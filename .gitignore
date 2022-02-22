@@ -1,0 +1,10 @@
+.vscode/
+.vscodecounter/
+backup/
+build/
+temp/
+
+core*
+GPATH
+GRTAGS
+GTAGS
