@@ -9,7 +9,7 @@ void switchToProjectPath()
     try
     {
         const int bufferSize = 4096;
-        char absolutePath[bufferSize] = { '\0' };
+        char absolutePath[bufferSize] = {'\0'};
         const int length = readlink("/proc/self/exe", absolutePath, bufferSize);
         if ((length < 0) || (length >= bufferSize))
         {

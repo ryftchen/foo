@@ -1,8 +1,8 @@
+#include "../include/command.hpp"
+#include <sys/file.h>
+#include <ext/stdio_filebuf.h>
 #include <functional>
 #include <iomanip>
-#include <ext/stdio_filebuf.h>
-#include <sys/file.h>
-#include "../include/command.hpp"
 #include "../include/exception.hpp"
 #include "../include/hash.hpp"
 #include "../include/integral.hpp"
@@ -24,30 +24,30 @@ bool Command::parseArgv(const int argc, char *const argv[])
         {
             switch (bkdrHash(argv[i]))
             {
-            case "-o"_bkdrHash:
-            case "--optimum"_bkdrHash:
-                COMMAND_PERPARE_BITSET(run.optimumBit, TaskBit::taskOptimum);
-                break;
-            case "-i"_bkdrHash:
-            case "--integral"_bkdrHash:
-                COMMAND_PERPARE_BITSET(run.integralBit, TaskBit::taskIntegral);
-                break;
-            case "-s"_bkdrHash:
-            case "--sort"_bkdrHash:
-                COMMAND_PERPARE_BITSET(run.sortBit, TaskBit::taskSort);
-                break;
-            case "--backup"_bkdrHash:
-                backupProject();
-                break;
-            case "--log"_bkdrHash:
-                printLogContext();
-                break;
-            case "--help"_bkdrHash:
-                printInstruction();
-                break;
-            default:
-                printUnkownParameter(argv + i);
-                break;
+                case "-o"_bkdrHash:
+                case "--optimum"_bkdrHash:
+                    COMMAND_PERPARE_BITSET(run.optimumBit, TaskBit::taskOptimum);
+                    break;
+                case "-i"_bkdrHash:
+                case "--integral"_bkdrHash:
+                    COMMAND_PERPARE_BITSET(run.integralBit, TaskBit::taskIntegral);
+                    break;
+                case "-s"_bkdrHash:
+                case "--sort"_bkdrHash:
+                    COMMAND_PERPARE_BITSET(run.sortBit, TaskBit::taskSort);
+                    break;
+                case "--backup"_bkdrHash:
+                    backupProject();
+                    break;
+                case "--log"_bkdrHash:
+                    printLogContext();
+                    break;
+                case "--help"_bkdrHash:
+                    printInstruction();
+                    break;
+                default:
+                    printUnkownParameter(argv + i);
+                    break;
             }
         }
         else
@@ -72,7 +72,8 @@ void Command::doTask()
     }
 }
 
-void Command::setBitFromTaskPlan(char *const argv[],
+void Command::setBitFromTaskPlan(
+    char *const argv[],
     const std::bitset<TaskBit::taskButtom> &taskBit)
 {
     if (taskBit.test(TaskBit::taskOptimum))
@@ -99,11 +100,16 @@ void Command::runOptimum()
     if (run.optimumBit.any())
     {
         std::unique_lock<std::mutex> lock(commandMutex);
-        const auto functor = std::bind(&Command::getOptimumResult, this, std::placeholders::_1,
-                std::placeholders::_2, std::placeholders::_3, OPTIMUM_EPSILON);
+        const auto functor = std::bind(
+            &Command::getOptimumResult,
+            this,
+            std::placeholders::_1,
+            std::placeholders::_2,
+            std::placeholders::_3,
+            OPTIMUM_EPSILON);
 
         std::cout << std::setiosflags(std::ios::showpos) << std::setiosflags(std::ios::fixed)
-            << std::setprecision(5);
+                  << std::setprecision(COMMAND_PRINT_PRECISION);
         std::cout << OPTIMUM_RUN_BEGIN << std::endl;
 
         std::cout << EXPRESS_FUN_1_OPTIMUM << std::endl;
@@ -118,8 +124,11 @@ void Command::runOptimum()
         std::cout << std::resetiosflags(std::ios::showpos) << std::resetiosflags(std::ios::fixed);
     }
 }
-void Command::getOptimumResult(const Expression &express, const double leftEndpoint,
-    const double rightEndpoint, const double epsilon) const
+void Command::getOptimumResult(
+    const Expression &express,
+    const double leftEndpoint,
+    const double rightEndpoint,
+    const double epsilon) const
 {
     assert((leftEndpoint > rightEndpoint) && (epsilon > 0.0));
     std::vector<std::shared_ptr<std::thread>> optimumThread;
@@ -127,43 +136,45 @@ void Command::getOptimumResult(const Expression &express, const double leftEndpo
         [&](const std::shared_ptr<Optimum> classPoint, const char *const threadName)
     {
         const std::shared_ptr<std::thread> methodThread = std::make_shared<std::thread>(
-                &Optimum::operator(), classPoint, leftEndpoint, rightEndpoint, epsilon);
+            &Optimum::operator(), classPoint, leftEndpoint, rightEndpoint, epsilon);
         pthread_setname_np(methodThread->native_handle(), threadName);
-        optimumThread.emplace_back(std::move(methodThread));
+        optimumThread.emplace_back(methodThread);
     };
 
     std::shared_ptr<Optimum> fib, gra, ann, par, gen;
-    char threadName[COMMAND_THREAD_NAME_LENGTH] = { '\0' };
+    char threadName[COMMAND_THREAD_NAME_LENGTH] = {'\0'};
     for (int i = 0; i < OptimumBit::optimumButtom; ++i)
     {
         if (run.optimumBit.test(OptimumBit(i)))
         {
-            memcpy(threadName, taskTable[TaskBit::taskOptimum][OptimumBit(i)],
+            memcpy(
+                threadName,
+                taskTable[TaskBit::taskOptimum][OptimumBit(i)],
                 COMMAND_THREAD_NAME_LENGTH);
             switch (bkdrHash(threadName))
             {
-            case "o_fib"_bkdrHash:
-                fib = std::make_shared<Fibonacci>(express);
-                optimumFunctor(fib, threadName);
-                break;
-            case "o_gra"_bkdrHash:
-                gra = std::make_shared<Gradient>(express);
-                optimumFunctor(gra, threadName);
-                break;
-            case "o_ann"_bkdrHash:
-                ann = std::make_shared<Annealing>(express);
-                optimumFunctor(ann, threadName);
-                break;
-            case "o_par"_bkdrHash:
-                par = std::make_shared<Particle>(express);
-                optimumFunctor(par, threadName);
-                break;
-            case "o_gen"_bkdrHash:
-                gen = std::make_shared<Genetic>(express);
-                optimumFunctor(gen, threadName);
-                break;
-            default:
-                break;
+                case "o_fib"_bkdrHash:
+                    fib = std::make_shared<Fibonacci>(express);
+                    optimumFunctor(fib, threadName);
+                    break;
+                case "o_gra"_bkdrHash:
+                    gra = std::make_shared<Gradient>(express);
+                    optimumFunctor(gra, threadName);
+                    break;
+                case "o_ann"_bkdrHash:
+                    ann = std::make_shared<Annealing>(express);
+                    optimumFunctor(ann, threadName);
+                    break;
+                case "o_par"_bkdrHash:
+                    par = std::make_shared<Particle>(express);
+                    optimumFunctor(par, threadName);
+                    break;
+                case "o_gen"_bkdrHash:
+                    gen = std::make_shared<Genetic>(express);
+                    optimumFunctor(gen, threadName);
+                    break;
+                default:
+                    break;
             }
         }
     }
@@ -177,24 +188,24 @@ void Command::setOptimumBit(char *const argv[])
 {
     switch (bkdrHash(argv[0]))
     {
-    case "fib"_bkdrHash:
-        run.optimumBit.set(OptimumBit::optimumFibonacci);
-        break;
-    case "gra"_bkdrHash:
-        run.optimumBit.set(OptimumBit::optimumGradient);
-        break;
-    case "ann"_bkdrHash:
-        run.optimumBit.set(OptimumBit::optimumAnnealing);
-        break;
-    case "par"_bkdrHash:
-        run.optimumBit.set(OptimumBit::optimumParticle);
-        break;
-    case "gen"_bkdrHash:
-        run.optimumBit.set(OptimumBit::optimumGenetic);
-        break;
-    default:
-        printUnkownParameter(argv);
-        break;
+        case "fib"_bkdrHash:
+            run.optimumBit.set(OptimumBit::optimumFibonacci);
+            break;
+        case "gra"_bkdrHash:
+            run.optimumBit.set(OptimumBit::optimumGradient);
+            break;
+        case "ann"_bkdrHash:
+            run.optimumBit.set(OptimumBit::optimumAnnealing);
+            break;
+        case "par"_bkdrHash:
+            run.optimumBit.set(OptimumBit::optimumParticle);
+            break;
+        case "gen"_bkdrHash:
+            run.optimumBit.set(OptimumBit::optimumGenetic);
+            break;
+        default:
+            printUnkownParameter(argv);
+            break;
     }
 }
 
@@ -204,11 +215,16 @@ void Command::runIntegral()
     if (run.integralBit.any())
     {
         std::unique_lock<std::mutex> lock(commandMutex);
-        const auto functor = std::bind(&Command::getIntegralResult, this, std::placeholders::_1,
-                std::placeholders::_2, std::placeholders::_3, INTEGRAL_EPSILON);
+        const auto functor = std::bind(
+            &Command::getIntegralResult,
+            this,
+            std::placeholders::_1,
+            std::placeholders::_2,
+            std::placeholders::_3,
+            INTEGRAL_EPSILON);
 
         std::cout << std::setiosflags(std::ios::showpos) << std::setiosflags(std::ios::fixed)
-            << std::setprecision(5);
+                  << std::setprecision(COMMAND_PRINT_PRECISION);
         std::cout << INTEGRAL_RUN_BEGIN << std::endl;
 
         std::cout << EXPRESS_FUN_1_INTEGRAL << std::endl;
@@ -223,8 +239,11 @@ void Command::runIntegral()
         std::cout << std::resetiosflags(std::ios::showpos) << std::resetiosflags(std::ios::fixed);
     }
 }
-void Command::getIntegralResult(const Expression &express, const double lowerLimit,
-    const double upperLimit, const double epsilon) const
+void Command::getIntegralResult(
+    const Expression &express,
+    const double lowerLimit,
+    const double upperLimit,
+    const double epsilon) const
 {
     assert(epsilon > 0.0);
     std::vector<std::shared_ptr<std::thread>> integralThread;
@@ -232,43 +251,45 @@ void Command::getIntegralResult(const Expression &express, const double lowerLim
         [&](const std::shared_ptr<Integral> classPoint, const char *const threadName)
     {
         const std::shared_ptr<std::thread> methodThread = std::make_shared<std::thread>(
-                &Integral::operator(), classPoint, lowerLimit, upperLimit, epsilon);
+            &Integral::operator(), classPoint, lowerLimit, upperLimit, epsilon);
         pthread_setname_np(methodThread->native_handle(), threadName);
-        integralThread.emplace_back(std::move(methodThread));
+        integralThread.emplace_back(methodThread);
     };
 
     std::shared_ptr<Integral> tra, sim, rom, gau, mon;
-    char threadName[COMMAND_THREAD_NAME_LENGTH] = { '\0' };
+    char threadName[COMMAND_THREAD_NAME_LENGTH] = {'\0'};
     for (int i = 0; i < IntegralBit::integralButtom; ++i)
     {
         if (run.integralBit.test(IntegralBit(i)))
         {
-            memcpy(threadName, taskTable[TaskBit::taskIntegral][IntegralBit(i)],
+            memcpy(
+                threadName,
+                taskTable[TaskBit::taskIntegral][IntegralBit(i)],
                 COMMAND_THREAD_NAME_LENGTH);
             switch (bkdrHash(threadName))
             {
-            case "i_tra"_bkdrHash:
-                tra = std::make_shared<Trapezoidal>(express);
-                integralFunctor(tra, threadName);
-                break;
-            case "i_sim"_bkdrHash:
-                sim = std::make_shared<Simpson>(express);
-                integralFunctor(sim, threadName);
-                break;
-            case "i_rom"_bkdrHash:
-                rom = std::make_shared<Romberg>(express);
-                integralFunctor(rom, threadName);
-                break;
-            case "i_gau"_bkdrHash:
-                gau = std::make_shared<Gauss>(express);
-                integralFunctor(gau, threadName);
-                break;
-            case "i_mon"_bkdrHash:
-                mon = std::make_shared<MonteCarlo>(express);
-                integralFunctor(mon, threadName);
-                break;
-            default:
-                break;
+                case "i_tra"_bkdrHash:
+                    tra = std::make_shared<Trapezoidal>(express);
+                    integralFunctor(tra, threadName);
+                    break;
+                case "i_sim"_bkdrHash:
+                    sim = std::make_shared<Simpson>(express);
+                    integralFunctor(sim, threadName);
+                    break;
+                case "i_rom"_bkdrHash:
+                    rom = std::make_shared<Romberg>(express);
+                    integralFunctor(rom, threadName);
+                    break;
+                case "i_gau"_bkdrHash:
+                    gau = std::make_shared<Gauss>(express);
+                    integralFunctor(gau, threadName);
+                    break;
+                case "i_mon"_bkdrHash:
+                    mon = std::make_shared<MonteCarlo>(express);
+                    integralFunctor(mon, threadName);
+                    break;
+                default:
+                    break;
             }
         }
     }
@@ -282,24 +303,24 @@ void Command::setIntegralBit(char *const argv[])
 {
     switch (bkdrHash(argv[0]))
     {
-    case "tra"_bkdrHash:
-        run.integralBit.set(IntegralBit::integralTrapezoidal);
-        break;
-    case "sim"_bkdrHash:
-        run.integralBit.set(IntegralBit::integralSimpson);
-        break;
-    case "rom"_bkdrHash:
-        run.integralBit.set(IntegralBit::integralRomberg);
-        break;
-    case "gau"_bkdrHash:
-        run.integralBit.set(IntegralBit::integralGauss);
-        break;
-    case "mon"_bkdrHash:
-        run.integralBit.set(IntegralBit::integralMonteCarlo);
-        break;
-    default:
-        printUnkownParameter(argv);
-        break;
+        case "tra"_bkdrHash:
+            run.integralBit.set(IntegralBit::integralTrapezoidal);
+            break;
+        case "sim"_bkdrHash:
+            run.integralBit.set(IntegralBit::integralSimpson);
+            break;
+        case "rom"_bkdrHash:
+            run.integralBit.set(IntegralBit::integralRomberg);
+            break;
+        case "gau"_bkdrHash:
+            run.integralBit.set(IntegralBit::integralGauss);
+            break;
+        case "mon"_bkdrHash:
+            run.integralBit.set(IntegralBit::integralMonteCarlo);
+            break;
+        default:
+            printUnkownParameter(argv);
+            break;
     }
 }
 
@@ -314,65 +335,64 @@ void Command::runSort()
         constexpr const uint32_t length = SORT_ARRAY_LENGTH;
         static_assert((leftEndpoint < rightEndpoint) && (length > 0));
 
-        const std::shared_ptr<Sort<int>> sort = std::make_shared<Sort<int>>(length, leftEndpoint,
-                    rightEndpoint);
+        const std::shared_ptr<Sort<int>> sort =
+            std::make_shared<Sort<int>>(length, leftEndpoint, rightEndpoint);
         getSortResult(sort);
     }
 }
 void Command::getSortResult(const std::shared_ptr<Sort<int>> sort) const
 {
     std::vector<std::shared_ptr<std::thread>> sortThread;
-    const auto sortFunctor =
-        [&](void (Sort<int>:: *methodPoint)(int *const, const uint32_t) const,
-            const char *const threadName)
+    const auto sortFunctor = [&](void (Sort<int>::*methodPoint)(int *const, const uint32_t) const,
+                                 const char *const threadName)
     {
-        const std::shared_ptr<std::thread> methodThread = std::make_shared<std::thread>(methodPoint,
-                sort, sort->randomArray.get(), sort->len);
+        const std::shared_ptr<std::thread> methodThread =
+            std::make_shared<std::thread>(methodPoint, sort, sort->randomArray.get(), sort->len);
         pthread_setname_np(methodThread->native_handle(), threadName);
-        sortThread.emplace_back(std::move(methodThread));
+        sortThread.emplace_back(methodThread);
     };
 
-    char threadName[COMMAND_THREAD_NAME_LENGTH] = { '\0' };
+    char threadName[COMMAND_THREAD_NAME_LENGTH] = {'\0'};
     for (int i = 0; i < SortBit::sortButtom; ++i)
     {
         if (run.sortBit.test(SortBit(i)))
         {
-            memcpy(threadName, taskTable[TaskBit::taskSort][SortBit(i)],
-                COMMAND_THREAD_NAME_LENGTH);
+            memcpy(
+                threadName, taskTable[TaskBit::taskSort][SortBit(i)], COMMAND_THREAD_NAME_LENGTH);
             switch (bkdrHash(threadName))
             {
-            case "s_bub"_bkdrHash:
-                sortFunctor(&Sort<int>::bubbleSort, threadName);
-                break;
-            case "s_sec"_bkdrHash:
-                sortFunctor(&Sort<int>::selectionSort, threadName);
-                break;
-            case "s_ins"_bkdrHash:
-                sortFunctor(&Sort<int>::insertionSort, threadName);
-                break;
-            case "s_she"_bkdrHash:
-                sortFunctor(&Sort<int>::shellSort, threadName);
-                break;
-            case "s_mer"_bkdrHash:
-                sortFunctor(&Sort<int>::mergeSort, threadName);
-                break;
-            case "s_qui"_bkdrHash:
-                sortFunctor(&Sort<int>::quickSort, threadName);
-                break;
-            case "s_hea"_bkdrHash:
-                sortFunctor(&Sort<int>::heapSort, threadName);
-                break;
-            case "s_cou"_bkdrHash:
-                sortFunctor(&Sort<int>::countingSort, threadName);
-                break;
-            case "s_buc"_bkdrHash:
-                sortFunctor(&Sort<int>::bucketSort, threadName);
-                break;
-            case "s_rad"_bkdrHash:
-                sortFunctor(&Sort<int>::radixSort, threadName);
-                break;
-            default:
-                break;
+                case "s_bub"_bkdrHash:
+                    sortFunctor(&Sort<int>::bubbleSort, threadName);
+                    break;
+                case "s_sec"_bkdrHash:
+                    sortFunctor(&Sort<int>::selectionSort, threadName);
+                    break;
+                case "s_ins"_bkdrHash:
+                    sortFunctor(&Sort<int>::insertionSort, threadName);
+                    break;
+                case "s_she"_bkdrHash:
+                    sortFunctor(&Sort<int>::shellSort, threadName);
+                    break;
+                case "s_mer"_bkdrHash:
+                    sortFunctor(&Sort<int>::mergeSort, threadName);
+                    break;
+                case "s_qui"_bkdrHash:
+                    sortFunctor(&Sort<int>::quickSort, threadName);
+                    break;
+                case "s_hea"_bkdrHash:
+                    sortFunctor(&Sort<int>::heapSort, threadName);
+                    break;
+                case "s_cou"_bkdrHash:
+                    sortFunctor(&Sort<int>::countingSort, threadName);
+                    break;
+                case "s_buc"_bkdrHash:
+                    sortFunctor(&Sort<int>::bucketSort, threadName);
+                    break;
+                case "s_rad"_bkdrHash:
+                    sortFunctor(&Sort<int>::radixSort, threadName);
+                    break;
+                default:
+                    break;
             }
         }
     }
@@ -386,39 +406,39 @@ void Command::setSortBit(char *const argv[])
 {
     switch (bkdrHash(argv[0]))
     {
-    case "bub"_bkdrHash:
-        run.sortBit.set(SortBit::sortBubble);
-        break;
-    case "sel"_bkdrHash:
-        run.sortBit.set(SortBit::sortSelection);
-        break;
-    case "ins"_bkdrHash:
-        run.sortBit.set(SortBit::sortInsertion);
-        break;
-    case "she"_bkdrHash:
-        run.sortBit.set(SortBit::sortShell);
-        break;
-    case "mer"_bkdrHash:
-        run.sortBit.set(SortBit::sortMerge);
-        break;
-    case "qui"_bkdrHash:
-        run.sortBit.set(SortBit::sortQuick);
-        break;
-    case "hea"_bkdrHash:
-        run.sortBit.set(SortBit::sortHeap);
-        break;
-    case "cou"_bkdrHash:
-        run.sortBit.set(SortBit::sortCounting);
-        break;
-    case "buc"_bkdrHash:
-        run.sortBit.set(SortBit::sortBucket);
-        break;
-    case "rad"_bkdrHash:
-        run.sortBit.set(SortBit::sortRadix);
-        break;
-    default:
-        printUnkownParameter(argv);
-        break;
+        case "bub"_bkdrHash:
+            run.sortBit.set(SortBit::sortBubble);
+            break;
+        case "sel"_bkdrHash:
+            run.sortBit.set(SortBit::sortSelection);
+            break;
+        case "ins"_bkdrHash:
+            run.sortBit.set(SortBit::sortInsertion);
+            break;
+        case "she"_bkdrHash:
+            run.sortBit.set(SortBit::sortShell);
+            break;
+        case "mer"_bkdrHash:
+            run.sortBit.set(SortBit::sortMerge);
+            break;
+        case "qui"_bkdrHash:
+            run.sortBit.set(SortBit::sortQuick);
+            break;
+        case "hea"_bkdrHash:
+            run.sortBit.set(SortBit::sortHeap);
+            break;
+        case "cou"_bkdrHash:
+            run.sortBit.set(SortBit::sortCounting);
+            break;
+        case "buc"_bkdrHash:
+            run.sortBit.set(SortBit::sortBucket);
+            break;
+        case "rad"_bkdrHash:
+            run.sortBit.set(SortBit::sortRadix);
+            break;
+        default:
+            printUnkownParameter(argv);
+            break;
     }
 }
 
@@ -435,8 +455,8 @@ void Command::backupProject()
         {
             if (0 == WEXITSTATUS(status))
             {
-                const std::string str = "Run script " + std::string(basename(BACKUP_PATH)) +
-                    " successfully.";
+                const std::string str =
+                    "Run script " + std::string(basename(BACKUP_PATH)) + " successfully.";
                 LOGGER(Log::Level::levelInfo, str.c_str());
             }
             else
@@ -481,19 +501,18 @@ void Command::printInstruction()
 {
     printFile(README_PATH);
 #ifdef NO_README
-    puts(
-        "### Usage    : foo [Options...]\n\n"
-        "### [Options]:\n\n"
-        "    -o, --optimum                      Optimum\n"
-        "    [ fib | gra | ann | par | gen ]    Fibonacci|Gradient|Annealing|Particle|Genetic\n\n"
-        "    -i, --integral                     Integral\n"
-        "    [ tra | sim | rom | gau | mon ]    Trapezoidal|Simpson|Romberg|Gauss|MonteCarlo\n\n"
-        "    -s, --sort                         Sort\n"
-        "    [ bub | sel | ins | she | mer ]    Bubble|Selection|Insertion|Shell|Merge\n"
-        "    [ qui | hea | cou | buc | rad ]    Quick|Heap|Counting|Bucket|Radix\n\n"
-        "    --backup                           Backup\n\n"
-        "    --log                              Log\n\n"
-        "    --help                             Help");
+    puts("### Usage    : foo [Options...]\n\n"
+         "### [Options]:\n\n"
+         "    -o, --optimum                      Optimum\n"
+         "    [ fib | gra | ann | par | gen ]    Fibonacci|Gradient|Annealing|Particle|Genetic\n\n"
+         "    -i, --integral                     Integral\n"
+         "    [ tra | sim | rom | gau | mon ]    Trapezoidal|Simpson|Romberg|Gauss|MonteCarlo\n\n"
+         "    -s, --sort                         Sort\n"
+         "    [ bub | sel | ins | she | mer ]    Bubble|Selection|Insertion|Shell|Merge\n"
+         "    [ qui | hea | cou | buc | rad ]    Quick|Heap|Counting|Bucket|Radix\n\n"
+         "    --backup                           Backup\n\n"
+         "    --log                              Log\n\n"
+         "    --help                             Help");
 #endif
     run.taskDone = true;
 }

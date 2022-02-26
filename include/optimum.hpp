@@ -5,84 +5,105 @@
 #include <vector>
 #include "./expression.hpp"
 
-#define OPTIMUM_EPSILON    1e-5
-#define OPTIMUM_RUN_BEGIN    "\r\n---------- BEGIN OPTIMUM  ----------"
-#define OPTIMUM_RUN_END    "\r\n----------  END OPTIMUM   ----------"
+#define OPTIMUM_EPSILON 1e-5
+#define OPTIMUM_RUN_BEGIN "\r\n---------- BEGIN OPTIMUM  ----------"
+#define OPTIMUM_RUN_END "\r\n----------  END OPTIMUM   ----------"
 
 class Optimum
 {
 public:
-    virtual ~Optimum() {};
-    virtual std::optional<std::tuple<double, double>> operator()(const double left,
-            const double right, const double eps) = 0;
+    virtual ~Optimum(){};
+    virtual std::optional<std::tuple<double, double>> operator()(
+        const double left,
+        const double right,
+        const double eps) = 0;
 };
 
 // Fibonacci method
-#define OPTIMUM_FIBONACCI    "*Fibonacci method: Y(max)=%+.5f X=%+.5f  ==>Run time: %8.5fms\n"
-#define FIBONACCI_X_1    (leftVal + fibonacci[n - 2] / fibonacci[n] * (rightVal - leftVal))
-#define FIBONACCI_X_2    (leftVal + fibonacci[n - 1] / fibonacci[n] * (rightVal - leftVal))
-#define FIBONACCI_MAX_UNCHANGED    3
-class Fibonacci: public Optimum
+#define OPTIMUM_FIBONACCI "*Fibonacci method: Y(max)=%+.5f X=%+.5f  ==>Run time: %8.5fms\n"
+#define FIBONACCI_X_1 (leftVal + fibonacci[n - 2] / fibonacci[n] * (rightVal - leftVal))
+#define FIBONACCI_X_2 (leftVal + fibonacci[n - 1] / fibonacci[n] * (rightVal - leftVal))
+#define FIBONACCI_MAX_UNCHANGED 3
+class Fibonacci : public Optimum
 {
 public:
-    explicit Fibonacci(const Expression &express): fun(express) {};
-    std::optional<std::tuple<double, double>> operator()(const double left,
-            const double right, const double eps) override;
+    explicit Fibonacci(const Expression &express) : fun(express){};
+    std::optional<std::tuple<double, double>> operator()(
+        const double left,
+        const double right,
+        const double eps) override;
+
 private:
     const Expression &fun;
-    std::optional<std::pair<double, double>> fibonacciSearch(const double left, const double right,
-            const double eps);
+    std::optional<std::pair<double, double>> fibonacciSearch(
+        const double left,
+        const double right,
+        const double eps);
     static void generateFibonacciNumber(std::vector<double> &fibonacci, const double max);
 };
 
 // Gradient ascent method
-#define OPTIMUM_GRADIENT    "*Gradient  method: Y(max)=%+.5f X=%+.5f  ==>Run time: %8.5fms\n"
+#define OPTIMUM_GRADIENT "*Gradient  method: Y(max)=%+.5f X=%+.5f  ==>Run time: %8.5fms\n"
 namespace Learning
 {
 static const double learningRateBegin = 0.01;
 static const double decay = 0.001;
 static const uint32_t repeatTime = 100;
-}
-class Gradient: public Optimum
+} // namespace Learning
+class Gradient : public Optimum
 {
 public:
-    explicit Gradient(const Expression &express): fun(express) {};
-    std::optional<std::tuple<double, double>> operator()(const double left,
-            const double right, const double eps) override;
+    explicit Gradient(const Expression &express) : fun(express){};
+    std::optional<std::tuple<double, double>> operator()(
+        const double left,
+        const double right,
+        const double eps) override;
+
 private:
     const Expression &fun;
-    double calculateFirstDerivative(const double x, const double eps) const;
+    [[nodiscard]] double calculateFirstDerivative(const double x, const double eps) const;
 };
 
 // Simulated annealing method
-#define OPTIMUM_ANNEALING    "*Annealing method: Y(max)=%+.5f X=%+.5f  ==>Run time: %8.5fms\n"
+#define OPTIMUM_ANNEALING "*Annealing method: Y(max)=%+.5f X=%+.5f  ==>Run time: %8.5fms\n"
+#define OPTIMUM_ANNEALING_PERTURBATION 0.5
 namespace Cooling
 {
 static const double initT = 100.0;
 static const double minT = 0.01;
 static const double rate = 0.9;
-static const uint32_t annealingMarkovChain = 100;
-}
-class Annealing: public Optimum
+static const uint32_t markovChain = 100;
+} // namespace Cooling
+class Annealing : public Optimum
 {
 public:
-    explicit Annealing(const Expression &express): fun(express) {};
-    std::optional<std::tuple<double, double>> operator()(const double left,
-            const double right, const double eps) override;
+    explicit Annealing(const Expression &express) : fun(express){};
+    std::optional<std::tuple<double, double>> operator()(
+        const double left,
+        const double right,
+        const double eps) override;
+
 private:
     const Expression &fun;
 };
 
 // Particle swarm method
-#define OPTIMUM_PARTICLE    "*Particle  method: Y(max)=%+.5f X=%+.5f  ==>Run time: %8.5fms\n"
+#define OPTIMUM_PARTICLE "*Particle  method: Y(max)=%+.5f X=%+.5f  ==>Run time: %8.5fms\n"
 namespace Swarm
 {
 struct Individual
 {
-    Individual(const double x, const double velocity, const double positionBest,
-        const double xFitness, const double fitnessPositionBest):
-        x(x), velocity(velocity), positionBest(positionBest),
-        xFitness(xFitness), fitnessPositionBest(fitnessPositionBest) {};
+    Individual(
+        const double x,
+        const double velocity,
+        const double positionBest,
+        const double xFitness,
+        const double fitnessPositionBest)
+        : x(x)
+        , velocity(velocity)
+        , positionBest(positionBest)
+        , xFitness(xFitness)
+        , fitnessPositionBest(fitnessPositionBest){};
     double x;
     double velocity;
     double positionBest;
@@ -93,18 +114,16 @@ struct Individual
 };
 struct Greater
 {
-    bool operator()(const double left, const double right) const
-    {
-        return left > right;
-    }
+    bool operator()(const double left, const double right) const { return left > right; }
 };
 using Society = std::vector<Swarm::Individual>;
 using History = std::map<double, double, Greater>;
 struct Record
 {
-    Record(const std::initializer_list<Society::value_type> &society,
-        const std::initializer_list<History::value_type> &history):
-        society(society), history(history) {};
+    Record(
+        const std::initializer_list<Society::value_type> &society,
+        const std::initializer_list<History::value_type> &history)
+        : society(society), history(history){};
     Society society;
     History history;
 
@@ -118,13 +137,16 @@ static const double vMax = 0.5;
 static const double vMin = -0.5;
 static const uint32_t size = 50;
 static const uint32_t iterNum = 100;
-}
-class Particle: public Optimum
+} // namespace Swarm
+class Particle : public Optimum
 {
 public:
-    explicit Particle(const Expression &express): fun(express) {};
-    std::optional<std::tuple<double, double>> operator()(const double left,
-            const double right, const double eps) override;
+    explicit Particle(const Expression &express) : fun(express){};
+    std::optional<std::tuple<double, double>> operator()(
+        const double left,
+        const double right,
+        const double eps) override;
+
 private:
     const Expression &fun;
     std::mt19937 seed;
@@ -132,7 +154,7 @@ private:
 };
 
 // Genetic method
-#define OPTIMUM_GENETIC    "*Genetic   method: Y(max)=%+.5f X=%+.5f  ==>Run time: %8.5fms\n"
+#define OPTIMUM_GENETIC "*Genetic   method: Y(max)=%+.5f X=%+.5f  ==>Run time: %8.5fms\n"
 namespace Species
 {
 using Chromosome = std::vector<uint32_t>;
@@ -141,13 +163,16 @@ static const double crossPr = 0.7;
 static const double mutatePr = 0.05;
 static const uint32_t size = 50;
 static const uint32_t iterNum = 100;
-}
-class Genetic: public Optimum
+} // namespace Species
+class Genetic : public Optimum
 {
 public:
-    explicit Genetic(const Expression &express): fun(express) {};
-    std::optional<std::tuple<double, double>> operator()(const double left,
-            const double right, const double eps) override;
+    explicit Genetic(const Expression &express) : fun(express){};
+    std::optional<std::tuple<double, double>> operator()(
+        const double left,
+        const double right,
+        const double eps) override;
+
 private:
     const Expression &fun;
     struct Range
@@ -170,8 +195,9 @@ private:
     void mutateIndividual(Species::Population &pop);
     double calculateFitness(const Species::Chromosome &chr);
     std::optional<std::tuple<double, double>> fitnessLinearTransformation(
-            const Species::Population &pop);
-    void stochasticTournamentSelection(Species::Population &pop,
+        const Species::Population &pop);
+    void stochasticTournamentSelection(
+        Species::Population &pop,
         const std::vector<double> &fitnessCum);
     void selectIndividual(Species::Population &pop);
     Species::Chromosome getBestIndividual(const Species::Population &pop);

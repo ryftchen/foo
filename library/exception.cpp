@@ -1,36 +1,36 @@
 #include "../include/exception.hpp"
 
-const char *RunScriptError::what() const throw()
+const char *RunScriptError::what() const noexcept
 {
     return message.c_str();
 }
 
-const char *CreateFolderError::what() const throw()
+const char *CreateFolderError::what() const noexcept
 {
     return message.c_str();
 }
 
-const char *OpenFileError::what() const throw()
+const char *OpenFileError::what() const noexcept
 {
     return message.c_str();
 }
 
-const char *LockReaderLockError::what() const throw()
+const char *LockReaderLockError::what() const noexcept
 {
     return message.c_str();
 }
 
-const char *UnlockReaderLockError::what() const throw()
+const char *UnlockReaderLockError::what() const noexcept
 {
     return message.c_str();
 }
 
-const char *LockWriterLockError::what() const throw()
+const char *LockWriterLockError::what() const noexcept
 {
     return message.c_str();
 }
 
-const char *UnlockWriterLockError::what() const throw()
+const char *UnlockWriterLockError::what() const noexcept
 {
     return message.c_str();
 }
