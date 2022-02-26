@@ -4,7 +4,6 @@
 import argparse
 import curses
 import fcntl
-import operator
 import os
 import signal
 import subprocess
@@ -30,12 +29,14 @@ WHOLE_STEP = (
 
 STDOUT_DEFAULT = sys.stdout
 STDOUT_LOG = sys.stdout
+SET_VALGRIND = False
 VALGRIND_CMD = "valgrind --tool=memcheck --show-reachable=yes --leak-check=full \
 --leak-resolution=high --log-fd=1"
-SET_VALGRIND = False
 TEMP_LOG = "./temp/test.log"
 TEMP_PATH = "./temp"
 BUILD_CMD = "./script/build.sh"
+BUILD_COMPILER_START = "Configuring done"
+BUILD_COMPILER_FINISH = "Built target"
 FORE_RED = "\033[0;31;40m"
 FORE_GREEN = "\033[0;32;40m"
 FORE_YELLOW = "\033[0;33;40m"
@@ -199,7 +200,7 @@ def buildProject(command):
     print(output)
     if cmd.returncode != 0:
         printAbort("Failed to execute shell script build.sh.")
-    elif operator.eq(command, BUILD_CMD + " 2>&1") and output.find("[100%] Built target foo") == -1:
+    elif output.find(BUILD_COMPILER_START) != -1 and output.find(BUILD_COMPILER_FINISH) == -1:
         printAbort("Failed to build project by shell script build.sh.")
 
 
@@ -286,7 +287,7 @@ def parseArgs():
         "--build",
         "-b",
         nargs="?",
-        choices=["default", "cleanup", "format", "analysis", "tag"],
+        choices=["default", "release", "cleanup", "format", "analysis", "tag"],
         const="default",
         help="test with build",
     )

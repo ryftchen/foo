@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # chmod 755 build.sh
 
+ARGS_RELEASE=0
 ARGS_CLEANUP=0
 ARGS_ANALYSIS=0
 ARGS_FORMAT=0
@@ -39,6 +40,8 @@ printInstruction()
     echo
     echo "### [Options]:"
     echo
+    echo "    -r, --release                      Release"
+    echo
     echo "    -c, --cleanup                      Cleanup"
     echo
     echo "    -f, --format                       Format"
@@ -55,6 +58,7 @@ parseArgs()
 {
     while [ "$#" -gt 0 ]; do
         case $1 in
+        -r | --release) ARGS_RELEASE=1 ;;
         -c | --cleanup) ARGS_CLEANUP=1 ;;
         -f | --format) ARGS_FORMAT=1 ;;
         -a | --analysis) ARGS_ANALYSIS=1 ;;
@@ -129,13 +133,15 @@ main()
     fi
 
     if [ -f "${CMAKE_FILE}" ]; then
-        if [ -d ./"${BUILD_FOLDER}" ]; then
-            shCommand "cd ${BUILD_FOLDER} && cmake .."
-            shCommand "cd ${BUILD_FOLDER} && make -j4"
-        else
-            shCommand "mkdir ${BUILD_FOLDER} && cd ${BUILD_FOLDER} && cmake .."
-            shCommand "cd ${BUILD_FOLDER} && make -j4"
+        if [ ! -d ./"${BUILD_FOLDER}" ]; then
+            shCommand "mkdir ${BUILD_FOLDER}"
         fi
+        if [ "${ARGS_RELEASE}" = "1" ]; then
+            shCommand "cd ${BUILD_FOLDER} && cmake .. -DCMAKE_BUILD_TYPE=Release"
+        else
+            shCommand "cd ${BUILD_FOLDER} && cmake .. -DCMAKE_BUILD_TYPE=Debug"
+        fi
+        shCommand "cd ${BUILD_FOLDER} && make -j4"
     else
         printAbort "There is no ${CMAKE_FILE} file in ${PROJECT_FOLDER} folder."
     fi
