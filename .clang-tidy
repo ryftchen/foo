@@ -1,0 +1,80 @@
+---
+Checks:
+    clang-diagnostic-gnu-zero-variadic-macro-arguments,
+    clang-diagnostic-mismatched-tags,
+    clang-diagnostic-missing-braces,
+    cppcoreguidelines-avoid-goto,
+    cppcoreguidelines-avoid-magic-numbers,
+    cppcoreguidelines-c-copy-assignment-signature,
+    cppcoreguidelines-explicit-virtual-functions,
+    cppcoreguidelines-pro-type-cstyle-cast,
+    cppcoreguidelines-pro-type-const-cast,
+    cppcoreguidelines-pro-type-reinterpret-cast,
+    cppcoreguidelines-pro-type-union-access,
+    misc-avoid-magic-numbers,
+    misc-new-delete-overloads,
+    misc-non-copyable-objects,
+    misc-static-assert,
+    misc-unused-parameters,
+    modernize-concat-nested-namespaces,
+    modernize-replace-auto-ptr,
+    modernize-use-nodiscard,
+    modernize-use-noexcept,
+    modernize-use-nullptr,
+    modernize-use-override,
+    performance-move-const-arg,
+    performance-move-constructor-init,
+    readability-braces-around-statements,
+    readability-convert-member-functions-to-static,
+    readability-function-cognitive-complexity,
+    readability-function-size,
+    readability-identifier-naming,
+    readability-magic-numbers,
+    readability-named-parameter,
+    readability-qualified-auto,
+    readability-redundant-access-specifiers,
+    readability-uppercase-literal-suffix,
+    readability-use-anyofallof
+AnalyzeTemporaryDtors: false
+CheckOptions:
+  - key:             readability-function-size.ParameterThreshold
+    value:           5
+  - key:             readability-function-size.StatementThreshold
+    value:           100
+  - key:             readability-identifier-naming.ClassCase
+    value:           CamelCase
+  - key:             readability-identifier-naming.ConstantCase
+    value:           camelBack
+  - key:             readability-identifier-naming.ConstantParameterCase
+    value:           camelBack
+  - key:             readability-identifier-naming.EnumCase
+    value:           CamelCase
+  - key:             readability-identifier-naming.EnumConstantCase
+    value:           camelBack
+  - key:             readability-identifier-naming.FunctionCase
+    value:           camelBack
+  - key:             readability-identifier-naming.LocalConstantCase
+    value:           camelBack
+  - key:             readability-identifier-naming.MacroDefinitionCase
+    value:           UPPER_CASE
+  - key:             readability-identifier-naming.MethodCase
+    value:           camelBack
+  - key:             readability-identifier-naming.NamespaceCase
+    value:           CamelCase
+  - key:             readability-identifier-naming.PrivateMemberPrefix
+    value:           ''
+  - key:             readability-identifier-naming.PrivateMemberSuffix
+    value:           ''
+  - key:             readability-identifier-naming.StructCase
+    value:           CamelCase
+  - key:             readability-identifier-naming.TypedefCase
+    value:           CamelCase
+  - key:             readability-identifier-naming.TypeAliasCase
+    value:           CamelCase
+  - key:             readability-identifier-naming.UnionCase
+    value:           CamelCase
+  - key:             readability-identifier-naming.VariableCase
+    value:           camelBack
+  - key:             readability-identifier-naming.VariablePrefix
+    value:           ''
+...
