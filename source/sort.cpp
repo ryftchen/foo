@@ -1,3 +1,4 @@
+#include "../include/sort.hpp"
 #include <algorithm>
 #define NODEBUG
 #include <cassert>
@@ -5,7 +6,6 @@
 #include <queue>
 #include <random>
 #include <vector>
-#include "../include/sort.hpp"
 #include "../include/time.hpp"
 
 template class Sort<int>;
@@ -21,44 +21,47 @@ template void Sort<int>::countingSort(int *const, const uint32_t) const;
 template void Sort<int>::bucketSort(int *const, const uint32_t) const;
 template void Sort<int>::radixSort(int *const, const uint32_t) const;
 
-template<class T>
-Sort<T>::Sort(const uint32_t len, const T left, const T right): len(len), left(left), right(right),
-    randomArray(std::make_unique<T []>(len))
+template <class T>
+Sort<T>::Sort(const uint32_t len, const T left, const T right)
+    : len(len), left(left), right(right), randomArray(std::make_unique<T[]>(len))
 {
     std::cout << SORT_RUN_BEGIN << std::endl;
     setRandomArray<T>(randomArray.get(), len, left, right);
 }
 
-template<class T>
+template <class T>
 Sort<T>::~Sort()
 {
     std::cout << SORT_RUN_END << std::endl;
 }
 
-template<class T>
+template <class T>
 Sort<T> &Sort<T>::operator=(const Sort &rhs)
 {
     deepCopyFromSort(rhs);
     return *this;
 }
 
-template<class T>
-Sort<T>::Sort(const Sort &sort): len(sort.len), left(sort.len), right(sort.len),
-    randomArray(std::make_unique<T []>(len))
+template <class T>
+Sort<T>::Sort(const Sort &sort)
+    : len(sort.len), left(sort.len), right(sort.len), randomArray(std::make_unique<T[]>(len))
 {
     deepCopyFromSort(sort);
 }
 
-template<class T>
+template <class T>
 void Sort<T>::deepCopyFromSort(const Sort &sort) const
 {
     memcpy(randomArray.get(), sort.randomArray.get(), len * sizeof(T));
 }
 
-template<class T>
-template<typename U>
-requires std::is_integral<U>::value
-void Sort<T>::setRandomArray(T array[], const uint32_t len, const T left, const T right) const
+template <class T>
+template <typename U>
+requires std::is_integral<U>::value void Sort<T>::setRandomArray(
+    T array[],
+    const uint32_t len,
+    const T left,
+    const T right) const
 {
     GET_TIME_SEED(seed);
     const char *const rangeFormat = std::is_integral<T>::value ? "%d to %d" : " ";
@@ -77,13 +80,19 @@ void Sort<T>::setRandomArray(T array[], const uint32_t len, const T left, const 
     const uint32_t bufferSize = len * SORT_PRINT_MAX_ALIGN;
     char buffer[bufferSize + 1];
     buffer[0] = '\0';
-    printf("\r\nGenerate %u random integral numbers from %s:\r\n%s\n", len, range,
+    printf(
+        "\r\nGenerate %u random integral numbers from %s:\r\n%s\n",
+        len,
+        range,
         formatArray(array, len, buffer, bufferSize + 1));
 }
-template<class T>
-template<typename U>
-requires std::is_floating_point<U>::value
-void Sort<T>::setRandomArray(T array[], const uint32_t len, const T left, const T right) const
+template <class T>
+template <typename U>
+requires std::is_floating_point<U>::value void Sort<T>::setRandomArray(
+    T array[],
+    const uint32_t len,
+    const T left,
+    const T right) const
 {
     GET_TIME_SEED(seed);
     const char *const rangeFormat = std::is_floating_point<T>::value ? "%.5f to %.5f" : " ";
@@ -102,12 +111,18 @@ void Sort<T>::setRandomArray(T array[], const uint32_t len, const T left, const 
     const uint32_t bufferSize = len * SORT_PRINT_MAX_ALIGN;
     char buffer[bufferSize + 1];
     buffer[0] = '\0';
-    printf("\r\nGenerate %u random floating point numbers from %s:\r\n%s\n", len, range,
+    printf(
+        "\r\nGenerate %u random floating point numbers from %s:\r\n%s\n",
+        len,
+        range,
         formatArray(array, len, buffer, bufferSize + 1));
 }
 
-template<class T>
-char *Sort<T>::formatArray(const T *const array, const uint32_t len, char *const buffer,
+template <class T>
+char *Sort<T>::formatArray(
+    const T *const array,
+    const uint32_t len,
+    char *const buffer,
     const uint32_t bufferSize) const
 {
     uint32_t align = 0;
@@ -116,14 +131,14 @@ char *Sort<T>::formatArray(const T *const array, const uint32_t len, char *const
         align = std::max(static_cast<uint32_t>(std::to_string(array[i]).length()), align);
     }
 
-    const char *const format = std::is_integral<T>::value ? "%*d " :
-        (std::is_floating_point<T>::value ? "%*.5f " : " ");
+    const char *const format =
+        std::is_integral<T>::value ? "%*d " : (std::is_floating_point<T>::value ? "%*.5f " : " ");
     uint32_t completeSize = 0;
     for (uint32_t i = 0; i < len; ++i)
     {
-        completeSize += std::snprintf(buffer + completeSize, bufferSize - completeSize, format,
-                align + 1, array[i]);
-        if ((0 == (i + 1) % 10) && (len != (i + 1)))
+        completeSize += std::snprintf(
+            buffer + completeSize, bufferSize - completeSize, format, align + 1, array[i]);
+        if ((0 == (i + 1) % SORT_PRINT_MAX_COLUMN) && (len != (i + 1)))
         {
             completeSize += std::snprintf(buffer + completeSize, bufferSize - completeSize, "\n");
         }
@@ -132,7 +147,7 @@ char *Sort<T>::formatArray(const T *const array, const uint32_t len, char *const
 }
 
 // Bubble method
-template<class T>
+template <class T>
 void Sort<T>::bubbleSort(T *const array, const uint32_t len) const
 {
     TIME_BEGIN;
@@ -159,7 +174,7 @@ void Sort<T>::bubbleSort(T *const array, const uint32_t len) const
 }
 
 // Selection method
-template<class T>
+template <class T>
 void Sort<T>::selectionSort(T *const array, const uint32_t len) const
 {
     TIME_BEGIN;
@@ -188,7 +203,7 @@ void Sort<T>::selectionSort(T *const array, const uint32_t len) const
 }
 
 // Insertion method
-template<class T>
+template <class T>
 void Sort<T>::insertionSort(T *const array, const uint32_t len) const
 {
     TIME_BEGIN;
@@ -216,7 +231,7 @@ void Sort<T>::insertionSort(T *const array, const uint32_t len) const
 }
 
 // Shell method
-template<class T>
+template <class T>
 void Sort<T>::shellSort(T *const array, const uint32_t len) const
 {
     TIME_BEGIN;
@@ -245,7 +260,7 @@ void Sort<T>::shellSort(T *const array, const uint32_t len) const
 }
 
 // Merge method
-template<class T>
+template <class T>
 void Sort<T>::mergeSort(T *const array, const uint32_t len) const
 {
     TIME_BEGIN;
@@ -261,7 +276,7 @@ void Sort<T>::mergeSort(T *const array, const uint32_t len) const
     buffer[0] = '\0';
     printf(SORT_MERGE, formatArray(sortArray, len, buffer, bufferSize + 1), TIME_INTERVAL);
 }
-template<class T>
+template <class T>
 void Sort<T>::mergeSortRecursive(T *const sortArray, const uint32_t begin, const uint32_t end)
 {
     if (begin >= end)
@@ -293,7 +308,7 @@ void Sort<T>::mergeSortRecursive(T *const sortArray, const uint32_t begin, const
 }
 
 // Quick method
-template<class T>
+template <class T>
 void Sort<T>::quickSort(T *const array, const uint32_t len) const
 {
     TIME_BEGIN;
@@ -309,7 +324,7 @@ void Sort<T>::quickSort(T *const array, const uint32_t len) const
     buffer[0] = '\0';
     printf(SORT_QUICK, formatArray(sortArray, len, buffer, bufferSize + 1), TIME_INTERVAL);
 }
-template<class T>
+template <class T>
 void Sort<T>::quickSortRecursive(T *const sortArray, const uint32_t begin, const uint32_t end)
 {
     if (begin >= end)
@@ -349,7 +364,7 @@ void Sort<T>::quickSortRecursive(T *const sortArray, const uint32_t begin, const
 }
 
 // Heap method
-template<class T>
+template <class T>
 void Sort<T>::heapSort(T *const array, const uint32_t len) const
 {
     TIME_BEGIN;
@@ -373,7 +388,7 @@ void Sort<T>::heapSort(T *const array, const uint32_t len) const
     buffer[0] = '\0';
     printf(SORT_HEAP, formatArray(sortArray, len, buffer, bufferSize + 1), TIME_INTERVAL);
 }
-template<class T>
+template <class T>
 void Sort<T>::buildMaxHeap(T *const sortArray, const uint32_t begin, const uint32_t end)
 {
     uint32_t parent = begin;
@@ -398,7 +413,7 @@ void Sort<T>::buildMaxHeap(T *const sortArray, const uint32_t begin, const uint3
 }
 
 // Counting method
-template<class T>
+template <class T>
 void Sort<T>::countingSort(T *const array, const uint32_t len) const
 {
     if (!std::is_integral_v<T>)
@@ -421,7 +436,7 @@ void Sort<T>::countingSort(T *const array, const uint32_t len) const
     }
 
     const T countingLen = max - min + 1;
-    std::unique_ptr<T []> counting = std::make_unique<T []>(countingLen);
+    std::unique_ptr<T[]> counting = std::make_unique<T[]>(countingLen);
     for (uint32_t i = 0; i < len; ++i)
     {
         ++counting[sortArray[i] - min];
@@ -444,7 +459,7 @@ void Sort<T>::countingSort(T *const array, const uint32_t len) const
 }
 
 // Bucket method
-template<class T>
+template <class T>
 void Sort<T>::bucketSort(T *const array, const uint32_t len) const
 {
     TIME_BEGIN;
@@ -467,8 +482,8 @@ void Sort<T>::bucketSort(T *const array, const uint32_t len) const
     for (uint32_t i = 0; i < len; ++i)
     {
         // min+(max-min)/(bucketNum-1)*(buckIndex-1)<=sortArray[i]
-        const uint32_t aggIndex = floor(static_cast<double>(sortArray[i] - min) /
-                intervalSpan + 1) - 1;
+        const uint32_t aggIndex =
+            floor(static_cast<double>(sortArray[i] - min) / intervalSpan + 1) - 1;
         aggregation[aggIndex].emplace_back(sortArray[i]);
     }
     uint32_t index = 0;
@@ -489,7 +504,7 @@ void Sort<T>::bucketSort(T *const array, const uint32_t len) const
 }
 
 // Radix method
-template<class T>
+template <class T>
 void Sort<T>::radixSort(T *const array, const uint32_t len) const
 {
     if (!std::is_integral_v<T>)
@@ -512,7 +527,7 @@ void Sort<T>::radixSort(T *const array, const uint32_t len) const
         min = std::min(sortArray[i], min);
         sortArray[i] > 0 ? positive = true : (sortArray[i] < 0 ? negative = true : sortArray[i]);
     }
-    T absMax = std::max(max, - min);
+    T absMax = std::max(max, -min);
     uint32_t digitMax = 0;
     const uint32_t base = 10;
     while (0 != absMax)
@@ -522,10 +537,12 @@ void Sort<T>::radixSort(T *const array, const uint32_t len) const
     }
 
     // -9 ... -1 0 1 ... 9
-    const uint32_t bucketNum = (positive ^ negative) ? 10 : 19;
-    const uint32_t offset = (false == negative) ? 0 : 9;
-    std::unique_ptr<T []> countingOld = std::make_unique<T []>(bucketNum);
-    std::unique_ptr<T []> countingNew = std::make_unique<T []>(bucketNum);
+    const uint32_t bucketNum = (positive ^ negative)
+        ? SORT_RADIX_NATURAL_NUMBER_BUCKET
+        : (SORT_RADIX_NATURAL_NUMBER_BUCKET + SORT_RADIX_NEGATIVE_INTEGER_BUCKET);
+    const uint32_t offset = (false == negative) ? 0 : SORT_RADIX_NEGATIVE_INTEGER_BUCKET;
+    std::unique_ptr<T[]> countingOld = std::make_unique<T[]>(bucketNum);
+    std::unique_ptr<T[]> countingNew = std::make_unique<T[]>(bucketNum);
     std::queue<T> bucket;
     std::vector<std::queue<T>> aggregation(bucketNum, bucket);
     for (uint32_t i = 0; i < len; ++i)
@@ -535,7 +552,7 @@ void Sort<T>::radixSort(T *const array, const uint32_t len) const
         aggregation[aggIndex].push(sortArray[i]);
         ++countingNew[aggIndex];
     }
-    for (uint32_t i = 1, pow = 10; i < digitMax; ++i, pow *= base)
+    for (uint32_t i = 1, pow = SORT_RADIX_DEC; i < digitMax; ++i, pow *= base)
     {
         memcpy(countingOld.get(), countingNew.get(), bucketNum * sizeof(T));
         memset(countingNew.get(), 0, bucketNum * sizeof(T));

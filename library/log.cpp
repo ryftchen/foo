@@ -1,15 +1,15 @@
-#include <cstdarg>
-#include <list>
-#include <vector>
-#include <unistd.h>
-#include <ext/stdio_filebuf.h>
+#include "../include/log.hpp"
 #include <sys/file.h>
 #include <sys/stat.h>
+#include <cstdarg>
+#include <ext/stdio_filebuf.h>
+#include <list>
+#include <unistd.h>
+#include <vector>
 #include "../include/exception.hpp"
-#include "../include/log.hpp"
 
 Log logger;
-//Log logger(LOG_PATH, Log::Type::typeAdd, Log::Level::levelError, Log::Target::targetAll);
+// Log logger(LOG_PATH, Log::Type::typeAdd, Log::Level::levelError, Log::Target::targetAll);
 
 Log::Log()
 {
@@ -21,7 +21,7 @@ Log::Log()
     {
         if (-1 == access(LOG_DIR, F_OK))
         {
-            if (0 != mkdir(LOG_DIR, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH))// rwx r-x r-x
+            if (0 != mkdir(LOG_DIR, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH)) // rwx r-x r-x
             {
                 throw CreateFolderError(basename(LOG_DIR));
             }
@@ -66,7 +66,7 @@ Log::Log(const std::string &logFile, const Type type, const Level level, const T
     {
         if (-1 == access(LOG_DIR, F_OK))
         {
-            if (0 != mkdir(LOG_DIR, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH))// rwx r-x r-x
+            if (0 != mkdir(LOG_DIR, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH)) // rwx r-x r-x
             {
                 throw CreateFolderError(basename(LOG_DIR));
             }
@@ -74,14 +74,14 @@ Log::Log(const std::string &logFile, const Type type, const Level level, const T
 
         switch (type)
         {
-        case Type::typeAdd:
-            ofs.open(pathname, std::ios_base::out | std::ios_base::app);
-            break;
-        case Type::typeOver:
-            ofs.open(pathname, std::ios_base::out | std::ios_base::trunc);
-            break;
-        default:
-            break;
+            case Type::typeAdd:
+                ofs.open(pathname, std::ios_base::out | std::ios_base::app);
+                break;
+            case Type::typeOver:
+                ofs.open(pathname, std::ios_base::out | std::ios_base::trunc);
+                break;
+            default:
+                break;
         }
 
         if (!ofs)

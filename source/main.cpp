@@ -1,6 +1,6 @@
+#include "../include/main.hpp"
 #include <iostream>
 #include "../include/command.hpp"
-#include "../include/main.hpp"
 
 using namespace std;
 

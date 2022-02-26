@@ -1,7 +1,7 @@
+#include "../include/integral.hpp"
 #include <functional>
 #include <iostream>
 #include <random>
-#include "../include/integral.hpp"
 #include "../include/time.hpp"
 
 double trapezoid(const Expression &express, const double left, const double h, const uint32_t step)
@@ -11,7 +11,8 @@ double trapezoid(const Expression &express, const double left, const double h, c
     const double delta = h / step;
     for (uint32_t i = 0; i < step; ++i)
     {
-        sum += (express(x) + express(x + delta)) * delta / 2.0;    // S=(a+b)*h/2
+        const double area = (express(x) + express(x + delta)) * delta / 2.0; // S=(a+b)*h/2
+        sum += area;
         x += delta;
     }
     return sum;
@@ -58,15 +59,17 @@ double Simpson::simpsonIntegral(const double left, const double right, const dou
 {
     const double mid = (left + right) / 2.0;
     const double sum = simpsonOneThird(left, right);
-    if (fabs(sum - (compositeSimpsonOneThird(left, mid, 2) +
-                compositeSimpsonOneThird(mid, right, 2))) > eps)
+    if (fabs(
+            sum -
+            (compositeSimpsonOneThird(left, mid, 2) + compositeSimpsonOneThird(mid, right, 2))) >
+        eps)
     {
         return simpsonIntegral(left, mid, eps) + simpsonIntegral(mid, right, eps);
     }
     return sum;
 }
-double Simpson::compositeSimpsonOneThird(const double left, const double right,
-    const uint32_t n) const
+double Simpson::compositeSimpsonOneThird(const double left, const double right, const uint32_t n)
+    const
 {
     const double h = (right - left) / n;
     double sum = 0.0;
@@ -79,7 +82,7 @@ double Simpson::compositeSimpsonOneThird(const double left, const double right,
 }
 double Simpson::simpsonOneThird(const double left, const double right) const
 {
-    return (fun(left) + 4.0 * fun((left + right) / 2.0) + fun(right)) / 6.0 * (right - left);
+    return INTEGRAL_SIMPSON_ONE_THIRDS_FORMULAS;
 }
 
 // Romberg method
@@ -90,24 +93,24 @@ double Romberg::operator()(double lower, double upper, const double eps) const
     uint32_t k = 0;
     double sum = 0.0;
     const double h = upper - lower;
-    const auto trapezoidFunctor = std::bind(trapezoid, std::ref(fun), lower, h,
-            std::placeholders::_1);
+    const auto trapezoidFunctor =
+        std::bind(trapezoid, std::ref(fun), lower, h, std::placeholders::_1);
     double t0 = trapezoidFunctor(pow(2, k));
 
     k = 1;
-    double t1_0 = trapezoidFunctor(pow(2, k));
-    double t1 = pow(4, k) / (pow(4, k) - 1) * trapezoidFunctor(pow(2, k + 1)) -
-        1.0 / pow(4, k) * t1_0;
+    double t1Zero = trapezoidFunctor(pow(2, k));
+    double t1 =
+        pow(4, k) / (pow(4, k) - 1) * trapezoidFunctor(pow(2, k + 1)) - 1.0 / pow(4, k) * t1Zero;
 
     while (fabs(t1 - t0) > eps)
     {
         ++k;
         t0 = t1;
-        t1_0 = trapezoidFunctor(pow(2, k));
+        t1Zero = trapezoidFunctor(pow(2, k));
         for (uint32_t i = 1; i <= k; ++i)
         {
             t1 = pow(4, i) / (pow(4, i) - 1) * trapezoidFunctor(pow(2, i + 1)) -
-                1.0 / pow(4, i) * t1_0;
+                1.0 / pow(4, i) * t1Zero;
         }
     }
     sum = trapezoidFunctor(pow(2, k)) * sign;
@@ -122,14 +125,12 @@ double Gauss::operator()(double lower, double upper, const double eps) const
 {
     TIME_BEGIN;
     const int sign = Integral::getSign(lower, upper);
-    const double gaussLegendreTable[5][2] =
-    {
-        { -0.9061798459, +0.2369268851 },
-        { -0.5384693101, +0.4786286705 },
-        { +0.0000000000, +0.5688888889 },
-        { +0.5384693101, +0.4786286705 },
-        { +0.9061798459, +0.2369268851 }
-    };
+    const double gaussLegendreTable[INTEGRAL_GAUSS_NODE][INTEGRAL_GAUSS_COEFFICIENT] = {
+        {-0.9061798459, +0.2369268851},
+        {-0.5384693101, +0.4786286705},
+        {+0.0000000000, +0.5688888889},
+        {+0.5384693101, +0.4786286705},
+        {+0.9061798459, +0.2369268851}};
     double sum = 0.0, s1 = 0.0, s2 = 0.0;
     uint32_t n = 1;
 
@@ -141,11 +142,12 @@ double Gauss::operator()(double lower, double upper, const double eps) const
         {
             const double left = lower + i * h;
             const double right = left + h;
-            for(uint32_t j = 0; j < 5; ++j)
+            for (uint32_t j = 0; j < INTEGRAL_GAUSS_NODE; ++j)
             {
                 // x=1/2[(a+b)+(b-a)t]
                 const double x = ((right - left) * gaussLegendreTable[j][0] + (left + right)) / 2.0;
-                sum += fun(x) * gaussLegendreTable[j][1] * (right - left) / 2.0;
+                const double polynomial = fun(x) * gaussLegendreTable[j][1] * (right - left) / 2.0;
+                sum += polynomial;
             }
         }
         s1 = s2;
@@ -176,7 +178,9 @@ double MonteCarlo::operator()(double lower, double upper, const double eps) cons
     printf(INTEGRAL_MONTE_CARLO, sum, TIME_INTERVAL);
     return sum;
 }
-double MonteCarlo::sampleFromUniformDistribution(const double lower, const double upper,
+double MonteCarlo::sampleFromUniformDistribution(
+    const double lower,
+    const double upper,
     const double eps) const
 {
     const uint32_t n = (upper - lower) / eps;
@@ -188,12 +192,14 @@ double MonteCarlo::sampleFromUniformDistribution(const double lower, const doubl
         double x = randomX(seed);
         sum += fun(x);
     }
-    sum *= (upper - lower) / n;    // I≈(b-a)/N*[F(X1)+ F(X2)+...+F(Xn)]
+    sum *= (upper - lower) / n; // I≈(b-a)/N*[F(X1)+ F(X2)+...+F(Xn)]
 
     return sum;
 }
 #ifdef NO_UNIFORM
-double MonteCarlo::sampleFromNormalDistribution(const double lower, const double upper,
+double MonteCarlo::sampleFromNormalDistribution(
+    const double lower,
+    const double upper,
     const double eps) const
 {
     const uint32_t n = (upper - lower) / eps;
@@ -209,13 +215,13 @@ double MonteCarlo::sampleFromNormalDistribution(const double lower, const double
             double u1 = randomU(seed);
             double u2 = randomU(seed);
             double mag = sigma * sqrt(-2.0 * log(u1));
-            x = mag * sin(2.0 * M_PI * u2) + mu;    // Box-Muller Transform
-            //x = mag * cos(2.0 * M_PI * u2) + mu;
+            x = mag * sin(2.0 * M_PI * u2) + mu; // Box-Muller Transform
+            // x = mag * cos(2.0 * M_PI * u2) + mu;
         }
         while ((x < lower) || (x > upper));
         const double probabilityDensityFunction = (1.0 / sqrt(2.0 * M_PI * sigma * sigma)) *
-            pow(M_E, (- (x - mu) * (x - mu)) / (2.0 * sigma * sigma));
-        sum += fun(x) / probabilityDensityFunction;    // I≈1/N*[F(X1)/P(X1)+...+F(Xn)/P(Xn)]
+            pow(M_E, (-(x - mu) * (x - mu)) / (2.0 * sigma * sigma));
+        sum += fun(x) / probabilityDensityFunction; // I≈1/N*[F(X1)/P(X1)+...+F(Xn)/P(Xn)]
     }
     sum /= n;
 
