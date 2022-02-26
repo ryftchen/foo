@@ -1,5 +1,8 @@
+.cache/
 .vscode/
-.vscodecounter/
+
+*.DS_Store
+
 backup/
 build/
 temp/
