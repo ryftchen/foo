@@ -19,6 +19,9 @@ BACKUP_FILE="backup.sh"
 TEST_FILE="test.py"
 CMAKE_FILE="CMakeLists.txt"
 README_FILE="README.md"
+COMPILE_COMMAND="compile_commands.json"
+ANALYSIS_STYLE=".clang-tidy"
+FORMAT_STYLE=".clang-format"
 
 shCommand()
 {
@@ -101,17 +104,22 @@ main()
 
     if [ "${ARGS_FORMAT}" = "1" ]; then
         if
-            command -v astyle >/dev/null 2>&1 &
+            command -v clang-format >/dev/null 2>&1 &
             command -v shfmt >/dev/null 2>&1 &
             command -v black >/dev/null 2>&1
         then
-            shCommand "astyle --style=ansi -s -xU -w -xg -k3 -W3 -c -n -xC100 -xL -v \
-./${INCLUDE_FOLDER}/*.hpp ./${SOURCE_FOLDER}/*.cpp ./${LIBRARY_FOLDER}/*.cpp"
+            if [ -f "${FORMAT_STYLE}" ]; then
+                shCommand "clang-format -i --verbose ./${INCLUDE_FOLDER}/*.hpp \
+./${SOURCE_FOLDER}/*.cpp ./${LIBRARY_FOLDER}/*.cpp"
+            else
+                printAbort "There is no ${FORMAT_STYLE} file in ${PROJECT_FOLDER} folder. \
+Please generate it."
+            fi
             shCommand "shfmt -l -w -i 4 -bn -fn ./${SCRIPT_FOLDER}/${BUILD_FILE} \
 ./${SCRIPT_FOLDER}/${BACKUP_FILE}"
             shCommand "black -l 100 -S -v ./${SCRIPT_FOLDER}/${TEST_FILE}"
         else
-            printAbort "There is no astyle, shfmt or black program. Please check it."
+            printAbort "There is no clang-format, shfmt or black program. Please check it."
         fi
         if [ "$#" -eq 1 ]; then
             exit 0
@@ -148,15 +156,20 @@ main()
 
     if [ "${ARGS_ANALYSIS}" = "1" ]; then
         if
-            command -v cppcheck >/dev/null 2>&1 &
+            command -v clang-tidy >/dev/null 2>&1 &
             command -v shellcheck >/dev/null 2>&1 &
             command -v pylint >/dev/null 2>&1
         then
-            if [ -f ./"${BUILD_FOLDER}"/compile_commands.json ]; then
-                shCommand "cppcheck ./ --std=c++20 --enable=all --suppress=missingIncludeSystem \
---project=./${BUILD_FOLDER}/compile_commands.json"
+            if [ -f ./"${BUILD_FOLDER}"/"${COMPILE_COMMAND}" ]; then
+                if [ -f "${ANALYSIS_STYLE}" ]; then
+                    shCommand "clang-tidy -p ./${BUILD_FOLDER}/compile_commands.json \
+./${INCLUDE_FOLDER}/*.hpp ./${SOURCE_FOLDER}/*.cpp ./${LIBRARY_FOLDER}/*.cpp"
+                else
+                    printAbort "There is no ${ANALYSIS_STYLE} file in ${PROJECT_FOLDER} folder. \
+Please generate it."
+                fi
             else
-                printAbort "There is no compile_commands.json file in ${BUILD_FOLDER} folder. \
+                printAbort "There is no ${COMPILE_COMMAND} file in ${BUILD_FOLDER} folder. \
 Please generate it."
             fi
             shCommand "shellcheck ./${SCRIPT_FOLDER}/${BUILD_FILE} \
@@ -167,7 +180,7 @@ Please generate it."
 --disable=missing-module-docstring,missing-class-docstring,missing-function-docstring,\
 global-statement"
         else
-            printAbort "There is no cppcheck, shellcheck or pylint program. Please check it."
+            printAbort "There is no clang-tidy, shellcheck or pylint program. Please check it."
         fi
     fi
 }
