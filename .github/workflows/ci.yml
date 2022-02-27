@@ -26,7 +26,7 @@ jobs:
         && sudo chmod +x /usr/local/bin/shfmt
         sudo apt-get install valgrind
         git clone https://github.com/KDAB/codebrowser.git && cd codebrowser/ \
-        && git reset --hard Ia0fcca61f77e68c6226aed0097ded98e6bd70163 \
+        && git reset --hard 73fce32fc696b3f6eb2a678397328d9ce1ad4cf6 \
         && cmake . -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=clang++ && make -j4 \
         && sudo make install && cd ..
 
