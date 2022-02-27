@@ -9,7 +9,7 @@ on:
         required: false
 
 jobs:
-  build:
+  CI:
     runs-on: ubuntu-20.04
 
     steps:
@@ -18,11 +18,23 @@ jobs:
     
     - name: Prepare for environment
       run: |
-        sudo apt-get install -y cmake llvm-11 clang-11 libclang-11-dev clang-format-11 clang-tidy-11
+        sudo apt-get install -y cmake llvm-11 clang-11 libclang-11-dev
+        sudo apt-get install clang-format-11 clang-tidy-11
         sudo apt-get install python3 pylint black shellcheck
         sudo wget https://github.com/mvdan/sh/releases/download/v3.4.2/shfmt_v3.4.2_linux_amd64
         sudo mv shfmt_v3.4.2_linux_amd64 shfmt && sudo mv shfmt /usr/local/bin/
         sudo chmod +x /usr/local/bin/shfmt
+        sudo apt-get install valgrind
+        cmake --version
+        clang++ --version
+        clang-fomat --version
+        clang-tidy --version
+        python3 --version
+        pylint --version
+        black --version
+        shellcheck --version
+        shfmt --version
+        valgrind --version
 
     - name: Code format
       run: ./script/build.sh --format
@@ -31,5 +43,7 @@ jobs:
       run: ./script/build.sh --analysis
 
     - name: Build
-      run: |
-        ./script/build.sh --release
+      run: ./script/build.sh --release
+
+    - name: Test
+      run: ./script/test.py --valgrind
