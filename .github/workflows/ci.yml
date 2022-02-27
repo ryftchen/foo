@@ -1,12 +1,6 @@
 name: CI workflow
 
-on:
-  workflow_dispatch:
-    inputs:
-      name:
-        description: 'CI for foo'
-        default: ''
-        required: false
+on: [push, workflow_dispatch]
 
 jobs:
   CI:
@@ -16,7 +10,7 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2.4.0
     
-    - name: Prepare for environment
+    - name: Prepare Environment
       run: |
         sudo apt-get install -y cmake llvm-11 clang-11 libclang-11-dev
         sudo apt-get install clang-format-11 clang-tidy-11
@@ -30,10 +24,10 @@ jobs:
         && cmake . -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=clang++ && make -j4 \
         && sudo make install && cd ..
 
-    - name: Code format
+    - name: Code Format
       run: ./script/build.sh --format
 
-    - name: Static code analysis
+    - name: Static Code Analysis
       run: ./script/build.sh --analysis
 
     - name: Build
@@ -45,11 +39,12 @@ jobs:
         export TERMINFO=/etc/terminfo
         ./script/test.py --valgrind
 
-    - name: Generate html
+    - name: Generate Html
       run: ./script/build.sh --html
 
-    - name: Upload a Build Artifact
+    - name: Upload Artifact
       uses: actions/upload-artifact@v2.3.1
       with:
-        path: ./temp/foo_html_*.tar.gz
-        retention-days: 7
+        name: foo_temp
+        path: ./temp/*
+        retention-days: 3
