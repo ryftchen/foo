@@ -149,7 +149,7 @@ main()
             command -v black >/dev/null 2>&1
         then
             if [ -f "${FORMAT_STYLE}" ]; then
-                shCommand "clang-format -i --verbose ./${INCLUDE_FOLDER}/*.hpp \
+                shCommand "clang-format-11 -i --verbose ./${INCLUDE_FOLDER}/*.hpp \
 ./${SOURCE_FOLDER}/*.cpp ./${LIBRARY_FOLDER}/*.cpp"
             else
                 printAbort "There is no ${FORMAT_STYLE} file in ${PROJECT_FOLDER} folder. \
@@ -227,7 +227,7 @@ ${timeDiff}s ago."
         then
             if [ -f ./"${BUILD_FOLDER}"/"${COMPILE_COMMAND}" ]; then
                 if [ -f "${ANALYSIS_STYLE}" ]; then
-                    shCommand "clang-tidy -p ./${BUILD_FOLDER}/compile_commands.json \
+                    shCommand "clang-tidy-11 -p ./${BUILD_FOLDER}/compile_commands.json \
 ./${INCLUDE_FOLDER}/*.hpp ./${SOURCE_FOLDER}/*.cpp ./${LIBRARY_FOLDER}/*.cpp"
                 else
                     printAbort "There is no ${ANALYSIS_STYLE} file in ${PROJECT_FOLDER} folder. \
