@@ -27,7 +27,7 @@ jobs:
         sudo apt-get install valgrind
         cmake --version
         clang++ --version
-        clang-fomat --version
+        clang-format --version
         clang-tidy --version
         python3 --version
         pylint --version
