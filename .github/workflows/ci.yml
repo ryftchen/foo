@@ -47,3 +47,9 @@ jobs:
 
     - name: Generate html
       run: ./script/build.sh --html
+
+    - name: Upload a Build Artifact
+      uses: actions/upload-artifact@v2.3.1
+      with:
+        path: ./temp/foo_html_*.tar.gz
+        retention-days: 7
