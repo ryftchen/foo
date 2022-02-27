@@ -287,9 +287,19 @@ def parseArgs():
         "--build",
         "-b",
         nargs="?",
-        choices=["default", "release", "cleanup", "format", "analysis", "backup", "tag"],
+        choices=[
+            "default",
+            "release",
+            "cleanup",
+            "format",
+            "analysis",
+            "html",
+            "backup",
+            "tag",
+            "help",
+        ],
         const="default",
-        help="test with build",
+        help="test with build.sh",
     )
     parser.add_argument(
         "--valgrind", "-v", action="store_true", default=False, help="test with valgrind"
