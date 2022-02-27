@@ -26,9 +26,9 @@ jobs:
         sudo chmod +x /usr/local/bin/shfmt
         sudo apt-get install valgrind
         cmake --version
-        clang++ --version
-        clang-format --version
-        clang-tidy --version
+        clang++-11 --version
+        clang-format-11 --version
+        clang-tidy-11 --version
         python3 --version
         pylint --version
         black --version
