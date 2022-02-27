@@ -6,6 +6,7 @@ ARGS_RELEASE=0
 ARGS_CLEANUP=0
 ARGS_ANALYSIS=0
 ARGS_FORMAT=0
+ARGS_HTML=0
 ARGS_BACKUP=0
 ARGS_TAG=0
 PROJECT_FOLDER="foo"
@@ -52,6 +53,8 @@ printInstruction()
     echo
     echo "    -a, --analysis                     Analysis"
     echo
+    echo "    -h, --html                         Html"
+    echo
     echo "    -b, --backup                       Backup"
     echo
     echo "    -t, --tag                          Tag"
@@ -68,6 +71,7 @@ parseArgs()
         -c | --cleanup) ARGS_CLEANUP=1 ;;
         -f | --format) ARGS_FORMAT=1 ;;
         -a | --analysis) ARGS_ANALYSIS=1 ;;
+        -h | --html) ARGS_HTML=1 ;;
         -b | --backup) ARGS_BACKUP=1 ;;
         -t | --tag) ARGS_TAG=1 ;;
         --help)
@@ -92,6 +96,24 @@ tarProject()
     shCommand "tar -zcvf ${BACKUP_FOLDER}/${tarFolder}.tar.gz -C ./${BACKUP_FOLDER} \
 ${PROJECT_FOLDER}"
     shCommand "rm -rf ${BACKUP_FOLDER}/${PROJECT_FOLDER}"
+}
+
+tarHtml()
+{
+    commitId=$(git rev-parse --short @)
+    browserFolder="${PROJECT_FOLDER}_html"
+    tarFolder="${browserFolder}_${commitId}.tar.gz"
+    if [ -d ./"${TEMP_FOLDER}"/"${browserFolder}" ]; then
+        rm -rf ./"${TEMP_FOLDER}"/"${browserFolder}"
+    fi
+    shCommand "mkdir ${TEMP_FOLDER}/${browserFolder}"
+    shCommand "codebrowser_generator -color -a -b ./${BUILD_FOLDER}/${COMPILE_COMMAND} \
+-o ./${TEMP_FOLDER}/${browserFolder} -p ${PROJECT_FOLDER}:.:${commitId} -d ./data"
+    shCommand "codebrowser_indexgenerator ./${TEMP_FOLDER}/${browserFolder} -d ./data"
+    shCommand "cp -rf /usr/local/share/woboq/data ./${TEMP_FOLDER}/${browserFolder}/"
+    shCommand "tar -zcvf ./${TEMP_FOLDER}/${tarFolder} -C ./${TEMP_FOLDER} ${browserFolder} \
+>/dev/null"
+    shCommand "rm -rf ./${TEMP_FOLDER}/${browserFolder}"
 }
 
 main()
@@ -223,6 +245,29 @@ Please generate it."
 global-statement"
         else
             printAbort "There is no clang-tidy, shellcheck or pylint program. Please check it."
+        fi
+    fi
+
+    if [ "${ARGS_HTML}" = "1" ]; then
+        if
+            command -v codebrowser_generator >/dev/null 2>&1 &
+            command -v codebrowser_indexgenerator >/dev/null 2>&1
+        then
+            if [ -d "${TEMP_FOLDER}" ]; then
+                commitId=$(git rev-parse --short @)
+                lastTar="${PROJECT_FOLDER}_html_${commitId}.tar.gz"
+                if [ -f ./"${TEMP_FOLDER}"/"${lastTar}" ]; then
+                    printAbort "The latest html file ${TEMP_FOLDER}/${lastTar} has been generated."
+                else
+                    tarHtml
+                fi
+            else
+                shCommand "mkdir ${TEMP_FOLDER}"
+                tarHtml
+            fi
+        else
+            printAbort "There is no codebrowser_generator or codebrowser_indexgenerator program. \
+Please check it."
         fi
     fi
 }
