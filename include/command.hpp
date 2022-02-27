@@ -9,7 +9,7 @@
 // #define BIT_TEST(a, b) (a == (a | b))
 // #define BIT_RESET(a, b) (a &= (a ^ b))
 #define README_PATH "./README.md"
-#define BACKUP_PATH "./script/backup.sh"
+#define BACKUP_CMD "./script/build.sh --backup"
 #define COMMAND_THREAD_NAME_LENGTH 6
 #define COMMAND_MAX_METHOD 10
 #define COMMAND_PRINT_MAX_LINE 50

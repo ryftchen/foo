@@ -1,10 +1,12 @@
 #!/usr/bin/env bash
 # chmod 755 build.sh
+# tar -zxvf foo_XXXXXXXXXXXXXX.tar.gz
 
 ARGS_RELEASE=0
 ARGS_CLEANUP=0
 ARGS_ANALYSIS=0
 ARGS_FORMAT=0
+ARGS_BACKUP=0
 ARGS_TAG=0
 PROJECT_FOLDER="foo"
 INCLUDE_FOLDER="include"
@@ -15,7 +17,6 @@ BUILD_FOLDER="build"
 BACKUP_FOLDER="backup"
 TEMP_FOLDER="temp"
 BUILD_FILE="build.sh"
-BACKUP_FILE="backup.sh"
 TEST_FILE="test.py"
 CMAKE_FILE="CMakeLists.txt"
 README_FILE="README.md"
@@ -51,6 +52,8 @@ printInstruction()
     echo
     echo "    -a, --analysis                     Analysis"
     echo
+    echo "    -b, --backup                       Backup"
+    echo
     echo "    -t, --tag                          Tag"
     echo
     echo "    --help                             Help"
@@ -65,6 +68,7 @@ parseArgs()
         -c | --cleanup) ARGS_CLEANUP=1 ;;
         -f | --format) ARGS_FORMAT=1 ;;
         -a | --analysis) ARGS_ANALYSIS=1 ;;
+        -b | --backup) ARGS_BACKUP=1 ;;
         -t | --tag) ARGS_TAG=1 ;;
         --help)
             printInstruction
@@ -73,6 +77,21 @@ parseArgs()
         esac
         shift
     done
+}
+
+tarProject()
+{
+    tarFolder="${PROJECT_FOLDER}_$(date "+%Y%m%d%H%M%S")"
+    shCommand "mkdir ${BACKUP_FOLDER}/${PROJECT_FOLDER}"
+    shCommand "find . -type f -o \( -path ./${BUILD_FOLDER} -o -path ./${BACKUP_FOLDER} \
+-o -path ./${TEMP_FOLDER} -o -path './.*' \) -prune -o -print | sed 1d \
+| grep -E '${INCLUDE_FOLDER}|${SOURCE_FOLDER}|${LIBRARY_FOLDER}|${SCRIPT_FOLDER}' \
+| xargs -i cp -R {} ${BACKUP_FOLDER}/${PROJECT_FOLDER}/"
+    shCommand "find . -maxdepth 1 -type d -o -print | grep -E '*\.txt|*\.md' \
+| xargs -i cp -R {} ${BACKUP_FOLDER}/${PROJECT_FOLDER}/"
+    shCommand "tar -zcvf ${BACKUP_FOLDER}/${tarFolder}.tar.gz -C ./${BACKUP_FOLDER} \
+${PROJECT_FOLDER}"
+    shCommand "rm -rf ${BACKUP_FOLDER}/${PROJECT_FOLDER}"
 }
 
 main()
@@ -96,7 +115,6 @@ main()
 
     if [ "${ARGS_FORMAT}" = "1" ] | [ "${ARGS_ANALYSIS}" = "1" ]; then
         if [ ! -f ./"${SCRIPT_FOLDER}"/"${BUILD_FILE}" ] \
-            | [ ! -f ./"${SCRIPT_FOLDER}"/"${BACKUP_FILE}" ] \
             | [ ! -f ./"${SCRIPT_FOLDER}"/"${TEST_FILE}" ]; then
             printAbort "There are missing file in ${SCRIPT_FOLDER} folder."
         fi
@@ -115,11 +133,36 @@ main()
                 printAbort "There is no ${FORMAT_STYLE} file in ${PROJECT_FOLDER} folder. \
 Please generate it."
             fi
-            shCommand "shfmt -l -w -i 4 -bn -fn ./${SCRIPT_FOLDER}/${BUILD_FILE} \
-./${SCRIPT_FOLDER}/${BACKUP_FILE}"
+            shCommand "shfmt -l -w -i 4 -bn -fn ./${SCRIPT_FOLDER}/${BUILD_FILE}"
             shCommand "black -l 100 -S -v ./${SCRIPT_FOLDER}/${TEST_FILE}"
         else
             printAbort "There is no clang-format, shfmt or black program. Please check it."
+        fi
+        if [ "$#" -eq 1 ]; then
+            exit 0
+        fi
+    fi
+
+    if [ "${ARGS_BACKUP}" = "1" ]; then
+        if [ -d "${BACKUP_FOLDER}" ]; then
+            files=$(find "${BACKUP_FOLDER}"/ -type f -name "${PROJECT_FOLDER}_*.tar.gz" \
+                2>/dev/null | wc -l)
+            if [ "${files}" != "0" ]; then
+                lastTar=$(find "${BACKUP_FOLDER}"/ -type f -name "${PROJECT_FOLDER}_*.tar.gz" \
+                    -print0 | xargs --null ls -at | head -n 1)
+                timeDiff=$(($(date +%s) - $(stat -L --format %Y "${lastTar}")))
+                if [ "${timeDiff}" -gt "10" ]; then
+                    tarProject
+                else
+                    printAbort "The latest backup file ${lastTar} has been generated since \
+${timeDiff}s ago."
+                fi
+            else
+                tarProject
+            fi
+        else
+            shCommand "mkdir ${BACKUP_FOLDER}"
+            tarProject
         fi
         if [ "$#" -eq 1 ]; then
             exit 0
@@ -172,8 +215,7 @@ Please generate it."
                 printAbort "There is no ${COMPILE_COMMAND} file in ${BUILD_FOLDER} folder. \
 Please generate it."
             fi
-            shCommand "shellcheck ./${SCRIPT_FOLDER}/${BUILD_FILE} \
-./${SCRIPT_FOLDER}/${BACKUP_FILE} --enable=all"
+            shCommand "shellcheck ./${SCRIPT_FOLDER}/${BUILD_FILE} --enable=all"
             shCommand "pylint ./${SCRIPT_FOLDER}/${TEST_FILE} --enable=all \
 --argument-naming-style=camelCase --attr-naming-style=camelCase --function-naming-style=camelCase \
 --method-naming-style=camelCase --module-naming-style=camelCase --variable-naming-style=camelCase \

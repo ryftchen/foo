@@ -446,7 +446,7 @@ void Command::backupProject()
 {
     try
     {
-        const pid_t status = system(BACKUP_PATH);
+        const pid_t status = system(BACKUP_CMD);
         if (-1 == status)
         {
             throw std::runtime_error("System error.");
@@ -456,12 +456,12 @@ void Command::backupProject()
             if (0 == WEXITSTATUS(status))
             {
                 const std::string str =
-                    "Run script " + std::string(basename(BACKUP_PATH)) + " successfully.";
+                    "Run script " + std::string(basename(BACKUP_CMD)) + " successfully.";
                 LOGGER(Log::Level::levelInfo, str.c_str());
             }
             else
             {
-                throw RunScriptError(basename(BACKUP_PATH));
+                throw RunScriptError(basename(BACKUP_CMD));
             }
         }
     }

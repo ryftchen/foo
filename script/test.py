@@ -287,7 +287,7 @@ def parseArgs():
         "--build",
         "-b",
         nargs="?",
-        choices=["default", "release", "cleanup", "format", "analysis", "tag"],
+        choices=["default", "release", "cleanup", "format", "analysis", "backup", "tag"],
         const="default",
         help="test with build",
     )
