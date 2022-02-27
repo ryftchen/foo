@@ -5,8 +5,7 @@ on:
     inputs:
       name:
         description: 'CI for foo'
-        default: ''
-        required: false
+        required: true
 
 jobs:
   build:
