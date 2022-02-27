@@ -13,7 +13,7 @@ AUX_SOURCE_DIRECTORY(library LIBRARY_LIST)
 
 #5. set environment variable
 SET(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-SET(CMAKE_CXX_COMPILER "/usr/bin/clang++")
+SET(CMAKE_CXX_COMPILER "/usr/bin/clang++-11")
 SET(CMAKE_CXX_FLAGS_DEBUG "-std=c++20 -stdlib=libstdc++ -W -g -O0")
 SET(CMAKE_CXX_FLAGS_RELEASE "-std=c++20 -stdlib=libstdc++ -W -O3")
 
