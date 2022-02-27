@@ -5,6 +5,7 @@ on:
     inputs:
       name:
         description: 'CI for foo'
+        default: ''
         required: false
 
 jobs:
@@ -18,7 +19,7 @@ jobs:
     - name: Prepare for environment
       run: |
         sudo apt-get install -y cmake llvm-11 clang-11 libclang-11-dev clang-format-11 clang-tidy-11
-        sudo apt-get python3 pylint black shellcheck
+        sudo apt-get install python3 pylint black shellcheck
         sudo wget https://github.com/mvdan/sh/releases/download/v3.4.2/shfmt_v3.4.2_linux_amd64
         sudo mv shfmt_v3.4.2_linux_amd64 shfmt && sudo mv shfmt /usr/local/bin/
         sudo chmod +x /usr/local/bin/shfmt
