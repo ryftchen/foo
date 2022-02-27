@@ -12,35 +12,27 @@ jobs:
     
     - name: Prepare Environment
       run: |
-        sudo apt-get install -y cmake llvm-11 clang-11 libclang-11-dev
-        sudo apt-get install clang-format-11 clang-tidy-11
-        sudo apt-get install python3 pylint black shellcheck
+        sudo apt-get install -y cmake llvm-11 clang-11 libclang-11-dev clang-format-11 clang-tidy-11
+        sudo apt-get install python3 pylint black shellcheck valgrind
         wget https://github.com/mvdan/sh/releases/download/v3.4.2/shfmt_v3.4.2_linux_amd64 \
         && sudo mv shfmt_v3.4.2_linux_amd64 shfmt && sudo mv shfmt /usr/local/bin/ \
         && sudo chmod +x /usr/local/bin/shfmt
-        sudo apt-get install valgrind
-        git clone https://github.com/KDAB/codebrowser.git && cd codebrowser/ \
+        git clone https://github.com/KDAB/codebrowser.git && cd ./codebrowser \
         && git reset --hard 73fce32fc696b3f6eb2a678397328d9ce1ad4cf6 \
         && cmake . -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=clang++ && make -j4 \
-        && sudo make install && cd ..
+        && sudo make install && cd .. && rm -rf ./codebrowser
 
-    - name: Code Format
-      run: ./script/build.sh --format
-
-    - name: Static Code Analysis
-      run: ./script/build.sh --analysis
+    - name: Code Format & Static Analysis
+      run: ./script/build.sh --format --analysis
 
     - name: Build
-      run: ./script/build.sh --release
+      run: ./script/build.sh --release --html
 
     - name: Test
       run: |
         export TERM=linux
         export TERMINFO=/etc/terminfo
         ./script/test.py --valgrind
-
-    - name: Generate Html
-      run: ./script/build.sh --html
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v2.3.1
