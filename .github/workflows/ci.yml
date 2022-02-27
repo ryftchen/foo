@@ -21,10 +21,14 @@ jobs:
         sudo apt-get install -y cmake llvm-11 clang-11 libclang-11-dev
         sudo apt-get install clang-format-11 clang-tidy-11
         sudo apt-get install python3 pylint black shellcheck
-        sudo wget https://github.com/mvdan/sh/releases/download/v3.4.2/shfmt_v3.4.2_linux_amd64
-        sudo mv shfmt_v3.4.2_linux_amd64 shfmt && sudo mv shfmt /usr/local/bin/
-        sudo chmod +x /usr/local/bin/shfmt
+        wget https://github.com/mvdan/sh/releases/download/v3.4.2/shfmt_v3.4.2_linux_amd64 \
+        && sudo mv shfmt_v3.4.2_linux_amd64 shfmt && sudo mv shfmt /usr/local/bin/ \
+        && sudo chmod +x /usr/local/bin/shfmt
         sudo apt-get install valgrind
+        git clone https://github.com/KDAB/codebrowser.git && cd codebrowser/ \
+        && git reset --hard Ia0fcca61f77e68c6226aed0097ded98e6bd70163 \
+        && cmake . -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=clang++ && make -j4 \
+        && sudo make install && cd ..
 
     - name: Code format
       run: ./script/build.sh --format
@@ -40,3 +44,6 @@ jobs:
         export TERM=linux
         export TERMINFO=/etc/terminfo
         ./script/test.py --valgrind
+
+    - name: Generate html
+      run: ./script/build.sh --html
