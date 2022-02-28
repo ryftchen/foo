@@ -21,12 +21,11 @@ std::string getCurrentSystemTime(char *const date);
     std::mt19937 seed(timeSeed.tv_sec * 1000000 + timeSeed.tv_usec)
 
 #define GET_CURRENT_TIME                                                                           \
-    (                                                                                              \
-        {                                                                                          \
-            char date[TIME_DATE_LENGTH + 1];                                                       \
-            date[0] = '\0';                                                                        \
-            getCurrentSystemTime(date);                                                            \
-        })
+    ({                                                                                             \
+        char date[TIME_DATE_LENGTH + 1];                                                           \
+        date[0] = '\0';                                                                            \
+        getCurrentSystemTime(date);                                                                \
+    })
 
 class Time final
 {

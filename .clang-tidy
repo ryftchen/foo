@@ -1,8 +1,5 @@
 ---
-Checks:
-  clang-diagnostic-gnu-zero-variadic-macro-arguments,
-  clang-diagnostic-mismatched-tags,
-  clang-diagnostic-missing-braces,
+Checks: >
   cppcoreguidelines-avoid-goto,
   cppcoreguidelines-avoid-magic-numbers,
   cppcoreguidelines-c-copy-assignment-signature,
@@ -11,7 +8,6 @@ Checks:
   cppcoreguidelines-pro-type-const-cast,
   cppcoreguidelines-pro-type-reinterpret-cast,
   cppcoreguidelines-pro-type-union-access,
-  misc-avoid-magic-numbers,
   misc-new-delete-overloads,
   misc-non-copyable-objects,
   misc-static-assert,
@@ -26,15 +22,13 @@ Checks:
   performance-move-constructor-init,
   readability-braces-around-statements,
   readability-convert-member-functions-to-static,
-  readability-function-cognitive-complexity,
   readability-function-size,
   readability-identifier-naming,
   readability-magic-numbers,
   readability-named-parameter,
   readability-qualified-auto,
   readability-redundant-access-specifiers,
-  readability-uppercase-literal-suffix,
-  readability-use-anyofallof
+  readability-uppercase-literal-suffix
 AnalyzeTemporaryDtors: false
 CheckOptions:
   - key:             readability-function-size.ParameterThreshold
@@ -55,8 +49,6 @@ CheckOptions:
     value:           camelBack
   - key:             readability-identifier-naming.LocalConstantCase
     value:           camelBack
-  - key:             readability-identifier-naming.MacroDefinitionCase
-    value:           UPPER_CASE
   - key:             readability-identifier-naming.MethodCase
     value:           camelBack
   - key:             readability-identifier-naming.NamespaceCase
