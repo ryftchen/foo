@@ -26,8 +26,7 @@
         {                                                                                          \
             xBit.set();                                                                            \
         }                                                                                          \
-    }                                                                                              \
-    while (0)
+    } while (0)
 
 class Command
 {

@@ -7,22 +7,23 @@ jobs:
     runs-on: ubuntu-20.04
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v2.4.0
-    
-    - name: Prepare Environment
+    - name: Install dependencies
       run: |
-        sudo apt-get install -y cmake llvm-11 clang-11 libclang-11-dev clang-format-11 clang-tidy-11
-        sudo apt-get install python3 pylint black shellcheck valgrind
+        sudo apt-get update
+        sudo apt-get install -y cmake llvm-10 clang-10 libclang-10-dev clang-format-10 clang-tidy-10 
+        sudo apt-get install -y python3 pylint black shellcheck valgrind
         wget https://github.com/mvdan/sh/releases/download/v3.4.2/shfmt_v3.4.2_linux_amd64 \
         && sudo mv shfmt_v3.4.2_linux_amd64 shfmt && sudo mv shfmt /usr/local/bin/ \
         && sudo chmod +x /usr/local/bin/shfmt
         git clone https://github.com/KDAB/codebrowser.git && cd ./codebrowser \
         && git reset --hard 73fce32fc696b3f6eb2a678397328d9ce1ad4cf6 \
-        && cmake . -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=clang++ && make -j4 \
+        && cmake . -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=clang++-10 && make -j4 \
         && sudo make install && cd .. && rm -rf ./codebrowser
 
-    - name: Code Format & Static Analysis
+    - name: Checkout
+      uses: actions/checkout@v2.4.0
+
+    - name: Code check
       run: ./script/build.sh --format --analysis
 
     - name: Build
@@ -34,9 +35,9 @@ jobs:
         export TERMINFO=/etc/terminfo
         ./script/test.py --valgrind
 
-    - name: Upload Artifact
+    - name: Upload artifact
       uses: actions/upload-artifact@v2.3.1
       with:
-        name: foo_temp
+        name: foo_artifact
         path: ./temp/
         retention-days: 3

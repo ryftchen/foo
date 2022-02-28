@@ -20,16 +20,15 @@ void printFile(
 #define LOGGER(level, format, args...) logger.outputLog(level, __FILE__, __LINE__, format, ##args)
 
 #define FORMAT_STRING(format, args...)                                                             \
-    (                                                                                              \
-        {                                                                                          \
-            const int bufferSize = std::snprintf(nullptr, 0, format, ##args);                      \
-            assert(bufferSize >= 0);                                                               \
-            char buffer[bufferSize + 1];                                                           \
-            buffer[0] = '\0';                                                                      \
-            std::snprintf(buffer, bufferSize + 1, format, ##args);                                 \
-            const std::string str(buffer);                                                         \
-            str;                                                                                   \
-        })
+    ({                                                                                             \
+        const int bufferSize = std::snprintf(nullptr, 0, format, ##args);                          \
+        assert(bufferSize >= 0);                                                                   \
+        char buffer[bufferSize + 1];                                                               \
+        buffer[0] = '\0';                                                                          \
+        std::snprintf(buffer, bufferSize + 1, format, ##args);                                     \
+        const std::string str(buffer);                                                             \
+        str;                                                                                       \
+    })
 
 class Log final
 {

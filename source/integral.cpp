@@ -33,8 +33,7 @@ double Trapezoidal::operator()(double lower, double upper, const double eps) con
         s1 = s2;
         s2 = sum;
         n *= 2;
-    }
-    while ((fabs(s1 - s2) > eps) || (n < TRAPEZOIDAL_MIN_STEP));
+    } while ((fabs(s1 - s2) > eps) || (n < TRAPEZOIDAL_MIN_STEP));
     sum = s2 * sign;
 
     TIME_END;
@@ -153,8 +152,7 @@ double Gauss::operator()(double lower, double upper, const double eps) const
         s1 = s2;
         s2 = sum;
         n *= 2;
-    }
-    while (fabs(s1 - s2) > eps);
+    } while (fabs(s1 - s2) > eps);
     sum = s2 * sign;
 
     TIME_END;
@@ -217,8 +215,7 @@ double MonteCarlo::sampleFromNormalDistribution(
             double mag = sigma * sqrt(-2.0 * log(u1));
             x = mag * sin(2.0 * M_PI * u2) + mu; // Box-Muller Transform
             // x = mag * cos(2.0 * M_PI * u2) + mu;
-        }
-        while ((x < lower) || (x > upper));
+        } while ((x < lower) || (x > upper));
         const double probabilityDensityFunction = (1.0 / sqrt(2.0 * M_PI * sigma * sigma)) *
             pow(M_E, (-(x - mu) * (x - mu)) / (2.0 * sigma * sigma));
         sum += fun(x) / probabilityDensityFunction; // I≈1/N*[F(X1)/P(X1)+...+F(Xn)/P(Xn)]
