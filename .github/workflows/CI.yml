@@ -17,8 +17,9 @@ jobs:
         && sudo chmod +x /usr/local/bin/shfmt
         git clone https://github.com/KDAB/codebrowser.git && cd ./codebrowser \
         && git reset --hard 73fce32fc696b3f6eb2a678397328d9ce1ad4cf6 \
-        && cmake . -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=clang++-10 && make -j4 \
-        && sudo make install && cd .. && rm -rf ./codebrowser
+        && cmake . -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=clang++-10 \
+        -DLLVM_DIR="/usr/bin/llvm-10/cmake" && make -j4 && sudo make install \
+        && cd .. && rm -rf ./codebrowser
 
     - name: Checkout
       uses: actions/checkout@v2.4.0
