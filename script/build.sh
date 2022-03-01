@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # chmod 755 build.sh
 # tar -zxvf foo_XXXXXXXXXXXXXX.tar.gz
-# tar -zxvf foo_html_XXXXXXX.tar.gz
+# tar -jxvf foo_html_XXXXXXX.tar.bz2
 
 ARGS_RELEASE=0
 ARGS_CLEANUP=0
@@ -103,7 +103,7 @@ tarHtml()
 {
     commitId=$(git rev-parse --short @)
     browserFolder="${PROJECT_FOLDER}_html"
-    tarFolder="${browserFolder}_${commitId}.tar.gz"
+    tarFile="${browserFolder}_${commitId}.tar.bz2"
     if [ -d ./"${TEMP_FOLDER}"/"${browserFolder}" ]; then
         rm -rf ./"${TEMP_FOLDER}"/"${browserFolder}"
     fi
@@ -112,7 +112,7 @@ tarHtml()
 -o ./${TEMP_FOLDER}/${browserFolder} -p ${PROJECT_FOLDER}:.:${commitId} -d ./data"
     shCommand "codebrowser_indexgenerator ./${TEMP_FOLDER}/${browserFolder} -d ./data"
     shCommand "cp -rf /usr/local/share/woboq/data ./${TEMP_FOLDER}/${browserFolder}/"
-    shCommand "tar -zcvf ./${TEMP_FOLDER}/${tarFolder} -C ./${TEMP_FOLDER} ${browserFolder} \
+    shCommand "tar -jcvf ./${TEMP_FOLDER}/${tarFile} -C ./${TEMP_FOLDER} ${browserFolder} \
 >/dev/null"
     shCommand "rm -rf ./${TEMP_FOLDER}/${browserFolder}"
 }
@@ -256,7 +256,7 @@ global-statement"
         then
             if [ -d "${TEMP_FOLDER}" ]; then
                 commitId=$(git rev-parse --short @)
-                lastTar="${PROJECT_FOLDER}_html_${commitId}.tar.gz"
+                lastTar="${PROJECT_FOLDER}_html_${commitId}.tar.bz2"
                 if [ -f ./"${TEMP_FOLDER}"/"${lastTar}" ]; then
                     printAbort "The latest html file ${TEMP_FOLDER}/${lastTar} has been generated."
                 else
