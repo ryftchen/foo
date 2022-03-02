@@ -1,12 +1,10 @@
 .cache/
 .vscode/
-
 *.DS_Store
 
 backup/
 build/
 temp/
-
 core*
 GPATH
 GRTAGS
