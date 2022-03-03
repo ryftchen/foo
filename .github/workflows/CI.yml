@@ -10,10 +10,10 @@ jobs:
   CI:
     runs-on: ubuntu-20.04
 
+    steps:
     - name: Checkout
       uses: actions/checkout@v2.4.0
 
-    steps:
     - name: Install dependencies
       run: |
         sudo apt-get update
