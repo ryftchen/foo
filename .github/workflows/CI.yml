@@ -1,6 +1,10 @@
 name: CI workflow
 
-on: [push, workflow_dispatch]
+on:
+  push:
+    branches: master
+
+  workflow_dispatch:
 
 jobs:
   CI:
@@ -11,23 +15,18 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get purge -y llvm-* clang-* libllvm-* libclang-*
-        sudo apt-get install -y llvm-10 clang-10 libclang-10-dev clang-format-10 clang-tidy-10 
-        sudo apt-get install -y cmake python3 pylint black shellcheck valgrind
-        wget https://github.com/mvdan/sh/releases/download/v3.4.2/shfmt_v3.4.2_linux_amd64 \
-        && sudo mv shfmt_v3.4.2_linux_amd64 shfmt && sudo mv shfmt /usr/local/bin/ \
-        && sudo chmod +x /usr/local/bin/shfmt
-        git clone https://github.com/KDAB/codebrowser.git && cd ./codebrowser \
-        && cmake . -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=clang++-10 && make -j4 \
-        && sudo make install && cd ..
+        ./.github/workflows/CI.sh
 
     - name: Checkout
       uses: actions/checkout@v2.4.0
 
-    - name: Code check
-      run: ./script/build.sh --format --analysis
+    - name: Check code
+      run: ./script/build.sh --release --format --analysis
 
     - name: Build
-      run: ./script/build.sh --release --html
+      run: | 
+        ./script/build.sh --release
+        ./script/build.sh --release --html
 
     - name: Test
       run: |
@@ -39,5 +38,5 @@ jobs:
       uses: actions/upload-artifact@v2.3.1
       with:
         name: foo_artifact
-        path: ./temp/
+        path: ./temp/foo_html_*.tar.bz2
         retention-days: 3
