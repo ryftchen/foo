@@ -8,8 +8,7 @@
 // #define BIT_SET(a, b) (a |= b)
 // #define BIT_TEST(a, b) (a == (a | b))
 // #define BIT_RESET(a, b) (a &= (a ^ b))
-#define README_PATH "./README.md"
-#define BACKUP_CMD "./script/build.sh --backup"
+#define LICENSE_CMD "cat ./LICENSE"
 #define COMMAND_THREAD_NAME_LENGTH 6
 #define COMMAND_MAX_METHOD 10
 #define COMMAND_PRINT_MAX_LINE 50
@@ -117,8 +116,8 @@ private:
     friend void printFile(const char *const pathname, const bool reverse, const uint32_t maxLine);
 
 protected:
-    void backupProject();
     void printLogContext();
+    void printLicense();
     void printInstruction();
     void printUnkownParameter(char *const argv[]);
 };

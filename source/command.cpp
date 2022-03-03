@@ -13,7 +13,6 @@ bool Command::parseArgv(const int argc, char *const argv[])
 {
     if (argc < 1)
     {
-        LOGGER(Log::Level::levelDebug, "No parameter.");
         printInstruction();
     }
 
@@ -36,8 +35,8 @@ bool Command::parseArgv(const int argc, char *const argv[])
                 case "--sort"_bkdrHash:
                     COMMAND_PERPARE_BITSET(run.sortBit, TaskBit::taskSort);
                     break;
-                case "--backup"_bkdrHash:
-                    backupProject();
+                case "--verbose"_bkdrHash:
+                    printLicense();
                     break;
                 case "--log"_bkdrHash:
                     printLogContext();
@@ -439,41 +438,6 @@ void Command::setSortBit(char *const argv[])
     }
 }
 
-void Command::backupProject()
-{
-    try
-    {
-        const pid_t status = system(BACKUP_CMD);
-        if (-1 == status)
-        {
-            throw std::runtime_error("System error.");
-        }
-        else if (WIFEXITED(status))
-        {
-            if (0 == WEXITSTATUS(status))
-            {
-                const std::string str =
-                    "Run script " + std::string(basename(BACKUP_CMD)) + " successfully.";
-                LOGGER(Log::Level::levelInfo, str.c_str());
-            }
-            else
-            {
-                throw RunScriptError(basename(BACKUP_CMD));
-            }
-        }
-    }
-    catch (std::runtime_error const &error)
-    {
-        LOGGER(Log::Level::levelError, error.what());
-    }
-    catch (RunScriptError const &error)
-    {
-        LOGGER(Log::Level::levelError, error.what());
-    }
-
-    run.taskDone = true;
-}
-
 void Command::printLogContext()
 {
     try
@@ -494,12 +458,39 @@ void Command::printLogContext()
     run.taskDone = true;
 }
 
+void Command::printLicense()
+{
+    try
+    {
+        const pid_t status = system(LICENSE_CMD);
+        if (-1 == status)
+        {
+            throw std::runtime_error("System error.");
+        }
+        else if (WIFEXITED(status))
+        {
+            if (0 != WEXITSTATUS(status))
+            {
+                throw RunCommandError(LICENSE_CMD);
+            }
+        }
+    }
+    catch (std::runtime_error const &error)
+    {
+        LOGGER(Log::Level::levelError, error.what());
+    }
+    catch (RunCommandError const &error)
+    {
+        LOGGER(Log::Level::levelError, error.what());
+    }
+
+    run.taskDone = true;
+}
+
 void Command::printInstruction()
 {
-    printFile(README_PATH);
-#ifdef NO_README
-    puts("### Usage    : foo [Options...]\n\n"
-         "### [Options]:\n\n"
+    puts("Usage    : foo [Options...]\n\n"
+         "[Options]:\n\n"
          "    -o, --optimum                      Optimum\n"
          "    [ fib | gra | ann | par | gen ]    Fibonacci|Gradient|Annealing|Particle|Genetic\n\n"
          "    -i, --integral                     Integral\n"
@@ -507,10 +498,10 @@ void Command::printInstruction()
          "    -s, --sort                         Sort\n"
          "    [ bub | sel | ins | she | mer ]    Bubble|Selection|Insertion|Shell|Merge\n"
          "    [ qui | hea | cou | buc | rad ]    Quick|Heap|Counting|Bucket|Radix\n\n"
-         "    --backup                           Backup\n\n"
          "    --log                              Log\n\n"
+         "    --verbose                          Verbose\n\n"
          "    --help                             Help");
-#endif
+
     run.taskDone = true;
 }
 
@@ -519,5 +510,6 @@ void Command::printUnkownParameter(char *const argv[])
     const std::string str = "Unknown command line option: " + std::string(argv[0]) +
         ". Try with --help to get information.";
     LOGGER(Log::Level::levelWarn, str.c_str());
+
     run.taskDone = true;
 }
