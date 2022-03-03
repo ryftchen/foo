@@ -10,15 +10,15 @@ jobs:
   CI:
     runs-on: ubuntu-20.04
 
+    - name: Checkout
+      uses: actions/checkout@v2.4.0
+
     steps:
     - name: Install dependencies
       run: |
         sudo apt-get update
         sudo apt-get purge -y llvm-* clang-* libllvm-* libclang-*
         ./.github/workflows/CI.sh
-
-    - name: Checkout
-      uses: actions/checkout@v2.4.0
 
     - name: Check code
       run: ./script/build.sh --release --format --analysis
