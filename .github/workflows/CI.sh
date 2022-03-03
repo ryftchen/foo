@@ -16,6 +16,8 @@ printAbort()
 
 main()
 {
+    cd "$(dirname "$0")" || exit 1
+
     shCommand "sudo apt-get install -y llvm-10 clang-10 libclang-10-dev \
 clang-format-10 clang-tidy-10 cmake python3 pylint black shellcheck valgrind"
     shCommand "wget https://github.com/mvdan/sh/releases/download/v3.4.2/shfmt_v3.4.2_linux_amd64 \
