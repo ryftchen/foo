@@ -16,7 +16,7 @@ OPTION_TYPE_1 = ["-o", "-i", "-s"]
 OPTIMUM = ["fib", "gra", "ann", "par", "gen"]
 INTEGRAL = ["tra", "sim", "rom", "gau", "mon"]
 SORT = ["bub", "sel", "ins", "she", "mer", "qui", "hea", "cou", "buc", "rad"]
-OPTION_TYPE_2 = ["--optimum", "--integral", "--sort", "--backup", "--log", "--help"]
+OPTION_TYPE_2 = ["--optimum", "--integral", "--sort", "--log", "--verbose", "--help"]
 CURRENT_STEP = 0
 WHOLE_STEP = (
     (len(OPTION_TYPE_1) + 2)

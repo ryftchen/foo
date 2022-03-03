@@ -2,13 +2,13 @@
 #include <exception>
 #include <string>
 
-class RunScriptError : public std::exception
+class RunCommandError : public std::exception
 {
 public:
-    RunScriptError() : message("Failed to run script."){};
-    explicit RunScriptError(const std::string &str)
-        : message("Failed to run script " + str + "."){};
-    ~RunScriptError() noexcept override {}
+    RunCommandError() : message("Failed to run command."){};
+    explicit RunCommandError(const std::string &str)
+        : message("Failed to run command " + str + "."){};
+    ~RunCommandError() noexcept override {}
     [[nodiscard]] const char *what() const noexcept override;
 
 private:
