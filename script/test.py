@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# chmod 755 test.py
 
 import argparse
 import curses
@@ -289,13 +288,13 @@ def parseArgs():
         nargs="?",
         choices=[
             "default",
-            "release",
             "cleanup",
             "format",
             "analysis",
             "html",
             "backup",
             "tag",
+            "release",
             "help",
         ],
         const="default",
