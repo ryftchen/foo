@@ -63,6 +63,7 @@ downloadArtifact()
     if
         zip -T ~/"${BROWSER_FOLDER}"/"${ARTIFACT_FILE}".zip | grep 'zip error' >/dev/null 2>&1
     then
+        shCommand "rm -rf ~/${BROWSER_FOLDER}/${ARTIFACT_FILE}.zip"
         printAbort "The zip file ${ARTIFACT_FILE}.zip in ~/${BROWSER_FOLDER} folder is corrupted."
     else
         shCommand "unzip ~/${BROWSER_FOLDER}/${ARTIFACT_FILE}.zip -d ~/${BROWSER_FOLDER}"
