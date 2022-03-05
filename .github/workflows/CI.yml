@@ -21,7 +21,9 @@ jobs:
         ./.github/workflows/CI.sh
 
     - name: Check code
-      run: ./script/build.sh --release --format --analysis
+      run: |
+        ./script/build.sh --release --format --analysis
+        git status
 
     - name: Build
       run: | 
