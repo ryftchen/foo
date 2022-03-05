@@ -4,7 +4,9 @@
 #include "./exception.hpp"
 #include "./log.hpp"
 
-void switchToProjectPath()
+static void switchToProjectPath() __attribute__((constructor));
+
+static void switchToProjectPath()
 {
     try
     {
