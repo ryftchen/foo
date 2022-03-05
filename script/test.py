@@ -16,14 +16,14 @@ OPTION_TYPE_1 = ["-o", "-i", "-s"]
 OPTIMUM = ["fib", "gra", "ann", "par", "gen"]
 INTEGRAL = ["tra", "sim", "rom", "gau", "mon"]
 SORT = ["bub", "sel", "ins", "she", "mer", "qui", "hea", "cou", "buc", "rad"]
-OPTION_TYPE_2 = ["--optimum", "--integral", "--sort", "--log", "--verbose", "--help"]
+OPTION_TYPE_2 = ["--optimum", "--integral", "--sort", "--log", "--help"]
 CURRENT_STEP = 0
 WHOLE_STEP = (
-    (len(OPTION_TYPE_1) + 2)
+    (len(OPTION_TYPE_1) + 1)
     + (len(OPTIMUM) + 1)
     + (len(INTEGRAL) + 1)
     + (len(SORT) + 1)
-    + len(OPTION_TYPE_2)
+    + (len(OPTION_TYPE_2) + 1)
 )
 
 STDOUT_DEFAULT = sys.stdout
@@ -283,8 +283,8 @@ def executeCommand(command):
 def parseArgs():
     parser = argparse.ArgumentParser(description="test script")
     parser.add_argument(
-        "--build",
         "-b",
+        "--build",
         nargs="?",
         choices=[
             "default",
@@ -301,7 +301,7 @@ def parseArgs():
         help="test with build.sh",
     )
     parser.add_argument(
-        "--valgrind", "-v", action="store_true", default=False, help="test with valgrind"
+        "-v", "--valgrind", action="store_true", default=False, help="test with valgrind"
     )
     args = parser.parse_args()
 
@@ -347,7 +347,6 @@ def completeTest():
 
 
 def testOptionType1():
-    executeCommand(RUN_CMD)
     for each in OPTION_TYPE_1:
         executeCommand(RUN_CMD + " " + each)
     executeCommand(RUN_CMD + " " + " ".join(OPTION_TYPE_1))
@@ -372,6 +371,7 @@ def testSort():
 
 
 def testOptionType2():
+    executeCommand(RUN_CMD)
     for each in OPTION_TYPE_2:
         executeCommand(RUN_CMD + " " + each)
 

@@ -5,10 +5,6 @@
 #include "./expression.hpp"
 #include "./sort.hpp"
 
-// #define BIT_SET(a, b) (a |= b)
-// #define BIT_TEST(a, b) (a == (a | b))
-// #define BIT_RESET(a, b) (a &= (a ^ b))
-#define LICENSE_CMD "cat ./LICENSE"
 #define COMMAND_THREAD_NAME_LENGTH 6
 #define COMMAND_MAX_METHOD 10
 #define COMMAND_PRINT_MAX_LINE 50
@@ -26,6 +22,7 @@
             xBit.set();                                                                            \
         }                                                                                          \
     } while (0)
+#define COMMAND_LICENSE_CMD "cat ./LICENSE"
 
 class Command
 {
@@ -117,7 +114,7 @@ private:
 
 protected:
     void printLogContext();
-    void printLicense();
     void printInstruction();
+    void printLicense();
     void printUnkownParameter(char *const argv[]);
 };
