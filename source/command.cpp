@@ -13,7 +13,7 @@ bool Command::parseArgv(const int argc, char *const argv[])
 {
     if (argc < 1)
     {
-        printInstruction();
+        printLicense();
     }
 
     std::bitset<TaskBit::taskButtom> taskBit(0);
@@ -34,9 +34,6 @@ bool Command::parseArgv(const int argc, char *const argv[])
                 case "-s"_bkdrHash:
                 case "--sort"_bkdrHash:
                     COMMAND_PERPARE_BITSET(run.sortBit, TaskBit::taskSort);
-                    break;
-                case "--verbose"_bkdrHash:
-                    printLicense();
                     break;
                 case "--log"_bkdrHash:
                     printLogContext();
@@ -458,35 +455,6 @@ void Command::printLogContext()
     run.taskDone = true;
 }
 
-void Command::printLicense()
-{
-    try
-    {
-        const pid_t status = system(LICENSE_CMD);
-        if (-1 == status)
-        {
-            throw std::runtime_error("System error.");
-        }
-        else if (WIFEXITED(status))
-        {
-            if (0 != WEXITSTATUS(status))
-            {
-                throw RunCommandError(LICENSE_CMD);
-            }
-        }
-    }
-    catch (std::runtime_error const &error)
-    {
-        LOGGER(Log::Level::levelError, error.what());
-    }
-    catch (RunCommandError const &error)
-    {
-        LOGGER(Log::Level::levelError, error.what());
-    }
-
-    run.taskDone = true;
-}
-
 void Command::printInstruction()
 {
     puts("Usage    : foo [Options...]\n\n"
@@ -499,8 +467,36 @@ void Command::printInstruction()
          "    [ bub | sel | ins | she | mer ]    Bubble|Selection|Insertion|Shell|Merge\n"
          "    [ qui | hea | cou | buc | rad ]    Quick|Heap|Counting|Bucket|Radix\n\n"
          "    --log                              Log\n\n"
-         "    --verbose                          Verbose\n\n"
          "    --help                             Help");
+
+    run.taskDone = true;
+}
+
+void Command::printLicense()
+{
+    try
+    {
+        const pid_t status = system(COMMAND_LICENSE_CMD);
+        if (-1 == status)
+        {
+            throw std::runtime_error("System error.");
+        }
+        else if (WIFEXITED(status))
+        {
+            if (0 != WEXITSTATUS(status))
+            {
+                throw RunCommandError(COMMAND_LICENSE_CMD);
+            }
+        }
+    }
+    catch (std::runtime_error const &error)
+    {
+        LOGGER(Log::Level::levelError, error.what());
+    }
+    catch (RunCommandError const &error)
+    {
+        LOGGER(Log::Level::levelError, error.what());
+    }
 
     run.taskDone = true;
 }
