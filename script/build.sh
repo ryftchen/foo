@@ -17,11 +17,11 @@ SCRIPT_FOLDER="script"
 BUILD_FOLDER="build"
 BACKUP_FOLDER="backup"
 TEMP_FOLDER="temp"
-BUILD_FILE="build.sh"
-TEST_FILE="test.py"
+BUILD_SCRIPT="build.sh"
+TEST_SCRIPT="test.py"
 CMAKE_FILE="CMakeLists.txt"
-README_FILE="README.md"
-COMPILE_COMMAND="compile_commands.json"
+LICENSE_FILE="LICENSE"
+COMPILE_COMMANDS="compile_commands.json"
 ANALYSIS_STYLE=".clang-tidy"
 FORMAT_STYLE=".clang-format"
 
@@ -91,13 +91,13 @@ checkProject()
 
     if [ ! -d ./"${INCLUDE_FOLDER}" ] || [ ! -d ./"${SOURCE_FOLDER}" ] \
         || [ ! -d ./"${LIBRARY_FOLDER}" ] || [ ! -d ./"${SCRIPT_FOLDER}" ] \
-        || [ ! -f ./"${CMAKE_FILE}" ] || [ ! -f ./"${README_FILE}" ]; then
+        || [ ! -f ./"${CMAKE_FILE}" ] || [ ! -f ./"${LICENSE_FILE}" ]; then
         printAbort "There are missing files in ${PROJECT_FOLDER} folder."
     fi
 
     if [ "${ARGS_FORMAT}" = "1" ] || [ "${ARGS_ANALYSIS}" = "1" ]; then
-        if [ ! -f ./"${SCRIPT_FOLDER}"/"${BUILD_FILE}" ] \
-            || [ ! -f ./"${SCRIPT_FOLDER}"/"${TEST_FILE}" ]; then
+        if [ ! -f ./"${SCRIPT_FOLDER}"/"${BUILD_SCRIPT}" ] \
+            || [ ! -f ./"${SCRIPT_FOLDER}"/"${TEST_SCRIPT}" ]; then
             printAbort "There are missing file in ${SCRIPT_FOLDER} folder."
         fi
     fi
@@ -130,7 +130,7 @@ buildCleanup()
 {
     if [ "${ARGS_CLEANUP}" = "1" ]; then
         shCommand "rm -rf ./${BUILD_FOLDER} ./${BACKUP_FOLDER} ./${TEMP_FOLDER}"
-        shCommand "rm -rf GPATH GRTAGS GTAGS"
+        shCommand "rm -rf ./GPATH ./GRTAGS ./GTAGS"
     fi
 }
 
@@ -149,8 +149,8 @@ buildFormat()
                 printAbort "There is no ${FORMAT_STYLE} file in ${PROJECT_FOLDER} folder. \
 Please generate it."
             fi
-            shCommand "shfmt -l -w -i 4 -bn -fn ./${SCRIPT_FOLDER}/${BUILD_FILE}"
-            shCommand "black -l 100 -S -v ./${SCRIPT_FOLDER}/${TEST_FILE}"
+            shCommand "shfmt -l -w -i 4 -bn -fn ./${SCRIPT_FOLDER}/${BUILD_SCRIPT}"
+            shCommand "black -l 100 -S -v ./${SCRIPT_FOLDER}/${TEST_SCRIPT}"
         else
             printAbort "There is no clang-format, shfmt or black program. Please check it."
         fi
@@ -165,20 +165,20 @@ buildAnalysis()
                 && command -v shellcheck >/dev/null 2>&1 \
                 && command -v pylint >/dev/null 2>&1
         then
-            if [ -f ./"${BUILD_FOLDER}"/"${COMPILE_COMMAND}" ]; then
+            if [ -f ./"${BUILD_FOLDER}"/"${COMPILE_COMMANDS}" ]; then
                 if [ -f ./"${ANALYSIS_STYLE}" ]; then
-                    shCommand "clang-tidy-10 -p ./${BUILD_FOLDER}/${COMPILE_COMMAND} \
+                    shCommand "clang-tidy-10 -p ./${BUILD_FOLDER}/${COMPILE_COMMANDS} \
 ./${INCLUDE_FOLDER}/*.hpp ./${SOURCE_FOLDER}/*.cpp ./${LIBRARY_FOLDER}/*.cpp"
                 else
                     printAbort "There is no ${ANALYSIS_STYLE} file in ${PROJECT_FOLDER} folder. \
 Please generate it."
                 fi
             else
-                printAbort "There is no ${COMPILE_COMMAND} file in ${BUILD_FOLDER} folder. \
+                printAbort "There is no ${COMPILE_COMMANDS} file in ${BUILD_FOLDER} folder. \
 Please generate it."
             fi
-            shCommand "shellcheck ./${SCRIPT_FOLDER}/${BUILD_FILE} --enable=all"
-            shCommand "pylint ./${SCRIPT_FOLDER}/${TEST_FILE} --enable=all \
+            shCommand "shellcheck ./${SCRIPT_FOLDER}/${BUILD_SCRIPT} --enable=all"
+            shCommand "pylint ./${SCRIPT_FOLDER}/${TEST_SCRIPT} --enable=all \
 --argument-naming-style=camelCase --attr-naming-style=camelCase --function-naming-style=camelCase \
 --method-naming-style=camelCase --module-naming-style=camelCase --variable-naming-style=camelCase \
 --disable=missing-module-docstring,missing-class-docstring,missing-function-docstring,\
@@ -223,7 +223,7 @@ tarHtml()
         rm -rf ./"${TEMP_FOLDER}"/"${browserFolder}"
     fi
     shCommand "mkdir ./${TEMP_FOLDER}/${browserFolder}"
-    shCommand "codebrowser_generator -color -a -b ./${BUILD_FOLDER}/${COMPILE_COMMAND} \
+    shCommand "codebrowser_generator -color -a -b ./${BUILD_FOLDER}/${COMPILE_COMMANDS} \
 -o ./${TEMP_FOLDER}/${browserFolder} -p ${PROJECT_FOLDER}:.:${commitId} -d ./data"
     shCommand "codebrowser_indexgenerator ./${TEMP_FOLDER}/${browserFolder} -d ./data"
     shCommand "cp -rf /usr/local/share/woboq/data ./${TEMP_FOLDER}/${browserFolder}/"
@@ -268,7 +268,7 @@ tarBackup()
 -o -path ./${TEMP_FOLDER} -o -path './.*' \) -prune -o -print | sed 1d \
 | grep -E '${INCLUDE_FOLDER}|${SOURCE_FOLDER}|${LIBRARY_FOLDER}|${SCRIPT_FOLDER}' \
 | xargs -i cp -R {} ${BACKUP_FOLDER}/${PROJECT_FOLDER}/"
-    shCommand "find . -maxdepth 1 -type d -o -print | grep -E '*\.txt|*\.md' \
+    shCommand "find . -maxdepth 1 -type d -o -print | grep -E '*\.txt|${LICENSE_FILE}' \
 | xargs -i cp -R {} ${BACKUP_FOLDER}/${PROJECT_FOLDER}/"
     shCommand "tar -zcvf ${BACKUP_FOLDER}/${tarFolder}.tar.gz -C ./${BACKUP_FOLDER} \
 ${PROJECT_FOLDER}"
