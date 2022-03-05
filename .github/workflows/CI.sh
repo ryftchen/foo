@@ -30,7 +30,7 @@ installDependencies()
 {
     shCommand "sudo apt-get install -y llvm-10 clang-10 libclang-10-dev \
 clang-format-10 clang-tidy-10 cmake python3 pylint black shellcheck valgrind"
-    shCommand "curl -O ${SHFMT_URL} && sudo mv ${SHFMT_FILE} shfmt \
+    shCommand "wget ${SHFMT_URL} && sudo mv ${SHFMT_FILE} shfmt \
 && sudo mv shfmt /usr/local/bin/ && sudo chmod +x /usr/local/bin/shfmt"
     shCommand "git clone ${WOBOQ_URL} && cd ./codebrowser && git reset --hard ${WOBOQ_COMMIT} \
 && cmake . -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=clang++-10 && make -j4 \
