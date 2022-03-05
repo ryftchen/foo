@@ -43,16 +43,17 @@ downloadArtifact()
     shCommand "git remote -v update"
     localCommitId=$(git rev-parse @)
     remoteCommitId=$(git rev-parse @\{u\})
+    htmlFolder="${PROJECT_FOLDER}_html"
     if [ "${localCommitId}" != "${remoteCommitId}" ]; then
         shCommand "git pull --rebase"
-    else
+    elif [ -d ~/"${BROWSER_FOLDER}"/"${htmlFolder}" ]; then
         printAbort "No change in ${PROJECT_FOLDER} project."
     fi
-
     files=$(find ~/"${BROWSER_FOLDER}" ./* 2>/dev/null | sed 1d | wc -l)
     if [ "${files}" != "0" ]; then
         shCommand "rm -rf ~/${BROWSER_FOLDER}/*"
     fi
+
     actionUrl=$(curl -s "${ARTIFACT_URL}" \
         | jq '[.artifacts[] | {name : .name, archive_download_url : .archive_download_url}]' \
         | jq -r '.[] | select (.name == "'"${ARTIFACT_URL}"'") | .archive_download_url' | head -n1)
@@ -63,7 +64,6 @@ downloadArtifact()
     then
         printAbort "The zip file ${ARTIFACT_FILE}.zip in ~/${BROWSER_FOLDER} folder is corrupted."
     else
-        htmlFolder="${PROJECT_FOLDER}_html"
         shCommand shCommand "unzip ~/${BROWSER_FOLDER}/${ARTIFACT_FILE}.zip -d ~/${BROWSER_FOLDER}"
         shCommand "tar -jxvf ~/${BROWSER_FOLDER}/${htmlFolder}_*.tar.bz2 -C ~/${BROWSER_FOLDER} \
 >/dev/null"
