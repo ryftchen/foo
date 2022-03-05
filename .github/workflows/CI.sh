@@ -49,14 +49,14 @@ downloadArtifact()
     elif [ -d ~/"${BROWSER_FOLDER}"/"${htmlFolder}" ]; then
         printAbort "No change in ${PROJECT_FOLDER} project."
     fi
-    files=$(find ~/"${BROWSER_FOLDER}" ./* 2>/dev/null | sed 1d | wc -l)
+    files=$(find ~/"${BROWSER_FOLDER}" -name "*" 2>/dev/null | sed 1d | wc -l)
     if [ "${files}" != "0" ]; then
         shCommand "rm -rf ~/${BROWSER_FOLDER}/*"
     fi
 
     actionUrl=$(curl -s "${ARTIFACT_URL}" \
         | jq '[.artifacts[] | {name : .name, archive_download_url : .archive_download_url}]' \
-        | jq -r '.[] | select (.name == "'"${ARTIFACT_URL}"'") | .archive_download_url' | head -n1)
+        | jq -r '.[] | select (.name == "'"${ARTIFACT_FILE}"'") | .archive_download_url' | head -n1)
     localUrl=$(curl -netrc -silent "${actionUrl}" | grep -oP 'location: \K.*' | tr -d '\r')
     shCommand "curl -L -X GET \"${localUrl}\" --output ~/${BROWSER_FOLDER}/${ARTIFACT_FILE}.zip"
     if
