@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+GITHUB_FOLDER="/home/runner/work"
 PROJECT_FOLDER="foo"
 BROWSER_FOLDER="browser"
 NETRC_FILE=".netrc"
@@ -45,7 +46,7 @@ downloadArtifact()
     remoteCommitId=$(git rev-parse @\{u\})
     htmlFolder="${PROJECT_FOLDER}_html"
     if [ "${localCommitId}" != "${remoteCommitId}" ]; then
-        shCommand "git pull --rebase"
+        shCommand "git pull origin master"
     elif [ -d ~/"${BROWSER_FOLDER}"/"${htmlFolder}" ]; then
         printAbort "No change in ${PROJECT_FOLDER} project."
     fi
@@ -64,7 +65,7 @@ downloadArtifact()
     then
         printAbort "The zip file ${ARTIFACT_FILE}.zip in ~/${BROWSER_FOLDER} folder is corrupted."
     else
-        shCommand shCommand "unzip ~/${BROWSER_FOLDER}/${ARTIFACT_FILE}.zip -d ~/${BROWSER_FOLDER}"
+        shCommand "unzip ~/${BROWSER_FOLDER}/${ARTIFACT_FILE}.zip -d ~/${BROWSER_FOLDER}"
         shCommand "tar -jxvf ~/${BROWSER_FOLDER}/${htmlFolder}_*.tar.bz2 -C ~/${BROWSER_FOLDER} \
 >/dev/null"
         shCommand "rm -rf ~/${BROWSER_FOLDER}/*.zip ~/${BROWSER_FOLDER}/*.tar.bz2"
@@ -76,7 +77,7 @@ main()
     cd "$(dirname "$0")" || exit 1
     localEnv=$(git rev-parse --show-toplevel)
     cd "${localEnv}" || exit 1
-    ciEnv="/home/runner/work/${PROJECT_FOLDER}/${PROJECT_FOLDER}"
+    ciEnv="${GITHUB_FOLDER}/${PROJECT_FOLDER}/${PROJECT_FOLDER}"
 
     if [ "${localEnv}" = "${ciEnv}" ]; then
         echo "$(date "+%b %d %T") INSTALL DEPENDENCIES"
