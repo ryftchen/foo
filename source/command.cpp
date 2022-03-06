@@ -1,8 +1,6 @@
 #include "../include/command.hpp"
 #include <sys/file.h>
 #include <ext/stdio_filebuf.h>
-#include <functional>
-#include <iomanip>
 #include "../include/exception.hpp"
 #include "../include/hash.hpp"
 #include "../include/integral.hpp"
@@ -96,28 +94,17 @@ void Command::runOptimum()
     if (run.optimumBit.any())
     {
         std::unique_lock<std::mutex> lock(commandMutex);
-        const auto functor = std::bind(
-            &Command::getOptimumResult,
-            this,
-            std::placeholders::_1,
-            std::placeholders::_2,
-            std::placeholders::_3,
-            OPTIMUM_EPSILON);
-
-        std::cout << std::setiosflags(std::ios::showpos) << std::setiosflags(std::ios::fixed)
-                  << std::setprecision(COMMAND_PRINT_PRECISION);
         std::cout << OPTIMUM_RUN_BEGIN << std::endl;
 
         std::cout << EXPRESS_FUN_1_OPTIMUM << std::endl;
         const std::shared_ptr<Expression> fun1 = std::make_shared<Function1>();
-        functor(*(fun1.get()), EXPRESS_FUN_1_RANGE_1, EXPRESS_FUN_1_RANGE_2);
+        getOptimumResult(*fun1, EXPRESS_FUN_1_RANGE_1, EXPRESS_FUN_1_RANGE_2, OPTIMUM_EPSILON);
 
         std::cout << EXPRESS_FUN_2_OPTIMUM << std::endl;
         const std::shared_ptr<Expression> fun2 = std::make_shared<Function2>();
-        functor(*(fun2.get()), EXPRESS_FUN_2_RANGE_1, EXPRESS_FUN_2_RANGE_2);
+        getOptimumResult(*fun2, EXPRESS_FUN_2_RANGE_1, EXPRESS_FUN_2_RANGE_2, OPTIMUM_EPSILON);
 
         std::cout << OPTIMUM_RUN_END << std::endl;
-        std::cout << std::resetiosflags(std::ios::showpos) << std::resetiosflags(std::ios::fixed);
     }
 }
 void Command::getOptimumResult(
@@ -210,28 +197,17 @@ void Command::runIntegral()
     if (run.integralBit.any())
     {
         std::unique_lock<std::mutex> lock(commandMutex);
-        const auto functor = std::bind(
-            &Command::getIntegralResult,
-            this,
-            std::placeholders::_1,
-            std::placeholders::_2,
-            std::placeholders::_3,
-            INTEGRAL_EPSILON);
-
-        std::cout << std::setiosflags(std::ios::showpos) << std::setiosflags(std::ios::fixed)
-                  << std::setprecision(COMMAND_PRINT_PRECISION);
         std::cout << INTEGRAL_RUN_BEGIN << std::endl;
 
         std::cout << EXPRESS_FUN_1_INTEGRAL << std::endl;
         const std::shared_ptr<Expression> fun1 = std::make_shared<Function1>();
-        functor(*(fun1.get()), EXPRESS_FUN_1_RANGE_1, EXPRESS_FUN_1_RANGE_2);
+        getIntegralResult(*fun1, EXPRESS_FUN_1_RANGE_1, EXPRESS_FUN_1_RANGE_2, INTEGRAL_EPSILON);
 
         std::cout << EXPRESS_FUN_2_INTEGRAL << std::endl;
         const std::shared_ptr<Expression> fun2 = std::make_shared<Function2>();
-        functor(*(fun2.get()), EXPRESS_FUN_2_RANGE_1, EXPRESS_FUN_2_RANGE_2);
+        getIntegralResult(*fun2, EXPRESS_FUN_2_RANGE_1, EXPRESS_FUN_2_RANGE_2, INTEGRAL_EPSILON);
 
         std::cout << INTEGRAL_RUN_END << std::endl;
-        std::cout << std::resetiosflags(std::ios::showpos) << std::resetiosflags(std::ios::fixed);
     }
 }
 void Command::getIntegralResult(
