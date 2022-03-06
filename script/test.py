@@ -287,17 +287,17 @@ def parseArgs():
         "--build",
         nargs="?",
         choices=[
-            "default",
+            "debug",
+            "release",
             "cleanup",
             "format",
             "analysis",
             "html",
             "backup",
             "tag",
-            "release",
             "help",
         ],
-        const="default",
+        const="debug",
         help="test with build.sh",
     )
     parser.add_argument(
@@ -307,8 +307,10 @@ def parseArgs():
 
     if args.build:
         if os.path.isfile(BUILD_CMD):
-            if args.build == "default":
+            if args.build == "debug":
                 buildProject(BUILD_CMD + " 2>&1")
+            elif args.build == "release":
+                buildProject(BUILD_CMD + " --release 2>&1")
             else:
                 buildProject(BUILD_CMD + " --" + args.build + " 2>&1")
                 sys.exit(0)
