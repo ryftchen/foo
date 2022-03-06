@@ -13,10 +13,10 @@ void printFile(
     const bool reverse = false,
     const uint32_t maxLine = 1000);
 
-// #define FILENAME(x) (strrchr(x, '/') ? strrchr(x, '/') + 1 : x)
+#define FILENAME(x) (strrchr(x, '/') ? strrchr(x, '/') + 1 : x)
 #define LOG_DIR "./temp"
 #define LOG_PATH "./temp/foo.log"
-#define LOG_PATHNAME_LEN 32
+#define LOG_PATHNAME_LENGTH 32
 #define LOGGER(level, format, args...) logger.outputLog(level, __FILE__, __LINE__, format, ##args)
 
 #define FORMAT_STRING(format, args...)                                                             \
@@ -62,7 +62,7 @@ public:
         const char *const format,
         const Args... args);
     std::ofstream ofs;
-    char pathname[LOG_PATHNAME_LEN + 1];
+    char pathname[LOG_PATHNAME_LENGTH + 1];
 
 private:
     Level minLevel;
@@ -101,7 +101,7 @@ void Log::outputLog(
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat-security"
         std::string output = prefix + "[" + GET_CURRENT_TIME + "]:" + "[" +
-            basename(codeFile.c_str()) + ":" + std::to_string(codeLine) +
+            FILENAME(codeFile.c_str()) + ":" + std::to_string(codeLine) +
             "]: " + FORMAT_STRING(format, args...);
 #pragma GCC diagnostic pop
         switch (realTarget)

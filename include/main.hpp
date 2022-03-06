@@ -1,5 +1,6 @@
 #pragma once
 #include <iostream>
+#include <libgen.h>
 #include <unistd.h>
 #include "./exception.hpp"
 #include "./log.hpp"
@@ -18,21 +19,7 @@ static void switchToProjectPath()
             throw std::runtime_error("System error.");
         }
 
-        uint32_t cnt = 0;
-        for (int i = length; i >= 0; --i)
-        {
-            if ('/' == absolutePath[i])
-            {
-                ++cnt;
-            }
-            if (2 == cnt)
-            {
-                absolutePath[i + 1] = '\0';
-                break;
-            }
-        }
-
-        const int status = chdir(absolutePath);
+        const int status = chdir(dirname(dirname(absolutePath)));
         if (-1 == status)
         {
             throw std::runtime_error("System error.");

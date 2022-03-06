@@ -15,8 +15,8 @@ Log::Log()
 {
     minLevel = Level::levelDebug;
     realTarget = Target::targetAll;
-    strncpy(pathname, LOG_PATH, LOG_PATHNAME_LEN);
-    pathname[LOG_PATHNAME_LEN] = '\0';
+    strncpy(pathname, LOG_PATH, LOG_PATHNAME_LENGTH);
+    pathname[LOG_PATHNAME_LENGTH] = '\0';
     try
     {
         if (-1 == access(LOG_DIR, F_OK))
@@ -60,8 +60,8 @@ Log::Log(const std::string &logFile, const Type type, const Level level, const T
 {
     minLevel = level;
     realTarget = target;
-    strncpy(pathname, logFile.c_str(), LOG_PATHNAME_LEN);
-    pathname[LOG_PATHNAME_LEN] = '\0';
+    strncpy(pathname, logFile.c_str(), LOG_PATHNAME_LENGTH);
+    pathname[LOG_PATHNAME_LENGTH] = '\0';
     try
     {
         if (-1 == access(LOG_DIR, F_OK))
