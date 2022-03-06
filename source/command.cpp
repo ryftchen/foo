@@ -11,6 +11,7 @@ bool Command::parseArgv(const int argc, char *const argv[])
 {
     if (argc < 1)
     {
+        LOGGER(Log::Level::levelInfo, "No command line option.");
         printLicense();
     }
 
