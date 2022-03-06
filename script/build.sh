@@ -131,6 +131,7 @@ buildCleanup()
     if [ "${ARGS_CLEANUP}" = "1" ]; then
         shCommand "rm -rf ./${BUILD_FOLDER} ./${BACKUP_FOLDER} ./${TEMP_FOLDER}"
         shCommand "rm -rf ./GPATH ./GRTAGS ./GTAGS"
+        exit 0
     fi
 }
 
