@@ -45,6 +45,8 @@ printInstruction()
     echo
     echo "[Options]:"
     echo
+    echo "    --release                          Release"
+    echo
     echo "    -c, --cleanup                      Cleanup"
     echo
     echo "    -f, --format                       Format"
@@ -57,8 +59,6 @@ printInstruction()
     echo
     echo "    -t, --tag                          Tag"
     echo
-    echo "    --release                          Release"
-    echo
     echo "    --help                             Help"
     exit 0
 }
@@ -67,13 +67,13 @@ parseArgs()
 {
     while [ "$#" -gt 0 ]; do
         case $1 in
+        --release) ARGS_RELEASE=1 ;;
         -c | --cleanup) ARGS_CLEANUP=1 ;;
         -f | --format) ARGS_FORMAT=1 ;;
         -a | --analysis) ARGS_ANALYSIS=1 ;;
         -h | --html) ARGS_HTML=1 ;;
         -b | --backup) ARGS_BACKUP=1 ;;
         -t | --tag) ARGS_TAG=1 ;;
-        --release) ARGS_RELEASE=1 ;;
         --help)
             printInstruction
             ;;

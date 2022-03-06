@@ -27,14 +27,15 @@ jobs:
 
     - name: Build
       run: | 
+        ./script/build.sh --cleanup
         ./script/build.sh --release
-        ./script/build.sh --release --html
+        ./script/build.sh --release --html --backup --tag
 
     - name: Test
       run: |
         export TERM=linux
         export TERMINFO=/etc/terminfo
-        ./script/test.py --valgrind
+        ./script/test.py --build release --valgrind
 
     - name: Upload artifact
       uses: actions/upload-artifact@v2.3.1
