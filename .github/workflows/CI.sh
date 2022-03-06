@@ -29,7 +29,7 @@ printAbort()
 installDependencies()
 {
     shCommand "sudo apt-get install -y llvm-10 clang-10 libclang-10-dev \
-clang-format-10 clang-tidy-10 cmake python3 pylint black shellcheck valgrind"
+clang-format-10 clang-tidy-10 cmake python3 pylint black shellcheck global valgrind"
     shCommand "wget ${SHFMT_URL} && sudo mv ${SHFMT_FILE} shfmt \
 && sudo mv shfmt /usr/local/bin/ && sudo chmod +x /usr/local/bin/shfmt"
     shCommand "git clone ${WOBOQ_URL} && cd ./codebrowser && git reset --hard ${WOBOQ_COMMIT} \
