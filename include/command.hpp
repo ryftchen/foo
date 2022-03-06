@@ -8,7 +8,6 @@
 #define COMMAND_THREAD_NAME_LENGTH 6
 #define COMMAND_MAX_METHOD 10
 #define COMMAND_PRINT_MAX_LINE 50
-#define COMMAND_PRINT_PRECISION 5
 #define COMMAND_PERPARE_BITSET(xBit, taskX)                                                        \
     do                                                                                             \
     {                                                                                              \
