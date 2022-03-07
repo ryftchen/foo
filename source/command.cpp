@@ -7,7 +7,7 @@
 #include "../include/log.hpp"
 #include "../include/optimum.hpp"
 
-bool Command::parseArgv(const int argc, char *const argv[])
+std::atomic<bool> Command::parseArgv(const int argc, char *const argv[])
 {
     if (argc < 1)
     {
@@ -316,8 +316,8 @@ void Command::getSortResult(const std::shared_ptr<Sort<int>> sort) const
     std::vector<std::shared_ptr<std::thread>> sortThread;
     const auto sortFunctor = [&](void (Sort<int>::*methodPoint)(int *const, const uint32_t) const,
                                  const char *const threadName) {
-        const std::shared_ptr<std::thread> methodThread =
-            std::make_shared<std::thread>(methodPoint, sort, sort->randomArray.get(), sort->len);
+        const std::shared_ptr<std::thread> methodThread = std::make_shared<std::thread>(
+            methodPoint, sort, sort->getRandomArray().get(), sort->getLength());
         pthread_setname_np(methodThread->native_handle(), threadName);
         sortThread.emplace_back(methodThread);
     };
