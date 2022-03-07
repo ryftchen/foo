@@ -1,6 +1,7 @@
 #pragma once
 #include <iostream>
 #include <memory>
+#include <mutex>
 
 #define SORT_ARRAY_RANGE_1 -50
 #define SORT_ARRAY_RANGE_2 150
@@ -27,38 +28,41 @@ template <class T>
 class Sort
 {
 public:
-    Sort(const uint32_t len, const T left, const T right);
+    Sort(const uint32_t length, const T left, const T right);
     virtual ~Sort();
     Sort<T> &operator=(const Sort &rhs);
     Sort(const Sort &sort);
-    void bubbleSort(T *const array, const uint32_t len) const;
-    void selectionSort(T *const array, const uint32_t len) const;
-    void insertionSort(T *const array, const uint32_t len) const;
-    void shellSort(T *const array, const uint32_t len) const;
-    void mergeSort(T *const array, const uint32_t len) const;
-    void quickSort(T *const array, const uint32_t len) const;
-    void heapSort(T *const array, const uint32_t len) const;
-    void countingSort(T *const array, const uint32_t len) const;
-    void bucketSort(T *const array, const uint32_t len) const;
-    void radixSort(T *const array, const uint32_t len) const;
-    const uint32_t len;
-    const T left;
-    const T right;
-    const std::unique_ptr<T[]> randomArray;
+    void bubbleSort(T *const array, const uint32_t length) const;
+    void selectionSort(T *const array, const uint32_t length) const;
+    void insertionSort(T *const array, const uint32_t length) const;
+    void shellSort(T *const array, const uint32_t length) const;
+    void mergeSort(T *const array, const uint32_t length) const;
+    void quickSort(T *const array, const uint32_t length) const;
+    void heapSort(T *const array, const uint32_t length) const;
+    void countingSort(T *const array, const uint32_t length) const;
+    void bucketSort(T *const array, const uint32_t length) const;
+    void radixSort(T *const array, const uint32_t length) const;
+    const std::unique_ptr<T[]> &getRandomArray() const;
+    uint32_t getLength() const;
     template <typename U>
     requires std::is_integral<U>::value void setRandomArray(
         T array[],
-        const uint32_t len,
+        const uint32_t length,
         const T left,
         const T right) const;
     template <typename U>
     requires std::is_floating_point<U>::value void setRandomArray(
         T array[],
-        const uint32_t len,
+        const uint32_t length,
         const T left,
         const T right) const;
 
 private:
+    mutable std::mutex sortMutex;
+    const std::unique_ptr<T[]> randomArray;
+    const uint32_t length;
+    const T left;
+    const T right;
     void deepCopyFromSort(const Sort &sort) const;
     static void mergeSortRecursive(T *const sortArray, const uint32_t begin, const uint32_t end);
     static void quickSortRecursive(T *const sortArray, const uint32_t begin, const uint32_t end);
@@ -67,7 +71,7 @@ private:
 protected:
     char *formatArray(
         const T *const array,
-        const uint32_t len,
+        const uint32_t length,
         char *const buffer,
         const uint32_t bufferSize) const;
 };
