@@ -1,4 +1,5 @@
 #pragma once
+#include <atomic>
 #include <bitset>
 #include <mutex>
 #include <thread>
@@ -66,7 +67,7 @@ public:
         sortButtom
     };
     virtual ~Command(){};
-    bool parseArgv(const int argc, char *const argv[]);
+    std::atomic<bool> parseArgv(const int argc, char *const argv[]);
     void doTask();
 
 private:
@@ -76,7 +77,7 @@ private:
         std::bitset<OptimumBit::optimumButtom> optimumBit;
         std::bitset<IntegralBit::integralButtom> integralBit;
         std::bitset<SortBit::sortButtom> sortBit;
-        volatile bool taskDone = false;
+        std::atomic<bool> taskDone = false;
 
         TaskPlan() = default;
     } run;
