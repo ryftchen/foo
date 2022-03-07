@@ -141,7 +141,7 @@ template <class T>
 char *Sort<T>::formatArray(
     const T *const array,
     const uint32_t length,
-    char *const buffer,
+    char *const __restrict buffer,
     const uint32_t bufferSize) const
 {
     uint32_t align = 0;
