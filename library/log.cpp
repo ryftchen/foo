@@ -9,7 +9,6 @@
 #include "../include/exception.hpp"
 
 Log logger;
-// Log logger(LOG_PATH, Log::Type::typeAdd, Log::Level::levelError, Log::Target::targetAll);
 
 Log::Log()
 {
@@ -131,6 +130,11 @@ Log::~Log()
     {
         ofs.close();
     }
+}
+
+const std::ofstream &Log::getOfs() const
+{
+    return ofs;
 }
 
 void printFile(const char *const pathname, const bool reverse, const uint32_t maxLine)
