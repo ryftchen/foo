@@ -61,12 +61,13 @@ public:
         const uint32_t codeLine,
         const char *const format,
         const Args... args);
-    std::ofstream ofs;
+    const std::ofstream &getOfs() const;
     char pathname[LOG_PATHNAME_LENGTH + 1];
 
 private:
     Level minLevel;
     Target realTarget;
+    std::ofstream ofs;
     friend std::string getCurrentSystemTime(char *const date);
 };
 

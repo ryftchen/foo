@@ -416,7 +416,8 @@ void Command::printLogContext()
 {
     try
     {
-        const int fd = static_cast<__gnu_cxx::stdio_filebuf<char> *const>(logger.ofs.rdbuf())->fd();
+        const int fd =
+            static_cast<__gnu_cxx::stdio_filebuf<char> *const>(logger.getOfs().rdbuf())->fd();
         if (flock(fd, LOCK_UN))
         {
             throw UnlockWriterLockError(basename(LOG_PATH));
