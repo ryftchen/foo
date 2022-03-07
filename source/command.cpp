@@ -90,11 +90,11 @@ void Command::setBitFromTaskPlan(
 }
 
 // Optimum
-void Command::runOptimum()
+void Command::runOptimum() const
 {
+    std::unique_lock<std::mutex> lock(commandMutex);
     if (run.optimumBit.any())
     {
-        std::unique_lock<std::mutex> lock(commandMutex);
         std::cout << OPTIMUM_RUN_BEGIN << std::endl;
 
         std::cout << EXPRESS_FUN_1_OPTIMUM << std::endl;
@@ -193,11 +193,11 @@ void Command::setOptimumBit(char *const argv[])
 }
 
 // Integral
-void Command::runIntegral()
+void Command::runIntegral() const
 {
+    std::unique_lock<std::mutex> lock(commandMutex);
     if (run.integralBit.any())
     {
-        std::unique_lock<std::mutex> lock(commandMutex);
         std::cout << INTEGRAL_RUN_BEGIN << std::endl;
 
         std::cout << EXPRESS_FUN_1_INTEGRAL << std::endl;
@@ -296,11 +296,11 @@ void Command::setIntegralBit(char *const argv[])
 }
 
 // Sort
-void Command::runSort()
+void Command::runSort() const
 {
+    std::unique_lock<std::mutex> lock(commandMutex);
     if (run.sortBit.any())
     {
-        std::unique_lock<std::mutex> lock(commandMutex);
         constexpr const int leftEndpoint = SORT_ARRAY_RANGE_1;
         constexpr const int rightEndpoint = SORT_ARRAY_RANGE_2;
         constexpr const uint32_t length = SORT_ARRAY_LENGTH;
