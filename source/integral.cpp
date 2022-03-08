@@ -214,7 +214,6 @@ double MonteCarlo::sampleFromNormalDistribution(
             double u2 = randomU(seed);
             double mag = sigma * sqrt(-2.0 * log(u1));
             x = mag * sin(2.0 * M_PI * u2) + mu; // Box-Muller Transform
-            // x = mag * cos(2.0 * M_PI * u2) + mu;
         } while ((x < lower) || (x > upper));
         const double probabilityDensityFunction = (1.0 / sqrt(2.0 * M_PI * sigma * sigma)) *
             pow(M_E, (-(x - mu) * (x - mu)) / (2.0 * sigma * sigma));
