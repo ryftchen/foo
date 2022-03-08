@@ -1,9 +1,10 @@
+---
 name: CI
 
+# yamllint disable-line rule:truthy
 on:
   push:
-    branches: master
-
+    branches: [master]
   workflow_dispatch:
 
 jobs:
@@ -11,35 +12,36 @@ jobs:
     runs-on: ubuntu-20.04
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v2.4.0
+      - name: Checkout
+        uses: actions/checkout@v2.4.0
 
-    - name: Install dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get purge -y llvm-* clang-* libllvm-* libclang-*
-        ./.github/workflows/CI.sh
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get purge -y llvm-* clang-* libllvm-* libclang-*
+          ./.github/workflows/CI.sh
 
-    - name: Check code
-      run: |
-        ./script/build.sh --release --format --analysis
-        git status
+      - name: Check code
+        run: |
+          ./script/build.sh --release --format --analysis
+          git status
 
-    - name: Build
-      run: | 
-        ./script/build.sh --cleanup
-        ./script/build.sh --release
-        ./script/build.sh --release --html --backup --tag
+      - name: Build
+        run: |
+          ./script/build.sh --cleanup
+          ./script/build.sh --release
+          ./script/build.sh --release --html --backup --tag
 
-    - name: Test
-      run: |
-        export TERM=linux
-        export TERMINFO=/etc/terminfo
-        ./script/test.py --build release --valgrind
+      - name: Test
+        run: |
+          export TERM=linux
+          export TERMINFO=/etc/terminfo
+          ./script/test.py --build release --valgrind
 
-    - name: Upload artifact
-      uses: actions/upload-artifact@v2.3.1
-      with:
-        name: foo_artifact
-        path: ./temp/foo_html_*.tar.bz2
-        retention-days: 3
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2.3.1
+        with:
+          name: foo_artifact
+          path: ./temp/foo_html_*.tar.bz2
+          retention-days: 3
+...
