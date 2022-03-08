@@ -19,7 +19,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get purge -y llvm-* clang-* libllvm-* libclang-*
-          ./.github/workflows/CI.sh
+          ./.github/workflows/ci.sh
 
       - name: Check code
         run: |
