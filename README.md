@@ -1,2 +1,2 @@
 # foo
-![CI](https://github.com/ryftchen/foo/actions/workflows/CI.yml/badge.svg)
+![CI](https://github.com/ryftchen/foo/actions/workflows/ci.yml/badge.svg)
