@@ -22,7 +22,7 @@ shCommand()
 
 printAbort()
 {
-    echo "Shell script CI.sh: $*"
+    echo "Shell script ci.sh: $*"
     exit 1
 }
 
