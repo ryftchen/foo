@@ -70,7 +70,7 @@ private:
 
 protected:
     char *formatArray(
-        const T *const array,
+        const T *const __restrict array,
         const uint32_t length,
         char *const __restrict buffer,
         const uint32_t bufferSize) const;

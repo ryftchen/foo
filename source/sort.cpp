@@ -139,7 +139,7 @@ requires std::is_floating_point<U>::value void Sort<T>::setRandomArray(
 
 template <class T>
 char *Sort<T>::formatArray(
-    const T *const array,
+    const T *const __restrict array,
     const uint32_t length,
     char *const __restrict buffer,
     const uint32_t bufferSize) const
@@ -147,7 +147,7 @@ char *Sort<T>::formatArray(
     uint32_t align = 0;
     for (uint32_t i = 0; i < length; ++i)
     {
-        align = std::max(static_cast<uint32_t>(std::to_string(array[i]).length()), align);
+        align = std::max(static_cast<uint32_t>(std::to_string(*(array + i)).length()), align);
     }
 
     const char *const format =
@@ -156,7 +156,7 @@ char *Sort<T>::formatArray(
     for (uint32_t i = 0; i < length; ++i)
     {
         completeSize += std::snprintf(
-            buffer + completeSize, bufferSize - completeSize, format, align + 1, array[i]);
+            buffer + completeSize, bufferSize - completeSize, format, align + 1, *(array + i));
         if ((0 == (i + 1) % SORT_PRINT_MAX_COLUMN) && (length != (i + 1)))
         {
             completeSize += std::snprintf(buffer + completeSize, bufferSize - completeSize, "\n");
