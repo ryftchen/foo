@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-GITHUB_PATH="/home/runner/work"
 PROJECT_URL="https://github.com/ryftchen/foo.git"
 PROJECT_FOLDER="foo"
 BROWSER_FOLDER="browser"
@@ -39,6 +38,9 @@ clang-format-10 clang-tidy-10 cmake python3 pylint black shellcheck global valgr
 
 downloadArtifact()
 {
+    if [ ! -d ~/"${BROWSER_FOLDER}" ]; then
+         printAbort "Please create the ${BROWSER_FOLDER} folder in ~/ folder."
+    fi
     if [ ! -f ~/"${NETRC_FILE}" ]; then
         printAbort "There is no ${NETRC_FILE} file in ~/ folder."
     fi
@@ -76,16 +78,15 @@ downloadArtifact()
 main()
 {
     cd "$(dirname "$0")" || exit 1
-    localEnv=$(git rev-parse --show-toplevel)
-    cd "${localEnv}" || exit 1
-    ciEnv="${GITHUB_PATH}/${PROJECT_FOLDER}/${PROJECT_FOLDER}"
+    localDir=$(git rev-parse --show-toplevel)
+    cd "${localDir}" || exit 1
 
-    if [ "${localEnv}" = "${ciEnv}" ]; then
-        echo "$(date "+%b %d %T") INSTALL DEPENDENCIES"
-        installDependencies
-    elif [ -d ~/"${BROWSER_FOLDER}" ]; then
-        echo "$(date "+%b %d %T") DOWNLOAD ARTIFACT"
-        downloadArtifact
+    if [ -n "${FOO_ENV:?}" ]; then
+        if [ "${FOO_ENV}" = "GITHUB_ACTION" ]; then
+            installDependencies
+        elif [ "${FOO_ENV}" = "CODE_BROWSER" ]; then
+            downloadArtifact
+        fi
     fi
 }
 
