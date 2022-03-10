@@ -27,6 +27,8 @@ printAbort()
 
 installDependencies()
 {
+    echo "$(date "+%b %d %T") INSTALL DEPENDENCIES BEGIN"
+
     shCommand "sudo apt-get install -y llvm-10 clang-10 libclang-10-dev \
 clang-format-10 clang-tidy-10 cmake python3 pylint black shellcheck global valgrind"
     shCommand "wget ${SHFMT_URL} && sudo mv ${SHFMT_FILE} shfmt \
@@ -34,12 +36,16 @@ clang-format-10 clang-tidy-10 cmake python3 pylint black shellcheck global valgr
     shCommand "git clone ${WOBOQ_URL} && cd ./codebrowser && git reset --hard ${WOBOQ_COMMIT} \
 && cmake . -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=clang++-10 && make -j4 \
 && sudo make install && cd .. && rm -rf ./codebrowser"
+
+    echo "$(date "+%b %d %T") INSTALL DEPENDENCIES END"
 }
 
 downloadArtifact()
 {
+    echo "$(date "+%b %d %T") DOWNLOAD ARTIFACT BEGIN"
+
     if [ ! -d ~/"${BROWSER_FOLDER}" ]; then
-         printAbort "Please create the ${BROWSER_FOLDER} folder in ~/ folder."
+        printAbort "Please create ${BROWSER_FOLDER} folder in ~/ folder."
     fi
     if [ ! -f ~/"${NETRC_FILE}" ]; then
         printAbort "There is no ${NETRC_FILE} file in ~/ folder."
@@ -47,10 +53,14 @@ downloadArtifact()
     localCommitId=$(git rev-parse HEAD)
     remoteCommitId=$(git ls-remote "${PROJECT_URL}" refs/heads/master | cut -f 1)
     htmlFolder="${PROJECT_FOLDER}_html"
-    if [ "${localCommitId}" != "${remoteCommitId}" ]; then
-        shCommand "git pull origin master"
-    elif [ -d ~/"${BROWSER_FOLDER}"/"${htmlFolder}" ]; then
-        printAbort "No change in ${PROJECT_FOLDER} project."
+    if [ -n "${remoteCommitId}" ]; then
+        if [ "${localCommitId}" != "${remoteCommitId}" ]; then
+            shCommand "git pull origin master"
+        elif [ -d ~/"${BROWSER_FOLDER}"/"${htmlFolder}" ]; then
+            printAbort "No change in ${PROJECT_FOLDER} project."
+        fi
+    else
+        printAbort "Failed to get the latest commit id."
     fi
     files=$(find ~/"${BROWSER_FOLDER}" -name "*" 2>/dev/null | sed 1d | wc -l)
     if [ "${files}" != "0" ]; then
@@ -73,6 +83,8 @@ downloadArtifact()
 >/dev/null"
         shCommand "rm -rf ~/${BROWSER_FOLDER}/*.zip ~/${BROWSER_FOLDER}/*.tar.bz2"
     fi
+
+    echo "$(date "+%b %d %T") DOWNLOAD ARTIFACT END"
 }
 
 main()
