@@ -311,7 +311,7 @@ void Command::runSort() const
         getSortResult(sort);
     }
 }
-void Command::getSortResult(const std::shared_ptr<Sort<int>> sort) const
+void Command::getSortResult(const std::shared_ptr<Sort<int>> &sort) const
 {
     std::vector<std::shared_ptr<std::thread>> sortThread;
     const auto sortFunctor = [&](void (Sort<int>::*methodPoint)(int *const, const uint32_t) const,
