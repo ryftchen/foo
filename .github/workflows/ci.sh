@@ -62,10 +62,6 @@ downloadArtifact()
     else
         printAbort "Failed to get the latest commit id."
     fi
-    files=$(find ~/"${BROWSER_FOLDER}" -name "*" 2>/dev/null | sed 1d | wc -l)
-    if [ "${files}" != "0" ]; then
-        shCommand "rm -rf ~/${BROWSER_FOLDER}/*"
-    fi
 
     actionUrl=$(curl -s "${ARTIFACT_URL}" \
         | jq '[.artifacts[] | {name : .name, archive_download_url : .archive_download_url}]' \
@@ -76,15 +72,18 @@ downloadArtifact()
         zip -T ~/"${BROWSER_FOLDER}"/"${ARTIFACT_FILE}".zip | grep 'zip error' >/dev/null 2>&1
     then
         shCommand "rm -rf ~/${BROWSER_FOLDER}/${ARTIFACT_FILE}.zip"
+        shCommand "git reset --hard ${localCommitId}"
         printAbort "The zip file ${ARTIFACT_FILE}.zip in ~/${BROWSER_FOLDER} folder is corrupted."
     else
+        files=$(find ~/"${BROWSER_FOLDER}" -name "*" 2>/dev/null | sed 1d | wc -l)
+        if [ "${files}" != "0" ]; then
+            shCommand "rm -rf ~/${BROWSER_FOLDER}/*"
+        fi
         shCommand "unzip ~/${BROWSER_FOLDER}/${ARTIFACT_FILE}.zip -d ~/${BROWSER_FOLDER}"
         shCommand "tar -jxvf ~/${BROWSER_FOLDER}/${htmlFolder}_*.tar.bz2 -C ~/${BROWSER_FOLDER} \
 >/dev/null"
         shCommand "rm -rf ~/${BROWSER_FOLDER}/*.zip ~/${BROWSER_FOLDER}/*.tar.bz2"
     fi
-
-    echo "$(date "+%b %d %T") DOWNLOAD ARTIFACT END"
 }
 
 main()
