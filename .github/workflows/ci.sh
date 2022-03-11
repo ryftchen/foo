@@ -27,7 +27,8 @@ printAbort()
 
 installDependencies()
 {
-    echo "$(date "+%b %d %T") INSTALL DEPENDENCIES BEGIN"
+    echo
+    echo "$(date "+%b %d %T") TRIGGER INSTALL DEPENDENCIES"
 
     shCommand "sudo apt-get install -y llvm-10 clang-10 libclang-10-dev \
 clang-format-10 clang-tidy-10 cmake python3 pylint black shellcheck global valgrind"
@@ -36,13 +37,12 @@ clang-format-10 clang-tidy-10 cmake python3 pylint black shellcheck global valgr
     shCommand "git clone ${WOBOQ_URL} && cd ./codebrowser && git reset --hard ${WOBOQ_COMMIT} \
 && cmake . -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=clang++-10 && make -j4 \
 && sudo make install && cd .. && rm -rf ./codebrowser"
-
-    echo "$(date "+%b %d %T") INSTALL DEPENDENCIES END"
 }
 
 downloadArtifact()
 {
-    echo "$(date "+%b %d %T") DOWNLOAD ARTIFACT BEGIN"
+    echo
+    echo "$(date "+%b %d %T") TRIGGER DOWNLOAD ARTIFACT"
 
     if [ ! -d ~/"${BROWSER_FOLDER}" ]; then
         printAbort "Please create ${BROWSER_FOLDER} folder in ~/ folder."
@@ -99,6 +99,8 @@ main()
         elif [ "${FOO_ENV}" = "CODE_BROWSER" ]; then
             downloadArtifact
         fi
+    else
+        printAbort "Please set environment variable FOO_ENV."
     fi
 }
 
