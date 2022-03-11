@@ -108,7 +108,7 @@ private:
         const double epsilon) const;
     void setIntegralBit(char *const argv[]);
     void runSort() const;
-    void getSortResult(const std::shared_ptr<Sort<int>> sort) const;
+    void getSortResult(const std::shared_ptr<Sort<int>> &sort) const;
     void setSortBit(char *const argv[]);
     friend void printFile(const char *const pathname, const bool reverse, const uint32_t maxLine);
 
