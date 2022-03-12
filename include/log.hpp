@@ -51,9 +51,13 @@ public:
         targetTerminal,
         targetAll
     };
-    Log();
-    Log(const std::string &logFile, const Type type, const Level level, const Target target);
+    Log() noexcept;
+    Log(const std::string &logFile,
+        const Type type,
+        const Level level,
+        const Target target) noexcept;
     virtual ~Log();
+    const std::ofstream &getOfs() const;
     template <typename... Args>
     void outputLog(
         const uint32_t level,
@@ -61,13 +65,12 @@ public:
         const uint32_t codeLine,
         const char *const format,
         const Args... args);
-    const std::ofstream &getOfs() const;
-    char pathname[LOG_PATHNAME_LENGTH + 1];
 
 private:
     Level minLevel;
     Target realTarget;
     std::ofstream ofs;
+    char pathname[LOG_PATHNAME_LENGTH + 1];
     friend std::string getCurrentSystemTime(char *const date);
 };
 
