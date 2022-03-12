@@ -10,7 +10,7 @@
 
 Log logger;
 
-Log::Log()
+Log::Log() noexcept
 {
     minLevel = Level::levelDebug;
     realTarget = Target::targetAll;
@@ -55,7 +55,11 @@ Log::Log()
     }
 }
 
-Log::Log(const std::string &logFile, const Type type, const Level level, const Target target)
+Log::Log(
+    const std::string &logFile,
+    const Type type,
+    const Level level,
+    const Target target) noexcept
 {
     minLevel = level;
     realTarget = target;
