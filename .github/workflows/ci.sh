@@ -75,10 +75,7 @@ downloadArtifact()
         shCommand "git reset --hard ${localCommitId}"
         printAbort "The zip file ${ARTIFACT_FILE}.zip in ~/${BROWSER_FOLDER} folder is corrupted."
     else
-        files=$(find ~/"${BROWSER_FOLDER}" -name "*" 2>/dev/null | sed 1d | wc -l)
-        if [ "${files}" != "0" ]; then
-            shCommand "rm -rf ~/${BROWSER_FOLDER}/*"
-        fi
+        shCommand "rm -rf ~/${BROWSER_FOLDER}/${htmlFolder}"
         shCommand "unzip ~/${BROWSER_FOLDER}/${ARTIFACT_FILE}.zip -d ~/${BROWSER_FOLDER}"
         shCommand "tar -jxvf ~/${BROWSER_FOLDER}/${htmlFolder}_*.tar.bz2 -C ~/${BROWSER_FOLDER} \
 >/dev/null"
