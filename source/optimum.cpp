@@ -6,8 +6,6 @@
 #include <map>
 #include "../include/time.hpp"
 
-using namespace Learning;
-using namespace Cooling;
 using Species::Chromosome;
 using Species::Population;
 using Swarm::Individual;
@@ -160,8 +158,8 @@ std::optional<std::tuple<ValueY, ValueX>> Gradient::operator()(
     double x = 0.0, max = 0.0;
     std::uniform_real_distribution<double> randomX(left, right);
     std::vector<double> climbing;
-    climbing.reserve(loopTime);
-    while (climbing.size() < loopTime)
+    climbing.reserve(Learning::loopTime);
+    while (climbing.size() < Learning::loopTime)
     {
         x = randomX(seed);
         if (climbing.end() == find(climbing.begin(), climbing.end(), x))
@@ -176,14 +174,14 @@ std::optional<std::tuple<ValueY, ValueX>> Gradient::operator()(
     {
         x = climber;
         uint32_t i = 0;
-        double learningRate = initLearningRate;
+        double learningRate = Learning::initLearningRate;
         double gradient = calculateFirstDerivative(x, eps);
         double dx = learningRate * gradient;
         while ((fabs(dx) > eps) && ((x + dx) >= left) && ((x + dx) <= right))
         {
             x += dx;
             ++i;
-            learningRate = initLearningRate * 1.0 / (1.0 + decay * i);
+            learningRate = Learning::initLearningRate * 1.0 / (1.0 + Learning::decay * i);
             gradient = calculateFirstDerivative(x, eps);
             dx = learningRate * gradient;
         }
@@ -212,19 +210,19 @@ std::optional<std::tuple<ValueY, ValueX>> Annealing::operator()(
     const double eps)
 {
     TIME_BEGIN;
-    double temperature = initT;
+    double temperature = Cooling::initT;
     GET_TIME_SEED(seed);
     std::uniform_real_distribution<double> randomX(left, right);
     std::uniform_real_distribution<double> random(
         -OPTIMUM_ANNEALING_PERTURBATION, OPTIMUM_ANNEALING_PERTURBATION);
     double x = randomX(seed);
     double y = fun(x);
-    while (temperature > minT)
+    while (temperature > Cooling::minT)
     {
         double xBest = x;
         double yBest = y;
         bool found = false;
-        for (uint32_t i = 0; i < markovChain; ++i)
+        for (uint32_t i = 0; i < Cooling::markovChain; ++i)
         {
             double xNew = 0.0, yNew = 0.0;
             do
@@ -254,7 +252,7 @@ std::optional<std::tuple<ValueY, ValueX>> Annealing::operator()(
             x = xBest;
             y = yBest;
         }
-        temperature *= coolingRate;
+        temperature *= Cooling::coolingRate;
     }
 
     TIME_END;
