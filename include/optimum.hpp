@@ -9,11 +9,14 @@
 #define OPTIMUM_RUN_BEGIN "\r\n---------- BEGIN OPTIMUM  ----------"
 #define OPTIMUM_RUN_END "\r\n----------  END OPTIMUM   ----------"
 
+using ValueX = double;
+using ValueY = double;
+
 class Optimum
 {
 public:
     virtual ~Optimum(){};
-    virtual std::optional<std::tuple<double, double>> operator()(
+    virtual std::optional<std::tuple<ValueY, ValueX>> operator()(
         const double left,
         const double right,
         const double eps) = 0;
@@ -28,7 +31,7 @@ class Fibonacci : public Optimum
 {
 public:
     explicit Fibonacci(const Expression &express) : fun(express){};
-    std::optional<std::tuple<double, double>> operator()(
+    std::optional<std::tuple<ValueY, ValueX>> operator()(
         const double left,
         const double right,
         const double eps) override;
@@ -46,15 +49,15 @@ private:
 #define OPTIMUM_GRADIENT "*Gradient  method: Y(max)=%+.5f X=%+.5f  ==>Run time: %8.5fms\n"
 namespace Learning
 {
-static const double learningRateBegin = 0.01;
+static const double initLearningRate = 0.01;
 static const double decay = 0.001;
-static const uint32_t repeatTime = 100;
+static const uint32_t loopTime = 100;
 } // namespace Learning
 class Gradient : public Optimum
 {
 public:
     explicit Gradient(const Expression &express) : fun(express){};
-    std::optional<std::tuple<double, double>> operator()(
+    std::optional<std::tuple<ValueY, ValueX>> operator()(
         const double left,
         const double right,
         const double eps) override;
@@ -71,14 +74,14 @@ namespace Cooling
 {
 static const double initT = 100.0;
 static const double minT = 0.01;
-static const double rate = 0.9;
+static const double coolingRate = 0.9;
 static const uint32_t markovChain = 100;
 } // namespace Cooling
 class Annealing : public Optimum
 {
 public:
     explicit Annealing(const Expression &express) : fun(express){};
-    std::optional<std::tuple<double, double>> operator()(
+    std::optional<std::tuple<ValueY, ValueX>> operator()(
         const double left,
         const double right,
         const double eps) override;
@@ -142,7 +145,7 @@ class Particle : public Optimum
 {
 public:
     explicit Particle(const Expression &express) : fun(express){};
-    std::optional<std::tuple<double, double>> operator()(
+    std::optional<std::tuple<ValueY, ValueX>> operator()(
         const double left,
         const double right,
         const double eps) override;
@@ -168,7 +171,7 @@ class Genetic : public Optimum
 {
 public:
     explicit Genetic(const Expression &express) : fun(express){};
-    std::optional<std::tuple<double, double>> operator()(
+    std::optional<std::tuple<ValueY, ValueX>> operator()(
         const double left,
         const double right,
         const double eps) override;
