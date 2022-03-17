@@ -9,7 +9,9 @@ on:
   workflow_dispatch:
     inputs:
       name:
-        description: 'Manual trigger'
+        description: 'Trigger CI'
+        default: 'Manual trigger'
+        required: false
 
 jobs:
   CI:
