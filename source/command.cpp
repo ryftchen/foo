@@ -1,11 +1,11 @@
-#include "../include/command.hpp"
+#include "command.hpp"
 #include <sys/file.h>
 #include <ext/stdio_filebuf.h>
-#include "../include/exception.hpp"
-#include "../include/hash.hpp"
-#include "../include/integral.hpp"
-#include "../include/log.hpp"
-#include "../include/optimum.hpp"
+#include "exception.hpp"
+#include "hash.hpp"
+#include "integral.hpp"
+#include "log.hpp"
+#include "optimum.hpp"
 
 std::atomic<bool> Command::parseArgv(const int argc, char *const argv[])
 {

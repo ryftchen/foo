@@ -3,8 +3,8 @@
 #include <bitset>
 #include <mutex>
 #include <thread>
-#include "./expression.hpp"
-#include "./sort.hpp"
+#include "expression.hpp"
+#include "sort.hpp"
 
 #define COMMAND_THREAD_NAME_LENGTH 6
 #define COMMAND_MAX_METHOD 10

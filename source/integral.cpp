@@ -1,8 +1,8 @@
-#include "../include/integral.hpp"
+#include "integral.hpp"
 #include <functional>
 #include <iostream>
 #include <random>
-#include "../include/time.hpp"
+#include "time.hpp"
 
 double trapezoid(const Expression &express, const double left, const double h, const uint32_t step)
 {

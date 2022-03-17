@@ -1,10 +1,10 @@
-#include "../include/optimum.hpp"
+#include "optimum.hpp"
 #include <algorithm>
 #define NDEBUG
 #include <cassert>
 #include <iostream>
 #include <map>
-#include "../include/time.hpp"
+#include "time.hpp"
 
 using Species::Chromosome;
 using Species::Population;

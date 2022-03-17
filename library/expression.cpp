@@ -1,4 +1,4 @@
-#include "../include/expression.hpp"
+#include "expression.hpp"
 
 double Function1::operator()(const double x) const
 {

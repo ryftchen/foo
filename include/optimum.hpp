@@ -3,7 +3,7 @@
 #include <random>
 #include <tuple>
 #include <vector>
-#include "./expression.hpp"
+#include "expression.hpp"
 
 #define OPTIMUM_EPSILON 1e-5
 #define OPTIMUM_RUN_BEGIN "\r\n---------- BEGIN OPTIMUM  ----------"

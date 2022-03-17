@@ -2,8 +2,8 @@
 #include <iostream>
 #include <libgen.h>
 #include <unistd.h>
-#include "./exception.hpp"
-#include "./log.hpp"
+#include "exception.hpp"
+#include "log.hpp"
 
 static void switchToProjectPath() __attribute__((constructor));
 

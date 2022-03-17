@@ -1,4 +1,4 @@
-#include "../include/sort.hpp"
+#include "sort.hpp"
 #include <algorithm>
 #define NODEBUG
 #include <cassert>
@@ -6,7 +6,7 @@
 #include <queue>
 #include <random>
 #include <vector>
-#include "../include/time.hpp"
+#include "time.hpp"
 
 template class Sort<int>;
 template Sort<int>::Sort(const uint32_t, const int, const int);
