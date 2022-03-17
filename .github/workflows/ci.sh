@@ -7,7 +7,6 @@ NETRC_FILE=".netrc"
 ARTIFACT_URL="https://api.github.com/repos/ryftchen/foo/actions/artifacts?per_page=1"
 ARTIFACT_FILE="foo_artifact"
 SHFMT_URL="https://github.com/mvdan/sh/releases/download/v3.4.2/shfmt_v3.4.2_linux_amd64"
-SHFMT_FILE="shfmt_v3.4.2_linux_amd64"
 WOBOQ_URL="https://github.com/KDAB/codebrowser.git"
 WOBOQ_COMMIT="73fce32fc696b3f6eb2a678397328d9ce1ad4cf6"
 
@@ -32,8 +31,8 @@ installDependencies()
 
     shCommand "sudo apt-get install -y llvm-10 clang-10 libclang-10-dev \
 clang-format-10 clang-tidy-10 cmake python3 pylint black shellcheck global valgrind"
-    shCommand "wget ${SHFMT_URL} && sudo mv ${SHFMT_FILE} shfmt \
-&& sudo mv shfmt /usr/local/bin/ && sudo chmod +x /usr/local/bin/shfmt"
+    shCommand "sudo curl -L ${SHFMT_URL} >/usr/local/bin/shfmt \
+&& sudo chmod +x /usr/local/bin/shfmt"
     shCommand "git clone ${WOBOQ_URL} && cd ./codebrowser && git reset --hard ${WOBOQ_COMMIT} \
 && cmake . -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=clang++-10 && make -j4 \
 && sudo make install && cd .. && rm -rf ./codebrowser"
