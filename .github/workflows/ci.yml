@@ -5,6 +5,7 @@ name: CI
 on:
   push:
     branches: [master]
+
   workflow_dispatch:
 
 jobs:
@@ -18,7 +19,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get purge -y llvm-* clang-* libllvm-* libclang-*
+          sudo apt-get remove -y llvm-* clang-* libllvm-* libclang-*
           export FOO_ENV=GITHUB_ACTION
           ./.github/workflows/ci.sh
 
@@ -44,5 +45,5 @@ jobs:
         with:
           name: foo_artifact
           path: ./temp/foo_html_*.tar.bz2
-          retention-days: 3
+          retention-days: 7
 ...
