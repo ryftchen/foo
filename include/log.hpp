@@ -5,7 +5,7 @@
 #include <cstring>
 #include <fstream>
 #include <iostream>
-#include "./time.hpp"
+#include "time.hpp"
 
 extern class Log logger;
 void printFile(

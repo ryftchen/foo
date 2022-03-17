@@ -1,6 +1,6 @@
 #pragma once
 #include <bits/stdint-uintn.h>
-#include "./expression.hpp"
+#include "expression.hpp"
 
 #define INTEGRAL_EPSILON 1e-5
 #define INTEGRAL_RUN_BEGIN "\r\n---------- BEGIN INTEGRAL ----------"

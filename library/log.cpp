@@ -1,4 +1,4 @@
-#include "../include/log.hpp"
+#include "log.hpp"
 #include <sys/file.h>
 #include <sys/stat.h>
 #include <cstdarg>
@@ -6,7 +6,7 @@
 #include <list>
 #include <unistd.h>
 #include <vector>
-#include "../include/exception.hpp"
+#include "exception.hpp"
 
 Log logger;
 

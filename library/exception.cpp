@@ -1,4 +1,4 @@
-#include "../include/exception.hpp"
+#include "exception.hpp"
 
 const char *RunCommandError::what() const noexcept
 {

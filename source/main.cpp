@@ -1,5 +1,5 @@
-#include "../include/main.hpp"
-#include "../include/command.hpp"
+#include "main.hpp"
+#include "command.hpp"
 
 int main(int argc, char *argv[])
 {

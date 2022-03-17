@@ -1,4 +1,4 @@
-#include "../include/hash.hpp"
+#include "hash.hpp"
 
 // BKDR Hash
 uint32_t bkdrHash(const char *str)
