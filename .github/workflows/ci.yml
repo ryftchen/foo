@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
     inputs:
       name:
-        description: 'Trigger CI'
+        description: 'CI'
         default: 'Manual trigger'
         required: false
 
@@ -26,7 +26,7 @@ jobs:
           sudo apt-get update
           sudo apt-get remove -y llvm-* clang-* libllvm-* libclang-*
           export FOO_ENV=GITHUB_ACTION
-          ./.github/workflows/ci.sh
+          ./.github/workflows/install.sh
 
       - name: Check code
         run: |
