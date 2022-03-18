@@ -14,7 +14,7 @@ shCommand()
 
 printAbort()
 {
-    echo "Shell script ci.sh: $*"
+    echo "Shell script install.sh: $*"
     exit 1
 }
 
