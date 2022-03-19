@@ -5,12 +5,17 @@
 #include <vector>
 #include "expression.hpp"
 
+using ValueX = double;
+using ValueY = double;
+
 #define OPTIMUM_EPSILON 1e-5
 #define OPTIMUM_RUN_BEGIN "\r\n---------- BEGIN OPTIMUM  ----------"
 #define OPTIMUM_RUN_END "\r\n----------  END OPTIMUM   ----------"
-
-using ValueX = double;
-using ValueY = double;
+#define OPTIMUM_FIBONACCI "*Fibonacci method: Y(max)=%+.5f X=%+.5f  ==>Run time: %8.5fms\n"
+#define OPTIMUM_GRADIENT "*Gradient  method: Y(max)=%+.5f X=%+.5f  ==>Run time: %8.5fms\n"
+#define OPTIMUM_ANNEALING "*Annealing method: Y(max)=%+.5f X=%+.5f  ==>Run time: %8.5fms\n"
+#define OPTIMUM_PARTICLE "*Particle  method: Y(max)=%+.5f X=%+.5f  ==>Run time: %8.5fms\n"
+#define OPTIMUM_GENETIC "*Genetic   method: Y(max)=%+.5f X=%+.5f  ==>Run time: %8.5fms\n"
 
 class Optimum
 {
@@ -23,10 +28,9 @@ public:
 };
 
 // Fibonacci method
-#define OPTIMUM_FIBONACCI "*Fibonacci method: Y(max)=%+.5f X=%+.5f  ==>Run time: %8.5fms\n"
-#define FIBONACCI_X_1 (leftVal + fibonacci[n - 2] / fibonacci[n] * (rightVal - leftVal))
-#define FIBONACCI_X_2 (leftVal + fibonacci[n - 1] / fibonacci[n] * (rightVal - leftVal))
-#define FIBONACCI_MAX_UNCHANGED 3
+#define OPTIMUM_FIBONACCI_X_1 (leftVal + fibonacci[n - 2] / fibonacci[n] * (rightVal - leftVal))
+#define OPTIMUM_FIBONACCI_X_2 (leftVal + fibonacci[n - 1] / fibonacci[n] * (rightVal - leftVal))
+#define OPTIMUM_FIBONACCI_MAX_UNCHANGED 3
 class Fibonacci : public Optimum
 {
 public:
@@ -46,7 +50,6 @@ private:
 };
 
 // Gradient ascent method
-#define OPTIMUM_GRADIENT "*Gradient  method: Y(max)=%+.5f X=%+.5f  ==>Run time: %8.5fms\n"
 namespace Learning
 {
 static const double initLearningRate = 0.01;
@@ -68,7 +71,6 @@ private:
 };
 
 // Simulated annealing method
-#define OPTIMUM_ANNEALING "*Annealing method: Y(max)=%+.5f X=%+.5f  ==>Run time: %8.5fms\n"
 #define OPTIMUM_ANNEALING_PERTURBATION 0.5
 namespace Cooling
 {
@@ -91,7 +93,6 @@ private:
 };
 
 // Particle swarm method
-#define OPTIMUM_PARTICLE "*Particle  method: Y(max)=%+.5f X=%+.5f  ==>Run time: %8.5fms\n"
 namespace Swarm
 {
 struct Individual
@@ -157,7 +158,6 @@ private:
 };
 
 // Genetic method
-#define OPTIMUM_GENETIC "*Genetic   method: Y(max)=%+.5f X=%+.5f  ==>Run time: %8.5fms\n"
 namespace Species
 {
 using Chromosome = std::vector<uint32_t>;

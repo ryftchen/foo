@@ -36,10 +36,11 @@ std::optional<std::tuple<ValueY, ValueX>> Fibonacci::operator()(
         {
             std::vector<std::pair<double, double>> aggregation;
             aggregation.reserve(n);
-            const double h = (right - left) / n;
+            const double stepLength = (right - left) / n;
             for (uint32_t i = 0; i < n; ++i)
             {
-                const auto result = fibonacciSearch(left + i * h, left + (i + 1) * h, eps);
+                const auto result =
+                    fibonacciSearch(left + i * stepLength, left + (i + 1) * stepLength, eps);
                 if (result.has_value())
                 {
                     aggregation.emplace_back(std::pair<double, double>(
@@ -65,7 +66,7 @@ std::optional<std::tuple<ValueY, ValueX>> Fibonacci::operator()(
                 }
             }
             n *= 2;
-        } while (cnt < FIBONACCI_MAX_UNCHANGED);
+        } while (cnt < OPTIMUM_FIBONACCI_MAX_UNCHANGED);
     }
 
     TIME_END;
@@ -86,27 +87,27 @@ std::optional<std::pair<double, double>> Fibonacci::fibonacciSearch(
         return std::nullopt;
     }
 
-    double x1 = FIBONACCI_X_1, x2 = FIBONACCI_X_2;
+    double x1 = OPTIMUM_FIBONACCI_X_1, x2 = OPTIMUM_FIBONACCI_X_2;
     while (n > 3)
     {
         if (fun(x1) < fun(x2))
         {
             leftVal = x1;
             x1 = x2;
-            x2 = FIBONACCI_X_2;
+            x2 = OPTIMUM_FIBONACCI_X_2;
         }
         else if (fun(x1) > fun(x2))
         {
             rightVal = x2;
             x2 = x1;
-            x1 = FIBONACCI_X_1;
+            x1 = OPTIMUM_FIBONACCI_X_1;
         }
         else
         {
             leftVal = x1;
             rightVal = x2;
-            x1 = FIBONACCI_X_1;
-            x2 = FIBONACCI_X_2;
+            x1 = OPTIMUM_FIBONACCI_X_1;
+            x2 = OPTIMUM_FIBONACCI_X_2;
         }
         --n;
     }

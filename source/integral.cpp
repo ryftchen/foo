@@ -4,11 +4,15 @@
 #include <random>
 #include "log.hpp"
 
-double trapezoid(const Expression &express, const double left, const double h, const uint32_t step)
+double trapezoid(
+    const Expression &express,
+    const double left,
+    const double height,
+    const uint32_t step)
 {
     double sum = 0.0;
     double x = left;
-    const double delta = h / step;
+    const double delta = height / step;
     for (uint32_t i = 0; i < step; ++i)
     {
         const double area = (express(x) + express(x + delta)) * delta / 2.0; // S=(a+b)*h/2
@@ -23,17 +27,17 @@ double Trapezoidal::operator()(double lower, double upper, const double eps) con
 {
     TIME_BEGIN;
     const int sign = Integral::getSign(lower, upper);
-    const double h = upper - lower;
+    const double height = upper - lower;
     double sum = 0.0, s1 = 0.0, s2 = 0.0;
     uint32_t n = 1;
 
     do
     {
-        sum = trapezoid(fun, lower, h, n);
+        sum = trapezoid(fun, lower, height, n);
         s1 = s2;
         s2 = sum;
         n *= 2;
-    } while ((fabs(s1 - s2) > eps) || (n < TRAPEZOIDAL_MIN_STEP));
+    } while ((fabs(s1 - s2) > eps) || (n < INTEGRAL_TRAPEZOIDAL_MIN_STEP));
     sum = s2 * sign;
 
     TIME_END;
@@ -70,12 +74,12 @@ double Simpson::simpsonIntegral(const double left, const double right, const dou
 double Simpson::compositeSimpsonOneThird(const double left, const double right, const uint32_t n)
     const
 {
-    const double h = (right - left) / n;
+    const double stepLength = (right - left) / n;
     double sum = 0.0;
     for (uint32_t i = 0; i < n; ++i)
     {
         // I≈(b-a)/6[Y0+Y2n+4(Y1+...+Y2n-1)+6(Y2+...+Y2n-2)]
-        sum += simpsonOneThird(left + i * h, left + (i + 1) * h);
+        sum += simpsonOneThird(left + i * stepLength, left + (i + 1) * stepLength);
     }
     return sum;
 }
@@ -91,9 +95,9 @@ double Romberg::operator()(double lower, double upper, const double eps) const
     const int sign = Integral::getSign(lower, upper);
     uint32_t k = 0;
     double sum = 0.0;
-    const double h = upper - lower;
+    const double height = upper - lower;
     const auto trapezoidFunctor =
-        std::bind(trapezoid, std::ref(fun), lower, h, std::placeholders::_1);
+        std::bind(trapezoid, std::ref(fun), lower, height, std::placeholders::_1);
     double t0 = trapezoidFunctor(pow(2, k));
 
     k = 1;
@@ -136,11 +140,11 @@ double Gauss::operator()(double lower, double upper, const double eps) const
     do
     {
         sum = 0.0;
-        const double h = (upper - lower) / n;
+        const double stepLength = (upper - lower) / n;
         for (uint32_t i = 0; i < n; ++i)
         {
-            const double left = lower + i * h;
-            const double right = left + h;
+            const double left = lower + i * stepLength;
+            const double right = left + stepLength;
             for (uint32_t j = 0; j < INTEGRAL_GAUSS_NODE; ++j)
             {
                 // x=1/2[(a+b)+(b-a)t]
