@@ -30,32 +30,26 @@ class Sort
 public:
     Sort(const uint32_t length, const T left, const T right);
     virtual ~Sort();
-    Sort<T> &operator=(const Sort &rhs);
-    Sort(const Sort &sort);
-    void bubbleSort(T *const array, const uint32_t length) const;
-    void selectionSort(T *const array, const uint32_t length) const;
-    void insertionSort(T *const array, const uint32_t length) const;
-    void shellSort(T *const array, const uint32_t length) const;
-    void mergeSort(T *const array, const uint32_t length) const;
-    void quickSort(T *const array, const uint32_t length) const;
-    void heapSort(T *const array, const uint32_t length) const;
-    void countingSort(T *const array, const uint32_t length) const;
-    void bucketSort(T *const array, const uint32_t length) const;
-    void radixSort(T *const array, const uint32_t length) const;
-    const std::unique_ptr<T[]> &getRandomArray() const;
+    Sort<T>& operator=(const Sort& rhs);
+    Sort(const Sort& sort);
+    void bubbleSort(T* const array, const uint32_t length) const;
+    void selectionSort(T* const array, const uint32_t length) const;
+    void insertionSort(T* const array, const uint32_t length) const;
+    void shellSort(T* const array, const uint32_t length) const;
+    void mergeSort(T* const array, const uint32_t length) const;
+    void quickSort(T* const array, const uint32_t length) const;
+    void heapSort(T* const array, const uint32_t length) const;
+    void countingSort(T* const array, const uint32_t length) const;
+    void bucketSort(T* const array, const uint32_t length) const;
+    void radixSort(T* const array, const uint32_t length) const;
+    const std::unique_ptr<T[]>& getRandomArray() const;
     uint32_t getLength() const;
     template <typename U>
     requires std::is_integral<U>::value void setRandomArray(
-        T array[],
-        const uint32_t length,
-        const T left,
-        const T right) const;
+        T array[], const uint32_t length, const T left, const T right) const;
     template <typename U>
     requires std::is_floating_point<U>::value void setRandomArray(
-        T array[],
-        const uint32_t length,
-        const T left,
-        const T right) const;
+        T array[], const uint32_t length, const T left, const T right) const;
 
 private:
     mutable std::mutex sortMutex;
@@ -63,15 +57,13 @@ private:
     const uint32_t length;
     const T left;
     const T right;
-    void deepCopyFromSort(const Sort &sort) const;
-    static void mergeSortRecursive(T *const sortArray, const uint32_t begin, const uint32_t end);
-    static void quickSortRecursive(T *const sortArray, const uint32_t begin, const uint32_t end);
-    static void buildMaxHeap(T *const sortArray, const uint32_t begin, const uint32_t end);
+    void deepCopyFromSort(const Sort& sort) const;
+    static void mergeSortRecursive(T* const sortArray, const uint32_t begin, const uint32_t end);
+    static void quickSortRecursive(T* const sortArray, const uint32_t begin, const uint32_t end);
+    static void buildMaxHeap(T* const sortArray, const uint32_t begin, const uint32_t end);
 
 protected:
-    char *formatArray(
-        const T *const __restrict array,
-        const uint32_t length,
-        char *const __restrict buffer,
+    char* formatArray(
+        const T* const __restrict array, const uint32_t length, char* const __restrict buffer,
         const uint32_t bufferSize) const;
 };

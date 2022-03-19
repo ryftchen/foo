@@ -1,9 +1,9 @@
 #include "log.hpp"
-#include <sys/file.h>
-#include <sys/stat.h>
 #include <cstdarg>
 #include <ext/stdio_filebuf.h>
 #include <list>
+#include <sys/file.h>
+#include <sys/stat.h>
 #include <unistd.h>
 #include <vector>
 #include "exception.hpp"
@@ -32,23 +32,23 @@ Log::Log() noexcept
             throw OpenFileError(basename(pathname));
         }
 
-        const int fd = static_cast<__gnu_cxx::stdio_filebuf<char> *const>(ofs.rdbuf())->fd();
+        const int fd = static_cast<__gnu_cxx::stdio_filebuf<char>* const>(ofs.rdbuf())->fd();
         if (flock(fd, LOCK_EX | LOCK_NB))
         {
             throw LockWriterLockError(basename(pathname));
         }
     }
-    catch (CreateFolderError const &error)
+    catch (CreateFolderError const& error)
     {
         std::cerr << error.what() << std::endl;
         realTarget = Target::targetTerminal;
     }
-    catch (OpenFileError const &error)
+    catch (OpenFileError const& error)
     {
         std::cerr << error.what() << std::endl;
         realTarget = Target::targetTerminal;
     }
-    catch (LockWriterLockError const &error)
+    catch (LockWriterLockError const& error)
     {
         std::cerr << error.what() << std::endl;
         realTarget = Target::targetTerminal;
@@ -56,10 +56,7 @@ Log::Log() noexcept
 }
 
 Log::Log(
-    const std::string &logFile,
-    const Type type,
-    const Level level,
-    const Target target) noexcept
+    const std::string& logFile, const Type type, const Level level, const Target target) noexcept
 {
     minLevel = level;
     realTarget = target;
@@ -92,23 +89,23 @@ Log::Log(
             throw OpenFileError(basename(pathname));
         }
 
-        const int fd = static_cast<__gnu_cxx::stdio_filebuf<char> *const>(ofs.rdbuf())->fd();
+        const int fd = static_cast<__gnu_cxx::stdio_filebuf<char>* const>(ofs.rdbuf())->fd();
         if (flock(fd, LOCK_EX | LOCK_NB))
         {
             throw LockWriterLockError(basename(pathname));
         }
     }
-    catch (CreateFolderError const &error)
+    catch (CreateFolderError const& error)
     {
         std::cerr << error.what() << std::endl;
         realTarget = Target::targetTerminal;
     }
-    catch (OpenFileError const &error)
+    catch (OpenFileError const& error)
     {
         std::cerr << error.what() << std::endl;
         realTarget = Target::targetTerminal;
     }
-    catch (LockWriterLockError const &error)
+    catch (LockWriterLockError const& error)
     {
         std::cerr << error.what() << std::endl;
         realTarget = Target::targetTerminal;
@@ -119,13 +116,13 @@ Log::~Log()
 {
     try
     {
-        const int fd = static_cast<__gnu_cxx::stdio_filebuf<char> *const>(ofs.rdbuf())->fd();
+        const int fd = static_cast<__gnu_cxx::stdio_filebuf<char>* const>(ofs.rdbuf())->fd();
         if (flock(fd, LOCK_UN))
         {
             throw UnlockWriterLockError(basename(pathname));
         }
     }
-    catch (UnlockWriterLockError const &error)
+    catch (UnlockWriterLockError const& error)
     {
         std::cerr << error.what() << std::endl;
     }
@@ -136,12 +133,12 @@ Log::~Log()
     }
 }
 
-const std::ofstream &Log::getOfs() const
+const std::ofstream& Log::getOfs() const
 {
     return ofs;
 }
 
-void printFile(const char *const pathname, const bool reverse, const uint32_t maxLine)
+void printFile(const char* const pathname, const bool reverse, const uint32_t maxLine)
 {
     std::ifstream file;
     try
@@ -152,7 +149,7 @@ void printFile(const char *const pathname, const bool reverse, const uint32_t ma
             throw OpenFileError(basename(pathname));
         }
 
-        const int fd = static_cast<__gnu_cxx::stdio_filebuf<char> *const>(file.rdbuf())->fd();
+        const int fd = static_cast<__gnu_cxx::stdio_filebuf<char>* const>(file.rdbuf())->fd();
         if (flock(fd, LOCK_SH | LOCK_NB))
         {
             throw LockReaderLockError(basename(pathname));
@@ -174,7 +171,7 @@ void printFile(const char *const pathname, const bool reverse, const uint32_t ma
                 context.emplace_front(line);
             }
         }
-        for (const auto &printLine : context)
+        for (const auto& printLine : context)
         {
             std::cout << printLine << std::endl;
         }
@@ -185,16 +182,16 @@ void printFile(const char *const pathname, const bool reverse, const uint32_t ma
         }
         file.close();
     }
-    catch (OpenFileError const &error)
+    catch (OpenFileError const& error)
     {
         LOGGER_ERR(error.what());
     }
-    catch (LockReaderLockError const &error)
+    catch (LockReaderLockError const& error)
     {
         LOGGER_ERR(error.what());
         file.close();
     }
-    catch (UnlockReaderLockError const &error)
+    catch (UnlockReaderLockError const& error)
     {
         LOGGER_ERR(error.what());
         file.close();

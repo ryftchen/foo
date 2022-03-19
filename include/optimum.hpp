@@ -22,9 +22,7 @@ class Optimum
 public:
     virtual ~Optimum(){};
     virtual std::optional<std::tuple<ValueY, ValueX>> operator()(
-        const double left,
-        const double right,
-        const double eps) = 0;
+        const double left, const double right, const double eps) = 0;
 };
 
 // Fibonacci method
@@ -34,19 +32,15 @@ public:
 class Fibonacci : public Optimum
 {
 public:
-    explicit Fibonacci(const Expression &express) : fun(express){};
+    explicit Fibonacci(const Expression& express) : fun(express){};
     std::optional<std::tuple<ValueY, ValueX>> operator()(
-        const double left,
-        const double right,
-        const double eps) override;
+        const double left, const double right, const double eps) override;
 
 private:
-    const Expression &fun;
+    const Expression& fun;
     std::optional<std::pair<double, double>> fibonacciSearch(
-        const double left,
-        const double right,
-        const double eps);
-    static void generateFibonacciNumber(std::vector<double> &fibonacci, const double max);
+        const double left, const double right, const double eps);
+    static void generateFibonacciNumber(std::vector<double>& fibonacci, const double max);
 };
 
 // Gradient ascent method
@@ -59,14 +53,12 @@ static const uint32_t loopTime = 100;
 class Gradient : public Optimum
 {
 public:
-    explicit Gradient(const Expression &express) : fun(express){};
+    explicit Gradient(const Expression& express) : fun(express){};
     std::optional<std::tuple<ValueY, ValueX>> operator()(
-        const double left,
-        const double right,
-        const double eps) override;
+        const double left, const double right, const double eps) override;
 
 private:
-    const Expression &fun;
+    const Expression& fun;
     [[nodiscard]] double calculateFirstDerivative(const double x, const double eps) const;
 };
 
@@ -82,14 +74,12 @@ static const uint32_t markovChain = 100;
 class Annealing : public Optimum
 {
 public:
-    explicit Annealing(const Expression &express) : fun(express){};
+    explicit Annealing(const Expression& express) : fun(express){};
     std::optional<std::tuple<ValueY, ValueX>> operator()(
-        const double left,
-        const double right,
-        const double eps) override;
+        const double left, const double right, const double eps) override;
 
 private:
-    const Expression &fun;
+    const Expression& fun;
 };
 
 // Particle swarm method
@@ -98,16 +88,11 @@ namespace Swarm
 struct Individual
 {
     Individual(
-        const double x,
-        const double velocity,
-        const double positionBest,
-        const double xFitness,
-        const double fitnessPositionBest)
-        : x(x)
-        , velocity(velocity)
-        , positionBest(positionBest)
-        , xFitness(xFitness)
-        , fitnessPositionBest(fitnessPositionBest){};
+        const double x, const double velocity, const double positionBest, const double xFitness,
+        const double fitnessPositionBest) :
+        x(x),
+        velocity(velocity), positionBest(positionBest), xFitness(xFitness),
+        fitnessPositionBest(fitnessPositionBest){};
     double x;
     double velocity;
     double positionBest;
@@ -125,9 +110,10 @@ using History = std::map<double, double, Greater>;
 struct Record
 {
     Record(
-        const std::initializer_list<Society::value_type> &society,
-        const std::initializer_list<History::value_type> &history)
-        : society(society), history(history){};
+        const std::initializer_list<Society::value_type>& society,
+        const std::initializer_list<History::value_type>& history) :
+        society(society),
+        history(history){};
     Society society;
     History history;
 
@@ -145,14 +131,12 @@ static const uint32_t iterNum = 100;
 class Particle : public Optimum
 {
 public:
-    explicit Particle(const Expression &express) : fun(express){};
+    explicit Particle(const Expression& express) : fun(express){};
     std::optional<std::tuple<ValueY, ValueX>> operator()(
-        const double left,
-        const double right,
-        const double eps) override;
+        const double left, const double right, const double eps) override;
 
 private:
-    const Expression &fun;
+    const Expression& fun;
     std::mt19937 seed;
     Swarm::Record recordInit(const double left, const double right);
 };
@@ -170,14 +154,12 @@ static const uint32_t iterNum = 100;
 class Genetic : public Optimum
 {
 public:
-    explicit Genetic(const Expression &express) : fun(express){};
+    explicit Genetic(const Expression& express) : fun(express){};
     std::optional<std::tuple<ValueY, ValueX>> operator()(
-        const double left,
-        const double right,
-        const double eps) override;
+        const double left, const double right, const double eps) override;
 
 private:
-    const Expression &fun;
+    const Expression& fun;
     struct Range
     {
         double left;
@@ -189,21 +171,20 @@ private:
     std::mt19937 seed;
     uint32_t chrNum = 0;
     void setSpecies(const double left, const double right, const double eps);
-    void geneCoding(Species::Chromosome &chr);
-    double geneDecoding(const Species::Chromosome &chr);
+    void geneCoding(Species::Chromosome& chr);
+    double geneDecoding(const Species::Chromosome& chr);
     Species::Population populationInit();
-    void geneCrossover(Species::Chromosome &chr1, Species::Chromosome &chr2);
-    void crossIndividual(Species::Population &pop);
-    void geneMutation(Species::Chromosome &chr);
-    void mutateIndividual(Species::Population &pop);
-    double calculateFitness(const Species::Chromosome &chr);
+    void geneCrossover(Species::Chromosome& chr1, Species::Chromosome& chr2);
+    void crossIndividual(Species::Population& pop);
+    void geneMutation(Species::Chromosome& chr);
+    void mutateIndividual(Species::Population& pop);
+    double calculateFitness(const Species::Chromosome& chr);
     std::optional<std::tuple<double, double>> fitnessLinearTransformation(
-        const Species::Population &pop);
+        const Species::Population& pop);
     void stochasticTournamentSelection(
-        Species::Population &pop,
-        const std::vector<double> &fitnessCum);
-    void selectIndividual(Species::Population &pop);
-    Species::Chromosome getBestIndividual(const Species::Population &pop);
+        Species::Population& pop, const std::vector<double>& fitnessCum);
+    void selectIndividual(Species::Population& pop);
+    Species::Chromosome getBestIndividual(const Species::Population& pop);
     double inline random();
     uint32_t inline getRandomNumber(const uint32_t limit);
 };

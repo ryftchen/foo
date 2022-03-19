@@ -25,7 +25,7 @@ static void switchToProjectPath()
             throw std::runtime_error("System error.");
         }
     }
-    catch (std::runtime_error const &error)
+    catch (std::runtime_error const& error)
     {
         LOGGER_ERR(error.what());
         exit(-1);

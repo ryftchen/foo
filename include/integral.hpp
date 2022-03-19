@@ -18,9 +18,9 @@ public:
     virtual double operator()(double lower, double upper, const double eps) const = 0;
 
 protected:
-    static int inline getSign(double &lower, double &upper);
+    static int inline getSign(double& lower, double& upper);
 };
-int inline Integral::getSign(double &lower, double &upper)
+int inline Integral::getSign(double& lower, double& upper)
 {
     return (lower < upper) ? 1 : (lower > upper ? (std::swap(lower, upper), -1) : 0);
 }
@@ -30,35 +30,30 @@ int inline Integral::getSign(double &lower, double &upper)
 class Trapezoidal : public Integral
 {
 public:
-    explicit Trapezoidal(const Expression &express) : fun(express){};
+    explicit Trapezoidal(const Expression& express) : fun(express){};
     double operator()(double lower, double upper, const double eps) const override;
 
 private:
-    const Expression &fun;
+    const Expression& fun;
     friend double trapezoid(
-        const Expression &express,
-        const double left,
-        const double height,
-        const uint32_t step);
+        const Expression& express, const double left, const double height, const uint32_t step);
 };
 
 // Adaptive Simpson's 1/3 method
-#define INTEGRAL_SIMPSON_ONE_THIRDS_FORMULAS                                                       \
+#define INTEGRAL_SIMPSON_ONE_THIRDS_FORMULAS \
     ((fun(left) + 4.0 * fun((left + right) / 2.0) + fun(right)) / 6.0 * (right - left))
 class Simpson : public Integral
 {
 public:
-    explicit Simpson(const Expression &express) : fun(express){};
+    explicit Simpson(const Expression& express) : fun(express){};
     double operator()(double lower, double upper, const double eps) const override;
 
 private:
-    const Expression &fun;
-    [[nodiscard]] double simpsonIntegral(const double left, const double right, const double eps)
-        const;
+    const Expression& fun;
+    [[nodiscard]] double simpsonIntegral(
+        const double left, const double right, const double eps) const;
     [[nodiscard]] double compositeSimpsonOneThird(
-        const double left,
-        const double right,
-        const uint32_t n) const;
+        const double left, const double right, const uint32_t n) const;
     [[nodiscard]] double simpsonOneThird(const double left, const double right) const;
 };
 
@@ -66,16 +61,13 @@ private:
 class Romberg : public Integral
 {
 public:
-    explicit Romberg(const Expression &express) : fun(express){};
+    explicit Romberg(const Expression& express) : fun(express){};
     double operator()(double lower, double upper, const double eps) const override;
 
 private:
-    const Expression &fun;
+    const Expression& fun;
     friend double trapezoid(
-        const Expression &express,
-        const double left,
-        const double height,
-        const uint32_t step);
+        const Expression& express, const double left, const double height, const uint32_t step);
 };
 
 // Gauss-Legendre's 5-points method
@@ -84,28 +76,26 @@ private:
 class Gauss : public Integral
 {
 public:
-    explicit Gauss(const Expression &express) : fun(express){};
+    explicit Gauss(const Expression& express) : fun(express){};
     double operator()(double lower, double upper, const double eps) const override;
 
 private:
-    const Expression &fun;
+    const Expression& fun;
 };
 
 // Monte-Carlo method
 class MonteCarlo : public Integral
 {
 public:
-    explicit MonteCarlo(const Expression &express) : fun(express){};
+    explicit MonteCarlo(const Expression& express) : fun(express){};
     double operator()(double lower, double upper, const double eps) const override;
 
 private:
-    const Expression &fun;
+    const Expression& fun;
     [[nodiscard]] double sampleFromUniformDistribution(
-        const double lower,
-        const double upper,
-        const double eps) const;
+        const double lower, const double upper, const double eps) const;
 #ifdef NO_UNIFORM
-    double sampleFromNormalDistribution(const double lower, const double upper, const double eps)
-        const;
+    double sampleFromNormalDistribution(
+        const double lower, const double upper, const double eps) const;
 #endif
 };
