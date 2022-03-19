@@ -90,7 +90,7 @@ def setupProgressBar():
     printProgress("\n")
 
     printProgress(SAVE_CURSOR)
-    printProgress("\033[0;" + str(lines) + "r")
+    printProgress("\033[0;{}r".format(str(lines)))
 
     printProgress(RESTORE_CURSOR)
     printProgress(MOVE_UP_CURSOR)
@@ -103,7 +103,7 @@ def drawProgressBar(percentage):
         setupProgressBar()
 
     printProgress(SAVE_CURSOR)
-    printProgress("\033[" + str(lines) + ";0f")
+    printProgress("\033[{};0f".format(str(lines)))
 
     tput()
     printBar(percentage)
@@ -114,7 +114,7 @@ def drawProgressBar(percentage):
 def destroyProgressBar():
     lines = tputLines()
     printProgress(SAVE_CURSOR)
-    printProgress("\033[0;" + str(lines) + "r")
+    printProgress("\033[0;{}r".format(str(lines)))
 
     printProgress(RESTORE_CURSOR)
     printProgress(MOVE_UP_CURSOR)
@@ -128,7 +128,7 @@ def destroyProgressBar():
 def clearProgressBar():
     lines = tputLines()
     printProgress(SAVE_CURSOR)
-    printProgress("\033[" + str(lines) + ";0f")
+    printProgress("\033[{};0f".format(str(lines)))
 
     tput()
     printProgress(RESTORE_CURSOR)
@@ -165,26 +165,32 @@ def printProgress(text):
 
 
 def tputLines():
-    cmd = tryCommand("tput lines")
-    output = cmd.stdout.read()
-    return int(output)
+    cmd = executeCommand("tput lines", output=False)
+    out = cmd.stdout.read()
+    return int(out)
 
 
 def tputCols():
-    cmd = tryCommand("tput cols")
-    output = cmd.stdout.read()
-    return int(output)
+    cmd = executeCommand("tput cols", output=False)
+    out = cmd.stdout.read()
+    return int(out)
 
 
 def tput():
     print(curses.tparm(curses.tigetstr("el")).decode(), end="")
 
 
-def tryCommand(command):
-    cmd = subprocess.Popen(
-        command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding="utf-8"
-    )
-    cmd.wait()
+def executeCommand(command, output=True):
+    try:
+        cmd = subprocess.Popen(
+            command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding="utf-8"
+        )
+        cmd.wait()
+        if output:
+            out = cmd.stdout.read()
+            print(out)
+    except RuntimeError():
+        printAbort(f"Failed to execute command: \"{command}\".")
     return cmd
 
 
@@ -194,61 +200,42 @@ def printAbort(message):
 
 
 def buildProject(command):
-    cmd = tryCommand(command)
-    output = cmd.stdout.read()
-    print(output)
+    cmd = executeCommand(command)
+    out = cmd.stdout.read()
     if cmd.returncode != 0:
         printAbort("Failed to execute shell script build.sh.")
-    elif output.find(BUILD_COMPILER_START) != -1 and output.find(BUILD_COMPILER_FINISH) == -1:
+    elif out.find(BUILD_COMPILER_START) != -1 and out.find(BUILD_COMPILER_FINISH) == -1:
         printAbort("Failed to build project by shell script build.sh.")
 
 
-def executeCommand(command):
-    completeCommand = RUN_DIR + command
+def runTestTask(command):
+    fullCommand = RUN_DIR + command
     if SET_VALGRIND:
-        completeCommand = VALGRIND_CMD + " " + completeCommand
+        fullCommand = VALGRIND_CMD + " " + fullCommand
     align = max(len(command) + 20, 30)
     print(
-        "\r\n"
-        + FORE_BLUE
-        + SPLIT_LINE
-        + "[ "
-        + datetime.strftime(datetime.now(), "%b %d %H:%M:%S")
-        + " | TEST TASK: "
-        + "%-10s" % command
-        + " | START  ]"
-        + SPLIT_LINE
-        + "\033[0m\n"
+        "\r\n{0}{1}[ {2} | TEST TASK: {3:<10} | START  ]{1}\033[0m\n".format(
+            FORE_BLUE, SPLIT_LINE, datetime.strftime(datetime.now(), "%b %d %H:%M:%S"), command
+        )
     )
-    cmd = tryCommand(completeCommand)
-    output = cmd.stdout.read()
-    print(output)
+    cmd = executeCommand(fullCommand)
     if cmd.returncode == 0:
         global CURRENT_STEP
         CURRENT_STEP += 1
     else:
         print(
-            FORE_RED
-            + SPLIT_LINE
-            + "[ "
-            + datetime.strftime(datetime.now(), "%b %d %H:%M:%S")
-            + " | "
-            + "%-*s" % (align, "TEST TASK ERROR")
-            + " ]"
-            + SPLIT_LINE
-            + "\033[0m"
+            "{0}{1}[ {2} | {3:<{x}} ]{1}\033[0m".format(
+                FORE_RED,
+                SPLIT_LINE,
+                datetime.strftime(datetime.now(), "%b %d %H:%M:%S"),
+                "TEST TASK ERROR",
+                x=align,
+            )
         )
     print(
-        "\r\n"
-        + FORE_BLUE
-        + SPLIT_LINE
-        + "[ "
-        + datetime.strftime(datetime.now(), "%b %d %H:%M:%S")
-        + " | TEST TASK: "
-        + "%-10s" % command
-        + " | FINISH ]"
-        + SPLIT_LINE
-        + "\033[0m"
+        "\r\n{0}{1}[ {2} | TEST TASK: {3:<10} | FINISH ]{1}\033[0m\n".format(
+            FORE_BLUE, SPLIT_LINE, datetime.strftime(datetime.now(), "%b %d %H:%M:%S"), command
+        )
     )
 
     if CURRENT_STEP != WHOLE_STEP:
@@ -256,24 +243,13 @@ def executeCommand(command):
     else:
         statusColor = FORE_GREEN
     print(
-        statusColor
-        + SPLIT_LINE
-        + "[ "
-        + datetime.strftime(datetime.now(), "%b %d %H:%M:%S")
-        + " | "
-        + "%-*s"
-        % (
-            align,
-            (
-                "TEST TASK COMPLETION: "
-                + "%2s" % str(CURRENT_STEP)
-                + " / "
-                + "%2s" % str(WHOLE_STEP)
-            ),
+        "{0}{1}[ {2} | {3:<{x}} ]{1}\033[0m\n".format(
+            statusColor,
+            SPLIT_LINE,
+            datetime.strftime(datetime.now(), "%b %d %H:%M:%S"),
+            "TEST TASK COMPLETION: {:>2} / {:>2}".format(str(CURRENT_STEP), str(WHOLE_STEP)),
+            x=align,
         )
-        + " ]"
-        + SPLIT_LINE
-        + "\033[0m\n"
     )
     sys.stdout = STDOUT_DEFAULT
     drawProgressBar(int(CURRENT_STEP / WHOLE_STEP * 100))
@@ -286,17 +262,7 @@ def parseArgs():
         "-b",
         "--build",
         nargs="?",
-        choices=[
-            "debug",
-            "release",
-            "cleanup",
-            "format",
-            "analysis",
-            "html",
-            "backup",
-            "tag",
-            "help",
-        ],
+        choices=["debug", "release"],
         const="debug",
         help="test with build.sh",
     )
@@ -311,15 +277,12 @@ def parseArgs():
                 buildProject(BUILD_CMD + " 2>&1")
             elif args.build == "release":
                 buildProject(BUILD_CMD + " --release 2>&1")
-            else:
-                buildProject(BUILD_CMD + " --" + args.build + " 2>&1")
-                sys.exit(0)
         else:
             printAbort("There is no shell script build.sh.")
     if args.valgrind:
-        cmd = tryCommand("command -v valgrind 2>&1")
-        output = cmd.stdout.read()
-        if output.find("valgrind") != -1:
+        cmd = executeCommand("command -v valgrind 2>&1", output=False)
+        out = cmd.stdout.read()
+        if out.find("valgrind") != -1:
             global SET_VALGRIND
             SET_VALGRIND = True
         else:
@@ -350,32 +313,32 @@ def completeTest():
 
 def testOptionType1():
     for each in OPTION_TYPE_1:
-        executeCommand(RUN_CMD + " " + each)
-    executeCommand(RUN_CMD + " " + " ".join(OPTION_TYPE_1))
+        runTestTask(RUN_CMD + " " + each)
+    runTestTask(RUN_CMD + " " + " ".join(OPTION_TYPE_1))
 
 
 def testOptimum():
     for each in OPTIMUM:
-        executeCommand(RUN_CMD + " " + OPTION_TYPE_1[0] + " " + each)
-    executeCommand(RUN_CMD + " " + OPTION_TYPE_1[0] + " " + " ".join(OPTIMUM))
+        runTestTask(RUN_CMD + " " + OPTION_TYPE_1[0] + " " + each)
+    runTestTask(RUN_CMD + " " + OPTION_TYPE_1[0] + " " + " ".join(OPTIMUM))
 
 
 def testIntegral():
     for each in INTEGRAL:
-        executeCommand(RUN_CMD + " " + OPTION_TYPE_1[1] + " " + each)
-    executeCommand(RUN_CMD + " " + OPTION_TYPE_1[1] + " " + " ".join(INTEGRAL))
+        runTestTask(RUN_CMD + " " + OPTION_TYPE_1[1] + " " + each)
+    runTestTask(RUN_CMD + " " + OPTION_TYPE_1[1] + " " + " ".join(INTEGRAL))
 
 
 def testSort():
     for each in SORT:
-        executeCommand(RUN_CMD + " " + OPTION_TYPE_1[2] + " " + each)
-    executeCommand(RUN_CMD + " " + OPTION_TYPE_1[2] + " " + " ".join(SORT))
+        runTestTask(RUN_CMD + " " + OPTION_TYPE_1[2] + " " + each)
+    runTestTask(RUN_CMD + " " + OPTION_TYPE_1[2] + " " + " ".join(SORT))
 
 
 def testOptionType2():
-    executeCommand(RUN_CMD)
+    runTestTask(RUN_CMD)
     for each in OPTION_TYPE_2:
-        executeCommand(RUN_CMD + " " + each)
+        runTestTask(RUN_CMD + " " + each)
 
 
 if __name__ == "__main__":
