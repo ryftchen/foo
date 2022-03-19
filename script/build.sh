@@ -45,8 +45,6 @@ printInstruction()
     echo
     echo "[Options]:"
     echo
-    echo "    --release                          Release"
-    echo
     echo "    -c, --cleanup                      Cleanup"
     echo
     echo "    -f, --format                       Format"
@@ -58,6 +56,8 @@ printInstruction()
     echo "    -b, --backup                       Backup"
     echo
     echo "    -t, --tag                          Tag"
+    echo
+    echo "    --release                          Release"
     echo
     echo "    --help                             Help"
     exit 0
