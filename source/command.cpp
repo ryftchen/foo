@@ -11,8 +11,8 @@ std::atomic<bool> Command::parseArgv(const int argc, char *const argv[])
 {
     if (argc < 1)
     {
+        printInstruction();
         LOGGER_INF("No command line option.");
-        printLicense();
     }
 
     std::bitset<TaskBit::taskButtom> taskBit(0);
@@ -446,35 +446,6 @@ void Command::printInstruction()
          "    [ qui | hea | cou | buc | rad ]    Quick|Heap|Counting|Bucket|Radix\n\n"
          "    --log                              Log\n\n"
          "    --help                             Help");
-
-    run.taskDone = true;
-}
-
-void Command::printLicense()
-{
-    try
-    {
-        const pid_t status = system(COMMAND_LICENSE_CMD);
-        if (-1 == status)
-        {
-            throw std::runtime_error("System error.");
-        }
-        else if (WIFEXITED(status))
-        {
-            if (0 != WEXITSTATUS(status))
-            {
-                throw RunCommandError(COMMAND_LICENSE_CMD);
-            }
-        }
-    }
-    catch (std::runtime_error const &error)
-    {
-        LOGGER_ERR(error.what());
-    }
-    catch (RunCommandError const &error)
-    {
-        LOGGER_ERR(error.what());
-    }
 
     run.taskDone = true;
 }

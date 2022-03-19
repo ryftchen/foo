@@ -74,9 +74,7 @@ parseArgs()
         -h | --html) ARGS_HTML=1 ;;
         -b | --backup) ARGS_BACKUP=1 ;;
         -t | --tag) ARGS_TAG=1 ;;
-        --help)
-            printInstruction
-            ;;
+        --help) printInstruction ;;
         *) printAbort "Unknown command line option: $1. Try with --help to get information." ;;
         esac
         shift
@@ -269,7 +267,7 @@ tarBackup()
 -o -path ./${TEMP_FOLDER} -o -path './.*' \) -prune -o -print | sed 1d \
 | grep -E '${INCLUDE_FOLDER}|${SOURCE_FOLDER}|${LIBRARY_FOLDER}|${SCRIPT_FOLDER}' \
 | xargs -i cp -R {} ${BACKUP_FOLDER}/${PROJECT_FOLDER}/"
-    shCommand "find . -maxdepth 1 -type d -o -print | grep -E '*\.txt|${LICENSE_FILE}' \
+    shCommand "find . -maxdepth 1 -type d -o -print | grep -E '*\.txt' \
 | xargs -i cp -R {} ${BACKUP_FOLDER}/${PROJECT_FOLDER}/"
     shCommand "tar -zcvf ${BACKUP_FOLDER}/${tarFolder}.tar.gz -C ./${BACKUP_FOLDER} \
 ${PROJECT_FOLDER}"
