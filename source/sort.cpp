@@ -6,7 +6,7 @@
 #include <queue>
 #include <random>
 #include <vector>
-#include "time.hpp"
+#include "log.hpp"
 
 template class Sort<int>;
 template Sort<int>::Sort(const uint32_t, const int, const int);
@@ -96,14 +96,14 @@ requires std::is_integral<U>::value void Sort<T>::setRandomArray(
     range[0] = '\0';
     std::snprintf(range, rangeSize + 1, rangeFormat, left, right);
 
-    const uint32_t bufferSize = length * SORT_PRINT_MAX_ALIGN;
-    char buffer[bufferSize + 1];
-    buffer[0] = '\0';
-    printf(
+    const uint32_t arrayBufferSize = length * SORT_PRINT_MAX_ALIGN;
+    char arrayBuffer[arrayBufferSize + 1];
+    arrayBuffer[0] = '\0';
+    FORMAT_PRINT(
         "\r\nGenerate %u random integral numbers from %s:\r\n%s\n",
         length,
         range,
-        formatArray(array, length, buffer, bufferSize + 1));
+        formatArray(array, length, arrayBuffer, arrayBufferSize + 1));
 }
 template <class T>
 template <typename U>
@@ -127,14 +127,14 @@ requires std::is_floating_point<U>::value void Sort<T>::setRandomArray(
     range[0] = '\0';
     std::snprintf(range, rangeSize + 1, rangeFormat, left, right);
 
-    const uint32_t bufferSize = length * SORT_PRINT_MAX_ALIGN;
-    char buffer[bufferSize + 1];
-    buffer[0] = '\0';
-    printf(
+    const uint32_t arrayBufferSize = length * SORT_PRINT_MAX_ALIGN;
+    char arrayBuffer[arrayBufferSize + 1];
+    arrayBuffer[0] = '\0';
+    FORMAT_PRINT(
         "\r\nGenerate %u random floating point numbers from %s:\r\n%s\n",
         length,
         range,
-        formatArray(array, length, buffer, bufferSize + 1));
+        formatArray(array, length, arrayBuffer, arrayBufferSize + 1));
 }
 
 template <class T>
@@ -186,10 +186,13 @@ void Sort<T>::bubbleSort(T *const array, const uint32_t length) const
     }
 
     TIME_END;
-    const uint32_t bufferSize = length * SORT_PRINT_MAX_ALIGN;
-    char buffer[bufferSize + 1];
-    buffer[0] = '\0';
-    printf(SORT_BUBBLE, formatArray(sortArray, length, buffer, bufferSize + 1), TIME_INTERVAL);
+    const uint32_t arrayBufferSize = length * SORT_PRINT_MAX_ALIGN;
+    char arrayBuffer[arrayBufferSize + 1];
+    arrayBuffer[0] = '\0';
+    FORMAT_PRINT(
+        SORT_BUBBLE,
+        formatArray(sortArray, length, arrayBuffer, arrayBufferSize + 1),
+        TIME_INTERVAL);
 }
 
 // Selection method
@@ -215,10 +218,13 @@ void Sort<T>::selectionSort(T *const array, const uint32_t length) const
     }
 
     TIME_END;
-    const uint32_t bufferSize = length * SORT_PRINT_MAX_ALIGN;
-    char buffer[bufferSize + 1];
-    buffer[0] = '\0';
-    printf(SORT_SELECTION, formatArray(sortArray, length, buffer, bufferSize + 1), TIME_INTERVAL);
+    const uint32_t arrayBufferSize = length * SORT_PRINT_MAX_ALIGN;
+    char arrayBuffer[arrayBufferSize + 1];
+    arrayBuffer[0] = '\0';
+    FORMAT_PRINT(
+        SORT_SELECTION,
+        formatArray(sortArray, length, arrayBuffer, arrayBufferSize + 1),
+        TIME_INTERVAL);
 }
 
 // Insertion method
@@ -243,10 +249,13 @@ void Sort<T>::insertionSort(T *const array, const uint32_t length) const
     }
 
     TIME_END;
-    const uint32_t bufferSize = length * SORT_PRINT_MAX_ALIGN;
-    char buffer[bufferSize + 1];
-    buffer[0] = '\0';
-    printf(SORT_INSERTION, formatArray(sortArray, length, buffer, bufferSize + 1), TIME_INTERVAL);
+    const uint32_t arrayBufferSize = length * SORT_PRINT_MAX_ALIGN;
+    char arrayBuffer[arrayBufferSize + 1];
+    arrayBuffer[0] = '\0';
+    FORMAT_PRINT(
+        SORT_INSERTION,
+        formatArray(sortArray, length, arrayBuffer, arrayBufferSize + 1),
+        TIME_INTERVAL);
 }
 
 // Shell method
@@ -272,10 +281,13 @@ void Sort<T>::shellSort(T *const array, const uint32_t length) const
     }
 
     TIME_END;
-    const uint32_t bufferSize = length * SORT_PRINT_MAX_ALIGN;
-    char buffer[bufferSize + 1];
-    buffer[0] = '\0';
-    printf(SORT_SHELL, formatArray(sortArray, length, buffer, bufferSize + 1), TIME_INTERVAL);
+    const uint32_t arrayBufferSize = length * SORT_PRINT_MAX_ALIGN;
+    char arrayBuffer[arrayBufferSize + 1];
+    arrayBuffer[0] = '\0';
+    FORMAT_PRINT(
+        SORT_SHELL,
+        formatArray(sortArray, length, arrayBuffer, arrayBufferSize + 1),
+        TIME_INTERVAL);
 }
 
 // Merge method
@@ -290,10 +302,13 @@ void Sort<T>::mergeSort(T *const array, const uint32_t length) const
     mergeSortRecursive(sortArray, 0, length - 1);
 
     TIME_END;
-    const uint32_t bufferSize = length * SORT_PRINT_MAX_ALIGN;
-    char buffer[bufferSize + 1];
-    buffer[0] = '\0';
-    printf(SORT_MERGE, formatArray(sortArray, length, buffer, bufferSize + 1), TIME_INTERVAL);
+    const uint32_t arrayBufferSize = length * SORT_PRINT_MAX_ALIGN;
+    char arrayBuffer[arrayBufferSize + 1];
+    arrayBuffer[0] = '\0';
+    FORMAT_PRINT(
+        SORT_MERGE,
+        formatArray(sortArray, length, arrayBuffer, arrayBufferSize + 1),
+        TIME_INTERVAL);
 }
 template <class T>
 void Sort<T>::mergeSortRecursive(T *const sortArray, const uint32_t begin, const uint32_t end)
@@ -338,10 +353,13 @@ void Sort<T>::quickSort(T *const array, const uint32_t length) const
     quickSortRecursive(sortArray, 0, length - 1);
 
     TIME_END;
-    const uint32_t bufferSize = length * SORT_PRINT_MAX_ALIGN;
-    char buffer[bufferSize + 1];
-    buffer[0] = '\0';
-    printf(SORT_QUICK, formatArray(sortArray, length, buffer, bufferSize + 1), TIME_INTERVAL);
+    const uint32_t arrayBufferSize = length * SORT_PRINT_MAX_ALIGN;
+    char arrayBuffer[arrayBufferSize + 1];
+    arrayBuffer[0] = '\0';
+    FORMAT_PRINT(
+        SORT_QUICK,
+        formatArray(sortArray, length, arrayBuffer, arrayBufferSize + 1),
+        TIME_INTERVAL);
 }
 template <class T>
 void Sort<T>::quickSortRecursive(T *const sortArray, const uint32_t begin, const uint32_t end)
@@ -402,10 +420,11 @@ void Sort<T>::heapSort(T *const array, const uint32_t length) const
     }
 
     TIME_END;
-    const uint32_t bufferSize = length * SORT_PRINT_MAX_ALIGN;
-    char buffer[bufferSize + 1];
-    buffer[0] = '\0';
-    printf(SORT_HEAP, formatArray(sortArray, length, buffer, bufferSize + 1), TIME_INTERVAL);
+    const uint32_t arrayBufferSize = length * SORT_PRINT_MAX_ALIGN;
+    char arrayBuffer[arrayBufferSize + 1];
+    arrayBuffer[0] = '\0';
+    FORMAT_PRINT(
+        SORT_HEAP, formatArray(sortArray, length, arrayBuffer, arrayBufferSize + 1), TIME_INTERVAL);
 }
 template <class T>
 void Sort<T>::buildMaxHeap(T *const sortArray, const uint32_t begin, const uint32_t end)
@@ -437,7 +456,7 @@ void Sort<T>::countingSort(T *const array, const uint32_t length) const
 {
     if (!std::is_integral_v<T>)
     {
-        printf("\r\n*Counting  method:\r\nThe type of array isn't integral.\n");
+        FORMAT_PRINT("\r\n*Counting  method:\r\nThe type of array isn't integral.\n");
         return;
     }
 
@@ -471,10 +490,13 @@ void Sort<T>::countingSort(T *const array, const uint32_t length) const
     }
 
     TIME_END;
-    const uint32_t bufferSize = length * SORT_PRINT_MAX_ALIGN;
-    char buffer[bufferSize + 1];
-    buffer[0] = '\0';
-    printf(SORT_COUNTING, formatArray(sortArray, length, buffer, bufferSize + 1), TIME_INTERVAL);
+    const uint32_t arrayBufferSize = length * SORT_PRINT_MAX_ALIGN;
+    char arrayBuffer[arrayBufferSize + 1];
+    arrayBuffer[0] = '\0';
+    FORMAT_PRINT(
+        SORT_COUNTING,
+        formatArray(sortArray, length, arrayBuffer, arrayBufferSize + 1),
+        TIME_INTERVAL);
 }
 
 // Bucket method
@@ -516,10 +538,13 @@ void Sort<T>::bucketSort(T *const array, const uint32_t length) const
     }
 
     TIME_END;
-    const uint32_t bufferSize = length * SORT_PRINT_MAX_ALIGN;
-    char buffer[bufferSize + 1];
-    buffer[0] = '\0';
-    printf(SORT_BUCKET, formatArray(sortArray, length, buffer, bufferSize + 1), TIME_INTERVAL);
+    const uint32_t arrayBufferSize = length * SORT_PRINT_MAX_ALIGN;
+    char arrayBuffer[arrayBufferSize + 1];
+    arrayBuffer[0] = '\0';
+    FORMAT_PRINT(
+        SORT_BUCKET,
+        formatArray(sortArray, length, arrayBuffer, arrayBufferSize + 1),
+        TIME_INTERVAL);
 }
 
 // Radix method
@@ -528,7 +553,7 @@ void Sort<T>::radixSort(T *const array, const uint32_t length) const
 {
     if (!std::is_integral_v<T>)
     {
-        printf("\r\n*Radix     method:\r\nThe type of array isn't integral.\n");
+        FORMAT_PRINT("\r\n*Radix     method:\r\nThe type of array isn't integral.\n");
         return;
     }
 
@@ -606,8 +631,11 @@ void Sort<T>::radixSort(T *const array, const uint32_t length) const
     }
 
     TIME_END;
-    const uint32_t bufferSize = length * SORT_PRINT_MAX_ALIGN;
-    char buffer[bufferSize + 1];
-    buffer[0] = '\0';
-    printf(SORT_RADIX, formatArray(sortArray, length, buffer, bufferSize + 1), TIME_INTERVAL);
+    const uint32_t arrayBufferSize = length * SORT_PRINT_MAX_ALIGN;
+    char arrayBuffer[arrayBufferSize + 1];
+    arrayBuffer[0] = '\0';
+    FORMAT_PRINT(
+        SORT_RADIX,
+        formatArray(sortArray, length, arrayBuffer, arrayBufferSize + 1),
+        TIME_INTERVAL);
 }
