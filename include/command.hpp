@@ -22,7 +22,6 @@
             xBit.set();                                                                            \
         }                                                                                          \
     } while (0)
-#define COMMAND_LICENSE_CMD "cat ./LICENSE"
 
 class Command
 {
@@ -115,6 +114,5 @@ private:
 protected:
     void printLogContext();
     void printInstruction();
-    void printLicense();
     void printUnkownParameter(char *const argv[]);
 };
