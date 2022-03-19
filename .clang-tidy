@@ -23,7 +23,6 @@ Checks: >
   google-objc-avoid-throwing-exception,
   google-objc-function-naming,
   google-objc-global-variable-declaration,
-  google-readability-avoid-underscore-in-googletest-name,
   google-readability-function-size,
   google-readability-namespace-comments,
   google-readability-todo,
@@ -54,10 +53,29 @@ Checks: >
   readability-uppercase-literal-suffix
 AnalyzeTemporaryDtors: false
 CheckOptions:
+  - key: cppcoreguidelines-special-member-functions.AllowSoleDefaultDtor
+    value: '1'
+  - key: cppcoreguidelines-special-member-functions.AllowMissingMoveFunctions
+    value: '0'
+  - key: google-global-names-in-headers.HeaderFileExtensions
+    value: h,hh,hpp,hxx
+  - key: misc-definitions-in-headers.HeaderFileExtensions
+    value: h,hh,hpp,hxx
+  - key: misc-definitions-in-headers.HeaderFileExtensions
+    value: '1'
+  - key: >
+      misc-non-private-member-variables-in-classes.IgnoreClassesWithAllMemberVariablesBeingPublic
+    value: '1'
+  - key: modernize-use-auto.RemoveStars
+    value: '1'
+  - key: modernize-use-default-member-init.UseAssignment
+    value: '1'
+  - key: performance-inefficient-string-concatenation.StrictMode
+    value: '1'
   - key: readability-function-size.ParameterThreshold
-    value: 5
+    value: '5'
   - key: readability-function-size.StatementThreshold
-    value: 100
+    value: '100'
   - key: readability-identifier-naming.ClassCase
     value: CamelCase
   - key: readability-identifier-naming.ConstantCase
@@ -72,6 +90,8 @@ CheckOptions:
     value: camelBack
   - key: readability-identifier-naming.LocalConstantCase
     value: camelBack
+  - key: readability-identifier-naming.MacroDefinitionCase
+    value: UPPER_CASE
   - key: readability-identifier-naming.MethodCase
     value: camelBack
   - key: readability-identifier-naming.NamespaceCase
@@ -86,10 +106,18 @@ CheckOptions:
     value: CamelCase
   - key: readability-identifier-naming.TypeAliasCase
     value: CamelCase
+  - key: readability-identifier-naming.TypeTemplateParameterCase
+    value: aNy_CasE
   - key: readability-identifier-naming.UnionCase
     value: CamelCase
   - key: readability-identifier-naming.VariableCase
     value: camelBack
   - key: readability-identifier-naming.VariablePrefix
     value: ''
+  - key: readability-simplify-boolean-expr.ChainedConditionalReturn
+    value: '1'
+  - key: readability-simplify-boolean-expr.ChainedConditionalAssignment
+    value: '1'
+  - key: readability-implicit-bool-conversion.AllowPointerConditions
+    value: '1'
 ...

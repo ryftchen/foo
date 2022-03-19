@@ -1,10 +1,11 @@
 ---
 Language: Cpp
-# BasedOnStyle: LLVM
+
 AccessModifierOffset: -4
 AlignAfterOpenBracket: AlwaysBreak
 AlignConsecutiveAssignments: false
 AlignConsecutiveDeclarations: false
+AlignEscapedNewlines: Left
 AlignOperands: false
 AlignTrailingComments: false
 AllowAllParametersOfDeclarationOnNextLine: false
@@ -17,8 +18,8 @@ AllowShortLoopsOnASingleLine: false
 AlwaysBreakAfterDefinitionReturnType: None
 AlwaysBreakBeforeMultilineStrings: false
 AlwaysBreakTemplateDeclarations: true
-BinPackArguments: false
-BinPackParameters: false
+BinPackArguments: true
+BinPackParameters: true
 BraceWrapping:
   AfterClass: true
   AfterControlStatement: true
@@ -30,15 +31,17 @@ BraceWrapping:
   AfterExternBlock: true
   BeforeCatch: true
   BeforeElse: true
+  BeforeLambdaBody: true
+  BeforeWhile: true
   IndentBraces: false
-BreakBeforeBinaryOperators: None
+BreakBeforeBinaryOperators: NonAssignment
 BreakBeforeBraces: Custom
 BreakBeforeTernaryOperators: true
-BreakConstructorInitializersBeforeComma: true
+BreakConstructorInitializers: AfterColon
 BreakStringLiterals: true
 ColumnLimit: 100
 CommentPragmas: '\$.*\$'
-ConstructorInitializerAllOnOneLineOrOnePerLine: true
+ConstructorInitializerAllOnOneLineOrOnePerLine: false
 ConstructorInitializerIndentWidth: 4
 ContinuationIndentWidth: 4
 Cpp11BracedListStyle: true
@@ -47,7 +50,7 @@ DerivePointerAlignment: false
 DisableFormat: false
 FixNamespaceComments: true
 IncludeCategories:
-  - Regex: '^<sys/'
+  - Regex: '^<[a-zA-Z]\/'
     Priority: 1
   - Regex: '^<'
     Priority: 2
@@ -59,7 +62,7 @@ KeepEmptyLinesAtTheStartOfBlocks: false
 MaxEmptyLinesToKeep: 1
 NamespaceIndentation: None
 PenaltyReturnTypeOnItsOwnLine: 5000
-PointerAlignment: Right
+PointerAlignment: Left
 SortIncludes: true
 SpaceBeforeAssignmentOperators: true
 SpaceBeforeParens: ControlStatements
