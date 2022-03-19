@@ -26,7 +26,7 @@ void printFile(
 #define LOGGER_ERR(format, args...)                                                                \
     logger.outputLog(Log::Level::levelError, __FILE__, __LINE__, format, ##args)
 
-#define FORMAT_STRING(format, args...)                                                             \
+#define FORMAT_TO_STRING(format, args...)                                                          \
     ({                                                                                             \
         const int bufferSize = std::snprintf(nullptr, 0, format, ##args);                          \
         assert(bufferSize >= 0);                                                                   \
@@ -36,6 +36,7 @@ void printFile(
         const std::string str(buffer);                                                             \
         str;                                                                                       \
     })
+#define FORMAT_PRINT(format, args...) std::cout << FORMAT_TO_STRING(format, ##args)
 
 class Log final
 {
@@ -113,7 +114,7 @@ void Log::outputLog(
 #pragma GCC diagnostic ignored "-Wformat-security"
         std::string output = prefix + "[" + GET_CURRENT_TIME + "]:" + "[" +
             FILENAME(codeFile.c_str()) + ":" + std::to_string(codeLine) +
-            "]: " + FORMAT_STRING(format, args...);
+            "]: " + FORMAT_TO_STRING(format, args...);
 #pragma GCC diagnostic pop
         switch (realTarget)
         {

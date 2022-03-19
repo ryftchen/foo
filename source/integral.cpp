@@ -2,7 +2,7 @@
 #include <functional>
 #include <iostream>
 #include <random>
-#include "time.hpp"
+#include "log.hpp"
 
 double trapezoid(const Expression &express, const double left, const double h, const uint32_t step)
 {
@@ -37,7 +37,7 @@ double Trapezoidal::operator()(double lower, double upper, const double eps) con
     sum = s2 * sign;
 
     TIME_END;
-    printf(INTEGRAL_TRAPEZOIDAL, sum, TIME_INTERVAL);
+    FORMAT_PRINT(INTEGRAL_TRAPEZOIDAL, sum, TIME_INTERVAL);
     return sum;
 }
 
@@ -51,7 +51,7 @@ double Simpson::operator()(double lower, double upper, const double eps) const
     sum *= sign;
 
     TIME_END;
-    printf(INTEGRAL_SIMPSON, sum, TIME_INTERVAL);
+    FORMAT_PRINT(INTEGRAL_SIMPSON, sum, TIME_INTERVAL);
     return sum;
 }
 double Simpson::simpsonIntegral(const double left, const double right, const double eps) const
@@ -115,7 +115,7 @@ double Romberg::operator()(double lower, double upper, const double eps) const
     sum = trapezoidFunctor(pow(2, k)) * sign;
 
     TIME_END;
-    printf(INTEGRAL_ROMBERG, sum, TIME_INTERVAL);
+    FORMAT_PRINT(INTEGRAL_ROMBERG, sum, TIME_INTERVAL);
     return sum;
 }
 
@@ -156,7 +156,7 @@ double Gauss::operator()(double lower, double upper, const double eps) const
     sum = s2 * sign;
 
     TIME_END;
-    printf(INTEGRAL_GAUSS, sum, TIME_INTERVAL);
+    FORMAT_PRINT(INTEGRAL_GAUSS, sum, TIME_INTERVAL);
     return sum;
 }
 
@@ -173,7 +173,7 @@ double MonteCarlo::operator()(double lower, double upper, const double eps) cons
     sum *= sign;
 
     TIME_END;
-    printf(INTEGRAL_MONTE_CARLO, sum, TIME_INTERVAL);
+    FORMAT_PRINT(INTEGRAL_MONTE_CARLO, sum, TIME_INTERVAL);
     return sum;
 }
 double MonteCarlo::sampleFromUniformDistribution(

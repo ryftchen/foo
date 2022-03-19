@@ -4,7 +4,7 @@
 #include <cassert>
 #include <iostream>
 #include <map>
-#include "time.hpp"
+#include "log.hpp"
 
 using Species::Chromosome;
 using Species::Population;
@@ -24,7 +24,7 @@ std::optional<std::tuple<ValueY, ValueX>> Fibonacci::operator()(
     const auto firstResult = fibonacciSearch(left, right, eps);
     if (!firstResult.has_value())
     {
-        printf("*Fibonacci method: The precise %.5f isn't enough.\n", eps);
+        FORMAT_PRINT("*Fibonacci method: The precise %.5f isn't enough.\n", eps);
         return std::nullopt;
     }
     else
@@ -69,7 +69,7 @@ std::optional<std::tuple<ValueY, ValueX>> Fibonacci::operator()(
     }
 
     TIME_END;
-    printf(OPTIMUM_FIBONACCI, y, x, TIME_INTERVAL);
+    FORMAT_PRINT(OPTIMUM_FIBONACCI, y, x, TIME_INTERVAL);
     return std::make_tuple(y, x);
 }
 std::optional<std::pair<double, double>> Fibonacci::fibonacciSearch(
@@ -194,7 +194,7 @@ std::optional<std::tuple<ValueY, ValueX>> Gradient::operator()(
     max = std::get<1>(*aggregation.begin());
 
     TIME_END;
-    printf(OPTIMUM_GRADIENT, max, x, TIME_INTERVAL);
+    FORMAT_PRINT(OPTIMUM_GRADIENT, max, x, TIME_INTERVAL);
     return std::make_tuple(max, x);
 }
 double Gradient::calculateFirstDerivative(const double x, const double eps) const
@@ -256,7 +256,7 @@ std::optional<std::tuple<ValueY, ValueX>> Annealing::operator()(
     }
 
     TIME_END;
-    printf(OPTIMUM_ANNEALING, y, x, TIME_INTERVAL);
+    FORMAT_PRINT(OPTIMUM_ANNEALING, y, x, TIME_INTERVAL);
     return std::make_tuple(y, x);
 }
 
@@ -317,7 +317,7 @@ std::optional<std::tuple<ValueY, ValueX>> Particle::operator()(
     xBest = std::get<1>(*(rec.history.begin()));
 
     TIME_END;
-    printf(OPTIMUM_PARTICLE, xFitnessBest, xBest, TIME_INTERVAL);
+    FORMAT_PRINT(OPTIMUM_PARTICLE, xFitnessBest, xBest, TIME_INTERVAL);
     return std::make_tuple(xFitnessBest, xBest);
 }
 Record Particle::recordInit(const double left, const double right)
@@ -349,7 +349,7 @@ std::optional<std::tuple<ValueY, ValueX>> Genetic::operator()(
     setSpecies(left, right, eps);
     if (chrNum < 3)
     {
-        printf("*Genetic   method: The precise %.5f isn't enough.\n", eps);
+        FORMAT_PRINT("*Genetic   method: The precise %.5f isn't enough.\n", eps);
         return std::nullopt;
     }
 
@@ -363,7 +363,7 @@ std::optional<std::tuple<ValueY, ValueX>> Genetic::operator()(
     const double x = geneDecoding(getBestIndividual(pop));
 
     TIME_END;
-    printf(OPTIMUM_GENETIC, fun(x), x, TIME_INTERVAL);
+    FORMAT_PRINT(OPTIMUM_GENETIC, fun(x), x, TIME_INTERVAL);
     return std::make_tuple(fun(x), x);
 }
 void Genetic::setSpecies(const double left, const double right, const double eps)
