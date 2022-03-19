@@ -137,12 +137,12 @@ buildFormat()
 {
     if [ "${ARGS_FORMAT}" = "1" ]; then
         if
-            command -v clang-format-10 >/dev/null 2>&1 \
+            command -v clang-format-11 >/dev/null 2>&1 \
                 && command -v shfmt >/dev/null 2>&1 \
                 && command -v black >/dev/null 2>&1
         then
             if [ -f ./"${FORMAT_STYLE}" ]; then
-                shCommand "clang-format-10 -i --verbose ./${INCLUDE_FOLDER}/*.hpp \
+                shCommand "clang-format-11 -i --verbose ./${INCLUDE_FOLDER}/*.hpp \
 ./${SOURCE_FOLDER}/*.cpp ./${LIBRARY_FOLDER}/*.cpp"
             else
                 printAbort "There is no ${FORMAT_STYLE} file in ${PROJECT_FOLDER} folder. \
@@ -160,13 +160,13 @@ buildAnalysis()
 {
     if [ "${ARGS_ANALYSIS}" = "1" ]; then
         if
-            command -v clang-tidy-10 >/dev/null 2>&1 \
+            command -v clang-tidy-11 >/dev/null 2>&1 \
                 && command -v shellcheck >/dev/null 2>&1 \
                 && command -v pylint >/dev/null 2>&1
         then
             if [ -f ./"${BUILD_FOLDER}"/"${COMPILE_COMMANDS}" ]; then
                 if [ -f ./"${ANALYSIS_STYLE}" ]; then
-                    shCommand "clang-tidy-10 -p ./${BUILD_FOLDER}/${COMPILE_COMMANDS} \
+                    shCommand "clang-tidy-11 -p ./${BUILD_FOLDER}/${COMPILE_COMMANDS} \
 ./${INCLUDE_FOLDER}/*.hpp ./${SOURCE_FOLDER}/*.cpp ./${LIBRARY_FOLDER}/*.cpp"
                 else
                     printAbort "There is no ${ANALYSIS_STYLE} file in ${PROJECT_FOLDER} folder. \
