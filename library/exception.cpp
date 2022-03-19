@@ -1,10 +1,5 @@
 #include "exception.hpp"
 
-const char *RunCommandError::what() const noexcept
-{
-    return message.c_str();
-}
-
 const char *CreateFolderError::what() const noexcept
 {
     return message.c_str();
