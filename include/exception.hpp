@@ -2,19 +2,6 @@
 #include <exception>
 #include <string>
 
-class RunCommandError : public std::exception
-{
-public:
-    RunCommandError() : message("Failed to run command."){};
-    explicit RunCommandError(const std::string &str)
-        : message("Failed to run command " + str + "."){};
-    ~RunCommandError() noexcept override {}
-    [[nodiscard]] const char *what() const noexcept override;
-
-private:
-    std::string message;
-};
-
 class CreateFolderError : public std::exception
 {
 public:

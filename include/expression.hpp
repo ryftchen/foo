@@ -51,23 +51,6 @@ private:
     const double rate;
 };
 
-#define EXPRESS_SCH (418.9829 - x * sin(sqrt(fabs(x))))
-#define EXPRESS_SCH_RANGE_1 -500.0
-#define EXPRESS_SCH_RANGE_2 500.0
-#define EXPRESS_SCH_OPTIMUM "\r\nOptimum Expression: one-dimensional Schwefel function"
-#define EXPRESS_SCH_INTEGRAL "\r\nIntegral Expression: one-dimensional Schwefel function"
-class Schwefel : public Expression
-{
-public:
-    explicit Schwefel(const double rate) : rate(rate){};
-    double operator()(const double x) const override;
-
-    Schwefel() = delete;
-
-private:
-    const double rate;
-};
-
 #define EXPRESS_RAS (x * x - 10.0 * cos(2.0 * M_PI * x) + 10.0)
 #define EXPRESS_RAS_RANGE_1 -5.12
 #define EXPRESS_RAS_RANGE_2 5.12
