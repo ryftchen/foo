@@ -31,7 +31,7 @@ def executeCommand(command, output=True):
         out, err = cmd.communicate()
         if len(out) != 0:
             print(out)
-        elif len(err) != 0:
+        if len(err) != 0:
             print(err)
         print("{} {} END".format(datetime.strftime(datetime.now(), "%b %d %H:%M:%S"), command))
     return cmd
@@ -73,9 +73,9 @@ def downloadArtifact():
         jsonInfo = json.loads(response.text)
         if jsonInfo["total_count"] != 0:
             if jsonInfo["artifacts"][0]["name"] == ARTIFACT_FILE:
-                actionUrl = jsonInfo["artifacts"][0]["archive_download_url"]
+                downloadUrl = jsonInfo["artifacts"][0]["archive_download_url"]
 
-        response = requests.get(actionUrl, allow_redirects=False)
+        response = requests.get(downloadUrl, allow_redirects=False)
         response.raise_for_status()
         locationUrl = response.headers["location"]
 
