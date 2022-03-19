@@ -1,13 +1,13 @@
 #include "command.hpp"
-#include <sys/file.h>
 #include <ext/stdio_filebuf.h>
+#include <sys/file.h>
 #include "exception.hpp"
 #include "hash.hpp"
 #include "integral.hpp"
 #include "log.hpp"
 #include "optimum.hpp"
 
-std::atomic<bool> Command::parseArgv(const int argc, char *const argv[])
+std::atomic<bool> Command::parseArgv(const int argc, char* const argv[])
 {
     if (argc < 1)
     {
@@ -24,15 +24,15 @@ std::atomic<bool> Command::parseArgv(const int argc, char *const argv[])
             {
                 case "-o"_bkdrHash:
                 case "--optimum"_bkdrHash:
-                    COMMAND_PERPARE_BITSET(run.optimumBit, TaskBit::taskOptimum);
+                    COMMAND_PERPARE_BITSET(task.optimumBit, TaskBit::taskOptimum);
                     break;
                 case "-i"_bkdrHash:
                 case "--integral"_bkdrHash:
-                    COMMAND_PERPARE_BITSET(run.integralBit, TaskBit::taskIntegral);
+                    COMMAND_PERPARE_BITSET(task.integralBit, TaskBit::taskIntegral);
                     break;
                 case "-s"_bkdrHash:
                 case "--sort"_bkdrHash:
-                    COMMAND_PERPARE_BITSET(run.sortBit, TaskBit::taskSort);
+                    COMMAND_PERPARE_BITSET(task.sortBit, TaskBit::taskSort);
                     break;
                 case "--log"_bkdrHash:
                     printLogContext();
@@ -50,7 +50,7 @@ std::atomic<bool> Command::parseArgv(const int argc, char *const argv[])
             setBitFromTaskPlan(argv + i, taskBit);
         }
 
-        if (true == run.taskDone)
+        if (true == task.taskDone)
         {
             return false;
         }
@@ -68,8 +68,7 @@ void Command::doTask()
 }
 
 void Command::setBitFromTaskPlan(
-    char *const argv[],
-    const std::bitset<TaskBit::taskButtom> &taskBit)
+    char* const argv[], const std::bitset<TaskBit::taskButtom>& taskBit)
 {
     if (taskBit.test(TaskBit::taskOptimum))
     {
@@ -93,7 +92,7 @@ void Command::setBitFromTaskPlan(
 void Command::runOptimum() const
 {
     std::unique_lock<std::mutex> lock(commandMutex);
-    if (run.optimumBit.any())
+    if (task.optimumBit.any())
     {
         std::cout << OPTIMUM_RUN_BEGIN << std::endl;
 
@@ -109,15 +108,14 @@ void Command::runOptimum() const
     }
 }
 void Command::getOptimumResult(
-    const Expression &express,
-    const double leftEndpoint,
-    const double rightEndpoint,
+    const Expression& express, const double leftEndpoint, const double rightEndpoint,
     const double epsilon) const
 {
     assert((leftEndpoint > rightEndpoint) && (epsilon > 0.0));
     std::vector<std::shared_ptr<std::thread>> optimumThread;
-    const auto optimumFunctor = [&](const std::shared_ptr<Optimum> classPoint,
-                                    const char *const threadName) {
+    const auto optimumFunctor =
+        [&](const std::shared_ptr<Optimum> classPoint, const char* const threadName)
+    {
         const std::shared_ptr<std::thread> methodThread = std::make_shared<std::thread>(
             &Optimum::operator(), classPoint, leftEndpoint, rightEndpoint, epsilon);
         pthread_setname_np(methodThread->native_handle(), threadName);
@@ -128,11 +126,10 @@ void Command::getOptimumResult(
     char threadName[COMMAND_THREAD_NAME_LENGTH] = {'\0'};
     for (int i = 0; i < OptimumBit::optimumButtom; ++i)
     {
-        if (run.optimumBit.test(OptimumBit(i)))
+        if (task.optimumBit.test(OptimumBit(i)))
         {
             memcpy(
-                threadName,
-                taskTable[TaskBit::taskOptimum][OptimumBit(i)],
+                threadName, taskTable[TaskBit::taskOptimum][OptimumBit(i)],
                 COMMAND_THREAD_NAME_LENGTH);
             switch (bkdrHash(threadName))
             {
@@ -167,24 +164,24 @@ void Command::getOptimumResult(
         thread->join();
     }
 }
-void Command::setOptimumBit(char *const argv[])
+void Command::setOptimumBit(char* const argv[])
 {
     switch (bkdrHash(argv[0]))
     {
         case "fib"_bkdrHash:
-            run.optimumBit.set(OptimumBit::optimumFibonacci);
+            task.optimumBit.set(OptimumBit::optimumFibonacci);
             break;
         case "gra"_bkdrHash:
-            run.optimumBit.set(OptimumBit::optimumGradient);
+            task.optimumBit.set(OptimumBit::optimumGradient);
             break;
         case "ann"_bkdrHash:
-            run.optimumBit.set(OptimumBit::optimumAnnealing);
+            task.optimumBit.set(OptimumBit::optimumAnnealing);
             break;
         case "par"_bkdrHash:
-            run.optimumBit.set(OptimumBit::optimumParticle);
+            task.optimumBit.set(OptimumBit::optimumParticle);
             break;
         case "gen"_bkdrHash:
-            run.optimumBit.set(OptimumBit::optimumGenetic);
+            task.optimumBit.set(OptimumBit::optimumGenetic);
             break;
         default:
             printUnkownParameter(argv);
@@ -196,7 +193,7 @@ void Command::setOptimumBit(char *const argv[])
 void Command::runIntegral() const
 {
     std::unique_lock<std::mutex> lock(commandMutex);
-    if (run.integralBit.any())
+    if (task.integralBit.any())
     {
         std::cout << INTEGRAL_RUN_BEGIN << std::endl;
 
@@ -212,15 +209,14 @@ void Command::runIntegral() const
     }
 }
 void Command::getIntegralResult(
-    const Expression &express,
-    const double lowerLimit,
-    const double upperLimit,
+    const Expression& express, const double lowerLimit, const double upperLimit,
     const double epsilon) const
 {
     assert(epsilon > 0.0);
     std::vector<std::shared_ptr<std::thread>> integralThread;
-    const auto integralFunctor = [&](const std::shared_ptr<Integral> classPoint,
-                                     const char *const threadName) {
+    const auto integralFunctor =
+        [&](const std::shared_ptr<Integral> classPoint, const char* const threadName)
+    {
         const std::shared_ptr<std::thread> methodThread = std::make_shared<std::thread>(
             &Integral::operator(), classPoint, lowerLimit, upperLimit, epsilon);
         pthread_setname_np(methodThread->native_handle(), threadName);
@@ -231,11 +227,10 @@ void Command::getIntegralResult(
     char threadName[COMMAND_THREAD_NAME_LENGTH] = {'\0'};
     for (int i = 0; i < IntegralBit::integralButtom; ++i)
     {
-        if (run.integralBit.test(IntegralBit(i)))
+        if (task.integralBit.test(IntegralBit(i)))
         {
             memcpy(
-                threadName,
-                taskTable[TaskBit::taskIntegral][IntegralBit(i)],
+                threadName, taskTable[TaskBit::taskIntegral][IntegralBit(i)],
                 COMMAND_THREAD_NAME_LENGTH);
             switch (bkdrHash(threadName))
             {
@@ -270,24 +265,24 @@ void Command::getIntegralResult(
         thread->join();
     }
 }
-void Command::setIntegralBit(char *const argv[])
+void Command::setIntegralBit(char* const argv[])
 {
     switch (bkdrHash(argv[0]))
     {
         case "tra"_bkdrHash:
-            run.integralBit.set(IntegralBit::integralTrapezoidal);
+            task.integralBit.set(IntegralBit::integralTrapezoidal);
             break;
         case "sim"_bkdrHash:
-            run.integralBit.set(IntegralBit::integralSimpson);
+            task.integralBit.set(IntegralBit::integralSimpson);
             break;
         case "rom"_bkdrHash:
-            run.integralBit.set(IntegralBit::integralRomberg);
+            task.integralBit.set(IntegralBit::integralRomberg);
             break;
         case "gau"_bkdrHash:
-            run.integralBit.set(IntegralBit::integralGauss);
+            task.integralBit.set(IntegralBit::integralGauss);
             break;
         case "mon"_bkdrHash:
-            run.integralBit.set(IntegralBit::integralMonteCarlo);
+            task.integralBit.set(IntegralBit::integralMonteCarlo);
             break;
         default:
             printUnkownParameter(argv);
@@ -299,7 +294,7 @@ void Command::setIntegralBit(char *const argv[])
 void Command::runSort() const
 {
     std::unique_lock<std::mutex> lock(commandMutex);
-    if (run.sortBit.any())
+    if (task.sortBit.any())
     {
         constexpr const int leftEndpoint = SORT_ARRAY_RANGE_1;
         constexpr const int rightEndpoint = SORT_ARRAY_RANGE_2;
@@ -311,11 +306,12 @@ void Command::runSort() const
         getSortResult(sort);
     }
 }
-void Command::getSortResult(const std::shared_ptr<Sort<int>> &sort) const
+void Command::getSortResult(const std::shared_ptr<Sort<int>>& sort) const
 {
     std::vector<std::shared_ptr<std::thread>> sortThread;
-    const auto sortFunctor = [&](void (Sort<int>::*methodPoint)(int *const, const uint32_t) const,
-                                 const char *const threadName) {
+    const auto sortFunctor = [&](void (Sort<int>::*methodPoint)(int* const, const uint32_t) const,
+                                 const char* const threadName)
+    {
         const std::shared_ptr<std::thread> methodThread = std::make_shared<std::thread>(
             methodPoint, sort, sort->getRandomArray().get(), sort->getLength());
         pthread_setname_np(methodThread->native_handle(), threadName);
@@ -325,7 +321,7 @@ void Command::getSortResult(const std::shared_ptr<Sort<int>> &sort) const
     char threadName[COMMAND_THREAD_NAME_LENGTH] = {'\0'};
     for (int i = 0; i < SortBit::sortButtom; ++i)
     {
-        if (run.sortBit.test(SortBit(i)))
+        if (task.sortBit.test(SortBit(i)))
         {
             memcpy(
                 threadName, taskTable[TaskBit::taskSort][SortBit(i)], COMMAND_THREAD_NAME_LENGTH);
@@ -372,39 +368,39 @@ void Command::getSortResult(const std::shared_ptr<Sort<int>> &sort) const
         thread->join();
     }
 }
-void Command::setSortBit(char *const argv[])
+void Command::setSortBit(char* const argv[])
 {
     switch (bkdrHash(argv[0]))
     {
         case "bub"_bkdrHash:
-            run.sortBit.set(SortBit::sortBubble);
+            task.sortBit.set(SortBit::sortBubble);
             break;
         case "sel"_bkdrHash:
-            run.sortBit.set(SortBit::sortSelection);
+            task.sortBit.set(SortBit::sortSelection);
             break;
         case "ins"_bkdrHash:
-            run.sortBit.set(SortBit::sortInsertion);
+            task.sortBit.set(SortBit::sortInsertion);
             break;
         case "she"_bkdrHash:
-            run.sortBit.set(SortBit::sortShell);
+            task.sortBit.set(SortBit::sortShell);
             break;
         case "mer"_bkdrHash:
-            run.sortBit.set(SortBit::sortMerge);
+            task.sortBit.set(SortBit::sortMerge);
             break;
         case "qui"_bkdrHash:
-            run.sortBit.set(SortBit::sortQuick);
+            task.sortBit.set(SortBit::sortQuick);
             break;
         case "hea"_bkdrHash:
-            run.sortBit.set(SortBit::sortHeap);
+            task.sortBit.set(SortBit::sortHeap);
             break;
         case "cou"_bkdrHash:
-            run.sortBit.set(SortBit::sortCounting);
+            task.sortBit.set(SortBit::sortCounting);
             break;
         case "buc"_bkdrHash:
-            run.sortBit.set(SortBit::sortBucket);
+            task.sortBit.set(SortBit::sortBucket);
             break;
         case "rad"_bkdrHash:
-            run.sortBit.set(SortBit::sortRadix);
+            task.sortBit.set(SortBit::sortRadix);
             break;
         default:
             printUnkownParameter(argv);
@@ -417,7 +413,7 @@ void Command::printLogContext()
     try
     {
         const int fd =
-            static_cast<__gnu_cxx::stdio_filebuf<char> *const>(logger.getOfs().rdbuf())->fd();
+            static_cast<__gnu_cxx::stdio_filebuf<char>* const>(logger.getOfs().rdbuf())->fd();
         if (flock(fd, LOCK_UN))
         {
             throw UnlockWriterLockError(basename(LOG_PATH));
@@ -425,12 +421,12 @@ void Command::printLogContext()
 
         printFile(LOG_PATH, true, COMMAND_PRINT_MAX_LINE);
     }
-    catch (UnlockWriterLockError const &error)
+    catch (UnlockWriterLockError const& error)
     {
         LOGGER_ERR(error.what());
     }
 
-    run.taskDone = true;
+    task.taskDone = true;
 }
 
 void Command::printInstruction()
@@ -447,14 +443,14 @@ void Command::printInstruction()
          "    --log                              Log\n\n"
          "    --help                             Help");
 
-    run.taskDone = true;
+    task.taskDone = true;
 }
 
-void Command::printUnkownParameter(char *const argv[])
+void Command::printUnkownParameter(char* const argv[])
 {
-    const std::string str = "Unknown command line option: " + std::string(argv[0]) +
-        ". Try with --help to get information.";
+    const std::string str = "Unknown command line option: " + std::string(argv[0])
+        + ". Try with --help to get information.";
     LOGGER_WRN(str.c_str());
 
-    run.taskDone = true;
+    task.taskDone = true;
 }

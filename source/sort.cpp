@@ -10,22 +10,22 @@
 
 template class Sort<int>;
 template Sort<int>::Sort(const uint32_t, const int, const int);
-template const std::unique_ptr<int[]> &Sort<int>::getRandomArray() const;
+template const std::unique_ptr<int[]>& Sort<int>::getRandomArray() const;
 template uint32_t Sort<int>::getLength() const;
-template void Sort<int>::bubbleSort(int *const, const uint32_t) const;
-template void Sort<int>::selectionSort(int *const, const uint32_t) const;
-template void Sort<int>::insertionSort(int *const, const uint32_t) const;
-template void Sort<int>::shellSort(int *const, const uint32_t) const;
-template void Sort<int>::mergeSort(int *const, const uint32_t) const;
-template void Sort<int>::quickSort(int *const, const uint32_t) const;
-template void Sort<int>::heapSort(int *const, const uint32_t) const;
-template void Sort<int>::countingSort(int *const, const uint32_t) const;
-template void Sort<int>::bucketSort(int *const, const uint32_t) const;
-template void Sort<int>::radixSort(int *const, const uint32_t) const;
+template void Sort<int>::bubbleSort(int* const, const uint32_t) const;
+template void Sort<int>::selectionSort(int* const, const uint32_t) const;
+template void Sort<int>::insertionSort(int* const, const uint32_t) const;
+template void Sort<int>::shellSort(int* const, const uint32_t) const;
+template void Sort<int>::mergeSort(int* const, const uint32_t) const;
+template void Sort<int>::quickSort(int* const, const uint32_t) const;
+template void Sort<int>::heapSort(int* const, const uint32_t) const;
+template void Sort<int>::countingSort(int* const, const uint32_t) const;
+template void Sort<int>::bucketSort(int* const, const uint32_t) const;
+template void Sort<int>::radixSort(int* const, const uint32_t) const;
 
 template <class T>
-Sort<T>::Sort(const uint32_t length, const T left, const T right)
-    : length(length), left(left), right(right), randomArray(std::make_unique<T[]>(length))
+Sort<T>::Sort(const uint32_t length, const T left, const T right) :
+    length(length), left(left), right(right), randomArray(std::make_unique<T[]>(length))
 {
     std::cout << SORT_RUN_BEGIN << std::endl;
     setRandomArray<T>(randomArray.get(), length, left, right);
@@ -38,30 +38,28 @@ Sort<T>::~Sort()
 }
 
 template <class T>
-Sort<T> &Sort<T>::operator=(const Sort &rhs)
+Sort<T>& Sort<T>::operator=(const Sort& rhs)
 {
     deepCopyFromSort(rhs);
     return *this;
 }
 
 template <class T>
-Sort<T>::Sort(const Sort &sort)
-    : length(sort.length)
-    , left(sort.length)
-    , right(sort.length)
-    , randomArray(std::make_unique<T[]>(length))
+Sort<T>::Sort(const Sort& sort) :
+    length(sort.length), left(sort.length), right(sort.length),
+    randomArray(std::make_unique<T[]>(length))
 {
     deepCopyFromSort(sort);
 }
 
 template <class T>
-void Sort<T>::deepCopyFromSort(const Sort &sort) const
+void Sort<T>::deepCopyFromSort(const Sort& sort) const
 {
     memcpy(this->randomArray.get(), sort.randomArray.get(), this->length * sizeof(T));
 }
 
 template <class T>
-const std::unique_ptr<T[]> &Sort<T>::getRandomArray() const
+const std::unique_ptr<T[]>& Sort<T>::getRandomArray() const
 {
     std::unique_lock<std::mutex> lock(sortMutex);
     return randomArray;
@@ -77,71 +75,45 @@ uint32_t Sort<T>::getLength() const
 template <class T>
 template <typename U>
 requires std::is_integral<U>::value void Sort<T>::setRandomArray(
-    T array[],
-    const uint32_t length,
-    const T left,
-    const T right) const
+    T array[], const uint32_t length, const T left, const T right) const
 {
     GET_TIME_SEED(seed);
-    const char *const rangeFormat = std::is_integral<T>::value ? "%d to %d" : " ";
     std::uniform_int_distribution<int> randomX(left, right);
     for (uint32_t i = 0; i < length; ++i)
     {
         array[i] = randomX(seed);
     }
 
-    const int rangeSize = std::snprintf(nullptr, 0, rangeFormat, left, right);
-    assert(rangeSize >= 0);
-    char range[rangeSize + 1];
-    range[0] = '\0';
-    std::snprintf(range, rangeSize + 1, rangeFormat, left, right);
-
     const uint32_t arrayBufferSize = length * SORT_PRINT_MAX_ALIGN;
     char arrayBuffer[arrayBufferSize + 1];
     arrayBuffer[0] = '\0';
     FORMAT_PRINT(
-        "\r\nGenerate %u random integral numbers from %s:\r\n%s\n",
-        length,
-        range,
+        "\r\nGenerate %u random integral numbers from %d to %d:\r\n%s\n", length, left, right,
         formatArray(array, length, arrayBuffer, arrayBufferSize + 1));
 }
 template <class T>
 template <typename U>
 requires std::is_floating_point<U>::value void Sort<T>::setRandomArray(
-    T array[],
-    const uint32_t length,
-    const T left,
-    const T right) const
+    T array[], const uint32_t length, const T left, const T right) const
 {
     GET_TIME_SEED(seed);
-    const char *const rangeFormat = std::is_floating_point<T>::value ? "%.5f to %.5f" : " ";
     std::uniform_real_distribution<double> randomX(left, right);
     for (uint32_t i = 0; i < length; ++i)
     {
         array[i] = randomX(seed);
     }
 
-    const int rangeSize = std::snprintf(nullptr, 0, rangeFormat, left, right);
-    assert(rangeSize >= 0);
-    char range[rangeSize + 1];
-    range[0] = '\0';
-    std::snprintf(range, rangeSize + 1, rangeFormat, left, right);
-
     const uint32_t arrayBufferSize = length * SORT_PRINT_MAX_ALIGN;
     char arrayBuffer[arrayBufferSize + 1];
     arrayBuffer[0] = '\0';
     FORMAT_PRINT(
-        "\r\nGenerate %u random floating point numbers from %s:\r\n%s\n",
-        length,
-        range,
-        formatArray(array, length, arrayBuffer, arrayBufferSize + 1));
+        "\r\nGenerate %u random floating point numbers from %.5f to %.5f:\r\n%s\n", length, left,
+        right, formatArray(array, length, arrayBuffer, arrayBufferSize + 1));
 }
 
 template <class T>
-char *Sort<T>::formatArray(
-    const T *const __restrict array,
-    const uint32_t length,
-    char *const __restrict buffer,
+char* Sort<T>::formatArray(
+    const T* const __restrict array, const uint32_t length, char* const __restrict buffer,
     const uint32_t bufferSize) const
 {
     uint32_t align = 0;
@@ -150,7 +122,7 @@ char *Sort<T>::formatArray(
         align = std::max(static_cast<uint32_t>(std::to_string(*(array + i)).length()), align);
     }
 
-    const char *const format =
+    const char* const format =
         std::is_integral<T>::value ? "%*d " : (std::is_floating_point<T>::value ? "%*.5f " : " ");
     uint32_t completeSize = 0;
     for (uint32_t i = 0; i < length; ++i)
@@ -167,7 +139,7 @@ char *Sort<T>::formatArray(
 
 // Bubble method
 template <class T>
-void Sort<T>::bubbleSort(T *const array, const uint32_t length) const
+void Sort<T>::bubbleSort(T* const array, const uint32_t length) const
 {
     TIME_BEGIN;
     T sortArray[length];
@@ -190,14 +162,13 @@ void Sort<T>::bubbleSort(T *const array, const uint32_t length) const
     char arrayBuffer[arrayBufferSize + 1];
     arrayBuffer[0] = '\0';
     FORMAT_PRINT(
-        SORT_BUBBLE,
-        formatArray(sortArray, length, arrayBuffer, arrayBufferSize + 1),
+        SORT_BUBBLE, formatArray(sortArray, length, arrayBuffer, arrayBufferSize + 1),
         TIME_INTERVAL);
 }
 
 // Selection method
 template <class T>
-void Sort<T>::selectionSort(T *const array, const uint32_t length) const
+void Sort<T>::selectionSort(T* const array, const uint32_t length) const
 {
     TIME_BEGIN;
     T sortArray[length];
@@ -222,14 +193,13 @@ void Sort<T>::selectionSort(T *const array, const uint32_t length) const
     char arrayBuffer[arrayBufferSize + 1];
     arrayBuffer[0] = '\0';
     FORMAT_PRINT(
-        SORT_SELECTION,
-        formatArray(sortArray, length, arrayBuffer, arrayBufferSize + 1),
+        SORT_SELECTION, formatArray(sortArray, length, arrayBuffer, arrayBufferSize + 1),
         TIME_INTERVAL);
 }
 
 // Insertion method
 template <class T>
-void Sort<T>::insertionSort(T *const array, const uint32_t length) const
+void Sort<T>::insertionSort(T* const array, const uint32_t length) const
 {
     TIME_BEGIN;
     T sortArray[length];
@@ -253,14 +223,13 @@ void Sort<T>::insertionSort(T *const array, const uint32_t length) const
     char arrayBuffer[arrayBufferSize + 1];
     arrayBuffer[0] = '\0';
     FORMAT_PRINT(
-        SORT_INSERTION,
-        formatArray(sortArray, length, arrayBuffer, arrayBufferSize + 1),
+        SORT_INSERTION, formatArray(sortArray, length, arrayBuffer, arrayBufferSize + 1),
         TIME_INTERVAL);
 }
 
 // Shell method
 template <class T>
-void Sort<T>::shellSort(T *const array, const uint32_t length) const
+void Sort<T>::shellSort(T* const array, const uint32_t length) const
 {
     TIME_BEGIN;
     T sortArray[length];
@@ -285,14 +254,13 @@ void Sort<T>::shellSort(T *const array, const uint32_t length) const
     char arrayBuffer[arrayBufferSize + 1];
     arrayBuffer[0] = '\0';
     FORMAT_PRINT(
-        SORT_SHELL,
-        formatArray(sortArray, length, arrayBuffer, arrayBufferSize + 1),
+        SORT_SHELL, formatArray(sortArray, length, arrayBuffer, arrayBufferSize + 1),
         TIME_INTERVAL);
 }
 
 // Merge method
 template <class T>
-void Sort<T>::mergeSort(T *const array, const uint32_t length) const
+void Sort<T>::mergeSort(T* const array, const uint32_t length) const
 {
     TIME_BEGIN;
     T sortArray[length];
@@ -306,12 +274,11 @@ void Sort<T>::mergeSort(T *const array, const uint32_t length) const
     char arrayBuffer[arrayBufferSize + 1];
     arrayBuffer[0] = '\0';
     FORMAT_PRINT(
-        SORT_MERGE,
-        formatArray(sortArray, length, arrayBuffer, arrayBufferSize + 1),
+        SORT_MERGE, formatArray(sortArray, length, arrayBuffer, arrayBufferSize + 1),
         TIME_INTERVAL);
 }
 template <class T>
-void Sort<T>::mergeSortRecursive(T *const sortArray, const uint32_t begin, const uint32_t end)
+void Sort<T>::mergeSortRecursive(T* const sortArray, const uint32_t begin, const uint32_t end)
 {
     if (begin >= end)
     {
@@ -343,7 +310,7 @@ void Sort<T>::mergeSortRecursive(T *const sortArray, const uint32_t begin, const
 
 // Quick method
 template <class T>
-void Sort<T>::quickSort(T *const array, const uint32_t length) const
+void Sort<T>::quickSort(T* const array, const uint32_t length) const
 {
     TIME_BEGIN;
     T sortArray[length];
@@ -357,12 +324,11 @@ void Sort<T>::quickSort(T *const array, const uint32_t length) const
     char arrayBuffer[arrayBufferSize + 1];
     arrayBuffer[0] = '\0';
     FORMAT_PRINT(
-        SORT_QUICK,
-        formatArray(sortArray, length, arrayBuffer, arrayBufferSize + 1),
+        SORT_QUICK, formatArray(sortArray, length, arrayBuffer, arrayBufferSize + 1),
         TIME_INTERVAL);
 }
 template <class T>
-void Sort<T>::quickSortRecursive(T *const sortArray, const uint32_t begin, const uint32_t end)
+void Sort<T>::quickSortRecursive(T* const sortArray, const uint32_t begin, const uint32_t end)
 {
     if (begin >= end)
     {
@@ -402,7 +368,7 @@ void Sort<T>::quickSortRecursive(T *const sortArray, const uint32_t begin, const
 
 // Heap method
 template <class T>
-void Sort<T>::heapSort(T *const array, const uint32_t length) const
+void Sort<T>::heapSort(T* const array, const uint32_t length) const
 {
     TIME_BEGIN;
     T sortArray[length];
@@ -427,7 +393,7 @@ void Sort<T>::heapSort(T *const array, const uint32_t length) const
         SORT_HEAP, formatArray(sortArray, length, arrayBuffer, arrayBufferSize + 1), TIME_INTERVAL);
 }
 template <class T>
-void Sort<T>::buildMaxHeap(T *const sortArray, const uint32_t begin, const uint32_t end)
+void Sort<T>::buildMaxHeap(T* const sortArray, const uint32_t begin, const uint32_t end)
 {
     uint32_t parent = begin;
     uint32_t child = parent * 2 + 1;
@@ -452,7 +418,7 @@ void Sort<T>::buildMaxHeap(T *const sortArray, const uint32_t begin, const uint3
 
 // Counting method
 template <class T>
-void Sort<T>::countingSort(T *const array, const uint32_t length) const
+void Sort<T>::countingSort(T* const array, const uint32_t length) const
 {
     if (!std::is_integral_v<T>)
     {
@@ -494,14 +460,13 @@ void Sort<T>::countingSort(T *const array, const uint32_t length) const
     char arrayBuffer[arrayBufferSize + 1];
     arrayBuffer[0] = '\0';
     FORMAT_PRINT(
-        SORT_COUNTING,
-        formatArray(sortArray, length, arrayBuffer, arrayBufferSize + 1),
+        SORT_COUNTING, formatArray(sortArray, length, arrayBuffer, arrayBufferSize + 1),
         TIME_INTERVAL);
 }
 
 // Bucket method
 template <class T>
-void Sort<T>::bucketSort(T *const array, const uint32_t length) const
+void Sort<T>::bucketSort(T* const array, const uint32_t length) const
 {
     TIME_BEGIN;
     T sortArray[length];
@@ -528,10 +493,10 @@ void Sort<T>::bucketSort(T *const array, const uint32_t length) const
         aggregation[aggIndex].emplace_back(sortArray[i]);
     }
     uint32_t index = 0;
-    for (auto &bucketUpdate : aggregation)
+    for (auto& bucketUpdate : aggregation)
     {
         std::sort(bucketUpdate.begin(), bucketUpdate.end());
-        for (const auto &bucketElement : bucketUpdate)
+        for (const auto& bucketElement : bucketUpdate)
         {
             sortArray[index++] = bucketElement;
         }
@@ -542,14 +507,13 @@ void Sort<T>::bucketSort(T *const array, const uint32_t length) const
     char arrayBuffer[arrayBufferSize + 1];
     arrayBuffer[0] = '\0';
     FORMAT_PRINT(
-        SORT_BUCKET,
-        formatArray(sortArray, length, arrayBuffer, arrayBufferSize + 1),
+        SORT_BUCKET, formatArray(sortArray, length, arrayBuffer, arrayBufferSize + 1),
         TIME_INTERVAL);
 }
 
 // Radix method
 template <class T>
-void Sort<T>::radixSort(T *const array, const uint32_t length) const
+void Sort<T>::radixSort(T* const array, const uint32_t length) const
 {
     if (!std::is_integral_v<T>)
     {
@@ -621,7 +585,7 @@ void Sort<T>::radixSort(T *const array, const uint32_t length) const
     }
 
     uint32_t index = 0;
-    for (auto &bucketInfo : aggregation)
+    for (auto& bucketInfo : aggregation)
     {
         while (bucketInfo.size())
         {
@@ -635,7 +599,6 @@ void Sort<T>::radixSort(T *const array, const uint32_t length) const
     char arrayBuffer[arrayBufferSize + 1];
     arrayBuffer[0] = '\0';
     FORMAT_PRINT(
-        SORT_RADIX,
-        formatArray(sortArray, length, arrayBuffer, arrayBufferSize + 1),
+        SORT_RADIX, formatArray(sortArray, length, arrayBuffer, arrayBufferSize + 1),
         TIME_INTERVAL);
 }

@@ -5,10 +5,7 @@
 #include "log.hpp"
 
 double trapezoid(
-    const Expression &express,
-    const double left,
-    const double height,
-    const uint32_t step)
+    const Expression& express, const double left, const double height, const uint32_t step)
 {
     double sum = 0.0;
     double x = left;
@@ -37,7 +34,8 @@ double Trapezoidal::operator()(double lower, double upper, const double eps) con
         s1 = s2;
         s2 = sum;
         n *= 2;
-    } while ((fabs(s1 - s2) > eps) || (n < INTEGRAL_TRAPEZOIDAL_MIN_STEP));
+    }
+    while ((fabs(s1 - s2) > eps) || (n < INTEGRAL_TRAPEZOIDAL_MIN_STEP));
     sum = s2 * sign;
 
     TIME_END;
@@ -63,16 +61,16 @@ double Simpson::simpsonIntegral(const double left, const double right, const dou
     const double mid = (left + right) / 2.0;
     const double sum = simpsonOneThird(left, right);
     if (fabs(
-            sum -
-            (compositeSimpsonOneThird(left, mid, 2) + compositeSimpsonOneThird(mid, right, 2))) >
-        eps)
+            sum
+            - (compositeSimpsonOneThird(left, mid, 2) + compositeSimpsonOneThird(mid, right, 2)))
+        > eps)
     {
         return simpsonIntegral(left, mid, eps) + simpsonIntegral(mid, right, eps);
     }
     return sum;
 }
-double Simpson::compositeSimpsonOneThird(const double left, const double right, const uint32_t n)
-    const
+double Simpson::compositeSimpsonOneThird(
+    const double left, const double right, const uint32_t n) const
 {
     const double stepLength = (right - left) / n;
     double sum = 0.0;
@@ -112,8 +110,8 @@ double Romberg::operator()(double lower, double upper, const double eps) const
         t1Zero = trapezoidFunctor(pow(2, k));
         for (uint32_t i = 1; i <= k; ++i)
         {
-            t1 = pow(4, i) / (pow(4, i) - 1) * trapezoidFunctor(pow(2, i + 1)) -
-                1.0 / pow(4, i) * t1Zero;
+            t1 = pow(4, i) / (pow(4, i) - 1) * trapezoidFunctor(pow(2, i + 1))
+                - 1.0 / pow(4, i) * t1Zero;
         }
     }
     sum = trapezoidFunctor(pow(2, k)) * sign;
@@ -156,7 +154,8 @@ double Gauss::operator()(double lower, double upper, const double eps) const
         s1 = s2;
         s2 = sum;
         n *= 2;
-    } while (fabs(s1 - s2) > eps);
+    }
+    while (fabs(s1 - s2) > eps);
     sum = s2 * sign;
 
     TIME_END;
@@ -181,9 +180,7 @@ double MonteCarlo::operator()(double lower, double upper, const double eps) cons
     return sum;
 }
 double MonteCarlo::sampleFromUniformDistribution(
-    const double lower,
-    const double upper,
-    const double eps) const
+    const double lower, const double upper, const double eps) const
 {
     const uint32_t n = (upper - lower) / eps;
     std::mt19937 seed(std::random_device{}());
@@ -200,9 +197,7 @@ double MonteCarlo::sampleFromUniformDistribution(
 }
 #ifdef NO_UNIFORM
 double MonteCarlo::sampleFromNormalDistribution(
-    const double lower,
-    const double upper,
-    const double eps) const
+    const double lower, const double upper, const double eps) const
 {
     const uint32_t n = (upper - lower) / eps;
     const double mu = (lower + upper) / 2.0;
@@ -218,9 +213,10 @@ double MonteCarlo::sampleFromNormalDistribution(
             double u2 = randomU(seed);
             double mag = sigma * sqrt(-2.0 * log(u1));
             x = mag * sin(2.0 * M_PI * u2) + mu; // Box-Muller Transform
-        } while ((x < lower) || (x > upper));
-        const double probabilityDensityFunction = (1.0 / sqrt(2.0 * M_PI * sigma * sigma)) *
-            pow(M_E, (-(x - mu) * (x - mu)) / (2.0 * sigma * sigma));
+        }
+        while ((x < lower) || (x > upper));
+        const double probabilityDensityFunction = (1.0 / sqrt(2.0 * M_PI * sigma * sigma))
+            * pow(M_E, (-(x - mu) * (x - mu)) / (2.0 * sigma * sigma));
         sum += fun(x) / probabilityDensityFunction; // I≈1/N*[F(X1)/P(X1)+...+F(Xn)/P(Xn)]
     }
     sum /= n;

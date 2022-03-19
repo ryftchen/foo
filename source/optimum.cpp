@@ -14,9 +14,7 @@ using Swarm::Society;
 
 // Fibonacci method
 std::optional<std::tuple<ValueY, ValueX>> Fibonacci::operator()(
-    const double left,
-    const double right,
-    const double eps)
+    const double left, const double right, const double eps)
 {
     TIME_BEGIN;
     double x = 0.0, y = 0.0;
@@ -48,7 +46,9 @@ std::optional<std::tuple<ValueY, ValueX>> Fibonacci::operator()(
                 }
             }
             std::sort(
-                aggregation.begin(), aggregation.end(), [](const auto &max1, const auto &max2) {
+                aggregation.begin(), aggregation.end(),
+                [](const auto& max1, const auto& max2)
+                {
                     return max1.second > max2.second;
                 });
 
@@ -66,7 +66,8 @@ std::optional<std::tuple<ValueY, ValueX>> Fibonacci::operator()(
                 }
             }
             n *= 2;
-        } while (cnt < OPTIMUM_FIBONACCI_MAX_UNCHANGED);
+        }
+        while (cnt < OPTIMUM_FIBONACCI_MAX_UNCHANGED);
     }
 
     TIME_END;
@@ -74,9 +75,7 @@ std::optional<std::tuple<ValueY, ValueX>> Fibonacci::operator()(
     return std::make_tuple(y, x);
 }
 std::optional<std::pair<double, double>> Fibonacci::fibonacciSearch(
-    const double left,
-    const double right,
-    const double eps)
+    const double left, const double right, const double eps)
 {
     double leftVal = left, rightVal = right;
     std::vector<double> fibonacci(0);
@@ -131,7 +130,7 @@ std::optional<std::pair<double, double>> Fibonacci::fibonacciSearch(
 
     return std::make_pair(x, fun(x));
 }
-void Fibonacci::generateFibonacciNumber(std::vector<double> &fibonacci, const double max)
+void Fibonacci::generateFibonacciNumber(std::vector<double>& fibonacci, const double max)
 {
     double f1 = 0.0, f2 = 1.0;
     while (1)
@@ -150,9 +149,7 @@ void Fibonacci::generateFibonacciNumber(std::vector<double> &fibonacci, const do
 
 // Gradient ascent method
 std::optional<std::tuple<ValueY, ValueX>> Gradient::operator()(
-    const double left,
-    const double right,
-    const double eps)
+    const double left, const double right, const double eps)
 {
     TIME_BEGIN;
     GET_TIME_SEED(seed);
@@ -171,7 +168,7 @@ std::optional<std::tuple<ValueY, ValueX>> Gradient::operator()(
 
     std::vector<std::pair<double, double>> aggregation;
     aggregation.reserve(climbing.size());
-    for (const auto &climber : climbing)
+    for (const auto& climber : climbing)
     {
         x = climber;
         uint32_t i = 0;
@@ -188,9 +185,12 @@ std::optional<std::tuple<ValueY, ValueX>> Gradient::operator()(
         }
         aggregation.emplace_back(std::pair<double, double>(x, fun(x)));
     }
-    std::sort(aggregation.begin(), aggregation.end(), [](const auto &max1, const auto &max2) {
-        return max1.second > max2.second;
-    });
+    std::sort(
+        aggregation.begin(), aggregation.end(),
+        [](const auto& max1, const auto& max2)
+        {
+            return max1.second > max2.second;
+        });
     x = std::get<0>(*aggregation.begin());
     max = std::get<1>(*aggregation.begin());
 
@@ -206,9 +206,7 @@ double Gradient::calculateFirstDerivative(const double x, const double eps) cons
 
 // Simulated annealing method
 std::optional<std::tuple<ValueY, ValueX>> Annealing::operator()(
-    const double left,
-    const double right,
-    const double eps)
+    const double left, const double right, const double eps)
 {
     TIME_BEGIN;
     double temperature = Cooling::initT;
@@ -228,12 +226,12 @@ std::optional<std::tuple<ValueY, ValueX>> Annealing::operator()(
             double xNew = 0.0, yNew = 0.0;
             do
             {
-                double delta =
-                    static_cast<int>(
-                        random(seed) * (right - left) * static_cast<uint32_t>(1.0 / eps)) *
-                    eps;
+                double delta = static_cast<int>(
+                                   random(seed) * (right - left) * static_cast<uint32_t>(1.0 / eps))
+                    * eps;
                 xNew = x + delta;
-            } while ((xNew < left) || (xNew > right));
+            }
+            while ((xNew < left) || (xNew > right));
             yNew = fun(xNew);
 
             if ((yNew > y) || (exp(-(y - yNew) / temperature) > random(seed)))
@@ -263,14 +261,14 @@ std::optional<std::tuple<ValueY, ValueX>> Annealing::operator()(
 
 // Particle swarm method
 std::optional<std::tuple<ValueY, ValueX>> Particle::operator()(
-    const double left,
-    const double right,
-    const double eps)
+    const double left, const double right, const double eps)
 {
     TIME_BEGIN;
     Record rec = recordInit(left, right);
     const Society::iterator best = std::max_element(
-        begin(rec.society), end(rec.society), [](const auto &max1, const auto &max2) {
+        begin(rec.society), end(rec.society),
+        [](const auto& max1, const auto& max2)
+        {
             return max1.xFitness < max2.xFitness;
         });
     double xBest = best->x;
@@ -279,16 +277,16 @@ std::optional<std::tuple<ValueY, ValueX>> Particle::operator()(
     std::uniform_real_distribution<double> random(0.0, 1.0);
     for (uint32_t i = 0; i < Swarm::iterNum; ++i)
     {
-        const double w = Swarm::wBegin -
-            (Swarm::wBegin - Swarm::wEnd) * pow(static_cast<double>(i + 1) / Swarm::iterNum, 2);
-        for (auto &ind : rec.society)
+        const double w = Swarm::wBegin
+            - (Swarm::wBegin - Swarm::wEnd) * pow(static_cast<double>(i + 1) / Swarm::iterNum, 2);
+        for (auto& ind : rec.society)
         {
             const double rand1 =
                 static_cast<uint32_t>(random(seed) * static_cast<uint32_t>(1.0 / eps)) * eps;
             const double rand2 =
                 static_cast<uint32_t>(random(seed) * static_cast<uint32_t>(1.0 / eps)) * eps;
-            ind.velocity = w * ind.velocity + Swarm::c1 * rand1 * (ind.positionBest - ind.x) +
-                Swarm::c2 * rand2 * (xBest - ind.x);
+            ind.velocity = w * ind.velocity + Swarm::c1 * rand1 * (ind.positionBest - ind.x)
+                + Swarm::c2 * rand2 * (xBest - ind.x);
             (ind.velocity > Swarm::vMax)
                 ? ind.velocity = Swarm::vMax
                 : (ind.velocity < Swarm::vMin ? ind.velocity = Swarm::vMin : ind.velocity);
@@ -299,7 +297,7 @@ std::optional<std::tuple<ValueY, ValueX>> Particle::operator()(
             ind.xFitness = fun(ind.x);
         }
 
-        for (auto &ind : rec.society)
+        for (auto& ind : rec.society)
         {
             if (ind.xFitness > ind.fitnessPositionBest)
             {
@@ -330,11 +328,14 @@ Record Particle::recordInit(const double left, const double right)
 
     const Individual individualInit(0.0, 0.0, 0.0, 0.0, 0.0);
     Society societyInit(Swarm::size, individualInit);
-    std::generate(societyInit.begin(), societyInit.end(), [&] {
-        const double x = randomX(seed);
-        const Individual individual(x, randomV(seed), x, fun(x), fun(x));
-        return individual;
-    });
+    std::generate(
+        societyInit.begin(), societyInit.end(),
+        [&]
+        {
+            const double x = randomX(seed);
+            const Individual individual(x, randomV(seed), x, fun(x), fun(x));
+            return individual;
+        });
     Record rec{{}, {}};
     rec.society = societyInit;
     return rec;
@@ -342,9 +343,7 @@ Record Particle::recordInit(const double left, const double right)
 
 // Genetic method
 std::optional<std::tuple<ValueY, ValueX>> Genetic::operator()(
-    const double left,
-    const double right,
-    const double eps)
+    const double left, const double right, const double eps)
 {
     TIME_BEGIN;
     setSpecies(left, right, eps);
@@ -383,34 +382,43 @@ void Genetic::setSpecies(const double left, const double right, const double eps
     }
     chrNum = num + 1;
 }
-void Genetic::geneCoding(Chromosome &chr)
+void Genetic::geneCoding(Chromosome& chr)
 {
     std::uniform_int_distribution<int> randomX(0, 1);
-    std::generate(chr.begin(), chr.end(), [&] {
-        return randomX(seed);
-    });
+    std::generate(
+        chr.begin(), chr.end(),
+        [&]
+        {
+            return randomX(seed);
+        });
 }
-double Genetic::geneDecoding(const Chromosome &chr)
+double Genetic::geneDecoding(const Chromosome& chr)
 {
     const double max = pow(2, chrNum) - 1.0;
     double temp = 0.0;
     uint32_t i = 0;
-    std::for_each(chr.begin(), chr.end(), [&temp, &i](const auto &bit) {
-        temp += bit * pow(2, i);
-        ++i;
-    });
+    std::for_each(
+        chr.begin(), chr.end(),
+        [&temp, &i](const auto& bit)
+        {
+            temp += bit * pow(2, i);
+            ++i;
+        });
     return range.left + (range.right - range.left) * temp / max;
 }
 Population Genetic::populationInit()
 {
     const Chromosome chrInit(chrNum, 0);
     Population pop(Species::size, chrInit);
-    std::for_each(pop.begin(), pop.end(), [this](auto &chr) {
-        geneCoding(chr);
-    });
+    std::for_each(
+        pop.begin(), pop.end(),
+        [this](auto& chr)
+        {
+            geneCoding(chr);
+        });
     return pop;
 }
-void Genetic::geneCrossover(Chromosome &chr1, Chromosome &chr2)
+void Genetic::geneCrossover(Chromosome& chr1, Chromosome& chr2)
 {
     Chromosome chrTemp;
     chrTemp.reserve(chr1.size());
@@ -425,7 +433,7 @@ void Genetic::geneCrossover(Chromosome &chr1, Chromosome &chr2)
     std::copy_n(chr2.begin() + crossBegin, crossEnd - crossBegin, chr1.begin() + crossBegin);
     std::copy_n(chrTemp.begin() + crossBegin, crossEnd - crossBegin, chr2.begin() + crossBegin);
 }
-void Genetic::crossIndividual(Population &pop)
+void Genetic::crossIndividual(Population& pop)
 {
     Population popCross;
     popCross.reserve(pop.size());
@@ -455,19 +463,23 @@ void Genetic::crossIndividual(Population &pop)
     }
     std::copy(popCross.begin(), popCross.end(), pop.begin());
 }
-void Genetic::geneMutation(Chromosome &chr)
+void Genetic::geneMutation(Chromosome& chr)
 {
     uint32_t flip = 0;
     do
     {
         flip = getRandomNumber(chrNum);
-    } while (0 == flip);
+    }
+    while (0 == flip);
 
     std::vector<uint32_t> index(chrNum);
     uint32_t id = 0;
-    std::generate(index.begin(), index.end(), [&id] {
-        return id++;
-    });
+    std::generate(
+        index.begin(), index.end(),
+        [&id]
+        {
+            return id++;
+        });
     while (flip)
     {
         const auto iterId = index.begin() + getRandomNumber(index.size() - 1);
@@ -477,27 +489,33 @@ void Genetic::geneMutation(Chromosome &chr)
         --flip;
     }
 }
-void Genetic::mutateIndividual(Population &pop)
+void Genetic::mutateIndividual(Population& pop)
 {
-    std::for_each(pop.begin(), pop.end(), [this](auto &ind) {
-        if (Species::mutatePr > random())
+    std::for_each(
+        pop.begin(), pop.end(),
+        [this](auto& ind)
         {
-            geneMutation(ind);
-        }
-    });
+            if (Species::mutatePr > random())
+            {
+                geneMutation(ind);
+            }
+        });
 }
-double Genetic::calculateFitness(const Chromosome &chr)
+double Genetic::calculateFitness(const Chromosome& chr)
 {
     return fun(geneDecoding(chr));
 }
 std::optional<std::tuple<double, double>> Genetic::fitnessLinearTransformation(
-    const Population &pop)
+    const Population& pop)
 {
     std::vector<double> reFitness;
     reFitness.reserve(pop.size());
-    std::transform(pop.begin(), pop.end(), std::back_inserter(reFitness), [this](const auto &ind) {
-        return calculateFitness(ind);
-    });
+    std::transform(
+        pop.begin(), pop.end(), std::back_inserter(reFitness),
+        [this](const auto& ind)
+        {
+            return calculateFitness(ind);
+        });
 
     double reFitnessMin = *(std::min_element(begin(reFitness), end(reFitness)));
     double reFitnessAvg = std::accumulate(begin(reFitness), end(reFitness), 0.0) / reFitness.size();
@@ -513,7 +531,7 @@ std::optional<std::tuple<double, double>> Genetic::fitnessLinearTransformation(
         return std::nullopt;
     }
 }
-void Genetic::stochasticTournamentSelection(Population &pop, const std::vector<double> &fitnessCum)
+void Genetic::stochasticTournamentSelection(Population& pop, const std::vector<double>& fitnessCum)
 {
     Population popNew;
     popNew.reserve(pop.size());
@@ -523,8 +541,10 @@ void Genetic::stochasticTournamentSelection(Population &pop, const std::vector<d
         do
         {
             const double rand = random();
-            const auto iterCum =
-                std::find_if(fitnessCum.begin(), fitnessCum.end(), [&rand](const auto &cumulation) {
+            const auto iterCum = std::find_if(
+                fitnessCum.begin(), fitnessCum.end(),
+                [&rand](const auto& cumulation)
+                {
                     return cumulation > rand;
                 });
             assert(iterCum != fitnessCum.end());
@@ -549,11 +569,12 @@ void Genetic::stochasticTournamentSelection(Population &pop, const std::vector<d
                     popNew.emplace_back(*competitor2);
                 }
             }
-        } while ((pop.end() == competitor1) || (pop.end() == competitor2));
+        }
+        while ((pop.end() == competitor1) || (pop.end() == competitor2));
     }
     std::copy(popNew.begin(), popNew.end(), pop.begin());
 }
-void Genetic::selectIndividual(Population &pop)
+void Genetic::selectIndividual(Population& pop)
 {
     double sum = 0.0, alpha = 1.0, beta = 0.0;
     const auto coefficient = fitnessLinearTransformation(pop);
@@ -564,37 +585,45 @@ void Genetic::selectIndividual(Population &pop)
     }
     std::vector<double> fitnessVal;
     fitnessVal.reserve(pop.size());
-    std::transform(pop.begin(), pop.end(), std::back_inserter(fitnessVal), [&](const auto &ind) {
-        const double fitVal = alpha * calculateFitness(ind) + beta;
-        sum += fitVal;
-        return fitVal;
-    });
+    std::transform(
+        pop.begin(), pop.end(), std::back_inserter(fitnessVal),
+        [&](const auto& ind)
+        {
+            const double fitVal = alpha * calculateFitness(ind) + beta;
+            sum += fitVal;
+            return fitVal;
+        });
     assert(0 != sum);
 
     std::vector<double> fitnessAvg;
     fitnessAvg.reserve(fitnessVal.size());
     std::transform(
-        fitnessVal.begin(),
-        fitnessVal.end(),
-        std::back_inserter(fitnessAvg),
-        [&sum](const auto &fitVal) {
+        fitnessVal.begin(), fitnessVal.end(), std::back_inserter(fitnessAvg),
+        [&sum](const auto& fitVal)
+        {
             return fitVal / sum;
         });
 
     double previous = 0.0;
-    std::for_each(fitnessAvg.begin(), fitnessAvg.end(), [&previous](auto &fitCum) {
-        fitCum += previous;
-        previous = fitCum;
-    });
+    std::for_each(
+        fitnessAvg.begin(), fitnessAvg.end(),
+        [&previous](auto& fitCum)
+        {
+            fitCum += previous;
+            previous = fitCum;
+        });
     stochasticTournamentSelection(pop, fitnessAvg);
 }
-Chromosome Genetic::getBestIndividual(const Population &pop)
+Chromosome Genetic::getBestIndividual(const Population& pop)
 {
     std::vector<double> fitnessVal;
     fitnessVal.reserve(pop.size());
-    std::transform(pop.begin(), pop.end(), std::back_inserter(fitnessVal), [this](const auto &ind) {
-        return calculateFitness(ind);
-    });
+    std::transform(
+        pop.begin(), pop.end(), std::back_inserter(fitnessVal),
+        [this](const auto& ind)
+        {
+            return calculateFitness(ind);
+        });
 
     auto indBest = *(pop.begin());
     auto iterInd = pop.begin();
