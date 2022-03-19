@@ -187,16 +187,16 @@ void printFile(const char *const pathname, const bool reverse, const uint32_t ma
     }
     catch (OpenFileError const &error)
     {
-        LOGGER(Log::Level::levelError, error.what());
+        LOGGER_ERR(error.what());
     }
     catch (LockReaderLockError const &error)
     {
-        LOGGER(Log::Level::levelError, error.what());
+        LOGGER_ERR(error.what());
         file.close();
     }
     catch (UnlockReaderLockError const &error)
     {
-        LOGGER(Log::Level::levelError, error.what());
+        LOGGER_ERR(error.what());
         file.close();
     }
 }

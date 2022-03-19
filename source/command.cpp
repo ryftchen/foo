@@ -11,7 +11,7 @@ std::atomic<bool> Command::parseArgv(const int argc, char *const argv[])
 {
     if (argc < 1)
     {
-        LOGGER(Log::Level::levelInfo, "No command line option.");
+        LOGGER_INF("No command line option.");
         printLicense();
     }
 
@@ -427,7 +427,7 @@ void Command::printLogContext()
     }
     catch (UnlockWriterLockError const &error)
     {
-        LOGGER(Log::Level::levelError, error.what());
+        LOGGER_ERR(error.what());
     }
 
     run.taskDone = true;
@@ -469,11 +469,11 @@ void Command::printLicense()
     }
     catch (std::runtime_error const &error)
     {
-        LOGGER(Log::Level::levelError, error.what());
+        LOGGER_ERR(error.what());
     }
     catch (RunCommandError const &error)
     {
-        LOGGER(Log::Level::levelError, error.what());
+        LOGGER_ERR(error.what());
     }
 
     run.taskDone = true;
@@ -483,7 +483,7 @@ void Command::printUnkownParameter(char *const argv[])
 {
     const std::string str = "Unknown command line option: " + std::string(argv[0]) +
         ". Try with --help to get information.";
-    LOGGER(Log::Level::levelWarn, str.c_str());
+    LOGGER_WRN(str.c_str());
 
     run.taskDone = true;
 }
