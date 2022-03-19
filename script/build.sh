@@ -108,9 +108,11 @@ createMakefile()
             shCommand "mkdir ./${BUILD_FOLDER}"
         fi
         if [ "${ARGS_RELEASE}" = "1" ]; then
-            shCommand "cd ./${BUILD_FOLDER} && cmake .. -DCMAKE_BUILD_TYPE=Release"
+            shCommand "cd ./${BUILD_FOLDER} \
+&& cmake .. -DCMAKE_CXX_COMPILER=clang++-11 -DCMAKE_BUILD_TYPE=Release"
         else
-            shCommand "cd ./${BUILD_FOLDER} && cmake .. -DCMAKE_BUILD_TYPE=Debug"
+            shCommand "cd ./${BUILD_FOLDER} \
+&& cmake .. -DCMAKE_CXX_COMPILER=clang++-11 -DCMAKE_BUILD_TYPE=Debug"
         fi
     else
         printAbort "There is no ${CMAKE_FILE} file in ${PROJECT_FOLDER} folder."
