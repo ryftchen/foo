@@ -27,7 +27,7 @@ static void switchToProjectPath()
     }
     catch (std::runtime_error const &error)
     {
-        LOGGER(Log::Level::levelError, error.what());
+        LOGGER_ERR(error.what());
         exit(-1);
     }
 }

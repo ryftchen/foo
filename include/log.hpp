@@ -17,7 +17,14 @@ void printFile(
 #define LOG_DIR "./temp"
 #define LOG_PATH "./temp/foo.log"
 #define LOG_PATHNAME_LENGTH 32
-#define LOGGER(level, format, args...) logger.outputLog(level, __FILE__, __LINE__, format, ##args)
+#define LOGGER_DBG(format, args...)                                                                \
+    logger.outputLog(Log::Level::levelDebug, __FILE__, __LINE__, format, ##args)
+#define LOGGER_INF(format, args...)                                                                \
+    logger.outputLog(Log::Level::levelInfo, __FILE__, __LINE__, format, ##args)
+#define LOGGER_WRN(format, args...)                                                                \
+    logger.outputLog(Log::Level::levelWarn, __FILE__, __LINE__, format, ##args)
+#define LOGGER_ERR(format, args...)                                                                \
+    logger.outputLog(Log::Level::levelError, __FILE__, __LINE__, format, ##args)
 
 #define FORMAT_STRING(format, args...)                                                             \
     ({                                                                                             \
@@ -63,7 +70,7 @@ public:
         const uint32_t level,
         const std::string &codeFile,
         const uint32_t codeLine,
-        const char *const format,
+        const char *const __restrict format,
         const Args... args);
 
 private:
@@ -79,7 +86,7 @@ void Log::outputLog(
     const uint32_t level,
     const std::string &codeFile,
     const uint32_t codeLine,
-    const char *const format,
+    const char *const __restrict format,
     const Args... args)
 {
     if (level >= minLevel)
@@ -88,16 +95,16 @@ void Log::outputLog(
         switch (level)
         {
             case Level::levelDebug:
-                prefix = "[DEBUG]:";
+                prefix = "[DBG]:";
                 break;
             case Level::levelInfo:
-                prefix = "[INFO] :";
+                prefix = "[INF]:";
                 break;
             case Level::levelWarn:
-                prefix = "[WARN] :";
+                prefix = "[WRN]:";
                 break;
             case Level::levelError:
-                prefix = "[ERROR]:";
+                prefix = "[ERR]:";
                 break;
             default:
                 break;
