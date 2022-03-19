@@ -13,9 +13,10 @@ AUX_SOURCE_DIRECTORY(library LIBRARY_LIST)
 
 # set environment variable
 SET(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-SET(CMAKE_CXX_COMPILER "/usr/bin/clang++-10")
-SET(CMAKE_CXX_FLAGS_DEBUG "-std=c++20 -stdlib=libstdc++ -W -g -O0")
-SET(CMAKE_CXX_FLAGS_RELEASE "-std=c++20 -stdlib=libstdc++ -W -O3")
+SET(CMAKE_CXX_COMPILER "/usr/bin/clang++-11")
+SET(CMAKE_CXX_FLAGS_DEBUG "-g -O0")
+SET(CMAKE_CXX_FLAGS_RELEASE "-O3")
+ADD_COMPILE_OPTIONS(-std=c++20 -stdlib=libstdc++ -W)
 
 # add executable file
 ADD_EXECUTABLE(foo ${SOURCE_LIST} ${LIBRARY_LIST})

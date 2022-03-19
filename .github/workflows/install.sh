@@ -24,13 +24,13 @@ installDependencies()
     localDir=$(git rev-parse --show-toplevel)
     cd "${localDir}" || exit 1
 
-    shCommand "sudo apt-get install -y llvm-10 clang-10 libclang-10-dev \
-clang-format-10 clang-tidy-10 cmake python3 pylint black shellcheck global valgrind"
+    shCommand "sudo apt-get install -y llvm-11 clang-11 libclang-11-dev \
+clang-format-11 clang-tidy-11 cmake python3 pylint black shellcheck global valgrind"
     shCommand "sudo curl -L ${SHFMT_URL} >/usr/local/bin/shfmt \
 && sudo chmod +x /usr/local/bin/shfmt"
     shCommand "git clone ${WOBOQ_GIT} -b master \
 && cd ./codebrowser && git reset --hard ${WOBOQ_COMMIT} \
-&& cmake . -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=clang++-10 && make -j4 \
+&& cmake . -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=clang++-11 && make -j4 \
 && sudo make install && cd .. && rm -rf ./codebrowser"
 }
 
