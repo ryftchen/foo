@@ -26,14 +26,15 @@ WHOLE_STEP = (
     + (len(SORT) + 1)
     + (len(OPTION_TYPE_2) + 1)
 )
-SET_VALGRIND = False
-VALGRIND_CMD = "valgrind --tool=memcheck --show-reachable=yes --leak-check=full \
---leak-resolution=high --log-fd=1"
 TEMP_LOG = "./temp/test.log"
 TEMP_PATH = "./temp"
 BUILD_CMD = "./script/build.sh"
 BUILD_COMPILER_START = "Configuring done"
 BUILD_COMPILER_FINISH = "Built target"
+SET_VALGRIND = False
+VALGRIND_CMD = "valgrind --tool=memcheck --show-reachable=yes --leak-check=full \
+--leak-resolution=high --log-fd=1"
+VALGRIND_INFO = "ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)"
 STATUS_RED = "\033[0;31;40m"
 STATUS_GREEN = "\033[0;32;40m"
 STATUS_YELLOW = "\033[0;33;40m"
@@ -230,6 +231,19 @@ def runTestTask(command):
     if cmd.returncode == 0:
         global CURRENT_STEP
         CURRENT_STEP += 1
+        if SET_VALGRIND:
+            out = cmd.stdout.read()
+            if out.find(VALGRIND_INFO) == -1:
+                print(
+                    "{0}{2}[ {3} | {4:<{x}} ]{2}{1}".format(
+                        STATUS_RED,
+                        STATUS_END,
+                        STATUS_SPLIT_LINE,
+                        datetime.strftime(datetime.now(), "%b %d %H:%M:%S"),
+                        "TEST TASK ERROR",
+                        x=align,
+                    )
+                )
     else:
         print(
             "{0}{2}[ {3} | {4:<{x}} ]{2}{1}".format(
@@ -325,6 +339,8 @@ def completeTest():
     sys.stdout = STDOUT_LOG
     sys.stdout.uninit()
 
+
+def analyzeTestLog():
     refresh = open(TEMP_LOG, "rt")
     inputContent = refresh.read()
     outputContent = re.sub(STATUS_ESC_REGEX, "", inputContent)
@@ -372,3 +388,4 @@ if __name__ == "__main__":
     testOptionType2()
 
     completeTest()
+    analyzeTestLog()
