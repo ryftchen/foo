@@ -317,7 +317,6 @@ def parseArgs():
     if args.valgrind:
         cmd = executeCommand("command -v valgrind 2>&1", output=False)
         out = cmd.stdout.read()
-        print(out)
         if out.find("valgrind") != -1:
             global SET_VALGRIND
             SET_VALGRIND = True
