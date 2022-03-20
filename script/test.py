@@ -190,11 +190,14 @@ def executeCommand(command, output=True):
             command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding="utf-8"
         )
         cmd.wait()
-        if output:
-            out = cmd.stdout.read()
-            print(out)
     except RuntimeError():
         printAbort(f"Failed to execute command: \"{command}\".")
+    if output:
+        out, err = cmd.communicate()
+        if len(out) != 0:
+            print(out)
+        if len(err) != 0:
+            print(err)
     return cmd
 
 
@@ -204,8 +207,9 @@ def printAbort(message):
 
 
 def buildProject(command):
-    cmd = executeCommand(command)
+    cmd = executeCommand(command, output=False)
     out = cmd.stdout.read()
+    print(out)
     if cmd.returncode != 0:
         printAbort("Failed to execute shell script build.sh.")
     elif out.find(BUILD_COMPILER_START) != -1 and out.find(BUILD_COMPILER_FINISH) == -1:
@@ -227,13 +231,15 @@ def runTestTask(command):
             x=ALIGN_CMD,
         )
     )
-    cmd = executeCommand(fullCommand)
+    cmd = executeCommand(fullCommand, output=False)
+    out = cmd.stdout.read()
+    print(out)
     if cmd.returncode == 0:
         global CURRENT_STEP
         CURRENT_STEP += 1
         if SET_VALGRIND:
-            out = cmd.stdout.read()
             if out.find(VALGRIND_INFO) == -1:
+                CURRENT_STEP -= 1
                 print(
                     "{0}{2}[ {3} | {4:<{x}} ]{2}{1}".format(
                         STATUS_RED,
@@ -311,6 +317,7 @@ def parseArgs():
     if args.valgrind:
         cmd = executeCommand("command -v valgrind 2>&1", output=False)
         out = cmd.stdout.read()
+        print(out)
         if out.find("valgrind") != -1:
             global SET_VALGRIND
             SET_VALGRIND = True
