@@ -1,20 +1,35 @@
 #pragma once
-#define NDEBUG
-#include <cassert>
 #include <climits>
-#include <cstring>
 #include <fstream>
 #include "main.hpp"
 #include "time.hpp"
 
 extern class Log logger;
-void printFile(
-    const char* const pathname, const bool reverse = false, const uint32_t maxLine = 1000);
 
-#define FILENAME(x) (strrchr(x, '/') ? strrchr(x, '/') + 1 : x)
+typedef std::string (*PrintStyle)(std::string& line);
+static PrintStyle nullStyle;
+std::string changeLogLevelStyle(std::string& line);
+void printFile(
+    const char* const pathname, const bool reverse = false, const uint32_t maxLine = 1000,
+    PrintStyle style = nullStyle);
+
 #define LOG_DIR "./temp"
 #define LOG_PATH "./temp/foo.log"
 #define LOG_PATHNAME_LENGTH 32
+#define LOG_PREFIX_DEBUG "[DGB]"
+#define LOG_PREFIX_INFO "[INF]"
+#define LOG_PREFIX_WARN "[WRN]"
+#define LOG_PREFIX_ERROR "[ERR]"
+#define LOG_REGEX_INFO "^\\[INF\\]"
+#define LOG_REGEX_WARN "^\\[WRN\\]"
+#define LOG_REGEX_ERROR "^\\[ERR\\]"
+#define LOG_COLOR_INFO \
+    (std::string(PRINT_COLOR_GREEN) + std::string(LOG_PREFIX_INFO) + std::string(PRINT_COLOR_END))
+#define LOG_COLOR_WARN \
+    (std::string(PRINT_COLOR_YELLOW) + std::string(LOG_PREFIX_WARN) + std::string(PRINT_COLOR_END))
+#define LOG_COLOR_ERROR \
+    (std::string(PRINT_COLOR_RED) + std::string(LOG_PREFIX_ERROR) + std::string(PRINT_COLOR_END))
+
 #define LOGGER_DBG(format, args...) \
     logger.outputLog(Log::Level::levelDebug, __FILE__, __LINE__, format, ##args)
 #define LOGGER_INF(format, args...) \
@@ -53,7 +68,7 @@ public:
     template <typename... Args>
     void outputLog(
         const uint32_t level, const std::string& codeFile, const uint32_t codeLine,
-        const char* const __restrict format, const Args... args);
+        const char* const __restrict format, Args&&... args);
 
 private:
     Level minLevel;
@@ -61,12 +76,13 @@ private:
     std::ofstream ofs;
     char pathname[LOG_PATHNAME_LENGTH + 1];
     friend std::string getCurrentSystemTime(char* const date);
+    friend std::string changeLogLevelStyle(std::string& line);
 };
 
 template <typename... Args>
 void Log::outputLog(
     const uint32_t level, const std::string& codeFile, const uint32_t codeLine,
-    const char* const __restrict format, const Args... args)
+    const char* const __restrict format, Args&&... args)
 {
     if (level >= minLevel)
     {
@@ -74,25 +90,25 @@ void Log::outputLog(
         switch (level)
         {
             case Level::levelDebug:
-                prefix = "[DBG]:";
+                prefix = LOG_PREFIX_DEBUG;
                 break;
             case Level::levelInfo:
-                prefix = "[INF]:";
+                prefix = LOG_PREFIX_INFO;
                 break;
             case Level::levelWarn:
-                prefix = "[WRN]:";
+                prefix = LOG_PREFIX_WARN;
                 break;
             case Level::levelError:
-                prefix = "[ERR]:";
+                prefix = LOG_PREFIX_ERROR;
                 break;
             default:
                 break;
         }
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat-security"
-        std::string output = prefix + "[" + GET_CURRENT_TIME + "]:" + "["
-            + FILENAME(codeFile.c_str()) + ":" + std::to_string(codeLine)
-            + "]: " + FORMAT_TO_STRING(format, args...);
+        std::string output = prefix + ":[" + GET_CURRENT_TIME + "]:" + "["
+            + FILENAME(codeFile.c_str()) + "#" + std::to_string(codeLine)
+            + "]: " + FORMAT_TO_STRING(format, std::forward<Args>(args)...);
 #pragma GCC diagnostic pop
         switch (realTarget)
         {
@@ -100,11 +116,11 @@ void Log::outputLog(
                 ofs << output << std::endl;
                 break;
             case Target::targetTerminal:
-                std::cout << output << std::endl;
+                std::cout << changeLogLevelStyle(output) << std::endl;
                 break;
             case Target::targetAll:
                 ofs << output << std::endl;
-                std::cout << output << std::endl;
+                std::cout << changeLogLevelStyle(output) << std::endl;
                 break;
             default:
                 break;

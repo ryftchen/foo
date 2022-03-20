@@ -2,8 +2,8 @@
 #include <ext/stdio_filebuf.h>
 #include <sys/file.h>
 #include <sys/stat.h>
-#include <cstdarg>
 #include <list>
+#include <regex>
 #include <vector>
 
 Log logger;
@@ -136,7 +136,8 @@ const std::ofstream& Log::getOfs() const
     return ofs;
 }
 
-void printFile(const char* const pathname, const bool reverse, const uint32_t maxLine)
+void printFile(
+    const char* const pathname, const bool reverse, const uint32_t maxLine, PrintStyle style)
 {
     std::ifstream file;
     try
@@ -153,22 +154,33 @@ void printFile(const char* const pathname, const bool reverse, const uint32_t ma
             throw LockReaderLockError(basename(pathname));
         }
 
+        PrintStyle formatStyle = style;
+        if (nullStyle == formatStyle)
+        {
+            auto keepStyle = [](std::string& line)
+            {
+                return line;
+            };
+            formatStyle = keepStyle;
+        }
+
         std::string line = "";
         std::list<std::string> context(0);
         if (false == reverse)
         {
             while ((context.size() < maxLine) && getline(file, line))
             {
-                context.emplace_back(line);
+                context.emplace_back(formatStyle(line));
             }
         }
         else
         {
             while ((context.size() < maxLine) && getline(file, line))
             {
-                context.emplace_front(line);
+                context.emplace_front(formatStyle(line));
             }
         }
+
         for (const auto& printLine : context)
         {
             std::cout << printLine << std::endl;
@@ -194,4 +206,21 @@ void printFile(const char* const pathname, const bool reverse, const uint32_t ma
         LOGGER_ERR(error.what());
         file.close();
     }
+}
+
+std::string changeLogLevelStyle(std::string& line)
+{
+    if (std::regex_search(line, std::regex(LOG_REGEX_INFO)))
+    {
+        line = std::regex_replace(line, std::regex(LOG_REGEX_INFO), LOG_COLOR_INFO);
+    }
+    else if (std::regex_search(line, std::regex(LOG_REGEX_WARN)))
+    {
+        line = std::regex_replace(line, std::regex(LOG_REGEX_WARN), LOG_COLOR_WARN);
+    }
+    else if (std::regex_search(line, std::regex(LOG_REGEX_ERROR)))
+    {
+        line = std::regex_replace(line, std::regex(LOG_REGEX_ERROR), LOG_COLOR_ERROR);
+    }
+    return line;
 }

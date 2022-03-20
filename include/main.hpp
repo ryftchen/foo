@@ -1,12 +1,20 @@
 #pragma once
 #include <libgen.h>
+#undef basename
 #include <unistd.h>
+#define NDEBUG
+#include <cassert>
+#include <cstring>
 #include <iostream>
 #include "exception.hpp"
 
 static void switchToProjectPath() __attribute__((constructor));
 
-#undef basename
+#define FILENAME(x) (strrchr(x, '/') ? strrchr(x, '/') + 1 : x)
+#define PRINT_COLOR_RED "\033[0;31;40m"
+#define PRINT_COLOR_GREEN "\033[0;32;40m"
+#define PRINT_COLOR_YELLOW "\033[0;33;40m"
+#define PRINT_COLOR_END "\033[0m"
 #define FORMAT_TO_STRING(format, args...)                                     \
     (                                                                         \
         {                                                                     \

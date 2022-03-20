@@ -4,6 +4,7 @@
 #include <mutex>
 #include <thread>
 #include "expression.hpp"
+#include "log.hpp"
 #include "sort.hpp"
 
 #define COMMAND_THREAD_NAME_LENGTH 6
@@ -104,7 +105,6 @@ private:
     void runSort() const;
     void getSortResult(const std::shared_ptr<Sort<int>>& sort) const;
     void setSortBit(char* const argv[]);
-    friend void printFile(const char* const pathname, const bool reverse, const uint32_t maxLine);
 
 protected:
     void printLogContext();
