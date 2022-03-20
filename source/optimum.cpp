@@ -1,8 +1,5 @@
 #include "optimum.hpp"
 #include <algorithm>
-#define NDEBUG
-#include <cassert>
-#include <iostream>
 #include <map>
 #include "log.hpp"
 

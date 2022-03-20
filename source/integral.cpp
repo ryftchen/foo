@@ -1,6 +1,5 @@
 #include "integral.hpp"
 #include <functional>
-#include <iostream>
 #include <random>
 #include "log.hpp"
 
