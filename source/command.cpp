@@ -4,7 +4,6 @@
 #include "exception.hpp"
 #include "hash.hpp"
 #include "integral.hpp"
-#include "log.hpp"
 #include "optimum.hpp"
 
 std::atomic<bool> Command::parseArgv(const int argc, char* const argv[])
@@ -419,7 +418,7 @@ void Command::printLogContext()
             throw UnlockWriterLockError(basename(LOG_PATH));
         }
 
-        printFile(LOG_PATH, true, COMMAND_PRINT_MAX_LINE);
+        printFile(LOG_PATH, true, COMMAND_PRINT_MAX_LINE, &changeLogLevelStyle);
     }
     catch (UnlockWriterLockError const& error)
     {
