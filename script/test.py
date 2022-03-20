@@ -4,6 +4,7 @@ import argparse
 import curses
 import fcntl
 import os
+import re
 import signal
 import subprocess
 import sys
@@ -25,9 +26,6 @@ WHOLE_STEP = (
     + (len(SORT) + 1)
     + (len(OPTION_TYPE_2) + 1)
 )
-
-STDOUT_DEFAULT = sys.stdout
-STDOUT_LOG = sys.stdout
 SET_VALGRIND = False
 VALGRIND_CMD = "valgrind --tool=memcheck --show-reachable=yes --leak-check=full \
 --leak-resolution=high --log-fd=1"
@@ -36,22 +34,28 @@ TEMP_PATH = "./temp"
 BUILD_CMD = "./script/build.sh"
 BUILD_COMPILER_START = "Configuring done"
 BUILD_COMPILER_FINISH = "Built target"
-FORE_RED = "\033[0;31;40m"
-FORE_GREEN = "\033[0;32;40m"
-FORE_YELLOW = "\033[0;33;40m"
-FORE_BLUE = "\033[0;36;40m"
-SPLIT_LINE = "==============="
+STATUS_RED = "\033[0;31;40m"
+STATUS_GREEN = "\033[0;32;40m"
+STATUS_YELLOW = "\033[0;33;40m"
+STATUS_BLUE = "\033[0;36;40m"
+STATUS_END = "\033[0m"
+STATUS_ESC_REGEX = "\\033.*?m"
+STATUS_SPLIT_LINE = "==============="
+ALIGN_MAX = 30
+ALIGN_CMD = 10
 
-SAVE_CURSOR = "\033[s"
-RESTORE_CURSOR = "\033[u"
-MOVE_UP_CURSOR = "\033[1A"
-FORE_COLOR = "\033[30m"
-BACK_COLOR = "\033[42m"
-FORE_DEFAULT = "\033[39m"
-BACK_DEFAULT = "\033[49m"
-CURRENT_LINES = 0
-SET_TRAP = False
-SIGNAL_DEFAULT = None
+STDOUT_DEFAULT = sys.stdout
+STDOUT_LOG = sys.stdout
+BAR_SAVE_CURSOR = "\033[s"
+BAR_RESTORE_CURSOR = "\033[u"
+BAR_MOVE_UP_CURSOR = "\033[1A"
+BAR_FORE_COLOR = "\033[30m"
+BAR_BACK_COLOR = "\033[42m"
+BAR_FORE_COLOR_DEFAULT = "\033[39m"
+BAR_BACK_COLOR_DEFAULT = "\033[49m"
+BAR_CURRENT_LINES = 0
+BAR_SET_TRAP = False
+BAR_SIGNAL_DEFAULT = None
 
 
 class Log:
@@ -80,65 +84,65 @@ class Log:
 
 
 def setupProgressBar():
-    global CURRENT_LINES
+    global BAR_CURRENT_LINES
     curses.setupterm()
 
     trapDueToInterrupt()
 
-    CURRENT_LINES = tputLines()
-    lines = CURRENT_LINES - 1
+    BAR_CURRENT_LINES = tputLines()
+    lines = BAR_CURRENT_LINES - 1
     printProgress("\n")
 
-    printProgress(SAVE_CURSOR)
+    printProgress(BAR_SAVE_CURSOR)
     printProgress("\033[0;{}r".format(str(lines)))
 
-    printProgress(RESTORE_CURSOR)
-    printProgress(MOVE_UP_CURSOR)
+    printProgress(BAR_RESTORE_CURSOR)
+    printProgress(BAR_MOVE_UP_CURSOR)
     drawProgressBar(0)
 
 
 def drawProgressBar(percentage):
     lines = tputLines()
-    if lines != CURRENT_LINES:
+    if lines != BAR_CURRENT_LINES:
         setupProgressBar()
 
-    printProgress(SAVE_CURSOR)
+    printProgress(BAR_SAVE_CURSOR)
     printProgress("\033[{};0f".format(str(lines)))
 
     tput()
     printBar(percentage)
-    printProgress(RESTORE_CURSOR)
-    time.sleep(0.1)
+    printProgress(BAR_RESTORE_CURSOR)
+    time.sleep(0.05)
 
 
 def destroyProgressBar():
     lines = tputLines()
-    printProgress(SAVE_CURSOR)
+    printProgress(BAR_SAVE_CURSOR)
     printProgress("\033[0;{}r".format(str(lines)))
 
-    printProgress(RESTORE_CURSOR)
-    printProgress(MOVE_UP_CURSOR)
+    printProgress(BAR_RESTORE_CURSOR)
+    printProgress(BAR_MOVE_UP_CURSOR)
 
     clearProgressBar()
     printProgress("\n\n")
-    if SET_TRAP:
-        signal.signal(signal.SIGINT, SIGNAL_DEFAULT)
+    if BAR_SET_TRAP:
+        signal.signal(signal.SIGINT, BAR_SIGNAL_DEFAULT)
 
 
 def clearProgressBar():
     lines = tputLines()
-    printProgress(SAVE_CURSOR)
+    printProgress(BAR_SAVE_CURSOR)
     printProgress("\033[{};0f".format(str(lines)))
 
     tput()
-    printProgress(RESTORE_CURSOR)
+    printProgress(BAR_RESTORE_CURSOR)
 
 
 def trapDueToInterrupt():
-    global SET_TRAP
-    global SIGNAL_DEFAULT
-    SET_TRAP = True
-    SIGNAL_DEFAULT = signal.getsignal(signal.SIGINT)
+    global BAR_SET_TRAP
+    global BAR_SIGNAL_DEFAULT
+    BAR_SET_TRAP = True
+    BAR_SIGNAL_DEFAULT = signal.getsignal(signal.SIGINT)
     signal.signal(signal.SIGINT, clearDueToInterrupt)
 
 
@@ -150,13 +154,12 @@ def clearDueToInterrupt(sign, frame):
 def printBar(percentage):
     cols = tputCols()
     barSize = cols - 18
-    color = f"{FORE_COLOR}{BACK_COLOR}"
+    color = f"{BAR_FORE_COLOR}{BAR_BACK_COLOR}"
+    defaultColor = f"{BAR_FORE_COLOR_DEFAULT}{BAR_BACK_COLOR_DEFAULT}"
 
     completeSize = int((barSize * percentage) / 100)
     remainderSize = barSize - completeSize
-    progressBar = (
-        f"[{color}{'#' * int(completeSize)}{FORE_DEFAULT}{BACK_DEFAULT}{'.' * int(remainderSize)}]"
-    )
+    progressBar = f"[{color}{'#' * int(completeSize)}{defaultColor}{'.' * int(remainderSize)}]"
     printProgress(f" Progress {percentage:>3}% {progressBar}\r")
 
 
@@ -212,10 +215,15 @@ def runTestTask(command):
     fullCommand = RUN_DIR + command
     if SET_VALGRIND:
         fullCommand = VALGRIND_CMD + " " + fullCommand
-    align = max(len(command) + 20, 30)
+    align = max(len(command) + (ALIGN_MAX - ALIGN_CMD), ALIGN_MAX)
     print(
-        "\r\n{0}{1}[ {2} | TEST TASK: {3:<10} | START  ]{1}\033[0m\n".format(
-            FORE_BLUE, SPLIT_LINE, datetime.strftime(datetime.now(), "%b %d %H:%M:%S"), command
+        "\r\n{0}{2}[ {3} | TEST TASK: {4:<{x}} | START  ]{2}{1}\n".format(
+            STATUS_BLUE,
+            STATUS_END,
+            STATUS_SPLIT_LINE,
+            datetime.strftime(datetime.now(), "%b %d %H:%M:%S"),
+            command,
+            x=ALIGN_CMD,
         )
     )
     cmd = executeCommand(fullCommand)
@@ -224,28 +232,35 @@ def runTestTask(command):
         CURRENT_STEP += 1
     else:
         print(
-            "{0}{1}[ {2} | {3:<{x}} ]{1}\033[0m".format(
-                FORE_RED,
-                SPLIT_LINE,
+            "{0}{2}[ {3} | {4:<{x}} ]{2}{1}".format(
+                STATUS_RED,
+                STATUS_END,
+                STATUS_SPLIT_LINE,
                 datetime.strftime(datetime.now(), "%b %d %H:%M:%S"),
                 "TEST TASK ERROR",
                 x=align,
             )
         )
     print(
-        "\r\n{0}{1}[ {2} | TEST TASK: {3:<10} | FINISH ]{1}\033[0m\n".format(
-            FORE_BLUE, SPLIT_LINE, datetime.strftime(datetime.now(), "%b %d %H:%M:%S"), command
+        "\r\n{0}{2}[ {3} | TEST TASK: {4:<{x}} | FINISH ]{2}{1}\n".format(
+            STATUS_BLUE,
+            STATUS_END,
+            STATUS_SPLIT_LINE,
+            datetime.strftime(datetime.now(), "%b %d %H:%M:%S"),
+            command,
+            x=ALIGN_CMD,
         )
     )
 
     if CURRENT_STEP != WHOLE_STEP:
-        statusColor = FORE_YELLOW
+        statusColor = STATUS_YELLOW
     else:
-        statusColor = FORE_GREEN
+        statusColor = STATUS_GREEN
     print(
-        "{0}{1}[ {2} | {3:<{x}} ]{1}\033[0m\n".format(
+        "{0}{2}[ {3} | {4:<{x}} ]{2}{1}\n".format(
             statusColor,
-            SPLIT_LINE,
+            STATUS_END,
+            STATUS_SPLIT_LINE,
             datetime.strftime(datetime.now(), "%b %d %H:%M:%S"),
             "TEST TASK COMPLETION: {:>2} / {:>2}".format(str(CURRENT_STEP), str(WHOLE_STEP)),
             x=align,
@@ -309,6 +324,12 @@ def completeTest():
     destroyProgressBar()
     sys.stdout = STDOUT_LOG
     sys.stdout.uninit()
+
+    refresh = open(TEMP_LOG, "rt")
+    inputContent = refresh.read()
+    outputContent = re.sub(STATUS_ESC_REGEX, "", inputContent)
+    refresh = open(TEMP_LOG, "w")
+    refresh.write(outputContent)
 
 
 def testOptionType1():
