@@ -1,8 +1,5 @@
 #include "sort.hpp"
 #include <algorithm>
-#define NODEBUG
-#include <cassert>
-#include <cstring>
 #include <queue>
 #include <random>
 #include <vector>

@@ -4,7 +4,7 @@
 #include <climits>
 #include <cstring>
 #include <fstream>
-#include <iostream>
+#include "main.hpp"
 #include "time.hpp"
 
 extern class Log logger;
@@ -23,19 +23,6 @@ void printFile(
     logger.outputLog(Log::Level::levelWarn, __FILE__, __LINE__, format, ##args)
 #define LOGGER_ERR(format, args...) \
     logger.outputLog(Log::Level::levelError, __FILE__, __LINE__, format, ##args)
-
-#define FORMAT_TO_STRING(format, args...)                                     \
-    (                                                                         \
-        {                                                                     \
-            const int bufferSize = std::snprintf(nullptr, 0, format, ##args); \
-            assert(bufferSize >= 0);                                          \
-            char buffer[bufferSize + 1];                                      \
-            buffer[0] = '\0';                                                 \
-            std::snprintf(buffer, bufferSize + 1, format, ##args);            \
-            const std::string str(buffer);                                    \
-            str;                                                              \
-        })
-#define FORMAT_PRINT(format, args...) std::cout << FORMAT_TO_STRING(format, ##args)
 
 class Log final
 {
