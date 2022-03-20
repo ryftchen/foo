@@ -1,7 +1,7 @@
 #pragma once
-#include <iostream>
 #include <libgen.h>
 #include <unistd.h>
+#include <iostream>
 #include "exception.hpp"
 
 static void switchToProjectPath() __attribute__((constructor));

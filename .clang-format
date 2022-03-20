@@ -40,7 +40,7 @@ BreakBeforeTernaryOperators: true
 BreakConstructorInitializers: AfterColon
 BreakStringLiterals: true
 ColumnLimit: 100
-CommentPragmas: '\$.*\$'
+CommentPragmas: '^TODO'
 ConstructorInitializerAllOnOneLineOrOnePerLine: false
 ConstructorInitializerIndentWidth: 4
 ContinuationIndentWidth: 4
@@ -50,12 +50,16 @@ DerivePointerAlignment: false
 DisableFormat: false
 FixNamespaceComments: true
 IncludeCategories:
-  - Regex: '^<[a-zA-Z]\/'
+  - Regex: '^<[a-zA-Z]+\/'
     Priority: 1
-  - Regex: '^<'
+  - Regex: '^<[a-zA-Z]+\.'
     Priority: 2
-  - Regex: '^"'
+  - Regex: '^<'
     Priority: 3
+  - Regex: '^"[0-9a-zA-Z_]+\/'
+    Priority: 4
+  - Regex: '^"'
+    Priority: 5
 IndentCaseLabels: true
 IndentWidth: 4
 KeepEmptyLinesAtTheStartOfBlocks: false

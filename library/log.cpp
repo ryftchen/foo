@@ -1,9 +1,9 @@
 #include "log.hpp"
-#include <cstdarg>
 #include <ext/stdio_filebuf.h>
-#include <list>
 #include <sys/file.h>
 #include <sys/stat.h>
+#include <cstdarg>
+#include <list>
 #include <vector>
 
 Log logger;
