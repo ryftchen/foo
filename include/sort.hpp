@@ -10,6 +10,10 @@
 #define SORT_PRINT_MAX_COLUMN 10
 #define SORT_RUN_BEGIN "\r\n----------   BEGIN SORT   ----------"
 #define SORT_RUN_END "\r\n----------    END SORT    ----------"
+#define SORT_GENERATE_INTEGRAL_ARRAY \
+    "\r\nGenerate %u random integral numbers from %d to %d:\r\n%s\n"
+#define SORT_GENERATE_FLOATING_ARRAY \
+    "\r\nGenerate %u random floating point numbers from %.5f to %.5f:\r\n%s\n"
 #define SORT_BUBBLE "\r\n*Bubble    method:\r\n%s\r\n==>Run time: %8.5fms\n"
 #define SORT_SELECTION "\r\n*Selection method:\r\n%s\r\n==>Run time: %8.5fms\n"
 #define SORT_INSERTION "\r\n*Insertion method:\r\n%s\r\n==>Run time: %8.5fms\n"

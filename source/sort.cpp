@@ -85,7 +85,7 @@ requires std::is_integral<U>::value void Sort<T>::setRandomArray(
     char arrayBuffer[arrayBufferSize + 1];
     arrayBuffer[0] = '\0';
     FORMAT_PRINT(
-        "\r\nGenerate %u random integral numbers from %d to %d:\r\n%s\n", length, left, right,
+        SORT_GENERATE_INTEGRAL_ARRAY, length, left, right,
         formatArray(array, length, arrayBuffer, arrayBufferSize + 1));
 }
 template <class T>
@@ -104,8 +104,8 @@ requires std::is_floating_point<U>::value void Sort<T>::setRandomArray(
     char arrayBuffer[arrayBufferSize + 1];
     arrayBuffer[0] = '\0';
     FORMAT_PRINT(
-        "\r\nGenerate %u random floating point numbers from %.5f to %.5f:\r\n%s\n", length, left,
-        right, formatArray(array, length, arrayBuffer, arrayBufferSize + 1));
+        SORT_GENERATE_FLOATING_ARRAY, length, left, right,
+        formatArray(array, length, arrayBuffer, arrayBufferSize + 1));
 }
 
 template <class T>
