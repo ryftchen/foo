@@ -20,7 +20,6 @@ TEMP_FOLDER="temp"
 BUILD_SCRIPT="build.sh"
 TEST_SCRIPT="test.py"
 CMAKE_FILE="CMakeLists.txt"
-LICENSE_FILE="LICENSE"
 COMPILE_COMMANDS="compile_commands.json"
 ANALYSIS_STYLE=".clang-tidy"
 FORMAT_STYLE=".clang-format"
@@ -89,7 +88,7 @@ checkProject()
 
     if [ ! -d ./"${INCLUDE_FOLDER}" ] || [ ! -d ./"${SOURCE_FOLDER}" ] \
         || [ ! -d ./"${LIBRARY_FOLDER}" ] || [ ! -d ./"${SCRIPT_FOLDER}" ] \
-        || [ ! -f ./"${CMAKE_FILE}" ] || [ ! -f ./"${LICENSE_FILE}" ]; then
+        || [ ! -f ./"${CMAKE_FILE}" ]; then
         printAbort "There are missing files in ${PROJECT_FOLDER} folder."
     fi
 
@@ -199,6 +198,9 @@ buildHtml()
         then
             if [ -d ./"${TEMP_FOLDER}" ]; then
                 commitId=$(git rev-parse --short @)
+                if [ -z "${commitId}" ]; then
+                    commitId="local"
+                fi
                 lastTar="${PROJECT_FOLDER}_html_${commitId}.tar.bz2"
                 if [ -f ./"${TEMP_FOLDER}"/"${lastTar}" ]; then
                     printAbort "The latest html file ${TEMP_FOLDER}/${lastTar} has been generated."
