@@ -26,7 +26,7 @@ WHOLE_STEP = (
     + (len(SORT) + 1)
     + (len(OPTION_TYPE_2) + 1)
 )
-TEMP_LOG = "./temp/test.log"
+TEMP_LOG = "./temp/foo_test.log"
 TEMP_PATH = "./temp"
 BUILD_CMD = "./script/build.sh"
 BUILD_COMPILER_START = "Configuring done"
