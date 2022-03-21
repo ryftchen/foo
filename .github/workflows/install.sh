@@ -27,7 +27,7 @@ installDependencies()
     cd "${localDir}" || exit 1
 
     bashCommand "sudo apt-get install -y llvm-11 clang-11 libclang-11-dev \
-clang-format-11 clang-tidy-11 cmake python3 pylint black shellcheck global valgrind"
+clang-format-11 clang-tidy-11 cmake python3 pylint black shellcheck valgrind global sysvbanner"
     bashCommand "sudo curl -L ${SHFMT_URL} >/usr/local/bin/shfmt \
 && sudo chmod +x /usr/local/bin/shfmt"
     bashCommand "git clone ${WOBOQ_GIT} -b master \
