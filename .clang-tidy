@@ -63,8 +63,7 @@ CheckOptions:
     value: h,hh,hpp,hxx
   - key: misc-definitions-in-headers.HeaderFileExtensions
     value: '1'
-  - key: >
-      misc-non-private-member-variables-in-classes.IgnoreClassesWithAllMemberVariablesBeingPublic
+  - key: misc-non-private-member-variables-in-classes.IgnoreClassesWithAllMemberVariablesBeingPublic
     value: '1'
   - key: modernize-use-auto.RemoveStars
     value: '1'
