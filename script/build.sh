@@ -8,7 +8,6 @@ ARGS_BACKUP=0
 ARGS_TAG=0
 ARGS_RELEASE=0
 
-DO_COMPILE=0
 PROJECT_FOLDER="foo"
 INCLUDE_FOLDER="include"
 SOURCE_FOLDER="source"
@@ -21,8 +20,11 @@ BUILD_SCRIPT="build.sh"
 TEST_SCRIPT="test.py"
 CMAKE_FILE="CMakeLists.txt"
 COMPILE_COMMANDS="compile_commands.json"
-ANALYSIS_STYLE=".clang-tidy"
-FORMAT_STYLE=".clang-format"
+FORMAT_C=".clang-format"
+ANALYSIS_C=".clang-tidy"
+ANALYSIS_PY=".pylintrc"
+ANALYSIS_SH=".shellcheckrc"
+DO_COMPILE=0
 
 bashCommand()
 {
@@ -142,11 +144,11 @@ buildFormat()
                 && command -v shfmt >/dev/null 2>&1 \
                 && command -v black >/dev/null 2>&1
         then
-            if [ -f ./"${FORMAT_STYLE}" ]; then
+            if [ -f ./"${FORMAT_C}" ]; then
                 bashCommand "clang-format-11 -i --verbose ./${INCLUDE_FOLDER}/*.hpp \
 ./${SOURCE_FOLDER}/*.cpp ./${LIBRARY_FOLDER}/*.cpp"
             else
-                printAbort "There is no ${FORMAT_STYLE} file in ${PROJECT_FOLDER} folder. \
+                printAbort "There is no ${FORMAT_C} file in ${PROJECT_FOLDER} folder. \
 Please generate it."
             fi
             bashCommand "shfmt -l -w -i 4 -bn -fn ./${SCRIPT_FOLDER}/${BUILD_SCRIPT}"
@@ -166,23 +168,29 @@ buildAnalysis()
                 && command -v pylint >/dev/null 2>&1
         then
             if [ -f ./"${BUILD_FOLDER}"/"${COMPILE_COMMANDS}" ]; then
-                if [ -f ./"${ANALYSIS_STYLE}" ]; then
+                if [ -f ./"${ANALYSIS_C}" ]; then
                     bashCommand "clang-tidy-11 -p ./${BUILD_FOLDER}/${COMPILE_COMMANDS} \
 ./${INCLUDE_FOLDER}/*.hpp ./${SOURCE_FOLDER}/*.cpp ./${LIBRARY_FOLDER}/*.cpp"
                 else
-                    printAbort "There is no ${ANALYSIS_STYLE} file in ${PROJECT_FOLDER} folder. \
+                    printAbort "There is no ${ANALYSIS_C} file in ${PROJECT_FOLDER} folder. \
 Please generate it."
                 fi
             else
                 printAbort "There is no ${COMPILE_COMMANDS} file in ${BUILD_FOLDER} folder. \
 Please generate it."
             fi
-            bashCommand "shellcheck ./${SCRIPT_FOLDER}/${BUILD_SCRIPT} --enable=all"
-            bashCommand "pylint ./${SCRIPT_FOLDER}/${TEST_SCRIPT} --enable=all \
---argument-naming-style=camelCase --attr-naming-style=camelCase --function-naming-style=camelCase \
---method-naming-style=camelCase --module-naming-style=camelCase --variable-naming-style=camelCase \
---disable=missing-module-docstring,missing-class-docstring,missing-function-docstring,\
-global-statement"
+            if [ -f ./"${ANALYSIS_SH}" ]; then
+                bashCommand "shellcheck --enable=all ./${SCRIPT_FOLDER}/${BUILD_SCRIPT}"
+            else
+                printAbort "There is no ${ANALYSIS_SH} file in ${PROJECT_FOLDER} folder. \
+Please generate it."
+            fi
+            if [ -f ./"${ANALYSIS_PY}" ]; then
+                bashCommand "pylint --rcfile=${ANALYSIS_PY} ./${SCRIPT_FOLDER}/${TEST_SCRIPT}"
+            else
+                printAbort "There is no ${ANALYSIS_PY} file in ${PROJECT_FOLDER} folder. \
+Please generate it."
+            fi
         else
             printAbort "There is no clang-tidy, shellcheck or pylint program. Please check it."
         fi
