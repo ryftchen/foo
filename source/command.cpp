@@ -6,12 +6,13 @@
 #include "integral.hpp"
 #include "optimum.hpp"
 
-std::atomic<bool> Command::parseArgv(const int argc, char* const argv[])
+bool Command::parseArgv(const int argc, char* const argv[])
 {
     if (argc < 1)
     {
-        printInstruction();
+        executeCommand(COMMAND_EXECUTE_OUTPUT_NAME);
         LOGGER_INF("No command line option.");
+        return false;
     }
 
     std::bitset<TaskBit::taskButtom> taskBit(0);
@@ -452,4 +453,31 @@ void Command::printUnkownParameter(char* const argv[])
     LOGGER_WRN(str.c_str());
 
     task.taskDone = true;
+}
+
+void executeCommand(const char* const command)
+{
+    try
+    {
+        const pid_t status = system(command);
+        if (-1 == status)
+        {
+            throw std::runtime_error("System error.");
+        }
+        else if (WIFEXITED(status))
+        {
+            if (0 != WEXITSTATUS(status))
+            {
+                throw ExecuteCommandError(command);
+            }
+        }
+    }
+    catch (std::runtime_error const& error)
+    {
+        LOGGER_ERR(error.what());
+    }
+    catch (ExecuteCommandError const& error)
+    {
+        LOGGER_ERR(error.what());
+    }
 }

@@ -2,6 +2,19 @@
 #include <exception>
 #include <string>
 
+class ExecuteCommandError : public std::exception
+{
+public:
+    ExecuteCommandError() : message("Failed to execute command."){};
+    explicit ExecuteCommandError(const std::string& str) :
+        message("Failed to execute command " + str + "."){};
+    ~ExecuteCommandError() noexcept override {}
+    [[nodiscard]] const char* what() const noexcept override;
+
+private:
+    std::string message;
+};
+
 class CreateFolderError : public std::exception
 {
 public:
