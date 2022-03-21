@@ -24,11 +24,11 @@ COMPILE_COMMANDS="compile_commands.json"
 ANALYSIS_STYLE=".clang-tidy"
 FORMAT_STYLE=".clang-format"
 
-shCommand()
+bashCommand()
 {
     echo
     echo "$(date "+%b %d %T") $*" BEGIN
-    sh -c "$@"
+    /bin/bash -c "$@"
     echo "$(date "+%b %d %T") $*" END
 }
 
@@ -104,13 +104,13 @@ createMakefile()
 {
     if [ -f ./"${CMAKE_FILE}" ]; then
         if [ ! -d ./"${BUILD_FOLDER}" ]; then
-            shCommand "mkdir ./${BUILD_FOLDER}"
+            bashCommand "mkdir ./${BUILD_FOLDER}"
         fi
         if [ "${ARGS_RELEASE}" = "1" ]; then
-            shCommand "cd ./${BUILD_FOLDER} \
+            bashCommand "cd ./${BUILD_FOLDER} \
 && cmake .. -DCMAKE_CXX_COMPILER=clang++-11 -DCMAKE_BUILD_TYPE=Release"
         else
-            shCommand "cd ./${BUILD_FOLDER} \
+            bashCommand "cd ./${BUILD_FOLDER} \
 && cmake .. -DCMAKE_CXX_COMPILER=clang++-11 -DCMAKE_BUILD_TYPE=Debug"
         fi
     else
@@ -121,15 +121,15 @@ createMakefile()
 compileProject()
 {
     if [ "${DO_COMPILE}" = "1" ]; then
-        shCommand "cd ./${BUILD_FOLDER} && make -j4"
+        bashCommand "cd ./${BUILD_FOLDER} && make -j4"
     fi
 }
 
 buildCleanup()
 {
     if [ "${ARGS_CLEANUP}" = "1" ]; then
-        shCommand "rm -rf ./${BUILD_FOLDER} ./${BACKUP_FOLDER} ./${TEMP_FOLDER}"
-        shCommand "rm -rf ./GPATH ./GRTAGS ./GTAGS"
+        bashCommand "rm -rf ./${BUILD_FOLDER} ./${BACKUP_FOLDER} ./${TEMP_FOLDER}"
+        bashCommand "rm -rf ./GPATH ./GRTAGS ./GTAGS"
         exit 0
     fi
 }
@@ -143,14 +143,14 @@ buildFormat()
                 && command -v black >/dev/null 2>&1
         then
             if [ -f ./"${FORMAT_STYLE}" ]; then
-                shCommand "clang-format-11 -i --verbose ./${INCLUDE_FOLDER}/*.hpp \
+                bashCommand "clang-format-11 -i --verbose ./${INCLUDE_FOLDER}/*.hpp \
 ./${SOURCE_FOLDER}/*.cpp ./${LIBRARY_FOLDER}/*.cpp"
             else
                 printAbort "There is no ${FORMAT_STYLE} file in ${PROJECT_FOLDER} folder. \
 Please generate it."
             fi
-            shCommand "shfmt -l -w -i 4 -bn -fn ./${SCRIPT_FOLDER}/${BUILD_SCRIPT}"
-            shCommand "black -l 100 -S -v ./${SCRIPT_FOLDER}/${TEST_SCRIPT}"
+            bashCommand "shfmt -l -w -i 4 -bn -fn ./${SCRIPT_FOLDER}/${BUILD_SCRIPT}"
+            bashCommand "black -l 100 -S -v ./${SCRIPT_FOLDER}/${TEST_SCRIPT}"
         else
             printAbort "There is no clang-format, shfmt or black program. Please check it."
         fi
@@ -167,7 +167,7 @@ buildAnalysis()
         then
             if [ -f ./"${BUILD_FOLDER}"/"${COMPILE_COMMANDS}" ]; then
                 if [ -f ./"${ANALYSIS_STYLE}" ]; then
-                    shCommand "clang-tidy-11 -p ./${BUILD_FOLDER}/${COMPILE_COMMANDS} \
+                    bashCommand "clang-tidy-11 -p ./${BUILD_FOLDER}/${COMPILE_COMMANDS} \
 ./${INCLUDE_FOLDER}/*.hpp ./${SOURCE_FOLDER}/*.cpp ./${LIBRARY_FOLDER}/*.cpp"
                 else
                     printAbort "There is no ${ANALYSIS_STYLE} file in ${PROJECT_FOLDER} folder. \
@@ -177,8 +177,8 @@ Please generate it."
                 printAbort "There is no ${COMPILE_COMMANDS} file in ${BUILD_FOLDER} folder. \
 Please generate it."
             fi
-            shCommand "shellcheck ./${SCRIPT_FOLDER}/${BUILD_SCRIPT} --enable=all"
-            shCommand "pylint ./${SCRIPT_FOLDER}/${TEST_SCRIPT} --enable=all \
+            bashCommand "shellcheck ./${SCRIPT_FOLDER}/${BUILD_SCRIPT} --enable=all"
+            bashCommand "pylint ./${SCRIPT_FOLDER}/${TEST_SCRIPT} --enable=all \
 --argument-naming-style=camelCase --attr-naming-style=camelCase --function-naming-style=camelCase \
 --method-naming-style=camelCase --module-naming-style=camelCase --variable-naming-style=camelCase \
 --disable=missing-module-docstring,missing-class-docstring,missing-function-docstring,\
@@ -208,7 +208,7 @@ buildHtml()
                     tarHtml
                 fi
             else
-                shCommand "mkdir ./${TEMP_FOLDER}"
+                bashCommand "mkdir ./${TEMP_FOLDER}"
                 tarHtml
             fi
         else
@@ -225,14 +225,14 @@ tarHtml()
     if [ -d ./"${TEMP_FOLDER}"/"${browserFolder}" ]; then
         rm -rf ./"${TEMP_FOLDER}"/"${browserFolder}"
     fi
-    shCommand "mkdir ./${TEMP_FOLDER}/${browserFolder}"
-    shCommand "codebrowser_generator -color -a -b ./${BUILD_FOLDER}/${COMPILE_COMMANDS} \
+    bashCommand "mkdir ./${TEMP_FOLDER}/${browserFolder}"
+    bashCommand "codebrowser_generator -color -a -b ./${BUILD_FOLDER}/${COMPILE_COMMANDS} \
 -o ./${TEMP_FOLDER}/${browserFolder} -p ${PROJECT_FOLDER}:.:${commitId} -d ./data"
-    shCommand "codebrowser_indexgenerator ./${TEMP_FOLDER}/${browserFolder} -d ./data"
-    shCommand "cp -rf /usr/local/share/woboq/data ./${TEMP_FOLDER}/${browserFolder}/"
-    shCommand "tar -jcvf ./${TEMP_FOLDER}/${tarFile} -C ./${TEMP_FOLDER} ${browserFolder} \
+    bashCommand "codebrowser_indexgenerator ./${TEMP_FOLDER}/${browserFolder} -d ./data"
+    bashCommand "cp -rf /usr/local/share/woboq/data ./${TEMP_FOLDER}/${browserFolder}/"
+    bashCommand "tar -jcvf ./${TEMP_FOLDER}/${tarFile} -C ./${TEMP_FOLDER} ${browserFolder} \
 >/dev/null"
-    shCommand "rm -rf ./${TEMP_FOLDER}/${browserFolder}"
+    bashCommand "rm -rf ./${TEMP_FOLDER}/${browserFolder}"
 }
 
 buildBackup()
@@ -255,7 +255,7 @@ ${timeDiff}s ago."
                 tarBackup
             fi
         else
-            shCommand "mkdir ./${BACKUP_FOLDER}"
+            bashCommand "mkdir ./${BACKUP_FOLDER}"
             tarBackup
         fi
     fi
@@ -266,16 +266,16 @@ tarBackup()
     if [ -d ./"${BACKUP_FOLDER}"/"${PROJECT_FOLDER}" ]; then
         rm -rf ./"${BACKUP_FOLDER}"/"${PROJECT_FOLDER}"
     fi
-    shCommand "mkdir ./${BACKUP_FOLDER}/${PROJECT_FOLDER}"
-    shCommand "find . -type f -o \( -path ./${BUILD_FOLDER} -o -path ./${BACKUP_FOLDER} \
+    bashCommand "mkdir ./${BACKUP_FOLDER}/${PROJECT_FOLDER}"
+    bashCommand "find . -type f -o \( -path ./${BUILD_FOLDER} -o -path ./${BACKUP_FOLDER} \
 -o -path ./${TEMP_FOLDER} -o -path './.*' \) -prune -o -print | sed 1d \
 | grep -E '${INCLUDE_FOLDER}|${SOURCE_FOLDER}|${LIBRARY_FOLDER}|${SCRIPT_FOLDER}' \
 | xargs -i cp -R {} ${BACKUP_FOLDER}/${PROJECT_FOLDER}/"
-    shCommand "find . -maxdepth 1 -type d -o -print | grep -E '*\.txt' \
+    bashCommand "find . -maxdepth 1 -type d -o -print | grep -E '*\.txt' \
 | xargs -i cp -R {} ${BACKUP_FOLDER}/${PROJECT_FOLDER}/"
-    shCommand "tar -zcvf ${BACKUP_FOLDER}/${tarFolder}.tar.gz -C ./${BACKUP_FOLDER} \
+    bashCommand "tar -zcvf ${BACKUP_FOLDER}/${tarFolder}.tar.gz -C ./${BACKUP_FOLDER} \
 ${PROJECT_FOLDER}"
-    shCommand "rm -rf ./${BACKUP_FOLDER}/${PROJECT_FOLDER}"
+    bashCommand "rm -rf ./${BACKUP_FOLDER}/${PROJECT_FOLDER}"
 }
 
 buildTag()
@@ -284,7 +284,7 @@ buildTag()
         if
             command -v gtags >/dev/null 2>&1
         then
-            shCommand "find ./${INCLUDE_FOLDER} ./${SOURCE_FOLDER} ./${LIBRARY_FOLDER} -type f \
+            bashCommand "find ./${INCLUDE_FOLDER} ./${SOURCE_FOLDER} ./${LIBRARY_FOLDER} -type f \
 -print | grep -E '*\.cpp|*\.hpp' | grep -v dummy | gtags -i -v -f -"
         else
             printAbort "There is no gtags program. Please check it."
