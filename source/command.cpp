@@ -113,8 +113,8 @@ void Command::getOptimumResult(
 {
     assert((leftEndpoint > rightEndpoint) && (epsilon > 0.0));
     std::vector<std::shared_ptr<std::thread>> optimumThread;
-    const auto optimumFunctor =
-        [&](const std::shared_ptr<Optimum> classPoint, const char* const threadName)
+    const auto optimumFunctor = [&](const std::shared_ptr<Optimum> classPoint,
+                                    const char* const threadName) -> decltype(auto)
     {
         const std::shared_ptr<std::thread> methodThread = std::make_shared<std::thread>(
             &Optimum::operator(), classPoint, leftEndpoint, rightEndpoint, epsilon);
@@ -214,8 +214,8 @@ void Command::getIntegralResult(
 {
     assert(epsilon > 0.0);
     std::vector<std::shared_ptr<std::thread>> integralThread;
-    const auto integralFunctor =
-        [&](const std::shared_ptr<Integral> classPoint, const char* const threadName)
+    const auto integralFunctor = [&](const std::shared_ptr<Integral> classPoint,
+                                     const char* const threadName) -> decltype(auto)
     {
         const std::shared_ptr<std::thread> methodThread = std::make_shared<std::thread>(
             &Integral::operator(), classPoint, lowerLimit, upperLimit, epsilon);
@@ -310,7 +310,7 @@ void Command::getSortResult(const std::shared_ptr<Sort<int>>& sort) const
 {
     std::vector<std::shared_ptr<std::thread>> sortThread;
     const auto sortFunctor = [&](void (Sort<int>::*methodPoint)(int* const, const uint32_t) const,
-                                 const char* const threadName)
+                                 const char* const threadName) -> decltype(auto)
     {
         const std::shared_ptr<std::thread> methodThread = std::make_shared<std::thread>(
             methodPoint, sort, sort->getRandomArray().get(), sort->getLength());

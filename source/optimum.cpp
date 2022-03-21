@@ -68,7 +68,7 @@ std::optional<std::tuple<ValueY, ValueX>> Fibonacci::operator()(
 
     TIME_END;
     FORMAT_PRINT(OPTIMUM_FIBONACCI, y, x, TIME_INTERVAL);
-    return std::make_tuple(y, x);
+    return std::make_optional(std::make_tuple(y, x));
 }
 std::optional<std::pair<ValueY, ValueX>> Fibonacci::fibonacciSearch(
     const double left, const double right, const double eps)
@@ -124,7 +124,7 @@ std::optional<std::pair<ValueY, ValueX>> Fibonacci::fibonacciSearch(
     }
     const double x = (leftVal + rightVal) / 2.0;
 
-    return std::make_pair(fun(x), x);
+    return std::make_optional(std::make_pair(fun(x), x));
 }
 void Fibonacci::generateFibonacciNumber(std::vector<double>& fibonacci, const double max)
 {
@@ -168,14 +168,14 @@ std::optional<std::tuple<ValueY, ValueX>> Gradient::operator()(
     {
         x = climber;
         uint32_t i = 0;
-        double learningRate = Learning::initLearningRate;
+        double learningRate = Learning::initialLearningRate;
         double gradient = calculateFirstDerivative(x, eps);
         double dx = learningRate * gradient;
         while ((fabs(dx) > eps) && ((x + dx) >= left) && ((x + dx) <= right))
         {
             x += dx;
             ++i;
-            learningRate = Learning::initLearningRate * 1.0 / (1.0 + Learning::decay * i);
+            learningRate = Learning::initialLearningRate * 1.0 / (1.0 + Learning::decay * i);
             gradient = calculateFirstDerivative(x, eps);
             dx = learningRate * gradient;
         }
@@ -192,7 +192,7 @@ std::optional<std::tuple<ValueY, ValueX>> Gradient::operator()(
 
     TIME_END;
     FORMAT_PRINT(OPTIMUM_GRADIENT, max, x, TIME_INTERVAL);
-    return std::make_tuple(max, x);
+    return std::make_optional(std::make_tuple(max, x));
 }
 double Gradient::calculateFirstDerivative(const double x, const double eps) const
 {
@@ -205,14 +205,14 @@ std::optional<std::tuple<ValueY, ValueX>> Annealing::operator()(
     const double left, const double right, const double eps)
 {
     TIME_BEGIN;
-    double temperature = Cooling::initT;
+    double temperature = Cooling::initialT;
     GET_TIME_SEED(seed);
     std::uniform_real_distribution<double> randomX(left, right);
     std::uniform_real_distribution<double> random(
         -OPTIMUM_ANNEALING_PERTURBATION, OPTIMUM_ANNEALING_PERTURBATION);
     double x = randomX(seed);
     double y = fun(x);
-    while (temperature > Cooling::minT)
+    while (temperature > Cooling::minimalT)
     {
         double xBest = x;
         double yBest = y;
@@ -252,7 +252,7 @@ std::optional<std::tuple<ValueY, ValueX>> Annealing::operator()(
 
     TIME_END;
     FORMAT_PRINT(OPTIMUM_ANNEALING, y, x, TIME_INTERVAL);
-    return std::make_tuple(y, x);
+    return std::make_optional(std::make_tuple(y, x));
 }
 
 // Particle swarm method
@@ -313,7 +313,7 @@ std::optional<std::tuple<ValueY, ValueX>> Particle::operator()(
 
     TIME_END;
     FORMAT_PRINT(OPTIMUM_PARTICLE, xFitnessBest, xBest, TIME_INTERVAL);
-    return std::make_tuple(xFitnessBest, xBest);
+    return std::make_optional(std::make_tuple(xFitnessBest, xBest));
 }
 Record Particle::recordInit(const double left, const double right)
 {
@@ -360,7 +360,7 @@ std::optional<std::tuple<ValueY, ValueX>> Genetic::operator()(
 
     TIME_END;
     FORMAT_PRINT(OPTIMUM_GENETIC, fun(x), x, TIME_INTERVAL);
-    return std::make_tuple(fun(x), x);
+    return std::make_optional(std::make_tuple(fun(x), x));
 }
 void Genetic::setSpecies(const double left, const double right, const double eps)
 {
@@ -497,7 +497,7 @@ void Genetic::mutateIndividual(Population& pop)
             }
         });
 }
-double Genetic::calculateFitness(const Chromosome& chr)
+auto Genetic::calculateFitness(const Chromosome& chr) -> decltype(fun(geneDecoding(chr)))
 {
     return fun(geneDecoding(chr));
 }
@@ -520,7 +520,7 @@ std::optional<std::tuple<double, double>> Genetic::fitnessLinearTransformation(
         const double alpha = reFitnessAvg / (reFitnessAvg - reFitnessMin);
         const double beta = -1.0 * (reFitnessMin * reFitnessAvg) / (reFitnessAvg - reFitnessMin);
         assert(!isnan(alpha) && !isinf(alpha) && !isnan(beta) && !isinf(beta));
-        return std::make_tuple(alpha, beta);
+        return std::make_optional(std::make_tuple(alpha, beta));
     }
     else
     {

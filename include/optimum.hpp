@@ -46,7 +46,7 @@ private:
 // Gradient ascent method
 namespace Learning
 {
-static const double initLearningRate = 0.01;
+static const double initialLearningRate = 0.01;
 static const double decay = 0.001;
 static const uint32_t loopTime = 100;
 } // namespace Learning
@@ -66,8 +66,8 @@ private:
 #define OPTIMUM_ANNEALING_PERTURBATION 0.5
 namespace Cooling
 {
-static const double initT = 100.0;
-static const double minT = 0.01;
+static const double initialT = 100.0;
+static const double minimalT = 0.01;
 static const double coolingRate = 0.9;
 static const uint32_t markovChain = 100;
 } // namespace Cooling
@@ -178,7 +178,7 @@ private:
     void crossIndividual(Species::Population& pop);
     void geneMutation(Species::Chromosome& chr);
     void mutateIndividual(Species::Population& pop);
-    double calculateFitness(const Species::Chromosome& chr);
+    auto calculateFitness(const Species::Chromosome& chr) -> decltype(fun(geneDecoding(chr)));
     std::optional<std::tuple<double, double>> fitnessLinearTransformation(
         const Species::Population& pop);
     void stochasticTournamentSelection(

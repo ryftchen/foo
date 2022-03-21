@@ -157,11 +157,10 @@ void printFile(
         PrintStyle formatStyle = style;
         if (nullStyle == formatStyle)
         {
-            auto keepStyle = [](std::string& line)
+            formatStyle = [](std::string& line)
             {
                 return line;
             };
-            formatStyle = keepStyle;
         }
 
         std::string line = "";
