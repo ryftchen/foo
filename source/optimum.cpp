@@ -1,6 +1,5 @@
 #include "optimum.hpp"
 #include <algorithm>
-#include <map>
 #include "log.hpp"
 
 using Species::Chromosome;
@@ -24,12 +23,12 @@ std::optional<std::tuple<ValueY, ValueX>> Fibonacci::operator()(
     }
     else
     {
-        x = std::get<0>(firstResult.value());
-        y = std::get<1>(firstResult.value());
+        y = std::get<0>(firstResult.value());
+        x = std::get<1>(firstResult.value());
         uint32_t n = 2, cnt = 0;
         do
         {
-            std::vector<std::pair<double, double>> aggregation;
+            std::vector<std::pair<ValueY, ValueX>> aggregation;
             aggregation.reserve(n);
             const double stepLength = (right - left) / n;
             for (uint32_t i = 0; i < n; ++i)
@@ -38,7 +37,7 @@ std::optional<std::tuple<ValueY, ValueX>> Fibonacci::operator()(
                     fibonacciSearch(left + i * stepLength, left + (i + 1) * stepLength, eps);
                 if (result.has_value())
                 {
-                    aggregation.emplace_back(std::pair<double, double>(
+                    aggregation.emplace_back(std::pair<ValueY, ValueX>(
                         std::get<0>(result.value()), std::get<1>(result.value())));
                 }
             }
@@ -46,12 +45,12 @@ std::optional<std::tuple<ValueY, ValueX>> Fibonacci::operator()(
                 aggregation.begin(), aggregation.end(),
                 [](const auto& max1, const auto& max2)
                 {
-                    return max1.second > max2.second;
+                    return max1.first > max2.first;
                 });
 
             if (aggregation.size())
             {
-                const auto [xNew, yNew] = *aggregation.begin();
+                const auto [yNew, xNew] = *aggregation.begin();
                 if (fabs(yNew - y) <= eps)
                 {
                     ++cnt;
@@ -71,7 +70,7 @@ std::optional<std::tuple<ValueY, ValueX>> Fibonacci::operator()(
     FORMAT_PRINT(OPTIMUM_FIBONACCI, y, x, TIME_INTERVAL);
     return std::make_tuple(y, x);
 }
-std::optional<std::pair<double, double>> Fibonacci::fibonacciSearch(
+std::optional<std::pair<ValueY, ValueX>> Fibonacci::fibonacciSearch(
     const double left, const double right, const double eps)
 {
     double leftVal = left, rightVal = right;
@@ -125,7 +124,7 @@ std::optional<std::pair<double, double>> Fibonacci::fibonacciSearch(
     }
     const double x = (leftVal + rightVal) / 2.0;
 
-    return std::make_pair(x, fun(x));
+    return std::make_pair(fun(x), x);
 }
 void Fibonacci::generateFibonacciNumber(std::vector<double>& fibonacci, const double max)
 {
@@ -163,7 +162,7 @@ std::optional<std::tuple<ValueY, ValueX>> Gradient::operator()(
         }
     }
 
-    std::vector<std::pair<double, double>> aggregation;
+    std::vector<std::pair<ValueY, ValueX>> aggregation;
     aggregation.reserve(climbing.size());
     for (const auto& climber : climbing)
     {
@@ -180,16 +179,16 @@ std::optional<std::tuple<ValueY, ValueX>> Gradient::operator()(
             gradient = calculateFirstDerivative(x, eps);
             dx = learningRate * gradient;
         }
-        aggregation.emplace_back(std::pair<double, double>(x, fun(x)));
+        aggregation.emplace_back(std::pair<ValueY, ValueX>(fun(x), x));
     }
     std::sort(
         aggregation.begin(), aggregation.end(),
         [](const auto& max1, const auto& max2)
         {
-            return max1.second > max2.second;
+            return max1.first > max2.first;
         });
-    x = std::get<0>(*aggregation.begin());
-    max = std::get<1>(*aggregation.begin());
+    max = std::get<0>(*aggregation.begin());
+    x = std::get<1>(*aggregation.begin());
 
     TIME_END;
     FORMAT_PRINT(OPTIMUM_GRADIENT, max, x, TIME_INTERVAL);
@@ -307,7 +306,7 @@ std::optional<std::tuple<ValueY, ValueX>> Particle::operator()(
                 xFitnessBest = ind.xFitness;
             }
         }
-        rec.history.insert(std::pair<double, double>(xFitnessBest, xBest));
+        rec.history.insert(std::pair<ValueY, ValueX>(xFitnessBest, xBest));
     }
     xFitnessBest = std::get<0>(*(rec.history.begin()));
     xBest = std::get<1>(*(rec.history.begin()));

@@ -38,7 +38,7 @@ public:
 
 private:
     const Expression& fun;
-    std::optional<std::pair<double, double>> fibonacciSearch(
+    std::optional<std::pair<ValueY, ValueX>> fibonacciSearch(
         const double left, const double right, const double eps);
     static void generateFibonacciNumber(std::vector<double>& fibonacci, const double max);
 };
@@ -106,7 +106,7 @@ struct Greater
     bool operator()(const double left, const double right) const { return left > right; }
 };
 using Society = std::vector<Swarm::Individual>;
-using History = std::map<double, double, Greater>;
+using History = std::map<ValueY, ValueX, Greater>;
 struct Record
 {
     Record(
