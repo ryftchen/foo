@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+STATUS_SPLIT_LINE="-----"
+STATUS_INSTALL_DEPENDENCIES="INSTALL DEPENDENCIES"
 SHFMT_URL="https://github.com/mvdan/sh/releases/download/v3.4.2/shfmt_v3.4.2_linux_amd64"
 WOBOQ_GIT="https://github.com/KDAB/codebrowser.git"
 WOBOQ_COMMIT="73fce32fc696b3f6eb2a678397328d9ce1ad4cf6"
@@ -37,7 +39,9 @@ clang-format-11 clang-tidy-11 cmake python3 pylint black shellcheck global valgr
 main()
 {
     echo
-    echo "$(date "+%b %d %T") ----- INSTALL DEPENDENCIES BEGIN -----"
+    echo "$(date "+%b %d %T") \
+${STATUS_SPLIT_LINE} ${STATUS_INSTALL_DEPENDENCIES} BEGIN ${STATUS_SPLIT_LINE}"
+
     if [ -n "${FOO_ENV:?}" ]; then
         if [ "${FOO_ENV}" = "GITHUB_ACTION" ]; then
             installDependencies
@@ -45,8 +49,10 @@ main()
     else
         printAbort "Please set environment variable FOO_ENV."
     fi
+
     echo
-    echo "$(date "+%b %d %T") -----  INSTALL DEPENDENCIES END  -----"
+    echo "$(date "+%b %d %T") \
+${STATUS_SPLIT_LINE}  ${STATUS_INSTALL_DEPENDENCIES} END  ${STATUS_SPLIT_LINE}"
 }
 
 main "$@"
