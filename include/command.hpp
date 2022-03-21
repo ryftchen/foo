@@ -7,6 +7,8 @@
 #include "log.hpp"
 #include "sort.hpp"
 
+void executeCommand(const char* const command);
+
 #define COMMAND_THREAD_NAME_LENGTH 6
 #define COMMAND_MAX_METHOD 10
 #define COMMAND_PRINT_MAX_LINE 50
@@ -24,6 +26,7 @@
         }                                              \
     }                                                  \
     while (0)
+#define COMMAND_EXECUTE_OUTPUT_NAME "tput bel; banner foo"
 
 class Command
 {
@@ -68,7 +71,7 @@ public:
         sortButtom
     };
     virtual ~Command(){};
-    std::atomic<bool> parseArgv(const int argc, char* const argv[]);
+    bool parseArgv(const int argc, char* const argv[]);
     void doTask();
 
 private:
