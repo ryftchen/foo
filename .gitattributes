@@ -1,8 +1,14 @@
 *.cpp text eol=lf
 *.hpp text eol=lf
-*.sh text eol=lf
 *.py text eol=lf
-
+*.sh text eol=lf
 *.txt text eol=lf
+
+*.clang-format text eol=lf
+*.clang-tidy text eol=lf
+*.pylintrc text eol=lf
+*.shellcheckrc text eol=lf
+*.yamllint text eol=lf
+
 *.md text eol=lf
 *.yml text eol=lf
