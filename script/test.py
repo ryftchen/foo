@@ -187,7 +187,12 @@ def tput():
 def executeCommand(command, output=True):
     try:
         cmd = subprocess.Popen(
-            command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding="utf-8"
+            command,
+            shell=True,
+            executable="/bin/bash",
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            encoding="utf-8",
         )
         cmd.wait()
     except RuntimeError():

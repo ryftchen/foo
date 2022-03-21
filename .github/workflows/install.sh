@@ -4,11 +4,11 @@ SHFMT_URL="https://github.com/mvdan/sh/releases/download/v3.4.2/shfmt_v3.4.2_lin
 WOBOQ_GIT="https://github.com/KDAB/codebrowser.git"
 WOBOQ_COMMIT="73fce32fc696b3f6eb2a678397328d9ce1ad4cf6"
 
-shCommand()
+bashCommand()
 {
     echo
     echo "$(date "+%b %d %T") $* BEGIN"
-    sh -c "$@"
+    /bin/bash -c "$@"
     echo "$(date "+%b %d %T") $* END"
 }
 
@@ -24,11 +24,11 @@ installDependencies()
     localDir=$(git rev-parse --show-toplevel)
     cd "${localDir}" || exit 1
 
-    shCommand "sudo apt-get install -y llvm-11 clang-11 libclang-11-dev \
+    bashCommand "sudo apt-get install -y llvm-11 clang-11 libclang-11-dev \
 clang-format-11 clang-tidy-11 cmake python3 pylint black shellcheck global valgrind"
-    shCommand "sudo curl -L ${SHFMT_URL} >/usr/local/bin/shfmt \
+    bashCommand "sudo curl -L ${SHFMT_URL} >/usr/local/bin/shfmt \
 && sudo chmod +x /usr/local/bin/shfmt"
-    shCommand "git clone ${WOBOQ_GIT} -b master \
+    bashCommand "git clone ${WOBOQ_GIT} -b master \
 && cd ./codebrowser && git reset --hard ${WOBOQ_COMMIT} \
 && cmake . -DCMAKE_CXX_COMPILER=clang++-11 -DCMAKE_BUILD_TYPE=Release && make -j4 \
 && sudo make install && cd .. && rm -rf ./codebrowser"
