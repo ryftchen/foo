@@ -497,7 +497,7 @@ void Genetic::mutateIndividual(Population& pop)
             }
         });
 }
-auto Genetic::calculateFitness(const Chromosome& chr) -> decltype(fun(geneDecoding(chr)))
+double Genetic::calculateFitness(const Chromosome& chr)
 {
     return fun(geneDecoding(chr));
 }

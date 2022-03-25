@@ -178,7 +178,7 @@ private:
     void crossIndividual(Species::Population& pop);
     void geneMutation(Species::Chromosome& chr);
     void mutateIndividual(Species::Population& pop);
-    auto calculateFitness(const Species::Chromosome& chr) -> decltype(fun(geneDecoding(chr)));
+    double calculateFitness(const Species::Chromosome& chr);
     std::optional<std::tuple<double, double>> fitnessLinearTransformation(
         const Species::Population& pop);
     void stochasticTournamentSelection(
