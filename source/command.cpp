@@ -5,6 +5,7 @@
 #include "hash.hpp"
 #include "integral.hpp"
 #include "optimum.hpp"
+#include "thread.hpp"
 
 bool Command::parseArgv(const int argc, char* const argv[])
 {
@@ -112,56 +113,55 @@ void Command::getOptimumResult(
     const double epsilon) const
 {
     assert((leftEndpoint > rightEndpoint) && (epsilon > 0.0));
-    std::vector<std::shared_ptr<std::thread>> optimumThread;
-    const auto optimumFunctor = [&](const std::shared_ptr<Optimum> classPoint,
-                                    const char* const threadName) -> decltype(auto)
+    Thread threadPool(task.optimumBit.count());
+    const auto optimumFunctor =
+        [&](const std::string& threadName, const std::shared_ptr<Optimum>& classPtr)
     {
-        const std::shared_ptr<std::thread> methodThread = std::make_shared<std::thread>(
-            &Optimum::operator(), classPoint, leftEndpoint, rightEndpoint, epsilon);
-        pthread_setname_np(methodThread->native_handle(), threadName);
-        optimumThread.emplace_back(methodThread);
+        threadPool.enqueue(
+            threadName, &Optimum::operator(), classPtr, leftEndpoint, rightEndpoint, epsilon);
     };
 
-    std::shared_ptr<Optimum> fib, gra, ann, par, gen;
-    char threadName[COMMAND_THREAD_NAME_LENGTH] = {'\0'};
     for (int i = 0; i < OptimumBit::optimumButtom; ++i)
     {
         if (task.optimumBit.test(OptimumBit(i)))
         {
-            memcpy(
-                threadName, taskTable[TaskBit::taskOptimum][OptimumBit(i)],
-                COMMAND_THREAD_NAME_LENGTH);
-            switch (bkdrHash(threadName))
+            const std::string threadName = taskTable[TaskBit::taskOptimum][OptimumBit(i)];
+            switch (bkdrHash(threadName.c_str()))
             {
                 case "o_fib"_bkdrHash:
-                    fib = std::make_shared<Fibonacci>(express);
-                    optimumFunctor(fib, threadName);
+                {
+                    std::shared_ptr<Optimum> fib = std::make_shared<Fibonacci>(express);
+                    optimumFunctor(threadName, fib);
                     break;
+                }
                 case "o_gra"_bkdrHash:
-                    gra = std::make_shared<Gradient>(express);
-                    optimumFunctor(gra, threadName);
+                {
+                    std::shared_ptr<Optimum> gra = std::make_shared<Gradient>(express);
+                    optimumFunctor(threadName, gra);
                     break;
+                }
                 case "o_ann"_bkdrHash:
-                    ann = std::make_shared<Annealing>(express);
-                    optimumFunctor(ann, threadName);
+                {
+                    std::shared_ptr<Optimum> ann = std::make_shared<Annealing>(express);
+                    optimumFunctor(threadName, ann);
                     break;
+                }
                 case "o_par"_bkdrHash:
-                    par = std::make_shared<Particle>(express);
-                    optimumFunctor(par, threadName);
+                {
+                    std::shared_ptr<Optimum> par = std::make_shared<Particle>(express);
+                    optimumFunctor(threadName, par);
                     break;
+                }
                 case "o_gen"_bkdrHash:
-                    gen = std::make_shared<Genetic>(express);
-                    optimumFunctor(gen, threadName);
+                {
+                    std::shared_ptr<Optimum> gen = std::make_shared<Genetic>(express);
+                    optimumFunctor(threadName, gen);
                     break;
+                }
                 default:
                     break;
             }
         }
-    }
-
-    for (const auto thread : optimumThread)
-    {
-        thread->join();
     }
 }
 void Command::setOptimumBit(char* const argv[])
@@ -213,56 +213,55 @@ void Command::getIntegralResult(
     const double epsilon) const
 {
     assert(epsilon > 0.0);
-    std::vector<std::shared_ptr<std::thread>> integralThread;
-    const auto integralFunctor = [&](const std::shared_ptr<Integral> classPoint,
-                                     const char* const threadName) -> decltype(auto)
+    Thread threadPool(task.integralBit.count());
+    const auto integralFunctor =
+        [&](const std::string& threadName, const std::shared_ptr<Integral>& classPtr)
     {
-        const std::shared_ptr<std::thread> methodThread = std::make_shared<std::thread>(
-            &Integral::operator(), classPoint, lowerLimit, upperLimit, epsilon);
-        pthread_setname_np(methodThread->native_handle(), threadName);
-        integralThread.emplace_back(methodThread);
+        threadPool.enqueue(
+            threadName, &Integral::operator(), classPtr, lowerLimit, upperLimit, epsilon);
     };
 
-    std::shared_ptr<Integral> tra, sim, rom, gau, mon;
-    char threadName[COMMAND_THREAD_NAME_LENGTH] = {'\0'};
     for (int i = 0; i < IntegralBit::integralButtom; ++i)
     {
         if (task.integralBit.test(IntegralBit(i)))
         {
-            memcpy(
-                threadName, taskTable[TaskBit::taskIntegral][IntegralBit(i)],
-                COMMAND_THREAD_NAME_LENGTH);
-            switch (bkdrHash(threadName))
+            const std::string threadName = taskTable[TaskBit::taskIntegral][IntegralBit(i)];
+            switch (bkdrHash(threadName.c_str()))
             {
                 case "i_tra"_bkdrHash:
-                    tra = std::make_shared<Trapezoidal>(express);
-                    integralFunctor(tra, threadName);
+                {
+                    std::shared_ptr<Integral> tra = std::make_shared<Trapezoidal>(express);
+                    integralFunctor(threadName, tra);
                     break;
+                }
                 case "i_sim"_bkdrHash:
-                    sim = std::make_shared<Simpson>(express);
-                    integralFunctor(sim, threadName);
+                {
+                    std::shared_ptr<Integral> sim = std::make_shared<Simpson>(express);
+                    integralFunctor(threadName, sim);
                     break;
+                }
                 case "i_rom"_bkdrHash:
-                    rom = std::make_shared<Romberg>(express);
-                    integralFunctor(rom, threadName);
+                {
+                    std::shared_ptr<Integral> rom = std::make_shared<Romberg>(express);
+                    integralFunctor(threadName, rom);
                     break;
+                }
                 case "i_gau"_bkdrHash:
-                    gau = std::make_shared<Gauss>(express);
-                    integralFunctor(gau, threadName);
+                {
+                    std::shared_ptr<Integral> gau = std::make_shared<Gauss>(express);
+                    integralFunctor(threadName, gau);
                     break;
+                }
                 case "i_mon"_bkdrHash:
-                    mon = std::make_shared<MonteCarlo>(express);
-                    integralFunctor(mon, threadName);
+                {
+                    std::shared_ptr<Integral> mon = std::make_shared<MonteCarlo>(express);
+                    integralFunctor(threadName, mon);
                     break;
+                }
                 default:
                     break;
             }
         }
-    }
-
-    for (const auto thread : integralThread)
-    {
-        thread->join();
     }
 }
 void Command::setIntegralBit(char* const argv[])
@@ -308,64 +307,55 @@ void Command::runSort() const
 }
 void Command::getSortResult(const std::shared_ptr<Sort<int>>& sort) const
 {
-    std::vector<std::shared_ptr<std::thread>> sortThread;
-    const auto sortFunctor = [&](void (Sort<int>::*methodPoint)(int* const, const uint32_t) const,
-                                 const char* const threadName) -> decltype(auto)
+    Thread threadPool(task.sortBit.count());
+    const auto sortFunctor = [&](const std::string& threadName,
+                                 void (Sort<int>::*methodPtr)(int* const, const uint32_t) const)
     {
-        const std::shared_ptr<std::thread> methodThread = std::make_shared<std::thread>(
-            methodPoint, sort, sort->getRandomArray().get(), sort->getLength());
-        pthread_setname_np(methodThread->native_handle(), threadName);
-        sortThread.emplace_back(methodThread);
+        threadPool.enqueue(
+            threadName, methodPtr, sort, sort->getRandomArray().get(), sort->getLength());
     };
 
-    char threadName[COMMAND_THREAD_NAME_LENGTH] = {'\0'};
     for (int i = 0; i < SortBit::sortButtom; ++i)
     {
         if (task.sortBit.test(SortBit(i)))
         {
-            memcpy(
-                threadName, taskTable[TaskBit::taskSort][SortBit(i)], COMMAND_THREAD_NAME_LENGTH);
-            switch (bkdrHash(threadName))
+            const std::string threadName = taskTable[TaskBit::taskSort][SortBit(i)];
+            switch (bkdrHash(threadName.c_str()))
             {
                 case "s_bub"_bkdrHash:
-                    sortFunctor(&Sort<int>::bubbleSort, threadName);
+                    sortFunctor(threadName, &Sort<int>::bubbleSort);
                     break;
                 case "s_sec"_bkdrHash:
-                    sortFunctor(&Sort<int>::selectionSort, threadName);
+                    sortFunctor(threadName, &Sort<int>::selectionSort);
                     break;
                 case "s_ins"_bkdrHash:
-                    sortFunctor(&Sort<int>::insertionSort, threadName);
+                    sortFunctor(threadName, &Sort<int>::insertionSort);
                     break;
                 case "s_she"_bkdrHash:
-                    sortFunctor(&Sort<int>::shellSort, threadName);
+                    sortFunctor(threadName, &Sort<int>::shellSort);
                     break;
                 case "s_mer"_bkdrHash:
-                    sortFunctor(&Sort<int>::mergeSort, threadName);
+                    sortFunctor(threadName, &Sort<int>::mergeSort);
                     break;
                 case "s_qui"_bkdrHash:
-                    sortFunctor(&Sort<int>::quickSort, threadName);
+                    sortFunctor(threadName, &Sort<int>::quickSort);
                     break;
                 case "s_hea"_bkdrHash:
-                    sortFunctor(&Sort<int>::heapSort, threadName);
+                    sortFunctor(threadName, &Sort<int>::heapSort);
                     break;
                 case "s_cou"_bkdrHash:
-                    sortFunctor(&Sort<int>::countingSort, threadName);
+                    sortFunctor(threadName, &Sort<int>::countingSort);
                     break;
                 case "s_buc"_bkdrHash:
-                    sortFunctor(&Sort<int>::bucketSort, threadName);
+                    sortFunctor(threadName, &Sort<int>::bucketSort);
                     break;
                 case "s_rad"_bkdrHash:
-                    sortFunctor(&Sort<int>::radixSort, threadName);
+                    sortFunctor(threadName, &Sort<int>::radixSort);
                     break;
                 default:
                     break;
             }
         }
-    }
-
-    for (const auto thread : sortThread)
-    {
-        thread->join();
     }
 }
 void Command::setSortBit(char* const argv[])
