@@ -39,6 +39,7 @@ jobs:
 
       - name: Test
         run: |
+          export TERM=linux
           export TERMINFO=/etc/terminfo
           ./script/test.py --build release --valgrind
 
