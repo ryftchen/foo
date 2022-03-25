@@ -9,7 +9,6 @@
 
 void executeCommand(const char* const command);
 
-#define COMMAND_THREAD_NAME_LENGTH 6
 #define COMMAND_MAX_METHOD 10
 #define COMMAND_PRINT_MAX_LINE 50
 #define COMMAND_PERPARE_BITSET(xBit, taskX)            \
@@ -75,6 +74,7 @@ public:
     void doTask();
 
 private:
+    mutable std::mutex commandMutex;
 #pragma pack(8)
     struct TaskPlan
     {
@@ -86,11 +86,10 @@ private:
         TaskPlan() = default;
     } task;
 #pragma pack()
-    mutable std::mutex commandMutex;
     typedef void (Command::*TaskFunctor)() const;
     const TaskFunctor taskFunctor[TaskBit::taskButtom] = {
         &Command::runOptimum, &Command::runIntegral, &Command::runSort};
-    const char taskTable[TaskBit::taskButtom][COMMAND_MAX_METHOD][COMMAND_THREAD_NAME_LENGTH] = {
+    const std::string taskTable[TaskBit::taskButtom][COMMAND_MAX_METHOD] = {
         {"o_fib", "o_gra", "o_ann", "o_par", "o_gen"},
         {"i_tra", "i_sim", "i_rom", "i_gau", "i_mon"},
         {"s_bub", "s_sec", "s_ins", "s_she", "s_mer", "s_qui", "s_hea", "s_cou", "s_buc", "s_rad"}};
