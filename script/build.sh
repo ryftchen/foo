@@ -293,7 +293,7 @@ buildTag()
             command -v gtags >/dev/null 2>&1
         then
             bashCommand "find ./${INCLUDE_FOLDER} ./${SOURCE_FOLDER} ./${LIBRARY_FOLDER} -type f \
--print | grep -E '*\.cpp|*\.hpp' | grep -v dummy | gtags -i -v -f -"
+-print | grep -E '*\.cpp|*\.hpp' | gtags -i -v -f -"
         else
             printAbort "There is no gtags program. Please check it."
         fi
