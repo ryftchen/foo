@@ -109,11 +109,11 @@ createMakefile()
             bashCommand "mkdir ./${BUILD_FOLDER}"
         fi
         if [ "${ARGS_RELEASE}" = "1" ]; then
-            bashCommand "cd ./${BUILD_FOLDER} \
-&& cmake .. -DCMAKE_CXX_COMPILER=clang++-11 -DCMAKE_BUILD_TYPE=Release"
+            bashCommand "cmake -S . -B ./${BUILD_FOLDER} \
+-DCMAKE_CXX_COMPILER=clang++-11 -DCMAKE_BUILD_TYPE=Release"
         else
-            bashCommand "cd ./${BUILD_FOLDER} \
-&& cmake .. -DCMAKE_CXX_COMPILER=clang++-11 -DCMAKE_BUILD_TYPE=Debug"
+            bashCommand "cmake -S . -B ./${BUILD_FOLDER} \
+-DCMAKE_CXX_COMPILER=clang++-11 -DCMAKE_BUILD_TYPE=Debug"
         fi
     else
         printAbort "There is no ${CMAKE_FILE} file in ${PROJECT_FOLDER} folder."
@@ -123,7 +123,7 @@ createMakefile()
 compileProject()
 {
     if [ "${DO_COMPILE}" = "1" ]; then
-        bashCommand "cd ./${BUILD_FOLDER} && make -j4"
+        bashCommand "make -C ./${BUILD_FOLDER} -j"
     fi
 }
 
