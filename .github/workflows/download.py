@@ -7,8 +7,6 @@ import sys
 from datetime import datetime
 import requests
 
-STATUS_SPLIT_LINE = "-----"
-STATUS_DOWNLOAD_ARTIFACT = "DOWNLOAD ARTIFACT"
 PROJECT_GIT = "https://github.com/ryftchen/foo.git"
 PROJECT_FOLDER = "foo"
 BROWSER_FOLDER = "browser"
@@ -111,10 +109,8 @@ def downloadArtifact():
 
 if __name__ == "__main__":
     print(
-        "\r\n{0} {1} {2} BEGIN {1}".format(
-            datetime.strftime(datetime.now(), "%b %d %H:%M:%S"),
-            STATUS_SPLIT_LINE,
-            STATUS_DOWNLOAD_ARTIFACT,
+        "\r\n{} ---------- DOWNLOAD ARTIFACT BEGIN".format(
+            datetime.strftime(datetime.now(), "%b %d %H:%M:%S")
         )
     )
 
@@ -124,9 +120,7 @@ if __name__ == "__main__":
         printAbort("Please set environment variable FOO_ENV.")
 
     print(
-        "\r\n{0} {1}  {2} END  {1}".format(
-            datetime.strftime(datetime.now(), "%b %d %H:%M:%S"),
-            STATUS_SPLIT_LINE,
-            STATUS_DOWNLOAD_ARTIFACT,
+        "\r\n{} ---------- DOWNLOAD ARTIFACT END".format(
+            datetime.strftime(datetime.now(), "%b %d %H:%M:%S")
         )
     )
