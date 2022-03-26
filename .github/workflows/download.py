@@ -18,7 +18,7 @@ HOME = os.path.expanduser("~")
 def executeCommand(command, output=True):
     if output:
         print(
-            "\r\n{} {} BEGIN".format(datetime.strftime(datetime.now(), "%b %d %H:%M:%S"), command)
+            "\r\n{} {} START".format(datetime.strftime(datetime.now(), "%b %d %H:%M:%S"), command)
         )
     try:
         cmd = subprocess.Popen(
@@ -38,7 +38,7 @@ def executeCommand(command, output=True):
             print(out)
         if len(err) != 0:
             print(err)
-        print("{} {} END".format(datetime.strftime(datetime.now(), "%b %d %H:%M:%S"), command))
+        print("{} {} FINISH".format(datetime.strftime(datetime.now(), "%b %d %H:%M:%S"), command))
     return cmd
 
 
@@ -109,7 +109,7 @@ def downloadArtifact():
 
 if __name__ == "__main__":
     print(
-        "\r\n{} =========> DOWNLOAD ARTIFACT BEGIN".format(
+        "\r\n{} =========> DOWNLOAD ARTIFACT START".format(
             datetime.strftime(datetime.now(), "%b %d %H:%M:%S")
         )
     )
@@ -123,7 +123,7 @@ if __name__ == "__main__":
         printAbort("Please set environment variable FOO_ENV firstly.")
 
     print(
-        "\r\n{} =========> DOWNLOAD ARTIFACT END".format(
+        "\r\n{} =========> DOWNLOAD ARTIFACT FINISH".format(
             datetime.strftime(datetime.now(), "%b %d %H:%M:%S")
         )
     )

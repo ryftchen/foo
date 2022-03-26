@@ -9,9 +9,9 @@ WOBOQ_FOLDER="codebrowser"
 bashCommand()
 {
     echo
-    echo "$(date "+%b %d %T") $* BEGIN"
+    echo "$(date "+%b %d %T") $* START"
     /bin/bash -c "$@"
-    echo "$(date "+%b %d %T") $* END"
+    echo "$(date "+%b %d %T") $* FINISH"
 }
 
 printAbort()
@@ -40,7 +40,7 @@ clang-format-11 clang-tidy-11 cmake python3 pylint black shellcheck valgrind glo
 main()
 {
     echo
-    echo "$(date "+%b %d %T") =========> INSTALL DEPENDENCIES BEGIN"
+    echo "$(date "+%b %d %T") =========> INSTALL DEPENDENCIES START"
 
     if [ -n "${FOO_ENV:=}" ]; then
         if [ "${FOO_ENV}" = "GITHUB_ACTION" ]; then
@@ -53,7 +53,7 @@ main()
     fi
 
     echo
-    echo "$(date "+%b %d %T") =========> INSTALL DEPENDENCIES END "
+    echo "$(date "+%b %d %T") =========> INSTALL DEPENDENCIES FINISH"
 }
 
 main "$@"
