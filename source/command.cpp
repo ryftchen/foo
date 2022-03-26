@@ -295,9 +295,9 @@ void Command::runSort() const
     std::unique_lock<std::mutex> lock(commandMutex);
     if (task.sortBit.any())
     {
-        constexpr const int leftEndpoint = SORT_ARRAY_RANGE_1;
-        constexpr const int rightEndpoint = SORT_ARRAY_RANGE_2;
-        constexpr const uint32_t length = SORT_ARRAY_LENGTH;
+        constexpr int leftEndpoint = SORT_ARRAY_RANGE_1;
+        constexpr int rightEndpoint = SORT_ARRAY_RANGE_2;
+        constexpr uint32_t length = SORT_ARRAY_LENGTH;
         static_assert((leftEndpoint < rightEndpoint) && (length > 0));
 
         const std::shared_ptr<Sort<int>> sort =

@@ -1,4 +1,5 @@
 #include "integral.hpp"
+#include <array>
 #include <functional>
 #include <random>
 #include "log.hpp"
@@ -125,12 +126,13 @@ double Gauss::operator()(double lower, double upper, const double eps) const
 {
     TIME_BEGIN;
     const int sign = Integral::getSign(lower, upper);
-    const double gaussLegendreTable[INTEGRAL_GAUSS_NODE][INTEGRAL_GAUSS_COEFFICIENT] = {
-        {-0.9061798459, +0.2369268851},
-        {-0.5384693101, +0.4786286705},
-        {+0.0000000000, +0.5688888889},
-        {+0.5384693101, +0.4786286705},
-        {+0.9061798459, +0.2369268851}};
+    constexpr std::array<std::array<double, INTEGRAL_GAUSS_COEFFICIENT>, INTEGRAL_GAUSS_NODE>
+        gaussLegendreTable = {
+            {{-0.9061798459, +0.2369268851},
+             {-0.5384693101, +0.4786286705},
+             {+0.0000000000, +0.5688888889},
+             {+0.5384693101, +0.4786286705},
+             {+0.9061798459, +0.2369268851}}};
     double sum = 0.0, s1 = 0.0, s2 = 0.0;
     uint32_t n = 1;
 
@@ -145,8 +147,10 @@ double Gauss::operator()(double lower, double upper, const double eps) const
             for (uint32_t j = 0; j < INTEGRAL_GAUSS_NODE; ++j)
             {
                 // x=1/2[(a+b)+(b-a)t]
-                const double x = ((right - left) * gaussLegendreTable[j][0] + (left + right)) / 2.0;
-                const double polynomial = fun(x) * gaussLegendreTable[j][1] * (right - left) / 2.0;
+                const double x =
+                    ((right - left) * gaussLegendreTable.at(j).at(0) + (left + right)) / 2.0;
+                const double polynomial =
+                    fun(x) * gaussLegendreTable.at(j).at(1) * (right - left) / 2.0;
                 sum += polynomial;
             }
         }

@@ -119,8 +119,15 @@ char* Sort<T>::formatArray(
         align = std::max(static_cast<uint32_t>(std::to_string(*(array + i)).length()), align);
     }
 
-    const char* const format =
-        std::is_integral<T>::value ? "%*d " : (std::is_floating_point<T>::value ? "%*.5f " : " ");
+    const char* format = " ";
+    if constexpr (std::is_integral<T>::value)
+    {
+        format = "%*d ";
+    }
+    else if constexpr (std::is_floating_point<T>::value)
+    {
+        format = "%*.5f ";
+    }
     uint32_t completeSize = 0;
     for (uint32_t i = 0; i < length; ++i)
     {
