@@ -109,18 +109,21 @@ def downloadArtifact():
 
 if __name__ == "__main__":
     print(
-        "\r\n{} ---------- DOWNLOAD ARTIFACT BEGIN".format(
+        "\r\n{} =========> DOWNLOAD ARTIFACT BEGIN".format(
             datetime.strftime(datetime.now(), "%b %d %H:%M:%S")
         )
     )
 
-    if os.getenv("FOO_ENV") == "CODE_BROWSER":
-        downloadArtifact()
+    if not os.getenv("FOO_ENV"):
+        if os.getenv("FOO_ENV") == "CODE_BROWSER":
+            downloadArtifact()
+        else:
+            printAbort("The environment variable FOO_ENV is not CODE_BROWSER.")
     else:
-        printAbort("Please set environment variable FOO_ENV.")
+        printAbort("Please set environment variable FOO_ENV firstly.")
 
     print(
-        "\r\n{} ---------- DOWNLOAD ARTIFACT END".format(
+        "\r\n{} =========> DOWNLOAD ARTIFACT END".format(
             datetime.strftime(datetime.now(), "%b %d %H:%M:%S")
         )
     )
