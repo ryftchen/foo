@@ -151,7 +151,7 @@ buildFormat()
                 printAbort "There is no ${FORMAT_C} file in ${PROJECT_FOLDER} folder. \
 Please generate it."
             fi
-            bashCommand "shfmt -l -w -i 4 -bn -fn ./${SCRIPT_FOLDER}/${BUILD_SCRIPT}"
+            bashCommand "shfmt -l -w -ln bash -i 4 -bn -fn ./${SCRIPT_FOLDER}/${BUILD_SCRIPT}"
             bashCommand "black -l 100 -S -v ./${SCRIPT_FOLDER}/${TEST_SCRIPT}"
         else
             printAbort "There is no clang-format, shfmt or black program. Please check it."
