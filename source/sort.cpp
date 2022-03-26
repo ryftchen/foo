@@ -286,20 +286,20 @@ void Sort<T>::mergeSortRecursive(T* const sortArray, const uint32_t begin, const
     mergeSortRecursive(sortArray, mid + 1, end);
 
     uint32_t leftIndex = 0, rightIndex = 0;
-    std::vector<T> leftSubSort(sortArray + begin, sortArray + mid + 1);
-    std::vector<T> rightSubSort(sortArray + mid + 1, sortArray + end + 1);
-    leftSubSort.insert(leftSubSort.end(), std::numeric_limits<T>::max());
-    rightSubSort.insert(rightSubSort.end(), std::numeric_limits<T>::max());
+    std::vector<T> leftSubArray(sortArray + begin, sortArray + mid + 1);
+    std::vector<T> rightSubArray(sortArray + mid + 1, sortArray + end + 1);
+    leftSubArray.insert(leftSubArray.end(), std::numeric_limits<T>::max());
+    rightSubArray.insert(rightSubArray.end(), std::numeric_limits<T>::max());
     for (uint32_t i = begin; i <= end; ++i)
     {
-        if (leftSubSort[leftIndex] < rightSubSort[rightIndex])
+        if (leftSubArray[leftIndex] < rightSubArray[rightIndex])
         {
-            sortArray[i] = leftSubSort[leftIndex];
+            sortArray[i] = leftSubArray[leftIndex];
             ++leftIndex;
         }
         else
         {
-            sortArray[i] = rightSubSort[rightIndex];
+            sortArray[i] = rightSubArray[rightIndex];
             ++rightIndex;
         }
     }
