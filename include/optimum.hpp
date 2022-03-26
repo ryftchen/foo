@@ -46,9 +46,9 @@ private:
 // Gradient ascent method
 namespace Learning
 {
-static const double initialLearningRate = 0.01;
-static const double decay = 0.001;
-static const uint32_t loopTime = 100;
+constexpr static double initialLearningRate = 0.01;
+constexpr static double decay = 0.001;
+constexpr static uint32_t loopTime = 100;
 } // namespace Learning
 class Gradient : public Optimum
 {
@@ -66,10 +66,10 @@ private:
 #define OPTIMUM_ANNEALING_PERTURBATION 0.5
 namespace Cooling
 {
-static const double initialT = 100.0;
-static const double minimalT = 0.01;
-static const double coolingRate = 0.9;
-static const uint32_t markovChain = 100;
+constexpr static double initialT = 100.0;
+constexpr static double minimalT = 0.01;
+constexpr static double coolingRate = 0.9;
+constexpr static uint32_t markovChain = 100;
 } // namespace Cooling
 class Annealing : public Optimum
 {
@@ -119,14 +119,14 @@ struct Record
 
     Record() = delete;
 };
-static const double c1 = 1.5;
-static const double c2 = 1.5;
-static const double wBegin = 0.9;
-static const double wEnd = 0.4;
-static const double vMax = 0.5;
-static const double vMin = -0.5;
-static const uint32_t size = 50;
-static const uint32_t iterNum = 100;
+constexpr static double c1 = 1.5;
+constexpr static double c2 = 1.5;
+constexpr static double wBegin = 0.9;
+constexpr static double wEnd = 0.4;
+constexpr static double vMax = 0.5;
+constexpr static double vMin = -0.5;
+constexpr static uint32_t size = 50;
+constexpr static uint32_t iterNum = 100;
 } // namespace Swarm
 class Particle : public Optimum
 {
@@ -146,10 +146,10 @@ namespace Species
 {
 using Chromosome = std::vector<uint32_t>;
 using Population = std::vector<Species::Chromosome>;
-static const double crossPr = 0.7;
-static const double mutatePr = 0.05;
-static const uint32_t size = 50;
-static const uint32_t iterNum = 100;
+constexpr static double crossPr = 0.7;
+constexpr static double mutatePr = 0.05;
+constexpr static uint32_t size = 50;
+constexpr static uint32_t iterNum = 100;
 } // namespace Species
 class Genetic : public Optimum
 {

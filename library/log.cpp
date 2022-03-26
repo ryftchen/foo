@@ -4,7 +4,6 @@
 #include <sys/stat.h>
 #include <list>
 #include <regex>
-#include <vector>
 
 Log logger;
 

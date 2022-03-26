@@ -2,7 +2,6 @@
 #include <atomic>
 #include <bitset>
 #include <mutex>
-#include <thread>
 #include "expression.hpp"
 #include "log.hpp"
 #include "sort.hpp"
