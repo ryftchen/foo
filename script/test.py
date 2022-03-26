@@ -55,6 +55,7 @@ BAR_BACK_COLOR = "\033[42m"
 BAR_FORE_COLOR_DEFAULT = "\033[39m"
 BAR_BACK_COLOR_DEFAULT = "\033[49m"
 BAR_CURRENT_LINES = 0
+BAR_PLACEHOLDER_LENGTH = 20
 BAR_SET_TRAP = False
 BAR_SIGNAL_DEFAULT = None
 
@@ -154,7 +155,7 @@ def clearDueToInterrupt(sign, frame):
 
 def printBar(percentage):
     cols = tputCols()
-    barSize = cols - 18
+    barSize = cols - BAR_PLACEHOLDER_LENGTH
     color = f"{BAR_FORE_COLOR}{BAR_BACK_COLOR}"
     defaultColor = f"{BAR_FORE_COLOR_DEFAULT}{BAR_BACK_COLOR_DEFAULT}"
 
