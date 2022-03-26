@@ -40,18 +40,20 @@ clang-format-11 clang-tidy-11 cmake python3 pylint black shellcheck valgrind glo
 main()
 {
     echo
-    echo "$(date "+%b %d %T") ---------- INSTALL DEPENDENCIES BEGIN"
+    echo "$(date "+%b %d %T") =========> INSTALL DEPENDENCIES BEGIN"
 
-    if [ -n "${FOO_ENV:?}" ]; then
+    if [ -n "${FOO_ENV:=}" ]; then
         if [ "${FOO_ENV}" = "GITHUB_ACTION" ]; then
             installDependencies
+        else
+            printAbort "The environment variable FOO_ENV is not GITHUB_ACTION."
         fi
     else
-        printAbort "Please set environment variable FOO_ENV."
+        printAbort "Please set environment variable FOO_ENV firstly."
     fi
 
     echo
-    echo "$(date "+%b %d %T") ---------- INSTALL DEPENDENCIES END "
+    echo "$(date "+%b %d %T") =========> INSTALL DEPENDENCIES END "
 }
 
 main "$@"
