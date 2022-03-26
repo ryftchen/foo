@@ -29,9 +29,9 @@ DO_COMPILE=0
 bashCommand()
 {
     echo
-    echo "$(date "+%b %d %T") $*" BEGIN
+    echo "$(date "+%b %d %T") $* START"
     /bin/bash -c "$@"
-    echo "$(date "+%b %d %T") $*" END
+    echo "$(date "+%b %d %T") $* FINISH"
 }
 
 printAbort()
