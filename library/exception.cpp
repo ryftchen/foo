@@ -5,6 +5,11 @@ const char* ExecuteCommandError::what() const noexcept
     return message.c_str();
 }
 
+const char* CallFunctionError::what() const noexcept
+{
+    return message.c_str();
+}
+
 const char* CreateFolderError::what() const noexcept
 {
     return message.c_str();
