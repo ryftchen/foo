@@ -34,9 +34,9 @@ def executeCommand(command, output=True):
         printAbort(f"Failed to execute command: \"{command}\".")
     if output:
         out, err = cmd.communicate()
-        if out:
+        if len(out) != 0:
             print(out)
-        if err:
+        if len(err) != 0:
             print(err)
         print("{} {} FINISH".format(datetime.strftime(datetime.now(), "%b %d %H:%M:%S"), command))
     return cmd
@@ -57,19 +57,18 @@ def downloadArtifact():
     if not os.path.exists(f"{HOME}/{BROWSER_FOLDER}"):
         printAbort(f"Please create {BROWSER_FOLDER} in ~/ folder.")
     localCommitId = executeCommand("git rev-parse HEAD", output=False).stdout.read().splitlines()[0]
-    remoteCommitId = (
-        executeCommand(f"git ls-remote {PROJECT_GIT} refs/heads/master | cut -f 1", output=False)
-        .stdout.read()
-        .splitlines()[0]
-    )
-    htmlFolder = f"{PROJECT_FOLDER}_html"
-    if remoteCommitId:
-        if localCommitId != remoteCommitId:
-            executeCommand("git pull origin master")
-        elif os.path.exists(f"{HOME}/{BROWSER_FOLDER}/{htmlFolder}"):
-            printAbort(f"No change in {PROJECT_FOLDER} project.")
+    remoteCommitId = executeCommand(
+        f"git ls-remote {PROJECT_GIT} refs/heads/master | cut -f 1", output=False
+    ).stdout.read()
+    if len(remoteCommitId) != 0:
+        remoteCommitId = remoteCommitId.splitlines()[0]
     else:
         printAbort("Failed to get the latest commit id.")
+    htmlFolder = f"{PROJECT_FOLDER}_html"
+    if localCommitId != remoteCommitId:
+        executeCommand("git pull origin master")
+    elif os.path.exists(f"{HOME}/{BROWSER_FOLDER}/{htmlFolder}"):
+        printAbort(f"No change in {PROJECT_FOLDER} project.")
 
     try:
         response = requests.get(ARTIFACT_URL)
