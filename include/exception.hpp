@@ -15,6 +15,19 @@ private:
     std::string message;
 };
 
+class CallFunctionError : public std::exception
+{
+public:
+    CallFunctionError() : message("Failed to call function."){};
+    explicit CallFunctionError(const std::string& str) :
+        message("Failed to call function " + str + "."){};
+    ~CallFunctionError() noexcept override {}
+    [[nodiscard]] const char* what() const noexcept override;
+
+private:
+    std::string message;
+};
+
 class CreateFolderError : public std::exception
 {
 public:

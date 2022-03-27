@@ -476,7 +476,7 @@ void executeCommand(const char* const command)
         const pid_t status = system(command);
         if (-1 == status)
         {
-            throw std::runtime_error("System error.");
+            throw CallFunctionError("system()");
         }
         else if (WIFEXITED(status))
         {
@@ -486,7 +486,7 @@ void executeCommand(const char* const command)
             }
         }
     }
-    catch (std::runtime_error const& error)
+    catch (CallFunctionError const& error)
     {
         LOGGER_ERR(error.what());
     }

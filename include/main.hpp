@@ -37,16 +37,16 @@ static void switchToProjectPath()
         const int length = readlink("/proc/self/exe", absolutePath, bufferSize);
         if ((length < 0) || (length >= bufferSize))
         {
-            throw std::runtime_error("System error.");
+            throw CallFunctionError("readlink()");
         }
 
         const int status = chdir(dirname(dirname(absolutePath)));
         if (-1 == status)
         {
-            throw std::runtime_error("System error.");
+            throw CallFunctionError("chdir()");
         }
     }
-    catch (std::runtime_error const& error)
+    catch (CallFunctionError const& error)
     {
         std::cerr << error.what() << std::endl;
         exit(-1);

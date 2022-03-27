@@ -35,10 +35,10 @@ decltype(auto) Thread::enqueue(const std::string& name, Function&& fun, Args&&..
         {
             if (releaseReady)
             {
-                throw std::runtime_error("System error.");
+                throw CallFunctionError("Thread::" + std::string(__FUNCTION__) + "()");
             }
         }
-        catch (std::runtime_error const& error)
+        catch (CallFunctionError const& error)
         {
             LOGGER_ERR(error.what());
         }
