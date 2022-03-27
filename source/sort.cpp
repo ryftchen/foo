@@ -7,6 +7,9 @@
 
 template class Sort<int>;
 template Sort<int>::Sort(const uint32_t, const int, const int);
+template Sort<int>::~Sort();
+template Sort<int>::Sort(const Sort& sort);
+template Sort<int>& Sort<int>::operator=(const Sort& rhs);
 template const std::unique_ptr<int[]>& Sort<int>::getRandomArray() const;
 template uint32_t Sort<int>::getLength() const;
 template void Sort<int>::bubbleSort(int* const, const uint32_t) const;
@@ -44,7 +47,7 @@ Sort<T>& Sort<T>::operator=(const Sort& rhs)
 template <class T>
 Sort<T>::Sort(const Sort& sort) :
     length(sort.length), left(sort.length), right(sort.length),
-    randomArray(std::make_unique<T[]>(length))
+    randomArray(std::make_unique<T[]>(sort.length))
 {
     deepCopyFromSort(sort);
 }
