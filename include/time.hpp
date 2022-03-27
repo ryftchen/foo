@@ -12,11 +12,11 @@ std::string getCurrentSystemTime(char* const date);
     time.setBeginTime()
 #define TIME_END time.setEndTime()
 #define TIME_INTERVAL time.getTimeInterval()
-#define GET_TIME_SEED(seed)           \
+#define TIME_GET_SEED(seed)           \
     timeval timeSeed;                 \
     gettimeofday(&timeSeed, nullptr); \
     std::mt19937 seed(timeSeed.tv_sec * 1000000 + timeSeed.tv_usec)
-#define GET_CURRENT_TIME                     \
+#define TIME_GET_CURRENT_DATE                \
     (                                        \
         {                                    \
             char date[TIME_DATE_LENGTH + 1]; \

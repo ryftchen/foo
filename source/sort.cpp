@@ -77,7 +77,7 @@ template <typename U>
 requires std::is_integral<U>::value void Sort<T>::setRandomArray(
     T array[], const uint32_t length, const T left, const T right) const
 {
-    GET_TIME_SEED(seed);
+    TIME_GET_SEED(seed);
     std::uniform_int_distribution<int> randomX(left, right);
     for (uint32_t i = 0; i < length; ++i)
     {
@@ -96,7 +96,7 @@ template <typename U>
 requires std::is_floating_point<U>::value void Sort<T>::setRandomArray(
     T array[], const uint32_t length, const T left, const T right) const
 {
-    GET_TIME_SEED(seed);
+    TIME_GET_SEED(seed);
     std::uniform_real_distribution<double> randomX(left, right);
     for (uint32_t i = 0; i < length; ++i)
     {
