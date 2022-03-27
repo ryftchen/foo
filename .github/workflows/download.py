@@ -34,9 +34,9 @@ def executeCommand(command, output=True):
         printAbort(f"Failed to execute command: \"{command}\".")
     if output:
         out, err = cmd.communicate()
-        if len(out) != 0:
+        if out:
             print(out)
-        if len(err) != 0:
+        if err:
             print(err)
         print("{} {} FINISH".format(datetime.strftime(datetime.now(), "%b %d %H:%M:%S"), command))
     return cmd
@@ -63,7 +63,7 @@ def downloadArtifact():
         .splitlines()[0]
     )
     htmlFolder = f"{PROJECT_FOLDER}_html"
-    if len(remoteCommitId) != 0:
+    if remoteCommitId:
         if localCommitId != remoteCommitId:
             executeCommand("git pull origin master")
         elif os.path.exists(f"{HOME}/{BROWSER_FOLDER}/{htmlFolder}"):
