@@ -92,6 +92,11 @@ private:
         {"o_fib", "o_gra", "o_ann", "o_par", "o_gen"},
         {"i_tra", "i_sim", "i_rom", "i_gau", "i_mon"},
         {"s_bub", "s_sec", "s_ins", "s_she", "s_mer", "s_qui", "s_hea", "s_cou", "s_buc", "s_rad"}};
+    const std::unordered_multimap<
+        ExpressionRange<double, double>, TargetExpression, ExpressionMapHash>
+        expressionMap{
+            {{EXPRESS_FUN_1_RANGE_1, EXPRESS_FUN_1_RANGE_2}, Function1()},
+            {{EXPRESS_FUN_2_RANGE_1, EXPRESS_FUN_2_RANGE_2}, Function2()}};
     void setBitFromTaskPlan(char* const argv[], const std::bitset<TaskBit::taskButtom>& taskBit);
     void runOptimum() const;
     void getOptimumResult(

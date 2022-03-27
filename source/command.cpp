@@ -95,16 +95,43 @@ void Command::runOptimum() const
     std::unique_lock<std::mutex> lock(commandMutex);
     if (task.optimumBit.any())
     {
+        const auto printFunctor = [](const TargetExpression& expression)
+        {
+            std::visit(
+                ExpressionOverloaded{
+                    [](const Function1& /*unused*/)
+                    {
+                        std::cout << EXPRESS_FUN_1_OPTIMUM << std::endl;
+                    },
+                    [](const Function2& /*unused*/)
+                    {
+                        std::cout << EXPRESS_FUN_2_OPTIMUM << std::endl;
+                    },
+                },
+                expression);
+        };
+        const auto resultFunctor =
+            [this](const Expression& expression, const ExpressionRange<double, double>& range)
+        {
+            getOptimumResult(expression, range.range1, range.range2, OPTIMUM_EPSILON);
+        };
+
         std::cout << OPTIMUM_RUN_BEGIN << std::endl;
-
-        std::cout << EXPRESS_FUN_1_OPTIMUM << std::endl;
-        const std::shared_ptr<Expression> fun1 = std::make_shared<Function1>();
-        getOptimumResult(*fun1, EXPRESS_FUN_1_RANGE_1, EXPRESS_FUN_1_RANGE_2, OPTIMUM_EPSILON);
-
-        std::cout << EXPRESS_FUN_2_OPTIMUM << std::endl;
-        const std::shared_ptr<Expression> fun2 = std::make_shared<Function2>();
-        getOptimumResult(*fun2, EXPRESS_FUN_2_RANGE_1, EXPRESS_FUN_2_RANGE_2, OPTIMUM_EPSILON);
-
+        for (const auto& [range, expression] : expressionMap)
+        {
+            printFunctor(expression);
+            switch (expression.index())
+            {
+                case 0:
+                    resultFunctor(std::get<0>(expression), range);
+                    break;
+                case 1:
+                    resultFunctor(std::get<1>(expression), range);
+                    break;
+                default:
+                    break;
+            }
+        }
         std::cout << OPTIMUM_RUN_END << std::endl;
     }
 }
@@ -129,35 +156,20 @@ void Command::getOptimumResult(
             switch (bkdrHash(threadName.c_str()))
             {
                 case "o_fib"_bkdrHash:
-                {
-                    std::shared_ptr<Optimum> fib = std::make_shared<Fibonacci>(express);
-                    optimumFunctor(threadName, fib);
+                    optimumFunctor(threadName, std::make_shared<Fibonacci>(express));
                     break;
-                }
                 case "o_gra"_bkdrHash:
-                {
-                    std::shared_ptr<Optimum> gra = std::make_shared<Gradient>(express);
-                    optimumFunctor(threadName, gra);
+                    optimumFunctor(threadName, std::make_shared<Gradient>(express));
                     break;
-                }
                 case "o_ann"_bkdrHash:
-                {
-                    std::shared_ptr<Optimum> ann = std::make_shared<Annealing>(express);
-                    optimumFunctor(threadName, ann);
+                    optimumFunctor(threadName, std::make_shared<Annealing>(express));
                     break;
-                }
                 case "o_par"_bkdrHash:
-                {
-                    std::shared_ptr<Optimum> par = std::make_shared<Particle>(express);
-                    optimumFunctor(threadName, par);
+                    optimumFunctor(threadName, std::make_shared<Particle>(express));
                     break;
-                }
-                case "o_gen"_bkdrHash:
-                {
-                    std::shared_ptr<Optimum> gen = std::make_shared<Genetic>(express);
-                    optimumFunctor(threadName, gen);
+                case "o_gen"_bkdrHash:;
+                    optimumFunctor(threadName, std::make_shared<Genetic>(express));
                     break;
-                }
                 default:
                     break;
             }
@@ -195,16 +207,43 @@ void Command::runIntegral() const
     std::unique_lock<std::mutex> lock(commandMutex);
     if (task.integralBit.any())
     {
+        const auto printFunctor = [](const TargetExpression& expression)
+        {
+            std::visit(
+                ExpressionOverloaded{
+                    [](const Function1& /*unused*/)
+                    {
+                        std::cout << EXPRESS_FUN_1_INTEGRAL << std::endl;
+                    },
+                    [](const Function2& /*unused*/)
+                    {
+                        std::cout << EXPRESS_FUN_2_INTEGRAL << std::endl;
+                    },
+                },
+                expression);
+        };
+        const auto resultFunctor =
+            [this](const Expression& expression, const ExpressionRange<double, double>& range)
+        {
+            getIntegralResult(expression, range.range1, range.range2, INTEGRAL_EPSILON);
+        };
+
         std::cout << INTEGRAL_RUN_BEGIN << std::endl;
-
-        std::cout << EXPRESS_FUN_1_INTEGRAL << std::endl;
-        const std::shared_ptr<Expression> fun1 = std::make_shared<Function1>();
-        getIntegralResult(*fun1, EXPRESS_FUN_1_RANGE_1, EXPRESS_FUN_1_RANGE_2, INTEGRAL_EPSILON);
-
-        std::cout << EXPRESS_FUN_2_INTEGRAL << std::endl;
-        const std::shared_ptr<Expression> fun2 = std::make_shared<Function2>();
-        getIntegralResult(*fun2, EXPRESS_FUN_2_RANGE_1, EXPRESS_FUN_2_RANGE_2, INTEGRAL_EPSILON);
-
+        for (const auto& [range, expression] : expressionMap)
+        {
+            printFunctor(expression);
+            switch (expression.index())
+            {
+                case 0:
+                    resultFunctor(std::get<0>(expression), range);
+                    break;
+                case 1:
+                    resultFunctor(std::get<1>(expression), range);
+                    break;
+                default:
+                    break;
+            }
+        }
         std::cout << INTEGRAL_RUN_END << std::endl;
     }
 }
@@ -229,35 +268,20 @@ void Command::getIntegralResult(
             switch (bkdrHash(threadName.c_str()))
             {
                 case "i_tra"_bkdrHash:
-                {
-                    std::shared_ptr<Integral> tra = std::make_shared<Trapezoidal>(express);
-                    integralFunctor(threadName, tra);
+                    integralFunctor(threadName, std::make_shared<Trapezoidal>(express));
                     break;
-                }
                 case "i_sim"_bkdrHash:
-                {
-                    std::shared_ptr<Integral> sim = std::make_shared<Simpson>(express);
-                    integralFunctor(threadName, sim);
+                    integralFunctor(threadName, std::make_shared<Simpson>(express));
                     break;
-                }
                 case "i_rom"_bkdrHash:
-                {
-                    std::shared_ptr<Integral> rom = std::make_shared<Romberg>(express);
-                    integralFunctor(threadName, rom);
+                    integralFunctor(threadName, std::make_shared<Romberg>(express));
                     break;
-                }
                 case "i_gau"_bkdrHash:
-                {
-                    std::shared_ptr<Integral> gau = std::make_shared<Gauss>(express);
-                    integralFunctor(threadName, gau);
+                    integralFunctor(threadName, std::make_shared<Gauss>(express));
                     break;
-                }
                 case "i_mon"_bkdrHash:
-                {
-                    std::shared_ptr<Integral> mon = std::make_shared<MonteCarlo>(express);
-                    integralFunctor(threadName, mon);
+                    integralFunctor(threadName, std::make_shared<MonteCarlo>(express));
                     break;
-                }
                 default:
                     break;
             }
