@@ -148,7 +148,7 @@ std::optional<std::tuple<ValueY, ValueX>> Gradient::operator()(
     const double left, const double right, const double eps)
 {
     TIME_BEGIN;
-    GET_TIME_SEED(seed);
+    TIME_GET_SEED(seed);
     double x = 0.0, max = 0.0;
     std::uniform_real_distribution<double> randomX(left, right);
     std::vector<double> climbing;
@@ -206,7 +206,7 @@ std::optional<std::tuple<ValueY, ValueX>> Annealing::operator()(
 {
     TIME_BEGIN;
     double temperature = Cooling::initialT;
-    GET_TIME_SEED(seed);
+    TIME_GET_SEED(seed);
     std::uniform_real_distribution<double> randomX(left, right);
     std::uniform_real_distribution<double> random(
         -OPTIMUM_ANNEALING_PERTURBATION, OPTIMUM_ANNEALING_PERTURBATION);
@@ -317,7 +317,7 @@ std::optional<std::tuple<ValueY, ValueX>> Particle::operator()(
 }
 Record Particle::recordInit(const double left, const double right)
 {
-    GET_TIME_SEED(seedNew);
+    TIME_GET_SEED(seedNew);
     seed = seedNew;
     std::uniform_real_distribution<double> randomX(left, right);
     std::uniform_real_distribution<double> randomV(Swarm::vMin, Swarm::vMax);
@@ -367,7 +367,7 @@ void Genetic::setSpecies(const double left, const double right, const double eps
     range.left = left;
     range.right = right;
     range.eps = eps;
-    GET_TIME_SEED(seedNew);
+    TIME_GET_SEED(seedNew);
     seed = seedNew;
 
     uint32_t num = 0;

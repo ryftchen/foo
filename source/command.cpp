@@ -25,15 +25,15 @@ bool Command::parseArgv(const int argc, char* const argv[])
             {
                 case "-o"_bkdrHash:
                 case "--optimum"_bkdrHash:
-                    COMMAND_PERPARE_BITSET(task.optimumBit, TaskBit::taskOptimum);
+                    COMMAND_PERPARE_BITSET(taskPlan.optimumBit, TaskBit::taskOptimum);
                     break;
                 case "-i"_bkdrHash:
                 case "--integral"_bkdrHash:
-                    COMMAND_PERPARE_BITSET(task.integralBit, TaskBit::taskIntegral);
+                    COMMAND_PERPARE_BITSET(taskPlan.integralBit, TaskBit::taskIntegral);
                     break;
                 case "-s"_bkdrHash:
                 case "--sort"_bkdrHash:
-                    COMMAND_PERPARE_BITSET(task.sortBit, TaskBit::taskSort);
+                    COMMAND_PERPARE_BITSET(taskPlan.sortBit, TaskBit::taskSort);
                     break;
                 case "--log"_bkdrHash:
                     printLogContext();
@@ -42,16 +42,16 @@ bool Command::parseArgv(const int argc, char* const argv[])
                     printInstruction();
                     break;
                 default:
-                    printUnkownParameter(argv + i);
+                    printUnkownOption(argv + i);
                     break;
             }
         }
         else
         {
-            setBitFromTaskPlan(argv + i, taskBit);
+            setTaskPlanFromTaskBit(argv + i, taskBit);
         }
 
-        if (true == task.taskDone)
+        if (true == taskPlan.taskDone)
         {
             return false;
         }
@@ -68,7 +68,7 @@ void Command::doTask()
     }
 }
 
-void Command::setBitFromTaskPlan(
+void Command::setTaskPlanFromTaskBit(
     char* const argv[], const std::bitset<TaskBit::taskButtom>& taskBit)
 {
     if (taskBit.test(TaskBit::taskOptimum))
@@ -85,7 +85,7 @@ void Command::setBitFromTaskPlan(
     }
     else
     {
-        printUnkownParameter(argv);
+        printUnkownOption(argv);
     }
 }
 
@@ -93,7 +93,7 @@ void Command::setBitFromTaskPlan(
 void Command::runOptimum() const
 {
     std::unique_lock<std::mutex> lock(commandMutex);
-    if (task.optimumBit.any())
+    if (taskPlan.optimumBit.any())
     {
         const auto printFunctor = [](const TargetExpression& expression)
         {
@@ -140,7 +140,7 @@ void Command::getOptimumResult(
     const double epsilon) const
 {
     assert((leftEndpoint > rightEndpoint) && (epsilon > 0.0));
-    Thread threadPool(task.optimumBit.count());
+    Thread threadPool(taskPlan.optimumBit.count());
     const auto optimumFunctor =
         [&](const std::string& threadName, const std::shared_ptr<Optimum>& classPtr)
     {
@@ -150,7 +150,7 @@ void Command::getOptimumResult(
 
     for (int i = 0; i < OptimumBit::optimumButtom; ++i)
     {
-        if (task.optimumBit.test(OptimumBit(i)))
+        if (taskPlan.optimumBit.test(OptimumBit(i)))
         {
             const std::string threadName = taskTable[TaskBit::taskOptimum][OptimumBit(i)];
             switch (bkdrHash(threadName.c_str()))
@@ -181,22 +181,22 @@ void Command::setOptimumBit(char* const argv[])
     switch (bkdrHash(argv[0]))
     {
         case "fib"_bkdrHash:
-            task.optimumBit.set(OptimumBit::optimumFibonacci);
+            taskPlan.optimumBit.set(OptimumBit::optimumFibonacci);
             break;
         case "gra"_bkdrHash:
-            task.optimumBit.set(OptimumBit::optimumGradient);
+            taskPlan.optimumBit.set(OptimumBit::optimumGradient);
             break;
         case "ann"_bkdrHash:
-            task.optimumBit.set(OptimumBit::optimumAnnealing);
+            taskPlan.optimumBit.set(OptimumBit::optimumAnnealing);
             break;
         case "par"_bkdrHash:
-            task.optimumBit.set(OptimumBit::optimumParticle);
+            taskPlan.optimumBit.set(OptimumBit::optimumParticle);
             break;
         case "gen"_bkdrHash:
-            task.optimumBit.set(OptimumBit::optimumGenetic);
+            taskPlan.optimumBit.set(OptimumBit::optimumGenetic);
             break;
         default:
-            printUnkownParameter(argv);
+            printUnkownOption(argv);
             break;
     }
 }
@@ -205,7 +205,7 @@ void Command::setOptimumBit(char* const argv[])
 void Command::runIntegral() const
 {
     std::unique_lock<std::mutex> lock(commandMutex);
-    if (task.integralBit.any())
+    if (taskPlan.integralBit.any())
     {
         const auto printFunctor = [](const TargetExpression& expression)
         {
@@ -252,7 +252,7 @@ void Command::getIntegralResult(
     const double epsilon) const
 {
     assert(epsilon > 0.0);
-    Thread threadPool(task.integralBit.count());
+    Thread threadPool(taskPlan.integralBit.count());
     const auto integralFunctor =
         [&](const std::string& threadName, const std::shared_ptr<Integral>& classPtr)
     {
@@ -262,7 +262,7 @@ void Command::getIntegralResult(
 
     for (int i = 0; i < IntegralBit::integralButtom; ++i)
     {
-        if (task.integralBit.test(IntegralBit(i)))
+        if (taskPlan.integralBit.test(IntegralBit(i)))
         {
             const std::string threadName = taskTable[TaskBit::taskIntegral][IntegralBit(i)];
             switch (bkdrHash(threadName.c_str()))
@@ -293,22 +293,22 @@ void Command::setIntegralBit(char* const argv[])
     switch (bkdrHash(argv[0]))
     {
         case "tra"_bkdrHash:
-            task.integralBit.set(IntegralBit::integralTrapezoidal);
+            taskPlan.integralBit.set(IntegralBit::integralTrapezoidal);
             break;
         case "sim"_bkdrHash:
-            task.integralBit.set(IntegralBit::integralSimpson);
+            taskPlan.integralBit.set(IntegralBit::integralSimpson);
             break;
         case "rom"_bkdrHash:
-            task.integralBit.set(IntegralBit::integralRomberg);
+            taskPlan.integralBit.set(IntegralBit::integralRomberg);
             break;
         case "gau"_bkdrHash:
-            task.integralBit.set(IntegralBit::integralGauss);
+            taskPlan.integralBit.set(IntegralBit::integralGauss);
             break;
         case "mon"_bkdrHash:
-            task.integralBit.set(IntegralBit::integralMonteCarlo);
+            taskPlan.integralBit.set(IntegralBit::integralMonteCarlo);
             break;
         default:
-            printUnkownParameter(argv);
+            printUnkownOption(argv);
             break;
     }
 }
@@ -317,7 +317,7 @@ void Command::setIntegralBit(char* const argv[])
 void Command::runSort() const
 {
     std::unique_lock<std::mutex> lock(commandMutex);
-    if (task.sortBit.any())
+    if (taskPlan.sortBit.any())
     {
         constexpr int leftEndpoint = SORT_ARRAY_RANGE_1;
         constexpr int rightEndpoint = SORT_ARRAY_RANGE_2;
@@ -331,7 +331,7 @@ void Command::runSort() const
 }
 void Command::getSortResult(const std::shared_ptr<Sort<int>>& sort) const
 {
-    Thread threadPool(task.sortBit.count());
+    Thread threadPool(taskPlan.sortBit.count());
     const auto sortFunctor = [&](const std::string& threadName,
                                  void (Sort<int>::*methodPtr)(int* const, const uint32_t) const)
     {
@@ -341,7 +341,7 @@ void Command::getSortResult(const std::shared_ptr<Sort<int>>& sort) const
 
     for (int i = 0; i < SortBit::sortButtom; ++i)
     {
-        if (task.sortBit.test(SortBit(i)))
+        if (taskPlan.sortBit.test(SortBit(i)))
         {
             const std::string threadName = taskTable[TaskBit::taskSort][SortBit(i)];
             switch (bkdrHash(threadName.c_str()))
@@ -387,37 +387,37 @@ void Command::setSortBit(char* const argv[])
     switch (bkdrHash(argv[0]))
     {
         case "bub"_bkdrHash:
-            task.sortBit.set(SortBit::sortBubble);
+            taskPlan.sortBit.set(SortBit::sortBubble);
             break;
         case "sel"_bkdrHash:
-            task.sortBit.set(SortBit::sortSelection);
+            taskPlan.sortBit.set(SortBit::sortSelection);
             break;
         case "ins"_bkdrHash:
-            task.sortBit.set(SortBit::sortInsertion);
+            taskPlan.sortBit.set(SortBit::sortInsertion);
             break;
         case "she"_bkdrHash:
-            task.sortBit.set(SortBit::sortShell);
+            taskPlan.sortBit.set(SortBit::sortShell);
             break;
         case "mer"_bkdrHash:
-            task.sortBit.set(SortBit::sortMerge);
+            taskPlan.sortBit.set(SortBit::sortMerge);
             break;
         case "qui"_bkdrHash:
-            task.sortBit.set(SortBit::sortQuick);
+            taskPlan.sortBit.set(SortBit::sortQuick);
             break;
         case "hea"_bkdrHash:
-            task.sortBit.set(SortBit::sortHeap);
+            taskPlan.sortBit.set(SortBit::sortHeap);
             break;
         case "cou"_bkdrHash:
-            task.sortBit.set(SortBit::sortCounting);
+            taskPlan.sortBit.set(SortBit::sortCounting);
             break;
         case "buc"_bkdrHash:
-            task.sortBit.set(SortBit::sortBucket);
+            taskPlan.sortBit.set(SortBit::sortBucket);
             break;
         case "rad"_bkdrHash:
-            task.sortBit.set(SortBit::sortRadix);
+            taskPlan.sortBit.set(SortBit::sortRadix);
             break;
         default:
-            printUnkownParameter(argv);
+            printUnkownOption(argv);
             break;
     }
 }
@@ -440,7 +440,7 @@ void Command::printLogContext()
         LOGGER_ERR(error.what());
     }
 
-    task.taskDone = true;
+    taskPlan.taskDone = true;
 }
 
 void Command::printInstruction()
@@ -457,16 +457,16 @@ void Command::printInstruction()
          "    --log                              Log\n\n"
          "    --help                             Help");
 
-    task.taskDone = true;
+    taskPlan.taskDone = true;
 }
 
-void Command::printUnkownParameter(char* const argv[])
+void Command::printUnkownOption(char* const argv[])
 {
     const std::string str = "Unknown command line option: " + std::string(argv[0])
         + ". Try with --help to get information.";
     LOGGER_WRN(str.c_str());
 
-    task.taskDone = true;
+    taskPlan.taskDone = true;
 }
 
 void executeCommand(const char* const command)

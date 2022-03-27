@@ -77,13 +77,13 @@ private:
 #pragma pack(8)
     struct TaskPlan
     {
+        std::atomic<bool> taskDone = false;
         std::bitset<OptimumBit::optimumButtom> optimumBit;
         std::bitset<IntegralBit::integralButtom> integralBit;
         std::bitset<SortBit::sortButtom> sortBit;
-        std::atomic<bool> taskDone = false;
 
         TaskPlan() = default;
-    } task;
+    } taskPlan;
 #pragma pack()
     typedef void (Command::*TaskFunctor)() const;
     const TaskFunctor taskFunctor[TaskBit::taskButtom] = {
@@ -97,7 +97,8 @@ private:
         expressionMap{
             {{EXPRESS_FUN_1_RANGE_1, EXPRESS_FUN_1_RANGE_2}, Function1()},
             {{EXPRESS_FUN_2_RANGE_1, EXPRESS_FUN_2_RANGE_2}, Function2()}};
-    void setBitFromTaskPlan(char* const argv[], const std::bitset<TaskBit::taskButtom>& taskBit);
+    void setTaskPlanFromTaskBit(
+        char* const argv[], const std::bitset<TaskBit::taskButtom>& taskBit);
     void runOptimum() const;
     void getOptimumResult(
         const Expression& express, const double leftEndpoint, const double rightEndpoint,
@@ -115,5 +116,5 @@ private:
 protected:
     void printLogContext();
     void printInstruction();
-    void printUnkownParameter(char* const argv[]);
+    void printUnkownOption(char* const argv[]);
 };
