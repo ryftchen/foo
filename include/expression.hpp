@@ -1,5 +1,7 @@
 #pragma once
 #include <cmath>
+#include <unordered_map>
+#include <variant>
 
 class Expression
 {
@@ -68,3 +70,36 @@ private:
     const double rate;
 };
 #endif
+
+typedef std::variant<Function1, Function2> TargetExpression;
+template <class... Ts>
+struct ExpressionOverloaded : Ts...
+{
+    using Ts::operator()...;
+};
+template <class... Ts>
+ExpressionOverloaded(Ts...) -> ExpressionOverloaded<Ts...>;
+
+template <typename T1, typename T2>
+struct ExpressionRange
+{
+    ExpressionRange(const T1& range1, const T2& range2) : range1(range1), range2(range2){};
+    T1 range1;
+    T2 range2;
+
+    bool operator==(const ExpressionRange& range) const
+    {
+        return (range1 == range.range1 && range2 == range.range2);
+    }
+    ExpressionRange() = delete;
+};
+struct ExpressionMapHash
+{
+    template <class T1, class T2>
+    std::size_t operator()(const ExpressionRange<T1, T2>& range) const
+    {
+        std::size_t hash1 = std::hash<T1>()(range.range1);
+        std::size_t hash2 = std::hash<T2>()(range.range1);
+        return hash1 ^ hash2;
+    }
+};
