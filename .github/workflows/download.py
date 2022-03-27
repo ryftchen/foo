@@ -114,7 +114,7 @@ if __name__ == "__main__":
         )
     )
 
-    if not os.getenv("FOO_ENV"):
+    if os.getenv("FOO_ENV"):
         if os.getenv("FOO_ENV") == "CODE_BROWSER":
             downloadArtifact()
         else:
