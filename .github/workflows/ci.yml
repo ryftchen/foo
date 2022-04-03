@@ -26,16 +26,15 @@ jobs:
           export FOO_ENV=GITHUB_ACTION
           ./.github/workflows/install.sh
 
-      - name: Check code
+      - name: Check
         run: |
-          ./script/build.sh --release --format --analysis
+          ./script/build.sh --release --format --analysis --html --backup --tag
           git status
 
       - name: Build
         run: |
           ./script/build.sh --cleanup
           ./script/build.sh --release
-          ./script/build.sh --release --html --backup --tag
 
       - name: Test
         run: |
@@ -43,7 +42,7 @@ jobs:
           export TERMINFO=/etc/terminfo
           ./script/test.py --build release --valgrind
 
-      - name: Upload artifact
+      - name: Upload artifacts
         uses: actions/upload-artifact@v2.3.1
         with:
           name: foo_artifact

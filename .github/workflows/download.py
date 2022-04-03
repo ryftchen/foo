@@ -46,7 +46,7 @@ def printAbort(message):
     sys.exit(-1)
 
 
-def downloadArtifact():
+def downloadArtifacts():
     os.chdir(os.path.split(os.path.realpath(__file__))[0])
     localDir = (
         executeCommand("git rev-parse --show-toplevel", output=False).stdout.read().splitlines()[0]
@@ -107,21 +107,21 @@ def downloadArtifact():
 
 if __name__ == "__main__":
     print(
-        "\r\n{} =========> DOWNLOAD ARTIFACT START".format(
+        "\r\n{} =========> DOWNLOAD ARTIFACTS START".format(
             datetime.strftime(datetime.now(), "%b %d %H:%M:%S")
         )
     )
 
     if os.getenv("FOO_ENV"):
         if os.getenv("FOO_ENV") == "CODE_BROWSER":
-            downloadArtifact()
+            downloadArtifacts()
         else:
             printAbort("The environment variable FOO_ENV is not CODE_BROWSER.")
     else:
         printAbort("Please set environment variable FOO_ENV firstly.")
 
     print(
-        "\r\n{} =========> DOWNLOAD ARTIFACT FINISH".format(
+        "\r\n{} =========> DOWNLOAD ARTIFACTS FINISH".format(
             datetime.strftime(datetime.now(), "%b %d %H:%M:%S")
         )
     )
