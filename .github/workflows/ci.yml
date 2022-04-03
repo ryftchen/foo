@@ -28,6 +28,15 @@ jobs:
 
       - name: Check spelling
         uses: check-spelling/check-spelling@v0.0.20-alpha4
+        with:
+          config: .github/actions/spelling
+          post_comment: 0
+          extra_dictionaries:
+            cspell:bash/bash-words.txt
+            cspell:cpp/cpp.txt
+            cspell:filetypes/filetypes.txt
+            cspell:python/python.txt
+          check_extra_dictionaries: ''
 
       - name: Inspect
         run: |

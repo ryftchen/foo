@@ -1,0 +1,10 @@
+^\.github/
+^\.clang-format$
+^\.clang-tidy$
+^\.gitattributes$
+^\.gitignore$
+^\.pylintrc$
+^\.shellcheckrc$
+^\.yamllint$
+^LICENSE$
+^README\.md$
