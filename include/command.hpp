@@ -10,7 +10,7 @@ void executeCommand(const char* const command);
 
 #define COMMAND_MAX_METHOD 10
 #define COMMAND_PRINT_MAX_LINE 50
-#define COMMAND_PERPARE_BITSET(xBit, taskX)            \
+#define COMMAND_PREPARE_BITSET(xBit, taskX)            \
     do                                                 \
     {                                                  \
         taskBit.reset();                               \
@@ -34,7 +34,7 @@ public:
         taskOptimum,
         taskIntegral,
         taskSort,
-        taskButtom
+        taskBottom
     };
     enum OptimumBit
     {
@@ -43,7 +43,7 @@ public:
         optimumAnnealing,
         optimumParticle,
         optimumGenetic,
-        optimumButtom
+        optimumBottom
     };
     enum IntegralBit
     {
@@ -52,7 +52,7 @@ public:
         integralRomberg,
         integralGauss,
         integralMonteCarlo,
-        integralButtom
+        integralBottom
     };
     enum SortBit
     {
@@ -66,7 +66,7 @@ public:
         sortCounting,
         sortBucket,
         sortRadix,
-        sortButtom
+        sortBottom
     };
     virtual ~Command(){};
     bool parseArgv(const int argc, char* const argv[]);
@@ -78,17 +78,17 @@ private:
     struct TaskPlan
     {
         std::atomic<bool> taskDone = false;
-        std::bitset<OptimumBit::optimumButtom> optimumBit;
-        std::bitset<IntegralBit::integralButtom> integralBit;
-        std::bitset<SortBit::sortButtom> sortBit;
+        std::bitset<OptimumBit::optimumBottom> optimumBit;
+        std::bitset<IntegralBit::integralBottom> integralBit;
+        std::bitset<SortBit::sortBottom> sortBit;
 
         TaskPlan() = default;
     } taskPlan;
 #pragma pack()
     typedef void (Command::*TaskFunctor)() const;
-    const TaskFunctor taskFunctor[TaskBit::taskButtom] = {
+    const TaskFunctor taskFunctor[TaskBit::taskBottom] = {
         &Command::runOptimum, &Command::runIntegral, &Command::runSort};
-    const std::string taskTable[TaskBit::taskButtom][COMMAND_MAX_METHOD] = {
+    const std::string taskTable[TaskBit::taskBottom][COMMAND_MAX_METHOD] = {
         {"o_fib", "o_gra", "o_ann", "o_par", "o_gen"},
         {"i_tra", "i_sim", "i_rom", "i_gau", "i_mon"},
         {"s_bub", "s_sec", "s_ins", "s_she", "s_mer", "s_qui", "s_hea", "s_cou", "s_buc", "s_rad"}};
@@ -98,7 +98,7 @@ private:
             {{EXPRESS_FUN_1_RANGE_1, EXPRESS_FUN_1_RANGE_2}, Function1()},
             {{EXPRESS_FUN_2_RANGE_1, EXPRESS_FUN_2_RANGE_2}, Function2()}};
     void setTaskPlanFromTaskBit(
-        char* const argv[], const std::bitset<TaskBit::taskButtom>& taskBit);
+        char* const argv[], const std::bitset<TaskBit::taskBottom>& taskBit);
     void runOptimum() const;
     void getOptimumResult(
         const Expression& express, const double leftEndpoint, const double rightEndpoint,

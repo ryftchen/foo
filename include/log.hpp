@@ -16,7 +16,7 @@ void printFile(
 #define LOG_DIR "./temp"
 #define LOG_PATH "./temp/foo.log"
 #define LOG_PATHNAME_LENGTH 32
-#define LOG_PREFIX_DEBUG "[DGB]"
+#define LOG_PREFIX_DEBUG "[DBG]"
 #define LOG_PREFIX_INFO "[INF]"
 #define LOG_PREFIX_WARN "[WRN]"
 #define LOG_PREFIX_ERROR "[ERR]"
