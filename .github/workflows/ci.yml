@@ -27,6 +27,7 @@ jobs:
           ./.github/workflows/install.sh
 
       - name: Check
+        uses: check-spelling/check-spelling@v0.0.20-alpha4
         run: |
           ./script/build.sh --release --format --analysis
           git status
