@@ -233,7 +233,7 @@ tarHtml()
     if [ -d ./"${TEMP_FOLDER}"/"${browserFolder}" ]; then
         rm -rf ./"${TEMP_FOLDER}"/"${browserFolder}"
     fi
-    bashCommand "mkdir ./${TEMP_FOLDER}/${browserFolder}"
+    bashCommand "mkdir -p ./${TEMP_FOLDER}/${browserFolder}"
     bashCommand "codebrowser_generator -color -a -b ./${BUILD_FOLDER}/${COMPILE_COMMANDS} \
 -o ./${TEMP_FOLDER}/${browserFolder} -p ${PROJECT_FOLDER}:.:${commitId} -d ./data"
     bashCommand "codebrowser_indexgenerator ./${TEMP_FOLDER}/${browserFolder} -d ./data"
@@ -274,7 +274,7 @@ tarBackup()
     if [ -d ./"${BACKUP_FOLDER}"/"${PROJECT_FOLDER}" ]; then
         rm -rf ./"${BACKUP_FOLDER}"/"${PROJECT_FOLDER}"
     fi
-    bashCommand "mkdir ./${BACKUP_FOLDER}/${PROJECT_FOLDER}"
+    bashCommand "mkdir -p ./${BACKUP_FOLDER}/${PROJECT_FOLDER}"
     bashCommand "find . -type f -o \( -path ./${BUILD_FOLDER} -o -path ./${BACKUP_FOLDER} \
 -o -path ./${TEMP_FOLDER} -o -path './.*' \) -prune -o -print | sed 1d \
 | grep -E '${INCLUDE_FOLDER}|${SOURCE_FOLDER}|${LIBRARY_FOLDER}|${SCRIPT_FOLDER}' \
