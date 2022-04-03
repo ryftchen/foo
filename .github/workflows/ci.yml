@@ -28,13 +28,14 @@ jobs:
 
       - name: Check
         run: |
-          ./script/build.sh --release --format --analysis --html --backup --tag
+          ./script/build.sh --release --format --analysis
           git status
 
       - name: Build
         run: |
           ./script/build.sh --cleanup
           ./script/build.sh --release
+          ./script/build.sh --release --html --backup --tag
 
       - name: Test
         run: |
