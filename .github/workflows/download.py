@@ -9,10 +9,9 @@ import requests
 
 PROJECT_GIT = "https://github.com/ryftchen/foo.git"
 PROJECT_FOLDER = "foo"
-BROWSER_FOLDER = "browser"
+BROWSER_FOLDER = "/var/www/code_browser"
 ARTIFACT_URL = "https://api.github.com/repos/ryftchen/foo/actions/artifacts?per_page=1"
 ARTIFACT_FILE = "foo_artifact"
-HOME = os.path.expanduser("~")
 
 
 def executeCommand(command, output=True):
@@ -54,8 +53,8 @@ def downloadArtifact():
     )
     os.chdir(localDir)
 
-    if not os.path.exists(f"{HOME}/{BROWSER_FOLDER}"):
-        printAbort(f"Please create {BROWSER_FOLDER} in ~/ folder.")
+    if not os.path.exists(f"{BROWSER_FOLDER}"):
+        printAbort(f"Please create code_browser folder in /var/www directory.")
     localCommitId = executeCommand("git rev-parse HEAD", output=False).stdout.read().splitlines()[0]
     remoteCommitId = executeCommand(
         f"git ls-remote {PROJECT_GIT} refs/heads/master | cut -f 1", output=False
@@ -67,7 +66,7 @@ def downloadArtifact():
     htmlFolder = f"{PROJECT_FOLDER}_html"
     if localCommitId != remoteCommitId:
         executeCommand("git pull origin master")
-    elif os.path.exists(f"{HOME}/{BROWSER_FOLDER}/{htmlFolder}"):
+    elif os.path.exists(f"{BROWSER_FOLDER}/{htmlFolder}"):
         printAbort(f"No change in {PROJECT_FOLDER} project.")
 
     try:
@@ -85,25 +84,25 @@ def downloadArtifact():
 
         response = requests.get(locationUrl)
         response.raise_for_status()
-        with open(f"{HOME}/{BROWSER_FOLDER}/{ARTIFACT_FILE}.zip", "wb") as outputFile:
+        with open(f"{BROWSER_FOLDER}/{ARTIFACT_FILE}.zip", "wb") as outputFile:
             outputFile.write(response.content)
     except requests.exceptions.HTTPError as error:
         printAbort(error)
 
     zipCheck = executeCommand(
-        f"zip -T ~/{BROWSER_FOLDER}/{ARTIFACT_FILE}.zip", output=False
+        f"zip -T {BROWSER_FOLDER}/{ARTIFACT_FILE}.zip", output=False
     ).stdout.read()
     if zipCheck.find("zip error") == -1:
-        executeCommand(f"rm -rf ~/{BROWSER_FOLDER}/{htmlFolder}")
-        executeCommand(f"unzip ~/{BROWSER_FOLDER}/{ARTIFACT_FILE}.zip -d ~/{BROWSER_FOLDER}")
+        executeCommand(f"rm -rf {BROWSER_FOLDER}/{htmlFolder}")
+        executeCommand(f"unzip {BROWSER_FOLDER}/{ARTIFACT_FILE}.zip -d {BROWSER_FOLDER}")
         executeCommand(
-            f"tar -jxvf ~/{BROWSER_FOLDER}/{htmlFolder}_*.tar.bz2 -C ~/{BROWSER_FOLDER} >/dev/null"
+            f"tar -jxvf {BROWSER_FOLDER}/{htmlFolder}_*.tar.bz2 -C {BROWSER_FOLDER} >/dev/null"
         )
-        executeCommand(f"rm -rf ~/{BROWSER_FOLDER}/*.zip ~/{BROWSER_FOLDER}/*.tar.bz2")
+        executeCommand(f"rm -rf {BROWSER_FOLDER}/*.zip {BROWSER_FOLDER}/*.tar.bz2")
     else:
-        executeCommand(f"rm -rf ~/{BROWSER_FOLDER}/{ARTIFACT_FILE}.zip")
+        executeCommand(f"rm -rf {BROWSER_FOLDER}/{ARTIFACT_FILE}.zip")
         executeCommand(f"git reset --hard {localCommitId}")
-        printAbort(f"The zip file {ARTIFACT_FILE}.zip in ~/{BROWSER_FOLDER} folder is corrupted.")
+        printAbort(f"The zip file {ARTIFACT_FILE}.zip in {BROWSER_FOLDER} folder is corrupted.")
 
 
 if __name__ == "__main__":
