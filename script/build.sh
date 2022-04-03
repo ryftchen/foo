@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 
-ARGS_CLEANUP=0
-ARGS_ANALYSIS=0
-ARGS_FORMAT=0
-ARGS_HTML=0
-ARGS_BACKUP=0
-ARGS_TAG=0
-ARGS_RELEASE=0
+ARGS_CLEANUP=false
+ARGS_ANALYSIS=false
+ARGS_FORMAT=false
+ARGS_HTML=false
+ARGS_BACKUP=false
+ARGS_TAG=false
+ARGS_RELEASE=false
 
 PROJECT_FOLDER="foo"
 INCLUDE_FOLDER="include"
@@ -23,7 +23,7 @@ FORMAT_C=".clang-format"
 ANALYSIS_C=".clang-tidy"
 ANALYSIS_PY=".pylintrc"
 ANALYSIS_SH=".shellcheckrc"
-DO_COMPILE=0
+PERFORM_COMPILE=false
 
 bashCommand()
 {
@@ -67,13 +67,13 @@ parseArgs()
 {
     while [ "$#" -gt 0 ]; do
         case $1 in
-        --release) ARGS_RELEASE=1 ;;
-        -c | --cleanup) ARGS_CLEANUP=1 ;;
-        -f | --format) ARGS_FORMAT=1 ;;
-        -a | --analysis) ARGS_ANALYSIS=1 ;;
-        -h | --html) ARGS_HTML=1 ;;
-        -b | --backup) ARGS_BACKUP=1 ;;
-        -t | --tag) ARGS_TAG=1 ;;
+        --release) ARGS_RELEASE=true ;;
+        -c | --cleanup) ARGS_CLEANUP=true ;;
+        -f | --format) ARGS_FORMAT=true ;;
+        -a | --analysis) ARGS_ANALYSIS=true ;;
+        -h | --html) ARGS_HTML=true ;;
+        -b | --backup) ARGS_BACKUP=true ;;
+        -t | --tag) ARGS_TAG=true ;;
         --help) printInstruction ;;
         *) printAbort "Unknown command line option: $1. Try with --help to get information." ;;
         esac
@@ -83,8 +83,8 @@ parseArgs()
 
 checkProject()
 {
-    if [ "$#" -eq 1 ] && [ "${ARGS_RELEASE}" = "1" ] || [ "$#" -eq 0 ]; then
-        DO_COMPILE=1
+    if [ "$#" -eq 1 ] && [ "${ARGS_RELEASE}" = true ] || [ "$#" -eq 0 ]; then
+        PERFORM_COMPILE=true
     fi
 
     if [ ! -d ./"${INCLUDE_FOLDER}" ] || [ ! -d ./"${SOURCE_FOLDER}" ] \
@@ -93,7 +93,7 @@ checkProject()
         printAbort "There are missing files in ${PROJECT_FOLDER} folder."
     fi
 
-    if [ "${ARGS_FORMAT}" = "1" ] || [ "${ARGS_ANALYSIS}" = "1" ]; then
+    if [ "${ARGS_FORMAT}" = true ] || [ "${ARGS_ANALYSIS}" = true ]; then
         if [ ! -f ./"${SCRIPT_FOLDER}"/"${BUILD_SCRIPT}" ] \
             || [ ! -f ./"${SCRIPT_FOLDER}"/"${TEST_SCRIPT}" ]; then
             printAbort "There are missing file in ${SCRIPT_FOLDER} folder."
@@ -101,13 +101,13 @@ checkProject()
     fi
 }
 
-createMakefile()
+generateMakefile()
 {
     if [ -f ./"${CMAKE_FILE}" ]; then
         if [ ! -d ./"${BUILD_FOLDER}" ]; then
             bashCommand "mkdir ./${BUILD_FOLDER}"
         fi
-        if [ "${ARGS_RELEASE}" = "1" ]; then
+        if [ "${ARGS_RELEASE}" = true ]; then
             bashCommand "cmake -S . -B ./${BUILD_FOLDER} \
 -DCMAKE_CXX_COMPILER=clang++-11 -DCMAKE_BUILD_TYPE=Release"
         else
@@ -121,14 +121,14 @@ createMakefile()
 
 compileProject()
 {
-    if [ "${DO_COMPILE}" = "1" ]; then
+    if [ "${PERFORM_COMPILE}" = true ]; then
         bashCommand "make -C ./${BUILD_FOLDER} -j"
     fi
 }
 
 buildCleanup()
 {
-    if [ "${ARGS_CLEANUP}" = "1" ]; then
+    if [ "${ARGS_CLEANUP}" = true ]; then
         bashCommand "rm -rf ./${BUILD_FOLDER} ./${TEMP_FOLDER}"
         bashCommand "rm -rf ./core* ./GPATH ./GRTAGS ./GTAGS"
         exit 0
@@ -137,7 +137,7 @@ buildCleanup()
 
 buildFormat()
 {
-    if [ "${ARGS_FORMAT}" = "1" ]; then
+    if [ "${ARGS_FORMAT}" = true ]; then
         if
             command -v clang-format-11 >/dev/null 2>&1 \
                 && command -v shfmt >/dev/null 2>&1 \
@@ -160,7 +160,7 @@ Please generate it."
 
 buildAnalysis()
 {
-    if [ "${ARGS_ANALYSIS}" = "1" ]; then
+    if [ "${ARGS_ANALYSIS}" = true ]; then
         if
             command -v clang-tidy-11 >/dev/null 2>&1 \
                 && command -v shellcheck >/dev/null 2>&1 \
@@ -198,7 +198,7 @@ Please generate it."
 
 buildHtml()
 {
-    if [ "${ARGS_HTML}" = "1" ]; then
+    if [ "${ARGS_HTML}" = true ]; then
         if
             command -v codebrowser_generator >/dev/null 2>&1 \
                 && command -v codebrowser_indexgenerator >/dev/null 2>&1
@@ -244,7 +244,7 @@ tarHtml()
 
 buildBackup()
 {
-    if [ "${ARGS_BACKUP}" = "1" ]; then
+    if [ "${ARGS_BACKUP}" = true ]; then
         if [ -d ./"${TEMP_FOLDER}" ]; then
             files=$(find "${TEMP_FOLDER}"/ -type f -name "${PROJECT_FOLDER}_backup_*.tar.gz" \
                 2>/dev/null | wc -l)
@@ -287,7 +287,7 @@ ${PROJECT_FOLDER}"
 
 buildTag()
 {
-    if [ "${ARGS_TAG}" = "1" ]; then
+    if [ "${ARGS_TAG}" = true ]; then
         if
             command -v gtags >/dev/null 2>&1
         then
@@ -301,13 +301,13 @@ buildTag()
 
 main()
 {
-    cd "$(dirname "$0")" && cd ..
+    cd "$(dirname "$(dirname "$0")")" || exit 1
 
     parseArgs "$@"
     checkProject "$@"
 
     buildCleanup
-    createMakefile
+    generateMakefile
 
     buildFormat
     buildAnalysis
