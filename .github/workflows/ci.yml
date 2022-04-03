@@ -37,6 +37,7 @@ jobs:
             cspell:filetypes/filetypes.txt
             cspell:python/python.txt
           shortest_word: 4
+          check_extra_dictionaries: ''
 
       - name: Inspect
         run: |
