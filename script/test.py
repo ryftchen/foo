@@ -331,8 +331,7 @@ def parseArgs():
 
 
 def prepareTest():
-    os.chdir(os.path.split(os.path.realpath(__file__))[0])
-    os.chdir("..")
+    os.chdir(os.path.split(os.path.split(os.path.realpath(__file__))[0])[0])
     parseArgs()
     if not os.path.isfile(RUN_DIR + RUN_CMD):
         printAbort("There is no executable file. Please build it.")
