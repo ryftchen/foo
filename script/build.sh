@@ -14,7 +14,6 @@ SOURCE_FOLDER="source"
 LIBRARY_FOLDER="library"
 SCRIPT_FOLDER="script"
 BUILD_FOLDER="build"
-BACKUP_FOLDER="backup"
 TEMP_FOLDER="temp"
 BUILD_SCRIPT="build.sh"
 TEST_SCRIPT="test.py"
@@ -130,8 +129,8 @@ compileProject()
 buildCleanup()
 {
     if [ "${ARGS_CLEANUP}" = "1" ]; then
-        bashCommand "rm -rf ./${BUILD_FOLDER} ./${BACKUP_FOLDER} ./${TEMP_FOLDER}"
-        bashCommand "rm -rf ./GPATH ./GRTAGS ./GTAGS"
+        bashCommand "rm -rf ./${BUILD_FOLDER} ./${TEMP_FOLDER}"
+        bashCommand "rm -rf ./core* ./GPATH ./GRTAGS ./GTAGS"
         exit 0
     fi
 }
@@ -246,11 +245,11 @@ tarHtml()
 buildBackup()
 {
     if [ "${ARGS_BACKUP}" = "1" ]; then
-        if [ -d ./"${BACKUP_FOLDER}" ]; then
-            files=$(find "${BACKUP_FOLDER}"/ -type f -name "${PROJECT_FOLDER}_*.tar.gz" \
+        if [ -d ./"${TEMP_FOLDER}" ]; then
+            files=$(find "${TEMP_FOLDER}"/ -type f -name "${PROJECT_FOLDER}_backup_*.tar.gz" \
                 2>/dev/null | wc -l)
             if [ "${files}" != "0" ]; then
-                lastTar=$(find "${BACKUP_FOLDER}"/ -type f -name "${PROJECT_FOLDER}_*.tar.gz" \
+                lastTar=$(find "${TEMP_FOLDER}"/ -type f -name "${PROJECT_FOLDER}_backup_*.tar.gz" \
                     -print0 | xargs --null ls -at | head -n 1)
                 timeDiff=$(($(date +%s) - $(stat -L --format %Y "${lastTar}")))
                 if [ "${timeDiff}" -gt "10" ]; then
@@ -263,27 +262,27 @@ ${timeDiff}s ago."
                 tarBackup
             fi
         else
-            bashCommand "mkdir ./${BACKUP_FOLDER}"
+            bashCommand "mkdir ./${TEMP_FOLDER}"
             tarBackup
         fi
     fi
 }
 tarBackup()
 {
-    tarFolder="${PROJECT_FOLDER}_$(date "+%Y%m%d%H%M%S")"
-    if [ -d ./"${BACKUP_FOLDER}"/"${PROJECT_FOLDER}" ]; then
-        rm -rf ./"${BACKUP_FOLDER}"/"${PROJECT_FOLDER}"
+    tarFolder="${PROJECT_FOLDER}_backup_$(date "+%Y%m%d%H%M%S")"
+    if [ -d ./"${TEMP_FOLDER}"/"${PROJECT_FOLDER}" ]; then
+        rm -rf ./"${TEMP_FOLDER}"/"${PROJECT_FOLDER}"
     fi
-    bashCommand "mkdir -p ./${BACKUP_FOLDER}/${PROJECT_FOLDER}"
-    bashCommand "find . -type f -o \( -path ./${BUILD_FOLDER} -o -path ./${BACKUP_FOLDER} \
--o -path ./${TEMP_FOLDER} -o -path './.*' \) -prune -o -print | sed 1d \
+    bashCommand "mkdir -p ./${TEMP_FOLDER}/${PROJECT_FOLDER}"
+    bashCommand "find . -type f -o \( -path ./${BUILD_FOLDER} -o -path ./${TEMP_FOLDER} \
+-o -path './.*' \) -prune -o -print | sed 1d \
 | grep -E '${INCLUDE_FOLDER}|${SOURCE_FOLDER}|${LIBRARY_FOLDER}|${SCRIPT_FOLDER}' \
-| xargs -i cp -R {} ${BACKUP_FOLDER}/${PROJECT_FOLDER}/"
+| xargs -i cp -R {} ${TEMP_FOLDER}/${PROJECT_FOLDER}/"
     bashCommand "find . -maxdepth 1 -type d -o -print | grep -E '*\.txt' \
-| xargs -i cp -R {} ${BACKUP_FOLDER}/${PROJECT_FOLDER}/"
-    bashCommand "tar -zcvf ${BACKUP_FOLDER}/${tarFolder}.tar.gz -C ./${BACKUP_FOLDER} \
+| xargs -i cp -R {} ${TEMP_FOLDER}/${PROJECT_FOLDER}/"
+    bashCommand "tar -zcvf ${TEMP_FOLDER}/${tarFolder}.tar.gz -C ./${TEMP_FOLDER} \
 ${PROJECT_FOLDER}"
-    bashCommand "rm -rf ./${BACKUP_FOLDER}/${PROJECT_FOLDER}"
+    bashCommand "rm -rf ./${TEMP_FOLDER}/${PROJECT_FOLDER}"
 }
 
 buildTag()
