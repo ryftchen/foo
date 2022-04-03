@@ -16,7 +16,7 @@ bool Command::parseArgv(const int argc, char* const argv[])
         return false;
     }
 
-    std::bitset<TaskBit::taskButtom> taskBit(0);
+    std::bitset<TaskBit::taskBottom> taskBit(0);
     for (int i = 0; i < argc; ++i)
     {
         if (argv[i][0] == '-')
@@ -25,15 +25,15 @@ bool Command::parseArgv(const int argc, char* const argv[])
             {
                 case "-o"_bkdrHash:
                 case "--optimum"_bkdrHash:
-                    COMMAND_PERPARE_BITSET(taskPlan.optimumBit, TaskBit::taskOptimum);
+                    COMMAND_PREPARE_BITSET(taskPlan.optimumBit, TaskBit::taskOptimum);
                     break;
                 case "-i"_bkdrHash:
                 case "--integral"_bkdrHash:
-                    COMMAND_PERPARE_BITSET(taskPlan.integralBit, TaskBit::taskIntegral);
+                    COMMAND_PREPARE_BITSET(taskPlan.integralBit, TaskBit::taskIntegral);
                     break;
                 case "-s"_bkdrHash:
                 case "--sort"_bkdrHash:
-                    COMMAND_PERPARE_BITSET(taskPlan.sortBit, TaskBit::taskSort);
+                    COMMAND_PREPARE_BITSET(taskPlan.sortBit, TaskBit::taskSort);
                     break;
                 case "--log"_bkdrHash:
                     printLogContext();
@@ -62,14 +62,14 @@ bool Command::parseArgv(const int argc, char* const argv[])
 
 void Command::doTask()
 {
-    for (int i = 0; i < TaskBit::taskButtom; ++i)
+    for (int i = 0; i < TaskBit::taskBottom; ++i)
     {
         (this->*taskFunctor[TaskBit(i)])();
     }
 }
 
 void Command::setTaskPlanFromTaskBit(
-    char* const argv[], const std::bitset<TaskBit::taskButtom>& taskBit)
+    char* const argv[], const std::bitset<TaskBit::taskBottom>& taskBit)
 {
     if (taskBit.test(TaskBit::taskOptimum))
     {
@@ -148,7 +148,7 @@ void Command::getOptimumResult(
             threadName, &Optimum::operator(), classPtr, leftEndpoint, rightEndpoint, epsilon);
     };
 
-    for (int i = 0; i < OptimumBit::optimumButtom; ++i)
+    for (int i = 0; i < OptimumBit::optimumBottom; ++i)
     {
         if (taskPlan.optimumBit.test(OptimumBit(i)))
         {
@@ -260,7 +260,7 @@ void Command::getIntegralResult(
             threadName, &Integral::operator(), classPtr, lowerLimit, upperLimit, epsilon);
     };
 
-    for (int i = 0; i < IntegralBit::integralButtom; ++i)
+    for (int i = 0; i < IntegralBit::integralBottom; ++i)
     {
         if (taskPlan.integralBit.test(IntegralBit(i)))
         {
@@ -339,7 +339,7 @@ void Command::getSortResult(const std::shared_ptr<Sort<int>>& sort) const
             threadName, methodPtr, sort, sort->getRandomArray().get(), sort->getLength());
     };
 
-    for (int i = 0; i < SortBit::sortButtom; ++i)
+    for (int i = 0; i < SortBit::sortBottom; ++i)
     {
         if (taskPlan.sortBit.test(SortBit(i)))
         {
