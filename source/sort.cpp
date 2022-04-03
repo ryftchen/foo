@@ -1,17 +1,9 @@
 #include "sort.hpp"
 #include <algorithm>
 #include <queue>
-#include <random>
 #include <vector>
-#include "log.hpp"
 
 template class Sort<int>;
-template Sort<int>::Sort(const uint32_t, const int, const int);
-template Sort<int>::~Sort();
-template Sort<int>::Sort(const Sort& sort);
-template Sort<int>& Sort<int>::operator=(const Sort& rhs);
-template const std::unique_ptr<int[]>& Sort<int>::getRandomArray() const;
-template uint32_t Sort<int>::getLength() const;
 template void Sort<int>::bubbleSort(int* const, const uint32_t) const;
 template void Sort<int>::selectionSort(int* const, const uint32_t) const;
 template void Sort<int>::insertionSort(int* const, const uint32_t) const;
@@ -22,127 +14,6 @@ template void Sort<int>::heapSort(int* const, const uint32_t) const;
 template void Sort<int>::countingSort(int* const, const uint32_t) const;
 template void Sort<int>::bucketSort(int* const, const uint32_t) const;
 template void Sort<int>::radixSort(int* const, const uint32_t) const;
-
-template <class T>
-Sort<T>::Sort(const uint32_t length, const T left, const T right) :
-    length(length), left(left), right(right), randomArray(std::make_unique<T[]>(length))
-{
-    std::cout << SORT_RUN_BEGIN << std::endl;
-    setRandomArray<T>(randomArray.get(), length, left, right);
-}
-
-template <class T>
-Sort<T>::~Sort()
-{
-    std::cout << SORT_RUN_END << std::endl;
-}
-
-template <class T>
-Sort<T>& Sort<T>::operator=(const Sort& rhs)
-{
-    deepCopyFromSort(rhs);
-    return *this;
-}
-
-template <class T>
-Sort<T>::Sort(const Sort& sort) :
-    length(sort.length), left(sort.length), right(sort.length),
-    randomArray(std::make_unique<T[]>(sort.length))
-{
-    deepCopyFromSort(sort);
-}
-
-template <class T>
-void Sort<T>::deepCopyFromSort(const Sort& sort) const
-{
-    memcpy(this->randomArray.get(), sort.randomArray.get(), this->length * sizeof(T));
-}
-
-template <class T>
-const std::unique_ptr<T[]>& Sort<T>::getRandomArray() const
-{
-    std::unique_lock<std::mutex> lock(sortMutex);
-    return randomArray;
-}
-
-template <class T>
-uint32_t Sort<T>::getLength() const
-{
-    std::unique_lock<std::mutex> lock(sortMutex);
-    return length;
-}
-
-template <class T>
-template <typename U>
-requires std::is_integral<U>::value void Sort<T>::setRandomArray(
-    T array[], const uint32_t length, const T left, const T right) const
-{
-    TIME_GET_SEED(seed);
-    std::uniform_int_distribution<int> randomX(left, right);
-    for (uint32_t i = 0; i < length; ++i)
-    {
-        array[i] = randomX(seed);
-    }
-
-    const uint32_t arrayBufferSize = length * SORT_PRINT_MAX_ALIGN;
-    char arrayBuffer[arrayBufferSize + 1];
-    arrayBuffer[0] = '\0';
-    FORMAT_PRINT(
-        SORT_GENERATE_INTEGRAL_ARRAY, length, left, right,
-        formatArray(array, length, arrayBuffer, arrayBufferSize + 1));
-}
-template <class T>
-template <typename U>
-requires std::is_floating_point<U>::value void Sort<T>::setRandomArray(
-    T array[], const uint32_t length, const T left, const T right) const
-{
-    TIME_GET_SEED(seed);
-    std::uniform_real_distribution<double> randomX(left, right);
-    for (uint32_t i = 0; i < length; ++i)
-    {
-        array[i] = randomX(seed);
-    }
-
-    const uint32_t arrayBufferSize = length * SORT_PRINT_MAX_ALIGN;
-    char arrayBuffer[arrayBufferSize + 1];
-    arrayBuffer[0] = '\0';
-    FORMAT_PRINT(
-        SORT_GENERATE_FLOATING_ARRAY, length, left, right,
-        formatArray(array, length, arrayBuffer, arrayBufferSize + 1));
-}
-
-template <class T>
-char* Sort<T>::formatArray(
-    const T* const __restrict array, const uint32_t length, char* const __restrict buffer,
-    const uint32_t bufferSize) const
-{
-    uint32_t align = 0;
-    for (uint32_t i = 0; i < length; ++i)
-    {
-        align = std::max(static_cast<uint32_t>(std::to_string(*(array + i)).length()), align);
-    }
-
-    const char* format = " ";
-    if constexpr (std::is_integral<T>::value)
-    {
-        format = "%*d ";
-    }
-    else if constexpr (std::is_floating_point<T>::value)
-    {
-        format = "%*.5f ";
-    }
-    uint32_t completeSize = 0;
-    for (uint32_t i = 0; i < length; ++i)
-    {
-        completeSize += std::snprintf(
-            buffer + completeSize, bufferSize - completeSize, format, align + 1, *(array + i));
-        if ((0 == (i + 1) % SORT_PRINT_MAX_COLUMN) && (length != (i + 1)))
-        {
-            completeSize += std::snprintf(buffer + completeSize, bufferSize - completeSize, "\n");
-        }
-    }
-    return buffer;
-}
 
 // Bubble method
 template <class T>
