@@ -7,13 +7,18 @@
 #include "optimum.hpp"
 #include "thread.hpp"
 
-bool Command::parseArgv(const int argc, char* const argv[])
+Command::Command(int argc, char* argv[])
+{
+    parseArgv(argc - 1, argv + 1);
+}
+
+void Command::parseArgv(const int argc, char* const argv[])
 {
     if (argc < 1)
     {
         executeCommand(COMMAND_EXECUTE_OUTPUT_NAME);
         LOGGER_INF("No command line option.");
-        return false;
+        return;
     }
 
     std::bitset<TaskBit::taskBottom> taskBit(0);
@@ -25,39 +30,49 @@ bool Command::parseArgv(const int argc, char* const argv[])
             {
                 case "-o"_bkdrHash:
                 case "--optimum"_bkdrHash:
-                    COMMAND_PREPARE_BITSET(taskPlan.optimumBit, TaskBit::taskOptimum);
+                    COMMAND_PREPARE_BIT_SET(taskPlan.optimumBit, TaskBit::taskOptimum);
                     break;
                 case "-i"_bkdrHash:
                 case "--integral"_bkdrHash:
-                    COMMAND_PREPARE_BITSET(taskPlan.integralBit, TaskBit::taskIntegral);
+                    COMMAND_PREPARE_BIT_SET(taskPlan.integralBit, TaskBit::taskIntegral);
                     break;
                 case "-s"_bkdrHash:
                 case "--sort"_bkdrHash:
-                    COMMAND_PREPARE_BITSET(taskPlan.sortBit, TaskBit::taskSort);
+                    COMMAND_PREPARE_BIT_SET(taskPlan.sortBit, TaskBit::taskSort);
                     break;
                 case "--log"_bkdrHash:
+                    COMMAND_PREPARE_TASK_CHECK;
                     printLogContext();
                     break;
                 case "--help"_bkdrHash:
+                    COMMAND_PREPARE_TASK_CHECK;
                     printInstruction();
                     break;
                 default:
-                    printUnkownOption(argv + i);
+                    printUnexpectedOption(argv + i, true);
                     break;
+            }
+            if (taskBit.none())
+            {
+                return;
             }
         }
         else
         {
             setTaskPlanFromTaskBit(argv + i, taskBit);
-        }
-
-        if (true == taskPlan.taskDone)
-        {
-            return false;
+            if (!checkTask())
+            {
+                return;
+            }
         }
     }
 
-    return true;
+    return;
+}
+
+bool Command::checkTask()
+{
+    return taskPlan.optimumBit.any() || taskPlan.integralBit.any() || taskPlan.sortBit.any();
 }
 
 void Command::doTask()
@@ -85,7 +100,7 @@ void Command::setTaskPlanFromTaskBit(
     }
     else
     {
-        printUnkownOption(argv);
+        printUnexpectedOption(argv, true);
     }
 }
 
@@ -196,7 +211,7 @@ void Command::setOptimumBit(char* const argv[])
             taskPlan.optimumBit.set(OptimumBit::optimumGenetic);
             break;
         default:
-            printUnkownOption(argv);
+            printUnexpectedOption(argv, true);
             break;
     }
 }
@@ -308,7 +323,7 @@ void Command::setIntegralBit(char* const argv[])
             taskPlan.integralBit.set(IntegralBit::integralMonteCarlo);
             break;
         default:
-            printUnkownOption(argv);
+            printUnexpectedOption(argv, true);
             break;
     }
 }
@@ -417,7 +432,7 @@ void Command::setSortBit(char* const argv[])
             taskPlan.sortBit.set(SortBit::sortRadix);
             break;
         default:
-            printUnkownOption(argv);
+            printUnexpectedOption(argv, true);
             break;
     }
 }
@@ -439,8 +454,6 @@ void Command::printLogContext()
     {
         LOGGER_ERR(error.what());
     }
-
-    taskPlan.taskDone = true;
 }
 
 void Command::printInstruction()
@@ -456,17 +469,23 @@ void Command::printInstruction()
          "    [ qui | hea | cou | buc | rad ]    Quick|Heap|Counting|Bucket|Radix\n\n"
          "    --log                              Log\n\n"
          "    --help                             Help");
-
-    taskPlan.taskDone = true;
 }
 
-void Command::printUnkownOption(char* const argv[])
+void Command::printUnexpectedOption(char* const argv[], const bool isUnknown)
 {
-    const std::string str = "Unknown command line option: " + std::string(argv[0])
-        + ". Try with --help to get information.";
+    std::string str = "";
+    if (isUnknown)
+    {
+        str = "Unknown command line option: " + std::string(argv[0])
+            + ". Try with --help to get information.";
+    }
+    else
+    {
+        str = "Excess command line option: " + std::string(argv[0]) + ".";
+    }
     LOGGER_WRN(str.c_str());
 
-    taskPlan.taskDone = true;
+    taskPlan = TaskPlan();
 }
 
 void executeCommand(const char* const command)
