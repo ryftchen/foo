@@ -129,7 +129,7 @@ std::optional<std::pair<ValueY, ValueX>> Fibonacci::fibonacciSearch(
 void Fibonacci::generateFibonacciNumber(std::vector<double>& fibonacci, const double max)
 {
     double f1 = 0.0, f2 = 1.0;
-    while (1)
+    for (;;)
     {
         double temp = f1 + f2;
         f1 = f2;
