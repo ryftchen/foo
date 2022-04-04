@@ -23,7 +23,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get remove -y llvm-* clang-* libllvm-* libclang-*
+          sudo apt-get purge -y llvm-* clang-* libllvm-* libclang-*
           export FOO_ENV=GITHUB_ACTION
           ./.github/workflows/install.sh
 
