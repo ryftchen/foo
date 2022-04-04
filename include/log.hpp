@@ -107,7 +107,7 @@ void Log::outputLog(
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat-security"
         std::string output = prefix + ":[" + TIME_GET_CURRENT_DATE + "]:" + "["
-            + FILENAME(codeFile.c_str()) + "#" + std::to_string(codeLine)
+            + basename(codeFile.c_str()) + "#" + std::to_string(codeLine)
             + "]: " + FORMAT_TO_STRING(format, std::forward<Args>(args)...);
 #pragma GCC diagnostic pop
         switch (realTarget)
