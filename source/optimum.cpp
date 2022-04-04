@@ -16,7 +16,7 @@ std::optional<std::tuple<ValueY, ValueX>> Fibonacci::operator()(
     double x = 0.0, y = 0.0;
 
     const auto firstResult = fibonacciSearch(left, right, eps);
-    if (!firstResult.has_value())
+    if (UNLIKELY(!firstResult.has_value()))
     {
         FORMAT_PRINT("*Fibonacci method: The precise %.5f isn't enough.\n", eps);
         return std::nullopt;
@@ -515,7 +515,7 @@ std::optional<std::tuple<double, double>> Genetic::fitnessLinearTransformation(
 
     double reFitnessMin = *(std::min_element(begin(reFitness), end(reFitness)));
     double reFitnessAvg = std::accumulate(begin(reFitness), end(reFitness), 0.0) / reFitness.size();
-    if (fabs(reFitnessMin - reFitnessAvg) > (range.eps * range.eps))
+    if (LIKELY(fabs(reFitnessMin - reFitnessAvg) > (range.eps * range.eps)))
     {
         const double alpha = reFitnessAvg / (reFitnessAvg - reFitnessMin);
         const double beta = -1.0 * (reFitnessMin * reFitnessAvg) / (reFitnessAvg - reFitnessMin);
