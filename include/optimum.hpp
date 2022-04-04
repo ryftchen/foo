@@ -179,7 +179,7 @@ private:
     void geneMutation(Species::Chromosome& chr);
     void mutateIndividual(Species::Population& pop);
     double calculateFitness(const Species::Chromosome& chr);
-    std::optional<std::tuple<double, double>> fitnessLinearTransformation(
+    std::optional<std::pair<double, double>> fitnessLinearTransformation(
         const Species::Population& pop);
     void stochasticTournamentSelection(
         Species::Population& pop, const std::vector<double>& fitnessCum);
