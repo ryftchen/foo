@@ -27,6 +27,8 @@ static void switchToProjectPath() __attribute__((constructor));
             str;                                                              \
         })
 #define FORMAT_PRINT(format, args...) std::cout << FORMAT_TO_STRING(format, ##args)
+#define LIKELY(x) __builtin_expect(!!(x), 1)
+#define UNLIKELY(x) __builtin_expect(!!(x), 0)
 
 static void switchToProjectPath()
 {
