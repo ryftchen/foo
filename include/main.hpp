@@ -28,15 +28,15 @@ static void switchToProjectPath() __attribute__((constructor));
 #define PRINT_COLOR_GREEN "\033[0;32;40m"
 #define PRINT_COLOR_YELLOW "\033[0;33;40m"
 #define PRINT_COLOR_END "\033[0m"
+#define BUFFER_SIZE_MAX 4096
 
 static void switchToProjectPath()
 {
     try
     {
-        const int bufferSize = 4096;
-        char absolutePath[bufferSize] = {'\0'};
-        const int length = readlink("/proc/self/exe", absolutePath, bufferSize);
-        if ((length < 0) || (length >= bufferSize))
+        char absolutePath[BUFFER_SIZE_MAX] = {'\0'};
+        const int length = readlink("/proc/self/exe", absolutePath, BUFFER_SIZE_MAX);
+        if ((length < 0) || (length >= BUFFER_SIZE_MAX))
         {
             throw CallFunctionError("readlink()");
         }
