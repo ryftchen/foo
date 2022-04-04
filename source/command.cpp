@@ -492,10 +492,26 @@ void executeCommand(const char* const command)
 {
     try
     {
-        const pid_t status = system(command);
+        FILE* file = popen(command, "r");
+        if (nullptr == file)
+        {
+            throw CallFunctionError("popen()");
+        }
+
+        char resultBuffer[BUFFER_SIZE_MAX] = {'\0'};
+        while (nullptr != fgets(resultBuffer, sizeof(resultBuffer), file))
+        {
+            if ('\n' == resultBuffer[strlen(resultBuffer) - 1])
+            {
+                resultBuffer[strlen(resultBuffer) - 1] = '\0';
+            }
+            std::cout << resultBuffer << std::endl;
+        }
+
+        const int status = pclose(file);
         if (-1 == status)
         {
-            throw CallFunctionError("system()");
+            throw CallFunctionError("pclose()");
         }
         else if (WIFEXITED(status))
         {
