@@ -10,19 +10,26 @@ void executeCommand(const char* const command);
 
 #define COMMAND_MAX_METHOD 10
 #define COMMAND_PRINT_MAX_LINE 50
-#define COMMAND_PREPARE_BITSET(xBit, taskX)            \
-    do                                                 \
-    {                                                  \
-        taskBit.reset();                               \
-        if ((argc > i + 1) && (argv[i + 1][0] != '-')) \
-        {                                              \
-            taskBit.set(taskX);                        \
-        }                                              \
-        else                                           \
-        {                                              \
-            xBit.set();                                \
-        }                                              \
-    }                                                  \
+#define COMMAND_PREPARE_TASK_CHECK                  \
+    do                                              \
+    {                                               \
+        if (checkTask())                            \
+        {                                           \
+            printUnexpectedOption(argv + i, false); \
+            return;                                 \
+        }                                           \
+    }                                               \
+    while (0)
+#define COMMAND_PREPARE_BIT_SET(xBit, taskX)            \
+    do                                                  \
+    {                                                   \
+        COMMAND_PREPARE_TASK_CHECK;                     \
+        taskBit.set(taskX);                             \
+        if ((argc <= i + 1) || (argv[i + 1][0] == '-')) \
+        {                                               \
+            xBit.set();                                 \
+        }                                               \
+    }                                                   \
     while (0)
 #define COMMAND_EXECUTE_OUTPUT_NAME "tput bel; banner foo"
 
@@ -68,8 +75,10 @@ public:
         sortRadix,
         sortBottom
     };
+    Command(int argc, char* argv[]);
     virtual ~Command(){};
-    bool parseArgv(const int argc, char* const argv[]);
+    void parseArgv(const int argc, char* const argv[]);
+    bool checkTask();
     void doTask();
 
 private:
@@ -77,7 +86,6 @@ private:
 #pragma pack(8)
     struct TaskPlan
     {
-        std::atomic<bool> taskDone = false;
         std::bitset<OptimumBit::optimumBottom> optimumBit;
         std::bitset<IntegralBit::integralBottom> integralBit;
         std::bitset<SortBit::sortBottom> sortBit;
@@ -114,7 +122,7 @@ private:
     void setSortBit(char* const argv[]);
 
 protected:
-    void printLogContext();
-    void printInstruction();
-    void printUnkownOption(char* const argv[]);
+    static void printLogContext();
+    static void printInstruction();
+    void printUnexpectedOption(char* const argv[], const bool isUnknown);
 };
