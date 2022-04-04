@@ -20,11 +20,12 @@ SORT = ["bub", "sel", "ins", "she", "mer", "qui", "hea", "cou", "buc", "rad"]
 OPTION_TYPE_2 = ["--optimum", "--integral", "--sort", "--log", "--help"]
 CURRENT_STEP = 0
 WHOLE_STEP = (
-    (len(OPTION_TYPE_1) + 1)
+    len(OPTION_TYPE_1)
     + (len(OPTIMUM) + 1)
     + (len(INTEGRAL) + 1)
     + (len(SORT) + 1)
-    + (len(OPTION_TYPE_2) + 1)
+    + len(OPTION_TYPE_2)
+    + 1
 )
 TEMP_LOG = "./temp/foo_test.log"
 TEMP_PATH = "./temp"
@@ -362,7 +363,6 @@ def analyzeTestLog():
 def testOptionType1():
     for each in OPTION_TYPE_1:
         runTestTask(RUN_CMD + " " + each)
-    runTestTask(RUN_CMD + " " + " ".join(OPTION_TYPE_1))
 
 
 def testOptimum():
@@ -384,7 +384,6 @@ def testSort():
 
 
 def testOptionType2():
-    runTestTask(RUN_CMD)
     for each in OPTION_TYPE_2:
         runTestTask(RUN_CMD + " " + each)
 
@@ -392,6 +391,7 @@ def testOptionType2():
 if __name__ == "__main__":
     prepareTest()
 
+    runTestTask(RUN_CMD)
     testOptionType1()
     testOptimum()
     testIntegral()
