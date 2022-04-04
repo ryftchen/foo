@@ -13,7 +13,7 @@ Thread::Thread(uint32_t count) : releaseReady(false)
                     std::packaged_task<void()> task;
                     {
                         std::unique_lock<std::mutex> lock(queueMutex);
-                        consumer.wait(
+                        condition.wait(
                             lock,
                             [this]() -> decltype(auto)
                             {
@@ -24,6 +24,7 @@ Thread::Thread(uint32_t count) : releaseReady(false)
                         {
                             return;
                         }
+
                         name = std::get<0>(taskQueue.front());
                         task = std::move(std::get<1>(taskQueue.front()));
                         taskQueue.pop();
@@ -55,7 +56,7 @@ Thread::~Thread()
         releaseReady = true;
     }
 
-    consumer.notify_all();
+    condition.notify_all();
     for (auto& thread : threadVector)
     {
         thread.join();
