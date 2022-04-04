@@ -501,8 +501,7 @@ double Genetic::calculateFitness(const Chromosome& chr)
 {
     return fun(geneDecoding(chr));
 }
-std::optional<std::tuple<double, double>> Genetic::fitnessLinearTransformation(
-    const Population& pop)
+std::optional<std::pair<double, double>> Genetic::fitnessLinearTransformation(const Population& pop)
 {
     std::vector<double> reFitness;
     reFitness.reserve(pop.size());
@@ -520,7 +519,7 @@ std::optional<std::tuple<double, double>> Genetic::fitnessLinearTransformation(
         const double alpha = reFitnessAvg / (reFitnessAvg - reFitnessMin);
         const double beta = -1.0 * (reFitnessMin * reFitnessAvg) / (reFitnessAvg - reFitnessMin);
         assert(!isnan(alpha) && !isinf(alpha) && !isnan(beta) && !isinf(beta));
-        return std::make_optional(std::make_tuple(alpha, beta));
+        return std::make_optional(std::pair<double, double>(alpha, beta));
     }
     else
     {
