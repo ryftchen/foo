@@ -20,7 +20,7 @@ using ValueY = double;
 class Optimum
 {
 public:
-    virtual ~Optimum(){};
+    virtual ~Optimum() = default;
     virtual std::optional<std::tuple<ValueY, ValueX>> operator()(
         const double left, const double right, const double eps) = 0;
 };
@@ -131,7 +131,7 @@ constexpr static uint32_t iterNum = 100;
 class Particle : public Optimum
 {
 public:
-    explicit Particle(const Expression& express) : fun(express){};
+    explicit Particle(const Expression& express) : fun(express), seed(std::random_device{}()){};
     std::optional<std::tuple<ValueY, ValueX>> operator()(
         const double left, const double right, const double eps) override;
 
@@ -154,7 +154,7 @@ constexpr static uint32_t iterNum = 100;
 class Genetic : public Optimum
 {
 public:
-    explicit Genetic(const Expression& express) : fun(express){};
+    explicit Genetic(const Expression& express) : fun(express), seed(std::random_device{}()){};
     std::optional<std::tuple<ValueY, ValueX>> operator()(
         const double left, const double right, const double eps) override;
 
@@ -167,12 +167,12 @@ private:
         double eps;
 
         Range() = default;
-    } range;
+    } range{};
     std::mt19937 seed;
     uint32_t chrNum = 0;
     void setSpecies(const double left, const double right, const double eps);
     void geneCoding(Species::Chromosome& chr);
-    double geneDecoding(const Species::Chromosome& chr);
+    [[nodiscard]] double geneDecoding(const Species::Chromosome& chr) const;
     Species::Population populationInit();
     void geneCrossover(Species::Chromosome& chr1, Species::Chromosome& chr2);
     void crossIndividual(Species::Population& pop);

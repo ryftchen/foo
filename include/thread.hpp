@@ -8,7 +8,7 @@
 class Thread
 {
 public:
-    Thread(uint32_t count);
+    explicit Thread(uint32_t count);
     template <typename Function, typename... Args>
     decltype(auto) enqueue(const std::string& name, Function&& fun, Args&&... args);
     ~Thread();
