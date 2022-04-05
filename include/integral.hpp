@@ -14,7 +14,7 @@
 class Integral
 {
 public:
-    virtual ~Integral(){};
+    virtual ~Integral() = default;
     virtual double operator()(double lower, double upper, const double eps) const = 0;
 
 protected:

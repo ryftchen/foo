@@ -70,7 +70,7 @@ void Command::parseArgv(const int argc, char* const argv[])
     return;
 }
 
-bool Command::checkTask()
+bool Command::checkTask() const
 {
     return taskPlan.optimumBit.any() || taskPlan.integralBit.any() || taskPlan.sortBit.any();
 }

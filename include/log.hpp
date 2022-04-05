@@ -74,7 +74,7 @@ private:
     Level minLevel;
     Target realTarget;
     std::ofstream ofs;
-    char pathname[LOG_PATHNAME_LENGTH + 1];
+    char pathname[LOG_PATHNAME_LENGTH + 1] = LOG_PATH;
     friend std::string getCurrentSystemTime(char* const date);
     friend std::string changeLogLevelStyle(std::string& line);
 };

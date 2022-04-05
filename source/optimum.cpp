@@ -388,7 +388,7 @@ void Genetic::geneCoding(Chromosome& chr)
             return randomX(seed);
         });
 }
-double Genetic::geneDecoding(const Chromosome& chr)
+double Genetic::geneDecoding(const Chromosome& chr) const
 {
     const double max = pow(2, chrNum) - 1.0;
     double temp = 0.0;

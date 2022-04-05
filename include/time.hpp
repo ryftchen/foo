@@ -13,7 +13,7 @@ std::string getCurrentSystemTime(char* const date);
 #define TIME_END time.setEndTime()
 #define TIME_INTERVAL time.getTimeInterval()
 #define TIME_GET_SEED(seed)           \
-    timeval timeSeed;                 \
+    timeval timeSeed{};               \
     gettimeofday(&timeSeed, nullptr); \
     std::mt19937 seed(timeSeed.tv_sec * 1000000 + timeSeed.tv_usec)
 #define TIME_GET_CURRENT_DATE                \
@@ -27,7 +27,7 @@ std::string getCurrentSystemTime(char* const date);
 class Time final
 {
 public:
-    virtual ~Time() {}
+    virtual ~Time() = default;
     void inline setBeginTime();
     void inline setEndTime();
     [[nodiscard]] double inline getTimeInterval() const;

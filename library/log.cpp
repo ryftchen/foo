@@ -7,12 +7,8 @@
 
 Log logger;
 
-Log::Log() noexcept
+Log::Log() noexcept : minLevel(Level::levelDebug), realTarget(Target::targetAll)
 {
-    minLevel = Level::levelDebug;
-    realTarget = Target::targetAll;
-    strncpy(pathname, LOG_PATH, LOG_PATHNAME_LENGTH);
-    pathname[LOG_PATHNAME_LENGTH] = '\0';
     try
     {
         if (-1 == access(LOG_DIR, F_OK))

@@ -8,7 +8,7 @@ public:
     ExecuteCommandError() : message("Failed to execute command."){};
     explicit ExecuteCommandError(const std::string& str) :
         message("Failed to execute command " + str + "."){};
-    ~ExecuteCommandError() noexcept override {}
+    ~ExecuteCommandError() noexcept override = default;
     [[nodiscard]] const char* what() const noexcept override;
 
 private:
@@ -21,7 +21,7 @@ public:
     CallFunctionError() : message("Failed to call function."){};
     explicit CallFunctionError(const std::string& str) :
         message("Failed to call function " + str + "."){};
-    ~CallFunctionError() noexcept override {}
+    ~CallFunctionError() noexcept override = default;
     [[nodiscard]] const char* what() const noexcept override;
 
 private:
@@ -34,7 +34,7 @@ public:
     CreateFolderError() : message("Failed to create folder."){};
     explicit CreateFolderError(const std::string& str) :
         message("Failed to create folder " + str + "."){};
-    ~CreateFolderError() noexcept override {}
+    ~CreateFolderError() noexcept override = default;
     [[nodiscard]] const char* what() const noexcept override;
 
 private:
@@ -46,7 +46,7 @@ class OpenFileError : public std::exception
 public:
     OpenFileError() : message("Failed to open file."){};
     explicit OpenFileError(const std::string& str) : message("Failed to open file " + str + "."){};
-    ~OpenFileError() noexcept override {}
+    ~OpenFileError() noexcept override = default;
     [[nodiscard]] const char* what() const noexcept override;
 
 private:
@@ -59,7 +59,7 @@ public:
     LockReaderLockError() : message("Failed to lock reader lock."){};
     explicit LockReaderLockError(const std::string& str) :
         message("Failed to lock reader lock " + str + "."){};
-    ~LockReaderLockError() noexcept override {}
+    ~LockReaderLockError() noexcept override = default;
     [[nodiscard]] const char* what() const noexcept override;
 
 private:
@@ -72,7 +72,7 @@ public:
     UnlockReaderLockError() : message("Failed to unlock reader lock."){};
     explicit UnlockReaderLockError(const std::string& str) :
         message("Failed to unlock reader lock " + str + "."){};
-    ~UnlockReaderLockError() noexcept override {}
+    ~UnlockReaderLockError() noexcept override = default;
     [[nodiscard]] const char* what() const noexcept override;
 
 private:
@@ -85,7 +85,7 @@ public:
     LockWriterLockError() : message("Failed to lock writer lock."){};
     explicit LockWriterLockError(const std::string& str) :
         message("Failed to lock writer lock " + str + "."){};
-    ~LockWriterLockError() noexcept override {}
+    ~LockWriterLockError() noexcept override = default;
     [[nodiscard]] const char* what() const noexcept override;
 
 private:
@@ -98,7 +98,7 @@ public:
     UnlockWriterLockError() : message("Failed to unlock writer lock."){};
     explicit UnlockWriterLockError(const std::string& str) :
         message("Failed to unlock writer lock " + str + "."){};
-    ~UnlockWriterLockError() noexcept override {}
+    ~UnlockWriterLockError() noexcept override = default;
     [[nodiscard]] const char* what() const noexcept override;
 
 private:

@@ -76,10 +76,10 @@ public:
         sortBottom
     };
     Command(int argc, char* argv[]);
-    virtual ~Command(){};
+    virtual ~Command() = default;
     void parseArgv(const int argc, char* const argv[]);
-    bool checkTask();
     void doTask();
+    bool checkTask() const;
 
 private:
     mutable std::mutex commandMutex;
