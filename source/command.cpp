@@ -344,11 +344,12 @@ void Command::runSort() const
         getSortResult(sort);
     }
 }
-void Command::getSortResult(const std::shared_ptr<Sort<int>>& sort) const
+template <typename T>
+void Command::getSortResult(const std::shared_ptr<Sort<T>>& sort) const
 {
     Thread threadPool(taskPlan.sortBit.count());
     const auto sortFunctor = [&](const std::string& threadName,
-                                 void (Sort<int>::*methodPtr)(int* const, const uint32_t) const)
+                                 void (Sort<T>::*methodPtr)(T* const, const uint32_t) const)
     {
         threadPool.enqueue(
             threadName, methodPtr, sort, sort->getRandomArray().get(), sort->getLength());
@@ -362,34 +363,34 @@ void Command::getSortResult(const std::shared_ptr<Sort<int>>& sort) const
             switch (bkdrHash(threadName.c_str()))
             {
                 case "s_bub"_bkdrHash:
-                    sortFunctor(threadName, &Sort<int>::bubbleSort);
+                    sortFunctor(threadName, &Sort<T>::bubbleSort);
                     break;
                 case "s_sec"_bkdrHash:
-                    sortFunctor(threadName, &Sort<int>::selectionSort);
+                    sortFunctor(threadName, &Sort<T>::selectionSort);
                     break;
                 case "s_ins"_bkdrHash:
-                    sortFunctor(threadName, &Sort<int>::insertionSort);
+                    sortFunctor(threadName, &Sort<T>::insertionSort);
                     break;
                 case "s_she"_bkdrHash:
-                    sortFunctor(threadName, &Sort<int>::shellSort);
+                    sortFunctor(threadName, &Sort<T>::shellSort);
                     break;
                 case "s_mer"_bkdrHash:
-                    sortFunctor(threadName, &Sort<int>::mergeSort);
+                    sortFunctor(threadName, &Sort<T>::mergeSort);
                     break;
                 case "s_qui"_bkdrHash:
-                    sortFunctor(threadName, &Sort<int>::quickSort);
+                    sortFunctor(threadName, &Sort<T>::quickSort);
                     break;
                 case "s_hea"_bkdrHash:
-                    sortFunctor(threadName, &Sort<int>::heapSort);
+                    sortFunctor(threadName, &Sort<T>::heapSort);
                     break;
                 case "s_cou"_bkdrHash:
-                    sortFunctor(threadName, &Sort<int>::countingSort);
+                    sortFunctor(threadName, &Sort<T>::countingSort);
                     break;
                 case "s_buc"_bkdrHash:
-                    sortFunctor(threadName, &Sort<int>::bucketSort);
+                    sortFunctor(threadName, &Sort<T>::bucketSort);
                     break;
                 case "s_rad"_bkdrHash:
-                    sortFunctor(threadName, &Sort<int>::radixSort);
+                    sortFunctor(threadName, &Sort<T>::radixSort);
                     break;
                 default:
                     break;

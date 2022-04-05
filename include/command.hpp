@@ -118,7 +118,8 @@ private:
         const double epsilon) const;
     void setIntegralBit(char* const argv[]);
     void runSort() const;
-    void getSortResult(const std::shared_ptr<Sort<int>>& sort) const;
+    template <typename T>
+    void getSortResult(const std::shared_ptr<Sort<T>>& sort) const;
     void setSortBit(char* const argv[]);
 
 protected:
