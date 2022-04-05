@@ -434,7 +434,7 @@ void Sort<T>::radixSort(T* const array, const uint32_t length) const
     for (uint32_t i = 0; i < length; ++i)
     {
         const int sign = (sortArray[i] > 0) ? 1 : -1;
-        const uint32_t aggIndex = abs(sortArray[i]) / 1 % base * sign + offset;
+        const uint32_t aggIndex = std::abs(sortArray[i]) / 1 % base * sign + offset;
         aggregation[aggIndex].push(sortArray[i]);
         ++countingNew[aggIndex];
     }
@@ -453,7 +453,7 @@ void Sort<T>::radixSort(T* const array, const uint32_t length) const
             {
                 auto bucketElement = iterBucket->front();
                 const int sign = (bucketElement > 0) ? 1 : -1;
-                const uint32_t aggIndex = abs(bucketElement) / pow % base * sign + offset;
+                const uint32_t aggIndex = std::abs(bucketElement) / pow % base * sign + offset;
                 aggregation[aggIndex].push(bucketElement);
                 ++countingNew[aggIndex];
                 iterBucket->pop();

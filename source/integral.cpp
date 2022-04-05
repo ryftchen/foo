@@ -35,7 +35,7 @@ double Trapezoidal::operator()(double lower, double upper, const double eps) con
         s2 = sum;
         n *= 2;
     }
-    while ((fabs(s1 - s2) > eps) || (n < INTEGRAL_TRAPEZOIDAL_MIN_STEP));
+    while ((std::fabs(s1 - s2) > eps) || (n < INTEGRAL_TRAPEZOIDAL_MIN_STEP));
     sum = s2 * sign;
 
     TIME_END;
@@ -60,7 +60,7 @@ double Simpson::simpsonIntegral(const double left, const double right, const dou
 {
     const double mid = (left + right) / 2.0;
     const double sum = simpsonOneThird(left, right);
-    if (fabs(
+    if (std::fabs(
             sum
             - (compositeSimpsonOneThird(left, mid, 2) + compositeSimpsonOneThird(mid, right, 2)))
         > eps)
@@ -103,7 +103,7 @@ double Romberg::operator()(double lower, double upper, const double eps) const
     double t1 =
         pow(4, k) / (pow(4, k) - 1) * trapezoidFunctor(pow(2, k + 1)) - 1.0 / pow(4, k) * t1Zero;
 
-    while (fabs(t1 - t0) > eps)
+    while (std::fabs(t1 - t0) > eps)
     {
         ++k;
         t0 = t1;
@@ -158,7 +158,7 @@ double Gauss::operator()(double lower, double upper, const double eps) const
         s2 = sum;
         n *= 2;
     }
-    while (fabs(s1 - s2) > eps);
+    while (std::fabs(s1 - s2) > eps);
     sum = s2 * sign;
 
     TIME_END;

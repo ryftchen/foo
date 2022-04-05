@@ -51,7 +51,7 @@ std::optional<std::tuple<ValueY, ValueX>> Fibonacci::operator()(
             if (aggregation.size())
             {
                 const auto [yNew, xNew] = *aggregation.begin();
-                if (fabs(yNew - y) <= eps)
+                if (std::fabs(yNew - y) <= eps)
                 {
                     ++cnt;
                 }
@@ -171,7 +171,7 @@ std::optional<std::tuple<ValueY, ValueX>> Gradient::operator()(
         double learningRate = Learning::initialLearningRate;
         double gradient = calculateFirstDerivative(x, eps);
         double dx = learningRate * gradient;
-        while ((fabs(dx) > eps) && ((x + dx) >= left) && ((x + dx) <= right))
+        while ((std::fabs(dx) > eps) && ((x + dx) >= left) && ((x + dx) <= right))
         {
             x += dx;
             ++i;
@@ -514,7 +514,7 @@ std::optional<std::pair<double, double>> Genetic::fitnessLinearTransformation(co
 
     double reFitnessMin = *(std::min_element(begin(reFitness), end(reFitness)));
     double reFitnessAvg = std::accumulate(begin(reFitness), end(reFitness), 0.0) / reFitness.size();
-    if (LIKELY(fabs(reFitnessMin - reFitnessAvg) > (range.eps * range.eps)))
+    if (LIKELY(std::fabs(reFitnessMin - reFitnessAvg) > (range.eps * range.eps)))
     {
         const double alpha = reFitnessAvg / (reFitnessAvg - reFitnessMin);
         const double beta = -1.0 * (reFitnessMin * reFitnessAvg) / (reFitnessAvg - reFitnessMin);
