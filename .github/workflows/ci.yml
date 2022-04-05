@@ -11,6 +11,8 @@ on:
         description: 'CI'
         default: 'Manual trigger'
         required: false
+  schedule:
+    - cron: '0 0 * * MON'
 
 jobs:
   CI:
