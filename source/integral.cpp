@@ -83,7 +83,7 @@ double Simpson::compositeSimpsonOneThird(
 }
 double Simpson::simpsonOneThird(const double left, const double right) const
 {
-    return INTEGRAL_SIMPSON_ONE_THIRDS_FORMULAS;
+    return (fun(left) + 4.0 * fun((left + right) / 2.0) + fun(right)) / 6.0 * (right - left);
 }
 
 // Romberg method

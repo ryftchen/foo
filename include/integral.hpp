@@ -40,8 +40,6 @@ private:
 };
 
 // Adaptive Simpson's 1/3 method
-#define INTEGRAL_SIMPSON_ONE_THIRDS_FORMULAS \
-    ((fun(left) + 4.0 * fun((left + right) / 2.0) + fun(right)) / 6.0 * (right - left))
 class Simpson : public Integral
 {
 public:

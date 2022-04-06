@@ -474,7 +474,7 @@ void Command::printInstruction()
 
 void Command::printUnexpectedOption(char* const argv[], const bool isUnknown)
 {
-    std::string str = "";
+    std::string str;
     if (isUnknown)
     {
         str = "Unknown command line option: " + std::string(argv[0])

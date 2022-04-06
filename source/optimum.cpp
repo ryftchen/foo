@@ -63,7 +63,7 @@ std::optional<std::tuple<ValueY, ValueX>> Fibonacci::operator()(
             }
             n *= 2;
         }
-        while (cnt < OPTIMUM_FIBONACCI_MAX_UNCHANGED);
+        while (cnt < OPTIMUM_FIBONACCI_UNCHANGED_TIMES);
     }
 
     TIME_END;
@@ -77,13 +77,13 @@ std::optional<std::pair<ValueY, ValueX>> Fibonacci::fibonacciSearch(
     std::vector<double> fibonacci(0);
     generateFibonacciNumber(fibonacci, (rightVal - leftVal) / eps);
     int n = fibonacci.size() - 1;
-    if (n < 3)
+    if (n < OPTIMUM_FIBONACCI_MIN_COUNT)
     {
         return std::nullopt;
     }
 
     double x1 = OPTIMUM_FIBONACCI_X_1, x2 = OPTIMUM_FIBONACCI_X_2;
-    while (n > 3)
+    while (n > OPTIMUM_FIBONACCI_MIN_COUNT)
     {
         if (fun(x1) < fun(x2))
         {
@@ -343,7 +343,7 @@ std::optional<std::tuple<ValueY, ValueX>> Genetic::operator()(
 {
     TIME_BEGIN;
     setSpecies(left, right, eps);
-    if (chrNum < 3)
+    if (chrNum < OPTIMUM_GENETIC_MIN_CHROMOSOME_NUMBER)
     {
         FORMAT_PRINT("*Genetic   method: The precise %.5f isn't enough.\n", eps);
         return std::nullopt;
