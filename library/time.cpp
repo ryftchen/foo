@@ -13,5 +13,5 @@ std::string getCurrentSystemTime(char* const date)
         static_cast<uint32_t>(tm->tm_mon) + 1, static_cast<uint32_t>(tm->tm_mday),
         static_cast<uint32_t>(tm->tm_hour), static_cast<uint32_t>(tm->tm_min),
         static_cast<uint32_t>(tm->tm_sec));
-    return std::string(date);
+    return date;
 }

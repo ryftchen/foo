@@ -86,7 +86,7 @@ void Log::outputLog(
 {
     if (level >= minLevel)
     {
-        std::string prefix = "";
+        std::string prefix;
         switch (level)
         {
             case Level::levelDebug:

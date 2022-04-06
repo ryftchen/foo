@@ -28,7 +28,8 @@ public:
 // Fibonacci method
 #define OPTIMUM_FIBONACCI_X_1 (leftVal + fibonacci[n - 2] / fibonacci[n] * (rightVal - leftVal))
 #define OPTIMUM_FIBONACCI_X_2 (leftVal + fibonacci[n - 1] / fibonacci[n] * (rightVal - leftVal))
-#define OPTIMUM_FIBONACCI_MAX_UNCHANGED 3
+#define OPTIMUM_FIBONACCI_MIN_COUNT 3
+#define OPTIMUM_FIBONACCI_UNCHANGED_TIMES 3
 class Fibonacci : public Optimum
 {
 public:
@@ -142,6 +143,7 @@ private:
 };
 
 // Genetic method
+#define OPTIMUM_GENETIC_MIN_CHROMOSOME_NUMBER 3
 namespace Species
 {
 using Chromosome = std::vector<uint32_t>;

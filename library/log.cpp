@@ -158,7 +158,7 @@ void printFile(
             };
         }
 
-        std::string line = "";
+        std::string line;
         std::list<std::string> context(0);
         if (false == reverse)
         {

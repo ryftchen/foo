@@ -9,7 +9,7 @@ Thread::Thread(uint32_t count) : releaseReady(false)
             {
                 for (;;)
                 {
-                    std::string name = "";
+                    std::string name;
                     std::packaged_task<void()> task;
                     {
                         std::unique_lock<std::mutex> lock(queueMutex);
