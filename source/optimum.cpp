@@ -322,7 +322,7 @@ Record Particle::recordInit(const double left, const double right)
     std::uniform_real_distribution<double> randomX(left, right);
     std::uniform_real_distribution<double> randomV(Swarm::vMin, Swarm::vMax);
 
-    const Individual individualInit(0.0, 0.0, 0.0, 0.0, 0.0);
+    const Individual individualInit{};
     Society societyInit(Swarm::size, individualInit);
     std::generate(
         societyInit.begin(), societyInit.end(),

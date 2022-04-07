@@ -100,7 +100,7 @@ struct Individual
     double xFitness;
     double fitnessPositionBest;
 
-    Individual() = delete;
+    Individual() = default;
 };
 struct Greater
 {
@@ -118,7 +118,7 @@ struct Record
     Society society;
     History history;
 
-    Record() = delete;
+    Record() = default;
 };
 constexpr static double c1 = 1.5;
 constexpr static double c2 = 1.5;
