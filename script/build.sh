@@ -169,7 +169,7 @@ buildAnalysis()
             if [ -f ./"${BUILD_FOLDER}"/"${COMPILE_COMMANDS}" ]; then
                 if [ -f ./"${ANALYSIS_C}" ]; then
                     bashCommand "clang-tidy-11 -p ./${BUILD_FOLDER}/${COMPILE_COMMANDS} \
--extra-arg=-std=c++20 ./${INCLUDE_FOLDER}/*.hpp ./${SOURCE_FOLDER}/*.cpp ./${LIBRARY_FOLDER}/*.cpp"
+./${INCLUDE_FOLDER}/*.hpp ./${SOURCE_FOLDER}/*.cpp ./${LIBRARY_FOLDER}/*.cpp"
                 else
                     printAbort "There is no ${ANALYSIS_C} file in ${PROJECT_FOLDER} folder. \
 Please generate it."
