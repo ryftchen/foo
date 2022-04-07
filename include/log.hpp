@@ -20,9 +20,9 @@ void printFile(
 #define LOG_PREFIX_INFO "[INF]"
 #define LOG_PREFIX_WARN "[WRN]"
 #define LOG_PREFIX_ERROR "[ERR]"
-#define LOG_REGEX_INFO "^\\[INF\\]"
-#define LOG_REGEX_WARN "^\\[WRN\\]"
-#define LOG_REGEX_ERROR "^\\[ERR\\]"
+#define LOG_REGEX_INFO R"(^\[INF\])"
+#define LOG_REGEX_WARN R"(^\[WRN\])"
+#define LOG_REGEX_ERROR R"(^\[ERR\])"
 #define LOG_COLOR_INFO \
     (std::string(PRINT_COLOR_GREEN) + std::string(LOG_PREFIX_INFO) + std::string(PRINT_COLOR_END))
 #define LOG_COLOR_WARN \
