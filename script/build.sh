@@ -67,13 +67,13 @@ parseArgs()
 {
     while [ "$#" -gt 0 ]; do
         case $1 in
-        --release) ARGS_RELEASE=true ;;
         -c | --cleanup) ARGS_CLEANUP=true ;;
         -f | --format) ARGS_FORMAT=true ;;
         -a | --analysis) ARGS_ANALYSIS=true ;;
         -h | --html) ARGS_HTML=true ;;
         -b | --backup) ARGS_BACKUP=true ;;
         -t | --tag) ARGS_TAG=true ;;
+        --release) ARGS_RELEASE=true ;;
         --help) printInstruction ;;
         *) printAbort "Unknown command line option: $1. Try with --help to get information." ;;
         esac
