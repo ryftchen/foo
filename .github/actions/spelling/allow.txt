@@ -4,10 +4,13 @@ chrono
 cmake
 codebrowser
 cou
+cov
 datetime
 DCMAKE
 decltype
+fcoverage
 fibonacci
+fprofile
 getsignal
 GPATH
 Griewank
@@ -21,6 +24,7 @@ IRWXU
 IXGRP
 IXOTH
 jcvf
+llvm
 markov
 maxdepth
 mday
@@ -28,6 +32,8 @@ memcheck
 milli
 nodiscard
 nullopt
+profdata
+profraw
 pylint
 pylintrc
 Rastrigin
@@ -38,6 +44,7 @@ setname
 shellcheck
 shellcheckrc
 shfmt
+STREQUAL
 uintn
 uninit
 valgrind
