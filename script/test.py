@@ -29,13 +29,18 @@ WHOLE_STEP = (
 )
 TEMP_LOG = "./temp/foo_test.log"
 TEMP_PATH = "./temp"
-BUILD_CMD = "./script/build.sh"
-BUILD_COMPILER_START = "Configuring done"
-BUILD_COMPILER_FINISH = "Built target"
-SET_VALGRIND = False
-VALGRIND_CMD = "valgrind --tool=memcheck --show-reachable=yes --leak-check=full \
+COMMAND_DESCRIPTION_CMD = "command -v"
+CHECK_SET_VALGRIND = False
+CHECK_VALGRIND_CMD = "valgrind --tool=memcheck --show-reachable=yes --leak-check=full \
 --leak-resolution=high --log-fd=1"
-VALGRIND_INFO = "ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)"
+CHECK_VALGRIND_INFO = "ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)"
+CHECK_SET_COVERAGE = False
+CHECK_COVERAGE_CMD = "LLVM_PROFILE_FILE"
+CHECK_COVERAGE_PROFDATA_CMD = "llvm-profdata-11 merge -sparse"
+CHECK_COVERAGE_COV_CMD = "llvm-cov-11 report"
+BUILD_SHELL = "./script/build.sh"
+BUILD_COMPILE_START = "Configuring done"
+BUILD_COMPILE_FINISH = "Built target"
 STATUS_RED = "\033[0;31;40m"
 STATUS_GREEN = "\033[0;32;40m"
 STATUS_YELLOW = "\033[0;33;40m"
@@ -75,7 +80,7 @@ class Log:
             fcntl.flock(self.log, fcntl.LOCK_UN)
             self.log.close()
             sys.stdout = STDOUT_DEFAULT
-            printAbort("Failed to write log file test.log.")
+            printAbort(f"Failed to write log file {TEMP_LOG}.")
 
     def flush(self):
         pass
@@ -97,7 +102,7 @@ def setupProgressBar():
     printProgress("\n")
 
     printProgress(BAR_SAVE_CURSOR)
-    printProgress("\033[0;{}r".format(str(lines)))
+    printProgress(f"\033[0;{str(lines)}r")
 
     printProgress(BAR_RESTORE_CURSOR)
     printProgress(BAR_MOVE_UP_CURSOR)
@@ -110,7 +115,7 @@ def drawProgressBar(percentage):
         setupProgressBar()
 
     printProgress(BAR_SAVE_CURSOR)
-    printProgress("\033[{};0f".format(str(lines)))
+    printProgress(f"\033[{str(lines)};0f")
 
     tput()
     printBar(percentage)
@@ -121,7 +126,7 @@ def drawProgressBar(percentage):
 def destroyProgressBar():
     lines = tputLines()
     printProgress(BAR_SAVE_CURSOR)
-    printProgress("\033[0;{}r".format(str(lines)))
+    printProgress(f"\033[0;{str(lines)}r")
 
     printProgress(BAR_RESTORE_CURSOR)
     printProgress(BAR_MOVE_UP_CURSOR)
@@ -135,7 +140,7 @@ def destroyProgressBar():
 def clearProgressBar():
     lines = tputLines()
     printProgress(BAR_SAVE_CURSOR)
-    printProgress("\033[{};0f".format(str(lines)))
+    printProgress(f"\033[{str(lines)};0f")
 
     tput()
     printProgress(BAR_RESTORE_CURSOR)
@@ -209,7 +214,7 @@ def executeCommand(command, output=True):
 
 
 def printAbort(message):
-    print("Python script test.py: " + message)
+    print(f"Python script test.py: {message}")
     sys.exit(-1)
 
 
@@ -218,15 +223,20 @@ def buildProject(command):
     out = cmd.stdout.read()
     print(out)
     if cmd.returncode != 0:
-        printAbort("Failed to execute shell script build.sh.")
-    elif out.find(BUILD_COMPILER_START) != -1 and out.find(BUILD_COMPILER_FINISH) == -1:
-        printAbort("Failed to build project by shell script build.sh.")
+        printAbort(f"Failed to execute shell script {BUILD_SHELL}")
+    elif out.find(BUILD_COMPILE_START) != -1 and out.find(BUILD_COMPILE_FINISH) == -1:
+        printAbort(f"Failed to build project by shell script {BUILD_SHELL}.")
 
 
 def runTestTask(command):
-    fullCommand = RUN_DIR + command
-    if SET_VALGRIND:
-        fullCommand = VALGRIND_CMD + " " + fullCommand
+    global CURRENT_STEP
+    fullCommand = f"{RUN_DIR}{command}"
+    if CHECK_SET_VALGRIND:
+        fullCommand = f"{CHECK_VALGRIND_CMD} {fullCommand}"
+    elif CHECK_SET_COVERAGE:
+        fullCommand = (
+            f"{CHECK_COVERAGE_CMD}=\"{TEMP_PATH}/foo_{str(CURRENT_STEP)}.profraw\" {fullCommand}"
+        )
     align = max(len(command) + (ALIGN_MAX - ALIGN_CMD), ALIGN_MAX)
     print(
         "\r\n{0}{2}[ {3} | TEST TASK: {4:<{x}} | START  ]{2}{1}\n".format(
@@ -242,10 +252,9 @@ def runTestTask(command):
     out = cmd.stdout.read()
     print(out)
     if cmd.returncode == 0:
-        global CURRENT_STEP
         CURRENT_STEP += 1
-        if SET_VALGRIND:
-            if out.find(VALGRIND_INFO) == -1:
+        if CHECK_SET_VALGRIND:
+            if out.find(CHECK_VALGRIND_INFO) == -1:
                 CURRENT_STEP -= 1
                 print(
                     "{0}{2}[ {3} | {4:<{x}} ]{2}{1}".format(
@@ -300,41 +309,51 @@ def runTestTask(command):
 
 def parseArgs():
     parser = argparse.ArgumentParser(description="test script")
+    parser.add_argument("-c", "--check", choices=["valgrind", "coverage"], help="test with check")
     parser.add_argument(
         "-b",
         "--build",
         nargs="?",
         choices=["debug", "release"],
         const="debug",
-        help="test with build.sh",
-    )
-    parser.add_argument(
-        "-v", "--valgrind", action="store_true", default=False, help="test with valgrind"
+        help="test with build",
     )
     args = parser.parse_args()
 
+    if args.check:
+        if args.check == "valgrind":
+            cmd = executeCommand(f"{COMMAND_DESCRIPTION_CMD} valgrind 2>&1", output=False)
+            out = cmd.stdout.read()
+            if out.find("valgrind") != -1:
+                global CHECK_SET_VALGRIND
+                CHECK_SET_VALGRIND = True
+            else:
+                printAbort("There is no valgrind program. Please check it.")
+        elif args.check == "coverage":
+            cmd1 = executeCommand(f"{COMMAND_DESCRIPTION_CMD} llvm-profdata-11 2>&1", output=False)
+            out1 = cmd1.stdout.read()
+            cmd2 = executeCommand(f"{COMMAND_DESCRIPTION_CMD} llvm-cov-11 2>&1", output=False)
+            out2 = cmd2.stdout.read()
+            if out1.find("llvm-profdata-11") != -1 and out2.find("llvm-cov-11") != -1:
+                os.environ["FOO_ENV"] = "CODE_COVERAGE"
+                global CHECK_SET_COVERAGE
+                CHECK_SET_COVERAGE = True
+            else:
+                printAbort("There is no llvm-profdata-11 or llvm-cov-11 program. Please check it.")
     if args.build:
-        if os.path.isfile(BUILD_CMD):
+        if os.path.isfile(BUILD_SHELL):
             if args.build == "debug":
-                buildProject(BUILD_CMD + " 2>&1")
+                buildProject(f"{BUILD_SHELL} 2>&1")
             elif args.build == "release":
-                buildProject(BUILD_CMD + " --release 2>&1")
+                buildProject(f"{BUILD_SHELL} --release 2>&1")
         else:
             printAbort("There is no shell script build.sh.")
-    if args.valgrind:
-        cmd = executeCommand("command -v valgrind 2>&1", output=False)
-        out = cmd.stdout.read()
-        if out.find("valgrind") != -1:
-            global SET_VALGRIND
-            SET_VALGRIND = True
-        else:
-            printAbort("There is no valgrind program. Please check it.")
 
 
 def prepareTest():
     os.chdir(os.path.split(os.path.split(os.path.realpath(__file__))[0])[0])
     parseArgs()
-    if not os.path.isfile(RUN_DIR + RUN_CMD):
+    if not os.path.isfile(f"{RUN_DIR}{RUN_CMD}"):
         printAbort("There is no executable file. Please build it.")
     if not os.path.exists(TEMP_PATH):
         os.makedirs(TEMP_PATH)
@@ -351,6 +370,21 @@ def completeTest():
     sys.stdout = STDOUT_LOG
     sys.stdout.uninit()
 
+    if CHECK_SET_COVERAGE:
+        executeCommand(
+            f"{CHECK_COVERAGE_PROFDATA_CMD} {TEMP_PATH}/foo_*.profraw -o {TEMP_PATH}/foo.profdata"
+        )
+        cmd = executeCommand(
+            f"{CHECK_COVERAGE_COV_CMD} {RUN_DIR}{RUN_CMD} -instr-profile={TEMP_PATH}/foo.profdata \
+2>&1",
+            output=False,
+        )
+        executeCommand(f"rm -rf {TEMP_PATH}/*.profraw")
+        out = cmd.stdout.read()
+        print(out)
+        if out.find("error") != -1:
+            printAbort("Please rebuild the executable file before use the coverage option.")
+
 
 def analyzeTestLog():
     refresh = open(TEMP_LOG, "rt")
@@ -361,37 +395,37 @@ def analyzeTestLog():
 
 
 def testOptionType1():
+    runTestTask(RUN_CMD)
     for each in OPTION_TYPE_1:
-        runTestTask(RUN_CMD + " " + each)
+        runTestTask(f"{RUN_CMD} {each}")
 
 
 def testOptimum():
     for each in OPTIMUM:
-        runTestTask(RUN_CMD + " " + OPTION_TYPE_1[0] + " " + each)
-    runTestTask(RUN_CMD + " " + OPTION_TYPE_1[0] + " " + " ".join(OPTIMUM))
+        runTestTask(f"{RUN_CMD} {OPTION_TYPE_1[0]} {each}")
+    runTestTask(f"{RUN_CMD} {OPTION_TYPE_1[0]} {' '.join(OPTIMUM)}")
 
 
 def testIntegral():
     for each in INTEGRAL:
-        runTestTask(RUN_CMD + " " + OPTION_TYPE_1[1] + " " + each)
-    runTestTask(RUN_CMD + " " + OPTION_TYPE_1[1] + " " + " ".join(INTEGRAL))
+        runTestTask(f"{RUN_CMD} {OPTION_TYPE_1[1]} {each}")
+    runTestTask(f"{RUN_CMD} {OPTION_TYPE_1[1]} {' '.join(INTEGRAL)}")
 
 
 def testSort():
     for each in SORT:
-        runTestTask(RUN_CMD + " " + OPTION_TYPE_1[2] + " " + each)
-    runTestTask(RUN_CMD + " " + OPTION_TYPE_1[2] + " " + " ".join(SORT))
+        runTestTask(f"{RUN_CMD} {OPTION_TYPE_1[2]} {each}")
+    runTestTask(f"{RUN_CMD} {OPTION_TYPE_1[2]} {' '.join(SORT)}")
 
 
 def testOptionType2():
     for each in OPTION_TYPE_2:
-        runTestTask(RUN_CMD + " " + each)
+        runTestTask(f"{RUN_CMD} {each}")
 
 
 if __name__ == "__main__":
     prepareTest()
 
-    runTestTask(RUN_CMD)
     testOptionType1()
     testOptimum()
     testIntegral()

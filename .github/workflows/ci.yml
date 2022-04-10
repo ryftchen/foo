@@ -26,7 +26,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get purge -y llvm-* clang-* libllvm-* libclang-*
-          export FOO_ENV=GITHUB_ACTION
+          export FOO_ENV=CODE_ACTION
           ./.github/workflows/install.sh
 
       - name: Check spelling
@@ -43,12 +43,12 @@ jobs:
 
       - name: Inspect
         run: |
+          ./script/build.sh --cleanup
           ./script/build.sh --release --format --analysis
           git status
 
       - name: Build
         run: |
-          ./script/build.sh --cleanup
           ./script/build.sh --release
           ./script/build.sh --release --html --backup --tag
 
@@ -56,7 +56,8 @@ jobs:
         run: |
           export TERM=linux
           export TERMINFO=/etc/terminfo
-          ./script/test.py --build release --valgrind
+          ./script/test.py --check valgrind --build release
+          ./script/test.py --check coverage --build debug
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v2.3.1
