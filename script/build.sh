@@ -96,7 +96,7 @@ checkProject()
     if [ "${ARGS_FORMAT}" = true ] || [ "${ARGS_ANALYSIS}" = true ]; then
         if [ ! -f ./"${SCRIPT_FOLDER}"/"${BUILD_SCRIPT}" ] \
             || [ ! -f ./"${SCRIPT_FOLDER}"/"${TEST_SCRIPT}" ]; then
-            printAbort "There are missing file in ${SCRIPT_FOLDER} folder."
+            printAbort "There are missing files in ${SCRIPT_FOLDER} folder."
         fi
     fi
 }
