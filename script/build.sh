@@ -19,10 +19,10 @@ BUILD_SCRIPT="build.sh"
 TEST_SCRIPT="test.py"
 CMAKE_FILE="CMakeLists.txt"
 COMPILE_COMMANDS="compile_commands.json"
-FORMAT_C=".clang-format"
-ANALYSIS_C=".clang-tidy"
-ANALYSIS_PY=".pylintrc"
-ANALYSIS_SH=".shellcheckrc"
+FORMAT_CONFIG_CPP=".clang-format"
+ANALYSIS_CONFIG_CPP=".clang-tidy"
+ANALYSIS_CONFIG_PY=".pylintrc"
+ANALYSIS_CONFIG_SH=".shellcheckrc"
 PERFORM_COMPILE=false
 
 bashCommand()
@@ -81,7 +81,7 @@ parseArgs()
     done
 }
 
-checkProject()
+checkDependencies()
 {
     if [ "$#" -eq 1 ] && [ "${ARGS_RELEASE}" = true ] || [ "$#" -eq 0 ]; then
         PERFORM_COMPILE=true
@@ -101,7 +101,7 @@ checkProject()
     fi
 }
 
-generateMakefile()
+generateCMakeFiles()
 {
     if [ -f ./"${CMAKE_FILE}" ]; then
         if [ ! -d ./"${BUILD_FOLDER}" ]; then
@@ -119,14 +119,14 @@ generateMakefile()
     fi
 }
 
-compileProject()
+compileCode()
 {
     if [ "${PERFORM_COMPILE}" = true ]; then
         bashCommand "make -C ./${BUILD_FOLDER} -j"
     fi
 }
 
-buildCleanup()
+performOptionCleanup()
 {
     if [ "${ARGS_CLEANUP}" = true ]; then
         bashCommand "rm -rf ./${BUILD_FOLDER} ./${TEMP_FOLDER}"
@@ -135,7 +135,7 @@ buildCleanup()
     fi
 }
 
-buildFormat()
+performOptionFormat()
 {
     if [ "${ARGS_FORMAT}" = true ]; then
         if
@@ -143,11 +143,11 @@ buildFormat()
                 && command -v shfmt >/dev/null 2>&1 \
                 && command -v black >/dev/null 2>&1
         then
-            if [ -f ./"${FORMAT_C}" ]; then
+            if [ -f ./"${FORMAT_CONFIG_CPP}" ]; then
                 bashCommand "clang-format-11 -i --verbose ./${INCLUDE_FOLDER}/*.hpp \
 ./${SOURCE_FOLDER}/*.cpp ./${LIBRARY_FOLDER}/*.cpp"
             else
-                printAbort "There is no ${FORMAT_C} file in ${PROJECT_FOLDER} folder. \
+                printAbort "There is no ${FORMAT_CONFIG_CPP} file in ${PROJECT_FOLDER} folder. \
 Please generate it."
             fi
             bashCommand "shfmt -l -w -ln bash -i 4 -bn -fn ./${SCRIPT_FOLDER}/${BUILD_SCRIPT}"
@@ -158,7 +158,7 @@ Please generate it."
     fi
 }
 
-buildAnalysis()
+performOptionAnalysis()
 {
     if [ "${ARGS_ANALYSIS}" = true ]; then
         if
@@ -167,27 +167,28 @@ buildAnalysis()
                 && command -v pylint >/dev/null 2>&1
         then
             if [ -f ./"${BUILD_FOLDER}"/"${COMPILE_COMMANDS}" ]; then
-                if [ -f ./"${ANALYSIS_C}" ]; then
+                if [ -f ./"${ANALYSIS_CONFIG_CPP}" ]; then
                     bashCommand "clang-tidy-11 -p ./${BUILD_FOLDER}/${COMPILE_COMMANDS} \
 ./${INCLUDE_FOLDER}/*.hpp ./${SOURCE_FOLDER}/*.cpp ./${LIBRARY_FOLDER}/*.cpp"
                 else
-                    printAbort "There is no ${ANALYSIS_C} file in ${PROJECT_FOLDER} folder. \
-Please generate it."
+                    printAbort "There is no ${ANALYSIS_CONFIG_CPP} file in \
+${PROJECT_FOLDER} folder. Please generate it."
                 fi
             else
                 printAbort "There is no ${COMPILE_COMMANDS} file in ${BUILD_FOLDER} folder. \
 Please generate it."
             fi
-            if [ -f ./"${ANALYSIS_SH}" ]; then
+            if [ -f ./"${ANALYSIS_CONFIG_SH}" ]; then
                 bashCommand "shellcheck --enable=all ./${SCRIPT_FOLDER}/${BUILD_SCRIPT}"
             else
-                printAbort "There is no ${ANALYSIS_SH} file in ${PROJECT_FOLDER} folder. \
+                printAbort "There is no ${ANALYSIS_CONFIG_SH} file in ${PROJECT_FOLDER} folder. \
 Please generate it."
             fi
-            if [ -f ./"${ANALYSIS_PY}" ]; then
-                bashCommand "pylint --rcfile=${ANALYSIS_PY} ./${SCRIPT_FOLDER}/${TEST_SCRIPT}"
+            if [ -f ./"${ANALYSIS_CONFIG_PY}" ]; then
+                bashCommand "pylint --rcfile=${ANALYSIS_CONFIG_PY} \
+./${SCRIPT_FOLDER}/${TEST_SCRIPT}"
             else
-                printAbort "There is no ${ANALYSIS_PY} file in ${PROJECT_FOLDER} folder. \
+                printAbort "There is no ${ANALYSIS_CONFIG_PY} file in ${PROJECT_FOLDER} folder. \
 Please generate it."
             fi
         else
@@ -196,7 +197,7 @@ Please generate it."
     fi
 }
 
-buildHtml()
+performOptionHtml()
 {
     if [ "${ARGS_HTML}" = true ]; then
         if
@@ -242,7 +243,7 @@ tarHtml()
     bashCommand "rm -rf ./${TEMP_FOLDER}/${browserFolder}"
 }
 
-buildBackup()
+performOptionBackup()
 {
     if [ "${ARGS_BACKUP}" = true ]; then
         if [ -d ./"${TEMP_FOLDER}" ]; then
@@ -256,7 +257,7 @@ buildBackup()
                     tarBackup
                 else
                     printAbort "The latest backup file ${lastTar} has been generated since \
-${timeDiff}s ago."
+${timeDiff} seconds ago."
                 fi
             else
                 tarBackup
@@ -285,7 +286,7 @@ ${PROJECT_FOLDER}"
     bashCommand "rm -rf ./${TEMP_FOLDER}/${PROJECT_FOLDER}"
 }
 
-buildTag()
+performOptionTag()
 {
     if [ "${ARGS_TAG}" = true ]; then
         if
@@ -304,18 +305,18 @@ main()
     cd "$(dirname "$(dirname "$0")")" || exit 1
 
     parseArgs "$@"
-    checkProject "$@"
+    checkDependencies "$@"
 
-    buildCleanup
-    generateMakefile
+    performOptionCleanup
+    generateCMakeFiles
 
-    buildFormat
-    buildAnalysis
-    buildHtml
-    buildBackup
-    buildTag
+    performOptionFormat
+    performOptionAnalysis
+    performOptionHtml
+    performOptionBackup
+    performOptionTag
 
-    compileProject
+    compileCode
 }
 
 main "$@"
