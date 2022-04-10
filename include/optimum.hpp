@@ -11,11 +11,11 @@ using ValueY = double;
 #define OPTIMUM_EPSILON 1e-5
 #define OPTIMUM_RUN_BEGIN "\r\n---------- BEGIN OPTIMUM  ----------"
 #define OPTIMUM_RUN_END "\r\n----------  END OPTIMUM   ----------"
-#define OPTIMUM_FIBONACCI "*Fibonacci method: Y(max)=%+.5f X=%+.5f  ==>Run time: %8.5fms\n"
-#define OPTIMUM_GRADIENT "*Gradient  method: Y(max)=%+.5f X=%+.5f  ==>Run time: %8.5fms\n"
-#define OPTIMUM_ANNEALING "*Annealing method: Y(max)=%+.5f X=%+.5f  ==>Run time: %8.5fms\n"
-#define OPTIMUM_PARTICLE "*Particle  method: Y(max)=%+.5f X=%+.5f  ==>Run time: %8.5fms\n"
-#define OPTIMUM_GENETIC "*Genetic   method: Y(max)=%+.5f X=%+.5f  ==>Run time: %8.5fms\n"
+#define OPTIMUM_FIBONACCI "*Fibonacci method: Y(max)=%+.5f X=%+.5f  ==>Run time: %8.5f ms\n"
+#define OPTIMUM_GRADIENT "*Gradient  method: Y(max)=%+.5f X=%+.5f  ==>Run time: %8.5f ms\n"
+#define OPTIMUM_ANNEALING "*Annealing method: Y(max)=%+.5f X=%+.5f  ==>Run time: %8.5f ms\n"
+#define OPTIMUM_PARTICLE "*Particle  method: Y(max)=%+.5f X=%+.5f  ==>Run time: %8.5f ms\n"
+#define OPTIMUM_GENETIC "*Genetic   method: Y(max)=%+.5f X=%+.5f  ==>Run time: %8.5f ms\n"
 
 class Optimum
 {
