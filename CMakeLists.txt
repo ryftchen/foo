@@ -16,6 +16,9 @@ SET(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 SET(CMAKE_CXX_COMPILER "/usr/bin/clang++-11")
 SET(CMAKE_CXX_FLAGS_DEBUG "-g -O0")
 SET(CMAKE_CXX_FLAGS_RELEASE "-O3")
+IF("$ENV{FOO_ENV}" STREQUAL "CODE_COVERAGE")
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-instr-generate -fcoverage-mapping")
+ENDIF()
 ADD_COMPILE_OPTIONS(-std=c++20 -stdlib=libstdc++ -W)
 
 # add executable file
