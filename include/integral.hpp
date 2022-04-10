@@ -5,11 +5,11 @@
 #define INTEGRAL_EPSILON 1e-5
 #define INTEGRAL_RUN_BEGIN "\r\n---------- BEGIN INTEGRAL ----------"
 #define INTEGRAL_RUN_END "\r\n----------  END INTEGRAL  ----------"
-#define INTEGRAL_TRAPEZOIDAL "*Trapezoidal method: I=%+.5f  ==>Run time: %8.5fms\n"
-#define INTEGRAL_SIMPSON "*Simpson     method: I=%+.5f  ==>Run time: %8.5fms\n"
-#define INTEGRAL_ROMBERG "*Romberg     method: I=%+.5f  ==>Run time: %8.5fms\n"
-#define INTEGRAL_GAUSS "*Gauss       method: I=%+.5f  ==>Run time: %8.5fms\n"
-#define INTEGRAL_MONTE_CARLO "*MonteCarlo  method: I=%+.5f  ==>Run time: %8.5fms\n"
+#define INTEGRAL_TRAPEZOIDAL "*Trapezoidal method: I=%+.5f  ==>Run time: %8.5f ms\n"
+#define INTEGRAL_SIMPSON "*Simpson     method: I=%+.5f  ==>Run time: %8.5f ms\n"
+#define INTEGRAL_ROMBERG "*Romberg     method: I=%+.5f  ==>Run time: %8.5f ms\n"
+#define INTEGRAL_GAUSS "*Gauss       method: I=%+.5f  ==>Run time: %8.5f ms\n"
+#define INTEGRAL_MONTE_CARLO "*MonteCarlo  method: I=%+.5f  ==>Run time: %8.5f ms\n"
 
 class Integral
 {
