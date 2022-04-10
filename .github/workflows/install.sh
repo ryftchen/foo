@@ -43,10 +43,10 @@ main()
     echo "$(date "+%b %d %T") =========> INSTALL DEPENDENCIES START"
 
     if [ -n "${FOO_ENV:=}" ]; then
-        if [ "${FOO_ENV}" = "GITHUB_ACTION" ]; then
+        if [ "${FOO_ENV}" = "CODE_ACTION" ]; then
             installDependencies
         else
-            printAbort "The environment variable FOO_ENV is not GITHUB_ACTION."
+            printAbort "The environment variable FOO_ENV is not CODE_ACTION."
         fi
     else
         printAbort "Please set environment variable FOO_ENV firstly."
