@@ -30,6 +30,7 @@ jobs:
           ./.github/workflows/install.sh
 
       - name: Check spelling
+        if: github.event_name == 'push'
         uses: check-spelling/check-spelling@v0.0.20-alpha4
         with:
           config: .github/actions/spelling
@@ -44,13 +45,12 @@ jobs:
       - name: Inspect
         run: |
           ./script/build.sh --cleanup
-          ./script/build.sh --release --format --analysis
+          ./script/build.sh --release --format --analysis --html --backup --tag
           git status
 
       - name: Build
         run: |
           ./script/build.sh --release
-          ./script/build.sh --release --html --backup --tag
 
       - name: Test
         run: |
