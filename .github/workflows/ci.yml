@@ -56,8 +56,7 @@ jobs:
         run: |
           export TERM=linux
           export TERMINFO=/etc/terminfo
-          ./script/test.py --check valgrind --build release
-          ./script/test.py --check coverage --build debug
+          ./script/test.py --check valgrind coverage --build release
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v2.3.1

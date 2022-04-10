@@ -233,10 +233,9 @@ def runTestTask(command):
     fullCommand = f"{RUN_DIR}{command}"
     if CHECK_SET_VALGRIND:
         fullCommand = f"{CHECK_VALGRIND_CMD} {fullCommand}"
-    elif CHECK_SET_COVERAGE:
-        fullCommand = (
-            f"{CHECK_COVERAGE_CMD}=\"{TEMP_PATH}/foo_{str(CURRENT_STEP)}.profraw\" {fullCommand}"
-        )
+    if CHECK_SET_COVERAGE:
+        fullCommand = f"{CHECK_COVERAGE_CMD}=\"{TEMP_PATH}/foo_{str(CURRENT_STEP + 1)}.profraw\" \
+{fullCommand}"
     align = max(len(command) + (ALIGN_MAX - ALIGN_CMD), ALIGN_MAX)
     print(
         "\r\n{0}{2}[ {3} | TEST TASK: {4:<{x}} | START  ]{2}{1}\n".format(
@@ -309,19 +308,21 @@ def runTestTask(command):
 
 def parseArgs():
     parser = argparse.ArgumentParser(description="test script")
-    parser.add_argument("-c", "--check", choices=["valgrind", "coverage"], help="test with check")
+    parser.add_argument(
+        "-c", "--check", choices=["valgrind", "coverage"], nargs="+", help="test with check"
+    )
     parser.add_argument(
         "-b",
         "--build",
-        nargs="?",
         choices=["debug", "release"],
+        nargs="?",
         const="debug",
         help="test with build",
     )
     args = parser.parse_args()
 
     if args.check:
-        if args.check == "valgrind":
+        if "valgrind" in args.check:
             cmd = executeCommand(f"{COMMAND_DESCRIPTION_CMD} valgrind 2>&1", output=False)
             out = cmd.stdout.read()
             if out.find("valgrind") != -1:
@@ -329,7 +330,7 @@ def parseArgs():
                 CHECK_SET_VALGRIND = True
             else:
                 printAbort("There is no valgrind program. Please check it.")
-        elif args.check == "coverage":
+        if "coverage" in args.check:
             cmd1 = executeCommand(f"{COMMAND_DESCRIPTION_CMD} llvm-profdata-11 2>&1", output=False)
             out1 = cmd1.stdout.read()
             cmd2 = executeCommand(f"{COMMAND_DESCRIPTION_CMD} llvm-cov-11 2>&1", output=False)
