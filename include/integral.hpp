@@ -26,7 +26,7 @@ int inline Integral::getSign(double& lower, double& upper)
 }
 
 // Trapezoidal method
-#define INTEGRAL_TRAPEZOIDAL_MIN_STEP pow(2, 3)
+#define INTEGRAL_TRAPEZOIDAL_MIN_STEP std::pow(2, 3)
 class Trapezoidal : public Integral
 {
 public:
@@ -92,7 +92,7 @@ private:
     const Expression& fun;
     [[nodiscard]] double sampleFromUniformDistribution(
         const double lower, const double upper, const double eps) const;
-#ifdef NO_UNIFORM
+#ifdef INTEGRAL_MONTE_CARLO_NO_UNIFORM
     double sampleFromNormalDistribution(
         const double lower, const double upper, const double eps) const;
 #endif

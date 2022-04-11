@@ -106,7 +106,7 @@ Sort<T>::Sort(const Sort& sort) :
 template <class T>
 void Sort<T>::deepCopyFromSort(const Sort& sort) const
 {
-    memcpy(this->randomArray.get(), sort.randomArray.get(), this->length * sizeof(T));
+    std::memcpy(this->randomArray.get(), sort.randomArray.get(), this->length * sizeof(T));
 }
 
 template <class T>

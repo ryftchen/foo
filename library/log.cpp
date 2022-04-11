@@ -53,7 +53,7 @@ Log::Log(
 {
     minLevel = level;
     realTarget = target;
-    strncpy(pathname, logFile.c_str(), LOG_PATHNAME_LENGTH);
+    std::strncpy(pathname, logFile.c_str(), LOG_PATHNAME_LENGTH);
     pathname[LOG_PATHNAME_LENGTH] = '\0';
     try
     {
@@ -162,14 +162,14 @@ void printFile(
         std::list<std::string> context(0);
         if (false == reverse)
         {
-            while ((context.size() < maxLine) && getline(file, line))
+            while ((context.size() < maxLine) && std::getline(file, line))
             {
                 context.emplace_back(formatStyle(line));
             }
         }
         else
         {
-            while ((context.size() < maxLine) && getline(file, line))
+            while ((context.size() < maxLine) && std::getline(file, line))
             {
                 context.emplace_front(formatStyle(line));
             }
