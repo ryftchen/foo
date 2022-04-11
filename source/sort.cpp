@@ -22,7 +22,7 @@ void Sort<T>::bubbleSort(T* const array, const uint32_t length) const
     TIME_BEGIN;
     T sortArray[length];
     sortArray[0] = '\0';
-    memcpy(sortArray, array, length * sizeof(T));
+    std::memcpy(sortArray, array, length * sizeof(T));
 
     for (uint32_t i = 0; i < length - 1; ++i)
     {
@@ -51,7 +51,7 @@ void Sort<T>::selectionSort(T* const array, const uint32_t length) const
     TIME_BEGIN;
     T sortArray[length];
     sortArray[0] = '\0';
-    memcpy(sortArray, array, length * sizeof(T));
+    std::memcpy(sortArray, array, length * sizeof(T));
 
     for (uint32_t i = 0; i < length - 1; ++i)
     {
@@ -82,7 +82,7 @@ void Sort<T>::insertionSort(T* const array, const uint32_t length) const
     TIME_BEGIN;
     T sortArray[length];
     sortArray[0] = '\0';
-    memcpy(sortArray, array, length * sizeof(T));
+    std::memcpy(sortArray, array, length * sizeof(T));
 
     for (uint32_t i = 1; i < length; ++i)
     {
@@ -112,7 +112,7 @@ void Sort<T>::shellSort(T* const array, const uint32_t length) const
     TIME_BEGIN;
     T sortArray[length];
     sortArray[0] = '\0';
-    memcpy(sortArray, array, length * sizeof(T));
+    std::memcpy(sortArray, array, length * sizeof(T));
 
     uint32_t gap = length / 2;
     while (gap >= 1)
@@ -143,7 +143,7 @@ void Sort<T>::mergeSort(T* const array, const uint32_t length) const
     TIME_BEGIN;
     T sortArray[length];
     sortArray[0] = '\0';
-    memcpy(sortArray, array, length * sizeof(T));
+    std::memcpy(sortArray, array, length * sizeof(T));
 
     mergeSortRecursive(sortArray, 0, length - 1);
 
@@ -193,7 +193,7 @@ void Sort<T>::quickSort(T* const array, const uint32_t length) const
     TIME_BEGIN;
     T sortArray[length];
     sortArray[0] = '\0';
-    memcpy(sortArray, array, length * sizeof(T));
+    std::memcpy(sortArray, array, length * sizeof(T));
 
     quickSortRecursive(sortArray, 0, length - 1);
 
@@ -251,7 +251,7 @@ void Sort<T>::heapSort(T* const array, const uint32_t length) const
     TIME_BEGIN;
     T sortArray[length];
     sortArray[0] = '\0';
-    memcpy(sortArray, array, length * sizeof(T));
+    std::memcpy(sortArray, array, length * sizeof(T));
 
     for (int i = length / 2 + 1; i >= 0; --i)
     {
@@ -307,7 +307,7 @@ void Sort<T>::countingSort(T* const array, const uint32_t length) const
     TIME_BEGIN;
     T sortArray[length];
     sortArray[0] = '\0';
-    memcpy(sortArray, array, length * sizeof(T));
+    std::memcpy(sortArray, array, length * sizeof(T));
 
     T max = std::numeric_limits<T>::min();
     T min = std::numeric_limits<T>::max();
@@ -349,7 +349,7 @@ void Sort<T>::bucketSort(T* const array, const uint32_t length) const
     TIME_BEGIN;
     T sortArray[length];
     sortArray[0] = '\0';
-    memcpy(sortArray, array, length * sizeof(T));
+    std::memcpy(sortArray, array, length * sizeof(T));
 
     T max = std::numeric_limits<T>::min();
     T min = std::numeric_limits<T>::max();
@@ -367,7 +367,7 @@ void Sort<T>::bucketSort(T* const array, const uint32_t length) const
     {
         // min+(max-min)/(bucketNum-1)*(buckIndex-1)<=sortArray[i]
         const uint32_t aggIndex =
-            floor(static_cast<double>(sortArray[i] - min) / intervalSpan + 1) - 1;
+            std::floor(static_cast<double>(sortArray[i] - min) / intervalSpan + 1) - 1;
         aggregation[aggIndex].emplace_back(sortArray[i]);
     }
     uint32_t index = 0;
@@ -402,7 +402,7 @@ void Sort<T>::radixSort(T* const array, const uint32_t length) const
     TIME_BEGIN;
     T sortArray[length];
     sortArray[0] = '\0';
-    memcpy(sortArray, array, length * sizeof(T));
+    std::memcpy(sortArray, array, length * sizeof(T));
 
     T max = std::numeric_limits<T>::min();
     T min = std::numeric_limits<T>::max();
@@ -440,8 +440,8 @@ void Sort<T>::radixSort(T* const array, const uint32_t length) const
     }
     for (uint32_t i = 1, pow = SORT_RADIX_DEC; i < digitMax; ++i, pow *= base)
     {
-        memcpy(countingOld.get(), countingNew.get(), bucketNum * sizeof(T));
-        memset(countingNew.get(), 0, bucketNum * sizeof(T));
+        std::memcpy(countingOld.get(), countingNew.get(), bucketNum * sizeof(T));
+        std::memset(countingNew.get(), 0, bucketNum * sizeof(T));
         for (auto iterBucket = aggregation.begin(); iterBucket != aggregation.end(); ++iterBucket)
         {
             if (!iterBucket->size())

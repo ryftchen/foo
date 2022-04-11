@@ -103,8 +103,8 @@ private:
     const std::unordered_multimap<
         ExpressionRange<double, double>, TargetExpression, ExpressionMapHash>
         expressionMap{
-            {{EXPRESS_FUN_1_RANGE_1, EXPRESS_FUN_1_RANGE_2}, Function1()},
-            {{EXPRESS_FUN_2_RANGE_1, EXPRESS_FUN_2_RANGE_2}, Function2()}};
+            {{EXPRESSION_FUN_1_RANGE_1, EXPRESSION_FUN_1_RANGE_2}, Function1()},
+            {{EXPRESSION_FUN_2_RANGE_1, EXPRESSION_FUN_2_RANGE_2}, Function2()}};
     void setTaskPlanFromTaskBit(
         char* const argv[], const std::bitset<TaskBit::taskBottom>& taskBit);
     void runOptimum() const;

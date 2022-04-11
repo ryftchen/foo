@@ -96,25 +96,25 @@ double Romberg::operator()(double lower, double upper, const double eps) const
     const double height = upper - lower;
     const auto trapezoidFunctor =
         std::bind(trapezoid, std::ref(fun), lower, height, std::placeholders::_1);
-    double t0 = trapezoidFunctor(pow(2, k));
+    double t0 = trapezoidFunctor(std::pow(2, k));
 
     k = 1;
-    double t1Zero = trapezoidFunctor(pow(2, k));
-    double t1 =
-        pow(4, k) / (pow(4, k) - 1) * trapezoidFunctor(pow(2, k + 1)) - 1.0 / pow(4, k) * t1Zero;
+    double t1Zero = trapezoidFunctor(std::pow(2, k));
+    double t1 = std::pow(4, k) / (std::pow(4, k) - 1) * trapezoidFunctor(std::pow(2, k + 1))
+        - 1.0 / std::pow(4, k) * t1Zero;
 
     while (std::fabs(t1 - t0) > eps)
     {
         ++k;
         t0 = t1;
-        t1Zero = trapezoidFunctor(pow(2, k));
+        t1Zero = trapezoidFunctor(std::pow(2, k));
         for (uint32_t i = 1; i <= k; ++i)
         {
-            t1 = pow(4, i) / (pow(4, i) - 1) * trapezoidFunctor(pow(2, i + 1))
-                - 1.0 / pow(4, i) * t1Zero;
+            t1 = std::pow(4, i) / (std::pow(4, i) - 1) * trapezoidFunctor(std::pow(2, i + 1))
+                - 1.0 / std::pow(4, i) * t1Zero;
         }
     }
-    sum = trapezoidFunctor(pow(2, k)) * sign;
+    sum = trapezoidFunctor(std::pow(2, k)) * sign;
 
     TIME_END;
     FORMAT_PRINT(INTEGRAL_ROMBERG, sum, TIME_INTERVAL);
@@ -173,7 +173,7 @@ double MonteCarlo::operator()(double lower, double upper, const double eps) cons
     const int sign = Integral::getSign(lower, upper);
 
     double sum = sampleFromUniformDistribution(lower, upper, eps);
-#ifdef NO_UNIFORM
+#ifdef INTEGRAL_MONTE_CARLO_NO_UNIFORM
     double sum = sampleFromNormalDistribution(lower, upper, eps);
 #endif
     sum *= sign;
@@ -194,11 +194,11 @@ double MonteCarlo::sampleFromUniformDistribution(
         double x = randomX(seed);
         sum += fun(x);
     }
-    sum *= (upper - lower) / n; // I≈(b-a)/N*[F(X1)+ F(X2)+...+F(Xn)]
+    sum *= (upper - lower) / n; // I≈(b-a)/N*[F(X1)+F(X2)+...+F(Xn)]
 
     return sum;
 }
-#ifdef NO_UNIFORM
+#ifdef INTEGRAL_MONTE_CARLO_NO_UNIFORM
 double MonteCarlo::sampleFromNormalDistribution(
     const double lower, const double upper, const double eps) const
 {
@@ -214,12 +214,12 @@ double MonteCarlo::sampleFromNormalDistribution(
         {
             double u1 = randomU(seed);
             double u2 = randomU(seed);
-            double mag = sigma * sqrt(-2.0 * log(u1));
-            x = mag * sin(2.0 * M_PI * u2) + mu; // Box-Muller Transform
+            double mag = sigma * std::sqrt(-2.0 * std::log(u1));
+            x = mag * std::sin(2.0 * M_PI * u2) + mu; // Box-Muller Transform
         }
         while ((x < lower) || (x > upper));
-        const double probabilityDensityFunction = (1.0 / sqrt(2.0 * M_PI * sigma * sigma))
-            * pow(M_E, (-(x - mu) * (x - mu)) / (2.0 * sigma * sigma));
+        const double probabilityDensityFunction = (1.0 / std::sqrt(2.0 * M_PI * sigma * sigma))
+            * std::pow(M_E, (-(x - mu) * (x - mu)) / (2.0 * sigma * sigma));
         sum += fun(x) / probabilityDensityFunction; // I≈1/N*[F(X1)/P(X1)+...+F(Xn)/P(Xn)]
     }
     sum /= n;

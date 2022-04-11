@@ -156,7 +156,7 @@ std::optional<std::tuple<ValueY, ValueX>> Gradient::operator()(
     while (climbing.size() < Learning::loopTime)
     {
         x = randomX(seed);
-        if (climbing.end() == find(climbing.begin(), climbing.end(), x))
+        if (climbing.end() == std::find(climbing.begin(), climbing.end(), x))
         {
             climbing.emplace_back(x);
         }
@@ -230,7 +230,7 @@ std::optional<std::tuple<ValueY, ValueX>> Annealing::operator()(
             while ((xNew < left) || (xNew > right));
             yNew = fun(xNew);
 
-            if ((yNew > y) || (exp(-(y - yNew) / temperature) > random(seed)))
+            if ((yNew > y) || (std::exp(-(y - yNew) / temperature) > random(seed)))
             {
                 found = true;
                 x = xNew;
@@ -262,7 +262,7 @@ std::optional<std::tuple<ValueY, ValueX>> Particle::operator()(
     TIME_BEGIN;
     Record rec = recordInit(left, right);
     const Society::iterator best = std::max_element(
-        begin(rec.society), end(rec.society),
+        std::begin(rec.society), std::end(rec.society),
         [](const auto& max1, const auto& max2)
         {
             return max1.xFitness < max2.xFitness;
@@ -274,7 +274,8 @@ std::optional<std::tuple<ValueY, ValueX>> Particle::operator()(
     for (uint32_t i = 0; i < Swarm::iterNum; ++i)
     {
         const double w = Swarm::wBegin
-            - (Swarm::wBegin - Swarm::wEnd) * pow(static_cast<double>(i + 1) / Swarm::iterNum, 2);
+            - (Swarm::wBegin - Swarm::wEnd)
+                * std::pow(static_cast<double>(i + 1) / Swarm::iterNum, 2);
         for (auto& ind : rec.society)
         {
             const double rand1 =
@@ -372,7 +373,7 @@ void Genetic::setSpecies(const double left, const double right, const double eps
 
     uint32_t num = 0;
     const double max = (range.right - range.left) * (1.0 / range.eps);
-    while ((max <= pow(2, num)) || (max >= pow(2, num + 1)))
+    while ((max <= std::pow(2, num)) || (max >= std::pow(2, num + 1)))
     {
         ++num;
     }
@@ -390,14 +391,14 @@ void Genetic::geneCoding(Chromosome& chr)
 }
 double Genetic::geneDecoding(const Chromosome& chr) const
 {
-    const double max = pow(2, chrNum) - 1.0;
+    const double max = std::pow(2, chrNum) - 1.0;
     double temp = 0.0;
     uint32_t i = 0;
     std::for_each(
         chr.begin(), chr.end(),
         [&temp, &i](const auto& bit)
         {
-            temp += bit * pow(2, i);
+            temp += bit * std::pow(2, i);
             ++i;
         });
     return range.left + (range.right - range.left) * temp / max;
@@ -512,8 +513,9 @@ std::optional<std::pair<double, double>> Genetic::fitnessLinearTransformation(co
             return calculateFitness(ind);
         });
 
-    double reFitnessMin = *(std::min_element(begin(reFitness), end(reFitness)));
-    double reFitnessAvg = std::accumulate(begin(reFitness), end(reFitness), 0.0) / reFitness.size();
+    double reFitnessMin = *(std::min_element(std::begin(reFitness), std::end(reFitness)));
+    double reFitnessAvg =
+        std::accumulate(std::begin(reFitness), std::end(reFitness), 0.0) / reFitness.size();
     if (LIKELY(std::fabs(reFitnessMin - reFitnessAvg) > (range.eps * range.eps)))
     {
         const double alpha = reFitnessAvg / (reFitnessAvg - reFitnessMin);

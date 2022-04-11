@@ -116,11 +116,11 @@ void Command::runOptimum() const
                 ExpressionOverloaded{
                     [](const Function1& /*unused*/)
                     {
-                        std::cout << EXPRESS_FUN_1_OPTIMUM << std::endl;
+                        std::cout << EXPRESSION_FUN_1_OPTIMUM << std::endl;
                     },
                     [](const Function2& /*unused*/)
                     {
-                        std::cout << EXPRESS_FUN_2_OPTIMUM << std::endl;
+                        std::cout << EXPRESSION_FUN_2_OPTIMUM << std::endl;
                     },
                 },
                 expression);
@@ -228,11 +228,11 @@ void Command::runIntegral() const
                 ExpressionOverloaded{
                     [](const Function1& /*unused*/)
                     {
-                        std::cout << EXPRESS_FUN_1_INTEGRAL << std::endl;
+                        std::cout << EXPRESSION_FUN_1_INTEGRAL << std::endl;
                     },
                     [](const Function2& /*unused*/)
                     {
-                        std::cout << EXPRESS_FUN_2_INTEGRAL << std::endl;
+                        std::cout << EXPRESSION_FUN_2_INTEGRAL << std::endl;
                     },
                 },
                 expression);
@@ -502,9 +502,9 @@ void executeCommand(const char* const command)
         char resultBuffer[BUFFER_SIZE_MAX] = {'\0'};
         while (nullptr != fgets(resultBuffer, sizeof(resultBuffer), file))
         {
-            if ('\n' == resultBuffer[strlen(resultBuffer) - 1])
+            if ('\n' == resultBuffer[std::strlen(resultBuffer) - 1])
             {
-                resultBuffer[strlen(resultBuffer) - 1] = '\0';
+                resultBuffer[std::strlen(resultBuffer) - 1] = '\0';
             }
             std::cout << resultBuffer << std::endl;
         }
