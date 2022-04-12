@@ -15,7 +15,7 @@ on:
     - cron: '0 0 * * MON'
 
 jobs:
-  CI:
+  Pipeline:
     runs-on: ubuntu-20.04
 
     steps:
@@ -28,19 +28,6 @@ jobs:
           sudo apt-get purge -y llvm-* clang-* libllvm-* libclang-*
           export FOO_ENV=CODE_ACTION
           ./.github/workflows/install.sh
-
-      - name: Check spelling
-        if: github.event_name == 'push'
-        uses: check-spelling/check-spelling@v0.0.20-alpha4
-        with:
-          config: .github/actions/spelling
-          post_comment: 0
-          extra_dictionaries:
-            cspell:bash/bash-words.txt
-            cspell:cpp/cpp.txt
-            cspell:filetypes/filetypes.txt
-            cspell:python/python.txt
-          check_extra_dictionaries: ''
 
       - name: Inspect
         run: |
@@ -64,4 +51,41 @@ jobs:
           name: foo_artifact
           path: ./temp/foo_html_*.tar.bz2
           retention-days: 7
+
+  Check:
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2.4.0
+
+      - name: Check spelling
+        if: github.event_name != 'workflow_dispatch'
+        uses: check-spelling/check-spelling@v0.0.20-alpha4
+        with:
+          config: .github/actions/spelling
+          post_comment: 0
+          extra_dictionaries:
+            cspell:bash/bash-words.txt
+            cspell:cpp/cpp.txt
+            cspell:filetypes/filetypes.txt
+            cspell:python/python.txt
+          check_extra_dictionaries: ''
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v2
+        with:
+          languages: ['cpp']
+
+      - name: Manual build
+        run: |
+          sudo apt-get update
+          sudo apt-get purge -y clang-*
+          sudo apt-get install -y clang-11 cmake
+          mkdir ./build
+          cmake -S . -B ./build -DCMAKE_CXX_COMPILER=clang++-11 -DCMAKE_BUILD_TYPE=Release
+          make -C ./build -j
+
+      - name: Perform CodeQL analysis
+        uses: github/codeql-action/analyze@v2
 ...
