@@ -15,53 +15,16 @@ on:
     - cron: '0 0 * * MON'
 
 jobs:
-  Pipeline:
+  Analysis:
     runs-on: ubuntu-20.04
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2.4.0
-
-      - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get purge -y llvm-* clang-* libllvm-* libclang-*
-          export FOO_ENV=CODE_ACTION
-          ./.github/workflows/install.sh
-
-      - name: Inspect
-        run: |
-          ./script/build.sh --cleanup
-          ./script/build.sh --release --format --analysis --html --backup --tag
-          git status
-
-      - name: Build
-        run: |
-          ./script/build.sh --release
-
-      - name: Test
-        run: |
-          export TERM=linux
-          export TERMINFO=/etc/terminfo
-          ./script/test.py --check valgrind coverage --build release
-
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v2.3.1
-        with:
-          name: foo_artifact
-          path: ./temp/foo_html_*.tar.bz2
-          retention-days: 7
-
-  Check:
-    runs-on: ubuntu-20.04
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2.4.0
+        uses: actions/checkout@v3.0.0
 
       - name: Check spelling
         if: github.event_name != 'workflow_dispatch'
-        uses: check-spelling/check-spelling@v0.0.20-alpha4
+        uses: check-spelling/check-spelling@v0.0.20-alpha5
         with:
           config: .github/actions/spelling
           post_comment: 0
@@ -88,4 +51,41 @@ jobs:
 
       - name: Perform CodeQL analysis
         uses: github/codeql-action/analyze@v2
+
+  Pipeline:
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3.0.0
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get purge -y llvm-* clang-* libllvm-* libclang-*
+          export FOO_ENV=CODE_ACTION
+          ./.github/workflows/install.sh
+
+      - name: Inspect
+        run: |
+          ./script/build.sh --cleanup
+          ./script/build.sh --release --format --lint --html --backup --tag
+          git status
+
+      - name: Build
+        run: |
+          ./script/build.sh --release
+
+      - name: Test
+        run: |
+          export TERM=linux
+          export TERMINFO=/etc/terminfo
+          ./script/test.py --check valgrind coverage --build release
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3.0.0
+        with:
+          name: foo_artifact
+          path: ./temp/foo_html_*.tar.bz2
+          retention-days: 7
 ...
