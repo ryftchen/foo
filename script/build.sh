@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
 ARGS_CLEANUP=false
-ARGS_ANALYSIS=false
 ARGS_FORMAT=false
+ARGS_LINT=false
 ARGS_HTML=false
 ARGS_BACKUP=false
 ARGS_TAG=false
@@ -20,9 +20,9 @@ TEST_SCRIPT="test.py"
 CMAKE_FILE="CMakeLists.txt"
 COMPILE_COMMANDS="compile_commands.json"
 FORMAT_CONFIG_CPP=".clang-format"
-ANALYSIS_CONFIG_CPP=".clang-tidy"
-ANALYSIS_CONFIG_PY=".pylintrc"
-ANALYSIS_CONFIG_SH=".shellcheckrc"
+LINT_CONFIG_CPP=".clang-tidy"
+LINT_CONFIG_PY=".pylintrc"
+LINT_CONFIG_SH=".shellcheckrc"
 PERFORM_COMPILE=false
 
 bashCommand()
@@ -49,7 +49,7 @@ printInstruction()
     echo
     echo "    -f, --format                       Format"
     echo
-    echo "    -a, --analysis                     Analysis"
+    echo "    -l, --lint                         Lint"
     echo
     echo "    -h, --html                         Html"
     echo
@@ -69,7 +69,7 @@ parseArgs()
         case $1 in
         -c | --cleanup) ARGS_CLEANUP=true ;;
         -f | --format) ARGS_FORMAT=true ;;
-        -a | --analysis) ARGS_ANALYSIS=true ;;
+        -l | --lint) ARGS_LINT=true ;;
         -h | --html) ARGS_HTML=true ;;
         -b | --backup) ARGS_BACKUP=true ;;
         -t | --tag) ARGS_TAG=true ;;
@@ -93,7 +93,7 @@ checkDependencies()
         printAbort "There are missing files in ${PROJECT_FOLDER} folder."
     fi
 
-    if [ "${ARGS_FORMAT}" = true ] || [ "${ARGS_ANALYSIS}" = true ]; then
+    if [ "${ARGS_FORMAT}" = true ] || [ "${ARGS_LINT}" = true ]; then
         if [ ! -f ./"${SCRIPT_FOLDER}"/"${BUILD_SCRIPT}" ] \
             || [ ! -f ./"${SCRIPT_FOLDER}"/"${TEST_SCRIPT}" ]; then
             printAbort "There are missing files in ${SCRIPT_FOLDER} folder."
@@ -158,37 +158,36 @@ Please generate it."
     fi
 }
 
-performOptionAnalysis()
+performOptionLint()
 {
-    if [ "${ARGS_ANALYSIS}" = true ]; then
+    if [ "${ARGS_LINT}" = true ]; then
         if
             command -v clang-tidy-11 >/dev/null 2>&1 \
                 && command -v shellcheck >/dev/null 2>&1 \
                 && command -v pylint >/dev/null 2>&1
         then
             if [ -f ./"${BUILD_FOLDER}"/"${COMPILE_COMMANDS}" ]; then
-                if [ -f ./"${ANALYSIS_CONFIG_CPP}" ]; then
+                if [ -f ./"${LINT_CONFIG_CPP}" ]; then
                     bashCommand "clang-tidy-11 -p ./${BUILD_FOLDER}/${COMPILE_COMMANDS} \
 ./${INCLUDE_FOLDER}/*.hpp ./${SOURCE_FOLDER}/*.cpp ./${LIBRARY_FOLDER}/*.cpp"
                 else
-                    printAbort "There is no ${ANALYSIS_CONFIG_CPP} file in \
-${PROJECT_FOLDER} folder. Please generate it."
+                    printAbort "There is no ${LINT_CONFIG_CPP} file in ${PROJECT_FOLDER} folder. \
+Please generate it."
                 fi
             else
                 printAbort "There is no ${COMPILE_COMMANDS} file in ${BUILD_FOLDER} folder. \
 Please generate it."
             fi
-            if [ -f ./"${ANALYSIS_CONFIG_SH}" ]; then
+            if [ -f ./"${LINT_CONFIG_SH}" ]; then
                 bashCommand "shellcheck --enable=all ./${SCRIPT_FOLDER}/${BUILD_SCRIPT}"
             else
-                printAbort "There is no ${ANALYSIS_CONFIG_SH} file in ${PROJECT_FOLDER} folder. \
+                printAbort "There is no ${LINT_CONFIG_SH} file in ${PROJECT_FOLDER} folder. \
 Please generate it."
             fi
-            if [ -f ./"${ANALYSIS_CONFIG_PY}" ]; then
-                bashCommand "pylint --rcfile=${ANALYSIS_CONFIG_PY} \
-./${SCRIPT_FOLDER}/${TEST_SCRIPT}"
+            if [ -f ./"${LINT_CONFIG_PY}" ]; then
+                bashCommand "pylint --rcfile=${LINT_CONFIG_PY} ./${SCRIPT_FOLDER}/${TEST_SCRIPT}"
             else
-                printAbort "There is no ${ANALYSIS_CONFIG_PY} file in ${PROJECT_FOLDER} folder. \
+                printAbort "There is no ${LINT_CONFIG_PY} file in ${PROJECT_FOLDER} folder. \
 Please generate it."
             fi
         else
@@ -311,7 +310,7 @@ main()
     generateCMakeFiles
 
     performOptionFormat
-    performOptionAnalysis
+    performOptionLint
     performOptionHtml
     performOptionBackup
     performOptionTag
