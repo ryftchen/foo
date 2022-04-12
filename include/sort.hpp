@@ -187,9 +187,17 @@ char* Sort<T>::formatArray(
     {
         completeSize += std::snprintf(
             buffer + completeSize, bufferSize - completeSize, format, align + 1, *(array + i));
+        if ((completeSize < 0) || (completeSize >= bufferSize - completeSize))
+        {
+            break;
+        }
         if ((0 == (i + 1) % SORT_PRINT_MAX_COLUMN) && (length != (i + 1)))
         {
             completeSize += std::snprintf(buffer + completeSize, bufferSize - completeSize, "\n");
+            if ((completeSize < 0) || (completeSize >= bufferSize - completeSize))
+            {
+                break;
+            }
         }
     }
     return buffer;
