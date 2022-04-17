@@ -29,8 +29,8 @@ decltype(auto) Thread::enqueue(const std::string& name, Function&& fun, Args&&..
         std::bind(std::forward<Function>(fun), std::forward<Args>(args)...));
     std::future<std::invoke_result_t<Function, Args...>> future = task.get_future();
 
+    if (std::unique_lock<std::mutex> lock(queueMutex); true)
     {
-        std::unique_lock<std::mutex> lock(queueMutex);
         try
         {
             if (releaseReady)
