@@ -109,10 +109,10 @@ generateCMakeFiles()
         fi
         if [ "${ARGS_RELEASE}" = true ]; then
             bashCommand "cmake -S . -B ./${BUILD_FOLDER} \
--DCMAKE_CXX_COMPILER=clang++-11 -DCMAKE_BUILD_TYPE=Release"
+-DCMAKE_CXX_COMPILER=clang++-12 -DCMAKE_BUILD_TYPE=Release"
         else
             bashCommand "cmake -S . -B ./${BUILD_FOLDER} \
--DCMAKE_CXX_COMPILER=clang++-11 -DCMAKE_BUILD_TYPE=Debug"
+-DCMAKE_CXX_COMPILER=clang++-12 -DCMAKE_BUILD_TYPE=Debug"
         fi
     else
         printAbort "There is no ${CMAKE_FILE} file in ${PROJECT_FOLDER} folder."
@@ -139,12 +139,12 @@ performOptionFormat()
 {
     if [ "${ARGS_FORMAT}" = true ]; then
         if
-            command -v clang-format-11 >/dev/null 2>&1 \
+            command -v clang-format-12 >/dev/null 2>&1 \
                 && command -v shfmt >/dev/null 2>&1 \
                 && command -v black >/dev/null 2>&1
         then
             if [ -f ./"${FORMAT_CONFIG_CPP}" ]; then
-                bashCommand "clang-format-11 -i --verbose ./${INCLUDE_FOLDER}/*.hpp \
+                bashCommand "clang-format-12 -i --verbose ./${INCLUDE_FOLDER}/*.hpp \
 ./${SOURCE_FOLDER}/*.cpp ./${LIBRARY_FOLDER}/*.cpp"
             else
                 printAbort "There is no ${FORMAT_CONFIG_CPP} file in ${PROJECT_FOLDER} folder. \
@@ -162,13 +162,13 @@ performOptionLint()
 {
     if [ "${ARGS_LINT}" = true ]; then
         if
-            command -v clang-tidy-11 >/dev/null 2>&1 \
+            command -v clang-tidy-12 >/dev/null 2>&1 \
                 && command -v shellcheck >/dev/null 2>&1 \
                 && command -v pylint >/dev/null 2>&1
         then
             if [ -f ./"${BUILD_FOLDER}"/"${COMPILE_COMMANDS}" ]; then
                 if [ -f ./"${LINT_CONFIG_CPP}" ]; then
-                    bashCommand "clang-tidy-11 -p ./${BUILD_FOLDER}/${COMPILE_COMMANDS} \
+                    bashCommand "clang-tidy-12 -p ./${BUILD_FOLDER}/${COMPILE_COMMANDS} \
 ./${INCLUDE_FOLDER}/*.hpp ./${SOURCE_FOLDER}/*.cpp ./${LIBRARY_FOLDER}/*.cpp"
                 else
                     printAbort "There is no ${LINT_CONFIG_CPP} file in ${PROJECT_FOLDER} folder. \
