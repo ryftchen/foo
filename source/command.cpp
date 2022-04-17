@@ -557,7 +557,7 @@ void executeCommand(const char* const command)
     }
     else if (WIFEXITED(status))
     {
-        if (0 != WEXITSTATUS(status))
+        if (WEXITSTATUS(status))
         {
             throw ExecuteCommandError(command);
         }
