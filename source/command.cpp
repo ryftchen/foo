@@ -9,7 +9,26 @@
 
 Command::Command(int argc, char* argv[])
 {
-    parseArgv(argc - 1, argv + 1);
+    try
+    {
+        parseArgv(argc - 1, argv + 1);
+    }
+    catch (CallFunctionError const& error)
+    {
+        LOGGER_ERR(error.what());
+    }
+    catch (ExecuteCommandError const& error)
+    {
+        LOGGER_ERR(error.what());
+    }
+    catch (OpenFileError const& error)
+    {
+        LOGGER_ERR(error.what());
+    }
+    catch (LockFileError const& error)
+    {
+        LOGGER_ERR(error.what());
+    }
 }
 
 void Command::parseArgv(const int argc, char* const argv[])
@@ -111,46 +130,53 @@ void Command::setTaskPlanFromTaskBit(
 void Command::runOptimum() const
 {
     std::unique_lock<std::mutex> lock(commandMutex);
-    if (taskPlan.optimumBit.any())
+    try
     {
-        const auto printFunctor = [](const TargetExpression& expression)
+        if (taskPlan.optimumBit.any())
         {
-            std::visit(
-                ExpressionOverloaded{
-                    [](const Function1& /*unused*/)
-                    {
-                        std::cout << EXPRESSION_FUN_1_OPTIMUM << std::endl;
-                    },
-                    [](const Function2& /*unused*/)
-                    {
-                        std::cout << EXPRESSION_FUN_2_OPTIMUM << std::endl;
-                    },
-                },
-                expression);
-        };
-        const auto resultFunctor =
-            [this](const Expression& expression, const ExpressionRange<double, double>& range)
-        {
-            getOptimumResult(expression, range.range1, range.range2, OPTIMUM_EPSILON);
-        };
-
-        std::cout << OPTIMUM_RUN_BEGIN << std::endl;
-        for (const auto& [range, expression] : expressionMap)
-        {
-            printFunctor(expression);
-            switch (expression.index())
+            const auto printFunctor = [](const TargetExpression& expression)
             {
-                case 0:
-                    resultFunctor(std::get<0>(expression), range);
-                    break;
-                case 1:
-                    resultFunctor(std::get<1>(expression), range);
-                    break;
-                default:
-                    break;
+                std::visit(
+                    ExpressionOverloaded{
+                        [](const Function1& /*unused*/)
+                        {
+                            std::cout << EXPRESSION_FUN_1_OPTIMUM << std::endl;
+                        },
+                        [](const Function2& /*unused*/)
+                        {
+                            std::cout << EXPRESSION_FUN_2_OPTIMUM << std::endl;
+                        },
+                    },
+                    expression);
+            };
+            const auto resultFunctor =
+                [this](const Expression& expression, const ExpressionRange<double, double>& range)
+            {
+                getOptimumResult(expression, range.range1, range.range2, OPTIMUM_EPSILON);
+            };
+
+            std::cout << OPTIMUM_RUN_BEGIN << std::endl;
+            for (const auto& [range, expression] : expressionMap)
+            {
+                printFunctor(expression);
+                switch (expression.index())
+                {
+                    case 0:
+                        resultFunctor(std::get<0>(expression), range);
+                        break;
+                    case 1:
+                        resultFunctor(std::get<1>(expression), range);
+                        break;
+                    default:
+                        break;
+                }
             }
+            std::cout << OPTIMUM_RUN_END << std::endl;
         }
-        std::cout << OPTIMUM_RUN_END << std::endl;
+    }
+    catch (CallFunctionError const& error)
+    {
+        LOGGER_ERR(error.what());
     }
 }
 void Command::getOptimumResult(
@@ -223,46 +249,53 @@ void Command::setOptimumBit(char* const argv[])
 void Command::runIntegral() const
 {
     std::unique_lock<std::mutex> lock(commandMutex);
-    if (taskPlan.integralBit.any())
+    try
     {
-        const auto printFunctor = [](const TargetExpression& expression)
+        if (taskPlan.integralBit.any())
         {
-            std::visit(
-                ExpressionOverloaded{
-                    [](const Function1& /*unused*/)
-                    {
-                        std::cout << EXPRESSION_FUN_1_INTEGRAL << std::endl;
-                    },
-                    [](const Function2& /*unused*/)
-                    {
-                        std::cout << EXPRESSION_FUN_2_INTEGRAL << std::endl;
-                    },
-                },
-                expression);
-        };
-        const auto resultFunctor =
-            [this](const Expression& expression, const ExpressionRange<double, double>& range)
-        {
-            getIntegralResult(expression, range.range1, range.range2, INTEGRAL_EPSILON);
-        };
-
-        std::cout << INTEGRAL_RUN_BEGIN << std::endl;
-        for (const auto& [range, expression] : expressionMap)
-        {
-            printFunctor(expression);
-            switch (expression.index())
+            const auto printFunctor = [](const TargetExpression& expression)
             {
-                case 0:
-                    resultFunctor(std::get<0>(expression), range);
-                    break;
-                case 1:
-                    resultFunctor(std::get<1>(expression), range);
-                    break;
-                default:
-                    break;
+                std::visit(
+                    ExpressionOverloaded{
+                        [](const Function1& /*unused*/)
+                        {
+                            std::cout << EXPRESSION_FUN_1_INTEGRAL << std::endl;
+                        },
+                        [](const Function2& /*unused*/)
+                        {
+                            std::cout << EXPRESSION_FUN_2_INTEGRAL << std::endl;
+                        },
+                    },
+                    expression);
+            };
+            const auto resultFunctor =
+                [this](const Expression& expression, const ExpressionRange<double, double>& range)
+            {
+                getIntegralResult(expression, range.range1, range.range2, INTEGRAL_EPSILON);
+            };
+
+            std::cout << INTEGRAL_RUN_BEGIN << std::endl;
+            for (const auto& [range, expression] : expressionMap)
+            {
+                printFunctor(expression);
+                switch (expression.index())
+                {
+                    case 0:
+                        resultFunctor(std::get<0>(expression), range);
+                        break;
+                    case 1:
+                        resultFunctor(std::get<1>(expression), range);
+                        break;
+                    default:
+                        break;
+                }
             }
+            std::cout << INTEGRAL_RUN_END << std::endl;
         }
-        std::cout << INTEGRAL_RUN_END << std::endl;
+    }
+    catch (CallFunctionError const& error)
+    {
+        LOGGER_ERR(error.what());
     }
 }
 void Command::getIntegralResult(
@@ -335,16 +368,23 @@ void Command::setIntegralBit(char* const argv[])
 void Command::runSort() const
 {
     std::unique_lock<std::mutex> lock(commandMutex);
-    if (taskPlan.sortBit.any())
+    try
     {
-        constexpr int leftEndpoint = SORT_ARRAY_RANGE_1;
-        constexpr int rightEndpoint = SORT_ARRAY_RANGE_2;
-        constexpr uint32_t length = SORT_ARRAY_LENGTH;
-        static_assert((leftEndpoint < rightEndpoint) && (length > 0));
+        if (taskPlan.sortBit.any())
+        {
+            constexpr int leftEndpoint = SORT_ARRAY_RANGE_1;
+            constexpr int rightEndpoint = SORT_ARRAY_RANGE_2;
+            constexpr uint32_t length = SORT_ARRAY_LENGTH;
+            static_assert((leftEndpoint < rightEndpoint) && (length > 0));
 
-        const std::shared_ptr<Sort<int>> sort =
-            std::make_shared<Sort<int>>(length, leftEndpoint, rightEndpoint);
-        getSortResult(sort);
+            const std::shared_ptr<Sort<int>> sort =
+                std::make_shared<Sort<int>>(length, leftEndpoint, rightEndpoint);
+            getSortResult(sort);
+        }
+    }
+    catch (CallFunctionError const& error)
+    {
+        LOGGER_ERR(error.what());
     }
 }
 template <typename T>
@@ -494,43 +534,32 @@ void Command::printUnexpectedOption(char* const argv[], const bool isUnknown)
 
 void executeCommand(const char* const command)
 {
-    try
+    FILE* file = popen(command, "r");
+    if (nullptr == file)
     {
-        FILE* file = popen(command, "r");
-        if (nullptr == file)
-        {
-            throw CallFunctionError("popen()");
-        }
-
-        char resultBuffer[BUFFER_SIZE_MAX] = {'\0'};
-        while (nullptr != fgets(resultBuffer, sizeof(resultBuffer), file))
-        {
-            if ('\n' == resultBuffer[std::strlen(resultBuffer) - 1])
-            {
-                resultBuffer[std::strlen(resultBuffer) - 1] = '\0';
-            }
-            std::cout << resultBuffer << std::endl;
-        }
-
-        const int status = pclose(file);
-        if (-1 == status)
-        {
-            throw CallFunctionError("pclose()");
-        }
-        else if (WIFEXITED(status))
-        {
-            if (0 != WEXITSTATUS(status))
-            {
-                throw ExecuteCommandError(command);
-            }
-        }
+        throw CallFunctionError("popen()");
     }
-    catch (CallFunctionError const& error)
+
+    char resultBuffer[BUFFER_SIZE_MAX] = {'\0'};
+    while (nullptr != fgets(resultBuffer, sizeof(resultBuffer), file))
     {
-        LOGGER_ERR(error.what());
+        if ('\n' == resultBuffer[std::strlen(resultBuffer) - 1])
+        {
+            resultBuffer[std::strlen(resultBuffer) - 1] = '\0';
+        }
+        std::cout << resultBuffer << std::endl;
     }
-    catch (ExecuteCommandError const& error)
+
+    const int status = pclose(file);
+    if (-1 == status)
     {
-        LOGGER_ERR(error.what());
+        throw CallFunctionError("pclose()");
+    }
+    else if (WIFEXITED(status))
+    {
+        if (0 != WEXITSTATUS(status))
+        {
+            throw ExecuteCommandError(command);
+        }
     }
 }

@@ -135,66 +135,57 @@ void printFile(
     const char* const pathname, const bool reverse, const uint32_t maxLine, PrintStyle style)
 {
     std::ifstream file;
-    try
+
+    file.open(pathname, std::ios_base::in);
+    if (!file)
     {
-        file.open(pathname, std::ios_base::in);
-        if (!file)
-        {
-            throw OpenFileError(basename(pathname));
-        }
+        throw OpenFileError(basename(pathname));
+    }
 
-        const int fd = static_cast<__gnu_cxx::stdio_filebuf<char>* const>(file.rdbuf())->fd();
-        if (flock(fd, LOCK_SH | LOCK_NB))
-        {
-            throwLockFileException(basename(pathname), true, true);
-        }
-
-        PrintStyle formatStyle = style;
-        if (nullStyle == formatStyle)
-        {
-            formatStyle = [](std::string& line)
-            {
-                return line;
-            };
-        }
-
-        std::string line;
-        std::list<std::string> context(0);
-        if (!reverse)
-        {
-            while ((context.size() < maxLine) && std::getline(file, line))
-            {
-                context.emplace_back(formatStyle(line));
-            }
-        }
-        else
-        {
-            while ((context.size() < maxLine) && std::getline(file, line))
-            {
-                context.emplace_front(formatStyle(line));
-            }
-        }
-
-        for (const auto& printLine : context)
-        {
-            std::cout << printLine << std::endl;
-        }
-
-        if (flock(fd, LOCK_UN))
-        {
-            throwLockFileException(basename(pathname), false, true);
-        }
+    const int fd = static_cast<__gnu_cxx::stdio_filebuf<char>* const>(file.rdbuf())->fd();
+    if (flock(fd, LOCK_SH | LOCK_NB))
+    {
         file.close();
+        throwLockFileException(basename(pathname), true, true);
     }
-    catch (OpenFileError const& error)
+
+    PrintStyle formatStyle = style;
+    if (nullStyle == formatStyle)
     {
-        LOGGER_ERR(error.what());
+        formatStyle = [](std::string& line)
+        {
+            return line;
+        };
     }
-    catch (LockFileError const& error)
+
+    std::string line;
+    std::list<std::string> context(0);
+    if (!reverse)
     {
-        LOGGER_ERR(error.what());
+        while ((context.size() < maxLine) && std::getline(file, line))
+        {
+            context.emplace_back(formatStyle(line));
+        }
+    }
+    else
+    {
+        while ((context.size() < maxLine) && std::getline(file, line))
+        {
+            context.emplace_front(formatStyle(line));
+        }
+    }
+
+    for (const auto& printLine : context)
+    {
+        std::cout << printLine << std::endl;
+    }
+
+    if (flock(fd, LOCK_UN))
+    {
         file.close();
+        throwLockFileException(basename(pathname), false, true);
     }
+    file.close();
 }
 
 std::string changeLogLevelStyle(std::string& line)
