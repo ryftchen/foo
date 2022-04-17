@@ -36,8 +36,8 @@ CHECK_VALGRIND_CMD = "valgrind --tool=memcheck --show-reachable=yes --leak-check
 CHECK_VALGRIND_INFO = "ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)"
 CHECK_SET_COVERAGE = False
 CHECK_COVERAGE_CMD = "LLVM_PROFILE_FILE"
-CHECK_COVERAGE_PROFDATA_CMD = "llvm-profdata-11 merge -sparse"
-CHECK_COVERAGE_COV_CMD = "llvm-cov-11 report"
+CHECK_COVERAGE_PROFDATA_CMD = "llvm-profdata-12 merge -sparse"
+CHECK_COVERAGE_COV_CMD = "llvm-cov-12 report"
 BUILD_SHELL = "./script/build.sh"
 BUILD_COMPILE_START = "Configuring done"
 BUILD_COMPILE_FINISH = "Built target"
@@ -331,16 +331,16 @@ def parseArgs():
             else:
                 printAbort("There is no valgrind program. Please check it.")
         if "coverage" in args.check:
-            cmd1 = executeCommand(f"{COMMAND_DESCRIPTION_CMD} llvm-profdata-11 2>&1", output=False)
+            cmd1 = executeCommand(f"{COMMAND_DESCRIPTION_CMD} llvm-profdata-12 2>&1", output=False)
             out1 = cmd1.stdout.read()
-            cmd2 = executeCommand(f"{COMMAND_DESCRIPTION_CMD} llvm-cov-11 2>&1", output=False)
+            cmd2 = executeCommand(f"{COMMAND_DESCRIPTION_CMD} llvm-cov-12 2>&1", output=False)
             out2 = cmd2.stdout.read()
-            if out1.find("llvm-profdata-11") != -1 and out2.find("llvm-cov-11") != -1:
+            if out1.find("llvm-profdata-12") != -1 and out2.find("llvm-cov-12") != -1:
                 os.environ["FOO_ENV"] = "CODE_COVERAGE"
                 global CHECK_SET_COVERAGE
                 CHECK_SET_COVERAGE = True
             else:
-                printAbort("There is no llvm-profdata-11 or llvm-cov-11 program. Please check it.")
+                printAbort("There is no llvm-profdata or llvm-cov program. Please check it.")
     if args.build:
         if os.path.isfile(BUILD_SHELL):
             if args.build == "debug":

@@ -49,9 +49,9 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get purge -y clang-*
-          sudo apt-get install -y clang-11 cmake
+          sudo apt-get install -y clang-12 cmake
           mkdir ./build
-          cmake -S . -B ./build -DCMAKE_CXX_COMPILER=clang++-11 -DCMAKE_BUILD_TYPE=Release
+          cmake -S . -B ./build -DCMAKE_CXX_COMPILER=clang++-12 -DCMAKE_BUILD_TYPE=Release
           make -C ./build -j
 
       - name: Perform CodeQL analysis

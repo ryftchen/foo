@@ -26,14 +26,14 @@ installDependencies()
     localDir=$(git rev-parse --show-toplevel)
     cd "${localDir}" || exit 1
 
-    bashCommand "sudo apt-get install -y llvm-11 clang-11 libclang-11-dev \
-clang-format-11 clang-tidy-11 cmake python3 pylint black shellcheck valgrind global sysvbanner"
+    bashCommand "sudo apt-get install -y llvm-12 clang-12 libclang-12-dev \
+clang-format-12 clang-tidy-12 cmake python3 pylint black shellcheck valgrind global sysvbanner"
     bashCommand "sudo curl -L ${SHFMT_URL} >${SHFMT_PATH}/shfmt \
 && sudo chmod +x ${SHFMT_PATH}/shfmt"
     bashCommand "git clone ${WOBOQ_GIT} -b master \
 && git -C ./${WOBOQ_FOLDER} reset --hard ${WOBOQ_COMMIT} \
 && cmake -S ./${WOBOQ_FOLDER} -B ./${WOBOQ_FOLDER} \
--DCMAKE_CXX_COMPILER=clang++-11 -DCMAKE_BUILD_TYPE=Release && make -C ./${WOBOQ_FOLDER} -j \
+-DCMAKE_CXX_COMPILER=clang++-12 -DCMAKE_BUILD_TYPE=Release && make -C ./${WOBOQ_FOLDER} -j \
 && sudo make -C ./${WOBOQ_FOLDER} install && rm -rf ./${WOBOQ_FOLDER}"
 }
 
