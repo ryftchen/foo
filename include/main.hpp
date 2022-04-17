@@ -8,7 +8,7 @@
 #include <iostream>
 #include "exception.hpp"
 
-static void switchToProjectPath() __attribute__((constructor));
+[[using gnu: constructor]] static void switchToProjectPath();
 
 #define FORMAT_TO_STRING(format, args...)                                     \
     (                                                                         \
