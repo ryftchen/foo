@@ -31,16 +31,9 @@ decltype(auto) Thread::enqueue(const std::string& name, Function&& fun, Args&&..
 
     if (std::unique_lock<std::mutex> lock(queueMutex); true)
     {
-        try
+        if (releaseReady)
         {
-            if (releaseReady)
-            {
-                throw CallFunctionError("Thread::" + std::string(__FUNCTION__) + "()");
-            }
-        }
-        catch (CallFunctionError const& error)
-        {
-            LOGGER_ERR(error.what());
+            throw CallFunctionError("Thread::" + std::string(__FUNCTION__) + "()");
         }
         taskQueue.emplace(std::make_pair(name, std::move(task)));
     }
