@@ -22,8 +22,6 @@
             str;                                                              \
         })
 #define FORMAT_PRINT(format, args...) std::cout << FORMAT_TO_STRING(format, ##args)
-#define LIKELY(x) __builtin_expect(!!(x), 1)
-#define UNLIKELY(x) __builtin_expect(!!(x), 0)
 #define PRINT_COLOR_RED "\033[0;31;40m"
 #define PRINT_COLOR_GREEN "\033[0;32;40m"
 #define PRINT_COLOR_YELLOW "\033[0;33;40m"
