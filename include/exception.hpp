@@ -2,6 +2,9 @@
 #include <exception>
 #include <string>
 
+[[noreturn]] void throwLockFileException(
+    const std::string& str, const bool isLock, const bool isReader);
+
 class ExecuteCommandError : public std::exception
 {
 public:
@@ -53,52 +56,12 @@ private:
     std::string message;
 };
 
-class LockReaderLockError : public std::exception
+class LockFileError : public std::exception
 {
 public:
-    LockReaderLockError() : message("Failed to lock reader lock."){};
-    explicit LockReaderLockError(const std::string& str) :
-        message("Failed to lock reader lock " + str + "."){};
-    ~LockReaderLockError() noexcept override = default;
-    [[nodiscard]] const char* what() const noexcept override;
-
-private:
-    std::string message;
-};
-
-class UnlockReaderLockError : public std::exception
-{
-public:
-    UnlockReaderLockError() : message("Failed to unlock reader lock."){};
-    explicit UnlockReaderLockError(const std::string& str) :
-        message("Failed to unlock reader lock " + str + "."){};
-    ~UnlockReaderLockError() noexcept override = default;
-    [[nodiscard]] const char* what() const noexcept override;
-
-private:
-    std::string message;
-};
-
-class LockWriterLockError : public std::exception
-{
-public:
-    LockWriterLockError() : message("Failed to lock writer lock."){};
-    explicit LockWriterLockError(const std::string& str) :
-        message("Failed to lock writer lock " + str + "."){};
-    ~LockWriterLockError() noexcept override = default;
-    [[nodiscard]] const char* what() const noexcept override;
-
-private:
-    std::string message;
-};
-
-class UnlockWriterLockError : public std::exception
-{
-public:
-    UnlockWriterLockError() : message("Failed to unlock writer lock."){};
-    explicit UnlockWriterLockError(const std::string& str) :
-        message("Failed to unlock writer lock " + str + "."){};
-    ~UnlockWriterLockError() noexcept override = default;
+    LockFileError() : message("Failed to lock/unlock reader/writer lock."){};
+    explicit LockFileError(const std::string& str) : message("Failed to " + str){};
+    ~LockFileError() noexcept override = default;
     [[nodiscard]] const char* what() const noexcept override;
 
 private:

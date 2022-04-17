@@ -28,7 +28,7 @@ Log::Log() noexcept : minLevel(Level::levelDebug), realTarget(Target::targetAll)
         const int fd = static_cast<__gnu_cxx::stdio_filebuf<char>* const>(ofs.rdbuf())->fd();
         if (flock(fd, LOCK_EX | LOCK_NB))
         {
-            throw LockWriterLockError(basename(pathname));
+            throwLockFileException(basename(pathname), true, false);
         }
     }
     catch (CreateFolderError const& error)
@@ -41,7 +41,7 @@ Log::Log() noexcept : minLevel(Level::levelDebug), realTarget(Target::targetAll)
         std::cerr << error.what() << std::endl;
         realTarget = Target::targetTerminal;
     }
-    catch (LockWriterLockError const& error)
+    catch (LockFileError const& error)
     {
         std::cerr << error.what() << std::endl;
         realTarget = Target::targetTerminal;
@@ -85,7 +85,7 @@ Log::Log(
         const int fd = static_cast<__gnu_cxx::stdio_filebuf<char>* const>(ofs.rdbuf())->fd();
         if (flock(fd, LOCK_EX | LOCK_NB))
         {
-            throw LockWriterLockError(basename(pathname));
+            throwLockFileException(basename(pathname), true, false);
         }
     }
     catch (CreateFolderError const& error)
@@ -98,7 +98,7 @@ Log::Log(
         std::cerr << error.what() << std::endl;
         realTarget = Target::targetTerminal;
     }
-    catch (LockWriterLockError const& error)
+    catch (LockFileError const& error)
     {
         std::cerr << error.what() << std::endl;
         realTarget = Target::targetTerminal;
@@ -112,10 +112,10 @@ Log::~Log()
         const int fd = static_cast<__gnu_cxx::stdio_filebuf<char>* const>(ofs.rdbuf())->fd();
         if (flock(fd, LOCK_UN))
         {
-            throw UnlockWriterLockError(basename(pathname));
+            throwLockFileException(basename(pathname), false, false);
         }
     }
-    catch (UnlockWriterLockError const& error)
+    catch (LockFileError const& error)
     {
         std::cerr << error.what() << std::endl;
     }
@@ -146,7 +146,7 @@ void printFile(
         const int fd = static_cast<__gnu_cxx::stdio_filebuf<char>* const>(file.rdbuf())->fd();
         if (flock(fd, LOCK_SH | LOCK_NB))
         {
-            throw LockReaderLockError(basename(pathname));
+            throwLockFileException(basename(pathname), true, true);
         }
 
         PrintStyle formatStyle = style;
@@ -182,7 +182,7 @@ void printFile(
 
         if (flock(fd, LOCK_UN))
         {
-            throw UnlockReaderLockError(basename(pathname));
+            throwLockFileException(basename(pathname), false, true);
         }
         file.close();
     }
@@ -190,12 +190,7 @@ void printFile(
     {
         LOGGER_ERR(error.what());
     }
-    catch (LockReaderLockError const& error)
-    {
-        LOGGER_ERR(error.what());
-        file.close();
-    }
-    catch (UnlockReaderLockError const& error)
+    catch (LockFileError const& error)
     {
         LOGGER_ERR(error.what());
         file.close();

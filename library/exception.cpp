@@ -20,22 +20,17 @@ const char* OpenFileError::what() const noexcept
     return message.c_str();
 }
 
-const char* LockReaderLockError::what() const noexcept
+const char* LockFileError::what() const noexcept
 {
     return message.c_str();
 }
 
-const char* UnlockReaderLockError::what() const noexcept
+[[noreturn]] void throwLockFileException(
+    const std::string& str, const bool isLock, const bool isReader)
 {
-    return message.c_str();
-}
+    std::string operate, type;
+    isLock ? operate = "lock" : operate = "unlock";
+    isReader ? type = "reader" : type = "writer";
 
-const char* LockWriterLockError::what() const noexcept
-{
-    return message.c_str();
-}
-
-const char* UnlockWriterLockError::what() const noexcept
-{
-    return message.c_str();
+    throw LockFileError(operate + " " + type + " lock " + str + ".");
 }
