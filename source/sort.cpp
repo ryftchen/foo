@@ -426,7 +426,7 @@ void Sort<T>::radixSort(T* const array, const uint32_t length) const
     const uint32_t bucketNum = (positive ^ negative)
         ? SORT_RADIX_NATURAL_NUMBER_BUCKET
         : (SORT_RADIX_NATURAL_NUMBER_BUCKET + SORT_RADIX_NEGATIVE_INTEGER_BUCKET);
-    const uint32_t offset = (false == negative) ? 0 : SORT_RADIX_NEGATIVE_INTEGER_BUCKET;
+    const uint32_t offset = (!negative) ? 0 : SORT_RADIX_NEGATIVE_INTEGER_BUCKET;
     std::unique_ptr<T[]> countingOld = std::make_unique<T[]>(bucketNum);
     std::unique_ptr<T[]> countingNew = std::make_unique<T[]>(bucketNum);
     std::queue<T> bucket;

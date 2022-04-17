@@ -242,7 +242,7 @@ std::optional<std::tuple<ValueY, ValueX>> Annealing::operator()(
                 }
             }
         }
-        if (true == found)
+        if (found)
         {
             x = xBest;
             y = yBest;
