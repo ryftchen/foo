@@ -169,8 +169,8 @@ void Sort<T>::mergeSortRecursive(T* const sortArray, const uint32_t begin, const
     uint32_t leftIndex = 0, rightIndex = 0;
     std::vector<T> leftSubArray(sortArray + begin, sortArray + mid + 1);
     std::vector<T> rightSubArray(sortArray + mid + 1, sortArray + end + 1);
-    leftSubArray.insert(leftSubArray.end(), std::numeric_limits<T>::max());
-    rightSubArray.insert(rightSubArray.end(), std::numeric_limits<T>::max());
+    leftSubArray.insert(leftSubArray.cend(), std::numeric_limits<T>::max());
+    rightSubArray.insert(rightSubArray.cend(), std::numeric_limits<T>::max());
     for (uint32_t i = begin; i <= end; ++i)
     {
         if (leftSubArray[leftIndex] < rightSubArray[rightIndex])
@@ -237,7 +237,7 @@ void Sort<T>::quickSortRecursive(T* const sortArray, const uint32_t begin, const
         ++leftIndex;
     }
 
-    if (0 != leftIndex)
+    if (leftIndex)
     {
         quickSortRecursive(sortArray, begin, leftIndex - 1);
     }
@@ -318,6 +318,7 @@ void Sort<T>::countingSort(T* const array, const uint32_t length) const
     }
 
     const T countingLen = max - min + 1;
+    assert(countingLen > 0);
     std::unique_ptr<T[]> counting = std::make_unique<T[]>(countingLen);
     for (uint32_t i = 0; i < length; ++i)
     {
@@ -326,7 +327,7 @@ void Sort<T>::countingSort(T* const array, const uint32_t length) const
     uint32_t index = 0;
     for (T j = 0; j < countingLen; ++j)
     {
-        while (counting[j] > 0)
+        while (counting[j])
         {
             sortArray[index++] = j + min;
             --counting[j];
@@ -416,7 +417,7 @@ void Sort<T>::radixSort(T* const array, const uint32_t length) const
     T absMax = std::max(max, -min);
     uint32_t digitMax = 0;
     const uint32_t base = 10;
-    while (0 != absMax)
+    while (absMax)
     {
         absMax /= base;
         ++digitMax;
@@ -426,6 +427,7 @@ void Sort<T>::radixSort(T* const array, const uint32_t length) const
     const uint32_t bucketNum = (positive ^ negative)
         ? SORT_RADIX_NATURAL_NUMBER_BUCKET
         : (SORT_RADIX_NATURAL_NUMBER_BUCKET + SORT_RADIX_NEGATIVE_INTEGER_BUCKET);
+    assert(bucketNum > 0);
     const uint32_t offset = (!negative) ? 0 : SORT_RADIX_NEGATIVE_INTEGER_BUCKET;
     std::unique_ptr<T[]> countingOld = std::make_unique<T[]>(bucketNum);
     std::unique_ptr<T[]> countingNew = std::make_unique<T[]>(bucketNum);

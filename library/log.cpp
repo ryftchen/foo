@@ -13,7 +13,7 @@ Log::Log() noexcept : minLevel(Level::levelDebug), realTarget(Target::targetAll)
     {
         if (-1 == access(LOG_DIR, F_OK))
         {
-            if (0 != mkdir(LOG_DIR, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH)) // rwx r-x r-x
+            if (mkdir(LOG_DIR, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH)) // d rwx r-x r-x
             {
                 throw CreateFolderError(basename(LOG_DIR));
             }
@@ -59,7 +59,7 @@ Log::Log(
     {
         if (-1 == access(LOG_DIR, F_OK))
         {
-            if (0 != mkdir(LOG_DIR, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH)) // rwx r-x r-x
+            if (mkdir(LOG_DIR, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH)) // d rwx r-x r-x
             {
                 throw CreateFolderError(basename(LOG_DIR));
             }

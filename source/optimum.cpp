@@ -45,7 +45,7 @@ std::optional<std::tuple<ValueY, ValueX>> Fibonacci::operator()(
 
             if (aggregation.size())
             {
-                [[maybe_unused]] const auto [yNew, xNew] = *aggregation.begin();
+                [[maybe_unused]] const auto [yNew, xNew] = *aggregation.cbegin();
                 if (std::fabs(yNew - y) <= eps)
                 {
                     ++cnt;
@@ -156,7 +156,7 @@ std::optional<std::tuple<ValueY, ValueX>> Gradient::operator()(
     while (climbing.size() < Learning::loopTime)
     {
         x = randomX(seed);
-        if (climbing.end() == std::find(climbing.begin(), climbing.end(), x))
+        if (climbing.cend() == std::find(climbing.cbegin(), climbing.cend(), x))
         {
             climbing.emplace_back(x);
         }
@@ -187,8 +187,8 @@ std::optional<std::tuple<ValueY, ValueX>> Gradient::operator()(
         {
             return max1.first > max2.first;
         });
-    max = std::get<0>(*aggregation.begin());
-    x = std::get<1>(*aggregation.begin());
+    max = std::get<0>(*aggregation.cbegin());
+    x = std::get<1>(*aggregation.cbegin());
 
     TIME_END;
     FORMAT_PRINT(OPTIMUM_GRADIENT, max, x, TIME_INTERVAL);
@@ -261,8 +261,8 @@ std::optional<std::tuple<ValueY, ValueX>> Particle::operator()(
 {
     TIME_BEGIN;
     Record rec = recordInit(left, right);
-    const Society::iterator best = std::max_element(
-        std::begin(rec.society), std::end(rec.society),
+    const auto best = std::max_element(
+        std::cbegin(rec.society), std::cend(rec.society),
         [](const auto& max1, const auto& max2)
         {
             return max1.xFitness < max2.xFitness;
@@ -309,8 +309,8 @@ std::optional<std::tuple<ValueY, ValueX>> Particle::operator()(
         }
         rec.history.insert(std::pair<ValueY, ValueX>(xFitnessBest, xBest));
     }
-    xFitnessBest = std::get<0>(*(rec.history.begin()));
-    xBest = std::get<1>(*(rec.history.begin()));
+    xFitnessBest = std::get<0>(*(rec.history.cbegin()));
+    xBest = std::get<1>(*(rec.history.cbegin()));
 
     TIME_END;
     FORMAT_PRINT(OPTIMUM_PARTICLE, xFitnessBest, xBest, TIME_INTERVAL);
@@ -395,7 +395,7 @@ double Genetic::geneDecoding(const Chromosome& chr) const
     double temp = 0.0;
     uint32_t i = 0;
     std::for_each(
-        chr.begin(), chr.end(),
+        chr.cbegin(), chr.cend(),
         [&temp, &i](const auto& bit)
         {
             temp += bit * std::pow(2, i);
@@ -419,7 +419,7 @@ void Genetic::geneCrossover(Chromosome& chr1, Chromosome& chr2)
 {
     Chromosome chrTemp;
     chrTemp.reserve(chr1.size());
-    std::copy(chr1.begin(), chr1.end(), std::back_inserter(chrTemp));
+    std::copy(chr1.cbegin(), chr1.cend(), std::back_inserter(chrTemp));
 
     uint32_t crossBegin = getRandomNumber(chrNum - 1);
     uint32_t crossEnd = getRandomNumber(chrNum - 1);
@@ -427,21 +427,21 @@ void Genetic::geneCrossover(Chromosome& chr1, Chromosome& chr2)
     {
         std::swap(crossBegin, crossEnd);
     }
-    std::copy_n(chr2.begin() + crossBegin, crossEnd - crossBegin, chr1.begin() + crossBegin);
-    std::copy_n(chrTemp.begin() + crossBegin, crossEnd - crossBegin, chr2.begin() + crossBegin);
+    std::copy_n(chr2.cbegin() + crossBegin, crossEnd - crossBegin, chr1.begin() + crossBegin);
+    std::copy_n(chrTemp.cbegin() + crossBegin, crossEnd - crossBegin, chr2.begin() + crossBegin);
 }
 void Genetic::crossIndividual(Population& pop)
 {
     Population popCross;
     popCross.reserve(pop.size());
     Population popTemp(pop.size());
-    std::copy(pop.begin(), pop.end(), popTemp.begin());
+    std::copy(pop.cbegin(), pop.cend(), popTemp.begin());
     while (popTemp.size() > 1)
     {
-        const auto iterParent1 = popTemp.begin() + getRandomNumber(popTemp.size() - 1);
+        const auto iterParent1 = popTemp.cbegin() + getRandomNumber(popTemp.size() - 1);
         Chromosome parent1 = *iterParent1;
         popTemp.erase(iterParent1);
-        const auto iterParent2 = popTemp.begin() + getRandomNumber(popTemp.size() - 1);
+        const auto iterParent2 = popTemp.cbegin() + getRandomNumber(popTemp.size() - 1);
         Chromosome parent2 = *iterParent2;
         popTemp.erase(iterParent2);
         if (Species::crossPr > random())
@@ -451,14 +451,14 @@ void Genetic::crossIndividual(Population& pop)
         popCross.emplace_back(std::move(parent1));
         popCross.emplace_back(std::move(parent2));
     }
-    if (0 != pop.size() % 2)
+    if (pop.size() % 2)
     {
-        const auto iterRemainder = popTemp.begin();
+        const auto iterRemainder = popTemp.cbegin();
         const Chromosome remainder = *iterRemainder;
         popTemp.erase(iterRemainder);
         popCross.emplace_back(remainder);
     }
-    std::copy(popCross.begin(), popCross.end(), pop.begin());
+    std::copy(popCross.cbegin(), popCross.cend(), pop.begin());
 }
 void Genetic::geneMutation(Chromosome& chr)
 {
@@ -467,7 +467,7 @@ void Genetic::geneMutation(Chromosome& chr)
     {
         flip = getRandomNumber(chrNum);
     }
-    while (0 == flip);
+    while (!flip);
 
     std::vector<uint32_t> index(chrNum);
     uint32_t id = 0;
@@ -479,7 +479,7 @@ void Genetic::geneMutation(Chromosome& chr)
         });
     while (flip)
     {
-        const auto iterId = index.begin() + getRandomNumber(index.size() - 1);
+        const auto iterId = index.cbegin() + getRandomNumber(index.size() - 1);
         auto iterBit = chr.begin() + *iterId;
         *iterBit = !*iterBit;
         index.erase(iterId);
@@ -507,15 +507,15 @@ std::optional<std::pair<double, double>> Genetic::fitnessLinearTransformation(co
     std::vector<double> reFitness;
     reFitness.reserve(pop.size());
     std::transform(
-        pop.begin(), pop.end(), std::back_inserter(reFitness),
+        pop.cbegin(), pop.cend(), std::back_inserter(reFitness),
         [this](const auto& ind)
         {
             return calculateFitness(ind);
         });
 
-    double reFitnessMin = *(std::min_element(std::begin(reFitness), std::end(reFitness)));
-    double reFitnessAvg =
-        std::accumulate(std::begin(reFitness), std::end(reFitness), 0.0) / reFitness.size();
+    const double reFitnessMin = *(std::min_element(std::cbegin(reFitness), std::cend(reFitness)));
+    const double reFitnessAvg =
+        std::accumulate(std::cbegin(reFitness), std::cend(reFitness), 0.0) / reFitness.size();
     if (std::fabs(reFitnessMin - reFitnessAvg) > (range.eps * range.eps))
     {
         [[likely]]
@@ -543,12 +543,12 @@ void Genetic::stochasticTournamentSelection(Population& pop, const std::vector<d
         {
             const double rand = random();
             const auto iterCum = std::find_if(
-                fitnessCum.begin(), fitnessCum.end(),
+                fitnessCum.cbegin(), fitnessCum.cend(),
                 [&rand](const auto& cumulation)
                 {
                     return cumulation > rand;
                 });
-            assert(iterCum != fitnessCum.end());
+            assert(iterCum != fitnessCum.cend());
 
             auto iterInd = pop.begin() + (iterCum - fitnessCum.begin());
             if (pop.end() == competitor1)
@@ -573,7 +573,7 @@ void Genetic::stochasticTournamentSelection(Population& pop, const std::vector<d
         }
         while ((pop.end() == competitor1) || (pop.end() == competitor2));
     }
-    std::copy(popNew.begin(), popNew.end(), pop.begin());
+    std::copy(popNew.cbegin(), popNew.cend(), pop.begin());
 }
 void Genetic::selectIndividual(Population& pop)
 {
@@ -587,7 +587,7 @@ void Genetic::selectIndividual(Population& pop)
     std::vector<double> fitnessVal;
     fitnessVal.reserve(pop.size());
     std::transform(
-        pop.begin(), pop.end(), std::back_inserter(fitnessVal),
+        pop.cbegin(), pop.cend(), std::back_inserter(fitnessVal),
         [&](const auto& ind)
         {
             const double fitVal = alpha * calculateFitness(ind) + beta;
@@ -599,7 +599,7 @@ void Genetic::selectIndividual(Population& pop)
     std::vector<double> fitnessAvg;
     fitnessAvg.reserve(fitnessVal.size());
     std::transform(
-        fitnessVal.begin(), fitnessVal.end(), std::back_inserter(fitnessAvg),
+        fitnessVal.cbegin(), fitnessVal.cend(), std::back_inserter(fitnessAvg),
         [&sum](const auto& fitVal)
         {
             return fitVal / sum;
@@ -620,7 +620,7 @@ Chromosome Genetic::getBestIndividual(const Population& pop)
     std::vector<double> fitnessVal;
     fitnessVal.reserve(pop.size());
     std::transform(
-        pop.begin(), pop.end(), std::back_inserter(fitnessVal),
+        pop.cbegin(), pop.cend(), std::back_inserter(fitnessVal),
         [this](const auto& ind)
         {
             return calculateFitness(ind);
