@@ -29,14 +29,17 @@ void Command::parseArgv(const int argc, char* const argv[])
             switch (bkdrHash(argv[i]))
             {
                 case "-o"_bkdrHash:
+                    [[fallthrough]];
                 case "--optimum"_bkdrHash:
                     COMMAND_PREPARE_BIT_SET(taskPlan.optimumBit, TaskBit::taskOptimum);
                     break;
                 case "-i"_bkdrHash:
+                    [[fallthrough]];
                 case "--integral"_bkdrHash:
                     COMMAND_PREPARE_BIT_SET(taskPlan.integralBit, TaskBit::taskIntegral);
                     break;
                 case "-s"_bkdrHash:
+                    [[fallthrough]];
                 case "--sort"_bkdrHash:
                     COMMAND_PREPARE_BIT_SET(taskPlan.sortBit, TaskBit::taskSort);
                     break;
@@ -446,12 +449,12 @@ void Command::printLogContext()
             static_cast<__gnu_cxx::stdio_filebuf<char>* const>(logger.getOfs().rdbuf())->fd();
         if (flock(fd, LOCK_UN))
         {
-            throw UnlockWriterLockError(basename(LOG_PATH));
+            throwLockFileException(basename(LOG_PATH), false, false);
         }
 
         printFile(LOG_PATH, true, COMMAND_PRINT_MAX_LINE, &changeLogLevelStyle);
     }
-    catch (UnlockWriterLockError const& error)
+    catch (LockFileError const& error)
     {
         LOGGER_ERR(error.what());
     }
