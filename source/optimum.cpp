@@ -16,12 +16,7 @@ std::optional<std::tuple<ValueY, ValueX>> Fibonacci::operator()(
     double x = 0.0, y = 0.0;
 
     const auto firstResult = fibonacciSearch(left, right, eps);
-    if (UNLIKELY(!firstResult.has_value()))
-    {
-        FORMAT_PRINT("*Fibonacci method: The precise %.5f isn't enough.\n", eps);
-        return std::nullopt;
-    }
-    else
+    if (firstResult.has_value())
     {
         y = std::get<0>(firstResult.value());
         x = std::get<1>(firstResult.value());
@@ -50,7 +45,7 @@ std::optional<std::tuple<ValueY, ValueX>> Fibonacci::operator()(
 
             if (aggregation.size())
             {
-                const auto [yNew, xNew] = *aggregation.begin();
+                [[maybe_unused]] const auto [yNew, xNew] = *aggregation.begin();
                 if (std::fabs(yNew - y) <= eps)
                 {
                     ++cnt;
@@ -64,6 +59,11 @@ std::optional<std::tuple<ValueY, ValueX>> Fibonacci::operator()(
             n *= 2;
         }
         while (cnt < OPTIMUM_FIBONACCI_UNCHANGED_TIMES);
+    }
+    else
+    {
+        FORMAT_PRINT("*Fibonacci method: The precise %.5f isn't enough.\n", eps);
+        return std::nullopt;
     }
 
     TIME_END;
@@ -516,12 +516,16 @@ std::optional<std::pair<double, double>> Genetic::fitnessLinearTransformation(co
     double reFitnessMin = *(std::min_element(std::begin(reFitness), std::end(reFitness)));
     double reFitnessAvg =
         std::accumulate(std::begin(reFitness), std::end(reFitness), 0.0) / reFitness.size();
-    if (LIKELY(std::fabs(reFitnessMin - reFitnessAvg) > (range.eps * range.eps)))
+    if (std::fabs(reFitnessMin - reFitnessAvg) > (range.eps * range.eps))
     {
-        const double alpha = reFitnessAvg / (reFitnessAvg - reFitnessMin);
-        const double beta = -1.0 * (reFitnessMin * reFitnessAvg) / (reFitnessAvg - reFitnessMin);
-        assert(!isnan(alpha) && !isinf(alpha) && !isnan(beta) && !isinf(beta));
-        return std::make_optional(std::pair<double, double>(alpha, beta));
+        [[likely]]
+        {
+            const double alpha = reFitnessAvg / (reFitnessAvg - reFitnessMin);
+            const double beta =
+                -1.0 * (reFitnessMin * reFitnessAvg) / (reFitnessAvg - reFitnessMin);
+            assert(!isnan(alpha) && !isinf(alpha) && !isnan(beta) && !isinf(beta));
+            return std::make_optional(std::pair<double, double>(alpha, beta));
+        }
     }
     else
     {
