@@ -541,7 +541,7 @@ void executeCommand(const char* const command)
         throw CallFunctionError("popen()");
     }
 
-    char resultBuffer[BUFFER_SIZE_MAX] = {'\0'};
+    char resultBuffer[BUFFER_SIZE_MAX + 1] = {'\0'};
     while (nullptr != fgets(resultBuffer, sizeof(resultBuffer), file))
     {
         if ('\n' == resultBuffer[std::strlen(resultBuffer) - 1])

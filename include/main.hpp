@@ -21,17 +21,20 @@
             str;                                                              \
         })
 #define FORMAT_PRINT(format, args...) std::cout << FORMAT_TO_STRING(format, ##args)
+#define BUFFER_SIZE_16 16
+#define BUFFER_SIZE_32 32
+#define BUFFER_SIZE_4096 4096
+#define BUFFER_SIZE_MAX BUFFER_SIZE_4096
 #define PRINT_COLOR_RED "\033[0;31;40m"
 #define PRINT_COLOR_GREEN "\033[0;32;40m"
 #define PRINT_COLOR_YELLOW "\033[0;33;40m"
 #define PRINT_COLOR_END "\033[0m"
-#define BUFFER_SIZE_MAX 4096
 
 static void switchToProjectPath()
 {
     try
     {
-        char absolutePath[BUFFER_SIZE_MAX] = {'\0'};
+        char absolutePath[BUFFER_SIZE_MAX + 1] = {'\0'};
         const int length = readlink("/proc/self/exe", absolutePath, BUFFER_SIZE_MAX);
         if ((length < 0) || (length >= BUFFER_SIZE_MAX))
         {

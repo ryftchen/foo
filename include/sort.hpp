@@ -8,7 +8,7 @@
 #define SORT_ARRAY_RANGE_1 -50
 #define SORT_ARRAY_RANGE_2 150
 #define SORT_ARRAY_LENGTH 53
-#define SORT_PRINT_MAX_ALIGN 16
+#define SORT_PRINT_MAX_ALIGN BUFFER_SIZE_16
 #define SORT_PRINT_MAX_COLUMN 10
 #define SORT_RUN_BEGIN "\r\n----------   BEGIN SORT   ----------"
 #define SORT_RUN_END "\r\n----------    END SORT    ----------"
