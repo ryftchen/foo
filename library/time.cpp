@@ -1,7 +1,6 @@
 #include "time.hpp"
 #include <cstring>
 #include <iostream>
-#include "main.hpp"
 
 std::string getCurrentSystemTime(char* const date)
 {
