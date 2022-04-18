@@ -15,7 +15,7 @@ on:
     - cron: '0 0 * * MON'
 
 jobs:
-  Analysis:
+  Precheck:
     runs-on: ubuntu-20.04
 
     permissions:
@@ -28,7 +28,7 @@ jobs:
         uses: actions/checkout@v3.0.0
 
       - name: Check spelling
-        if: github.event_name != 'workflow_dispatch'
+        if: github.event_name == 'push'
         uses: check-spelling/check-spelling@v0.0.20-alpha5
         with:
           config: .github/actions/spelling
