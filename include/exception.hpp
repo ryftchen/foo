@@ -31,19 +31,6 @@ private:
     std::string message;
 };
 
-class CreateFolderError : public std::exception
-{
-public:
-    CreateFolderError() : message("Failed to create folder."){};
-    explicit CreateFolderError(const std::string& str) :
-        message("Failed to create folder " + str + "."){};
-    ~CreateFolderError() noexcept override = default;
-    [[nodiscard]] const char* what() const noexcept override;
-
-private:
-    std::string message;
-};
-
 class OpenFileError : public std::exception
 {
 public:

@@ -489,7 +489,8 @@ void Command::printLogContext()
             static_cast<__gnu_cxx::stdio_filebuf<char>* const>(logger.getOfs().rdbuf())->fd();
         if (flock(fd, LOCK_UN))
         {
-            throwLockFileException(basename(LOG_PATH), false, false);
+            throwLockFileException(
+                std::filesystem::path(LOG_PATH).filename().string(), false, false);
         }
 
         printFile(LOG_PATH, true, COMMAND_PRINT_MAX_LINE, &changeLogLevelStyle);

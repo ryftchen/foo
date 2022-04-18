@@ -1,7 +1,6 @@
 #include "log.hpp"
 #include <ext/stdio_filebuf.h>
 #include <sys/file.h>
-#include <sys/stat.h>
 #include <list>
 #include <regex>
 
@@ -11,30 +10,25 @@ Log::Log() noexcept : minLevel(Level::levelDebug), realTarget(Target::targetAll)
 {
     try
     {
-        if (-1 == access(LOG_DIR, F_OK))
+        if (!std::filesystem::exists(LOG_DIR))
         {
-            if (mkdir(LOG_DIR, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH)) // d rwx r-x r-x
-            {
-                throw CreateFolderError(basename(LOG_DIR));
-            }
+            std::filesystem::create_directory(LOG_DIR);
+            std::filesystem::permissions(
+                LOG_DIR, std::filesystem::perms::owner_all, std::filesystem::perm_options::add);
         }
 
         ofs.open(pathname, std::ios_base::out | std::ios_base::app);
         if (!ofs)
         {
-            throw OpenFileError(basename(pathname));
+            throw OpenFileError(std::filesystem::path(pathname).filename().string());
         }
 
         const int fd = static_cast<__gnu_cxx::stdio_filebuf<char>* const>(ofs.rdbuf())->fd();
         if (flock(fd, LOCK_EX | LOCK_NB))
         {
-            throwLockFileException(basename(pathname), true, false);
+            throwLockFileException(
+                std::filesystem::path(pathname).filename().string(), true, false);
         }
-    }
-    catch (CreateFolderError const& error)
-    {
-        std::cerr << error.what() << std::endl;
-        realTarget = Target::targetTerminal;
     }
     catch (OpenFileError const& error)
     {
@@ -57,12 +51,11 @@ Log::Log(
     pathname[LOG_PATHNAME_LENGTH] = '\0';
     try
     {
-        if (-1 == access(LOG_DIR, F_OK))
+        if (!std::filesystem::exists(LOG_DIR))
         {
-            if (mkdir(LOG_DIR, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH)) // d rwx r-x r-x
-            {
-                throw CreateFolderError(basename(LOG_DIR));
-            }
+            std::filesystem::create_directory(LOG_DIR);
+            std::filesystem::permissions(
+                LOG_DIR, std::filesystem::perms::owner_all, std::filesystem::perm_options::add);
         }
 
         switch (type)
@@ -79,19 +72,15 @@ Log::Log(
 
         if (!ofs)
         {
-            throw OpenFileError(basename(pathname));
+            throw OpenFileError(std::filesystem::path(pathname).filename().string());
         }
 
         const int fd = static_cast<__gnu_cxx::stdio_filebuf<char>* const>(ofs.rdbuf())->fd();
         if (flock(fd, LOCK_EX | LOCK_NB))
         {
-            throwLockFileException(basename(pathname), true, false);
+            throwLockFileException(
+                std::filesystem::path(pathname).filename().string(), true, false);
         }
-    }
-    catch (CreateFolderError const& error)
-    {
-        std::cerr << error.what() << std::endl;
-        realTarget = Target::targetTerminal;
     }
     catch (OpenFileError const& error)
     {
@@ -112,7 +101,8 @@ Log::~Log()
         const int fd = static_cast<__gnu_cxx::stdio_filebuf<char>* const>(ofs.rdbuf())->fd();
         if (flock(fd, LOCK_UN))
         {
-            throwLockFileException(basename(pathname), false, false);
+            throwLockFileException(
+                std::filesystem::path(pathname).filename().string(), false, false);
         }
     }
     catch (LockFileError const& error)
@@ -139,14 +129,14 @@ void printFile(
     file.open(pathname, std::ios_base::in);
     if (!file)
     {
-        throw OpenFileError(basename(pathname));
+        throw OpenFileError(std::filesystem::path(pathname).filename().string());
     }
 
     const int fd = static_cast<__gnu_cxx::stdio_filebuf<char>* const>(file.rdbuf())->fd();
     if (flock(fd, LOCK_SH | LOCK_NB))
     {
         file.close();
-        throwLockFileException(basename(pathname), true, true);
+        throwLockFileException(std::filesystem::path(pathname).filename().string(), true, true);
     }
 
     PrintStyle formatStyle = style;
@@ -183,7 +173,7 @@ void printFile(
     if (flock(fd, LOCK_UN))
     {
         file.close();
-        throwLockFileException(basename(pathname), false, true);
+        throwLockFileException(std::filesystem::path(pathname).filename().string(), false, true);
     }
     file.close();
 }

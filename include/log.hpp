@@ -106,7 +106,8 @@ void Log::outputLog(
         }
 
         std::string output = prefix + ":[" + TIME_GET_CURRENT_DATE + "]:["
-            + basename(codeFile.c_str()) + "#" + std::to_string(codeLine) + "]: ";
+            + std::filesystem::path(codeFile.c_str()).filename().string() + "#"
+            + std::to_string(codeLine) + "]: ";
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat-security"
         output.append(FORMAT_TO_STRING(format, std::forward<Args>(args)...));
