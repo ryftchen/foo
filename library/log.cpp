@@ -159,10 +159,20 @@ void printFile(
     }
     else
     {
-        while ((context.size() < maxLine) && std::getline(file, line))
+        std::ifstream fileTmp(pathname);
+        uint32_t lineNum = std::count(
+            std::istreambuf_iterator<char>(fileTmp), std::istreambuf_iterator<char>(), '\n');
+        uint32_t currentLine = 0, startLine = 0;
+        (lineNum > maxLine) ? (startLine = lineNum - maxLine + 1) : (startLine = 1);
+        while (std::getline(file, line))
         {
-            context.emplace_front(formatStyle(line));
+            ++currentLine;
+            if (currentLine >= startLine)
+            {
+                context.emplace_front(formatStyle(line));
+            }
         }
+        assert(context.size() <= maxLine);
     }
 
     for (const auto& printLine : context)
