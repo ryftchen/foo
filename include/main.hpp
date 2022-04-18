@@ -1,10 +1,9 @@
 #pragma once
-#include <libgen.h>
-#undef basename
 #include <unistd.h>
 #define NDEBUG
 #include <cassert>
 #include <cstring>
+#include <filesystem>
 #include <iostream>
 #include "exception.hpp"
 
@@ -39,11 +38,9 @@ static void switchToProjectPath()
             throw CallFunctionError("readlink()");
         }
 
-        const int status = chdir(dirname(dirname(absolutePath)));
-        if (-1 == status)
-        {
-            throw CallFunctionError("chdir()");
-        }
+        std::filesystem::path buildPath(std::filesystem::path{absolutePath}.parent_path());
+        assert(buildPath.has_parent_path());
+        std::filesystem::current_path(buildPath.parent_path());
     }
     catch (CallFunctionError const& error)
     {
