@@ -12,21 +12,12 @@ fcoverage
 fibonacci
 fprofile
 getsignal
-GPATH
 Griewank
-GRTAGS
-gtags
 hea
 indexgenerator
-IRGRP
-IROTH
-IRWXU
-IXGRP
-IXOTH
 jcvf
 llvm
 markov
-maxdepth
 mday
 memcheck
 milli
@@ -39,7 +30,6 @@ pylintrc
 Rastrigin
 rcfile
 ROMBERG
-rwx
 setname
 shellcheck
 shellcheckrc
@@ -50,4 +40,3 @@ uninit
 valgrind
 woboq
 WRN
-zcvf
