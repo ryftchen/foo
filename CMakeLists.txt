@@ -9,7 +9,7 @@ INCLUDE_DIRECTORIES(include)
 
 # source directory
 AUX_SOURCE_DIRECTORY(source SOURCE_LIST)
-AUX_SOURCE_DIRECTORY(library LIBRARY_LIST)
+AUX_SOURCE_DIRECTORY(utility UTILITY_LIST)
 
 # set environment variable
 SET(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -22,7 +22,7 @@ ENDIF()
 ADD_COMPILE_OPTIONS(-std=c++20 -stdlib=libstdc++ -W)
 
 # add executable file
-ADD_EXECUTABLE(foo ${SOURCE_LIST} ${LIBRARY_LIST})
+ADD_EXECUTABLE(foo ${SOURCE_LIST} ${UTILITY_LIST})
 
 # add link library
 TARGET_LINK_LIBRARIES(foo pthread)

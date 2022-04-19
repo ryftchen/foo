@@ -11,7 +11,7 @@ ARGS_RELEASE=false
 PROJECT_FOLDER="foo"
 INCLUDE_FOLDER="include"
 SOURCE_FOLDER="source"
-LIBRARY_FOLDER="library"
+UTILITY_FOLDER="utility"
 SCRIPT_FOLDER="script"
 BUILD_FOLDER="build"
 TEMP_FOLDER="temp"
@@ -88,7 +88,7 @@ checkDependencies()
     fi
 
     if [ ! -d ./"${INCLUDE_FOLDER}" ] || [ ! -d ./"${SOURCE_FOLDER}" ] \
-        || [ ! -d ./"${LIBRARY_FOLDER}" ] || [ ! -d ./"${SCRIPT_FOLDER}" ] \
+        || [ ! -d ./"${UTILITY_FOLDER}" ] || [ ! -d ./"${SCRIPT_FOLDER}" ] \
         || [ ! -f ./"${CMAKE_FILE}" ]; then
         printAbort "There are missing files in ${PROJECT_FOLDER} folder."
     fi
@@ -145,7 +145,7 @@ performOptionFormat()
         then
             if [ -f ./"${FORMAT_CONFIG_CPP}" ]; then
                 bashCommand "clang-format-12 -i --verbose ./${INCLUDE_FOLDER}/*.hpp \
-./${SOURCE_FOLDER}/*.cpp ./${LIBRARY_FOLDER}/*.cpp"
+./${SOURCE_FOLDER}/*.cpp ./${UTILITY_FOLDER}/*.cpp"
             else
                 printAbort "There is no ${FORMAT_CONFIG_CPP} file in ${PROJECT_FOLDER} folder. \
 Please generate it."
@@ -169,7 +169,7 @@ performOptionLint()
             if [ -f ./"${BUILD_FOLDER}"/"${COMPILE_COMMANDS}" ]; then
                 if [ -f ./"${LINT_CONFIG_CPP}" ]; then
                     bashCommand "clang-tidy-12 -p ./${BUILD_FOLDER}/${COMPILE_COMMANDS} \
-./${INCLUDE_FOLDER}/*.hpp ./${SOURCE_FOLDER}/*.cpp ./${LIBRARY_FOLDER}/*.cpp"
+./${INCLUDE_FOLDER}/*.hpp ./${SOURCE_FOLDER}/*.cpp ./${UTILITY_FOLDER}/*.cpp"
                 else
                     printAbort "There is no ${LINT_CONFIG_CPP} file in ${PROJECT_FOLDER} folder. \
 Please generate it."
@@ -276,7 +276,7 @@ tarBackup()
     bashCommand "mkdir -p ./${TEMP_FOLDER}/${PROJECT_FOLDER}"
     bashCommand "find . -type f -o \( -path ./${BUILD_FOLDER} -o -path ./${TEMP_FOLDER} \
 -o -path './.*' \) -prune -o -print | sed 1d \
-| grep -E '${INCLUDE_FOLDER}|${SOURCE_FOLDER}|${LIBRARY_FOLDER}|${SCRIPT_FOLDER}' \
+| grep -E '${INCLUDE_FOLDER}|${SOURCE_FOLDER}|${UTILITY_FOLDER}|${SCRIPT_FOLDER}' \
 | xargs -i cp -R {} ${TEMP_FOLDER}/${PROJECT_FOLDER}/"
     bashCommand "find . -maxdepth 1 -type d -o -print | grep -E '*\.txt' \
 | xargs -i cp -R {} ${TEMP_FOLDER}/${PROJECT_FOLDER}/"
@@ -291,7 +291,7 @@ performOptionTag()
         if
             command -v gtags >/dev/null 2>&1
         then
-            bashCommand "find ./${INCLUDE_FOLDER} ./${SOURCE_FOLDER} ./${LIBRARY_FOLDER} -type f \
+            bashCommand "find ./${INCLUDE_FOLDER} ./${SOURCE_FOLDER} ./${UTILITY_FOLDER} -type f \
 -print | grep -E '*\.cpp|*\.hpp' | gtags -i -v -f -"
         else
             printAbort "There is no gtags program. Please check it."
