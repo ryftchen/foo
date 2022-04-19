@@ -74,7 +74,7 @@ jobs:
       - name: Inspect
         run: |
           ./script/build.sh --cleanup
-          ./script/build.sh --release --format --lint --html --backup --tag
+          ./script/build.sh --release --format --lint --html
           git status
 
       - name: Build
