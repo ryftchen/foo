@@ -15,6 +15,7 @@ getsignal
 Griewank
 hea
 indexgenerator
+istreambuf
 jcvf
 llvm
 markov
