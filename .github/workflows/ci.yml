@@ -31,7 +31,7 @@ jobs:
         if: github.event_name == 'push'
         uses: check-spelling/check-spelling@v0.0.20-alpha5
         with:
-          config: .github/actions/spelling
+          config: .github/actions/check_spelling
           post_comment: 0
           extra_dictionaries:
             cspell:bash/bash-words.txt
