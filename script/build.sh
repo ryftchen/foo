@@ -4,8 +4,6 @@ ARGS_CLEANUP=false
 ARGS_FORMAT=false
 ARGS_LINT=false
 ARGS_HTML=false
-ARGS_BACKUP=false
-ARGS_TAG=false
 ARGS_RELEASE=false
 
 PROJECT_FOLDER="foo"
@@ -53,10 +51,6 @@ printInstruction()
     echo
     echo "    -h, --html                         Html"
     echo
-    echo "    -b, --backup                       Backup"
-    echo
-    echo "    -t, --tag                          Tag"
-    echo
     echo "    --release                          Release"
     echo
     echo "    --help                             Help"
@@ -71,8 +65,6 @@ parseArgs()
         -f | --format) ARGS_FORMAT=true ;;
         -l | --lint) ARGS_LINT=true ;;
         -h | --html) ARGS_HTML=true ;;
-        -b | --backup) ARGS_BACKUP=true ;;
-        -t | --tag) ARGS_TAG=true ;;
         --release) ARGS_RELEASE=true ;;
         --help) printInstruction ;;
         *) printAbort "Unknown command line option: $1. Try with --help to get information." ;;
@@ -130,7 +122,7 @@ performOptionCleanup()
 {
     if [ "${ARGS_CLEANUP}" = true ]; then
         bashCommand "rm -rf ./${BUILD_FOLDER} ./${TEMP_FOLDER}"
-        bashCommand "rm -rf ./core* ./GPATH ./GRTAGS ./GTAGS"
+        bashCommand "rm -rf ./core*"
         exit 0
     fi
 }
@@ -242,63 +234,6 @@ tarHtml()
     bashCommand "rm -rf ./${TEMP_FOLDER}/${browserFolder}"
 }
 
-performOptionBackup()
-{
-    if [ "${ARGS_BACKUP}" = true ]; then
-        if [ -d ./"${TEMP_FOLDER}" ]; then
-            files=$(find "${TEMP_FOLDER}"/ -type f -name "${PROJECT_FOLDER}_backup_*.tar.gz" \
-                2>/dev/null | wc -l)
-            if [ "${files}" != "0" ]; then
-                lastTar=$(find "${TEMP_FOLDER}"/ -type f -name "${PROJECT_FOLDER}_backup_*.tar.gz" \
-                    -print0 | xargs --null ls -at | head -n 1)
-                timeDiff=$(($(date +%s) - $(stat -L --format %Y "${lastTar}")))
-                if [ "${timeDiff}" -gt "10" ]; then
-                    tarBackup
-                else
-                    printAbort "The latest backup file ${lastTar} has been generated since \
-${timeDiff} seconds ago."
-                fi
-            else
-                tarBackup
-            fi
-        else
-            bashCommand "mkdir ./${TEMP_FOLDER}"
-            tarBackup
-        fi
-    fi
-}
-tarBackup()
-{
-    tarFolder="${PROJECT_FOLDER}_backup_$(date "+%Y%m%d%H%M%S")"
-    if [ -d ./"${TEMP_FOLDER}"/"${PROJECT_FOLDER}" ]; then
-        rm -rf ./"${TEMP_FOLDER}"/"${PROJECT_FOLDER}"
-    fi
-    bashCommand "mkdir -p ./${TEMP_FOLDER}/${PROJECT_FOLDER}"
-    bashCommand "find . -type f -o \( -path ./${BUILD_FOLDER} -o -path ./${TEMP_FOLDER} \
--o -path './.*' \) -prune -o -print | sed 1d \
-| grep -E '${INCLUDE_FOLDER}|${SOURCE_FOLDER}|${UTILITY_FOLDER}|${SCRIPT_FOLDER}' \
-| xargs -i cp -R {} ${TEMP_FOLDER}/${PROJECT_FOLDER}/"
-    bashCommand "find . -maxdepth 1 -type d -o -print | grep -E '*\.txt' \
-| xargs -i cp -R {} ${TEMP_FOLDER}/${PROJECT_FOLDER}/"
-    bashCommand "tar -zcvf ${TEMP_FOLDER}/${tarFolder}.tar.gz -C ./${TEMP_FOLDER} \
-${PROJECT_FOLDER}"
-    bashCommand "rm -rf ./${TEMP_FOLDER}/${PROJECT_FOLDER}"
-}
-
-performOptionTag()
-{
-    if [ "${ARGS_TAG}" = true ]; then
-        if
-            command -v gtags >/dev/null 2>&1
-        then
-            bashCommand "find ./${INCLUDE_FOLDER} ./${SOURCE_FOLDER} ./${UTILITY_FOLDER} -type f \
--print | grep -E '*\.cpp|*\.hpp' | gtags -i -v -f -"
-        else
-            printAbort "There is no gtags program. Please check it."
-        fi
-    fi
-}
-
 main()
 {
     cd "$(dirname "$(dirname "$0")")" || exit 1
@@ -312,8 +247,6 @@ main()
     performOptionFormat
     performOptionLint
     performOptionHtml
-    performOptionBackup
-    performOptionTag
 
     compileCode
 }
