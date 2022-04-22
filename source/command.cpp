@@ -494,6 +494,11 @@ void Command::printLogContext()
         }
 
         printFile(LOG_PATH, true, COMMAND_PRINT_MAX_LINE, &changeLogLevelStyle);
+        if (flock(fd, LOCK_EX | LOCK_NB))
+        {
+            throwLockFileException(
+                std::filesystem::path(LOG_PATH).filename().string(), true, false);
+        }
     }
     catch (LockFileError const& error)
     {
