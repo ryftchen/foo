@@ -15,8 +15,8 @@ on:
     - cron: '0 0 * * MON'
 
 jobs:
-  if: github.event_name == 'push'
   Precheck:
+    if: github.event_name == 'push'
     runs-on: ubuntu-20.04
 
     permissions:
