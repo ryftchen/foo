@@ -15,6 +15,7 @@ on:
     - cron: '0 0 * * MON'
 
 jobs:
+  if: github.event_name == 'push'
   Precheck:
     runs-on: ubuntu-20.04
 
@@ -28,7 +29,6 @@ jobs:
         uses: actions/checkout@v3.0.0
 
       - name: Check spelling
-        if: github.event_name == 'push'
         uses: check-spelling/check-spelling@v0.0.20-alpha5
         with:
           config: .github/actions/check_spelling
