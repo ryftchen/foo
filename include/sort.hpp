@@ -20,6 +20,13 @@
 #define SORT_RADIX_DEC 10
 #define SORT_RADIX_NATURAL_NUMBER_BUCKET 10
 #define SORT_RADIX_NEGATIVE_INTEGER_BUCKET 9
+#define SORT_FORMAT_FOR_LOOP(format, args...)                                                     \
+    formatSize = std::snprintf(buffer + completeSize, bufferSize - completeSize, format, ##args); \
+    if ((formatSize < 0) || (formatSize >= static_cast<int>(bufferSize - completeSize)))          \
+    {                                                                                             \
+        break;                                                                                    \
+    }                                                                                             \
+    completeSize += formatSize;
 
 template <class T>
 class Sort
@@ -173,22 +180,14 @@ char* Sort<T>::formatArray(
     {
         format = "%*.5f ";
     }
+    int formatSize = 0;
     uint32_t completeSize = 0;
     for (uint32_t i = 0; i < length; ++i)
     {
-        completeSize += std::snprintf(
-            buffer + completeSize, bufferSize - completeSize, format, align + 1, *(array + i));
-        if ((completeSize < 0) || (completeSize >= bufferSize - completeSize))
-        {
-            break;
-        }
+        SORT_FORMAT_FOR_LOOP(format, align + 1, *(array + i));
         if ((0 == (i + 1) % SORT_PRINT_MAX_COLUMN) && (length != (i + 1)))
         {
-            completeSize += std::snprintf(buffer + completeSize, bufferSize - completeSize, "\n");
-            if ((completeSize < 0) || (completeSize >= bufferSize - completeSize))
-            {
-                break;
-            }
+            SORT_FORMAT_FOR_LOOP("\n");
         }
     }
     return buffer;
