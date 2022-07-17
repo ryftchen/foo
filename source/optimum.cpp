@@ -67,7 +67,7 @@ std::optional<std::tuple<ValueY, ValueX>> Fibonacci::operator()(
     }
 
     TIME_END;
-    FORMAT_PRINT(OPTIMUM_FIBONACCI, y, x, TIME_INTERVAL);
+    FORMAT_PRINT(OPTIMUM_RESULT(max), "Fibonacci", y, x, TIME_INTERVAL);
     return std::make_optional(std::make_tuple(y, x));
 }
 std::optional<std::pair<ValueY, ValueX>> Fibonacci::fibonacciSearch(
@@ -149,7 +149,7 @@ std::optional<std::tuple<ValueY, ValueX>> Gradient::operator()(
 {
     TIME_BEGIN;
     TIME_GET_SEED(seed);
-    double x = 0.0, max = 0.0;
+    double x = 0.0, y = 0.0;
     std::uniform_real_distribution<double> randomX(left, right);
     std::vector<double> climbing;
     climbing.reserve(Learning::loopTime);
@@ -187,12 +187,12 @@ std::optional<std::tuple<ValueY, ValueX>> Gradient::operator()(
         {
             return max1.first > max2.first;
         });
-    max = std::get<0>(*aggregation.cbegin());
+    y = std::get<0>(*aggregation.cbegin());
     x = std::get<1>(*aggregation.cbegin());
 
     TIME_END;
-    FORMAT_PRINT(OPTIMUM_GRADIENT, max, x, TIME_INTERVAL);
-    return std::make_optional(std::make_tuple(max, x));
+    FORMAT_PRINT(OPTIMUM_RESULT(max), "Gradient", y, x, TIME_INTERVAL);
+    return std::make_optional(std::make_tuple(y, x));
 }
 double Gradient::calculateFirstDerivative(const double x, const double eps) const
 {
@@ -251,7 +251,7 @@ std::optional<std::tuple<ValueY, ValueX>> Annealing::operator()(
     }
 
     TIME_END;
-    FORMAT_PRINT(OPTIMUM_ANNEALING, y, x, TIME_INTERVAL);
+    FORMAT_PRINT(OPTIMUM_RESULT(max), "Annealing", y, x, TIME_INTERVAL);
     return std::make_optional(std::make_tuple(y, x));
 }
 
@@ -313,7 +313,7 @@ std::optional<std::tuple<ValueY, ValueX>> Particle::operator()(
     xBest = std::get<1>(*(rec.history.cbegin()));
 
     TIME_END;
-    FORMAT_PRINT(OPTIMUM_PARTICLE, xFitnessBest, xBest, TIME_INTERVAL);
+    FORMAT_PRINT(OPTIMUM_RESULT(max), "Particle", xFitnessBest, xBest, TIME_INTERVAL);
     return std::make_optional(std::make_tuple(xFitnessBest, xBest));
 }
 Record Particle::recordInit(const double left, const double right)
@@ -360,7 +360,7 @@ std::optional<std::tuple<ValueY, ValueX>> Genetic::operator()(
     const double x = geneDecoding(getBestIndividual(pop));
 
     TIME_END;
-    FORMAT_PRINT(OPTIMUM_GENETIC, fun(x), x, TIME_INTERVAL);
+    FORMAT_PRINT(OPTIMUM_RESULT(max), "Genetic", fun(x), x, TIME_INTERVAL);
     return std::make_optional(std::make_tuple(fun(x), x));
 }
 void Genetic::setSpecies(const double left, const double right, const double eps)

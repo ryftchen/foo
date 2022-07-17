@@ -40,7 +40,7 @@ void Sort<T>::bubbleSort(T* const array, const uint32_t length) const
     char arrayBuffer[arrayBufferSize + 1];
     arrayBuffer[0] = '\0';
     FORMAT_PRINT(
-        SORT_BUBBLE, formatArray(sortArray, length, arrayBuffer, arrayBufferSize + 1),
+        SORT_RESULT, "Bubble", formatArray(sortArray, length, arrayBuffer, arrayBufferSize + 1),
         TIME_INTERVAL);
 }
 
@@ -71,7 +71,7 @@ void Sort<T>::selectionSort(T* const array, const uint32_t length) const
     char arrayBuffer[arrayBufferSize + 1];
     arrayBuffer[0] = '\0';
     FORMAT_PRINT(
-        SORT_SELECTION, formatArray(sortArray, length, arrayBuffer, arrayBufferSize + 1),
+        SORT_RESULT, "Selection", formatArray(sortArray, length, arrayBuffer, arrayBufferSize + 1),
         TIME_INTERVAL);
 }
 
@@ -101,7 +101,7 @@ void Sort<T>::insertionSort(T* const array, const uint32_t length) const
     char arrayBuffer[arrayBufferSize + 1];
     arrayBuffer[0] = '\0';
     FORMAT_PRINT(
-        SORT_INSERTION, formatArray(sortArray, length, arrayBuffer, arrayBufferSize + 1),
+        SORT_RESULT, "Insertion", formatArray(sortArray, length, arrayBuffer, arrayBufferSize + 1),
         TIME_INTERVAL);
 }
 
@@ -132,7 +132,7 @@ void Sort<T>::shellSort(T* const array, const uint32_t length) const
     char arrayBuffer[arrayBufferSize + 1];
     arrayBuffer[0] = '\0';
     FORMAT_PRINT(
-        SORT_SHELL, formatArray(sortArray, length, arrayBuffer, arrayBufferSize + 1),
+        SORT_RESULT, "Shell", formatArray(sortArray, length, arrayBuffer, arrayBufferSize + 1),
         TIME_INTERVAL);
 }
 
@@ -152,7 +152,7 @@ void Sort<T>::mergeSort(T* const array, const uint32_t length) const
     char arrayBuffer[arrayBufferSize + 1];
     arrayBuffer[0] = '\0';
     FORMAT_PRINT(
-        SORT_MERGE, formatArray(sortArray, length, arrayBuffer, arrayBufferSize + 1),
+        SORT_RESULT, "Merge", formatArray(sortArray, length, arrayBuffer, arrayBufferSize + 1),
         TIME_INTERVAL);
 }
 template <class T>
@@ -202,7 +202,7 @@ void Sort<T>::quickSort(T* const array, const uint32_t length) const
     char arrayBuffer[arrayBufferSize + 1];
     arrayBuffer[0] = '\0';
     FORMAT_PRINT(
-        SORT_QUICK, formatArray(sortArray, length, arrayBuffer, arrayBufferSize + 1),
+        SORT_RESULT, "Quick", formatArray(sortArray, length, arrayBuffer, arrayBufferSize + 1),
         TIME_INTERVAL);
 }
 template <class T>
@@ -268,7 +268,8 @@ void Sort<T>::heapSort(T* const array, const uint32_t length) const
     char arrayBuffer[arrayBufferSize + 1];
     arrayBuffer[0] = '\0';
     FORMAT_PRINT(
-        SORT_HEAP, formatArray(sortArray, length, arrayBuffer, arrayBufferSize + 1), TIME_INTERVAL);
+        SORT_RESULT, "Heap", formatArray(sortArray, length, arrayBuffer, arrayBufferSize + 1),
+        TIME_INTERVAL);
 }
 template <class T>
 void Sort<T>::buildMaxHeap(T* const sortArray, const uint32_t begin, const uint32_t end)
@@ -339,7 +340,7 @@ void Sort<T>::countingSort(T* const array, const uint32_t length) const
     char arrayBuffer[arrayBufferSize + 1];
     arrayBuffer[0] = '\0';
     FORMAT_PRINT(
-        SORT_COUNTING, formatArray(sortArray, length, arrayBuffer, arrayBufferSize + 1),
+        SORT_RESULT, "Counting", formatArray(sortArray, length, arrayBuffer, arrayBufferSize + 1),
         TIME_INTERVAL);
 }
 
@@ -386,7 +387,7 @@ void Sort<T>::bucketSort(T* const array, const uint32_t length) const
     char arrayBuffer[arrayBufferSize + 1];
     arrayBuffer[0] = '\0';
     FORMAT_PRINT(
-        SORT_BUCKET, formatArray(sortArray, length, arrayBuffer, arrayBufferSize + 1),
+        SORT_RESULT, "Bucket", formatArray(sortArray, length, arrayBuffer, arrayBufferSize + 1),
         TIME_INTERVAL);
 }
 
@@ -479,6 +480,6 @@ void Sort<T>::radixSort(T* const array, const uint32_t length) const
     char arrayBuffer[arrayBufferSize + 1];
     arrayBuffer[0] = '\0';
     FORMAT_PRINT(
-        SORT_RADIX, formatArray(sortArray, length, arrayBuffer, arrayBufferSize + 1),
+        SORT_RESULT, "Radix", formatArray(sortArray, length, arrayBuffer, arrayBufferSize + 1),
         TIME_INTERVAL);
 }
