@@ -16,16 +16,7 @@
     "\r\nGenerate %u random integral numbers from %d to %d:\r\n%s\n"
 #define SORT_GENERATE_FLOATING_ARRAY \
     "\r\nGenerate %u random floating point numbers from %.5f to %.5f:\r\n%s\n"
-#define SORT_BUBBLE "\r\n*Bubble    method:\r\n%s\r\n==>Run time: %8.5f ms\n"
-#define SORT_SELECTION "\r\n*Selection method:\r\n%s\r\n==>Run time: %8.5f ms\n"
-#define SORT_INSERTION "\r\n*Insertion method:\r\n%s\r\n==>Run time: %8.5f ms\n"
-#define SORT_SHELL "\r\n*Shell     method:\r\n%s\r\n==>Run time: %8.5f ms\n"
-#define SORT_MERGE "\r\n*Merge     method:\r\n%s\r\n==>Run time: %8.5f ms\n"
-#define SORT_QUICK "\r\n*Quick     method:\r\n%s\r\n==>Run time: %8.5f ms\n"
-#define SORT_HEAP "\r\n*Heap      method:\r\n%s\r\n==>Run time: %8.5f ms\n"
-#define SORT_COUNTING "\r\n*Counting  method:\r\n%s\r\n==>Run time: %8.5f ms\n"
-#define SORT_BUCKET "\r\n*Bucket    method:\r\n%s\r\n==>Run time: %8.5f ms\n"
-#define SORT_RADIX "\r\n*Radix     method:\r\n%s\r\n==>Run time: %8.5f ms\n"
+#define SORT_RESULT "\r\n*%-9s method:\r\n%s\r\n==>Run time: %8.5f ms\n"
 #define SORT_RADIX_DEC 10
 #define SORT_RADIX_NATURAL_NUMBER_BUCKET 10
 #define SORT_RADIX_NEGATIVE_INTEGER_BUCKET 9
