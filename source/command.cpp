@@ -372,9 +372,9 @@ void Command::runSort() const
     {
         if (taskPlan.sortBit.any())
         {
-            constexpr int leftEndpoint = SORT_ARRAY_RANGE_1;
-            constexpr int rightEndpoint = SORT_ARRAY_RANGE_2;
-            constexpr uint32_t length = SORT_ARRAY_LENGTH;
+            const int leftEndpoint = SORT_ARRAY_RANGE_1;
+            const int rightEndpoint = SORT_ARRAY_RANGE_2;
+            const uint32_t length = SORT_ARRAY_LENGTH;
             static_assert((leftEndpoint < rightEndpoint) && (length > 0));
 
             const std::shared_ptr<Sort<int>> sort =
@@ -508,17 +508,18 @@ void Command::printLogContext()
 
 void Command::printInstruction()
 {
-    puts("Usage    : foo [Options...]\n\n"
-         "[Options]:\n\n"
-         "    -o, --optimum                      Optimum\n"
-         "    [ fib | gra | ann | par | gen ]    Fibonacci|Gradient|Annealing|Particle|Genetic\n\n"
-         "    -i, --integral                     Integral\n"
-         "    [ tra | sim | rom | gau | mon ]    Trapezoidal|Simpson|Romberg|Gauss|MonteCarlo\n\n"
-         "    -s, --sort                         Sort\n"
-         "    [ bub | sel | ins | she | mer ]    Bubble|Selection|Insertion|Shell|Merge\n"
-         "    [ qui | hea | cou | buc | rad ]    Quick|Heap|Counting|Bucket|Radix\n\n"
-         "    --log                              Log\n\n"
-         "    --help                             Help");
+    std::puts(
+        "Usage    : foo [Options...]\n\n"
+        "[Options]:\n\n"
+        "    -o, --optimum                      Optimum\n"
+        "    [ fib | gra | ann | par | gen ]    Fibonacci|Gradient|Annealing|Particle|Genetic\n\n"
+        "    -i, --integral                     Integral\n"
+        "    [ tra | sim | rom | gau | mon ]    Trapezoidal|Simpson|Romberg|Gauss|MonteCarlo\n\n"
+        "    -s, --sort                         Sort\n"
+        "    [ bub | sel | ins | she | mer ]    Bubble|Selection|Insertion|Shell|Merge\n"
+        "    [ qui | hea | cou | buc | rad ]    Quick|Heap|Counting|Bucket|Radix\n\n"
+        "    --log                              Log\n\n"
+        "    --help                             Help");
 }
 
 void Command::printUnexpectedOption(char* const argv[], const bool isUnknown)
@@ -547,7 +548,7 @@ void executeCommand(const char* const command)
     }
 
     char resultBuffer[BUFFER_SIZE_MAX + 1] = {'\0'};
-    while (nullptr != fgets(resultBuffer, sizeof(resultBuffer), file))
+    while (nullptr != std::fgets(resultBuffer, sizeof(resultBuffer), file))
     {
         if ('\n' == resultBuffer[std::strlen(resultBuffer) - 1])
         {

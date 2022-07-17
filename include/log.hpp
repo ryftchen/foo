@@ -7,7 +7,7 @@
 extern class Log logger;
 
 typedef std::string (*PrintStyle)(std::string& line);
-static PrintStyle nullStyle;
+constexpr static PrintStyle nullStyle = nullptr;
 std::string changeLogLevelStyle(std::string& line);
 void printFile(
     const char* const pathname, const bool reverse = false, const uint32_t maxLine = 1000,
