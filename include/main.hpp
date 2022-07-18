@@ -1,5 +1,4 @@
 #pragma once
-#include <unistd.h>
 #define NDEBUG
 #include <cassert>
 #include <cstring>
@@ -32,22 +31,21 @@
 
 static void switchToProjectPath()
 {
-    try
+    const std::filesystem::path absolutePath =
+        std::filesystem::canonical(std::filesystem::path{"/proc/self/exe"});
+    const size_t pos = absolutePath.string().find_last_of("build");
+    if (std::string::npos == pos)
     {
-        char absolutePath[BUFFER_SIZE_MAX + 1] = {'\0'};
-        const int length = readlink("/proc/self/exe", absolutePath, BUFFER_SIZE_MAX);
-        if ((length < 0) || (length >= BUFFER_SIZE_MAX))
-        {
-            throw CallFunctionError("readlink()");
-        }
-
-        std::filesystem::path buildPath(std::filesystem::path{absolutePath}.parent_path());
-        assert(buildPath.has_parent_path());
-        std::filesystem::current_path(buildPath.parent_path());
-    }
-    catch (CallFunctionError const& error)
-    {
-        std::cerr << error.what() << std::endl;
+        printf("The build directory does not exist. Please check it.\n");
         exit(-1);
     }
+    const std::filesystem::path buildPath(
+        std::filesystem::path{absolutePath.string().substr(0, pos)});
+
+    if (!buildPath.has_parent_path())
+    {
+        printf("The project directory does not exist. Please check it.\n");
+        exit(-1);
+    }
+    std::filesystem::current_path(buildPath.parent_path());
 }
