@@ -156,7 +156,7 @@ void Command::runOptimum() const
             };
 
             std::cout << OPTIMUM_RUN_BEGIN << std::endl;
-            for (const auto& [range, expression] : expressionMap)
+            for ([[maybe_unused]] const auto& [range, expression] : expressionMap)
             {
                 printFunctor(expression);
                 switch (expression.index())
@@ -275,7 +275,7 @@ void Command::runIntegral() const
             };
 
             std::cout << INTEGRAL_RUN_BEGIN << std::endl;
-            for (const auto& [range, expression] : expressionMap)
+            for ([[maybe_unused]] const auto& [range, expression] : expressionMap)
             {
                 printFunctor(expression);
                 switch (expression.index())
