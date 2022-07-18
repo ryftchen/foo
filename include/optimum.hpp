@@ -25,7 +25,6 @@ public:
 #define OPTIMUM_FIBONACCI_X_1 (leftVal + fibonacci[n - 2] / fibonacci[n] * (rightVal - leftVal))
 #define OPTIMUM_FIBONACCI_X_2 (leftVal + fibonacci[n - 1] / fibonacci[n] * (rightVal - leftVal))
 #define OPTIMUM_FIBONACCI_MIN_COUNT 3
-#define OPTIMUM_FIBONACCI_UNCHANGED_TIMES 3
 class Fibonacci : public Optimum
 {
 public:
@@ -35,8 +34,6 @@ public:
 
 private:
     const Expression& fun;
-    std::optional<std::pair<ValueY, ValueX>> fibonacciSearch(
-        const double left, const double right, const double eps);
     static void generateFibonacciNumber(std::vector<double>& fibonacci, const double max);
 };
 

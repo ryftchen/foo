@@ -13,72 +13,13 @@ std::optional<std::tuple<ValueY, ValueX>> Fibonacci::operator()(
     const double left, const double right, const double eps)
 {
     TIME_BEGIN;
-    double x = 0.0, y = 0.0;
-
-    const auto firstResult = fibonacciSearch(left, right, eps);
-    if (firstResult.has_value())
-    {
-        y = std::get<0>(firstResult.value());
-        x = std::get<1>(firstResult.value());
-        uint32_t n = 2, cnt = 0;
-        do
-        {
-            std::vector<std::pair<ValueY, ValueX>> aggregation;
-            aggregation.reserve(n);
-            const double stepLength = (right - left) / n;
-            for (uint32_t i = 0; i < n; ++i)
-            {
-                const auto result =
-                    fibonacciSearch(left + i * stepLength, left + (i + 1) * stepLength, eps);
-                if (result.has_value())
-                {
-                    aggregation.emplace_back(std::pair<ValueY, ValueX>(
-                        std::get<0>(result.value()), std::get<1>(result.value())));
-                }
-            }
-            std::sort(
-                aggregation.begin(), aggregation.end(),
-                [](const auto& max1, const auto& max2)
-                {
-                    return max1.first > max2.first;
-                });
-
-            if (aggregation.size())
-            {
-                [[maybe_unused]] const auto [yNew, xNew] = *aggregation.cbegin();
-                if (std::fabs(yNew - y) <= eps)
-                {
-                    ++cnt;
-                }
-                if (yNew > y)
-                {
-                    x = xNew;
-                    y = yNew;
-                }
-            }
-            n *= 2;
-        }
-        while (cnt < OPTIMUM_FIBONACCI_UNCHANGED_TIMES);
-    }
-    else
-    {
-        FORMAT_PRINT("*Fibonacci method: The precise %.5f isn't enough.\n", eps);
-        return std::nullopt;
-    }
-
-    TIME_END;
-    FORMAT_PRINT(OPTIMUM_RESULT(max), "Fibonacci", y, x, TIME_INTERVAL);
-    return std::make_optional(std::make_tuple(y, x));
-}
-std::optional<std::pair<ValueY, ValueX>> Fibonacci::fibonacciSearch(
-    const double left, const double right, const double eps)
-{
     double leftVal = left, rightVal = right;
     std::vector<double> fibonacci(0);
     generateFibonacciNumber(fibonacci, (rightVal - leftVal) / eps);
     int n = fibonacci.size() - 1;
     if (n < OPTIMUM_FIBONACCI_MIN_COUNT)
     {
+        FORMAT_PRINT("*Fibonacci method: The precise %.5f isn't enough.\n", eps);
         return std::nullopt;
     }
 
@@ -124,7 +65,9 @@ std::optional<std::pair<ValueY, ValueX>> Fibonacci::fibonacciSearch(
     }
     const double x = (leftVal + rightVal) / 2.0;
 
-    return std::make_optional(std::make_pair(fun(x), x));
+    TIME_END;
+    FORMAT_PRINT(OPTIMUM_RESULT(max), "Fibonacci", fun(x), x, TIME_INTERVAL);
+    return std::make_optional(std::make_tuple(fun(x), x));
 }
 void Fibonacci::generateFibonacciNumber(std::vector<double>& fibonacci, const double max)
 {
