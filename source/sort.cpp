@@ -4,16 +4,16 @@
 #include <vector>
 
 template class Sort<int>;
-template void Sort<int>::bubbleSort(int* const, const uint32_t) const;
-template void Sort<int>::selectionSort(int* const, const uint32_t) const;
-template void Sort<int>::insertionSort(int* const, const uint32_t) const;
-template void Sort<int>::shellSort(int* const, const uint32_t) const;
-template void Sort<int>::mergeSort(int* const, const uint32_t) const;
-template void Sort<int>::quickSort(int* const, const uint32_t) const;
-template void Sort<int>::heapSort(int* const, const uint32_t) const;
-template void Sort<int>::countingSort(int* const, const uint32_t) const;
-template void Sort<int>::bucketSort(int* const, const uint32_t) const;
-template void Sort<int>::radixSort(int* const, const uint32_t) const;
+template void Sort<int>::bubbleSort(int* const array, const uint32_t length) const;
+template void Sort<int>::selectionSort(int* const array, const uint32_t length) const;
+template void Sort<int>::insertionSort(int* const array, const uint32_t length) const;
+template void Sort<int>::shellSort(int* const array, const uint32_t length) const;
+template void Sort<int>::mergeSort(int* const array, const uint32_t length) const;
+template void Sort<int>::quickSort(int* const array, const uint32_t length) const;
+template void Sort<int>::heapSort(int* const array, const uint32_t length) const;
+template void Sort<int>::countingSort(int* const array, const uint32_t length) const;
+template void Sort<int>::bucketSort(int* const array, const uint32_t length) const;
+template void Sort<int>::radixSort(int* const array, const uint32_t length) const;
 
 // Bubble method
 template <class T>

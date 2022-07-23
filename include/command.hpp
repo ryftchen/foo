@@ -1,14 +1,12 @@
 #pragma once
-#include <atomic>
 #include <bitset>
 #include <mutex>
 #include "expression.hpp"
 #include "log.hpp"
 #include "sort.hpp"
 
-void executeCommand(const char* const command);
-
-#define COMMAND_MAX_METHOD 10
+#define COMMAND_MAX_METHOD_PER_TASK 10
+#define COMMAND_PRINT_TITLE_WIDTH 40
 #define COMMAND_PRINT_MAX_LINE 50
 #define COMMAND_PREPARE_TASK_CHECK                  \
     do                                              \
@@ -36,14 +34,18 @@ void executeCommand(const char* const command);
 class Command
 {
 public:
-    enum TaskBit
+    virtual ~Command() = default;
+    void parseArgv(const int argc, char* const argv[]);
+    void performTask();
+    bool checkTask() const;
+    enum TaskType
     {
         taskOptimum,
         taskIntegral,
         taskSort,
         taskBottom
     };
-    enum OptimumBit
+    enum OptimumMethod
     {
         optimumFibonacci,
         optimumGradient,
@@ -52,7 +54,7 @@ public:
         optimumGenetic,
         optimumBottom
     };
-    enum IntegralBit
+    enum IntegralMethod
     {
         integralTrapezoidal,
         integralSimpson,
@@ -61,7 +63,7 @@ public:
         integralMonteCarlo,
         integralBottom
     };
-    enum SortBit
+    enum SortMethod
     {
         sortBubble,
         sortSelection,
@@ -75,28 +77,29 @@ public:
         sortRadix,
         sortBottom
     };
-    Command(int argc, char* argv[]);
-    virtual ~Command() = default;
-    void parseArgv(const int argc, char* const argv[]);
-    void doTask();
-    bool checkTask() const;
 
 private:
     mutable std::mutex commandMutex;
 #pragma pack(8)
     struct TaskPlan
     {
-        std::bitset<OptimumBit::optimumBottom> optimumBit;
-        std::bitset<IntegralBit::integralBottom> integralBit;
-        std::bitset<SortBit::sortBottom> sortBit;
+        std::bitset<OptimumMethod::optimumBottom> optimumBit;
+        std::bitset<IntegralMethod::integralBottom> integralBit;
+        std::bitset<SortMethod::sortBottom> sortBit;
 
         TaskPlan() = default;
+        void reset()
+        {
+            optimumBit.reset();
+            integralBit.reset();
+            sortBit.reset();
+        };
     } taskPlan;
 #pragma pack()
     typedef void (Command::*TaskFunctor)() const;
-    const TaskFunctor taskFunctor[TaskBit::taskBottom] = {
+    const TaskFunctor taskFunctor[TaskType::taskBottom] = {
         &Command::runOptimum, &Command::runIntegral, &Command::runSort};
-    const std::string taskTable[TaskBit::taskBottom][COMMAND_MAX_METHOD] = {
+    const std::string taskTable[TaskType::taskBottom][COMMAND_MAX_METHOD_PER_TASK] = {
         {"o_fib", "o_gra", "o_ann", "o_par", "o_gen"},
         {"i_tra", "i_sim", "i_rom", "i_gau", "i_mon"},
         {"s_bub", "s_sec", "s_ins", "s_she", "s_mer", "s_qui", "s_hea", "s_cou", "s_buc", "s_rad"}};
@@ -105,8 +108,8 @@ private:
         expressionMap{
             {{EXPRESSION_FUN_1_RANGE_1, EXPRESSION_FUN_1_RANGE_2}, Function1()},
             {{EXPRESSION_FUN_2_RANGE_1, EXPRESSION_FUN_2_RANGE_2}, Function2()}};
-    void setTaskPlanFromTaskBit(
-        char* const argv[], const std::bitset<TaskBit::taskBottom>& taskBit);
+    void updateTaskPlanFromTaskBit(
+        char* const argv[], const std::bitset<TaskType::taskBottom>& taskBit);
     void runOptimum() const;
     void getOptimumResult(
         const Expression& express, const double leftEndpoint, const double rightEndpoint,
@@ -125,5 +128,11 @@ private:
 protected:
     static void printLogContext();
     static void printInstruction();
+    static void printTaskTitle(const TaskType& taskType, const bool isBegin);
     void printUnexpectedOption(char* const argv[], const bool isUnknown);
+    friend void executeCommand(const char* const command);
+    friend std::ostream& operator<<(std::ostream& os, const TaskType& taskType);
 };
+
+void executeCommand(const char* const command);
+std::ostream& operator<<(std::ostream& os, const Command::TaskType& taskType);

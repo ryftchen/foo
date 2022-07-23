@@ -7,11 +7,65 @@
 #include "optimum.hpp"
 #include "thread.hpp"
 
-Command::Command(int argc, char* argv[])
+void Command::parseArgv(const int argc, char* const argv[])
 {
+    if (argc < 1)
+    {
+        executeCommand(COMMAND_EXECUTE_OUTPUT_NAME);
+        LOGGER_INF("No command line option.");
+        return;
+    }
+
     try
     {
-        parseArgv(argc - 1, argv + 1);
+        std::bitset<TaskType::taskBottom> taskBit(0);
+        for (int i = 0; i < argc; ++i)
+        {
+            if (argv[i][0] == '-')
+            {
+                switch (bkdrHash(argv[i]))
+                {
+                    case "-o"_bkdrHash:
+                        [[fallthrough]];
+                    case "--optimum"_bkdrHash:
+                        COMMAND_PREPARE_BIT_SET(taskPlan.optimumBit, TaskType::taskOptimum);
+                        break;
+                    case "-i"_bkdrHash:
+                        [[fallthrough]];
+                    case "--integral"_bkdrHash:
+                        COMMAND_PREPARE_BIT_SET(taskPlan.integralBit, TaskType::taskIntegral);
+                        break;
+                    case "-s"_bkdrHash:
+                        [[fallthrough]];
+                    case "--sort"_bkdrHash:
+                        COMMAND_PREPARE_BIT_SET(taskPlan.sortBit, TaskType::taskSort);
+                        break;
+                    case "--log"_bkdrHash:
+                        COMMAND_PREPARE_TASK_CHECK;
+                        printLogContext();
+                        break;
+                    case "--help"_bkdrHash:
+                        COMMAND_PREPARE_TASK_CHECK;
+                        printInstruction();
+                        break;
+                    default:
+                        printUnexpectedOption(argv + i, true);
+                        break;
+                }
+                if (taskBit.none())
+                {
+                    return;
+                }
+            }
+            else
+            {
+                updateTaskPlanFromTaskBit(argv + i, taskBit);
+                if (!checkTask())
+                {
+                    return;
+                }
+            }
+        }
     }
     catch (CallFunctionError const& error)
     {
@@ -29,65 +83,6 @@ Command::Command(int argc, char* argv[])
     {
         LOGGER_ERR(error.what());
     }
-}
-
-void Command::parseArgv(const int argc, char* const argv[])
-{
-    if (argc < 1)
-    {
-        executeCommand(COMMAND_EXECUTE_OUTPUT_NAME);
-        LOGGER_INF("No command line option.");
-        return;
-    }
-
-    std::bitset<TaskBit::taskBottom> taskBit(0);
-    for (int i = 0; i < argc; ++i)
-    {
-        if (argv[i][0] == '-')
-        {
-            switch (bkdrHash(argv[i]))
-            {
-                case "-o"_bkdrHash:
-                    [[fallthrough]];
-                case "--optimum"_bkdrHash:
-                    COMMAND_PREPARE_BIT_SET(taskPlan.optimumBit, TaskBit::taskOptimum);
-                    break;
-                case "-i"_bkdrHash:
-                    [[fallthrough]];
-                case "--integral"_bkdrHash:
-                    COMMAND_PREPARE_BIT_SET(taskPlan.integralBit, TaskBit::taskIntegral);
-                    break;
-                case "-s"_bkdrHash:
-                    [[fallthrough]];
-                case "--sort"_bkdrHash:
-                    COMMAND_PREPARE_BIT_SET(taskPlan.sortBit, TaskBit::taskSort);
-                    break;
-                case "--log"_bkdrHash:
-                    COMMAND_PREPARE_TASK_CHECK;
-                    printLogContext();
-                    break;
-                case "--help"_bkdrHash:
-                    COMMAND_PREPARE_TASK_CHECK;
-                    printInstruction();
-                    break;
-                default:
-                    printUnexpectedOption(argv + i, true);
-                    break;
-            }
-            if (taskBit.none())
-            {
-                return;
-            }
-        }
-        else
-        {
-            setTaskPlanFromTaskBit(argv + i, taskBit);
-            if (!checkTask())
-            {
-                return;
-            }
-        }
-    }
 
     return;
 }
@@ -97,26 +92,26 @@ bool Command::checkTask() const
     return taskPlan.optimumBit.any() || taskPlan.integralBit.any() || taskPlan.sortBit.any();
 }
 
-void Command::doTask()
+void Command::performTask()
 {
-    for (int i = 0; i < TaskBit::taskBottom; ++i)
+    for (int i = 0; i < TaskType::taskBottom; ++i)
     {
-        (this->*taskFunctor[TaskBit(i)])();
+        (this->*taskFunctor[TaskType(i)])();
     }
 }
 
-void Command::setTaskPlanFromTaskBit(
-    char* const argv[], const std::bitset<TaskBit::taskBottom>& taskBit)
+void Command::updateTaskPlanFromTaskBit(
+    char* const argv[], const std::bitset<TaskType::taskBottom>& taskBit)
 {
-    if (taskBit.test(TaskBit::taskOptimum))
+    if (taskBit.test(TaskType::taskOptimum))
     {
         setOptimumBit(argv);
     }
-    else if (taskBit.test(TaskBit::taskIntegral))
+    else if (taskBit.test(TaskType::taskIntegral))
     {
         setIntegralBit(argv);
     }
-    else if (taskBit.test(TaskBit::taskSort))
+    else if (taskBit.test(TaskType::taskSort))
     {
         setSortBit(argv);
     }
@@ -155,7 +150,7 @@ void Command::runOptimum() const
                 getOptimumResult(expression, range.range1, range.range2, OPTIMUM_EPSILON);
             };
 
-            std::cout << OPTIMUM_RUN_BEGIN << std::endl;
+            printTaskTitle(TaskType::taskOptimum, true);
             for ([[maybe_unused]] const auto& [range, expression] : expressionMap)
             {
                 printFunctor(expression);
@@ -167,11 +162,10 @@ void Command::runOptimum() const
                     case 1:
                         resultFunctor(std::get<1>(expression), range);
                         break;
-                    default:
-                        break;
+                        [[unlikely]] default : break;
                 }
             }
-            std::cout << OPTIMUM_RUN_END << std::endl;
+            printTaskTitle(TaskType::taskOptimum, false);
         }
     }
     catch (CallFunctionError const& error)
@@ -192,11 +186,11 @@ void Command::getOptimumResult(
             threadName, &Optimum::operator(), classPtr, leftEndpoint, rightEndpoint, epsilon);
     };
 
-    for (int i = 0; i < OptimumBit::optimumBottom; ++i)
+    for (int i = 0; i < OptimumMethod::optimumBottom; ++i)
     {
-        if (taskPlan.optimumBit.test(OptimumBit(i)))
+        if (taskPlan.optimumBit.test(OptimumMethod(i)))
         {
-            const std::string threadName = taskTable[TaskBit::taskOptimum][OptimumBit(i)];
+            const std::string threadName = taskTable[TaskType::taskOptimum][OptimumMethod(i)];
             switch (bkdrHash(threadName.c_str()))
             {
                 case "o_fib"_bkdrHash:
@@ -225,19 +219,19 @@ void Command::setOptimumBit(char* const argv[])
     switch (bkdrHash(argv[0]))
     {
         case "fib"_bkdrHash:
-            taskPlan.optimumBit.set(OptimumBit::optimumFibonacci);
+            taskPlan.optimumBit.set(OptimumMethod::optimumFibonacci);
             break;
         case "gra"_bkdrHash:
-            taskPlan.optimumBit.set(OptimumBit::optimumGradient);
+            taskPlan.optimumBit.set(OptimumMethod::optimumGradient);
             break;
         case "ann"_bkdrHash:
-            taskPlan.optimumBit.set(OptimumBit::optimumAnnealing);
+            taskPlan.optimumBit.set(OptimumMethod::optimumAnnealing);
             break;
         case "par"_bkdrHash:
-            taskPlan.optimumBit.set(OptimumBit::optimumParticle);
+            taskPlan.optimumBit.set(OptimumMethod::optimumParticle);
             break;
         case "gen"_bkdrHash:
-            taskPlan.optimumBit.set(OptimumBit::optimumGenetic);
+            taskPlan.optimumBit.set(OptimumMethod::optimumGenetic);
             break;
         default:
             printUnexpectedOption(argv, true);
@@ -274,7 +268,7 @@ void Command::runIntegral() const
                 getIntegralResult(expression, range.range1, range.range2, INTEGRAL_EPSILON);
             };
 
-            std::cout << INTEGRAL_RUN_BEGIN << std::endl;
+            printTaskTitle(TaskType::taskIntegral, true);
             for ([[maybe_unused]] const auto& [range, expression] : expressionMap)
             {
                 printFunctor(expression);
@@ -286,11 +280,10 @@ void Command::runIntegral() const
                     case 1:
                         resultFunctor(std::get<1>(expression), range);
                         break;
-                    default:
-                        break;
+                        [[unlikely]] default : break;
                 }
             }
-            std::cout << INTEGRAL_RUN_END << std::endl;
+            printTaskTitle(TaskType::taskIntegral, false);
         }
     }
     catch (CallFunctionError const& error)
@@ -311,11 +304,11 @@ void Command::getIntegralResult(
             threadName, &Integral::operator(), classPtr, lowerLimit, upperLimit, epsilon);
     };
 
-    for (int i = 0; i < IntegralBit::integralBottom; ++i)
+    for (int i = 0; i < IntegralMethod::integralBottom; ++i)
     {
-        if (taskPlan.integralBit.test(IntegralBit(i)))
+        if (taskPlan.integralBit.test(IntegralMethod(i)))
         {
-            const std::string threadName = taskTable[TaskBit::taskIntegral][IntegralBit(i)];
+            const std::string threadName = taskTable[TaskType::taskIntegral][IntegralMethod(i)];
             switch (bkdrHash(threadName.c_str()))
             {
                 case "i_tra"_bkdrHash:
@@ -344,19 +337,19 @@ void Command::setIntegralBit(char* const argv[])
     switch (bkdrHash(argv[0]))
     {
         case "tra"_bkdrHash:
-            taskPlan.integralBit.set(IntegralBit::integralTrapezoidal);
+            taskPlan.integralBit.set(IntegralMethod::integralTrapezoidal);
             break;
         case "sim"_bkdrHash:
-            taskPlan.integralBit.set(IntegralBit::integralSimpson);
+            taskPlan.integralBit.set(IntegralMethod::integralSimpson);
             break;
         case "rom"_bkdrHash:
-            taskPlan.integralBit.set(IntegralBit::integralRomberg);
+            taskPlan.integralBit.set(IntegralMethod::integralRomberg);
             break;
         case "gau"_bkdrHash:
-            taskPlan.integralBit.set(IntegralBit::integralGauss);
+            taskPlan.integralBit.set(IntegralMethod::integralGauss);
             break;
         case "mon"_bkdrHash:
-            taskPlan.integralBit.set(IntegralBit::integralMonteCarlo);
+            taskPlan.integralBit.set(IntegralMethod::integralMonteCarlo);
             break;
         default:
             printUnexpectedOption(argv, true);
@@ -377,9 +370,11 @@ void Command::runSort() const
             const uint32_t length = SORT_ARRAY_LENGTH;
             static_assert((leftEndpoint < rightEndpoint) && (length > 0));
 
+            printTaskTitle(TaskType::taskSort, true);
             const std::shared_ptr<Sort<int>> sort =
                 std::make_shared<Sort<int>>(length, leftEndpoint, rightEndpoint);
             getSortResult(sort);
+            printTaskTitle(TaskType::taskSort, false);
         }
     }
     catch (CallFunctionError const& error)
@@ -398,11 +393,11 @@ void Command::getSortResult(const std::shared_ptr<Sort<T>>& sort) const
             threadName, methodPtr, sort, sort->getRandomArray().get(), sort->getLength());
     };
 
-    for (int i = 0; i < SortBit::sortBottom; ++i)
+    for (int i = 0; i < SortMethod::sortBottom; ++i)
     {
-        if (taskPlan.sortBit.test(SortBit(i)))
+        if (taskPlan.sortBit.test(SortMethod(i)))
         {
-            const std::string threadName = taskTable[TaskBit::taskSort][SortBit(i)];
+            const std::string threadName = taskTable[TaskType::taskSort][SortMethod(i)];
             switch (bkdrHash(threadName.c_str()))
             {
                 case "s_bub"_bkdrHash:
@@ -446,34 +441,34 @@ void Command::setSortBit(char* const argv[])
     switch (bkdrHash(argv[0]))
     {
         case "bub"_bkdrHash:
-            taskPlan.sortBit.set(SortBit::sortBubble);
+            taskPlan.sortBit.set(SortMethod::sortBubble);
             break;
         case "sel"_bkdrHash:
-            taskPlan.sortBit.set(SortBit::sortSelection);
+            taskPlan.sortBit.set(SortMethod::sortSelection);
             break;
         case "ins"_bkdrHash:
-            taskPlan.sortBit.set(SortBit::sortInsertion);
+            taskPlan.sortBit.set(SortMethod::sortInsertion);
             break;
         case "she"_bkdrHash:
-            taskPlan.sortBit.set(SortBit::sortShell);
+            taskPlan.sortBit.set(SortMethod::sortShell);
             break;
         case "mer"_bkdrHash:
-            taskPlan.sortBit.set(SortBit::sortMerge);
+            taskPlan.sortBit.set(SortMethod::sortMerge);
             break;
         case "qui"_bkdrHash:
-            taskPlan.sortBit.set(SortBit::sortQuick);
+            taskPlan.sortBit.set(SortMethod::sortQuick);
             break;
         case "hea"_bkdrHash:
-            taskPlan.sortBit.set(SortBit::sortHeap);
+            taskPlan.sortBit.set(SortMethod::sortHeap);
             break;
         case "cou"_bkdrHash:
-            taskPlan.sortBit.set(SortBit::sortCounting);
+            taskPlan.sortBit.set(SortMethod::sortCounting);
             break;
         case "buc"_bkdrHash:
-            taskPlan.sortBit.set(SortBit::sortBucket);
+            taskPlan.sortBit.set(SortMethod::sortBucket);
             break;
         case "rad"_bkdrHash:
-            taskPlan.sortBit.set(SortBit::sortRadix);
+            taskPlan.sortBit.set(SortMethod::sortRadix);
             break;
         default:
             printUnexpectedOption(argv, true);
@@ -522,6 +517,14 @@ void Command::printInstruction()
         "    --help                             Help");
 }
 
+void Command::printTaskTitle(const Command::TaskType& taskType, const bool isBegin)
+{
+    std::cout << std::endl
+              << "TASK " << std::setiosflags(std::ios_base::left) << std::setfill('.')
+              << std::setw(COMMAND_PRINT_TITLE_WIDTH) << taskType << (isBegin ? "BEGIN" : "END")
+              << std::resetiosflags(std::ios_base::left) << std::setfill(' ') << std::endl;
+}
+
 void Command::printUnexpectedOption(char* const argv[], const bool isUnknown)
 {
     std::string str;
@@ -536,7 +539,7 @@ void Command::printUnexpectedOption(char* const argv[], const bool isUnknown)
     }
     LOGGER_WRN(str.c_str());
 
-    taskPlan = TaskPlan();
+    taskPlan.reset();
 }
 
 void executeCommand(const char* const command)
@@ -569,4 +572,23 @@ void executeCommand(const char* const command)
             throw ExecuteCommandError(command);
         }
     }
+}
+
+std::ostream& operator<<(std::ostream& os, const Command::TaskType& taskType)
+{
+    switch (taskType)
+    {
+        case Command::TaskType::taskOptimum:
+            os << "OPTIMUM";
+            break;
+        case Command::TaskType::taskIntegral:
+            os << "INGTERGAL";
+            break;
+        case Command::TaskType::taskSort:
+            os << "SORT";
+            break;
+        default:
+            os << "UNKNOW: " << static_cast<std::underlying_type_t<Command::TaskType>>(taskType);
+    }
+    return os;
 }
