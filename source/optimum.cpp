@@ -286,7 +286,7 @@ std::optional<std::tuple<ValueY, ValueX>> Genetic::operator()(
     const double left, const double right, const double eps)
 {
     TIME_BEGIN;
-    setSpecies(left, right, eps);
+    updateSpecies(left, right, eps);
     if (chrNum < OPTIMUM_GENETIC_MIN_CHROMOSOME_NUMBER)
     {
         FORMAT_PRINT("*Genetic   method: The precise %.5f isn't enough.\n", eps);
@@ -306,16 +306,16 @@ std::optional<std::tuple<ValueY, ValueX>> Genetic::operator()(
     FORMAT_PRINT(OPTIMUM_RESULT(max), "Genetic", fun(x), x, TIME_INTERVAL);
     return std::make_optional(std::make_tuple(fun(x), x));
 }
-void Genetic::setSpecies(const double left, const double right, const double eps)
+void Genetic::updateSpecies(const double left, const double right, const double eps)
 {
-    range.left = left;
-    range.right = right;
+    range.lower = left;
+    range.upper = right;
     range.eps = eps;
     TIME_GET_SEED(seedNew);
     seed = seedNew;
 
     uint32_t num = 0;
-    const double max = (range.right - range.left) * (1.0 / range.eps);
+    const double max = (range.upper - range.lower) * (1.0 / range.eps);
     while ((max <= std::pow(2, num)) || (max >= std::pow(2, num + 1)))
     {
         ++num;
@@ -344,7 +344,7 @@ double Genetic::geneDecoding(const Chromosome& chr) const
             temp += bit * std::pow(2, i);
             ++i;
         });
-    return range.left + (range.right - range.left) * temp / max;
+    return range.lower + (range.upper - range.lower) * temp / max;
 }
 Population Genetic::populationInit()
 {
@@ -377,56 +377,39 @@ void Genetic::crossIndividual(Population& pop)
 {
     Population popCross;
     popCross.reserve(pop.size());
-    Population popTemp(pop.size());
-    std::copy(pop.cbegin(), pop.cend(), popTemp.begin());
-    while (popTemp.size() > 1)
+
+    std::vector<std::reference_wrapper<Chromosome>> crossContainer(pop.begin(), pop.end());
+    std::shuffle(crossContainer.begin(), crossContainer.end(), seed);
+    for (auto iterChr = crossContainer.begin();
+         iterChr != crossContainer.end() && std::next(iterChr, 1) != crossContainer.end();
+         std::advance(iterChr, 2))
     {
-        const auto iterParent1 = popTemp.cbegin() + getRandomNumber(popTemp.size() - 1);
-        Chromosome parent1 = *iterParent1;
-        popTemp.erase(iterParent1);
-        const auto iterParent2 = popTemp.cbegin() + getRandomNumber(popTemp.size() - 1);
-        Chromosome parent2 = *iterParent2;
-        popTemp.erase(iterParent2);
+        Chromosome parent1 = iterChr->get(), parent2 = std::next(iterChr, 1)->get();
         if (Species::crossPr > random())
         {
             geneCrossover(parent1, parent2);
         }
         popCross.emplace_back(std::move(parent1));
         popCross.emplace_back(std::move(parent2));
+
+        if (pop.size() % 2 && std::next(iterChr, 2) == crossContainer.end() - 1)
+        {
+            Chromosome single = std::next(iterChr, 2)->get();
+            popCross.emplace_back(std::move(single));
+        }
     }
-    if (pop.size() % 2)
-    {
-        const auto iterRemainder = popTemp.cbegin();
-        const Chromosome remainder = *iterRemainder;
-        popTemp.erase(iterRemainder);
-        popCross.emplace_back(remainder);
-    }
+
     std::copy(popCross.cbegin(), popCross.cend(), pop.begin());
 }
 void Genetic::geneMutation(Chromosome& chr)
 {
-    uint32_t flip = 0;
-    do
+    uint32_t flip = getRandomNumber(chrNum - 1) + 1;
+    std::vector<std::reference_wrapper<uint32_t>> mutateChr(chr.begin(), chr.end());
+    std::shuffle(mutateChr.begin(), mutateChr.end(), seed);
+    for (auto iterGene = mutateChr.begin(); iterGene != mutateChr.end() && 0 != flip;
+         ++iterGene, --flip)
     {
-        flip = getRandomNumber(chrNum);
-    }
-    while (!flip);
-
-    std::vector<uint32_t> index(chrNum);
-    uint32_t id = 0;
-    std::generate(
-        index.begin(), index.end(),
-        [&id]
-        {
-            return id++;
-        });
-    while (flip)
-    {
-        const auto iterId = index.cbegin() + getRandomNumber(index.size() - 1);
-        auto iterBit = chr.begin() + *iterId;
-        *iterBit = !*iterBit;
-        index.erase(iterId);
-        --flip;
+        iterGene->get() = !iterGene->get();
     }
 }
 void Genetic::mutateIndividual(Population& pop)
@@ -461,19 +444,28 @@ std::optional<std::pair<double, double>> Genetic::fitnessLinearTransformation(co
         std::accumulate(std::cbegin(reFitness), std::cend(reFitness), 0.0) / reFitness.size();
     if (std::fabs(reFitnessMin - reFitnessAvg) > (range.eps * range.eps))
     {
-        [[likely]]
-        {
-            const double alpha = reFitnessAvg / (reFitnessAvg - reFitnessMin);
-            const double beta =
-                -1.0 * (reFitnessMin * reFitnessAvg) / (reFitnessAvg - reFitnessMin);
-            assert(!isnan(alpha) && !isinf(alpha) && !isnan(beta) && !isinf(beta));
-            return std::make_optional(std::pair<double, double>(alpha, beta));
-        }
+        const double alpha = reFitnessAvg / (reFitnessAvg - reFitnessMin);
+        const double beta = -1.0 * (reFitnessMin * reFitnessAvg) / (reFitnessAvg - reFitnessMin);
+        assert(!isnan(alpha) && !isinf(alpha) && !isnan(beta) && !isinf(beta));
+        return std::make_optional(std::pair<double, double>(alpha, beta));
     }
     else
     {
         return std::nullopt;
     }
+}
+auto Genetic::rouletteWheelSelection(const Population& pop, const std::vector<double>& fitnessCum)
+{
+    const double rand = random();
+    const auto iterCum = std::find_if(
+        fitnessCum.cbegin(), fitnessCum.cend(),
+        [&rand](const auto& cumulation)
+        {
+            return cumulation > rand;
+        });
+    assert(iterCum != fitnessCum.cend());
+
+    return std::next(pop.cbegin(), std::distance(fitnessCum.cbegin(), iterCum));
 }
 void Genetic::stochasticTournamentSelection(Population& pop, const std::vector<double>& fitnessCum)
 {
@@ -481,40 +473,11 @@ void Genetic::stochasticTournamentSelection(Population& pop, const std::vector<d
     popNew.reserve(pop.size());
     while (popNew.size() < pop.size())
     {
-        auto competitor1 = pop.end(), competitor2 = pop.end();
-        do
-        {
-            const double rand = random();
-            const auto iterCum = std::find_if(
-                fitnessCum.cbegin(), fitnessCum.cend(),
-                [&rand](const auto& cumulation)
-                {
-                    return cumulation > rand;
-                });
-            assert(iterCum != fitnessCum.cend());
-
-            auto iterInd = pop.begin() + (iterCum - fitnessCum.begin());
-            if (pop.end() == competitor1)
-            {
-                competitor1 = iterInd;
-            }
-            else if (pop.end() == competitor2)
-            {
-                competitor2 = iterInd;
-            }
-            if ((pop.end() != competitor1) && (pop.end() != competitor2))
-            {
-                if (calculateFitness(*competitor1) >= calculateFitness(*competitor2))
-                {
-                    popNew.emplace_back(*competitor1);
-                }
-                else
-                {
-                    popNew.emplace_back(*competitor2);
-                }
-            }
-        }
-        while ((pop.end() == competitor1) || (pop.end() == competitor2));
+        auto competitor1 = rouletteWheelSelection(pop, fitnessCum);
+        auto competitor2 = rouletteWheelSelection(pop, fitnessCum);
+        calculateFitness(*competitor1) >= calculateFitness(*competitor2)
+            ? popNew.emplace_back(*competitor1)
+            : popNew.emplace_back(*competitor2);
     }
     std::copy(popNew.cbegin(), popNew.cend(), pop.begin());
 }
@@ -569,17 +532,9 @@ Chromosome Genetic::getBestIndividual(const Population& pop)
             return calculateFitness(ind);
         });
 
-    auto indBest = *(pop.begin());
-    auto iterInd = pop.begin();
-    auto fitValBest = *(fitnessVal.begin());
-    for (auto fitVal : fitnessVal)
-    {
-        if (fitVal > fitValBest)
-        {
-            fitValBest = fitVal;
-            indBest = *iterInd;
-        }
-        ++iterInd;
-    }
-    return indBest;
+    const auto iterFitValBest = std::max_element(std::cbegin(fitnessVal), std::cend(fitnessVal));
+    const auto iterIndBest =
+        std::next(pop.cbegin(), std::distance(fitnessVal.cbegin(), iterFitValBest));
+
+    return *iterIndBest;
 }

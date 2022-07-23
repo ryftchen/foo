@@ -141,7 +141,7 @@ namespace Species
 {
 using Chromosome = std::vector<uint32_t>;
 using Population = std::vector<Species::Chromosome>;
-constexpr static double crossPr = 0.7;
+constexpr static double crossPr = 0.8;
 constexpr static double mutatePr = 0.05;
 constexpr static uint32_t size = 50;
 constexpr static uint32_t iterNum = 100;
@@ -157,15 +157,15 @@ private:
     const Expression& fun;
     struct Range
     {
-        double left;
-        double right;
+        double lower;
+        double upper;
         double eps;
 
         Range() = default;
     } range{};
     std::mt19937 seed;
     uint32_t chrNum = 0;
-    void setSpecies(const double left, const double right, const double eps);
+    void updateSpecies(const double left, const double right, const double eps);
     void geneCoding(Species::Chromosome& chr);
     [[nodiscard]] double geneDecoding(const Species::Chromosome& chr) const;
     Species::Population populationInit();
@@ -176,6 +176,8 @@ private:
     double calculateFitness(const Species::Chromosome& chr);
     std::optional<std::pair<double, double>> fitnessLinearTransformation(
         const Species::Population& pop);
+    auto rouletteWheelSelection(
+        const Species::Population& pop, const std::vector<double>& fitnessCum);
     void stochasticTournamentSelection(
         Species::Population& pop, const std::vector<double>& fitnessCum);
     void selectIndividual(Species::Population& pop);
