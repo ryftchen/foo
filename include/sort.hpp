@@ -10,8 +10,6 @@
 #define SORT_ARRAY_LENGTH 53
 #define SORT_PRINT_MAX_ALIGN BUFFER_SIZE_16
 #define SORT_PRINT_MAX_COLUMN 10
-#define SORT_RUN_BEGIN "\r\n----------   BEGIN SORT   ----------"
-#define SORT_RUN_END "\r\n----------    END SORT    ----------"
 #define SORT_GENERATE_INTEGRAL_ARRAY \
     "\r\nGenerate %u random integral numbers from %d to %d:\r\n%s\n"
 #define SORT_GENERATE_FLOATING_ARRAY \
@@ -33,7 +31,6 @@ class Sort
 {
 public:
     Sort(const uint32_t length, const T left, const T right);
-    virtual ~Sort();
     Sort<T>& operator=(const Sort& rhs);
     Sort(const Sort& sort);
     void bubbleSort(T* const array, const uint32_t length) const;
@@ -76,14 +73,7 @@ template <class T>
 Sort<T>::Sort(const uint32_t length, const T left, const T right) :
     length(length), left(left), right(right), randomArray(std::make_unique<T[]>(length))
 {
-    std::cout << SORT_RUN_BEGIN << std::endl;
     setRandomArray<T>(randomArray.get(), length, left, right);
-}
-
-template <class T>
-Sort<T>::~Sort()
-{
-    std::cout << SORT_RUN_END << std::endl;
 }
 
 template <class T>

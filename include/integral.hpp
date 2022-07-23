@@ -3,8 +3,6 @@
 #include "expression.hpp"
 
 #define INTEGRAL_EPSILON 1e-5
-#define INTEGRAL_RUN_BEGIN "\r\n---------- BEGIN INTEGRAL ----------"
-#define INTEGRAL_RUN_END "\r\n----------  END INTEGRAL  ----------"
 #define INTEGRAL_RESULT "*%-11s method: I=%+.5f  ==>Run time: %8.5f ms\n"
 
 class Integral
