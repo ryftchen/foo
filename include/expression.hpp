@@ -73,6 +73,7 @@ struct ExpressionOverloaded : Ts...
 {
     using Ts::operator()...;
 };
+
 template <class... Ts>
 ExpressionOverloaded(Ts...) -> ExpressionOverloaded<Ts...>;
 
@@ -85,7 +86,7 @@ struct ExpressionRange
 
     bool operator==(const ExpressionRange& range) const
     {
-        return (range1 == range.range1 && range2 == range.range2);
+        return (range.range1 == range1) && (range.range2 == range2);
     }
     ExpressionRange() = delete;
 };

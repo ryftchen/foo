@@ -77,6 +77,14 @@ private:
 // Particle swarm method
 namespace Swarm
 {
+constexpr static double c1 = 1.5;
+constexpr static double c2 = 1.5;
+constexpr static double wBegin = 0.9;
+constexpr static double wEnd = 0.4;
+constexpr static double vMax = 0.5;
+constexpr static double vMin = -0.5;
+constexpr static uint32_t size = 50;
+constexpr static uint32_t iterNum = 100;
 struct Individual
 {
     Individual(
@@ -97,6 +105,7 @@ struct Greater
 {
     bool operator()(const double left, const double right) const { return left > right; }
 };
+
 using Society = std::vector<Swarm::Individual>;
 using History = std::map<ValueY, ValueX, Greater>;
 struct Record
@@ -111,14 +120,6 @@ struct Record
 
     Record() = default;
 };
-constexpr static double c1 = 1.5;
-constexpr static double c2 = 1.5;
-constexpr static double wBegin = 0.9;
-constexpr static double wEnd = 0.4;
-constexpr static double vMax = 0.5;
-constexpr static double vMin = -0.5;
-constexpr static uint32_t size = 50;
-constexpr static uint32_t iterNum = 100;
 } // namespace Swarm
 class Particle : public Optimum
 {
@@ -155,14 +156,12 @@ private:
     const Expression& fun;
     struct Range
     {
-        double lower;
-        double upper;
-        double eps;
-
-        Range() = default;
+        double lower{0.0};
+        double upper{0.0};
+        double eps{0.0};
     } range{};
     std::mt19937 seed;
-    uint32_t chrNum = 0;
+    uint32_t chrNum{0};
     void updateSpecies(const double left, const double right, const double eps);
     void geneCoding(Species::Chromosome& chr);
     [[nodiscard]] double geneDecoding(const Species::Chromosome& chr) const;
@@ -183,11 +182,13 @@ private:
     double inline random();
     uint32_t inline getRandomNumber(const uint32_t limit);
 };
+
 double inline Genetic::random()
 {
     std::uniform_real_distribution<double> random(0.0, 1.0);
     return random(seed);
 }
+
 uint32_t inline Genetic::getRandomNumber(const uint32_t limit)
 {
     std::uniform_int_distribution<int> randomX(0, limit);

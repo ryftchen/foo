@@ -1,17 +1,10 @@
 #pragma once
-#include <climits>
-#include <fstream>
-#include "main.hpp"
+#include "file.hpp"
 #include "time.hpp"
 
 extern class Log logger;
 
-typedef std::string (*PrintStyle)(std::string& line);
-constexpr static PrintStyle nullStyle = nullptr;
 std::string changeLogLevelStyle(std::string& line);
-void printFile(
-    const char* const pathname, const bool reverse = false, const uint32_t maxLine = 1000,
-    PrintStyle style = nullStyle);
 
 #define LOG_DIR "./temp"
 #define LOG_PATH "./temp/foo.log"
@@ -64,19 +57,17 @@ public:
     Log(const std::string& logFile, const Type type, const Level level,
         const Target target) noexcept;
     virtual ~Log();
-    const std::ofstream& getOfs() const;
     template <typename... Args>
     void outputLog(
         const uint32_t level, const std::string& codeFile, const uint32_t codeLine,
         const char* const __restrict format, Args&&... args);
+    std::ofstream& getOfs() const;
 
 private:
-    Level minLevel;
-    Target realTarget;
-    std::ofstream ofs;
-    char pathname[LOG_PATHNAME_LENGTH + 1] = LOG_PATH;
-    friend std::string getCurrentSystemTime(char* const date);
-    friend std::string changeLogLevelStyle(std::string& line);
+    mutable std::ofstream ofs;
+    Level minLevel{Level::levelDebug};
+    Target realTarget{Target::targetAll};
+    char pathname[LOG_PATHNAME_LENGTH + 1]{LOG_PATH};
 };
 
 template <typename... Args>

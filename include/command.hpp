@@ -2,33 +2,36 @@
 #include <bitset>
 #include <mutex>
 #include "expression.hpp"
-#include "log.hpp"
 #include "sort.hpp"
 
-#define COMMAND_MAX_METHOD_PER_TASK 10
+#define COMMAND_PER_TASK_MAX_METHOD 10
 #define COMMAND_PRINT_TITLE_WIDTH 40
 #define COMMAND_PRINT_MAX_LINE 50
-#define COMMAND_PREPARE_TASK_CHECK                  \
-    do                                              \
-    {                                               \
-        if (checkTask())                            \
-        {                                           \
-            printUnexpectedOption(argv + i, false); \
-            return;                                 \
-        }                                           \
-    }                                               \
+#define COMMAND_PREPARE_TASK_CHECK(isAllowSubParam)                 \
+    do                                                              \
+    {                                                               \
+        if (!validatePluralOptions(argc, argv, i, isAllowSubParam)) \
+        {                                                           \
+            return;                                                 \
+        }                                                           \
+    }                                                               \
     while (0)
-#define COMMAND_PREPARE_BIT_SET(xBit, taskX)            \
-    do                                                  \
-    {                                                   \
-        COMMAND_PREPARE_TASK_CHECK;                     \
-        taskBit.set(taskX);                             \
-        if ((argc <= i + 1) || (argv[i + 1][0] == '-')) \
-        {                                               \
-            xBit.set();                                 \
-        }                                               \
-    }                                                   \
+#define COMMAND_PREPARE_BIT_SET(taskType, taskTypeBit)                          \
+    do                                                                          \
+    {                                                                           \
+        COMMAND_PREPARE_TASK_CHECK(true);                                       \
+        taskBitForPreview.set(taskType);                                        \
+        if (((i + 1) == argc) || ((argc > (i + 1)) && ('-' == argv[i + 1][0]))) \
+        {                                                                       \
+            taskTypeBit.set();                                                  \
+        }                                                                       \
+    }                                                                           \
     while (0)
+#define COMMAND_PRINT_TASK_TITLE(taskType, title)                                      \
+    std::cout << std::endl                                                             \
+              << "TASK " << std::setiosflags(std::ios_base::left) << std::setfill('.') \
+              << std::setw(COMMAND_PRINT_TITLE_WIDTH) << taskType << title             \
+              << std::resetiosflags(std::ios_base::left) << std::setfill(' ') << std::endl;
 #define COMMAND_EXECUTE_OUTPUT_NAME "tput bel; banner foo"
 
 class Command
@@ -36,7 +39,7 @@ class Command
 public:
     virtual ~Command() = default;
     void parseArgv(const int argc, char* const argv[]);
-    void performTask();
+    void performTask() const;
     bool checkTask() const;
     enum TaskType
     {
@@ -94,12 +97,12 @@ private:
             integralBit.reset();
             sortBit.reset();
         };
-    } taskPlan;
+    } taskPlan{};
 #pragma pack()
     typedef void (Command::*TaskFunctor)() const;
     const TaskFunctor taskFunctor[TaskType::taskBottom] = {
         &Command::runOptimum, &Command::runIntegral, &Command::runSort};
-    const std::string taskTable[TaskType::taskBottom][COMMAND_MAX_METHOD_PER_TASK] = {
+    const std::string taskTable[TaskType::taskBottom][COMMAND_PER_TASK_MAX_METHOD] = {
         {"o_fib", "o_gra", "o_ann", "o_par", "o_gen"},
         {"i_tra", "i_sim", "i_rom", "i_gau", "i_mon"},
         {"s_bub", "s_sec", "s_ins", "s_she", "s_mer", "s_qui", "s_hea", "s_cou", "s_buc", "s_rad"}};
@@ -108,8 +111,10 @@ private:
         expressionMap{
             {{EXPRESSION_FUN_1_RANGE_1, EXPRESSION_FUN_1_RANGE_2}, Function1()},
             {{EXPRESSION_FUN_2_RANGE_1, EXPRESSION_FUN_2_RANGE_2}, Function2()}};
-    void updateTaskPlanFromTaskBit(
-        char* const argv[], const std::bitset<TaskType::taskBottom>& taskBit);
+    bool validatePluralOptions(
+        const int argc, char* const argv[], const int index, const bool isAllowSubParam);
+    void updateTaskPlan(
+        char* const argv[], const std::bitset<TaskType::taskBottom>& taskBitForPreview);
     void runOptimum() const;
     void getOptimumResult(
         const Expression& express, const double leftEndpoint, const double rightEndpoint,
@@ -128,11 +133,8 @@ private:
 protected:
     static void printLogContext();
     static void printInstruction();
-    static void printTaskTitle(const TaskType& taskType, const bool isBegin);
-    void printUnexpectedOption(char* const argv[], const bool isUnknown);
-    friend void executeCommand(const char* const command);
+    void printUnexpectedOption(char* const argv[], const bool isUnknownOption);
     friend std::ostream& operator<<(std::ostream& os, const TaskType& taskType);
 };
 
-void executeCommand(const char* const command);
 std::ostream& operator<<(std::ostream& os, const Command::TaskType& taskType);

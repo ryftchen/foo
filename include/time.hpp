@@ -2,7 +2,7 @@
 #include <sys/time.h>
 #include <chrono>
 #include <string>
-#include "main.hpp"
+#include "file.hpp"
 
 std::string getCurrentSystemTime(char* const date);
 
@@ -36,14 +36,17 @@ private:
     std::chrono::steady_clock::time_point beginTime;
     std::chrono::steady_clock::time_point endTime;
 };
+
 void inline Time::setBeginTime()
 {
     beginTime = std::chrono::steady_clock::now();
 }
+
 void inline Time::setEndTime()
 {
     endTime = std::chrono::steady_clock::now();
 }
+
 double inline Time::getTimeInterval() const
 {
     const std::chrono::duration<double, std::milli> timeInterval =

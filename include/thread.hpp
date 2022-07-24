@@ -3,7 +3,7 @@
 #include <functional>
 #include <future>
 #include <queue>
-#include "log.hpp"
+#include "exception.hpp"
 
 class Thread
 {
@@ -16,7 +16,7 @@ public:
 private:
     std::vector<std::thread> threadVector;
     std::queue<std::pair<std::string, std::packaged_task<void()>>> taskQueue;
-    std::mutex queueMutex;
+    mutable std::mutex queueMutex;
     std::condition_variable condition;
     std::condition_variable producer;
     std::atomic<bool> releaseReady;
