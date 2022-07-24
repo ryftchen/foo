@@ -528,7 +528,7 @@ std::ostream& operator<<(std::ostream& os, const Command::TaskType& taskType)
             os << "OPTIMUM";
             break;
         case Command::TaskType::taskIntegral:
-            os << "INTERGAL";
+            os << "INTEGRAL";
             break;
         case Command::TaskType::taskSort:
             os << "SORT";
