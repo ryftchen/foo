@@ -21,10 +21,10 @@ const char* LockFileError::what() const noexcept
 }
 
 [[noreturn]] void throwLockFileException(
-    const std::string& str, const bool isLock, const bool isReader)
+    const std::string& str, const bool isToLock, const bool isReader)
 {
     std::string operate, type;
-    isLock ? operate = "lock" : operate = "unlock";
+    isToLock ? operate = "lock" : operate = "unlock";
     isReader ? type = "reader" : type = "writer";
 
     throw LockFileError(operate + " " + type + " lock " + str + ".");

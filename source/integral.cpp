@@ -2,7 +2,7 @@
 #include <array>
 #include <functional>
 #include <random>
-#include "log.hpp"
+#include "time.hpp"
 
 double trapezoid(
     const Expression& express, const double left, const double height, const uint32_t step)
@@ -56,6 +56,7 @@ double Simpson::operator()(double lower, double upper, const double eps) const
     FORMAT_PRINT(INTEGRAL_RESULT, "Simpson", sum, TIME_INTERVAL);
     return sum;
 }
+
 double Simpson::simpsonIntegral(const double left, const double right, const double eps) const
 {
     const double mid = (left + right) / 2.0;
@@ -69,6 +70,7 @@ double Simpson::simpsonIntegral(const double left, const double right, const dou
     }
     return sum;
 }
+
 double Simpson::compositeSimpsonOneThird(
     const double left, const double right, const uint32_t n) const
 {
@@ -81,6 +83,7 @@ double Simpson::compositeSimpsonOneThird(
     }
     return sum;
 }
+
 double Simpson::simpsonOneThird(const double left, const double right) const
 {
     return (fun(left) + 4.0 * fun((left + right) / 2.0) + fun(right)) / 6.0 * (right - left);
@@ -182,6 +185,7 @@ double MonteCarlo::operator()(double lower, double upper, const double eps) cons
     FORMAT_PRINT(INTEGRAL_RESULT, "MonteCarlo", sum, TIME_INTERVAL);
     return sum;
 }
+
 double MonteCarlo::sampleFromUniformDistribution(
     const double lower, const double upper, const double eps) const
 {
@@ -198,6 +202,7 @@ double MonteCarlo::sampleFromUniformDistribution(
 
     return sum;
 }
+
 #ifdef INTEGRAL_MONTE_CARLO_NO_UNIFORM
 double MonteCarlo::sampleFromNormalDistribution(
     const double lower, const double upper, const double eps) const

@@ -3,7 +3,7 @@
 #include <string>
 
 [[noreturn]] void throwLockFileException(
-    const std::string& str, const bool isLock, const bool isReader);
+    const std::string& str, const bool isToLock, const bool isReader);
 
 class ExecuteCommandError : public std::exception
 {

@@ -155,6 +155,7 @@ void Sort<T>::mergeSort(T* const array, const uint32_t length) const
         SORT_RESULT, "Merge", formatArray(sortArray, length, arrayBuffer, arrayBufferSize + 1),
         TIME_INTERVAL);
 }
+
 template <class T>
 void Sort<T>::mergeSortRecursive(T* const sortArray, const uint32_t begin, const uint32_t end)
 {
@@ -205,6 +206,7 @@ void Sort<T>::quickSort(T* const array, const uint32_t length) const
         SORT_RESULT, "Quick", formatArray(sortArray, length, arrayBuffer, arrayBufferSize + 1),
         TIME_INTERVAL);
 }
+
 template <class T>
 void Sort<T>::quickSortRecursive(T* const sortArray, const uint32_t begin, const uint32_t end)
 {
@@ -271,6 +273,7 @@ void Sort<T>::heapSort(T* const array, const uint32_t length) const
         SORT_RESULT, "Heap", formatArray(sortArray, length, arrayBuffer, arrayBufferSize + 1),
         TIME_INTERVAL);
 }
+
 template <class T>
 void Sort<T>::buildMaxHeap(T* const sortArray, const uint32_t begin, const uint32_t end)
 {
@@ -413,7 +416,8 @@ void Sort<T>::radixSort(T* const array, const uint32_t length) const
     {
         max = std::max(sortArray[i], max);
         min = std::min(sortArray[i], min);
-        sortArray[i] > 0 ? positive = true : (sortArray[i] < 0 ? negative = true : sortArray[i]);
+        (sortArray[i] > 0) ? positive = true
+                           : ((sortArray[i] < 0) ? negative = true : sortArray[i]);
     }
     T absMax = std::max(max, -min);
     uint32_t digitMax = 0;
@@ -445,7 +449,7 @@ void Sort<T>::radixSort(T* const array, const uint32_t length) const
     {
         std::memcpy(countingOld.get(), countingNew.get(), bucketNum * sizeof(T));
         std::memset(countingNew.get(), 0, bucketNum * sizeof(T));
-        for (auto iterBucket = aggregation.begin(); iterBucket != aggregation.end(); ++iterBucket)
+        for (auto iterBucket = aggregation.begin(); aggregation.end() != iterBucket; ++iterBucket)
         {
             if (!iterBucket->size())
             {

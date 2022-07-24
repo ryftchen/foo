@@ -13,10 +13,13 @@ public:
 
 protected:
     static int inline getSign(double& lower, double& upper);
+    friend double trapezoid(
+        const Expression& express, const double left, const double height, const uint32_t step);
 };
+
 int inline Integral::getSign(double& lower, double& upper)
 {
-    return (lower < upper) ? 1 : (lower > upper ? (std::swap(lower, upper), -1) : 0);
+    return (lower < upper) ? 1 : ((lower > upper) ? (std::swap(lower, upper), -1) : 0);
 }
 
 // Trapezoidal method
@@ -29,8 +32,6 @@ public:
 
 private:
     const Expression& fun;
-    friend double trapezoid(
-        const Expression& express, const double left, const double height, const uint32_t step);
 };
 
 // Adaptive Simpson's 1/3 method
@@ -58,8 +59,6 @@ public:
 
 private:
     const Expression& fun;
-    friend double trapezoid(
-        const Expression& express, const double left, const double height, const uint32_t step);
 };
 
 // Gauss-Legendre's 5-points method

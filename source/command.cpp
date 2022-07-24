@@ -1,9 +1,7 @@
 #include "command.hpp"
-#include <ext/stdio_filebuf.h>
-#include <sys/file.h>
-#include "exception.hpp"
 #include "hash.hpp"
 #include "integral.hpp"
+#include "log.hpp"
 #include "optimum.hpp"
 #include "thread.hpp"
 
@@ -16,72 +14,53 @@ void Command::parseArgv(const int argc, char* const argv[])
         return;
     }
 
-    try
+    std::bitset<TaskType::taskBottom> taskBitForPreview(0);
+    for (int i = 0; i < argc; ++i)
     {
-        std::bitset<TaskType::taskBottom> taskBit(0);
-        for (int i = 0; i < argc; ++i)
+        if ('-' == argv[i][0])
         {
-            if (argv[i][0] == '-')
+            switch (bkdrHash(argv[i]))
             {
-                switch (bkdrHash(argv[i]))
-                {
-                    case "-o"_bkdrHash:
-                        [[fallthrough]];
-                    case "--optimum"_bkdrHash:
-                        COMMAND_PREPARE_BIT_SET(taskPlan.optimumBit, TaskType::taskOptimum);
-                        break;
-                    case "-i"_bkdrHash:
-                        [[fallthrough]];
-                    case "--integral"_bkdrHash:
-                        COMMAND_PREPARE_BIT_SET(taskPlan.integralBit, TaskType::taskIntegral);
-                        break;
-                    case "-s"_bkdrHash:
-                        [[fallthrough]];
-                    case "--sort"_bkdrHash:
-                        COMMAND_PREPARE_BIT_SET(taskPlan.sortBit, TaskType::taskSort);
-                        break;
-                    case "--log"_bkdrHash:
-                        COMMAND_PREPARE_TASK_CHECK;
-                        printLogContext();
-                        break;
-                    case "--help"_bkdrHash:
-                        COMMAND_PREPARE_TASK_CHECK;
-                        printInstruction();
-                        break;
-                    default:
-                        printUnexpectedOption(argv + i, true);
-                        break;
-                }
-                if (taskBit.none())
-                {
-                    return;
-                }
+                case "-o"_bkdrHash:
+                    [[fallthrough]];
+                case "--optimum"_bkdrHash:
+                    COMMAND_PREPARE_BIT_SET(TaskType::taskOptimum, taskPlan.optimumBit);
+                    break;
+                case "-i"_bkdrHash:
+                    [[fallthrough]];
+                case "--integral"_bkdrHash:
+                    COMMAND_PREPARE_BIT_SET(TaskType::taskIntegral, taskPlan.integralBit);
+                    break;
+                case "-s"_bkdrHash:
+                    [[fallthrough]];
+                case "--sort"_bkdrHash:
+                    COMMAND_PREPARE_BIT_SET(TaskType::taskSort, taskPlan.sortBit);
+                    break;
+                case "--log"_bkdrHash:
+                    COMMAND_PREPARE_TASK_CHECK(false);
+                    printLogContext();
+                    break;
+                case "--help"_bkdrHash:
+                    COMMAND_PREPARE_TASK_CHECK(false);
+                    printInstruction();
+                    break;
+                default:
+                    printUnexpectedOption(argv + i, true);
+                    break;
             }
-            else
+            if (taskBitForPreview.none())
             {
-                updateTaskPlanFromTaskBit(argv + i, taskBit);
-                if (!checkTask())
-                {
-                    return;
-                }
+                return;
             }
         }
-    }
-    catch (CallFunctionError const& error)
-    {
-        LOGGER_ERR(error.what());
-    }
-    catch (ExecuteCommandError const& error)
-    {
-        LOGGER_ERR(error.what());
-    }
-    catch (OpenFileError const& error)
-    {
-        LOGGER_ERR(error.what());
-    }
-    catch (LockFileError const& error)
-    {
-        LOGGER_ERR(error.what());
+        else
+        {
+            updateTaskPlan(argv + i, taskBitForPreview);
+            if (!checkTask())
+            {
+                return;
+            }
+        }
     }
 
     return;
@@ -92,7 +71,7 @@ bool Command::checkTask() const
     return taskPlan.optimumBit.any() || taskPlan.integralBit.any() || taskPlan.sortBit.any();
 }
 
-void Command::performTask()
+void Command::performTask() const
 {
     for (int i = 0; i < TaskType::taskBottom; ++i)
     {
@@ -100,18 +79,36 @@ void Command::performTask()
     }
 }
 
-void Command::updateTaskPlanFromTaskBit(
-    char* const argv[], const std::bitset<TaskType::taskBottom>& taskBit)
+bool Command::validatePluralOptions(
+    const int argc, char* const argv[], const int index, const bool isAllowSubParam = true)
 {
-    if (taskBit.test(TaskType::taskOptimum))
+    bool isValidationPass = true;
+    if (checkTask())
+    {
+        printUnexpectedOption(argv + index, false);
+        isValidationPass = false;
+    }
+    else if (argc > (index + 1) && !isAllowSubParam)
+    {
+        printUnexpectedOption(argv + (index + 1), false);
+        isValidationPass = false;
+    }
+
+    return isValidationPass;
+}
+
+void Command::updateTaskPlan(
+    char* const argv[], const std::bitset<TaskType::taskBottom>& taskBitForPreview)
+{
+    if (taskBitForPreview.test(TaskType::taskOptimum))
     {
         setOptimumBit(argv);
     }
-    else if (taskBit.test(TaskType::taskIntegral))
+    else if (taskBitForPreview.test(TaskType::taskIntegral))
     {
         setIntegralBit(argv);
     }
-    else if (taskBit.test(TaskType::taskSort))
+    else if (taskBitForPreview.test(TaskType::taskSort))
     {
         setSortBit(argv);
     }
@@ -150,7 +147,7 @@ void Command::runOptimum() const
                 getOptimumResult(expression, range.range1, range.range2, OPTIMUM_EPSILON);
             };
 
-            printTaskTitle(TaskType::taskOptimum, true);
+            COMMAND_PRINT_TASK_TITLE(TaskType::taskOptimum, "BEGIN");
             for ([[maybe_unused]] const auto& [range, expression] : expressionMap)
             {
                 printFunctor(expression);
@@ -165,7 +162,7 @@ void Command::runOptimum() const
                         [[unlikely]] default : break;
                 }
             }
-            printTaskTitle(TaskType::taskOptimum, false);
+            COMMAND_PRINT_TASK_TITLE(TaskType::taskOptimum, "END");
         }
     }
     catch (CallFunctionError const& error)
@@ -173,6 +170,7 @@ void Command::runOptimum() const
         LOGGER_ERR(error.what());
     }
 }
+
 void Command::getOptimumResult(
     const Expression& express, const double leftEndpoint, const double rightEndpoint,
     const double epsilon) const
@@ -214,6 +212,7 @@ void Command::getOptimumResult(
         }
     }
 }
+
 void Command::setOptimumBit(char* const argv[])
 {
     switch (bkdrHash(argv[0]))
@@ -268,7 +267,7 @@ void Command::runIntegral() const
                 getIntegralResult(expression, range.range1, range.range2, INTEGRAL_EPSILON);
             };
 
-            printTaskTitle(TaskType::taskIntegral, true);
+            COMMAND_PRINT_TASK_TITLE(TaskType::taskIntegral, "BEGIN");
             for ([[maybe_unused]] const auto& [range, expression] : expressionMap)
             {
                 printFunctor(expression);
@@ -283,7 +282,7 @@ void Command::runIntegral() const
                         [[unlikely]] default : break;
                 }
             }
-            printTaskTitle(TaskType::taskIntegral, false);
+            COMMAND_PRINT_TASK_TITLE(TaskType::taskIntegral, "END");
         }
     }
     catch (CallFunctionError const& error)
@@ -291,6 +290,7 @@ void Command::runIntegral() const
         LOGGER_ERR(error.what());
     }
 }
+
 void Command::getIntegralResult(
     const Expression& express, const double lowerLimit, const double upperLimit,
     const double epsilon) const
@@ -332,6 +332,7 @@ void Command::getIntegralResult(
         }
     }
 }
+
 void Command::setIntegralBit(char* const argv[])
 {
     switch (bkdrHash(argv[0]))
@@ -370,11 +371,11 @@ void Command::runSort() const
             const uint32_t length = SORT_ARRAY_LENGTH;
             static_assert((leftEndpoint < rightEndpoint) && (length > 0));
 
-            printTaskTitle(TaskType::taskSort, true);
+            COMMAND_PRINT_TASK_TITLE(TaskType::taskSort, "BEGIN");
             const std::shared_ptr<Sort<int>> sort =
                 std::make_shared<Sort<int>>(length, leftEndpoint, rightEndpoint);
             getSortResult(sort);
-            printTaskTitle(TaskType::taskSort, false);
+            COMMAND_PRINT_TASK_TITLE(TaskType::taskSort, "END");
         }
     }
     catch (CallFunctionError const& error)
@@ -382,6 +383,7 @@ void Command::runSort() const
         LOGGER_ERR(error.what());
     }
 }
+
 template <typename T>
 void Command::getSortResult(const std::shared_ptr<Sort<T>>& sort) const
 {
@@ -436,6 +438,7 @@ void Command::getSortResult(const std::shared_ptr<Sort<T>>& sort) const
         }
     }
 }
+
 void Command::setSortBit(char* const argv[])
 {
     switch (bkdrHash(argv[0]))
@@ -480,20 +483,9 @@ void Command::printLogContext()
 {
     try
     {
-        const int fd =
-            static_cast<__gnu_cxx::stdio_filebuf<char>* const>(logger.getOfs().rdbuf())->fd();
-        if (flock(fd, LOCK_UN))
-        {
-            throwLockFileException(
-                std::filesystem::path(LOG_PATH).filename().string(), false, false);
-        }
-
+        tryToOperateFileLock(logger.getOfs(), LOG_PATH, false, false);
         printFile(LOG_PATH, true, COMMAND_PRINT_MAX_LINE, &changeLogLevelStyle);
-        if (flock(fd, LOCK_EX | LOCK_NB))
-        {
-            throwLockFileException(
-                std::filesystem::path(LOG_PATH).filename().string(), true, false);
-        }
+        tryToOperateFileLock(logger.getOfs(), LOG_PATH, true, false);
     }
     catch (LockFileError const& error)
     {
@@ -517,61 +509,15 @@ void Command::printInstruction()
         "    --help                             Help");
 }
 
-void Command::printTaskTitle(const Command::TaskType& taskType, const bool isBegin)
+void Command::printUnexpectedOption(char* const argv[], const bool isUnknownOption)
 {
-    std::cout << std::endl
-              << "TASK " << std::setiosflags(std::ios_base::left) << std::setfill('.')
-              << std::setw(COMMAND_PRINT_TITLE_WIDTH) << taskType << (isBegin ? "BEGIN" : "END")
-              << std::resetiosflags(std::ios_base::left) << std::setfill(' ') << std::endl;
-}
-
-void Command::printUnexpectedOption(char* const argv[], const bool isUnknown)
-{
-    std::string str;
-    if (isUnknown)
-    {
-        str = "Unknown command line option: " + std::string(argv[0])
-            + ". Try with --help to get information.";
-    }
-    else
-    {
-        str = "Excess command line option: " + std::string(argv[0]) + ".";
-    }
+    const std::string str = isUnknownOption
+        ? ("Unknown command line option: " + std::string(argv[0])
+           + ". Try with --help to get information.")
+        : ("Excess command line option: " + std::string(argv[0]) + ".");
     LOGGER_WRN(str.c_str());
 
     taskPlan.reset();
-}
-
-void executeCommand(const char* const command)
-{
-    FILE* file = popen(command, "r");
-    if (nullptr == file)
-    {
-        throw CallFunctionError("popen()");
-    }
-
-    char resultBuffer[BUFFER_SIZE_MAX + 1] = {'\0'};
-    while (nullptr != std::fgets(resultBuffer, sizeof(resultBuffer), file))
-    {
-        if ('\n' == resultBuffer[std::strlen(resultBuffer) - 1])
-        {
-            resultBuffer[std::strlen(resultBuffer) - 1] = '\0';
-        }
-        std::cout << resultBuffer << std::endl;
-    }
-
-    const int status = pclose(file);
-    if (-1 == status)
-    {
-        throw CallFunctionError("pclose()");
-    }
-    else if (WIFEXITED(status))
-    {
-        if (WEXITSTATUS(status))
-        {
-            throw ExecuteCommandError(command);
-        }
-    }
 }
 
 std::ostream& operator<<(std::ostream& os, const Command::TaskType& taskType)
@@ -588,7 +534,8 @@ std::ostream& operator<<(std::ostream& os, const Command::TaskType& taskType)
             os << "SORT";
             break;
         default:
-            os << "UNKNOW: " << static_cast<std::underlying_type_t<Command::TaskType>>(taskType);
+            os << "UNKNOWN: " << static_cast<std::underlying_type_t<Command::TaskType>>(taskType);
     }
+
     return os;
 }

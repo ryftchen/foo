@@ -1,9 +1,8 @@
 #pragma once
-#include <iostream>
 #include <memory>
 #include <mutex>
 #include <random>
-#include "log.hpp"
+#include "time.hpp"
 
 #define SORT_ARRAY_RANGE_1 -50
 #define SORT_ARRAY_RANGE_2 150
@@ -130,6 +129,7 @@ requires std::is_integral<U>::value void Sort<T>::setRandomArray(
         SORT_GENERATE_INTEGRAL_ARRAY, length, left, right,
         formatArray(array, length, arrayBuffer, arrayBufferSize + 1));
 }
+
 template <class T>
 template <typename U>
 requires std::is_floating_point<U>::value void Sort<T>::setRandomArray(
@@ -175,7 +175,7 @@ char* Sort<T>::formatArray(
     for (uint32_t i = 0; i < length; ++i)
     {
         SORT_FORMAT_FOR_LOOP(format, align + 1, *(array + i));
-        if ((0 == (i + 1) % SORT_PRINT_MAX_COLUMN) && (length != (i + 1)))
+        if ((0 == (i + 1) % SORT_PRINT_MAX_COLUMN) && ((i + 1) != length))
         {
             SORT_FORMAT_FOR_LOOP("\n");
         }

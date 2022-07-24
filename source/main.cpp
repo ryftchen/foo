@@ -1,6 +1,5 @@
 #include "main.hpp"
 #include "command.hpp"
-#include "log.hpp"
 
 int main(int argc, char* argv[])
 {
