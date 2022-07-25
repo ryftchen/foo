@@ -4,28 +4,26 @@
 #include "expression.hpp"
 #include "sort.hpp"
 
-#define COMMAND_PER_TASK_MAX_METHOD 10
 #define COMMAND_PRINT_TITLE_WIDTH 40
 #define COMMAND_PRINT_MAX_LINE 50
-#define COMMAND_PREPARE_TASK_CHECK(isAllowSubParam)                 \
-    do                                                              \
-    {                                                               \
-        if (!validatePluralOptions(argc, argv, i, isAllowSubParam)) \
-        {                                                           \
-            return;                                                 \
-        }                                                           \
-    }                                                               \
+#define COMMAND_TASK_MAX_METHOD 10
+#define COMMAND_TASK_VALIDATE_ALLOW_SUB_PARAM(taskType)                   \
+    do                                                                    \
+    {                                                                     \
+        if (!validateWithAllowSubParam(argc, argv, i, taskType, taskBit)) \
+        {                                                                 \
+            return;                                                       \
+        }                                                                 \
+    }                                                                     \
     while (0)
-#define COMMAND_PREPARE_BIT_SET(taskType, taskTypeBit)                          \
-    do                                                                          \
-    {                                                                           \
-        COMMAND_PREPARE_TASK_CHECK(true);                                       \
-        taskBitForPreview.set(taskType);                                        \
-        if (((i + 1) == argc) || ((argc > (i + 1)) && ('-' == argv[i + 1][0]))) \
-        {                                                                       \
-            taskTypeBit.set();                                                  \
-        }                                                                       \
-    }                                                                           \
+#define COMMAND_TASK_VALIDATE_PREVENT_SUB_PARAM          \
+    do                                                   \
+    {                                                    \
+        if (!isLegalPluralOptions(argc, argv, i, false)) \
+        {                                                \
+            return;                                      \
+        }                                                \
+    }                                                    \
     while (0)
 #define COMMAND_PRINT_TASK_TITLE(taskType, title)                                      \
     std::cout << std::endl                                                             \
@@ -102,7 +100,7 @@ private:
     typedef void (Command::*TaskFunctor)() const;
     const TaskFunctor taskFunctor[TaskType::taskBottom] = {
         &Command::runOptimum, &Command::runIntegral, &Command::runSort};
-    const std::string taskTable[TaskType::taskBottom][COMMAND_PER_TASK_MAX_METHOD] = {
+    const std::string taskTable[TaskType::taskBottom][COMMAND_TASK_MAX_METHOD] = {
         {"o_fib", "o_gra", "o_ann", "o_par", "o_gen"},
         {"i_tra", "i_sim", "i_rom", "i_gau", "i_mon"},
         {"s_bub", "s_sec", "s_ins", "s_she", "s_mer", "s_qui", "s_hea", "s_cou", "s_buc", "s_rad"}};
@@ -111,10 +109,12 @@ private:
         expressionMap{
             {{EXPRESSION_FUN_1_RANGE_1, EXPRESSION_FUN_1_RANGE_2}, Function1()},
             {{EXPRESSION_FUN_2_RANGE_1, EXPRESSION_FUN_2_RANGE_2}, Function2()}};
-    bool validatePluralOptions(
+    bool isLegalPluralOptions(
         const int argc, char* const argv[], const int index, const bool isAllowSubParam);
-    void updateTaskPlan(
-        char* const argv[], const std::bitset<TaskType::taskBottom>& taskBitForPreview);
+    bool validateWithAllowSubParam(
+        const int argc, char* const argv[], const int index, const TaskType taskType,
+        std::bitset<TaskType::taskBottom>& taskBit);
+    void updateTaskPlan(char* const argv[], const std::bitset<TaskType::taskBottom>& taskBit);
     void runOptimum() const;
     void getOptimumResult(
         const Expression& express, const double leftEndpoint, const double rightEndpoint,
