@@ -14,7 +14,7 @@ void Command::parseArgv(const int argc, char* const argv[])
         return;
     }
 
-    std::bitset<TaskType::taskBottom> taskBitForPreview(0);
+    std::bitset<TaskType::taskBottom> taskBit(0);
     for (int i = 0; i < argc; ++i)
     {
         if ('-' == argv[i][0])
@@ -24,38 +24,38 @@ void Command::parseArgv(const int argc, char* const argv[])
                 case "-o"_bkdrHash:
                     [[fallthrough]];
                 case "--optimum"_bkdrHash:
-                    COMMAND_PREPARE_BIT_SET(TaskType::taskOptimum, taskPlan.optimumBit);
+                    COMMAND_TASK_VALIDATE_ALLOW_SUB_PARAM(TaskType::taskOptimum);
                     break;
                 case "-i"_bkdrHash:
                     [[fallthrough]];
                 case "--integral"_bkdrHash:
-                    COMMAND_PREPARE_BIT_SET(TaskType::taskIntegral, taskPlan.integralBit);
+                    COMMAND_TASK_VALIDATE_ALLOW_SUB_PARAM(TaskType::taskIntegral);
                     break;
                 case "-s"_bkdrHash:
                     [[fallthrough]];
                 case "--sort"_bkdrHash:
-                    COMMAND_PREPARE_BIT_SET(TaskType::taskSort, taskPlan.sortBit);
+                    COMMAND_TASK_VALIDATE_ALLOW_SUB_PARAM(TaskType::taskSort);
                     break;
                 case "--log"_bkdrHash:
-                    COMMAND_PREPARE_TASK_CHECK(false);
+                    COMMAND_TASK_VALIDATE_PREVENT_SUB_PARAM;
                     printLogContext();
                     break;
                 case "--help"_bkdrHash:
-                    COMMAND_PREPARE_TASK_CHECK(false);
+                    COMMAND_TASK_VALIDATE_PREVENT_SUB_PARAM;
                     printInstruction();
                     break;
                 default:
                     printUnexpectedOption(argv + i, true);
                     break;
             }
-            if (taskBitForPreview.none())
+            if (taskBit.none())
             {
                 return;
             }
         }
         else
         {
-            updateTaskPlan(argv + i, taskBitForPreview);
+            updateTaskPlan(argv + i, taskBit);
             if (!checkTask())
             {
                 return;
@@ -79,36 +79,65 @@ void Command::performTask() const
     }
 }
 
-bool Command::validatePluralOptions(
+bool Command::isLegalPluralOptions(
     const int argc, char* const argv[], const int index, const bool isAllowSubParam = true)
 {
-    bool isValidationPass = true;
     if (checkTask())
     {
         printUnexpectedOption(argv + index, false);
-        isValidationPass = false;
+        return false;
     }
     else if (argc > (index + 1) && !isAllowSubParam)
     {
         printUnexpectedOption(argv + (index + 1), false);
-        isValidationPass = false;
+        return false;
     }
 
-    return isValidationPass;
+    return true;
 }
 
-void Command::updateTaskPlan(
-    char* const argv[], const std::bitset<TaskType::taskBottom>& taskBitForPreview)
+bool Command::validateWithAllowSubParam(
+    const int argc, char* const argv[], const int index, const TaskType taskType,
+    std::bitset<TaskType::taskBottom>& taskBit)
 {
-    if (taskBitForPreview.test(TaskType::taskOptimum))
+    if (!isLegalPluralOptions(argc, argv, index))
+    {
+        return false;
+    }
+
+    taskBit.set(taskType);
+    if (((index + 1) == argc) || ((argc > (index + 1)) && ('-' == argv[index + 1][0])))
+    {
+        switch (taskType)
+        {
+            case TaskType::taskOptimum:
+                taskPlan.optimumBit.set();
+                break;
+            case TaskType::taskIntegral:
+                taskPlan.integralBit.set();
+                break;
+            case TaskType::taskSort:
+                taskPlan.sortBit.set();
+                break;
+            default:
+                break;
+        }
+    }
+
+    return true;
+}
+
+void Command::updateTaskPlan(char* const argv[], const std::bitset<TaskType::taskBottom>& taskBit)
+{
+    if (taskBit.test(TaskType::taskOptimum))
     {
         setOptimumBit(argv);
     }
-    else if (taskBitForPreview.test(TaskType::taskIntegral))
+    else if (taskBit.test(TaskType::taskIntegral))
     {
         setIntegralBit(argv);
     }
-    else if (taskBitForPreview.test(TaskType::taskSort))
+    else if (taskBit.test(TaskType::taskSort))
     {
         setSortBit(argv);
     }
