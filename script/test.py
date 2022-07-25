@@ -352,7 +352,9 @@ def parseArgs():
 
 
 def prepareTest():
-    os.chdir(os.path.split(os.path.split(os.path.realpath(__file__))[0])[0])
+    filePath = os.path.split(os.path.realpath(__file__))[0]
+    os.chdir(filePath.replace(filePath[filePath.index("script") :], ''))
+
     parseArgs()
     if not os.path.isfile(f"{RUN_DIR}{RUN_CMD}"):
         printAbort("There is no executable file. Please build it.")
