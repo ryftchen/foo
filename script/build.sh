@@ -236,7 +236,7 @@ tarHtml()
 
 main()
 {
-    cd "$(dirname "$(dirname "$0")")" || exit 1
+    cd "${0%%${SCRIPT_FOLDER}*}" || exit 1
 
     parseArgs "$@"
     checkDependencies "$@"
