@@ -11,7 +11,7 @@ constexpr uint32_t bkdrHashInCompile(const char* const str, const uint32_t hash 
     return *str ? bkdrHashInCompile(str + 1, (hash * HASH_BKDR_SEED + *str) & HASH_BKDR_SIZE)
                 : hash;
 }
-constexpr uint64_t operator""_bkdrHash(const char* const str, const size_t /*unused*/) noexcept
+constexpr uint64_t operator""_bkdrHash(const char* const str, const std::size_t /*unused*/) noexcept
 {
     return bkdrHashInCompile(str);
 }
