@@ -6,9 +6,9 @@ ARGS_RELEASE=false
 ARGS_REPORT=false
 
 PROJECT_FOLDER="foo"
-INCLUDE_FOLDER="include"
-SOURCE_FOLDER="source"
+APPLICATION_FOLDER="application"
 UTILITY_FOLDER="utility"
+ALGORITHM_FOLDER="algorithm"
 SCRIPT_FOLDER="script"
 BUILD_FOLDER="build"
 TEMP_FOLDER="temp"
@@ -78,8 +78,8 @@ checkDependencies()
         PERFORM_COMPILE=true
     fi
 
-    if [ ! -d ./"${INCLUDE_FOLDER}" ] || [ ! -d ./"${SOURCE_FOLDER}" ] \
-        || [ ! -d ./"${UTILITY_FOLDER}" ] || [ ! -d ./"${SCRIPT_FOLDER}" ]; then
+    if [ ! -d ./"${APPLICATION_FOLDER}" ] || [ ! -d ./"${UTILITY_FOLDER}" ] \
+        || [ ! -d ./"${ALGORITHM_FOLDER}" ] || [ ! -d ./"${SCRIPT_FOLDER}" ]; then
         printAbort "There are missing folders in ${PROJECT_FOLDER} folder. Please check it."
     fi
 
@@ -131,8 +131,8 @@ performOptionFormat()
                 && command -v shfmt >/dev/null 2>&1 \
                 && command -v black >/dev/null 2>&1
         then
-            bashCommand "clang-format-12 -i --verbose ./${INCLUDE_FOLDER}/*.hpp \
-./${SOURCE_FOLDER}/*.cpp ./${UTILITY_FOLDER}/*.cpp"
+            bashCommand "find ./${APPLICATION_FOLDER} ./${UTILITY_FOLDER} ./${ALGORITHM_FOLDER} \
+-name *.cpp -o -name *.hpp | xargs clang-format-12 -i --verbose"
             bashCommand "shfmt -l -w -ln bash -i 4 -bn -fn ./${SCRIPT_FOLDER}/*.sh"
             bashCommand "black -l 100 -S -v ./${SCRIPT_FOLDER}/*.py"
         else
@@ -150,8 +150,9 @@ performOptionLint()
                 && command -v pylint >/dev/null 2>&1
         then
             if [ -f ./"${BUILD_FOLDER}"/"${COMPILE_COMMANDS}" ]; then
-                bashCommand "clang-tidy-12 -p ./${BUILD_FOLDER}/${COMPILE_COMMANDS} \
-./${INCLUDE_FOLDER}/*.hpp ./${SOURCE_FOLDER}/*.cpp ./${UTILITY_FOLDER}/*.cpp"
+                bashCommand "find ./${APPLICATION_FOLDER} ./${UTILITY_FOLDER} \
+./${ALGORITHM_FOLDER} -name *.cpp -o -name *.hpp \
+| xargs clang-tidy-12 -p ./${BUILD_FOLDER}/${COMPILE_COMMANDS}"
             else
                 printAbort "There is no ${COMPILE_COMMANDS} file in ${BUILD_FOLDER} folder. \
 Please generate it."

@@ -1,28 +1,20 @@
-# cmake version
-CMAKE_MINIMUM_REQUIRED(VERSION 3.0)
+cmake_minimum_required(VERSION 3.0)
 
-# project name
-PROJECT(foo)
+project(foo)
 
-# head file path
-INCLUDE_DIRECTORIES(include)
+set(BUILD_DIR ${PROJECT_SOURCE_DIR}/build)
+set(EXECUTABLE_OUTPUT_PATH ${BUILD_DIR}/bin)
+set(LIBRARY_OUTPUT_PATH ${BUILD_DIR}/lib)
 
-# source directory
-AUX_SOURCE_DIRECTORY(source SOURCE_LIST)
-AUX_SOURCE_DIRECTORY(utility UTILITY_LIST)
-
-# set environment variable
-SET(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-SET(CMAKE_CXX_COMPILER "/usr/bin/clang++-12")
-SET(CMAKE_CXX_FLAGS_DEBUG "-g -O0")
-SET(CMAKE_CXX_FLAGS_RELEASE "-O3")
-IF("$ENV{FOO_ENV}" STREQUAL "CODE_COVERAGE")
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON CACHE INTERNAL "")
+set(CMAKE_CXX_COMPILER "/usr/bin/clang++-12")
+set(CMAKE_CXX_FLAGS_DEBUG "-g -O0")
+set(CMAKE_CXX_FLAGS_RELEASE "-O3")
+if("$ENV{FOO_ENV}" STREQUAL "CODE_COVERAGE")
     SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-instr-generate -fcoverage-mapping")
-ENDIF()
-ADD_COMPILE_OPTIONS(-std=c++20 -stdlib=libstdc++ -W)
+endif()
+add_compile_options(-std=c++20 -stdlib=libstdc++ -W)
 
-# add executable file
-ADD_EXECUTABLE(foo ${SOURCE_LIST} ${UTILITY_LIST})
-
-# add link library
-TARGET_LINK_LIBRARIES(foo pthread)
+add_subdirectory(application)
+add_subdirectory(utility)
+add_subdirectory(algorithm)
