@@ -1,10 +1,9 @@
 #!/usr/bin/env bash
 
-ARGS_CLEANUP=false
 ARGS_FORMAT=false
 ARGS_LINT=false
-ARGS_HTML=false
 ARGS_RELEASE=false
+ARGS_REPORT=false
 
 PROJECT_FOLDER="foo"
 INCLUDE_FOLDER="include"
@@ -13,8 +12,6 @@ UTILITY_FOLDER="utility"
 SCRIPT_FOLDER="script"
 BUILD_FOLDER="build"
 TEMP_FOLDER="temp"
-BUILD_SCRIPT="build.sh"
-TEST_SCRIPT="test.py"
 CMAKE_FILE="CMakeLists.txt"
 COMPILE_COMMANDS="compile_commands.json"
 FORMAT_CONFIG_CPP=".clang-format"
@@ -43,15 +40,15 @@ printInstruction()
     echo
     echo "[Options]:"
     echo
-    echo "    -c, --cleanup                      Cleanup"
-    echo
     echo "    -f, --format                       Format"
     echo
     echo "    -l, --lint                         Lint"
     echo
-    echo "    -h, --html                         Html"
-    echo
     echo "    --release                          Release"
+    echo
+    echo "    --report                           Report"
+    echo
+    echo "    --cleanup                          Cleanup"
     echo
     echo "    --help                             Help"
     exit 0
@@ -61,11 +58,11 @@ parseArgs()
 {
     while [ "$#" -gt 0 ]; do
         case $1 in
-        -c | --cleanup) ARGS_CLEANUP=true ;;
         -f | --format) ARGS_FORMAT=true ;;
         -l | --lint) ARGS_LINT=true ;;
-        -h | --html) ARGS_HTML=true ;;
+        --report) ARGS_REPORT=true ;;
         --release) ARGS_RELEASE=true ;;
+        --cleanup) performOptionCleanup ;;
         --help) printInstruction ;;
         *) printAbort "Unknown command line option: $1. Try with --help to get information." ;;
         esac
@@ -75,20 +72,22 @@ parseArgs()
 
 checkDependencies()
 {
-    if [ "$#" -eq 1 ] && [ "${ARGS_RELEASE}" = true ] || [ "$#" -eq 0 ]; then
+    if {
+        [ "$#" -eq 1 ] && [ "${ARGS_RELEASE}" = true ]
+    } || [ "$#" -eq 0 ]; then
         PERFORM_COMPILE=true
     fi
 
     if [ ! -d ./"${INCLUDE_FOLDER}" ] || [ ! -d ./"${SOURCE_FOLDER}" ] \
-        || [ ! -d ./"${UTILITY_FOLDER}" ] || [ ! -d ./"${SCRIPT_FOLDER}" ] \
-        || [ ! -f ./"${CMAKE_FILE}" ]; then
-        printAbort "There are missing files in ${PROJECT_FOLDER} folder."
+        || [ ! -d ./"${UTILITY_FOLDER}" ] || [ ! -d ./"${SCRIPT_FOLDER}" ]; then
+        printAbort "There are missing folders in ${PROJECT_FOLDER} folder. Please check it."
     fi
 
     if [ "${ARGS_FORMAT}" = true ] || [ "${ARGS_LINT}" = true ]; then
-        if [ ! -f ./"${SCRIPT_FOLDER}"/"${BUILD_SCRIPT}" ] \
-            || [ ! -f ./"${SCRIPT_FOLDER}"/"${TEST_SCRIPT}" ]; then
-            printAbort "There are missing files in ${SCRIPT_FOLDER} folder."
+        if [ ! -f ./"${FORMAT_CONFIG_CPP}" ] || [ ! -f ./"${LINT_CONFIG_CPP}" ] \
+            || [ ! -f ./"${LINT_CONFIG_PY}" ] || [ ! -f ./"${LINT_CONFIG_SH}" ]; then
+            printAbort "There are missing config files in ${PROJECT_FOLDER} folder. \
+Please check it."
         fi
     fi
 }
@@ -120,11 +119,8 @@ compileCode()
 
 performOptionCleanup()
 {
-    if [ "${ARGS_CLEANUP}" = true ]; then
-        bashCommand "rm -rf ./${BUILD_FOLDER} ./${TEMP_FOLDER}"
-        bashCommand "rm -rf ./core*"
-        exit 0
-    fi
+    bashCommand "rm -rf ./${BUILD_FOLDER} ./${TEMP_FOLDER}"
+    bashCommand "rm -rf ./core*"
 }
 
 performOptionFormat()
@@ -135,15 +131,10 @@ performOptionFormat()
                 && command -v shfmt >/dev/null 2>&1 \
                 && command -v black >/dev/null 2>&1
         then
-            if [ -f ./"${FORMAT_CONFIG_CPP}" ]; then
-                bashCommand "clang-format-12 -i --verbose ./${INCLUDE_FOLDER}/*.hpp \
+            bashCommand "clang-format-12 -i --verbose ./${INCLUDE_FOLDER}/*.hpp \
 ./${SOURCE_FOLDER}/*.cpp ./${UTILITY_FOLDER}/*.cpp"
-            else
-                printAbort "There is no ${FORMAT_CONFIG_CPP} file in ${PROJECT_FOLDER} folder. \
-Please generate it."
-            fi
-            bashCommand "shfmt -l -w -ln bash -i 4 -bn -fn ./${SCRIPT_FOLDER}/${BUILD_SCRIPT}"
-            bashCommand "black -l 100 -S -v ./${SCRIPT_FOLDER}/${TEST_SCRIPT}"
+            bashCommand "shfmt -l -w -ln bash -i 4 -bn -fn ./${SCRIPT_FOLDER}/*.sh"
+            bashCommand "black -l 100 -S -v ./${SCRIPT_FOLDER}/*.py"
         else
             printAbort "There is no clang-format, shfmt or black program. Please check it."
         fi
@@ -159,38 +150,23 @@ performOptionLint()
                 && command -v pylint >/dev/null 2>&1
         then
             if [ -f ./"${BUILD_FOLDER}"/"${COMPILE_COMMANDS}" ]; then
-                if [ -f ./"${LINT_CONFIG_CPP}" ]; then
-                    bashCommand "clang-tidy-12 -p ./${BUILD_FOLDER}/${COMPILE_COMMANDS} \
+                bashCommand "clang-tidy-12 -p ./${BUILD_FOLDER}/${COMPILE_COMMANDS} \
 ./${INCLUDE_FOLDER}/*.hpp ./${SOURCE_FOLDER}/*.cpp ./${UTILITY_FOLDER}/*.cpp"
-                else
-                    printAbort "There is no ${LINT_CONFIG_CPP} file in ${PROJECT_FOLDER} folder. \
-Please generate it."
-                fi
             else
                 printAbort "There is no ${COMPILE_COMMANDS} file in ${BUILD_FOLDER} folder. \
 Please generate it."
             fi
-            if [ -f ./"${LINT_CONFIG_SH}" ]; then
-                bashCommand "shellcheck --enable=all ./${SCRIPT_FOLDER}/${BUILD_SCRIPT}"
-            else
-                printAbort "There is no ${LINT_CONFIG_SH} file in ${PROJECT_FOLDER} folder. \
-Please generate it."
-            fi
-            if [ -f ./"${LINT_CONFIG_PY}" ]; then
-                bashCommand "pylint --rcfile=${LINT_CONFIG_PY} ./${SCRIPT_FOLDER}/${TEST_SCRIPT}"
-            else
-                printAbort "There is no ${LINT_CONFIG_PY} file in ${PROJECT_FOLDER} folder. \
-Please generate it."
-            fi
+            bashCommand "shellcheck --enable=all ./${SCRIPT_FOLDER}/*.sh"
+            bashCommand "pylint --rcfile=${LINT_CONFIG_PY} ./${SCRIPT_FOLDER}/*.py"
         else
             printAbort "There is no clang-tidy, shellcheck or pylint program. Please check it."
         fi
     fi
 }
 
-performOptionHtml()
+performOptionReport()
 {
-    if [ "${ARGS_HTML}" = true ]; then
+    if [ "${ARGS_REPORT}" = true ]; then
         if
             command -v codebrowser_generator >/dev/null 2>&1 \
                 && command -v codebrowser_indexgenerator >/dev/null 2>&1
@@ -204,11 +180,11 @@ performOptionHtml()
                 if [ -f ./"${TEMP_FOLDER}"/"${lastTar}" ]; then
                     printAbort "The latest html file ${TEMP_FOLDER}/${lastTar} has been generated."
                 else
-                    tarHtml
+                    tarReport
                 fi
             else
                 bashCommand "mkdir ./${TEMP_FOLDER}"
-                tarHtml
+                tarReport
             fi
         else
             printAbort "There is no codebrowser_generator or codebrowser_indexgenerator program. \
@@ -216,7 +192,7 @@ Please check it."
         fi
     fi
 }
-tarHtml()
+tarReport()
 {
     commitId=$(git rev-parse --short @)
     browserFolder="${PROJECT_FOLDER}_html"
@@ -240,13 +216,11 @@ main()
 
     parseArgs "$@"
     checkDependencies "$@"
-
-    performOptionCleanup
     generateCMakeFiles
 
     performOptionFormat
     performOptionLint
-    performOptionHtml
+    performOptionReport
 
     compileCode
 }

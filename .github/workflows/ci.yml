@@ -71,10 +71,10 @@ jobs:
           export FOO_ENV=CODE_ACTION
           ./.github/workflows/install.sh
 
-      - name: Inspect
+      - name: Check
         run: |
           ./script/build.sh --cleanup
-          ./script/build.sh --release --format --lint --html
+          ./script/build.sh --format --lint --report --release
           git status
 
       - name: Build
