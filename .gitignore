@@ -3,4 +3,5 @@
 
 build/
 temp/
+__pycache__/
 core*
