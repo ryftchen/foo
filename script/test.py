@@ -8,7 +8,7 @@ from datetime import datetime
 import common
 
 RUN_CMD = "foo"
-RUN_DIR = "./build/"
+RUN_DIR = "./build/bin/"
 OPTION_TYPE_1 = ["-o", "-i", "-s"]
 OPTIMUM = ["fib", "gra", "ann", "par", "gen"]
 INTEGRAL = ["tra", "sim", "rom", "gau", "mon"]
