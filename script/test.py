@@ -7,19 +7,21 @@ import sys
 from datetime import datetime
 import common
 
-RUN_CMD = "foo"
-RUN_DIR = "./build/bin/"
+BIN_EXE = "foo"
+BIN_DIR = "./build/bin/"
+LIB_LIST = ["libutility.so", "libalgorithm.so"]
+LIB_DIR = "./build/lib/"
 OPTION_TYPE_1 = ["-o", "-i", "-s"]
-OPTIMUM = ["fib", "gra", "ann", "par", "gen"]
-INTEGRAL = ["tra", "sim", "rom", "gau", "mon"]
-SORT = ["bub", "sel", "ins", "she", "mer", "qui", "hea", "cou", "buc", "rad"]
+OPTIMUM_METHOD = ["fib", "gra", "ann", "par", "gen"]
+INTEGRAL_METHOD = ["tra", "sim", "rom", "gau", "mon"]
+SORT_METHOD = ["bub", "sel", "ins", "she", "mer", "qui", "hea", "cou", "buc", "rad"]
 OPTION_TYPE_2 = ["--optimum", "--integral", "--sort", "--log", "--help"]
 CURRENT_STEP = 0
 WHOLE_STEP = (
     len(OPTION_TYPE_1)
-    + (len(OPTIMUM) + 1)
-    + (len(INTEGRAL) + 1)
-    + (len(SORT) + 1)
+    + (len(OPTIMUM_METHOD) + 1)
+    + (len(INTEGRAL_METHOD) + 1)
+    + (len(SORT_METHOD) + 1)
     + len(OPTION_TYPE_2)
     + 1
 )
@@ -68,7 +70,7 @@ def buildProject(command):
 
 def runTestTask(command):
     global CURRENT_STEP
-    fullCommand = f"{RUN_DIR}{command}"
+    fullCommand = f"{BIN_DIR}{command}"
     if CHECK_SET_VALGRIND:
         fullCommand = f"{CHECK_VALGRIND_CMD} {fullCommand}"
     if CHECK_SET_COVERAGE:
@@ -147,9 +149,6 @@ def runTestTask(command):
 def parseArgs():
     parser = argparse.ArgumentParser(description="test script")
     parser.add_argument(
-        "-c", "--check", choices=["valgrind", "coverage"], nargs="+", help="test with check"
-    )
-    parser.add_argument(
         "-b",
         "--build",
         choices=["debug", "release"],
@@ -157,17 +156,12 @@ def parseArgs():
         const="debug",
         help="test with build",
     )
+    parser.add_argument(
+        "-c", "--check", choices=["coverage", "valgrind"], nargs="+", help="test with check"
+    )
     args = parser.parse_args()
 
     if args.check:
-        if "valgrind" in args.check:
-            cmd = common.executeCommand(f"{COMMAND_DESCRIPTION_CMD} valgrind 2>&1", output=False)
-            out = cmd.stdout.read()
-            if out.find("valgrind") != -1:
-                global CHECK_SET_VALGRIND
-                CHECK_SET_VALGRIND = True
-            else:
-                printAbort("There is no valgrind program. Please check it.")
         if "coverage" in args.check:
             cmd1 = common.executeCommand(
                 f"{COMMAND_DESCRIPTION_CMD} llvm-profdata-12 2>&1", output=False
@@ -183,6 +177,14 @@ def parseArgs():
                 CHECK_SET_COVERAGE = True
             else:
                 printAbort("There is no llvm-profdata or llvm-cov program. Please check it.")
+        if "valgrind" in args.check:
+            cmd = common.executeCommand(f"{COMMAND_DESCRIPTION_CMD} valgrind 2>&1", output=False)
+            out = cmd.stdout.read()
+            if out.find("valgrind") != -1:
+                global CHECK_SET_VALGRIND
+                CHECK_SET_VALGRIND = True
+            else:
+                printAbort("There is no valgrind program. Please check it.")
     if args.build:
         if os.path.isfile(BUILD_SHELL):
             if args.build == "debug":
@@ -198,7 +200,7 @@ def prepareTest():
     os.chdir(filePath.replace(filePath[filePath.index("script") :], ''))
 
     parseArgs()
-    if not os.path.isfile(f"{RUN_DIR}{RUN_CMD}"):
+    if not os.path.isfile(f"{BIN_DIR}{BIN_EXE}"):
         printAbort("There is no executable file. Please build it.")
     if not os.path.exists(TEMP_PATH):
         os.makedirs(TEMP_PATH)
@@ -220,8 +222,10 @@ def completeTest():
             f"{CHECK_COVERAGE_PROFDATA_CMD} {TEMP_PATH}/foo_*.profraw -o {TEMP_PATH}/foo.profdata"
         )
         cmd = common.executeCommand(
-            f"{CHECK_COVERAGE_COV_CMD} {RUN_DIR}{RUN_CMD} -instr-profile={TEMP_PATH}/foo.profdata \
-2>&1",
+            f"{CHECK_COVERAGE_COV_CMD} -instr-profile={TEMP_PATH}/foo.profdata \
+-object={BIN_DIR}{BIN_EXE} "
+            + ' '.join([f"-object={LIB_DIR}{lib}" for lib in LIB_LIST])
+            + " 2>&1",
             output=False,
         )
         common.executeCommand(f"rm -rf {TEMP_PATH}/*.profraw")
@@ -240,32 +244,32 @@ def analyzeTestLog():
 
 
 def testOptionType1():
-    runTestTask(RUN_CMD)
+    runTestTask(BIN_EXE)
     for each in OPTION_TYPE_1:
-        runTestTask(f"{RUN_CMD} {each}")
+        runTestTask(f"{BIN_EXE} {each}")
 
 
 def testOptimum():
-    for each in OPTIMUM:
-        runTestTask(f"{RUN_CMD} {OPTION_TYPE_1[0]} {each}")
-    runTestTask(f"{RUN_CMD} {OPTION_TYPE_1[0]} {' '.join(OPTIMUM)}")
+    for each in OPTIMUM_METHOD:
+        runTestTask(f"{BIN_EXE} {OPTION_TYPE_1[0]} {each}")
+    runTestTask(f"{BIN_EXE} {OPTION_TYPE_1[0]} {' '.join(OPTIMUM_METHOD)}")
 
 
 def testIntegral():
-    for each in INTEGRAL:
-        runTestTask(f"{RUN_CMD} {OPTION_TYPE_1[1]} {each}")
-    runTestTask(f"{RUN_CMD} {OPTION_TYPE_1[1]} {' '.join(INTEGRAL)}")
+    for each in INTEGRAL_METHOD:
+        runTestTask(f"{BIN_EXE} {OPTION_TYPE_1[1]} {each}")
+    runTestTask(f"{BIN_EXE} {OPTION_TYPE_1[1]} {' '.join(INTEGRAL_METHOD)}")
 
 
 def testSort():
-    for each in SORT:
-        runTestTask(f"{RUN_CMD} {OPTION_TYPE_1[2]} {each}")
-    runTestTask(f"{RUN_CMD} {OPTION_TYPE_1[2]} {' '.join(SORT)}")
+    for each in SORT_METHOD:
+        runTestTask(f"{BIN_EXE} {OPTION_TYPE_1[2]} {each}")
+    runTestTask(f"{BIN_EXE} {OPTION_TYPE_1[2]} {' '.join(SORT_METHOD)}")
 
 
 def testOptionType2():
     for each in OPTION_TYPE_2:
-        runTestTask(f"{RUN_CMD} {each}")
+        runTestTask(f"{BIN_EXE} {each}")
 
 
 if __name__ == "__main__":

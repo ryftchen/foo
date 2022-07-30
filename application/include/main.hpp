@@ -7,7 +7,7 @@ static void switchToProjectPath()
 {
     const std::filesystem::path absolutePath =
         std::filesystem::canonical(std::filesystem::path{"/proc/self/exe"});
-    const std::size_t pos = absolutePath.string().find_last_of("build");
+    const std::size_t pos = absolutePath.string().find("build");
     if (std::string::npos == pos)
     {
         printf("The build directory does not exist. Please check it.\n");
