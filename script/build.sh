@@ -181,11 +181,11 @@ performOptionReport()
                 if [ -f ./"${TEMP_FOLDER}"/"${lastTar}" ]; then
                     printAbort "The latest html file ${TEMP_FOLDER}/${lastTar} has been generated."
                 else
-                    tarReport
+                    tarHtmlReport
                 fi
             else
                 bashCommand "mkdir ./${TEMP_FOLDER}"
-                tarReport
+                tarHtmlReport
             fi
         else
             printAbort "There is no codebrowser_generator or codebrowser_indexgenerator program. \
@@ -193,7 +193,8 @@ Please check it."
         fi
     fi
 }
-tarReport()
+
+tarHtmlReport()
 {
     commitId=$(git rev-parse --short @)
     browserFolder="${PROJECT_FOLDER}_html"
