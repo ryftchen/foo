@@ -107,7 +107,7 @@ def downloadArtifacts():
 
 if __name__ == "__main__":
     print(
-        "\r\n{} =========> DOWNLOAD ARTIFACTS START".format(
+        "\r\n{} >>>>>>>>>> DOWNLOAD ARTIFACTS START".format(
             datetime.strftime(datetime.now(), "%b %d %H:%M:%S")
         )
     )
@@ -121,7 +121,7 @@ if __name__ == "__main__":
         printAbort("Please set environment variable FOO_ENV firstly.")
 
     print(
-        "\r\n{} =========> DOWNLOAD ARTIFACTS FINISH".format(
+        "\r\n{} >>>>>>>>>> DOWNLOAD ARTIFACTS FINISH".format(
             datetime.strftime(datetime.now(), "%b %d %H:%M:%S")
         )
     )

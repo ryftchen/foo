@@ -44,11 +44,11 @@ printInstruction()
     echo
     echo "    -l, --lint                         Lint"
     echo
-    echo "    --release                          Release"
+    echo "    -c, --cleanup                      Cleanup"
     echo
     echo "    --report                           Report"
     echo
-    echo "    --cleanup                          Cleanup"
+    echo "    --release                          Release"
     echo
     echo "    --help                             Help"
     exit 0
@@ -60,9 +60,9 @@ parseArgs()
         case $1 in
         -f | --format) ARGS_FORMAT=true ;;
         -l | --lint) ARGS_LINT=true ;;
+        -c | --cleanup) performOptionCleanup ;;
         --report) ARGS_REPORT=true ;;
         --release) ARGS_RELEASE=true ;;
-        --cleanup) performOptionCleanup ;;
         --help) printInstruction ;;
         *) printAbort "Unknown command line option: $1. Try with --help to get information." ;;
         esac
