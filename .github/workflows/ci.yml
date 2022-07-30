@@ -29,7 +29,7 @@ jobs:
         uses: actions/checkout@v3.0.0
 
       - name: Check spelling
-        uses: check-spelling/check-spelling@v0.0.20-alpha5
+        uses: check-spelling/check-spelling@v0.0.20
         with:
           config: .github/actions/check_spelling
           post_comment: 0
@@ -79,13 +79,15 @@ jobs:
 
       - name: Build
         run: |
+          ./script/build.sh --debug
           ./script/build.sh --release
 
       - name: Test
         run: |
           export TERM=linux
           export TERMINFO=/etc/terminfo
-          ./script/test.py --check valgrind coverage --build release
+          ./script/test.py --check coverage --build debug
+          ./script/test.py --check valgrind --build release
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v3.0.0
