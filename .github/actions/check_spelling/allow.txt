@@ -17,6 +17,8 @@ hea
 indexgenerator
 istreambuf
 jcvf
+libalgorithm
+libutility
 llvm
 markov
 mday
