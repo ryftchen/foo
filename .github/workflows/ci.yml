@@ -79,7 +79,7 @@ jobs:
 
       - name: Build
         run: |
-          ./script/build.sh --debug
+          ./script/build.sh
           ./script/build.sh --release
 
       - name: Test
