@@ -149,15 +149,15 @@ def runTestTask(command):
 def parseArgs():
     parser = argparse.ArgumentParser(description="test script")
     parser.add_argument(
+        "-c", "--check", choices=["coverage", "valgrind"], nargs="+", help="test with check"
+    )
+    parser.add_argument(
         "-b",
         "--build",
         choices=["debug", "release"],
         nargs="?",
         const="debug",
         help="test with build",
-    )
-    parser.add_argument(
-        "-c", "--check", choices=["coverage", "valgrind"], nargs="+", help="test with check"
     )
     args = parser.parse_args()
 
