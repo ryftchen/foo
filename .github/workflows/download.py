@@ -14,31 +14,28 @@ ARTIFACT_URL = "https://api.github.com/repos/ryftchen/foo/actions/artifacts?per_
 ARTIFACT_FILE = "foo_artifact"
 
 
-def executeCommand(command, output=True):
+def bashCommand(cmd, output=True):
     if output:
-        print(
-            "\r\n{} {} START".format(datetime.strftime(datetime.now(), "%b %d %H:%M:%S"), command)
-        )
+        print("\r\n{} {} START".format(datetime.strftime(datetime.now(), "%b %d %H:%M:%S"), cmd))
     try:
-        cmd = subprocess.Popen(
-            command,
+        out = subprocess.Popen(
+            cmd,
             shell=True,
             executable="/bin/bash",
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             encoding="utf-8",
         )
-        cmd.wait()
-    except RuntimeError():
-        printAbort(f"Failed to execute command: \"{command}\".")
+    except RuntimeError:
+        sys.exit(-1)
     if output:
-        out, err = cmd.communicate()
-        if len(out) != 0:
-            print(out)
-        if len(err) != 0:
-            print(err)
-        print("{} {} FINISH".format(datetime.strftime(datetime.now(), "%b %d %H:%M:%S"), command))
-    return cmd
+        stdout, stderr = out.communicate()
+        if stdout.strip():
+            print(stdout.strip())
+        if stderr.strip():
+            print(stderr.strip())
+        print("{} {} FINISH".format(datetime.strftime(datetime.now(), "%b %d %H:%M:%S"), cmd))
+    return out
 
 
 def printAbort(message):
@@ -49,14 +46,14 @@ def printAbort(message):
 def downloadArtifacts():
     os.chdir(os.path.split(os.path.realpath(__file__))[0])
     localDir = (
-        executeCommand("git rev-parse --show-toplevel", output=False).stdout.read().splitlines()[0]
+        bashCommand("git rev-parse --show-toplevel", output=False).stdout.read().splitlines()[0]
     )
     os.chdir(localDir)
 
     if not os.path.exists(f"{BROWSER_FOLDER}"):
         printAbort(f"Please create code_browser folder in /var/www directory.")
-    localCommitId = executeCommand("git rev-parse HEAD", output=False).stdout.read().splitlines()[0]
-    remoteCommitId = executeCommand(
+    localCommitId = bashCommand("git rev-parse HEAD", output=False).stdout.read().splitlines()[0]
+    remoteCommitId = bashCommand(
         f"git ls-remote {PROJECT_GIT} refs/heads/master | cut -f 1", output=False
     ).stdout.read()
     if len(remoteCommitId) != 0:
@@ -65,7 +62,7 @@ def downloadArtifacts():
         printAbort("Failed to get the latest commit id.")
     htmlFolder = f"{PROJECT_FOLDER}_html"
     if localCommitId != remoteCommitId:
-        executeCommand("git pull origin master")
+        bashCommand("git pull origin master")
     elif os.path.exists(f"{BROWSER_FOLDER}/{htmlFolder}"):
         printAbort(f"No change in {PROJECT_FOLDER} project.")
 
@@ -89,25 +86,25 @@ def downloadArtifacts():
     except requests.exceptions.HTTPError as error:
         printAbort(error)
 
-    zipCheck = executeCommand(
+    zipCheck = bashCommand(
         f"zip -T {BROWSER_FOLDER}/{ARTIFACT_FILE}.zip", output=False
     ).stdout.read()
     if zipCheck.find("zip error") == -1:
-        executeCommand(f"rm -rf {BROWSER_FOLDER}/{htmlFolder}")
-        executeCommand(f"unzip {BROWSER_FOLDER}/{ARTIFACT_FILE}.zip -d {BROWSER_FOLDER}")
-        executeCommand(
+        bashCommand(f"rm -rf {BROWSER_FOLDER}/{htmlFolder}")
+        bashCommand(f"unzip {BROWSER_FOLDER}/{ARTIFACT_FILE}.zip -d {BROWSER_FOLDER}")
+        bashCommand(
             f"tar -jxvf {BROWSER_FOLDER}/{htmlFolder}_*.tar.bz2 -C {BROWSER_FOLDER} >/dev/null"
         )
-        executeCommand(f"rm -rf {BROWSER_FOLDER}/*.zip {BROWSER_FOLDER}/*.tar.bz2")
+        bashCommand(f"rm -rf {BROWSER_FOLDER}/*.zip {BROWSER_FOLDER}/*.tar.bz2")
     else:
-        executeCommand(f"rm -rf {BROWSER_FOLDER}/{ARTIFACT_FILE}.zip")
-        executeCommand(f"git reset --hard {localCommitId}")
+        bashCommand(f"rm -rf {BROWSER_FOLDER}/{ARTIFACT_FILE}.zip")
+        bashCommand(f"git reset --hard {localCommitId}")
         printAbort(f"The zip file {ARTIFACT_FILE}.zip in {BROWSER_FOLDER} folder is corrupted.")
 
 
 if __name__ == "__main__":
     print(
-        "\r\n{} >>>>>>>>>> DOWNLOAD ARTIFACTS START".format(
+        "\r\n{} >>>>>>>>>> DOWNLOAD ARTIFACTS START <<<<<<<<<<".format(
             datetime.strftime(datetime.now(), "%b %d %H:%M:%S")
         )
     )
@@ -121,7 +118,7 @@ if __name__ == "__main__":
         printAbort("Please set environment variable FOO_ENV firstly.")
 
     print(
-        "\r\n{} >>>>>>>>>> DOWNLOAD ARTIFACTS FINISH".format(
+        "\r\n{} >>>>>>>>>> DOWNLOAD ARTIFACTS FINISH <<<<<<<<<<".format(
             datetime.strftime(datetime.now(), "%b %d %H:%M:%S")
         )
     )
