@@ -1,3 +1,4 @@
+api
 bkdr
 buc
 chrono
@@ -8,6 +9,7 @@ cov
 datetime
 DCMAKE
 decltype
+destructure
 fcoverage
 fibonacci
 fprofile
@@ -39,7 +41,6 @@ shellcheckrc
 shfmt
 STREQUAL
 uintn
-uninit
 valgrind
 woboq
 WRN
