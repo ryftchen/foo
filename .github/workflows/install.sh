@@ -40,7 +40,7 @@ clang-format-12 clang-tidy-12 cmake python3 pylint black shellcheck valgrind sys
 main()
 {
     echo
-    echo "$(date "+%b %d %T") >>>>>>>>>> INSTALL DEPENDENCIES START"
+    echo "$(date "+%b %d %T") >>>>>>>>>> INSTALL DEPENDENCIES START <<<<<<<<<<"
 
     if [ -n "${FOO_ENV:=}" ]; then
         if [ "${FOO_ENV}" = "CODE_ACTION" ]; then
@@ -53,7 +53,7 @@ main()
     fi
 
     echo
-    echo "$(date "+%b %d %T") >>>>>>>>>> INSTALL DEPENDENCIES FINISH"
+    echo "$(date "+%b %d %T") >>>>>>>>>> INSTALL DEPENDENCIES FINISH <<<<<<<<<<"
 }
 
 main "$@"
