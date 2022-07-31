@@ -38,7 +38,7 @@ CHECK_COVERAGE_PROFDATA_CMD = "llvm-profdata-12 merge -sparse"
 CHECK_COVERAGE_COV_CMD = "llvm-cov-12 report"
 BUILD_SHELL = "./script/build.sh"
 BUILD_COMPILE_START = "Configuring done"
-BUILD_COMPILE_FINISH = "Built target"
+BUILD_COMPILE_FINISH = "Built target foo"
 STATUS_RED = "\033[0;31;40m"
 STATUS_GREEN = "\033[0;32;40m"
 STATUS_YELLOW = "\033[0;33;40m"
@@ -59,13 +59,13 @@ def printAbort(message):
 
 
 def buildProject(command):
-    cmd = common.executeCommand(command, output=False)
-    out = cmd.stdout.read()
-    print(out)
-    if cmd.returncode != 0:
-        printAbort(f"Failed to execute shell script {BUILD_SHELL}")
-    elif out.find(BUILD_COMPILE_START) != -1 and out.find(BUILD_COMPILE_FINISH) == -1:
-        printAbort(f"Failed to build project by shell script {BUILD_SHELL}.")
+    stdout, stderr, errcode = common.executeCommand(command)
+    if stderr or errcode != 0:
+        printAbort(f"Failed to execute shell script {BUILD_SHELL} in test.")
+    else:
+        print(stdout)
+        if stdout.find(BUILD_COMPILE_START) != -1 and stdout.find(BUILD_COMPILE_FINISH) == -1:
+            printAbort(f"Failed to build project by shell script {BUILD_SHELL}")
 
 
 def runTestTask(command):
@@ -87,13 +87,24 @@ def runTestTask(command):
             x=ALIGN_CMD,
         )
     )
-    cmd = common.executeCommand(fullCommand, output=False)
-    out = cmd.stdout.read()
-    print(out)
-    if cmd.returncode == 0:
+
+    stdout, stderr, errcode = common.executeCommand(fullCommand)
+    if stderr or errcode != 0:
+        print(
+            "{0}{2}[ {3} | {4:<{x}} ]{2}{1}".format(
+                STATUS_RED,
+                STATUS_END,
+                STATUS_SPLIT_LINE,
+                datetime.strftime(datetime.now(), "%b %d %H:%M:%S"),
+                "TEST TASK ERROR",
+                x=align,
+            )
+        )
+    else:
+        print(stdout)
         CURRENT_STEP += 1
         if CHECK_SET_VALGRIND:
-            if out.find(CHECK_VALGRIND_INFO) == -1:
+            if stdout.find(CHECK_VALGRIND_INFO) == -1:
                 CURRENT_STEP -= 1
                 print(
                     "{0}{2}[ {3} | {4:<{x}} ]{2}{1}".format(
@@ -105,17 +116,7 @@ def runTestTask(command):
                         x=align,
                     )
                 )
-    else:
-        print(
-            "{0}{2}[ {3} | {4:<{x}} ]{2}{1}".format(
-                STATUS_RED,
-                STATUS_END,
-                STATUS_SPLIT_LINE,
-                datetime.strftime(datetime.now(), "%b %d %H:%M:%S"),
-                "TEST TASK ERROR",
-                x=align,
-            )
-        )
+
     print(
         "\r\n{0}{2}[ {3} | TEST TASK: {4:<{x}} | FINISH ]{2}{1}\n".format(
             STATUS_BLUE,
@@ -163,28 +164,24 @@ def parseArgs():
 
     if args.check:
         if "coverage" in args.check:
-            cmd1 = common.executeCommand(
-                f"{COMMAND_DESCRIPTION_CMD} llvm-profdata-12 2>&1", output=False
+            stdout, _, _ = common.executeCommand(
+                f"{COMMAND_DESCRIPTION_CMD} llvm-profdata-12 llvm-cov-12 2>&1"
             )
-            out1 = cmd1.stdout.read()
-            cmd2 = common.executeCommand(
-                f"{COMMAND_DESCRIPTION_CMD} llvm-cov-12 2>&1", output=False
-            )
-            out2 = cmd2.stdout.read()
-            if out1.find("llvm-profdata-12") != -1 and out2.find("llvm-cov-12") != -1:
+            if stdout.find("llvm-profdata-12") != -1 and stdout.find("llvm-cov-12") != -1:
                 os.environ["FOO_ENV"] = "CODE_COVERAGE"
                 global CHECK_SET_COVERAGE
                 CHECK_SET_COVERAGE = True
             else:
                 printAbort("There is no llvm-profdata or llvm-cov program. Please check it.")
+
         if "valgrind" in args.check:
-            cmd = common.executeCommand(f"{COMMAND_DESCRIPTION_CMD} valgrind 2>&1", output=False)
-            out = cmd.stdout.read()
-            if out.find("valgrind") != -1:
+            stdout, _, _ = common.executeCommand(f"{COMMAND_DESCRIPTION_CMD} valgrind 2>&1")
+            if stdout.find("valgrind") != -1:
                 global CHECK_SET_VALGRIND
                 CHECK_SET_VALGRIND = True
             else:
                 printAbort("There is no valgrind program. Please check it.")
+
     if args.build:
         if os.path.isfile(BUILD_SHELL):
             if args.build == "debug":
@@ -192,7 +189,7 @@ def parseArgs():
             elif args.build == "release":
                 buildProject(f"{BUILD_SHELL} --release 2>&1")
         else:
-            printAbort("There is no shell script build.sh.")
+            printAbort("There is no shell script build.sh in script folder.")
 
 
 def prepareTest():
@@ -215,23 +212,21 @@ def completeTest():
     sys.stdout = STDOUT_DEFAULT
     common.destroyProgressBar()
     sys.stdout = STDOUT_LOG
-    sys.stdout.uninit()
+    sys.stdout.reset()
 
     if CHECK_SET_COVERAGE:
         common.executeCommand(
             f"{CHECK_COVERAGE_PROFDATA_CMD} {TEMP_PATH}/foo_*.profraw -o {TEMP_PATH}/foo.profdata"
         )
-        cmd = common.executeCommand(
+        stdout, _, _ = common.executeCommand(
             f"{CHECK_COVERAGE_COV_CMD} -instr-profile={TEMP_PATH}/foo.profdata \
 -object={BIN_DIR}{BIN_EXE} "
             + ' '.join([f"-object={LIB_DIR}{lib}" for lib in LIB_LIST])
-            + " 2>&1",
-            output=False,
+            + " 2>&1"
         )
         common.executeCommand(f"rm -rf {TEMP_PATH}/*.profraw")
-        out = cmd.stdout.read()
-        print(out)
-        if out.find("error") != -1:
+        print(stdout)
+        if stdout.find("error") != -1:
             printAbort("Please rebuild the executable file before use the coverage option.")
 
 

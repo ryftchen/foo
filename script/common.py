@@ -41,33 +41,27 @@ class Log:
     def flush(self):
         pass
 
-    def uninit(self):
+    def reset(self):
         fcntl.flock(self.log, fcntl.LOCK_UN)
         self.log.close()
         sys.stdout = STDOUT_DEFAULT
 
 
-def executeCommand(command, output=True):
+def executeCommand(cmd):
     try:
-        cmd = subprocess.Popen(
-            command,
+        out = subprocess.Popen(
+            cmd,
             shell=True,
             executable="/bin/bash",
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             encoding="utf-8",
         )
-        cmd.wait()
-    except RuntimeError():
-        print(f"Python script common.py: Failed to execute command: \"{command}\".")
-        sys.exit(-1)
-    if output:
-        out, err = cmd.communicate()
-        if len(out) != 0:
-            print(out)
-        if len(err) != 0:
-            print(err)
-    return cmd
+    except RuntimeError as err:
+        return "", err.args[0], 255
+    stdout, stderr = out.communicate()
+    error = out.returncode
+    return stdout.strip(), stderr.strip(), error
 
 
 def setupProgressBar():
@@ -155,15 +149,13 @@ def printProgress(text):
 
 
 def tputLines():
-    cmd = executeCommand("tput lines", output=False)
-    out = cmd.stdout.read()
-    return int(out)
+    stdout, _, _ = executeCommand("tput lines")
+    return int(stdout)
 
 
 def tputCols():
-    cmd = executeCommand("tput cols", output=False)
-    out = cmd.stdout.read()
-    return int(out)
+    stdout, _, _ = executeCommand("tput cols")
+    return int(stdout)
 
 
 def tput():
