@@ -1,7 +1,6 @@
 #pragma once
 #include <sys/time.h>
 #include <chrono>
-#include <string>
 #include "file.hpp"
 
 std::string getCurrentSystemTime(char* const date);

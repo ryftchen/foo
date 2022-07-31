@@ -1,4 +1,5 @@
 #include "file.hpp"
+#include <cstring>
 #include <iterator>
 #include <list>
 
@@ -9,7 +10,7 @@ void executeCommand(const char* const cmd)
         FILE* file = popen(cmd, "r");
         if (nullptr == file)
         {
-            throw CallFunctionError("popen()");
+            throwCallSystemApiException("popen");
         }
 
         char resultBuffer[BUFFER_SIZE_MAX + 1] = {'\0'};
@@ -25,21 +26,17 @@ void executeCommand(const char* const cmd)
         const int status = pclose(file);
         if (-1 == status)
         {
-            throw CallFunctionError("pclose()");
+            throwCallSystemApiException("pclose");
         }
         else if (WIFEXITED(status))
         {
             if (WEXITSTATUS(status))
             {
-                throw ExecuteCommandError(cmd);
+                throwRunCommandLineException(cmd);
             }
         }
     }
-    catch (CallFunctionError const& error)
-    {
-        std::cerr << error.what() << std::endl;
-    }
-    catch (ExecuteCommandError const& error)
+    catch (const std::exception& error)
     {
         std::cerr << error.what() << std::endl;
     }
@@ -54,7 +51,7 @@ void printFile(
         file.open(pathname, std::ios_base::in);
         if (!file)
         {
-            throw OpenFileError(std::filesystem::path(pathname).filename().string());
+            throwOperateFileException(std::filesystem::path(pathname).filename().string(), true);
         }
         tryToOperateFileLock(file, pathname, true, true);
 
@@ -99,13 +96,8 @@ void printFile(
         tryToOperateFileLock(file, pathname, false, true);
         file.close();
     }
-    catch (OpenFileError const& error)
+    catch (const std::exception& error)
     {
-        std::cerr << error.what() << std::endl;
-    }
-    catch (LockFileError const& error)
-    {
-        file.close();
         std::cerr << error.what() << std::endl;
     }
 }

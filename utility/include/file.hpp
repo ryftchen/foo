@@ -3,7 +3,6 @@
 #include <ext/stdio_filebuf.h>
 #include <sys/file.h>
 #include <cassert>
-#include <cstring>
 #include <filesystem>
 #include <iostream>
 #include "exception.hpp"
@@ -47,7 +46,7 @@ void tryToOperateFileLock(
     if (flock(fd, operate))
     {
         isNeedToCloseOnException ? file.close() : void();
-        throwLockFileException(
+        throwOperateLockException(
             std::filesystem::path(pathname).filename().string(), isToLock, isReader);
     }
 }

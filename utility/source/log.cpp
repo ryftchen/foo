@@ -17,16 +17,11 @@ Log::Log() noexcept : minLevel(Level::levelDebug), realTarget(Target::targetAll)
         ofs.open(pathname, std::ios_base::out | std::ios_base::app);
         if (!ofs)
         {
-            throw OpenFileError(std::filesystem::path(pathname).filename().string());
+            throwOperateFileException(std::filesystem::path(pathname).filename().string(), true);
         }
         tryToOperateFileLock(ofs, pathname, true, false);
     }
-    catch (OpenFileError const& error)
-    {
-        std::cerr << error.what() << std::endl;
-        realTarget = Target::targetTerminal;
-    }
-    catch (LockFileError const& error)
+    catch (const std::exception& error)
     {
         std::cerr << error.what() << std::endl;
         realTarget = Target::targetTerminal;
@@ -63,16 +58,11 @@ Log::Log(
 
         if (!ofs)
         {
-            throw OpenFileError(std::filesystem::path(pathname).filename().string());
+            throwOperateFileException(std::filesystem::path(pathname).filename().string(), true);
         }
         tryToOperateFileLock(ofs, pathname, true, false);
     }
-    catch (OpenFileError const& error)
-    {
-        std::cerr << error.what() << std::endl;
-        realTarget = Target::targetTerminal;
-    }
-    catch (LockFileError const& error)
+    catch (const std::exception& error)
     {
         std::cerr << error.what() << std::endl;
         realTarget = Target::targetTerminal;
@@ -85,7 +75,7 @@ Log::~Log()
     {
         tryToOperateFileLock(ofs, pathname, false, false);
     }
-    catch (LockFileError const& error)
+    catch (const std::exception& error)
     {
         std::cerr << error.what() << std::endl;
     }

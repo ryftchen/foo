@@ -1,56 +1,9 @@
 #pragma once
-#include <exception>
 #include <string>
 
-[[noreturn]] void throwLockFileException(
-    const std::string& str, const bool isToLock, const bool isReader);
-
-class ExecuteCommandError : public std::exception
-{
-public:
-    ExecuteCommandError() : message("Failed to execute command."){};
-    explicit ExecuteCommandError(const std::string& str) :
-        message("Failed to execute command " + str + "."){};
-    ~ExecuteCommandError() noexcept override = default;
-    [[nodiscard]] const char* what() const noexcept override;
-
-private:
-    std::string message;
-};
-
-class CallFunctionError : public std::exception
-{
-public:
-    CallFunctionError() : message("Failed to call function."){};
-    explicit CallFunctionError(const std::string& str) :
-        message("Failed to call function " + str + "."){};
-    ~CallFunctionError() noexcept override = default;
-    [[nodiscard]] const char* what() const noexcept override;
-
-private:
-    std::string message;
-};
-
-class OpenFileError : public std::exception
-{
-public:
-    OpenFileError() : message("Failed to open file."){};
-    explicit OpenFileError(const std::string& str) : message("Failed to open file " + str + "."){};
-    ~OpenFileError() noexcept override = default;
-    [[nodiscard]] const char* what() const noexcept override;
-
-private:
-    std::string message;
-};
-
-class LockFileError : public std::exception
-{
-public:
-    LockFileError() : message("Failed to lock/unlock reader/writer lock."){};
-    explicit LockFileError(const std::string& str) : message("Failed to " + str){};
-    ~LockFileError() noexcept override = default;
-    [[nodiscard]] const char* what() const noexcept override;
-
-private:
-    std::string message;
-};
+[[noreturn]] void throwLogicErrorException(const std::string& str);
+[[noreturn]] void throwRunCommandLineException(const std::string& str);
+[[noreturn]] void throwCallSystemApiException(const std::string& str);
+[[noreturn]] void throwOperateFileException(const std::string& name, const bool isToOpen);
+[[noreturn]] void throwOperateLockException(
+    const std::string& name, const bool isToLock, const bool isReader);

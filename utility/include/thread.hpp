@@ -33,7 +33,7 @@ decltype(auto) Thread::enqueue(const std::string& name, Function&& fun, Args&&..
     {
         if (releaseReady)
         {
-            throw CallFunctionError("Thread::" + std::string(__FUNCTION__) + "()");
+            throwLogicErrorException("coming to destructure");
         }
         taskQueue.emplace(std::make_pair(name, std::move(task)));
     }
