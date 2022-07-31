@@ -194,7 +194,7 @@ void Command::runOptimum() const
             COMMAND_PRINT_TASK_TITLE(TaskType::taskOptimum, "END");
         }
     }
-    catch (CallFunctionError const& error)
+    catch (const std::exception& error)
     {
         LOGGER_ERR(error.what());
     }
@@ -314,7 +314,7 @@ void Command::runIntegral() const
             COMMAND_PRINT_TASK_TITLE(TaskType::taskIntegral, "END");
         }
     }
-    catch (CallFunctionError const& error)
+    catch (const std::exception& error)
     {
         LOGGER_ERR(error.what());
     }
@@ -407,7 +407,7 @@ void Command::runSort() const
             COMMAND_PRINT_TASK_TITLE(TaskType::taskSort, "END");
         }
     }
-    catch (CallFunctionError const& error)
+    catch (const std::exception& error)
     {
         LOGGER_ERR(error.what());
     }
@@ -514,9 +514,10 @@ void Command::printLogContext()
     {
         tryToOperateFileLock(logger.getOfs(), LOG_PATH, false, false);
         printFile(LOG_PATH, true, COMMAND_PRINT_MAX_LINE, &changeLogLevelStyle);
+
         tryToOperateFileLock(logger.getOfs(), LOG_PATH, true, false);
     }
-    catch (LockFileError const& error)
+    catch (const std::exception& error)
     {
         LOGGER_ERR(error.what());
     }

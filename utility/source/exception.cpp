@@ -1,31 +1,30 @@
 #include "exception.hpp"
+#include <stdexcept>
 
-const char* ExecuteCommandError::what() const noexcept
+void throwLogicErrorException(const std::string& str)
 {
-    return message.c_str();
+    throw std::logic_error("Logic error, because: " + str);
 }
 
-const char* CallFunctionError::what() const noexcept
+void throwRunCommandLineException(const std::string& str)
 {
-    return message.c_str();
+    throw std::runtime_error("Failed to run common line: " + str);
 }
 
-const char* OpenFileError::what() const noexcept
+void throwCallSystemApiException(const std::string& str)
 {
-    return message.c_str();
+    throw std::runtime_error("Failed to call system api: " + str);
 }
 
-const char* LockFileError::what() const noexcept
+void throwOperateLockException(const std::string& name, const bool isToLock, const bool isReader)
 {
-    return message.c_str();
+    std::string operate = isToLock ? "lock" : "unlock";
+    std::string type = isReader ? "reader" : "writer";
+    throw std::runtime_error("Failed to " + operate + " " + type + " lock: " + name);
 }
 
-[[noreturn]] void throwLockFileException(
-    const std::string& str, const bool isToLock, const bool isReader)
+void throwOperateFileException(const std::string& name, const bool isToOpen)
 {
-    std::string operate, type;
-    isToLock ? operate = "lock" : operate = "unlock";
-    isReader ? type = "reader" : type = "writer";
-
-    throw LockFileError(operate + " " + type + " lock " + str + ".");
+    std::string operate = isToOpen ? "open" : "unlock";
+    throw std::runtime_error("Failed to " + operate + " file: " + name);
 }
