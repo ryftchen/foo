@@ -9,7 +9,7 @@ void Command::parseArgv(const int argc, char* const argv[])
 {
     if (argc < 1)
     {
-        executeCommand(COMMAND_EXECUTE_OUTPUT_NAME);
+        executeCommand(("tput bel; echo " + getASCIIBannerTextWithSubZeroFont()).c_str());
         LOGGER_INF("No command line option.");
         return;
     }
@@ -508,6 +508,17 @@ void Command::setSortBit(char* const argv[])
     }
 }
 
+void Command::printUnexpectedOption(char* const argv[], const bool isUnknownOption)
+{
+    const std::string str = isUnknownOption
+        ? ("Unknown command line option: " + std::string(argv[0])
+           + ". Try with --help to get information.")
+        : ("Excess command line option: " + std::string(argv[0]) + ".");
+    LOGGER_WRN(str.c_str());
+
+    taskPlan.reset();
+}
+
 void Command::printLogContext()
 {
     try
@@ -539,15 +550,18 @@ void Command::printInstruction()
         "    --help                             Help");
 }
 
-void Command::printUnexpectedOption(char* const argv[], const bool isUnknownOption)
+std::string Command::getASCIIBannerTextWithSubZeroFont()
 {
-    const std::string str = isUnknownOption
-        ? ("Unknown command line option: " + std::string(argv[0])
-           + ". Try with --help to get information.")
-        : ("Excess command line option: " + std::string(argv[0]) + ".");
-    LOGGER_WRN(str.c_str());
+    std::string banner;
+    banner += R"(")";
+    banner += R"( ______   ______     ______    \n)";
+    banner += R"(/\  ___\ /\  __ \   /\  __ \   \n)";
+    banner += R"(\ \  __\ \ \ \/\ \  \ \ \/\ \  \n)";
+    banner += R"( \ \_\    \ \_____\  \ \_____\ \n)";
+    banner += R"(  \/_/     \/_____/   \/_____/ \n)";
+    banner += R"(")";
 
-    taskPlan.reset();
+    return banner;
 }
 
 std::ostream& operator<<(std::ostream& os, const Command::TaskType& taskType)
