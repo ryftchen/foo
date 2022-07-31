@@ -30,7 +30,6 @@
               << "TASK " << std::setiosflags(std::ios_base::left) << std::setfill('.') \
               << std::setw(COMMAND_PRINT_TITLE_WIDTH) << taskType << title             \
               << std::resetiosflags(std::ios_base::left) << std::setfill(' ') << std::endl;
-#define COMMAND_EXECUTE_OUTPUT_NAME "tput bel; banner foo"
 
 class Command
 {
@@ -129,11 +128,12 @@ private:
     template <typename T>
     void getSortResult(const std::shared_ptr<Sort<T>>& sort) const;
     void setSortBit(char* const argv[]);
+    void printUnexpectedOption(char* const argv[], const bool isUnknownOption);
 
 protected:
     static void printLogContext();
     static void printInstruction();
-    void printUnexpectedOption(char* const argv[], const bool isUnknownOption);
+    static std::string getASCIIBannerTextWithSubZeroFont();
     friend std::ostream& operator<<(std::ostream& os, const TaskType& taskType);
 };
 
