@@ -18,6 +18,7 @@ BAR_CURRENT_LINES = 0
 BAR_PLACEHOLDER_LENGTH = 20
 BAR_SET_TRAP = False
 BAR_SIGNAL_DEFAULT = None
+
 STDOUT_DEFAULT = sys.stdout
 
 
@@ -35,13 +36,11 @@ class Log:
             fcntl.flock(self.log, fcntl.LOCK_UN)
             self.log.close()
             sys.stdout = STDOUT_DEFAULT
-            print(f"Python script common.py: Failed to write log file.")
-            sys.exit(-1)
 
     def flush(self):
         pass
 
-    def reset(self):
+    def __del__(self):
         fcntl.flock(self.log, fcntl.LOCK_UN)
         self.log.close()
         sys.stdout = STDOUT_DEFAULT
