@@ -98,6 +98,8 @@ generateCMakeFiles()
         if [ ! -d ./"${BUILD_FOLDER}" ]; then
             bashCommand "mkdir ./${BUILD_FOLDER}"
         fi
+
+        bashCommand "export CC=/usr/bin/clang-12 && export CXX=/usr/bin/clang++-12"
         if [ "${ARGS_RELEASE}" = true ]; then
             bashCommand "cmake -S . -B ./${BUILD_FOLDER} \
 -DCMAKE_CXX_COMPILER=clang++-12 -DCMAKE_BUILD_TYPE=Release"
