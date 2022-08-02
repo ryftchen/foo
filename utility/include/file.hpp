@@ -1,7 +1,7 @@
 #pragma once
-#define NDEBUG
 #include <ext/stdio_filebuf.h>
 #include <sys/file.h>
+#define NDEBUG
 #include <cassert>
 #include <filesystem>
 #include <iostream>
