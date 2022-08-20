@@ -16,11 +16,11 @@ void Log::runLogger()
 {
     try
     {
-        if (!std::filesystem::exists(pathname))
+        if (!std::filesystem::exists(LOG_DIR))
         {
-            std::filesystem::create_directory(pathname);
+            std::filesystem::create_directory(LOG_DIR);
             std::filesystem::permissions(
-                pathname, std::filesystem::perms::owner_all, std::filesystem::perm_options::add);
+                LOG_DIR, std::filesystem::perms::owner_all, std::filesystem::perm_options::add);
         }
 
         switch (writeType)
