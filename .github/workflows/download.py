@@ -15,8 +15,6 @@ ARTIFACT_FILE = "foo_artifact"
 
 
 def executeCommand(cmd, output=True):
-    if output:
-        print("\r\n{} {} START".format(datetime.strftime(datetime.now(), "%b %d %H:%M:%S"), cmd))
     try:
         out = subprocess.Popen(
             cmd,
@@ -29,6 +27,7 @@ def executeCommand(cmd, output=True):
     except RuntimeError:
         sys.exit(-1)
     if output:
+        print("\r\n{} {} START".format(datetime.strftime(datetime.now(), "%b %d %H:%M:%S"), cmd))
         stdout, stderr = out.communicate()
         if stdout.strip():
             print(stdout.strip())
