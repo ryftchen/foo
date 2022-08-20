@@ -35,8 +35,8 @@ std::string changeLogLevelStyle(std::string& line);
     logger.output(Log::Level::warn, __FILE__, __LINE__, format, ##args)
 #define LOGGER_ERR(format, args...) \
     logger.output(Log::Level::error, __FILE__, __LINE__, format, ##args)
-#define LOGGER_EXIT           \
-    TIME_WAIT_MILLISECOND_50; \
+#define LOGGER_EXIT            \
+    TIME_WAIT_MILLISECOND_100; \
     logger.exit()
 
 class Log final
