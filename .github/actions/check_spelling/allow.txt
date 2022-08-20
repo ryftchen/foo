@@ -9,6 +9,7 @@ cov
 datetime
 DCMAKE
 decltype
+declval
 destructure
 fcoverage
 fibonacci
@@ -34,7 +35,7 @@ pylint
 pylintrc
 Rastrigin
 rcfile
-ROMBERG
+romberg
 setname
 shellcheck
 shellcheckrc
