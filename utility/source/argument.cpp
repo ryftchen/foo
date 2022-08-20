@@ -89,9 +89,9 @@ std::size_t ArgumentRegister::getArgumentsLength() const
 {
     return std::accumulate(
         std::begin(names), std::end(names), std::size_t(0),
-        [](const auto& sum, const auto& s)
+        [](const auto& sum, const auto& str)
         {
-            return sum + s.size() + 1;
+            return sum + str.size() + 1;
         });
 }
 
@@ -141,7 +141,7 @@ void ArgumentRegister::throwNargsRangeValidationException() const
     {
         stream << argNumArgsRange.getMin() << " or more";
     }
-    stream << " argument(s) expected. " << values.size() << " provided.";
+    stream << " argument(str) expected. " << values.size() << " provided.";
     throw std::runtime_error(stream.str());
 }
 
@@ -159,13 +159,13 @@ void ArgumentRegister::throwRequiredArgNoValueProvidedException() const
     throw std::runtime_error(stream.str());
 }
 
-auto ArgumentRegister::lookAhead(std::string_view s) -> int
+auto ArgumentRegister::lookAhead(std::string_view str) -> int
 {
-    if (s.empty())
+    if (str.empty())
     {
         return eof;
     }
-    return static_cast<int>(static_cast<unsigned char>(s[0]));
+    return static_cast<int>(static_cast<unsigned char>(str[0]));
 }
 
 bool ArgumentRegister::checkIfOptional(std::string_view name)
