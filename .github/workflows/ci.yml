@@ -51,6 +51,7 @@ jobs:
           sudo apt-get purge -y clang-*
           sudo apt-get install -y clang-12 cmake
           mkdir ./build
+          export CC=/usr/bin/clang-12 CXX=/usr/bin/clang++-12
           cmake -S . -B ./build -DCMAKE_CXX_COMPILER=clang++-12 -DCMAKE_BUILD_TYPE=Release
           make -C ./build -j
 
