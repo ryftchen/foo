@@ -93,6 +93,7 @@ void Log::runLogger()
 
 void Log::exit()
 {
+    TIME_WAIT_MILLISECOND_50;
     if (isLogging)
     {
         isLogging = false;

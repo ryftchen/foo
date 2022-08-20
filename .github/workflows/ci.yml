@@ -87,7 +87,7 @@ jobs:
         run: |
           export TERM=linux
           export TERMINFO=/etc/terminfo
-          ./script/test.py --check coverage --build debug
+          ./script/test.py --check coverage --build
           ./script/test.py --check valgrind --build release
 
       - name: Upload artifacts
