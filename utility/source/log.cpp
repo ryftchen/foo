@@ -12,6 +12,11 @@ Log::Log(
     pathname[LOG_PATHNAME_LENGTH] = '\0';
 }
 
+Log::~Log()
+{
+    exit();
+}
+
 void Log::runLogger()
 {
     try
@@ -75,14 +80,10 @@ void Log::runLogger()
             }
         }
 
-        if (!isLogging)
+        tryToOperateFileLock(ofs, pathname, false, false);
+        if (ofs.is_open())
         {
-            tryToOperateFileLock(ofs, pathname, false, false);
-
-            if (ofs.is_open())
-            {
-                ofs.close();
-            }
+            ofs.close();
         }
     }
     catch (const std::exception& error)
@@ -93,7 +94,6 @@ void Log::runLogger()
 
 void Log::exit()
 {
-    TIME_WAIT_MILLISECOND_50;
     if (isLogging)
     {
         isLogging = false;

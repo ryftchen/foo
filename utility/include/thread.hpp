@@ -8,9 +8,9 @@ class Thread
 {
 public:
     explicit Thread(uint32_t count);
-    template <typename Function, typename... Args>
-    decltype(auto) enqueue(const std::string& name, Function&& func, Args&&... args);
-    ~Thread();
+    template <typename Func, typename... Args>
+    decltype(auto) enqueue(const std::string& name, Func&& func, Args&&... args);
+    virtual ~Thread();
 
 private:
     std::vector<std::thread> threadVector;
@@ -21,12 +21,12 @@ private:
     std::atomic<bool> releaseReady{false};
 };
 
-template <typename Function, typename... Args>
-decltype(auto) Thread::enqueue(const std::string& name, Function&& func, Args&&... args)
+template <typename Func, typename... Args>
+decltype(auto) Thread::enqueue(const std::string& name, Func&& func, Args&&... args)
 {
-    std::packaged_task<std::invoke_result_t<Function, Args...>()> task(
-        std::bind(std::forward<Function>(func), std::forward<Args>(args)...));
-    std::future<std::invoke_result_t<Function, Args...>> future = task.get_future();
+    std::packaged_task<std::invoke_result_t<Func, Args...>()> task(
+        std::bind(std::forward<Func>(func), std::forward<Args>(args)...));
+    std::future<std::invoke_result_t<Func, Args...>> future = task.get_future();
 
     if (std::unique_lock<std::mutex> lock(queueMutex); true)
     {
