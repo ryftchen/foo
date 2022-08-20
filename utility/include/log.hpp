@@ -37,7 +37,7 @@ std::string changeLogLevelStyle(std::string& line);
     logger.outputLog(Log::Level::error, __FILE__, __LINE__, format, ##args)
 #define LOGGER_EXIT                                                         \
     using std::chrono::operator""ms;                                        \
-    std::this_thread::sleep_until(std::chrono::steady_clock::now() + 10ms); \
+    std::this_thread::sleep_until(std::chrono::steady_clock::now() + 50ms); \
     logger.exit()
 
 class Log final
