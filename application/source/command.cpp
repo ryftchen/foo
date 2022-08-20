@@ -80,7 +80,6 @@ void Command::runCommand(const int argc, const char* const argv[])
             printVersionInfo();
             printHelpMessage();
 
-            TIME_WAIT_MILLISECOND_50;
             LOGGER_EXIT;
             return;
         }
@@ -93,7 +92,6 @@ void Command::runCommand(const int argc, const char* const argv[])
         LOGGER_ERR(error.what());
     }
 
-    TIME_WAIT_MILLISECOND_50;
     LOGGER_EXIT;
 }
 
@@ -548,7 +546,7 @@ void Command::setSortBit(const char* const method)
 void Command::printLogContext() const
 {
     LOGGER_EXIT;
-    TIME_WAIT_MILLISECOND_50;
+
     printFile(
         LOG_PATH, taskPlan.utilTask.logConfig.isReverse, taskPlan.utilTask.logConfig.maxLine,
         &changeLogLevelStyle);

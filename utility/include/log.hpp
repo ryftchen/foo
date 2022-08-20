@@ -28,13 +28,13 @@ std::string changeLogLevelStyle(std::string& line);
     (std::string(PRINT_COLOR_RED) + std::string(LOG_PREFIX_ERROR) + std::string(PRINT_COLOR_END))
 
 #define LOGGER_DBG(format, args...) \
-    logger.outputLog(Log::Level::debug, __FILE__, __LINE__, format, ##args)
+    logger.output(Log::Level::debug, __FILE__, __LINE__, format, ##args)
 #define LOGGER_INF(format, args...) \
-    logger.outputLog(Log::Level::info, __FILE__, __LINE__, format, ##args)
+    logger.output(Log::Level::info, __FILE__, __LINE__, format, ##args)
 #define LOGGER_WRN(format, args...) \
-    logger.outputLog(Log::Level::warn, __FILE__, __LINE__, format, ##args)
+    logger.output(Log::Level::warn, __FILE__, __LINE__, format, ##args)
 #define LOGGER_ERR(format, args...) \
-    logger.outputLog(Log::Level::error, __FILE__, __LINE__, format, ##args)
+    logger.output(Log::Level::error, __FILE__, __LINE__, format, ##args)
 #define LOGGER_EXIT logger.exit()
 
 class Log final
@@ -63,7 +63,7 @@ public:
         const Target target) noexcept;
     virtual ~Log() = default;
     template <typename... Args>
-    void outputLog(
+    void output(
         const uint32_t level, const std::string& codeFile, const uint32_t codeLine,
         const char* const __restrict format, Args&&... args);
     void runLogger();
@@ -83,7 +83,7 @@ private:
 };
 
 template <typename... Args>
-void Log::outputLog(
+void Log::output(
     const uint32_t level, const std::string& codeFile, const uint32_t codeLine,
     const char* const __restrict format, Args&&... args)
 {
