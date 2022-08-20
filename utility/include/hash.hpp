@@ -1,10 +1,10 @@
 #pragma once
 #include <iostream>
 
-uint32_t bkdrHash(const char* str);
-
 #define HASH_BKDR_SEED 131
 #define HASH_BKDR_SIZE 0x7FFFFFFF
+
+uint32_t bkdrHash(const char* str);
 
 constexpr uint32_t bkdrHashInCompile(const char* const str, const uint32_t hash = 0) noexcept
 {

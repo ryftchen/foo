@@ -5,7 +5,6 @@
 #include <cassert>
 #include <filesystem>
 #include <iostream>
-#include "exception.hpp"
 
 #define FORMAT_TO_STRING(format, args...)                                     \
     (                                                                         \
@@ -35,17 +34,21 @@ void executeCommand(const char* const cmd);
 void printFile(
     const char* const pathname, const bool reverse = false,
     const uint32_t maxLine = PRINT_FILE_MAX_LINE, PrintStyle style = nullStyle);
+[[noreturn]] void throwRunCommandLineException(const std::string& str);
+[[noreturn]] void throwCallSystemApiException(const std::string& str);
+[[noreturn]] void throwOperateFileException(const std::string& name, const bool isToOpen);
+[[noreturn]] void throwOperateLockException(
+    const std::string& name, const bool isToLock, const bool isReader);
 
 template <class T>
 void tryToOperateFileLock(
-    T& file, const char* const pathname, const bool isToLock, const bool isReader,
-    const bool isNeedToCloseOnException = false)
+    T& file, const char* const pathname, const bool isToLock, const bool isReader)
 {
     const int fd = static_cast<__gnu_cxx::stdio_filebuf<char>* const>(file.rdbuf())->fd();
     const int operate = isToLock ? ((isReader ? LOCK_SH : LOCK_EX) | LOCK_NB) : LOCK_UN;
     if (flock(fd, operate))
     {
-        isNeedToCloseOnException ? file.close() : void();
+        file.close();
         throwOperateLockException(
             std::filesystem::path(pathname).filename().string(), isToLock, isReader);
     }

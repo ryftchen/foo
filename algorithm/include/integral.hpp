@@ -27,22 +27,22 @@ int inline Integral::getSign(double& lower, double& upper)
 class Trapezoidal : public Integral
 {
 public:
-    explicit Trapezoidal(const Expression& express) : fun(express){};
+    explicit Trapezoidal(const Expression& express) : func(express){};
     double operator()(double lower, double upper, const double eps) const override;
 
 private:
-    const Expression& fun;
+    const Expression& func;
 };
 
 // Adaptive Simpson's 1/3 method
 class Simpson : public Integral
 {
 public:
-    explicit Simpson(const Expression& express) : fun(express){};
+    explicit Simpson(const Expression& express) : func(express){};
     double operator()(double lower, double upper, const double eps) const override;
 
 private:
-    const Expression& fun;
+    const Expression& func;
     [[nodiscard]] double simpsonIntegral(
         const double left, const double right, const double eps) const;
     [[nodiscard]] double compositeSimpsonOneThird(
@@ -54,11 +54,11 @@ private:
 class Romberg : public Integral
 {
 public:
-    explicit Romberg(const Expression& express) : fun(express){};
+    explicit Romberg(const Expression& express) : func(express){};
     double operator()(double lower, double upper, const double eps) const override;
 
 private:
-    const Expression& fun;
+    const Expression& func;
 };
 
 // Gauss-Legendre's 5-points method
@@ -67,22 +67,22 @@ private:
 class Gauss : public Integral
 {
 public:
-    explicit Gauss(const Expression& express) : fun(express){};
+    explicit Gauss(const Expression& express) : func(express){};
     double operator()(double lower, double upper, const double eps) const override;
 
 private:
-    const Expression& fun;
+    const Expression& func;
 };
 
 // Monte-Carlo method
 class MonteCarlo : public Integral
 {
 public:
-    explicit MonteCarlo(const Expression& express) : fun(express){};
+    explicit MonteCarlo(const Expression& express) : func(express){};
     double operator()(double lower, double upper, const double eps) const override;
 
 private:
-    const Expression& fun;
+    const Expression& func;
     [[nodiscard]] double sampleFromUniformDistribution(
         const double lower, const double upper, const double eps) const;
 #ifdef INTEGRAL_MONTE_CARLO_NO_UNIFORM

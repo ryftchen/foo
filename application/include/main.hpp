@@ -11,7 +11,7 @@ static void switchToProjectPath()
     if (std::string::npos == pos)
     {
         printf("The build directory does not exist. Please check it.\n");
-        exit(-1);
+        std::exit(-1);
     }
     const std::filesystem::path buildPath(
         std::filesystem::path{absolutePath.string().substr(0, pos)});
@@ -19,7 +19,7 @@ static void switchToProjectPath()
     if (!buildPath.has_parent_path())
     {
         printf("The project directory does not exist. Please check it.\n");
-        exit(-1);
+        std::exit(-1);
     }
     std::filesystem::current_path(buildPath.parent_path());
 }

@@ -1,4 +1,8 @@
 #pragma once
+#include <atomic>
+#include <condition_variable>
+#include <queue>
+#include <thread>
 #include "file.hpp"
 #include "time.hpp"
 
@@ -24,50 +28,58 @@ std::string changeLogLevelStyle(std::string& line);
     (std::string(PRINT_COLOR_RED) + std::string(LOG_PREFIX_ERROR) + std::string(PRINT_COLOR_END))
 
 #define LOGGER_DBG(format, args...) \
-    logger.outputLog(Log::Level::levelDebug, __FILE__, __LINE__, format, ##args)
+    logger.outputLog(Log::Level::debug, __FILE__, __LINE__, format, ##args)
 #define LOGGER_INF(format, args...) \
-    logger.outputLog(Log::Level::levelInfo, __FILE__, __LINE__, format, ##args)
+    logger.outputLog(Log::Level::info, __FILE__, __LINE__, format, ##args)
 #define LOGGER_WRN(format, args...) \
-    logger.outputLog(Log::Level::levelWarn, __FILE__, __LINE__, format, ##args)
+    logger.outputLog(Log::Level::warn, __FILE__, __LINE__, format, ##args)
 #define LOGGER_ERR(format, args...) \
-    logger.outputLog(Log::Level::levelError, __FILE__, __LINE__, format, ##args)
+    logger.outputLog(Log::Level::error, __FILE__, __LINE__, format, ##args)
+#define LOGGER_EXIT logger.exit()
 
 class Log final
 {
 public:
     enum Type
     {
-        typeAdd,
-        typeOver
+        add,
+        over
     };
     enum Level
     {
-        levelDebug,
-        levelInfo,
-        levelWarn,
-        levelError
+        debug,
+        info,
+        warn,
+        error
     };
     enum Target
     {
-        targetFile,
-        targetTerminal,
-        targetAll
+        file,
+        terminal,
+        all
     };
-    Log() noexcept;
+    Log() noexcept = default;
     Log(const std::string& logFile, const Type type, const Level level,
         const Target target) noexcept;
-    virtual ~Log();
+    virtual ~Log() = default;
     template <typename... Args>
     void outputLog(
         const uint32_t level, const std::string& codeFile, const uint32_t codeLine,
         const char* const __restrict format, Args&&... args);
-    std::ofstream& getOfs() const;
+    void runLogger();
+    void exit();
 
 private:
-    mutable std::ofstream ofs;
-    Level minLevel{Level::levelDebug};
-    Target realTarget{Target::targetAll};
+    std::ofstream ofs;
+    Type writeType{Type::add};
+    Level minLevel{Level::debug};
+    Target realTarget{Target::all};
     char pathname[LOG_PATHNAME_LENGTH + 1]{LOG_PATH};
+
+    std::atomic<bool> isLogging{false};
+    mutable std::mutex logQueueMutex;
+    std::queue<std::string> logQueue;
+    std::condition_variable logCondition;
 };
 
 template <typename... Args>
@@ -75,48 +87,43 @@ void Log::outputLog(
     const uint32_t level, const std::string& codeFile, const uint32_t codeLine,
     const char* const __restrict format, Args&&... args)
 {
-    if (level >= minLevel)
+    if (std::unique_lock<std::mutex> lock(logQueueMutex); true)
     {
-        std::string prefix;
-        switch (level)
+        if (level >= minLevel)
         {
-            case Level::levelDebug:
-                prefix = LOG_PREFIX_DEBUG;
-                break;
-            case Level::levelInfo:
-                prefix = LOG_PREFIX_INFO;
-                break;
-            case Level::levelWarn:
-                prefix = LOG_PREFIX_WARN;
-                break;
-            case Level::levelError:
-                prefix = LOG_PREFIX_ERROR;
-                break;
-            default:
-                break;
-        }
+            using std::chrono::operator""ms;
+            std::string prefix;
+            switch (level)
+            {
+                case Level::debug:
+                    prefix = LOG_PREFIX_DEBUG;
+                    break;
+                case Level::info:
+                    prefix = LOG_PREFIX_INFO;
+                    break;
+                case Level::warn:
+                    prefix = LOG_PREFIX_WARN;
+                    break;
+                case Level::error:
+                    prefix = LOG_PREFIX_ERROR;
+                    break;
+                default:
+                    break;
+            }
 
-        std::string output = prefix + ":[" + TIME_GET_CURRENT_DATE + "]:["
-            + std::filesystem::path(codeFile.c_str()).filename().string() + "#"
-            + std::to_string(codeLine) + "]: ";
+            std::string output = prefix + ":[" + TIME_GET_CURRENT_DATE + "]:["
+                + std::filesystem::path(codeFile.c_str()).filename().string() + "#"
+                + std::to_string(codeLine) + "]: ";
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat-security"
-        output.append(FORMAT_TO_STRING(format, std::forward<Args>(args)...));
+            output.append(FORMAT_TO_STRING(format, std::forward<Args>(args)...));
 #pragma GCC diagnostic pop
-        switch (realTarget)
-        {
-            case Target::targetFile:
-                ofs << output << std::endl;
-                break;
-            case Target::targetTerminal:
-                std::cout << changeLogLevelStyle(output) << std::endl;
-                break;
-            case Target::targetAll:
-                ofs << output << std::endl;
-                std::cout << changeLogLevelStyle(output) << std::endl;
-                break;
-            default:
-                break;
+            logQueue.push(std::move(output));
+
+            lock.unlock();
+            logCondition.notify_one();
+            std::this_thread::sleep_until(std::chrono::steady_clock::now() + 1ms);
+            lock.lock();
         }
     }
 }

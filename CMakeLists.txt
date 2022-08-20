@@ -37,4 +37,4 @@ add_subdirectory(algorithm)
 
 add_executable(${BIN_NAME} ${APPLICATION_LIST})
 target_include_directories(${BIN_NAME} PUBLIC application/include PRIVATE application/source)
-target_link_libraries(${BIN_NAME} PUBLIC utility pthread PRIVATE algorithm)
+target_link_libraries(${BIN_NAME} PUBLIC pthread PRIVATE utility algorithm)

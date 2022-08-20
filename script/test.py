@@ -11,19 +11,19 @@ BIN_CMD = "foo"
 BIN_DIR = "./build/bin/"
 LIB_LIST = ["libutility.so", "libalgorithm.so"]
 LIB_DIR = "./build/lib/"
-OPTION_TYPE_1 = ["-o", "-i", "-s"]
+OPTION_ALG_TYPE = ["--optimum", "--integral", "--sort"]
 OPTIMUM_METHOD = ["fib", "gra", "ann", "par", "gen"]
 INTEGRAL_METHOD = ["tra", "sim", "rom", "gau", "mon"]
 SORT_METHOD = ["bub", "sel", "ins", "she", "mer", "qui", "hea", "cou", "buc", "rad"]
-OPTION_TYPE_2 = ["--optimum", "--integral", "--sort", "--log", "--help"]
+OPTION_UTIL_TYPE = ["--log", "--version", "--help"]
 PASS_STEP = 0
 COMPLETE_STEP = 0
 WHOLE_STEP = (
-    len(OPTION_TYPE_1)
+    len(OPTION_ALG_TYPE)
     + (len(OPTIMUM_METHOD) + 1)
     + (len(INTEGRAL_METHOD) + 1)
     + (len(SORT_METHOD) + 1)
-    + len(OPTION_TYPE_2)
+    + len(OPTION_UTIL_TYPE)
     + 1
 )
 TEMP_LOG = "./temp/foo_test.log"
@@ -67,7 +67,7 @@ def buildProject(command):
     else:
         print(stdout)
         if stdout.find(ARG_BUILD_COMPILE_FINISH) == -1:
-            printAbort(f"Failed to build project by shell script {ARG_BUILD_SHELL}")
+            printAbort(f"Failed to build project by shell script {ARG_BUILD_SHELL}.")
 
 
 def runTestTask(command):
@@ -242,43 +242,43 @@ def analyzeTestLog():
     refresh.write(outputContent)
 
 
-def testOptionType1():
+def testAlgTypeOption():
     runTestTask(BIN_CMD)
-    for each in OPTION_TYPE_1:
+    for each in OPTION_ALG_TYPE:
         runTestTask(f"{BIN_CMD} {each}")
 
 
-def testOptimum():
+def testOptimumMethod():
     for each in OPTIMUM_METHOD:
-        runTestTask(f"{BIN_CMD} {OPTION_TYPE_1[0]} {each}")
-    runTestTask(f"{BIN_CMD} {OPTION_TYPE_1[0]} {' '.join(OPTIMUM_METHOD)}")
+        runTestTask(f"{BIN_CMD} {OPTION_ALG_TYPE[0]} {each}")
+    runTestTask(f"{BIN_CMD} {OPTION_ALG_TYPE[0]} {' '.join(OPTIMUM_METHOD)}")
 
 
-def testIntegral():
+def testIntegralMethod():
     for each in INTEGRAL_METHOD:
-        runTestTask(f"{BIN_CMD} {OPTION_TYPE_1[1]} {each}")
-    runTestTask(f"{BIN_CMD} {OPTION_TYPE_1[1]} {' '.join(INTEGRAL_METHOD)}")
+        runTestTask(f"{BIN_CMD} {OPTION_ALG_TYPE[1]} {each}")
+    runTestTask(f"{BIN_CMD} {OPTION_ALG_TYPE[1]} {' '.join(INTEGRAL_METHOD)}")
 
 
-def testSort():
+def testSortMethod():
     for each in SORT_METHOD:
-        runTestTask(f"{BIN_CMD} {OPTION_TYPE_1[2]} {each}")
-    runTestTask(f"{BIN_CMD} {OPTION_TYPE_1[2]} {' '.join(SORT_METHOD)}")
+        runTestTask(f"{BIN_CMD} {OPTION_ALG_TYPE[2]} {each}")
+    runTestTask(f"{BIN_CMD} {OPTION_ALG_TYPE[2]} {' '.join(SORT_METHOD)}")
 
 
-def testOptionType2():
-    for each in OPTION_TYPE_2:
+def testUtilTypeOption():
+    for each in OPTION_UTIL_TYPE:
         runTestTask(f"{BIN_CMD} {each}")
 
 
 if __name__ == "__main__":
     prepareTest()
 
-    testOptionType1()
-    testOptimum()
-    testIntegral()
-    testSort()
-    testOptionType2()
+    testAlgTypeOption()
+    testOptimumMethod()
+    testIntegralMethod()
+    testSortMethod()
+    testUtilTypeOption()
 
     completeTest()
     analyzeTestLog()

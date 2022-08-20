@@ -3,14 +3,13 @@
 #include <functional>
 #include <future>
 #include <queue>
-#include "exception.hpp"
 
 class Thread
 {
 public:
     explicit Thread(uint32_t count);
     template <typename Function, typename... Args>
-    decltype(auto) enqueue(const std::string& name, Function&& fun, Args&&... args);
+    decltype(auto) enqueue(const std::string& name, Function&& func, Args&&... args);
     ~Thread();
 
 private:
@@ -19,21 +18,21 @@ private:
     mutable std::mutex queueMutex;
     std::condition_variable condition;
     std::condition_variable producer;
-    std::atomic<bool> releaseReady;
+    std::atomic<bool> releaseReady{false};
 };
 
 template <typename Function, typename... Args>
-decltype(auto) Thread::enqueue(const std::string& name, Function&& fun, Args&&... args)
+decltype(auto) Thread::enqueue(const std::string& name, Function&& func, Args&&... args)
 {
     std::packaged_task<std::invoke_result_t<Function, Args...>()> task(
-        std::bind(std::forward<Function>(fun), std::forward<Args>(args)...));
+        std::bind(std::forward<Function>(func), std::forward<Args>(args)...));
     std::future<std::invoke_result_t<Function, Args...>> future = task.get_future();
 
     if (std::unique_lock<std::mutex> lock(queueMutex); true)
     {
         if (releaseReady)
         {
-            throwLogicErrorException("coming to destructure");
+            throw std::logic_error("Coming to destructure.");
         }
         taskQueue.emplace(std::make_pair(name, std::move(task)));
     }

@@ -27,13 +27,13 @@ std::optional<std::tuple<ValueY, ValueX>> Fibonacci::operator()(
     double x1 = OPTIMUM_FIBONACCI_X_1, x2 = OPTIMUM_FIBONACCI_X_2;
     while (n > OPTIMUM_FIBONACCI_MIN_COUNT)
     {
-        if (fun(x1) < fun(x2))
+        if (func(x1) < func(x2))
         {
             leftVal = x1;
             x1 = x2;
             x2 = OPTIMUM_FIBONACCI_X_2;
         }
-        else if (fun(x1) > fun(x2))
+        else if (func(x1) > func(x2))
         {
             rightVal = x2;
             x2 = x1;
@@ -51,11 +51,11 @@ std::optional<std::tuple<ValueY, ValueX>> Fibonacci::operator()(
 
     x1 = leftVal + fibonacci[1] / fibonacci[2] * (rightVal - leftVal);
     x2 = x1 + (((x1 + eps) < right) ? eps : -eps);
-    if (fun(x1) < fun(x2))
+    if (func(x1) < func(x2))
     {
         leftVal = x1;
     }
-    else if (fun(x1) > fun(x2))
+    else if (func(x1) > func(x2))
     {
         rightVal = x2;
     }
@@ -67,8 +67,8 @@ std::optional<std::tuple<ValueY, ValueX>> Fibonacci::operator()(
     const double x = (leftVal + rightVal) / 2.0;
 
     TIME_END;
-    FORMAT_PRINT(OPTIMUM_RESULT(max), "Fibonacci", fun(x), x, TIME_INTERVAL);
-    return std::make_optional(std::make_tuple(fun(x), x));
+    FORMAT_PRINT(OPTIMUM_RESULT(max), "Fibonacci", func(x), x, TIME_INTERVAL);
+    return std::make_optional(std::make_tuple(func(x), x));
 }
 
 void Fibonacci::generateFibonacciNumber(std::vector<double>& fibonacci, const double max)
@@ -119,7 +119,7 @@ std::optional<std::tuple<ValueY, ValueX>> Gradient::operator()(
             gradient = calculateFirstDerivative(x, eps);
             dx = learningRate * gradient;
         }
-        aggregation.emplace_back(std::pair<ValueY, ValueX>(fun(x), x));
+        aggregation.emplace_back(std::pair<ValueY, ValueX>(func(x), x));
     }
 
     const auto best = std::max_element(
@@ -139,7 +139,7 @@ std::optional<std::tuple<ValueY, ValueX>> Gradient::operator()(
 double Gradient::calculateFirstDerivative(const double x, const double eps) const
 {
     const double differential = eps / 2.0;
-    return (fun(x + differential) - fun(x - differential)) / eps;
+    return (func(x + differential) - func(x - differential)) / eps;
 }
 
 // Simulated annealing method
@@ -153,7 +153,7 @@ std::optional<std::tuple<ValueY, ValueX>> Annealing::operator()(
     std::uniform_real_distribution<double> random(
         -OPTIMUM_ANNEALING_PERTURBATION, OPTIMUM_ANNEALING_PERTURBATION);
     double x = randomX(seed);
-    double y = fun(x);
+    double y = func(x);
     while (temperature > Cooling::minimalT)
     {
         double xBest = x;
@@ -170,7 +170,7 @@ std::optional<std::tuple<ValueY, ValueX>> Annealing::operator()(
                 xNew = x + delta;
             }
             while ((xNew < left) || (xNew > right));
-            yNew = fun(xNew);
+            yNew = func(xNew);
 
             if ((yNew > y) || (std::exp(-(y - yNew) / temperature) > random(seed)))
             {
@@ -232,7 +232,7 @@ std::optional<std::tuple<ValueY, ValueX>> Particle::operator()(
 
             ind.x += ind.velocity;
             (ind.x > right) ? ind.x = right : ((ind.x < left) ? ind.x = left : ind.x);
-            ind.xFitness = fun(ind.x);
+            ind.xFitness = func(ind.x);
         }
 
         for (auto& ind : rec.society)
@@ -272,7 +272,7 @@ Record Particle::recordInit(const double left, const double right)
         [&]
         {
             const double x = randomX(seed);
-            const Individual individual(x, randomV(seed), x, fun(x), fun(x));
+            const Individual individual(x, randomV(seed), x, func(x), func(x));
             return individual;
         });
     Record rec{{}, {}};
@@ -302,8 +302,8 @@ std::optional<std::tuple<ValueY, ValueX>> Genetic::operator()(
     const double x = geneDecoding(getBestIndividual(pop));
 
     TIME_END;
-    FORMAT_PRINT(OPTIMUM_RESULT(max), "Genetic", fun(x), x, TIME_INTERVAL);
-    return std::make_optional(std::make_tuple(fun(x), x));
+    FORMAT_PRINT(OPTIMUM_RESULT(max), "Genetic", func(x), x, TIME_INTERVAL);
+    return std::make_optional(std::make_tuple(func(x), x));
 }
 
 void Genetic::updateSpecies(const double left, const double right, const double eps)
@@ -434,7 +434,7 @@ void Genetic::mutateIndividual(Population& pop)
 
 double Genetic::calculateFitness(const Chromosome& chr)
 {
-    return fun(geneDecoding(chr));
+    return func(geneDecoding(chr));
 }
 
 std::optional<std::pair<double, double>> Genetic::fitnessLinearTransformation(const Population& pop)

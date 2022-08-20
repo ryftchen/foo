@@ -3,53 +3,32 @@
 
 Log logger;
 
-Log::Log() noexcept : minLevel(Level::levelDebug), realTarget(Target::targetAll)
-{
-    try
-    {
-        if (!std::filesystem::exists(LOG_DIR))
-        {
-            std::filesystem::create_directory(LOG_DIR);
-            std::filesystem::permissions(
-                LOG_DIR, std::filesystem::perms::owner_all, std::filesystem::perm_options::add);
-        }
-
-        ofs.open(pathname, std::ios_base::out | std::ios_base::app);
-        if (!ofs)
-        {
-            throwOperateFileException(std::filesystem::path(pathname).filename().string(), true);
-        }
-        tryToOperateFileLock(ofs, pathname, true, false);
-    }
-    catch (const std::exception& error)
-    {
-        std::cerr << error.what() << std::endl;
-        realTarget = Target::targetTerminal;
-    }
-}
-
 Log::Log(
-    const std::string& logFile, const Type type, const Level level, const Target target) noexcept
+    const std::string& logFile, const Type type, const Level level, const Target target) noexcept :
+    writeType(type),
+    minLevel(level), realTarget(target)
 {
-    minLevel = level;
-    realTarget = target;
     std::strncpy(pathname, logFile.c_str(), LOG_PATHNAME_LENGTH);
     pathname[LOG_PATHNAME_LENGTH] = '\0';
+}
+
+void Log::runLogger()
+{
     try
     {
-        if (!std::filesystem::exists(LOG_DIR))
+        if (!std::filesystem::exists(pathname))
         {
-            std::filesystem::create_directory(LOG_DIR);
+            std::filesystem::create_directory(pathname);
             std::filesystem::permissions(
-                LOG_DIR, std::filesystem::perms::owner_all, std::filesystem::perm_options::add);
+                pathname, std::filesystem::perms::owner_all, std::filesystem::perm_options::add);
         }
 
-        switch (type)
+        switch (writeType)
         {
-            case Type::typeAdd:
+            case Type::add:
                 ofs.open(pathname, std::ios_base::out | std::ios_base::app);
                 break;
-            case Type::typeOver:
+            case Type::over:
                 ofs.open(pathname, std::ios_base::out | std::ios_base::trunc);
                 break;
             default:
@@ -61,34 +40,64 @@ Log::Log(
             throwOperateFileException(std::filesystem::path(pathname).filename().string(), true);
         }
         tryToOperateFileLock(ofs, pathname, true, false);
+
+        isLogging = true;
+        while (isLogging)
+        {
+            if (std::unique_lock<std::mutex> lock(logQueueMutex); true)
+            {
+                logCondition.wait(
+                    lock,
+                    [this]() -> decltype(auto)
+                    {
+                        return !isLogging || !logQueue.empty();
+                    });
+
+                while (!logQueue.empty())
+                {
+                    switch (realTarget)
+                    {
+                        case Target::file:
+                            ofs << logQueue.front() << std::endl;
+                            break;
+                        case Target::terminal:
+                            std::cout << changeLogLevelStyle(logQueue.front()) << std::endl;
+                            break;
+                        case Target::all:
+                            ofs << logQueue.front() << std::endl;
+                            std::cout << changeLogLevelStyle(logQueue.front()) << std::endl;
+                            break;
+                        default:
+                            break;
+                    }
+                    logQueue.pop();
+                }
+            }
+        }
+
+        if (!isLogging)
+        {
+            tryToOperateFileLock(ofs, pathname, false, false);
+
+            if (ofs.is_open())
+            {
+                ofs.close();
+            }
+        }
     }
     catch (const std::exception& error)
     {
         std::cerr << error.what() << std::endl;
-        realTarget = Target::targetTerminal;
     }
 }
 
-Log::~Log()
+void Log::exit()
 {
-    try
+    if (isLogging)
     {
-        tryToOperateFileLock(ofs, pathname, false, false);
+        isLogging = false;
+        logCondition.notify_one();
     }
-    catch (const std::exception& error)
-    {
-        std::cerr << error.what() << std::endl;
-    }
-
-    if (ofs.is_open())
-    {
-        ofs.close();
-    }
-}
-
-std::ofstream& Log::getOfs() const
-{
-    return ofs;
 }
 
 std::string changeLogLevelStyle(std::string& line)
