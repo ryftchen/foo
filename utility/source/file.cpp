@@ -45,9 +45,9 @@ void executeCommand(const char* const cmd)
 void printFile(
     const char* const pathname, const bool reverse, const uint32_t maxLine, PrintStyle style)
 {
-    std::ifstream file;
     try
     {
+        std::ifstream file;
         file.open(pathname, std::ios_base::in);
         if (!file)
         {

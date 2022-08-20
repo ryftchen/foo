@@ -35,7 +35,9 @@ std::string changeLogLevelStyle(std::string& line);
     logger.output(Log::Level::warn, __FILE__, __LINE__, format, ##args)
 #define LOGGER_ERR(format, args...) \
     logger.output(Log::Level::error, __FILE__, __LINE__, format, ##args)
-#define LOGGER_EXIT logger.exit()
+#define LOGGER_EXIT           \
+    TIME_WAIT_MILLISECOND_50; \
+    logger.exit()
 
 class Log final
 {
@@ -61,7 +63,7 @@ public:
     Log() noexcept = default;
     Log(const std::string& logFile, const Type type, const Level level,
         const Target target) noexcept;
-    virtual ~Log() = default;
+    virtual ~Log();
     template <typename... Args>
     void output(
         const uint32_t level, const std::string& codeFile, const uint32_t codeLine,
