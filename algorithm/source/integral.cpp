@@ -30,7 +30,7 @@ double Trapezoidal::operator()(double lower, double upper, const double eps) con
 
     do
     {
-        sum = trapezoid(fun, lower, height, n);
+        sum = trapezoid(func, lower, height, n);
         s1 = s2;
         s2 = sum;
         n *= 2;
@@ -86,7 +86,7 @@ double Simpson::compositeSimpsonOneThird(
 
 double Simpson::simpsonOneThird(const double left, const double right) const
 {
-    return (fun(left) + 4.0 * fun((left + right) / 2.0) + fun(right)) / 6.0 * (right - left);
+    return (func(left) + 4.0 * func((left + right) / 2.0) + func(right)) / 6.0 * (right - left);
 }
 
 // Romberg method
@@ -98,7 +98,7 @@ double Romberg::operator()(double lower, double upper, const double eps) const
     double sum = 0.0;
     const double height = upper - lower;
     const auto trapezoidFunctor =
-        std::bind(trapezoid, std::ref(fun), lower, height, std::placeholders::_1);
+        std::bind(trapezoid, std::ref(func), lower, height, std::placeholders::_1);
     double t0 = trapezoidFunctor(std::pow(2, k));
 
     k = 1;
@@ -153,7 +153,7 @@ double Gauss::operator()(double lower, double upper, const double eps) const
                 const double x =
                     ((right - left) * gaussLegendreTable.at(j).at(0) + (left + right)) / 2.0;
                 const double polynomial =
-                    fun(x) * gaussLegendreTable.at(j).at(1) * (right - left) / 2.0;
+                    func(x) * gaussLegendreTable.at(j).at(1) * (right - left) / 2.0;
                 sum += polynomial;
             }
         }
@@ -196,7 +196,7 @@ double MonteCarlo::sampleFromUniformDistribution(
     for (uint32_t i = 0; i < n; ++i)
     {
         double x = randomX(seed);
-        sum += fun(x);
+        sum += func(x);
     }
     sum *= (upper - lower) / n; // I≈(b-a)/N*[F(X1)+F(X2)+...+F(Xn)]
 
@@ -225,7 +225,7 @@ double MonteCarlo::sampleFromNormalDistribution(
         while ((x < lower) || (x > upper));
         const double probabilityDensityFunction = (1.0 / std::sqrt(2.0 * M_PI * sigma * sigma))
             * std::pow(M_E, (-(x - mu) * (x - mu)) / (2.0 * sigma * sigma));
-        sum += fun(x) / probabilityDensityFunction; // I≈1/N*[F(X1)/P(X1)+...+F(Xn)/P(Xn)]
+        sum += func(x) / probabilityDensityFunction; // I≈1/N*[F(X1)/P(X1)+...+F(Xn)/P(Xn)]
     }
     sum /= n;
 

@@ -26,12 +26,12 @@ public:
 class Fibonacci : public Optimum
 {
 public:
-    explicit Fibonacci(const Expression& express) : fun(express){};
+    explicit Fibonacci(const Expression& express) : func(express){};
     std::optional<std::tuple<ValueY, ValueX>> operator()(
         const double left, const double right, const double eps) override;
 
 private:
-    const Expression& fun;
+    const Expression& func;
     static void generateFibonacciNumber(std::vector<double>& fibonacci, const double max);
 };
 
@@ -45,12 +45,12 @@ constexpr static uint32_t loopTime = 100;
 class Gradient : public Optimum
 {
 public:
-    explicit Gradient(const Expression& express) : fun(express){};
+    explicit Gradient(const Expression& express) : func(express){};
     std::optional<std::tuple<ValueY, ValueX>> operator()(
         const double left, const double right, const double eps) override;
 
 private:
-    const Expression& fun;
+    const Expression& func;
     [[nodiscard]] double calculateFirstDerivative(const double x, const double eps) const;
 };
 
@@ -66,12 +66,12 @@ constexpr static uint32_t markovChain = 100;
 class Annealing : public Optimum
 {
 public:
-    explicit Annealing(const Expression& express) : fun(express){};
+    explicit Annealing(const Expression& express) : func(express){};
     std::optional<std::tuple<ValueY, ValueX>> operator()(
         const double left, const double right, const double eps) override;
 
 private:
-    const Expression& fun;
+    const Expression& func;
 };
 
 // Particle swarm method
@@ -124,12 +124,12 @@ struct Record
 class Particle : public Optimum
 {
 public:
-    explicit Particle(const Expression& express) : fun(express), seed(std::random_device{}()){};
+    explicit Particle(const Expression& express) : func(express), seed(std::random_device{}()){};
     std::optional<std::tuple<ValueY, ValueX>> operator()(
         const double left, const double right, const double eps) override;
 
 private:
-    const Expression& fun;
+    const Expression& func;
     std::mt19937 seed;
     Swarm::Record recordInit(const double left, const double right);
 };
@@ -148,12 +148,12 @@ constexpr static uint32_t iterNum = 100;
 class Genetic : public Optimum
 {
 public:
-    explicit Genetic(const Expression& express) : fun(express), seed(std::random_device{}()){};
+    explicit Genetic(const Expression& express) : func(express), seed(std::random_device{}()){};
     std::optional<std::tuple<ValueY, ValueX>> operator()(
         const double left, const double right, const double eps) override;
 
 private:
-    const Expression& fun;
+    const Expression& func;
     struct Range
     {
         double lower{0.0};
