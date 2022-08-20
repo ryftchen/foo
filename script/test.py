@@ -92,6 +92,7 @@ def runTestTask(command):
 
     stdout, stderr, errcode = common.executeCommand(fullCommand)
     if stderr or errcode != 0:
+        print(f"stderr: {stderr}\nerrcode: {errcode}")
         print(
             "{0}{2}[ {3} | {4:<{x}} ]{2}{1}".format(
                 PRINT_STATUS_RED,
