@@ -99,7 +99,7 @@ generateCMakeFiles()
             bashCommand "mkdir ./${BUILD_FOLDER}"
         fi
 
-        bashCommand "export CC=/usr/bin/clang-12 && export CXX=/usr/bin/clang++-12"
+        export CC=/usr/bin/clang-12 CXX=/usr/bin/clang++-12
         if [ "${ARGS_RELEASE}" = true ]; then
             bashCommand "cmake -S . -B ./${BUILD_FOLDER} -DCMAKE_BUILD_TYPE=Release"
         else
