@@ -215,7 +215,7 @@ private:
     void throwNargsRangeValidationException() const;
     void throwRequiredArgNotUsedException() const;
     void throwRequiredArgNoValueProvidedException() const;
-    static auto lookAhead(std::string_view s) -> int;
+    static auto lookAhead(std::string_view str) -> int;
     static bool checkIfOptional(std::string_view name);
     static bool checkIfPositional(std::string_view name);
     template <typename T>
