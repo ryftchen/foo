@@ -22,9 +22,9 @@ std::string getCurrentSystemTime(char* const date);
             char date[TIME_DATE_LENGTH + 1] = {'\0'}; \
             getCurrentSystemTime(date);               \
         })
-#define TIME_WAIT_MILLISECOND_50     \
+#define TIME_WAIT_MILLISECOND_100    \
     using std::chrono::operator""ms; \
-    std::this_thread::sleep_until(std::chrono::steady_clock::now() + 50ms)
+    std::this_thread::sleep_until(std::chrono::steady_clock::now() + 100ms)
 
 class Time final
 {
