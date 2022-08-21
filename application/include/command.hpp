@@ -1,6 +1,7 @@
 #pragma once
 #include <bitset>
 #include <mutex>
+#include <thread>
 #include "argument.hpp"
 #include "expression.hpp"
 #include "sort.hpp"
@@ -26,11 +27,6 @@
 class Command
 {
 public:
-    Command();
-    virtual ~Command() = default;
-    void runCommand(const int argc, const char* const argv[]);
-    void foregroundHandle(const int argc, const char* const argv[]);
-    void backgroundHandle() const;
     enum AlgTaskType
     {
         optimum,
@@ -77,6 +73,10 @@ public:
         help,
         utilTaskBottom
     };
+
+    Command();
+    virtual ~Command() = default;
+    void runCommander(const int argc, const char* const argv[]);
 
 private:
     mutable std::mutex commandMutex;
@@ -156,6 +156,9 @@ private:
         expressionMap{
             {{EXPRESSION_FUN_1_RANGE_1, EXPRESSION_FUN_1_RANGE_2}, Function1()},
             {{EXPRESSION_FUN_2_RANGE_1, EXPRESSION_FUN_2_RANGE_2}, Function2()}};
+
+    void foregroundHandle(const int argc, const char* const argv[]);
+    void backgroundHandle() const;
     void precheckAlgorithmTask();
     void precheckUtilityTask();
     bool checkTask() const;
