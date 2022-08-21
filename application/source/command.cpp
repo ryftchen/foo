@@ -546,7 +546,6 @@ void Command::setSortBit(const char* const method)
 void Command::printLogContext() const
 {
     LOGGER_EXIT;
-    TIME_WAIT_MILLISECOND_50;
 
     printFile(
         LOG_PATH, taskPlan.utilTask.logConfig.isReverse, taskPlan.utilTask.logConfig.maxLine,
