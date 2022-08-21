@@ -65,7 +65,7 @@ private:
 
 protected:
     char* formatArray(
-        const T* const __restrict array, const uint32_t length, char* const __restrict buffer,
+        const T* const array, const uint32_t length, char* const buffer,
         const uint32_t bufferSize) const;
 };
 
@@ -153,7 +153,7 @@ requires std::is_floating_point<U>::value void Sort<T>::setRandomArray(
 
 template <class T>
 char* Sort<T>::formatArray(
-    const T* const __restrict array, const uint32_t length, char* const __restrict buffer,
+    const T* const array, const uint32_t length, char* const buffer,
     const uint32_t bufferSize) const
 {
     uint32_t align = 0;
