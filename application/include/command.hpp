@@ -1,7 +1,6 @@
 #pragma once
 #include <bitset>
 #include <mutex>
-#include <thread>
 #include "argument.hpp"
 #include "expression.hpp"
 #include "sort.hpp"
