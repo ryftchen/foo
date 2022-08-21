@@ -70,8 +70,10 @@ Command::Command()
         "show help");
 }
 
-void Command::runCommand(const int argc, const char* const argv[])
+void Command::runCommander(const int argc, const char* const argv[])
 {
+    LOGGER_WAIT;
+
     try
     {
         if (0 == argc - 1)

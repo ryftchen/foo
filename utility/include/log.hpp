@@ -7,7 +7,6 @@
 #include "time.hpp"
 
 extern class Log logger;
-
 std::string changeLogLevelStyle(std::string& line);
 
 #define LOG_DIR "./temp"
@@ -35,7 +34,8 @@ std::string changeLogLevelStyle(std::string& line);
     logger.output(Log::Level::warn, __FILE__, __LINE__, format, ##args)
 #define LOGGER_ERR(format, args...) \
     logger.output(Log::Level::error, __FILE__, __LINE__, format, ##args)
-#define LOGGER_EXIT logger.exit();
+#define LOGGER_EXIT logger.exitLogger();
+#define LOGGER_WAIT logger.waitLogger();
 
 class Log final
 {
@@ -58,25 +58,32 @@ public:
         terminal,
         all
     };
+    enum Status
+    {
+        idle,
+        work,
+        finish
+    };
     Log() noexcept = default;
     Log(const std::string& logFile, const Type type, const Level level,
         const Target target) noexcept;
     virtual ~Log();
-    void runLogger();
     template <typename... Args>
     void output(
         const uint32_t level, const std::string& codeFile, const uint32_t codeLine,
         const char* const __restrict format, Args&&... args);
-    void exit();
+    void runLogger();
+    void exitLogger();
+    void waitLogger();
 
 private:
     std::ofstream ofs;
     Type writeType{Type::add};
     Level minLevel{Level::debug};
-    Target realTarget{Target::all};
+    Target outputTarget{Target::all};
     char pathname[LOG_PATHNAME_LENGTH + 1]{LOG_PATH};
 
-    std::atomic<bool> isLogging{false};
+    std::atomic<Status> loggingStatus{Status::idle};
     std::condition_variable loggingCondition;
     mutable std::mutex logQueueMutex;
     std::queue<std::string> logQueue;
@@ -87,6 +94,11 @@ void Log::output(
     const uint32_t level, const std::string& codeFile, const uint32_t codeLine,
     const char* const __restrict format, Args&&... args)
 {
+    if (Status::work != loggingStatus.load())
+    {
+        return;
+    }
+
     if (std::unique_lock<std::mutex> lock(logQueueMutex); true)
     {
         if (level >= minLevel)

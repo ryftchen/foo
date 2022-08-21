@@ -6,7 +6,7 @@ Log logger;
 Log::Log(
     const std::string& logFile, const Type type, const Level level, const Target target) noexcept :
     writeType(type),
-    minLevel(level), realTarget(target)
+    minLevel(level), outputTarget(target)
 {
     std::strncpy(pathname, logFile.c_str(), LOG_PATHNAME_LENGTH);
     pathname[LOG_PATHNAME_LENGTH] = '\0';
@@ -14,14 +14,13 @@ Log::Log(
 
 Log::~Log()
 {
-    exit();
+    exitLogger();
 }
 
 void Log::runLogger()
 {
     try
     {
-        isLogging = true;
         if (!std::filesystem::exists(LOG_DIR))
         {
             std::filesystem::create_directory(LOG_DIR);
@@ -47,7 +46,17 @@ void Log::runLogger()
         }
         tryToOperateFileLock(ofs, pathname, true, false);
 
-        while (isLogging)
+        if (std::unique_lock<std::mutex> lock(logQueueMutex); true)
+        {
+            loggingStatus = Status::work;
+
+            lock.unlock();
+            loggingCondition.notify_all();
+            std::this_thread::sleep_until(
+                std::chrono::steady_clock::now() + std::chrono::operator""ms(1));
+            lock.lock();
+        }
+        while (Log::Status::work == loggingStatus.load())
         {
             if (std::unique_lock<std::mutex> lock(logQueueMutex); true)
             {
@@ -55,12 +64,12 @@ void Log::runLogger()
                     lock,
                     [this]() -> decltype(auto)
                     {
-                        return !isLogging || !logQueue.empty();
+                        return (Status::idle == loggingStatus.load()) || !logQueue.empty();
                     });
 
                 while (!logQueue.empty())
                 {
-                    switch (realTarget)
+                    switch (outputTarget)
                     {
                         case Target::file:
                             ofs << logQueue.front() << std::endl;
@@ -85,21 +94,32 @@ void Log::runLogger()
         {
             ofs.close();
         }
+
+        if (std::unique_lock<std::mutex> lock(logQueueMutex); true)
+        {
+            loggingStatus = Status::finish;
+
+            lock.unlock();
+            loggingCondition.notify_all();
+            std::this_thread::sleep_until(
+                std::chrono::steady_clock::now() + std::chrono::operator""ms(1));
+            lock.lock();
+        }
     }
     catch (const std::exception& error)
     {
-        isLogging = false;
+        loggingStatus = Status::finish;
         std::cerr << error.what() << std::endl;
     }
 }
 
-void Log::exit()
+void Log::exitLogger()
 {
     if (std::unique_lock<std::mutex> lock(logQueueMutex); true)
     {
-        if (isLogging)
+        if (Status::work == loggingStatus.load())
         {
-            isLogging = false;
+            loggingStatus = Status::idle;
 
             lock.unlock();
             loggingCondition.notify_one();
@@ -107,6 +127,29 @@ void Log::exit()
                 std::chrono::steady_clock::now() + std::chrono::operator""ms(1));
             lock.lock();
         }
+
+        if (Log::Status::idle == loggingStatus.load())
+        {
+            loggingCondition.wait(
+                lock,
+                [this]() -> decltype(auto)
+                {
+                    return (Status::finish == loggingStatus.load());
+                });
+        }
+    }
+}
+
+void Log::waitLogger()
+{
+    if (std::unique_lock<std::mutex> lock(logQueueMutex); true)
+    {
+        loggingCondition.wait(
+            lock,
+            [this]() -> decltype(auto)
+            {
+                return (Status::work == loggingStatus.load());
+            });
     }
 }
 
