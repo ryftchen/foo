@@ -35,9 +35,7 @@ std::string changeLogLevelStyle(std::string& line);
     logger.output(Log::Level::warn, __FILE__, __LINE__, format, ##args)
 #define LOGGER_ERR(format, args...) \
     logger.output(Log::Level::error, __FILE__, __LINE__, format, ##args)
-#define LOGGER_EXIT           \
-    TIME_WAIT_MILLISECOND_50; \
-    logger.exit();
+#define LOGGER_EXIT logger.exit();
 
 class Log final
 {
@@ -64,11 +62,11 @@ public:
     Log(const std::string& logFile, const Type type, const Level level,
         const Target target) noexcept;
     virtual ~Log();
+    void runLogger();
     template <typename... Args>
     void output(
         const uint32_t level, const std::string& codeFile, const uint32_t codeLine,
         const char* const __restrict format, Args&&... args);
-    void runLogger();
     void exit();
 
 private:
@@ -79,9 +77,9 @@ private:
     char pathname[LOG_PATHNAME_LENGTH + 1]{LOG_PATH};
 
     std::atomic<bool> isLogging{false};
+    std::condition_variable loggingCondition;
     mutable std::mutex logQueueMutex;
     std::queue<std::string> logQueue;
-    std::condition_variable logCondition;
 };
 
 template <typename... Args>
@@ -93,7 +91,6 @@ void Log::output(
     {
         if (level >= minLevel)
         {
-            using std::chrono::operator""ms;
             std::string prefix;
             switch (level)
             {
@@ -123,8 +120,9 @@ void Log::output(
             logQueue.push(std::move(output));
 
             lock.unlock();
-            logCondition.notify_one();
-            std::this_thread::sleep_until(std::chrono::steady_clock::now() + 1ms);
+            loggingCondition.notify_one();
+            std::this_thread::sleep_until(
+                std::chrono::steady_clock::now() + std::chrono::operator""ms(1));
             lock.lock();
         }
     }

@@ -21,6 +21,7 @@ void Log::runLogger()
 {
     try
     {
+        isLogging = true;
         if (!std::filesystem::exists(LOG_DIR))
         {
             std::filesystem::create_directory(LOG_DIR);
@@ -46,12 +47,11 @@ void Log::runLogger()
         }
         tryToOperateFileLock(ofs, pathname, true, false);
 
-        isLogging = true;
         while (isLogging)
         {
             if (std::unique_lock<std::mutex> lock(logQueueMutex); true)
             {
-                logCondition.wait(
+                loggingCondition.wait(
                     lock,
                     [this]() -> decltype(auto)
                     {
@@ -88,16 +88,25 @@ void Log::runLogger()
     }
     catch (const std::exception& error)
     {
+        isLogging = false;
         std::cerr << error.what() << std::endl;
     }
 }
 
 void Log::exit()
 {
-    if (isLogging)
+    if (std::unique_lock<std::mutex> lock(logQueueMutex); true)
     {
-        isLogging = false;
-        logCondition.notify_one();
+        if (isLogging)
+        {
+            isLogging = false;
+
+            lock.unlock();
+            loggingCondition.notify_one();
+            std::this_thread::sleep_until(
+                std::chrono::steady_clock::now() + std::chrono::operator""ms(1));
+            lock.lock();
+        }
     }
 }
 
