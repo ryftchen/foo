@@ -72,7 +72,7 @@ Command::Command()
 
 void Command::runCommander(const int argc, const char* const argv[])
 {
-    LOGGER_WAIT;
+    LOGGER_START;
 
     try
     {
@@ -82,7 +82,7 @@ void Command::runCommander(const int argc, const char* const argv[])
             printVersionInfo();
             printHelpMessage();
 
-            LOGGER_EXIT;
+            LOGGER_STOP;
             return;
         }
 
@@ -94,7 +94,7 @@ void Command::runCommander(const int argc, const char* const argv[])
         LOGGER_ERR(error.what());
     }
 
-    LOGGER_EXIT;
+    LOGGER_STOP;
 }
 
 void Command::foregroundHandle(const int argc, const char* const argv[])
@@ -233,7 +233,7 @@ void Command::getOptimumResult(
     const Expression& express, const double leftEndpoint, const double rightEndpoint,
     const double epsilon) const
 {
-    assert((leftEndpoint > rightEndpoint) && (epsilon > 0.0));
+    assert((leftEndpoint < rightEndpoint) && (epsilon > 0.0));
     Thread threadPool(std::min(
         static_cast<uint32_t>(taskPlan.algTask.optimumBit.count()),
         static_cast<uint32_t>(OptimumMethod::optimumBottom)));
@@ -547,7 +547,7 @@ void Command::setSortBit(const char* const method)
 
 void Command::printLogContext() const
 {
-    LOGGER_EXIT;
+    LOGGER_STOP;
 
     printFile(
         LOG_PATH, taskPlan.utilTask.logConfig.isReverse, taskPlan.utilTask.logConfig.maxLine,

@@ -58,7 +58,7 @@ void printFile(
         PrintStyle formatStyle = style;
         if (nullStyle == formatStyle)
         {
-            formatStyle = [](std::string& line)
+            formatStyle = [](std::string& line) -> std::string&
             {
                 return line;
             };

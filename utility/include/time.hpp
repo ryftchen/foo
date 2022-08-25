@@ -1,17 +1,12 @@
 #pragma once
 #include <sys/time.h>
 #include <chrono>
-#include "file.hpp"
+#include <string>
 
 std::string getCurrentSystemTime(char* const date);
 
-#define TIME_DATE_LENGTH BUFFER_SIZE_32
+#define TIME_DATE_LENGTH 32
 #define TIME_DATE_YEAR_START 1900
-#define TIME_BEGIN \
-    Time time;     \
-    time.setBeginTime()
-#define TIME_END time.setEndTime()
-#define TIME_INTERVAL time.getTimeInterval()
 #define TIME_GET_SEED(seed)           \
     timeval timeSeed{};               \
     gettimeofday(&timeSeed, nullptr); \
@@ -22,6 +17,14 @@ std::string getCurrentSystemTime(char* const date);
             char date[TIME_DATE_LENGTH + 1] = {'\0'}; \
             getCurrentSystemTime(date);               \
         })
+#define TIME_SLEEP_MILLISECOND(num) \
+    std::this_thread::sleep_until(std::chrono::steady_clock::now() + std::chrono::operator""ms(num))
+
+#define TIMER_BEGIN \
+    Time timer;     \
+    timer.setBeginTime()
+#define TIMER_END timer.setEndTime()
+#define TIMER_INTERVAL timer.getTimeInterval()
 
 class Time final
 {

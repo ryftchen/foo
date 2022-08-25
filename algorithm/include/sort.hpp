@@ -3,12 +3,13 @@
 #include <memory>
 #include <mutex>
 #include <random>
+#include "file.hpp"
 #include "time.hpp"
 
 #define SORT_ARRAY_RANGE_1 -50
 #define SORT_ARRAY_RANGE_2 150
 #define SORT_ARRAY_LENGTH 53
-#define SORT_PRINT_MAX_ALIGN BUFFER_SIZE_16
+#define SORT_PRINT_MAX_ALIGN 16
 #define SORT_PRINT_MAX_COLUMN 10
 #define SORT_GENERATE_INTEGRAL_ARRAY \
     "\r\nGenerate %u random integral numbers from %d to %d:\r\n%s\n"
