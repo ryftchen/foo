@@ -4,9 +4,10 @@
 Log logger;
 
 Log::Log(
-    const std::string& logFile, const Type type, const Level level, const Target target) noexcept :
+    const std::string& logFile, const OutputType type, const OutputLevel level,
+    const OutputTarget target, StateType initState) noexcept :
     writeType(type),
-    minLevel(level), outputTarget(target)
+    minLevel(level), actualTarget(target), FSM(initState)
 {
     std::strncpy(pathname, logFile.c_str(), LOG_PATHNAME_LENGTH);
     pathname[LOG_PATHNAME_LENGTH] = '\0';
@@ -14,49 +15,28 @@ Log::Log(
 
 Log::~Log()
 {
-    exitLogger();
+    waitLoggerStop();
 }
 
 void Log::runLogger()
 {
+    State expectedState = State::idle;
+    auto targetState = [&](const State state) -> bool
+    {
+        expectedState = state;
+        return (currentState() == expectedState);
+    };
+
     try
     {
-        if (!std::filesystem::exists(LOG_DIR))
-        {
-            std::filesystem::create_directory(LOG_DIR);
-            std::filesystem::permissions(
-                LOG_DIR, std::filesystem::perms::owner_all, std::filesystem::perm_options::add);
-        }
+        checkIfExceptedFSMState(targetState(State::init));
+        processEvent(OpenFile());
 
-        switch (writeType)
-        {
-            case Type::add:
-                ofs.open(pathname, std::ios_base::out | std::ios_base::app);
-                break;
-            case Type::over:
-                ofs.open(pathname, std::ios_base::out | std::ios_base::trunc);
-                break;
-            default:
-                break;
-        }
+        checkIfExceptedFSMState(targetState(State::idle));
+        processEvent(GoLogging());
 
-        if (!ofs)
-        {
-            throwOperateFileException(std::filesystem::path(pathname).filename().string(), true);
-        }
-        tryToOperateFileLock(ofs, pathname, true, false);
-
-        if (std::unique_lock<std::mutex> lock(logQueueMutex); true)
-        {
-            loggingStatus = Status::work;
-
-            lock.unlock();
-            loggingCondition.notify_all();
-            std::this_thread::sleep_until(
-                std::chrono::steady_clock::now() + std::chrono::operator""ms(1));
-            lock.lock();
-        }
-        while (Log::Status::work == loggingStatus.load())
+        checkIfExceptedFSMState(targetState(State::work));
+        while (isLogging)
         {
             if (std::unique_lock<std::mutex> lock(logQueueMutex); true)
             {
@@ -64,20 +44,20 @@ void Log::runLogger()
                     lock,
                     [this]() -> decltype(auto)
                     {
-                        return (Status::idle == loggingStatus.load()) || !logQueue.empty();
+                        return !isLogging || !logQueue.empty();
                     });
 
                 while (!logQueue.empty())
                 {
-                    switch (outputTarget)
+                    switch (actualTarget)
                     {
-                        case Target::file:
+                        case OutputTarget::file:
                             ofs << logQueue.front() << std::endl;
                             break;
-                        case Target::terminal:
+                        case OutputTarget::terminal:
                             std::cout << changeLogLevelStyle(logQueue.front()) << std::endl;
                             break;
-                        case Target::all:
+                        case OutputTarget::all:
                             ofs << logQueue.front() << std::endl;
                             std::cout << changeLogLevelStyle(logQueue.front()) << std::endl;
                             break;
@@ -89,71 +69,116 @@ void Log::runLogger()
             }
         }
 
-        tryToOperateFileLock(ofs, pathname, false, false);
-        if (ofs.is_open())
-        {
-            ofs.close();
-        }
+        processEvent(CloseFile());
 
-        if (std::unique_lock<std::mutex> lock(logQueueMutex); true)
-        {
-            loggingStatus = Status::finish;
+        checkIfExceptedFSMState(targetState(State::idle));
+        processEvent(NoLogging());
 
-            lock.unlock();
-            loggingCondition.notify_all();
-            std::this_thread::sleep_until(
-                std::chrono::steady_clock::now() + std::chrono::operator""ms(1));
-            lock.lock();
-        }
+        checkIfExceptedFSMState(targetState(State::done));
     }
     catch (const std::exception& error)
     {
-        loggingStatus = Status::finish;
         std::cerr << error.what() << std::endl;
+        std::cerr << "FSM's expected state: " << expectedState
+                  << ", FSM's current state: " << Log::State(currentState()) << std::endl;
+        stopLogging();
     }
 }
 
-void Log::exitLogger()
+void Log::waitLoggerStart()
+{
+    while (State::work != currentState())
+    {
+        TIME_SLEEP_MILLISECOND(1);
+    }
+}
+
+void Log::waitLoggerStop()
 {
     if (std::unique_lock<std::mutex> lock(logQueueMutex); true)
     {
-        if (Status::work == loggingStatus.load())
-        {
-            loggingStatus = Status::idle;
+        isLogging = false;
 
-            lock.unlock();
-            loggingCondition.notify_one();
-            std::this_thread::sleep_until(
-                std::chrono::steady_clock::now() + std::chrono::operator""ms(1));
-            lock.lock();
-        }
+        lock.unlock();
+        loggingCondition.notify_one();
+        TIME_SLEEP_MILLISECOND(1);
+        lock.lock();
+    }
 
-        if (Log::Status::idle == loggingStatus.load())
-        {
-            loggingCondition.wait(
-                lock,
-                [this]() -> decltype(auto)
-                {
-                    return (Status::finish == loggingStatus.load());
-                });
-        }
+    while (State::done != currentState())
+    {
+        TIME_SLEEP_MILLISECOND(1);
     }
 }
 
-void Log::waitLogger()
+void Log::openLogFile()
+{
+    if (!std::filesystem::exists(LOG_DIR))
+    {
+        std::filesystem::create_directory(LOG_DIR);
+        std::filesystem::permissions(
+            LOG_DIR, std::filesystem::perms::owner_all, std::filesystem::perm_options::add);
+    }
+
+    switch (writeType)
+    {
+        case OutputType::add:
+            ofs.open(pathname, std::ios_base::out | std::ios_base::app);
+            break;
+        case OutputType::over:
+            ofs.open(pathname, std::ios_base::out | std::ios_base::trunc);
+            break;
+        default:
+            break;
+    }
+
+    if (!ofs)
+    {
+        throwOperateFileException(std::filesystem::path(pathname).filename().string(), true);
+    }
+    tryToOperateFileLock(ofs, pathname, true, false);
+};
+
+void Log::startLogging()
 {
     if (std::unique_lock<std::mutex> lock(logQueueMutex); true)
     {
-        loggingCondition.wait(
-            lock,
-            [this]() -> decltype(auto)
-            {
-                return (Status::work == loggingStatus.load());
-            });
+        isLogging = true;
+    }
+};
+
+void Log::closeLogFile()
+{
+    tryToOperateFileLock(ofs, pathname, false, false);
+    if (ofs.is_open())
+    {
+        ofs.close();
+    }
+};
+
+void Log::stopLogging()
+{
+    if (std::unique_lock<std::mutex> lock(logQueueMutex); true)
+    {
+        isLogging = false;
+        while (!logQueue.empty())
+        {
+            logQueue.pop();
+        }
     }
 }
 
-std::string changeLogLevelStyle(std::string& line)
+bool Log::isLogFileOpen(const GoLogging& /*unused*/) const
+{
+    return ofs.is_open();
+}
+
+bool Log::isLogFileClose(const NoLogging& /*unused*/) const
+{
+    return !ofs.is_open();
+}
+
+std::string& changeLogLevelStyle(std::string& line)
 {
     if (std::regex_search(line, std::regex(LOG_REGEX_INFO)))
     {
@@ -169,4 +194,27 @@ std::string changeLogLevelStyle(std::string& line)
     }
 
     return line;
+}
+
+std::ostream& operator<<(std::ostream& os, const Log::State& state)
+{
+    switch (state)
+    {
+        case Log::State::init:
+            os << "INIT";
+            break;
+        case Log::State::idle:
+            os << "IDLE";
+            break;
+        case Log::State::work:
+            os << "WORK";
+            break;
+        case Log::State::done:
+            os << "DONE";
+            break;
+        default:
+            os << "UNKNOWN: " << static_cast<std::underlying_type_t<Log::State>>(state);
+    }
+
+    return os;
 }

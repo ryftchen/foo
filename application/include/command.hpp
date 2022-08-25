@@ -185,5 +185,3 @@ private:
 protected:
     friend std::ostream& operator<<(std::ostream& os, const AlgTaskType& taskType);
 };
-
-std::ostream& operator<<(std::ostream& os, const Command::AlgTaskType& taskType);

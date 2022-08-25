@@ -1,7 +1,7 @@
 #pragma once
 #include <ext/stdio_filebuf.h>
 #include <sys/file.h>
-#define NDEBUG
+// #define NDEBUG
 #include <cassert>
 #include <filesystem>
 #include <iostream>
@@ -18,17 +18,14 @@
             str;                                                              \
         })
 #define FORMAT_PRINT(format, args...) std::cout << FORMAT_TO_STRING(format, ##args)
-#define BUFFER_SIZE_16 16
-#define BUFFER_SIZE_32 32
-#define BUFFER_SIZE_4096 4096
-#define BUFFER_SIZE_MAX BUFFER_SIZE_4096
 #define PRINT_COLOR_RED "\033[0;31;40m"
 #define PRINT_COLOR_GREEN "\033[0;32;40m"
 #define PRINT_COLOR_YELLOW "\033[0;33;40m"
 #define PRINT_COLOR_END "\033[0m"
 #define PRINT_FILE_MAX_LINE 1000
+#define BUFFER_SIZE_MAX 4096
 
-typedef std::string (*PrintStyle)(std::string& line);
+typedef std::string& (*PrintStyle)(std::string& line);
 constexpr static PrintStyle nullStyle = nullptr;
 void executeCommand(const char* const cmd);
 void printFile(

@@ -1,17 +1,17 @@
 #pragma once
-#include <atomic>
 #include <condition_variable>
 #include <queue>
 #include <thread>
 #include "file.hpp"
+#include "fsm.hpp"
 #include "time.hpp"
 
 extern class Log logger;
-std::string changeLogLevelStyle(std::string& line);
+std::string& changeLogLevelStyle(std::string& line);
 
 #define LOG_DIR "./temp"
 #define LOG_PATH "./temp/foo.log"
-#define LOG_PATHNAME_LENGTH BUFFER_SIZE_32
+#define LOG_PATHNAME_LENGTH 32
 #define LOG_PREFIX_DEBUG "[DBG]"
 #define LOG_PREFIX_INFO "[INF]"
 #define LOG_PREFIX_WARN "[WRN]"
@@ -27,74 +27,110 @@ std::string changeLogLevelStyle(std::string& line);
     (std::string(PRINT_COLOR_RED) + std::string(LOG_PREFIX_ERROR) + std::string(PRINT_COLOR_END))
 
 #define LOGGER_DBG(format, args...) \
-    logger.output(Log::Level::debug, __FILE__, __LINE__, format, ##args)
+    logger.output(Log::OutputLevel::debug, __FILE__, __LINE__, format, ##args)
 #define LOGGER_INF(format, args...) \
-    logger.output(Log::Level::info, __FILE__, __LINE__, format, ##args)
+    logger.output(Log::OutputLevel::info, __FILE__, __LINE__, format, ##args)
 #define LOGGER_WRN(format, args...) \
-    logger.output(Log::Level::warn, __FILE__, __LINE__, format, ##args)
+    logger.output(Log::OutputLevel::warn, __FILE__, __LINE__, format, ##args)
 #define LOGGER_ERR(format, args...) \
-    logger.output(Log::Level::error, __FILE__, __LINE__, format, ##args)
-#define LOGGER_EXIT logger.exitLogger();
-#define LOGGER_WAIT logger.waitLogger();
+    logger.output(Log::OutputLevel::error, __FILE__, __LINE__, format, ##args)
+#define LOGGER_START logger.waitLoggerStart();
+#define LOGGER_STOP logger.waitLoggerStop();
 
-class Log final
+class Log final : public FSM<Log>
 {
 public:
-    enum Type
+    friend class FSM<Log>;
+    enum class OutputType
     {
         add,
         over
     };
-    enum Level
+    enum class OutputLevel
     {
         debug,
         info,
         warn,
         error
     };
-    enum Target
+    enum class OutputTarget
     {
         file,
         terminal,
         all
     };
-    enum Status
+    enum State
     {
+        init,
         idle,
         work,
-        finish
+        done
     };
-    Log() noexcept = default;
-    Log(const std::string& logFile, const Type type, const Level level,
-        const Target target) noexcept;
+
+    explicit Log(StateType initState = State::init) noexcept : FSM(initState) {}
+    Log(const std::string& logFile, const OutputType type, const OutputLevel level,
+        const OutputTarget target, StateType initState = State::init) noexcept;
     virtual ~Log();
     template <typename... Args>
     void output(
-        const uint32_t level, const std::string& codeFile, const uint32_t codeLine,
+        const OutputLevel level, const std::string& codeFile, const uint32_t codeLine,
         const char* const __restrict format, Args&&... args);
     void runLogger();
-    void exitLogger();
-    void waitLogger();
+    void waitLoggerStart();
+    void waitLoggerStop();
 
 private:
     std::ofstream ofs;
-    Type writeType{Type::add};
-    Level minLevel{Level::debug};
-    Target outputTarget{Target::all};
+    OutputType writeType{OutputType::add};
+    OutputLevel minLevel{OutputLevel::debug};
+    OutputTarget actualTarget{OutputTarget::all};
     char pathname[LOG_PATHNAME_LENGTH + 1]{LOG_PATH};
 
-    std::atomic<Status> loggingStatus{Status::idle};
+    std::atomic<bool> isLogging{false};
     std::condition_variable loggingCondition;
     mutable std::mutex logQueueMutex;
     std::queue<std::string> logQueue;
+
+    struct OpenFile
+    {
+    };
+    struct CloseFile
+    {
+    };
+    struct GoLogging
+    {
+    };
+    struct NoLogging
+    {
+    };
+
+    void openLogFile();
+    void startLogging();
+    void closeLogFile();
+    void stopLogging();
+
+    bool isLogFileOpen(const GoLogging& /*unused*/) const;
+    bool isLogFileClose(const NoLogging& /*unused*/) const;
+    using TransitionMap = Map<
+        // -- Source --+-- Event --+-- Target --+----- Action -----+----- Guard -----
+        // ------------+-----------+------------+------------------+-----------------
+        Row<State::init, OpenFile, State::idle, &Log::openLogFile>,
+        Row<State::idle, GoLogging, State::work, &Log::startLogging, &Log::isLogFileOpen>,
+        Row<State::work, CloseFile, State::idle, &Log::closeLogFile>,
+        Row<State::idle, NoLogging, State::done, &Log::stopLogging, &Log::isLogFileClose>
+        // ------------+-----------+------------+------------------+-----------------
+        >;
+
+protected:
+    friend std::ostream& operator<<(std::ostream& os, const Log::State& state);
 };
 
 template <typename... Args>
 void Log::output(
-    const uint32_t level, const std::string& codeFile, const uint32_t codeLine,
+    const OutputLevel level, const std::string& codeFile, const uint32_t codeLine,
     const char* const __restrict format, Args&&... args)
 {
-    if (Status::work != loggingStatus.load())
+    if (State::work != currentState())
     {
         return;
     }
@@ -106,16 +142,16 @@ void Log::output(
             std::string prefix;
             switch (level)
             {
-                case Level::debug:
+                case OutputLevel::debug:
                     prefix = LOG_PREFIX_DEBUG;
                     break;
-                case Level::info:
+                case OutputLevel::info:
                     prefix = LOG_PREFIX_INFO;
                     break;
-                case Level::warn:
+                case OutputLevel::warn:
                     prefix = LOG_PREFIX_WARN;
                     break;
-                case Level::error:
+                case OutputLevel::error:
                     prefix = LOG_PREFIX_ERROR;
                     break;
                 default:
@@ -133,8 +169,7 @@ void Log::output(
 
             lock.unlock();
             loggingCondition.notify_one();
-            std::this_thread::sleep_until(
-                std::chrono::steady_clock::now() + std::chrono::operator""ms(1));
+            TIME_SLEEP_MILLISECOND(1);
             lock.lock();
         }
     }

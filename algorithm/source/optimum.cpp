@@ -1,6 +1,7 @@
 #include "optimum.hpp"
 #include <algorithm>
 #include <set>
+#include "file.hpp"
 #include "time.hpp"
 
 using Species::Chromosome;
@@ -13,7 +14,7 @@ using Swarm::Society;
 std::optional<std::tuple<ValueY, ValueX>> Fibonacci::operator()(
     const double left, const double right, const double eps)
 {
-    TIME_BEGIN;
+    TIMER_BEGIN;
     double leftVal = left, rightVal = right;
     std::vector<double> fibonacci(0);
     generateFibonacciNumber(fibonacci, (rightVal - leftVal) / eps);
@@ -66,8 +67,8 @@ std::optional<std::tuple<ValueY, ValueX>> Fibonacci::operator()(
     }
     const double x = (leftVal + rightVal) / 2.0;
 
-    TIME_END;
-    FORMAT_PRINT(OPTIMUM_RESULT(max), "Fibonacci", func(x), x, TIME_INTERVAL);
+    TIMER_END;
+    FORMAT_PRINT(OPTIMUM_RESULT(max), "Fibonacci", func(x), x, TIMER_INTERVAL);
     return std::make_optional(std::make_tuple(func(x), x));
 }
 
@@ -92,7 +93,7 @@ void Fibonacci::generateFibonacciNumber(std::vector<double>& fibonacci, const do
 std::optional<std::tuple<ValueY, ValueX>> Gradient::operator()(
     const double left, const double right, const double eps)
 {
-    TIME_BEGIN;
+    TIMER_BEGIN;
     TIME_GET_SEED(seed);
     double x = 0.0, y = 0.0;
     std::uniform_real_distribution<double> randomX(left, right);
@@ -131,8 +132,8 @@ std::optional<std::tuple<ValueY, ValueX>> Gradient::operator()(
     y = std::get<0>(*best);
     x = std::get<1>(*best);
 
-    TIME_END;
-    FORMAT_PRINT(OPTIMUM_RESULT(max), "Gradient", y, x, TIME_INTERVAL);
+    TIMER_END;
+    FORMAT_PRINT(OPTIMUM_RESULT(max), "Gradient", y, x, TIMER_INTERVAL);
     return std::make_optional(std::make_tuple(y, x));
 }
 
@@ -146,7 +147,7 @@ double Gradient::calculateFirstDerivative(const double x, const double eps) cons
 std::optional<std::tuple<ValueY, ValueX>> Annealing::operator()(
     const double left, const double right, const double eps)
 {
-    TIME_BEGIN;
+    TIMER_BEGIN;
     double temperature = Cooling::initialT;
     TIME_GET_SEED(seed);
     std::uniform_real_distribution<double> randomX(left, right);
@@ -192,8 +193,8 @@ std::optional<std::tuple<ValueY, ValueX>> Annealing::operator()(
         temperature *= Cooling::coolingRate;
     }
 
-    TIME_END;
-    FORMAT_PRINT(OPTIMUM_RESULT(max), "Annealing", y, x, TIME_INTERVAL);
+    TIMER_END;
+    FORMAT_PRINT(OPTIMUM_RESULT(max), "Annealing", y, x, TIMER_INTERVAL);
     return std::make_optional(std::make_tuple(y, x));
 }
 
@@ -201,7 +202,7 @@ std::optional<std::tuple<ValueY, ValueX>> Annealing::operator()(
 std::optional<std::tuple<ValueY, ValueX>> Particle::operator()(
     const double left, const double right, const double eps)
 {
-    TIME_BEGIN;
+    TIMER_BEGIN;
     Record rec = recordInit(left, right);
     const auto best = std::max_element(
         std::cbegin(rec.society), std::cend(rec.society),
@@ -253,8 +254,8 @@ std::optional<std::tuple<ValueY, ValueX>> Particle::operator()(
     xFitnessBest = std::get<0>(*(rec.history.cbegin()));
     xBest = std::get<1>(*(rec.history.cbegin()));
 
-    TIME_END;
-    FORMAT_PRINT(OPTIMUM_RESULT(max), "Particle", xFitnessBest, xBest, TIME_INTERVAL);
+    TIMER_END;
+    FORMAT_PRINT(OPTIMUM_RESULT(max), "Particle", xFitnessBest, xBest, TIMER_INTERVAL);
     return std::make_optional(std::make_tuple(xFitnessBest, xBest));
 }
 
@@ -284,7 +285,7 @@ Record Particle::recordInit(const double left, const double right)
 std::optional<std::tuple<ValueY, ValueX>> Genetic::operator()(
     const double left, const double right, const double eps)
 {
-    TIME_BEGIN;
+    TIMER_BEGIN;
     updateSpecies(left, right, eps);
     if (chrNum < OPTIMUM_GENETIC_MIN_CHROMOSOME_NUMBER)
     {
@@ -301,8 +302,8 @@ std::optional<std::tuple<ValueY, ValueX>> Genetic::operator()(
     }
     const double x = geneDecoding(getBestIndividual(pop));
 
-    TIME_END;
-    FORMAT_PRINT(OPTIMUM_RESULT(max), "Genetic", func(x), x, TIME_INTERVAL);
+    TIMER_END;
+    FORMAT_PRINT(OPTIMUM_RESULT(max), "Genetic", func(x), x, TIMER_INTERVAL);
     return std::make_optional(std::make_tuple(func(x), x));
 }
 
@@ -455,7 +456,7 @@ std::optional<std::pair<double, double>> Genetic::fitnessLinearTransformation(co
     {
         const double alpha = reFitnessAvg / (reFitnessAvg - reFitnessMin);
         const double beta = -1.0 * (reFitnessMin * reFitnessAvg) / (reFitnessAvg - reFitnessMin);
-        assert(!isnan(alpha) && !isinf(alpha) && !isnan(beta) && !isinf(beta));
+        assert(!std::isnan(alpha) && !std::isinf(alpha) && !std::isnan(beta) && !std::isinf(beta));
         return std::make_optional(std::pair<double, double>(alpha, beta));
     }
     else
