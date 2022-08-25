@@ -4,6 +4,7 @@ buc
 chrono
 cmake
 codebrowser
+Concat
 cou
 cov
 datetime
@@ -14,6 +15,7 @@ destructure
 fcoverage
 fibonacci
 fprofile
+fsm
 getsignal
 Griewank
 hea
