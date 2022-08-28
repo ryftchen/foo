@@ -1,0 +1,6 @@
+[*.sh]
+binary_next_line = true
+function_next_line = true
+indent_style = space
+indent_size = 4
+shell_variant = bash
