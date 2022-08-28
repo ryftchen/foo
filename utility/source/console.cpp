@@ -1,11 +1,8 @@
 #include "console.hpp"
 #include <readline/readline.h>
-#include <algorithm>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
-#include <sstream>
-#include <unordered_map>
 
 Console* currentConsole = nullptr;
 
