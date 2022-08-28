@@ -1,7 +1,8 @@
 #include "time.hpp"
 
-std::string getCurrentSystemTime(char* const date)
+std::string getCurrentSystemTime()
 {
+    char date[TIME_DATE_LENGTH + 1] = {'\0'};
     const time_t tt = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
     const tm* tm = localtime(&tt);
 
@@ -11,5 +12,7 @@ std::string getCurrentSystemTime(char* const date)
         static_cast<uint32_t>(tm->tm_mon) + 1, static_cast<uint32_t>(tm->tm_mday),
         static_cast<uint32_t>(tm->tm_hour), static_cast<uint32_t>(tm->tm_min),
         static_cast<uint32_t>(tm->tm_sec));
-    return date;
+
+    std::string dateStr(date);
+    return dateStr;
 }

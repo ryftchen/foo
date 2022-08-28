@@ -3,7 +3,7 @@
 #include <chrono>
 #include <string>
 
-std::string getCurrentSystemTime(char* const date);
+std::string getCurrentSystemTime();
 
 #define TIME_DATE_LENGTH 32
 #define TIME_DATE_YEAR_START 1900
@@ -11,12 +11,12 @@ std::string getCurrentSystemTime(char* const date);
     timeval timeSeed{};               \
     gettimeofday(&timeSeed, nullptr); \
     std::mt19937 seed(timeSeed.tv_sec * 1000000 + timeSeed.tv_usec)
-#define TIME_GET_CURRENT_DATE                         \
-    (                                                 \
-        {                                             \
-            char date[TIME_DATE_LENGTH + 1] = {'\0'}; \
-            getCurrentSystemTime(date);               \
-        })
+// #define TIME_GET_CURRENT_DATE                         \
+//     (                                                 \
+//         {                                             \
+//             char date[TIME_DATE_LENGTH + 1] = {'\0'}; \
+//             getCurrentSystemTime(date);               \
+//         })
 #define TIME_SLEEP_MILLISECOND(num) \
     std::this_thread::sleep_until(std::chrono::steady_clock::now() + std::chrono::operator""ms(num))
 

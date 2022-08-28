@@ -2,6 +2,7 @@
 #include <bitset>
 #include <mutex>
 #include "argument.hpp"
+#include "console.hpp"
 #include "expression.hpp"
 #include "sort.hpp"
 
@@ -22,6 +23,18 @@
         }                                   \
     }                                       \
     while (0)
+#define COMMAND_GET_ICON_BANNER                               \
+    (                                                         \
+        {                                                     \
+            std::string banner;                               \
+            banner += R"(")";                                 \
+            banner += R"( ______   ______     ______    \n)"; \
+            banner += R"(/\  ___\ /\  __ \   /\  __ \   \n)"; \
+            banner += R"(\ \  __\ \ \ \/\ \  \ \ \/\ \  \n)"; \
+            banner += R"( \ \_\    \ \_____\  \ \_____\ \n)"; \
+            banner += R"(  \/_/     \/_____/   \/_____/ \n)"; \
+            banner += R"(")";                                 \
+        })
 
 class Command
 {
@@ -67,14 +80,14 @@ public:
     };
     enum UtilTaskType
     {
-        log,
+        console,
         version,
         help,
         utilTaskBottom
     };
 
     Command();
-    virtual ~Command() = default;
+    ~Command() = default;
     void runCommander(const int argc, const char* const argv[]);
 
 private:
@@ -106,18 +119,9 @@ private:
         struct UtilTask
         {
             std::bitset<UtilTaskType::utilTaskBottom> utilTaskBit;
-            struct LogConfig
-            {
-                uint32_t maxLine{COMMAND_PRINT_MAX_LINE};
-                bool isReverse{true};
-            } logConfig{};
 
             [[nodiscard]] bool empty() const { return !utilTaskBit.any(); }
-            void reset()
-            {
-                utilTaskBit.reset();
-                logConfig = {COMMAND_PRINT_MAX_LINE, true};
-            }
+            void reset() { utilTaskBit.reset(); }
         } utilTask{};
 
         TaskPlan() = default;
@@ -145,10 +149,11 @@ private:
     const SetAlgTaskBitFunctor setAlgTaskBitFunctor[AlgTaskType::algTaskBottom] = {
         &Command::setOptimumBit, &Command::setIntegralBit, &Command::setSortBit};
 
-    const std::string utilTaskNameTable[UtilTaskType::utilTaskBottom] = {"log", "version", "help"};
+    const std::string utilTaskNameTable[UtilTaskType::utilTaskBottom] = {
+        "console", "version", "help"};
     typedef void (Command::*PerformUtilTaskFunctor)() const;
     const PerformUtilTaskFunctor performUtilTaskFunctor[UtilTaskType::utilTaskBottom] = {
-        &Command::printLogContext, &Command::printVersionInfo, &Command::printHelpMessage};
+        &Command::printConsoleOutput, &Command::printVersionInfo, &Command::printHelpMessage};
 
     const std::unordered_multimap<
         ExpressionRange<double, double>, TargetExpression, ExpressionMapHash>
@@ -176,9 +181,13 @@ private:
     template <typename T>
     void getSortResult(const std::shared_ptr<Sort<T>>& sort) const;
     void setSortBit(const char* const method);
-    void printLogContext() const;
+    void printConsoleOutput() const;
     void printVersionInfo() const;
     void printHelpMessage() const;
+
+    void enterConsole() const;
+    void registerOnConsole(Console& console) const;
+    static void displayLogContext();
     [[noreturn]] void throwUnexpectedMethodException(const std::string methodInfo);
     [[noreturn]] void throwExcessArgumentException();
 

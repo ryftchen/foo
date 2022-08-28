@@ -67,10 +67,10 @@ public:
         done
     };
 
-    explicit Log(StateType initState = State::init) noexcept : FSM(initState) {}
+    explicit Log(const StateType initState = State::init) noexcept;
     Log(const std::string& logFile, const OutputType type, const OutputLevel level,
-        const OutputTarget target, StateType initState = State::init) noexcept;
-    virtual ~Log();
+        const OutputTarget target, const StateType initState = State::init) noexcept;
+    virtual ~Log() = default;
     template <typename... Args>
     void output(
         const OutputLevel level, const std::string& codeFile, const uint32_t codeLine,
@@ -111,15 +111,17 @@ private:
 
     bool isLogFileOpen(const GoLogging& /*unused*/) const;
     bool isLogFileClose(const NoLogging& /*unused*/) const;
+    // clang-format off
     using TransitionMap = Map<
-        // -- Source --+-- Event --+-- Target --+----- Action -----+----- Guard -----
-        // ------------+-----------+------------+------------------+-----------------
-        Row<State::init, OpenFile, State::idle, &Log::openLogFile>,
-        Row<State::idle, GoLogging, State::work, &Log::startLogging, &Log::isLogFileOpen>,
-        Row<State::work, CloseFile, State::idle, &Log::closeLogFile>,
-        Row<State::idle, NoLogging, State::done, &Log::stopLogging, &Log::isLogFileClose>
-        // ------------+-----------+------------+------------------+-----------------
+        // -- Source --+-- Event --+-- Target --+----- Action -----+-- Guard(Optional) --
+        // ------------+-----------+------------+------------------+---------------------
+        Row<State::init, OpenFile,  State::idle, &Log::openLogFile                       >,
+        Row<State::idle, GoLogging, State::work, &Log::startLogging, &Log::isLogFileOpen >,
+        Row<State::work, CloseFile, State::idle, &Log::closeLogFile                      >,
+        Row<State::idle, NoLogging, State::done, &Log::stopLogging,  &Log::isLogFileClose>
+        // ------------+-----------+------------+------------------+---------------------
         >;
+    // clang-format on
 
 protected:
     friend std::ostream& operator<<(std::ostream& os, const Log::State& state);
@@ -158,7 +160,7 @@ void Log::output(
                     break;
             }
 
-            std::string output = prefix + ":[" + TIME_GET_CURRENT_DATE + "]:["
+            std::string output = prefix + ":[" + getCurrentSystemTime() + "]:["
                 + std::filesystem::path(codeFile.c_str()).filename().string() + "#"
                 + std::to_string(codeLine) + "]: ";
 #pragma GCC diagnostic push
