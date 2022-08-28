@@ -253,7 +253,7 @@ def testUtilTypeOption():
 
 
 def testConsoleCommand():
-    runTestTask(BIN_CMD, CONSOLE_COMMAND[2])
+    runTestTask(BIN_CMD, CONSOLE_COMMAND[1])
     for each in CONSOLE_COMMAND:
         runTestTask(f"{BIN_CMD} {OPTION_UTIL_TYPE[2]} \"{each}\"")
 
