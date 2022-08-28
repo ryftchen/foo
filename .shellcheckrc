@@ -1,2 +1,2 @@
 shell=bash
-enable=check-unassigned-uppercase
+enable=all
