@@ -20,8 +20,9 @@ SORT_METHOD = ["bub", "sel", "ins", "she", "mer", "qui", "hea", "cou", "buc", "r
 PASS_STEP = 0
 COMPLETE_STEP = 0
 WHOLE_STEP = (
-    len(OPTION_UTIL_TYPE)
-    + (len(CONSOLE_COMMAND) + 1)
+    1
+    + len(OPTION_UTIL_TYPE)
+    + len(CONSOLE_COMMAND)
     + len(OPTION_ALG_TYPE)
     + (len(OPTIMUM_METHOD) + 1)
     + (len(INTEGRAL_METHOD) + 1)
@@ -31,9 +32,9 @@ TEMP_LOG = "./temp/foo_test.log"
 TEMP_PATH = "./temp"
 
 ARG_COMMAND_DEPEND = "command -v"
-ARG_CHECK_VALGRIND_STATE = False
-ARG_CHECK_VALGRIND_CMD = "valgrind"
-ARG_CHECK_VALGRIND_SUM = "ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)"
+ARG_CHECK_MEMORY_STATE = False
+ARG_CHECK_MEMORY_CMD = "valgrind"
+ARG_CHECK_MEMORY_SUM = "ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)"
 ARG_CHECK_COVERAGE_STATE = False
 ARG_CHECK_COVERAGE_CMD = "LLVM_PROFILE_FILE"
 ARG_CHECK_COVERAGE_PROFDATA_CMD = "llvm-profdata-12 merge -sparse"
@@ -73,8 +74,8 @@ def buildProject(command):
 def runTestTask(command, enter=""):
     global PASS_STEP, COMPLETE_STEP
     fullCommand = f"{BIN_DIR}{command}"
-    if ARG_CHECK_VALGRIND_STATE:
-        fullCommand = f"{ARG_CHECK_VALGRIND_CMD} {fullCommand}"
+    if ARG_CHECK_MEMORY_STATE:
+        fullCommand = f"{ARG_CHECK_MEMORY_CMD} {fullCommand}"
     if ARG_CHECK_COVERAGE_STATE:
         fullCommand = f"{ARG_CHECK_COVERAGE_CMD}\
 =\"{TEMP_PATH}/foo_{str(COMPLETE_STEP + 1)}.profraw\" {fullCommand}"
@@ -106,8 +107,8 @@ def runTestTask(command, enter=""):
     else:
         print(stdout)
         PASS_STEP += 1
-        if ARG_CHECK_VALGRIND_STATE:
-            if stdout.find(ARG_CHECK_VALGRIND_SUM) == -1:
+        if ARG_CHECK_MEMORY_STATE:
+            if stdout.find(ARG_CHECK_MEMORY_SUM) == -1:
                 PASS_STEP -= 1
                 print(
                     "{0}{2}[ {3} | {4:<{x}} ]{2}{1}".format(
@@ -182,11 +183,11 @@ def parseArgs():
             else:
                 printAbort("There is no llvm-profdata or llvm-cov program. Please check it.")
 
-        if "valgrind" in args.check:
+        if "memory" in args.check:
             stdout, _, _ = common.executeCommand(f"{ARG_COMMAND_DEPEND} valgrind 2>&1")
             if stdout.find("valgrind") != -1:
-                global ARG_CHECK_VALGRIND_STATE
-                ARG_CHECK_VALGRIND_STATE = True
+                global ARG_CHECK_MEMORY_STATE
+                ARG_CHECK_MEMORY_STATE = True
             else:
                 printAbort("There is no valgrind program. Please check it.")
 
@@ -247,6 +248,17 @@ def analyzeTestLog():
     refresh.write(outputContent)
 
 
+def testUtilTypeOption():
+    runTestTask(BIN_CMD, CONSOLE_COMMAND[2])
+    for each in OPTION_UTIL_TYPE:
+        runTestTask(f"{BIN_CMD} {each}")
+
+
+def testConsoleCommand():
+    for each in CONSOLE_COMMAND:
+        runTestTask(f"{BIN_CMD} {OPTION_UTIL_TYPE[0]} \"{each}\"")
+
+
 def testAlgTypeOption():
     for each in OPTION_ALG_TYPE:
         runTestTask(f"{BIN_CMD} {each}")
@@ -268,17 +280,6 @@ def testSortMethod():
     for each in SORT_METHOD:
         runTestTask(f"{BIN_CMD} {OPTION_ALG_TYPE[2]} {each}")
     runTestTask(f"{BIN_CMD} {OPTION_ALG_TYPE[2]} {' '.join(SORT_METHOD)}")
-
-
-def testUtilTypeOption():
-    for each in OPTION_UTIL_TYPE:
-        runTestTask(f"{BIN_CMD} {each}")
-
-
-def testConsoleCommand():
-    runTestTask(BIN_CMD, CONSOLE_COMMAND[2])
-    for each in CONSOLE_COMMAND:
-        runTestTask(f"{BIN_CMD} {OPTION_UTIL_TYPE[0]} \"{each}\"")
 
 
 if __name__ == "__main__":
