@@ -46,19 +46,20 @@ class Log:
         sys.stdout = STDOUT_DEFAULT
 
 
-def executeCommand(cmd):
+def executeCommand(command, enter=""):
     try:
         out = subprocess.Popen(
-            cmd,
+            command,
             shell=True,
             executable="/bin/bash",
+            stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             encoding="utf-8",
         )
     except RuntimeError as err:
         return "", err.args[0], 255
-    stdout, stderr = out.communicate()
+    stdout, stderr = out.communicate(input=enter)
     error = out.returncode
     return stdout.strip(), stderr.strip(), error
 

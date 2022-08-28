@@ -11,28 +11,28 @@ BIN_CMD = "foo"
 BIN_DIR = "./build/bin/"
 LIB_LIST = ["libutility.so", "libalgorithm.so"]
 LIB_DIR = "./build/lib/"
+OPTION_UTIL_TYPE = ["--console", "--version", "--help"]
+CONSOLE_COMMAND = ["log", "run ./script/batch.txt", "quit", "help"]
 OPTION_ALG_TYPE = ["--optimum", "--integral", "--sort"]
 OPTIMUM_METHOD = ["fib", "gra", "ann", "par", "gen"]
 INTEGRAL_METHOD = ["tra", "sim", "rom", "gau", "mon"]
 SORT_METHOD = ["bub", "sel", "ins", "she", "mer", "qui", "hea", "cou", "buc", "rad"]
-OPTION_UTIL_TYPE = ["--log", "--version", "--help"]
 PASS_STEP = 0
 COMPLETE_STEP = 0
 WHOLE_STEP = (
-    len(OPTION_ALG_TYPE)
+    len(OPTION_UTIL_TYPE)
+    + (len(CONSOLE_COMMAND) + 1)
+    + len(OPTION_ALG_TYPE)
     + (len(OPTIMUM_METHOD) + 1)
     + (len(INTEGRAL_METHOD) + 1)
     + (len(SORT_METHOD) + 1)
-    + len(OPTION_UTIL_TYPE)
-    + 1
 )
 TEMP_LOG = "./temp/foo_test.log"
 TEMP_PATH = "./temp"
 
 ARG_COMMAND_DEPEND = "command -v"
 ARG_CHECK_VALGRIND_STATE = False
-ARG_CHECK_VALGRIND_CMD = "valgrind --tool=memcheck --show-reachable=yes --leak-check=full \
---leak-resolution=high --log-fd=1"
+ARG_CHECK_VALGRIND_CMD = "valgrind"
 ARG_CHECK_VALGRIND_SUM = "ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)"
 ARG_CHECK_COVERAGE_STATE = False
 ARG_CHECK_COVERAGE_CMD = "LLVM_PROFILE_FILE"
@@ -70,7 +70,7 @@ def buildProject(command):
             printAbort(f"Failed to build project by shell script {ARG_BUILD_SHELL}.")
 
 
-def runTestTask(command):
+def runTestTask(command, enter=""):
     global PASS_STEP, COMPLETE_STEP
     fullCommand = f"{BIN_DIR}{command}"
     if ARG_CHECK_VALGRIND_STATE:
@@ -90,7 +90,7 @@ def runTestTask(command):
         )
     )
 
-    stdout, stderr, errcode = common.executeCommand(fullCommand)
+    stdout, stderr, errcode = common.executeCommand(fullCommand, enter)
     if stderr or errcode != 0:
         print(f"stderr: {stderr}\nerrcode: {errcode}")
         print(
@@ -154,7 +154,11 @@ def runTestTask(command):
 def parseArgs():
     parser = argparse.ArgumentParser(description="test script")
     parser.add_argument(
-        "-c", "--check", choices=["coverage", "valgrind"], nargs="+", help="test with check"
+        "-c",
+        "--check",
+        choices=["coverage", "memory"],
+        nargs="+",
+        help="test with check: coverage check or memory check",
     )
     parser.add_argument(
         "-b",
@@ -162,7 +166,7 @@ def parseArgs():
         choices=["debug", "release"],
         nargs="?",
         const="debug",
-        help="test with build",
+        help="test with build: debug version or release version",
     )
     args = parser.parse_args()
 
@@ -244,7 +248,6 @@ def analyzeTestLog():
 
 
 def testAlgTypeOption():
-    runTestTask(BIN_CMD)
     for each in OPTION_ALG_TYPE:
         runTestTask(f"{BIN_CMD} {each}")
 
@@ -272,14 +275,22 @@ def testUtilTypeOption():
         runTestTask(f"{BIN_CMD} {each}")
 
 
+def testConsoleCommand():
+    runTestTask(BIN_CMD, CONSOLE_COMMAND[2])
+    for each in CONSOLE_COMMAND:
+        runTestTask(f"{BIN_CMD} {OPTION_UTIL_TYPE[0]} \"{each}\"")
+
+
 if __name__ == "__main__":
     prepareTest()
+
+    testUtilTypeOption()
+    testConsoleCommand()
 
     testAlgTypeOption()
     testOptimumMethod()
     testIntegralMethod()
     testSortMethod()
-    testUtilTypeOption()
 
     completeTest()
     analyzeTestLog()
