@@ -80,15 +80,13 @@ jobs:
 
       - name: Build
         run: |
-          ./script/build.sh
           ./script/build.sh --release
 
       - name: Test
         run: |
           export TERM=linux
           export TERMINFO=/etc/terminfo
-          ./script/test.py --check coverage --build
-          ./script/test.py --check valgrind --build release
+          ./script/test.py --check coverage memory --build release
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v3.0.0
