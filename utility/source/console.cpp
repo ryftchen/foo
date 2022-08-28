@@ -1,6 +1,8 @@
 #include "console.hpp"
 #include <readline/readline.h>
+#include <algorithm>
 #include <fstream>
+#include <iomanip>
 #include <iostream>
 #include <sstream>
 #include <unordered_map>
@@ -15,10 +17,18 @@ Console::Console(std::string const& greeting) : impl(std::make_unique<Impl>(gree
         [this](const Arguments& /*unused*/)
         {
             auto commandsHelp = getHelpOfRegisteredCommands();
-            std::cout << "Console Command:" << std::endl;
-            for (auto& [command, help] : commandsHelp)
+            std::size_t maxLength = 0;
+            for ([[maybe_unused]] const auto& [command, help] : commandsHelp)
             {
-                std::cout << command << "    " << help << std::endl;
+                maxLength = std::max(maxLength, command.length());
+            }
+
+            std::cout << "Console Command:" << std::endl;
+            for ([[maybe_unused]] const auto& [command, help] : commandsHelp)
+            {
+                std::cout << std::setiosflags(std::ios_base::left) << std::setw(maxLength)
+                          << command << "    " << help << std::resetiosflags(std::ios_base::left)
+                          << std::endl;
             }
             return ReturnCode::success;
         },
