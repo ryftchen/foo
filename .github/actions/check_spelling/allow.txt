@@ -7,11 +7,13 @@ codebrowser
 Concat
 cou
 cov
+cppcoreguidelines
 datetime
 DCMAKE
 decltype
 declval
 destructure
+editorconfig
 fcoverage
 fibonacci
 fprofile
@@ -23,6 +25,7 @@ indexgenerator
 istreambuf
 jcvf
 libalgorithm
+libreadline
 libutility
 llvm
 markov
@@ -30,6 +33,7 @@ mday
 memcheck
 milli
 nodiscard
+NOLINTNEXTLINE
 nullopt
 profdata
 profraw
