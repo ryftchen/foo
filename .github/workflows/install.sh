@@ -26,8 +26,9 @@ installDependencies()
     localDir=$(git rev-parse --show-toplevel)
     cd "${localDir}" || exit 1
 
-    bashCommand "sudo apt-get install -y llvm-12 clang-12 libclang-12-dev \
-clang-format-12 clang-tidy-12 cmake python3 pylint black shellcheck valgrind"
+    bashCommand "sudo apt-get install -y git curl python3 \
+build-essential llvm-12 clang-12 libclang-12-dev libreadline-dev cmake gdb valgrind \
+clang-format-12 clang-tidy-12 python3 pylint black shellcheck"
     bashCommand "sudo curl -L ${SHFMT_URL} >${SHFMT_PATH}/shfmt \
 && sudo chmod +x ${SHFMT_PATH}/shfmt"
     bashCommand "git clone ${WOBOQ_GIT} -b master \
