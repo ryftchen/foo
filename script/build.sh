@@ -15,6 +15,8 @@ TEMP_FOLDER="temp"
 CMAKE_FILE="CMakeLists.txt"
 COMPILE_COMMANDS="compile_commands.json"
 FORMAT_CONFIG_CPP=".clang-format"
+FORMAT_CONFIG_PY=".toml"
+FORMAT_CONFIG_SH=".editorconfig"
 LINT_CONFIG_CPP=".clang-tidy"
 LINT_CONFIG_PY=".pylintrc"
 LINT_CONFIG_SH=".shellcheckrc"
@@ -40,17 +42,17 @@ printInstruction()
     echo
     echo "[Options]:"
     echo
-    echo "    -f, --format                       Format"
+    echo "    -f, --format                       format code"
     echo
-    echo "    -l, --lint                         Lint"
+    echo "    -l, --lint                         lint code"
     echo
-    echo "    -c, --cleanup                      Cleanup"
+    echo "    --cleanup                          cleanup project"
     echo
-    echo "    --report                           Report"
+    echo "    --report                           report to html"
     echo
-    echo "    --release                          Release"
+    echo "    --release                          release version"
     echo
-    echo "    --help                             Help"
+    echo "    --help                             show help"
     exit 0
 }
 
@@ -60,7 +62,7 @@ parseArgs()
         case $1 in
         -f | --format) ARGS_FORMAT=true ;;
         -l | --lint) ARGS_LINT=true ;;
-        -c | --cleanup) performOptionCleanup ;;
+        --cleanup) performCleanupOption ;;
         --report) ARGS_REPORT=true ;;
         --release) ARGS_RELEASE=true ;;
         --help) printInstruction ;;
@@ -83,10 +85,18 @@ checkDependencies()
         printAbort "There are missing folders in ${PROJECT_FOLDER} folder. Please check it."
     fi
 
-    if [ "${ARGS_FORMAT}" = true ] || [ "${ARGS_LINT}" = true ]; then
-        if [ ! -f ./"${FORMAT_CONFIG_CPP}" ] || [ ! -f ./"${LINT_CONFIG_CPP}" ] \
-            || [ ! -f ./"${LINT_CONFIG_PY}" ] || [ ! -f ./"${LINT_CONFIG_SH}" ]; then
-            printAbort "There are missing config files in ${PROJECT_FOLDER} folder. \
+    if [ "${ARGS_FORMAT}" = true ]; then
+        if [ ! -f ./"${FORMAT_CONFIG_CPP}" ] || [ ! -f ./"${FORMAT_CONFIG_PY}" ] \
+            || [ ! -f ./"${FORMAT_CONFIG_SH}" ]; then
+            printAbort "There are missing format config files in ${PROJECT_FOLDER} folder. \
+Please check it."
+        fi
+    fi
+
+    if [ "${ARGS_LINT}" = true ]; then
+        if [ ! -f ./"${LINT_CONFIG_CPP}" ] || [ ! -f ./"${LINT_CONFIG_PY}" ] \
+            || [ ! -f ./"${LINT_CONFIG_SH}" ]; then
+            printAbort "There are missing lint config files in ${PROJECT_FOLDER} folder. \
 Please check it."
         fi
     fi
@@ -119,13 +129,13 @@ compileCode()
     fi
 }
 
-performOptionCleanup()
+performCleanupOption()
 {
     bashCommand "rm -rf ./${BUILD_FOLDER} ./${TEMP_FOLDER}"
     bashCommand "rm -rf ./core*"
 }
 
-performOptionFormat()
+performFormatOption()
 {
     if [ "${ARGS_FORMAT}" = true ]; then
         if
@@ -135,15 +145,15 @@ performOptionFormat()
         then
             bashCommand "find ./${APPLICATION_FOLDER} ./${UTILITY_FOLDER} ./${ALGORITHM_FOLDER} \
 -name *.cpp -o -name *.hpp | xargs clang-format-12 -i --verbose"
-            bashCommand "shfmt -l -w -ln bash -i 4 -bn -fn ./${SCRIPT_FOLDER}/*.sh"
-            bashCommand "black -l 100 -S -v ./${SCRIPT_FOLDER}/*.py"
+            bashCommand "shfmt -l -w ./${SCRIPT_FOLDER}/*.sh"
+            bashCommand "black --config ./${FORMAT_CONFIG_PY} ./${SCRIPT_FOLDER}/*.py"
         else
             printAbort "There is no clang-format, shfmt or black program. Please check it."
         fi
     fi
 }
 
-performOptionLint()
+performLintOption()
 {
     if [ "${ARGS_LINT}" = true ]; then
         if
@@ -159,7 +169,7 @@ performOptionLint()
                 printAbort "There is no ${COMPILE_COMMANDS} file in ${BUILD_FOLDER} folder. \
 Please generate it."
             fi
-            bashCommand "shellcheck --enable=all ./${SCRIPT_FOLDER}/*.sh"
+            bashCommand "shellcheck ./${SCRIPT_FOLDER}/*.sh"
             bashCommand "pylint --rcfile=${LINT_CONFIG_PY} ./${SCRIPT_FOLDER}/*.py"
         else
             printAbort "There is no clang-tidy, shellcheck or pylint program. Please check it."
@@ -167,7 +177,7 @@ Please generate it."
     fi
 }
 
-performOptionReport()
+performReportOption()
 {
     if [ "${ARGS_REPORT}" = true ]; then
         if
@@ -222,9 +232,9 @@ main()
     checkDependencies "$@"
     generateCMakeFiles
 
-    performOptionFormat
-    performOptionLint
-    performOptionReport
+    performFormatOption
+    performLintOption
+    performReportOption
 
     compileCode
 }
