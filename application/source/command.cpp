@@ -58,7 +58,9 @@ Command::Command()
               "\r\n    [ qui | hea | cou | buc | rad ]"
               "    Quick | Heap | Counting | Bucket | Radix");
 
-    program.addArgument("--log").nArgs(0).help("display log and exit program");
+    program.addArgument("--console")
+        .nArgs(NArgsPattern::atLeastOne)
+        .help("run commands on console");
 
     program.addArgument("--version")
         .nArgs(0)
@@ -76,18 +78,16 @@ void Command::runCommander(const int argc, const char* const argv[])
 
     try
     {
-        if (0 == argc - 1)
+        if (0 != argc - 1)
         {
-            LOGGER_INF("No command line option.");
-            printVersionInfo();
-            printHelpMessage();
+            foregroundHandle(argc, argv);
+            backgroundHandle();
 
             LOGGER_STOP;
             return;
         }
 
-        foregroundHandle(argc, argv);
-        backgroundHandle();
+        enterConsole();
     }
     catch (const std::exception& error)
     {
@@ -545,33 +545,64 @@ void Command::setSortBit(const char* const method)
     }
 }
 
-void Command::printLogContext() const
+void Command::printConsoleOutput() const
 {
-    LOGGER_STOP;
-
-    printFile(
-        LOG_PATH, taskPlan.utilTask.logConfig.isReverse, taskPlan.utilTask.logConfig.maxLine,
-        &changeLogLevelStyle);
+    auto cmds =
+        program.get<std::vector<std::string>>("--" + utilTaskNameTable[UtilTaskType::console]);
+    if (!cmds.empty())
+    {
+        Console console = Console("> ");
+        registerOnConsole(console);
+        for (auto cmd : cmds)
+        {
+            console.runCommand(cmd);
+        }
+    }
 }
 
 void Command::printVersionInfo() const
 {
-    std::string banner;
-    banner += R"(")";
-    banner += R"( ______   ______     ______    \n)";
-    banner += R"(/\  ___\ /\  __ \   /\  __ \   \n)";
-    banner += R"(\ \  __\ \ \ \/\ \  \ \ \/\ \  \n)";
-    banner += R"( \ \_\    \ \_____\  \ \_____\ \n)";
-    banner += R"(  \/_/     \/_____/   \/_____/ \n)";
-    banner += R"(")";
-
+    executeCommand(("echo " + COMMAND_GET_ICON_BANNER).c_str());
     std::cout << "Version: " << program.programVersion << std::endl;
-    executeCommand(("tput bel; echo " + banner).c_str());
 }
 
 void Command::printHelpMessage() const
 {
     std::cout << program.help().str();
+}
+
+void Command::enterConsole() const
+{
+    Console console = Console("foo> ");
+    registerOnConsole(console);
+
+    executeCommand(("tput bel; echo " + COMMAND_GET_ICON_BANNER).c_str());
+    int returnCode;
+    do
+    {
+        returnCode = console.readLine();
+        console.setGreeting("foo> ");
+    }
+    while (Console::ReturnCode::quit != returnCode);
+}
+
+void Command::registerOnConsole(Console& console) const
+{
+    console.registerCommand(
+        "log",
+        [this](const std::vector<std::string>& /*unused*/) -> decltype(auto)
+        {
+            displayLogContext();
+            return Console::ReturnCode::success;
+        },
+        "display log");
+}
+
+void Command::displayLogContext()
+{
+    LOGGER_STOP;
+
+    printFile(LOG_PATH, true, COMMAND_PRINT_MAX_LINE, &changeLogLevelStyle);
 }
 
 void Command::throwUnexpectedMethodException(const std::string methodInfo)

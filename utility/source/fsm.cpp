@@ -1,8 +1,8 @@
 #include "fsm.hpp"
 
-void checkIfExceptedFSMState(const bool normalStatus)
+void checkIfExceptedFSMState(const bool normalState)
 {
-    if (!normalStatus)
+    if (!normalState)
     {
         throw std::runtime_error("FSM's state is abnormal.");
     }

@@ -2,7 +2,7 @@
 #include <atomic>
 #include <iostream>
 
-void checkIfExceptedFSMState(const bool normalStatus);
+void checkIfExceptedFSMState(const bool normalState);
 
 template <class Func, class... Args>
 using InvokeResult = std::invoke_result_t<Func, Args...>;

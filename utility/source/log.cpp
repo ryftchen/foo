@@ -3,19 +3,16 @@
 
 Log logger;
 
+Log::Log(const StateType initState) noexcept : FSM(initState) {}
+
 Log::Log(
     const std::string& logFile, const OutputType type, const OutputLevel level,
-    const OutputTarget target, StateType initState) noexcept :
+    const OutputTarget target, const StateType initState) noexcept :
     writeType(type),
     minLevel(level), actualTarget(target), FSM(initState)
 {
     std::strncpy(pathname, logFile.c_str(), LOG_PATHNAME_LENGTH);
     pathname[LOG_PATHNAME_LENGTH] = '\0';
-}
-
-Log::~Log()
-{
-    waitLoggerStop();
 }
 
 void Log::runLogger()
