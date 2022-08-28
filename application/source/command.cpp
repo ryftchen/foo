@@ -7,6 +7,19 @@
 
 Command::Command()
 {
+    program.addArgument("--help").nArgs(0).defaultValue(false).implicitValue(true).help(
+        "show help");
+
+    program.addArgument("--version")
+        .nArgs(0)
+        .defaultValue(false)
+        .implicitValue(true)
+        .help("show version");
+
+    program.addArgument("--console")
+        .nArgs(NArgsPattern::atLeastOne)
+        .help("run commands on console");
+
     program.addArgument("-o", "--optimum")
         .nArgs(NArgsPattern::any)
         .action(
@@ -19,9 +32,9 @@ Command::Command()
                 }
                 throwUnexpectedMethodException("optimum: " + value);
             })
-        .help("run optimum"
-              "\r\n    [ fib | gra | ann | par | gen ]"
-              "    Fibonacci | Gradient | Annealing | Particle | Genetic");
+        .help("run optimum\r\n"
+              "[ fib | gra | ann | par | gen ]    "
+              "[ Fibonacci | Gradient | Annealing | Particle | Genetic ]");
 
     program.addArgument("-i", "--integral")
         .nArgs(NArgsPattern::any)
@@ -35,9 +48,9 @@ Command::Command()
                 }
                 throwUnexpectedMethodException("integral: " + value);
             })
-        .help("run integral"
-              "\r\n    [ tra | sim | rom | gau | mon ]"
-              "    Trapezoidal | Simpson | Romberg | Gauss | MonteCarlo");
+        .help("run integral\r\n"
+              "[ tra | sim | rom | gau | mon ]    "
+              "[ Trapezoidal | Simpson | Romberg | Gauss | MonteCarlo ]");
 
     program.addArgument("-s", "--sort")
         .nArgs(NArgsPattern::any)
@@ -52,24 +65,11 @@ Command::Command()
                 }
                 throwUnexpectedMethodException("sort: " + value);
             })
-        .help("run sort"
-              "\r\n    [ bub | sel | ins | she | mer ]"
-              "    Bubble | Selection | Insertion | Shell | Merge"
-              "\r\n    [ qui | hea | cou | buc | rad ]"
-              "    Quick | Heap | Counting | Bucket | Radix");
-
-    program.addArgument("--console")
-        .nArgs(NArgsPattern::atLeastOne)
-        .help("run commands on console");
-
-    program.addArgument("--version")
-        .nArgs(0)
-        .defaultValue(false)
-        .implicitValue(true)
-        .help("show version");
-
-    program.addArgument("--help").nArgs(0).defaultValue(false).implicitValue(true).help(
-        "show help");
+        .help("run sort\r\n"
+              "[ bub | sel | ins | she | mer ]    "
+              "[ Bubble | Selection | Insertion | Shell | Merge ]\r\n"
+              "[ qui | hea | cou | buc | rad ]    "
+              "[ Quick | Heap | Counting | Bucket | Radix ]");
 }
 
 void Command::runCommander(const int argc, const char* const argv[])
@@ -123,7 +123,7 @@ void Command::precheckAlgorithmTask()
                 program.get<std::vector<std::string>>("--" + algTaskNameTable[AlgTaskType(i)]);
             if (!methods.empty() && !checkTask())
             {
-                for (auto method : methods)
+                for (const auto& method : methods)
                 {
                     (this->*setAlgTaskBitFunctor[AlgTaskType(i)])(method.c_str());
                 }
@@ -553,7 +553,7 @@ void Command::printConsoleOutput() const
     {
         Console console = Console("> ");
         registerOnConsole(console);
-        for (auto cmd : cmds)
+        for (const auto& cmd : cmds)
         {
             console.runCommand(cmd);
         }

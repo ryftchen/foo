@@ -170,10 +170,10 @@ auto ArgumentRegister::lookAhead(std::string_view str) -> int
 
 bool ArgumentRegister::checkIfOptional(std::string_view name)
 {
-    return !checkIfPositional(name);
+    return !checkIfRequired(name);
 }
 
-bool ArgumentRegister::checkIfPositional(std::string_view name)
+bool ArgumentRegister::checkIfRequired(std::string_view name)
 {
     switch (lookAhead(name))
     {
@@ -200,9 +200,9 @@ Argument::Argument(std::string programName, std::string programVersion) :
 
 Argument::Argument(const Argument& arg) :
     programName(arg.programName), programVersion(arg.programVersion), isParsed(arg.isParsed),
-    positionalArguments(arg.positionalArguments), optionalArguments(arg.optionalArguments)
+    requiredArguments(arg.requiredArguments), optionalArguments(arg.optionalArguments)
 {
-    for (auto iterator = std::begin(positionalArguments); std::end(positionalArguments) != iterator;
+    for (auto iterator = std::begin(requiredArguments); std::end(requiredArguments) != iterator;
          ++iterator)
     {
         indexArgument(iterator);
@@ -273,21 +273,21 @@ ArgumentRegister& Argument::operator[](std::string_view argName) const
 auto operator<<(std::ostream& stream, const Argument& parser) -> std::ostream&
 {
     stream.setf(std::ios_base::left);
-    stream << "Usage: " << parser.programName << " [options] ";
+    stream << "Usage: " << parser.programName << " [Options...]";
     std::size_t longestArgLength = parser.getLengthOfLongestArgument();
 
-    for (const auto& argument : parser.positionalArguments)
+    for (const auto& argument : parser.requiredArguments)
     {
         stream << argument.names.front() << " ";
     }
     stream << "\n\n";
 
-    if (!parser.positionalArguments.empty())
+    if (!parser.requiredArguments.empty())
     {
-        stream << "Positional arguments:\n";
+        stream << "Required:\n";
     }
 
-    for (const auto& argument : parser.positionalArguments)
+    for (const auto& argument : parser.requiredArguments)
     {
         stream.width(longestArgLength);
         stream << argument;
@@ -295,7 +295,7 @@ auto operator<<(std::ostream& stream, const Argument& parser) -> std::ostream&
 
     if (!parser.optionalArguments.empty())
     {
-        stream << (parser.positionalArguments.empty() ? "" : "\n") << "Optional arguments:\n";
+        stream << (parser.requiredArguments.empty() ? "" : "\n") << "Optional:\n";
     }
 
     for (const auto& argument : parser.optionalArguments)
@@ -321,17 +321,17 @@ void Argument::parseArgsInternal(const std::vector<std::string>& arguments)
         programName = arguments.front();
     }
     auto end = std::end(arguments);
-    auto iterPositionalArgument = std::begin(positionalArguments);
+    auto iterRequiredArgument = std::begin(requiredArguments);
     for (auto iterator = std::next(std::begin(arguments)); end != iterator;)
     {
         const auto& currentArgument = *iterator;
-        if (ArgumentRegister::checkIfPositional(currentArgument))
+        if (ArgumentRegister::checkIfRequired(currentArgument))
         {
-            if (std::end(positionalArguments) == iterPositionalArgument)
+            if (std::end(requiredArguments) == iterRequiredArgument)
             {
-                throw std::runtime_error("Maximum number of positional arguments exceeded.");
+                throw std::runtime_error("Maximum number of required arguments exceeded.");
             }
-            auto argument = iterPositionalArgument++;
+            auto argument = iterRequiredArgument++;
             iterator = argument->consume(iterator, end);
             continue;
         }

@@ -23,12 +23,13 @@ Console::Console(std::string const& greeting) : impl(std::make_unique<Impl>(gree
                 maxLength = std::max(maxLength, command.length());
             }
 
-            std::cout << "Console Command:" << std::endl;
-            for ([[maybe_unused]] const auto& [command, help] : commandsHelp)
+            std::cout << "Console command:" << std::endl;
+            for (auto iterReverse = commandsHelp.rbegin(); commandsHelp.rend() != iterReverse;
+                 ++iterReverse)
             {
                 std::cout << std::setiosflags(std::ios_base::left) << std::setw(maxLength)
-                          << command << "    " << help << std::resetiosflags(std::ios_base::left)
-                          << std::endl;
+                          << iterReverse->first << "    " << iterReverse->second
+                          << std::resetiosflags(std::ios_base::left) << std::endl;
             }
             return ReturnCode::success;
         },
@@ -69,7 +70,7 @@ void Console::registerCommand(
 std::vector<std::pair<std::string, std::string>> Console::getHelpOfRegisteredCommands() const
 {
     std::vector<std::pair<std::string, std::string>> allCommandsHelp;
-    for (auto& pair : impl->RegCmds)
+    for (const auto& pair : impl->RegCmds)
     {
         allCommandsHelp.emplace_back(std::make_pair(pair.first, std::get<1>(pair.second)));
     }

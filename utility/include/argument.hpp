@@ -217,7 +217,7 @@ private:
     void throwRequiredArgNoValueProvidedException() const;
     static auto lookAhead(std::string_view str) -> int;
     static bool checkIfOptional(std::string_view name);
-    static bool checkIfPositional(std::string_view name);
+    static bool checkIfRequired(std::string_view name);
     template <typename T>
     T get() const;
     template <typename T>
@@ -469,7 +469,7 @@ private:
     using ListIterator = std::list<ArgumentRegister>::iterator;
 
     bool isParsed{false};
-    std::list<ArgumentRegister> positionalArguments;
+    std::list<ArgumentRegister> requiredArguments;
     std::list<ArgumentRegister> optionalArguments;
     std::map<std::string_view, ListIterator, std::less<>> argumentMap;
 
@@ -486,7 +486,7 @@ ArgumentRegister& Argument::addArgument(Args... fewArgs)
 
     if (!argument->isOptional)
     {
-        positionalArguments.splice(std::cend(positionalArguments), optionalArguments, argument);
+        requiredArguments.splice(std::cend(requiredArguments), optionalArguments, argument);
     }
 
     indexArgument(argument);
@@ -498,9 +498,9 @@ Argument& Argument::addParents(const Args&... fewArgs)
 {
     for (const Argument& parentParser : {std::ref(fewArgs)...})
     {
-        for (const auto& argument : parentParser.positionalArguments)
+        for (const auto& argument : parentParser.requiredArguments)
         {
-            auto iterator = positionalArguments.insert(std::cend(positionalArguments), argument);
+            auto iterator = requiredArguments.insert(std::cend(requiredArguments), argument);
             indexArgument(iterator);
         }
         for (const auto& argument : parentParser.optionalArguments)

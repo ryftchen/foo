@@ -11,8 +11,8 @@ BIN_CMD = "foo"
 BIN_DIR = "./build/bin/"
 LIB_LIST = ["libutility.so", "libalgorithm.so"]
 LIB_DIR = "./build/lib/"
-OPTION_UTIL_TYPE = ["--console", "--version", "--help"]
-CONSOLE_COMMAND = ["log", "run ./script/batch.txt", "quit", "help"]
+OPTION_UTIL_TYPE = ["--help", "--version", "--console"]
+CONSOLE_COMMAND = ["help", "quit", "run ./script/batch.txt", "log"]
 OPTION_ALG_TYPE = ["--optimum", "--integral", "--sort"]
 OPTIMUM_METHOD = ["fib", "gra", "ann", "par", "gen"]
 INTEGRAL_METHOD = ["tra", "sim", "rom", "gau", "mon"]
@@ -20,9 +20,8 @@ SORT_METHOD = ["bub", "sel", "ins", "she", "mer", "qui", "hea", "cou", "buc", "r
 PASS_STEP = 0
 COMPLETE_STEP = 0
 WHOLE_STEP = (
-    1
-    + len(OPTION_UTIL_TYPE)
-    + len(CONSOLE_COMMAND)
+    +len(OPTION_UTIL_TYPE)
+    + (len(CONSOLE_COMMAND) + 1)
     + len(OPTION_ALG_TYPE)
     + (len(OPTIMUM_METHOD) + 1)
     + (len(INTEGRAL_METHOD) + 1)
@@ -249,14 +248,14 @@ def analyzeTestLog():
 
 
 def testUtilTypeOption():
-    runTestTask(BIN_CMD, CONSOLE_COMMAND[2])
     for each in OPTION_UTIL_TYPE:
         runTestTask(f"{BIN_CMD} {each}")
 
 
 def testConsoleCommand():
+    runTestTask(BIN_CMD, CONSOLE_COMMAND[2])
     for each in CONSOLE_COMMAND:
-        runTestTask(f"{BIN_CMD} {OPTION_UTIL_TYPE[0]} \"{each}\"")
+        runTestTask(f"{BIN_CMD} {OPTION_UTIL_TYPE[2]} \"{each}\"")
 
 
 def testAlgTypeOption():

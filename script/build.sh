@@ -38,21 +38,15 @@ printAbort()
 
 printInstruction()
 {
-    echo "Usage    : build.sh [Options...]"
+    echo "Usage: build.sh [Options...]"
     echo
-    echo "[Options]:"
-    echo
-    echo "    -f, --format                       format code"
-    echo
-    echo "    -l, --lint                         lint code"
-    echo
-    echo "    --cleanup                          cleanup project"
-    echo
-    echo "    --report                           report to html"
-    echo
-    echo "    --release                          release version"
-    echo
-    echo "    --help                             show help"
+    echo "Optional:"
+    echo "--help          show help"
+    echo "--release       release version"
+    echo "-f, --format    format code"
+    echo "-l, --lint      lint code"
+    echo "--cleanup       cleanup project"
+    echo "--report        report to html"
     exit 0
 }
 
@@ -60,12 +54,12 @@ parseArgs()
 {
     while [ "$#" -gt 0 ]; do
         case $1 in
+        --help) printInstruction ;;
+        --release) ARGS_RELEASE=true ;;
         -f | --format) ARGS_FORMAT=true ;;
         -l | --lint) ARGS_LINT=true ;;
         --cleanup) performCleanupOption ;;
         --report) ARGS_REPORT=true ;;
-        --release) ARGS_RELEASE=true ;;
-        --help) printInstruction ;;
         *) printAbort "Unknown command line option: $1. Try with --help to get information." ;;
         esac
         shift
