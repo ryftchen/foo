@@ -1,7 +1,10 @@
 #pragma once
+
 #include <atomic>
 #include <iostream>
 
+namespace util_fsm
+{
 void checkIfExceptedFSMState(const bool normalState);
 
 template <class Func, class... Args>
@@ -331,3 +334,4 @@ FSM<Derived, State>::ProcessingLock::~ProcessingLock()
 {
     isProcessing = false;
 }
+} // namespace util_fsm

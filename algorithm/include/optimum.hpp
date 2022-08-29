@@ -1,10 +1,13 @@
 #pragma once
+
 #include <map>
 #include <random>
 #include <tuple>
 #include <vector>
 #include "expression.hpp"
 
+namespace alg_optimum
+{
 using ValueX = double;
 using ValueY = double;
 
@@ -26,56 +29,56 @@ public:
 class Fibonacci : public Optimum
 {
 public:
-    explicit Fibonacci(const Expression& express) : func(express){};
+    explicit Fibonacci(const alg_expression::Expression& express) : func(express){};
     std::optional<std::tuple<ValueY, ValueX>> operator()(
         const double left, const double right, const double eps) override;
 
 private:
-    const Expression& func;
+    const alg_expression::Expression& func;
     static void generateFibonacciNumber(std::vector<double>& fibonacci, const double max);
 };
 
 // Gradient ascent method
-namespace Learning
+namespace gra_learning
 {
 constexpr static double initialLearningRate = 0.01;
 constexpr static double decay = 0.001;
 constexpr static uint32_t loopTime = 100;
-} // namespace Learning
+} // namespace gra_learning
 class Gradient : public Optimum
 {
 public:
-    explicit Gradient(const Expression& express) : func(express){};
+    explicit Gradient(const alg_expression::Expression& express) : func(express){};
     std::optional<std::tuple<ValueY, ValueX>> operator()(
         const double left, const double right, const double eps) override;
 
 private:
-    const Expression& func;
+    const alg_expression::Expression& func;
     [[nodiscard]] double calculateFirstDerivative(const double x, const double eps) const;
 };
 
 // Simulated annealing method
 #define OPTIMUM_ANNEALING_PERTURBATION 0.5
-namespace Cooling
+namespace ann_cooling
 {
 constexpr static double initialT = 100.0;
 constexpr static double minimalT = 0.01;
 constexpr static double coolingRate = 0.9;
 constexpr static uint32_t markovChain = 100;
-} // namespace Cooling
+} // namespace ann_cooling
 class Annealing : public Optimum
 {
 public:
-    explicit Annealing(const Expression& express) : func(express){};
+    explicit Annealing(const alg_expression::Expression& express) : func(express){};
     std::optional<std::tuple<ValueY, ValueX>> operator()(
         const double left, const double right, const double eps) override;
 
 private:
-    const Expression& func;
+    const alg_expression::Expression& func;
 };
 
 // Particle swarm method
-namespace Swarm
+namespace par_swarm
 {
 constexpr static double c1 = 1.5;
 constexpr static double c2 = 1.5;
@@ -106,7 +109,7 @@ struct Greater
     bool operator()(const double left, const double right) const { return left > right; }
 };
 
-using Society = std::vector<Swarm::Individual>;
+using Society = std::vector<par_swarm::Individual>;
 using History = std::map<ValueY, ValueX, Greater>;
 struct Record
 {
@@ -120,40 +123,42 @@ struct Record
 
     Record() = default;
 };
-} // namespace Swarm
+} // namespace par_swarm
 class Particle : public Optimum
 {
 public:
-    explicit Particle(const Expression& express) : func(express), seed(std::random_device{}()){};
+    explicit Particle(const alg_expression::Expression& express) :
+        func(express), seed(std::random_device{}()){};
     std::optional<std::tuple<ValueY, ValueX>> operator()(
         const double left, const double right, const double eps) override;
 
 private:
-    const Expression& func;
+    const alg_expression::Expression& func;
     std::mt19937 seed;
-    Swarm::Record recordInit(const double left, const double right);
+    par_swarm::Record recordInit(const double left, const double right);
 };
 
 // Genetic method
 #define OPTIMUM_GENETIC_MIN_CHROMOSOME_NUMBER 3
-namespace Species
+namespace gen_species
 {
 using Chromosome = std::vector<uint32_t>;
-using Population = std::vector<Species::Chromosome>;
+using Population = std::vector<gen_species::Chromosome>;
 constexpr static double crossPr = 0.8;
 constexpr static double mutatePr = 0.05;
 constexpr static uint32_t size = 50;
 constexpr static uint32_t iterNum = 100;
-} // namespace Species
+} // namespace gen_species
 class Genetic : public Optimum
 {
 public:
-    explicit Genetic(const Expression& express) : func(express), seed(std::random_device{}()){};
+    explicit Genetic(const alg_expression::Expression& express) :
+        func(express), seed(std::random_device{}()){};
     std::optional<std::tuple<ValueY, ValueX>> operator()(
         const double left, const double right, const double eps) override;
 
 private:
-    const Expression& func;
+    const alg_expression::Expression& func;
     struct Range
     {
         double lower{0.0};
@@ -163,22 +168,22 @@ private:
     std::mt19937 seed;
     uint32_t chrNum{0};
     void updateSpecies(const double left, const double right, const double eps);
-    void geneCoding(Species::Chromosome& chr);
-    [[nodiscard]] double geneDecoding(const Species::Chromosome& chr) const;
-    Species::Population populationInit();
-    void geneCrossover(Species::Chromosome& chr1, Species::Chromosome& chr2);
-    void crossIndividual(Species::Population& pop);
-    void geneMutation(Species::Chromosome& chr);
-    void mutateIndividual(Species::Population& pop);
-    double calculateFitness(const Species::Chromosome& chr);
+    void geneCoding(gen_species::Chromosome& chr);
+    [[nodiscard]] double geneDecoding(const gen_species::Chromosome& chr) const;
+    gen_species::Population populationInit();
+    void geneCrossover(gen_species::Chromosome& chr1, gen_species::Chromosome& chr2);
+    void crossIndividual(gen_species::Population& pop);
+    void geneMutation(gen_species::Chromosome& chr);
+    void mutateIndividual(gen_species::Population& pop);
+    double calculateFitness(const gen_species::Chromosome& chr);
     std::optional<std::pair<double, double>> fitnessLinearTransformation(
-        const Species::Population& pop);
+        const gen_species::Population& pop);
     auto rouletteWheelSelection(
-        const Species::Population& pop, const std::vector<double>& fitnessCum);
+        const gen_species::Population& pop, const std::vector<double>& fitnessCum);
     void stochasticTournamentSelection(
-        Species::Population& pop, const std::vector<double>& fitnessCum);
-    void selectIndividual(Species::Population& pop);
-    Species::Chromosome getBestIndividual(const Species::Population& pop);
+        gen_species::Population& pop, const std::vector<double>& fitnessCum);
+    void selectIndividual(gen_species::Population& pop);
+    gen_species::Chromosome getBestIndividual(const gen_species::Population& pop);
     double inline random();
     uint32_t inline getRandomNumber(const uint32_t limit);
 };
@@ -194,3 +199,4 @@ uint32_t inline Genetic::getRandomNumber(const uint32_t limit)
     std::uniform_int_distribution<int> randomX(0, limit);
     return randomX(seed);
 }
+} // namespace alg_optimum

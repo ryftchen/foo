@@ -1,4 +1,5 @@
 #pragma once
+
 #include <cstring>
 #include <memory>
 #include <mutex>
@@ -6,6 +7,8 @@
 #include "file.hpp"
 #include "time.hpp"
 
+namespace alg_sort
+{
 #define SORT_ARRAY_RANGE_1 -50
 #define SORT_ARRAY_RANGE_2 150
 #define SORT_ARRAY_LENGTH 53
@@ -184,3 +187,4 @@ char* Sort<T>::formatArray(
     }
     return buffer;
 }
+} // namespace alg_sort

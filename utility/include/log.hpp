@@ -6,6 +6,8 @@
 #include "fsm.hpp"
 #include "time.hpp"
 
+namespace util_log
+{
 extern class Log logger;
 std::string& changeLogLevelStyle(std::string& line);
 
@@ -27,17 +29,17 @@ std::string& changeLogLevelStyle(std::string& line);
     (std::string(PRINT_COLOR_RED) + std::string(LOG_PREFIX_ERROR) + std::string(PRINT_COLOR_END))
 
 #define LOGGER_DBG(format, args...) \
-    logger.output(Log::OutputLevel::debug, __FILE__, __LINE__, format, ##args)
+    util_log::logger.output(util_log::Log::OutputLevel::debug, __FILE__, __LINE__, format, ##args)
 #define LOGGER_INF(format, args...) \
-    logger.output(Log::OutputLevel::info, __FILE__, __LINE__, format, ##args)
+    util_log::logger.output(util_log::Log::OutputLevel::info, __FILE__, __LINE__, format, ##args)
 #define LOGGER_WRN(format, args...) \
-    logger.output(Log::OutputLevel::warn, __FILE__, __LINE__, format, ##args)
+    util_log::logger.output(util_log::Log::OutputLevel::warn, __FILE__, __LINE__, format, ##args)
 #define LOGGER_ERR(format, args...) \
-    logger.output(Log::OutputLevel::error, __FILE__, __LINE__, format, ##args)
-#define LOGGER_START logger.waitLoggerStart();
-#define LOGGER_STOP logger.waitLoggerStop();
+    util_log::logger.output(util_log::Log::OutputLevel::error, __FILE__, __LINE__, format, ##args)
+#define LOGGER_START util_log::logger.waitLoggerStart();
+#define LOGGER_STOP util_log::logger.waitLoggerStop();
 
-class Log final : public FSM<Log>
+class Log final : public util_fsm::FSM<Log>
 {
 public:
     friend class FSM<Log>;
@@ -160,7 +162,7 @@ void Log::output(
                     break;
             }
 
-            std::string output = prefix + ":[" + getCurrentSystemTime() + "]:["
+            std::string output = prefix + ":[" + util_time::getCurrentSystemTime() + "]:["
                 + std::filesystem::path(codeFile.c_str()).filename().string() + "#"
                 + std::to_string(codeLine) + "]: ";
 #pragma GCC diagnostic push
@@ -176,3 +178,4 @@ void Log::output(
         }
     }
 }
+} // namespace util_log

@@ -1,5 +1,7 @@
 #include "thread.hpp"
 
+namespace util_thread
+{
 Thread::Thread(uint32_t count)
 {
     for (uint32_t i = 0; i < count; ++i)
@@ -62,3 +64,4 @@ Thread::~Thread()
         thread.join();
     }
 }
+} // namespace util_thread

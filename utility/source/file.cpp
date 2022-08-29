@@ -3,6 +3,8 @@
 #include <iterator>
 #include <list>
 
+namespace util_file
+{
 void executeCommand(const char* const cmd)
 {
     try
@@ -124,3 +126,4 @@ void throwOperateFileException(const std::string& name, const bool isToOpen)
     std::string operate = isToOpen ? "open" : "close";
     throw std::runtime_error("Failed to " + operate + " file: " + name);
 }
+} // namespace util_file

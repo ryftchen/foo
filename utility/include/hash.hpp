@@ -1,8 +1,12 @@
 #pragma once
+
 #include <iostream>
 
+namespace util_hash
+{
 #define HASH_BKDR_SEED 131
 #define HASH_BKDR_SIZE 0x7FFFFFFF
+#define HASH_BKDR(str) util_hash::operator""_bkdrHash(str, std::size_t(0))
 
 uint32_t bkdrHash(const char* str);
 
@@ -15,3 +19,4 @@ constexpr uint64_t operator""_bkdrHash(const char* const str, const std::size_t 
 {
     return bkdrHashInCompile(str);
 }
+} // namespace util_hash

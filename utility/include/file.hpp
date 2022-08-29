@@ -1,4 +1,5 @@
 #pragma once
+
 #include <ext/stdio_filebuf.h>
 #include <sys/file.h>
 // #define NDEBUG
@@ -6,6 +7,8 @@
 #include <filesystem>
 #include <iostream>
 
+namespace util_file
+{
 #define FORMAT_TO_STRING(format, args...)                                     \
     (                                                                         \
         {                                                                     \
@@ -50,3 +53,4 @@ void tryToOperateFileLock(
             std::filesystem::path(pathname).filename().string(), isToLock, isReader);
     }
 }
+} // namespace util_file

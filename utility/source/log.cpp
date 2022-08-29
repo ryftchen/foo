@@ -1,6 +1,8 @@
 #include "log.hpp"
 #include <regex>
 
+namespace util_log
+{
 Log logger;
 
 Log::Log(const StateType initState) noexcept : FSM(initState) {}
@@ -26,13 +28,13 @@ void Log::runLogger()
 
     try
     {
-        checkIfExceptedFSMState(targetState(State::init));
+        util_fsm::checkIfExceptedFSMState(targetState(State::init));
         processEvent(OpenFile());
 
-        checkIfExceptedFSMState(targetState(State::idle));
+        util_fsm::checkIfExceptedFSMState(targetState(State::idle));
         processEvent(GoLogging());
 
-        checkIfExceptedFSMState(targetState(State::work));
+        util_fsm::checkIfExceptedFSMState(targetState(State::work));
         while (isLogging)
         {
             if (std::unique_lock<std::mutex> lock(logQueueMutex); true)
@@ -68,10 +70,10 @@ void Log::runLogger()
 
         processEvent(CloseFile());
 
-        checkIfExceptedFSMState(targetState(State::idle));
+        util_fsm::checkIfExceptedFSMState(targetState(State::idle));
         processEvent(NoLogging());
 
-        checkIfExceptedFSMState(targetState(State::done));
+        util_fsm::checkIfExceptedFSMState(targetState(State::done));
     }
     catch (const std::exception& error)
     {
@@ -131,9 +133,10 @@ void Log::openLogFile()
 
     if (!ofs)
     {
-        throwOperateFileException(std::filesystem::path(pathname).filename().string(), true);
+        util_file::throwOperateFileException(
+            std::filesystem::path(pathname).filename().string(), true);
     }
-    tryToOperateFileLock(ofs, pathname, true, false);
+    util_file::tryToOperateFileLock(ofs, pathname, true, false);
 };
 
 void Log::startLogging()
@@ -146,7 +149,7 @@ void Log::startLogging()
 
 void Log::closeLogFile()
 {
-    tryToOperateFileLock(ofs, pathname, false, false);
+    util_file::tryToOperateFileLock(ofs, pathname, false, false);
     if (ofs.is_open())
     {
         ofs.close();
@@ -215,3 +218,4 @@ std::ostream& operator<<(std::ostream& os, const Log::State& state)
 
     return os;
 }
+} // namespace util_log
