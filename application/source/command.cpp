@@ -17,11 +17,11 @@ Command::Command()
         .help("show version");
 
     program.addArgument("--console")
-        .nArgs(NArgsPattern::atLeastOne)
+        .nArgs(util_argument::NArgsPattern::atLeastOne)
         .help("run commands on console");
 
     program.addArgument("-o", "--optimum")
-        .nArgs(NArgsPattern::any)
+        .nArgs(util_argument::NArgsPattern::any)
         .action(
             [this](const std::string& value)
             {
@@ -37,7 +37,7 @@ Command::Command()
               "[ Fibonacci | Gradient | Annealing | Particle | Genetic ]");
 
     program.addArgument("-i", "--integral")
-        .nArgs(NArgsPattern::any)
+        .nArgs(util_argument::NArgsPattern::any)
         .action(
             [this](const std::string& value)
             {
@@ -53,7 +53,7 @@ Command::Command()
               "[ Trapezoidal | Simpson | Romberg | Gauss | MonteCarlo ]");
 
     program.addArgument("-s", "--sort")
-        .nArgs(NArgsPattern::any)
+        .nArgs(util_argument::NArgsPattern::any)
         .action(
             [this](const std::string& value)
             {
@@ -184,15 +184,15 @@ void Command::runOptimum() const
     {
         if (taskPlan.algTask.optimumBit.any())
         {
-            const auto printFunctor = [](const TargetExpression& expression)
+            const auto printFunctor = [](const alg_expression::TargetExpression& expression)
             {
                 std::visit(
-                    ExpressionOverloaded{
-                        [](const Function1& /*unused*/)
+                    alg_expression::ExpressionOverloaded{
+                        [](const alg_expression::Function1& /*unused*/)
                         {
                             std::cout << EXPRESSION_FUN_1_OPTIMUM << std::endl;
                         },
-                        [](const Function2& /*unused*/)
+                        [](const alg_expression::Function2& /*unused*/)
                         {
                             std::cout << EXPRESSION_FUN_2_OPTIMUM << std::endl;
                         },
@@ -200,7 +200,9 @@ void Command::runOptimum() const
                     expression);
             };
             const auto resultFunctor =
-                [this](const Expression& expression, const ExpressionRange<double, double>& range)
+                [this](
+                    const alg_expression::Expression& expression,
+                    const alg_expression::ExpressionRange<double, double>& range)
             {
                 getOptimumResult(expression, range.range1, range.range2, OPTIMUM_EPSILON);
             };
@@ -230,18 +232,19 @@ void Command::runOptimum() const
 }
 
 void Command::getOptimumResult(
-    const Expression& express, const double leftEndpoint, const double rightEndpoint,
-    const double epsilon) const
+    const alg_expression::Expression& express, const double leftEndpoint,
+    const double rightEndpoint, const double epsilon) const
 {
     assert((leftEndpoint < rightEndpoint) && (epsilon > 0.0));
-    Thread threadPool(std::min(
+    util_thread::Thread threadPool(std::min(
         static_cast<uint32_t>(taskPlan.algTask.optimumBit.count()),
         static_cast<uint32_t>(OptimumMethod::optimumBottom)));
     const auto optimumFunctor =
-        [&](const std::string& threadName, const std::shared_ptr<Optimum>& classPtr)
+        [&](const std::string& threadName, const std::shared_ptr<alg_optimum::Optimum>& classPtr)
     {
         threadPool.enqueue(
-            threadName, &Optimum::operator(), classPtr, leftEndpoint, rightEndpoint, epsilon);
+            threadName, &alg_optimum::Optimum::operator(), classPtr, leftEndpoint, rightEndpoint,
+            epsilon);
     };
 
     for (int i = 0; i < OptimumMethod::optimumBottom; ++i)
@@ -251,22 +254,23 @@ void Command::getOptimumResult(
             const std::string threadName =
                 std::string{1, algTaskNameTable[AlgTaskType::optimum].at(0)} + "_"
                 + algTaskMethodTable[AlgTaskType::optimum][OptimumMethod(i)];
-            switch (bkdrHash(algTaskMethodTable[AlgTaskType::optimum][OptimumMethod(i)].c_str()))
+            switch (util_hash::bkdrHash(
+                algTaskMethodTable[AlgTaskType::optimum][OptimumMethod(i)].c_str()))
             {
-                case "fib"_bkdrHash:
-                    optimumFunctor(threadName, std::make_shared<Fibonacci>(express));
+                case HASH_BKDR("fib"):
+                    optimumFunctor(threadName, std::make_shared<alg_optimum::Fibonacci>(express));
                     break;
-                case "gra"_bkdrHash:
-                    optimumFunctor(threadName, std::make_shared<Gradient>(express));
+                case HASH_BKDR("gra"):
+                    optimumFunctor(threadName, std::make_shared<alg_optimum::Gradient>(express));
                     break;
-                case "ann"_bkdrHash:
-                    optimumFunctor(threadName, std::make_shared<Annealing>(express));
+                case HASH_BKDR("ann"):
+                    optimumFunctor(threadName, std::make_shared<alg_optimum::Annealing>(express));
                     break;
-                case "par"_bkdrHash:
-                    optimumFunctor(threadName, std::make_shared<Particle>(express));
+                case HASH_BKDR("par"):
+                    optimumFunctor(threadName, std::make_shared<alg_optimum::Particle>(express));
                     break;
-                case "gen"_bkdrHash:;
-                    optimumFunctor(threadName, std::make_shared<Genetic>(express));
+                case HASH_BKDR("gen"):;
+                    optimumFunctor(threadName, std::make_shared<alg_optimum::Genetic>(express));
                     break;
                 default:
                     break;
@@ -277,21 +281,21 @@ void Command::getOptimumResult(
 
 void Command::setOptimumBit(const char* const method)
 {
-    switch (bkdrHash(method))
+    switch (util_hash::bkdrHash(method))
     {
-        case "fib"_bkdrHash:
+        case HASH_BKDR("fib"):
             taskPlan.algTask.optimumBit.set(OptimumMethod::fibonacci);
             break;
-        case "gra"_bkdrHash:
+        case HASH_BKDR("gra"):
             taskPlan.algTask.optimumBit.set(OptimumMethod::gradient);
             break;
-        case "ann"_bkdrHash:
+        case HASH_BKDR("ann"):
             taskPlan.algTask.optimumBit.set(OptimumMethod::annealing);
             break;
-        case "par"_bkdrHash:
+        case HASH_BKDR("par"):
             taskPlan.algTask.optimumBit.set(OptimumMethod::particle);
             break;
-        case "gen"_bkdrHash:
+        case HASH_BKDR("gen"):
             taskPlan.algTask.optimumBit.set(OptimumMethod::genetic);
             break;
         default:
@@ -307,15 +311,15 @@ void Command::runIntegral() const
     {
         if (taskPlan.algTask.integralBit.any())
         {
-            const auto printFunctor = [](const TargetExpression& expression)
+            const auto printFunctor = [](const alg_expression::TargetExpression& expression)
             {
                 std::visit(
-                    ExpressionOverloaded{
-                        [](const Function1& /*unused*/)
+                    alg_expression::ExpressionOverloaded{
+                        [](const alg_expression::Function1& /*unused*/)
                         {
                             std::cout << EXPRESSION_FUN_1_INTEGRAL << std::endl;
                         },
-                        [](const Function2& /*unused*/)
+                        [](const alg_expression::Function2& /*unused*/)
                         {
                             std::cout << EXPRESSION_FUN_2_INTEGRAL << std::endl;
                         },
@@ -323,7 +327,9 @@ void Command::runIntegral() const
                     expression);
             };
             const auto resultFunctor =
-                [this](const Expression& expression, const ExpressionRange<double, double>& range)
+                [this](
+                    const alg_expression::Expression& expression,
+                    const alg_expression::ExpressionRange<double, double>& range)
             {
                 getIntegralResult(expression, range.range1, range.range2, INTEGRAL_EPSILON);
             };
@@ -353,18 +359,19 @@ void Command::runIntegral() const
 }
 
 void Command::getIntegralResult(
-    const Expression& express, const double lowerLimit, const double upperLimit,
+    const alg_expression::Expression& express, const double lowerLimit, const double upperLimit,
     const double epsilon) const
 {
     assert(epsilon > 0.0);
-    Thread threadPool(std::min(
+    util_thread::Thread threadPool(std::min(
         static_cast<uint32_t>(taskPlan.algTask.integralBit.count()),
         static_cast<uint32_t>(IntegralMethod::integralBottom)));
     const auto integralFunctor =
-        [&](const std::string& threadName, const std::shared_ptr<Integral>& classPtr)
+        [&](const std::string& threadName, const std::shared_ptr<alg_integral::Integral>& classPtr)
     {
         threadPool.enqueue(
-            threadName, &Integral::operator(), classPtr, lowerLimit, upperLimit, epsilon);
+            threadName, &alg_integral::Integral::operator(), classPtr, lowerLimit, upperLimit,
+            epsilon);
     };
 
     for (int i = 0; i < IntegralMethod::integralBottom; ++i)
@@ -374,22 +381,25 @@ void Command::getIntegralResult(
             const std::string threadName =
                 std::string{1, algTaskNameTable[AlgTaskType::integral].at(0)} + "_"
                 + algTaskMethodTable[AlgTaskType::integral][IntegralMethod(i)];
-            switch (bkdrHash(algTaskMethodTable[AlgTaskType::integral][IntegralMethod(i)].c_str()))
+            switch (util_hash::bkdrHash(
+                algTaskMethodTable[AlgTaskType::integral][IntegralMethod(i)].c_str()))
             {
-                case "tra"_bkdrHash:
-                    integralFunctor(threadName, std::make_shared<Trapezoidal>(express));
+                case HASH_BKDR("tra"):
+                    integralFunctor(
+                        threadName, std::make_shared<alg_integral::Trapezoidal>(express));
                     break;
-                case "sim"_bkdrHash:
-                    integralFunctor(threadName, std::make_shared<Simpson>(express));
+                case HASH_BKDR("sim"):
+                    integralFunctor(threadName, std::make_shared<alg_integral::Simpson>(express));
                     break;
-                case "rom"_bkdrHash:
-                    integralFunctor(threadName, std::make_shared<Romberg>(express));
+                case HASH_BKDR("rom"):
+                    integralFunctor(threadName, std::make_shared<alg_integral::Romberg>(express));
                     break;
-                case "gau"_bkdrHash:
-                    integralFunctor(threadName, std::make_shared<Gauss>(express));
+                case HASH_BKDR("gau"):
+                    integralFunctor(threadName, std::make_shared<alg_integral::Gauss>(express));
                     break;
-                case "mon"_bkdrHash:
-                    integralFunctor(threadName, std::make_shared<MonteCarlo>(express));
+                case HASH_BKDR("mon"):
+                    integralFunctor(
+                        threadName, std::make_shared<alg_integral::MonteCarlo>(express));
                     break;
                 default:
                     break;
@@ -400,21 +410,21 @@ void Command::getIntegralResult(
 
 void Command::setIntegralBit(const char* const method)
 {
-    switch (bkdrHash(method))
+    switch (util_hash::bkdrHash(method))
     {
-        case "tra"_bkdrHash:
+        case HASH_BKDR("tra"):
             taskPlan.algTask.integralBit.set(IntegralMethod::trapezoidal);
             break;
-        case "sim"_bkdrHash:
+        case HASH_BKDR("sim"):
             taskPlan.algTask.integralBit.set(IntegralMethod::simpson);
             break;
-        case "rom"_bkdrHash:
+        case HASH_BKDR("rom"):
             taskPlan.algTask.integralBit.set(IntegralMethod::romberg);
             break;
-        case "gau"_bkdrHash:
+        case HASH_BKDR("gau"):
             taskPlan.algTask.integralBit.set(IntegralMethod::gauss);
             break;
-        case "mon"_bkdrHash:
+        case HASH_BKDR("mon"):
             taskPlan.algTask.integralBit.set(IntegralMethod::monteCarlo);
             break;
         default:
@@ -436,8 +446,8 @@ void Command::runSort() const
             static_assert((leftEndpoint < rightEndpoint) && (length > 0));
 
             COMMAND_PRINT_ALG_TASK_TITLE(AlgTaskType::sort, "BEGIN");
-            const std::shared_ptr<Sort<int>> sort =
-                std::make_shared<Sort<int>>(length, leftEndpoint, rightEndpoint);
+            const std::shared_ptr<alg_sort::Sort<int>> sort =
+                std::make_shared<alg_sort::Sort<int>>(length, leftEndpoint, rightEndpoint);
             getSortResult(sort);
             COMMAND_PRINT_ALG_TASK_TITLE(AlgTaskType::sort, "END");
         }
@@ -449,13 +459,14 @@ void Command::runSort() const
 }
 
 template <typename T>
-void Command::getSortResult(const std::shared_ptr<Sort<T>>& sort) const
+void Command::getSortResult(const std::shared_ptr<alg_sort::Sort<T>>& sort) const
 {
-    Thread threadPool(std::min(
+    util_thread::Thread threadPool(std::min(
         static_cast<uint32_t>(taskPlan.algTask.sortBit.count()),
         static_cast<uint32_t>(SortMethod::sortBottom)));
     const auto sortFunctor = [&](const std::string& threadName,
-                                 void (Sort<T>::*methodPtr)(T* const, const uint32_t) const)
+                                 void (alg_sort::Sort<T>::*methodPtr)(T* const, const uint32_t)
+                                     const)
     {
         threadPool.enqueue(
             threadName, methodPtr, sort, sort->getRandomArray().get(), sort->getLength());
@@ -467,37 +478,38 @@ void Command::getSortResult(const std::shared_ptr<Sort<T>>& sort) const
         {
             const std::string threadName = std::string{1, algTaskNameTable[AlgTaskType::sort].at(0)}
                 + "_" + algTaskMethodTable[AlgTaskType::sort][SortMethod(i)];
-            switch (bkdrHash(algTaskMethodTable[AlgTaskType::sort][SortMethod(i)].c_str()))
+            switch (
+                util_hash::bkdrHash(algTaskMethodTable[AlgTaskType::sort][SortMethod(i)].c_str()))
             {
-                case "bub"_bkdrHash:
-                    sortFunctor(threadName, &Sort<T>::bubbleSort);
+                case HASH_BKDR("bub"):
+                    sortFunctor(threadName, &alg_sort::Sort<T>::bubbleSort);
                     break;
-                case "sec"_bkdrHash:
-                    sortFunctor(threadName, &Sort<T>::selectionSort);
+                case HASH_BKDR("sec"):
+                    sortFunctor(threadName, &alg_sort::Sort<T>::selectionSort);
                     break;
-                case "ins"_bkdrHash:
-                    sortFunctor(threadName, &Sort<T>::insertionSort);
+                case HASH_BKDR("ins"):
+                    sortFunctor(threadName, &alg_sort::Sort<T>::insertionSort);
                     break;
-                case "she"_bkdrHash:
-                    sortFunctor(threadName, &Sort<T>::shellSort);
+                case HASH_BKDR("she"):
+                    sortFunctor(threadName, &alg_sort::Sort<T>::shellSort);
                     break;
-                case "mer"_bkdrHash:
-                    sortFunctor(threadName, &Sort<T>::mergeSort);
+                case HASH_BKDR("mer"):
+                    sortFunctor(threadName, &alg_sort::Sort<T>::mergeSort);
                     break;
-                case "qui"_bkdrHash:
-                    sortFunctor(threadName, &Sort<T>::quickSort);
+                case HASH_BKDR("qui"):
+                    sortFunctor(threadName, &alg_sort::Sort<T>::quickSort);
                     break;
-                case "hea"_bkdrHash:
-                    sortFunctor(threadName, &Sort<T>::heapSort);
+                case HASH_BKDR("hea"):
+                    sortFunctor(threadName, &alg_sort::Sort<T>::heapSort);
                     break;
-                case "cou"_bkdrHash:
-                    sortFunctor(threadName, &Sort<T>::countingSort);
+                case HASH_BKDR("cou"):
+                    sortFunctor(threadName, &alg_sort::Sort<T>::countingSort);
                     break;
-                case "buc"_bkdrHash:
-                    sortFunctor(threadName, &Sort<T>::bucketSort);
+                case HASH_BKDR("buc"):
+                    sortFunctor(threadName, &alg_sort::Sort<T>::bucketSort);
                     break;
-                case "rad"_bkdrHash:
-                    sortFunctor(threadName, &Sort<T>::radixSort);
+                case HASH_BKDR("rad"):
+                    sortFunctor(threadName, &alg_sort::Sort<T>::radixSort);
                     break;
                 default:
                     break;
@@ -508,36 +520,36 @@ void Command::getSortResult(const std::shared_ptr<Sort<T>>& sort) const
 
 void Command::setSortBit(const char* const method)
 {
-    switch (bkdrHash(method))
+    switch (util_hash::bkdrHash(method))
     {
-        case "bub"_bkdrHash:
+        case HASH_BKDR("bub"):
             taskPlan.algTask.sortBit.set(SortMethod::bubble);
             break;
-        case "sel"_bkdrHash:
+        case HASH_BKDR("sel"):
             taskPlan.algTask.sortBit.set(SortMethod::selection);
             break;
-        case "ins"_bkdrHash:
+        case HASH_BKDR("ins"):
             taskPlan.algTask.sortBit.set(SortMethod::insertion);
             break;
-        case "she"_bkdrHash:
+        case HASH_BKDR("she"):
             taskPlan.algTask.sortBit.set(SortMethod::shell);
             break;
-        case "mer"_bkdrHash:
+        case HASH_BKDR("mer"):
             taskPlan.algTask.sortBit.set(SortMethod::merge);
             break;
-        case "qui"_bkdrHash:
+        case HASH_BKDR("qui"):
             taskPlan.algTask.sortBit.set(SortMethod::quick);
             break;
-        case "hea"_bkdrHash:
+        case HASH_BKDR("hea"):
             taskPlan.algTask.sortBit.set(SortMethod::heap);
             break;
-        case "cou"_bkdrHash:
+        case HASH_BKDR("cou"):
             taskPlan.algTask.sortBit.set(SortMethod::counting);
             break;
-        case "buc"_bkdrHash:
+        case HASH_BKDR("buc"):
             taskPlan.algTask.sortBit.set(SortMethod::bucket);
             break;
-        case "rad"_bkdrHash:
+        case HASH_BKDR("rad"):
             taskPlan.algTask.sortBit.set(SortMethod::radix);
             break;
         default:
@@ -551,7 +563,7 @@ void Command::printConsoleOutput() const
         program.get<std::vector<std::string>>("--" + utilTaskNameTable[UtilTaskType::console]);
     if (!cmds.empty())
     {
-        Console console = Console("> ");
+        util_console::Console console("> ");
         registerOnConsole(console);
         for (const auto& cmd : cmds)
         {
@@ -562,7 +574,7 @@ void Command::printConsoleOutput() const
 
 void Command::printVersionInfo() const
 {
-    executeCommand(("echo " + COMMAND_GET_ICON_BANNER).c_str());
+    util_file::executeCommand(("echo " + COMMAND_GET_ICON_BANNER).c_str());
     std::cout << "Version: " << program.programVersion << std::endl;
 }
 
@@ -573,27 +585,27 @@ void Command::printHelpMessage() const
 
 void Command::enterConsole() const
 {
-    Console console = Console("foo> ");
+    util_console::Console console("foo> ");
     registerOnConsole(console);
 
-    executeCommand(("tput bel; echo " + COMMAND_GET_ICON_BANNER).c_str());
+    util_file::executeCommand(("tput bel; echo " + COMMAND_GET_ICON_BANNER).c_str());
     int returnCode;
     do
     {
         returnCode = console.readLine();
         console.setGreeting("foo> ");
     }
-    while (Console::ReturnCode::quit != returnCode);
+    while (util_console::Console::ReturnCode::quit != returnCode);
 }
 
-void Command::registerOnConsole(Console& console) const
+void Command::registerOnConsole(util_console::Console& console) const
 {
     console.registerCommand(
         "log",
         [this](const std::vector<std::string>& /*unused*/) -> decltype(auto)
         {
             displayLogContext();
-            return Console::ReturnCode::success;
+            return util_console::Console::ReturnCode::success;
         },
         "display log");
 }
@@ -602,7 +614,7 @@ void Command::displayLogContext()
 {
     LOGGER_STOP;
 
-    printFile(LOG_PATH, true, COMMAND_PRINT_MAX_LINE, &changeLogLevelStyle);
+    util_file::printFile(LOG_PATH, true, COMMAND_PRINT_MAX_LINE, &util_log::changeLogLevelStyle);
 }
 
 void Command::throwUnexpectedMethodException(const std::string methodInfo)

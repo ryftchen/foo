@@ -1,6 +1,8 @@
 #include "argument.hpp"
 #include <numeric>
 
+namespace util_argument
+{
 ArgumentRegister& ArgumentRegister::help(std::string str)
 {
     helpStr = std::move(str);
@@ -390,3 +392,4 @@ void Argument::indexArgument(ListIterator iterator)
         argumentMap.insert_or_assign(name, iterator);
     }
 }
+} // namespace util_argument

@@ -1,5 +1,7 @@
 #include "time.hpp"
 
+namespace util_time
+{
 std::string getCurrentSystemTime()
 {
     char date[TIME_DATE_LENGTH + 1] = {'\0'};
@@ -16,3 +18,4 @@ std::string getCurrentSystemTime()
     std::string dateStr(date);
     return dateStr;
 }
+} // namespace util_time

@@ -1,8 +1,11 @@
 #pragma once
+
 #include <cmath>
 #include <unordered_map>
 #include <variant>
 
+namespace alg_expression
+{
 class Expression
 {
 public:
@@ -100,3 +103,4 @@ struct ExpressionMapHash
         return hash1 ^ hash2;
     }
 };
+} // namespace alg_expression

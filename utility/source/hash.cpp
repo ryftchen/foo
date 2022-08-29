@@ -1,5 +1,7 @@
 #include "hash.hpp"
 
+namespace util_hash
+{
 // BKDR Hash
 uint32_t bkdrHash(const char* str)
 {
@@ -11,3 +13,4 @@ uint32_t bkdrHash(const char* str)
     }
     return (hash & HASH_BKDR_SIZE);
 }
+} // namespace util_hash

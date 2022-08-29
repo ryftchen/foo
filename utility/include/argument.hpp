@@ -1,4 +1,5 @@
 #pragma once
+
 #include <algorithm>
 #include <any>
 #include <list>
@@ -6,6 +7,8 @@
 #include <sstream>
 #include <variant>
 
+namespace util_argument
+{
 template <typename T, typename = void>
 struct HasContainerTraits : std::false_type
 {
@@ -527,3 +530,4 @@ auto Argument::present(std::string_view argName) const -> std::optional<T>
 {
     return (*this)[argName].present<T>();
 }
+} // namespace util_argument

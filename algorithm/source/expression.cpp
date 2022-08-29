@@ -1,5 +1,7 @@
 #include "expression.hpp"
 
+namespace alg_expression
+{
 double Function1::operator()(const double x) const
 {
     return ((x * std::sin(x)) / (1.0 + std::cos(x) * std::cos(x)));
@@ -23,3 +25,4 @@ double Rastrigin::operator()(const double x) const
     return (x * x - 10.0 * std::cos(2.0 * M_PI * x) + 10.0) * rate;
 }
 #endif
+} // namespace alg_expression

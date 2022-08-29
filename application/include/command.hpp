@@ -1,4 +1,5 @@
 #pragma once
+
 #include <bitset>
 #include <mutex>
 #include "argument.hpp"
@@ -92,7 +93,7 @@ public:
 
 private:
     mutable std::mutex commandMutex;
-    Argument program{Argument("foo")};
+    util_argument::Argument program{util_argument::Argument("foo")};
 
     using AlgTaskBitSet = std::bitset<COMMAND_ALG_TASK_MAX_METHOD>;
 #pragma pack(8)
@@ -156,10 +157,11 @@ private:
         &Command::printConsoleOutput, &Command::printVersionInfo, &Command::printHelpMessage};
 
     const std::unordered_multimap<
-        ExpressionRange<double, double>, TargetExpression, ExpressionMapHash>
+        alg_expression::ExpressionRange<double, double>, alg_expression::TargetExpression,
+        alg_expression::ExpressionMapHash>
         expressionMap{
-            {{EXPRESSION_FUN_1_RANGE_1, EXPRESSION_FUN_1_RANGE_2}, Function1()},
-            {{EXPRESSION_FUN_2_RANGE_1, EXPRESSION_FUN_2_RANGE_2}, Function2()}};
+            {{EXPRESSION_FUN_1_RANGE_1, EXPRESSION_FUN_1_RANGE_2}, alg_expression::Function1()},
+            {{EXPRESSION_FUN_2_RANGE_1, EXPRESSION_FUN_2_RANGE_2}, alg_expression::Function2()}};
 
     void foregroundHandle(const int argc, const char* const argv[]);
     void backgroundHandle() const;
@@ -169,24 +171,24 @@ private:
     void performTask() const;
     void runOptimum() const;
     void getOptimumResult(
-        const Expression& express, const double leftEndpoint, const double rightEndpoint,
-        const double epsilon) const;
+        const alg_expression::Expression& express, const double leftEndpoint,
+        const double rightEndpoint, const double epsilon) const;
     void setOptimumBit(const char* const method);
     void runIntegral() const;
     void getIntegralResult(
-        const Expression& express, const double lowerLimit, const double upperLimit,
+        const alg_expression::Expression& express, const double lowerLimit, const double upperLimit,
         const double epsilon) const;
     void setIntegralBit(const char* const method);
     void runSort() const;
     template <typename T>
-    void getSortResult(const std::shared_ptr<Sort<T>>& sort) const;
+    void getSortResult(const std::shared_ptr<alg_sort::Sort<T>>& sort) const;
     void setSortBit(const char* const method);
     void printConsoleOutput() const;
     void printVersionInfo() const;
     void printHelpMessage() const;
 
     void enterConsole() const;
-    void registerOnConsole(Console& console) const;
+    void registerOnConsole(util_console::Console& console) const;
     static void displayLogContext();
     [[noreturn]] void throwUnexpectedMethodException(const std::string methodInfo);
     [[noreturn]] void throwExcessArgumentException();

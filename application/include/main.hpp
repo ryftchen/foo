@@ -1,4 +1,5 @@
 #pragma once
+
 #include <filesystem>
 
 [[using gnu: constructor]] static void switchToProjectPath();

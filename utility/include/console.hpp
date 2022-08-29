@@ -1,9 +1,12 @@
 #pragma once
+
 #include <readline/history.h>
 #include <functional>
 #include <memory>
 #include <vector>
 
+namespace util_console
+{
 class Console
 {
 public:
@@ -62,3 +65,4 @@ private:
     static CommandCompleterFunction getCommandCompletions;
     static CommandIteratorFunction commandIterator;
 };
+} // namespace util_console

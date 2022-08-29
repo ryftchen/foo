@@ -5,8 +5,8 @@
 
 int main(int argc, char* argv[])
 {
-    Thread threadPool(2);
-    threadPool.enqueue("log", &Log::runLogger, &logger);
+    util_thread::Thread threadPool(2);
+    threadPool.enqueue("log", &util_log::Log::runLogger, &util_log::logger);
     threadPool.enqueue("command", &Command::runCommander, std::make_shared<Command>(), argc, argv);
 
     return 0;

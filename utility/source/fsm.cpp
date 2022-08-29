@@ -1,5 +1,7 @@
 #include "fsm.hpp"
 
+namespace util_fsm
+{
 void checkIfExceptedFSMState(const bool normalState)
 {
     if (!normalState)
@@ -7,3 +9,4 @@ void checkIfExceptedFSMState(const bool normalState)
         throw std::runtime_error("FSM's state is abnormal.");
     }
 }
+} // namespace util_fsm

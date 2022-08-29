@@ -4,6 +4,8 @@
 #include <iomanip>
 #include <iostream>
 
+namespace util_console
+{
 Console* currentConsole = nullptr;
 
 Console::Console(std::string const& greeting) : impl(std::make_unique<Impl>(greeting))
@@ -229,3 +231,4 @@ char* Console::commandIterator(const char* text, int state)
     }
     return nullptr;
 }
+} // namespace util_console

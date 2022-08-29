@@ -3,6 +3,8 @@
 #include <queue>
 #include <vector>
 
+namespace alg_sort
+{
 template class Sort<int>;
 template void Sort<int>::bubbleSort(int* const array, const uint32_t length) const;
 template void Sort<int>::selectionSort(int* const array, const uint32_t length) const;
@@ -487,3 +489,4 @@ void Sort<T>::radixSort(T* const array, const uint32_t length) const
         SORT_RESULT, "Radix", formatArray(sortArray, length, arrayBuffer, arrayBufferSize + 1),
         TIMER_INTERVAL);
 }
+} // namespace alg_sort
