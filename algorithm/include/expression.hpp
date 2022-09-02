@@ -4,7 +4,7 @@
 #include <unordered_map>
 #include <variant>
 
-namespace alg_expression
+namespace algo_expression
 {
 class Expression
 {
@@ -103,4 +103,4 @@ struct ExpressionMapHash
         return hash1 ^ hash2;
     }
 };
-} // namespace alg_expression
+} // namespace algo_expression

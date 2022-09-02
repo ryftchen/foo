@@ -5,10 +5,10 @@
 #include "file.hpp"
 #include "time.hpp"
 
-namespace alg_integral
+namespace algo_integral
 {
 double trapezoid(
-    const alg_expression::Expression& express, const double left, const double height,
+    const algo_expression::Expression& express, const double left, const double height,
     const uint32_t step)
 {
     double sum = 0.0;
@@ -236,4 +236,4 @@ double MonteCarlo::sampleFromNormalDistribution(
     return sum;
 }
 #endif
-} // namespace alg_integral
+} // namespace algo_integral

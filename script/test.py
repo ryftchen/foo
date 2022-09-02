@@ -13,16 +13,16 @@ LIB_LIST = ["libutility.so", "libalgorithm.so"]
 LIB_DIR = "./build/lib/"
 OPTION_UTIL_TYPE = ["--help", "--version", "--console"]
 CONSOLE_COMMAND = ["help", "quit", "run ./script/batch.txt", "log"]
-OPTION_ALG_TYPE = ["--optimum", "--integral", "--sort"]
+OPTION_ALGO_TYPE = ["--optimum", "--integral", "--sort"]
 OPTIMUM_METHOD = ["fib", "gra", "ann", "par", "gen"]
 INTEGRAL_METHOD = ["tra", "sim", "rom", "gau", "mon"]
 SORT_METHOD = ["bub", "sel", "ins", "she", "mer", "qui", "hea", "cou", "buc", "rad"]
 PASS_STEP = 0
 COMPLETE_STEP = 0
 WHOLE_STEP = (
-    +len(OPTION_UTIL_TYPE)
+    len(OPTION_UTIL_TYPE)
     + (len(CONSOLE_COMMAND) + 1)
-    + len(OPTION_ALG_TYPE)
+    + len(OPTION_ALGO_TYPE)
     + (len(OPTIMUM_METHOD) + 1)
     + (len(INTEGRAL_METHOD) + 1)
     + (len(SORT_METHOD) + 1)
@@ -258,27 +258,27 @@ def testConsoleCommand():
         runTestTask(f"{BIN_CMD} {OPTION_UTIL_TYPE[2]} \"{each}\"")
 
 
-def testAlgTypeOption():
-    for each in OPTION_ALG_TYPE:
+def testAlgoTypeOption():
+    for each in OPTION_ALGO_TYPE:
         runTestTask(f"{BIN_CMD} {each}")
 
 
 def testOptimumMethod():
     for each in OPTIMUM_METHOD:
-        runTestTask(f"{BIN_CMD} {OPTION_ALG_TYPE[0]} {each}")
-    runTestTask(f"{BIN_CMD} {OPTION_ALG_TYPE[0]} {' '.join(OPTIMUM_METHOD)}")
+        runTestTask(f"{BIN_CMD} {OPTION_ALGO_TYPE[0]} {each}")
+    runTestTask(f"{BIN_CMD} {OPTION_ALGO_TYPE[0]} {' '.join(OPTIMUM_METHOD)}")
 
 
 def testIntegralMethod():
     for each in INTEGRAL_METHOD:
-        runTestTask(f"{BIN_CMD} {OPTION_ALG_TYPE[1]} {each}")
-    runTestTask(f"{BIN_CMD} {OPTION_ALG_TYPE[1]} {' '.join(INTEGRAL_METHOD)}")
+        runTestTask(f"{BIN_CMD} {OPTION_ALGO_TYPE[1]} {each}")
+    runTestTask(f"{BIN_CMD} {OPTION_ALGO_TYPE[1]} {' '.join(INTEGRAL_METHOD)}")
 
 
 def testSortMethod():
     for each in SORT_METHOD:
-        runTestTask(f"{BIN_CMD} {OPTION_ALG_TYPE[2]} {each}")
-    runTestTask(f"{BIN_CMD} {OPTION_ALG_TYPE[2]} {' '.join(SORT_METHOD)}")
+        runTestTask(f"{BIN_CMD} {OPTION_ALGO_TYPE[2]} {each}")
+    runTestTask(f"{BIN_CMD} {OPTION_ALGO_TYPE[2]} {' '.join(SORT_METHOD)}")
 
 
 if __name__ == "__main__":
@@ -287,7 +287,7 @@ if __name__ == "__main__":
     testUtilTypeOption()
     testConsoleCommand()
 
-    testAlgTypeOption()
+    testAlgoTypeOption()
     testOptimumMethod()
     testIntegralMethod()
     testSortMethod()
