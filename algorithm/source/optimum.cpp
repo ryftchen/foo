@@ -4,7 +4,7 @@
 #include "file.hpp"
 #include "time.hpp"
 
-namespace alg_optimum
+namespace algo_optimum
 {
 using gen_species::Chromosome;
 using gen_species::Population;
@@ -556,4 +556,4 @@ Chromosome Genetic::getBestIndividual(const Population& pop)
 
     return *iterIndBest;
 }
-} // namespace alg_optimum
+} // namespace algo_optimum
