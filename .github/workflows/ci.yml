@@ -59,18 +59,12 @@ jobs:
         uses: github/codeql-action/analyze@v2
 
   Pipeline:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
+    container: ryftchen/foo:latest
 
     steps:
       - name: Checkout
         uses: actions/checkout@v3.0.0
-
-      - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get purge -y llvm-* clang-* libllvm-* libclang-*
-          export FOO_ENV=CODE_ACTION
-          ./.github/workflows/install.sh
 
       - name: Check
         run: |
@@ -88,7 +82,7 @@ jobs:
           export TERMINFO=/etc/terminfo
           ./script/test.py --check coverage memory --build release
 
-      - name: Upload artifacts
+      - name: Upload
         uses: actions/upload-artifact@v3.0.0
         with:
           name: foo_artifact
