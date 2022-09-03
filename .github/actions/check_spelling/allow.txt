@@ -3,6 +3,7 @@ bkdr
 buc
 chrono
 cmake
+codebrowser
 Concat
 cou
 cov
