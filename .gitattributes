@@ -5,14 +5,16 @@
 *.txt text eol=lf
 
 *.clang-format text eol=lf
-*.clang-tidy text eol=lf
 *.toml text eol=lf
-*.pylintrc text eol=lf
 *.editorconfig text eol=lf
+*.clang-tidy text eol=lf
+*.pylintrc text eol=lf
 *.shellcheckrc text eol=lf
-*.yamllint text eol=lf
 *.valgrindrc text eol=lf
 *.supp text eol=lf
+
+Dockerfile text eol=lf
+LICENSE text eol=lf
 
 *.md text eol=lf
 *.yml text eol=lf
