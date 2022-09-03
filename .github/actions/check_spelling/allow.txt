@@ -3,7 +3,6 @@ bkdr
 buc
 chrono
 cmake
-codebrowser
 Concat
 cou
 cov
@@ -25,12 +24,10 @@ indexgenerator
 istreambuf
 jcvf
 libalgorithm
-libreadline
 libutility
 llvm
 markov
 mday
-memcheck
 milli
 nodiscard
 NOLINTNEXTLINE
