@@ -158,7 +158,7 @@ def parseArgs():
         "--check",
         choices=["coverage", "memory"],
         nargs="+",
-        help="test with check: coverage check or memory check",
+        help="test with check: check coverage or check memory",
     )
     parser.add_argument(
         "-b",
@@ -166,7 +166,7 @@ def parseArgs():
         choices=["debug", "release"],
         nargs="?",
         const="debug",
-        help="test with build: debug version or release version",
+        help="test with build: build debug or build release",
     )
     args = parser.parse_args()
 
