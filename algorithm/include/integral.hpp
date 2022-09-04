@@ -90,7 +90,7 @@ private:
     [[nodiscard]] double sampleFromUniformDistribution(
         const double lower, const double upper, const double eps) const;
 #ifdef INTEGRAL_MONTE_CARLO_NO_UNIFORM
-    double sampleFromNormalDistribution(
+    [[nodiscard]] double sampleFromNormalDistribution(
         const double lower, const double upper, const double eps) const;
 #endif
 };

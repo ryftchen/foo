@@ -1,4 +1,5 @@
 #pragma once
+
 #include <condition_variable>
 #include <queue>
 #include <thread>
@@ -88,10 +89,10 @@ private:
     OutputTarget actualTarget{OutputTarget::all};
     char pathname[LOG_PATHNAME_LENGTH + 1]{LOG_PATH};
 
-    std::atomic<bool> isLogging{false};
-    std::condition_variable loggingCondition;
-    mutable std::mutex logQueueMutex;
+    mutable std::mutex queueMutex;
     std::queue<std::string> logQueue;
+    std::condition_variable loggingCondition;
+    std::atomic<bool> isLogging{false};
 
     struct OpenFile
     {
@@ -115,13 +116,13 @@ private:
     bool isLogFileClose(const NoLogging& /*unused*/) const;
     // clang-format off
     using TransitionMap = Map<
-        // -- Source --+-- Event --+-- Target --+----- Action -----+-- Guard(Optional) --
-        // ------------+-----------+------------+------------------+---------------------
-        Row<State::init, OpenFile,  State::idle, &Log::openLogFile                       >,
-        Row<State::idle, GoLogging, State::work, &Log::startLogging, &Log::isLogFileOpen >,
-        Row<State::work, CloseFile, State::idle, &Log::closeLogFile                      >,
-        Row<State::idle, NoLogging, State::done, &Log::stopLogging,  &Log::isLogFileClose>
-        // ------------+-----------+------------+------------------+---------------------
+        // --- Source ---+--- Event ---+--- Target ---+------ Action ------+--- Guard(Optional) ---
+        // --------------+-------------+--------------+--------------------+-----------------------
+        Row< State::init ,  OpenFile   , State::idle  , &Log::openLogFile                         >,
+        Row< State::idle ,  GoLogging  , State::work  , &Log::startLogging , &Log::isLogFileOpen  >,
+        Row< State::work ,  CloseFile  , State::idle  , &Log::closeLogFile                        >,
+        Row< State::idle ,  NoLogging  , State::done  , &Log::stopLogging  , &Log::isLogFileClose >
+        // --------------+-------------+--------------+--------------------+-----------------------
         >;
     // clang-format on
 
@@ -139,7 +140,7 @@ void Log::output(
         return;
     }
 
-    if (std::unique_lock<std::mutex> lock(logQueueMutex); true)
+    if (std::unique_lock<std::mutex> lock(queueMutex); true)
     {
         if (level >= minLevel)
         {

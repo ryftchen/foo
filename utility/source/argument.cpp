@@ -103,7 +103,7 @@ std::ostream& operator<<(std::ostream& stream, const ArgumentRegister& argument)
     std::copy(
         std::begin(argument.names), std::end(argument.names),
         std::ostream_iterator<std::string>(nameStream, " "));
-    stream << nameStream.str() << "\t" << argument.helpStr;
+    stream << nameStream.str() << "    " << argument.helpStr;
     if (argument.defaultValues.has_value())
     {
         if (!argument.helpStr.empty())
@@ -120,7 +120,7 @@ std::ostream& operator<<(std::ostream& stream, const ArgumentRegister& argument)
         }
         stream << "[required]";
     }
-    stream << "\n";
+    stream << std::endl;
     return stream;
 }
 
@@ -161,7 +161,7 @@ void ArgumentRegister::throwRequiredArgNoValueProvidedException() const
     throw std::runtime_error(stream.str());
 }
 
-auto ArgumentRegister::lookAhead(std::string_view str) -> int
+auto ArgumentRegister::lookAhead(const std::string_view str) -> int
 {
     if (str.empty())
     {
@@ -239,12 +239,12 @@ void Argument::parseArgs(int argc, const char* const argv[])
     parseArgs(arguments);
 }
 
-bool Argument::isUsed(std::string_view argName) const
+bool Argument::isUsed(const std::string_view argName) const
 {
     return (*this)[argName].isUsed;
 }
 
-ArgumentRegister& Argument::operator[](std::string_view argName) const
+ArgumentRegister& Argument::operator[](const std::string_view argName) const
 {
     auto iterator = argumentMap.find(argName);
     if (argumentMap.end() != iterator)
@@ -282,11 +282,11 @@ auto operator<<(std::ostream& stream, const Argument& parser) -> std::ostream&
     {
         stream << argument.names.front() << " ";
     }
-    stream << "\n\n";
+    stream << std::endl << std::endl;
 
     if (!parser.requiredArguments.empty())
     {
-        stream << "Required:\n";
+        stream << "Required:" << std::endl;
     }
 
     for (const auto& argument : parser.requiredArguments)
@@ -297,7 +297,7 @@ auto operator<<(std::ostream& stream, const Argument& parser) -> std::ostream&
 
     if (!parser.optionalArguments.empty())
     {
-        stream << (parser.requiredArguments.empty() ? "" : "\n") << "Optional:\n";
+        stream << (parser.requiredArguments.empty() ? "" : "\n") << "Optional:" << std::endl;
     }
 
     for (const auto& argument : parser.optionalArguments)
@@ -348,9 +348,9 @@ void Argument::parseArgsInternal(const std::vector<std::string>& arguments)
                  (compoundArg.size() > 1) && ('-' == compoundArg[0]) && ('-' != compoundArg[1]))
         {
             ++iterator;
-            for (std::size_t j = 1; j < compoundArg.size(); ++j)
+            for (std::size_t i = 1; i < compoundArg.size(); ++i)
             {
-                auto hypotheticalArg = std::string{'-', compoundArg[j]};
+                auto hypotheticalArg = std::string{'-', compoundArg[i]};
                 auto iterArgMap2 = argumentMap.find(hypotheticalArg);
                 if (argumentMap.end() != iterArgMap2)
                 {

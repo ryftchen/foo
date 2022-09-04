@@ -1,7 +1,5 @@
 #include "sort.hpp"
-#include <algorithm>
 #include <queue>
-#include <vector>
 
 namespace algo_sort
 {
@@ -38,9 +36,7 @@ void Sort<T>::bubbleSort(T* const array, const uint32_t length) const
     }
 
     TIMER_END;
-    const uint32_t arrayBufferSize = length * SORT_PRINT_MAX_ALIGN;
-    char arrayBuffer[arrayBufferSize + 1];
-    arrayBuffer[0] = '\0';
+    SORT_GENERATE_PRINT_BUFFER(arrayBuffer, arrayBufferSize);
     FORMAT_PRINT(
         SORT_RESULT, "Bubble", formatArray(sortArray, length, arrayBuffer, arrayBufferSize + 1),
         TIMER_INTERVAL);
@@ -69,9 +65,7 @@ void Sort<T>::selectionSort(T* const array, const uint32_t length) const
     }
 
     TIMER_END;
-    const uint32_t arrayBufferSize = length * SORT_PRINT_MAX_ALIGN;
-    char arrayBuffer[arrayBufferSize + 1];
-    arrayBuffer[0] = '\0';
+    SORT_GENERATE_PRINT_BUFFER(arrayBuffer, arrayBufferSize);
     FORMAT_PRINT(
         SORT_RESULT, "Selection", formatArray(sortArray, length, arrayBuffer, arrayBufferSize + 1),
         TIMER_INTERVAL);
@@ -99,9 +93,7 @@ void Sort<T>::insertionSort(T* const array, const uint32_t length) const
     }
 
     TIMER_END;
-    const uint32_t arrayBufferSize = length * SORT_PRINT_MAX_ALIGN;
-    char arrayBuffer[arrayBufferSize + 1];
-    arrayBuffer[0] = '\0';
+    SORT_GENERATE_PRINT_BUFFER(arrayBuffer, arrayBufferSize);
     FORMAT_PRINT(
         SORT_RESULT, "Insertion", formatArray(sortArray, length, arrayBuffer, arrayBufferSize + 1),
         TIMER_INTERVAL);
@@ -130,9 +122,7 @@ void Sort<T>::shellSort(T* const array, const uint32_t length) const
     }
 
     TIMER_END;
-    const uint32_t arrayBufferSize = length * SORT_PRINT_MAX_ALIGN;
-    char arrayBuffer[arrayBufferSize + 1];
-    arrayBuffer[0] = '\0';
+    SORT_GENERATE_PRINT_BUFFER(arrayBuffer, arrayBufferSize);
     FORMAT_PRINT(
         SORT_RESULT, "Shell", formatArray(sortArray, length, arrayBuffer, arrayBufferSize + 1),
         TIMER_INTERVAL);
@@ -150,9 +140,7 @@ void Sort<T>::mergeSort(T* const array, const uint32_t length) const
     mergeSortRecursive(sortArray, 0, length - 1);
 
     TIMER_END;
-    const uint32_t arrayBufferSize = length * SORT_PRINT_MAX_ALIGN;
-    char arrayBuffer[arrayBufferSize + 1];
-    arrayBuffer[0] = '\0';
+    SORT_GENERATE_PRINT_BUFFER(arrayBuffer, arrayBufferSize);
     FORMAT_PRINT(
         SORT_RESULT, "Merge", formatArray(sortArray, length, arrayBuffer, arrayBufferSize + 1),
         TIMER_INTERVAL);
@@ -201,9 +189,7 @@ void Sort<T>::quickSort(T* const array, const uint32_t length) const
     quickSortRecursive(sortArray, 0, length - 1);
 
     TIMER_END;
-    const uint32_t arrayBufferSize = length * SORT_PRINT_MAX_ALIGN;
-    char arrayBuffer[arrayBufferSize + 1];
-    arrayBuffer[0] = '\0';
+    SORT_GENERATE_PRINT_BUFFER(arrayBuffer, arrayBufferSize);
     FORMAT_PRINT(
         SORT_RESULT, "Quick", formatArray(sortArray, length, arrayBuffer, arrayBufferSize + 1),
         TIMER_INTERVAL);
@@ -268,9 +254,7 @@ void Sort<T>::heapSort(T* const array, const uint32_t length) const
     }
 
     TIMER_END;
-    const uint32_t arrayBufferSize = length * SORT_PRINT_MAX_ALIGN;
-    char arrayBuffer[arrayBufferSize + 1];
-    arrayBuffer[0] = '\0';
+    SORT_GENERATE_PRINT_BUFFER(arrayBuffer, arrayBufferSize);
     FORMAT_PRINT(
         SORT_RESULT, "Heap", formatArray(sortArray, length, arrayBuffer, arrayBufferSize + 1),
         TIMER_INTERVAL);
@@ -341,9 +325,7 @@ void Sort<T>::countingSort(T* const array, const uint32_t length) const
     }
 
     TIMER_END;
-    const uint32_t arrayBufferSize = length * SORT_PRINT_MAX_ALIGN;
-    char arrayBuffer[arrayBufferSize + 1];
-    arrayBuffer[0] = '\0';
+    SORT_GENERATE_PRINT_BUFFER(arrayBuffer, arrayBufferSize);
     FORMAT_PRINT(
         SORT_RESULT, "Counting", formatArray(sortArray, length, arrayBuffer, arrayBufferSize + 1),
         TIMER_INTERVAL);
@@ -388,9 +370,7 @@ void Sort<T>::bucketSort(T* const array, const uint32_t length) const
     }
 
     TIMER_END;
-    const uint32_t arrayBufferSize = length * SORT_PRINT_MAX_ALIGN;
-    char arrayBuffer[arrayBufferSize + 1];
-    arrayBuffer[0] = '\0';
+    SORT_GENERATE_PRINT_BUFFER(arrayBuffer, arrayBufferSize);
     FORMAT_PRINT(
         SORT_RESULT, "Bucket", formatArray(sortArray, length, arrayBuffer, arrayBufferSize + 1),
         TIMER_INTERVAL);
@@ -482,9 +462,7 @@ void Sort<T>::radixSort(T* const array, const uint32_t length) const
     }
 
     TIMER_END;
-    const uint32_t arrayBufferSize = length * SORT_PRINT_MAX_ALIGN;
-    char arrayBuffer[arrayBufferSize + 1];
-    arrayBuffer[0] = '\0';
+    SORT_GENERATE_PRINT_BUFFER(arrayBuffer, arrayBufferSize);
     FORMAT_PRINT(
         SORT_RESULT, "Radix", formatArray(sortArray, length, arrayBuffer, arrayBufferSize + 1),
         TIMER_INTERVAL);

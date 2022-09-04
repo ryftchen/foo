@@ -3,15 +3,14 @@
 #include <readline/history.h>
 #include <functional>
 #include <memory>
-#include <vector>
 
 namespace util_console
 {
 class Console
 {
 public:
-    using Arguments = std::vector<std::string>;
-    using CommandFunction = std::function<int(const Arguments&)>;
+    using Args = std::vector<std::string>;
+    using CommandFunction = std::function<int(const Args&)>;
     enum ReturnCode : int
     {
         quit = -1,
@@ -19,7 +18,7 @@ public:
         error = 1
     };
 
-    explicit Console(std::string const& greeting);
+    explicit Console(const std::string& greeting);
     virtual ~Console();
     Console(const Console&) = delete;
     Console(Console&&) = delete;
@@ -31,8 +30,8 @@ public:
         const;
     void setGreeting(const std::string& greeting);
     [[nodiscard]] std::string getGreeting() const;
-    int runCommand(const std::string& command);
-    int runFile(const std::string& filename);
+    int commandExecutor(const std::string& command);
+    int fileExecutor(const std::string& filename);
     int readLine();
 
 private:
@@ -41,11 +40,11 @@ private:
 
     struct Impl
     {
-        explicit Impl(std::string const& greeting) : greeting(greeting), RegCmds() {}
+        explicit Impl(const std::string& greeting) : greeting(greeting), RegCmds() {}
         ~Impl() { delete history; }
-        Impl(Impl const&) = delete;
+        Impl(const Impl&) = delete;
         Impl(Impl&&) = delete;
-        Impl& operator=(Impl const&) = delete;
+        Impl& operator=(const Impl&) = delete;
         Impl& operator=(Impl&&) = delete;
 
         using RegisteredCommands =

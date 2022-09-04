@@ -2,7 +2,7 @@
 
 namespace util_thread
 {
-Thread::Thread(uint32_t count)
+Thread::Thread(const uint32_t count)
 {
     for (uint32_t i = 0; i < count; ++i)
     {

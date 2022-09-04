@@ -1,7 +1,6 @@
 #pragma once
 
 #include <cstring>
-#include <memory>
 #include <mutex>
 #include <random>
 #include "file.hpp"
@@ -29,6 +28,10 @@ namespace algo_sort
         break;                                                                                    \
     }                                                                                             \
     completeSize += formatSize;
+#define SORT_GENERATE_PRINT_BUFFER(buffer, bufferSize)         \
+    const uint32_t bufferSize = length * SORT_PRINT_MAX_ALIGN; \
+    char buffer[bufferSize + 1];                               \
+    buffer[0] = '\0';
 
 template <class T>
 class Sort
