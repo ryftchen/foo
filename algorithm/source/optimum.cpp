@@ -1,16 +1,15 @@
 #include "optimum.hpp"
-#include <algorithm>
 #include <set>
 #include "file.hpp"
 #include "time.hpp"
 
 namespace algo_optimum
 {
-using gen_species::Chromosome;
-using gen_species::Population;
-using par_swarm::Individual;
-using par_swarm::Record;
-using par_swarm::Society;
+using genetic_species::Chromosome;
+using genetic_species::Population;
+using particle_swarm::Individual;
+using particle_swarm::Record;
+using particle_swarm::Society;
 
 // Fibonacci method
 std::optional<std::tuple<ValueY, ValueX>> Fibonacci::operator()(
@@ -18,8 +17,7 @@ std::optional<std::tuple<ValueY, ValueX>> Fibonacci::operator()(
 {
     TIMER_BEGIN;
     double leftVal = left, rightVal = right;
-    std::vector<double> fibonacci(0);
-    generateFibonacciNumber(fibonacci, (rightVal - leftVal) / eps);
+    std::vector<double> fibonacci = generateFibonacciNumber((rightVal - leftVal) / eps);
     int n = fibonacci.size() - 1;
     if (n < OPTIMUM_FIBONACCI_MIN_COUNT)
     {
@@ -74,12 +72,13 @@ std::optional<std::tuple<ValueY, ValueX>> Fibonacci::operator()(
     return std::make_optional(std::make_tuple(func(x), x));
 }
 
-void Fibonacci::generateFibonacciNumber(std::vector<double>& fibonacci, const double max)
+std::vector<double> Fibonacci::generateFibonacciNumber(const double max)
 {
+    std::vector<double> fibonacci(0);
     double f1 = 0.0, f2 = 1.0;
     for (;;)
     {
-        double temp = f1 + f2;
+        const double temp = f1 + f2;
         f1 = f2;
         f2 = temp;
         fibonacci.emplace_back(f1);
@@ -89,6 +88,8 @@ void Fibonacci::generateFibonacciNumber(std::vector<double>& fibonacci, const do
             break;
         }
     }
+
+    return fibonacci;
 }
 
 // Gradient ascent method
@@ -217,23 +218,24 @@ std::optional<std::tuple<ValueY, ValueX>> Particle::operator()(
     double xFitnessBest = best->xFitness;
 
     std::uniform_real_distribution<double> random(0.0, 1.0);
-    for (uint32_t i = 0; i < par_swarm::iterNum; ++i)
+    for (uint32_t i = 0; i < particle_swarm::iterNum; ++i)
     {
-        const double w = par_swarm::wBegin
-            - (par_swarm::wBegin - par_swarm::wEnd)
-                * std::pow(static_cast<double>(i + 1) / par_swarm::iterNum, 2);
+        const double w = particle_swarm::wBegin
+            - (particle_swarm::wBegin - particle_swarm::wEnd)
+                * std::pow(static_cast<double>(i + 1) / particle_swarm::iterNum, 2);
         for (auto& ind : rec.society)
         {
             const double rand1 =
                 static_cast<uint32_t>(random(seed) * static_cast<uint32_t>(1.0 / eps)) * eps;
             const double rand2 =
                 static_cast<uint32_t>(random(seed) * static_cast<uint32_t>(1.0 / eps)) * eps;
-            ind.velocity = w * ind.velocity + par_swarm::c1 * rand1 * (ind.positionBest - ind.x)
-                + par_swarm::c2 * rand2 * (xBest - ind.x);
-            (ind.velocity > par_swarm::vMax)
-                ? ind.velocity = par_swarm::vMax
-                : ((ind.velocity < par_swarm::vMin) ? ind.velocity = par_swarm::vMin
-                                                    : ind.velocity);
+            ind.velocity = w * ind.velocity
+                + particle_swarm::c1 * rand1 * (ind.positionBest - ind.x)
+                + particle_swarm::c2 * rand2 * (xBest - ind.x);
+            (ind.velocity > particle_swarm::vMax)
+                ? ind.velocity = particle_swarm::vMax
+                : ((ind.velocity < particle_swarm::vMin) ? ind.velocity = particle_swarm::vMin
+                                                         : ind.velocity);
 
             ind.x += ind.velocity;
             (ind.x > right) ? ind.x = right : ((ind.x < left) ? ind.x = left : ind.x);
@@ -268,10 +270,10 @@ Record Particle::recordInit(const double left, const double right)
     TIME_GET_SEED(seedNew);
     seed = seedNew;
     std::uniform_real_distribution<double> randomX(left, right);
-    std::uniform_real_distribution<double> randomV(par_swarm::vMin, par_swarm::vMax);
+    std::uniform_real_distribution<double> randomV(particle_swarm::vMin, particle_swarm::vMax);
 
     const Individual individualInit{};
-    Society societyInit(par_swarm::size, individualInit);
+    Society societyInit(particle_swarm::size, individualInit);
     std::generate(
         societyInit.begin(), societyInit.end(),
         [&]
@@ -298,7 +300,7 @@ std::optional<std::tuple<ValueY, ValueX>> Genetic::operator()(
     }
 
     Population pop = populationInit();
-    for (uint32_t i = 0; i < gen_species::iterNum; ++i)
+    for (uint32_t i = 0; i < genetic_species::iterNum; ++i)
     {
         selectIndividual(pop);
         crossIndividual(pop);
@@ -357,7 +359,7 @@ double Genetic::geneDecoding(const Chromosome& chr) const
 Population Genetic::populationInit()
 {
     const Chromosome chrInit(chrNum, 0);
-    Population pop(gen_species::size, chrInit);
+    Population pop(genetic_species::size, chrInit);
     std::for_each(
         pop.begin(), pop.end(),
         [this](auto& chr)
@@ -395,7 +397,7 @@ void Genetic::crossIndividual(Population& pop)
          std::advance(iterChr, 2))
     {
         Chromosome parent1 = iterChr->get(), parent2 = std::next(iterChr, 1)->get();
-        if (gen_species::crossPr > random())
+        if (genetic_species::crossPr > random())
         {
             geneCrossover(parent1, parent2);
         }
@@ -430,7 +432,7 @@ void Genetic::mutateIndividual(Population& pop)
         pop.begin(), pop.end(),
         [this](auto& ind)
         {
-            if (gen_species::mutatePr > random())
+            if (genetic_species::mutatePr > random())
             {
                 geneMutation(ind);
             }
@@ -456,17 +458,14 @@ std::optional<std::pair<double, double>> Genetic::fitnessLinearTransformation(co
     const double reFitnessMin = *(std::min_element(std::cbegin(reFitness), std::cend(reFitness)));
     const double reFitnessAvg =
         std::accumulate(std::cbegin(reFitness), std::cend(reFitness), 0.0) / reFitness.size();
-    if (std::fabs(reFitnessMin - reFitnessAvg) > (range.eps * range.eps))
-    {
-        const double alpha = reFitnessAvg / (reFitnessAvg - reFitnessMin);
-        const double beta = -1.0 * (reFitnessMin * reFitnessAvg) / (reFitnessAvg - reFitnessMin);
-        assert(!std::isnan(alpha) && !std::isinf(alpha) && !std::isnan(beta) && !std::isinf(beta));
-        return std::make_optional(std::pair<double, double>(alpha, beta));
-    }
-    else
+    if (std::fabs(reFitnessMin - reFitnessAvg) < (range.eps * range.eps))
     {
         return std::nullopt;
     }
+    const double alpha = reFitnessAvg / (reFitnessAvg - reFitnessMin);
+    const double beta = -1.0 * (reFitnessMin * reFitnessAvg) / (reFitnessAvg - reFitnessMin);
+    assert(!std::isnan(alpha) && !std::isinf(alpha) && !std::isnan(beta) && !std::isinf(beta));
+    return std::make_optional(std::pair<double, double>(alpha, beta));
 }
 
 auto Genetic::rouletteWheelSelection(const Population& pop, const std::vector<double>& fitnessCum)

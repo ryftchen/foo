@@ -89,7 +89,7 @@ struct ExpressionRange
 
     bool operator==(const ExpressionRange& range) const
     {
-        return (range.range1 == range1) && (range.range2 == range2);
+        return (std::tie(range.range1, range.range2) == std::tie(range1, range2));
     }
     ExpressionRange() = delete;
 };
@@ -100,7 +100,7 @@ struct ExpressionMapHash
     {
         std::size_t hash1 = std::hash<T1>()(range.range1);
         std::size_t hash2 = std::hash<T2>()(range.range1);
-        return hash1 ^ hash2;
+        return (hash1 ^ hash2);
     }
 };
 } // namespace algo_expression

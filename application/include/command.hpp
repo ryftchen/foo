@@ -24,18 +24,6 @@
         }                                   \
     }                                       \
     while (0)
-#define COMMAND_GET_ICON_BANNER                               \
-    (                                                         \
-        {                                                     \
-            std::string banner;                               \
-            banner += R"(")";                                 \
-            banner += R"( ______   ______     ______    \n)"; \
-            banner += R"(/\  ___\ /\  __ \   /\  __ \   \n)"; \
-            banner += R"(\ \  __\ \ \ \/\ \  \ \ \/\ \  \n)"; \
-            banner += R"( \ \_\    \ \_____\  \ \_____\ \n)"; \
-            banner += R"(  \/_/     \/_____/   \/_____/ \n)"; \
-            banner += R"(")";                                 \
-        })
 
 class Command
 {
@@ -187,11 +175,12 @@ private:
     void printConsoleOutput() const;
     void printVersionInfo() const;
     void printHelpMessage() const;
+    static std::string getIconBanner();
 
     void enterConsole() const;
     void registerOnConsole(util_console::Console& console) const;
     static void displayLogContext();
-    [[noreturn]] void throwUnexpectedMethodException(const std::string methodInfo);
+    [[noreturn]] void throwUnexpectedMethodException(const std::string& methodInfo);
     [[noreturn]] void throwExcessArgumentException();
 
 protected:

@@ -119,7 +119,7 @@ void Command::validateAlgorithmTask()
     {
         if (program.isUsed("--" + algoTaskNameTable[AlgoTaskType(i)]))
         {
-            auto methods =
+            const auto methods =
                 program.get<std::vector<std::string>>("--" + algoTaskNameTable[AlgoTaskType(i)]);
             if (!methods.empty() && !checkTask())
             {
@@ -252,8 +252,8 @@ void Command::getOptimumResult(
         if (taskPlan.algoTask.optimumBit.test(OptimumMethod(i)))
         {
             const std::string threadName =
-                std::string{1, algoTaskNameTable[AlgoTaskType::optimum].at(0)} + "_"
-                + algoTaskMethodTable[AlgoTaskType::optimum][OptimumMethod(i)];
+                std::string{1, std::string_view{algoTaskNameTable[AlgoTaskType::optimum]}.at(0)}
+                + "_" + algoTaskMethodTable[AlgoTaskType::optimum][OptimumMethod(i)];
             switch (util_hash::bkdrHash(
                 algoTaskMethodTable[AlgoTaskType::optimum][OptimumMethod(i)].c_str()))
             {
@@ -379,8 +379,8 @@ void Command::getIntegralResult(
         if (taskPlan.algoTask.integralBit.test(IntegralMethod(i)))
         {
             const std::string threadName =
-                std::string{1, algoTaskNameTable[AlgoTaskType::integral].at(0)} + "_"
-                + algoTaskMethodTable[AlgoTaskType::integral][IntegralMethod(i)];
+                std::string{1, std::string_view{algoTaskNameTable[AlgoTaskType::integral]}.at(0)}
+                + "_" + algoTaskMethodTable[AlgoTaskType::integral][IntegralMethod(i)];
             switch (util_hash::bkdrHash(
                 algoTaskMethodTable[AlgoTaskType::integral][IntegralMethod(i)].c_str()))
             {
@@ -477,7 +477,7 @@ void Command::getSortResult(const std::shared_ptr<algo_sort::Sort<T>>& sort) con
         if (taskPlan.algoTask.sortBit.test(SortMethod(i)))
         {
             const std::string threadName =
-                std::string{1, algoTaskNameTable[AlgoTaskType::sort].at(0)} + "_"
+                std::string{1, std::string_view{algoTaskNameTable[AlgoTaskType::sort]}.at(0)} + "_"
                 + algoTaskMethodTable[AlgoTaskType::sort][SortMethod(i)];
             switch (
                 util_hash::bkdrHash(algoTaskMethodTable[AlgoTaskType::sort][SortMethod(i)].c_str()))
@@ -560,22 +560,22 @@ void Command::setSortBit(const char* const method)
 
 void Command::printConsoleOutput() const
 {
-    auto cmds =
+    const auto commands =
         program.get<std::vector<std::string>>("--" + utilTaskNameTable[UtilTaskType::console]);
-    if (!cmds.empty())
+    if (!commands.empty())
     {
-        util_console::Console console("> ");
+        util_console::Console console(" > ");
         registerOnConsole(console);
-        for (const auto& cmd : cmds)
+        for (const auto& command : commands)
         {
-            console.runCommand(cmd);
+            console.commandExecutor(command);
         }
     }
 }
 
 void Command::printVersionInfo() const
 {
-    util_file::executeCommand(("echo " + COMMAND_GET_ICON_BANNER).c_str());
+    util_file::executeCommand(("echo " + getIconBanner()).c_str());
     std::cout << "Version: " << program.programVersion << std::endl;
 }
 
@@ -584,17 +584,31 @@ void Command::printHelpMessage() const
     std::cout << program.help().str();
 }
 
+std::string Command::getIconBanner()
+{
+    std::string banner;
+    banner += R"(")";
+    banner += R"( ______   ______     ______    \n)";
+    banner += R"(/\  ___\ /\  __ \   /\  __ \   \n)";
+    banner += R"(\ \  __\ \ \ \/\ \  \ \ \/\ \  \n)";
+    banner += R"( \ \_\    \ \_____\  \ \_____\ \n)";
+    banner += R"(  \/_/     \/_____/   \/_____/ \n)";
+    banner += R"(")";
+
+    return banner;
+}
+
 void Command::enterConsole() const
 {
-    util_console::Console console("foo> ");
+    util_console::Console console("foo > ");
     registerOnConsole(console);
 
-    util_file::executeCommand(("tput bel; echo " + COMMAND_GET_ICON_BANNER).c_str());
+    util_file::executeCommand(("tput bel; echo " + getIconBanner()).c_str());
     int returnCode;
     do
     {
         returnCode = console.readLine();
-        console.setGreeting("foo> ");
+        console.setGreeting("foo > ");
     }
     while (util_console::Console::ReturnCode::quit != returnCode);
 }
@@ -618,7 +632,7 @@ void Command::displayLogContext()
     util_file::printFile(LOG_PATH, true, COMMAND_PRINT_MAX_LINE, &util_log::changeLogLevelStyle);
 }
 
-void Command::throwUnexpectedMethodException(const std::string methodInfo)
+void Command::throwUnexpectedMethodException(const std::string& methodInfo)
 {
     taskPlan.reset();
     throw std::runtime_error("Unexpected method of " + methodInfo);

@@ -2,8 +2,6 @@
 
 #include <map>
 #include <random>
-#include <tuple>
-#include <vector>
 #include "expression.hpp"
 
 namespace algo_optimum
@@ -35,7 +33,7 @@ public:
 
 private:
     const algo_expression::Expression& func;
-    static void generateFibonacciNumber(std::vector<double>& fibonacci, const double max);
+    static std::vector<double> generateFibonacciNumber(const double max);
 };
 
 // Gradient ascent method
@@ -78,7 +76,7 @@ private:
 };
 
 // Particle swarm method
-namespace par_swarm
+namespace particle_swarm
 {
 constexpr static double c1 = 1.5;
 constexpr static double c2 = 1.5;
@@ -109,7 +107,7 @@ struct Greater
     bool operator()(const double left, const double right) const { return left > right; }
 };
 
-using Society = std::vector<par_swarm::Individual>;
+using Society = std::vector<particle_swarm::Individual>;
 using History = std::map<ValueY, ValueX, Greater>;
 struct Record
 {
@@ -123,7 +121,7 @@ struct Record
 
     Record() = default;
 };
-} // namespace par_swarm
+} // namespace particle_swarm
 class Particle : public Optimum
 {
 public:
@@ -135,20 +133,20 @@ public:
 private:
     const algo_expression::Expression& func;
     std::mt19937 seed;
-    par_swarm::Record recordInit(const double left, const double right);
+    particle_swarm::Record recordInit(const double left, const double right);
 };
 
 // Genetic method
 #define OPTIMUM_GENETIC_MIN_CHROMOSOME_NUMBER 3
-namespace gen_species
+namespace genetic_species
 {
 using Chromosome = std::vector<uint32_t>;
-using Population = std::vector<gen_species::Chromosome>;
+using Population = std::vector<genetic_species::Chromosome>;
 constexpr static double crossPr = 0.8;
 constexpr static double mutatePr = 0.05;
 constexpr static uint32_t size = 50;
 constexpr static uint32_t iterNum = 100;
-} // namespace gen_species
+} // namespace genetic_species
 class Genetic : public Optimum
 {
 public:
@@ -168,22 +166,22 @@ private:
     std::mt19937 seed;
     uint32_t chrNum{0};
     void updateSpecies(const double left, const double right, const double eps);
-    void geneCoding(gen_species::Chromosome& chr);
-    [[nodiscard]] double geneDecoding(const gen_species::Chromosome& chr) const;
-    gen_species::Population populationInit();
-    void geneCrossover(gen_species::Chromosome& chr1, gen_species::Chromosome& chr2);
-    void crossIndividual(gen_species::Population& pop);
-    void geneMutation(gen_species::Chromosome& chr);
-    void mutateIndividual(gen_species::Population& pop);
-    double calculateFitness(const gen_species::Chromosome& chr);
+    void geneCoding(genetic_species::Chromosome& chr);
+    [[nodiscard]] double geneDecoding(const genetic_species::Chromosome& chr) const;
+    genetic_species::Population populationInit();
+    void geneCrossover(genetic_species::Chromosome& chr1, genetic_species::Chromosome& chr2);
+    void crossIndividual(genetic_species::Population& pop);
+    void geneMutation(genetic_species::Chromosome& chr);
+    void mutateIndividual(genetic_species::Population& pop);
+    double calculateFitness(const genetic_species::Chromosome& chr);
     std::optional<std::pair<double, double>> fitnessLinearTransformation(
-        const gen_species::Population& pop);
+        const genetic_species::Population& pop);
     auto rouletteWheelSelection(
-        const gen_species::Population& pop, const std::vector<double>& fitnessCum);
+        const genetic_species::Population& pop, const std::vector<double>& fitnessCum);
     void stochasticTournamentSelection(
-        gen_species::Population& pop, const std::vector<double>& fitnessCum);
-    void selectIndividual(gen_species::Population& pop);
-    gen_species::Chromosome getBestIndividual(const gen_species::Population& pop);
+        genetic_species::Population& pop, const std::vector<double>& fitnessCum);
+    void selectIndividual(genetic_species::Population& pop);
+    genetic_species::Chromosome getBestIndividual(const genetic_species::Population& pop);
     double inline random();
     uint32_t inline getRandomNumber(const uint32_t limit);
 };

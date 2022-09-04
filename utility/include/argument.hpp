@@ -149,7 +149,7 @@ public:
     ArgumentRegister& nArgs(NArgsPattern pattern);
     ArgumentRegister& remaining();
     template <typename Iterator>
-    Iterator consume(Iterator start, Iterator end, std::string_view usedName = {});
+    Iterator consume(Iterator start, Iterator end, const std::string_view usedName = {});
     void validate() const;
     [[nodiscard]] std::size_t getArgumentsLength() const;
     template <typename T>
@@ -218,7 +218,7 @@ private:
     void throwNargsRangeValidationException() const;
     void throwRequiredArgNotUsedException() const;
     void throwRequiredArgNoValueProvidedException() const;
-    static auto lookAhead(std::string_view str) -> int;
+    static auto lookAhead(const std::string_view str) -> int;
     static bool checkIfOptional(std::string_view name);
     static bool checkIfRequired(std::string_view name);
     template <typename T>
@@ -283,7 +283,7 @@ auto ArgumentRegister::action(Function&& callable, Args&&... boundArgs) -> std::
 }
 
 template <typename Iterator>
-Iterator ArgumentRegister::consume(Iterator start, Iterator end, std::string_view usedName)
+Iterator ArgumentRegister::consume(Iterator start, Iterator end, const std::string_view usedName)
 {
     if (!isRepeatable && isUsed)
     {
@@ -458,13 +458,12 @@ public:
     void parseArgs(const std::vector<std::string>& arguments);
     void parseArgs(int argc, const char* const argv[]);
     template <typename T = std::string>
-    T get(std::string_view argName) const;
+    T get(const std::string_view argName) const;
     template <typename T = std::string>
-    auto present(std::string_view argName) const -> std::optional<T>;
-    [[nodiscard]] bool isUsed(std::string_view argName) const;
-    ArgumentRegister& operator[](std::string_view argName) const;
+    auto present(const std::string_view argName) const -> std::optional<T>;
+    [[nodiscard]] bool isUsed(const std::string_view argName) const;
+    ArgumentRegister& operator[](const std::string_view argName) const;
     [[nodiscard]] auto help() const -> std::stringstream;
-    friend auto operator<<(std::ostream& stream, const Argument& parser) -> std::ostream&;
     std::string programName;
     std::string programVersion;
 
@@ -479,6 +478,9 @@ private:
     void parseArgsInternal(const std::vector<std::string>& arguments);
     [[nodiscard]] std::size_t getLengthOfLongestArgument() const;
     void indexArgument(ListIterator iterator);
+
+protected:
+    friend auto operator<<(std::ostream& stream, const Argument& parser) -> std::ostream&;
 };
 
 template <typename... Args>
@@ -516,7 +518,7 @@ Argument& Argument::addParents(const Args&... fewArgs)
 }
 
 template <typename T>
-T Argument::get(std::string_view argName) const
+T Argument::get(const std::string_view argName) const
 {
     if (!isParsed)
     {
@@ -526,7 +528,7 @@ T Argument::get(std::string_view argName) const
 }
 
 template <typename T>
-auto Argument::present(std::string_view argName) const -> std::optional<T>
+auto Argument::present(const std::string_view argName) const -> std::optional<T>
 {
     return (*this)[argName].present<T>();
 }

@@ -10,7 +10,7 @@ namespace util_thread
 class Thread
 {
 public:
-    explicit Thread(uint32_t count);
+    explicit Thread(const uint32_t count);
     template <typename Func, typename... Args>
     decltype(auto) enqueue(const std::string& name, Func&& func, Args&&... args);
     virtual ~Thread();

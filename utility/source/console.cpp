@@ -8,21 +8,21 @@ namespace util_console
 {
 Console* currentConsole = nullptr;
 
-Console::Console(std::string const& greeting) : impl(std::make_unique<Impl>(greeting))
+Console::Console(const std::string& greeting) : impl(std::make_unique<Impl>(greeting))
 {
     rl_attempted_completion_function = &Console::getCommandCompletions;
 
     impl->RegCmds["help"] = std::make_pair(
-        [this](const Arguments& /*unused*/)
+        [this](const Args& /*unused*/)
         {
-            auto commandsHelp = getHelpOfRegisteredCommands();
+            const auto commandsHelp = getHelpOfRegisteredCommands();
             std::size_t maxLength = 0;
             for ([[maybe_unused]] const auto& [command, help] : commandsHelp)
             {
                 maxLength = std::max(maxLength, command.length());
             }
 
-            std::cout << "Console command:" << std::endl;
+            std::cout << "Console command:\n" << std::endl;
             for (auto iterReverse = commandsHelp.rbegin(); commandsHelp.rend() != iterReverse;
                  ++iterReverse)
             {
@@ -35,21 +35,21 @@ Console::Console(std::string const& greeting) : impl(std::make_unique<Impl>(gree
         "show help");
 
     impl->RegCmds["quit"] = std::make_pair(
-        [this](const Arguments& /*unused*/)
+        [this](const Args& /*unused*/)
         {
             return ReturnCode::quit;
         },
         "exit console");
 
     impl->RegCmds["run"] = std::make_pair(
-        [this](const Arguments& input)
+        [this](const Args& input)
         {
             if (input.size() < 2)
             {
                 std::cout << "Please input \"" << input[0] << " ScriptFilename\"" << std::endl;
                 return ReturnCode::error;
             }
-            return ReturnCode(runFile(input[1]));
+            return ReturnCode(fileExecutor(input[1]));
         },
         "run script file");
 }
@@ -118,7 +118,7 @@ std::string Console::getGreeting() const
     return impl->greeting;
 }
 
-int Console::runCommand(const std::string& command)
+int Console::commandExecutor(const std::string& command)
 {
     std::vector<std::string> inputs;
     std::istringstream is(command);
@@ -141,12 +141,12 @@ int Console::runCommand(const std::string& command)
     return ReturnCode::error;
 }
 
-int Console::runFile(const std::string& filename)
+int Console::fileExecutor(const std::string& filename)
 {
     std::ifstream input(filename);
     if (!input)
     {
-        std::cout << "Can not find the file to run." << std::endl;
+        std::cout << "Can not find script file to run." << std::endl;
         return ReturnCode::error;
     }
     std::string command;
@@ -160,7 +160,7 @@ int Console::runFile(const std::string& filename)
         }
         std::cout << "[" << counter << "] " << command << std::endl;
 
-        result = runCommand(command);
+        result = commandExecutor(command);
         if (result)
         {
             return ReturnCode(result);
@@ -191,7 +191,7 @@ int Console::readLine()
     std::string line(buffer);
     // NOLINTNEXTLINE(cppcoreguidelines-no-malloc)
     free(buffer);
-    return ReturnCode(runCommand(line));
+    return ReturnCode(commandExecutor(line));
 }
 
 char** Console::getCommandCompletions(const char* text, int start, int /*unused*/)

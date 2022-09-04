@@ -1,5 +1,4 @@
 #include "integral.hpp"
-#include <array>
 #include <functional>
 #include <random>
 #include "file.hpp"

@@ -37,7 +37,7 @@ void Log::runLogger()
         util_fsm::checkIfExceptedFSMState(targetState(State::work));
         while (isLogging)
         {
-            if (std::unique_lock<std::mutex> lock(logQueueMutex); true)
+            if (std::unique_lock<std::mutex> lock(queueMutex); true)
             {
                 loggingCondition.wait(
                     lock,
@@ -77,8 +77,7 @@ void Log::runLogger()
     }
     catch (const std::exception& error)
     {
-        std::cerr << error.what() << std::endl;
-        std::cerr << "FSM's expected state: " << expectedState
+        std::cerr << "logger: " << error.what() << ", FSM's expected state: " << expectedState
                   << ", FSM's current state: " << Log::State(currentState()) << std::endl;
         stopLogging();
     }
@@ -94,7 +93,7 @@ void Log::waitLoggerStart()
 
 void Log::waitLoggerStop()
 {
-    if (std::unique_lock<std::mutex> lock(logQueueMutex); true)
+    if (std::unique_lock<std::mutex> lock(queueMutex); true)
     {
         isLogging = false;
 
@@ -141,7 +140,7 @@ void Log::openLogFile()
 
 void Log::startLogging()
 {
-    if (std::unique_lock<std::mutex> lock(logQueueMutex); true)
+    if (std::unique_lock<std::mutex> lock(queueMutex); true)
     {
         isLogging = true;
     }
@@ -158,7 +157,7 @@ void Log::closeLogFile()
 
 void Log::stopLogging()
 {
-    if (std::unique_lock<std::mutex> lock(logQueueMutex); true)
+    if (std::unique_lock<std::mutex> lock(queueMutex); true)
     {
         isLogging = false;
         while (!logQueue.empty())
