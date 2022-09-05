@@ -32,7 +32,7 @@ public:
     [[nodiscard]] std::string getGreeting() const;
     int commandExecutor(const std::string& command);
     int fileExecutor(const std::string& filename);
-    int readLine();
+    int readCommandLine();
 
 private:
     using HistoryState = HISTORY_STATE;

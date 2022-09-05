@@ -600,14 +600,14 @@ std::string Command::getIconBanner()
 
 void Command::enterConsole() const
 {
+    util_file::executeCommand(("tput bel; echo " + getIconBanner()).c_str());
+
     util_console::Console console("foo > ");
     registerOnConsole(console);
-
-    util_file::executeCommand(("tput bel; echo " + getIconBanner()).c_str());
-    int returnCode;
+    int returnCode = 0;
     do
     {
-        returnCode = console.readLine();
+        returnCode = console.readCommandLine();
         console.setGreeting("foo > ");
     }
     while (util_console::Console::ReturnCode::quit != returnCode);

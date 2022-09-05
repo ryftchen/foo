@@ -1,11 +1,14 @@
 #!/usr/bin/env python3
 
-import curses
-import fcntl
-import signal
-import sys
-import subprocess
-import time
+try:
+    import curses
+    import fcntl
+    import signal
+    import sys
+    import subprocess
+    import time
+except ImportError as err:
+    raise ImportError(err)
 
 BAR_SAVE_CURSOR = "\033[s"
 BAR_RESTORE_CURSOR = "\033[u"

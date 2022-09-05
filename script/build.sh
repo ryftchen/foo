@@ -30,8 +30,9 @@ bashCommand()
     echo "$(date "+%b %d %T") $* FINISH"
 }
 
-printAbort()
+printException()
 {
+    echo
     echo "Shell script build.sh: $*"
     exit 1
 }
@@ -41,12 +42,12 @@ printInstruction()
     echo "Usage: build.sh [Options...]"
     echo
     echo "Optional:"
-    echo "--help          show help"
-    echo "--release       release version"
-    echo "-f, --format    format code"
-    echo "-l, --lint      lint code"
-    echo "--cleanup       cleanup project"
-    echo "--report        report to html"
+    echo "--help           show help"
+    echo "--release        release version"
+    echo "-f, --format     format code"
+    echo "-l, --lint       lint code"
+    echo "-c, --cleanup    cleanup project"
+    echo "-r, --report     report by html" #
     exit 0
 }
 
@@ -58,9 +59,9 @@ parseArgs()
         --release) ARGS_RELEASE=true ;;
         -f | --format) ARGS_FORMAT=true ;;
         -l | --lint) ARGS_LINT=true ;;
-        --cleanup) performCleanupOption ;;
-        --report) ARGS_REPORT=true ;;
-        *) printAbort "Unknown command line option: $1. Try with --help to get information." ;;
+        -c | --cleanup) performCleanupOption ;;
+        -r | --report) ARGS_REPORT=true ;;
+        *) printException "Unknown command line option: $1. Try with --help to get information." ;;
         esac
         shift
     done
@@ -76,13 +77,14 @@ checkDependencies()
 
     if [ ! -d ./"${APPLICATION_FOLDER}" ] || [ ! -d ./"${UTILITY_FOLDER}" ] \
         || [ ! -d ./"${ALGORITHM_FOLDER}" ] || [ ! -d ./"${SCRIPT_FOLDER}" ]; then
-        printAbort "There are missing folders in ${PROJECT_FOLDER} folder. Please check it."
+        printException "There are missing code folders in ${PROJECT_FOLDER} folder. \
+Please check it."
     fi
 
     if [ "${ARGS_FORMAT}" = true ]; then
         if [ ! -f ./"${FORMAT_CONFIG_CPP}" ] || [ ! -f ./"${FORMAT_CONFIG_PY}" ] \
             || [ ! -f ./"${FORMAT_CONFIG_SH}" ]; then
-            printAbort "There are missing format config files in ${PROJECT_FOLDER} folder. \
+            printException "There are missing format config files in ${PROJECT_FOLDER} folder. \
 Please check it."
         fi
     fi
@@ -90,7 +92,7 @@ Please check it."
     if [ "${ARGS_LINT}" = true ]; then
         if [ ! -f ./"${LINT_CONFIG_CPP}" ] || [ ! -f ./"${LINT_CONFIG_PY}" ] \
             || [ ! -f ./"${LINT_CONFIG_SH}" ]; then
-            printAbort "There are missing lint config files in ${PROJECT_FOLDER} folder. \
+            printException "There are missing lint config files in ${PROJECT_FOLDER} folder. \
 Please check it."
         fi
     fi
@@ -112,7 +114,7 @@ generateCMakeFiles()
 -DCMAKE_BUILD_TYPE=Debug"
         fi
     else
-        printAbort "There is no ${CMAKE_FILE} file in ${PROJECT_FOLDER} folder."
+        printException "No ${CMAKE_FILE} file in ${PROJECT_FOLDER} folder."
     fi
 }
 
@@ -142,7 +144,7 @@ performFormatOption()
             bashCommand "shfmt -l -w ./${SCRIPT_FOLDER}/*.sh"
             bashCommand "black --config ./${FORMAT_CONFIG_PY} ./${SCRIPT_FOLDER}/*.py"
         else
-            printAbort "There is no clang-format, shfmt or black program. Please check it."
+            printException "No clang-format, shfmt or black program. Please check it."
         fi
     fi
 }
@@ -160,13 +162,13 @@ performLintOption()
 ./${ALGORITHM_FOLDER} -name *.cpp -o -name *.hpp \
 | xargs clang-tidy-12 -p ./${BUILD_FOLDER}/${COMPILE_COMMANDS}"
             else
-                printAbort "There is no ${COMPILE_COMMANDS} file in ${BUILD_FOLDER} folder. \
+                printException "No ${COMPILE_COMMANDS} file in ${BUILD_FOLDER} folder. \
 Please generate it."
             fi
             bashCommand "shellcheck ./${SCRIPT_FOLDER}/*.sh"
             bashCommand "pylint --rcfile=${LINT_CONFIG_PY} ./${SCRIPT_FOLDER}/*.py"
         else
-            printAbort "There is no clang-tidy, shellcheck or pylint program. Please check it."
+            printException "No clang-tidy, shellcheck or pylint program. Please check it."
         fi
     fi
 }
@@ -185,7 +187,8 @@ performReportOption()
                 fi
                 lastTar="${PROJECT_FOLDER}_html_${commitId}.tar.bz2"
                 if [ -f ./"${TEMP_FOLDER}"/"${lastTar}" ]; then
-                    printAbort "The latest html file ${TEMP_FOLDER}/${lastTar} has been generated."
+                    printException "The latest html file ${TEMP_FOLDER}/${lastTar} \
+has been generated."
                 else
                     tarHtmlReport
                 fi
@@ -194,7 +197,7 @@ performReportOption()
                 tarHtmlReport
             fi
         else
-            printAbort "There is no codebrowser_generator or codebrowser_indexgenerator program. \
+            printException "No codebrowser_generator or codebrowser_indexgenerator program. \
 Please check it."
         fi
     fi
