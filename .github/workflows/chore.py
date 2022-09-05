@@ -115,7 +115,7 @@ def chore():
     args = parser.parse_args()
 
     print(
-        "\r\n{} >>>>>>>>>> chore.py <<<<<<<<<<".format(
+        "\r\n{} >>>>>>>>>>>>>>>>>>>> chore <<<<<<<<<<<<<<<<<<<<".format(
             datetime.strftime(datetime.now(), "%b %d %H:%M:%S")
         )
     )
