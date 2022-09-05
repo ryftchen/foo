@@ -575,8 +575,11 @@ void Command::printConsoleOutput() const
 
 void Command::printVersionInfo() const
 {
-    util_file::executeCommand(("echo " + getIconBanner()).c_str());
-    std::cout << "Version: " << program.programVersion << std::endl;
+    std::string versionStr = "tput rev; echo " + getIconBanner();
+    versionStr.pop_back();
+    versionStr.append("                    VERSION " + program.programVersion + R"( "; tput sgr0)");
+
+    util_file::executeCommand(versionStr.c_str());
 }
 
 void Command::printHelpMessage() const
@@ -588,11 +591,11 @@ std::string Command::getIconBanner()
 {
     std::string banner;
     banner += R"(")";
-    banner += R"( ______   ______     ______    \n)";
-    banner += R"(/\  ___\ /\  __ \   /\  __ \   \n)";
-    banner += R"(\ \  __\ \ \ \/\ \  \ \ \/\ \  \n)";
-    banner += R"( \ \_\    \ \_____\  \ \_____\ \n)";
-    banner += R"(  \/_/     \/_____/   \/_____/ \n)";
+    banner += R"(  ______   ______     ______    \n)";
+    banner += R"( /\  ___\ /\  __ \   /\  __ \   \n)";
+    banner += R"( \ \  __\ \ \ \/\ \  \ \ \/\ \  \n)";
+    banner += R"(  \ \_\    \ \_____\  \ \_____\ \n)";
+    banner += R"(   \/_/     \/_____/   \/_____/ \n)";
     banner += R"(")";
 
     return banner;

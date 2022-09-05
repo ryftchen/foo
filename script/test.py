@@ -23,8 +23,8 @@ SORT_METHOD = ["bub", "sel", "ins", "she", "mer", "qui", "hea", "cou", "buc", "r
 PASS_STEP = 0
 COMPLETE_STEP = 0
 WHOLE_STEP = (
-    len(OPTION_UTIL_TYPE)
-    + (len(CONSOLE_COMMAND) + 1)
+    (1 + len(OPTION_UTIL_TYPE))
+    + len(CONSOLE_COMMAND)
     + len(OPTION_ALGO_TYPE)
     + (len(OPTIMUM_METHOD) + 1)
     + (len(INTEGRAL_METHOD) + 1)
@@ -45,7 +45,7 @@ PRINT_STATUS_GREEN = "\033[0;32;40m"
 PRINT_STATUS_YELLOW = "\033[0;33;40m"
 PRINT_STATUS_BLUE = "\033[0;36;40m"
 PRINT_STATUS_END = "\033[0m"
-PRINT_STATUS_ESC_REGEX = r"(\033\[0.*?m)"
+PRINT_STATUS_ESC_REGEX = r"((\033.*?m)|(\007))"
 PRINT_STATUS_COLUMN_LENGTH = 10
 PRINT_ALIGN_MAX = 30
 PRINT_ALIGN_CMD_LEN = 10
@@ -61,7 +61,7 @@ def printException(message):
 
 def printStatus(color, context):
     print(
-        "\r{0}{2}[ {3} | {4} ]{2}{1}".format(
+        "{0}{2}[ {3} | {4} ]{2}{1}".format(
             color,
             PRINT_STATUS_END,
             f"{'=' * PRINT_STATUS_COLUMN_LENGTH}",
@@ -102,10 +102,9 @@ def runTestTask(command, enter=""):
     else:
         print(stdout)
         PASS_STEP += 1
-        if ARG_CHECK_MEMORY_STATE:
-            if ARG_CHECK_MEMORY_SUM not in stdout:
-                PASS_STEP -= 1
-                printStatus(PRINT_STATUS_RED, "{0:<{x}}".format("TEST CASE FAILURE", x=align))
+        if ARG_CHECK_MEMORY_STATE and (ARG_CHECK_MEMORY_SUM not in stdout):
+            PASS_STEP -= 1
+            printStatus(PRINT_STATUS_RED, "{0:<{x}}".format("TEST CASE FAILURE", x=align))
 
     COMPLETE_STEP += 1
     printStatus(
@@ -223,12 +222,12 @@ def analyzeTestLog():
 
 
 def testUtilTypeOption():
+    runTestTask(BIN_CMD, CONSOLE_COMMAND[1])
     for each in OPTION_UTIL_TYPE:
         runTestTask(f"{BIN_CMD} {each}")
 
 
 def testConsoleCommand():
-    runTestTask(BIN_CMD, CONSOLE_COMMAND[1])
     for each in CONSOLE_COMMAND:
         runTestTask(f"{BIN_CMD} {OPTION_UTIL_TYPE[2]} \"{each}\"")
 
