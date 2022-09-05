@@ -172,7 +172,7 @@ int Console::fileExecutor(const std::string& filename)
     return ReturnCode::success;
 }
 
-int Console::readLine()
+int Console::readCommandLine()
 {
     reserveConsole();
 

@@ -78,7 +78,7 @@ void Log::runLogger()
     catch (const std::exception& error)
     {
         std::cerr << "logger: " << error.what() << ", FSM's expected state: " << expectedState
-                  << ", FSM's current state: " << Log::State(currentState()) << std::endl;
+                  << ", FSM's current state: " << State(currentState()) << std::endl;
         stopLogging();
     }
 }
