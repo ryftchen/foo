@@ -1,12 +1,15 @@
 #!/usr/bin/env python3
 
-import argparse
-import json
-import os
-import subprocess
-import sys
-from datetime import datetime
-import requests
+try:
+    import argparse
+    import json
+    import os
+    import subprocess
+    import sys
+    from datetime import datetime
+    import requests
+except ImportError as err:
+    raise ImportError(err)
 
 ENV_BROWSER = "CODE_BROWSER"
 ENV_CONTAINER = "CODE_CONTAINER"
@@ -41,11 +44,7 @@ def command(cmd):
 
 
 def abort(msg):
-    print(
-        "{} {}".format(
-            datetime.strftime(datetime.now(), "%b %d %H:%M:%S"), f"Python script chore.py: {msg}"
-        )
-    )
+    print("{} {}".format(datetime.strftime(datetime.now(), "%b %d %H:%M:%S"), f"Exit: {msg}"))
     sys.exit(-1)
 
 
