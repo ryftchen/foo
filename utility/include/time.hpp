@@ -4,12 +4,6 @@
 #include <chrono>
 #include <string>
 
-namespace util_time
-{
-std::string getCurrentSystemTime();
-
-#define TIME_DATE_LENGTH 32
-#define TIME_DATE_YEAR_START 1900
 #define TIME_GET_SEED(seed)           \
     timeval timeSeed{};               \
     gettimeofday(&timeSeed, nullptr); \
@@ -22,6 +16,13 @@ std::string getCurrentSystemTime();
     timer.setBeginTime()
 #define TIMER_END timer.setEndTime()
 #define TIMER_INTERVAL timer.getTimeInterval()
+
+namespace util_time
+{
+std::string getCurrentSystemTime();
+
+constexpr uint32_t dateLength = 32;
+constexpr uint32_t dateStartYear = 1900;
 
 class Time final
 {

@@ -13,8 +13,8 @@ Log::Log(
     writeType(type),
     minLevel(level), actualTarget(target), FSM(initState)
 {
-    std::strncpy(pathname, logFile.c_str(), LOG_PATHNAME_LENGTH);
-    pathname[LOG_PATHNAME_LENGTH] = '\0';
+    std::strncpy(pathname, logFile.c_str(), logPathLength);
+    pathname[logPathLength] = '\0';
 }
 
 void Log::runLogger()
@@ -111,11 +111,11 @@ void Log::waitLoggerStop()
 
 void Log::openLogFile()
 {
-    if (!std::filesystem::exists(LOG_DIR))
+    if (!std::filesystem::exists(logDirectory))
     {
-        std::filesystem::create_directory(LOG_DIR);
+        std::filesystem::create_directory(logDirectory);
         std::filesystem::permissions(
-            LOG_DIR, std::filesystem::perms::owner_all, std::filesystem::perm_options::add);
+            logDirectory, std::filesystem::perms::owner_all, std::filesystem::perm_options::add);
     }
 
     switch (writeType)
@@ -179,17 +179,20 @@ bool Log::isLogFileClose(const NoLogging& /*unused*/) const
 
 std::string& changeLogLevelStyle(std::string& line)
 {
-    if (std::regex_search(line, std::regex(LOG_REGEX_INFO)))
+    if (std::regex_search(line, std::regex(std::string{infoRegex})))
     {
-        line = std::regex_replace(line, std::regex(LOG_REGEX_INFO), LOG_COLOR_INFO);
+        line = std::regex_replace(
+            line, std::regex(std::string{infoRegex}), std::string{infoColorForLog});
     }
-    else if (std::regex_search(line, std::regex(LOG_REGEX_WARN)))
+    else if (std::regex_search(line, std::regex(std::string{warnRegex})))
     {
-        line = std::regex_replace(line, std::regex(LOG_REGEX_WARN), LOG_COLOR_WARN);
+        line = std::regex_replace(
+            line, std::regex(std::string{warnRegex}), std::string{warnColorForLog});
     }
-    else if (std::regex_search(line, std::regex(LOG_REGEX_ERROR)))
+    else if (std::regex_search(line, std::regex(std::string{errorRegex})))
     {
-        line = std::regex_replace(line, std::regex(LOG_REGEX_ERROR), LOG_COLOR_ERROR);
+        line = std::regex_replace(
+            line, std::regex(std::string{errorRegex}), std::string{errorColorForLog});
     }
 
     return line;

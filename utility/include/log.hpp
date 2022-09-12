@@ -7,38 +7,39 @@
 #include "fsm.hpp"
 #include "time.hpp"
 
+#define LOG_DEFAULT_LOG_PATH "./temp/foo.log"
+#define LOG_DBG(logObj, format, args...) \
+    util_log::logObj.output(util_log::Log::OutputLevel::debug, __FILE__, __LINE__, format, ##args)
+#define LOG_INF(logObj, format, args...) \
+    util_log::logObj.output(util_log::Log::OutputLevel::info, __FILE__, __LINE__, format, ##args)
+#define LOG_WRN(logObj, format, args...) \
+    util_log::logObj.output(util_log::Log::OutputLevel::warn, __FILE__, __LINE__, format, ##args)
+#define LOG_ERR(logObj, format, args...) \
+    util_log::logObj.output(util_log::Log::OutputLevel::error, __FILE__, __LINE__, format, ##args)
+#define LOG_START(logObj) util_log::logObj.waitLoggerStart();
+#define LOG_STOP(logObj) util_log::logObj.waitLoggerStop();
+
 namespace util_log
 {
 extern class Log logger;
 std::string& changeLogLevelStyle(std::string& line);
 
-#define LOG_DIR "./temp"
-#define LOG_PATH "./temp/foo.log"
-#define LOG_PATHNAME_LENGTH 32
-#define LOG_PREFIX_DEBUG "[DBG]"
-#define LOG_PREFIX_INFO "[INF]"
-#define LOG_PREFIX_WARN "[WRN]"
-#define LOG_PREFIX_ERROR "[ERR]"
-#define LOG_REGEX_INFO R"(^\[INF\])"
-#define LOG_REGEX_WARN R"(^\[WRN\])"
-#define LOG_REGEX_ERROR R"(^\[ERR\])"
-#define LOG_COLOR_INFO \
-    (std::string(PRINT_COLOR_GREEN) + std::string(LOG_PREFIX_INFO) + std::string(PRINT_COLOR_END))
-#define LOG_COLOR_WARN \
-    (std::string(PRINT_COLOR_YELLOW) + std::string(LOG_PREFIX_WARN) + std::string(PRINT_COLOR_END))
-#define LOG_COLOR_ERROR \
-    (std::string(PRINT_COLOR_RED) + std::string(LOG_PREFIX_ERROR) + std::string(PRINT_COLOR_END))
-
-#define LOGGER_DBG(format, args...) \
-    util_log::logger.output(util_log::Log::OutputLevel::debug, __FILE__, __LINE__, format, ##args)
-#define LOGGER_INF(format, args...) \
-    util_log::logger.output(util_log::Log::OutputLevel::info, __FILE__, __LINE__, format, ##args)
-#define LOGGER_WRN(format, args...) \
-    util_log::logger.output(util_log::Log::OutputLevel::warn, __FILE__, __LINE__, format, ##args)
-#define LOGGER_ERR(format, args...) \
-    util_log::logger.output(util_log::Log::OutputLevel::error, __FILE__, __LINE__, format, ##args)
-#define LOGGER_START util_log::logger.waitLoggerStart();
-#define LOGGER_STOP util_log::logger.waitLoggerStop();
+inline constexpr std::string_view logPath = LOG_DEFAULT_LOG_PATH;
+constexpr std::string_view logDirectory = "./temp";
+constexpr uint32_t logPathLength = 32;
+constexpr std::string_view debugPrefix = "[DBG]";
+constexpr std::string_view infoPrefix = "[INF]";
+constexpr std::string_view warnPrefix = "[WRN]";
+constexpr std::string_view errorPrefix = "[ERR]";
+constexpr std::string_view infoRegex = R"(^\[INF\])";
+constexpr std::string_view warnRegex = R"(^\[WRN\])";
+constexpr std::string_view errorRegex = R"(^\[ERR\])";
+constexpr auto infoColorForLog =
+    util_file::joinStr<util_file::greenForeground, infoPrefix, util_file::colorEnd>;
+constexpr auto warnColorForLog =
+    util_file::joinStr<util_file::yellowForeground, warnPrefix, util_file::colorEnd>;
+constexpr auto errorColorForLog =
+    util_file::joinStr<util_file::redForeground, errorPrefix, util_file::colorEnd>;
 
 class Log final : public util_fsm::FSM<Log>
 {
@@ -87,7 +88,7 @@ private:
     OutputType writeType{OutputType::add};
     OutputLevel minLevel{OutputLevel::debug};
     OutputTarget actualTarget{OutputTarget::all};
-    char pathname[LOG_PATHNAME_LENGTH + 1]{LOG_PATH};
+    char pathname[logPathLength + 1]{LOG_DEFAULT_LOG_PATH};
 
     mutable std::mutex queueMutex;
     std::queue<std::string> logQueue;
@@ -144,27 +145,27 @@ void Log::output(
     {
         if (level >= minLevel)
         {
-            std::string prefix;
+            std::string_view prefix;
             switch (level)
             {
                 case OutputLevel::debug:
-                    prefix = LOG_PREFIX_DEBUG;
+                    prefix = debugPrefix;
                     break;
                 case OutputLevel::info:
-                    prefix = LOG_PREFIX_INFO;
+                    prefix = infoPrefix;
                     break;
                 case OutputLevel::warn:
-                    prefix = LOG_PREFIX_WARN;
+                    prefix = warnPrefix;
                     break;
                 case OutputLevel::error:
-                    prefix = LOG_PREFIX_ERROR;
+                    prefix = errorPrefix;
                     break;
                 default:
                     break;
             }
 
-            std::string output = prefix + ":[" + util_time::getCurrentSystemTime() + "]:["
-                + std::filesystem::path(codeFile.c_str()).filename().string() + "#"
+            std::string output = std::string{prefix} + ":[" + util_time::getCurrentSystemTime()
+                + "]:[" + std::filesystem::path(codeFile.c_str()).filename().string() + "#"
                 + std::to_string(codeLine) + "]: ";
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat-security"

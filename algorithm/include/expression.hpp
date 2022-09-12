@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cmath>
+#include <string>
 #include <unordered_map>
 #include <variant>
 
@@ -13,39 +14,48 @@ public:
     virtual double operator()(const double x) const = 0;
 };
 
-#define EXPRESSION_FUN_1_RANGE_1 (-M_PI / 2.0)
-#define EXPRESSION_FUN_1_RANGE_2 (2.0 * M_PI)
-#define EXPRESSION_FUN_1_OPTIMUM "\r\nOptimum Expression: y=x*sin(x)/(1+(cos(x))^2),x∈[-π/2,2π]"
-#define EXPRESSION_FUN_1_INTEGRAL "\r\nIntegral Expression: I=∫(-π/2→2π)x*sin(x)/(1+(cos(x))^2)dx"
 class Function1 : public Expression
 {
 public:
     double operator()(const double x) const override;
+
+    static constexpr double range1 = -M_PI / 2.0;
+    static constexpr double range2 = 2.0 * M_PI;
+    static constexpr std::string_view optimumExpression =
+        "\r\nOptimum Expression: y=x*sin(x)/(1+(cos(x))^2),x∈[-π/2,2π]";
+    static constexpr std::string_view integralExpression =
+        "\r\nIntegral Expression: I=∫(-π/2→2π)x*sin(x)/(1+(cos(x))^2)dx";
 };
 
-#define EXPRESSION_FUN_2_RANGE_1 0.0
-#define EXPRESSION_FUN_2_RANGE_2 9.0
-#define EXPRESSION_FUN_2_OPTIMUM "\r\nOptimum Expression: y=x+10sin(5x)+7cos(4x),x∈[0,9]"
-#define EXPRESSION_FUN_2_INTEGRAL "\r\nIntegral Expression: I=∫(0→9)x+10sin(5x)+7cos(4x)dx"
 class Function2 : public Expression
 {
 public:
     double operator()(const double x) const override;
+
+    static constexpr double range1 = 0.0;
+    static constexpr double range2 = 9.0;
+    static constexpr std::string_view optimumExpression =
+        "\r\nOptimum Expression: y=x+10sin(5x)+7cos(4x),x∈[0,9]";
+    static constexpr std::string_view integralExpression =
+        "\r\nIntegral Expression: I=∫(0→9)x+10sin(5x)+7cos(4x)dx";
 };
 
 #ifdef EXPRESSION_NO_MAXIMUM
-#define EXPRESSION_RATE_KEEP 1.0
-#define EXPRESSION_RATE_FLIP -1.0
+inline constexpr double positiveScaleFactor = 1.0;
+inline constexpr double inverseScaleFactor = -1.0;
 
-#define EXPRESSION_GRI_RANGE_1 -600.0
-#define EXPRESSION_GRI_RANGE_2 600.0
-#define EXPRESSION_GRI_OPTIMUM "\r\nOptimum Expression: one-dimensional Griewank function"
-#define EXPRESSION_GRI_INTEGRAL "\r\nIntegral Expression: one-dimensional Griewank function"
 class Griewank : public Expression
 {
 public:
     explicit Griewank(const double rate) : rate(rate){};
     double operator()(const double x) const override;
+
+    static constexpr double range1 = -600.0;
+    static constexpr double range2 = 600.0;
+    static constexpr std::string_view optimumExpression =
+        "\r\nOptimum Expression: one-dimensional Griewank function";
+    static constexpr std::string_view integralExpression =
+        "\r\nIntegral Expression: one-dimensional Griewank function";
 
     Griewank() = delete;
 
@@ -53,15 +63,18 @@ private:
     const double rate;
 };
 
-#define EXPRESSION_RAS_RANGE_1 -5.12
-#define EXPRESSION_RAS_RANGE_2 5.12
-#define EXPRESSION_RAS_OPTIMUM "\r\nOptimum Expression: one-dimensional Rastrigin function"
-#define EXPRESSION_RAS_INTEGRAL "\r\nIntegral Expression: one-dimensional Rastrigin function"
 class Rastrigin : public Expression
 {
 public:
     explicit Rastrigin(const double rate) : rate(rate){};
     double operator()(const double x) const override;
+
+    static constexpr double range1 = -5.12;
+    static constexpr double range2 = 5.12;
+    static constexpr std::string_view optimumExpression =
+        "\r\nOptimum Expression: one-dimensional Rastrigin function";
+    static constexpr std::string_view integralExpression =
+        "\r\nIntegral Expression: one-dimensional Rastrigin function";
 
     Rastrigin() = delete;
 

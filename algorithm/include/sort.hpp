@@ -6,21 +6,11 @@
 #include "file.hpp"
 #include "time.hpp"
 
-namespace algo_sort
-{
-#define SORT_ARRAY_RANGE_1 -50
-#define SORT_ARRAY_RANGE_2 150
-#define SORT_ARRAY_LENGTH 53
-#define SORT_PRINT_MAX_ALIGN 16
-#define SORT_PRINT_MAX_COLUMN 10
 #define SORT_GENERATE_INTEGRAL_ARRAY \
     "\r\nGenerate %u random integral numbers from %d to %d:\r\n%s\n"
 #define SORT_GENERATE_FLOATING_ARRAY \
     "\r\nGenerate %u random floating point numbers from %.5f to %.5f:\r\n%s\n"
 #define SORT_RESULT "\r\n*%-9s method:\r\n%s\r\n==>Run time: %8.5f ms\n"
-#define SORT_RADIX_DEC 10
-#define SORT_RADIX_NATURAL_NUMBER_BUCKET 10
-#define SORT_RADIX_NEGATIVE_INTEGER_BUCKET 9
 #define SORT_FORMAT_FOR_LOOP(format, args...)                                                     \
     formatSize = std::snprintf(buffer + completeSize, bufferSize - completeSize, format, ##args); \
     if ((formatSize < 0) || (formatSize >= static_cast<int>(bufferSize - completeSize)))          \
@@ -28,10 +18,25 @@ namespace algo_sort
         break;                                                                                    \
     }                                                                                             \
     completeSize += formatSize;
-#define SORT_GENERATE_PRINT_BUFFER(buffer, bufferSize)         \
-    const uint32_t bufferSize = length * SORT_PRINT_MAX_ALIGN; \
-    char buffer[bufferSize + 1];                               \
+#define SORT_GENERATE_PRINT_BUFFER(buffer, bufferSize)    \
+    const uint32_t bufferSize = length * maxAlignOfPrint; \
+    char buffer[bufferSize + 1];                          \
     buffer[0] = '\0';
+
+namespace algo_sort
+{
+inline constexpr int arrayRange1 = -50;
+inline constexpr int arrayRange2 = 150;
+inline constexpr uint32_t arrayLength = 53;
+constexpr uint32_t maxAlignOfPrint = 16;
+constexpr uint32_t maxColumnOfPrint = 10;
+
+namespace radix
+{
+constexpr uint32_t decimal = 10;
+constexpr uint32_t naturalNumberBucket = 10;
+constexpr uint32_t negativeIntegerBucket = 9;
+} // namespace radix
 
 template <class T>
 class Sort
@@ -130,7 +135,7 @@ requires std::is_integral<U>::value void Sort<T>::setRandomArray(
         array[i] = randomX(seed);
     }
 
-    const uint32_t arrayBufferSize = length * SORT_PRINT_MAX_ALIGN;
+    const uint32_t arrayBufferSize = length * maxAlignOfPrint;
     char arrayBuffer[arrayBufferSize + 1];
     arrayBuffer[0] = '\0';
     FORMAT_PRINT(
@@ -150,7 +155,7 @@ requires std::is_floating_point<U>::value void Sort<T>::setRandomArray(
         array[i] = randomX(seed);
     }
 
-    const uint32_t arrayBufferSize = length * SORT_PRINT_MAX_ALIGN;
+    const uint32_t arrayBufferSize = length * maxAlignOfPrint;
     char arrayBuffer[arrayBufferSize + 1];
     arrayBuffer[0] = '\0';
     FORMAT_PRINT(
@@ -183,7 +188,7 @@ char* Sort<T>::formatArray(
     for (uint32_t i = 0; i < length; ++i)
     {
         SORT_FORMAT_FOR_LOOP(format, align + 1, *(array + i));
-        if ((0 == (i + 1) % SORT_PRINT_MAX_COLUMN) && ((i + 1) != length))
+        if ((0 == (i + 1) % maxColumnOfPrint) && ((i + 1) != length))
         {
             SORT_FORMAT_FOR_LOOP("\n");
         }

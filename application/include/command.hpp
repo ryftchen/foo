@@ -7,15 +7,12 @@
 #include "expression.hpp"
 #include "sort.hpp"
 
-#define COMMAND_ALGO_TASK_MAX_METHOD 10
-#define COMMAND_PRINT_TITLE_WIDTH 40
-#define COMMAND_PRINT_MAX_LINE 50
 #define COMMAND_PRINT_ALGO_TASK_TITLE(taskType, title)                                 \
     std::cout << std::endl                                                             \
               << "TASK " << std::setiosflags(std::ios_base::left) << std::setfill('.') \
-              << std::setw(COMMAND_PRINT_TITLE_WIDTH) << taskType << title             \
+              << std::setw(titleWidthForPrintTask) << taskType << title                \
               << std::resetiosflags(std::ios_base::left) << std::setfill(' ') << std::endl;
-#define COMMAND_CHECK_EXIST_EXCESS_ARG      \
+#define COMMAND_CHECK_FOR_EXCESS_ARG        \
     do                                      \
     {                                       \
         if (checkTask())                    \
@@ -24,6 +21,10 @@
         }                                   \
     }                                       \
     while (0)
+
+constexpr uint32_t maxMethodOfAlgoTask = 10;
+constexpr uint32_t titleWidthForPrintTask = 40;
+constexpr uint32_t maxLineNumForPrintLog = 50;
 
 class Command
 {
@@ -69,9 +70,9 @@ public:
     };
     enum UtilTaskType
     {
-        console,
-        version,
         help,
+        version,
+        console,
         utilTaskBottom
     };
 
@@ -83,10 +84,18 @@ private:
     mutable std::mutex commandMutex;
     util_argument::Argument program{util_argument::Argument("foo")};
 
-    using AlgoTaskBitSet = std::bitset<COMMAND_ALGO_TASK_MAX_METHOD>;
+    using AlgoTaskBitSet = std::bitset<maxMethodOfAlgoTask>;
 #pragma pack(8)
     struct TaskPlan
     {
+        struct UtilTask
+        {
+            std::bitset<UtilTaskType::utilTaskBottom> utilTaskBit;
+
+            [[nodiscard]] bool empty() const { return !utilTaskBit.any(); }
+            void reset() { utilTaskBit.reset(); }
+        } utilTask{};
+
         struct AlgoTask
         {
             AlgoTaskBitSet optimumBit;
@@ -105,14 +114,6 @@ private:
             }
         } algoTask{};
 
-        struct UtilTask
-        {
-            std::bitset<UtilTaskType::utilTaskBottom> utilTaskBit;
-
-            [[nodiscard]] bool empty() const { return !utilTaskBit.any(); }
-            void reset() { utilTaskBit.reset(); }
-        } utilTask{};
-
         TaskPlan() = default;
         [[nodiscard]] bool empty() const { return algoTask.empty() && utilTask.empty(); }
         void reset()
@@ -123,12 +124,12 @@ private:
     } taskPlan{};
 #pragma pack()
 
-    const std::string algoTaskNameTable[AlgoTaskType::algoTaskBottom] = {
+    static constexpr std::string_view algoTaskNameTable[AlgoTaskType::algoTaskBottom] = {
         "optimum", "integral", "sort"};
     AlgoTaskBitSet* const algoTaskBitPtr[AlgoTaskType::algoTaskBottom] = {
         &taskPlan.algoTask.optimumBit, &taskPlan.algoTask.integralBit, &taskPlan.algoTask.sortBit};
-    const std::string
-        algoTaskMethodTable[AlgoTaskType::algoTaskBottom][COMMAND_ALGO_TASK_MAX_METHOD] = {
+    static constexpr std::string_view
+        algoTaskMethodTable[AlgoTaskType::algoTaskBottom][maxMethodOfAlgoTask] = {
             {"fib", "gra", "ann", "par", "gen"},
             {"tra", "sim", "rom", "gau", "mon"},
             {"bub", "sec", "ins", "she", "mer", "qui", "hea", "cou", "buc", "rad"}};
@@ -139,8 +140,8 @@ private:
     const SetAlgoTaskBitFunctor setAlgoTaskBitFunctor[AlgoTaskType::algoTaskBottom] = {
         &Command::setOptimumBit, &Command::setIntegralBit, &Command::setSortBit};
 
-    const std::string utilTaskNameTable[UtilTaskType::utilTaskBottom] = {
-        "console", "version", "help"};
+    static constexpr std::string_view utilTaskNameTable[UtilTaskType::utilTaskBottom] = {
+        "help", "version", "console"};
     typedef void (Command::*PerformUtilTaskFunctor)() const;
     const PerformUtilTaskFunctor performUtilTaskFunctor[UtilTaskType::utilTaskBottom] = {
         &Command::printConsoleOutput, &Command::printVersionInfo, &Command::printHelpMessage};
@@ -149,8 +150,10 @@ private:
         algo_expression::ExpressionRange<double, double>, algo_expression::TargetExpression,
         algo_expression::ExpressionMapHash>
         expressionMap{
-            {{EXPRESSION_FUN_1_RANGE_1, EXPRESSION_FUN_1_RANGE_2}, algo_expression::Function1()},
-            {{EXPRESSION_FUN_2_RANGE_1, EXPRESSION_FUN_2_RANGE_2}, algo_expression::Function2()}};
+            {{algo_expression::Function1::range1, algo_expression::Function1::range2},
+             algo_expression::Function1()},
+            {{algo_expression::Function2::range1, algo_expression::Function2::range2},
+             algo_expression::Function2()}};
 
     void foregroundHandle(const int argc, const char* const argv[]);
     void backgroundHandle() const;

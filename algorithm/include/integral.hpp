@@ -3,10 +3,11 @@
 #include <bits/stdint-uintn.h>
 #include "expression.hpp"
 
+#define INTEGRAL_RESULT "*%-11s method: I=%+.5f  ==>Run time: %8.5f ms\n"
+
 namespace algo_integral
 {
-#define INTEGRAL_EPSILON 1e-5
-#define INTEGRAL_RESULT "*%-11s method: I=%+.5f  ==>Run time: %8.5f ms\n"
+inline constexpr double epsilon = 1e-5;
 
 class Integral
 {
@@ -27,7 +28,6 @@ int inline Integral::getSign(double& lower, double& upper)
 }
 
 // Trapezoidal method
-#define INTEGRAL_TRAPEZOIDAL_MIN_STEP std::pow(2, 3)
 class Trapezoidal : public Integral
 {
 public:
@@ -66,8 +66,6 @@ private:
 };
 
 // Gauss-Legendre's 5-points method
-#define INTEGRAL_GAUSS_NODE 5
-#define INTEGRAL_GAUSS_COEFFICIENT 2
 class Gauss : public Integral
 {
 public:
