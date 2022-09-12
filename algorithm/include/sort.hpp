@@ -31,13 +31,6 @@ inline constexpr uint32_t arrayLength = 53;
 constexpr uint32_t maxAlignOfPrint = 16;
 constexpr uint32_t maxColumnOfPrint = 10;
 
-namespace radix
-{
-constexpr uint32_t decimal = 10;
-constexpr uint32_t naturalNumberBucket = 10;
-constexpr uint32_t negativeIntegerBucket = 9;
-} // namespace radix
-
 template <class T>
 class Sort
 {
