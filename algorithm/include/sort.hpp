@@ -13,6 +13,10 @@
 #define SORT_RESULT "\r\n*%-9s method:\r\n%s\r\n==>Run time: %8.5f ms\n"
 #define SORT_FORMAT_FOR_LOOP(format, args...)                                                     \
     formatSize = std::snprintf(buffer + completeSize, bufferSize - completeSize, format, ##args); \
+    if ((formatSize < 0) || (formatSize >= static_cast<int>(bufferSize - completeSize)))          \
+    {                                                                                             \
+        break;                                                                                    \
+    }                                                                                             \
     completeSize += formatSize;
 #define SORT_GENERATE_PRINT_BUFFER(buffer, bufferSize)    \
     const uint32_t bufferSize = length * maxAlignOfPrint; \
