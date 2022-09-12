@@ -42,12 +42,12 @@ void printFile(
     const char* const pathname, const bool reverse = false,
     const uint32_t maxLine = maxLineNumForPrintFile, PrintStyle style = nullStyle);
 
-template <std::string_view const&... Strs>
+template <std::string_view const&... Strings>
 struct Join
 {
     static constexpr auto impl() noexcept
     {
-        constexpr std::size_t length = (Strs.size() + ... + 0);
+        constexpr std::size_t length = (Strings.size() + ... + 0);
         std::array<char, length + 1> array{};
         auto append = [i = 0, &array](auto const& str) mutable
         {
@@ -56,15 +56,15 @@ struct Join
                 array[i++] = ch;
             }
         };
-        (append(Strs), ...);
+        (append(Strings), ...);
         array[length] = 0;
         return array;
     }
     static constexpr auto array = impl();
     static constexpr std::string_view value{array.data(), array.size() - 1};
 };
-template <std::string_view const&... Strs>
-static constexpr auto joinStr = Join<Strs...>::value;
+template <std::string_view const&... Strings>
+static constexpr auto joinStr = Join<Strings...>::value;
 
 template <class T>
 void tryToOperateFileLock(
