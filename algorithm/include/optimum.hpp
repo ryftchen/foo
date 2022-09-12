@@ -4,13 +4,14 @@
 #include <random>
 #include "expression.hpp"
 
+#define OPTIMUM_RESULT(opt) "*%-9s method: Y(" #opt ")=%+.5f X=%+.5f  ==>Run time: %8.5f ms\n"
+
 namespace algo_optimum
 {
 using ValueX = double;
 using ValueY = double;
 
-#define OPTIMUM_EPSILON 1e-5
-#define OPTIMUM_RESULT(opt) "*%-9s method: Y(" #opt ")=%+.5f X=%+.5f  ==>Run time: %8.5f ms\n"
+inline constexpr double epsilon = 1e-5;
 
 class Optimum
 {
@@ -21,9 +22,6 @@ public:
 };
 
 // Fibonacci method
-#define OPTIMUM_FIBONACCI_X_1 (leftVal + fibonacci[n - 2] / fibonacci[n] * (rightVal - leftVal))
-#define OPTIMUM_FIBONACCI_X_2 (leftVal + fibonacci[n - 1] / fibonacci[n] * (rightVal - leftVal))
-#define OPTIMUM_FIBONACCI_MIN_COUNT 3
 class Fibonacci : public Optimum
 {
 public:
@@ -34,15 +32,31 @@ public:
 private:
     const algo_expression::Expression& func;
     static std::vector<double> generateFibonacciNumber(const double max);
+    static double inline fibonacciCalculationForX1(
+        const std::vector<double>::const_iterator iterFib, const double left, const double right);
+    static double inline fibonacciCalculationForX2(
+        const std::vector<double>::const_iterator iterFib, const double left, const double right);
+};
+
+double inline Fibonacci::fibonacciCalculationForX1(
+    const std::vector<double>::const_iterator iterFib, const double left, const double right)
+{
+    return (left + (*std::prev(iterFib, 2)) / (*iterFib) * (right - left));
+};
+
+double inline Fibonacci::fibonacciCalculationForX2(
+    const std::vector<double>::const_iterator iterFib, const double left, const double right)
+{
+    return (left + (*std::prev(iterFib, 1)) / (*iterFib) * (right - left));
 };
 
 // Gradient ascent method
-namespace gra_learning
+namespace gradient_learning
 {
-constexpr static double initialLearningRate = 0.01;
-constexpr static double decay = 0.001;
-constexpr static uint32_t loopTime = 100;
-} // namespace gra_learning
+constexpr double initialLearningRate = 0.01;
+constexpr double decay = 0.001;
+constexpr uint32_t loopTime = 100;
+} // namespace gradient_learning
 class Gradient : public Optimum
 {
 public:
@@ -56,14 +70,13 @@ private:
 };
 
 // Simulated annealing method
-#define OPTIMUM_ANNEALING_PERTURBATION 0.5
-namespace ann_cooling
+namespace annealing_cooling
 {
-constexpr static double initialT = 100.0;
-constexpr static double minimalT = 0.01;
-constexpr static double coolingRate = 0.9;
-constexpr static uint32_t markovChain = 100;
-} // namespace ann_cooling
+constexpr double initialT = 100.0;
+constexpr double minimalT = 0.01;
+constexpr double coolingRate = 0.9;
+constexpr uint32_t markovChain = 100;
+} // namespace annealing_cooling
 class Annealing : public Optimum
 {
 public:
@@ -78,14 +91,14 @@ private:
 // Particle swarm method
 namespace particle_swarm
 {
-constexpr static double c1 = 1.5;
-constexpr static double c2 = 1.5;
-constexpr static double wBegin = 0.9;
-constexpr static double wEnd = 0.4;
-constexpr static double vMax = 0.5;
-constexpr static double vMin = -0.5;
-constexpr static uint32_t size = 50;
-constexpr static uint32_t iterNum = 100;
+constexpr double c1 = 1.5;
+constexpr double c2 = 1.5;
+constexpr double wBegin = 0.9;
+constexpr double wEnd = 0.4;
+constexpr double vMax = 0.5;
+constexpr double vMin = -0.5;
+constexpr uint32_t size = 50;
+constexpr uint32_t iterNum = 100;
 struct Individual
 {
     Individual(
@@ -137,15 +150,15 @@ private:
 };
 
 // Genetic method
-#define OPTIMUM_GENETIC_MIN_CHROMOSOME_NUMBER 3
 namespace genetic_species
 {
 using Chromosome = std::vector<uint32_t>;
 using Population = std::vector<genetic_species::Chromosome>;
-constexpr static double crossPr = 0.8;
-constexpr static double mutatePr = 0.05;
-constexpr static uint32_t size = 50;
-constexpr static uint32_t iterNum = 100;
+
+constexpr double crossPr = 0.8;
+constexpr double mutatePr = 0.05;
+constexpr uint32_t size = 50;
+constexpr uint32_t iterNum = 100;
 } // namespace genetic_species
 class Genetic : public Optimum
 {

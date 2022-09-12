@@ -13,7 +13,7 @@ void executeCommand(const char* const cmd)
         throwCallSystemApiException("popen");
     }
 
-    char resultBuffer[BUFFER_SIZE_MAX + 1] = {'\0'};
+    char resultBuffer[maxBufferSize + 1] = {'\0'};
     while (nullptr != std::fgets(resultBuffer, sizeof(resultBuffer), file))
     {
         if ('\n' == resultBuffer[std::strlen(resultBuffer) - 1])
@@ -102,8 +102,7 @@ void throwCallSystemApiException(const std::string& str)
 
 void throwOperateLockException(const std::string& name, const bool isToLock, const bool isReader)
 {
-    const std::string operate = isToLock ? "lock" : "unlock";
-    const std::string type = isReader ? "reader" : "writer";
+    const std::string operate = isToLock ? "lock" : "unlock", type = isReader ? "reader" : "writer";
     throw std::runtime_error("Failed to " + operate + " " + type + " lock: " + name);
 }
 

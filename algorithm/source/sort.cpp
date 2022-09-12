@@ -412,10 +412,10 @@ void Sort<T>::radixSort(T* const array, const uint32_t length) const
 
     // -9 ... -1 0 1 ... 9
     const uint32_t bucketNum = (positive ^ negative)
-        ? SORT_RADIX_NATURAL_NUMBER_BUCKET
-        : (SORT_RADIX_NATURAL_NUMBER_BUCKET + SORT_RADIX_NEGATIVE_INTEGER_BUCKET);
+        ? radix::naturalNumberBucket
+        : (radix::naturalNumberBucket + radix::negativeIntegerBucket);
     assert(bucketNum > 0);
-    const uint32_t offset = (!negative) ? 0 : SORT_RADIX_NEGATIVE_INTEGER_BUCKET;
+    const uint32_t offset = (!negative) ? 0 : radix::negativeIntegerBucket;
     std::unique_ptr<T[]> countingOld = std::make_unique<T[]>(bucketNum);
     std::unique_ptr<T[]> countingNew = std::make_unique<T[]>(bucketNum);
     std::queue<T> bucket;
@@ -427,7 +427,7 @@ void Sort<T>::radixSort(T* const array, const uint32_t length) const
         aggregation[aggIndex].push(sortArray[i]);
         ++countingNew[aggIndex];
     }
-    for (uint32_t i = 1, pow = SORT_RADIX_DEC; i < digitMax; ++i, pow *= base)
+    for (uint32_t i = 1, pow = radix::decimal; i < digitMax; ++i, pow *= base)
     {
         std::memcpy(countingOld.get(), countingNew.get(), bucketNum * sizeof(T));
         std::memset(countingNew.get(), 0, bucketNum * sizeof(T));

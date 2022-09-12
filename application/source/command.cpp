@@ -74,7 +74,7 @@ Command::Command()
 
 void Command::runCommander(const int argc, const char* const argv[])
 {
-    LOGGER_START;
+    LOG_START(logger);
 
     try
     {
@@ -83,7 +83,7 @@ void Command::runCommander(const int argc, const char* const argv[])
             foregroundHandle(argc, argv);
             backgroundHandle();
 
-            LOGGER_STOP;
+            LOG_STOP(logger);
             return;
         }
 
@@ -91,10 +91,10 @@ void Command::runCommander(const int argc, const char* const argv[])
     }
     catch (const std::exception& error)
     {
-        LOGGER_ERR(error.what());
+        LOG_ERR(logger, error.what());
     }
 
-    LOGGER_STOP;
+    LOG_STOP(logger);
 }
 
 void Command::foregroundHandle(const int argc, const char* const argv[])
@@ -117,10 +117,10 @@ void Command::validateAlgorithmTask()
 {
     for (int i = 0; i < AlgoTaskType::algoTaskBottom; ++i)
     {
-        if (program.isUsed("--" + algoTaskNameTable[AlgoTaskType(i)]))
+        if (program.isUsed("--" + std::string{algoTaskNameTable[AlgoTaskType(i)]}))
         {
-            const auto methods =
-                program.get<std::vector<std::string>>("--" + algoTaskNameTable[AlgoTaskType(i)]);
+            const auto methods = program.get<std::vector<std::string>>(
+                "--" + std::string{algoTaskNameTable[AlgoTaskType(i)]});
             if (!methods.empty() && !checkTask())
             {
                 for (const auto& method : methods)
@@ -130,7 +130,7 @@ void Command::validateAlgorithmTask()
             }
             else
             {
-                COMMAND_CHECK_EXIST_EXCESS_ARG;
+                COMMAND_CHECK_FOR_EXCESS_ARG;
                 (this->algoTaskBitPtr[AlgoTaskType(i)])->set();
             }
         }
@@ -141,9 +141,9 @@ void Command::validateUtilityTask()
 {
     for (int i = 0; i < UtilTaskType::utilTaskBottom; ++i)
     {
-        if (program.isUsed("--" + utilTaskNameTable[UtilTaskType(i)]))
+        if (program.isUsed("--" + std::string{utilTaskNameTable[UtilTaskType(i)]}))
         {
-            COMMAND_CHECK_EXIST_EXCESS_ARG;
+            COMMAND_CHECK_FOR_EXCESS_ARG;
             taskPlan.utilTask.utilTaskBit.set(UtilTaskType(i));
         }
     }
@@ -190,11 +190,11 @@ void Command::runOptimum() const
                     algo_expression::ExpressionOverloaded{
                         [](const algo_expression::Function1& /*unused*/)
                         {
-                            std::cout << EXPRESSION_FUN_1_OPTIMUM << std::endl;
+                            std::cout << algo_expression::Function1::optimumExpression << std::endl;
                         },
                         [](const algo_expression::Function2& /*unused*/)
                         {
-                            std::cout << EXPRESSION_FUN_2_OPTIMUM << std::endl;
+                            std::cout << algo_expression::Function2::optimumExpression << std::endl;
                         },
                     },
                     expression);
@@ -204,7 +204,7 @@ void Command::runOptimum() const
                     const algo_expression::Expression& expression,
                     const algo_expression::ExpressionRange<double, double>& range)
             {
-                getOptimumResult(expression, range.range1, range.range2, OPTIMUM_EPSILON);
+                getOptimumResult(expression, range.range1, range.range2, algo_optimum::epsilon);
             };
 
             COMMAND_PRINT_ALGO_TASK_TITLE(AlgoTaskType::optimum, "BEGIN");
@@ -227,7 +227,7 @@ void Command::runOptimum() const
     }
     catch (const std::exception& error)
     {
-        LOGGER_ERR(error.what());
+        LOG_WRN(logger, error.what());
     }
 }
 
@@ -252,10 +252,10 @@ void Command::getOptimumResult(
         if (taskPlan.algoTask.optimumBit.test(OptimumMethod(i)))
         {
             const std::string threadName =
-                std::string{1, std::string_view{algoTaskNameTable[AlgoTaskType::optimum]}.at(0)}
-                + "_" + algoTaskMethodTable[AlgoTaskType::optimum][OptimumMethod(i)];
+                std::string{1, algoTaskNameTable[AlgoTaskType::optimum].at(0)} + "_"
+                + std::string{algoTaskMethodTable[AlgoTaskType::optimum][OptimumMethod(i)]};
             switch (util_hash::bkdrHash(
-                algoTaskMethodTable[AlgoTaskType::optimum][OptimumMethod(i)].c_str()))
+                algoTaskMethodTable[AlgoTaskType::optimum][OptimumMethod(i)].data()))
             {
                 case HASH_BKDR("fib"):
                     optimumFunctor(threadName, std::make_shared<algo_optimum::Fibonacci>(express));
@@ -317,11 +317,13 @@ void Command::runIntegral() const
                     algo_expression::ExpressionOverloaded{
                         [](const algo_expression::Function1& /*unused*/)
                         {
-                            std::cout << EXPRESSION_FUN_1_INTEGRAL << std::endl;
+                            std::cout << algo_expression::Function1::integralExpression
+                                      << std::endl;
                         },
                         [](const algo_expression::Function2& /*unused*/)
                         {
-                            std::cout << EXPRESSION_FUN_2_INTEGRAL << std::endl;
+                            std::cout << algo_expression::Function2::integralExpression
+                                      << std::endl;
                         },
                     },
                     expression);
@@ -331,7 +333,7 @@ void Command::runIntegral() const
                     const algo_expression::Expression& expression,
                     const algo_expression::ExpressionRange<double, double>& range)
             {
-                getIntegralResult(expression, range.range1, range.range2, INTEGRAL_EPSILON);
+                getIntegralResult(expression, range.range1, range.range2, algo_integral::epsilon);
             };
 
             COMMAND_PRINT_ALGO_TASK_TITLE(AlgoTaskType::integral, "BEGIN");
@@ -354,7 +356,7 @@ void Command::runIntegral() const
     }
     catch (const std::exception& error)
     {
-        LOGGER_ERR(error.what());
+        LOG_WRN(logger, error.what());
     }
 }
 
@@ -379,10 +381,10 @@ void Command::getIntegralResult(
         if (taskPlan.algoTask.integralBit.test(IntegralMethod(i)))
         {
             const std::string threadName =
-                std::string{1, std::string_view{algoTaskNameTable[AlgoTaskType::integral]}.at(0)}
-                + "_" + algoTaskMethodTable[AlgoTaskType::integral][IntegralMethod(i)];
+                std::string{1, algoTaskNameTable[AlgoTaskType::integral].at(0)} + "_"
+                + std::string{algoTaskMethodTable[AlgoTaskType::integral][IntegralMethod(i)]};
             switch (util_hash::bkdrHash(
-                algoTaskMethodTable[AlgoTaskType::integral][IntegralMethod(i)].c_str()))
+                algoTaskMethodTable[AlgoTaskType::integral][IntegralMethod(i)].data()))
             {
                 case HASH_BKDR("tra"):
                     integralFunctor(
@@ -440,9 +442,9 @@ void Command::runSort() const
     {
         if (taskPlan.algoTask.sortBit.any())
         {
-            const int leftEndpoint = SORT_ARRAY_RANGE_1;
-            const int rightEndpoint = SORT_ARRAY_RANGE_2;
-            const uint32_t length = SORT_ARRAY_LENGTH;
+            const int leftEndpoint = algo_sort::arrayRange1;
+            const int rightEndpoint = algo_sort::arrayRange2;
+            const uint32_t length = algo_sort::arrayLength;
             static_assert((leftEndpoint < rightEndpoint) && (length > 0));
 
             COMMAND_PRINT_ALGO_TASK_TITLE(AlgoTaskType::sort, "BEGIN");
@@ -454,7 +456,7 @@ void Command::runSort() const
     }
     catch (const std::exception& error)
     {
-        LOGGER_ERR(error.what());
+        LOG_WRN(logger, error.what());
     }
 }
 
@@ -477,10 +479,10 @@ void Command::getSortResult(const std::shared_ptr<algo_sort::Sort<T>>& sort) con
         if (taskPlan.algoTask.sortBit.test(SortMethod(i)))
         {
             const std::string threadName =
-                std::string{1, std::string_view{algoTaskNameTable[AlgoTaskType::sort]}.at(0)} + "_"
-                + algoTaskMethodTable[AlgoTaskType::sort][SortMethod(i)];
+                std::string{1, algoTaskNameTable[AlgoTaskType::sort].at(0)} + "_"
+                + std::string{algoTaskMethodTable[AlgoTaskType::sort][SortMethod(i)]};
             switch (
-                util_hash::bkdrHash(algoTaskMethodTable[AlgoTaskType::sort][SortMethod(i)].c_str()))
+                util_hash::bkdrHash(algoTaskMethodTable[AlgoTaskType::sort][SortMethod(i)].data()))
             {
                 case HASH_BKDR("bub"):
                     sortFunctor(threadName, &algo_sort::Sort<T>::bubbleSort);
@@ -558,19 +560,9 @@ void Command::setSortBit(const char* const method)
     }
 }
 
-void Command::printConsoleOutput() const
+void Command::printHelpMessage() const
 {
-    const auto commands =
-        program.get<std::vector<std::string>>("--" + utilTaskNameTable[UtilTaskType::console]);
-    if (!commands.empty())
-    {
-        util_console::Console console(" > ");
-        registerOnConsole(console);
-        for (const auto& command : commands)
-        {
-            console.commandExecutor(command);
-        }
-    }
+    std::cout << program.help().str();
 }
 
 void Command::printVersionInfo() const
@@ -582,9 +574,19 @@ void Command::printVersionInfo() const
     util_file::executeCommand(versionStr.c_str());
 }
 
-void Command::printHelpMessage() const
+void Command::printConsoleOutput() const
 {
-    std::cout << program.help().str();
+    const auto commands = program.get<std::vector<std::string>>(
+        "--" + std::string{utilTaskNameTable[UtilTaskType::console]});
+    if (!commands.empty())
+    {
+        util_console::Console console(" > ");
+        registerOnConsole(console);
+        for (const auto& command : commands)
+        {
+            console.commandExecutor(command);
+        }
+    }
 }
 
 std::string Command::getIconBanner()
@@ -630,9 +632,11 @@ void Command::registerOnConsole(util_console::Console& console) const
 
 void Command::displayLogContext()
 {
-    LOGGER_STOP;
+    LOG_STOP(logger);
 
-    util_file::printFile(LOG_PATH, true, COMMAND_PRINT_MAX_LINE, &util_log::changeLogLevelStyle);
+    util_file::printFile(
+        std::string{util_log::logPath}.c_str(), true, maxLineNumForPrintLog,
+        &util_log::changeLogLevelStyle);
 }
 
 void Command::throwUnexpectedMethodException(const std::string& methodInfo)

@@ -17,40 +17,44 @@ std::optional<std::tuple<ValueY, ValueX>> Fibonacci::operator()(
 {
     TIMER_BEGIN;
     double leftVal = left, rightVal = right;
-    std::vector<double> fibonacci = generateFibonacciNumber((rightVal - leftVal) / eps);
-    int n = fibonacci.size() - 1;
-    if (n < OPTIMUM_FIBONACCI_MIN_COUNT)
+    std::vector<double> fibVec = generateFibonacciNumber((rightVal - leftVal) / eps);
+    constexpr int minSize = 3;
+    int n = fibVec.size() - 1;
+    if (n < minSize)
     {
         FORMAT_PRINT("*Fibonacci method: The precise %.5f isn't enough.\n", eps);
         return std::nullopt;
     }
 
-    double x1 = OPTIMUM_FIBONACCI_X_1, x2 = OPTIMUM_FIBONACCI_X_2;
-    while (n > OPTIMUM_FIBONACCI_MIN_COUNT)
+    auto iterFib = std::next(fibVec.cbegin(), n);
+    double x1 = fibonacciCalculationForX1(iterFib, leftVal, rightVal),
+           x2 = fibonacciCalculationForX2(iterFib, leftVal, rightVal);
+    while (n > minSize)
     {
+        iterFib = std::next(fibVec.cbegin(), n);
         if (func(x1) < func(x2))
         {
             leftVal = x1;
             x1 = x2;
-            x2 = OPTIMUM_FIBONACCI_X_2;
+            x2 = fibonacciCalculationForX2(iterFib, leftVal, rightVal);
         }
         else if (func(x1) > func(x2))
         {
             rightVal = x2;
             x2 = x1;
-            x1 = OPTIMUM_FIBONACCI_X_1;
+            x1 = fibonacciCalculationForX1(iterFib, leftVal, rightVal);
         }
         else
         {
             leftVal = x1;
             rightVal = x2;
-            x1 = OPTIMUM_FIBONACCI_X_1;
-            x2 = OPTIMUM_FIBONACCI_X_2;
+            x1 = fibonacciCalculationForX1(iterFib, leftVal, rightVal);
+            x2 = fibonacciCalculationForX2(iterFib, leftVal, rightVal);
         }
         --n;
     }
 
-    x1 = leftVal + fibonacci[1] / fibonacci[2] * (rightVal - leftVal);
+    x1 = leftVal + fibVec[1] / fibVec[2] * (rightVal - leftVal);
     x2 = x1 + (((x1 + eps) < right) ? eps : -eps);
     if (func(x1) < func(x2))
     {
@@ -101,7 +105,7 @@ std::optional<std::tuple<ValueY, ValueX>> Gradient::operator()(
     double x = 0.0, y = 0.0;
     std::uniform_real_distribution<double> randomX(left, right);
     std::set<double> climbing;
-    while (climbing.size() < gra_learning::loopTime)
+    while (climbing.size() < gradient_learning::loopTime)
     {
         climbing.insert(randomX(seed));
     }
@@ -112,15 +116,14 @@ std::optional<std::tuple<ValueY, ValueX>> Gradient::operator()(
     {
         x = climber;
         uint32_t iterNum = 0;
-        double learningRate = gra_learning::initialLearningRate;
-        double gradient = calculateFirstDerivative(x, eps);
-        double dx = learningRate * gradient;
+        double learningRate = gradient_learning::initialLearningRate,
+               gradient = calculateFirstDerivative(x, eps), dx = learningRate * gradient;
         while ((std::fabs(dx) > eps) && ((x + dx) >= left) && ((x + dx) <= right))
         {
             x += dx;
             ++iterNum;
-            learningRate =
-                gra_learning::initialLearningRate * 1.0 / (1.0 + gra_learning::decay * iterNum);
+            learningRate = gradient_learning::initialLearningRate * 1.0
+                / (1.0 + gradient_learning::decay * iterNum);
             gradient = calculateFirstDerivative(x, eps);
             dx = learningRate * gradient;
         }
@@ -152,19 +155,17 @@ std::optional<std::tuple<ValueY, ValueX>> Annealing::operator()(
     const double left, const double right, const double eps)
 {
     TIMER_BEGIN;
-    double temperature = ann_cooling::initialT;
+    constexpr double perturbation = 0.5;
+    double temperature = annealing_cooling::initialT;
     TIME_GET_SEED(seed);
     std::uniform_real_distribution<double> randomX(left, right);
-    std::uniform_real_distribution<double> random(
-        -OPTIMUM_ANNEALING_PERTURBATION, OPTIMUM_ANNEALING_PERTURBATION);
-    double x = randomX(seed);
-    double y = func(x);
-    while (temperature > ann_cooling::minimalT)
+    std::uniform_real_distribution<double> random(-perturbation, perturbation);
+    double x = randomX(seed), y = func(x);
+    while (temperature > annealing_cooling::minimalT)
     {
-        double xBest = x;
-        double yBest = y;
+        double xBest = x, yBest = y;
         bool found = false;
-        for (uint32_t i = 0; i < ann_cooling::markovChain; ++i)
+        for (uint32_t i = 0; i < annealing_cooling::markovChain; ++i)
         {
             double xNew = 0.0, yNew = 0.0;
             do
@@ -194,7 +195,7 @@ std::optional<std::tuple<ValueY, ValueX>> Annealing::operator()(
             x = xBest;
             y = yBest;
         }
-        temperature *= ann_cooling::coolingRate;
+        temperature *= annealing_cooling::coolingRate;
     }
 
     TIMER_END;
@@ -214,8 +215,7 @@ std::optional<std::tuple<ValueY, ValueX>> Particle::operator()(
         {
             return max1.xFitness < max2.xFitness;
         });
-    double xBest = best->x;
-    double xFitnessBest = best->xFitness;
+    double xBest = best->x, xFitnessBest = best->xFitness;
 
     std::uniform_real_distribution<double> random(0.0, 1.0);
     for (uint32_t i = 0; i < particle_swarm::iterNum; ++i)
@@ -269,8 +269,8 @@ Record Particle::recordInit(const double left, const double right)
 {
     TIME_GET_SEED(seedNew);
     seed = seedNew;
-    std::uniform_real_distribution<double> randomX(left, right);
-    std::uniform_real_distribution<double> randomV(particle_swarm::vMin, particle_swarm::vMax);
+    std::uniform_real_distribution<double> randomX(left, right),
+        randomV(particle_swarm::vMin, particle_swarm::vMax);
 
     const Individual individualInit{};
     Society societyInit(particle_swarm::size, individualInit);
@@ -292,8 +292,9 @@ std::optional<std::tuple<ValueY, ValueX>> Genetic::operator()(
     const double left, const double right, const double eps)
 {
     TIMER_BEGIN;
+    constexpr uint32_t minChrNum = 3;
     updateSpecies(left, right, eps);
-    if (chrNum < OPTIMUM_GENETIC_MIN_CHROMOSOME_NUMBER)
+    if (chrNum < minChrNum)
     {
         FORMAT_PRINT("*Genetic   method: The precise %.5f isn't enough.\n", eps);
         return std::nullopt;
@@ -375,8 +376,7 @@ void Genetic::geneCrossover(Chromosome& chr1, Chromosome& chr2)
     chrTemp.reserve(chr1.size());
     std::copy(chr1.cbegin(), chr1.cend(), std::back_inserter(chrTemp));
 
-    uint32_t crossBegin = getRandomNumber(chrNum - 1);
-    uint32_t crossEnd = getRandomNumber(chrNum - 1);
+    uint32_t crossBegin = getRandomNumber(chrNum - 1), crossEnd = getRandomNumber(chrNum - 1);
     if (crossBegin > crossEnd)
     {
         std::swap(crossBegin, crossEnd);
@@ -455,15 +455,15 @@ std::optional<std::pair<double, double>> Genetic::fitnessLinearTransformation(co
             return calculateFitness(ind);
         });
 
-    const double reFitnessMin = *(std::min_element(std::cbegin(reFitness), std::cend(reFitness)));
-    const double reFitnessAvg =
-        std::accumulate(std::cbegin(reFitness), std::cend(reFitness), 0.0) / reFitness.size();
+    const double reFitnessMin = *(std::min_element(std::cbegin(reFitness), std::cend(reFitness))),
+                 reFitnessAvg = std::accumulate(std::cbegin(reFitness), std::cend(reFitness), 0.0)
+        / reFitness.size();
     if (std::fabs(reFitnessMin - reFitnessAvg) < (range.eps * range.eps))
     {
         return std::nullopt;
     }
-    const double alpha = reFitnessAvg / (reFitnessAvg - reFitnessMin);
-    const double beta = -1.0 * (reFitnessMin * reFitnessAvg) / (reFitnessAvg - reFitnessMin);
+    const double alpha = reFitnessAvg / (reFitnessAvg - reFitnessMin),
+                 beta = -1.0 * (reFitnessMin * reFitnessAvg) / (reFitnessAvg - reFitnessMin);
     assert(!std::isnan(alpha) && !std::isinf(alpha) && !std::isnan(beta) && !std::isinf(beta));
     return std::make_optional(std::pair<double, double>(alpha, beta));
 }

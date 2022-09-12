@@ -10,8 +10,7 @@ double trapezoid(
     const algo_expression::Expression& express, const double left, const double height,
     const uint32_t step)
 {
-    double sum = 0.0;
-    double x = left;
+    double sum = 0.0, x = left;
     const double delta = height / step;
     for (uint32_t i = 0; i < step; ++i)
     {
@@ -27,6 +26,7 @@ double Trapezoidal::operator()(double lower, double upper, const double eps) con
 {
     TIMER_BEGIN;
     const int sign = Integral::getSign(lower, upper);
+    const uint32_t minStep = std::pow(2, 3);
     const double height = upper - lower;
     double sum = 0.0, s1 = 0.0, s2 = 0.0;
     uint32_t n = 1;
@@ -38,7 +38,7 @@ double Trapezoidal::operator()(double lower, double upper, const double eps) con
         s2 = sum;
         n *= 2;
     }
-    while ((std::fabs(s1 - s2) > eps) || (n < INTEGRAL_TRAPEZOIDAL_MIN_STEP));
+    while ((std::fabs(s1 - s2) > eps) || (n < minStep));
     sum = s2 * sign;
 
     TIMER_END;
@@ -62,8 +62,7 @@ double Simpson::operator()(double lower, double upper, const double eps) const
 
 double Simpson::simpsonIntegral(const double left, const double right, const double eps) const
 {
-    const double mid = (left + right) / 2.0;
-    const double sum = simpsonOneThird(left, right);
+    const double mid = (left + right) / 2.0, sum = simpsonOneThird(left, right);
     if (std::fabs(
             sum
             - (compositeSimpsonOneThird(left, mid, 2) + compositeSimpsonOneThird(mid, right, 2)))
@@ -132,13 +131,13 @@ double Gauss::operator()(double lower, double upper, const double eps) const
 {
     TIMER_BEGIN;
     const int sign = Integral::getSign(lower, upper);
-    constexpr std::array<std::array<double, INTEGRAL_GAUSS_COEFFICIENT>, INTEGRAL_GAUSS_NODE>
-        gaussLegendreTable = {
-            {{-0.9061798459, +0.2369268851},
-             {-0.5384693101, +0.4786286705},
-             {+0.0000000000, +0.5688888889},
-             {+0.5384693101, +0.4786286705},
-             {+0.9061798459, +0.2369268851}}};
+    constexpr uint32_t gaussNodes = 5, gaussCoefficient = 2;
+    constexpr std::array<std::array<double, gaussCoefficient>, gaussNodes> gaussLegendreTable = {
+        {{-0.9061798459, +0.2369268851},
+         {-0.5384693101, +0.4786286705},
+         {+0.0000000000, +0.5688888889},
+         {+0.5384693101, +0.4786286705},
+         {+0.9061798459, +0.2369268851}}};
     double sum = 0.0, s1 = 0.0, s2 = 0.0;
     uint32_t n = 1;
 
@@ -150,7 +149,7 @@ double Gauss::operator()(double lower, double upper, const double eps) const
         {
             const double left = lower + i * stepLength;
             const double right = left + stepLength;
-            for (uint32_t j = 0; j < INTEGRAL_GAUSS_NODE; ++j)
+            for (uint32_t j = 0; j < gaussNodes; ++j)
             {
                 // x=1/2[(a+b)+(b-a)t]
                 const double x =
@@ -211,8 +210,7 @@ double MonteCarlo::sampleFromNormalDistribution(
     const double lower, const double upper, const double eps) const
 {
     const uint32_t n = (upper - lower) / eps;
-    const double mu = (lower + upper) / 2.0;
-    const double sigma = (upper - lower) / 6.0;
+    const double mu = (lower + upper) / 2.0, sigma = (upper - lower) / 6.0;
     std::mt19937 seed(std::random_device{}());
     std::uniform_real_distribution<double> randomU(0.0, 1.0);
     double sum = 0.0, x = 0.0;
