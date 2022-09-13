@@ -112,7 +112,7 @@ struct ExpressionMapHash
     std::size_t operator()(const ExpressionRange<T1, T2>& range) const
     {
         std::size_t hash1 = std::hash<T1>()(range.range1);
-        std::size_t hash2 = std::hash<T2>()(range.range1);
+        std::size_t hash2 = std::hash<T2>()(range.range2);
         return (hash1 ^ hash2);
     }
 };
