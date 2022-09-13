@@ -22,10 +22,6 @@
     }                                       \
     while (0)
 
-constexpr uint32_t maxMethodOfAlgoTask = 10;
-constexpr uint32_t titleWidthForPrintTask = 40;
-constexpr uint32_t maxLineNumForPrintLog = 50;
-
 class Command
 {
 public:
@@ -81,6 +77,9 @@ public:
     void runCommander(const int argc, const char* const argv[]);
 
 private:
+    static constexpr uint32_t maxMethodOfAlgoTask = 10;
+    static constexpr uint32_t titleWidthForPrintTask = 40;
+    static constexpr uint32_t maxLineNumForPrintLog = 50;
     mutable std::mutex commandMutex;
     util_argument::Argument program{util_argument::Argument("foo")};
 
@@ -115,11 +114,11 @@ private:
         } algoTask{};
 
         TaskPlan() = default;
-        [[nodiscard]] bool empty() const { return algoTask.empty() && utilTask.empty(); }
+        [[nodiscard]] bool empty() const { return utilTask.empty() && algoTask.empty(); }
         void reset()
         {
-            algoTask.reset();
             utilTask.reset();
+            algoTask.reset();
         };
     } taskPlan{};
 #pragma pack()
@@ -144,7 +143,7 @@ private:
         "help", "version", "console"};
     typedef void (Command::*PerformUtilTaskFunctor)() const;
     const PerformUtilTaskFunctor performUtilTaskFunctor[UtilTaskType::utilTaskBottom] = {
-        &Command::printConsoleOutput, &Command::printVersionInfo, &Command::printHelpMessage};
+        &Command::printHelpMessage, &Command::printVersionInfo, &Command::printConsoleOutput};
 
     const std::unordered_multimap<
         algo_expression::ExpressionRange<double, double>, algo_expression::TargetExpression,
