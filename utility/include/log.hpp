@@ -24,22 +24,22 @@ namespace util_log
 extern class Log logger;
 std::string& changeLogLevelStyle(std::string& line);
 
-inline constexpr std::string_view logPath = LOG_DEFAULT_LOG_PATH;
-constexpr std::string_view logDirectory = "./temp";
+inline constexpr std::string_view logPath{LOG_DEFAULT_LOG_PATH};
 constexpr uint32_t logPathLength = 32;
-constexpr std::string_view debugPrefix = "[DBG]";
-constexpr std::string_view infoPrefix = "[INF]";
-constexpr std::string_view warnPrefix = "[WRN]";
-constexpr std::string_view errorPrefix = "[ERR]";
-constexpr std::string_view infoRegex = R"(^\[INF\])";
-constexpr std::string_view warnRegex = R"(^\[WRN\])";
-constexpr std::string_view errorRegex = R"(^\[ERR\])";
-constexpr auto infoColorForLog =
-    util_file::joinStr<util_file::greenForeground, infoPrefix, util_file::colorEnd>;
-constexpr auto warnColorForLog =
-    util_file::joinStr<util_file::yellowForeground, warnPrefix, util_file::colorEnd>;
-constexpr auto errorColorForLog =
-    util_file::joinStr<util_file::redForeground, errorPrefix, util_file::colorEnd>;
+constexpr std::string_view logDirectory{"./temp"};
+constexpr std::string_view debugPrefix{"[DBG]"};
+constexpr std::string_view infoPrefix{"[INF]"};
+constexpr std::string_view warnPrefix{"[WRN]"};
+constexpr std::string_view errorPrefix{"[ERR]"};
+constexpr std::string_view infoRegex{R"(^\[INF\])"};
+constexpr std::string_view warnRegex{R"(^\[WRN\])"};
+constexpr std::string_view errorRegex{R"(^\[ERR\])"};
+constexpr auto infoColorForLog{
+    util_file::joinStr<util_file::greenForeground, infoPrefix, util_file::colorEnd>};
+constexpr auto warnColorForLog{
+    util_file::joinStr<util_file::yellowForeground, warnPrefix, util_file::colorEnd>};
+constexpr auto errorColorForLog{
+    util_file::joinStr<util_file::redForeground, errorPrefix, util_file::colorEnd>};
 
 class Log final : public util_fsm::FSM<Log>
 {
