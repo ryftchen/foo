@@ -275,12 +275,10 @@ void Sort<T>::buildMaxHeap(T* const sortArray, const uint32_t begin, const uint3
         {
             return;
         }
-        else
-        {
-            std::swap(sortArray[parent], sortArray[child]);
-            parent = child;
-            child = parent * 2 + 1;
-        }
+
+        std::swap(sortArray[parent], sortArray[child]);
+        parent = child;
+        child = parent * 2 + 1;
     }
 }
 
@@ -359,6 +357,7 @@ void Sort<T>::bucketSort(T* const array, const uint32_t length) const
             std::floor(static_cast<double>(sortArray[i] - min) / intervalSpan + 1) - 1;
         aggregation[aggIndex].emplace_back(sortArray[i]);
     }
+
     uint32_t index = 0;
     for (auto& bucketUpdate : aggregation)
     {
