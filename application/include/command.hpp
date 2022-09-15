@@ -1,5 +1,6 @@
 #pragma once
 
+#include <algorithm>
 #include <bitset>
 #include <mutex>
 #include "argument.hpp"
@@ -25,31 +26,60 @@
 class Command
 {
 public:
+    template <class T>
+    struct Bottom;
+    enum UtilTaskType
+    {
+        help,
+        version,
+        console
+    };
+    template <>
+    struct Bottom<UtilTaskType>
+    {
+        static constexpr int value = 3;
+    };
+
     enum AlgoTaskType
     {
         optimum,
         integral,
-        sort,
-        algoTaskBottom
+        sort
     };
+    template <>
+    struct Bottom<AlgoTaskType>
+    {
+        static constexpr int value = 3;
+    };
+
     enum OptimumMethod
     {
         fibonacci,
         gradient,
         annealing,
         particle,
-        genetic,
-        optimumBottom
+        genetic
     };
+    template <>
+    struct Bottom<OptimumMethod>
+    {
+        static constexpr int value = 5;
+    };
+
     enum IntegralMethod
     {
         trapezoidal,
         simpson,
         romberg,
         gauss,
-        monteCarlo,
-        integralBottom
+        monteCarlo
     };
+    template <>
+    struct Bottom<IntegralMethod>
+    {
+        static constexpr int value = 5;
+    };
+
     enum SortMethod
     {
         bubble,
@@ -61,15 +91,12 @@ public:
         heap,
         counting,
         bucket,
-        radix,
-        sortBottom
+        radix
     };
-    enum UtilTaskType
+    template <>
+    struct Bottom<SortMethod>
     {
-        help,
-        version,
-        console,
-        utilTaskBottom
+        static constexpr int value = 10;
     };
 
     Command();
@@ -77,9 +104,10 @@ public:
     void runCommander(const int argc, const char* const argv[]);
 
 private:
-    static constexpr uint32_t maxMethodOfAlgoTask = 10;
     static constexpr uint32_t titleWidthForPrintTask = 40;
     static constexpr uint32_t maxLineNumForPrintLog = 50;
+    static constexpr int maxMethodOfAlgoTask = std::max<int>(
+        {Bottom<OptimumMethod>::value, Bottom<IntegralMethod>::value, Bottom<SortMethod>::value});
     mutable std::mutex commandMutex;
     util_argument::Argument program{util_argument::Argument("foo")};
 
@@ -89,7 +117,7 @@ private:
     {
         struct UtilTask
         {
-            std::bitset<UtilTaskType::utilTaskBottom> utilTaskBit;
+            std::bitset<Bottom<UtilTaskType>::value> utilTaskBit;
 
             [[nodiscard]] bool empty() const { return !utilTaskBit.any(); }
             void reset() { utilTaskBit.reset(); }
@@ -123,27 +151,27 @@ private:
     } taskPlan{};
 #pragma pack()
 
-    static constexpr std::string_view algoTaskNameTable[AlgoTaskType::algoTaskBottom] = {
+    static constexpr std::string_view utilTaskNameTable[Bottom<UtilTaskType>::value] = {
+        "help", "version", "console"};
+    typedef void (Command::*PerformUtilTaskFunctor)() const;
+    const PerformUtilTaskFunctor performUtilTaskFunctor[Bottom<UtilTaskType>::value] = {
+        &Command::printHelpMessage, &Command::printVersionInfo, &Command::printConsoleOutput};
+
+    static constexpr std::string_view algoTaskNameTable[Bottom<AlgoTaskType>::value] = {
         "optimum", "integral", "sort"};
-    AlgoTaskBitSet* const algoTaskBitPtr[AlgoTaskType::algoTaskBottom] = {
+    AlgoTaskBitSet* const algoTaskBitPtr[Bottom<AlgoTaskType>::value] = {
         &taskPlan.algoTask.optimumBit, &taskPlan.algoTask.integralBit, &taskPlan.algoTask.sortBit};
     static constexpr std::string_view
-        algoTaskMethodTable[AlgoTaskType::algoTaskBottom][maxMethodOfAlgoTask] = {
+        algoTaskMethodTable[Bottom<AlgoTaskType>::value][maxMethodOfAlgoTask] = {
             {"fib", "gra", "ann", "par", "gen"},
             {"tra", "sim", "rom", "gau", "mon"},
             {"bub", "sec", "ins", "she", "mer", "qui", "hea", "cou", "buc", "rad"}};
     typedef void (Command::*PerformAlgoTaskFunctor)() const;
-    const PerformAlgoTaskFunctor performAlgoTaskFunctor[AlgoTaskType::algoTaskBottom] = {
+    const PerformAlgoTaskFunctor performAlgoTaskFunctor[Bottom<AlgoTaskType>::value] = {
         &Command::runOptimum, &Command::runIntegral, &Command::runSort};
     typedef void (Command::*SetAlgoTaskBitFunctor)(const char* const);
-    const SetAlgoTaskBitFunctor setAlgoTaskBitFunctor[AlgoTaskType::algoTaskBottom] = {
+    const SetAlgoTaskBitFunctor setAlgoTaskBitFunctor[Bottom<AlgoTaskType>::value] = {
         &Command::setOptimumBit, &Command::setIntegralBit, &Command::setSortBit};
-
-    static constexpr std::string_view utilTaskNameTable[UtilTaskType::utilTaskBottom] = {
-        "help", "version", "console"};
-    typedef void (Command::*PerformUtilTaskFunctor)() const;
-    const PerformUtilTaskFunctor performUtilTaskFunctor[UtilTaskType::utilTaskBottom] = {
-        &Command::printHelpMessage, &Command::printVersionInfo, &Command::printConsoleOutput};
 
     const std::unordered_multimap<
         algo_expression::ExpressionRange<double, double>, algo_expression::TargetExpression,
@@ -156,8 +184,8 @@ private:
 
     void foregroundHandle(const int argc, const char* const argv[]);
     void backgroundHandle() const;
-    void validateAlgorithmTask();
     void validateUtilityTask();
+    void validateAlgorithmTask();
     bool checkTask() const;
     void performTask() const;
     void runOptimum() const;
