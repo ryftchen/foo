@@ -101,8 +101,8 @@ void Command::foregroundHandle(const int argc, const char* const argv[])
 {
     program.parseArgs(argc, argv);
 
-    validateAlgorithmTask();
     validateUtilityTask();
+    validateAlgorithmTask();
 }
 
 void Command::backgroundHandle() const
@@ -113,9 +113,21 @@ void Command::backgroundHandle() const
     }
 }
 
+void Command::validateUtilityTask()
+{
+    for (int i = 0; i < Bottom<UtilTaskType>::value; ++i)
+    {
+        if (program.isUsed("--" + std::string{utilTaskNameTable[UtilTaskType(i)]}))
+        {
+            COMMAND_CHECK_FOR_EXCESS_ARG;
+            taskPlan.utilTask.utilTaskBit.set(UtilTaskType(i));
+        }
+    }
+}
+
 void Command::validateAlgorithmTask()
 {
-    for (int i = 0; i < AlgoTaskType::algoTaskBottom; ++i)
+    for (int i = 0; i < Bottom<AlgoTaskType>::value; ++i)
     {
         if (program.isUsed("--" + std::string{algoTaskNameTable[AlgoTaskType(i)]}))
         {
@@ -137,18 +149,6 @@ void Command::validateAlgorithmTask()
     }
 }
 
-void Command::validateUtilityTask()
-{
-    for (int i = 0; i < UtilTaskType::utilTaskBottom; ++i)
-    {
-        if (program.isUsed("--" + std::string{utilTaskNameTable[UtilTaskType(i)]}))
-        {
-            COMMAND_CHECK_FOR_EXCESS_ARG;
-            taskPlan.utilTask.utilTaskBit.set(UtilTaskType(i));
-        }
-    }
-}
-
 bool Command::checkTask() const
 {
     return !taskPlan.empty();
@@ -156,22 +156,22 @@ bool Command::checkTask() const
 
 void Command::performTask() const
 {
-    if (!taskPlan.algoTask.empty())
+    if (!taskPlan.utilTask.empty())
     {
-        for (int i = 0; i < AlgoTaskType::algoTaskBottom; ++i)
+        for (int i = 0; i < Bottom<UtilTaskType>::value; ++i)
         {
-            (this->*performAlgoTaskFunctor[AlgoTaskType(i)])();
+            if (taskPlan.utilTask.utilTaskBit.test(UtilTaskType(i)))
+            {
+                (this->*performUtilTaskFunctor[UtilTaskType(i)])();
+            }
         }
     }
 
-    if (!taskPlan.utilTask.empty())
+    if (!taskPlan.algoTask.empty())
     {
-        for (int j = 0; j < UtilTaskType::utilTaskBottom; ++j)
+        for (int j = 0; j < Bottom<AlgoTaskType>::value; ++j)
         {
-            if (taskPlan.utilTask.utilTaskBit.test(UtilTaskType(j)))
-            {
-                (this->*performUtilTaskFunctor[UtilTaskType(j)])();
-            }
+            (this->*performAlgoTaskFunctor[AlgoTaskType(j)])();
         }
     }
 }
@@ -238,7 +238,7 @@ void Command::getOptimumResult(
     assert((leftEndpoint < rightEndpoint) && (epsilon > 0.0));
     util_thread::Thread threadPool(std::min(
         static_cast<uint32_t>(taskPlan.algoTask.optimumBit.count()),
-        static_cast<uint32_t>(OptimumMethod::optimumBottom)));
+        static_cast<uint32_t>(Bottom<OptimumMethod>::value)));
     const auto optimumFunctor =
         [&](const std::string& threadName, const std::shared_ptr<algo_optimum::Optimum>& classPtr)
     {
@@ -247,7 +247,7 @@ void Command::getOptimumResult(
             epsilon);
     };
 
-    for (int i = 0; i < OptimumMethod::optimumBottom; ++i)
+    for (int i = 0; i < Bottom<OptimumMethod>::value; ++i)
     {
         if (taskPlan.algoTask.optimumBit.test(OptimumMethod(i)))
         {
@@ -367,7 +367,7 @@ void Command::getIntegralResult(
     assert(epsilon > 0.0);
     util_thread::Thread threadPool(std::min(
         static_cast<uint32_t>(taskPlan.algoTask.integralBit.count()),
-        static_cast<uint32_t>(IntegralMethod::integralBottom)));
+        static_cast<uint32_t>(Bottom<IntegralMethod>::value)));
     const auto integralFunctor =
         [&](const std::string& threadName, const std::shared_ptr<algo_integral::Integral>& classPtr)
     {
@@ -376,7 +376,7 @@ void Command::getIntegralResult(
             epsilon);
     };
 
-    for (int i = 0; i < IntegralMethod::integralBottom; ++i)
+    for (int i = 0; i < Bottom<IntegralMethod>::value; ++i)
     {
         if (taskPlan.algoTask.integralBit.test(IntegralMethod(i)))
         {
@@ -465,7 +465,7 @@ void Command::getSortResult(const std::shared_ptr<algo_sort::Sort<T>>& sort) con
 {
     util_thread::Thread threadPool(std::min(
         static_cast<uint32_t>(taskPlan.algoTask.sortBit.count()),
-        static_cast<uint32_t>(SortMethod::sortBottom)));
+        static_cast<uint32_t>(Bottom<SortMethod>::value)));
     const auto sortFunctor = [&](const std::string& threadName,
                                  void (algo_sort::Sort<T>::*methodPtr)(T* const, const uint32_t)
                                      const)
@@ -474,7 +474,7 @@ void Command::getSortResult(const std::shared_ptr<algo_sort::Sort<T>>& sort) con
             threadName, methodPtr, sort, sort->getRandomArray().get(), sort->getLength());
     };
 
-    for (int i = 0; i < SortMethod::sortBottom; ++i)
+    for (int i = 0; i < Bottom<SortMethod>::value; ++i)
     {
         if (taskPlan.algoTask.sortBit.test(SortMethod(i)))
         {
