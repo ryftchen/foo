@@ -138,16 +138,16 @@ public:
     ArgumentRegister& help(std::string str);
     template <typename T>
     ArgumentRegister& defaultValue(T&& value);
-    ArgumentRegister& required();
     ArgumentRegister& implicitValue(std::any value);
+    ArgumentRegister& required();
+    ArgumentRegister& appending();
+    ArgumentRegister& remaining();
     template <class Function, class... Args>
     auto action(Function&& callable, Args&&... boundArgs) -> std::enable_if_t<
         std::is_invocable_v<Function, Args..., std::string const>, ArgumentRegister&>;
-    auto& append();
     ArgumentRegister& nArgs(std::size_t numArgs);
     ArgumentRegister& nArgs(std::size_t numArgsMin, std::size_t numArgsMax);
     ArgumentRegister& nArgs(NArgsPattern pattern);
-    ArgumentRegister& remaining();
     template <typename Iterator>
     Iterator consume(Iterator start, Iterator end, const std::string_view usedName = {});
     void validate() const;
@@ -220,11 +220,9 @@ private:
     void throwRequiredArgNoValueProvidedException() const;
     static auto lookAhead(const std::string_view str) -> int;
     static bool checkIfOptional(std::string_view name);
-    static bool checkIfRequired(std::string_view name);
+    static bool checkIfNonOptional(std::string_view name);
     template <typename T>
     T get() const;
-    template <typename T>
-    auto present() const -> std::optional<T>;
     template <typename T>
     static auto anyCastContainer(const std::vector<std::any>& operand) -> T;
 };
@@ -410,24 +408,6 @@ T ArgumentRegister::get() const
 }
 
 template <typename T>
-auto ArgumentRegister::present() const -> std::optional<T>
-{
-    if (defaultValues.has_value())
-    {
-        throw std::logic_error("ArgumentRegister with default value always presents.");
-    }
-    if (values.empty())
-    {
-        return std::nullopt;
-    }
-    if constexpr (isContainer<T>)
-    {
-        return anyCastContainer<T>(values);
-    }
-    return std::any_cast<T>(values.front());
-}
-
-template <typename T>
 auto ArgumentRegister::anyCastContainer(const std::vector<std::any>& operand) -> T
 {
     using ValueType = typename T::value_type;
@@ -445,7 +425,7 @@ auto ArgumentRegister::anyCastContainer(const std::vector<std::any>& operand) ->
 class Argument
 {
 public:
-    explicit Argument(std::string programName = {}, std::string programVersion = "1.0");
+    explicit Argument(std::string title = {}, std::string version = "1.0");
     Argument(Argument&&) noexcept = default;
     Argument& operator=(Argument&&) = default;
     Argument(const Argument& arg);
@@ -453,25 +433,21 @@ public:
     Argument& operator=(const Argument& arg);
     template <typename... Args>
     ArgumentRegister& addArgument(Args... fewArgs);
-    template <typename... Args>
-    Argument& addParents(const Args&... fewArgs);
     void parseArgs(const std::vector<std::string>& arguments);
     void parseArgs(int argc, const char* const argv[]);
     template <typename T = std::string>
     T get(const std::string_view argName) const;
-    template <typename T = std::string>
-    auto present(const std::string_view argName) const -> std::optional<T>;
     [[nodiscard]] bool isUsed(const std::string_view argName) const;
     ArgumentRegister& operator[](const std::string_view argName) const;
     [[nodiscard]] auto help() const -> std::stringstream;
-    std::string programName;
-    std::string programVersion;
+    std::string title;
+    std::string version;
 
 private:
     using ListIterator = std::list<ArgumentRegister>::iterator;
 
     bool isParsed{false};
-    std::list<ArgumentRegister> requiredArguments;
+    std::list<ArgumentRegister> nonOptionalArguments;
     std::list<ArgumentRegister> optionalArguments;
     std::map<std::string_view, ListIterator, std::less<>> argumentMap;
 
@@ -491,30 +467,11 @@ ArgumentRegister& Argument::addArgument(Args... fewArgs)
 
     if (!argument->isOptional)
     {
-        requiredArguments.splice(std::cend(requiredArguments), optionalArguments, argument);
+        nonOptionalArguments.splice(std::cend(nonOptionalArguments), optionalArguments, argument);
     }
 
     indexArgument(argument);
     return *argument;
-}
-
-template <typename... Args>
-Argument& Argument::addParents(const Args&... fewArgs)
-{
-    for (const Argument& parentParser : {std::ref(fewArgs)...})
-    {
-        for (const auto& argument : parentParser.requiredArguments)
-        {
-            auto iterator = requiredArguments.insert(std::cend(requiredArguments), argument);
-            indexArgument(iterator);
-        }
-        for (const auto& argument : parentParser.optionalArguments)
-        {
-            auto iterator = optionalArguments.insert(std::cend(optionalArguments), argument);
-            indexArgument(iterator);
-        }
-    }
-    return *this;
 }
 
 template <typename T>
@@ -525,11 +482,5 @@ T Argument::get(const std::string_view argName) const
         throw std::logic_error("Nothing parsed, no arguments are available.");
     }
     return (*this)[argName].get<T>();
-}
-
-template <typename T>
-auto Argument::present(const std::string_view argName) const -> std::optional<T>
-{
-    return (*this)[argName].present<T>();
 }
 } // namespace util_argument
