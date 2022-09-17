@@ -111,7 +111,6 @@ private:
     mutable std::mutex commandMutex;
     util_argument::Argument program{util_argument::Argument("foo")};
 
-    using AlgoTaskBitSet = std::bitset<maxMethodOfAlgoTask>;
 #pragma pack(8)
     struct TaskPlan
     {
@@ -119,19 +118,19 @@ private:
         {
             std::bitset<Bottom<UtilTaskType>::value> utilTaskBit;
 
-            [[nodiscard]] bool empty() const { return !utilTaskBit.any(); }
+            [[nodiscard]] bool empty() const { return utilTaskBit.none(); }
             void reset() { utilTaskBit.reset(); }
         } utilTask{};
 
         struct AlgoTask
         {
-            AlgoTaskBitSet optimumBit;
-            AlgoTaskBitSet integralBit;
-            AlgoTaskBitSet sortBit;
+            std::bitset<Bottom<OptimumMethod>::value> optimumBit;
+            std::bitset<Bottom<IntegralMethod>::value> integralBit;
+            std::bitset<Bottom<SortMethod>::value> sortBit;
 
             [[nodiscard]] bool empty() const
             {
-                return !optimumBit.any() && !integralBit.any() && !sortBit.any();
+                return optimumBit.none() && integralBit.none() && sortBit.none();
             }
             void reset()
             {
@@ -151,28 +150,25 @@ private:
     } taskPlan{};
 #pragma pack()
 
-    static constexpr std::string_view utilTaskNameTable[Bottom<UtilTaskType>::value] = {
+    static constexpr std::array<std::string_view, Bottom<UtilTaskType>::value> utilTaskNameTable = {
         "help", "version", "console"};
     typedef void (Command::*PerformUtilTaskFunctor)() const;
-    const PerformUtilTaskFunctor performUtilTaskFunctor[Bottom<UtilTaskType>::value] = {
+    const std::array<PerformUtilTaskFunctor, Bottom<UtilTaskType>::value> performUtilTaskFunctor = {
         &Command::printHelpMessage, &Command::printVersionInfo, &Command::printConsoleOutput};
-
-    static constexpr std::string_view algoTaskNameTable[Bottom<AlgoTaskType>::value] = {
+    static constexpr std::array<std::string_view, Bottom<AlgoTaskType>::value> algoTaskNameTable = {
         "optimum", "integral", "sort"};
-    AlgoTaskBitSet* const algoTaskBitPtr[Bottom<AlgoTaskType>::value] = {
-        &taskPlan.algoTask.optimumBit, &taskPlan.algoTask.integralBit, &taskPlan.algoTask.sortBit};
-    static constexpr std::string_view
-        algoTaskMethodTable[Bottom<AlgoTaskType>::value][maxMethodOfAlgoTask] = {
-            {"fib", "gra", "ann", "par", "gen"},
-            {"tra", "sim", "rom", "gau", "mon"},
-            {"bub", "sec", "ins", "she", "mer", "qui", "hea", "cou", "buc", "rad"}};
+    static constexpr std::array<
+        std::array<std::string_view, maxMethodOfAlgoTask>, Bottom<AlgoTaskType>::value>
+        algoTaskMethodTable = {
+            {{"fib", "gra", "ann", "par", "gen"},
+             {"tra", "sim", "rom", "gau", "mon"},
+             {"bub", "sel", "ins", "she", "mer", "qui", "hea", "cou", "buc", "rad"}}};
     typedef void (Command::*PerformAlgoTaskFunctor)() const;
-    const PerformAlgoTaskFunctor performAlgoTaskFunctor[Bottom<AlgoTaskType>::value] = {
+    const std::array<PerformAlgoTaskFunctor, Bottom<AlgoTaskType>::value> performAlgoTaskFunctor = {
         &Command::runOptimum, &Command::runIntegral, &Command::runSort};
-    typedef void (Command::*SetAlgoTaskBitFunctor)(const char* const);
-    const SetAlgoTaskBitFunctor setAlgoTaskBitFunctor[Bottom<AlgoTaskType>::value] = {
+    typedef void (Command::*SetAlgoTaskBitFunctor)(const std::string&);
+    const std::array<SetAlgoTaskBitFunctor, Bottom<AlgoTaskType>::value> setAlgoTaskBitFunctor = {
         &Command::setOptimumBit, &Command::setIntegralBit, &Command::setSortBit};
-
     const std::unordered_multimap<
         algo_expression::ExpressionRange<double, double>, algo_expression::TargetExpression,
         algo_expression::ExpressionMapHash>
@@ -192,16 +188,16 @@ private:
     void getOptimumResult(
         const algo_expression::Expression& express, const double leftEndpoint,
         const double rightEndpoint, const double epsilon) const;
-    void setOptimumBit(const char* const method);
+    void setOptimumBit(const std::string& method);
     void runIntegral() const;
     void getIntegralResult(
         const algo_expression::Expression& express, const double lowerLimit,
         const double upperLimit, const double epsilon) const;
-    void setIntegralBit(const char* const method);
+    void setIntegralBit(const std::string& method);
     void runSort() const;
     template <typename T>
     void getSortResult(const std::shared_ptr<algo_sort::Sort<T>>& sort) const;
-    void setSortBit(const char* const method);
+    void setSortBit(const std::string& method);
     void printConsoleOutput() const;
     void printVersionInfo() const;
     void printHelpMessage() const;
@@ -210,7 +206,7 @@ private:
     void enterConsole() const;
     void registerOnConsole(util_console::Console& console) const;
     static void displayLogContext();
-    [[noreturn]] void throwUnexpectedMethodException(const std::string& methodInfo);
+    [[noreturn]] void throwUnexpectedMethodException(const std::string& info);
     [[noreturn]] void throwExcessArgumentException();
 
 protected:
