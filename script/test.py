@@ -15,20 +15,20 @@ BIN_DIR = "./build/bin/"
 LIB_LIST = ["libutility.so", "libalgorithm.so"]
 LIB_DIR = "./build/lib/"
 OPTION_UTIL_TYPE = ["--help", "--version", "--console"]
-CONSOLE_COMMAND = ["help", "quit", "run ./script/batch.txt", "log"]
-OPTION_ALGO_TYPE = ["--optimum", "--integral", "--sort"]
-OPTIMUM_METHOD = ["fib", "gra", "ann", "par", "gen"]
-INTEGRAL_METHOD = ["tra", "sim", "rom", "gau", "mon"]
-SORT_METHOD = ["bub", "sel", "ins", "she", "mer", "qui", "hea", "cou", "buc", "rad"]
+UTIL_CONSOLE_COMMAND = ["help", "quit", "run ./script/batch.txt", "log"]
+OPTION_ALGO_TYPE = ["--algorithm", ("optimum", "integral", "sort")]
+ALGO_OPTIMUM_METHOD = ["fib", "gra", "ann", "par", "gen"]
+ALGO_INTEGRAL_METHOD = ["tra", "sim", "rom", "gau", "mon"]
+ALGO_SORT_METHOD = ["bub", "sel", "ins", "she", "mer", "qui", "hea", "cou", "buc", "rad"]
 PASS_STEP = 0
 COMPLETE_STEP = 0
 WHOLE_STEP = (
     (1 + len(OPTION_UTIL_TYPE))
-    + len(CONSOLE_COMMAND)
-    + len(OPTION_ALGO_TYPE)
-    + (len(OPTIMUM_METHOD) + 1)
-    + (len(INTEGRAL_METHOD) + 1)
-    + (len(SORT_METHOD) + 1)
+    + len(UTIL_CONSOLE_COMMAND)
+    + len(OPTION_ALGO_TYPE[1])
+    + (len(ALGO_OPTIMUM_METHOD) + 1)
+    + (len(ALGO_INTEGRAL_METHOD) + 1)
+    + (len(ALGO_SORT_METHOD) + 1)
 )
 TEMP_LOG = "./temp/foo_test.log"
 TEMP_PATH = "./temp"
@@ -222,49 +222,54 @@ def analyzeTestLog():
 
 
 def testUtilTypeOption():
-    runTestTask(BIN_CMD, CONSOLE_COMMAND[1])
+    runTestTask(BIN_CMD, UTIL_CONSOLE_COMMAND[1])
     for each in OPTION_UTIL_TYPE:
         runTestTask(f"{BIN_CMD} {each}")
+    testConsoleCommand()
 
 
 def testConsoleCommand():
-    for each in CONSOLE_COMMAND:
+    for each in UTIL_CONSOLE_COMMAND:
         runTestTask(f"{BIN_CMD} {OPTION_UTIL_TYPE[2]} \"{each}\"")
 
 
 def testAlgoTypeOption():
-    for each in OPTION_ALGO_TYPE:
-        runTestTask(f"{BIN_CMD} {each}")
+    for each in OPTION_ALGO_TYPE[1]:
+        runTestTask(f"{BIN_CMD} {OPTION_ALGO_TYPE[0]} {each}")
+    testOptimumMethod()
+    testIntegralMethod()
+    testSortMethod()
 
 
 def testOptimumMethod():
-    for each in OPTIMUM_METHOD:
-        runTestTask(f"{BIN_CMD} {OPTION_ALGO_TYPE[0]} {each}")
-    runTestTask(f"{BIN_CMD} {OPTION_ALGO_TYPE[0]} {' '.join(OPTIMUM_METHOD)}")
+    for each in ALGO_OPTIMUM_METHOD:
+        runTestTask(f"{BIN_CMD} {OPTION_ALGO_TYPE[0]} {OPTION_ALGO_TYPE[1][0]} {each}")
+    runTestTask(
+        f"{BIN_CMD} {OPTION_ALGO_TYPE[0]} {OPTION_ALGO_TYPE[1][0]} {' '.join(ALGO_OPTIMUM_METHOD)}"
+    )
 
 
 def testIntegralMethod():
-    for each in INTEGRAL_METHOD:
-        runTestTask(f"{BIN_CMD} {OPTION_ALGO_TYPE[1]} {each}")
-    runTestTask(f"{BIN_CMD} {OPTION_ALGO_TYPE[1]} {' '.join(INTEGRAL_METHOD)}")
+    for each in ALGO_INTEGRAL_METHOD:
+        runTestTask(f"{BIN_CMD} {OPTION_ALGO_TYPE[0]} {OPTION_ALGO_TYPE[1][1]} {each}")
+    runTestTask(
+        f"{BIN_CMD} {OPTION_ALGO_TYPE[0]} {OPTION_ALGO_TYPE[1][1]} {' '.join(ALGO_INTEGRAL_METHOD)}"
+    )
 
 
 def testSortMethod():
-    for each in SORT_METHOD:
-        runTestTask(f"{BIN_CMD} {OPTION_ALGO_TYPE[2]} {each}")
-    runTestTask(f"{BIN_CMD} {OPTION_ALGO_TYPE[2]} {' '.join(SORT_METHOD)}")
+    for each in ALGO_SORT_METHOD:
+        runTestTask(f"{BIN_CMD} {OPTION_ALGO_TYPE[0]} {OPTION_ALGO_TYPE[1][2]} {each}")
+    runTestTask(
+        f"{BIN_CMD} {OPTION_ALGO_TYPE[0]} {OPTION_ALGO_TYPE[1][2]} {' '.join(ALGO_SORT_METHOD)}"
+    )
 
 
 if __name__ == "__main__":
     prepareTest()
 
     testUtilTypeOption()
-    testConsoleCommand()
-
     testAlgoTypeOption()
-    testOptimumMethod()
-    testIntegralMethod()
-    testSortMethod()
 
     completeTest()
     analyzeTestLog()

@@ -1,2 +1,3 @@
 # console command
 help
+quit
