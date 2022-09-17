@@ -9,12 +9,6 @@ ArgumentRegister& ArgumentRegister::help(std::string str)
     return *this;
 }
 
-ArgumentRegister& ArgumentRegister::required()
-{
-    isRequired = true;
-    return *this;
-}
-
 ArgumentRegister& ArgumentRegister::implicitValue(std::any value)
 {
     implicitValues = std::move(value);
@@ -22,10 +16,22 @@ ArgumentRegister& ArgumentRegister::implicitValue(std::any value)
     return *this;
 }
 
-auto& ArgumentRegister::append()
+ArgumentRegister& ArgumentRegister::required()
+{
+    isRequired = true;
+    return *this;
+}
+
+ArgumentRegister& ArgumentRegister::appending()
 {
     isRepeatable = true;
     return *this;
+}
+
+ArgumentRegister& ArgumentRegister::remaining()
+{
+    isAcceptOptionalLikeValue = true;
+    return nArgs(NArgsPattern::any);
 }
 
 ArgumentRegister& ArgumentRegister::nArgs(std::size_t numArgs)
@@ -57,12 +63,6 @@ ArgumentRegister& ArgumentRegister::nArgs(NArgsPattern pattern)
             break;
     }
     return *this;
-}
-
-ArgumentRegister& ArgumentRegister::remaining()
-{
-    isAcceptOptionalLikeValue = true;
-    return nArgs(NArgsPattern::any);
 }
 
 void ArgumentRegister::validate() const
@@ -172,10 +172,10 @@ auto ArgumentRegister::lookAhead(const std::string_view str) -> int
 
 bool ArgumentRegister::checkIfOptional(std::string_view name)
 {
-    return !checkIfRequired(name);
+    return !checkIfNonOptional(name);
 }
 
-bool ArgumentRegister::checkIfRequired(std::string_view name)
+bool ArgumentRegister::checkIfNonOptional(std::string_view name)
 {
     switch (lookAhead(name))
     {
@@ -195,17 +195,17 @@ bool ArgumentRegister::checkIfRequired(std::string_view name)
     }
 }
 
-Argument::Argument(std::string programName, std::string programVersion) :
-    programName(std::move(programName)), programVersion(std::move(programVersion))
+Argument::Argument(std::string title, std::string version) :
+    title(std::move(title)), version(std::move(version))
 {
 }
 
 Argument::Argument(const Argument& arg) :
-    programName(arg.programName), programVersion(arg.programVersion), isParsed(arg.isParsed),
-    requiredArguments(arg.requiredArguments), optionalArguments(arg.optionalArguments)
+    title(arg.title), version(arg.version), isParsed(arg.isParsed),
+    nonOptionalArguments(arg.nonOptionalArguments), optionalArguments(arg.optionalArguments)
 {
-    for (auto iterator = std::begin(requiredArguments); std::end(requiredArguments) != iterator;
-         ++iterator)
+    for (auto iterator = std::begin(nonOptionalArguments);
+         std::end(nonOptionalArguments) != iterator; ++iterator)
     {
         indexArgument(iterator);
     }
@@ -275,29 +275,18 @@ ArgumentRegister& Argument::operator[](const std::string_view argName) const
 auto operator<<(std::ostream& stream, const Argument& parser) -> std::ostream&
 {
     stream.setf(std::ios_base::left);
-    stream << "Usage: " << parser.programName << " [Options...]";
+    stream << "Usage: " << parser.title << " <options...> ";
     std::size_t longestArgLength = parser.getLengthOfLongestArgument();
 
-    for (const auto& argument : parser.requiredArguments)
+    for (const auto& argument : parser.nonOptionalArguments)
     {
-        stream << argument.names.front() << " ";
+        stream << "[" << argument.names.front() << "...] ";
     }
     stream << std::endl << std::endl;
 
-    if (!parser.requiredArguments.empty())
-    {
-        stream << "Required:" << std::endl;
-    }
-
-    for (const auto& argument : parser.requiredArguments)
-    {
-        stream.width(longestArgLength);
-        stream << argument;
-    }
-
     if (!parser.optionalArguments.empty())
     {
-        stream << (parser.requiredArguments.empty() ? "" : "\n") << "Optional:" << std::endl;
+        stream << "Optional:" << std::endl;
     }
 
     for (const auto& argument : parser.optionalArguments)
@@ -305,6 +294,19 @@ auto operator<<(std::ostream& stream, const Argument& parser) -> std::ostream&
         stream.width(longestArgLength);
         stream << argument;
     }
+    stream << std::endl;
+
+    if (!parser.nonOptionalArguments.empty())
+    {
+        stream << "Non-optional:" << std::endl;
+    }
+
+    for (const auto& argument : parser.nonOptionalArguments)
+    {
+        stream.width(longestArgLength);
+        stream << argument;
+    }
+    stream << std::endl;
 
     return stream;
 }
@@ -318,22 +320,22 @@ auto Argument::help() const -> std::stringstream
 
 void Argument::parseArgsInternal(const std::vector<std::string>& arguments)
 {
-    if (programName.empty() && !arguments.empty())
+    if (title.empty() && !arguments.empty())
     {
-        programName = arguments.front();
+        title = arguments.front();
     }
     auto end = std::end(arguments);
-    auto iterRequiredArgument = std::begin(requiredArguments);
+    auto iterNonOptionalArgument = std::begin(nonOptionalArguments);
     for (auto iterator = std::next(std::begin(arguments)); end != iterator;)
     {
         const auto& currentArgument = *iterator;
-        if (ArgumentRegister::checkIfRequired(currentArgument))
+        if (ArgumentRegister::checkIfNonOptional(currentArgument))
         {
-            if (std::end(requiredArguments) == iterRequiredArgument)
+            if (std::end(nonOptionalArguments) == iterNonOptionalArgument)
             {
-                throw std::runtime_error("Maximum number of required arguments exceeded.");
+                throw std::runtime_error("Maximum number of non-optional arguments exceeded.");
             }
-            auto argument = iterRequiredArgument++;
+            auto argument = iterNonOptionalArgument++;
             iterator = argument->consume(iterator, end);
             continue;
         }
