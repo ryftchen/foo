@@ -135,7 +135,8 @@ void Log::openLogFile()
         util_file::throwOperateFileException(
             std::filesystem::path(pathname).filename().string(), true);
     }
-    util_file::tryToOperateFileLock(ofs, pathname, true, false);
+    util_file::tryToOperateFileLock(
+        ofs, pathname, util_file::LockOperateType::lock, util_file::FileLockType::writerLock);
 };
 
 void Log::startLogging()
@@ -148,7 +149,8 @@ void Log::startLogging()
 
 void Log::closeLogFile()
 {
-    util_file::tryToOperateFileLock(ofs, pathname, false, false);
+    util_file::tryToOperateFileLock(
+        ofs, pathname, util_file::LockOperateType::unlock, util_file::FileLockType::writerLock);
     if (ofs.is_open())
     {
         ofs.close();

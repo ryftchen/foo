@@ -352,7 +352,7 @@ void Sort<T>::bucketSort(T* const array, const uint32_t length) const
     for (auto& bucketUpdate : aggregation)
     {
         std::sort(bucketUpdate.begin(), bucketUpdate.end());
-        for (const auto& bucketElement : bucketUpdate)
+        for (const auto bucketElement : bucketUpdate)
         {
             sortArray[index++] = bucketElement;
         }

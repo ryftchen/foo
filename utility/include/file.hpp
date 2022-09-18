@@ -22,12 +22,7 @@
 
 namespace util_file
 {
-void executeCommand(const char* const cmd);
-[[noreturn]] void throwRunCommandLineException(const std::string& str);
-[[noreturn]] void throwCallSystemApiException(const std::string& str);
-[[noreturn]] void throwOperateFileException(const std::string& name, const bool isToOpen);
-[[noreturn]] void throwOperateLockException(
-    const std::string& name, const bool isToLock, const bool isReader);
+typedef std::string& (*PrintStyle)(std::string& line);
 
 inline constexpr std::string_view redForeground{"\033[0;31;40m"};
 inline constexpr std::string_view greenForeground{"\033[0;32;40m"};
@@ -35,12 +30,60 @@ inline constexpr std::string_view yellowForeground{"\033[0;33;40m"};
 inline constexpr std::string_view colorEnd{"\033[0m"};
 constexpr uint32_t maxLineNumForPrintFile = 1000;
 constexpr uint32_t maxBufferSize = 4096;
-
-typedef std::string& (*PrintStyle)(std::string& line);
 inline constexpr PrintStyle nullStyle = nullptr;
-void printFile(
-    const char* const pathname, const bool reverse = false,
-    const uint32_t maxLine = maxLineNumForPrintFile, PrintStyle style = nullStyle);
+
+enum class LockOperateType
+{
+    lock,
+    unlock
+};
+
+enum class FileLockType
+{
+    readerLock,
+    writerLock
+};
+
+void inline throwRunCommandLineException(const std::string& cmd)
+{
+    throw std::runtime_error("Failed to run common line: " + cmd);
+}
+
+void inline throwCallSystemApiException(const std::string& api)
+{
+    throw std::runtime_error("Failed to call system api: " + api);
+}
+
+void inline throwOperateLockException(
+    const std::string& name, const LockOperateType lockOperate, const FileLockType fileLock)
+{
+    const std::string operate = (LockOperateType::lock == lockOperate) ? "lock" : "unlock",
+                      type = (FileLockType::readerLock == fileLock) ? "reader" : "writer";
+    throw std::runtime_error("Failed to " + operate + " " + type + " lock: " + name);
+}
+
+void inline throwOperateFileException(const std::string& name, const bool isToOpen)
+{
+    const std::string operate = isToOpen ? "open" : "close";
+    throw std::runtime_error("Failed to " + operate + " file: " + name);
+}
+
+template <class T>
+void tryToOperateFileLock(
+    T& file, const char* const pathname, const LockOperateType lockOperate,
+    const FileLockType fileLock)
+{
+    const int fd = static_cast<__gnu_cxx::stdio_filebuf<char>* const>(file.rdbuf())->fd();
+    const int operate = (LockOperateType::lock == lockOperate)
+        ? (((FileLockType::readerLock == fileLock) ? LOCK_SH : LOCK_EX) | LOCK_NB)
+        : LOCK_UN;
+    if (flock(fd, operate))
+    {
+        file.close();
+        throwOperateLockException(
+            std::filesystem::path(pathname).filename().string(), lockOperate, fileLock);
+    }
+}
 
 template <std::string_view const&... Strings>
 struct Join
@@ -49,9 +92,9 @@ struct Join
     {
         constexpr std::size_t length = (Strings.size() + ... + 0);
         std::array<char, length + 1> array{};
-        auto append = [i = 0, &array](auto const& str) mutable
+        auto append = [i = 0, &array](const auto& str) mutable
         {
-            for (auto ch : str)
+            for (const auto ch : str)
             {
                 array[i++] = ch;
             }
@@ -66,17 +109,8 @@ struct Join
 template <std::string_view const&... Strings>
 static constexpr auto joinStr = Join<Strings...>::value;
 
-template <class T>
-void tryToOperateFileLock(
-    T& file, const char* const pathname, const bool isToLock, const bool isReader)
-{
-    const int fd = static_cast<__gnu_cxx::stdio_filebuf<char>* const>(file.rdbuf())->fd();
-    const int operate = isToLock ? ((isReader ? LOCK_SH : LOCK_EX) | LOCK_NB) : LOCK_UN;
-    if (flock(fd, operate))
-    {
-        file.close();
-        throwOperateLockException(
-            std::filesystem::path(pathname).filename().string(), isToLock, isReader);
-    }
-}
+void executeCommand(const char* const cmd);
+void printFile(
+    const char* const pathname, const bool reverse = false,
+    const uint32_t maxLine = maxLineNumForPrintFile, PrintStyle style = nullStyle);
 } // namespace util_file

@@ -14,10 +14,6 @@
 
 namespace util_time
 {
-std::string getCurrentSystemTime();
-std::mt19937 getRandomSeedByTime();
-void inline millisecondLevelSleep(const uint32_t interval);
-
 constexpr uint32_t dateLength = 32;
 constexpr uint32_t dateStartYear = 1900;
 
@@ -56,4 +52,7 @@ void inline millisecondLevelSleep(const uint32_t interval)
     std::this_thread::sleep_until(
         std::chrono::steady_clock::now() + std::chrono::operator""ms(interval));
 }
+
+std::string getCurrentSystemTime();
+std::mt19937 getRandomSeedByTime();
 } // namespace util_time

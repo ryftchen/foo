@@ -20,9 +20,6 @@
 
 namespace util_log
 {
-extern class Log logger;
-std::string& changeLogLevelStyle(std::string& line);
-
 inline constexpr std::string_view logPath{LOG_DEFAULT_LOG_PATH};
 constexpr uint32_t logPathLength = 32;
 constexpr std::string_view logDirectory{"./temp"};
@@ -179,4 +176,7 @@ void Log::output(
         }
     }
 }
+
+extern class Log logger;
+std::string& changeLogLevelStyle(std::string& line);
 } // namespace util_log

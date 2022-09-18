@@ -4,8 +4,6 @@
 
 namespace util_hash
 {
-uint32_t bkdrHash(const char* str);
-
 constexpr uint32_t bkdrHashSeed = 131;
 constexpr int bkdrHashSize = 0x7FFFFFFF;
 
@@ -18,4 +16,6 @@ constexpr uint64_t operator""_bkdrHash(const char* const str, const std::size_t 
 {
     return bkdrHashInCompile(str);
 }
+
+uint32_t bkdrHash(const char* str);
 } // namespace util_hash
