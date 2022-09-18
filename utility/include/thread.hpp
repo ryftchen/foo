@@ -11,9 +11,9 @@ class Thread
 {
 public:
     explicit Thread(const uint32_t count);
+    virtual ~Thread();
     template <typename Func, typename... Args>
     decltype(auto) enqueue(const std::string& name, Func&& func, Args&&... args);
-    virtual ~Thread();
 
 private:
     std::vector<std::thread> threadVector;

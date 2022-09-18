@@ -46,7 +46,7 @@ void printFile(
     {
         throwOperateFileException(std::filesystem::path(pathname).filename().string(), true);
     }
-    tryToOperateFileLock(file, pathname, true, true);
+    tryToOperateFileLock(file, pathname, LockOperateType::lock, FileLockType::readerLock);
 
     PrintStyle formatStyle = style;
     if (nullStyle == formatStyle)
@@ -86,29 +86,7 @@ void printFile(
     std::copy(
         context.cbegin(), context.cend(), std::ostream_iterator<std::string>(std::cout, "\n"));
 
-    tryToOperateFileLock(file, pathname, false, true);
+    tryToOperateFileLock(file, pathname, LockOperateType::unlock, FileLockType::readerLock);
     file.close();
-}
-
-void throwRunCommandLineException(const std::string& str)
-{
-    throw std::runtime_error("Failed to run common line: " + str);
-}
-
-void throwCallSystemApiException(const std::string& str)
-{
-    throw std::runtime_error("Failed to call system api: " + str);
-}
-
-void throwOperateLockException(const std::string& name, const bool isToLock, const bool isReader)
-{
-    const std::string operate = isToLock ? "lock" : "unlock", type = isReader ? "reader" : "writer";
-    throw std::runtime_error("Failed to " + operate + " " + type + " lock: " + name);
-}
-
-void throwOperateFileException(const std::string& name, const bool isToOpen)
-{
-    const std::string operate = isToOpen ? "open" : "close";
-    throw std::runtime_error("Failed to " + operate + " file: " + name);
 }
 } // namespace util_file

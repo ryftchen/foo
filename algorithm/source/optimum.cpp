@@ -114,7 +114,7 @@ std::optional<std::tuple<ValueY, ValueX>> Gradient::operator()(
 
     std::vector<std::pair<ValueY, ValueX>> aggregation;
     aggregation.reserve(climbing.size());
-    for (const auto& climber : climbing)
+    for (const auto climber : climbing)
     {
         x = climber;
         uint32_t iterNum = 0;
@@ -213,7 +213,7 @@ std::optional<std::tuple<ValueY, ValueX>> Particle::operator()(
     Record rec = recordInit(left, right);
     const auto best = std::max_element(
         std::cbegin(rec.society), std::cend(rec.society),
-        [](const auto& max1, const auto& max2)
+        [](const auto max1, const auto max2)
         {
             return max1.xFitness < max2.xFitness;
         });
@@ -349,7 +349,7 @@ double Genetic::geneDecoding(const Chromosome& chr) const
     uint32_t i = 0;
     std::for_each(
         chr.cbegin(), chr.cend(),
-        [&temp, &i](const auto& bit)
+        [&temp, &i](const auto bit)
         {
             temp += bit * std::pow(2, i);
             ++i;
@@ -473,7 +473,7 @@ auto Genetic::rouletteWheelSelection(const Population& pop, const std::vector<do
     const double rand = random();
     const auto iterCum = std::find_if(
         fitnessCum.cbegin(), fitnessCum.cend(),
-        [&rand](const auto& cumulation)
+        [&rand](const auto cumulation)
         {
             return cumulation > rand;
         });
@@ -522,7 +522,7 @@ void Genetic::selectIndividual(Population& pop)
     fitnessAvg.reserve(fitnessVal.size());
     std::transform(
         fitnessVal.cbegin(), fitnessVal.cend(), std::back_inserter(fitnessAvg),
-        [&sum](const auto& fitVal)
+        [&sum](const auto fitVal)
         {
             return fitVal / sum;
         });

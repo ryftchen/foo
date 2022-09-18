@@ -5,8 +5,6 @@
 
 namespace util_fsm
 {
-void checkIfExceptedFSMState(const bool normalState);
-
 template <class Func, class... Args>
 using InvokeResult = std::invoke_result_t<Func, Args...>;
 
@@ -334,4 +332,6 @@ FSM<Derived, State>::ProcessingLock::~ProcessingLock()
 {
     isProcessing = false;
 }
+
+void checkIfExceptedFSMState(const bool normalState);
 } // namespace util_fsm
