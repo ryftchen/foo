@@ -97,7 +97,9 @@ def constructCodeContainer():
     if IMAGE_REPO not in containerInfo:
         localImageInfo = command("docker image ls -a")
         if IMAGE_REPO not in localImageInfo:
-            remoteImageInfo = command(f"docker search {IMAGE_REPO}")
+            remoteImageInfo = command(
+                f"docker search {IMAGE_REPO}" + " | awk \'{split($0, a, \" \"); print a[1]}\'"
+            )
             if IMAGE_REPO in remoteImageInfo:
                 command(f"docker pull {IMAGE_REPO}:latest")
             else:
