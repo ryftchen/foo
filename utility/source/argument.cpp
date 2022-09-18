@@ -97,31 +97,31 @@ std::size_t ArgumentRegister::getArgumentsLength() const
         });
 }
 
-std::ostream& operator<<(std::ostream& stream, const ArgumentRegister& argument)
+std::ostream& operator<<(std::ostream& os, const ArgumentRegister& argument)
 {
     std::stringstream nameStream;
     std::copy(
         std::begin(argument.names), std::end(argument.names),
         std::ostream_iterator<std::string>(nameStream, " "));
-    stream << nameStream.str() << "    " << argument.helpStr;
+    os << nameStream.str() << "    " << argument.helpStr;
     if (argument.defaultValues.has_value())
     {
         if (!argument.helpStr.empty())
         {
-            stream << " ";
+            os << " ";
         }
-        stream << "[default: " << argument.defaultValueRepresent << "]";
+        os << "[default: " << argument.defaultValueRepresent << "]";
     }
     else if (argument.isRequired)
     {
         if (!argument.helpStr.empty())
         {
-            stream << " ";
+            os << " ";
         }
-        stream << "[required]";
+        os << "[required]";
     }
-    stream << std::endl;
-    return stream;
+    os << std::endl;
+    return os;
 }
 
 void ArgumentRegister::throwNargsRangeValidationException() const
@@ -272,43 +272,43 @@ ArgumentRegister& Argument::operator[](const std::string_view argName) const
     throw std::logic_error("No such argument: " + std::string(argName));
 }
 
-auto operator<<(std::ostream& stream, const Argument& parser) -> std::ostream&
+auto operator<<(std::ostream& os, const Argument& parser) -> std::ostream&
 {
-    stream.setf(std::ios_base::left);
-    stream << "Usage: " << parser.title << " <options...> ";
+    os.setf(std::ios_base::left);
+    os << "Usage: " << parser.title << " <options...> ";
     std::size_t longestArgLength = parser.getLengthOfLongestArgument();
 
     for (const auto& argument : parser.nonOptionalArguments)
     {
-        stream << "[" << argument.names.front() << "...] ";
+        os << "[" << argument.names.front() << "...] ";
     }
-    stream << std::endl << std::endl;
+    os << std::endl << std::endl;
 
     if (!parser.optionalArguments.empty())
     {
-        stream << "Optional:" << std::endl;
+        os << "Optional:" << std::endl;
     }
 
     for (const auto& argument : parser.optionalArguments)
     {
-        stream.width(longestArgLength);
-        stream << argument;
+        os.width(longestArgLength);
+        os << argument;
     }
-    stream << std::endl;
+    os << std::endl;
 
     if (!parser.nonOptionalArguments.empty())
     {
-        stream << "Non-optional:" << std::endl;
+        os << "Non-optional:" << std::endl;
     }
 
     for (const auto& argument : parser.nonOptionalArguments)
     {
-        stream.width(longestArgLength);
-        stream << argument;
+        os.width(longestArgLength);
+        os << argument;
     }
-    stream << std::endl;
+    os << std::endl;
 
-    return stream;
+    return os;
 }
 
 auto Argument::help() const -> std::stringstream

@@ -34,13 +34,14 @@ public:
     void countingSort(T* const array, const uint32_t length) const;
     void bucketSort(T* const array, const uint32_t length) const;
     void radixSort(T* const array, const uint32_t length) const;
+
     const std::unique_ptr<T[]>& getRandomArray() const;
     uint32_t getLength() const;
-    template <typename U>
-    requires std::is_integral<U>::value void setRandomArray(
+    template <typename V>
+    requires std::is_integral<V>::value void setRandomArray(
         T array[], const uint32_t length, const T left, const T right) const;
-    template <typename U>
-    requires std::is_floating_point<U>::value void setRandomArray(
+    template <typename V>
+    requires std::is_floating_point<V>::value void setRandomArray(
         T array[], const uint32_t length, const T left, const T right) const;
 
 private:
@@ -49,6 +50,7 @@ private:
     const uint32_t length;
     const T left;
     const T right;
+
     void deepCopyFromSort(const Sort& sort) const;
     static void mergeSortRecursive(T* const sortArray, const uint32_t begin, const uint32_t end);
     static void quickSortRecursive(T* const sortArray, const uint32_t begin, const uint32_t end);
@@ -103,8 +105,8 @@ uint32_t Sort<T>::getLength() const
 }
 
 template <class T>
-template <typename U>
-requires std::is_integral<U>::value void Sort<T>::setRandomArray(
+template <typename V>
+requires std::is_integral<V>::value void Sort<T>::setRandomArray(
     T array[], const uint32_t length, const T left, const T right) const
 {
     std::mt19937 seed{util_time::getRandomSeedByTime()};
@@ -123,8 +125,8 @@ requires std::is_integral<U>::value void Sort<T>::setRandomArray(
 }
 
 template <class T>
-template <typename U>
-requires std::is_floating_point<U>::value void Sort<T>::setRandomArray(
+template <typename V>
+requires std::is_floating_point<V>::value void Sort<T>::setRandomArray(
     T array[], const uint32_t length, const T left, const T right) const
 {
     std::mt19937 seed{util_time::getRandomSeedByTime()};

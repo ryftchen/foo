@@ -157,8 +157,8 @@ public:
     template <typename T>
     bool operator==(const T& rhs) const;
     friend class Argument;
-    friend auto operator<<(std::ostream& stream, const Argument& parser) -> std::ostream&;
-    friend std::ostream& operator<<(std::ostream& stream, const ArgumentRegister& argument);
+    friend auto operator<<(std::ostream& os, const Argument& parser) -> std::ostream&;
+    friend std::ostream& operator<<(std::ostream& os, const ArgumentRegister& argument);
 
 private:
     using ValuedAction = std::function<std::any(const std::string&)>;
