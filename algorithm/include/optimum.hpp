@@ -105,13 +105,12 @@ struct Individual
         x(x),
         velocity(velocity), positionBest(positionBest), xFitness(xFitness),
         fitnessPositionBest(fitnessPositionBest){};
+    Individual() = default;
     double x;
     double velocity;
     double positionBest;
     double xFitness;
     double fitnessPositionBest;
-
-    Individual() = default;
 };
 struct Greater
 {
@@ -127,10 +126,9 @@ struct Record
         const std::initializer_list<History::value_type>& history) :
         society(society),
         history(history){};
+    Record() = default;
     Society society;
     History history;
-
-    Record() = default;
 };
 } // namespace particle_swarm
 class Particle : public Optimum

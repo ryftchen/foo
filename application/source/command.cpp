@@ -194,30 +194,31 @@ void Command::runOptimum() const
         return;
     }
 
-    const auto printFunctor = [](const algo_expression::TargetExpression& expression)
+    const auto printFunctor = [](const algo_expression::ExprTarget& expression)
     {
+        constexpr std::string_view prefix{"\r\nOptimum Expression: "};
         std::visit(
-            algo_expression::ExpressionOverloaded{
-                [](const algo_expression::Function1& /*unused*/)
+            algo_expression::ExprOverloaded{
+                [&prefix](const algo_expression::Function1& /*unused*/)
                 {
-                    std::cout << algo_expression::Function1::optimumExpression << std::endl;
+                    std::cout << prefix << algo_expression::Function1::optimumExpr << std::endl;
                 },
-                [](const algo_expression::Function2& /*unused*/)
+                [&prefix](const algo_expression::Function2& /*unused*/)
                 {
-                    std::cout << algo_expression::Function2::optimumExpression << std::endl;
+                    std::cout << prefix << algo_expression::Function2::optimumExpr << std::endl;
                 },
             },
             expression);
     };
     const auto resultFunctor = [this](
                                    const algo_expression::Expression& expression,
-                                   const algo_expression::ExpressionRange<double, double>& range)
+                                   const algo_expression::ExprRange<double, double>& range)
     {
         getOptimumResult(expression, range.range1, range.range2, algo_optimum::epsilon);
     };
 
     COMMAND_PRINT_ALGO_TASK_TITLE(AlgoTaskType::optimum, "BEGIN");
-    for ([[maybe_unused]] const auto& [range, expression] : expressionMap)
+    for ([[maybe_unused]] const auto& [range, expression] : optimumExprMap)
     {
         printFunctor(expression);
         switch (expression.index())
@@ -318,30 +319,31 @@ void Command::runIntegral() const
         return;
     }
 
-    const auto printFunctor = [](const algo_expression::TargetExpression& expression)
+    const auto printFunctor = [](const algo_expression::ExprTarget& expression)
     {
+        constexpr std::string_view prefix{"\r\nIntegral Expression: "};
         std::visit(
-            algo_expression::ExpressionOverloaded{
-                [](const algo_expression::Function1& /*unused*/)
+            algo_expression::ExprOverloaded{
+                [&prefix](const algo_expression::Function1& /*unused*/)
                 {
-                    std::cout << algo_expression::Function1::integralExpression << std::endl;
+                    std::cout << prefix << algo_expression::Function1::integralExpr << std::endl;
                 },
-                [](const algo_expression::Function2& /*unused*/)
+                [&prefix](const algo_expression::Function2& /*unused*/)
                 {
-                    std::cout << algo_expression::Function2::integralExpression << std::endl;
+                    std::cout << prefix << algo_expression::Function2::integralExpr << std::endl;
                 },
             },
             expression);
     };
     const auto resultFunctor = [this](
                                    const algo_expression::Expression& expression,
-                                   const algo_expression::ExpressionRange<double, double>& range)
+                                   const algo_expression::ExprRange<double, double>& range)
     {
         getIntegralResult(expression, range.range1, range.range2, algo_integral::epsilon);
     };
 
     COMMAND_PRINT_ALGO_TASK_TITLE(AlgoTaskType::integral, "BEGIN");
-    for ([[maybe_unused]] const auto& [range, expression] : expressionMap)
+    for ([[maybe_unused]] const auto& [range, expression] : integralExprMap)
     {
         printFunctor(expression);
         switch (expression.index())
