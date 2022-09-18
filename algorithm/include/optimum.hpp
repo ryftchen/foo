@@ -4,8 +4,6 @@
 #include <random>
 #include "expression.hpp"
 
-#define OPTIMUM_RESULT(opt) "*%-9s method: Y(" #opt ")=%+.5f X=%+.5f  ==>Run time: %8.5f ms\n"
-
 namespace algo_optimum
 {
 using ValueX = double;

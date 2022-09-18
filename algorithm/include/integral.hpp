@@ -3,8 +3,6 @@
 #include <bits/stdint-uintn.h>
 #include "expression.hpp"
 
-#define INTEGRAL_RESULT "*%-11s method: I=%+.5f  ==>Run time: %8.5f ms\n"
-
 namespace algo_integral
 {
 inline constexpr double epsilon = 1e-5;

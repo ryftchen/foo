@@ -8,21 +8,6 @@
 #include "expression.hpp"
 #include "sort.hpp"
 
-#define COMMAND_PRINT_ALGO_TASK_TITLE(taskType, title)                                 \
-    std::cout << std::endl                                                             \
-              << "TASK " << std::setiosflags(std::ios_base::left) << std::setfill('.') \
-              << std::setw(titleWidthForPrintTask) << taskType << title                \
-              << std::resetiosflags(std::ios_base::left) << std::setfill(' ') << std::endl;
-#define COMMAND_CHECK_FOR_EXCESS_ARG        \
-    do                                      \
-    {                                       \
-        if (checkTask())                    \
-        {                                   \
-            throwExcessArgumentException(); \
-        }                                   \
-    }                                       \
-    while (0)
-
 class Command
 {
 public:

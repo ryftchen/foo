@@ -3,6 +3,8 @@
 #include "file.hpp"
 #include "time.hpp"
 
+#define OPTIMUM_RESULT(opt) "*%-9s method: Y(" #opt ")=%+.5f X=%+.5f  ==>Run time: %8.5f ms\n"
+
 namespace algo_optimum
 {
 using genetic_species::Chromosome;
@@ -15,7 +17,7 @@ using particle_swarm::Society;
 std::optional<std::tuple<ValueY, ValueX>> Fibonacci::operator()(
     const double left, const double right, const double eps)
 {
-    TIMER_BEGIN;
+    TIME_BEGIN(timer);
     double leftVal = left, rightVal = right;
     std::vector<double> fibVec = generateFibonacciNumber((rightVal - leftVal) / eps);
     constexpr int minSize = 3;
@@ -71,8 +73,8 @@ std::optional<std::tuple<ValueY, ValueX>> Fibonacci::operator()(
     }
     const double x = (leftVal + rightVal) / 2.0;
 
-    TIMER_END;
-    FORMAT_PRINT(OPTIMUM_RESULT(max), "Fibonacci", func(x), x, TIMER_INTERVAL);
+    TIME_END(timer);
+    FORMAT_PRINT(OPTIMUM_RESULT(max), "Fibonacci", func(x), x, TIME_INTERVAL(timer));
     return std::make_optional(std::make_tuple(func(x), x));
 }
 
@@ -100,8 +102,8 @@ std::vector<double> Fibonacci::generateFibonacciNumber(const double max)
 std::optional<std::tuple<ValueY, ValueX>> Gradient::operator()(
     const double left, const double right, const double eps)
 {
-    TIMER_BEGIN;
-    TIME_GET_SEED(seed);
+    TIME_BEGIN(timer);
+    std::mt19937 seed{util_time::getRandomSeedByTime()};
     double x = 0.0, y = 0.0;
     std::uniform_real_distribution<double> randomX(left, right);
     std::set<double> climbing;
@@ -139,8 +141,8 @@ std::optional<std::tuple<ValueY, ValueX>> Gradient::operator()(
     y = std::get<0>(*best);
     x = std::get<1>(*best);
 
-    TIMER_END;
-    FORMAT_PRINT(OPTIMUM_RESULT(max), "Gradient", y, x, TIMER_INTERVAL);
+    TIME_END(timer);
+    FORMAT_PRINT(OPTIMUM_RESULT(max), "Gradient", y, x, TIME_INTERVAL(timer));
     return std::make_optional(std::make_tuple(y, x));
 }
 
@@ -154,10 +156,10 @@ double Gradient::calculateFirstDerivative(const double x, const double eps) cons
 std::optional<std::tuple<ValueY, ValueX>> Annealing::operator()(
     const double left, const double right, const double eps)
 {
-    TIMER_BEGIN;
+    TIME_BEGIN(timer);
     constexpr double perturbation = 0.5;
     double temperature = annealing_cooling::initialT;
-    TIME_GET_SEED(seed);
+    std::mt19937 seed{util_time::getRandomSeedByTime()};
     std::uniform_real_distribution<double> randomX(left, right);
     std::uniform_real_distribution<double> random(-perturbation, perturbation);
     double x = randomX(seed), y = func(x);
@@ -198,8 +200,8 @@ std::optional<std::tuple<ValueY, ValueX>> Annealing::operator()(
         temperature *= annealing_cooling::coolingRate;
     }
 
-    TIMER_END;
-    FORMAT_PRINT(OPTIMUM_RESULT(max), "Annealing", y, x, TIMER_INTERVAL);
+    TIME_END(timer);
+    FORMAT_PRINT(OPTIMUM_RESULT(max), "Annealing", y, x, TIME_INTERVAL(timer));
     return std::make_optional(std::make_tuple(y, x));
 }
 
@@ -207,7 +209,7 @@ std::optional<std::tuple<ValueY, ValueX>> Annealing::operator()(
 std::optional<std::tuple<ValueY, ValueX>> Particle::operator()(
     const double left, const double right, const double eps)
 {
-    TIMER_BEGIN;
+    TIME_BEGIN(timer);
     Record rec = recordInit(left, right);
     const auto best = std::max_element(
         std::cbegin(rec.society), std::cend(rec.society),
@@ -260,15 +262,14 @@ std::optional<std::tuple<ValueY, ValueX>> Particle::operator()(
     xFitnessBest = std::get<0>(*(rec.history.cbegin()));
     xBest = std::get<1>(*(rec.history.cbegin()));
 
-    TIMER_END;
-    FORMAT_PRINT(OPTIMUM_RESULT(max), "Particle", xFitnessBest, xBest, TIMER_INTERVAL);
+    TIME_END(timer);
+    FORMAT_PRINT(OPTIMUM_RESULT(max), "Particle", xFitnessBest, xBest, TIME_INTERVAL(timer));
     return std::make_optional(std::make_tuple(xFitnessBest, xBest));
 }
 
 Record Particle::recordInit(const double left, const double right)
 {
-    TIME_GET_SEED(seedNew);
-    seed = seedNew;
+    seed = std::mt19937{util_time::getRandomSeedByTime()};
     std::uniform_real_distribution<double> randomX(left, right),
         randomV(particle_swarm::vMin, particle_swarm::vMax);
 
@@ -291,7 +292,7 @@ Record Particle::recordInit(const double left, const double right)
 std::optional<std::tuple<ValueY, ValueX>> Genetic::operator()(
     const double left, const double right, const double eps)
 {
-    TIMER_BEGIN;
+    TIME_BEGIN(timer);
     constexpr uint32_t minChrNum = 3;
     updateSpecies(left, right, eps);
     if (chrNum < minChrNum)
@@ -309,8 +310,8 @@ std::optional<std::tuple<ValueY, ValueX>> Genetic::operator()(
     }
     const double x = geneDecoding(getBestIndividual(pop));
 
-    TIMER_END;
-    FORMAT_PRINT(OPTIMUM_RESULT(max), "Genetic", func(x), x, TIMER_INTERVAL);
+    TIME_END(timer);
+    FORMAT_PRINT(OPTIMUM_RESULT(max), "Genetic", func(x), x, TIME_INTERVAL(timer));
     return std::make_optional(std::make_tuple(func(x), x));
 }
 
@@ -319,8 +320,7 @@ void Genetic::updateSpecies(const double left, const double right, const double 
     range.lower = left;
     range.upper = right;
     range.eps = eps;
-    TIME_GET_SEED(seedNew);
-    seed = seedNew;
+    seed = std::mt19937{util_time::getRandomSeedByTime()};
 
     uint32_t num = 0;
     const double max = (range.upper - range.lower) * (1.0 / range.eps);

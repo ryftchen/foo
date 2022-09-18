@@ -17,4 +17,13 @@ std::string getCurrentSystemTime()
     std::string dateStr(date);
     return dateStr;
 }
+
+std::mt19937 getRandomSeedByTime()
+{
+    timeval timeSeed{};
+    constexpr uint32_t secToUsec = 1000000;
+    gettimeofday(&timeSeed, nullptr);
+
+    return std::mt19937(timeSeed.tv_sec * secToUsec + timeSeed.tv_usec);
+}
 } // namespace util_time

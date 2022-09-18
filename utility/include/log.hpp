@@ -2,7 +2,6 @@
 
 #include <condition_variable>
 #include <queue>
-#include <thread>
 #include "file.hpp"
 #include "fsm.hpp"
 #include "time.hpp"
@@ -16,8 +15,8 @@
     util_log::logObj.output(util_log::Log::OutputLevel::warn, __FILE__, __LINE__, format, ##args)
 #define LOG_ERR(logObj, format, args...) \
     util_log::logObj.output(util_log::Log::OutputLevel::error, __FILE__, __LINE__, format, ##args)
-#define LOG_START(logObj) util_log::logObj.waitLoggerStart();
-#define LOG_STOP(logObj) util_log::logObj.waitLoggerStop();
+#define LOG_TO_START(logObj) util_log::logObj.waitLoggerStart();
+#define LOG_TO_STOP(logObj) util_log::logObj.waitLoggerStop();
 
 namespace util_log
 {
@@ -175,7 +174,7 @@ void Log::output(
 
             lock.unlock();
             loggingCondition.notify_one();
-            TIME_SLEEP_MILLISECOND(1);
+            util_time::millisecondLevelSleep(1);
             lock.lock();
         }
     }
