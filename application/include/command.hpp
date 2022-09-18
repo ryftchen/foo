@@ -99,6 +99,7 @@ private:
 #pragma pack(8)
     struct TaskPlan
     {
+        TaskPlan() = default;
         struct UtilTask
         {
             std::bitset<Bottom<UtilTaskType>::value> utilTaskBit;
@@ -125,7 +126,6 @@ private:
             }
         } algoTask{};
 
-        TaskPlan() = default;
         [[nodiscard]] bool empty() const { return utilTask.empty() && algoTask.empty(); }
         void reset()
         {
@@ -154,13 +154,26 @@ private:
     typedef void (Command::*SetAlgoTaskBitFunctor)(const std::string&);
     const std::array<SetAlgoTaskBitFunctor, Bottom<AlgoTaskType>::value> setAlgoTaskBitFunctor = {
         &Command::setOptimumBit, &Command::setIntegralBit, &Command::setSortBit};
+
     const std::unordered_multimap<
-        algo_expression::ExpressionRange<double, double>, algo_expression::TargetExpression,
-        algo_expression::ExpressionMapHash>
-        expressionMap{
-            {{algo_expression::Function1::range1, algo_expression::Function1::range2},
+        algo_expression::ExprRange<double, double>, algo_expression::ExprTarget,
+        algo_expression::ExprMapHash>
+        optimumExprMap{
+            {{algo_expression::Function1::range1, algo_expression::Function1::range2,
+              algo_expression::Function1::optimumExpr},
              algo_expression::Function1()},
-            {{algo_expression::Function2::range1, algo_expression::Function2::range2},
+            {{algo_expression::Function2::range1, algo_expression::Function2::range2,
+              algo_expression::Function2::optimumExpr},
+             algo_expression::Function2()}};
+    const std::unordered_multimap<
+        algo_expression::ExprRange<double, double>, algo_expression::ExprTarget,
+        algo_expression::ExprMapHash>
+        integralExprMap{
+            {{algo_expression::Function1::range1, algo_expression::Function1::range2,
+              algo_expression::Function1::integralExpr},
+             algo_expression::Function1()},
+            {{algo_expression::Function2::range1, algo_expression::Function2::range2,
+              algo_expression::Function2::integralExpr},
              algo_expression::Function2()}};
 
     void foregroundHandle(const int argc, const char* const argv[]);
