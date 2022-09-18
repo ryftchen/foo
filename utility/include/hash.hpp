@@ -2,8 +2,6 @@
 
 #include <iostream>
 
-#define HASH_BKDR(str) util_hash::operator""_bkdrHash(str, std::size_t(0))
-
 namespace util_hash
 {
 uint32_t bkdrHash(const char* str);
@@ -15,6 +13,7 @@ constexpr uint32_t bkdrHashInCompile(const char* const str, const uint32_t hash 
 {
     return *str ? bkdrHashInCompile(str + 1, (hash * bkdrHashSeed + *str) & bkdrHashSize) : hash;
 }
+
 constexpr uint64_t operator""_bkdrHash(const char* const str, const std::size_t /*unused*/) noexcept
 {
     return bkdrHashInCompile(str);

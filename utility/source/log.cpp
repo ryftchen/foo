@@ -87,7 +87,7 @@ void Log::waitLoggerStart()
 {
     while (State::work != currentState())
     {
-        TIME_SLEEP_MILLISECOND(1);
+        util_time::millisecondLevelSleep(1);
     }
 }
 
@@ -99,13 +99,13 @@ void Log::waitLoggerStop()
 
         lock.unlock();
         loggingCondition.notify_one();
-        TIME_SLEEP_MILLISECOND(1);
+        util_time::millisecondLevelSleep(1);
         lock.lock();
     }
 
     while (State::done != currentState())
     {
-        TIME_SLEEP_MILLISECOND(1);
+        util_time::millisecondLevelSleep(1);
     }
 }
 

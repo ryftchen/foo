@@ -2,24 +2,21 @@
 
 #include <sys/time.h>
 #include <chrono>
+#include <random>
 #include <string>
+#include <thread>
 
-#define TIME_GET_SEED(seed)           \
-    timeval timeSeed{};               \
-    gettimeofday(&timeSeed, nullptr); \
-    std::mt19937 seed(timeSeed.tv_sec * 1000000 + timeSeed.tv_usec)
-#define TIME_SLEEP_MILLISECOND(num) \
-    std::this_thread::sleep_until(std::chrono::steady_clock::now() + std::chrono::operator""ms(num))
-
-#define TIMER_BEGIN        \
+#define TIME_BEGIN(timer)  \
     util_time::Time timer; \
     timer.setBeginTime()
-#define TIMER_END timer.setEndTime()
-#define TIMER_INTERVAL timer.getTimeInterval()
+#define TIME_END(timer) timer.setEndTime()
+#define TIME_INTERVAL(timer) timer.getTimeInterval()
 
 namespace util_time
 {
 std::string getCurrentSystemTime();
+std::mt19937 getRandomSeedByTime();
+void inline millisecondLevelSleep(const uint32_t interval);
 
 constexpr uint32_t dateLength = 32;
 constexpr uint32_t dateStartYear = 1900;
@@ -52,5 +49,11 @@ double inline Time::getTimeInterval() const
     const std::chrono::duration<double, std::milli> timeInterval =
         std::chrono::duration<double, std::milli>(endTime - beginTime);
     return timeInterval.count();
+}
+
+void inline millisecondLevelSleep(const uint32_t interval)
+{
+    std::this_thread::sleep_until(
+        std::chrono::steady_clock::now() + std::chrono::operator""ms(interval));
 }
 } // namespace util_time

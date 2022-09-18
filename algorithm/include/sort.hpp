@@ -2,26 +2,8 @@
 
 #include <cstring>
 #include <mutex>
-#include <random>
 #include "file.hpp"
 #include "time.hpp"
-
-#define SORT_GENERATE_INTEGRAL_ARRAY \
-    "\r\nGenerate %u random integral numbers from %d to %d:\r\n%s\n"
-#define SORT_GENERATE_FLOATING_ARRAY \
-    "\r\nGenerate %u random floating point numbers from %.5f to %.5f:\r\n%s\n"
-#define SORT_RESULT "\r\n*%-9s method:\r\n%s\r\n==>Run time: %8.5f ms\n"
-#define SORT_FORMAT_FOR_LOOP(format, args...)                                                     \
-    formatSize = std::snprintf(buffer + completeSize, bufferSize - completeSize, format, ##args); \
-    if ((formatSize < 0) || (formatSize >= static_cast<int>(bufferSize - completeSize)))          \
-    {                                                                                             \
-        break;                                                                                    \
-    }                                                                                             \
-    completeSize += formatSize;
-#define SORT_GENERATE_PRINT_BUFFER(buffer, bufferSize)    \
-    const uint32_t bufferSize = length * maxAlignOfPrint; \
-    char buffer[bufferSize + 1];                          \
-    buffer[0] = '\0';
 
 namespace algo_sort
 {
@@ -30,6 +12,10 @@ inline constexpr int arrayRange2 = 150;
 inline constexpr uint32_t arrayLength = 53;
 constexpr uint32_t maxAlignOfPrint = 16;
 constexpr uint32_t maxColumnOfPrint = 10;
+constexpr std::string_view titleOfIntegralArray{
+    "\r\nGenerate %u random integral numbers from %d to %d:\r\n%s\n"};
+constexpr std::string_view titleOfFloatingArray{
+    "\r\nGenerate %u random floating point numbers from %.5f to %.5f:\r\n%s\n"};
 
 template <class T>
 class Sort
@@ -121,7 +107,7 @@ template <typename U>
 requires std::is_integral<U>::value void Sort<T>::setRandomArray(
     T array[], const uint32_t length, const T left, const T right) const
 {
-    TIME_GET_SEED(seed);
+    std::mt19937 seed{util_time::getRandomSeedByTime()};
     std::uniform_int_distribution<int> randomX(left, right);
     for (uint32_t i = 0; i < length; ++i)
     {
@@ -132,7 +118,7 @@ requires std::is_integral<U>::value void Sort<T>::setRandomArray(
     char arrayBuffer[arrayBufferSize + 1];
     arrayBuffer[0] = '\0';
     FORMAT_PRINT(
-        SORT_GENERATE_INTEGRAL_ARRAY, length, left, right,
+        titleOfIntegralArray.data(), length, left, right,
         formatArray(array, length, arrayBuffer, arrayBufferSize + 1));
 }
 
@@ -141,7 +127,7 @@ template <typename U>
 requires std::is_floating_point<U>::value void Sort<T>::setRandomArray(
     T array[], const uint32_t length, const T left, const T right) const
 {
-    TIME_GET_SEED(seed);
+    std::mt19937 seed{util_time::getRandomSeedByTime()};
     std::uniform_real_distribution<double> randomX(left, right);
     for (uint32_t i = 0; i < length; ++i)
     {
@@ -152,7 +138,7 @@ requires std::is_floating_point<U>::value void Sort<T>::setRandomArray(
     char arrayBuffer[arrayBufferSize + 1];
     arrayBuffer[0] = '\0';
     FORMAT_PRINT(
-        SORT_GENERATE_FLOATING_ARRAY, length, left, right,
+        titleOfFloatingArray.data(), length, left, right,
         formatArray(array, length, arrayBuffer, arrayBufferSize + 1));
 }
 
@@ -176,16 +162,30 @@ char* Sort<T>::formatArray(
     {
         format = "%*.5f ";
     }
+
     int formatSize = 0;
     uint32_t completeSize = 0;
     for (uint32_t i = 0; i < length; ++i)
     {
-        SORT_FORMAT_FOR_LOOP(format, align + 1, *(array + i));
+        formatSize = std::snprintf(
+            buffer + completeSize, bufferSize - completeSize, format, align + 1, *(array + i));
+        if ((formatSize < 0) || (formatSize >= static_cast<int>(bufferSize - completeSize)))
+        {
+            break;
+        }
+        completeSize += formatSize;
+
         if ((0 == (i + 1) % maxColumnOfPrint) && ((i + 1) != length))
         {
-            SORT_FORMAT_FOR_LOOP("\n");
+            formatSize = std::snprintf(buffer + completeSize, bufferSize - completeSize, "\n");
+            if ((formatSize < 0) || (formatSize >= static_cast<int>(bufferSize - completeSize)))
+            {
+                break;
+            }
+            completeSize += formatSize;
         }
     }
+
     return buffer;
 }
 } // namespace algo_sort
