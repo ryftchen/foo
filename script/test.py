@@ -234,14 +234,13 @@ def testConsoleCommand():
 
 
 def testAlgoTypeOption():
-    for each in OPTION_ALGO_TYPE[1]:
-        runTestTask(f"{BIN_CMD} {OPTION_ALGO_TYPE[0]} {each}")
     testOptimumMethod()
     testIntegralMethod()
     testSortMethod()
 
 
 def testOptimumMethod():
+    runTestTask(f"{BIN_CMD} {OPTION_ALGO_TYPE[0]} {OPTION_ALGO_TYPE[1][0]}")
     for each in ALGO_OPTIMUM_METHOD:
         runTestTask(f"{BIN_CMD} {OPTION_ALGO_TYPE[0]} {OPTION_ALGO_TYPE[1][0]} {each}")
     runTestTask(
@@ -250,6 +249,7 @@ def testOptimumMethod():
 
 
 def testIntegralMethod():
+    runTestTask(f"{BIN_CMD} {OPTION_ALGO_TYPE[0]} {OPTION_ALGO_TYPE[1][1]}")
     for each in ALGO_INTEGRAL_METHOD:
         runTestTask(f"{BIN_CMD} {OPTION_ALGO_TYPE[0]} {OPTION_ALGO_TYPE[1][1]} {each}")
     runTestTask(
@@ -258,6 +258,7 @@ def testIntegralMethod():
 
 
 def testSortMethod():
+    runTestTask(f"{BIN_CMD} {OPTION_ALGO_TYPE[0]} {OPTION_ALGO_TYPE[1][2]}")
     for each in ALGO_SORT_METHOD:
         runTestTask(f"{BIN_CMD} {OPTION_ALGO_TYPE[0]} {OPTION_ALGO_TYPE[1][2]} {each}")
     runTestTask(
