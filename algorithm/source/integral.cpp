@@ -25,7 +25,7 @@ double trapezoid(
 // Trapezoidal method
 double Trapezoidal::operator()(double lower, double upper, const double eps) const
 {
-    TIME_BEGIN(timer);
+    TIME_BEGIN(timing);
     const int sign = Integral::getSign(lower, upper);
     const uint32_t minStep = std::pow(2, 3);
     const double height = upper - lower;
@@ -42,22 +42,22 @@ double Trapezoidal::operator()(double lower, double upper, const double eps) con
     while ((std::fabs(s1 - s2) > eps) || (n < minStep));
     sum = s2 * sign;
 
-    TIME_END(timer);
-    FORMAT_PRINT(INTEGRAL_RESULT(def), "Trapezoidal", sum, TIME_INTERVAL(timer));
+    TIME_END(timing);
+    FORMAT_PRINT(INTEGRAL_RESULT(def), "Trapezoidal", sum, TIME_INTERVAL(timing));
     return sum;
 }
 
 // Adaptive Simpson's 1/3 method
 double Simpson::operator()(double lower, double upper, const double eps) const
 {
-    TIME_BEGIN(timer);
+    TIME_BEGIN(timing);
     const int sign = Integral::getSign(lower, upper);
 
     double sum = simpsonIntegral(lower, upper, eps);
     sum *= sign;
 
-    TIME_END(timer);
-    FORMAT_PRINT(INTEGRAL_RESULT(def), "Simpson", sum, TIME_INTERVAL(timer));
+    TIME_END(timing);
+    FORMAT_PRINT(INTEGRAL_RESULT(def), "Simpson", sum, TIME_INTERVAL(timing));
     return sum;
 }
 
@@ -95,7 +95,7 @@ double Simpson::simpsonOneThird(const double left, const double right) const
 // Romberg method
 double Romberg::operator()(double lower, double upper, const double eps) const
 {
-    TIME_BEGIN(timer);
+    TIME_BEGIN(timing);
     const int sign = Integral::getSign(lower, upper);
     uint32_t k = 0;
     double sum = 0.0;
@@ -122,15 +122,15 @@ double Romberg::operator()(double lower, double upper, const double eps) const
     }
     sum = trapezoidFunctor(std::pow(2, k)) * sign;
 
-    TIME_END(timer);
-    FORMAT_PRINT(INTEGRAL_RESULT(def), "Romberg", sum, TIME_INTERVAL(timer));
+    TIME_END(timing);
+    FORMAT_PRINT(INTEGRAL_RESULT(def), "Romberg", sum, TIME_INTERVAL(timing));
     return sum;
 }
 
 // Gauss-Legendre's 5-points method
 double Gauss::operator()(double lower, double upper, const double eps) const
 {
-    TIME_BEGIN(timer);
+    TIME_BEGIN(timing);
     const int sign = Integral::getSign(lower, upper);
     constexpr uint32_t gaussNodes = 5, gaussCoefficient = 2;
     constexpr std::array<std::array<double, gaussCoefficient>, gaussNodes> gaussLegendreTable = {
@@ -167,15 +167,15 @@ double Gauss::operator()(double lower, double upper, const double eps) const
     while (std::fabs(s1 - s2) > eps);
     sum = s2 * sign;
 
-    TIME_END(timer);
-    FORMAT_PRINT(INTEGRAL_RESULT(def), "Gauss", sum, TIME_INTERVAL(timer));
+    TIME_END(timing);
+    FORMAT_PRINT(INTEGRAL_RESULT(def), "Gauss", sum, TIME_INTERVAL(timing));
     return sum;
 }
 
 // Monte-Carlo method
 double MonteCarlo::operator()(double lower, double upper, const double eps) const
 {
-    TIME_BEGIN(timer);
+    TIME_BEGIN(timing);
     const int sign = Integral::getSign(lower, upper);
 
     double sum = sampleFromUniformDistribution(lower, upper, eps);
@@ -184,8 +184,8 @@ double MonteCarlo::operator()(double lower, double upper, const double eps) cons
 #endif
     sum *= sign;
 
-    TIME_END(timer);
-    FORMAT_PRINT(INTEGRAL_RESULT(def), "MonteCarlo", sum, TIME_INTERVAL(timer));
+    TIME_END(timing);
+    FORMAT_PRINT(INTEGRAL_RESULT(def), "MonteCarlo", sum, TIME_INTERVAL(timing));
     return sum;
 }
 

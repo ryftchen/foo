@@ -280,6 +280,7 @@ void Command::getOptimumResult(
                 optimumFunctor(threadName, std::make_shared<algo_optimum::Genetic>(express));
                 break;
             default:
+                LOG_DBG(logger, "Unable to execute unknown optimum method.");
                 break;
         }
     }
@@ -405,6 +406,7 @@ void Command::getIntegralResult(
                 integralFunctor(threadName, std::make_shared<algo_integral::MonteCarlo>(express));
                 break;
             default:
+                LOG_DBG(logger, "execute to run unknown integral method.");
                 break;
         }
     }
@@ -514,6 +516,7 @@ void Command::getSortResult(const std::shared_ptr<algo_sort::Sort<T>>& sort) con
                 sortFunctor(threadName, &algo_sort::Sort<T>::radixSort);
                 break;
             default:
+                LOG_DBG(logger, "execute to run unknown sort method.");
                 break;
         }
     }

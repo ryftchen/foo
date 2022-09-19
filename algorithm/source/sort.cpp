@@ -11,7 +11,7 @@
         FORMAT_PRINT(                                                         \
             SORT_RESULT(asc), method,                                         \
             formatArray(sortArray, length, arrayBuffer, arrayBufferSize + 1), \
-            TIME_INTERVAL(timer));                                            \
+            TIME_INTERVAL(timing));                                           \
     }                                                                         \
     while (0)
 
@@ -33,7 +33,7 @@ template void Sort<int>::radixSort(int* const array, const uint32_t length) cons
 template <class T>
 void Sort<T>::bubbleSort(T* const array, const uint32_t length) const
 {
-    TIME_BEGIN(timer);
+    TIME_BEGIN(timing);
     T sortArray[length];
     sortArray[0] = '\0';
     std::memcpy(sortArray, array, length * sizeof(T));
@@ -49,7 +49,7 @@ void Sort<T>::bubbleSort(T* const array, const uint32_t length) const
         }
     }
 
-    TIME_END(timer);
+    TIME_END(timing);
     SORT_PRINT_RESULT_CONTEXT("Bubble");
 }
 
@@ -57,7 +57,7 @@ void Sort<T>::bubbleSort(T* const array, const uint32_t length) const
 template <class T>
 void Sort<T>::selectionSort(T* const array, const uint32_t length) const
 {
-    TIME_BEGIN(timer);
+    TIME_BEGIN(timing);
     T sortArray[length];
     sortArray[0] = '\0';
     std::memcpy(sortArray, array, length * sizeof(T));
@@ -75,7 +75,7 @@ void Sort<T>::selectionSort(T* const array, const uint32_t length) const
         std::swap(sortArray[i], sortArray[min]);
     }
 
-    TIME_END(timer);
+    TIME_END(timing);
     SORT_PRINT_RESULT_CONTEXT("Selection");
 }
 
@@ -83,7 +83,7 @@ void Sort<T>::selectionSort(T* const array, const uint32_t length) const
 template <class T>
 void Sort<T>::insertionSort(T* const array, const uint32_t length) const
 {
-    TIME_BEGIN(timer);
+    TIME_BEGIN(timing);
     T sortArray[length];
     sortArray[0] = '\0';
     std::memcpy(sortArray, array, length * sizeof(T));
@@ -100,7 +100,7 @@ void Sort<T>::insertionSort(T* const array, const uint32_t length) const
         sortArray[n + 1] = temp;
     }
 
-    TIME_END(timer);
+    TIME_END(timing);
     SORT_PRINT_RESULT_CONTEXT("Insertion");
 }
 
@@ -108,7 +108,7 @@ void Sort<T>::insertionSort(T* const array, const uint32_t length) const
 template <class T>
 void Sort<T>::shellSort(T* const array, const uint32_t length) const
 {
-    TIME_BEGIN(timer);
+    TIME_BEGIN(timing);
     T sortArray[length];
     sortArray[0] = '\0';
     std::memcpy(sortArray, array, length * sizeof(T));
@@ -126,7 +126,7 @@ void Sort<T>::shellSort(T* const array, const uint32_t length) const
         gap /= 2;
     }
 
-    TIME_END(timer);
+    TIME_END(timing);
     SORT_PRINT_RESULT_CONTEXT("Shell");
 }
 
@@ -134,14 +134,14 @@ void Sort<T>::shellSort(T* const array, const uint32_t length) const
 template <class T>
 void Sort<T>::mergeSort(T* const array, const uint32_t length) const
 {
-    TIME_BEGIN(timer);
+    TIME_BEGIN(timing);
     T sortArray[length];
     sortArray[0] = '\0';
     std::memcpy(sortArray, array, length * sizeof(T));
 
     mergeSortRecursive(sortArray, 0, length - 1);
 
-    TIME_END(timer);
+    TIME_END(timing);
     SORT_PRINT_RESULT_CONTEXT("Merge");
 }
 
@@ -180,14 +180,14 @@ void Sort<T>::mergeSortRecursive(T* const sortArray, const uint32_t begin, const
 template <class T>
 void Sort<T>::quickSort(T* const array, const uint32_t length) const
 {
-    TIME_BEGIN(timer);
+    TIME_BEGIN(timing);
     T sortArray[length];
     sortArray[0] = '\0';
     std::memcpy(sortArray, array, length * sizeof(T));
 
     quickSortRecursive(sortArray, 0, length - 1);
 
-    TIME_END(timer);
+    TIME_END(timing);
     SORT_PRINT_RESULT_CONTEXT("Quick");
 }
 
@@ -234,7 +234,7 @@ void Sort<T>::quickSortRecursive(T* const sortArray, const uint32_t begin, const
 template <class T>
 void Sort<T>::heapSort(T* const array, const uint32_t length) const
 {
-    TIME_BEGIN(timer);
+    TIME_BEGIN(timing);
     T sortArray[length];
     sortArray[0] = '\0';
     std::memcpy(sortArray, array, length * sizeof(T));
@@ -249,7 +249,7 @@ void Sort<T>::heapSort(T* const array, const uint32_t length) const
         buildMaxHeap(sortArray, 0, i - 1);
     }
 
-    TIME_END(timer);
+    TIME_END(timing);
     SORT_PRINT_RESULT_CONTEXT("Heap");
 }
 
@@ -285,7 +285,7 @@ void Sort<T>::countingSort(T* const array, const uint32_t length) const
         return;
     }
 
-    TIME_BEGIN(timer);
+    TIME_BEGIN(timing);
     T sortArray[length];
     sortArray[0] = '\0';
     std::memcpy(sortArray, array, length * sizeof(T));
@@ -315,7 +315,7 @@ void Sort<T>::countingSort(T* const array, const uint32_t length) const
         }
     }
 
-    TIME_END(timer);
+    TIME_END(timing);
     SORT_PRINT_RESULT_CONTEXT("Counting");
 }
 
@@ -323,7 +323,7 @@ void Sort<T>::countingSort(T* const array, const uint32_t length) const
 template <class T>
 void Sort<T>::bucketSort(T* const array, const uint32_t length) const
 {
-    TIME_BEGIN(timer);
+    TIME_BEGIN(timing);
     T sortArray[length];
     sortArray[0] = '\0';
     std::memcpy(sortArray, array, length * sizeof(T));
@@ -358,7 +358,7 @@ void Sort<T>::bucketSort(T* const array, const uint32_t length) const
         }
     }
 
-    TIME_END(timer);
+    TIME_END(timing);
     SORT_PRINT_RESULT_CONTEXT("Bucket");
 }
 
@@ -372,7 +372,7 @@ void Sort<T>::radixSort(T* const array, const uint32_t length) const
         return;
     }
 
-    TIME_BEGIN(timer);
+    TIME_BEGIN(timing);
     T sortArray[length];
     sortArray[0] = '\0';
     std::memcpy(sortArray, array, length * sizeof(T));
@@ -449,7 +449,7 @@ void Sort<T>::radixSort(T* const array, const uint32_t length) const
         }
     }
 
-    TIME_END(timer);
+    TIME_END(timing);
     SORT_PRINT_RESULT_CONTEXT("Radix");
 }
 } // namespace algo_sort
