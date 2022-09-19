@@ -15,13 +15,14 @@
     util_log::logObj.output(util_log::Log::OutputLevel::warn, __FILE__, __LINE__, format, ##args)
 #define LOG_ERR(logObj, format, args...) \
     util_log::logObj.output(util_log::Log::OutputLevel::error, __FILE__, __LINE__, format, ##args)
-#define LOG_TO_START(logObj) util_log::logObj.waitLoggerStart();
-#define LOG_TO_STOP(logObj) util_log::logObj.waitLoggerStop();
+#define LOG_TO_START(logObj) util_log::logObj.waitLoggerStartForExternalUse();
+#define LOG_TO_STOP(logObj) util_log::logObj.waitLoggerStopForExternalUse();
 
 namespace util_log
 {
 inline constexpr std::string_view logPath{LOG_DEFAULT_LOG_PATH};
 constexpr uint32_t logPathLength = 32;
+constexpr uint32_t maxCountOfWaitLogger = 10;
 constexpr std::string_view logDirectory{"./temp"};
 constexpr std::string_view debugPrefix{"[DBG]"};
 constexpr std::string_view infoPrefix{"[INF]"};
@@ -76,8 +77,8 @@ public:
         const OutputLevel level, const std::string& codeFile, const uint32_t codeLine,
         const char* const __restrict format, Args&&... args);
     void runLogger();
-    void waitLoggerStart();
-    void waitLoggerStop();
+    void waitLoggerStartForExternalUse();
+    void waitLoggerStopForExternalUse();
 
 private:
     std::ofstream ofs;

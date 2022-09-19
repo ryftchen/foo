@@ -20,7 +20,7 @@ Log::Log(
 void Log::runLogger()
 {
     State expectedState = State::idle;
-    auto targetState = [&](const State state) -> bool
+    auto isTargetState = [&](const State state) -> bool
     {
         expectedState = state;
         return (currentState() == expectedState);
@@ -28,13 +28,13 @@ void Log::runLogger()
 
     try
     {
-        util_fsm::checkIfExceptedFSMState(targetState(State::init));
+        util_fsm::checkIfExceptedFSMState(isTargetState(State::init));
         processEvent(OpenFile());
 
-        util_fsm::checkIfExceptedFSMState(targetState(State::idle));
+        util_fsm::checkIfExceptedFSMState(isTargetState(State::idle));
         processEvent(GoLogging());
 
-        util_fsm::checkIfExceptedFSMState(targetState(State::work));
+        util_fsm::checkIfExceptedFSMState(isTargetState(State::work));
         while (isLogging)
         {
             if (std::unique_lock<std::mutex> lock(queueMutex); true)
@@ -70,28 +70,41 @@ void Log::runLogger()
 
         processEvent(CloseFile());
 
-        util_fsm::checkIfExceptedFSMState(targetState(State::idle));
+        util_fsm::checkIfExceptedFSMState(isTargetState(State::idle));
         processEvent(NoLogging());
 
-        util_fsm::checkIfExceptedFSMState(targetState(State::done));
+        util_fsm::checkIfExceptedFSMState(isTargetState(State::done));
     }
     catch (const std::exception& error)
     {
-        std::cerr << "logger: " << error.what() << ", FSM's expected state: " << expectedState
-                  << ", FSM's current state: " << State(currentState()) << std::endl;
+        std::cerr << "logger: " << error.what() << ", expected state: " << expectedState
+                  << ", current state: " << State(currentState()) << std::endl;
         stopLogging();
     }
 }
 
-void Log::waitLoggerStart()
+void Log::waitLoggerStartForExternalUse()
 {
-    while (State::work != currentState())
-    {
-        util_time::millisecondLevelSleep(1);
-    }
+    util_time::Time timer;
+    uint32_t waitCount = 0;
+    timer.setBlockingTimer(
+        [&]()
+        {
+            if ((State::work == currentState()) || (maxCountOfWaitLogger == waitCount))
+            {
+                timer.resetBlockingTimer();
+            }
+            else
+            {
+                ++waitCount;
+                std::cout << "logger: Wait logger start... (" << waitCount << ")" << std::endl;
+            }
+        },
+        1);
+    timer.resetBlockingTimer();
 }
 
-void Log::waitLoggerStop()
+void Log::waitLoggerStopForExternalUse()
 {
     if (std::unique_lock<std::mutex> lock(queueMutex); true)
     {
@@ -103,10 +116,23 @@ void Log::waitLoggerStop()
         lock.lock();
     }
 
-    while (State::done != currentState())
-    {
-        util_time::millisecondLevelSleep(1);
-    }
+    util_time::Time timer;
+    uint32_t waitCount = 0;
+    timer.setBlockingTimer(
+        [&]()
+        {
+            if ((State::done == currentState()) || (maxCountOfWaitLogger == waitCount))
+            {
+                timer.resetBlockingTimer();
+            }
+            else
+            {
+                ++waitCount;
+                std::cout << "logger: Wait logger stop... (" << waitCount << ")" << std::endl;
+            }
+        },
+        1);
+    timer.resetBlockingTimer();
 }
 
 void Log::openLogFile()

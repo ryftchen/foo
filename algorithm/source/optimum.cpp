@@ -17,7 +17,7 @@ using particle_swarm::Society;
 std::optional<std::tuple<ValueY, ValueX>> Fibonacci::operator()(
     const double left, const double right, const double eps)
 {
-    TIME_BEGIN(timer);
+    TIME_BEGIN(timing);
     double leftVal = left, rightVal = right;
     std::vector<double> fibVec = generateFibonacciNumber((rightVal - leftVal) / eps);
     constexpr int minSize = 3;
@@ -73,8 +73,8 @@ std::optional<std::tuple<ValueY, ValueX>> Fibonacci::operator()(
     }
     const double x = (leftVal + rightVal) / 2.0;
 
-    TIME_END(timer);
-    FORMAT_PRINT(OPTIMUM_RESULT(max), "Fibonacci", func(x), x, TIME_INTERVAL(timer));
+    TIME_END(timing);
+    FORMAT_PRINT(OPTIMUM_RESULT(max), "Fibonacci", func(x), x, TIME_INTERVAL(timing));
     return std::make_optional(std::make_tuple(func(x), x));
 }
 
@@ -102,7 +102,7 @@ std::vector<double> Fibonacci::generateFibonacciNumber(const double max)
 std::optional<std::tuple<ValueY, ValueX>> Gradient::operator()(
     const double left, const double right, const double eps)
 {
-    TIME_BEGIN(timer);
+    TIME_BEGIN(timing);
     std::mt19937 seed{util_time::getRandomSeedByTime()};
     double x = 0.0, y = 0.0;
     std::uniform_real_distribution<double> randomX(left, right);
@@ -141,8 +141,8 @@ std::optional<std::tuple<ValueY, ValueX>> Gradient::operator()(
     y = std::get<0>(*best);
     x = std::get<1>(*best);
 
-    TIME_END(timer);
-    FORMAT_PRINT(OPTIMUM_RESULT(max), "Gradient", y, x, TIME_INTERVAL(timer));
+    TIME_END(timing);
+    FORMAT_PRINT(OPTIMUM_RESULT(max), "Gradient", y, x, TIME_INTERVAL(timing));
     return std::make_optional(std::make_tuple(y, x));
 }
 
@@ -156,7 +156,7 @@ double Gradient::calculateFirstDerivative(const double x, const double eps) cons
 std::optional<std::tuple<ValueY, ValueX>> Annealing::operator()(
     const double left, const double right, const double eps)
 {
-    TIME_BEGIN(timer);
+    TIME_BEGIN(timing);
     constexpr double perturbation = 0.5;
     double temperature = annealing_cooling::initialT;
     std::mt19937 seed{util_time::getRandomSeedByTime()};
@@ -200,8 +200,8 @@ std::optional<std::tuple<ValueY, ValueX>> Annealing::operator()(
         temperature *= annealing_cooling::coolingRate;
     }
 
-    TIME_END(timer);
-    FORMAT_PRINT(OPTIMUM_RESULT(max), "Annealing", y, x, TIME_INTERVAL(timer));
+    TIME_END(timing);
+    FORMAT_PRINT(OPTIMUM_RESULT(max), "Annealing", y, x, TIME_INTERVAL(timing));
     return std::make_optional(std::make_tuple(y, x));
 }
 
@@ -209,7 +209,7 @@ std::optional<std::tuple<ValueY, ValueX>> Annealing::operator()(
 std::optional<std::tuple<ValueY, ValueX>> Particle::operator()(
     const double left, const double right, const double eps)
 {
-    TIME_BEGIN(timer);
+    TIME_BEGIN(timing);
     Record rec = recordInit(left, right);
     const auto best = std::max_element(
         std::cbegin(rec.society), std::cend(rec.society),
@@ -262,8 +262,8 @@ std::optional<std::tuple<ValueY, ValueX>> Particle::operator()(
     xFitnessBest = std::get<0>(*(rec.history.cbegin()));
     xBest = std::get<1>(*(rec.history.cbegin()));
 
-    TIME_END(timer);
-    FORMAT_PRINT(OPTIMUM_RESULT(max), "Particle", xFitnessBest, xBest, TIME_INTERVAL(timer));
+    TIME_END(timing);
+    FORMAT_PRINT(OPTIMUM_RESULT(max), "Particle", xFitnessBest, xBest, TIME_INTERVAL(timing));
     return std::make_optional(std::make_tuple(xFitnessBest, xBest));
 }
 
@@ -292,7 +292,7 @@ Record Particle::recordInit(const double left, const double right)
 std::optional<std::tuple<ValueY, ValueX>> Genetic::operator()(
     const double left, const double right, const double eps)
 {
-    TIME_BEGIN(timer);
+    TIME_BEGIN(timing);
     constexpr uint32_t minChrNum = 3;
     updateSpecies(left, right, eps);
     if (chrNum < minChrNum)
@@ -310,8 +310,8 @@ std::optional<std::tuple<ValueY, ValueX>> Genetic::operator()(
     }
     const double x = geneDecoding(getBestIndividual(pop));
 
-    TIME_END(timer);
-    FORMAT_PRINT(OPTIMUM_RESULT(max), "Genetic", func(x), x, TIME_INTERVAL(timer));
+    TIME_END(timing);
+    FORMAT_PRINT(OPTIMUM_RESULT(max), "Genetic", func(x), x, TIME_INTERVAL(timing));
     return std::make_optional(std::make_tuple(func(x), x));
 }
 

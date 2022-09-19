@@ -6,11 +6,11 @@
 #include <string>
 #include <thread>
 
-#define TIME_BEGIN(timer)  \
-    util_time::Time timer; \
-    timer.setBeginTime()
-#define TIME_END(timer) timer.setEndTime()
-#define TIME_INTERVAL(timer) timer.getTimeInterval()
+#define TIME_BEGIN(timing)  \
+    util_time::Time timing; \
+    timing.setBeginTime()
+#define TIME_END(timing) timing.setEndTime()
+#define TIME_INTERVAL(timing) timing.getTimeInterval()
 
 namespace util_time
 {
@@ -24,11 +24,23 @@ public:
     void inline setBeginTime();
     void inline setEndTime();
     [[nodiscard]] double inline getTimeInterval() const;
+    void setBlockingTimer(auto func, const uint32_t delay);
+    void inline resetBlockingTimer();
 
 private:
     std::chrono::steady_clock::time_point beginTime;
     std::chrono::steady_clock::time_point endTime;
+    std::atomic<bool> isBlockingTimerRunning{true};
+
+protected:
+    friend void inline millisecondLevelSleep(const uint32_t interval);
 };
+
+void inline millisecondLevelSleep(const uint32_t interval)
+{
+    std::this_thread::sleep_until(
+        std::chrono::steady_clock::now() + std::chrono::operator""ms(interval));
+}
 
 void inline Time::setBeginTime()
 {
@@ -47,10 +59,26 @@ double inline Time::getTimeInterval() const
     return timeInterval.count();
 }
 
-void inline millisecondLevelSleep(const uint32_t interval)
+void Time::setBlockingTimer(auto func, const uint32_t delay)
 {
-    std::this_thread::sleep_until(
-        std::chrono::steady_clock::now() + std::chrono::operator""ms(interval));
+    isBlockingTimerRunning = true;
+    std::thread timerThread(
+        [=]()
+        {
+            while (isBlockingTimerRunning)
+            {
+                millisecondLevelSleep(delay);
+                func();
+            }
+        });
+
+    pthread_setname_np(timerThread.native_handle(), "timer");
+    timerThread.join();
+}
+
+void inline Time::resetBlockingTimer()
+{
+    isBlockingTimerRunning = false;
 }
 
 std::string getCurrentSystemTime();
