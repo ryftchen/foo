@@ -26,12 +26,7 @@ def command(cmd):
     print("{} {}".format(datetime.strftime(datetime.now(), "%b %d %H:%M:%S"), cmd))
     try:
         proc = subprocess.Popen(
-            cmd,
-            shell=True,
-            executable="/bin/bash",
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            encoding="utf-8",
+            cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding="utf-8"
         )
     except RuntimeError:
         sys.exit(-1)
@@ -97,17 +92,12 @@ def constructCodeContainer():
     if IMAGE_REPO not in containerInfo:
         localImageInfo = command("docker image ls -a")
         if IMAGE_REPO not in localImageInfo:
-            remoteImageInfo = command(
-                f"docker search {IMAGE_REPO}" + " | awk \'{split($0, a, \" \"); print a[1]}\'"
-            )
+            remoteImageInfo = command(f"docker search {IMAGE_REPO}" + " | awk \'{split($0, a, \" \"); print a[1]}\'")
             if IMAGE_REPO in remoteImageInfo:
                 command(f"docker pull {IMAGE_REPO}:latest")
             else:
                 command(f"docker build -t {IMAGE_REPO}:latest -f Dockerfile .")
-        command(
-            f"docker run -it --name {PROJECT_NAME} -v {CODE_DIR}:{CODE_DIR} \
--d {IMAGE_REPO}:latest /bin/bash"
-        )
+        command(f"docker run -it --name {PROJECT_NAME} -v {CODE_DIR}:{CODE_DIR} -d {IMAGE_REPO}:latest /bin/bash")
 
 
 def chore():
@@ -117,7 +107,7 @@ def chore():
     args = parser.parse_args()
 
     print(
-        "\r\n{} >>>>>>>>>>>>>>>>>>>> chore <<<<<<<<<<<<<<<<<<<<".format(
+        "\r\n{} >>>>>>>>>>>>>>>>>>>>>>>>> CHORE <<<<<<<<<<<<<<<<<<<<<<<<<".format(
             datetime.strftime(datetime.now(), "%b %d %H:%M:%S")
         )
     )
