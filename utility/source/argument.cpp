@@ -179,8 +179,6 @@ bool ArgumentRegister::checkIfNonOptional(std::string_view name)
 {
     switch (lookAhead(name))
     {
-        case eof:
-            return true;
         case '-':
         {
             name.remove_prefix(1);
@@ -190,6 +188,8 @@ bool ArgumentRegister::checkIfNonOptional(std::string_view name)
             }
             return false;
         }
+        case eof:
+            [[fallthrough]];
         default:
             return true;
     }

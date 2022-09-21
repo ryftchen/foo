@@ -12,7 +12,7 @@ ALGORITHM_FOLDER="algorithm"
 SCRIPT_FOLDER="script"
 BUILD_FOLDER="build"
 TEMP_FOLDER="temp"
-CMAKE_FILE="CMakeLists.txt"
+CMAKE_CONTENT="CMakeLists.txt"
 COMPILE_COMMANDS="compile_commands.json"
 FORMAT_CONFIG_CPP=".clang-format"
 FORMAT_CONFIG_PY=".toml"
@@ -39,11 +39,11 @@ printException()
 
 printInstruction()
 {
-    echo "Usage: build.sh [Options...]"
+    echo "Usage: build.sh [options...]"
     echo
     echo "Optional:"
     echo "--help           show help"
-    echo "--release        release version"
+    echo "--release        build with release version"
     echo "-f, --format     format code"
     echo "-l, --lint       lint code"
     echo "-c, --cleanup    cleanup project"
@@ -75,46 +75,68 @@ checkDependencies()
         PERFORM_COMPILE=true
     fi
 
-    if [ ! -d ./"${APPLICATION_FOLDER}" ] || [ ! -d ./"${UTILITY_FOLDER}" ] \
-        || [ ! -d ./"${ALGORITHM_FOLDER}" ] || [ ! -d ./"${SCRIPT_FOLDER}" ]; then
-        printException "There are missing code folders in ${PROJECT_FOLDER} folder. \
-Please check it."
+    if [ ! -d ./"${APPLICATION_FOLDER}" ] || [ ! -d ./"${UTILITY_FOLDER}" ] || [ ! -d ./"${ALGORITHM_FOLDER}" ] \
+        || [ ! -d ./"${SCRIPT_FOLDER}" ]; then
+        printException "Missing code folders in ${PROJECT_FOLDER} folder. Please check it."
     fi
 
     if [ "${ARGS_FORMAT}" = true ]; then
-        if [ ! -f ./"${FORMAT_CONFIG_CPP}" ] || [ ! -f ./"${FORMAT_CONFIG_PY}" ] \
-            || [ ! -f ./"${FORMAT_CONFIG_SH}" ]; then
-            printException "There are missing format config files in ${PROJECT_FOLDER} folder. \
-Please check it."
+        if
+            command -v clang-format-12 >/dev/null 2>&1 \
+                && command -v shfmt >/dev/null 2>&1 \
+                && command -v black >/dev/null 2>&1
+        then
+            if [ ! -f ./"${FORMAT_CONFIG_CPP}" ] || [ ! -f ./"${FORMAT_CONFIG_PY}" ] \
+                || [ ! -f ./"${FORMAT_CONFIG_SH}" ]; then
+                printException "Missing format config files in ${PROJECT_FOLDER} folder. Please check it."
+            fi
+        else
+            printException "No clang-format, shfmt or black program. Please check it."
         fi
     fi
 
     if [ "${ARGS_LINT}" = true ]; then
-        if [ ! -f ./"${LINT_CONFIG_CPP}" ] || [ ! -f ./"${LINT_CONFIG_PY}" ] \
-            || [ ! -f ./"${LINT_CONFIG_SH}" ]; then
-            printException "There are missing lint config files in ${PROJECT_FOLDER} folder. \
-Please check it."
+        if
+            command -v clang-tidy-12 >/dev/null 2>&1 \
+                && command -v shellcheck >/dev/null 2>&1 \
+                && command -v pylint >/dev/null 2>&1
+        then
+            if [ ! -f ./"${LINT_CONFIG_CPP}" ] || [ ! -f ./"${LINT_CONFIG_PY}" ] || [ ! -f ./"${LINT_CONFIG_SH}" ]; then
+                printException "Missing lint config files in ${PROJECT_FOLDER} folder. Please check it."
+            fi
+            if [ ! -f ./"${BUILD_FOLDER}"/"${COMPILE_COMMANDS}" ]; then
+                printException "No ${COMPILE_COMMANDS} file in ${BUILD_FOLDER} folder. Please generate it."
+            fi
+        else
+            printException "No clang-tidy, shellcheck or pylint program. Please check it."
+        fi
+    fi
+
+    if [ "${ARGS_REPORT}" = true ]; then
+        if
+            ! command -v codebrowser_generator >/dev/null 2>&1 \
+                || ! command -v codebrowser_indexgenerator >/dev/null 2>&1
+        then
+            printException "No codebrowser_generator or codebrowser_indexgenerator program. Please check it."
         fi
     fi
 }
 
 generateCMakeFiles()
 {
-    if [ -f ./"${CMAKE_FILE}" ]; then
+    if [ -f ./"${CMAKE_CONTENT}" ]; then
         if [ ! -d ./"${BUILD_FOLDER}" ]; then
             bashCommand "mkdir ./${BUILD_FOLDER}"
         fi
 
         export CC=/usr/bin/clang-12 CXX=/usr/bin/clang++-12
         if [ "${ARGS_RELEASE}" = true ]; then
-            bashCommand "cmake -S . -B ./${BUILD_FOLDER} -DCMAKE_CXX_COMPILER=clang++-12 \
--DCMAKE_BUILD_TYPE=Release"
+            bashCommand "cmake -S . -B ./${BUILD_FOLDER} -DCMAKE_CXX_COMPILER=clang++-12 -DCMAKE_BUILD_TYPE=Release"
         else
-            bashCommand "cmake -S . -B ./${BUILD_FOLDER} -DCMAKE_CXX_COMPILER=clang++-12 \
--DCMAKE_BUILD_TYPE=Debug"
+            bashCommand "cmake -S . -B ./${BUILD_FOLDER} -DCMAKE_CXX_COMPILER=clang++-12 -DCMAKE_BUILD_TYPE=Debug"
         fi
     else
-        printException "No ${CMAKE_FILE} file in ${PROJECT_FOLDER} folder."
+        printException "No ${CMAKE_CONTENT} file in ${PROJECT_FOLDER} folder."
     fi
 }
 
@@ -134,71 +156,40 @@ performCleanupOption()
 performFormatOption()
 {
     if [ "${ARGS_FORMAT}" = true ]; then
-        if
-            command -v clang-format-12 >/dev/null 2>&1 \
-                && command -v shfmt >/dev/null 2>&1 \
-                && command -v black >/dev/null 2>&1
-        then
-            bashCommand "find ./${APPLICATION_FOLDER} ./${UTILITY_FOLDER} ./${ALGORITHM_FOLDER} \
--name *.cpp -o -name *.hpp | xargs clang-format-12 -i --verbose"
-            bashCommand "shfmt -l -w ./${SCRIPT_FOLDER}/*.sh"
-            bashCommand "black --config ./${FORMAT_CONFIG_PY} ./${SCRIPT_FOLDER}/*.py"
-        else
-            printException "No clang-format, shfmt or black program. Please check it."
-        fi
+        bashCommand "find ./${APPLICATION_FOLDER} ./${UTILITY_FOLDER} ./${ALGORITHM_FOLDER} -name *.cpp -o -name *.hpp \
+| xargs clang-format-12 -i --verbose"
+        bashCommand "shfmt -l -w ./${SCRIPT_FOLDER}/*.sh"
+        bashCommand "black --config ./${FORMAT_CONFIG_PY} ./${SCRIPT_FOLDER}/*.py"
     fi
 }
 
 performLintOption()
 {
     if [ "${ARGS_LINT}" = true ]; then
-        if
-            command -v clang-tidy-12 >/dev/null 2>&1 \
-                && command -v shellcheck >/dev/null 2>&1 \
-                && command -v pylint >/dev/null 2>&1
-        then
-            if [ -f ./"${BUILD_FOLDER}"/"${COMPILE_COMMANDS}" ]; then
-                bashCommand "find ./${APPLICATION_FOLDER} ./${UTILITY_FOLDER} \
-./${ALGORITHM_FOLDER} -name *.cpp -o -name *.hpp \
+        bashCommand "find ./${APPLICATION_FOLDER} ./${UTILITY_FOLDER} ./${ALGORITHM_FOLDER} -name *.cpp -o -name *.hpp \
 | xargs clang-tidy-12 -p ./${BUILD_FOLDER}/${COMPILE_COMMANDS}"
-            else
-                printException "No ${COMPILE_COMMANDS} file in ${BUILD_FOLDER} folder. \
-Please generate it."
-            fi
-            bashCommand "shellcheck ./${SCRIPT_FOLDER}/*.sh"
-            bashCommand "pylint --rcfile=${LINT_CONFIG_PY} ./${SCRIPT_FOLDER}/*.py"
-        else
-            printException "No clang-tidy, shellcheck or pylint program. Please check it."
-        fi
+        bashCommand "shellcheck ./${SCRIPT_FOLDER}/*.sh"
+        bashCommand "pylint --rcfile=${LINT_CONFIG_PY} ./${SCRIPT_FOLDER}/*.py"
     fi
 }
 
 performReportOption()
 {
     if [ "${ARGS_REPORT}" = true ]; then
-        if
-            command -v codebrowser_generator >/dev/null 2>&1 \
-                && command -v codebrowser_indexgenerator >/dev/null 2>&1
-        then
-            if [ -d ./"${TEMP_FOLDER}" ]; then
-                commitId=$(git rev-parse --short @)
-                if [ -z "${commitId}" ]; then
-                    commitId="local"
-                fi
-                lastTar="${PROJECT_FOLDER}_html_${commitId}.tar.bz2"
-                if [ -f ./"${TEMP_FOLDER}"/"${lastTar}" ]; then
-                    printException "The latest html file ${TEMP_FOLDER}/${lastTar} \
-has been generated."
-                else
-                    tarHtmlReport
-                fi
+        if [ -d ./"${TEMP_FOLDER}" ]; then
+            commitId=$(git rev-parse --short @)
+            if [ -z "${commitId}" ]; then
+                commitId="local"
+            fi
+            lastTar="${PROJECT_FOLDER}_html_${commitId}.tar.bz2"
+            if [ -f ./"${TEMP_FOLDER}"/"${lastTar}" ]; then
+                printException "The latest html file ${TEMP_FOLDER}/${lastTar} has been generated."
             else
-                bashCommand "mkdir ./${TEMP_FOLDER}"
                 tarHtmlReport
             fi
         else
-            printException "No codebrowser_generator or codebrowser_indexgenerator program. \
-Please check it."
+            bashCommand "mkdir ./${TEMP_FOLDER}"
+            tarHtmlReport
         fi
     fi
 }
@@ -216,8 +207,7 @@ tarHtmlReport()
 -o ./${TEMP_FOLDER}/${browserFolder} -p ${PROJECT_FOLDER}:.:${commitId} -d ./data"
     bashCommand "codebrowser_indexgenerator ./${TEMP_FOLDER}/${browserFolder} -d ./data"
     bashCommand "cp -rf /usr/local/share/woboq/data ./${TEMP_FOLDER}/${browserFolder}/"
-    bashCommand "tar -jcvf ./${TEMP_FOLDER}/${tarFile} -C ./${TEMP_FOLDER} ${browserFolder} \
->/dev/null"
+    bashCommand "tar -jcvf ./${TEMP_FOLDER}/${tarFile} -C ./${TEMP_FOLDER} ${browserFolder} >/dev/null"
     bashCommand "rm -rf ./${TEMP_FOLDER}/${browserFolder}"
 }
 

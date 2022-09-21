@@ -72,7 +72,7 @@ void Command::foregroundHandle(const int argc, const char* const argv[])
     {
         program.parseArgs(argc, argv);
 
-        validateUtilityTask();
+        validateBasicTask();
         validateAlgorithmTask();
     }
     catch (const std::exception& error)
@@ -96,11 +96,11 @@ void Command::backgroundHandle() const
     }
 }
 
-void Command::validateUtilityTask()
+void Command::validateBasicTask()
 {
-    for (int i = 0; i < Bottom<UtilTaskType>::value; ++i)
+    for (int i = 0; i < Bottom<BasicTaskType>::value; ++i)
     {
-        if (!program.isUsed(utilTaskNameTable.at(i)))
+        if (!program.isUsed(basicTaskNameTable.at(i)))
         {
             continue;
         }
@@ -109,7 +109,7 @@ void Command::validateUtilityTask()
         {
             throwExcessArgumentException();
         }
-        taskPlan.utilTask.utilTaskBit.set(UtilTaskType(i));
+        taskPlan.basicTask.basicTaskBit.set(BasicTaskType(i));
     }
 }
 
@@ -165,13 +165,13 @@ bool Command::checkTask() const
 
 void Command::performTask() const
 {
-    if (!taskPlan.utilTask.empty())
+    if (!taskPlan.basicTask.empty())
     {
-        for (int i = 0; i < Bottom<UtilTaskType>::value; ++i)
+        for (int i = 0; i < Bottom<BasicTaskType>::value; ++i)
         {
-            if (taskPlan.utilTask.utilTaskBit.test(UtilTaskType(i)))
+            if (taskPlan.basicTask.basicTaskBit.test(BasicTaskType(i)))
             {
-                (this->*performUtilTaskFunctor.at(i))();
+                (this->*performBasicTaskFunctor.at(i))();
             }
         }
     }
@@ -581,7 +581,7 @@ void Command::printVersionInfo() const
 void Command::printConsoleOutput() const
 {
     const auto commands =
-        program.get<std::vector<std::string>>(utilTaskNameTable.at(UtilTaskType::console));
+        program.get<std::vector<std::string>>(basicTaskNameTable.at(BasicTaskType::console));
     if (commands.empty())
     {
         return;
@@ -630,13 +630,13 @@ void Command::registerOnConsole(util_console::Console& console) const
         "log",
         [this](const std::vector<std::string>& /*unused*/) -> decltype(auto)
         {
-            displayLogContext();
+            viewLogContent();
             return util_console::Console::ReturnCode::success;
         },
-        "display log");
+        "view log");
 }
 
-void Command::displayLogContext()
+void Command::viewLogContent()
 {
     LOG_TO_STOP(logger);
 

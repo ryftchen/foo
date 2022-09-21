@@ -58,12 +58,12 @@ void printFile(
     }
 
     std::string line;
-    std::list<std::string> context(0);
+    std::list<std::string> content(0);
     if (!reverse)
     {
-        while ((context.size() < maxLine) && std::getline(file, line))
+        while ((content.size() < maxLine) && std::getline(file, line))
         {
-            context.emplace_back(formatStyle(line));
+            content.emplace_back(formatStyle(line));
         }
     }
     else
@@ -78,13 +78,13 @@ void printFile(
             ++currentLine;
             if (currentLine >= startLine)
             {
-                context.emplace_front(formatStyle(line));
+                content.emplace_front(formatStyle(line));
             }
         }
-        assert(maxLine >= context.size());
+        assert(maxLine >= content.size());
     }
     std::copy(
-        context.cbegin(), context.cend(), std::ostream_iterator<std::string>(std::cout, "\n"));
+        content.cbegin(), content.cend(), std::ostream_iterator<std::string>(std::cout, "\n"));
 
     tryToOperateFileLock(file, pathname, LockOperateType::unlock, FileLockType::readerLock);
     file.close();
