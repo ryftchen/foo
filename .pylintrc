@@ -12,7 +12,7 @@ variable-naming-style=camelCase
 [FORMAT]
 indent-after-paren=4
 indent-string='    '
-max-line-length=100
+max-line-length=120
 
 [MESSAGES CONTROL]
 disable=global-statement,
