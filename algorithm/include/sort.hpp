@@ -12,8 +12,7 @@ inline constexpr int arrayRange2 = 150;
 inline constexpr uint32_t arrayLength = 53;
 constexpr uint32_t maxAlignOfPrint = 16;
 constexpr uint32_t maxColumnOfPrint = 10;
-constexpr std::string_view titleOfIntegralArray{
-    "\r\nGenerate %u random integral numbers from %d to %d:\r\n%s\n"};
+constexpr std::string_view titleOfIntegralArray{"\r\nGenerate %u random integral numbers from %d to %d:\r\n%s\n"};
 constexpr std::string_view titleOfFloatingArray{
     "\r\nGenerate %u random floating point numbers from %.5f to %.5f:\r\n%s\n"};
 
@@ -39,10 +38,16 @@ public:
     uint32_t getLength() const;
     template <typename V>
     requires std::is_integral<V>::value void setRandomArray(
-        T array[], const uint32_t length, const T left, const T right) const;
+        T array[],
+        const uint32_t length,
+        const T left,
+        const T right) const;
     template <typename V>
     requires std::is_floating_point<V>::value void setRandomArray(
-        T array[], const uint32_t length, const T left, const T right) const;
+        T array[],
+        const uint32_t length,
+        const T left,
+        const T right) const;
 
 private:
     mutable std::mutex sortMutex;
@@ -57,9 +62,7 @@ private:
     static void buildMaxHeap(T* const sortArray, const uint32_t begin, const uint32_t end);
 
 protected:
-    char* formatArray(
-        const T* const array, const uint32_t length, char* const buffer,
-        const uint32_t bufferSize) const;
+    char* formatArray(const T* const array, const uint32_t length, char* const buffer, const uint32_t bufferSize) const;
 };
 
 template <class T>
@@ -78,8 +81,7 @@ Sort<T>& Sort<T>::operator=(const Sort& rhs)
 
 template <class T>
 Sort<T>::Sort(const Sort& sort) :
-    length(sort.length), left(sort.length), right(sort.length),
-    randomArray(std::make_unique<T[]>(sort.length))
+    length(sort.length), left(sort.length), right(sort.length), randomArray(std::make_unique<T[]>(sort.length))
 {
     deepCopyFromSort(sort);
 }
@@ -107,7 +109,10 @@ uint32_t Sort<T>::getLength() const
 template <class T>
 template <typename V>
 requires std::is_integral<V>::value void Sort<T>::setRandomArray(
-    T array[], const uint32_t length, const T left, const T right) const
+    T array[],
+    const uint32_t length,
+    const T left,
+    const T right) const
 {
     std::mt19937 seed{util_time::getRandomSeedByTime()};
     std::uniform_int_distribution<int> randomX(left, right);
@@ -120,14 +125,16 @@ requires std::is_integral<V>::value void Sort<T>::setRandomArray(
     char arrayBuffer[arrayBufferSize + 1];
     arrayBuffer[0] = '\0';
     FORMAT_PRINT(
-        titleOfIntegralArray.data(), length, left, right,
-        formatArray(array, length, arrayBuffer, arrayBufferSize + 1));
+        titleOfIntegralArray.data(), length, left, right, formatArray(array, length, arrayBuffer, arrayBufferSize + 1));
 }
 
 template <class T>
 template <typename V>
 requires std::is_floating_point<V>::value void Sort<T>::setRandomArray(
-    T array[], const uint32_t length, const T left, const T right) const
+    T array[],
+    const uint32_t length,
+    const T left,
+    const T right) const
 {
     std::mt19937 seed{util_time::getRandomSeedByTime()};
     std::uniform_real_distribution<double> randomX(left, right);
@@ -140,14 +147,12 @@ requires std::is_floating_point<V>::value void Sort<T>::setRandomArray(
     char arrayBuffer[arrayBufferSize + 1];
     arrayBuffer[0] = '\0';
     FORMAT_PRINT(
-        titleOfFloatingArray.data(), length, left, right,
-        formatArray(array, length, arrayBuffer, arrayBufferSize + 1));
+        titleOfFloatingArray.data(), length, left, right, formatArray(array, length, arrayBuffer, arrayBufferSize + 1));
 }
 
 template <class T>
-char* Sort<T>::formatArray(
-    const T* const array, const uint32_t length, char* const buffer,
-    const uint32_t bufferSize) const
+char* Sort<T>::formatArray(const T* const array, const uint32_t length, char* const buffer, const uint32_t bufferSize)
+    const
 {
     uint32_t align = 0;
     for (uint32_t i = 0; i < length; ++i)
@@ -169,8 +174,7 @@ char* Sort<T>::formatArray(
     uint32_t completeSize = 0;
     for (uint32_t i = 0; i < length; ++i)
     {
-        formatSize = std::snprintf(
-            buffer + completeSize, bufferSize - completeSize, format, align + 1, *(array + i));
+        formatSize = std::snprintf(buffer + completeSize, bufferSize - completeSize, format, align + 1, *(array + i));
         if ((formatSize < 0) || (formatSize >= static_cast<int>(bufferSize - completeSize)))
         {
             break;

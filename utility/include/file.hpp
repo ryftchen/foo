@@ -55,7 +55,9 @@ void inline throwCallSystemApiException(const std::string& api)
 }
 
 void inline throwOperateLockException(
-    const std::string& name, const LockOperateType lockOperate, const FileLockType fileLock)
+    const std::string& name,
+    const LockOperateType lockOperate,
+    const FileLockType fileLock)
 {
     const std::string operate = (LockOperateType::lock == lockOperate) ? "lock" : "unlock",
                       type = (FileLockType::readerLock == fileLock) ? "reader" : "writer";
@@ -70,7 +72,9 @@ void inline throwOperateFileException(const std::string& name, const bool isToOp
 
 template <class T>
 void tryToOperateFileLock(
-    T& file, const char* const pathname, const LockOperateType lockOperate,
+    T& file,
+    const char* const pathname,
+    const LockOperateType lockOperate,
     const FileLockType fileLock)
 {
     const int fd = static_cast<__gnu_cxx::stdio_filebuf<char>* const>(file.rdbuf())->fd();
@@ -80,8 +84,7 @@ void tryToOperateFileLock(
     if (flock(fd, operate))
     {
         file.close();
-        throwOperateLockException(
-            std::filesystem::path(pathname).filename().string(), lockOperate, fileLock);
+        throwOperateLockException(std::filesystem::path(pathname).filename().string(), lockOperate, fileLock);
     }
 }
 
@@ -111,6 +114,8 @@ static constexpr auto joinStr = Join<Strings...>::value;
 
 void executeCommand(const char* const cmd);
 void printFile(
-    const char* const pathname, const bool reverse = false,
-    const uint32_t maxLine = maxLineNumForPrintFile, PrintStyle style = nullStyle);
+    const char* const pathname,
+    const bool reverse = false,
+    const uint32_t maxLine = maxLineNumForPrintFile,
+    PrintStyle style = nullStyle);
 } // namespace util_file

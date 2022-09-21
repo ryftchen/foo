@@ -9,8 +9,6 @@ namespace util_console
 class Console
 {
 public:
-    using Args = std::vector<std::string>;
-    using CommandFunction = std::function<int(const Args&)>;
     enum ReturnCode : int
     {
         quit = -1,
@@ -25,9 +23,10 @@ public:
     Console& operator=(Console const&) = delete;
     Console& operator=(Console&&) = delete;
 
+    using Args = std::vector<std::string>;
+    using CommandFunction = std::function<int(const Args&)>;
     void registerCommand(const std::string& command, CommandFunction func, const std::string& help);
-    [[nodiscard]] std::vector<std::pair<std::string, std::string>> getHelpOfRegisteredCommands()
-        const;
+    [[nodiscard]] std::vector<std::pair<std::string, std::string>> getHelpOfRegisteredCommands() const;
     void setGreeting(const std::string& greeting);
     [[nodiscard]] std::string getGreeting() const;
     int commandExecutor(const std::string& command);
@@ -47,11 +46,10 @@ private:
         Impl& operator=(const Impl&) = delete;
         Impl& operator=(Impl&&) = delete;
 
-        using RegisteredCommands =
-            std::unordered_map<std::string, std::pair<CommandFunction, std::string>>;
         std::string greeting;
+        using RegisteredCommands = std::unordered_map<std::string, std::pair<CommandFunction, std::string>>;
         RegisteredCommands RegCmds;
-        HistoryState* history = nullptr;
+        HistoryState* history{nullptr};
     };
     std::unique_ptr<Impl> impl;
 
@@ -60,7 +58,6 @@ private:
 
     using CommandCompleterFunction = char**(const char* text, int start, int end);
     using CommandIteratorFunction = char*(const char* text, int state);
-
     static CommandCompleterFunction getCommandCompletions;
     static CommandIteratorFunction commandIterator;
 };

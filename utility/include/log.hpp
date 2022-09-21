@@ -31,12 +31,9 @@ constexpr std::string_view errorPrefix{"[ERR]"};
 constexpr std::string_view infoRegex{R"(^\[INF\])"};
 constexpr std::string_view warnRegex{R"(^\[WRN\])"};
 constexpr std::string_view errorRegex{R"(^\[ERR\])"};
-constexpr auto infoColorForLog{
-    util_file::joinStr<util_file::greenForeground, infoPrefix, util_file::colorEnd>};
-constexpr auto warnColorForLog{
-    util_file::joinStr<util_file::yellowForeground, warnPrefix, util_file::colorEnd>};
-constexpr auto errorColorForLog{
-    util_file::joinStr<util_file::redForeground, errorPrefix, util_file::colorEnd>};
+constexpr auto infoColorForLog{util_file::joinStr<util_file::greenForeground, infoPrefix, util_file::colorEnd>};
+constexpr auto warnColorForLog{util_file::joinStr<util_file::yellowForeground, warnPrefix, util_file::colorEnd>};
+constexpr auto errorColorForLog{util_file::joinStr<util_file::redForeground, errorPrefix, util_file::colorEnd>};
 
 class Log final : public util_fsm::FSM<Log>
 {
@@ -69,13 +66,19 @@ public:
     };
 
     explicit Log(const StateType initState = State::init) noexcept;
-    Log(const std::string& logFile, const OutputType type, const OutputLevel level,
-        const OutputTarget target, const StateType initState = State::init) noexcept;
+    Log(const std::string& logFile,
+        const OutputType type,
+        const OutputLevel level,
+        const OutputTarget target,
+        const StateType initState = State::init) noexcept;
     virtual ~Log() = default;
     template <typename... Args>
     void output(
-        const OutputLevel level, const std::string& codeFile, const uint32_t codeLine,
-        const char* const __restrict format, Args&&... args);
+        const OutputLevel level,
+        const std::string& codeFile,
+        const uint32_t codeLine,
+        const char* const __restrict format,
+        Args&&... args);
     void runLogger();
     void waitLoggerStartForExternalUse();
     void waitLoggerStopForExternalUse();
@@ -130,8 +133,11 @@ protected:
 
 template <typename... Args>
 void Log::output(
-    const OutputLevel level, const std::string& codeFile, const uint32_t codeLine,
-    const char* const __restrict format, Args&&... args)
+    const OutputLevel level,
+    const std::string& codeFile,
+    const uint32_t codeLine,
+    const char* const __restrict format,
+    Args&&... args)
 {
     if (State::work != currentState())
     {
@@ -161,9 +167,8 @@ void Log::output(
                     break;
             }
 
-            std::string output = std::string{prefix} + ":[" + util_time::getCurrentSystemTime()
-                + "]:[" + std::filesystem::path(codeFile.c_str()).filename().string() + "#"
-                + std::to_string(codeLine) + "]: ";
+            std::string output = std::string{prefix} + ":[" + util_time::getCurrentSystemTime() + "]:["
+                + std::filesystem::path(codeFile.c_str()).filename().string() + "#" + std::to_string(codeLine) + "]: ";
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat-security"
             output.append(FORMAT_TO_STRING(format, std::forward<Args>(args)...));

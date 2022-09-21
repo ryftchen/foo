@@ -9,10 +9,15 @@ std::string getCurrentSystemTime()
     const tm* tm = localtime(&tt);
 
     std::snprintf(
-        date, dateLength + 1, "%u-%02u-%02u %02u:%02u:%02u",
-        static_cast<uint32_t>(tm->tm_year) + dateStartYear, static_cast<uint32_t>(tm->tm_mon) + 1,
-        static_cast<uint32_t>(tm->tm_mday), static_cast<uint32_t>(tm->tm_hour),
-        static_cast<uint32_t>(tm->tm_min), static_cast<uint32_t>(tm->tm_sec));
+        date,
+        dateLength + 1,
+        "%u-%02u-%02u %02u:%02u:%02u",
+        static_cast<uint32_t>(tm->tm_year) + dateStartYear,
+        static_cast<uint32_t>(tm->tm_mon) + 1,
+        static_cast<uint32_t>(tm->tm_mday),
+        static_cast<uint32_t>(tm->tm_hour),
+        static_cast<uint32_t>(tm->tm_min),
+        static_cast<uint32_t>(tm->tm_sec));
 
     std::string dateStr(date);
     return dateStr;

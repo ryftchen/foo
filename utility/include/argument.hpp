@@ -23,8 +23,10 @@ template <typename T>
 struct HasContainerTraits<
     T,
     std::void_t<
-        typename T::value_type, decltype(std::declval<T>().begin()),
-        decltype(std::declval<T>().end()), decltype(std::declval<T>().size())>> : std::true_type
+        typename T::value_type,
+        decltype(std::declval<T>().begin()),
+        decltype(std::declval<T>().end()),
+        decltype(std::declval<T>().size())>> : std::true_type
 {
 };
 
@@ -37,8 +39,8 @@ struct HasStreamableTraits : std::false_type
 };
 
 template <typename T>
-struct HasStreamableTraits<
-    T, std::void_t<decltype(std::declval<std::ostream&>() << std::declval<T>())>> : std::true_type
+struct HasStreamableTraits<T, std::void_t<decltype(std::declval<std::ostream&>() << std::declval<T>())>>
+    : std::true_type
 {
 };
 
@@ -103,18 +105,22 @@ std::string represent(T const& val)
 
 template <class Function, class Tuple, class Extra, std::size_t... I>
 constexpr decltype(auto) applyPlusOneImpl(
-    Function&& func, Tuple&& tup, Extra&& ext, std::index_sequence<I...> /*unused*/)
+    Function&& func,
+    Tuple&& tup,
+    Extra&& ext,
+    std::index_sequence<I...> /*unused*/)
 {
     return std::invoke(
-        std::forward<Function>(func), std::get<I>(std::forward<Tuple>(tup))...,
-        std::forward<Extra>(ext));
+        std::forward<Function>(func), std::get<I>(std::forward<Tuple>(tup))..., std::forward<Extra>(ext));
 }
 
 template <class Function, class Tuple, class Extra>
 constexpr decltype(auto) applyPlusOne(Function&& func, Tuple&& tup, Extra&& ext)
 {
     return applyPlusOneImpl(
-        std::forward<Function>(func), std::forward<Tuple>(tup), std::forward<Extra>(ext),
+        std::forward<Function>(func),
+        std::forward<Tuple>(tup),
+        std::forward<Extra>(ext),
         std::make_index_sequence<std::tuple_size_v<std::remove_reference_t<Tuple>>>{});
 }
 
@@ -131,8 +137,7 @@ class ArgumentRegister
 {
 public:
     template <std::size_t N, std::size_t... I>
-    explicit ArgumentRegister(
-        std::array<std::string_view, N>&& array, std::index_sequence<I...> /*unused*/);
+    explicit ArgumentRegister(std::array<std::string_view, N>&& array, std::index_sequence<I...> /*unused*/);
     template <std::size_t N>
     explicit ArgumentRegister(std::array<std::string_view, N>&& array);
     ArgumentRegister& help(std::string str);
@@ -143,8 +148,8 @@ public:
     ArgumentRegister& appending();
     ArgumentRegister& remaining();
     template <class Function, class... Args>
-    auto action(Function&& callable, Args&&... boundArgs) -> std::enable_if_t<
-        std::is_invocable_v<Function, Args..., std::string const>, ArgumentRegister&>;
+    auto action(Function&& callable, Args&&... boundArgs)
+        -> std::enable_if_t<std::is_invocable_v<Function, Args..., std::string const>, ArgumentRegister&>;
     ArgumentRegister& nArgs(std::size_t numArgs);
     ArgumentRegister& nArgs(std::size_t numArgsMin, std::size_t numArgsMax);
     ArgumentRegister& nArgs(NArgsPattern pattern);
@@ -181,7 +186,7 @@ private:
     bool isRequired{true};
     bool isRepeatable{true};
     bool isUsed{true};
-    static constexpr int eof = std::char_traits<char>::eof();
+    static constexpr int eof{std::char_traits<char>::eof()};
 
     class NArgsRange
     {
@@ -197,20 +202,10 @@ private:
             }
         }
 
-        [[nodiscard]] bool contains(std::size_t value) const
-        {
-            return (value >= min) && (value <= max);
-        }
-
+        [[nodiscard]] bool contains(std::size_t value) const { return (value >= min) && (value <= max); }
         [[nodiscard]] bool isExact() const { return (min == max); }
-
-        [[nodiscard]] bool isRightBounded() const
-        {
-            return max < std::numeric_limits<std::size_t>::max();
-        }
-
+        [[nodiscard]] bool isRightBounded() const { return max < std::numeric_limits<std::size_t>::max(); }
         [[nodiscard]] std::size_t getMin() const { return min; }
-
         [[nodiscard]] std::size_t getMax() const { return max; }
     };
     NArgsRange argNumArgsRange{1, 1};
@@ -228,14 +223,13 @@ private:
 };
 
 template <std::size_t N, std::size_t... I>
-ArgumentRegister::ArgumentRegister(
-    std::array<std::string_view, N>&& array, std::index_sequence<I...> /*unused*/) :
-    isOptional((checkIfOptional(array[I]) || ...)),
-    isRequired(false), isRepeatable(false), isUsed(false)
+ArgumentRegister::ArgumentRegister(std::array<std::string_view, N>&& array, std::index_sequence<I...> /*unused*/) :
+    isOptional((checkIfOptional(array[I]) || ...)), isRequired(false), isRepeatable(false), isUsed(false)
 {
     ((void)names.emplace_back(array[I]), ...);
     std::sort(
-        names.begin(), names.end(),
+        names.begin(),
+        names.end(),
         [](const auto& lhs, const auto& rhs)
         {
             return (lhs.size() == rhs.size()) ? (lhs < rhs) : (lhs.size() < rhs.size());
@@ -257,11 +251,12 @@ ArgumentRegister& ArgumentRegister::defaultValue(T&& value)
 }
 
 template <class Function, class... Args>
-auto ArgumentRegister::action(Function&& callable, Args&&... boundArgs) -> std::enable_if_t<
-    std::is_invocable_v<Function, Args..., std::string const>, ArgumentRegister&>
+auto ArgumentRegister::action(Function&& callable, Args&&... boundArgs)
+    -> std::enable_if_t<std::is_invocable_v<Function, Args..., std::string const>, ArgumentRegister&>
 {
     using ActionType = std::conditional_t<
-        std::is_void_v<std::invoke_result_t<Function, Args..., std::string const>>, VoidAction,
+        std::is_void_v<std::invoke_result_t<Function, Args..., std::string const>>,
+        VoidAction,
         ValuedAction>;
     if constexpr (!sizeof...(Args))
     {
@@ -271,8 +266,7 @@ auto ArgumentRegister::action(Function&& callable, Args&&... boundArgs) -> std::
     {
         actions.emplace<ActionType>(
             [func = std::forward<Function>(callable),
-             tup =
-                 std::make_tuple(std::forward<Args>(boundArgs)...)](std::string const& opt) mutable
+             tup = std::make_tuple(std::forward<Args>(boundArgs)...)](std::string const& opt) mutable
             {
                 return applyPlusOne(func, tup, opt);
             });
@@ -322,10 +316,7 @@ Iterator ArgumentRegister::consume(Iterator start, Iterator end, const std::stri
 
         struct ActionApply
         {
-            void operator()(ValuedAction& func)
-            {
-                std::transform(first, last, std::back_inserter(self.values), func);
-            }
+            void operator()(ValuedAction& func) { std::transform(first, last, std::back_inserter(self.values), func); }
 
             void operator()(VoidAction& func)
             {
@@ -370,7 +361,10 @@ bool ArgumentRegister::operator==(const T& rhs) const
         using ValueType = typename T::value_type;
         auto lhs = get<T>();
         return std::equal(
-            std::begin(lhs), std::end(lhs), std::begin(rhs), std::end(rhs),
+            std::begin(lhs),
+            std::end(lhs),
+            std::begin(rhs),
+            std::end(rhs),
             [](const auto& lhs, const auto& rhs)
             {
                 return (rhs == std::any_cast<const ValueType&>(lhs));
@@ -414,7 +408,9 @@ auto ArgumentRegister::anyCastContainer(const std::vector<std::any>& operand) ->
 
     T result;
     std::transform(
-        std::begin(operand), std::end(operand), std::back_inserter(result),
+        std::begin(operand),
+        std::end(operand),
+        std::back_inserter(result),
         [](const auto& value)
         {
             return std::any_cast<ValueType>(value);
