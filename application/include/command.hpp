@@ -13,14 +13,14 @@ class Command
 public:
     template <class T>
     struct Bottom;
-    enum UtilTaskType
+    enum BasicTaskType
     {
         help,
         version,
         console
     };
     template <>
-    struct Bottom<UtilTaskType>
+    struct Bottom<BasicTaskType>
     {
         static constexpr int value = 3;
     };
@@ -100,13 +100,13 @@ private:
     struct TaskPlan
     {
         TaskPlan() = default;
-        struct UtilTask
+        struct BasicTask
         {
-            std::bitset<Bottom<UtilTaskType>::value> utilTaskBit;
+            std::bitset<Bottom<BasicTaskType>::value> basicTaskBit;
 
-            [[nodiscard]] bool empty() const { return utilTaskBit.none(); }
-            void reset() { utilTaskBit.reset(); }
-        } utilTask{};
+            [[nodiscard]] bool empty() const { return basicTaskBit.none(); }
+            void reset() { basicTaskBit.reset(); }
+        } basicTask{};
 
         struct AlgoTask
         {
@@ -126,20 +126,21 @@ private:
             }
         } algoTask{};
 
-        [[nodiscard]] bool empty() const { return utilTask.empty() && algoTask.empty(); }
+        [[nodiscard]] bool empty() const { return basicTask.empty() && algoTask.empty(); }
         void reset()
         {
-            utilTask.reset();
+            basicTask.reset();
             algoTask.reset();
         };
     } taskPlan{};
 #pragma pack()
 
-    static constexpr std::array<std::string_view, Bottom<UtilTaskType>::value> utilTaskNameTable = {
-        "help", "version", "console"};
-    typedef void (Command::*PerformUtilTaskFunctor)() const;
-    const std::array<PerformUtilTaskFunctor, Bottom<UtilTaskType>::value> performUtilTaskFunctor = {
-        &Command::printHelpMessage, &Command::printVersionInfo, &Command::printConsoleOutput};
+    static constexpr std::array<std::string_view, Bottom<BasicTaskType>::value> basicTaskNameTable =
+        {"help", "version", "console"};
+    typedef void (Command::*PerformBasicTaskFunctor)() const;
+    const std::array<PerformBasicTaskFunctor, Bottom<BasicTaskType>::value>
+        performBasicTaskFunctor = {
+            &Command::printHelpMessage, &Command::printVersionInfo, &Command::printConsoleOutput};
     static constexpr std::array<std::string_view, Bottom<AlgoTaskType>::value> algoTaskNameTable = {
         "optimum", "integral", "sort"};
     static constexpr std::array<
@@ -178,7 +179,7 @@ private:
 
     void foregroundHandle(const int argc, const char* const argv[]);
     void backgroundHandle() const;
-    void validateUtilityTask();
+    void validateBasicTask();
     void validateAlgorithmTask();
     bool checkTask() const;
     void performTask() const;
@@ -203,7 +204,7 @@ private:
 
     void enterConsole() const;
     void registerOnConsole(util_console::Console& console) const;
-    static void displayLogContext();
+    static void viewLogContent();
     [[noreturn]] void throwUnexpectedMethodException(const std::string& info);
     [[noreturn]] void throwExcessArgumentException();
 
