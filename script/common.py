@@ -10,44 +10,6 @@ try:
 except ImportError as err:
     raise ImportError(err)
 
-BAR_SAVE_CURSOR = "\033[s"
-BAR_RESTORE_CURSOR = "\033[u"
-BAR_MOVE_UP_CURSOR = "\033[1A"
-BAR_FORE_COLOR = "\033[30m"
-BAR_BACK_COLOR = "\033[42m"
-BAR_FORE_COLOR_DEFAULT = "\033[39m"
-BAR_BACK_COLOR_DEFAULT = "\033[49m"
-BAR_CURRENT_LINES = 0
-BAR_PLACEHOLDER_LENGTH = 20
-BAR_SET_TRAP = False
-BAR_SIGNAL_DEFAULT = None
-
-STDOUT_DEFAULT = sys.stdout
-
-
-class Log:
-    def __init__(self, filename, stream=sys.stdout):
-        self.terminal = stream
-        self.log = open(filename, "w")
-        fcntl.flock(self.log, fcntl.LOCK_EX | fcntl.LOCK_NB)
-
-    def write(self, message):
-        self.terminal.write(message)
-        try:
-            self.log.write(message)
-        except IOError:
-            fcntl.flock(self.log, fcntl.LOCK_UN)
-            self.log.close()
-            sys.stdout = STDOUT_DEFAULT
-
-    def flush(self):
-        pass
-
-    def __del__(self):
-        fcntl.flock(self.log, fcntl.LOCK_UN)
-        self.log.close()
-        sys.stdout = STDOUT_DEFAULT
-
 
 def executeCommand(command, enter=""):
     try:
@@ -67,99 +29,125 @@ def executeCommand(command, enter=""):
     return stdout.strip(), stderr.strip(), error
 
 
-def setupProgressBar():
-    global BAR_CURRENT_LINES
-    curses.setupterm()
+class Log:
+    def __init__(self, filename, stream=sys.stdout):
+        self.terminal = stream
+        self.log = open(filename, "w")
+        fcntl.flock(self.log, fcntl.LOCK_EX | fcntl.LOCK_NB)
 
-    trapDueToInterrupt()
+    def write(self, message):
+        self.terminal.write(message)
+        try:
+            self.log.write(message)
+        except IOError:
+            fcntl.flock(self.log, fcntl.LOCK_UN)
+            self.log.close()
 
-    BAR_CURRENT_LINES = tputLines()
-    lines = BAR_CURRENT_LINES - 1
-    printProgress("\n")
+    def flush(self):
+        pass
 
-    printProgress(BAR_SAVE_CURSOR)
-    printProgress(f"\033[0;{str(lines)}r")
-
-    printProgress(BAR_RESTORE_CURSOR)
-    printProgress(BAR_MOVE_UP_CURSOR)
-    drawProgressBar(0)
-
-
-def drawProgressBar(percentage):
-    lines = tputLines()
-    if lines != BAR_CURRENT_LINES:
-        setupProgressBar()
-
-    printProgress(BAR_SAVE_CURSOR)
-    printProgress(f"\033[{str(lines)};0f")
-
-    tput()
-    printBar(percentage)
-    printProgress(BAR_RESTORE_CURSOR)
-    time.sleep(0.05)
+    def __del__(self):
+        fcntl.flock(self.log, fcntl.LOCK_UN)
+        self.log.close()
 
 
-def destroyProgressBar():
-    lines = tputLines()
-    printProgress(BAR_SAVE_CURSOR)
-    printProgress(f"\033[0;{str(lines)}r")
+class ProgressBar:
+    saveCursor = "\033[s"
+    retoreCursor = "\033[u"
+    moveUpCursor = "\033[1A"
+    foreColor = "\033[30m"
+    backColor = "\033[42m"
+    defaultForeColor = "\033[39m"
+    defaultBackColor = "\033[49m"
+    currentLines = 0
+    placeholderLength = 20
+    setTrap = False
+    defaultSignal = None
 
-    printProgress(BAR_RESTORE_CURSOR)
-    printProgress(BAR_MOVE_UP_CURSOR)
+    def setupProgressBar(self):
+        curses.setupterm()
 
-    clearProgressBar()
-    printProgress("\n\n")
-    if BAR_SET_TRAP:
-        signal.signal(signal.SIGINT, BAR_SIGNAL_DEFAULT)
+        self.trapDueToInterrupt()
 
+        self.currentLines = self.tputLines()
+        lines = self.currentLines - 1
+        self.printProgress("\n")
 
-def clearProgressBar():
-    lines = tputLines()
-    printProgress(BAR_SAVE_CURSOR)
-    printProgress(f"\033[{str(lines)};0f")
+        self.printProgress(self.saveCursor)
+        self.printProgress(f"\033[0;{str(lines)}r")
 
-    tput()
-    printProgress(BAR_RESTORE_CURSOR)
+        self.printProgress(self.retoreCursor)
+        self.printProgress(self.moveUpCursor)
+        self.drawProgressBar(0)
 
+    def drawProgressBar(self, percentage):
+        lines = self.tputLines()
+        if lines != self.currentLines:
+            self.setupProgressBar()
 
-def trapDueToInterrupt():
-    global BAR_SET_TRAP
-    global BAR_SIGNAL_DEFAULT
-    BAR_SET_TRAP = True
-    BAR_SIGNAL_DEFAULT = signal.getsignal(signal.SIGINT)
-    signal.signal(signal.SIGINT, clearDueToInterrupt)
+        self.printProgress(self.saveCursor)
+        self.printProgress(f"\033[{str(lines)};0f")
 
+        self.tput()
+        self.printBar(percentage)
+        self.printProgress(self.retoreCursor)
+        time.sleep(0.01)
 
-def clearDueToInterrupt(sign, frame):
-    destroyProgressBar()
-    raise KeyboardInterrupt
+    def destroyProgressBar(self):
+        lines = self.tputLines()
+        self.printProgress(self.saveCursor)
+        self.printProgress(f"\033[0;{str(lines)}r")
 
+        self.printProgress(self.retoreCursor)
+        self.printProgress(self.moveUpCursor)
 
-def printBar(percentage):
-    cols = tputCols()
-    barSize = cols - BAR_PLACEHOLDER_LENGTH
-    color = f"{BAR_FORE_COLOR}{BAR_BACK_COLOR}"
-    defaultColor = f"{BAR_FORE_COLOR_DEFAULT}{BAR_BACK_COLOR_DEFAULT}"
+        self.clearProgressBar()
+        self.printProgress("\n\n")
+        if self.setTrap:
+            signal.signal(signal.SIGINT, self.defaultSignal)
 
-    completeSize = int((barSize * percentage) / 100)
-    remainderSize = barSize - completeSize
-    progressBar = f"[{color}{'#' * int(completeSize)}{defaultColor}{'.' * int(remainderSize)}]"
-    printProgress(f" Progress {percentage:>3}% {progressBar}\r")
+    def clearProgressBar(self):
+        lines = self.tputLines()
+        self.printProgress(self.saveCursor)
+        self.printProgress(f"\033[{str(lines)};0f")
 
+        self.tput()
+        self.printProgress(self.retoreCursor)
 
-def printProgress(text):
-    print(text, end="")
+    def trapDueToInterrupt(self):
+        self.setTrap = True
+        self.defaultSignal = signal.getsignal(signal.SIGINT)
+        signal.signal(signal.SIGINT, self.clearDueToInterrupt)
 
+    def clearDueToInterrupt(self, sign, frame):
+        self.destroyProgressBar()
+        raise KeyboardInterrupt
 
-def tputLines():
-    stdout, _, _ = executeCommand("tput lines")
-    return int(stdout)
+    def printBar(self, percentage):
+        cols = self.tputCols()
+        barSize = cols - self.placeholderLength
+        color = f"{self.foreColor}{self.backColor}"
+        defaultColor = f"{self.defaultForeColor}{self.defaultBackColor}"
 
+        completeSize = int((barSize * percentage) / 100)
+        remainderSize = barSize - completeSize
+        progressBar = f"[{color}{'#' * int(completeSize)}{defaultColor}{'.' * int(remainderSize)}]"
+        self.printProgress(f" Progress {percentage:>3}% {progressBar}\r")
 
-def tputCols():
-    stdout, _, _ = executeCommand("tput cols")
-    return int(stdout)
+    @staticmethod
+    def printProgress(text):
+        print(text, end="")
 
+    @staticmethod
+    def tputLines():
+        stdout, _, _ = executeCommand("tput lines")
+        return int(stdout)
 
-def tput():
-    print(curses.tparm(curses.tigetstr("el")).decode(), end="")
+    @staticmethod
+    def tputCols():
+        stdout, _, _ = executeCommand("tput cols")
+        return int(stdout)
+
+    @staticmethod
+    def tput():
+        print(curses.tparm(curses.tigetstr("el")).decode(), end="")
