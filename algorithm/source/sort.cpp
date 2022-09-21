@@ -9,7 +9,8 @@
         char arrayBuffer[arrayBufferSize + 1];                                \
         arrayBuffer[0] = '\0';                                                \
         FORMAT_PRINT(                                                         \
-            SORT_RESULT(asc), method,                                         \
+            SORT_RESULT(asc),                                                 \
+            method,                                                           \
             formatArray(sortArray, length, arrayBuffer, arrayBufferSize + 1), \
             TIME_INTERVAL(timing));                                           \
     }                                                                         \
@@ -343,8 +344,7 @@ void Sort<T>::bucketSort(T* const array, const uint32_t length) const
     for (uint32_t i = 0; i < length; ++i)
     {
         // min+(max-min)/(bucketNum-1)*(buckIndex-1)<=sortArray[i]
-        const uint32_t aggIndex =
-            std::floor(static_cast<double>(sortArray[i] - min) / intervalSpan + 1) - 1;
+        const uint32_t aggIndex = std::floor(static_cast<double>(sortArray[i] - min) / intervalSpan + 1) - 1;
         aggregation[aggIndex].emplace_back(sortArray[i]);
     }
 
@@ -384,8 +384,7 @@ void Sort<T>::radixSort(T* const array, const uint32_t length) const
     {
         max = std::max(sortArray[i], max);
         min = std::min(sortArray[i], min);
-        (sortArray[i] > 0) ? positive = true
-                           : ((sortArray[i] < 0) ? negative = true : sortArray[i]);
+        (sortArray[i] > 0) ? positive = true : ((sortArray[i] < 0) ? negative = true : sortArray[i]);
     }
     T absMax = std::max(max, -min);
     uint32_t digitMax = 0;
@@ -401,8 +400,7 @@ void Sort<T>::radixSort(T* const array, const uint32_t length) const
     const uint32_t bucketNum =
         (positive ^ negative) ? naturalNumberBucket : (naturalNumberBucket + negativeIntegerBucket);
     assert(bucketNum > 0);
-    std::unique_ptr<T[]> countingOld = std::make_unique<T[]>(bucketNum),
-                         countingNew = std::make_unique<T[]>(bucketNum);
+    std::unique_ptr<T[]> countingOld = std::make_unique<T[]>(bucketNum), countingNew = std::make_unique<T[]>(bucketNum);
     std::queue<T> bucket;
     std::vector<std::queue<T>> aggregation(bucketNum, bucket);
     const uint32_t offset = (!negative) ? 0 : negativeIntegerBucket;

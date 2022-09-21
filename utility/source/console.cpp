@@ -23,12 +23,10 @@ Console::Console(const std::string& greeting) : impl(std::make_unique<Impl>(gree
             }
 
             std::cout << "Console command:\n" << std::endl;
-            for (auto iterReverse = commandsHelp.rbegin(); commandsHelp.rend() != iterReverse;
-                 ++iterReverse)
+            for (auto iterReverse = commandsHelp.rbegin(); commandsHelp.rend() != iterReverse; ++iterReverse)
             {
-                std::cout << std::setiosflags(std::ios_base::left) << std::setw(maxLength)
-                          << iterReverse->first << "    " << iterReverse->second
-                          << std::resetiosflags(std::ios_base::left) << std::endl;
+                std::cout << std::setiosflags(std::ios_base::left) << std::setw(maxLength) << iterReverse->first
+                          << "    " << iterReverse->second << std::resetiosflags(std::ios_base::left) << std::endl;
             }
             return ReturnCode::success;
         },
@@ -60,8 +58,7 @@ Console::~Console()
     free(emptyHistory);
 }
 
-void Console::registerCommand(
-    const std::string& command, CommandFunction func, const std::string& help)
+void Console::registerCommand(const std::string& command, CommandFunction func, const std::string& help)
 {
     impl->RegCmds[command] = std::make_pair(func, help);
 }
@@ -122,9 +119,7 @@ int Console::commandExecutor(const std::string& command)
 {
     std::vector<std::string> inputs;
     std::istringstream is(command);
-    std::copy(
-        std::istream_iterator<std::string>(is), std::istream_iterator<std::string>(),
-        std::back_inserter(inputs));
+    std::copy(std::istream_iterator<std::string>(is), std::istream_iterator<std::string>(), std::back_inserter(inputs));
 
     if (!inputs.size())
     {

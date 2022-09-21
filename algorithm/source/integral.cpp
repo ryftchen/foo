@@ -8,7 +8,9 @@
 namespace algo_integral
 {
 double trapezoid(
-    const algo_expression::Expression& express, const double left, const double height,
+    const algo_expression::Expression& express,
+    const double left,
+    const double height,
     const uint32_t step)
 {
     double sum = 0.0, x = left;
@@ -64,18 +66,14 @@ double Simpson::operator()(double lower, double upper, const double eps) const
 double Simpson::simpsonIntegral(const double left, const double right, const double eps) const
 {
     const double mid = (left + right) / 2.0, sum = simpsonOneThird(left, right);
-    if (std::fabs(
-            sum
-            - (compositeSimpsonOneThird(left, mid, 2) + compositeSimpsonOneThird(mid, right, 2)))
-        > eps)
+    if (std::fabs(sum - (compositeSimpsonOneThird(left, mid, 2) + compositeSimpsonOneThird(mid, right, 2))) > eps)
     {
         return simpsonIntegral(left, mid, eps) + simpsonIntegral(mid, right, eps);
     }
     return sum;
 }
 
-double Simpson::compositeSimpsonOneThird(
-    const double left, const double right, const uint32_t n) const
+double Simpson::compositeSimpsonOneThird(const double left, const double right, const uint32_t n) const
 {
     const double stepLength = (right - left) / n;
     double sum = 0.0;
@@ -100,14 +98,13 @@ double Romberg::operator()(double lower, double upper, const double eps) const
     uint32_t k = 0;
     double sum = 0.0;
     const double height = upper - lower;
-    const auto trapezoidFunctor =
-        std::bind(trapezoid, std::ref(func), lower, height, std::placeholders::_1);
+    const auto trapezoidFunctor = std::bind(trapezoid, std::ref(func), lower, height, std::placeholders::_1);
     double t0 = trapezoidFunctor(std::pow(2, k));
 
     k = 1;
     double t1Zero = trapezoidFunctor(std::pow(2, k));
-    double t1 = std::pow(4, k) / (std::pow(4, k) - 1) * trapezoidFunctor(std::pow(2, k + 1))
-        - 1.0 / std::pow(4, k) * t1Zero;
+    double t1 =
+        std::pow(4, k) / (std::pow(4, k) - 1) * trapezoidFunctor(std::pow(2, k + 1)) - 1.0 / std::pow(4, k) * t1Zero;
 
     while (std::fabs(t1 - t0) > eps)
     {
@@ -153,10 +150,8 @@ double Gauss::operator()(double lower, double upper, const double eps) const
             for (uint32_t j = 0; j < gaussNodes; ++j)
             {
                 // x=1/2[(a+b)+(b-a)t]
-                const double x =
-                    ((right - left) * gaussLegendreTable.at(j).at(0) + (left + right)) / 2.0;
-                const double polynomial =
-                    func(x) * gaussLegendreTable.at(j).at(1) * (right - left) / 2.0;
+                const double x = ((right - left) * gaussLegendreTable.at(j).at(0) + (left + right)) / 2.0;
+                const double polynomial = func(x) * gaussLegendreTable.at(j).at(1) * (right - left) / 2.0;
                 sum += polynomial;
             }
         }
@@ -189,8 +184,7 @@ double MonteCarlo::operator()(double lower, double upper, const double eps) cons
     return sum;
 }
 
-double MonteCarlo::sampleFromUniformDistribution(
-    const double lower, const double upper, const double eps) const
+double MonteCarlo::sampleFromUniformDistribution(const double lower, const double upper, const double eps) const
 {
     const uint32_t n = (upper - lower) / eps;
     std::mt19937 seed(std::random_device{}());
@@ -207,8 +201,7 @@ double MonteCarlo::sampleFromUniformDistribution(
 }
 
 #ifdef INTEGRAL_MONTE_CARLO_NO_UNIFORM
-double MonteCarlo::sampleFromNormalDistribution(
-    const double lower, const double upper, const double eps) const
+double MonteCarlo::sampleFromNormalDistribution(const double lower, const double upper, const double eps) const
 {
     const uint32_t n = (upper - lower) / eps;
     const double mu = (lower + upper) / 2.0, sigma = (upper - lower) / 6.0;

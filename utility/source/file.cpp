@@ -37,8 +37,7 @@ void executeCommand(const char* const cmd)
     }
 }
 
-void printFile(
-    const char* const pathname, const bool reverse, const uint32_t maxLine, PrintStyle style)
+void printFile(const char* const pathname, const bool reverse, const uint32_t maxLine, PrintStyle style)
 {
     std::ifstream file;
     file.open(pathname, std::ios_base::in);
@@ -69,8 +68,7 @@ void printFile(
     else
     {
         std::ifstream fileTmp(pathname);
-        uint32_t lineNum = std::count(
-            std::istreambuf_iterator<char>(fileTmp), std::istreambuf_iterator<char>(), '\n');
+        uint32_t lineNum = std::count(std::istreambuf_iterator<char>(fileTmp), std::istreambuf_iterator<char>(), '\n');
         uint32_t currentLine = 0;
         uint32_t startLine = (lineNum > maxLine) ? (lineNum - maxLine + 1) : 1;
         while (std::getline(file, line))
@@ -83,8 +81,7 @@ void printFile(
         }
         assert(maxLine >= content.size());
     }
-    std::copy(
-        content.cbegin(), content.cend(), std::ostream_iterator<std::string>(std::cout, "\n"));
+    std::copy(content.cbegin(), content.cend(), std::ostream_iterator<std::string>(std::cout, "\n"));
 
     tryToOperateFileLock(file, pathname, LockOperateType::unlock, FileLockType::readerLock);
     file.close();

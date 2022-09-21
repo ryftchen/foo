@@ -8,10 +8,12 @@ Log logger;
 Log::Log(const StateType initState) noexcept : FSM(initState) {}
 
 Log::Log(
-    const std::string& logFile, const OutputType type, const OutputLevel level,
-    const OutputTarget target, const StateType initState) noexcept :
-    writeType(type),
-    minLevel(level), actualTarget(target), FSM(initState)
+    const std::string& logFile,
+    const OutputType type,
+    const OutputLevel level,
+    const OutputTarget target,
+    const StateType initState) noexcept :
+    writeType(type), minLevel(level), actualTarget(target), FSM(initState)
 {
     std::strncpy(pathname, logFile.c_str(), logPathLength);
     pathname[logPathLength] = '\0';
@@ -158,8 +160,7 @@ void Log::openLogFile()
 
     if (!ofs)
     {
-        util_file::throwOperateFileException(
-            std::filesystem::path(pathname).filename().string(), true);
+        util_file::throwOperateFileException(std::filesystem::path(pathname).filename().string(), true);
     }
     util_file::tryToOperateFileLock(
         ofs, pathname, util_file::LockOperateType::lock, util_file::FileLockType::writerLock);
@@ -209,18 +210,15 @@ std::string& changeLogLevelStyle(std::string& line)
 {
     if (std::regex_search(line, std::regex(std::string{infoRegex})))
     {
-        line = std::regex_replace(
-            line, std::regex(std::string{infoRegex}), std::string{infoColorForLog});
+        line = std::regex_replace(line, std::regex(std::string{infoRegex}), std::string{infoColorForLog});
     }
     else if (std::regex_search(line, std::regex(std::string{warnRegex})))
     {
-        line = std::regex_replace(
-            line, std::regex(std::string{warnRegex}), std::string{warnColorForLog});
+        line = std::regex_replace(line, std::regex(std::string{warnRegex}), std::string{warnColorForLog});
     }
     else if (std::regex_search(line, std::regex(std::string{errorRegex})))
     {
-        line = std::regex_replace(
-            line, std::regex(std::string{errorRegex}), std::string{errorColorForLog});
+        line = std::regex_replace(line, std::regex(std::string{errorRegex}), std::string{errorColorForLog});
     }
 
     return line;

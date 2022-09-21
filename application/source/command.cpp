@@ -5,11 +5,11 @@
 #include "optimum.hpp"
 #include "thread.hpp"
 
-#define COMMAND_PRINT_ALGO_TASK_TITLE(taskType, title)                                 \
-    std::cout << std::endl                                                             \
-              << "TASK " << std::setiosflags(std::ios_base::left) << std::setfill('.') \
-              << std::setw(titleWidthForPrintTask) << taskType << title                \
-              << std::resetiosflags(std::ios_base::left) << std::setfill(' ') << std::endl
+#define COMMAND_PRINT_ALGO_TASK_TITLE(taskType, title)                                                             \
+    std::cout << std::endl                                                                                         \
+              << "TASK " << std::setiosflags(std::ios_base::left) << std::setfill('.')                             \
+              << std::setw(titleWidthForPrintTask) << taskType << title << std::resetiosflags(std::ios_base::left) \
+              << std::setfill(' ') << std::endl
 
 Command::Command()
 {
@@ -28,8 +28,7 @@ Command::Command()
         .action(
             [this](const std::string& value)
             {
-                if (std::find(algoTaskNameTable.begin(), algoTaskNameTable.end(), value)
-                    != algoTaskNameTable.end())
+                if (std::find(algoTaskNameTable.begin(), algoTaskNameTable.end(), value) != algoTaskNameTable.end())
                 {
                     return value;
                 }
@@ -143,7 +142,8 @@ void Command::validateAlgorithmTask()
             methods.assign(algoTaskMethodTable.at(i).cbegin(), algoTaskMethodTable.at(i).cend());
             methods.erase(
                 std::remove_if(
-                    methods.begin(), methods.end(),
+                    methods.begin(),
+                    methods.end(),
                     [](const std::string& method) -> bool
                     {
                         return (std::string::npos == method.find_first_not_of(" "));
@@ -210,9 +210,8 @@ void Command::runOptimum() const
             },
             expression);
     };
-    const auto resultFunctor = [this](
-                                   const algo_expression::Expression& expression,
-                                   const algo_expression::ExprRange<double, double>& range)
+    const auto resultFunctor =
+        [this](const algo_expression::Expression& expression, const algo_expression::ExprRange<double, double>& range)
     {
         getOptimumResult(expression, range.range1, range.range2, algo_optimum::epsilon);
     };
@@ -236,8 +235,10 @@ void Command::runOptimum() const
 }
 
 void Command::getOptimumResult(
-    const algo_expression::Expression& express, const double leftEndpoint,
-    const double rightEndpoint, const double epsilon) const
+    const algo_expression::Expression& express,
+    const double leftEndpoint,
+    const double rightEndpoint,
+    const double epsilon) const
 {
     assert((leftEndpoint < rightEndpoint) && (epsilon > 0.0));
     util_thread::Thread threadPool(std::min(
@@ -247,8 +248,7 @@ void Command::getOptimumResult(
         [&](const std::string& threadName, const std::shared_ptr<algo_optimum::Optimum>& classPtr)
     {
         threadPool.enqueue(
-            threadName, &algo_optimum::Optimum::operator(), classPtr, leftEndpoint, rightEndpoint,
-            epsilon);
+            threadName, &algo_optimum::Optimum::operator(), classPtr, leftEndpoint, rightEndpoint, epsilon);
     };
 
     for (int i = 0; i < Bottom<OptimumMethod>::value; ++i)
@@ -258,8 +258,7 @@ void Command::getOptimumResult(
             continue;
         }
 
-        const std::string threadName =
-            std::string{1, algoTaskNameTable.at(AlgoTaskType::optimum).at(0)} + "_"
+        const std::string threadName = std::string{1, algoTaskNameTable.at(AlgoTaskType::optimum).at(0)} + "_"
             + std::string{algoTaskMethodTable.at(AlgoTaskType::optimum).at(i)};
         using util_hash::operator""_bkdrHash;
         switch (util_hash::bkdrHash(algoTaskMethodTable.at(AlgoTaskType::optimum).at(i).data()))
@@ -336,9 +335,8 @@ void Command::runIntegral() const
             },
             expression);
     };
-    const auto resultFunctor = [this](
-                                   const algo_expression::Expression& expression,
-                                   const algo_expression::ExprRange<double, double>& range)
+    const auto resultFunctor =
+        [this](const algo_expression::Expression& expression, const algo_expression::ExprRange<double, double>& range)
     {
         getIntegralResult(expression, range.range1, range.range2, algo_integral::epsilon);
     };
@@ -362,7 +360,9 @@ void Command::runIntegral() const
 }
 
 void Command::getIntegralResult(
-    const algo_expression::Expression& express, const double lowerLimit, const double upperLimit,
+    const algo_expression::Expression& express,
+    const double lowerLimit,
+    const double upperLimit,
     const double epsilon) const
 {
     assert(epsilon > 0.0);
@@ -372,9 +372,7 @@ void Command::getIntegralResult(
     const auto integralFunctor =
         [&](const std::string& threadName, const std::shared_ptr<algo_integral::Integral>& classPtr)
     {
-        threadPool.enqueue(
-            threadName, &algo_integral::Integral::operator(), classPtr, lowerLimit, upperLimit,
-            epsilon);
+        threadPool.enqueue(threadName, &algo_integral::Integral::operator(), classPtr, lowerLimit, upperLimit, epsilon);
     };
 
     for (int i = 0; i < Bottom<IntegralMethod>::value; ++i)
@@ -384,8 +382,7 @@ void Command::getIntegralResult(
             continue;
         }
 
-        const std::string threadName =
-            std::string{1, algoTaskNameTable.at(AlgoTaskType::integral).at(0)} + "_"
+        const std::string threadName = std::string{1, algoTaskNameTable.at(AlgoTaskType::integral).at(0)} + "_"
             + std::string{algoTaskMethodTable.at(AlgoTaskType::integral).at(i)};
         using util_hash::operator""_bkdrHash;
         switch (util_hash::bkdrHash(algoTaskMethodTable.at(AlgoTaskType::integral).at(i).data()))
@@ -462,14 +459,11 @@ template <typename T>
 void Command::getSortResult(const std::shared_ptr<algo_sort::Sort<T>>& sort) const
 {
     util_thread::Thread threadPool(std::min(
-        static_cast<uint32_t>(taskPlan.algoTask.sortBit.count()),
-        static_cast<uint32_t>(Bottom<SortMethod>::value)));
-    const auto sortFunctor = [&](const std::string& threadName,
-                                 void (algo_sort::Sort<T>::*methodPtr)(T* const, const uint32_t)
-                                     const)
+        static_cast<uint32_t>(taskPlan.algoTask.sortBit.count()), static_cast<uint32_t>(Bottom<SortMethod>::value)));
+    const auto sortFunctor =
+        [&](const std::string& threadName, void (algo_sort::Sort<T>::*methodPtr)(T* const, const uint32_t) const)
     {
-        threadPool.enqueue(
-            threadName, methodPtr, sort, sort->getRandomArray().get(), sort->getLength());
+        threadPool.enqueue(threadName, methodPtr, sort, sort->getRandomArray().get(), sort->getLength());
     };
 
     for (int i = 0; i < Bottom<SortMethod>::value; ++i)
@@ -479,8 +473,7 @@ void Command::getSortResult(const std::shared_ptr<algo_sort::Sort<T>>& sort) con
             continue;
         }
 
-        const std::string threadName =
-            std::string{1, algoTaskNameTable.at(AlgoTaskType::sort).at(0)} + "_"
+        const std::string threadName = std::string{1, algoTaskNameTable.at(AlgoTaskType::sort).at(0)} + "_"
             + std::string{algoTaskMethodTable.at(AlgoTaskType::sort).at(i)};
         using util_hash::operator""_bkdrHash;
         switch (util_hash::bkdrHash(algoTaskMethodTable.at(AlgoTaskType::sort).at(i).data()))
@@ -580,8 +573,7 @@ void Command::printVersionInfo() const
 
 void Command::printConsoleOutput() const
 {
-    const auto commands =
-        program.get<std::vector<std::string>>(basicTaskNameTable.at(BasicTaskType::console));
+    const auto commands = program.get<std::vector<std::string>>(basicTaskNameTable.at(BasicTaskType::console));
     if (commands.empty())
     {
         return;
@@ -641,8 +633,7 @@ void Command::viewLogContent()
     LOG_TO_STOP(logger);
 
     util_file::printFile(
-        std::string{util_log::logPath}.c_str(), true, maxLineNumForPrintLog,
-        &util_log::changeLogLevelStyle);
+        std::string{util_log::logPath}.c_str(), true, maxLineNumForPrintLog, &util_log::changeLogLevelStyle);
 }
 
 void Command::throwUnexpectedMethodException(const std::string& info)
@@ -671,8 +662,7 @@ std::ostream& operator<<(std::ostream& os, const Command::AlgoTaskType& taskType
             os << "SORT";
             break;
         default:
-            os << "UNKNOWN: "
-               << static_cast<std::underlying_type_t<Command::AlgoTaskType>>(taskType);
+            os << "UNKNOWN: " << static_cast<std::underlying_type_t<Command::AlgoTaskType>>(taskType);
     }
 
     return os;

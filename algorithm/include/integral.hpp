@@ -16,7 +16,9 @@ public:
 protected:
     static int inline getSign(double& lower, double& upper);
     friend double trapezoid(
-        const algo_expression::Expression& express, const double left, const double height,
+        const algo_expression::Expression& express,
+        const double left,
+        const double height,
         const uint32_t step);
 };
 
@@ -45,10 +47,8 @@ public:
 
 private:
     const algo_expression::Expression& func;
-    [[nodiscard]] double simpsonIntegral(
-        const double left, const double right, const double eps) const;
-    [[nodiscard]] double compositeSimpsonOneThird(
-        const double left, const double right, const uint32_t n) const;
+    [[nodiscard]] double simpsonIntegral(const double left, const double right, const double eps) const;
+    [[nodiscard]] double compositeSimpsonOneThird(const double left, const double right, const uint32_t n) const;
     [[nodiscard]] double simpsonOneThird(const double left, const double right) const;
 };
 
@@ -83,11 +83,9 @@ public:
 
 private:
     const algo_expression::Expression& func;
-    [[nodiscard]] double sampleFromUniformDistribution(
-        const double lower, const double upper, const double eps) const;
+    [[nodiscard]] double sampleFromUniformDistribution(const double lower, const double upper, const double eps) const;
 #ifdef INTEGRAL_MONTE_CARLO_NO_UNIFORM
-    [[nodiscard]] double sampleFromNormalDistribution(
-        const double lower, const double upper, const double eps) const;
+    [[nodiscard]] double sampleFromNormalDistribution(const double lower, const double upper, const double eps) const;
 #endif
 };
 } // namespace algo_integral

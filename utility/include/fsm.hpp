@@ -24,8 +24,12 @@ InvokeResult<Mem T1::*, T2, Args...> invokeResult(Mem T1::*func, T2&& obj, Args&
 }
 
 template <
-    class Func, class Arg1, class Arg2, bool val1 = IsInvocable<Func>::value,
-    bool val2 = IsInvocable<Func, Arg1>::value, bool val3 = IsInvocable<Func, Arg2>::value,
+    class Func,
+    class Arg1,
+    class Arg2,
+    bool val1 = IsInvocable<Func>::value,
+    bool val2 = IsInvocable<Func, Arg1>::value,
+    bool val3 = IsInvocable<Func, Arg2>::value,
     bool val4 = IsInvocable<Func, Arg1, Arg2>::value>
 struct BinaryFuncHelper;
 
@@ -34,10 +38,7 @@ struct BinaryFuncHelper<Func, Arg1, Arg2, true, false, false, false>
 {
     using ResultType = InvokeResult<Func>;
 
-    static ResultType invoke(Func&& func, Arg1&& /*unused*/, Arg2&& /*unused*/)
-    {
-        return invokeResult(func);
-    }
+    static ResultType invoke(Func&& func, Arg1&& /*unused*/, Arg2&& /*unused*/) { return invokeResult(func); }
 };
 
 template <class Func, class Arg1, class Arg2>
@@ -45,10 +46,7 @@ struct BinaryFuncHelper<Func, Arg1, Arg2, false, true, false, false>
 {
     using ResultType = InvokeResult<Func, Arg1>;
 
-    static ResultType invoke(Func&& func, Arg1&& arg1, Arg2&& /*unused*/)
-    {
-        return invokeResult(func, arg1);
-    }
+    static ResultType invoke(Func&& func, Arg1&& arg1, Arg2&& /*unused*/) { return invokeResult(func, arg1); }
 };
 
 template <class Func, class Arg1, class Arg2>
@@ -56,10 +54,7 @@ struct BinaryFuncHelper<Func, Arg1, Arg2, false, false, true, false>
 {
     using ResultType = InvokeResult<Func, Arg2>;
 
-    static ResultType invoke(Func&& func, Arg1&& /*unused*/, Arg2&& arg2)
-    {
-        return invokeResult(func, arg2);
-    }
+    static ResultType invoke(Func&& func, Arg1&& /*unused*/, Arg2&& arg2) { return invokeResult(func, arg2); }
 };
 
 template <class Func, class Arg1, class Arg2>
@@ -67,10 +62,7 @@ struct BinaryFuncHelper<Func, Arg1, Arg2, false, false, false, true>
 {
     using ResultType = InvokeResult<Func, Arg1, Arg2>;
 
-    static ResultType invoke(Func&& func, Arg1&& arg1, Arg2&& arg2)
-    {
-        return invokeResult(func, arg1, arg2);
-    }
+    static ResultType invoke(Func&& func, Arg1&& arg1, Arg2&& arg2) { return invokeResult(func, arg1, arg2); }
 };
 
 template <class Func, class Arg1, class Arg2>
@@ -110,7 +102,8 @@ template <template <typename> class Predicate, class T, class... Types>
 struct filter<Predicate, T, Types...>
 {
     using Type = typename std::conditional<
-        Predicate<T>::value, typename Concat<T, typename filter<Predicate, Types...>::Type>::Type,
+        Predicate<T>::value,
+        typename Concat<T, typename filter<Predicate, Types...>::Type>::Type,
         typename filter<Predicate, Types...>::Type>::type;
 };
 
@@ -148,10 +141,7 @@ private:
             invokeAsBinaryFunc(action, self, event);
         }
 
-        static constexpr void processEvent(
-            std::nullptr_t, Derived& /*unused*/, const Event& /*unused*/)
-        {
-        }
+        static constexpr void processEvent(std::nullptr_t, Derived& /*unused*/, const Event& /*unused*/) {}
 
         template <class Guard>
         static bool checkGuard(Guard&& guard, const Derived& self, const Event& event)
@@ -159,8 +149,7 @@ private:
             return invokeAsBinaryFunc(guard, self, event);
         }
 
-        static constexpr bool checkGuard(
-            std::nullptr_t, const Derived& /*unused*/, const Event& /*unused*/)
+        static constexpr bool checkGuard(std::nullptr_t, const Derived& /*unused*/, const Event& /*unused*/)
         {
             return true;
         }
@@ -200,10 +189,7 @@ private:
     template <class Event>
     struct handleEvent<Event, List<>>
     {
-        static State execute(Derived& self, const Event& event, State /*unused*/)
-        {
-            return self.noTransition(event);
-        }
+        static State execute(Derived& self, const Event& event, State /*unused*/) { return self.noTransition(event); }
     };
 
     class ProcessingLock
@@ -227,8 +213,13 @@ protected:
     State noTransition(const Event& /*unused*/);
 
     template <
-        State Source, class Event, State Target, class Action = std::nullptr_t,
-        Action action = nullptr, class Guard = std::nullptr_t, Guard guard = nullptr>
+        State Source,
+        class Event,
+        State Target,
+        class Action = std::nullptr_t,
+        Action action = nullptr,
+        class Guard = std::nullptr_t,
+        Guard guard = nullptr>
     struct BasicRow : public RowBase<Source, Event, Target>
     {
         static void processEvent(Derived& self, const Event& event)
@@ -243,7 +234,10 @@ protected:
     };
 
     template <
-        State Source, class Event, State Target, void (Derived::*action)(const Event&) = nullptr,
+        State Source,
+        class Event,
+        State Target,
+        void (Derived::*action)(const Event&) = nullptr,
         bool (Derived::*guard)(const Event&) const = nullptr>
     struct MemFuncRow : public RowBase<Source, Event, Target>
     {

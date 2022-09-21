@@ -38,8 +38,7 @@ protected:
 
 void inline millisecondLevelSleep(const uint32_t interval)
 {
-    std::this_thread::sleep_until(
-        std::chrono::steady_clock::now() + std::chrono::operator""ms(interval));
+    std::this_thread::sleep_until(std::chrono::steady_clock::now() + std::chrono::operator""ms(interval));
 }
 
 void inline Time::setBeginTime()

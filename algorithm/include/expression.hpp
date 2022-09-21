@@ -20,8 +20,8 @@ class Function1 : public Expression
 public:
     double operator()(const double x) const override;
 
-    static constexpr double range1 = -M_PI / 2.0;
-    static constexpr double range2 = 2.0 * M_PI;
+    static constexpr double range1{-M_PI / 2.0};
+    static constexpr double range2{2.0 * M_PI};
     static constexpr std::string_view optimumExpr{"y=x*sin(x)/(1+(cos(x))^2),x∈[-π/2,2π]"};
     static constexpr std::string_view integralExpr{"I=∫(-π/2→2π)x*sin(x)/(1+(cos(x))^2)dx"};
 };
@@ -31,8 +31,8 @@ class Function2 : public Expression
 public:
     double operator()(const double x) const override;
 
-    static constexpr double range1 = 0.0;
-    static constexpr double range2 = 9.0;
+    static constexpr double range1{0.0};
+    static constexpr double range2{9.0};
     static constexpr std::string_view optimumExpr{"y=x+10sin(5x)+7cos(4x),x∈[0,9]"};
     static constexpr std::string_view integralExpr{"I=∫(0→9)x+10sin(5x)+7cos(4x)dx"};
 };
@@ -48,8 +48,8 @@ public:
     Griewank() = delete;
     double operator()(const double x) const override;
 
-    static constexpr double range1 = -600.0;
-    static constexpr double range2 = 600.0;
+    static constexpr double range1{-600.0};
+    static constexpr double range2{600.0};
     static constexpr std::string_view optimumExpr{"one-dimensional Griewank function"};
     static constexpr std::string_view integralExpr{"one-dimensional Griewank function"};
 
@@ -64,8 +64,8 @@ public:
     Rastrigin() = delete;
     double operator()(const double x) const override;
 
-    static constexpr double range1 = -5.12;
-    static constexpr double range2 = 5.12;
+    static constexpr double range1{-5.12};
+    static constexpr double range2{5.12};
     static constexpr std::string_view optimumExpr{"one-dimensional Rastrigin function"};
     static constexpr std::string_view integralExpr{"one-dimensional Rastrigin function"};
 
@@ -96,9 +96,7 @@ struct ExprRange
 
     bool operator==(const ExprRange& range) const
     {
-        return (
-            std::tie(range.range1, range.range2, range.exprStr)
-            == std::tie(range1, range2, exprStr));
+        return (std::tie(range.range1, range.range2, range.exprStr) == std::tie(range1, range2, exprStr));
     }
 };
 struct ExprMapHash

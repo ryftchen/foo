@@ -16,7 +16,9 @@ class Optimum
 public:
     virtual ~Optimum() = default;
     virtual std::optional<std::tuple<ValueY, ValueX>> operator()(
-        const double left, const double right, const double eps) = 0;
+        const double left,
+        const double right,
+        const double eps) = 0;
 };
 
 // Fibonacci method
@@ -24,26 +26,34 @@ class Fibonacci : public Optimum
 {
 public:
     explicit Fibonacci(const algo_expression::Expression& express) : func(express){};
-    std::optional<std::tuple<ValueY, ValueX>> operator()(
-        const double left, const double right, const double eps) override;
+    std::optional<std::tuple<ValueY, ValueX>> operator()(const double left, const double right, const double eps)
+        override;
 
 private:
     const algo_expression::Expression& func;
     static std::vector<double> generateFibonacciNumber(const double max);
     static double inline fibonacciCalculationForX1(
-        const std::vector<double>::const_iterator iterFib, const double left, const double right);
+        const std::vector<double>::const_iterator iterFib,
+        const double left,
+        const double right);
     static double inline fibonacciCalculationForX2(
-        const std::vector<double>::const_iterator iterFib, const double left, const double right);
+        const std::vector<double>::const_iterator iterFib,
+        const double left,
+        const double right);
 };
 
 double inline Fibonacci::fibonacciCalculationForX1(
-    const std::vector<double>::const_iterator iterFib, const double left, const double right)
+    const std::vector<double>::const_iterator iterFib,
+    const double left,
+    const double right)
 {
     return (left + (*std::prev(iterFib, 2)) / (*iterFib) * (right - left));
 };
 
 double inline Fibonacci::fibonacciCalculationForX2(
-    const std::vector<double>::const_iterator iterFib, const double left, const double right)
+    const std::vector<double>::const_iterator iterFib,
+    const double left,
+    const double right)
 {
     return (left + (*std::prev(iterFib, 1)) / (*iterFib) * (right - left));
 };
@@ -59,8 +69,8 @@ class Gradient : public Optimum
 {
 public:
     explicit Gradient(const algo_expression::Expression& express) : func(express){};
-    std::optional<std::tuple<ValueY, ValueX>> operator()(
-        const double left, const double right, const double eps) override;
+    std::optional<std::tuple<ValueY, ValueX>> operator()(const double left, const double right, const double eps)
+        override;
 
 private:
     const algo_expression::Expression& func;
@@ -79,8 +89,8 @@ class Annealing : public Optimum
 {
 public:
     explicit Annealing(const algo_expression::Expression& express) : func(express){};
-    std::optional<std::tuple<ValueY, ValueX>> operator()(
-        const double left, const double right, const double eps) override;
+    std::optional<std::tuple<ValueY, ValueX>> operator()(const double left, const double right, const double eps)
+        override;
 
 private:
     const algo_expression::Expression& func;
@@ -100,10 +110,15 @@ constexpr uint32_t iterNum = 100;
 struct Individual
 {
     Individual(
-        const double x, const double velocity, const double positionBest, const double xFitness,
+        const double x,
+        const double velocity,
+        const double positionBest,
+        const double xFitness,
         const double fitnessPositionBest) :
         x(x),
-        velocity(velocity), positionBest(positionBest), xFitness(xFitness),
+        velocity(velocity),
+        positionBest(positionBest),
+        xFitness(xFitness),
         fitnessPositionBest(fitnessPositionBest){};
     Individual() = default;
     double x;
@@ -124,8 +139,7 @@ struct Record
     Record(
         const std::initializer_list<Society::value_type>& society,
         const std::initializer_list<History::value_type>& history) :
-        society(society),
-        history(history){};
+        society(society), history(history){};
     Record() = default;
     Society society;
     History history;
@@ -134,10 +148,9 @@ struct Record
 class Particle : public Optimum
 {
 public:
-    explicit Particle(const algo_expression::Expression& express) :
-        func(express), seed(std::random_device{}()){};
-    std::optional<std::tuple<ValueY, ValueX>> operator()(
-        const double left, const double right, const double eps) override;
+    explicit Particle(const algo_expression::Expression& express) : func(express), seed(std::random_device{}()){};
+    std::optional<std::tuple<ValueY, ValueX>> operator()(const double left, const double right, const double eps)
+        override;
 
 private:
     const algo_expression::Expression& func;
@@ -159,10 +172,9 @@ constexpr uint32_t iterNum = 100;
 class Genetic : public Optimum
 {
 public:
-    explicit Genetic(const algo_expression::Expression& express) :
-        func(express), seed(std::random_device{}()){};
-    std::optional<std::tuple<ValueY, ValueX>> operator()(
-        const double left, const double right, const double eps) override;
+    explicit Genetic(const algo_expression::Expression& express) : func(express), seed(std::random_device{}()){};
+    std::optional<std::tuple<ValueY, ValueX>> operator()(const double left, const double right, const double eps)
+        override;
 
 private:
     const algo_expression::Expression& func;
@@ -174,6 +186,7 @@ private:
     } range{};
     std::mt19937 seed;
     uint32_t chrNum{0};
+
     void updateSpecies(const double left, const double right, const double eps);
     void geneCoding(genetic_species::Chromosome& chr);
     [[nodiscard]] double geneDecoding(const genetic_species::Chromosome& chr) const;
@@ -183,12 +196,9 @@ private:
     void geneMutation(genetic_species::Chromosome& chr);
     void mutateIndividual(genetic_species::Population& pop);
     double calculateFitness(const genetic_species::Chromosome& chr);
-    std::optional<std::pair<double, double>> fitnessLinearTransformation(
-        const genetic_species::Population& pop);
-    auto rouletteWheelSelection(
-        const genetic_species::Population& pop, const std::vector<double>& fitnessCum);
-    void stochasticTournamentSelection(
-        genetic_species::Population& pop, const std::vector<double>& fitnessCum);
+    std::optional<std::pair<double, double>> fitnessLinearTransformation(const genetic_species::Population& pop);
+    auto rouletteWheelSelection(const genetic_species::Population& pop, const std::vector<double>& fitnessCum);
+    void stochasticTournamentSelection(genetic_species::Population& pop, const std::vector<double>& fitnessCum);
     void selectIndividual(genetic_species::Population& pop);
     genetic_species::Chromosome getBestIndividual(const genetic_species::Population& pop);
     double inline random();

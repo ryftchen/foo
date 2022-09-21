@@ -90,7 +90,9 @@ void ArgumentRegister::validate() const
 std::size_t ArgumentRegister::getArgumentsLength() const
 {
     return std::accumulate(
-        std::begin(names), std::end(names), std::size_t(0),
+        std::begin(names),
+        std::end(names),
+        std::size_t(0),
         [](const auto& sum, const auto& str)
         {
             return sum + str.size() + 1;
@@ -101,8 +103,7 @@ std::ostream& operator<<(std::ostream& os, const ArgumentRegister& argument)
 {
     std::stringstream nameStream;
     std::copy(
-        std::begin(argument.names), std::end(argument.names),
-        std::ostream_iterator<std::string>(nameStream, " "));
+        std::begin(argument.names), std::end(argument.names), std::ostream_iterator<std::string>(nameStream, " "));
     os << nameStream.str() << "    " << argument.helpStr;
     if (argument.defaultValues.has_value())
     {
@@ -195,22 +196,20 @@ bool ArgumentRegister::checkIfNonOptional(std::string_view name)
     }
 }
 
-Argument::Argument(std::string title, std::string version) :
-    title(std::move(title)), version(std::move(version))
-{
-}
+Argument::Argument(std::string title, std::string version) : title(std::move(title)), version(std::move(version)) {}
 
 Argument::Argument(const Argument& arg) :
-    title(arg.title), version(arg.version), isParsed(arg.isParsed),
-    nonOptionalArguments(arg.nonOptionalArguments), optionalArguments(arg.optionalArguments)
+    title(arg.title),
+    version(arg.version),
+    isParsed(arg.isParsed),
+    nonOptionalArguments(arg.nonOptionalArguments),
+    optionalArguments(arg.optionalArguments)
 {
-    for (auto iterator = std::begin(nonOptionalArguments);
-         std::end(nonOptionalArguments) != iterator; ++iterator)
+    for (auto iterator = std::begin(nonOptionalArguments); std::end(nonOptionalArguments) != iterator; ++iterator)
     {
         indexArgument(iterator);
     }
-    for (auto iterator = std::begin(optionalArguments); std::end(optionalArguments) != iterator;
-         ++iterator)
+    for (auto iterator = std::begin(optionalArguments); std::end(optionalArguments) != iterator; ++iterator)
     {
         indexArgument(iterator);
     }
