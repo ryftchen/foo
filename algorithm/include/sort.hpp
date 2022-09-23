@@ -21,8 +21,10 @@ class Sort
 {
 public:
     Sort(const uint32_t length, const T left, const T right);
-    Sort<T>& operator=(const Sort& rhs);
+    virtual ~Sort() = default;
     Sort(const Sort& sort);
+    Sort<T>& operator=(const Sort& rhs);
+
     void bubbleSort(T* const array, const uint32_t length) const;
     void selectionSort(T* const array, const uint32_t length) const;
     void insertionSort(T* const array, const uint32_t length) const;
@@ -73,17 +75,17 @@ Sort<T>::Sort(const uint32_t length, const T left, const T right) :
 }
 
 template <class T>
-Sort<T>& Sort<T>::operator=(const Sort& rhs)
-{
-    deepCopyFromSort(rhs);
-    return *this;
-}
-
-template <class T>
 Sort<T>::Sort(const Sort& sort) :
     length(sort.length), left(sort.length), right(sort.length), randomArray(std::make_unique<T[]>(sort.length))
 {
     deepCopyFromSort(sort);
+}
+
+template <class T>
+Sort<T>& Sort<T>::operator=(const Sort& rhs)
+{
+    deepCopyFromSort(rhs);
+    return *this;
 }
 
 template <class T>
