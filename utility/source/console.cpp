@@ -54,8 +54,10 @@ Console::Console(const std::string& greeting) : impl(std::make_unique<Impl>(gree
 
 Console::~Console()
 {
-    // NOLINTNEXTLINE(cppcoreguidelines-no-malloc)
-    free(emptyHistory);
+    rl_free(emptyHistory);
+
+    rl_clear_history();
+    rl_restore_prompt();
 }
 
 void Console::registerCommand(const std::string& command, CommandFunction func, const std::string& help)
@@ -76,8 +78,7 @@ std::vector<std::pair<std::string, std::string>> Console::getHelpOfRegisteredCom
 
 void Console::saveState()
 {
-    // NOLINTNEXTLINE(cppcoreguidelines-no-malloc)
-    free(impl->history);
+    rl_free(impl->history);
     impl->history = history_get_history_state();
 }
 
@@ -184,8 +185,7 @@ int Console::readCommandLine()
     }
 
     std::string line(buffer);
-    // NOLINTNEXTLINE(cppcoreguidelines-no-malloc)
-    free(buffer);
+    rl_free(buffer);
     return ReturnCode(commandExecutor(line));
 }
 
