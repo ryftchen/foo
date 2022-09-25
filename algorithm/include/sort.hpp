@@ -1,8 +1,8 @@
 #pragma once
 
 #include <cstring>
+#include <iostream>
 #include <mutex>
-#include "file.hpp"
 #include "time.hpp"
 
 namespace algo_sort
@@ -12,9 +12,6 @@ inline constexpr int arrayRange2 = 150;
 inline constexpr uint32_t arrayLength = 53;
 constexpr uint32_t maxAlignOfPrint = 16;
 constexpr uint32_t maxColumnOfPrint = 10;
-constexpr std::string_view titleOfIntegralArray{"\r\nGenerate %u random integral numbers from %d to %d:\r\n%s\n"};
-constexpr std::string_view titleOfFloatingArray{
-    "\r\nGenerate %u random floating point numbers from %.5f to %.5f:\r\n%s\n"};
 
 template <class T>
 class Sort
@@ -126,8 +123,8 @@ requires std::is_integral<V>::value void Sort<T>::setRandomArray(
     const uint32_t arrayBufferSize = length * maxAlignOfPrint;
     char arrayBuffer[arrayBufferSize + 1];
     arrayBuffer[0] = '\0';
-    FORMAT_PRINT(
-        titleOfIntegralArray.data(), length, left, right, formatArray(array, length, arrayBuffer, arrayBufferSize + 1));
+    std::cout << "\r\nGenerate " << length << " random integral numbers from " << left << " to " << right << ":\r\n"
+              << formatArray(array, length, arrayBuffer, arrayBufferSize + 1) << std::endl;
 }
 
 template <class T>
@@ -148,8 +145,9 @@ requires std::is_floating_point<V>::value void Sort<T>::setRandomArray(
     const uint32_t arrayBufferSize = length * maxAlignOfPrint;
     char arrayBuffer[arrayBufferSize + 1];
     arrayBuffer[0] = '\0';
-    FORMAT_PRINT(
-        titleOfFloatingArray.data(), length, left, right, formatArray(array, length, arrayBuffer, arrayBufferSize + 1));
+    std::cout << "\r\nGenerate " << length << " random floating point numbers from " << left << " to " << right
+              << ":\r\n"
+              << formatArray(array, length, arrayBuffer, arrayBufferSize + 1) << std::endl;
 }
 
 template <class T>
