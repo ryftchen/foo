@@ -4,6 +4,6 @@
 build/
 temp/
 __pycache__/
-core.*
-vgcore.*
+core*
+vgcore*
 *.profraw
