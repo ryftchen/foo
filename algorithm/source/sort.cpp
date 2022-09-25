@@ -1,8 +1,9 @@
 #include "sort.hpp"
 #include <queue>
+#include "file.hpp"
 
 #define SORT_RESULT(opt) "\r\n*%-9s method: (" #opt ")\r\n%s\r\n==>Run time: %8.5f ms\n"
-#define SORT_PRINT_RESULT_CONTEXT(method)                                     \
+#define SORT_PRINT_RESULT_CONTENT(method)                                     \
     do                                                                        \
     {                                                                         \
         const uint32_t arrayBufferSize = length * maxAlignOfPrint;            \
@@ -51,7 +52,7 @@ void Sort<T>::bubbleSort(T* const array, const uint32_t length) const
     }
 
     TIME_END(timing);
-    SORT_PRINT_RESULT_CONTEXT("Bubble");
+    SORT_PRINT_RESULT_CONTENT("Bubble");
 }
 
 // Selection method
@@ -77,7 +78,7 @@ void Sort<T>::selectionSort(T* const array, const uint32_t length) const
     }
 
     TIME_END(timing);
-    SORT_PRINT_RESULT_CONTEXT("Selection");
+    SORT_PRINT_RESULT_CONTENT("Selection");
 }
 
 // Insertion method
@@ -102,7 +103,7 @@ void Sort<T>::insertionSort(T* const array, const uint32_t length) const
     }
 
     TIME_END(timing);
-    SORT_PRINT_RESULT_CONTEXT("Insertion");
+    SORT_PRINT_RESULT_CONTENT("Insertion");
 }
 
 // Shell method
@@ -128,7 +129,7 @@ void Sort<T>::shellSort(T* const array, const uint32_t length) const
     }
 
     TIME_END(timing);
-    SORT_PRINT_RESULT_CONTEXT("Shell");
+    SORT_PRINT_RESULT_CONTENT("Shell");
 }
 
 // Merge method
@@ -143,7 +144,7 @@ void Sort<T>::mergeSort(T* const array, const uint32_t length) const
     mergeSortRecursive(sortArray, 0, length - 1);
 
     TIME_END(timing);
-    SORT_PRINT_RESULT_CONTEXT("Merge");
+    SORT_PRINT_RESULT_CONTENT("Merge");
 }
 
 template <class T>
@@ -189,7 +190,7 @@ void Sort<T>::quickSort(T* const array, const uint32_t length) const
     quickSortRecursive(sortArray, 0, length - 1);
 
     TIME_END(timing);
-    SORT_PRINT_RESULT_CONTEXT("Quick");
+    SORT_PRINT_RESULT_CONTENT("Quick");
 }
 
 template <class T>
@@ -251,7 +252,7 @@ void Sort<T>::heapSort(T* const array, const uint32_t length) const
     }
 
     TIME_END(timing);
-    SORT_PRINT_RESULT_CONTEXT("Heap");
+    SORT_PRINT_RESULT_CONTENT("Heap");
 }
 
 template <class T>
@@ -317,7 +318,7 @@ void Sort<T>::countingSort(T* const array, const uint32_t length) const
     }
 
     TIME_END(timing);
-    SORT_PRINT_RESULT_CONTEXT("Counting");
+    SORT_PRINT_RESULT_CONTENT("Counting");
 }
 
 // Bucket method
@@ -359,7 +360,7 @@ void Sort<T>::bucketSort(T* const array, const uint32_t length) const
     }
 
     TIME_END(timing);
-    SORT_PRINT_RESULT_CONTEXT("Bucket");
+    SORT_PRINT_RESULT_CONTENT("Bucket");
 }
 
 // Radix method
@@ -448,6 +449,6 @@ void Sort<T>::radixSort(T* const array, const uint32_t length) const
     }
 
     TIME_END(timing);
-    SORT_PRINT_RESULT_CONTEXT("Radix");
+    SORT_PRINT_RESULT_CONTENT("Radix");
 }
 } // namespace algo_sort
