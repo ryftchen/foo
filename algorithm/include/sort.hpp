@@ -19,7 +19,7 @@ class Sort
 public:
     Sort(const uint32_t length, const T left, const T right);
     virtual ~Sort() = default;
-    Sort(const Sort& sort);
+    Sort(const Sort& rhs);
     Sort<T>& operator=(const Sort& rhs);
 
     void bubbleSort(T* const array, const uint32_t length) const;
@@ -72,10 +72,10 @@ Sort<T>::Sort(const uint32_t length, const T left, const T right) :
 }
 
 template <class T>
-Sort<T>::Sort(const Sort& sort) :
-    length(sort.length), left(sort.length), right(sort.length), randomArray(std::make_unique<T[]>(sort.length))
+Sort<T>::Sort(const Sort& rhs) :
+    length(rhs.length), left(rhs.length), right(rhs.length), randomArray(std::make_unique<T[]>(rhs.length))
 {
-    deepCopyFromSort(sort);
+    deepCopyFromSort(rhs);
 }
 
 template <class T>
