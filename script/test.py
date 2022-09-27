@@ -73,6 +73,8 @@ class Test:
     tempDir = "./temp"
 
     def __init__(self):
+        if not os.path.exists(self.tempDir):
+            os.mkdir(self.tempDir)
         self.log = common.Log(self.logFile)
         self.progressBar = common.ProgressBar()
 
