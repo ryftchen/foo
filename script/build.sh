@@ -39,7 +39,7 @@ printException()
 
 printInstruction()
 {
-    echo "Usage: build.sh [options...]"
+    echo "Usage: build.sh <options...>"
     echo
     echo "Optional:"
     echo "--help           show help"
