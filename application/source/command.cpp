@@ -34,17 +34,19 @@ Command::Command()
                 }
                 throw std::runtime_error("Unknown algorithm category: " + value);
             })
-        .help("demo of algorithm, see \"methods\" for detail of specific category");
+        .help("demo of algorithm, see \"tasks\" for detail of specific category");
 
-    program.addArgument("methods").remaining().help("specify method\r\n"
-                                                    "└── -a --algorithm\r\n"
-                                                    "    ├── optimum\r\n"
-                                                    "    │   └── fib, gra, ann, par, gen\r\n"
-                                                    "    ├── integral\r\n"
-                                                    "    │   └── tra, sim, rom, gau, mon\r\n"
-                                                    "    └── sort\r\n"
-                                                    "        ├── bub, sel, ins, she, mer\r\n"
-                                                    "        └── qui, hea, cou, buc, rad");
+    program.addArgument("tasks").remaining().help("specify task\r\n"
+                                                  "└── -a --algorithm\r\n"
+                                                  "    ├── optimum\r\n"
+                                                  "    │   └── fib, gra, ann, par, gen\r\n"
+                                                  "    ├── integral\r\n"
+                                                  "    │   └── tra, sim, rom, gau, mon\r\n"
+                                                  "    ├── sort\r\n"
+                                                  "    │   ├── bub, sel, ins, she, mer\r\n"
+                                                  "    │   └── qui, hea, cou, buc, rad\r\n"
+                                                  "    └── match\r\n"
+                                                  "        └── rab, knu, boy, hor, sun");
 }
 
 void Command::runCommander(const int argc, const char* const argv[])
@@ -131,29 +133,29 @@ void Command::validateAlgorithmTask()
             continue;
         }
 
-        constexpr std::string_view methOption{"methods"};
-        std::vector<std::string> methods;
-        if (program.isUsed(methOption))
+        constexpr std::string_view taskOption{"tasks"};
+        std::vector<std::string> tasks;
+        if (program.isUsed(taskOption))
         {
-            methods = program.get<std::vector<std::string>>(methOption);
+            tasks = program.get<std::vector<std::string>>(taskOption);
         }
         else
         {
-            methods.assign(algoTaskMethodTable.at(i).cbegin(), algoTaskMethodTable.at(i).cend());
-            methods.erase(
+            tasks.assign(algoTaskMethodTable.at(i).cbegin(), algoTaskMethodTable.at(i).cend());
+            tasks.erase(
                 std::remove_if(
-                    methods.begin(),
-                    methods.end(),
-                    [](const std::string& method) -> bool
+                    tasks.begin(),
+                    tasks.end(),
+                    [](const std::string& task) -> bool
                     {
-                        return (std::string::npos == method.find_first_not_of(" "));
+                        return (std::string::npos == task.find_first_not_of(" "));
                     }),
-                std::end(methods));
+                std::end(tasks));
         }
 
-        for (const auto& method : methods)
+        for (const auto& task : tasks)
         {
-            (this->*setAlgoTaskBitFunctor.at(i))(method);
+            (this->*setAlgoTaskBitFunctor.at(i))(task);
         }
     }
 }
@@ -555,6 +557,98 @@ void Command::setSortBit(const std::string& method)
     }
 }
 
+void Command::runMatch() const
+{
+    std::unique_lock<std::mutex> lock(commandMutex);
+    if (taskPlan.algoTask.matchBit.none())
+    {
+        return;
+    }
+
+    const uint32_t length = algo_match::maxDigit;
+    static_assert(length > algo_match::singlePattern.length());
+
+    COMMAND_PRINT_ALGO_TASK_TITLE(AlgoTaskType::match, "BEGIN");
+    const std::shared_ptr<algo_match::Match> match = std::make_shared<algo_match::Match>(length);
+    getMatchResult(match);
+    COMMAND_PRINT_ALGO_TASK_TITLE(AlgoTaskType::match, "END") << std::endl;
+}
+
+void Command::getMatchResult(const std::shared_ptr<algo_match::Match>& match) const
+{
+    util_thread::Thread threadPool(std::min(
+        static_cast<uint32_t>(taskPlan.algoTask.matchBit.count()), static_cast<uint32_t>(Bottom<MatchMethod>::value)));
+    const auto matchFunctor =
+        [&](const std::string& threadName, int (*methodPtr)(const char*, const char*, const uint32_t, const uint32_t))
+    {
+        threadPool.enqueue(
+            threadName,
+            methodPtr,
+            match->getSearchingText().get(),
+            algo_match::singlePattern.data(),
+            match->getLength(),
+            algo_match::singlePattern.length());
+    };
+
+    for (int i = 0; i < Bottom<MatchMethod>::value; ++i)
+    {
+        if (!taskPlan.algoTask.matchBit.test(MatchMethod(i)))
+        {
+            continue;
+        }
+
+        const std::string threadName = std::string{1, algoTaskNameTable.at(AlgoTaskType::match).at(0)} + "_"
+            + std::string{algoTaskMethodTable.at(AlgoTaskType::match).at(i)};
+        using util_hash::operator""_bkdrHash;
+        switch (util_hash::bkdrHash(algoTaskMethodTable.at(AlgoTaskType::match).at(i).data()))
+        {
+            case "rab"_bkdrHash:
+                matchFunctor(threadName, &algo_match::Match::rkMethod);
+                break;
+            case "knu"_bkdrHash:
+                matchFunctor(threadName, &algo_match::Match::kmpMethod);
+                break;
+            case "boy"_bkdrHash:
+                matchFunctor(threadName, &algo_match::Match::bmMethod);
+                break;
+            case "hor"_bkdrHash:
+                matchFunctor(threadName, &algo_match::Match::horspoolMethod);
+                break;
+            case "sun"_bkdrHash:
+                matchFunctor(threadName, &algo_match::Match::sundayMethod);
+                break;
+            default:
+                LOG_DBG(logger, "execute to run unknown match method.");
+                break;
+        }
+    }
+}
+
+void Command::setMatchBit(const std::string& method)
+{
+    using util_hash::operator""_bkdrHash;
+    switch (util_hash::bkdrHash(method.c_str()))
+    {
+        case "rab"_bkdrHash:
+            taskPlan.algoTask.matchBit.set(MatchMethod::rabinKarp);
+            break;
+        case "knu"_bkdrHash:
+            taskPlan.algoTask.matchBit.set(MatchMethod::knuthMorrisPratt);
+            break;
+        case "boy"_bkdrHash:
+            taskPlan.algoTask.matchBit.set(MatchMethod::boyerMoore);
+            break;
+        case "hor"_bkdrHash:
+            taskPlan.algoTask.matchBit.set(MatchMethod::horspool);
+            break;
+        case "sun"_bkdrHash:
+            taskPlan.algoTask.matchBit.set(MatchMethod::sunday);
+            break;
+        default:
+            throwUnexpectedMethodException("match: " + method);
+    }
+}
+
 void Command::printHelpMessage() const
 {
     std::cout << program.help().str();
@@ -660,6 +754,9 @@ std::ostream& operator<<(std::ostream& os, const Command::AlgoTaskType& taskType
             break;
         case Command::AlgoTaskType::sort:
             os << "SORT";
+            break;
+        case Command::AlgoTaskType::match:
+            os << "MATCH";
             break;
         default:
             os << "UNKNOWN: " << static_cast<std::underlying_type_t<Command::AlgoTaskType>>(taskType);

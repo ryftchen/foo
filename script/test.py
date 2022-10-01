@@ -49,10 +49,11 @@ class Test:
     libDir = "./build/lib/"
     basicTaskType = ["--help", "--version", "--console"]
     basicConsoleCmd = ["help", "quit", "run ./script/batch.txt", "log"]
-    algoTaskType = ["--algorithm", ("optimum", "integral", "sort")]
+    algoTaskType = ["--algorithm", ("optimum", "integral", "sort", "match")]
     algoOptimumMethod = ["fib", "gra", "ann", "par", "gen"]
     algoIntegralMethod = ["tra", "sim", "rom", "gau", "mon"]
     algoSortMethod = ["bub", "sel", "ins", "she", "mer", "qui", "hea", "cou", "buc", "rad"]
+    algoMatchMethod = ["rab", "knu", "boy", "hor", "sun"]
     passStep = 0
     completeStep = 0
     totalStep = (
@@ -62,6 +63,7 @@ class Test:
         + (len(algoOptimumMethod) + 1)
         + (len(algoIntegralMethod) + 1)
         + (len(algoSortMethod) + 1)
+        + (len(algoMatchMethod) + 1)
     )
     isCheckCoverage = False
     envCoverage = "CODE_COVERAGE"
@@ -230,6 +232,7 @@ class Test:
         self.testOptimumMethod()
         self.testIntegralMethod()
         self.testSortMethod()
+        self.testMatchMethod()
 
     def testOptimumMethod(self):
         self.runTestTask(f"{self.binCmd} {self.algoTaskType[0]} {self.algoTaskType[1][0]}")
@@ -253,6 +256,14 @@ class Test:
             self.runTestTask(f"{self.binCmd} {self.algoTaskType[0]} {self.algoTaskType[1][2]} {each}")
         self.runTestTask(
             f"{self.binCmd} {self.algoTaskType[0]} {self.algoTaskType[1][2]} {' '.join(self.algoSortMethod)}"
+        )
+
+    def testMatchMethod(self):
+        self.runTestTask(f"{self.binCmd} {self.algoTaskType[0]} {self.algoTaskType[1][3]}")
+        for each in self.algoMatchMethod:
+            self.runTestTask(f"{self.binCmd} {self.algoTaskType[0]} {self.algoTaskType[1][3]} {each}")
+        self.runTestTask(
+            f"{self.binCmd} {self.algoTaskType[0]} {self.algoTaskType[1][3]} {' '.join(self.algoMatchMethod)}"
         )
 
 
