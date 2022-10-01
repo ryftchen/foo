@@ -10,6 +10,7 @@ check_include_file("bits/stdint-uintn.h" HAVE_BITS_HEADER)
 check_include_file("ext/stdio_filebuf.h" HAVE_EXT_HEADER)
 check_include_files("sys/file.h;sys/time.h" HAVE_SYS_HEADER)
 check_include_files("readline/history.h;readline/readline.h" HAVE_READLINE_HEADER)
+check_include_file("mpfr.h" HAVE_MPFR_HEADER)
 find_package(Threads REQUIRED)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON CACHE INTERNAL "")
@@ -38,4 +39,4 @@ add_subdirectory(algorithm)
 
 add_executable(${BIN_NAME} ${APPLICATION_LIST})
 target_include_directories(${BIN_NAME} PUBLIC application/include PRIVATE application/source)
-target_link_libraries(${BIN_NAME} PUBLIC pthread readline PRIVATE utility algorithm)
+target_link_libraries(${BIN_NAME} PUBLIC pthread readline mpfr PRIVATE utility algorithm)

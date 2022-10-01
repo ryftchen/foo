@@ -6,7 +6,7 @@ RUN apt-get update \
 && DEBIAN_FRONTEND=noninteractive apt-get install -y sudo tzdata ca-certificates curl zip \
 && sudo apt-get update \
 && sudo apt-get install -y git build-essential python3 python3-pip \
-llvm-12 clang-12 libclang-12-dev libstdc++-10-dev libreadline-dev cmake gdb \
+llvm-12 clang-12 libclang-12-dev libstdc++-10-dev libreadline-dev libmpfrc++-dev cmake gdb \
 clang-format-12 clang-tidy-12 pylint black shellcheck valgrind \
 && sudo apt-get clean \
 && sudo pip3 install requests \
