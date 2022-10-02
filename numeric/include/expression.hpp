@@ -6,7 +6,7 @@
 #include <unordered_map>
 #include <variant>
 
-namespace algo_expression
+namespace num_expression
 {
 class Expression
 {
@@ -110,4 +110,4 @@ struct ExprMapHash
         return (hash1 ^ hash2 ^ hash3);
     }
 };
-} // namespace algo_expression
+} // namespace num_expression

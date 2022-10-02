@@ -4,7 +4,7 @@
 #include <random>
 #include "expression.hpp"
 
-namespace algo_optimum
+namespace num_optimum
 {
 using ValueX = double;
 using ValueY = double;
@@ -25,12 +25,12 @@ public:
 class Fibonacci : public Optimum
 {
 public:
-    explicit Fibonacci(const algo_expression::Expression& express) : func(express){};
+    explicit Fibonacci(const num_expression::Expression& express) : func(express){};
     std::optional<std::tuple<ValueY, ValueX>> operator()(const double left, const double right, const double eps)
         override;
 
 private:
-    const algo_expression::Expression& func;
+    const num_expression::Expression& func;
     static std::vector<double> generateFibonacciNumber(const double max);
     static double inline fibonacciCalculationForX1(
         const std::vector<double>::const_iterator iterFib,
@@ -68,12 +68,12 @@ constexpr uint32_t loopTime = 100;
 class Gradient : public Optimum
 {
 public:
-    explicit Gradient(const algo_expression::Expression& express) : func(express){};
+    explicit Gradient(const num_expression::Expression& express) : func(express){};
     std::optional<std::tuple<ValueY, ValueX>> operator()(const double left, const double right, const double eps)
         override;
 
 private:
-    const algo_expression::Expression& func;
+    const num_expression::Expression& func;
     [[nodiscard]] double calculateFirstDerivative(const double x, const double eps) const;
 };
 
@@ -88,12 +88,12 @@ constexpr uint32_t markovChain = 100;
 class Annealing : public Optimum
 {
 public:
-    explicit Annealing(const algo_expression::Expression& express) : func(express){};
+    explicit Annealing(const num_expression::Expression& express) : func(express){};
     std::optional<std::tuple<ValueY, ValueX>> operator()(const double left, const double right, const double eps)
         override;
 
 private:
-    const algo_expression::Expression& func;
+    const num_expression::Expression& func;
 };
 
 // Particle swarm method
@@ -148,12 +148,12 @@ struct Record
 class Particle : public Optimum
 {
 public:
-    explicit Particle(const algo_expression::Expression& express) : func(express), seed(std::random_device{}()){};
+    explicit Particle(const num_expression::Expression& express) : func(express), seed(std::random_device{}()){};
     std::optional<std::tuple<ValueY, ValueX>> operator()(const double left, const double right, const double eps)
         override;
 
 private:
-    const algo_expression::Expression& func;
+    const num_expression::Expression& func;
     std::mt19937 seed;
     particle_swarm::Record recordInit(const double left, const double right);
 };
@@ -172,12 +172,12 @@ constexpr uint32_t iterNum = 100;
 class Genetic : public Optimum
 {
 public:
-    explicit Genetic(const algo_expression::Expression& express) : func(express), seed(std::random_device{}()){};
+    explicit Genetic(const num_expression::Expression& express) : func(express), seed(std::random_device{}()){};
     std::optional<std::tuple<ValueY, ValueX>> operator()(const double left, const double right, const double eps)
         override;
 
 private:
-    const algo_expression::Expression& func;
+    const num_expression::Expression& func;
     struct Range
     {
         double lower{0.0};
@@ -216,4 +216,4 @@ uint32_t inline Genetic::getRandomNumber(const uint32_t limit)
     std::uniform_int_distribution<int> randomX(0, limit);
     return randomX(seed);
 }
-} // namespace algo_optimum
+} // namespace num_optimum

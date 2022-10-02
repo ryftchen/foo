@@ -5,13 +5,9 @@
 
 #define INTEGRAL_RESULT(opt) "*%-11s method: I(" #opt ")=%+.5f  ==>Run time: %8.5f ms\n"
 
-namespace algo_integral
+namespace num_integral
 {
-double trapezoid(
-    const algo_expression::Expression& express,
-    const double left,
-    const double height,
-    const uint32_t step)
+double trapezoid(const num_expression::Expression& express, const double left, const double height, const uint32_t step)
 {
     double sum = 0.0, x = left;
     const double delta = height / step;
@@ -227,4 +223,4 @@ double MonteCarlo::sampleFromNormalDistribution(const double lower, const double
     return sum;
 }
 #endif
-} // namespace algo_integral
+} // namespace num_integral

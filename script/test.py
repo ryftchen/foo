@@ -45,25 +45,28 @@ class Output:
 class Test:
     binCmd = "foo"
     binDir = "./build/bin/"
-    libList = ["libutility.so", "libalgorithm.so"]
+    libList = ["libutility.so", "libalgorithm.so", "libnumeric.so"]
     libDir = "./build/lib/"
-    basicTaskType = ["--help", "--version", "--console"]
-    basicConsoleCmd = ["help", "quit", "run ./script/batch.txt", "log"]
-    algoTaskType = ["--algorithm", ("optimum", "integral", "sort", "match")]
-    algoOptimumMethod = ["fib", "gra", "ann", "par", "gen"]
-    algoIntegralMethod = ["tra", "sim", "rom", "gau", "mon"]
-    algoSortMethod = ["bub", "sel", "ins", "she", "mer", "qui", "hea", "cou", "buc", "rad"]
-    algoMatchMethod = ["rab", "knu", "boy", "hor", "sun"]
+    basicTaskCategory = ["--help", "--version", "--console"]
+    consoleCommand = ["help", "quit", "run ./script/batch.txt", "log"]
+    generalTaskCategory = ["--algorithm", "--numeric"]
+    algorithmTaskType = ["match", "sort"]
+    matchMethod = ["rab", "knu", "boy", "hor", "sun"]
+    sortMethod = ["bub", "sel", "ins", "she", "mer", "qui", "hea", "cou", "buc", "rad"]
+    numericTaskType = ["integral", "optimum"]
+    integralMethod = ["tra", "sim", "rom", "gau", "mon"]
+    optimumMethod = ["fib", "gra", "ann", "par", "gen"]
     passStep = 0
     completeStep = 0
     totalStep = (
-        (1 + len(basicTaskType))
-        + len(basicConsoleCmd)
-        + len(algoTaskType[1])
-        + (len(algoOptimumMethod) + 1)
-        + (len(algoIntegralMethod) + 1)
-        + (len(algoSortMethod) + 1)
-        + (len(algoMatchMethod) + 1)
+        (1 + len(basicTaskCategory))
+        + len(consoleCommand)
+        + len(algorithmTaskType)
+        + (len(matchMethod) + 1)
+        + (len(sortMethod) + 1)
+        + len(numericTaskType)
+        + (len(integralMethod) + 1)
+        + (len(optimumMethod) + 1)
     )
     isCheckCoverage = False
     envCoverage = "CODE_COVERAGE"
@@ -84,7 +87,7 @@ class Test:
         self.prepareTest()
 
         self.testBasicTask()
-        self.testAlgoTask()
+        self.testGeneralTask()
 
         self.completeTest()
         self.analyzeTestLog()
@@ -219,51 +222,57 @@ class Test:
         refresh.write(outputContent)
 
     def testBasicTask(self):
-        self.runTestTask(self.binCmd, self.basicConsoleCmd[1])
-        for each in self.basicTaskType:
+        self.runTestTask(self.binCmd, self.consoleCommand[1])
+        for each in self.basicTaskCategory:
             self.runTestTask(f"{self.binCmd} {each}")
         self.testConsoleCommand()
 
     def testConsoleCommand(self):
-        for each in self.basicConsoleCmd:
-            self.runTestTask(f"{self.binCmd} {self.basicTaskType[2]} \"{each}\"")
+        for each in self.consoleCommand:
+            self.runTestTask(f"{self.binCmd} {self.basicTaskCategory[2]} \"{each}\"")
 
-    def testAlgoTask(self):
-        self.testOptimumMethod()
-        self.testIntegralMethod()
-        self.testSortMethod()
+    def testGeneralTask(self):
+        self.testAlgorithmTask()
+        self.testNumericTask()
+
+    def testAlgorithmTask(self):
         self.testMatchMethod()
+        self.testSortMethod()
 
-    def testOptimumMethod(self):
-        self.runTestTask(f"{self.binCmd} {self.algoTaskType[0]} {self.algoTaskType[1][0]}")
-        for each in self.algoOptimumMethod:
-            self.runTestTask(f"{self.binCmd} {self.algoTaskType[0]} {self.algoTaskType[1][0]} {each}")
+    def testMatchMethod(self):
+        self.runTestTask(f"{self.binCmd} {self.generalTaskCategory[0]} {self.algorithmTaskType[0]}")
+        for each in self.matchMethod:
+            self.runTestTask(f"{self.binCmd} {self.generalTaskCategory[0]} {self.algorithmTaskType[0]} {each}")
         self.runTestTask(
-            f"{self.binCmd} {self.algoTaskType[0]} {self.algoTaskType[1][0]} {' '.join(self.algoOptimumMethod)}"
-        )
-
-    def testIntegralMethod(self):
-        self.runTestTask(f"{self.binCmd} {self.algoTaskType[0]} {self.algoTaskType[1][1]}")
-        for each in self.algoIntegralMethod:
-            self.runTestTask(f"{self.binCmd} {self.algoTaskType[0]} {self.algoTaskType[1][1]} {each}")
-        self.runTestTask(
-            f"{self.binCmd} {self.algoTaskType[0]} {self.algoTaskType[1][1]} {' '.join(self.algoIntegralMethod)}"
+            f"{self.binCmd} {self.generalTaskCategory[0]} {self.algorithmTaskType[0]} {' '.join(self.matchMethod)}"
         )
 
     def testSortMethod(self):
-        self.runTestTask(f"{self.binCmd} {self.algoTaskType[0]} {self.algoTaskType[1][2]}")
-        for each in self.algoSortMethod:
-            self.runTestTask(f"{self.binCmd} {self.algoTaskType[0]} {self.algoTaskType[1][2]} {each}")
+        self.runTestTask(f"{self.binCmd} {self.generalTaskCategory[0]} {self.algorithmTaskType[1]}")
+        for each in self.sortMethod:
+            self.runTestTask(f"{self.binCmd} {self.generalTaskCategory[0]} {self.algorithmTaskType[1]} {each}")
         self.runTestTask(
-            f"{self.binCmd} {self.algoTaskType[0]} {self.algoTaskType[1][2]} {' '.join(self.algoSortMethod)}"
+            f"{self.binCmd} {self.generalTaskCategory[0]} {self.algorithmTaskType[1]} {' '.join(self.sortMethod)}"
         )
 
-    def testMatchMethod(self):
-        self.runTestTask(f"{self.binCmd} {self.algoTaskType[0]} {self.algoTaskType[1][3]}")
-        for each in self.algoMatchMethod:
-            self.runTestTask(f"{self.binCmd} {self.algoTaskType[0]} {self.algoTaskType[1][3]} {each}")
+    def testNumericTask(self):
+        self.testIntegralMethod()
+        self.testOptimumMethod()
+
+    def testIntegralMethod(self):
+        self.runTestTask(f"{self.binCmd} {self.generalTaskCategory[1]} {self.numericTaskType[0]}")
+        for each in self.integralMethod:
+            self.runTestTask(f"{self.binCmd} {self.generalTaskCategory[1]} {self.numericTaskType[0]} {each}")
         self.runTestTask(
-            f"{self.binCmd} {self.algoTaskType[0]} {self.algoTaskType[1][3]} {' '.join(self.algoMatchMethod)}"
+            f"{self.binCmd} {self.generalTaskCategory[1]} {self.numericTaskType[0]} {' '.join(self.integralMethod)}"
+        )
+
+    def testOptimumMethod(self):
+        self.runTestTask(f"{self.binCmd} {self.generalTaskCategory[1]} {self.numericTaskType[1]}")
+        for each in self.optimumMethod:
+            self.runTestTask(f"{self.binCmd} {self.generalTaskCategory[1]} {self.numericTaskType[1]} {each}")
+        self.runTestTask(
+            f"{self.binCmd} {self.generalTaskCategory[1]} {self.numericTaskType[1]} {' '.join(self.optimumMethod)}"
         )
 
 

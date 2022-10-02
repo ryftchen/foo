@@ -9,6 +9,7 @@ PROJECT_FOLDER="foo"
 APPLICATION_FOLDER="application"
 UTILITY_FOLDER="utility"
 ALGORITHM_FOLDER="algorithm"
+NUMERIC_FOLDER="numeric"
 SCRIPT_FOLDER="script"
 BUILD_FOLDER="build"
 TEMP_FOLDER="temp"
@@ -76,7 +77,7 @@ checkDependencies()
     fi
 
     if [ ! -d ./"${APPLICATION_FOLDER}" ] || [ ! -d ./"${UTILITY_FOLDER}" ] || [ ! -d ./"${ALGORITHM_FOLDER}" ] \
-        || [ ! -d ./"${SCRIPT_FOLDER}" ]; then
+        || [ ! -d ./"${NUMERIC_FOLDER}" ] || [ ! -d ./"${SCRIPT_FOLDER}" ]; then
         printException "Missing code folders in ${PROJECT_FOLDER} folder. Please check it."
     fi
 
@@ -156,8 +157,8 @@ performCleanupOption()
 performFormatOption()
 {
     if [ "${ARGS_FORMAT}" = true ]; then
-        bashCommand "find ./${APPLICATION_FOLDER} ./${UTILITY_FOLDER} ./${ALGORITHM_FOLDER} -name *.cpp -o -name *.hpp \
-| xargs clang-format-12 -i --verbose"
+        bashCommand "find ./${APPLICATION_FOLDER} ./${UTILITY_FOLDER} ./${ALGORITHM_FOLDER} ./${NUMERIC_FOLDER} \
+-name *.cpp -o -name *.hpp | xargs clang-format-12 -i --verbose"
         bashCommand "shfmt -l -w ./${SCRIPT_FOLDER}/*.sh"
         bashCommand "black --config ./${FORMAT_CONFIG_PY} ./${SCRIPT_FOLDER}/*.py"
     fi
@@ -166,8 +167,8 @@ performFormatOption()
 performLintOption()
 {
     if [ "${ARGS_LINT}" = true ]; then
-        bashCommand "find ./${APPLICATION_FOLDER} ./${UTILITY_FOLDER} ./${ALGORITHM_FOLDER} -name *.cpp -o -name *.hpp \
-| xargs clang-tidy-12 -p ./${BUILD_FOLDER}/${COMPILE_COMMANDS}"
+        bashCommand "find ./${APPLICATION_FOLDER} ./${UTILITY_FOLDER} ./${ALGORITHM_FOLDER} ./${NUMERIC_FOLDER} \
+-name *.cpp -o -name *.hpp | xargs clang-tidy-12 -p ./${BUILD_FOLDER}/${COMPILE_COMMANDS}"
         bashCommand "shellcheck ./${SCRIPT_FOLDER}/*.sh"
         bashCommand "pylint --rcfile=${LINT_CONFIG_PY} ./${SCRIPT_FOLDER}/*.py"
     fi
