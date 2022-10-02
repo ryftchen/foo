@@ -1,9 +1,8 @@
 #pragma once
 
 #include <cmath>
-#include <string>
 #include <string_view>
-#include <unordered_map>
+#include <tuple>
 
 namespace num_expression
 {
