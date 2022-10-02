@@ -64,6 +64,20 @@ private:
         static constexpr int value = 2;
     };
 
+    enum MatchMethod
+    {
+        rabinKarp,
+        knuthMorrisPratt,
+        boyerMoore,
+        horspool,
+        sunday
+    };
+    template <>
+    struct Bottom<MatchMethod>
+    {
+        static constexpr int value = 5;
+    };
+
     enum SortMethod
     {
         bubble,
@@ -83,20 +97,6 @@ private:
         static constexpr int value = 10;
     };
 
-    enum MatchMethod
-    {
-        rabinKarp,
-        knuthMorrisPratt,
-        boyerMoore,
-        horspool,
-        sunday
-    };
-    template <>
-    struct Bottom<MatchMethod>
-    {
-        static constexpr int value = 5;
-    };
-
     enum NumericTaskType
     {
         integral,
@@ -106,20 +106,6 @@ private:
     struct Bottom<NumericTaskType>
     {
         static constexpr int value = 2;
-    };
-
-    enum OptimumMethod
-    {
-        fibonacci,
-        gradient,
-        annealing,
-        particle,
-        genetic
-    };
-    template <>
-    struct Bottom<OptimumMethod>
-    {
-        static constexpr int value = 5;
     };
 
     enum IntegralMethod
@@ -132,6 +118,20 @@ private:
     };
     template <>
     struct Bottom<IntegralMethod>
+    {
+        static constexpr int value = 5;
+    };
+
+    enum OptimumMethod
+    {
+        fibonacci,
+        gradient,
+        annealing,
+        particle,
+        genetic
+    };
+    template <>
+    struct Bottom<OptimumMethod>
     {
         static constexpr int value = 5;
     };
