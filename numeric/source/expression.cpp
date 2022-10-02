@@ -1,6 +1,6 @@
 #include "expression.hpp"
 
-namespace algo_expression
+namespace num_expression
 {
 double Function1::operator()(const double x) const
 {
@@ -25,4 +25,4 @@ double Rastrigin::operator()(const double x) const
     return (x * x - 10.0 * std::cos(2.0 * M_PI * x) + 10.0) * rate;
 }
 #endif
-} // namespace algo_expression
+} // namespace num_expression

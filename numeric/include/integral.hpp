@@ -3,7 +3,7 @@
 #include <bits/stdint-uintn.h>
 #include "expression.hpp"
 
-namespace algo_integral
+namespace num_integral
 {
 inline constexpr double epsilon = 1e-5;
 
@@ -16,7 +16,7 @@ public:
 protected:
     static int inline getSign(double& lower, double& upper);
     friend double trapezoid(
-        const algo_expression::Expression& express,
+        const num_expression::Expression& express,
         const double left,
         const double height,
         const uint32_t step);
@@ -31,22 +31,22 @@ int inline Integral::getSign(double& lower, double& upper)
 class Trapezoidal : public Integral
 {
 public:
-    explicit Trapezoidal(const algo_expression::Expression& express) : func(express){};
+    explicit Trapezoidal(const num_expression::Expression& express) : func(express){};
     double operator()(double lower, double upper, const double eps) const override;
 
 private:
-    const algo_expression::Expression& func;
+    const num_expression::Expression& func;
 };
 
 // Adaptive Simpson's 1/3 method
 class Simpson : public Integral
 {
 public:
-    explicit Simpson(const algo_expression::Expression& express) : func(express){};
+    explicit Simpson(const num_expression::Expression& express) : func(express){};
     double operator()(double lower, double upper, const double eps) const override;
 
 private:
-    const algo_expression::Expression& func;
+    const num_expression::Expression& func;
     [[nodiscard]] double simpsonIntegral(const double left, const double right, const double eps) const;
     [[nodiscard]] double compositeSimpsonOneThird(const double left, const double right, const uint32_t n) const;
     [[nodiscard]] double simpsonOneThird(const double left, const double right) const;
@@ -56,36 +56,36 @@ private:
 class Romberg : public Integral
 {
 public:
-    explicit Romberg(const algo_expression::Expression& express) : func(express){};
+    explicit Romberg(const num_expression::Expression& express) : func(express){};
     double operator()(double lower, double upper, const double eps) const override;
 
 private:
-    const algo_expression::Expression& func;
+    const num_expression::Expression& func;
 };
 
 // Gauss-Legendre's 5-points method
 class Gauss : public Integral
 {
 public:
-    explicit Gauss(const algo_expression::Expression& express) : func(express){};
+    explicit Gauss(const num_expression::Expression& express) : func(express){};
     double operator()(double lower, double upper, const double eps) const override;
 
 private:
-    const algo_expression::Expression& func;
+    const num_expression::Expression& func;
 };
 
 // Monte-Carlo method
 class MonteCarlo : public Integral
 {
 public:
-    explicit MonteCarlo(const algo_expression::Expression& express) : func(express){};
+    explicit MonteCarlo(const num_expression::Expression& express) : func(express){};
     double operator()(double lower, double upper, const double eps) const override;
 
 private:
-    const algo_expression::Expression& func;
+    const num_expression::Expression& func;
     [[nodiscard]] double sampleFromUniformDistribution(const double lower, const double upper, const double eps) const;
 #ifdef INTEGRAL_MONTE_CARLO_NO_UNIFORM
     [[nodiscard]] double sampleFromNormalDistribution(const double lower, const double upper, const double eps) const;
 #endif
 };
-} // namespace algo_integral
+} // namespace num_integral

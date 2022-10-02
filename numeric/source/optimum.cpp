@@ -5,7 +5,7 @@
 
 #define OPTIMUM_RESULT(opt) "*%-9s method: Y(" #opt ")=%+.5f X=%+.5f  ==>Run time: %8.5f ms\n"
 
-namespace algo_optimum
+namespace num_optimum
 {
 using genetic_species::Chromosome;
 using genetic_species::Population;
@@ -555,4 +555,4 @@ Chromosome Genetic::getBestIndividual(const Population& pop)
 
     return *iterIndBest;
 }
-} // namespace algo_optimum
+} // namespace num_optimum
