@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <bitset>
 #include <mutex>
+#include <variant>
 #include "argument.hpp"
 #include "console.hpp"
 #include "expression.hpp"
@@ -124,7 +125,6 @@ private:
 
     enum OptimumMethod
     {
-        fibonacci,
         gradient,
         annealing,
         particle,
@@ -133,7 +133,7 @@ private:
     template <>
     struct Bottom<OptimumMethod>
     {
-        static constexpr int value = 5;
+        static constexpr int value = 4;
     };
 
 #pragma pack(8)
@@ -236,7 +236,7 @@ private:
           {{"tra", "sim", "rom", "gau", "mon"},
            {&Command::runIntegral, &Command::setIntegralBit}}},
           {"optimum",
-          {{"fib", "gra", "ann", "par", "gen"},
+          {{"gra", "ann", "par", "gen"},
            {&Command::runOptimum, &Command::setOptimumBit}}}}}};
     // clang-format on
     void runMatch() const;
@@ -253,19 +253,18 @@ private:
         const double lowerLimit,
         const double upperLimit,
         const double epsilon) const;
-    const std::unordered_multimap<
-        num_expression::ExprRange<double, double>,
-        num_expression::ExprTarget,
-        num_expression::ExprMapHash>
-        integralExprMap{
-            {{num_expression::Function1::range1,
-              num_expression::Function1::range2,
-              num_expression::Function1::integralExpr},
-             num_expression::Function1()},
-            {{num_expression::Function2::range1,
-              num_expression::Function2::range2,
-              num_expression::Function2::integralExpr},
-             num_expression::Function2()}};
+    typedef std::variant<num_expression::Function1, num_expression::Function2> IntegralExprTarget;
+    const std::
+        unordered_multimap<num_expression::ExprRange<double, double>, IntegralExprTarget, num_expression::ExprMapHash>
+            integralExprMap{
+                {{num_expression::Function1::range1,
+                  num_expression::Function1::range2,
+                  num_expression::Function1::integralExpr},
+                 num_expression::Function1()},
+                {{num_expression::Function2::range1,
+                  num_expression::Function2::range2,
+                  num_expression::Function2::integralExpr},
+                 num_expression::Function2()}};
     void runOptimum() const;
     void setOptimumBit(const std::string& method);
     void getOptimumResult(
@@ -273,19 +272,18 @@ private:
         const double leftEndpoint,
         const double rightEndpoint,
         const double epsilon) const;
-    const std::unordered_multimap<
-        num_expression::ExprRange<double, double>,
-        num_expression::ExprTarget,
-        num_expression::ExprMapHash>
-        optimumExprMap{
-            {{num_expression::Function1::range1,
-              num_expression::Function1::range2,
-              num_expression::Function1::optimumExpr},
-             num_expression::Function1()},
-            {{num_expression::Function2::range1,
-              num_expression::Function2::range2,
-              num_expression::Function2::optimumExpr},
-             num_expression::Function2()}};
+    typedef std::variant<num_expression::Griewank, num_expression::Rastrigin> OptimumExprTarget;
+    const std::
+        unordered_multimap<num_expression::ExprRange<double, double>, OptimumExprTarget, num_expression::ExprMapHash>
+            optimumExprMap{
+                {{num_expression::Griewank::range1,
+                  num_expression::Griewank::range2,
+                  num_expression::Griewank::optimumExpr},
+                 num_expression::Griewank()},
+                {{num_expression::Rastrigin::range1,
+                  num_expression::Rastrigin::range2,
+                  num_expression::Rastrigin::optimumExpr},
+                 num_expression::Rastrigin()}};
 
     [[noreturn]] void throwExcessArgumentException();
     [[noreturn]] void throwUnexpectedMethodException(const std::string& info);

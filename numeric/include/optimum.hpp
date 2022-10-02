@@ -21,43 +21,6 @@ public:
         const double eps) = 0;
 };
 
-// Fibonacci method
-class Fibonacci : public Optimum
-{
-public:
-    explicit Fibonacci(const num_expression::Expression& express) : func(express){};
-    std::optional<std::tuple<ValueY, ValueX>> operator()(const double left, const double right, const double eps)
-        override;
-
-private:
-    const num_expression::Expression& func;
-    static std::vector<double> generateFibonacciNumber(const double max);
-    static double inline fibonacciCalculationForX1(
-        const std::vector<double>::const_iterator iterFib,
-        const double left,
-        const double right);
-    static double inline fibonacciCalculationForX2(
-        const std::vector<double>::const_iterator iterFib,
-        const double left,
-        const double right);
-};
-
-double inline Fibonacci::fibonacciCalculationForX1(
-    const std::vector<double>::const_iterator iterFib,
-    const double left,
-    const double right)
-{
-    return (left + (*std::prev(iterFib, 2)) / (*iterFib) * (right - left));
-};
-
-double inline Fibonacci::fibonacciCalculationForX2(
-    const std::vector<double>::const_iterator iterFib,
-    const double left,
-    const double right)
-{
-    return (left + (*std::prev(iterFib, 1)) / (*iterFib) * (right - left));
-};
-
 // Gradient ascent method
 namespace gradient_learning
 {
@@ -127,13 +90,13 @@ struct Individual
     double xFitness;
     double fitnessPositionBest;
 };
-struct Greater
+struct Smaller
 {
-    bool operator()(const double left, const double right) const { return left > right; }
+    bool operator()(const double left, const double right) const { return left < right; }
 };
 
 using Society = std::vector<particle_swarm::Individual>;
-using History = std::map<ValueY, ValueX, Greater>;
+using History = std::map<ValueY, ValueX, Smaller>;
 struct Record
 {
     Record(

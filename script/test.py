@@ -55,7 +55,7 @@ class Test:
     sortMethod = ["bub", "sel", "ins", "she", "mer", "qui", "hea", "cou", "buc", "rad"]
     numericTaskType = ["integral", "optimum"]
     integralMethod = ["tra", "sim", "rom", "gau", "mon"]
-    optimumMethod = ["fib", "gra", "ann", "par", "gen"]
+    optimumMethod = ["gra", "ann", "par", "gen"]
     passStep = 0
     completeStep = 0
     totalStep = (

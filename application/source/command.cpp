@@ -72,7 +72,7 @@ Command::Command()
                                                   "    ├── integral\r\n"
                                                   "    │   └── tra, sim, rom, gau, mon\r\n"
                                                   "    └── optimum\r\n"
-                                                  "        └── fib, gra, ann, par, gen\r\n");
+                                                  "        └── gra, ann, par, gen\r\n");
 }
 
 void Command::runCommander(const int argc, const char* const argv[])
@@ -537,7 +537,7 @@ void Command::runIntegral() const
         return;
     }
 
-    const auto printFunctor = [](const num_expression::ExprTarget& expression)
+    const auto printFunctor = [](const IntegralExprTarget& expression)
     {
         constexpr std::string_view prefix{"\r\nIntegral Expression: "};
         std::visit(
@@ -663,18 +663,18 @@ void Command::runOptimum() const
         return;
     }
 
-    const auto printFunctor = [](const num_expression::ExprTarget& expression)
+    const auto printFunctor = [](const OptimumExprTarget& expression)
     {
         constexpr std::string_view prefix{"\r\nOptimum Expression: "};
         std::visit(
             num_expression::ExprOverloaded{
-                [&prefix](const num_expression::Function1& /*unused*/)
+                [&prefix](const num_expression::Griewank& /*unused*/)
                 {
-                    std::cout << prefix << num_expression::Function1::optimumExpr << std::endl;
+                    std::cout << prefix << num_expression::Griewank::optimumExpr << std::endl;
                 },
-                [&prefix](const num_expression::Function2& /*unused*/)
+                [&prefix](const num_expression::Rastrigin& /*unused*/)
                 {
-                    std::cout << prefix << num_expression::Function2::optimumExpr << std::endl;
+                    std::cout << prefix << num_expression::Rastrigin::optimumExpr << std::endl;
                 },
             },
             expression);
@@ -708,9 +708,6 @@ void Command::setOptimumBit(const std::string& method)
     using util_hash::operator""_bkdrHash;
     switch (util_hash::bkdrHash(method.c_str()))
     {
-        case "fib"_bkdrHash:
-            taskPlan.generalTask.numTask.optimumBit.set(OptimumMethod::fibonacci);
-            break;
         case "gra"_bkdrHash:
             taskPlan.generalTask.numTask.optimumBit.set(OptimumMethod::gradient);
             break;
@@ -760,9 +757,6 @@ void Command::getOptimumResult(
         using util_hash::operator""_bkdrHash;
         switch (util_hash::bkdrHash(targetMethod.data()))
         {
-            case "fib"_bkdrHash:
-                optimumFunctor(threadName, std::make_shared<num_optimum::Fibonacci>(express));
-                break;
             case "gra"_bkdrHash:
                 optimumFunctor(threadName, std::make_shared<num_optimum::Gradient>(express));
                 break;

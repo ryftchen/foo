@@ -3,7 +3,7 @@
 #include "file.hpp"
 #include "time.hpp"
 
-#define OPTIMUM_RESULT(opt) "*%-9s method: Y(" #opt ")=%+.5f X=%+.5f  ==>Run time: %8.5f ms\n"
+#define OPTIMUM_RESULT(opt) "*%-9s method: F(" #opt ")=%+.5f X=%+.5f  ==>Run time: %8.5f ms\n"
 
 namespace num_optimum
 {
@@ -13,91 +13,7 @@ using particle_swarm::Individual;
 using particle_swarm::Record;
 using particle_swarm::Society;
 
-// Fibonacci method
-std::optional<std::tuple<ValueY, ValueX>> Fibonacci::operator()(const double left, const double right, const double eps)
-{
-    TIME_BEGIN(timing);
-    double leftVal = left, rightVal = right;
-    std::vector<double> fibVec = generateFibonacciNumber((rightVal - leftVal) / eps);
-    constexpr int minSize = 3;
-    int n = fibVec.size() - 1;
-    if (n < minSize)
-    {
-        FORMAT_PRINT("*Fibonacci method: The precise %.5f isn't enough.\n", eps);
-        return std::nullopt;
-    }
-
-    auto iterFib = std::next(fibVec.cbegin(), n);
-    double x1 = fibonacciCalculationForX1(iterFib, leftVal, rightVal),
-           x2 = fibonacciCalculationForX2(iterFib, leftVal, rightVal);
-    while (n > minSize)
-    {
-        iterFib = std::next(fibVec.cbegin(), n);
-        if (func(x1) < func(x2))
-        {
-            leftVal = x1;
-            x1 = x2;
-            x2 = fibonacciCalculationForX2(iterFib, leftVal, rightVal);
-        }
-        else if (func(x1) > func(x2))
-        {
-            rightVal = x2;
-            x2 = x1;
-            x1 = fibonacciCalculationForX1(iterFib, leftVal, rightVal);
-        }
-        else
-        {
-            leftVal = x1;
-            rightVal = x2;
-            x1 = fibonacciCalculationForX1(iterFib, leftVal, rightVal);
-            x2 = fibonacciCalculationForX2(iterFib, leftVal, rightVal);
-        }
-        --n;
-    }
-
-    x1 = leftVal + fibVec[1] / fibVec[2] * (rightVal - leftVal);
-    x2 = x1 + (((x1 + eps) < right) ? eps : -eps);
-    if (func(x1) < func(x2))
-    {
-        leftVal = x1;
-    }
-    else if (func(x1) > func(x2))
-    {
-        rightVal = x2;
-    }
-    else
-    {
-        leftVal = x1;
-        rightVal = x2;
-    }
-    const double x = (leftVal + rightVal) / 2.0;
-
-    TIME_END(timing);
-    FORMAT_PRINT(OPTIMUM_RESULT(max), "Fibonacci", func(x), x, TIME_INTERVAL(timing));
-    return std::make_optional(std::make_tuple(func(x), x));
-}
-
-std::vector<double> Fibonacci::generateFibonacciNumber(const double max)
-{
-    std::vector<double> fibonacci(0);
-    double f1 = 0.0, f2 = 1.0;
-    for (;;)
-    {
-        const double temp = f1 + f2;
-        f1 = f2;
-        f2 = temp;
-        fibonacci.emplace_back(f1);
-
-        if (f1 > max)
-        {
-            break;
-        }
-    }
-
-    return fibonacci;
-}
-
-// Gradient ascent method
+// Gradient descent method
 std::optional<std::tuple<ValueY, ValueX>> Gradient::operator()(const double left, const double right, const double eps)
 {
     TIME_BEGIN(timing);
@@ -118,9 +34,9 @@ std::optional<std::tuple<ValueY, ValueX>> Gradient::operator()(const double left
         uint32_t iterNum = 0;
         double learningRate = gradient_learning::initialLearningRate, gradient = calculateFirstDerivative(x, eps),
                dx = learningRate * gradient;
-        while ((std::fabs(dx) > eps) && ((x + dx) >= left) && ((x + dx) <= right))
+        while ((std::fabs(dx) > eps) && ((x - dx) >= left) && ((x - dx) <= right))
         {
-            x += dx;
+            x -= dx;
             ++iterNum;
             learningRate = gradient_learning::initialLearningRate * 1.0 / (1.0 + gradient_learning::decay * iterNum);
             gradient = calculateFirstDerivative(x, eps);
@@ -129,18 +45,18 @@ std::optional<std::tuple<ValueY, ValueX>> Gradient::operator()(const double left
         aggregation.emplace_back(std::pair<ValueY, ValueX>(func(x), x));
     }
 
-    const auto best = std::max_element(
+    const auto best = std::min_element(
         std::cbegin(aggregation),
         std::cend(aggregation),
-        [](const auto& max1, const auto& max2)
+        [](const auto& min1, const auto& min2)
         {
-            return std::get<0>(max1) < std::get<0>(max2);
+            return std::get<0>(min1) < std::get<0>(min2);
         });
     y = std::get<0>(*best);
     x = std::get<1>(*best);
 
     TIME_END(timing);
-    FORMAT_PRINT(OPTIMUM_RESULT(max), "Gradient", y, x, TIME_INTERVAL(timing));
+    FORMAT_PRINT(OPTIMUM_RESULT(min), "Gradient", y, x, TIME_INTERVAL(timing));
     return std::make_optional(std::make_tuple(y, x));
 }
 
@@ -175,12 +91,12 @@ std::optional<std::tuple<ValueY, ValueX>> Annealing::operator()(const double lef
             while ((xNew < left) || (xNew > right));
             yNew = func(xNew);
 
-            if ((yNew > y) || (std::exp(-(y - yNew) / temperature) > random(seed)))
+            if ((yNew < y) || (std::exp(-(y - yNew) / temperature) > random(seed)))
             {
                 found = true;
                 x = xNew;
                 y = yNew;
-                if (y > yBest)
+                if (y < yBest)
                 {
                     xBest = x;
                     yBest = y;
@@ -196,7 +112,7 @@ std::optional<std::tuple<ValueY, ValueX>> Annealing::operator()(const double lef
     }
 
     TIME_END(timing);
-    FORMAT_PRINT(OPTIMUM_RESULT(max), "Annealing", y, x, TIME_INTERVAL(timing));
+    FORMAT_PRINT(OPTIMUM_RESULT(min), "Annealing", y, x, TIME_INTERVAL(timing));
     return std::make_optional(std::make_tuple(y, x));
 }
 
@@ -205,12 +121,12 @@ std::optional<std::tuple<ValueY, ValueX>> Particle::operator()(const double left
 {
     TIME_BEGIN(timing);
     Record rec = recordInit(left, right);
-    const auto best = std::max_element(
+    const auto best = std::min_element(
         std::cbegin(rec.society),
         std::cend(rec.society),
-        [](const auto max1, const auto max2)
+        [](const auto min1, const auto min2)
         {
-            return max1.xFitness < max2.xFitness;
+            return min1.xFitness < min2.xFitness;
         });
     double xBest = best->x, xFitnessBest = best->xFitness;
 
@@ -237,12 +153,12 @@ std::optional<std::tuple<ValueY, ValueX>> Particle::operator()(const double left
 
         for (auto& ind : rec.society)
         {
-            if (ind.xFitness > ind.fitnessPositionBest)
+            if (ind.xFitness < ind.fitnessPositionBest)
             {
                 ind.positionBest = ind.x;
                 ind.fitnessPositionBest = ind.xFitness;
             }
-            if (ind.xFitness > xFitnessBest)
+            if (ind.xFitness < xFitnessBest)
             {
                 xBest = ind.x;
                 xFitnessBest = ind.xFitness;
@@ -254,7 +170,7 @@ std::optional<std::tuple<ValueY, ValueX>> Particle::operator()(const double left
     xBest = std::get<1>(*(rec.history.cbegin()));
 
     TIME_END(timing);
-    FORMAT_PRINT(OPTIMUM_RESULT(max), "Particle", xFitnessBest, xBest, TIME_INTERVAL(timing));
+    FORMAT_PRINT(OPTIMUM_RESULT(min), "Particle", xFitnessBest, xBest, TIME_INTERVAL(timing));
     return std::make_optional(std::make_tuple(xFitnessBest, xBest));
 }
 
@@ -301,7 +217,7 @@ std::optional<std::tuple<ValueY, ValueX>> Genetic::operator()(const double left,
     const double x = geneDecoding(getBestIndividual(pop));
 
     TIME_END(timing);
-    FORMAT_PRINT(OPTIMUM_RESULT(max), "Genetic", func(x), x, TIME_INTERVAL(timing));
+    FORMAT_PRINT(OPTIMUM_RESULT(min), "Genetic", func(x), x, TIME_INTERVAL(timing));
     return std::make_optional(std::make_tuple(func(x), x));
 }
 
@@ -434,7 +350,7 @@ void Genetic::mutateIndividual(Population& pop)
 
 double Genetic::calculateFitness(const Chromosome& chr)
 {
-    return func(geneDecoding(chr));
+    return -func(geneDecoding(chr));
 }
 
 std::optional<std::pair<double, double>> Genetic::fitnessLinearTransformation(const Population& pop)
@@ -457,7 +373,7 @@ std::optional<std::pair<double, double>> Genetic::fitnessLinearTransformation(co
         return std::nullopt;
     }
     const double alpha = reFitnessAvg / (reFitnessAvg - reFitnessMin),
-                 beta = -1.0 * (reFitnessMin * reFitnessAvg) / (reFitnessAvg - reFitnessMin);
+                 beta = -(reFitnessMin * reFitnessAvg) / (reFitnessAvg - reFitnessMin);
     assert(!std::isnan(alpha) && !std::isinf(alpha) && !std::isnan(beta) && !std::isinf(beta));
     return std::make_optional(std::pair<double, double>(alpha, beta));
 }
