@@ -8,6 +8,7 @@
 #include "console.hpp"
 #include "expression.hpp"
 #include "match.hpp"
+#include "search.hpp"
 #include "sort.hpp"
 
 class Command
@@ -57,12 +58,13 @@ private:
     enum AlgorithmTaskType
     {
         match,
+        search,
         sort
     };
     template <>
     struct Bottom<AlgorithmTaskType>
     {
-        static constexpr int value = 2;
+        static constexpr int value = 3;
     };
 
     enum MatchMethod
@@ -77,6 +79,18 @@ private:
     struct Bottom<MatchMethod>
     {
         static constexpr int value = 5;
+    };
+
+    enum SearchMethod
+    {
+        binary,
+        interpolation,
+        fibonacci
+    };
+    template <>
+    struct Bottom<SearchMethod>
+    {
+        static constexpr int value = 3;
     };
 
     enum SortMethod
@@ -153,12 +167,14 @@ private:
             struct AlgoTask
             {
                 std::bitset<Bottom<MatchMethod>::value> matchBit;
+                std::bitset<Bottom<SearchMethod>::value> searchBit;
                 std::bitset<Bottom<SortMethod>::value> sortBit;
 
-                [[nodiscard]] bool empty() const { return matchBit.none() && sortBit.none(); }
+                [[nodiscard]] bool empty() const { return matchBit.none() && searchBit.none() && sortBit.none(); }
                 void reset()
                 {
                     matchBit.reset();
+                    searchBit.reset();
                     sortBit.reset();
                 }
             } algoTask{};
@@ -228,6 +244,9 @@ private:
          {{"match",
           {{"rab", "knu", "boy", "hor", "sun"},
            {&Command::runMatch, &Command::setMatchBit}}},
+          {"search",
+          {{"bin", "int", "fib"},
+           {&Command::runSearch, &Command::setSearchBit}}},
           {"sort",
           {{"bub", "sel", "ins", "she", "mer", "qui", "hea", "cou", "buc", "rad"},
            {&Command::runSort, &Command::setSortBit}}}}},
@@ -242,6 +261,10 @@ private:
     void runMatch() const;
     void setMatchBit(const std::string& method);
     void getMatchResult(const std::shared_ptr<algo_match::Match>& match) const;
+    void runSearch() const;
+    void setSearchBit(const std::string& method);
+    template <typename T>
+    void getSearchResult(const std::shared_ptr<algo_search::Search<T>>& search) const;
     void runSort() const;
     void setSortBit(const std::string& method);
     template <typename T>

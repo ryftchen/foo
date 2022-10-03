@@ -50,8 +50,9 @@ class Test:
     basicTaskCategory = ["--help", "--version", "--console"]
     consoleCommand = ["help", "quit", "run ./script/batch.txt", "log"]
     generalTaskCategory = ["--algorithm", "--numeric"]
-    algorithmTaskType = ["match", "sort"]
+    algorithmTaskType = ["match", "search", "sort"]
     matchMethod = ["rab", "knu", "boy", "hor", "sun"]
+    searchMethod = ["bin", "int", "fib"]
     sortMethod = ["bub", "sel", "ins", "she", "mer", "qui", "hea", "cou", "buc", "rad"]
     numericTaskType = ["integral", "optimum"]
     integralMethod = ["tra", "sim", "rom", "gau", "mon"]
@@ -63,6 +64,7 @@ class Test:
         + len(consoleCommand)
         + len(algorithmTaskType)
         + (len(matchMethod) + 1)
+        + (len(searchMethod) + 1)
         + (len(sortMethod) + 1)
         + len(numericTaskType)
         + (len(integralMethod) + 1)
@@ -237,6 +239,7 @@ class Test:
 
     def testAlgorithmTask(self):
         self.testMatchMethod()
+        self.testSearchMethod()
         self.testSortMethod()
 
     def testMatchMethod(self):
@@ -247,12 +250,20 @@ class Test:
             f"{self.binCmd} {self.generalTaskCategory[0]} {self.algorithmTaskType[0]} {' '.join(self.matchMethod)}"
         )
 
-    def testSortMethod(self):
+    def testSearchMethod(self):
         self.runTestTask(f"{self.binCmd} {self.generalTaskCategory[0]} {self.algorithmTaskType[1]}")
-        for each in self.sortMethod:
+        for each in self.searchMethod:
             self.runTestTask(f"{self.binCmd} {self.generalTaskCategory[0]} {self.algorithmTaskType[1]} {each}")
         self.runTestTask(
-            f"{self.binCmd} {self.generalTaskCategory[0]} {self.algorithmTaskType[1]} {' '.join(self.sortMethod)}"
+            f"{self.binCmd} {self.generalTaskCategory[0]} {self.algorithmTaskType[1]} {' '.join(self.searchMethod)}"
+        )
+
+    def testSortMethod(self):
+        self.runTestTask(f"{self.binCmd} {self.generalTaskCategory[0]} {self.algorithmTaskType[2]}")
+        for each in self.sortMethod:
+            self.runTestTask(f"{self.binCmd} {self.generalTaskCategory[0]} {self.algorithmTaskType[2]} {each}")
+        self.runTestTask(
+            f"{self.binCmd} {self.generalTaskCategory[0]} {self.algorithmTaskType[2]} {' '.join(self.sortMethod)}"
         )
 
     def testNumericTask(self):

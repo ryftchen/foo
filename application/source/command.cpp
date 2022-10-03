@@ -65,6 +65,8 @@ Command::Command()
                                                   "├── -a --algorithm\r\n"
                                                   "│   ├── match\r\n"
                                                   "│   │   └── rab, knu, boy, hor, sun\r\n"
+                                                  "│   ├── search\r\n"
+                                                  "│   │   └── bin, int, fib\r\n"
                                                   "│   └── sort\r\n"
                                                   "│       ├── bub, sel, ins, she, mer\r\n"
                                                   "│       └── qui, hea, cou, buc, rad\r\n"
@@ -405,6 +407,94 @@ void Command::getMatchResult(const std::shared_ptr<algo_match::Match>& match) co
     }
 }
 
+void Command::runSearch() const
+{
+    std::unique_lock<std::mutex> lock(commandMutex);
+    if (taskPlan.generalTask.algoTask.searchBit.none())
+    {
+        return;
+    }
+
+    constexpr double leftEndpoint = algo_search::arrayRange1;
+    constexpr double rightEndpoint = algo_search::arrayRange2;
+    constexpr uint32_t length = algo_search::arrayLength;
+    static_assert((leftEndpoint < rightEndpoint) && (length > 0));
+
+    COMMAND_PRINT_TASK_TITLE("ALGORITHM", AlgorithmTaskType::search, "BEGIN");
+    const std::shared_ptr<algo_search::Search<double>> search =
+        std::make_shared<algo_search::Search<double>>(length, leftEndpoint, rightEndpoint);
+    getSearchResult(search);
+    COMMAND_PRINT_TASK_TITLE("ALGORITHM", AlgorithmTaskType::search, "END") << std::endl;
+}
+
+void Command::setSearchBit(const std::string& method)
+{
+    using util_hash::operator""_bkdrHash;
+    switch (util_hash::bkdrHash(method.c_str()))
+    {
+        case "bin"_bkdrHash:
+            taskPlan.generalTask.algoTask.searchBit.set(SearchMethod::binary);
+            break;
+        case "int"_bkdrHash:
+            taskPlan.generalTask.algoTask.searchBit.set(SearchMethod::interpolation);
+            break;
+        case "fib"_bkdrHash:
+            taskPlan.generalTask.algoTask.searchBit.set(SearchMethod::fibonacci);
+            break;
+        default:
+            throwUnexpectedMethodException("search: " + method);
+    }
+}
+
+template <typename T>
+void Command::getSearchResult(const std::shared_ptr<algo_search::Search<T>>& search) const
+{
+    util_thread::Thread threadPool(std::min(
+        static_cast<uint32_t>(taskPlan.generalTask.algoTask.searchBit.count()),
+        static_cast<uint32_t>(Bottom<SearchMethod>::value)));
+    const auto searchFunctor = [&](const std::string& threadName,
+                                   int (algo_search::Search<T>::*methodPtr)(T* const, const uint32_t, const T) const)
+    {
+        threadPool.enqueue(
+            threadName,
+            methodPtr,
+            search,
+            search->getOrderedArray().get(),
+            search->getLength(),
+            search->getSearchedKey());
+    };
+
+    for (int i = 0; i < Bottom<SearchMethod>::value; ++i)
+    {
+        if (!taskPlan.generalTask.algoTask.searchBit.test(SearchMethod(i)))
+        {
+            continue;
+        }
+
+        const auto taskCategoryMap = std::next(
+            std::next(generalTaskMap.cbegin(), GeneralTaskCategory::algorithm)->second.cbegin(),
+            AlgorithmTaskType::search);
+        const auto targetMethod = get<TaskMethodVector>(taskCategoryMap->second).at(i);
+        const std::string threadName = std::string{1, taskCategoryMap->first.at(0)} + "_" + targetMethod;
+        using util_hash::operator""_bkdrHash;
+        switch (util_hash::bkdrHash(targetMethod.data()))
+        {
+            case "bin"_bkdrHash:
+                searchFunctor(threadName, &algo_search::Search<T>::binarySearch);
+                break;
+            case "int"_bkdrHash:
+                searchFunctor(threadName, &algo_search::Search<T>::interpolationSearch);
+                break;
+            case "fib"_bkdrHash:
+                searchFunctor(threadName, &algo_search::Search<T>::fibonacciSearch);
+                break;
+            default:
+                LOG_DBG(logger, "execute to run unknown search method.");
+                break;
+        }
+    }
+}
+
 void Command::runSort() const
 {
     std::unique_lock<std::mutex> lock(commandMutex);
@@ -413,9 +503,9 @@ void Command::runSort() const
         return;
     }
 
-    const int leftEndpoint = algo_sort::arrayRange1;
-    const int rightEndpoint = algo_sort::arrayRange2;
-    const uint32_t length = algo_sort::arrayLength;
+    constexpr int leftEndpoint = algo_sort::arrayRange1;
+    constexpr int rightEndpoint = algo_sort::arrayRange2;
+    constexpr uint32_t length = algo_sort::arrayLength;
     static_assert((leftEndpoint < rightEndpoint) && (length > 0));
 
     COMMAND_PRINT_TASK_TITLE("ALGORITHM", AlgorithmTaskType::sort, "BEGIN");
@@ -794,6 +884,9 @@ std::ostream& operator<<(std::ostream& os, const Command::AlgorithmTaskType& tas
     {
         case Command::AlgorithmTaskType::match:
             os << "MATCH";
+            break;
+        case Command::AlgorithmTaskType::search:
+            os << "SEARCH";
             break;
         case Command::AlgorithmTaskType::sort:
             os << "SORT";
