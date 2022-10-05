@@ -47,33 +47,27 @@ class Test:
     binDir = "./build/bin/"
     libList = ["libutility.so", "libalgorithm.so", "libnumeric.so"]
     libDir = "./build/lib/"
-    basicTaskCategory = ["--help", "--version", "--console"]
-    consoleCommand = ["help", "quit", "run ./script/batch.txt", "log"]
-    generalTaskCategory = ["--algorithm", "--numeric"]
-    algorithmTaskType = ["match", "search", "sort"]
-    matchMethod = ["rab", "knu", "boy", "hor", "sun"]
-    searchMethod = ["bin", "int", "fib"]
-    sortMethod = ["bub", "sel", "ins", "she", "mer", "qui", "hea", "cou", "buc", "rad"]
-    numericTaskType = ["divisor", "integral", "optimum", "sieve"]
-    divisorMethod = ["euc", "ste"]
-    integralMethod = ["tra", "sim", "rom", "gau", "mon"]
-    optimumMethod = ["gra", "ann", "par", "gen"]
-    sieveMethod = ["era", "eul"]
+    basicTaskDict = {
+        "--console": [r"'help'", r"'quit'", r"'run ./script/batch.txt'", r"'log'"],
+        "--help": "",
+        "--version": "",
+    }
+    generalTaskDict = {
+        "--algorithm": {
+            "match": ["rab", "knu", "boy", "hor", "sun"],
+            "search": ["bin", "int", "fib"],
+            "sort": ["bub", "sel", "ins", "she", "mer", "qui", "hea", "cou", "buc", "rad"],
+        },
+        "--numeric": {
+            "divisor": ["euc", "ste"],
+            "integral": ["tra", "sim", "rom", "gau", "mon"],
+            "optimum": ["gra", "ann", "par", "gen"],
+            "sieve": ["era", "eul"],
+        },
+    }
     passStep = 0
     completeStep = 0
-    totalStep = (
-        (1 + len(basicTaskCategory))
-        + len(consoleCommand)
-        + len(algorithmTaskType)
-        + (len(matchMethod) + 1)
-        + (len(searchMethod) + 1)
-        + (len(sortMethod) + 1)
-        + len(numericTaskType)
-        + (len(divisorMethod) + 1)
-        + (len(integralMethod) + 1)
-        + (len(optimumMethod) + 1)
-        + (len(sieveMethod) + 1)
-    )
+    totalStep = 0
     isCheckCoverage = False
     envCoverage = "CODE_COVERAGE"
     isCheckMemory = False
@@ -88,6 +82,14 @@ class Test:
             os.mkdir(self.tempDir)
         self.log = common.Log(self.logFile)
         self.progressBar = common.ProgressBar()
+
+        self.totalStep += 1 + len(self.basicTaskDict.keys())
+        for taskCategoryOptions in self.basicTaskDict.values():
+            self.totalStep += len(taskCategoryOptions)
+        for taskCategoryMap in self.generalTaskDict.values():
+            self.totalStep += len(taskCategoryMap.keys())
+            for taskMethods in taskCategoryMap.values():
+                self.totalStep += len(taskMethods) + 1
 
     def run(self):
         self.prepareTest()
@@ -228,69 +230,19 @@ class Test:
         refresh.write(outputContent)
 
     def testBasicTask(self):
-        self.runTestTask(self.binCmd, self.consoleCommand[1])
-        for each in self.basicTaskCategory:
-            self.runTestTask(f"{self.binCmd} {each}")
-        self.testConsoleCommand()
-
-    def testConsoleCommand(self):
-        for each in self.consoleCommand:
-            self.runTestTask(f"{self.binCmd} {self.basicTaskCategory[2]} \"{each}\"")
+        self.runTestTask(self.binCmd, "quit")
+        for taskCategory, taskCategoryOptions in self.basicTaskDict.items():
+            self.runTestTask(f"{self.binCmd} {taskCategory}")
+            for option in taskCategoryOptions:
+                self.runTestTask(f"{self.binCmd} {taskCategory} {option}")
 
     def testGeneralTask(self):
-        self.testAlgorithmTask()
-        self.testNumericTask()
-
-    def testAlgorithmTask(self):
-        self.runTestTask(f"{self.binCmd} {self.generalTaskCategory[0]} {self.algorithmTaskType[0]}")
-        for each in self.matchMethod:
-            self.runTestTask(f"{self.binCmd} {self.generalTaskCategory[0]} {self.algorithmTaskType[0]} {each}")
-        self.runTestTask(
-            f"{self.binCmd} {self.generalTaskCategory[0]} {self.algorithmTaskType[0]} {' '.join(self.matchMethod)}"
-        )
-
-        self.runTestTask(f"{self.binCmd} {self.generalTaskCategory[0]} {self.algorithmTaskType[1]}")
-        for each in self.searchMethod:
-            self.runTestTask(f"{self.binCmd} {self.generalTaskCategory[0]} {self.algorithmTaskType[1]} {each}")
-        self.runTestTask(
-            f"{self.binCmd} {self.generalTaskCategory[0]} {self.algorithmTaskType[1]} {' '.join(self.searchMethod)}"
-        )
-
-        self.runTestTask(f"{self.binCmd} {self.generalTaskCategory[0]} {self.algorithmTaskType[2]}")
-        for each in self.sortMethod:
-            self.runTestTask(f"{self.binCmd} {self.generalTaskCategory[0]} {self.algorithmTaskType[2]} {each}")
-        self.runTestTask(
-            f"{self.binCmd} {self.generalTaskCategory[0]} {self.algorithmTaskType[2]} {' '.join(self.sortMethod)}"
-        )
-
-    def testNumericTask(self):
-        self.runTestTask(f"{self.binCmd} {self.generalTaskCategory[1]} {self.numericTaskType[0]}")
-        for each in self.divisorMethod:
-            self.runTestTask(f"{self.binCmd} {self.generalTaskCategory[1]} {self.numericTaskType[0]} {each}")
-        self.runTestTask(
-            f"{self.binCmd} {self.generalTaskCategory[1]} {self.numericTaskType[0]} {' '.join(self.divisorMethod)}"
-        )
-
-        self.runTestTask(f"{self.binCmd} {self.generalTaskCategory[1]} {self.numericTaskType[1]}")
-        for each in self.integralMethod:
-            self.runTestTask(f"{self.binCmd} {self.generalTaskCategory[1]} {self.numericTaskType[1]} {each}")
-        self.runTestTask(
-            f"{self.binCmd} {self.generalTaskCategory[1]} {self.numericTaskType[1]} {' '.join(self.integralMethod)}"
-        )
-
-        self.runTestTask(f"{self.binCmd} {self.generalTaskCategory[1]} {self.numericTaskType[2]}")
-        for each in self.optimumMethod:
-            self.runTestTask(f"{self.binCmd} {self.generalTaskCategory[1]} {self.numericTaskType[2]} {each}")
-        self.runTestTask(
-            f"{self.binCmd} {self.generalTaskCategory[1]} {self.numericTaskType[2]} {' '.join(self.optimumMethod)}"
-        )
-
-        self.runTestTask(f"{self.binCmd} {self.generalTaskCategory[1]} {self.numericTaskType[3]}")
-        for each in self.sieveMethod:
-            self.runTestTask(f"{self.binCmd} {self.generalTaskCategory[1]} {self.numericTaskType[3]} {each}")
-        self.runTestTask(
-            f"{self.binCmd} {self.generalTaskCategory[1]} {self.numericTaskType[3]} {' '.join(self.sieveMethod)}"
-        )
+        for taskCategory, taskCategoryMap in self.generalTaskDict.items():
+            for taskType, taskMethods in taskCategoryMap.items():
+                self.runTestTask(f"{self.binCmd} {taskCategory} {taskType}")
+                for method in taskMethods:
+                    self.runTestTask(f"{self.binCmd} {taskCategory} {taskType} {method}")
+                self.runTestTask(f"{self.binCmd} {taskCategory} {taskType} {' '.join(taskMethods)}")
 
 
 if __name__ == "__main__":
