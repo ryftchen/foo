@@ -279,7 +279,7 @@ auto operator<<(std::ostream& os, const Argument& parser) -> std::ostream&
     {
         os << "[" << argument.names.front() << "...] ";
     }
-    os << std::endl << std::endl;
+    os << "\n" << std::endl;
 
     if (!parser.optionalArguments.empty())
     {

@@ -11,7 +11,7 @@
 #include "thread.hpp"
 
 #define COMMAND_PRINT_TASK_TITLE(taskCategory, taskType, title)                                                    \
-    std::cout << std::endl                                                                                         \
+    std::cout << "\n"                                                                                              \
               << taskCategory << " TASK: " << std::setiosflags(std::ios_base::left) << std::setfill('.')           \
               << std::setw(titleWidthForPrintTask) << taskType << title << std::resetiosflags(std::ios_base::left) \
               << std::setfill(' ') << std::endl

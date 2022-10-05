@@ -79,7 +79,7 @@ void Log::runLogger()
     }
     catch (const std::exception& error)
     {
-        std::cerr << "logger: " << error.what() << ", expected state: " << expectedState
+        std::cerr << "log: " << error.what() << ", expected state: " << expectedState
                   << ", current state: " << State(currentState()) << std::endl;
         stopLogging();
     }
@@ -99,7 +99,7 @@ void Log::waitLoggerStartForExternalUse()
             else
             {
                 ++waitCount;
-                std::cout << "logger: Wait logger start... (" << waitCount << ")" << std::endl;
+                std::cout << "log: Wait logger start... (" << waitCount << ")" << std::endl;
             }
         },
         1);
@@ -130,7 +130,7 @@ void Log::waitLoggerStopForExternalUse()
             else
             {
                 ++waitCount;
-                std::cout << "logger: Wait logger stop... (" << waitCount << ")" << std::endl;
+                std::cout << "log: Wait logger stop... (" << waitCount << ")" << std::endl;
             }
         },
         1);
