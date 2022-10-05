@@ -3,7 +3,7 @@
 #include "file.hpp"
 #include "time.hpp"
 
-#define SIEVE_RESULT "\r\n*%-9s method:\r\nAll prime numbers less than %d:\r\n%s\r\n==>Run time: %8.5f ms\n"
+#define SIEVE_RESULT "\r\n*%-9s method:\r\n%s\r\n==>Run time: %8.5f ms\n"
 #define SIEVE_PRINT_RESULT_CONTENT(method)                                      \
     do                                                                          \
     {                                                                           \
@@ -13,7 +13,6 @@
         FORMAT_PRINT(                                                           \
             SIEVE_RESULT,                                                       \
             method,                                                             \
-            max,                                                                \
             formatIntegerVector(sieveVector, arrayBuffer, arrayBufferSize + 1), \
             TIME_INTERVAL(timing));                                             \
     }                                                                           \
@@ -21,6 +20,11 @@
 
 namespace num_sieve
 {
+Sieve::Sieve()
+{
+    std::cout << "\r\nAll prime numbers less than " << maxPositiveInteger << ":" << std::endl;
+}
+
 // Eratosthenes method
 std::vector<uint32_t> Sieve::eratosthenesMethod(const uint32_t max) const
 {
