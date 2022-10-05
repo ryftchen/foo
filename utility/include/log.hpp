@@ -72,6 +72,7 @@ public:
         const OutputTarget target,
         const StateType initState = State::init) noexcept;
     virtual ~Log() = default;
+
     template <typename... Args>
     void output(
         const OutputLevel level,

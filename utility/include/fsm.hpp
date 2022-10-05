@@ -37,7 +37,6 @@ template <class Func, class Arg1, class Arg2>
 struct BinaryFuncHelper<Func, Arg1, Arg2, true, false, false, false>
 {
     using ResultType = InvokeResult<Func>;
-
     static ResultType invoke(Func&& func, Arg1&& /*unused*/, Arg2&& /*unused*/) { return invokeResult(func); }
 };
 
@@ -45,7 +44,6 @@ template <class Func, class Arg1, class Arg2>
 struct BinaryFuncHelper<Func, Arg1, Arg2, false, true, false, false>
 {
     using ResultType = InvokeResult<Func, Arg1>;
-
     static ResultType invoke(Func&& func, Arg1&& arg1, Arg2&& /*unused*/) { return invokeResult(func, arg1); }
 };
 
@@ -53,7 +51,6 @@ template <class Func, class Arg1, class Arg2>
 struct BinaryFuncHelper<Func, Arg1, Arg2, false, false, true, false>
 {
     using ResultType = InvokeResult<Func, Arg2>;
-
     static ResultType invoke(Func&& func, Arg1&& /*unused*/, Arg2&& arg2) { return invokeResult(func, arg2); }
 };
 
@@ -61,7 +58,6 @@ template <class Func, class Arg1, class Arg2>
 struct BinaryFuncHelper<Func, Arg1, Arg2, false, false, false, true>
 {
     using ResultType = InvokeResult<Func, Arg1, Arg2>;
-
     static ResultType invoke(Func&& func, Arg1&& arg1, Arg2&& arg2) { return invokeResult(func, arg1, arg2); }
 };
 
@@ -118,7 +114,6 @@ class FSM
 {
 public:
     using StateType = State;
-
     explicit FSM(State initState = State());
     template <class Event>
     void processEvent(const Event& event);
@@ -284,7 +279,6 @@ template <class Event>
 void FSM<Derived, State>::processEvent(const Event& event)
 {
     using Rows = typename ByEventType<Event, typename Derived::TransitionMap>::Type;
-
     ProcessingLock procLock(*this);
     static_assert(std::is_base_of<FSM, Derived>::value);
     Derived& self = static_cast<Derived&>(*this);

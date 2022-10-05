@@ -10,6 +10,7 @@ class Expression
 {
 public:
     virtual ~Expression() = default;
+
     virtual double operator()(const double x) const = 0;
 };
 

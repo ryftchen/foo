@@ -15,6 +15,7 @@ class Optimum
 {
 public:
     virtual ~Optimum() = default;
+
     virtual std::optional<std::tuple<ValueY, ValueX>> operator()(
         const double left,
         const double right,
@@ -32,6 +33,7 @@ class Gradient : public Optimum
 {
 public:
     explicit Gradient(const num_expression::Expression& express) : func(express){};
+
     [[nodiscard]] std::optional<std::tuple<ValueY, ValueX>> operator()(
         const double left,
         const double right,
@@ -54,6 +56,7 @@ class Annealing : public Optimum
 {
 public:
     explicit Annealing(const num_expression::Expression& express) : func(express){};
+
     [[nodiscard]] std::optional<std::tuple<ValueY, ValueX>> operator()(
         const double left,
         const double right,
@@ -88,6 +91,7 @@ struct Individual
         xFitness(xFitness),
         fitnessPositionBest(fitnessPositionBest){};
     Individual() = default;
+
     double x;
     double velocity;
     double positionBest;
@@ -116,6 +120,7 @@ class Particle : public Optimum
 {
 public:
     explicit Particle(const num_expression::Expression& express) : func(express), seed(std::random_device{}()){};
+
     [[nodiscard]] std::optional<std::tuple<ValueY, ValueX>> operator()(
         const double left,
         const double right,
@@ -142,6 +147,7 @@ class Genetic : public Optimum
 {
 public:
     explicit Genetic(const num_expression::Expression& express) : func(express), seed(std::random_device{}()){};
+
     [[nodiscard]] std::optional<std::tuple<ValueY, ValueX>> operator()(
         const double left,
         const double right,
