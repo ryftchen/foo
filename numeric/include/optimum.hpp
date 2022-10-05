@@ -32,8 +32,10 @@ class Gradient : public Optimum
 {
 public:
     explicit Gradient(const num_expression::Expression& express) : func(express){};
-    std::optional<std::tuple<ValueY, ValueX>> operator()(const double left, const double right, const double eps)
-        override;
+    [[nodiscard]] std::optional<std::tuple<ValueY, ValueX>> operator()(
+        const double left,
+        const double right,
+        const double eps) override;
 
 private:
     const num_expression::Expression& func;
@@ -52,8 +54,10 @@ class Annealing : public Optimum
 {
 public:
     explicit Annealing(const num_expression::Expression& express) : func(express){};
-    std::optional<std::tuple<ValueY, ValueX>> operator()(const double left, const double right, const double eps)
-        override;
+    [[nodiscard]] std::optional<std::tuple<ValueY, ValueX>> operator()(
+        const double left,
+        const double right,
+        const double eps) override;
 
 private:
     const num_expression::Expression& func;
@@ -112,8 +116,10 @@ class Particle : public Optimum
 {
 public:
     explicit Particle(const num_expression::Expression& express) : func(express), seed(std::random_device{}()){};
-    std::optional<std::tuple<ValueY, ValueX>> operator()(const double left, const double right, const double eps)
-        override;
+    [[nodiscard]] std::optional<std::tuple<ValueY, ValueX>> operator()(
+        const double left,
+        const double right,
+        const double eps) override;
 
 private:
     const num_expression::Expression& func;
@@ -136,8 +142,10 @@ class Genetic : public Optimum
 {
 public:
     explicit Genetic(const num_expression::Expression& express) : func(express), seed(std::random_device{}()){};
-    std::optional<std::tuple<ValueY, ValueX>> operator()(const double left, const double right, const double eps)
-        override;
+    [[nodiscard]] std::optional<std::tuple<ValueY, ValueX>> operator()(
+        const double left,
+        const double right,
+        const double eps) override;
 
 private:
     const num_expression::Expression& func;

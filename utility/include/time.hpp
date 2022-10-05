@@ -3,7 +3,6 @@
 #include <sys/time.h>
 #include <chrono>
 #include <random>
-#include <string>
 #include <thread>
 
 #define TIME_BEGIN(timing)  \
@@ -21,6 +20,7 @@ class Time final
 {
 public:
     virtual ~Time() = default;
+
     void inline setBeginTime();
     void inline setEndTime();
     [[nodiscard]] double inline getTimeInterval() const;

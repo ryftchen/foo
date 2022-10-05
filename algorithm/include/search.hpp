@@ -13,6 +13,12 @@ inline constexpr uint32_t arrayLength = 53;
 constexpr uint32_t maxAlignOfPrint = 16;
 constexpr uint32_t maxColumnOfPrint = 10;
 
+template <typename T>
+constexpr bool isNumber()
+{
+    return (std::is_integral<T>::value || std::is_floating_point<T>::value);
+}
+
 template <class T>
 class Search
 {
@@ -22,9 +28,9 @@ public:
     Search(const Search& rhs);
     Search<T>& operator=(const Search& rhs);
 
-    int binarySearch(T* const array, const uint32_t length, const T key) const;
-    int interpolationSearch(T* const array, const uint32_t length, const T key) const;
-    int fibonacciSearch(T* const array, const uint32_t length, const T key) const;
+    [[nodiscard]] int binarySearch(const T* const array, const uint32_t length, const T key) const;
+    [[nodiscard]] int interpolationSearch(const T* const array, const uint32_t length, const T key) const;
+    [[nodiscard]] int fibonacciSearch(const T* const array, const uint32_t length, const T key) const;
 
     const std::unique_ptr<T[]>& getOrderedArray() const;
     uint32_t getLength() const;
@@ -54,7 +60,12 @@ private:
     static std::vector<uint32_t> generateFibonacciNumber(const uint32_t max);
 
 protected:
-    char* formatArray(const T* const array, const uint32_t length, char* const buffer, const uint32_t bufferSize) const;
+    template <typename V>
+    requires(isNumber<V>()) char* formatArray(
+        const T* const array,
+        const uint32_t length,
+        char* const buffer,
+        const uint32_t bufferSize) const;
 };
 
 template <class T>
@@ -127,7 +138,7 @@ requires std::is_integral<V>::value void Search<T>::setOrderedArray(
     char arrayBuffer[arrayBufferSize + 1];
     arrayBuffer[0] = '\0';
     std::cout << "\r\nGenerate " << length << " ordered integral numbers from " << left << " to " << right << ":\r\n"
-              << formatArray(array, length, arrayBuffer, arrayBufferSize + 1) << "\r\n"
+              << formatArray<T>(array, length, arrayBuffer, arrayBufferSize + 1) << "\r\n"
               << std::endl;
 }
 
@@ -152,13 +163,17 @@ requires std::is_floating_point<V>::value void Search<T>::setOrderedArray(
     arrayBuffer[0] = '\0';
     std::cout << "\r\nGenerate " << length << " ordered floating point numbers from " << left << " to " << right
               << ":\r\n"
-              << formatArray(array, length, arrayBuffer, arrayBufferSize + 1) << "\r\n"
+              << formatArray<T>(array, length, arrayBuffer, arrayBufferSize + 1) << "\r\n"
               << std::endl;
 }
 
 template <class T>
-char* Search<T>::formatArray(const T* const array, const uint32_t length, char* const buffer, const uint32_t bufferSize)
-    const
+template <typename V>
+requires(isNumber<V>()) char* Search<T>::formatArray(
+    const T* const array,
+    const uint32_t length,
+    char* const buffer,
+    const uint32_t bufferSize) const
 {
     uint32_t align = 0;
     for (uint32_t i = 0; i < length; ++i)

@@ -1,15 +1,11 @@
 #pragma once
 
-#include <algorithm>
 #include <bitset>
 #include <mutex>
 #include <variant>
 #include "argument.hpp"
 #include "console.hpp"
 #include "expression.hpp"
-#include "match.hpp"
-#include "search.hpp"
-#include "sort.hpp"
 
 class Command
 {
@@ -115,12 +111,13 @@ private:
     enum NumericTaskType
     {
         integral,
-        optimum
+        optimum,
+        sieve
     };
     template <>
     struct Bottom<NumericTaskType>
     {
-        static constexpr int value = 2;
+        static constexpr int value = 3;
     };
 
     enum IntegralMethod
@@ -148,6 +145,17 @@ private:
     struct Bottom<OptimumMethod>
     {
         static constexpr int value = 4;
+    };
+
+    enum SieveMethod
+    {
+        eratosthenes,
+        euler
+    };
+    template <>
+    struct Bottom<SieveMethod>
+    {
+        static constexpr int value = 2;
     };
 
 #pragma pack(8)
@@ -183,12 +191,14 @@ private:
             {
                 std::bitset<Bottom<IntegralMethod>::value> integralBit;
                 std::bitset<Bottom<OptimumMethod>::value> optimumBit;
+                std::bitset<Bottom<SieveMethod>::value> sieveBit;
 
-                [[nodiscard]] bool empty() const { return integralBit.none() && optimumBit.none(); }
+                [[nodiscard]] bool empty() const { return integralBit.none() && optimumBit.none() && sieveBit.none(); }
                 void reset()
                 {
                     integralBit.reset();
                     optimumBit.reset();
+                    sieveBit.reset();
                 }
             } numTask{};
 
@@ -240,42 +250,31 @@ private:
 
     // clang-format off
     const GeneralTaskMap generalTaskMap{
-        {"algorithm",
-         {{"match",
-          {{"rab", "knu", "boy", "hor", "sun"},
-           {&Command::runMatch, &Command::setMatchBit}}},
-          {"search",
-          {{"bin", "int", "fib"},
-           {&Command::runSearch, &Command::setSearchBit}}},
-          {"sort",
-          {{"bub", "sel", "ins", "she", "mer", "qui", "hea", "cou", "buc", "rad"},
-           {&Command::runSort, &Command::setSortBit}}}}},
-        {"numeric",
-         {{"integral",
-          {{"tra", "sim", "rom", "gau", "mon"},
-           {&Command::runIntegral, &Command::setIntegralBit}}},
-          {"optimum",
-          {{"gra", "ann", "par", "gen"},
-           {&Command::runOptimum, &Command::setOptimumBit}}}}}};
+        // - Category -+---- Type ----+---------------- Method ----------------+---------- Run ----------+--------- UpdateTask ---------
+        // ------------+--------------+----------------------------------------+-------------------------+------------------------------
+        { "algorithm" , {{ "match"    , {{ "rab", "knu", "boy", "hor", "sun" } , { &Command::runMatch    , &Command::updateMatchTask    }}},
+                         { "search"   , {{ "bin", "int", "fib" },                { &Command::runSearch   , &Command::updateSearchTask   }}},
+                         { "sort"     , {{ "bub", "sel", "ins", "she", "mer",
+                                           "qui", "hea", "cou", "buc", "rad" } , { &Command::runSort     , &Command::updateSortTask     }}}}},
+        { "numeric"   , {{ "integral" , {{ "tra", "sim", "rom", "gau", "mon" } , { &Command::runIntegral , &Command::updateIntegralTask }}},
+                         { "optimum"  , {{ "gra", "ann", "par", "gen"        } , { &Command::runOptimum  , &Command::updateOptimumTask  }}},
+                         { "sieve"    , {{ "era", "eul"                      } , { &Command::runSieve    , &Command::updateSieveTask    }}}}}
+        // ------------+--------------+----------------------------------------+-------------------------+------------------------------
+    };
     // clang-format on
     void runMatch() const;
-    void setMatchBit(const std::string& method);
-    void getMatchResult(const std::shared_ptr<algo_match::Match>& match) const;
+    void updateMatchTask(const std::string& method);
     void runSearch() const;
-    void setSearchBit(const std::string& method);
-    template <typename T>
-    void getSearchResult(const std::shared_ptr<algo_search::Search<T>>& search) const;
+    void updateSearchTask(const std::string& method);
     void runSort() const;
-    void setSortBit(const std::string& method);
-    template <typename T>
-    void getSortResult(const std::shared_ptr<algo_sort::Sort<T>>& sort) const;
+    void updateSortTask(const std::string& method);
     void runIntegral() const;
-    void setIntegralBit(const std::string& method);
-    void getIntegralResult(
-        const num_expression::Expression& express,
-        const double lowerLimit,
-        const double upperLimit,
-        const double epsilon) const;
+    void updateIntegralTask(const std::string& method);
+    void runOptimum() const;
+    void updateOptimumTask(const std::string& method);
+    void runSieve() const;
+    void updateSieveTask(const std::string& method);
+
     typedef std::variant<num_expression::Function1, num_expression::Function2> IntegralExprTarget;
     const std::
         unordered_multimap<num_expression::ExprRange<double, double>, IntegralExprTarget, num_expression::ExprMapHash>
@@ -288,13 +287,6 @@ private:
                   num_expression::Function2::range2,
                   num_expression::Function2::integralExpr},
                  num_expression::Function2()}};
-    void runOptimum() const;
-    void setOptimumBit(const std::string& method);
-    void getOptimumResult(
-        const num_expression::Expression& express,
-        const double leftEndpoint,
-        const double rightEndpoint,
-        const double epsilon) const;
     typedef std::variant<num_expression::Griewank, num_expression::Rastrigin> OptimumExprTarget;
     const std::
         unordered_multimap<num_expression::ExprRange<double, double>, OptimumExprTarget, num_expression::ExprMapHash>
@@ -307,7 +299,6 @@ private:
                   num_expression::Rastrigin::range2,
                   num_expression::Rastrigin::optimumExpr},
                  num_expression::Rastrigin()}};
-
     [[noreturn]] void throwExcessArgumentException();
     [[noreturn]] void throwUnexpectedMethodException(const std::string& info);
 

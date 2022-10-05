@@ -54,9 +54,10 @@ class Test:
     matchMethod = ["rab", "knu", "boy", "hor", "sun"]
     searchMethod = ["bin", "int", "fib"]
     sortMethod = ["bub", "sel", "ins", "she", "mer", "qui", "hea", "cou", "buc", "rad"]
-    numericTaskType = ["integral", "optimum"]
+    numericTaskType = ["integral", "optimum", "sieve"]
     integralMethod = ["tra", "sim", "rom", "gau", "mon"]
     optimumMethod = ["gra", "ann", "par", "gen"]
+    sieveMethod = ["era", "eul"]
     passStep = 0
     completeStep = 0
     totalStep = (
@@ -69,6 +70,7 @@ class Test:
         + len(numericTaskType)
         + (len(integralMethod) + 1)
         + (len(optimumMethod) + 1)
+        + (len(sieveMethod) + 1)
     )
     isCheckCoverage = False
     envCoverage = "CODE_COVERAGE"
@@ -238,11 +240,6 @@ class Test:
         self.testNumericTask()
 
     def testAlgorithmTask(self):
-        self.testMatchMethod()
-        self.testSearchMethod()
-        self.testSortMethod()
-
-    def testMatchMethod(self):
         self.runTestTask(f"{self.binCmd} {self.generalTaskCategory[0]} {self.algorithmTaskType[0]}")
         for each in self.matchMethod:
             self.runTestTask(f"{self.binCmd} {self.generalTaskCategory[0]} {self.algorithmTaskType[0]} {each}")
@@ -250,7 +247,6 @@ class Test:
             f"{self.binCmd} {self.generalTaskCategory[0]} {self.algorithmTaskType[0]} {' '.join(self.matchMethod)}"
         )
 
-    def testSearchMethod(self):
         self.runTestTask(f"{self.binCmd} {self.generalTaskCategory[0]} {self.algorithmTaskType[1]}")
         for each in self.searchMethod:
             self.runTestTask(f"{self.binCmd} {self.generalTaskCategory[0]} {self.algorithmTaskType[1]} {each}")
@@ -258,7 +254,6 @@ class Test:
             f"{self.binCmd} {self.generalTaskCategory[0]} {self.algorithmTaskType[1]} {' '.join(self.searchMethod)}"
         )
 
-    def testSortMethod(self):
         self.runTestTask(f"{self.binCmd} {self.generalTaskCategory[0]} {self.algorithmTaskType[2]}")
         for each in self.sortMethod:
             self.runTestTask(f"{self.binCmd} {self.generalTaskCategory[0]} {self.algorithmTaskType[2]} {each}")
@@ -267,10 +262,6 @@ class Test:
         )
 
     def testNumericTask(self):
-        self.testIntegralMethod()
-        self.testOptimumMethod()
-
-    def testIntegralMethod(self):
         self.runTestTask(f"{self.binCmd} {self.generalTaskCategory[1]} {self.numericTaskType[0]}")
         for each in self.integralMethod:
             self.runTestTask(f"{self.binCmd} {self.generalTaskCategory[1]} {self.numericTaskType[0]} {each}")
@@ -278,12 +269,18 @@ class Test:
             f"{self.binCmd} {self.generalTaskCategory[1]} {self.numericTaskType[0]} {' '.join(self.integralMethod)}"
         )
 
-    def testOptimumMethod(self):
         self.runTestTask(f"{self.binCmd} {self.generalTaskCategory[1]} {self.numericTaskType[1]}")
         for each in self.optimumMethod:
             self.runTestTask(f"{self.binCmd} {self.generalTaskCategory[1]} {self.numericTaskType[1]} {each}")
         self.runTestTask(
             f"{self.binCmd} {self.generalTaskCategory[1]} {self.numericTaskType[1]} {' '.join(self.optimumMethod)}"
+        )
+
+        self.runTestTask(f"{self.binCmd} {self.generalTaskCategory[1]} {self.numericTaskType[2]}")
+        for each in self.sieveMethod:
+            self.runTestTask(f"{self.binCmd} {self.generalTaskCategory[1]} {self.numericTaskType[2]} {each}")
+        self.runTestTask(
+            f"{self.binCmd} {self.generalTaskCategory[1]} {self.numericTaskType[2]} {' '.join(self.sieveMethod)}"
         )
 
 
