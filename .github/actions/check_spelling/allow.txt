@@ -15,6 +15,7 @@ declval
 destructure
 editorconfig
 eratosthenes
+euc
 eul
 fcoverage
 fibonacci
@@ -52,6 +53,7 @@ setname
 shellcheck
 shellcheckrc
 shfmt
+ste
 STREQUAL
 uintn
 valgrind
