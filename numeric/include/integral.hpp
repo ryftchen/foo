@@ -11,6 +11,7 @@ class Integral
 {
 public:
     virtual ~Integral() = default;
+
     virtual double operator()(double lower, double upper, const double eps) const = 0;
 
 protected:
@@ -32,6 +33,7 @@ class Trapezoidal : public Integral
 {
 public:
     explicit Trapezoidal(const num_expression::Expression& express) : func(express){};
+
     [[nodiscard]] double operator()(double lower, double upper, const double eps) const override;
 
 private:
@@ -43,6 +45,7 @@ class Simpson : public Integral
 {
 public:
     explicit Simpson(const num_expression::Expression& express) : func(express){};
+
     [[nodiscard]] double operator()(double lower, double upper, const double eps) const override;
 
 private:
@@ -57,6 +60,7 @@ class Romberg : public Integral
 {
 public:
     explicit Romberg(const num_expression::Expression& express) : func(express){};
+
     [[nodiscard]] double operator()(double lower, double upper, const double eps) const override;
 
 private:
@@ -68,6 +72,7 @@ class Gauss : public Integral
 {
 public:
     explicit Gauss(const num_expression::Expression& express) : func(express){};
+
     [[nodiscard]] double operator()(double lower, double upper, const double eps) const override;
 
 private:
@@ -79,6 +84,7 @@ class MonteCarlo : public Integral
 {
 public:
     explicit MonteCarlo(const num_expression::Expression& express) : func(express){};
+
     [[nodiscard]] double operator()(double lower, double upper, const double eps) const override;
 
 private:
