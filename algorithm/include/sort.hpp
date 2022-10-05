@@ -13,6 +13,12 @@ inline constexpr uint32_t arrayLength = 53;
 constexpr uint32_t maxAlignOfPrint = 16;
 constexpr uint32_t maxColumnOfPrint = 10;
 
+template <typename T>
+constexpr bool isNumber()
+{
+    return (std::is_integral<T>::value || std::is_floating_point<T>::value);
+}
+
 template <class T>
 class Sort
 {
@@ -61,7 +67,12 @@ private:
     static void buildMaxHeap(T* const sortArray, const uint32_t begin, const uint32_t end);
 
 protected:
-    char* formatArray(const T* const array, const uint32_t length, char* const buffer, const uint32_t bufferSize) const;
+    template <typename V>
+    requires(isNumber<V>()) char* formatArray(
+        const T* const array,
+        const uint32_t length,
+        char* const buffer,
+        const uint32_t bufferSize) const;
 };
 
 template <class T>
@@ -124,7 +135,7 @@ requires std::is_integral<V>::value void Sort<T>::setRandomArray(
     char arrayBuffer[arrayBufferSize + 1];
     arrayBuffer[0] = '\0';
     std::cout << "\r\nGenerate " << length << " random integral numbers from " << left << " to " << right << ":\r\n"
-              << formatArray(array, length, arrayBuffer, arrayBufferSize + 1) << std::endl;
+              << formatArray<T>(array, length, arrayBuffer, arrayBufferSize + 1) << std::endl;
 }
 
 template <class T>
@@ -147,12 +158,16 @@ requires std::is_floating_point<V>::value void Sort<T>::setRandomArray(
     arrayBuffer[0] = '\0';
     std::cout << "\r\nGenerate " << length << " random floating point numbers from " << left << " to " << right
               << ":\r\n"
-              << formatArray(array, length, arrayBuffer, arrayBufferSize + 1) << std::endl;
+              << formatArray<T>(array, length, arrayBuffer, arrayBufferSize + 1) << std::endl;
 }
 
 template <class T>
-char* Sort<T>::formatArray(const T* const array, const uint32_t length, char* const buffer, const uint32_t bufferSize)
-    const
+template <typename V>
+requires(isNumber<V>()) char* Sort<T>::formatArray(
+    const T* const array,
+    const uint32_t length,
+    char* const buffer,
+    const uint32_t bufferSize) const
 {
     uint32_t align = 0;
     for (uint32_t i = 0; i < length; ++i)

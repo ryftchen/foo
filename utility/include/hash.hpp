@@ -1,6 +1,6 @@
 #pragma once
 
-#include <iostream>
+#include <cstdint>
 
 namespace util_hash
 {

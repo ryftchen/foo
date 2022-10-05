@@ -1,15 +1,13 @@
 #include "match.hpp"
 #include <mpfr.h>
-#include <cstdint>
 #include <cstring>
-#include <iostream>
 #include "file.hpp"
 #include "hash.hpp"
 #include "time.hpp"
 
 #define MATCH_RESULT(opt) \
     "*%-16s method: Found the pattern \"%s\" starting(" #opt ") at index %d.  ==>Run time: %8.5f ms\n"
-#define MATCH_NO_RESULT(opt) "*%-16s method: Could not find the pattern \"%s\".  ==>Run time: %8.5f ms\n"
+#define MATCH_NO_RESULT "*%-16s method: Could not find the pattern \"%s\".  ==>Run time: %8.5f ms\n"
 #define MATCH_PRINT_RESULT_CONTENT(method)                                                  \
     do                                                                                      \
     {                                                                                       \
@@ -19,7 +17,7 @@
         }                                                                                   \
         else                                                                                \
         {                                                                                   \
-            FORMAT_PRINT(MATCH_NO_RESULT(1st), method, pattern, TIME_INTERVAL(timing));     \
+            FORMAT_PRINT(MATCH_NO_RESULT, method, pattern, TIME_INTERVAL(timing));          \
         }                                                                                   \
     }                                                                                       \
     while (0)
@@ -209,7 +207,7 @@ void Match::fillBadCharRuleTable(uint32_t badCharRuleTable[], const char* patter
     }
 }
 
-void Match::fillGoodSuffixRuleTable(uint32_t goodSuffixRuleTable[], const char* pattern, uint32_t const patternLen)
+void Match::fillGoodSuffixRuleTable(uint32_t goodSuffixRuleTable[], const char* pattern, const uint32_t patternLen)
 {
     uint32_t lastPrefixIndex = 1;
     for (int pos = (patternLen - 1); pos >= 0; --pos)

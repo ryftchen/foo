@@ -2,12 +2,16 @@
 #include "hash.hpp"
 #include "integral.hpp"
 #include "log.hpp"
+#include "match.hpp"
 #include "optimum.hpp"
+#include "search.hpp"
+#include "sieve.hpp"
+#include "sort.hpp"
 #include "thread.hpp"
 
-#define COMMAND_PRINT_TASK_TITLE(task, taskType, title)                                                            \
+#define COMMAND_PRINT_TASK_TITLE(taskCategory, taskType, title)                                                    \
     std::cout << std::endl                                                                                         \
-              << task << " TASK: " << std::setiosflags(std::ios_base::left) << std::setfill('.')                   \
+              << taskCategory << " TASK: " << std::setiosflags(std::ios_base::left) << std::setfill('.')           \
               << std::setw(titleWidthForPrintTask) << taskType << title << std::resetiosflags(std::ios_base::left) \
               << std::setfill(' ') << std::endl
 
@@ -73,8 +77,11 @@ Command::Command()
                                                   "└── -n --numeric\r\n"
                                                   "    ├── integral\r\n"
                                                   "    │   └── tra, sim, rom, gau, mon\r\n"
-                                                  "    └── optimum\r\n"
-                                                  "        └── gra, ann, par, gen\r\n");
+                                                  "    ├── optimum\r\n"
+                                                  "    │   └── gra, ann, par, gen\r\n"
+                                                  "    │   └── tra, sim, rom, gau, mon\r\n"
+                                                  "    └── sieve\r\n"
+                                                  "        └── era, eul\r\n");
 }
 
 void Command::runCommander(const int argc, const char* const argv[])
@@ -319,16 +326,66 @@ void Command::runMatch() const
         return;
     }
 
-    const uint32_t length = algo_match::maxDigit;
-    static_assert(length > algo_match::singlePattern.length());
-
+    static_assert(algo_match::maxDigit > algo_match::singlePattern.length());
     COMMAND_PRINT_TASK_TITLE("ALGORITHM", AlgorithmTaskType::match, "BEGIN");
-    const std::shared_ptr<algo_match::Match> match = std::make_shared<algo_match::Match>(length);
-    getMatchResult(match);
+    [&]
+    {
+        const std::shared_ptr<algo_match::Match> match = std::make_shared<algo_match::Match>(algo_match::maxDigit);
+        util_thread::Thread threadPool(std::min(
+            static_cast<uint32_t>(taskPlan.generalTask.algoTask.matchBit.count()),
+            static_cast<uint32_t>(Bottom<MatchMethod>::value)));
+        const auto matchFunctor = [&](const std::string& threadName,
+                                      int (*methodPtr)(const char*, const char*, const uint32_t, const uint32_t))
+        {
+            threadPool.enqueue(
+                threadName,
+                methodPtr,
+                match->getSearchingText().get(),
+                algo_match::singlePattern.data(),
+                match->getLength(),
+                algo_match::singlePattern.length());
+        };
+
+        for (int i = 0; i < Bottom<MatchMethod>::value; ++i)
+        {
+            if (!taskPlan.generalTask.algoTask.matchBit.test(MatchMethod(i)))
+            {
+                continue;
+            }
+
+            const auto taskCategoryMap = std::next(
+                std::next(generalTaskMap.cbegin(), GeneralTaskCategory::algorithm)->second.cbegin(),
+                AlgorithmTaskType::match);
+            const auto targetMethod = get<TaskMethodVector>(taskCategoryMap->second).at(i);
+            const std::string threadName = std::string{1, taskCategoryMap->first.at(0)} + "_" + targetMethod;
+            using util_hash::operator""_bkdrHash;
+            switch (util_hash::bkdrHash(targetMethod.data()))
+            {
+                case "rab"_bkdrHash:
+                    matchFunctor(threadName, &algo_match::Match::rkMethod);
+                    break;
+                case "knu"_bkdrHash:
+                    matchFunctor(threadName, &algo_match::Match::kmpMethod);
+                    break;
+                case "boy"_bkdrHash:
+                    matchFunctor(threadName, &algo_match::Match::bmMethod);
+                    break;
+                case "hor"_bkdrHash:
+                    matchFunctor(threadName, &algo_match::Match::horspoolMethod);
+                    break;
+                case "sun"_bkdrHash:
+                    matchFunctor(threadName, &algo_match::Match::sundayMethod);
+                    break;
+                default:
+                    LOG_DBG(logger, "execute to run unknown match method.");
+                    break;
+            }
+        }
+    }();
     COMMAND_PRINT_TASK_TITLE("ALGORITHM", AlgorithmTaskType::match, "END") << std::endl;
 }
 
-void Command::setMatchBit(const std::string& method)
+void Command::updateMatchTask(const std::string& method)
 {
     using util_hash::operator""_bkdrHash;
     switch (util_hash::bkdrHash(method.c_str()))
@@ -353,60 +410,6 @@ void Command::setMatchBit(const std::string& method)
     }
 }
 
-void Command::getMatchResult(const std::shared_ptr<algo_match::Match>& match) const
-{
-    util_thread::Thread threadPool(std::min(
-        static_cast<uint32_t>(taskPlan.generalTask.algoTask.matchBit.count()),
-        static_cast<uint32_t>(Bottom<MatchMethod>::value)));
-    const auto matchFunctor =
-        [&](const std::string& threadName, int (*methodPtr)(const char*, const char*, const uint32_t, const uint32_t))
-    {
-        threadPool.enqueue(
-            threadName,
-            methodPtr,
-            match->getSearchingText().get(),
-            algo_match::singlePattern.data(),
-            match->getLength(),
-            algo_match::singlePattern.length());
-    };
-
-    for (int i = 0; i < Bottom<MatchMethod>::value; ++i)
-    {
-        if (!taskPlan.generalTask.algoTask.matchBit.test(MatchMethod(i)))
-        {
-            continue;
-        }
-
-        const auto taskCategoryMap = std::next(
-            std::next(generalTaskMap.cbegin(), GeneralTaskCategory::algorithm)->second.cbegin(),
-            AlgorithmTaskType::match);
-        const auto targetMethod = get<TaskMethodVector>(taskCategoryMap->second).at(i);
-        const std::string threadName = std::string{1, taskCategoryMap->first.at(0)} + "_" + targetMethod;
-        using util_hash::operator""_bkdrHash;
-        switch (util_hash::bkdrHash(targetMethod.data()))
-        {
-            case "rab"_bkdrHash:
-                matchFunctor(threadName, &algo_match::Match::rkMethod);
-                break;
-            case "knu"_bkdrHash:
-                matchFunctor(threadName, &algo_match::Match::kmpMethod);
-                break;
-            case "boy"_bkdrHash:
-                matchFunctor(threadName, &algo_match::Match::bmMethod);
-                break;
-            case "hor"_bkdrHash:
-                matchFunctor(threadName, &algo_match::Match::horspoolMethod);
-                break;
-            case "sun"_bkdrHash:
-                matchFunctor(threadName, &algo_match::Match::sundayMethod);
-                break;
-            default:
-                LOG_DBG(logger, "execute to run unknown match method.");
-                break;
-        }
-    }
-}
-
 void Command::runSearch() const
 {
     std::unique_lock<std::mutex> lock(commandMutex);
@@ -415,19 +418,62 @@ void Command::runSearch() const
         return;
     }
 
-    constexpr double leftEndpoint = algo_search::arrayRange1;
-    constexpr double rightEndpoint = algo_search::arrayRange2;
-    constexpr uint32_t length = algo_search::arrayLength;
-    static_assert((leftEndpoint < rightEndpoint) && (length > 0));
-
+    static_assert((algo_search::arrayRange1 < algo_search::arrayRange2) && (algo_search::arrayLength > 0));
     COMMAND_PRINT_TASK_TITLE("ALGORITHM", AlgorithmTaskType::search, "BEGIN");
-    const std::shared_ptr<algo_search::Search<double>> search =
-        std::make_shared<algo_search::Search<double>>(length, leftEndpoint, rightEndpoint);
-    getSearchResult(search);
+    [&]
+    {
+        const std::shared_ptr<algo_search::Search<double>> search = std::make_shared<algo_search::Search<double>>(
+            algo_search::arrayLength, algo_search::arrayRange1, algo_search::arrayRange2);
+        util_thread::Thread threadPool(std::min(
+            static_cast<uint32_t>(taskPlan.generalTask.algoTask.searchBit.count()),
+            static_cast<uint32_t>(Bottom<SearchMethod>::value)));
+        const auto searchFunctor =
+            [&](const std::string& threadName,
+                int (algo_search::Search<double>::*methodPtr)(const double* const, const uint32_t, const double) const)
+        {
+            threadPool.enqueue(
+                threadName,
+                methodPtr,
+                search,
+                search->getOrderedArray().get(),
+                search->getLength(),
+                search->getSearchedKey());
+        };
+
+        for (int i = 0; i < Bottom<SearchMethod>::value; ++i)
+        {
+            if (!taskPlan.generalTask.algoTask.searchBit.test(SearchMethod(i)))
+            {
+                continue;
+            }
+
+            const auto taskCategoryMap = std::next(
+                std::next(generalTaskMap.cbegin(), GeneralTaskCategory::algorithm)->second.cbegin(),
+                AlgorithmTaskType::search);
+            const auto targetMethod = get<TaskMethodVector>(taskCategoryMap->second).at(i);
+            const std::string threadName = std::string{1, taskCategoryMap->first.at(0)} + "_" + targetMethod;
+            using util_hash::operator""_bkdrHash;
+            switch (util_hash::bkdrHash(targetMethod.data()))
+            {
+                case "bin"_bkdrHash:
+                    searchFunctor(threadName, &algo_search::Search<double>::binarySearch);
+                    break;
+                case "int"_bkdrHash:
+                    searchFunctor(threadName, &algo_search::Search<double>::interpolationSearch);
+                    break;
+                case "fib"_bkdrHash:
+                    searchFunctor(threadName, &algo_search::Search<double>::fibonacciSearch);
+                    break;
+                default:
+                    LOG_DBG(logger, "execute to run unknown search method.");
+                    break;
+            }
+        }
+    }();
     COMMAND_PRINT_TASK_TITLE("ALGORITHM", AlgorithmTaskType::search, "END") << std::endl;
 }
 
-void Command::setSearchBit(const std::string& method)
+void Command::updateSearchTask(const std::string& method)
 {
     using util_hash::operator""_bkdrHash;
     switch (util_hash::bkdrHash(method.c_str()))
@@ -446,55 +492,6 @@ void Command::setSearchBit(const std::string& method)
     }
 }
 
-template <typename T>
-void Command::getSearchResult(const std::shared_ptr<algo_search::Search<T>>& search) const
-{
-    util_thread::Thread threadPool(std::min(
-        static_cast<uint32_t>(taskPlan.generalTask.algoTask.searchBit.count()),
-        static_cast<uint32_t>(Bottom<SearchMethod>::value)));
-    const auto searchFunctor = [&](const std::string& threadName,
-                                   int (algo_search::Search<T>::*methodPtr)(T* const, const uint32_t, const T) const)
-    {
-        threadPool.enqueue(
-            threadName,
-            methodPtr,
-            search,
-            search->getOrderedArray().get(),
-            search->getLength(),
-            search->getSearchedKey());
-    };
-
-    for (int i = 0; i < Bottom<SearchMethod>::value; ++i)
-    {
-        if (!taskPlan.generalTask.algoTask.searchBit.test(SearchMethod(i)))
-        {
-            continue;
-        }
-
-        const auto taskCategoryMap = std::next(
-            std::next(generalTaskMap.cbegin(), GeneralTaskCategory::algorithm)->second.cbegin(),
-            AlgorithmTaskType::search);
-        const auto targetMethod = get<TaskMethodVector>(taskCategoryMap->second).at(i);
-        const std::string threadName = std::string{1, taskCategoryMap->first.at(0)} + "_" + targetMethod;
-        using util_hash::operator""_bkdrHash;
-        switch (util_hash::bkdrHash(targetMethod.data()))
-        {
-            case "bin"_bkdrHash:
-                searchFunctor(threadName, &algo_search::Search<T>::binarySearch);
-                break;
-            case "int"_bkdrHash:
-                searchFunctor(threadName, &algo_search::Search<T>::interpolationSearch);
-                break;
-            case "fib"_bkdrHash:
-                searchFunctor(threadName, &algo_search::Search<T>::fibonacciSearch);
-                break;
-            default:
-                LOG_DBG(logger, "execute to run unknown search method.");
-                break;
-        }
-    }
-}
-
 void Command::runSort() const
 {
     std::unique_lock<std::mutex> lock(commandMutex);
@@ -503,19 +500,76 @@ void Command::runSort() const
         return;
     }
 
-    constexpr int leftEndpoint = algo_sort::arrayRange1;
-    constexpr int rightEndpoint = algo_sort::arrayRange2;
-    constexpr uint32_t length = algo_sort::arrayLength;
-    static_assert((leftEndpoint < rightEndpoint) && (length > 0));
-
+    static_assert((algo_sort::arrayRange1 < algo_sort::arrayRange2) && (algo_sort::arrayLength > 0));
     COMMAND_PRINT_TASK_TITLE("ALGORITHM", AlgorithmTaskType::sort, "BEGIN");
-    const std::shared_ptr<algo_sort::Sort<int>> sort =
-        std::make_shared<algo_sort::Sort<int>>(length, leftEndpoint, rightEndpoint);
-    getSortResult(sort);
+    [&]
+    {
+        const std::shared_ptr<algo_sort::Sort<int>> sort = std::make_shared<algo_sort::Sort<int>>(
+            algo_sort::arrayLength, algo_sort::arrayRange1, algo_sort::arrayRange2);
+        util_thread::Thread threadPool(std::min(
+            static_cast<uint32_t>(taskPlan.generalTask.algoTask.sortBit.count()),
+            static_cast<uint32_t>(Bottom<SortMethod>::value)));
+        const auto sortFunctor = [&](const std::string& threadName,
+                                     void (algo_sort::Sort<int>::*methodPtr)(int* const, const uint32_t) const)
+        {
+            threadPool.enqueue(threadName, methodPtr, sort, sort->getRandomArray().get(), sort->getLength());
+        };
+
+        for (int i = 0; i < Bottom<SortMethod>::value; ++i)
+        {
+            if (!taskPlan.generalTask.algoTask.sortBit.test(SortMethod(i)))
+            {
+                continue;
+            }
+
+            const auto taskCategoryMap = std::next(
+                std::next(generalTaskMap.cbegin(), GeneralTaskCategory::algorithm)->second.cbegin(),
+                AlgorithmTaskType::sort);
+            const auto targetMethod = get<TaskMethodVector>(taskCategoryMap->second).at(i);
+            const std::string threadName = std::string{1, taskCategoryMap->first.at(0)} + "_" + targetMethod;
+            using util_hash::operator""_bkdrHash;
+            switch (util_hash::bkdrHash(targetMethod.data()))
+            {
+                case "bub"_bkdrHash:
+                    sortFunctor(threadName, &algo_sort::Sort<int>::bubbleSort);
+                    break;
+                case "sel"_bkdrHash:
+                    sortFunctor(threadName, &algo_sort::Sort<int>::selectionSort);
+                    break;
+                case "ins"_bkdrHash:
+                    sortFunctor(threadName, &algo_sort::Sort<int>::insertionSort);
+                    break;
+                case "she"_bkdrHash:
+                    sortFunctor(threadName, &algo_sort::Sort<int>::shellSort);
+                    break;
+                case "mer"_bkdrHash:
+                    sortFunctor(threadName, &algo_sort::Sort<int>::mergeSort);
+                    break;
+                case "qui"_bkdrHash:
+                    sortFunctor(threadName, &algo_sort::Sort<int>::quickSort);
+                    break;
+                case "hea"_bkdrHash:
+                    sortFunctor(threadName, &algo_sort::Sort<int>::heapSort);
+                    break;
+                case "cou"_bkdrHash:
+                    sortFunctor(threadName, &algo_sort::Sort<int>::countingSort);
+                    break;
+                case "buc"_bkdrHash:
+                    sortFunctor(threadName, &algo_sort::Sort<int>::bucketSort);
+                    break;
+                case "rad"_bkdrHash:
+                    sortFunctor(threadName, &algo_sort::Sort<int>::radixSort);
+                    break;
+                default:
+                    LOG_DBG(logger, "execute to run unknown sort method.");
+                    break;
+            }
+        }
+    }();
     COMMAND_PRINT_TASK_TITLE("ALGORITHM", AlgorithmTaskType::sort, "END") << std::endl;
 }
 
-void Command::setSortBit(const std::string& method)
+void Command::updateSortTask(const std::string& method)
 {
     using util_hash::operator""_bkdrHash;
     switch (util_hash::bkdrHash(method.c_str()))
@@ -555,70 +609,6 @@ void Command::setSortBit(const std::string& method)
     }
 }
 
-template <typename T>
-void Command::getSortResult(const std::shared_ptr<algo_sort::Sort<T>>& sort) const
-{
-    util_thread::Thread threadPool(std::min(
-        static_cast<uint32_t>(taskPlan.generalTask.algoTask.sortBit.count()),
-        static_cast<uint32_t>(Bottom<SortMethod>::value)));
-    const auto sortFunctor =
-        [&](const std::string& threadName, void (algo_sort::Sort<T>::*methodPtr)(T* const, const uint32_t) const)
-    {
-        threadPool.enqueue(threadName, methodPtr, sort, sort->getRandomArray().get(), sort->getLength());
-    };
-
-    for (int i = 0; i < Bottom<SortMethod>::value; ++i)
-    {
-        if (!taskPlan.generalTask.algoTask.sortBit.test(SortMethod(i)))
-        {
-            continue;
-        }
-
-        const auto taskCategoryMap = std::next(
-            std::next(generalTaskMap.cbegin(), GeneralTaskCategory::algorithm)->second.cbegin(),
-            AlgorithmTaskType::sort);
-        const auto targetMethod = get<TaskMethodVector>(taskCategoryMap->second).at(i);
-        const std::string threadName = std::string{1, taskCategoryMap->first.at(0)} + "_" + targetMethod;
-        using util_hash::operator""_bkdrHash;
-        switch (util_hash::bkdrHash(targetMethod.data()))
-        {
-            case "bub"_bkdrHash:
-                sortFunctor(threadName, &algo_sort::Sort<T>::bubbleSort);
-                break;
-            case "sel"_bkdrHash:
-                sortFunctor(threadName, &algo_sort::Sort<T>::selectionSort);
-                break;
-            case "ins"_bkdrHash:
-                sortFunctor(threadName, &algo_sort::Sort<T>::insertionSort);
-                break;
-            case "she"_bkdrHash:
-                sortFunctor(threadName, &algo_sort::Sort<T>::shellSort);
-                break;
-            case "mer"_bkdrHash:
-                sortFunctor(threadName, &algo_sort::Sort<T>::mergeSort);
-                break;
-            case "qui"_bkdrHash:
-                sortFunctor(threadName, &algo_sort::Sort<T>::quickSort);
-                break;
-            case "hea"_bkdrHash:
-                sortFunctor(threadName, &algo_sort::Sort<T>::heapSort);
-                break;
-            case "cou"_bkdrHash:
-                sortFunctor(threadName, &algo_sort::Sort<T>::countingSort);
-                break;
-            case "buc"_bkdrHash:
-                sortFunctor(threadName, &algo_sort::Sort<T>::bucketSort);
-                break;
-            case "rad"_bkdrHash:
-                sortFunctor(threadName, &algo_sort::Sort<T>::radixSort);
-                break;
-            default:
-                LOG_DBG(logger, "execute to run unknown sort method.");
-                break;
-        }
-    }
-}
-
 void Command::runIntegral() const
 {
     std::unique_lock<std::mutex> lock(commandMutex);
@@ -646,7 +636,57 @@ void Command::runIntegral() const
     const auto resultFunctor =
         [this](const num_expression::Expression& expression, const num_expression::ExprRange<double, double>& range)
     {
-        getIntegralResult(expression, range.range1, range.range2, num_integral::epsilon);
+        static_assert(num_integral::epsilon > 0.0);
+        util_thread::Thread threadPool(std::min(
+            static_cast<uint32_t>(taskPlan.generalTask.numTask.integralBit.count()),
+            static_cast<uint32_t>(Bottom<IntegralMethod>::value)));
+        const auto integralFunctor =
+            [&](const std::string& threadName, const std::shared_ptr<num_integral::Integral>& classPtr)
+        {
+            threadPool.enqueue(
+                threadName,
+                &num_integral::Integral::operator(),
+                classPtr,
+                range.range1,
+                range.range2,
+                num_integral::epsilon);
+        };
+
+        for (int i = 0; i < Bottom<IntegralMethod>::value; ++i)
+        {
+            if (!taskPlan.generalTask.numTask.integralBit.test(IntegralMethod(i)))
+            {
+                continue;
+            }
+
+            const auto taskCategoryMap = std::next(
+                std::next(generalTaskMap.cbegin(), GeneralTaskCategory::numeric)->second.cbegin(),
+                NumericTaskType::integral);
+            const auto targetMethod = get<TaskMethodVector>(taskCategoryMap->second).at(i);
+            const std::string threadName = std::string{1, taskCategoryMap->first.at(0)} + "_" + targetMethod;
+            using util_hash::operator""_bkdrHash;
+            switch (util_hash::bkdrHash(targetMethod.data()))
+            {
+                case "tra"_bkdrHash:
+                    integralFunctor(threadName, std::make_shared<num_integral::Trapezoidal>(expression));
+                    break;
+                case "sim"_bkdrHash:
+                    integralFunctor(threadName, std::make_shared<num_integral::Simpson>(expression));
+                    break;
+                case "rom"_bkdrHash:
+                    integralFunctor(threadName, std::make_shared<num_integral::Romberg>(expression));
+                    break;
+                case "gau"_bkdrHash:
+                    integralFunctor(threadName, std::make_shared<num_integral::Gauss>(expression));
+                    break;
+                case "mon"_bkdrHash:
+                    integralFunctor(threadName, std::make_shared<num_integral::MonteCarlo>(expression));
+                    break;
+                default:
+                    LOG_DBG(logger, "execute to run unknown integral method.");
+                    break;
+            }
+        }
     };
 
     COMMAND_PRINT_TASK_TITLE("NUMERIC", NumericTaskType::integral, "BEGIN");
@@ -667,7 +707,7 @@ void Command::runIntegral() const
     COMMAND_PRINT_TASK_TITLE("NUMERIC", NumericTaskType::integral, "END") << std::endl;
 }
 
-void Command::setIntegralBit(const std::string& method)
+void Command::updateIntegralTask(const std::string& method)
 {
     using util_hash::operator""_bkdrHash;
     switch (util_hash::bkdrHash(method.c_str()))
@@ -689,59 +729,6 @@ void Command::setIntegralBit(const std::string& method)
             break;
         default:
             throwUnexpectedMethodException("integral: " + method);
-    }
-}
-
-void Command::getIntegralResult(
-    const num_expression::Expression& express,
-    const double lowerLimit,
-    const double upperLimit,
-    const double epsilon) const
-{
-    assert(epsilon > 0.0);
-    util_thread::Thread threadPool(std::min(
-        static_cast<uint32_t>(taskPlan.generalTask.numTask.integralBit.count()),
-        static_cast<uint32_t>(Bottom<IntegralMethod>::value)));
-    const auto integralFunctor =
-        [&](const std::string& threadName, const std::shared_ptr<num_integral::Integral>& classPtr)
-    {
-        threadPool.enqueue(threadName, &num_integral::Integral::operator(), classPtr, lowerLimit, upperLimit, epsilon);
-    };
-
-    for (int i = 0; i < Bottom<IntegralMethod>::value; ++i)
-    {
-        if (!taskPlan.generalTask.numTask.integralBit.test(IntegralMethod(i)))
-        {
-            continue;
-        }
-
-        const auto taskCategoryMap = std::next(
-            std::next(generalTaskMap.cbegin(), GeneralTaskCategory::numeric)->second.cbegin(),
-            NumericTaskType::integral);
-        const auto targetMethod = get<TaskMethodVector>(taskCategoryMap->second).at(i);
-        const std::string threadName = std::string{1, taskCategoryMap->first.at(0)} + "_" + targetMethod;
-        using util_hash::operator""_bkdrHash;
-        switch (util_hash::bkdrHash(targetMethod.data()))
-        {
-            case "tra"_bkdrHash:
-                integralFunctor(threadName, std::make_shared<num_integral::Trapezoidal>(express));
-                break;
-            case "sim"_bkdrHash:
-                integralFunctor(threadName, std::make_shared<num_integral::Simpson>(express));
-                break;
-            case "rom"_bkdrHash:
-                integralFunctor(threadName, std::make_shared<num_integral::Romberg>(express));
-                break;
-            case "gau"_bkdrHash:
-                integralFunctor(threadName, std::make_shared<num_integral::Gauss>(express));
-                break;
-            case "mon"_bkdrHash:
-                integralFunctor(threadName, std::make_shared<num_integral::MonteCarlo>(express));
-                break;
-            default:
-                LOG_DBG(logger, "execute to run unknown integral method.");
-                break;
-        }
     }
 }
 
@@ -772,7 +759,54 @@ void Command::runOptimum() const
     const auto resultFunctor =
         [this](const num_expression::Expression& expression, const num_expression::ExprRange<double, double>& range)
     {
-        getOptimumResult(expression, range.range1, range.range2, num_optimum::epsilon);
+        assert((range.range1 < range.range2) && (num_optimum::epsilon > 0.0));
+        util_thread::Thread threadPool(std::min(
+            static_cast<uint32_t>(taskPlan.generalTask.numTask.optimumBit.count()),
+            static_cast<uint32_t>(Bottom<OptimumMethod>::value)));
+        const auto optimumFunctor =
+            [&](const std::string& threadName, const std::shared_ptr<num_optimum::Optimum>& classPtr)
+        {
+            threadPool.enqueue(
+                threadName,
+                &num_optimum::Optimum::operator(),
+                classPtr,
+                range.range1,
+                range.range2,
+                num_optimum::epsilon);
+        };
+
+        for (int i = 0; i < Bottom<OptimumMethod>::value; ++i)
+        {
+            if (!taskPlan.generalTask.numTask.optimumBit.test(OptimumMethod(i)))
+            {
+                continue;
+            }
+
+            const auto taskCategoryMap = std::next(
+                std::next(generalTaskMap.cbegin(), GeneralTaskCategory::numeric)->second.cbegin(),
+                NumericTaskType::optimum);
+            const auto targetMethod = get<TaskMethodVector>(taskCategoryMap->second).at(i);
+            const std::string threadName = std::string{1, taskCategoryMap->first.at(0)} + "_" + targetMethod;
+            using util_hash::operator""_bkdrHash;
+            switch (util_hash::bkdrHash(targetMethod.data()))
+            {
+                case "gra"_bkdrHash:
+                    optimumFunctor(threadName, std::make_shared<num_optimum::Gradient>(expression));
+                    break;
+                case "ann"_bkdrHash:
+                    optimumFunctor(threadName, std::make_shared<num_optimum::Annealing>(expression));
+                    break;
+                case "par"_bkdrHash:
+                    optimumFunctor(threadName, std::make_shared<num_optimum::Particle>(expression));
+                    break;
+                case "gen"_bkdrHash:
+                    optimumFunctor(threadName, std::make_shared<num_optimum::Genetic>(expression));
+                    break;
+                default:
+                    LOG_DBG(logger, "Unable to execute unknown optimum method.");
+                    break;
+            }
+        }
     };
 
     COMMAND_PRINT_TASK_TITLE("NUMERIC", NumericTaskType::optimum, "BEGIN");
@@ -793,7 +827,7 @@ void Command::runOptimum() const
     COMMAND_PRINT_TASK_TITLE("NUMERIC", NumericTaskType::optimum, "END") << std::endl;
 }
 
-void Command::setOptimumBit(const std::string& method)
+void Command::updateOptimumTask(const std::string& method)
 {
     using util_hash::operator""_bkdrHash;
     switch (util_hash::bkdrHash(method.c_str()))
@@ -815,54 +849,70 @@ void Command::setOptimumBit(const std::string& method)
     }
 }
 
-void Command::getOptimumResult(
-    const num_expression::Expression& express,
-    const double leftEndpoint,
-    const double rightEndpoint,
-    const double epsilon) const
+void Command::runSieve() const
 {
-    assert((leftEndpoint < rightEndpoint) && (epsilon > 0.0));
-    util_thread::Thread threadPool(std::min(
-        static_cast<uint32_t>(taskPlan.generalTask.numTask.optimumBit.count()),
-        static_cast<uint32_t>(Bottom<OptimumMethod>::value)));
-    const auto optimumFunctor =
-        [&](const std::string& threadName, const std::shared_ptr<num_optimum::Optimum>& classPtr)
+    std::unique_lock<std::mutex> lock(commandMutex);
+    if (taskPlan.generalTask.numTask.sieveBit.none())
     {
-        threadPool.enqueue(
-            threadName, &num_optimum::Optimum::operator(), classPtr, leftEndpoint, rightEndpoint, epsilon);
-    };
+        return;
+    }
 
-    for (int i = 0; i < Bottom<OptimumMethod>::value; ++i)
+    COMMAND_PRINT_TASK_TITLE("NUMERIC", NumericTaskType::sieve, "BEGIN");
+    [&]
     {
-        if (!taskPlan.generalTask.numTask.optimumBit.test(OptimumMethod(i)))
+        const std::shared_ptr<num_sieve::Sieve> sieve = std::make_shared<num_sieve::Sieve>();
+        util_thread::Thread threadPool(std::min(
+            static_cast<uint32_t>(taskPlan.generalTask.numTask.sieveBit.count()),
+            static_cast<uint32_t>(Bottom<SieveMethod>::value)));
+        const auto sieveFunctor = [&](const std::string& threadName,
+                                      std::vector<uint32_t> (num_sieve::Sieve::*methodPtr)(const uint32_t) const)
         {
-            continue;
-        }
+            threadPool.enqueue(threadName, methodPtr, sieve, num_sieve::maxPositiveInteger);
+        };
 
-        const auto taskCategoryMap = std::next(
-            std::next(generalTaskMap.cbegin(), GeneralTaskCategory::numeric)->second.cbegin(),
-            NumericTaskType::optimum);
-        const auto targetMethod = get<TaskMethodVector>(taskCategoryMap->second).at(i);
-        const std::string threadName = std::string{1, taskCategoryMap->first.at(0)} + "_" + targetMethod;
-        using util_hash::operator""_bkdrHash;
-        switch (util_hash::bkdrHash(targetMethod.data()))
+        for (int i = 0; i < Bottom<SieveMethod>::value; ++i)
         {
-            case "gra"_bkdrHash:
-                optimumFunctor(threadName, std::make_shared<num_optimum::Gradient>(express));
-                break;
-            case "ann"_bkdrHash:
-                optimumFunctor(threadName, std::make_shared<num_optimum::Annealing>(express));
-                break;
-            case "par"_bkdrHash:
-                optimumFunctor(threadName, std::make_shared<num_optimum::Particle>(express));
-                break;
-            case "gen"_bkdrHash:
-                optimumFunctor(threadName, std::make_shared<num_optimum::Genetic>(express));
-                break;
-            default:
-                LOG_DBG(logger, "Unable to execute unknown optimum method.");
-                break;
+            if (!taskPlan.generalTask.numTask.sieveBit.test(SieveMethod(i)))
+            {
+                continue;
+            }
+
+            const auto taskCategoryMap = std::next(
+                std::next(generalTaskMap.cbegin(), GeneralTaskCategory::numeric)->second.cbegin(),
+                NumericTaskType::sieve);
+            const auto targetMethod = get<TaskMethodVector>(taskCategoryMap->second).at(i);
+            const std::string threadName = std::string{1, taskCategoryMap->first.at(0)} + "_" + targetMethod;
+            using util_hash::operator""_bkdrHash;
+            switch (util_hash::bkdrHash(targetMethod.data()))
+            {
+                case "era"_bkdrHash:
+                    sieveFunctor(threadName, &num_sieve::Sieve::eratosthenesMethod);
+                    break;
+                case "eul"_bkdrHash:
+                    sieveFunctor(threadName, &num_sieve::Sieve::eulerMethod);
+                    break;
+                default:
+                    LOG_DBG(logger, "execute to run unknown sieve method.");
+                    break;
+            }
         }
+    }();
+    COMMAND_PRINT_TASK_TITLE("NUMERIC", NumericTaskType::sieve, "END") << std::endl;
+}
+
+void Command::updateSieveTask(const std::string& method)
+{
+    using util_hash::operator""_bkdrHash;
+    switch (util_hash::bkdrHash(method.c_str()))
+    {
+        case "era"_bkdrHash:
+            taskPlan.generalTask.numTask.sieveBit.set(SieveMethod::eratosthenes);
+            break;
+        case "eul"_bkdrHash:
+            taskPlan.generalTask.numTask.sieveBit.set(SieveMethod::euler);
+            break;
+        default:
+            throwUnexpectedMethodException("sieve: " + method);
     }
 }
 
@@ -907,6 +957,9 @@ std::ostream& operator<<(std::ostream& os, const Command::NumericTaskType& taskT
             break;
         case Command::NumericTaskType::optimum:
             os << "OPTIMUM";
+            break;
+        case Command::NumericTaskType::sieve:
+            os << "SIEVE";
             break;
         default:
             os << "UNKNOWN: " << static_cast<std::underlying_type_t<Command::NumericTaskType>>(taskType);

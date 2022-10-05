@@ -3,18 +3,18 @@
 #include "file.hpp"
 
 #define SORT_RESULT(opt) "\r\n*%-9s method: (" #opt ")\r\n%s\r\n==>Run time: %8.5f ms\n"
-#define SORT_PRINT_RESULT_CONTENT(method)                                     \
-    do                                                                        \
-    {                                                                         \
-        const uint32_t arrayBufferSize = length * maxAlignOfPrint;            \
-        char arrayBuffer[arrayBufferSize + 1];                                \
-        arrayBuffer[0] = '\0';                                                \
-        FORMAT_PRINT(                                                         \
-            SORT_RESULT(asc),                                                 \
-            method,                                                           \
-            formatArray(sortArray, length, arrayBuffer, arrayBufferSize + 1), \
-            TIME_INTERVAL(timing));                                           \
-    }                                                                         \
+#define SORT_PRINT_RESULT_CONTENT(method)                                        \
+    do                                                                           \
+    {                                                                            \
+        const uint32_t arrayBufferSize = length * maxAlignOfPrint;               \
+        char arrayBuffer[arrayBufferSize + 1];                                   \
+        arrayBuffer[0] = '\0';                                                   \
+        FORMAT_PRINT(                                                            \
+            SORT_RESULT(asc),                                                    \
+            method,                                                              \
+            formatArray<T>(sortArray, length, arrayBuffer, arrayBufferSize + 1), \
+            TIME_INTERVAL(timing));                                              \
+    }                                                                            \
     while (0)
 
 namespace algo_sort
@@ -165,14 +165,14 @@ void Sort<T>::mergeSortRecursive(T* const sortArray, const uint32_t begin, const
     rightSubArray.insert(rightSubArray.cend(), std::numeric_limits<T>::max());
     for (uint32_t i = begin; i <= end; ++i)
     {
-        if (leftSubArray[leftIndex] < rightSubArray[rightIndex])
+        if (leftSubArray.at(leftIndex) < rightSubArray.at(rightIndex))
         {
-            sortArray[i] = leftSubArray[leftIndex];
+            sortArray[i] = leftSubArray.at(leftIndex);
             ++leftIndex;
         }
         else
         {
-            sortArray[i] = rightSubArray[rightIndex];
+            sortArray[i] = rightSubArray.at(rightIndex);
             ++rightIndex;
         }
     }
@@ -340,13 +340,12 @@ void Sort<T>::bucketSort(T* const array, const uint32_t length) const
 
     const uint32_t bucketNum = length;
     const double intervalSpan = static_cast<double>(max - min) / static_cast<double>(bucketNum - 1);
-    std::vector<T> bucket(0);
-    std::vector<std::vector<T>> aggregation(bucketNum, bucket);
+    std::vector<std::vector<T>> aggregation(bucketNum, std::vector<T>{});
     for (uint32_t i = 0; i < length; ++i)
     {
         // min+(max-min)/(bucketNum-1)*(buckIndex-1)<=sortArray[i]
         const uint32_t aggIndex = std::floor(static_cast<double>(sortArray[i] - min) / intervalSpan + 1) - 1;
-        aggregation[aggIndex].emplace_back(sortArray[i]);
+        aggregation.at(aggIndex).emplace_back(sortArray[i]);
     }
 
     uint32_t index = 0;

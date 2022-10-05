@@ -1,33 +1,33 @@
 #include "search.hpp"
 #include "file.hpp"
 
-#define SEARCH_RESULT(opt) \
-    "*%-13s method: Found the key \"%.5f\" appearing(" #opt ") at index %d.  ==>Run time: %8.5f ms\n"
-#define SEARCH_NO_RESULT(opt) "*%-13s method: Could not find the key \"%.5f\".  ==>Run time: %8.5f ms\n"
-#define SEARCH_PRINT_RESULT_CONTENT(method)                                              \
-    do                                                                                   \
-    {                                                                                    \
-        if (-1 != index)                                                                 \
-        {                                                                                \
-            FORMAT_PRINT(SEARCH_RESULT(1st), method, key, index, TIME_INTERVAL(timing)); \
-        }                                                                                \
-        else                                                                             \
-        {                                                                                \
-            FORMAT_PRINT(SEARCH_NO_RESULT(1st), method, key, TIME_INTERVAL(timing));     \
-        }                                                                                \
-    }                                                                                    \
+#define SEARCH_RESULT "*%-13s method: Found the key \"%.5f\" appearing at index %d.  ==>Run time: %8.5f ms\n"
+#define SEARCH_NO_RESULT "*%-13s method: Could not find the key \"%.5f\".  ==>Run time: %8.5f ms\n"
+#define SEARCH_PRINT_RESULT_CONTENT(method)                                         \
+    do                                                                              \
+    {                                                                               \
+        if (-1 != index)                                                            \
+        {                                                                           \
+            FORMAT_PRINT(SEARCH_RESULT, method, key, index, TIME_INTERVAL(timing)); \
+        }                                                                           \
+        else                                                                        \
+        {                                                                           \
+            FORMAT_PRINT(SEARCH_NO_RESULT, method, key, TIME_INTERVAL(timing));     \
+        }                                                                           \
+    }                                                                               \
     while (0)
 
 namespace algo_search
 {
 template class Search<double>;
-template int Search<double>::binarySearch(double* const array, const uint32_t length, const double key) const;
-template int Search<double>::interpolationSearch(double* const array, const uint32_t length, const double key) const;
-template int Search<double>::fibonacciSearch(double* const array, const uint32_t length, const double key) const;
+template int Search<double>::binarySearch(const double* const array, const uint32_t length, const double key) const;
+template int Search<double>::interpolationSearch(const double* const array, const uint32_t length, const double key)
+    const;
+template int Search<double>::fibonacciSearch(const double* const array, const uint32_t length, const double key) const;
 
 // Binary method
 template <class T>
-int Search<T>::binarySearch(T* const array, const uint32_t length, const T key) const
+int Search<T>::binarySearch(const T* const array, const uint32_t length, const T key) const
 {
     TIME_BEGIN(timing);
     int index = -1;
@@ -58,7 +58,7 @@ int Search<T>::binarySearch(T* const array, const uint32_t length, const T key) 
 
 // Interpolation method
 template <class T>
-int Search<T>::interpolationSearch(T* const array, const uint32_t length, const T key) const
+int Search<T>::interpolationSearch(const T* const array, const uint32_t length, const T key) const
 {
     TIME_BEGIN(timing);
     int index = -1;
@@ -89,7 +89,7 @@ int Search<T>::interpolationSearch(T* const array, const uint32_t length, const 
 
 // Fibonacci method
 template <class T>
-int Search<T>::fibonacciSearch(T* const array, const uint32_t length, const T key) const
+int Search<T>::fibonacciSearch(const T* const array, const uint32_t length, const T key) const
 {
     TIME_BEGIN(timing);
     int index = -1;
