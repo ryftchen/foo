@@ -285,7 +285,7 @@ void FSM<Derived, State>::processEvent(const Event& event)
 {
     using Rows = typename ByEventType<Event, typename Derived::TransitionMap>::Type;
 
-    ProcessingLock proclock(*this);
+    ProcessingLock procLock(*this);
     static_assert(std::is_base_of<FSM, Derived>::value);
     Derived& self = static_cast<Derived&>(*this);
     state = handleEvent<Event, Rows>::execute(self, event, state);
