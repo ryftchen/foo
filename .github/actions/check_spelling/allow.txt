@@ -14,6 +14,8 @@ decltype
 declval
 destructure
 editorconfig
+eratosthenes
+eul
 fcoverage
 fibonacci
 fprofile
