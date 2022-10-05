@@ -3,20 +3,25 @@
 #include <string>
 #include <vector>
 
-namespace num_sieve
+namespace num_divisor
 {
-inline constexpr uint32_t maxPositiveInteger = 997;
+inline constexpr int integer1 = 2 * 2 * 3 * 3 * 5 * 5 * 7 * 7;
+inline constexpr int integer2 = 2 * 3 * 5 * 7 * 11 * 13 * 17;
 constexpr uint32_t maxAlignOfPrint = 16;
 constexpr uint32_t maxColumnOfPrint = 10;
 
-class Sieve
+class Divisor
 {
 public:
-    Sieve();
-    virtual ~Sieve() = default;
+    Divisor();
+    virtual ~Divisor() = default;
 
-    [[nodiscard]] std::vector<uint32_t> eratosthenesMethod(const uint32_t max) const;
-    [[nodiscard]] std::vector<uint32_t> eulerMethod(const uint32_t max) const;
+    [[nodiscard]] std::vector<int> euclidMethod(int a, int b) const;
+    [[nodiscard]] std::vector<int> steinMethod(int a, int b) const;
+
+private:
+    static int steinRecursive(int a, int b);
+    static std::vector<int> getAllDivisors(const int greatestCommonDivisor);
 
 protected:
     template <typename T>
@@ -27,7 +32,7 @@ protected:
 };
 
 template <typename T>
-requires std::is_integral<T>::value char* Sieve::formatIntegerVector(
+requires std::is_integral<T>::value char* Divisor::formatIntegerVector(
     const std::vector<T>& vector,
     char* const buffer,
     const uint32_t bufferSize) const
@@ -62,4 +67,4 @@ requires std::is_integral<T>::value char* Sieve::formatIntegerVector(
 
     return buffer;
 }
-} // namespace num_sieve
+} // namespace num_divisor

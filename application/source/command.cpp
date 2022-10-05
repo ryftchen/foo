@@ -1,4 +1,5 @@
 #include "command.hpp"
+#include "divisor.hpp"
 #include "hash.hpp"
 #include "integral.hpp"
 #include "log.hpp"
@@ -75,11 +76,12 @@ Command::Command()
                                                   "│       ├── bub, sel, ins, she, mer\r\n"
                                                   "│       └── qui, hea, cou, buc, rad\r\n"
                                                   "└── -n --numeric\r\n"
+                                                  "    ├── divisor\r\n"
+                                                  "    │   └── euc, ste\r\n"
                                                   "    ├── integral\r\n"
                                                   "    │   └── tra, sim, rom, gau, mon\r\n"
                                                   "    ├── optimum\r\n"
                                                   "    │   └── gra, ann, par, gen\r\n"
-                                                  "    │   └── tra, sim, rom, gau, mon\r\n"
                                                   "    └── sieve\r\n"
                                                   "        └── era, eul\r\n");
 }
@@ -609,6 +611,73 @@ void Command::updateSortTask(const std::string& method)
     }
 }
 
+void Command::runDivisor() const
+{
+    std::unique_lock<std::mutex> lock(commandMutex);
+    if (taskPlan.generalTask.numTask.divisorBit.none())
+    {
+        return;
+    }
+
+    COMMAND_PRINT_TASK_TITLE("NUMERIC", NumericTaskType::divisor, "BEGIN");
+    [&]
+    {
+        const std::shared_ptr<num_divisor::Divisor> divisor = std::make_shared<num_divisor::Divisor>();
+        util_thread::Thread threadPool(std::min(
+            static_cast<uint32_t>(taskPlan.generalTask.numTask.divisorBit.count()),
+            static_cast<uint32_t>(Bottom<DivisorMethod>::value)));
+        const auto divisorFunctor =
+            [&](const std::string& threadName, std::vector<int> (num_divisor::Divisor::*methodPtr)(int, int) const)
+        {
+            threadPool.enqueue(threadName, methodPtr, divisor, num_divisor::integer1, num_divisor::integer2);
+        };
+
+        for (int i = 0; i < Bottom<DivisorMethod>::value; ++i)
+        {
+            if (!taskPlan.generalTask.numTask.divisorBit.test(DivisorMethod(i)))
+            {
+                continue;
+            }
+
+            const auto taskCategoryMap = std::next(
+                std::next(generalTaskMap.cbegin(), GeneralTaskCategory::numeric)->second.cbegin(),
+                NumericTaskType::divisor);
+            const auto targetMethod = get<TaskMethodVector>(taskCategoryMap->second).at(i);
+            const std::string threadName = std::string{1, taskCategoryMap->first.at(0)} + "_" + targetMethod;
+            using util_hash::operator""_bkdrHash;
+            switch (util_hash::bkdrHash(targetMethod.data()))
+            {
+                case "euc"_bkdrHash:
+                    divisorFunctor(threadName, &num_divisor::Divisor::euclidMethod);
+                    break;
+                case "ste"_bkdrHash:
+                    divisorFunctor(threadName, &num_divisor::Divisor::steinMethod);
+                    break;
+                default:
+                    LOG_DBG(logger, "execute to run unknown divisor method.");
+                    break;
+            }
+        }
+    }();
+    COMMAND_PRINT_TASK_TITLE("NUMERIC", NumericTaskType::divisor, "END") << std::endl;
+}
+
+void Command::updateDivisorTask(const std::string& method)
+{
+    using util_hash::operator""_bkdrHash;
+    switch (util_hash::bkdrHash(method.c_str()))
+    {
+        case "euc"_bkdrHash:
+            taskPlan.generalTask.numTask.divisorBit.set(DivisorMethod::euclid);
+            break;
+        case "ste"_bkdrHash:
+            taskPlan.generalTask.numTask.divisorBit.set(DivisorMethod::stein);
+            break;
+        default:
+            throwUnexpectedMethodException("divisor: " + method);
+    }
+}
+
 void Command::runIntegral() const
 {
     std::unique_lock<std::mutex> lock(commandMutex);
@@ -952,6 +1021,9 @@ std::ostream& operator<<(std::ostream& os, const Command::NumericTaskType& taskT
 {
     switch (taskType)
     {
+        case Command::NumericTaskType::divisor:
+            os << "DIVISOR";
+            break;
         case Command::NumericTaskType::integral:
             os << "INTEGRAL";
             break;

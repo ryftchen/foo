@@ -110,6 +110,7 @@ private:
 
     enum NumericTaskType
     {
+        divisor,
         integral,
         optimum,
         sieve
@@ -117,7 +118,18 @@ private:
     template <>
     struct Bottom<NumericTaskType>
     {
-        static constexpr int value = 3;
+        static constexpr int value = 4;
+    };
+
+    enum DivisorMethod
+    {
+        euclid,
+        stein
+    };
+    template <>
+    struct Bottom<DivisorMethod>
+    {
+        static constexpr int value = 2;
     };
 
     enum IntegralMethod
@@ -189,13 +201,18 @@ private:
 
             struct NumTask
             {
+                std::bitset<Bottom<DivisorMethod>::value> divisorBit;
                 std::bitset<Bottom<IntegralMethod>::value> integralBit;
                 std::bitset<Bottom<OptimumMethod>::value> optimumBit;
                 std::bitset<Bottom<SieveMethod>::value> sieveBit;
 
-                [[nodiscard]] bool empty() const { return integralBit.none() && optimumBit.none() && sieveBit.none(); }
+                [[nodiscard]] bool empty() const
+                {
+                    return divisorBit.none() && integralBit.none() && optimumBit.none() && sieveBit.none();
+                }
                 void reset()
                 {
+                    divisorBit.reset();
                     integralBit.reset();
                     optimumBit.reset();
                     sieveBit.reset();
@@ -256,7 +273,8 @@ private:
                          { "search"   , {{ "bin", "int", "fib" },                { &Command::runSearch   , &Command::updateSearchTask   }}},
                          { "sort"     , {{ "bub", "sel", "ins", "she", "mer",
                                            "qui", "hea", "cou", "buc", "rad" } , { &Command::runSort     , &Command::updateSortTask     }}}}},
-        { "numeric"   , {{ "integral" , {{ "tra", "sim", "rom", "gau", "mon" } , { &Command::runIntegral , &Command::updateIntegralTask }}},
+        { "numeric"   , {{ "divisor"  , {{ "euc", "ste"                      } , { &Command::runDivisor  , &Command::updateDivisorTask  }}},
+                         { "integral" , {{ "tra", "sim", "rom", "gau", "mon" } , { &Command::runIntegral , &Command::updateIntegralTask }}},
                          { "optimum"  , {{ "gra", "ann", "par", "gen"        } , { &Command::runOptimum  , &Command::updateOptimumTask  }}},
                          { "sieve"    , {{ "era", "eul"                      } , { &Command::runSieve    , &Command::updateSieveTask    }}}}}
         // ------------+--------------+----------------------------------------+-------------------------+------------------------------
@@ -268,6 +286,8 @@ private:
     void updateSearchTask(const std::string& method);
     void runSort() const;
     void updateSortTask(const std::string& method);
+    void runDivisor() const;
+    void updateDivisorTask(const std::string& method);
     void runIntegral() const;
     void updateIntegralTask(const std::string& method);
     void runOptimum() const;
