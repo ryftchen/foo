@@ -65,7 +65,7 @@ std::vector<uint32_t> Sieve::eulerMethod(const uint32_t max) const
 
         for (uint32_t j = 1; (j <= sieveVector.size()) && ((i * sieveVector.at(j - 1)) <= max); ++j)
         {
-            isPrime.at(i * sieveVector.at(j - 1)) = false;
+            isPrime.at(static_cast<uint32_t>(i * sieveVector.at(j - 1))) = false;
             if (0 == (i % sieveVector.at(j - 1)))
             {
                 break;
