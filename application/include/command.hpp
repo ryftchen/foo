@@ -110,6 +110,7 @@ private:
 
     enum NumericTaskType
     {
+        arithmetic,
         divisor,
         integral,
         optimum,
@@ -117,6 +118,19 @@ private:
     };
     template <>
     struct Bottom<NumericTaskType>
+    {
+        static constexpr int value = 5;
+    };
+
+    enum ArithmeticMethod
+    {
+        addition,
+        subtraction,
+        multiplication,
+        division
+    };
+    template <>
+    struct Bottom<ArithmeticMethod>
     {
         static constexpr int value = 4;
     };
@@ -190,7 +204,7 @@ private:
                 std::bitset<Bottom<SearchMethod>::value> searchBit;
                 std::bitset<Bottom<SortMethod>::value> sortBit;
 
-                [[nodiscard]] bool empty() const { return matchBit.none() && searchBit.none() && sortBit.none(); }
+                [[nodiscard]] bool empty() const { return (matchBit.none() && searchBit.none() && sortBit.none()); }
                 void reset()
                 {
                     matchBit.reset();
@@ -201,6 +215,7 @@ private:
 
             struct NumTask
             {
+                std::bitset<Bottom<ArithmeticMethod>::value> arithmeticBit;
                 std::bitset<Bottom<DivisorMethod>::value> divisorBit;
                 std::bitset<Bottom<IntegralMethod>::value> integralBit;
                 std::bitset<Bottom<OptimumMethod>::value> optimumBit;
@@ -208,10 +223,13 @@ private:
 
                 [[nodiscard]] bool empty() const
                 {
-                    return divisorBit.none() && integralBit.none() && optimumBit.none() && sieveBit.none();
+                    return (
+                        arithmeticBit.none() && divisorBit.none() && integralBit.none() && optimumBit.none()
+                        && sieveBit.none());
                 }
                 void reset()
                 {
+                    arithmeticBit.reset();
                     divisorBit.reset();
                     integralBit.reset();
                     optimumBit.reset();
@@ -219,7 +237,7 @@ private:
                 }
             } numTask{};
 
-            [[nodiscard]] bool empty() const { return algoTask.empty() && numTask.empty(); }
+            [[nodiscard]] bool empty() const { return (algoTask.empty() && numTask.empty()); }
             void reset()
             {
                 algoTask.reset();
@@ -227,7 +245,7 @@ private:
             }
         } generalTask{};
 
-        [[nodiscard]] bool empty() const { return basicTask.empty() && generalTask.empty(); }
+        [[nodiscard]] bool empty() const { return (basicTask.empty() && generalTask.empty()); }
         void reset()
         {
             basicTask.reset();
@@ -237,12 +255,12 @@ private:
 #pragma pack()
 
     typedef void (Command::*PerformTaskFunctor)() const;
-    typedef void (Command::*SetTaskBitFunctor)(const std::string&);
+    typedef void (Command::*UpdateTaskFunctor)(const std::string&);
     using TaskCategoryName = std::string;
     using TaskTypeName = std::string;
     using TaskMethodName = std::string;
     using TaskMethodVector = std::vector<TaskMethodName>;
-    using TaskFunctorTuple = std::tuple<PerformTaskFunctor, SetTaskBitFunctor>;
+    using TaskFunctorTuple = std::tuple<PerformTaskFunctor, UpdateTaskFunctor>;
     using TaskTypeTuple = std::tuple<TaskMethodVector, TaskFunctorTuple>;
     using TaskCategoryMap = std::map<TaskTypeName, TaskTypeTuple>;
     using BasicTaskMap = std::map<TaskCategoryName, PerformTaskFunctor>;
@@ -267,17 +285,18 @@ private:
 
     // clang-format off
     const GeneralTaskMap generalTaskMap{
-        // - Category -+---- Type ----+---------------- Method ----------------+---------- Run ----------+--------- UpdateTask ---------
-        // ------------+--------------+----------------------------------------+-------------------------+------------------------------
-        { "algorithm" , {{ "match"    , {{ "rab", "knu", "boy", "hor", "sun" } , { &Command::runMatch    , &Command::updateMatchTask    }}},
-                         { "search"   , {{ "bin", "int", "fib" },                { &Command::runSearch   , &Command::updateSearchTask   }}},
-                         { "sort"     , {{ "bub", "sel", "ins", "she", "mer",
-                                           "qui", "hea", "cou", "buc", "rad" } , { &Command::runSort     , &Command::updateSortTask     }}}}},
-        { "numeric"   , {{ "divisor"  , {{ "euc", "ste"                      } , { &Command::runDivisor  , &Command::updateDivisorTask  }}},
-                         { "integral" , {{ "tra", "sim", "rom", "gau", "mon" } , { &Command::runIntegral , &Command::updateIntegralTask }}},
-                         { "optimum"  , {{ "gra", "ann", "par", "gen"        } , { &Command::runOptimum  , &Command::updateOptimumTask  }}},
-                         { "sieve"    , {{ "era", "eul"                      } , { &Command::runSieve    , &Command::updateSieveTask    }}}}}
-        // ------------+--------------+----------------------------------------+-------------------------+------------------------------
+        // - Category -+----- Type -----+---------------- Method ----------------+----------- Run -----------+---------- UpdateTask ----------
+        // ------------+----------------+----------------------------------------+---------------------------+--------------------------------
+        { "algorithm" , {{ "match"      , {{ "rab", "knu", "boy", "hor", "sun" } , { &Command::runMatch      , &Command::updateMatchTask      }}},
+                         { "search"     , {{ "bin", "int", "fib" },                { &Command::runSearch     , &Command::updateSearchTask     }}},
+                         { "sort"       , {{ "bub", "sel", "ins", "she", "mer",
+                                             "qui", "hea", "cou", "buc", "rad" } , { &Command::runSort       , &Command::updateSortTask       }}}}},
+        { "numeric"   , {{ "arithmetic" , {{ "add", "sub", "mul", "div"        } , { &Command::runArithmetic , &Command::updateArithmeticTask }}},
+                         { "divisor"    , {{ "euc", "ste"                      } , { &Command::runDivisor    , &Command::updateDivisorTask    }}},
+                         { "integral"   , {{ "tra", "sim", "rom", "gau", "mon" } , { &Command::runIntegral   , &Command::updateIntegralTask   }}},
+                         { "optimum"    , {{ "gra", "ann", "par", "gen"        } , { &Command::runOptimum    , &Command::updateOptimumTask    }}},
+                         { "sieve"      , {{ "era", "eul"                      } , { &Command::runSieve      , &Command::updateSieveTask      }}}}}
+        // ------------+----------------+----------------------------------------+---------------------------+--------------------------------
     };
     // clang-format on
     void runMatch() const;
@@ -286,6 +305,8 @@ private:
     void updateSearchTask(const std::string& method);
     void runSort() const;
     void updateSortTask(const std::string& method);
+    void runArithmetic() const;
+    void updateArithmeticTask(const std::string& method);
     void runDivisor() const;
     void updateDivisorTask(const std::string& method);
     void runIntegral() const;
@@ -347,7 +368,7 @@ auto Command::get(const TaskFunctorTuple& tuple) const
     {
         return std::get<0>(tuple);
     }
-    else if constexpr (std::is_same_v<T, SetTaskBitFunctor>)
+    else if constexpr (std::is_same_v<T, UpdateTaskFunctor>)
     {
         return std::get<1>(tuple);
     }

@@ -1,4 +1,5 @@
 #include "command.hpp"
+#include "arithmetic.hpp"
 #include "divisor.hpp"
 #include "hash.hpp"
 #include "integral.hpp"
@@ -11,7 +12,7 @@
 #include "thread.hpp"
 
 #define COMMAND_PRINT_TASK_TITLE(taskCategory, taskType, title)                                                    \
-    std::cout << "\n"                                                                                              \
+    std::cout << "\r\n"                                                                                            \
               << taskCategory << " TASK: " << std::setiosflags(std::ios_base::left) << std::setfill('.')           \
               << std::setw(titleWidthForPrintTask) << taskType << title << std::resetiosflags(std::ios_base::left) \
               << std::setfill(' ') << std::endl
@@ -76,6 +77,8 @@ Command::Command()
                                                   "│       ├── bub, sel, ins, she, mer\r\n"
                                                   "│       └── qui, hea, cou, buc, rad\r\n"
                                                   "└── -n --numeric\r\n"
+                                                  "    ├── arithmetic\r\n"
+                                                  "    │   └── add, sub, mul, div\r\n"
                                                   "    ├── divisor\r\n"
                                                   "    │   └── euc, ste\r\n"
                                                   "    ├── integral\r\n"
@@ -195,7 +198,7 @@ void Command::validateGeneralTask()
 
             for (const auto& task : tasks)
             {
-                (this->*get<SetTaskBitFunctor>(get<TaskFunctorTuple>(taskTypeTuple)))(task);
+                (this->*get<UpdateTaskFunctor>(get<TaskFunctorTuple>(taskTypeTuple)))(task);
             }
         }
     }
@@ -611,6 +614,84 @@ void Command::updateSortTask(const std::string& method)
     }
 }
 
+void Command::runArithmetic() const
+{
+    std::unique_lock<std::mutex> lock(commandMutex);
+    if (taskPlan.generalTask.numTask.arithmeticBit.none())
+    {
+        return;
+    }
+
+    COMMAND_PRINT_TASK_TITLE("NUMERIC", NumericTaskType::arithmetic, "BEGIN");
+    [&]
+    {
+        const std::shared_ptr<num_arithmetic::Arithmetic> arithmetic = std::make_shared<num_arithmetic::Arithmetic>();
+        util_thread::Thread threadPool(std::min(
+            static_cast<uint32_t>(taskPlan.generalTask.numTask.arithmeticBit.count()),
+            static_cast<uint32_t>(Bottom<ArithmeticMethod>::value)));
+        const auto arithmeticFunctor = [&](const std::string& threadName, int (*methodPtr)(const int, const int))
+        {
+            threadPool.enqueue(threadName, methodPtr, num_arithmetic::integer1, num_arithmetic::integer2);
+        };
+
+        for (int i = 0; i < Bottom<ArithmeticMethod>::value; ++i)
+        {
+            if (!taskPlan.generalTask.numTask.arithmeticBit.test(ArithmeticMethod(i)))
+            {
+                continue;
+            }
+
+            const auto taskCategoryMap = std::next(
+                std::next(generalTaskMap.cbegin(), GeneralTaskCategory::numeric)->second.cbegin(),
+                NumericTaskType::arithmetic);
+            const auto targetMethod = get<TaskMethodVector>(taskCategoryMap->second).at(i);
+            const std::string threadName = std::string{1, taskCategoryMap->first.at(0)} + "_" + targetMethod;
+            using util_hash::operator""_bkdrHash;
+            switch (util_hash::bkdrHash(targetMethod.data()))
+            {
+                case "add"_bkdrHash:
+                    arithmeticFunctor(threadName, &num_arithmetic::Arithmetic::additionMethod);
+                    break;
+                case "sub"_bkdrHash:
+                    arithmeticFunctor(threadName, &num_arithmetic::Arithmetic::subtractionMethod);
+                    break;
+                case "mul"_bkdrHash:
+                    arithmeticFunctor(threadName, &num_arithmetic::Arithmetic::multiplicationMethod);
+                    break;
+                case "div"_bkdrHash:
+                    arithmeticFunctor(threadName, &num_arithmetic::Arithmetic::divisionMethod);
+                    break;
+                default:
+                    LOG_DBG(logger, "execute to run unknown arithmetic method.");
+                    break;
+            }
+        }
+    }();
+    COMMAND_PRINT_TASK_TITLE("NUMERIC", NumericTaskType::arithmetic, "END") << std::endl;
+}
+
+void Command::updateArithmeticTask(const std::string& method)
+{
+    using util_hash::operator""_bkdrHash;
+    switch (util_hash::bkdrHash(method.c_str()))
+    {
+        case "add"_bkdrHash:
+            taskPlan.generalTask.numTask.arithmeticBit.set(ArithmeticMethod::addition);
+            break;
+        case "sub"_bkdrHash:
+            taskPlan.generalTask.numTask.arithmeticBit.set(ArithmeticMethod::subtraction);
+            break;
+        case "mul"_bkdrHash:
+            taskPlan.generalTask.numTask.arithmeticBit.set(ArithmeticMethod::multiplication);
+            break;
+        case "div"_bkdrHash:
+            taskPlan.generalTask.numTask.arithmeticBit.set(ArithmeticMethod::division);
+            break;
+        default:
+            throwUnexpectedMethodException("arithmetic: " + method);
+    }
+}
+
 void Command::runDivisor() const
 {
     std::unique_lock<std::mutex> lock(commandMutex);
@@ -1021,6 +1102,9 @@ std::ostream& operator<<(std::ostream& os, const Command::NumericTaskType& taskT
 {
     switch (taskType)
     {
+        case Command::NumericTaskType::arithmetic:
+            os << "ARITHMETIC";
+            break;
         case Command::NumericTaskType::divisor:
             os << "DIVISOR";
             break;
