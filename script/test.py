@@ -55,6 +55,7 @@ class Test:
     generalTaskDict = {
         "--algorithm": {
             "match": ["rab", "knu", "boy", "hor", "sun"],
+            "notation": ["pre", "pos"],
             "search": ["bin", "int", "fib"],
             "sort": ["bub", "sel", "ins", "she", "mer", "qui", "hea", "cou", "buc", "rad"],
         },
