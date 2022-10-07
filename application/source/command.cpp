@@ -68,28 +68,7 @@ Command::Command()
             })
         .help("demo of numeric, see \"tasks\" for detail of specific category");
 
-    program.addArgument("tasks").remaining().help("specify task\r\n"
-                                                  "├── -a --algorithm\r\n"
-                                                  "│   ├── match\r\n"
-                                                  "│   │   └── rab, knu, boy, hor, sun\r\n"
-                                                  "│   ├── notation\r\n"
-                                                  "│   │   └── pre, pos\r\n"
-                                                  "│   ├── search\r\n"
-                                                  "│   │   └── bin, int, fib\r\n"
-                                                  "│   └── sort\r\n"
-                                                  "│       ├── bub, sel, ins, she, mer\r\n"
-                                                  "│       └── qui, hea, cou, buc, rad\r\n"
-                                                  "└── -n --numeric\r\n"
-                                                  "    ├── arithmetic\r\n"
-                                                  "    │   └── add, sub, mul, div\r\n"
-                                                  "    ├── divisor\r\n"
-                                                  "    │   └── euc, ste\r\n"
-                                                  "    ├── integral\r\n"
-                                                  "    │   └── tra, sim, rom, gau, mon\r\n"
-                                                  "    ├── optimum\r\n"
-                                                  "    │   └── gra, ann, par, gen\r\n"
-                                                  "    └── sieve\r\n"
-                                                  "        └── era, eul\r\n");
+    program.addArgument("tasks").remaining().help("specify task\r\n" + std::string{optionTreeOfHelpMsg});
 }
 
 void Command::runCommander(const int argc, const char* const argv[])
@@ -838,7 +817,7 @@ void Command::runIntegral() const
 
     const auto printFunctor = [](const IntegralExprTarget& expression)
     {
-        constexpr std::string_view prefix{"\r\nIntegral Expression: "};
+        constexpr std::string_view prefix{"\r\nIntegral expression: "};
         std::visit(
             num_expression::ExprOverloaded{
                 [&prefix](const num_expression::Function1& /*unused*/)
@@ -961,7 +940,7 @@ void Command::runOptimum() const
 
     const auto printFunctor = [](const OptimumExprTarget& expression)
     {
-        constexpr std::string_view prefix{"\r\nOptimum Expression: "};
+        constexpr std::string_view prefix{"\r\nOptimum expression: "};
         std::visit(
             num_expression::ExprOverloaded{
                 [&prefix](const num_expression::Griewank& /*unused*/)

@@ -1,6 +1,5 @@
 #pragma once
 
-#include <queue>
 #include <string>
 
 namespace algo_notation
