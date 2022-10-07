@@ -59,6 +59,7 @@ class Test:
             "sort": ["bub", "sel", "ins", "she", "mer", "qui", "hea", "cou", "buc", "rad"],
         },
         "--numeric": {
+            "arithmetic": ["add", "sub", "mul", "div"],
             "divisor": ["euc", "ste"],
             "integral": ["tra", "sim", "rom", "gau", "mon"],
             "optimum": ["gra", "ann", "par", "gen"],
