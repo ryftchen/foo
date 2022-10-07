@@ -287,20 +287,36 @@ private:
     template <typename T>
     auto get(const TaskFunctorTuple& tuple) const;
 
-    const BasicTaskMap basicTaskMap{
-        {"console", &Command::printConsoleOutput},
-        {"help", &Command::printHelpMessage},
-        {"version", &Command::printVersionInfo},
-    };
-    void printConsoleOutput() const;
-    void printHelpMessage() const;
-    void printVersionInfo() const;
-    void enterConsole() const;
-    void registerOnConsole(util_console::Console& console) const;
-    static void viewLogContent();
-    static std::string getIconBanner();
-
     // clang-format off
+    static constexpr std::string_view optionTreeOfHelpMsg{
+        "├── -a --algorithm\r\n"
+        "│   ├── match\r\n"
+        "│   │   └── rab, knu, boy, hor, sun\r\n"
+        "│   ├── notation\r\n"
+        "│   │   └── pre, pos\r\n"
+        "│   ├── search\r\n"
+        "│   │   └── bin, int, fib\r\n"
+        "│   └── sort\r\n"
+        "│       ├── bub, sel, ins, she, mer\r\n"
+        "│       └── qui, hea, cou, buc, rad\r\n"
+        "└── -n --numeric\r\n"
+        "    ├── arithmetic\r\n"
+        "    │   └── add, sub, mul, div\r\n"
+        "    ├── divisor\r\n"
+        "    │   └── euc, ste\r\n"
+        "    ├── integral\r\n"
+        "    │   └── tra, sim, rom, gau, mon\r\n"
+        "    ├── optimum\r\n"
+        "    │   └── gra, ann, par, gen\r\n"
+        "    └── sieve\r\n"
+        "        └── era, eul"
+    };
+    const BasicTaskMap basicTaskMap{
+        // - Category -+----------- Run -----------
+        { "console" , &Command::printConsoleOutput },
+        { "help"    , &Command::printHelpMessage   },
+        { "version" , &Command::printVersionInfo   },
+    };
     const GeneralTaskMap generalTaskMap{
         // - Category -+----- Type -----+---------------- Method ----------------+----------- Run -----------+---------- UpdateTask ----------
         // ------------+----------------+----------------------------------------+---------------------------+--------------------------------
@@ -317,6 +333,9 @@ private:
         // ------------+----------------+----------------------------------------+---------------------------+--------------------------------
     };
     // clang-format on
+    void printConsoleOutput() const;
+    void printHelpMessage() const;
+    void printVersionInfo() const;
     void runMatch() const;
     void updateMatchTask(const std::string& method);
     void runNotation() const;
@@ -360,6 +379,11 @@ private:
                   num_expression::Rastrigin::range2,
                   num_expression::Rastrigin::optimumExpr},
                  num_expression::Rastrigin()}};
+
+    void enterConsole() const;
+    void registerOnConsole(util_console::Console& console) const;
+    static void viewLogContent();
+    static std::string getIconBanner();
     [[noreturn]] void throwExcessArgumentException();
     [[noreturn]] void throwUnexpectedMethodException(const std::string& info);
 

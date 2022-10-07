@@ -10,6 +10,7 @@ Arithmetic::Arithmetic()
     std::cout << "\r\nElementary arithmetic of " << integer1 << " and " << integer2 << ":" << std::endl;
 }
 
+// Addition method
 int Arithmetic::additionMethod(const int augend, const int addend)
 {
     int sum = bitAdd(augend, addend);
@@ -18,6 +19,7 @@ int Arithmetic::additionMethod(const int augend, const int addend)
     return sum;
 }
 
+// Subtraction method
 int Arithmetic::subtractionMethod(const int minuend, const int subtrahend)
 {
     int difference = bitAdd(minuend, bitAdd(~subtrahend, 1));
@@ -26,6 +28,7 @@ int Arithmetic::subtractionMethod(const int minuend, const int subtrahend)
     return difference;
 }
 
+// Multiplication method
 int Arithmetic::multiplicationMethod(const int multiplier, const int multiplicand)
 {
     int product = 0;
@@ -43,6 +46,7 @@ int Arithmetic::multiplicationMethod(const int multiplier, const int multiplican
     return product;
 }
 
+// Division method
 int Arithmetic::divisionMethod(const int dividend, const int divisor)
 {
     if (0 == divisor)
@@ -70,5 +74,4 @@ int Arithmetic::divisionMethod(const int dividend, const int divisor)
     FORMAT_PRINT(ARITHMETIC_RESULT, "Division", dividend, "/", divisor, quotient);
     return quotient;
 }
-
 } // namespace num_arithmetic
