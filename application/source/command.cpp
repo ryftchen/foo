@@ -5,6 +5,7 @@
 #include "integral.hpp"
 #include "log.hpp"
 #include "match.hpp"
+#include "notation.hpp"
 #include "optimum.hpp"
 #include "search.hpp"
 #include "sieve.hpp"
@@ -71,6 +72,8 @@ Command::Command()
                                                   "├── -a --algorithm\r\n"
                                                   "│   ├── match\r\n"
                                                   "│   │   └── rab, knu, boy, hor, sun\r\n"
+                                                  "│   ├── notation\r\n"
+                                                  "│   │   └── pre, pos\r\n"
                                                   "│   ├── search\r\n"
                                                   "│   │   └── bin, int, fib\r\n"
                                                   "│   └── sort\r\n"
@@ -412,6 +415,72 @@ void Command::updateMatchTask(const std::string& method)
             break;
         default:
             throwUnexpectedMethodException("match: " + method);
+    }
+}
+
+void Command::runNotation() const
+{
+    std::unique_lock<std::mutex> lock(commandMutex);
+    if (taskPlan.generalTask.algoTask.notationBit.none())
+    {
+        return;
+    }
+
+    COMMAND_PRINT_TASK_TITLE("ALGORITHM", AlgorithmTaskType::notation, "BEGIN");
+    [&]
+    {
+        const std::shared_ptr<algo_notation::Notation> notation = std::make_shared<algo_notation::Notation>();
+        util_thread::Thread threadPool(std::min(
+            static_cast<uint32_t>(taskPlan.generalTask.algoTask.notationBit.count()),
+            static_cast<uint32_t>(Bottom<NotationMethod>::value)));
+        const auto notationFunctor = [&](const std::string& threadName, std::string (*methodPtr)(const std::string&))
+        {
+            threadPool.enqueue(threadName, methodPtr, std::string{algo_notation::infixNotation});
+        };
+
+        for (int i = 0; i < Bottom<NotationMethod>::value; ++i)
+        {
+            if (!taskPlan.generalTask.algoTask.notationBit.test(NotationMethod(i)))
+            {
+                continue;
+            }
+
+            const auto taskCategoryMap = std::next(
+                std::next(generalTaskMap.cbegin(), GeneralTaskCategory::algorithm)->second.cbegin(),
+                AlgorithmTaskType::notation);
+            const auto targetMethod = get<TaskMethodVector>(taskCategoryMap->second).at(i);
+            const std::string threadName = std::string{1, taskCategoryMap->first.at(0)} + "_" + targetMethod;
+            using util_hash::operator""_bkdrHash;
+            switch (util_hash::bkdrHash(targetMethod.data()))
+            {
+                case "pre"_bkdrHash:
+                    notationFunctor(threadName, &algo_notation::Notation::prefixMethod);
+                    break;
+                case "pos"_bkdrHash:
+                    notationFunctor(threadName, &algo_notation::Notation::postfixMethod);
+                    break;
+                default:
+                    LOG_DBG(logger, "execute to run unknown notation method.");
+                    break;
+            }
+        }
+    }();
+    COMMAND_PRINT_TASK_TITLE("ALGORITHM", AlgorithmTaskType::notation, "END") << std::endl;
+}
+
+void Command::updateNotationTask(const std::string& method)
+{
+    using util_hash::operator""_bkdrHash;
+    switch (util_hash::bkdrHash(method.c_str()))
+    {
+        case "pre"_bkdrHash:
+            taskPlan.generalTask.algoTask.notationBit.set(NotationMethod::prefix);
+            break;
+        case "pos"_bkdrHash:
+            taskPlan.generalTask.algoTask.notationBit.set(NotationMethod::postfix);
+            break;
+        default:
+            throwUnexpectedMethodException("notation: " + method);
     }
 }
 
@@ -1084,6 +1153,9 @@ std::ostream& operator<<(std::ostream& os, const Command::AlgorithmTaskType& tas
     {
         case Command::AlgorithmTaskType::match:
             os << "MATCH";
+            break;
+        case Command::AlgorithmTaskType::notation:
+            os << "NOTATION";
             break;
         case Command::AlgorithmTaskType::search:
             os << "SEARCH";

@@ -54,13 +54,14 @@ private:
     enum AlgorithmTaskType
     {
         match,
+        notation,
         search,
         sort
     };
     template <>
     struct Bottom<AlgorithmTaskType>
     {
-        static constexpr int value = 3;
+        static constexpr int value = 4;
     };
 
     enum MatchMethod
@@ -75,6 +76,17 @@ private:
     struct Bottom<MatchMethod>
     {
         static constexpr int value = 5;
+    };
+
+    enum NotationMethod
+    {
+        prefix,
+        postfix
+    };
+    template <>
+    struct Bottom<NotationMethod>
+    {
+        static constexpr int value = 2;
     };
 
     enum SearchMethod
@@ -201,13 +213,18 @@ private:
             struct AlgoTask
             {
                 std::bitset<Bottom<MatchMethod>::value> matchBit;
+                std::bitset<Bottom<NotationMethod>::value> notationBit;
                 std::bitset<Bottom<SearchMethod>::value> searchBit;
                 std::bitset<Bottom<SortMethod>::value> sortBit;
 
-                [[nodiscard]] bool empty() const { return (matchBit.none() && searchBit.none() && sortBit.none()); }
+                [[nodiscard]] bool empty() const
+                {
+                    return (matchBit.none() && notationBit.none() && searchBit.none() && sortBit.none());
+                }
                 void reset()
                 {
                     matchBit.reset();
+                    notationBit.reset();
                     searchBit.reset();
                     sortBit.reset();
                 }
@@ -288,7 +305,8 @@ private:
         // - Category -+----- Type -----+---------------- Method ----------------+----------- Run -----------+---------- UpdateTask ----------
         // ------------+----------------+----------------------------------------+---------------------------+--------------------------------
         { "algorithm" , {{ "match"      , {{ "rab", "knu", "boy", "hor", "sun" } , { &Command::runMatch      , &Command::updateMatchTask      }}},
-                         { "search"     , {{ "bin", "int", "fib" },                { &Command::runSearch     , &Command::updateSearchTask     }}},
+                         { "notation"   , {{ "pre", "pos"                      } , { &Command::runNotation   , &Command::updateNotationTask   }}},
+                         { "search"     , {{ "bin", "int", "fib"               } , { &Command::runSearch     , &Command::updateSearchTask     }}},
                          { "sort"       , {{ "bub", "sel", "ins", "she", "mer",
                                              "qui", "hea", "cou", "buc", "rad" } , { &Command::runSort       , &Command::updateSortTask       }}}}},
         { "numeric"   , {{ "arithmetic" , {{ "add", "sub", "mul", "div"        } , { &Command::runArithmetic , &Command::updateArithmeticTask }}},
@@ -301,6 +319,8 @@ private:
     // clang-format on
     void runMatch() const;
     void updateMatchTask(const std::string& method);
+    void runNotation() const;
+    void updateNotationTask(const std::string& method);
     void runSearch() const;
     void updateSearchTask(const std::string& method);
     void runSort() const;
