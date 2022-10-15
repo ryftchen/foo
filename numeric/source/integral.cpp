@@ -7,13 +7,13 @@
 
 namespace num_integral
 {
-double trapezoid(const num_expression::Expression& express, const double left, const double height, const uint32_t step)
+double trapezoid(const num_expression::Expression& expr, const double left, const double height, const uint32_t step)
 {
     double sum = 0.0, x = left;
     const double delta = height / step;
     for (uint32_t i = 0; i < step; ++i)
     {
-        const double area = (express(x) + express(x + delta)) * delta / 2.0; // S=(a+b)*h/2
+        const double area = (expr(x) + expr(x + delta)) * delta / 2.0; // S=(a+b)*h/2
         sum += area;
         x += delta;
     }

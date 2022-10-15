@@ -13,7 +13,7 @@ Arithmetic::Arithmetic()
 // Addition method
 int Arithmetic::additionMethod(const int augend, const int addend)
 {
-    int sum = bitAdd(augend, addend);
+    const int sum = bitAdd(augend, addend);
 
     FORMAT_PRINT(ARITHMETIC_RESULT, "Addition", augend, "+", addend, sum);
     return sum;
@@ -22,7 +22,7 @@ int Arithmetic::additionMethod(const int augend, const int addend)
 // Subtraction method
 int Arithmetic::subtractionMethod(const int minuend, const int subtrahend)
 {
-    int difference = bitAdd(minuend, bitAdd(~subtrahend, 1));
+    const int difference = bitAdd(minuend, bitAdd(~subtrahend, 1));
 
     FORMAT_PRINT(ARITHMETIC_RESULT, "Subtraction", minuend, "-", subtrahend, difference);
     return difference;

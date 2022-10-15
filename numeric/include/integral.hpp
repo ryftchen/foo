@@ -17,7 +17,7 @@ public:
 protected:
     static int inline getSign(double& lower, double& upper);
     friend double trapezoid(
-        const num_expression::Expression& express,
+        const num_expression::Expression& expr,
         const double left,
         const double height,
         const uint32_t step);
@@ -32,7 +32,7 @@ int inline Integral::getSign(double& lower, double& upper)
 class Trapezoidal : public Integral
 {
 public:
-    explicit Trapezoidal(const num_expression::Expression& express) : func(express){};
+    explicit Trapezoidal(const num_expression::Expression& expr) : func(expr){};
 
     [[nodiscard]] double operator()(double lower, double upper, const double eps) const override;
 
@@ -44,7 +44,7 @@ private:
 class Simpson : public Integral
 {
 public:
-    explicit Simpson(const num_expression::Expression& express) : func(express){};
+    explicit Simpson(const num_expression::Expression& expr) : func(expr){};
 
     [[nodiscard]] double operator()(double lower, double upper, const double eps) const override;
 
@@ -59,7 +59,7 @@ private:
 class Romberg : public Integral
 {
 public:
-    explicit Romberg(const num_expression::Expression& express) : func(express){};
+    explicit Romberg(const num_expression::Expression& expr) : func(expr){};
 
     [[nodiscard]] double operator()(double lower, double upper, const double eps) const override;
 
@@ -71,7 +71,7 @@ private:
 class Gauss : public Integral
 {
 public:
-    explicit Gauss(const num_expression::Expression& express) : func(express){};
+    explicit Gauss(const num_expression::Expression& expr) : func(expr){};
 
     [[nodiscard]] double operator()(double lower, double upper, const double eps) const override;
 
@@ -83,7 +83,7 @@ private:
 class MonteCarlo : public Integral
 {
 public:
-    explicit MonteCarlo(const num_expression::Expression& express) : func(express){};
+    explicit MonteCarlo(const num_expression::Expression& expr) : func(expr){};
 
     [[nodiscard]] double operator()(double lower, double upper, const double eps) const override;
 
