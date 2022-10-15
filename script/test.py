@@ -48,7 +48,7 @@ class Test:
     libList = ["libutility.so", "libalgorithm.so", "libnumeric.so"]
     libDir = "./build/lib/"
     basicTaskDict = {
-        "--console": [r"'help'", r"'quit'", r"'run ./script/batch.txt'", r"'log'"],
+        "--console": [r"'help'", r"'quit'", r"'run ./script/console_batch.txt'", r"'log'"],
         "--help": "",
         "--version": "",
     }
