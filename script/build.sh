@@ -12,7 +12,7 @@ ALGORITHM_FOLDER="algorithm"
 NUMERIC_FOLDER="numeric"
 SCRIPT_FOLDER="script"
 BUILD_FOLDER="build"
-TEMP_FOLDER="temp"
+TEMPORARY_FOLDER="temporary"
 CMAKE_CONTENT="CMakeLists.txt"
 COMPILE_COMMANDS="compile_commands.json"
 FORMAT_CONFIG_CPP=".clang-format"
@@ -150,7 +150,7 @@ compileCode()
 
 performCleanupOption()
 {
-    bashCommand "rm -rf ./${BUILD_FOLDER} ./${TEMP_FOLDER}"
+    bashCommand "rm -rf ./${BUILD_FOLDER} ./${TEMPORARY_FOLDER}"
     bashCommand "rm -rf ./core*"
 }
 
@@ -177,19 +177,19 @@ performLintOption()
 performReportOption()
 {
     if [ "${ARGS_REPORT}" = true ]; then
-        if [ -d ./"${TEMP_FOLDER}" ]; then
+        if [ -d ./"${TEMPORARY_FOLDER}" ]; then
             commitId=$(git rev-parse --short @)
             if [ -z "${commitId}" ]; then
                 commitId="local"
             fi
             lastTar="${PROJECT_FOLDER}_html_${commitId}.tar.bz2"
-            if [ -f ./"${TEMP_FOLDER}"/"${lastTar}" ]; then
-                printException "The latest html file ${TEMP_FOLDER}/${lastTar} has been generated."
+            if [ -f ./"${TEMPORARY_FOLDER}"/"${lastTar}" ]; then
+                printException "The latest html file ${TEMPORARY_FOLDER}/${lastTar} has been generated."
             else
                 tarHtmlReport
             fi
         else
-            bashCommand "mkdir ./${TEMP_FOLDER}"
+            bashCommand "mkdir ./${TEMPORARY_FOLDER}"
             tarHtmlReport
         fi
     fi
@@ -200,16 +200,16 @@ tarHtmlReport()
     commitId=$(git rev-parse --short @)
     browserFolder="${PROJECT_FOLDER}_html"
     tarFile="${browserFolder}_${commitId}.tar.bz2"
-    if [ -d ./"${TEMP_FOLDER}"/"${browserFolder}" ]; then
-        rm -rf ./"${TEMP_FOLDER}"/"${browserFolder}"
+    if [ -d ./"${TEMPORARY_FOLDER}"/"${browserFolder}" ]; then
+        rm -rf ./"${TEMPORARY_FOLDER}"/"${browserFolder}"
     fi
-    bashCommand "mkdir -p ./${TEMP_FOLDER}/${browserFolder}"
+    bashCommand "mkdir -p ./${TEMPORARY_FOLDER}/${browserFolder}"
     bashCommand "codebrowser_generator -color -a -b ./${BUILD_FOLDER}/${COMPILE_COMMANDS} \
--o ./${TEMP_FOLDER}/${browserFolder} -p ${PROJECT_FOLDER}:.:${commitId} -d ./data"
-    bashCommand "codebrowser_indexgenerator ./${TEMP_FOLDER}/${browserFolder} -d ./data"
-    bashCommand "cp -rf /usr/local/share/woboq/data ./${TEMP_FOLDER}/${browserFolder}/"
-    bashCommand "tar -jcvf ./${TEMP_FOLDER}/${tarFile} -C ./${TEMP_FOLDER} ${browserFolder} >/dev/null"
-    bashCommand "rm -rf ./${TEMP_FOLDER}/${browserFolder}"
+-o ./${TEMPORARY_FOLDER}/${browserFolder} -p ${PROJECT_FOLDER}:.:${commitId} -d ./data"
+    bashCommand "codebrowser_indexgenerator ./${TEMPORARY_FOLDER}/${browserFolder} -d ./data"
+    bashCommand "cp -rf /usr/local/share/woboq/data ./${TEMPORARY_FOLDER}/${browserFolder}/"
+    bashCommand "tar -jcvf ./${TEMPORARY_FOLDER}/${tarFile} -C ./${TEMPORARY_FOLDER} ${browserFolder} >/dev/null"
+    bashCommand "rm -rf ./${TEMPORARY_FOLDER}/${browserFolder}"
 }
 
 main()
