@@ -56,9 +56,9 @@ IncludeCategories:
     Priority: 2
   - Regex: '^<'
     Priority: 3
-  - Regex: '^"[0-9a-zA-Z_]+\/'
-    Priority: 4
   - Regex: '^"'
+    Priority: 4
+  - Regex: '^"[0-9a-zA-Z_]+\/'
     Priority: 5
 IndentCaseLabels: true
 IndentWidth: 4

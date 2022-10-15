@@ -31,13 +31,27 @@ set(BUILD_DIR ${PROJECT_SOURCE_DIR}/build)
 set(EXECUTABLE_OUTPUT_PATH ${BUILD_DIR}/bin)
 set(LIBRARY_OUTPUT_PATH ${BUILD_DIR}/lib)
 
-aux_source_directory(application/source APPLICATION_LIST)
-include_directories(utility/include algorithm/include numeric/include)
+aux_source_directory(${CMAKE_SOURCE_DIR}/application/source APPLICATION_LIST)
+include_directories(${CMAKE_SOURCE_DIR})
 
 add_subdirectory(utility)
 add_subdirectory(algorithm)
 add_subdirectory(numeric)
 
 add_executable(${BIN_NAME} ${APPLICATION_LIST})
-target_include_directories(${BIN_NAME} PUBLIC application/include PRIVATE application/source)
-target_link_libraries(${BIN_NAME} PUBLIC pthread readline mpfr PRIVATE utility algorithm numeric)
+target_include_directories(
+    ${BIN_NAME}
+    PUBLIC
+        ${CMAKE_SOURCE_DIR}/application/include
+    PRIVATE
+        ${CMAKE_SOURCE_DIR}/application/source)
+target_link_libraries(
+    ${BIN_NAME}
+    PUBLIC
+        pthread
+        readline
+        mpfr
+    PRIVATE
+        foo::utility
+        foo::algorithm
+        foo::numeric)

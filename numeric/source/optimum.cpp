@@ -1,7 +1,7 @@
 #include "optimum.hpp"
 #include <set>
-#include "file.hpp"
-#include "time.hpp"
+#include "utility/include/file.hpp"
+#include "utility/include/time.hpp"
 
 #define OPTIMUM_RESULT(opt) "*%-9s method: F(" #opt ")=%+.5f X=%+.5f  ==>Run time: %8.5f ms\n"
 

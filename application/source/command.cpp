@@ -1,16 +1,16 @@
 #include "command.hpp"
-#include "arithmetic.hpp"
-#include "divisor.hpp"
-#include "hash.hpp"
-#include "integral.hpp"
-#include "log.hpp"
-#include "match.hpp"
-#include "notation.hpp"
-#include "optimum.hpp"
-#include "search.hpp"
-#include "sieve.hpp"
-#include "sort.hpp"
-#include "thread.hpp"
+#include "algorithm/include/match.hpp"
+#include "algorithm/include/notation.hpp"
+#include "algorithm/include/search.hpp"
+#include "algorithm/include/sort.hpp"
+#include "numeric/include/arithmetic.hpp"
+#include "numeric/include/divisor.hpp"
+#include "numeric/include/integral.hpp"
+#include "numeric/include/optimum.hpp"
+#include "numeric/include/sieve.hpp"
+#include "utility/include/hash.hpp"
+#include "utility/include/log.hpp"
+#include "utility/include/thread.hpp"
 
 #define COMMAND_PRINT_TASK_TITLE(taskCategory, taskType, title)                                                    \
     std::cout << "\r\n"                                                                                            \
@@ -204,19 +204,28 @@ void Command::performTask() const
         }
     }
 
-    if (!taskPlan.generalTask.algoTask.empty())
+    for (int i = 0; i < Bottom<GeneralTaskCategory>::value; ++i)
     {
-        for ([[maybe_unused]] const auto& [taskTypeName, taskTypeTuple] :
-             std::next(generalTaskMap.cbegin(), GeneralTaskCategory::algorithm)->second)
+        switch (GeneralTaskCategory(i))
         {
-            (this->*get<PerformTaskFunctor>(get<TaskFunctorTuple>(taskTypeTuple)))();
+            case GeneralTaskCategory::algorithm:
+                if (taskPlan.generalTask.algoTask.empty())
+                {
+                    continue;
+                }
+                break;
+            case GeneralTaskCategory::numeric:
+                if (taskPlan.generalTask.numTask.empty())
+                {
+                    continue;
+                }
+                break;
+            default:
+                break;
         }
-    }
 
-    if (!taskPlan.generalTask.numTask.empty())
-    {
         for ([[maybe_unused]] const auto& [taskTypeName, taskTypeTuple] :
-             std::next(generalTaskMap.cbegin(), GeneralTaskCategory::numeric)->second)
+             std::next(generalTaskMap.cbegin(), GeneralTaskCategory(i))->second)
         {
             (this->*get<PerformTaskFunctor>(get<TaskFunctorTuple>(taskTypeTuple)))();
         }

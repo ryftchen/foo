@@ -1,7 +1,7 @@
 #include "sieve.hpp"
 #include <bitset>
-#include "file.hpp"
-#include "time.hpp"
+#include "utility/include/file.hpp"
+#include "utility/include/time.hpp"
 
 #define SIEVE_RESULT "\r\n*%-9s method:\r\n%s\r\n==>Run time: %8.5f ms\n"
 #define SIEVE_PRINT_RESULT_CONTENT(method)                                      \
