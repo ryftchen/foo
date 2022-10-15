@@ -114,7 +114,7 @@ class FSM
 {
 public:
     using StateType = State;
-    explicit FSM(State initState = State());
+    explicit FSM(State initState = State()) : state(initState){};
     template <class Event>
     void processEvent(const Event& event);
     State currentState() const;
@@ -268,11 +268,6 @@ protected:
         }
     };
 };
-
-template <class Derived, class State>
-FSM<Derived, State>::FSM(State initState) : state(initState)
-{
-}
 
 template <class Derived, class State>
 template <class Event>

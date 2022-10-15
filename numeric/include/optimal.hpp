@@ -32,7 +32,7 @@ constexpr uint32_t loopTime = 100;
 class Gradient : public Optimal
 {
 public:
-    explicit Gradient(const num_expression::Expression& express) : func(express){};
+    explicit Gradient(const num_expression::Expression& expr) : func(expr){};
 
     [[nodiscard]] std::optional<std::tuple<ValueY, ValueX>> operator()(
         const double left,
@@ -55,7 +55,7 @@ constexpr uint32_t markovChain = 100;
 class Annealing : public Optimal
 {
 public:
-    explicit Annealing(const num_expression::Expression& express) : func(express){};
+    explicit Annealing(const num_expression::Expression& expr) : func(expr){};
 
     [[nodiscard]] std::optional<std::tuple<ValueY, ValueX>> operator()(
         const double left,
@@ -119,7 +119,7 @@ struct Record
 class Particle : public Optimal
 {
 public:
-    explicit Particle(const num_expression::Expression& express) : func(express), seed(std::random_device{}()){};
+    explicit Particle(const num_expression::Expression& expr) : func(expr), seed(std::random_device{}()){};
 
     [[nodiscard]] std::optional<std::tuple<ValueY, ValueX>> operator()(
         const double left,
@@ -135,7 +135,7 @@ private:
 // Genetic method
 namespace genetic_species
 {
-using Chromosome = std::vector<uint32_t>;
+using Chromosome = std::vector<uint8_t>;
 using Population = std::vector<genetic_species::Chromosome>;
 
 constexpr double crossPr = 0.8;
@@ -146,7 +146,7 @@ constexpr uint32_t iterNum = 100;
 class Genetic : public Optimal
 {
 public:
-    explicit Genetic(const num_expression::Expression& express) : func(express), seed(std::random_device{}()){};
+    explicit Genetic(const num_expression::Expression& expr) : func(expr), seed(std::random_device{}()){};
 
     [[nodiscard]] std::optional<std::tuple<ValueY, ValueX>> operator()(
         const double left,

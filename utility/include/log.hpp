@@ -65,7 +65,7 @@ public:
         done
     };
 
-    explicit Log(const StateType initState = State::init) noexcept;
+    explicit Log(const StateType initState = State::init) noexcept : FSM(initState){};
     Log(const std::string& logFile,
         const OutputType type,
         const OutputLevel level,

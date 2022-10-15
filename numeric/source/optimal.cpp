@@ -245,7 +245,7 @@ void Genetic::geneCoding(Chromosome& chr)
         chr.end(),
         [&]
         {
-            return randomX(seed);
+            return static_cast<uint8_t>(randomX(seed));
         });
 }
 
@@ -326,7 +326,7 @@ void Genetic::crossIndividual(Population& pop)
 void Genetic::geneMutation(Chromosome& chr)
 {
     uint32_t flip = getRandomNumber(chrNum - 1) + 1;
-    std::vector<std::reference_wrapper<uint32_t>> mutateChr(chr.begin(), chr.end());
+    std::vector<std::reference_wrapper<uint8_t>> mutateChr(chr.begin(), chr.end());
     std::shuffle(mutateChr.begin(), mutateChr.end(), seed);
     for (auto iterGene = mutateChr.begin(); (mutateChr.end() != iterGene) && (0 != flip); ++iterGene, --flip)
     {
