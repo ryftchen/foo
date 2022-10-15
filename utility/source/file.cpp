@@ -68,9 +68,8 @@ void printFile(const char* const pathname, const bool reverse, const uint32_t ma
     else
     {
         std::ifstream fileTmp(pathname);
-        uint32_t lineNum = std::count(std::istreambuf_iterator<char>(fileTmp), std::istreambuf_iterator<char>(), '\n');
-        uint32_t currentLine = 0;
-        uint32_t startLine = (lineNum > maxLine) ? (lineNum - maxLine + 1) : 1;
+        uint32_t lineNum = std::count(std::istreambuf_iterator<char>(fileTmp), std::istreambuf_iterator<char>(), '\n'),
+                 startLine = (lineNum > maxLine) ? (lineNum - maxLine + 1) : 1, currentLine = 0;
         while (std::getline(file, line))
         {
             ++currentLine;
