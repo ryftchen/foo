@@ -1,7 +1,7 @@
 #include "main.hpp"
 #include "command.hpp"
-#include "log.hpp"
-#include "thread.hpp"
+#include "utility/include/log.hpp"
+#include "utility/include/thread.hpp"
 
 int main(int argc, char* argv[])
 {

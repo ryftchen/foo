@@ -3,9 +3,9 @@
 #include <bitset>
 #include <mutex>
 #include <variant>
-#include "argument.hpp"
-#include "console.hpp"
-#include "expression.hpp"
+#include "numeric/include/expression.hpp"
+#include "utility/include/argument.hpp"
+#include "utility/include/console.hpp"
 
 class Command
 {

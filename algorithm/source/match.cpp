@@ -1,9 +1,9 @@
 #include "match.hpp"
 #include <mpfr.h>
 #include <cstring>
-#include "file.hpp"
-#include "hash.hpp"
-#include "time.hpp"
+#include "utility/include/file.hpp"
+#include "utility/include/hash.hpp"
+#include "utility/include/time.hpp"
 
 #define MATCH_RESULT(opt) \
     "*%-16s method: Found the pattern \"%s\" starting(" #opt ") at index %d.  ==>Run time: %8.5f ms\n"

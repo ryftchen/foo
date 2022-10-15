@@ -1,7 +1,7 @@
 #include "integral.hpp"
 #include <functional>
-#include "file.hpp"
-#include "time.hpp"
+#include "utility/include/file.hpp"
+#include "utility/include/time.hpp"
 
 #define INTEGRAL_RESULT(opt) "*%-11s method: I(" #opt ")=%+.5f  ==>Run time: %8.5f ms\n"
 

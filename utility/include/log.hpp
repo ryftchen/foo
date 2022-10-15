@@ -2,9 +2,9 @@
 
 #include <condition_variable>
 #include <queue>
-#include "file.hpp"
-#include "fsm.hpp"
-#include "time.hpp"
+#include "utility/include/file.hpp"
+#include "utility/include/fsm.hpp"
+#include "utility/include/time.hpp"
 
 #define LOG_DEFAULT_LOG_PATH "./temp/foo.log"
 #define LOG_DBG(logObj, format, args...) \
