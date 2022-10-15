@@ -63,7 +63,7 @@ class Test:
             "arithmetic": ["add", "sub", "mul", "div"],
             "divisor": ["euc", "ste"],
             "integral": ["tra", "sim", "rom", "gau", "mon"],
-            "optimum": ["gra", "ann", "par", "gen"],
+            "optimal": ["gra", "ann", "par", "gen"],
             "sieve": ["era", "eul"],
         },
     }

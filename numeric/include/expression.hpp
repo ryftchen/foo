@@ -41,7 +41,7 @@ public:
 
     static constexpr double range1{-600.0};
     static constexpr double range2{600.0};
-    static constexpr std::string_view optimumExpr{
+    static constexpr std::string_view optimalExpr{
         "f(x)=1+1/4000*Σ(1→n)[(Xi)^2]-Π(1→n)[cos(Xi/(i)^(1/2))],x∈[-600,600] (one-dimensional Griewank)"};
 };
 
@@ -52,7 +52,7 @@ public:
 
     static constexpr double range1{-5.12};
     static constexpr double range2{5.12};
-    static constexpr std::string_view optimumExpr{
+    static constexpr std::string_view optimalExpr{
         "f(x)=An+Σ(1→n)[(Xi)^2-Acos(2π*Xi)],A=10,x∈[-5.12,5.12] (one-dimensional Rastrigin)"};
 };
 

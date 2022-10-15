@@ -125,7 +125,7 @@ private:
         arithmetic,
         divisor,
         integral,
-        optimum,
+        optimal,
         sieve
     };
     template <>
@@ -172,7 +172,7 @@ private:
         static constexpr int value = 5;
     };
 
-    enum OptimumMethod
+    enum OptimalMethod
     {
         gradient,
         annealing,
@@ -180,7 +180,7 @@ private:
         genetic
     };
     template <>
-    struct Bottom<OptimumMethod>
+    struct Bottom<OptimalMethod>
     {
         static constexpr int value = 4;
     };
@@ -235,13 +235,13 @@ private:
                 std::bitset<Bottom<ArithmeticMethod>::value> arithmeticBit;
                 std::bitset<Bottom<DivisorMethod>::value> divisorBit;
                 std::bitset<Bottom<IntegralMethod>::value> integralBit;
-                std::bitset<Bottom<OptimumMethod>::value> optimumBit;
+                std::bitset<Bottom<OptimalMethod>::value> optimalBit;
                 std::bitset<Bottom<SieveMethod>::value> sieveBit;
 
                 [[nodiscard]] bool empty() const
                 {
                     return (
-                        arithmeticBit.none() && divisorBit.none() && integralBit.none() && optimumBit.none()
+                        arithmeticBit.none() && divisorBit.none() && integralBit.none() && optimalBit.none()
                         && sieveBit.none());
                 }
                 void reset()
@@ -249,7 +249,7 @@ private:
                     arithmeticBit.reset();
                     divisorBit.reset();
                     integralBit.reset();
-                    optimumBit.reset();
+                    optimalBit.reset();
                     sieveBit.reset();
                 }
             } numTask{};
@@ -306,7 +306,7 @@ private:
         "    │   └── euc, ste\r\n"
         "    ├── integral\r\n"
         "    │   └── tra, sim, rom, gau, mon\r\n"
-        "    ├── optimum\r\n"
+        "    ├── optimal\r\n"
         "    │   └── gra, ann, par, gen\r\n"
         "    └── sieve\r\n"
         "        └── era, eul"
@@ -328,7 +328,7 @@ private:
         { "numeric"   , {{ "arithmetic" , {{ "add", "sub", "mul", "div"        } , { &Command::runArithmetic , &Command::updateArithmeticTask }}},
                          { "divisor"    , {{ "euc", "ste"                      } , { &Command::runDivisor    , &Command::updateDivisorTask    }}},
                          { "integral"   , {{ "tra", "sim", "rom", "gau", "mon" } , { &Command::runIntegral   , &Command::updateIntegralTask   }}},
-                         { "optimum"    , {{ "gra", "ann", "par", "gen"        } , { &Command::runOptimum    , &Command::updateOptimumTask    }}},
+                         { "optimal"    , {{ "gra", "ann", "par", "gen"        } , { &Command::runOptimal    , &Command::updateOptimalTask    }}},
                          { "sieve"      , {{ "era", "eul"                      } , { &Command::runSieve      , &Command::updateSieveTask      }}}}}
         // ------------+----------------+----------------------------------------+---------------------------+--------------------------------
     };
@@ -350,8 +350,8 @@ private:
     void updateDivisorTask(const std::string& method);
     void runIntegral() const;
     void updateIntegralTask(const std::string& method);
-    void runOptimum() const;
-    void updateOptimumTask(const std::string& method);
+    void runOptimal() const;
+    void updateOptimalTask(const std::string& method);
     void runSieve() const;
     void updateSieveTask(const std::string& method);
 
@@ -367,17 +367,17 @@ private:
                   num_expression::Function2::range2,
                   num_expression::Function2::integralExpr},
                  num_expression::Function2()}};
-    typedef std::variant<num_expression::Griewank, num_expression::Rastrigin> OptimumExprTarget;
+    typedef std::variant<num_expression::Griewank, num_expression::Rastrigin> OptimalExprTarget;
     const std::
-        unordered_multimap<num_expression::ExprRange<double, double>, OptimumExprTarget, num_expression::ExprMapHash>
-            optimumExprMap{
+        unordered_multimap<num_expression::ExprRange<double, double>, OptimalExprTarget, num_expression::ExprMapHash>
+            optimalExprMap{
                 {{num_expression::Griewank::range1,
                   num_expression::Griewank::range2,
-                  num_expression::Griewank::optimumExpr},
+                  num_expression::Griewank::optimalExpr},
                  num_expression::Griewank()},
                 {{num_expression::Rastrigin::range1,
                   num_expression::Rastrigin::range2,
-                  num_expression::Rastrigin::optimumExpr},
+                  num_expression::Rastrigin::optimalExpr},
                  num_expression::Rastrigin()}};
 
     void enterConsole() const;

@@ -4,17 +4,17 @@
 #include <random>
 #include "expression.hpp"
 
-namespace num_optimum
+namespace num_optimal
 {
 using ValueX = double;
 using ValueY = double;
 
 inline constexpr double epsilon = 1e-5;
 
-class Optimum
+class Optimal
 {
 public:
-    virtual ~Optimum() = default;
+    virtual ~Optimal() = default;
 
     virtual std::optional<std::tuple<ValueY, ValueX>> operator()(
         const double left,
@@ -29,7 +29,7 @@ constexpr double initialLearningRate = 0.01;
 constexpr double decay = 0.001;
 constexpr uint32_t loopTime = 100;
 } // namespace gradient_learning
-class Gradient : public Optimum
+class Gradient : public Optimal
 {
 public:
     explicit Gradient(const num_expression::Expression& express) : func(express){};
@@ -52,7 +52,7 @@ constexpr double minimalT = 0.01;
 constexpr double coolingRate = 0.9;
 constexpr uint32_t markovChain = 100;
 } // namespace annealing_cooling
-class Annealing : public Optimum
+class Annealing : public Optimal
 {
 public:
     explicit Annealing(const num_expression::Expression& express) : func(express){};
@@ -116,7 +116,7 @@ struct Record
     History history;
 };
 } // namespace particle_swarm
-class Particle : public Optimum
+class Particle : public Optimal
 {
 public:
     explicit Particle(const num_expression::Expression& express) : func(express), seed(std::random_device{}()){};
@@ -143,7 +143,7 @@ constexpr double mutatePr = 0.05;
 constexpr uint32_t size = 50;
 constexpr uint32_t iterNum = 100;
 } // namespace genetic_species
-class Genetic : public Optimum
+class Genetic : public Optimal
 {
 public:
     explicit Genetic(const num_expression::Expression& express) : func(express), seed(std::random_device{}()){};
@@ -193,4 +193,4 @@ uint32_t inline Genetic::getRandomNumber(const uint32_t limit)
     std::uniform_int_distribution<int> randomX(0, limit);
     return randomX(seed);
 }
-} // namespace num_optimum
+} // namespace num_optimal

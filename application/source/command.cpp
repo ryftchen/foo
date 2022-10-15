@@ -6,7 +6,7 @@
 #include "numeric/include/arithmetic.hpp"
 #include "numeric/include/divisor.hpp"
 #include "numeric/include/integral.hpp"
-#include "numeric/include/optimum.hpp"
+#include "numeric/include/optimal.hpp"
 #include "numeric/include/sieve.hpp"
 #include "utility/include/hash.hpp"
 #include "utility/include/log.hpp"
@@ -939,26 +939,26 @@ void Command::updateIntegralTask(const std::string& method)
     }
 }
 
-void Command::runOptimum() const
+void Command::runOptimal() const
 {
     std::unique_lock<std::mutex> lock(commandMutex);
-    if (taskPlan.generalTask.numTask.optimumBit.none())
+    if (taskPlan.generalTask.numTask.optimalBit.none())
     {
         return;
     }
 
-    const auto printFunctor = [](const OptimumExprTarget& expression)
+    const auto printFunctor = [](const OptimalExprTarget& expression)
     {
-        constexpr std::string_view prefix{"\r\nOptimum expression: "};
+        constexpr std::string_view prefix{"\r\nOptimal expression: "};
         std::visit(
             num_expression::ExprOverloaded{
                 [&prefix](const num_expression::Griewank& /*unused*/)
                 {
-                    std::cout << prefix << num_expression::Griewank::optimumExpr << std::endl;
+                    std::cout << prefix << num_expression::Griewank::optimalExpr << std::endl;
                 },
                 [&prefix](const num_expression::Rastrigin& /*unused*/)
                 {
-                    std::cout << prefix << num_expression::Rastrigin::optimumExpr << std::endl;
+                    std::cout << prefix << num_expression::Rastrigin::optimalExpr << std::endl;
                 },
             },
             expression);
@@ -966,58 +966,58 @@ void Command::runOptimum() const
     const auto resultFunctor =
         [this](const num_expression::Expression& expression, const num_expression::ExprRange<double, double>& range)
     {
-        assert((range.range1 < range.range2) && (num_optimum::epsilon > 0.0));
+        assert((range.range1 < range.range2) && (num_optimal::epsilon > 0.0));
         util_thread::Thread threadPool(std::min(
-            static_cast<uint32_t>(taskPlan.generalTask.numTask.optimumBit.count()),
-            static_cast<uint32_t>(Bottom<OptimumMethod>::value)));
-        const auto optimumFunctor =
-            [&](const std::string& threadName, const std::shared_ptr<num_optimum::Optimum>& classPtr)
+            static_cast<uint32_t>(taskPlan.generalTask.numTask.optimalBit.count()),
+            static_cast<uint32_t>(Bottom<OptimalMethod>::value)));
+        const auto optimalFunctor =
+            [&](const std::string& threadName, const std::shared_ptr<num_optimal::Optimal>& classPtr)
         {
             threadPool.enqueue(
                 threadName,
-                &num_optimum::Optimum::operator(),
+                &num_optimal::Optimal::operator(),
                 classPtr,
                 range.range1,
                 range.range2,
-                num_optimum::epsilon);
+                num_optimal::epsilon);
         };
 
-        for (int i = 0; i < Bottom<OptimumMethod>::value; ++i)
+        for (int i = 0; i < Bottom<OptimalMethod>::value; ++i)
         {
-            if (!taskPlan.generalTask.numTask.optimumBit.test(OptimumMethod(i)))
+            if (!taskPlan.generalTask.numTask.optimalBit.test(OptimalMethod(i)))
             {
                 continue;
             }
 
             const auto taskCategoryMap = std::next(
                 std::next(generalTaskMap.cbegin(), GeneralTaskCategory::numeric)->second.cbegin(),
-                NumericTaskType::optimum);
+                NumericTaskType::optimal);
             const auto targetMethod = get<TaskMethodVector>(taskCategoryMap->second).at(i);
             const std::string threadName = std::string{1, taskCategoryMap->first.at(0)} + "_" + targetMethod;
             using util_hash::operator""_bkdrHash;
             switch (util_hash::bkdrHash(targetMethod.data()))
             {
                 case "gra"_bkdrHash:
-                    optimumFunctor(threadName, std::make_shared<num_optimum::Gradient>(expression));
+                    optimalFunctor(threadName, std::make_shared<num_optimal::Gradient>(expression));
                     break;
                 case "ann"_bkdrHash:
-                    optimumFunctor(threadName, std::make_shared<num_optimum::Annealing>(expression));
+                    optimalFunctor(threadName, std::make_shared<num_optimal::Annealing>(expression));
                     break;
                 case "par"_bkdrHash:
-                    optimumFunctor(threadName, std::make_shared<num_optimum::Particle>(expression));
+                    optimalFunctor(threadName, std::make_shared<num_optimal::Particle>(expression));
                     break;
                 case "gen"_bkdrHash:
-                    optimumFunctor(threadName, std::make_shared<num_optimum::Genetic>(expression));
+                    optimalFunctor(threadName, std::make_shared<num_optimal::Genetic>(expression));
                     break;
                 default:
-                    LOG_DBG(logger, "Unable to execute unknown optimum method.");
+                    LOG_DBG(logger, "Unable to execute unknown optimal method.");
                     break;
             }
         }
     };
 
-    COMMAND_PRINT_TASK_TITLE("NUMERIC", NumericTaskType::optimum, "BEGIN");
-    for ([[maybe_unused]] const auto& [range, expression] : optimumExprMap)
+    COMMAND_PRINT_TASK_TITLE("NUMERIC", NumericTaskType::optimal, "BEGIN");
+    for ([[maybe_unused]] const auto& [range, expression] : optimalExprMap)
     {
         printFunctor(expression);
         switch (expression.index())
@@ -1031,28 +1031,28 @@ void Command::runOptimum() const
                 [[unlikely]] default : break;
         }
     }
-    COMMAND_PRINT_TASK_TITLE("NUMERIC", NumericTaskType::optimum, "END") << std::endl;
+    COMMAND_PRINT_TASK_TITLE("NUMERIC", NumericTaskType::optimal, "END") << std::endl;
 }
 
-void Command::updateOptimumTask(const std::string& method)
+void Command::updateOptimalTask(const std::string& method)
 {
     using util_hash::operator""_bkdrHash;
     switch (util_hash::bkdrHash(method.c_str()))
     {
         case "gra"_bkdrHash:
-            taskPlan.generalTask.numTask.optimumBit.set(OptimumMethod::gradient);
+            taskPlan.generalTask.numTask.optimalBit.set(OptimalMethod::gradient);
             break;
         case "ann"_bkdrHash:
-            taskPlan.generalTask.numTask.optimumBit.set(OptimumMethod::annealing);
+            taskPlan.generalTask.numTask.optimalBit.set(OptimalMethod::annealing);
             break;
         case "par"_bkdrHash:
-            taskPlan.generalTask.numTask.optimumBit.set(OptimumMethod::particle);
+            taskPlan.generalTask.numTask.optimalBit.set(OptimalMethod::particle);
             break;
         case "gen"_bkdrHash:
-            taskPlan.generalTask.numTask.optimumBit.set(OptimumMethod::genetic);
+            taskPlan.generalTask.numTask.optimalBit.set(OptimalMethod::genetic);
             break;
         default:
-            throwUnexpectedMethodException("optimum: " + method);
+            throwUnexpectedMethodException("optimal: " + method);
     }
 }
 
@@ -1171,8 +1171,8 @@ std::ostream& operator<<(std::ostream& os, const Command::NumericTaskType& taskT
         case Command::NumericTaskType::integral:
             os << "INTEGRAL";
             break;
-        case Command::NumericTaskType::optimum:
-            os << "OPTIMUM";
+        case Command::NumericTaskType::optimal:
+            os << "OPTIMAL";
             break;
         case Command::NumericTaskType::sieve:
             os << "SIEVE";
