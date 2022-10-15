@@ -92,6 +92,6 @@ jobs:
         uses: actions/upload-artifact@v3.0.0
         with:
           name: foo_artifact
-          path: ./temp/foo_html_*.tar.bz2
+          path: ./temporary/foo_html_*.tar.bz2
           retention-days: 7
 ...

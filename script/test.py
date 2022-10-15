@@ -76,8 +76,8 @@ class Test:
     memorySummaryContent = "ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)"
     buildFile = "./script/build.sh"
     buildSummaryContent = "Built target foo"
-    logFile = "./temp/foo_test.log"
-    tempDir = "./temp"
+    logFile = "./temporary/foo_test.log"
+    tempDir = "./temporary"
 
     def __init__(self):
         if not os.path.exists(self.tempDir):

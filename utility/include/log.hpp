@@ -6,7 +6,7 @@
 #include "utility/include/fsm.hpp"
 #include "utility/include/time.hpp"
 
-#define LOG_DEFAULT_LOG_PATH "./temp/foo.log"
+#define LOG_DEFAULT_LOG_PATH "./temporary/foo.log"
 #define LOG_DBG(logObj, format, args...) \
     util_log::logObj.output(util_log::Log::OutputLevel::debug, __FILE__, __LINE__, format, ##args)
 #define LOG_INF(logObj, format, args...) \
@@ -23,7 +23,7 @@ namespace util_log
 inline constexpr std::string_view logPath{LOG_DEFAULT_LOG_PATH};
 constexpr uint32_t logPathLength = 32;
 constexpr uint32_t maxCountOfWaitLogger = 10;
-constexpr std::string_view logDirectory{"./temp"};
+constexpr std::string_view logDirectory{"./temporary"};
 constexpr std::string_view debugPrefix{"[DBG]"};
 constexpr std::string_view infoPrefix{"[INF]"};
 constexpr std::string_view warnPrefix{"[WRN]"};
