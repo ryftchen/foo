@@ -23,7 +23,7 @@
     std::cout << "\r\n"                                                                                            \
               << taskCategory << " TASK: " << std::setiosflags(std::ios_base::left) << std::setfill('.')           \
               << std::setw(titleWidthForPrintTask) << taskType << "END" << std::resetiosflags(std::ios_base::left) \
-              << std::setfill(' ') << "\n"                                                                         \
+              << std::setfill(' ') << "\r\n"                                                                       \
               << std::endl;
 
 Command::Command()
@@ -581,8 +581,8 @@ void Command::runSort() const
     std::shared_ptr<util_thread::Thread> threads = std::make_shared<util_thread::Thread>(std::min(
         static_cast<uint32_t>(taskPlan.generalTask.algoTask.sortBit.count()),
         static_cast<uint32_t>(Bottom<SortMethod>::value)));
-    const auto sortFunctor =
-        [&](const std::string& threadName, void (algo_sort::Sort<int>::*methodPtr)(int* const, const uint32_t) const)
+    const auto sortFunctor = [&](const std::string& threadName,
+                                 std::vector<int> (algo_sort::Sort<int>::*methodPtr)(int* const, const uint32_t) const)
     {
         threads->enqueue(threadName, methodPtr, sort, sort->getRandomArray().get(), sort->getLength());
     };

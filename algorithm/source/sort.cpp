@@ -20,20 +20,20 @@
 namespace algo_sort
 {
 template class Sort<int>;
-template void Sort<int>::bubbleSort(int* const array, const uint32_t length) const;
-template void Sort<int>::selectionSort(int* const array, const uint32_t length) const;
-template void Sort<int>::insertionSort(int* const array, const uint32_t length) const;
-template void Sort<int>::shellSort(int* const array, const uint32_t length) const;
-template void Sort<int>::mergeSort(int* const array, const uint32_t length) const;
-template void Sort<int>::quickSort(int* const array, const uint32_t length) const;
-template void Sort<int>::heapSort(int* const array, const uint32_t length) const;
-template void Sort<int>::countingSort(int* const array, const uint32_t length) const;
-template void Sort<int>::bucketSort(int* const array, const uint32_t length) const;
-template void Sort<int>::radixSort(int* const array, const uint32_t length) const;
+template std::vector<int> Sort<int>::bubbleSort(int* const array, const uint32_t length) const;
+template std::vector<int> Sort<int>::selectionSort(int* const array, const uint32_t length) const;
+template std::vector<int> Sort<int>::insertionSort(int* const array, const uint32_t length) const;
+template std::vector<int> Sort<int>::shellSort(int* const array, const uint32_t length) const;
+template std::vector<int> Sort<int>::mergeSort(int* const array, const uint32_t length) const;
+template std::vector<int> Sort<int>::quickSort(int* const array, const uint32_t length) const;
+template std::vector<int> Sort<int>::heapSort(int* const array, const uint32_t length) const;
+template std::vector<int> Sort<int>::countingSort(int* const array, const uint32_t length) const;
+template std::vector<int> Sort<int>::bucketSort(int* const array, const uint32_t length) const;
+template std::vector<int> Sort<int>::radixSort(int* const array, const uint32_t length) const;
 
 // Bubble method
 template <class T>
-void Sort<T>::bubbleSort(T* const array, const uint32_t length) const
+std::vector<T> Sort<T>::bubbleSort(T* const array, const uint32_t length) const
 {
     TIME_BEGIN(timing);
     T sortArray[length];
@@ -53,11 +53,12 @@ void Sort<T>::bubbleSort(T* const array, const uint32_t length) const
 
     TIME_END(timing);
     SORT_PRINT_RESULT_CONTENT("Bubble");
+    return std::vector<T>(sortArray, sortArray + length);
 }
 
 // Selection method
 template <class T>
-void Sort<T>::selectionSort(T* const array, const uint32_t length) const
+std::vector<T> Sort<T>::selectionSort(T* const array, const uint32_t length) const
 {
     TIME_BEGIN(timing);
     T sortArray[length];
@@ -79,11 +80,12 @@ void Sort<T>::selectionSort(T* const array, const uint32_t length) const
 
     TIME_END(timing);
     SORT_PRINT_RESULT_CONTENT("Selection");
+    return std::vector<T>(sortArray, sortArray + length);
 }
 
 // Insertion method
 template <class T>
-void Sort<T>::insertionSort(T* const array, const uint32_t length) const
+std::vector<T> Sort<T>::insertionSort(T* const array, const uint32_t length) const
 {
     TIME_BEGIN(timing);
     T sortArray[length];
@@ -104,11 +106,12 @@ void Sort<T>::insertionSort(T* const array, const uint32_t length) const
 
     TIME_END(timing);
     SORT_PRINT_RESULT_CONTENT("Insertion");
+    return std::vector<T>(sortArray, sortArray + length);
 }
 
 // Shell method
 template <class T>
-void Sort<T>::shellSort(T* const array, const uint32_t length) const
+std::vector<T> Sort<T>::shellSort(T* const array, const uint32_t length) const
 {
     TIME_BEGIN(timing);
     T sortArray[length];
@@ -130,11 +133,12 @@ void Sort<T>::shellSort(T* const array, const uint32_t length) const
 
     TIME_END(timing);
     SORT_PRINT_RESULT_CONTENT("Shell");
+    return std::vector<T>(sortArray, sortArray + length);
 }
 
 // Merge method
 template <class T>
-void Sort<T>::mergeSort(T* const array, const uint32_t length) const
+std::vector<T> Sort<T>::mergeSort(T* const array, const uint32_t length) const
 {
     TIME_BEGIN(timing);
     T sortArray[length];
@@ -145,6 +149,7 @@ void Sort<T>::mergeSort(T* const array, const uint32_t length) const
 
     TIME_END(timing);
     SORT_PRINT_RESULT_CONTENT("Merge");
+    return std::vector<T>(sortArray, sortArray + length);
 }
 
 template <class T>
@@ -180,7 +185,7 @@ void Sort<T>::mergeSortRecursive(T* const sortArray, const uint32_t begin, const
 
 // Quick method
 template <class T>
-void Sort<T>::quickSort(T* const array, const uint32_t length) const
+std::vector<T> Sort<T>::quickSort(T* const array, const uint32_t length) const
 {
     TIME_BEGIN(timing);
     T sortArray[length];
@@ -191,6 +196,7 @@ void Sort<T>::quickSort(T* const array, const uint32_t length) const
 
     TIME_END(timing);
     SORT_PRINT_RESULT_CONTENT("Quick");
+    return std::vector<T>(sortArray, sortArray + length);
 }
 
 template <class T>
@@ -234,7 +240,7 @@ void Sort<T>::quickSortRecursive(T* const sortArray, const uint32_t begin, const
 
 // Heap method
 template <class T>
-void Sort<T>::heapSort(T* const array, const uint32_t length) const
+std::vector<T> Sort<T>::heapSort(T* const array, const uint32_t length) const
 {
     TIME_BEGIN(timing);
     T sortArray[length];
@@ -253,6 +259,7 @@ void Sort<T>::heapSort(T* const array, const uint32_t length) const
 
     TIME_END(timing);
     SORT_PRINT_RESULT_CONTENT("Heap");
+    return std::vector<T>(sortArray, sortArray + length);
 }
 
 template <class T>
@@ -279,12 +286,12 @@ void Sort<T>::buildMaxHeap(T* const sortArray, const uint32_t begin, const uint3
 
 // Counting method
 template <class T>
-void Sort<T>::countingSort(T* const array, const uint32_t length) const
+std::vector<T> Sort<T>::countingSort(T* const array, const uint32_t length) const
 {
     if (!std::is_integral_v<T>)
     {
         COMMON_PRINT("\r\n*Counting  method:\r\nThe type of array isn't integral.\n");
-        return;
+        return std::vector<T>();
     }
 
     TIME_BEGIN(timing);
@@ -319,11 +326,12 @@ void Sort<T>::countingSort(T* const array, const uint32_t length) const
 
     TIME_END(timing);
     SORT_PRINT_RESULT_CONTENT("Counting");
+    return std::vector<T>(sortArray, sortArray + length);
 }
 
 // Bucket method
 template <class T>
-void Sort<T>::bucketSort(T* const array, const uint32_t length) const
+std::vector<T> Sort<T>::bucketSort(T* const array, const uint32_t length) const
 {
     TIME_BEGIN(timing);
     T sortArray[length];
@@ -360,16 +368,18 @@ void Sort<T>::bucketSort(T* const array, const uint32_t length) const
 
     TIME_END(timing);
     SORT_PRINT_RESULT_CONTENT("Bucket");
+    return std::vector<T>(sortArray, sortArray + length);
 }
 
 // Radix method
 template <class T>
-void Sort<T>::radixSort(T* const array, const uint32_t length) const
+std::vector<T> Sort<T>::radixSort(T* const array, const uint32_t length) const
 {
     if (!std::is_integral_v<T>)
     {
         COMMON_PRINT("\r\n*Radix     method:\r\nThe type of array isn't integral.\n");
-        return;
+        return std::vector<T>();
+        ;
     }
 
     TIME_BEGIN(timing);
@@ -449,5 +459,6 @@ void Sort<T>::radixSort(T* const array, const uint32_t length) const
 
     TIME_END(timing);
     SORT_PRINT_RESULT_CONTENT("Radix");
+    return std::vector<T>(sortArray, sortArray + length);
 }
 } // namespace algo_sort

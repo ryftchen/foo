@@ -28,16 +28,16 @@ public:
     Sort(const Sort& rhs);
     Sort<T>& operator=(const Sort& rhs);
 
-    void bubbleSort(T* const array, const uint32_t length) const;
-    void selectionSort(T* const array, const uint32_t length) const;
-    void insertionSort(T* const array, const uint32_t length) const;
-    void shellSort(T* const array, const uint32_t length) const;
-    void mergeSort(T* const array, const uint32_t length) const;
-    void quickSort(T* const array, const uint32_t length) const;
-    void heapSort(T* const array, const uint32_t length) const;
-    void countingSort(T* const array, const uint32_t length) const;
-    void bucketSort(T* const array, const uint32_t length) const;
-    void radixSort(T* const array, const uint32_t length) const;
+    [[nodiscard]] std::vector<T> bubbleSort(T* const array, const uint32_t length) const;
+    [[nodiscard]] std::vector<T> selectionSort(T* const array, const uint32_t length) const;
+    [[nodiscard]] std::vector<T> insertionSort(T* const array, const uint32_t length) const;
+    [[nodiscard]] std::vector<T> shellSort(T* const array, const uint32_t length) const;
+    [[nodiscard]] std::vector<T> mergeSort(T* const array, const uint32_t length) const;
+    [[nodiscard]] std::vector<T> quickSort(T* const array, const uint32_t length) const;
+    [[nodiscard]] std::vector<T> heapSort(T* const array, const uint32_t length) const;
+    [[nodiscard]] std::vector<T> countingSort(T* const array, const uint32_t length) const;
+    [[nodiscard]] std::vector<T> bucketSort(T* const array, const uint32_t length) const;
+    [[nodiscard]] std::vector<T> radixSort(T* const array, const uint32_t length) const;
 
     const std::unique_ptr<T[]>& getRandomArray() const;
     uint32_t getLength() const;
