@@ -1,6 +1,6 @@
 #include "notation.hpp"
 #include <stack>
-#include "utility/include/file.hpp"
+#include "utility/include/common.hpp"
 
 #define NOTATION_RESULT "\r\n*%-7s method:\r\n%s: %s\n"
 
@@ -94,7 +94,7 @@ std::string Notation::prefixMethod(const std::string& infixNotation)
     std::string prefixNotation = infixToPostfix(infix);
     std::reverse(prefixNotation.begin(), prefixNotation.end());
 
-    FORMAT_PRINT(NOTATION_RESULT, "Prefix", "Polish notation", prefixNotation.data());
+    COMMON_PRINT(NOTATION_RESULT, "Prefix", "Polish notation", prefixNotation.data());
     return std::move(prefixNotation);
 }
 
@@ -103,7 +103,7 @@ std::string Notation::postfixMethod(const std::string& infixNotation)
 {
     std::string postfixNotation = infixToPostfix(infixNotation);
 
-    FORMAT_PRINT(NOTATION_RESULT, "Postfix", "Reverse polish notation", postfixNotation.data());
+    COMMON_PRINT(NOTATION_RESULT, "Postfix", "Reverse polish notation", postfixNotation.data());
     return std::move(postfixNotation);
 }
 } // namespace algo_notation

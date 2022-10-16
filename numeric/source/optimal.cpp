@@ -1,6 +1,6 @@
 #include "optimal.hpp"
 #include <set>
-#include "utility/include/file.hpp"
+#include "utility/include/common.hpp"
 #include "utility/include/time.hpp"
 
 #define OPTIMAL_RESULT(opt) "*%-9s method: F(" #opt ")=%+.5f X=%+.5f  ==>Run time: %8.5f ms\n"
@@ -56,7 +56,7 @@ std::optional<std::tuple<ValueY, ValueX>> Gradient::operator()(const double left
     x = std::get<1>(*best);
 
     TIME_END(timing);
-    FORMAT_PRINT(OPTIMAL_RESULT(min), "Gradient", y, x, TIME_INTERVAL(timing));
+    COMMON_PRINT(OPTIMAL_RESULT(min), "Gradient", y, x, TIME_INTERVAL(timing));
     return std::make_optional(std::make_tuple(y, x));
 }
 
@@ -112,7 +112,7 @@ std::optional<std::tuple<ValueY, ValueX>> Annealing::operator()(const double lef
     }
 
     TIME_END(timing);
-    FORMAT_PRINT(OPTIMAL_RESULT(min), "Annealing", y, x, TIME_INTERVAL(timing));
+    COMMON_PRINT(OPTIMAL_RESULT(min), "Annealing", y, x, TIME_INTERVAL(timing));
     return std::make_optional(std::make_tuple(y, x));
 }
 
@@ -170,7 +170,7 @@ std::optional<std::tuple<ValueY, ValueX>> Particle::operator()(const double left
     xBest = std::get<1>(*(rec.history.cbegin()));
 
     TIME_END(timing);
-    FORMAT_PRINT(OPTIMAL_RESULT(min), "Particle", xFitnessBest, xBest, TIME_INTERVAL(timing));
+    COMMON_PRINT(OPTIMAL_RESULT(min), "Particle", xFitnessBest, xBest, TIME_INTERVAL(timing));
     return std::make_optional(std::make_tuple(xFitnessBest, xBest));
 }
 
@@ -203,7 +203,7 @@ std::optional<std::tuple<ValueY, ValueX>> Genetic::operator()(const double left,
     updateSpecies(left, right, eps);
     if (chrNum < minChrNum)
     {
-        FORMAT_PRINT("*Genetic   method: The precise %.5f isn't enough.\n", eps);
+        COMMON_PRINT("*Genetic   method: The precise %.5f isn't enough.\n", eps);
         return std::nullopt;
     }
 
@@ -217,7 +217,7 @@ std::optional<std::tuple<ValueY, ValueX>> Genetic::operator()(const double left,
     const double x = geneDecoding(getBestIndividual(pop));
 
     TIME_END(timing);
-    FORMAT_PRINT(OPTIMAL_RESULT(min), "Genetic", func(x), x, TIME_INTERVAL(timing));
+    COMMON_PRINT(OPTIMAL_RESULT(min), "Genetic", func(x), x, TIME_INTERVAL(timing));
     return std::make_optional(std::make_tuple(func(x), x));
 }
 

@@ -1,6 +1,6 @@
 #include "integral.hpp"
 #include <functional>
-#include "utility/include/file.hpp"
+#include "utility/include/common.hpp"
 #include "utility/include/time.hpp"
 
 #define INTEGRAL_RESULT(opt) "*%-11s method: I(" #opt ")=%+.5f  ==>Run time: %8.5f ms\n"
@@ -41,7 +41,7 @@ double Trapezoidal::operator()(double lower, double upper, const double eps) con
     sum = s2 * sign;
 
     TIME_END(timing);
-    FORMAT_PRINT(INTEGRAL_RESULT(def), "Trapezoidal", sum, TIME_INTERVAL(timing));
+    COMMON_PRINT(INTEGRAL_RESULT(def), "Trapezoidal", sum, TIME_INTERVAL(timing));
     return sum;
 }
 
@@ -55,7 +55,7 @@ double Simpson::operator()(double lower, double upper, const double eps) const
     sum *= sign;
 
     TIME_END(timing);
-    FORMAT_PRINT(INTEGRAL_RESULT(def), "Simpson", sum, TIME_INTERVAL(timing));
+    COMMON_PRINT(INTEGRAL_RESULT(def), "Simpson", sum, TIME_INTERVAL(timing));
     return sum;
 }
 
@@ -116,7 +116,7 @@ double Romberg::operator()(double lower, double upper, const double eps) const
     sum = trapezoidFunctor(std::pow(2, k)) * sign;
 
     TIME_END(timing);
-    FORMAT_PRINT(INTEGRAL_RESULT(def), "Romberg", sum, TIME_INTERVAL(timing));
+    COMMON_PRINT(INTEGRAL_RESULT(def), "Romberg", sum, TIME_INTERVAL(timing));
     return sum;
 }
 
@@ -159,7 +159,7 @@ double Gauss::operator()(double lower, double upper, const double eps) const
     sum = s2 * sign;
 
     TIME_END(timing);
-    FORMAT_PRINT(INTEGRAL_RESULT(def), "Gauss", sum, TIME_INTERVAL(timing));
+    COMMON_PRINT(INTEGRAL_RESULT(def), "Gauss", sum, TIME_INTERVAL(timing));
     return sum;
 }
 
@@ -176,7 +176,7 @@ double MonteCarlo::operator()(double lower, double upper, const double eps) cons
     sum *= sign;
 
     TIME_END(timing);
-    FORMAT_PRINT(INTEGRAL_RESULT(def), "MonteCarlo", sum, TIME_INTERVAL(timing));
+    COMMON_PRINT(INTEGRAL_RESULT(def), "MonteCarlo", sum, TIME_INTERVAL(timing));
     return sum;
 }
 

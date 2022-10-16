@@ -158,10 +158,10 @@ void Log::openLogFile()
 
     if (!ofs)
     {
-        util_file::throwOperateFileException(std::filesystem::path(pathname).filename().string(), true);
+        util_common::throwOperateFileException(std::filesystem::path(pathname).filename().string(), true);
     }
-    util_file::tryToOperateFileLock(
-        ofs, pathname, util_file::LockOperateType::lock, util_file::FileLockType::writerLock);
+    util_common::tryToOperateFileLock(
+        ofs, pathname, util_common::LockOperateType::lock, util_common::FileLockType::writerLock);
 };
 
 void Log::startLogging()
@@ -174,8 +174,8 @@ void Log::startLogging()
 
 void Log::closeLogFile()
 {
-    util_file::tryToOperateFileLock(
-        ofs, pathname, util_file::LockOperateType::unlock, util_file::FileLockType::writerLock);
+    util_common::tryToOperateFileLock(
+        ofs, pathname, util_common::LockOperateType::unlock, util_common::FileLockType::writerLock);
     if (ofs.is_open())
     {
         ofs.close();

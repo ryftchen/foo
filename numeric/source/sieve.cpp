@@ -1,6 +1,6 @@
 #include "sieve.hpp"
 #include <bitset>
-#include "utility/include/file.hpp"
+#include "utility/include/common.hpp"
 #include "utility/include/time.hpp"
 
 #define SIEVE_RESULT "\r\n*%-9s method:\r\n%s\r\n==>Run time: %8.5f ms\n"
@@ -10,7 +10,7 @@
         const uint32_t arrayBufferSize = sieveVector.size() * maxAlignOfPrint;  \
         char arrayBuffer[arrayBufferSize + 1];                                  \
         arrayBuffer[0] = '\0';                                                  \
-        FORMAT_PRINT(                                                           \
+        COMMON_PRINT(                                                           \
             SIEVE_RESULT,                                                       \
             method,                                                             \
             formatIntegerVector(sieveVector, arrayBuffer, arrayBufferSize + 1), \

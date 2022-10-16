@@ -1,18 +1,18 @@
 #include "search.hpp"
-#include "utility/include/file.hpp"
+#include "utility/include/common.hpp"
 
 #define SEARCH_RESULT "*%-13s method: Found the key \"%.5f\" appearing at index %d.  ==>Run time: %8.5f ms\n"
-#define SEARCH_NO_RESULT "*%-13s method: Could not find the key \"%.5f\".  ==>Run time: %8.5f ms\n"
+#define SEARCH_NONE_RESULT "*%-13s method: Could not find the key \"%.5f\".  ==>Run time: %8.5f ms\n"
 #define SEARCH_PRINT_RESULT_CONTENT(method)                                         \
     do                                                                              \
     {                                                                               \
         if (-1 != index)                                                            \
         {                                                                           \
-            FORMAT_PRINT(SEARCH_RESULT, method, key, index, TIME_INTERVAL(timing)); \
+            COMMON_PRINT(SEARCH_RESULT, method, key, index, TIME_INTERVAL(timing)); \
         }                                                                           \
         else                                                                        \
         {                                                                           \
-            FORMAT_PRINT(SEARCH_NO_RESULT, method, key, TIME_INTERVAL(timing));     \
+            COMMON_PRINT(SEARCH_NONE_RESULT, method, key, TIME_INTERVAL(timing));   \
         }                                                                           \
     }                                                                               \
     while (0)
@@ -98,7 +98,7 @@ int Search<T>::fibonacciSearch(const T* const array, const uint32_t length, cons
     uint32_t n = fib.size() - 1;
     if (constexpr uint32_t minSize = 3; n < minSize)
     {
-        FORMAT_PRINT("*%-13s method: The length %u isn't enough.\n", "Fibonacci", length);
+        COMMON_PRINT("*%-13s method: The length %u isn't enough.\n", "Fibonacci", length);
         return index;
     }
 
