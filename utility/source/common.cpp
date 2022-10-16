@@ -1,9 +1,9 @@
-#include "file.hpp"
+#include "common.hpp"
 #include <cstring>
 #include <iterator>
 #include <list>
 
-namespace util_file
+namespace util_common
 {
 void executeCommand(const char* const cmd)
 {
@@ -85,4 +85,4 @@ void printFile(const char* const pathname, const bool reverse, const uint32_t ma
     tryToOperateFileLock(file, pathname, LockOperateType::unlock, FileLockType::readerLock);
     file.close();
 }
-} // namespace util_file
+} // namespace util_common

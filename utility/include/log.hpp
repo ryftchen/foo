@@ -2,11 +2,12 @@
 
 #include <condition_variable>
 #include <queue>
-#include "utility/include/file.hpp"
+#include "utility/include/common.hpp"
 #include "utility/include/fsm.hpp"
 #include "utility/include/time.hpp"
 
-#define LOG_DEFAULT_LOG_PATH "./temporary/foo.log"
+#define LOG_TO_START(logObj) util_log::logObj.waitLoggerStartForExternalUse()
+#define LOG_TO_STOP(logObj) util_log::logObj.waitLoggerStopForExternalUse()
 #define LOG_DBG(logObj, format, args...) \
     util_log::logObj.output(util_log::Log::OutputLevel::debug, __FILE__, __LINE__, format, ##args)
 #define LOG_INF(logObj, format, args...) \
@@ -15,12 +16,10 @@
     util_log::logObj.output(util_log::Log::OutputLevel::warn, __FILE__, __LINE__, format, ##args)
 #define LOG_ERR(logObj, format, args...) \
     util_log::logObj.output(util_log::Log::OutputLevel::error, __FILE__, __LINE__, format, ##args)
-#define LOG_TO_START(logObj) util_log::logObj.waitLoggerStartForExternalUse();
-#define LOG_TO_STOP(logObj) util_log::logObj.waitLoggerStopForExternalUse();
 
 namespace util_log
 {
-inline constexpr std::string_view logPath{LOG_DEFAULT_LOG_PATH};
+inline constexpr std::string_view logPath{"./temporary/foo.log"};
 constexpr uint32_t logPathLength = 32;
 constexpr uint32_t maxCountOfWaitLogger = 10;
 constexpr std::string_view logDirectory{"./temporary"};
@@ -31,9 +30,9 @@ constexpr std::string_view errorPrefix{"[ERR]"};
 constexpr std::string_view infoRegex{R"(^\[INF\])"};
 constexpr std::string_view warnRegex{R"(^\[WRN\])"};
 constexpr std::string_view errorRegex{R"(^\[ERR\])"};
-constexpr auto infoColorForLog{util_file::joinStr<util_file::greenForeground, infoPrefix, util_file::colorEnd>};
-constexpr auto warnColorForLog{util_file::joinStr<util_file::yellowForeground, warnPrefix, util_file::colorEnd>};
-constexpr auto errorColorForLog{util_file::joinStr<util_file::redForeground, errorPrefix, util_file::colorEnd>};
+constexpr auto infoColorForLog{util_common::joinStr<util_common::greenForeground, infoPrefix, util_common::colorEnd>};
+constexpr auto warnColorForLog{util_common::joinStr<util_common::yellowForeground, warnPrefix, util_common::colorEnd>};
+constexpr auto errorColorForLog{util_common::joinStr<util_common::redForeground, errorPrefix, util_common::colorEnd>};
 
 class Log final : public util_fsm::FSM<Log>
 {
@@ -89,7 +88,7 @@ private:
     OutputType writeType{OutputType::add};
     OutputLevel minLevel{OutputLevel::debug};
     OutputTarget actualTarget{OutputTarget::all};
-    char pathname[logPathLength + 1]{LOG_DEFAULT_LOG_PATH};
+    char pathname[logPathLength + 1]{"./temporary/foo.log"};
 
     mutable std::mutex queueMutex;
     std::queue<std::string> logQueue;
@@ -172,7 +171,7 @@ void Log::output(
                 + std::filesystem::path(codeFile.c_str()).filename().string() + "#" + std::to_string(codeLine) + "]: ";
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat-security"
-            output.append(FORMAT_TO_STRING(format, std::forward<Args>(args)...));
+            output.append(COMMON_FORMAT_TO_STRING(format, std::forward<Args>(args)...));
 #pragma GCC diagnostic pop
             logQueue.push(std::move(output));
 

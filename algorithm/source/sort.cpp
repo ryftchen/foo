@@ -1,6 +1,6 @@
 #include "sort.hpp"
 #include <queue>
-#include "utility/include/file.hpp"
+#include "utility/include/common.hpp"
 
 #define SORT_RESULT(opt) "\r\n*%-9s method: (" #opt ")\r\n%s\r\n==>Run time: %8.5f ms\n"
 #define SORT_PRINT_RESULT_CONTENT(method)                                        \
@@ -9,7 +9,7 @@
         const uint32_t arrayBufferSize = length * maxAlignOfPrint;               \
         char arrayBuffer[arrayBufferSize + 1];                                   \
         arrayBuffer[0] = '\0';                                                   \
-        FORMAT_PRINT(                                                            \
+        COMMON_PRINT(                                                            \
             SORT_RESULT(asc),                                                    \
             method,                                                              \
             formatArray<T>(sortArray, length, arrayBuffer, arrayBufferSize + 1), \
@@ -283,7 +283,7 @@ void Sort<T>::countingSort(T* const array, const uint32_t length) const
 {
     if (!std::is_integral_v<T>)
     {
-        FORMAT_PRINT("\r\n*Counting  method:\r\nThe type of array isn't integral.\n");
+        COMMON_PRINT("\r\n*Counting  method:\r\nThe type of array isn't integral.\n");
         return;
     }
 
@@ -368,7 +368,7 @@ void Sort<T>::radixSort(T* const array, const uint32_t length) const
 {
     if (!std::is_integral_v<T>)
     {
-        FORMAT_PRINT("\r\n*Radix     method:\r\nThe type of array isn't integral.\n");
+        COMMON_PRINT("\r\n*Radix     method:\r\nThe type of array isn't integral.\n");
         return;
     }
 

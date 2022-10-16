@@ -1,23 +1,23 @@
 #include "match.hpp"
 #include <mpfr.h>
 #include <cstring>
-#include "utility/include/file.hpp"
+#include "utility/include/common.hpp"
 #include "utility/include/hash.hpp"
 #include "utility/include/time.hpp"
 
 #define MATCH_RESULT(opt) \
     "*%-16s method: Found the pattern \"%s\" starting(" #opt ") at index %d.  ==>Run time: %8.5f ms\n"
-#define MATCH_NO_RESULT "*%-16s method: Could not find the pattern \"%s\".  ==>Run time: %8.5f ms\n"
+#define MATCH_NONE_RESULT "*%-16s method: Could not find the pattern \"%s\".  ==>Run time: %8.5f ms\n"
 #define MATCH_PRINT_RESULT_CONTENT(method)                                                  \
     do                                                                                      \
     {                                                                                       \
         if (-1 != shift)                                                                    \
         {                                                                                   \
-            FORMAT_PRINT(MATCH_RESULT(1st), method, pattern, shift, TIME_INTERVAL(timing)); \
+            COMMON_PRINT(MATCH_RESULT(1st), method, pattern, shift, TIME_INTERVAL(timing)); \
         }                                                                                   \
         else                                                                                \
         {                                                                                   \
-            FORMAT_PRINT(MATCH_NO_RESULT, method, pattern, TIME_INTERVAL(timing));          \
+            COMMON_PRINT(MATCH_NONE_RESULT, method, pattern, TIME_INTERVAL(timing));        \
         }                                                                                   \
     }                                                                                       \
     while (0)
@@ -79,7 +79,7 @@ void Match::setSearchingText(char* text, const uint32_t length)
     std::cout << std::endl;
 }
 
-// Rabin-Karp Method
+// Rabin-Karp method
 int Match::rkMethod(const char* text, const char* pattern, const uint32_t textLen, const uint32_t patternLen)
 {
     TIME_BEGIN(timing);
@@ -117,7 +117,7 @@ int Match::rkMethod(const char* text, const char* pattern, const uint32_t textLe
     return shift;
 }
 
-// Knuth-Morris-Pratt Method
+// Knuth-Morris-Pratt method
 int Match::kmpMethod(const char* text, const char* pattern, const uint32_t textLen, const uint32_t patternLen)
 {
     TIME_BEGIN(timing);
@@ -161,7 +161,7 @@ int Match::kmpMethod(const char* text, const char* pattern, const uint32_t textL
     return shift;
 }
 
-// Boyer-Moore Method
+// Boyer-Moore method
 int Match::bmMethod(const char* text, const char* pattern, const uint32_t textLen, const uint32_t patternLen)
 {
     TIME_BEGIN(timing);
@@ -244,7 +244,7 @@ void Match::fillGoodSuffixRuleTable(uint32_t goodSuffixRuleTable[], const char* 
     }
 }
 
-// Horspool
+// Horspool method
 int Match::horspoolMethod(const char* text, const char* pattern, const uint32_t textLen, const uint32_t patternLen)
 {
     TIME_BEGIN(timing);
@@ -292,7 +292,7 @@ void Match::fillBadCharShiftTableForHorspool(
     }
 }
 
-// Sunday
+// Sunday method
 int Match::sundayMethod(const char* text, const char* pattern, const uint32_t textLen, const uint32_t patternLen)
 {
     TIME_BEGIN(timing);

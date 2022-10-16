@@ -388,6 +388,7 @@ private:
     [[noreturn]] void throwUnexpectedMethodException(const std::string& info);
 
 protected:
+    friend std::ostream& operator<<(std::ostream& os, const GeneralTaskCategory& taskCategory);
     friend std::ostream& operator<<(std::ostream& os, const AlgorithmTaskType& taskType);
     friend std::ostream& operator<<(std::ostream& os, const NumericTaskType& taskType);
 };

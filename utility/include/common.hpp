@@ -7,7 +7,7 @@
 #include <filesystem>
 #include <iostream>
 
-#define FORMAT_TO_STRING(format, args...)                                     \
+#define COMMON_FORMAT_TO_STRING(format, args...)                              \
     (                                                                         \
         {                                                                     \
             const int bufferSize = std::snprintf(nullptr, 0, format, ##args); \
@@ -18,9 +18,9 @@
             const std::string str(buffer);                                    \
             str;                                                              \
         })
-#define FORMAT_PRINT(format, args...) std::cout << FORMAT_TO_STRING(format, ##args)
+#define COMMON_PRINT(format, args...) std::cout << COMMON_FORMAT_TO_STRING(format, ##args)
 
-namespace util_file
+namespace util_common
 {
 typedef std::string& (*PrintStyle)(std::string& line);
 
@@ -77,8 +77,8 @@ void tryToOperateFileLock(
     const LockOperateType lockOperate,
     const FileLockType fileLock)
 {
-    const int fd = static_cast<__gnu_cxx::stdio_filebuf<char>* const>(file.rdbuf())->fd();
-    const int operate = (LockOperateType::lock == lockOperate)
+    const int fd = static_cast<__gnu_cxx::stdio_filebuf<char>*const>(file.rdbuf())->fd(),
+              operate = (LockOperateType::lock == lockOperate)
         ? (((FileLockType::readerLock == fileLock) ? LOCK_SH : LOCK_EX) | LOCK_NB)
         : LOCK_UN;
     if (flock(fd, operate))
@@ -118,4 +118,4 @@ void printFile(
     const bool reverse = false,
     const uint32_t maxLine = maxLineNumForPrintFile,
     PrintStyle style = nullStyle);
-} // namespace util_file
+} // namespace util_common

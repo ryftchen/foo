@@ -1,5 +1,5 @@
 #include "divisor.hpp"
-#include "utility/include/file.hpp"
+#include "utility/include/common.hpp"
 #include "utility/include/time.hpp"
 
 #define DIVISOR_RESULT "\r\n*%-9s method:\r\n%s\r\n==>Run time: %8.5f ms\n"
@@ -9,7 +9,7 @@
         const uint32_t arrayBufferSize = divisorVector.size() * maxAlignOfPrint;  \
         char arrayBuffer[arrayBufferSize + 1];                                    \
         arrayBuffer[0] = '\0';                                                    \
-        FORMAT_PRINT(                                                             \
+        COMMON_PRINT(                                                             \
             DIVISOR_RESULT,                                                       \
             method,                                                               \
             formatIntegerVector(divisorVector, arrayBuffer, arrayBufferSize + 1), \

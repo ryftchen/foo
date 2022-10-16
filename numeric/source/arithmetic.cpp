@@ -1,5 +1,5 @@
 #include "arithmetic.hpp"
-#include "utility/include/file.hpp"
+#include "utility/include/common.hpp"
 
 #define ARITHMETIC_RESULT "\r\n*%-14s method:\r\n(%d) %s (%d) = %d\n"
 
@@ -15,7 +15,7 @@ int Arithmetic::additionMethod(const int augend, const int addend)
 {
     const int sum = bitAdd(augend, addend);
 
-    FORMAT_PRINT(ARITHMETIC_RESULT, "Addition", augend, "+", addend, sum);
+    COMMON_PRINT(ARITHMETIC_RESULT, "Addition", augend, "+", addend, sum);
     return sum;
 }
 
@@ -24,7 +24,7 @@ int Arithmetic::subtractionMethod(const int minuend, const int subtrahend)
 {
     const int difference = bitAdd(minuend, bitAdd(~subtrahend, 1));
 
-    FORMAT_PRINT(ARITHMETIC_RESULT, "Subtraction", minuend, "-", subtrahend, difference);
+    COMMON_PRINT(ARITHMETIC_RESULT, "Subtraction", minuend, "-", subtrahend, difference);
     return difference;
 }
 
@@ -42,7 +42,7 @@ int Arithmetic::multiplicationMethod(const int multiplier, const int multiplican
         }
     }
 
-    FORMAT_PRINT(ARITHMETIC_RESULT, "Multiplication", multiplier, "*", multiplicand, product);
+    COMMON_PRINT(ARITHMETIC_RESULT, "Multiplication", multiplier, "*", multiplicand, product);
     return product;
 }
 
@@ -71,7 +71,7 @@ int Arithmetic::divisionMethod(const int dividend, const int divisor)
         quotient = bitSub(0, quotient);
     }
 
-    FORMAT_PRINT(ARITHMETIC_RESULT, "Division", dividend, "/", divisor, quotient);
+    COMMON_PRINT(ARITHMETIC_RESULT, "Division", dividend, "/", divisor, quotient);
     return quotient;
 }
 } // namespace num_arithmetic
