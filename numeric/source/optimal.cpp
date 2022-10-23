@@ -13,7 +13,7 @@ using particle_swarm::Individual;
 using particle_swarm::Record;
 using particle_swarm::Society;
 
-// Gradient descent method
+// gradient descent
 std::optional<std::tuple<ValueY, ValueX>> Gradient::operator()(const double left, const double right, const double eps)
 {
     TIME_BEGIN(timing);
@@ -66,7 +66,7 @@ double Gradient::calculateFirstDerivative(const double x, const double eps) cons
     return (func(x + differential) - func(x - differential)) / eps;
 }
 
-// Simulated annealing method
+// simulated annealing
 std::optional<std::tuple<ValueY, ValueX>> Annealing::operator()(const double left, const double right, const double eps)
 {
     TIME_BEGIN(timing);
@@ -116,7 +116,7 @@ std::optional<std::tuple<ValueY, ValueX>> Annealing::operator()(const double lef
     return std::make_optional(std::make_tuple(y, x));
 }
 
-// Particle swarm method
+// particle swarm
 std::optional<std::tuple<ValueY, ValueX>> Particle::operator()(const double left, const double right, const double eps)
 {
     TIME_BEGIN(timing);
@@ -195,7 +195,7 @@ Record Particle::recordInit(const double left, const double right)
     return rec;
 }
 
-// Genetic method
+// genetic
 std::optional<std::tuple<ValueY, ValueX>> Genetic::operator()(const double left, const double right, const double eps)
 {
     TIME_BEGIN(timing);

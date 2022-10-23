@@ -25,7 +25,7 @@ Sieve::Sieve()
     std::cout << "\r\nAll prime numbers less than " << maxPositiveInteger << ":" << std::endl;
 }
 
-// Eratosthenes method
+// Eratosthenes
 std::vector<uint32_t> Sieve::eratosthenesMethod(const uint32_t max) const
 {
     TIME_BEGIN(timing);
@@ -51,7 +51,7 @@ std::vector<uint32_t> Sieve::eratosthenesMethod(const uint32_t max) const
     return sieveVector;
 }
 
-// Euler method
+// Euler
 std::vector<uint32_t> Sieve::eulerMethod(const uint32_t max) const
 {
     TIME_BEGIN(timing);

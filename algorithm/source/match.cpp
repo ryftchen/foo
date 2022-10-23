@@ -79,7 +79,7 @@ void Match::setSearchingText(char* text, const uint32_t length)
     std::cout << std::endl;
 }
 
-// Rabin-Karp method
+// Rabin-Karp
 int Match::rkMethod(const char* text, const char* pattern, const uint32_t textLen, const uint32_t patternLen)
 {
     TIME_BEGIN(timing);
@@ -117,7 +117,7 @@ int Match::rkMethod(const char* text, const char* pattern, const uint32_t textLe
     return shift;
 }
 
-// Knuth-Morris-Pratt method
+// Knuth-Morris-Pratt
 int Match::kmpMethod(const char* text, const char* pattern, const uint32_t textLen, const uint32_t patternLen)
 {
     TIME_BEGIN(timing);
@@ -161,7 +161,7 @@ int Match::kmpMethod(const char* text, const char* pattern, const uint32_t textL
     return shift;
 }
 
-// Boyer-Moore method
+// Boyer-Moore
 int Match::bmMethod(const char* text, const char* pattern, const uint32_t textLen, const uint32_t patternLen)
 {
     TIME_BEGIN(timing);
@@ -244,7 +244,7 @@ void Match::fillGoodSuffixRuleTable(uint32_t goodSuffixRuleTable[], const char* 
     }
 }
 
-// Horspool method
+// Horspool
 int Match::horspoolMethod(const char* text, const char* pattern, const uint32_t textLen, const uint32_t patternLen)
 {
     TIME_BEGIN(timing);
@@ -292,7 +292,7 @@ void Match::fillBadCharShiftTableForHorspool(
     }
 }
 
-// Sunday method
+// Sunday
 int Match::sundayMethod(const char* text, const char* pattern, const uint32_t textLen, const uint32_t patternLen)
 {
     TIME_BEGIN(timing);

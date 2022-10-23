@@ -20,7 +20,7 @@ double trapezoid(const num_expression::Expression& expr, const double left, cons
     return sum;
 }
 
-// Trapezoidal method
+// trapezoidal
 double Trapezoidal::operator()(double lower, double upper, const double eps) const
 {
     TIME_BEGIN(timing);
@@ -45,7 +45,7 @@ double Trapezoidal::operator()(double lower, double upper, const double eps) con
     return sum;
 }
 
-// Adaptive Simpson's 1/3 method
+// adaptive Simpson's 1/3
 double Simpson::operator()(double lower, double upper, const double eps) const
 {
     TIME_BEGIN(timing);
@@ -86,7 +86,7 @@ double Simpson::simpsonOneThird(const double left, const double right) const
     return (func(left) + 4.0 * func((left + right) / 2.0) + func(right)) / 6.0 * (right - left);
 }
 
-// Romberg method
+// Romberg
 double Romberg::operator()(double lower, double upper, const double eps) const
 {
     TIME_BEGIN(timing);
@@ -120,7 +120,7 @@ double Romberg::operator()(double lower, double upper, const double eps) const
     return sum;
 }
 
-// Gauss-Legendre's 5-points method
+// Gauss-Legendre's 5-points
 double Gauss::operator()(double lower, double upper, const double eps) const
 {
     TIME_BEGIN(timing);
