@@ -74,7 +74,7 @@ Notation::Priority Notation::getPriority(const char c)
     }
 }
 
-// prefix
+// Prefix
 std::string Notation::prefixMethod(const std::string& infixNotation)
 {
     std::string infix = infixNotation;
@@ -98,7 +98,7 @@ std::string Notation::prefixMethod(const std::string& infixNotation)
     return std::move(prefixNotation);
 }
 
-// postfix
+// Postfix
 std::string Notation::postfixMethod(const std::string& infixNotation)
 {
     std::string postfixNotation = infixToPostfix(infixNotation);

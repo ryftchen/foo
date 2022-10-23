@@ -25,7 +25,7 @@ template int Search<double>::interpolationSearch(const double* const array, cons
     const;
 template int Search<double>::fibonacciSearch(const double* const array, const uint32_t length, const double key) const;
 
-// binary
+// Binary
 template <class T>
 int Search<T>::binarySearch(const T* const array, const uint32_t length, const T key) const
 {
@@ -56,7 +56,7 @@ int Search<T>::binarySearch(const T* const array, const uint32_t length, const T
     return index;
 }
 
-// interpolation
+// Interpolation
 template <class T>
 int Search<T>::interpolationSearch(const T* const array, const uint32_t length, const T key) const
 {

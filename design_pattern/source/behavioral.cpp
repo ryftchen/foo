@@ -12,7 +12,7 @@ Behavioral::Behavioral()
     std::cout << "\r\nBehavioral pattern:" << std::endl;
 }
 
-// chain of responsibility
+// Chain Of Responsibility
 namespace chain_of_responsibility
 {
 static std::stringstream& stringstream()
@@ -95,7 +95,7 @@ void Behavioral::chainOfResponsibilityInstance()
     COMMON_PRINT(BEHAVIORAL_RESULT, "ChainOfResponsibility", stringstream().str().c_str());
 }
 
-// command
+// Command
 namespace command
 {
 static std::stringstream& stringstream()
@@ -174,7 +174,7 @@ void Behavioral::commandInstance()
     COMMON_PRINT(BEHAVIORAL_RESULT, "Command", stringstream().str().c_str());
 }
 
-// interpreter
+// Interpreter
 namespace interpreter
 {
 static std::stringstream& stringstream()
@@ -259,7 +259,7 @@ void Behavioral::interpreterInstance()
     COMMON_PRINT(BEHAVIORAL_RESULT, "Interpreter", stringstream().str().c_str());
 }
 
-// iterator
+// Iterator
 namespace iterator
 {
 static std::stringstream& stringstream()
@@ -357,7 +357,7 @@ void Behavioral::iteratorInstance()
     COMMON_PRINT(BEHAVIORAL_RESULT, "Iterator", stringstream().str().c_str());
 }
 
-// mediator
+// Mediator
 namespace mediator
 {
 static std::stringstream& stringstream()
@@ -470,7 +470,7 @@ void Behavioral::mediatorInstance()
     COMMON_PRINT(BEHAVIORAL_RESULT, "Mediator", stringstream().str().c_str());
 }
 
-// memento
+// Memento
 namespace memento
 {
 static std::stringstream& stringstream()
@@ -574,7 +574,7 @@ void Behavioral::mementoInstance()
     COMMON_PRINT(BEHAVIORAL_RESULT, "Memento", stringstream().str().c_str());
 }
 
-// observer
+// Observer
 namespace observer
 {
 static std::stringstream& stringstream()
@@ -675,7 +675,7 @@ void Behavioral::observerInstance()
     COMMON_PRINT(BEHAVIORAL_RESULT, "Observer", stringstream().str().c_str());
 }
 
-// state
+// State
 namespace state
 {
 static std::stringstream& stringstream()
@@ -748,7 +748,7 @@ void Behavioral::stateInstance()
     COMMON_PRINT(BEHAVIORAL_RESULT, "State", stringstream().str().c_str());
 }
 
-// strategy
+// Strategy
 namespace strategy
 {
 static std::stringstream& stringstream()
@@ -810,7 +810,7 @@ void Behavioral::strategyInstance()
     COMMON_PRINT(BEHAVIORAL_RESULT, "Strategy", stringstream().str().c_str());
 }
 
-// template method
+// Template Method
 namespace template_method
 {
 static std::stringstream& stringstream()
@@ -855,7 +855,7 @@ void Behavioral::templateMethodInstance()
     COMMON_PRINT(BEHAVIORAL_RESULT, "TemplateMethod", stringstream().str().c_str());
 }
 
-// visitor
+// Visitor
 namespace visitor
 {
 static std::stringstream& stringstream()
