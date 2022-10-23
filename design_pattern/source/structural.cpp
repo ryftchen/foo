@@ -12,7 +12,7 @@ Structural::Structural()
     std::cout << "\r\nStructural pattern:" << std::endl;
 }
 
-// adapter
+// Adapter
 namespace adapter
 {
 static std::stringstream& stringstream()
@@ -61,7 +61,7 @@ void Structural::adapterInstance()
     COMMON_PRINT(STRUCTURAL_RESULT, "Adapter", stringstream().str().c_str());
 }
 
-// bridge
+// Bridge
 namespace bridge
 {
 static std::stringstream& stringstream()
@@ -136,7 +136,7 @@ void Structural::bridgeInstance()
     COMMON_PRINT(STRUCTURAL_RESULT, "Bridge", stringstream().str().c_str());
 }
 
-// composite
+// Composite
 namespace composite
 {
 static std::stringstream& stringstream()
@@ -225,7 +225,7 @@ void Structural::compositeInstance()
     COMMON_PRINT(STRUCTURAL_RESULT, "Composite", stringstream().str().c_str());
 }
 
-// decorator
+// Decorator
 namespace decorator
 {
 static std::stringstream& stringstream()
@@ -305,7 +305,7 @@ void Structural::decoratorInstance()
     COMMON_PRINT(STRUCTURAL_RESULT, "Decorator", stringstream().str().c_str());
 }
 
-// facade
+// Facade
 namespace facade
 {
 static std::stringstream& stringstream()
@@ -364,7 +364,7 @@ void Structural::facadeInstance()
     COMMON_PRINT(STRUCTURAL_RESULT, "Facade", stringstream().str().c_str());
 }
 
-// flyweight
+// Flyweight
 namespace flyweight
 {
 static std::stringstream& stringstream()
@@ -448,7 +448,7 @@ void Structural::flyweightInstance()
     COMMON_PRINT(STRUCTURAL_RESULT, "Flyweight", stringstream().str().c_str());
 }
 
-// proxy
+// Proxy
 namespace proxy
 {
 static std::stringstream& stringstream()

@@ -10,7 +10,7 @@ Creational::Creational()
     std::cout << "\r\nCreational pattern:" << std::endl;
 }
 
-// abstract factory
+// Abstract Factory
 namespace abstract_factory
 {
 static std::stringstream& stringstream()
@@ -121,7 +121,7 @@ void Creational::abstractFactoryInstance()
     COMMON_PRINT(CREATIONAL_RESULT, "AbstractFactory", stringstream().str().c_str());
 }
 
-// builder
+// Builder
 namespace builder
 {
 static std::stringstream& stringstream()
@@ -230,7 +230,7 @@ void Creational::builderInstance()
     COMMON_PRINT(CREATIONAL_RESULT, "Builder", stringstream().str().c_str());
 }
 
-// factory method
+// Factory Method
 namespace factory_method
 {
 static std::stringstream& stringstream()
@@ -304,7 +304,7 @@ void Creational::factoryMethodInstance()
     COMMON_PRINT(CREATIONAL_RESULT, "FactoryMethod", stringstream().str().c_str());
 }
 
-// prototype
+// Prototype
 namespace prototype
 {
 static std::stringstream& stringstream()
@@ -390,7 +390,7 @@ void Creational::prototypeInstance()
     COMMON_PRINT(CREATIONAL_RESULT, "Prototype", stringstream().str().c_str());
 }
 
-// singleton
+// Singleton
 namespace singleton
 {
 static std::stringstream& stringstream()
