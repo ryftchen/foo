@@ -2,7 +2,7 @@
 
 namespace util_hash
 {
-// BKDR Hash
+// Brian-Kernighan Dennis-Ritchie hash
 uint32_t bkdrHash(const char* str)
 {
     const uint32_t seed = bkdrHashSeed; // 31 131 1313 13131 131313 etc...

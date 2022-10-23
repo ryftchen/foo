@@ -8,9 +8,9 @@ include(CheckIncludeFiles)
 check_cxx_compiler_flag(-std=c++20 COMPILER_SUPPORTS_CXX20)
 check_include_file("bits/stdint-uintn.h" HAVE_BITS_HEADER)
 check_include_file("ext/stdio_filebuf.h" HAVE_EXT_HEADER)
-check_include_files("sys/file.h;sys/time.h" HAVE_SYS_HEADER)
-check_include_files("readline/history.h;readline/readline.h" HAVE_READLINE_HEADER)
 check_include_file("mpfr.h" HAVE_MPFR_HEADER)
+check_include_files("readline/history.h;readline/readline.h" HAVE_READLINE_HEADER)
+check_include_files("sys/file.h;sys/time.h" HAVE_SYS_HEADER)
 find_package(Threads REQUIRED)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON CACHE INTERNAL "")
@@ -36,6 +36,7 @@ include_directories(${CMAKE_SOURCE_DIR})
 
 add_subdirectory(utility)
 add_subdirectory(algorithm)
+add_subdirectory(design_pattern)
 add_subdirectory(numeric)
 
 add_executable(${BIN_NAME} ${APPLICATION_LIST})
@@ -54,4 +55,5 @@ target_link_libraries(
     PRIVATE
         foo::utility
         foo::algorithm
+        foo::design_pattern
         foo::numeric)
