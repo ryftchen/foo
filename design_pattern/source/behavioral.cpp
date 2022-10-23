@@ -217,23 +217,23 @@ class NonterminalExpression : public AbstractExpression
 {
 public:
     NonterminalExpression(std::shared_ptr<AbstractExpression> left, std::shared_ptr<AbstractExpression> right) :
-        lop(left), rop(right)
+        leftOp(left), rightOp(right)
     {
     }
     ~NonterminalExpression() override
     {
-        lop.reset();
-        rop.reset();
+        leftOp.reset();
+        rightOp.reset();
     }
 
     bool interpret(const std::shared_ptr<Context> context) override
     {
-        return (lop->interpret(context) && rop->interpret(context));
+        return (leftOp->interpret(context) && rightOp->interpret(context));
     }
 
 private:
-    std::shared_ptr<AbstractExpression> lop;
-    std::shared_ptr<AbstractExpression> rop;
+    std::shared_ptr<AbstractExpression> leftOp;
+    std::shared_ptr<AbstractExpression> rightOp;
 };
 } // namespace interpreter
 
