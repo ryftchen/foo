@@ -11,6 +11,7 @@
 #include "numeric/include/integral.hpp"
 #include "numeric/include/optimal.hpp"
 #include "numeric/include/sieve.hpp"
+#include "time.hpp"
 #include "utility/include/hash.hpp"
 #include "utility/include/log.hpp"
 #include "utility/include/thread.hpp"
@@ -114,13 +115,14 @@ void Command::runCommander(const int argc, const char* const argv[])
 
     if (0 != argc - 1)
     {
-        foregroundHandle(argc, argv);
-        backgroundHandle();
+        std::shared_ptr<util_thread::Thread> threads = std::make_shared<util_thread::Thread>(2);
+        threads->enqueue("commander_fore", &Command::foregroundHandle, this, argc, argv);
+        threads->enqueue("commander_back", &Command::backgroundHandle, this);
     }
     else
     {
         LOG_INF(logger, "Enter console mode.");
-        enterConsole();
+        enterConsoleMode();
     }
 
     LOG_TO_STOP(logger);
@@ -130,10 +132,15 @@ void Command::foregroundHandle(const int argc, const char* const argv[])
 {
     try
     {
+        std::unique_lock<std::mutex> lock(commandMutex);
         program.parseArgs(argc, argv);
-
         validateBasicTask();
         validateGeneralTask();
+
+        lock.unlock();
+        commandCondition.notify_one();
+        util_time::millisecondLevelSleep(1);
+        lock.lock();
     }
     catch (const std::exception& error)
     {
@@ -141,10 +148,20 @@ void Command::foregroundHandle(const int argc, const char* const argv[])
     }
 }
 
-void Command::backgroundHandle() const
+void Command::backgroundHandle()
 {
     try
     {
+        if (std::unique_lock<std::mutex> lock(commandMutex); true)
+        {
+            commandCondition.wait(
+                lock,
+                [this]() -> decltype(auto)
+                {
+                    return true;
+                });
+        }
+
         if (checkTask())
         {
             performTask();
@@ -308,7 +325,7 @@ void Command::printVersionInfo() const
     util_common::executeCommand(versionStr.c_str());
 }
 
-void Command::enterConsole() const
+void Command::enterConsoleMode() const
 {
     util_common::executeCommand(("tput bel; echo " + getIconBanner()).c_str());
 
