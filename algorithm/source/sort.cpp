@@ -31,7 +31,7 @@ template std::vector<int> Sort<int>::countingSort(int* const array, const uint32
 template std::vector<int> Sort<int>::bucketSort(int* const array, const uint32_t length) const;
 template std::vector<int> Sort<int>::radixSort(int* const array, const uint32_t length) const;
 
-// Bubble method
+// bubble
 template <class T>
 std::vector<T> Sort<T>::bubbleSort(T* const array, const uint32_t length) const
 {
@@ -56,7 +56,7 @@ std::vector<T> Sort<T>::bubbleSort(T* const array, const uint32_t length) const
     return std::vector<T>(sortArray, sortArray + length);
 }
 
-// Selection method
+// selection
 template <class T>
 std::vector<T> Sort<T>::selectionSort(T* const array, const uint32_t length) const
 {
@@ -83,7 +83,7 @@ std::vector<T> Sort<T>::selectionSort(T* const array, const uint32_t length) con
     return std::vector<T>(sortArray, sortArray + length);
 }
 
-// Insertion method
+// insertion
 template <class T>
 std::vector<T> Sort<T>::insertionSort(T* const array, const uint32_t length) const
 {
@@ -109,7 +109,7 @@ std::vector<T> Sort<T>::insertionSort(T* const array, const uint32_t length) con
     return std::vector<T>(sortArray, sortArray + length);
 }
 
-// Shell method
+// Shell
 template <class T>
 std::vector<T> Sort<T>::shellSort(T* const array, const uint32_t length) const
 {
@@ -136,7 +136,7 @@ std::vector<T> Sort<T>::shellSort(T* const array, const uint32_t length) const
     return std::vector<T>(sortArray, sortArray + length);
 }
 
-// Merge method
+// merge
 template <class T>
 std::vector<T> Sort<T>::mergeSort(T* const array, const uint32_t length) const
 {
@@ -183,7 +183,7 @@ void Sort<T>::mergeSortRecursive(T* const sortArray, const uint32_t begin, const
     }
 }
 
-// Quick method
+// quick
 template <class T>
 std::vector<T> Sort<T>::quickSort(T* const array, const uint32_t length) const
 {
@@ -238,7 +238,7 @@ void Sort<T>::quickSortRecursive(T* const sortArray, const uint32_t begin, const
     quickSortRecursive(sortArray, leftIndex + 1, end);
 }
 
-// Heap method
+// heap
 template <class T>
 std::vector<T> Sort<T>::heapSort(T* const array, const uint32_t length) const
 {
@@ -284,7 +284,7 @@ void Sort<T>::buildMaxHeap(T* const sortArray, const uint32_t begin, const uint3
     }
 }
 
-// Counting method
+// counting
 template <class T>
 std::vector<T> Sort<T>::countingSort(T* const array, const uint32_t length) const
 {
@@ -329,7 +329,7 @@ std::vector<T> Sort<T>::countingSort(T* const array, const uint32_t length) cons
     return std::vector<T>(sortArray, sortArray + length);
 }
 
-// Bucket method
+// bucket
 template <class T>
 std::vector<T> Sort<T>::bucketSort(T* const array, const uint32_t length) const
 {
@@ -371,7 +371,7 @@ std::vector<T> Sort<T>::bucketSort(T* const array, const uint32_t length) const
     return std::vector<T>(sortArray, sortArray + length);
 }
 
-// Radix method
+// radix
 template <class T>
 std::vector<T> Sort<T>::radixSort(T* const array, const uint32_t length) const
 {

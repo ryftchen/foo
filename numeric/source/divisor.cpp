@@ -42,7 +42,7 @@ std::vector<int> Divisor::getAllDivisors(const int greatestCommonDivisor)
     return divisor;
 }
 
-// Euclid method
+// Euclid
 std::vector<int> Divisor::euclidMethod(int a, int b) const
 {
     TIME_BEGIN(timing);
@@ -63,7 +63,7 @@ std::vector<int> Divisor::euclidMethod(int a, int b) const
     return divisorVector;
 }
 
-// Stein method
+// Stein
 std::vector<int> Divisor::steinMethod(int a, int b) const
 {
     TIME_BEGIN(timing);
