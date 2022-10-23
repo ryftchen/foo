@@ -1,6 +1,7 @@
 #pragma once
 
 #include <bitset>
+#include <condition_variable>
 #include <mutex>
 #include <variant>
 #include "numeric/include/expression.hpp"
@@ -16,11 +17,10 @@ public:
 
 private:
     mutable std::mutex commandMutex;
+    std::condition_variable commandCondition;
     util_argument::Argument program{util_argument::Argument("foo")};
-    static constexpr uint32_t titleWidthForPrintTask{40};
-    static constexpr uint32_t maxLineNumForPrintLog{50};
     void foregroundHandle(const int argc, const char* const argv[]);
-    void backgroundHandle() const;
+    void backgroundHandle();
     void validateBasicTask();
     void validateGeneralTask();
     bool checkTask() const;
@@ -682,6 +682,8 @@ private:
         // ----------------+----------------+----------------------------------------+---------------------------+--------------------------------
     };
     // clang-format on
+    static constexpr uint32_t titleWidthForPrintTask{40};
+    static constexpr uint32_t maxLineNumForPrintLog{50};
     void printConsoleOutput() const;
     void printHelpMessage() const;
     void printVersionInfo() const;
@@ -735,7 +737,7 @@ private:
                   num_expression::Rastrigin::optimalExpr},
                  num_expression::Rastrigin()}};
 
-    void enterConsole() const;
+    void enterConsoleMode() const;
     void registerOnConsole(util_console::Console& console) const;
     static void viewLogContent();
     static std::string getIconBanner();
