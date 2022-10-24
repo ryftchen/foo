@@ -303,7 +303,6 @@ auto operator<<(std::ostream& os, const Argument& parser) -> std::ostream&
         os.width(longestArgLength);
         os << argument;
     }
-    os << std::endl;
 
     return os;
 }
