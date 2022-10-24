@@ -174,9 +174,9 @@ void Command::backgroundHandle()
 
 void Command::validateBasicTask()
 {
-    for (int i = 0; i < BasicTaskBottom<BasicTaskCategory>::value; ++i)
+    for (int i = 0; i < BasicTask::Bottom<BasicTask::Category>::value; ++i)
     {
-        if (!program.isUsed(std::next(basicTaskMap.cbegin(), BasicTaskCategory(i))->first))
+        if (!program.isUsed(std::next(basicTaskMap.cbegin(), BasicTask::Category(i))->first))
         {
             continue;
         }
@@ -186,7 +186,7 @@ void Command::validateBasicTask()
             throwExcessArgumentException();
         }
 
-        taskPlan.basicTask.basicTaskBit.set(BasicTaskCategory(i));
+        taskPlan.basicTask.basicTaskBit.set(BasicTask::Category(i));
     }
 }
 
@@ -248,32 +248,32 @@ void Command::performTask() const
 {
     if (!taskPlan.basicTask.empty())
     {
-        for (int i = 0; i < BasicTaskBottom<BasicTaskCategory>::value; ++i)
+        for (int i = 0; i < BasicTask::Bottom<BasicTask::Category>::value; ++i)
         {
-            if (taskPlan.basicTask.basicTaskBit.test(BasicTaskCategory(i)))
+            if (taskPlan.basicTask.basicTaskBit.test(BasicTask::Category(i)))
             {
-                (this->*std::next(basicTaskMap.cbegin(), BasicTaskCategory(i))->second)();
+                (this->*std::next(basicTaskMap.cbegin(), BasicTask::Category(i))->second)();
             }
         }
     }
 
-    for (int i = 0; i < GeneralTaskBottom<GeneralTaskCategory>::value; ++i)
+    for (int i = 0; i < GeneralTask::Bottom<GeneralTask::Category>::value; ++i)
     {
-        switch (GeneralTaskCategory(i))
+        switch (GeneralTask::Category(i))
         {
-            case GeneralTaskCategory::algorithm:
+            case GeneralTask::Category::algorithm:
                 if (taskPlan.generalTask.algorithmTask.empty())
                 {
                     continue;
                 }
                 break;
-            case GeneralTaskCategory::designPattern:
+            case GeneralTask::Category::designPattern:
                 if (taskPlan.generalTask.designPatternTask.empty())
                 {
                     continue;
                 }
                 break;
-            case GeneralTaskCategory::numeric:
+            case GeneralTask::Category::numeric:
                 if (taskPlan.generalTask.numericTask.empty())
                 {
                     continue;
@@ -284,7 +284,7 @@ void Command::performTask() const
         }
 
         for ([[maybe_unused]] const auto& [taskTypeName, taskTypeTuple] :
-             std::next(generalTaskMap.cbegin(), GeneralTaskCategory(i))->second)
+             std::next(generalTaskMap.cbegin(), GeneralTask::Category(i))->second)
         {
             (this->*get<PerformTaskFunctor>(get<TaskFunctorTuple>(taskTypeTuple)))();
         }
@@ -294,7 +294,7 @@ void Command::performTask() const
 void Command::printConsoleOutput() const
 {
     const auto commands =
-        program.get<std::vector<std::string>>(std::next(basicTaskMap.cbegin(), BasicTaskCategory::console)->first);
+        program.get<std::vector<std::string>>(std::next(basicTaskMap.cbegin(), BasicTask::Category::console)->first);
     if (commands.empty())
     {
         return;
@@ -387,7 +387,7 @@ void Command::runMatch() const
     const std::shared_ptr<algo_match::Match> match = std::make_shared<algo_match::Match>(algo_match::maxDigit);
     std::shared_ptr<util_thread::Thread> threads = std::make_shared<util_thread::Thread>(std::min(
         static_cast<uint32_t>(taskPlan.generalTask.getBit<MatchMethod>().count()),
-        static_cast<uint32_t>(AlgorithmTaskBottom<MatchMethod>::value)));
+        static_cast<uint32_t>(AlgorithmTask::Bottom<MatchMethod>::value)));
     const auto matchFunctor =
         [&](const std::string& threadName, int (*methodPtr)(const char*, const char*, const uint32_t, const uint32_t))
     {
@@ -400,7 +400,7 @@ void Command::runMatch() const
             algo_match::singlePattern.length());
     };
 
-    for (int i = 0; i < AlgorithmTaskBottom<MatchMethod>::value; ++i)
+    for (int i = 0; i < AlgorithmTask::Bottom<MatchMethod>::value; ++i)
     {
         if (!taskPlan.generalTask.getBit<MatchMethod>().test(MatchMethod(i)))
         {
@@ -474,13 +474,13 @@ void Command::runNotation() const
     const std::shared_ptr<algo_notation::Notation> notation = std::make_shared<algo_notation::Notation>();
     std::shared_ptr<util_thread::Thread> threads = std::make_shared<util_thread::Thread>(std::min(
         static_cast<uint32_t>(taskPlan.generalTask.getBit<NotationMethod>().count()),
-        static_cast<uint32_t>(AlgorithmTaskBottom<NotationMethod>::value)));
+        static_cast<uint32_t>(AlgorithmTask::Bottom<NotationMethod>::value)));
     const auto notationFunctor = [&](const std::string& threadName, std::string (*methodPtr)(const std::string&))
     {
         threads->enqueue(threadName, methodPtr, std::string{algo_notation::infixNotation});
     };
 
-    for (int i = 0; i < AlgorithmTaskBottom<NotationMethod>::value; ++i)
+    for (int i = 0; i < AlgorithmTask::Bottom<NotationMethod>::value; ++i)
     {
         if (!taskPlan.generalTask.getBit<NotationMethod>().test(NotationMethod(i)))
         {
@@ -538,7 +538,7 @@ void Command::runSearch() const
         algo_search::arrayLength, algo_search::arrayRange1, algo_search::arrayRange2);
     std::shared_ptr<util_thread::Thread> threads = std::make_shared<util_thread::Thread>(std::min(
         static_cast<uint32_t>(taskPlan.generalTask.getBit<SearchMethod>().count()),
-        static_cast<uint32_t>(AlgorithmTaskBottom<SearchMethod>::value)));
+        static_cast<uint32_t>(AlgorithmTask::Bottom<SearchMethod>::value)));
     const auto searchFunctor =
         [&](const std::string& threadName,
             int (algo_search::Search<double>::*methodPtr)(const double* const, const uint32_t, const double) const)
@@ -552,7 +552,7 @@ void Command::runSearch() const
             search->getSearchedKey());
     };
 
-    for (int i = 0; i < AlgorithmTaskBottom<SearchMethod>::value; ++i)
+    for (int i = 0; i < AlgorithmTask::Bottom<SearchMethod>::value; ++i)
     {
         if (!taskPlan.generalTask.getBit<SearchMethod>().test(SearchMethod(i)))
         {
@@ -616,14 +616,14 @@ void Command::runSort() const
         std::make_shared<algo_sort::Sort<int>>(algo_sort::arrayLength, algo_sort::arrayRange1, algo_sort::arrayRange2);
     std::shared_ptr<util_thread::Thread> threads = std::make_shared<util_thread::Thread>(std::min(
         static_cast<uint32_t>(taskPlan.generalTask.getBit<SortMethod>().count()),
-        static_cast<uint32_t>(AlgorithmTaskBottom<SortMethod>::value)));
+        static_cast<uint32_t>(AlgorithmTask::Bottom<SortMethod>::value)));
     const auto sortFunctor = [&](const std::string& threadName,
                                  std::vector<int> (algo_sort::Sort<int>::*methodPtr)(int* const, const uint32_t) const)
     {
         threads->enqueue(threadName, methodPtr, sort, sort->getRandomArray().get(), sort->getLength());
     };
 
-    for (int i = 0; i < AlgorithmTaskBottom<SortMethod>::value; ++i)
+    for (int i = 0; i < AlgorithmTask::Bottom<SortMethod>::value; ++i)
     {
         if (!taskPlan.generalTask.getBit<SortMethod>().test(SortMethod(i)))
         {
@@ -727,13 +727,13 @@ void Command::runBehavioral() const
     const std::shared_ptr<dp_behavioral::Behavioral> behavioral = std::make_shared<dp_behavioral::Behavioral>();
     std::shared_ptr<util_thread::Thread> threads = std::make_shared<util_thread::Thread>(std::min(
         static_cast<uint32_t>(taskPlan.generalTask.getBit<BehavioralMethod>().count()),
-        static_cast<uint32_t>(DesignPatternTaskBottom<BehavioralMethod>::value)));
+        static_cast<uint32_t>(DesignPatternTask::Bottom<BehavioralMethod>::value)));
     const auto behavioralFunctor = [&](const std::string& threadName, void (*methodPtr)())
     {
         threads->enqueue(threadName, methodPtr);
     };
 
-    for (int i = 0; i < DesignPatternTaskBottom<BehavioralMethod>::value; ++i)
+    for (int i = 0; i < DesignPatternTask::Bottom<BehavioralMethod>::value; ++i)
     {
         if (!taskPlan.generalTask.getBit<BehavioralMethod>().test(BehavioralMethod(i)))
         {
@@ -843,13 +843,13 @@ void Command::runCreational() const
     const std::shared_ptr<dp_creational::Creational> creational = std::make_shared<dp_creational::Creational>();
     std::shared_ptr<util_thread::Thread> threads = std::make_shared<util_thread::Thread>(std::min(
         static_cast<uint32_t>(taskPlan.generalTask.getBit<CreationalMethod>().count()),
-        static_cast<uint32_t>(DesignPatternTaskBottom<CreationalMethod>::value)));
+        static_cast<uint32_t>(DesignPatternTask::Bottom<CreationalMethod>::value)));
     const auto creationalFunctor = [&](const std::string& threadName, void (*methodPtr)())
     {
         threads->enqueue(threadName, methodPtr);
     };
 
-    for (int i = 0; i < DesignPatternTaskBottom<CreationalMethod>::value; ++i)
+    for (int i = 0; i < DesignPatternTask::Bottom<CreationalMethod>::value; ++i)
     {
         if (!taskPlan.generalTask.getBit<CreationalMethod>().test(CreationalMethod(i)))
         {
@@ -923,13 +923,13 @@ void Command::runStructural() const
     const std::shared_ptr<dp_structural::Structural> structural = std::make_shared<dp_structural::Structural>();
     std::shared_ptr<util_thread::Thread> threads = std::make_shared<util_thread::Thread>(std::min(
         static_cast<uint32_t>(taskPlan.generalTask.getBit<StructuralMethod>().count()),
-        static_cast<uint32_t>(DesignPatternTaskBottom<StructuralMethod>::value)));
+        static_cast<uint32_t>(DesignPatternTask::Bottom<StructuralMethod>::value)));
     const auto structuralFunctor = [&](const std::string& threadName, void (*methodPtr)())
     {
         threads->enqueue(threadName, methodPtr);
     };
 
-    for (int i = 0; i < DesignPatternTaskBottom<StructuralMethod>::value; ++i)
+    for (int i = 0; i < DesignPatternTask::Bottom<StructuralMethod>::value; ++i)
     {
         if (!taskPlan.generalTask.getBit<StructuralMethod>().test(StructuralMethod(i)))
         {
@@ -1015,13 +1015,13 @@ void Command::runArithmetic() const
     const std::shared_ptr<num_arithmetic::Arithmetic> arithmetic = std::make_shared<num_arithmetic::Arithmetic>();
     std::shared_ptr<util_thread::Thread> threads = std::make_shared<util_thread::Thread>(std::min(
         static_cast<uint32_t>(taskPlan.generalTask.getBit<ArithmeticMethod>().count()),
-        static_cast<uint32_t>(NumericTaskBottom<ArithmeticMethod>::value)));
+        static_cast<uint32_t>(NumericTask::Bottom<ArithmeticMethod>::value)));
     const auto arithmeticFunctor = [&](const std::string& threadName, int (*methodPtr)(const int, const int))
     {
         threads->enqueue(threadName, methodPtr, num_arithmetic::integer1, num_arithmetic::integer2);
     };
 
-    for (int i = 0; i < NumericTaskBottom<ArithmeticMethod>::value; ++i)
+    for (int i = 0; i < NumericTask::Bottom<ArithmeticMethod>::value; ++i)
     {
         if (!taskPlan.generalTask.getBit<ArithmeticMethod>().test(ArithmeticMethod(i)))
         {
@@ -1089,14 +1089,14 @@ void Command::runDivisor() const
     const std::shared_ptr<num_divisor::Divisor> divisor = std::make_shared<num_divisor::Divisor>();
     std::shared_ptr<util_thread::Thread> threads = std::make_shared<util_thread::Thread>(std::min(
         static_cast<uint32_t>(taskPlan.generalTask.getBit<DivisorMethod>().count()),
-        static_cast<uint32_t>(NumericTaskBottom<DivisorMethod>::value)));
+        static_cast<uint32_t>(NumericTask::Bottom<DivisorMethod>::value)));
     const auto divisorFunctor =
         [&](const std::string& threadName, std::vector<int> (num_divisor::Divisor::*methodPtr)(int, int) const)
     {
         threads->enqueue(threadName, methodPtr, divisor, num_divisor::integer1, num_divisor::integer2);
     };
 
-    for (int i = 0; i < NumericTaskBottom<DivisorMethod>::value; ++i)
+    for (int i = 0; i < NumericTask::Bottom<DivisorMethod>::value; ++i)
     {
         if (!taskPlan.generalTask.getBit<DivisorMethod>().test(DivisorMethod(i)))
         {
@@ -1168,7 +1168,7 @@ void Command::runIntegral() const
         static_assert(num_integral::epsilon > 0.0);
         std::shared_ptr<util_thread::Thread> threads = std::make_shared<util_thread::Thread>(std::min(
             static_cast<uint32_t>(taskPlan.generalTask.getBit<IntegralMethod>().count()),
-            static_cast<uint32_t>(NumericTaskBottom<IntegralMethod>::value)));
+            static_cast<uint32_t>(NumericTask::Bottom<IntegralMethod>::value)));
         const auto integralFunctor =
             [&](const std::string& threadName, const std::shared_ptr<num_integral::Integral>& classPtr)
         {
@@ -1182,7 +1182,7 @@ void Command::runIntegral() const
         };
 
         const auto [taskCategory, taskType] = getMethodAttribute<IntegralMethod>();
-        for (int i = 0; i < NumericTaskBottom<IntegralMethod>::value; ++i)
+        for (int i = 0; i < NumericTask::Bottom<IntegralMethod>::value; ++i)
         {
             if (!taskPlan.generalTask.getBit<IntegralMethod>().test(IntegralMethod(i)))
             {
@@ -1291,7 +1291,7 @@ void Command::runOptimal() const
         assert((range.range1 < range.range2) && (num_optimal::epsilon > 0.0));
         std::shared_ptr<util_thread::Thread> threads = std::make_shared<util_thread::Thread>(std::min(
             static_cast<uint32_t>(taskPlan.generalTask.getBit<OptimalMethod>().count()),
-            static_cast<uint32_t>(NumericTaskBottom<OptimalMethod>::value)));
+            static_cast<uint32_t>(NumericTask::Bottom<OptimalMethod>::value)));
         const auto optimalFunctor =
             [&](const std::string& threadName, const std::shared_ptr<num_optimal::Optimal>& classPtr)
         {
@@ -1305,7 +1305,7 @@ void Command::runOptimal() const
         };
 
         const auto [taskCategory, taskType] = getMethodAttribute<OptimalMethod>();
-        for (int i = 0; i < NumericTaskBottom<OptimalMethod>::value; ++i)
+        for (int i = 0; i < NumericTask::Bottom<OptimalMethod>::value; ++i)
         {
             if (!taskPlan.generalTask.getBit<OptimalMethod>().test(OptimalMethod(i)))
             {
@@ -1392,14 +1392,14 @@ void Command::runSieve() const
     const std::shared_ptr<num_sieve::Sieve> sieve = std::make_shared<num_sieve::Sieve>();
     std::shared_ptr<util_thread::Thread> threads = std::make_shared<util_thread::Thread>(std::min(
         static_cast<uint32_t>(taskPlan.generalTask.getBit<SieveMethod>().count()),
-        static_cast<uint32_t>(NumericTaskBottom<SieveMethod>::value)));
+        static_cast<uint32_t>(NumericTask::Bottom<SieveMethod>::value)));
     const auto sieveFunctor =
         [&](const std::string& threadName, std::vector<uint32_t> (num_sieve::Sieve::*methodPtr)(const uint32_t) const)
     {
         threads->enqueue(threadName, methodPtr, sieve, num_sieve::maxPositiveInteger);
     };
 
-    for (int i = 0; i < NumericTaskBottom<SieveMethod>::value; ++i)
+    for (int i = 0; i < NumericTask::Bottom<SieveMethod>::value; ++i)
     {
         if (!taskPlan.generalTask.getBit<SieveMethod>().test(SieveMethod(i)))
         {
