@@ -1,9 +1,9 @@
 .cache/
 .vscode/
-
 build/
 temporary/
-__pycache__/
+script/__pycache__/
+
 core*
 vgcore*
 *.profraw
