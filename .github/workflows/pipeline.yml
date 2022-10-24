@@ -1,5 +1,5 @@
 ---
-name: CI
+name: Pipeline
 
 on:
   push:
@@ -8,14 +8,15 @@ on:
   workflow_dispatch:
     inputs:
       name:
-        description: 'CI'
+        description: 'Pipeline'
         default: 'Manual trigger'
         required: false
   schedule:
     - cron: '0 0 * * MON'
 
 jobs:
-  Precheck:
+  precheck:
+    name: Precheck
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
     container: ryftchen/foo:latest
@@ -60,7 +61,10 @@ jobs:
       - name: Perform CodeQL analysis
         uses: github/codeql-action/analyze@v2
 
-  Pipeline:
+  static_analysis:
+    name: Static analysis
+    needs: precheck
+    if: needs.precheck.result == 'success'
     runs-on: ubuntu-latest
     container: ryftchen/foo:latest
 
@@ -78,6 +82,28 @@ jobs:
           ./script/build.sh --format --lint --report --release
           git status
 
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3.0.0
+        with:
+          name: foo_artifact
+          path: ./temporary/foo_html_*.tar.bz2
+          retention-days: 7
+
+  dynamic_analysis:
+    name: Dynamic analysis
+    needs: precheck
+    if: needs.precheck.result == 'success'
+    runs-on: ubuntu-latest
+    container: ryftchen/foo:latest
+
+    steps:
+      - name: Prepare
+        run: |
+          git config --global --add safe.directory '*'
+  
+      - name: Checkout
+        uses: actions/checkout@v3.0.0
+
       - name: Build
         run: |
           ./script/build.sh --release
@@ -87,11 +113,4 @@ jobs:
           export TERM=linux
           export TERMINFO=/etc/terminfo
           ./script/test.py --check coverage memory --build release
-
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v3.0.0
-        with:
-          name: foo_artifact
-          path: ./temporary/foo_html_*.tar.bz2
-          retention-days: 7
 ...
