@@ -64,9 +64,7 @@ jobs:
   static_analysis:
     name: Static analysis
     needs: precheck
-    if: |
-        ((github.event_name == 'push') && (needs.precheck.result == 'success')) ||
-        (github.event_name != 'push')
+    if: always() && ((needs.precheck.result == 'success') || (needs.precheck.result == 'skipped'))
     runs-on: ubuntu-latest
     container: ryftchen/foo:latest
 
@@ -94,9 +92,7 @@ jobs:
   dynamic_analysis:
     name: Dynamic analysis
     needs: precheck
-    if: |
-        ((github.event_name == 'push') && (needs.precheck.result == 'success')) ||
-        (github.event_name != 'push')
+    if: always() && ((needs.precheck.result == 'success') || (needs.precheck.result == 'skipped'))
     runs-on: ubuntu-latest
     container: ryftchen/foo:latest
 
