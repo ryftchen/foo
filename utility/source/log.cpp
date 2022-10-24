@@ -3,8 +3,6 @@
 
 namespace util_log
 {
-Log logger;
-
 Log::Log(
     const std::string& logFile,
     const OutputType type,
@@ -39,7 +37,7 @@ void Log::runLogger()
         {
             if (std::unique_lock<std::mutex> lock(queueMutex); true)
             {
-                loggingCondition.wait(
+                logCondition.wait(
                     lock,
                     [this]() -> decltype(auto)
                     {
@@ -83,7 +81,7 @@ void Log::runLogger()
     }
 }
 
-void Log::waitLoggerStartForExternalUse()
+void Log::waitStartForExternalUse()
 {
     util_time::Time timer;
     uint32_t waitCount = 0;
@@ -104,14 +102,14 @@ void Log::waitLoggerStartForExternalUse()
     timer.resetBlockingTimer();
 }
 
-void Log::waitLoggerStopForExternalUse()
+void Log::waitStopForExternalUse()
 {
     if (std::unique_lock<std::mutex> lock(queueMutex); true)
     {
         isLogging = false;
 
         lock.unlock();
-        loggingCondition.notify_one();
+        logCondition.notify_one();
         util_time::millisecondLevelSleep(1);
         lock.lock();
     }

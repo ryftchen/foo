@@ -6,16 +6,16 @@
 #include "utility/include/fsm.hpp"
 #include "utility/include/time.hpp"
 
-#define LOG_TO_START(logObj) util_log::logObj.waitLoggerStartForExternalUse()
-#define LOG_TO_STOP(logObj) util_log::logObj.waitLoggerStopForExternalUse()
-#define LOG_DBG(logObj, format, args...) \
-    util_log::logObj.output(util_log::Log::OutputLevel::debug, __FILE__, __LINE__, format, ##args)
-#define LOG_INF(logObj, format, args...) \
-    util_log::logObj.output(util_log::Log::OutputLevel::info, __FILE__, __LINE__, format, ##args)
-#define LOG_WRN(logObj, format, args...) \
-    util_log::logObj.output(util_log::Log::OutputLevel::warn, __FILE__, __LINE__, format, ##args)
-#define LOG_ERR(logObj, format, args...) \
-    util_log::logObj.output(util_log::Log::OutputLevel::error, __FILE__, __LINE__, format, ##args)
+#define LOG_TO_START util_log::Log::getInstance().waitStartForExternalUse()
+#define LOG_TO_STOP util_log::Log::getInstance().waitStopForExternalUse()
+#define LOG_DBG(format, args...) \
+    util_log::Log::getInstance().flush(util_log::Log::OutputLevel::debug, __FILE__, __LINE__, format, ##args)
+#define LOG_INF(format, args...) \
+    util_log::Log::getInstance().flush(util_log::Log::OutputLevel::info, __FILE__, __LINE__, format, ##args)
+#define LOG_WRN(format, args...) \
+    util_log::Log::getInstance().flush(util_log::Log::OutputLevel::warn, __FILE__, __LINE__, format, ##args)
+#define LOG_ERR(format, args...) \
+    util_log::Log::getInstance().flush(util_log::Log::OutputLevel::error, __FILE__, __LINE__, format, ##args)
 
 namespace util_log
 {
@@ -64,36 +64,39 @@ public:
         done
     };
 
-    explicit Log(const StateType initState = State::init) noexcept : FSM(initState){};
-    Log(const std::string& logFile,
-        const OutputType type,
-        const OutputLevel level,
-        const OutputTarget target,
-        const StateType initState = State::init) noexcept;
+    Log(Log const&) = delete;
+    Log& operator=(Log const&) = delete;
     virtual ~Log() = default;
 
+    static inline Log& getInstance();
     template <typename... Args>
-    void output(
+    void flush(
         const OutputLevel level,
         const std::string& codeFile,
         const uint32_t codeLine,
         const char* const __restrict format,
         Args&&... args);
     void runLogger();
-    void waitLoggerStartForExternalUse();
-    void waitLoggerStopForExternalUse();
+    void waitStartForExternalUse();
+    void waitStopForExternalUse();
 
 private:
+    explicit Log(const StateType initState = State::init) noexcept : FSM(initState){};
+    Log(const std::string& logFile,
+        const OutputType type,
+        const OutputLevel level,
+        const OutputTarget target,
+        const StateType initState = State::init) noexcept;
+
+    mutable std::mutex queueMutex;
+    std::queue<std::string> logQueue;
+    std::condition_variable logCondition;
+    std::atomic<bool> isLogging{false};
     std::ofstream ofs;
     OutputType writeType{OutputType::add};
     OutputLevel minLevel{OutputLevel::debug};
     OutputTarget actualTarget{OutputTarget::all};
     char pathname[logPathLength + 1]{"./temporary/foo.log"};
-
-    mutable std::mutex queueMutex;
-    std::queue<std::string> logQueue;
-    std::condition_variable loggingCondition;
-    std::atomic<bool> isLogging{false};
 
     struct OpenFile
     {
@@ -131,8 +134,14 @@ protected:
     friend std::ostream& operator<<(std::ostream& os, const Log::State& state);
 };
 
+inline Log& Log::getInstance()
+{
+    static Log logger;
+    return logger;
+}
+
 template <typename... Args>
-void Log::output(
+void Log::flush(
     const OutputLevel level,
     const std::string& codeFile,
     const uint32_t codeLine,
@@ -176,13 +185,12 @@ void Log::output(
             logQueue.push(std::move(output));
 
             lock.unlock();
-            loggingCondition.notify_one();
+            logCondition.notify_one();
             util_time::millisecondLevelSleep(1);
             lock.lock();
         }
     }
 }
 
-extern class Log logger;
 std::string& changeLogLevelStyle(std::string& line);
 } // namespace util_log
