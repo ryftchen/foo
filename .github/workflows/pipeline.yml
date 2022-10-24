@@ -72,7 +72,7 @@ jobs:
       - name: Prepare
         run: |
           git config --global --add safe.directory '*'
-  
+
       - name: Checkout
         uses: actions/checkout@v3.0.0
 
@@ -100,7 +100,7 @@ jobs:
       - name: Prepare
         run: |
           git config --global --add safe.directory '*'
-  
+
       - name: Checkout
         uses: actions/checkout@v3.0.0
 
