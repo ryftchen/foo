@@ -64,7 +64,7 @@ jobs:
   static_analysis:
     name: Static analysis
     needs: precheck
-    if: needs.precheck.result == 'success'
+    if: always() && (needs.precheck.result == 'success')
     runs-on: ubuntu-latest
     container: ryftchen/foo:latest
 
@@ -92,7 +92,7 @@ jobs:
   dynamic_analysis:
     name: Dynamic analysis
     needs: precheck
-    if: needs.precheck.result == 'success'
+    if: always() && (needs.precheck.result == 'success')
     runs-on: ubuntu-latest
     container: ryftchen/foo:latest
 
@@ -112,5 +112,5 @@ jobs:
         run: |
           export TERM=linux
           export TERMINFO=/etc/terminfo
-          ./script/test.py --check coverage memory --build release
+          ./script/test.py --check cov mem --build rls
 ...
