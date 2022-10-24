@@ -11,7 +11,6 @@
 #include "numeric/include/integral.hpp"
 #include "numeric/include/optimal.hpp"
 #include "numeric/include/sieve.hpp"
-#include "time.hpp"
 #include "utility/include/hash.hpp"
 #include "utility/include/log.hpp"
 #include "utility/include/thread.hpp"
@@ -111,7 +110,7 @@ Command::Command()
 
 void Command::runCommander(const int argc, const char* const argv[])
 {
-    LOG_TO_START(logger);
+    LOG_TO_START;
 
     if (0 != argc - 1)
     {
@@ -121,11 +120,11 @@ void Command::runCommander(const int argc, const char* const argv[])
     }
     else
     {
-        LOG_INF(logger, "Enter console mode.");
+        LOG_INF("Enter console mode.");
         enterConsoleMode();
     }
 
-    LOG_TO_STOP(logger);
+    LOG_TO_STOP;
 }
 
 void Command::foregroundHandle(const int argc, const char* const argv[])
@@ -144,7 +143,7 @@ void Command::foregroundHandle(const int argc, const char* const argv[])
     }
     catch (const std::exception& error)
     {
-        LOG_WRN(logger, error.what());
+        LOG_WRN(error.what());
     }
 }
 
@@ -169,7 +168,7 @@ void Command::backgroundHandle()
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(logger, error.what());
+        LOG_ERR(error.what());
     }
 }
 
@@ -354,7 +353,7 @@ void Command::registerOnConsole(util_console::Console& console) const
 
 void Command::viewLogContent()
 {
-    LOG_TO_STOP(logger);
+    LOG_TO_STOP;
 
     util_common::printFile(util_log::logPath.data(), true, maxLineNumForPrintLog, &util_log::changeLogLevelStyle);
 }
@@ -428,7 +427,7 @@ void Command::runMatch() const
                 matchFunctor(threadName, &algo_match::Match::sundayMethod);
                 break;
             default:
-                LOG_DBG(logger, "execute to run unknown match method.");
+                LOG_DBG("execute to run unknown match method.");
                 break;
         }
     }
@@ -499,7 +498,7 @@ void Command::runNotation() const
                 notationFunctor(threadName, &algo_notation::Notation::postfixMethod);
                 break;
             default:
-                LOG_DBG(logger, "execute to run unknown notation method.");
+                LOG_DBG("execute to run unknown notation method.");
                 break;
         }
     }
@@ -574,7 +573,7 @@ void Command::runSearch() const
                 searchFunctor(threadName, &algo_search::Search<double>::fibonacciSearch);
                 break;
             default:
-                LOG_DBG(logger, "execute to run unknown search method.");
+                LOG_DBG("execute to run unknown search method.");
                 break;
         }
     }
@@ -666,7 +665,7 @@ void Command::runSort() const
                 sortFunctor(threadName, &algo_sort::Sort<int>::radixSort);
                 break;
             default:
-                LOG_DBG(logger, "execute to run unknown sort method.");
+                LOG_DBG("execute to run unknown sort method.");
                 break;
         }
     }
@@ -779,7 +778,7 @@ void Command::runBehavioral() const
                 behavioralFunctor(threadName, &dp_behavioral::Behavioral::visitorInstance);
                 break;
             default:
-                LOG_DBG(logger, "execute to run unknown behavioral method.");
+                LOG_DBG("execute to run unknown behavioral method.");
                 break;
         }
     }
@@ -877,7 +876,7 @@ void Command::runCreational() const
                 creationalFunctor(threadName, &dp_creational::Creational::singletonInstance);
                 break;
             default:
-                LOG_DBG(logger, "execute to run unknown design pattern method.");
+                LOG_DBG("execute to run unknown design pattern method.");
                 break;
         }
     }
@@ -963,7 +962,7 @@ void Command::runStructural() const
                 structuralFunctor(threadName, &dp_structural::Structural::proxyInstance);
                 break;
             default:
-                LOG_DBG(logger, "execute to run unknown structural method.");
+                LOG_DBG("execute to run unknown structural method.");
                 break;
         }
     }
@@ -1046,7 +1045,7 @@ void Command::runArithmetic() const
                 arithmeticFunctor(threadName, &num_arithmetic::Arithmetic::divisionMethod);
                 break;
             default:
-                LOG_DBG(logger, "execute to run unknown arithmetic method.");
+                LOG_DBG("execute to run unknown arithmetic method.");
                 break;
         }
     }
@@ -1115,7 +1114,7 @@ void Command::runDivisor() const
                 divisorFunctor(threadName, &num_divisor::Divisor::steinMethod);
                 break;
             default:
-                LOG_DBG(logger, "execute to run unknown divisor method.");
+                LOG_DBG("execute to run unknown divisor method.");
                 break;
         }
     }
@@ -1210,7 +1209,7 @@ void Command::runIntegral() const
                     integralFunctor(threadName, std::make_shared<num_integral::MonteCarlo>(expression));
                     break;
                 default:
-                    LOG_DBG(logger, "execute to run unknown integral method.");
+                    LOG_DBG("execute to run unknown integral method.");
                     break;
             }
         }
@@ -1330,7 +1329,7 @@ void Command::runOptimal() const
                     optimalFunctor(threadName, std::make_shared<num_optimal::Genetic>(expression));
                     break;
                 default:
-                    LOG_DBG(logger, "Unable to execute unknown optimal method.");
+                    LOG_DBG("Unable to execute unknown optimal method.");
                     break;
             }
         }
@@ -1418,7 +1417,7 @@ void Command::runSieve() const
                 sieveFunctor(threadName, &num_sieve::Sieve::eulerMethod);
                 break;
             default:
-                LOG_DBG(logger, "execute to run unknown sieve method.");
+                LOG_DBG("execute to run unknown sieve method.");
                 break;
         }
     }
