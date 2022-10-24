@@ -556,31 +556,16 @@ private:
     };
 #pragma pack()
 
-    using BasicTaskCategory = BasicTask::Category;
-    template <class T>
-    using BasicTaskBottom = BasicTask::Bottom<T>;
-    using GeneralTaskCategory = GeneralTask::Category;
-    template <class T>
-    using GeneralTaskBottom = GeneralTask::Bottom<T>;
     using AlgorithmTask = GeneralTask::AlgorithmTask;
-    using AlgorithmTaskType = AlgorithmTask::Type;
-    template <class T>
-    using AlgorithmTaskBottom = AlgorithmTask::Bottom<T>;
     using MatchMethod = AlgorithmTask::MatchMethod;
     using NotationMethod = AlgorithmTask::NotationMethod;
     using SearchMethod = AlgorithmTask::SearchMethod;
     using SortMethod = AlgorithmTask::SortMethod;
     using DesignPatternTask = GeneralTask::DesignPatternTask;
-    using DesignPatternTaskType = DesignPatternTask::Type;
-    template <class T>
-    using DesignPatternTaskBottom = DesignPatternTask::Bottom<T>;
     using BehavioralMethod = DesignPatternTask::BehavioralMethod;
     using CreationalMethod = DesignPatternTask::CreationalMethod;
     using StructuralMethod = DesignPatternTask::StructuralMethod;
     using NumericTask = GeneralTask::NumericTask;
-    using NumericTaskType = NumericTask::Type;
-    template <class T>
-    using NumericTaskBottom = NumericTask::Bottom<T>;
     using ArithmeticMethod = NumericTask::ArithmeticMethod;
     using DivisorMethod = NumericTask::DivisorMethod;
     using IntegralMethod = NumericTask::IntegralMethod;
@@ -797,50 +782,50 @@ auto Command::getMethodAttribute() const
 {
     if constexpr (std::is_same_v<T, MatchMethod>)
     {
-        return std::make_tuple(GeneralTaskCategory::algorithm, AlgorithmTaskType::match);
+        return std::make_tuple(GeneralTask::Category::algorithm, AlgorithmTask::Type::match);
     }
     else if constexpr (std::is_same_v<T, NotationMethod>)
     {
-        return std::make_tuple(GeneralTaskCategory::algorithm, AlgorithmTaskType::notation);
+        return std::make_tuple(GeneralTask::Category::algorithm, AlgorithmTask::Type::notation);
     }
     else if constexpr (std::is_same_v<T, SearchMethod>)
     {
-        return std::make_tuple(GeneralTaskCategory::algorithm, AlgorithmTaskType::search);
+        return std::make_tuple(GeneralTask::Category::algorithm, AlgorithmTask::Type::search);
     }
     else if constexpr (std::is_same_v<T, SortMethod>)
     {
-        return std::make_tuple(GeneralTaskCategory::algorithm, AlgorithmTaskType::sort);
+        return std::make_tuple(GeneralTask::Category::algorithm, AlgorithmTask::Type::sort);
     }
     else if constexpr (std::is_same_v<T, BehavioralMethod>)
     {
-        return std::make_tuple(GeneralTaskCategory::designPattern, DesignPatternTaskType::behavioral);
+        return std::make_tuple(GeneralTask::Category::designPattern, DesignPatternTask::Type::behavioral);
     }
     else if constexpr (std::is_same_v<T, CreationalMethod>)
     {
-        return std::make_tuple(GeneralTaskCategory::designPattern, DesignPatternTaskType::creational);
+        return std::make_tuple(GeneralTask::Category::designPattern, DesignPatternTask::Type::creational);
     }
     else if constexpr (std::is_same_v<T, StructuralMethod>)
     {
-        return std::make_tuple(GeneralTaskCategory::designPattern, DesignPatternTaskType::structural);
+        return std::make_tuple(GeneralTask::Category::designPattern, DesignPatternTask::Type::structural);
     }
     else if constexpr (std::is_same_v<T, ArithmeticMethod>)
     {
-        return std::make_tuple(GeneralTaskCategory::numeric, NumericTaskType::arithmetic);
+        return std::make_tuple(GeneralTask::Category::numeric, NumericTask::Type::arithmetic);
     }
     else if constexpr (std::is_same_v<T, DivisorMethod>)
     {
-        return std::make_tuple(GeneralTaskCategory::numeric, NumericTaskType::divisor);
+        return std::make_tuple(GeneralTask::Category::numeric, NumericTask::Type::divisor);
     }
     else if constexpr (std::is_same_v<T, IntegralMethod>)
     {
-        return std::make_tuple(GeneralTaskCategory::numeric, NumericTaskType::integral);
+        return std::make_tuple(GeneralTask::Category::numeric, NumericTask::Type::integral);
     }
     else if constexpr (std::is_same_v<T, OptimalMethod>)
     {
-        return std::make_tuple(GeneralTaskCategory::numeric, NumericTaskType::optimal);
+        return std::make_tuple(GeneralTask::Category::numeric, NumericTask::Type::optimal);
     }
     else if constexpr (std::is_same_v<T, SieveMethod>)
     {
-        return std::make_tuple(GeneralTaskCategory::numeric, NumericTaskType::sieve);
+        return std::make_tuple(GeneralTask::Category::numeric, NumericTask::Type::sieve);
     }
 }
