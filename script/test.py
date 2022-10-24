@@ -150,20 +150,15 @@ class Test:
     def parseArgs(self):
         parser = argparse.ArgumentParser(description="test script")
         parser.add_argument(
-            "-c", "--check", choices=["coverage", "memory"], nargs="+", help="test with check: coverage / memory"
+            "-c", "--check", choices=["cov", "mem"], nargs="+", help="test with check: coverage / memory"
         )
         parser.add_argument(
-            "-b",
-            "--build",
-            choices=["debug", "release"],
-            nargs="?",
-            const="debug",
-            help="test with build: debug / release",
+            "-b", "--build", choices=["dbg", "rls"], nargs="?", const="dbg", help="test with build: debug / release"
         )
         args = parser.parse_args()
 
         if args.check:
-            if "coverage" in args.check:
+            if "cov" in args.check:
                 stdout, _, _ = common.executeCommand("command -v llvm-profdata-12 llvm-cov-12 2>&1")
                 if stdout.find("llvm-profdata-12") != -1 and stdout.find("llvm-cov-12") != -1:
                     os.environ["FOO_ENV"] = self.envCoverage
@@ -171,7 +166,7 @@ class Test:
                 else:
                     Output.printException("No llvm-profdata or llvm-cov program. Please check it.")
 
-            if "memory" in args.check:
+            if "mem" in args.check:
                 stdout, _, _ = common.executeCommand("command -v valgrind 2>&1")
                 if stdout.find("valgrind") != -1:
                     self.isCheckMemory = True
@@ -180,9 +175,9 @@ class Test:
 
         if args.build:
             if os.path.isfile(self.buildFile):
-                if args.build == "debug":
+                if args.build == "dbg":
                     self.buildProject(f"{self.buildFile} 2>&1")
-                elif args.build == "release":
+                elif args.build == "rls":
                     self.buildProject(f"{self.buildFile} --release 2>&1")
             else:
                 Output.printException("No shell script build.sh in script folder.")

@@ -33,11 +33,11 @@ Command::Command()
 {
     try
     {
-        program.addArgument("--help").nArgs(0).implicitValue(true).help("show help");
+        program.addArgument("-h", "--help").nArgs(0).implicitValue(true).help("show help");
 
-        program.addArgument("--version").nArgs(0).implicitValue(true).help("show version");
+        program.addArgument("-v", "--version").nArgs(0).implicitValue(true).help("show version");
 
-        program.addArgument("--console")
+        program.addArgument("-c", "--console")
             .nArgs(util_argument::NArgsPattern::any)
             .defaultValue<std::vector<std::string>>({"help"})
             .appending()

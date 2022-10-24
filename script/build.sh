@@ -44,12 +44,12 @@ printInstruction()
     echo "Usage: build.sh <options...>"
     echo
     echo "Optional:"
-    echo "--help           show help"
-    echo "--release        build with release version"
-    echo "-f, --format     format code"
-    echo "-l, --lint       lint code"
-    echo "-c, --cleanup    cleanup project"
-    echo "-r, --report     report by html" #
+    echo "-h, --help         show help"
+    echo "-f, --format       format code"
+    echo "-l, --lint         lint code"
+    echo "-c, --cleanup      cleanup project"
+    echo "-r, --report       report by html"
+    echo "-rls, --release    build with release"
     exit 0
 }
 
@@ -57,12 +57,12 @@ parseArgs()
 {
     while [ "$#" -gt 0 ]; do
         case $1 in
-        --help) printInstruction ;;
-        --release) ARGS_RELEASE=true ;;
+        -h | --help) printInstruction ;;
         -f | --format) ARGS_FORMAT=true ;;
         -l | --lint) ARGS_LINT=true ;;
         -c | --cleanup) performCleanupOption ;;
         -r | --report) ARGS_REPORT=true ;;
+        -rls | --release) ARGS_RELEASE=true ;;
         *) printException "Unknown command line option: $1. Try with --help to get information." ;;
         esac
         shift
