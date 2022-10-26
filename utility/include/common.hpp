@@ -44,17 +44,17 @@ enum class FileLockType
     writerLock
 };
 
-void inline throwRunCommandLineException(const std::string& cmd)
+inline void throwRunCommandLineException(const std::string& cmd)
 {
     throw std::runtime_error("file: Failed to run common line: " + cmd);
 }
 
-void inline throwCallSystemApiException(const std::string& api)
+inline void throwCallSystemApiException(const std::string& api)
 {
     throw std::runtime_error("file: Failed to call system api: " + api);
 }
 
-void inline throwOperateLockException(
+inline void throwOperateLockException(
     const std::string& name,
     const LockOperateType lockOperate,
     const FileLockType fileLock)
@@ -64,7 +64,7 @@ void inline throwOperateLockException(
     throw std::runtime_error("file: Failed to " + operate + " " + type + " lock: " + name);
 }
 
-void inline throwOperateFileException(const std::string& name, const bool isToOpen)
+inline void throwOperateFileException(const std::string& name, const bool isToOpen)
 {
     const std::string operate = isToOpen ? "open" : "close";
     throw std::runtime_error("file: Failed to " + operate + " file: " + name);
@@ -112,8 +112,8 @@ struct Join
 template <std::string_view const&... Strings>
 static constexpr auto joinStr = Join<Strings...>::value;
 
-void executeCommand(const char* const cmd);
-void printFile(
+extern void executeCommand(const char* const cmd);
+extern void printFile(
     const char* const pathname,
     const bool reverse = false,
     const uint32_t maxLine = maxLineNumForPrintFile,

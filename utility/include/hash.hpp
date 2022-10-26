@@ -19,6 +19,6 @@ constexpr uint64_t operator""_bkdrHash(const char* const str, const std::size_t 
     return bkdrHashInCompile(str);
 }
 
-uint32_t bkdrHash(const char* str);
-int rollingHash(const char* str, const uint32_t length);
+extern uint32_t bkdrHash(const char* str);
+extern int rollingHash(const char* str, const uint32_t length);
 } // namespace util_hash

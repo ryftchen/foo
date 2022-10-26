@@ -15,7 +15,7 @@ public:
     virtual double operator()(double lower, double upper, const double eps) const = 0;
 
 protected:
-    static int inline getSign(double& lower, double& upper);
+    static inline int getSign(double& lower, double& upper);
     friend double trapezoid(
         const num_expression::Expression& expr,
         const double left,
@@ -23,7 +23,7 @@ protected:
         const uint32_t step);
 };
 
-int inline Integral::getSign(double& lower, double& upper)
+inline int Integral::getSign(double& lower, double& upper)
 {
     return (lower < upper) ? 1 : ((lower > upper) ? (std::swap(lower, upper), -1) : 0);
 }

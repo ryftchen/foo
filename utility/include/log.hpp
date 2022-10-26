@@ -192,5 +192,5 @@ void Log::flush(
     }
 }
 
-std::string& changeLogLevelStyle(std::string& line);
+extern std::string& changeLogLevelStyle(std::string& line);
 } // namespace util_log

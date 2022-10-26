@@ -55,7 +55,7 @@ private:
     const std::unique_ptr<char[]> searchingText;
     const uint32_t length;
 
-    static int inline calculatePrecision(const uint32_t digit);
+    static inline int calculatePrecision(const uint32_t digit);
     static void fillBadCharRuleTable(uint32_t badCharRuleTable[], const char* pattern, const uint32_t patternLen);
     static void fillGoodSuffixRuleTable(uint32_t goodSuffixRuleTable[], const char* pattern, const uint32_t patternLen);
     static void fillBadCharShiftTableForHorspool(
@@ -68,7 +68,7 @@ private:
         const uint32_t patternLen);
 };
 
-int inline Match::calculatePrecision(const uint32_t digit)
+inline int Match::calculatePrecision(const uint32_t digit)
 {
     return static_cast<int>(std::ceil(static_cast<double>(digit) * std::log2(mpfrBase)));
 }
