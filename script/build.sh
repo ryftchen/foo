@@ -51,9 +51,9 @@ showHelp()
     echo "-f, --format     format code"
     echo "-l, --lint       lint code"
     echo "-c, --cleanup    cleanup project"
-    echo "-b, --browser    generate browser"
-    echo "-d, --docker     construct docker"
-    echo "-r, --release    build release"
+    echo "-b, --browser    generate code browser"
+    echo "-d, --docker     construct docker container"
+    echo "-r, --release    build release version"
     exit 0
 }
 
@@ -148,7 +148,7 @@ checkDependencies()
                 printException "No ${DOCKER_FILE} file in ${DOCKER_FOLDER} folder. Please check it."
             fi
 
-            printf "Please confirm further whether construct container. [y/n]: "
+            printf "Please confirm further whether construct the docker container. [y/n]: "
             oldStty=$(stty -g)
             stty raw -echo
             answer=$(while ! head -c 1 | grep -i '[ny]'; do true; done)
@@ -269,7 +269,7 @@ performDockerOption()
 -d ${imageRepo}:latest /bin/bash"
             fi
         else
-            printException "Service docker status is not active."
+            printException "The service docker status is not active."
         fi
     fi
 }
