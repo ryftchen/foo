@@ -3,8 +3,10 @@
 try:
     import argparse
     import os
+    import queue
     import re
     import sys
+    import threading
     from datetime import datetime
     import common
 except ImportError as err:
@@ -72,9 +74,6 @@ class Test:
             "sieve": ["era", "eul"],
         },
     }
-    passStep = 0
-    completeStep = 0
-    totalStep = 0
     isCheckCoverage = False
     envCoverage = "CODE_COVERAGE"
     isCheckMemory = False
@@ -83,31 +82,50 @@ class Test:
     buildSummaryContent = "Built target foo"
     logFile = "./temporary/foo_test.log"
     tempDir = "./temporary"
+    passStep = 0
+    completeStep = 0
+    totalStep = 1 + len(basicTaskDict.keys())
+    for taskCategoryLists in basicTaskDict.values():
+        totalStep += len(taskCategoryLists)
+    for taskCategoryMaps in generalTaskDict.values():
+        totalStep += len(taskCategoryMaps.keys())
+        for taskMethods in taskCategoryMaps.values():
+            totalStep += len(taskMethods) + 1
 
     def __init__(self):
         if not os.path.exists(self.tempDir):
             os.mkdir(self.tempDir)
         self.log = common.Log(self.logFile)
         self.progressBar = common.ProgressBar()
-
-        self.totalStep += 1 + len(self.basicTaskDict.keys())
-        for taskCategoryOptions in self.basicTaskDict.values():
-            self.totalStep += len(taskCategoryOptions)
-        for taskCategoryMap in self.generalTaskDict.values():
-            self.totalStep += len(taskCategoryMap.keys())
-            for taskMethods in taskCategoryMap.values():
-                self.totalStep += len(taskMethods) + 1
+        self.taskQueue = queue.Queue()
 
     def run(self):
         self.prepareTest()
 
-        self.testBasicTask()
-        self.testGeneralTask()
+        threadList = []
+        generater = threading.Thread(target=self.generateTestTask(), args=())
+        generater.start()
+        threadList.append(generater)
+        performer = threading.Thread(target=self.performTestTask(), args=())
+        performer.start()
+        threadList.append(performer)
+        for thread in threadList:
+            thread.join()
 
         self.completeTest()
-        self.analyzeTestLog()
+        self.analyzeLog()
 
-    def runTestTask(self, command, enter=""):
+    def generateTestTask(self):
+        self.generateBasicTask()
+        self.generateGeneralTask()
+
+    def performTestTask(self):
+        self.runTask(self.binCmd, "quit")
+        while self.completeStep < self.totalStep:
+            cmd = self.taskQueue.get()
+            self.runTask(cmd)
+
+    def runTask(self, command, enter=""):
         fullCommand = f"{self.binDir}{command}"
         if self.isCheckMemory:
             fullCommand = f"valgrind {fullCommand}"
@@ -224,27 +242,26 @@ class Test:
             if "error" in stdout:
                 Output.printException("Please rebuild the executable file before use --check option.")
 
-    def analyzeTestLog(self):
+    def analyzeLog(self):
         refresh = open(self.logFile, "rt")
         inputContent = refresh.read()
         outputContent = re.sub(Output.regexColorEsc, "", inputContent)
         refresh = open(self.logFile, "w")
         refresh.write(outputContent)
 
-    def testBasicTask(self):
-        self.runTestTask(self.binCmd, "quit")
-        for taskCategory, taskCategoryOptions in self.basicTaskDict.items():
-            self.runTestTask(f"{self.binCmd} {taskCategory}")
-            for option in taskCategoryOptions:
-                self.runTestTask(f"{self.binCmd} {taskCategory} {option}")
+    def generateBasicTask(self):
+        for taskCategory, taskCategoryLists in self.basicTaskDict.items():
+            self.taskQueue.put(f"{self.binCmd} {taskCategory}")
+            for option in taskCategoryLists:
+                self.taskQueue.put(f"{self.binCmd} {taskCategory} {option}")
 
-    def testGeneralTask(self):
-        for taskCategory, taskCategoryMap in self.generalTaskDict.items():
-            for taskType, taskMethods in taskCategoryMap.items():
-                self.runTestTask(f"{self.binCmd} {taskCategory} {taskType}")
+    def generateGeneralTask(self):
+        for taskCategory, taskCategoryMaps in self.generalTaskDict.items():
+            for taskType, taskMethods in taskCategoryMaps.items():
+                self.taskQueue.put(f"{self.binCmd} {taskCategory} {taskType}")
                 for method in taskMethods:
-                    self.runTestTask(f"{self.binCmd} {taskCategory} {taskType} {method}")
-                self.runTestTask(f"{self.binCmd} {taskCategory} {taskType} {' '.join(taskMethods)}")
+                    self.taskQueue.put(f"{self.binCmd} {taskCategory} {taskType} {method}")
+                self.taskQueue.put(f"{self.binCmd} {taskCategory} {taskType} {' '.join(taskMethods)}")
 
 
 if __name__ == "__main__":
