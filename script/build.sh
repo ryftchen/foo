@@ -2,8 +2,10 @@
 
 ARGS_FORMAT=false
 ARGS_LINT=false
+ARGS_BROWSER=false
+ARGS_DOCKER=false
 ARGS_RELEASE=false
-ARGS_REPORT=false
+PERFORM_COMPILE=false
 
 PROJECT_FOLDER="foo"
 APPLICATION_FOLDER="application"
@@ -12,9 +14,10 @@ ALGORITHM_FOLDER="algorithm"
 DESIGN_PATTERN_FOLDER="design_pattern"
 NUMERIC_FOLDER="numeric"
 SCRIPT_FOLDER="script"
+DOCKER_FOLDER="docker"
 BUILD_FOLDER="build"
 TEMPORARY_FOLDER="temporary"
-CMAKE_CONTENT="CMakeLists.txt"
+CMAKE_LISTS="CMakeLists.txt"
 COMPILE_COMMANDS="compile_commands.json"
 FORMAT_CONFIG_CPP=".clang-format"
 FORMAT_CONFIG_PY=".toml"
@@ -22,7 +25,7 @@ FORMAT_CONFIG_SH=".editorconfig"
 LINT_CONFIG_CPP=".clang-tidy"
 LINT_CONFIG_PY=".pylintrc"
 LINT_CONFIG_SH=".shellcheckrc"
-PERFORM_COMPILE=false
+DOCKER_FILE="Dockerfile"
 
 bashCommand()
 {
@@ -39,30 +42,38 @@ printException()
     exit 1
 }
 
-printInstruction()
+showHelp()
 {
     echo "Usage: build.sh <options...>"
     echo
     echo "Optional:"
-    echo "-h, --help         show help"
-    echo "-f, --format       format code"
-    echo "-l, --lint         lint code"
-    echo "-c, --cleanup      cleanup project"
-    echo "-r, --report       report by html"
-    echo "-rls, --release    build with release"
+    echo "-h, --help       show help"
+    echo "-f, --format     format code"
+    echo "-l, --lint       lint code"
+    echo "-c, --cleanup    cleanup project"
+    echo "-b, --browser    generate browser"
+    echo "-d, --docker     construct docker"
+    echo "-r, --release    build release"
     exit 0
+}
+
+cleanupProject()
+{
+    bashCommand "rm -rf ./${BUILD_FOLDER} ./${TEMPORARY_FOLDER}"
+    bashCommand "rm -rf ./core*"
 }
 
 parseArgs()
 {
     while [ "$#" -gt 0 ]; do
         case $1 in
-        -h | --help) printInstruction ;;
+        -h | --help) showHelp ;;
         -f | --format) ARGS_FORMAT=true ;;
         -l | --lint) ARGS_LINT=true ;;
-        -c | --cleanup) performCleanupOption ;;
-        -r | --report) ARGS_REPORT=true ;;
-        -rls | --release) ARGS_RELEASE=true ;;
+        -c | --cleanup) cleanupProject ;;
+        -b | --browser) ARGS_BROWSER=true ;;
+        -d | --docker) ARGS_DOCKER=true ;;
+        -r | --release) ARGS_RELEASE=true ;;
         *) printException "Unknown command line option: $1. Try with --help to get information." ;;
         esac
         shift
@@ -81,6 +92,10 @@ checkDependencies()
         || [ ! -d ./"${DESIGN_PATTERN_FOLDER}" ] || [ ! -d ./"${NUMERIC_FOLDER}" ] \
         || [ ! -d ./"${SCRIPT_FOLDER}" ]; then
         printException "Missing code folders in ${PROJECT_FOLDER} folder. Please check it."
+    fi
+
+    if ! command -v cmake >/dev/null 2>&1; then
+        printException "No cmake program. Please check it."
     fi
 
     if [ "${ARGS_FORMAT}" = true ]; then
@@ -115,7 +130,7 @@ checkDependencies()
         fi
     fi
 
-    if [ "${ARGS_REPORT}" = true ]; then
+    if [ "${ARGS_BROWSER}" = true ]; then
         if
             ! command -v codebrowser_generator >/dev/null 2>&1 \
                 || ! command -v codebrowser_indexgenerator >/dev/null 2>&1
@@ -123,11 +138,36 @@ checkDependencies()
             printException "No codebrowser_generator or codebrowser_indexgenerator program. Please check it."
         fi
     fi
+
+    if [ "${ARGS_DOCKER}" = true ]; then
+        if [ ! -d ./"${DOCKER_FOLDER}" ]; then
+            printException "Missing construct folders in ${PROJECT_FOLDER} folder. Please check it."
+        fi
+        if command -v docker >/dev/null 2>&1; then
+            if [ ! -f ./"${DOCKER_FOLDER}"/"${DOCKER_FILE}" ]; then
+                printException "No ${DOCKER_FILE} file in ${DOCKER_FOLDER} folder. Please check it."
+            fi
+
+            printf "Please confirm further whether construct container. [y/n]: "
+            oldStty=$(stty -g)
+            stty raw -echo
+            answer=$(while ! head -c 1 | grep -i '[ny]'; do true; done)
+            stty "${oldStty}"
+            if echo "${answer}" | grep -iq "^y"; then
+                echo "Yes"
+            else
+                echo "No"
+                ARGS_DOCKER=false
+            fi
+        else
+            printException "No docker program. Please check it."
+        fi
+    fi
 }
 
 generateCMakeFiles()
 {
-    if [ -f ./"${CMAKE_CONTENT}" ]; then
+    if [ -f ./"${CMAKE_LISTS}" ]; then
         if [ ! -d ./"${BUILD_FOLDER}" ]; then
             bashCommand "mkdir ./${BUILD_FOLDER}"
         fi
@@ -139,7 +179,7 @@ generateCMakeFiles()
             bashCommand "cmake -S . -B ./${BUILD_FOLDER} -DCMAKE_CXX_COMPILER=clang++-12 -DCMAKE_BUILD_TYPE=Debug"
         fi
     else
-        printException "No ${CMAKE_CONTENT} file in ${PROJECT_FOLDER} folder."
+        printException "No ${CMAKE_LISTS} file in ${PROJECT_FOLDER} folder. Please check it."
     fi
 }
 
@@ -148,12 +188,6 @@ compileCode()
     if [ "${PERFORM_COMPILE}" = true ]; then
         bashCommand "make -C ./${BUILD_FOLDER} -j"
     fi
-}
-
-performCleanupOption()
-{
-    bashCommand "rm -rf ./${BUILD_FOLDER} ./${TEMPORARY_FOLDER}"
-    bashCommand "rm -rf ./core*"
 }
 
 performFormatOption()
@@ -176,9 +210,9 @@ performLintOption()
     fi
 }
 
-performReportOption()
+performBrowserOption()
 {
-    if [ "${ARGS_REPORT}" = true ]; then
+    if [ "${ARGS_BROWSER}" = true ]; then
         if [ -d ./"${TEMPORARY_FOLDER}" ]; then
             commitId=$(git rev-parse --short @)
             if [ -z "${commitId}" ]; then
@@ -188,16 +222,16 @@ performReportOption()
             if [ -f ./"${TEMPORARY_FOLDER}"/"${lastTar}" ]; then
                 printException "The latest html file ${TEMPORARY_FOLDER}/${lastTar} has been generated."
             else
-                tarHtmlReport
+                tarHtmlForBrowser
             fi
         else
             bashCommand "mkdir ./${TEMPORARY_FOLDER}"
-            tarHtmlReport
+            tarHtmlForBrowser
         fi
     fi
 }
 
-tarHtmlReport()
+tarHtmlForBrowser()
 {
     commitId=$(git rev-parse --short @)
     browserFolder="${PROJECT_FOLDER}_html"
@@ -214,6 +248,32 @@ tarHtmlReport()
     bashCommand "rm -rf ./${TEMPORARY_FOLDER}/${browserFolder}"
 }
 
+performDockerOption()
+{
+    if [ "${ARGS_DOCKER}" = true ]; then
+        if service docker status | grep -q "active (running)" 2>/dev/null; then
+            imageRepo="ryftchen/${PROJECT_FOLDER}"
+            if ! docker ps -a | tail -n +2 | awk '{split($0, a, " "); print a[2]}' \
+                | grep "${imageRepo}" >/dev/null 2>&1; then
+                if ! docker image ls -a | tail -n +2 | awk '{split($0, a, " "); print a[1]}' \
+                    | grep "${imageRepo}" >/dev/null 2>&1; then
+                    if docker search "${imageRepo}" | tail -n +2 | awk '{split($0, a, " "); print a[1]}' \
+                        | grep "${imageRepo}" >/dev/null 2>&1; then
+                        bashCommand "docker pull ${imageRepo}:latest"
+                    else
+                        bashCommand "docker build -t ${imageRepo}:latest -f ./${DOCKER_FOLDER}/${DOCKER_FILE} \
+./${DOCKER_FOLDER}/"
+                    fi
+                fi
+                bashCommand "docker run -it --name ${PROJECT_FOLDER} -v ${PWD}:/root/${PROJECT_FOLDER} \
+-d ${imageRepo}:latest /bin/bash"
+            fi
+        else
+            printException "Service docker status is not active."
+        fi
+    fi
+}
+
 main()
 {
     cd "${0%%${SCRIPT_FOLDER}*}" || exit 1
@@ -224,7 +284,8 @@ main()
 
     performFormatOption
     performLintOption
-    performReportOption
+    performBrowserOption
+    performDockerOption
 
     compileCode
 }

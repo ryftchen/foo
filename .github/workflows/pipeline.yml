@@ -79,7 +79,7 @@ jobs:
       - name: Check
         run: |
           ./script/build.sh --cleanup
-          ./script/build.sh --format --lint --report --release
+          ./script/build.sh --format --lint --browser --release
           git status
 
       - name: Upload artifact
