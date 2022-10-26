@@ -56,6 +56,7 @@ rcfile
 rls
 RNDN
 romberg
+ryftchen
 setname
 shellcheck
 shellcheckrc
