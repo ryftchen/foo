@@ -603,7 +603,7 @@ private:
     auto get(const TaskFunctorTuple& tuple) const;
     template <typename T>
     auto getMethodAttribute() const;
-    auto inline getMethodDetail(const int categoryIndex, const int typeIndex, const int methodIndex) const;
+    inline auto getMethodDetail(const int categoryIndex, const int typeIndex, const int methodIndex) const;
 
     // clang-format off
     static constexpr std::string_view optionTreeOfHelpMsg{
@@ -726,17 +726,17 @@ private:
     void registerOnConsole(util_console::Console& console) const;
     static void viewLogContent();
     static std::string getIconBanner();
-    [[noreturn]] void inline throwExcessArgumentException();
-    [[noreturn]] void inline throwUnexpectedMethodException(const std::string& info);
+    [[noreturn]] inline void throwExcessArgumentException();
+    [[noreturn]] inline void throwUnexpectedMethodException(const std::string& info);
 };
 
-void inline Command::throwUnexpectedMethodException(const std::string& info)
+inline void Command::throwUnexpectedMethodException(const std::string& info)
 {
     taskPlan.reset();
     throw std::runtime_error("Unexpected method of " + info);
 }
 
-void inline Command::throwExcessArgumentException()
+inline void Command::throwExcessArgumentException()
 {
     taskPlan.reset();
     throw std::runtime_error("Excess argument.");
@@ -768,7 +768,7 @@ auto Command::get(const TaskFunctorTuple& tuple) const
     }
 }
 
-auto inline Command::getMethodDetail(const int categoryIndex, const int typeIndex, const int methodIndex) const
+inline auto Command::getMethodDetail(const int categoryIndex, const int typeIndex, const int methodIndex) const
 {
     const auto taskCategoryMap =
         std::next(std::next(generalTaskMap.cbegin(), categoryIndex)->second.cbegin(), typeIndex);

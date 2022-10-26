@@ -26,10 +26,10 @@ private:
 
     static std::string infixToPostfix(const std::string& infix);
     static Priority getPriority(const char c);
-    static bool inline isOperator(const char c);
+    static inline bool isOperator(const char c);
 };
 
-bool inline Notation::isOperator(const char c)
+inline bool Notation::isOperator(const char c)
 {
     return (!std::isalpha(c) && !std::isdigit(c));
 }

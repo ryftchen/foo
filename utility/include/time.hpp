@@ -21,11 +21,11 @@ class Time final
 public:
     virtual ~Time() = default;
 
-    void inline setBeginTime();
-    void inline setEndTime();
-    [[nodiscard]] double inline getTimeInterval() const;
+    inline void setBeginTime();
+    inline void setEndTime();
+    [[nodiscard]] inline double getTimeInterval() const;
     void setBlockingTimer(auto func, const uint32_t delay);
-    void inline resetBlockingTimer();
+    inline void resetBlockingTimer();
 
 private:
     std::chrono::steady_clock::time_point beginTime;
@@ -33,25 +33,25 @@ private:
     std::atomic<bool> isBlockingTimerRunning{true};
 
 protected:
-    friend void inline millisecondLevelSleep(const uint32_t interval);
+    friend inline void millisecondLevelSleep(const uint32_t interval);
 };
 
-void inline millisecondLevelSleep(const uint32_t interval)
+inline void millisecondLevelSleep(const uint32_t interval)
 {
     std::this_thread::sleep_until(std::chrono::steady_clock::now() + std::chrono::operator""ms(interval));
 }
 
-void inline Time::setBeginTime()
+inline void Time::setBeginTime()
 {
     beginTime = std::chrono::steady_clock::now();
 }
 
-void inline Time::setEndTime()
+inline void Time::setEndTime()
 {
     endTime = std::chrono::steady_clock::now();
 }
 
-double inline Time::getTimeInterval() const
+inline double Time::getTimeInterval() const
 {
     const std::chrono::duration<double, std::milli> timeInterval =
         std::chrono::duration<double, std::milli>(endTime - beginTime);
@@ -75,11 +75,11 @@ void Time::setBlockingTimer(auto func, const uint32_t delay)
     timerThread.join();
 }
 
-void inline Time::resetBlockingTimer()
+inline void Time::resetBlockingTimer()
 {
     isBlockingTimerRunning = false;
 }
 
-std::string getCurrentSystemTime();
-std::mt19937 getRandomSeedByTime();
+extern std::string getCurrentSystemTime();
+extern std::mt19937 getRandomSeedByTime();
 } // namespace util_time

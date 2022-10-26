@@ -178,17 +178,17 @@ private:
     void stochasticTournamentSelection(genetic_species::Population& pop, const std::vector<double>& fitnessCum);
     void selectIndividual(genetic_species::Population& pop);
     genetic_species::Chromosome getBestIndividual(const genetic_species::Population& pop);
-    double inline random();
-    uint32_t inline getRandomNumber(const uint32_t limit);
+    inline double random();
+    inline uint32_t getRandomNumber(const uint32_t limit);
 };
 
-double inline Genetic::random()
+inline double Genetic::random()
 {
     std::uniform_real_distribution<double> random(0.0, 1.0);
     return random(seed);
 }
 
-uint32_t inline Genetic::getRandomNumber(const uint32_t limit)
+inline uint32_t Genetic::getRandomNumber(const uint32_t limit)
 {
     std::uniform_int_distribution<int> randomX(0, limit);
     return randomX(seed);
