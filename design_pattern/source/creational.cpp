@@ -13,9 +13,9 @@ Creational::Creational()
 // Abstract Factory
 namespace abstract_factory
 {
-static std::stringstream& stringstream()
+static std::ostringstream& output()
 {
-    static std::stringstream stream;
+    static std::ostringstream stream;
     return stream;
 }
 
@@ -72,8 +72,8 @@ class AbstractFactory
 public:
     virtual ~AbstractFactory() = default;
 
-    virtual std::shared_ptr<ProductA> createProductA() = 0;
-    virtual std::shared_ptr<ProductB> createProductB() = 0;
+    virtual std::unique_ptr<ProductA> createProductA() = 0;
+    virtual std::unique_ptr<ProductB> createProductB() = 0;
 };
 
 class ConcreteFactoryX : public AbstractFactory
@@ -81,8 +81,8 @@ class ConcreteFactoryX : public AbstractFactory
 public:
     ~ConcreteFactoryX() override = default;
 
-    std::shared_ptr<ProductA> createProductA() override { return std::make_shared<ConcreteProductAX>(); }
-    std::shared_ptr<ProductB> createProductB() override { return std::make_shared<ConcreteProductBX>(); }
+    std::unique_ptr<ProductA> createProductA() override { return std::make_unique<ConcreteProductAX>(); }
+    std::unique_ptr<ProductB> createProductB() override { return std::make_unique<ConcreteProductBX>(); }
 };
 
 class ConcreteFactoryY : public AbstractFactory
@@ -90,8 +90,8 @@ class ConcreteFactoryY : public AbstractFactory
 public:
     ~ConcreteFactoryY() override = default;
 
-    std::shared_ptr<ProductA> createProductA() override { return std::make_shared<ConcreteProductAY>(); }
-    std::shared_ptr<ProductB> createProductB() override { return std::make_shared<ConcreteProductBY>(); }
+    std::unique_ptr<ProductA> createProductA() override { return std::make_unique<ConcreteProductAY>(); }
+    std::unique_ptr<ProductB> createProductB() override { return std::make_unique<ConcreteProductBY>(); }
 };
 } // namespace abstract_factory
 
@@ -101,32 +101,31 @@ void Creational::abstractFactoryInstance()
     using abstract_factory::ConcreteFactoryY;
     using abstract_factory::ProductA;
     using abstract_factory::ProductB;
-    using abstract_factory::stringstream;
 
     std::shared_ptr<ConcreteFactoryX> factoryX = std::make_shared<ConcreteFactoryX>();
     std::shared_ptr<ConcreteFactoryY> factoryY = std::make_shared<ConcreteFactoryY>();
 
-    std::shared_ptr<ProductA> p1 = factoryX->createProductA();
-    stringstream() << "product: " << p1->getName() << std::endl;
+    std::unique_ptr<ProductA> p1 = factoryX->createProductA();
+    abstract_factory::output() << "product: " << p1->getName() << std::endl;
 
-    std::shared_ptr<ProductA> p2 = factoryY->createProductA();
-    stringstream() << "product: " << p2->getName() << std::endl;
+    std::unique_ptr<ProductA> p2 = factoryY->createProductA();
+    abstract_factory::output() << "product: " << p2->getName() << std::endl;
 
-    std::shared_ptr<ProductB> p3 = factoryX->createProductB();
-    stringstream() << "product: " << p3->getName() << std::endl;
+    std::unique_ptr<ProductB> p3 = factoryX->createProductB();
+    abstract_factory::output() << "product: " << p3->getName() << std::endl;
 
-    std::shared_ptr<ProductB> p4 = factoryY->createProductB();
-    stringstream() << "product: " << p4->getName() << std::endl;
+    std::unique_ptr<ProductB> p4 = factoryY->createProductB();
+    abstract_factory::output() << "product: " << p4->getName() << std::endl;
 
-    COMMON_PRINT(CREATIONAL_RESULT, "AbstractFactory", stringstream().str().c_str());
+    COMMON_PRINT(CREATIONAL_RESULT, "AbstractFactory", abstract_factory::output().str().c_str());
 }
 
 // Builder
 namespace builder
 {
-static std::stringstream& stringstream()
+static std::ostringstream& output()
 {
-    static std::stringstream stream;
+    static std::ostringstream stream;
     return stream;
 }
 
@@ -186,13 +185,13 @@ public:
         }
     }
 
-    void set(std::shared_ptr<Builder> b)
+    void set(std::unique_ptr<Builder> b)
     {
         if (builder)
         {
             builder.reset();
         }
-        builder = b;
+        builder = std::move(b);
     }
     Product get() { return builder->get(); }
     void construct()
@@ -203,7 +202,7 @@ public:
     }
 
 private:
-    std::shared_ptr<Builder> builder;
+    std::unique_ptr<Builder> builder;
 };
 } // namespace builder
 
@@ -213,29 +212,28 @@ void Creational::builderInstance()
     using builder::ConcreteBuilderY;
     using builder::Director;
     using builder::Product;
-    using builder::stringstream;
 
     Director director;
 
-    director.set(std::make_shared<ConcreteBuilderX>());
+    director.set(std::make_unique<ConcreteBuilderX>());
     director.construct();
     Product product1 = director.get();
-    stringstream() << "1st product parts: " << product1.get() << std::endl;
+    builder::output() << "1st product parts: " << product1.get() << std::endl;
 
-    director.set(std::make_shared<ConcreteBuilderY>());
+    director.set(std::make_unique<ConcreteBuilderY>());
     director.construct();
     Product product2 = director.get();
-    stringstream() << "2nd product parts: " << product2.get() << std::endl;
+    builder::output() << "2nd product parts: " << product2.get() << std::endl;
 
-    COMMON_PRINT(CREATIONAL_RESULT, "Builder", stringstream().str().c_str());
+    COMMON_PRINT(CREATIONAL_RESULT, "Builder", builder::output().str().c_str());
 }
 
 // Factory Method
 namespace factory_method
 {
-static std::stringstream& stringstream()
+static std::ostringstream& output()
 {
-    static std::stringstream stream;
+    static std::ostringstream stream;
     return stream;
 }
 
@@ -268,9 +266,9 @@ class Creator
 public:
     virtual ~Creator() = default;
 
-    virtual std::shared_ptr<Product> createProductA() = 0;
-    virtual std::shared_ptr<Product> createProductB() = 0;
-    virtual void removeProduct(std::shared_ptr<Product>& product) = 0;
+    virtual std::unique_ptr<Product> createProductA() = 0;
+    virtual std::unique_ptr<Product> createProductB() = 0;
+    virtual void removeProduct(std::unique_ptr<Product>& product) = 0;
 };
 
 class ConcreteCreator : public Creator
@@ -278,9 +276,9 @@ class ConcreteCreator : public Creator
 public:
     ~ConcreteCreator() override = default;
 
-    std::shared_ptr<Product> createProductA() override { return std::make_shared<ConcreteProductA>(); }
-    std::shared_ptr<Product> createProductB() override { return std::make_shared<ConcreteProductB>(); }
-    void removeProduct(std::shared_ptr<Product>& product) override { product.reset(); }
+    std::unique_ptr<Product> createProductA() override { return std::make_unique<ConcreteProductA>(); }
+    std::unique_ptr<Product> createProductB() override { return std::make_unique<ConcreteProductB>(); }
+    void removeProduct(std::unique_ptr<Product>& product) override { product.reset(); }
 };
 } // namespace factory_method
 
@@ -289,27 +287,26 @@ void Creational::factoryMethodInstance()
     using factory_method::ConcreteCreator;
     using factory_method::Creator;
     using factory_method::Product;
-    using factory_method::stringstream;
 
     std::shared_ptr<Creator> creator = std::make_shared<ConcreteCreator>();
 
-    std::shared_ptr<Product> p1 = creator->createProductA();
-    stringstream() << "product: " << p1->getName() << std::endl;
+    std::unique_ptr<Product> p1 = creator->createProductA();
+    factory_method::output() << "product: " << p1->getName() << std::endl;
     creator->removeProduct(p1);
 
-    std::shared_ptr<Product> p2 = creator->createProductB();
-    stringstream() << "product: " << p2->getName() << std::endl;
+    std::unique_ptr<Product> p2 = creator->createProductB();
+    factory_method::output() << "product: " << p2->getName() << std::endl;
     creator->removeProduct(p2);
 
-    COMMON_PRINT(CREATIONAL_RESULT, "FactoryMethod", stringstream().str().c_str());
+    COMMON_PRINT(CREATIONAL_RESULT, "FactoryMethod", factory_method::output().str().c_str());
 }
 
 // Prototype
 namespace prototype
 {
-static std::stringstream& stringstream()
+static std::ostringstream& output()
 {
-    static std::stringstream stream;
+    static std::ostringstream stream;
     return stream;
 }
 
@@ -318,7 +315,7 @@ class Prototype
 public:
     virtual ~Prototype() = default;
 
-    virtual std::shared_ptr<Prototype> clone() = 0;
+    virtual std::unique_ptr<Prototype> clone() = 0;
     virtual std::string type() = 0;
 };
 
@@ -327,7 +324,7 @@ class ConcretePrototypeA : public Prototype
 public:
     ~ConcretePrototypeA() override = default;
 
-    std::shared_ptr<Prototype> clone() override { return std::make_shared<ConcretePrototypeA>(); }
+    std::unique_ptr<Prototype> clone() override { return std::make_unique<ConcretePrototypeA>(); }
     std::string type() override { return "type A"; }
 };
 
@@ -336,7 +333,7 @@ class ConcretePrototypeB : public Prototype
 public:
     ~ConcretePrototypeB() override = default;
 
-    std::shared_ptr<Prototype> clone() override { return std::make_shared<ConcretePrototypeB>(); }
+    std::unique_ptr<Prototype> clone() override { return std::make_unique<ConcretePrototypeB>(); }
     std::string type() override { return "type B"; }
 };
 
@@ -345,15 +342,15 @@ class Client
 public:
     static void init()
     {
-        types[0] = std::make_shared<ConcretePrototypeA>();
-        types[1] = std::make_shared<ConcretePrototypeB>();
+        types[0] = std::make_unique<ConcretePrototypeA>();
+        types[1] = std::make_unique<ConcretePrototypeB>();
     }
     static void remove()
     {
         types[0].reset();
         types[1].reset();
     }
-    static std::shared_ptr<Prototype> make(const int index)
+    static std::unique_ptr<Prototype> make(const int index)
     {
         if (index >= nTypes)
         {
@@ -363,11 +360,11 @@ public:
     }
 
 private:
-    static std::shared_ptr<Prototype> types[2];
+    static std::unique_ptr<Prototype> types[2];
     static int nTypes;
 };
 
-std::shared_ptr<Prototype> Client::types[2];
+std::unique_ptr<Prototype> Client::types[2];
 int Client::nTypes = 2;
 } // namespace prototype
 
@@ -375,27 +372,26 @@ void Creational::prototypeInstance()
 {
     using prototype::Client;
     using prototype::Prototype;
-    using prototype::stringstream;
 
     Client::init();
 
-    std::shared_ptr<Prototype> prototype1 = Client::make(0);
-    stringstream() << "prototype: " << prototype1->type() << std::endl;
+    std::unique_ptr<Prototype> prototype1 = Client::make(0);
+    prototype::output() << "prototype: " << prototype1->type() << std::endl;
 
-    std::shared_ptr<Prototype> prototype2 = Client::make(1);
-    stringstream() << "prototype: " << prototype2->type() << std::endl;
+    std::unique_ptr<Prototype> prototype2 = Client::make(1);
+    prototype::output() << "prototype: " << prototype2->type() << std::endl;
 
     Client::remove();
 
-    COMMON_PRINT(CREATIONAL_RESULT, "Prototype", stringstream().str().c_str());
+    COMMON_PRINT(CREATIONAL_RESULT, "Prototype", prototype::output().str().c_str());
 }
 
 // Singleton
 namespace singleton
 {
-static std::stringstream& stringstream()
+static std::ostringstream& output()
 {
-    static std::stringstream stream;
+    static std::ostringstream stream;
     return stream;
 }
 
@@ -420,7 +416,7 @@ public:
             instance.reset();
         }
     }
-    static void tell() { stringstream() << "this is singleton" << std::endl; }
+    static void tell() { output() << "this is singleton" << std::endl; }
 
 private:
     Singleton() = default;
@@ -434,11 +430,10 @@ std::shared_ptr<Singleton> Singleton::instance = nullptr;
 void Creational::singletonInstance()
 {
     using singleton::Singleton;
-    using singleton::stringstream;
 
     Singleton::get()->tell();
     Singleton::restart();
 
-    COMMON_PRINT(CREATIONAL_RESULT, "Singleton", stringstream().str().c_str());
+    COMMON_PRINT(CREATIONAL_RESULT, "Singleton", singleton::output().str().c_str());
 }
 } // namespace dp_creational

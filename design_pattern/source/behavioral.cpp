@@ -1,5 +1,6 @@
 #include "behavioral.hpp"
 #include <map>
+#include <memory>
 #include <vector>
 #include "utility/include/common.hpp"
 
@@ -15,9 +16,9 @@ Behavioral::Behavioral()
 // Chain Of Responsibility
 namespace chain_of_responsibility
 {
-static std::stringstream& stringstream()
+static std::ostringstream& output()
 {
-    static std::stringstream stream;
+    static std::ostringstream stream;
     return stream;
 }
 
@@ -26,7 +27,7 @@ class Handler
 public:
     virtual ~Handler() = default;
 
-    virtual void setHandler(std::shared_ptr<Handler> handler) { successor = handler; }
+    virtual void setHandler(std::shared_ptr<Handler> handler) { successor = std::move(handler); }
     virtual void handleRequest()
     {
         if (successor)
@@ -49,11 +50,11 @@ public:
     {
         if (canHandle())
         {
-            stringstream() << "handled by concrete handler 1" << std::endl;
+            output() << "handled by concrete handler 1" << std::endl;
         }
         else
         {
-            stringstream() << "cannot be handled by handler 1" << std::endl;
+            output() << "cannot be handled by handler 1" << std::endl;
             Handler::handleRequest();
         }
     }
@@ -69,11 +70,11 @@ public:
     {
         if (canHandle())
         {
-            stringstream() << "handled by handler 2" << std::endl;
+            output() << "handled by handler 2" << std::endl;
         }
         else
         {
-            stringstream() << "cannot be handled by handler 2" << std::endl;
+            output() << "cannot be handled by handler 2" << std::endl;
             Handler::handleRequest();
         }
     }
@@ -84,7 +85,6 @@ void Behavioral::chainOfResponsibilityInstance()
 {
     using chain_of_responsibility::ConcreteHandler1;
     using chain_of_responsibility::ConcreteHandler2;
-    using chain_of_responsibility::stringstream;
 
     std::shared_ptr<ConcreteHandler1> handler1 = std::make_shared<ConcreteHandler1>();
     std::shared_ptr<ConcreteHandler2> handler2 = std::make_shared<ConcreteHandler2>();
@@ -92,22 +92,22 @@ void Behavioral::chainOfResponsibilityInstance()
     handler1->setHandler(handler2);
     handler1->handleRequest();
 
-    COMMON_PRINT(BEHAVIORAL_RESULT, "ChainOfResponsibility", stringstream().str().c_str());
+    COMMON_PRINT(BEHAVIORAL_RESULT, "ChainOfResponsibility", chain_of_responsibility::output().str().c_str());
 }
 
 // Command
 namespace command
 {
-static std::stringstream& stringstream()
+static std::ostringstream& output()
 {
-    static std::stringstream stream;
+    static std::ostringstream stream;
     return stream;
 }
 
 class Receiver
 {
 public:
-    static void action() { stringstream() << "receiver: execute action" << std::endl; }
+    static void action() { output() << "receiver: execute action" << std::endl; }
 };
 
 class Command
@@ -124,36 +124,36 @@ protected:
 class ConcreteCommand : public Command
 {
 public:
-    explicit ConcreteCommand(std::shared_ptr<Receiver> receiver) : receiver(receiver) {}
+    explicit ConcreteCommand(const std::shared_ptr<Receiver>& receiver) : receiver(receiver) {}
 
     ~ConcreteCommand() override
     {
-        if (receiver)
+        if (auto r = receiver.lock())
         {
-            receiver.reset();
+            r.reset();
         }
     }
 
-    void execute() override { receiver->action(); }
+    void execute() override { receiver.lock()->action(); }
 
 private:
-    std::shared_ptr<Receiver> receiver;
+    std::weak_ptr<Receiver> receiver;
 };
 
 class Invoker
 {
 public:
-    void set(std::shared_ptr<Command> c) { command = c; }
+    void set(const std::shared_ptr<Command>& c) { command = c; }
     void confirm()
     {
-        if (command)
+        if (const auto c = command.lock())
         {
-            command->execute();
+            c->execute();
         }
     }
 
 private:
-    std::shared_ptr<Command> command;
+    std::weak_ptr<Command> command;
 };
 } // namespace command
 
@@ -163,7 +163,6 @@ void Behavioral::commandInstance()
     using command::ConcreteCommand;
     using command::Invoker;
     using command::Receiver;
-    using command::stringstream;
 
     std::shared_ptr<ConcreteCommand> command = std::make_shared<ConcreteCommand>((std::make_shared<Receiver>()));
 
@@ -171,15 +170,15 @@ void Behavioral::commandInstance()
     invoker.set(command);
     invoker.confirm();
 
-    COMMON_PRINT(BEHAVIORAL_RESULT, "Command", stringstream().str().c_str());
+    COMMON_PRINT(BEHAVIORAL_RESULT, "Command", command::output().str().c_str());
 }
 
 // Interpreter
 namespace interpreter
 {
-static std::stringstream& stringstream()
+static std::ostringstream& output()
 {
-    static std::stringstream stream;
+    static std::ostringstream stream;
     return stream;
 }
 
@@ -242,7 +241,6 @@ void Behavioral::interpreterInstance()
     using interpreter::AbstractExpression;
     using interpreter::Context;
     using interpreter::NonterminalExpression;
-    using interpreter::stringstream;
     using interpreter::TerminalExpression;
 
     std::shared_ptr<AbstractExpression> a = std::make_shared<TerminalExpression>("A");
@@ -253,18 +251,18 @@ void Behavioral::interpreterInstance()
     context->set("A", true);
     context->set("B", false);
 
-    stringstream() << context->get("A") << " AND " << context->get("B");
-    stringstream() << " = " << exp->interpret(context) << std::endl;
+    interpreter::output() << context->get("A") << " AND " << context->get("B");
+    interpreter::output() << " = " << exp->interpret(context) << std::endl;
 
-    COMMON_PRINT(BEHAVIORAL_RESULT, "Interpreter", stringstream().str().c_str());
+    COMMON_PRINT(BEHAVIORAL_RESULT, "Interpreter", interpreter::output().str().c_str());
 }
 
 // Iterator
 namespace iterator
 {
-static std::stringstream& stringstream()
+static std::ostringstream& output()
 {
-    static std::stringstream stream;
+    static std::ostringstream stream;
     return stream;
 }
 
@@ -343,7 +341,6 @@ void Behavioral::iteratorInstance()
 {
     using iterator::ConcreteAggregate;
     using iterator::Iterator;
-    using iterator::stringstream;
 
     constexpr uint32_t size = 5;
     std::shared_ptr<ConcreteAggregate> list = std::make_shared<ConcreteAggregate>(size);
@@ -351,18 +348,18 @@ void Behavioral::iteratorInstance()
 
     for (; !iter->isDone(); iter->next())
     {
-        stringstream() << "item value: " << iter->currentItem() << std::endl;
+        iterator::output() << "item value: " << iter->currentItem() << std::endl;
     }
 
-    COMMON_PRINT(BEHAVIORAL_RESULT, "Iterator", stringstream().str().c_str());
+    COMMON_PRINT(BEHAVIORAL_RESULT, "Iterator", iterator::output().str().c_str());
 }
 
 // Mediator
 namespace mediator
 {
-static std::stringstream& stringstream()
+static std::ostringstream& output()
 {
-    static std::stringstream stream;
+    static std::ostringstream stream;
     return stream;
 }
 
@@ -388,8 +385,8 @@ class Mediator
 public:
     virtual ~Mediator() = default;
 
-    virtual void add(const std::shared_ptr<Colleague> colleague) = 0;
-    virtual void distribute(const std::shared_ptr<Colleague> sender, const std::string& msg) = 0;
+    virtual void add(const std::shared_ptr<Colleague>& colleague) = 0;
+    virtual void distribute(const std::shared_ptr<Colleague>& sender, const std::string& msg) = 0;
 
 protected:
     Mediator() = default;
@@ -398,17 +395,17 @@ protected:
 class ConcreteColleague : public Colleague, public std::enable_shared_from_this<ConcreteColleague>
 {
 public:
-    ConcreteColleague(const std::shared_ptr<Mediator> mediator, const uint32_t id) : Colleague(mediator, id) {}
+    ConcreteColleague(const std::shared_ptr<Mediator>& mediator, const uint32_t id) : Colleague(mediator, id) {}
     ~ConcreteColleague() override = default;
 
     void send(const std::string& msg) override
     {
-        stringstream() << "message \"" << msg << "\" sent by colleague " << id << std::endl;
+        output() << "message \"" << msg << "\" sent by colleague " << id << std::endl;
         mediator.lock()->distribute(shared_from_this(), msg);
     }
     void receive(const std::string& msg) override
     {
-        stringstream() << "message \"" << msg << "\" received by colleague " << id << std::endl;
+        output() << "message \"" << msg << "\" received by colleague " << id << std::endl;
     }
 };
 
@@ -427,23 +424,26 @@ public:
         colleagues.clear();
     }
 
-    void add(const std::shared_ptr<Colleague> colleague) override { colleagues.emplace_back(colleague); }
-    void distribute(const std::shared_ptr<Colleague> sender, const std::string& msg) override
+    void add(const std::shared_ptr<Colleague>& colleague) override { colleagues.emplace_back(colleague); }
+    void distribute(const std::shared_ptr<Colleague>& sender, const std::string& msg) override
     {
         std::for_each(
             colleagues.cbegin(),
             colleagues.cend(),
             [&sender, &msg](const auto& colleague)
             {
-                if (colleague->getID() != sender->getID())
+                if (const auto c = colleague.lock())
                 {
-                    colleague->receive(msg);
+                    if (c->getID() != sender->getID())
+                    {
+                        c->receive(msg);
+                    }
                 }
             });
     }
 
 private:
-    std::vector<std::shared_ptr<Colleague>> colleagues;
+    std::vector<std::weak_ptr<Colleague>> colleagues;
 };
 } // namespace mediator
 
@@ -453,7 +453,6 @@ void Behavioral::mediatorInstance()
     using mediator::ConcreteColleague;
     using mediator::ConcreteMediator;
     using mediator::Mediator;
-    using mediator::stringstream;
 
     constexpr uint32_t id1 = 1, id2 = 2, id3 = 3;
     std::shared_ptr<Mediator> mediator = std::make_shared<ConcreteMediator>();
@@ -467,15 +466,15 @@ void Behavioral::mediatorInstance()
     c1->send("Hi!");
     c3->send("Hello!");
 
-    COMMON_PRINT(BEHAVIORAL_RESULT, "Mediator", stringstream().str().c_str());
+    COMMON_PRINT(BEHAVIORAL_RESULT, "Mediator", mediator::output().str().c_str());
 }
 
 // Memento
 namespace memento
 {
-static std::stringstream& stringstream()
+static std::ostringstream& output()
 {
-    static std::stringstream stream;
+    static std::ostringstream stream;
     return stream;
 }
 
@@ -495,7 +494,7 @@ class Originator
 public:
     void setState(const int s)
     {
-        stringstream() << "set state to " << s << std::endl;
+        output() << "set state to " << s << std::endl;
         state = s;
     }
     [[nodiscard]] int getState() const { return state; }
@@ -527,20 +526,20 @@ public:
 
     void save()
     {
-        stringstream() << "save state" << std::endl;
+        output() << "save state" << std::endl;
         history.emplace_back(originator->createMemento());
     }
     void undo()
     {
         if (history.empty())
         {
-            stringstream() << "unable to undo state" << std::endl;
+            output() << "unable to undo state" << std::endl;
             return;
         }
 
         std::shared_ptr<Memento> memento = history.back();
         originator->setMemento(memento);
-        stringstream() << "undo state" << std::endl;
+        output() << "undo state" << std::endl;
 
         history.pop_back();
         memento.reset();
@@ -556,7 +555,6 @@ void Behavioral::mementoInstance()
 {
     using memento::CareTaker;
     using memento::Originator;
-    using memento::stringstream;
 
     constexpr int state1 = 1, state2 = 2, state3 = 3;
     std::shared_ptr<Originator> originator = std::make_shared<Originator>();
@@ -569,17 +567,17 @@ void Behavioral::mementoInstance()
     originator->setState(state3);
     caretaker->undo();
 
-    stringstream() << "actual state is " << originator->getState() << std::endl;
+    memento::output() << "actual state is " << originator->getState() << std::endl;
 
-    COMMON_PRINT(BEHAVIORAL_RESULT, "Memento", stringstream().str().c_str());
+    COMMON_PRINT(BEHAVIORAL_RESULT, "Memento", memento::output().str().c_str());
 }
 
 // Observer
 namespace observer
 {
-static std::stringstream& stringstream()
+static std::ostringstream& output()
 {
-    static std::stringstream stream;
+    static std::ostringstream stream;
     return stream;
 }
 
@@ -591,7 +589,7 @@ public:
     virtual ~Observer() = default;
 
     virtual int getState() = 0;
-    virtual void update(std::shared_ptr<Subject> subject) = 0;
+    virtual void update(const std::shared_ptr<Subject>& subject) = 0;
 };
 
 class Subject : public std::enable_shared_from_this<Subject>
@@ -599,7 +597,7 @@ class Subject : public std::enable_shared_from_this<Subject>
 public:
     virtual ~Subject() = default;
 
-    void attach(std::shared_ptr<Observer> observer) { observers.emplace_back(observer); }
+    void attach(const std::shared_ptr<Observer>& observer) { observers.emplace_back(observer); }
     void detach(const int index) { observers.erase(observers.begin() + index); }
     void notify()
     {
@@ -625,10 +623,10 @@ public:
     ~ConcreteObserver() override = default;
 
     int getState() override { return observerState; }
-    void update(std::shared_ptr<Subject> subject) override
+    void update(const std::shared_ptr<Subject>& subject) override
     {
         observerState = subject->getState();
-        stringstream() << "observer state updated" << std::endl;
+        output() << "observer state updated" << std::endl;
     }
 
 private:
@@ -653,15 +651,14 @@ void Behavioral::observerInstance()
 {
     using observer::ConcreteObserver;
     using observer::ConcreteSubject;
-    using observer::stringstream;
     using observer::Subject;
 
     constexpr int state1 = 1, state2 = 2, state3 = 3;
     std::shared_ptr<ConcreteObserver> observer1 = std::make_shared<ConcreteObserver>(state1);
     std::shared_ptr<ConcreteObserver> observer2 = std::make_shared<ConcreteObserver>(state2);
 
-    stringstream() << "observer1 state: " << observer1->getState() << std::endl;
-    stringstream() << "observer2 state: " << observer2->getState() << std::endl;
+    observer::output() << "observer1 state: " << observer1->getState() << std::endl;
+    observer::output() << "observer2 state: " << observer2->getState() << std::endl;
 
     std::shared_ptr<Subject> subject = std::make_shared<ConcreteSubject>();
     subject->attach(observer1);
@@ -669,18 +666,18 @@ void Behavioral::observerInstance()
     subject->setState(state3);
     subject->notify();
 
-    stringstream() << "observer1 state: " << observer1->getState() << std::endl;
-    stringstream() << "observer2 state: " << observer2->getState() << std::endl;
+    observer::output() << "observer1 state: " << observer1->getState() << std::endl;
+    observer::output() << "observer2 state: " << observer2->getState() << std::endl;
 
-    COMMON_PRINT(BEHAVIORAL_RESULT, "Observer", stringstream().str().c_str());
+    COMMON_PRINT(BEHAVIORAL_RESULT, "Observer", observer::output().str().c_str());
 }
 
 // State
 namespace state
 {
-static std::stringstream& stringstream()
+static std::ostringstream& output()
 {
-    static std::stringstream stream;
+    static std::ostringstream stream;
     return stream;
 }
 
@@ -697,7 +694,7 @@ class ConcreteStateA : public State
 public:
     ~ConcreteStateA() override = default;
 
-    void handle() override { stringstream() << "state A handled" << std::endl; }
+    void handle() override { output() << "state A handled" << std::endl; }
 };
 
 class ConcreteStateB : public State
@@ -705,7 +702,7 @@ class ConcreteStateB : public State
 public:
     ~ConcreteStateB() override = default;
 
-    void handle() override { stringstream() << "state B handled" << std::endl; }
+    void handle() override { output() << "state B handled" << std::endl; }
 };
 
 class Context
@@ -714,19 +711,19 @@ public:
     Context() : state() {}
     ~Context() { state.reset(); }
 
-    void setState(const std::shared_ptr<State> s)
+    void setState(std::unique_ptr<State> s)
     {
         if (state)
         {
             state.reset();
         }
-        state = s;
+        state = std::move(s);
     }
 
     void request() { state->handle(); }
 
 private:
-    std::shared_ptr<State> state;
+    std::unique_ptr<State> state;
 };
 } // namespace state
 
@@ -735,25 +732,24 @@ void Behavioral::stateInstance()
     using state::ConcreteStateA;
     using state::ConcreteStateB;
     using state::Context;
-    using state::stringstream;
 
     std::shared_ptr<Context> context = std::make_shared<Context>();
 
-    context->setState(std::make_shared<ConcreteStateA>());
+    context->setState(std::make_unique<ConcreteStateA>());
     context->request();
 
-    context->setState(std::make_shared<ConcreteStateB>());
+    context->setState(std::make_unique<ConcreteStateB>());
     context->request();
 
-    COMMON_PRINT(BEHAVIORAL_RESULT, "State", stringstream().str().c_str());
+    COMMON_PRINT(BEHAVIORAL_RESULT, "State", state::output().str().c_str());
 }
 
 // Strategy
 namespace strategy
 {
-static std::stringstream& stringstream()
+static std::ostringstream& output()
 {
-    static std::stringstream stream;
+    static std::ostringstream stream;
     return stream;
 }
 
@@ -770,7 +766,7 @@ class ConcreteStrategyA : public Strategy
 public:
     ~ConcreteStrategyA() override = default;
 
-    void algorithmInterface() override { stringstream() << "concrete strategy A" << std::endl; }
+    void algorithmInterface() override { output() << "concrete strategy A" << std::endl; }
 };
 
 class ConcreteStrategyB : public Strategy
@@ -778,19 +774,19 @@ class ConcreteStrategyB : public Strategy
 public:
     ~ConcreteStrategyB() override = default;
 
-    void algorithmInterface() override { stringstream() << "concrete strategy B" << std::endl; }
+    void algorithmInterface() override { output() << "concrete strategy B" << std::endl; }
 };
 
 class Context
 {
 public:
-    explicit Context(const std::shared_ptr<Strategy> strategy) : strategy(strategy) {}
+    explicit Context(std::unique_ptr<Strategy> strategy) : strategy(std::move(strategy)) {}
     ~Context() { strategy.reset(); }
 
     void contextInterface() { strategy->algorithmInterface(); }
 
 private:
-    std::shared_ptr<Strategy> strategy;
+    std::unique_ptr<Strategy> strategy;
 };
 } // namespace strategy
 
@@ -799,23 +795,22 @@ void Behavioral::strategyInstance()
     using strategy::ConcreteStrategyA;
     using strategy::ConcreteStrategyB;
     using strategy::Context;
-    using strategy::stringstream;
 
-    Context contextA(std::make_shared<ConcreteStrategyA>());
+    Context contextA(std::make_unique<ConcreteStrategyA>());
     contextA.contextInterface();
 
-    Context contextB(std::make_shared<ConcreteStrategyB>());
+    Context contextB(std::make_unique<ConcreteStrategyB>());
     contextB.contextInterface();
 
-    COMMON_PRINT(BEHAVIORAL_RESULT, "Strategy", stringstream().str().c_str());
+    COMMON_PRINT(BEHAVIORAL_RESULT, "Strategy", strategy::output().str().c_str());
 }
 
 // Template Method
 namespace template_method
 {
-static std::stringstream& stringstream()
+static std::ostringstream& output()
 {
-    static std::stringstream stream;
+    static std::ostringstream stream;
     return stream;
 }
 
@@ -838,8 +833,8 @@ class ConcreteClass : public AbstractClass
 public:
     ~ConcreteClass() override = default;
 
-    void primitiveOperation1() override { stringstream() << "primitive operation 1" << std::endl; }
-    void primitiveOperation2() override { stringstream() << "primitive operation 2" << std::endl; }
+    void primitiveOperation1() override { output() << "primitive operation 1" << std::endl; }
+    void primitiveOperation2() override { output() << "primitive operation 2" << std::endl; }
 };
 } // namespace template_method
 
@@ -847,20 +842,19 @@ void Behavioral::templateMethodInstance()
 {
     using template_method::AbstractClass;
     using template_method::ConcreteClass;
-    using template_method::stringstream;
 
     std::shared_ptr<AbstractClass> tm = std::make_shared<ConcreteClass>();
     tm->templateMethod();
 
-    COMMON_PRINT(BEHAVIORAL_RESULT, "TemplateMethod", stringstream().str().c_str());
+    COMMON_PRINT(BEHAVIORAL_RESULT, "TemplateMethod", template_method::output().str().c_str());
 }
 
 // Visitor
 namespace visitor
 {
-static std::stringstream& stringstream()
+static std::ostringstream& output()
 {
-    static std::stringstream stream;
+    static std::ostringstream stream;
     return stream;
 }
 
@@ -873,8 +867,8 @@ class Visitor
 public:
     virtual ~Visitor() = default;
 
-    virtual void visitElementA(const std::shared_ptr<ConcreteElementA> element) = 0;
-    virtual void visitElementB(const std::shared_ptr<ConcreteElementB> element) = 0;
+    virtual void visitElementA(const std::shared_ptr<ConcreteElementA>& element) = 0;
+    virtual void visitElementB(const std::shared_ptr<ConcreteElementB>& element) = 0;
 };
 
 class ConcreteVisitor1 : public Visitor
@@ -882,14 +876,13 @@ class ConcreteVisitor1 : public Visitor
 public:
     ~ConcreteVisitor1() override = default;
 
-    void visitElementA(const std::shared_ptr<ConcreteElementA> /*element*/) override
+    void visitElementA(const std::shared_ptr<ConcreteElementA>& /*element*/) override
     {
-        stringstream() << "concrete visitor 1: element A visited" << std::endl;
+        output() << "concrete visitor 1: element A visited" << std::endl;
     }
-
-    void visitElementB(const std::shared_ptr<ConcreteElementB> /*element*/) override
+    void visitElementB(const std::shared_ptr<ConcreteElementB>& /*element*/) override
     {
-        stringstream() << "concrete visitor 1: element B visited" << std::endl;
+        output() << "concrete visitor 1: element B visited" << std::endl;
     }
 };
 
@@ -898,13 +891,13 @@ class ConcreteVisitor2 : public Visitor
 public:
     ~ConcreteVisitor2() override = default;
 
-    void visitElementA(const std::shared_ptr<ConcreteElementA> /*element*/) override
+    void visitElementA(const std::shared_ptr<ConcreteElementA>& /*element*/) override
     {
-        stringstream() << "concrete visitor 2: element A visited" << std::endl;
+        output() << "concrete visitor 2: element A visited" << std::endl;
     }
-    void visitElementB(const std::shared_ptr<ConcreteElementB> /*element*/) override
+    void visitElementB(const std::shared_ptr<ConcreteElementB>& /*element*/) override
     {
-        stringstream() << "concrete visitor 2: element B visited" << std::endl;
+        output() << "concrete visitor 2: element B visited" << std::endl;
     }
 };
 
@@ -939,7 +932,6 @@ void Behavioral::visitorInstance()
     using visitor::ConcreteElementB;
     using visitor::ConcreteVisitor1;
     using visitor::ConcreteVisitor2;
-    using visitor::stringstream;
 
     std::shared_ptr<ConcreteElementA> elementA = std::make_shared<ConcreteElementA>();
     std::shared_ptr<ConcreteElementB> elementB = std::make_shared<ConcreteElementB>();
@@ -951,6 +943,6 @@ void Behavioral::visitorInstance()
     elementB->accept(visitor1);
     elementB->accept(visitor2);
 
-    COMMON_PRINT(BEHAVIORAL_RESULT, "Visitor", stringstream().str().c_str());
+    COMMON_PRINT(BEHAVIORAL_RESULT, "Visitor", visitor::output().str().c_str());
 }
 } // namespace dp_behavioral
