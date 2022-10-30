@@ -1,6 +1,6 @@
 set(MODULE_NAME algorithm)
 
-aux_source_directory(source ALGORITHM_LIST)
+aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/source ALGORITHM_LIST)
 include_directories(${CMAKE_SOURCE_DIR})
 
 add_library(${MODULE_NAME} SHARED ${ALGORITHM_LIST})
