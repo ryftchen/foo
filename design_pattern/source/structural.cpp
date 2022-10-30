@@ -15,9 +15,9 @@ Structural::Structural()
 // Adapter
 namespace adapter
 {
-static std::stringstream& stringstream()
+static std::ostringstream& output()
 {
-    static std::stringstream stream;
+    static std::ostringstream stream;
     return stream;
 }
 
@@ -32,19 +32,19 @@ public:
 class Adaptee
 {
 public:
-    static void specificRequest() { stringstream() << "specific request" << std::endl; }
+    static void specificRequest() { output() << "specific request" << std::endl; }
 };
 
 class Adapter : public Target
 {
 public:
-    Adapter() : adaptee() {}
+    Adapter() : adaptee(std::make_unique<Adaptee>()) {}
     ~Adapter() override { adaptee.reset(); }
 
     void request() override { adaptee->specificRequest(); }
 
 private:
-    std::shared_ptr<Adaptee> adaptee;
+    std::unique_ptr<Adaptee> adaptee;
 };
 
 } // namespace adapter
@@ -52,21 +52,20 @@ private:
 void Structural::adapterInstance()
 {
     using adapter::Adapter;
-    using adapter::stringstream;
     using adapter::Target;
 
     std::shared_ptr<Target> t = std::make_shared<Adapter>();
     t->request();
 
-    COMMON_PRINT(STRUCTURAL_RESULT, "Adapter", stringstream().str().c_str());
+    COMMON_PRINT(STRUCTURAL_RESULT, "Adapter", adapter::output().str().c_str());
 }
 
 // Bridge
 namespace bridge
 {
-static std::stringstream& stringstream()
+static std::ostringstream& output()
 {
-    static std::stringstream stream;
+    static std::ostringstream stream;
     return stream;
 }
 
@@ -83,7 +82,7 @@ class ConcreteImplementorA : public Implementor
 public:
     ~ConcreteImplementorA() override = default;
 
-    void action() override { stringstream() << "concrete implementor A" << std::endl; }
+    void action() override { output() << "concrete implementor A" << std::endl; }
 };
 
 class ConcreteImplementorB : public Implementor
@@ -91,7 +90,7 @@ class ConcreteImplementorB : public Implementor
 public:
     ~ConcreteImplementorB() override = default;
 
-    void action() override { stringstream() << "concrete implementor B" << std::endl; }
+    void action() override { output() << "concrete implementor B" << std::endl; }
 };
 
 class Abstraction
@@ -106,12 +105,12 @@ class RefinedAbstraction : public Abstraction
 {
 public:
     ~RefinedAbstraction() override = default;
-    explicit RefinedAbstraction(std::shared_ptr<Implementor> implementor) : implementor(implementor) {}
+    explicit RefinedAbstraction(std::unique_ptr<Implementor> implementor) : implementor(std::move(implementor)) {}
 
     void operation() override { return implementor->action(); }
 
 private:
-    std::shared_ptr<Implementor> implementor;
+    std::unique_ptr<Implementor> implementor;
 };
 } // namespace bridge
 
@@ -122,26 +121,24 @@ void Structural::bridgeInstance()
     using bridge::ConcreteImplementorB;
     using bridge::Implementor;
     using bridge::RefinedAbstraction;
-    using bridge::stringstream;
 
-    std::shared_ptr<Implementor> implA = std::make_shared<ConcreteImplementorA>();
-    std::shared_ptr<Implementor> implB = std::make_shared<ConcreteImplementorB>();
-
-    std::shared_ptr<Abstraction> abstract1 = std::make_shared<RefinedAbstraction>(implA);
+    std::unique_ptr<Abstraction> abstract1 =
+        std::make_unique<RefinedAbstraction>(std::make_unique<ConcreteImplementorA>());
     abstract1->operation();
 
-    std::shared_ptr<Abstraction> abstract2 = std::make_shared<RefinedAbstraction>(implB);
+    std::unique_ptr<Abstraction> abstract2 =
+        std::make_unique<RefinedAbstraction>(std::make_unique<ConcreteImplementorB>());
     abstract2->operation();
 
-    COMMON_PRINT(STRUCTURAL_RESULT, "Bridge", stringstream().str().c_str());
+    COMMON_PRINT(STRUCTURAL_RESULT, "Bridge", bridge::output().str().c_str());
 }
 
 // Composite
 namespace composite
 {
-static std::stringstream& stringstream()
+static std::ostringstream& output()
 {
-    static std::stringstream stream;
+    static std::ostringstream stream;
     return stream;
 }
 
@@ -151,7 +148,7 @@ public:
     virtual ~Component() = default;
 
     virtual std::shared_ptr<Component> getChild(const uint32_t /*unused*/) { return nullptr; }
-    virtual void add(std::shared_ptr<Component> /*unused*/) {}
+    virtual void add(const std::shared_ptr<Component>& /*unused*/) {}
     virtual void remove(const uint32_t /*unused*/) {}
     virtual void operation() = 0;
 };
@@ -171,7 +168,7 @@ public:
     }
 
     std::shared_ptr<Component> getChild(const uint32_t index) override { return children[index]; }
-    void add(std::shared_ptr<Component> component) override { children.emplace_back(component); }
+    void add(const std::shared_ptr<Component>& component) override { children.emplace_back(component); }
     void remove(const uint32_t index) override
     {
         std::shared_ptr<Component> child = children[index];
@@ -199,7 +196,7 @@ public:
     explicit Leaf(const int id) : id(id) {}
     ~Leaf() override = default;
 
-    void operation() override { stringstream() << "leaf " << id << " operation" << std::endl; }
+    void operation() override { output() << "leaf " << id << " operation" << std::endl; }
 
 private:
     int id;
@@ -210,7 +207,6 @@ void Structural::compositeInstance()
 {
     using composite::Composite;
     using composite::Leaf;
-    using composite::stringstream;
 
     constexpr uint32_t count = 5;
     Composite composite;
@@ -222,15 +218,15 @@ void Structural::compositeInstance()
     composite.remove(0);
     composite.operation();
 
-    COMMON_PRINT(STRUCTURAL_RESULT, "Composite", stringstream().str().c_str());
+    COMMON_PRINT(STRUCTURAL_RESULT, "Composite", composite::output().str().c_str());
 }
 
 // Decorator
 namespace decorator
 {
-static std::stringstream& stringstream()
+static std::ostringstream& output()
 {
-    static std::stringstream stream;
+    static std::ostringstream stream;
     return stream;
 }
 
@@ -247,14 +243,14 @@ class ConcreteComponent : public Component
 public:
     ~ConcreteComponent() override = default;
 
-    void operation() override { stringstream() << "concrete component operation" << std::endl; }
+    void operation() override { output() << "concrete component operation" << std::endl; }
 };
 
 class Decorator : public Component
 {
 public:
     ~Decorator() override = default;
-    explicit Decorator(std::shared_ptr<Component> component) : component(component) {}
+    explicit Decorator(std::shared_ptr<Component> component) : component(std::move(component)) {}
 
     void operation() override { component->operation(); }
 
@@ -265,24 +261,24 @@ private:
 class ConcreteDecoratorA : public Decorator
 {
 public:
-    explicit ConcreteDecoratorA(std::shared_ptr<Component> decorator) : Decorator(decorator) {}
+    explicit ConcreteDecoratorA(std::shared_ptr<Component> decorator) : Decorator(std::move(decorator)) {}
 
     void operation() override
     {
         Decorator::operation();
-        stringstream() << "decorator A" << std::endl;
+        output() << "decorator A" << std::endl;
     }
 };
 
 class ConcreteDecoratorB : public Decorator
 {
 public:
-    explicit ConcreteDecoratorB(std::shared_ptr<Component> decorator) : Decorator(decorator) {}
+    explicit ConcreteDecoratorB(std::shared_ptr<Component> decorator) : Decorator(std::move(decorator)) {}
 
     void operation() override
     {
         Decorator::operation();
-        stringstream() << "decorator B" << std::endl;
+        output() << "decorator B" << std::endl;
     }
 };
 } // namespace decorator
@@ -293,7 +289,6 @@ void Structural::decoratorInstance()
     using decorator::ConcreteComponent;
     using decorator::ConcreteDecoratorA;
     using decorator::ConcreteDecoratorB;
-    using decorator::stringstream;
 
     std::shared_ptr<ConcreteComponent> cc = std::make_shared<ConcreteComponent>();
     std::shared_ptr<ConcreteDecoratorA> da = std::make_shared<ConcreteDecoratorA>(cc);
@@ -302,34 +297,34 @@ void Structural::decoratorInstance()
     std::shared_ptr<Component> component = db;
     component->operation();
 
-    COMMON_PRINT(STRUCTURAL_RESULT, "Decorator", stringstream().str().c_str());
+    COMMON_PRINT(STRUCTURAL_RESULT, "Decorator", decorator::output().str().c_str());
 }
 
 // Facade
 namespace facade
 {
-static std::stringstream& stringstream()
+static std::ostringstream& output()
 {
-    static std::stringstream stream;
+    static std::ostringstream stream;
     return stream;
 }
 
 class SubsystemA
 {
 public:
-    static void suboperation() { stringstream() << "subsystem A method" << std::endl; }
+    static void suboperation() { output() << "subsystem A method" << std::endl; }
 };
 
 class SubsystemB
 {
 public:
-    static void suboperation() { stringstream() << "subsystem B method" << std::endl; }
+    static void suboperation() { output() << "subsystem B method" << std::endl; }
 };
 
 class SubsystemC
 {
 public:
-    static void suboperation() { stringstream() << "subsystem C method" << std::endl; }
+    static void suboperation() { output() << "subsystem C method" << std::endl; }
 };
 
 class Facade
@@ -354,22 +349,20 @@ private:
 void Structural::facadeInstance()
 {
     using facade::Facade;
-    using facade::stringstream;
 
     std::shared_ptr<Facade> facade = std::make_shared<Facade>();
-
     facade->operation1();
     facade->operation2();
 
-    COMMON_PRINT(STRUCTURAL_RESULT, "Facade", stringstream().str().c_str());
+    COMMON_PRINT(STRUCTURAL_RESULT, "Facade", facade::output().str().c_str());
 }
 
 // Flyweight
 namespace flyweight
 {
-static std::stringstream& stringstream()
+static std::ostringstream& output()
 {
-    static std::stringstream stream;
+    static std::ostringstream stream;
     return stream;
 }
 
@@ -387,7 +380,7 @@ public:
     explicit UnsharedConcreteFlyweight(const int intrinsicState) : state(intrinsicState) {}
     ~UnsharedConcreteFlyweight() override = default;
 
-    void operation() override { stringstream() << "unshared flyweight with state " << state << std::endl; }
+    void operation() override { output() << "unshared flyweight with state " << state << std::endl; }
 
 private:
     int state;
@@ -399,7 +392,7 @@ public:
     explicit ConcreteFlyweight(const int allState) : state(allState) {}
     ~ConcreteFlyweight() override = default;
 
-    void operation() override { stringstream() << "concrete flyweight with state " << state << std::endl; }
+    void operation() override { output() << "concrete flyweight with state " << state << std::endl; }
 
 private:
     int state;
@@ -420,40 +413,39 @@ public:
         flies.clear();
     }
 
-    std::shared_ptr<Flyweight> getFlyweight(const int key)
+    std::unique_ptr<Flyweight>& getFlyweight(const int key)
     {
         if (flies.find(key) != flies.cend())
         {
             return flies[key];
         }
-        std::shared_ptr<Flyweight> fly = std::make_shared<ConcreteFlyweight>(key);
-        flies.insert(std::pair<int, std::shared_ptr<Flyweight>>(key, fly));
-        return fly;
+        std::unique_ptr<Flyweight> fly = std::make_unique<ConcreteFlyweight>(key);
+        flies.insert(std::pair<int, std::unique_ptr<Flyweight>>(key, std::move(fly)));
+        return flies[key];
     }
 
 private:
-    std::map<int, std::shared_ptr<Flyweight>> flies;
+    std::map<int, std::unique_ptr<Flyweight>> flies;
 };
 } // namespace flyweight
 
 void Structural::flyweightInstance()
 {
     using flyweight::FlyweightFactory;
-    using flyweight::stringstream;
 
     std::shared_ptr<FlyweightFactory> factory = std::make_shared<FlyweightFactory>();
     factory->getFlyweight(1)->operation();
     factory->getFlyweight(2)->operation();
 
-    COMMON_PRINT(STRUCTURAL_RESULT, "Flyweight", stringstream().str().c_str());
+    COMMON_PRINT(STRUCTURAL_RESULT, "Flyweight", flyweight::output().str().c_str());
 }
 
 // Proxy
 namespace proxy
 {
-static std::stringstream& stringstream()
+static std::ostringstream& output()
 {
-    static std::stringstream stream;
+    static std::ostringstream stream;
     return stream;
 }
 
@@ -468,30 +460,44 @@ public:
 class RealSubject : public Subject
 {
 public:
-    void request() override { stringstream() << "real subject request" << std::endl; }
+    void request() override { output() << "real subject request" << std::endl; }
 };
 
 class Proxy : public Subject
 {
 public:
-    Proxy() { subject = std::make_shared<RealSubject>(); }
-    ~Proxy() override { subject.reset(); }
+    ~Proxy() override
+    {
+        if (subject)
+        {
+            subject.reset();
+        }
+    }
 
-    void request() override { subject->request(); }
+    void request() override { realSubject().request(); }
 
 private:
-    std::shared_ptr<RealSubject> subject;
+    std::unique_ptr<RealSubject> subject;
+
+protected:
+    RealSubject& realSubject()
+    {
+        if (!subject)
+        {
+            subject = std::make_unique<RealSubject>();
+        }
+        return *subject;
+    }
 };
 } // namespace proxy
 
 void Structural::proxyInstance()
 {
     using proxy::Proxy;
-    using proxy::stringstream;
 
     std::shared_ptr<Proxy> proxy = std::make_shared<Proxy>();
     proxy->request();
 
-    COMMON_PRINT(STRUCTURAL_RESULT, "Proxy", stringstream().str().c_str());
+    COMMON_PRINT(STRUCTURAL_RESULT, "Proxy", proxy::output().str().c_str());
 }
 } // namespace dp_structural
