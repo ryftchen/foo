@@ -116,6 +116,8 @@ checkDependencies()
     if [ "${ARGS_LINT}" = true ]; then
         if
             command -v clang-tidy-12 >/dev/null 2>&1 \
+                && command -v run-clang-tidy-12.py >/dev/null 2>&1 \
+                && command -v compdb >/dev/null 2>&1 \
                 && command -v shellcheck >/dev/null 2>&1 \
                 && command -v pylint >/dev/null 2>&1
         then
@@ -126,7 +128,8 @@ checkDependencies()
                 printException "No ${COMPILE_COMMANDS} file in ${BUILD_FOLDER} folder. Please generate it."
             fi
         else
-            printException "No clang-tidy, shellcheck or pylint program. Please check it."
+            printException "No clang-tidy (involving run-clang-tidy-12.py, compdb), shellcheck or pylint program. \
+Please check it."
         fi
     fi
 
@@ -148,7 +151,7 @@ checkDependencies()
                 printException "No ${DOCKER_FILE} file in ${DOCKER_FOLDER} folder. Please check it."
             fi
 
-            printf "Please confirm further whether construct the docker container. [y/n]: "
+            echo "Please confirm further whether construct docker container. (y or n)"
             oldStty=$(stty -g)
             stty raw -echo
             answer=$(while ! head -c 1 | grep -i '[ny]'; do true; done)
@@ -174,9 +177,9 @@ generateCMakeFiles()
 
         export CC=/usr/bin/clang-12 CXX=/usr/bin/clang++-12
         if [ "${ARGS_RELEASE}" = true ]; then
-            bashCommand "cmake -S . -B ./${BUILD_FOLDER} -DCMAKE_CXX_COMPILER=clang++-12 -DCMAKE_BUILD_TYPE=Release"
+            bashCommand "cmake -S . -B ./${BUILD_FOLDER} -G Ninja -DCMAKE_CXX_COMPILER=clang++-12 -DCMAKE_BUILD_TYPE=Release"
         else
-            bashCommand "cmake -S . -B ./${BUILD_FOLDER} -DCMAKE_CXX_COMPILER=clang++-12 -DCMAKE_BUILD_TYPE=Debug"
+            bashCommand "cmake -S . -B ./${BUILD_FOLDER} -G Ninja -DCMAKE_CXX_COMPILER=clang++-12 -DCMAKE_BUILD_TYPE=Debug"
         fi
     else
         printException "No ${CMAKE_LISTS} file in ${PROJECT_FOLDER} folder. Please check it."
@@ -186,7 +189,7 @@ generateCMakeFiles()
 compileCode()
 {
     if [ "${PERFORM_COMPILE}" = true ]; then
-        bashCommand "make -C ./${BUILD_FOLDER} -j"
+        bashCommand "tput setaf 2; tput bold; cmake --build ./${BUILD_FOLDER}; tput sgr0"
     fi
 }
 
@@ -203,8 +206,10 @@ performFormatOption()
 performLintOption()
 {
     if [ "${ARGS_LINT}" = true ]; then
-        bashCommand "find ./${APPLICATION_FOLDER} ./${UTILITY_FOLDER} ./${ALGORITHM_FOLDER} ./${DESIGN_PATTERN_FOLDER} \
-./${NUMERIC_FOLDER} -name *.cpp -o -name *.hpp | xargs clang-tidy-12 -p ./${BUILD_FOLDER}/${COMPILE_COMMANDS}"
+        bashCommand "compdb -p ./${BUILD_FOLDER} list > ./${COMPILE_COMMANDS} && \
+mv ./${COMPILE_COMMANDS} ./${BUILD_FOLDER} && \
+find ./${APPLICATION_FOLDER} ./${UTILITY_FOLDER} ./${ALGORITHM_FOLDER} ./${DESIGN_PATTERN_FOLDER} ./${NUMERIC_FOLDER} \
+-name *.cpp -o -name *.hpp | xargs run-clang-tidy-12.py -p ./${BUILD_FOLDER} -quiet"
         bashCommand "shellcheck ./${SCRIPT_FOLDER}/*.sh"
         bashCommand "pylint --rcfile=${LINT_CONFIG_PY} ./${SCRIPT_FOLDER}/*.py"
     fi
@@ -251,16 +256,29 @@ tarHtmlForBrowser()
 performDockerOption()
 {
     if [ "${ARGS_DOCKER}" = true ]; then
+        toBuildImage=false
         if service docker status | grep -q "active (running)" 2>/dev/null; then
             imageRepo="ryftchen/${PROJECT_FOLDER}"
-            if ! docker ps -a | tail -n +2 | awk '{split($0, a, " "); print a[2]}' \
-                | grep "${imageRepo}" >/dev/null 2>&1; then
-                if ! docker image ls -a | tail -n +2 | awk '{split($0, a, " "); print a[1]}' \
-                    | grep "${imageRepo}" >/dev/null 2>&1; then
-                    if docker search "${imageRepo}" | tail -n +2 | awk '{split($0, a, " "); print a[1]}' \
-                        | grep "${imageRepo}" >/dev/null 2>&1; then
-                        bashCommand "docker pull ${imageRepo}:latest"
+            if ! docker ps -a --format "{{lower .Image}}" | grep -q "${imageRepo}":latest 2>/dev/null; then
+                if
+                    ! docker image ls -a --format "{{lower .Repository}}" | grep -q "${imageRepo}" 2>/dev/null \
+                        || ! docker image ls -a | tail -n +2 | grep "${imageRepo}" \
+                        | awk '{split($0, a, " "); print a[2]}' | grep -q "latest" 2>/dev/null
+                then
+                    if docker search "${imageRepo}" --format "{{lower .Name}}" \
+                        | grep -q "${imageRepo}" 2>/dev/null; then
+                        tags=$(curl -sS "https://registry.hub.docker.com/v2/repositories/${imageRepo}/tags" \
+                            | sed -Ee 's/("name":)"([^"]*)"/\n\1\2\n/g' | grep '"name":' \
+                            | awk -F: '{printf("%s\n", $2)}')
+                        if echo "${tags}" | grep -q "latest" 2>/dev/null; then
+                            bashCommand "docker pull ${imageRepo}:latest"
+                        else
+                            toBuildImage=true
+                        fi
                     else
+                        toBuildImage=true
+                    fi
+                    if [ "${toBuildImage}" = true ]; then
                         bashCommand "docker build -t ${imageRepo}:latest -f ./${DOCKER_FOLDER}/${DOCKER_FILE} \
 ./${DOCKER_FOLDER}/"
                     fi
@@ -269,7 +287,7 @@ performDockerOption()
 -d ${imageRepo}:latest /bin/bash"
             fi
         else
-            printException "The service docker status is not active."
+            printException "Service docker status is not active."
         fi
     fi
 }
@@ -277,6 +295,7 @@ performDockerOption()
 main()
 {
     cd "${0%%${SCRIPT_FOLDER}*}" || exit 1
+    trap "tput sgr0" INT TERM
 
     parseArgs "$@"
     checkDependencies "$@"
