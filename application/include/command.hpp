@@ -45,10 +45,10 @@ private:
             static constexpr int value = 3;
         };
 
-        std::bitset<Bottom<Category>::value> basicTaskBit;
+        std::bitset<Bottom<Category>::value> primaryBit;
 
-        [[nodiscard]] bool empty() const { return basicTaskBit.none(); }
-        void reset() { basicTaskBit.reset(); }
+        [[nodiscard]] bool empty() const { return primaryBit.none(); }
+        void reset() { primaryBit.reset(); }
     };
 
     class GeneralTask
@@ -606,39 +606,6 @@ private:
     inline auto getMethodDetail(const int categoryIndex, const int typeIndex, const int methodIndex) const;
 
     // clang-format off
-    static constexpr std::string_view optionTreeOfHelpMsg{
-        "├── -a --algorithm\r\n"
-        "│   ├── match\r\n"
-        "│   │   └── rab, knu, boy, hor, sun\r\n"
-        "│   ├── notation\r\n"
-        "│   │   └── pre, pos\r\n"
-        "│   ├── search\r\n"
-        "│   │   └── bin, int, fib\r\n"
-        "│   └── sort\r\n"
-        "│       ├── bub, sel, ins, she, mer\r\n"
-        "│       └── qui, hea, cou, buc, rad\r\n"
-        "├── -dp --design-pattern\r\n"
-        "│   ├── behavioral\r\n"
-        "│   │   ├── cha, com, int, ite, med\r\n"
-        "│   │   ├── mem, obs, sta, str, tem\r\n"
-        "│   │   └── vis\r\n"
-        "│   ├── creational\r\n"
-        "│   │   └── abs, bui, fac, pro, sin\r\n"
-        "│   └── structural\r\n"
-        "│       ├── ada, bri, com, dec, fac\r\n"
-        "│       └── fly, pro\r\n"
-        "└── -n --numeric\r\n"
-        "    ├── arithmetic\r\n"
-        "    │   └── add, sub, mul, div\r\n"
-        "    ├── divisor\r\n"
-        "    │   └── euc, ste\r\n"
-        "    ├── integral\r\n"
-        "    │   └── tra, sim, rom, gau, mon\r\n"
-        "    ├── optimal\r\n"
-        "    │   └── gra, ann, par, gen\r\n"
-        "    └── sieve\r\n"
-        "        └── era, eul"
-    };
     const BasicTaskMap basicTaskMap{
         // - Category -+----------- Run -----------
         { "console" , &Command::printConsoleOutput },
