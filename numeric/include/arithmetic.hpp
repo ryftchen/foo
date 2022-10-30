@@ -11,10 +11,10 @@ public:
     Arithmetic();
     virtual ~Arithmetic() = default;
 
-    [[nodiscard]] static int additionMethod(const int augend, const int addend);
-    [[nodiscard]] static int subtractionMethod(const int minuend, const int subtrahend);
-    [[nodiscard]] static int multiplicationMethod(const int multiplier, const int multiplicand);
-    [[nodiscard]] static int divisionMethod(const int dividend, const int divisor);
+    [[nodiscard]] int additionMethod(const int augend, const int addend) const;
+    [[nodiscard]] int subtractionMethod(const int minuend, const int subtrahend) const;
+    [[nodiscard]] int multiplicationMethod(const int multiplier, const int multiplicand) const;
+    [[nodiscard]] int divisionMethod(const int dividend, const int divisor) const;
 
 private:
     static inline int bitAdd(const int a, const int b);

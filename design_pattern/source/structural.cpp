@@ -49,7 +49,8 @@ private:
 
 } // namespace adapter
 
-void Structural::adapterInstance()
+// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
+void Structural::adapterInstance() const
 {
     using adapter::Adapter;
     using adapter::Target;
@@ -114,7 +115,8 @@ private:
 };
 } // namespace bridge
 
-void Structural::bridgeInstance()
+// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
+void Structural::bridgeInstance() const
 {
     using bridge::Abstraction;
     using bridge::ConcreteImplementorA;
@@ -203,7 +205,8 @@ private:
 };
 } // namespace composite
 
-void Structural::compositeInstance()
+// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
+void Structural::compositeInstance() const
 {
     using composite::Composite;
     using composite::Leaf;
@@ -283,7 +286,8 @@ public:
 };
 } // namespace decorator
 
-void Structural::decoratorInstance()
+// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
+void Structural::decoratorInstance() const
 {
     using decorator::Component;
     using decorator::ConcreteComponent;
@@ -346,7 +350,8 @@ private:
 };
 } // namespace facade
 
-void Structural::facadeInstance()
+// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
+void Structural::facadeInstance() const
 {
     using facade::Facade;
 
@@ -429,7 +434,8 @@ private:
 };
 } // namespace flyweight
 
-void Structural::flyweightInstance()
+// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
+void Structural::flyweightInstance() const
 {
     using flyweight::FlyweightFactory;
 
@@ -491,7 +497,8 @@ protected:
 };
 } // namespace proxy
 
-void Structural::proxyInstance()
+// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
+void Structural::proxyInstance() const
 {
     using proxy::Proxy;
 

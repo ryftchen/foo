@@ -52,7 +52,7 @@ std::string Notation::infixToPostfix(const std::string& infix)
         charStack.pop();
     }
 
-    return std::move(postfix);
+    return postfix;
 }
 
 Notation::Priority Notation::getPriority(const char c)
@@ -75,7 +75,8 @@ Notation::Priority Notation::getPriority(const char c)
 }
 
 // Prefix
-std::string Notation::prefixMethod(const std::string& infixNotation)
+// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
+std::string Notation::prefixMethod(const std::string& infixNotation) const
 {
     std::string infix = infixNotation;
 
@@ -95,15 +96,16 @@ std::string Notation::prefixMethod(const std::string& infixNotation)
     std::reverse(prefixNotation.begin(), prefixNotation.end());
 
     COMMON_PRINT(NOTATION_RESULT, "Prefix", "PolishNotation", prefixNotation.data());
-    return std::move(prefixNotation);
+    return prefixNotation;
 }
 
 // Postfix
-std::string Notation::postfixMethod(const std::string& infixNotation)
+// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
+std::string Notation::postfixMethod(const std::string& infixNotation) const
 {
     std::string postfixNotation = infixToPostfix(infixNotation);
 
     COMMON_PRINT(NOTATION_RESULT, "Postfix", "ReversePolishNotation", postfixNotation.data());
-    return std::move(postfixNotation);
+    return postfixNotation;
 }
 } // namespace algo_notation

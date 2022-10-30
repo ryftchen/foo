@@ -8,12 +8,12 @@ public:
     Structural();
     virtual ~Structural() = default;
 
-    static void adapterInstance();
-    static void bridgeInstance();
-    static void compositeInstance();
-    static void decoratorInstance();
-    static void facadeInstance();
-    static void flyweightInstance();
-    static void proxyInstance();
+    void adapterInstance() const;
+    void bridgeInstance() const;
+    void compositeInstance() const;
+    void decoratorInstance() const;
+    void facadeInstance() const;
+    void flyweightInstance() const;
+    void proxyInstance() const;
 };
 } // namespace dp_structural

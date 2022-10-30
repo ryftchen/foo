@@ -8,16 +8,16 @@ public:
     Behavioral();
     virtual ~Behavioral() = default;
 
-    static void chainOfResponsibilityInstance();
-    static void commandInstance();
-    static void interpreterInstance();
-    static void iteratorInstance();
-    static void mediatorInstance();
-    static void mementoInstance();
-    static void observerInstance();
-    static void stateInstance();
-    static void strategyInstance();
-    static void templateMethodInstance();
-    static void visitorInstance();
+    void chainOfResponsibilityInstance() const;
+    void commandInstance() const;
+    void interpreterInstance() const;
+    void iteratorInstance() const;
+    void mediatorInstance() const;
+    void mementoInstance() const;
+    void observerInstance() const;
+    void stateInstance() const;
+    void strategyInstance() const;
+    void templateMethodInstance() const;
+    void visitorInstance() const;
 };
 } // namespace dp_behavioral

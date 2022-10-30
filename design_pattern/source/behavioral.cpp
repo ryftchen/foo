@@ -81,7 +81,8 @@ public:
 };
 } // namespace chain_of_responsibility
 
-void Behavioral::chainOfResponsibilityInstance()
+// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
+void Behavioral::chainOfResponsibilityInstance() const
 {
     using chain_of_responsibility::ConcreteHandler1;
     using chain_of_responsibility::ConcreteHandler2;
@@ -157,7 +158,8 @@ private:
 };
 } // namespace command
 
-void Behavioral::commandInstance()
+// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
+void Behavioral::commandInstance() const
 {
     using command::Command;
     using command::ConcreteCommand;
@@ -236,7 +238,8 @@ private:
 };
 } // namespace interpreter
 
-void Behavioral::interpreterInstance()
+// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
+void Behavioral::interpreterInstance() const
 {
     using interpreter::AbstractExpression;
     using interpreter::Context;
@@ -337,7 +340,8 @@ std::shared_ptr<Iterator> ConcreteAggregate::createIterator()
 }
 } // namespace iterator
 
-void Behavioral::iteratorInstance()
+// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
+void Behavioral::iteratorInstance() const
 {
     using iterator::ConcreteAggregate;
     using iterator::Iterator;
@@ -447,7 +451,8 @@ private:
 };
 } // namespace mediator
 
-void Behavioral::mediatorInstance()
+// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
+void Behavioral::mediatorInstance() const
 {
     using mediator::Colleague;
     using mediator::ConcreteColleague;
@@ -551,7 +556,8 @@ private:
 };
 } // namespace memento
 
-void Behavioral::mementoInstance()
+// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
+void Behavioral::mementoInstance() const
 {
     using memento::CareTaker;
     using memento::Originator;
@@ -647,7 +653,8 @@ private:
 };
 } // namespace observer
 
-void Behavioral::observerInstance()
+// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
+void Behavioral::observerInstance() const
 {
     using observer::ConcreteObserver;
     using observer::ConcreteSubject;
@@ -727,7 +734,8 @@ private:
 };
 } // namespace state
 
-void Behavioral::stateInstance()
+// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
+void Behavioral::stateInstance() const
 {
     using state::ConcreteStateA;
     using state::ConcreteStateB;
@@ -790,7 +798,8 @@ private:
 };
 } // namespace strategy
 
-void Behavioral::strategyInstance()
+// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
+void Behavioral::strategyInstance() const
 {
     using strategy::ConcreteStrategyA;
     using strategy::ConcreteStrategyB;
@@ -838,7 +847,8 @@ public:
 };
 } // namespace template_method
 
-void Behavioral::templateMethodInstance()
+// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
+void Behavioral::templateMethodInstance() const
 {
     using template_method::AbstractClass;
     using template_method::ConcreteClass;
@@ -926,7 +936,8 @@ public:
 };
 } // namespace visitor
 
-void Behavioral::visitorInstance()
+// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
+void Behavioral::visitorInstance() const
 {
     using visitor::ConcreteElementA;
     using visitor::ConcreteElementB;

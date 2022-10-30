@@ -8,10 +8,10 @@ public:
     Creational();
     virtual ~Creational() = default;
 
-    static void abstractFactoryInstance();
-    static void builderInstance();
-    static void factoryMethodInstance();
-    static void prototypeInstance();
-    static void singletonInstance();
+    void abstractFactoryInstance() const;
+    void builderInstance() const;
+    void factoryMethodInstance() const;
+    void prototypeInstance() const;
+    void singletonInstance() const;
 };
 } // namespace dp_creational
