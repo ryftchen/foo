@@ -79,11 +79,15 @@ class Test:
     isCheckMemory = False
     memorySummaryContent = "ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)"
     buildFile = "./script/build.sh"
-    buildSummaryContent = "Built target foo"
     logFile = "./temporary/foo_test.log"
     tempDir = "./temporary"
     passStep = 0
     completeStep = 0
+    basicTaskDict["--help"] = [
+        f"{taskCategory} {taskType}"
+        for taskCategory, taskCategoryMaps in generalTaskDict.items()
+        for taskType in taskCategoryMaps.keys()
+    ]
     totalStep = 1 + len(basicTaskDict.keys())
     for taskCategoryLists in basicTaskDict.values():
         totalStep += len(taskCategoryLists)
@@ -206,7 +210,7 @@ class Test:
             Output.printException(f"Failed to run shell script {self.buildFile} in test.")
         else:
             print(stdout)
-            if self.buildSummaryContent not in stdout:
+            if "FAILED:" in stdout:
                 Output.printException(f"Failed to build project by shell script {self.buildFile}.")
 
     def prepareTest(self):
