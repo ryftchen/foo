@@ -7,12 +7,6 @@
 
 namespace num_optimal
 {
-using genetic_species::Chromosome;
-using genetic_species::Population;
-using particle_swarm::Individual;
-using particle_swarm::Record;
-using particle_swarm::Society;
-
 // Gradient Descent
 std::optional<std::tuple<ValueY, ValueX>> Gradient::operator()(const double left, const double right, const double eps)
 {
@@ -21,7 +15,7 @@ std::optional<std::tuple<ValueY, ValueX>> Gradient::operator()(const double left
     double x = 0.0, y = 0.0;
     std::uniform_real_distribution<double> randomX(left, right);
     std::set<double> climbing;
-    while (climbing.size() < gradient_learning::loopTime)
+    while (climbing.size() < gradient::loopTime)
     {
         climbing.insert(randomX(seed));
     }
@@ -32,13 +26,13 @@ std::optional<std::tuple<ValueY, ValueX>> Gradient::operator()(const double left
     {
         x = climber;
         uint32_t iterNum = 0;
-        double learningRate = gradient_learning::initialLearningRate, gradient = calculateFirstDerivative(x, eps),
+        double learningRate = gradient::initialLearningRate, gradient = calculateFirstDerivative(x, eps),
                dx = learningRate * gradient;
         while ((std::fabs(dx) > eps) && ((x - dx) >= left) && ((x - dx) <= right))
         {
             x -= dx;
             ++iterNum;
-            learningRate = gradient_learning::initialLearningRate * 1.0 / (1.0 + gradient_learning::decay * iterNum);
+            learningRate = gradient::initialLearningRate * 1.0 / (1.0 + gradient::decay * iterNum);
             gradient = calculateFirstDerivative(x, eps);
             dx = learningRate * gradient;
         }
@@ -71,16 +65,16 @@ std::optional<std::tuple<ValueY, ValueX>> Annealing::operator()(const double lef
 {
     TIME_BEGIN(timing);
     constexpr double perturbation = 0.5;
-    double temperature = annealing_cooling::initialT;
+    double temperature = annealing::initialT;
     std::mt19937 seed{util_time::getRandomSeedByTime()};
     std::uniform_real_distribution<double> randomX(left, right);
     std::uniform_real_distribution<double> random(-perturbation, perturbation);
     double x = randomX(seed), y = func(x);
-    while (temperature > annealing_cooling::minimalT)
+    while (temperature > annealing::minimalT)
     {
         double xBest = x, yBest = y;
         bool found = false;
-        for (uint32_t i = 0; i < annealing_cooling::markovChain; ++i)
+        for (uint32_t i = 0; i < annealing::markovChain; ++i)
         {
             double xNew = 0.0, yNew = 0.0;
             do
@@ -108,7 +102,7 @@ std::optional<std::tuple<ValueY, ValueX>> Annealing::operator()(const double lef
             x = xBest;
             y = yBest;
         }
-        temperature *= annealing_cooling::coolingRate;
+        temperature *= annealing::coolingRate;
     }
 
     TIME_END(timing);
@@ -131,20 +125,19 @@ std::optional<std::tuple<ValueY, ValueX>> Particle::operator()(const double left
     double xBest = best->x, xFitnessBest = best->xFitness;
 
     std::uniform_real_distribution<double> random(0.0, 1.0);
-    for (uint32_t i = 0; i < particle_swarm::iterNum; ++i)
+    for (uint32_t i = 0; i < particle::iterNum; ++i)
     {
-        const double w = particle_swarm::wBegin
-            - (particle_swarm::wBegin - particle_swarm::wEnd)
-                * std::pow(static_cast<double>(i + 1) / particle_swarm::iterNum, 2);
+        const double w = particle::wBegin
+            - (particle::wBegin - particle::wEnd) * std::pow(static_cast<double>(i + 1) / particle::iterNum, 2);
         for (auto& ind : rec.society)
         {
             const double rand1 = static_cast<uint32_t>(random(seed) * static_cast<uint32_t>(1.0 / eps)) * eps;
             const double rand2 = static_cast<uint32_t>(random(seed) * static_cast<uint32_t>(1.0 / eps)) * eps;
-            ind.velocity = w * ind.velocity + particle_swarm::c1 * rand1 * (ind.positionBest - ind.x)
-                + particle_swarm::c2 * rand2 * (xBest - ind.x);
-            (ind.velocity > particle_swarm::vMax)
-                ? ind.velocity = particle_swarm::vMax
-                : ((ind.velocity < particle_swarm::vMin) ? ind.velocity = particle_swarm::vMin : ind.velocity);
+            ind.velocity = w * ind.velocity + particle::c1 * rand1 * (ind.positionBest - ind.x)
+                + particle::c2 * rand2 * (xBest - ind.x);
+            (ind.velocity > particle::vMax)
+                ? ind.velocity = particle::vMax
+                : ((ind.velocity < particle::vMin) ? ind.velocity = particle::vMin : ind.velocity);
 
             ind.x += ind.velocity;
             (ind.x > right) ? ind.x = right : ((ind.x < left) ? ind.x = left : ind.x);
@@ -174,13 +167,13 @@ std::optional<std::tuple<ValueY, ValueX>> Particle::operator()(const double left
     return std::make_optional(std::make_tuple(xFitnessBest, xBest));
 }
 
-Record Particle::recordInit(const double left, const double right)
+particle::Record Particle::recordInit(const double left, const double right)
 {
     seed = std::mt19937{util_time::getRandomSeedByTime()};
-    std::uniform_real_distribution<double> randomX(left, right), randomV(particle_swarm::vMin, particle_swarm::vMax);
+    std::uniform_real_distribution<double> randomX(left, right), randomV(particle::vMin, particle::vMax);
 
     const Individual individualInit{};
-    Society societyInit(particle_swarm::size, individualInit);
+    Society societyInit(particle::size, individualInit);
     std::generate(
         societyInit.begin(),
         societyInit.end(),
@@ -208,7 +201,7 @@ std::optional<std::tuple<ValueY, ValueX>> Genetic::operator()(const double left,
     }
 
     Population pop = populationInit();
-    for (uint32_t i = 0; i < genetic_species::iterNum; ++i)
+    for (uint32_t i = 0; i < genetic::iterNum; ++i)
     {
         selectIndividual(pop);
         crossIndividual(pop);
@@ -265,10 +258,10 @@ double Genetic::geneDecoding(const Chromosome& chr) const
     return range.lower + (range.upper - range.lower) * temp / max;
 }
 
-Population Genetic::populationInit()
+genetic::Population Genetic::populationInit()
 {
     const Chromosome chrInit(chrNum, 0);
-    Population pop(genetic_species::size, chrInit);
+    Population pop(genetic::size, chrInit);
     std::for_each(
         pop.begin(),
         pop.end(),
@@ -306,7 +299,7 @@ void Genetic::crossIndividual(Population& pop)
          std::advance(iterChr, 2))
     {
         Chromosome parent1 = iterChr->get(), parent2 = std::next(iterChr, 1)->get();
-        if (genetic_species::crossPr > random())
+        if (genetic::crossPr > random())
         {
             geneCrossover(parent1, parent2);
         }
@@ -341,7 +334,7 @@ void Genetic::mutateIndividual(Population& pop)
         pop.end(),
         [this](auto& ind)
         {
-            if (genetic_species::mutatePr > random())
+            if (genetic::mutatePr > random())
             {
                 geneMutation(ind);
             }
@@ -453,7 +446,7 @@ void Genetic::selectIndividual(Population& pop)
     stochasticTournamentSelection(pop, fitnessAvg);
 }
 
-Chromosome Genetic::getBestIndividual(const Population& pop)
+genetic::Chromosome Genetic::getBestIndividual(const Population& pop)
 {
     std::vector<double> fitnessVal;
     fitnessVal.reserve(pop.size());

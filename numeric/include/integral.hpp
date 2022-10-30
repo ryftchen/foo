@@ -28,7 +28,7 @@ inline int Integral::getSign(double& lower, double& upper)
     return (lower < upper) ? 1 : ((lower > upper) ? (std::swap(lower, upper), -1) : 0);
 }
 
-// Trapezoidal method
+// Trapezoidal
 class Trapezoidal : public Integral
 {
 public:
@@ -40,7 +40,7 @@ private:
     const num_expression::Expression& func;
 };
 
-// Adaptive Simpson's 1/3 method
+// Adaptive Simpson's 1/3
 class Simpson : public Integral
 {
 public:
@@ -55,7 +55,7 @@ private:
     [[nodiscard]] double simpsonOneThird(const double left, const double right) const;
 };
 
-// Romberg method
+// Romberg
 class Romberg : public Integral
 {
 public:
@@ -67,7 +67,7 @@ private:
     const num_expression::Expression& func;
 };
 
-// Gauss-Legendre's 5-points method
+// Gauss-Legendre's 5-points
 class Gauss : public Integral
 {
 public:
@@ -79,7 +79,7 @@ private:
     const num_expression::Expression& func;
 };
 
-// Monte-Carlo method
+// Monte-Carlo
 class MonteCarlo : public Integral
 {
 public:
