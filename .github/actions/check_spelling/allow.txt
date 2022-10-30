@@ -2,7 +2,6 @@ ada
 adaptee
 asc
 api
-bkdr
 buc
 bui
 chrono
@@ -21,9 +20,7 @@ editorconfig
 eratosthenes
 euc
 eul
-fcoverage
 fibonacci
-fprofile
 fsm
 getsignal
 Griewank
@@ -62,9 +59,7 @@ shellcheck
 shellcheckrc
 shfmt
 ste
-STREQUAL
 suboperation
-uintn
 valgrind
 woboq
 WRN

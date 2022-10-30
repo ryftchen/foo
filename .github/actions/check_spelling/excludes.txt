@@ -12,6 +12,7 @@
 ^\.toml$
 ^\.valgrindrc$
 
+^CMakeLists\.txt$
 ^LICENSE$
 ^README\.md$
 ^SECURITY\.md$
