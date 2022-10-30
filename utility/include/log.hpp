@@ -27,12 +27,17 @@ constexpr std::string_view debugPrefix{"[DBG]"};
 constexpr std::string_view infoPrefix{"[INF]"};
 constexpr std::string_view warnPrefix{"[WRN]"};
 constexpr std::string_view errorPrefix{"[ERR]"};
+constexpr std::string_view debugRegex{R"(^\[DBG\])"};
 constexpr std::string_view infoRegex{R"(^\[INF\])"};
 constexpr std::string_view warnRegex{R"(^\[WRN\])"};
 constexpr std::string_view errorRegex{R"(^\[ERR\])"};
-constexpr auto infoColorForLog{util_common::joinStr<util_common::greenForeground, infoPrefix, util_common::colorEnd>};
-constexpr auto warnColorForLog{util_common::joinStr<util_common::yellowForeground, warnPrefix, util_common::colorEnd>};
-constexpr auto errorColorForLog{util_common::joinStr<util_common::redForeground, errorPrefix, util_common::colorEnd>};
+constexpr auto debugColorForLog{util_common::joinStr<util_common::colorBold, debugPrefix, util_common::colorEscape>};
+constexpr auto infoColorForLog{
+    util_common::joinStr<util_common::colorGreen, util_common::colorBold, infoPrefix, util_common::colorEscape>};
+constexpr auto warnColorForLog{
+    util_common::joinStr<util_common::colorYellow, util_common::colorBold, warnPrefix, util_common::colorEscape>};
+constexpr auto errorColorForLog{
+    util_common::joinStr<util_common::colorRed, util_common::colorBold, errorPrefix, util_common::colorEscape>};
 
 class Log final : public util_fsm::FSM<Log>
 {
