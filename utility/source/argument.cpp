@@ -103,8 +103,8 @@ std::ostream& operator<<(std::ostream& os, const ArgumentRegister& argument)
 {
     std::stringstream nameStream;
     std::copy(
-        std::begin(argument.names), std::end(argument.names), std::ostream_iterator<std::string>(nameStream, " "));
-    os << nameStream.str() << "    " << argument.helpStr;
+        std::begin(argument.names), std::end(argument.names), std::ostream_iterator<std::string>(nameStream, ", "));
+    os << nameStream.str().substr(0, nameStream.str().length() - 2) << "    " << argument.helpStr;
     if (argument.defaultValues.has_value())
     {
         if (!argument.helpStr.empty())

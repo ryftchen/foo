@@ -41,7 +41,7 @@ Command::Command()
             .nArgs(util_argument::NArgsPattern::any)
             .defaultValue<std::vector<std::string>>({"help"})
             .appending()
-            .help("run commands on console");
+            .help("run commands on console mode");
 
         program.addArgument("-a", "--algorithm")
             .nArgs(1)
@@ -60,7 +60,7 @@ Command::Command()
                     }
                     throw std::runtime_error("Unknown algorithm category: " + value);
                 })
-            .help("demo of algorithm, see \"tasks\" for detail of specific category");
+            .help("match, notation, search, sort [add category with \"--help\" for task details]");
 
         program.addArgument("-dp", "--design-pattern")
             .nArgs(1)
@@ -79,7 +79,7 @@ Command::Command()
                     }
                     throw std::runtime_error("Unknown design pattern category: " + value);
                 })
-            .help("demo of design pattern, see \"tasks\" for detail of specific category");
+            .help("behavioral, creational, structural [add category with \"--help\" for task details");
 
         program.addArgument("-n", "--numeric")
             .nArgs(1)
@@ -98,9 +98,9 @@ Command::Command()
                     }
                     throw std::runtime_error("Unknown numeric category: " + value);
                 })
-            .help("demo of numeric, see \"tasks\" for detail of specific category");
+            .help("arithmetic, divisor, integral, optimal, sieve [add category with \"--help\" for task details");
 
-        program.addArgument("tasks").remaining().help("specify task\r\n" + std::string{optionTreeOfHelpMsg});
+        program.addArgument("tasks").remaining().help("specify tasks");
     }
     catch (const std::exception& error)
     {
@@ -186,12 +186,13 @@ void Command::validateBasicTask()
             throwExcessArgumentException();
         }
 
-        taskPlan.basicTask.basicTaskBit.set(BasicTask::Category(i));
+        taskPlan.basicTask.primaryBit.set(BasicTask::Category(i));
     }
 }
 
 void Command::validateGeneralTask()
 {
+    bool isToBeExcess = false;
     for ([[maybe_unused]] const auto& [taskCategoryName, taskCategoryMap] : generalTaskMap)
     {
         if (!program.isUsed(taskCategoryName))
@@ -199,7 +200,7 @@ void Command::validateGeneralTask()
             continue;
         }
 
-        if (checkTask())
+        if (isToBeExcess || (checkTask() && !program.isUsed("help")))
         {
             throwExcessArgumentException();
         }
@@ -215,6 +216,10 @@ void Command::validateGeneralTask()
             if (program.isUsed("tasks"))
             {
                 tasks = program.get<std::vector<std::string>>("tasks");
+                if (program.isUsed("help"))
+                {
+                    throwExcessArgumentException();
+                }
             }
             else
             {
@@ -235,6 +240,7 @@ void Command::validateGeneralTask()
             {
                 (this->*get<UpdateTaskFunctor>(get<TaskFunctorTuple>(taskTypeTuple)))(task);
             }
+            isToBeExcess = true;
         }
     }
 }
@@ -250,43 +256,45 @@ void Command::performTask() const
     {
         for (int i = 0; i < BasicTask::Bottom<BasicTask::Category>::value; ++i)
         {
-            if (taskPlan.basicTask.basicTaskBit.test(BasicTask::Category(i)))
+            if (taskPlan.basicTask.primaryBit.test(BasicTask::Category(i)))
             {
                 (this->*std::next(basicTaskMap.cbegin(), BasicTask::Category(i))->second)();
             }
         }
     }
-
-    for (int i = 0; i < GeneralTask::Bottom<GeneralTask::Category>::value; ++i)
+    else if (!taskPlan.generalTask.empty() && !taskPlan.basicTask.primaryBit.test(BasicTask::Category::help))
     {
-        switch (GeneralTask::Category(i))
+        for (int i = 0; i < GeneralTask::Bottom<GeneralTask::Category>::value; ++i)
         {
-            case GeneralTask::Category::algorithm:
-                if (taskPlan.generalTask.algorithmTask.empty())
-                {
-                    continue;
-                }
-                break;
-            case GeneralTask::Category::designPattern:
-                if (taskPlan.generalTask.designPatternTask.empty())
-                {
-                    continue;
-                }
-                break;
-            case GeneralTask::Category::numeric:
-                if (taskPlan.generalTask.numericTask.empty())
-                {
-                    continue;
-                }
-                break;
-            default:
-                break;
-        }
+            switch (GeneralTask::Category(i))
+            {
+                case GeneralTask::Category::algorithm:
+                    if (taskPlan.generalTask.algorithmTask.empty())
+                    {
+                        continue;
+                    }
+                    break;
+                case GeneralTask::Category::designPattern:
+                    if (taskPlan.generalTask.designPatternTask.empty())
+                    {
+                        continue;
+                    }
+                    break;
+                case GeneralTask::Category::numeric:
+                    if (taskPlan.generalTask.numericTask.empty())
+                    {
+                        continue;
+                    }
+                    break;
+                default:
+                    break;
+            }
 
-        for ([[maybe_unused]] const auto& [taskTypeName, taskTypeTuple] :
-             std::next(generalTaskMap.cbegin(), GeneralTask::Category(i))->second)
-        {
-            (this->*get<PerformTaskFunctor>(get<TaskFunctorTuple>(taskTypeTuple)))();
+            for ([[maybe_unused]] const auto& [taskTypeName, taskTypeTuple] :
+                 std::next(generalTaskMap.cbegin(), GeneralTask::Category(i))->second)
+            {
+                (this->*get<PerformTaskFunctor>(get<TaskFunctorTuple>(taskTypeTuple)))();
+            }
         }
     }
 }
@@ -310,7 +318,132 @@ void Command::printConsoleOutput() const
 
 void Command::printHelpMessage() const
 {
-    std::cout << program.help().str();
+    if (taskPlan.generalTask.empty())
+    {
+        std::cout << program.help().str();
+        return;
+    }
+
+    if (!taskPlan.generalTask.algorithmTask.empty())
+    {
+        std::cout << "Usage: foo -a, --algorithm ";
+        if (!taskPlan.generalTask.getBit<MatchMethod>().none())
+        {
+            std::puts("match [tasks...]\r\n\r\nNon-optional:\r\n"
+                      "rab    Rabin-Karp\r\n"
+                      "knu    Knuth-Morris-Pratt\r\n"
+                      "boy    Boyer-Moore\r\n"
+                      "hor    Horspool\r\n"
+                      "sun    Sunday");
+        }
+        else if (!taskPlan.generalTask.getBit<NotationMethod>().none())
+        {
+            std::puts("notation [tasks...]\r\n\r\nNon-optional:\r\n"
+                      "pre    Prefix\r\n"
+                      "pos    Postfix");
+        }
+        else if (!taskPlan.generalTask.getBit<SearchMethod>().none())
+        {
+            std::puts("search [tasks...]\r\n\r\nNon-optional:\r\n"
+                      "bin    Binary\r\n"
+                      "int    Interpolation\r\n"
+                      "fib    Fibonacci");
+        }
+        else if (!taskPlan.generalTask.getBit<SortMethod>().none())
+        {
+            std::puts("search [tasks...]\r\n\r\nNon-optional:\r\n"
+                      "bub    Bubble\r\n"
+                      "sel    Selection\r\n"
+                      "ins    Insertion\r\n"
+                      "she    Shell\r\n"
+                      "mer    Merge\r\n"
+                      "qui    Quick\r\n"
+                      "hea    Heap\r\n"
+                      "cou    Counting\r\n"
+                      "buc    Bucket\r\n"
+                      "rad    Radix");
+        }
+    }
+    else if (!taskPlan.generalTask.designPatternTask.empty())
+    {
+        std::cout << "Usage: foo -dp, --design-pattern ";
+        if (!taskPlan.generalTask.getBit<BehavioralMethod>().none())
+        {
+            std::puts("behavioral [tasks...]\r\n\r\nNon-optional:\r\n"
+                      "cha    Chain Of Responsibility\r\n"
+                      "com    Command\r\n"
+                      "int    Interpreter\r\n"
+                      "ite    Iterator\r\n"
+                      "med    Mediator\r\n"
+                      "mem    Memento\r\n"
+                      "obs    Observer\r\n"
+                      "sta    State\r\n"
+                      "str    Strategy\r\n"
+                      "tem    Template Method\r\n"
+                      "vis    Visitor");
+        }
+        else if (!taskPlan.generalTask.getBit<CreationalMethod>().none())
+        {
+            std::puts("creational [tasks...]\r\n\r\nNon-optional:\r\n"
+                      "abs    Abstract Factory\r\n"
+                      "bui    Builder\r\n"
+                      "fac    Factory Method\r\n"
+                      "pro    Prototype\r\n"
+                      "sin    Singleton");
+        }
+        else if (!taskPlan.generalTask.getBit<StructuralMethod>().none())
+        {
+            std::puts("structural [tasks...]\r\n\r\nNon-optional:\r\n"
+                      "ada    Adapter\r\n"
+                      "bri    Bridge\r\n"
+                      "com    Composite\r\n"
+                      "dec    Decorator\r\n"
+                      "fac    Facade\r\n"
+                      "fly    Flyweight\r\n"
+                      "pro    Proxy");
+        }
+    }
+    else if (!taskPlan.generalTask.numericTask.empty())
+    {
+        std::cout << "Usage: foo -n, --numeric ";
+        if (!taskPlan.generalTask.getBit<ArithmeticMethod>().none())
+        {
+            std::puts("arithmetic [tasks...]\r\n\r\nNon-optional:\r\n"
+                      "add    Addition\r\n"
+                      "sub    Subtraction\r\n"
+                      "mul    Multiplication\r\n"
+                      "div    Division");
+        }
+        else if (!taskPlan.generalTask.getBit<DivisorMethod>().none())
+        {
+            std::puts("divisor [tasks...]\r\n\r\nNon-optional:\r\n"
+                      "euc    Euclid\r\n"
+                      "ste    Stein");
+        }
+        else if (!taskPlan.generalTask.getBit<IntegralMethod>().none())
+        {
+            std::puts("integral [tasks...]\r\n\r\nNon-optional:\r\n"
+                      "tra    Trapezoidal\r\n"
+                      "sim    Adaptive Simpson's 1/3\r\n"
+                      "rom    Romberg\r\n"
+                      "gau    Gauss-Legendre's 5-Points\r\n"
+                      "mon    Monte-Carlo");
+        }
+        else if (!taskPlan.generalTask.getBit<OptimalMethod>().none())
+        {
+            std::puts("optimal [tasks...]\r\n\r\nNon-optional:\r\n"
+                      "gra    Gradient Descent\r\n"
+                      "ann    Simulated Annealing\r\n"
+                      "par    Particle Swarm\r\n"
+                      "gen    Genetic");
+        }
+        else if (!taskPlan.generalTask.getBit<SieveMethod>().none())
+        {
+            std::puts("sieve [tasks...]\r\n\r\nNon-optional:\r\n"
+                      "era    Eratosthenes\r\n"
+                      "eul    Euler");
+        }
+    }
 }
 
 void Command::printVersionInfo() const
