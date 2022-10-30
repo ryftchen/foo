@@ -204,7 +204,11 @@ bool Log::isLogFileClose(const NoLogging& /*unused*/) const
 
 std::string& changeLogLevelStyle(std::string& line)
 {
-    if (std::regex_search(line, std::regex(std::string{infoRegex})))
+    if (std::regex_search(line, std::regex(std::string{debugRegex})))
+    {
+        line = std::regex_replace(line, std::regex(std::string{debugRegex}), std::string{debugColorForLog});
+    }
+    else if (std::regex_search(line, std::regex(std::string{infoRegex})))
     {
         line = std::regex_replace(line, std::regex(std::string{infoRegex}), std::string{infoColorForLog});
     }

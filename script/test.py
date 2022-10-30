@@ -20,7 +20,7 @@ class Output:
     colorGreen = "\033[0;32;40m"
     colorYellow = "\033[0;33;40m"
     colorBlue = "\033[0;36;40m"
-    colorEnd = "\033[0m"
+    colorEscape = "\033[0m"
     regexColorEsc = r"((\033.*?m)|(\007))"
     columnLength = 10
     alignMaxLen = 30
@@ -36,7 +36,7 @@ class Output:
         print(
             "{0}{2}[ {3} | {4} ]{2}{1}".format(
                 color,
-                cls.colorEnd,
+                cls.colorEscape,
                 f"{'=' * cls.columnLength}",
                 datetime.strftime(datetime.now(), "%b %d %H:%M:%S"),
                 content,
