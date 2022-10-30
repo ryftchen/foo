@@ -80,7 +80,8 @@ void Match::setSearchingText(char* text, const uint32_t length)
 }
 
 // Rabin-Karp
-int Match::rkMethod(const char* text, const char* pattern, const uint32_t textLen, const uint32_t patternLen)
+// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
+int Match::rkMethod(const char* text, const char* pattern, const uint32_t textLen, const uint32_t patternLen) const
 {
     TIME_BEGIN(timing);
     int shift = -1;
@@ -118,7 +119,8 @@ int Match::rkMethod(const char* text, const char* pattern, const uint32_t textLe
 }
 
 // Knuth-Morris-Pratt
-int Match::kmpMethod(const char* text, const char* pattern, const uint32_t textLen, const uint32_t patternLen)
+// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
+int Match::kmpMethod(const char* text, const char* pattern, const uint32_t textLen, const uint32_t patternLen) const
 {
     TIME_BEGIN(timing);
     int shift = -1;
@@ -162,7 +164,8 @@ int Match::kmpMethod(const char* text, const char* pattern, const uint32_t textL
 }
 
 // Boyer-Moore
-int Match::bmMethod(const char* text, const char* pattern, const uint32_t textLen, const uint32_t patternLen)
+// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
+int Match::bmMethod(const char* text, const char* pattern, const uint32_t textLen, const uint32_t patternLen) const
 {
     TIME_BEGIN(timing);
     int shift = -1;
@@ -245,7 +248,9 @@ void Match::fillGoodSuffixRuleTable(uint32_t goodSuffixRuleTable[], const char* 
 }
 
 // Horspool
+// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
 int Match::horspoolMethod(const char* text, const char* pattern, const uint32_t textLen, const uint32_t patternLen)
+    const
 {
     TIME_BEGIN(timing);
     int shift = -1;
@@ -293,7 +298,8 @@ void Match::fillBadCharShiftTableForHorspool(
 }
 
 // Sunday
-int Match::sundayMethod(const char* text, const char* pattern, const uint32_t textLen, const uint32_t patternLen)
+// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
+int Match::sundayMethod(const char* text, const char* pattern, const uint32_t textLen, const uint32_t patternLen) const
 {
     TIME_BEGIN(timing);
     int shift = -1;

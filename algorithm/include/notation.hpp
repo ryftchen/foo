@@ -12,8 +12,8 @@ public:
     Notation();
     virtual ~Notation() = default;
 
-    [[nodiscard]] static std::string prefixMethod(const std::string& infixNotation);
-    [[nodiscard]] static std::string postfixMethod(const std::string& infixNotation);
+    [[nodiscard]] std::string prefixMethod(const std::string& infixNotation) const;
+    [[nodiscard]] std::string postfixMethod(const std::string& infixNotation) const;
 
 private:
     enum class Priority

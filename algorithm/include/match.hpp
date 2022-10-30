@@ -20,31 +20,11 @@ public:
     Match(const Match& rhs) = delete;
     Match& operator=(const Match& rhs) = delete;
 
-    [[nodiscard]] static int rkMethod(
-        const char* text,
-        const char* pattern,
-        const uint32_t textLen,
-        const uint32_t patternLen);
-    [[nodiscard]] static int kmpMethod(
-        const char* text,
-        const char* pattern,
-        const uint32_t textLen,
-        const uint32_t patternLen);
-    [[nodiscard]] static int bmMethod(
-        const char* text,
-        const char* pattern,
-        const uint32_t textLen,
-        const uint32_t patternLen);
-    [[nodiscard]] static int horspoolMethod(
-        const char* text,
-        const char* pattern,
-        const uint32_t textLen,
-        const uint32_t patternLen);
-    [[nodiscard]] static int sundayMethod(
-        const char* text,
-        const char* pattern,
-        const uint32_t textLen,
-        const uint32_t patternLen);
+    int rkMethod(const char* text, const char* pattern, const uint32_t textLen, const uint32_t patternLen) const;
+    int kmpMethod(const char* text, const char* pattern, const uint32_t textLen, const uint32_t patternLen) const;
+    int bmMethod(const char* text, const char* pattern, const uint32_t textLen, const uint32_t patternLen) const;
+    int horspoolMethod(const char* text, const char* pattern, const uint32_t textLen, const uint32_t patternLen) const;
+    int sundayMethod(const char* text, const char* pattern, const uint32_t textLen, const uint32_t patternLen) const;
 
     [[nodiscard]] const std::unique_ptr<char[]>& getSearchingText() const;
     [[nodiscard]] uint32_t getLength() const;

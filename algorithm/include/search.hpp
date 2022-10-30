@@ -28,9 +28,9 @@ public:
     Search(const Search& rhs);
     Search<T>& operator=(const Search& rhs);
 
-    [[nodiscard]] int binarySearch(const T* const array, const uint32_t length, const T key) const;
-    [[nodiscard]] int interpolationSearch(const T* const array, const uint32_t length, const T key) const;
-    [[nodiscard]] int fibonacciSearch(const T* const array, const uint32_t length, const T key) const;
+    int binarySearch(const T* const array, const uint32_t length, const T key) const;
+    int interpolationSearch(const T* const array, const uint32_t length, const T key) const;
+    int fibonacciSearch(const T* const array, const uint32_t length, const T key) const;
 
     const std::unique_ptr<T[]>& getOrderedArray() const;
     uint32_t getLength() const;

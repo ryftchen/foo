@@ -522,12 +522,14 @@ void Command::runMatch() const
     std::shared_ptr<util_thread::Thread> threads = std::make_shared<util_thread::Thread>(std::min(
         static_cast<uint32_t>(taskPlan.generalTask.getBit<MatchMethod>().count()),
         static_cast<uint32_t>(AlgorithmTask::Bottom<MatchMethod>::value)));
-    const auto matchFunctor =
-        [&](const std::string& threadName, int (*methodPtr)(const char*, const char*, const uint32_t, const uint32_t))
+    const auto matchFunctor = [&](const std::string& threadName,
+                                  int (Match::*methodPtr)(const char*, const char*, const uint32_t, const uint32_t)
+                                      const)
     {
         threads->enqueue(
             threadName,
             methodPtr,
+            match,
             match->getSearchingText().get(),
             algo_match::singlePattern.data(),
             match->getLength(),
@@ -610,9 +612,10 @@ void Command::runNotation() const
     std::shared_ptr<util_thread::Thread> threads = std::make_shared<util_thread::Thread>(std::min(
         static_cast<uint32_t>(taskPlan.generalTask.getBit<NotationMethod>().count()),
         static_cast<uint32_t>(AlgorithmTask::Bottom<NotationMethod>::value)));
-    const auto notationFunctor = [&](const std::string& threadName, std::string (*methodPtr)(const std::string&))
+    const auto notationFunctor =
+        [&](const std::string& threadName, std::string (Notation::*methodPtr)(const std::string&) const)
     {
-        threads->enqueue(threadName, methodPtr, std::string{algo_notation::infixNotation});
+        threads->enqueue(threadName, methodPtr, notation, std::string{algo_notation::infixNotation});
     };
 
     for (int i = 0; i < AlgorithmTask::Bottom<NotationMethod>::value; ++i)
@@ -866,9 +869,9 @@ void Command::runBehavioral() const
     std::shared_ptr<util_thread::Thread> threads = std::make_shared<util_thread::Thread>(std::min(
         static_cast<uint32_t>(taskPlan.generalTask.getBit<BehavioralMethod>().count()),
         static_cast<uint32_t>(DesignPatternTask::Bottom<BehavioralMethod>::value)));
-    const auto behavioralFunctor = [&](const std::string& threadName, void (*methodPtr)())
+    const auto behavioralFunctor = [&](const std::string& threadName, void (Behavioral::*methodPtr)() const)
     {
-        threads->enqueue(threadName, methodPtr);
+        threads->enqueue(threadName, methodPtr, behavioral);
     };
 
     for (int i = 0; i < DesignPatternTask::Bottom<BehavioralMethod>::value; ++i)
@@ -983,9 +986,9 @@ void Command::runCreational() const
     std::shared_ptr<util_thread::Thread> threads = std::make_shared<util_thread::Thread>(std::min(
         static_cast<uint32_t>(taskPlan.generalTask.getBit<CreationalMethod>().count()),
         static_cast<uint32_t>(DesignPatternTask::Bottom<CreationalMethod>::value)));
-    const auto creationalFunctor = [&](const std::string& threadName, void (*methodPtr)())
+    const auto creationalFunctor = [&](const std::string& threadName, void (Creational::*methodPtr)() const)
     {
-        threads->enqueue(threadName, methodPtr);
+        threads->enqueue(threadName, methodPtr, creational);
     };
 
     for (int i = 0; i < DesignPatternTask::Bottom<CreationalMethod>::value; ++i)
@@ -1064,9 +1067,9 @@ void Command::runStructural() const
     std::shared_ptr<util_thread::Thread> threads = std::make_shared<util_thread::Thread>(std::min(
         static_cast<uint32_t>(taskPlan.generalTask.getBit<StructuralMethod>().count()),
         static_cast<uint32_t>(DesignPatternTask::Bottom<StructuralMethod>::value)));
-    const auto structuralFunctor = [&](const std::string& threadName, void (*methodPtr)())
+    const auto structuralFunctor = [&](const std::string& threadName, void (Structural::*methodPtr)() const)
     {
-        threads->enqueue(threadName, methodPtr);
+        threads->enqueue(threadName, methodPtr, structural);
     };
 
     for (int i = 0; i < DesignPatternTask::Bottom<StructuralMethod>::value; ++i)
@@ -1157,9 +1160,10 @@ void Command::runArithmetic() const
     std::shared_ptr<util_thread::Thread> threads = std::make_shared<util_thread::Thread>(std::min(
         static_cast<uint32_t>(taskPlan.generalTask.getBit<ArithmeticMethod>().count()),
         static_cast<uint32_t>(NumericTask::Bottom<ArithmeticMethod>::value)));
-    const auto arithmeticFunctor = [&](const std::string& threadName, int (*methodPtr)(const int, const int))
+    const auto arithmeticFunctor =
+        [&](const std::string& threadName, int (Arithmetic::*methodPtr)(const int, const int) const)
     {
-        threads->enqueue(threadName, methodPtr, num_arithmetic::integer1, num_arithmetic::integer2);
+        threads->enqueue(threadName, methodPtr, arithmetic, num_arithmetic::integer1, num_arithmetic::integer2);
     };
 
     for (int i = 0; i < NumericTask::Bottom<ArithmeticMethod>::value; ++i)
