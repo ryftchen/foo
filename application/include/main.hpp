@@ -11,9 +11,9 @@
 
 static void signalHandler(int sig)
 {
-    void* callstack[128];
-    const int maxFrame = sizeof(callstack) / sizeof(callstack[0]), numOfFrame = backtrace(callstack, maxFrame);
-    char** symbols = backtrace_symbols(callstack, numOfFrame);
+    void* callStack[128];
+    const int maxFrame = sizeof(callStack) / sizeof(callStack[0]), numOfFrame = backtrace(callStack, maxFrame);
+    char** symbols = backtrace_symbols(callStack, numOfFrame);
     char buffer[1024];
     std::ostringstream originalTrace, realTrace;
 
@@ -22,7 +22,7 @@ static void signalHandler(int sig)
         originalTrace << symbols[i] << "\n";
 
         Dl_info info;
-        if (dladdr(callstack[i], &info) && info.dli_sname)
+        if (dladdr(callStack[i], &info) && info.dli_sname)
         {
             char* demangle = nullptr;
             int status = -1;
@@ -36,9 +36,9 @@ static void signalHandler(int sig)
                 "%-3d %*p %s + %zd\n",
                 i,
                 static_cast<int>(2 + sizeof(void*) * 2),
-                callstack[i],
+                callStack[i],
                 (0 == status) ? demangle : ((nullptr == info.dli_sname) ? symbols[i] : info.dli_sname),
-                static_cast<char*>(callstack[i]) - static_cast<char*>(info.dli_saddr));
+                static_cast<char*>(callStack[i]) - static_cast<char*>(info.dli_saddr));
             free(demangle); // NOLINT(cppcoreguidelines-no-malloc)
         }
         else
@@ -49,7 +49,7 @@ static void signalHandler(int sig)
                 "%-3d %*p %s\n",
                 i,
                 static_cast<int>(2 + sizeof(void*) * 2),
-                callstack[i],
+                callStack[i],
                 symbols[i]);
         }
         realTrace << buffer;
