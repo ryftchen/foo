@@ -5,11 +5,11 @@ SHELL ["/bin/bash", "-c"]
 RUN apt-get update \
 && DEBIAN_FRONTEND=noninteractive apt-get install -y sudo tzdata ca-certificates curl zip \
 && sudo apt-get update \
-&& sudo apt-get install -y git build-essential python3 python3-pip \
-llvm-12 clang-12 libclang-12-dev libstdc++-10-dev libreadline-dev libmpfrc++-dev cmake gdb \
+&& sudo apt-get install -y git python3 python3-pip build-essential cmake ninja-build gdb \
+llvm-12 clang-12 libclang-12-dev libstdc++-10-dev libreadline-dev libmpfrc++-dev \
 clang-format-12 clang-tidy-12 pylint black shellcheck valgrind \
 && sudo apt-get clean \
-&& sudo pip3 install requests \
+&& sudo pip3 install compdb requests \
 && cd /root \
 && sudo curl -L https://github.com/mvdan/sh/releases/download/v3.4.2/shfmt_v3.4.2_linux_amd64 >/usr/local/bin/shfmt \
 && sudo chmod +x /usr/local/bin/shfmt \
