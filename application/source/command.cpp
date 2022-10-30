@@ -517,7 +517,8 @@ void Command::runMatch() const
     const auto [taskCategory, taskType] = getMethodAttribute<MatchMethod>();
     COMMAND_PRINT_TASK_BEGIN_TITLE;
 
-    const std::shared_ptr<algo_match::Match> match = std::make_shared<algo_match::Match>(algo_match::maxDigit);
+    using algo_match::Match;
+    const std::shared_ptr<Match> match = std::make_shared<Match>(algo_match::maxDigit);
     std::shared_ptr<util_thread::Thread> threads = std::make_shared<util_thread::Thread>(std::min(
         static_cast<uint32_t>(taskPlan.generalTask.getBit<MatchMethod>().count()),
         static_cast<uint32_t>(AlgorithmTask::Bottom<MatchMethod>::value)));
@@ -545,19 +546,19 @@ void Command::runMatch() const
         switch (util_hash::bkdrHash(targetMethod.data()))
         {
             case "rab"_bkdrHash:
-                matchFunctor(threadName, &algo_match::Match::rkMethod);
+                matchFunctor(threadName, &Match::rkMethod);
                 break;
             case "knu"_bkdrHash:
-                matchFunctor(threadName, &algo_match::Match::kmpMethod);
+                matchFunctor(threadName, &Match::kmpMethod);
                 break;
             case "boy"_bkdrHash:
-                matchFunctor(threadName, &algo_match::Match::bmMethod);
+                matchFunctor(threadName, &Match::bmMethod);
                 break;
             case "hor"_bkdrHash:
-                matchFunctor(threadName, &algo_match::Match::horspoolMethod);
+                matchFunctor(threadName, &Match::horspoolMethod);
                 break;
             case "sun"_bkdrHash:
-                matchFunctor(threadName, &algo_match::Match::sundayMethod);
+                matchFunctor(threadName, &Match::sundayMethod);
                 break;
             default:
                 LOG_DBG("execute to run unknown match method.");
@@ -604,7 +605,8 @@ void Command::runNotation() const
     const auto [taskCategory, taskType] = getMethodAttribute<NotationMethod>();
     COMMAND_PRINT_TASK_BEGIN_TITLE;
 
-    const std::shared_ptr<algo_notation::Notation> notation = std::make_shared<algo_notation::Notation>();
+    using algo_notation::Notation;
+    const std::shared_ptr<Notation> notation = std::make_shared<Notation>();
     std::shared_ptr<util_thread::Thread> threads = std::make_shared<util_thread::Thread>(std::min(
         static_cast<uint32_t>(taskPlan.generalTask.getBit<NotationMethod>().count()),
         static_cast<uint32_t>(AlgorithmTask::Bottom<NotationMethod>::value)));
@@ -625,10 +627,10 @@ void Command::runNotation() const
         switch (util_hash::bkdrHash(targetMethod.data()))
         {
             case "pre"_bkdrHash:
-                notationFunctor(threadName, &algo_notation::Notation::prefixMethod);
+                notationFunctor(threadName, &Notation::prefixMethod);
                 break;
             case "pos"_bkdrHash:
-                notationFunctor(threadName, &algo_notation::Notation::postfixMethod);
+                notationFunctor(threadName, &Notation::postfixMethod);
                 break;
             default:
                 LOG_DBG("execute to run unknown notation method.");
@@ -667,14 +669,15 @@ void Command::runSearch() const
     const auto [taskCategory, taskType] = getMethodAttribute<SearchMethod>();
     COMMAND_PRINT_TASK_BEGIN_TITLE;
 
-    const std::shared_ptr<algo_search::Search<double>> search = std::make_shared<algo_search::Search<double>>(
-        algo_search::arrayLength, algo_search::arrayRange1, algo_search::arrayRange2);
+    using algo_search::Search;
+    const std::shared_ptr<Search<double>> search =
+        std::make_shared<Search<double>>(algo_search::arrayLength, algo_search::arrayRange1, algo_search::arrayRange2);
     std::shared_ptr<util_thread::Thread> threads = std::make_shared<util_thread::Thread>(std::min(
         static_cast<uint32_t>(taskPlan.generalTask.getBit<SearchMethod>().count()),
         static_cast<uint32_t>(AlgorithmTask::Bottom<SearchMethod>::value)));
-    const auto searchFunctor =
-        [&](const std::string& threadName,
-            int (algo_search::Search<double>::*methodPtr)(const double* const, const uint32_t, const double) const)
+    const auto searchFunctor = [&](const std::string& threadName,
+                                   int (Search<double>::*methodPtr)(const double* const, const uint32_t, const double)
+                                       const)
     {
         threads->enqueue(
             threadName,
@@ -697,13 +700,13 @@ void Command::runSearch() const
         switch (util_hash::bkdrHash(targetMethod.data()))
         {
             case "bin"_bkdrHash:
-                searchFunctor(threadName, &algo_search::Search<double>::binarySearch);
+                searchFunctor(threadName, &Search<double>::binarySearch);
                 break;
             case "int"_bkdrHash:
-                searchFunctor(threadName, &algo_search::Search<double>::interpolationSearch);
+                searchFunctor(threadName, &Search<double>::interpolationSearch);
                 break;
             case "fib"_bkdrHash:
-                searchFunctor(threadName, &algo_search::Search<double>::fibonacciSearch);
+                searchFunctor(threadName, &Search<double>::fibonacciSearch);
                 break;
             default:
                 LOG_DBG("execute to run unknown search method.");
@@ -745,13 +748,14 @@ void Command::runSort() const
     const auto [taskCategory, taskType] = getMethodAttribute<SortMethod>();
     COMMAND_PRINT_TASK_BEGIN_TITLE;
 
-    const std::shared_ptr<algo_sort::Sort<int>> sort =
-        std::make_shared<algo_sort::Sort<int>>(algo_sort::arrayLength, algo_sort::arrayRange1, algo_sort::arrayRange2);
+    using algo_sort::Sort;
+    const std::shared_ptr<Sort<int>> sort =
+        std::make_shared<Sort<int>>(algo_sort::arrayLength, algo_sort::arrayRange1, algo_sort::arrayRange2);
     std::shared_ptr<util_thread::Thread> threads = std::make_shared<util_thread::Thread>(std::min(
         static_cast<uint32_t>(taskPlan.generalTask.getBit<SortMethod>().count()),
         static_cast<uint32_t>(AlgorithmTask::Bottom<SortMethod>::value)));
-    const auto sortFunctor = [&](const std::string& threadName,
-                                 std::vector<int> (algo_sort::Sort<int>::*methodPtr)(int* const, const uint32_t) const)
+    const auto sortFunctor =
+        [&](const std::string& threadName, std::vector<int> (Sort<int>::*methodPtr)(int* const, const uint32_t) const)
     {
         threads->enqueue(threadName, methodPtr, sort, sort->getRandomArray().get(), sort->getLength());
     };
@@ -768,34 +772,34 @@ void Command::runSort() const
         switch (util_hash::bkdrHash(targetMethod.data()))
         {
             case "bub"_bkdrHash:
-                sortFunctor(threadName, &algo_sort::Sort<int>::bubbleSort);
+                sortFunctor(threadName, &Sort<int>::bubbleSort);
                 break;
             case "sel"_bkdrHash:
-                sortFunctor(threadName, &algo_sort::Sort<int>::selectionSort);
+                sortFunctor(threadName, &Sort<int>::selectionSort);
                 break;
             case "ins"_bkdrHash:
-                sortFunctor(threadName, &algo_sort::Sort<int>::insertionSort);
+                sortFunctor(threadName, &Sort<int>::insertionSort);
                 break;
             case "she"_bkdrHash:
-                sortFunctor(threadName, &algo_sort::Sort<int>::shellSort);
+                sortFunctor(threadName, &Sort<int>::shellSort);
                 break;
             case "mer"_bkdrHash:
-                sortFunctor(threadName, &algo_sort::Sort<int>::mergeSort);
+                sortFunctor(threadName, &Sort<int>::mergeSort);
                 break;
             case "qui"_bkdrHash:
-                sortFunctor(threadName, &algo_sort::Sort<int>::quickSort);
+                sortFunctor(threadName, &Sort<int>::quickSort);
                 break;
             case "hea"_bkdrHash:
-                sortFunctor(threadName, &algo_sort::Sort<int>::heapSort);
+                sortFunctor(threadName, &Sort<int>::heapSort);
                 break;
             case "cou"_bkdrHash:
-                sortFunctor(threadName, &algo_sort::Sort<int>::countingSort);
+                sortFunctor(threadName, &Sort<int>::countingSort);
                 break;
             case "buc"_bkdrHash:
-                sortFunctor(threadName, &algo_sort::Sort<int>::bucketSort);
+                sortFunctor(threadName, &Sort<int>::bucketSort);
                 break;
             case "rad"_bkdrHash:
-                sortFunctor(threadName, &algo_sort::Sort<int>::radixSort);
+                sortFunctor(threadName, &Sort<int>::radixSort);
                 break;
             default:
                 LOG_DBG("execute to run unknown sort method.");
@@ -857,7 +861,8 @@ void Command::runBehavioral() const
     const auto [taskCategory, taskType] = getMethodAttribute<BehavioralMethod>();
     COMMAND_PRINT_TASK_BEGIN_TITLE;
 
-    const std::shared_ptr<dp_behavioral::Behavioral> behavioral = std::make_shared<dp_behavioral::Behavioral>();
+    using dp_behavioral::Behavioral;
+    const std::shared_ptr<Behavioral> behavioral = std::make_shared<Behavioral>();
     std::shared_ptr<util_thread::Thread> threads = std::make_shared<util_thread::Thread>(std::min(
         static_cast<uint32_t>(taskPlan.generalTask.getBit<BehavioralMethod>().count()),
         static_cast<uint32_t>(DesignPatternTask::Bottom<BehavioralMethod>::value)));
@@ -878,37 +883,37 @@ void Command::runBehavioral() const
         switch (util_hash::bkdrHash(targetMethod.data()))
         {
             case "cha"_bkdrHash:
-                behavioralFunctor(threadName, &dp_behavioral::Behavioral::chainOfResponsibilityInstance);
+                behavioralFunctor(threadName, &Behavioral::chainOfResponsibilityInstance);
                 break;
             case "com"_bkdrHash:
-                behavioralFunctor(threadName, &dp_behavioral::Behavioral::commandInstance);
+                behavioralFunctor(threadName, &Behavioral::commandInstance);
                 break;
             case "int"_bkdrHash:
-                behavioralFunctor(threadName, &dp_behavioral::Behavioral::interpreterInstance);
+                behavioralFunctor(threadName, &Behavioral::interpreterInstance);
                 break;
             case "ite"_bkdrHash:
-                behavioralFunctor(threadName, &dp_behavioral::Behavioral::iteratorInstance);
+                behavioralFunctor(threadName, &Behavioral::iteratorInstance);
                 break;
             case "med"_bkdrHash:
-                behavioralFunctor(threadName, &dp_behavioral::Behavioral::mediatorInstance);
+                behavioralFunctor(threadName, &Behavioral::mediatorInstance);
                 break;
             case "mem"_bkdrHash:
-                behavioralFunctor(threadName, &dp_behavioral::Behavioral::mementoInstance);
+                behavioralFunctor(threadName, &Behavioral::mementoInstance);
                 break;
             case "obs"_bkdrHash:
-                behavioralFunctor(threadName, &dp_behavioral::Behavioral::observerInstance);
+                behavioralFunctor(threadName, &Behavioral::observerInstance);
                 break;
             case "sta"_bkdrHash:
-                behavioralFunctor(threadName, &dp_behavioral::Behavioral::stateInstance);
+                behavioralFunctor(threadName, &Behavioral::stateInstance);
                 break;
             case "str"_bkdrHash:
-                behavioralFunctor(threadName, &dp_behavioral::Behavioral::strategyInstance);
+                behavioralFunctor(threadName, &Behavioral::strategyInstance);
                 break;
             case "tem"_bkdrHash:
-                behavioralFunctor(threadName, &dp_behavioral::Behavioral::templateMethodInstance);
+                behavioralFunctor(threadName, &Behavioral::templateMethodInstance);
                 break;
             case "vis"_bkdrHash:
-                behavioralFunctor(threadName, &dp_behavioral::Behavioral::visitorInstance);
+                behavioralFunctor(threadName, &Behavioral::visitorInstance);
                 break;
             default:
                 LOG_DBG("execute to run unknown behavioral method.");
@@ -973,7 +978,8 @@ void Command::runCreational() const
     const auto [taskCategory, taskType] = getMethodAttribute<CreationalMethod>();
     COMMAND_PRINT_TASK_BEGIN_TITLE;
 
-    const std::shared_ptr<dp_creational::Creational> creational = std::make_shared<dp_creational::Creational>();
+    using dp_creational::Creational;
+    const std::shared_ptr<Creational> creational = std::make_shared<Creational>();
     std::shared_ptr<util_thread::Thread> threads = std::make_shared<util_thread::Thread>(std::min(
         static_cast<uint32_t>(taskPlan.generalTask.getBit<CreationalMethod>().count()),
         static_cast<uint32_t>(DesignPatternTask::Bottom<CreationalMethod>::value)));
@@ -994,19 +1000,19 @@ void Command::runCreational() const
         switch (util_hash::bkdrHash(targetMethod.data()))
         {
             case "abs"_bkdrHash:
-                creationalFunctor(threadName, &dp_creational::Creational::abstractFactoryInstance);
+                creationalFunctor(threadName, &Creational::abstractFactoryInstance);
                 break;
             case "bui"_bkdrHash:
-                creationalFunctor(threadName, &dp_creational::Creational::builderInstance);
+                creationalFunctor(threadName, &Creational::builderInstance);
                 break;
             case "fac"_bkdrHash:
-                creationalFunctor(threadName, &dp_creational::Creational::factoryMethodInstance);
+                creationalFunctor(threadName, &Creational::factoryMethodInstance);
                 break;
             case "pro"_bkdrHash:
-                creationalFunctor(threadName, &dp_creational::Creational::prototypeInstance);
+                creationalFunctor(threadName, &Creational::prototypeInstance);
                 break;
             case "sin"_bkdrHash:
-                creationalFunctor(threadName, &dp_creational::Creational::singletonInstance);
+                creationalFunctor(threadName, &Creational::singletonInstance);
                 break;
             default:
                 LOG_DBG("execute to run unknown design pattern method.");
@@ -1053,7 +1059,8 @@ void Command::runStructural() const
     const auto [taskCategory, taskType] = getMethodAttribute<StructuralMethod>();
     COMMAND_PRINT_TASK_BEGIN_TITLE;
 
-    const std::shared_ptr<dp_structural::Structural> structural = std::make_shared<dp_structural::Structural>();
+    using dp_structural::Structural;
+    const std::shared_ptr<Structural> structural = std::make_shared<Structural>();
     std::shared_ptr<util_thread::Thread> threads = std::make_shared<util_thread::Thread>(std::min(
         static_cast<uint32_t>(taskPlan.generalTask.getBit<StructuralMethod>().count()),
         static_cast<uint32_t>(DesignPatternTask::Bottom<StructuralMethod>::value)));
@@ -1074,25 +1081,25 @@ void Command::runStructural() const
         switch (util_hash::bkdrHash(targetMethod.data()))
         {
             case "ada"_bkdrHash:
-                structuralFunctor(threadName, &dp_structural::Structural::adapterInstance);
+                structuralFunctor(threadName, &Structural::adapterInstance);
                 break;
             case "bri"_bkdrHash:
-                structuralFunctor(threadName, &dp_structural::Structural::bridgeInstance);
+                structuralFunctor(threadName, &Structural::bridgeInstance);
                 break;
             case "com"_bkdrHash:
-                structuralFunctor(threadName, &dp_structural::Structural::compositeInstance);
+                structuralFunctor(threadName, &Structural::compositeInstance);
                 break;
             case "dec"_bkdrHash:
-                structuralFunctor(threadName, &dp_structural::Structural::decoratorInstance);
+                structuralFunctor(threadName, &Structural::decoratorInstance);
                 break;
             case "fac"_bkdrHash:
-                structuralFunctor(threadName, &dp_structural::Structural::facadeInstance);
+                structuralFunctor(threadName, &Structural::facadeInstance);
                 break;
             case "fly"_bkdrHash:
-                structuralFunctor(threadName, &dp_structural::Structural::flyweightInstance);
+                structuralFunctor(threadName, &Structural::flyweightInstance);
                 break;
             case "pro"_bkdrHash:
-                structuralFunctor(threadName, &dp_structural::Structural::proxyInstance);
+                structuralFunctor(threadName, &Structural::proxyInstance);
                 break;
             default:
                 LOG_DBG("execute to run unknown structural method.");
@@ -1145,7 +1152,8 @@ void Command::runArithmetic() const
     const auto [taskCategory, taskType] = getMethodAttribute<ArithmeticMethod>();
     COMMAND_PRINT_TASK_BEGIN_TITLE;
 
-    const std::shared_ptr<num_arithmetic::Arithmetic> arithmetic = std::make_shared<num_arithmetic::Arithmetic>();
+    using num_arithmetic::Arithmetic;
+    const std::shared_ptr<Arithmetic> arithmetic = std::make_shared<Arithmetic>();
     std::shared_ptr<util_thread::Thread> threads = std::make_shared<util_thread::Thread>(std::min(
         static_cast<uint32_t>(taskPlan.generalTask.getBit<ArithmeticMethod>().count()),
         static_cast<uint32_t>(NumericTask::Bottom<ArithmeticMethod>::value)));
@@ -1166,16 +1174,16 @@ void Command::runArithmetic() const
         switch (util_hash::bkdrHash(targetMethod.data()))
         {
             case "add"_bkdrHash:
-                arithmeticFunctor(threadName, &num_arithmetic::Arithmetic::additionMethod);
+                arithmeticFunctor(threadName, &Arithmetic::additionMethod);
                 break;
             case "sub"_bkdrHash:
-                arithmeticFunctor(threadName, &num_arithmetic::Arithmetic::subtractionMethod);
+                arithmeticFunctor(threadName, &Arithmetic::subtractionMethod);
                 break;
             case "mul"_bkdrHash:
-                arithmeticFunctor(threadName, &num_arithmetic::Arithmetic::multiplicationMethod);
+                arithmeticFunctor(threadName, &Arithmetic::multiplicationMethod);
                 break;
             case "div"_bkdrHash:
-                arithmeticFunctor(threadName, &num_arithmetic::Arithmetic::divisionMethod);
+                arithmeticFunctor(threadName, &Arithmetic::divisionMethod);
                 break;
             default:
                 LOG_DBG("execute to run unknown arithmetic method.");
@@ -1219,12 +1227,13 @@ void Command::runDivisor() const
     const auto [taskCategory, taskType] = getMethodAttribute<DivisorMethod>();
     COMMAND_PRINT_TASK_BEGIN_TITLE;
 
-    const std::shared_ptr<num_divisor::Divisor> divisor = std::make_shared<num_divisor::Divisor>();
+    using num_divisor::Divisor;
+    const std::shared_ptr<Divisor> divisor = std::make_shared<Divisor>();
     std::shared_ptr<util_thread::Thread> threads = std::make_shared<util_thread::Thread>(std::min(
         static_cast<uint32_t>(taskPlan.generalTask.getBit<DivisorMethod>().count()),
         static_cast<uint32_t>(NumericTask::Bottom<DivisorMethod>::value)));
     const auto divisorFunctor =
-        [&](const std::string& threadName, std::vector<int> (num_divisor::Divisor::*methodPtr)(int, int) const)
+        [&](const std::string& threadName, std::vector<int> (Divisor::*methodPtr)(int, int) const)
     {
         threads->enqueue(threadName, methodPtr, divisor, num_divisor::integer1, num_divisor::integer2);
     };
@@ -1241,10 +1250,10 @@ void Command::runDivisor() const
         switch (util_hash::bkdrHash(targetMethod.data()))
         {
             case "euc"_bkdrHash:
-                divisorFunctor(threadName, &num_divisor::Divisor::euclidMethod);
+                divisorFunctor(threadName, &Divisor::euclidMethod);
                 break;
             case "ste"_bkdrHash:
-                divisorFunctor(threadName, &num_divisor::Divisor::steinMethod);
+                divisorFunctor(threadName, &Divisor::steinMethod);
                 break;
             default:
                 LOG_DBG("execute to run unknown divisor method.");
@@ -1522,12 +1531,13 @@ void Command::runSieve() const
     const auto [taskCategory, taskType] = getMethodAttribute<SieveMethod>();
     COMMAND_PRINT_TASK_BEGIN_TITLE;
 
-    const std::shared_ptr<num_sieve::Sieve> sieve = std::make_shared<num_sieve::Sieve>();
+    using num_sieve::Sieve;
+    const std::shared_ptr<Sieve> sieve = std::make_shared<Sieve>();
     std::shared_ptr<util_thread::Thread> threads = std::make_shared<util_thread::Thread>(std::min(
         static_cast<uint32_t>(taskPlan.generalTask.getBit<SieveMethod>().count()),
         static_cast<uint32_t>(NumericTask::Bottom<SieveMethod>::value)));
     const auto sieveFunctor =
-        [&](const std::string& threadName, std::vector<uint32_t> (num_sieve::Sieve::*methodPtr)(const uint32_t) const)
+        [&](const std::string& threadName, std::vector<uint32_t> (Sieve::*methodPtr)(const uint32_t) const)
     {
         threads->enqueue(threadName, methodPtr, sieve, num_sieve::maxPositiveInteger);
     };
@@ -1544,10 +1554,10 @@ void Command::runSieve() const
         switch (util_hash::bkdrHash(targetMethod.data()))
         {
             case "era"_bkdrHash:
-                sieveFunctor(threadName, &num_sieve::Sieve::eratosthenesMethod);
+                sieveFunctor(threadName, &Sieve::eratosthenesMethod);
                 break;
             case "eul"_bkdrHash:
-                sieveFunctor(threadName, &num_sieve::Sieve::eulerMethod);
+                sieveFunctor(threadName, &Sieve::eulerMethod);
                 break;
             default:
                 LOG_DBG("execute to run unknown sieve method.");
