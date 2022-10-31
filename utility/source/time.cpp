@@ -11,15 +11,16 @@ std::string getCurrentSystemTime()
     std::snprintf(
         date,
         dateLength + 1,
-        "%u-%02u-%02u %02u:%02u:%02u",
+        "%u-%02u-%02u %02u:%02u:%02u %s",
         static_cast<uint32_t>(tm->tm_year) + dateStartYear,
         static_cast<uint32_t>(tm->tm_mon) + 1,
         static_cast<uint32_t>(tm->tm_mday),
         static_cast<uint32_t>(tm->tm_hour),
         static_cast<uint32_t>(tm->tm_min),
-        static_cast<uint32_t>(tm->tm_sec));
-
+        static_cast<uint32_t>(tm->tm_sec),
+        tm->tm_zone);
     std::string dateStr(date);
+
     return dateStr;
 }
 
