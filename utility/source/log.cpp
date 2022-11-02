@@ -225,6 +225,22 @@ std::string& changeLogLevelStyle(std::string& line)
             line, std::regex(std::string{errorLevelPrefixRegex}), std::string{errorLevelPrefixColorForLog});
     }
 
+    if (const std::regex time(std::string{timeRegex}); std::regex_search(line, time))
+    {
+        const auto iterTime = std::sregex_iterator(line.begin(), line.end(), time);
+        const std::string timeColorForLog = std::string{util_common::colorGray} + std::string{util_common::colorBold}
+            + std::string{util_common::colorForBackground} + (*iterTime).str() + std::string{util_common::colorOff};
+        line = std::regex_replace(line, std::regex(std::string{timeRegex}), timeColorForLog);
+    }
+
+    if (const std::regex codeFile(std::string{codeFileRegex}); std::regex_search(line, codeFile))
+    {
+        const auto iterCodeFile = std::sregex_iterator(line.begin(), line.end(), codeFile);
+        const std::string codeFileColorForLog = std::string{util_common::colorUnderLine}
+            + std::string{util_common::colorForBackground} + (*iterCodeFile).str() + std::string{util_common::colorOff};
+        line = std::regex_replace(line, std::regex(std::string{codeFileRegex}), codeFileColorForLog);
+    }
+
     return line;
 }
 
