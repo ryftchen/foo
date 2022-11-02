@@ -15,6 +15,7 @@ namespace util_time
 {
 constexpr uint32_t dateLength = 32;
 constexpr uint32_t dateStartYear = 1900;
+constexpr uint32_t secToUsec = 1000000;
 
 class Time final
 {
