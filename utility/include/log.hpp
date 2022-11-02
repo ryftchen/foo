@@ -31,6 +31,8 @@ constexpr std::string_view debugLevelPrefixRegex{R"(^\[DBG\])"};
 constexpr std::string_view infoLevelPrefixRegex{R"(^\[INF\])"};
 constexpr std::string_view warnLevelPrefixRegex{R"(^\[WRN\])"};
 constexpr std::string_view errorLevelPrefixRegex{R"(^\[ERR\])"};
+constexpr std::string_view timeRegex{R"(\[(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})\.(\d{6}) (\w{3})\])"};
+constexpr std::string_view codeFileRegex{R"(\[[^:]+\.(c|h|cc|hh|cpp|hpp|cxx|hxx|C|H)+#\d+\])"};
 constexpr auto debugLevelPrefixColorForLog{util_common::joinStr<
     util_common::colorBlue,
     util_common::colorBold,
@@ -199,7 +201,7 @@ void Log::flush(
             }
 
             std::string output = std::string{prefix} + ":[" + util_time::getCurrentSystemTime() + "]:["
-                + std::filesystem::path(codeFile.c_str()).filename().string() + "#" + std::to_string(codeLine) + "]: ";
+                + codeFile.substr(codeFile.find("/") + 1, codeFile.length()) + "#" + std::to_string(codeLine) + "]: ";
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat-security"
             output.append(COMMON_FORMAT_TO_STRING(format, std::forward<Args>(args)...));
