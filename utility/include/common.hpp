@@ -24,11 +24,13 @@ namespace util_common
 {
 typedef std::string& (*PrintStyle)(std::string& line);
 
-inline constexpr std::string_view colorBold{"\033[1m"};
 inline constexpr std::string_view colorRed{"\033[0;31;40m"};
 inline constexpr std::string_view colorGreen{"\033[0;32;40m"};
 inline constexpr std::string_view colorYellow{"\033[0;33;40m"};
-inline constexpr std::string_view colorEscape{"\033[0m"};
+inline constexpr std::string_view colorBlue{"\033[0;34;40m"};
+inline constexpr std::string_view colorBold{"\033[1m"};
+inline constexpr std::string_view colorForBackground{"\033[49m"};
+inline constexpr std::string_view colorOff{"\033[0m"};
 constexpr uint32_t maxLineNumForPrintFile = 1000;
 constexpr uint32_t maxBufferSize = 4096;
 inline constexpr PrintStyle nullStyle = nullptr;

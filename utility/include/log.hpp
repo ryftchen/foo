@@ -23,21 +23,38 @@ inline constexpr std::string_view logPath{"./temporary/foo.log"};
 constexpr uint32_t logPathLength = 32;
 constexpr uint32_t maxCountOfWaitLogger = 10;
 constexpr std::string_view logDirectory{"./temporary"};
-constexpr std::string_view debugPrefix{"[DBG]"};
-constexpr std::string_view infoPrefix{"[INF]"};
-constexpr std::string_view warnPrefix{"[WRN]"};
-constexpr std::string_view errorPrefix{"[ERR]"};
-constexpr std::string_view debugRegex{R"(^\[DBG\])"};
-constexpr std::string_view infoRegex{R"(^\[INF\])"};
-constexpr std::string_view warnRegex{R"(^\[WRN\])"};
-constexpr std::string_view errorRegex{R"(^\[ERR\])"};
-constexpr auto debugColorForLog{util_common::joinStr<util_common::colorBold, debugPrefix, util_common::colorEscape>};
-constexpr auto infoColorForLog{
-    util_common::joinStr<util_common::colorGreen, util_common::colorBold, infoPrefix, util_common::colorEscape>};
-constexpr auto warnColorForLog{
-    util_common::joinStr<util_common::colorYellow, util_common::colorBold, warnPrefix, util_common::colorEscape>};
-constexpr auto errorColorForLog{
-    util_common::joinStr<util_common::colorRed, util_common::colorBold, errorPrefix, util_common::colorEscape>};
+constexpr std::string_view debugLevelPrefix{"[DBG]"};
+constexpr std::string_view infoLevelPrefix{"[INF]"};
+constexpr std::string_view warnLevelPrefix{"[WRN]"};
+constexpr std::string_view errorLevelPrefix{"[ERR]"};
+constexpr std::string_view debugLevelPrefixRegex{R"(^\[DBG\])"};
+constexpr std::string_view infoLevelPrefixRegex{R"(^\[INF\])"};
+constexpr std::string_view warnLevelPrefixRegex{R"(^\[WRN\])"};
+constexpr std::string_view errorLevelPrefixRegex{R"(^\[ERR\])"};
+constexpr auto debugLevelPrefixColorForLog{util_common::joinStr<
+    util_common::colorBlue,
+    util_common::colorBold,
+    util_common::colorForBackground,
+    debugLevelPrefix,
+    util_common::colorOff>};
+constexpr auto infoLevelPrefixColorForLog{util_common::joinStr<
+    util_common::colorGreen,
+    util_common::colorBold,
+    util_common::colorForBackground,
+    infoLevelPrefix,
+    util_common::colorOff>};
+constexpr auto warnLevelPrefixColorForLog{util_common::joinStr<
+    util_common::colorYellow,
+    util_common::colorBold,
+    util_common::colorForBackground,
+    warnLevelPrefix,
+    util_common::colorOff>};
+constexpr auto errorLevelPrefixColorForLog{util_common::joinStr<
+    util_common::colorRed,
+    util_common::colorBold,
+    util_common::colorForBackground,
+    errorLevelPrefix,
+    util_common::colorOff>};
 
 class Log final : public util_fsm::FSM<Log>
 {
@@ -166,16 +183,16 @@ void Log::flush(
             switch (level)
             {
                 case OutputLevel::debug:
-                    prefix = debugPrefix;
+                    prefix = debugLevelPrefix;
                     break;
                 case OutputLevel::info:
-                    prefix = infoPrefix;
+                    prefix = infoLevelPrefix;
                     break;
                 case OutputLevel::warn:
-                    prefix = warnPrefix;
+                    prefix = warnLevelPrefix;
                     break;
                 case OutputLevel::error:
-                    prefix = errorPrefix;
+                    prefix = errorLevelPrefix;
                     break;
                 default:
                     break;
