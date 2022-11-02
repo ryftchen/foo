@@ -19,9 +19,10 @@ class Output:
     colorRed = "\033[0;31;40m"
     colorGreen = "\033[0;32;40m"
     colorYellow = "\033[0;33;40m"
-    colorBlue = "\033[0;36;40m"
-    colorEscape = "\033[0m"
-    regexColorEsc = r"((\033.*?m)|(\007))"
+    colorBlue = "\033[0;34;40m"
+    colorForBackground = "\033[49m"
+    colorOff = "\033[0m"
+    colorEscapeRegex = r"((\033.*?m)|(\007))"
     columnLength = 10
     alignMaxLen = 30
     alignCmdLen = 10
@@ -32,11 +33,11 @@ class Output:
         sys.exit(-1)
 
     @classmethod
-    def printStatus(cls, color, content):
+    def printStatus(cls, colorForForeground, content):
         print(
             "{0}{2}[ {3} | {4} ]{2}{1}".format(
-                color,
-                cls.colorEscape,
+                f"{colorForForeground}{cls.colorForBackground}",
+                cls.colorOff,
                 f"{'=' * cls.columnLength}",
                 datetime.strftime(datetime.now(), "%b %d %H:%M:%S"),
                 content,
@@ -249,7 +250,7 @@ class Test:
     def analyzeLog(self):
         refresh = open(self.logFile, "rt")
         inputContent = refresh.read()
-        outputContent = re.sub(Output.regexColorEsc, "", inputContent)
+        outputContent = re.sub(Output.colorEscapeRegex, "", inputContent)
         refresh = open(self.logFile, "w")
         refresh.write(outputContent)
 

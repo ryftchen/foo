@@ -204,21 +204,25 @@ bool Log::isLogFileClose(const NoLogging& /*unused*/) const
 
 std::string& changeLogLevelStyle(std::string& line)
 {
-    if (std::regex_search(line, std::regex(std::string{debugRegex})))
+    if (std::regex_search(line, std::regex(std::string{debugLevelPrefixRegex})))
     {
-        line = std::regex_replace(line, std::regex(std::string{debugRegex}), std::string{debugColorForLog});
+        line = std::regex_replace(
+            line, std::regex(std::string{debugLevelPrefixRegex}), std::string{debugLevelPrefixColorForLog});
     }
-    else if (std::regex_search(line, std::regex(std::string{infoRegex})))
+    else if (std::regex_search(line, std::regex(std::string{infoLevelPrefixRegex})))
     {
-        line = std::regex_replace(line, std::regex(std::string{infoRegex}), std::string{infoColorForLog});
+        line = std::regex_replace(
+            line, std::regex(std::string{infoLevelPrefixRegex}), std::string{infoLevelPrefixColorForLog});
     }
-    else if (std::regex_search(line, std::regex(std::string{warnRegex})))
+    else if (std::regex_search(line, std::regex(std::string{warnLevelPrefixRegex})))
     {
-        line = std::regex_replace(line, std::regex(std::string{warnRegex}), std::string{warnColorForLog});
+        line = std::regex_replace(
+            line, std::regex(std::string{warnLevelPrefixRegex}), std::string{warnLevelPrefixColorForLog});
     }
-    else if (std::regex_search(line, std::regex(std::string{errorRegex})))
+    else if (std::regex_search(line, std::regex(std::string{errorLevelPrefixRegex})))
     {
-        line = std::regex_replace(line, std::regex(std::string{errorRegex}), std::string{errorColorForLog});
+        line = std::regex_replace(
+            line, std::regex(std::string{errorLevelPrefixRegex}), std::string{errorLevelPrefixColorForLog});
     }
 
     return line;
