@@ -21,6 +21,7 @@ public:
 private:
     mutable std::mutex commandMutex;
     std::condition_variable commandCondition;
+    std::atomic<bool> isParsed{false};
     util_argument::Argument program{util_argument::Argument("foo")};
     void foregroundHandle(const int argc, const char* const argv[]);
     void backgroundHandle();
