@@ -136,6 +136,7 @@ void Command::foregroundHandle(const int argc, const char* const argv[])
         validateBasicTask();
         validateGeneralTask();
 
+        isParsed = true;
         lock.unlock();
         commandCondition.notify_one();
         util_time::millisecondLevelSleep(1);
@@ -157,7 +158,7 @@ void Command::backgroundHandle()
                 lock,
                 [this]() -> decltype(auto)
                 {
-                    return true;
+                    return isParsed.load();
                 });
         }
 
