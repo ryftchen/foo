@@ -2,11 +2,11 @@
 
 namespace dp_creational
 {
-class Creational
+class CreationalPattern
 {
 public:
-    Creational();
-    virtual ~Creational() = default;
+    CreationalPattern();
+    virtual ~CreationalPattern() = default;
 
     void abstractFactoryInstance() const;
     void builderInstance() const;

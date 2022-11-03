@@ -24,30 +24,30 @@
 
 namespace algo_match
 {
-Match::Match(const uint32_t length) :
-    length(length), searchingText(std::make_unique<char[]>(calculatePrecision(length)))
+MatchSolution::MatchSolution(const uint32_t length) :
+    length(length), marchingText(std::make_unique<char[]>(calculatePrecision(length)))
 {
-    setSearchingText(searchingText.get(), length);
+    setMatchingText(marchingText.get(), length);
 }
 
-Match::~Match()
+MatchSolution::~MatchSolution()
 {
     mpfr_free_cache();
 }
 
-const std::unique_ptr<char[]>& Match::getSearchingText() const
+const std::unique_ptr<char[]>& MatchSolution::getMatchingText() const
 {
     std::unique_lock<std::mutex> lock(matchMutex);
-    return searchingText;
+    return marchingText;
 }
 
-uint32_t Match::getLength() const
+uint32_t MatchSolution::getLength() const
 {
     std::unique_lock<std::mutex> lock(matchMutex);
     return length;
 }
 
-void Match::setSearchingText(char* text, const uint32_t length)
+void MatchSolution::setMatchingText(char* text, const uint32_t length)
 {
     assert((nullptr != text) && (length > 0));
     mpfr_t x;
@@ -81,7 +81,8 @@ void Match::setSearchingText(char* text, const uint32_t length)
 
 // Rabin-Karp
 // NOLINTNEXTLINE(readability-convert-member-functions-to-static)
-int Match::rkMethod(const char* text, const char* pattern, const uint32_t textLen, const uint32_t patternLen) const
+int MatchSolution::rkMethod(const char* text, const char* pattern, const uint32_t textLen, const uint32_t patternLen)
+    const
 {
     TIME_BEGIN(timing);
     int shift = -1;
@@ -120,7 +121,8 @@ int Match::rkMethod(const char* text, const char* pattern, const uint32_t textLe
 
 // Knuth-Morris-Pratt
 // NOLINTNEXTLINE(readability-convert-member-functions-to-static)
-int Match::kmpMethod(const char* text, const char* pattern, const uint32_t textLen, const uint32_t patternLen) const
+int MatchSolution::kmpMethod(const char* text, const char* pattern, const uint32_t textLen, const uint32_t patternLen)
+    const
 {
     TIME_BEGIN(timing);
     int shift = -1;
@@ -165,7 +167,8 @@ int Match::kmpMethod(const char* text, const char* pattern, const uint32_t textL
 
 // Boyer-Moore
 // NOLINTNEXTLINE(readability-convert-member-functions-to-static)
-int Match::bmMethod(const char* text, const char* pattern, const uint32_t textLen, const uint32_t patternLen) const
+int MatchSolution::bmMethod(const char* text, const char* pattern, const uint32_t textLen, const uint32_t patternLen)
+    const
 {
     TIME_BEGIN(timing);
     int shift = -1;
@@ -197,7 +200,7 @@ int Match::bmMethod(const char* text, const char* pattern, const uint32_t textLe
     return shift;
 }
 
-void Match::fillBadCharRuleTable(uint32_t badCharRuleTable[], const char* pattern, const uint32_t patternLen)
+void MatchSolution::fillBadCharRuleTable(uint32_t badCharRuleTable[], const char* pattern, const uint32_t patternLen)
 {
     for (uint32_t i = 0; i < maxASCII; ++i)
     {
@@ -210,7 +213,10 @@ void Match::fillBadCharRuleTable(uint32_t badCharRuleTable[], const char* patter
     }
 }
 
-void Match::fillGoodSuffixRuleTable(uint32_t goodSuffixRuleTable[], const char* pattern, const uint32_t patternLen)
+void MatchSolution::fillGoodSuffixRuleTable(
+    uint32_t goodSuffixRuleTable[],
+    const char* pattern,
+    const uint32_t patternLen)
 {
     uint32_t lastPrefixIndex = 1;
     for (int pos = (patternLen - 1); pos >= 0; --pos)
@@ -249,8 +255,11 @@ void Match::fillGoodSuffixRuleTable(uint32_t goodSuffixRuleTable[], const char* 
 
 // Horspool
 // NOLINTNEXTLINE(readability-convert-member-functions-to-static)
-int Match::horspoolMethod(const char* text, const char* pattern, const uint32_t textLen, const uint32_t patternLen)
-    const
+int MatchSolution::horspoolMethod(
+    const char* text,
+    const char* pattern,
+    const uint32_t textLen,
+    const uint32_t patternLen) const
 {
     TIME_BEGIN(timing);
     int shift = -1;
@@ -281,7 +290,7 @@ int Match::horspoolMethod(const char* text, const char* pattern, const uint32_t 
     return shift;
 }
 
-void Match::fillBadCharShiftTableForHorspool(
+void MatchSolution::fillBadCharShiftTableForHorspool(
     uint32_t badCharShiftTable[],
     const char* pattern,
     const uint32_t patternLen)
@@ -299,7 +308,11 @@ void Match::fillBadCharShiftTableForHorspool(
 
 // Sunday
 // NOLINTNEXTLINE(readability-convert-member-functions-to-static)
-int Match::sundayMethod(const char* text, const char* pattern, const uint32_t textLen, const uint32_t patternLen) const
+int MatchSolution::sundayMethod(
+    const char* text,
+    const char* pattern,
+    const uint32_t textLen,
+    const uint32_t patternLen) const
 {
     TIME_BEGIN(timing);
     int shift = -1;
@@ -332,7 +345,10 @@ int Match::sundayMethod(const char* text, const char* pattern, const uint32_t te
     return shift;
 }
 
-void Match::fillBadCharShiftTableForSunday(uint32_t badCharShiftTable[], const char* pattern, const uint32_t patternLen)
+void MatchSolution::fillBadCharShiftTableForSunday(
+    uint32_t badCharShiftTable[],
+    const char* pattern,
+    const uint32_t patternLen)
 {
     for (uint32_t i = 0; i < maxASCII; ++i)
     {

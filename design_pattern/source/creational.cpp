@@ -5,7 +5,7 @@
 
 namespace dp_creational
 {
-Creational::Creational()
+CreationalPattern::CreationalPattern()
 {
     std::cout << "\r\nCreational pattern:" << std::endl;
 }
@@ -96,7 +96,7 @@ public:
 } // namespace abstract_factory
 
 // NOLINTNEXTLINE(readability-convert-member-functions-to-static)
-void Creational::abstractFactoryInstance() const
+void CreationalPattern::abstractFactoryInstance() const
 {
     using abstract_factory::ConcreteFactoryX;
     using abstract_factory::ConcreteFactoryY;
@@ -208,7 +208,7 @@ private:
 } // namespace builder
 
 // NOLINTNEXTLINE(readability-convert-member-functions-to-static)
-void Creational::builderInstance() const
+void CreationalPattern::builderInstance() const
 {
     using builder::ConcreteBuilderX;
     using builder::ConcreteBuilderY;
@@ -285,7 +285,7 @@ public:
 } // namespace factory_method
 
 // NOLINTNEXTLINE(readability-convert-member-functions-to-static)
-void Creational::factoryMethodInstance() const
+void CreationalPattern::factoryMethodInstance() const
 {
     using factory_method::ConcreteCreator;
     using factory_method::Creator;
@@ -372,7 +372,7 @@ int Client::nTypes = 2;
 } // namespace prototype
 
 // NOLINTNEXTLINE(readability-convert-member-functions-to-static)
-void Creational::prototypeInstance() const
+void CreationalPattern::prototypeInstance() const
 {
     using prototype::Client;
     using prototype::Prototype;
@@ -432,7 +432,7 @@ std::shared_ptr<Singleton> Singleton::instance = nullptr;
 } // namespace singleton
 
 // NOLINTNEXTLINE(readability-convert-member-functions-to-static)
-void Creational::singletonInstance() const
+void CreationalPattern::singletonInstance() const
 {
     using singleton::Singleton;
 

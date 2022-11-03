@@ -10,13 +10,13 @@ inline constexpr int integer2 = 2 * 3 * 5 * 7 * 11 * 13 * 17;
 constexpr uint32_t maxAlignOfPrint = 16;
 constexpr uint32_t maxColumnOfPrint = 10;
 
-class Divisor
+class DivisorSolution
 {
 public:
-    Divisor();
-    virtual ~Divisor() = default;
+    DivisorSolution();
+    virtual ~DivisorSolution() = default;
 
-    [[nodiscard]] std::vector<int> euclidMethod(int a, int b) const;
+    [[nodiscard]] std::vector<int> euclideanMethod(int a, int b) const;
     [[nodiscard]] std::vector<int> steinMethod(int a, int b) const;
 
 private:
@@ -32,7 +32,7 @@ protected:
 };
 
 template <typename T>
-requires std::is_integral<T>::value char* Divisor::formatIntegerVector(
+requires std::is_integral<T>::value char* DivisorSolution::formatIntegerVector(
     const std::vector<T>& vector,
     char* const buffer,
     const uint32_t bufferSize) const

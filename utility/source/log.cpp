@@ -37,7 +37,7 @@ void Log::runLogger()
         {
             if (std::unique_lock<std::mutex> lock(queueMutex); true)
             {
-                logCondition.wait(
+                condition.wait(
                     lock,
                     [this]() -> decltype(auto)
                     {
@@ -109,7 +109,7 @@ void Log::waitStopForExternalUse()
         isLogging = false;
 
         lock.unlock();
-        logCondition.notify_one();
+        condition.notify_one();
         util_time::millisecondLevelSleep(1);
         lock.lock();
     }
@@ -227,17 +227,17 @@ std::string& changeLogLevelStyle(std::string& line)
 
     if (const std::regex time(std::string{timeRegex}); std::regex_search(line, time))
     {
-        const auto iterTime = std::sregex_iterator(line.begin(), line.end(), time);
+        const auto searchIter = std::sregex_iterator(line.begin(), line.end(), time);
         const std::string timeColorForLog = std::string{util_common::colorGray} + std::string{util_common::colorBold}
-            + std::string{util_common::colorForBackground} + (*iterTime).str() + std::string{util_common::colorOff};
+            + std::string{util_common::colorForBackground} + (*searchIter).str() + std::string{util_common::colorOff};
         line = std::regex_replace(line, std::regex(std::string{timeRegex}), timeColorForLog);
     }
 
     if (const std::regex codeFile(std::string{codeFileRegex}); std::regex_search(line, codeFile))
     {
-        const auto iterCodeFile = std::sregex_iterator(line.begin(), line.end(), codeFile);
+        const auto searchIter = std::sregex_iterator(line.begin(), line.end(), codeFile);
         const std::string codeFileColorForLog = std::string{util_common::colorUnderLine}
-            + std::string{util_common::colorForBackground} + (*iterCodeFile).str() + std::string{util_common::colorOff};
+            + std::string{util_common::colorForBackground} + (*searchIter).str() + std::string{util_common::colorOff};
         line = std::regex_replace(line, std::regex(std::string{codeFileRegex}), codeFileColorForLog);
     }
 

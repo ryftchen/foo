@@ -24,7 +24,7 @@ double trapezoid(const num_expression::Expression& expr, const double left, cons
 double Trapezoidal::operator()(double lower, double upper, const double eps) const
 {
     TIME_BEGIN(timing);
-    const int sign = Integral::getSign(lower, upper);
+    const int sign = IntegralSolution::getSign(lower, upper);
     const uint32_t minStep = std::pow(2, 3);
     const double height = upper - lower;
     double sum = 0.0, s1 = 0.0, s2 = 0.0;
@@ -49,7 +49,7 @@ double Trapezoidal::operator()(double lower, double upper, const double eps) con
 double Simpson::operator()(double lower, double upper, const double eps) const
 {
     TIME_BEGIN(timing);
-    const int sign = Integral::getSign(lower, upper);
+    const int sign = IntegralSolution::getSign(lower, upper);
 
     double sum = simpsonIntegral(lower, upper, eps);
     sum *= sign;
@@ -90,7 +90,7 @@ double Simpson::simpsonOneThird(const double left, const double right) const
 double Romberg::operator()(double lower, double upper, const double eps) const
 {
     TIME_BEGIN(timing);
-    const int sign = Integral::getSign(lower, upper);
+    const int sign = IntegralSolution::getSign(lower, upper);
     uint32_t k = 0;
     double sum = 0.0;
     const double height = upper - lower;
@@ -124,7 +124,7 @@ double Romberg::operator()(double lower, double upper, const double eps) const
 double Gauss::operator()(double lower, double upper, const double eps) const
 {
     TIME_BEGIN(timing);
-    const int sign = Integral::getSign(lower, upper);
+    const int sign = IntegralSolution::getSign(lower, upper);
     constexpr uint32_t gaussNodes = 5, gaussCoefficient = 2;
     constexpr std::array<std::array<double, gaussCoefficient>, gaussNodes> gaussLegendreTable = {
         {{-0.9061798459, +0.2369268851},
@@ -167,7 +167,7 @@ double Gauss::operator()(double lower, double upper, const double eps) const
 double MonteCarlo::operator()(double lower, double upper, const double eps) const
 {
     TIME_BEGIN(timing);
-    const int sign = Integral::getSign(lower, upper);
+    const int sign = IntegralSolution::getSign(lower, upper);
 
     double sum = sampleFromUniformDistribution(lower, upper, eps);
 #ifdef INTEGRAL_MONTE_CARLO_NO_UNIFORM

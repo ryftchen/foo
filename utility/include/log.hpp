@@ -61,6 +61,10 @@ constexpr auto errorLevelPrefixColorForLog{util_common::joinStr<
 class Log final : public util_fsm::FSM<Log>
 {
 public:
+    virtual ~Log() = default;
+    Log(const Log&) = delete;
+    Log& operator=(const Log&) = delete;
+
     friend class FSM<Log>;
     enum class OutputType
     {
@@ -88,10 +92,6 @@ public:
         done
     };
 
-    Log(Log const&) = delete;
-    Log& operator=(Log const&) = delete;
-    virtual ~Log() = default;
-
     static inline Log& getInstance();
     template <typename... Args>
     void flush(
@@ -112,9 +112,9 @@ private:
         const OutputTarget target,
         const StateType initState = State::init) noexcept;
 
-    mutable std::mutex queueMutex;
     std::queue<std::string> logQueue;
-    std::condition_variable logCondition;
+    mutable std::mutex queueMutex;
+    std::condition_variable condition;
     std::atomic<bool> isLogging{false};
     std::ofstream ofs;
     OutputType writeType{OutputType::add};
@@ -209,7 +209,7 @@ void Log::flush(
             logQueue.push(std::move(output));
 
             lock.unlock();
-            logCondition.notify_one();
+            condition.notify_one();
             util_time::millisecondLevelSleep(1);
             lock.lock();
         }

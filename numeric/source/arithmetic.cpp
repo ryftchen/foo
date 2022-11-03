@@ -5,14 +5,14 @@
 
 namespace num_arithmetic
 {
-Arithmetic::Arithmetic()
+ArithmeticSolution::ArithmeticSolution()
 {
     std::cout << "\r\nElementary arithmetic of " << integer1 << " and " << integer2 << ":" << std::endl;
 }
 
 // Addition
 // NOLINTNEXTLINE(readability-convert-member-functions-to-static)
-int Arithmetic::additionMethod(const int augend, const int addend) const
+int ArithmeticSolution::additionMethod(const int augend, const int addend) const
 {
     const int sum = bitAdd(augend, addend);
 
@@ -22,7 +22,7 @@ int Arithmetic::additionMethod(const int augend, const int addend) const
 
 // Subtraction
 // NOLINTNEXTLINE(readability-convert-member-functions-to-static)
-int Arithmetic::subtractionMethod(const int minuend, const int subtrahend) const
+int ArithmeticSolution::subtractionMethod(const int minuend, const int subtrahend) const
 {
     const int difference = bitAdd(minuend, bitAdd(~subtrahend, 1));
 
@@ -32,7 +32,7 @@ int Arithmetic::subtractionMethod(const int minuend, const int subtrahend) const
 
 // Multiplication
 // NOLINTNEXTLINE(readability-convert-member-functions-to-static)
-int Arithmetic::multiplicationMethod(const int multiplier, const int multiplicand) const
+int ArithmeticSolution::multiplicationMethod(const int multiplier, const int multiplicand) const
 {
     int product = 0;
 
@@ -51,7 +51,7 @@ int Arithmetic::multiplicationMethod(const int multiplier, const int multiplican
 
 // Division
 // NOLINTNEXTLINE(readability-convert-member-functions-to-static)
-int Arithmetic::divisionMethod(const int dividend, const int divisor) const
+int ArithmeticSolution::divisionMethod(const int dividend, const int divisor) const
 {
     if (0 == divisor)
     {

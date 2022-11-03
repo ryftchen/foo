@@ -23,10 +23,10 @@ Console::Console(const std::string& greeting) : impl(std::make_unique<Impl>(gree
             }
 
             std::cout << "Console command:\n" << std::endl;
-            for (auto iterReverse = commandsHelp.rbegin(); commandsHelp.rend() != iterReverse; ++iterReverse)
+            for (auto reverseIter = commandsHelp.rbegin(); commandsHelp.rend() != reverseIter; ++reverseIter)
             {
-                std::cout << std::setiosflags(std::ios_base::left) << std::setw(maxLength) << iterReverse->first
-                          << "    " << iterReverse->second << std::resetiosflags(std::ios_base::left) << std::endl;
+                std::cout << std::setiosflags(std::ios_base::left) << std::setw(maxLength) << reverseIter->first
+                          << "    " << reverseIter->second << std::resetiosflags(std::ios_base::left) << std::endl;
             }
             return ReturnCode::success;
         },

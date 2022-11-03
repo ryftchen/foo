@@ -2,11 +2,11 @@
 
 namespace dp_structural
 {
-class Structural
+class StructuralPattern
 {
 public:
-    Structural();
-    virtual ~Structural() = default;
+    StructuralPattern();
+    virtual ~StructuralPattern() = default;
 
     void adapterInstance() const;
     void bridgeInstance() const;

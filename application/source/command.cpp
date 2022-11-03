@@ -10,7 +10,7 @@
 #include "numeric/include/divisor.hpp"
 #include "numeric/include/integral.hpp"
 #include "numeric/include/optimal.hpp"
-#include "numeric/include/sieve.hpp"
+#include "numeric/include/prime.hpp"
 #include "utility/include/hash.hpp"
 #include "utility/include/log.hpp"
 #include "utility/include/thread.hpp"
@@ -79,7 +79,7 @@ Command::Command()
                     }
                     throw std::runtime_error("Unknown design pattern category: " + value);
                 })
-            .help("behavioral, creational, structural [add category with \"--help\" for task details");
+            .help("behavioral, creational, structural [add category with \"--help\" for task details]");
 
         program.addArgument("-n", "--numeric")
             .nArgs(1)
@@ -98,7 +98,7 @@ Command::Command()
                     }
                     throw std::runtime_error("Unknown numeric category: " + value);
                 })
-            .help("arithmetic, divisor, integral, optimal, sieve [add category with \"--help\" for task details");
+            .help("arithmetic, divisor, integral, optimal, prime [add category with \"--help\" for task details]");
 
         program.addArgument("tasks").remaining().help("specify tasks");
     }
@@ -212,7 +212,7 @@ void Command::validateGeneralTask()
                 continue;
             }
 
-            TaskMethodVector tasks;
+            TargetTaskVector tasks;
             if (program.isUsed("tasks"))
             {
                 tasks = program.get<std::vector<std::string>>("tasks");
@@ -223,7 +223,7 @@ void Command::validateGeneralTask()
             }
             else
             {
-                const auto taskMethodVector = get<TaskMethodVector>(taskTypeTuple);
+                const auto taskMethodVector = get<TargetTaskVector>(taskTypeTuple);
                 tasks.assign(taskMethodVector.cbegin(), taskMethodVector.cend());
                 tasks.erase(
                     std::remove_if(
@@ -417,7 +417,7 @@ void Command::printHelpMessage() const
         else if (!taskPlan.generalTask.getBit<DivisorMethod>().none())
         {
             std::puts("divisor [tasks...]\r\n\r\nNon-optional:\r\n"
-                      "euc    Euclid\r\n"
+                      "euc    Euclidean\r\n"
                       "ste    Stein");
         }
         else if (!taskPlan.generalTask.getBit<IntegralMethod>().none())
@@ -437,9 +437,9 @@ void Command::printHelpMessage() const
                       "par    Particle Swarm\r\n"
                       "gen    Genetic");
         }
-        else if (!taskPlan.generalTask.getBit<SieveMethod>().none())
+        else if (!taskPlan.generalTask.getBit<PrimeMethod>().none())
         {
-            std::puts("sieve [tasks...]\r\n\r\nNon-optional:\r\n"
+            std::puts("prime [tasks...]\r\n\r\nNon-optional:\r\n"
                       "era    Eratosthenes\r\n"
                       "eul    Euler");
         }
@@ -514,23 +514,23 @@ void Command::runMatch() const
     }
 
     static_assert(algo_match::maxDigit > algo_match::singlePattern.length());
-    const auto [taskCategory, taskType] = getMethodAttribute<MatchMethod>();
+    const auto [taskCategory, taskType] = getTargetTaskAttribute<MatchMethod>();
     COMMAND_PRINT_TASK_BEGIN_TITLE;
 
-    using algo_match::Match;
-    const std::shared_ptr<Match> match = std::make_shared<Match>(algo_match::maxDigit);
+    using algo_match::MatchSolution;
+    const std::shared_ptr<MatchSolution> match = std::make_shared<MatchSolution>(algo_match::maxDigit);
     std::shared_ptr<util_thread::Thread> threads = std::make_shared<util_thread::Thread>(std::min(
         static_cast<uint32_t>(taskPlan.generalTask.getBit<MatchMethod>().count()),
         static_cast<uint32_t>(AlgorithmTask::Bottom<MatchMethod>::value)));
-    const auto matchFunctor = [&](const std::string& threadName,
-                                  int (Match::*methodPtr)(const char*, const char*, const uint32_t, const uint32_t)
-                                      const)
+    const auto matchFunctor =
+        [&](const std::string& threadName,
+            int (MatchSolution::*methodPtr)(const char*, const char*, const uint32_t, const uint32_t) const)
     {
         threads->enqueue(
             threadName,
             methodPtr,
             match,
-            match->getSearchingText().get(),
+            match->getMatchingText().get(),
             algo_match::singlePattern.data(),
             match->getLength(),
             algo_match::singlePattern.length());
@@ -543,24 +543,24 @@ void Command::runMatch() const
             continue;
         }
 
-        const auto [targetMethod, threadName] = getMethodDetail(taskCategory, taskType, i);
+        const auto [targetMethod, threadName] = getTargetTaskDetail(taskCategory, taskType, i);
         using util_hash::operator""_bkdrHash;
         switch (util_hash::bkdrHash(targetMethod.data()))
         {
             case "rab"_bkdrHash:
-                matchFunctor(threadName, &Match::rkMethod);
+                matchFunctor(threadName, &MatchSolution::rkMethod);
                 break;
             case "knu"_bkdrHash:
-                matchFunctor(threadName, &Match::kmpMethod);
+                matchFunctor(threadName, &MatchSolution::kmpMethod);
                 break;
             case "boy"_bkdrHash:
-                matchFunctor(threadName, &Match::bmMethod);
+                matchFunctor(threadName, &MatchSolution::bmMethod);
                 break;
             case "hor"_bkdrHash:
-                matchFunctor(threadName, &Match::horspoolMethod);
+                matchFunctor(threadName, &MatchSolution::horspoolMethod);
                 break;
             case "sun"_bkdrHash:
-                matchFunctor(threadName, &Match::sundayMethod);
+                matchFunctor(threadName, &MatchSolution::sundayMethod);
                 break;
             default:
                 LOG_DBG("execute to run unknown match method.");
@@ -571,10 +571,10 @@ void Command::runMatch() const
     COMMAND_PRINT_TASK_END_TITLE;
 }
 
-void Command::updateMatchTask(const std::string& method)
+void Command::updateMatchTask(const std::string& target)
 {
     using util_hash::operator""_bkdrHash;
-    switch (util_hash::bkdrHash(method.c_str()))
+    switch (util_hash::bkdrHash(target.c_str()))
     {
         case "rab"_bkdrHash:
             taskPlan.generalTask.setBit<MatchMethod>(MatchMethod::rabinKarp);
@@ -592,7 +592,7 @@ void Command::updateMatchTask(const std::string& method)
             taskPlan.generalTask.setBit<MatchMethod>(MatchMethod::sunday);
             break;
         default:
-            throwUnexpectedMethodException("match: " + method);
+            throwUnexpectedTaskException("match: " + target);
     }
 }
 
@@ -604,16 +604,16 @@ void Command::runNotation() const
         return;
     }
 
-    const auto [taskCategory, taskType] = getMethodAttribute<NotationMethod>();
+    const auto [taskCategory, taskType] = getTargetTaskAttribute<NotationMethod>();
     COMMAND_PRINT_TASK_BEGIN_TITLE;
 
-    using algo_notation::Notation;
-    const std::shared_ptr<Notation> notation = std::make_shared<Notation>();
+    using algo_notation::NotationSolution;
+    const std::shared_ptr<NotationSolution> notation = std::make_shared<NotationSolution>();
     std::shared_ptr<util_thread::Thread> threads = std::make_shared<util_thread::Thread>(std::min(
         static_cast<uint32_t>(taskPlan.generalTask.getBit<NotationMethod>().count()),
         static_cast<uint32_t>(AlgorithmTask::Bottom<NotationMethod>::value)));
     const auto notationFunctor =
-        [&](const std::string& threadName, std::string (Notation::*methodPtr)(const std::string&) const)
+        [&](const std::string& threadName, std::string (NotationSolution::*methodPtr)(const std::string&) const)
     {
         threads->enqueue(threadName, methodPtr, notation, std::string{algo_notation::infixNotation});
     };
@@ -625,15 +625,15 @@ void Command::runNotation() const
             continue;
         }
 
-        const auto [targetMethod, threadName] = getMethodDetail(taskCategory, taskType, i);
+        const auto [targetMethod, threadName] = getTargetTaskDetail(taskCategory, taskType, i);
         using util_hash::operator""_bkdrHash;
         switch (util_hash::bkdrHash(targetMethod.data()))
         {
             case "pre"_bkdrHash:
-                notationFunctor(threadName, &Notation::prefixMethod);
+                notationFunctor(threadName, &NotationSolution::prefixMethod);
                 break;
             case "pos"_bkdrHash:
-                notationFunctor(threadName, &Notation::postfixMethod);
+                notationFunctor(threadName, &NotationSolution::postfixMethod);
                 break;
             default:
                 LOG_DBG("execute to run unknown notation method.");
@@ -644,10 +644,10 @@ void Command::runNotation() const
     COMMAND_PRINT_TASK_END_TITLE;
 }
 
-void Command::updateNotationTask(const std::string& method)
+void Command::updateNotationTask(const std::string& target)
 {
     using util_hash::operator""_bkdrHash;
-    switch (util_hash::bkdrHash(method.c_str()))
+    switch (util_hash::bkdrHash(target.c_str()))
     {
         case "pre"_bkdrHash:
             taskPlan.generalTask.setBit<NotationMethod>(NotationMethod::prefix);
@@ -656,7 +656,7 @@ void Command::updateNotationTask(const std::string& method)
             taskPlan.generalTask.setBit<NotationMethod>(NotationMethod::postfix);
             break;
         default:
-            throwUnexpectedMethodException("notation: " + method);
+            throwUnexpectedTaskException("notation: " + target);
     }
 }
 
@@ -669,18 +669,18 @@ void Command::runSearch() const
     }
 
     static_assert((algo_search::arrayRange1 < algo_search::arrayRange2) && (algo_search::arrayLength > 0));
-    const auto [taskCategory, taskType] = getMethodAttribute<SearchMethod>();
+    const auto [taskCategory, taskType] = getTargetTaskAttribute<SearchMethod>();
     COMMAND_PRINT_TASK_BEGIN_TITLE;
 
-    using algo_search::Search;
-    const std::shared_ptr<Search<double>> search =
-        std::make_shared<Search<double>>(algo_search::arrayLength, algo_search::arrayRange1, algo_search::arrayRange2);
+    using algo_search::SearchSolution;
+    const std::shared_ptr<SearchSolution<double>> search = std::make_shared<SearchSolution<double>>(
+        algo_search::arrayLength, algo_search::arrayRange1, algo_search::arrayRange2);
     std::shared_ptr<util_thread::Thread> threads = std::make_shared<util_thread::Thread>(std::min(
         static_cast<uint32_t>(taskPlan.generalTask.getBit<SearchMethod>().count()),
         static_cast<uint32_t>(AlgorithmTask::Bottom<SearchMethod>::value)));
-    const auto searchFunctor = [&](const std::string& threadName,
-                                   int (Search<double>::*methodPtr)(const double* const, const uint32_t, const double)
-                                       const)
+    const auto searchFunctor =
+        [&](const std::string& threadName,
+            int (SearchSolution<double>::*methodPtr)(const double* const, const uint32_t, const double) const)
     {
         threads->enqueue(
             threadName,
@@ -698,18 +698,18 @@ void Command::runSearch() const
             continue;
         }
 
-        const auto [targetMethod, threadName] = getMethodDetail(taskCategory, taskType, i);
+        const auto [targetMethod, threadName] = getTargetTaskDetail(taskCategory, taskType, i);
         using util_hash::operator""_bkdrHash;
         switch (util_hash::bkdrHash(targetMethod.data()))
         {
             case "bin"_bkdrHash:
-                searchFunctor(threadName, &Search<double>::binarySearch);
+                searchFunctor(threadName, &SearchSolution<double>::binaryMethod);
                 break;
             case "int"_bkdrHash:
-                searchFunctor(threadName, &Search<double>::interpolationSearch);
+                searchFunctor(threadName, &SearchSolution<double>::interpolationMethod);
                 break;
             case "fib"_bkdrHash:
-                searchFunctor(threadName, &Search<double>::fibonacciSearch);
+                searchFunctor(threadName, &SearchSolution<double>::fibonacciMethod);
                 break;
             default:
                 LOG_DBG("execute to run unknown search method.");
@@ -720,10 +720,10 @@ void Command::runSearch() const
     COMMAND_PRINT_TASK_END_TITLE;
 }
 
-void Command::updateSearchTask(const std::string& method)
+void Command::updateSearchTask(const std::string& target)
 {
     using util_hash::operator""_bkdrHash;
-    switch (util_hash::bkdrHash(method.c_str()))
+    switch (util_hash::bkdrHash(target.c_str()))
     {
         case "bin"_bkdrHash:
             taskPlan.generalTask.setBit<SearchMethod>(SearchMethod::binary);
@@ -735,7 +735,7 @@ void Command::updateSearchTask(const std::string& method)
             taskPlan.generalTask.setBit<SearchMethod>(SearchMethod::fibonacci);
             break;
         default:
-            throwUnexpectedMethodException("search: " + method);
+            throwUnexpectedTaskException("search: " + target);
     }
 }
 
@@ -748,17 +748,17 @@ void Command::runSort() const
     }
 
     static_assert((algo_sort::arrayRange1 < algo_sort::arrayRange2) && (algo_sort::arrayLength > 0));
-    const auto [taskCategory, taskType] = getMethodAttribute<SortMethod>();
+    const auto [taskCategory, taskType] = getTargetTaskAttribute<SortMethod>();
     COMMAND_PRINT_TASK_BEGIN_TITLE;
 
-    using algo_sort::Sort;
-    const std::shared_ptr<Sort<int>> sort =
-        std::make_shared<Sort<int>>(algo_sort::arrayLength, algo_sort::arrayRange1, algo_sort::arrayRange2);
+    using algo_sort::SortSolution;
+    const std::shared_ptr<SortSolution<int>> sort =
+        std::make_shared<SortSolution<int>>(algo_sort::arrayLength, algo_sort::arrayRange1, algo_sort::arrayRange2);
     std::shared_ptr<util_thread::Thread> threads = std::make_shared<util_thread::Thread>(std::min(
         static_cast<uint32_t>(taskPlan.generalTask.getBit<SortMethod>().count()),
         static_cast<uint32_t>(AlgorithmTask::Bottom<SortMethod>::value)));
-    const auto sortFunctor =
-        [&](const std::string& threadName, std::vector<int> (Sort<int>::*methodPtr)(int* const, const uint32_t) const)
+    const auto sortFunctor = [&](const std::string& threadName,
+                                 std::vector<int> (SortSolution<int>::*methodPtr)(int* const, const uint32_t) const)
     {
         threads->enqueue(threadName, methodPtr, sort, sort->getRandomArray().get(), sort->getLength());
     };
@@ -770,39 +770,39 @@ void Command::runSort() const
             continue;
         }
 
-        const auto [targetMethod, threadName] = getMethodDetail(taskCategory, taskType, i);
+        const auto [targetMethod, threadName] = getTargetTaskDetail(taskCategory, taskType, i);
         using util_hash::operator""_bkdrHash;
         switch (util_hash::bkdrHash(targetMethod.data()))
         {
             case "bub"_bkdrHash:
-                sortFunctor(threadName, &Sort<int>::bubbleSort);
+                sortFunctor(threadName, &SortSolution<int>::bubbleMethod);
                 break;
             case "sel"_bkdrHash:
-                sortFunctor(threadName, &Sort<int>::selectionSort);
+                sortFunctor(threadName, &SortSolution<int>::selectionMethod);
                 break;
             case "ins"_bkdrHash:
-                sortFunctor(threadName, &Sort<int>::insertionSort);
+                sortFunctor(threadName, &SortSolution<int>::insertionMethod);
                 break;
             case "she"_bkdrHash:
-                sortFunctor(threadName, &Sort<int>::shellSort);
+                sortFunctor(threadName, &SortSolution<int>::shellMethod);
                 break;
             case "mer"_bkdrHash:
-                sortFunctor(threadName, &Sort<int>::mergeSort);
+                sortFunctor(threadName, &SortSolution<int>::mergeMethod);
                 break;
             case "qui"_bkdrHash:
-                sortFunctor(threadName, &Sort<int>::quickSort);
+                sortFunctor(threadName, &SortSolution<int>::quickMethod);
                 break;
             case "hea"_bkdrHash:
-                sortFunctor(threadName, &Sort<int>::heapSort);
+                sortFunctor(threadName, &SortSolution<int>::heapMethod);
                 break;
             case "cou"_bkdrHash:
-                sortFunctor(threadName, &Sort<int>::countingSort);
+                sortFunctor(threadName, &SortSolution<int>::countingMethod);
                 break;
             case "buc"_bkdrHash:
-                sortFunctor(threadName, &Sort<int>::bucketSort);
+                sortFunctor(threadName, &SortSolution<int>::bucketMethod);
                 break;
             case "rad"_bkdrHash:
-                sortFunctor(threadName, &Sort<int>::radixSort);
+                sortFunctor(threadName, &SortSolution<int>::radixMethod);
                 break;
             default:
                 LOG_DBG("execute to run unknown sort method.");
@@ -813,10 +813,10 @@ void Command::runSort() const
     COMMAND_PRINT_TASK_END_TITLE;
 }
 
-void Command::updateSortTask(const std::string& method)
+void Command::updateSortTask(const std::string& target)
 {
     using util_hash::operator""_bkdrHash;
-    switch (util_hash::bkdrHash(method.c_str()))
+    switch (util_hash::bkdrHash(target.c_str()))
     {
         case "bub"_bkdrHash:
             taskPlan.generalTask.setBit<SortMethod>(SortMethod::bubble);
@@ -849,7 +849,7 @@ void Command::updateSortTask(const std::string& method)
             taskPlan.generalTask.setBit<SortMethod>(SortMethod::radix);
             break;
         default:
-            throwUnexpectedMethodException("sort: " + method);
+            throwUnexpectedTaskException("sort: " + target);
     }
 }
 
@@ -861,17 +861,17 @@ void Command::runBehavioral() const
         return;
     }
 
-    const auto [taskCategory, taskType] = getMethodAttribute<BehavioralMethod>();
+    const auto [taskCategory, taskType] = getTargetTaskAttribute<BehavioralMethod>();
     COMMAND_PRINT_TASK_BEGIN_TITLE;
 
-    using dp_behavioral::Behavioral;
-    const std::shared_ptr<Behavioral> behavioral = std::make_shared<Behavioral>();
+    using dp_behavioral::BehavioralPattern;
+    const std::shared_ptr<BehavioralPattern> behavioral = std::make_shared<BehavioralPattern>();
     std::shared_ptr<util_thread::Thread> threads = std::make_shared<util_thread::Thread>(std::min(
         static_cast<uint32_t>(taskPlan.generalTask.getBit<BehavioralMethod>().count()),
         static_cast<uint32_t>(DesignPatternTask::Bottom<BehavioralMethod>::value)));
-    const auto behavioralFunctor = [&](const std::string& threadName, void (Behavioral::*methodPtr)() const)
+    const auto behavioralFunctor = [&](const std::string& threadName, void (BehavioralPattern::*instancePtr)() const)
     {
-        threads->enqueue(threadName, methodPtr, behavioral);
+        threads->enqueue(threadName, instancePtr, behavioral);
     };
 
     for (int i = 0; i < DesignPatternTask::Bottom<BehavioralMethod>::value; ++i)
@@ -881,45 +881,45 @@ void Command::runBehavioral() const
             continue;
         }
 
-        const auto [targetMethod, threadName] = getMethodDetail(taskCategory, taskType, i);
+        const auto [targetInstance, threadName] = getTargetTaskDetail(taskCategory, taskType, i);
         using util_hash::operator""_bkdrHash;
-        switch (util_hash::bkdrHash(targetMethod.data()))
+        switch (util_hash::bkdrHash(targetInstance.data()))
         {
             case "cha"_bkdrHash:
-                behavioralFunctor(threadName, &Behavioral::chainOfResponsibilityInstance);
+                behavioralFunctor(threadName, &BehavioralPattern::chainOfResponsibilityInstance);
                 break;
             case "com"_bkdrHash:
-                behavioralFunctor(threadName, &Behavioral::commandInstance);
+                behavioralFunctor(threadName, &BehavioralPattern::commandInstance);
                 break;
             case "int"_bkdrHash:
-                behavioralFunctor(threadName, &Behavioral::interpreterInstance);
+                behavioralFunctor(threadName, &BehavioralPattern::interpreterInstance);
                 break;
             case "ite"_bkdrHash:
-                behavioralFunctor(threadName, &Behavioral::iteratorInstance);
+                behavioralFunctor(threadName, &BehavioralPattern::iteratorInstance);
                 break;
             case "med"_bkdrHash:
-                behavioralFunctor(threadName, &Behavioral::mediatorInstance);
+                behavioralFunctor(threadName, &BehavioralPattern::mediatorInstance);
                 break;
             case "mem"_bkdrHash:
-                behavioralFunctor(threadName, &Behavioral::mementoInstance);
+                behavioralFunctor(threadName, &BehavioralPattern::mementoInstance);
                 break;
             case "obs"_bkdrHash:
-                behavioralFunctor(threadName, &Behavioral::observerInstance);
+                behavioralFunctor(threadName, &BehavioralPattern::observerInstance);
                 break;
             case "sta"_bkdrHash:
-                behavioralFunctor(threadName, &Behavioral::stateInstance);
+                behavioralFunctor(threadName, &BehavioralPattern::stateInstance);
                 break;
             case "str"_bkdrHash:
-                behavioralFunctor(threadName, &Behavioral::strategyInstance);
+                behavioralFunctor(threadName, &BehavioralPattern::strategyInstance);
                 break;
             case "tem"_bkdrHash:
-                behavioralFunctor(threadName, &Behavioral::templateMethodInstance);
+                behavioralFunctor(threadName, &BehavioralPattern::templateMethodInstance);
                 break;
             case "vis"_bkdrHash:
-                behavioralFunctor(threadName, &Behavioral::visitorInstance);
+                behavioralFunctor(threadName, &BehavioralPattern::visitorInstance);
                 break;
             default:
-                LOG_DBG("execute to run unknown behavioral method.");
+                LOG_DBG("execute to run unknown behavioral instance.");
                 break;
         }
     }
@@ -927,10 +927,10 @@ void Command::runBehavioral() const
     COMMAND_PRINT_TASK_END_TITLE;
 }
 
-void Command::updateBehavioralTask(const std::string& method)
+void Command::updateBehavioralTask(const std::string& target)
 {
     using util_hash::operator""_bkdrHash;
-    switch (util_hash::bkdrHash(method.c_str()))
+    switch (util_hash::bkdrHash(target.c_str()))
     {
         case "cha"_bkdrHash:
             taskPlan.generalTask.setBit<BehavioralMethod>(BehavioralMethod::chainOfResponsibility);
@@ -966,7 +966,7 @@ void Command::updateBehavioralTask(const std::string& method)
             taskPlan.generalTask.setBit<BehavioralMethod>(BehavioralMethod::visitor);
             break;
         default:
-            throwUnexpectedMethodException("behavioral: " + method);
+            throwUnexpectedTaskException("behavioral: " + target);
     }
 }
 
@@ -978,17 +978,17 @@ void Command::runCreational() const
         return;
     }
 
-    const auto [taskCategory, taskType] = getMethodAttribute<CreationalMethod>();
+    const auto [taskCategory, taskType] = getTargetTaskAttribute<CreationalMethod>();
     COMMAND_PRINT_TASK_BEGIN_TITLE;
 
-    using dp_creational::Creational;
-    const std::shared_ptr<Creational> creational = std::make_shared<Creational>();
+    using dp_creational::CreationalPattern;
+    const std::shared_ptr<CreationalPattern> creational = std::make_shared<CreationalPattern>();
     std::shared_ptr<util_thread::Thread> threads = std::make_shared<util_thread::Thread>(std::min(
         static_cast<uint32_t>(taskPlan.generalTask.getBit<CreationalMethod>().count()),
         static_cast<uint32_t>(DesignPatternTask::Bottom<CreationalMethod>::value)));
-    const auto creationalFunctor = [&](const std::string& threadName, void (Creational::*methodPtr)() const)
+    const auto creationalFunctor = [&](const std::string& threadName, void (CreationalPattern::*instancePtr)() const)
     {
-        threads->enqueue(threadName, methodPtr, creational);
+        threads->enqueue(threadName, instancePtr, creational);
     };
 
     for (int i = 0; i < DesignPatternTask::Bottom<CreationalMethod>::value; ++i)
@@ -998,27 +998,27 @@ void Command::runCreational() const
             continue;
         }
 
-        const auto [targetMethod, threadName] = getMethodDetail(taskCategory, taskType, i);
+        const auto [targetInstance, threadName] = getTargetTaskDetail(taskCategory, taskType, i);
         using util_hash::operator""_bkdrHash;
-        switch (util_hash::bkdrHash(targetMethod.data()))
+        switch (util_hash::bkdrHash(targetInstance.data()))
         {
             case "abs"_bkdrHash:
-                creationalFunctor(threadName, &Creational::abstractFactoryInstance);
+                creationalFunctor(threadName, &CreationalPattern::abstractFactoryInstance);
                 break;
             case "bui"_bkdrHash:
-                creationalFunctor(threadName, &Creational::builderInstance);
+                creationalFunctor(threadName, &CreationalPattern::builderInstance);
                 break;
             case "fac"_bkdrHash:
-                creationalFunctor(threadName, &Creational::factoryMethodInstance);
+                creationalFunctor(threadName, &CreationalPattern::factoryMethodInstance);
                 break;
             case "pro"_bkdrHash:
-                creationalFunctor(threadName, &Creational::prototypeInstance);
+                creationalFunctor(threadName, &CreationalPattern::prototypeInstance);
                 break;
             case "sin"_bkdrHash:
-                creationalFunctor(threadName, &Creational::singletonInstance);
+                creationalFunctor(threadName, &CreationalPattern::singletonInstance);
                 break;
             default:
-                LOG_DBG("execute to run unknown design pattern method.");
+                LOG_DBG("execute to run unknown creational instance.");
                 break;
         }
     }
@@ -1026,10 +1026,10 @@ void Command::runCreational() const
     COMMAND_PRINT_TASK_END_TITLE;
 }
 
-void Command::updateCreationalTask(const std::string& method)
+void Command::updateCreationalTask(const std::string& target)
 {
     using util_hash::operator""_bkdrHash;
-    switch (util_hash::bkdrHash(method.c_str()))
+    switch (util_hash::bkdrHash(target.c_str()))
     {
         case "abs"_bkdrHash:
             taskPlan.generalTask.setBit<CreationalMethod>(CreationalMethod::abstractFactory);
@@ -1047,7 +1047,7 @@ void Command::updateCreationalTask(const std::string& method)
             taskPlan.generalTask.setBit<CreationalMethod>(CreationalMethod::singleton);
             break;
         default:
-            throwUnexpectedMethodException("creational: " + method);
+            throwUnexpectedTaskException("creational: " + target);
     }
 }
 
@@ -1059,17 +1059,17 @@ void Command::runStructural() const
         return;
     }
 
-    const auto [taskCategory, taskType] = getMethodAttribute<StructuralMethod>();
+    const auto [taskCategory, taskType] = getTargetTaskAttribute<StructuralMethod>();
     COMMAND_PRINT_TASK_BEGIN_TITLE;
 
-    using dp_structural::Structural;
-    const std::shared_ptr<Structural> structural = std::make_shared<Structural>();
+    using dp_structural::StructuralPattern;
+    const std::shared_ptr<StructuralPattern> structural = std::make_shared<StructuralPattern>();
     std::shared_ptr<util_thread::Thread> threads = std::make_shared<util_thread::Thread>(std::min(
         static_cast<uint32_t>(taskPlan.generalTask.getBit<StructuralMethod>().count()),
         static_cast<uint32_t>(DesignPatternTask::Bottom<StructuralMethod>::value)));
-    const auto structuralFunctor = [&](const std::string& threadName, void (Structural::*methodPtr)() const)
+    const auto structuralFunctor = [&](const std::string& threadName, void (StructuralPattern::*instancePtr)() const)
     {
-        threads->enqueue(threadName, methodPtr, structural);
+        threads->enqueue(threadName, instancePtr, structural);
     };
 
     for (int i = 0; i < DesignPatternTask::Bottom<StructuralMethod>::value; ++i)
@@ -1079,33 +1079,33 @@ void Command::runStructural() const
             continue;
         }
 
-        const auto [targetMethod, threadName] = getMethodDetail(taskCategory, taskType, i);
+        const auto [targetInstance, threadName] = getTargetTaskDetail(taskCategory, taskType, i);
         using util_hash::operator""_bkdrHash;
-        switch (util_hash::bkdrHash(targetMethod.data()))
+        switch (util_hash::bkdrHash(targetInstance.data()))
         {
             case "ada"_bkdrHash:
-                structuralFunctor(threadName, &Structural::adapterInstance);
+                structuralFunctor(threadName, &StructuralPattern::adapterInstance);
                 break;
             case "bri"_bkdrHash:
-                structuralFunctor(threadName, &Structural::bridgeInstance);
+                structuralFunctor(threadName, &StructuralPattern::bridgeInstance);
                 break;
             case "com"_bkdrHash:
-                structuralFunctor(threadName, &Structural::compositeInstance);
+                structuralFunctor(threadName, &StructuralPattern::compositeInstance);
                 break;
             case "dec"_bkdrHash:
-                structuralFunctor(threadName, &Structural::decoratorInstance);
+                structuralFunctor(threadName, &StructuralPattern::decoratorInstance);
                 break;
             case "fac"_bkdrHash:
-                structuralFunctor(threadName, &Structural::facadeInstance);
+                structuralFunctor(threadName, &StructuralPattern::facadeInstance);
                 break;
             case "fly"_bkdrHash:
-                structuralFunctor(threadName, &Structural::flyweightInstance);
+                structuralFunctor(threadName, &StructuralPattern::flyweightInstance);
                 break;
             case "pro"_bkdrHash:
-                structuralFunctor(threadName, &Structural::proxyInstance);
+                structuralFunctor(threadName, &StructuralPattern::proxyInstance);
                 break;
             default:
-                LOG_DBG("execute to run unknown structural method.");
+                LOG_DBG("execute to run unknown structural instance.");
                 break;
         }
     }
@@ -1113,10 +1113,10 @@ void Command::runStructural() const
     COMMAND_PRINT_TASK_END_TITLE;
 }
 
-void Command::updateStructuralTask(const std::string& method)
+void Command::updateStructuralTask(const std::string& target)
 {
     using util_hash::operator""_bkdrHash;
-    switch (util_hash::bkdrHash(method.c_str()))
+    switch (util_hash::bkdrHash(target.c_str()))
     {
         case "ada"_bkdrHash:
             taskPlan.generalTask.setBit<StructuralMethod>(StructuralMethod::adapter);
@@ -1140,7 +1140,7 @@ void Command::updateStructuralTask(const std::string& method)
             taskPlan.generalTask.setBit<StructuralMethod>(StructuralMethod::proxy);
             break;
         default:
-            throwUnexpectedMethodException("structural: " + method);
+            throwUnexpectedTaskException("structural: " + target);
     }
 }
 
@@ -1152,16 +1152,16 @@ void Command::runArithmetic() const
         return;
     }
 
-    const auto [taskCategory, taskType] = getMethodAttribute<ArithmeticMethod>();
+    const auto [taskCategory, taskType] = getTargetTaskAttribute<ArithmeticMethod>();
     COMMAND_PRINT_TASK_BEGIN_TITLE;
 
-    using num_arithmetic::Arithmetic;
-    const std::shared_ptr<Arithmetic> arithmetic = std::make_shared<Arithmetic>();
+    using num_arithmetic::ArithmeticSolution;
+    const std::shared_ptr<ArithmeticSolution> arithmetic = std::make_shared<ArithmeticSolution>();
     std::shared_ptr<util_thread::Thread> threads = std::make_shared<util_thread::Thread>(std::min(
         static_cast<uint32_t>(taskPlan.generalTask.getBit<ArithmeticMethod>().count()),
         static_cast<uint32_t>(NumericTask::Bottom<ArithmeticMethod>::value)));
     const auto arithmeticFunctor =
-        [&](const std::string& threadName, int (Arithmetic::*methodPtr)(const int, const int) const)
+        [&](const std::string& threadName, int (ArithmeticSolution::*methodPtr)(const int, const int) const)
     {
         threads->enqueue(threadName, methodPtr, arithmetic, num_arithmetic::integer1, num_arithmetic::integer2);
     };
@@ -1173,21 +1173,21 @@ void Command::runArithmetic() const
             continue;
         }
 
-        const auto [targetMethod, threadName] = getMethodDetail(taskCategory, taskType, i);
+        const auto [targetMethod, threadName] = getTargetTaskDetail(taskCategory, taskType, i);
         using util_hash::operator""_bkdrHash;
         switch (util_hash::bkdrHash(targetMethod.data()))
         {
             case "add"_bkdrHash:
-                arithmeticFunctor(threadName, &Arithmetic::additionMethod);
+                arithmeticFunctor(threadName, &ArithmeticSolution::additionMethod);
                 break;
             case "sub"_bkdrHash:
-                arithmeticFunctor(threadName, &Arithmetic::subtractionMethod);
+                arithmeticFunctor(threadName, &ArithmeticSolution::subtractionMethod);
                 break;
             case "mul"_bkdrHash:
-                arithmeticFunctor(threadName, &Arithmetic::multiplicationMethod);
+                arithmeticFunctor(threadName, &ArithmeticSolution::multiplicationMethod);
                 break;
             case "div"_bkdrHash:
-                arithmeticFunctor(threadName, &Arithmetic::divisionMethod);
+                arithmeticFunctor(threadName, &ArithmeticSolution::divisionMethod);
                 break;
             default:
                 LOG_DBG("execute to run unknown arithmetic method.");
@@ -1198,10 +1198,10 @@ void Command::runArithmetic() const
     COMMAND_PRINT_TASK_END_TITLE;
 }
 
-void Command::updateArithmeticTask(const std::string& method)
+void Command::updateArithmeticTask(const std::string& target)
 {
     using util_hash::operator""_bkdrHash;
-    switch (util_hash::bkdrHash(method.c_str()))
+    switch (util_hash::bkdrHash(target.c_str()))
     {
         case "add"_bkdrHash:
             taskPlan.generalTask.setBit<ArithmeticMethod>(ArithmeticMethod::addition);
@@ -1216,7 +1216,7 @@ void Command::updateArithmeticTask(const std::string& method)
             taskPlan.generalTask.setBit<ArithmeticMethod>(ArithmeticMethod::division);
             break;
         default:
-            throwUnexpectedMethodException("arithmetic: " + method);
+            throwUnexpectedTaskException("arithmetic: " + target);
     }
 }
 
@@ -1228,16 +1228,16 @@ void Command::runDivisor() const
         return;
     }
 
-    const auto [taskCategory, taskType] = getMethodAttribute<DivisorMethod>();
+    const auto [taskCategory, taskType] = getTargetTaskAttribute<DivisorMethod>();
     COMMAND_PRINT_TASK_BEGIN_TITLE;
 
-    using num_divisor::Divisor;
-    const std::shared_ptr<Divisor> divisor = std::make_shared<Divisor>();
+    using num_divisor::DivisorSolution;
+    const std::shared_ptr<DivisorSolution> divisor = std::make_shared<DivisorSolution>();
     std::shared_ptr<util_thread::Thread> threads = std::make_shared<util_thread::Thread>(std::min(
         static_cast<uint32_t>(taskPlan.generalTask.getBit<DivisorMethod>().count()),
         static_cast<uint32_t>(NumericTask::Bottom<DivisorMethod>::value)));
     const auto divisorFunctor =
-        [&](const std::string& threadName, std::vector<int> (Divisor::*methodPtr)(int, int) const)
+        [&](const std::string& threadName, std::vector<int> (DivisorSolution::*methodPtr)(int, int) const)
     {
         threads->enqueue(threadName, methodPtr, divisor, num_divisor::integer1, num_divisor::integer2);
     };
@@ -1249,15 +1249,15 @@ void Command::runDivisor() const
             continue;
         }
 
-        const auto [targetMethod, threadName] = getMethodDetail(taskCategory, taskType, i);
+        const auto [targetMethod, threadName] = getTargetTaskDetail(taskCategory, taskType, i);
         using util_hash::operator""_bkdrHash;
         switch (util_hash::bkdrHash(targetMethod.data()))
         {
             case "euc"_bkdrHash:
-                divisorFunctor(threadName, &Divisor::euclidMethod);
+                divisorFunctor(threadName, &DivisorSolution::euclideanMethod);
                 break;
             case "ste"_bkdrHash:
-                divisorFunctor(threadName, &Divisor::steinMethod);
+                divisorFunctor(threadName, &DivisorSolution::steinMethod);
                 break;
             default:
                 LOG_DBG("execute to run unknown divisor method.");
@@ -1268,19 +1268,19 @@ void Command::runDivisor() const
     COMMAND_PRINT_TASK_END_TITLE;
 }
 
-void Command::updateDivisorTask(const std::string& method)
+void Command::updateDivisorTask(const std::string& target)
 {
     using util_hash::operator""_bkdrHash;
-    switch (util_hash::bkdrHash(method.c_str()))
+    switch (util_hash::bkdrHash(target.c_str()))
     {
         case "euc"_bkdrHash:
-            taskPlan.generalTask.setBit<DivisorMethod>(DivisorMethod::euclid);
+            taskPlan.generalTask.setBit<DivisorMethod>(DivisorMethod::euclidean);
             break;
         case "ste"_bkdrHash:
             taskPlan.generalTask.setBit<DivisorMethod>(DivisorMethod::stein);
             break;
         default:
-            throwUnexpectedMethodException("divisor: " + method);
+            throwUnexpectedTaskException("divisor: " + target);
     }
 }
 
@@ -1316,18 +1316,18 @@ void Command::runIntegral() const
             static_cast<uint32_t>(taskPlan.generalTask.getBit<IntegralMethod>().count()),
             static_cast<uint32_t>(NumericTask::Bottom<IntegralMethod>::value)));
         const auto integralFunctor =
-            [&](const std::string& threadName, const std::shared_ptr<num_integral::Integral>& classPtr)
+            [&](const std::string& threadName, const std::shared_ptr<num_integral::IntegralSolution>& classPtr)
         {
             threads->enqueue(
                 threadName,
-                &num_integral::Integral::operator(),
+                &num_integral::IntegralSolution::operator(),
                 classPtr,
                 range.range1,
                 range.range2,
                 num_integral::epsilon);
         };
 
-        const auto [taskCategory, taskType] = getMethodAttribute<IntegralMethod>();
+        const auto [taskCategory, taskType] = getTargetTaskAttribute<IntegralMethod>();
         for (int i = 0; i < NumericTask::Bottom<IntegralMethod>::value; ++i)
         {
             if (!taskPlan.generalTask.getBit<IntegralMethod>().test(IntegralMethod(i)))
@@ -1335,7 +1335,7 @@ void Command::runIntegral() const
                 continue;
             }
 
-            const auto [targetMethod, threadName] = getMethodDetail(taskCategory, taskType, i);
+            const auto [targetMethod, threadName] = getTargetTaskDetail(taskCategory, taskType, i);
             using util_hash::operator""_bkdrHash;
             switch (util_hash::bkdrHash(targetMethod.data()))
             {
@@ -1361,7 +1361,7 @@ void Command::runIntegral() const
         }
     };
 
-    const auto [taskCategory, taskType] = getMethodAttribute<IntegralMethod>();
+    const auto [taskCategory, taskType] = getTargetTaskAttribute<IntegralMethod>();
     COMMAND_PRINT_TASK_BEGIN_TITLE;
 
     for ([[maybe_unused]] const auto& [range, expression] : integralExprMap)
@@ -1382,10 +1382,10 @@ void Command::runIntegral() const
     COMMAND_PRINT_TASK_END_TITLE;
 }
 
-void Command::updateIntegralTask(const std::string& method)
+void Command::updateIntegralTask(const std::string& target)
 {
     using util_hash::operator""_bkdrHash;
-    switch (util_hash::bkdrHash(method.c_str()))
+    switch (util_hash::bkdrHash(target.c_str()))
     {
         case "tra"_bkdrHash:
             taskPlan.generalTask.setBit<IntegralMethod>(IntegralMethod::trapezoidal);
@@ -1403,7 +1403,7 @@ void Command::updateIntegralTask(const std::string& method)
             taskPlan.generalTask.setBit<IntegralMethod>(IntegralMethod::monteCarlo);
             break;
         default:
-            throwUnexpectedMethodException("integral: " + method);
+            throwUnexpectedTaskException("integral: " + target);
     }
 }
 
@@ -1439,18 +1439,18 @@ void Command::runOptimal() const
             static_cast<uint32_t>(taskPlan.generalTask.getBit<OptimalMethod>().count()),
             static_cast<uint32_t>(NumericTask::Bottom<OptimalMethod>::value)));
         const auto optimalFunctor =
-            [&](const std::string& threadName, const std::shared_ptr<num_optimal::Optimal>& classPtr)
+            [&](const std::string& threadName, const std::shared_ptr<num_optimal::OptimalSolution>& classPtr)
         {
             threads->enqueue(
                 threadName,
-                &num_optimal::Optimal::operator(),
+                &num_optimal::OptimalSolution::operator(),
                 classPtr,
                 range.range1,
                 range.range2,
                 num_optimal::epsilon);
         };
 
-        const auto [taskCategory, taskType] = getMethodAttribute<OptimalMethod>();
+        const auto [taskCategory, taskType] = getTargetTaskAttribute<OptimalMethod>();
         for (int i = 0; i < NumericTask::Bottom<OptimalMethod>::value; ++i)
         {
             if (!taskPlan.generalTask.getBit<OptimalMethod>().test(OptimalMethod(i)))
@@ -1458,7 +1458,7 @@ void Command::runOptimal() const
                 continue;
             }
 
-            const auto [targetMethod, threadName] = getMethodDetail(taskCategory, taskType, i);
+            const auto [targetMethod, threadName] = getTargetTaskDetail(taskCategory, taskType, i);
             using util_hash::operator""_bkdrHash;
             switch (util_hash::bkdrHash(targetMethod.data()))
             {
@@ -1481,7 +1481,7 @@ void Command::runOptimal() const
         }
     };
 
-    const auto [taskCategory, taskType] = getMethodAttribute<OptimalMethod>();
+    const auto [taskCategory, taskType] = getTargetTaskAttribute<OptimalMethod>();
     COMMAND_PRINT_TASK_BEGIN_TITLE;
 
     for ([[maybe_unused]] const auto& [range, expression] : optimalExprMap)
@@ -1502,10 +1502,10 @@ void Command::runOptimal() const
     COMMAND_PRINT_TASK_END_TITLE;
 }
 
-void Command::updateOptimalTask(const std::string& method)
+void Command::updateOptimalTask(const std::string& target)
 {
     using util_hash::operator""_bkdrHash;
-    switch (util_hash::bkdrHash(method.c_str()))
+    switch (util_hash::bkdrHash(target.c_str()))
     {
         case "gra"_bkdrHash:
             taskPlan.generalTask.setBit<OptimalMethod>(OptimalMethod::gradient);
@@ -1520,51 +1520,51 @@ void Command::updateOptimalTask(const std::string& method)
             taskPlan.generalTask.setBit<OptimalMethod>(OptimalMethod::genetic);
             break;
         default:
-            throwUnexpectedMethodException("optimal: " + method);
+            throwUnexpectedTaskException("optimal: " + target);
     }
 }
 
-void Command::runSieve() const
+void Command::runPrime() const
 {
     std::unique_lock<std::mutex> lock(commandMutex);
-    if (taskPlan.generalTask.getBit<SieveMethod>().none())
+    if (taskPlan.generalTask.getBit<PrimeMethod>().none())
     {
         return;
     }
 
-    const auto [taskCategory, taskType] = getMethodAttribute<SieveMethod>();
+    const auto [taskCategory, taskType] = getTargetTaskAttribute<PrimeMethod>();
     COMMAND_PRINT_TASK_BEGIN_TITLE;
 
-    using num_sieve::Sieve;
-    const std::shared_ptr<Sieve> sieve = std::make_shared<Sieve>();
+    using num_prime::PrimeSolution;
+    const std::shared_ptr<PrimeSolution> prime = std::make_shared<PrimeSolution>();
     std::shared_ptr<util_thread::Thread> threads = std::make_shared<util_thread::Thread>(std::min(
-        static_cast<uint32_t>(taskPlan.generalTask.getBit<SieveMethod>().count()),
-        static_cast<uint32_t>(NumericTask::Bottom<SieveMethod>::value)));
-    const auto sieveFunctor =
-        [&](const std::string& threadName, std::vector<uint32_t> (Sieve::*methodPtr)(const uint32_t) const)
+        static_cast<uint32_t>(taskPlan.generalTask.getBit<PrimeMethod>().count()),
+        static_cast<uint32_t>(NumericTask::Bottom<PrimeMethod>::value)));
+    const auto primeFunctor =
+        [&](const std::string& threadName, std::vector<uint32_t> (PrimeSolution::*methodPtr)(const uint32_t) const)
     {
-        threads->enqueue(threadName, methodPtr, sieve, num_sieve::maxPositiveInteger);
+        threads->enqueue(threadName, methodPtr, prime, num_prime::maxPositiveInteger);
     };
 
-    for (int i = 0; i < NumericTask::Bottom<SieveMethod>::value; ++i)
+    for (int i = 0; i < NumericTask::Bottom<PrimeMethod>::value; ++i)
     {
-        if (!taskPlan.generalTask.getBit<SieveMethod>().test(SieveMethod(i)))
+        if (!taskPlan.generalTask.getBit<PrimeMethod>().test(PrimeMethod(i)))
         {
             continue;
         }
 
-        const auto [targetMethod, threadName] = getMethodDetail(taskCategory, taskType, i);
+        const auto [targetMethod, threadName] = getTargetTaskDetail(taskCategory, taskType, i);
         using util_hash::operator""_bkdrHash;
         switch (util_hash::bkdrHash(targetMethod.data()))
         {
             case "era"_bkdrHash:
-                sieveFunctor(threadName, &Sieve::eratosthenesMethod);
+                primeFunctor(threadName, &PrimeSolution::eratosthenesMethod);
                 break;
             case "eul"_bkdrHash:
-                sieveFunctor(threadName, &Sieve::eulerMethod);
+                primeFunctor(threadName, &PrimeSolution::eulerMethod);
                 break;
             default:
-                LOG_DBG("execute to run unknown sieve method.");
+                LOG_DBG("execute to run unknown prime method.");
                 break;
         }
     }
@@ -1572,18 +1572,18 @@ void Command::runSieve() const
     COMMAND_PRINT_TASK_END_TITLE;
 }
 
-void Command::updateSieveTask(const std::string& method)
+void Command::updatePrimeTask(const std::string& target)
 {
     using util_hash::operator""_bkdrHash;
-    switch (util_hash::bkdrHash(method.c_str()))
+    switch (util_hash::bkdrHash(target.c_str()))
     {
         case "era"_bkdrHash:
-            taskPlan.generalTask.setBit<SieveMethod>(SieveMethod::eratosthenes);
+            taskPlan.generalTask.setBit<PrimeMethod>(PrimeMethod::eratosthenes);
             break;
         case "eul"_bkdrHash:
-            taskPlan.generalTask.setBit<SieveMethod>(SieveMethod::euler);
+            taskPlan.generalTask.setBit<PrimeMethod>(PrimeMethod::euler);
             break;
         default:
-            throwUnexpectedMethodException("sieve: " + method);
+            throwUnexpectedTaskException("prime: " + target);
     }
 }

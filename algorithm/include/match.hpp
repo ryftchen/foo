@@ -12,13 +12,13 @@ constexpr uint32_t maxDigit = 100000;
 constexpr uint32_t maxASCII = 256;
 constexpr int mpfrBase = 10;
 
-class Match
+class MatchSolution
 {
 public:
-    explicit Match(const uint32_t length);
-    virtual ~Match();
-    Match(const Match& rhs) = delete;
-    Match& operator=(const Match& rhs) = delete;
+    explicit MatchSolution(const uint32_t length);
+    virtual ~MatchSolution();
+    MatchSolution(const MatchSolution& rhs) = delete;
+    MatchSolution& operator=(const MatchSolution& rhs) = delete;
 
     int rkMethod(const char* text, const char* pattern, const uint32_t textLen, const uint32_t patternLen) const;
     int kmpMethod(const char* text, const char* pattern, const uint32_t textLen, const uint32_t patternLen) const;
@@ -26,13 +26,13 @@ public:
     int horspoolMethod(const char* text, const char* pattern, const uint32_t textLen, const uint32_t patternLen) const;
     int sundayMethod(const char* text, const char* pattern, const uint32_t textLen, const uint32_t patternLen) const;
 
-    [[nodiscard]] const std::unique_ptr<char[]>& getSearchingText() const;
+    [[nodiscard]] const std::unique_ptr<char[]>& getMatchingText() const;
     [[nodiscard]] uint32_t getLength() const;
-    static void setSearchingText(char* text, const uint32_t length);
+    static void setMatchingText(char* text, const uint32_t length);
 
 private:
     mutable std::mutex matchMutex;
-    const std::unique_ptr<char[]> searchingText;
+    const std::unique_ptr<char[]> marchingText;
     const uint32_t length;
 
     static inline int calculatePrecision(const uint32_t digit);
@@ -48,7 +48,7 @@ private:
         const uint32_t patternLen);
 };
 
-inline int Match::calculatePrecision(const uint32_t digit)
+inline int MatchSolution::calculatePrecision(const uint32_t digit)
 {
     return static_cast<int>(std::ceil(static_cast<double>(digit) * std::log2(mpfrBase)));
 }

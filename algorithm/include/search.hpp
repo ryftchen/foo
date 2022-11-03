@@ -20,17 +20,17 @@ constexpr bool isNumber()
 }
 
 template <class T>
-class Search
+class SearchSolution
 {
 public:
-    Search(const uint32_t length, const T left, const T right);
-    virtual ~Search() = default;
-    Search(const Search& rhs);
-    Search<T>& operator=(const Search& rhs);
+    SearchSolution(const uint32_t length, const T left, const T right);
+    virtual ~SearchSolution() = default;
+    SearchSolution(const SearchSolution& rhs);
+    SearchSolution<T>& operator=(const SearchSolution& rhs);
 
-    int binarySearch(const T* const array, const uint32_t length, const T key) const;
-    int interpolationSearch(const T* const array, const uint32_t length, const T key) const;
-    int fibonacciSearch(const T* const array, const uint32_t length, const T key) const;
+    int binaryMethod(const T* const array, const uint32_t length, const T key) const;
+    int interpolationMethod(const T* const array, const uint32_t length, const T key) const;
+    int fibonacciMethod(const T* const array, const uint32_t length, const T key) const;
 
     const std::unique_ptr<T[]>& getOrderedArray() const;
     uint32_t getLength() const;
@@ -56,7 +56,7 @@ private:
     const T right;
     T searchedKey{0};
 
-    void deepCopyFromSearch(const Search& search) const;
+    void deepCopy(const SearchSolution& rhs) const;
     static std::vector<uint32_t> generateFibonacciNumber(const uint32_t max);
 
 protected:
@@ -69,7 +69,7 @@ protected:
 };
 
 template <class T>
-Search<T>::Search(const uint32_t length, const T left, const T right) :
+SearchSolution<T>::SearchSolution(const uint32_t length, const T left, const T right) :
     length(length), left(left), right(right), orderedArray(std::make_unique<T[]>(length))
 {
     setOrderedArray<T>(orderedArray.get(), length, left, right);
@@ -77,42 +77,42 @@ Search<T>::Search(const uint32_t length, const T left, const T right) :
 }
 
 template <class T>
-Search<T>::Search(const Search& rhs) :
+SearchSolution<T>::SearchSolution(const SearchSolution& rhs) :
     length(rhs.length), left(rhs.left), right(rhs.right), orderedArray(std::make_unique<T[]>(rhs.length))
 {
-    deepCopyFromSearch(rhs);
+    deepCopy(rhs);
     searchedKey = orderedArray[length / 2];
 }
 
 template <class T>
-Search<T>& Search<T>::operator=(const Search& rhs)
+SearchSolution<T>& SearchSolution<T>::operator=(const SearchSolution& rhs)
 {
-    deepCopyFromSearch(rhs);
+    deepCopy(rhs);
     return *this;
 }
 
 template <class T>
-void Search<T>::deepCopyFromSearch(const Search& search) const
+void SearchSolution<T>::deepCopy(const SearchSolution& rhs) const
 {
-    std::memcpy(this->orderedArray.get(), search.orderedArray.get(), this->length * sizeof(T));
+    std::memcpy(this->orderedArray.get(), rhs.orderedArray.get(), this->length * sizeof(T));
 }
 
 template <class T>
-const std::unique_ptr<T[]>& Search<T>::getOrderedArray() const
+const std::unique_ptr<T[]>& SearchSolution<T>::getOrderedArray() const
 {
     std::unique_lock<std::mutex> lock(searchMutex);
     return orderedArray;
 }
 
 template <class T>
-uint32_t Search<T>::getLength() const
+uint32_t SearchSolution<T>::getLength() const
 {
     std::unique_lock<std::mutex> lock(searchMutex);
     return length;
 }
 
 template <class T>
-T Search<T>::getSearchedKey() const
+T SearchSolution<T>::getSearchedKey() const
 {
     std::unique_lock<std::mutex> lock(searchMutex);
     return searchedKey;
@@ -120,7 +120,7 @@ T Search<T>::getSearchedKey() const
 
 template <class T>
 template <typename V>
-requires std::is_integral<V>::value void Search<T>::setOrderedArray(
+requires std::is_integral<V>::value void SearchSolution<T>::setOrderedArray(
     T array[],
     const uint32_t length,
     const T left,
@@ -144,7 +144,7 @@ requires std::is_integral<V>::value void Search<T>::setOrderedArray(
 
 template <class T>
 template <typename V>
-requires std::is_floating_point<V>::value void Search<T>::setOrderedArray(
+requires std::is_floating_point<V>::value void SearchSolution<T>::setOrderedArray(
     T array[],
     const uint32_t length,
     const T left,
@@ -169,7 +169,7 @@ requires std::is_floating_point<V>::value void Search<T>::setOrderedArray(
 
 template <class T>
 template <typename V>
-requires(isNumber<V>()) char* Search<T>::formatArray(
+requires(isNumber<V>()) char* SearchSolution<T>::formatArray(
     const T* const array,
     const uint32_t length,
     char* const buffer,

@@ -20,24 +20,24 @@ constexpr bool isNumber()
 }
 
 template <class T>
-class Sort
+class SortSolution
 {
 public:
-    Sort(const uint32_t length, const T left, const T right);
-    virtual ~Sort() = default;
-    Sort(const Sort& rhs);
-    Sort<T>& operator=(const Sort& rhs);
+    SortSolution(const uint32_t length, const T left, const T right);
+    virtual ~SortSolution() = default;
+    SortSolution(const SortSolution& rhs);
+    SortSolution<T>& operator=(const SortSolution& rhs);
 
-    std::vector<T> bubbleSort(T* const array, const uint32_t length) const;
-    std::vector<T> selectionSort(T* const array, const uint32_t length) const;
-    std::vector<T> insertionSort(T* const array, const uint32_t length) const;
-    std::vector<T> shellSort(T* const array, const uint32_t length) const;
-    std::vector<T> mergeSort(T* const array, const uint32_t length) const;
-    std::vector<T> quickSort(T* const array, const uint32_t length) const;
-    std::vector<T> heapSort(T* const array, const uint32_t length) const;
-    std::vector<T> countingSort(T* const array, const uint32_t length) const;
-    std::vector<T> bucketSort(T* const array, const uint32_t length) const;
-    std::vector<T> radixSort(T* const array, const uint32_t length) const;
+    std::vector<T> bubbleMethod(T* const array, const uint32_t length) const;
+    std::vector<T> selectionMethod(T* const array, const uint32_t length) const;
+    std::vector<T> insertionMethod(T* const array, const uint32_t length) const;
+    std::vector<T> shellMethod(T* const array, const uint32_t length) const;
+    std::vector<T> mergeMethod(T* const array, const uint32_t length) const;
+    std::vector<T> quickMethod(T* const array, const uint32_t length) const;
+    std::vector<T> heapMethod(T* const array, const uint32_t length) const;
+    std::vector<T> countingMethod(T* const array, const uint32_t length) const;
+    std::vector<T> bucketMethod(T* const array, const uint32_t length) const;
+    std::vector<T> radixMethod(T* const array, const uint32_t length) const;
 
     const std::unique_ptr<T[]>& getRandomArray() const;
     uint32_t getLength() const;
@@ -61,7 +61,7 @@ private:
     const T left;
     const T right;
 
-    void deepCopyFromSort(const Sort& sort) const;
+    void deepCopy(const SortSolution& rhs) const;
     static void mergeSortRecursive(T* const sortArray, const uint32_t begin, const uint32_t end);
     static void quickSortRecursive(T* const sortArray, const uint32_t begin, const uint32_t end);
     static void buildMaxHeap(T* const sortArray, const uint32_t begin, const uint32_t end);
@@ -76,41 +76,41 @@ protected:
 };
 
 template <class T>
-Sort<T>::Sort(const uint32_t length, const T left, const T right) :
+SortSolution<T>::SortSolution(const uint32_t length, const T left, const T right) :
     length(length), left(left), right(right), randomArray(std::make_unique<T[]>(length))
 {
     setRandomArray<T>(randomArray.get(), length, left, right);
 }
 
 template <class T>
-Sort<T>::Sort(const Sort& rhs) :
+SortSolution<T>::SortSolution(const SortSolution& rhs) :
     length(rhs.length), left(rhs.length), right(rhs.length), randomArray(std::make_unique<T[]>(rhs.length))
 {
-    deepCopyFromSort(rhs);
+    deepCopy(rhs);
 }
 
 template <class T>
-Sort<T>& Sort<T>::operator=(const Sort& rhs)
+SortSolution<T>& SortSolution<T>::operator=(const SortSolution& rhs)
 {
-    deepCopyFromSort(rhs);
+    deepCopy(rhs);
     return *this;
 }
 
 template <class T>
-void Sort<T>::deepCopyFromSort(const Sort& sort) const
+void SortSolution<T>::deepCopy(const SortSolution& rhs) const
 {
-    std::memcpy(this->randomArray.get(), sort.randomArray.get(), this->length * sizeof(T));
+    std::memcpy(this->randomArray.get(), rhs.randomArray.get(), this->length * sizeof(T));
 }
 
 template <class T>
-const std::unique_ptr<T[]>& Sort<T>::getRandomArray() const
+const std::unique_ptr<T[]>& SortSolution<T>::getRandomArray() const
 {
     std::unique_lock<std::mutex> lock(sortMutex);
     return randomArray;
 }
 
 template <class T>
-uint32_t Sort<T>::getLength() const
+uint32_t SortSolution<T>::getLength() const
 {
     std::unique_lock<std::mutex> lock(sortMutex);
     return length;
@@ -118,7 +118,7 @@ uint32_t Sort<T>::getLength() const
 
 template <class T>
 template <typename V>
-requires std::is_integral<V>::value void Sort<T>::setRandomArray(
+requires std::is_integral<V>::value void SortSolution<T>::setRandomArray(
     T array[],
     const uint32_t length,
     const T left,
@@ -140,7 +140,7 @@ requires std::is_integral<V>::value void Sort<T>::setRandomArray(
 
 template <class T>
 template <typename V>
-requires std::is_floating_point<V>::value void Sort<T>::setRandomArray(
+requires std::is_floating_point<V>::value void SortSolution<T>::setRandomArray(
     T array[],
     const uint32_t length,
     const T left,
@@ -163,7 +163,7 @@ requires std::is_floating_point<V>::value void Sort<T>::setRandomArray(
 
 template <class T>
 template <typename V>
-requires(isNumber<V>()) char* Sort<T>::formatArray(
+requires(isNumber<V>()) char* SortSolution<T>::formatArray(
     const T* const array,
     const uint32_t length,
     char* const buffer,
