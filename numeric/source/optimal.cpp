@@ -25,14 +25,14 @@ std::optional<std::tuple<ValueY, ValueX>> Gradient::operator()(const double left
     for (const auto climber : climbing)
     {
         x = climber;
-        uint32_t iterNum = 0;
+        uint32_t numOfIteration = 0;
         double learningRate = gradient::initialLearningRate, gradient = calculateFirstDerivative(x, eps),
                dx = learningRate * gradient;
         while ((std::fabs(dx) > eps) && ((x - dx) >= left) && ((x - dx) <= right))
         {
             x -= dx;
-            ++iterNum;
-            learningRate = gradient::initialLearningRate * 1.0 / (1.0 + gradient::decay * iterNum);
+            ++numOfIteration;
+            learningRate = gradient::initialLearningRate * 1.0 / (1.0 + gradient::decay * numOfIteration);
             gradient = calculateFirstDerivative(x, eps);
             dx = learningRate * gradient;
         }
@@ -125,10 +125,10 @@ std::optional<std::tuple<ValueY, ValueX>> Particle::operator()(const double left
     double xBest = best->x, xFitnessBest = best->xFitness;
 
     std::uniform_real_distribution<double> random(0.0, 1.0);
-    for (uint32_t i = 0; i < particle::iterNum; ++i)
+    for (uint32_t i = 0; i < particle::numOfIteration; ++i)
     {
         const double w = particle::wBegin
-            - (particle::wBegin - particle::wEnd) * std::pow(static_cast<double>(i + 1) / particle::iterNum, 2);
+            - (particle::wBegin - particle::wEnd) * std::pow(static_cast<double>(i + 1) / particle::numOfIteration, 2);
         for (auto& ind : rec.society)
         {
             const double rand1 = static_cast<uint32_t>(random(seed) * static_cast<uint32_t>(1.0 / eps)) * eps;
@@ -201,7 +201,7 @@ std::optional<std::tuple<ValueY, ValueX>> Genetic::operator()(const double left,
     }
 
     Population pop = populationInit();
-    for (uint32_t i = 0; i < genetic::iterNum; ++i)
+    for (uint32_t i = 0; i < genetic::numOfIteration; ++i)
     {
         selectIndividual(pop);
         crossIndividual(pop);
@@ -294,11 +294,11 @@ void Genetic::crossIndividual(Population& pop)
 
     std::vector<std::reference_wrapper<Chromosome>> crossContainer(pop.begin(), pop.end());
     std::shuffle(crossContainer.begin(), crossContainer.end(), seed);
-    for (auto iterChr = crossContainer.begin();
-         (crossContainer.end() != iterChr) && (std::next(iterChr, 1) != crossContainer.end());
-         std::advance(iterChr, 2))
+    for (auto chrIter = crossContainer.begin();
+         (crossContainer.end() != chrIter) && (std::next(chrIter, 1) != crossContainer.end());
+         std::advance(chrIter, 2))
     {
-        Chromosome parent1 = iterChr->get(), parent2 = std::next(iterChr, 1)->get();
+        Chromosome parent1 = chrIter->get(), parent2 = std::next(chrIter, 1)->get();
         if (genetic::crossPr > random())
         {
             geneCrossover(parent1, parent2);
@@ -306,9 +306,9 @@ void Genetic::crossIndividual(Population& pop)
         popCross.emplace_back(std::move(parent1));
         popCross.emplace_back(std::move(parent2));
 
-        if ((pop.size() % 2) && (std::next(iterChr, 2) == crossContainer.end() - 1))
+        if ((pop.size() % 2) && (std::next(chrIter, 2) == crossContainer.end() - 1))
         {
-            Chromosome single = std::next(iterChr, 2)->get();
+            Chromosome single = std::next(chrIter, 2)->get();
             popCross.emplace_back(std::move(single));
         }
     }
@@ -321,9 +321,9 @@ void Genetic::geneMutation(Chromosome& chr)
     uint32_t flip = getRandomNumber(chrNum - 1) + 1;
     std::vector<std::reference_wrapper<uint8_t>> mutateChr(chr.begin(), chr.end());
     std::shuffle(mutateChr.begin(), mutateChr.end(), seed);
-    for (auto iterGene = mutateChr.begin(); (mutateChr.end() != iterGene) && (0 != flip); ++iterGene, --flip)
+    for (auto geneIter = mutateChr.begin(); (mutateChr.end() != geneIter) && (0 != flip); ++geneIter, --flip)
     {
-        iterGene->get() = !iterGene->get();
+        geneIter->get() = !geneIter->get();
     }
 }
 
@@ -374,16 +374,16 @@ std::optional<std::pair<double, double>> Genetic::fitnessLinearTransformation(co
 auto Genetic::rouletteWheelSelection(const Population& pop, const std::vector<double>& fitnessCum)
 {
     const double rand = random();
-    const auto iterCum = std::find_if(
+    const auto cumIter = std::find_if(
         fitnessCum.cbegin(),
         fitnessCum.cend(),
         [&rand](const auto cumulation)
         {
             return cumulation > rand;
         });
-    assert(iterCum != fitnessCum.cend());
+    assert(cumIter != fitnessCum.cend());
 
-    return std::next(pop.cbegin(), std::distance(fitnessCum.cbegin(), iterCum));
+    return std::next(pop.cbegin(), std::distance(fitnessCum.cbegin(), cumIter));
 }
 
 void Genetic::stochasticTournamentSelection(Population& pop, const std::vector<double>& fitnessCum)
@@ -459,9 +459,9 @@ genetic::Chromosome Genetic::getBestIndividual(const Population& pop)
             return calculateFitness(ind);
         });
 
-    const auto iterFitValBest = std::max_element(std::cbegin(fitnessVal), std::cend(fitnessVal));
-    const auto iterIndBest = std::next(pop.cbegin(), std::distance(fitnessVal.cbegin(), iterFitValBest));
+    const auto fitValBestIter = std::max_element(std::cbegin(fitnessVal), std::cend(fitnessVal));
+    const auto indBestIter = std::next(pop.cbegin(), std::distance(fitnessVal.cbegin(), fitValBestIter));
 
-    return *iterIndBest;
+    return *indBestIter;
 }
 } // namespace num_optimal

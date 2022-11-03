@@ -12,7 +12,10 @@ class Command
 {
 public:
     Command();
-    ~Command() = default;
+    virtual ~Command() = default;
+    Command(const Command&) = delete;
+    Command& operator=(const Command&) = delete;
+
     void runCommander(const int argc, const char* const argv[]);
 
 private:
@@ -301,7 +304,7 @@ private:
                 divisor,
                 integral,
                 optimal,
-                sieve
+                prime
             };
             template <>
             struct Bottom<Type>
@@ -324,7 +327,7 @@ private:
 
             enum DivisorMethod
             {
-                euclid,
+                euclidean,
                 stein
             };
             template <>
@@ -360,13 +363,13 @@ private:
                 static constexpr int value = 4;
             };
 
-            enum SieveMethod
+            enum PrimeMethod
             {
                 eratosthenes,
                 euler
             };
             template <>
-            struct Bottom<SieveMethod>
+            struct Bottom<PrimeMethod>
             {
                 static constexpr int value = 2;
             };
@@ -375,13 +378,13 @@ private:
             std::bitset<Bottom<DivisorMethod>::value> divisorBit;
             std::bitset<Bottom<IntegralMethod>::value> integralBit;
             std::bitset<Bottom<OptimalMethod>::value> optimalBit;
-            std::bitset<Bottom<SieveMethod>::value> sieveBit;
+            std::bitset<Bottom<PrimeMethod>::value> primeBit;
 
             [[nodiscard]] bool empty() const
             {
                 return (
                     arithmeticBit.none() && divisorBit.none() && integralBit.none() && optimalBit.none()
-                    && sieveBit.none());
+                    && primeBit.none());
             }
             void reset()
             {
@@ -389,7 +392,7 @@ private:
                 divisorBit.reset();
                 integralBit.reset();
                 optimalBit.reset();
-                sieveBit.reset();
+                primeBit.reset();
             }
 
         protected:
@@ -409,8 +412,8 @@ private:
                     case Type::optimal:
                         os << "OPTIMAL";
                         break;
-                    case Type::sieve:
-                        os << "SIEVE";
+                    case Type::prime:
+                        os << "PRIME";
                         break;
                     default:
                         os << "UNKNOWN: " << static_cast<std::underlying_type_t<Type>>(type);
@@ -476,9 +479,9 @@ private:
             {
                 return numericTask.optimalBit;
             }
-            else if constexpr (std::is_same_v<T, NumericTask::SieveMethod>)
+            else if constexpr (std::is_same_v<T, NumericTask::PrimeMethod>)
             {
-                return numericTask.sieveBit;
+                return numericTask.primeBit;
             }
         }
         template <typename T>
@@ -528,9 +531,9 @@ private:
             {
                 numericTask.optimalBit.set(NumericTask::OptimalMethod(index));
             }
-            else if constexpr (std::is_same_v<T, NumericTask::SieveMethod>)
+            else if constexpr (std::is_same_v<T, NumericTask::PrimeMethod>)
             {
-                numericTask.sieveBit.set(NumericTask::SieveMethod(index));
+                numericTask.primeBit.set(NumericTask::PrimeMethod(index));
             }
         }
 
@@ -570,7 +573,7 @@ private:
     using DivisorMethod = NumericTask::DivisorMethod;
     using IntegralMethod = NumericTask::IntegralMethod;
     using OptimalMethod = NumericTask::OptimalMethod;
-    using SieveMethod = NumericTask::SieveMethod;
+    using PrimeMethod = NumericTask::PrimeMethod;
     struct TaskPlan
     {
         TaskPlan() = default;
@@ -590,10 +593,10 @@ private:
     typedef void (Command::*UpdateTaskFunctor)(const std::string&);
     using TaskCategoryName = std::string;
     using TaskTypeName = std::string;
-    using TaskMethodName = std::string;
-    using TaskMethodVector = std::vector<TaskMethodName>;
+    using TargetTaskName = std::string;
+    using TargetTaskVector = std::vector<TargetTaskName>;
     using TaskFunctorTuple = std::tuple<PerformTaskFunctor, UpdateTaskFunctor>;
-    using TaskTypeTuple = std::tuple<TaskMethodVector, TaskFunctorTuple>;
+    using TaskTypeTuple = std::tuple<TargetTaskVector, TaskFunctorTuple>;
     using TaskCategoryMap = std::map<TaskTypeName, TaskTypeTuple>;
     using BasicTaskMap = std::map<TaskCategoryName, PerformTaskFunctor>;
     using GeneralTaskMap = std::map<TaskCategoryName, TaskCategoryMap>;
@@ -602,8 +605,8 @@ private:
     template <typename T>
     auto get(const TaskFunctorTuple& tuple) const;
     template <typename T>
-    auto getMethodAttribute() const;
-    inline auto getMethodDetail(const int categoryIndex, const int typeIndex, const int methodIndex) const;
+    auto getTargetTaskAttribute() const;
+    inline auto getTargetTaskDetail(const int categoryIndex, const int typeIndex, const int targetIndex) const;
 
     // clang-format off
     const BasicTaskMap basicTaskMap{
@@ -613,7 +616,7 @@ private:
         { "version" , &Command::printVersionInfo   },
     };
     const GeneralTaskMap generalTaskMap{
-        // --- Category ---+----- Type -----+---------------- Method ----------------+----------- Run -----------+---------- UpdateTask ----------
+        // --- Category ---+----- Type -----+---------------- Target ----------------+----------- Run -----------+---------- UpdateTask ----------
         // ----------------+----------------+----------------------------------------+---------------------------+--------------------------------
         { "algorithm"      , {{ "match"      , {{ "rab", "knu", "boy", "hor", "sun" } , { &Command::runMatch      , &Command::updateMatchTask      }}},
                               { "notation"   , {{ "pre", "pos"                      } , { &Command::runNotation   , &Command::updateNotationTask   }}},
@@ -630,7 +633,7 @@ private:
                               { "divisor"    , {{ "euc", "ste"                      } , { &Command::runDivisor    , &Command::updateDivisorTask    }}},
                               { "integral"   , {{ "tra", "sim", "rom", "gau", "mon" } , { &Command::runIntegral   , &Command::updateIntegralTask   }}},
                               { "optimal"    , {{ "gra", "ann", "par", "gen"        } , { &Command::runOptimal    , &Command::updateOptimalTask    }}},
-                              { "sieve"      , {{ "era", "eul"                      } , { &Command::runSieve      , &Command::updateSieveTask      }}}}}
+                              { "prime"      , {{ "era", "eul"                      } , { &Command::runPrime      , &Command::updatePrimeTask      }}}}}
         // ----------------+----------------+----------------------------------------+---------------------------+--------------------------------
     };
     // clang-format on
@@ -640,29 +643,29 @@ private:
     void printHelpMessage() const;
     void printVersionInfo() const;
     void runMatch() const;
-    void updateMatchTask(const std::string& method);
+    void updateMatchTask(const std::string& target);
     void runNotation() const;
-    void updateNotationTask(const std::string& method);
+    void updateNotationTask(const std::string& target);
     void runSearch() const;
-    void updateSearchTask(const std::string& method);
+    void updateSearchTask(const std::string& target);
     void runSort() const;
-    void updateSortTask(const std::string& method);
+    void updateSortTask(const std::string& target);
     void runBehavioral() const;
-    void updateBehavioralTask(const std::string& method);
+    void updateBehavioralTask(const std::string& target);
     void runCreational() const;
-    void updateCreationalTask(const std::string& method);
+    void updateCreationalTask(const std::string& target);
     void runStructural() const;
-    void updateStructuralTask(const std::string& method);
+    void updateStructuralTask(const std::string& target);
     void runArithmetic() const;
-    void updateArithmeticTask(const std::string& method);
+    void updateArithmeticTask(const std::string& target);
     void runDivisor() const;
-    void updateDivisorTask(const std::string& method);
+    void updateDivisorTask(const std::string& target);
     void runIntegral() const;
-    void updateIntegralTask(const std::string& method);
+    void updateIntegralTask(const std::string& target);
     void runOptimal() const;
-    void updateOptimalTask(const std::string& method);
-    void runSieve() const;
-    void updateSieveTask(const std::string& method);
+    void updateOptimalTask(const std::string& target);
+    void runPrime() const;
+    void updatePrimeTask(const std::string& target);
 
     typedef std::variant<num_expression::Function1, num_expression::Function2> IntegralExprTarget;
     const std::
@@ -694,13 +697,13 @@ private:
     static void viewLogContent();
     static std::string getIconBanner();
     [[noreturn]] inline void throwExcessArgumentException();
-    [[noreturn]] inline void throwUnexpectedMethodException(const std::string& info);
+    [[noreturn]] inline void throwUnexpectedTaskException(const std::string& info);
 };
 
-inline void Command::throwUnexpectedMethodException(const std::string& info)
+inline void Command::throwUnexpectedTaskException(const std::string& info)
 {
     taskPlan.reset();
-    throw std::runtime_error("Unexpected method of " + info);
+    throw std::runtime_error("Unexpected task of " + info);
 }
 
 inline void Command::throwExcessArgumentException()
@@ -712,7 +715,7 @@ inline void Command::throwExcessArgumentException()
 template <typename T>
 auto Command::get(const TaskTypeTuple& tuple) const
 {
-    if constexpr (std::is_same_v<T, TaskMethodVector>)
+    if constexpr (std::is_same_v<T, TargetTaskVector>)
     {
         return std::get<0>(tuple);
     }
@@ -735,17 +738,17 @@ auto Command::get(const TaskFunctorTuple& tuple) const
     }
 }
 
-inline auto Command::getMethodDetail(const int categoryIndex, const int typeIndex, const int methodIndex) const
+inline auto Command::getTargetTaskDetail(const int categoryIndex, const int typeIndex, const int targetIndex) const
 {
     const auto taskCategoryMap =
         std::next(std::next(generalTaskMap.cbegin(), categoryIndex)->second.cbegin(), typeIndex);
-    const auto targetMethod = get<TaskMethodVector>(taskCategoryMap->second).at(methodIndex);
+    const auto targetMethod = get<TargetTaskVector>(taskCategoryMap->second).at(targetIndex);
     const std::string threadName = std::string{1, taskCategoryMap->first.at(0)} + "_" + targetMethod;
     return std::make_tuple(targetMethod, threadName);
 }
 
 template <typename T>
-auto Command::getMethodAttribute() const
+auto Command::getTargetTaskAttribute() const
 {
     if constexpr (std::is_same_v<T, MatchMethod>)
     {
@@ -791,8 +794,8 @@ auto Command::getMethodAttribute() const
     {
         return std::make_tuple(GeneralTask::Category::numeric, NumericTask::Type::optimal);
     }
-    else if constexpr (std::is_same_v<T, SieveMethod>)
+    else if constexpr (std::is_same_v<T, PrimeMethod>)
     {
-        return std::make_tuple(GeneralTask::Category::numeric, NumericTask::Type::sieve);
+        return std::make_tuple(GeneralTask::Category::numeric, NumericTask::Type::prime);
     }
 }

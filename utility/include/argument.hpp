@@ -315,7 +315,6 @@ Iterator ArgumentRegister::consume(Iterator start, Iterator end, const std::stri
         struct ActionApply
         {
             void operator()(ValuedAction& func) { std::transform(first, last, std::back_inserter(self.values), func); }
-
             void operator()(VoidAction& func)
             {
                 std::for_each(first, last, func);

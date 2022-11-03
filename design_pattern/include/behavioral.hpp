@@ -2,11 +2,11 @@
 
 namespace dp_behavioral
 {
-class Behavioral
+class BehavioralPattern
 {
 public:
-    Behavioral();
-    virtual ~Behavioral() = default;
+    BehavioralPattern();
+    virtual ~BehavioralPattern() = default;
 
     void chainOfResponsibilityInstance() const;
     void commandInstance() const;

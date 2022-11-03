@@ -8,7 +8,7 @@
 
 namespace dp_behavioral
 {
-Behavioral::Behavioral()
+BehavioralPattern::BehavioralPattern()
 {
     std::cout << "\r\nBehavioral pattern:" << std::endl;
 }
@@ -82,7 +82,7 @@ public:
 } // namespace chain_of_responsibility
 
 // NOLINTNEXTLINE(readability-convert-member-functions-to-static)
-void Behavioral::chainOfResponsibilityInstance() const
+void BehavioralPattern::chainOfResponsibilityInstance() const
 {
     using chain_of_responsibility::ConcreteHandler1;
     using chain_of_responsibility::ConcreteHandler2;
@@ -159,7 +159,7 @@ private:
 } // namespace command
 
 // NOLINTNEXTLINE(readability-convert-member-functions-to-static)
-void Behavioral::commandInstance() const
+void BehavioralPattern::commandInstance() const
 {
     using command::Command;
     using command::ConcreteCommand;
@@ -239,7 +239,7 @@ private:
 } // namespace interpreter
 
 // NOLINTNEXTLINE(readability-convert-member-functions-to-static)
-void Behavioral::interpreterInstance() const
+void BehavioralPattern::interpreterInstance() const
 {
     using interpreter::AbstractExpression;
     using interpreter::Context;
@@ -341,7 +341,7 @@ std::shared_ptr<Iterator> ConcreteAggregate::createIterator()
 } // namespace iterator
 
 // NOLINTNEXTLINE(readability-convert-member-functions-to-static)
-void Behavioral::iteratorInstance() const
+void BehavioralPattern::iteratorInstance() const
 {
     using iterator::ConcreteAggregate;
     using iterator::Iterator;
@@ -452,7 +452,7 @@ private:
 } // namespace mediator
 
 // NOLINTNEXTLINE(readability-convert-member-functions-to-static)
-void Behavioral::mediatorInstance() const
+void BehavioralPattern::mediatorInstance() const
 {
     using mediator::Colleague;
     using mediator::ConcreteColleague;
@@ -557,7 +557,7 @@ private:
 } // namespace memento
 
 // NOLINTNEXTLINE(readability-convert-member-functions-to-static)
-void Behavioral::mementoInstance() const
+void BehavioralPattern::mementoInstance() const
 {
     using memento::CareTaker;
     using memento::Originator;
@@ -654,7 +654,7 @@ private:
 } // namespace observer
 
 // NOLINTNEXTLINE(readability-convert-member-functions-to-static)
-void Behavioral::observerInstance() const
+void BehavioralPattern::observerInstance() const
 {
     using observer::ConcreteObserver;
     using observer::ConcreteSubject;
@@ -735,7 +735,7 @@ private:
 } // namespace state
 
 // NOLINTNEXTLINE(readability-convert-member-functions-to-static)
-void Behavioral::stateInstance() const
+void BehavioralPattern::stateInstance() const
 {
     using state::ConcreteStateA;
     using state::ConcreteStateB;
@@ -799,7 +799,7 @@ private:
 } // namespace strategy
 
 // NOLINTNEXTLINE(readability-convert-member-functions-to-static)
-void Behavioral::strategyInstance() const
+void BehavioralPattern::strategyInstance() const
 {
     using strategy::ConcreteStrategyA;
     using strategy::ConcreteStrategyB;
@@ -848,7 +848,7 @@ public:
 } // namespace template_method
 
 // NOLINTNEXTLINE(readability-convert-member-functions-to-static)
-void Behavioral::templateMethodInstance() const
+void BehavioralPattern::templateMethodInstance() const
 {
     using template_method::AbstractClass;
     using template_method::ConcreteClass;
@@ -937,7 +937,7 @@ public:
 } // namespace visitor
 
 // NOLINTNEXTLINE(readability-convert-member-functions-to-static)
-void Behavioral::visitorInstance() const
+void BehavioralPattern::visitorInstance() const
 {
     using visitor::ConcreteElementA;
     using visitor::ConcreteElementB;

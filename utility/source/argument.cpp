@@ -321,26 +321,26 @@ void Argument::parseArgsInternal(const std::vector<std::string>& arguments)
         title = arguments.front();
     }
     auto end = std::end(arguments);
-    auto iterNonOptionalArgument = std::begin(nonOptionalArguments);
+    auto nonOptionalArgumentIter = std::begin(nonOptionalArguments);
     for (auto iterator = std::next(std::begin(arguments)); end != iterator;)
     {
         const auto& currentArgument = *iterator;
         if (ArgumentRegister::checkIfNonOptional(currentArgument))
         {
-            if (std::end(nonOptionalArguments) == iterNonOptionalArgument)
+            if (std::end(nonOptionalArguments) == nonOptionalArgumentIter)
             {
                 throw std::runtime_error("argument: Maximum number of non-optional arguments exceeded.");
             }
-            auto argument = iterNonOptionalArgument++;
+            auto argument = nonOptionalArgumentIter++;
             iterator = argument->consume(iterator, end);
             continue;
         }
 
-        auto iterArgMap = argumentMap.find(currentArgument);
-        if (argumentMap.end() != iterArgMap)
+        auto argMapIter = argumentMap.find(currentArgument);
+        if (argumentMap.end() != argMapIter)
         {
-            auto argument = iterArgMap->second;
-            iterator = argument->consume(std::next(iterator), end, iterArgMap->first);
+            auto argument = argMapIter->second;
+            iterator = argument->consume(std::next(iterator), end, argMapIter->first);
         }
         else if (const auto& compoundArg = currentArgument;
                  (compoundArg.size() > 1) && ('-' == compoundArg[0]) && ('-' != compoundArg[1]))
@@ -349,11 +349,11 @@ void Argument::parseArgsInternal(const std::vector<std::string>& arguments)
             for (std::size_t i = 1; i < compoundArg.size(); ++i)
             {
                 auto hypotheticalArg = std::string{'-', compoundArg[i]};
-                auto iterArgMap2 = argumentMap.find(hypotheticalArg);
-                if (argumentMap.end() != iterArgMap2)
+                auto argMapIter2 = argumentMap.find(hypotheticalArg);
+                if (argumentMap.end() != argMapIter2)
                 {
-                    auto argument = iterArgMap2->second;
-                    iterator = argument->consume(iterator, end, iterArgMap2->first);
+                    auto argument = argMapIter2->second;
+                    iterator = argument->consume(iterator, end, argMapIter2->first);
                 }
                 else
                 {

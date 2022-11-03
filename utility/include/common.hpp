@@ -33,9 +33,9 @@ inline constexpr std::string_view colorBold{"\033[1m"};
 inline constexpr std::string_view colorUnderLine{"\033[4m"};
 inline constexpr std::string_view colorForBackground{"\033[49m"};
 inline constexpr std::string_view colorOff{"\033[0m"};
+inline constexpr PrintStyle nullStyle = nullptr;
 constexpr uint32_t maxLineNumForPrintFile = 1000;
 constexpr uint32_t maxBufferSize = 4096;
-inline constexpr PrintStyle nullStyle = nullptr;
 
 enum class LockOperateType
 {

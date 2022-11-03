@@ -7,10 +7,10 @@ namespace num_integral
 {
 inline constexpr double epsilon = 1e-5;
 
-class Integral
+class IntegralSolution
 {
 public:
-    virtual ~Integral() = default;
+    virtual ~IntegralSolution() = default;
 
     virtual double operator()(double lower, double upper, const double eps) const = 0;
 
@@ -23,13 +23,13 @@ protected:
         const uint32_t step);
 };
 
-inline int Integral::getSign(double& lower, double& upper)
+inline int IntegralSolution::getSign(double& lower, double& upper)
 {
     return (lower < upper) ? 1 : ((lower > upper) ? (std::swap(lower, upper), -1) : 0);
 }
 
 // Trapezoidal
-class Trapezoidal : public Integral
+class Trapezoidal : public IntegralSolution
 {
 public:
     explicit Trapezoidal(const num_expression::Expression& expr) : func(expr){};
@@ -41,7 +41,7 @@ private:
 };
 
 // Adaptive Simpson's 1/3
-class Simpson : public Integral
+class Simpson : public IntegralSolution
 {
 public:
     explicit Simpson(const num_expression::Expression& expr) : func(expr){};
@@ -56,7 +56,7 @@ private:
 };
 
 // Romberg
-class Romberg : public Integral
+class Romberg : public IntegralSolution
 {
 public:
     explicit Romberg(const num_expression::Expression& expr) : func(expr){};
@@ -68,7 +68,7 @@ private:
 };
 
 // Gauss-Legendre's 5-points
-class Gauss : public Integral
+class Gauss : public IntegralSolution
 {
 public:
     explicit Gauss(const num_expression::Expression& expr) : func(expr){};
@@ -80,7 +80,7 @@ private:
 };
 
 // Monte-Carlo
-class MonteCarlo : public Integral
+class MonteCarlo : public IntegralSolution
 {
 public:
     explicit MonteCarlo(const num_expression::Expression& expr) : func(expr){};

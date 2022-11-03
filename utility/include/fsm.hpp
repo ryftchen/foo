@@ -115,6 +115,7 @@ class FSM
 public:
     using StateType = State;
     explicit FSM(State initState = State()) : state(initState){};
+
     template <class Event>
     void processEvent(const Event& event);
     State currentState() const;
@@ -135,7 +136,6 @@ private:
         {
             invokeAsBinaryFunc(action, self, event);
         }
-
         static constexpr void processEvent(std::nullptr_t, Derived& /*unused*/, const Event& /*unused*/) {}
 
         template <class Guard>
@@ -143,7 +143,6 @@ private:
         {
             return invokeAsBinaryFunc(guard, self, event);
         }
-
         static constexpr bool checkGuard(std::nullptr_t, const Derived& /*unused*/, const Event& /*unused*/)
         {
             return true;
@@ -175,9 +174,10 @@ private:
     {
         static State execute(Derived& self, const Event& event, State state)
         {
-            return ((state == T::sourceValue()) && T::checkGuard(self, event))
-                ? (T::processEvent(self, event), T::targetValue())
-                : handleEvent<Event, List<Types...>>::execute(self, event, state);
+            return (
+                ((T::sourceValue() == state) && T::checkGuard(self, event))
+                    ? (T::processEvent(self, event), T::targetValue())
+                    : handleEvent<Event, List<Types...>>::execute(self, event, state));
         }
     };
 
@@ -221,7 +221,6 @@ protected:
         {
             RowBase<Source, Event, Target>::processEvent(action, self, event);
         }
-
         static bool checkGuard(const Derived& self, const Event& event)
         {
             return RowBase<Source, Event, Target>::checkGuard(guard, self, event);
@@ -243,7 +242,6 @@ protected:
                 RowBase<Source, Event, Target>::processEvent(action, self, event);
             }
         }
-
         static bool checkGuard(const Derived& self, const Event& event)
         {
             if (nullptr == guard)
@@ -261,7 +259,6 @@ protected:
         {
             RowBase<Source, Event, Target>::processEvent(action, self, event);
         }
-
         static bool checkGuard(const Derived& self, const Event& event)
         {
             return RowBase<Source, Event, Target>::checkGuard(guard, self, event);
@@ -316,5 +313,5 @@ FSM<Derived, State>::ProcessingLock::~ProcessingLock()
     isProcessing = false;
 }
 
-void checkIfExceptedFSMState(const bool normalState);
+extern void checkIfExceptedFSMState(const bool normalState);
 } // namespace util_fsm

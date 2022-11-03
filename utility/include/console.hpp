@@ -20,7 +20,7 @@ public:
     virtual ~Console();
     Console(const Console&) = delete;
     Console(Console&&) = delete;
-    Console& operator=(Console const&) = delete;
+    Console& operator=(const Console&) = delete;
     Console& operator=(Console&&) = delete;
 
     using Args = std::vector<std::string>;

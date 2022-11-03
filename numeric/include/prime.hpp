@@ -3,17 +3,17 @@
 #include <string>
 #include <vector>
 
-namespace num_sieve
+namespace num_prime
 {
 inline constexpr uint32_t maxPositiveInteger = 997;
 constexpr uint32_t maxAlignOfPrint = 16;
 constexpr uint32_t maxColumnOfPrint = 10;
 
-class Sieve
+class PrimeSolution
 {
 public:
-    Sieve();
-    virtual ~Sieve() = default;
+    PrimeSolution();
+    virtual ~PrimeSolution() = default;
 
     [[nodiscard]] std::vector<uint32_t> eratosthenesMethod(const uint32_t max) const;
     [[nodiscard]] std::vector<uint32_t> eulerMethod(const uint32_t max) const;
@@ -27,7 +27,7 @@ protected:
 };
 
 template <typename T>
-requires std::is_integral<T>::value char* Sieve::formatIntegerVector(
+requires std::is_integral<T>::value char* PrimeSolution::formatIntegerVector(
     const std::vector<T>& vector,
     char* const buffer,
     const uint32_t bufferSize) const
@@ -62,4 +62,4 @@ requires std::is_integral<T>::value char* Sieve::formatIntegerVector(
 
     return buffer;
 }
-} // namespace num_sieve
+} // namespace num_prime

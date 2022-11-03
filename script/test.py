@@ -72,7 +72,7 @@ class Test:
             "divisor": ["euc", "ste"],
             "integral": ["tra", "sim", "rom", "gau", "mon"],
             "optimal": ["gra", "ann", "par", "gen"],
-            "sieve": ["era", "eul"],
+            "prime": ["era", "eul"],
         },
     }
     isCheckCoverage = False

@@ -11,10 +11,10 @@ using ValueY = double;
 
 inline constexpr double epsilon = 1e-5;
 
-class Optimal
+class OptimalSolution
 {
 public:
-    virtual ~Optimal() = default;
+    virtual ~OptimalSolution() = default;
 
     virtual std::optional<std::tuple<ValueY, ValueX>> operator()(
         const double left,
@@ -30,7 +30,7 @@ constexpr double decay = 0.001;
 constexpr uint32_t loopTime = 100;
 } // namespace gradient
 
-class Gradient : public Optimal
+class Gradient : public OptimalSolution
 {
 public:
     explicit Gradient(const num_expression::Expression& expr) : func(expr){};
@@ -54,7 +54,7 @@ constexpr double coolingRate = 0.9;
 constexpr uint32_t markovChain = 100;
 } // namespace annealing
 
-class Annealing : public Optimal
+class Annealing : public OptimalSolution
 {
 public:
     explicit Annealing(const num_expression::Expression& expr) : func(expr){};
@@ -78,7 +78,7 @@ constexpr double wEnd = 0.4;
 constexpr double vMax = 0.5;
 constexpr double vMin = -0.5;
 constexpr uint32_t size = 50;
-constexpr uint32_t iterNum = 100;
+constexpr uint32_t numOfIteration = 100;
 
 struct Individual
 {
@@ -122,7 +122,7 @@ struct Record
 };
 } // namespace particle
 
-class Particle : public Optimal
+class Particle : public OptimalSolution
 {
 public:
     explicit Particle(const num_expression::Expression& expr) : func(expr), seed(std::random_device{}()){};
@@ -151,10 +151,10 @@ using Population = std::vector<genetic::Chromosome>;
 constexpr double crossPr = 0.8;
 constexpr double mutatePr = 0.05;
 constexpr uint32_t size = 50;
-constexpr uint32_t iterNum = 100;
+constexpr uint32_t numOfIteration = 100;
 } // namespace genetic
 
-class Genetic : public Optimal
+class Genetic : public OptimalSolution
 {
 public:
     explicit Genetic(const num_expression::Expression& expr) : func(expr), seed(std::random_device{}()){};

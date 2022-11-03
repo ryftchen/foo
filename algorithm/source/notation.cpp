@@ -6,12 +6,12 @@
 
 namespace algo_notation
 {
-Notation::Notation()
+NotationSolution::NotationSolution()
 {
     std::cout << "\r\nInfix notation: " << infixNotation << std::endl;
 }
 
-std::string Notation::infixToPostfix(const std::string& infix)
+std::string NotationSolution::infixToPostfix(const std::string& infix)
 {
     std::string postfix;
     std::stack<char> charStack;
@@ -55,7 +55,7 @@ std::string Notation::infixToPostfix(const std::string& infix)
     return postfix;
 }
 
-Notation::Priority Notation::getPriority(const char c)
+NotationSolution::Priority NotationSolution::getPriority(const char c)
 {
     switch (c)
     {
@@ -76,7 +76,7 @@ Notation::Priority Notation::getPriority(const char c)
 
 // Prefix
 // NOLINTNEXTLINE(readability-convert-member-functions-to-static)
-std::string Notation::prefixMethod(const std::string& infixNotation) const
+std::string NotationSolution::prefixMethod(const std::string& infixNotation) const
 {
     std::string infix = infixNotation;
 
@@ -101,7 +101,7 @@ std::string Notation::prefixMethod(const std::string& infixNotation) const
 
 // Postfix
 // NOLINTNEXTLINE(readability-convert-member-functions-to-static)
-std::string Notation::postfixMethod(const std::string& infixNotation) const
+std::string NotationSolution::postfixMethod(const std::string& infixNotation) const
 {
     std::string postfixNotation = infixToPostfix(infixNotation);
 

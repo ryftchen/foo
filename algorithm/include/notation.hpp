@@ -6,11 +6,11 @@ namespace algo_notation
 {
 inline constexpr std::string_view infixNotation{"a+b*(c^d-e)^(f+g*h)-i"};
 
-class Notation
+class NotationSolution
 {
 public:
-    Notation();
-    virtual ~Notation() = default;
+    NotationSolution();
+    virtual ~NotationSolution() = default;
 
     [[nodiscard]] std::string prefixMethod(const std::string& infixNotation) const;
     [[nodiscard]] std::string postfixMethod(const std::string& infixNotation) const;
@@ -29,7 +29,7 @@ private:
     static inline bool isOperator(const char c);
 };
 
-inline bool Notation::isOperator(const char c)
+inline bool NotationSolution::isOperator(const char c)
 {
     return (!std::isalpha(c) && !std::isdigit(c));
 }

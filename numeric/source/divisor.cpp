@@ -19,31 +19,31 @@
 
 namespace num_divisor
 {
-Divisor::Divisor()
+DivisorSolution::DivisorSolution()
 {
     std::cout << "\r\nAll common divisors of " << integer1 << " and " << integer2 << ":" << std::endl;
 }
 
-std::vector<int> Divisor::getAllDivisors(const int greatestCommonDivisor)
+std::vector<int> DivisorSolution::getAllDivisors(const int greatestCommonDivisor)
 {
-    std::vector<int> divisor;
+    std::vector<int> divisors(0);
     for (int i = 1; i <= std::sqrt(greatestCommonDivisor); ++i)
     {
-        if (0 == greatestCommonDivisor % i)
+        if (0 == (greatestCommonDivisor % i))
         {
-            divisor.emplace_back(i);
+            divisors.emplace_back(i);
             if ((greatestCommonDivisor / i) != i)
             {
-                divisor.emplace_back(greatestCommonDivisor / i);
+                divisors.emplace_back(greatestCommonDivisor / i);
             }
         }
     }
-    std::sort(divisor.begin(), divisor.end());
-    return divisor;
+    std::sort(divisors.begin(), divisors.end());
+    return divisors;
 }
 
-// Euclid
-std::vector<int> Divisor::euclidMethod(int a, int b) const
+// Euclidean
+std::vector<int> DivisorSolution::euclideanMethod(int a, int b) const
 {
     TIME_BEGIN(timing);
     a = std::abs(a);
@@ -59,12 +59,12 @@ std::vector<int> Divisor::euclidMethod(int a, int b) const
     std::vector<int> divisorVector = getAllDivisors(greatestCommonDivisor);
 
     TIME_END(timing);
-    DIVISOR_PRINT_RESULT_CONTENT("Euclid");
+    DIVISOR_PRINT_RESULT_CONTENT("Euclidean");
     return divisorVector;
 }
 
 // Stein
-std::vector<int> Divisor::steinMethod(int a, int b) const
+std::vector<int> DivisorSolution::steinMethod(int a, int b) const
 {
     TIME_BEGIN(timing);
     int greatestCommonDivisor = 0, c = 0;
@@ -93,7 +93,7 @@ std::vector<int> Divisor::steinMethod(int a, int b) const
     return divisorVector;
 }
 
-int Divisor::steinRecursive(int a, int b)
+int DivisorSolution::steinRecursive(int a, int b)
 {
     if (0 == a)
     {

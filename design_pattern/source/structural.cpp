@@ -7,7 +7,7 @@
 
 namespace dp_structural
 {
-Structural::Structural()
+StructuralPattern::StructuralPattern()
 {
     std::cout << "\r\nStructural pattern:" << std::endl;
 }
@@ -50,7 +50,7 @@ private:
 } // namespace adapter
 
 // NOLINTNEXTLINE(readability-convert-member-functions-to-static)
-void Structural::adapterInstance() const
+void StructuralPattern::adapterInstance() const
 {
     using adapter::Adapter;
     using adapter::Target;
@@ -116,7 +116,7 @@ private:
 } // namespace bridge
 
 // NOLINTNEXTLINE(readability-convert-member-functions-to-static)
-void Structural::bridgeInstance() const
+void StructuralPattern::bridgeInstance() const
 {
     using bridge::Abstraction;
     using bridge::ConcreteImplementorA;
@@ -206,7 +206,7 @@ private:
 } // namespace composite
 
 // NOLINTNEXTLINE(readability-convert-member-functions-to-static)
-void Structural::compositeInstance() const
+void StructuralPattern::compositeInstance() const
 {
     using composite::Composite;
     using composite::Leaf;
@@ -287,7 +287,7 @@ public:
 } // namespace decorator
 
 // NOLINTNEXTLINE(readability-convert-member-functions-to-static)
-void Structural::decoratorInstance() const
+void StructuralPattern::decoratorInstance() const
 {
     using decorator::Component;
     using decorator::ConcreteComponent;
@@ -351,7 +351,7 @@ private:
 } // namespace facade
 
 // NOLINTNEXTLINE(readability-convert-member-functions-to-static)
-void Structural::facadeInstance() const
+void StructuralPattern::facadeInstance() const
 {
     using facade::Facade;
 
@@ -435,7 +435,7 @@ private:
 } // namespace flyweight
 
 // NOLINTNEXTLINE(readability-convert-member-functions-to-static)
-void Structural::flyweightInstance() const
+void StructuralPattern::flyweightInstance() const
 {
     using flyweight::FlyweightFactory;
 
@@ -498,7 +498,7 @@ protected:
 } // namespace proxy
 
 // NOLINTNEXTLINE(readability-convert-member-functions-to-static)
-void Structural::proxyInstance() const
+void StructuralPattern::proxyInstance() const
 {
     using proxy::Proxy;
 

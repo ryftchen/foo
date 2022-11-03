@@ -19,15 +19,19 @@
 
 namespace algo_search
 {
-template class Search<double>;
-template int Search<double>::binarySearch(const double* const array, const uint32_t length, const double key) const;
-template int Search<double>::interpolationSearch(const double* const array, const uint32_t length, const double key)
+template class SearchSolution<double>;
+template int SearchSolution<double>::binaryMethod(const double* const array, const uint32_t length, const double key)
     const;
-template int Search<double>::fibonacciSearch(const double* const array, const uint32_t length, const double key) const;
+template int SearchSolution<double>::interpolationMethod(
+    const double* const array,
+    const uint32_t length,
+    const double key) const;
+template int SearchSolution<double>::fibonacciMethod(const double* const array, const uint32_t length, const double key)
+    const;
 
 // Binary
 template <class T>
-int Search<T>::binarySearch(const T* const array, const uint32_t length, const T key) const
+int SearchSolution<T>::binaryMethod(const T* const array, const uint32_t length, const T key) const
 {
     TIME_BEGIN(timing);
     int index = -1;
@@ -58,7 +62,7 @@ int Search<T>::binarySearch(const T* const array, const uint32_t length, const T
 
 // Interpolation
 template <class T>
-int Search<T>::interpolationSearch(const T* const array, const uint32_t length, const T key) const
+int SearchSolution<T>::interpolationMethod(const T* const array, const uint32_t length, const T key) const
 {
     TIME_BEGIN(timing);
     int index = -1;
@@ -89,7 +93,7 @@ int Search<T>::interpolationSearch(const T* const array, const uint32_t length, 
 
 // Fibonacci
 template <class T>
-int Search<T>::fibonacciSearch(const T* const array, const uint32_t length, const T key) const
+int SearchSolution<T>::fibonacciMethod(const T* const array, const uint32_t length, const T key) const
 {
     TIME_BEGIN(timing);
     int index = -1;
@@ -143,7 +147,7 @@ int Search<T>::fibonacciSearch(const T* const array, const uint32_t length, cons
 }
 
 template <class T>
-std::vector<uint32_t> Search<T>::generateFibonacciNumber(const uint32_t max)
+std::vector<uint32_t> SearchSolution<T>::generateFibonacciNumber(const uint32_t max)
 {
     std::vector<uint32_t> fibonacci(0);
     uint32_t f1 = 0.0, f2 = 1.0;
