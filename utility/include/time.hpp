@@ -61,11 +61,11 @@ inline double Time::getTimeInterval() const
 
 void Time::setBlockingTimer(auto func, const uint32_t delay)
 {
-    isBlockingTimerRunning = true;
+    isBlockingTimerRunning.store(true);
     std::thread timerThread(
         [=]()
         {
-            while (isBlockingTimerRunning)
+            while (isBlockingTimerRunning.load())
             {
                 millisecondLevelSleep(delay);
                 func();
@@ -78,7 +78,7 @@ void Time::setBlockingTimer(auto func, const uint32_t delay)
 
 inline void Time::resetBlockingTimer()
 {
-    isBlockingTimerRunning = false;
+    isBlockingTimerRunning.store(false);
 }
 
 extern std::string getCurrentSystemTime();

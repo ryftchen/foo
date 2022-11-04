@@ -34,7 +34,7 @@ decltype(auto) Thread::enqueue(const std::string& name, Func&& func, Args&&... a
 
     if (std::unique_lock<std::mutex> lock(queueMutex); true)
     {
-        if (releaseReady)
+        if (releaseReady.load())
         {
             throw std::logic_error("thread: Coming to destructure.");
         }

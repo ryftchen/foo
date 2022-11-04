@@ -17,23 +17,16 @@ Log::Log(
 
 void Log::runLogger()
 {
-    State expectedState = State::idle;
-    auto isTargetState = [&](const State state) -> bool
-    {
-        expectedState = state;
-        return (currentState() == expectedState);
-    };
-
     try
     {
-        util_fsm::checkIfExceptedFSMState(isTargetState(State::init));
+        util_fsm::checkIfExceptedFSMState(currentState(), State::init);
         processEvent(OpenFile());
 
-        util_fsm::checkIfExceptedFSMState(isTargetState(State::idle));
+        util_fsm::checkIfExceptedFSMState(currentState(), State::idle);
         processEvent(GoLogging());
 
-        util_fsm::checkIfExceptedFSMState(isTargetState(State::work));
-        while (isLogging)
+        util_fsm::checkIfExceptedFSMState(currentState(), State::work);
+        while (isLogging.load())
         {
             if (std::unique_lock<std::mutex> lock(queueMutex); true)
             {
@@ -41,7 +34,7 @@ void Log::runLogger()
                     lock,
                     [this]() -> decltype(auto)
                     {
-                        return !isLogging || !logQueue.empty();
+                        return (!isLogging.load() || !logQueue.empty());
                     });
 
                 while (!logQueue.empty())
@@ -68,15 +61,14 @@ void Log::runLogger()
 
         processEvent(CloseFile());
 
-        util_fsm::checkIfExceptedFSMState(isTargetState(State::idle));
+        util_fsm::checkIfExceptedFSMState(currentState(), State::idle);
         processEvent(NoLogging());
 
-        util_fsm::checkIfExceptedFSMState(isTargetState(State::done));
+        util_fsm::checkIfExceptedFSMState(currentState(), State::done);
     }
     catch (const std::exception& error)
     {
-        std::cerr << "log: " << error.what() << ", expected state: " << expectedState
-                  << ", current state: " << State(currentState()) << std::endl;
+        std::cerr << error.what() << std::endl;
         stopLogging();
     }
 }
@@ -98,7 +90,7 @@ void Log::waitStartForExternalUse()
                 std::cout << "log: Wait logger start... (" << waitCount << ")" << std::endl;
             }
         },
-        1);
+        2);
     timer.resetBlockingTimer();
 }
 
@@ -106,7 +98,7 @@ void Log::waitStopForExternalUse()
 {
     if (std::unique_lock<std::mutex> lock(queueMutex); true)
     {
-        isLogging = false;
+        isLogging.store(false);
 
         lock.unlock();
         condition.notify_one();
@@ -129,7 +121,7 @@ void Log::waitStopForExternalUse()
                 std::cout << "log: Wait logger stop... (" << waitCount << ")" << std::endl;
             }
         },
-        1);
+        2);
     timer.resetBlockingTimer();
 }
 
@@ -166,7 +158,7 @@ void Log::startLogging()
 {
     if (std::unique_lock<std::mutex> lock(queueMutex); true)
     {
-        isLogging = true;
+        isLogging.store(true);
     }
 };
 
@@ -184,7 +176,7 @@ void Log::stopLogging()
 {
     if (std::unique_lock<std::mutex> lock(queueMutex); true)
     {
-        isLogging = false;
+        isLogging.store(false);
         while (!logQueue.empty())
         {
             logQueue.pop();
@@ -242,28 +234,5 @@ std::string& changeLogLevelStyle(std::string& line)
     }
 
     return line;
-}
-
-std::ostream& operator<<(std::ostream& os, const Log::State& state)
-{
-    switch (state)
-    {
-        case Log::State::init:
-            os << "INIT";
-            break;
-        case Log::State::idle:
-            os << "IDLE";
-            break;
-        case Log::State::work:
-            os << "WORK";
-            break;
-        case Log::State::done:
-            os << "DONE";
-            break;
-        default:
-            os << "UNKNOWN: " << static_cast<std::underlying_type_t<Log::State>>(state);
-    }
-
-    return os;
 }
 } // namespace util_log
