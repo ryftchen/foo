@@ -1,12 +1,15 @@
 #include "fsm.hpp"
+#include <sstream>
 
 namespace util_fsm
 {
-void checkIfExceptedFSMState(const bool normalState)
+void checkIfExceptedFSMState(const int currentState, const int exceptedState)
 {
-    if (!normalState)
+    if (currentState != exceptedState)
     {
-        throw std::runtime_error("fsm: State is abnormal.");
+        std::ostringstream stream;
+        stream << "fsm: Abnormal status, current: " << currentState << ", expected: " << exceptedState << ".";
+        throw std::runtime_error(stream.str());
     }
 }
 } // namespace util_fsm

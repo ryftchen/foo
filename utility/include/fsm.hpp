@@ -295,11 +295,11 @@ FSM<Derived, State>::ProcessingLock::ProcessingLock(FSM& fsm) : isProcessing(fsm
 {
     try
     {
-        if (isProcessing)
+        if (isProcessing.load())
         {
             throw std::logic_error("fsm: Call processEvent recursively.");
         }
-        isProcessing = true;
+        isProcessing.store(true);
     }
     catch (const std::exception& error)
     {
@@ -310,8 +310,8 @@ FSM<Derived, State>::ProcessingLock::ProcessingLock(FSM& fsm) : isProcessing(fsm
 template <class Derived, class State>
 FSM<Derived, State>::ProcessingLock::~ProcessingLock()
 {
-    isProcessing = false;
+    isProcessing.store(false);
 }
 
-extern void checkIfExceptedFSMState(const bool normalState);
+extern void checkIfExceptedFSMState(const int currentState, const int exceptedState);
 } // namespace util_fsm

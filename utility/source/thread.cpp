@@ -19,10 +19,10 @@ Thread::Thread(const uint32_t count)
                             lock,
                             [this]() -> decltype(auto)
                             {
-                                return releaseReady || !taskQueue.empty();
+                                return (releaseReady.load() || !taskQueue.empty());
                             });
 
-                        if (releaseReady && taskQueue.empty())
+                        if (releaseReady.load() && taskQueue.empty())
                         {
                             return;
                         }
@@ -55,7 +55,7 @@ Thread::~Thread()
             {
                 return taskQueue.empty();
             });
-        releaseReady = true;
+        releaseReady.store(true);
     }
 
     condition.notify_all();
