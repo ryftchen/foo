@@ -25,7 +25,7 @@ public:
     inline void setBeginTime();
     inline void setEndTime();
     [[nodiscard]] inline double getTimeInterval() const;
-    void setBlockingTimer(auto func, const uint32_t delay);
+    void setBlockingTimer(auto func, const uint32_t interval);
     inline void resetBlockingTimer();
 
 private:
@@ -59,7 +59,7 @@ inline double Time::getTimeInterval() const
     return timeInterval.count();
 }
 
-void Time::setBlockingTimer(auto func, const uint32_t delay)
+void Time::setBlockingTimer(auto func, const uint32_t interval)
 {
     isBlockingTimerRunning.store(true);
     std::thread timerThread(
@@ -67,7 +67,7 @@ void Time::setBlockingTimer(auto func, const uint32_t delay)
         {
             while (isBlockingTimerRunning.load())
             {
-                millisecondLevelSleep(delay);
+                millisecondLevelSleep(interval);
                 func();
             }
         });
