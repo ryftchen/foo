@@ -40,6 +40,7 @@ jcvf
 kmp
 knu
 libalgorithm
+libdata
 libdesign
 libnumeric
 libutility
@@ -54,6 +55,7 @@ profdata
 profraw
 pylint
 pylintrc
+qux
 rabin
 Rastrigin
 rcfile
