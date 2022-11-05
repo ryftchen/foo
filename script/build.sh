@@ -12,6 +12,7 @@ APPLICATION_FOLDER="application"
 UTILITY_FOLDER="utility"
 ALGORITHM_FOLDER="algorithm"
 DESIGN_PATTERN_FOLDER="design_pattern"
+DATA_STRUCTURE_FOLDER="data_structure"
 NUMERIC_FOLDER="numeric"
 SCRIPT_FOLDER="script"
 DOCKER_FOLDER="docker"
@@ -89,8 +90,8 @@ checkDependencies()
     fi
 
     if [ ! -d ./"${APPLICATION_FOLDER}" ] || [ ! -d ./"${UTILITY_FOLDER}" ] || [ ! -d ./"${ALGORITHM_FOLDER}" ] \
-        || [ ! -d ./"${DESIGN_PATTERN_FOLDER}" ] || [ ! -d ./"${NUMERIC_FOLDER}" ] \
-        || [ ! -d ./"${SCRIPT_FOLDER}" ]; then
+        || [ ! -d ./"${DATA_STRUCTURE_FOLDER}" ] || [ ! -d ./"${DESIGN_PATTERN_FOLDER}" ] \
+        || [ ! -d ./"${NUMERIC_FOLDER}" ] || [ ! -d ./"${SCRIPT_FOLDER}" ]; then
         printException "Missing code folders in ${PROJECT_FOLDER} folder. Please check it."
     fi
 
@@ -196,8 +197,8 @@ compileCode()
 performFormatOption()
 {
     if [ "${ARGS_FORMAT}" = true ]; then
-        bashCommand "find ./${APPLICATION_FOLDER} ./${UTILITY_FOLDER} ./${ALGORITHM_FOLDER} ./${DESIGN_PATTERN_FOLDER} \
-./${NUMERIC_FOLDER} -name *.cpp -o -name *.hpp | xargs clang-format-12 -i --verbose"
+        bashCommand "find ./${APPLICATION_FOLDER} ./${UTILITY_FOLDER} ./${ALGORITHM_FOLDER} ./${DATA_STRUCTURE_FOLDER} \
+./${DESIGN_PATTERN_FOLDER} ./${NUMERIC_FOLDER} -name *.cpp -o -name *.hpp | xargs clang-format-12 -i --verbose"
         bashCommand "shfmt -l -w ./${SCRIPT_FOLDER}/*.sh"
         bashCommand "black --config ./${FORMAT_CONFIG_PY} ./${SCRIPT_FOLDER}/*.py"
     fi
@@ -207,8 +208,8 @@ performLintOption()
 {
     if [ "${ARGS_LINT}" = true ]; then
         bashCommand "compdb -p ./${BUILD_FOLDER} list > ./${COMPILE_COMMANDS} && \
-mv ./${COMPILE_COMMANDS} ./${BUILD_FOLDER} && \
-find ./${APPLICATION_FOLDER} ./${UTILITY_FOLDER} ./${ALGORITHM_FOLDER} ./${DESIGN_PATTERN_FOLDER} ./${NUMERIC_FOLDER} \
+mv ./${COMPILE_COMMANDS} ./${BUILD_FOLDER} && find ./${APPLICATION_FOLDER} ./${UTILITY_FOLDER} \
+./${ALGORITHM_FOLDER} ./${DATA_STRUCTURE_FOLDER} ./${DESIGN_PATTERN_FOLDER} ./${NUMERIC_FOLDER} \
 -name *.cpp -o -name *.hpp | xargs run-clang-tidy-12.py -p ./${BUILD_FOLDER} -quiet"
         bashCommand "shellcheck ./${SCRIPT_FOLDER}/*.sh"
         bashCommand "pylint --rcfile=${LINT_CONFIG_PY} ./${SCRIPT_FOLDER}/*.py"

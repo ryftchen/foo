@@ -3,6 +3,7 @@
 #include "algorithm/include/notation.hpp"
 #include "algorithm/include/search.hpp"
 #include "algorithm/include/sort.hpp"
+#include "data_structure/include/linear.hpp"
 #include "design_pattern/include/behavioral.hpp"
 #include "design_pattern/include/creational.hpp"
 #include "design_pattern/include/structural.hpp"
@@ -61,6 +62,25 @@ Command::Command()
                     throw std::runtime_error("Unknown algorithm category: " + value);
                 })
             .help("match, notation, search, sort [add category with \"--help\" for task details]");
+
+        program.addArgument("-ds", "--data-structure")
+            .nArgs(1)
+            .action(
+                [this](const std::string& value)
+                {
+                    if (std::any_of(
+                            generalTaskMap.at("data-structure").cbegin(),
+                            generalTaskMap.at("data-structure").cend(),
+                            [&value](const auto& taskCategoryMap)
+                            {
+                                return (taskCategoryMap.first == value);
+                            }))
+                    {
+                        return value;
+                    }
+                    throw std::runtime_error("Unknown data structure category: " + value);
+                })
+            .help("linear [add category with \"--help\" for task details]");
 
         program.addArgument("-dp", "--design-pattern")
             .nArgs(1)
@@ -275,6 +295,12 @@ void Command::performTask() const
                         continue;
                     }
                     break;
+                case GeneralTask::Category::dataStructure:
+                    if (taskPlan.generalTask.dataStructureTask.empty())
+                    {
+                        continue;
+                    }
+                    break;
                 case GeneralTask::Category::designPattern:
                     if (taskPlan.generalTask.designPatternTask.empty())
                     {
@@ -363,6 +389,17 @@ void Command::printHelpMessage() const
                       "cou    Counting\r\n"
                       "buc    Bucket\r\n"
                       "rad    Radix");
+        }
+    }
+    else if (!taskPlan.generalTask.dataStructureTask.empty())
+    {
+        std::cout << "Usage: foo -ds, --data-structure ";
+        if (!taskPlan.generalTask.getBit<LinearMethod>().none())
+        {
+            std::puts("linear [tasks...]\r\n\r\nNon-optional:\r\n"
+                      "lin    Linked List\r\n"
+                      "sta    Stack\r\n"
+                      "que    Queue");
         }
     }
     else if (!taskPlan.generalTask.designPatternTask.empty())
@@ -926,6 +963,75 @@ void Command::runBehavioral() const
     }
 
     COMMAND_PRINT_TASK_END_TITLE;
+}
+
+void Command::runLinear() const
+{
+    std::unique_lock<std::mutex> lock(commandMutex);
+    if (taskPlan.generalTask.getBit<LinearMethod>().none())
+    {
+        return;
+    }
+
+    const auto [taskCategory, taskType] = getTargetTaskAttribute<LinearMethod>();
+    COMMAND_PRINT_TASK_BEGIN_TITLE;
+
+    using ds_linear::LinearStructure;
+    const std::shared_ptr<LinearStructure> linear = std::make_shared<LinearStructure>();
+    std::shared_ptr<util_thread::Thread> threads = std::make_shared<util_thread::Thread>(std::min(
+        static_cast<uint32_t>(taskPlan.generalTask.getBit<LinearMethod>().count()),
+        static_cast<uint32_t>(DataStructureTask::Bottom<LinearMethod>::value)));
+    const auto linearFunctor = [&](const std::string& threadName, void (LinearStructure::*instancePtr)() const)
+    {
+        threads->enqueue(threadName, instancePtr, linear);
+    };
+
+    for (int i = 0; i < DataStructureTask::Bottom<LinearMethod>::value; ++i)
+    {
+        if (!taskPlan.generalTask.getBit<LinearMethod>().test(LinearMethod(i)))
+        {
+            continue;
+        }
+
+        const auto [targetInstance, threadName] = getTargetTaskDetail(taskCategory, taskType, i);
+        using util_hash::operator""_bkdrHash;
+        switch (util_hash::bkdrHash(targetInstance.data()))
+        {
+            case "lin"_bkdrHash:
+                linearFunctor(threadName, &LinearStructure::linkedListInstance);
+                break;
+            case "sta"_bkdrHash:
+                linearFunctor(threadName, &LinearStructure::stackInstance);
+                break;
+            case "que"_bkdrHash:
+                linearFunctor(threadName, &LinearStructure::queueInstance);
+                break;
+            default:
+                LOG_DBG("execute to run unknown linear instance.");
+                break;
+        }
+    }
+
+    COMMAND_PRINT_TASK_END_TITLE;
+}
+
+void Command::updateLinearTask(const std::string& target)
+{
+    using util_hash::operator""_bkdrHash;
+    switch (util_hash::bkdrHash(target.c_str()))
+    {
+        case "lin"_bkdrHash:
+            taskPlan.generalTask.setBit<LinearMethod>(LinearMethod::linkedList);
+            break;
+        case "sta"_bkdrHash:
+            taskPlan.generalTask.setBit<LinearMethod>(LinearMethod::stack);
+            break;
+        case "que"_bkdrHash:
+            taskPlan.generalTask.setBit<LinearMethod>(LinearMethod::queue);
+            break;
+        default:
+            throwUnexpectedTaskException("linear: " + target);
+    }
 }
 
 void Command::updateBehavioralTask(const std::string& target)

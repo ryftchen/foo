@@ -64,13 +64,14 @@ private:
         enum Category
         {
             algorithm,
+            dataStructure,
             designPattern,
             numeric
         };
         template <>
         struct Bottom<Category>
         {
-            static constexpr int value = 3;
+            static constexpr int value = 4;
         };
 
         class AlgorithmTask
@@ -188,6 +189,54 @@ private:
                 return os;
             }
         } algorithmTask{};
+
+        class DataStructureTask
+        {
+        public:
+            template <class T>
+            struct Bottom;
+
+            enum Type
+            {
+                linear
+            };
+            template <>
+            struct Bottom<Type>
+            {
+                static constexpr int value = 1;
+            };
+
+            enum LinearMethod
+            {
+                linkedList,
+                stack,
+                queue
+            };
+            template <>
+            struct Bottom<LinearMethod>
+            {
+                static constexpr int value = 3;
+            };
+
+            std::bitset<Bottom<LinearMethod>::value> linearBit;
+
+            [[nodiscard]] bool empty() const { return (linearBit.none()); }
+            void reset() { linearBit.reset(); }
+
+        protected:
+            friend std::ostream& operator<<(std::ostream& os, const Type& type)
+            {
+                switch (type)
+                {
+                    case Type::linear:
+                        os << "LINEAR";
+                        break;
+                    default:
+                        os << "UNKNOWN: " << static_cast<std::underlying_type_t<Type>>(type);
+                }
+                return os;
+            }
+        } dataStructureTask{};
 
         class DesignPatternTask
         {
@@ -425,11 +474,13 @@ private:
 
         [[nodiscard]] bool empty() const
         {
-            return (algorithmTask.empty() && designPatternTask.empty() && numericTask.empty());
+            return (
+                algorithmTask.empty() && dataStructureTask.empty() && designPatternTask.empty() && numericTask.empty());
         }
         void reset()
         {
             algorithmTask.reset();
+            dataStructureTask.reset();
             designPatternTask.reset();
             numericTask.reset();
         }
@@ -451,6 +502,10 @@ private:
             else if constexpr (std::is_same_v<T, AlgorithmTask::SortMethod>)
             {
                 return algorithmTask.sortBit;
+            }
+            else if constexpr (std::is_same_v<T, DataStructureTask::LinearMethod>)
+            {
+                return dataStructureTask.linearBit;
             }
             else if constexpr (std::is_same_v<T, DesignPatternTask::BehavioralMethod>)
             {
@@ -504,6 +559,10 @@ private:
             {
                 algorithmTask.sortBit.set(AlgorithmTask::SortMethod(index));
             }
+            else if constexpr (std::is_same_v<T, DataStructureTask::LinearMethod>)
+            {
+                dataStructureTask.linearBit.set(DataStructureTask::LinearMethod(index));
+            }
             else if constexpr (std::is_same_v<T, DesignPatternTask::BehavioralMethod>)
             {
                 designPatternTask.behavioralBit.set(DesignPatternTask::BehavioralMethod(index));
@@ -546,6 +605,9 @@ private:
                 case Category::algorithm:
                     os << "ALGORITHM";
                     break;
+                case Category::dataStructure:
+                    os << "DATA STRUCTURE";
+                    break;
                 case Category::designPattern:
                     os << "DESIGN PATTERN";
                     break;
@@ -565,6 +627,8 @@ private:
     using NotationMethod = AlgorithmTask::NotationMethod;
     using SearchMethod = AlgorithmTask::SearchMethod;
     using SortMethod = AlgorithmTask::SortMethod;
+    using DataStructureTask = GeneralTask::DataStructureTask;
+    using LinearMethod = DataStructureTask::LinearMethod;
     using DesignPatternTask = GeneralTask::DesignPatternTask;
     using BehavioralMethod = DesignPatternTask::BehavioralMethod;
     using CreationalMethod = DesignPatternTask::CreationalMethod;
@@ -624,6 +688,7 @@ private:
                               { "search"     , {{ "bin", "int", "fib"               } , { &Command::runSearch     , &Command::updateSearchTask     }}},
                               { "sort"       , {{ "bub", "sel", "ins", "she", "mer",
                                                   "qui", "hea", "cou", "buc", "rad" } , { &Command::runSort       , &Command::updateSortTask       }}}}},
+        { "data-structure" , {{ "linear"     , {{ "lin", "sta", "que"               } , { &Command::runLinear     , &Command::updateLinearTask     }}}}},
         { "design-pattern" , {{ "behavioral" , {{ "cha", "com", "int", "ite", "med",
                                                   "mem", "obs", "sta", "str", "tem",
                                                   "vis"                             } , { &Command::runBehavioral , &Command::updateBehavioralTask }}},
@@ -651,6 +716,8 @@ private:
     void updateSearchTask(const std::string& target);
     void runSort() const;
     void updateSortTask(const std::string& target);
+    void runLinear() const;
+    void updateLinearTask(const std::string& target);
     void runBehavioral() const;
     void updateBehavioralTask(const std::string& target);
     void runCreational() const;
@@ -766,6 +833,10 @@ auto Command::getTargetTaskAttribute() const
     else if constexpr (std::is_same_v<T, SortMethod>)
     {
         return std::make_tuple(GeneralTask::Category::algorithm, AlgorithmTask::Type::sort);
+    }
+    else if constexpr (std::is_same_v<T, LinearMethod>)
+    {
+        return std::make_tuple(GeneralTask::Category::dataStructure, DataStructureTask::Type::linear);
     }
     else if constexpr (std::is_same_v<T, BehavioralMethod>)
     {

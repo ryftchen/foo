@@ -49,6 +49,7 @@ include_directories(${CMAKE_SOURCE_DIR})
 
 add_subdirectory(utility)
 add_subdirectory(algorithm)
+add_subdirectory(data_structure)
 add_subdirectory(design_pattern)
 add_subdirectory(numeric)
 
@@ -69,5 +70,6 @@ target_link_libraries(
     PRIVATE
         foo::utility
         foo::algorithm
+        foo::data_structure
         foo::design_pattern
         foo::numeric)
