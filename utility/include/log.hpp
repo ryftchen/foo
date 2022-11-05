@@ -22,6 +22,7 @@ namespace util_log
 inline constexpr std::string_view logPath{"./temporary/foo.log"};
 constexpr uint32_t logPathLength = 32;
 constexpr uint32_t maxCountOfWaitLogger = 10;
+constexpr uint32_t intervalOfWaitLogger = 5;
 constexpr std::string_view logDirectory{"./temporary"};
 constexpr std::string_view debugLevelPrefix{"[DBG]"};
 constexpr std::string_view infoLevelPrefix{"[INF]"};

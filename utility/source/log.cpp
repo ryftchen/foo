@@ -90,7 +90,7 @@ void Log::waitStartForExternalUse()
                 std::cout << "log: Wait logger start... (" << waitCount << ")" << std::endl;
             }
         },
-        2);
+        intervalOfWaitLogger);
     timer.resetBlockingTimer();
 }
 
@@ -121,7 +121,7 @@ void Log::waitStopForExternalUse()
                 std::cout << "log: Wait logger stop... (" << waitCount << ")" << std::endl;
             }
         },
-        2);
+        intervalOfWaitLogger);
     timer.resetBlockingTimer();
 }
 
