@@ -206,19 +206,19 @@ private:
                 static constexpr int value = 1;
             };
 
-            enum LinearMethod
+            enum LinearInstance
             {
                 linkedList,
                 stack,
                 queue
             };
             template <>
-            struct Bottom<LinearMethod>
+            struct Bottom<LinearInstance>
             {
                 static constexpr int value = 3;
             };
 
-            std::bitset<Bottom<LinearMethod>::value> linearBit;
+            std::bitset<Bottom<LinearInstance>::value> linearBit;
 
             [[nodiscard]] bool empty() const { return (linearBit.none()); }
             void reset() { linearBit.reset(); }
@@ -256,7 +256,7 @@ private:
                 static constexpr int value = 3;
             };
 
-            enum BehavioralMethod
+            enum BehavioralInstance
             {
                 chainOfResponsibility,
                 command,
@@ -271,12 +271,12 @@ private:
                 visitor
             };
             template <>
-            struct Bottom<BehavioralMethod>
+            struct Bottom<BehavioralInstance>
             {
                 static constexpr int value = 11;
             };
 
-            enum CreationalMethod
+            enum CreationalInstance
             {
                 abstractFactory,
                 builder,
@@ -285,12 +285,12 @@ private:
                 singleton
             };
             template <>
-            struct Bottom<CreationalMethod>
+            struct Bottom<CreationalInstance>
             {
                 static constexpr int value = 5;
             };
 
-            enum StructuralMethod
+            enum StructuralInstance
             {
                 adapter,
                 bridge,
@@ -301,14 +301,14 @@ private:
                 proxy
             };
             template <>
-            struct Bottom<StructuralMethod>
+            struct Bottom<StructuralInstance>
             {
                 static constexpr int value = 7;
             };
 
-            std::bitset<Bottom<BehavioralMethod>::value> behavioralBit;
-            std::bitset<Bottom<CreationalMethod>::value> creationalBit;
-            std::bitset<Bottom<StructuralMethod>::value> structuralBit;
+            std::bitset<Bottom<BehavioralInstance>::value> behavioralBit;
+            std::bitset<Bottom<CreationalInstance>::value> creationalBit;
+            std::bitset<Bottom<StructuralInstance>::value> structuralBit;
 
             [[nodiscard]] bool empty() const
             {
@@ -503,19 +503,19 @@ private:
             {
                 return algorithmTask.sortBit;
             }
-            else if constexpr (std::is_same_v<T, DataStructureTask::LinearMethod>)
+            else if constexpr (std::is_same_v<T, DataStructureTask::LinearInstance>)
             {
                 return dataStructureTask.linearBit;
             }
-            else if constexpr (std::is_same_v<T, DesignPatternTask::BehavioralMethod>)
+            else if constexpr (std::is_same_v<T, DesignPatternTask::BehavioralInstance>)
             {
                 return designPatternTask.behavioralBit;
             }
-            else if constexpr (std::is_same_v<T, DesignPatternTask::CreationalMethod>)
+            else if constexpr (std::is_same_v<T, DesignPatternTask::CreationalInstance>)
             {
                 return designPatternTask.creationalBit;
             }
-            else if constexpr (std::is_same_v<T, DesignPatternTask::StructuralMethod>)
+            else if constexpr (std::is_same_v<T, DesignPatternTask::StructuralInstance>)
             {
                 return designPatternTask.structuralBit;
             }
@@ -559,21 +559,21 @@ private:
             {
                 algorithmTask.sortBit.set(AlgorithmTask::SortMethod(index));
             }
-            else if constexpr (std::is_same_v<T, DataStructureTask::LinearMethod>)
+            else if constexpr (std::is_same_v<T, DataStructureTask::LinearInstance>)
             {
-                dataStructureTask.linearBit.set(DataStructureTask::LinearMethod(index));
+                dataStructureTask.linearBit.set(DataStructureTask::LinearInstance(index));
             }
-            else if constexpr (std::is_same_v<T, DesignPatternTask::BehavioralMethod>)
+            else if constexpr (std::is_same_v<T, DesignPatternTask::BehavioralInstance>)
             {
-                designPatternTask.behavioralBit.set(DesignPatternTask::BehavioralMethod(index));
+                designPatternTask.behavioralBit.set(DesignPatternTask::BehavioralInstance(index));
             }
-            else if constexpr (std::is_same_v<T, DesignPatternTask::CreationalMethod>)
+            else if constexpr (std::is_same_v<T, DesignPatternTask::CreationalInstance>)
             {
-                designPatternTask.creationalBit.set(DesignPatternTask::CreationalMethod(index));
+                designPatternTask.creationalBit.set(DesignPatternTask::CreationalInstance(index));
             }
-            else if constexpr (std::is_same_v<T, DesignPatternTask::StructuralMethod>)
+            else if constexpr (std::is_same_v<T, DesignPatternTask::StructuralInstance>)
             {
-                designPatternTask.structuralBit.set(DesignPatternTask::StructuralMethod(index));
+                designPatternTask.structuralBit.set(DesignPatternTask::StructuralInstance(index));
             }
             else if constexpr (std::is_same_v<T, NumericTask::ArithmeticMethod>)
             {
@@ -628,11 +628,11 @@ private:
     using SearchMethod = AlgorithmTask::SearchMethod;
     using SortMethod = AlgorithmTask::SortMethod;
     using DataStructureTask = GeneralTask::DataStructureTask;
-    using LinearMethod = DataStructureTask::LinearMethod;
+    using LinearInstance = DataStructureTask::LinearInstance;
     using DesignPatternTask = GeneralTask::DesignPatternTask;
-    using BehavioralMethod = DesignPatternTask::BehavioralMethod;
-    using CreationalMethod = DesignPatternTask::CreationalMethod;
-    using StructuralMethod = DesignPatternTask::StructuralMethod;
+    using BehavioralInstance = DesignPatternTask::BehavioralInstance;
+    using CreationalInstance = DesignPatternTask::CreationalInstance;
+    using StructuralInstance = DesignPatternTask::StructuralInstance;
     using NumericTask = GeneralTask::NumericTask;
     using ArithmeticMethod = NumericTask::ArithmeticMethod;
     using DivisorMethod = NumericTask::DivisorMethod;
@@ -834,19 +834,19 @@ auto Command::getTargetTaskAttribute() const
     {
         return std::make_tuple(GeneralTask::Category::algorithm, AlgorithmTask::Type::sort);
     }
-    else if constexpr (std::is_same_v<T, LinearMethod>)
+    else if constexpr (std::is_same_v<T, LinearInstance>)
     {
         return std::make_tuple(GeneralTask::Category::dataStructure, DataStructureTask::Type::linear);
     }
-    else if constexpr (std::is_same_v<T, BehavioralMethod>)
+    else if constexpr (std::is_same_v<T, BehavioralInstance>)
     {
         return std::make_tuple(GeneralTask::Category::designPattern, DesignPatternTask::Type::behavioral);
     }
-    else if constexpr (std::is_same_v<T, CreationalMethod>)
+    else if constexpr (std::is_same_v<T, CreationalInstance>)
     {
         return std::make_tuple(GeneralTask::Category::designPattern, DesignPatternTask::Type::creational);
     }
-    else if constexpr (std::is_same_v<T, StructuralMethod>)
+    else if constexpr (std::is_same_v<T, StructuralInstance>)
     {
         return std::make_tuple(GeneralTask::Category::designPattern, DesignPatternTask::Type::structural);
     }

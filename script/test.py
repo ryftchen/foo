@@ -87,16 +87,16 @@ class Test:
     completeStep = 0
     basicTaskDict["--help"] = [
         f"{taskCategory} {taskType}"
-        for taskCategory, taskCategoryMaps in generalTaskDict.items()
-        for taskType in taskCategoryMaps.keys()
+        for taskCategory, taskCategoryMap in generalTaskDict.items()
+        for taskType in taskCategoryMap.keys()
     ]
     totalStep = 1 + len(basicTaskDict.keys())
-    for taskCategoryLists in basicTaskDict.values():
-        totalStep += len(taskCategoryLists)
-    for taskCategoryMaps in generalTaskDict.values():
-        totalStep += len(taskCategoryMaps.keys())
-        for taskMethods in taskCategoryMaps.values():
-            totalStep += len(taskMethods) + 1
+    for taskCategoryList in basicTaskDict.values():
+        totalStep += len(taskCategoryList)
+    for taskCategoryMap in generalTaskDict.values():
+        totalStep += len(taskCategoryMap.keys())
+        for targetTaskList in taskCategoryMap.values():
+            totalStep += len(targetTaskList) + 1
 
     def __init__(self):
         if not os.path.exists(self.tempDir):
@@ -256,18 +256,18 @@ class Test:
         refresh.write(outputContent)
 
     def generateBasicTask(self):
-        for taskCategory, taskCategoryLists in self.basicTaskDict.items():
+        for taskCategory, taskCategoryList in self.basicTaskDict.items():
             self.taskQueue.put(f"{self.binCmd} {taskCategory}")
-            for option in taskCategoryLists:
+            for option in taskCategoryList:
                 self.taskQueue.put(f"{self.binCmd} {taskCategory} {option}")
 
     def generateGeneralTask(self):
-        for taskCategory, taskCategoryMaps in self.generalTaskDict.items():
-            for taskType, taskMethods in taskCategoryMaps.items():
+        for taskCategory, taskCategoryMap in self.generalTaskDict.items():
+            for taskType, targetTaskList in taskCategoryMap.items():
                 self.taskQueue.put(f"{self.binCmd} {taskCategory} {taskType}")
-                for method in taskMethods:
-                    self.taskQueue.put(f"{self.binCmd} {taskCategory} {taskType} {method}")
-                self.taskQueue.put(f"{self.binCmd} {taskCategory} {taskType} {' '.join(taskMethods)}")
+                for target in targetTaskList:
+                    self.taskQueue.put(f"{self.binCmd} {taskCategory} {taskType} {target}")
+                self.taskQueue.put(f"{self.binCmd} {taskCategory} {taskType} {' '.join(targetTaskList)}")
 
 
 if __name__ == "__main__":
