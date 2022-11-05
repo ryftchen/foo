@@ -48,7 +48,7 @@ class Output:
 class Test:
     binCmd = "foo"
     binDir = "./build/bin/"
-    libList = ["libutility.so", "libalgorithm.so", "libdesign_pattern.so", "libnumeric.so"]
+    libList = ["libutility.so", "libalgorithm.so", "libdata_structure.so", "libdesign_pattern.so", "libnumeric.so"]
     libDir = "./build/lib/"
     basicTaskDict = {
         "--console": [r"'help'", r"'quit'", r"'run ./script/console_batch.txt'", r"'log'"],
@@ -62,6 +62,7 @@ class Test:
             "search": ["bin", "int", "fib"],
             "sort": ["bub", "sel", "ins", "she", "mer", "qui", "hea", "cou", "buc", "rad"],
         },
+        "--data-structure": {"linear": ["lin", "sta", "que"]},
         "--design-pattern": {
             "behavioral": ["cha", "com", "int", "ite", "med", "mem", "obs", "sta", "str", "tem", "vis"],
             "creational": ["abs", "bui", "fac", "pro", "sin"],
