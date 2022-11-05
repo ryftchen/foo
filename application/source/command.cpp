@@ -394,7 +394,7 @@ void Command::printHelpMessage() const
     else if (!taskPlan.generalTask.dataStructureTask.empty())
     {
         std::cout << "Usage: foo -ds, --data-structure ";
-        if (!taskPlan.generalTask.getBit<LinearMethod>().none())
+        if (!taskPlan.generalTask.getBit<LinearInstance>().none())
         {
             std::puts("linear [tasks...]\r\n\r\nNon-optional:\r\n"
                       "lin    Linked List\r\n"
@@ -405,7 +405,7 @@ void Command::printHelpMessage() const
     else if (!taskPlan.generalTask.designPatternTask.empty())
     {
         std::cout << "Usage: foo -dp, --design-pattern ";
-        if (!taskPlan.generalTask.getBit<BehavioralMethod>().none())
+        if (!taskPlan.generalTask.getBit<BehavioralInstance>().none())
         {
             std::puts("behavioral [tasks...]\r\n\r\nNon-optional:\r\n"
                       "cha    Chain Of Responsibility\r\n"
@@ -420,7 +420,7 @@ void Command::printHelpMessage() const
                       "tem    Template Method\r\n"
                       "vis    Visitor");
         }
-        else if (!taskPlan.generalTask.getBit<CreationalMethod>().none())
+        else if (!taskPlan.generalTask.getBit<CreationalInstance>().none())
         {
             std::puts("creational [tasks...]\r\n\r\nNon-optional:\r\n"
                       "abs    Abstract Factory\r\n"
@@ -429,7 +429,7 @@ void Command::printHelpMessage() const
                       "pro    Prototype\r\n"
                       "sin    Singleton");
         }
-        else if (!taskPlan.generalTask.getBit<StructuralMethod>().none())
+        else if (!taskPlan.generalTask.getBit<StructuralInstance>().none())
         {
             std::puts("structural [tasks...]\r\n\r\nNon-optional:\r\n"
                       "ada    Adapter\r\n"
@@ -891,30 +891,99 @@ void Command::updateSortTask(const std::string& target)
     }
 }
 
-void Command::runBehavioral() const
+void Command::runLinear() const
 {
     std::unique_lock<std::mutex> lock(commandMutex);
-    if (taskPlan.generalTask.getBit<BehavioralMethod>().none())
+    if (taskPlan.generalTask.getBit<LinearInstance>().none())
     {
         return;
     }
 
-    const auto [taskCategory, taskType] = getTargetTaskAttribute<BehavioralMethod>();
+    const auto [taskCategory, taskType] = getTargetTaskAttribute<LinearInstance>();
+    COMMAND_PRINT_TASK_BEGIN_TITLE;
+
+    using ds_linear::LinearStructure;
+    const std::shared_ptr<LinearStructure> linear = std::make_shared<LinearStructure>();
+    std::shared_ptr<util_thread::Thread> threads = std::make_shared<util_thread::Thread>(std::min(
+        static_cast<uint32_t>(taskPlan.generalTask.getBit<LinearInstance>().count()),
+        static_cast<uint32_t>(DataStructureTask::Bottom<LinearInstance>::value)));
+    const auto linearFunctor = [&](const std::string& threadName, void (LinearStructure::*instancePtr)() const)
+    {
+        threads->enqueue(threadName, instancePtr, linear);
+    };
+
+    for (int i = 0; i < DataStructureTask::Bottom<LinearInstance>::value; ++i)
+    {
+        if (!taskPlan.generalTask.getBit<LinearInstance>().test(LinearInstance(i)))
+        {
+            continue;
+        }
+
+        const auto [targetInstance, threadName] = getTargetTaskDetail(taskCategory, taskType, i);
+        using util_hash::operator""_bkdrHash;
+        switch (util_hash::bkdrHash(targetInstance.data()))
+        {
+            case "lin"_bkdrHash:
+                linearFunctor(threadName, &LinearStructure::linkedListInstance);
+                break;
+            case "sta"_bkdrHash:
+                linearFunctor(threadName, &LinearStructure::stackInstance);
+                break;
+            case "que"_bkdrHash:
+                linearFunctor(threadName, &LinearStructure::queueInstance);
+                break;
+            default:
+                LOG_DBG("execute to run unknown linear instance.");
+                break;
+        }
+    }
+
+    COMMAND_PRINT_TASK_END_TITLE;
+}
+
+void Command::updateLinearTask(const std::string& target)
+{
+    using util_hash::operator""_bkdrHash;
+    switch (util_hash::bkdrHash(target.c_str()))
+    {
+        case "lin"_bkdrHash:
+            taskPlan.generalTask.setBit<LinearInstance>(LinearInstance::linkedList);
+            break;
+        case "sta"_bkdrHash:
+            taskPlan.generalTask.setBit<LinearInstance>(LinearInstance::stack);
+            break;
+        case "que"_bkdrHash:
+            taskPlan.generalTask.setBit<LinearInstance>(LinearInstance::queue);
+            break;
+        default:
+            throwUnexpectedTaskException("linear: " + target);
+    }
+}
+
+void Command::runBehavioral() const
+{
+    std::unique_lock<std::mutex> lock(commandMutex);
+    if (taskPlan.generalTask.getBit<BehavioralInstance>().none())
+    {
+        return;
+    }
+
+    const auto [taskCategory, taskType] = getTargetTaskAttribute<BehavioralInstance>();
     COMMAND_PRINT_TASK_BEGIN_TITLE;
 
     using dp_behavioral::BehavioralPattern;
     const std::shared_ptr<BehavioralPattern> behavioral = std::make_shared<BehavioralPattern>();
     std::shared_ptr<util_thread::Thread> threads = std::make_shared<util_thread::Thread>(std::min(
-        static_cast<uint32_t>(taskPlan.generalTask.getBit<BehavioralMethod>().count()),
-        static_cast<uint32_t>(DesignPatternTask::Bottom<BehavioralMethod>::value)));
+        static_cast<uint32_t>(taskPlan.generalTask.getBit<BehavioralInstance>().count()),
+        static_cast<uint32_t>(DesignPatternTask::Bottom<BehavioralInstance>::value)));
     const auto behavioralFunctor = [&](const std::string& threadName, void (BehavioralPattern::*instancePtr)() const)
     {
         threads->enqueue(threadName, instancePtr, behavioral);
     };
 
-    for (int i = 0; i < DesignPatternTask::Bottom<BehavioralMethod>::value; ++i)
+    for (int i = 0; i < DesignPatternTask::Bottom<BehavioralInstance>::value; ++i)
     {
-        if (!taskPlan.generalTask.getBit<BehavioralMethod>().test(BehavioralMethod(i)))
+        if (!taskPlan.generalTask.getBit<BehavioralInstance>().test(BehavioralInstance(i)))
         {
             continue;
         }
@@ -965,112 +1034,43 @@ void Command::runBehavioral() const
     COMMAND_PRINT_TASK_END_TITLE;
 }
 
-void Command::runLinear() const
-{
-    std::unique_lock<std::mutex> lock(commandMutex);
-    if (taskPlan.generalTask.getBit<LinearMethod>().none())
-    {
-        return;
-    }
-
-    const auto [taskCategory, taskType] = getTargetTaskAttribute<LinearMethod>();
-    COMMAND_PRINT_TASK_BEGIN_TITLE;
-
-    using ds_linear::LinearStructure;
-    const std::shared_ptr<LinearStructure> linear = std::make_shared<LinearStructure>();
-    std::shared_ptr<util_thread::Thread> threads = std::make_shared<util_thread::Thread>(std::min(
-        static_cast<uint32_t>(taskPlan.generalTask.getBit<LinearMethod>().count()),
-        static_cast<uint32_t>(DataStructureTask::Bottom<LinearMethod>::value)));
-    const auto linearFunctor = [&](const std::string& threadName, void (LinearStructure::*instancePtr)() const)
-    {
-        threads->enqueue(threadName, instancePtr, linear);
-    };
-
-    for (int i = 0; i < DataStructureTask::Bottom<LinearMethod>::value; ++i)
-    {
-        if (!taskPlan.generalTask.getBit<LinearMethod>().test(LinearMethod(i)))
-        {
-            continue;
-        }
-
-        const auto [targetInstance, threadName] = getTargetTaskDetail(taskCategory, taskType, i);
-        using util_hash::operator""_bkdrHash;
-        switch (util_hash::bkdrHash(targetInstance.data()))
-        {
-            case "lin"_bkdrHash:
-                linearFunctor(threadName, &LinearStructure::linkedListInstance);
-                break;
-            case "sta"_bkdrHash:
-                linearFunctor(threadName, &LinearStructure::stackInstance);
-                break;
-            case "que"_bkdrHash:
-                linearFunctor(threadName, &LinearStructure::queueInstance);
-                break;
-            default:
-                LOG_DBG("execute to run unknown linear instance.");
-                break;
-        }
-    }
-
-    COMMAND_PRINT_TASK_END_TITLE;
-}
-
-void Command::updateLinearTask(const std::string& target)
-{
-    using util_hash::operator""_bkdrHash;
-    switch (util_hash::bkdrHash(target.c_str()))
-    {
-        case "lin"_bkdrHash:
-            taskPlan.generalTask.setBit<LinearMethod>(LinearMethod::linkedList);
-            break;
-        case "sta"_bkdrHash:
-            taskPlan.generalTask.setBit<LinearMethod>(LinearMethod::stack);
-            break;
-        case "que"_bkdrHash:
-            taskPlan.generalTask.setBit<LinearMethod>(LinearMethod::queue);
-            break;
-        default:
-            throwUnexpectedTaskException("linear: " + target);
-    }
-}
-
 void Command::updateBehavioralTask(const std::string& target)
 {
     using util_hash::operator""_bkdrHash;
     switch (util_hash::bkdrHash(target.c_str()))
     {
         case "cha"_bkdrHash:
-            taskPlan.generalTask.setBit<BehavioralMethod>(BehavioralMethod::chainOfResponsibility);
+            taskPlan.generalTask.setBit<BehavioralInstance>(BehavioralInstance::chainOfResponsibility);
             break;
         case "com"_bkdrHash:
-            taskPlan.generalTask.setBit<BehavioralMethod>(BehavioralMethod::command);
+            taskPlan.generalTask.setBit<BehavioralInstance>(BehavioralInstance::command);
             break;
         case "int"_bkdrHash:
-            taskPlan.generalTask.setBit<BehavioralMethod>(BehavioralMethod::interpreter);
+            taskPlan.generalTask.setBit<BehavioralInstance>(BehavioralInstance::interpreter);
             break;
         case "ite"_bkdrHash:
-            taskPlan.generalTask.setBit<BehavioralMethod>(BehavioralMethod::iterator);
+            taskPlan.generalTask.setBit<BehavioralInstance>(BehavioralInstance::iterator);
             break;
         case "med"_bkdrHash:
-            taskPlan.generalTask.setBit<BehavioralMethod>(BehavioralMethod::mediator);
+            taskPlan.generalTask.setBit<BehavioralInstance>(BehavioralInstance::mediator);
             break;
         case "mem"_bkdrHash:
-            taskPlan.generalTask.setBit<BehavioralMethod>(BehavioralMethod::memento);
+            taskPlan.generalTask.setBit<BehavioralInstance>(BehavioralInstance::memento);
             break;
         case "obs"_bkdrHash:
-            taskPlan.generalTask.setBit<BehavioralMethod>(BehavioralMethod::observer);
+            taskPlan.generalTask.setBit<BehavioralInstance>(BehavioralInstance::observer);
             break;
         case "sta"_bkdrHash:
-            taskPlan.generalTask.setBit<BehavioralMethod>(BehavioralMethod::state);
+            taskPlan.generalTask.setBit<BehavioralInstance>(BehavioralInstance::state);
             break;
         case "str"_bkdrHash:
-            taskPlan.generalTask.setBit<BehavioralMethod>(BehavioralMethod::strategy);
+            taskPlan.generalTask.setBit<BehavioralInstance>(BehavioralInstance::strategy);
             break;
         case "tem"_bkdrHash:
-            taskPlan.generalTask.setBit<BehavioralMethod>(BehavioralMethod::templateMethod);
+            taskPlan.generalTask.setBit<BehavioralInstance>(BehavioralInstance::templateMethod);
             break;
         case "vis"_bkdrHash:
-            taskPlan.generalTask.setBit<BehavioralMethod>(BehavioralMethod::visitor);
+            taskPlan.generalTask.setBit<BehavioralInstance>(BehavioralInstance::visitor);
             break;
         default:
             throwUnexpectedTaskException("behavioral: " + target);
@@ -1080,27 +1080,27 @@ void Command::updateBehavioralTask(const std::string& target)
 void Command::runCreational() const
 {
     std::unique_lock<std::mutex> lock(commandMutex);
-    if (taskPlan.generalTask.getBit<CreationalMethod>().none())
+    if (taskPlan.generalTask.getBit<CreationalInstance>().none())
     {
         return;
     }
 
-    const auto [taskCategory, taskType] = getTargetTaskAttribute<CreationalMethod>();
+    const auto [taskCategory, taskType] = getTargetTaskAttribute<CreationalInstance>();
     COMMAND_PRINT_TASK_BEGIN_TITLE;
 
     using dp_creational::CreationalPattern;
     const std::shared_ptr<CreationalPattern> creational = std::make_shared<CreationalPattern>();
     std::shared_ptr<util_thread::Thread> threads = std::make_shared<util_thread::Thread>(std::min(
-        static_cast<uint32_t>(taskPlan.generalTask.getBit<CreationalMethod>().count()),
-        static_cast<uint32_t>(DesignPatternTask::Bottom<CreationalMethod>::value)));
+        static_cast<uint32_t>(taskPlan.generalTask.getBit<CreationalInstance>().count()),
+        static_cast<uint32_t>(DesignPatternTask::Bottom<CreationalInstance>::value)));
     const auto creationalFunctor = [&](const std::string& threadName, void (CreationalPattern::*instancePtr)() const)
     {
         threads->enqueue(threadName, instancePtr, creational);
     };
 
-    for (int i = 0; i < DesignPatternTask::Bottom<CreationalMethod>::value; ++i)
+    for (int i = 0; i < DesignPatternTask::Bottom<CreationalInstance>::value; ++i)
     {
-        if (!taskPlan.generalTask.getBit<CreationalMethod>().test(CreationalMethod(i)))
+        if (!taskPlan.generalTask.getBit<CreationalInstance>().test(CreationalInstance(i)))
         {
             continue;
         }
@@ -1139,19 +1139,19 @@ void Command::updateCreationalTask(const std::string& target)
     switch (util_hash::bkdrHash(target.c_str()))
     {
         case "abs"_bkdrHash:
-            taskPlan.generalTask.setBit<CreationalMethod>(CreationalMethod::abstractFactory);
+            taskPlan.generalTask.setBit<CreationalInstance>(CreationalInstance::abstractFactory);
             break;
         case "bui"_bkdrHash:
-            taskPlan.generalTask.setBit<CreationalMethod>(CreationalMethod::builder);
+            taskPlan.generalTask.setBit<CreationalInstance>(CreationalInstance::builder);
             break;
         case "fac"_bkdrHash:
-            taskPlan.generalTask.setBit<CreationalMethod>(CreationalMethod::factoryMethod);
+            taskPlan.generalTask.setBit<CreationalInstance>(CreationalInstance::factoryMethod);
             break;
         case "pro"_bkdrHash:
-            taskPlan.generalTask.setBit<CreationalMethod>(CreationalMethod::prototype);
+            taskPlan.generalTask.setBit<CreationalInstance>(CreationalInstance::prototype);
             break;
         case "sin"_bkdrHash:
-            taskPlan.generalTask.setBit<CreationalMethod>(CreationalMethod::singleton);
+            taskPlan.generalTask.setBit<CreationalInstance>(CreationalInstance::singleton);
             break;
         default:
             throwUnexpectedTaskException("creational: " + target);
@@ -1161,27 +1161,27 @@ void Command::updateCreationalTask(const std::string& target)
 void Command::runStructural() const
 {
     std::unique_lock<std::mutex> lock(commandMutex);
-    if (taskPlan.generalTask.getBit<StructuralMethod>().none())
+    if (taskPlan.generalTask.getBit<StructuralInstance>().none())
     {
         return;
     }
 
-    const auto [taskCategory, taskType] = getTargetTaskAttribute<StructuralMethod>();
+    const auto [taskCategory, taskType] = getTargetTaskAttribute<StructuralInstance>();
     COMMAND_PRINT_TASK_BEGIN_TITLE;
 
     using dp_structural::StructuralPattern;
     const std::shared_ptr<StructuralPattern> structural = std::make_shared<StructuralPattern>();
     std::shared_ptr<util_thread::Thread> threads = std::make_shared<util_thread::Thread>(std::min(
-        static_cast<uint32_t>(taskPlan.generalTask.getBit<StructuralMethod>().count()),
-        static_cast<uint32_t>(DesignPatternTask::Bottom<StructuralMethod>::value)));
+        static_cast<uint32_t>(taskPlan.generalTask.getBit<StructuralInstance>().count()),
+        static_cast<uint32_t>(DesignPatternTask::Bottom<StructuralInstance>::value)));
     const auto structuralFunctor = [&](const std::string& threadName, void (StructuralPattern::*instancePtr)() const)
     {
         threads->enqueue(threadName, instancePtr, structural);
     };
 
-    for (int i = 0; i < DesignPatternTask::Bottom<StructuralMethod>::value; ++i)
+    for (int i = 0; i < DesignPatternTask::Bottom<StructuralInstance>::value; ++i)
     {
-        if (!taskPlan.generalTask.getBit<StructuralMethod>().test(StructuralMethod(i)))
+        if (!taskPlan.generalTask.getBit<StructuralInstance>().test(StructuralInstance(i)))
         {
             continue;
         }
@@ -1226,25 +1226,25 @@ void Command::updateStructuralTask(const std::string& target)
     switch (util_hash::bkdrHash(target.c_str()))
     {
         case "ada"_bkdrHash:
-            taskPlan.generalTask.setBit<StructuralMethod>(StructuralMethod::adapter);
+            taskPlan.generalTask.setBit<StructuralInstance>(StructuralInstance::adapter);
             break;
         case "bri"_bkdrHash:
-            taskPlan.generalTask.setBit<StructuralMethod>(StructuralMethod::bridge);
+            taskPlan.generalTask.setBit<StructuralInstance>(StructuralInstance::bridge);
             break;
         case "com"_bkdrHash:
-            taskPlan.generalTask.setBit<StructuralMethod>(StructuralMethod::composite);
+            taskPlan.generalTask.setBit<StructuralInstance>(StructuralInstance::composite);
             break;
         case "dec"_bkdrHash:
-            taskPlan.generalTask.setBit<StructuralMethod>(StructuralMethod::decorator);
+            taskPlan.generalTask.setBit<StructuralInstance>(StructuralInstance::decorator);
             break;
         case "fac"_bkdrHash:
-            taskPlan.generalTask.setBit<StructuralMethod>(StructuralMethod::facade);
+            taskPlan.generalTask.setBit<StructuralInstance>(StructuralInstance::facade);
             break;
         case "fly"_bkdrHash:
-            taskPlan.generalTask.setBit<StructuralMethod>(StructuralMethod::flyweight);
+            taskPlan.generalTask.setBit<StructuralInstance>(StructuralInstance::flyweight);
             break;
         case "pro"_bkdrHash:
-            taskPlan.generalTask.setBit<StructuralMethod>(StructuralMethod::proxy);
+            taskPlan.generalTask.setBit<StructuralInstance>(StructuralInstance::proxy);
             break;
         default:
             throwUnexpectedTaskException("structural: " + target);
