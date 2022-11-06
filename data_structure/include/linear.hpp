@@ -11,6 +11,13 @@ public:
     void linkedListInstance() const;
     void stackInstance() const;
     void queueInstance() const;
+
+private:
+    typedef struct TagMeta
+    {
+        int id;
+        char name[4];
+    } Meta;
 };
 
 namespace doubly_linked_list

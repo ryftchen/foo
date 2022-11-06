@@ -1,7 +1,7 @@
 #include "linear.hpp"
 #include <iostream>
 #include <sstream>
-#include "common.hpp"
+#include "utility/include/common.hpp"
 
 #define LINEAR_RESULT "\r\n*%-10s instance:\r\n%s"
 
@@ -252,12 +252,7 @@ void LinearStructure::linkedListInstance() const
     using doubly_linked_list::dllSize;
 
     std::ostringstream output;
-    typedef struct TagFoo
-    {
-        int id;
-        char name[4];
-    } Meta;
-    Meta meta[] = {{-1, "foo"}, {0, "bar"}, {1, "baz"}, {2, "qux"}};
+    Meta meta[] = {{'A', "foo"}, {'B', "bar"}, {'C', "baz"}, {'D', "qux"}};
     const int metaSize = sizeof(meta) / sizeof(meta[0]);
 
     Meta* pVal = nullptr;
@@ -361,12 +356,7 @@ void LinearStructure::stackInstance() const
     using stack::stackTop;
 
     std::ostringstream output;
-    typedef struct TagFoo
-    {
-        int id;
-        char name[4];
-    } Meta;
-    Meta meta[] = {{-1, "foo"}, {0, "bar"}, {1, "baz"}, {2, "qux"}};
+    Meta meta[] = {{'A', "foo"}, {'B', "bar"}, {'C', "baz"}, {'D', "qux"}};
     const int metaSize = sizeof(meta) / sizeof(meta[0]);
 
     Meta* pVal = nullptr;
@@ -460,12 +450,7 @@ void LinearStructure::queueInstance() const
     using queue::queueSize;
 
     std::ostringstream output;
-    typedef struct TagFoo
-    {
-        int id;
-        char name[4];
-    } Meta;
-    Meta meta[] = {{-1, "foo"}, {0, "bar"}, {1, "baz"}, {2, "qux"}};
+    Meta meta[] = {{'A', "foo"}, {'B', "bar"}, {'C', "baz"}, {'D', "qux"}};
     const int metaSize = sizeof(meta) / sizeof(meta[0]);
 
     Meta* pVal = nullptr;
