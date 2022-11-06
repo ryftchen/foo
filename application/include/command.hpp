@@ -198,12 +198,13 @@ private:
 
             enum Type
             {
-                linear
+                linear,
+                tree
             };
             template <>
             struct Bottom<Type>
             {
-                static constexpr int value = 1;
+                static constexpr int value = 2;
             };
 
             enum LinearInstance
@@ -218,10 +219,26 @@ private:
                 static constexpr int value = 3;
             };
 
-            std::bitset<Bottom<LinearInstance>::value> linearBit;
+            enum TreeInstance
+            {
+                binarySearch,
+                adelsonVelskyLandis
+            };
+            template <>
+            struct Bottom<TreeInstance>
+            {
+                static constexpr int value = 2;
+            };
 
-            [[nodiscard]] bool empty() const { return (linearBit.none()); }
-            void reset() { linearBit.reset(); }
+            std::bitset<Bottom<LinearInstance>::value> linearBit;
+            std::bitset<Bottom<TreeInstance>::value> treeBit;
+
+            [[nodiscard]] bool empty() const { return (linearBit.none() && treeBit.none()); }
+            void reset()
+            {
+                linearBit.reset();
+                treeBit.reset();
+            }
 
         protected:
             friend std::ostream& operator<<(std::ostream& os, const Type& type)
@@ -230,6 +247,9 @@ private:
                 {
                     case Type::linear:
                         os << "LINEAR";
+                        break;
+                    case Type::tree:
+                        os << "TREE";
                         break;
                     default:
                         os << "UNKNOWN: " << static_cast<std::underlying_type_t<Type>>(type);
@@ -507,6 +527,10 @@ private:
             {
                 return dataStructureTask.linearBit;
             }
+            else if constexpr (std::is_same_v<T, DataStructureTask::TreeInstance>)
+            {
+                return dataStructureTask.treeBit;
+            }
             else if constexpr (std::is_same_v<T, DesignPatternTask::BehavioralInstance>)
             {
                 return designPatternTask.behavioralBit;
@@ -562,6 +586,10 @@ private:
             else if constexpr (std::is_same_v<T, DataStructureTask::LinearInstance>)
             {
                 dataStructureTask.linearBit.set(DataStructureTask::LinearInstance(index));
+            }
+            else if constexpr (std::is_same_v<T, DataStructureTask::TreeInstance>)
+            {
+                dataStructureTask.treeBit.set(DataStructureTask::TreeInstance(index));
             }
             else if constexpr (std::is_same_v<T, DesignPatternTask::BehavioralInstance>)
             {
@@ -629,6 +657,7 @@ private:
     using SortMethod = AlgorithmTask::SortMethod;
     using DataStructureTask = GeneralTask::DataStructureTask;
     using LinearInstance = DataStructureTask::LinearInstance;
+    using TreeInstance = DataStructureTask::TreeInstance;
     using DesignPatternTask = GeneralTask::DesignPatternTask;
     using BehavioralInstance = DesignPatternTask::BehavioralInstance;
     using CreationalInstance = DesignPatternTask::CreationalInstance;
@@ -688,7 +717,8 @@ private:
                               { "search"     , {{ "bin", "int", "fib"               } , { &Command::runSearch     , &Command::updateSearchTask     }}},
                               { "sort"       , {{ "bub", "sel", "ins", "she", "mer",
                                                   "qui", "hea", "cou", "buc", "rad" } , { &Command::runSort       , &Command::updateSortTask       }}}}},
-        { "data-structure" , {{ "linear"     , {{ "lin", "sta", "que"               } , { &Command::runLinear     , &Command::updateLinearTask     }}}}},
+        { "data-structure" , {{ "linear"     , {{ "lin", "sta", "que"               } , { &Command::runLinear     , &Command::updateLinearTask     }}},
+                              { "tree"       , {{ "bin", "ade"                      } , { &Command::runTree       , &Command::updateTreeTask       }}}}},
         { "design-pattern" , {{ "behavioral" , {{ "cha", "com", "int", "ite", "med",
                                                   "mem", "obs", "sta", "str", "tem",
                                                   "vis"                             } , { &Command::runBehavioral , &Command::updateBehavioralTask }}},
@@ -718,6 +748,8 @@ private:
     void updateSortTask(const std::string& target);
     void runLinear() const;
     void updateLinearTask(const std::string& target);
+    void runTree() const;
+    void updateTreeTask(const std::string& target);
     void runBehavioral() const;
     void updateBehavioralTask(const std::string& target);
     void runCreational() const;
@@ -837,6 +869,10 @@ auto Command::getTargetTaskAttribute() const
     else if constexpr (std::is_same_v<T, LinearInstance>)
     {
         return std::make_tuple(GeneralTask::Category::dataStructure, DataStructureTask::Type::linear);
+    }
+    else if constexpr (std::is_same_v<T, TreeInstance>)
+    {
+        return std::make_tuple(GeneralTask::Category::dataStructure, DataStructureTask::Type::tree);
     }
     else if constexpr (std::is_same_v<T, BehavioralInstance>)
     {
