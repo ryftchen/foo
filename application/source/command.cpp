@@ -4,6 +4,7 @@
 #include "algorithm/include/search.hpp"
 #include "algorithm/include/sort.hpp"
 #include "data_structure/include/linear.hpp"
+#include "data_structure/include/tree.hpp"
 #include "design_pattern/include/behavioral.hpp"
 #include "design_pattern/include/creational.hpp"
 #include "design_pattern/include/structural.hpp"
@@ -80,7 +81,7 @@ Command::Command()
                     }
                     throw std::runtime_error("Unknown data structure category: " + value);
                 })
-            .help("linear [add category with \"--help\" for task details]");
+            .help("linear, tree [add category with \"--help\" for task details]");
 
         program.addArgument("-dp", "--design-pattern")
             .nArgs(1)
@@ -400,6 +401,12 @@ void Command::printHelpMessage() const
                       "lin    Linked List\r\n"
                       "sta    Stack\r\n"
                       "que    Queue");
+        }
+        else if (!taskPlan.generalTask.getBit<TreeInstance>().none())
+        {
+            std::puts("tree [tasks...]\r\n\r\nNon-optional:\r\n"
+                      "bin    Binary Search\r\n"
+                      "ade    Adelson-Velsky-Landis");
         }
     }
     else if (!taskPlan.generalTask.designPatternTask.empty())
@@ -957,6 +964,69 @@ void Command::updateLinearTask(const std::string& target)
             break;
         default:
             throwUnexpectedTaskException("linear: " + target);
+    }
+}
+
+void Command::runTree() const
+{
+    std::unique_lock<std::mutex> lock(commandMutex);
+    if (taskPlan.generalTask.getBit<TreeInstance>().none())
+    {
+        return;
+    }
+
+    const auto [taskCategory, taskType] = getTargetTaskAttribute<TreeInstance>();
+    COMMAND_PRINT_TASK_BEGIN_TITLE;
+
+    using ds_tree::TreeStructure;
+    const std::shared_ptr<TreeStructure> tree = std::make_shared<TreeStructure>();
+    std::shared_ptr<util_thread::Thread> threads = std::make_shared<util_thread::Thread>(std::min(
+        static_cast<uint32_t>(taskPlan.generalTask.getBit<TreeInstance>().count()),
+        static_cast<uint32_t>(DataStructureTask::Bottom<TreeInstance>::value)));
+    const auto treeFunctor = [&](const std::string& threadName, void (TreeStructure::*instancePtr)() const)
+    {
+        threads->enqueue(threadName, instancePtr, tree);
+    };
+
+    for (int i = 0; i < DataStructureTask::Bottom<TreeInstance>::value; ++i)
+    {
+        if (!taskPlan.generalTask.getBit<TreeInstance>().test(TreeInstance(i)))
+        {
+            continue;
+        }
+
+        const auto [targetInstance, threadName] = getTargetTaskDetail(taskCategory, taskType, i);
+        using util_hash::operator""_bkdrHash;
+        switch (util_hash::bkdrHash(targetInstance.data()))
+        {
+            case "bin"_bkdrHash:
+                treeFunctor(threadName, &TreeStructure::bsInstance);
+                break;
+            case "ade"_bkdrHash:
+                treeFunctor(threadName, &TreeStructure::avlInstance);
+                break;
+            default:
+                LOG_DBG("execute to run unknown tree instance.");
+                break;
+        }
+    }
+
+    COMMAND_PRINT_TASK_END_TITLE;
+}
+
+void Command::updateTreeTask(const std::string& target)
+{
+    using util_hash::operator""_bkdrHash;
+    switch (util_hash::bkdrHash(target.c_str()))
+    {
+        case "bin"_bkdrHash:
+            taskPlan.generalTask.setBit<TreeInstance>(TreeInstance::binarySearch);
+            break;
+        case "ade"_bkdrHash:
+            taskPlan.generalTask.setBit<TreeInstance>(TreeInstance::adelsonVelskyLandis);
+            break;
+        default:
+            throwUnexpectedTaskException("tree: " + target);
     }
 }
 
