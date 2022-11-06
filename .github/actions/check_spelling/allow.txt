@@ -1,8 +1,10 @@
 abi
 ada
 adaptee
+adelson
 asc
 api
+avl
 bkdr
 buc
 bui
@@ -34,6 +36,7 @@ Griewank
 hea
 horspool
 indexgenerator
+inorder
 istreambuf
 ite
 jcvf
@@ -73,5 +76,6 @@ ste
 suboperation
 uintn
 valgrind
+Velsky
 woboq
 WRN
