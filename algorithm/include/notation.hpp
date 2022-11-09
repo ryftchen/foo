@@ -4,12 +4,10 @@
 
 namespace algo_notation
 {
-inline constexpr std::string_view infixNotation{"a+b*(c^d-e)^(f+g*h)-i"};
-
 class NotationSolution
 {
 public:
-    NotationSolution();
+    explicit NotationSolution(const std::string_view infixNotation);
     virtual ~NotationSolution() = default;
 
     [[nodiscard]] std::string prefixMethod(const std::string& infixNotation) const;

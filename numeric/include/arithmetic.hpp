@@ -2,13 +2,10 @@
 
 namespace num_arithmetic
 {
-inline constexpr int integer1 = 1073741823;
-inline constexpr int integer2 = -2;
-
 class ArithmeticSolution
 {
 public:
-    ArithmeticSolution();
+    ArithmeticSolution(const int integer1, const int integer2);
     virtual ~ArithmeticSolution() = default;
 
     [[nodiscard]] int additionMethod(const int augend, const int addend) const;

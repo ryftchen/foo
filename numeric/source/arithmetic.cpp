@@ -5,7 +5,7 @@
 
 namespace num_arithmetic
 {
-ArithmeticSolution::ArithmeticSolution()
+ArithmeticSolution::ArithmeticSolution(const int integer1, const int integer2)
 {
     std::cout << "\r\nElementary arithmetic of " << integer1 << " and " << integer2 << ":" << std::endl;
 }

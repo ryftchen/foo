@@ -5,15 +5,13 @@
 
 namespace num_divisor
 {
-inline constexpr int integer1 = 2 * 2 * 3 * 3 * 5 * 5 * 7 * 7;
-inline constexpr int integer2 = 2 * 3 * 5 * 7 * 11 * 13 * 17;
 constexpr uint32_t maxAlignOfPrint = 16;
 constexpr uint32_t maxColumnOfPrint = 10;
 
 class DivisorSolution
 {
 public:
-    DivisorSolution();
+    DivisorSolution(const int integer1, const int integer2);
     virtual ~DivisorSolution() = default;
 
     [[nodiscard]] std::vector<int> euclideanMethod(int a, int b) const;

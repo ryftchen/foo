@@ -6,7 +6,7 @@
 
 namespace algo_notation
 {
-NotationSolution::NotationSolution()
+NotationSolution::NotationSolution(const std::string_view infixNotation)
 {
     std::cout << "\r\nInfix notation: " << infixNotation << std::endl;
 }

@@ -7,9 +7,6 @@
 
 namespace algo_sort
 {
-inline constexpr int arrayRange1 = -50;
-inline constexpr int arrayRange2 = 150;
-inline constexpr uint32_t arrayLength = 53;
 constexpr uint32_t maxAlignOfPrint = 16;
 constexpr uint32_t maxColumnOfPrint = 10;
 

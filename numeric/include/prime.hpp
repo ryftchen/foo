@@ -5,14 +5,13 @@
 
 namespace num_prime
 {
-inline constexpr uint32_t maxPositiveInteger = 997;
 constexpr uint32_t maxAlignOfPrint = 16;
 constexpr uint32_t maxColumnOfPrint = 10;
 
 class PrimeSolution
 {
 public:
-    PrimeSolution();
+    explicit PrimeSolution(const uint32_t maxPositiveInteger);
     virtual ~PrimeSolution() = default;
 
     [[nodiscard]] std::vector<uint32_t> eratosthenesMethod(const uint32_t max) const;

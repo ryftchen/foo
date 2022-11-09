@@ -20,7 +20,7 @@
 
 namespace num_prime
 {
-PrimeSolution::PrimeSolution()
+PrimeSolution::PrimeSolution(const uint32_t maxPositiveInteger)
 {
     std::cout << "\r\nAll prime numbers less than " << maxPositiveInteger << ":" << std::endl;
 }
