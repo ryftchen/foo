@@ -6,7 +6,6 @@
 
 namespace algo_match
 {
-inline constexpr std::string_view singlePattern{"12345"};
 constexpr uint32_t maxNumPerLineOfPrint = 50;
 constexpr uint32_t maxDigit = 100000;
 constexpr uint32_t maxASCII = 256;

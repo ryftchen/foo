@@ -19,7 +19,7 @@
 
 namespace num_divisor
 {
-DivisorSolution::DivisorSolution()
+DivisorSolution::DivisorSolution(const int integer1, const int integer2)
 {
     std::cout << "\r\nAll common divisors of " << integer1 << " and " << integer2 << ":" << std::endl;
 }

@@ -2,10 +2,56 @@
 
 #include <map>
 #include <random>
-#include "expression.hpp"
 
 namespace num_optimal
 {
+namespace function
+{
+class Function
+{
+public:
+    virtual ~Function() = default;
+
+    virtual inline double operator()(const double x) const = 0;
+};
+
+template <class... Ts>
+struct FuncOverloaded : Ts...
+{
+    using Ts::operator()...;
+};
+
+template <class... Ts>
+FuncOverloaded(Ts...) -> FuncOverloaded<Ts...>;
+
+template <typename T1, typename T2>
+struct FuncRange
+{
+    FuncRange(const T1& range1, const T2& range2, const std::string_view funcStr) :
+        range1(range1), range2(range2), funcStr(funcStr){};
+    FuncRange() = delete;
+    T1 range1;
+    T2 range2;
+    std::string_view funcStr;
+
+    bool operator==(const FuncRange& range) const
+    {
+        return (std::tie(range.range1, range.range2, range.funcStr) == std::tie(range1, range2, funcStr));
+    }
+};
+struct FuncMapHash
+{
+    template <typename T1, typename T2>
+    std::size_t operator()(const FuncRange<T1, T2>& range) const
+    {
+        std::size_t hash1 = std::hash<T1>()(range.range1);
+        std::size_t hash2 = std::hash<T2>()(range.range2);
+        std::size_t hash3 = std::hash<std::string_view>()(range.funcStr);
+        return (hash1 ^ hash2 ^ hash3);
+    }
+};
+} // namespace function
+
 using ValueX = double;
 using ValueY = double;
 
@@ -33,7 +79,7 @@ constexpr uint32_t loopTime = 100;
 class Gradient : public OptimalSolution
 {
 public:
-    explicit Gradient(const num_expression::Expression& expr) : func(expr){};
+    explicit Gradient(const function::Function& func) : func(func){};
 
     [[nodiscard]] std::optional<std::tuple<ValueY, ValueX>> operator()(
         const double left,
@@ -41,7 +87,7 @@ public:
         const double eps) override;
 
 private:
-    const num_expression::Expression& func;
+    const function::Function& func;
     [[nodiscard]] double calculateFirstDerivative(const double x, const double eps) const;
 };
 
@@ -57,7 +103,7 @@ constexpr uint32_t markovChain = 100;
 class Annealing : public OptimalSolution
 {
 public:
-    explicit Annealing(const num_expression::Expression& expr) : func(expr){};
+    explicit Annealing(const function::Function& func) : func(func){};
 
     [[nodiscard]] std::optional<std::tuple<ValueY, ValueX>> operator()(
         const double left,
@@ -65,7 +111,7 @@ public:
         const double eps) override;
 
 private:
-    const num_expression::Expression& func;
+    const function::Function& func;
 };
 
 // Particle Swarm
@@ -125,7 +171,7 @@ struct Record
 class Particle : public OptimalSolution
 {
 public:
-    explicit Particle(const num_expression::Expression& expr) : func(expr), seed(std::random_device{}()){};
+    explicit Particle(const function::Function& func) : func(func), seed(std::random_device{}()){};
 
     [[nodiscard]] std::optional<std::tuple<ValueY, ValueX>> operator()(
         const double left,
@@ -133,7 +179,7 @@ public:
         const double eps) override;
 
 private:
-    const num_expression::Expression& func;
+    const function::Function& func;
     std::mt19937 seed;
 
     using Individual = particle::Individual;
@@ -157,7 +203,7 @@ constexpr uint32_t numOfIteration = 100;
 class Genetic : public OptimalSolution
 {
 public:
-    explicit Genetic(const num_expression::Expression& expr) : func(expr), seed(std::random_device{}()){};
+    explicit Genetic(const function::Function& func) : func(func), seed(std::random_device{}()){};
 
     [[nodiscard]] std::optional<std::tuple<ValueY, ValueX>> operator()(
         const double left,
@@ -165,7 +211,7 @@ public:
         const double eps) override;
 
 private:
-    const num_expression::Expression& func;
+    const function::Function& func;
     struct Range
     {
         double lower{0.0};

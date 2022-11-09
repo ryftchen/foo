@@ -7,9 +7,6 @@
 
 namespace algo_search
 {
-inline constexpr double arrayRange1 = -50.0;
-inline constexpr double arrayRange2 = 150.0;
-inline constexpr uint32_t arrayLength = 53;
 constexpr uint32_t maxAlignOfPrint = 16;
 constexpr uint32_t maxColumnOfPrint = 10;
 

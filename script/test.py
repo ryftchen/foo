@@ -59,6 +59,7 @@ class Test:
         "--algorithm": {
             "match": ["rab", "knu", "boy", "hor", "sun"],
             "notation": ["pre", "pos"],
+            "optimal": ["gra", "ann", "par", "gen"],
             "search": ["bin", "int", "fib"],
             "sort": ["bub", "sel", "ins", "she", "mer", "qui", "hea", "cou", "buc", "rad"],
         },
@@ -72,7 +73,6 @@ class Test:
             "arithmetic": ["add", "sub", "mul", "div"],
             "divisor": ["euc", "ste"],
             "integral": ["tra", "sim", "rom", "gau", "mon"],
-            "optimal": ["gra", "ann", "par", "gen"],
             "prime": ["era", "eul"],
         },
     }

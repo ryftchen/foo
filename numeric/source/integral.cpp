@@ -7,7 +7,7 @@
 
 namespace num_integral
 {
-double trapezoid(const num_expression::Expression& expr, const double left, const double height, const uint32_t step)
+double trapezoid(const expression::Expression& expr, const double left, const double height, const uint32_t step)
 {
     double sum = 0.0, x = left;
     const double delta = height / step;
@@ -32,7 +32,7 @@ double Trapezoidal::operator()(double lower, double upper, const double eps) con
 
     do
     {
-        sum = trapezoid(func, lower, height, n);
+        sum = trapezoid(expr, lower, height, n);
         s1 = s2;
         s2 = sum;
         n *= 2;
@@ -83,7 +83,7 @@ double Simpson::compositeSimpsonOneThird(const double left, const double right, 
 
 double Simpson::simpsonOneThird(const double left, const double right) const
 {
-    return (func(left) + 4.0 * func((left + right) / 2.0) + func(right)) / 6.0 * (right - left);
+    return (expr(left) + 4.0 * expr((left + right) / 2.0) + expr(right)) / 6.0 * (right - left);
 }
 
 // Romberg
@@ -94,7 +94,7 @@ double Romberg::operator()(double lower, double upper, const double eps) const
     uint32_t k = 0;
     double sum = 0.0;
     const double height = upper - lower;
-    const auto trapezoidFunctor = std::bind(trapezoid, std::ref(func), lower, height, std::placeholders::_1);
+    const auto trapezoidFunctor = std::bind(trapezoid, std::ref(expr), lower, height, std::placeholders::_1);
     double t0 = trapezoidFunctor(std::pow(2, k));
 
     k = 1;
@@ -147,7 +147,7 @@ double Gauss::operator()(double lower, double upper, const double eps) const
             {
                 // x=1/2[(a+b)+(b-a)t]
                 const double x = ((right - left) * gaussLegendreTable.at(j).at(0) + (left + right)) / 2.0;
-                const double polynomial = func(x) * gaussLegendreTable.at(j).at(1) * (right - left) / 2.0;
+                const double polynomial = expr(x) * gaussLegendreTable.at(j).at(1) * (right - left) / 2.0;
                 sum += polynomial;
             }
         }
@@ -189,7 +189,7 @@ double MonteCarlo::sampleFromUniformDistribution(const double lower, const doubl
     for (uint32_t i = 0; i < n; ++i)
     {
         double x = randomX(seed);
-        sum += func(x);
+        sum += expr(x);
     }
     sum *= (upper - lower) / n; // I≈(b-a)/N*[F(X1)+F(X2)+...+F(Xn)]
 
@@ -216,7 +216,7 @@ double MonteCarlo::sampleFromNormalDistribution(const double lower, const double
         while ((x < lower) || (x > upper));
         const double probabilityDensityFunction = (1.0 / std::sqrt(2.0 * M_PI * sigma * sigma))
             * std::pow(M_E, (-(x - mu) * (x - mu)) / (2.0 * sigma * sigma));
-        sum += func(x) / probabilityDensityFunction; // I≈1/N*[F(X1)/P(X1)+...+F(Xn)/P(Xn)]
+        sum += expr(x) / probabilityDensityFunction; // I≈1/N*[F(X1)/P(X1)+...+F(Xn)/P(Xn)]
     }
     sum /= n;
 

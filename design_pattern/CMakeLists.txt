@@ -1,6 +1,7 @@
 set(MODULE_NAME design_pattern)
 
 aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/source DESIGN_PATTERN_LIST)
+aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/test DESIGN_PATTERN_LIST)
 include_directories(${CMAKE_SOURCE_DIR})
 
 add_library(${MODULE_NAME} SHARED ${DESIGN_PATTERN_LIST})
