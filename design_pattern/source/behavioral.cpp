@@ -214,14 +214,14 @@ private:
     std::string value;
 };
 
-class NonterminalExpression : public AbstractExpression
+class NonTerminalExpression : public AbstractExpression
 {
 public:
-    NonterminalExpression(std::shared_ptr<AbstractExpression> left, std::shared_ptr<AbstractExpression> right) :
+    NonTerminalExpression(std::shared_ptr<AbstractExpression> left, std::shared_ptr<AbstractExpression> right) :
         leftOp(left), rightOp(right)
     {
     }
-    ~NonterminalExpression() override
+    ~NonTerminalExpression() override
     {
         leftOp.reset();
         rightOp.reset();
@@ -243,12 +243,12 @@ void BehavioralPattern::interpreterInstance() const
 {
     using interpreter::AbstractExpression;
     using interpreter::Context;
-    using interpreter::NonterminalExpression;
+    using interpreter::NonTerminalExpression;
     using interpreter::TerminalExpression;
 
     std::shared_ptr<AbstractExpression> a = std::make_shared<TerminalExpression>("A");
     std::shared_ptr<AbstractExpression> b = std::make_shared<TerminalExpression>("B");
-    std::shared_ptr<AbstractExpression> exp = std::make_shared<NonterminalExpression>(a, b);
+    std::shared_ptr<AbstractExpression> exp = std::make_shared<NonTerminalExpression>(a, b);
 
     std::shared_ptr<Context> context = std::make_shared<Context>();
     context->set("A", true);
