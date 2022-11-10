@@ -109,9 +109,9 @@ class Test:
         self.prepareTest()
 
         threadList = []
-        generater = threading.Thread(target=self.generateTestTask(), args=())
-        generater.start()
-        threadList.append(generater)
+        generator = threading.Thread(target=self.generateTestTask(), args=())
+        generator.start()
+        threadList.append(generator)
         performer = threading.Thread(target=self.performTestTask(), args=())
         performer.start()
         threadList.append(performer)
