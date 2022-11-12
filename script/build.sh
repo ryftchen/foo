@@ -64,7 +64,7 @@ showHelp()
 
 cleanupProject()
 {
-    bashCommand "rm -rf ./${BUILD_FOLDER} ./${TEMPORARY_FOLDER}"
+    bashCommand "rm -rf ./${BUILD_FOLDER} ./${SCRIPT_FOLDER}/__pycache__ ./${TEMPORARY_FOLDER}"
     bashCommand "find ./${DOCUMENT_FOLDER} -maxdepth 1 -type d | sed 1d | grep -E 'browser|doxygen' \
 | xargs -i rm -rf {}"
     bashCommand "rm -rf ./core* ./vgcore* ./*.profraw"
