@@ -221,9 +221,7 @@ generateCMakeFiles()
 compileCode()
 {
     if [ "${PERFORM_COMPILE}" = true ]; then
-        tput setaf 2 && tput bold
-        bashCommand "cmake --build ./${BUILD_FOLDER}"
-        tput sgr0
+        bashCommand "tput setaf 2; tput bold; cmake --build ./${BUILD_FOLDER}; tput sgr0"
     fi
 }
 
