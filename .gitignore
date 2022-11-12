@@ -1,4 +1,5 @@
 .cache/
+.devcontainer/
 .vscode/
 build/
 document/browser
