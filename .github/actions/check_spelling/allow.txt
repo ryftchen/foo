@@ -59,6 +59,7 @@ nodiscard
 nullopt
 profdata
 profraw
+pycache
 pylint
 pylintrc
 qux
