@@ -24,6 +24,8 @@ decltype
 declval
 destructure
 dli
+Doxyfile
+doxygen
 editorconfig
 eratosthenes
 euc
@@ -49,6 +51,7 @@ libnumeric
 libutility
 llvm
 markov
+maxdepth
 mday
 milli
 mpfr
@@ -74,8 +77,10 @@ shfmt
 sregex
 ste
 suboperation
+tarball
 uintn
 valgrind
 Velsky
+vgcore
 woboq
 WRN
