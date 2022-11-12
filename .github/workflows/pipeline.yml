@@ -79,14 +79,14 @@ jobs:
       - name: Check
         run: |
           ./script/build.sh --cleanup
-          ./script/build.sh --format --lint --browser --release
+          ./script/build.sh --format --lint --browser --doxygen --release
           git status
 
       - name: Upload artifact
         uses: actions/upload-artifact@v3.0.0
         with:
           name: foo_artifact
-          path: ./temporary/foo_html_*.tar.bz2
+          path: ./temporary/foo_*.tar.bz2
           retention-days: 7
 
   dynamic_analysis:

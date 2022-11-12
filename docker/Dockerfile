@@ -7,7 +7,7 @@ RUN apt-get update \
 && sudo apt-get update \
 && sudo apt-get install -y git python3 python3-pip build-essential cmake ninja-build gdb \
 llvm-12 clang-12 libclang-12-dev libstdc++-10-dev libreadline-dev libmpfrc++-dev \
-clang-format-12 clang-tidy-12 pylint black shellcheck valgrind \
+clang-format-12 clang-tidy-12 pylint black shellcheck valgrind doxygen graphviz \
 && sudo apt-get clean \
 && sudo pip3 install compdb requests \
 && cd /root \

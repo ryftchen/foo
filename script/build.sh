@@ -3,7 +3,8 @@
 ARGS_FORMAT=false
 ARGS_LINT=false
 ARGS_BROWSER=false
-ARGS_DOCKER=false
+ARGS_DOXYGEN=false
+ARGS_CONTAINER=false
 ARGS_RELEASE=false
 PERFORM_COMPILE=false
 
@@ -16,6 +17,7 @@ DATA_STRUCTURE_FOLDER="data_structure"
 NUMERIC_FOLDER="numeric"
 SCRIPT_FOLDER="script"
 DOCKER_FOLDER="docker"
+DOCUMENT_FOLDER="document"
 BUILD_FOLDER="build"
 TEMPORARY_FOLDER="temporary"
 CMAKE_LISTS="CMakeLists.txt"
@@ -27,6 +29,7 @@ LINT_CONFIG_CPP=".clang-tidy"
 LINT_CONFIG_PY=".pylintrc"
 LINT_CONFIG_SH=".shellcheckrc"
 DOCKER_FILE="Dockerfile"
+DOXYGEN_FILE="Doxyfile"
 
 bashCommand()
 {
@@ -48,20 +51,23 @@ showHelp()
     echo "Usage: build.sh <options...>"
     echo
     echo "Optional:"
-    echo "-h, --help       show help"
-    echo "-f, --format     format code"
-    echo "-l, --lint       lint code"
-    echo "-c, --cleanup    cleanup project"
-    echo "-b, --browser    generate code browser"
-    echo "-d, --docker     construct docker container"
-    echo "-r, --release    build release version"
+    echo "-h, --help         show help and exit"
+    echo "-f, --format       format code"
+    echo "-l, --lint         lint code"
+    echo "-C, --cleanup      cleanup project"
+    echo "-b, --browser      generate code browser"
+    echo "-d, --doxygen      generate doxygen document"
+    echo "-c, --container    construct docker container"
+    echo "-r, --release      build release version"
     exit 0
 }
 
 cleanupProject()
 {
     bashCommand "rm -rf ./${BUILD_FOLDER} ./${TEMPORARY_FOLDER}"
-    bashCommand "rm -rf ./core*"
+    bashCommand "find ./${DOCUMENT_FOLDER} -maxdepth 1 -type d | sed 1d | grep -E 'browser|doxygen' \
+| xargs -i rm -rf {}"
+    bashCommand "rm -rf ./core* ./vgcore* ./*.profraw"
 }
 
 parseArgs()
@@ -71,9 +77,10 @@ parseArgs()
         -h | --help) showHelp ;;
         -f | --format) ARGS_FORMAT=true ;;
         -l | --lint) ARGS_LINT=true ;;
-        -c | --cleanup) cleanupProject ;;
+        -C | --cleanup) cleanupProject ;;
         -b | --browser) ARGS_BROWSER=true ;;
-        -d | --docker) ARGS_DOCKER=true ;;
+        -d | --doxygen) ARGS_DOXYGEN=true ;;
+        -c | --container) ARGS_CONTAINER=true ;;
         -r | --release) ARGS_RELEASE=true ;;
         *) printException "Unknown command line option: $1. Try with --help to get information." ;;
         esac
@@ -95,8 +102,11 @@ checkDependencies()
         printException "Missing code folders in ${PROJECT_FOLDER} folder. Please check it."
     fi
 
-    if ! command -v cmake >/dev/null 2>&1; then
-        printException "No cmake program. Please check it."
+    if
+        ! command -v cmake >/dev/null 2>&1 \
+            || ! command -v ninja >/dev/null 2>&1
+    then
+        printException "No cmake or ninja program. Please check it."
     fi
 
     if [ "${ARGS_FORMAT}" = true ]; then
@@ -135,6 +145,9 @@ Please check it."
     fi
 
     if [ "${ARGS_BROWSER}" = true ]; then
+        if [ ! -d ./"${DOCUMENT_FOLDER}" ]; then
+            printException "Missing ${DOCUMENT_FOLDER} folder in ${PROJECT_FOLDER} folder. Please check it."
+        fi
         if
             ! command -v codebrowser_generator >/dev/null 2>&1 \
                 || ! command -v codebrowser_indexgenerator >/dev/null 2>&1
@@ -143,9 +156,25 @@ Please check it."
         fi
     fi
 
-    if [ "${ARGS_DOCKER}" = true ]; then
+    if [ "${ARGS_DOXYGEN}" = true ]; then
+        if [ ! -d ./"${DOCUMENT_FOLDER}" ]; then
+            printException "Missing ${DOCUMENT_FOLDER} folder in ${PROJECT_FOLDER} folder. Please check it."
+        fi
+        if
+            command -v doxygen >/dev/null 2>&1 \
+                && command -v dot >/dev/null 2>&1
+        then
+            if [ ! -f ./"${DOCUMENT_FOLDER}"/"${DOXYGEN_FILE}" ]; then
+                printException "No ${DOXYGEN_FILE} file in ${DOCUMENT_FOLDER} folder. Please check it."
+            fi
+        else
+            printException "No doxygen or dot program. Please check it."
+        fi
+    fi
+
+    if [ "${ARGS_CONTAINER}" = true ]; then
         if [ ! -d ./"${DOCKER_FOLDER}" ]; then
-            printException "Missing construct folders in ${PROJECT_FOLDER} folder. Please check it."
+            printException "Missing ${DOCKER_FOLDER} folder in ${PROJECT_FOLDER} folder. Please check it."
         fi
         if command -v docker >/dev/null 2>&1; then
             if [ ! -f ./"${DOCKER_FOLDER}"/"${DOCKER_FILE}" ]; then
@@ -161,7 +190,7 @@ Please check it."
                 echo "Yes"
             else
                 echo "No"
-                ARGS_DOCKER=false
+                ARGS_CONTAINER=false
             fi
         else
             printException "No docker program. Please check it."
@@ -178,10 +207,12 @@ generateCMakeFiles()
 
         export CC=/usr/bin/clang-12 CXX=/usr/bin/clang++-12
         if [ "${ARGS_RELEASE}" = true ]; then
-            bashCommand "cmake -S . -B ./${BUILD_FOLDER} -G Ninja -DCMAKE_CXX_COMPILER=clang++-12 -DCMAKE_BUILD_TYPE=Release"
+            buildType="Release"
         else
-            bashCommand "cmake -S . -B ./${BUILD_FOLDER} -G Ninja -DCMAKE_CXX_COMPILER=clang++-12 -DCMAKE_BUILD_TYPE=Debug"
+            buildType="Debug"
         fi
+        bashCommand "cmake -S . -B ./${BUILD_FOLDER} -G Ninja -DCMAKE_CXX_COMPILER=clang++-12 \
+-DCMAKE_BUILD_TYPE=${buildType}"
     else
         printException "No ${CMAKE_LISTS} file in ${PROJECT_FOLDER} folder. Please check it."
     fi
@@ -190,7 +221,9 @@ generateCMakeFiles()
 compileCode()
 {
     if [ "${PERFORM_COMPILE}" = true ]; then
-        bashCommand "tput setaf 2; tput bold; cmake --build ./${BUILD_FOLDER}; tput sgr0"
+        tput setaf 2 && tput bold
+        bashCommand "cmake --build ./${BUILD_FOLDER}"
+        tput sgr0
     fi
 }
 
@@ -208,9 +241,11 @@ performLintOption()
 {
     if [ "${ARGS_LINT}" = true ]; then
         bashCommand "compdb -p ./${BUILD_FOLDER} list > ./${COMPILE_COMMANDS} && \
-mv ./${COMPILE_COMMANDS} ./${BUILD_FOLDER} && find ./${APPLICATION_FOLDER} ./${UTILITY_FOLDER} \
+mv ./${COMPILE_COMMANDS} ./${BUILD_FOLDER}"
+        bashCommand "find ./${APPLICATION_FOLDER} ./${UTILITY_FOLDER} \
 ./${ALGORITHM_FOLDER} ./${DATA_STRUCTURE_FOLDER} ./${DESIGN_PATTERN_FOLDER} ./${NUMERIC_FOLDER} \
 -name *.cpp -o -name *.hpp | xargs run-clang-tidy-12.py -p ./${BUILD_FOLDER} -quiet"
+        generateCMakeFiles
         bashCommand "shellcheck ./${SCRIPT_FOLDER}/*.sh"
         bashCommand "pylint --rcfile=${LINT_CONFIG_PY} ./${SCRIPT_FOLDER}/*.py"
     fi
@@ -219,44 +254,79 @@ mv ./${COMPILE_COMMANDS} ./${BUILD_FOLDER} && find ./${APPLICATION_FOLDER} ./${U
 performBrowserOption()
 {
     if [ "${ARGS_BROWSER}" = true ]; then
+        commitId=$(git rev-parse --short @)
+        if [ -z "${commitId}" ]; then
+            commitId="local"
+        fi
         if [ -d ./"${TEMPORARY_FOLDER}" ]; then
-            commitId=$(git rev-parse --short @)
-            if [ -z "${commitId}" ]; then
-                commitId="local"
-            fi
-            lastTar="${PROJECT_FOLDER}_html_${commitId}.tar.bz2"
+            lastTar="${PROJECT_FOLDER}_browser_${commitId}.tar.bz2"
             if [ -f ./"${TEMPORARY_FOLDER}"/"${lastTar}" ]; then
-                printException "The latest html file ${TEMPORARY_FOLDER}/${lastTar} has been generated."
-            else
-                tarHtmlForBrowser
+                timeDiff=$(($(date +%s) - $(stat -L --format %Y "./${TEMPORARY_FOLDER}/${lastTar}")))
+                if [ "${timeDiff}" -lt "10" ]; then
+                    printException "The latest browser tarball ${TEMPORARY_FOLDER}/${lastTar} has been generated since \
+${timeDiff}s ago."
+                fi
             fi
+            tarHtmlForBrowser "${commitId}"
         else
             bashCommand "mkdir ./${TEMPORARY_FOLDER}"
-            tarHtmlForBrowser
+            tarHtmlForBrowser "${commitId}"
         fi
     fi
 }
 
 tarHtmlForBrowser()
 {
-    commitId=$(git rev-parse --short @)
-    browserFolder="${PROJECT_FOLDER}_html"
-    tarFile="${browserFolder}_${commitId}.tar.bz2"
-    if [ -d ./"${TEMPORARY_FOLDER}"/"${browserFolder}" ]; then
-        rm -rf ./"${TEMPORARY_FOLDER}"/"${browserFolder}"
-    fi
-    bashCommand "mkdir -p ./${TEMPORARY_FOLDER}/${browserFolder}"
+    browserFolder="browser"
+    tarFile="${PROJECT_FOLDER}_${browserFolder}_$1.tar.bz2"
+    rm -rf ./"${DOCUMENT_FOLDER}"/"${browserFolder}" ./"${TEMPORARY_FOLDER}"/"${tarFile}"
+
+    bashCommand "mkdir -p ./${DOCUMENT_FOLDER}/${browserFolder}"
     bashCommand "codebrowser_generator -color -a -b ./${BUILD_FOLDER}/${COMPILE_COMMANDS} \
--o ./${TEMPORARY_FOLDER}/${browserFolder} -p ${PROJECT_FOLDER}:.:${commitId} -d ./data"
-    bashCommand "codebrowser_indexgenerator ./${TEMPORARY_FOLDER}/${browserFolder} -d ./data"
-    bashCommand "cp -rf /usr/local/share/woboq/data ./${TEMPORARY_FOLDER}/${browserFolder}/"
-    bashCommand "tar -jcvf ./${TEMPORARY_FOLDER}/${tarFile} -C ./${TEMPORARY_FOLDER} ${browserFolder} >/dev/null"
-    bashCommand "rm -rf ./${TEMPORARY_FOLDER}/${browserFolder}"
+-o ./${DOCUMENT_FOLDER}/${browserFolder} -p ${PROJECT_FOLDER}:.:$1 -d ./data"
+    bashCommand "codebrowser_indexgenerator ./${DOCUMENT_FOLDER}/${browserFolder} -d ./data"
+    bashCommand "cp -rf /usr/local/share/woboq/data ./${DOCUMENT_FOLDER}/${browserFolder}/"
+    bashCommand "tar -jcvf ./${TEMPORARY_FOLDER}/${tarFile} -C ./${DOCUMENT_FOLDER} ${browserFolder} >/dev/null"
 }
 
-performDockerOption()
+performDoxygenOption()
 {
-    if [ "${ARGS_DOCKER}" = true ]; then
+    if [ "${ARGS_DOXYGEN}" = true ]; then
+        commitId=$(git rev-parse --short @)
+        if [ -z "${commitId}" ]; then
+            commitId="local"
+        fi
+        if [ -d ./"${TEMPORARY_FOLDER}" ]; then
+            lastTar="${PROJECT_FOLDER}_doxygen_${commitId}.tar.bz2"
+            if [ -f ./"${TEMPORARY_FOLDER}"/"${lastTar}" ]; then
+                timeDiff=$(($(date +%s) - $(stat -L --format %Y "./${TEMPORARY_FOLDER}/${lastTar}")))
+                if [ "${timeDiff}" -lt "10" ]; then
+                    printException "The latest doxygen tarball ${TEMPORARY_FOLDER}/${lastTar} has been generated since \
+${timeDiff}s ago."
+                fi
+            fi
+            tarHtmlForDoxygen "${commitId}"
+        else
+            bashCommand "mkdir ./${TEMPORARY_FOLDER}"
+            tarHtmlForDoxygen "${commitId}"
+        fi
+    fi
+}
+
+tarHtmlForDoxygen()
+{
+    doxygenFolder="doxygen"
+    tarFile="${PROJECT_FOLDER}_${doxygenFolder}_$1.tar.bz2"
+    rm -rf ./"${DOCUMENT_FOLDER}"/"${doxygenFolder}" ./"${TEMPORARY_FOLDER}"/"${tarFile}"
+
+    bashCommand "mkdir -p ./${DOCUMENT_FOLDER}/${doxygenFolder}"
+    bashCommand "doxygen ./${DOCUMENT_FOLDER}/${DOXYGEN_FILE} >/dev/null"
+    bashCommand "tar -jcvf ./${TEMPORARY_FOLDER}/${tarFile} -C ./${DOCUMENT_FOLDER} ${doxygenFolder} >/dev/null"
+}
+
+performContainerOption()
+{
+    if [ "${ARGS_CONTAINER}" = true ]; then
         toBuildImage=false
         if service docker status | grep -q "active (running)" 2>/dev/null; then
             imageRepo="ryftchen/${PROJECT_FOLDER}"
@@ -305,7 +375,8 @@ main()
     performFormatOption
     performLintOption
     performBrowserOption
-    performDockerOption
+    performDoxygenOption
+    performContainerOption
 
     compileCode
 }
