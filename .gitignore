@@ -1,6 +1,8 @@
 .cache/
 .vscode/
 build/
+document/browser
+document/doxygen
 temporary/
 script/__pycache__/
 

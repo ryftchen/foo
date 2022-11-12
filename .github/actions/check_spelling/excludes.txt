@@ -1,5 +1,6 @@
 ^\.github/
 ^docker/
+^document/
 
 ^\.clang-format$
 ^\.clang-tidy$
