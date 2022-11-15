@@ -3,13 +3,14 @@ name: Pipeline
 
 on:
   push:
-    branches: [master]
+    branches:
+      - master
 
   workflow_dispatch:
     inputs:
       name:
         description: 'Pipeline'
-        default: 'Manual Trigger'
+        default: 'Manual trigger'
         required: false
   schedule:
     - cron: '0 0 * * MON'
@@ -34,7 +35,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Check Spelling
+      - name: Check spelling
         uses: check-spelling/check-spelling@v0.0.20
         with:
           config: ./.github/actions/check_spelling
@@ -51,18 +52,18 @@ jobs:
         with:
           languages: cpp
 
-      - name: Manual Build
+      - name: Manual build
         run: |
           mkdir ./build
           export CC=/usr/bin/clang-12 CXX=/usr/bin/clang++-12
           cmake -S . -B ./build -G Ninja -DCMAKE_CXX_COMPILER=clang++-12 -DCMAKE_BUILD_TYPE=Release
           cmake --build ./build
 
-      - name: Perform CodeQL Analysis
+      - name: Perform CodeQL analysis
         uses: github/codeql-action/analyze@v2
 
   static_analysis:
-    name: Static Analysis
+    name: Static analysis
     needs: precheck
     if: always() && ((needs.precheck.result == 'success') || (needs.precheck.result == 'skipped'))
     runs-on: ubuntu-latest
@@ -82,24 +83,25 @@ jobs:
       - name: Check
         run: |
           ./script/build.sh --cleanup
-          ./script/build.sh --format --lint --browser --doxygen --release
+          ./script/build.sh --format --lint --release
+          ./script/build.sh --browser --doxygen --release
           git status
 
-      - name: Upload Artifact
+      - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
           name: foo_artifact
           path: ./temporary/foo_*.tar.bz2
           retention-days: 7
 
-      - name: Deploy to GitHub Pages
+      - name: Deploy to github pages
         uses: JamesIves/github-pages-deploy-action@v4.4.1
         with:
           branch: gh-pages
           folder: ./document/doxygen
 
   dynamic_analysis:
-    name: Dynamic Analysis
+    name: Dynamic analysis
     needs: precheck
     if: always() && ((needs.precheck.result == 'success') || (needs.precheck.result == 'skipped'))
     runs-on: ubuntu-latest
