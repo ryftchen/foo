@@ -10,7 +10,7 @@ try:
     from datetime import datetime
     import common
 except ImportError as err:
-    raise ImportError(err)
+    raise ImportError(err) from err
 
 STDOUT = sys.stdout
 
@@ -35,13 +35,8 @@ class Output:
     @classmethod
     def printStatus(cls, colorForForeground, content):
         print(
-            "{0}{2}[ {3} | {4} ]{2}{1}".format(
-                f"{colorForForeground}{cls.colorForBackground}",
-                cls.colorOff,
-                f"{'=' * cls.columnLength}",
-                datetime.strftime(datetime.now(), "%b %d %H:%M:%S"),
-                content,
-            )
+            f"""{colorForForeground}{cls.colorForBackground}{f"{'=' * cls.columnLength}"}\
+[ {datetime.strftime(datetime.now(), "%b %d %H:%M:%S")} | {content} ]{f"{'=' * cls.columnLength}"}{cls.colorOff}"""
         )
 
 
@@ -77,9 +72,8 @@ class Test:
         },
     }
     isCheckCoverage = False
-    envCoverage = "CODE_COVERAGE"
     isCheckMemory = False
-    memorySummaryContent = "ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)"
+    envCoverage = "FOO_COV"
     buildFile = "./script/build.sh"
     logFile = "./temporary/foo_test.log"
     tempDir = "./temporary"
@@ -134,25 +128,38 @@ class Test:
     def runTask(self, command, enter=""):
         fullCommand = f"{self.binDir}{command}"
         if self.isCheckMemory:
-            fullCommand = f"valgrind {fullCommand}"
+            fullCommand = f"valgrind --xml=yes --xml-file={self.tempDir}/foo_mem_{str(self.completeStep + 1)}.xml \
+{fullCommand}"
         if self.isCheckCoverage:
-            fullCommand = f"LLVM_PROFILE_FILE=\"{self.tempDir}/foo_{str(self.completeStep + 1)}.profraw\" {fullCommand}"
+            fullCommand = f"LLVM_PROFILE_FILE=\"{self.tempDir}/foo_cov_{str(self.completeStep + 1)}.profraw\" \
+{fullCommand}"
         align = max(len(command) + (Output.alignMaxLen - Output.alignCmdLen), Output.alignMaxLen)
-        Output.printStatus(Output.colorBlue, "TEST CASE: {0:<{x}} | START ".format(command, x=Output.alignCmdLen))
+        Output.printStatus(Output.colorBlue, f"TEST CASE: {f'{command}':<{Output.alignCmdLen}} | START ")
 
         stdout, stderr, errcode = common.executeCommand(fullCommand, enter)
         if stderr or errcode != 0:
-            print(f"stderr: {stderr}\nerrcode: {errcode}")
-            Output.printStatus(Output.colorRed, "{0:<{x}}".format("TEST CASE FAILURE", x=align))
+            print(f"STDERR:\n{stderr}\nERRCODE:\n{errcode}")
+            Output.printStatus(Output.colorRed, f"{f'TEST CASE: NO.{str(self.completeStep + 1)} FAILURE':<{align}}")
         else:
             print(stdout)
             self.passStep += 1
-            if self.isCheckMemory and (self.memorySummaryContent not in stdout):
-                self.passStep -= 1
-                Output.printStatus(Output.colorRed, "{0:<{x}}".format("TEST CASE FAILURE", x=align))
+            if self.isCheckMemory:
+                stdout, _, _ = common.executeCommand(
+                    f"valgrind-ci {self.tempDir}/foo_mem_{str(self.completeStep + 1)}.xml --summary"
+                )
+                if "error" in stdout:
+                    print(f"\r\nCHECK MEMORY:\n{stdout}")
+                    common.executeCommand(
+                        f"valgrind-ci {self.tempDir}/foo_mem_{str(self.completeStep + 1)}.xml --source-dir=./ \
+--output-dir={self.tempDir}/memory/test_case_{str(self.completeStep + 1)}"
+                    )
+                    self.passStep -= 1
+                    Output.printStatus(
+                        Output.colorRed, f"{f'TEST CASE: NO.{str(self.completeStep + 1)} FAILURE':<{align}}"
+                    )
 
         self.completeStep += 1
-        Output.printStatus(Output.colorBlue, "TEST CASE: {0:<{x}} | FINISH".format(command, x=Output.alignCmdLen))
+        Output.printStatus(Output.colorBlue, f"TEST CASE: {f'{command}':<{Output.alignCmdLen}} | FINISH")
 
         if self.passStep != self.totalStep:
             statusColor = Output.colorYellow
@@ -160,13 +167,11 @@ class Test:
             statusColor = Output.colorGreen
         Output.printStatus(
             statusColor,
-            "{0:<{x}}".format(
-                "TEST CASE SUCCESS: {:>2} / {:>2}".format(str(self.passStep), str(self.totalStep)), x=align
-            ),
+            f"""\
+{f"TEST CASE: {f'{str(self.passStep)}':>{len(str(self.totalStep))}} / {str(self.totalStep)} SUCCESS":<{align}}""",
         )
         print("\n")
 
-        global STDOUT
         sys.stdout = STDOUT
         self.progressBar.drawProgressBar(int(self.completeStep / self.totalStep * 100))
         sys.stdout = self.log
@@ -187,15 +192,17 @@ class Test:
                 if stdout.find("llvm-profdata-12") != -1 and stdout.find("llvm-cov-12") != -1:
                     os.environ["FOO_ENV"] = self.envCoverage
                     self.isCheckCoverage = True
+                    common.executeCommand(f"rm -rf {self.tempDir}/coverage/*")
                 else:
                     Output.printException("No llvm-profdata or llvm-cov program. Please check it.")
 
             if "mem" in args.check:
-                stdout, _, _ = common.executeCommand("command -v valgrind 2>&1")
-                if stdout.find("valgrind") != -1:
+                stdout, _, _ = common.executeCommand("command -v valgrind valgrind-ci 2>&1")
+                if stdout.find("valgrind") != -1 and stdout.find("valgrind-ci") != -1:
                     self.isCheckMemory = True
+                    common.executeCommand(f"rm -rf {self.tempDir}/memory/*")
                 else:
-                    Output.printException("No valgrind program. Please check it.")
+                    Output.printException("No valgrind or valgrind-ci program. Please check it.")
 
         if args.build:
             if os.path.isfile(self.buildFile):
@@ -229,31 +236,41 @@ class Test:
         sys.stdout = self.log
 
     def completeTest(self):
-        global STDOUT
+        if self.isCheckMemory:
+            common.executeCommand(f"rm -rf {self.tempDir}/*.xml")
+
+        if self.isCheckCoverage:
+            common.executeCommand(
+                f"llvm-profdata-12 merge -sparse {self.tempDir}/foo_cov_*.profraw -o {self.tempDir}/foo_cov.profdata"
+            )
+            common.executeCommand(
+                f"llvm-cov-12 show -instr-profile={self.tempDir}/foo_cov.profdata -show-branches=percent \
+-show-expansions -show-regions -show-line-counts-or-regions -format=html -output-dir={self.tempDir}/coverage \
+-Xdemangler=c++filt -object={self.binDir}{self.binCmd} "
+                + ' '.join([f"-object={self.libDir}{lib}" for lib in self.libList])
+                + " 2>&1"
+            )
+            stdout, _, _ = common.executeCommand(
+                f"llvm-cov-12 report -instr-profile={self.tempDir}/foo_cov.profdata -object={self.binDir}{self.binCmd} "
+                + ' '.join([f"-object={self.libDir}{lib}" for lib in self.libList])
+                + " 2>&1"
+            )
+            common.executeCommand(f"rm -rf {self.tempDir}/*.profraw {self.tempDir}/*.profdata")
+            print(f"\r\nCHECK COVERAGE:\n{stdout}")
+            if "error" in stdout:
+                Output.printException("Please rebuild the executable file before use --check option.")
+
         sys.stdout = STDOUT
         self.progressBar.destroyProgressBar()
         del self.log
 
-        if self.isCheckCoverage:
-            common.executeCommand(
-                f"llvm-profdata-12 merge -sparse {self.tempDir}/foo_*.profraw -o {self.tempDir}/foo.profdata"
-            )
-            stdout, _, _ = common.executeCommand(
-                f"llvm-cov-12 report -instr-profile={self.tempDir}/foo.profdata -object={self.binDir}{self.binCmd} "
-                + ' '.join([f"-object={self.libDir}{lib}" for lib in self.libList])
-                + " 2>&1"
-            )
-            common.executeCommand(f"rm -rf {self.tempDir}/*.profraw")
-            print(stdout)
-            if "error" in stdout:
-                Output.printException("Please rebuild the executable file before use --check option.")
-
     def analyzeLog(self):
-        refresh = open(self.logFile, "rt")
-        inputContent = refresh.read()
+        refresh = ""
+        with open(self.logFile, "rt", encoding="utf-8") as refresh:
+            inputContent = refresh.read()
         outputContent = re.sub(Output.colorEscapeRegex, "", inputContent)
-        refresh = open(self.logFile, "w")
-        refresh.write(outputContent)
+        with open(self.logFile, "w", encoding="utf-8") as refresh:
+            refresh.write(outputContent)
 
     def generateBasicTask(self):
         for taskCategory, taskCategoryList in self.basicTaskDict.items():

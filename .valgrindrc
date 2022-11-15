@@ -1,6 +1,6 @@
 --tool=memcheck
---show-reachable=yes
---leak-check=full
---leak-resolution=high
 --log-fd=1
 --suppressions=.supp
+--leak-check=full
+--leak-resolution=high
+--show-reachable=yes

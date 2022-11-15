@@ -8,12 +8,12 @@ try:
     import subprocess
     import time
 except ImportError as err:
-    raise ImportError(err)
+    raise ImportError(err) from err
 
 
 def executeCommand(command, enter=""):
     try:
-        out = subprocess.Popen(
+        with subprocess.Popen(
             command,
             shell=True,
             executable="/bin/bash",
@@ -21,18 +21,18 @@ def executeCommand(command, enter=""):
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             encoding="utf-8",
-        )
-    except RuntimeError as err:
-        return "", err.args[0], 255
-    stdout, stderr = out.communicate(input=enter)
-    error = out.returncode
-    return stdout.strip(), stderr.strip(), error
+        ) as output:
+            stdout, stderr = output.communicate(input=enter)
+            error = output.returncode
+            return stdout.strip(), stderr.strip(), error
+    except RuntimeError as error:
+        return "", error.args[0], 255
 
 
 class Log:
     def __init__(self, filename, stream=sys.stdout):
         self.terminal = stream
-        self.log = open(filename, "w")
+        self.log = open(filename, "w", encoding="utf-8")  # pylint: disable=consider-using-with
         fcntl.flock(self.log, fcntl.LOCK_EX | fcntl.LOCK_NB)
 
     def write(self, message):
@@ -120,6 +120,7 @@ class ProgressBar:
         signal.signal(signal.SIGINT, self.clearDueToInterrupt)
 
     def clearDueToInterrupt(self, sign, frame):
+        _ = (sign, frame)
         self.destroyProgressBar()
         raise KeyboardInterrupt
 
