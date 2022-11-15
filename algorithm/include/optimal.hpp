@@ -3,7 +3,7 @@
 #include <map>
 #include <random>
 
-namespace num_optimal
+namespace algo_optimal
 {
 namespace function
 {
@@ -252,4 +252,4 @@ inline uint32_t Genetic::getRandomNumber(const uint32_t limit)
     std::uniform_int_distribution<int> randomX(0, limit);
     return randomX(seed);
 }
-} // namespace num_optimal
+} // namespace algo_optimal
