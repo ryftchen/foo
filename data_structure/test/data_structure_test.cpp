@@ -133,6 +133,9 @@ void runTree(const std::vector<std::string>& targets)
             case "ade"_bkdrHash:
                 treeFunctor(threadName, &TreeStructure::avlInstance);
                 break;
+            case "spl"_bkdrHash:
+                treeFunctor(threadName, &TreeStructure::splayInstance);
+                break;
             default:
                 LOG_DBG("execute to run unknown tree instance.");
                 break;
@@ -151,6 +154,9 @@ void updateTreeTask(const std::string& target)
             break;
         case "ade"_bkdrHash:
             setBit<TreeInstance>(TreeInstance::adelsonVelskyLandis);
+            break;
+        case "spl"_bkdrHash:
+            setBit<TreeInstance>(TreeInstance::splay);
             break;
         default:
             getBit<TreeInstance>().reset();

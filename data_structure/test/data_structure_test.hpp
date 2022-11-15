@@ -33,12 +33,13 @@ public:
     enum TreeInstance
     {
         binarySearch,
-        adelsonVelskyLandis
+        adelsonVelskyLandis,
+        splay
     };
     template <>
     struct Bottom<TreeInstance>
     {
-        static constexpr int value = 2;
+        static constexpr int value = 3;
     };
 
     std::bitset<Bottom<LinearInstance>::value> linearBit;

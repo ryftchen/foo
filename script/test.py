@@ -58,7 +58,7 @@ class Test:
             "search": ["bin", "int", "fib"],
             "sort": ["bub", "sel", "ins", "she", "mer", "qui", "hea", "cou", "buc", "rad"],
         },
-        "--data-structure": {"linear": ["lin", "sta", "que"], "tree": ["bin", "ade"]},
+        "--data-structure": {"linear": ["lin", "sta", "que"], "tree": ["bin", "ade", "spl"]},
         "--design-pattern": {
             "behavioral": ["cha", "com", "int", "ite", "med", "mem", "obs", "sta", "str", "tem", "vis"],
             "creational": ["abs", "bui", "fac", "pro", "sin"],

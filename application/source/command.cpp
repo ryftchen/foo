@@ -390,7 +390,8 @@ void Command::printHelpMessage() const
         {
             std::puts("tree [tasks...]\r\n\r\nNon-optional:\r\n"
                       "bin    Binary Search\r\n"
-                      "ade    Adelson-Velsky-Landis");
+                      "ade    Adelson-Velsky-Landis\r\n"
+                      "spl    Splay");
         }
     }
     else if (!dp_tst::getTask().empty())
