@@ -12,8 +12,8 @@ PROJECT_FOLDER="foo"
 APPLICATION_FOLDER="application"
 UTILITY_FOLDER="utility"
 ALGORITHM_FOLDER="algorithm"
-DESIGN_PATTERN_FOLDER="design_pattern"
 DATA_STRUCTURE_FOLDER="data_structure"
+DESIGN_PATTERN_FOLDER="design_pattern"
 NUMERIC_FOLDER="numeric"
 SCRIPT_FOLDER="script"
 DOCKER_FOLDER="docker"
@@ -72,7 +72,7 @@ cleanupProject()
 
 parseArgs()
 {
-    while [ "$#" -gt 0 ]; do
+    while [[ "$#" -gt 0 ]]; do
         case $1 in
         -h | --help) showHelp ;;
         -f | --format) ARGS_FORMAT=true ;;
@@ -91,14 +91,14 @@ parseArgs()
 checkDependencies()
 {
     if {
-        [ "$#" -eq 1 ] && [ "${ARGS_RELEASE}" = true ]
-    } || [ "$#" -eq 0 ]; then
+        [[ "$#" -eq 1 ]] && [[ "${ARGS_RELEASE}" = true ]]
+    } || [[ "$#" -eq 0 ]]; then
         PERFORM_COMPILE=true
     fi
 
-    if [ ! -d ./"${APPLICATION_FOLDER}" ] || [ ! -d ./"${UTILITY_FOLDER}" ] || [ ! -d ./"${ALGORITHM_FOLDER}" ] \
-        || [ ! -d ./"${DATA_STRUCTURE_FOLDER}" ] || [ ! -d ./"${DESIGN_PATTERN_FOLDER}" ] \
-        || [ ! -d ./"${NUMERIC_FOLDER}" ] || [ ! -d ./"${SCRIPT_FOLDER}" ]; then
+    if [[ ! -d ./"${APPLICATION_FOLDER}" ]] || [[ ! -d ./"${UTILITY_FOLDER}" ]] || [[ ! -d ./"${ALGORITHM_FOLDER}" ]] \
+        || [[ ! -d ./"${DATA_STRUCTURE_FOLDER}" ]] || [[ ! -d ./"${DESIGN_PATTERN_FOLDER}" ]] \
+        || [[ ! -d ./"${NUMERIC_FOLDER}" ]] || [[ ! -d ./"${SCRIPT_FOLDER}" ]]; then
         printException "Missing code folders in ${PROJECT_FOLDER} folder. Please check it."
     fi
 
@@ -109,14 +109,14 @@ checkDependencies()
         printException "No cmake or ninja program. Please check it."
     fi
 
-    if [ "${ARGS_FORMAT}" = true ]; then
+    if [[ "${ARGS_FORMAT}" = true ]]; then
         if
             command -v clang-format-12 >/dev/null 2>&1 \
                 && command -v shfmt >/dev/null 2>&1 \
                 && command -v black >/dev/null 2>&1
         then
-            if [ ! -f ./"${FORMAT_CONFIG_CPP}" ] || [ ! -f ./"${FORMAT_CONFIG_PY}" ] \
-                || [ ! -f ./"${FORMAT_CONFIG_SH}" ]; then
+            if [[ ! -f ./"${FORMAT_CONFIG_CPP}" ]] || [[ ! -f ./"${FORMAT_CONFIG_PY}" ]] \
+                || [[ ! -f ./"${FORMAT_CONFIG_SH}" ]]; then
                 printException "Missing format config files in ${PROJECT_FOLDER} folder. Please check it."
             fi
         else
@@ -124,7 +124,7 @@ checkDependencies()
         fi
     fi
 
-    if [ "${ARGS_LINT}" = true ]; then
+    if [[ "${ARGS_LINT}" = true ]]; then
         if
             command -v clang-tidy-12 >/dev/null 2>&1 \
                 && command -v run-clang-tidy-12.py >/dev/null 2>&1 \
@@ -132,10 +132,11 @@ checkDependencies()
                 && command -v shellcheck >/dev/null 2>&1 \
                 && command -v pylint >/dev/null 2>&1
         then
-            if [ ! -f ./"${LINT_CONFIG_CPP}" ] || [ ! -f ./"${LINT_CONFIG_PY}" ] || [ ! -f ./"${LINT_CONFIG_SH}" ]; then
+            if [[ ! -f ./"${LINT_CONFIG_CPP}" ]] || [[ ! -f ./"${LINT_CONFIG_PY}" ]] \
+                || [[ ! -f ./"${LINT_CONFIG_SH}" ]]; then
                 printException "Missing lint config files in ${PROJECT_FOLDER} folder. Please check it."
             fi
-            if [ ! -f ./"${BUILD_FOLDER}"/"${COMPILE_COMMANDS}" ]; then
+            if [[ ! -f ./"${BUILD_FOLDER}"/"${COMPILE_COMMANDS}" ]]; then
                 printException "No ${COMPILE_COMMANDS} file in ${BUILD_FOLDER} folder. Please generate it."
             fi
         else
@@ -144,8 +145,8 @@ Please check it."
         fi
     fi
 
-    if [ "${ARGS_BROWSER}" = true ]; then
-        if [ ! -d ./"${DOCUMENT_FOLDER}" ]; then
+    if [[ "${ARGS_BROWSER}" = true ]]; then
+        if [[ ! -d ./"${DOCUMENT_FOLDER}" ]]; then
             printException "Missing ${DOCUMENT_FOLDER} folder in ${PROJECT_FOLDER} folder. Please check it."
         fi
         if
@@ -156,15 +157,15 @@ Please check it."
         fi
     fi
 
-    if [ "${ARGS_DOXYGEN}" = true ]; then
-        if [ ! -d ./"${DOCUMENT_FOLDER}" ]; then
+    if [[ "${ARGS_DOXYGEN}" = true ]]; then
+        if [[ ! -d ./"${DOCUMENT_FOLDER}" ]]; then
             printException "Missing ${DOCUMENT_FOLDER} folder in ${PROJECT_FOLDER} folder. Please check it."
         fi
         if
             command -v doxygen >/dev/null 2>&1 \
                 && command -v dot >/dev/null 2>&1
         then
-            if [ ! -f ./"${DOCUMENT_FOLDER}"/"${DOXYGEN_FILE}" ]; then
+            if [[ ! -f ./"${DOCUMENT_FOLDER}"/"${DOXYGEN_FILE}" ]]; then
                 printException "No ${DOXYGEN_FILE} file in ${DOCUMENT_FOLDER} folder. Please check it."
             fi
         else
@@ -172,19 +173,19 @@ Please check it."
         fi
     fi
 
-    if [ "${ARGS_CONTAINER}" = true ]; then
-        if [ ! -d ./"${DOCKER_FOLDER}" ]; then
+    if [[ "${ARGS_CONTAINER}" = true ]]; then
+        if [[ ! -d ./"${DOCKER_FOLDER}" ]]; then
             printException "Missing ${DOCKER_FOLDER} folder in ${PROJECT_FOLDER} folder. Please check it."
         fi
         if command -v docker >/dev/null 2>&1; then
-            if [ ! -f ./"${DOCKER_FOLDER}"/"${DOCKER_FILE}" ]; then
+            if [[ ! -f ./"${DOCKER_FOLDER}"/"${DOCKER_FILE}" ]]; then
                 printException "No ${DOCKER_FILE} file in ${DOCKER_FOLDER} folder. Please check it."
             fi
 
             echo "Please confirm further whether construct docker container. (y or n)"
             oldStty=$(stty -g)
             stty raw -echo
-            answer=$(while ! head -c 1 | grep -i '[ny]'; do true; done)
+            answer=$(while ! head -c 1 | grep -i '[ny]' || true; do true; done)
             stty "${oldStty}"
             if echo "${answer}" | grep -iq "^y"; then
                 echo "Yes"
@@ -200,13 +201,13 @@ Please check it."
 
 generateCMakeFiles()
 {
-    if [ -f ./"${CMAKE_LISTS}" ]; then
-        if [ ! -d ./"${BUILD_FOLDER}" ]; then
+    if [[ -f ./"${CMAKE_LISTS}" ]]; then
+        if [[ ! -d ./"${BUILD_FOLDER}" ]]; then
             bashCommand "mkdir ./${BUILD_FOLDER}"
         fi
 
         export CC=/usr/bin/clang-12 CXX=/usr/bin/clang++-12
-        if [ "${ARGS_RELEASE}" = true ]; then
+        if [[ "${ARGS_RELEASE}" = true ]]; then
             buildType="Release"
         else
             buildType="Debug"
@@ -220,14 +221,14 @@ generateCMakeFiles()
 
 compileCode()
 {
-    if [ "${PERFORM_COMPILE}" = true ]; then
+    if [[ "${PERFORM_COMPILE}" = true ]]; then
         bashCommand "tput setaf 2; tput bold; cmake --build ./${BUILD_FOLDER}; tput sgr0"
     fi
 }
 
 performFormatOption()
 {
-    if [ "${ARGS_FORMAT}" = true ]; then
+    if [[ "${ARGS_FORMAT}" = true ]]; then
         bashCommand "find ./${APPLICATION_FOLDER} ./${UTILITY_FOLDER} ./${ALGORITHM_FOLDER} ./${DATA_STRUCTURE_FOLDER} \
 ./${DESIGN_PATTERN_FOLDER} ./${NUMERIC_FOLDER} -name *.cpp -o -name *.hpp | xargs clang-format-12 -i --verbose"
         bashCommand "shfmt -l -w ./${SCRIPT_FOLDER}/*.sh"
@@ -237,7 +238,7 @@ performFormatOption()
 
 performLintOption()
 {
-    if [ "${ARGS_LINT}" = true ]; then
+    if [[ "${ARGS_LINT}" = true ]]; then
         bashCommand "compdb -p ./${BUILD_FOLDER} list > ./${COMPILE_COMMANDS} && \
 mv ./${COMPILE_COMMANDS} ./${BUILD_FOLDER}"
         bashCommand "find ./${APPLICATION_FOLDER} ./${UTILITY_FOLDER} \
@@ -251,16 +252,16 @@ mv ./${COMPILE_COMMANDS} ./${BUILD_FOLDER}"
 
 performBrowserOption()
 {
-    if [ "${ARGS_BROWSER}" = true ]; then
+    if [[ "${ARGS_BROWSER}" = true ]]; then
         commitId=$(git rev-parse --short @)
-        if [ -z "${commitId}" ]; then
+        if [[ -z "${commitId}" ]]; then
             commitId="local"
         fi
-        if [ -d ./"${TEMPORARY_FOLDER}" ]; then
+        if [[ -d ./"${TEMPORARY_FOLDER}" ]]; then
             lastTar="${PROJECT_FOLDER}_browser_${commitId}.tar.bz2"
-            if [ -f ./"${TEMPORARY_FOLDER}"/"${lastTar}" ]; then
+            if [[ -f ./"${TEMPORARY_FOLDER}"/"${lastTar}" ]]; then
                 timeDiff=$(($(date +%s) - $(stat -L --format %Y "./${TEMPORARY_FOLDER}/${lastTar}")))
-                if [ "${timeDiff}" -lt "10" ]; then
+                if [[ "${timeDiff}" -lt "10" ]]; then
                     printException "The latest browser tarball ${TEMPORARY_FOLDER}/${lastTar} has been generated since \
 ${timeDiff}s ago."
                 fi
@@ -289,16 +290,16 @@ tarHtmlForBrowser()
 
 performDoxygenOption()
 {
-    if [ "${ARGS_DOXYGEN}" = true ]; then
+    if [[ "${ARGS_DOXYGEN}" = true ]]; then
         commitId=$(git rev-parse --short @)
-        if [ -z "${commitId}" ]; then
+        if [[ -z "${commitId}" ]]; then
             commitId="local"
         fi
-        if [ -d ./"${TEMPORARY_FOLDER}" ]; then
+        if [[ -d ./"${TEMPORARY_FOLDER}" ]]; then
             lastTar="${PROJECT_FOLDER}_doxygen_${commitId}.tar.bz2"
-            if [ -f ./"${TEMPORARY_FOLDER}"/"${lastTar}" ]; then
+            if [[ -f ./"${TEMPORARY_FOLDER}"/"${lastTar}" ]]; then
                 timeDiff=$(($(date +%s) - $(stat -L --format %Y "./${TEMPORARY_FOLDER}/${lastTar}")))
-                if [ "${timeDiff}" -lt "10" ]; then
+                if [[ "${timeDiff}" -lt "10" ]]; then
                     printException "The latest doxygen tarball ${TEMPORARY_FOLDER}/${lastTar} has been generated since \
 ${timeDiff}s ago."
                 fi
@@ -324,21 +325,22 @@ tarHtmlForDoxygen()
 
 performContainerOption()
 {
-    if [ "${ARGS_CONTAINER}" = true ]; then
+    if [[ "${ARGS_CONTAINER}" = true ]]; then
         toBuildImage=false
-        if service docker status | grep -q "active (running)" 2>/dev/null; then
+        if service docker status | grep -q "active (running)" 2>/dev/null || true; then
             imageRepo="ryftchen/${PROJECT_FOLDER}"
-            if ! docker ps -a --format "{{lower .Image}}" | grep -q "${imageRepo}":latest 2>/dev/null; then
-                if
-                    ! docker image ls -a --format "{{lower .Repository}}" | grep -q "${imageRepo}" 2>/dev/null \
-                        || ! docker image ls -a | tail -n +2 | grep "${imageRepo}" \
-                        | awk '{split($0, a, " "); print a[2]}' | grep -q "latest" 2>/dev/null
-                then
+            if ! docker ps -a --format "{{lower .Image}}" | grep -q "${imageRepo}":latest 2>/dev/null || true; then
+                if {
+                    ! docker image ls -a --format "{{lower .Repository}}" | grep -q "${imageRepo}" 2>/dev/null || true
+                } || {
+                    ! docker image ls -a | tail -n +2 | grep "${imageRepo}" | awk '{split($0, a, " "); print a[2]}' \
+                        | grep -q "latest" 2>/dev/null || true
+                }; then
                     if docker search "${imageRepo}" --format "{{lower .Name}}" \
-                        | grep -q "${imageRepo}" 2>/dev/null; then
+                        | grep -q "${imageRepo}" 2>/dev/null || true; then
                         tags=$(curl -sS "https://registry.hub.docker.com/v2/repositories/${imageRepo}/tags" \
                             | sed -Ee 's/("name":)"([^"]*)"/\n\1\2\n/g' | grep '"name":' \
-                            | awk -F: '{printf("%s\n", $2)}')
+                            | awk -F: '{printf("%s\n", $2)}' || true)
                         if echo "${tags}" | grep -q "latest" 2>/dev/null; then
                             bashCommand "docker pull ${imageRepo}:latest"
                         else
@@ -347,7 +349,7 @@ performContainerOption()
                     else
                         toBuildImage=true
                     fi
-                    if [ "${toBuildImage}" = true ]; then
+                    if [[ "${toBuildImage}" = true ]]; then
                         bashCommand "docker build -t ${imageRepo}:latest -f ./${DOCKER_FOLDER}/${DOCKER_FILE} \
 ./${DOCKER_FOLDER}/"
                     fi
