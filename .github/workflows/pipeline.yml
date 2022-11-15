@@ -99,7 +99,7 @@ jobs:
         with:
           branch: gh-pages
           folder: ./document/doxygen
-          commit-message: 'chore: deploy to gh-pages from @ ${{ github.repository }}@${{ github.sha }'
+          commit-message: 'chore: deploy to gh-pages from @ ${{ github.repository }}@${{ github.sha }}'
 
   dynamic_analysis:
     name: Dynamic analysis
