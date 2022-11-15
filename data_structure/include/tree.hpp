@@ -10,5 +10,6 @@ public:
 
     void bsInstance() const;
     void avlInstance() const;
+    void splayInstance() const;
 };
 } // namespace ds_tree

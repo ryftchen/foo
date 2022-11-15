@@ -136,7 +136,7 @@ private:
                               { "sort"       , {{ "bub", "sel", "ins", "she", "mer",
                                                   "qui", "hea", "cou", "buc", "rad" } , { &algo_tst::runSort      , &algo_tst::updateSortTask      }}}}},
         { "data-structure" , {{ "linear"     , {{ "lin", "sta", "que"               } , { &ds_tst::runLinear      , &ds_tst::updateLinearTask      }}},
-                              { "tree"       , {{ "bin", "ade"                      } , { &ds_tst::runTree        , &ds_tst::updateTreeTask        }}}}},
+                              { "tree"       , {{ "bin", "ade", "spl"               } , { &ds_tst::runTree        , &ds_tst::updateTreeTask        }}}}},
         { "design-pattern" , {{ "behavioral" , {{ "cha", "com", "int", "ite", "med",
                                                   "mem", "obs", "sta", "str", "tem",
                                                   "vis"                             } , { &dp_tst::runBehavioral  , &dp_tst::updateBehavioralTask  }}},

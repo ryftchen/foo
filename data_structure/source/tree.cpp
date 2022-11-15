@@ -659,7 +659,7 @@ static void destroyAVLTree(AVLTree tree)
     delete tree;
 }
 
-static void printAVLTree(AVLTree tree, const Type key, int direction)
+static void printAVLTree(AVLTree tree, const Type key, const int direction)
 {
     if (nullptr != tree)
     {
@@ -732,5 +732,351 @@ void TreeStructure::avlInstance() const
     destroyAVLTree(root);
 
     COMMON_PRINT(TREE_RESULT, "AdelsonVelskyLandis", avl::output().str().c_str());
+}
+
+// Splay
+namespace splay
+{
+static std::ostringstream& output()
+{
+    static std::ostringstream stream;
+    return stream;
+}
+
+typedef int Type;
+typedef struct SplayTreeNode
+{
+    Type key;
+    struct SplayTreeNode* left;
+    struct SplayTreeNode* right;
+} Node, *SplayTree;
+
+static void preorderSplayTree(SplayTree tree)
+{
+    if (nullptr != tree)
+    {
+        output() << tree->key << " ";
+        preorderSplayTree(tree->left);
+        preorderSplayTree(tree->right);
+    }
+}
+
+static void inorderSplayTree(SplayTree tree)
+{
+    if (nullptr != tree)
+    {
+        inorderSplayTree(tree->left);
+        output() << tree->key << " ";
+        inorderSplayTree(tree->right);
+    }
+}
+
+static void postorderSplayTree(SplayTree tree)
+{
+    if (nullptr != tree)
+    {
+        postorderSplayTree(tree->left);
+        postorderSplayTree(tree->right);
+        output() << tree->key << " ";
+    }
+}
+
+static Node* splayTreeSearch(SplayTree x, const Type key)
+{
+    if ((nullptr == x) || (key == x->key))
+    {
+        return x;
+    }
+
+    if (key < x->key)
+    {
+        return splayTreeSearch(x->left, key);
+    }
+    else
+    {
+        return splayTreeSearch(x->right, key);
+    }
+}
+
+static Node* splayTreeMinimum(SplayTree tree)
+{
+    if (nullptr == tree)
+    {
+        return nullptr;
+    }
+
+    while (nullptr != tree->left)
+    {
+        tree = tree->left;
+    }
+
+    return tree;
+}
+
+static Node* splayTreeMaximum(SplayTree tree)
+{
+    if (nullptr == tree)
+    {
+        return nullptr;
+    }
+
+    while (nullptr != tree->right)
+    {
+        tree = tree->right;
+    }
+
+    return tree;
+}
+
+static Node* splayTreeSplay(SplayTree tree, const Type key)
+{
+    Node n, *l, *r, *c;
+    if (tree == nullptr)
+    {
+        return tree;
+    }
+
+    n.left = n.right = nullptr;
+    l = r = &n;
+    for (;;)
+    {
+        if (key < tree->key)
+        {
+            if (nullptr == tree->left)
+            {
+                break;
+            }
+            if (key < tree->left->key)
+            {
+                c = tree->left;
+                tree->left = c->right;
+                c->right = tree;
+                tree = c;
+                if (nullptr == tree->left)
+                {
+                    break;
+                }
+            }
+            r->left = tree;
+            r = tree;
+            tree = tree->left;
+        }
+        else if (key > tree->key)
+        {
+            if (nullptr == tree->right)
+            {
+                break;
+            }
+            if (key > tree->right->key)
+            {
+                c = tree->right;
+                tree->right = c->left;
+                c->left = tree;
+                tree = c;
+                if (nullptr == tree->right)
+                {
+                    break;
+                }
+            }
+            l->right = tree;
+            l = tree;
+            tree = tree->right;
+        }
+        else
+        {
+            break;
+        }
+    }
+
+    l->right = tree->left;
+    r->left = tree->right;
+    tree->left = n.right;
+    tree->right = n.left;
+
+    return tree;
+}
+
+static Node* splayTreeInsert(SplayTree tree, Node* z)
+{
+    Node* y = nullptr;
+    Node* x = tree;
+
+    while (nullptr != x)
+    {
+        y = x;
+        if (z->key < x->key)
+        {
+            x = x->left;
+        }
+        else if (z->key > x->key)
+        {
+            x = x->right;
+        }
+        else
+        {
+            std::cerr << "Do not allow to insert the same node." << std::endl;
+            delete z;
+            return tree;
+        }
+    }
+
+    if (nullptr == y)
+    {
+        tree = z;
+    }
+    else if (z->key < y->key)
+    {
+        y->left = z;
+    }
+    else
+    {
+        y->right = z;
+    }
+
+    return tree;
+}
+
+static Node* createSplayTreeNode(const Type key, Node* left, Node* right)
+{
+    Node* p = new Node();
+    if (nullptr == p)
+    {
+        return nullptr;
+    }
+
+    p->key = key;
+    p->left = left;
+    p->right = right;
+
+    return p;
+}
+
+static Node* insertSplayTree(SplayTree tree, const Type key)
+{
+    Node* z = createSplayTreeNode(key, nullptr, nullptr);
+    if (nullptr == z)
+    {
+        return tree;
+    }
+
+    tree = splayTreeInsert(tree, z);
+    tree = splayTreeSplay(tree, key);
+
+    return tree;
+}
+
+static Node* deleteSplayTree(SplayTree tree, const Type key)
+{
+    if (nullptr == tree)
+    {
+        return nullptr;
+    }
+
+    if (nullptr == splayTreeSearch(tree, key))
+    {
+        return tree;
+    }
+
+    Node* x;
+    tree = splayTreeSplay(tree, key);
+    if (nullptr != tree->left)
+    {
+        x = splayTreeSplay(tree->left, key);
+        x->right = tree->right;
+    }
+    else
+    {
+        x = tree->right;
+    }
+
+    delete tree;
+    return x;
+}
+
+static void destroySplayTree(SplayTree tree)
+{
+    if (nullptr == tree)
+    {
+        return;
+    }
+
+    if (nullptr != tree->left)
+    {
+        destroySplayTree(tree->left);
+    }
+    if (nullptr != tree->right)
+    {
+        destroySplayTree(tree->right);
+    }
+
+    delete tree;
+}
+
+static void printSplayTree(SplayTree tree, const Type key, const int direction)
+{
+    if (nullptr != tree)
+    {
+        if (0 == direction)
+        {
+            output() << tree->key << " is root" << std::endl;
+        }
+        else
+        {
+            output() << tree->key << " is " << key << "'s " << ((1 == direction) ? "right" : " left") << " child"
+                     << std::endl;
+        }
+
+        printSplayTree(tree->left, tree->key, -1);
+        printSplayTree(tree->right, tree->key, 1);
+    }
+}
+} // namespace splay
+
+// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
+void TreeStructure::splayInstance() const
+{
+    using splay::destroySplayTree;
+    using splay::inorderSplayTree;
+    using splay::insertSplayTree;
+    using splay::postorderSplayTree;
+    using splay::preorderSplayTree;
+    using splay::printSplayTree;
+    using splay::SplayTree;
+    using splay::splayTreeMaximum;
+    using splay::splayTreeMinimum;
+    using splay::splayTreeSplay;
+
+    SplayTree root = nullptr;
+    constexpr int arraySize = 6;
+    constexpr std::array<int, arraySize> array = {10, 50, 40, 30, 20, 60};
+
+    splay::output() << "Insert: ";
+    for (int i = 0; i < arraySize; ++i)
+    {
+        splay::output() << array.at(i) << " ";
+        root = insertSplayTree(root, array.at(i));
+    }
+
+    splay::output() << "\nPreorder traversal: ";
+    preorderSplayTree(root);
+    splay::output() << "\nInorder traversal: ";
+    inorderSplayTree(root);
+    splay::output() << "\nPostorder traversal: ";
+    postorderSplayTree(root);
+
+    splay::output() << "\nMinimum: " << splayTreeMinimum(root)->key;
+    splay::output() << "\nMaximum: " << splayTreeMaximum(root)->key;
+    splay::output() << "\nTree verbose: " << std::endl;
+    printSplayTree(root, root->key, 0);
+
+    constexpr int splayNode = 30;
+    splay::output() << "Splay node as root node: " << splayNode;
+    splay::output() << "\nTree verbose: " << std::endl;
+    root = splayTreeSplay(root, splayNode);
+    printSplayTree(root, root->key, 0);
+
+    destroySplayTree(root);
+
+    COMMON_PRINT(TREE_RESULT, "Splay", splay::output().str().c_str());
 }
 } // namespace ds_tree
