@@ -1,10 +1,10 @@
 DOXYFILE_ENCODING      = UTF-8
 PROJECT_NAME           = "Foo"
 PROJECT_NUMBER         =
-PROJECT_BRIEF          =
+PROJECT_BRIEF          = "bar"
 PROJECT_LOGO           =
 OUTPUT_DIRECTORY       = ./document
-CREATE_SUBDIRS         = NO
+CREATE_SUBDIRS         = YES
 CREATE_SUBDIRS_LEVEL   = 8
 ALLOW_UNICODE_NAMES    = NO
 OUTPUT_LANGUAGE        = English
