@@ -34,9 +34,9 @@ DOXYGEN_FILE="Doxyfile"
 bashCommand()
 {
     echo
-    echo "$(date "+%b %d %T") $* START"
+    echo "$(date "+%b %d %T") $* START" || true
     /bin/bash -c "$@"
-    echo "$(date "+%b %d %T") $* FINISH"
+    echo "$(date "+%b %d %T") $* FINISH" || true
 }
 
 printException()
@@ -363,7 +363,7 @@ performContainerOption()
 
 main()
 {
-    cd "${0%%${SCRIPT_FOLDER}*}" || exit 1
+    cd "${0%%"${SCRIPT_FOLDER}"*}" || exit 1
     trap "tput sgr0" INT TERM
 
     parseArgs "$@"
