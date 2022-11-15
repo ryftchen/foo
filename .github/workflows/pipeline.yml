@@ -68,8 +68,8 @@ jobs:
     runs-on: ubuntu-latest
     container: ryftchen/foo:latest
 
-  permissions:
-    contents: write
+    permissions:
+      contents: write
 
     steps:
       - name: Prepare
