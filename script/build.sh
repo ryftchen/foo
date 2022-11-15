@@ -34,9 +34,9 @@ DOXYGEN_FILE="Doxyfile"
 bashCommand()
 {
     echo
-    echo "$(date "+%b %d %T") $* START" || true
+    echo "$(date "+%b %d %T") $* START"
     /bin/bash -c "$@"
-    echo "$(date "+%b %d %T") $* FINISH" || true
+    echo "$(date "+%b %d %T") $* FINISH"
 }
 
 printException()
@@ -185,7 +185,7 @@ Please check it."
             echo "Please confirm further whether construct docker container. (y or n)"
             oldStty=$(stty -g)
             stty raw -echo
-            answer=$(while ! head -c 1 | grep -i '[ny]' || true; do true; done)
+            answer=$(while ! head -c 1 | grep -i '[ny]'; do true; done)
             stty "${oldStty}"
             if echo "${answer}" | grep -iq "^y"; then
                 echo "Yes"
@@ -327,20 +327,19 @@ performContainerOption()
 {
     if [[ "${ARGS_CONTAINER}" = true ]]; then
         toBuildImage=false
-        if service docker status | grep -q "active (running)" 2>/dev/null || true; then
+        if service docker status | grep -q "active (running)" 2>/dev/null; then
             imageRepo="ryftchen/${PROJECT_FOLDER}"
-            if ! docker ps -a --format "{{lower .Image}}" | grep -q "${imageRepo}":latest 2>/dev/null || true; then
-                if {
-                    ! docker image ls -a --format "{{lower .Repository}}" | grep -q "${imageRepo}" 2>/dev/null || true
-                } || {
-                    ! docker image ls -a | tail -n +2 | grep "${imageRepo}" | awk '{split($0, a, " "); print a[2]}' \
-                        | grep -q "latest" 2>/dev/null || true
-                }; then
+            if ! docker ps -a --format "{{lower .Image}}" | grep -q "${imageRepo}":latest 2>/dev/null; then
+                if
+                    ! docker image ls -a --format "{{lower .Repository}}" | grep -q "${imageRepo}" 2>/dev/null \
+                        || ! docker image ls -a | tail -n +2 | grep "${imageRepo}" \
+                        | awk '{split($0, a, " "); print a[2]}' | grep -q "latest" 2>/dev/null
+                then
                     if docker search "${imageRepo}" --format "{{lower .Name}}" \
-                        | grep -q "${imageRepo}" 2>/dev/null || true; then
+                        | grep -q "${imageRepo}" 2>/dev/null; then
                         tags=$(curl -sS "https://registry.hub.docker.com/v2/repositories/${imageRepo}/tags" \
                             | sed -Ee 's/("name":)"([^"]*)"/\n\1\2\n/g' | grep '"name":' \
-                            | awk -F: '{printf("%s\n", $2)}' || true)
+                            | awk -F: '{printf("%s\n", $2)}')
                         if echo "${tags}" | grep -q "latest" 2>/dev/null; then
                             bashCommand "docker pull ${imageRepo}:latest"
                         else
