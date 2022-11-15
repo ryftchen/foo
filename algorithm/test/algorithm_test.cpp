@@ -50,7 +50,7 @@ constexpr int arrayRangeForSort1 = -50;
 constexpr int arrayRangeForSort2 = 150;
 constexpr uint32_t arrayLengthForSort = 53;
 
-class Griewank : public num_optimal::function::Function
+class Griewank : public algo_optimal::function::Function
 {
 public:
     double operator()(const double x) const override
@@ -65,7 +65,7 @@ public:
         "f(x)=1+1/4000*Σ(1→n)[(Xi)^2]-Π(1→n)[cos(Xi/(i)^(1/2))],x∈[-600,600] (one-dimensional Griewank)"};
 };
 
-class Rastrigin : public num_optimal::function::Function
+class Rastrigin : public algo_optimal::function::Function
 {
 public:
     double operator()(const double x) const override
@@ -244,7 +244,7 @@ void runOptimal(const std::vector<std::string>& targets)
     {
         constexpr std::string_view prefix{"\r\nOptimal function: "};
         std::visit(
-            num_optimal::function::FuncOverloaded{
+            algo_optimal::function::FuncOverloaded{
                 [&prefix](const Griewank& /*unused*/)
                 {
                     std::cout << prefix << Griewank::funcStr << std::endl;
@@ -257,23 +257,23 @@ void runOptimal(const std::vector<std::string>& targets)
             function);
     };
     const auto resultFunctor = [targets](
-                                   const num_optimal::function::Function& function,
-                                   const num_optimal::function::FuncRange<double, double>& range)
+                                   const algo_optimal::function::Function& function,
+                                   const algo_optimal::function::FuncRange<double, double>& range)
     {
-        assert((range.range1 < range.range2) && (num_optimal::epsilon > 0.0));
+        assert((range.range1 < range.range2) && (algo_optimal::epsilon > 0.0));
         std::shared_ptr<util_thread::Thread> threads = std::make_shared<util_thread::Thread>(std::min(
             static_cast<uint32_t>(getBit<OptimalMethod>().count()),
             static_cast<uint32_t>(Bottom<OptimalMethod>::value)));
         const auto optimalFunctor =
-            [&](const std::string& threadName, const std::shared_ptr<num_optimal::OptimalSolution>& classPtr)
+            [&](const std::string& threadName, const std::shared_ptr<algo_optimal::OptimalSolution>& classPtr)
         {
             threads->enqueue(
                 threadName,
-                &num_optimal::OptimalSolution::operator(),
+                &algo_optimal::OptimalSolution::operator(),
                 classPtr,
                 range.range1,
                 range.range2,
-                num_optimal::epsilon);
+                algo_optimal::epsilon);
         };
 
         for (int i = 0; i < Bottom<OptimalMethod>::value; ++i)
@@ -287,16 +287,16 @@ void runOptimal(const std::vector<std::string>& targets)
             switch (util_hash::bkdrHash(targetMethod.data()))
             {
                 case "gra"_bkdrHash:
-                    optimalFunctor(threadName, std::make_shared<num_optimal::Gradient>(function));
+                    optimalFunctor(threadName, std::make_shared<algo_optimal::Gradient>(function));
                     break;
                 case "ann"_bkdrHash:
-                    optimalFunctor(threadName, std::make_shared<num_optimal::Annealing>(function));
+                    optimalFunctor(threadName, std::make_shared<algo_optimal::Annealing>(function));
                     break;
                 case "par"_bkdrHash:
-                    optimalFunctor(threadName, std::make_shared<num_optimal::Particle>(function));
+                    optimalFunctor(threadName, std::make_shared<algo_optimal::Particle>(function));
                     break;
                 case "gen"_bkdrHash:
-                    optimalFunctor(threadName, std::make_shared<num_optimal::Genetic>(function));
+                    optimalFunctor(threadName, std::make_shared<algo_optimal::Genetic>(function));
                     break;
                 default:
                     LOG_DBG("Unable to execute unknown optimal method.");
@@ -308,9 +308,9 @@ void runOptimal(const std::vector<std::string>& targets)
     ALGORITHM_PRINT_TASK_BEGIN_TITLE(Type::optimal);
 
     const std::unordered_multimap<
-        num_optimal::function::FuncRange<double, double>,
+        algo_optimal::function::FuncRange<double, double>,
         OptimalFuncTarget,
-        num_optimal::function::FuncMapHash>
+        algo_optimal::function::FuncMapHash>
         optimalFuncMap{
             {{Griewank::range1, Griewank::range2, Griewank::funcStr}, Griewank()},
             {{Rastrigin::range1, Rastrigin::range2, Rastrigin::funcStr}, Rastrigin()}};

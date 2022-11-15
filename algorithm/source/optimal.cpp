@@ -5,7 +5,7 @@
 
 #define OPTIMAL_RESULT(opt) "*%-9s method: F(" #opt ")=%+.5f X=%+.5f  ==>Run time: %8.5f ms\n"
 
-namespace num_optimal
+namespace algo_optimal
 {
 // Gradient Descent
 std::optional<std::tuple<ValueY, ValueX>> Gradient::operator()(const double left, const double right, const double eps)
@@ -464,4 +464,4 @@ genetic::Chromosome Genetic::getBestIndividual(const Population& pop)
 
     return *indBestIter;
 }
-} // namespace num_optimal
+} // namespace algo_optimal
