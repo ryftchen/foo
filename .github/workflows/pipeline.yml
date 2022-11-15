@@ -9,7 +9,7 @@ on:
     inputs:
       name:
         description: 'Pipeline'
-        default: 'Manual trigger'
+        default: 'Manual Trigger'
         required: false
   schedule:
     - cron: '0 0 * * MON'
@@ -32,12 +32,12 @@ jobs:
           git config --global --add safe.directory '*'
 
       - name: Checkout
-        uses: actions/checkout@v3.0.0
+        uses: actions/checkout@v3
 
-      - name: Check spelling
+      - name: Check Spelling
         uses: check-spelling/check-spelling@v0.0.20
         with:
-          config: .github/actions/check_spelling
+          config: ./.github/actions/check_spelling
           post_comment: 0
           extra_dictionaries:
             cspell:bash/bash-words.txt
@@ -51,22 +51,25 @@ jobs:
         with:
           languages: cpp
 
-      - name: Manual build
+      - name: Manual Build
         run: |
           mkdir ./build
           export CC=/usr/bin/clang-12 CXX=/usr/bin/clang++-12
-          cmake -S . -B ./build -DCMAKE_CXX_COMPILER=clang++-12 -DCMAKE_BUILD_TYPE=Release
-          make -C ./build -j
+          cmake -S . -B ./build -G Ninja -DCMAKE_CXX_COMPILER=clang++-12 -DCMAKE_BUILD_TYPE=Release
+          cmake --build ./build
 
-      - name: Perform CodeQL analysis
+      - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v2
 
   static_analysis:
-    name: Static analysis
+    name: Static Analysis
     needs: precheck
     if: always() && ((needs.precheck.result == 'success') || (needs.precheck.result == 'skipped'))
     runs-on: ubuntu-latest
     container: ryftchen/foo:latest
+
+  permissions:
+    contents: write
 
     steps:
       - name: Prepare
@@ -74,7 +77,7 @@ jobs:
           git config --global --add safe.directory '*'
 
       - name: Checkout
-        uses: actions/checkout@v3.0.0
+        uses: actions/checkout@v3
 
       - name: Check
         run: |
@@ -82,15 +85,21 @@ jobs:
           ./script/build.sh --format --lint --browser --doxygen --release
           git status
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v3.0.0
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
         with:
           name: foo_artifact
           path: ./temporary/foo_*.tar.bz2
           retention-days: 7
 
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4.4.1
+        with:
+          branch: gh-pages
+          folder: ./document/doxygen
+
   dynamic_analysis:
-    name: Dynamic analysis
+    name: Dynamic Analysis
     needs: precheck
     if: always() && ((needs.precheck.result == 'success') || (needs.precheck.result == 'skipped'))
     runs-on: ubuntu-latest
@@ -102,7 +111,7 @@ jobs:
           git config --global --add safe.directory '*'
 
       - name: Checkout
-        uses: actions/checkout@v3.0.0
+        uses: actions/checkout@v3
 
       - name: Build
         run: |
