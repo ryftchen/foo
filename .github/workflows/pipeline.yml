@@ -82,9 +82,11 @@ jobs:
 
       - name: Check
         run: |
-          ./script/build.sh --cleanup
           ./script/build.sh --format --lint --release
           git status
+
+      - name: Archive
+        run: |
           sed -i "s/\(^PROJECT_NUMBER[ ]\+=\)/\1 \"@ $(git rev-parse --short @)\"/" ./document/Doxyfile
           ./script/build.sh --browser --doxygen --release
 
@@ -123,7 +125,5 @@ jobs:
 
       - name: Test
         run: |
-          export TERM=linux
-          export TERMINFO=/etc/terminfo
           ./script/test.py --check cov mem --build rls
 ...

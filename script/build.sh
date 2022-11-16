@@ -230,7 +230,7 @@ performFormatOption()
 {
     if [[ "${ARGS_FORMAT}" = true ]]; then
         bashCommand "find ./${APPLICATION_FOLDER} ./${UTILITY_FOLDER} ./${ALGORITHM_FOLDER} ./${DATA_STRUCTURE_FOLDER} \
-./${DESIGN_PATTERN_FOLDER} ./${NUMERIC_FOLDER} -name *.cpp -o -name *.hpp | xargs clang-format-12 -i --verbose"
+./${DESIGN_PATTERN_FOLDER} ./${NUMERIC_FOLDER} -name *.cpp -o -name *.hpp | xargs clang-format-12 -i --verbose --Werror"
         bashCommand "shfmt -l -w ./${SCRIPT_FOLDER}/*.sh"
         bashCommand "black --config ./${FORMAT_CONFIG_PY} ./${SCRIPT_FOLDER}/*.py"
     fi
@@ -365,6 +365,7 @@ performContainerOption()
 main()
 {
     cd "${0%%"${SCRIPT_FOLDER}"*}" || exit 1
+    export TERM=linux TERMINFO=/etc/terminfo
     trap "tput sgr0" INT TERM
 
     parseArgs "$@"

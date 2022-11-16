@@ -12,6 +12,8 @@ try:
 except ImportError as err:
     raise ImportError(err) from err
 
+os.environ["TERM"] = "linux"
+os.environ["TERMINFO"] = "/etc/terminfo"
 STDOUT = sys.stdout
 
 
