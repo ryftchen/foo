@@ -136,9 +136,6 @@ checkDependencies()
                 || [[ ! -f ./"${LINT_CONFIG_SH}" ]]; then
                 printException "Missing lint config files in ${PROJECT_FOLDER} folder. Please check it."
             fi
-            if [[ ! -f ./"${BUILD_FOLDER}"/"${COMPILE_COMMANDS}" ]]; then
-                printException "No ${COMPILE_COMMANDS} file in ${BUILD_FOLDER} folder. Please generate it."
-            fi
         else
             printException "No clang-tidy (involving run-clang-tidy-12.py, compdb), shellcheck or pylint program. \
 Please check it."
@@ -239,6 +236,9 @@ performFormatOption()
 performLintOption()
 {
     if [[ "${ARGS_LINT}" = true ]]; then
+        if [[ ! -f ./"${BUILD_FOLDER}"/"${COMPILE_COMMANDS}" ]]; then
+            printException "No ${COMPILE_COMMANDS} file in ${BUILD_FOLDER} folder. Please generate it."
+        fi
         bashCommand "compdb -p ./${BUILD_FOLDER} list > ./${COMPILE_COMMANDS} && \
 mv ./${COMPILE_COMMANDS} ./${BUILD_FOLDER}"
         bashCommand "find ./${APPLICATION_FOLDER} ./${UTILITY_FOLDER} \
@@ -276,6 +276,9 @@ ${timeDiff}s ago."
 
 tarHtmlForBrowser()
 {
+    if [[ ! -f ./"${BUILD_FOLDER}"/"${COMPILE_COMMANDS}" ]]; then
+        printException "No ${COMPILE_COMMANDS} file in ${BUILD_FOLDER} folder. Please generate it."
+    fi
     browserFolder="browser"
     tarFile="${PROJECT_FOLDER}_${browserFolder}_$1.tar.bz2"
     rm -rf ./"${DOCUMENT_FOLDER}"/"${browserFolder}" ./"${TEMPORARY_FOLDER}"/"${tarFile}"
