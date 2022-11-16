@@ -83,6 +83,7 @@ uintn
 valgrind
 Velsky
 vgcore
+Werror
 woboq
 WRN
 Xdemangler
