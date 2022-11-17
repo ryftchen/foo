@@ -127,7 +127,7 @@ checkDependencies()
     if [[ "${ARGS_LINT}" = true ]]; then
         if
             command -v clang-tidy-12 >/dev/null 2>&1 \
-                && command -v run-clang-tidy-12.py >/dev/null 2>&1 \
+                && command -v run-clang-tidy-12 >/dev/null 2>&1 \
                 && command -v compdb >/dev/null 2>&1 \
                 && command -v shellcheck >/dev/null 2>&1 \
                 && command -v pylint >/dev/null 2>&1
@@ -137,7 +137,7 @@ checkDependencies()
                 printException "Missing lint config files in ${PROJECT_FOLDER} folder. Please check it."
             fi
         else
-            printException "No clang-tidy (involving run-clang-tidy-12.py, compdb), shellcheck or pylint program. \
+            printException "No clang-tidy (involving run-clang-tidy-12, compdb), shellcheck or pylint program. \
 Please check it."
         fi
     fi
@@ -243,7 +243,7 @@ performLintOption()
 mv ./${COMPILE_COMMANDS} ./${BUILD_FOLDER}"
         bashCommand "find ./${APPLICATION_FOLDER} ./${UTILITY_FOLDER} \
 ./${ALGORITHM_FOLDER} ./${DATA_STRUCTURE_FOLDER} ./${DESIGN_PATTERN_FOLDER} ./${NUMERIC_FOLDER} \
--name *.cpp -o -name *.hpp | xargs run-clang-tidy-12.py -p ./${BUILD_FOLDER} -quiet"
+-name *.cpp -o -name *.hpp | xargs run-clang-tidy-12 -p ./${BUILD_FOLDER} -quiet"
         generateCMakeFiles
         bashCommand "shellcheck ./${SCRIPT_FOLDER}/*.sh"
         bashCommand "pylint --rcfile=${LINT_CONFIG_PY} ./${SCRIPT_FOLDER}/*.py"
@@ -281,7 +281,8 @@ tarHtmlForBrowser()
     fi
     browserFolder="browser"
     tarFile="${PROJECT_FOLDER}_${browserFolder}_$1.tar.bz2"
-    rm -rf ./"${DOCUMENT_FOLDER}"/"${browserFolder}" ./"${TEMPORARY_FOLDER}"/"${tarFile}"
+    rm -rf ./"${TEMPORARY_FOLDER}"/"${PROJECT_FOLDER}"_"${browserFolder}"_*.tar.bz2 \
+        ./"${DOCUMENT_FOLDER}"/"${browserFolder}"
 
     bashCommand "mkdir -p ./${DOCUMENT_FOLDER}/${browserFolder}"
     bashCommand "codebrowser_generator -color -a -b ./${BUILD_FOLDER}/${COMPILE_COMMANDS} \
@@ -319,11 +320,14 @@ tarHtmlForDoxygen()
 {
     doxygenFolder="doxygen"
     tarFile="${PROJECT_FOLDER}_${doxygenFolder}_$1.tar.bz2"
-    rm -rf ./"${DOCUMENT_FOLDER}"/"${doxygenFolder}" ./"${TEMPORARY_FOLDER}"/"${tarFile}"
+    rm -rf ./"${TEMPORARY_FOLDER}"/"${PROJECT_FOLDER}"_"${doxygenFolder}"_*.tar.bz2 \
+        ./"${DOCUMENT_FOLDER}"/"${doxygenFolder}"
 
+    sed -i "s/\(^PROJECT_NUMBER[ ]\+=\)/\1 \"@ $(git rev-parse --short @)\"/" ./document/Doxyfile
     bashCommand "mkdir -p ./${DOCUMENT_FOLDER}/${doxygenFolder}"
     bashCommand "doxygen ./${DOCUMENT_FOLDER}/${DOXYGEN_FILE} >/dev/null"
     bashCommand "tar -jcvf ./${TEMPORARY_FOLDER}/${tarFile} -C ./${DOCUMENT_FOLDER} ${doxygenFolder} >/dev/null"
+    sed -i "s/\(^PROJECT_NUMBER[ ]\+=\).*/\1/" ./document/Doxyfile
 }
 
 performContainerOption()
