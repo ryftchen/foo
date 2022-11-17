@@ -87,7 +87,6 @@ jobs:
 
       - name: Archive
         run: |
-          sed -i "s/\(^PROJECT_NUMBER[ ]\+=\)/\1 \"@ $(git rev-parse --short @)\"/" ./document/Doxyfile
           ./script/build.sh --browser --doxygen --release
 
       - name: Upload artifact
