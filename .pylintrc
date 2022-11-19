@@ -18,4 +18,6 @@ max-line-length=120
 disable=global-statement,
         missing-class-docstring,
         missing-function-docstring,
-        missing-module-docstring
+        missing-module-docstring,
+        too-many-branches,
+        too-many-instance-attributes

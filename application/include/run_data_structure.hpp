@@ -4,7 +4,7 @@
 #include <sstream>
 #include <vector>
 
-namespace ds_tst
+namespace run_ds
 {
 class DataStructureTask
 {
@@ -102,4 +102,4 @@ extern void runLinear(const std::vector<std::string>& targets);
 extern void updateLinearTask(const std::string& target);
 extern void runTree(const std::vector<std::string>& targets);
 extern void updateTreeTask(const std::string& target);
-} // namespace ds_tst
+} // namespace run_ds

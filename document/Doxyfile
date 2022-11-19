@@ -123,7 +123,8 @@ FILE_PATTERNS          = *.c \
                          README.md
 RECURSIVE              = YES
 EXCLUDE                = ./build \
-                         ./document
+                         ./document \
+                         ./test/build
 EXCLUDE_SYMLINKS       = NO
 EXCLUDE_PATTERNS       =
 EXCLUDE_SYMBOLS        =
@@ -268,7 +269,7 @@ INCLUDE_PATH           =
 INCLUDE_FILE_PATTERNS  =
 PREDEFINED             = __cplusplus
 EXPAND_AS_DEFINED      =
-SKIP_FUNCTION_MACROS   = YES
+SKIP_FUNCTION_MACROS   = NO
 TAGFILES               =
 GENERATE_TAGFILE       =
 ALLEXTERNALS           = NO

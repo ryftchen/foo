@@ -4,7 +4,7 @@
 #include <sstream>
 #include <vector>
 
-namespace algo_tst
+namespace run_algo
 {
 class AlgorithmTask
 {
@@ -198,4 +198,4 @@ extern void runSearch(const std::vector<std::string>& targets);
 extern void updateSearchTask(const std::string& target);
 extern void runSort(const std::vector<std::string>& targets);
 extern void updateSortTask(const std::string& target);
-} // namespace algo_tst
+} // namespace run_algo

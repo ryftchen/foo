@@ -1,9 +1,9 @@
-#include "numeric_test.hpp"
+#include "run_numeric.hpp"
 #include <variant>
-#include "arithmetic.hpp"
-#include "divisor.hpp"
-#include "integral.hpp"
-#include "prime.hpp"
+#include "numeric/include/arithmetic.hpp"
+#include "numeric/include/divisor.hpp"
+#include "numeric/include/integral.hpp"
+#include "numeric/include/prime.hpp"
 #include "utility/include/hash.hpp"
 #include "utility/include/log.hpp"
 #include "utility/include/thread.hpp"
@@ -20,7 +20,7 @@
               << taskType << "END" << std::resetiosflags(std::ios_base::left) << std::setfill(' ') << "\r\n"     \
               << std::endl;
 
-namespace num_tst
+namespace run_num
 {
 using util_hash::operator""_bkdrHash;
 using Type = NumericTask::Type;
@@ -398,4 +398,4 @@ void updatePrimeTask(const std::string& target)
             throw std::runtime_error("Unexpected task of prime: " + target);
     }
 }
-} // namespace num_tst
+} // namespace run_num

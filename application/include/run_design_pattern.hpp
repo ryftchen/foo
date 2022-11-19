@@ -4,7 +4,7 @@
 #include <sstream>
 #include <vector>
 
-namespace dp_tst
+namespace run_dp
 {
 class DesignPatternTask
 {
@@ -144,4 +144,4 @@ extern void runCreational(const std::vector<std::string>& targets);
 extern void updateCreationalTask(const std::string& target);
 extern void runStructural(const std::vector<std::string>& targets);
 extern void updateStructuralTask(const std::string& target);
-} // namespace dp_tst
+} // namespace run_dp

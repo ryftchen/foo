@@ -1,7 +1,6 @@
 set(MODULE_NAME numeric)
 
 aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/source NUMERIC_LIST)
-aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/test NUMERIC_LIST)
 include_directories(${CMAKE_SOURCE_DIR})
 
 add_library(${MODULE_NAME} SHARED ${NUMERIC_LIST})
