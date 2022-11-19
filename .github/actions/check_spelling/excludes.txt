@@ -1,6 +1,7 @@
 ^\.github/
 ^docker/
 ^document/
+^test/CMakeLists\.txt$
 
 ^\.clang-format$
 ^\.clang-tidy$
