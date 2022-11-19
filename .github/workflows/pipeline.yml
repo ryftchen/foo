@@ -54,10 +54,11 @@ jobs:
 
       - name: Manual build
         run: |
-          mkdir ./build
           export CC=/usr/bin/clang-12 CXX=/usr/bin/clang++-12
           cmake -S . -B ./build -G Ninja -DCMAKE_CXX_COMPILER=clang++-12 -DCMAKE_BUILD_TYPE=Release
           cmake --build ./build
+          cmake -S ./test -B ./test/build -G Ninja -DCMAKE_CXX_COMPILER=clang++-12 -DCMAKE_BUILD_TYPE=Release
+          cmake --build ./test/build
 
       - name: Perform CodeQL analysis
         uses: github/codeql-action/analyze@v2
@@ -98,6 +99,7 @@ jobs:
 
       - name: Deploy to github pages
         uses: JamesIves/github-pages-deploy-action@v4.4.1
+        if: github.event_name == 'workflow_dispatch'
         with:
           branch: gh-pages
           folder: ./document/doxygen
