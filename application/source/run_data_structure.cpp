@@ -1,6 +1,6 @@
-#include "data_structure_test.hpp"
-#include "linear.hpp"
-#include "tree.hpp"
+#include "run_data_structure.hpp"
+#include "data_structure/include/linear.hpp"
+#include "data_structure/include/tree.hpp"
 #include "utility/include/hash.hpp"
 #include "utility/include/log.hpp"
 #include "utility/include/thread.hpp"
@@ -19,7 +19,7 @@
               << "\r\n"                                                                                             \
               << std::endl;
 
-namespace ds_tst
+namespace run_ds
 {
 using util_hash::operator""_bkdrHash;
 using Type = DataStructureTask::Type;
@@ -163,4 +163,4 @@ void updateTreeTask(const std::string& target)
             throw std::runtime_error("Unexpected task of tree: " + target);
     }
 }
-} // namespace ds_tst
+} // namespace run_ds

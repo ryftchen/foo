@@ -1,7 +1,7 @@
-#include "design_pattern_test.hpp"
-#include "behavioral.hpp"
-#include "creational.hpp"
-#include "structural.hpp"
+#include "run_design_pattern.hpp"
+#include "design_pattern/include/behavioral.hpp"
+#include "design_pattern/include/creational.hpp"
+#include "design_pattern/include/structural.hpp"
 #include "utility/include/hash.hpp"
 #include "utility/include/log.hpp"
 #include "utility/include/thread.hpp"
@@ -20,7 +20,7 @@
               << "\r\n"                                                                                             \
               << std::endl;
 
-namespace dp_tst
+namespace run_dp
 {
 using util_hash::operator""_bkdrHash;
 using Type = DesignPatternTask::Type;
@@ -317,4 +317,4 @@ void updateStructuralTask(const std::string& target)
             throw std::runtime_error("Unexpected task of structural: " + target);
     }
 }
-} // namespace dp_tst
+} // namespace run_dp

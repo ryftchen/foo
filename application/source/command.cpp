@@ -263,25 +263,25 @@ void Command::performTask() const
             switch (GeneralTask::Category(i))
             {
                 case GeneralTask::Category::algorithm:
-                    if (algo_tst::getTask().empty())
+                    if (run_algo::getTask().empty())
                     {
                         continue;
                     }
                     break;
                 case GeneralTask::Category::dataStructure:
-                    if (ds_tst::getTask().empty())
+                    if (run_ds::getTask().empty())
                     {
                         continue;
                     }
                     break;
                 case GeneralTask::Category::designPattern:
-                    if (dp_tst::getTask().empty())
+                    if (run_dp::getTask().empty())
                     {
                         continue;
                     }
                     break;
                 case GeneralTask::Category::numeric:
-                    if (num_tst::getTask().empty())
+                    if (run_num::getTask().empty())
                     {
                         continue;
                     }
@@ -324,10 +324,10 @@ void Command::printHelpMessage() const
         return;
     }
 
-    if (!algo_tst::getTask().empty())
+    if (!run_algo::getTask().empty())
     {
-        using algo_tst::AlgorithmTask;
-        using algo_tst::getBit;
+        using run_algo::AlgorithmTask;
+        using run_algo::getBit;
         std::cout << "Usage: foo -a, --algorithm ";
         if (!getBit<AlgorithmTask::MatchMethod>().none())
         {
@@ -374,10 +374,10 @@ void Command::printHelpMessage() const
                       "rad    Radix");
         }
     }
-    else if (!ds_tst::getTask().empty())
+    else if (!run_ds::getTask().empty())
     {
-        using ds_tst::DataStructureTask;
-        using ds_tst::getBit;
+        using run_ds::DataStructureTask;
+        using run_ds::getBit;
         std::cout << "Usage: foo -ds, --data-structure ";
         if (!getBit<DataStructureTask::LinearInstance>().none())
         {
@@ -394,10 +394,10 @@ void Command::printHelpMessage() const
                       "spl    Splay");
         }
     }
-    else if (!dp_tst::getTask().empty())
+    else if (!run_dp::getTask().empty())
     {
-        using dp_tst::DesignPatternTask;
-        using dp_tst::getBit;
+        using run_dp::DesignPatternTask;
+        using run_dp::getBit;
         std::cout << "Usage: foo -dp, --design-pattern ";
         if (!getBit<DesignPatternTask::BehavioralInstance>().none())
         {
@@ -435,10 +435,10 @@ void Command::printHelpMessage() const
                       "pro    Proxy");
         }
     }
-    else if (!num_tst::getTask().empty())
+    else if (!run_num::getTask().empty())
     {
-        using num_tst::getBit;
-        using num_tst::NumericTask;
+        using run_num::getBit;
+        using run_num::NumericTask;
         std::cout << "Usage: foo -n, --numeric ";
         if (!getBit<NumericTask::ArithmeticMethod>().none())
         {

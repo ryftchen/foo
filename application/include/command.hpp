@@ -1,10 +1,10 @@
 #pragma once
 
 #include <condition_variable>
-#include "algorithm/test/algorithm_test.hpp"
-#include "data_structure/test/data_structure_test.hpp"
-#include "design_pattern/test/design_pattern_test.hpp"
-#include "numeric/test/numeric_test.hpp"
+#include "run_algorithm.hpp"
+#include "run_data_structure.hpp"
+#include "run_design_pattern.hpp"
+#include "run_numeric.hpp"
 #include "utility/include/argument.hpp"
 #include "utility/include/console.hpp"
 
@@ -77,15 +77,15 @@ private:
         [[nodiscard]] static bool empty()
         {
             return (
-                algo_tst::getTask().empty() && ds_tst::getTask().empty() && dp_tst::getTask().empty()
-                && num_tst::getTask().empty());
+                run_algo::getTask().empty() && run_ds::getTask().empty() && run_dp::getTask().empty()
+                && run_num::getTask().empty());
         }
         static void reset()
         {
-            algo_tst::getTask().reset();
-            ds_tst::getTask().reset();
-            dp_tst::getTask().reset();
-            num_tst::getTask().reset();
+            run_algo::getTask().reset();
+            run_ds::getTask().reset();
+            run_dp::getTask().reset();
+            run_num::getTask().reset();
         }
     };
 #pragma pack()
@@ -129,24 +129,24 @@ private:
     const GeneralTaskMap generalTaskMap{
         // --- Category ---+----- Type -----+---------------- Target ----------------+----------- Run -----------+---------- UpdateTask ----------
         // ----------------+----------------+----------------------------------------+---------------------------+--------------------------------
-        { "algorithm"      , {{ "match"      , {{ "rab", "knu", "boy", "hor", "sun" } , { &algo_tst::runMatch     , &algo_tst::updateMatchTask     }}},
-                              { "notation"   , {{ "pre", "pos"                      } , { &algo_tst::runNotation  , &algo_tst::updateNotationTask  }}},
-                              { "optimal"    , {{ "gra", "ann", "par", "gen"        } , { &algo_tst::runOptimal   , &algo_tst::updateOptimalTask    }}},
-                              { "search"     , {{ "bin", "int", "fib"               } , { &algo_tst::runSearch    , &algo_tst::updateSearchTask    }}},
+        { "algorithm"      , {{ "match"      , {{ "rab", "knu", "boy", "hor", "sun" } , { &run_algo::runMatch     , &run_algo::updateMatchTask     }}},
+                              { "notation"   , {{ "pre", "pos"                      } , { &run_algo::runNotation  , &run_algo::updateNotationTask  }}},
+                              { "optimal"    , {{ "gra", "ann", "par", "gen"        } , { &run_algo::runOptimal   , &run_algo::updateOptimalTask   }}},
+                              { "search"     , {{ "bin", "int", "fib"               } , { &run_algo::runSearch    , &run_algo::updateSearchTask    }}},
                               { "sort"       , {{ "bub", "sel", "ins", "she", "mer",
-                                                  "qui", "hea", "cou", "buc", "rad" } , { &algo_tst::runSort      , &algo_tst::updateSortTask      }}}}},
-        { "data-structure" , {{ "linear"     , {{ "lin", "sta", "que"               } , { &ds_tst::runLinear      , &ds_tst::updateLinearTask      }}},
-                              { "tree"       , {{ "bin", "ade", "spl"               } , { &ds_tst::runTree        , &ds_tst::updateTreeTask        }}}}},
+                                                  "qui", "hea", "cou", "buc", "rad" } , { &run_algo::runSort      , &run_algo::updateSortTask      }}}}},
+        { "data-structure" , {{ "linear"     , {{ "lin", "sta", "que"               } , { &run_ds::runLinear      , &run_ds::updateLinearTask      }}},
+                              { "tree"       , {{ "bin", "ade", "spl"               } , { &run_ds::runTree        , &run_ds::updateTreeTask        }}}}},
         { "design-pattern" , {{ "behavioral" , {{ "cha", "com", "int", "ite", "med",
                                                   "mem", "obs", "sta", "str", "tem",
-                                                  "vis"                             } , { &dp_tst::runBehavioral  , &dp_tst::updateBehavioralTask  }}},
-                              { "creational" , {{ "abs", "bui", "fac", "pro", "sin" } , { &dp_tst::runCreational  , &dp_tst::updateCreationalTask  }}},
+                                                  "vis"                             } , { &run_dp::runBehavioral  , &run_dp::updateBehavioralTask  }}},
+                              { "creational" , {{ "abs", "bui", "fac", "pro", "sin" } , { &run_dp::runCreational  , &run_dp::updateCreationalTask  }}},
                               { "structural" , {{ "ada", "bri", "com", "dec", "fac",
-                                                  "fly", "pro"                      } , { &dp_tst::runStructural  , &dp_tst::updateStructuralTask  }}}}},
-        { "numeric"        , {{ "arithmetic" , {{ "add", "sub", "mul", "div"        } , { &num_tst::runArithmetic , &num_tst::updateArithmeticTask }}},
-                              { "divisor"    , {{ "euc", "ste"                      } , { &num_tst::runDivisor    , &num_tst::updateDivisorTask    }}},
-                              { "integral"   , {{ "tra", "sim", "rom", "gau", "mon" } , { &num_tst::runIntegral   , &num_tst::updateIntegralTask   }}},
-                              { "prime"      , {{ "era", "eul"                      } , { &num_tst::runPrime      , &num_tst::updatePrimeTask      }}}}}
+                                                  "fly", "pro"                      } , { &run_dp::runStructural  , &run_dp::updateStructuralTask  }}}}},
+        { "numeric"        , {{ "arithmetic" , {{ "add", "sub", "mul", "div"        } , { &run_num::runArithmetic , &run_num::updateArithmeticTask }}},
+                              { "divisor"    , {{ "euc", "ste"                      } , { &run_num::runDivisor    , &run_num::updateDivisorTask    }}},
+                              { "integral"   , {{ "tra", "sim", "rom", "gau", "mon" } , { &run_num::runIntegral   , &run_num::updateIntegralTask   }}},
+                              { "prime"      , {{ "era", "eul"                      } , { &run_num::runPrime      , &run_num::updatePrimeTask      }}}}}
         // ----------------+----------------+----------------------------------------+---------------------------+--------------------------------
     };
     // clang-format on

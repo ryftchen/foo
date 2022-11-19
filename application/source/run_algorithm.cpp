@@ -1,10 +1,10 @@
-#include "algorithm_test.hpp"
+#include "run_algorithm.hpp"
 #include <variant>
-#include "match.hpp"
-#include "notation.hpp"
-#include "optimal.hpp"
-#include "search.hpp"
-#include "sort.hpp"
+#include "algorithm/include/match.hpp"
+#include "algorithm/include/notation.hpp"
+#include "algorithm/include/optimal.hpp"
+#include "algorithm/include/search.hpp"
+#include "algorithm/include/sort.hpp"
 #include "utility/include/hash.hpp"
 #include "utility/include/log.hpp"
 #include "utility/include/thread.hpp"
@@ -21,7 +21,7 @@
               << taskType << "END" << std::resetiosflags(std::ios_base::left) << std::setfill(' ') << "\r\n"       \
               << std::endl;
 
-namespace algo_tst
+namespace run_algo
 {
 using util_hash::operator""_bkdrHash;
 using Type = AlgorithmTask::Type;
@@ -544,4 +544,4 @@ void updateSortTask(const std::string& target)
             throw std::runtime_error("Unexpected task of sort: " + target);
     }
 }
-} // namespace algo_tst
+} // namespace run_algo

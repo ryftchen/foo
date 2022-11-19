@@ -31,7 +31,7 @@ class Output:
 
     @classmethod
     def printException(cls, message):
-        print(f"\r\nPython script test.py: {message}")
+        print(f"\r\nPython script run.py: {message}")
         sys.exit(-1)
 
     @classmethod
@@ -42,9 +42,11 @@ class Output:
         )
 
 
-class Test:
+class Task:
     binCmd = "foo"
     binDir = "./build/bin/"
+    testBinCmd = "foo_test"
+    testBinDir = "./test/build/bin/"
     libList = ["libutility.so", "libalgorithm.so", "libdata_structure.so", "libdesign_pattern.so", "libnumeric.so"]
     libDir = "./build/lib/"
     basicTaskDict = {
@@ -76,8 +78,9 @@ class Test:
     isCheckCoverage = False
     isCheckMemory = False
     envCoverage = "FOO_COV"
+    isUnitTest = False
     buildFile = "./script/build.sh"
-    logFile = "./temporary/foo_test.log"
+    logFile = "./temporary/foo_run.log"
     tempDir = "./temporary"
     passStep = 0
     completeStep = 0
@@ -102,33 +105,40 @@ class Test:
         self.taskQueue = queue.Queue()
 
     def run(self):
-        self.prepareTest()
+        self.prepareTask()
 
-        threadList = []
-        generator = threading.Thread(target=self.generateTestTask(), args=())
-        generator.start()
-        threadList.append(generator)
-        performer = threading.Thread(target=self.performTestTask(), args=())
-        performer.start()
-        threadList.append(performer)
-        for thread in threadList:
-            thread.join()
+        if not self.isUnitTest:
+            threadList = []
+            generator = threading.Thread(target=self.generateTask(), args=())
+            generator.start()
+            threadList.append(generator)
+            performer = threading.Thread(target=self.performTask(), args=())
+            performer.start()
+            threadList.append(performer)
+            for thread in threadList:
+                thread.join()
+        else:
+            self.totalStep = 1
+            self.runTask(self.testBinCmd)
 
-        self.completeTest()
+        self.completeTask()
         self.analyzeLog()
 
-    def generateTestTask(self):
+    def generateTask(self):
         self.generateBasicTask()
         self.generateGeneralTask()
 
-    def performTestTask(self):
+    def performTask(self):
         self.runTask(self.binCmd, "quit")
         while self.completeStep < self.totalStep:
             cmd = self.taskQueue.get()
             self.runTask(cmd)
 
     def runTask(self, command, enter=""):
-        fullCommand = f"{self.binDir}{command}"
+        if not self.isUnitTest:
+            fullCommand = f"{self.binDir}{command}"
+        else:
+            fullCommand = f"{self.testBinDir}{command}"
         if self.isCheckMemory:
             fullCommand = f"valgrind --xml=yes --xml-file={self.tempDir}/foo_mem_{str(self.completeStep + 1)}.xml \
 {fullCommand}"
@@ -136,12 +146,12 @@ class Test:
             fullCommand = f"LLVM_PROFILE_FILE=\"{self.tempDir}/foo_cov_{str(self.completeStep + 1)}.profraw\" \
 {fullCommand}"
         align = max(len(command) + (Output.alignMaxLen - Output.alignCmdLen), Output.alignMaxLen)
-        Output.printStatus(Output.colorBlue, f"TEST CASE: {f'{command}':<{Output.alignCmdLen}} | START ")
+        Output.printStatus(Output.colorBlue, f"CASE TASK: {f'{command}':<{Output.alignCmdLen}} | START ")
 
         stdout, stderr, errcode = common.executeCommand(fullCommand, enter)
         if stderr or errcode != 0:
-            print(f"STDERR:\n{stderr}\nERRCODE:\n{errcode}")
-            Output.printStatus(Output.colorRed, f"{f'TEST CASE: NO.{str(self.completeStep + 1)} FAILURE':<{align}}")
+            print(f"STDOUT:\n{stdout}\nSTDERR:\n{stderr}\nERRCODE:\n{errcode}")
+            Output.printStatus(Output.colorRed, f"{f'CASE TASK: NO.{str(self.completeStep + 1)} FAILURE':<{align}}")
         else:
             print(stdout)
             self.passStep += 1
@@ -153,15 +163,15 @@ class Test:
                     print(f"\r\nCHECK MEMORY:\n{stdout}")
                     common.executeCommand(
                         f"valgrind-ci {self.tempDir}/foo_mem_{str(self.completeStep + 1)}.xml --source-dir=./ \
---output-dir={self.tempDir}/memory/test_case_{str(self.completeStep + 1)}"
+--output-dir={self.tempDir}/memory/case_task_{str(self.completeStep + 1)}"
                     )
                     self.passStep -= 1
                     Output.printStatus(
-                        Output.colorRed, f"{f'TEST CASE: NO.{str(self.completeStep + 1)} FAILURE':<{align}}"
+                        Output.colorRed, f"{f'CASE TASK: NO.{str(self.completeStep + 1)} FAILURE':<{align}}"
                     )
 
         self.completeStep += 1
-        Output.printStatus(Output.colorBlue, f"TEST CASE: {f'{command}':<{Output.alignCmdLen}} | FINISH")
+        Output.printStatus(Output.colorBlue, f"CASE TASK: {f'{command}':<{Output.alignCmdLen}} | FINISH")
 
         if self.passStep != self.totalStep:
             statusColor = Output.colorYellow
@@ -170,7 +180,7 @@ class Test:
         Output.printStatus(
             statusColor,
             f"""\
-{f"TEST CASE: {f'{str(self.passStep)}':>{len(str(self.totalStep))}} / {str(self.totalStep)} SUCCESS":<{align}}""",
+{f"CASE TASK: {f'{str(self.passStep)}':>{len(str(self.totalStep))}} / {str(self.totalStep)} SUCCESS":<{align}}""",
         )
         print("\n")
 
@@ -179,16 +189,19 @@ class Test:
         sys.stdout = self.log
 
     def parseArgs(self):
-        parser = argparse.ArgumentParser(description="test script")
+        parser = argparse.ArgumentParser(description="run script")
+        parser.add_argument("-t", "--test", action='store_true', default=False, help="only run unit test")
         parser.add_argument(
-            "-c", "--check", choices=["cov", "mem"], nargs="+", help="test with check: coverage / memory"
+            "-c", "--check", choices=["cov", "mem"], nargs="+", help="run with check: coverage / memory"
         )
         parser.add_argument(
-            "-b", "--build", choices=["dbg", "rls"], nargs="?", const="dbg", help="test with build: debug / release"
+            "-b", "--build", choices=["dbg", "rls"], nargs="?", const="dbg", help="run with build: debug / release"
         )
         args = parser.parse_args()
 
         if args.check:
+            if args.test:
+                Output.printException("No support for check in test.")
             if "cov" in args.check:
                 stdout, _, _ = common.executeCommand("command -v llvm-profdata-12 llvm-cov-12 2>&1")
                 if stdout.find("llvm-profdata-12") != -1 and stdout.find("llvm-cov-12") != -1:
@@ -208,36 +221,44 @@ class Test:
 
         if args.build:
             if os.path.isfile(self.buildFile):
+                buildCommand = self.buildFile
+                if args.test:
+                    buildCommand += " --test"
                 if args.build == "dbg":
-                    self.buildProject(f"{self.buildFile} 2>&1")
+                    self.buildProject(f"{buildCommand} 2>&1")
                 elif args.build == "rls":
-                    self.buildProject(f"{self.buildFile} --release 2>&1")
+                    self.buildProject(f"{buildCommand} --release 2>&1")
             else:
                 Output.printException("No shell script build.sh in script folder.")
+
+        if args.test:
+            self.isUnitTest = True
 
     def buildProject(self, command):
         stdout, stderr, errcode = common.executeCommand(command)
         if stderr or errcode != 0:
-            Output.printException(f"Failed to run shell script {self.buildFile} in test.")
+            Output.printException(f"Failed to run shell script {self.buildFile}.")
         else:
             print(stdout)
             if "FAILED:" in stdout:
                 Output.printException(f"Failed to build project by shell script {self.buildFile}.")
 
-    def prepareTest(self):
+    def prepareTask(self):
         filePath = os.path.split(os.path.realpath(__file__))[0]
         os.chdir(filePath.replace(filePath[filePath.index("script") :], ''))
 
         self.parseArgs()
-        if not os.path.isfile(f"{self.binDir}{self.binCmd}"):
+        if not self.isUnitTest and not os.path.isfile(f"{self.binDir}{self.binCmd}"):
             Output.printException("No executable file. Please build it.")
+        if self.isUnitTest and not os.path.isfile(f"{self.testBinDir}{self.testBinCmd}"):
+            Output.printException("No test executable file. Please build it.")
         if not os.path.exists(self.tempDir):
             os.makedirs(self.tempDir)
 
         self.progressBar.setupProgressBar()
         sys.stdout = self.log
 
-    def completeTest(self):
+    def completeTask(self):
         if self.isCheckMemory:
             common.executeCommand(f"rm -rf {self.tempDir}/*.xml")
 
@@ -290,4 +311,4 @@ class Test:
 
 
 if __name__ == "__main__":
-    Test().run()
+    Task().run()

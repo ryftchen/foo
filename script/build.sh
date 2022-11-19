@@ -1,11 +1,14 @@
 #!/usr/bin/env bash
 
+ARGS_HELP=false
 ARGS_FORMAT=false
 ARGS_LINT=false
+ARGS_CLEANUP=false
 ARGS_BROWSER=false
 ARGS_DOXYGEN=false
-ARGS_CONTAINER=false
 ARGS_RELEASE=false
+ARGS_TEST=false
+ARGS_CONTAINER=false
 PERFORM_COMPILE=false
 
 PROJECT_FOLDER="foo"
@@ -15,6 +18,7 @@ ALGORITHM_FOLDER="algorithm"
 DATA_STRUCTURE_FOLDER="data_structure"
 DESIGN_PATTERN_FOLDER="design_pattern"
 NUMERIC_FOLDER="numeric"
+TEST_FOLDER="test"
 SCRIPT_FOLDER="script"
 DOCKER_FOLDER="docker"
 DOCUMENT_FOLDER="document"
@@ -46,42 +50,19 @@ printException()
     exit 1
 }
 
-showHelp()
-{
-    echo "Usage: build.sh <options...>"
-    echo
-    echo "Optional:"
-    echo "-h, --help         show help and exit"
-    echo "-f, --format       format code"
-    echo "-l, --lint         lint code"
-    echo "-C, --cleanup      cleanup project"
-    echo "-b, --browser      generate code browser"
-    echo "-d, --doxygen      generate doxygen document"
-    echo "-c, --container    construct docker container"
-    echo "-r, --release      build release version"
-    exit 0
-}
-
-cleanupProject()
-{
-    bashCommand "rm -rf ./${BUILD_FOLDER} ./${SCRIPT_FOLDER}/__pycache__ ./${TEMPORARY_FOLDER}"
-    bashCommand "find ./${DOCUMENT_FOLDER} -maxdepth 1 -type d | sed 1d | grep -E 'browser|doxygen' \
-| xargs -i rm -rf {}"
-    bashCommand "rm -rf ./core* ./vgcore* ./*.profraw"
-}
-
 parseArgs()
 {
     while [[ "$#" -gt 0 ]]; do
         case $1 in
-        -h | --help) showHelp ;;
+        -h | --help) ARGS_HELP=true ;;
         -f | --format) ARGS_FORMAT=true ;;
         -l | --lint) ARGS_LINT=true ;;
-        -C | --cleanup) cleanupProject ;;
+        -C | --cleanup) ARGS_CLEANUP=true ;;
         -b | --browser) ARGS_BROWSER=true ;;
         -d | --doxygen) ARGS_DOXYGEN=true ;;
-        -c | --container) ARGS_CONTAINER=true ;;
+        -t | --test) ARGS_TEST=true ;;
         -r | --release) ARGS_RELEASE=true ;;
+        -c | --container) ARGS_CONTAINER=true ;;
         *) printException "Unknown command line option: $1. Try with --help to get information." ;;
         esac
         shift
@@ -98,7 +79,7 @@ checkDependencies()
 
     if [[ ! -d ./"${APPLICATION_FOLDER}" ]] || [[ ! -d ./"${UTILITY_FOLDER}" ]] || [[ ! -d ./"${ALGORITHM_FOLDER}" ]] \
         || [[ ! -d ./"${DATA_STRUCTURE_FOLDER}" ]] || [[ ! -d ./"${DESIGN_PATTERN_FOLDER}" ]] \
-        || [[ ! -d ./"${NUMERIC_FOLDER}" ]] || [[ ! -d ./"${SCRIPT_FOLDER}" ]]; then
+        || [[ ! -d ./"${NUMERIC_FOLDER}" ]] || [[ ! -d ./"${TEST_FOLDER}" ]] || [[ ! -d ./"${SCRIPT_FOLDER}" ]]; then
         printException "Missing code folders in ${PROJECT_FOLDER} folder. Please check it."
     fi
 
@@ -198,28 +179,44 @@ Please check it."
 
 generateCMakeFiles()
 {
-    if [[ -f ./"${CMAKE_LISTS}" ]]; then
-        if [[ ! -d ./"${BUILD_FOLDER}" ]]; then
-            bashCommand "mkdir ./${BUILD_FOLDER}"
-        fi
+    export CC=/usr/bin/clang-12 CXX=/usr/bin/clang++-12
+    if [[ "${ARGS_RELEASE}" = true ]]; then
+        buildType="Release"
+    else
+        buildType="Debug"
+    fi
 
-        export CC=/usr/bin/clang-12 CXX=/usr/bin/clang++-12
-        if [[ "${ARGS_RELEASE}" = true ]]; then
-            buildType="Release"
-        else
-            buildType="Debug"
-        fi
+    if [[ -f ./"${CMAKE_LISTS}" ]]; then
         bashCommand "cmake -S . -B ./${BUILD_FOLDER} -G Ninja -DCMAKE_CXX_COMPILER=clang++-12 \
 -DCMAKE_BUILD_TYPE=${buildType}"
     else
         printException "No ${CMAKE_LISTS} file in ${PROJECT_FOLDER} folder. Please check it."
     fi
+
+    if [[ -f ./"${TEST_FOLDER}"/"${CMAKE_LISTS}" ]]; then
+        bashCommand "cmake -S ./${TEST_FOLDER} -B ./${TEST_FOLDER}/${BUILD_FOLDER} -G Ninja \
+-DCMAKE_CXX_COMPILER=clang++-12 -DCMAKE_BUILD_TYPE=${buildType}"
+    else
+        printException "No ${CMAKE_LISTS} file in ${PROJECT_FOLDER}/${TEST_FOLDER} folder. Please check it."
+    fi
 }
 
-compileCode()
+performHelpOption()
 {
-    if [[ "${PERFORM_COMPILE}" = true ]]; then
-        bashCommand "tput setaf 2; tput bold; cmake --build ./${BUILD_FOLDER}; tput sgr0"
+    if [[ "${ARGS_HELP}" = true ]]; then
+        echo "Usage: build.sh <options...>"
+        echo
+        echo "Optional:"
+        echo "-h, --help         show help and exit"
+        echo "-f, --format       format code"
+        echo "-l, --lint         lint code"
+        echo "-b, --browser      generate code browser"
+        echo "-d, --doxygen      generate doxygen document"
+        echo "-t, --test         build unit test"
+        echo "-r, --release      build with release version"
+        echo "-c, --container    construct docker container"
+        echo "-C, --cleanup      cleanup project"
+        exit 0
     fi
 }
 
@@ -227,7 +224,8 @@ performFormatOption()
 {
     if [[ "${ARGS_FORMAT}" = true ]]; then
         bashCommand "find ./${APPLICATION_FOLDER} ./${UTILITY_FOLDER} ./${ALGORITHM_FOLDER} ./${DATA_STRUCTURE_FOLDER} \
-./${DESIGN_PATTERN_FOLDER} ./${NUMERIC_FOLDER} -name *.cpp -o -name *.hpp | xargs clang-format-12 -i --verbose --Werror"
+./${DESIGN_PATTERN_FOLDER} ./${NUMERIC_FOLDER} ./${TEST_FOLDER} -name *.cpp -o -name *.hpp \
+| grep -v '/${BUILD_FOLDER}/' | xargs clang-format-12 -i --verbose --Werror"
         bashCommand "shfmt -l -w ./${SCRIPT_FOLDER}/*.sh"
         bashCommand "black --config ./${FORMAT_CONFIG_PY} ./${SCRIPT_FOLDER}/*.py"
     fi
@@ -241,12 +239,25 @@ performLintOption()
         fi
         bashCommand "compdb -p ./${BUILD_FOLDER} list > ./${COMPILE_COMMANDS} && \
 mv ./${COMPILE_COMMANDS} ./${BUILD_FOLDER}"
-        bashCommand "find ./${APPLICATION_FOLDER} ./${UTILITY_FOLDER} \
-./${ALGORITHM_FOLDER} ./${DATA_STRUCTURE_FOLDER} ./${DESIGN_PATTERN_FOLDER} ./${NUMERIC_FOLDER} \
--name *.cpp -o -name *.hpp | xargs run-clang-tidy-12 -p ./${BUILD_FOLDER} -quiet"
+        bashCommand "find ./${APPLICATION_FOLDER} ./${UTILITY_FOLDER} ./${ALGORITHM_FOLDER} ./${DATA_STRUCTURE_FOLDER} \
+./${DESIGN_PATTERN_FOLDER} ./${NUMERIC_FOLDER} -name *.cpp -o -name *.hpp \
+| xargs run-clang-tidy-12 -p ./${BUILD_FOLDER} -quiet"
         generateCMakeFiles
+        bashCommand "find ./${TEST_FOLDER}/${BUILD_FOLDER} -name *.cpp -o -name *.hpp \
+| xargs run-clang-tidy-12 -p ./${TEST_FOLDER}/${BUILD_FOLDER} -quiet"
         bashCommand "shellcheck ./${SCRIPT_FOLDER}/*.sh"
         bashCommand "pylint --rcfile=${LINT_CONFIG_PY} ./${SCRIPT_FOLDER}/*.py"
+    fi
+}
+
+performCleanupOption()
+{
+    if [[ "${ARGS_CLEANUP}" = true ]]; then
+        bashCommand "rm -rf ./${BUILD_FOLDER} ./${TEST_FOLDER}/${BUILD_FOLDER} ./${SCRIPT_FOLDER}/__pycache__ \
+./${TEMPORARY_FOLDER}"
+        bashCommand "find ./${DOCUMENT_FOLDER} -maxdepth 1 -type d | sed 1d | grep -E 'browser|doxygen' \
+| xargs -i rm -rf {}"
+        bashCommand "rm -rf ./core* ./vgcore* ./*.profraw"
     fi
 }
 
@@ -286,6 +297,8 @@ tarHtmlForBrowser()
 
     bashCommand "mkdir -p ./${DOCUMENT_FOLDER}/${browserFolder}"
     bashCommand "codebrowser_generator -color -a -b ./${BUILD_FOLDER}/${COMPILE_COMMANDS} \
+-o ./${DOCUMENT_FOLDER}/${browserFolder} -p ${PROJECT_FOLDER}:.:$1 -d ./data"
+    bashCommand "codebrowser_generator -color -a -b ./${TEST_FOLDER}/${BUILD_FOLDER}/${COMPILE_COMMANDS} \
 -o ./${DOCUMENT_FOLDER}/${browserFolder} -p ${PROJECT_FOLDER}:.:$1 -d ./data"
     bashCommand "codebrowser_indexgenerator ./${DOCUMENT_FOLDER}/${browserFolder} -d ./data"
     bashCommand "cp -rf /usr/local/share/woboq/data ./${DOCUMENT_FOLDER}/${browserFolder}/"
@@ -330,6 +343,13 @@ tarHtmlForDoxygen()
     sed -i "s/\(^PROJECT_NUMBER[ ]\+=\).*/\1/" ./document/Doxyfile
 }
 
+performTestOption()
+{
+    if [[ "${ARGS_TEST}" = true ]]; then
+        bashCommand "tput setaf 2; tput bold; cmake --build ./${TEST_FOLDER}/${BUILD_FOLDER}; tput sgr0"
+    fi
+}
+
 performContainerOption()
 {
     if [[ "${ARGS_CONTAINER}" = true ]]; then
@@ -369,6 +389,13 @@ performContainerOption()
     fi
 }
 
+compileCode()
+{
+    if [[ "${PERFORM_COMPILE}" = true ]]; then
+        bashCommand "tput setaf 2; tput bold; cmake --build ./${BUILD_FOLDER}; tput sgr0"
+    fi
+}
+
 main()
 {
     cd "${0%%"${SCRIPT_FOLDER}"*}" || exit 1
@@ -376,6 +403,9 @@ main()
     trap "tput sgr0" INT TERM
 
     parseArgs "$@"
+    performHelpOption
+    performCleanupOption
+
     checkDependencies "$@"
     generateCMakeFiles
 
@@ -383,6 +413,7 @@ main()
     performLintOption
     performBrowserOption
     performDoxygenOption
+    performTestOption
     performContainerOption
 
     compileCode
