@@ -124,5 +124,9 @@ jobs:
 
       - name: Test
         run: |
-          ./script/test.py --check cov mem --build rls
+          ./script/run.py --test --build rls
+
+      - name: Run
+        run: |
+          ./script/run.py --check cov mem --build rls
 ...

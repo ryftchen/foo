@@ -1,3 +1,4 @@
+abcd
 abi
 ada
 adaptee
@@ -8,6 +9,7 @@ avl
 bkdr
 buc
 bui
+cde
 chrono
 cmake
 codebrowser
@@ -31,10 +33,12 @@ eratosthenes
 euc
 eul
 execinfo
+fgh
 fibonacci
 fsm
 getsignal
-Griewank
+griewank
+gtest
 hea
 horspool
 indexgenerator
@@ -64,7 +68,7 @@ pylint
 pylintrc
 qux
 rabin
-Rastrigin
+rastrigin
 rcfile
 rls
 RNDN
