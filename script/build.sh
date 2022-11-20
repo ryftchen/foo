@@ -338,7 +338,7 @@ tarHtmlForDoxygen()
 
     sed -i "s/\(^PROJECT_NUMBER[ ]\+=\)/\1 \"@ $(git rev-parse --short @)\"/" ./document/Doxyfile
     bashCommand "mkdir -p ./${DOCUMENT_FOLDER}/${doxygenFolder}"
-    bashCommand "doxygen ./${DOCUMENT_FOLDER}/${DOXYGEN_FILE} >/dev/null"
+    bashCommand "doxygen ./${DOCUMENT_FOLDER}/${DOXYGEN_FILE}"
     bashCommand "tar -jcvf ./${TEMPORARY_FOLDER}/${tarFile} -C ./${DOCUMENT_FOLDER} ${doxygenFolder} >/dev/null"
     sed -i "s/\(^PROJECT_NUMBER[ ]\+=\).*/\1/" ./document/Doxyfile
 }
