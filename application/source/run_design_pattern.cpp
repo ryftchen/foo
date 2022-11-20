@@ -22,7 +22,6 @@
 
 namespace run_dp
 {
-using util_hash::operator""_bkdrHash;
 using Type = DesignPatternTask::Type;
 template <class T>
 using Bottom = DesignPatternTask::Bottom<T>;
@@ -55,6 +54,7 @@ void runBehavioral(const std::vector<std::string>& targets)
         threads->enqueue(threadName, instancePtr, behavioral);
     };
 
+    using util_hash::operator""_bkdrHash;
     for (int i = 0; i < Bottom<BehavioralInstance>::value; ++i)
     {
         if (!getBit<BehavioralInstance>().test(BehavioralInstance(i)))
@@ -109,6 +109,7 @@ void runBehavioral(const std::vector<std::string>& targets)
 
 void updateBehavioralTask(const std::string& target)
 {
+    using util_hash::operator""_bkdrHash;
     switch (util_hash::bkdrHash(target.c_str()))
     {
         case "cha"_bkdrHash:
@@ -169,6 +170,7 @@ void runCreational(const std::vector<std::string>& targets)
         threads->enqueue(threadName, instancePtr, creational);
     };
 
+    using util_hash::operator""_bkdrHash;
     for (int i = 0; i < Bottom<CreationalInstance>::value; ++i)
     {
         if (!getBit<CreationalInstance>().test(CreationalInstance(i)))
@@ -205,6 +207,7 @@ void runCreational(const std::vector<std::string>& targets)
 
 void updateCreationalTask(const std::string& target)
 {
+    using util_hash::operator""_bkdrHash;
     switch (util_hash::bkdrHash(target.c_str()))
     {
         case "abs"_bkdrHash:
@@ -247,6 +250,7 @@ void runStructural(const std::vector<std::string>& targets)
         threads->enqueue(threadName, instancePtr, structural);
     };
 
+    using util_hash::operator""_bkdrHash;
     for (int i = 0; i < Bottom<StructuralInstance>::value; ++i)
     {
         if (!getBit<StructuralInstance>().test(StructuralInstance(i)))
@@ -289,6 +293,7 @@ void runStructural(const std::vector<std::string>& targets)
 
 void updateStructuralTask(const std::string& target)
 {
+    using util_hash::operator""_bkdrHash;
     switch (util_hash::bkdrHash(target.c_str()))
     {
         case "ada"_bkdrHash:

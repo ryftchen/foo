@@ -95,8 +95,7 @@ public:
 };
 } // namespace abstract_factory
 
-// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
-void CreationalPattern::abstractFactoryInstance() const
+void CreationalPattern::abstractFactoryInstance() const // NOLINT(readability-convert-member-functions-to-static)
 {
     using abstract_factory::ConcreteFactoryX;
     using abstract_factory::ConcreteFactoryY;
@@ -207,8 +206,7 @@ private:
 };
 } // namespace builder
 
-// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
-void CreationalPattern::builderInstance() const
+void CreationalPattern::builderInstance() const // NOLINT(readability-convert-member-functions-to-static)
 {
     using builder::ConcreteBuilderX;
     using builder::ConcreteBuilderY;
@@ -284,8 +282,7 @@ public:
 };
 } // namespace factory_method
 
-// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
-void CreationalPattern::factoryMethodInstance() const
+void CreationalPattern::factoryMethodInstance() const // NOLINT(readability-convert-member-functions-to-static)
 {
     using factory_method::ConcreteCreator;
     using factory_method::Creator;
@@ -371,8 +368,7 @@ std::unique_ptr<Prototype> Client::types[2];
 int Client::nTypes = 2;
 } // namespace prototype
 
-// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
-void CreationalPattern::prototypeInstance() const
+void CreationalPattern::prototypeInstance() const // NOLINT(readability-convert-member-functions-to-static)
 {
     using prototype::Client;
     using prototype::Prototype;
@@ -431,8 +427,7 @@ private:
 std::shared_ptr<Singleton> Singleton::instance = nullptr;
 } // namespace singleton
 
-// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
-void CreationalPattern::singletonInstance() const
+void CreationalPattern::singletonInstance() const // NOLINT(readability-convert-member-functions-to-static)
 {
     using singleton::Singleton;
 

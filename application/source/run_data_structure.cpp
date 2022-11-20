@@ -21,7 +21,6 @@
 
 namespace run_ds
 {
-using util_hash::operator""_bkdrHash;
 using Type = DataStructureTask::Type;
 template <class T>
 using Bottom = DataStructureTask::Bottom<T>;
@@ -52,6 +51,7 @@ void runLinear(const std::vector<std::string>& targets)
         threads->enqueue(threadName, instancePtr, linear);
     };
 
+    using util_hash::operator""_bkdrHash;
     for (int i = 0; i < Bottom<LinearInstance>::value; ++i)
     {
         if (!getBit<LinearInstance>().test(LinearInstance(i)))
@@ -82,6 +82,7 @@ void runLinear(const std::vector<std::string>& targets)
 
 void updateLinearTask(const std::string& target)
 {
+    using util_hash::operator""_bkdrHash;
     switch (util_hash::bkdrHash(target.c_str()))
     {
         case "lin"_bkdrHash:
@@ -117,6 +118,7 @@ void runTree(const std::vector<std::string>& targets)
         threads->enqueue(threadName, instancePtr, tree);
     };
 
+    using util_hash::operator""_bkdrHash;
     for (int i = 0; i < Bottom<TreeInstance>::value; ++i)
     {
         if (!getBit<TreeInstance>().test(TreeInstance(i)))
@@ -147,6 +149,7 @@ void runTree(const std::vector<std::string>& targets)
 
 void updateTreeTask(const std::string& target)
 {
+    using util_hash::operator""_bkdrHash;
     switch (util_hash::bkdrHash(target.c_str()))
     {
         case "bin"_bkdrHash:

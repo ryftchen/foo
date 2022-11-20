@@ -70,7 +70,7 @@ std::vector<std::pair<std::string, std::string>> Console::getHelpOfRegisteredCom
     std::vector<std::pair<std::string, std::string>> allCommandsHelp;
     for (const auto& pair : impl->RegCmds)
     {
-        allCommandsHelp.emplace_back(std::make_pair(pair.first, std::get<1>(pair.second)));
+        allCommandsHelp.emplace_back(pair.first, std::get<1>(pair.second));
     }
 
     return allCommandsHelp;

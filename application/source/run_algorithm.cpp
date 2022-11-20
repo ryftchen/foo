@@ -23,7 +23,6 @@
 
 namespace run_algo
 {
-using util_hash::operator""_bkdrHash;
 using Type = AlgorithmTask::Type;
 template <class T>
 using Bottom = AlgorithmTask::Bottom<T>;
@@ -110,6 +109,7 @@ void runMatch(const std::vector<std::string>& targets)
             singlePatternForMatch.length());
     };
 
+    using util_hash::operator""_bkdrHash;
     for (int i = 0; i < Bottom<MatchMethod>::value; ++i)
     {
         if (!getBit<MatchMethod>().test(MatchMethod(i)))
@@ -146,6 +146,7 @@ void runMatch(const std::vector<std::string>& targets)
 
 void updateMatchTask(const std::string& target)
 {
+    using util_hash::operator""_bkdrHash;
     switch (util_hash::bkdrHash(target.c_str()))
     {
         case "rab"_bkdrHash:
@@ -189,6 +190,7 @@ void runNotation(const std::vector<std::string>& targets)
         threads->enqueue(threadName, methodPtr, notation, std::string{infixForNotation});
     };
 
+    using util_hash::operator""_bkdrHash;
     for (int i = 0; i < Bottom<NotationMethod>::value; ++i)
     {
         if (!getBit<NotationMethod>().test(NotationMethod(i)))
@@ -216,6 +218,7 @@ void runNotation(const std::vector<std::string>& targets)
 
 void updateNotationTask(const std::string& target)
 {
+    using util_hash::operator""_bkdrHash;
     switch (util_hash::bkdrHash(target.c_str()))
     {
         case "pre"_bkdrHash:
@@ -276,6 +279,7 @@ void runOptimal(const std::vector<std::string>& targets)
                 algo_optimal::epsilon);
         };
 
+        using util_hash::operator""_bkdrHash;
         for (int i = 0; i < Bottom<OptimalMethod>::value; ++i)
         {
             if (!getBit<OptimalMethod>().test(OptimalMethod(i)))
@@ -334,6 +338,7 @@ void runOptimal(const std::vector<std::string>& targets)
 
 void updateOptimalTask(const std::string& target)
 {
+    using util_hash::operator""_bkdrHash;
     switch (util_hash::bkdrHash(target.c_str()))
     {
         case "gra"_bkdrHash:
@@ -385,6 +390,7 @@ void runSearch(const std::vector<std::string>& targets)
             search->getSearchedKey());
     };
 
+    using util_hash::operator""_bkdrHash;
     for (int i = 0; i < Bottom<SearchMethod>::value; ++i)
     {
         if (!getBit<SearchMethod>().test(SearchMethod(i)))
@@ -415,6 +421,7 @@ void runSearch(const std::vector<std::string>& targets)
 
 void updateSearchTask(const std::string& target)
 {
+    using util_hash::operator""_bkdrHash;
     switch (util_hash::bkdrHash(target.c_str()))
     {
         case "bin"_bkdrHash:
@@ -456,6 +463,7 @@ void runSort(const std::vector<std::string>& targets)
         threads->enqueue(threadName, methodPtr, sort, sort->getRandomArray().get(), sort->getLength());
     };
 
+    using util_hash::operator""_bkdrHash;
     for (int i = 0; i < Bottom<SortMethod>::value; ++i)
     {
         if (!getBit<SortMethod>().test(SortMethod(i)))
@@ -507,6 +515,7 @@ void runSort(const std::vector<std::string>& targets)
 
 void updateSortTask(const std::string& target)
 {
+    using util_hash::operator""_bkdrHash;
     switch (util_hash::bkdrHash(target.c_str()))
     {
         case "bub"_bkdrHash:

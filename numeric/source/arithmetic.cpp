@@ -11,8 +11,9 @@ ArithmeticSolution::ArithmeticSolution(const int integer1, const int integer2)
 }
 
 // Addition
-// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
-int ArithmeticSolution::additionMethod(const int augend, const int addend) const
+int ArithmeticSolution::additionMethod( // NOLINT(readability-convert-member-functions-to-static)
+    const int augend,
+    const int addend) const
 {
     const int sum = bitAdd(augend, addend);
 
@@ -21,8 +22,9 @@ int ArithmeticSolution::additionMethod(const int augend, const int addend) const
 }
 
 // Subtraction
-// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
-int ArithmeticSolution::subtractionMethod(const int minuend, const int subtrahend) const
+int ArithmeticSolution::subtractionMethod( // NOLINT(readability-convert-member-functions-to-static)
+    const int minuend,
+    const int subtrahend) const
 {
     const int difference = bitAdd(minuend, bitAdd(~subtrahend, 1));
 
@@ -31,8 +33,9 @@ int ArithmeticSolution::subtractionMethod(const int minuend, const int subtrahen
 }
 
 // Multiplication
-// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
-int ArithmeticSolution::multiplicationMethod(const int multiplier, const int multiplicand) const
+int ArithmeticSolution::multiplicationMethod( // NOLINT(readability-convert-member-functions-to-static)
+    const int multiplier,
+    const int multiplicand) const
 {
     int product = 0;
 
@@ -50,8 +53,9 @@ int ArithmeticSolution::multiplicationMethod(const int multiplier, const int mul
 }
 
 // Division
-// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
-int ArithmeticSolution::divisionMethod(const int dividend, const int divisor) const
+int ArithmeticSolution::divisionMethod( // NOLINT(readability-convert-member-functions-to-static)
+    const int dividend,
+    const int divisor) const
 {
     if (0 == divisor)
     {

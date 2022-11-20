@@ -233,8 +233,7 @@ int dllDeleteLast(DLL pHead)
 } // namespace doubly_linked_list
 
 // Linked List
-// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
-void LinearStructure::linkedListInstance() const
+void LinearStructure::linkedListInstance() const // NOLINT(readability-convert-member-functions-to-static)
 {
     using doubly_linked_list::createDll;
     using doubly_linked_list::destroyDll;
@@ -343,8 +342,7 @@ static int stackIsEmpty(Stack stack)
 }
 } // namespace stack
 
-// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
-void LinearStructure::stackInstance() const
+void LinearStructure::stackInstance() const // NOLINT(readability-convert-member-functions-to-static)
 {
     using stack::createStack;
     using stack::destroyStack;
@@ -437,8 +435,7 @@ static int queueIsEmpty(Queue queue)
 }
 } // namespace queue
 
-// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
-void LinearStructure::queueInstance() const
+void LinearStructure::queueInstance() const // NOLINT(readability-convert-member-functions-to-static)
 {
     using queue::createQueue;
     using queue::destroyQueue;
