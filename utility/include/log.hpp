@@ -2,9 +2,9 @@
 
 #include <condition_variable>
 #include <queue>
-#include "utility/include/common.hpp"
-#include "utility/include/fsm.hpp"
-#include "utility/include/time.hpp"
+#include "common.hpp"
+#include "fsm.hpp"
+#include "time.hpp"
 
 #define LOG_TO_START util_log::Log::getInstance().waitStartForExternalUse()
 #define LOG_TO_STOP util_log::Log::getInstance().waitStopForExternalUse()
