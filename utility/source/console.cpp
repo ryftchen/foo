@@ -39,17 +39,17 @@ Console::Console(const std::string& greeting) : impl(std::make_unique<Impl>(gree
         },
         "exit console");
 
-    impl->RegCmds["run"] = std::make_pair(
+    impl->RegCmds["batch"] = std::make_pair(
         [this](const Args& input)
         {
             if (input.size() < 2)
             {
-                std::cout << "Please input \"" << input[0] << " ScriptFilename\"" << std::endl;
+                std::cout << "Please input \"" << input[0] << " Filename\"." << std::endl;
                 return ReturnCode::error;
             }
             return ReturnCode(fileExecutor(input[1]));
         },
-        "run script file");
+        "run batch commands in file");
 }
 
 Console::~Console()
@@ -192,7 +192,6 @@ int Console::readCommandLine()
 char** Console::getCommandCompletions(const char* text, int start, int /*unused*/)
 {
     char** completionList = nullptr;
-
     if (!start)
     {
         completionList = rl_completion_matches(text, &Console::commandIterator);
@@ -224,6 +223,7 @@ char* Console::commandIterator(const char* text, int state)
             return strdup(command.c_str());
         }
     }
+
     return nullptr;
 }
 } // namespace util_console

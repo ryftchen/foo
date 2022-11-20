@@ -6,15 +6,15 @@ Command::Command()
 {
     try
     {
-        program.addArgument("-h", "--help").nArgs(0).implicitValue(true).help("show help");
+        program.addArgument("-h", "--help").nArgs(0).implicitValue(true).help("show help and exit");
 
-        program.addArgument("-v", "--version").nArgs(0).implicitValue(true).help("show version");
+        program.addArgument("-v", "--version").nArgs(0).implicitValue(true).help("show version and exit");
 
         program.addArgument("-c", "--console")
             .nArgs(util_argument::NArgsPattern::any)
-            .defaultValue<std::vector<std::string>>({"help"})
+            .defaultValue<std::vector<std::string>>({"'help'"})
             .appending()
-            .help("run commands on console mode");
+            .help("run commands on console mode and exit");
 
         program.addArgument("-a", "--algorithm")
             .nArgs(1)
