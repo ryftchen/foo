@@ -12,9 +12,9 @@ Command::Command()
 
         program.addArgument("-c", "--console")
             .nArgs(util_argument::NArgsPattern::any)
-            .defaultValue<std::vector<std::string>>({"'help'"})
+            .defaultValue<std::vector<std::string>>({"help"})
             .appending()
-            .help("run commands on console mode and exit");
+            .help("run commands(with quotes) on console mode and exit");
 
         program.addArgument("-a", "--algorithm")
             .nArgs(1)

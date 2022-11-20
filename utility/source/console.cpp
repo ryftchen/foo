@@ -37,19 +37,19 @@ Console::Console(const std::string& greeting) : impl(std::make_unique<Impl>(gree
         {
             return ReturnCode::quit;
         },
-        "exit console");
+        "exit console mode");
 
     impl->RegCmds["batch"] = std::make_pair(
         [this](const Args& input)
         {
             if (input.size() < 2)
             {
-                std::cout << "Please input \"" << input[0] << " Filename\"." << std::endl;
+                std::cerr << "console: Please input \"" << input[0] << " Filename\" to run." << std::endl;
                 return ReturnCode::error;
             }
             return ReturnCode(fileExecutor(input[1]));
         },
-        "run batch commands in file");
+        "run batch commands from file");
 }
 
 Console::~Console()
@@ -133,7 +133,7 @@ int Console::commandExecutor(const std::string& command)
         return ReturnCode(static_cast<int>(std::get<0>(iterator->second)(inputs)));
     }
 
-    std::cout << "Command on console \"" << inputs[0] << "\" not found." << std::endl;
+    std::cerr << "console: Command on console \"" << inputs[0] << "\" not found." << std::endl;
     return ReturnCode::error;
 }
 
@@ -142,7 +142,7 @@ int Console::fileExecutor(const std::string& filename)
     std::ifstream input(filename);
     if (!input)
     {
-        std::cout << "Can not find script file to run." << std::endl;
+        std::cerr << "console: Can not find batch file to run." << std::endl;
         return ReturnCode::error;
     }
     std::string command;
