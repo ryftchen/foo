@@ -36,7 +36,7 @@ std::optional<std::tuple<ValueY, ValueX>> Gradient::operator()(const double left
             gradient = calculateFirstDerivative(x, eps);
             dx = learningRate * gradient;
         }
-        aggregation.emplace_back(std::pair<ValueY, ValueX>(func(x), x));
+        aggregation.emplace_back(func(x), x);
     }
 
     const auto best = std::min_element(

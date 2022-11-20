@@ -22,7 +22,6 @@
 
 namespace run_num
 {
-using util_hash::operator""_bkdrHash;
 using Type = NumericTask::Type;
 template <class T>
 using Bottom = NumericTask::Bottom<T>;
@@ -92,6 +91,7 @@ void runArithmetic(const std::vector<std::string>& targets)
         threads->enqueue(threadName, methodPtr, arithmetic, integerForArithmetic1, integerForArithmetic2);
     };
 
+    using util_hash::operator""_bkdrHash;
     for (int i = 0; i < Bottom<ArithmeticMethod>::value; ++i)
     {
         if (!getBit<ArithmeticMethod>().test(ArithmeticMethod(i)))
@@ -125,6 +125,7 @@ void runArithmetic(const std::vector<std::string>& targets)
 
 void updateArithmeticTask(const std::string& target)
 {
+    using util_hash::operator""_bkdrHash;
     switch (util_hash::bkdrHash(target.c_str()))
     {
         case "add"_bkdrHash:
@@ -167,6 +168,7 @@ void runDivisor(const std::vector<std::string>& targets)
         threads->enqueue(threadName, methodPtr, divisor, integerForDivisor1, integerForDivisor2);
     };
 
+    using util_hash::operator""_bkdrHash;
     for (int i = 0; i < Bottom<DivisorMethod>::value; ++i)
     {
         if (!getBit<DivisorMethod>().test(DivisorMethod(i)))
@@ -194,6 +196,7 @@ void runDivisor(const std::vector<std::string>& targets)
 
 void updateDivisorTask(const std::string& target)
 {
+    using util_hash::operator""_bkdrHash;
     switch (util_hash::bkdrHash(target.c_str()))
     {
         case "euc"_bkdrHash:
@@ -254,6 +257,7 @@ void runIntegral(const std::vector<std::string>& targets)
                 num_integral::epsilon);
         };
 
+        using util_hash::operator""_bkdrHash;
         for (int i = 0; i < Bottom<IntegralMethod>::value; ++i)
         {
             if (!getBit<IntegralMethod>().test(IntegralMethod(i)))
@@ -315,6 +319,7 @@ void runIntegral(const std::vector<std::string>& targets)
 
 void updateIntegralTask(const std::string& target)
 {
+    using util_hash::operator""_bkdrHash;
     switch (util_hash::bkdrHash(target.c_str()))
     {
         case "tra"_bkdrHash:
@@ -358,6 +363,7 @@ void runPrime(const std::vector<std::string>& targets)
         threads->enqueue(threadName, methodPtr, prime, maxPositiveIntegerForPrime);
     };
 
+    using util_hash::operator""_bkdrHash;
     for (int i = 0; i < Bottom<PrimeMethod>::value; ++i)
     {
         if (!getBit<PrimeMethod>().test(PrimeMethod(i)))
@@ -385,6 +391,7 @@ void runPrime(const std::vector<std::string>& targets)
 
 void updatePrimeTask(const std::string& target)
 {
+    using util_hash::operator""_bkdrHash;
     switch (util_hash::bkdrHash(target.c_str()))
     {
         case "era"_bkdrHash:

@@ -75,8 +75,8 @@ NotationSolution::Priority NotationSolution::getPriority(const char c)
 }
 
 // Prefix
-// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
-std::string NotationSolution::prefixMethod(const std::string& infixNotation) const
+std::string NotationSolution::prefixMethod( // NOLINT(readability-convert-member-functions-to-static)
+    const std::string& infixNotation) const
 {
     std::string infix = infixNotation;
 
@@ -100,8 +100,8 @@ std::string NotationSolution::prefixMethod(const std::string& infixNotation) con
 }
 
 // Postfix
-// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
-std::string NotationSolution::postfixMethod(const std::string& infixNotation) const
+std::string NotationSolution::postfixMethod( // NOLINT(readability-convert-member-functions-to-static)
+    const std::string& infixNotation) const
 {
     std::string postfixNotation = infixToPostfix(infixNotation);
 

@@ -308,8 +308,7 @@ static void printBSTree(BSTree tree, const Type key, int direction)
 }
 } // namespace bs
 
-// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
-void TreeStructure::bsInstance() const
+void TreeStructure::bsInstance() const // NOLINT(readability-convert-member-functions-to-static)
 {
     using bs::BSTree;
     using bs::bsTreeMaximum;
@@ -679,8 +678,7 @@ static void printAVLTree(AVLTree tree, const Type key, const int direction)
 }
 } // namespace avl
 
-// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
-void TreeStructure::avlInstance() const
+void TreeStructure::avlInstance() const // NOLINT(readability-convert-member-functions-to-static)
 {
     using avl::AVLTree;
     using avl::avlTreeDelete;
@@ -1032,8 +1030,7 @@ static void printSplayTree(SplayTree tree, const Type key, const int direction)
 }
 } // namespace splay
 
-// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
-void TreeStructure::splayInstance() const
+void TreeStructure::splayInstance() const // NOLINT(readability-convert-member-functions-to-static)
 {
     using splay::destroySplayTree;
     using splay::inorderSplayTree;

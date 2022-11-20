@@ -49,8 +49,7 @@ private:
 
 } // namespace adapter
 
-// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
-void StructuralPattern::adapterInstance() const
+void StructuralPattern::adapterInstance() const // NOLINT(readability-convert-member-functions-to-static)
 {
     using adapter::Adapter;
     using adapter::Target;
@@ -115,8 +114,7 @@ private:
 };
 } // namespace bridge
 
-// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
-void StructuralPattern::bridgeInstance() const
+void StructuralPattern::bridgeInstance() const // NOLINT(readability-convert-member-functions-to-static)
 {
     using bridge::Abstraction;
     using bridge::ConcreteImplementorA;
@@ -205,8 +203,7 @@ private:
 };
 } // namespace composite
 
-// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
-void StructuralPattern::compositeInstance() const
+void StructuralPattern::compositeInstance() const // NOLINT(readability-convert-member-functions-to-static)
 {
     using composite::Composite;
     using composite::Leaf;
@@ -286,8 +283,7 @@ public:
 };
 } // namespace decorator
 
-// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
-void StructuralPattern::decoratorInstance() const
+void StructuralPattern::decoratorInstance() const // NOLINT(readability-convert-member-functions-to-static)
 {
     using decorator::Component;
     using decorator::ConcreteComponent;
@@ -350,8 +346,7 @@ private:
 };
 } // namespace facade
 
-// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
-void StructuralPattern::facadeInstance() const
+void StructuralPattern::facadeInstance() const // NOLINT(readability-convert-member-functions-to-static)
 {
     using facade::Facade;
 
@@ -434,8 +429,7 @@ private:
 };
 } // namespace flyweight
 
-// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
-void StructuralPattern::flyweightInstance() const
+void StructuralPattern::flyweightInstance() const // NOLINT(readability-convert-member-functions-to-static)
 {
     using flyweight::FlyweightFactory;
 
@@ -497,8 +491,7 @@ protected:
 };
 } // namespace proxy
 
-// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
-void StructuralPattern::proxyInstance() const
+void StructuralPattern::proxyInstance() const // NOLINT(readability-convert-member-functions-to-static)
 {
     using proxy::Proxy;
 

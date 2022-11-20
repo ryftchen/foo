@@ -80,9 +80,11 @@ void MatchSolution::setMatchingText(char* text, const uint32_t length)
 }
 
 // Rabin-Karp
-// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
-int MatchSolution::rkMethod(const char* text, const char* pattern, const uint32_t textLen, const uint32_t patternLen)
-    const
+int MatchSolution::rkMethod( // NOLINT(readability-convert-member-functions-to-static)
+    const char* text,
+    const char* pattern,
+    const uint32_t textLen,
+    const uint32_t patternLen) const
 {
     TIME_BEGIN(timing);
     int shift = -1;
@@ -120,9 +122,11 @@ int MatchSolution::rkMethod(const char* text, const char* pattern, const uint32_
 }
 
 // Knuth-Morris-Pratt
-// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
-int MatchSolution::kmpMethod(const char* text, const char* pattern, const uint32_t textLen, const uint32_t patternLen)
-    const
+int MatchSolution::kmpMethod( // NOLINT(readability-convert-member-functions-to-static)
+    const char* text,
+    const char* pattern,
+    const uint32_t textLen,
+    const uint32_t patternLen) const
 {
     TIME_BEGIN(timing);
     int shift = -1;
@@ -166,9 +170,11 @@ int MatchSolution::kmpMethod(const char* text, const char* pattern, const uint32
 }
 
 // Boyer-Moore
-// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
-int MatchSolution::bmMethod(const char* text, const char* pattern, const uint32_t textLen, const uint32_t patternLen)
-    const
+int MatchSolution::bmMethod( // NOLINT(readability-convert-member-functions-to-static)
+    const char* text,
+    const char* pattern,
+    const uint32_t textLen,
+    const uint32_t patternLen) const
 {
     TIME_BEGIN(timing);
     int shift = -1;
@@ -254,8 +260,7 @@ void MatchSolution::fillGoodSuffixRuleTable(
 }
 
 // Horspool
-// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
-int MatchSolution::horspoolMethod(
+int MatchSolution::horspoolMethod( // NOLINT(readability-convert-member-functions-to-static)
     const char* text,
     const char* pattern,
     const uint32_t textLen,
@@ -307,8 +312,7 @@ void MatchSolution::fillBadCharShiftTableForHorspool(
 }
 
 // Sunday
-// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
-int MatchSolution::sundayMethod(
+int MatchSolution::sundayMethod( // NOLINT(readability-convert-member-functions-to-static)
     const char* text,
     const char* pattern,
     const uint32_t textLen,
