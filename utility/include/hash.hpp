@@ -6,8 +6,8 @@ namespace util_hash
 {
 constexpr uint32_t bkdrHashSeed = 131;
 constexpr int bkdrHashSize = 0x7FFFFFFF;
-constexpr unsigned rollingHashBase = 10;
-constexpr unsigned rollingHashMod = 19260817;
+constexpr uint32_t rollingHashBase = 10;
+constexpr uint32_t rollingHashMod = 19260817;
 
 constexpr uint32_t bkdrHashInCompile(const char* const str, const uint32_t hash = 0) noexcept
 {
