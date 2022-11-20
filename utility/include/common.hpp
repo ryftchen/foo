@@ -51,12 +51,12 @@ enum class FileLockType
 
 inline void throwRunCommandLineException(const std::string& cmd)
 {
-    throw std::runtime_error("file: Failed to run common line: " + cmd);
+    throw std::runtime_error("common: Failed to run common line: " + cmd + ".");
 }
 
 inline void throwCallSystemApiException(const std::string& api)
 {
-    throw std::runtime_error("file: Failed to call system api: " + api);
+    throw std::runtime_error("common: Failed to call system api: " + api + ".");
 }
 
 inline void throwOperateLockException(
@@ -66,13 +66,13 @@ inline void throwOperateLockException(
 {
     const std::string operate = (LockOperateType::lock == lockOperate) ? "lock" : "unlock",
                       type = (FileLockType::readerLock == fileLock) ? "reader" : "writer";
-    throw std::runtime_error("file: Failed to " + operate + " " + type + " lock: " + name);
+    throw std::runtime_error("common: Failed to " + operate + " " + type + " lock: " + name + ".");
 }
 
 inline void throwOperateFileException(const std::string& name, const bool isToOpen)
 {
     const std::string operate = isToOpen ? "open" : "close";
-    throw std::runtime_error("file: Failed to " + operate + " file: " + name);
+    throw std::runtime_error("common: Failed to " + operate + " file: " + name + ".");
 }
 
 template <class T>
