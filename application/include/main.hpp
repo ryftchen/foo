@@ -73,6 +73,8 @@ static void signalHandler(int sig)
 static void switchToProjectPath()
 {
     std::signal(SIGSEGV, signalHandler);
+    setenv("TERM", "linux", true);
+    setenv("TERMINFO", "/etc/terminfo", true);
 
     const std::filesystem::path absolutePath = std::filesystem::canonical(std::filesystem::path{"/proc/self/exe"});
     const std::size_t pos = absolutePath.string().find("build");
