@@ -1,7 +1,6 @@
 ^\.github/
 ^docker/
 ^document/
-^test/CMakeLists\.txt$
 
 ^\.clang-format$
 ^\.clang-tidy$
@@ -14,7 +13,7 @@
 ^\.toml$
 ^\.valgrindrc$
 
-^CMakeLists\.txt$
+CMakeLists\.txt$
 ^LICENSE$
 ^README\.md$
 ^SECURITY\.md$

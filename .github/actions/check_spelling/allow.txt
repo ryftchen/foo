@@ -32,7 +32,6 @@ editorconfig
 eratosthenes
 euc
 eul
-execinfo
 fgh
 fibonacci
 fsm
@@ -84,7 +83,6 @@ sregex
 ste
 suboperation
 tarball
-uintn
 valgrind
 Velsky
 vgcore
