@@ -75,6 +75,7 @@ RNDN
 romberg
 ryftchen
 setaf
+setenv
 setname
 shellcheck
 shellcheckrc
