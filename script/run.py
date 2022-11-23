@@ -140,8 +140,8 @@ class Task:
         else:
             fullCommand = f"{self.testBinDir}{command}"
         if self.isCheckMemory:
-            fullCommand = f"valgrind --xml=yes --xml-file={self.tempDir}/foo_mem_{str(self.completeStep + 1)}.xml \
-{fullCommand}"
+            fullCommand = f"valgrind --tool=memcheck --xml=yes \
+--xml-file={self.tempDir}/foo_mem_{str(self.completeStep + 1)}.xml {fullCommand}"
         if self.isCheckCoverage:
             fullCommand = f"LLVM_PROFILE_FILE=\"{self.tempDir}/foo_cov_{str(self.completeStep + 1)}.profraw\" \
 {fullCommand}"
@@ -207,7 +207,7 @@ class Task:
                 if stdout.find("llvm-profdata-12") != -1 and stdout.find("llvm-cov-12") != -1:
                     os.environ["FOO_ENV"] = self.envCoverage
                     self.isCheckCoverage = True
-                    common.executeCommand(f"rm -rf {self.tempDir}/coverage/*")
+                    common.executeCommand(f"rm -rf {self.tempDir}/coverage")
                 else:
                     Output.printException("No llvm-profdata or llvm-cov program. Please check it.")
 
@@ -215,7 +215,7 @@ class Task:
                 stdout, _, _ = common.executeCommand("command -v valgrind valgrind-ci 2>&1")
                 if stdout.find("valgrind") != -1 and stdout.find("valgrind-ci") != -1:
                     self.isCheckMemory = True
-                    common.executeCommand(f"rm -rf {self.tempDir}/memory/*")
+                    common.executeCommand(f"rm -rf {self.tempDir}/memory")
                 else:
                     Output.printException("No valgrind or valgrind-ci program. Please check it.")
 

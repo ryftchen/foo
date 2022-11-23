@@ -346,7 +346,9 @@ tarHtmlForDoxygen()
 performTestOption()
 {
     if [[ "${ARGS_TEST}" = true ]]; then
-        bashCommand "tput setaf 2; tput bold; cmake --build ./${TEST_FOLDER}/${BUILD_FOLDER}; tput sgr0"
+        tput setaf 2 && tput bold
+        bashCommand "cmake --build ./${TEST_FOLDER}/${BUILD_FOLDER}"
+        tput sgr0
     fi
 }
 
@@ -392,7 +394,9 @@ performContainerOption()
 compileCode()
 {
     if [[ "${PERFORM_COMPILE}" = true ]]; then
-        bashCommand "tput setaf 2; tput bold; cmake --build ./${BUILD_FOLDER}; tput sgr0"
+        tput setaf 2 && tput bold
+        bashCommand "cmake --build ./${BUILD_FOLDER}"
+        tput sgr0
     fi
 }
 
