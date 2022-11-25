@@ -3,6 +3,7 @@ abi
 ada
 adaptee
 adelson
+alignof
 asc
 api
 avl
@@ -59,10 +60,12 @@ mday
 memcheck
 milli
 mpfr
+Multithreading
 nodiscard
 nullopt
 profdata
 profraw
+ptrdiff
 pycache
 pylint
 pylintrc
@@ -84,6 +87,7 @@ sregex
 ste
 suboperation
 tarball
+uintptr
 valgrind
 Velsky
 vgcore
