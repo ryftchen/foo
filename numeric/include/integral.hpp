@@ -79,7 +79,7 @@ inline int IntegralSolution::getSign(double& lower, double& upper)
 class Trapezoidal : public IntegralSolution
 {
 public:
-    explicit Trapezoidal(const expression::Expression& expr) : expr(expr){};
+    explicit Trapezoidal(const expression::Expression& expr);
 
     [[nodiscard]] double operator()(double lower, double upper, const double eps) const override;
 
@@ -91,7 +91,7 @@ private:
 class Simpson : public IntegralSolution
 {
 public:
-    explicit Simpson(const expression::Expression& expr) : expr(expr){};
+    explicit Simpson(const expression::Expression& expr);
 
     [[nodiscard]] double operator()(double lower, double upper, const double eps) const override;
 
@@ -106,7 +106,7 @@ private:
 class Romberg : public IntegralSolution
 {
 public:
-    explicit Romberg(const expression::Expression& expr) : expr(expr){};
+    explicit Romberg(const expression::Expression& expr);
 
     [[nodiscard]] double operator()(double lower, double upper, const double eps) const override;
 
@@ -118,7 +118,7 @@ private:
 class Gauss : public IntegralSolution
 {
 public:
-    explicit Gauss(const expression::Expression& expr) : expr(expr){};
+    explicit Gauss(const expression::Expression& expr);
 
     [[nodiscard]] double operator()(double lower, double upper, const double eps) const override;
 
@@ -130,7 +130,7 @@ private:
 class MonteCarlo : public IntegralSolution
 {
 public:
-    explicit MonteCarlo(const expression::Expression& expr) : expr(expr){};
+    explicit MonteCarlo(const expression::Expression& expr);
 
     [[nodiscard]] double operator()(double lower, double upper, const double eps) const override;
 

@@ -21,6 +21,10 @@ double trapezoid(const expression::Expression& expr, const double left, const do
 }
 
 // Trapezoidal
+Trapezoidal::Trapezoidal(const expression::Expression& expr) : expr(expr)
+{
+}
+
 double Trapezoidal::operator()(double lower, double upper, const double eps) const
 {
     TIME_BEGIN(timing);
@@ -46,6 +50,10 @@ double Trapezoidal::operator()(double lower, double upper, const double eps) con
 }
 
 // Adaptive Simpson's 1/3
+Simpson::Simpson(const expression::Expression& expr) : expr(expr)
+{
+}
+
 double Simpson::operator()(double lower, double upper, const double eps) const
 {
     TIME_BEGIN(timing);
@@ -87,6 +95,10 @@ double Simpson::simpsonOneThird(const double left, const double right) const
 }
 
 // Romberg
+Romberg::Romberg(const expression::Expression& expr) : expr(expr)
+{
+}
+
 double Romberg::operator()(double lower, double upper, const double eps) const
 {
     TIME_BEGIN(timing);
@@ -121,6 +133,10 @@ double Romberg::operator()(double lower, double upper, const double eps) const
 }
 
 // Gauss-Legendre's 5-Points
+Gauss::Gauss(const expression::Expression& expr) : expr(expr)
+{
+}
+
 double Gauss::operator()(double lower, double upper, const double eps) const
 {
     TIME_BEGIN(timing);
@@ -164,6 +180,10 @@ double Gauss::operator()(double lower, double upper, const double eps) const
 }
 
 // Monte-Carlo
+MonteCarlo::MonteCarlo(const expression::Expression& expr) : expr(expr)
+{
+}
+
 double MonteCarlo::operator()(double lower, double upper, const double eps) const
 {
     TIME_BEGIN(timing);

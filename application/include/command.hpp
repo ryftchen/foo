@@ -1,24 +1,30 @@
 #pragma once
 
 #include <condition_variable>
-#include "run_algorithm.hpp"
-#include "run_data_structure.hpp"
-#include "run_design_pattern.hpp"
-#include "run_numeric.hpp"
+#include "apply_algorithm.hpp"
+#include "apply_data_structure.hpp"
+#include "apply_design_pattern.hpp"
+#include "apply_numeric.hpp"
 #include "utility/include/argument.hpp"
 #include "utility/include/console.hpp"
+#include "utility/include/memory.hpp"
+#include "utility/include/thread.hpp"
 
+namespace app_command
+{
 class Command
 {
 public:
-    Command();
     virtual ~Command() = default;
     Command(const Command&) = delete;
     Command& operator=(const Command&) = delete;
 
+    static inline Command& getInstance();
     void runCommander(const int argc, const char* const argv[]);
 
 private:
+    Command();
+
     mutable std::mutex commandMutex;
     std::condition_variable commandCondition;
     std::atomic<bool> isParsed{false};
@@ -77,15 +83,15 @@ private:
         [[nodiscard]] static bool empty()
         {
             return (
-                run_algo::getTask().empty() && run_ds::getTask().empty() && run_dp::getTask().empty()
-                && run_num::getTask().empty());
+                app_algo::getTask().empty() && app_ds::getTask().empty() && app_dp::getTask().empty()
+                && app_num::getTask().empty());
         }
         static void reset()
         {
-            run_algo::getTask().reset();
-            run_ds::getTask().reset();
-            run_dp::getTask().reset();
-            run_num::getTask().reset();
+            app_algo::getTask().reset();
+            app_ds::getTask().reset();
+            app_dp::getTask().reset();
+            app_num::getTask().reset();
         }
     };
 #pragma pack()
@@ -129,24 +135,24 @@ private:
     const GeneralTaskMap generalTaskMap{
         // --- Category ---+----- Type -----+---------------- Target ----------------+----------- Run -----------+---------- UpdateTask ----------
         // ----------------+----------------+----------------------------------------+---------------------------+--------------------------------
-        { "algorithm"      , {{ "match"      , {{ "rab", "knu", "boy", "hor", "sun" } , { &run_algo::runMatch     , &run_algo::updateMatchTask     }}},
-                              { "notation"   , {{ "pre", "pos"                      } , { &run_algo::runNotation  , &run_algo::updateNotationTask  }}},
-                              { "optimal"    , {{ "gra", "ann", "par", "gen"        } , { &run_algo::runOptimal   , &run_algo::updateOptimalTask   }}},
-                              { "search"     , {{ "bin", "int", "fib"               } , { &run_algo::runSearch    , &run_algo::updateSearchTask    }}},
+        { "algorithm"      , {{ "match"      , {{ "rab", "knu", "boy", "hor", "sun" } , { &app_algo::runMatch     , &app_algo::updateMatchTask     }}},
+                              { "notation"   , {{ "pre", "pos"                      } , { &app_algo::runNotation  , &app_algo::updateNotationTask  }}},
+                              { "optimal"    , {{ "gra", "ann", "par", "gen"        } , { &app_algo::runOptimal   , &app_algo::updateOptimalTask   }}},
+                              { "search"     , {{ "bin", "int", "fib"               } , { &app_algo::runSearch    , &app_algo::updateSearchTask    }}},
                               { "sort"       , {{ "bub", "sel", "ins", "she", "mer",
-                                                  "qui", "hea", "cou", "buc", "rad" } , { &run_algo::runSort      , &run_algo::updateSortTask      }}}}},
-        { "data-structure" , {{ "linear"     , {{ "lin", "sta", "que"               } , { &run_ds::runLinear      , &run_ds::updateLinearTask      }}},
-                              { "tree"       , {{ "bin", "ade", "spl"               } , { &run_ds::runTree        , &run_ds::updateTreeTask        }}}}},
+                                                  "qui", "hea", "cou", "buc", "rad" } , { &app_algo::runSort      , &app_algo::updateSortTask      }}}}},
+        { "data-structure" , {{ "linear"     , {{ "lin", "sta", "que"               } , { &app_ds::runLinear      , &app_ds::updateLinearTask      }}},
+                              { "tree"       , {{ "bin", "ade", "spl"               } , { &app_ds::runTree        , &app_ds::updateTreeTask        }}}}},
         { "design-pattern" , {{ "behavioral" , {{ "cha", "com", "int", "ite", "med",
                                                   "mem", "obs", "sta", "str", "tem",
-                                                  "vis"                             } , { &run_dp::runBehavioral  , &run_dp::updateBehavioralTask  }}},
-                              { "creational" , {{ "abs", "bui", "fac", "pro", "sin" } , { &run_dp::runCreational  , &run_dp::updateCreationalTask  }}},
+                                                  "vis"                             } , { &app_dp::runBehavioral  , &app_dp::updateBehavioralTask  }}},
+                              { "creational" , {{ "abs", "bui", "fac", "pro", "sin" } , { &app_dp::runCreational  , &app_dp::updateCreationalTask  }}},
                               { "structural" , {{ "ada", "bri", "com", "dec", "fac",
-                                                  "fly", "pro"                      } , { &run_dp::runStructural  , &run_dp::updateStructuralTask  }}}}},
-        { "numeric"        , {{ "arithmetic" , {{ "add", "sub", "mul", "div"        } , { &run_num::runArithmetic , &run_num::updateArithmeticTask }}},
-                              { "divisor"    , {{ "euc", "ste"                      } , { &run_num::runDivisor    , &run_num::updateDivisorTask    }}},
-                              { "integral"   , {{ "tra", "sim", "rom", "gau", "mon" } , { &run_num::runIntegral   , &run_num::updateIntegralTask   }}},
-                              { "prime"      , {{ "era", "eul"                      } , { &run_num::runPrime      , &run_num::updatePrimeTask      }}}}}
+                                                  "fly", "pro"                      } , { &app_dp::runStructural  , &app_dp::updateStructuralTask  }}}}},
+        { "numeric"        , {{ "arithmetic" , {{ "add", "sub", "mul", "div"        } , { &app_num::runArithmetic , &app_num::updateArithmeticTask }}},
+                              { "divisor"    , {{ "euc", "ste"                      } , { &app_num::runDivisor    , &app_num::updateDivisorTask    }}},
+                              { "integral"   , {{ "tra", "sim", "rom", "gau", "mon" } , { &app_num::runIntegral   , &app_num::updateIntegralTask   }}},
+                              { "prime"      , {{ "era", "eul"                      } , { &app_num::runPrime      , &app_num::updatePrimeTask      }}}}}
         // ----------------+----------------+----------------------------------------+---------------------------+--------------------------------
     };
     // clang-format on
@@ -161,6 +167,12 @@ private:
     static std::string getIconBanner();
     [[noreturn]] inline void throwExcessArgumentException();
 };
+
+inline Command& Command::getInstance()
+{
+    static Command commander;
+    return commander;
+}
 
 inline void Command::throwExcessArgumentException()
 {
@@ -193,3 +205,6 @@ auto Command::get(const TaskFunctorTuple& tuple) const
         return std::get<1>(tuple);
     }
 }
+
+extern util_memory::Memory<util_thread::Thread>& getMemoryForMultithreading();
+} // namespace app_command

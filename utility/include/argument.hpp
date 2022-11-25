@@ -139,10 +139,7 @@ public:
     template <std::size_t N, std::size_t... I>
     explicit ArgumentRegister(std::array<std::string_view, N>&& array, std::index_sequence<I...> /*unused*/);
     template <std::size_t N>
-    explicit ArgumentRegister(std::array<std::string_view, N>&& array) :
-        ArgumentRegister(std::move(array), std::make_index_sequence<N>{})
-    {
-    }
+    explicit ArgumentRegister(std::array<std::string_view, N>&& array);
 
     ArgumentRegister& help(std::string str);
     template <typename T>
@@ -238,6 +235,12 @@ ArgumentRegister::ArgumentRegister(std::array<std::string_view, N>&& array, std:
         {
             return (lhs.size() == rhs.size()) ? (lhs < rhs) : (lhs.size() < rhs.size());
         });
+}
+
+template <std::size_t N>
+ArgumentRegister::ArgumentRegister(std::array<std::string_view, N>&& array) :
+    ArgumentRegister(std::move(array), std::make_index_sequence<N>{})
+{
 }
 
 template <typename T>
@@ -417,15 +420,12 @@ auto ArgumentRegister::anyCastContainer(const std::vector<std::any>& operand) ->
 class Argument
 {
 public:
-    explicit Argument(std::string title = {}, std::string version = "1.0") :
-        title(std::move(title)), version(std::move(version))
-    {
-    }
-    Argument(Argument&&) noexcept = default;
-    Argument& operator=(Argument&&) = default;
-    Argument(const Argument& arg);
+    explicit Argument(std::string title = {}, std::string version = "1.0");
     ~Argument() = default;
+    Argument(const Argument& arg);
+    Argument(Argument&&) noexcept = default;
     Argument& operator=(const Argument& arg);
+    Argument& operator=(Argument&&) = default;
 
     template <typename... Args>
     ArgumentRegister& addArgument(Args... fewArgs);

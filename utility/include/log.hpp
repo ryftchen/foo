@@ -106,7 +106,7 @@ public:
     void waitStopForExternalUse();
 
 private:
-    explicit Log(const StateType initState = State::init) noexcept : FSM(initState){};
+    explicit Log(const StateType initState = State::init) noexcept;
     Log(const std::string& logFile,
         const OutputType type,
         const OutputLevel level,

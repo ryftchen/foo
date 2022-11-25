@@ -114,7 +114,7 @@ class FSM
 {
 public:
     using StateType = State;
-    explicit FSM(State initState = State()) : state(initState){};
+    explicit FSM(State initState = State());
 
     template <class Event>
     void processEvent(const Event& event);
@@ -190,8 +190,22 @@ private:
     class ProcessingLock
     {
     public:
-        explicit ProcessingLock(FSM& fsm);
-        ~ProcessingLock();
+        explicit ProcessingLock(FSM& fsm) : isProcessing(fsm.isProcessing)
+        {
+            try
+            {
+                if (isProcessing.load())
+                {
+                    throw std::logic_error("fsm: Call processEvent recursively.");
+                }
+                isProcessing.store(true);
+            }
+            catch (const std::exception& error)
+            {
+                std::cerr << error.what() << std::endl;
+            }
+        }
+        ~ProcessingLock() { isProcessing.store(false); }
 
     private:
         std::atomic<bool>& isProcessing;
@@ -267,6 +281,11 @@ protected:
 };
 
 template <class Derived, class State>
+FSM<Derived, State>::FSM(State initState) : state(initState)
+{
+}
+
+template <class Derived, class State>
 template <class Event>
 void FSM<Derived, State>::processEvent(const Event& event)
 {
@@ -288,29 +307,6 @@ template <class Event>
 State FSM<Derived, State>::noTransition(const Event& /*unused*/)
 {
     return state;
-}
-
-template <class Derived, class State>
-FSM<Derived, State>::ProcessingLock::ProcessingLock(FSM& fsm) : isProcessing(fsm.isProcessing)
-{
-    try
-    {
-        if (isProcessing.load())
-        {
-            throw std::logic_error("fsm: Call processEvent recursively.");
-        }
-        isProcessing.store(true);
-    }
-    catch (const std::exception& error)
-    {
-        std::cerr << error.what() << std::endl;
-    }
-}
-
-template <class Derived, class State>
-FSM<Derived, State>::ProcessingLock::~ProcessingLock()
-{
-    isProcessing.store(false);
 }
 
 extern void checkIfExceptedFSMState(const int currentState, const int exceptedState);

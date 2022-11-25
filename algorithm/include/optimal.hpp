@@ -79,7 +79,7 @@ constexpr uint32_t loopTime = 100;
 class Gradient : public OptimalSolution
 {
 public:
-    explicit Gradient(const function::Function& func) : func(func){};
+    explicit Gradient(const function::Function& func);
 
     [[nodiscard]] std::optional<std::tuple<ValueY, ValueX>> operator()(
         const double left,
@@ -103,7 +103,7 @@ constexpr uint32_t markovChain = 100;
 class Annealing : public OptimalSolution
 {
 public:
-    explicit Annealing(const function::Function& func) : func(func){};
+    explicit Annealing(const function::Function& func);
 
     [[nodiscard]] std::optional<std::tuple<ValueY, ValueX>> operator()(
         const double left,
@@ -171,7 +171,7 @@ struct Record
 class Particle : public OptimalSolution
 {
 public:
-    explicit Particle(const function::Function& func) : func(func), seed(std::random_device{}()){};
+    explicit Particle(const function::Function& func);
 
     [[nodiscard]] std::optional<std::tuple<ValueY, ValueX>> operator()(
         const double left,
@@ -203,7 +203,7 @@ constexpr uint32_t numOfIteration = 100;
 class Genetic : public OptimalSolution
 {
 public:
-    explicit Genetic(const function::Function& func) : func(func), seed(std::random_device{}()){};
+    explicit Genetic(const function::Function& func);
 
     [[nodiscard]] std::optional<std::tuple<ValueY, ValueX>> operator()(
         const double left,

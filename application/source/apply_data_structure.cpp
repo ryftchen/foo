@@ -1,4 +1,5 @@
-#include "run_data_structure.hpp"
+#include "apply_data_structure.hpp"
+#include "application/include/command.hpp"
 #include "data_structure/include/linear.hpp"
 #include "data_structure/include/tree.hpp"
 #include "utility/include/hash.hpp"
@@ -19,7 +20,7 @@
               << "\r\n"                                                                                             \
               << std::endl;
 
-namespace run_ds
+namespace app_ds
 {
 using Type = DataStructureTask::Type;
 template <class T>
@@ -41,11 +42,11 @@ void runLinear(const std::vector<std::string>& targets)
     }
 
     DATA_STRUCTURE_PRINT_TASK_BEGIN_TITLE(Type::linear);
+    auto* threads = app_command::getMemoryForMultithreading().newElement(std::min(
+        static_cast<uint32_t>(getBit<LinearInstance>().count()), static_cast<uint32_t>(Bottom<LinearInstance>::value)));
 
     using ds_linear::LinearStructure;
     const std::shared_ptr<LinearStructure> linear = std::make_shared<LinearStructure>();
-    std::shared_ptr<util_thread::Thread> threads = std::make_shared<util_thread::Thread>(std::min(
-        static_cast<uint32_t>(getBit<LinearInstance>().count()), static_cast<uint32_t>(Bottom<LinearInstance>::value)));
     const auto linearFunctor = [&](const std::string& threadName, void (LinearStructure::*instancePtr)() const)
     {
         threads->enqueue(threadName, instancePtr, linear);
@@ -77,6 +78,7 @@ void runLinear(const std::vector<std::string>& targets)
         }
     }
 
+    app_command::getMemoryForMultithreading().deleteElement(threads);
     DATA_STRUCTURE_PRINT_TASK_END_TITLE(Type::linear);
 }
 
@@ -108,11 +110,11 @@ void runTree(const std::vector<std::string>& targets)
     }
 
     DATA_STRUCTURE_PRINT_TASK_BEGIN_TITLE(Type::tree);
+    auto* threads = app_command::getMemoryForMultithreading().newElement(std::min(
+        static_cast<uint32_t>(getBit<TreeInstance>().count()), static_cast<uint32_t>(Bottom<TreeInstance>::value)));
 
     using ds_tree::TreeStructure;
     const std::shared_ptr<TreeStructure> tree = std::make_shared<TreeStructure>();
-    std::shared_ptr<util_thread::Thread> threads = std::make_shared<util_thread::Thread>(std::min(
-        static_cast<uint32_t>(getBit<TreeInstance>().count()), static_cast<uint32_t>(Bottom<TreeInstance>::value)));
     const auto treeFunctor = [&](const std::string& threadName, void (TreeStructure::*instancePtr)() const)
     {
         threads->enqueue(threadName, instancePtr, tree);
@@ -144,6 +146,7 @@ void runTree(const std::vector<std::string>& targets)
         }
     }
 
+    app_command::getMemoryForMultithreading().deleteElement(threads);
     DATA_STRUCTURE_PRINT_TASK_END_TITLE(Type::tree);
 }
 
@@ -166,4 +169,4 @@ void updateTreeTask(const std::string& target)
             throw std::runtime_error("Unexpected task of tree: " + target);
     }
 }
-} // namespace run_ds
+} // namespace app_ds
