@@ -3,6 +3,10 @@
 
 namespace util_log
 {
+Log::Log(const StateType initState) noexcept : FSM(initState)
+{
+}
+
 Log::Log(
     const std::string& logFile,
     const OutputType type,

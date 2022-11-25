@@ -1,10 +1,11 @@
-#include "run_algorithm.hpp"
+#include "apply_algorithm.hpp"
 #include <variant>
 #include "algorithm/include/match.hpp"
 #include "algorithm/include/notation.hpp"
 #include "algorithm/include/optimal.hpp"
 #include "algorithm/include/search.hpp"
 #include "algorithm/include/sort.hpp"
+#include "application/include/command.hpp"
 #include "utility/include/hash.hpp"
 #include "utility/include/log.hpp"
 #include "utility/include/thread.hpp"
@@ -21,7 +22,7 @@
               << taskType << "END" << std::resetiosflags(std::ios_base::left) << std::setfill(' ') << "\r\n"       \
               << std::endl;
 
-namespace run_algo
+namespace app_algo
 {
 using Type = AlgorithmTask::Type;
 template <class T>
@@ -90,11 +91,11 @@ void runMatch(const std::vector<std::string>& targets)
     using input::singlePatternForMatch;
     static_assert(algo_match::maxDigit > singlePatternForMatch.length());
     ALGORITHM_PRINT_TASK_BEGIN_TITLE(Type::match);
+    auto* threads = app_command::getMemoryForMultithreading().newElement(std::min(
+        static_cast<uint32_t>(getBit<MatchMethod>().count()), static_cast<uint32_t>(Bottom<MatchMethod>::value)));
 
     using algo_match::MatchSolution;
     const std::shared_ptr<MatchSolution> match = std::make_shared<MatchSolution>(algo_match::maxDigit);
-    std::shared_ptr<util_thread::Thread> threads = std::make_shared<util_thread::Thread>(std::min(
-        static_cast<uint32_t>(getBit<MatchMethod>().count()), static_cast<uint32_t>(Bottom<MatchMethod>::value)));
     const auto matchFunctor =
         [&](const std::string& threadName,
             int (MatchSolution::*methodPtr)(const char*, const char*, const uint32_t, const uint32_t) const)
@@ -141,6 +142,7 @@ void runMatch(const std::vector<std::string>& targets)
         }
     }
 
+    app_command::getMemoryForMultithreading().deleteElement(threads);
     ALGORITHM_PRINT_TASK_END_TITLE(Type::match);
 }
 
@@ -178,12 +180,12 @@ void runNotation(const std::vector<std::string>& targets)
     }
 
     ALGORITHM_PRINT_TASK_BEGIN_TITLE(Type::notation);
+    auto* threads = app_command::getMemoryForMultithreading().newElement(std::min(
+        static_cast<uint32_t>(getBit<NotationMethod>().count()), static_cast<uint32_t>(Bottom<NotationMethod>::value)));
 
     using algo_notation::NotationSolution;
     using input::infixForNotation;
     const std::shared_ptr<NotationSolution> notation = std::make_shared<NotationSolution>(infixForNotation);
-    std::shared_ptr<util_thread::Thread> threads = std::make_shared<util_thread::Thread>(std::min(
-        static_cast<uint32_t>(getBit<NotationMethod>().count()), static_cast<uint32_t>(Bottom<NotationMethod>::value)));
     const auto notationFunctor =
         [&](const std::string& threadName, std::string (NotationSolution::*methodPtr)(const std::string&) const)
     {
@@ -213,6 +215,7 @@ void runNotation(const std::vector<std::string>& targets)
         }
     }
 
+    app_command::getMemoryForMultithreading().deleteElement(threads);
     ALGORITHM_PRINT_TASK_END_TITLE(Type::notation);
 }
 
@@ -264,7 +267,7 @@ void runOptimal(const std::vector<std::string>& targets)
                                    const algo_optimal::function::FuncRange<double, double>& range)
     {
         assert((range.range1 < range.range2) && (algo_optimal::epsilon > 0.0));
-        std::shared_ptr<util_thread::Thread> threads = std::make_shared<util_thread::Thread>(std::min(
+        auto* threads = app_command::getMemoryForMultithreading().newElement(std::min(
             static_cast<uint32_t>(getBit<OptimalMethod>().count()),
             static_cast<uint32_t>(Bottom<OptimalMethod>::value)));
         const auto optimalFunctor =
@@ -307,6 +310,7 @@ void runOptimal(const std::vector<std::string>& targets)
                     break;
             }
         }
+        app_command::getMemoryForMultithreading().deleteElement(threads);
     };
 
     ALGORITHM_PRINT_TASK_BEGIN_TITLE(Type::optimal);
@@ -371,12 +375,12 @@ void runSearch(const std::vector<std::string>& targets)
     using input::arrayRangeForSearch2;
     static_assert((arrayRangeForSearch1 < arrayRangeForSearch2) && (arrayLengthForSearch > 0));
     ALGORITHM_PRINT_TASK_BEGIN_TITLE(Type::search);
+    auto* threads = app_command::getMemoryForMultithreading().newElement(std::min(
+        static_cast<uint32_t>(getBit<SearchMethod>().count()), static_cast<uint32_t>(Bottom<SearchMethod>::value)));
 
     using algo_search::SearchSolution;
     const std::shared_ptr<SearchSolution<double>> search =
         std::make_shared<SearchSolution<double>>(arrayLengthForSearch, arrayRangeForSearch1, arrayRangeForSearch2);
-    std::shared_ptr<util_thread::Thread> threads = std::make_shared<util_thread::Thread>(std::min(
-        static_cast<uint32_t>(getBit<SearchMethod>().count()), static_cast<uint32_t>(Bottom<SearchMethod>::value)));
     const auto searchFunctor =
         [&](const std::string& threadName,
             int (SearchSolution<double>::*methodPtr)(const double* const, const uint32_t, const double) const)
@@ -416,6 +420,7 @@ void runSearch(const std::vector<std::string>& targets)
         }
     }
 
+    app_command::getMemoryForMultithreading().deleteElement(threads);
     ALGORITHM_PRINT_TASK_END_TITLE(Type::search);
 }
 
@@ -451,12 +456,12 @@ void runSort(const std::vector<std::string>& targets)
     using input::arrayRangeForSort2;
     static_assert((arrayRangeForSort1 < arrayRangeForSort2) && (arrayLengthForSort > 0));
     ALGORITHM_PRINT_TASK_BEGIN_TITLE(Type::sort);
+    auto* threads = app_command::getMemoryForMultithreading().newElement(std::min(
+        static_cast<uint32_t>(getBit<SortMethod>().count()), static_cast<uint32_t>(Bottom<SortMethod>::value)));
 
     using algo_sort::SortSolution;
     const std::shared_ptr<SortSolution<int>> sort =
         std::make_shared<SortSolution<int>>(arrayLengthForSort, arrayRangeForSort1, arrayRangeForSort2);
-    std::shared_ptr<util_thread::Thread> threads = std::make_shared<util_thread::Thread>(std::min(
-        static_cast<uint32_t>(getBit<SortMethod>().count()), static_cast<uint32_t>(Bottom<SortMethod>::value)));
     const auto sortFunctor = [&](const std::string& threadName,
                                  std::vector<int> (SortSolution<int>::*methodPtr)(int* const, const uint32_t) const)
     {
@@ -510,6 +515,7 @@ void runSort(const std::vector<std::string>& targets)
         }
     }
 
+    app_command::getMemoryForMultithreading().deleteElement(threads);
     ALGORITHM_PRINT_TASK_END_TITLE(Type::sort);
 }
 
@@ -553,4 +559,4 @@ void updateSortTask(const std::string& target)
             throw std::runtime_error("Unexpected task of sort: " + target);
     }
 }
-} // namespace run_algo
+} // namespace app_algo

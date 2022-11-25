@@ -196,6 +196,10 @@ bool ArgumentRegister::checkIfNonOptional(std::string_view name)
     }
 }
 
+Argument::Argument(std::string title, std::string version) : title(std::move(title)), version(std::move(version))
+{
+}
+
 Argument::Argument(const Argument& arg) :
     title(arg.title),
     version(arg.version),

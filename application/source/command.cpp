@@ -1,7 +1,8 @@
 #include "command.hpp"
 #include "utility/include/log.hpp"
-#include "utility/include/thread.hpp"
 
+namespace app_command
+{
 Command::Command()
 {
     try
@@ -106,9 +107,9 @@ void Command::runCommander(const int argc, const char* const argv[])
 
     if (0 != argc - 1)
     {
-        std::shared_ptr<util_thread::Thread> threads = std::make_shared<util_thread::Thread>(2);
-        threads->enqueue("commander_fore", &Command::foregroundHandle, this, argc, argv);
-        threads->enqueue("commander_back", &Command::backgroundHandle, this);
+        std::shared_ptr<util_thread::Thread> thread = std::make_shared<util_thread::Thread>(2);
+        thread->enqueue("commander_fore", &Command::foregroundHandle, this, argc, argv);
+        thread->enqueue("commander_back", &Command::backgroundHandle, this);
     }
     else
     {
@@ -263,25 +264,25 @@ void Command::performTask() const
             switch (GeneralTask::Category(i))
             {
                 case GeneralTask::Category::algorithm:
-                    if (run_algo::getTask().empty())
+                    if (app_algo::getTask().empty())
                     {
                         continue;
                     }
                     break;
                 case GeneralTask::Category::dataStructure:
-                    if (run_ds::getTask().empty())
+                    if (app_ds::getTask().empty())
                     {
                         continue;
                     }
                     break;
                 case GeneralTask::Category::designPattern:
-                    if (run_dp::getTask().empty())
+                    if (app_dp::getTask().empty())
                     {
                         continue;
                     }
                     break;
                 case GeneralTask::Category::numeric:
-                    if (run_num::getTask().empty())
+                    if (app_num::getTask().empty())
                     {
                         continue;
                     }
@@ -324,10 +325,10 @@ void Command::printHelpMessage() const
         return;
     }
 
-    if (!run_algo::getTask().empty())
+    if (!app_algo::getTask().empty())
     {
-        using run_algo::AlgorithmTask;
-        using run_algo::getBit;
+        using app_algo::AlgorithmTask;
+        using app_algo::getBit;
         std::cout << "Usage: foo -a, --algorithm ";
         if (!getBit<AlgorithmTask::MatchMethod>().none())
         {
@@ -374,10 +375,10 @@ void Command::printHelpMessage() const
                       "rad    Radix");
         }
     }
-    else if (!run_ds::getTask().empty())
+    else if (!app_ds::getTask().empty())
     {
-        using run_ds::DataStructureTask;
-        using run_ds::getBit;
+        using app_ds::DataStructureTask;
+        using app_ds::getBit;
         std::cout << "Usage: foo -ds, --data-structure ";
         if (!getBit<DataStructureTask::LinearInstance>().none())
         {
@@ -394,10 +395,10 @@ void Command::printHelpMessage() const
                       "spl    Splay");
         }
     }
-    else if (!run_dp::getTask().empty())
+    else if (!app_dp::getTask().empty())
     {
-        using run_dp::DesignPatternTask;
-        using run_dp::getBit;
+        using app_dp::DesignPatternTask;
+        using app_dp::getBit;
         std::cout << "Usage: foo -dp, --design-pattern ";
         if (!getBit<DesignPatternTask::BehavioralInstance>().none())
         {
@@ -435,10 +436,10 @@ void Command::printHelpMessage() const
                       "pro    Proxy");
         }
     }
-    else if (!run_num::getTask().empty())
+    else if (!app_num::getTask().empty())
     {
-        using run_num::getBit;
-        using run_num::NumericTask;
+        using app_num::getBit;
+        using app_num::NumericTask;
         std::cout << "Usage: foo -n, --numeric ";
         if (!getBit<NumericTask::ArithmeticMethod>().none())
         {
@@ -530,3 +531,10 @@ std::string Command::getIconBanner()
 
     return banner;
 }
+
+util_memory::Memory<util_thread::Thread>& getMemoryForMultithreading()
+{
+    static util_memory::Memory<util_thread::Thread> memory;
+    return memory;
+}
+} // namespace app_command

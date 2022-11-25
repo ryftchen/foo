@@ -8,6 +8,10 @@
 namespace algo_optimal
 {
 // Gradient Descent
+Gradient::Gradient(const function::Function& func) : func(func)
+{
+}
+
 std::optional<std::tuple<ValueY, ValueX>> Gradient::operator()(const double left, const double right, const double eps)
 {
     TIME_BEGIN(timing);
@@ -61,6 +65,10 @@ double Gradient::calculateFirstDerivative(const double x, const double eps) cons
 }
 
 // Simulated Annealing
+Annealing::Annealing(const function::Function& func) : func(func)
+{
+}
+
 std::optional<std::tuple<ValueY, ValueX>> Annealing::operator()(const double left, const double right, const double eps)
 {
     TIME_BEGIN(timing);
@@ -111,6 +119,10 @@ std::optional<std::tuple<ValueY, ValueX>> Annealing::operator()(const double lef
 }
 
 // Particle Swarm
+Particle::Particle(const function::Function& func) : func(func), seed(std::random_device{}())
+{
+}
+
 std::optional<std::tuple<ValueY, ValueX>> Particle::operator()(const double left, const double right, const double eps)
 {
     TIME_BEGIN(timing);
@@ -189,6 +201,10 @@ particle::Record Particle::recordInit(const double left, const double right)
 }
 
 // Genetic
+Genetic::Genetic(const function::Function& func) : func(func), seed(std::random_device{}())
+{
+}
+
 std::optional<std::tuple<ValueY, ValueX>> Genetic::operator()(const double left, const double right, const double eps)
 {
     TIME_BEGIN(timing);

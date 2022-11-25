@@ -1,4 +1,5 @@
-#include "run_design_pattern.hpp"
+#include "apply_design_pattern.hpp"
+#include "application/include/command.hpp"
 #include "design_pattern/include/behavioral.hpp"
 #include "design_pattern/include/creational.hpp"
 #include "design_pattern/include/structural.hpp"
@@ -20,7 +21,7 @@
               << "\r\n"                                                                                             \
               << std::endl;
 
-namespace run_dp
+namespace app_dp
 {
 using Type = DesignPatternTask::Type;
 template <class T>
@@ -43,12 +44,12 @@ void runBehavioral(const std::vector<std::string>& targets)
     }
 
     DESIGN_PATTERN_PRINT_TASK_BEGIN_TITLE(Type::behavioral);
+    auto* threads = app_command::getMemoryForMultithreading().newElement(std::min(
+        static_cast<uint32_t>(getBit<BehavioralInstance>().count()),
+        static_cast<uint32_t>(Bottom<BehavioralInstance>::value)));
 
     using dp_behavioral::BehavioralPattern;
     const std::shared_ptr<BehavioralPattern> behavioral = std::make_shared<BehavioralPattern>();
-    std::shared_ptr<util_thread::Thread> threads = std::make_shared<util_thread::Thread>(std::min(
-        static_cast<uint32_t>(getBit<BehavioralInstance>().count()),
-        static_cast<uint32_t>(Bottom<BehavioralInstance>::value)));
     const auto behavioralFunctor = [&](const std::string& threadName, void (BehavioralPattern::*instancePtr)() const)
     {
         threads->enqueue(threadName, instancePtr, behavioral);
@@ -104,6 +105,7 @@ void runBehavioral(const std::vector<std::string>& targets)
         }
     }
 
+    app_command::getMemoryForMultithreading().deleteElement(threads);
     DESIGN_PATTERN_PRINT_TASK_END_TITLE(Type::behavioral);
 }
 
@@ -159,12 +161,12 @@ void runCreational(const std::vector<std::string>& targets)
     }
 
     DESIGN_PATTERN_PRINT_TASK_BEGIN_TITLE(Type::creational);
+    auto* threads = app_command::getMemoryForMultithreading().newElement(std::min(
+        static_cast<uint32_t>(getBit<CreationalInstance>().count()),
+        static_cast<uint32_t>(Bottom<CreationalInstance>::value)));
 
     using dp_creational::CreationalPattern;
     const std::shared_ptr<CreationalPattern> creational = std::make_shared<CreationalPattern>();
-    std::shared_ptr<util_thread::Thread> threads = std::make_shared<util_thread::Thread>(std::min(
-        static_cast<uint32_t>(getBit<CreationalInstance>().count()),
-        static_cast<uint32_t>(Bottom<CreationalInstance>::value)));
     const auto creationalFunctor = [&](const std::string& threadName, void (CreationalPattern::*instancePtr)() const)
     {
         threads->enqueue(threadName, instancePtr, creational);
@@ -202,6 +204,7 @@ void runCreational(const std::vector<std::string>& targets)
         }
     }
 
+    app_command::getMemoryForMultithreading().deleteElement(threads);
     DESIGN_PATTERN_PRINT_TASK_END_TITLE(Type::creational);
 }
 
@@ -239,12 +242,12 @@ void runStructural(const std::vector<std::string>& targets)
     }
 
     DESIGN_PATTERN_PRINT_TASK_BEGIN_TITLE(Type::structural);
+    auto* threads = app_command::getMemoryForMultithreading().newElement(std::min(
+        static_cast<uint32_t>(getBit<StructuralInstance>().count()),
+        static_cast<uint32_t>(Bottom<StructuralInstance>::value)));
 
     using dp_structural::StructuralPattern;
     const std::shared_ptr<StructuralPattern> structural = std::make_shared<StructuralPattern>();
-    std::shared_ptr<util_thread::Thread> threads = std::make_shared<util_thread::Thread>(std::min(
-        static_cast<uint32_t>(getBit<StructuralInstance>().count()),
-        static_cast<uint32_t>(Bottom<StructuralInstance>::value)));
     const auto structuralFunctor = [&](const std::string& threadName, void (StructuralPattern::*instancePtr)() const)
     {
         threads->enqueue(threadName, instancePtr, structural);
@@ -288,6 +291,7 @@ void runStructural(const std::vector<std::string>& targets)
         }
     }
 
+    app_command::getMemoryForMultithreading().deleteElement(threads);
     DESIGN_PATTERN_PRINT_TASK_END_TITLE(Type::structural);
 }
 
@@ -322,4 +326,4 @@ void updateStructuralTask(const std::string& target)
             throw std::runtime_error("Unexpected task of structural: " + target);
     }
 }
-} // namespace run_dp
+} // namespace app_dp

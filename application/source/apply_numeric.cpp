@@ -1,5 +1,6 @@
-#include "run_numeric.hpp"
+#include "apply_numeric.hpp"
 #include <variant>
+#include "application/include/command.hpp"
 #include "numeric/include/arithmetic.hpp"
 #include "numeric/include/divisor.hpp"
 #include "numeric/include/integral.hpp"
@@ -20,7 +21,7 @@
               << taskType << "END" << std::resetiosflags(std::ios_base::left) << std::setfill(' ') << "\r\n"     \
               << std::endl;
 
-namespace run_num
+namespace app_num
 {
 using Type = NumericTask::Type;
 template <class T>
@@ -76,15 +77,15 @@ void runArithmetic(const std::vector<std::string>& targets)
     }
 
     NUMERIC_PRINT_TASK_BEGIN_TITLE(Type::arithmetic);
+    auto* threads = app_command::getMemoryForMultithreading().newElement(std::min(
+        static_cast<uint32_t>(getBit<ArithmeticMethod>().count()),
+        static_cast<uint32_t>(Bottom<ArithmeticMethod>::value)));
 
     using input::integerForArithmetic1;
     using input::integerForArithmetic2;
     using num_arithmetic::ArithmeticSolution;
     const std::shared_ptr<ArithmeticSolution> arithmetic =
         std::make_shared<ArithmeticSolution>(integerForArithmetic1, integerForArithmetic2);
-    std::shared_ptr<util_thread::Thread> threads = std::make_shared<util_thread::Thread>(std::min(
-        static_cast<uint32_t>(getBit<ArithmeticMethod>().count()),
-        static_cast<uint32_t>(Bottom<ArithmeticMethod>::value)));
     const auto arithmeticFunctor =
         [&](const std::string& threadName, int (ArithmeticSolution::*methodPtr)(const int, const int) const)
     {
@@ -120,6 +121,7 @@ void runArithmetic(const std::vector<std::string>& targets)
         }
     }
 
+    app_command::getMemoryForMultithreading().deleteElement(threads);
     NUMERIC_PRINT_TASK_END_TITLE(Type::arithmetic);
 }
 
@@ -154,14 +156,14 @@ void runDivisor(const std::vector<std::string>& targets)
     }
 
     NUMERIC_PRINT_TASK_BEGIN_TITLE(Type::divisor);
+    auto* threads = app_command::getMemoryForMultithreading().newElement(std::min(
+        static_cast<uint32_t>(getBit<DivisorMethod>().count()), static_cast<uint32_t>(Bottom<DivisorMethod>::value)));
 
     using input::integerForDivisor1;
     using input::integerForDivisor2;
     using num_divisor::DivisorSolution;
     const std::shared_ptr<DivisorSolution> divisor =
         std::make_shared<DivisorSolution>(integerForDivisor1, integerForDivisor2);
-    std::shared_ptr<util_thread::Thread> threads = std::make_shared<util_thread::Thread>(std::min(
-        static_cast<uint32_t>(getBit<DivisorMethod>().count()), static_cast<uint32_t>(Bottom<DivisorMethod>::value)));
     const auto divisorFunctor =
         [&](const std::string& threadName, std::vector<int> (DivisorSolution::*methodPtr)(int, int) const)
     {
@@ -191,6 +193,7 @@ void runDivisor(const std::vector<std::string>& targets)
         }
     }
 
+    app_command::getMemoryForMultithreading().deleteElement(threads);
     NUMERIC_PRINT_TASK_END_TITLE(Type::divisor);
 }
 
@@ -242,7 +245,7 @@ void runIntegral(const std::vector<std::string>& targets)
                                    const num_integral::expression::ExprRange<double, double>& range)
     {
         static_assert(num_integral::epsilon > 0.0);
-        std::shared_ptr<util_thread::Thread> threads = std::make_shared<util_thread::Thread>(std::min(
+        auto* threads = app_command::getMemoryForMultithreading().newElement(std::min(
             static_cast<uint32_t>(getBit<IntegralMethod>().count()),
             static_cast<uint32_t>(Bottom<IntegralMethod>::value)));
         const auto integralFunctor =
@@ -288,6 +291,7 @@ void runIntegral(const std::vector<std::string>& targets)
                     break;
             }
         }
+        app_command::getMemoryForMultithreading().deleteElement(threads);
     };
 
     NUMERIC_PRINT_TASK_BEGIN_TITLE(Type::integral);
@@ -351,12 +355,12 @@ void runPrime(const std::vector<std::string>& targets)
     }
 
     NUMERIC_PRINT_TASK_BEGIN_TITLE(Type::prime);
+    auto* threads = app_command::getMemoryForMultithreading().newElement(std::min(
+        static_cast<uint32_t>(getBit<PrimeMethod>().count()), static_cast<uint32_t>(Bottom<PrimeMethod>::value)));
 
     using input::maxPositiveIntegerForPrime;
     using num_prime::PrimeSolution;
     const std::shared_ptr<PrimeSolution> prime = std::make_shared<PrimeSolution>(maxPositiveIntegerForPrime);
-    std::shared_ptr<util_thread::Thread> threads = std::make_shared<util_thread::Thread>(std::min(
-        static_cast<uint32_t>(getBit<PrimeMethod>().count()), static_cast<uint32_t>(Bottom<PrimeMethod>::value)));
     const auto primeFunctor =
         [&](const std::string& threadName, std::vector<uint32_t> (PrimeSolution::*methodPtr)(const uint32_t) const)
     {
@@ -386,6 +390,7 @@ void runPrime(const std::vector<std::string>& targets)
         }
     }
 
+    app_command::getMemoryForMultithreading().deleteElement(threads);
     NUMERIC_PRINT_TASK_END_TITLE(Type::prime);
 }
 
@@ -405,4 +410,4 @@ void updatePrimeTask(const std::string& target)
             throw std::runtime_error("Unexpected task of prime: " + target);
     }
 }
-} // namespace run_num
+} // namespace app_num
