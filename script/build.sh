@@ -242,9 +242,11 @@ mv ./${COMPILE_COMMANDS} ./${BUILD_FOLDER}"
         bashCommand "find ./${APPLICATION_FOLDER} ./${UTILITY_FOLDER} ./${ALGORITHM_FOLDER} ./${DATA_STRUCTURE_FOLDER} \
 ./${DESIGN_PATTERN_FOLDER} ./${NUMERIC_FOLDER} -name *.cpp -o -name *.hpp \
 | xargs run-clang-tidy-12 -p ./${BUILD_FOLDER} -quiet"
-        generateCMakeFiles
+        bashCommand "compdb -p ./${TEST_FOLDER}/${BUILD_FOLDER} list > ./${COMPILE_COMMANDS} && \
+mv ./${COMPILE_COMMANDS} ./${TEST_FOLDER}/${BUILD_FOLDER}"
         bashCommand "find ./${TEST_FOLDER} -name *.cpp -o -name *.hpp \
 | xargs run-clang-tidy-12 -p ./${TEST_FOLDER}/${BUILD_FOLDER} -quiet"
+        generateCMakeFiles
         bashCommand "shellcheck ./${SCRIPT_FOLDER}/*.sh"
         bashCommand "pylint --rcfile=${LINT_CONFIG_PY} ./${SCRIPT_FOLDER}/*.py"
     fi
