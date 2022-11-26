@@ -49,11 +49,6 @@ enum class FileLockType
     writerLock
 };
 
-inline void throwRunCommandLineException(const std::string& cmd)
-{
-    throw std::runtime_error("common: Failed to run common line: " + cmd + ".");
-}
-
 inline void throwCallSystemApiException(const std::string& api)
 {
     throw std::runtime_error("common: Failed to call system api: " + api + ".");

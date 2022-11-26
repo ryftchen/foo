@@ -154,6 +154,9 @@ private:
         // --------------+-------------+--------------+--------------------+-----------------------
         >;
     // clang-format on
+
+protected:
+    friend std::ostream& operator<<(std::ostream& os, const Log::State& state);
 };
 
 inline Log& Log::getInstance()

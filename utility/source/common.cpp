@@ -32,7 +32,7 @@ void executeCommand(const char* const cmd)
     {
         if (WEXITSTATUS(status))
         {
-            throwRunCommandLineException(cmd);
+            throw std::runtime_error("common: Failed to run common line: " + std::string{cmd} + ".");
         }
     }
 }

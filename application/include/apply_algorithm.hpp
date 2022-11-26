@@ -96,11 +96,11 @@ public:
     std::bitset<Bottom<SearchMethod>::value> searchBit;
     std::bitset<Bottom<SortMethod>::value> sortBit;
 
-    [[nodiscard]] bool empty() const
+    [[nodiscard]] inline bool empty() const
     {
         return (matchBit.none() && notationBit.none() && optimalBit.none() && searchBit.none() && sortBit.none());
     }
-    void reset()
+    inline void reset()
     {
         matchBit.reset();
         notationBit.reset();

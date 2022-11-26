@@ -73,8 +73,11 @@ public:
     std::bitset<Bottom<CreationalInstance>::value> creationalBit;
     std::bitset<Bottom<StructuralInstance>::value> structuralBit;
 
-    [[nodiscard]] bool empty() const { return (behavioralBit.none() && creationalBit.none() && structuralBit.none()); }
-    void reset()
+    [[nodiscard]] inline bool empty() const
+    {
+        return (behavioralBit.none() && creationalBit.none() && structuralBit.none());
+    }
+    inline void reset()
     {
         behavioralBit.reset();
         creationalBit.reset();

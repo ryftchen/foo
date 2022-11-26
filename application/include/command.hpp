@@ -57,8 +57,8 @@ private:
 
         std::bitset<Bottom<Category>::value> primaryBit;
 
-        [[nodiscard]] bool empty() const { return primaryBit.none(); }
-        void reset() { primaryBit.reset(); }
+        [[nodiscard]] inline bool empty() const { return primaryBit.none(); }
+        inline void reset() { primaryBit.reset(); }
     };
 
     class GeneralTask
@@ -80,13 +80,13 @@ private:
             static constexpr int value = 4;
         };
 
-        [[nodiscard]] static bool empty()
+        [[nodiscard]] static inline bool empty()
         {
             return (
                 app_algo::getTask().empty() && app_ds::getTask().empty() && app_dp::getTask().empty()
                 && app_num::getTask().empty());
         }
-        static void reset()
+        static inline void reset()
         {
             app_algo::getTask().reset();
             app_ds::getTask().reset();
@@ -102,8 +102,8 @@ private:
         BasicTask basicTask;
         GeneralTask generalTask;
 
-        [[nodiscard]] bool empty() const { return (basicTask.empty() && generalTask.empty()); }
-        void reset()
+        [[nodiscard]] bool inline empty() const { return (basicTask.empty() && generalTask.empty()); }
+        inline void reset()
         {
             basicTask.reset();
             generalTask.reset();
