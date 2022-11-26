@@ -1,5 +1,6 @@
 #include "log.hpp"
 #include <regex>
+#include <stdexcept>
 
 namespace util_log
 {
@@ -21,15 +22,25 @@ Log::Log(
 
 void Log::runLogger()
 {
+    State expectedState = State::init;
+    auto checkIfExceptedFSMState = [&](const State state) -> void
+    {
+        expectedState = state;
+        if (currentState() != expectedState)
+        {
+            throw std::logic_error("Abnormal state");
+        }
+    };
+
     try
     {
-        util_fsm::checkIfExceptedFSMState(currentState(), State::init);
+        checkIfExceptedFSMState(State::init);
         processEvent(OpenFile());
 
-        util_fsm::checkIfExceptedFSMState(currentState(), State::idle);
+        checkIfExceptedFSMState(State::idle);
         processEvent(GoLogging());
 
-        util_fsm::checkIfExceptedFSMState(currentState(), State::work);
+        checkIfExceptedFSMState(State::work);
         while (isLogging.load())
         {
             if (std::unique_lock<std::mutex> lock(queueMutex); true)
@@ -65,14 +76,15 @@ void Log::runLogger()
 
         processEvent(CloseFile());
 
-        util_fsm::checkIfExceptedFSMState(currentState(), State::idle);
+        checkIfExceptedFSMState(State::idle);
         processEvent(NoLogging());
 
-        util_fsm::checkIfExceptedFSMState(currentState(), State::done);
+        checkIfExceptedFSMState(State::done);
     }
     catch (const std::exception& error)
     {
-        std::cerr << error.what() << std::endl;
+        std::cerr << "log: " << error.what() << ", expected state: " << expectedState
+                  << ", current state: " << State(currentState()) << "." << std::endl;
         stopLogging();
     }
 }
@@ -196,6 +208,29 @@ bool Log::isLogFileOpen(const GoLogging& /*unused*/) const
 bool Log::isLogFileClose(const NoLogging& /*unused*/) const
 {
     return !ofs.is_open();
+}
+
+std::ostream& operator<<(std::ostream& os, const Log::State& state)
+{
+    switch (state)
+    {
+        case Log::State::init:
+            os << "INIT";
+            break;
+        case Log::State::idle:
+            os << "IDLE";
+            break;
+        case Log::State::work:
+            os << "WORK";
+            break;
+        case Log::State::done:
+            os << "DONE";
+            break;
+        default:
+            os << "UNKNOWN: " << static_cast<std::underlying_type_t<Log::State>>(state);
+    }
+
+    return os;
 }
 
 std::string& changeLogLevelStyle(std::string& line)

@@ -308,6 +308,4 @@ State FSM<Derived, State>::noTransition(const Event& /*unused*/)
 {
     return state;
 }
-
-extern void checkIfExceptedFSMState(const int currentState, const int exceptedState);
 } // namespace util_fsm

@@ -74,11 +74,11 @@ public:
     std::bitset<Bottom<IntegralMethod>::value> integralBit;
     std::bitset<Bottom<PrimeMethod>::value> primeBit;
 
-    [[nodiscard]] bool empty() const
+    [[nodiscard]] inline bool empty() const
     {
         return (arithmeticBit.none() && divisorBit.none() && integralBit.none() && primeBit.none());
     }
-    void reset()
+    inline void reset()
     {
         arithmeticBit.reset();
         divisorBit.reset();

@@ -37,7 +37,7 @@ file(
     ../utility/source/common.cpp
     ../utility/source/hash.cpp
     ../utility/source/time.cpp)
-aux_source_directory(${CMAKE_SOURCE_DIR}/source TEST_LIST)
+aux_source_directory(${CMAKE_SOURCE_DIR}/unit TEST_LIST)
 aux_source_directory(../algorithm/source TEST_LIST)
 aux_source_directory(../data_structure/source TEST_LIST)
 aux_source_directory(../design_pattern/source TEST_LIST)

@@ -45,8 +45,8 @@ public:
     std::bitset<Bottom<LinearInstance>::value> linearBit;
     std::bitset<Bottom<TreeInstance>::value> treeBit;
 
-    [[nodiscard]] bool empty() const { return (linearBit.none() && treeBit.none()); }
-    void reset()
+    [[nodiscard]] inline bool empty() const { return (linearBit.none() && treeBit.none()); }
+    inline void reset()
     {
         linearBit.reset();
         treeBit.reset();
