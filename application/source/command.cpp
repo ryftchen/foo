@@ -34,7 +34,7 @@ Command::Command()
                     }
                     throw std::runtime_error("Unknown algorithm category: " + value);
                 })
-            .help("match, notation, optimal, search, sort [add category with \"--help\" for task details]");
+            .help("category: match, notation, optimal, search, sort [add category with --help for task details]");
 
         program.addArgument("-ds", "--data-structure")
             .nArgs(1)
@@ -53,7 +53,7 @@ Command::Command()
                     }
                     throw std::runtime_error("Unknown data structure category: " + value);
                 })
-            .help("linear, tree [add category with \"--help\" for task details]");
+            .help("category: linear, tree [add category with --help for task details]");
 
         program.addArgument("-dp", "--design-pattern")
             .nArgs(1)
@@ -72,7 +72,7 @@ Command::Command()
                     }
                     throw std::runtime_error("Unknown design pattern category: " + value);
                 })
-            .help("behavioral, creational, structural [add category with \"--help\" for task details]");
+            .help("category: behavioral, creational, structural [add category with --help for task details]");
 
         program.addArgument("-n", "--numeric")
             .nArgs(1)
@@ -91,7 +91,7 @@ Command::Command()
                     }
                     throw std::runtime_error("Unknown numeric category: " + value);
                 })
-            .help("arithmetic, divisor, integral, prime [add category with \"--help\" for task details]");
+            .help("category: arithmetic, divisor, integral, prime [add category with --help for task details]");
 
         program.addArgument("tasks").remaining().help("specify tasks");
     }
