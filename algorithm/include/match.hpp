@@ -25,12 +25,11 @@ public:
     int horspoolMethod(const char* text, const char* pattern, const uint32_t textLen, const uint32_t patternLen) const;
     int sundayMethod(const char* text, const char* pattern, const uint32_t textLen, const uint32_t patternLen) const;
 
-    [[nodiscard]] const std::unique_ptr<char[]>& getMatchingText() const;
-    [[nodiscard]] uint32_t getLength() const;
+    [[nodiscard]] inline const std::unique_ptr<char[]>& getMatchingText() const;
+    [[nodiscard]] inline uint32_t getLength() const;
     static void setMatchingText(char* text, const uint32_t length);
 
 private:
-    mutable std::mutex matchMutex;
     const std::unique_ptr<char[]> marchingText;
     const uint32_t length;
 
@@ -46,6 +45,16 @@ private:
         const char* pattern,
         const uint32_t patternLen);
 };
+
+inline const std::unique_ptr<char[]>& MatchSolution::getMatchingText() const
+{
+    return marchingText;
+}
+
+inline uint32_t MatchSolution::getLength() const
+{
+    return length;
+}
 
 inline int MatchSolution::calculatePrecision(const uint32_t digit)
 {

@@ -35,18 +35,6 @@ MatchSolution::~MatchSolution()
     mpfr_free_cache();
 }
 
-const std::unique_ptr<char[]>& MatchSolution::getMatchingText() const
-{
-    std::unique_lock<std::mutex> lock(matchMutex);
-    return marchingText;
-}
-
-uint32_t MatchSolution::getLength() const
-{
-    std::unique_lock<std::mutex> lock(matchMutex);
-    return length;
-}
-
 void MatchSolution::setMatchingText(char* text, const uint32_t length)
 {
     assert((nullptr != text) && (length > 0));

@@ -29,9 +29,9 @@ public:
     int interpolationMethod(const T* const array, const uint32_t length, const T key) const;
     int fibonacciMethod(const T* const array, const uint32_t length, const T key) const;
 
-    const std::unique_ptr<T[]>& getOrderedArray() const;
-    uint32_t getLength() const;
-    T getSearchedKey() const;
+    inline const std::unique_ptr<T[]>& getOrderedArray() const;
+    [[nodiscard]] inline uint32_t getLength() const;
+    inline T getSearchedKey() const;
     template <typename V>
     requires std::is_integral<V>::value void setOrderedArray(
         T array[],
@@ -46,11 +46,8 @@ public:
         const T right) const;
 
 private:
-    mutable std::mutex searchMutex;
     const std::unique_ptr<T[]> orderedArray;
     const uint32_t length;
-    const T left;
-    const T right;
     T searchedKey{0};
 
     void deepCopy(const SearchSolution& rhs) const;
@@ -67,7 +64,7 @@ protected:
 
 template <class T>
 SearchSolution<T>::SearchSolution(const uint32_t length, const T left, const T right) :
-    length(length), left(left), right(right), orderedArray(std::make_unique<T[]>(length))
+    length(length), orderedArray(std::make_unique<T[]>(length))
 {
     setOrderedArray<T>(orderedArray.get(), length, left, right);
     searchedKey = orderedArray[length / 2];
@@ -75,7 +72,7 @@ SearchSolution<T>::SearchSolution(const uint32_t length, const T left, const T r
 
 template <class T>
 SearchSolution<T>::SearchSolution(const SearchSolution& rhs) :
-    length(rhs.length), left(rhs.left), right(rhs.right), orderedArray(std::make_unique<T[]>(rhs.length))
+    length(rhs.length), orderedArray(std::make_unique<T[]>(rhs.length))
 {
     deepCopy(rhs);
     searchedKey = orderedArray[length / 2];
@@ -95,23 +92,20 @@ void SearchSolution<T>::deepCopy(const SearchSolution& rhs) const
 }
 
 template <class T>
-const std::unique_ptr<T[]>& SearchSolution<T>::getOrderedArray() const
+inline const std::unique_ptr<T[]>& SearchSolution<T>::getOrderedArray() const
 {
-    std::unique_lock<std::mutex> lock(searchMutex);
     return orderedArray;
 }
 
 template <class T>
-uint32_t SearchSolution<T>::getLength() const
+inline uint32_t SearchSolution<T>::getLength() const
 {
-    std::unique_lock<std::mutex> lock(searchMutex);
     return length;
 }
 
 template <class T>
-T SearchSolution<T>::getSearchedKey() const
+inline T SearchSolution<T>::getSearchedKey() const
 {
-    std::unique_lock<std::mutex> lock(searchMutex);
     return searchedKey;
 }
 

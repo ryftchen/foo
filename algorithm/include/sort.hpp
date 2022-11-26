@@ -36,8 +36,8 @@ public:
     std::vector<T> bucketMethod(T* const array, const uint32_t length) const;
     std::vector<T> radixMethod(T* const array, const uint32_t length) const;
 
-    const std::unique_ptr<T[]>& getRandomArray() const;
-    uint32_t getLength() const;
+    inline const std::unique_ptr<T[]>& getRandomArray() const;
+    [[nodiscard]] inline uint32_t getLength() const;
     template <typename V>
     requires std::is_integral<V>::value void setRandomArray(
         T array[],
@@ -52,11 +52,8 @@ public:
         const T right) const;
 
 private:
-    mutable std::mutex sortMutex;
     const std::unique_ptr<T[]> randomArray;
     const uint32_t length;
-    const T left;
-    const T right;
 
     void deepCopy(const SortSolution& rhs) const;
     static void mergeSortRecursive(T* const sortArray, const uint32_t begin, const uint32_t end);
@@ -74,14 +71,14 @@ protected:
 
 template <class T>
 SortSolution<T>::SortSolution(const uint32_t length, const T left, const T right) :
-    length(length), left(left), right(right), randomArray(std::make_unique<T[]>(length))
+    length(length), randomArray(std::make_unique<T[]>(length))
 {
     setRandomArray<T>(randomArray.get(), length, left, right);
 }
 
 template <class T>
 SortSolution<T>::SortSolution(const SortSolution& rhs) :
-    length(rhs.length), left(rhs.length), right(rhs.length), randomArray(std::make_unique<T[]>(rhs.length))
+    length(rhs.length), randomArray(std::make_unique<T[]>(rhs.length))
 {
     deepCopy(rhs);
 }
@@ -100,16 +97,14 @@ void SortSolution<T>::deepCopy(const SortSolution& rhs) const
 }
 
 template <class T>
-const std::unique_ptr<T[]>& SortSolution<T>::getRandomArray() const
+inline const std::unique_ptr<T[]>& SortSolution<T>::getRandomArray() const
 {
-    std::unique_lock<std::mutex> lock(sortMutex);
     return randomArray;
 }
 
 template <class T>
-uint32_t SortSolution<T>::getLength() const
+inline uint32_t SortSolution<T>::getLength() const
 {
-    std::unique_lock<std::mutex> lock(sortMutex);
     return length;
 }
 
