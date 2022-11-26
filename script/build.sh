@@ -3,12 +3,12 @@
 ARGS_HELP=false
 ARGS_FORMAT=false
 ARGS_LINT=false
-ARGS_CLEANUP=false
 ARGS_BROWSER=false
 ARGS_DOXYGEN=false
-ARGS_RELEASE=false
 ARGS_TEST=false
+ARGS_RELEASE=false
 ARGS_CONTAINER=false
+ARGS_CLEANUP=false
 PERFORM_COMPILE=false
 
 PROJECT_FOLDER="foo"
@@ -57,12 +57,12 @@ parseArgs()
         -h | --help) ARGS_HELP=true ;;
         -f | --format) ARGS_FORMAT=true ;;
         -l | --lint) ARGS_LINT=true ;;
-        -C | --cleanup) ARGS_CLEANUP=true ;;
         -b | --browser) ARGS_BROWSER=true ;;
         -d | --doxygen) ARGS_DOXYGEN=true ;;
         -t | --test) ARGS_TEST=true ;;
         -r | --release) ARGS_RELEASE=true ;;
         -c | --container) ARGS_CONTAINER=true ;;
+        -C | --cleanup) ARGS_CLEANUP=true ;;
         *) printException "Unknown command line option: $1. Try with --help to get information." ;;
         esac
         shift
@@ -160,7 +160,7 @@ Please check it."
                 printException "No ${DOCKER_FILE} file in ${DOCKER_FOLDER} folder. Please check it."
             fi
 
-            echo "Please confirm further whether construct docker container. (y or n)"
+            echo "Please confirm further whether construct the docker container. (y or n)"
             oldStty=$(stty -g)
             stty raw -echo
             answer=$(while ! head -c 1 | grep -i '[ny]'; do true; done)
