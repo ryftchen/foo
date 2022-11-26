@@ -7,6 +7,7 @@ try:
     import re
     import sys
     import threading
+    import traceback
     from datetime import datetime
     import common
 except ImportError as err:
@@ -281,7 +282,7 @@ class Task:
             common.executeCommand(f"rm -rf {self.tempDir}/*.profraw {self.tempDir}/*.profdata")
             print(f"\r\nCHECK COVERAGE:\n{stdout}")
             if "error" in stdout:
-                Output.printException("Please rebuild the executable file before use --check option.")
+                print("Please rebuild the executable file before use --check option.")
 
         sys.stdout = STDOUT
         self.progressBar.destroyProgressBar()
@@ -311,4 +312,7 @@ class Task:
 
 
 if __name__ == "__main__":
-    Task().run()
+    try:
+        Task().run()
+    except Exception:  # pylint: disable=broad-except
+        Output.printException(traceback.format_exc())
