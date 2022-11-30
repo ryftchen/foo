@@ -224,7 +224,7 @@ performFormatOption()
 {
     if [[ "${ARGS_FORMAT}" = true ]]; then
         bashCommand "find ./${APPLICATION_FOLDER} ./${UTILITY_FOLDER} ./${ALGORITHM_FOLDER} ./${DATA_STRUCTURE_FOLDER} \
-./${DESIGN_PATTERN_FOLDER} ./${NUMERIC_FOLDER} ./${TEST_FOLDER} -name *.cpp -o -name *.hpp \
+./${DESIGN_PATTERN_FOLDER} ./${NUMERIC_FOLDER} ./${TEST_FOLDER} -name *.cpp -o -name *.hpp -o -name *.tpp \
 | grep -v '/${BUILD_FOLDER}/' | xargs clang-format-12 -i --verbose --Werror"
         bashCommand "shfmt -l -w ./${SCRIPT_FOLDER}/*.sh"
         bashCommand "black --config ./${FORMAT_CONFIG_PY} ./${SCRIPT_FOLDER}/*.py"
@@ -237,16 +237,37 @@ performLintOption()
         if [[ ! -f ./"${BUILD_FOLDER}"/"${COMPILE_COMMANDS}" ]]; then
             printException "No ${COMPILE_COMMANDS} file in ${BUILD_FOLDER} folder. Please generate it."
         fi
-        bashCommand "compdb -p ./${BUILD_FOLDER} list > ./${COMPILE_COMMANDS} && \
-mv ./${COMPILE_COMMANDS} ./${BUILD_FOLDER}"
+        compdb -p ./"${BUILD_FOLDER}" list >./"${COMPILE_COMMANDS}" \
+            && mv ./"${BUILD_FOLDER}"/"${COMPILE_COMMANDS}" ./"${BUILD_FOLDER}"/"${COMPILE_COMMANDS}".bak \
+            && mv ./"${COMPILE_COMMANDS}" ./"${BUILD_FOLDER}"
+        numberRegex="^[0-9]+$"
+        while true; do
+            line=$(grep -n '.tpp' ./"${BUILD_FOLDER}"/"${COMPILE_COMMANDS}" | head -n 1 | cut -d : -f 1)
+            if ! [[ "${line}" =~ ${numberRegex} ]]; then
+                break
+            fi
+            sed -i $(("${line}" - 2)),$(("${line}" + 3))d ./"${BUILD_FOLDER}"/"${COMPILE_COMMANDS}"
+        done
         bashCommand "find ./${APPLICATION_FOLDER} ./${UTILITY_FOLDER} ./${ALGORITHM_FOLDER} ./${DATA_STRUCTURE_FOLDER} \
 ./${DESIGN_PATTERN_FOLDER} ./${NUMERIC_FOLDER} -name *.cpp -o -name *.hpp \
 | xargs run-clang-tidy-12 -p ./${BUILD_FOLDER} -quiet"
-        bashCommand "compdb -p ./${TEST_FOLDER}/${BUILD_FOLDER} list > ./${COMPILE_COMMANDS} && \
-mv ./${COMPILE_COMMANDS} ./${TEST_FOLDER}/${BUILD_FOLDER}"
-        bashCommand "find ./${TEST_FOLDER} -name *.cpp -o -name *.hpp \
-| xargs run-clang-tidy-12 -p ./${TEST_FOLDER}/${BUILD_FOLDER} -quiet"
-        generateCMakeFiles
+        bashCommand "find ./${APPLICATION_FOLDER} ./${UTILITY_FOLDER} ./${ALGORITHM_FOLDER} ./${DATA_STRUCTURE_FOLDER} \
+./${DESIGN_PATTERN_FOLDER} ./${NUMERIC_FOLDER} -name *.tpp \
+| xargs clang-tidy-12 --use-color -p ./${BUILD_FOLDER} -quiet"
+        rm -rf ./"${BUILD_FOLDER}"/"${COMPILE_COMMANDS}" \
+            && mv ./"${BUILD_FOLDER}"/"${COMPILE_COMMANDS}".bak ./"${BUILD_FOLDER}"/"${COMPILE_COMMANDS}"
+
+        testBuildFolder="${TEST_FOLDER}/${BUILD_FOLDER}"
+        if [[ ! -f ./"${testBuildFolder}"/"${COMPILE_COMMANDS}" ]]; then
+            printException "No ${COMPILE_COMMANDS} file in ${testBuildFolder} folder. Please generate it."
+        fi
+        compdb -p ./"${testBuildFolder}" list >./"${COMPILE_COMMANDS}" \
+            && mv ./"${testBuildFolder}"/"${COMPILE_COMMANDS}" ./"${testBuildFolder}"/"${COMPILE_COMMANDS}".bak \
+            && mv ./"${COMPILE_COMMANDS}" ./"${testBuildFolder}"
+        bashCommand "find ./${TEST_FOLDER} -name *.cpp | xargs run-clang-tidy-12 -p ./${testBuildFolder} -quiet"
+        rm -rf ./"${testBuildFolder}"/"${COMPILE_COMMANDS}" \
+            && mv ./"${testBuildFolder}"/"${COMPILE_COMMANDS}".bak ./"${testBuildFolder}"/"${COMPILE_COMMANDS}"
+
         bashCommand "shellcheck ./${SCRIPT_FOLDER}/*.sh"
         bashCommand "pylint --rcfile=${LINT_CONFIG_PY} ./${SCRIPT_FOLDER}/*.py"
     fi
@@ -281,7 +302,7 @@ ${timeDiff}s ago."
             fi
             tarHtmlForBrowser "${commitId}"
         else
-            bashCommand "mkdir ./${TEMPORARY_FOLDER}"
+            mkdir ./"${TEMPORARY_FOLDER}"
             tarHtmlForBrowser "${commitId}"
         fi
     fi
@@ -297,7 +318,7 @@ tarHtmlForBrowser()
     rm -rf ./"${TEMPORARY_FOLDER}"/"${PROJECT_FOLDER}"_"${browserFolder}"_*.tar.bz2 \
         ./"${DOCUMENT_FOLDER}"/"${browserFolder}"
 
-    bashCommand "mkdir -p ./${DOCUMENT_FOLDER}/${browserFolder}"
+    mkdir -p ./"${DOCUMENT_FOLDER}"/"${browserFolder}"
     bashCommand "codebrowser_generator -color -a -b ./${BUILD_FOLDER}/${COMPILE_COMMANDS} \
 -o ./${DOCUMENT_FOLDER}/${browserFolder} -p ${PROJECT_FOLDER}:.:$1 -d ./data"
     bashCommand "codebrowser_generator -color -a -b ./${TEST_FOLDER}/${BUILD_FOLDER}/${COMPILE_COMMANDS} \
@@ -325,7 +346,7 @@ ${timeDiff}s ago."
             fi
             tarHtmlForDoxygen "${commitId}"
         else
-            bashCommand "mkdir ./${TEMPORARY_FOLDER}"
+            mkdir ./"${TEMPORARY_FOLDER}"
             tarHtmlForDoxygen "${commitId}"
         fi
     fi
@@ -338,8 +359,8 @@ tarHtmlForDoxygen()
     rm -rf ./"${TEMPORARY_FOLDER}"/"${PROJECT_FOLDER}"_"${doxygenFolder}"_*.tar.bz2 \
         ./"${DOCUMENT_FOLDER}"/"${doxygenFolder}"
 
+    mkdir -p ./"${DOCUMENT_FOLDER}"/"${doxygenFolder}"
     sed -i "s/\(^PROJECT_NUMBER[ ]\+=\)/\1 \"@ $(git rev-parse --short @)\"/" ./document/Doxyfile
-    bashCommand "mkdir -p ./${DOCUMENT_FOLDER}/${doxygenFolder}"
     bashCommand "doxygen ./${DOCUMENT_FOLDER}/${DOXYGEN_FILE}"
     bashCommand "tar -jcvf ./${TEMPORARY_FOLDER}/${tarFile} -C ./${DOCUMENT_FOLDER} ${doxygenFolder} >/dev/null"
     sed -i "s/\(^PROJECT_NUMBER[ ]\+=\).*/\1/" ./document/Doxyfile
