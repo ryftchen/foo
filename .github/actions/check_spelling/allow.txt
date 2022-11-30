@@ -7,6 +7,7 @@ alignof
 asc
 api
 avl
+bak
 bkdr
 buc
 bui
@@ -87,6 +88,7 @@ sregex
 ste
 suboperation
 tarball
+tpp
 uintptr
 valgrind
 Velsky
