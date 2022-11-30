@@ -118,7 +118,7 @@ public:
 
     template <class Event>
     void processEvent(const Event& event);
-    State currentState() const;
+    inline State currentState() const;
 
 private:
     template <State Source, class Event, State Target>
@@ -219,7 +219,7 @@ protected:
     using Map = List<Rows...>;
 
     template <class Event>
-    State noTransition(const Event& /*unused*/);
+    inline State noTransition(const Event& /*unused*/);
 
     template <
         State Source,
@@ -279,33 +279,6 @@ protected:
         }
     };
 };
-
-template <class Derived, class State>
-FSM<Derived, State>::FSM(State initState) : state(initState)
-{
-}
-
-template <class Derived, class State>
-template <class Event>
-void FSM<Derived, State>::processEvent(const Event& event)
-{
-    using Rows = typename ByEventType<Event, typename Derived::TransitionMap>::Type;
-    ProcessingLock procLock(*this);
-    static_assert(std::is_base_of<FSM, Derived>::value);
-    Derived& self = static_cast<Derived&>(*this);
-    state = handleEvent<Event, Rows>::execute(self, event, state);
-}
-
-template <class Derived, class State>
-State FSM<Derived, State>::currentState() const
-{
-    return state;
-}
-
-template <class Derived, class State>
-template <class Event>
-State FSM<Derived, State>::noTransition(const Event& /*unused*/)
-{
-    return state;
-}
 } // namespace util_fsm
+
+#include "utility/source/fsm.tpp"
