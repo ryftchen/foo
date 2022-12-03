@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 
-namespace num_divisor
+namespace numeric::divisor
 {
 constexpr uint32_t maxAlignOfPrint = 16;
 constexpr uint32_t maxColumnOfPrint = 10;
@@ -17,7 +17,12 @@ public:
     [[nodiscard]] std::vector<int> euclideanMethod(int a, int b) const;
     [[nodiscard]] std::vector<int> steinMethod(int a, int b) const;
 
+    [[nodiscard]] inline std::pair<int, int> getIntegers() const;
+
 private:
+    const int integer1;
+    const int integer2;
+
     static int steinRecursive(int a, int b);
     static std::vector<int> getAllDivisors(const int greatestCommonDivisor);
 
@@ -28,6 +33,11 @@ protected:
         char* const buffer,
         const uint32_t bufferSize) const;
 };
+
+inline std::pair<int, int> DivisorSolution::getIntegers() const
+{
+    return std::make_pair(integer1, integer2);
+}
 
 template <typename T>
 requires std::is_integral<T>::value char* DivisorSolution::formatIntegerVector(
@@ -65,4 +75,4 @@ requires std::is_integral<T>::value char* DivisorSolution::formatIntegerVector(
 
     return buffer;
 }
-} // namespace num_divisor
+} // namespace numeric::divisor

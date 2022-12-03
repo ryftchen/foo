@@ -2,7 +2,7 @@
 #include "data_structure/include/linear.hpp"
 #include "data_structure/include/tree.hpp"
 
-namespace tst_ds
+namespace test::tst_ds
 {
 constexpr uint32_t titleWidthForPrintTest = 50;
 
@@ -17,7 +17,7 @@ public:
         std::cout << "TEST DATA STRUCTURE: " << std::setiosflags(std::ios_base::left) << std::setfill('.')
                   << std::setw(titleWidthForPrintTest) << "LINEAR"
                   << "BEGIN" << std::resetiosflags(std::ios_base::left) << std::setfill(' ') << std::endl;
-        linear = std::make_shared<ds_linear::LinearStructure>();
+        linear = std::make_shared<date_structure::linear::LinearStructure>();
     };
     static void TearDownTestCase()
     {
@@ -29,10 +29,10 @@ public:
     void SetUp() override{};
     void TearDown() override{};
 
-    static std::shared_ptr<ds_linear::LinearStructure> linear;
+    static std::shared_ptr<date_structure::linear::LinearStructure> linear;
 };
 
-std::shared_ptr<ds_linear::LinearStructure> LinearTestBase::linear = nullptr;
+std::shared_ptr<date_structure::linear::LinearStructure> LinearTestBase::linear = nullptr;
 
 TEST_F(LinearTestBase, linkedListInstance) // NOLINT(cert-err58-cpp)
 {
@@ -60,7 +60,7 @@ public:
         std::cout << "TEST DATA STRUCTURE: " << std::setiosflags(std::ios_base::left) << std::setfill('.')
                   << std::setw(titleWidthForPrintTest) << "TREE"
                   << "BEGIN" << std::resetiosflags(std::ios_base::left) << std::setfill(' ') << std::endl;
-        tree = std::make_shared<ds_tree::TreeStructure>();
+        tree = std::make_shared<date_structure::tree::TreeStructure>();
     };
     static void TearDownTestCase()
     {
@@ -72,10 +72,10 @@ public:
     void SetUp() override{};
     void TearDown() override{};
 
-    static std::shared_ptr<ds_tree::TreeStructure> tree;
+    static std::shared_ptr<date_structure::tree::TreeStructure> tree;
 };
 
-std::shared_ptr<ds_tree::TreeStructure> TreeTestBase::tree = nullptr;
+std::shared_ptr<date_structure::tree::TreeStructure> TreeTestBase::tree = nullptr;
 
 TEST_F(TreeTestBase, bsInstance) // NOLINT(cert-err58-cpp)
 {
@@ -91,4 +91,4 @@ TEST_F(TreeTestBase, splayInstance) // NOLINT(cert-err58-cpp)
 {
     ASSERT_NO_THROW(tree->splayInstance()); // NOLINT(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
 }
-} // namespace tst_ds
+} // namespace test::tst_ds

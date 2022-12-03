@@ -1,14 +1,24 @@
 #include "tree.hpp"
 #include <array>
+#ifndef _NO_PRINT_AT_RUNTIME
 #include "utility/include/common.hpp"
 
 #define TREE_RESULT "\r\n*%-19s instance:\r\n%s"
+#define TREE_PRINT_RESULT_CONTENT(method) COMMON_PRINT(TREE_RESULT, method, output().str().c_str())
+#else
+#include <iostream>
+#include <sstream>
 
-namespace ds_tree
+#define TREE_PRINT_RESULT_CONTENT(method)
+#endif
+
+namespace date_structure::tree
 {
 TreeStructure::TreeStructure()
 {
+#ifndef _NO_PRINT_AT_RUNTIME
     std::cout << "\r\nTree structure:" << std::endl;
+#endif
 }
 
 // Binary Search
@@ -317,6 +327,7 @@ void TreeStructure::bsInstance() const // NOLINT(readability-convert-member-func
     using bs::destroyBSTree;
     using bs::inorderBSTree;
     using bs::insertBSTree;
+    using bs::output;
     using bs::postorderBSTree;
     using bs::preorderBSTree;
     using bs::printBSTree;
@@ -325,35 +336,35 @@ void TreeStructure::bsInstance() const // NOLINT(readability-convert-member-func
     constexpr int arraySize = 6;
     constexpr std::array<int, arraySize> array = {1, 5, 4, 3, 2, 6};
 
-    bs::output() << "Insert: ";
+    output() << "Insert: ";
     for (int i = 0; i < arraySize; ++i)
     {
-        bs::output() << array.at(i) << " ";
+        output() << array.at(i) << " ";
         root = insertBSTree(root, array.at(i));
     }
 
-    bs::output() << "\nPreorder traversal: ";
+    output() << "\nPreorder traversal: ";
     preorderBSTree(root);
-    bs::output() << "\nInorder traversal: ";
+    output() << "\nInorder traversal: ";
     inorderBSTree(root);
-    bs::output() << "\nPostorder traversal: ";
+    output() << "\nPostorder traversal: ";
     postorderBSTree(root);
 
-    bs::output() << "\nMinimum: " << bsTreeMinimum(root)->key;
-    bs::output() << "\nMaximum: " << bsTreeMaximum(root)->key;
-    bs::output() << "\nTree verbose: " << std::endl;
+    output() << "\nMinimum: " << bsTreeMinimum(root)->key;
+    output() << "\nMaximum: " << bsTreeMaximum(root)->key;
+    output() << "\nTree verbose: " << std::endl;
     printBSTree(root, root->key, 0);
 
     constexpr int deleteNode = 3;
-    bs::output() << "Delete root node: " << deleteNode;
+    output() << "Delete root node: " << deleteNode;
     root = deleteBSTree(root, deleteNode);
-    bs::output() << "\nInorder traversal: ";
+    output() << "\nInorder traversal: ";
     inorderBSTree(root);
-    bs::output() << std::endl;
+    output() << std::endl;
 
     destroyBSTree(root);
 
-    COMMON_PRINT(TREE_RESULT, "BinarySearch", bs::output().str().c_str());
+    TREE_PRINT_RESULT_CONTENT("BinarySearch");
 }
 
 // Adelson-Velsky-Landis
@@ -688,6 +699,7 @@ void TreeStructure::avlInstance() const // NOLINT(readability-convert-member-fun
     using avl::avlTreeMinimum;
     using avl::destroyAVLTree;
     using avl::inorderAVLTree;
+    using avl::output;
     using avl::postorderAVLTree;
     using avl::preorderAVLTree;
     using avl::printAVLTree;
@@ -696,40 +708,40 @@ void TreeStructure::avlInstance() const // NOLINT(readability-convert-member-fun
     constexpr int arraySize = 16;
     constexpr std::array<int, arraySize> array = {3, 2, 1, 4, 5, 6, 7, 16, 15, 14, 13, 12, 11, 10, 8, 9};
 
-    avl::output() << "Height: " << avlTreeHeight(root);
-    avl::output() << "\nInsert: ";
+    output() << "Height: " << avlTreeHeight(root);
+    output() << "\nInsert: ";
     for (int i = 0; i < arraySize; ++i)
     {
-        avl::output() << array.at(i) << " ";
+        output() << array.at(i) << " ";
         root = avlTreeInsert(root, array.at(i));
     }
 
-    avl::output() << "\nPreorder traversal: ";
+    output() << "\nPreorder traversal: ";
     preorderAVLTree(root);
-    avl::output() << "\nInorder traversal: ";
+    output() << "\nInorder traversal: ";
     inorderAVLTree(root);
-    avl::output() << "\nPostorder traversal: ";
+    output() << "\nPostorder traversal: ";
     postorderAVLTree(root);
 
-    avl::output() << "\nHeight: " << avlTreeHeight(root);
-    avl::output() << "\nMinimum: " << avlTreeMinimum(root)->key;
-    avl::output() << "\nMaximum: " << avlTreeMaximum(root)->key;
-    avl::output() << "\nTree verbose: " << std::endl;
+    output() << "\nHeight: " << avlTreeHeight(root);
+    output() << "\nMinimum: " << avlTreeMinimum(root)->key;
+    output() << "\nMaximum: " << avlTreeMaximum(root)->key;
+    output() << "\nTree verbose: " << std::endl;
     printAVLTree(root, root->key, 0);
 
     constexpr int deleteNode = 8;
-    avl::output() << "Delete root node: " << deleteNode;
+    output() << "Delete root node: " << deleteNode;
     root = avlTreeDelete(root, deleteNode);
 
-    avl::output() << "\nHeight: " << avlTreeHeight(root);
-    avl::output() << "\nInorder traversal: ";
+    output() << "\nHeight: " << avlTreeHeight(root);
+    output() << "\nInorder traversal: ";
     inorderAVLTree(root);
-    avl::output() << "\nTree verbose: " << std::endl;
+    output() << "\nTree verbose: " << std::endl;
     printAVLTree(root, root->key, 0);
 
     destroyAVLTree(root);
 
-    COMMON_PRINT(TREE_RESULT, "AdelsonVelskyLandis", avl::output().str().c_str());
+    TREE_PRINT_RESULT_CONTENT("AdelsonVelskyLandis");
 }
 
 // Splay
@@ -1035,6 +1047,7 @@ void TreeStructure::splayInstance() const // NOLINT(readability-convert-member-f
     using splay::destroySplayTree;
     using splay::inorderSplayTree;
     using splay::insertSplayTree;
+    using splay::output;
     using splay::postorderSplayTree;
     using splay::preorderSplayTree;
     using splay::printSplayTree;
@@ -1047,33 +1060,33 @@ void TreeStructure::splayInstance() const // NOLINT(readability-convert-member-f
     constexpr int arraySize = 6;
     constexpr std::array<int, arraySize> array = {10, 50, 40, 30, 20, 60};
 
-    splay::output() << "Insert: ";
+    output() << "Insert: ";
     for (int i = 0; i < arraySize; ++i)
     {
-        splay::output() << array.at(i) << " ";
+        output() << array.at(i) << " ";
         root = insertSplayTree(root, array.at(i));
     }
 
-    splay::output() << "\nPreorder traversal: ";
+    output() << "\nPreorder traversal: ";
     preorderSplayTree(root);
-    splay::output() << "\nInorder traversal: ";
+    output() << "\nInorder traversal: ";
     inorderSplayTree(root);
-    splay::output() << "\nPostorder traversal: ";
+    output() << "\nPostorder traversal: ";
     postorderSplayTree(root);
 
-    splay::output() << "\nMinimum: " << splayTreeMinimum(root)->key;
-    splay::output() << "\nMaximum: " << splayTreeMaximum(root)->key;
-    splay::output() << "\nTree verbose: " << std::endl;
+    output() << "\nMinimum: " << splayTreeMinimum(root)->key;
+    output() << "\nMaximum: " << splayTreeMaximum(root)->key;
+    output() << "\nTree verbose: " << std::endl;
     printSplayTree(root, root->key, 0);
 
     constexpr int splayNode = 30;
-    splay::output() << "Splay node as root node: " << splayNode;
-    splay::output() << "\nTree verbose: " << std::endl;
+    output() << "Splay node as root node: " << splayNode;
+    output() << "\nTree verbose: " << std::endl;
     root = splayTreeSplay(root, splayNode);
     printSplayTree(root, root->key, 0);
 
     destroySplayTree(root);
 
-    COMMON_PRINT(TREE_RESULT, "Splay", splay::output().str().c_str());
+    TREE_PRINT_RESULT_CONTENT("Splay");
 }
-} // namespace ds_tree
+} // namespace date_structure::tree

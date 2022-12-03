@@ -2,7 +2,7 @@
 
 #include "fsm.hpp"
 
-namespace util_fsm
+namespace utility::fsm
 {
 template <class Derived, class State>
 FSM<Derived, State>::FSM(State initState) : state(initState)
@@ -32,4 +32,4 @@ inline State FSM<Derived, State>::noTransition(const Event& /*unused*/)
 {
     return state;
 }
-} // namespace util_fsm
+} // namespace utility::fsm

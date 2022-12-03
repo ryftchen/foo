@@ -1,7 +1,7 @@
 #include "command.hpp"
 #include "utility/include/log.hpp"
 
-namespace app_command
+namespace application::command
 {
 Command::Command()
 {
@@ -12,7 +12,7 @@ Command::Command()
         program.addArgument("-v", "--version").nArgs(0).implicitValue(true).help("show version and exit");
 
         program.addArgument("-c", "--console")
-            .nArgs(util_argument::NArgsPattern::any)
+            .nArgs(utility::argument::NArgsPattern::any)
             .defaultValue<std::vector<std::string>>({"help"})
             .appending()
             .help("run commands(with quotes) on console mode and exit");
@@ -107,7 +107,7 @@ void Command::runCommander(const int argc, const char* const argv[])
 
     if (0 != argc - 1)
     {
-        std::shared_ptr<util_thread::Thread> thread = std::make_shared<util_thread::Thread>(2);
+        std::shared_ptr<utility::thread::Thread> thread = std::make_shared<utility::thread::Thread>(2);
         thread->enqueue("commander_fore", &Command::foregroundHandle, this, argc, argv);
         thread->enqueue("commander_back", &Command::backgroundHandle, this);
     }
@@ -132,7 +132,7 @@ void Command::foregroundHandle(const int argc, const char* const argv[])
         isParsed.store(true);
         lock.unlock();
         commandCondition.notify_one();
-        util_time::millisecondLevelSleep(1);
+        utility::time::millisecondLevelSleep(1);
         lock.lock();
     }
     catch (const std::exception& error)
@@ -309,7 +309,7 @@ void Command::printConsoleOutput() const
         return;
     }
 
-    util_console::Console console(" > ");
+    utility::console::Console console(" > ");
     registerOnConsole(console);
     for (const auto& command : commands)
     {
@@ -481,14 +481,14 @@ void Command::printVersionInfo() const
     versionStr += "                    VERSION " + program.version;
     versionStr += " \"; tput sgr0";
 
-    util_common::executeCommand(versionStr.c_str());
+    utility::common::executeCommand(versionStr.c_str());
 }
 
 void Command::enterConsoleMode() const
 {
-    util_common::executeCommand(("tput bel; echo " + getIconBanner()).c_str());
+    utility::common::executeCommand(("tput bel; echo " + getIconBanner()).c_str());
 
-    util_console::Console console("foo > ");
+    utility::console::Console console("foo > ");
     registerOnConsole(console);
     int returnCode = 0;
     do
@@ -496,17 +496,17 @@ void Command::enterConsoleMode() const
         returnCode = console.readCommandLine();
         console.setGreeting("foo > ");
     }
-    while (util_console::Console::ReturnCode::quit != returnCode);
+    while (utility::console::Console::ReturnCode::quit != returnCode);
 }
 
-void Command::registerOnConsole(util_console::Console& console) const
+void Command::registerOnConsole(utility::console::Console& console) const
 {
     console.registerCommand(
         "log",
         [this](const std::vector<std::string>& /*unused*/) -> decltype(auto)
         {
             viewLogContent();
-            return util_console::Console::ReturnCode::success;
+            return utility::console::Console::ReturnCode::success;
         },
         "view log");
 }
@@ -515,7 +515,8 @@ void Command::viewLogContent()
 {
     LOG_TO_STOP;
 
-    util_common::printFile(util_log::logPath.data(), true, maxLineNumForPrintLog, &util_log::changeLogLevelStyle);
+    utility::common::printFile(
+        utility::log::logPath.data(), true, maxLineNumForPrintLog, &utility::log::changeLogLevelStyle);
 }
 
 std::string Command::getIconBanner()
@@ -532,9 +533,9 @@ std::string Command::getIconBanner()
     return banner;
 }
 
-util_memory::Memory<util_thread::Thread>& getMemoryForMultithreading()
+utility::memory::Memory<utility::thread::Thread>& getMemoryForMultithreading()
 {
-    static util_memory::Memory<util_thread::Thread> memory;
+    static utility::memory::Memory<utility::thread::Thread> memory;
     return memory;
 }
-} // namespace app_command
+} // namespace application::command

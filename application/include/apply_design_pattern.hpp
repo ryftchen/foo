@@ -4,7 +4,7 @@
 #include <sstream>
 #include <vector>
 
-namespace app_dp
+namespace application::app_dp
 {
 class DesignPatternTask
 {
@@ -147,4 +147,4 @@ extern void runCreational(const std::vector<std::string>& targets);
 extern void updateCreationalTask(const std::string& target);
 extern void runStructural(const std::vector<std::string>& targets);
 extern void updateStructuralTask(const std::string& target);
-} // namespace app_dp
+} // namespace application::app_dp

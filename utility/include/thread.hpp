@@ -5,7 +5,7 @@
 #include <future>
 #include <queue>
 
-namespace util_thread
+namespace utility::thread
 {
 class Thread
 {
@@ -43,4 +43,4 @@ decltype(auto) Thread::enqueue(const std::string& name, Func&& func, Args&&... a
     condition.notify_one();
     return future;
 }
-} // namespace util_thread
+} // namespace utility::thread

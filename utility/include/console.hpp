@@ -4,7 +4,7 @@
 #include <functional>
 #include <memory>
 
-namespace util_console
+namespace utility::console
 {
 class Console
 {
@@ -61,4 +61,4 @@ private:
     static CommandCompleterFunction getCommandCompletions;
     static CommandIteratorFunction commandIterator;
 };
-} // namespace util_console
+} // namespace utility::console

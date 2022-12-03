@@ -2,7 +2,7 @@
 
 #include <string>
 
-namespace algo_notation
+namespace algorithm::notation
 {
 class NotationSolution
 {
@@ -13,7 +13,11 @@ public:
     [[nodiscard]] std::string prefixMethod(const std::string& infixNotation) const;
     [[nodiscard]] std::string postfixMethod(const std::string& infixNotation) const;
 
+    [[nodiscard]] inline std::string_view getInfixNotation() const;
+
 private:
+    const std::string_view infixNotation;
+
     enum class Priority
     {
         none,
@@ -27,8 +31,13 @@ private:
     static inline bool isOperator(const char c);
 };
 
+inline std::string_view NotationSolution::getInfixNotation() const
+{
+    return infixNotation;
+}
+
 inline bool NotationSolution::isOperator(const char c)
 {
     return (!std::isalpha(c) && !std::isdigit(c));
 }
-} // namespace algo_notation
+} // namespace algorithm::notation

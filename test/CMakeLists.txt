@@ -13,7 +13,7 @@ check_include_files("sys/file.h;sys/time.h" HAVE_SYS_HEADER)
 find_package(GTest REQUIRED)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON CACHE INTERNAL "")
-set(CMAKE_CXX_USE_RESPONSE_FILE_FOR_INCLUDES Off)
+set(CMAKE_CXX_USE_RESPONSE_FILE_FOR_INCLUDES OFF)
 set(CMAKE_C_COMPILER /usr/bin/clang-12)
 set(CMAKE_CXX_COMPILER /usr/bin/clang++-12)
 set(CMAKE_C_FLAGS_DEBUG "-g -O0")
@@ -21,6 +21,10 @@ set(CMAKE_C_FLAGS_RELEASE "-O3")
 set(CMAKE_CXX_FLAGS_DEBUG "-g -O0")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 add_compile_options(-std=c++20 -stdlib=libstdc++ -W -fcolor-diagnostics)
+option(NO_PRINT_AT_RUNTIME "no print at runtime" ON)
+if(NO_PRINT_AT_RUNTIME)
+    add_compile_options(-D_NO_PRINT_AT_RUNTIME)
+endif()
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     set(CMAKE_EXE_LINKER_FLAGS "-Wl,-export-dynamic")
 endif()
@@ -34,7 +38,6 @@ set(EXECUTABLE_OUTPUT_PATH ${BUILD_DIR}/bin)
 file(
     GLOB
     TEST_LIST
-    ../utility/source/common.cpp
     ../utility/source/hash.cpp
     ../utility/source/time.cpp)
 aux_source_directory(${CMAKE_SOURCE_DIR}/unit TEST_LIST)

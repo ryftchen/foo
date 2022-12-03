@@ -7,13 +7,13 @@
 #include "utility/include/log.hpp"
 #include "utility/include/thread.hpp"
 
-#define DESIGN_PATTERN_PRINT_TASK_BEGIN_TITLE(taskType)                                                               \
+#define APP_DP_PRINT_TASK_BEGIN_TITLE(taskType)                                                                       \
     std::cout << "\r\n"                                                                                               \
               << "DESIGN PATTERN TASK: " << std::setiosflags(std::ios_base::left) << std::setfill('.')                \
               << std::setw(50) << taskType << "BEGIN" << std::resetiosflags(std::ios_base::left) << std::setfill(' ') \
               << std::endl;                                                                                           \
     {
-#define DESIGN_PATTERN_PRINT_TASK_END_TITLE(taskType)                                                               \
+#define APP_DP_PRINT_TASK_END_TITLE(taskType)                                                                       \
     }                                                                                                               \
     std::cout << "\r\n"                                                                                             \
               << "DESIGN PATTERN TASK: " << std::setiosflags(std::ios_base::left) << std::setfill('.')              \
@@ -21,7 +21,7 @@
               << "\r\n"                                                                                             \
               << std::endl;
 
-namespace app_dp
+namespace application::app_dp
 {
 using Type = DesignPatternTask::Type;
 template <class T>
@@ -43,19 +43,20 @@ void runBehavioral(const std::vector<std::string>& targets)
         return;
     }
 
-    DESIGN_PATTERN_PRINT_TASK_BEGIN_TITLE(Type::behavioral);
-    auto* threads = app_command::getMemoryForMultithreading().newElement(std::min(
+    using design_pattern::behavioral::BehavioralPattern;
+    using utility::hash::operator""_bkdrHash;
+
+    APP_DP_PRINT_TASK_BEGIN_TITLE(Type::behavioral);
+    auto* threads = command::getMemoryForMultithreading().newElement(std::min(
         static_cast<uint32_t>(getBit<BehavioralInstance>().count()),
         static_cast<uint32_t>(Bottom<BehavioralInstance>::value)));
 
-    using dp_behavioral::BehavioralPattern;
     const std::shared_ptr<BehavioralPattern> behavioral = std::make_shared<BehavioralPattern>();
     const auto behavioralFunctor = [&](const std::string& threadName, void (BehavioralPattern::*instancePtr)() const)
     {
         threads->enqueue(threadName, instancePtr, behavioral);
     };
 
-    using util_hash::operator""_bkdrHash;
     for (int i = 0; i < Bottom<BehavioralInstance>::value; ++i)
     {
         if (!getBit<BehavioralInstance>().test(BehavioralInstance(i)))
@@ -64,7 +65,7 @@ void runBehavioral(const std::vector<std::string>& targets)
         }
 
         const std::string targetInstance = targets.at(i), threadName = "b_" + targetInstance;
-        switch (util_hash::bkdrHash(targetInstance.data()))
+        switch (utility::hash::bkdrHash(targetInstance.data()))
         {
             case "cha"_bkdrHash:
                 behavioralFunctor(threadName, &BehavioralPattern::chainOfResponsibilityInstance);
@@ -105,14 +106,14 @@ void runBehavioral(const std::vector<std::string>& targets)
         }
     }
 
-    app_command::getMemoryForMultithreading().deleteElement(threads);
-    DESIGN_PATTERN_PRINT_TASK_END_TITLE(Type::behavioral);
+    command::getMemoryForMultithreading().deleteElement(threads);
+    APP_DP_PRINT_TASK_END_TITLE(Type::behavioral);
 }
 
 void updateBehavioralTask(const std::string& target)
 {
-    using util_hash::operator""_bkdrHash;
-    switch (util_hash::bkdrHash(target.c_str()))
+    using utility::hash::operator""_bkdrHash;
+    switch (utility::hash::bkdrHash(target.c_str()))
     {
         case "cha"_bkdrHash:
             setBit<BehavioralInstance>(BehavioralInstance::chainOfResponsibility);
@@ -160,19 +161,20 @@ void runCreational(const std::vector<std::string>& targets)
         return;
     }
 
-    DESIGN_PATTERN_PRINT_TASK_BEGIN_TITLE(Type::creational);
-    auto* threads = app_command::getMemoryForMultithreading().newElement(std::min(
+    using design_pattern::creational::CreationalPattern;
+    using utility::hash::operator""_bkdrHash;
+
+    APP_DP_PRINT_TASK_BEGIN_TITLE(Type::creational);
+    auto* threads = command::getMemoryForMultithreading().newElement(std::min(
         static_cast<uint32_t>(getBit<CreationalInstance>().count()),
         static_cast<uint32_t>(Bottom<CreationalInstance>::value)));
 
-    using dp_creational::CreationalPattern;
     const std::shared_ptr<CreationalPattern> creational = std::make_shared<CreationalPattern>();
     const auto creationalFunctor = [&](const std::string& threadName, void (CreationalPattern::*instancePtr)() const)
     {
         threads->enqueue(threadName, instancePtr, creational);
     };
 
-    using util_hash::operator""_bkdrHash;
     for (int i = 0; i < Bottom<CreationalInstance>::value; ++i)
     {
         if (!getBit<CreationalInstance>().test(CreationalInstance(i)))
@@ -181,7 +183,7 @@ void runCreational(const std::vector<std::string>& targets)
         }
 
         const std::string targetInstance = targets.at(i), threadName = "c_" + targetInstance;
-        switch (util_hash::bkdrHash(targetInstance.data()))
+        switch (utility::hash::bkdrHash(targetInstance.data()))
         {
             case "abs"_bkdrHash:
                 creationalFunctor(threadName, &CreationalPattern::abstractFactoryInstance);
@@ -204,14 +206,14 @@ void runCreational(const std::vector<std::string>& targets)
         }
     }
 
-    app_command::getMemoryForMultithreading().deleteElement(threads);
-    DESIGN_PATTERN_PRINT_TASK_END_TITLE(Type::creational);
+    command::getMemoryForMultithreading().deleteElement(threads);
+    APP_DP_PRINT_TASK_END_TITLE(Type::creational);
 }
 
 void updateCreationalTask(const std::string& target)
 {
-    using util_hash::operator""_bkdrHash;
-    switch (util_hash::bkdrHash(target.c_str()))
+    using utility::hash::operator""_bkdrHash;
+    switch (utility::hash::bkdrHash(target.c_str()))
     {
         case "abs"_bkdrHash:
             setBit<CreationalInstance>(CreationalInstance::abstractFactory);
@@ -241,19 +243,20 @@ void runStructural(const std::vector<std::string>& targets)
         return;
     }
 
-    DESIGN_PATTERN_PRINT_TASK_BEGIN_TITLE(Type::structural);
-    auto* threads = app_command::getMemoryForMultithreading().newElement(std::min(
+    using design_pattern::structural::StructuralPattern;
+    using utility::hash::operator""_bkdrHash;
+
+    APP_DP_PRINT_TASK_BEGIN_TITLE(Type::structural);
+    auto* threads = command::getMemoryForMultithreading().newElement(std::min(
         static_cast<uint32_t>(getBit<StructuralInstance>().count()),
         static_cast<uint32_t>(Bottom<StructuralInstance>::value)));
 
-    using dp_structural::StructuralPattern;
     const std::shared_ptr<StructuralPattern> structural = std::make_shared<StructuralPattern>();
     const auto structuralFunctor = [&](const std::string& threadName, void (StructuralPattern::*instancePtr)() const)
     {
         threads->enqueue(threadName, instancePtr, structural);
     };
 
-    using util_hash::operator""_bkdrHash;
     for (int i = 0; i < Bottom<StructuralInstance>::value; ++i)
     {
         if (!getBit<StructuralInstance>().test(StructuralInstance(i)))
@@ -262,7 +265,7 @@ void runStructural(const std::vector<std::string>& targets)
         }
 
         const std::string targetInstance = targets.at(i), threadName = "s_" + targetInstance;
-        switch (util_hash::bkdrHash(targetInstance.data()))
+        switch (utility::hash::bkdrHash(targetInstance.data()))
         {
             case "ada"_bkdrHash:
                 structuralFunctor(threadName, &StructuralPattern::adapterInstance);
@@ -291,14 +294,14 @@ void runStructural(const std::vector<std::string>& targets)
         }
     }
 
-    app_command::getMemoryForMultithreading().deleteElement(threads);
-    DESIGN_PATTERN_PRINT_TASK_END_TITLE(Type::structural);
+    command::getMemoryForMultithreading().deleteElement(threads);
+    APP_DP_PRINT_TASK_END_TITLE(Type::structural);
 }
 
 void updateStructuralTask(const std::string& target)
 {
-    using util_hash::operator""_bkdrHash;
-    switch (util_hash::bkdrHash(target.c_str()))
+    using utility::hash::operator""_bkdrHash;
+    switch (utility::hash::bkdrHash(target.c_str()))
     {
         case "ada"_bkdrHash:
             setBit<StructuralInstance>(StructuralInstance::adapter);
@@ -326,4 +329,4 @@ void updateStructuralTask(const std::string& target)
             throw std::runtime_error("Unexpected task of structural: " + target);
     }
 }
-} // namespace app_dp
+} // namespace application::app_dp

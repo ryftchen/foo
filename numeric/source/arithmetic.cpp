@@ -1,13 +1,22 @@
 #include "arithmetic.hpp"
+#ifndef _NO_PRINT_AT_RUNTIME
 #include "utility/include/common.hpp"
 
 #define ARITHMETIC_RESULT "\r\n*%-14s method:\r\n(%d) %s (%d) = %d\n"
+#define ARITHMETIC_PRINT_RESULT_CONTENT(method, a, operator, b, result) \
+    COMMON_PRINT(ARITHMETIC_RESULT, method, a, operator, b, result)
+#else
 
-namespace num_arithmetic
+#define ARITHMETIC_PRINT_RESULT_CONTENT(method, a, operator, b, result)
+#endif
+
+namespace numeric::arithmetic
 {
-ArithmeticSolution::ArithmeticSolution(const int integer1, const int integer2)
+ArithmeticSolution::ArithmeticSolution(const int integer1, const int integer2) : integer1(integer1), integer2(integer2)
 {
+#ifndef _NO_PRINT_AT_RUNTIME
     std::cout << "\r\nElementary arithmetic of " << integer1 << " and " << integer2 << ":" << std::endl;
+#endif
 }
 
 // Addition
@@ -17,7 +26,7 @@ int ArithmeticSolution::additionMethod( // NOLINT(readability-convert-member-fun
 {
     const int sum = bitAdd(augend, addend);
 
-    COMMON_PRINT(ARITHMETIC_RESULT, "Addition", augend, "+", addend, sum);
+    ARITHMETIC_PRINT_RESULT_CONTENT("Addition", augend, "+", addend, sum);
     return sum;
 }
 
@@ -28,7 +37,7 @@ int ArithmeticSolution::subtractionMethod( // NOLINT(readability-convert-member-
 {
     const int difference = bitAdd(minuend, bitAdd(~subtrahend, 1));
 
-    COMMON_PRINT(ARITHMETIC_RESULT, "Subtraction", minuend, "-", subtrahend, difference);
+    ARITHMETIC_PRINT_RESULT_CONTENT("Subtraction", minuend, "-", subtrahend, difference);
     return difference;
 }
 
@@ -48,7 +57,7 @@ int ArithmeticSolution::multiplicationMethod( // NOLINT(readability-convert-memb
         }
     }
 
-    COMMON_PRINT(ARITHMETIC_RESULT, "Multiplication", multiplier, "*", multiplicand, product);
+    ARITHMETIC_PRINT_RESULT_CONTENT("Multiplication", multiplier, "*", multiplicand, product);
     return product;
 }
 
@@ -79,7 +88,7 @@ int ArithmeticSolution::divisionMethod( // NOLINT(readability-convert-member-fun
         quotient = bitSub(0, quotient);
     }
 
-    COMMON_PRINT(ARITHMETIC_RESULT, "Division", dividend, "/", divisor, quotient);
+    ARITHMETIC_PRINT_RESULT_CONTENT("Division", dividend, "/", divisor, quotient);
     return quotient;
 }
-} // namespace num_arithmetic
+} // namespace numeric::arithmetic

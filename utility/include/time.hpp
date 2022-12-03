@@ -5,13 +5,13 @@
 #include <random>
 #include <thread>
 
-#define TIME_BEGIN(timing)  \
-    util_time::Time timing; \
+#define TIME_BEGIN(timing)      \
+    utility::time::Time timing; \
     timing.setBeginTime()
 #define TIME_END(timing) timing.setEndTime()
 #define TIME_INTERVAL(timing) timing.getTimeInterval()
 
-namespace util_time
+namespace utility::time
 {
 constexpr uint32_t dateLength = 32;
 constexpr uint32_t dateStartYear = 1900;
@@ -83,4 +83,4 @@ inline void Time::resetBlockingTimer()
 
 extern std::string getCurrentSystemTime();
 extern std::mt19937 getRandomSeedByTime();
-} // namespace util_time
+} // namespace utility::time

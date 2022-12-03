@@ -1,6 +1,6 @@
 #pragma once
 
-namespace dp_structural
+namespace design_pattern::structural
 {
 class StructuralPattern
 {
@@ -16,4 +16,4 @@ public:
     void flyweightInstance() const;
     void proxyInstance() const;
 };
-} // namespace dp_structural
+} // namespace design_pattern::structural

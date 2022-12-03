@@ -1,11 +1,25 @@
 #include "optimal.hpp"
 #include <set>
-#include "utility/include/common.hpp"
 #include "utility/include/time.hpp"
+#ifndef _NO_PRINT_AT_RUNTIME
+#include "utility/include/common.hpp"
 
 #define OPTIMAL_RESULT(opt) "*%-9s method: F(" #opt ")=%+.5f X=%+.5f  ==>Run time: %8.5f ms\n"
+#define OPTIMAL_PRINT_RESULT_CONTENT(method, f, x) \
+    COMMON_PRINT(OPTIMAL_RESULT(min), method, f, x, OPTIMAL_TIME_INTERVAL)
+#define OPTIMAL_RUNTIME_BEGIN TIME_BEGIN(timing)
+#define OPTIMAL_RUNTIME_END TIME_END(timing)
+#define OPTIMAL_TIME_INTERVAL TIME_INTERVAL(timing)
+#else
+// #define NDEBUG
+#include <cassert>
 
-namespace algo_optimal
+#define OPTIMAL_PRINT_RESULT_CONTENT(method, f, x)
+#define OPTIMAL_RUNTIME_BEGIN
+#define OPTIMAL_RUNTIME_END
+#endif
+
+namespace algorithm::optimal
 {
 // Gradient Descent
 Gradient::Gradient(const function::Function& func) : func(func)
@@ -14,12 +28,12 @@ Gradient::Gradient(const function::Function& func) : func(func)
 
 std::optional<std::tuple<ValueY, ValueX>> Gradient::operator()(const double left, const double right, const double eps)
 {
-    TIME_BEGIN(timing);
-    std::mt19937 seed{util_time::getRandomSeedByTime()};
+    OPTIMAL_RUNTIME_BEGIN;
+    std::mt19937 seed{utility::time::getRandomSeedByTime()};
     double x = 0.0, y = 0.0;
     std::uniform_real_distribution<double> randomX(left, right);
     std::set<double> climbing;
-    while (climbing.size() < gradient::loopTime)
+    while (climbing.size() < loopTime)
     {
         climbing.insert(randomX(seed));
     }
@@ -30,13 +44,13 @@ std::optional<std::tuple<ValueY, ValueX>> Gradient::operator()(const double left
     {
         x = climber;
         uint32_t numOfIteration = 0;
-        double learningRate = gradient::initialLearningRate, gradient = calculateFirstDerivative(x, eps),
+        double learningRate = initialLearningRate, gradient = calculateFirstDerivative(x, eps),
                dx = learningRate * gradient;
         while ((std::fabs(dx) > eps) && ((x - dx) >= left) && ((x - dx) <= right))
         {
             x -= dx;
             ++numOfIteration;
-            learningRate = gradient::initialLearningRate * 1.0 / (1.0 + gradient::decay * numOfIteration);
+            learningRate = initialLearningRate * 1.0 / (1.0 + decay * numOfIteration);
             gradient = calculateFirstDerivative(x, eps);
             dx = learningRate * gradient;
         }
@@ -53,8 +67,8 @@ std::optional<std::tuple<ValueY, ValueX>> Gradient::operator()(const double left
     y = std::get<0>(*best);
     x = std::get<1>(*best);
 
-    TIME_END(timing);
-    COMMON_PRINT(OPTIMAL_RESULT(min), "Gradient", y, x, TIME_INTERVAL(timing));
+    OPTIMAL_RUNTIME_END;
+    OPTIMAL_PRINT_RESULT_CONTENT("Gradient", y, x);
     return std::make_optional(std::make_tuple(y, x));
 }
 
@@ -71,18 +85,18 @@ Annealing::Annealing(const function::Function& func) : func(func)
 
 std::optional<std::tuple<ValueY, ValueX>> Annealing::operator()(const double left, const double right, const double eps)
 {
-    TIME_BEGIN(timing);
+    OPTIMAL_RUNTIME_BEGIN;
     constexpr double perturbation = 0.5;
-    double temperature = annealing::initialT;
-    std::mt19937 seed{util_time::getRandomSeedByTime()};
+    double temperature = initialT;
+    std::mt19937 seed{utility::time::getRandomSeedByTime()};
     std::uniform_real_distribution<double> randomX(left, right);
     std::uniform_real_distribution<double> random(-perturbation, perturbation);
     double x = randomX(seed), y = func(x);
-    while (temperature > annealing::minimalT)
+    while (temperature > minimalT)
     {
         double xBest = x, yBest = y;
         bool found = false;
-        for (uint32_t i = 0; i < annealing::markovChain; ++i)
+        for (uint32_t i = 0; i < markovChain; ++i)
         {
             double xNew = 0.0, yNew = 0.0;
             do
@@ -110,11 +124,11 @@ std::optional<std::tuple<ValueY, ValueX>> Annealing::operator()(const double lef
             x = xBest;
             y = yBest;
         }
-        temperature *= annealing::coolingRate;
+        temperature *= coolingRate;
     }
 
-    TIME_END(timing);
-    COMMON_PRINT(OPTIMAL_RESULT(min), "Annealing", y, x, TIME_INTERVAL(timing));
+    OPTIMAL_RUNTIME_END;
+    OPTIMAL_PRINT_RESULT_CONTENT("Annealing", y, x);
     return std::make_optional(std::make_tuple(y, x));
 }
 
@@ -125,7 +139,7 @@ Particle::Particle(const function::Function& func) : func(func), seed(std::rando
 
 std::optional<std::tuple<ValueY, ValueX>> Particle::operator()(const double left, const double right, const double eps)
 {
-    TIME_BEGIN(timing);
+    OPTIMAL_RUNTIME_BEGIN;
     Record rec = recordInit(left, right);
     const auto best = std::min_element(
         std::cbegin(rec.society),
@@ -137,19 +151,15 @@ std::optional<std::tuple<ValueY, ValueX>> Particle::operator()(const double left
     double xBest = best->x, xFitnessBest = best->xFitness;
 
     std::uniform_real_distribution<double> random(0.0, 1.0);
-    for (uint32_t i = 0; i < particle::numOfIteration; ++i)
+    for (uint32_t i = 0; i < numOfIteration; ++i)
     {
-        const double w = particle::wBegin
-            - (particle::wBegin - particle::wEnd) * std::pow(static_cast<double>(i + 1) / particle::numOfIteration, 2);
+        const double w = wBegin - (wBegin - wEnd) * std::pow(static_cast<double>(i + 1) / numOfIteration, 2);
         for (auto& ind : rec.society)
         {
             const double rand1 = static_cast<uint32_t>(random(seed) * static_cast<uint32_t>(1.0 / eps)) * eps;
             const double rand2 = static_cast<uint32_t>(random(seed) * static_cast<uint32_t>(1.0 / eps)) * eps;
-            ind.velocity = w * ind.velocity + particle::c1 * rand1 * (ind.positionBest - ind.x)
-                + particle::c2 * rand2 * (xBest - ind.x);
-            (ind.velocity > particle::vMax)
-                ? ind.velocity = particle::vMax
-                : ((ind.velocity < particle::vMin) ? ind.velocity = particle::vMin : ind.velocity);
+            ind.velocity = w * ind.velocity + c1 * rand1 * (ind.positionBest - ind.x) + c2 * rand2 * (xBest - ind.x);
+            (ind.velocity > vMax) ? ind.velocity = vMax : ((ind.velocity < vMin) ? ind.velocity = vMin : ind.velocity);
 
             ind.x += ind.velocity;
             (ind.x > right) ? ind.x = right : ((ind.x < left) ? ind.x = left : ind.x);
@@ -174,18 +184,18 @@ std::optional<std::tuple<ValueY, ValueX>> Particle::operator()(const double left
     xFitnessBest = std::get<0>(*(rec.history.cbegin()));
     xBest = std::get<1>(*(rec.history.cbegin()));
 
-    TIME_END(timing);
-    COMMON_PRINT(OPTIMAL_RESULT(min), "Particle", xFitnessBest, xBest, TIME_INTERVAL(timing));
+    OPTIMAL_RUNTIME_END;
+    OPTIMAL_PRINT_RESULT_CONTENT("Particle", xFitnessBest, xBest);
     return std::make_optional(std::make_tuple(xFitnessBest, xBest));
 }
 
-particle::Record Particle::recordInit(const double left, const double right)
+Particle::Record Particle::recordInit(const double left, const double right)
 {
-    seed = std::mt19937{util_time::getRandomSeedByTime()};
-    std::uniform_real_distribution<double> randomX(left, right), randomV(particle::vMin, particle::vMax);
+    seed = std::mt19937{utility::time::getRandomSeedByTime()};
+    std::uniform_real_distribution<double> randomX(left, right), randomV(vMin, vMax);
 
     const Individual individualInit{};
-    Society societyInit(particle::size, individualInit);
+    Society societyInit(size, individualInit);
     std::generate(
         societyInit.begin(),
         societyInit.end(),
@@ -207,17 +217,19 @@ Genetic::Genetic(const function::Function& func) : func(func), seed(std::random_
 
 std::optional<std::tuple<ValueY, ValueX>> Genetic::operator()(const double left, const double right, const double eps)
 {
-    TIME_BEGIN(timing);
+    OPTIMAL_RUNTIME_BEGIN;
     constexpr uint32_t minChrNum = 3;
     updateSpecies(left, right, eps);
     if (chrNum < minChrNum)
     {
+#ifndef _NO_PRINT_AT_RUNTIME
         COMMON_PRINT("*Genetic   method: The precise %.5f isn't enough.\n", eps);
+#endif
         return std::nullopt;
     }
 
     Population pop = populationInit();
-    for (uint32_t i = 0; i < genetic::numOfIteration; ++i)
+    for (uint32_t i = 0; i < numOfIteration; ++i)
     {
         selectIndividual(pop);
         crossIndividual(pop);
@@ -225,8 +237,8 @@ std::optional<std::tuple<ValueY, ValueX>> Genetic::operator()(const double left,
     }
     const double x = geneDecoding(getBestIndividual(pop));
 
-    TIME_END(timing);
-    COMMON_PRINT(OPTIMAL_RESULT(min), "Genetic", func(x), x, TIME_INTERVAL(timing));
+    OPTIMAL_RUNTIME_END;
+    OPTIMAL_PRINT_RESULT_CONTENT("Genetic", func(x), x);
     return std::make_optional(std::make_tuple(func(x), x));
 }
 
@@ -235,7 +247,7 @@ void Genetic::updateSpecies(const double left, const double right, const double 
     range.lower = left;
     range.upper = right;
     range.eps = eps;
-    seed = std::mt19937{util_time::getRandomSeedByTime()};
+    seed = std::mt19937{utility::time::getRandomSeedByTime()};
 
     uint32_t num = 0;
     const double max = (range.upper - range.lower) * (1.0 / range.eps);
@@ -274,10 +286,10 @@ double Genetic::geneDecoding(const Chromosome& chr) const
     return range.lower + (range.upper - range.lower) * temp / max;
 }
 
-genetic::Population Genetic::populationInit()
+Genetic::Population Genetic::populationInit()
 {
     const Chromosome chrInit(chrNum, 0);
-    Population pop(genetic::size, chrInit);
+    Population pop(size, chrInit);
     std::for_each(
         pop.begin(),
         pop.end(),
@@ -315,7 +327,7 @@ void Genetic::crossIndividual(Population& pop)
          std::advance(chrIter, 2))
     {
         Chromosome parent1 = chrIter->get(), parent2 = std::next(chrIter, 1)->get();
-        if (genetic::crossPr > random())
+        if (crossPr > random())
         {
             geneCrossover(parent1, parent2);
         }
@@ -350,7 +362,7 @@ void Genetic::mutateIndividual(Population& pop)
         pop.end(),
         [this](auto& ind)
         {
-            if (genetic::mutatePr > random())
+            if (mutatePr > random())
             {
                 geneMutation(ind);
             }
@@ -462,7 +474,7 @@ void Genetic::selectIndividual(Population& pop)
     stochasticTournamentSelection(pop, fitnessAvg);
 }
 
-genetic::Chromosome Genetic::getBestIndividual(const Population& pop)
+Genetic::Chromosome Genetic::getBestIndividual(const Population& pop)
 {
     std::vector<double> fitnessVal;
     fitnessVal.reserve(pop.size());
@@ -480,4 +492,4 @@ genetic::Chromosome Genetic::getBestIndividual(const Population& pop)
 
     return *indBestIter;
 }
-} // namespace algo_optimal
+} // namespace algorithm::optimal

@@ -2,7 +2,7 @@
 #include <regex>
 #include <stdexcept>
 
-namespace util_log
+namespace utility::log
 {
 Log::Log(const StateType initState) noexcept : FSM(initState)
 {
@@ -91,7 +91,7 @@ void Log::runLogger()
 
 void Log::waitStartForExternalUse()
 {
-    util_time::Time timer;
+    utility::time::Time timer;
     uint32_t waitCount = 0;
     timer.setBlockingTimer(
         [&]()
@@ -118,11 +118,11 @@ void Log::waitStopForExternalUse()
 
         lock.unlock();
         condition.notify_one();
-        util_time::millisecondLevelSleep(1);
+        utility::time::millisecondLevelSleep(1);
         lock.lock();
     }
 
-    util_time::Time timer;
+    utility::time::Time timer;
     uint32_t waitCount = 0;
     timer.setBlockingTimer(
         [&]()
@@ -164,10 +164,10 @@ void Log::openLogFile()
 
     if (!ofs)
     {
-        util_common::throwOperateFileException(std::filesystem::path(pathname).filename().string(), true);
+        utility::common::throwOperateFileException(std::filesystem::path(pathname).filename().string(), true);
     }
-    util_common::tryToOperateFileLock(
-        ofs, pathname, util_common::LockOperateType::lock, util_common::FileLockType::writerLock);
+    utility::common::tryToOperateFileLock(
+        ofs, pathname, utility::common::LockOperateType::lock, utility::common::FileLockType::writerLock);
 };
 
 void Log::startLogging()
@@ -180,8 +180,8 @@ void Log::startLogging()
 
 void Log::closeLogFile()
 {
-    util_common::tryToOperateFileLock(
-        ofs, pathname, util_common::LockOperateType::unlock, util_common::FileLockType::writerLock);
+    utility::common::tryToOperateFileLock(
+        ofs, pathname, utility::common::LockOperateType::unlock, utility::common::FileLockType::writerLock);
     if (ofs.is_open())
     {
         ofs.close();
@@ -259,19 +259,21 @@ std::string& changeLogLevelStyle(std::string& line)
     if (const std::regex time(std::string{timeRegex}); std::regex_search(line, time))
     {
         const auto searchIter = std::sregex_iterator(line.begin(), line.end(), time);
-        const std::string timeColorForLog = std::string{util_common::colorGray} + std::string{util_common::colorBold}
-            + std::string{util_common::colorForBackground} + (*searchIter).str() + std::string{util_common::colorOff};
+        const std::string timeColorForLog = std::string{utility::common::colorGray}
+            + std::string{utility::common::colorBold} + std::string{utility::common::colorForBackground}
+            + (*searchIter).str() + std::string{utility::common::colorOff};
         line = std::regex_replace(line, std::regex(std::string{timeRegex}), timeColorForLog);
     }
 
     if (const std::regex codeFile(std::string{codeFileRegex}); std::regex_search(line, codeFile))
     {
         const auto searchIter = std::sregex_iterator(line.begin(), line.end(), codeFile);
-        const std::string codeFileColorForLog = std::string{util_common::colorUnderLine}
-            + std::string{util_common::colorForBackground} + (*searchIter).str() + std::string{util_common::colorOff};
+        const std::string codeFileColorForLog = std::string{utility::common::colorUnderLine}
+            + std::string{utility::common::colorForBackground} + (*searchIter).str()
+            + std::string{utility::common::colorOff};
         line = std::regex_replace(line, std::regex(std::string{codeFileRegex}), codeFileColorForLog);
     }
 
     return line;
 }
-} // namespace util_log
+} // namespace utility::log

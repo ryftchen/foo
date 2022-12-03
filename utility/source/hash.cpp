@@ -1,6 +1,6 @@
 #include "hash.hpp"
 
-namespace util_hash
+namespace utility::hash
 {
 // Brian-Kernighan Dennis-Ritchie hash
 uint32_t bkdrHash(const char* str)
@@ -23,4 +23,4 @@ int rollingHash(const char* str, const uint32_t length)
     }
     return hash;
 }
-} // namespace util_hash
+} // namespace utility::hash

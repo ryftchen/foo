@@ -7,7 +7,7 @@
 #include <csignal>
 #include <filesystem>
 
-namespace app_main
+namespace application
 {
 [[using gnu: constructor]] static void switchToProjectPath();
 
@@ -94,4 +94,4 @@ static void switchToProjectPath()
     }
     std::filesystem::current_path(buildPath.parent_path());
 }
-} // namespace app_main
+} // namespace application

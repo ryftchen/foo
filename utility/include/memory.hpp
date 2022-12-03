@@ -5,7 +5,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace util_memory
+namespace utility::memory
 {
 template <typename T, size_t BlockSize = 4096>
 class Memory
@@ -72,6 +72,6 @@ private:
     void allocateBlock();
     static_assert(BlockSize >= (2 * sizeof(SlotType)), "memory: BlockSize is too small.");
 };
-} // namespace util_memory
+} // namespace utility::memory
 
 #include "utility/source/memory.tpp"

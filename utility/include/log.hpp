@@ -6,18 +6,18 @@
 #include "fsm.hpp"
 #include "time.hpp"
 
-#define LOG_TO_START util_log::Log::getInstance().waitStartForExternalUse()
-#define LOG_TO_STOP util_log::Log::getInstance().waitStopForExternalUse()
+#define LOG_TO_START utility::log::Log::getInstance().waitStartForExternalUse()
+#define LOG_TO_STOP utility::log::Log::getInstance().waitStopForExternalUse()
 #define LOG_DBG(format, args...) \
-    util_log::Log::getInstance().flush(util_log::Log::OutputLevel::debug, __FILE__, __LINE__, format, ##args)
+    utility::log::Log::getInstance().flush(utility::log::Log::OutputLevel::debug, __FILE__, __LINE__, format, ##args)
 #define LOG_INF(format, args...) \
-    util_log::Log::getInstance().flush(util_log::Log::OutputLevel::info, __FILE__, __LINE__, format, ##args)
+    utility::log::Log::getInstance().flush(utility::log::Log::OutputLevel::info, __FILE__, __LINE__, format, ##args)
 #define LOG_WRN(format, args...) \
-    util_log::Log::getInstance().flush(util_log::Log::OutputLevel::warn, __FILE__, __LINE__, format, ##args)
+    utility::log::Log::getInstance().flush(utility::log::Log::OutputLevel::warn, __FILE__, __LINE__, format, ##args)
 #define LOG_ERR(format, args...) \
-    util_log::Log::getInstance().flush(util_log::Log::OutputLevel::error, __FILE__, __LINE__, format, ##args)
+    utility::log::Log::getInstance().flush(utility::log::Log::OutputLevel::error, __FILE__, __LINE__, format, ##args)
 
-namespace util_log
+namespace utility::log
 {
 inline constexpr std::string_view logPath{"./temporary/foo.log"};
 constexpr uint32_t logPathLength = 32;
@@ -34,32 +34,32 @@ constexpr std::string_view warnLevelPrefixRegex{R"(^\[WRN\])"};
 constexpr std::string_view errorLevelPrefixRegex{R"(^\[ERR\])"};
 constexpr std::string_view timeRegex{R"(\[(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})\.(\d{6}) (\w{3})\])"};
 constexpr std::string_view codeFileRegex{R"(\[[^:]+\.(c|h|cc|hh|cpp|hpp|tpp|cxx|hxx|C|H)+#\d+\])"};
-constexpr auto debugLevelPrefixColorForLog{util_common::joinStr<
-    util_common::colorBlue,
-    util_common::colorBold,
-    util_common::colorForBackground,
+constexpr auto debugLevelPrefixColorForLog{utility::common::joinStr<
+    utility::common::colorBlue,
+    utility::common::colorBold,
+    utility::common::colorForBackground,
     debugLevelPrefix,
-    util_common::colorOff>};
-constexpr auto infoLevelPrefixColorForLog{util_common::joinStr<
-    util_common::colorGreen,
-    util_common::colorBold,
-    util_common::colorForBackground,
+    utility::common::colorOff>};
+constexpr auto infoLevelPrefixColorForLog{utility::common::joinStr<
+    utility::common::colorGreen,
+    utility::common::colorBold,
+    utility::common::colorForBackground,
     infoLevelPrefix,
-    util_common::colorOff>};
-constexpr auto warnLevelPrefixColorForLog{util_common::joinStr<
-    util_common::colorYellow,
-    util_common::colorBold,
-    util_common::colorForBackground,
+    utility::common::colorOff>};
+constexpr auto warnLevelPrefixColorForLog{utility::common::joinStr<
+    utility::common::colorYellow,
+    utility::common::colorBold,
+    utility::common::colorForBackground,
     warnLevelPrefix,
-    util_common::colorOff>};
-constexpr auto errorLevelPrefixColorForLog{util_common::joinStr<
-    util_common::colorRed,
-    util_common::colorBold,
-    util_common::colorForBackground,
+    utility::common::colorOff>};
+constexpr auto errorLevelPrefixColorForLog{utility::common::joinStr<
+    utility::common::colorRed,
+    utility::common::colorBold,
+    utility::common::colorForBackground,
     errorLevelPrefix,
-    util_common::colorOff>};
+    utility::common::colorOff>};
 
-class Log final : public util_fsm::FSM<Log>
+class Log final : public utility::fsm::FSM<Log>
 {
 public:
     virtual ~Log() = default;
@@ -201,7 +201,7 @@ void Log::flush(
                     break;
             }
 
-            std::string output = std::string{prefix} + ":[" + util_time::getCurrentSystemTime() + "]:["
+            std::string output = std::string{prefix} + ":[" + utility::time::getCurrentSystemTime() + "]:["
                 + codeFile.substr(codeFile.find("/") + 1, codeFile.length()) + "#" + std::to_string(codeLine) + "]: ";
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat-security"
@@ -211,11 +211,11 @@ void Log::flush(
 
             lock.unlock();
             condition.notify_one();
-            util_time::millisecondLevelSleep(1);
+            utility::time::millisecondLevelSleep(1);
             lock.lock();
         }
     }
 }
 
 extern std::string& changeLogLevelStyle(std::string& line);
-} // namespace util_log
+} // namespace utility::log

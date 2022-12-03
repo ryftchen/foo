@@ -1,6 +1,6 @@
 #pragma once
 
-namespace ds_tree
+namespace date_structure::tree
 {
 class TreeStructure
 {
@@ -12,4 +12,4 @@ public:
     void avlInstance() const;
     void splayInstance() const;
 };
-} // namespace ds_tree
+} // namespace date_structure::tree

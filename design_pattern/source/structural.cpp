@@ -1,15 +1,25 @@
 #include "structural.hpp"
 #include <map>
 #include <vector>
+#ifndef _NO_PRINT_AT_RUNTIME
 #include "utility/include/common.hpp"
 
 #define STRUCTURAL_RESULT "\r\n*%-9s instance:\r\n%s"
+#define STRUCTURAL_PRINT_RESULT_CONTENT(method) COMMON_PRINT(STRUCTURAL_RESULT, method, output().str().c_str())
+#else
+#include <memory>
+#include <sstream>
 
-namespace dp_structural
+#define STRUCTURAL_PRINT_RESULT_CONTENT(method)
+#endif
+
+namespace design_pattern::structural
 {
 StructuralPattern::StructuralPattern()
 {
+#ifndef _NO_PRINT_AT_RUNTIME
     std::cout << "\r\nStructural pattern:" << std::endl;
+#endif
 }
 
 // Adapter
@@ -52,12 +62,13 @@ private:
 void StructuralPattern::adapterInstance() const // NOLINT(readability-convert-member-functions-to-static)
 {
     using adapter::Adapter;
+    using adapter::output;
     using adapter::Target;
 
     std::shared_ptr<Target> t = std::make_shared<Adapter>();
     t->request();
 
-    COMMON_PRINT(STRUCTURAL_RESULT, "Adapter", adapter::output().str().c_str());
+    STRUCTURAL_PRINT_RESULT_CONTENT("Adapter");
 }
 
 // Bridge
@@ -120,6 +131,7 @@ void StructuralPattern::bridgeInstance() const // NOLINT(readability-convert-mem
     using bridge::ConcreteImplementorA;
     using bridge::ConcreteImplementorB;
     using bridge::Implementor;
+    using bridge::output;
     using bridge::RefinedAbstraction;
 
     std::unique_ptr<Abstraction> abstract1 =
@@ -130,7 +142,7 @@ void StructuralPattern::bridgeInstance() const // NOLINT(readability-convert-mem
         std::make_unique<RefinedAbstraction>(std::make_unique<ConcreteImplementorB>());
     abstract2->operation();
 
-    COMMON_PRINT(STRUCTURAL_RESULT, "Bridge", bridge::output().str().c_str());
+    STRUCTURAL_PRINT_RESULT_CONTENT("Bridge");
 }
 
 // Composite
@@ -207,6 +219,7 @@ void StructuralPattern::compositeInstance() const // NOLINT(readability-convert-
 {
     using composite::Composite;
     using composite::Leaf;
+    using composite::output;
 
     constexpr uint32_t count = 5;
     Composite composite;
@@ -218,7 +231,7 @@ void StructuralPattern::compositeInstance() const // NOLINT(readability-convert-
     composite.remove(0);
     composite.operation();
 
-    COMMON_PRINT(STRUCTURAL_RESULT, "Composite", composite::output().str().c_str());
+    STRUCTURAL_PRINT_RESULT_CONTENT("Composite");
 }
 
 // Decorator
@@ -289,6 +302,7 @@ void StructuralPattern::decoratorInstance() const // NOLINT(readability-convert-
     using decorator::ConcreteComponent;
     using decorator::ConcreteDecoratorA;
     using decorator::ConcreteDecoratorB;
+    using decorator::output;
 
     std::shared_ptr<ConcreteComponent> cc = std::make_shared<ConcreteComponent>();
     std::shared_ptr<ConcreteDecoratorA> da = std::make_shared<ConcreteDecoratorA>(cc);
@@ -297,7 +311,7 @@ void StructuralPattern::decoratorInstance() const // NOLINT(readability-convert-
     std::shared_ptr<Component> component = db;
     component->operation();
 
-    COMMON_PRINT(STRUCTURAL_RESULT, "Decorator", decorator::output().str().c_str());
+    STRUCTURAL_PRINT_RESULT_CONTENT("Decorator");
 }
 
 // Facade
@@ -349,12 +363,13 @@ private:
 void StructuralPattern::facadeInstance() const // NOLINT(readability-convert-member-functions-to-static)
 {
     using facade::Facade;
+    using facade::output;
 
     std::shared_ptr<Facade> facade = std::make_shared<Facade>();
     facade->operation1();
     facade->operation2();
 
-    COMMON_PRINT(STRUCTURAL_RESULT, "Facade", facade::output().str().c_str());
+    STRUCTURAL_PRINT_RESULT_CONTENT("Facade");
 }
 
 // Flyweight
@@ -432,12 +447,13 @@ private:
 void StructuralPattern::flyweightInstance() const // NOLINT(readability-convert-member-functions-to-static)
 {
     using flyweight::FlyweightFactory;
+    using flyweight::output;
 
     std::shared_ptr<FlyweightFactory> factory = std::make_shared<FlyweightFactory>();
     factory->getFlyweight(1)->operation();
     factory->getFlyweight(2)->operation();
 
-    COMMON_PRINT(STRUCTURAL_RESULT, "Flyweight", flyweight::output().str().c_str());
+    STRUCTURAL_PRINT_RESULT_CONTENT("Flyweight");
 }
 
 // Proxy
@@ -493,11 +509,12 @@ protected:
 
 void StructuralPattern::proxyInstance() const // NOLINT(readability-convert-member-functions-to-static)
 {
+    using proxy::output;
     using proxy::Proxy;
 
     std::shared_ptr<Proxy> proxy = std::make_shared<Proxy>();
     proxy->request();
 
-    COMMON_PRINT(STRUCTURAL_RESULT, "Proxy", proxy::output().str().c_str());
+    STRUCTURAL_PRINT_RESULT_CONTENT("Proxy");
 }
-} // namespace dp_structural
+} // namespace design_pattern::structural

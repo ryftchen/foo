@@ -3,7 +3,7 @@
 #include <atomic>
 #include <iostream>
 
-namespace util_fsm
+namespace utility::fsm
 {
 template <class Func, class... Args>
 using InvokeResult = std::invoke_result_t<Func, Args...>;
@@ -279,6 +279,6 @@ protected:
         }
     };
 };
-} // namespace util_fsm
+} // namespace utility::fsm
 
 #include "utility/source/fsm.tpp"

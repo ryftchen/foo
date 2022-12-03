@@ -3,7 +3,7 @@
 #include <map>
 #include <random>
 
-namespace algo_optimal
+namespace algorithm::optimal
 {
 namespace function
 {
@@ -69,13 +69,6 @@ public:
 };
 
 // Gradient Descent
-namespace gradient
-{
-constexpr double initialLearningRate = 0.01;
-constexpr double decay = 0.001;
-constexpr uint32_t loopTime = 100;
-} // namespace gradient
-
 class Gradient : public OptimalSolution
 {
 public:
@@ -88,18 +81,14 @@ public:
 
 private:
     const function::Function& func;
+    static constexpr double initialLearningRate{0.01};
+    static constexpr double decay{0.001};
+    static constexpr uint32_t loopTime{100};
+
     [[nodiscard]] double calculateFirstDerivative(const double x, const double eps) const;
 };
 
 // Simulated Annealing
-namespace annealing
-{
-constexpr double initialT = 100.0;
-constexpr double minimalT = 0.01;
-constexpr double coolingRate = 0.9;
-constexpr uint32_t markovChain = 100;
-} // namespace annealing
-
 class Annealing : public OptimalSolution
 {
 public:
@@ -112,62 +101,13 @@ public:
 
 private:
     const function::Function& func;
+    static constexpr double initialT{100.0};
+    static constexpr double minimalT{0.01};
+    static constexpr double coolingRate{0.9};
+    static constexpr uint32_t markovChain{100};
 };
 
 // Particle Swarm
-namespace particle
-{
-constexpr double c1 = 1.5;
-constexpr double c2 = 1.5;
-constexpr double wBegin = 0.9;
-constexpr double wEnd = 0.4;
-constexpr double vMax = 0.5;
-constexpr double vMin = -0.5;
-constexpr uint32_t size = 50;
-constexpr uint32_t numOfIteration = 100;
-
-struct Individual
-{
-    Individual(
-        const double x,
-        const double velocity,
-        const double positionBest,
-        const double xFitness,
-        const double fitnessPositionBest) :
-        x(x),
-        velocity(velocity),
-        positionBest(positionBest),
-        xFitness(xFitness),
-        fitnessPositionBest(fitnessPositionBest){};
-    Individual() = default;
-
-    double x;
-    double velocity;
-    double positionBest;
-    double xFitness;
-    double fitnessPositionBest;
-};
-
-struct Smaller
-{
-    bool operator()(const double left, const double right) const { return left < right; }
-};
-
-using Society = std::vector<particle::Individual>;
-using History = std::map<ValueY, ValueX, Smaller>;
-struct Record
-{
-    Record(
-        const std::initializer_list<Society::value_type>& society,
-        const std::initializer_list<History::value_type>& history) :
-        society(society), history(history){};
-    Record() = default;
-
-    Society society;
-    History history;
-};
-} // namespace particle
-
 class Particle : public OptimalSolution
 {
 public:
@@ -181,25 +121,59 @@ public:
 private:
     const function::Function& func;
     std::mt19937 seed;
+    static constexpr double c1{1.5};
+    static constexpr double c2{1.5};
+    static constexpr double wBegin{0.9};
+    static constexpr double wEnd{0.4};
+    static constexpr double vMax{0.5};
+    static constexpr double vMin{-0.5};
+    static constexpr uint32_t size{50};
+    static constexpr uint32_t numOfIteration{100};
 
-    using Individual = particle::Individual;
-    using Record = particle::Record;
-    using Society = particle::Society;
+    struct Individual
+    {
+        Individual(
+            const double x,
+            const double velocity,
+            const double positionBest,
+            const double xFitness,
+            const double fitnessPositionBest) :
+            x(x),
+            velocity(velocity),
+            positionBest(positionBest),
+            xFitness(xFitness),
+            fitnessPositionBest(fitnessPositionBest){};
+        Individual() = default;
+
+        double x;
+        double velocity;
+        double positionBest;
+        double xFitness;
+        double fitnessPositionBest;
+    };
+    struct Smaller
+    {
+        bool operator()(const double left, const double right) const { return left < right; }
+    };
+
+    using Society = std::vector<Individual>;
+    using History = std::map<ValueY, ValueX, Smaller>;
+    struct Record
+    {
+        Record(
+            const std::initializer_list<Society::value_type>& society,
+            const std::initializer_list<History::value_type>& history) :
+            society(society), history(history){};
+        Record() = default;
+
+        Society society;
+        History history;
+    };
+
     Record recordInit(const double left, const double right);
 };
 
 // Genetic
-namespace genetic
-{
-using Chromosome = std::vector<uint8_t>;
-using Population = std::vector<genetic::Chromosome>;
-
-constexpr double crossPr = 0.8;
-constexpr double mutatePr = 0.05;
-constexpr uint32_t size = 50;
-constexpr uint32_t numOfIteration = 100;
-} // namespace genetic
-
 class Genetic : public OptimalSolution
 {
 public:
@@ -220,9 +194,13 @@ private:
     } range{};
     std::mt19937 seed;
     uint32_t chrNum{0};
+    static constexpr double crossPr{0.8};
+    static constexpr double mutatePr{0.05};
+    static constexpr uint32_t size{50};
+    static constexpr uint32_t numOfIteration{100};
 
-    using Chromosome = genetic::Chromosome;
-    using Population = genetic::Population;
+    using Chromosome = std::vector<uint8_t>;
+    using Population = std::vector<Chromosome>;
     void updateSpecies(const double left, const double right, const double eps);
     void geneCoding(Chromosome& chr);
     [[nodiscard]] double geneDecoding(const Chromosome& chr) const;
@@ -252,4 +230,4 @@ inline uint32_t Genetic::getRandomNumber(const uint32_t limit)
     std::uniform_int_distribution<int> randomX(0, limit);
     return randomX(seed);
 }
-} // namespace algo_optimal
+} // namespace algorithm::optimal

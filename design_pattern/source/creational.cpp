@@ -1,13 +1,23 @@
 #include "creational.hpp"
+#ifndef _NO_PRINT_AT_RUNTIME
 #include "utility/include/common.hpp"
 
 #define CREATIONAL_RESULT "\r\n*%-15s instance:\r\n%s"
+#define CREATIONAL_PRINT_RESULT_CONTENT(method) COMMON_PRINT(CREATIONAL_RESULT, method, output().str().c_str())
+#else
+#include <memory>
+#include <sstream>
 
-namespace dp_creational
+#define CREATIONAL_PRINT_RESULT_CONTENT(method)
+#endif
+
+namespace design_pattern::creational
 {
 CreationalPattern::CreationalPattern()
 {
+#ifndef _NO_PRINT_AT_RUNTIME
     std::cout << "\r\nCreational pattern:" << std::endl;
+#endif
 }
 
 // Abstract Factory
@@ -99,6 +109,7 @@ void CreationalPattern::abstractFactoryInstance() const // NOLINT(readability-co
 {
     using abstract_factory::ConcreteFactoryX;
     using abstract_factory::ConcreteFactoryY;
+    using abstract_factory::output;
     using abstract_factory::ProductA;
     using abstract_factory::ProductB;
 
@@ -106,18 +117,18 @@ void CreationalPattern::abstractFactoryInstance() const // NOLINT(readability-co
     std::shared_ptr<ConcreteFactoryY> factoryY = std::make_shared<ConcreteFactoryY>();
 
     std::unique_ptr<ProductA> p1 = factoryX->createProductA();
-    abstract_factory::output() << "product: " << p1->getName() << std::endl;
+    output() << "product: " << p1->getName() << std::endl;
 
     std::unique_ptr<ProductA> p2 = factoryY->createProductA();
-    abstract_factory::output() << "product: " << p2->getName() << std::endl;
+    output() << "product: " << p2->getName() << std::endl;
 
     std::unique_ptr<ProductB> p3 = factoryX->createProductB();
-    abstract_factory::output() << "product: " << p3->getName() << std::endl;
+    output() << "product: " << p3->getName() << std::endl;
 
     std::unique_ptr<ProductB> p4 = factoryY->createProductB();
-    abstract_factory::output() << "product: " << p4->getName() << std::endl;
+    output() << "product: " << p4->getName() << std::endl;
 
-    COMMON_PRINT(CREATIONAL_RESULT, "AbstractFactory", abstract_factory::output().str().c_str());
+    CREATIONAL_PRINT_RESULT_CONTENT("AbstractFactory");
 }
 
 // Builder
@@ -211,6 +222,7 @@ void CreationalPattern::builderInstance() const // NOLINT(readability-convert-me
     using builder::ConcreteBuilderX;
     using builder::ConcreteBuilderY;
     using builder::Director;
+    using builder::output;
     using builder::Product;
 
     Director director;
@@ -218,14 +230,14 @@ void CreationalPattern::builderInstance() const // NOLINT(readability-convert-me
     director.set(std::make_unique<ConcreteBuilderX>());
     director.construct();
     Product product1 = director.get();
-    builder::output() << "1st product parts: " << product1.get() << std::endl;
+    output() << "1st product parts: " << product1.get() << std::endl;
 
     director.set(std::make_unique<ConcreteBuilderY>());
     director.construct();
     Product product2 = director.get();
-    builder::output() << "2nd product parts: " << product2.get() << std::endl;
+    output() << "2nd product parts: " << product2.get() << std::endl;
 
-    COMMON_PRINT(CREATIONAL_RESULT, "Builder", builder::output().str().c_str());
+    CREATIONAL_PRINT_RESULT_CONTENT("Builder");
 }
 
 // Factory Method
@@ -286,19 +298,20 @@ void CreationalPattern::factoryMethodInstance() const // NOLINT(readability-conv
 {
     using factory_method::ConcreteCreator;
     using factory_method::Creator;
+    using factory_method::output;
     using factory_method::Product;
 
     std::shared_ptr<Creator> creator = std::make_shared<ConcreteCreator>();
 
     std::unique_ptr<Product> p1 = creator->createProductA();
-    factory_method::output() << "product: " << p1->getName() << std::endl;
+    output() << "product: " << p1->getName() << std::endl;
     creator->removeProduct(p1);
 
     std::unique_ptr<Product> p2 = creator->createProductB();
-    factory_method::output() << "product: " << p2->getName() << std::endl;
+    output() << "product: " << p2->getName() << std::endl;
     creator->removeProduct(p2);
 
-    COMMON_PRINT(CREATIONAL_RESULT, "FactoryMethod", factory_method::output().str().c_str());
+    CREATIONAL_PRINT_RESULT_CONTENT("FactoryMethod");
 }
 
 // Prototype
@@ -371,19 +384,20 @@ int Client::nTypes = 2;
 void CreationalPattern::prototypeInstance() const // NOLINT(readability-convert-member-functions-to-static)
 {
     using prototype::Client;
+    using prototype::output;
     using prototype::Prototype;
 
     Client::init();
 
     std::unique_ptr<Prototype> prototype1 = Client::make(0);
-    prototype::output() << "prototype: " << prototype1->type() << std::endl;
+    output() << "prototype: " << prototype1->type() << std::endl;
 
     std::unique_ptr<Prototype> prototype2 = Client::make(1);
-    prototype::output() << "prototype: " << prototype2->type() << std::endl;
+    output() << "prototype: " << prototype2->type() << std::endl;
 
     Client::remove();
 
-    COMMON_PRINT(CREATIONAL_RESULT, "Prototype", prototype::output().str().c_str());
+    CREATIONAL_PRINT_RESULT_CONTENT("Prototype");
 }
 
 // Singleton
@@ -429,11 +443,12 @@ std::shared_ptr<Singleton> Singleton::instance = nullptr;
 
 void CreationalPattern::singletonInstance() const // NOLINT(readability-convert-member-functions-to-static)
 {
+    using singleton::output;
     using singleton::Singleton;
 
     Singleton::get()->tell();
     Singleton::restart();
 
-    COMMON_PRINT(CREATIONAL_RESULT, "Singleton", singleton::output().str().c_str());
+    CREATIONAL_PRINT_RESULT_CONTENT("Singleton");
 }
-} // namespace dp_creational
+} // namespace design_pattern::creational
