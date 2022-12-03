@@ -36,7 +36,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Check spelling
-        uses: check-spelling/check-spelling@v0.0.20
+        uses: check-spelling/check-spelling@v0.0.21
         with:
           config: ./.github/actions/check_spelling
           post_comment: 0
