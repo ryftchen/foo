@@ -1,6 +1,6 @@
 #include "time.hpp"
 
-namespace util_time
+namespace utility::time
 {
 std::string getCurrentSystemTime()
 {
@@ -34,4 +34,4 @@ std::mt19937 getRandomSeedByTime()
 
     return std::mt19937(timeSeed.tv_sec * secToUsec + timeSeed.tv_usec);
 }
-} // namespace util_time
+} // namespace utility::time

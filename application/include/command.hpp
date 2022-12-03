@@ -10,7 +10,7 @@
 #include "utility/include/memory.hpp"
 #include "utility/include/thread.hpp"
 
-namespace app_command
+namespace application::command
 {
 class Command
 {
@@ -28,7 +28,7 @@ private:
     mutable std::mutex commandMutex;
     std::condition_variable commandCondition;
     std::atomic<bool> isParsed{false};
-    util_argument::Argument program{util_argument::Argument("foo")};
+    utility::argument::Argument program{utility::argument::Argument("foo")};
     void foregroundHandle(const int argc, const char* const argv[]);
     void backgroundHandle();
     void validateBasicTask();
@@ -162,7 +162,7 @@ private:
     void printVersionInfo() const;
 
     void enterConsoleMode() const;
-    void registerOnConsole(util_console::Console& console) const;
+    void registerOnConsole(utility::console::Console& console) const;
     static void viewLogContent();
     static std::string getIconBanner();
     [[noreturn]] inline void throwExcessArgumentException();
@@ -206,5 +206,5 @@ auto Command::get(const TaskFunctorTuple& tuple) const
     }
 }
 
-extern util_memory::Memory<util_thread::Thread>& getMemoryForMultithreading();
-} // namespace app_command
+extern utility::memory::Memory<utility::thread::Thread>& getMemoryForMultithreading();
+} // namespace application::command

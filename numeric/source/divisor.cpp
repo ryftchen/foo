@@ -1,4 +1,5 @@
 #include "divisor.hpp"
+#ifndef _NO_PRINT_AT_RUNTIME
 #include "utility/include/common.hpp"
 #include "utility/include/time.hpp"
 
@@ -13,15 +14,27 @@
             DIVISOR_RESULT,                                                       \
             method,                                                               \
             formatIntegerVector(divisorVector, arrayBuffer, arrayBufferSize + 1), \
-            TIME_INTERVAL(timing));                                               \
+            DIVISOR_TIME_INTERVAL);                                               \
     }                                                                             \
     while (0)
+#define DIVISOR_RUNTIME_BEGIN TIME_BEGIN(timing)
+#define DIVISOR_RUNTIME_END TIME_END(timing)
+#define DIVISOR_TIME_INTERVAL TIME_INTERVAL(timing)
+#else
+#include <cmath>
 
-namespace num_divisor
+#define DIVISOR_PRINT_RESULT_CONTENT(method)
+#define DIVISOR_RUNTIME_BEGIN
+#define DIVISOR_RUNTIME_END
+#endif
+
+namespace numeric::divisor
 {
-DivisorSolution::DivisorSolution(const int integer1, const int integer2)
+DivisorSolution::DivisorSolution(const int integer1, const int integer2) : integer1(integer1), integer2(integer2)
 {
+#ifndef _NO_PRINT_AT_RUNTIME
     std::cout << "\r\nAll common divisors of " << integer1 << " and " << integer2 << ":" << std::endl;
+#endif
 }
 
 std::vector<int> DivisorSolution::getAllDivisors(const int greatestCommonDivisor)
@@ -45,7 +58,7 @@ std::vector<int> DivisorSolution::getAllDivisors(const int greatestCommonDivisor
 // Euclidean
 std::vector<int> DivisorSolution::euclideanMethod(int a, int b) const
 {
-    TIME_BEGIN(timing);
+    DIVISOR_RUNTIME_BEGIN;
     a = std::abs(a);
     b = std::abs(b);
 
@@ -58,7 +71,7 @@ std::vector<int> DivisorSolution::euclideanMethod(int a, int b) const
     const int greatestCommonDivisor = a;
     std::vector<int> divisorVector = getAllDivisors(greatestCommonDivisor);
 
-    TIME_END(timing);
+    DIVISOR_RUNTIME_END;
     DIVISOR_PRINT_RESULT_CONTENT("Euclidean");
     return divisorVector;
 }
@@ -66,7 +79,7 @@ std::vector<int> DivisorSolution::euclideanMethod(int a, int b) const
 // Stein
 std::vector<int> DivisorSolution::steinMethod(int a, int b) const
 {
-    TIME_BEGIN(timing);
+    DIVISOR_RUNTIME_BEGIN;
     int greatestCommonDivisor = 0, c = 0;
     a = std::abs(a);
     b = std::abs(b);
@@ -88,7 +101,7 @@ std::vector<int> DivisorSolution::steinMethod(int a, int b) const
     }
     std::vector<int> divisorVector = getAllDivisors(greatestCommonDivisor);
 
-    TIME_END(timing);
+    DIVISOR_RUNTIME_END;
     DIVISOR_PRINT_RESULT_CONTENT("Stein");
     return divisorVector;
 }
@@ -119,4 +132,4 @@ int DivisorSolution::steinRecursive(int a, int b)
         return steinRecursive(a, b);
     }
 }
-} // namespace num_divisor
+} // namespace numeric::divisor

@@ -3,7 +3,7 @@
 #include <string_view>
 #include <tuple>
 
-namespace num_integral
+namespace numeric::integral
 {
 namespace expression
 {
@@ -141,4 +141,4 @@ private:
     [[nodiscard]] double sampleFromNormalDistribution(const double lower, const double upper, const double eps) const;
 #endif
 };
-} // namespace num_integral
+} // namespace numeric::integral

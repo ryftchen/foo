@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 
-namespace num_prime
+namespace numeric::prime
 {
 constexpr uint32_t maxAlignOfPrint = 16;
 constexpr uint32_t maxColumnOfPrint = 10;
@@ -17,6 +17,11 @@ public:
     [[nodiscard]] std::vector<uint32_t> eratosthenesMethod(const uint32_t max) const;
     [[nodiscard]] std::vector<uint32_t> eulerMethod(const uint32_t max) const;
 
+    [[nodiscard]] inline uint32_t getMaxPositiveInteger() const;
+
+private:
+    const uint32_t maxPositiveInteger;
+
 protected:
     template <typename T>
     requires std::is_integral<T>::value char* formatIntegerVector(
@@ -24,6 +29,11 @@ protected:
         char* const buffer,
         const uint32_t bufferSize) const;
 };
+
+inline uint32_t PrimeSolution::getMaxPositiveInteger() const
+{
+    return maxPositiveInteger;
+}
 
 template <typename T>
 requires std::is_integral<T>::value char* PrimeSolution::formatIntegerVector(
@@ -61,4 +71,4 @@ requires std::is_integral<T>::value char* PrimeSolution::formatIntegerVector(
 
     return buffer;
 }
-} // namespace num_prime
+} // namespace numeric::prime

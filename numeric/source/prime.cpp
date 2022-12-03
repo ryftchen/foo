@@ -3,6 +3,7 @@
 #include "utility/include/common.hpp"
 #include "utility/include/time.hpp"
 
+#ifndef _NO_PRINT_AT_RUNTIME
 #define PRIME_RESULT "\r\n*%-9s method:\r\n%s\r\n==>Run time: %8.5f ms\n"
 #define PRIME_PRINT_RESULT_CONTENT(method)                                      \
     do                                                                          \
@@ -17,18 +18,29 @@
             TIME_INTERVAL(timing));                                             \
     }                                                                           \
     while (0)
+#define PRIME_RUNTIME_BEGIN TIME_BEGIN(timing)
+#define PRIME_RUNTIME_END TIME_END(timing)
+#define PRIME_TIME_INTERVAL TIME_INTERVAL(timing)
+#else
 
-namespace num_prime
+#define PRIME_PRINT_RESULT_CONTENT(method)
+#define PRIME_RUNTIME_BEGIN
+#define PRIME_RUNTIME_END
+#endif
+
+namespace numeric::prime
 {
-PrimeSolution::PrimeSolution(const uint32_t maxPositiveInteger)
+PrimeSolution::PrimeSolution(const uint32_t maxPositiveInteger) : maxPositiveInteger(maxPositiveInteger)
 {
+#ifndef _NO_PRINT_AT_RUNTIME
     std::cout << "\r\nAll prime numbers less than " << maxPositiveInteger << ":" << std::endl;
+#endif
 }
 
 // Eratosthenes
 std::vector<uint32_t> PrimeSolution::eratosthenesMethod(const uint32_t max) const
 {
-    TIME_BEGIN(timing);
+    PRIME_RUNTIME_BEGIN;
     std::vector<uint32_t> primeVector(0);
     std::vector<bool> isPrime(max + 1, true);
 
@@ -46,7 +58,7 @@ std::vector<uint32_t> PrimeSolution::eratosthenesMethod(const uint32_t max) cons
         }
     }
 
-    TIME_END(timing);
+    PRIME_RUNTIME_END;
     PRIME_PRINT_RESULT_CONTENT("Eratosthenes");
     return primeVector;
 }
@@ -54,7 +66,7 @@ std::vector<uint32_t> PrimeSolution::eratosthenesMethod(const uint32_t max) cons
 // Euler
 std::vector<uint32_t> PrimeSolution::eulerMethod(const uint32_t max) const
 {
-    TIME_BEGIN(timing);
+    PRIME_RUNTIME_BEGIN;
     std::vector<uint32_t> primeVector(0);
     std::vector<bool> isPrime(max + 1, true);
 
@@ -77,8 +89,8 @@ std::vector<uint32_t> PrimeSolution::eulerMethod(const uint32_t max) const
         }
     }
 
-    TIME_END(timing);
+    PRIME_RUNTIME_END;
     PRIME_PRINT_RESULT_CONTENT("Euler");
     return primeVector;
 }
-} // namespace num_prime
+} // namespace numeric::prime

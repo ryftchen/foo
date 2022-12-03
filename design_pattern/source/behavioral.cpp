@@ -2,15 +2,24 @@
 #include <map>
 #include <memory>
 #include <vector>
+#ifndef _NO_PRINT_AT_RUNTIME
 #include "utility/include/common.hpp"
 
 #define BEHAVIORAL_RESULT "\r\n*%-21s instance:\r\n%s"
+#define BEHAVIORAL_PRINT_RESULT_CONTENT(method) COMMON_PRINT(BEHAVIORAL_RESULT, method, output().str().c_str())
+#else
+#include <sstream>
 
-namespace dp_behavioral
+#define BEHAVIORAL_PRINT_RESULT_CONTENT(method)
+#endif
+
+namespace design_pattern::behavioral
 {
 BehavioralPattern::BehavioralPattern()
 {
+#ifndef _NO_PRINT_AT_RUNTIME
     std::cout << "\r\nBehavioral pattern:" << std::endl;
+#endif
 }
 
 // Chain Of Responsibility
@@ -85,6 +94,7 @@ void BehavioralPattern::chainOfResponsibilityInstance() const // NOLINT(readabil
 {
     using chain_of_responsibility::ConcreteHandler1;
     using chain_of_responsibility::ConcreteHandler2;
+    using chain_of_responsibility::output;
 
     std::shared_ptr<ConcreteHandler1> handler1 = std::make_shared<ConcreteHandler1>();
     std::shared_ptr<ConcreteHandler2> handler2 = std::make_shared<ConcreteHandler2>();
@@ -92,7 +102,7 @@ void BehavioralPattern::chainOfResponsibilityInstance() const // NOLINT(readabil
     handler1->setHandler(handler2);
     handler1->handleRequest();
 
-    COMMON_PRINT(BEHAVIORAL_RESULT, "ChainOfResponsibility", chain_of_responsibility::output().str().c_str());
+    BEHAVIORAL_PRINT_RESULT_CONTENT("ChainOfResponsibility");
 }
 
 // Command
@@ -162,6 +172,7 @@ void BehavioralPattern::commandInstance() const // NOLINT(readability-convert-me
     using command::Command;
     using command::ConcreteCommand;
     using command::Invoker;
+    using command::output;
     using command::Receiver;
 
     std::shared_ptr<ConcreteCommand> command = std::make_shared<ConcreteCommand>((std::make_shared<Receiver>()));
@@ -170,7 +181,7 @@ void BehavioralPattern::commandInstance() const // NOLINT(readability-convert-me
     invoker.set(command);
     invoker.confirm();
 
-    COMMON_PRINT(BEHAVIORAL_RESULT, "Command", command::output().str().c_str());
+    BEHAVIORAL_PRINT_RESULT_CONTENT("Command");
 }
 
 // Interpreter
@@ -241,6 +252,7 @@ void BehavioralPattern::interpreterInstance() const // NOLINT(readability-conver
     using interpreter::AbstractExpression;
     using interpreter::Context;
     using interpreter::NonTerminalExpression;
+    using interpreter::output;
     using interpreter::TerminalExpression;
 
     std::shared_ptr<AbstractExpression> a = std::make_shared<TerminalExpression>("A");
@@ -251,10 +263,10 @@ void BehavioralPattern::interpreterInstance() const // NOLINT(readability-conver
     context->set("A", true);
     context->set("B", false);
 
-    interpreter::output() << context->get("A") << " AND " << context->get("B");
-    interpreter::output() << " = " << exp->interpret(context) << std::endl;
+    output() << context->get("A") << " AND " << context->get("B");
+    output() << " = " << exp->interpret(context) << std::endl;
 
-    COMMON_PRINT(BEHAVIORAL_RESULT, "Interpreter", interpreter::output().str().c_str());
+    BEHAVIORAL_PRINT_RESULT_CONTENT("Interpreter");
 }
 
 // Iterator
@@ -341,6 +353,7 @@ void BehavioralPattern::iteratorInstance() const // NOLINT(readability-convert-m
 {
     using iterator::ConcreteAggregate;
     using iterator::Iterator;
+    using iterator::output;
 
     constexpr uint32_t size = 5;
     std::shared_ptr<ConcreteAggregate> list = std::make_shared<ConcreteAggregate>(size);
@@ -348,10 +361,10 @@ void BehavioralPattern::iteratorInstance() const // NOLINT(readability-convert-m
 
     for (; !iter->isDone(); iter->next())
     {
-        iterator::output() << "item value: " << iter->currentItem() << std::endl;
+        output() << "item value: " << iter->currentItem() << std::endl;
     }
 
-    COMMON_PRINT(BEHAVIORAL_RESULT, "Iterator", iterator::output().str().c_str());
+    BEHAVIORAL_PRINT_RESULT_CONTENT("Iterator");
 }
 
 // Mediator
@@ -453,6 +466,7 @@ void BehavioralPattern::mediatorInstance() const // NOLINT(readability-convert-m
     using mediator::ConcreteColleague;
     using mediator::ConcreteMediator;
     using mediator::Mediator;
+    using mediator::output;
 
     constexpr uint32_t id1 = 1, id2 = 2, id3 = 3;
     std::shared_ptr<Mediator> mediator = std::make_shared<ConcreteMediator>();
@@ -466,7 +480,7 @@ void BehavioralPattern::mediatorInstance() const // NOLINT(readability-convert-m
     c1->send("Hi!");
     c3->send("Hello!");
 
-    COMMON_PRINT(BEHAVIORAL_RESULT, "Mediator", mediator::output().str().c_str());
+    BEHAVIORAL_PRINT_RESULT_CONTENT("Mediator");
 }
 
 // Memento
@@ -555,6 +569,7 @@ void BehavioralPattern::mementoInstance() const // NOLINT(readability-convert-me
 {
     using memento::CareTaker;
     using memento::Originator;
+    using memento::output;
 
     constexpr int state1 = 1, state2 = 2, state3 = 3;
     std::shared_ptr<Originator> originator = std::make_shared<Originator>();
@@ -567,9 +582,9 @@ void BehavioralPattern::mementoInstance() const // NOLINT(readability-convert-me
     originator->setState(state3);
     caretaker->undo();
 
-    memento::output() << "actual state is " << originator->getState() << std::endl;
+    output() << "actual state is " << originator->getState() << std::endl;
 
-    COMMON_PRINT(BEHAVIORAL_RESULT, "Memento", memento::output().str().c_str());
+    BEHAVIORAL_PRINT_RESULT_CONTENT("Memento");
 }
 
 // Observer
@@ -651,14 +666,15 @@ void BehavioralPattern::observerInstance() const // NOLINT(readability-convert-m
 {
     using observer::ConcreteObserver;
     using observer::ConcreteSubject;
+    using observer::output;
     using observer::Subject;
 
     constexpr int state1 = 1, state2 = 2, state3 = 3;
     std::shared_ptr<ConcreteObserver> observer1 = std::make_shared<ConcreteObserver>(state1);
     std::shared_ptr<ConcreteObserver> observer2 = std::make_shared<ConcreteObserver>(state2);
 
-    observer::output() << "observer1 state: " << observer1->getState() << std::endl;
-    observer::output() << "observer2 state: " << observer2->getState() << std::endl;
+    output() << "observer1 state: " << observer1->getState() << std::endl;
+    output() << "observer2 state: " << observer2->getState() << std::endl;
 
     std::shared_ptr<Subject> subject = std::make_shared<ConcreteSubject>();
     subject->attach(observer1);
@@ -666,10 +682,10 @@ void BehavioralPattern::observerInstance() const // NOLINT(readability-convert-m
     subject->setState(state3);
     subject->notify();
 
-    observer::output() << "observer1 state: " << observer1->getState() << std::endl;
-    observer::output() << "observer2 state: " << observer2->getState() << std::endl;
+    output() << "observer1 state: " << observer1->getState() << std::endl;
+    output() << "observer2 state: " << observer2->getState() << std::endl;
 
-    COMMON_PRINT(BEHAVIORAL_RESULT, "Observer", observer::output().str().c_str());
+    BEHAVIORAL_PRINT_RESULT_CONTENT("Observer");
 }
 
 // State
@@ -732,6 +748,7 @@ void BehavioralPattern::stateInstance() const // NOLINT(readability-convert-memb
     using state::ConcreteStateA;
     using state::ConcreteStateB;
     using state::Context;
+    using state::output;
 
     std::shared_ptr<Context> context = std::make_shared<Context>();
 
@@ -741,7 +758,7 @@ void BehavioralPattern::stateInstance() const // NOLINT(readability-convert-memb
     context->setState(std::make_unique<ConcreteStateB>());
     context->request();
 
-    COMMON_PRINT(BEHAVIORAL_RESULT, "State", state::output().str().c_str());
+    BEHAVIORAL_PRINT_RESULT_CONTENT("State");
 }
 
 // Strategy
@@ -795,6 +812,7 @@ void BehavioralPattern::strategyInstance() const // NOLINT(readability-convert-m
     using strategy::ConcreteStrategyA;
     using strategy::ConcreteStrategyB;
     using strategy::Context;
+    using strategy::output;
 
     Context contextA(std::make_unique<ConcreteStrategyA>());
     contextA.contextInterface();
@@ -802,7 +820,7 @@ void BehavioralPattern::strategyInstance() const // NOLINT(readability-convert-m
     Context contextB(std::make_unique<ConcreteStrategyB>());
     contextB.contextInterface();
 
-    COMMON_PRINT(BEHAVIORAL_RESULT, "Strategy", strategy::output().str().c_str());
+    BEHAVIORAL_PRINT_RESULT_CONTENT("Strategy");
 }
 
 // Template Method
@@ -842,11 +860,12 @@ void BehavioralPattern::templateMethodInstance() const // NOLINT(readability-con
 {
     using template_method::AbstractClass;
     using template_method::ConcreteClass;
+    using template_method::output;
 
     std::shared_ptr<AbstractClass> tm = std::make_shared<ConcreteClass>();
     tm->templateMethod();
 
-    COMMON_PRINT(BEHAVIORAL_RESULT, "TemplateMethod", template_method::output().str().c_str());
+    BEHAVIORAL_PRINT_RESULT_CONTENT("TemplateMethod");
 }
 
 // Visitor
@@ -932,6 +951,7 @@ void BehavioralPattern::visitorInstance() const // NOLINT(readability-convert-me
     using visitor::ConcreteElementB;
     using visitor::ConcreteVisitor1;
     using visitor::ConcreteVisitor2;
+    using visitor::output;
 
     std::shared_ptr<ConcreteElementA> elementA = std::make_shared<ConcreteElementA>();
     std::shared_ptr<ConcreteElementB> elementB = std::make_shared<ConcreteElementB>();
@@ -943,6 +963,6 @@ void BehavioralPattern::visitorInstance() const // NOLINT(readability-convert-me
     elementB->accept(visitor1);
     elementB->accept(visitor2);
 
-    COMMON_PRINT(BEHAVIORAL_RESULT, "Visitor", visitor::output().str().c_str());
+    BEHAVIORAL_PRINT_RESULT_CONTENT("Visitor");
 }
-} // namespace dp_behavioral
+} // namespace design_pattern::behavioral

@@ -1,6 +1,6 @@
 #pragma once
 
-namespace dp_behavioral
+namespace design_pattern::behavioral
 {
 class BehavioralPattern
 {
@@ -20,4 +20,4 @@ public:
     void templateMethodInstance() const;
     void visitorInstance() const;
 };
-} // namespace dp_behavioral
+} // namespace design_pattern::behavioral

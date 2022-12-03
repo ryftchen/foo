@@ -1,6 +1,6 @@
 #pragma once
 
-namespace dp_creational
+namespace design_pattern::creational
 {
 class CreationalPattern
 {
@@ -14,4 +14,4 @@ public:
     void prototypeInstance() const;
     void singletonInstance() const;
 };
-} // namespace dp_creational
+} // namespace design_pattern::creational

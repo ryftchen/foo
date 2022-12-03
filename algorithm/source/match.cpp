@@ -1,33 +1,45 @@
 #include "match.hpp"
 #include <mpfr.h>
 #include <cstring>
-#include "utility/include/common.hpp"
 #include "utility/include/hash.hpp"
+#ifndef _NO_PRINT_AT_RUNTIME
+#include "utility/include/common.hpp"
 #include "utility/include/time.hpp"
 
 #define MATCH_RESULT(opt) \
     "*%-16s method: Found the pattern \"%s\" starting(" #opt ") at index %d.  ==>Run time: %8.5f ms\n"
 #define MATCH_NONE_RESULT "*%-16s method: Could not find the pattern \"%s\".  ==>Run time: %8.5f ms\n"
-#define MATCH_PRINT_RESULT_CONTENT(method)                                                  \
-    do                                                                                      \
-    {                                                                                       \
-        if (-1 != shift)                                                                    \
-        {                                                                                   \
-            COMMON_PRINT(MATCH_RESULT(1st), method, pattern, shift, TIME_INTERVAL(timing)); \
-        }                                                                                   \
-        else                                                                                \
-        {                                                                                   \
-            COMMON_PRINT(MATCH_NONE_RESULT, method, pattern, TIME_INTERVAL(timing));        \
-        }                                                                                   \
-    }                                                                                       \
+#define MATCH_PRINT_RESULT_CONTENT(method)                                                \
+    do                                                                                    \
+    {                                                                                     \
+        if (-1 != shift)                                                                  \
+        {                                                                                 \
+            COMMON_PRINT(MATCH_RESULT(1st), method, pattern, shift, MATCH_TIME_INTERVAL); \
+        }                                                                                 \
+        else                                                                              \
+        {                                                                                 \
+            COMMON_PRINT(MATCH_NONE_RESULT, method, pattern, MATCH_TIME_INTERVAL);        \
+        }                                                                                 \
+    }                                                                                     \
     while (0)
+#define MATCH_RUNTIME_BEGIN TIME_BEGIN(timing)
+#define MATCH_RUNTIME_END TIME_END(timing)
+#define MATCH_TIME_INTERVAL TIME_INTERVAL(timing)
+#else
+// #define NDEBUG
+#include <cassert>
 
-namespace algo_match
+#define MATCH_PRINT_RESULT_CONTENT(method)
+#define MATCH_RUNTIME_BEGIN
+#define MATCH_RUNTIME_END
+#endif
+
+namespace algorithm::match
 {
-MatchSolution::MatchSolution(const uint32_t length) :
-    length(length), marchingText(std::make_unique<char[]>(calculatePrecision(length)))
+MatchSolution::MatchSolution(const uint32_t textLen, const std::string_view singlePattern) :
+    marchingText(std::make_unique<char[]>(calculatePrecision(textLen))), singlePattern(singlePattern)
 {
-    setMatchingText(marchingText.get(), length);
+    setMatchingText(marchingText.get(), textLen);
 }
 
 MatchSolution::~MatchSolution()
@@ -35,36 +47,38 @@ MatchSolution::~MatchSolution()
     mpfr_free_cache();
 }
 
-void MatchSolution::setMatchingText(char* text, const uint32_t length)
+void MatchSolution::setMatchingText(char* text, const uint32_t textLen)
 {
-    assert((nullptr != text) && (length > 0));
+    assert((nullptr != text) && (textLen > 0));
     mpfr_t x;
-    mpfr_init2(x, calculatePrecision(length));
+    mpfr_init2(x, calculatePrecision(textLen));
     mpfr_const_pi(x, MPFR_RNDN);
     mpfr_exp_t mpfrDecimalLocation;
     mpfr_get_str(text, &mpfrDecimalLocation, mpfrBase, 0, x, MPFR_RNDN);
     mpfr_clear(x);
 
     assert('\0' != *text);
-    text[length] = '\0';
+    text[textLen] = '\0';
 
+#ifndef _NO_PRINT_AT_RUNTIME
     std::string out(text);
     out.insert(1, ".");
-    std::cout << "\r\nπ " << length << " digits:\r\n"
-              << out.substr(0, std::min(length, maxNumPerLineOfPrint)) << std::endl;
-    if (length > maxNumPerLineOfPrint)
+    std::cout << "\r\nπ " << textLen << " digits:\r\n"
+              << out.substr(0, std::min(textLen, maxNumPerLineOfPrint)) << std::endl;
+    if (textLen > maxNumPerLineOfPrint)
     {
         std::cout << "...\r\n...\r\n..." << std::endl;
-        if (length > maxNumPerLineOfPrint)
+        if (textLen > maxNumPerLineOfPrint)
         {
             std::cout
-                << ((length > (maxNumPerLineOfPrint * 2))
+                << ((textLen > (maxNumPerLineOfPrint * 2))
                         ? out.substr(out.length() - maxNumPerLineOfPrint, out.length())
                         : out.substr(maxNumPerLineOfPrint + 1, out.length()))
                 << std::endl;
         }
     }
     std::cout << std::endl;
+#endif
 }
 
 // Rabin-Karp
@@ -74,24 +88,25 @@ int MatchSolution::rkMethod( // NOLINT(readability-convert-member-functions-to-s
     const uint32_t textLen,
     const uint32_t patternLen) const
 {
-    TIME_BEGIN(timing);
+    MATCH_RUNTIME_BEGIN;
     int shift = -1;
-    long long textHash = util_hash::rollingHash(std::string{text}.substr(0, patternLen).c_str(), patternLen);
-    long long patternHash = util_hash::rollingHash(pattern, patternLen);
+    long long textHash = utility::hash::rollingHash(std::string{text}.substr(0, patternLen).c_str(), patternLen);
+    long long patternHash = utility::hash::rollingHash(pattern, patternLen);
     if (textHash != patternHash)
     {
         long long pow = 1;
         for (uint32_t j = 0; j < patternLen - 1; ++j)
         {
-            pow = (pow * util_hash::rollingHashBase) % util_hash::rollingHashMod;
+            pow = (pow * utility::hash::rollingHashBase) % utility::hash::rollingHashMod;
         }
 
         for (uint32_t i = 1; i <= textLen - patternLen; ++i)
         {
             textHash = (textHash - static_cast<long long>(text[i - 1]) * pow);
-            textHash = (textHash % util_hash::rollingHashMod + util_hash::rollingHashMod) % util_hash::rollingHashMod;
-            textHash = (textHash * util_hash::rollingHashBase + static_cast<int>(text[i + patternLen - 1]))
-                % util_hash::rollingHashMod;
+            textHash = (textHash % utility::hash::rollingHashMod + utility::hash::rollingHashMod)
+                % utility::hash::rollingHashMod;
+            textHash = (textHash * utility::hash::rollingHashBase + static_cast<int>(text[i + patternLen - 1]))
+                % utility::hash::rollingHashMod;
             if (textHash == patternHash)
             {
                 shift = i;
@@ -104,7 +119,7 @@ int MatchSolution::rkMethod( // NOLINT(readability-convert-member-functions-to-s
         shift = 0;
     }
 
-    TIME_END(timing);
+    MATCH_RUNTIME_END;
     MATCH_PRINT_RESULT_CONTENT("RabinKarp");
     return shift;
 }
@@ -116,7 +131,7 @@ int MatchSolution::kmpMethod( // NOLINT(readability-convert-member-functions-to-
     const uint32_t textLen,
     const uint32_t patternLen) const
 {
-    TIME_BEGIN(timing);
+    MATCH_RUNTIME_BEGIN;
     int shift = -1;
     uint32_t next[patternLen + 1];
 
@@ -152,7 +167,7 @@ int MatchSolution::kmpMethod( // NOLINT(readability-convert-member-functions-to-
         }
     }
 
-    TIME_END(timing);
+    MATCH_RUNTIME_END;
     MATCH_PRINT_RESULT_CONTENT("KnuthMorrisPratt");
     return shift;
 }
@@ -164,7 +179,7 @@ int MatchSolution::bmMethod( // NOLINT(readability-convert-member-functions-to-s
     const uint32_t textLen,
     const uint32_t patternLen) const
 {
-    TIME_BEGIN(timing);
+    MATCH_RUNTIME_BEGIN;
     int shift = -1;
     uint32_t badCharRuleTable[maxASCII], goodSuffixIndexTable[maxASCII];
 
@@ -189,7 +204,7 @@ int MatchSolution::bmMethod( // NOLINT(readability-convert-member-functions-to-s
         textIndex += std::max(badCharRuleTable[text[textIndex]], goodSuffixIndexTable[patternIndex]);
     }
 
-    TIME_END(timing);
+    MATCH_RUNTIME_END;
     MATCH_PRINT_RESULT_CONTENT("BoyerMoore");
     return shift;
 }
@@ -254,7 +269,7 @@ int MatchSolution::horspoolMethod( // NOLINT(readability-convert-member-function
     const uint32_t textLen,
     const uint32_t patternLen) const
 {
-    TIME_BEGIN(timing);
+    MATCH_RUNTIME_BEGIN;
     int shift = -1;
     uint32_t badCharShiftTable[maxASCII];
 
@@ -278,7 +293,7 @@ int MatchSolution::horspoolMethod( // NOLINT(readability-convert-member-function
         moveLen += badCharShiftTable[text[moveLen]];
     }
 
-    TIME_END(timing);
+    MATCH_RUNTIME_END;
     MATCH_PRINT_RESULT_CONTENT("Horspool");
     return shift;
 }
@@ -306,7 +321,7 @@ int MatchSolution::sundayMethod( // NOLINT(readability-convert-member-functions-
     const uint32_t textLen,
     const uint32_t patternLen) const
 {
-    TIME_BEGIN(timing);
+    MATCH_RUNTIME_BEGIN;
     int shift = -1;
     uint32_t badCharShiftTable[maxASCII];
 
@@ -332,7 +347,7 @@ int MatchSolution::sundayMethod( // NOLINT(readability-convert-member-functions-
         }
     }();
 
-    TIME_END(timing);
+    MATCH_RUNTIME_END;
     MATCH_PRINT_RESULT_CONTENT("Sunday");
     return shift;
 }
@@ -352,4 +367,4 @@ void MatchSolution::fillBadCharShiftTableForSunday(
         badCharShiftTable[pattern[j]] = patternLen - j;
     }
 }
-} // namespace algo_match
+} // namespace algorithm::match

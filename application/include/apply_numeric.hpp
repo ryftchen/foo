@@ -4,7 +4,7 @@
 #include <sstream>
 #include <vector>
 
-namespace app_num
+namespace application::app_num
 {
 class NumericTask
 {
@@ -162,4 +162,4 @@ extern void runIntegral(const std::vector<std::string>& targets);
 extern void updateIntegralTask(const std::string& target);
 extern void runPrime(const std::vector<std::string>& targets);
 extern void updatePrimeTask(const std::string& target);
-} // namespace app_num
+} // namespace application::app_num

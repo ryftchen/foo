@@ -1,6 +1,7 @@
 #pragma once
 
-namespace num_arithmetic
+#include <utility>
+namespace numeric::arithmetic
 {
 class ArithmeticSolution
 {
@@ -13,11 +14,21 @@ public:
     [[nodiscard]] int multiplicationMethod(const int multiplier, const int multiplicand) const;
     [[nodiscard]] int divisionMethod(const int dividend, const int divisor) const;
 
+    [[nodiscard]] inline std::pair<int, int> getIntegers() const;
+
 private:
+    const int integer1;
+    const int integer2;
+
     static inline int bitAdd(const int a, const int b);
     static inline int bitSub(const int a, const int b);
     static inline int bitAbs(const int a);
 };
+
+inline std::pair<int, int> ArithmeticSolution::getIntegers() const
+{
+    return std::make_pair(integer1, integer2);
+}
 
 inline int ArithmeticSolution::bitAdd(const int a, const int b)
 {
@@ -35,4 +46,4 @@ inline int ArithmeticSolution::bitAbs(const int a)
     const int mask = a >> (sizeof(int) * 8 - 1);
     return ((a ^ mask) - mask);
 }
-} // namespace num_arithmetic
+} // namespace numeric::arithmetic

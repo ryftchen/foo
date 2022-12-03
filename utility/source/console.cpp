@@ -4,7 +4,7 @@
 #include <iomanip>
 #include <iostream>
 
-namespace util_console
+namespace utility::console
 {
 Console* currentConsole = nullptr;
 
@@ -226,4 +226,4 @@ char* Console::commandIterator(const char* text, int state)
 
     return nullptr;
 }
-} // namespace util_console
+} // namespace utility::console

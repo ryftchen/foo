@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-namespace util_hash
+namespace utility::hash
 {
 constexpr uint32_t bkdrHashSeed = 131;
 constexpr int bkdrHashSize = 0x7FFFFFFF;
@@ -21,4 +21,4 @@ constexpr uint64_t operator""_bkdrHash(const char* const str, const std::size_t 
 
 extern uint32_t bkdrHash(const char* str);
 extern int rollingHash(const char* str, const uint32_t length);
-} // namespace util_hash
+} // namespace utility::hash

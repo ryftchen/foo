@@ -1,6 +1,6 @@
 #pragma once
 
-namespace ds_linear
+namespace date_structure::linear
 {
 class LinearStructure
 {
@@ -43,4 +43,4 @@ static int dllDelete(DLL pHead, const int index);
 static int dllDeleteFirst(DLL pHead);
 static int dllDeleteLast(DLL pHead);
 } // namespace doubly_linked_list
-} // namespace ds_linear
+} // namespace date_structure::linear

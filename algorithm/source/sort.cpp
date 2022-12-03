@@ -1,5 +1,6 @@
 #include "sort.hpp"
 #include <queue>
+#ifndef _NO_PRINT_AT_RUNTIME
 #include "utility/include/common.hpp"
 
 #define SORT_RESULT(opt) "\r\n*%-9s method: (" #opt ")\r\n%s\r\n==>Run time: %8.5f ms\n"
@@ -13,11 +14,22 @@
             SORT_RESULT(asc),                                                    \
             method,                                                              \
             formatArray<T>(sortArray, length, arrayBuffer, arrayBufferSize + 1), \
-            TIME_INTERVAL(timing));                                              \
+            SORT_TIME_INTERVAL);                                                 \
     }                                                                            \
     while (0)
+#define SORT_RUNTIME_BEGIN TIME_BEGIN(timing)
+#define SORT_RUNTIME_END TIME_END(timing)
+#define SORT_TIME_INTERVAL TIME_INTERVAL(timing)
+#else
+// #define NDEBUG
+#include <cassert>
 
-namespace algo_sort
+#define SORT_PRINT_RESULT_CONTENT(method)
+#define SORT_RUNTIME_BEGIN
+#define SORT_RUNTIME_END
+#endif
+
+namespace algorithm::sort
 {
 template class SortSolution<int>;
 template std::vector<int> SortSolution<int>::bubbleMethod(int* const array, const uint32_t length) const;
@@ -35,7 +47,7 @@ template std::vector<int> SortSolution<int>::radixMethod(int* const array, const
 template <class T>
 std::vector<T> SortSolution<T>::bubbleMethod(T* const array, const uint32_t length) const
 {
-    TIME_BEGIN(timing);
+    SORT_RUNTIME_BEGIN;
     T sortArray[length];
     sortArray[0] = '\0';
     std::memcpy(sortArray, array, length * sizeof(T));
@@ -51,7 +63,7 @@ std::vector<T> SortSolution<T>::bubbleMethod(T* const array, const uint32_t leng
         }
     }
 
-    TIME_END(timing);
+    SORT_RUNTIME_END;
     SORT_PRINT_RESULT_CONTENT("Bubble");
     return std::vector<T>(sortArray, sortArray + length);
 }
@@ -60,7 +72,7 @@ std::vector<T> SortSolution<T>::bubbleMethod(T* const array, const uint32_t leng
 template <class T>
 std::vector<T> SortSolution<T>::selectionMethod(T* const array, const uint32_t length) const
 {
-    TIME_BEGIN(timing);
+    SORT_RUNTIME_BEGIN;
     T sortArray[length];
     sortArray[0] = '\0';
     std::memcpy(sortArray, array, length * sizeof(T));
@@ -78,7 +90,7 @@ std::vector<T> SortSolution<T>::selectionMethod(T* const array, const uint32_t l
         std::swap(sortArray[i], sortArray[min]);
     }
 
-    TIME_END(timing);
+    SORT_RUNTIME_END;
     SORT_PRINT_RESULT_CONTENT("Selection");
     return std::vector<T>(sortArray, sortArray + length);
 }
@@ -87,7 +99,7 @@ std::vector<T> SortSolution<T>::selectionMethod(T* const array, const uint32_t l
 template <class T>
 std::vector<T> SortSolution<T>::insertionMethod(T* const array, const uint32_t length) const
 {
-    TIME_BEGIN(timing);
+    SORT_RUNTIME_BEGIN;
     T sortArray[length];
     sortArray[0] = '\0';
     std::memcpy(sortArray, array, length * sizeof(T));
@@ -104,7 +116,7 @@ std::vector<T> SortSolution<T>::insertionMethod(T* const array, const uint32_t l
         sortArray[n + 1] = temp;
     }
 
-    TIME_END(timing);
+    SORT_RUNTIME_END;
     SORT_PRINT_RESULT_CONTENT("Insertion");
     return std::vector<T>(sortArray, sortArray + length);
 }
@@ -113,7 +125,7 @@ std::vector<T> SortSolution<T>::insertionMethod(T* const array, const uint32_t l
 template <class T>
 std::vector<T> SortSolution<T>::shellMethod(T* const array, const uint32_t length) const
 {
-    TIME_BEGIN(timing);
+    SORT_RUNTIME_BEGIN;
     T sortArray[length];
     sortArray[0] = '\0';
     std::memcpy(sortArray, array, length * sizeof(T));
@@ -131,7 +143,7 @@ std::vector<T> SortSolution<T>::shellMethod(T* const array, const uint32_t lengt
         gap /= 2;
     }
 
-    TIME_END(timing);
+    SORT_RUNTIME_END;
     SORT_PRINT_RESULT_CONTENT("Shell");
     return std::vector<T>(sortArray, sortArray + length);
 }
@@ -140,14 +152,14 @@ std::vector<T> SortSolution<T>::shellMethod(T* const array, const uint32_t lengt
 template <class T>
 std::vector<T> SortSolution<T>::mergeMethod(T* const array, const uint32_t length) const
 {
-    TIME_BEGIN(timing);
+    SORT_RUNTIME_BEGIN;
     T sortArray[length];
     sortArray[0] = '\0';
     std::memcpy(sortArray, array, length * sizeof(T));
 
     mergeSortRecursive(sortArray, 0, length - 1);
 
-    TIME_END(timing);
+    SORT_RUNTIME_END;
     SORT_PRINT_RESULT_CONTENT("Merge");
     return std::vector<T>(sortArray, sortArray + length);
 }
@@ -187,14 +199,14 @@ void SortSolution<T>::mergeSortRecursive(T* const sortArray, const uint32_t begi
 template <class T>
 std::vector<T> SortSolution<T>::quickMethod(T* const array, const uint32_t length) const
 {
-    TIME_BEGIN(timing);
+    SORT_RUNTIME_BEGIN;
     T sortArray[length];
     sortArray[0] = '\0';
     std::memcpy(sortArray, array, length * sizeof(T));
 
     quickSortRecursive(sortArray, 0, length - 1);
 
-    TIME_END(timing);
+    SORT_RUNTIME_END;
     SORT_PRINT_RESULT_CONTENT("Quick");
     return std::vector<T>(sortArray, sortArray + length);
 }
@@ -242,7 +254,7 @@ void SortSolution<T>::quickSortRecursive(T* const sortArray, const uint32_t begi
 template <class T>
 std::vector<T> SortSolution<T>::heapMethod(T* const array, const uint32_t length) const
 {
-    TIME_BEGIN(timing);
+    SORT_RUNTIME_BEGIN;
     T sortArray[length];
     sortArray[0] = '\0';
     std::memcpy(sortArray, array, length * sizeof(T));
@@ -257,7 +269,7 @@ std::vector<T> SortSolution<T>::heapMethod(T* const array, const uint32_t length
         buildMaxHeap(sortArray, 0, i - 1);
     }
 
-    TIME_END(timing);
+    SORT_RUNTIME_END;
     SORT_PRINT_RESULT_CONTENT("Heap");
     return std::vector<T>(sortArray, sortArray + length);
 }
@@ -290,11 +302,13 @@ std::vector<T> SortSolution<T>::countingMethod(T* const array, const uint32_t le
 {
     if (!std::is_integral_v<T>)
     {
+#ifndef _NO_PRINT_AT_RUNTIME
         COMMON_PRINT("\r\n*Counting  method:\r\nThe type of array isn't integral.\n");
+#endif
         return std::vector<T>();
     }
 
-    TIME_BEGIN(timing);
+    SORT_RUNTIME_BEGIN;
     T sortArray[length];
     sortArray[0] = '\0';
     std::memcpy(sortArray, array, length * sizeof(T));
@@ -324,7 +338,7 @@ std::vector<T> SortSolution<T>::countingMethod(T* const array, const uint32_t le
         }
     }
 
-    TIME_END(timing);
+    SORT_RUNTIME_END;
     SORT_PRINT_RESULT_CONTENT("Counting");
     return std::vector<T>(sortArray, sortArray + length);
 }
@@ -333,7 +347,7 @@ std::vector<T> SortSolution<T>::countingMethod(T* const array, const uint32_t le
 template <class T>
 std::vector<T> SortSolution<T>::bucketMethod(T* const array, const uint32_t length) const
 {
-    TIME_BEGIN(timing);
+    SORT_RUNTIME_BEGIN;
     T sortArray[length];
     sortArray[0] = '\0';
     std::memcpy(sortArray, array, length * sizeof(T));
@@ -366,7 +380,7 @@ std::vector<T> SortSolution<T>::bucketMethod(T* const array, const uint32_t leng
         }
     }
 
-    TIME_END(timing);
+    SORT_RUNTIME_END;
     SORT_PRINT_RESULT_CONTENT("Bucket");
     return std::vector<T>(sortArray, sortArray + length);
 }
@@ -377,12 +391,13 @@ std::vector<T> SortSolution<T>::radixMethod(T* const array, const uint32_t lengt
 {
     if (!std::is_integral_v<T>)
     {
+#ifndef _NO_PRINT_AT_RUNTIME
         COMMON_PRINT("\r\n*Radix     method:\r\nThe type of array isn't integral.\n");
+#endif
         return std::vector<T>();
-        ;
     }
 
-    TIME_BEGIN(timing);
+    SORT_RUNTIME_BEGIN;
     T sortArray[length];
     sortArray[0] = '\0';
     std::memcpy(sortArray, array, length * sizeof(T));
@@ -457,8 +472,8 @@ std::vector<T> SortSolution<T>::radixMethod(T* const array, const uint32_t lengt
         }
     }
 
-    TIME_END(timing);
+    SORT_RUNTIME_END;
     SORT_PRINT_RESULT_CONTENT("Radix");
     return std::vector<T>(sortArray, sortArray + length);
 }
-} // namespace algo_sort
+} // namespace algorithm::sort

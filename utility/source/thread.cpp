@@ -1,6 +1,6 @@
 #include "thread.hpp"
 
-namespace util_thread
+namespace utility::thread
 {
 Thread::Thread(const uint32_t count)
 {
@@ -64,4 +64,4 @@ Thread::~Thread()
         thread.join();
     }
 }
-} // namespace util_thread
+} // namespace utility::thread

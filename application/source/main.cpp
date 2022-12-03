@@ -5,9 +5,12 @@
 
 int main(int argc, char* argv[])
 {
-    std::shared_ptr<util_thread::Thread> thread = std::make_shared<util_thread::Thread>(2);
-    thread->enqueue("logger", &util_log::Log::runLogger, &util_log::Log::getInstance());
-    thread->enqueue("commander", &app_command::Command::runCommander, &app_command::Command::getInstance(), argc, argv);
+    using application::command::Command;
+    using utility::log::Log;
+
+    std::shared_ptr<utility::thread::Thread> thread = std::make_shared<utility::thread::Thread>(2);
+    thread->enqueue("commander", &Command::runCommander, &Command::getInstance(), argc, argv);
+    thread->enqueue("logger", &Log::runLogger, &Log::getInstance());
 
     return 0;
 }

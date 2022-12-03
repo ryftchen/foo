@@ -25,7 +25,7 @@ class Output:
     colorBlue = "\033[0;34;40m"
     colorForBackground = "\033[49m"
     colorOff = "\033[0m"
-    colorEscapeRegex = r"((\033.*?m)|(\007))"
+    colorEscapeRegex = r"((\033.*?m)|(\007)|(\017))"
     columnLength = 10
     alignMaxLen = 30
     alignCmdLen = 10

@@ -10,19 +10,19 @@
 #include "utility/include/log.hpp"
 #include "utility/include/thread.hpp"
 
-#define ALGORITHM_PRINT_TASK_BEGIN_TITLE(taskType)                                                                 \
+#define APP_ALGO_PRINT_TASK_BEGIN_TITLE(taskType)                                                                  \
     std::cout << "\r\n"                                                                                            \
               << "ALGORITHM TASK: " << std::setiosflags(std::ios_base::left) << std::setfill('.') << std::setw(50) \
               << taskType << "BEGIN" << std::resetiosflags(std::ios_base::left) << std::setfill(' ') << std::endl; \
     {
-#define ALGORITHM_PRINT_TASK_END_TITLE(taskType)                                                                   \
+#define APP_ALGO_PRINT_TASK_END_TITLE(taskType)                                                                    \
     }                                                                                                              \
     std::cout << "\r\n"                                                                                            \
               << "ALGORITHM TASK: " << std::setiosflags(std::ios_base::left) << std::setfill('.') << std::setw(50) \
               << taskType << "END" << std::resetiosflags(std::ios_base::left) << std::setfill(' ') << "\r\n"       \
               << std::endl;
 
-namespace app_algo
+namespace application::app_algo
 {
 using Type = AlgorithmTask::Type;
 template <class T>
@@ -50,7 +50,7 @@ constexpr int arrayRangeForSort1 = -50;
 constexpr int arrayRangeForSort2 = 150;
 constexpr uint32_t arrayLengthForSort = 53;
 
-class Griewank : public algo_optimal::function::Function
+class Griewank : public algorithm::optimal::function::Function
 {
 public:
     double operator()(const double x) const override
@@ -65,7 +65,7 @@ public:
         "f(x)=1+1/4000*Σ(1→n)[(Xi)^2]-Π(1→n)[cos(Xi/(i)^(1/2))],x∈[-600,600] (one-dimensional Griewank)"};
 };
 
-class Rastrigin : public algo_optimal::function::Function
+class Rastrigin : public algorithm::optimal::function::Function
 {
 public:
     double operator()(const double x) const override
@@ -88,14 +88,16 @@ void runMatch(const std::vector<std::string>& targets)
         return;
     }
 
-    using input::singlePatternForMatch;
-    static_assert(algo_match::maxDigit > singlePatternForMatch.length());
-    ALGORITHM_PRINT_TASK_BEGIN_TITLE(Type::match);
-    auto* threads = app_command::getMemoryForMultithreading().newElement(std::min(
+    using algorithm::match::MatchSolution;
+    using utility::hash::operator""_bkdrHash;
+
+    static_assert(algorithm::match::maxDigit > input::singlePatternForMatch.length());
+    APP_ALGO_PRINT_TASK_BEGIN_TITLE(Type::match);
+    auto* threads = command::getMemoryForMultithreading().newElement(std::min(
         static_cast<uint32_t>(getBit<MatchMethod>().count()), static_cast<uint32_t>(Bottom<MatchMethod>::value)));
 
-    using algo_match::MatchSolution;
-    const std::shared_ptr<MatchSolution> match = std::make_shared<MatchSolution>(algo_match::maxDigit);
+    const std::shared_ptr<MatchSolution> match =
+        std::make_shared<MatchSolution>(algorithm::match::maxDigit, input::singlePatternForMatch);
     const auto matchFunctor =
         [&](const std::string& threadName,
             int (MatchSolution::*methodPtr)(const char*, const char*, const uint32_t, const uint32_t) const)
@@ -105,12 +107,11 @@ void runMatch(const std::vector<std::string>& targets)
             methodPtr,
             match,
             match->getMatchingText().get(),
-            singlePatternForMatch.data(),
-            match->getLength(),
-            singlePatternForMatch.length());
+            match->getSinglePattern().data(),
+            std::string_view(match->getMatchingText().get()).length(),
+            match->getSinglePattern().length());
     };
 
-    using util_hash::operator""_bkdrHash;
     for (int i = 0; i < Bottom<MatchMethod>::value; ++i)
     {
         if (!getBit<MatchMethod>().test(MatchMethod(i)))
@@ -119,7 +120,7 @@ void runMatch(const std::vector<std::string>& targets)
         }
 
         const std::string targetMethod = targets.at(i), threadName = "m_" + targetMethod;
-        switch (util_hash::bkdrHash(targetMethod.data()))
+        switch (utility::hash::bkdrHash(targetMethod.data()))
         {
             case "rab"_bkdrHash:
                 matchFunctor(threadName, &MatchSolution::rkMethod);
@@ -142,14 +143,14 @@ void runMatch(const std::vector<std::string>& targets)
         }
     }
 
-    app_command::getMemoryForMultithreading().deleteElement(threads);
-    ALGORITHM_PRINT_TASK_END_TITLE(Type::match);
+    command::getMemoryForMultithreading().deleteElement(threads);
+    APP_ALGO_PRINT_TASK_END_TITLE(Type::match);
 }
 
 void updateMatchTask(const std::string& target)
 {
-    using util_hash::operator""_bkdrHash;
-    switch (util_hash::bkdrHash(target.c_str()))
+    using utility::hash::operator""_bkdrHash;
+    switch (utility::hash::bkdrHash(target.c_str()))
     {
         case "rab"_bkdrHash:
             setBit<MatchMethod>(MatchMethod::rabinKarp);
@@ -179,20 +180,20 @@ void runNotation(const std::vector<std::string>& targets)
         return;
     }
 
-    ALGORITHM_PRINT_TASK_BEGIN_TITLE(Type::notation);
-    auto* threads = app_command::getMemoryForMultithreading().newElement(std::min(
+    using algorithm::notation::NotationSolution;
+    using utility::hash::operator""_bkdrHash;
+
+    APP_ALGO_PRINT_TASK_BEGIN_TITLE(Type::notation);
+    auto* threads = command::getMemoryForMultithreading().newElement(std::min(
         static_cast<uint32_t>(getBit<NotationMethod>().count()), static_cast<uint32_t>(Bottom<NotationMethod>::value)));
 
-    using algo_notation::NotationSolution;
-    using input::infixForNotation;
-    const std::shared_ptr<NotationSolution> notation = std::make_shared<NotationSolution>(infixForNotation);
+    const std::shared_ptr<NotationSolution> notation = std::make_shared<NotationSolution>(input::infixForNotation);
     const auto notationFunctor =
         [&](const std::string& threadName, std::string (NotationSolution::*methodPtr)(const std::string&) const)
     {
-        threads->enqueue(threadName, methodPtr, notation, std::string{infixForNotation});
+        threads->enqueue(threadName, methodPtr, notation, std::string{notation->getInfixNotation()});
     };
 
-    using util_hash::operator""_bkdrHash;
     for (int i = 0; i < Bottom<NotationMethod>::value; ++i)
     {
         if (!getBit<NotationMethod>().test(NotationMethod(i)))
@@ -201,7 +202,7 @@ void runNotation(const std::vector<std::string>& targets)
         }
 
         const std::string targetMethod = targets.at(i), threadName = "n_" + targetMethod;
-        switch (util_hash::bkdrHash(targetMethod.data()))
+        switch (utility::hash::bkdrHash(targetMethod.data()))
         {
             case "pre"_bkdrHash:
                 notationFunctor(threadName, &NotationSolution::prefixMethod);
@@ -215,14 +216,14 @@ void runNotation(const std::vector<std::string>& targets)
         }
     }
 
-    app_command::getMemoryForMultithreading().deleteElement(threads);
-    ALGORITHM_PRINT_TASK_END_TITLE(Type::notation);
+    command::getMemoryForMultithreading().deleteElement(threads);
+    APP_ALGO_PRINT_TASK_END_TITLE(Type::notation);
 }
 
 void updateNotationTask(const std::string& target)
 {
-    using util_hash::operator""_bkdrHash;
-    switch (util_hash::bkdrHash(target.c_str()))
+    using utility::hash::operator""_bkdrHash;
+    switch (utility::hash::bkdrHash(target.c_str()))
     {
         case "pre"_bkdrHash:
             setBit<NotationMethod>(NotationMethod::prefix);
@@ -243,14 +244,16 @@ void runOptimal(const std::vector<std::string>& targets)
         return;
     }
 
-    using Griewank = input::Griewank;
-    using Rastrigin = input::Rastrigin;
+    using input::Griewank;
+    using input::Rastrigin;
     typedef std::variant<Griewank, Rastrigin> OptimalFuncTarget;
+
+#ifndef _NO_PRINT_AT_RUNTIME
     const auto printFunctor = [](const OptimalFuncTarget& function)
     {
         constexpr std::string_view prefix{"\r\nOptimal function: "};
         std::visit(
-            algo_optimal::function::FuncOverloaded{
+            algorithm::optimal::function::FuncOverloaded{
                 [&prefix](const Griewank& /*unused*/)
                 {
                     std::cout << prefix << Griewank::funcStr << std::endl;
@@ -262,27 +265,28 @@ void runOptimal(const std::vector<std::string>& targets)
             },
             function);
     };
+#endif
     const auto resultFunctor = [targets](
-                                   const algo_optimal::function::Function& function,
-                                   const algo_optimal::function::FuncRange<double, double>& range)
+                                   const algorithm::optimal::function::Function& function,
+                                   const algorithm::optimal::function::FuncRange<double, double>& range)
     {
-        assert((range.range1 < range.range2) && (algo_optimal::epsilon > 0.0));
-        auto* threads = app_command::getMemoryForMultithreading().newElement(std::min(
+        assert((range.range1 < range.range2) && (algorithm::optimal::epsilon > 0.0));
+        auto* threads = command::getMemoryForMultithreading().newElement(std::min(
             static_cast<uint32_t>(getBit<OptimalMethod>().count()),
             static_cast<uint32_t>(Bottom<OptimalMethod>::value)));
         const auto optimalFunctor =
-            [&](const std::string& threadName, const std::shared_ptr<algo_optimal::OptimalSolution>& classPtr)
+            [&](const std::string& threadName, const std::shared_ptr<algorithm::optimal::OptimalSolution>& classPtr)
         {
             threads->enqueue(
                 threadName,
-                &algo_optimal::OptimalSolution::operator(),
+                &algorithm::optimal::OptimalSolution::operator(),
                 classPtr,
                 range.range1,
                 range.range2,
-                algo_optimal::epsilon);
+                algorithm::optimal::epsilon);
         };
 
-        using util_hash::operator""_bkdrHash;
+        using utility::hash::operator""_bkdrHash;
         for (int i = 0; i < Bottom<OptimalMethod>::value; ++i)
         {
             if (!getBit<OptimalMethod>().test(OptimalMethod(i)))
@@ -291,40 +295,42 @@ void runOptimal(const std::vector<std::string>& targets)
             }
 
             const std::string targetMethod = targets.at(i), threadName = "o_" + targetMethod;
-            switch (util_hash::bkdrHash(targetMethod.data()))
+            switch (utility::hash::bkdrHash(targetMethod.data()))
             {
                 case "gra"_bkdrHash:
-                    optimalFunctor(threadName, std::make_shared<algo_optimal::Gradient>(function));
+                    optimalFunctor(threadName, std::make_shared<algorithm::optimal::Gradient>(function));
                     break;
                 case "ann"_bkdrHash:
-                    optimalFunctor(threadName, std::make_shared<algo_optimal::Annealing>(function));
+                    optimalFunctor(threadName, std::make_shared<algorithm::optimal::Annealing>(function));
                     break;
                 case "par"_bkdrHash:
-                    optimalFunctor(threadName, std::make_shared<algo_optimal::Particle>(function));
+                    optimalFunctor(threadName, std::make_shared<algorithm::optimal::Particle>(function));
                     break;
                 case "gen"_bkdrHash:
-                    optimalFunctor(threadName, std::make_shared<algo_optimal::Genetic>(function));
+                    optimalFunctor(threadName, std::make_shared<algorithm::optimal::Genetic>(function));
                     break;
                 default:
                     LOG_DBG("Unable to execute unknown optimal method.");
                     break;
             }
         }
-        app_command::getMemoryForMultithreading().deleteElement(threads);
+        command::getMemoryForMultithreading().deleteElement(threads);
     };
 
-    ALGORITHM_PRINT_TASK_BEGIN_TITLE(Type::optimal);
+    APP_ALGO_PRINT_TASK_BEGIN_TITLE(Type::optimal);
 
     const std::unordered_multimap<
-        algo_optimal::function::FuncRange<double, double>,
+        algorithm::optimal::function::FuncRange<double, double>,
         OptimalFuncTarget,
-        algo_optimal::function::FuncMapHash>
+        algorithm::optimal::function::FuncMapHash>
         optimalFuncMap{
             {{Griewank::range1, Griewank::range2, Griewank::funcStr}, Griewank()},
             {{Rastrigin::range1, Rastrigin::range2, Rastrigin::funcStr}, Rastrigin()}};
     for ([[maybe_unused]] const auto& [range, expression] : optimalFuncMap)
     {
+#ifndef _NO_PRINT_AT_RUNTIME
         printFunctor(expression);
+#endif
         switch (expression.index())
         {
             case 0:
@@ -337,13 +343,13 @@ void runOptimal(const std::vector<std::string>& targets)
         }
     }
 
-    ALGORITHM_PRINT_TASK_END_TITLE(Type::optimal);
+    APP_ALGO_PRINT_TASK_END_TITLE(Type::optimal);
 }
 
 void updateOptimalTask(const std::string& target)
 {
-    using util_hash::operator""_bkdrHash;
-    switch (util_hash::bkdrHash(target.c_str()))
+    using utility::hash::operator""_bkdrHash;
+    switch (utility::hash::bkdrHash(target.c_str()))
     {
         case "gra"_bkdrHash:
             setBit<OptimalMethod>(OptimalMethod::gradient);
@@ -370,15 +376,17 @@ void runSearch(const std::vector<std::string>& targets)
         return;
     }
 
+    using algorithm::search::SearchSolution;
     using input::arrayLengthForSearch;
     using input::arrayRangeForSearch1;
     using input::arrayRangeForSearch2;
+    using utility::hash::operator""_bkdrHash;
+
     static_assert((arrayRangeForSearch1 < arrayRangeForSearch2) && (arrayLengthForSearch > 0));
-    ALGORITHM_PRINT_TASK_BEGIN_TITLE(Type::search);
-    auto* threads = app_command::getMemoryForMultithreading().newElement(std::min(
+    APP_ALGO_PRINT_TASK_BEGIN_TITLE(Type::search);
+    auto* threads = command::getMemoryForMultithreading().newElement(std::min(
         static_cast<uint32_t>(getBit<SearchMethod>().count()), static_cast<uint32_t>(Bottom<SearchMethod>::value)));
 
-    using algo_search::SearchSolution;
     const std::shared_ptr<SearchSolution<double>> search =
         std::make_shared<SearchSolution<double>>(arrayLengthForSearch, arrayRangeForSearch1, arrayRangeForSearch2);
     const auto searchFunctor =
@@ -394,7 +402,6 @@ void runSearch(const std::vector<std::string>& targets)
             search->getSearchedKey());
     };
 
-    using util_hash::operator""_bkdrHash;
     for (int i = 0; i < Bottom<SearchMethod>::value; ++i)
     {
         if (!getBit<SearchMethod>().test(SearchMethod(i)))
@@ -403,7 +410,7 @@ void runSearch(const std::vector<std::string>& targets)
         }
 
         const std::string targetMethod = targets.at(i), threadName = "s_" + targetMethod;
-        switch (util_hash::bkdrHash(targetMethod.data()))
+        switch (utility::hash::bkdrHash(targetMethod.data()))
         {
             case "bin"_bkdrHash:
                 searchFunctor(threadName, &SearchSolution<double>::binaryMethod);
@@ -420,14 +427,14 @@ void runSearch(const std::vector<std::string>& targets)
         }
     }
 
-    app_command::getMemoryForMultithreading().deleteElement(threads);
-    ALGORITHM_PRINT_TASK_END_TITLE(Type::search);
+    command::getMemoryForMultithreading().deleteElement(threads);
+    APP_ALGO_PRINT_TASK_END_TITLE(Type::search);
 }
 
 void updateSearchTask(const std::string& target)
 {
-    using util_hash::operator""_bkdrHash;
-    switch (util_hash::bkdrHash(target.c_str()))
+    using utility::hash::operator""_bkdrHash;
+    switch (utility::hash::bkdrHash(target.c_str()))
     {
         case "bin"_bkdrHash:
             setBit<SearchMethod>(SearchMethod::binary);
@@ -451,15 +458,17 @@ void runSort(const std::vector<std::string>& targets)
         return;
     }
 
+    using algorithm::sort::SortSolution;
     using input::arrayLengthForSort;
     using input::arrayRangeForSort1;
     using input::arrayRangeForSort2;
+    using utility::hash::operator""_bkdrHash;
+
     static_assert((arrayRangeForSort1 < arrayRangeForSort2) && (arrayLengthForSort > 0));
-    ALGORITHM_PRINT_TASK_BEGIN_TITLE(Type::sort);
-    auto* threads = app_command::getMemoryForMultithreading().newElement(std::min(
+    APP_ALGO_PRINT_TASK_BEGIN_TITLE(Type::sort);
+    auto* threads = command::getMemoryForMultithreading().newElement(std::min(
         static_cast<uint32_t>(getBit<SortMethod>().count()), static_cast<uint32_t>(Bottom<SortMethod>::value)));
 
-    using algo_sort::SortSolution;
     const std::shared_ptr<SortSolution<int>> sort =
         std::make_shared<SortSolution<int>>(arrayLengthForSort, arrayRangeForSort1, arrayRangeForSort2);
     const auto sortFunctor = [&](const std::string& threadName,
@@ -468,7 +477,6 @@ void runSort(const std::vector<std::string>& targets)
         threads->enqueue(threadName, methodPtr, sort, sort->getRandomArray().get(), sort->getLength());
     };
 
-    using util_hash::operator""_bkdrHash;
     for (int i = 0; i < Bottom<SortMethod>::value; ++i)
     {
         if (!getBit<SortMethod>().test(SortMethod(i)))
@@ -477,7 +485,7 @@ void runSort(const std::vector<std::string>& targets)
         }
 
         const std::string targetMethod = targets.at(i), threadName = "s_" + targetMethod;
-        switch (util_hash::bkdrHash(targetMethod.data()))
+        switch (utility::hash::bkdrHash(targetMethod.data()))
         {
             case "bub"_bkdrHash:
                 sortFunctor(threadName, &SortSolution<int>::bubbleMethod);
@@ -515,14 +523,14 @@ void runSort(const std::vector<std::string>& targets)
         }
     }
 
-    app_command::getMemoryForMultithreading().deleteElement(threads);
-    ALGORITHM_PRINT_TASK_END_TITLE(Type::sort);
+    command::getMemoryForMultithreading().deleteElement(threads);
+    APP_ALGO_PRINT_TASK_END_TITLE(Type::sort);
 }
 
 void updateSortTask(const std::string& target)
 {
-    using util_hash::operator""_bkdrHash;
-    switch (util_hash::bkdrHash(target.c_str()))
+    using utility::hash::operator""_bkdrHash;
+    switch (utility::hash::bkdrHash(target.c_str()))
     {
         case "bub"_bkdrHash:
             setBit<SortMethod>(SortMethod::bubble);
@@ -559,4 +567,4 @@ void updateSortTask(const std::string& target)
             throw std::runtime_error("Unexpected task of sort: " + target);
     }
 }
-} // namespace app_algo
+} // namespace application::app_algo

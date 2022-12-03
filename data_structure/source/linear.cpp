@@ -1,15 +1,23 @@
 #include "linear.hpp"
 #include <iostream>
 #include <sstream>
+#ifndef _NO_PRINT_AT_RUNTIME
 #include "utility/include/common.hpp"
 
 #define LINEAR_RESULT "\r\n*%-10s instance:\r\n%s"
+#define LINEAR_PRINT_RESULT_CONTENT(method) COMMON_PRINT(LINEAR_RESULT, method, output.str().c_str())
+#else
 
-namespace ds_linear
+#define LINEAR_PRINT_RESULT_CONTENT(method)
+#endif
+
+namespace date_structure::linear
 {
 LinearStructure::LinearStructure()
 {
+#ifndef _NO_PRINT_AT_RUNTIME
     std::cout << "\r\nLinear structure:" << std::endl;
+#endif
 }
 
 namespace doubly_linked_list
@@ -289,7 +297,7 @@ void LinearStructure::linkedListInstance() const // NOLINT(readability-convert-m
     }
     destroyDll(&dll);
 
-    COMMON_PRINT(LINEAR_RESULT, "LinkedList", output.str().c_str());
+    LINEAR_PRINT_RESULT_CONTENT("LinkedList");
 }
 
 // Stack
@@ -382,7 +390,7 @@ void LinearStructure::stackInstance() const // NOLINT(readability-convert-member
     }
     destroyStack(&stack);
 
-    COMMON_PRINT(LINEAR_RESULT, "Stack", output.str().c_str());
+    LINEAR_PRINT_RESULT_CONTENT("Stack");
 }
 
 // Queue
@@ -475,6 +483,6 @@ void LinearStructure::queueInstance() const // NOLINT(readability-convert-member
     }
     destroyQueue(&queue);
 
-    COMMON_PRINT(LINEAR_RESULT, "Queue", output.str().c_str());
+    LINEAR_PRINT_RESULT_CONTENT("Queue");
 }
-} // namespace ds_linear
+} // namespace date_structure::linear

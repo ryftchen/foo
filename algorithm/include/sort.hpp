@@ -5,7 +5,7 @@
 #include <mutex>
 #include "utility/include/time.hpp"
 
-namespace algo_sort
+namespace algorithm::sort
 {
 constexpr uint32_t maxAlignOfPrint = 16;
 constexpr uint32_t maxColumnOfPrint = 10;
@@ -116,18 +116,20 @@ requires std::is_integral<V>::value void SortSolution<T>::setRandomArray(
     const T left,
     const T right) const
 {
-    std::mt19937 seed{util_time::getRandomSeedByTime()};
+    std::mt19937 seed{utility::time::getRandomSeedByTime()};
     std::uniform_int_distribution<int> randomX(left, right);
     for (uint32_t i = 0; i < length; ++i)
     {
         array[i] = randomX(seed);
     }
 
+#ifndef _NO_PRINT_AT_RUNTIME
     const uint32_t arrayBufferSize = length * maxAlignOfPrint;
     char arrayBuffer[arrayBufferSize + 1];
     arrayBuffer[0] = '\0';
     std::cout << "\r\nGenerate " << length << " random integral numbers from " << left << " to " << right << ":\r\n"
               << formatArray<T>(array, length, arrayBuffer, arrayBufferSize + 1) << std::endl;
+#endif
 }
 
 template <class T>
@@ -138,19 +140,21 @@ requires std::is_floating_point<V>::value void SortSolution<T>::setRandomArray(
     const T left,
     const T right) const
 {
-    std::mt19937 seed{util_time::getRandomSeedByTime()};
+    std::mt19937 seed{utility::time::getRandomSeedByTime()};
     std::uniform_real_distribution<double> randomX(left, right);
     for (uint32_t i = 0; i < length; ++i)
     {
         array[i] = randomX(seed);
     }
 
+#ifndef _NO_PRINT_AT_RUNTIME
     const uint32_t arrayBufferSize = length * maxAlignOfPrint;
     char arrayBuffer[arrayBufferSize + 1];
     arrayBuffer[0] = '\0';
     std::cout << "\r\nGenerate " << length << " random floating point numbers from " << left << " to " << right
               << ":\r\n"
               << formatArray<T>(array, length, arrayBuffer, arrayBufferSize + 1) << std::endl;
+#endif
 }
 
 template <class T>
@@ -201,4 +205,4 @@ requires(isNumber<V>()) char* SortSolution<T>::formatArray(
 
     return buffer;
 }
-} // namespace algo_sort
+} // namespace algorithm::sort

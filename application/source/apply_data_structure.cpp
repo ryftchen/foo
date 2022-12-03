@@ -6,13 +6,13 @@
 #include "utility/include/log.hpp"
 #include "utility/include/thread.hpp"
 
-#define DATA_STRUCTURE_PRINT_TASK_BEGIN_TITLE(taskType)                                                               \
+#define APP_DS_PRINT_TASK_BEGIN_TITLE(taskType)                                                                       \
     std::cout << "\r\n"                                                                                               \
               << "DATA STRUCTURE TASK: " << std::setiosflags(std::ios_base::left) << std::setfill('.')                \
               << std::setw(50) << taskType << "BEGIN" << std::resetiosflags(std::ios_base::left) << std::setfill(' ') \
               << std::endl;                                                                                           \
     {
-#define DATA_STRUCTURE_PRINT_TASK_END_TITLE(taskType)                                                               \
+#define APP_DS_PRINT_TASK_END_TITLE(taskType)                                                                       \
     }                                                                                                               \
     std::cout << "\r\n"                                                                                             \
               << "DATA STRUCTURE TASK: " << std::setiosflags(std::ios_base::left) << std::setfill('.')              \
@@ -20,7 +20,7 @@
               << "\r\n"                                                                                             \
               << std::endl;
 
-namespace app_ds
+namespace application::app_ds
 {
 using Type = DataStructureTask::Type;
 template <class T>
@@ -41,18 +41,19 @@ void runLinear(const std::vector<std::string>& targets)
         return;
     }
 
-    DATA_STRUCTURE_PRINT_TASK_BEGIN_TITLE(Type::linear);
-    auto* threads = app_command::getMemoryForMultithreading().newElement(std::min(
+    using date_structure::linear::LinearStructure;
+    using utility::hash::operator""_bkdrHash;
+
+    APP_DS_PRINT_TASK_BEGIN_TITLE(Type::linear);
+    auto* threads = command::getMemoryForMultithreading().newElement(std::min(
         static_cast<uint32_t>(getBit<LinearInstance>().count()), static_cast<uint32_t>(Bottom<LinearInstance>::value)));
 
-    using ds_linear::LinearStructure;
     const std::shared_ptr<LinearStructure> linear = std::make_shared<LinearStructure>();
     const auto linearFunctor = [&](const std::string& threadName, void (LinearStructure::*instancePtr)() const)
     {
         threads->enqueue(threadName, instancePtr, linear);
     };
 
-    using util_hash::operator""_bkdrHash;
     for (int i = 0; i < Bottom<LinearInstance>::value; ++i)
     {
         if (!getBit<LinearInstance>().test(LinearInstance(i)))
@@ -61,7 +62,7 @@ void runLinear(const std::vector<std::string>& targets)
         }
 
         const std::string targetInstance = targets.at(i), threadName = "l_" + targetInstance;
-        switch (util_hash::bkdrHash(targetInstance.data()))
+        switch (utility::hash::bkdrHash(targetInstance.data()))
         {
             case "lin"_bkdrHash:
                 linearFunctor(threadName, &LinearStructure::linkedListInstance);
@@ -78,14 +79,14 @@ void runLinear(const std::vector<std::string>& targets)
         }
     }
 
-    app_command::getMemoryForMultithreading().deleteElement(threads);
-    DATA_STRUCTURE_PRINT_TASK_END_TITLE(Type::linear);
+    command::getMemoryForMultithreading().deleteElement(threads);
+    APP_DS_PRINT_TASK_END_TITLE(Type::linear);
 }
 
 void updateLinearTask(const std::string& target)
 {
-    using util_hash::operator""_bkdrHash;
-    switch (util_hash::bkdrHash(target.c_str()))
+    using utility::hash::operator""_bkdrHash;
+    switch (utility::hash::bkdrHash(target.c_str()))
     {
         case "lin"_bkdrHash:
             setBit<LinearInstance>(LinearInstance::linkedList);
@@ -109,18 +110,19 @@ void runTree(const std::vector<std::string>& targets)
         return;
     }
 
-    DATA_STRUCTURE_PRINT_TASK_BEGIN_TITLE(Type::tree);
-    auto* threads = app_command::getMemoryForMultithreading().newElement(std::min(
+    using date_structure::tree::TreeStructure;
+    using utility::hash::operator""_bkdrHash;
+
+    APP_DS_PRINT_TASK_BEGIN_TITLE(Type::tree);
+    auto* threads = command::getMemoryForMultithreading().newElement(std::min(
         static_cast<uint32_t>(getBit<TreeInstance>().count()), static_cast<uint32_t>(Bottom<TreeInstance>::value)));
 
-    using ds_tree::TreeStructure;
     const std::shared_ptr<TreeStructure> tree = std::make_shared<TreeStructure>();
     const auto treeFunctor = [&](const std::string& threadName, void (TreeStructure::*instancePtr)() const)
     {
         threads->enqueue(threadName, instancePtr, tree);
     };
 
-    using util_hash::operator""_bkdrHash;
     for (int i = 0; i < Bottom<TreeInstance>::value; ++i)
     {
         if (!getBit<TreeInstance>().test(TreeInstance(i)))
@@ -129,7 +131,7 @@ void runTree(const std::vector<std::string>& targets)
         }
 
         const std::string targetInstance = targets.at(i), threadName = "t_" + targetInstance;
-        switch (util_hash::bkdrHash(targetInstance.data()))
+        switch (utility::hash::bkdrHash(targetInstance.data()))
         {
             case "bin"_bkdrHash:
                 treeFunctor(threadName, &TreeStructure::bsInstance);
@@ -146,14 +148,14 @@ void runTree(const std::vector<std::string>& targets)
         }
     }
 
-    app_command::getMemoryForMultithreading().deleteElement(threads);
-    DATA_STRUCTURE_PRINT_TASK_END_TITLE(Type::tree);
+    command::getMemoryForMultithreading().deleteElement(threads);
+    APP_DS_PRINT_TASK_END_TITLE(Type::tree);
 }
 
 void updateTreeTask(const std::string& target)
 {
-    using util_hash::operator""_bkdrHash;
-    switch (util_hash::bkdrHash(target.c_str()))
+    using utility::hash::operator""_bkdrHash;
+    switch (utility::hash::bkdrHash(target.c_str()))
     {
         case "bin"_bkdrHash:
             setBit<TreeInstance>(TreeInstance::binarySearch);
@@ -169,4 +171,4 @@ void updateTreeTask(const std::string& target)
             throw std::runtime_error("Unexpected task of tree: " + target);
     }
 }
-} // namespace app_ds
+} // namespace application::app_ds

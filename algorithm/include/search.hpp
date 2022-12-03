@@ -5,7 +5,7 @@
 #include <mutex>
 #include "utility/include/time.hpp"
 
-namespace algo_search
+namespace algorithm::search
 {
 constexpr uint32_t maxAlignOfPrint = 16;
 constexpr uint32_t maxColumnOfPrint = 10;
@@ -117,7 +117,7 @@ requires std::is_integral<V>::value void SearchSolution<T>::setOrderedArray(
     const T left,
     const T right) const
 {
-    std::mt19937 seed{util_time::getRandomSeedByTime()};
+    std::mt19937 seed{utility::time::getRandomSeedByTime()};
     std::uniform_int_distribution<int> randomX(left, right);
     for (uint32_t i = 0; i < length; ++i)
     {
@@ -125,12 +125,14 @@ requires std::is_integral<V>::value void SearchSolution<T>::setOrderedArray(
     }
     std::sort(array, array + length);
 
+#ifndef _NO_PRINT_AT_RUNTIME
     const uint32_t arrayBufferSize = length * maxAlignOfPrint;
     char arrayBuffer[arrayBufferSize + 1];
     arrayBuffer[0] = '\0';
     std::cout << "\r\nGenerate " << length << " ordered integral numbers from " << left << " to " << right << ":\r\n"
               << formatArray<T>(array, length, arrayBuffer, arrayBufferSize + 1) << "\r\n"
               << std::endl;
+#endif
 }
 
 template <class T>
@@ -141,7 +143,7 @@ requires std::is_floating_point<V>::value void SearchSolution<T>::setOrderedArra
     const T left,
     const T right) const
 {
-    std::mt19937 seed{util_time::getRandomSeedByTime()};
+    std::mt19937 seed{utility::time::getRandomSeedByTime()};
     std::uniform_real_distribution<double> randomX(left, right);
     for (uint32_t i = 0; i < length; ++i)
     {
@@ -149,6 +151,7 @@ requires std::is_floating_point<V>::value void SearchSolution<T>::setOrderedArra
     }
     std::sort(array, array + length);
 
+#ifndef _NO_PRINT_AT_RUNTIME
     const uint32_t arrayBufferSize = length * maxAlignOfPrint;
     char arrayBuffer[arrayBufferSize + 1];
     arrayBuffer[0] = '\0';
@@ -156,6 +159,7 @@ requires std::is_floating_point<V>::value void SearchSolution<T>::setOrderedArra
               << ":\r\n"
               << formatArray<T>(array, length, arrayBuffer, arrayBufferSize + 1) << "\r\n"
               << std::endl;
+#endif
 }
 
 template <class T>
@@ -206,4 +210,4 @@ requires(isNumber<V>()) char* SearchSolution<T>::formatArray(
 
     return buffer;
 }
-} // namespace algo_search
+} // namespace algorithm::search

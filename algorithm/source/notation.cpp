@@ -1,14 +1,23 @@
 #include "notation.hpp"
 #include <stack>
+#ifndef _NO_PRINT_AT_RUNTIME
 #include "utility/include/common.hpp"
 
 #define NOTATION_RESULT "\r\n*%-7s method:\r\n%s: %s\n"
+#define NOTATION_PRINT_RESULT_CONTENT(method, notationType, notationString) \
+    COMMON_PRINT(NOTATION_RESULT, method, notationType, notationString)
+#else
 
-namespace algo_notation
+#define NOTATION_PRINT_RESULT_CONTENT(method, notationType, notationString)
+#endif
+
+namespace algorithm::notation
 {
-NotationSolution::NotationSolution(const std::string_view infixNotation)
+NotationSolution::NotationSolution(const std::string_view infixNotation) : infixNotation(infixNotation)
 {
+#ifndef _NO_PRINT_AT_RUNTIME
     std::cout << "\r\nInfix notation: " << infixNotation << std::endl;
+#endif
 }
 
 std::string NotationSolution::infixToPostfix(const std::string& infix)
@@ -95,7 +104,7 @@ std::string NotationSolution::prefixMethod( // NOLINT(readability-convert-member
     std::string prefixNotation = infixToPostfix(infix);
     std::reverse(prefixNotation.begin(), prefixNotation.end());
 
-    COMMON_PRINT(NOTATION_RESULT, "Prefix", "PolishNotation", prefixNotation.data());
+    NOTATION_PRINT_RESULT_CONTENT("Prefix", "PolishNotation", prefixNotation.data());
     return prefixNotation;
 }
 
@@ -105,7 +114,7 @@ std::string NotationSolution::postfixMethod( // NOLINT(readability-convert-membe
 {
     std::string postfixNotation = infixToPostfix(infixNotation);
 
-    COMMON_PRINT(NOTATION_RESULT, "Postfix", "ReversePolishNotation", postfixNotation.data());
+    NOTATION_PRINT_RESULT_CONTENT("Postfix", "ReversePolishNotation", postfixNotation.data());
     return postfixNotation;
 }
-} // namespace algo_notation
+} // namespace algorithm::notation

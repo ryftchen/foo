@@ -7,7 +7,7 @@
 #include <sstream>
 #include <variant>
 
-namespace util_argument
+namespace utility::argument
 {
 template <typename T, typename = void>
 struct HasContainerTraits : std::false_type
@@ -478,4 +478,4 @@ T Argument::get(const std::string_view argName) const
     }
     return (*this)[argName].get<T>();
 }
-} // namespace util_argument
+} // namespace utility::argument

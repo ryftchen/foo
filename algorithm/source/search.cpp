@@ -1,23 +1,33 @@
 #include "search.hpp"
+#ifndef _NO_PRINT_AT_RUNTIME
 #include "utility/include/common.hpp"
 
 #define SEARCH_RESULT "*%-13s method: Found the key \"%.5f\" appearing at index %d.  ==>Run time: %8.5f ms\n"
 #define SEARCH_NONE_RESULT "*%-13s method: Could not find the key \"%.5f\".  ==>Run time: %8.5f ms\n"
-#define SEARCH_PRINT_RESULT_CONTENT(method)                                         \
-    do                                                                              \
-    {                                                                               \
-        if (-1 != index)                                                            \
-        {                                                                           \
-            COMMON_PRINT(SEARCH_RESULT, method, key, index, TIME_INTERVAL(timing)); \
-        }                                                                           \
-        else                                                                        \
-        {                                                                           \
-            COMMON_PRINT(SEARCH_NONE_RESULT, method, key, TIME_INTERVAL(timing));   \
-        }                                                                           \
-    }                                                                               \
+#define SEARCH_PRINT_RESULT_CONTENT(method)                                        \
+    do                                                                             \
+    {                                                                              \
+        if (-1 != index)                                                           \
+        {                                                                          \
+            COMMON_PRINT(SEARCH_RESULT, method, key, index, SEARCH_TIME_INTERVAL); \
+        }                                                                          \
+        else                                                                       \
+        {                                                                          \
+            COMMON_PRINT(SEARCH_NONE_RESULT, method, key, SEARCH_TIME_INTERVAL);   \
+        }                                                                          \
+    }                                                                              \
     while (0)
+#define SEARCH_RUNTIME_BEGIN TIME_BEGIN(timing)
+#define SEARCH_RUNTIME_END TIME_END(timing)
+#define SEARCH_TIME_INTERVAL TIME_INTERVAL(timing)
+#else
 
-namespace algo_search
+#define SEARCH_PRINT_RESULT_CONTENT(method)
+#define SEARCH_RUNTIME_BEGIN
+#define SEARCH_RUNTIME_END
+#endif
+
+namespace algorithm::search
 {
 template class SearchSolution<double>;
 template int SearchSolution<double>::binaryMethod(const double* const array, const uint32_t length, const double key)
@@ -33,7 +43,7 @@ template int SearchSolution<double>::fibonacciMethod(const double* const array, 
 template <class T>
 int SearchSolution<T>::binaryMethod(const T* const array, const uint32_t length, const T key) const
 {
-    TIME_BEGIN(timing);
+    SEARCH_RUNTIME_BEGIN;
     int index = -1;
     uint32_t lower = 0, upper = length - 1;
 
@@ -55,7 +65,7 @@ int SearchSolution<T>::binaryMethod(const T* const array, const uint32_t length,
         }
     }
 
-    TIME_END(timing);
+    SEARCH_RUNTIME_END;
     SEARCH_PRINT_RESULT_CONTENT("Binary");
     return index;
 }
@@ -64,7 +74,7 @@ int SearchSolution<T>::binaryMethod(const T* const array, const uint32_t length,
 template <class T>
 int SearchSolution<T>::interpolationMethod(const T* const array, const uint32_t length, const T key) const
 {
-    TIME_BEGIN(timing);
+    SEARCH_RUNTIME_BEGIN;
     int index = -1;
     uint32_t lower = 0, upper = length - 1;
 
@@ -86,7 +96,7 @@ int SearchSolution<T>::interpolationMethod(const T* const array, const uint32_t 
         }
     }
 
-    TIME_END(timing);
+    SEARCH_RUNTIME_END;
     SEARCH_PRINT_RESULT_CONTENT("Interpolation");
     return index;
 }
@@ -95,14 +105,16 @@ int SearchSolution<T>::interpolationMethod(const T* const array, const uint32_t 
 template <class T>
 int SearchSolution<T>::fibonacciMethod(const T* const array, const uint32_t length, const T key) const
 {
-    TIME_BEGIN(timing);
+    SEARCH_RUNTIME_BEGIN;
     int index = -1;
     uint32_t lower = 0, upper = length - 1;
     std::vector<uint32_t> fib = generateFibonacciNumber(length);
     uint32_t n = fib.size() - 1;
     if (constexpr uint32_t minSize = 3; n < minSize)
     {
-        COMMON_PRINT("*%-13s method: The length %u isn't enough.\n", "Fibonacci", length);
+#ifndef _NO_PRINT_AT_RUNTIME
+        COMMON_PRINT("*Fibonacci     method: The length %u isn't enough.\n", length);
+#endif
         return index;
     }
 
@@ -141,7 +153,7 @@ int SearchSolution<T>::fibonacciMethod(const T* const array, const uint32_t leng
         }
     }
 
-    TIME_END(timing);
+    SEARCH_RUNTIME_END;
     SEARCH_PRINT_RESULT_CONTENT("Fibonacci");
     return index;
 }
@@ -166,4 +178,4 @@ std::vector<uint32_t> SearchSolution<T>::generateFibonacciNumber(const uint32_t 
 
     return fibonacci;
 }
-} // namespace algo_search
+} // namespace algorithm::search

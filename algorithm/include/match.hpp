@@ -4,7 +4,7 @@
 #include <memory>
 #include <mutex>
 
-namespace algo_match
+namespace algorithm::match
 {
 constexpr uint32_t maxNumPerLineOfPrint = 50;
 constexpr uint32_t maxDigit = 100000;
@@ -14,7 +14,7 @@ constexpr int mpfrBase = 10;
 class MatchSolution
 {
 public:
-    explicit MatchSolution(const uint32_t length);
+    explicit MatchSolution(const uint32_t textLen, const std::string_view pattern);
     virtual ~MatchSolution();
     MatchSolution(const MatchSolution& rhs) = delete;
     MatchSolution& operator=(const MatchSolution& rhs) = delete;
@@ -26,12 +26,12 @@ public:
     int sundayMethod(const char* text, const char* pattern, const uint32_t textLen, const uint32_t patternLen) const;
 
     [[nodiscard]] inline const std::unique_ptr<char[]>& getMatchingText() const;
-    [[nodiscard]] inline uint32_t getLength() const;
-    static void setMatchingText(char* text, const uint32_t length);
+    [[nodiscard]] inline std::string_view getSinglePattern() const;
+    static void setMatchingText(char* text, const uint32_t textLen);
 
 private:
     const std::unique_ptr<char[]> marchingText;
-    const uint32_t length;
+    const std::string_view singlePattern;
 
     static inline int calculatePrecision(const uint32_t digit);
     static void fillBadCharRuleTable(uint32_t badCharRuleTable[], const char* pattern, const uint32_t patternLen);
@@ -51,13 +51,13 @@ inline const std::unique_ptr<char[]>& MatchSolution::getMatchingText() const
     return marchingText;
 }
 
-inline uint32_t MatchSolution::getLength() const
+inline std::string_view MatchSolution::getSinglePattern() const
 {
-    return length;
+    return singlePattern;
 }
 
 inline int MatchSolution::calculatePrecision(const uint32_t digit)
 {
     return static_cast<int>(std::ceil(static_cast<double>(digit) * std::log2(mpfrBase)));
 }
-} // namespace algo_match
+} // namespace algorithm::match

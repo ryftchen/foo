@@ -20,7 +20,7 @@
         })
 #define COMMON_PRINT(format, args...) std::cout << COMMON_FORMAT_TO_STRING(format, ##args)
 
-namespace util_common
+namespace utility::common
 {
 typedef std::string& (*PrintStyle)(std::string& line);
 
@@ -118,4 +118,4 @@ extern void printFile(
     const bool reverse = false,
     const uint32_t maxLine = maxLineNumForPrintFile,
     PrintStyle style = nullStyle);
-} // namespace util_common
+} // namespace utility::common

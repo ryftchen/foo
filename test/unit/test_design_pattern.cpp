@@ -3,7 +3,7 @@
 #include "design_pattern/include/creational.hpp"
 #include "design_pattern/include/structural.hpp"
 
-namespace tst_dp
+namespace test::tst_dp
 {
 constexpr uint32_t titleWidthForPrintTest = 50;
 
@@ -18,7 +18,7 @@ public:
         std::cout << "TEST DESIGN PATTERN: " << std::setiosflags(std::ios_base::left) << std::setfill('.')
                   << std::setw(titleWidthForPrintTest) << "BEHAVIORAL"
                   << "BEGIN" << std::resetiosflags(std::ios_base::left) << std::setfill(' ') << std::endl;
-        behavioral = std::make_shared<dp_behavioral::BehavioralPattern>();
+        behavioral = std::make_shared<design_pattern::behavioral::BehavioralPattern>();
     };
     static void TearDownTestCase()
     {
@@ -30,10 +30,10 @@ public:
     void SetUp() override{};
     void TearDown() override{};
 
-    static std::shared_ptr<dp_behavioral::BehavioralPattern> behavioral;
+    static std::shared_ptr<design_pattern::behavioral::BehavioralPattern> behavioral;
 };
 
-std::shared_ptr<dp_behavioral::BehavioralPattern> BehavioralTestBase::behavioral = nullptr;
+std::shared_ptr<design_pattern::behavioral::BehavioralPattern> BehavioralTestBase::behavioral = nullptr;
 
 TEST_F(BehavioralTestBase, chainOfResponsibilityInstance) // NOLINT(cert-err58-cpp)
 {
@@ -102,7 +102,7 @@ public:
         std::cout << "TEST DESIGN PATTERN: " << std::setiosflags(std::ios_base::left) << std::setfill('.')
                   << std::setw(titleWidthForPrintTest) << "CREATIONAL"
                   << "BEGIN" << std::resetiosflags(std::ios_base::left) << std::setfill(' ') << std::endl;
-        creational = std::make_shared<dp_creational::CreationalPattern>();
+        creational = std::make_shared<design_pattern::creational::CreationalPattern>();
     };
     static void TearDownTestCase()
     {
@@ -114,10 +114,10 @@ public:
     void SetUp() override{};
     void TearDown() override{};
 
-    static std::shared_ptr<dp_creational::CreationalPattern> creational;
+    static std::shared_ptr<design_pattern::creational::CreationalPattern> creational;
 };
 
-std::shared_ptr<dp_creational::CreationalPattern> CreationalTestBase::creational = nullptr;
+std::shared_ptr<design_pattern::creational::CreationalPattern> CreationalTestBase::creational = nullptr;
 
 TEST_F(CreationalTestBase, abstractFactoryInstance) // NOLINT(cert-err58-cpp)
 {
@@ -155,7 +155,7 @@ public:
         std::cout << "TEST DESIGN PATTERN: " << std::setiosflags(std::ios_base::left) << std::setfill('.')
                   << std::setw(titleWidthForPrintTest) << "STRUCTURAL"
                   << "BEGIN" << std::resetiosflags(std::ios_base::left) << std::setfill(' ') << std::endl;
-        structural = std::make_shared<dp_structural::StructuralPattern>();
+        structural = std::make_shared<design_pattern::structural::StructuralPattern>();
     };
     static void TearDownTestCase()
     {
@@ -167,10 +167,10 @@ public:
     void SetUp() override{};
     void TearDown() override{};
 
-    static std::shared_ptr<dp_structural::StructuralPattern> structural;
+    static std::shared_ptr<design_pattern::structural::StructuralPattern> structural;
 };
 
-std::shared_ptr<dp_structural::StructuralPattern> StructuralTestBase::structural = nullptr;
+std::shared_ptr<design_pattern::structural::StructuralPattern> StructuralTestBase::structural = nullptr;
 
 TEST_F(StructuralTestBase, adapterInstance) // NOLINT(cert-err58-cpp)
 {
@@ -206,4 +206,4 @@ TEST_F(StructuralTestBase, proxyInstance) // NOLINT(cert-err58-cpp)
 {
     ASSERT_NO_THROW(structural->proxyInstance()); // NOLINT(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
 }
-} // namespace tst_dp
+} // namespace test::tst_dp

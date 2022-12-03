@@ -9,19 +9,19 @@
 #include "utility/include/log.hpp"
 #include "utility/include/thread.hpp"
 
-#define NUMERIC_PRINT_TASK_BEGIN_TITLE(taskType)                                                                   \
+#define APP_NUM_PRINT_TASK_BEGIN_TITLE(taskType)                                                                   \
     std::cout << "\r\n"                                                                                            \
               << "NUMERIC TASK: " << std::setiosflags(std::ios_base::left) << std::setfill('.') << std::setw(50)   \
               << taskType << "BEGIN" << std::resetiosflags(std::ios_base::left) << std::setfill(' ') << std::endl; \
     {
-#define NUMERIC_PRINT_TASK_END_TITLE(taskType)                                                                   \
+#define APP_NUM_PRINT_TASK_END_TITLE(taskType)                                                                   \
     }                                                                                                            \
     std::cout << "\r\n"                                                                                          \
               << "NUMERIC TASK: " << std::setiosflags(std::ios_base::left) << std::setfill('.') << std::setw(50) \
               << taskType << "END" << std::resetiosflags(std::ios_base::left) << std::setfill(' ') << "\r\n"     \
               << std::endl;
 
-namespace app_num
+namespace application::app_num
 {
 using Type = NumericTask::Type;
 template <class T>
@@ -45,7 +45,7 @@ constexpr int integerForDivisor1 = 2 * 2 * 3 * 3 * 5 * 5 * 7 * 7;
 constexpr int integerForDivisor2 = 2 * 3 * 5 * 7 * 11 * 13 * 17;
 constexpr uint32_t maxPositiveIntegerForPrime = 997;
 
-class Expression1 : public num_integral::expression::Expression
+class Expression1 : public numeric::integral::expression::Expression
 {
 public:
     double operator()(const double x) const override { return ((x * std::sin(x)) / (1.0 + std::cos(x) * std::cos(x))); }
@@ -55,7 +55,7 @@ public:
     static constexpr std::string_view exprStr{"I=∫(-π/2→2π)x*sin(x)/(1+(cos(x))^2)dx"};
 };
 
-class Expression2 : public num_integral::expression::Expression
+class Expression2 : public numeric::integral::expression::Expression
 {
 public:
     double operator()(const double x) const override
@@ -76,23 +76,27 @@ void runArithmetic(const std::vector<std::string>& targets)
         return;
     }
 
-    NUMERIC_PRINT_TASK_BEGIN_TITLE(Type::arithmetic);
-    auto* threads = app_command::getMemoryForMultithreading().newElement(std::min(
+    using numeric::arithmetic::ArithmeticSolution;
+    using utility::hash::operator""_bkdrHash;
+
+    APP_NUM_PRINT_TASK_BEGIN_TITLE(Type::arithmetic);
+    auto* threads = command::getMemoryForMultithreading().newElement(std::min(
         static_cast<uint32_t>(getBit<ArithmeticMethod>().count()),
         static_cast<uint32_t>(Bottom<ArithmeticMethod>::value)));
 
-    using input::integerForArithmetic1;
-    using input::integerForArithmetic2;
-    using num_arithmetic::ArithmeticSolution;
     const std::shared_ptr<ArithmeticSolution> arithmetic =
-        std::make_shared<ArithmeticSolution>(integerForArithmetic1, integerForArithmetic2);
+        std::make_shared<ArithmeticSolution>(input::integerForArithmetic1, input::integerForArithmetic2);
     const auto arithmeticFunctor =
         [&](const std::string& threadName, int (ArithmeticSolution::*methodPtr)(const int, const int) const)
     {
-        threads->enqueue(threadName, methodPtr, arithmetic, integerForArithmetic1, integerForArithmetic2);
+        threads->enqueue(
+            threadName,
+            methodPtr,
+            arithmetic,
+            std::get<0>(arithmetic->getIntegers()),
+            std::get<1>(arithmetic->getIntegers()));
     };
 
-    using util_hash::operator""_bkdrHash;
     for (int i = 0; i < Bottom<ArithmeticMethod>::value; ++i)
     {
         if (!getBit<ArithmeticMethod>().test(ArithmeticMethod(i)))
@@ -101,7 +105,7 @@ void runArithmetic(const std::vector<std::string>& targets)
         }
 
         const std::string targetMethod = targets.at(i), threadName = "a_" + targetMethod;
-        switch (util_hash::bkdrHash(targetMethod.data()))
+        switch (utility::hash::bkdrHash(targetMethod.data()))
         {
             case "add"_bkdrHash:
                 arithmeticFunctor(threadName, &ArithmeticSolution::additionMethod);
@@ -121,14 +125,14 @@ void runArithmetic(const std::vector<std::string>& targets)
         }
     }
 
-    app_command::getMemoryForMultithreading().deleteElement(threads);
-    NUMERIC_PRINT_TASK_END_TITLE(Type::arithmetic);
+    command::getMemoryForMultithreading().deleteElement(threads);
+    APP_NUM_PRINT_TASK_END_TITLE(Type::arithmetic);
 }
 
 void updateArithmeticTask(const std::string& target)
 {
-    using util_hash::operator""_bkdrHash;
-    switch (util_hash::bkdrHash(target.c_str()))
+    using utility::hash::operator""_bkdrHash;
+    switch (utility::hash::bkdrHash(target.c_str()))
     {
         case "add"_bkdrHash:
             setBit<ArithmeticMethod>(ArithmeticMethod::addition);
@@ -155,22 +159,22 @@ void runDivisor(const std::vector<std::string>& targets)
         return;
     }
 
-    NUMERIC_PRINT_TASK_BEGIN_TITLE(Type::divisor);
-    auto* threads = app_command::getMemoryForMultithreading().newElement(std::min(
+    using numeric::divisor::DivisorSolution;
+    using utility::hash::operator""_bkdrHash;
+
+    APP_NUM_PRINT_TASK_BEGIN_TITLE(Type::divisor);
+    auto* threads = command::getMemoryForMultithreading().newElement(std::min(
         static_cast<uint32_t>(getBit<DivisorMethod>().count()), static_cast<uint32_t>(Bottom<DivisorMethod>::value)));
 
-    using input::integerForDivisor1;
-    using input::integerForDivisor2;
-    using num_divisor::DivisorSolution;
     const std::shared_ptr<DivisorSolution> divisor =
-        std::make_shared<DivisorSolution>(integerForDivisor1, integerForDivisor2);
+        std::make_shared<DivisorSolution>(input::integerForDivisor1, input::integerForDivisor2);
     const auto divisorFunctor =
         [&](const std::string& threadName, std::vector<int> (DivisorSolution::*methodPtr)(int, int) const)
     {
-        threads->enqueue(threadName, methodPtr, divisor, integerForDivisor1, integerForDivisor2);
+        threads->enqueue(
+            threadName, methodPtr, divisor, std::get<0>(divisor->getIntegers()), std::get<1>(divisor->getIntegers()));
     };
 
-    using util_hash::operator""_bkdrHash;
     for (int i = 0; i < Bottom<DivisorMethod>::value; ++i)
     {
         if (!getBit<DivisorMethod>().test(DivisorMethod(i)))
@@ -179,7 +183,7 @@ void runDivisor(const std::vector<std::string>& targets)
         }
 
         const std::string targetMethod = targets.at(i), threadName = "d_" + targetMethod;
-        switch (util_hash::bkdrHash(targetMethod.data()))
+        switch (utility::hash::bkdrHash(targetMethod.data()))
         {
             case "euc"_bkdrHash:
                 divisorFunctor(threadName, &DivisorSolution::euclideanMethod);
@@ -193,14 +197,14 @@ void runDivisor(const std::vector<std::string>& targets)
         }
     }
 
-    app_command::getMemoryForMultithreading().deleteElement(threads);
-    NUMERIC_PRINT_TASK_END_TITLE(Type::divisor);
+    command::getMemoryForMultithreading().deleteElement(threads);
+    APP_NUM_PRINT_TASK_END_TITLE(Type::divisor);
 }
 
 void updateDivisorTask(const std::string& target)
 {
-    using util_hash::operator""_bkdrHash;
-    switch (util_hash::bkdrHash(target.c_str()))
+    using utility::hash::operator""_bkdrHash;
+    switch (utility::hash::bkdrHash(target.c_str()))
     {
         case "euc"_bkdrHash:
             setBit<DivisorMethod>(DivisorMethod::euclidean);
@@ -224,11 +228,13 @@ void runIntegral(const std::vector<std::string>& targets)
     using Expression1 = input::Expression1;
     using Expression2 = input::Expression2;
     typedef std::variant<Expression1, Expression2> IntegralExprTarget;
+
+#ifndef _NO_PRINT_AT_RUNTIME
     const auto printFunctor = [](const IntegralExprTarget& expression)
     {
         constexpr std::string_view prefix{"\r\nIntegral expression: "};
         std::visit(
-            num_integral::expression::ExprOverloaded{
+            numeric::integral::expression::ExprOverloaded{
                 [&prefix](const Expression1& /*unused*/)
                 {
                     std::cout << prefix << Expression1::exprStr << std::endl;
@@ -240,27 +246,28 @@ void runIntegral(const std::vector<std::string>& targets)
             },
             expression);
     };
+#endif
     const auto resultFunctor = [targets](
-                                   const num_integral::expression::Expression& expression,
-                                   const num_integral::expression::ExprRange<double, double>& range)
+                                   const numeric::integral::expression::Expression& expression,
+                                   const numeric::integral::expression::ExprRange<double, double>& range)
     {
-        static_assert(num_integral::epsilon > 0.0);
-        auto* threads = app_command::getMemoryForMultithreading().newElement(std::min(
+        static_assert(numeric::integral::epsilon > 0.0);
+        auto* threads = command::getMemoryForMultithreading().newElement(std::min(
             static_cast<uint32_t>(getBit<IntegralMethod>().count()),
             static_cast<uint32_t>(Bottom<IntegralMethod>::value)));
         const auto integralFunctor =
-            [&](const std::string& threadName, const std::shared_ptr<num_integral::IntegralSolution>& classPtr)
+            [&](const std::string& threadName, const std::shared_ptr<numeric::integral::IntegralSolution>& classPtr)
         {
             threads->enqueue(
                 threadName,
-                &num_integral::IntegralSolution::operator(),
+                &numeric::integral::IntegralSolution::operator(),
                 classPtr,
                 range.range1,
                 range.range2,
-                num_integral::epsilon);
+                numeric::integral::epsilon);
         };
 
-        using util_hash::operator""_bkdrHash;
+        using utility::hash::operator""_bkdrHash;
         for (int i = 0; i < Bottom<IntegralMethod>::value; ++i)
         {
             if (!getBit<IntegralMethod>().test(IntegralMethod(i)))
@@ -269,43 +276,45 @@ void runIntegral(const std::vector<std::string>& targets)
             }
 
             const std::string targetMethod = targets.at(i), threadName = "i_" + targetMethod;
-            switch (util_hash::bkdrHash(targetMethod.data()))
+            switch (utility::hash::bkdrHash(targetMethod.data()))
             {
                 case "tra"_bkdrHash:
-                    integralFunctor(threadName, std::make_shared<num_integral::Trapezoidal>(expression));
+                    integralFunctor(threadName, std::make_shared<numeric::integral::Trapezoidal>(expression));
                     break;
                 case "sim"_bkdrHash:
-                    integralFunctor(threadName, std::make_shared<num_integral::Simpson>(expression));
+                    integralFunctor(threadName, std::make_shared<numeric::integral::Simpson>(expression));
                     break;
                 case "rom"_bkdrHash:
-                    integralFunctor(threadName, std::make_shared<num_integral::Romberg>(expression));
+                    integralFunctor(threadName, std::make_shared<numeric::integral::Romberg>(expression));
                     break;
                 case "gau"_bkdrHash:
-                    integralFunctor(threadName, std::make_shared<num_integral::Gauss>(expression));
+                    integralFunctor(threadName, std::make_shared<numeric::integral::Gauss>(expression));
                     break;
                 case "mon"_bkdrHash:
-                    integralFunctor(threadName, std::make_shared<num_integral::MonteCarlo>(expression));
+                    integralFunctor(threadName, std::make_shared<numeric::integral::MonteCarlo>(expression));
                     break;
                 default:
                     LOG_DBG("execute to run unknown integral method.");
                     break;
             }
         }
-        app_command::getMemoryForMultithreading().deleteElement(threads);
+        command::getMemoryForMultithreading().deleteElement(threads);
     };
 
-    NUMERIC_PRINT_TASK_BEGIN_TITLE(Type::integral);
+    APP_NUM_PRINT_TASK_BEGIN_TITLE(Type::integral);
 
     const std::unordered_multimap<
-        num_integral::expression::ExprRange<double, double>,
+        numeric::integral::expression::ExprRange<double, double>,
         IntegralExprTarget,
-        num_integral::expression::ExprMapHash>
+        numeric::integral::expression::ExprMapHash>
         integralExprMap{
             {{Expression1::range1, Expression1::range2, Expression1::exprStr}, Expression1()},
             {{Expression2::range1, Expression2::range2, Expression2::exprStr}, Expression2()}};
     for ([[maybe_unused]] const auto& [range, expression] : integralExprMap)
     {
+#ifndef _NO_PRINT_AT_RUNTIME
         printFunctor(expression);
+#endif
         switch (expression.index())
         {
             case 0:
@@ -318,13 +327,13 @@ void runIntegral(const std::vector<std::string>& targets)
         }
     }
 
-    NUMERIC_PRINT_TASK_END_TITLE(Type::integral);
+    APP_NUM_PRINT_TASK_END_TITLE(Type::integral);
 }
 
 void updateIntegralTask(const std::string& target)
 {
-    using util_hash::operator""_bkdrHash;
-    switch (util_hash::bkdrHash(target.c_str()))
+    using utility::hash::operator""_bkdrHash;
+    switch (utility::hash::bkdrHash(target.c_str()))
     {
         case "tra"_bkdrHash:
             setBit<IntegralMethod>(IntegralMethod::trapezoidal);
@@ -354,20 +363,20 @@ void runPrime(const std::vector<std::string>& targets)
         return;
     }
 
-    NUMERIC_PRINT_TASK_BEGIN_TITLE(Type::prime);
-    auto* threads = app_command::getMemoryForMultithreading().newElement(std::min(
+    using numeric::prime::PrimeSolution;
+    using utility::hash::operator""_bkdrHash;
+
+    APP_NUM_PRINT_TASK_BEGIN_TITLE(Type::prime);
+    auto* threads = command::getMemoryForMultithreading().newElement(std::min(
         static_cast<uint32_t>(getBit<PrimeMethod>().count()), static_cast<uint32_t>(Bottom<PrimeMethod>::value)));
 
-    using input::maxPositiveIntegerForPrime;
-    using num_prime::PrimeSolution;
-    const std::shared_ptr<PrimeSolution> prime = std::make_shared<PrimeSolution>(maxPositiveIntegerForPrime);
+    const std::shared_ptr<PrimeSolution> prime = std::make_shared<PrimeSolution>(input::maxPositiveIntegerForPrime);
     const auto primeFunctor =
         [&](const std::string& threadName, std::vector<uint32_t> (PrimeSolution::*methodPtr)(const uint32_t) const)
     {
-        threads->enqueue(threadName, methodPtr, prime, maxPositiveIntegerForPrime);
+        threads->enqueue(threadName, methodPtr, prime, prime->getMaxPositiveInteger());
     };
 
-    using util_hash::operator""_bkdrHash;
     for (int i = 0; i < Bottom<PrimeMethod>::value; ++i)
     {
         if (!getBit<PrimeMethod>().test(PrimeMethod(i)))
@@ -376,7 +385,7 @@ void runPrime(const std::vector<std::string>& targets)
         }
 
         const std::string targetMethod = targets.at(i), threadName = "p_" + targetMethod;
-        switch (util_hash::bkdrHash(targetMethod.data()))
+        switch (utility::hash::bkdrHash(targetMethod.data()))
         {
             case "era"_bkdrHash:
                 primeFunctor(threadName, &PrimeSolution::eratosthenesMethod);
@@ -390,14 +399,14 @@ void runPrime(const std::vector<std::string>& targets)
         }
     }
 
-    app_command::getMemoryForMultithreading().deleteElement(threads);
-    NUMERIC_PRINT_TASK_END_TITLE(Type::prime);
+    command::getMemoryForMultithreading().deleteElement(threads);
+    APP_NUM_PRINT_TASK_END_TITLE(Type::prime);
 }
 
 void updatePrimeTask(const std::string& target)
 {
-    using util_hash::operator""_bkdrHash;
-    switch (util_hash::bkdrHash(target.c_str()))
+    using utility::hash::operator""_bkdrHash;
+    switch (utility::hash::bkdrHash(target.c_str()))
     {
         case "era"_bkdrHash:
             setBit<PrimeMethod>(PrimeMethod::eratosthenes);
@@ -410,4 +419,4 @@ void updatePrimeTask(const std::string& target)
             throw std::runtime_error("Unexpected task of prime: " + target);
     }
 }
-} // namespace app_num
+} // namespace application::app_num

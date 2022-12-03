@@ -2,7 +2,7 @@
 
 #include "memory.hpp"
 
-namespace util_memory
+namespace utility::memory
 {
 template <typename T, size_t BlockSize>
 Memory<T, BlockSize>::Memory() noexcept
@@ -163,4 +163,4 @@ void Memory<T, BlockSize>::allocateBlock()
     lastSlot = reinterpret_cast<SlotPointer>( // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
         newBlock + BlockSize - sizeof(SlotType) + 1);
 }
-} // namespace util_memory
+} // namespace utility::memory
