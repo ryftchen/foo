@@ -6,10 +6,10 @@
 
 #define OPTIMAL_RESULT(opt) "*%-9s method: F(" #opt ")=%+.5f X=%+.5f  ==>Run time: %8.5f ms\n"
 #define OPTIMAL_PRINT_RESULT_CONTENT(method, f, x) \
-    COMMON_PRINT(OPTIMAL_RESULT(min), method, f, x, OPTIMAL_TIME_INTERVAL)
+    COMMON_PRINT(OPTIMAL_RESULT(min), method, f, x, OPTIMAL_RUNTIME_INTERVAL)
 #define OPTIMAL_RUNTIME_BEGIN TIME_BEGIN(timing)
 #define OPTIMAL_RUNTIME_END TIME_END(timing)
-#define OPTIMAL_TIME_INTERVAL TIME_INTERVAL(timing)
+#define OPTIMAL_RUNTIME_INTERVAL TIME_INTERVAL(timing)
 #else
 // #define NDEBUG
 #include <cassert>
