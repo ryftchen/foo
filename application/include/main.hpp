@@ -9,7 +9,7 @@
 
 namespace application
 {
-[[using gnu: constructor]] static void switchToProjectPath();
+[[using gnu: constructor]] static void switchToTargetPath();
 
 static void signalHandler(int sig)
 {
@@ -72,26 +72,33 @@ static void signalHandler(int sig)
     kill(getpid(), SIGKILL);
 }
 
-static void switchToProjectPath()
+static void switchToTargetPath()
 {
     std::signal(SIGSEGV, signalHandler);
     setenv("TERM", "linux", true);
     setenv("TERMINFO", "/etc/terminfo", true);
 
     const std::filesystem::path absolutePath = std::filesystem::canonical(std::filesystem::path{"/proc/self/exe"});
-    const std::size_t pos = absolutePath.string().find("build");
-    if (std::string::npos == pos)
+    const std::size_t pos = absolutePath.string().find("build/bin");
+    if (std::string::npos != pos)
     {
-        std::fprintf(stderr, "The build directory isn't exist. Please check it.\n");
-        std::exit(-1);
+        const std::filesystem::path buildPath(std::filesystem::path{absolutePath.string().substr(0, pos)});
+        if (!buildPath.has_parent_path())
+        {
+            std::fprintf(stderr, "The project path isn't exist. Please check it.\n");
+            std::exit(-1);
+        }
+        std::filesystem::current_path(buildPath.parent_path());
     }
-    const std::filesystem::path buildPath(std::filesystem::path{absolutePath.string().substr(0, pos)});
-
-    if (!buildPath.has_parent_path())
+    else
     {
-        std::fprintf(stderr, "The project directory isn't exist. Please check it.\n");
-        std::exit(-1);
+        const std::filesystem::path homePath(std::filesystem::path{getenv("HOME")});
+        if (homePath.empty())
+        {
+            std::fprintf(stderr, "The home path isn't exist. Please check it.\n");
+            std::exit(-1);
+        }
+        std::filesystem::current_path(homePath);
     }
-    std::filesystem::current_path(buildPath.parent_path());
 }
 } // namespace application
