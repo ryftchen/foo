@@ -14,12 +14,12 @@
             DIVISOR_RESULT,                                                       \
             method,                                                               \
             formatIntegerVector(divisorVector, arrayBuffer, arrayBufferSize + 1), \
-            DIVISOR_TIME_INTERVAL);                                               \
+            DIVISOR_RUNTIME_INTERVAL);                                            \
     }                                                                             \
     while (0)
 #define DIVISOR_RUNTIME_BEGIN TIME_BEGIN(timing)
 #define DIVISOR_RUNTIME_END TIME_END(timing)
-#define DIVISOR_TIME_INTERVAL TIME_INTERVAL(timing)
+#define DIVISOR_RUNTIME_INTERVAL TIME_INTERVAL(timing)
 #else
 #include <cmath>
 

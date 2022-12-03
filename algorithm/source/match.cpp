@@ -9,22 +9,22 @@
 #define MATCH_RESULT(opt) \
     "*%-16s method: Found the pattern \"%s\" starting(" #opt ") at index %d.  ==>Run time: %8.5f ms\n"
 #define MATCH_NONE_RESULT "*%-16s method: Could not find the pattern \"%s\".  ==>Run time: %8.5f ms\n"
-#define MATCH_PRINT_RESULT_CONTENT(method)                                                \
-    do                                                                                    \
-    {                                                                                     \
-        if (-1 != shift)                                                                  \
-        {                                                                                 \
-            COMMON_PRINT(MATCH_RESULT(1st), method, pattern, shift, MATCH_TIME_INTERVAL); \
-        }                                                                                 \
-        else                                                                              \
-        {                                                                                 \
-            COMMON_PRINT(MATCH_NONE_RESULT, method, pattern, MATCH_TIME_INTERVAL);        \
-        }                                                                                 \
-    }                                                                                     \
+#define MATCH_PRINT_RESULT_CONTENT(method)                                                   \
+    do                                                                                       \
+    {                                                                                        \
+        if (-1 != shift)                                                                     \
+        {                                                                                    \
+            COMMON_PRINT(MATCH_RESULT(1st), method, pattern, shift, MATCH_RUNTIME_INTERVAL); \
+        }                                                                                    \
+        else                                                                                 \
+        {                                                                                    \
+            COMMON_PRINT(MATCH_NONE_RESULT, method, pattern, MATCH_RUNTIME_INTERVAL);        \
+        }                                                                                    \
+    }                                                                                        \
     while (0)
 #define MATCH_RUNTIME_BEGIN TIME_BEGIN(timing)
 #define MATCH_RUNTIME_END TIME_END(timing)
-#define MATCH_TIME_INTERVAL TIME_INTERVAL(timing)
+#define MATCH_RUNTIME_INTERVAL TIME_INTERVAL(timing)
 #else
 // #define NDEBUG
 #include <cassert>

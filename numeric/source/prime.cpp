@@ -20,7 +20,7 @@
     while (0)
 #define PRIME_RUNTIME_BEGIN TIME_BEGIN(timing)
 #define PRIME_RUNTIME_END TIME_END(timing)
-#define PRIME_TIME_INTERVAL TIME_INTERVAL(timing)
+#define PRIME_RUNTIME_INTERVAL TIME_INTERVAL(timing)
 #else
 
 #define PRIME_PRINT_RESULT_CONTENT(method)

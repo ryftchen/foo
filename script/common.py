@@ -53,7 +53,7 @@ class Log:
 
 class ProgressBar:
     saveCursor = "\033[s"
-    retoreCursor = "\033[u"
+    restoreCursor = "\033[u"
     moveUpCursor = "\033[1A"
     foreColor = "\033[30m"
     backColor = "\033[42m"
@@ -76,7 +76,7 @@ class ProgressBar:
         self.printProgress(self.saveCursor)
         self.printProgress(f"\033[0;{str(lines)}r")
 
-        self.printProgress(self.retoreCursor)
+        self.printProgress(self.restoreCursor)
         self.printProgress(self.moveUpCursor)
         self.drawProgressBar(0)
 
@@ -90,7 +90,7 @@ class ProgressBar:
 
         self.tput()
         self.printBar(percentage)
-        self.printProgress(self.retoreCursor)
+        self.printProgress(self.restoreCursor)
         time.sleep(0.01)
 
     def destroyProgressBar(self):
@@ -98,7 +98,7 @@ class ProgressBar:
         self.printProgress(self.saveCursor)
         self.printProgress(f"\033[0;{str(lines)}r")
 
-        self.printProgress(self.retoreCursor)
+        self.printProgress(self.restoreCursor)
         self.printProgress(self.moveUpCursor)
 
         self.clearProgressBar()
@@ -112,7 +112,7 @@ class ProgressBar:
         self.printProgress(f"\033[{str(lines)};0f")
 
         self.tput()
-        self.printProgress(self.retoreCursor)
+        self.printProgress(self.restoreCursor)
 
     def trapDueToInterrupt(self):
         self.setTrap = True

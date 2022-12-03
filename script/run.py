@@ -45,11 +45,11 @@ class Output:
 
 class Task:
     binCmd = "foo"
-    binDir = "./build/bin/"
+    binDir = "./build/bin"
     testBinCmd = "foo_test"
-    testBinDir = "./test/build/bin/"
+    testBinDir = "./test/build/bin"
     libList = ["libutility.so", "libalgorithm.so", "libdata_structure.so", "libdesign_pattern.so", "libnumeric.so"]
-    libDir = "./build/lib/"
+    libDir = "./build/lib"
     basicTaskDict = {
         "--console": [r"'help'", r"'quit'", r"'batch ./script/console_batch.txt'", r"'log'"],
         "--help": "",
@@ -137,9 +137,9 @@ class Task:
 
     def runTask(self, command, enter=""):
         if not self.isUnitTest:
-            fullCommand = f"{self.binDir}{command}"
+            fullCommand = f"{self.binDir}/{command}"
         else:
-            fullCommand = f"{self.testBinDir}{command}"
+            fullCommand = f"{self.testBinDir}/{command}"
         if self.isCheckMemory:
             fullCommand = f"valgrind --tool=memcheck --xml=yes \
 --xml-file={self.tempDir}/foo_mem_{str(self.completeStep + 1)}.xml {fullCommand}"
@@ -249,9 +249,9 @@ class Task:
         os.chdir(filePath.replace(filePath[filePath.index("script") :], ''))
 
         self.parseArgs()
-        if not self.isUnitTest and not os.path.isfile(f"{self.binDir}{self.binCmd}"):
+        if not self.isUnitTest and not os.path.isfile(f"{self.binDir}/{self.binCmd}"):
             Output.printException("No executable file. Please build it.")
-        if self.isUnitTest and not os.path.isfile(f"{self.testBinDir}{self.testBinCmd}"):
+        if self.isUnitTest and not os.path.isfile(f"{self.testBinDir}/{self.testBinCmd}"):
             Output.printException("No test executable file. Please build it.")
         if not os.path.exists(self.tempDir):
             os.makedirs(self.tempDir)
@@ -270,13 +270,14 @@ class Task:
             common.executeCommand(
                 f"llvm-cov-12 show -instr-profile={self.tempDir}/foo_cov.profdata -show-branches=percent \
 -show-expansions -show-regions -show-line-counts-or-regions -format=html -output-dir={self.tempDir}/coverage \
--Xdemangler=c++filt -object={self.binDir}{self.binCmd} "
-                + ' '.join([f"-object={self.libDir}{lib}" for lib in self.libList])
+-Xdemangler=c++filt -object={self.binDir}/{self.binCmd} "
+                + ' '.join([f"-object={self.libDir}/{lib}" for lib in self.libList])
                 + " 2>&1"
             )
             stdout, _, _ = common.executeCommand(
-                f"llvm-cov-12 report -instr-profile={self.tempDir}/foo_cov.profdata -object={self.binDir}{self.binCmd} "
-                + ' '.join([f"-object={self.libDir}{lib}" for lib in self.libList])
+                f"llvm-cov-12 report -instr-profile={self.tempDir}/foo_cov.profdata \
+-object={self.binDir}/{self.binCmd} "
+                + ' '.join([f"-object={self.libDir}/{lib}" for lib in self.libList])
                 + " 2>&1"
             )
             common.executeCommand(f"rm -rf {self.tempDir}/*.profraw {self.tempDir}/*.profdata")

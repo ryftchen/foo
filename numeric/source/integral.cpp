@@ -6,10 +6,10 @@
 
 #define INTEGRAL_RESULT(opt) "*%-11s method: I(" #opt ")=%+.5f  ==>Run time: %8.5f ms\n"
 #define INTEGRAL_PRINT_RESULT_CONTENT(method, sum) \
-    COMMON_PRINT(INTEGRAL_RESULT(def), method, sum, INTEGRAL_TIME_INTERVAL)
+    COMMON_PRINT(INTEGRAL_RESULT(def), method, sum, INTEGRAL_RUNTIME_INTERVAL)
 #define INTEGRAL_RUNTIME_BEGIN TIME_BEGIN(timing)
 #define INTEGRAL_RUNTIME_END TIME_END(timing)
-#define INTEGRAL_TIME_INTERVAL TIME_INTERVAL(timing)
+#define INTEGRAL_RUNTIME_INTERVAL TIME_INTERVAL(timing)
 #else
 #include <cmath>
 #include <random>

@@ -14,12 +14,12 @@
             SORT_RESULT(asc),                                                    \
             method,                                                              \
             formatArray<T>(sortArray, length, arrayBuffer, arrayBufferSize + 1), \
-            SORT_TIME_INTERVAL);                                                 \
+            SORT_RUNTIME_INTERVAL);                                              \
     }                                                                            \
     while (0)
 #define SORT_RUNTIME_BEGIN TIME_BEGIN(timing)
 #define SORT_RUNTIME_END TIME_END(timing)
-#define SORT_TIME_INTERVAL TIME_INTERVAL(timing)
+#define SORT_RUNTIME_INTERVAL TIME_INTERVAL(timing)
 #else
 // #define NDEBUG
 #include <cassert>

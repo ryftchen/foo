@@ -4,22 +4,22 @@
 
 #define SEARCH_RESULT "*%-13s method: Found the key \"%.5f\" appearing at index %d.  ==>Run time: %8.5f ms\n"
 #define SEARCH_NONE_RESULT "*%-13s method: Could not find the key \"%.5f\".  ==>Run time: %8.5f ms\n"
-#define SEARCH_PRINT_RESULT_CONTENT(method)                                        \
-    do                                                                             \
-    {                                                                              \
-        if (-1 != index)                                                           \
-        {                                                                          \
-            COMMON_PRINT(SEARCH_RESULT, method, key, index, SEARCH_TIME_INTERVAL); \
-        }                                                                          \
-        else                                                                       \
-        {                                                                          \
-            COMMON_PRINT(SEARCH_NONE_RESULT, method, key, SEARCH_TIME_INTERVAL);   \
-        }                                                                          \
-    }                                                                              \
+#define SEARCH_PRINT_RESULT_CONTENT(method)                                           \
+    do                                                                                \
+    {                                                                                 \
+        if (-1 != index)                                                              \
+        {                                                                             \
+            COMMON_PRINT(SEARCH_RESULT, method, key, index, SEARCH_RUNTIME_INTERVAL); \
+        }                                                                             \
+        else                                                                          \
+        {                                                                             \
+            COMMON_PRINT(SEARCH_NONE_RESULT, method, key, SEARCH_RUNTIME_INTERVAL);   \
+        }                                                                             \
+    }                                                                                 \
     while (0)
 #define SEARCH_RUNTIME_BEGIN TIME_BEGIN(timing)
 #define SEARCH_RUNTIME_END TIME_END(timing)
-#define SEARCH_TIME_INTERVAL TIME_INTERVAL(timing)
+#define SEARCH_RUNTIME_INTERVAL TIME_INTERVAL(timing)
 #else
 
 #define SEARCH_PRINT_RESULT_CONTENT(method)

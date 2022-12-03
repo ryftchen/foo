@@ -16,7 +16,7 @@ namespace algorithm::notation
 NotationSolution::NotationSolution(const std::string_view infixNotation) : infixNotation(infixNotation)
 {
 #ifndef _NO_PRINT_AT_RUNTIME
-    std::cout << "\r\nInfix notation: " << infixNotation << std::endl;
+    std::cout << "\r\nInfix notation " << infixNotation << ":" << std::endl;
 #endif
 }
 
