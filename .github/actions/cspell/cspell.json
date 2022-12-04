@@ -1,12 +1,4 @@
 {
-    "language": "en",
-    "useGitignore": true,
-    "ignorePaths":
-    [
-        ".github",
-        "docker",
-        "document"
-    ],
     "dictionaries":
     [
         "bash",
@@ -18,16 +10,64 @@
         "software-terms",
         "shell"
     ],
-    "patterns":
+    "words":
     [
-        {
-            "name": "comment-single-line",
-            "pattern": "/(\\/\\/.*)|(#.*)/g"
-        },
-        {
-            "name": "comment-multi-line",
-            "pattern": "/(?:\\/\\*[\\s\\S]*?\\*\\/)/g"
-        }
+        "Adaptee",
+        "Adelson",
+        "bkdr",
+        "codebrowser",
+        "compdb",
+        "creational",
+        "DCMAKE",
+        "Doxyfile",
+        "Griewank",
+        "indexgenerator",
+        "inorder",
+        "jcvf",
+        "Karp",
+        "Kernighan",
+        "Landis",
+        "libalgorithm",
+        "libdata",
+        "libdesign",
+        "libnumeric",
+        "libutility",
+        "memcheck",
+        "mpfr",
+        "profdata",
+        "profraw",
+        "pylintrc",
+        "Rastrigin",
+        "rcfile",
+        "Ritchie",
+        "RNDN",
+        "ryftchen",
+        "setaf",
+        "shellcheckrc",
+        "suboperation",
+        "valgrind",
+        "Velsky",
+        "vgcore",
+        "Werror",
+        "woboq",
+        "Xdemangler"
+    ],
+    "enableFiletypes":
+    [
+        "shellscript"
+    ],
+    "ignorePaths":
+    [
+        ".github",
+        "docker",
+        "document"
+    ],
+    "useGitignore": true,
+    "ignoreRegExpList":
+    [
+        "\/\/ NOLINT.*",
+        "# pylint:.*",
+        "# shellcheck.*"
     ],
     "overrides":
     [
@@ -35,9 +75,5 @@
             "filename": "**/*.tpp",
             "languageId": "cpp"
         }
-    ],
-    "enableFiletypes":
-    [
-        "shellscript"
     ]
 }
