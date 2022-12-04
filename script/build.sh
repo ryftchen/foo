@@ -407,6 +407,8 @@ performContainerOption()
                 fi
                 bashCommand "docker run -it --name ${PROJECT_FOLDER} -v ${PWD}:/root/${PROJECT_FOLDER} \
 -d ${imageRepo}:latest /bin/bash"
+            else
+                printException "The container is exist."
             fi
         else
             printException "Service docker status is not active."
