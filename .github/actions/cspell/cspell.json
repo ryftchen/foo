@@ -1,10 +1,32 @@
 {
-    "ignorePaths": [
-        "**/.github/**",
-        "**/build/**",
-        "**/docker/**",
-        "**/document/**",
-        "**/temporary/**",
-        "**/.*"
+    "language": "en",
+    "useGitignore": true,
+    "ignorePaths":
+    [
+        ".github",
+        "docker",
+        "document"
+    ],
+    "patterns":
+    [
+        {
+            "name": "comment-single-line",
+            "pattern": "/(\\/\\/.*)|(#.*)/g"
+        },
+        {
+            "name": "comment-multi-line",
+            "pattern": "/(?:\\/\\*[\\s\\S]*?\\*\\/)/g"
+        }
+    ],
+    "overrides":
+    [
+        {
+            "filename": "**/*.tpp",
+            "languageId": "cpp"
+        }
+    ],
+    "enableFiletypes":
+    [
+        "shellscript"
     ]
 }
