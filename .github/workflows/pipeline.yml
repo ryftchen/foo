@@ -39,7 +39,7 @@ jobs:
         uses: streetsidesoftware/cspell-action@v2.13.0
         with:
           files: |
-            **/*.{cpp,hpp,tpp,sh,py}
+            **/*.{cpp,hpp,tpp,py,sh}
           incremental_files_only: false
           config: ./.github/actions/cspell/cspell.json
           verbose: true
@@ -47,7 +47,7 @@ jobs:
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v2
         with:
-          languages: cpp
+          languages: cpp, python
 
       - name: Manual build
         run: |
