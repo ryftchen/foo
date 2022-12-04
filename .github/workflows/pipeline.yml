@@ -40,11 +40,30 @@ jobs:
         with:
           config: ./.github/actions/check_spelling
           post_comment: 0
+          shortest_word: 4
           extra_dictionaries:
             cspell:bash/bash-words.txt
-            cspell:cpp/cpp.txt
+            cspell:cpp/src/compiler-clang-attributes.txt
+            cspell:cpp/src/compiler-gcc.txt
+            cspell:cpp/src/cpp.txt
+            cspell:cpp/src/ecosystem.txt
+            cspell:cpp/src/lang-jargon.txt
+            cspell:cpp/src/lang-keywords.txt
+            cspell:cpp/src/stdlib-c.txt
+            cspell:cpp/src/stdlib-cerrno.txt
+            cspell:cpp/src/stdlib-cmath.txt
+            cspell:cpp/src/stdlib-cpp.txt
+            cspell:en_GB/src/aoo-mozilla-en-dict/en-GB.dic
+            cspell:en_GB/src/hunspell/en_GB.dic
+            cspell:en_GB/src/wordsEnGb.txt
+            cspell:en_US/src/aoo-mozilla-en-dict/en_US.dic
+            cspell:en_US/src/en_US.txt
+            cspell:en_US/src/hunspell/en_US.dic
             cspell:filetypes/filetypes.txt
-            cspell:python/python.txt
+            cspell:python/src/python/python-lib.txt
+            cspell:python/src/python/python.txt
+            cspell:software-terms/src/software-terms.txt
+            cspell:software-terms/src/software-tools.txt
           check_extra_dictionaries: ''
 
       - name: Initialize CodeQL
