@@ -7,6 +7,17 @@
         "docker",
         "document"
     ],
+    "dictionaries":
+    [
+        "bash",
+        "cpp",
+        "en_GB",
+        "en_US",
+        "filetypes",
+        "python",
+        "software-terms",
+        "shell"
+    ],
     "patterns":
     [
         {
