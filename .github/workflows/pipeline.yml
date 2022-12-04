@@ -38,10 +38,8 @@ jobs:
       - name: Check spelling
         uses: streetsidesoftware/cspell-action@v2.13.0
         with:
-          files: |
-            *.{cpp,hpp,tpp,sh,py}
-          check_dot_files: false
           incremental_files_only: false
+          config: ./.github/actions/cspell
           verbose: true
 
       - name: Initialize CodeQL

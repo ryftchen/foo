@@ -1,0 +1,10 @@
+{
+    "ignorePaths": [
+        "**/.github/**",
+        "**/build/**",
+        "**/docker/**",
+        "**/document/**",
+        "**/temporary/**",
+        "**/.*"
+    ]
+}
