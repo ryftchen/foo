@@ -32,7 +32,7 @@ class Output:
 
     @classmethod
     def printException(cls, message):
-        print(f"\r\nPython script run.py: {message}")
+        print(f"\r\nrun.py: {message}")
         sys.exit(-1)
 
     @classmethod
@@ -123,7 +123,23 @@ class Task:
             self.runTask(self.testBinCmd)
 
         self.completeTask()
-        self.analyzeLog()
+        self.formatLog()
+
+    def stop(self, message=""):
+        try:
+            if self.isCheckMemory:
+                common.executeCommand(f"rm -rf {self.tempDir}/*.xml")
+            if self.isCheckCoverage:
+                common.executeCommand(f"rm -rf {self.tempDir}/*.profraw {self.tempDir}/*.profdata")
+            sys.stdout = STDOUT
+            self.progressBar.destroyProgressBar()
+            del self.log
+            self.formatLog()
+        except Exception:  # pylint: disable=broad-except
+            pass
+        finally:
+            if message:
+                Output.printException(message)
 
     def generateTask(self):
         self.generateBasicTask()
@@ -238,6 +254,7 @@ class Task:
     def buildProject(self, command):
         stdout, stderr, errcode = common.executeCommand(command)
         if stderr or errcode != 0:
+            print(f"STDOUT:\n{stdout}\nSTDERR:\n{stderr}\nERRCODE:\n{errcode}")
             Output.printException(f"Failed to run shell script {self.buildFile}.")
         else:
             print(stdout)
@@ -289,7 +306,7 @@ class Task:
         self.progressBar.destroyProgressBar()
         del self.log
 
-    def analyzeLog(self):
+    def formatLog(self):
         refresh = ""
         with open(self.logFile, "rt", encoding="utf-8") as refresh:
             inputContent = refresh.read()
@@ -314,6 +331,9 @@ class Task:
 
 if __name__ == "__main__":
     try:
-        Task().run()
+        task = Task()
+        task.run()
     except Exception:  # pylint: disable=broad-except
-        Output.printException(traceback.format_exc())
+        task.stop(traceback.format_exc())
+    except KeyboardInterrupt:
+        task.stop()

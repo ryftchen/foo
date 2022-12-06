@@ -11,7 +11,7 @@ except ImportError as err:
     raise ImportError(err) from err
 
 
-def executeCommand(command, enter=""):
+def executeCommand(command, setInput="", setTimeout=300):
     try:
         with subprocess.Popen(
             command,
@@ -21,12 +21,12 @@ def executeCommand(command, enter=""):
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             encoding="utf-8",
-        ) as output:
-            stdout, stderr = output.communicate(input=enter)
-            error = output.returncode
-            return stdout.strip(), stderr.strip(), error
-    except RuntimeError as error:
-        return "", error.args[0], 255
+        ) as process:
+            stdout, stderr = process.communicate(input=setInput, timeout=setTimeout)
+            return stdout.strip(), stderr.strip(), process.returncode
+    except subprocess.TimeoutExpired as error:
+        process.kill()
+        return "", error, process.returncode
 
 
 class Log:
