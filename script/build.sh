@@ -46,7 +46,13 @@ bashCommand()
 printException()
 {
     echo
-    echo "Shell script build.sh: $*"
+    echo "build.sh: $*"
+    exit 1
+}
+
+signalHandler()
+{
+    tput sgr0
     exit 1
 }
 
@@ -429,7 +435,7 @@ main()
 {
     cd "${0%%"${SCRIPT_FOLDER}"*}" || exit 1
     export TERM=linux TERMINFO=/etc/terminfo
-    trap "tput sgr0" INT TERM
+    trap "signalHandler" INT TERM
 
     parseArgs "$@"
     performHelpOption
