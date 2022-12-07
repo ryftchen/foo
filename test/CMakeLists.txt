@@ -4,12 +4,9 @@ project(foo_test)
 
 include(CheckCXXCompilerFlag)
 include(CheckIncludeFile)
-include(CheckIncludeFiles)
 check_cxx_compiler_flag(-std=c++20 COMPILER_SUPPORTS_CXX20)
-check_include_file("bits/stdint-uintn.h" HAVE_BITS_HEADER)
-check_include_file("ext/stdio_filebuf.h" HAVE_EXT_HEADER)
 check_include_file("mpfr.h" HAVE_MPFR_HEADER)
-check_include_files("sys/file.h;sys/time.h" HAVE_SYS_HEADER)
+check_include_file("sys/time.h" HAVE_SYS_TIME_HEADER)
 find_package(GTest REQUIRED)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON CACHE INTERNAL "")
