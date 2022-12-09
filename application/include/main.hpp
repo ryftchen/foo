@@ -92,7 +92,7 @@ static void switchToTargetPath()
     }
     else
     {
-        const std::filesystem::path homePath(std::filesystem::path{getenv("HOME")});
+        const std::filesystem::path homePath(std::filesystem::path{std::getenv("HOME")});
         if (homePath.empty())
         {
             std::fprintf(stderr, "The home path isn't exist. Please check it.\n");

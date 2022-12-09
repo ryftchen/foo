@@ -145,9 +145,9 @@ int Console::fileExecutor(const std::string& filename)
         std::cerr << "console: Can not find batch file to run." << std::endl;
         return ReturnCode::error;
     }
+
     std::string command;
     int counter = 0, result = 0;
-
     while (std::getline(input, command))
     {
         if ('#' == command[0])
@@ -172,7 +172,7 @@ int Console::readCommandLine()
 {
     reserveConsole();
 
-    char* buffer = readline(impl->greeting.c_str());
+    char* buffer = readline(getGreeting().c_str());
     if (!buffer)
     {
         std::cout << std::endl;
@@ -207,8 +207,8 @@ char* Console::commandIterator(const char* text, int state)
     {
         return nullptr;
     }
-    auto& commands = currentConsole->impl->RegCmds;
 
+    auto& commands = currentConsole->impl->RegCmds;
     if (!state)
     {
         iterator = std::begin(commands);
