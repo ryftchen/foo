@@ -83,7 +83,7 @@ private:
     const function::Function& func;
     static constexpr double initialLearningRate{0.01};
     static constexpr double decay{0.001};
-    static constexpr uint32_t loopTime{100};
+    static constexpr uint32_t loopTime{1000};
 
     [[nodiscard]] double calculateFirstDerivative(const double x, const double eps) const;
 };
@@ -123,12 +123,12 @@ private:
     std::mt19937 seed;
     static constexpr double c1{1.5};
     static constexpr double c2{1.5};
-    static constexpr double wBegin{0.9};
-    static constexpr double wEnd{0.4};
+    static constexpr double wBegin{0.85};
+    static constexpr double wEnd{0.35};
     static constexpr double vMax{0.5};
     static constexpr double vMin{-0.5};
-    static constexpr uint32_t size{50};
-    static constexpr uint32_t numOfIteration{100};
+    static constexpr uint32_t size{100};
+    static constexpr uint32_t numOfIteration{500};
 
     struct Individual
     {
@@ -194,10 +194,10 @@ private:
     } range{};
     std::mt19937 seed;
     uint32_t chrNum{0};
-    static constexpr double crossPr{0.8};
-    static constexpr double mutatePr{0.05};
-    static constexpr uint32_t size{50};
-    static constexpr uint32_t numOfIteration{100};
+    static constexpr double crossPr{0.75};
+    static constexpr double mutatePr{0.035};
+    static constexpr uint32_t size{100};
+    static constexpr uint32_t numOfIteration{500};
 
     using Chromosome = std::vector<uint8_t>;
     using Population = std::vector<Chromosome>;

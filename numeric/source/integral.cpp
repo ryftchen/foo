@@ -216,7 +216,7 @@ double MonteCarlo::operator()(double lower, double upper, const double eps) cons
 
 double MonteCarlo::sampleFromUniformDistribution(const double lower, const double upper, const double eps) const
 {
-    const uint32_t n = (upper - lower) / eps;
+    const uint32_t n = std::max<uint32_t>((upper - lower) / eps, 1000000);
     std::mt19937 seed(std::random_device{}());
     std::uniform_real_distribution<double> randomX(lower, upper);
     double sum = 0.0;
@@ -233,7 +233,7 @@ double MonteCarlo::sampleFromUniformDistribution(const double lower, const doubl
 #ifdef INTEGRAL_MONTE_CARLO_NO_UNIFORM
 double MonteCarlo::sampleFromNormalDistribution(const double lower, const double upper, const double eps) const
 {
-    const uint32_t n = (upper - lower) / eps;
+    const uint32_t n = std::max<uint32_t>((upper - lower) / eps, 1000000);
     const double mu = (lower + upper) / 2.0, sigma = (upper - lower) / 6.0;
     std::mt19937 seed(std::random_device{}());
     std::uniform_real_distribution<double> randomU(0.0, 1.0);
@@ -242,9 +242,7 @@ double MonteCarlo::sampleFromNormalDistribution(const double lower, const double
     {
         do
         {
-            double u1 = randomU(seed);
-            double u2 = randomU(seed);
-            double mag = sigma * std::sqrt(-2.0 * std::log(u1));
+            double u1 = randomU(seed), u2 = randomU(seed), mag = sigma * std::sqrt(-2.0 * std::log(u1));
             x = mag * std::sin(2.0 * M_PI * u2) + mu; // Box-Muller Transform
         }
         while ((x < lower) || (x > upper));
