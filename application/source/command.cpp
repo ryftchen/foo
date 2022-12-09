@@ -1,4 +1,6 @@
 #include "command.hpp"
+#include <unistd.h>
+#include <climits>
 #include "utility/include/log.hpp"
 
 namespace application::command
@@ -486,15 +488,21 @@ void Command::printVersionInfo() const
 
 void Command::enterConsoleMode() const
 {
-    utility::common::executeCommand(("tput bel; echo " + getIconBanner()).c_str());
+    char hostName[HOST_NAME_MAX + 1];
+    if (gethostname(hostName, HOST_NAME_MAX + 1))
+    {
+        throw std::runtime_error("Failed to get host name.");
+    }
+    const std::string greeting = std::string{std::getenv("USER")} + "@" + hostName + " foo > ";
 
-    utility::console::Console console("foo > ");
+    utility::common::executeCommand(("tput bel; echo " + getIconBanner()).c_str());
+    utility::console::Console console(greeting);
     registerOnConsole(console);
     int returnCode = 0;
     do
     {
         returnCode = console.readCommandLine();
-        console.setGreeting("foo > ");
+        console.setGreeting(greeting);
     }
     while (utility::console::Console::ReturnCode::quit != returnCode);
 }
