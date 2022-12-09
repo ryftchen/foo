@@ -80,7 +80,7 @@ int SearchSolution<T>::interpolationMethod(const T* const array, const uint32_t 
 
     while (lower <= upper)
     {
-        uint32_t mid = lower + (upper - lower) * (key - array[lower]) / (array[upper] - array[lower]);
+        uint32_t mid = lower + (upper - lower) * ((key - array[lower]) / (array[upper] - array[lower]));
         if (key == array[mid])
         {
             index = mid;
