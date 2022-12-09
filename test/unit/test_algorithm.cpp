@@ -193,8 +193,8 @@ TEST_F(OptimalTestBase, gradient) // NOLINT(cert-err58-cpp)
 #endif
     auto result = (*gradient)(griewank.range1, griewank.range2, algorithm::optimal::epsilon);
     ASSERT_TRUE(result.has_value());
-    ASSERT_GT(get<0>(result.value()), -1.0);
-    ASSERT_LT(get<0>(result.value()), 1.0);
+    ASSERT_GT(get<0>(result.value()), 0.0 - 0.05);
+    ASSERT_LT(get<0>(result.value()), 0.0 + 0.05);
 
     gradient = std::make_shared<algorithm::optimal::Gradient>(rastrigin);
 #ifndef _NO_PRINT_AT_RUNTIME
@@ -202,8 +202,8 @@ TEST_F(OptimalTestBase, gradient) // NOLINT(cert-err58-cpp)
 #endif
     result = (*gradient)(rastrigin.range1, rastrigin.range2, algorithm::optimal::epsilon);
     ASSERT_TRUE(result.has_value());
-    ASSERT_GT(get<0>(result.value()), -1.0);
-    ASSERT_LT(get<0>(result.value()), 1.0);
+    ASSERT_GT(get<0>(result.value()), 0.0 - 0.05);
+    ASSERT_LT(get<0>(result.value()), 0.0 + 0.05);
 }
 
 TEST_F(OptimalTestBase, annealing) // NOLINT(cert-err58-cpp)
@@ -215,8 +215,8 @@ TEST_F(OptimalTestBase, annealing) // NOLINT(cert-err58-cpp)
 #endif
     auto result = (*annealing)(griewank.range1, griewank.range2, algorithm::optimal::epsilon);
     ASSERT_TRUE(result.has_value());
-    ASSERT_GT(get<0>(result.value()), -1.0);
-    ASSERT_LT(get<0>(result.value()), 1.0);
+    ASSERT_GT(get<0>(result.value()), 0.0 - 0.05);
+    ASSERT_LT(get<0>(result.value()), 0.0 + 0.05);
 
     annealing = std::make_shared<algorithm::optimal::Annealing>(rastrigin);
 #ifndef _NO_PRINT_AT_RUNTIME
@@ -224,8 +224,8 @@ TEST_F(OptimalTestBase, annealing) // NOLINT(cert-err58-cpp)
 #endif
     result = (*annealing)(rastrigin.range1, rastrigin.range2, algorithm::optimal::epsilon);
     ASSERT_TRUE(result.has_value());
-    ASSERT_GT(get<0>(result.value()), -1.0);
-    ASSERT_LT(get<0>(result.value()), 1.0);
+    ASSERT_GT(get<0>(result.value()), 0.0 - 0.05);
+    ASSERT_LT(get<0>(result.value()), 0.0 + 0.05);
 }
 
 TEST_F(OptimalTestBase, particle) // NOLINT(cert-err58-cpp)
@@ -237,8 +237,8 @@ TEST_F(OptimalTestBase, particle) // NOLINT(cert-err58-cpp)
 #endif
     auto result = (*particle)(griewank.range1, griewank.range2, algorithm::optimal::epsilon);
     ASSERT_TRUE(result.has_value());
-    ASSERT_GT(get<0>(result.value()), -1.0);
-    ASSERT_LT(get<0>(result.value()), 1.0);
+    ASSERT_GT(get<0>(result.value()), 0.0 - 0.05);
+    ASSERT_LT(get<0>(result.value()), 0.0 + 0.05);
 
     particle = std::make_shared<algorithm::optimal::Particle>(rastrigin);
 #ifndef _NO_PRINT_AT_RUNTIME
@@ -246,8 +246,8 @@ TEST_F(OptimalTestBase, particle) // NOLINT(cert-err58-cpp)
 #endif
     result = (*particle)(rastrigin.range1, rastrigin.range2, algorithm::optimal::epsilon);
     ASSERT_TRUE(result.has_value());
-    ASSERT_GT(get<0>(result.value()), -1.0);
-    ASSERT_LT(get<0>(result.value()), 1.0);
+    ASSERT_GT(get<0>(result.value()), 0.0 - 0.05);
+    ASSERT_LT(get<0>(result.value()), 0.0 + 0.05);
 }
 
 TEST_F(OptimalTestBase, genetic) // NOLINT(cert-err58-cpp)
@@ -259,8 +259,8 @@ TEST_F(OptimalTestBase, genetic) // NOLINT(cert-err58-cpp)
 #endif
     auto result = (*genetic)(griewank.range1, griewank.range2, algorithm::optimal::epsilon);
     ASSERT_TRUE(result.has_value());
-    ASSERT_GT(get<0>(result.value()), -1.0);
-    ASSERT_LT(get<0>(result.value()), 1.0);
+    ASSERT_GT(get<0>(result.value()), 0.0 - 0.05);
+    ASSERT_LT(get<0>(result.value()), 0.0 + 0.05);
 
     genetic = std::make_shared<algorithm::optimal::Genetic>(rastrigin);
 #ifndef _NO_PRINT_AT_RUNTIME
@@ -268,8 +268,8 @@ TEST_F(OptimalTestBase, genetic) // NOLINT(cert-err58-cpp)
 #endif
     result = (*genetic)(rastrigin.range1, rastrigin.range2, algorithm::optimal::epsilon);
     ASSERT_TRUE(result.has_value());
-    ASSERT_GT(get<0>(result.value()), -1.0);
-    ASSERT_LT(get<0>(result.value()), 1.0);
+    ASSERT_GT(get<0>(result.value()), 0.0 - 0.05);
+    ASSERT_LT(get<0>(result.value()), 0.0 + 0.05);
 }
 
 class SearchTestBase : public ::testing::Test

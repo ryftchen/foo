@@ -169,16 +169,16 @@ TEST_F(IntegralTestBase, trapezoidal) // NOLINT(cert-err58-cpp)
     std::cout << "\r\nIntegral expression: " << expression1.exprStr << std::endl;
 #endif
     auto result = (*trapezoidal)(expression1.range1, expression1.range2, numeric::integral::epsilon);
-    ASSERT_GT(result, -5.0);
-    ASSERT_LT(result, -4.0);
+    ASSERT_GT(result, -4.08951 - 0.5);
+    ASSERT_LT(result, -4.08951 + 0.5);
 
     trapezoidal = std::make_shared<numeric::integral::Trapezoidal>(expression2);
 #ifndef _NO_PRINT_AT_RUNTIME
     std::cout << "\r\nIntegral expression: " << expression2.exprStr << std::endl;
 #endif
     result = (*trapezoidal)(expression2.range1, expression2.range2, numeric::integral::epsilon);
-    ASSERT_GT(result, 39.0);
-    ASSERT_LT(result, 40.0);
+    ASSERT_GT(result, +39.71374 - 0.5);
+    ASSERT_LT(result, +39.71374 + 0.5);
 }
 
 TEST_F(IntegralTestBase, simpson) // NOLINT(cert-err58-cpp)
@@ -189,16 +189,16 @@ TEST_F(IntegralTestBase, simpson) // NOLINT(cert-err58-cpp)
     std::cout << "\r\nIntegral expression: " << expression1.exprStr << std::endl;
 #endif
     auto result = (*simpson)(expression1.range1, expression1.range2, numeric::integral::epsilon);
-    ASSERT_GT(result, -5.0);
-    ASSERT_LT(result, -4.0);
+    ASSERT_GT(result, -4.08951 - 0.5);
+    ASSERT_LT(result, -4.08951 + 0.5);
 
     simpson = std::make_shared<numeric::integral::Simpson>(expression2);
 #ifndef _NO_PRINT_AT_RUNTIME
     std::cout << "\r\nIntegral expression: " << expression2.exprStr << std::endl;
 #endif
     result = (*simpson)(expression2.range1, expression2.range2, numeric::integral::epsilon);
-    ASSERT_GT(result, 39.0);
-    ASSERT_LT(result, 40.0);
+    ASSERT_GT(result, +39.71374 - 0.5);
+    ASSERT_LT(result, +39.71374 + 0.5);
 }
 
 TEST_F(IntegralTestBase, romberg) // NOLINT(cert-err58-cpp)
@@ -209,16 +209,16 @@ TEST_F(IntegralTestBase, romberg) // NOLINT(cert-err58-cpp)
     std::cout << "\r\nIntegral expression: " << expression1.exprStr << std::endl;
 #endif
     auto result = (*romberg)(expression1.range1, expression1.range2, numeric::integral::epsilon);
-    ASSERT_GT(result, -5.0);
-    ASSERT_LT(result, -4.0);
+    ASSERT_GT(result, -4.08951 - 0.5);
+    ASSERT_LT(result, -4.08951 + 0.5);
 
     romberg = std::make_shared<numeric::integral::Romberg>(expression2);
 #ifndef _NO_PRINT_AT_RUNTIME
     std::cout << "\r\nIntegral expression: " << expression2.exprStr << std::endl;
 #endif
     result = (*romberg)(expression2.range1, expression2.range2, numeric::integral::epsilon);
-    ASSERT_GT(result, 39.0);
-    ASSERT_LT(result, 40.0);
+    ASSERT_GT(result, +39.71374 - 0.5);
+    ASSERT_LT(result, +39.71374 + 0.5);
 }
 
 TEST_F(IntegralTestBase, gauss) // NOLINT(cert-err58-cpp)
@@ -229,16 +229,16 @@ TEST_F(IntegralTestBase, gauss) // NOLINT(cert-err58-cpp)
     std::cout << "\r\nIntegral expression: " << expression1.exprStr << std::endl;
 #endif
     auto result = (*gauss)(expression1.range1, expression1.range2, numeric::integral::epsilon);
-    ASSERT_GT(result, -5.0);
-    ASSERT_LT(result, -4.0);
+    ASSERT_GT(result, -4.08951 - 0.5);
+    ASSERT_LT(result, -4.08951 + 0.5);
 
     gauss = std::make_shared<numeric::integral::Gauss>(expression2);
 #ifndef _NO_PRINT_AT_RUNTIME
     std::cout << "\r\nIntegral expression: " << expression2.exprStr << std::endl;
 #endif
     result = (*gauss)(expression2.range1, expression2.range2, numeric::integral::epsilon);
-    ASSERT_GT(result, 39.0);
-    ASSERT_LT(result, 40.0);
+    ASSERT_GT(result, +39.71374 - 0.5);
+    ASSERT_LT(result, +39.71374 + 0.5);
 }
 
 TEST_F(IntegralTestBase, monteCarlo) // NOLINT(cert-err58-cpp)
@@ -249,16 +249,16 @@ TEST_F(IntegralTestBase, monteCarlo) // NOLINT(cert-err58-cpp)
     std::cout << "\r\nIntegral expression: " << expression1.exprStr << std::endl;
 #endif
     auto result = (*monteCarlo)(expression1.range1, expression1.range2, numeric::integral::epsilon);
-    ASSERT_GT(result, -5.0);
-    ASSERT_LT(result, -4.0);
+    ASSERT_GT(result, -4.08951 - 0.5);
+    ASSERT_LT(result, -4.08951 + 0.5);
 
     monteCarlo = std::make_shared<numeric::integral::MonteCarlo>(expression2);
 #ifndef _NO_PRINT_AT_RUNTIME
     std::cout << "\r\nIntegral expression: " << expression2.exprStr << std::endl;
 #endif
     result = (*monteCarlo)(expression2.range1, expression2.range2, numeric::integral::epsilon);
-    ASSERT_GT(result, 39.0);
-    ASSERT_LT(result, 40.0);
+    ASSERT_GT(result, +39.71374 - 0.5);
+    ASSERT_LT(result, +39.71374 + 0.5);
 }
 
 class PrimeTestBase : public ::testing::Test
