@@ -27,8 +27,8 @@ class Output:
     colorOff = "\033[0m"
     colorEscapeRegex = r"((\033.*?m)|(\007)|(\017))"
     columnLength = 10
-    alignMaxLen = 30
-    alignCmdLen = 10
+    alignMinLen = 30
+    alignExclCmdLen = 20
 
     @classmethod
     def printException(cls, message):
@@ -119,8 +119,8 @@ class Task:
             for thread in threadList:
                 thread.join()
         else:
-            self.totalStep = 1
-            self.runTask(self.testBinCmd)
+            while self.completeStep < self.totalStep:
+                self.runTask(self.testBinCmd)
 
         self.completeTask()
         self.formatLog()
@@ -162,8 +162,12 @@ class Task:
         if self.isCheckCoverage:
             fullCommand = f"LLVM_PROFILE_FILE=\"{self.tempDir}/foo_cov_{str(self.completeStep + 1)}.profraw\" \
 {fullCommand}"
-        align = max(len(command) + (Output.alignMaxLen - Output.alignCmdLen), Output.alignMaxLen)
-        Output.printStatus(Output.colorBlue, f"CASE TASK: {f'{command}':<{Output.alignCmdLen}} | START ")
+        align = max(
+            len(command) + Output.alignExclCmdLen,
+            Output.alignMinLen,
+            len(str(self.totalStep)) * 2 + len(" / ") + Output.alignExclCmdLen,
+        )
+        Output.printStatus(Output.colorBlue, f"CASE TASK: {f'{command}':<{align - Output.alignExclCmdLen}} | START ")
 
         stdout, stderr, errcode = common.executeCommand(fullCommand, enter)
         if stderr or errcode != 0:
@@ -188,7 +192,7 @@ class Task:
                     )
 
         self.completeStep += 1
-        Output.printStatus(Output.colorBlue, f"CASE TASK: {f'{command}':<{Output.alignCmdLen}} | FINISH")
+        Output.printStatus(Output.colorBlue, f"CASE TASK: {f'{command}':<{align - Output.alignExclCmdLen}} | FINISH")
 
         if self.passStep != self.totalStep:
             statusColor = Output.colorYellow
@@ -207,7 +211,7 @@ class Task:
 
     def parseArgs(self):
         parser = argparse.ArgumentParser(description="run script")
-        parser.add_argument("-t", "--test", action='store_true', default=False, help="only run unit test")
+        parser.add_argument("-t", "--test", nargs="?", type=int, const=1, help="only run unit test")
         parser.add_argument(
             "-c", "--check", choices=["cov", "mem"], nargs="+", help="run with check: coverage / memory"
         )
@@ -250,6 +254,7 @@ class Task:
 
         if args.test:
             self.isUnitTest = True
+            self.totalStep = args.test
 
     def buildProject(self, command):
         stdout, stderr, errcode = common.executeCommand(command)
