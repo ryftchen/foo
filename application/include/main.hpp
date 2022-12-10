@@ -5,6 +5,7 @@
 #include <execinfo.h>
 #include <unistd.h>
 #include <csignal>
+#include <cstring>
 #include <filesystem>
 
 namespace application
@@ -92,7 +93,8 @@ static void switchToTargetPath()
     }
     else
     {
-        const std::filesystem::path homePath(std::filesystem::path{std::getenv("HOME")});
+        const std::filesystem::path homePath(
+            std::filesystem::path{std::strlen(std::getenv("HOME")) ? std::getenv("HOME") : "/root"});
         if (homePath.empty())
         {
             std::fprintf(stderr, "The home path isn't exist. Please check it.\n");

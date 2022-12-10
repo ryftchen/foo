@@ -1,6 +1,7 @@
 #include "command.hpp"
 #include <unistd.h>
 #include <climits>
+#include <cstring>
 #include "utility/include/log.hpp"
 
 namespace application::command
@@ -493,7 +494,8 @@ void Command::enterConsoleMode() const
     {
         throw std::runtime_error("Failed to get host name.");
     }
-    const std::string greeting = std::string{std::getenv("USER")} + "@" + hostName + " foo > ";
+    const std::string greeting = std::string{std::strlen(std::getenv("USER")) ? std::getenv("USER") : "root"} + "@"
+        + std::string{hostName} + " foo > ";
 
     utility::common::executeCommand(("tput bel; echo " + getIconBanner()).c_str());
     utility::console::Console console(greeting);
