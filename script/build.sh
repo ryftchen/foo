@@ -282,10 +282,8 @@ performLintOption()
 performCleanupOption()
 {
     if [[ "${ARGS_CLEANUP}" = true ]]; then
-        bashCommand "rm -rf ./${BUILD_FOLDER} ./${TEST_FOLDER}/${BUILD_FOLDER} ./${SCRIPT_FOLDER}/__pycache__ \
-./${TEMPORARY_FOLDER}"
-        bashCommand "find ./${DOCUMENT_FOLDER} -maxdepth 1 -type d | sed 1d | grep -E 'browser|doxygen' \
-| xargs -i rm -rf {}"
+        bashCommand "find ./ -maxdepth 2 -type d | sed 1d \
+| grep -E '(${BUILD_FOLDER}|${TEMPORARY_FOLDER}|browser|doxygen|__pycache__)$' | xargs -i rm -rf {}"
         bashCommand "rm -rf ./core* ./vgcore* ./*.profraw"
     fi
 }
