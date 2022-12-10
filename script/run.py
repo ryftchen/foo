@@ -201,7 +201,7 @@ class Task:
         Output.printStatus(
             statusColor,
             f"""\
-{f"CASE TASK: {f'{str(self.passStep)}':>{len(str(self.totalStep))}} / {str(self.totalStep)} SUCCESS":<{align}}""",
+{f"CASE TASK: SUCCESS {f'{str(self.passStep)}':>{len(str(self.totalStep))}} / {str(self.totalStep)}":<{align}}""",
         )
         print("\n")
 
