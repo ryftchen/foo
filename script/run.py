@@ -169,10 +169,10 @@ class Task:
         )
         Output.printStatus(Output.colorBlue, f"CASE TASK: {f'{command}':<{align - Output.alignExclCmdLen}} | START ")
 
-        stdout, stderr, errcode = common.executeCommand(fullCommand, enter)
-        if stderr or errcode != 0:
-            print(f"STDOUT:\n{stdout}\nSTDERR:\n{stderr}\nERRCODE:\n{errcode}")
-            Output.printStatus(Output.colorRed, f"{f'CASE TASK: NO.{str(self.completeStep + 1)} FAILURE':<{align}}")
+        stdout, stderr, returncode = common.executeCommand(fullCommand, enter)
+        if stderr or returncode != 0:
+            print(f"<STDOUT>\n{stdout}\n<STDERR>\n{stderr}\n<RETURN CODE>\n{returncode}")
+            Output.printStatus(Output.colorRed, f"{f'CASE TASK: FAILURE NO.{str(self.completeStep + 1)}':<{align}}")
         else:
             print(stdout)
             self.passStep += 1
@@ -181,14 +181,14 @@ class Task:
                     f"valgrind-ci {self.tempDir}/foo_mem_{str(self.completeStep + 1)}.xml --summary"
                 )
                 if "error" in stdout:
-                    print(f"\r\nCHECK MEMORY:\n{stdout}")
+                    print(f"\r\n<CHECK MEMORY>\n{stdout}")
                     common.executeCommand(
                         f"valgrind-ci {self.tempDir}/foo_mem_{str(self.completeStep + 1)}.xml --source-dir=./ \
 --output-dir={self.tempDir}/memory/case_task_{str(self.completeStep + 1)}"
                     )
                     self.passStep -= 1
                     Output.printStatus(
-                        Output.colorRed, f"{f'CASE TASK: NO.{str(self.completeStep + 1)} FAILURE':<{align}}"
+                        Output.colorRed, f"{f'CASE TASK: FAILURE NO.{str(self.completeStep + 1)}':<{align}}"
                     )
 
         self.completeStep += 1
@@ -257,9 +257,9 @@ class Task:
             self.totalStep = args.test
 
     def buildProject(self, command):
-        stdout, stderr, errcode = common.executeCommand(command)
-        if stderr or errcode != 0:
-            print(f"STDOUT:\n{stdout}\nSTDERR:\n{stderr}\nERRCODE:\n{errcode}")
+        stdout, stderr, returncode = common.executeCommand(command)
+        if stderr or returncode != 0:
+            print(f"<STDOUT>\n{stdout}\n<STDERR>\n{stderr}\n<RETURN CODE>\n{returncode}")
             Output.printException(f"Failed to run shell script {self.buildFile}.")
         else:
             print(stdout)
@@ -303,9 +303,9 @@ class Task:
                 + " 2>&1"
             )
             common.executeCommand(f"rm -rf {self.tempDir}/*.profraw {self.tempDir}/*.profdata")
-            print(f"\r\nCHECK COVERAGE:\n{stdout}")
+            print(f"\r\n<CHECK COVERAGE>\n{stdout}")
             if "error" in stdout:
-                print("Please rebuild the executable file before use --check option.")
+                print("Please rebuild the executable file and use --check option.")
 
         sys.stdout = STDOUT
         self.progressBar.destroyProgressBar()

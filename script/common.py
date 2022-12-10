@@ -6,7 +6,6 @@ try:
     import signal
     import sys
     import subprocess
-    import threading
     import time
 except ImportError as err:
     raise ImportError(err) from err
@@ -14,27 +13,22 @@ except ImportError as err:
 
 def executeCommand(command, setInput="", setTimeout=300):
     try:
-        value = None
-        with subprocess.Popen(
+        process = subprocess.run(
             command,
             shell=True,
             executable="/bin/bash",
-            stdin=subprocess.PIPE,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
+            universal_newlines=True,
+            capture_output=True,
+            check=True,
             encoding="utf-8",
-        ) as process:
-            if setTimeout:
-                timer = threading.Timer(setTimeout, process.kill)
-                timer.start()
-            stdout, stderr = process.communicate(input=setInput, timeout=setTimeout)
-            value = stdout.strip(), stderr.strip(), process.returncode
-    except subprocess.SubprocessError as error:
-        value = "", error, process.returncode
-    finally:
-        if setTimeout and timer.is_alive():
-            timer.cancel()
-    return value
+            input=setInput,
+            timeout=setTimeout,
+        )
+        return process.stdout.strip(), process.stderr.strip(), process.returncode
+    except subprocess.CalledProcessError as error:
+        return error.stdout.strip(), error.stderr.strip(), error.returncode
+    except subprocess.TimeoutExpired as error:
+        return "", error, 124
 
 
 class Log:
