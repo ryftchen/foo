@@ -104,7 +104,7 @@ private:
     static constexpr double initialT{100.0};
     static constexpr double minimalT{0.01};
     static constexpr double coolingRate{0.9};
-    static constexpr uint32_t markovChain{100};
+    static constexpr uint32_t markovChain{500};
 };
 
 // Particle Swarm
