@@ -25,7 +25,7 @@ class Output:
     colorBlue = "\033[0;34;40m"
     colorForBackground = "\033[49m"
     colorOff = "\033[0m"
-    colorEscapeRegex = r"((\033.*?m)|(\007)|(\017))"
+    colorEscapeRegex = r"((\033\[.*?(m|s|u|A))|(\007|\017))"
     columnLength = 10
     alignMinLen = 30
     alignExclCmdLen = 20
@@ -123,7 +123,7 @@ class Task:
                 self.runTask(self.testBinCmd)
 
         self.completeTask()
-        self.formatLog()
+        self.formatRunLog()
 
     def stop(self, message=""):
         try:
@@ -134,7 +134,7 @@ class Task:
             sys.stdout = STDOUT
             self.progressBar.destroyProgressBar()
             del self.log
-            self.formatLog()
+            self.formatRunLog()
         except Exception:  # pylint: disable=broad-except
             pass
         finally:
@@ -311,7 +311,7 @@ class Task:
         self.progressBar.destroyProgressBar()
         del self.log
 
-    def formatLog(self):
+    def formatRunLog(self):
         refresh = ""
         with open(self.logFile, "rt", encoding="utf-8") as refresh:
             inputContent = refresh.read()
