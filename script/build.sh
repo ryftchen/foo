@@ -53,6 +53,19 @@ printException()
 signalHandler()
 {
     tput sgr0
+    if [[ "${ARGS_LINT}" = true ]]; then
+        if [[ -f ./"${BUILD_FOLDER}"/"${COMPILE_COMMANDS}".bak ]]; then
+            rm -rf ./"${BUILD_FOLDER}"/"${COMPILE_COMMANDS}" \
+                && mv ./"${BUILD_FOLDER}"/"${COMPILE_COMMANDS}".bak ./"${BUILD_FOLDER}"/"${COMPILE_COMMANDS}"
+        fi
+        if [[ -f ./"${testBuildFolder}"/"${COMPILE_COMMANDS}".bak ]]; then
+            rm -rf ./"${testBuildFolder}"/"${COMPILE_COMMANDS}" \
+                && mv ./"${testBuildFolder}"/"${COMPILE_COMMANDS}".bak ./"${testBuildFolder}"/"${COMPILE_COMMANDS}"
+        fi
+    fi
+    if [[ "${ARGS_DOXYGEN}" = true ]]; then
+        sed -i "s/\(^PROJECT_NUMBER[ ]\+=\).*/\1/" ./"${DOCUMENT_FOLDER}"/"${DOXYGEN_FILE}"
+    fi
     exit 1
 }
 
@@ -364,10 +377,10 @@ tarHtmlForDoxygen()
         ./"${DOCUMENT_FOLDER}"/"${doxygenFolder}"
 
     mkdir -p ./"${DOCUMENT_FOLDER}"/"${doxygenFolder}"
-    sed -i "s/\(^PROJECT_NUMBER[ ]\+=\)/\1 \"@ $(git rev-parse --short @)\"/" ./document/Doxyfile
+    sed -i "s/\(^PROJECT_NUMBER[ ]\+=\)/\1 \"@ $(git rev-parse --short @)\"/" ./"${DOCUMENT_FOLDER}"/"${DOXYGEN_FILE}"
     bashCommand "doxygen ./${DOCUMENT_FOLDER}/${DOXYGEN_FILE}"
     bashCommand "tar -jcvf ./${TEMPORARY_FOLDER}/${tarFile} -C ./${DOCUMENT_FOLDER} ${doxygenFolder} >/dev/null"
-    sed -i "s/\(^PROJECT_NUMBER[ ]\+=\).*/\1/" ./document/Doxyfile
+    sed -i "s/\(^PROJECT_NUMBER[ ]\+=\).*/\1/" ./"${DOCUMENT_FOLDER}"/"${DOXYGEN_FILE}"
 }
 
 performTestOption()
