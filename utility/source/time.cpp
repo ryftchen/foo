@@ -1,7 +1,14 @@
+//! @file time.cpp
+//! @author ryftchen
+//! @brief The definitions (time) in the utility module.
+//! @version 0.1
+//! @copyright Copyright (c) 2022
 #include "time.hpp"
 
 namespace utility::time
 {
+//! @brief Get the current system time, like "1970-01-01 00:00:00.000000 UTC".
+//! @return current system time
 std::string getCurrentSystemTime()
 {
     char date[dateLength + 1] = {'\0'};
@@ -27,6 +34,8 @@ std::string getCurrentSystemTime()
     return dateStr;
 }
 
+//! @brief Get the random seed by time.
+//! @return random seed
 std::mt19937 getRandomSeedByTime()
 {
     timeval timeSeed{};

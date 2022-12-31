@@ -1,3 +1,8 @@
+//! @file apply_data_structure.cpp
+//! @author ryftchen
+//! @brief The definitions (apply_data_structure) in the application module.
+//! @version 0.1
+//! @copyright Copyright (c) 2022
 #include "apply_data_structure.hpp"
 #include "application/include/command.hpp"
 #include "data_structure/include/linear.hpp"
@@ -6,12 +11,14 @@
 #include "utility/include/log.hpp"
 #include "utility/include/thread.hpp"
 
+//! @brief Macro for the title of printing when data structure tasks are beginning.
 #define APP_DS_PRINT_TASK_BEGIN_TITLE(taskType)                                                                       \
     std::cout << "\r\n"                                                                                               \
               << "DATA STRUCTURE TASK: " << std::setiosflags(std::ios_base::left) << std::setfill('.')                \
               << std::setw(50) << taskType << "BEGIN" << std::resetiosflags(std::ios_base::left) << std::setfill(' ') \
               << std::endl;                                                                                           \
     {
+//! @brief Macro for the title of printing when data structure tasks are ending.
 #define APP_DS_PRINT_TASK_END_TITLE(taskType)                                                                       \
     }                                                                                                               \
     std::cout << "\r\n"                                                                                             \
@@ -22,18 +29,27 @@
 
 namespace application::app_ds
 {
+//! @brief Typedef for Type.
 using Type = DataStructureTask::Type;
+//! @brief Typedef for Bottom.
+//! @tparam T type of specific enum
 template <class T>
 using Bottom = DataStructureTask::Bottom<T>;
+//! @brief Typedef for LinearInstance.
 using LinearInstance = DataStructureTask::LinearInstance;
+//! @brief Typedef for TreeInstance.
 using TreeInstance = DataStructureTask::TreeInstance;
 
+//! @brief Get the data structure task.
+//! @return reference of DataStructureTask object
 DataStructureTask& getTask()
 {
     static DataStructureTask task;
     return task;
 }
 
+//! @brief Run linear tasks.
+//! @param targets vector of target instances
 void runLinear(const std::vector<std::string>& targets)
 {
     if (getBit<LinearInstance>().none())
@@ -83,6 +99,8 @@ void runLinear(const std::vector<std::string>& targets)
     APP_DS_PRINT_TASK_END_TITLE(Type::linear);
 }
 
+//! @brief Update linear instances in tasks.
+//! @param target target instance
 void updateLinearTask(const std::string& target)
 {
     using utility::hash::operator""_bkdrHash;
@@ -103,6 +121,8 @@ void updateLinearTask(const std::string& target)
     }
 }
 
+//! @brief Run tree tasks.
+//! @param targets vector of target instances
 void runTree(const std::vector<std::string>& targets)
 {
     if (getBit<TreeInstance>().none())
@@ -152,6 +172,8 @@ void runTree(const std::vector<std::string>& targets)
     APP_DS_PRINT_TASK_END_TITLE(Type::tree);
 }
 
+//! @brief Update tree instances in tasks.
+//! @param target target instance
 void updateTreeTask(const std::string& target)
 {
     using utility::hash::operator""_bkdrHash;

@@ -1,3 +1,8 @@
+//! @file apply_numeric.cpp
+//! @author ryftchen
+//! @brief The definitions (apply_numeric) in the application module.
+//! @version 0.1
+//! @copyright Copyright (c) 2022
 #include "apply_numeric.hpp"
 #include <variant>
 #include "application/include/command.hpp"
@@ -9,11 +14,13 @@
 #include "utility/include/log.hpp"
 #include "utility/include/thread.hpp"
 
+//! @brief Macro for the title of printing when numeric tasks are beginning.
 #define APP_NUM_PRINT_TASK_BEGIN_TITLE(taskType)                                                                   \
     std::cout << "\r\n"                                                                                            \
               << "NUMERIC TASK: " << std::setiosflags(std::ios_base::left) << std::setfill('.') << std::setw(50)   \
               << taskType << "BEGIN" << std::resetiosflags(std::ios_base::left) << std::setfill(' ') << std::endl; \
     {
+//! @brief Macro for the title of printing when numeric tasks are ending.
 #define APP_NUM_PRINT_TASK_END_TITLE(taskType)                                                                   \
     }                                                                                                            \
     std::cout << "\r\n"                                                                                          \
@@ -23,52 +30,83 @@
 
 namespace application::app_num
 {
+//! @brief Typedef for Type.
 using Type = NumericTask::Type;
+//! @brief Typedef for Bottom.
+//! @tparam T type of specific enum
 template <class T>
 using Bottom = NumericTask::Bottom<T>;
+//! @brief Typedef for ArithmeticMethod.
 using ArithmeticMethod = NumericTask::ArithmeticMethod;
+//! @brief Typedef for DivisorMethod.
 using DivisorMethod = NumericTask::DivisorMethod;
+//! @brief Typedef for IntegralMethod.
 using IntegralMethod = NumericTask::IntegralMethod;
+//! @brief Typedef for PrimeMethod.
 using PrimeMethod = NumericTask::PrimeMethod;
 
+//! @brief Get the numeric task.
+//! @return reference of NumericTask object
 NumericTask& getTask()
 {
     static NumericTask task;
     return task;
 }
 
+//! @brief Namespace for setting input parameters.
 namespace input
 {
+//! @brief One of integers for arithmetic methods.
 constexpr int integerForArithmetic1 = 1073741823;
+//! @brief One of integers for arithmetic methods.
 constexpr int integerForArithmetic2 = -2;
+//! @brief One of integers for divisor methods.
 constexpr int integerForDivisor1 = 2 * 2 * 3 * 3 * 5 * 5 * 7 * 7;
+//! @brief One of integers for divisor methods.
 constexpr int integerForDivisor2 = 2 * 3 * 5 * 7 * 11 * 13 * 17;
+//! @brief Max positive integer for prime methods.
 constexpr uint32_t maxPositiveIntegerForPrime = 997;
 
+//! @brief Class for expression example 1.
 class Expression1 : public numeric::integral::expression::Expression
 {
 public:
+    //! @brief The operator (()) overloading of Expression1 class.
+    //! @param x independent variable
+    //! @return dependent variable
     double operator()(const double x) const override { return ((x * std::sin(x)) / (1.0 + std::cos(x) * std::cos(x))); }
 
+    //! @brief Left endpoint.
     static constexpr double range1{-M_PI / 2.0};
+    //! @brief Right endpoint.
     static constexpr double range2{2.0 * M_PI};
+    //! @brief Expression example 1.
     static constexpr std::string_view exprStr{"I=∫(-π/2→2π)x*sin(x)/(1+(cos(x))^2)dx"};
 };
 
+//! @brief Class for expression example 2.
 class Expression2 : public numeric::integral::expression::Expression
 {
 public:
+    //! @brief The operator (()) overloading of Expression2 class.
+    //! @param x independent variable
+    //! @return dependent variable
     double operator()(const double x) const override
     {
         return (x + 10.0 * std::sin(5.0 * x) + 7.0 * std::cos(4.0 * x));
     }
 
+    //! @brief Left endpoint.
     static constexpr double range1{0.0};
+    //! @brief Right endpoint.
     static constexpr double range2{9.0};
+    //! @brief Expression example 2.
     static constexpr std::string_view exprStr{"I=∫(0→9)x+10sin(5x)+7cos(4x)dx"};
 };
 } // namespace input
 
+//! @brief Run arithmetic tasks.
+//! @param targets vector of target methods
 void runArithmetic(const std::vector<std::string>& targets)
 {
     if (getBit<ArithmeticMethod>().none())
@@ -129,6 +167,8 @@ void runArithmetic(const std::vector<std::string>& targets)
     APP_NUM_PRINT_TASK_END_TITLE(Type::arithmetic);
 }
 
+//! @brief Update arithmetic methods in tasks.
+//! @param target target method
 void updateArithmeticTask(const std::string& target)
 {
     using utility::hash::operator""_bkdrHash;
@@ -152,6 +192,8 @@ void updateArithmeticTask(const std::string& target)
     }
 }
 
+//! @brief Run divisor tasks.
+//! @param targets vector of target methods
 void runDivisor(const std::vector<std::string>& targets)
 {
     if (getBit<DivisorMethod>().none())
@@ -201,6 +243,8 @@ void runDivisor(const std::vector<std::string>& targets)
     APP_NUM_PRINT_TASK_END_TITLE(Type::divisor);
 }
 
+//! @brief Update divisor methods in tasks.
+//! @param target target method
 void updateDivisorTask(const std::string& target)
 {
     using utility::hash::operator""_bkdrHash;
@@ -218,6 +262,8 @@ void updateDivisorTask(const std::string& target)
     }
 }
 
+//! @brief Run integral tasks.
+//! @param targets vector of target methods
 void runIntegral(const std::vector<std::string>& targets)
 {
     if (getBit<IntegralMethod>().none())
@@ -330,6 +376,8 @@ void runIntegral(const std::vector<std::string>& targets)
     APP_NUM_PRINT_TASK_END_TITLE(Type::integral);
 }
 
+//! @brief Update integral methods in tasks.
+//! @param target target method
 void updateIntegralTask(const std::string& target)
 {
     using utility::hash::operator""_bkdrHash;
@@ -356,6 +404,8 @@ void updateIntegralTask(const std::string& target)
     }
 }
 
+//! @brief Run prime tasks.
+//! @param targets vector of target methods
 void runPrime(const std::vector<std::string>& targets)
 {
     if (getBit<PrimeMethod>().none())
@@ -403,6 +453,8 @@ void runPrime(const std::vector<std::string>& targets)
     APP_NUM_PRINT_TASK_END_TITLE(Type::prime);
 }
 
+//! @brief Update prime methods in tasks.
+//! @param target target method
 void updatePrimeTask(const std::string& target)
 {
     using utility::hash::operator""_bkdrHash;

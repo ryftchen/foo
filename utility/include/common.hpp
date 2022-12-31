@@ -1,3 +1,8 @@
+//! @file common.hpp
+//! @author ryftchen
+//! @brief The declarations (common) in the utility module.
+//! @version 0.1
+//! @copyright Copyright (c) 2022
 #pragma once
 
 #include <ext/stdio_filebuf.h>
@@ -7,6 +12,7 @@
 #include <filesystem>
 #include <iostream>
 
+//! @brief Macro for formatting as a string.
 #define COMMON_FORMAT_TO_STRING(format, args...)                              \
     (                                                                         \
         {                                                                     \
@@ -18,79 +24,115 @@
             const std::string str(buffer);                                    \
             str;                                                              \
         })
+//! @brief Macro for formatting as a string and printing.
 #define COMMON_PRINT(format, args...) std::cout << COMMON_FORMAT_TO_STRING(format, ##args)
 
+//! @brief Namespace for common-interface-related functions in the utility module.
 namespace utility::common
 {
+//! @brief Typedef for print style.
 typedef std::string& (*PrintStyle)(std::string& line);
 
+//! @brief ANSI escape codes for red foreground color.
 inline constexpr std::string_view colorRed{"\033[0;31;40m"};
+//! @brief ANSI escape codes for green foreground color.
 inline constexpr std::string_view colorGreen{"\033[0;32;40m"};
+//! @brief ANSI escape codes for yellow foreground color.
 inline constexpr std::string_view colorYellow{"\033[0;33;40m"};
+//! @brief ANSI escape codes for blue foreground color.
 inline constexpr std::string_view colorBlue{"\033[0;34;40m"};
+//! @brief ANSI escape codes for gray foreground color.
 inline constexpr std::string_view colorGray{"\033[0;37;40m"};
+//! @brief ANSI escape codes for the bold font.
 inline constexpr std::string_view colorBold{"\033[1m"};
+//! @brief ANSI escape codes for the underline font.
 inline constexpr std::string_view colorUnderLine{"\033[4m"};
+//! @brief ANSI escape codes for default background color.
 inline constexpr std::string_view colorForBackground{"\033[49m"};
+//! @brief ANSI escape codes for ending.
 inline constexpr std::string_view colorOff{"\033[0m"};
+//! @brief Print without style.
 inline constexpr PrintStyle nullStyle = nullptr;
+//! @brief Maximum number of lines to print.
 constexpr uint32_t maxLineNumForPrintFile = 1000;
+//! @brief Maximum size of output per line.
 constexpr uint32_t maxBufferSize = 4096;
 
-enum class LockOperateType
+//! @brief Enum for enumerating specific lock operation types.
+enum class LockOperationType
 {
     lock,
     unlock
 };
 
+//! @brief Enum for enumerating specific file lock types.
 enum class FileLockType
 {
     readerLock,
     writerLock
 };
 
-inline void throwCallSystemApiException(const std::string& api)
+//! @brief Throw an exception when calling system API.
+//! @param api system API name
+inline void throwCallSystemAPIException(const std::string& api)
 {
-    throw std::runtime_error("common: Failed to call system api: " + api + ".");
+    throw std::runtime_error("common: Failed to call system API: " + api + ".");
 }
 
+//! @brief Throw an exception when operating the lock.
+//! @param name filename
+//! @param lockOperation lock operation type
+//! @param fileLock file lock type
 inline void throwOperateLockException(
     const std::string& name,
-    const LockOperateType lockOperate,
+    const LockOperationType lockOperation,
     const FileLockType fileLock)
 {
-    const std::string operate = (LockOperateType::lock == lockOperate) ? "lock" : "unlock",
+    const std::string operate = (LockOperationType::lock == lockOperation) ? "lock" : "unlock",
                       type = (FileLockType::readerLock == fileLock) ? "reader" : "writer";
     throw std::runtime_error("common: Failed to " + operate + " " + type + " lock: " + name + ".");
 }
 
+//! @brief Throw an exception when operating the file.
+//! @param name filename
+//! @param isToOpen to open or not
 inline void throwOperateFileException(const std::string& name, const bool isToOpen)
 {
     const std::string operate = isToOpen ? "open" : "close";
     throw std::runtime_error("common: Failed to " + operate + " file: " + name + ".");
 }
 
+//! @brief Try to operate the file lock.
+//! @tparam T type of file stream
+//! @param file file stream
+//! @param pathname target file to be operated
+//! @param lockOperation lock operation type
+//! @param fileLock file lock type
 template <class T>
 void tryToOperateFileLock(
     T& file,
     const char* const pathname,
-    const LockOperateType lockOperate,
+    const LockOperationType lockOperation,
     const FileLockType fileLock)
 {
     const int fd = static_cast<__gnu_cxx::stdio_filebuf<char>*const>(file.rdbuf())->fd(),
-              operate = (LockOperateType::lock == lockOperate)
+              operate = (LockOperationType::lock == lockOperation)
         ? (((FileLockType::readerLock == fileLock) ? LOCK_SH : LOCK_EX) | LOCK_NB)
         : LOCK_UN;
     if (flock(fd, operate))
     {
         file.close();
-        throwOperateLockException(std::filesystem::path(pathname).filename().string(), lockOperate, fileLock);
+        throwOperateLockException(std::filesystem::path(pathname).filename().string(), lockOperation, fileLock);
     }
 }
 
+//! @brief Struct for splicing strings into constexpr type.
+//! @tparam Strings target strings to be spliced
 template <std::string_view const&... Strings>
 struct Join
 {
+    //! @brief Implementation of splicing strings.
+    //! @return character array
     static constexpr auto impl() noexcept
     {
         constexpr std::size_t length = (Strings.size() + ... + 0);
@@ -106,9 +148,13 @@ struct Join
         array[length] = 0;
         return array;
     }
+    //! @brief A sequence of characters.
     static constexpr auto array = impl();
+    //! @brief The splicing result. Converted from a sequence of characters.
     static constexpr std::string_view value{array.data(), array.size() - 1};
 };
+//! @brief Get the result of splicing strings.
+//! @tparam target strings to be spliced
 template <std::string_view const&... Strings>
 static constexpr auto joinStr = Join<Strings...>::value;
 

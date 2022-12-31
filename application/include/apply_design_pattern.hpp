@@ -1,17 +1,27 @@
+//! @file apply_design_pattern.hpp
+//! @author ryftchen
+//! @brief The declarations (apply_design_pattern) in the application module.
+//! @version 0.1
+//! @copyright Copyright (c) 2022
 #pragma once
 
 #include <bitset>
 #include <sstream>
 #include <vector>
 
+//! @brief Namespace for design-pattern-applying-related functions in the application module.
 namespace application::app_dp
 {
+//! @brief Class for managing design pattern tasks.
 class DesignPatternTask
 {
 public:
+    //! @brief Struct for representing the maximum value of an enum.
+    //! @tparam T type of specific enum
     template <class T>
     struct Bottom;
 
+    //! @brief Enum for enumerating specific design pattern tasks.
     enum Type
     {
         behavioral,
@@ -19,6 +29,7 @@ public:
         structural
     };
 
+    //! @brief Enum for enumerating specific behavioral instances.
     enum BehavioralInstance
     {
         chainOfResponsibility,
@@ -33,12 +44,15 @@ public:
         templateMethod,
         visitor
     };
+    //! @brief Struct for storing the maximum value of the BehavioralInstance enum.
+    //! @tparam N/A
     template <>
     struct Bottom<BehavioralInstance>
     {
         static constexpr int value = 11;
     };
 
+    //! @brief Enum for enumerating specific creational instances.
     enum CreationalInstance
     {
         abstractFactory,
@@ -47,12 +61,15 @@ public:
         prototype,
         singleton
     };
+    //! @brief Struct for storing the maximum value of the CreationalInstance enum.
+    //! @tparam N/A
     template <>
     struct Bottom<CreationalInstance>
     {
         static constexpr int value = 5;
     };
 
+    //! @brief Enum for enumerating specific structural instances.
     enum StructuralInstance
     {
         adapter,
@@ -63,20 +80,28 @@ public:
         flyweight,
         proxy
     };
+    //! @brief Struct for storing the maximum value of the StructuralInstance enum.
+    //! @tparam N/A
     template <>
     struct Bottom<StructuralInstance>
     {
         static constexpr int value = 7;
     };
 
+    //! @brief Bit flags for managing behavioral instances.
     std::bitset<Bottom<BehavioralInstance>::value> behavioralBit;
+    //! @brief Bit flags for managing creational instances.
     std::bitset<Bottom<CreationalInstance>::value> creationalBit;
+    //! @brief Bit flags for managing structural instances.
     std::bitset<Bottom<StructuralInstance>::value> structuralBit;
 
+    //! @brief Check whether any design pattern tasks do not exist.
+    //! @return any design pattern tasks do not exist or exist
     [[nodiscard]] inline bool empty() const
     {
         return (behavioralBit.none() && creationalBit.none() && structuralBit.none());
     }
+    //! @brief Reset bit flags that manage design pattern tasks.
     inline void reset()
     {
         behavioralBit.reset();
@@ -85,6 +110,10 @@ public:
     }
 
 protected:
+    //! @brief The operator (<<) overloading of the Type enum.
+    //! @param os output stream object
+    //! @param type the specific value of Type enum
+    //! @return reference of output stream object
     friend std::ostream& operator<<(std::ostream& os, const Type& type)
     {
         switch (type)
@@ -107,6 +136,9 @@ protected:
 
 extern DesignPatternTask& getTask();
 
+//! @brief Get the bit flags of the instance in design pattern tasks.
+//! @tparam T type of the instance
+//! @return bit flags of the instance
 template <typename T>
 auto getBit()
 {
@@ -124,6 +156,9 @@ auto getBit()
     }
 }
 
+//! @brief Set the bit flags of the instance in design pattern tasks.
+//! @tparam T type of the instance
+//! @param index instance index
 template <typename T>
 void setBit(const int index)
 {

@@ -1,3 +1,8 @@
+//! @file thread.cpp
+//! @author ryftchen
+//! @brief The definitions (thread) in the utility module.
+//! @version 0.1
+//! @copyright Copyright (c) 2022
 #include "thread.hpp"
 
 namespace utility::thread

@@ -1,3 +1,8 @@
+//! @file thread.hpp
+//! @author ryftchen
+//! @brief The declarations (thread) in the utility module.
+//! @version 0.1
+//! @copyright Copyright (c) 2022
 #pragma once
 
 #include <atomic>
@@ -5,23 +10,41 @@
 #include <future>
 #include <queue>
 
+//! @brief Namespace for thread-pool-related functions in the utility module.
 namespace utility::thread
 {
+//! @brief Class for thread pool.
 class Thread
 {
 public:
+    //! @brief Construct a new Thread object.
+    //! @param count maximum number of threads
     explicit Thread(const uint32_t count);
+    //! @brief Destroy the Thread object.
     virtual ~Thread();
 
+    //! @brief Enqueue tasks that require multi-threading.
+    //! @tparam Func type of callable function
+    //! @tparam Args type of function arguments
+    //! @param name thread name
+    //! @param func callable function
+    //! @param args function arguments
+    //! @return result of thread execution
     template <typename Func, typename... Args>
     decltype(auto) enqueue(const std::string& name, Func&& func, Args&&... args);
 
 private:
+    //! @brief The vector of target threads to join.
     std::vector<std::thread> threadVector;
+    //! @brief The queue of tasks.
     std::queue<std::pair<std::string, std::packaged_task<void()>>> taskQueue;
+    //! @brief Mutex for controlling queue.
     mutable std::mutex queueMutex;
+    //! @brief The synchronization condition for queue. Use with queueMutex.
     std::condition_variable condition;
+    //! @brief The synchronization condition for availability of resources.
     std::condition_variable producer;
+    //! @brief Flag to indicate whether the release of resources is ready.
     std::atomic<bool> releaseReady{false};
 };
 

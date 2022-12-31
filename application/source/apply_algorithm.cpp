@@ -1,3 +1,8 @@
+//! @file apply_algorithm.cpp
+//! @author ryftchen
+//! @brief The definitions (apply_algorithm) in the application module.
+//! @version 0.1
+//! @copyright Copyright (c) 2022
 #include "apply_algorithm.hpp"
 #include <variant>
 #include "algorithm/include/match.hpp"
@@ -10,11 +15,13 @@
 #include "utility/include/log.hpp"
 #include "utility/include/thread.hpp"
 
+//! @brief Macro for the title of printing when algorithm tasks are beginning.
 #define APP_ALGO_PRINT_TASK_BEGIN_TITLE(taskType)                                                                  \
     std::cout << "\r\n"                                                                                            \
               << "ALGORITHM TASK: " << std::setiosflags(std::ios_base::left) << std::setfill('.') << std::setw(50) \
               << taskType << "BEGIN" << std::resetiosflags(std::ios_base::left) << std::setfill(' ') << std::endl; \
     {
+//! @brief Macro for the title of printing when algorithm tasks are ending.
 #define APP_ALGO_PRINT_TASK_END_TITLE(taskType)                                                                    \
     }                                                                                                              \
     std::cout << "\r\n"                                                                                            \
@@ -24,63 +31,98 @@
 
 namespace application::app_algo
 {
+//! @brief Typedef for Type.
 using Type = AlgorithmTask::Type;
+//! @brief Typedef for Bottom.
+//! @tparam T type of specific enum
 template <class T>
 using Bottom = AlgorithmTask::Bottom<T>;
+//! @brief Typedef for MatchMethod.
 using MatchMethod = AlgorithmTask::MatchMethod;
+//! @brief Typedef for NotationMethod.
 using NotationMethod = AlgorithmTask::NotationMethod;
+//! @brief Typedef for OptimalMethod.
 using OptimalMethod = AlgorithmTask::OptimalMethod;
+//! @brief Typedef for SearchMethod.
 using SearchMethod = AlgorithmTask::SearchMethod;
+//! @brief Typedef for SortMethod.
 using SortMethod = AlgorithmTask::SortMethod;
 
+//! @brief Get the algorithm task.
+//! @return reference of AlgorithmTask object
 AlgorithmTask& getTask()
 {
     static AlgorithmTask task;
     return task;
 }
 
+//! @brief Namespace for setting input parameters.
 namespace input
 {
+//! @brief Single pattern for match methods.
 constexpr std::string_view singlePatternForMatch{"12345"};
+//! @brief Infix for notation methods.
 constexpr std::string_view infixForNotation{"a+b*(c^d-e)^(f+g*h)-i"};
+//! @brief Minimum of the array for search methods.
 constexpr double arrayRangeForSearch1 = -50.0;
+//! @brief Maximum of the array for search methods.
 constexpr double arrayRangeForSearch2 = 150.0;
+//! @brief Length of the array for search methods.
 constexpr uint32_t arrayLengthForSearch = 53;
+//! @brief Minimum of the array for sort methods.
 constexpr int arrayRangeForSort1 = -50;
+//! @brief Maximum of the array for sort methods.
 constexpr int arrayRangeForSort2 = 150;
+//! @brief Length of the array for sort methods.
 constexpr uint32_t arrayLengthForSort = 53;
 
+//! @brief Class for Griewank function.
 class Griewank : public algorithm::optimal::function::Function
 {
 public:
+    //! @brief The operator (()) overloading of Griewank class.
+    //! @param x independent variable
+    //! @return dependent variable
     double operator()(const double x) const override
     {
         // f(x)=1+1/4000*Σ(1→n)[(Xi)^2]-Π(1→n)[cos(Xi/(i)^(1/2))],x∈[-600,600],f(min)=0
         return (1.0 + 1.0 / 4000.0 * x * x - std::cos(x));
     }
 
+    //! @brief Left endpoint.
     static constexpr double range1{-600.0};
+    //! @brief Right endpoint.
     static constexpr double range2{600.0};
+    //! @brief One-dimensional Griewank.
     static constexpr std::string_view funcStr{
         "f(x)=1+1/4000*Σ(1→n)[(Xi)^2]-Π(1→n)[cos(Xi/(i)^(1/2))],x∈[-600,600] (one-dimensional Griewank)"};
 };
 
+//! @brief Class for Rastrigin function.
 class Rastrigin : public algorithm::optimal::function::Function
 {
 public:
+    //! @brief The operator (()) overloading of Rastrigin class.
+    //! @param x independent variable
+    //! @return dependent variable
     double operator()(const double x) const override
     {
         // f(x)=An+Σ(1→n)[(Xi)^2-Acos(2π*Xi)],A=10,x∈[-5.12,5.12],f(min)=0
         return (x * x - 10.0 * std::cos(2.0 * M_PI * x) + 10.0);
     }
 
+    //! @brief Left endpoint.
     static constexpr double range1{-5.12};
+    //! @brief Right endpoint.
     static constexpr double range2{5.12};
+    //! @brief One-dimensional Rastrigin.
     static constexpr std::string_view funcStr{
         "f(x)=An+Σ(1→n)[(Xi)^2-Acos(2π*Xi)],A=10,x∈[-5.12,5.12] (one-dimensional Rastrigin)"};
 };
 } // namespace input
 
+//! @brief Run match tasks.
+//! @param targets vector of target methods
 void runMatch(const std::vector<std::string>& targets)
 {
     if (getBit<MatchMethod>().none())
@@ -147,6 +189,8 @@ void runMatch(const std::vector<std::string>& targets)
     APP_ALGO_PRINT_TASK_END_TITLE(Type::match);
 }
 
+//! @brief Update match methods in tasks.
+//! @param target target method
 void updateMatchTask(const std::string& target)
 {
     using utility::hash::operator""_bkdrHash;
@@ -173,6 +217,8 @@ void updateMatchTask(const std::string& target)
     }
 }
 
+//! @brief Run notation tasks.
+//! @param targets vector of target methods
 void runNotation(const std::vector<std::string>& targets)
 {
     if (getBit<NotationMethod>().none())
@@ -220,6 +266,8 @@ void runNotation(const std::vector<std::string>& targets)
     APP_ALGO_PRINT_TASK_END_TITLE(Type::notation);
 }
 
+//! @brief Update notation methods in tasks.
+//! @param target target method
 void updateNotationTask(const std::string& target)
 {
     using utility::hash::operator""_bkdrHash;
@@ -237,6 +285,8 @@ void updateNotationTask(const std::string& target)
     }
 }
 
+//! @brief Run optimal tasks.
+//! @param targets vector of target methods
 void runOptimal(const std::vector<std::string>& targets)
 {
     if (getBit<OptimalMethod>().none())
@@ -346,6 +396,8 @@ void runOptimal(const std::vector<std::string>& targets)
     APP_ALGO_PRINT_TASK_END_TITLE(Type::optimal);
 }
 
+//! @brief Update optimal methods in tasks.
+//! @param target target method
 void updateOptimalTask(const std::string& target)
 {
     using utility::hash::operator""_bkdrHash;
@@ -369,6 +421,8 @@ void updateOptimalTask(const std::string& target)
     }
 }
 
+//! @brief Run search tasks.
+//! @param targets vector of target methods
 void runSearch(const std::vector<std::string>& targets)
 {
     if (getBit<SearchMethod>().none())
@@ -431,6 +485,8 @@ void runSearch(const std::vector<std::string>& targets)
     APP_ALGO_PRINT_TASK_END_TITLE(Type::search);
 }
 
+//! @brief Update search methods in tasks.
+//! @param target target method
 void updateSearchTask(const std::string& target)
 {
     using utility::hash::operator""_bkdrHash;
@@ -451,6 +507,8 @@ void updateSearchTask(const std::string& target)
     }
 }
 
+//! @brief Run sort tasks.
+//! @param targets vector of target methods
 void runSort(const std::vector<std::string>& targets)
 {
     if (getBit<SortMethod>().none())
@@ -527,6 +585,8 @@ void runSort(const std::vector<std::string>& targets)
     APP_ALGO_PRINT_TASK_END_TITLE(Type::sort);
 }
 
+//! @brief Update sort methods in tasks.
+//! @param target target method
 void updateSortTask(const std::string& target)
 {
     using utility::hash::operator""_bkdrHash;

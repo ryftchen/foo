@@ -1,17 +1,27 @@
+//! @file apply_numeric.hpp
+//! @author ryftchen
+//! @brief The declarations (apply_numeric) in the application module.
+//! @version 0.1
+//! @copyright Copyright (c) 2022
 #pragma once
 
 #include <bitset>
 #include <sstream>
 #include <vector>
 
+//! @brief Namespace for numeric-applying-related functions in the application module.
 namespace application::app_num
 {
+//! @brief Class for managing numeric tasks.
 class NumericTask
 {
 public:
+    //! @brief Struct for representing the maximum value of an enum.
+    //! @tparam T type of specific enum
     template <class T>
     struct Bottom;
 
+    //! @brief Enum for enumerating specific numeric tasks.
     enum Type
     {
         arithmetic,
@@ -20,6 +30,7 @@ public:
         prime
     };
 
+    //! @brief Enum for enumerating specific arithmetic methods.
     enum ArithmeticMethod
     {
         addition,
@@ -27,23 +38,29 @@ public:
         multiplication,
         division
     };
+    //! @brief Struct for storing the maximum value of the ArithmeticMethod enum.
+    //! @tparam N/A
     template <>
     struct Bottom<ArithmeticMethod>
     {
         static constexpr int value = 4;
     };
 
+    //! @brief Enum for enumerating specific divisor methods.
     enum DivisorMethod
     {
         euclidean,
         stein
     };
+    //! @brief Struct for storing the maximum value of the DivisorMethod enum.
+    //! @tparam N/A
     template <>
     struct Bottom<DivisorMethod>
     {
         static constexpr int value = 2;
     };
 
+    //! @brief Enum for enumerating specific integral methods.
     enum IntegralMethod
     {
         trapezoidal,
@@ -52,32 +69,44 @@ public:
         gauss,
         monteCarlo
     };
+    //! @brief Struct for storing the maximum value of the IntegralMethod enum.
+    //! @tparam N/A
     template <>
     struct Bottom<IntegralMethod>
     {
         static constexpr int value = 5;
     };
 
+    //! @brief Enum for enumerating specific prime methods.
     enum PrimeMethod
     {
         eratosthenes,
         euler
     };
+    //! @brief Struct for storing the maximum value of the PrimeMethod enum.
+    //! @tparam N/A
     template <>
     struct Bottom<PrimeMethod>
     {
         static constexpr int value = 2;
     };
 
+    //! @brief Bit flags for managing arithmetic methods.
     std::bitset<Bottom<ArithmeticMethod>::value> arithmeticBit;
+    //! @brief Bit flags for managing divisor methods.
     std::bitset<Bottom<DivisorMethod>::value> divisorBit;
+    //! @brief Bit flags for managing integral methods.
     std::bitset<Bottom<IntegralMethod>::value> integralBit;
+    //! @brief Bit flags for managing prime methods.
     std::bitset<Bottom<PrimeMethod>::value> primeBit;
 
+    //! @brief Check whether any numeric tasks do not exist.
+    //! @return any numeric tasks do not exist or exist
     [[nodiscard]] inline bool empty() const
     {
         return (arithmeticBit.none() && divisorBit.none() && integralBit.none() && primeBit.none());
     }
+    //! @brief Reset bit flags that manage numeric tasks.
     inline void reset()
     {
         arithmeticBit.reset();
@@ -87,6 +116,10 @@ public:
     }
 
 protected:
+    //! @brief The operator (<<) overloading of the Type enum.
+    //! @param os output stream object
+    //! @param type the specific value of Type enum
+    //! @return reference of output stream object
     friend std::ostream& operator<<(std::ostream& os, const Type& type)
     {
         switch (type)
@@ -112,6 +145,9 @@ protected:
 
 extern NumericTask& getTask();
 
+//! @brief Get the bit flags of the method in numeric tasks.
+//! @tparam T type of the method
+//! @return bit flags of the method
 template <typename T>
 auto getBit()
 {
@@ -133,6 +169,9 @@ auto getBit()
     }
 }
 
+//! @brief Set the bit flags of the method in numeric tasks
+//! @tparam T type of the method
+//! @param index method index
 template <typename T>
 void setBit(const int index)
 {

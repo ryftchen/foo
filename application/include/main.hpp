@@ -1,3 +1,8 @@
+//! @file main.hpp
+//! @author ryftchen
+//! @brief The declarations (main) in the application module.
+//! @version 0.1
+//! @copyright Copyright (c) 2022
 #pragma once
 
 #include <cxxabi.h>
@@ -7,10 +12,13 @@
 #include <csignal>
 #include <filesystem>
 
+//! @brief Namespace for the application module.
 namespace application
 {
 [[using gnu: constructor]] static void switchToTargetPath();
 
+//! @brief Signal handler for SIGSEGV signal.
+//! @param sig signal type
 static void signalHandler(int sig)
 {
     void* callStack[128];
@@ -72,6 +80,7 @@ static void signalHandler(int sig)
     kill(getpid(), SIGKILL);
 }
 
+//! @brief The constructor function before entering the main function for switching to the target path.
 static void switchToTargetPath()
 {
     std::signal(SIGSEGV, signalHandler);
