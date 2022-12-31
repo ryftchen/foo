@@ -1,3 +1,8 @@
+//! @file console.cpp
+//! @author ryftchen
+//! @brief The definitions (console) in the utility module.
+//! @version 0.1
+//! @copyright Copyright (c) 2022
 #include "console.hpp"
 #include <readline/readline.h>
 #include <fstream>
@@ -6,11 +11,12 @@
 
 namespace utility::console
 {
+//! @brief Save current console instance.
 Console* currentConsole = nullptr;
 
 Console::Console(const std::string& greeting) : impl(std::make_unique<Impl>(greeting))
 {
-    rl_attempted_completion_function = &Console::getCommandCompletions;
+    rl_attempted_completion_function = &Console::getCommandCompleter;
 
     impl->RegCmds["help"] = std::make_pair(
         [this](const Args& /*unused*/)
@@ -60,7 +66,7 @@ Console::~Console()
     rl_restore_prompt();
 }
 
-void Console::registerCommand(const std::string& command, CommandFunction func, const std::string& help)
+void Console::registerCommand(const std::string& command, CommandFunctor func, const std::string& help)
 {
     impl->RegCmds[command] = std::make_pair(func, help);
 }
@@ -189,18 +195,18 @@ int Console::readCommandLine()
     return ReturnCode(commandExecutor(line));
 }
 
-char** Console::getCommandCompletions(const char* text, int start, int /*unused*/)
+char** Console::getCommandCompleter(const char* text, int start, int /*unused*/)
 {
     char** completionList = nullptr;
     if (!start)
     {
-        completionList = rl_completion_matches(text, &Console::commandIterator);
+        completionList = rl_completion_matches(text, &Console::getCommandIterator);
     }
 
     return completionList;
 }
 
-char* Console::commandIterator(const char* text, int state)
+char* Console::getCommandIterator(const char* text, int state)
 {
     static Impl::RegisteredCommands::iterator iterator;
     if (!currentConsole)

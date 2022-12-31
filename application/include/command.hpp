@@ -1,3 +1,8 @@
+//! @file command.hpp
+//! @author ryftchen
+//! @brief The declarations (command) in the application module.
+//! @version 0.1
+//! @copyright Copyright (c) 2022
 #pragma once
 
 #include <condition_variable>
@@ -10,63 +15,103 @@
 #include "utility/include/memory.hpp"
 #include "utility/include/thread.hpp"
 
+//! @brief Namespace for command-line-related functions in the application module.
 namespace application::command
 {
+//! @brief Class for executing command line.
 class Command
 {
 public:
+    //! @brief Destroy the Command object.
     virtual ~Command() = default;
+    //! @brief Construct a new Command object.
     Command(const Command&) = delete;
+    //! @brief The operator (=) overloading of Command class.
+    //! @return reference of Command object
     Command& operator=(const Command&) = delete;
 
+    //! @brief Get the Command instance.
+    //! @return reference of Command object
     static inline Command& getInstance();
+    //! @brief Interface for running commander.
+    //! @param argc argument count
+    //! @param argv argument vector
     void runCommander(const int argc, const char* const argv[]);
 
 private:
+    //! @brief Construct a new Command object.
     Command();
 
+    //! @brief Mutex for controlling multi-threading.
     mutable std::mutex commandMutex;
+    //! @brief The synchronization condition for foreground and background. Use with commandMutex.
     std::condition_variable commandCondition;
+    //! @brief Flag to indicate whether parsing of arguments is completed.
     std::atomic<bool> isParsed{false};
-    utility::argument::Argument program{utility::argument::Argument("foo")};
-    void foregroundHandle(const int argc, const char* const argv[]);
-    void backgroundHandle();
+    //! @brief A Argument object for parsing arguments.
+    utility::argument::Argument program{utility::argument::Argument("foo", "0.1")};
+
+    //! @brief Foreground handler for parsing command line arguments.
+    //! @param argc argument count
+    //! @param argv argument vector
+    void foregroundHandler(const int argc, const char* const argv[]);
+    //! @brief Background handler for performing the specific task.
+    void backgroundHandler();
+    //! @brief Pre-check the basic task.
     void validateBasicTask();
+    //! @brief Pre-check the general task.
     void validateGeneralTask();
+    //! @brief Check whether any tasks exist.
+    //! @return any tasks exist or do not exist
     bool checkTask() const;
+    //! @brief Perform specific tasks.
     void performTask() const;
 
 #pragma pack(8)
+    //! @brief Class for managing basic tasks.
     class BasicTask
     {
     public:
+        //! @brief Struct for representing the maximum value of an enum.
+        //! @tparam T type of specific enum
         template <class T>
         struct Bottom;
 
+        //! @brief Enum for enumerating specific basic tasks.
         enum Category
         {
             console,
             help,
             version
         };
+        //! @brief Struct for storing the maximum value of the Category enum.
+        //! @tparam N/A
         template <>
         struct Bottom<Category>
         {
             static constexpr int value = 3;
         };
 
+        //! @brief Bit flags for managing basic tasks.
         std::bitset<Bottom<Category>::value> primaryBit;
 
+        //! @brief Check whether any basic tasks do not exist.
+        //! @return any basic tasks do not exist or exist
         [[nodiscard]] inline bool empty() const { return primaryBit.none(); }
+        //! @brief Reset bit flags that manage basic tasks.
         inline void reset() { primaryBit.reset(); }
     };
 
+    //! @brief Class for managing general tasks.
     class GeneralTask
     {
     public:
+        //! @brief Struct for representing the maximum value of an enum.
+        //! @tparam T type of specific enum
         template <class T>
         struct Bottom;
 
+        //! @brief Enum for enumerating specific general tasks.
         enum Category
         {
             algorithm,
@@ -74,18 +119,23 @@ private:
             designPattern,
             numeric
         };
+        //! @brief Struct for storing the maximum value of the category type enum.
+        //! @tparam N/A
         template <>
         struct Bottom<Category>
         {
             static constexpr int value = 4;
         };
 
+        //! @brief Check whether any general tasks do not exist.
+        //! @return any general tasks do not exist or exist
         [[nodiscard]] static inline bool empty()
         {
             return (
                 app_algo::getTask().empty() && app_ds::getTask().empty() && app_dp::getTask().empty()
                 && app_num::getTask().empty());
         }
+        //! @brief Reset bit flags that manage general tasks.
         static inline void reset()
         {
             app_algo::getTask().reset();
@@ -95,43 +145,74 @@ private:
         }
     };
 #pragma pack()
-    struct TaskPlan
+    //! @brief Struct for managing all types of tasks.
+    struct AssignedTask
     {
-        TaskPlan() = default;
+        //! @brief Construct a new AssignedTask object.
+        AssignedTask() = default;
 
+        //! @brief A BasicTask object for managing basic type tasks.
         BasicTask basicTask;
+        //! @brief A GeneralTask object for managing general type tasks.
         GeneralTask generalTask;
 
+        //! @brief Check whether any tasks do not exist.
+        //! @return any tasks do not exist or exist
         [[nodiscard]] bool inline empty() const { return (basicTask.empty() && generalTask.empty()); }
+        //! @brief Reset bit flags that manage all tasks.
         inline void reset()
         {
             basicTask.reset();
             generalTask.reset();
         };
-    } taskPlan{};
+    } /** @brief A AssignedTask object for managing all types of tasks.*/ assignedTask{};
 
+    //! @brief Typedef for the functor to perform the task.
     typedef void (*PerformTaskFunctor)(const std::vector<std::string>&);
+    //! @brief Typedef for the functor to update the task.
     typedef void (*UpdateTaskFunctor)(const std::string&);
+    //! @brief Typedef for the task category name.
     using TaskCategoryName = std::string;
+    //! @brief Typedef for the task type name.
     using TaskTypeName = std::string;
+    //! @brief Typedef for the target task name.
     using TargetTaskName = std::string;
+    //! @brief Typedef for the vector of TargetTaskName.
     using TargetTaskVector = std::vector<TargetTaskName>;
+    //! @brief Typedef for the tuple of PerformTaskFunctor and UpdateTaskFunctor.
     using TaskFunctorTuple = std::tuple<PerformTaskFunctor, UpdateTaskFunctor>;
+    //! @brief Typedef for the tuple of TargetTaskVector and TaskFunctorTuple.
     using TaskTypeTuple = std::tuple<TargetTaskVector, TaskFunctorTuple>;
+    //! @brief Typedef for the map of TaskTypeName and TaskTypeTuple.
     using TaskCategoryMap = std::map<TaskTypeName, TaskTypeTuple>;
+    //! @brief Typedef for the map of TaskCategoryName and TaskCategoryMap.
     using GeneralTaskMap = std::map<TaskCategoryName, TaskCategoryMap>;
+
+    //! @memberof application::command::Command
+    //! @brief Get a member of TaskTypeTuple.
+    //! @tparam T type of member to be got
+    //! @param tuple a tuple containing the member types to be got
+    //! @return member corresponding to the specific type
     template <typename T>
     auto get(const TaskTypeTuple& tuple) const;
+
+    //! @memberof application::command::Command
+    //! @brief Get a member of TaskFunctorTuple.
+    //! @tparam T type of member to be got
+    //! @param tuple a tuple containing the member types to be got
+    //! @return member corresponding to the specific type
     template <typename T>
     auto get(const TaskFunctorTuple& tuple) const;
 
     // clang-format off
+    //! @brief Mapping table of all basic tasks.
     const std::map<std::string, void (Command::*)() const> basicTaskMap{
         // - Category -+----------- Run -----------
         { "console" , &Command::printConsoleOutput },
         { "help"    , &Command::printHelpMessage   },
         { "version" , &Command::printVersionInfo   },
     };
+    //! @brief Mapping table of all general tasks.
     const GeneralTaskMap generalTaskMap{
         // --- Category ---+----- Type -----+---------------- Target ----------------+----------- Run -----------+---------- UpdateTask ----------
         // ----------------+----------------+----------------------------------------+---------------------------+--------------------------------
@@ -156,15 +237,26 @@ private:
         // ----------------+----------------+----------------------------------------+---------------------------+--------------------------------
     };
     // clang-format on
+    //! @brief Max line numbers for printing log.
     static constexpr uint32_t maxLineNumForPrintLog{50};
-    void printConsoleOutput() const;
-    void printHelpMessage() const;
-    void printVersionInfo() const;
 
+    //! @brief Print the output of the console mode command line.
+    void printConsoleOutput() const;
+    //! @brief Print help message.
+    void printHelpMessage() const;
+    //! @brief Print version information.
+    void printVersionInfo() const;
+    //! @brief Enter console mode.
     void enterConsoleMode() const;
+    //! @brief Register the command line to console mode.
+    //! @param console console to be registered
     void registerOnConsole(utility::console::Console& console) const;
+    //! @brief View log content.
     static void viewLogContent();
+    //! @brief Get ASCII banner text.
+    //! @return ASCII banner text content
     static std::string getIconBanner();
+    //! @brief Throw an exception when excess arguments.
     [[noreturn]] inline void throwExcessArgumentException();
 };
 
@@ -176,7 +268,7 @@ inline Command& Command::getInstance()
 
 inline void Command::throwExcessArgumentException()
 {
-    taskPlan.reset();
+    assignedTask.reset();
     throw std::runtime_error("Excess argument.");
 }
 

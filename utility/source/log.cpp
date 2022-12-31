@@ -1,6 +1,10 @@
+//! @file log.cpp
+//! @author ryftchen
+//! @brief The definitions (log) in the utility module.
+//! @version 0.1
+//! @copyright Copyright (c) 2022
 #include "log.hpp"
 #include <regex>
-#include <stdexcept>
 
 namespace utility::log
 {
@@ -60,11 +64,11 @@ void Log::runLogger()
                             ofs << logQueue.front() << std::endl;
                             break;
                         case OutputTarget::terminal:
-                            std::cout << changeLogLevelStyle(logQueue.front()) << std::endl;
+                            std::cout << changeToLogStyle(logQueue.front()) << std::endl;
                             break;
                         case OutputTarget::all:
                             ofs << logQueue.front() << std::endl;
-                            std::cout << changeLogLevelStyle(logQueue.front()) << std::endl;
+                            std::cout << changeToLogStyle(logQueue.front()) << std::endl;
                             break;
                         default:
                             break;
@@ -96,7 +100,7 @@ void Log::waitStartForExternalUse()
     timer.setBlockingTimer(
         [&]()
         {
-            if ((State::work == currentState()) || (maxCountOfWaitLogger == waitCount))
+            if ((State::work == currentState()) || (maxTimesOfWaitLogger == waitCount))
             {
                 timer.resetBlockingTimer();
             }
@@ -127,7 +131,7 @@ void Log::waitStopForExternalUse()
     timer.setBlockingTimer(
         [&]()
         {
-            if ((State::done == currentState()) || (maxCountOfWaitLogger == waitCount))
+            if ((State::done == currentState()) || (maxTimesOfWaitLogger == waitCount))
             {
                 timer.resetBlockingTimer();
             }
@@ -167,7 +171,7 @@ void Log::openLogFile()
         utility::common::throwOperateFileException(std::filesystem::path(pathname).filename().string(), true);
     }
     utility::common::tryToOperateFileLock(
-        ofs, pathname, utility::common::LockOperateType::lock, utility::common::FileLockType::writerLock);
+        ofs, pathname, utility::common::LockOperationType::lock, utility::common::FileLockType::writerLock);
 };
 
 void Log::startLogging()
@@ -181,7 +185,7 @@ void Log::startLogging()
 void Log::closeLogFile()
 {
     utility::common::tryToOperateFileLock(
-        ofs, pathname, utility::common::LockOperateType::unlock, utility::common::FileLockType::writerLock);
+        ofs, pathname, utility::common::LockOperationType::unlock, utility::common::FileLockType::writerLock);
     if (ofs.is_open())
     {
         ofs.close();
@@ -210,6 +214,10 @@ bool Log::isLogFileClose(const NoLogging& /*unused*/) const
     return !ofs.is_open();
 }
 
+//! @brief The operator (<<) overloading of the State enum.
+//! @param os output stream object
+//! @param state the specific value of State enum
+//! @return reference of output stream object
 std::ostream& operator<<(std::ostream& os, const Log::State& state)
 {
     switch (state)
@@ -233,7 +241,10 @@ std::ostream& operator<<(std::ostream& os, const Log::State& state)
     return os;
 }
 
-std::string& changeLogLevelStyle(std::string& line)
+//! @brief Change line string to log style.
+//! @param line target line to be changed
+//! @return changed line
+std::string& changeToLogStyle(std::string& line)
 {
     if (std::regex_search(line, std::regex(std::string{debugLevelPrefixRegex})))
     {
@@ -256,13 +267,13 @@ std::string& changeLogLevelStyle(std::string& line)
             line, std::regex(std::string{errorLevelPrefixRegex}), std::string{errorLevelPrefixColorForLog});
     }
 
-    if (const std::regex time(std::string{timeRegex}); std::regex_search(line, time))
+    if (const std::regex date(std::string{dateRegex}); std::regex_search(line, date))
     {
-        const auto searchIter = std::sregex_iterator(line.begin(), line.end(), time);
+        const auto searchIter = std::sregex_iterator(line.begin(), line.end(), date);
         const std::string timeColorForLog = std::string{utility::common::colorGray}
             + std::string{utility::common::colorBold} + std::string{utility::common::colorForBackground}
             + (*searchIter).str() + std::string{utility::common::colorOff};
-        line = std::regex_replace(line, std::regex(std::string{timeRegex}), timeColorForLog);
+        line = std::regex_replace(line, std::regex(std::string{dateRegex}), timeColorForLog);
     }
 
     if (const std::regex codeFile(std::string{codeFileRegex}); std::regex_search(line, codeFile))

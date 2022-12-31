@@ -1,3 +1,8 @@
+//! @file argument.cpp
+//! @author ryftchen
+//! @brief The definitions (argument) in the utility module.
+//! @version 0.1
+//! @copyright Copyright (c) 2022
 #include "argument.hpp"
 #include <numeric>
 
@@ -80,9 +85,9 @@ void ArgumentRegister::validate() const
     }
     else
     {
-        if (!argNumArgsRange.contains(values.size()) && !defaultValues.has_value())
+        if (!argNumArgsRange.isContain(values.size()) && !defaultValues.has_value())
         {
-            throwNargsRangeValidationException();
+            throwNArgsRangeValidationException();
         }
     }
 }
@@ -99,6 +104,10 @@ std::size_t ArgumentRegister::getArgumentsLength() const
         });
 }
 
+//! @brief The operator (<<) overloading of the ArgumentRegister class.
+//! @param os output stream object
+//! @param argument specific ArgumentRegister object
+//! @return reference of output stream object
 std::ostream& operator<<(std::ostream& os, const ArgumentRegister& argument)
 {
     std::stringstream nameStream;
@@ -125,7 +134,7 @@ std::ostream& operator<<(std::ostream& os, const ArgumentRegister& argument)
     return os;
 }
 
-void ArgumentRegister::throwNargsRangeValidationException() const
+void ArgumentRegister::throwNArgsRangeValidationException() const
 {
     std::stringstream stream;
     if (!usedNameStr.empty())
@@ -273,6 +282,10 @@ ArgumentRegister& Argument::operator[](const std::string_view argName) const
     throw std::logic_error("argument: No such argument: " + std::string(argName));
 }
 
+//! @brief The operator (<<) overloading of the Argument class.
+//! @param os output stream object
+//! @param parser specific Argument object
+//! @return reference of output stream object
 auto operator<<(std::ostream& os, const Argument& parser) -> std::ostream&
 {
     os.setf(std::ios_base::left);

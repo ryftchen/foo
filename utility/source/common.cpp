@@ -1,3 +1,8 @@
+//! @file common.cpp
+//! @author ryftchen
+//! @brief The definitions (common) in the utility module.
+//! @version 0.1
+//! @copyright Copyright (c) 2022
 #include "common.hpp"
 #include <cstring>
 #include <iterator>
@@ -5,12 +10,14 @@
 
 namespace utility::common
 {
+//! @brief Execute the command line.
+//! @param cmd target command line to be executed
 void executeCommand(const char* const cmd)
 {
     FILE* file = popen(cmd, "r");
     if (nullptr == file)
     {
-        throwCallSystemApiException("popen");
+        throwCallSystemAPIException("popen");
     }
 
     char resultBuffer[maxBufferSize + 1] = {'\0'};
@@ -26,7 +33,7 @@ void executeCommand(const char* const cmd)
     const int status = pclose(file);
     if (-1 == status)
     {
-        throwCallSystemApiException("pclose");
+        throwCallSystemAPIException("pclose");
     }
     else if (WIFEXITED(status))
     {
@@ -37,6 +44,11 @@ void executeCommand(const char* const cmd)
     }
 }
 
+//! @brief Print file contents.
+//! @param pathname target file to be printed
+//! @param reverse reverse or not reverse
+//! @param maxLine maximum number of lines to print
+//! @param style print style
 void printFile(const char* const pathname, const bool reverse, const uint32_t maxLine, PrintStyle style)
 {
     std::ifstream file;
@@ -45,7 +57,7 @@ void printFile(const char* const pathname, const bool reverse, const uint32_t ma
     {
         throwOperateFileException(std::filesystem::path(pathname).filename().string(), true);
     }
-    tryToOperateFileLock(file, pathname, LockOperateType::lock, FileLockType::readerLock);
+    tryToOperateFileLock(file, pathname, LockOperationType::lock, FileLockType::readerLock);
 
     PrintStyle formatStyle = style;
     if (nullStyle == formatStyle)
@@ -82,7 +94,7 @@ void printFile(const char* const pathname, const bool reverse, const uint32_t ma
     }
     std::copy(content.cbegin(), content.cend(), std::ostream_iterator<std::string>(std::cout, "\n"));
 
-    tryToOperateFileLock(file, pathname, LockOperateType::unlock, FileLockType::readerLock);
+    tryToOperateFileLock(file, pathname, LockOperationType::unlock, FileLockType::readerLock);
     file.close();
 }
 } // namespace utility::common

@@ -1,3 +1,8 @@
+//! @file command.cpp
+//! @author ryftchen
+//! @brief The definitions (command) in the application module.
+//! @version 0.1
+//! @copyright Copyright (c) 2022
 #include "command.hpp"
 #include <unistd.h>
 #include <climits>
@@ -110,8 +115,8 @@ void Command::runCommander(const int argc, const char* const argv[])
     if (0 != argc - 1)
     {
         std::shared_ptr<utility::thread::Thread> thread = std::make_shared<utility::thread::Thread>(2);
-        thread->enqueue("commander_fore", &Command::foregroundHandle, this, argc, argv);
-        thread->enqueue("commander_back", &Command::backgroundHandle, this);
+        thread->enqueue("commander_fore", &Command::foregroundHandler, this, argc, argv);
+        thread->enqueue("commander_back", &Command::backgroundHandler, this);
     }
     else
     {
@@ -122,7 +127,7 @@ void Command::runCommander(const int argc, const char* const argv[])
     LOG_TO_STOP;
 }
 
-void Command::foregroundHandle(const int argc, const char* const argv[])
+void Command::foregroundHandler(const int argc, const char* const argv[])
 {
     try
     {
@@ -144,7 +149,7 @@ void Command::foregroundHandle(const int argc, const char* const argv[])
     }
 }
 
-void Command::backgroundHandle()
+void Command::backgroundHandler()
 {
     try
     {
@@ -183,7 +188,7 @@ void Command::validateBasicTask()
             throwExcessArgumentException();
         }
 
-        taskPlan.basicTask.primaryBit.set(BasicTask::Category(i));
+        assignedTask.basicTask.primaryBit.set(BasicTask::Category(i));
     }
 }
 
@@ -244,22 +249,22 @@ void Command::validateGeneralTask()
 
 bool Command::checkTask() const
 {
-    return !taskPlan.empty();
+    return !assignedTask.empty();
 }
 
 void Command::performTask() const
 {
-    if (!taskPlan.basicTask.empty())
+    if (!assignedTask.basicTask.empty())
     {
         for (int i = 0; i < BasicTask::Bottom<BasicTask::Category>::value; ++i)
         {
-            if (taskPlan.basicTask.primaryBit.test(BasicTask::Category(i)))
+            if (assignedTask.basicTask.primaryBit.test(BasicTask::Category(i)))
             {
                 (this->*std::next(basicTaskMap.cbegin(), BasicTask::Category(i))->second)();
             }
         }
     }
-    else if (!taskPlan.generalTask.empty() && !taskPlan.basicTask.primaryBit.test(BasicTask::Category::help))
+    else if (!assignedTask.generalTask.empty() && !assignedTask.basicTask.primaryBit.test(BasicTask::Category::help))
     {
         for (int i = 0; i < GeneralTask::Bottom<GeneralTask::Category>::value; ++i)
         {
@@ -321,7 +326,7 @@ void Command::printConsoleOutput() const
 
 void Command::printHelpMessage() const
 {
-    if (taskPlan.generalTask.empty())
+    if (assignedTask.generalTask.empty())
     {
         std::cout << program.help().str();
         return;
@@ -525,7 +530,7 @@ void Command::viewLogContent()
     LOG_TO_STOP;
 
     utility::common::printFile(
-        utility::log::logPath.data(), true, maxLineNumForPrintLog, &utility::log::changeLogLevelStyle);
+        utility::log::logPath.data(), true, maxLineNumForPrintLog, &utility::log::changeToLogStyle);
 }
 
 std::string Command::getIconBanner()
@@ -542,6 +547,8 @@ std::string Command::getIconBanner()
     return banner;
 }
 
+//! @brief Get memory pool when making multi-threading.
+//! @return reference of the Memory object
 utility::memory::Memory<utility::thread::Thread>& getMemoryForMultithreading()
 {
     static utility::memory::Memory<utility::thread::Thread> memory;

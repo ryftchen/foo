@@ -1,10 +1,15 @@
+//! @file memory.tpp
+//! @author ryftchen
+//! @brief The definitions (memory) in the utility module.
+//! @version 0.1
+//! @copyright Copyright (c) 2022
 #pragma once
 
 #include "memory.hpp"
 
 namespace utility::memory
 {
-template <typename T, size_t BlockSize>
+template <typename T, std::size_t BlockSize>
 Memory<T, BlockSize>::Memory() noexcept
 {
     currentBlock = nullptr;
@@ -13,7 +18,7 @@ Memory<T, BlockSize>::Memory() noexcept
     freeSlots = nullptr;
 }
 
-template <typename T, size_t BlockSize>
+template <typename T, std::size_t BlockSize>
 Memory<T, BlockSize>::~Memory() noexcept
 {
     SlotPointer curr = currentBlock;
@@ -25,18 +30,18 @@ Memory<T, BlockSize>::~Memory() noexcept
     }
 }
 
-template <typename T, size_t BlockSize>
+template <typename T, std::size_t BlockSize>
 Memory<T, BlockSize>::Memory(const Memory& /*memory*/) noexcept : Memory()
 {
 }
 
-template <typename T, size_t BlockSize>
+template <typename T, std::size_t BlockSize>
 template <class U>
 Memory<T, BlockSize>::Memory(const Memory<U>& /*memory*/) noexcept : Memory()
 {
 }
 
-template <typename T, size_t BlockSize>
+template <typename T, std::size_t BlockSize>
 Memory<T, BlockSize>::Memory(Memory&& memory) noexcept
 {
     currentBlock = memory.currentBlock;
@@ -46,7 +51,7 @@ Memory<T, BlockSize>::Memory(Memory&& memory) noexcept
     freeSlots = memory.freeSlots;
 }
 
-template <typename T, size_t BlockSize>
+template <typename T, std::size_t BlockSize>
 Memory<T, BlockSize>& Memory<T, BlockSize>::operator=(Memory&& memory) noexcept
 {
     if (this != &memory)
@@ -59,19 +64,19 @@ Memory<T, BlockSize>& Memory<T, BlockSize>::operator=(Memory&& memory) noexcept
     return *this;
 }
 
-template <typename T, size_t BlockSize>
+template <typename T, std::size_t BlockSize>
 inline typename Memory<T, BlockSize>::Pointer Memory<T, BlockSize>::address(Reference x) const noexcept
 {
     return &x;
 }
 
-template <typename T, size_t BlockSize>
+template <typename T, std::size_t BlockSize>
 inline typename Memory<T, BlockSize>::ConstPointer Memory<T, BlockSize>::address(ConstReference x) const noexcept
 {
     return &x;
 }
 
-template <typename T, size_t BlockSize>
+template <typename T, std::size_t BlockSize>
 inline typename Memory<T, BlockSize>::Pointer Memory<T, BlockSize>::allocate(SizeType /*n*/, ConstPointer /*hint*/)
 {
     if (nullptr != freeSlots)
@@ -90,7 +95,7 @@ inline typename Memory<T, BlockSize>::Pointer Memory<T, BlockSize>::allocate(Siz
     }
 }
 
-template <typename T, size_t BlockSize>
+template <typename T, std::size_t BlockSize>
 inline void Memory<T, BlockSize>::deallocate(Pointer p, SizeType /*n*/)
 {
     if (nullptr != p)
@@ -100,28 +105,28 @@ inline void Memory<T, BlockSize>::deallocate(Pointer p, SizeType /*n*/)
     }
 }
 
-template <typename T, size_t BlockSize>
+template <typename T, std::size_t BlockSize>
 inline typename Memory<T, BlockSize>::SizeType Memory<T, BlockSize>::maxSize() const noexcept
 {
     SizeType maxBlocks = -1 / BlockSize;
     return (BlockSize - sizeof(DataPointer)) / sizeof(SlotType) * maxBlocks;
 }
 
-template <typename T, size_t BlockSize>
+template <typename T, std::size_t BlockSize>
 template <class U, class... Args>
 inline void Memory<T, BlockSize>::construct(U* p, Args&&... args)
 {
     new (p) U(std::forward<Args>(args)...);
 }
 
-template <typename T, size_t BlockSize>
+template <typename T, std::size_t BlockSize>
 template <class U>
 inline void Memory<T, BlockSize>::destroy(U* p)
 {
     p->~U();
 }
 
-template <typename T, size_t BlockSize>
+template <typename T, std::size_t BlockSize>
 template <class... Args>
 inline typename Memory<T, BlockSize>::Pointer Memory<T, BlockSize>::newElement(Args&&... args)
 {
@@ -130,7 +135,7 @@ inline typename Memory<T, BlockSize>::Pointer Memory<T, BlockSize>::newElement(A
     return result;
 }
 
-template <typename T, size_t BlockSize>
+template <typename T, std::size_t BlockSize>
 inline void Memory<T, BlockSize>::deleteElement(Pointer p)
 {
     if (nullptr != p)
@@ -140,15 +145,15 @@ inline void Memory<T, BlockSize>::deleteElement(Pointer p)
     }
 }
 
-template <typename T, size_t BlockSize>
+template <typename T, std::size_t BlockSize>
 inline typename Memory<T, BlockSize>::SizeType Memory<T, BlockSize>::padPointer(DataPointer p, SizeType align)
     const noexcept
 {
-    uintptr_t result = reinterpret_cast<uintptr_t>(p); // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
+    std::uintptr_t result = reinterpret_cast<std::uintptr_t>(p); // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
     return ((align - result) % align);
 }
 
-template <typename T, size_t BlockSize>
+template <typename T, std::size_t BlockSize>
 void Memory<T, BlockSize>::allocateBlock()
 {
     DataPointer newBlock =

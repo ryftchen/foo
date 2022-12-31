@@ -1,3 +1,8 @@
+//! @file apply_design_pattern.cpp
+//! @author ryftchen
+//! @brief The definitions (apply_design_pattern) in the application module.
+//! @version 0.1
+//! @copyright Copyright (c) 2022
 #include "apply_design_pattern.hpp"
 #include "application/include/command.hpp"
 #include "design_pattern/include/behavioral.hpp"
@@ -7,12 +12,14 @@
 #include "utility/include/log.hpp"
 #include "utility/include/thread.hpp"
 
+//! @brief Macro for the title of printing when design pattern tasks are beginning.
 #define APP_DP_PRINT_TASK_BEGIN_TITLE(taskType)                                                                       \
     std::cout << "\r\n"                                                                                               \
               << "DESIGN PATTERN TASK: " << std::setiosflags(std::ios_base::left) << std::setfill('.')                \
               << std::setw(50) << taskType << "BEGIN" << std::resetiosflags(std::ios_base::left) << std::setfill(' ') \
               << std::endl;                                                                                           \
     {
+//! @brief Macro for the title of printing when design pattern tasks are ending.
 #define APP_DP_PRINT_TASK_END_TITLE(taskType)                                                                       \
     }                                                                                                               \
     std::cout << "\r\n"                                                                                             \
@@ -23,19 +30,29 @@
 
 namespace application::app_dp
 {
+//! @brief Typedef for Type.
 using Type = DesignPatternTask::Type;
+//! @brief Typedef for Bottom.
+//! @tparam T type of specific enum
 template <class T>
 using Bottom = DesignPatternTask::Bottom<T>;
+//! @brief Typedef for BehavioralInstance.
 using BehavioralInstance = DesignPatternTask::BehavioralInstance;
+//! @brief Typedef for CreationalInstance.
 using CreationalInstance = DesignPatternTask::CreationalInstance;
+//! @brief Typedef for StructuralInstance.
 using StructuralInstance = DesignPatternTask::StructuralInstance;
 
+//! @brief Get the design pattern task.
+//! @return reference of DesignPatternTask object
 DesignPatternTask& getTask()
 {
     static DesignPatternTask task;
     return task;
 }
 
+//! @brief Run behavioral tasks.
+//! @param targets vector of target instances
 void runBehavioral(const std::vector<std::string>& targets)
 {
     if (getBit<BehavioralInstance>().none())
@@ -110,6 +127,8 @@ void runBehavioral(const std::vector<std::string>& targets)
     APP_DP_PRINT_TASK_END_TITLE(Type::behavioral);
 }
 
+//! @brief Update behavioral instances in tasks.
+//! @param target target instance
 void updateBehavioralTask(const std::string& target)
 {
     using utility::hash::operator""_bkdrHash;
@@ -154,6 +173,8 @@ void updateBehavioralTask(const std::string& target)
     }
 }
 
+//! @brief Run creational tasks.
+//! @param targets vector of target instances
 void runCreational(const std::vector<std::string>& targets)
 {
     if (getBit<CreationalInstance>().none())
@@ -210,6 +231,8 @@ void runCreational(const std::vector<std::string>& targets)
     APP_DP_PRINT_TASK_END_TITLE(Type::creational);
 }
 
+//! @brief Update creational instances in tasks.
+//! @param target target instance
 void updateCreationalTask(const std::string& target)
 {
     using utility::hash::operator""_bkdrHash;
@@ -236,6 +259,8 @@ void updateCreationalTask(const std::string& target)
     }
 }
 
+//! @brief Run structural tasks.
+//! @param targets vector of target instances
 void runStructural(const std::vector<std::string>& targets)
 {
     if (getBit<StructuralInstance>().none())
@@ -298,6 +323,8 @@ void runStructural(const std::vector<std::string>& targets)
     APP_DP_PRINT_TASK_END_TITLE(Type::structural);
 }
 
+//! @brief Update structural instances in tasks.
+//! @param target target instance
 void updateStructuralTask(const std::string& target)
 {
     using utility::hash::operator""_bkdrHash;

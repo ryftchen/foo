@@ -1,17 +1,27 @@
+//! @file apply_algorithm.hpp
+//! @author ryftchen
+//! @brief The declarations (apply_algorithm) in the application module.
+//! @version 0.1
+//! @copyright Copyright (c) 2022
 #pragma once
 
 #include <bitset>
 #include <sstream>
 #include <vector>
 
+//! @brief Namespace for algorithm-applying-related functions in the application module.
 namespace application::app_algo
 {
+//! @brief Class for managing algorithm tasks.
 class AlgorithmTask
 {
 public:
+    //! @brief Struct for representing the maximum value of an enum.
+    //! @tparam T type of specific enum
     template <class T>
     struct Bottom;
 
+    //! @brief Enum for enumerating specific algorithm tasks.
     enum Type
     {
         match,
@@ -21,6 +31,7 @@ public:
         sort
     };
 
+    //! @brief Enum for enumerating specific match methods.
     enum MatchMethod
     {
         rabinKarp,
@@ -29,23 +40,29 @@ public:
         horspool,
         sunday
     };
+    //! @brief Struct for storing the maximum value of the MatchMethod enum.
+    //! @tparam N/A
     template <>
     struct Bottom<MatchMethod>
     {
         static constexpr int value = 5;
     };
 
+    //! @brief Enum for enumerating specific notation methods.
     enum NotationMethod
     {
         prefix,
         postfix
     };
+    //! @brief Struct for storing the maximum value of the NotationMethod enum.
+    //! @tparam N/A
     template <>
     struct Bottom<NotationMethod>
     {
         static constexpr int value = 2;
     };
 
+    //! @brief Enum for enumerating specific optimal methods.
     enum OptimalMethod
     {
         gradient,
@@ -53,24 +70,30 @@ public:
         particle,
         genetic
     };
+    //! @brief Struct for storing the maximum value of the OptimalMethod enum.
+    //! @tparam N/A
     template <>
     struct Bottom<OptimalMethod>
     {
         static constexpr int value = 4;
     };
 
+    //! @brief Enum for enumerating specific search methods.
     enum SearchMethod
     {
         binary,
         interpolation,
         fibonacci
     };
+    //! @brief Struct for storing the maximum value of the SearchMethod enum.
+    //! @tparam N/A
     template <>
     struct Bottom<SearchMethod>
     {
         static constexpr int value = 3;
     };
 
+    //! @brief Enum for enumerating specific sort methods.
     enum SortMethod
     {
         bubble,
@@ -84,22 +107,32 @@ public:
         bucket,
         radix
     };
+    //! @brief Struct for storing the maximum value of the SortMethod enum.
+    //! @tparam N/A
     template <>
     struct Bottom<SortMethod>
     {
         static constexpr int value = 10;
     };
 
+    //! @brief Bit flags for managing match methods.
     std::bitset<Bottom<MatchMethod>::value> matchBit;
+    //! @brief Bit flags for managing notation methods..
     std::bitset<Bottom<NotationMethod>::value> notationBit;
+    //! @brief Bit flags for managing optimal methods..
     std::bitset<Bottom<OptimalMethod>::value> optimalBit;
+    //! @brief Bit flags for managing search methods.
     std::bitset<Bottom<SearchMethod>::value> searchBit;
+    //! @brief Bit flags for managing sort methods.
     std::bitset<Bottom<SortMethod>::value> sortBit;
 
+    //! @brief Check whether any algorithm tasks do not exist.
+    //! @return any algorithm tasks do not exist or exist
     [[nodiscard]] inline bool empty() const
     {
         return (matchBit.none() && notationBit.none() && optimalBit.none() && searchBit.none() && sortBit.none());
     }
+    //! @brief Reset bit flags that manage algorithm tasks.
     inline void reset()
     {
         matchBit.reset();
@@ -110,6 +143,10 @@ public:
     }
 
 protected:
+    //! @brief The operator (<<) overloading of the Type enum.
+    //! @param os output stream object
+    //! @param type the specific value of Type enum
+    //! @return reference of output stream object
     friend std::ostream& operator<<(std::ostream& os, const Type& type)
     {
         switch (type)
@@ -138,6 +175,9 @@ protected:
 
 extern AlgorithmTask& getTask();
 
+//! @brief Get the bit flags of the method in algorithm tasks.
+//! @tparam T type of the method
+//! @return bit flags of the method
 template <typename T>
 auto getBit()
 {
@@ -163,6 +203,9 @@ auto getBit()
     }
 }
 
+//! @brief Set the bit flags of the method in algorithm tasks
+//! @tparam T type of the method
+//! @param index method index
 template <typename T>
 void setBit(const int index)
 {
