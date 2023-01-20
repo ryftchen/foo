@@ -94,7 +94,7 @@ public:
     //! @brief Right endpoint.
     static constexpr double range2{600.0};
     //! @brief One-dimensional Griewank.
-    static constexpr std::string_view funcStr{
+    static constexpr std::string_view funcDescr{
         "f(x)=1+1/4000*Σ(1→n)[(Xi)^2]-Π(1→n)[cos(Xi/(i)^(1/2))],x∈[-600,600] (one-dimensional Griewank)"};
 };
 
@@ -116,7 +116,7 @@ public:
     //! @brief Right endpoint.
     static constexpr double range2{5.12};
     //! @brief One-dimensional Rastrigin.
-    static constexpr std::string_view funcStr{
+    static constexpr std::string_view funcDescr{
         "f(x)=An+Σ(1→n)[(Xi)^2-Acos(2π*Xi)],A=10,x∈[-5.12,5.12] (one-dimensional Rastrigin)"};
 };
 } // namespace input
@@ -306,11 +306,11 @@ void runOptimal(const std::vector<std::string>& targets)
             algorithm::optimal::function::FuncOverloaded{
                 [&prefix](const Griewank& /*unused*/)
                 {
-                    std::cout << prefix << Griewank::funcStr << std::endl;
+                    std::cout << prefix << Griewank::funcDescr << std::endl;
                 },
                 [&prefix](const Rastrigin& /*unused*/)
                 {
-                    std::cout << prefix << Rastrigin::funcStr << std::endl;
+                    std::cout << prefix << Rastrigin::funcDescr << std::endl;
                 },
             },
             function);
@@ -374,8 +374,8 @@ void runOptimal(const std::vector<std::string>& targets)
         OptimalFuncTarget,
         algorithm::optimal::function::FuncMapHash>
         optimalFuncMap{
-            {{Griewank::range1, Griewank::range2, Griewank::funcStr}, Griewank()},
-            {{Rastrigin::range1, Rastrigin::range2, Rastrigin::funcStr}, Rastrigin()}};
+            {{Griewank::range1, Griewank::range2, Griewank::funcDescr}, Griewank()},
+            {{Rastrigin::range1, Rastrigin::range2, Rastrigin::funcDescr}, Rastrigin()}};
     for ([[maybe_unused]] const auto& [range, expression] : optimalFuncMap)
     {
 #ifndef _NO_PRINT_AT_RUNTIME
