@@ -10,7 +10,7 @@
 #include <mutex>
 #include "utility/include/time.hpp"
 
-//! @brief Namespace for search-related functions in the algorithm module.
+//! @brief Search-related functions in the algorithm module.
 namespace algorithm::search
 {
 //! @brief Maximum alignment length per element of printing.
@@ -27,7 +27,7 @@ constexpr bool isNumber()
     return (std::is_integral<T>::value || std::is_floating_point<T>::value);
 }
 
-//! @brief Class for the solution of search.
+//! @brief Solution of search.
 //! @tparam T type of the solution of search
 template <class T>
 class SearchSolution

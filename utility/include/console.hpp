@@ -9,10 +9,10 @@
 #include <functional>
 #include <memory>
 
-//! @brief Namespace for console-mode-related functions in the utility module.
+//! @brief Console-mode-related functions in the utility module.
 namespace utility::console
 {
-//! @brief Class for console mode.
+//! @brief Console mode.
 class Console
 {
 public:
@@ -32,9 +32,9 @@ public:
     //! @return reference of Console object
     Console& operator=(Console&&) = delete;
 
-    //! @brief Typedef for the vector of arguments.
+    //! @brief Alias for the vector of arguments.
     using Args = std::vector<std::string>;
-    //! @brief Typedef for the functor of command.
+    //! @brief Alias for the functor of command.
     using CommandFunctor = std::function<int(const Args&)>;
     //! @brief Register console command.
     //! @param command command to be registered
@@ -62,7 +62,7 @@ public:
     //! @return value of ReturnCode
     int readCommandLine();
 
-    //! @brief Enum for enumerating specific return code.
+    //! @brief Enumerate specific return code.
     enum ReturnCode : int
     {
         quit = -1,
@@ -71,12 +71,12 @@ public:
     };
 
 private:
-    //! @brief Typedef for the history state.
+    //! @brief Alias for the history state.
     using HistoryState = HISTORY_STATE;
     //! @brief Saved empty history state.
     HistoryState* emptyHistory = history_get_history_state();
 
-    //! @brief Struct for implementation of running console.
+    //! @brief Implementation of running console.
     struct Impl
     {
         //! @brief Construct a new Impl object.
@@ -97,7 +97,7 @@ private:
 
         //! @brief Greeting information.
         std::string greeting;
-        //! @brief Typedef for the map of command and function in console.
+        //! @brief Alias for the map of command and function in console.
         using RegisteredCommands = std::unordered_map<std::string, std::pair<CommandFunctor, std::string>>;
         //! @brief Mapping table of all registered commands.
         RegisteredCommands RegCmds;
@@ -112,9 +112,9 @@ private:
     //! @brief Reserve usage to the calling console instance.
     void reserveConsole();
 
-    //! @brief Typedef for the functor of command completer.
+    //! @brief Alias for the functor of command completer.
     using CommandCompleterFunctor = char**(const char* text, int start, int end);
-    //! @brief Typedef for the functor of command iterator.
+    //! @brief Alias for the functor of command iterator.
     using CommandIteratorFunctor = char*(const char* text, int state);
     //! @brief Get the command completer. Wrap the interface.
     static CommandCompleterFunctor getCommandCompleter;

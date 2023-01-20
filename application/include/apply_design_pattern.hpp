@@ -9,19 +9,19 @@
 #include <sstream>
 #include <vector>
 
-//! @brief Namespace for design-pattern-applying-related functions in the application module.
+//! @brief Design-pattern-applying-related functions in the application module.
 namespace application::app_dp
 {
-//! @brief Class for managing design pattern tasks.
+//! @brief Manage design pattern tasks.
 class DesignPatternTask
 {
 public:
-    //! @brief Struct for representing the maximum value of an enum.
+    //! @brief Represent the maximum value of an enum.
     //! @tparam T type of specific enum
     template <class T>
     struct Bottom;
 
-    //! @brief Enum for enumerating specific design pattern tasks.
+    //! @brief Enumerate specific design pattern tasks.
     enum Type
     {
         behavioral,
@@ -29,7 +29,7 @@ public:
         structural
     };
 
-    //! @brief Enum for enumerating specific behavioral instances.
+    //! @brief Enumerate specific behavioral instances.
     enum BehavioralInstance
     {
         chainOfResponsibility,
@@ -44,7 +44,7 @@ public:
         templateMethod,
         visitor
     };
-    //! @brief Struct for storing the maximum value of the BehavioralInstance enum.
+    //! @brief Store the maximum value of the BehavioralInstance enum.
     //! @tparam N/A
     template <>
     struct Bottom<BehavioralInstance>
@@ -52,7 +52,7 @@ public:
         static constexpr int value = 11;
     };
 
-    //! @brief Enum for enumerating specific creational instances.
+    //! @brief Enumerate specific creational instances.
     enum CreationalInstance
     {
         abstractFactory,
@@ -61,7 +61,7 @@ public:
         prototype,
         singleton
     };
-    //! @brief Struct for storing the maximum value of the CreationalInstance enum.
+    //! @brief Store the maximum value of the CreationalInstance enum.
     //! @tparam N/A
     template <>
     struct Bottom<CreationalInstance>
@@ -69,7 +69,7 @@ public:
         static constexpr int value = 5;
     };
 
-    //! @brief Enum for enumerating specific structural instances.
+    //! @brief Enumerate specific structural instances.
     enum StructuralInstance
     {
         adapter,
@@ -80,7 +80,7 @@ public:
         flyweight,
         proxy
     };
-    //! @brief Struct for storing the maximum value of the StructuralInstance enum.
+    //! @brief Store the maximum value of the StructuralInstance enum.
     //! @tparam N/A
     template <>
     struct Bottom<StructuralInstance>

@@ -7,7 +7,7 @@
 
 #include <cstdint>
 
-//! @brief Namespace for hash-related functions in the utility module.
+//! @brief Hash-related functions in the utility module.
 namespace utility::hash
 {
 //! @brief The hash seed for BKDR hash function.

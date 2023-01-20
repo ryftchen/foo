@@ -14,13 +14,13 @@
 #include "utility/include/log.hpp"
 #include "utility/include/thread.hpp"
 
-//! @brief Macro for the title of printing when numeric tasks are beginning.
+//! @brief Title of printing when numeric tasks are beginning.
 #define APP_NUM_PRINT_TASK_BEGIN_TITLE(taskType)                                                                   \
     std::cout << "\r\n"                                                                                            \
               << "NUMERIC TASK: " << std::setiosflags(std::ios_base::left) << std::setfill('.') << std::setw(50)   \
               << taskType << "BEGIN" << std::resetiosflags(std::ios_base::left) << std::setfill(' ') << std::endl; \
     {
-//! @brief Macro for the title of printing when numeric tasks are ending.
+//! @brief Title of printing when numeric tasks are ending.
 #define APP_NUM_PRINT_TASK_END_TITLE(taskType)                                                                   \
     }                                                                                                            \
     std::cout << "\r\n"                                                                                          \
@@ -30,19 +30,19 @@
 
 namespace application::app_num
 {
-//! @brief Typedef for Type.
+//! @brief Alias for Type.
 using Type = NumericTask::Type;
-//! @brief Typedef for Bottom.
+//! @brief Alias for Bottom.
 //! @tparam T type of specific enum
 template <class T>
 using Bottom = NumericTask::Bottom<T>;
-//! @brief Typedef for ArithmeticMethod.
+//! @brief Alias for ArithmeticMethod.
 using ArithmeticMethod = NumericTask::ArithmeticMethod;
-//! @brief Typedef for DivisorMethod.
+//! @brief Alias for DivisorMethod.
 using DivisorMethod = NumericTask::DivisorMethod;
-//! @brief Typedef for IntegralMethod.
+//! @brief Alias for IntegralMethod.
 using IntegralMethod = NumericTask::IntegralMethod;
-//! @brief Typedef for PrimeMethod.
+//! @brief Alias for PrimeMethod.
 using PrimeMethod = NumericTask::PrimeMethod;
 
 //! @brief Get the numeric task.
@@ -53,7 +53,7 @@ NumericTask& getTask()
     return task;
 }
 
-//! @brief Namespace for setting input parameters.
+//! @brief Set input parameters.
 namespace input
 {
 //! @brief One of integers for arithmetic methods.
@@ -67,7 +67,7 @@ constexpr int integerForDivisor2 = 2 * 3 * 5 * 7 * 11 * 13 * 17;
 //! @brief Max positive integer for prime methods.
 constexpr uint32_t maxPositiveIntegerForPrime = 997;
 
-//! @brief Class for expression example 1.
+//! @brief Expression example 1.
 class Expression1 : public numeric::integral::expression::Expression
 {
 public:
@@ -84,7 +84,7 @@ public:
     static constexpr std::string_view exprStr{"I=∫(-π/2→2π)x*sin(x)/(1+(cos(x))^2)dx"};
 };
 
-//! @brief Class for expression example 2.
+//! @brief Expression example 2.
 class Expression2 : public numeric::integral::expression::Expression
 {
 public:

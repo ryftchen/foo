@@ -8,10 +8,10 @@
 #include <cstdint>
 #include <utility>
 
-//! @brief Namespace for memory-pool-related functions in the utility module.
+//! @brief Memory-pool-related functions in the utility module.
 namespace utility::memory
 {
-//! @brief Class for memory pool.
+//! @brief Memory pool.
 //! @tparam T type of object to allocate
 //! @tparam BlockSize size of the chunk's memory pool allocates
 template <typename T, std::size_t BlockSize = 4096>
@@ -41,17 +41,17 @@ public:
     //! @return reference of Memory object
     Memory& operator=(Memory&& memory) noexcept;
 
-    //! @brief Typedef for the type of object to allocate.
+    //! @brief Alias for the type of object to allocate.
     typedef T ValueType;
-    //! @brief Typedef for the pointer of the object to allocate.
+    //! @brief Alias for the pointer of the object to allocate.
     typedef T* Pointer;
-    //! @brief Typedef for the reference of the object to allocate.
+    //! @brief Alias for the reference of the object to allocate.
     typedef T& Reference;
-    //! @brief Typedef for the const pointer of the object to allocate.
+    //! @brief Alias for the const pointer of the object to allocate.
     typedef const T* ConstPointer;
-    //! @brief Typedef for the const reference of the object to allocate.
+    //! @brief Alias for the const reference of the object to allocate.
     typedef const T& ConstReference;
-    //! @brief Typedef for size type.
+    //! @brief Alias for size type.
     typedef std::size_t SizeType;
 
     //! @brief Get the pointer of the allocated object.
@@ -106,11 +106,11 @@ private:
         Slot* next;
     };
 
-    //! @brief Typedef for the pointer of data in the element.
+    //! @brief Alias for the pointer of data in the element.
     typedef char* DataPointer;
-    //! @brief Typedef for the type of slot.
+    //! @brief Alias for the type of slot.
     typedef Slot SlotType;
-    //! @brief Typedef for the pointer of the slot.
+    //! @brief Alias for the pointer of the slot.
     typedef Slot* SlotPointer;
 
     //! @brief The pointer of the current block.

@@ -8,14 +8,14 @@
 #ifndef _NO_PRINT_AT_RUNTIME
 #include "utility/include/common.hpp"
 
-//! @brief Macro for displaying the notation result.
+//! @brief Display notation result.
 #define NOTATION_RESULT "\r\n*%-7s method:\r\n%s: %s\n"
-//! @brief Macro for printing the notation result content.
+//! @brief Print notation result content.
 #define NOTATION_PRINT_RESULT_CONTENT(method, notationType, notationString) \
     COMMON_PRINT(NOTATION_RESULT, method, notationType, notationString)
 #else
 
-//! @brief Macro for printing the notation result content.
+//! @brief Print notation result content.
 #define NOTATION_PRINT_RESULT_CONTENT(method, notationType, notationString)
 #endif
 

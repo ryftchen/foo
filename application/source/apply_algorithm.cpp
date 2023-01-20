@@ -15,13 +15,13 @@
 #include "utility/include/log.hpp"
 #include "utility/include/thread.hpp"
 
-//! @brief Macro for the title of printing when algorithm tasks are beginning.
+//! @brief Title of printing when algorithm tasks are beginning.
 #define APP_ALGO_PRINT_TASK_BEGIN_TITLE(taskType)                                                                  \
     std::cout << "\r\n"                                                                                            \
               << "ALGORITHM TASK: " << std::setiosflags(std::ios_base::left) << std::setfill('.') << std::setw(50) \
               << taskType << "BEGIN" << std::resetiosflags(std::ios_base::left) << std::setfill(' ') << std::endl; \
     {
-//! @brief Macro for the title of printing when algorithm tasks are ending.
+//! @brief Title of printing when algorithm tasks are ending.
 #define APP_ALGO_PRINT_TASK_END_TITLE(taskType)                                                                    \
     }                                                                                                              \
     std::cout << "\r\n"                                                                                            \
@@ -31,21 +31,21 @@
 
 namespace application::app_algo
 {
-//! @brief Typedef for Type.
+//! @brief Alias for Type.
 using Type = AlgorithmTask::Type;
-//! @brief Typedef for Bottom.
+//! @brief Alias for Bottom.
 //! @tparam T type of specific enum
 template <class T>
 using Bottom = AlgorithmTask::Bottom<T>;
-//! @brief Typedef for MatchMethod.
+//! @brief Alias for MatchMethod.
 using MatchMethod = AlgorithmTask::MatchMethod;
-//! @brief Typedef for NotationMethod.
+//! @brief Alias for NotationMethod.
 using NotationMethod = AlgorithmTask::NotationMethod;
-//! @brief Typedef for OptimalMethod.
+//! @brief Alias for OptimalMethod.
 using OptimalMethod = AlgorithmTask::OptimalMethod;
-//! @brief Typedef for SearchMethod.
+//! @brief Alias for SearchMethod.
 using SearchMethod = AlgorithmTask::SearchMethod;
-//! @brief Typedef for SortMethod.
+//! @brief Alias for SortMethod.
 using SortMethod = AlgorithmTask::SortMethod;
 
 //! @brief Get the algorithm task.
@@ -56,7 +56,7 @@ AlgorithmTask& getTask()
     return task;
 }
 
-//! @brief Namespace for setting input parameters.
+//! @brief Set input parameters.
 namespace input
 {
 //! @brief Single pattern for match methods.
@@ -76,7 +76,7 @@ constexpr int arrayRangeForSort2 = 150;
 //! @brief Length of the array for sort methods.
 constexpr uint32_t arrayLengthForSort = 53;
 
-//! @brief Class for Griewank function.
+//! @brief Griewank function.
 class Griewank : public algorithm::optimal::function::Function
 {
 public:
@@ -98,7 +98,7 @@ public:
         "f(x)=1+1/4000*Σ(1→n)[(Xi)^2]-Π(1→n)[cos(Xi/(i)^(1/2))],x∈[-600,600] (one-dimensional Griewank)"};
 };
 
-//! @brief Class for Rastrigin function.
+//! @brief Rastrigin function.
 class Rastrigin : public algorithm::optimal::function::Function
 {
 public:

@@ -9,19 +9,19 @@
 #include <sstream>
 #include <vector>
 
-//! @brief Namespace for numeric-applying-related functions in the application module.
+//! @brief Numeric-applying-related functions in the application module.
 namespace application::app_num
 {
-//! @brief Class for managing numeric tasks.
+//! @brief Manage numeric tasks.
 class NumericTask
 {
 public:
-    //! @brief Struct for representing the maximum value of an enum.
+    //! @brief Represent the maximum value of an enum.
     //! @tparam T type of specific enum
     template <class T>
     struct Bottom;
 
-    //! @brief Enum for enumerating specific numeric tasks.
+    //! @brief Enumerate specific numeric tasks.
     enum Type
     {
         arithmetic,
@@ -30,7 +30,7 @@ public:
         prime
     };
 
-    //! @brief Enum for enumerating specific arithmetic methods.
+    //! @brief Enumerate specific arithmetic methods.
     enum ArithmeticMethod
     {
         addition,
@@ -38,7 +38,7 @@ public:
         multiplication,
         division
     };
-    //! @brief Struct for storing the maximum value of the ArithmeticMethod enum.
+    //! @brief Store the maximum value of the ArithmeticMethod enum.
     //! @tparam N/A
     template <>
     struct Bottom<ArithmeticMethod>
@@ -46,13 +46,13 @@ public:
         static constexpr int value = 4;
     };
 
-    //! @brief Enum for enumerating specific divisor methods.
+    //! @brief Enumerate specific divisor methods.
     enum DivisorMethod
     {
         euclidean,
         stein
     };
-    //! @brief Struct for storing the maximum value of the DivisorMethod enum.
+    //! @brief Store the maximum value of the DivisorMethod enum.
     //! @tparam N/A
     template <>
     struct Bottom<DivisorMethod>
@@ -60,7 +60,7 @@ public:
         static constexpr int value = 2;
     };
 
-    //! @brief Enum for enumerating specific integral methods.
+    //! @brief Enumerate specific integral methods.
     enum IntegralMethod
     {
         trapezoidal,
@@ -69,7 +69,7 @@ public:
         gauss,
         monteCarlo
     };
-    //! @brief Struct for storing the maximum value of the IntegralMethod enum.
+    //! @brief Store the maximum value of the IntegralMethod enum.
     //! @tparam N/A
     template <>
     struct Bottom<IntegralMethod>
@@ -77,13 +77,13 @@ public:
         static constexpr int value = 5;
     };
 
-    //! @brief Enum for enumerating specific prime methods.
+    //! @brief Enumerate specific prime methods.
     enum PrimeMethod
     {
         eratosthenes,
         euler
     };
-    //! @brief Struct for storing the maximum value of the PrimeMethod enum.
+    //! @brief Store the maximum value of the PrimeMethod enum.
     //! @tparam N/A
     template <>
     struct Bottom<PrimeMethod>

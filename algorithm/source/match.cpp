@@ -11,12 +11,12 @@
 #include "utility/include/common.hpp"
 #include "utility/include/time.hpp"
 
-//! @brief Macro for displaying the match result.
+//! @brief Display match result.
 #define MATCH_RESULT(opt) \
     "*%-16s method: Found the pattern \"%s\" starting(" #opt ") at index %d.  ==>Run time: %8.5f ms\n"
-//! @brief Macro for displaying the none match result.
+//! @brief Display none match result.
 #define MATCH_NONE_RESULT "*%-16s method: Could not find the pattern \"%s\".  ==>Run time: %8.5f ms\n"
-//! @brief Macro for printing the match result content.
+//! @brief Print match result content.
 #define MATCH_PRINT_RESULT_CONTENT(method)                                                   \
     do                                                                                       \
     {                                                                                        \
@@ -30,21 +30,21 @@
         }                                                                                    \
     }                                                                                        \
     while (0)
-//! @brief Macro for storing match beginning runtime.
+//! @brief Store match beginning runtime.
 #define MATCH_RUNTIME_BEGIN TIME_BEGIN(timing)
-//! @brief Macro for storing match ending runtime.
+//! @brief Store match ending runtime.
 #define MATCH_RUNTIME_END TIME_END(timing)
-//! @brief Macro for calculating match runtime interval.
+//! @brief Calculate match runtime interval.
 #define MATCH_RUNTIME_INTERVAL TIME_INTERVAL(timing)
 #else
 // #define NDEBUG
 #include <cassert>
 
-//! @brief Macro for printing the match result content.
+//! @brief Print match result content.
 #define MATCH_PRINT_RESULT_CONTENT(method)
-//! @brief Macro for storing match beginning runtime.
+//! @brief Store match beginning runtime.
 #define MATCH_RUNTIME_BEGIN
-//! @brief Macro for storing match ending runtime.
+//! @brief Store match ending runtime.
 #define MATCH_RUNTIME_END
 #endif
 
