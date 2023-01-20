@@ -8,13 +8,13 @@
 #include <map>
 #include <random>
 
-//! @brief Namespace for optimal-related functions in the algorithm module.
+//! @brief Optimal-related functions in the algorithm module.
 namespace algorithm::optimal
 {
-//! @brief Namespace for target functions of optimization.
+//! @brief Target functions of optimization.
 namespace function
 {
-//! @brief Class for target functions.
+//! @brief Target functions.
 class Function
 {
 public:
@@ -27,7 +27,7 @@ public:
     virtual inline double operator()(const double x) const = 0;
 };
 
-//! @brief Struct for Function object's helper type for the visitor.
+//! @brief Function object's helper type for the visitor.
 //! @tparam Ts type of visitor
 template <class... Ts>
 struct FuncOverloaded : Ts...
@@ -40,7 +40,7 @@ struct FuncOverloaded : Ts...
 template <class... Ts>
 FuncOverloaded(Ts...) -> FuncOverloaded<Ts...>;
 
-//! @brief Struct for range properties of the function.
+//! @brief Range properties of the function.
 //! @tparam T1 type of left endpoint
 //! @tparam T2 type of right endpoint
 template <typename T1, typename T2>
@@ -69,7 +69,7 @@ struct FuncRange
         return (std::tie(rhs.range1, rhs.range2, rhs.funcStr) == std::tie(range1, range2, funcStr));
     }
 };
-//! @brief Struct for mapping hash value for the function.
+//! @brief Mapping hash value for the function.
 struct FuncMapHash
 {
     //! @brief The operator (()) overloading of FuncMapHash class.
@@ -88,15 +88,15 @@ struct FuncMapHash
 };
 } // namespace function
 
-//! @brief Typedef for the independent variable.
+//! @brief Alias for the independent variable.
 using ValueX = double;
-//! @brief Typedef for the dependent variable.
+//! @brief Alias for the dependent variable.
 using ValueY = double;
 
 //! @brief The precision of calculation.
 inline constexpr double epsilon = 1e-5;
 
-//! @brief Class for the solution of optimal.
+//! @brief Solution of optimal.
 class OptimalSolution
 {
 public:
@@ -114,7 +114,7 @@ public:
         const double eps) = 0;
 };
 
-//! @brief Class for the gradient descent method.
+//! @brief The gradient descent method.
 class Gradient : public OptimalSolution
 {
 public:
@@ -149,7 +149,7 @@ private:
     [[nodiscard]] double calculateFirstDerivative(const double x, const double eps) const;
 };
 
-//! @brief Class for the simulated annealing method.
+//! @brief The simulated annealing method.
 class Annealing : public OptimalSolution
 {
 public:
@@ -180,7 +180,7 @@ private:
     static constexpr uint32_t markovChain{500};
 };
 
-//! @brief Class for the particle swarm method.
+//! @brief The particle swarm method.
 class Particle : public OptimalSolution
 {
 public:
@@ -220,7 +220,7 @@ private:
     //! @brief The number of iterations.
     static constexpr uint32_t numOfIteration{500};
 
-    //! @brief Struct for the individual information in the swarm.
+    //! @brief Individual information in the swarm.
     struct Individual
     {
         //! @brief Construct a new Individual object.
@@ -254,7 +254,7 @@ private:
         //! @brief Fitness of the best position.
         double fitnessPositionBest;
     };
-    //! @brief Struct for comparing the value in history.
+    //! @brief Compare the value in history.
     struct Smaller
     {
         //! @brief The operator (()) overloading of Smaller class.
@@ -264,11 +264,11 @@ private:
         bool operator()(const double left, const double right) const { return left < right; }
     };
 
-    //! @brief Typedef for the society information in the swarm.
+    //! @brief Alias for the society information in the swarm.
     using Society = std::vector<Individual>;
-    //! @brief Typedef for the history information in the swarm.
+    //! @brief Alias for the history information in the swarm.
     using History = std::map<ValueY, ValueX, Smaller>;
-    //! @brief Struct for storing the information of society and history in the swarm.
+    //! @brief Store the information of society and history in the swarm.
     struct Storage
     {
         //! @brief Construct a new Storage object.
@@ -294,7 +294,7 @@ private:
     Storage storageInit(const double left, const double right);
 };
 
-//! @brief Class for the genetic method.
+//! @brief The genetic method.
 class Genetic : public OptimalSolution
 {
 public:
@@ -315,7 +315,7 @@ public:
 private:
     //! @brief Target function.
     const function::Function& func;
-    //! @brief Struct for range properties of species.
+    //! @brief Range properties of species.
     struct Range
     {
         //! @brief Left endpoint.
@@ -338,9 +338,9 @@ private:
     //! @brief The number of iterations.
     static constexpr uint32_t numOfIteration{500};
 
-    //! @brief Typedef for the individual's chromosome in species.
+    //! @brief Alias for the individual's chromosome in species.
     using Chromosome = std::vector<uint8_t>;
-    //! @brief Typedef for the population in species.
+    //! @brief Alias for the population in species.
     using Population = std::vector<Chromosome>;
     //! @brief Update species.
     //! @param left left endpoint

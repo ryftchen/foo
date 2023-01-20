@@ -12,23 +12,23 @@
 #include <sstream>
 #include <variant>
 
-//! @brief Namespace for argument-parsing-related functions in the utility module.
+//! @brief Argument-parsing-related functions in the utility module.
 namespace utility::argument
 {
-//! @brief Struct for confirming container traits. Value is false.
+//! @brief Confirm container traits. Value is false.
 //! @tparam T type to be confirmed
 //! @tparam typename valid type or expression
 template <typename T, typename = void>
 struct HasContainerTraits : std::false_type
 {
 };
-//! @brief Struct for confirming container traits(std::string). Value is false.
+//! @brief Confirm container traits(std::string). Value is false.
 //! @tparam N/A
 template <>
 struct HasContainerTraits<std::string> : std::false_type
 {
 };
-//! @brief Struct for confirming container traits. Value is true.
+//! @brief Confirm container traits. Value is true.
 //! @tparam T type to be confirmed
 template <typename T>
 struct HasContainerTraits<
@@ -45,14 +45,14 @@ struct HasContainerTraits<
 template <typename T>
 static constexpr bool isContainer = HasContainerTraits<T>::value;
 
-//! @brief Struct for confirming streamable traits. Value is false.
+//! @brief Confirm streamable traits. Value is false.
 //! @tparam T type to be confirmed
 //! @tparam typename valid type or expression
 template <typename T, typename = void>
 struct HasStreamableTraits : std::false_type
 {
 };
-//! @brief Struct for confirming streamable traits. Value is true.
+//! @brief Confirm streamable traits. Value is true.
 //! @tparam T type to be confirmed
 template <typename T>
 struct HasStreamableTraits<T, std::void_t<decltype(std::declval<std::ostream&>() << std::declval<T>())>>
@@ -160,7 +160,7 @@ constexpr decltype(auto) applyScopedOne(Function&& func, Tuple&& tup, Extra&& ex
         std::make_index_sequence<std::tuple_size_v<std::remove_reference_t<Tuple>>>{});
 }
 
-//! @brief Enum for enumerating specific argument patterns.
+//! @brief Enumerate specific argument patterns.
 enum class NArgsPattern
 {
     optional,
@@ -170,7 +170,7 @@ enum class NArgsPattern
 
 class Argument;
 
-//! @brief Class for argument register.
+//! @brief Argument register.
 class ArgumentRegister
 {
 public:
@@ -261,9 +261,9 @@ public:
     friend std::ostream& operator<<(std::ostream& os, const ArgumentRegister& argument);
 
 private:
-    //! @brief Typedef for function which has valued return.
+    //! @brief Alias for function which has valued return.
     using ValuedAction = std::function<std::any(const std::string&)>;
-    //! @brief Typedef for function which has void return.
+    //! @brief Alias for function which has void return.
     using VoidAction = std::function<void(const std::string&)>;
     //! @brief All argument names.
     std::vector<std::string> names;
@@ -299,7 +299,7 @@ private:
     //! @brief End of file in arguments.
     static constexpr int eof{std::char_traits<char>::eof()};
 
-    //! @brief Class for indicating the range for the number of arguments.
+    //! @brief Indicate the range for the number of arguments.
     class NArgsRange
     {
         //! @brief Minimum of range.
@@ -564,7 +564,7 @@ auto ArgumentRegister::anyCastContainer(const std::vector<std::any>& operand) ->
     return result;
 }
 
-//! @brief Class for parsing arguments.
+//! @brief Parse arguments.
 class Argument
 {
 public:
@@ -623,7 +623,7 @@ public:
     std::string version;
 
 private:
-    //! @brief Typedef for iterator in all argument registers.
+    //! @brief Alias for iterator in all argument registers.
     using ListIterator = std::list<ArgumentRegister>::iterator;
     //! @brief Flag to indicate whether to be parsed.
     bool isParsed{false};

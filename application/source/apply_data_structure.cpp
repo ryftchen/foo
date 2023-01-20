@@ -11,14 +11,14 @@
 #include "utility/include/log.hpp"
 #include "utility/include/thread.hpp"
 
-//! @brief Macro for the title of printing when data structure tasks are beginning.
+//! @brief Title of printing when data structure tasks are beginning.
 #define APP_DS_PRINT_TASK_BEGIN_TITLE(taskType)                                                                       \
     std::cout << "\r\n"                                                                                               \
               << "DATA STRUCTURE TASK: " << std::setiosflags(std::ios_base::left) << std::setfill('.')                \
               << std::setw(50) << taskType << "BEGIN" << std::resetiosflags(std::ios_base::left) << std::setfill(' ') \
               << std::endl;                                                                                           \
     {
-//! @brief Macro for the title of printing when data structure tasks are ending.
+//! @brief Title of printing when data structure tasks are ending.
 #define APP_DS_PRINT_TASK_END_TITLE(taskType)                                                                       \
     }                                                                                                               \
     std::cout << "\r\n"                                                                                             \
@@ -29,15 +29,15 @@
 
 namespace application::app_ds
 {
-//! @brief Typedef for Type.
+//! @brief Alias for Type.
 using Type = DataStructureTask::Type;
-//! @brief Typedef for Bottom.
+//! @brief Alias for Bottom.
 //! @tparam T type of specific enum
 template <class T>
 using Bottom = DataStructureTask::Bottom<T>;
-//! @brief Typedef for LinearInstance.
+//! @brief Alias for LinearInstance.
 using LinearInstance = DataStructureTask::LinearInstance;
-//! @brief Typedef for TreeInstance.
+//! @brief Alias for TreeInstance.
 using TreeInstance = DataStructureTask::TreeInstance;
 
 //! @brief Get the data structure task.

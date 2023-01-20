@@ -10,7 +10,7 @@
 #include <mutex>
 #include "utility/include/time.hpp"
 
-//! @brief Namespace for sort-related functions in the algorithm module.
+//! @brief Sort-related functions in the algorithm module.
 namespace algorithm::sort
 {
 //! @brief Maximum alignment length per element of printing.
@@ -27,7 +27,7 @@ constexpr bool isNumber()
     return (std::is_integral<T>::value || std::is_floating_point<T>::value);
 }
 
-//! @brief Class for the solution of sort.
+//! @brief Solution of sort.
 //! @tparam T type of the solution of sort
 template <class T>
 class SortSolution

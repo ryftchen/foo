@@ -7,11 +7,11 @@
 #ifndef _NO_PRINT_AT_RUNTIME
 #include "utility/include/common.hpp"
 
-//! @brief Macro for displaying the search result.
+//! @brief Display search result.
 #define SEARCH_RESULT "*%-13s method: Found the key \"%.5f\" appearing at index %d.  ==>Run time: %8.5f ms\n"
-//! @brief Macro for displaying the none search result.
+//! @brief Display none search result.
 #define SEARCH_NONE_RESULT "*%-13s method: Could not find the key \"%.5f\".  ==>Run time: %8.5f ms\n"
-//! @brief Macro for printing the search result content.
+//! @brief Print search result content.
 #define SEARCH_PRINT_RESULT_CONTENT(method)                                           \
     do                                                                                \
     {                                                                                 \
@@ -25,19 +25,19 @@
         }                                                                             \
     }                                                                                 \
     while (0)
-//! @brief Macro for storing search beginning runtime.
+//! @brief Store search beginning runtime.
 #define SEARCH_RUNTIME_BEGIN TIME_BEGIN(timing)
-//! @brief Macro for storing search ending runtime.
+//! @brief Store search ending runtime.
 #define SEARCH_RUNTIME_END TIME_END(timing)
-//! @brief Macro for calculating search runtime interval.
+//! @brief Calculate search runtime interval.
 #define SEARCH_RUNTIME_INTERVAL TIME_INTERVAL(timing)
 #else
 
-//! @brief Macro for printing the search result content.
+//! @brief Print search result content.
 #define SEARCH_PRINT_RESULT_CONTENT(method)
-//! @brief Macro for storing search beginning runtime.
+//! @brief Store search beginning runtime.
 #define SEARCH_RUNTIME_BEGIN
-//! @brief Macro for storing search ending runtime.
+//! @brief Store search ending runtime.
 #define SEARCH_RUNTIME_END
 #endif
 

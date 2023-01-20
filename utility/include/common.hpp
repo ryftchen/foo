@@ -12,7 +12,7 @@
 #include <filesystem>
 #include <iostream>
 
-//! @brief Macro for formatting as a string.
+//! @brief Format as a string.
 #define COMMON_FORMAT_TO_STRING(format, args...)                              \
     (                                                                         \
         {                                                                     \
@@ -24,13 +24,13 @@
             const std::string str(buffer);                                    \
             str;                                                              \
         })
-//! @brief Macro for formatting as a string and printing.
+//! @brief Format as a string and printing.
 #define COMMON_PRINT(format, args...) std::cout << COMMON_FORMAT_TO_STRING(format, ##args)
 
-//! @brief Namespace for common-interface-related functions in the utility module.
+//! @brief Common-interface-related functions in the utility module.
 namespace utility::common
 {
-//! @brief Typedef for print style.
+//! @brief Alias for print style.
 typedef std::string& (*PrintStyle)(std::string& line);
 
 //! @brief ANSI escape codes for red foreground color.
@@ -58,14 +58,14 @@ constexpr uint32_t maxLineNumForPrintFile = 1000;
 //! @brief Maximum size of output per line.
 constexpr uint32_t maxBufferSize = 4096;
 
-//! @brief Enum for enumerating specific lock operation types.
+//! @brief Enumerate specific lock operation types.
 enum class LockOperationType
 {
     lock,
     unlock
 };
 
-//! @brief Enum for enumerating specific file lock types.
+//! @brief Enumerate specific file lock types.
 enum class FileLockType
 {
     readerLock,
@@ -126,7 +126,7 @@ void tryToOperateFileLock(
     }
 }
 
-//! @brief Struct for splicing strings into constexpr type.
+//! @brief Splice strings into constexpr type.
 //! @tparam Strings target strings to be spliced
 template <std::string_view const&... Strings>
 struct Join

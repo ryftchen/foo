@@ -8,16 +8,16 @@
 #include <atomic>
 #include <iostream>
 
-//! @brief Namespace for finite-state-machine-related functions in the utility module.
+//! @brief Finite-state-machine-related functions in the utility module.
 namespace utility::fsm
 {
-//! @brief Typedef for invoke result.
+//! @brief Alias for invoke result.
 //! @tparam Func type of callable function
 //! @tparam Args type of function arguments
 template <class Func, class... Args>
 using InvokeResult = std::invoke_result_t<Func, Args...>;
 
-//! @brief Typedef for checking whether to be invocable.
+//! @brief Alias for checking whether to be invocable.
 //! @tparam Func type of callable function
 //! @tparam Args type of function arguments
 template <class Func, class... Args>
@@ -50,7 +50,7 @@ InvokeResult<Ret T1::*, T2, Args...> invokeResult(Ret T1::*func, T2&& obj, Args&
     return (obj.*func)(args...);
 }
 
-//! @brief Struct for binary function helper.
+//! @brief Binary function helper.
 //! @tparam Func type of callable function
 //! @tparam Arg1 type of function arguments
 //! @tparam Arg2 type of function arguments
@@ -68,63 +68,63 @@ template <
     bool val4 = IsInvocable<Func, Arg1, Arg2>::value>
 struct BinaryFuncHelper;
 
-//! @brief Struct for binary function helper. Exclude both Arg1 and Arg2.
+//! @brief Binary function helper. Exclude both Arg1 and Arg2.
 //! @tparam Func type of callable function
 //! @tparam Arg1 type of function arguments
 //! @tparam Arg2 type of function arguments
 template <class Func, class Arg1, class Arg2>
 struct BinaryFuncHelper<Func, Arg1, Arg2, true, false, false, false>
 {
-    //! @brief Typedef for invoke result.
+    //! @brief Alias for invoke result.
     using ResultType = InvokeResult<Func>;
     //! @brief Invoke operation.
     //! @return invoke result
     static ResultType invoke(Func&& func, Arg1&& /*unused*/, Arg2&& /*unused*/) { return invokeResult(func); }
 };
 
-//! @brief Struct for binary function helper. Include only Arg1.
+//! @brief Binary function helper. Include only Arg1.
 //! @tparam Func type of callable function
 //! @tparam Arg1 type of function arguments
 //! @tparam Arg2 type of function arguments
 template <class Func, class Arg1, class Arg2>
 struct BinaryFuncHelper<Func, Arg1, Arg2, false, true, false, false>
 {
-    //! @brief Typedef for invoke result.
+    //! @brief Alias for invoke result.
     using ResultType = InvokeResult<Func, Arg1>;
     //! @brief Invoke operation.
     //! @return invoke result
     static ResultType invoke(Func&& func, Arg1&& arg1, Arg2&& /*unused*/) { return invokeResult(func, arg1); }
 };
 
-//! @brief Struct for binary function helper. Include only Arg2.
+//! @brief Binary function helper. Include only Arg2.
 //! @tparam Func type of callable function
 //! @tparam Arg1 type of function arguments
 //! @tparam Arg2 type of function arguments
 template <class Func, class Arg1, class Arg2>
 struct BinaryFuncHelper<Func, Arg1, Arg2, false, false, true, false>
 {
-    //! @brief Typedef for invoke result.
+    //! @brief Alias for invoke result.
     using ResultType = InvokeResult<Func, Arg2>;
     //! @brief Invoke operation.
     //! @return invoke result
     static ResultType invoke(Func&& func, Arg1&& /*unused*/, Arg2&& arg2) { return invokeResult(func, arg2); }
 };
 
-//! @brief Struct for binary function helper. Include both Arg1 and Arg2.
+//! @brief Binary function helper. Include both Arg1 and Arg2.
 //! @tparam Func type of callable function
 //! @tparam Arg1 type of function arguments
 //! @tparam Arg2 type of function arguments
 template <class Func, class Arg1, class Arg2>
 struct BinaryFuncHelper<Func, Arg1, Arg2, false, false, false, true>
 {
-    //! @brief Typedef for invoke result.
+    //! @brief Alias for invoke result.
     using ResultType = InvokeResult<Func, Arg1, Arg2>;
     //! @brief Invoke operation.
     //! @return invoke result
     static ResultType invoke(Func&& func, Arg1&& arg1, Arg2&& arg2) { return invokeResult(func, arg1, arg2); }
 };
 
-//! @brief Typedef for invoke result of binary function.
+//! @brief Alias for invoke result of binary function.
 //! @tparam Func type of callable function
 //! @tparam Arg1 type of function arguments
 //! @tparam Arg2 type of function arguments
@@ -146,74 +146,74 @@ InvokeAsBinaryFuncResult<Func, Arg1, Arg2> invokeAsBinaryFunc(Func&& func, Arg1&
         std::forward<Func>(func), std::forward<Arg1>(arg1), std::forward<Arg2>(arg2));
 }
 
-//! @brief Struct for the list of behaviors.
+//! @brief The list of behaviors.
 //! @tparam Types type of behaviors
 template <class... Types>
 struct List
 {
 };
 
-//! @brief Struct for associating behaviors.
+//! @brief Associate behaviors.
 //! @tparam Types type of behaviors
 template <class... Types>
 struct Concat;
 
-//! @brief Struct for associating events with behaviors.
+//! @brief Associate events with behaviors.
 //! @tparam T type of triggered event
 //! @tparam Types type of behaviors
 template <class T, class... Types>
 struct Concat<T, List<Types...>>
 {
-    //! @brief Typedef for list.
+    //! @brief Alias for list.
     using Type = List<T, Types...>;
 };
 
-//! @brief Struct for associating.
+//! @brief Associate.
 //! @tparam N/A
 template <>
 struct Concat<>
 {
-    //! @brief Typedef for list.
+    //! @brief Alias for list.
     using Type = List<>;
 };
 
-//! @brief Struct for the filter of events and behaviors.
+//! @brief The filter of events and behaviors.
 //! @tparam Pred type of predicate
 //! @tparam Types type of behaviors
 template <template <typename> class Pred, class... Types>
 struct Filter;
 
-//! @brief Struct for the filter of events and behaviors. Based on conditions.
+//! @brief The filter of events and behaviors. Based on conditions.
 //! @tparam Pred type of predicate
 //! @tparam T specific type for predicate
 //! @tparam Types type of behaviors
 template <template <typename> class Pred, class T, class... Types>
 struct Filter<Pred, T, Types...>
 {
-    //! @brief Typedef for concat or filter.
+    //! @brief Alias for concat or filter.
     using Type = typename std::conditional<
         Pred<T>::value,
         typename Concat<T, typename Filter<Pred, Types...>::Type>::Type,
         typename Filter<Pred, Types...>::Type>::type;
 };
 
-//! @brief Struct for the filter of behaviors.
+//! @brief The filter of behaviors.
 //! @tparam Pred type of predicate
 template <template <typename> class Pred>
 struct Filter<Pred>
 {
-    //! @brief Typedef for list.
+    //! @brief Alias for list.
     using Type = List<>;
 };
 
-//! @brief Class for finite state machine.
+//! @brief Finite state machine.
 //! @tparam Derived type of derived class
 //! @tparam State type of state
 template <class Derived, class State = int>
 class FSM
 {
 public:
-    //! @brief Typedef for state.
+    //! @brief Alias for state.
     using StateType = State;
     //! @brief Construct a new FSM object.
     //! @param initState initialization value of state
@@ -229,16 +229,16 @@ public:
     inline State currentState() const;
 
 private:
-    //! @brief Struct for row-based.
+    //! @brief Row-based.
     //! @tparam Source source state
     //! @tparam Event type of triggered event
     //! @tparam Target target state
     template <State Source, class Event, State Target>
     struct RowBased
     {
-        //! @brief Typedef for state.
+        //! @brief Alias for state.
         using StateType = State;
-        //! @brief Typedef for event.
+        //! @brief Alias for event.
         using EventType = Event;
 
         //! @brief Get source state.
@@ -292,11 +292,11 @@ private:
     template <class Event, class... Types>
     struct ByEventType<Event, List<Types...>>
     {
-        //! @brief Typedef for predicate.
+        //! @brief Alias for predicate.
         //! @tparam T type of class to which the struct belongs
         template <class T>
         using Pred = std::is_same<typename T::EventType, Event>;
-        //! @brief Typedef for filter type.
+        //! @brief Alias for filter type.
         using Type = typename Filter<Pred, Types...>::Type;
     };
 
@@ -305,7 +305,7 @@ private:
     template <class Event>
     struct ByEventType<Event, List<>>
     {
-        //! @brief Typedef for list.
+        //! @brief Alias for list.
         using Type = List<>;
     };
 
@@ -348,7 +348,7 @@ private:
         static State execute(Derived& self, const Event& event, State /*unused*/) { return self.noTransition(event); }
     };
 
-    //! @brief Class for the lock of FSM processing.
+    //! @brief Lock of FSM processing.
     class ProcessingLock
     {
     public:
@@ -383,7 +383,7 @@ private:
     std::atomic<bool> isProcessing{false};
 
 protected:
-    //! @brief Typedef for transition map.
+    //! @brief Alias for transition map.
     //! @tparam Rows type of row-based
     template <class... Rows>
     using Map = List<Rows...>;
@@ -394,7 +394,7 @@ protected:
     template <class Event>
     inline State noTransition(const Event& /*unused*/);
 
-    //! @brief Struct for the basic row of the transition map.
+    //! @brief The basic row of the transition map.
     //! @tparam Source source state
     //! @tparam Event type of triggered event
     //! @tparam Target target state
@@ -429,7 +429,7 @@ protected:
         }
     };
 
-    //! @brief Struct for the member function row of the transition map.
+    //! @brief Member function row of the transition map.
     //! @tparam Source source state
     //! @tparam Event type of triggered event
     //! @tparam Target target state
@@ -467,7 +467,7 @@ protected:
         }
     };
 
-    //! @brief Struct for the generic row of the transition map.
+    //! @brief The generic row of the transition map.
     //! @tparam Source source state
     //! @tparam Event type of triggered event
     //! @tparam Target target state

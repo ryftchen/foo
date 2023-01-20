@@ -9,7 +9,7 @@
 #include <memory>
 #include <mutex>
 
-//! @brief Namespace for match-related functions in the algorithm module.
+//! @brief Match-related functions in the algorithm module.
 namespace algorithm::match
 {
 //! @brief Maximum number per line of printing.
@@ -21,7 +21,7 @@ constexpr uint32_t maxASCII = 256;
 //! @brief Base number for converting the digit to precision.
 constexpr int mpfrBase = 10;
 
-//! @brief Class for the solution of match.
+//! @brief Solution of match.
 class MatchSolution
 {
 public:

@@ -11,24 +11,24 @@
 #include "fsm.hpp"
 #include "time.hpp"
 
-//! @brief Macro for starting to log.
+//! @brief Start to log.
 #define LOG_TO_START utility::log::Log::getInstance().waitStartForExternalUse()
-//! @brief Macro for stopping to log.
+//! @brief Stop to log.
 #define LOG_TO_STOP utility::log::Log::getInstance().waitStopForExternalUse()
-//! @brief Macro for logging with debug level.
+//! @brief Log with debug level.
 #define LOG_DBG(format, args...) \
     utility::log::Log::getInstance().flush(utility::log::Log::OutputLevel::debug, __FILE__, __LINE__, format, ##args)
-//! @brief Macro for logging with info level.
+//! @brief Log with info level.
 #define LOG_INF(format, args...) \
     utility::log::Log::getInstance().flush(utility::log::Log::OutputLevel::info, __FILE__, __LINE__, format, ##args)
-//! @brief Macro for logging with warning level.
+//! @brief Log with warning level.
 #define LOG_WRN(format, args...) \
     utility::log::Log::getInstance().flush(utility::log::Log::OutputLevel::warn, __FILE__, __LINE__, format, ##args)
-//! @brief Macro for logging with error level.
+//! @brief Log with error level.
 #define LOG_ERR(format, args...) \
     utility::log::Log::getInstance().flush(utility::log::Log::OutputLevel::error, __FILE__, __LINE__, format, ##args)
 
-//! @brief Namespace for log-related functions in the utility module.
+//! @brief Log-related functions in the utility module.
 namespace utility::log
 {
 //! @brief Log file path.
@@ -90,7 +90,7 @@ constexpr auto errorLevelPrefixColorForLog{utility::common::joinStr<
     errorLevelPrefix,
     utility::common::colorOff>};
 
-//! @brief Class for log.
+//! @brief Logger.
 class Log final : public utility::fsm::FSM<Log>
 {
 public:
@@ -103,13 +103,13 @@ public:
     Log& operator=(const Log&) = delete;
 
     friend class FSM<Log>;
-    //! @brief Enum for enumerating specific output types.
+    //! @brief Enumerate specific output types.
     enum class OutputType
     {
         add,
         over
     };
-    //! @brief Enum for enumerating specific output levels.
+    //! @brief Enumerate specific output levels.
     enum class OutputLevel
     {
         debug,
@@ -117,14 +117,14 @@ public:
         warn,
         error
     };
-    //! @brief Enum for enumerating specific output targets.
+    //! @brief Enumerate specific output targets.
     enum class OutputTarget
     {
         file,
         terminal,
         all
     };
-    //! @brief Enum for enumerating specific states for FSM.
+    //! @brief Enumerate specific states for FSM.
     enum State
     {
         init,
@@ -192,19 +192,19 @@ private:
     //! @brief Log file path.
     char pathname[logPathLength + 1]{"./temporary/foo.log"};
 
-    //! @brief Struct for FSM event. Open file.
+    //! @brief FSM event. Open file.
     struct OpenFile
     {
     };
-    //! @brief Struct for FSM event. Close file.
+    //! @brief FSM event. Close file.
     struct CloseFile
     {
     };
-    //! @brief Struct for FSM event. Go logging.
+    //! @brief FSM event. Go logging.
     struct GoLogging
     {
     };
-    //! @brief Struct for FSM event. No logging.
+    //! @brief FSM event. No logging.
     struct NoLogging
     {
     };
@@ -223,7 +223,7 @@ private:
     //! @brief Check whether the log file is closed.
     bool isLogFileClose(const NoLogging& /*unused*/) const;
     // clang-format off
-    //! @brief Typedef for the transition map of the logger.
+    //! @brief Alias for the transition map of the logger.
     using TransitionMap = Map<
         // --- Source ---+--- Event ---+--- Target ---+------ Action ------+--- Guard(Optional) ---
         // --------------+-------------+--------------+--------------------+-----------------------

@@ -9,19 +9,19 @@
 #include <sstream>
 #include <vector>
 
-//! @brief Namespace for algorithm-applying-related functions in the application module.
+//! @brief Algorithm-applying-related functions in the application module.
 namespace application::app_algo
 {
-//! @brief Class for managing algorithm tasks.
+//! @brief Manage algorithm tasks.
 class AlgorithmTask
 {
 public:
-    //! @brief Struct for representing the maximum value of an enum.
+    //! @brief Represent the maximum value of an enum.
     //! @tparam T type of specific enum
     template <class T>
     struct Bottom;
 
-    //! @brief Enum for enumerating specific algorithm tasks.
+    //! @brief Enumerate specific algorithm tasks.
     enum Type
     {
         match,
@@ -31,7 +31,7 @@ public:
         sort
     };
 
-    //! @brief Enum for enumerating specific match methods.
+    //! @brief Enumerate specific match methods.
     enum MatchMethod
     {
         rabinKarp,
@@ -40,7 +40,7 @@ public:
         horspool,
         sunday
     };
-    //! @brief Struct for storing the maximum value of the MatchMethod enum.
+    //! @brief Store the maximum value of the MatchMethod enum.
     //! @tparam N/A
     template <>
     struct Bottom<MatchMethod>
@@ -48,13 +48,13 @@ public:
         static constexpr int value = 5;
     };
 
-    //! @brief Enum for enumerating specific notation methods.
+    //! @brief Enumerate specific notation methods.
     enum NotationMethod
     {
         prefix,
         postfix
     };
-    //! @brief Struct for storing the maximum value of the NotationMethod enum.
+    //! @brief Store the maximum value of the NotationMethod enum.
     //! @tparam N/A
     template <>
     struct Bottom<NotationMethod>
@@ -62,7 +62,7 @@ public:
         static constexpr int value = 2;
     };
 
-    //! @brief Enum for enumerating specific optimal methods.
+    //! @brief Enumerate specific optimal methods.
     enum OptimalMethod
     {
         gradient,
@@ -70,7 +70,7 @@ public:
         particle,
         genetic
     };
-    //! @brief Struct for storing the maximum value of the OptimalMethod enum.
+    //! @brief Store the maximum value of the OptimalMethod enum.
     //! @tparam N/A
     template <>
     struct Bottom<OptimalMethod>
@@ -78,14 +78,14 @@ public:
         static constexpr int value = 4;
     };
 
-    //! @brief Enum for enumerating specific search methods.
+    //! @brief Enumerate specific search methods.
     enum SearchMethod
     {
         binary,
         interpolation,
         fibonacci
     };
-    //! @brief Struct for storing the maximum value of the SearchMethod enum.
+    //! @brief Store the maximum value of the SearchMethod enum.
     //! @tparam N/A
     template <>
     struct Bottom<SearchMethod>
@@ -93,7 +93,7 @@ public:
         static constexpr int value = 3;
     };
 
-    //! @brief Enum for enumerating specific sort methods.
+    //! @brief Enumerate specific sort methods.
     enum SortMethod
     {
         bubble,
@@ -107,7 +107,7 @@ public:
         bucket,
         radix
     };
-    //! @brief Struct for storing the maximum value of the SortMethod enum.
+    //! @brief Store the maximum value of the SortMethod enum.
     //! @tparam N/A
     template <>
     struct Bottom<SortMethod>
@@ -117,9 +117,9 @@ public:
 
     //! @brief Bit flags for managing match methods.
     std::bitset<Bottom<MatchMethod>::value> matchBit;
-    //! @brief Bit flags for managing notation methods..
+    //! @brief Bit flags for managing notation methods.
     std::bitset<Bottom<NotationMethod>::value> notationBit;
-    //! @brief Bit flags for managing optimal methods..
+    //! @brief Bit flags for managing optimal methods.
     std::bitset<Bottom<OptimalMethod>::value> optimalBit;
     //! @brief Bit flags for managing search methods.
     std::bitset<Bottom<SearchMethod>::value> searchBit;

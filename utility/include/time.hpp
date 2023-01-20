@@ -10,16 +10,16 @@
 #include <random>
 #include <thread>
 
-//! @brief Macro for recording begin time.
+//! @brief Store beginning time.
 #define TIME_BEGIN(timing)      \
     utility::time::Time timing; \
     timing.setBeginTime()
-//! @brief Macro for recording end time.
+//! @brief Store ending time.
 #define TIME_END(timing) timing.setEndTime()
-//! @brief Macro for calculating time interval.
+//! @brief Calculate time interval.
 #define TIME_INTERVAL(timing) timing.getTimeInterval()
 
-//! @brief Namespace for timing-related functions in the utility module.
+//! @brief Timing-related functions in the utility module.
 namespace utility::time
 {
 //! @brief Length of time format.
@@ -29,16 +29,16 @@ constexpr uint32_t dateStartYear = 1900;
 //! @brief Multiplier from the second to the millisecond.
 constexpr uint32_t secToUsec = 1000000;
 
-//! @brief Class for timer.
+//! @brief Timer.
 class Time final
 {
 public:
     //! @brief Destroy the Time object.
     virtual ~Time() = default;
 
-    //! @brief Set the begin time.
+    //! @brief Set the beginning time.
     inline void setBeginTime();
-    //! @brief Set the end time.
+    //! @brief Set the ending time.
     inline void setEndTime();
     //! @brief Get the time interval.
     [[nodiscard]] inline double getTimeInterval() const;
@@ -50,9 +50,9 @@ public:
     inline void resetBlockingTimer();
 
 private:
-    //! @brief Begin time.
+    //! @brief Beginning time.
     std::chrono::steady_clock::time_point beginTime;
-    //! @brief End time.
+    //! @brief Ending time.
     std::chrono::steady_clock::time_point endTime;
     //! @brief Flag to indicate whether the blocking timer is running.
     std::atomic<bool> isBlockingTimerRunning{true};

@@ -10,33 +10,33 @@
 #include <sstream>
 #include <vector>
 
-//! @brief Namespace for data-structure-applying-related functions in the application module.
+//! @brief Data-structure-applying-related functions in the application module.
 namespace application::app_ds
 {
-//! @brief Class for managing data structure tasks.
+//! @brief Manage data structure tasks.
 class DataStructureTask
 {
 public:
-    //! @brief Struct for representing the maximum value of an enum.
+    //! @brief Represent the maximum value of an enum.
     //! @tparam T type of specific enum
     template <class T>
     struct Bottom;
 
-    //! @brief Enum for enumerating specific data structure tasks.
+    //! @brief Enumerate specific data structure tasks.
     enum Type
     {
         linear,
         tree
     };
 
-    //! @brief Enum for enumerating specific linear instances.
+    //! @brief Enumerate specific linear instances.
     enum LinearInstance
     {
         linkedList,
         stack,
         queue
     };
-    //! @brief Struct for storing the maximum value of the LinearInstance enum.
+    //! @brief Store the maximum value of the LinearInstance enum.
     //! @tparam N/A
     template <>
     struct Bottom<LinearInstance>
@@ -44,14 +44,14 @@ public:
         static constexpr int value = 3;
     };
 
-    //! @brief Enum for enumerating specific tree instances.
+    //! @brief Enumerate specific tree instances.
     enum TreeInstance
     {
         binarySearch,
         adelsonVelskyLandis,
         splay
     };
-    //! @brief Struct for storing the maximum value of the TreeInstance enum.
+    //! @brief Store the maximum value of the TreeInstance enum.
     //! @tparam N/A
     template <>
     struct Bottom<TreeInstance>

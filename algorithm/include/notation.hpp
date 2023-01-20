@@ -7,10 +7,10 @@
 
 #include <string>
 
-//! @brief Namespace for notation-related functions in the algorithm module.
+//! @brief Notation-related functions in the algorithm module.
 namespace algorithm::notation
 {
-//! @brief Class for the solution of notation.
+//! @brief Solution of notation.
 class NotationSolution
 {
 public:
@@ -37,7 +37,7 @@ private:
     //! @brief Infix notation.
     const std::string_view infixNotation;
 
-    //! @brief Enum for enumerating specific operator priorities.
+    //! @brief Enumerate specific operator priorities.
     enum class Priority
     {
         none,

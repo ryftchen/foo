@@ -15,10 +15,10 @@
 #include "utility/include/memory.hpp"
 #include "utility/include/thread.hpp"
 
-//! @brief Namespace for command-line-related functions in the application module.
+//! @brief Command-line-related functions in the application module.
 namespace application::command
 {
-//! @brief Class for executing command line.
+//! @brief Execute the command line.
 class Command
 {
 public:
@@ -68,23 +68,23 @@ private:
     void performTask() const;
 
 #pragma pack(8)
-    //! @brief Class for managing basic tasks.
+    //! @brief Manage basic tasks.
     class BasicTask
     {
     public:
-        //! @brief Struct for representing the maximum value of an enum.
+        //! @brief Represent the maximum value of an enum.
         //! @tparam T type of specific enum
         template <class T>
         struct Bottom;
 
-        //! @brief Enum for enumerating specific basic tasks.
+        //! @brief Enumerate specific basic tasks.
         enum Category
         {
             console,
             help,
             version
         };
-        //! @brief Struct for storing the maximum value of the Category enum.
+        //! @brief Store the maximum value of the Category enum.
         //! @tparam N/A
         template <>
         struct Bottom<Category>
@@ -102,16 +102,16 @@ private:
         inline void reset() { primaryBit.reset(); }
     };
 
-    //! @brief Class for managing general tasks.
+    //! @brief Manage general tasks.
     class GeneralTask
     {
     public:
-        //! @brief Struct for representing the maximum value of an enum.
+        //! @brief Represent the maximum value of an enum.
         //! @tparam T type of specific enum
         template <class T>
         struct Bottom;
 
-        //! @brief Enum for enumerating specific general tasks.
+        //! @brief Enumerate specific general tasks.
         enum Category
         {
             algorithm,
@@ -119,7 +119,7 @@ private:
             designPattern,
             numeric
         };
-        //! @brief Struct for storing the maximum value of the category type enum.
+        //! @brief Store the maximum value of the category type enum.
         //! @tparam N/A
         template <>
         struct Bottom<Category>
@@ -145,7 +145,7 @@ private:
         }
     };
 #pragma pack()
-    //! @brief Struct for managing all types of tasks.
+    //! @brief Manage all types of tasks.
     struct AssignedTask
     {
         //! @brief Construct a new AssignedTask object.
@@ -165,27 +165,27 @@ private:
             basicTask.reset();
             generalTask.reset();
         };
-    } /** @brief A AssignedTask object for managing all types of tasks.*/ assignedTask{};
+    } /** @brief A AssignedTask object for managing all types of tasks. */ assignedTask{};
 
-    //! @brief Typedef for the functor to perform the task.
+    //! @brief Alias for the functor to perform the task.
     typedef void (*PerformTaskFunctor)(const std::vector<std::string>&);
-    //! @brief Typedef for the functor to update the task.
+    //! @brief Alias for the functor to update the task.
     typedef void (*UpdateTaskFunctor)(const std::string&);
-    //! @brief Typedef for the task category name.
+    //! @brief Alias for the task category name.
     using TaskCategoryName = std::string;
-    //! @brief Typedef for the task type name.
+    //! @brief Alias for the task type name.
     using TaskTypeName = std::string;
-    //! @brief Typedef for the target task name.
+    //! @brief Alias for the target task name.
     using TargetTaskName = std::string;
-    //! @brief Typedef for the vector of TargetTaskName.
+    //! @brief Alias for the vector of TargetTaskName.
     using TargetTaskVector = std::vector<TargetTaskName>;
-    //! @brief Typedef for the tuple of PerformTaskFunctor and UpdateTaskFunctor.
+    //! @brief Alias for the tuple of PerformTaskFunctor and UpdateTaskFunctor.
     using TaskFunctorTuple = std::tuple<PerformTaskFunctor, UpdateTaskFunctor>;
-    //! @brief Typedef for the tuple of TargetTaskVector and TaskFunctorTuple.
+    //! @brief Alias for the tuple of TargetTaskVector and TaskFunctorTuple.
     using TaskTypeTuple = std::tuple<TargetTaskVector, TaskFunctorTuple>;
-    //! @brief Typedef for the map of TaskTypeName and TaskTypeTuple.
+    //! @brief Alias for the map of TaskTypeName and TaskTypeTuple.
     using TaskCategoryMap = std::map<TaskTypeName, TaskTypeTuple>;
-    //! @brief Typedef for the map of TaskCategoryName and TaskCategoryMap.
+    //! @brief Alias for the map of TaskCategoryName and TaskCategoryMap.
     using GeneralTaskMap = std::map<TaskCategoryName, TaskCategoryMap>;
 
     //! @memberof application::command::Command
@@ -240,7 +240,7 @@ private:
     //! @brief Max line numbers for printing log.
     static constexpr uint32_t maxLineNumForPrintLog{50};
 
-    //! @brief Print the output of the console mode command line.
+    //! @brief Print output of the console mode command line.
     void printConsoleOutput() const;
     //! @brief Print help message.
     void printHelpMessage() const;

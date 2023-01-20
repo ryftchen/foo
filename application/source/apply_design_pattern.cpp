@@ -12,14 +12,14 @@
 #include "utility/include/log.hpp"
 #include "utility/include/thread.hpp"
 
-//! @brief Macro for the title of printing when design pattern tasks are beginning.
+//! @brief Title of printing when design pattern tasks are beginning.
 #define APP_DP_PRINT_TASK_BEGIN_TITLE(taskType)                                                                       \
     std::cout << "\r\n"                                                                                               \
               << "DESIGN PATTERN TASK: " << std::setiosflags(std::ios_base::left) << std::setfill('.')                \
               << std::setw(50) << taskType << "BEGIN" << std::resetiosflags(std::ios_base::left) << std::setfill(' ') \
               << std::endl;                                                                                           \
     {
-//! @brief Macro for the title of printing when design pattern tasks are ending.
+//! @brief Title of printing when design pattern tasks are ending.
 #define APP_DP_PRINT_TASK_END_TITLE(taskType)                                                                       \
     }                                                                                                               \
     std::cout << "\r\n"                                                                                             \
@@ -30,17 +30,17 @@
 
 namespace application::app_dp
 {
-//! @brief Typedef for Type.
+//! @brief Alias for Type.
 using Type = DesignPatternTask::Type;
-//! @brief Typedef for Bottom.
+//! @brief Alias for Bottom.
 //! @tparam T type of specific enum
 template <class T>
 using Bottom = DesignPatternTask::Bottom<T>;
-//! @brief Typedef for BehavioralInstance.
+//! @brief Alias for BehavioralInstance.
 using BehavioralInstance = DesignPatternTask::BehavioralInstance;
-//! @brief Typedef for CreationalInstance.
+//! @brief Alias for CreationalInstance.
 using CreationalInstance = DesignPatternTask::CreationalInstance;
-//! @brief Typedef for StructuralInstance.
+//! @brief Alias for StructuralInstance.
 using StructuralInstance = DesignPatternTask::StructuralInstance;
 
 //! @brief Get the design pattern task.

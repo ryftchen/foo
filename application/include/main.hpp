@@ -12,7 +12,7 @@
 #include <csignal>
 #include <filesystem>
 
-//! @brief Namespace for the application module.
+//! @brief The application module.
 namespace application
 {
 [[using gnu: constructor]] static void switchToTargetPath();

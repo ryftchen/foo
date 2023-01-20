@@ -8,9 +8,9 @@
 #ifndef _NO_PRINT_AT_RUNTIME
 #include "utility/include/common.hpp"
 
-//! @brief Macro for displaying the sort result.
+//! @brief Display sort result.
 #define SORT_RESULT(opt) "\r\n*%-9s method: (" #opt ")\r\n%s\r\n==>Run time: %8.5f ms\n"
-//! @brief Macro for printing the sort result content.
+//! @brief Print sort result content.
 #define SORT_PRINT_RESULT_CONTENT(method)                                        \
     do                                                                           \
     {                                                                            \
@@ -24,21 +24,21 @@
             SORT_RUNTIME_INTERVAL);                                              \
     }                                                                            \
     while (0)
-//! @brief Macro for storing sort beginning runtime.
+//! @brief Store sort beginning runtime.
 #define SORT_RUNTIME_BEGIN TIME_BEGIN(timing)
-//! @brief Macro for storing sort ending runtime.
+//! @brief Store sort ending runtime.
 #define SORT_RUNTIME_END TIME_END(timing)
-//! @brief Macro for calculating sort runtime interval.
+//! @brief Calculate sort runtime interval.
 #define SORT_RUNTIME_INTERVAL TIME_INTERVAL(timing)
 #else
 // #define NDEBUG
 #include <cassert>
 
-//! @brief Macro for printing the sort result content.
+//! @brief Print sort result content.
 #define SORT_PRINT_RESULT_CONTENT(method)
-//! @brief Macro for storing sort beginning runtime.
+//! @brief Store sort beginning runtime.
 #define SORT_RUNTIME_BEGIN
-//! @brief Macro for storing sort ending runtime.
+//! @brief Store sort ending runtime.
 #define SORT_RUNTIME_END
 #endif
 

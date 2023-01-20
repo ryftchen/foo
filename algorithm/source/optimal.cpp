@@ -9,26 +9,26 @@
 #ifndef _NO_PRINT_AT_RUNTIME
 #include "utility/include/common.hpp"
 
-//! @brief Macro for displaying the optimal result.
+//! @brief Display optimal result.
 #define OPTIMAL_RESULT(opt) "*%-9s method: F(" #opt ")=%+.5f X=%+.5f  ==>Run time: %8.5f ms\n"
-//! @brief Macro for printing the optimal result content.
+//! @brief Print optimal result content.
 #define OPTIMAL_PRINT_RESULT_CONTENT(method, f, x) \
     COMMON_PRINT(OPTIMAL_RESULT(min), method, f, x, OPTIMAL_RUNTIME_INTERVAL)
-//! @brief Macro for storing optimal beginning runtime.
+//! @brief Store optimal beginning runtime.
 #define OPTIMAL_RUNTIME_BEGIN TIME_BEGIN(timing)
-//! @brief Macro for storing optimal ending runtime.
+//! @brief Store optimal ending runtime.
 #define OPTIMAL_RUNTIME_END TIME_END(timing)
-//! @brief Macro for calculating optimal runtime interval.
+//! @brief Calculate optimal runtime interval.
 #define OPTIMAL_RUNTIME_INTERVAL TIME_INTERVAL(timing)
 #else
 // #define NDEBUG
 #include <cassert>
 
-//! @brief Macro for printing the optimal result content.
+//! @brief Print optimal result content.
 #define OPTIMAL_PRINT_RESULT_CONTENT(method, f, x)
-//! @brief Macro for storing optimal beginning runtime.
+//! @brief Store optimal beginning runtime.
 #define OPTIMAL_RUNTIME_BEGIN
-//! @brief Macro for storing optimal ending runtime.
+//! @brief Store optimal ending runtime.
 #define OPTIMAL_RUNTIME_END
 #endif
 

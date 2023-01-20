@@ -10,10 +10,10 @@
 #include <future>
 #include <queue>
 
-//! @brief Namespace for thread-pool-related functions in the utility module.
+//! @brief Thread-pool-related functions in the utility module.
 namespace utility::thread
 {
-//! @brief Class for thread pool.
+//! @brief Thread pool.
 class Thread
 {
 public:
