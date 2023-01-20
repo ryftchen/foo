@@ -14,8 +14,6 @@ namespace utility::hash
 constexpr uint32_t bkdrHashSeed = 131;
 //! @brief The hash size for BKDR hash function.
 constexpr int bkdrHashSize = 0x7FFFFFFF;
-constexpr uint32_t rollingHashBase = 10;
-constexpr uint32_t rollingHashMod = 19260817;
 
 //! @brief The Brian-Kernighan Dennis-Ritchie hash function in compile time.
 //! @param str input data
@@ -35,5 +33,4 @@ constexpr uint64_t operator""_bkdrHash(const char* const str, const std::size_t 
 }
 
 extern uint32_t bkdrHash(const char* str);
-extern int rollingHash(const char* str, const uint32_t length);
 } // namespace utility::hash

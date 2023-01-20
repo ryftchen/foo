@@ -1,9 +1,9 @@
 #include "prime.hpp"
 #include <bitset>
+#ifndef _NO_PRINT_AT_RUNTIME
 #include "utility/include/common.hpp"
 #include "utility/include/time.hpp"
 
-#ifndef _NO_PRINT_AT_RUNTIME
 #define PRIME_RESULT "\r\n*%-9s method:\r\n%s\r\n==>Run time: %8.5f ms\n"
 #define PRIME_PRINT_RESULT_CONTENT(method)                                      \
     do                                                                          \

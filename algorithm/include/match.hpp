@@ -94,6 +94,13 @@ private:
     //! @param digit digit for the target text
     //! @return precision converted from digit
     static inline int calculatePrecision(const uint32_t digit);
+    //! @brief The rolling hash function.
+    //! @param str input data
+    //! @param length length of input data
+    //! @param hashBase hash base
+    //! @param hashMod hash mod
+    //! @return hash value
+    static int rollingHash(const char* str, const uint32_t length, const uint32_t hashBase, const uint32_t hashMod);
     //! @brief Fill bad character rule table.
     //! @param badCharRuleTable bad character rule table
     //! @param pattern single pattern

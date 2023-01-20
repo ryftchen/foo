@@ -5,10 +5,12 @@
 //! @copyright Copyright (c) 2022
 #pragma once
 
+#include <sys/time.h>
 #include <cstring>
 #include <iostream>
+#include <memory>
 #include <mutex>
-#include "utility/include/time.hpp"
+#include <random>
 
 //! @brief Sort-related functions in the algorithm module.
 namespace algorithm::sort
@@ -169,6 +171,9 @@ protected:
         const uint32_t length,
         char* const buffer,
         const uint32_t bufferSize) const;
+    //! @brief Get the random seed by time.
+    //! @return random seed
+    inline static std::mt19937 getRandomSeedByTime();
 };
 
 template <class T>
@@ -218,7 +223,7 @@ requires std::is_integral<V>::value void SortSolution<T>::setRandomArray(
     const T left,
     const T right) const
 {
-    std::mt19937 seed{utility::time::getRandomSeedByTime()};
+    std::mt19937 seed{getRandomSeedByTime()};
     std::uniform_int_distribution<int> randomX(left, right);
     for (uint32_t i = 0; i < length; ++i)
     {
@@ -242,7 +247,7 @@ requires std::is_floating_point<V>::value void SortSolution<T>::setRandomArray(
     const T left,
     const T right) const
 {
-    std::mt19937 seed{utility::time::getRandomSeedByTime()};
+    std::mt19937 seed{getRandomSeedByTime()};
     std::uniform_real_distribution<double> randomX(left, right);
     for (uint32_t i = 0; i < length; ++i)
     {
@@ -306,5 +311,15 @@ requires(isNumber<V>()) char* SortSolution<T>::formatArray(
     }
 
     return buffer;
+}
+
+template <class T>
+inline std::mt19937 SortSolution<T>::getRandomSeedByTime()
+{
+    constexpr uint32_t secToUsec = 1000000;
+    timeval timeSeed{};
+    gettimeofday(&timeSeed, nullptr);
+
+    return std::mt19937(timeSeed.tv_sec * secToUsec + timeSeed.tv_usec);
 }
 } // namespace algorithm::sort

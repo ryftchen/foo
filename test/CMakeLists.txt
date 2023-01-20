@@ -32,23 +32,18 @@ set(BIN_NAME foo_test)
 set(BUILD_DIR ${CMAKE_SOURCE_DIR}/build)
 set(EXECUTABLE_OUTPUT_PATH ${BUILD_DIR}/bin)
 
-file(
-    GLOB
-    TEST_LIST
-    ../utility/source/hash.cpp
-    ../utility/source/time.cpp)
+file(GLOB TEST_LIST)
 aux_source_directory(${CMAKE_SOURCE_DIR}/unit TEST_LIST)
-aux_source_directory(../algorithm/source TEST_LIST)
-aux_source_directory(../data_structure/source TEST_LIST)
-aux_source_directory(../design_pattern/source TEST_LIST)
-aux_source_directory(../numeric/source TEST_LIST)
+aux_source_directory(${CMAKE_SOURCE_DIR}/../algorithm/source TEST_LIST)
+aux_source_directory(${CMAKE_SOURCE_DIR}/../data_structure/source TEST_LIST)
+aux_source_directory(${CMAKE_SOURCE_DIR}/../design_pattern/source TEST_LIST)
+aux_source_directory(${CMAKE_SOURCE_DIR}/../numeric/source TEST_LIST)
 include_directories(
-    ../
-    ../utility/include
-    ../algorithm/include
-    ../data_structure/include
-    ../design_pattern/include
-    ../numeric/include)
+    ${CMAKE_SOURCE_DIR}/../
+    ${CMAKE_SOURCE_DIR}/../algorithm/include
+    ${CMAKE_SOURCE_DIR}/../data_structure/include
+    ${CMAKE_SOURCE_DIR}/../design_pattern/include
+    ${CMAKE_SOURCE_DIR}/../numeric/include)
 
 add_executable(${BIN_NAME} ${TEST_LIST})
 target_link_libraries(

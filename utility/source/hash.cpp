@@ -20,18 +20,4 @@ uint32_t bkdrHash(const char* str)
     }
     return (hash & bkdrHashSize);
 }
-
-//! @brief The rolling hash function.
-//! @param str input data
-//! @param length length of input data
-//! @return hash value
-int rollingHash(const char* str, const uint32_t length)
-{
-    int hash = 0;
-    for (uint32_t i = 0; i < length; ++i)
-    {
-        hash = ((hash * rollingHashBase) % rollingHashMod + static_cast<int>(str[i])) % rollingHashMod;
-    }
-    return hash;
-}
 } // namespace utility::hash

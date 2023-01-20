@@ -6,7 +6,6 @@
 #include "match.hpp"
 #include <mpfr.h>
 #include <cstring>
-#include "utility/include/hash.hpp"
 #ifndef _NO_PRINT_AT_RUNTIME
 #include "utility/include/common.hpp"
 #include "utility/include/time.hpp"
@@ -103,23 +102,24 @@ int MatchSolution::rkMethod( // NOLINT(readability-convert-member-functions-to-s
 {
     MATCH_RUNTIME_BEGIN;
     int shift = -1;
-    long long textHash = utility::hash::rollingHash(std::string{text}.substr(0, patternLen).c_str(), patternLen);
-    long long patternHash = utility::hash::rollingHash(pattern, patternLen);
+    constexpr uint32_t rollingHashBase = 10;
+    constexpr uint32_t rollingHashMod = 19260817;
+    long long textHash =
+        rollingHash(std::string{text}.substr(0, patternLen).c_str(), patternLen, rollingHashBase, rollingHashMod);
+    long long patternHash = rollingHash(pattern, patternLen, rollingHashBase, rollingHashMod);
     if (textHash != patternHash)
     {
         long long pow = 1;
         for (uint32_t j = 0; j < patternLen - 1; ++j)
         {
-            pow = (pow * utility::hash::rollingHashBase) % utility::hash::rollingHashMod;
+            pow = (pow * rollingHashBase) % rollingHashMod;
         }
 
         for (uint32_t i = 1; i <= textLen - patternLen; ++i)
         {
             textHash = (textHash - static_cast<long long>(text[i - 1]) * pow);
-            textHash = (textHash % utility::hash::rollingHashMod + utility::hash::rollingHashMod)
-                % utility::hash::rollingHashMod;
-            textHash = (textHash * utility::hash::rollingHashBase + static_cast<int>(text[i + patternLen - 1]))
-                % utility::hash::rollingHashMod;
+            textHash = (textHash % rollingHashMod + rollingHashMod) % rollingHashMod;
+            textHash = (textHash * rollingHashBase + static_cast<int>(text[i + patternLen - 1])) % rollingHashMod;
             if (textHash == patternHash)
             {
                 shift = i;
@@ -135,6 +135,16 @@ int MatchSolution::rkMethod( // NOLINT(readability-convert-member-functions-to-s
     MATCH_RUNTIME_END;
     MATCH_PRINT_RESULT_CONTENT("RabinKarp");
     return shift;
+}
+
+int MatchSolution::rollingHash(const char* str, const uint32_t length, const uint32_t hashBase, const uint32_t hashMod)
+{
+    int hash = 0;
+    for (uint32_t i = 0; i < length; ++i)
+    {
+        hash = ((hash * hashBase) % hashMod + static_cast<int>(str[i])) % hashMod;
+    }
+    return hash;
 }
 
 int MatchSolution::kmpMethod( // NOLINT(readability-convert-member-functions-to-static)

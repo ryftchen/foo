@@ -112,6 +112,9 @@ public:
         const double left,
         const double right,
         const double eps) = 0;
+
+protected:
+    friend std::mt19937 getRandomSeedByTime();
 };
 
 //! @brief The gradient descent method.
