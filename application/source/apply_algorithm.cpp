@@ -453,7 +453,7 @@ void runSearch(const std::vector<std::string>& targets)
             search,
             search->getOrderedArray().get(),
             search->getLength(),
-            search->getSearchedKey());
+            search->getSearchKey());
     };
 
     for (int i = 0; i < Bottom<SearchMethod>::value; ++i)

@@ -1,3 +1,8 @@
+//! @file match.cpp
+//! @author ryftchen
+//! @brief The definitions (match) in the algorithm module.
+//! @version 0.1
+//! @copyright Copyright (c) 2022
 #include "match.hpp"
 #include <mpfr.h>
 #include <cstring>
@@ -6,9 +11,12 @@
 #include "utility/include/common.hpp"
 #include "utility/include/time.hpp"
 
+//! @brief Macro for displaying the match result.
 #define MATCH_RESULT(opt) \
     "*%-16s method: Found the pattern \"%s\" starting(" #opt ") at index %d.  ==>Run time: %8.5f ms\n"
+//! @brief Macro for displaying the none match result.
 #define MATCH_NONE_RESULT "*%-16s method: Could not find the pattern \"%s\".  ==>Run time: %8.5f ms\n"
+//! @brief Macro for printing the match result content.
 #define MATCH_PRINT_RESULT_CONTENT(method)                                                   \
     do                                                                                       \
     {                                                                                        \
@@ -22,15 +30,21 @@
         }                                                                                    \
     }                                                                                        \
     while (0)
+//! @brief Macro for storing match beginning runtime.
 #define MATCH_RUNTIME_BEGIN TIME_BEGIN(timing)
+//! @brief Macro for storing match ending runtime.
 #define MATCH_RUNTIME_END TIME_END(timing)
+//! @brief Macro for calculating match runtime interval.
 #define MATCH_RUNTIME_INTERVAL TIME_INTERVAL(timing)
 #else
 // #define NDEBUG
 #include <cassert>
 
+//! @brief Macro for printing the match result content.
 #define MATCH_PRINT_RESULT_CONTENT(method)
+//! @brief Macro for storing match beginning runtime.
 #define MATCH_RUNTIME_BEGIN
+//! @brief Macro for storing match ending runtime.
 #define MATCH_RUNTIME_END
 #endif
 
@@ -81,7 +95,6 @@ void MatchSolution::setMatchingText(char* text, const uint32_t textLen)
 #endif
 }
 
-// Rabin-Karp
 int MatchSolution::rkMethod( // NOLINT(readability-convert-member-functions-to-static)
     const char* text,
     const char* pattern,
@@ -124,7 +137,6 @@ int MatchSolution::rkMethod( // NOLINT(readability-convert-member-functions-to-s
     return shift;
 }
 
-// Knuth-Morris-Pratt
 int MatchSolution::kmpMethod( // NOLINT(readability-convert-member-functions-to-static)
     const char* text,
     const char* pattern,
@@ -172,7 +184,6 @@ int MatchSolution::kmpMethod( // NOLINT(readability-convert-member-functions-to-
     return shift;
 }
 
-// Boyer-Moore
 int MatchSolution::bmMethod( // NOLINT(readability-convert-member-functions-to-static)
     const char* text,
     const char* pattern,
@@ -262,7 +273,6 @@ void MatchSolution::fillGoodSuffixRuleTable(
     }
 }
 
-// Horspool
 int MatchSolution::horspoolMethod( // NOLINT(readability-convert-member-functions-to-static)
     const char* text,
     const char* pattern,
@@ -314,7 +324,6 @@ void MatchSolution::fillBadCharShiftTableForHorspool(
     }
 }
 
-// Sunday
 int MatchSolution::sundayMethod( // NOLINT(readability-convert-member-functions-to-static)
     const char* text,
     const char* pattern,

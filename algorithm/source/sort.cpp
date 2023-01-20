@@ -1,9 +1,16 @@
+//! @file sort.cpp
+//! @author ryftchen
+//! @brief The definitions (sort) in the algorithm module.
+//! @version 0.1
+//! @copyright Copyright (c) 2022
 #include "sort.hpp"
 #include <queue>
 #ifndef _NO_PRINT_AT_RUNTIME
 #include "utility/include/common.hpp"
 
+//! @brief Macro for displaying the sort result.
 #define SORT_RESULT(opt) "\r\n*%-9s method: (" #opt ")\r\n%s\r\n==>Run time: %8.5f ms\n"
+//! @brief Macro for printing the sort result content.
 #define SORT_PRINT_RESULT_CONTENT(method)                                        \
     do                                                                           \
     {                                                                            \
@@ -17,15 +24,21 @@
             SORT_RUNTIME_INTERVAL);                                              \
     }                                                                            \
     while (0)
+//! @brief Macro for storing sort beginning runtime.
 #define SORT_RUNTIME_BEGIN TIME_BEGIN(timing)
+//! @brief Macro for storing sort ending runtime.
 #define SORT_RUNTIME_END TIME_END(timing)
+//! @brief Macro for calculating sort runtime interval.
 #define SORT_RUNTIME_INTERVAL TIME_INTERVAL(timing)
 #else
 // #define NDEBUG
 #include <cassert>
 
+//! @brief Macro for printing the sort result content.
 #define SORT_PRINT_RESULT_CONTENT(method)
+//! @brief Macro for storing sort beginning runtime.
 #define SORT_RUNTIME_BEGIN
+//! @brief Macro for storing sort ending runtime.
 #define SORT_RUNTIME_END
 #endif
 
@@ -43,7 +56,6 @@ template std::vector<int> SortSolution<int>::countingMethod(int* const array, co
 template std::vector<int> SortSolution<int>::bucketMethod(int* const array, const uint32_t length) const;
 template std::vector<int> SortSolution<int>::radixMethod(int* const array, const uint32_t length) const;
 
-// Bubble
 template <class T>
 std::vector<T> SortSolution<T>::bubbleMethod(T* const array, const uint32_t length) const
 {
@@ -68,7 +80,6 @@ std::vector<T> SortSolution<T>::bubbleMethod(T* const array, const uint32_t leng
     return std::vector<T>(sortArray, sortArray + length);
 }
 
-// Selection
 template <class T>
 std::vector<T> SortSolution<T>::selectionMethod(T* const array, const uint32_t length) const
 {
@@ -95,7 +106,6 @@ std::vector<T> SortSolution<T>::selectionMethod(T* const array, const uint32_t l
     return std::vector<T>(sortArray, sortArray + length);
 }
 
-// Insertion
 template <class T>
 std::vector<T> SortSolution<T>::insertionMethod(T* const array, const uint32_t length) const
 {
@@ -121,7 +131,6 @@ std::vector<T> SortSolution<T>::insertionMethod(T* const array, const uint32_t l
     return std::vector<T>(sortArray, sortArray + length);
 }
 
-// Shell
 template <class T>
 std::vector<T> SortSolution<T>::shellMethod(T* const array, const uint32_t length) const
 {
@@ -148,7 +157,6 @@ std::vector<T> SortSolution<T>::shellMethod(T* const array, const uint32_t lengt
     return std::vector<T>(sortArray, sortArray + length);
 }
 
-// Merge
 template <class T>
 std::vector<T> SortSolution<T>::mergeMethod(T* const array, const uint32_t length) const
 {
@@ -195,7 +203,6 @@ void SortSolution<T>::mergeSortRecursive(T* const sortArray, const uint32_t begi
     }
 }
 
-// Quick
 template <class T>
 std::vector<T> SortSolution<T>::quickMethod(T* const array, const uint32_t length) const
 {
@@ -250,7 +257,6 @@ void SortSolution<T>::quickSortRecursive(T* const sortArray, const uint32_t begi
     quickSortRecursive(sortArray, leftIndex + 1, end);
 }
 
-// Heap
 template <class T>
 std::vector<T> SortSolution<T>::heapMethod(T* const array, const uint32_t length) const
 {
@@ -296,7 +302,6 @@ void SortSolution<T>::buildMaxHeap(T* const sortArray, const uint32_t begin, con
     }
 }
 
-// Counting
 template <class T>
 std::vector<T> SortSolution<T>::countingMethod(T* const array, const uint32_t length) const
 {
@@ -343,7 +348,6 @@ std::vector<T> SortSolution<T>::countingMethod(T* const array, const uint32_t le
     return std::vector<T>(sortArray, sortArray + length);
 }
 
-// Bucket
 template <class T>
 std::vector<T> SortSolution<T>::bucketMethod(T* const array, const uint32_t length) const
 {
@@ -385,7 +389,6 @@ std::vector<T> SortSolution<T>::bucketMethod(T* const array, const uint32_t leng
     return std::vector<T>(sortArray, sortArray + length);
 }
 
-// Radix
 template <class T>
 std::vector<T> SortSolution<T>::radixMethod(T* const array, const uint32_t length) const
 {

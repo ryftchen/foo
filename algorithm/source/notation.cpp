@@ -1,13 +1,21 @@
+//! @file notation.cpp
+//! @author ryftchen
+//! @brief The definitions (notation) in the algorithm module.
+//! @version 0.1
+//! @copyright Copyright (c) 2022
 #include "notation.hpp"
 #include <stack>
 #ifndef _NO_PRINT_AT_RUNTIME
 #include "utility/include/common.hpp"
 
+//! @brief Macro for displaying the notation result.
 #define NOTATION_RESULT "\r\n*%-7s method:\r\n%s: %s\n"
+//! @brief Macro for printing the notation result content.
 #define NOTATION_PRINT_RESULT_CONTENT(method, notationType, notationString) \
     COMMON_PRINT(NOTATION_RESULT, method, notationType, notationString)
 #else
 
+//! @brief Macro for printing the notation result content.
 #define NOTATION_PRINT_RESULT_CONTENT(method, notationType, notationString)
 #endif
 
@@ -83,7 +91,6 @@ NotationSolution::Priority NotationSolution::getPriority(const char c)
     }
 }
 
-// Prefix
 std::string NotationSolution::prefixMethod( // NOLINT(readability-convert-member-functions-to-static)
     const std::string& infixNotation) const
 {
@@ -108,7 +115,6 @@ std::string NotationSolution::prefixMethod( // NOLINT(readability-convert-member
     return prefixNotation;
 }
 
-// Postfix
 std::string NotationSolution::postfixMethod( // NOLINT(readability-convert-member-functions-to-static)
     const std::string& infixNotation) const
 {
