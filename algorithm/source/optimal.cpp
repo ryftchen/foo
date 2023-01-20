@@ -43,11 +43,11 @@ std::optional<std::tuple<ValueY, ValueX>> Gradient::operator()(const double left
     OPTIMAL_RUNTIME_BEGIN;
     std::mt19937 seed{utility::time::getRandomSeedByTime()};
     double x = 0.0, y = 0.0;
-    std::uniform_real_distribution<double> randomX(left, right);
+    std::uniform_real_distribution<double> candidate(left, right);
     std::set<double> climbing;
     while (climbing.size() < loopTime)
     {
-        climbing.insert(randomX(seed));
+        climbing.insert(candidate(seed));
     }
 
     std::vector<std::pair<ValueY, ValueX>> aggregation;
@@ -97,29 +97,20 @@ Annealing::Annealing(const function::Function& func) : func(func)
 std::optional<std::tuple<ValueY, ValueX>> Annealing::operator()(const double left, const double right, const double eps)
 {
     OPTIMAL_RUNTIME_BEGIN;
-    constexpr double perturbationSize = 0.5;
-    double temperature = initialT;
+    std::uniform_real_distribution<double> perturbation(left, right);
+    std::uniform_real_distribution<double> pr(0.0, 1.0);
+
     std::mt19937 seed{utility::time::getRandomSeedByTime()};
-    std::uniform_real_distribution<double> randomX(left, right);
-    std::uniform_real_distribution<double> perturbation(-perturbationSize, perturbationSize);
-    double x = randomX(seed), y = func(x);
+    double temperature = initialT, x = perturbation(seed), y = func(x);
     while (temperature > minimalT)
     {
         double xBest = x, yBest = y;
         bool found = false;
         for (uint32_t i = 0; i < markovChain; ++i)
         {
-            double xNew = 0.0, yNew = 0.0;
-            do
-            {
-                double delta =
-                    static_cast<int>(perturbation(seed) * (right - left) * static_cast<uint32_t>(1.0 / eps)) * eps;
-                xNew = x + delta;
-            }
-            while ((xNew < left) || (xNew > right));
-            yNew = func(xNew);
-
-            if ((yNew < y) || (std::exp(-(y - yNew) / temperature) > perturbation(seed)))
+            double xNew = static_cast<int>(perturbation(seed) * static_cast<uint32_t>(1.0 / eps)) * eps,
+                   yNew = func(xNew);
+            if ((yNew <= y) || (std::exp(-(yNew - y) / temperature) > pr(seed)))
             {
                 found = true;
                 x = xNew;
@@ -203,7 +194,7 @@ std::optional<std::tuple<ValueY, ValueX>> Particle::operator()(const double left
 Particle::Storage Particle::storageInit(const double left, const double right)
 {
     seed = std::mt19937{utility::time::getRandomSeedByTime()};
-    std::uniform_real_distribution<double> randomX(left, right), randomV(vMin, vMax);
+    std::uniform_real_distribution<double> candidate(left, right), randomV(vMin, vMax);
 
     const Individual individualInit{};
     Society societyInit(size, individualInit);
@@ -212,7 +203,7 @@ Particle::Storage Particle::storageInit(const double left, const double right)
         societyInit.end(),
         [&]
         {
-            const double x = randomX(seed);
+            const double x = candidate(seed);
             const Individual individual(x, randomV(seed), x, func(x), func(x));
             return individual;
         });
@@ -270,13 +261,13 @@ void Genetic::updateSpecies(const double left, const double right, const double 
 
 void Genetic::geneticCode(Chromosome& chr)
 {
-    std::uniform_int_distribution<int> randomX(0, 1);
+    std::uniform_int_distribution<int> random(0, 1);
     std::generate(
         chr.begin(),
         chr.end(),
         [&]
         {
-            return static_cast<uint8_t>(randomX(seed));
+            return static_cast<uint8_t>(random(seed));
         });
 }
 

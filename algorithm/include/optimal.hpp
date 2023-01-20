@@ -49,9 +49,9 @@ struct FuncRange
     //! @brief Construct a new FuncRange object.
     //! @param range1 left endpoint
     //! @param range2 light endpoint
-    //! @param funcStr function description
-    FuncRange(const T1& range1, const T2& range2, const std::string_view funcStr) :
-        range1(range1), range2(range2), funcStr(funcStr){};
+    //! @param funcDescr function description
+    FuncRange(const T1& range1, const T2& range2, const std::string_view funcDescr) :
+        range1(range1), range2(range2), funcDescr(funcDescr){};
     //! @brief Construct a new FuncRange object.
     FuncRange() = delete;
     //! @brief Left endpoint.
@@ -59,14 +59,14 @@ struct FuncRange
     //! @brief Right endpoint.
     T2 range2;
     //! @brief Function description.
-    std::string_view funcStr;
+    std::string_view funcDescr;
 
     //! @brief The operator (==) overloading of FuncRange class.
     //! @param rhs right-hand side
     //! @return be equal or not equal
     bool operator==(const FuncRange& rhs) const
     {
-        return (std::tie(rhs.range1, rhs.range2, rhs.funcStr) == std::tie(range1, range2, funcStr));
+        return (std::tie(rhs.range1, rhs.range2, rhs.funcDescr) == std::tie(range1, range2, funcDescr));
     }
 };
 //! @brief Mapping hash value for the function.
@@ -82,7 +82,7 @@ struct FuncMapHash
     {
         std::size_t hash1 = std::hash<T1>()(range.range1);
         std::size_t hash2 = std::hash<T2>()(range.range2);
-        std::size_t hash3 = std::hash<std::string_view>()(range.funcStr);
+        std::size_t hash3 = std::hash<std::string_view>()(range.funcDescr);
         return (hash1 ^ hash2 ^ hash3);
     }
 };
@@ -175,7 +175,7 @@ private:
     //! @brief Minimal temperature.
     static constexpr double minimalT{0.01};
     //! @brief Cooling rate.
-    static constexpr double coolingRate{0.9};
+    static constexpr double coolingRate{0.98};
     //! @brief Length of Markov chain.
     static constexpr uint32_t markovChain{500};
 };
