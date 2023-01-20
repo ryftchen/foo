@@ -7,6 +7,7 @@
 #include <queue>
 #ifndef _NO_PRINT_AT_RUNTIME
 #include "utility/include/common.hpp"
+#include "utility/include/time.hpp"
 
 //! @brief Display sort result.
 #define SORT_RESULT(opt) "\r\n*%-9s method: (" #opt ")\r\n%s\r\n==>Run time: %8.5f ms\n"

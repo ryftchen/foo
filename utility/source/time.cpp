@@ -33,14 +33,4 @@ std::string getCurrentSystemTime()
 
     return dateStr;
 }
-
-//! @brief Get the random seed by time.
-//! @return random seed
-std::mt19937 getRandomSeedByTime()
-{
-    timeval timeSeed{};
-    gettimeofday(&timeSeed, nullptr);
-
-    return std::mt19937(timeSeed.tv_sec * secToUsec + timeSeed.tv_usec);
-}
 } // namespace utility::time

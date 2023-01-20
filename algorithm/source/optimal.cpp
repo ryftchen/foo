@@ -5,9 +5,9 @@
 //! @copyright Copyright (c) 2022
 #include "optimal.hpp"
 #include <set>
-#include "utility/include/time.hpp"
 #ifndef _NO_PRINT_AT_RUNTIME
 #include "utility/include/common.hpp"
+#include "utility/include/time.hpp"
 
 //! @brief Display optimal result.
 #define OPTIMAL_RESULT(opt) "*%-9s method: F(" #opt ")=%+.5f X=%+.5f  ==>Run time: %8.5f ms\n"
@@ -21,8 +21,10 @@
 //! @brief Calculate optimal runtime interval.
 #define OPTIMAL_RUNTIME_INTERVAL TIME_INTERVAL(timing)
 #else
+#include <sys/time.h>
 // #define NDEBUG
 #include <cassert>
+#include <functional>
 
 //! @brief Print optimal result content.
 #define OPTIMAL_PRINT_RESULT_CONTENT(method, f, x)
@@ -34,6 +36,17 @@
 
 namespace algorithm::optimal
 {
+//! @brief Get the random seed by time.
+//! @return random seed
+std::mt19937 getRandomSeedByTime()
+{
+    constexpr uint32_t secToUsec = 1000000;
+    timeval timeSeed{};
+    gettimeofday(&timeSeed, nullptr);
+
+    return std::mt19937(timeSeed.tv_sec * secToUsec + timeSeed.tv_usec);
+}
+
 Gradient::Gradient(const function::Function& func) : func(func)
 {
 }
@@ -41,7 +54,7 @@ Gradient::Gradient(const function::Function& func) : func(func)
 std::optional<std::tuple<ValueY, ValueX>> Gradient::operator()(const double left, const double right, const double eps)
 {
     OPTIMAL_RUNTIME_BEGIN;
-    std::mt19937 seed{utility::time::getRandomSeedByTime()};
+    std::mt19937 seed{getRandomSeedByTime()};
     double x = 0.0, y = 0.0;
     std::uniform_real_distribution<double> candidate(left, right);
     std::set<double> climbing;
@@ -100,7 +113,7 @@ std::optional<std::tuple<ValueY, ValueX>> Annealing::operator()(const double lef
     std::uniform_real_distribution<double> perturbation(left, right);
     std::uniform_real_distribution<double> pr(0.0, 1.0);
 
-    std::mt19937 seed{utility::time::getRandomSeedByTime()};
+    std::mt19937 seed{getRandomSeedByTime()};
     double temperature = initialT, x = perturbation(seed), y = func(x);
     while (temperature > minimalT)
     {
@@ -193,7 +206,7 @@ std::optional<std::tuple<ValueY, ValueX>> Particle::operator()(const double left
 
 Particle::Storage Particle::storageInit(const double left, const double right)
 {
-    seed = std::mt19937{utility::time::getRandomSeedByTime()};
+    seed = std::mt19937{getRandomSeedByTime()};
     std::uniform_real_distribution<double> candidate(left, right), randomV(vMin, vMax);
 
     const Individual individualInit{};
@@ -248,7 +261,7 @@ void Genetic::updateSpecies(const double left, const double right, const double 
     range.lower = left;
     range.upper = right;
     range.eps = eps;
-    seed = std::mt19937{utility::time::getRandomSeedByTime()};
+    seed = std::mt19937{getRandomSeedByTime()};
 
     uint32_t num = 0;
     const double max = (range.upper - range.lower) * (1.0 / range.eps);

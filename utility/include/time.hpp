@@ -108,5 +108,4 @@ inline void Time::resetBlockingTimer()
 }
 
 extern std::string getCurrentSystemTime();
-extern std::mt19937 getRandomSeedByTime();
 } // namespace utility::time

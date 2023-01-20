@@ -6,6 +6,7 @@
 #include "search.hpp"
 #ifndef _NO_PRINT_AT_RUNTIME
 #include "utility/include/common.hpp"
+#include "utility/include/time.hpp"
 
 //! @brief Display search result.
 #define SEARCH_RESULT "*%-13s method: Found the key \"%.5f\" appearing at index %d.  ==>Run time: %8.5f ms\n"
