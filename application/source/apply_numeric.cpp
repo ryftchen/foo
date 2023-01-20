@@ -81,7 +81,7 @@ public:
     //! @brief Right endpoint.
     static constexpr double range2{2.0 * M_PI};
     //! @brief Expression example 1.
-    static constexpr std::string_view exprStr{"I=∫(-π/2→2π)x*sin(x)/(1+(cos(x))^2)dx"};
+    static constexpr std::string_view exprDescr{"I=∫(-π/2→2π)x*sin(x)/(1+(cos(x))^2)dx"};
 };
 
 //! @brief Expression example 2.
@@ -101,7 +101,7 @@ public:
     //! @brief Right endpoint.
     static constexpr double range2{9.0};
     //! @brief Expression example 2.
-    static constexpr std::string_view exprStr{"I=∫(0→9)x+10sin(5x)+7cos(4x)dx"};
+    static constexpr std::string_view exprDescr{"I=∫(0→9)x+10sin(5x)+7cos(4x)dx"};
 };
 } // namespace input
 
@@ -283,11 +283,11 @@ void runIntegral(const std::vector<std::string>& targets)
             numeric::integral::expression::ExprOverloaded{
                 [&prefix](const Expression1& /*unused*/)
                 {
-                    std::cout << prefix << Expression1::exprStr << std::endl;
+                    std::cout << prefix << Expression1::exprDescr << std::endl;
                 },
                 [&prefix](const Expression2& /*unused*/)
                 {
-                    std::cout << prefix << Expression2::exprStr << std::endl;
+                    std::cout << prefix << Expression2::exprDescr << std::endl;
                 },
             },
             expression);
@@ -354,8 +354,8 @@ void runIntegral(const std::vector<std::string>& targets)
         IntegralExprTarget,
         numeric::integral::expression::ExprMapHash>
         integralExprMap{
-            {{Expression1::range1, Expression1::range2, Expression1::exprStr}, Expression1()},
-            {{Expression2::range1, Expression2::range2, Expression2::exprStr}, Expression2()}};
+            {{Expression1::range1, Expression1::range2, Expression1::exprDescr}, Expression1()},
+            {{Expression2::range1, Expression2::range2, Expression2::exprDescr}, Expression2()}};
     for ([[maybe_unused]] const auto& [range, expression] : integralExprMap)
     {
 #ifndef _NO_PRINT_AT_RUNTIME

@@ -27,16 +27,16 @@ ExprOverloaded(Ts...) -> ExprOverloaded<Ts...>;
 template <typename T1, typename T2>
 struct ExprRange
 {
-    ExprRange(const T1& range1, const T2& range2, const std::string_view exprStr) :
-        range1(range1), range2(range2), exprStr(exprStr){};
+    ExprRange(const T1& range1, const T2& range2, const std::string_view exprDescr) :
+        range1(range1), range2(range2), exprDescr(exprDescr){};
     ExprRange() = delete;
     T1 range1;
     T2 range2;
-    std::string_view exprStr;
+    std::string_view exprDescr;
 
     bool operator==(const ExprRange& range) const
     {
-        return (std::tie(range.range1, range.range2, range.exprStr) == std::tie(range1, range2, exprStr));
+        return (std::tie(range.range1, range.range2, range.exprDescr) == std::tie(range1, range2, exprDescr));
     }
 };
 struct ExprMapHash
@@ -46,7 +46,7 @@ struct ExprMapHash
     {
         std::size_t hash1 = std::hash<T1>()(range.range1);
         std::size_t hash2 = std::hash<T2>()(range.range2);
-        std::size_t hash3 = std::hash<std::string_view>()(range.exprStr);
+        std::size_t hash3 = std::hash<std::string_view>()(range.exprDescr);
         return (hash1 ^ hash2 ^ hash3);
     }
 };
