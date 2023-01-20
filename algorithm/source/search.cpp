@@ -1,9 +1,17 @@
+//! @file search.cpp
+//! @author ryftchen
+//! @brief The definitions (search) in the algorithm module.
+//! @version 0.1
+//! @copyright Copyright (c) 2022
 #include "search.hpp"
 #ifndef _NO_PRINT_AT_RUNTIME
 #include "utility/include/common.hpp"
 
+//! @brief Macro for displaying the search result.
 #define SEARCH_RESULT "*%-13s method: Found the key \"%.5f\" appearing at index %d.  ==>Run time: %8.5f ms\n"
+//! @brief Macro for displaying the none search result.
 #define SEARCH_NONE_RESULT "*%-13s method: Could not find the key \"%.5f\".  ==>Run time: %8.5f ms\n"
+//! @brief Macro for printing the search result content.
 #define SEARCH_PRINT_RESULT_CONTENT(method)                                           \
     do                                                                                \
     {                                                                                 \
@@ -17,13 +25,19 @@
         }                                                                             \
     }                                                                                 \
     while (0)
+//! @brief Macro for storing search beginning runtime.
 #define SEARCH_RUNTIME_BEGIN TIME_BEGIN(timing)
+//! @brief Macro for storing search ending runtime.
 #define SEARCH_RUNTIME_END TIME_END(timing)
+//! @brief Macro for calculating search runtime interval.
 #define SEARCH_RUNTIME_INTERVAL TIME_INTERVAL(timing)
 #else
 
+//! @brief Macro for printing the search result content.
 #define SEARCH_PRINT_RESULT_CONTENT(method)
+//! @brief Macro for storing search beginning runtime.
 #define SEARCH_RUNTIME_BEGIN
+//! @brief Macro for storing search ending runtime.
 #define SEARCH_RUNTIME_END
 #endif
 
@@ -39,7 +53,6 @@ template int SearchSolution<double>::interpolationMethod(
 template int SearchSolution<double>::fibonacciMethod(const double* const array, const uint32_t length, const double key)
     const;
 
-// Binary
 template <class T>
 int SearchSolution<T>::binaryMethod(const T* const array, const uint32_t length, const T key) const
 {
@@ -70,7 +83,6 @@ int SearchSolution<T>::binaryMethod(const T* const array, const uint32_t length,
     return index;
 }
 
-// Interpolation
 template <class T>
 int SearchSolution<T>::interpolationMethod(const T* const array, const uint32_t length, const T key) const
 {
@@ -101,7 +113,6 @@ int SearchSolution<T>::interpolationMethod(const T* const array, const uint32_t 
     return index;
 }
 
-// Fibonacci
 template <class T>
 int SearchSolution<T>::fibonacciMethod(const T* const array, const uint32_t length, const T key) const
 {

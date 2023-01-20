@@ -1,3 +1,8 @@
+//! @file sort.hpp
+//! @author ryftchen
+//! @brief The declarations (sort) in the algorithm module.
+//! @version 0.1
+//! @copyright Copyright (c) 2022
 #pragma once
 
 #include <cstring>
@@ -5,45 +10,119 @@
 #include <mutex>
 #include "utility/include/time.hpp"
 
+//! @brief Namespace for sort-related functions in the algorithm module.
 namespace algorithm::sort
 {
+//! @brief Maximum alignment length per element of printing.
 constexpr uint32_t maxAlignOfPrint = 16;
+//! @brief Maximum columns per row of printing.
 constexpr uint32_t maxColumnOfPrint = 10;
 
+//! @brief Check whether it is the number type.
+//! @tparam T type of inspection to be performed
+//! @return be number or not
 template <typename T>
 constexpr bool isNumber()
 {
     return (std::is_integral<T>::value || std::is_floating_point<T>::value);
 }
 
+//! @brief Class for the solution of sort.
+//! @tparam T type of the solution of sort
 template <class T>
 class SortSolution
 {
 public:
+    //! @brief Construct a new SortSolution object.
+    //! @param length length of array
+    //! @param left the left boundary of the array
+    //! @param right the right boundary of the array
     SortSolution(const uint32_t length, const T left, const T right);
+    //! @brief Destroy the SortSolution object.
     virtual ~SortSolution() = default;
+    //! @brief Construct a new SortSolution object.
+    //! @param rhs right-hand side
     SortSolution(const SortSolution& rhs);
+    //! @brief The operator (!=) overloading of SortSolution class.
+    //! @param rhs right-hand side
+    //! @return reference of SortSolution object
     SortSolution<T>& operator=(const SortSolution& rhs);
 
+    //! @brief The bubble method.
+    //! @param array array to be sorted
+    //! @param length length of array
+    //! @return array after sort
     std::vector<T> bubbleMethod(T* const array, const uint32_t length) const;
+    //! @brief The selection method.
+    //! @param array array to be sorted
+    //! @param length length of array
+    //! @return array after sort
     std::vector<T> selectionMethod(T* const array, const uint32_t length) const;
+    //! @brief The insertion method.
+    //! @param array array to be sorted
+    //! @param length length of array
+    //! @return array after sort
     std::vector<T> insertionMethod(T* const array, const uint32_t length) const;
+    //! @brief The shell method.
+    //! @param array array to be sorted
+    //! @param length length of array
+    //! @return array after sort
     std::vector<T> shellMethod(T* const array, const uint32_t length) const;
+    //! @brief The merge method.
+    //! @param array array to be sorted
+    //! @param length length of array
+    //! @return array after sort
     std::vector<T> mergeMethod(T* const array, const uint32_t length) const;
+    //! @brief The quick method.
+    //! @param array array to be sorted
+    //! @param length length of array
+    //! @return array after sort
     std::vector<T> quickMethod(T* const array, const uint32_t length) const;
+    //! @brief The heap method.
+    //! @param array array to be sorted
+    //! @param length length of array
+    //! @return array after sort
     std::vector<T> heapMethod(T* const array, const uint32_t length) const;
+    //! @brief The counting method.
+    //! @param array array to be sorted
+    //! @param length length of array
+    //! @return array after sort
     std::vector<T> countingMethod(T* const array, const uint32_t length) const;
+    //! @brief The bucket method.
+    //! @param array array to be sorted
+    //! @param length length of array
+    //! @return array after sort
     std::vector<T> bucketMethod(T* const array, const uint32_t length) const;
+    //! @brief The radix method.
+    //! @param array array to be sorted
+    //! @param length length of array
+    //! @return array after sort
     std::vector<T> radixMethod(T* const array, const uint32_t length) const;
 
+    //! @brief Get the random array.
+    //! @return random array
     inline const std::unique_ptr<T[]>& getRandomArray() const;
+    //! @brief Get the length.
+    //! @return length
     [[nodiscard]] inline uint32_t getLength() const;
+    //! @brief Set the random array.
+    //! @tparam V the specific type of integral
+    //! @param array random array
+    //! @param length length of the random array
+    //! @param left the left boundary of the random array
+    //! @param right the left right of the random array
     template <typename V>
     requires std::is_integral<V>::value void setRandomArray(
         T array[],
         const uint32_t length,
         const T left,
         const T right) const;
+    //! @brief Set the random array.
+    //! @tparam V the specific type of floating point
+    //! @param array random array
+    //! @param length length of the random array
+    //! @param left the left boundary of the random array
+    //! @param right the left right of the random array
     template <typename V>
     requires std::is_floating_point<V>::value void setRandomArray(
         T array[],
@@ -52,15 +131,38 @@ public:
         const T right) const;
 
 private:
+    //! @brief random array.
     const std::unique_ptr<T[]> randomArray;
+    //! @brief Length of the random array.
     const uint32_t length;
 
+    //! @brief Deep copy for copy constructor.
+    //! @param rhs right-hand side
     void deepCopy(const SortSolution& rhs) const;
+    //! @brief Recursive for merge sort.
+    //! @param sortArray array to be sorted
+    //! @param begin index of beginning
+    //! @param end index of ending
     static void mergeSortRecursive(T* const sortArray, const uint32_t begin, const uint32_t end);
+    //! @brief Recursive for quick sort.
+    //! @param sortArray array to be sorted
+    //! @param begin index of beginning
+    //! @param end index of ending
     static void quickSortRecursive(T* const sortArray, const uint32_t begin, const uint32_t end);
+    //! @brief Build max heap for heap sort.
+    //! @param sortArray array to be sorted
+    //! @param begin index of beginning
+    //! @param end index of ending
     static void buildMaxHeap(T* const sortArray, const uint32_t begin, const uint32_t end);
 
 protected:
+    //! @brief Format array for printing.
+    //! @tparam V type of array
+    //! @param array array to be formatted
+    //! @param length length of array
+    //! @param buffer buffer for filling the formatted array
+    //! @param bufferSize size of buffer
+    //! @return buffer after format
     template <typename V>
     requires(isNumber<V>()) char* formatArray(
         const T* const array,

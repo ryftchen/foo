@@ -1,3 +1,8 @@
+//! @file search.hpp
+//! @author ryftchen
+//! @brief The declarations (search) in the algorithm module.
+//! @version 0.1
+//! @copyright Copyright (c) 2022
 #pragma once
 
 #include <cstring>
@@ -5,39 +10,90 @@
 #include <mutex>
 #include "utility/include/time.hpp"
 
+//! @brief Namespace for search-related functions in the algorithm module.
 namespace algorithm::search
 {
+//! @brief Maximum alignment length per element of printing.
 constexpr uint32_t maxAlignOfPrint = 16;
+//! @brief Maximum columns per row of printing.
 constexpr uint32_t maxColumnOfPrint = 10;
 
+//! @brief Check whether it is the number type.
+//! @tparam T type of inspection to be performed
+//! @return be number or not
 template <typename T>
 constexpr bool isNumber()
 {
     return (std::is_integral<T>::value || std::is_floating_point<T>::value);
 }
 
+//! @brief Class for the solution of search.
+//! @tparam T type of the solution of search
 template <class T>
 class SearchSolution
 {
 public:
+    //! @brief Construct a new SearchSolution object.
+    //! @param length length of array
+    //! @param left the left boundary of the array
+    //! @param right the right boundary of the array
     SearchSolution(const uint32_t length, const T left, const T right);
+    //! @brief Destroy the SearchSolution object.
     virtual ~SearchSolution() = default;
+    //! @brief Construct a new SearchSolution object.
+    //! @param rhs right-hand side
     SearchSolution(const SearchSolution& rhs);
+    //! @brief The operator (!=) overloading of SearchSolution class.
+    //! @param rhs right-hand side
+    //! @return reference of SearchSolution object
     SearchSolution<T>& operator=(const SearchSolution& rhs);
 
+    //! @brief The binary method.
+    //! @param array array to be searched
+    //! @param length length of array
+    //! @param key search key
+    //! @return index of the first occurrence of key
     int binaryMethod(const T* const array, const uint32_t length, const T key) const;
+    //! @brief The interpolation method.
+    //! @param array array to be searched
+    //! @param length length of array
+    //! @param key search key
+    //! @return index of the first occurrence of key
     int interpolationMethod(const T* const array, const uint32_t length, const T key) const;
+    //! @brief The fibonacci method.
+    //! @param array array to be searched
+    //! @param length length of array
+    //! @param key search key
+    //! @return index of the first occurrence of key
     int fibonacciMethod(const T* const array, const uint32_t length, const T key) const;
 
+    //! @brief Get the ordered array.
+    //! @return ordered array
     inline const std::unique_ptr<T[]>& getOrderedArray() const;
+    //! @brief Get the length.
+    //! @return length
     [[nodiscard]] inline uint32_t getLength() const;
-    inline T getSearchedKey() const;
+    //! @brief Get the search key.
+    //! @return T search key
+    inline T getSearchKey() const;
+    //! @brief Set the ordered array.
+    //! @tparam V the specific type of integral
+    //! @param array ordered array
+    //! @param length length of the ordered array
+    //! @param left the left boundary of the ordered array
+    //! @param right the left right of the ordered array
     template <typename V>
     requires std::is_integral<V>::value void setOrderedArray(
         T array[],
         const uint32_t length,
         const T left,
         const T right) const;
+    //! @brief Set the ordered array.
+    //! @tparam V the specific type of floating point
+    //! @param array ordered array
+    //! @param length length of the ordered array
+    //! @param left the left boundary of the ordered array
+    //! @param right the left right of the ordered array
     template <typename V>
     requires std::is_floating_point<V>::value void setOrderedArray(
         T array[],
@@ -46,14 +102,29 @@ public:
         const T right) const;
 
 private:
+    //! @brief Ordered array.
     const std::unique_ptr<T[]> orderedArray;
+    //! @brief Length of the ordered array.
     const uint32_t length;
-    T searchedKey{0};
+    //! @brief Search key.
+    T searchKey{0};
 
+    //! @brief Deep copy for copy constructor.
+    //! @param rhs right-hand side
     void deepCopy(const SearchSolution& rhs) const;
+    //! @brief Generate fibonacci number.
+    //! @param max the smallest integer greater than or equal to the maximum of the Fibonacci series
+    //! @return fibonacci sequences
     static std::vector<uint32_t> generateFibonacciNumber(const uint32_t max);
 
 protected:
+    //! @brief Format array for printing.
+    //! @tparam V type of array
+    //! @param array array to be formatted
+    //! @param length length of array
+    //! @param buffer buffer for filling the formatted array
+    //! @param bufferSize size of buffer
+    //! @return buffer after format
     template <typename V>
     requires(isNumber<V>()) char* formatArray(
         const T* const array,
@@ -67,7 +138,7 @@ SearchSolution<T>::SearchSolution(const uint32_t length, const T left, const T r
     length(length), orderedArray(std::make_unique<T[]>(length))
 {
     setOrderedArray<T>(orderedArray.get(), length, left, right);
-    searchedKey = orderedArray[length / 2];
+    searchKey = orderedArray[length / 2];
 }
 
 template <class T>
@@ -75,7 +146,7 @@ SearchSolution<T>::SearchSolution(const SearchSolution& rhs) :
     length(rhs.length), orderedArray(std::make_unique<T[]>(rhs.length))
 {
     deepCopy(rhs);
-    searchedKey = orderedArray[length / 2];
+    searchKey = orderedArray[length / 2];
 }
 
 template <class T>
@@ -104,9 +175,9 @@ inline uint32_t SearchSolution<T>::getLength() const
 }
 
 template <class T>
-inline T SearchSolution<T>::getSearchedKey() const
+inline T SearchSolution<T>::getSearchKey() const
 {
-    return searchedKey;
+    return searchKey;
 }
 
 template <class T>

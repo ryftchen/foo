@@ -308,21 +308,21 @@ TEST_F(SearchTestBase, binaryMethod) // NOLINT(cert-err58-cpp)
 {
     ASSERT_EQ(
         search->getLength() / 2,
-        search->binaryMethod(search->getOrderedArray().get(), search->getLength(), search->getSearchedKey()));
+        search->binaryMethod(search->getOrderedArray().get(), search->getLength(), search->getSearchKey()));
 }
 
 TEST_F(SearchTestBase, interpolationMethod) // NOLINT(cert-err58-cpp)
 {
     ASSERT_EQ(
         search->getLength() / 2,
-        search->interpolationMethod(search->getOrderedArray().get(), search->getLength(), search->getSearchedKey()));
+        search->interpolationMethod(search->getOrderedArray().get(), search->getLength(), search->getSearchKey()));
 }
 
 TEST_F(SearchTestBase, fibonacciMethod) // NOLINT(cert-err58-cpp)
 {
     ASSERT_EQ(
         search->getLength() / 2,
-        search->fibonacciMethod(search->getOrderedArray().get(), search->getLength(), search->getSearchedKey()));
+        search->fibonacciMethod(search->getOrderedArray().get(), search->getLength(), search->getSearchKey()));
 }
 
 class SortTestBase : public ::testing::Test
