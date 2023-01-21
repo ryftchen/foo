@@ -11,39 +11,44 @@ constexpr uint32_t maxColumnOfPrint = 10;
 class DivisorSolution
 {
 public:
-    DivisorSolution(const int integer1, const int integer2);
     virtual ~DivisorSolution() = default;
 
-    [[nodiscard]] std::vector<int> euclideanMethod(int a, int b) const;
-    [[nodiscard]] std::vector<int> steinMethod(int a, int b) const;
+    static std::vector<int> euclideanMethod(int a, int b);
+    static std::vector<int> steinMethod(int a, int b);
+
+private:
+    static int steinRecursive(int a, int b);
+    static std::vector<int> getAllDivisors(const int greatestCommonDivisor);
+};
+
+class TargetBuilder
+{
+public:
+    TargetBuilder(const int integer1, const int integer2);
+    virtual ~TargetBuilder() = default;
 
     [[nodiscard]] inline std::pair<int, int> getIntegers() const;
+    template <typename T>
+    requires std::is_integral<T>::value static char* formatIntegerVector(
+        const std::vector<T>& vector,
+        char* const buffer,
+        const uint32_t bufferSize);
 
 private:
     const int integer1;
     const int integer2;
-
-    static int steinRecursive(int a, int b);
-    static std::vector<int> getAllDivisors(const int greatestCommonDivisor);
-
-protected:
-    template <typename T>
-    requires std::is_integral<T>::value char* formatIntegerVector(
-        const std::vector<T>& vector,
-        char* const buffer,
-        const uint32_t bufferSize) const;
 };
 
-inline std::pair<int, int> DivisorSolution::getIntegers() const
+inline std::pair<int, int> TargetBuilder::getIntegers() const
 {
     return std::make_pair(integer1, integer2);
 }
 
 template <typename T>
-requires std::is_integral<T>::value char* DivisorSolution::formatIntegerVector(
+requires std::is_integral<T>::value char* TargetBuilder::formatIntegerVector(
     const std::vector<T>& vector,
     char* const buffer,
-    const uint32_t bufferSize) const
+    const uint32_t bufferSize)
 {
     uint32_t align = 0;
     for (uint32_t i = 0; i < vector.size(); ++i)

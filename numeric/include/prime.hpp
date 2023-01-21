@@ -11,35 +11,39 @@ constexpr uint32_t maxColumnOfPrint = 10;
 class PrimeSolution
 {
 public:
-    explicit PrimeSolution(const uint32_t maxPositiveInteger);
     virtual ~PrimeSolution() = default;
 
-    [[nodiscard]] std::vector<uint32_t> eratosthenesMethod(const uint32_t max) const;
-    [[nodiscard]] std::vector<uint32_t> eulerMethod(const uint32_t max) const;
+    static std::vector<uint32_t> eratosthenesMethod(const uint32_t max);
+    static std::vector<uint32_t> eulerMethod(const uint32_t max);
+};
+
+class TargetBuilder
+{
+public:
+    explicit TargetBuilder(const uint32_t maxPositiveInteger);
+    virtual ~TargetBuilder() = default;
 
     [[nodiscard]] inline uint32_t getMaxPositiveInteger() const;
+    template <typename T>
+    requires std::is_integral<T>::value static char* formatIntegerVector(
+        const std::vector<T>& vector,
+        char* const buffer,
+        const uint32_t bufferSize);
 
 private:
     const uint32_t maxPositiveInteger;
-
-protected:
-    template <typename T>
-    requires std::is_integral<T>::value char* formatIntegerVector(
-        const std::vector<T>& vector,
-        char* const buffer,
-        const uint32_t bufferSize) const;
 };
 
-inline uint32_t PrimeSolution::getMaxPositiveInteger() const
+inline uint32_t TargetBuilder::getMaxPositiveInteger() const
 {
     return maxPositiveInteger;
 }
 
 template <typename T>
-requires std::is_integral<T>::value char* PrimeSolution::formatIntegerVector(
+requires std::is_integral<T>::value char* TargetBuilder::formatIntegerVector(
     const std::vector<T>& vector,
     char* const buffer,
-    const uint32_t bufferSize) const
+    const uint32_t bufferSize)
 {
     uint32_t align = 0;
     for (uint32_t i = 0; i < vector.size(); ++i)

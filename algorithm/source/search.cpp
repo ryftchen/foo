@@ -45,17 +45,18 @@
 namespace algorithm::search
 {
 template class SearchSolution<double>;
-template int SearchSolution<double>::binaryMethod(const double* const array, const uint32_t length, const double key)
-    const;
+template int SearchSolution<double>::binaryMethod(const double* const array, const uint32_t length, const double key);
 template int SearchSolution<double>::interpolationMethod(
     const double* const array,
     const uint32_t length,
-    const double key) const;
-template int SearchSolution<double>::fibonacciMethod(const double* const array, const uint32_t length, const double key)
-    const;
+    const double key);
+template int SearchSolution<double>::fibonacciMethod(
+    const double* const array,
+    const uint32_t length,
+    const double key);
 
 template <class T>
-int SearchSolution<T>::binaryMethod(const T* const array, const uint32_t length, const T key) const
+int SearchSolution<T>::binaryMethod(const T* const array, const uint32_t length, const T key)
 {
     SEARCH_RUNTIME_BEGIN;
     int index = -1;
@@ -85,7 +86,7 @@ int SearchSolution<T>::binaryMethod(const T* const array, const uint32_t length,
 }
 
 template <class T>
-int SearchSolution<T>::interpolationMethod(const T* const array, const uint32_t length, const T key) const
+int SearchSolution<T>::interpolationMethod(const T* const array, const uint32_t length, const T key)
 {
     SEARCH_RUNTIME_BEGIN;
     int index = -1;
@@ -115,7 +116,7 @@ int SearchSolution<T>::interpolationMethod(const T* const array, const uint32_t 
 }
 
 template <class T>
-int SearchSolution<T>::fibonacciMethod(const T* const array, const uint32_t length, const T key) const
+int SearchSolution<T>::fibonacciMethod(const T* const array, const uint32_t length, const T key)
 {
     SEARCH_RUNTIME_BEGIN;
     int index = -1;

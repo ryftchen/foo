@@ -20,53 +20,55 @@ public:
         std::cout << "TEST NUMERIC: " << std::setiosflags(std::ios_base::left) << std::setfill('.')
                   << std::setw(titleWidthForPrintTest) << "ARITHMETIC"
                   << "BEGIN" << std::resetiosflags(std::ios_base::left) << std::setfill(' ') << std::endl;
-        arithmetic =
-            std::make_shared<numeric::arithmetic::ArithmeticSolution>(integerForArithmetic1, integerForArithmetic2);
+        builder = std::make_shared<numeric::arithmetic::TargetBuilder>(integerForArithmetic1, integerForArithmetic2);
     };
     static void TearDownTestCase()
     {
         std::cout << "TEST NUMERIC: " << std::setiosflags(std::ios_base::left) << std::setfill('.')
                   << std::setw(titleWidthForPrintTest) << "ARITHMETIC"
                   << "END" << std::resetiosflags(std::ios_base::left) << std::setfill(' ') << std::endl;
-        arithmetic.reset();
+        builder.reset();
     }
     void SetUp() override{};
     void TearDown() override{};
 
-    static std::shared_ptr<numeric::arithmetic::ArithmeticSolution> arithmetic;
-    static constexpr int integerForArithmetic1 = 1073741823;
-    static constexpr int integerForArithmetic2 = -2;
+    static std::shared_ptr<numeric::arithmetic::TargetBuilder> builder;
+    static constexpr int integerForArithmetic1{1073741823};
+    static constexpr int integerForArithmetic2{-2};
 };
 
-std::shared_ptr<numeric::arithmetic::ArithmeticSolution> ArithmeticTestBase::arithmetic = nullptr;
+std::shared_ptr<numeric::arithmetic::TargetBuilder> ArithmeticTestBase::builder = nullptr;
 
 TEST_F(ArithmeticTestBase, additionMethod) // NOLINT(cert-err58-cpp)
 {
     ASSERT_EQ(
         1073741821,
-        arithmetic->additionMethod(std::get<0>(arithmetic->getIntegers()), std::get<1>(arithmetic->getIntegers())));
+        numeric::arithmetic::ArithmeticSolution::additionMethod(
+            std::get<0>(builder->getIntegers()), std::get<1>(builder->getIntegers())));
 }
 
 TEST_F(ArithmeticTestBase, subtractionMethod) // NOLINT(cert-err58-cpp)
 {
     ASSERT_EQ(
         1073741825,
-        arithmetic->subtractionMethod(std::get<0>(arithmetic->getIntegers()), std::get<1>(arithmetic->getIntegers())));
+        numeric::arithmetic::ArithmeticSolution::subtractionMethod(
+            std::get<0>(builder->getIntegers()), std::get<1>(builder->getIntegers())));
 }
 
 TEST_F(ArithmeticTestBase, multiplicationMethod) // NOLINT(cert-err58-cpp)
 {
     ASSERT_EQ(
         -2147483646,
-        arithmetic->multiplicationMethod(
-            std::get<0>(arithmetic->getIntegers()), std::get<1>(arithmetic->getIntegers())));
+        numeric::arithmetic::ArithmeticSolution::multiplicationMethod(
+            std::get<0>(builder->getIntegers()), std::get<1>(builder->getIntegers())));
 }
 
 TEST_F(ArithmeticTestBase, divisionMethod) // NOLINT(cert-err58-cpp)
 {
     ASSERT_EQ(
         -536870911,
-        arithmetic->divisionMethod(std::get<0>(arithmetic->getIntegers()), std::get<1>(arithmetic->getIntegers())));
+        numeric::arithmetic::ArithmeticSolution::divisionMethod(
+            std::get<0>(builder->getIntegers()), std::get<1>(builder->getIntegers())));
 }
 
 class DivisorTestBase : public ::testing::Test
@@ -80,37 +82,40 @@ public:
         std::cout << "TEST NUMERIC: " << std::setiosflags(std::ios_base::left) << std::setfill('.')
                   << std::setw(titleWidthForPrintTest) << "DIVISOR"
                   << "BEGIN" << std::resetiosflags(std::ios_base::left) << std::setfill(' ') << std::endl;
-        divisor = std::make_shared<numeric::divisor::DivisorSolution>(integerForDivisor1, integerForDivisor2);
+        builder = std::make_shared<numeric::divisor::TargetBuilder>(integerForDivisor1, integerForDivisor2);
     };
     static void TearDownTestCase()
     {
         std::cout << "TEST NUMERIC: " << std::setiosflags(std::ios_base::left) << std::setfill('.')
                   << std::setw(titleWidthForPrintTest) << "DIVISOR"
                   << "END" << std::resetiosflags(std::ios_base::left) << std::setfill(' ') << std::endl;
-        divisor.reset();
+        builder.reset();
     }
     void SetUp() override{};
     void TearDown() override{};
 
-    static std::shared_ptr<numeric::divisor::DivisorSolution> divisor;
-    static constexpr int integerForDivisor1 = 2 * 2 * 3 * 3 * 5 * 5 * 7 * 7;
-    static constexpr int integerForDivisor2 = 2 * 3 * 5 * 7 * 11 * 13 * 17;
+    static std::shared_ptr<numeric::divisor::TargetBuilder> builder;
+    static constexpr int integerForDivisor1{2 * 2 * 3 * 3 * 5 * 5 * 7 * 7};
+    static constexpr int integerForDivisor2{2 * 3 * 5 * 7 * 11 * 13 * 17};
     const std::vector<int> divisorVector{1, 2, 3, 5, 6, 7, 10, 14, 15, 21, 30, 35, 42, 70, 105, 210};
 };
 
-std::shared_ptr<numeric::divisor::DivisorSolution> DivisorTestBase::divisor = nullptr;
+std::shared_ptr<numeric::divisor::TargetBuilder> DivisorTestBase::builder = nullptr;
 
 TEST_F(DivisorTestBase, euclideanMethod) // NOLINT(cert-err58-cpp)
 {
     ASSERT_EQ(
         divisorVector,
-        divisor->euclideanMethod(std::get<0>(divisor->getIntegers()), std::get<1>(divisor->getIntegers())));
+        numeric::divisor::DivisorSolution::euclideanMethod(
+            std::get<0>(builder->getIntegers()), std::get<1>(builder->getIntegers())));
 }
 
 TEST_F(DivisorTestBase, steinMethod) // NOLINT(cert-err58-cpp)
 {
     ASSERT_EQ(
-        divisorVector, divisor->steinMethod(std::get<0>(divisor->getIntegers()), std::get<1>(divisor->getIntegers())));
+        divisorVector,
+        numeric::divisor::DivisorSolution::steinMethod(
+            std::get<0>(builder->getIntegers()), std::get<1>(builder->getIntegers())));
 }
 
 class IntegralTestBase : public ::testing::Test
@@ -272,20 +277,20 @@ public:
         std::cout << "TEST NUMERIC: " << std::setiosflags(std::ios_base::left) << std::setfill('.')
                   << std::setw(titleWidthForPrintTest) << "PRIME"
                   << "BEGIN" << std::resetiosflags(std::ios_base::left) << std::setfill(' ') << std::endl;
-        prime = std::make_shared<numeric::prime::PrimeSolution>(maxPositiveIntegerForPrime);
+        builder = std::make_shared<numeric::prime::TargetBuilder>(maxPositiveIntegerForPrime);
     };
     static void TearDownTestCase()
     {
         std::cout << "TEST NUMERIC: " << std::setiosflags(std::ios_base::left) << std::setfill('.')
                   << std::setw(titleWidthForPrintTest) << "PRIME"
                   << "END" << std::resetiosflags(std::ios_base::left) << std::setfill(' ') << std::endl;
-        prime.reset();
+        builder.reset();
     }
     void SetUp() override{};
     void TearDown() override{};
 
-    static std::shared_ptr<numeric::prime::PrimeSolution> prime;
-    static constexpr uint32_t maxPositiveIntegerForPrime = 997;
+    static std::shared_ptr<numeric::prime::TargetBuilder> builder;
+    static constexpr uint32_t maxPositiveIntegerForPrime{997};
     const std::vector<uint32_t> primeVector{
         2,   3,   5,   7,   11,  13,  17,  19,  23,  29,  31,  37,  41,  43,  47,  53,  59,  61,  67,  71,  73,
         79,  83,  89,  97,  101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167, 173, 179, 181,
@@ -297,15 +302,15 @@ public:
         857, 859, 863, 877, 881, 883, 887, 907, 911, 919, 929, 937, 941, 947, 953, 967, 971, 977, 983, 991, 997};
 };
 
-std::shared_ptr<numeric::prime::PrimeSolution> PrimeTestBase::prime = nullptr;
+std::shared_ptr<numeric::prime::TargetBuilder> PrimeTestBase::builder = nullptr;
 
 TEST_F(PrimeTestBase, eratosthenesMethod) // NOLINT(cert-err58-cpp)
 {
-    ASSERT_EQ(primeVector, prime->eratosthenesMethod(prime->getMaxPositiveInteger()));
+    ASSERT_EQ(primeVector, numeric::prime::PrimeSolution::eratosthenesMethod(builder->getMaxPositiveInteger()));
 }
 
 TEST_F(PrimeTestBase, eulerMethod) // NOLINT(cert-err58-cpp)
 {
-    ASSERT_EQ(primeVector, prime->eulerMethod(prime->getMaxPositiveInteger()));
+    ASSERT_EQ(primeVector, numeric::prime::PrimeSolution::eulerMethod(builder->getMaxPositiveInteger()));
 }
 } // namespace test::tst_num

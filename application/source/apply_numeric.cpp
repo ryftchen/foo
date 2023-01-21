@@ -115,6 +115,7 @@ void runArithmetic(const std::vector<std::string>& targets)
     }
 
     using numeric::arithmetic::ArithmeticSolution;
+    using numeric::arithmetic::TargetBuilder;
     using utility::hash::operator""_bkdrHash;
 
     APP_NUM_PRINT_TASK_BEGIN_TITLE(Type::arithmetic);
@@ -122,17 +123,12 @@ void runArithmetic(const std::vector<std::string>& targets)
         static_cast<uint32_t>(getBit<ArithmeticMethod>().count()),
         static_cast<uint32_t>(Bottom<ArithmeticMethod>::value)));
 
-    const std::shared_ptr<ArithmeticSolution> arithmetic =
-        std::make_shared<ArithmeticSolution>(input::integerForArithmetic1, input::integerForArithmetic2);
-    const auto arithmeticFunctor =
-        [&](const std::string& threadName, int (ArithmeticSolution::*methodPtr)(const int, const int) const)
+    const std::shared_ptr<TargetBuilder> builder =
+        std::make_shared<TargetBuilder>(input::integerForArithmetic1, input::integerForArithmetic2);
+    const auto arithmeticFunctor = [&](const std::string& threadName, int (*methodPtr)(const int, const int))
     {
         threads->enqueue(
-            threadName,
-            methodPtr,
-            arithmetic,
-            std::get<0>(arithmetic->getIntegers()),
-            std::get<1>(arithmetic->getIntegers()));
+            threadName, methodPtr, std::get<0>(builder->getIntegers()), std::get<1>(builder->getIntegers()));
     };
 
     for (int i = 0; i < Bottom<ArithmeticMethod>::value; ++i)
@@ -202,19 +198,19 @@ void runDivisor(const std::vector<std::string>& targets)
     }
 
     using numeric::divisor::DivisorSolution;
+    using numeric::divisor::TargetBuilder;
     using utility::hash::operator""_bkdrHash;
 
     APP_NUM_PRINT_TASK_BEGIN_TITLE(Type::divisor);
     auto* threads = command::getMemoryForMultithreading().newElement(std::min(
         static_cast<uint32_t>(getBit<DivisorMethod>().count()), static_cast<uint32_t>(Bottom<DivisorMethod>::value)));
 
-    const std::shared_ptr<DivisorSolution> divisor =
-        std::make_shared<DivisorSolution>(input::integerForDivisor1, input::integerForDivisor2);
-    const auto divisorFunctor =
-        [&](const std::string& threadName, std::vector<int> (DivisorSolution::*methodPtr)(int, int) const)
+    const std::shared_ptr<TargetBuilder> builder =
+        std::make_shared<TargetBuilder>(input::integerForDivisor1, input::integerForDivisor2);
+    const auto divisorFunctor = [&](const std::string& threadName, std::vector<int> (*methodPtr)(int, int))
     {
         threads->enqueue(
-            threadName, methodPtr, divisor, std::get<0>(divisor->getIntegers()), std::get<1>(divisor->getIntegers()));
+            threadName, methodPtr, std::get<0>(builder->getIntegers()), std::get<1>(builder->getIntegers()));
     };
 
     for (int i = 0; i < Bottom<DivisorMethod>::value; ++i)
@@ -414,17 +410,17 @@ void runPrime(const std::vector<std::string>& targets)
     }
 
     using numeric::prime::PrimeSolution;
+    using numeric::prime::TargetBuilder;
     using utility::hash::operator""_bkdrHash;
 
     APP_NUM_PRINT_TASK_BEGIN_TITLE(Type::prime);
     auto* threads = command::getMemoryForMultithreading().newElement(std::min(
         static_cast<uint32_t>(getBit<PrimeMethod>().count()), static_cast<uint32_t>(Bottom<PrimeMethod>::value)));
 
-    const std::shared_ptr<PrimeSolution> prime = std::make_shared<PrimeSolution>(input::maxPositiveIntegerForPrime);
-    const auto primeFunctor =
-        [&](const std::string& threadName, std::vector<uint32_t> (PrimeSolution::*methodPtr)(const uint32_t) const)
+    const std::shared_ptr<TargetBuilder> builder = std::make_shared<TargetBuilder>(input::maxPositiveIntegerForPrime);
+    const auto primeFunctor = [&](const std::string& threadName, std::vector<uint32_t> (*methodPtr)(const uint32_t))
     {
-        threads->enqueue(threadName, methodPtr, prime, prime->getMaxPositiveInteger());
+        threads->enqueue(threadName, methodPtr, builder->getMaxPositiveInteger());
     };
 
     for (int i = 0; i < Bottom<PrimeMethod>::value; ++i)

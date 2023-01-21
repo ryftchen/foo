@@ -20,6 +20,38 @@ constexpr uint32_t maxAlignOfPrint = 16;
 //! @brief Maximum columns per row of printing.
 constexpr uint32_t maxColumnOfPrint = 10;
 
+//! @brief Solution of search.
+//! @tparam T type of the solution of search
+template <class T>
+class SearchSolution
+{
+public:
+    //! @brief Destroy the SearchSolution object.
+    virtual ~SearchSolution() = default;
+
+    //! @brief The binary method.
+    //! @param array array to be searched
+    //! @param length length of array
+    //! @param key search key
+    //! @return index of the first occurrence of key
+    static int binaryMethod(const T* const array, const uint32_t length, const T key);
+    //! @brief The interpolation method.
+    //! @param array array to be searched
+    //! @param length length of array
+    //! @param key search key
+    //! @return index of the first occurrence of key
+    static int interpolationMethod(const T* const array, const uint32_t length, const T key);
+    //! @brief The fibonacci method.
+    //! @param array array to be searched
+    //! @param length length of array
+    //! @param key search key
+    //! @return index of the first occurrence of key
+    static int fibonacciMethod(const T* const array, const uint32_t length, const T key);
+
+private:
+    static std::vector<uint32_t> generateFibonacciNumber(const uint32_t max);
+};
+
 //! @brief Check whether it is the number type.
 //! @tparam T type of inspection to be performed
 //! @return be number or not
@@ -29,45 +61,26 @@ constexpr bool isNumber()
     return (std::is_integral<T>::value || std::is_floating_point<T>::value);
 }
 
-//! @brief Solution of search.
-//! @tparam T type of the solution of search
+//! @brief Builder for the target.
+//! @tparam T type of builder for the target
 template <class T>
-class SearchSolution
+class TargetBuilder
 {
 public:
-    //! @brief Construct a new SearchSolution object.
+    //! @brief Construct a new TargetBuilder object.
     //! @param length length of array
     //! @param left the left boundary of the array
     //! @param right the right boundary of the array
-    SearchSolution(const uint32_t length, const T left, const T right);
-    //! @brief Destroy the SearchSolution object.
-    virtual ~SearchSolution() = default;
-    //! @brief Construct a new SearchSolution object.
+    TargetBuilder(const uint32_t length, const T left, const T right);
+    //! @brief Destroy the TargetBuilder object.
+    virtual ~TargetBuilder() = default;
+    //! @brief Construct a new TargetBuilder object.
     //! @param rhs right-hand side
-    SearchSolution(const SearchSolution& rhs);
-    //! @brief The operator (!=) overloading of SearchSolution class.
+    TargetBuilder(const TargetBuilder& rhs);
+    //! @brief The operator (!=) overloading of TargetBuilder class.
     //! @param rhs right-hand side
-    //! @return reference of SearchSolution object
-    SearchSolution<T>& operator=(const SearchSolution& rhs);
-
-    //! @brief The binary method.
-    //! @param array array to be searched
-    //! @param length length of array
-    //! @param key search key
-    //! @return index of the first occurrence of key
-    int binaryMethod(const T* const array, const uint32_t length, const T key) const;
-    //! @brief The interpolation method.
-    //! @param array array to be searched
-    //! @param length length of array
-    //! @param key search key
-    //! @return index of the first occurrence of key
-    int interpolationMethod(const T* const array, const uint32_t length, const T key) const;
-    //! @brief The fibonacci method.
-    //! @param array array to be searched
-    //! @param length length of array
-    //! @param key search key
-    //! @return index of the first occurrence of key
-    int fibonacciMethod(const T* const array, const uint32_t length, const T key) const;
+    //! @return reference of TargetBuilder object
+    TargetBuilder<T>& operator=(const TargetBuilder& rhs);
 
     //! @brief Get the ordered array.
     //! @return ordered array
@@ -78,30 +91,6 @@ public:
     //! @brief Get the search key.
     //! @return T search key
     inline T getSearchKey() const;
-    //! @brief Set the ordered array.
-    //! @tparam V the specific type of integral
-    //! @param array ordered array
-    //! @param length length of the ordered array
-    //! @param left the left boundary of the ordered array
-    //! @param right the left right of the ordered array
-    template <typename V>
-    requires std::is_integral<V>::value void setOrderedArray(
-        T array[],
-        const uint32_t length,
-        const T left,
-        const T right) const;
-    //! @brief Set the ordered array.
-    //! @tparam V the specific type of floating point
-    //! @param array ordered array
-    //! @param length length of the ordered array
-    //! @param left the left boundary of the ordered array
-    //! @param right the left right of the ordered array
-    template <typename V>
-    requires std::is_floating_point<V>::value void setOrderedArray(
-        T array[],
-        const uint32_t length,
-        const T left,
-        const T right) const;
 
 private:
     //! @brief Ordered array.
@@ -113,13 +102,31 @@ private:
 
     //! @brief Deep copy for copy constructor.
     //! @param rhs right-hand side
-    void deepCopy(const SearchSolution& rhs) const;
-    //! @brief Generate fibonacci number.
-    //! @param max the smallest integer greater than or equal to the maximum of the Fibonacci series
-    //! @return fibonacci sequences
-    static std::vector<uint32_t> generateFibonacciNumber(const uint32_t max);
-
-protected:
+    void deepCopy(const TargetBuilder& rhs) const;
+    //! @brief Set the ordered array.
+    //! @tparam V the specific type of integral
+    //! @param array ordered array
+    //! @param length length of the ordered array
+    //! @param left the left boundary of the ordered array
+    //! @param right the left right of the ordered array
+    template <typename V>
+    requires std::is_integral<V>::value static void setOrderedArray(
+        T array[],
+        const uint32_t length,
+        const T left,
+        const T right);
+    //! @brief Set the ordered array.
+    //! @tparam V the specific type of floating point
+    //! @param array ordered array
+    //! @param length length of the ordered array
+    //! @param left the left boundary of the ordered array
+    //! @param right the left right of the ordered array
+    template <typename V>
+    requires std::is_floating_point<V>::value static void setOrderedArray(
+        T array[],
+        const uint32_t length,
+        const T left,
+        const T right);
     //! @brief Format array for printing.
     //! @tparam V type of array
     //! @param array array to be formatted
@@ -128,18 +135,18 @@ protected:
     //! @param bufferSize size of buffer
     //! @return buffer after format
     template <typename V>
-    requires(isNumber<V>()) char* formatArray(
+    requires(isNumber<V>()) static char* formatArray(
         const T* const array,
         const uint32_t length,
         char* const buffer,
-        const uint32_t bufferSize) const;
+        const uint32_t bufferSize);
     //! @brief Get the random seed by time.
     //! @return random seed
     inline static std::mt19937 getRandomSeedByTime();
 };
 
 template <class T>
-SearchSolution<T>::SearchSolution(const uint32_t length, const T left, const T right) :
+TargetBuilder<T>::TargetBuilder(const uint32_t length, const T left, const T right) :
     length(length), orderedArray(std::make_unique<T[]>(length))
 {
     setOrderedArray<T>(orderedArray.get(), length, left, right);
@@ -147,7 +154,7 @@ SearchSolution<T>::SearchSolution(const uint32_t length, const T left, const T r
 }
 
 template <class T>
-SearchSolution<T>::SearchSolution(const SearchSolution& rhs) :
+TargetBuilder<T>::TargetBuilder(const TargetBuilder& rhs) :
     length(rhs.length), orderedArray(std::make_unique<T[]>(rhs.length))
 {
     deepCopy(rhs);
@@ -155,49 +162,49 @@ SearchSolution<T>::SearchSolution(const SearchSolution& rhs) :
 }
 
 template <class T>
-SearchSolution<T>& SearchSolution<T>::operator=(const SearchSolution& rhs)
+TargetBuilder<T>& TargetBuilder<T>::operator=(const TargetBuilder& rhs)
 {
     deepCopy(rhs);
     return *this;
 }
 
 template <class T>
-void SearchSolution<T>::deepCopy(const SearchSolution& rhs) const
-{
-    std::memcpy(this->orderedArray.get(), rhs.orderedArray.get(), this->length * sizeof(T));
-}
-
-template <class T>
-inline const std::unique_ptr<T[]>& SearchSolution<T>::getOrderedArray() const
+inline const std::unique_ptr<T[]>& TargetBuilder<T>::getOrderedArray() const
 {
     return orderedArray;
 }
 
 template <class T>
-inline uint32_t SearchSolution<T>::getLength() const
+inline uint32_t TargetBuilder<T>::getLength() const
 {
     return length;
 }
 
 template <class T>
-inline T SearchSolution<T>::getSearchKey() const
+inline T TargetBuilder<T>::getSearchKey() const
 {
     return searchKey;
 }
 
 template <class T>
+void TargetBuilder<T>::deepCopy(const TargetBuilder& rhs) const
+{
+    std::memcpy(this->orderedArray.get(), rhs.orderedArray.get(), this->length * sizeof(T));
+}
+
+template <class T>
 template <typename V>
-requires std::is_integral<V>::value void SearchSolution<T>::setOrderedArray(
+requires std::is_integral<V>::value void TargetBuilder<T>::setOrderedArray(
     T array[],
     const uint32_t length,
     const T left,
-    const T right) const
+    const T right)
 {
     std::mt19937 seed{getRandomSeedByTime()};
-    std::uniform_int_distribution<int> randomX(left, right);
+    std::uniform_int_distribution<int> random(left, right);
     for (uint32_t i = 0; i < length; ++i)
     {
-        array[i] = randomX(seed);
+        array[i] = random(seed);
     }
     std::sort(array, array + length);
 
@@ -213,17 +220,17 @@ requires std::is_integral<V>::value void SearchSolution<T>::setOrderedArray(
 
 template <class T>
 template <typename V>
-requires std::is_floating_point<V>::value void SearchSolution<T>::setOrderedArray(
+requires std::is_floating_point<V>::value void TargetBuilder<T>::setOrderedArray(
     T array[],
     const uint32_t length,
     const T left,
-    const T right) const
+    const T right)
 {
     std::mt19937 seed{getRandomSeedByTime()};
-    std::uniform_real_distribution<double> randomX(left, right);
+    std::uniform_real_distribution<double> random(left, right);
     for (uint32_t i = 0; i < length; ++i)
     {
-        array[i] = randomX(seed);
+        array[i] = random(seed);
     }
     std::sort(array, array + length);
 
@@ -240,11 +247,11 @@ requires std::is_floating_point<V>::value void SearchSolution<T>::setOrderedArra
 
 template <class T>
 template <typename V>
-requires(isNumber<V>()) char* SearchSolution<T>::formatArray(
+requires(isNumber<V>()) char* TargetBuilder<T>::formatArray(
     const T* const array,
     const uint32_t length,
     char* const buffer,
-    const uint32_t bufferSize) const
+    const uint32_t bufferSize)
 {
     uint32_t align = 0;
     for (uint32_t i = 0; i < length; ++i)
@@ -288,7 +295,7 @@ requires(isNumber<V>()) char* SearchSolution<T>::formatArray(
 }
 
 template <class T>
-inline std::mt19937 SearchSolution<T>::getRandomSeedByTime()
+inline std::mt19937 TargetBuilder<T>::getRandomSeedByTime()
 {
     constexpr uint32_t secToUsec = 1000000;
     timeval timeSeed{};

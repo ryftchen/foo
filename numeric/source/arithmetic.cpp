@@ -12,17 +12,8 @@
 
 namespace numeric::arithmetic
 {
-ArithmeticSolution::ArithmeticSolution(const int integer1, const int integer2) : integer1(integer1), integer2(integer2)
-{
-#ifndef _NO_PRINT_AT_RUNTIME
-    std::cout << "\r\nElementary arithmetic of " << integer1 << " and " << integer2 << ":" << std::endl;
-#endif
-}
-
 // Addition
-int ArithmeticSolution::additionMethod( // NOLINT(readability-convert-member-functions-to-static)
-    const int augend,
-    const int addend) const
+int ArithmeticSolution::additionMethod(const int augend, const int addend)
 {
     const int sum = bitAdd(augend, addend);
 
@@ -31,9 +22,7 @@ int ArithmeticSolution::additionMethod( // NOLINT(readability-convert-member-fun
 }
 
 // Subtraction
-int ArithmeticSolution::subtractionMethod( // NOLINT(readability-convert-member-functions-to-static)
-    const int minuend,
-    const int subtrahend) const
+int ArithmeticSolution::subtractionMethod(const int minuend, const int subtrahend)
 {
     const int difference = bitAdd(minuend, bitAdd(~subtrahend, 1));
 
@@ -42,9 +31,7 @@ int ArithmeticSolution::subtractionMethod( // NOLINT(readability-convert-member-
 }
 
 // Multiplication
-int ArithmeticSolution::multiplicationMethod( // NOLINT(readability-convert-member-functions-to-static)
-    const int multiplier,
-    const int multiplicand) const
+int ArithmeticSolution::multiplicationMethod(const int multiplier, const int multiplicand)
 {
     int product = 0;
 
@@ -62,9 +49,7 @@ int ArithmeticSolution::multiplicationMethod( // NOLINT(readability-convert-memb
 }
 
 // Division
-int ArithmeticSolution::divisionMethod( // NOLINT(readability-convert-member-functions-to-static)
-    const int dividend,
-    const int divisor) const
+int ArithmeticSolution::divisionMethod(const int dividend, const int divisor)
 {
     if (0 == divisor)
     {
@@ -90,5 +75,12 @@ int ArithmeticSolution::divisionMethod( // NOLINT(readability-convert-member-fun
 
     ARITHMETIC_PRINT_RESULT_CONTENT("Division", dividend, "/", divisor, quotient);
     return quotient;
+}
+
+TargetBuilder::TargetBuilder(const int integer1, const int integer2) : integer1(integer1), integer2(integer2)
+{
+#ifndef _NO_PRINT_AT_RUNTIME
+    std::cout << "\r\nElementary arithmetic of " << integer1 << " and " << integer2 << ":" << std::endl;
+#endif
 }
 } // namespace numeric::arithmetic

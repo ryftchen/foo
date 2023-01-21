@@ -25,17 +25,8 @@ constexpr int mpfrBase = 10;
 class MatchSolution
 {
 public:
-    //! @brief Construct a new MatchSolution object.
-    //! @param textLen length of matching text
-    //! @param pattern single pattern
-    explicit MatchSolution(const uint32_t textLen, const std::string_view pattern);
     //! @brief Destroy the MatchSolution object.
-    virtual ~MatchSolution();
-    //! @brief Construct a new MatchSolution object.
-    MatchSolution(const MatchSolution&) = delete;
-    //! @brief The operator (=) overloading of MatchSolution class.
-    //! @return reference of MatchSolution object
-    MatchSolution& operator=(const MatchSolution&) = delete;
+    virtual ~MatchSolution() = default;
 
     //! @brief The Rabin-Karp method.
     //! @param text matching text
@@ -43,57 +34,37 @@ public:
     //! @param textLen length of matching text
     //! @param patternLen length of single pattern
     //! @return index in matching text
-    int rkMethod(const char* text, const char* pattern, const uint32_t textLen, const uint32_t patternLen) const;
+    static int rkMethod(const char* text, const char* pattern, const uint32_t textLen, const uint32_t patternLen);
     //! @brief The Knuth-Morris-Pratt method.
     //! @param text matching text
     //! @param pattern single pattern
     //! @param textLen length of matching text
     //! @param patternLen length of single pattern
     //! @return index in matching text
-    int kmpMethod(const char* text, const char* pattern, const uint32_t textLen, const uint32_t patternLen) const;
+    static int kmpMethod(const char* text, const char* pattern, const uint32_t textLen, const uint32_t patternLen);
     //! @brief The Boyer-Moore method.
     //! @param text matching text
     //! @param pattern single pattern
     //! @param textLen length of matching text
     //! @param patternLen length of single pattern
     //! @return index in matching text
-    int bmMethod(const char* text, const char* pattern, const uint32_t textLen, const uint32_t patternLen) const;
+    static int bmMethod(const char* text, const char* pattern, const uint32_t textLen, const uint32_t patternLen);
     //! @brief The Horspool method.
     //! @param text matching text
     //! @param pattern single pattern
     //! @param textLen length of matching text
     //! @param patternLen length of single pattern
     //! @return index in matching text
-    int horspoolMethod(const char* text, const char* pattern, const uint32_t textLen, const uint32_t patternLen) const;
+    static int horspoolMethod(const char* text, const char* pattern, const uint32_t textLen, const uint32_t patternLen);
     //! @brief The Sunday method.
     //! @param text matching text
     //! @param pattern single pattern
     //! @param textLen length of matching text
     //! @param patternLen length of single pattern
     //! @return index in matching text
-    int sundayMethod(const char* text, const char* pattern, const uint32_t textLen, const uint32_t patternLen) const;
-
-    //! @brief Get the matching text.
-    //! @return matching text
-    [[nodiscard]] inline const std::unique_ptr<char[]>& getMatchingText() const;
-    //! @brief Get the single pattern.
-    //! @return single pattern
-    [[nodiscard]] inline std::string_view getSinglePattern() const;
-    //! @brief Set the matching text.
-    //! @param text matching text to be set
-    //! @param textLen length of matching text
-    static void setMatchingText(char* text, const uint32_t textLen);
+    static int sundayMethod(const char* text, const char* pattern, const uint32_t textLen, const uint32_t patternLen);
 
 private:
-    //! @brief Matching text.
-    const std::unique_ptr<char[]> marchingText;
-    //! @brief Single pattern.
-    const std::string_view singlePattern;
-
-    //! @brief Calculate precision by digit.
-    //! @param digit digit for the target text
-    //! @return precision converted from digit
-    static inline int calculatePrecision(const uint32_t digit);
     //! @brief The rolling hash function.
     //! @param str input data
     //! @param length length of input data
@@ -129,17 +100,56 @@ private:
         const uint32_t patternLen);
 };
 
-inline const std::unique_ptr<char[]>& MatchSolution::getMatchingText() const
+//! @brief Builder for the target.
+class TargetBuilder
+{
+public:
+    //! @brief Construct a new TargetBuilder object.
+    //! @param textLen length of matching text
+    //! @param pattern single pattern
+    explicit TargetBuilder(const uint32_t textLen, const std::string_view pattern);
+    //! @brief Destroy the TargetBuilder object.
+    virtual ~TargetBuilder();
+    //! @brief Construct a new TargetBuilder object.
+    TargetBuilder(const TargetBuilder&) = delete;
+    //! @brief The operator (=) overloading of TargetBuilder class.
+    //! @return reference of TargetBuilder object
+    TargetBuilder& operator=(const TargetBuilder&) = delete;
+
+    //! @brief Get the matching text.
+    //! @return matching text
+    [[nodiscard]] inline const std::unique_ptr<char[]>& getMatchingText() const;
+    //! @brief Get the single pattern.
+    //! @return single pattern
+    [[nodiscard]] inline std::string_view getSinglePattern() const;
+
+private:
+    //! @brief Matching text.
+    const std::unique_ptr<char[]> marchingText;
+    //! @brief Single pattern.
+    const std::string_view singlePattern;
+
+    //! @brief Set the matching text.
+    //! @param text matching text to be set
+    //! @param textLen length of matching text
+    static void setMatchingText(char* text, const uint32_t textLen);
+    //! @brief Calculate precision by digit.
+    //! @param digit digit for the target text
+    //! @return precision converted from digit
+    static inline int calculatePrecision(const uint32_t digit);
+};
+
+inline const std::unique_ptr<char[]>& TargetBuilder::getMatchingText() const
 {
     return marchingText;
 }
 
-inline std::string_view MatchSolution::getSinglePattern() const
+inline std::string_view TargetBuilder::getSinglePattern() const
 {
     return singlePattern;
 }
 
-inline int MatchSolution::calculatePrecision(const uint32_t digit)
+inline int TargetBuilder::calculatePrecision(const uint32_t digit)
 {
     return static_cast<int>(std::ceil(static_cast<double>(digit) * std::log2(mpfrBase)));
 }
