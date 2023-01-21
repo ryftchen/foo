@@ -81,17 +81,17 @@ public:
     static std::vector<T> radixMethod(T* const array, const uint32_t length);
 
 private:
-    //! @brief Recursive for merge sort.
+    //! @brief Recursive for the merge method.
     //! @param sortArray array to be sorted
     //! @param begin index of beginning
     //! @param end index of ending
     static void mergeSortRecursive(T* const sortArray, const uint32_t begin, const uint32_t end);
-    //! @brief Recursive for quick sort.
+    //! @brief Recursive for the quick method.
     //! @param sortArray array to be sorted
     //! @param begin index of beginning
     //! @param end index of ending
     static void quickSortRecursive(T* const sortArray, const uint32_t begin, const uint32_t end);
-    //! @brief Build max heap for heap sort.
+    //! @brief Build max heap for the heap method.
     //! @param sortArray array to be sorted
     //! @param begin index of beginning
     //! @param end index of ending
