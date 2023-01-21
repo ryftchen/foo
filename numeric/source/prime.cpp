@@ -1,10 +1,16 @@
+//! @file prime.cpp
+//! @author ryftchen
+//! @brief The definitions (prime) in the numeric module.
+//! @version 0.1
+//! @copyright Copyright (c) 2022
 #include "prime.hpp"
-#include <bitset>
 #ifndef _NO_PRINT_AT_RUNTIME
 #include "utility/include/common.hpp"
 #include "utility/include/time.hpp"
 
+//! @brief Display prime result.
 #define PRIME_RESULT "\r\n*%-9s method:\r\n%s\r\n==>Run time: %8.5f ms\n"
+//! @brief Print prime result content.
 #define PRIME_PRINT_RESULT_CONTENT(method)                                                                        \
     do                                                                                                            \
     {                                                                                                             \
@@ -18,19 +24,24 @@
             TIME_INTERVAL(timing));                                                                               \
     }                                                                                                             \
     while (0)
+//! @brief Store prime beginning runtime.
 #define PRIME_RUNTIME_BEGIN TIME_BEGIN(timing)
+//! @brief Store prime ending runtime.
 #define PRIME_RUNTIME_END TIME_END(timing)
+//! @brief Calculate prime runtime interval.
 #define PRIME_RUNTIME_INTERVAL TIME_INTERVAL(timing)
 #else
 
+//! @brief Print prime result content.
 #define PRIME_PRINT_RESULT_CONTENT(method)
+//! @brief Store prime beginning runtime.
 #define PRIME_RUNTIME_BEGIN
+//! @brief Store prime ending runtime.
 #define PRIME_RUNTIME_END
 #endif
 
 namespace numeric::prime
 {
-// Eratosthenes
 std::vector<uint32_t> PrimeSolution::eratosthenesMethod(const uint32_t max)
 {
     PRIME_RUNTIME_BEGIN;
@@ -56,7 +67,6 @@ std::vector<uint32_t> PrimeSolution::eratosthenesMethod(const uint32_t max)
     return primeVector;
 }
 
-// Euler
 std::vector<uint32_t> PrimeSolution::eulerMethod(const uint32_t max)
 {
     PRIME_RUNTIME_BEGIN;

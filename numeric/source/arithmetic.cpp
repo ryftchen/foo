@@ -1,18 +1,25 @@
+//! @file arithmetic.cpp
+//! @author ryftchen
+//! @brief The definitions (arithmetic) in the numeric module.
+//! @version 0.1
+//! @copyright Copyright (c) 2022
 #include "arithmetic.hpp"
 #ifndef _NO_PRINT_AT_RUNTIME
 #include "utility/include/common.hpp"
 
+//! @brief Display arithmetic result.
 #define ARITHMETIC_RESULT "\r\n*%-14s method:\r\n(%d) %s (%d) = %d\n"
+//! @brief Print arithmetic result content.
 #define ARITHMETIC_PRINT_RESULT_CONTENT(method, a, operator, b, result) \
     COMMON_PRINT(ARITHMETIC_RESULT, method, a, operator, b, result)
 #else
 
+//! @brief Print arithmetic result content.
 #define ARITHMETIC_PRINT_RESULT_CONTENT(method, a, operator, b, result)
 #endif
 
 namespace numeric::arithmetic
 {
-// Addition
 int ArithmeticSolution::additionMethod(const int augend, const int addend)
 {
     const int sum = bitAdd(augend, addend);
@@ -21,7 +28,6 @@ int ArithmeticSolution::additionMethod(const int augend, const int addend)
     return sum;
 }
 
-// Subtraction
 int ArithmeticSolution::subtractionMethod(const int minuend, const int subtrahend)
 {
     const int difference = bitAdd(minuend, bitAdd(~subtrahend, 1));
@@ -30,7 +36,6 @@ int ArithmeticSolution::subtractionMethod(const int minuend, const int subtrahen
     return difference;
 }
 
-// Multiplication
 int ArithmeticSolution::multiplicationMethod(const int multiplier, const int multiplicand)
 {
     int product = 0;
@@ -48,7 +53,6 @@ int ArithmeticSolution::multiplicationMethod(const int multiplier, const int mul
     return product;
 }
 
-// Division
 int ArithmeticSolution::divisionMethod(const int dividend, const int divisor)
 {
     if (0 == divisor)

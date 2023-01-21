@@ -1,9 +1,16 @@
+//! @file divisor.cpp
+//! @author ryftchen
+//! @brief The definitions (divisor) in the numeric module.
+//! @version 0.1
+//! @copyright Copyright (c) 2022
 #include "divisor.hpp"
 #ifndef _NO_PRINT_AT_RUNTIME
 #include "utility/include/common.hpp"
 #include "utility/include/time.hpp"
 
+//! @brief Display divisor result.
 #define DIVISOR_RESULT "\r\n*%-9s method:\r\n%s\r\n==>Run time: %8.5f ms\n"
+//! @brief Print divisor result content.
 #define DIVISOR_PRINT_RESULT_CONTENT(method)                                                                   \
     do                                                                                                         \
     {                                                                                                          \
@@ -17,20 +24,25 @@
             DIVISOR_RUNTIME_INTERVAL);                                                                         \
     }                                                                                                          \
     while (0)
+//! @brief Store divisor beginning runtime.
 #define DIVISOR_RUNTIME_BEGIN TIME_BEGIN(timing)
+//! @brief Store divisor ending runtime.
 #define DIVISOR_RUNTIME_END TIME_END(timing)
+//! @brief Calculate divisor runtime interval.
 #define DIVISOR_RUNTIME_INTERVAL TIME_INTERVAL(timing)
 #else
 #include <cmath>
 
+//! @brief Print divisor result content.
 #define DIVISOR_PRINT_RESULT_CONTENT(method)
+//! @brief Store divisor beginning runtime.
 #define DIVISOR_RUNTIME_BEGIN
+//! @brief Store divisor ending runtime.
 #define DIVISOR_RUNTIME_END
 #endif
 
 namespace numeric::divisor
 {
-// Euclidean
 std::vector<int> DivisorSolution::euclideanMethod(int a, int b)
 {
     DIVISOR_RUNTIME_BEGIN;
@@ -51,7 +63,6 @@ std::vector<int> DivisorSolution::euclideanMethod(int a, int b)
     return divisorVector;
 }
 
-// Stein
 std::vector<int> DivisorSolution::steinMethod(int a, int b)
 {
     DIVISOR_RUNTIME_BEGIN;
