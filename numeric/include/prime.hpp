@@ -1,29 +1,57 @@
+//! @file prime.hpp
+//! @author ryftchen
+//! @brief The declarations (prime) in the numeric module.
+//! @version 0.1
+//! @copyright Copyright (c) 2022
 #pragma once
 
 #include <string>
 #include <vector>
 
+//! @brief Prime-related functions in the numeric module.
 namespace numeric::prime
 {
+//! @brief Maximum alignment length per element of printing.
 constexpr uint32_t maxAlignOfPrint = 16;
+//! @brief Maximum columns per row of printing.
 constexpr uint32_t maxColumnOfPrint = 10;
 
+//! @brief Solution of prime.
 class PrimeSolution
 {
 public:
+    //! @brief Destroy the PrimeSolution object.
     virtual ~PrimeSolution() = default;
 
+    //! @brief The Eratosthenes method.
+    //! @param max maximum positive integer
+    //! @return all prime numbers that are not greater than the maximum positive integer
     static std::vector<uint32_t> eratosthenesMethod(const uint32_t max);
+    //! @brief The Euler method.
+    //! @param max maximum positive integer
+    //! @return all prime numbers that are not greater than the maximum positive integer
     static std::vector<uint32_t> eulerMethod(const uint32_t max);
 };
 
+//! @brief Builder for the target.
 class TargetBuilder
 {
 public:
+    //! @brief Construct a new TargetBuilder object.
+    //! @param maxPositiveInteger maximum positive integer
     explicit TargetBuilder(const uint32_t maxPositiveInteger);
+    //! @brief Destroy the TargetBuilder object.
     virtual ~TargetBuilder() = default;
 
+    //! @brief Get the Maximum positive integer.
+    //! @return maximum positive integer
     [[nodiscard]] inline uint32_t getMaxPositiveInteger() const;
+    //! @brief Format integer vector for printing.
+    //! @tparam T type of vector
+    //! @param vector vector to be formatted
+    //! @param buffer buffer for filling the formatted vector
+    //! @param bufferSize size of buffer
+    //! @return buffer after format
     template <typename T>
     requires std::is_integral<T>::value static char* formatIntegerVector(
         const std::vector<T>& vector,
@@ -31,6 +59,7 @@ public:
         const uint32_t bufferSize);
 
 private:
+    //! @brief Maximum positive integer.
     const uint32_t maxPositiveInteger;
 };
 

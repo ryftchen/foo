@@ -1,26 +1,45 @@
+//! @file integral.cpp
+//! @author ryftchen
+//! @brief The definitions (integral) in the numeric module.
+//! @version 0.1
+//! @copyright Copyright (c) 2022
 #include "integral.hpp"
 #include <functional>
 #ifndef _NO_PRINT_AT_RUNTIME
 #include "utility/include/common.hpp"
 #include "utility/include/time.hpp"
 
+//! @brief Display integral result.
 #define INTEGRAL_RESULT(opt) "*%-11s method: I(" #opt ")=%+.5f  ==>Run time: %8.5f ms\n"
+//! @brief Print integral result content.
 #define INTEGRAL_PRINT_RESULT_CONTENT(method, sum) \
     COMMON_PRINT(INTEGRAL_RESULT(def), method, sum, INTEGRAL_RUNTIME_INTERVAL)
+//! @brief Store integral beginning runtime.
 #define INTEGRAL_RUNTIME_BEGIN TIME_BEGIN(timing)
+//! @brief Store integral ending runtime.
 #define INTEGRAL_RUNTIME_END TIME_END(timing)
+//! @brief Calculate integral runtime interval.
 #define INTEGRAL_RUNTIME_INTERVAL TIME_INTERVAL(timing)
 #else
 #include <cmath>
 #include <random>
 
+//! @brief Print integral result content.
 #define INTEGRAL_PRINT_RESULT_CONTENT(method, sum)
+//! @brief Store integral beginning runtime.
 #define INTEGRAL_RUNTIME_BEGIN
+//! @brief Store integral ending runtime.
 #define INTEGRAL_RUNTIME_END
 #endif
 
 namespace numeric::integral
 {
+//! @brief Calculate the value of the definite integral with the trapezoidal rule.
+//! @param expr target expression
+//! @param left left endpoint
+//! @param height height of trapezoidal
+//! @param step number of steps
+//! @return result of definite integral
 double trapezoid(const expression::Expression& expr, const double left, const double height, const uint32_t step)
 {
     double sum = 0.0, x = left;
@@ -34,7 +53,6 @@ double trapezoid(const expression::Expression& expr, const double left, const do
     return sum;
 }
 
-// Trapezoidal
 Trapezoidal::Trapezoidal(const expression::Expression& expr) : expr(expr)
 {
 }
@@ -63,7 +81,6 @@ double Trapezoidal::operator()(double lower, double upper, const double eps) con
     return sum;
 }
 
-// Adaptive Simpson's 1/3
 Simpson::Simpson(const expression::Expression& expr) : expr(expr)
 {
 }
@@ -91,11 +108,11 @@ double Simpson::simpsonIntegral(const double left, const double right, const dou
     return sum;
 }
 
-double Simpson::compositeSimpsonOneThird(const double left, const double right, const uint32_t n) const
+double Simpson::compositeSimpsonOneThird(const double left, const double right, const uint32_t step) const
 {
-    const double stepLength = (right - left) / n;
+    const double stepLength = (right - left) / step;
     double sum = 0.0;
-    for (uint32_t i = 0; i < n; ++i)
+    for (uint32_t i = 0; i < step; ++i)
     {
         // I≈(b-a)/6[Y0+Y2n+4(Y1+...+Y2n-1)+6(Y2+...+Y2n-2)]
         sum += simpsonOneThird(left + i * stepLength, left + (i + 1) * stepLength);
@@ -108,7 +125,6 @@ double Simpson::simpsonOneThird(const double left, const double right) const
     return (expr(left) + 4.0 * expr((left + right) / 2.0) + expr(right)) / 6.0 * (right - left);
 }
 
-// Romberg
 Romberg::Romberg(const expression::Expression& expr) : expr(expr)
 {
 }
@@ -146,7 +162,6 @@ double Romberg::operator()(double lower, double upper, const double eps) const
     return sum;
 }
 
-// Gauss-Legendre's 5-Points
 Gauss::Gauss(const expression::Expression& expr) : expr(expr)
 {
 }
@@ -193,7 +208,6 @@ double Gauss::operator()(double lower, double upper, const double eps) const
     return sum;
 }
 
-// Monte-Carlo
 MonteCarlo::MonteCarlo(const expression::Expression& expr) : expr(expr)
 {
 }
