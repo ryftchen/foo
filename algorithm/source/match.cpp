@@ -49,56 +49,7 @@
 
 namespace algorithm::match
 {
-MatchSolution::MatchSolution(const uint32_t textLen, const std::string_view singlePattern) :
-    marchingText(std::make_unique<char[]>(calculatePrecision(textLen))), singlePattern(singlePattern)
-{
-    setMatchingText(marchingText.get(), textLen);
-}
-
-MatchSolution::~MatchSolution()
-{
-    mpfr_free_cache();
-}
-
-void MatchSolution::setMatchingText(char* text, const uint32_t textLen)
-{
-    assert((nullptr != text) && (textLen > 0));
-    mpfr_t x;
-    mpfr_init2(x, calculatePrecision(textLen));
-    mpfr_const_pi(x, MPFR_RNDN);
-    mpfr_exp_t mpfrDecimalLocation;
-    mpfr_get_str(text, &mpfrDecimalLocation, mpfrBase, 0, x, MPFR_RNDN);
-    mpfr_clear(x);
-
-    assert('\0' != *text);
-    text[textLen] = '\0';
-
-#ifndef _NO_PRINT_AT_RUNTIME
-    std::string out(text);
-    out.insert(1, ".");
-    std::cout << "\r\nπ " << textLen << " digits:\r\n"
-              << out.substr(0, std::min(textLen, maxNumPerLineOfPrint)) << std::endl;
-    if (textLen > maxNumPerLineOfPrint)
-    {
-        std::cout << "...\r\n...\r\n..." << std::endl;
-        if (textLen > maxNumPerLineOfPrint)
-        {
-            std::cout
-                << ((textLen > (maxNumPerLineOfPrint * 2))
-                        ? out.substr(out.length() - maxNumPerLineOfPrint, out.length())
-                        : out.substr(maxNumPerLineOfPrint + 1, out.length()))
-                << std::endl;
-        }
-    }
-    std::cout << std::endl;
-#endif
-}
-
-int MatchSolution::rkMethod( // NOLINT(readability-convert-member-functions-to-static)
-    const char* text,
-    const char* pattern,
-    const uint32_t textLen,
-    const uint32_t patternLen) const
+int MatchSolution::rkMethod(const char* text, const char* pattern, const uint32_t textLen, const uint32_t patternLen)
 {
     MATCH_RUNTIME_BEGIN;
     int shift = -1;
@@ -147,11 +98,7 @@ int MatchSolution::rollingHash(const char* str, const uint32_t length, const uin
     return hash;
 }
 
-int MatchSolution::kmpMethod( // NOLINT(readability-convert-member-functions-to-static)
-    const char* text,
-    const char* pattern,
-    const uint32_t textLen,
-    const uint32_t patternLen) const
+int MatchSolution::kmpMethod(const char* text, const char* pattern, const uint32_t textLen, const uint32_t patternLen)
 {
     MATCH_RUNTIME_BEGIN;
     int shift = -1;
@@ -194,11 +141,7 @@ int MatchSolution::kmpMethod( // NOLINT(readability-convert-member-functions-to-
     return shift;
 }
 
-int MatchSolution::bmMethod( // NOLINT(readability-convert-member-functions-to-static)
-    const char* text,
-    const char* pattern,
-    const uint32_t textLen,
-    const uint32_t patternLen) const
+int MatchSolution::bmMethod(const char* text, const char* pattern, const uint32_t textLen, const uint32_t patternLen)
 {
     MATCH_RUNTIME_BEGIN;
     int shift = -1;
@@ -283,11 +226,11 @@ void MatchSolution::fillGoodSuffixRuleTable(
     }
 }
 
-int MatchSolution::horspoolMethod( // NOLINT(readability-convert-member-functions-to-static)
+int MatchSolution::horspoolMethod(
     const char* text,
     const char* pattern,
     const uint32_t textLen,
-    const uint32_t patternLen) const
+    const uint32_t patternLen)
 {
     MATCH_RUNTIME_BEGIN;
     int shift = -1;
@@ -334,11 +277,11 @@ void MatchSolution::fillBadCharShiftTableForHorspool(
     }
 }
 
-int MatchSolution::sundayMethod( // NOLINT(readability-convert-member-functions-to-static)
+int MatchSolution::sundayMethod(
     const char* text,
     const char* pattern,
     const uint32_t textLen,
-    const uint32_t patternLen) const
+    const uint32_t patternLen)
 {
     MATCH_RUNTIME_BEGIN;
     int shift = -1;
@@ -385,5 +328,50 @@ void MatchSolution::fillBadCharShiftTableForSunday(
     {
         badCharShiftTable[pattern[j]] = patternLen - j;
     }
+}
+
+TargetBuilder::TargetBuilder(const uint32_t textLen, const std::string_view singlePattern) :
+    marchingText(std::make_unique<char[]>(calculatePrecision(textLen))), singlePattern(singlePattern)
+{
+    setMatchingText(marchingText.get(), textLen);
+}
+
+TargetBuilder::~TargetBuilder()
+{
+    mpfr_free_cache();
+}
+
+void TargetBuilder::setMatchingText(char* text, const uint32_t textLen)
+{
+    assert((nullptr != text) && (textLen > 0));
+    mpfr_t x;
+    mpfr_init2(x, calculatePrecision(textLen));
+    mpfr_const_pi(x, MPFR_RNDN);
+    mpfr_exp_t mpfrDecimalLocation;
+    mpfr_get_str(text, &mpfrDecimalLocation, mpfrBase, 0, x, MPFR_RNDN);
+    mpfr_clear(x);
+
+    assert('\0' != *text);
+    text[textLen] = '\0';
+
+#ifndef _NO_PRINT_AT_RUNTIME
+    std::string out(text);
+    out.insert(1, ".");
+    std::cout << "\r\nπ " << textLen << " digits:\r\n"
+              << out.substr(0, std::min(textLen, maxNumPerLineOfPrint)) << std::endl;
+    if (textLen > maxNumPerLineOfPrint)
+    {
+        std::cout << "...\r\n...\r\n..." << std::endl;
+        if (textLen > maxNumPerLineOfPrint)
+        {
+            std::cout
+                << ((textLen > (maxNumPerLineOfPrint * 2))
+                        ? out.substr(out.length() - maxNumPerLineOfPrint, out.length())
+                        : out.substr(maxNumPerLineOfPrint + 1, out.length()))
+                << std::endl;
+        }
+    }
+    std::cout << std::endl;
+#endif
 }
 } // namespace algorithm::match

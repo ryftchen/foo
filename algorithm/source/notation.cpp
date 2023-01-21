@@ -21,11 +21,35 @@
 
 namespace algorithm::notation
 {
-NotationSolution::NotationSolution(const std::string_view infixNotation) : infixNotation(infixNotation)
+std::string NotationSolution::prefixMethod(const std::string& infixNotation)
 {
-#ifndef _NO_PRINT_AT_RUNTIME
-    std::cout << "\r\nInfix notation: " << infixNotation << std::endl;
-#endif
+    std::string infix = infixNotation;
+
+    std::reverse(infix.begin(), infix.end());
+    for (uint32_t i = 0; i < infix.size(); ++i)
+    {
+        if ('(' == infix.at(i))
+        {
+            infix.at(i) = ')';
+        }
+        else if (')' == infix.at(i))
+        {
+            infix.at(i) = '(';
+        }
+    }
+    std::string prefixNotation = infixToPostfix(infix);
+    std::reverse(prefixNotation.begin(), prefixNotation.end());
+
+    NOTATION_PRINT_RESULT_CONTENT("Prefix", "Polish notation", prefixNotation.data());
+    return prefixNotation;
+}
+
+std::string NotationSolution::postfixMethod(const std::string& infixNotation)
+{
+    std::string postfixNotation = infixToPostfix(infixNotation);
+
+    NOTATION_PRINT_RESULT_CONTENT("Postfix", "Reverse polish notation", postfixNotation.data());
+    return postfixNotation;
 }
 
 std::string NotationSolution::infixToPostfix(const std::string& infix)
@@ -91,36 +115,10 @@ NotationSolution::Priority NotationSolution::getPriority(const char c)
     }
 }
 
-std::string NotationSolution::prefixMethod( // NOLINT(readability-convert-member-functions-to-static)
-    const std::string& infixNotation) const
+TargetBuilder::TargetBuilder(const std::string_view infixNotation) : infixNotation(infixNotation)
 {
-    std::string infix = infixNotation;
-
-    std::reverse(infix.begin(), infix.end());
-    for (uint32_t i = 0; i < infix.size(); ++i)
-    {
-        if ('(' == infix.at(i))
-        {
-            infix.at(i) = ')';
-        }
-        else if (')' == infix.at(i))
-        {
-            infix.at(i) = '(';
-        }
-    }
-    std::string prefixNotation = infixToPostfix(infix);
-    std::reverse(prefixNotation.begin(), prefixNotation.end());
-
-    NOTATION_PRINT_RESULT_CONTENT("Prefix", "Polish notation", prefixNotation.data());
-    return prefixNotation;
-}
-
-std::string NotationSolution::postfixMethod( // NOLINT(readability-convert-member-functions-to-static)
-    const std::string& infixNotation) const
-{
-    std::string postfixNotation = infixToPostfix(infixNotation);
-
-    NOTATION_PRINT_RESULT_CONTENT("Postfix", "Reverse polish notation", postfixNotation.data());
-    return postfixNotation;
+#ifndef _NO_PRINT_AT_RUNTIME
+    std::cout << "\r\nInfix notation: " << infixNotation << std::endl;
+#endif
 }
 } // namespace algorithm::notation

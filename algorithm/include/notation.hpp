@@ -14,29 +14,19 @@ namespace algorithm::notation
 class NotationSolution
 {
 public:
-    //! @brief Construct a new NotationSolution object.
-    //! @param infixNotation infix notation
-    explicit NotationSolution(const std::string_view infixNotation);
     //! @brief Destroy the NotationSolution object.
     virtual ~NotationSolution() = default;
 
     //! @brief The prefix method.
     //! @param infixNotation infix notation
     //! @return prefix notation
-    [[nodiscard]] std::string prefixMethod(const std::string& infixNotation) const;
+    static std::string prefixMethod(const std::string& infixNotation);
     //! @brief The postfix method.
     //! @param infixNotation infix notation
     //! @return postfix notation
-    [[nodiscard]] std::string postfixMethod(const std::string& infixNotation) const;
-
-    //! @brief Get the infix notation.
-    //! @return infix notation
-    [[nodiscard]] inline std::string_view getInfixNotation() const;
+    static std::string postfixMethod(const std::string& infixNotation);
 
 private:
-    //! @brief Infix notation.
-    const std::string_view infixNotation;
-
     //! @brief Enumerate specific operator priorities.
     enum class Priority
     {
@@ -60,13 +50,32 @@ private:
     static inline bool isOperator(const char c);
 };
 
-inline std::string_view NotationSolution::getInfixNotation() const
-{
-    return infixNotation;
-}
-
 inline bool NotationSolution::isOperator(const char c)
 {
     return (!std::isalpha(c) && !std::isdigit(c));
+}
+
+//! @brief Builder for the target.
+class TargetBuilder
+{
+public:
+    //! @brief Construct a new TargetBuilder object.
+    //! @param infixNotation infix notation
+    explicit TargetBuilder(const std::string_view infixNotation);
+    //! @brief Destroy the TargetBuilder object.
+    virtual ~TargetBuilder() = default;
+
+    //! @brief Get the infix notation.
+    //! @return infix notation
+    [[nodiscard]] inline std::string_view getInfixNotation() const;
+
+private:
+    //! @brief Infix notation.
+    const std::string_view infixNotation;
+};
+
+inline std::string_view TargetBuilder::getInfixNotation() const
+{
+    return infixNotation;
 }
 } // namespace algorithm::notation

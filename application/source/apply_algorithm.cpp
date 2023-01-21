@@ -131,6 +131,7 @@ void runMatch(const std::vector<std::string>& targets)
     }
 
     using algorithm::match::MatchSolution;
+    using algorithm::match::TargetBuilder;
     using utility::hash::operator""_bkdrHash;
 
     static_assert(algorithm::match::maxDigit > input::singlePatternForMatch.length());
@@ -138,20 +139,18 @@ void runMatch(const std::vector<std::string>& targets)
     auto* threads = command::getMemoryForMultithreading().newElement(std::min(
         static_cast<uint32_t>(getBit<MatchMethod>().count()), static_cast<uint32_t>(Bottom<MatchMethod>::value)));
 
-    const std::shared_ptr<MatchSolution> match =
-        std::make_shared<MatchSolution>(algorithm::match::maxDigit, input::singlePatternForMatch);
+    const std::shared_ptr<TargetBuilder> builder =
+        std::make_shared<TargetBuilder>(algorithm::match::maxDigit, input::singlePatternForMatch);
     const auto matchFunctor =
-        [&](const std::string& threadName,
-            int (MatchSolution::*methodPtr)(const char*, const char*, const uint32_t, const uint32_t) const)
+        [&](const std::string& threadName, int (*methodPtr)(const char*, const char*, const uint32_t, const uint32_t))
     {
         threads->enqueue(
             threadName,
             methodPtr,
-            match,
-            match->getMatchingText().get(),
-            match->getSinglePattern().data(),
-            std::string_view(match->getMatchingText().get()).length(),
-            match->getSinglePattern().length());
+            builder->getMatchingText().get(),
+            builder->getSinglePattern().data(),
+            std::string_view(builder->getMatchingText().get()).length(),
+            builder->getSinglePattern().length());
     };
 
     for (int i = 0; i < Bottom<MatchMethod>::value; ++i)
@@ -227,17 +226,17 @@ void runNotation(const std::vector<std::string>& targets)
     }
 
     using algorithm::notation::NotationSolution;
+    using algorithm::notation::TargetBuilder;
     using utility::hash::operator""_bkdrHash;
 
     APP_ALGO_PRINT_TASK_BEGIN_TITLE(Type::notation);
     auto* threads = command::getMemoryForMultithreading().newElement(std::min(
         static_cast<uint32_t>(getBit<NotationMethod>().count()), static_cast<uint32_t>(Bottom<NotationMethod>::value)));
 
-    const std::shared_ptr<NotationSolution> notation = std::make_shared<NotationSolution>(input::infixForNotation);
-    const auto notationFunctor =
-        [&](const std::string& threadName, std::string (NotationSolution::*methodPtr)(const std::string&) const)
+    const std::shared_ptr<TargetBuilder> builder = std::make_shared<TargetBuilder>(input::infixForNotation);
+    const auto notationFunctor = [&](const std::string& threadName, std::string (*methodPtr)(const std::string&))
     {
-        threads->enqueue(threadName, methodPtr, notation, std::string{notation->getInfixNotation()});
+        threads->enqueue(threadName, methodPtr, std::string{builder->getInfixNotation()});
     };
 
     for (int i = 0; i < Bottom<NotationMethod>::value; ++i)
@@ -431,6 +430,7 @@ void runSearch(const std::vector<std::string>& targets)
     }
 
     using algorithm::search::SearchSolution;
+    using algorithm::search::TargetBuilder;
     using input::arrayLengthForSearch;
     using input::arrayRangeForSearch1;
     using input::arrayRangeForSearch2;
@@ -441,19 +441,13 @@ void runSearch(const std::vector<std::string>& targets)
     auto* threads = command::getMemoryForMultithreading().newElement(std::min(
         static_cast<uint32_t>(getBit<SearchMethod>().count()), static_cast<uint32_t>(Bottom<SearchMethod>::value)));
 
-    const std::shared_ptr<SearchSolution<double>> search =
-        std::make_shared<SearchSolution<double>>(arrayLengthForSearch, arrayRangeForSearch1, arrayRangeForSearch2);
+    const std::shared_ptr<TargetBuilder<double>> builder =
+        std::make_shared<TargetBuilder<double>>(arrayLengthForSearch, arrayRangeForSearch1, arrayRangeForSearch2);
     const auto searchFunctor =
-        [&](const std::string& threadName,
-            int (SearchSolution<double>::*methodPtr)(const double* const, const uint32_t, const double) const)
+        [&](const std::string& threadName, int (*methodPtr)(const double* const, const uint32_t, const double))
     {
         threads->enqueue(
-            threadName,
-            methodPtr,
-            search,
-            search->getOrderedArray().get(),
-            search->getLength(),
-            search->getSearchKey());
+            threadName, methodPtr, builder->getOrderedArray().get(), builder->getLength(), builder->getSearchKey());
     };
 
     for (int i = 0; i < Bottom<SearchMethod>::value; ++i)
@@ -517,6 +511,7 @@ void runSort(const std::vector<std::string>& targets)
     }
 
     using algorithm::sort::SortSolution;
+    using algorithm::sort::TargetBuilder;
     using input::arrayLengthForSort;
     using input::arrayRangeForSort1;
     using input::arrayRangeForSort2;
@@ -527,12 +522,12 @@ void runSort(const std::vector<std::string>& targets)
     auto* threads = command::getMemoryForMultithreading().newElement(std::min(
         static_cast<uint32_t>(getBit<SortMethod>().count()), static_cast<uint32_t>(Bottom<SortMethod>::value)));
 
-    const std::shared_ptr<SortSolution<int>> sort =
-        std::make_shared<SortSolution<int>>(arrayLengthForSort, arrayRangeForSort1, arrayRangeForSort2);
-    const auto sortFunctor = [&](const std::string& threadName,
-                                 std::vector<int> (SortSolution<int>::*methodPtr)(int* const, const uint32_t) const)
+    const std::shared_ptr<TargetBuilder<int>> builder =
+        std::make_shared<TargetBuilder<int>>(arrayLengthForSort, arrayRangeForSort1, arrayRangeForSort2);
+    const auto sortFunctor =
+        [&](const std::string& threadName, std::vector<int> (*methodPtr)(int* const, const uint32_t))
     {
-        threads->enqueue(threadName, methodPtr, sort, sort->getRandomArray().get(), sort->getLength());
+        threads->enqueue(threadName, methodPtr, builder->getRandomArray().get(), builder->getLength());
     };
 
     for (int i = 0; i < Bottom<SortMethod>::value; ++i)

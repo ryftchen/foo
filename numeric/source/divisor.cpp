@@ -4,18 +4,18 @@
 #include "utility/include/time.hpp"
 
 #define DIVISOR_RESULT "\r\n*%-9s method:\r\n%s\r\n==>Run time: %8.5f ms\n"
-#define DIVISOR_PRINT_RESULT_CONTENT(method)                                      \
-    do                                                                            \
-    {                                                                             \
-        const uint32_t arrayBufferSize = divisorVector.size() * maxAlignOfPrint;  \
-        char arrayBuffer[arrayBufferSize + 1];                                    \
-        arrayBuffer[0] = '\0';                                                    \
-        COMMON_PRINT(                                                             \
-            DIVISOR_RESULT,                                                       \
-            method,                                                               \
-            formatIntegerVector(divisorVector, arrayBuffer, arrayBufferSize + 1), \
-            DIVISOR_RUNTIME_INTERVAL);                                            \
-    }                                                                             \
+#define DIVISOR_PRINT_RESULT_CONTENT(method)                                                                   \
+    do                                                                                                         \
+    {                                                                                                          \
+        const uint32_t arrayBufferSize = divisorVector.size() * maxAlignOfPrint;                               \
+        char arrayBuffer[arrayBufferSize + 1];                                                                 \
+        arrayBuffer[0] = '\0';                                                                                 \
+        COMMON_PRINT(                                                                                          \
+            DIVISOR_RESULT,                                                                                    \
+            method,                                                                                            \
+            TargetBuilder::template formatIntegerVector<int>(divisorVector, arrayBuffer, arrayBufferSize + 1), \
+            DIVISOR_RUNTIME_INTERVAL);                                                                         \
+    }                                                                                                          \
     while (0)
 #define DIVISOR_RUNTIME_BEGIN TIME_BEGIN(timing)
 #define DIVISOR_RUNTIME_END TIME_END(timing)
@@ -30,33 +30,8 @@
 
 namespace numeric::divisor
 {
-DivisorSolution::DivisorSolution(const int integer1, const int integer2) : integer1(integer1), integer2(integer2)
-{
-#ifndef _NO_PRINT_AT_RUNTIME
-    std::cout << "\r\nAll common divisors of " << integer1 << " and " << integer2 << ":" << std::endl;
-#endif
-}
-
-std::vector<int> DivisorSolution::getAllDivisors(const int greatestCommonDivisor)
-{
-    std::vector<int> divisors(0);
-    for (int i = 1; i <= std::sqrt(greatestCommonDivisor); ++i)
-    {
-        if (0 == (greatestCommonDivisor % i))
-        {
-            divisors.emplace_back(i);
-            if ((greatestCommonDivisor / i) != i)
-            {
-                divisors.emplace_back(greatestCommonDivisor / i);
-            }
-        }
-    }
-    std::sort(divisors.begin(), divisors.end());
-    return divisors;
-}
-
 // Euclidean
-std::vector<int> DivisorSolution::euclideanMethod(int a, int b) const
+std::vector<int> DivisorSolution::euclideanMethod(int a, int b)
 {
     DIVISOR_RUNTIME_BEGIN;
     a = std::abs(a);
@@ -77,7 +52,7 @@ std::vector<int> DivisorSolution::euclideanMethod(int a, int b) const
 }
 
 // Stein
-std::vector<int> DivisorSolution::steinMethod(int a, int b) const
+std::vector<int> DivisorSolution::steinMethod(int a, int b)
 {
     DIVISOR_RUNTIME_BEGIN;
     int greatestCommonDivisor = 0, c = 0;
@@ -131,5 +106,30 @@ int DivisorSolution::steinRecursive(int a, int b)
         a = (a - b) >> 1;
         return steinRecursive(a, b);
     }
+}
+
+std::vector<int> DivisorSolution::getAllDivisors(const int greatestCommonDivisor)
+{
+    std::vector<int> divisors(0);
+    for (int i = 1; i <= std::sqrt(greatestCommonDivisor); ++i)
+    {
+        if (0 == (greatestCommonDivisor % i))
+        {
+            divisors.emplace_back(i);
+            if ((greatestCommonDivisor / i) != i)
+            {
+                divisors.emplace_back(greatestCommonDivisor / i);
+            }
+        }
+    }
+    std::sort(divisors.begin(), divisors.end());
+    return divisors;
+}
+
+TargetBuilder::TargetBuilder(const int integer1, const int integer2) : integer1(integer1), integer2(integer2)
+{
+#ifndef _NO_PRINT_AT_RUNTIME
+    std::cout << "\r\nAll common divisors of " << integer1 << " and " << integer2 << ":" << std::endl;
+#endif
 }
 } // namespace numeric::divisor

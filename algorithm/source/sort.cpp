@@ -12,18 +12,18 @@
 //! @brief Display sort result.
 #define SORT_RESULT(opt) "\r\n*%-9s method: (" #opt ")\r\n%s\r\n==>Run time: %8.5f ms\n"
 //! @brief Print sort result content.
-#define SORT_PRINT_RESULT_CONTENT(method)                                        \
-    do                                                                           \
-    {                                                                            \
-        const uint32_t arrayBufferSize = length * maxAlignOfPrint;               \
-        char arrayBuffer[arrayBufferSize + 1];                                   \
-        arrayBuffer[0] = '\0';                                                   \
-        COMMON_PRINT(                                                            \
-            SORT_RESULT(asc),                                                    \
-            method,                                                              \
-            formatArray<T>(sortArray, length, arrayBuffer, arrayBufferSize + 1), \
-            SORT_RUNTIME_INTERVAL);                                              \
-    }                                                                            \
+#define SORT_PRINT_RESULT_CONTENT(method)                                                                   \
+    do                                                                                                      \
+    {                                                                                                       \
+        const uint32_t arrayBufferSize = length * maxAlignOfPrint;                                          \
+        char arrayBuffer[arrayBufferSize + 1];                                                              \
+        arrayBuffer[0] = '\0';                                                                              \
+        COMMON_PRINT(                                                                                       \
+            SORT_RESULT(asc),                                                                               \
+            method,                                                                                         \
+            TargetBuilder<T>::template formatArray<T>(sortArray, length, arrayBuffer, arrayBufferSize + 1), \
+            SORT_RUNTIME_INTERVAL);                                                                         \
+    }                                                                                                       \
     while (0)
 //! @brief Store sort beginning runtime.
 #define SORT_RUNTIME_BEGIN TIME_BEGIN(timing)
@@ -46,19 +46,19 @@
 namespace algorithm::sort
 {
 template class SortSolution<int>;
-template std::vector<int> SortSolution<int>::bubbleMethod(int* const array, const uint32_t length) const;
-template std::vector<int> SortSolution<int>::selectionMethod(int* const array, const uint32_t length) const;
-template std::vector<int> SortSolution<int>::insertionMethod(int* const array, const uint32_t length) const;
-template std::vector<int> SortSolution<int>::shellMethod(int* const array, const uint32_t length) const;
-template std::vector<int> SortSolution<int>::mergeMethod(int* const array, const uint32_t length) const;
-template std::vector<int> SortSolution<int>::quickMethod(int* const array, const uint32_t length) const;
-template std::vector<int> SortSolution<int>::heapMethod(int* const array, const uint32_t length) const;
-template std::vector<int> SortSolution<int>::countingMethod(int* const array, const uint32_t length) const;
-template std::vector<int> SortSolution<int>::bucketMethod(int* const array, const uint32_t length) const;
-template std::vector<int> SortSolution<int>::radixMethod(int* const array, const uint32_t length) const;
+template std::vector<int> SortSolution<int>::bubbleMethod(int* const array, const uint32_t length);
+template std::vector<int> SortSolution<int>::selectionMethod(int* const array, const uint32_t length);
+template std::vector<int> SortSolution<int>::insertionMethod(int* const array, const uint32_t length);
+template std::vector<int> SortSolution<int>::shellMethod(int* const array, const uint32_t length);
+template std::vector<int> SortSolution<int>::mergeMethod(int* const array, const uint32_t length);
+template std::vector<int> SortSolution<int>::quickMethod(int* const array, const uint32_t length);
+template std::vector<int> SortSolution<int>::heapMethod(int* const array, const uint32_t length);
+template std::vector<int> SortSolution<int>::countingMethod(int* const array, const uint32_t length);
+template std::vector<int> SortSolution<int>::bucketMethod(int* const array, const uint32_t length);
+template std::vector<int> SortSolution<int>::radixMethod(int* const array, const uint32_t length);
 
 template <class T>
-std::vector<T> SortSolution<T>::bubbleMethod(T* const array, const uint32_t length) const
+std::vector<T> SortSolution<T>::bubbleMethod(T* const array, const uint32_t length)
 {
     SORT_RUNTIME_BEGIN;
     T sortArray[length];
@@ -82,7 +82,7 @@ std::vector<T> SortSolution<T>::bubbleMethod(T* const array, const uint32_t leng
 }
 
 template <class T>
-std::vector<T> SortSolution<T>::selectionMethod(T* const array, const uint32_t length) const
+std::vector<T> SortSolution<T>::selectionMethod(T* const array, const uint32_t length)
 {
     SORT_RUNTIME_BEGIN;
     T sortArray[length];
@@ -108,7 +108,7 @@ std::vector<T> SortSolution<T>::selectionMethod(T* const array, const uint32_t l
 }
 
 template <class T>
-std::vector<T> SortSolution<T>::insertionMethod(T* const array, const uint32_t length) const
+std::vector<T> SortSolution<T>::insertionMethod(T* const array, const uint32_t length)
 {
     SORT_RUNTIME_BEGIN;
     T sortArray[length];
@@ -133,7 +133,7 @@ std::vector<T> SortSolution<T>::insertionMethod(T* const array, const uint32_t l
 }
 
 template <class T>
-std::vector<T> SortSolution<T>::shellMethod(T* const array, const uint32_t length) const
+std::vector<T> SortSolution<T>::shellMethod(T* const array, const uint32_t length)
 {
     SORT_RUNTIME_BEGIN;
     T sortArray[length];
@@ -159,7 +159,7 @@ std::vector<T> SortSolution<T>::shellMethod(T* const array, const uint32_t lengt
 }
 
 template <class T>
-std::vector<T> SortSolution<T>::mergeMethod(T* const array, const uint32_t length) const
+std::vector<T> SortSolution<T>::mergeMethod(T* const array, const uint32_t length)
 {
     SORT_RUNTIME_BEGIN;
     T sortArray[length];
@@ -205,7 +205,7 @@ void SortSolution<T>::mergeSortRecursive(T* const sortArray, const uint32_t begi
 }
 
 template <class T>
-std::vector<T> SortSolution<T>::quickMethod(T* const array, const uint32_t length) const
+std::vector<T> SortSolution<T>::quickMethod(T* const array, const uint32_t length)
 {
     SORT_RUNTIME_BEGIN;
     T sortArray[length];
@@ -259,7 +259,7 @@ void SortSolution<T>::quickSortRecursive(T* const sortArray, const uint32_t begi
 }
 
 template <class T>
-std::vector<T> SortSolution<T>::heapMethod(T* const array, const uint32_t length) const
+std::vector<T> SortSolution<T>::heapMethod(T* const array, const uint32_t length)
 {
     SORT_RUNTIME_BEGIN;
     T sortArray[length];
@@ -304,7 +304,7 @@ void SortSolution<T>::buildMaxHeap(T* const sortArray, const uint32_t begin, con
 }
 
 template <class T>
-std::vector<T> SortSolution<T>::countingMethod(T* const array, const uint32_t length) const
+std::vector<T> SortSolution<T>::countingMethod(T* const array, const uint32_t length)
 {
     if (!std::is_integral_v<T>)
     {
@@ -350,7 +350,7 @@ std::vector<T> SortSolution<T>::countingMethod(T* const array, const uint32_t le
 }
 
 template <class T>
-std::vector<T> SortSolution<T>::bucketMethod(T* const array, const uint32_t length) const
+std::vector<T> SortSolution<T>::bucketMethod(T* const array, const uint32_t length)
 {
     SORT_RUNTIME_BEGIN;
     T sortArray[length];
@@ -391,7 +391,7 @@ std::vector<T> SortSolution<T>::bucketMethod(T* const array, const uint32_t leng
 }
 
 template <class T>
-std::vector<T> SortSolution<T>::radixMethod(T* const array, const uint32_t length) const
+std::vector<T> SortSolution<T>::radixMethod(T* const array, const uint32_t length)
 {
     if (!std::is_integral_v<T>)
     {

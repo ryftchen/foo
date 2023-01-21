@@ -20,77 +20,77 @@ public:
         std::cout << "TEST ALGORITHM: " << std::setiosflags(std::ios_base::left) << std::setfill('.')
                   << std::setw(titleWidthForPrintTest) << "MATCH"
                   << "BEGIN" << std::resetiosflags(std::ios_base::left) << std::setfill(' ') << std::endl;
-        match = std::make_shared<algorithm::match::MatchSolution>(algorithm::match::maxDigit, singlePatternForMatch);
+        builder = std::make_shared<algorithm::match::TargetBuilder>(algorithm::match::maxDigit, singlePatternForMatch);
     };
     static void TearDownTestCase()
     {
         std::cout << "TEST ALGORITHM: " << std::setiosflags(std::ios_base::left) << std::setfill('.')
                   << std::setw(titleWidthForPrintTest) << "MATCH"
                   << "END" << std::resetiosflags(std::ios_base::left) << std::setfill(' ') << std::endl;
-        match.reset();
+        builder.reset();
     }
     void SetUp() override{};
     void TearDown() override{};
 
-    static std::shared_ptr<algorithm::match::MatchSolution> match;
+    static std::shared_ptr<algorithm::match::TargetBuilder> builder;
     static constexpr std::string_view singlePatternForMatch{"12345"};
 };
 
-std::shared_ptr<algorithm::match::MatchSolution> MatchTestBase::match = nullptr;
+std::shared_ptr<algorithm::match::TargetBuilder> MatchTestBase::builder = nullptr;
 
 TEST_F(MatchTestBase, rkMethod) // NOLINT(cert-err58-cpp)
 {
     ASSERT_EQ(
         49702,
-        match->rkMethod(
-            match->getMatchingText().get(),
-            match->getSinglePattern().data(),
-            std::string_view(match->getMatchingText().get()).length(),
-            match->getSinglePattern().length()));
+        algorithm::match::MatchSolution::rkMethod(
+            builder->getMatchingText().get(),
+            builder->getSinglePattern().data(),
+            std::string_view(builder->getMatchingText().get()).length(),
+            builder->getSinglePattern().length()));
 }
 
 TEST_F(MatchTestBase, kmpMethod) // NOLINT(cert-err58-cpp)
 {
     ASSERT_EQ(
         49702,
-        match->kmpMethod(
-            match->getMatchingText().get(),
-            match->getSinglePattern().data(),
-            std::string_view(match->getMatchingText().get()).length(),
-            match->getSinglePattern().length()));
+        algorithm::match::MatchSolution::kmpMethod(
+            builder->getMatchingText().get(),
+            builder->getSinglePattern().data(),
+            std::string_view(builder->getMatchingText().get()).length(),
+            builder->getSinglePattern().length()));
 }
 
 TEST_F(MatchTestBase, bmMethod) // NOLINT(cert-err58-cpp)
 {
     ASSERT_EQ(
         49702,
-        match->bmMethod(
-            match->getMatchingText().get(),
-            match->getSinglePattern().data(),
-            std::string_view(match->getMatchingText().get()).length(),
-            match->getSinglePattern().length()));
+        algorithm::match::MatchSolution::bmMethod(
+            builder->getMatchingText().get(),
+            builder->getSinglePattern().data(),
+            std::string_view(builder->getMatchingText().get()).length(),
+            builder->getSinglePattern().length()));
 }
 
 TEST_F(MatchTestBase, horspoolMethod) // NOLINT(cert-err58-cpp)
 {
     ASSERT_EQ(
         49702,
-        match->horspoolMethod(
-            match->getMatchingText().get(),
-            match->getSinglePattern().data(),
-            std::string_view(match->getMatchingText().get()).length(),
-            match->getSinglePattern().length()));
+        algorithm::match::MatchSolution::horspoolMethod(
+            builder->getMatchingText().get(),
+            builder->getSinglePattern().data(),
+            std::string_view(builder->getMatchingText().get()).length(),
+            builder->getSinglePattern().length()));
 }
 
 TEST_F(MatchTestBase, sundayMethod) // NOLINT(cert-err58-cpp)
 {
     ASSERT_EQ(
         49702,
-        match->sundayMethod(
-            match->getMatchingText().get(),
-            match->getSinglePattern().data(),
-            std::string_view(match->getMatchingText().get()).length(),
-            match->getSinglePattern().length()));
+        algorithm::match::MatchSolution::sundayMethod(
+            builder->getMatchingText().get(),
+            builder->getSinglePattern().data(),
+            std::string_view(builder->getMatchingText().get()).length(),
+            builder->getSinglePattern().length()));
 }
 
 class NotationTestBase : public ::testing::Test
@@ -104,32 +104,36 @@ public:
         std::cout << "TEST ALGORITHM: " << std::setiosflags(std::ios_base::left) << std::setfill('.')
                   << std::setw(titleWidthForPrintTest) << "NOTATION"
                   << "BEGIN" << std::resetiosflags(std::ios_base::left) << std::setfill(' ') << std::endl;
-        notation = std::make_shared<algorithm::notation::NotationSolution>(infixForNotation);
+        builder = std::make_shared<algorithm::notation::TargetBuilder>(infixForNotation);
     };
     static void TearDownTestCase()
     {
         std::cout << "TEST ALGORITHM: " << std::setiosflags(std::ios_base::left) << std::setfill('.')
                   << std::setw(titleWidthForPrintTest) << "NOTATION"
                   << "END" << std::resetiosflags(std::ios_base::left) << std::setfill(' ') << std::endl;
-        notation.reset();
+        builder.reset();
     }
     void SetUp() override{};
     void TearDown() override{};
 
-    static std::shared_ptr<algorithm::notation::NotationSolution> notation;
+    static std::shared_ptr<algorithm::notation::TargetBuilder> builder;
     static constexpr std::string_view infixForNotation{"a+b*(c^d-e)^(f+g*h)-i"};
 };
 
-std::shared_ptr<algorithm::notation::NotationSolution> NotationTestBase::notation = nullptr;
+std::shared_ptr<algorithm::notation::TargetBuilder> NotationTestBase::builder = nullptr;
 
 TEST_F(NotationTestBase, prefixMethod) // NOLINT(cert-err58-cpp)
 {
-    ASSERT_EQ("+a-*b^-^cde+f*ghi", notation->prefixMethod(std::string{notation->getInfixNotation()}));
+    ASSERT_EQ(
+        "+a-*b^-^cde+f*ghi",
+        algorithm::notation::NotationSolution::prefixMethod(std::string{builder->getInfixNotation()}));
 }
 
 TEST_F(NotationTestBase, postfixMethod) // NOLINT(cert-err58-cpp)
 {
-    ASSERT_EQ("abcd^e-fgh*+^*+i-", notation->postfixMethod(std::string{notation->getInfixNotation()}));
+    ASSERT_EQ(
+        "abcd^e-fgh*+^*+i-",
+        algorithm::notation::NotationSolution::postfixMethod(std::string{builder->getInfixNotation()}));
 }
 
 class OptimalTestBase : public ::testing::Test
@@ -283,7 +287,7 @@ public:
         std::cout << "TEST ALGORITHM: " << std::setiosflags(std::ios_base::left) << std::setfill('.')
                   << std::setw(titleWidthForPrintTest) << "SEARCH"
                   << "BEGIN" << std::resetiosflags(std::ios_base::left) << std::setfill(' ') << std::endl;
-        search = std::make_shared<algorithm::search::SearchSolution<double>>(
+        builder = std::make_shared<algorithm::search::TargetBuilder<double>>(
             arrayLengthForSearch, arrayRangeForSearch1, arrayRangeForSearch2);
     };
     static void TearDownTestCase()
@@ -291,38 +295,41 @@ public:
         std::cout << "TEST ALGORITHM: " << std::setiosflags(std::ios_base::left) << std::setfill('.')
                   << std::setw(titleWidthForPrintTest) << "SEARCH"
                   << "END" << std::resetiosflags(std::ios_base::left) << std::setfill(' ') << std::endl;
-        search.reset();
+        builder.reset();
     }
     void SetUp() override{};
     void TearDown() override{};
 
-    static std::shared_ptr<algorithm::search::SearchSolution<double>> search;
-    static constexpr double arrayRangeForSearch1 = -50.0;
-    static constexpr double arrayRangeForSearch2 = 150.0;
-    static constexpr uint32_t arrayLengthForSearch = 53;
+    static std::shared_ptr<algorithm::search::TargetBuilder<double>> builder;
+    static constexpr double arrayRangeForSearch1{-50.0};
+    static constexpr double arrayRangeForSearch2{150.0};
+    static constexpr uint32_t arrayLengthForSearch{53};
 };
 
-std::shared_ptr<algorithm::search::SearchSolution<double>> SearchTestBase::search = nullptr;
+std::shared_ptr<algorithm::search::TargetBuilder<double>> SearchTestBase::builder = nullptr;
 
 TEST_F(SearchTestBase, binaryMethod) // NOLINT(cert-err58-cpp)
 {
     ASSERT_EQ(
-        search->getLength() / 2,
-        search->binaryMethod(search->getOrderedArray().get(), search->getLength(), search->getSearchKey()));
+        builder->getLength() / 2,
+        algorithm::search::SearchSolution<double>::binaryMethod(
+            builder->getOrderedArray().get(), builder->getLength(), builder->getSearchKey()));
 }
 
 TEST_F(SearchTestBase, interpolationMethod) // NOLINT(cert-err58-cpp)
 {
     ASSERT_EQ(
-        search->getLength() / 2,
-        search->interpolationMethod(search->getOrderedArray().get(), search->getLength(), search->getSearchKey()));
+        builder->getLength() / 2,
+        algorithm::search::SearchSolution<double>::interpolationMethod(
+            builder->getOrderedArray().get(), builder->getLength(), builder->getSearchKey()));
 }
 
 TEST_F(SearchTestBase, fibonacciMethod) // NOLINT(cert-err58-cpp)
 {
     ASSERT_EQ(
-        search->getLength() / 2,
-        search->fibonacciMethod(search->getOrderedArray().get(), search->getLength(), search->getSearchKey()));
+        builder->getLength() / 2,
+        algorithm::search::SearchSolution<double>::fibonacciMethod(
+            builder->getOrderedArray().get(), builder->getLength(), builder->getSearchKey()));
 }
 
 class SortTestBase : public ::testing::Test
@@ -336,7 +343,7 @@ public:
         std::cout << "TEST ALGORITHM: " << std::setiosflags(std::ios_base::left) << std::setfill('.')
                   << std::setw(titleWidthForPrintTest) << "SORT"
                   << "BEGIN" << std::resetiosflags(std::ios_base::left) << std::setfill(' ') << std::endl;
-        sort = std::make_shared<algorithm::sort::SortSolution<int>>(
+        builder = std::make_shared<algorithm::sort::TargetBuilder<int>>(
             arrayLengthForSort, arrayRangeForSort1, arrayRangeForSort2);
     };
     static void TearDownTestCase()
@@ -344,86 +351,116 @@ public:
         std::cout << "TEST ALGORITHM: " << std::setiosflags(std::ios_base::left) << std::setfill('.')
                   << std::setw(titleWidthForPrintTest) << "SORT"
                   << "END" << std::resetiosflags(std::ios_base::left) << std::setfill(' ') << std::endl;
-        sort.reset();
+        builder.reset();
     }
     void SetUp() override{};
     void TearDown() override{};
 
-    static std::shared_ptr<algorithm::sort::SortSolution<int>> sort;
-    static constexpr int arrayRangeForSort1 = -50;
-    static constexpr int arrayRangeForSort2 = 150;
-    static constexpr uint32_t arrayLengthForSort = 53;
+    static std::shared_ptr<algorithm::sort::TargetBuilder<int>> builder;
+    static constexpr int arrayRangeForSort1{-50};
+    static constexpr int arrayRangeForSort2{150};
+    static constexpr uint32_t arrayLengthForSort{53};
 };
 
-std::shared_ptr<algorithm::sort::SortSolution<int>> SortTestBase::sort = nullptr;
+std::shared_ptr<algorithm::sort::TargetBuilder<int>> SortTestBase::builder = nullptr;
 
 TEST_F(SortTestBase, bubbleMethod) // NOLINT(cert-err58-cpp)
 {
-    std::vector<int> sortVector(sort->getRandomArray().get(), sort->getRandomArray().get() + sort->getLength());
+    std::vector<int> sortVector(
+        builder->getRandomArray().get(), builder->getRandomArray().get() + builder->getLength());
     std::sort(sortVector.begin(), sortVector.end());
-    ASSERT_EQ(sortVector, sort->bubbleMethod(sort->getRandomArray().get(), sort->getLength()));
+    ASSERT_EQ(
+        sortVector,
+        algorithm::sort::SortSolution<int>::bubbleMethod(builder->getRandomArray().get(), builder->getLength()));
 }
 
 TEST_F(SortTestBase, selectionMethod) // NOLINT(cert-err58-cpp)
 {
-    std::vector<int> sortVector(sort->getRandomArray().get(), sort->getRandomArray().get() + sort->getLength());
+    std::vector<int> sortVector(
+        builder->getRandomArray().get(), builder->getRandomArray().get() + builder->getLength());
     std::sort(sortVector.begin(), sortVector.end());
-    ASSERT_EQ(sortVector, sort->selectionMethod(sort->getRandomArray().get(), sort->getLength()));
+    ASSERT_EQ(
+        sortVector,
+        algorithm::sort::SortSolution<int>::selectionMethod(builder->getRandomArray().get(), builder->getLength()));
 }
 
 TEST_F(SortTestBase, insertionMethod) // NOLINT(cert-err58-cpp)
 {
-    std::vector<int> sortVector(sort->getRandomArray().get(), sort->getRandomArray().get() + sort->getLength());
+    std::vector<int> sortVector(
+        builder->getRandomArray().get(), builder->getRandomArray().get() + builder->getLength());
     std::sort(sortVector.begin(), sortVector.end());
-    ASSERT_EQ(sortVector, sort->insertionMethod(sort->getRandomArray().get(), sort->getLength()));
+    ASSERT_EQ(
+        sortVector,
+        algorithm::sort::SortSolution<int>::insertionMethod(builder->getRandomArray().get(), builder->getLength()));
 }
 
 TEST_F(SortTestBase, shellMethod) // NOLINT(cert-err58-cpp)
 {
-    std::vector<int> sortVector(sort->getRandomArray().get(), sort->getRandomArray().get() + sort->getLength());
+    std::vector<int> sortVector(
+        builder->getRandomArray().get(), builder->getRandomArray().get() + builder->getLength());
     std::sort(sortVector.begin(), sortVector.end());
-    ASSERT_EQ(sortVector, sort->shellMethod(sort->getRandomArray().get(), sort->getLength()));
+    ASSERT_EQ(
+        sortVector,
+        algorithm::sort::SortSolution<int>::shellMethod(builder->getRandomArray().get(), builder->getLength()));
 }
 
 TEST_F(SortTestBase, mergeMethod) // NOLINT(cert-err58-cpp)
 {
-    std::vector<int> sortVector(sort->getRandomArray().get(), sort->getRandomArray().get() + sort->getLength());
+    std::vector<int> sortVector(
+        builder->getRandomArray().get(), builder->getRandomArray().get() + builder->getLength());
     std::sort(sortVector.begin(), sortVector.end());
-    ASSERT_EQ(sortVector, sort->mergeMethod(sort->getRandomArray().get(), sort->getLength()));
+    ASSERT_EQ(
+        sortVector,
+        algorithm::sort::SortSolution<int>::mergeMethod(builder->getRandomArray().get(), builder->getLength()));
 }
 
 TEST_F(SortTestBase, quickMethod) // NOLINT(cert-err58-cpp)
 {
-    std::vector<int> sortVector(sort->getRandomArray().get(), sort->getRandomArray().get() + sort->getLength());
+    std::vector<int> sortVector(
+        builder->getRandomArray().get(), builder->getRandomArray().get() + builder->getLength());
     std::sort(sortVector.begin(), sortVector.end());
-    ASSERT_EQ(sortVector, sort->quickMethod(sort->getRandomArray().get(), sort->getLength()));
+    ASSERT_EQ(
+        sortVector,
+        algorithm::sort::SortSolution<int>::quickMethod(builder->getRandomArray().get(), builder->getLength()));
 }
 
 TEST_F(SortTestBase, heapMethod) // NOLINT(cert-err58-cpp)
 {
-    std::vector<int> sortVector(sort->getRandomArray().get(), sort->getRandomArray().get() + sort->getLength());
+    std::vector<int> sortVector(
+        builder->getRandomArray().get(), builder->getRandomArray().get() + builder->getLength());
     std::sort(sortVector.begin(), sortVector.end());
-    ASSERT_EQ(sortVector, sort->heapMethod(sort->getRandomArray().get(), sort->getLength()));
+    ASSERT_EQ(
+        sortVector,
+        algorithm::sort::SortSolution<int>::heapMethod(builder->getRandomArray().get(), builder->getLength()));
 }
 
 TEST_F(SortTestBase, countingMethod) // NOLINT(cert-err58-cpp)
 {
-    std::vector<int> sortVector(sort->getRandomArray().get(), sort->getRandomArray().get() + sort->getLength());
+    std::vector<int> sortVector(
+        builder->getRandomArray().get(), builder->getRandomArray().get() + builder->getLength());
     std::sort(sortVector.begin(), sortVector.end());
-    ASSERT_EQ(sortVector, sort->countingMethod(sort->getRandomArray().get(), sort->getLength()));
+    ASSERT_EQ(
+        sortVector,
+        algorithm::sort::SortSolution<int>::countingMethod(builder->getRandomArray().get(), builder->getLength()));
 }
 
 TEST_F(SortTestBase, bucketMethod) // NOLINT(cert-err58-cpp)
 {
-    std::vector<int> sortVector(sort->getRandomArray().get(), sort->getRandomArray().get() + sort->getLength());
+    std::vector<int> sortVector(
+        builder->getRandomArray().get(), builder->getRandomArray().get() + builder->getLength());
     std::sort(sortVector.begin(), sortVector.end());
-    ASSERT_EQ(sortVector, sort->bucketMethod(sort->getRandomArray().get(), sort->getLength()));
+    ASSERT_EQ(
+        sortVector,
+        algorithm::sort::SortSolution<int>::bucketMethod(builder->getRandomArray().get(), builder->getLength()));
 }
 
 TEST_F(SortTestBase, radixMethod) // NOLINT(cert-err58-cpp)
 {
-    std::vector<int> sortVector(sort->getRandomArray().get(), sort->getRandomArray().get() + sort->getLength());
+    std::vector<int> sortVector(
+        builder->getRandomArray().get(), builder->getRandomArray().get() + builder->getLength());
     std::sort(sortVector.begin(), sortVector.end());
-    ASSERT_EQ(sortVector, sort->radixMethod(sort->getRandomArray().get(), sort->getLength()));
+    ASSERT_EQ(
+        sortVector,
+        algorithm::sort::SortSolution<int>::radixMethod(builder->getRandomArray().get(), builder->getLength()));
 }
 } // namespace test::tst_algo
