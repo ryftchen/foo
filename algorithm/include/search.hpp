@@ -41,7 +41,7 @@ public:
     //! @param key search key
     //! @return index of the first occurrence of key
     static int interpolationMethod(const T* const array, const uint32_t length, const T key);
-    //! @brief The fibonacci method.
+    //! @brief The Fibonacci method.
     //! @param array array to be searched
     //! @param length length of array
     //! @param key search key
@@ -49,6 +49,9 @@ public:
     static int fibonacciMethod(const T* const array, const uint32_t length, const T key);
 
 private:
+    //! @brief Generate Fibonacci number.
+    //! @param max the smallest integer that is not greater than the maximum value of the Fibonacci sequence
+    //! @return Fibonacci sequence
     static std::vector<uint32_t> generateFibonacciNumber(const uint32_t max);
 };
 
