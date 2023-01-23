@@ -1,25 +1,26 @@
+//! @file linear.cpp
+//! @author ryftchen
+//! @brief The definitions (linear) in the data structure module.
+//! @version 0.1
+//! @copyright Copyright (c) 2022
 #include "linear.hpp"
 #include <iostream>
 #include <sstream>
 #ifndef _NO_PRINT_AT_RUNTIME
 #include "utility/include/common.hpp"
 
+//! @brief Display linear result.
 #define LINEAR_RESULT "\r\n*%-10s instance:\r\n%s"
+//! @brief Print linear result content.
 #define LINEAR_PRINT_RESULT_CONTENT(method) COMMON_PRINT(LINEAR_RESULT, method, output.str().c_str())
 #else
 
+//! @brief Print linear result content.
 #define LINEAR_PRINT_RESULT_CONTENT(method)
 #endif
 
 namespace date_structure::linear
 {
-LinearStructure::LinearStructure()
-{
-#ifndef _NO_PRINT_AT_RUNTIME
-    std::cout << "\r\nLinear structure:" << std::endl;
-#endif
-}
-
 namespace doubly_linked_list
 {
 Node* createNode(void* const pVal)
@@ -70,20 +71,10 @@ Node* getNode(DLL pHead, const int index)
     return rNode;
 }
 
-Node* getFirstNode(DLL pHead)
+int createDll(DLL* dll)
 {
-    return getNode(pHead, 0);
-}
-
-Node* getLastNode(DLL pHead)
-{
-    return getNode(pHead, dllSize(pHead) - 1);
-}
-
-int createDll(DLL* pHead)
-{
-    *pHead = createNode(nullptr);
-    if (!*pHead)
+    *dll = createNode(nullptr);
+    if (!*dll)
     {
         return -1;
     }
@@ -91,25 +82,25 @@ int createDll(DLL* pHead)
     return 0;
 }
 
-int destroyDll(DLL* pHead)
+int destroyDll(DLL* dll)
 {
-    if (!*pHead)
+    if (!*dll)
     {
         std::cerr << "Destroy doubly linked list failed, doubly linked list is null." << std::endl;
         return -1;
     }
 
-    Node* pNode = (*pHead)->next;
+    Node* pNode = (*dll)->next;
     Node* pTemp = nullptr;
-    while (pNode != *pHead)
+    while (pNode != *dll)
     {
         pTemp = pNode;
         pNode = pNode->next;
         delete pTemp;
     }
 
-    delete *pHead;
-    *pHead = nullptr;
+    delete *dll;
+    *dll = nullptr;
 
     return 0;
 }
@@ -127,7 +118,7 @@ int dllSize(DLL pHead)
     return count;
 }
 
-int dllIsEmpty(DLL pHead)
+bool dllIsEmpty(DLL pHead)
 {
     return (0 == dllSize(pHead));
 }
@@ -240,7 +231,102 @@ int dllDeleteLast(DLL pHead)
 }
 } // namespace doubly_linked_list
 
-// Linked List
+namespace stack
+{
+int createStack(Stack* stack)
+{
+    return createDll(stack);
+}
+
+int destroyStack(Stack* stack)
+{
+    return destroyDll(stack);
+}
+
+int stackPush(Stack pHead, void* const pVal)
+{
+    return dllInsertFirst(pHead, pVal);
+}
+
+void* stackTop(Stack pHead)
+{
+    return dllGetFirst(pHead);
+}
+
+void* stackPop(Stack pHead)
+{
+    void* p = stackTop(pHead);
+    dllDeleteFirst(pHead);
+    return p;
+}
+
+int stackSize(Stack pHead)
+{
+    return dllSize(pHead);
+}
+
+bool stackIsEmpty(Stack pHead)
+{
+    return dllIsEmpty(pHead);
+}
+} // namespace stack
+
+namespace queue
+{
+int createQueue(Queue* queue)
+{
+    return createDll(queue);
+}
+
+int destroyQueue(Queue* queue)
+{
+    return destroyDll(queue);
+}
+
+int queuePush(Queue pHead, void* const pVal)
+{
+    return dllInsertLast(pHead, pVal);
+}
+
+void* queueFront(Queue pHead)
+{
+    return dllGetFirst(pHead);
+}
+
+void* queuePop(Queue pHead)
+{
+    void* p = dllGetFirst(pHead);
+    dllDeleteFirst(pHead);
+    return p;
+}
+
+int queueSize(Queue pHead)
+{
+    return dllSize(pHead);
+}
+
+bool queueIsEmpty(Queue pHead)
+{
+    return dllIsEmpty(pHead);
+}
+} // namespace queue
+
+//! @brief Metadata, which is used in the instance.
+typedef struct TagMeta
+{
+    //! @brief The ID of metadata.
+    int id;
+    //! @brief The name of metadata.
+    char name[4];
+} Meta;
+
+LinearStructure::LinearStructure()
+{
+#ifndef _NO_PRINT_AT_RUNTIME
+    std::cout << "\r\nLinear structure:" << std::endl;
+#endif
+}
+
 void LinearStructure::linkedListInstance() const // NOLINT(readability-convert-member-functions-to-static)
 {
     using doubly_linked_list::createDll;
@@ -300,56 +386,6 @@ void LinearStructure::linkedListInstance() const // NOLINT(readability-convert-m
     LINEAR_PRINT_RESULT_CONTENT("LinkedList");
 }
 
-// Stack
-namespace stack
-{
-using doubly_linked_list::createDll;
-using doubly_linked_list::destroyDll;
-using doubly_linked_list::dllDeleteFirst;
-using doubly_linked_list::dllGetFirst;
-using doubly_linked_list::dllInsertFirst;
-using doubly_linked_list::dllIsEmpty;
-using doubly_linked_list::dllSize;
-using Stack = doubly_linked_list::DLL;
-
-static int createStack(Stack* stack)
-{
-    return createDll(stack);
-}
-
-static int destroyStack(Stack* stack)
-{
-    return destroyDll(stack);
-}
-
-static int stackPush(Stack stack, void* p)
-{
-    return dllInsertFirst(stack, p);
-}
-
-static void* stackTop(Stack stack)
-{
-    return dllGetFirst(stack);
-}
-
-static void* stackPop(Stack stack)
-{
-    void* p = stackTop(stack);
-    dllDeleteFirst(stack);
-    return p;
-}
-
-static int stackSize(Stack stack)
-{
-    return dllSize(stack);
-}
-
-static int stackIsEmpty(Stack stack)
-{
-    return dllIsEmpty(stack);
-}
-} // namespace stack
-
 void LinearStructure::stackInstance() const // NOLINT(readability-convert-member-functions-to-static)
 {
     using stack::createStack;
@@ -392,56 +428,6 @@ void LinearStructure::stackInstance() const // NOLINT(readability-convert-member
 
     LINEAR_PRINT_RESULT_CONTENT("Stack");
 }
-
-// Queue
-namespace queue
-{
-using doubly_linked_list::createDll;
-using doubly_linked_list::destroyDll;
-using doubly_linked_list::dllDeleteFirst;
-using doubly_linked_list::dllGetFirst;
-using doubly_linked_list::dllInsertLast;
-using doubly_linked_list::dllIsEmpty;
-using doubly_linked_list::dllSize;
-using Queue = doubly_linked_list::DLL;
-
-static int createQueue(Queue* queue)
-{
-    return createDll(queue);
-}
-
-static int destroyQueue(Queue* queue)
-{
-    return destroyDll(queue);
-}
-
-static int queuePush(Queue queue, void* p)
-{
-    return dllInsertLast(queue, p);
-}
-
-static void* queueFront(Queue queue)
-{
-    return dllGetFirst(queue);
-}
-
-static void* queuePop(Queue queue)
-{
-    void* p = dllGetFirst(queue);
-    dllDeleteFirst(queue);
-    return p;
-}
-
-static int queueSize(Queue queue)
-{
-    return dllSize(queue);
-}
-
-static int queueIsEmpty(Queue queue)
-{
-    return dllIsEmpty(queue);
-}
-} // namespace queue
 
 void LinearStructure::queueInstance() const // NOLINT(readability-convert-member-functions-to-static)
 {
