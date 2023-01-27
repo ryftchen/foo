@@ -8,7 +8,7 @@
 //! @brief Linear-related functions in the data structure module.
 namespace date_structure::linear
 {
-//! @brief The doubly linked list.
+//! @brief The doubly linked list structure.
 namespace doubly_linked_list
 {
 //! @brief The node of the doubly linked list.
@@ -22,11 +22,11 @@ typedef struct TagNode
     void* p;
 } Node, *DLL;
 
-//! @brief Create a node.
+//! @brief Create a node of the doubly linked list.
 //! @param pVal value of the target node
 //! @return node
 static Node* createNode(void* const pVal);
-//! @brief Get the node by index.
+//! @brief Get the node of the doubly linked list by index.
 //! @param pHead head of the list
 //! @param index node index
 //! @return node
@@ -92,7 +92,7 @@ static int dllDeleteFirst(DLL pHead);
 static int dllDeleteLast(DLL pHead);
 } // namespace doubly_linked_list
 
-//! @brief The stack.
+//! @brief The stack structure.
 namespace stack
 {
 //! @brief Alias for the doubly linked list. Used for the stack.
@@ -129,7 +129,7 @@ static int stackSize(Stack pHead);
 static bool stackIsEmpty(Stack pHead);
 } // namespace stack
 
-//! @brief The queue.
+//! @brief The queue structure.
 namespace queue
 {
 //! @brief Alias for the doubly linked list. Used for the queue.

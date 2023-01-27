@@ -10,7 +10,7 @@
 //! @brief Tree-related functions in the data structure module.
 namespace date_structure::tree
 {
-//! @brief The binary search tree.
+//! @brief The binary search tree structure.
 namespace bs
 {
 //! @brief Alias for the type of key in the node of the binary search tree.
@@ -28,7 +28,7 @@ typedef struct BSTreeNode
     struct BSTreeNode* parent;
 } Node, *BSTree;
 
-//! @brief Output stream for binary search tree. Need to be cleared manually.
+//! @brief Output stream for the binary search tree structure. Need to be cleared manually.
 //! @return reference of output stream object, which is on string based.
 static std::ostringstream& output();
 //! @brief The pre-order traversal of the binary search tree.
@@ -101,7 +101,7 @@ static Node* bsTreeDelete(BSTree tree, const Type key);
 static void destroyBSTree(BSTree tree);
 } // namespace bs
 
-//! @brief The Adelson-Velsky-Landis tree.
+//! @brief The Adelson-Velsky-Landis tree structure.
 namespace avl
 {
 //! @brief Alias for the type of key in the node of the AVL tree.
@@ -119,7 +119,7 @@ typedef struct AVLTreeNode
     struct AVLTreeNode* right;
 } Node, *AVLTree;
 
-//! @brief Output stream for AVL tree. Need to be cleared manually.
+//! @brief Output stream for the AVL tree structure. Need to be cleared manually.
 //! @return reference of output stream object, which is on string based.
 static std::ostringstream& output();
 //! @brief The pre-order traversal of the AVL tree.
@@ -196,7 +196,7 @@ static Node* avlTreeDelete(AVLTree tree, const Type key);
 static void destroyAVLTree(AVLTree tree);
 } // namespace avl
 
-//! @brief The splay tree.
+//! @brief The splay tree structure.
 namespace splay
 {
 //! @brief Alias for the type of key in the node of the splay tree.
@@ -212,7 +212,7 @@ typedef struct SplayTreeNode
     struct SplayTreeNode* right;
 } Node, *SplayTree;
 
-//! @brief Output stream for splay tree. Need to be cleared manually.
+//! @brief Output stream for the splay tree structure. Need to be cleared manually.
 //! @return reference of output stream object, which is on string based.
 static std::ostringstream& output();
 //! @brief The pre-order traversal of the splay tree.
