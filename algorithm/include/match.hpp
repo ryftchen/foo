@@ -130,7 +130,7 @@ private:
     const std::string_view singlePattern;
 
     //! @brief Set the matching text.
-    //! @param text matching text to be set
+    //! @param text target matching text
     //! @param textLen length of matching text
     static void setMatchingText(char* text, const uint32_t textLen);
     //! @brief Calculate precision by digit.
