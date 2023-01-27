@@ -20,7 +20,7 @@
 #include <sstream>
 
 //! @brief Print structural result content.
-#define STRUCTURAL_PRINT_RESULT_CONTENT(method)
+#define STRUCTURAL_PRINT_RESULT_CONTENT(method) output().clear()
 #endif
 
 namespace design_pattern::structural
@@ -153,7 +153,7 @@ class RefinedAbstraction : public Abstraction
 {
 public:
     //! @brief Construct a new RefinedAbstraction object
-    //! @param implementor target implementor
+    //! @param implementor - target implementor
     explicit RefinedAbstraction(std::unique_ptr<Implementor> implementor) : implementor(std::move(implementor)) {}
     //! @brief Destroy the RefinedAbstraction object.
     ~RefinedAbstraction() override = default;
@@ -232,14 +232,14 @@ public:
     }
 
     //! @brief Get the child component by index.
-    //! @param index child component index
+    //! @param index - child component index
     //! @return child component
     std::shared_ptr<Component> getChild(const uint32_t index) override { return children[index]; }
     //! @brief Add the child component.
-    //! @param component child component to be added
+    //! @param component - child component to be added
     void add(const std::shared_ptr<Component>& component) override { children.emplace_back(component); }
     //! @brief Remove the child component by index.
-    //! @param index child component index
+    //! @param index - child component index
     void remove(const uint32_t index) override
     {
         std::shared_ptr<Component> child = children[index];
@@ -268,7 +268,7 @@ class Leaf : public Component
 {
 public:
     //! @brief Construct a new Leaf object.
-    //! @param id target leaf node id
+    //! @param id - target leaf node id
     explicit Leaf(const int id) : id(id) {}
     //! @brief Destroy the Leaf object.
     ~Leaf() override = default;
@@ -339,7 +339,7 @@ class Decorator : public Component
 {
 public:
     //! @brief Construct a new Decorator object.
-    //! @param component target component
+    //! @param component - target component
     explicit Decorator(std::shared_ptr<Component> component) : component(std::move(component)) {}
     //! @brief Destroy the Decorator object.
     ~Decorator() override = default;
@@ -357,7 +357,7 @@ class ConcreteDecoratorA : public Decorator
 {
 public:
     //! @brief Construct a new ConcreteDecoratorA object.
-    //! @param decorator target decorator
+    //! @param decorator - target decorator
     explicit ConcreteDecoratorA(std::shared_ptr<Component> decorator) : Decorator(std::move(decorator)) {}
 
     //! @brief The related operation.
@@ -373,7 +373,7 @@ class ConcreteDecoratorB : public Decorator
 {
 public:
     //! @brief Construct a new ConcreteDecoratorB object.
-    //! @param decorator target decorator
+    //! @param decorator - target decorator
     explicit ConcreteDecoratorB(std::shared_ptr<Component> decorator) : Decorator(std::move(decorator)) {}
 
     //! @brief The related operation.
@@ -503,7 +503,7 @@ class UnsharedConcreteFlyweight : public Flyweight
 {
 public:
     //! @brief Construct a new UnsharedConcreteFlyweight object.
-    //! @param intrinsicState target intrinsic state
+    //! @param intrinsicState - target intrinsic state
     explicit UnsharedConcreteFlyweight(const int intrinsicState) : state(intrinsicState) {}
     //! @brief Destroy the UnsharedConcreteFlyweight object.
     ~UnsharedConcreteFlyweight() override = default;
@@ -521,7 +521,7 @@ class ConcreteFlyweight : public Flyweight
 {
 public:
     //! @brief Construct a new ConcreteFlyweight object.
-    //! @param intrinsicState target intrinsic state
+    //! @param intrinsicState - target intrinsic state
     explicit ConcreteFlyweight(const int intrinsicState) : state(intrinsicState) {}
     //! @brief Destroy the ConcreteFlyweight object.
     ~ConcreteFlyweight() override = default;
@@ -552,7 +552,7 @@ public:
     }
 
     //! @brief Get the flyweight by key value.
-    //! @param key key value
+    //! @param key - key value
     //! @return flyweight
     std::unique_ptr<Flyweight>& getFlyweight(const int key)
     {

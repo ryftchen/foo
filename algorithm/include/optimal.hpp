@@ -22,13 +22,13 @@ public:
     virtual ~Function() = default;
 
     //! @brief The operator (()) overloading of Function class.
-    //! @param x independent variable
+    //! @param x - independent variable
     //! @return dependent variable
     virtual inline double operator()(const double x) const = 0;
 };
 
 //! @brief Function object's helper type for the visitor.
-//! @tparam Ts type of visitor
+//! @tparam Ts - type of visitor
 template <class... Ts>
 struct FuncOverloaded : Ts...
 {
@@ -36,20 +36,20 @@ struct FuncOverloaded : Ts...
 };
 
 //! @brief Explicit deduction guide for FuncOverloaded.
-//! @tparam Ts type of visitor
+//! @tparam Ts - type of visitor
 template <class... Ts>
 FuncOverloaded(Ts...) -> FuncOverloaded<Ts...>;
 
 //! @brief Range properties of the function.
-//! @tparam T1 type of left endpoint
-//! @tparam T2 type of right endpoint
+//! @tparam T1 - type of left endpoint
+//! @tparam T2 - type of right endpoint
 template <typename T1, typename T2>
 struct FuncRange
 {
     //! @brief Construct a new FuncRange object.
-    //! @param range1 left endpoint
-    //! @param range2 light endpoint
-    //! @param funcDescr function description
+    //! @param range1 - left endpoint
+    //! @param range2 - light endpoint
+    //! @param funcDescr - function description
     FuncRange(const T1& range1, const T2& range2, const std::string_view funcDescr) :
         range1(range1), range2(range2), funcDescr(funcDescr){};
     //! @brief Construct a new FuncRange object.
@@ -62,7 +62,7 @@ struct FuncRange
     std::string_view funcDescr;
 
     //! @brief The operator (==) overloading of FuncRange class.
-    //! @param rhs right-hand side
+    //! @param rhs - right-hand side
     //! @return be equal or not equal
     bool operator==(const FuncRange& rhs) const
     {
@@ -73,9 +73,9 @@ struct FuncRange
 struct FuncMapHash
 {
     //! @brief The operator (()) overloading of FuncMapHash class.
-    //! @tparam T1 type of left endpoint
-    //! @tparam T2 type of right endpoint
-    //! @param range range properties of the function
+    //! @tparam T1 - type of left endpoint
+    //! @tparam T2 - type of right endpoint
+    //! @param range - range properties of the function
     //! @return hash value
     template <typename T1, typename T2>
     std::size_t operator()(const FuncRange<T1, T2>& range) const
@@ -104,9 +104,9 @@ public:
     virtual ~OptimalSolution() = default;
 
     //! @brief The operator (()) overloading of OptimalSolution class.
-    //! @param left left endpoint
-    //! @param right right endpoint
-    //! @param eps precision of calculation
+    //! @param left - left endpoint
+    //! @param right - right endpoint
+    //! @param eps - precision of calculation
     //! @return result of optimal
     virtual std::optional<std::tuple<ValueY, ValueX>> operator()(
         const double left,
@@ -122,13 +122,13 @@ class Gradient : public OptimalSolution
 {
 public:
     //! @brief Construct a new Gradient object.
-    //! @param func target function
+    //! @param func - target function
     explicit Gradient(const function::Function& func);
 
     //! @brief The operator (()) overloading of Gradient class.
-    //! @param left left endpoint
-    //! @param right right endpoint
-    //! @param eps precision of calculation
+    //! @param left - left endpoint
+    //! @param right - right endpoint
+    //! @param eps - precision of calculation
     //! @return result of optimal
     [[nodiscard]] std::optional<std::tuple<ValueY, ValueX>> operator()(
         const double left,
@@ -146,8 +146,8 @@ private:
     static constexpr uint32_t loopTime{1000};
 
     //! @brief Calculate the first derivative.
-    //! @param x independent variable
-    //! @param eps precision of calculation
+    //! @param x - independent variable
+    //! @param eps - precision of calculation
     //! @return value of the first derivative
     [[nodiscard]] double calculateFirstDerivative(const double x, const double eps) const;
 };
@@ -157,13 +157,13 @@ class Annealing : public OptimalSolution
 {
 public:
     //! @brief Construct a new Annealing object.
-    //! @param func target function
+    //! @param func - target function
     explicit Annealing(const function::Function& func);
 
     //! @brief The operator (()) overloading of Gradient class.
-    //! @param left left endpoint
-    //! @param right right endpoint
-    //! @param eps precision of calculation
+    //! @param left - left endpoint
+    //! @param right - right endpoint
+    //! @param eps - precision of calculation
     //! @return result of optimal
     [[nodiscard]] std::optional<std::tuple<ValueY, ValueX>> operator()(
         const double left,
@@ -188,13 +188,13 @@ class Particle : public OptimalSolution
 {
 public:
     //! @brief Construct a new Particle object.
-    //! @param func target function
+    //! @param func - target function
     explicit Particle(const function::Function& func);
 
     //! @brief The operator (()) overloading of Gradient class.
-    //! @param left left endpoint
-    //! @param right right endpoint
-    //! @param eps precision of calculation
+    //! @param left - left endpoint
+    //! @param right - right endpoint
+    //! @param eps - precision of calculation
     //! @return result of optimal
     [[nodiscard]] std::optional<std::tuple<ValueY, ValueX>> operator()(
         const double left,
@@ -227,11 +227,11 @@ private:
     struct Individual
     {
         //! @brief Construct a new Individual object.
-        //! @param x independent variable
-        //! @param velocity velocity value
-        //! @param positionBest the best position
-        //! @param xFitness fitness of independent variable
-        //! @param fitnessPositionBest fitness of the best position
+        //! @param x - independent variable
+        //! @param velocity - velocity value
+        //! @param positionBest - the best position
+        //! @param xFitness - fitness of independent variable
+        //! @param fitnessPositionBest - fitness of the best position
         Individual(
             const double x,
             const double velocity,
@@ -261,8 +261,8 @@ private:
     struct Smaller
     {
         //! @brief The operator (()) overloading of Smaller class.
-        //! @param left the first value
-        //! @param right the second value
+        //! @param left - the first value
+        //! @param right - the second value
         //! @return be smaller or not
         bool operator()(const double left, const double right) const { return left < right; }
     };
@@ -275,8 +275,8 @@ private:
     struct Storage
     {
         //! @brief Construct a new Storage object.
-        //! @param society society information
-        //! @param history history information
+        //! @param society - society information
+        //! @param history - history information
         Storage(
             const std::initializer_list<Society::value_type>& society,
             const std::initializer_list<History::value_type>& history) :
@@ -291,8 +291,8 @@ private:
     };
 
     //! @brief Initialize the storage in the swarm.
-    //! @param left left endpoint
-    //! @param right right endpoint
+    //! @param left - left endpoint
+    //! @param right - right endpoint
     //! @return storage which includes information about society and history
     Storage storageInit(const double left, const double right);
 };
@@ -302,13 +302,13 @@ class Genetic : public OptimalSolution
 {
 public:
     //! @brief Construct a new Genetic object.
-    //! @param func target function
+    //! @param func - target function
     explicit Genetic(const function::Function& func);
 
     //! @brief The operator (()) overloading of Gradient class.
-    //! @param left left endpoint
-    //! @param right right endpoint
-    //! @param eps precision of calculation
+    //! @param left - left endpoint
+    //! @param right - right endpoint
+    //! @param eps - precision of calculation
     //! @return result of optimal
     [[nodiscard]] std::optional<std::tuple<ValueY, ValueX>> operator()(
         const double left,
@@ -346,62 +346,62 @@ private:
     //! @brief Alias for the population in species.
     using Population = std::vector<Chromosome>;
     //! @brief Update species.
-    //! @param left left endpoint
-    //! @param right right endpoint
-    //! @param eps precision of calculation
+    //! @param left - left endpoint
+    //! @param right - right endpoint
+    //! @param eps - precision of calculation
     void updateSpecies(const double left, const double right, const double eps);
     //! @brief The genetic code.
-    //! @param chr individual's chromosome
+    //! @param chr - individual's chromosome
     void geneticCode(Chromosome& chr);
     //! @brief The genetic decode.
-    //! @param chr individual's chromosome
+    //! @param chr - individual's chromosome
     //! @return decoded value
     [[nodiscard]] double geneticDecode(const Chromosome& chr) const;
     //! @brief Initialize the population.
     //! @return initial population
     Population populationInit();
     //! @brief The genetic cross.
-    //! @param chr1 the chromosome from one of the parents
-    //! @param chr2 the chromosome from one of the parents
+    //! @param chr1 - the chromosome from one of the parents
+    //! @param chr2 - the chromosome from one of the parents
     void geneticCross(Chromosome& chr1, Chromosome& chr2);
     //! @brief Chromosomal crossover in the population.
-    //! @param pop whole population
+    //! @param pop - whole population
     void crossover(Population& pop);
     //! @brief The genetic mutation.
-    //! @param chr individual's chromosome
+    //! @param chr - individual's chromosome
     void geneticMutation(Chromosome& chr);
     //! @brief Chromosomal mutation in the population.
-    //! @param pop whole population
+    //! @param pop - whole population
     void mutate(Population& pop);
     //! @brief Calculate the fitness of the individual.
-    //! @param chr individual's chromosome
+    //! @param chr - individual's chromosome
     //! @return fitness of the individual
     double calculateFitness(const Chromosome& chr);
     //! @brief Linear transformation of fitness.
-    //! @param pop whole population
+    //! @param pop - whole population
     //! @return coefficient of the linear transformation
     std::optional<std::pair<double, double>> fitnessLinearTransformation(const Population& pop);
     //! @brief The roulette wheel selection.
-    //! @param pop whole population
-    //! @param cumFitness cumulative fitness
+    //! @param pop - whole population
+    //! @param cumFitness - cumulative fitness
     //! @return selected competitor
     auto rouletteWheelSelection(const Population& pop, const std::vector<double>& cumFitness);
     //! @brief The stochastic tournament selection.
-    //! @param pop whole population
-    //! @param cumFitness cumulative fitness
+    //! @param pop - whole population
+    //! @param cumFitness - cumulative fitness
     void stochasticTournamentSelection(Population& pop, const std::vector<double>& cumFitness);
     //! @brief The genetic selection.
-    //! @param pop whole population
+    //! @param pop - whole population
     void select(Population& pop);
     //! @brief Get the best individual.
-    //! @param pop whole population
+    //! @param pop - whole population
     //! @return the best individual's chromosome
     Chromosome getBestIndividual(const Population& pop);
     //! @brief The probability of a possible event.
     //! @return probability from 0 to 1
     inline double probability();
     //! @brief Get a random number from 0 to the limit.
-    //! @param limit maximum random number
+    //! @param limit - maximum random number
     //! @return random number
     inline uint32_t getRandomNumber(const uint32_t limit);
 };

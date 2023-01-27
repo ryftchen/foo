@@ -18,7 +18,7 @@ class DataStructureTask
 {
 public:
     //! @brief Represent the maximum value of an enum.
-    //! @tparam T type of specific enum
+    //! @tparam T - type of specific enum
     template <class T>
     struct Bottom;
 
@@ -37,7 +37,6 @@ public:
         queue
     };
     //! @brief Store the maximum value of the LinearInstance enum.
-    //! @tparam N/A
     template <>
     struct Bottom<LinearInstance>
     {
@@ -52,7 +51,6 @@ public:
         splay
     };
     //! @brief Store the maximum value of the TreeInstance enum.
-    //! @tparam N/A
     template <>
     struct Bottom<TreeInstance>
     {
@@ -76,8 +74,8 @@ public:
 
 protected:
     //! @brief The operator (<<) overloading of the Type enum.
-    //! @param os output stream object
-    //! @param type the specific value of Type enum
+    //! @param os - output stream object
+    //! @param type - the specific value of Type enum
     //! @return reference of output stream object
     friend std::ostream& operator<<(std::ostream& os, const Type& type)
     {
@@ -99,7 +97,7 @@ protected:
 extern DataStructureTask& getTask();
 
 //! @brief Get the bit flags of the instance in data structure tasks.
-//! @tparam T type of the instance
+//! @tparam T - type of the instance
 //! @return bit flags of the instance
 template <typename T>
 auto getBit()
@@ -115,8 +113,8 @@ auto getBit()
 }
 
 //! @brief Set the bit flags of the instance in data structure tasks.
-//! @tparam T type of the instance
-//! @param index instance index
+//! @tparam T - type of the instance
+//! @param index - instance index
 template <typename T>
 void setBit(const int index)
 {

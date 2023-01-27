@@ -11,7 +11,7 @@
 namespace utility::common
 {
 //! @brief Execute the command line.
-//! @param cmd target command line to be executed
+//! @param cmd - target command line to be executed
 void executeCommand(const char* const cmd)
 {
     FILE* file = popen(cmd, "r");
@@ -45,10 +45,10 @@ void executeCommand(const char* const cmd)
 }
 
 //! @brief Print file contents.
-//! @param pathname target file to be printed
-//! @param reverse reverse or not reverse
-//! @param maxLine maximum number of lines to print
-//! @param style print style
+//! @param pathname - target file to be printed
+//! @param reverse - reverse or not reverse
+//! @param maxLine - maximum number of lines to print
+//! @param style - print style
 void printFile(const char* const pathname, const bool reverse, const uint32_t maxLine, PrintStyle style)
 {
     std::ifstream file;

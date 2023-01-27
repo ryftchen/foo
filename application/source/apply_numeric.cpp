@@ -33,7 +33,7 @@ namespace application::app_num
 //! @brief Alias for Type.
 using Type = NumericTask::Type;
 //! @brief Alias for Bottom.
-//! @tparam T type of specific enum
+//! @tparam T - type of specific enum
 template <class T>
 using Bottom = NumericTask::Bottom<T>;
 //! @brief Alias for ArithmeticMethod.
@@ -72,7 +72,7 @@ class Expression1 : public numeric::integral::expression::Expression
 {
 public:
     //! @brief The operator (()) overloading of Expression1 class.
-    //! @param x independent variable
+    //! @param x - independent variable
     //! @return dependent variable
     double operator()(const double x) const override { return ((x * std::sin(x)) / (1.0 + std::cos(x) * std::cos(x))); }
 
@@ -89,7 +89,7 @@ class Expression2 : public numeric::integral::expression::Expression
 {
 public:
     //! @brief The operator (()) overloading of Expression2 class.
-    //! @param x independent variable
+    //! @param x - independent variable
     //! @return dependent variable
     double operator()(const double x) const override
     {
@@ -106,7 +106,7 @@ public:
 } // namespace input
 
 //! @brief Run arithmetic tasks.
-//! @param targets vector of target methods
+//! @param targets - vector of target methods
 void runArithmetic(const std::vector<std::string>& targets)
 {
     if (getBit<ArithmeticMethod>().none())
@@ -164,7 +164,7 @@ void runArithmetic(const std::vector<std::string>& targets)
 }
 
 //! @brief Update arithmetic methods in tasks.
-//! @param target target method
+//! @param target - target method
 void updateArithmeticTask(const std::string& target)
 {
     using utility::hash::operator""_bkdrHash;
@@ -189,7 +189,7 @@ void updateArithmeticTask(const std::string& target)
 }
 
 //! @brief Run divisor tasks.
-//! @param targets vector of target methods
+//! @param targets - vector of target methods
 void runDivisor(const std::vector<std::string>& targets)
 {
     if (getBit<DivisorMethod>().none())
@@ -240,7 +240,7 @@ void runDivisor(const std::vector<std::string>& targets)
 }
 
 //! @brief Update divisor methods in tasks.
-//! @param target target method
+//! @param target - target method
 void updateDivisorTask(const std::string& target)
 {
     using utility::hash::operator""_bkdrHash;
@@ -259,7 +259,7 @@ void updateDivisorTask(const std::string& target)
 }
 
 //! @brief Run integral tasks.
-//! @param targets vector of target methods
+//! @param targets - vector of target methods
 void runIntegral(const std::vector<std::string>& targets)
 {
     if (getBit<IntegralMethod>().none())
@@ -373,7 +373,7 @@ void runIntegral(const std::vector<std::string>& targets)
 }
 
 //! @brief Update integral methods in tasks.
-//! @param target target method
+//! @param target - target method
 void updateIntegralTask(const std::string& target)
 {
     using utility::hash::operator""_bkdrHash;
@@ -401,7 +401,7 @@ void updateIntegralTask(const std::string& target)
 }
 
 //! @brief Run prime tasks.
-//! @param targets vector of target methods
+//! @param targets - vector of target methods
 void runPrime(const std::vector<std::string>& targets)
 {
     if (getBit<PrimeMethod>().none())
@@ -450,7 +450,7 @@ void runPrime(const std::vector<std::string>& targets)
 }
 
 //! @brief Update prime methods in tasks.
-//! @param target target method
+//! @param target - target method
 void updatePrimeTask(const std::string& target)
 {
     using utility::hash::operator""_bkdrHash;

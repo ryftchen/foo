@@ -17,7 +17,7 @@ class DesignPatternTask
 {
 public:
     //! @brief Represent the maximum value of an enum.
-    //! @tparam T type of specific enum
+    //! @tparam T - type of specific enum
     template <class T>
     struct Bottom;
 
@@ -45,7 +45,6 @@ public:
         visitor
     };
     //! @brief Store the maximum value of the BehavioralInstance enum.
-    //! @tparam N/A
     template <>
     struct Bottom<BehavioralInstance>
     {
@@ -62,7 +61,6 @@ public:
         singleton
     };
     //! @brief Store the maximum value of the CreationalInstance enum.
-    //! @tparam N/A
     template <>
     struct Bottom<CreationalInstance>
     {
@@ -81,7 +79,6 @@ public:
         proxy
     };
     //! @brief Store the maximum value of the StructuralInstance enum.
-    //! @tparam N/A
     template <>
     struct Bottom<StructuralInstance>
     {
@@ -111,8 +108,8 @@ public:
 
 protected:
     //! @brief The operator (<<) overloading of the Type enum.
-    //! @param os output stream object
-    //! @param type the specific value of Type enum
+    //! @param os - output stream object
+    //! @param type - the specific value of Type enum
     //! @return reference of output stream object
     friend std::ostream& operator<<(std::ostream& os, const Type& type)
     {
@@ -137,7 +134,7 @@ protected:
 extern DesignPatternTask& getTask();
 
 //! @brief Get the bit flags of the instance in design pattern tasks.
-//! @tparam T type of the instance
+//! @tparam T - type of the instance
 //! @return bit flags of the instance
 template <typename T>
 auto getBit()
@@ -157,8 +154,8 @@ auto getBit()
 }
 
 //! @brief Set the bit flags of the instance in design pattern tasks.
-//! @tparam T type of the instance
-//! @param index instance index
+//! @tparam T - type of the instance
+//! @param index - instance index
 template <typename T>
 void setBit(const int index)
 {

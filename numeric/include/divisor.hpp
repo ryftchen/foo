@@ -24,24 +24,24 @@ public:
     virtual ~DivisorSolution() = default;
 
     //! @brief The Euclidean method.
-    //! @param a first integer
-    //! @param b second integer
+    //! @param a - first integer
+    //! @param b - second integer
     //! @return all common divisors of two integers
     static std::vector<int> euclideanMethod(int a, int b);
     //! @brief The Stein method.
-    //! @param a first integer
-    //! @param b second integer
+    //! @param a - first integer
+    //! @param b - second integer
     //! @return all common divisors of two integers
     static std::vector<int> steinMethod(int a, int b);
 
 private:
     //! @brief Recursive for the Stein method.
-    //! @param a first integer
-    //! @param b second integer
+    //! @param a - first integer
+    //! @param b - second integer
     //! @return greatest common divisor
     static int steinRecursive(int a, int b);
     //! @brief Get all common divisors by the greatest common divisor.
-    //! @param greatestCommonDivisor greatest common divisor
+    //! @param greatestCommonDivisor - greatest common divisor
     //! @return all common divisors
     static std::vector<int> getAllDivisors(const int greatestCommonDivisor);
 };
@@ -51,8 +51,8 @@ class TargetBuilder
 {
 public:
     //! @brief Construct a new TargetBuilder object.
-    //! @param integer1 first integer
-    //! @param integer2 second integer
+    //! @param integer1 - first integer
+    //! @param integer2 - second integer
     TargetBuilder(const int integer1, const int integer2);
     //! @brief Destroy the TargetBuilder object.
     virtual ~TargetBuilder() = default;
@@ -61,10 +61,10 @@ public:
     //! @return pair of integers
     [[nodiscard]] inline std::pair<int, int> getIntegers() const;
     //! @brief Format integer vector for printing.
-    //! @tparam T type of vector
-    //! @param vector vector to be formatted
-    //! @param buffer buffer for filling the formatted vector
-    //! @param bufferSize size of buffer
+    //! @tparam T - type of vector
+    //! @param vector - vector to be formatted
+    //! @param buffer - buffer for filling the formatted vector
+    //! @param bufferSize - size of buffer
     //! @return buffer after format
     template <typename T>
     requires std::is_integral<T>::value static char* formatIntegerVector(

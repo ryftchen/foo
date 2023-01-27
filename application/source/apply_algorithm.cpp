@@ -34,7 +34,7 @@ namespace application::app_algo
 //! @brief Alias for Type.
 using Type = AlgorithmTask::Type;
 //! @brief Alias for Bottom.
-//! @tparam T type of specific enum
+//! @tparam T - type of specific enum
 template <class T>
 using Bottom = AlgorithmTask::Bottom<T>;
 //! @brief Alias for MatchMethod.
@@ -81,7 +81,7 @@ class Griewank : public algorithm::optimal::function::Function
 {
 public:
     //! @brief The operator (()) overloading of Griewank class.
-    //! @param x independent variable
+    //! @param x - independent variable
     //! @return dependent variable
     double operator()(const double x) const override
     {
@@ -103,7 +103,7 @@ class Rastrigin : public algorithm::optimal::function::Function
 {
 public:
     //! @brief The operator (()) overloading of Rastrigin class.
-    //! @param x independent variable
+    //! @param x - independent variable
     //! @return dependent variable
     double operator()(const double x) const override
     {
@@ -122,7 +122,7 @@ public:
 } // namespace input
 
 //! @brief Run match tasks.
-//! @param targets vector of target methods
+//! @param targets - vector of target methods
 void runMatch(const std::vector<std::string>& targets)
 {
     if (getBit<MatchMethod>().none())
@@ -189,7 +189,7 @@ void runMatch(const std::vector<std::string>& targets)
 }
 
 //! @brief Update match methods in tasks.
-//! @param target target method
+//! @param target - target method
 void updateMatchTask(const std::string& target)
 {
     using utility::hash::operator""_bkdrHash;
@@ -217,7 +217,7 @@ void updateMatchTask(const std::string& target)
 }
 
 //! @brief Run notation tasks.
-//! @param targets vector of target methods
+//! @param targets - vector of target methods
 void runNotation(const std::vector<std::string>& targets)
 {
     if (getBit<NotationMethod>().none())
@@ -266,7 +266,7 @@ void runNotation(const std::vector<std::string>& targets)
 }
 
 //! @brief Update notation methods in tasks.
-//! @param target target method
+//! @param target - target method
 void updateNotationTask(const std::string& target)
 {
     using utility::hash::operator""_bkdrHash;
@@ -285,7 +285,7 @@ void updateNotationTask(const std::string& target)
 }
 
 //! @brief Run optimal tasks.
-//! @param targets vector of target methods
+//! @param targets - vector of target methods
 void runOptimal(const std::vector<std::string>& targets)
 {
     if (getBit<OptimalMethod>().none())
@@ -396,7 +396,7 @@ void runOptimal(const std::vector<std::string>& targets)
 }
 
 //! @brief Update optimal methods in tasks.
-//! @param target target method
+//! @param target - target method
 void updateOptimalTask(const std::string& target)
 {
     using utility::hash::operator""_bkdrHash;
@@ -421,7 +421,7 @@ void updateOptimalTask(const std::string& target)
 }
 
 //! @brief Run search tasks.
-//! @param targets vector of target methods
+//! @param targets - vector of target methods
 void runSearch(const std::vector<std::string>& targets)
 {
     if (getBit<SearchMethod>().none())
@@ -480,7 +480,7 @@ void runSearch(const std::vector<std::string>& targets)
 }
 
 //! @brief Update search methods in tasks.
-//! @param target target method
+//! @param target - target method
 void updateSearchTask(const std::string& target)
 {
     using utility::hash::operator""_bkdrHash;
@@ -502,7 +502,7 @@ void updateSearchTask(const std::string& target)
 }
 
 //! @brief Run sort tasks.
-//! @param targets vector of target methods
+//! @param targets - vector of target methods
 void runSort(const std::vector<std::string>& targets)
 {
     if (getBit<SortMethod>().none())
@@ -581,7 +581,7 @@ void runSort(const std::vector<std::string>& targets)
 }
 
 //! @brief Update sort methods in tasks.
-//! @param target target method
+//! @param target - target method
 void updateSortTask(const std::string& target)
 {
     using utility::hash::operator""_bkdrHash;

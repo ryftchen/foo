@@ -9,8 +9,8 @@
 #include "utility/include/thread.hpp"
 
 //! @brief The main function.
-//! @param argc argument count
-//! @param argv argument vector
+//! @param argc - argument count
+//! @param argv - argument vector
 //! @return the argument to the implicit call to exit()
 int main(int argc, char* argv[])
 {

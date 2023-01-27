@@ -20,7 +20,7 @@
 #include <sstream>
 
 //! @brief Print behavioral result content.
-#define BEHAVIORAL_PRINT_RESULT_CONTENT(method)
+#define BEHAVIORAL_PRINT_RESULT_CONTENT(method) output().clear()
 #endif
 
 namespace design_pattern::behavioral
@@ -51,7 +51,7 @@ public:
     virtual ~Handler() = default;
 
     //! @brief Set the handler.
-    //! @param handler target handler
+    //! @param handler - target handler
     virtual void setHandler(std::shared_ptr<Handler> handler) { successor = std::move(handler); }
     //! @brief Handle the request.
     virtual void handleRequest()
@@ -172,7 +172,7 @@ class ConcreteCommand : public Command
 {
 public:
     //! @brief Construct a new ConcreteCommand object.
-    //! @param receiver receiver associated with the command
+    //! @param receiver - receiver associated with the command
     explicit ConcreteCommand(const std::shared_ptr<Receiver>& receiver) : receiver(receiver) {}
 
     //! @brief Destroy the ConcreteCommand object.
@@ -197,7 +197,7 @@ class Invoker
 {
 public:
     //! @brief Set the command.
-    //! @param c command
+    //! @param c - command
     void set(const std::shared_ptr<Command>& c) { command = c; }
     //! @brief Ask the command to carry out the request.
     void confirm()
@@ -247,11 +247,11 @@ class Context
 {
 public:
     //! @brief Set the pair of the expression and the value.
-    //! @param expr expression
-    //! @param val value
+    //! @param expr - expression
+    //! @param val - value
     void set(const std::string& expr, const bool val) { vars.insert(std::pair<std::string, bool>(expr, val)); }
     //! @brief Get the value by expression.
-    //! @param expr expression
+    //! @param expr - expression
     //! @return value
     bool get(const std::string& expr) { return vars[expr]; }
 
@@ -277,13 +277,13 @@ class TerminalExpression : public AbstractExpression
 {
 public:
     //! @brief Construct a new TerminalExpression object.
-    //! @param value target value
+    //! @param value - target value
     explicit TerminalExpression(const std::string& value) : value(value) {}
     //! @brief Destroy the TerminalExpression object.
     ~TerminalExpression() override = default;
 
     //! @brief The interpret that associated with terminal symbols in the grammar.
-    //! @param context global context
+    //! @param context - global context
     //! @return value
     bool interpret(const std::shared_ptr<Context> context) override { return context->get(value); }
 
@@ -297,8 +297,8 @@ class NonTerminalExpression : public AbstractExpression
 {
 public:
     //! @brief Construct a new NonTerminalExpression object.
-    //! @param left target left operation
-    //! @param right target right operation
+    //! @param left - target left operation
+    //! @param right - target right operation
     NonTerminalExpression(std::shared_ptr<AbstractExpression> left, std::shared_ptr<AbstractExpression> right) :
         leftOp(left), rightOp(right)
     {
@@ -311,7 +311,7 @@ public:
     }
 
     //! @brief The interpret that associated with non-terminal symbols in the grammar.
-    //! @param context global context
+    //! @param context - global context
     //! @return value
     bool interpret(const std::shared_ptr<Context> context) override
     {
@@ -379,7 +379,7 @@ class ConcreteAggregate : public Aggregate, public std::enable_shared_from_this<
 {
 public:
     //! @brief Construct a new ConcreteAggregate object.
-    //! @param size size of the concrete aggregate
+    //! @param size - size of the concrete aggregate
     explicit ConcreteAggregate(const uint32_t size)
     {
         list = std::make_unique<int[]>(size);
@@ -396,7 +396,7 @@ public:
     //! @return size of the concrete aggregate
     [[nodiscard]] uint32_t size() const { return count; }
     //! @brief Get the item by index.
-    //! @param index index of item
+    //! @param index - index of item
     //! @return item
     int at(uint32_t index) { return list[index]; }
 
@@ -431,7 +431,7 @@ class ConcreteIterator : public Iterator
 {
 public:
     //! @brief Construct a new ConcreteIterator object.
-    //! @param list target collection of items
+    //! @param list - target collection of items
     explicit ConcreteIterator(std::shared_ptr<ConcreteAggregate> list) : list(list), index(0) {}
     //! @brief Destroy the ConcreteIterator object.
     ~ConcreteIterator() override = default;
@@ -504,8 +504,8 @@ class Colleague
 {
 public:
     //! @brief Construct a new Colleague object.
-    //! @param mediator target mediator
-    //! @param id target id
+    //! @param mediator - target mediator
+    //! @param id - target id
     Colleague(const std::shared_ptr<Mediator> mediator, const uint32_t id) : mediator(mediator), id(id) {}
     //! @brief Destroy the Colleague object.
     virtual ~Colleague() = default;
@@ -514,10 +514,10 @@ public:
     //! @return id of the colleague
     [[nodiscard]] uint32_t getID() const { return id; }
     //! @brief Send message.
-    //! @param msg sending message
+    //! @param msg - sending message
     virtual void send(const std::string& msg) = 0;
     //! @brief Receive message.
-    //! @param msg receiving message
+    //! @param msg - receiving message
     virtual void receive(const std::string& msg) = 0;
 
 protected:
@@ -535,11 +535,11 @@ public:
     virtual ~Mediator() = default;
 
     //! @brief Add colleague.
-    //! @param colleague target colleague
+    //! @param colleague - target colleague
     virtual void add(const std::shared_ptr<Colleague>& colleague) = 0;
     //! @brief Distribute message.
-    //! @param sender sender in colleagues
-    //! @param msg message from sender
+    //! @param sender - sender in colleagues
+    //! @param msg - message from sender
     virtual void distribute(const std::shared_ptr<Colleague>& sender, const std::string& msg) = 0;
 
 protected:
@@ -552,21 +552,21 @@ class ConcreteColleague : public Colleague, public std::enable_shared_from_this<
 {
 public:
     //! @brief Construct a new ConcreteColleague object.
-    //! @param mediator target mediator
-    //! @param id target id
+    //! @param mediator - target mediator
+    //! @param id - target id
     ConcreteColleague(const std::shared_ptr<Mediator>& mediator, const uint32_t id) : Colleague(mediator, id) {}
     //! @brief Destroy the ConcreteColleague object.
     ~ConcreteColleague() override = default;
 
     //! @brief Send message.
-    //! @param msg sending message
+    //! @param msg - sending message
     void send(const std::string& msg) override
     {
         output() << "message \"" << msg << "\" sent by colleague " << id << std::endl;
         mediator.lock()->distribute(shared_from_this(), msg);
     }
     //! @brief Receive message.
-    //! @param msg receiving message
+    //! @param msg - receiving message
     void receive(const std::string& msg) override
     {
         output() << "message \"" << msg << "\" received by colleague " << id << std::endl;
@@ -591,11 +591,11 @@ public:
     }
 
     //! @brief Add colleague.
-    //! @param colleague target colleague
+    //! @param colleague - target colleague
     void add(const std::shared_ptr<Colleague>& colleague) override { colleagues.emplace_back(colleague); }
     //! @brief Distribute message.
-    //! @param sender sender in colleagues
-    //! @param msg message from sender
+    //! @param sender - sender in colleagues
+    //! @param msg - message from sender
     void distribute(const std::shared_ptr<Colleague>& sender, const std::string& msg) override
     {
         std::for_each(
@@ -659,13 +659,13 @@ class Memento
 private:
     friend class Originator;
     //! @brief Construct a new Memento object.
-    //! @param state target state
+    //! @param state - target state
     explicit Memento(const int state) : state(state) {}
 
     //! @brief State of memento.
     int state;
     //! @brief Set the state of memento.
-    //! @param s target state
+    //! @param s - target state
     void setState(const int s) { state = s; }
     //! @brief Get the state of memento.
     //! @return state of memento
@@ -678,7 +678,7 @@ class Originator
 {
 public:
     //! @brief Set the state of originator.
-    //! @param s target state
+    //! @param s - target state
     void setState(const int s)
     {
         output() << "set state to " << s << std::endl;
@@ -688,7 +688,7 @@ public:
     //! @return state of originator
     [[nodiscard]] int getState() const { return state; }
     //! @brief Set the state of originator by memento.
-    //! @param memento target memento
+    //! @param memento - target memento
     void setMemento(const std::shared_ptr<Memento> memento) { state = memento->getState(); }
     //! @brief Create a memento.
     //! @return memento
@@ -707,7 +707,7 @@ class CareTaker
 {
 public:
     //! @brief Construct a new CareTaker object.
-    //! @param originator target originator
+    //! @param originator - target originator
     explicit CareTaker(const std::shared_ptr<Originator> originator) : originator(originator) {}
     //! @brief Destroy the CareTaker object.
     ~CareTaker()
@@ -799,7 +799,7 @@ public:
     //! @return state of observer
     virtual int getState() = 0;
     //! @brief Update the state of observer by subject.
-    //! @param subject target subject
+    //! @param subject - target subject
     virtual void update(const std::shared_ptr<Subject>& subject) = 0;
 };
 
@@ -811,10 +811,10 @@ public:
     virtual ~Subject() = default;
 
     //! @brief Attach observer.
-    //! @param observer observer to be attached
+    //! @param observer - observer to be attached
     void attach(const std::shared_ptr<Observer>& observer) { observers.emplace_back(observer); }
     //! @brief Detach observer by index.
-    //! @param index observer index
+    //! @param index - observer index
     void detach(const int index) { observers.erase(observers.begin() + index); }
     //! @brief Notify all observers.
     void notify()
@@ -831,7 +831,7 @@ public:
     //! @return state of subject
     virtual int getState() = 0;
     //! @brief Set the state of subject.
-    //! @param s target state of subject
+    //! @param s - target state of subject
     virtual void setState(const int s) = 0;
 
 private:
@@ -844,7 +844,7 @@ class ConcreteObserver : public Observer
 {
 public:
     //! @brief Construct a new ConcreteObserver object.
-    //! @param state target state of observer
+    //! @param state - target state of observer
     explicit ConcreteObserver(const int state) : observerState(state) {}
     //! @brief Destroy the ConcreteObserver object.
     ~ConcreteObserver() override = default;
@@ -853,7 +853,7 @@ public:
     //! @return state of observer
     int getState() override { return observerState; }
     //! @brief Update the state of observer by subject.
-    //! @param subject target subject
+    //! @param subject - target subject
     void update(const std::shared_ptr<Subject>& subject) override
     {
         observerState = subject->getState();
@@ -878,7 +878,7 @@ public:
     //! @return state of subject
     int getState() override { return subjectState; }
     //! @brief Set the state of subject.
-    //! @param s target state of subject
+    //! @param s - target state of subject
     void setState(const int s) override { subjectState = s; }
 
 private:
@@ -967,7 +967,7 @@ public:
     ~Context() { state.reset(); }
 
     //! @brief Set the state of context.
-    //! @param s target state
+    //! @param s - target state
     void setState(std::unique_ptr<State> s)
     {
         if (state)
@@ -1053,7 +1053,7 @@ class Context
 {
 public:
     //! @brief Construct a new Context object.
-    //! @param strategy target strategy
+    //! @param strategy - target strategy
     explicit Context(std::unique_ptr<Strategy> strategy) : strategy(std::move(strategy)) {}
     //! @brief Destroy the Context object.
     ~Context() { strategy.reset(); }
@@ -1162,10 +1162,10 @@ public:
     virtual ~Visitor() = default;
 
     //! @brief Visit element A.
-    //! @param element element to be visited
+    //! @param element - element to be visited
     virtual void visitElementA(const std::shared_ptr<ConcreteElementA>& element) = 0;
     //! @brief Visit element B.
-    //! @param element element to be visited
+    //! @param element - element to be visited
     virtual void visitElementB(const std::shared_ptr<ConcreteElementB>& element) = 0;
 };
 
@@ -1215,7 +1215,7 @@ public:
     virtual ~Element() = default;
 
     //! @brief Accept visitor.
-    //! @param visitor visitor to be accepted
+    //! @param visitor - visitor to be accepted
     virtual void accept(Visitor& visitor) = 0;
 };
 
@@ -1227,7 +1227,7 @@ public:
     ~ConcreteElementA() override = default;
 
     //! @brief Accept visitor.
-    //! @param visitor visitor to be accepted
+    //! @param visitor - visitor to be accepted
     void accept(Visitor& visitor) override { visitor.visitElementA(shared_from_this()); }
 };
 
@@ -1239,7 +1239,7 @@ public:
     ~ConcreteElementB() override = default;
 
     //! @brief Accept visitor.
-    //! @param visitor visitor to be accepted
+    //! @param visitor - visitor to be accepted
     void accept(Visitor& visitor) override { visitor.visitElementB(shared_from_this()); }
 };
 } // namespace visitor

@@ -33,7 +33,7 @@ namespace application::app_dp
 //! @brief Alias for Type.
 using Type = DesignPatternTask::Type;
 //! @brief Alias for Bottom.
-//! @tparam T type of specific enum
+//! @tparam T - type of specific enum
 template <class T>
 using Bottom = DesignPatternTask::Bottom<T>;
 //! @brief Alias for BehavioralInstance.
@@ -52,7 +52,7 @@ DesignPatternTask& getTask()
 }
 
 //! @brief Run behavioral tasks.
-//! @param targets vector of target instances
+//! @param targets - vector of target instances
 void runBehavioral(const std::vector<std::string>& targets)
 {
     if (getBit<BehavioralInstance>().none())
@@ -128,7 +128,7 @@ void runBehavioral(const std::vector<std::string>& targets)
 }
 
 //! @brief Update behavioral instances in tasks.
-//! @param target target instance
+//! @param target - target instance
 void updateBehavioralTask(const std::string& target)
 {
     using utility::hash::operator""_bkdrHash;
@@ -174,7 +174,7 @@ void updateBehavioralTask(const std::string& target)
 }
 
 //! @brief Run creational tasks.
-//! @param targets vector of target instances
+//! @param targets - vector of target instances
 void runCreational(const std::vector<std::string>& targets)
 {
     if (getBit<CreationalInstance>().none())
@@ -232,7 +232,7 @@ void runCreational(const std::vector<std::string>& targets)
 }
 
 //! @brief Update creational instances in tasks.
-//! @param target target instance
+//! @param target - target instance
 void updateCreationalTask(const std::string& target)
 {
     using utility::hash::operator""_bkdrHash;
@@ -260,7 +260,7 @@ void updateCreationalTask(const std::string& target)
 }
 
 //! @brief Run structural tasks.
-//! @param targets vector of target instances
+//! @param targets - vector of target instances
 void runStructural(const std::vector<std::string>& targets)
 {
     if (getBit<StructuralInstance>().none())
@@ -324,7 +324,7 @@ void runStructural(const std::vector<std::string>& targets)
 }
 
 //! @brief Update structural instances in tasks.
-//! @param target target instance
+//! @param target - target instance
 void updateStructuralTask(const std::string& target)
 {
     using utility::hash::operator""_bkdrHash;

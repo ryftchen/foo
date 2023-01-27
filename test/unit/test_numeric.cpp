@@ -169,7 +169,7 @@ public:
     {
     public:
         //! @brief The operator (()) overloading of Expression1 class.
-        //! @param x independent variable
+        //! @param x - independent variable
         //! @return dependent variable
         double operator()(const double x) const override
         {
@@ -189,7 +189,7 @@ public:
     {
     public:
         //! @brief The operator (()) overloading of Expression2 class.
-        //! @param x independent variable
+        //! @param x - independent variable
         //! @return dependent variable
         double operator()(const double x) const override
         {

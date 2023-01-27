@@ -16,8 +16,8 @@ constexpr uint32_t bkdrHashSeed = 131;
 constexpr int bkdrHashSize = 0x7FFFFFFF;
 
 //! @brief The Brian-Kernighan Dennis-Ritchie hash function in compile time.
-//! @param str input data
-//! @param hash previous hash value
+//! @param str - input data
+//! @param hash - previous hash value
 //! @return hash value
 constexpr uint32_t bkdrHashInCompile(const char* const str, const uint32_t hash = 0) noexcept
 {
@@ -25,7 +25,7 @@ constexpr uint32_t bkdrHashInCompile(const char* const str, const uint32_t hash 
 }
 
 //! @brief The operator ("") overloading with BKDR hash function.
-//! @param str input data
+//! @param str - input data
 //! @return hash value
 constexpr uint64_t operator""_bkdrHash(const char* const str, const std::size_t /*unused*/) noexcept
 {

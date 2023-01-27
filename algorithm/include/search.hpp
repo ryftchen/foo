@@ -21,7 +21,7 @@ constexpr uint32_t maxAlignOfPrint = 16;
 constexpr uint32_t maxColumnOfPrint = 10;
 
 //! @brief Solution of search.
-//! @tparam T type of the solution of search
+//! @tparam T - type of the solution of search
 template <class T>
 class SearchSolution
 {
@@ -30,33 +30,33 @@ public:
     virtual ~SearchSolution() = default;
 
     //! @brief The binary method.
-    //! @param array array to be searched
-    //! @param length length of array
-    //! @param key search key
+    //! @param array - array to be searched
+    //! @param length - length of array
+    //! @param key - search key
     //! @return index of the first occurrence of key
     static int binaryMethod(const T* const array, const uint32_t length, const T key);
     //! @brief The interpolation method.
-    //! @param array array to be searched
-    //! @param length length of array
-    //! @param key search key
+    //! @param array - array to be searched
+    //! @param length - length of array
+    //! @param key - search key
     //! @return index of the first occurrence of key
     static int interpolationMethod(const T* const array, const uint32_t length, const T key);
     //! @brief The Fibonacci method.
-    //! @param array array to be searched
-    //! @param length length of array
-    //! @param key search key
+    //! @param array - array to be searched
+    //! @param length - length of array
+    //! @param key - search key
     //! @return index of the first occurrence of key
     static int fibonacciMethod(const T* const array, const uint32_t length, const T key);
 
 private:
     //! @brief Generate Fibonacci number.
-    //! @param max the smallest integer that is not greater than the maximum value of the Fibonacci sequence
+    //! @param max - the smallest integer that is not greater than the maximum value of the Fibonacci sequence
     //! @return Fibonacci sequence
     static std::vector<uint32_t> generateFibonacciNumber(const uint32_t max);
 };
 
 //! @brief Check whether it is the number type.
-//! @tparam T type of inspection to be performed
+//! @tparam T - type of inspection to be performed
 //! @return be number or not
 template <typename T>
 constexpr bool isNumber()
@@ -65,23 +65,23 @@ constexpr bool isNumber()
 }
 
 //! @brief Builder for the target.
-//! @tparam T type of builder for the target
+//! @tparam T - type of builder for the target
 template <class T>
 class TargetBuilder
 {
 public:
     //! @brief Construct a new TargetBuilder object.
-    //! @param length length of array
-    //! @param left the left boundary of the array
-    //! @param right the right boundary of the array
+    //! @param length - length of array
+    //! @param left - the left boundary of the array
+    //! @param right - the right boundary of the array
     TargetBuilder(const uint32_t length, const T left, const T right);
     //! @brief Destroy the TargetBuilder object.
     virtual ~TargetBuilder() = default;
     //! @brief Construct a new TargetBuilder object.
-    //! @param rhs right-hand side
+    //! @param rhs - right-hand side
     TargetBuilder(const TargetBuilder& rhs);
     //! @brief The operator (!=) overloading of TargetBuilder class.
-    //! @param rhs right-hand side
+    //! @param rhs - right-hand side
     //! @return reference of TargetBuilder object
     TargetBuilder<T>& operator=(const TargetBuilder& rhs);
 
@@ -104,14 +104,14 @@ private:
     T searchKey{0};
 
     //! @brief Deep copy for copy constructor.
-    //! @param rhs right-hand side
+    //! @param rhs - right-hand side
     void deepCopy(const TargetBuilder& rhs) const;
     //! @brief Set the ordered array.
-    //! @tparam V the specific type of integral
-    //! @param array ordered array
-    //! @param length length of the ordered array
-    //! @param left the left boundary of the ordered array
-    //! @param right the left right of the ordered array
+    //! @tparam V - the specific type of integral
+    //! @param array - ordered array
+    //! @param length - length of the ordered array
+    //! @param left - the left boundary of the ordered array
+    //! @param right - the left right of the ordered array
     template <typename V>
     requires std::is_integral<V>::value static void setOrderedArray(
         T array[],
@@ -119,11 +119,11 @@ private:
         const T left,
         const T right);
     //! @brief Set the ordered array.
-    //! @tparam V the specific type of floating point
-    //! @param array ordered array
-    //! @param length length of the ordered array
-    //! @param left the left boundary of the ordered array
-    //! @param right the left right of the ordered array
+    //! @tparam V - the specific type of floating point
+    //! @param array - ordered array
+    //! @param length - length of the ordered array
+    //! @param left - the left boundary of the ordered array
+    //! @param right - the left right of the ordered array
     template <typename V>
     requires std::is_floating_point<V>::value static void setOrderedArray(
         T array[],
@@ -131,11 +131,11 @@ private:
         const T left,
         const T right);
     //! @brief Format array for printing.
-    //! @tparam V type of array
-    //! @param array array to be formatted
-    //! @param length length of array
-    //! @param buffer buffer for filling the formatted array
-    //! @param bufferSize size of buffer
+    //! @tparam V - type of array
+    //! @param array - array to be formatted
+    //! @param length - length of array
+    //! @param buffer - buffer for filling the formatted array
+    //! @param bufferSize - size of buffer
     //! @return buffer after format
     template <typename V>
     requires(isNumber<V>()) static char* formatArray(

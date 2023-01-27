@@ -22,13 +22,13 @@ public:
     virtual ~Expression() = default;
 
     //! @brief The operator (()) overloading of Function class.
-    //! @param x independent variable
+    //! @param x - independent variable
     //! @return dependent variable
     virtual inline double operator()(const double x) const = 0;
 };
 
 //! @brief Expression object's helper type for the visitor.
-//! @tparam Ts type of visitor
+//! @tparam Ts - type of visitor
 template <class... Ts>
 struct ExprOverloaded : Ts...
 {
@@ -36,20 +36,20 @@ struct ExprOverloaded : Ts...
 };
 
 //! @brief Explicit deduction guide for ExprOverloaded.
-//! @tparam Ts type of visitor
+//! @tparam Ts - type of visitor
 template <class... Ts>
 ExprOverloaded(Ts...) -> ExprOverloaded<Ts...>;
 
 //! @brief Range properties of the expression.
-//! @tparam T1 type of lower endpoint
-//! @tparam T2 type of upper endpoint
+//! @tparam T1 - type of lower endpoint
+//! @tparam T2 - type of upper endpoint
 template <typename T1, typename T2>
 struct ExprRange
 {
     //! @brief Construct a new ExprRange object.
-    //! @param range1 lower endpoint
-    //! @param range2 upper endpoint
-    //! @param exprDescr expression description
+    //! @param range1 - lower endpoint
+    //! @param range2 - upper endpoint
+    //! @param exprDescr - expression description
     ExprRange(const T1& range1, const T2& range2, const std::string_view exprDescr) :
         range1(range1), range2(range2), exprDescr(exprDescr){};
     //! @brief Construct a new ExprRange object.
@@ -61,7 +61,7 @@ struct ExprRange
     //! @brief Expression description.
     std::string_view exprDescr;
     //! @brief The operator (==) overloading of ExprRange class.
-    //! @param rhs right-hand side
+    //! @param rhs - right-hand side
     //! @return be equal or not equal
     bool operator==(const ExprRange& rhs) const
     {
@@ -72,9 +72,9 @@ struct ExprRange
 struct ExprMapHash
 {
     //! @brief The operator (()) overloading of ExprMapHash class.
-    //! @tparam T1 type of lower endpoint
-    //! @tparam T2 type of upper endpoint
-    //! @param range range properties of the expression
+    //! @tparam T1 - type of lower endpoint
+    //! @tparam T2 - type of upper endpoint
+    //! @param range - range properties of the expression
     //! @return hash value
     template <typename T1, typename T2>
     std::size_t operator()(const ExprRange<T1, T2>& range) const
@@ -98,16 +98,16 @@ public:
     virtual ~IntegralSolution() = default;
 
     //! @brief The operator (()) overloading of IntegralSolution class.
-    //! @param lower lower endpoint
-    //! @param upper upper endpoint
-    //! @param eps precision of calculation
+    //! @param lower - lower endpoint
+    //! @param upper - upper endpoint
+    //! @param eps - precision of calculation
     //! @return result of integral
     virtual double operator()(double lower, double upper, const double eps) const = 0;
 
 protected:
     //! @brief Get the sign.
-    //! @param lower lower endpoint
-    //! @param upper upper endpoint
+    //! @param lower - lower endpoint
+    //! @param upper - upper endpoint
     //! @return sign
     static inline int getSign(double& lower, double& upper);
     friend double trapezoid(
@@ -127,13 +127,13 @@ class Trapezoidal : public IntegralSolution
 {
 public:
     //! @brief Construct a new Trapezoidal object.
-    //! @param expr target expression
+    //! @param expr - target expression
     explicit Trapezoidal(const expression::Expression& expr);
 
     //! @brief The operator (()) overloading of Trapezoidal class.
-    //! @param lower lower endpoint
-    //! @param upper upper endpoint
-    //! @param eps precision of calculation
+    //! @param lower - lower endpoint
+    //! @param upper - upper endpoint
+    //! @param eps - precision of calculation
     //! @return result of integral
     [[nodiscard]] double operator()(double lower, double upper, const double eps) const override;
 
@@ -147,13 +147,13 @@ class Simpson : public IntegralSolution
 {
 public:
     //! @brief Construct a new Simpson object.
-    //! @param expr target expression
+    //! @param expr - target expression
     explicit Simpson(const expression::Expression& expr);
 
     //! @brief The operator (()) overloading of Simpson class.
-    //! @param lower lower endpoint
-    //! @param upper upper endpoint
-    //! @param eps precision of calculation
+    //! @param lower - lower endpoint
+    //! @param upper - upper endpoint
+    //! @param eps - precision of calculation
     //! @return result of integral
     [[nodiscard]] double operator()(double lower, double upper, const double eps) const override;
 
@@ -161,20 +161,20 @@ private:
     //! @brief Target expression.
     const expression::Expression& expr;
     //! @brief Calculate the value of the definite integral with the Simpson's rule.
-    //! @param left left endpoint
-    //! @param right right endpoint
-    //! @param eps precision of calculation
+    //! @param left - left endpoint
+    //! @param right - right endpoint
+    //! @param eps - precision of calculation
     //! @return result of definite integral
     [[nodiscard]] double simpsonIntegral(const double left, const double right, const double eps) const;
     //! @brief Composite Simpson's 1/3 formula.
-    //! @param left left endpoint
-    //! @param right right endpoint
-    //! @param step number of steps
+    //! @param left - left endpoint
+    //! @param right - right endpoint
+    //! @param step - number of steps
     //! @return result of definite integral
     [[nodiscard]] double compositeSimpsonOneThird(const double left, const double right, const uint32_t step) const;
     //! @brief Simpson's 1/3 formula.
-    //! @param left left endpoint
-    //! @param right right endpoint
+    //! @param left - left endpoint
+    //! @param right - right endpoint
     //! @return result of definite integral
     [[nodiscard]] double simpsonOneThird(const double left, const double right) const;
 };
@@ -184,13 +184,13 @@ class Romberg : public IntegralSolution
 {
 public:
     //! @brief Construct a new Romberg object.
-    //! @param expr target expression
+    //! @param expr - target expression
     explicit Romberg(const expression::Expression& expr);
 
     //! @brief The operator (()) overloading of Romberg class.
-    //! @param lower lower endpoint
-    //! @param upper upper endpoint
-    //! @param eps precision of calculation
+    //! @param lower - lower endpoint
+    //! @param upper - upper endpoint
+    //! @param eps - precision of calculation
     //! @return result of integral
     [[nodiscard]] double operator()(double lower, double upper, const double eps) const override;
 
@@ -204,13 +204,13 @@ class Gauss : public IntegralSolution
 {
 public:
     //! @brief Construct a new Gauss object.
-    //! @param expr target expression
+    //! @param expr - target expression
     explicit Gauss(const expression::Expression& expr);
 
     //! @brief The operator (()) overloading of Gauss class.
-    //! @param lower lower endpoint
-    //! @param upper upper endpoint
-    //! @param eps precision of calculation
+    //! @param lower - lower endpoint
+    //! @param upper - upper endpoint
+    //! @param eps - precision of calculation
     //! @return result of integral
     [[nodiscard]] double operator()(double lower, double upper, const double eps) const override;
 
@@ -224,13 +224,13 @@ class MonteCarlo : public IntegralSolution
 {
 public:
     //! @brief Construct a new MonteCarlo object.
-    //! @param expr target expression
+    //! @param expr - target expression
     explicit MonteCarlo(const expression::Expression& expr);
 
     //! @brief The operator (()) overloading of MonteCarlo class.
-    //! @param lower lower endpoint
-    //! @param upper upper endpoint
-    //! @param eps precision of calculation
+    //! @param lower - lower endpoint
+    //! @param upper - upper endpoint
+    //! @param eps - precision of calculation
     //! @return result of integral
     [[nodiscard]] double operator()(double lower, double upper, const double eps) const override;
 
@@ -238,16 +238,16 @@ private:
     //! @brief Target expression.
     const expression::Expression& expr;
     //! @brief Sample from the uniform distribution.
-    //! @param lower lower endpoint
-    //! @param upper upper endpoint
-    //! @param eps precision of calculation
+    //! @param lower - lower endpoint
+    //! @param upper - upper endpoint
+    //! @param eps - precision of calculation
     //! @return result of definite integral
     [[nodiscard]] double sampleFromUniformDistribution(const double lower, const double upper, const double eps) const;
 #ifdef INTEGRAL_MONTE_CARLO_NO_UNIFORM
     //! @brief Sample from the normal distribution.
-    //! @param lower lower endpoint
-    //! @param upper upper endpoint
-    //! @param eps precision of calculation
+    //! @param lower - lower endpoint
+    //! @param upper - upper endpoint
+    //! @param eps - precision of calculation
     //! @return result of definite integral
     [[nodiscard]] double sampleFromNormalDistribution(const double lower, const double upper, const double eps) const;
 #endif

@@ -16,20 +16,19 @@
 namespace utility::argument
 {
 //! @brief Confirm container traits. Value is false.
-//! @tparam T type to be confirmed
-//! @tparam typename valid type or expression
+//! @tparam T - type to be confirmed
+//! @tparam typename - valid type or expression
 template <typename T, typename = void>
 struct HasContainerTraits : std::false_type
 {
 };
 //! @brief Confirm container traits(std::string). Value is false.
-//! @tparam N/A
 template <>
 struct HasContainerTraits<std::string> : std::false_type
 {
 };
 //! @brief Confirm container traits. Value is true.
-//! @tparam T type to be confirmed
+//! @tparam T - type to be confirmed
 template <typename T>
 struct HasContainerTraits<
     T,
@@ -41,26 +40,26 @@ struct HasContainerTraits<
 {
 };
 //! @brief Confirm whether it is a container.
-//! @tparam T type to be confirmed
+//! @tparam T - type to be confirmed
 template <typename T>
 static constexpr bool isContainer = HasContainerTraits<T>::value;
 
 //! @brief Confirm streamable traits. Value is false.
-//! @tparam T type to be confirmed
-//! @tparam typename valid type or expression
+//! @tparam T - type to be confirmed
+//! @tparam typename - valid type or expression
 template <typename T, typename = void>
 struct HasStreamableTraits : std::false_type
 {
 };
 //! @brief Confirm streamable traits. Value is true.
-//! @tparam T type to be confirmed
+//! @tparam T - type to be confirmed
 template <typename T>
 struct HasStreamableTraits<T, std::void_t<decltype(std::declval<std::ostream&>() << std::declval<T>())>>
     : std::true_type
 {
 };
 //! @brief Confirm whether it is streamable.
-//! @tparam T type to be confirmed
+//! @tparam T - type to be confirmed
 template <typename T>
 static constexpr bool isStreamable = HasStreamableTraits<T>::value;
 
@@ -68,8 +67,8 @@ static constexpr bool isStreamable = HasStreamableTraits<T>::value;
 constexpr std::size_t representMaxContainerSize = 5;
 
 //! @brief Represent target value.
-//! @tparam T type of target value
-//! @param val target value
+//! @tparam T - type of target value
+//! @param val - target value
 //! @return content to be represented
 template <typename T>
 std::string represent(T const& val)
@@ -126,10 +125,10 @@ std::string represent(T const& val)
 }
 
 //! @brief Implementation of wrapping function calls that have scope.
-//! @tparam Function type of callable function
-//! @tparam Tuple type of bound arguments tuple
-//! @tparam Extra type of extra option
-//! @tparam I number of sequence which converted from bound arguments tuple
+//! @tparam Function - type of callable function
+//! @tparam Tuple - type of bound arguments tuple
+//! @tparam Extra - type of extra option
+//! @tparam I - number of sequence which converted from bound arguments tuple
 //! @return wrapping of calls
 template <class Function, class Tuple, class Extra, std::size_t... I>
 constexpr decltype(auto) applyScopedOneImpl(
@@ -143,12 +142,12 @@ constexpr decltype(auto) applyScopedOneImpl(
 }
 
 //! @brief Wrap function calls that have scope.
-//! @tparam Function type of callable function
-//! @tparam Tuple type of bound arguments tuple
-//! @tparam Extra type of extra option
-//! @param func callable function
-//! @param tup bound arguments tuple
-//! @param ext extra option
+//! @tparam Function - type of callable function
+//! @tparam Tuple - type of bound arguments tuple
+//! @tparam Extra - type of extra option
+//! @param func - callable function
+//! @param tup - bound arguments tuple
+//! @param ext - extra option
 //! @return wrapping of calls
 template <class Function, class Tuple, class Extra>
 constexpr decltype(auto) applyScopedOne(Function&& func, Tuple&& tup, Extra&& ext)
@@ -175,29 +174,29 @@ class ArgumentRegister
 {
 public:
     //! @brief Construct a new ArgumentRegister object.
-    //! @tparam N number of arguments
-    //! @tparam I number of sequences related to arguments
-    //! @param array array of arguments to be registered
+    //! @tparam N - number of arguments
+    //! @tparam I - number of sequences related to arguments
+    //! @param array - array of arguments to be registered
     template <std::size_t N, std::size_t... I>
     explicit ArgumentRegister(std::array<std::string_view, N>&& array, std::index_sequence<I...> /*unused*/);
     //! @brief Construct a new ArgumentRegister object.
-    //! @tparam N number of arguments
-    //! @param array array of arguments to be registered
+    //! @tparam N - number of arguments
+    //! @param array - array of arguments to be registered
     template <std::size_t N>
     explicit ArgumentRegister(std::array<std::string_view, N>&& array);
 
     //! @brief Set help message.
-    //! @param str help message content
+    //! @param str - help message content
     //! @return reference of ArgumentRegister object
     ArgumentRegister& help(std::string str);
     //! @brief Set default value.
-    //! @tparam T type of default value
-    //! @param value default value
+    //! @tparam T - type of default value
+    //! @param value - default value
     //! @return reference of ArgumentRegister object
     template <typename T>
     ArgumentRegister& defaultValue(T&& value);
     //! @brief Set implicit value
-    //! @param value implicit value
+    //! @param value - implicit value
     //! @return reference of ArgumentRegister object
     ArgumentRegister& implicitValue(std::any value);
     //! @brief Set the argument property to be required.
@@ -210,32 +209,32 @@ public:
     //! @return reference of ArgumentRegister object
     ArgumentRegister& remaining();
     //! @brief The action of specific arguments.
-    //! @tparam Function type of callable function
-    //! @tparam Args type of bound arguments
-    //! @param callable callable function
-    //! @param boundArgs bound arguments
+    //! @tparam Function - type of callable function
+    //! @tparam Args - type of bound arguments
+    //! @param callable - callable function
+    //! @param boundArgs - bound arguments
     //! @return reference of ArgumentRegister object
     template <class Function, class... Args>
     auto action(Function&& callable, Args&&... boundArgs)
         -> std::enable_if_t<std::is_invocable_v<Function, Args..., std::string const>, ArgumentRegister&>;
     //! @brief Set number of arguments.
-    //! @param numArgs number of arguments
+    //! @param numArgs - number of arguments
     //! @return reference of ArgumentRegister object
     ArgumentRegister& nArgs(std::size_t numArgs);
     //! @brief Set minimum number and maximum number of arguments.
-    //! @param numArgsMin minimum number
-    //! @param numArgsMax maximum number
+    //! @param numArgsMin - minimum number
+    //! @param numArgsMax - maximum number
     //! @return reference of ArgumentRegister object
     ArgumentRegister& nArgs(std::size_t numArgsMin, std::size_t numArgsMax);
     //! @brief Set number of arguments with pattern.
-    //! @param pattern argument pattern
+    //! @param pattern - argument pattern
     //! @return reference of ArgumentRegister object
     ArgumentRegister& nArgs(NArgsPattern pattern);
     //! @brief Consume arguments.
-    //! @tparam Iterator type of argument iterator
-    //! @param start start argument iterator
-    //! @param end end argument iterator
-    //! @param usedName name of argument
+    //! @tparam Iterator - type of argument iterator
+    //! @param start - start argument iterator
+    //! @param end - end argument iterator
+    //! @param usedName - name of argument
     //! @return argument iterator between start and end
     template <typename Iterator>
     Iterator consume(Iterator start, Iterator end, const std::string_view usedName = {});
@@ -245,14 +244,14 @@ public:
     //! @return the length of all arguments
     [[nodiscard]] std::size_t getArgumentsLength() const;
     //! @brief The operator (!=) overloading of ArgumentRegister class.
-    //! @tparam T type of right-hand side
-    //! @param rhs right-hand side
+    //! @tparam T - type of right-hand side
+    //! @param rhs - right-hand side
     //! @return be not equal or equal
     template <typename T>
     bool operator!=(const T& rhs) const;
     //! @brief The operator (==) overloading of ArgumentRegister class.
-    //! @tparam T type of right-hand side
-    //! @param rhs right-hand side
+    //! @tparam T - type of right-hand side
+    //! @param rhs - right-hand side
     //! @return be equal or not equal
     template <typename T>
     bool operator==(const T& rhs) const;
@@ -309,8 +308,8 @@ private:
 
     public:
         //! @brief Construct a new NArgsRange object
-        //! @param minimum minimum of range
-        //! @param maximum maximum of range
+        //! @param minimum - minimum of range
+        //! @param maximum - maximum of range
         NArgsRange(std::size_t minimum, std::size_t maximum) : min(minimum), max(maximum)
         {
             if (minimum > maximum)
@@ -320,7 +319,7 @@ private:
         }
 
         //! @brief Check if the number of arguments is within the range.
-        //! @param value number of arguments
+        //! @param value - number of arguments
         //! @return be contain or not contain
         [[nodiscard]] bool isContain(std::size_t value) const { return (value >= min) && (value <= max); }
         //! @brief Check if the number of arguments is exact.
@@ -346,25 +345,25 @@ private:
     //! @brief Throw an exception when the required argument has no value provided.
     void throwRequiredArgNoValueProvidedException() const;
     //! @brief Find the character in the argument.
-    //! @param str name of argument
+    //! @param str - name of argument
     //! @return character
     static auto lookAhead(const std::string_view str) -> int;
     //! @brief Check if the argument is optional.
-    //! @param name name of argument
+    //! @param name - name of argument
     //! @return be optional or not optional
     static bool checkIfOptional(std::string_view name);
     //! @brief Check if the argument is non-optional.
-    //! @param name name of argument
+    //! @param name - name of argument
     //! @return be non-optional or not non-optional
     static bool checkIfNonOptional(std::string_view name);
     //! @brief Get the member.
-    //! @tparam T type of member to be got
+    //! @tparam T - type of member to be got
     //! @return member corresponding to the specific type
     template <typename T>
     T get() const;
     //! @brief Convert the container type.
-    //! @tparam T type of container
-    //! @param operand container to be converted
+    //! @tparam T - type of container
+    //! @param operand - container to be converted
     //! @return container after converting type
     template <typename T>
     static auto anyCastContainer(const std::vector<std::any>& operand) -> T;
@@ -569,18 +568,18 @@ class Argument
 {
 public:
     //! @brief Construct a new Argument object.
-    //! @param title title name
-    //! @param version version information
+    //! @param title - title name
+    //! @param version - version information
     explicit Argument(std::string title = {}, std::string version = "1.0");
     //! @brief Destroy the Argument object.
     ~Argument() = default;
     //! @brief Construct a new Argument object.
-    //! @param arg the old object for copy constructor
+    //! @param arg - the old object for copy constructor
     Argument(const Argument& arg);
     //! @brief Construct a new Argument object.
     Argument(Argument&&) noexcept = default;
     //! @brief The operator (=) overloading of Argument class.
-    //! @param arg the old object for copy assignment operator
+    //! @param arg - the old object for copy assignment operator
     //! @return reference of Argument object
     Argument& operator=(const Argument& arg);
     //! @brief The operator (=) overloading of Argument class.
@@ -588,30 +587,30 @@ public:
     Argument& operator=(Argument&&) = default;
 
     //! @brief Add a single argument.
-    //! @tparam Args type of argument
-    //! @param fewArgs argument name
+    //! @tparam Args - type of argument
+    //! @param fewArgs - argument name
     //! @return reference of ArgumentRegister object
     template <typename... Args>
     ArgumentRegister& addArgument(Args... fewArgs);
     //! @brief Parse all input arguments.
-    //! @param arguments vector of all arguments
+    //! @param arguments - vector of all arguments
     void parseArgs(const std::vector<std::string>& arguments);
     //! @brief Parse all input arguments.
-    //! @param argc argument count
-    //! @param argv argument vector
+    //! @param argc - argument count
+    //! @param argv - argument vector
     void parseArgs(int argc, const char* const argv[]);
     //! @brief Get argument value by name.
-    //! @tparam T type of argument
-    //! @param argName target argument name
+    //! @tparam T - type of argument
+    //! @param argName - target argument name
     //! @return argument value
     template <typename T = std::string>
     T get(const std::string_view argName) const;
     //! @brief Check if the argument is used.
-    //! @param argName target argument name
+    //! @param argName - target argument name
     //! @return be used or not used
     [[nodiscard]] bool isUsed(const std::string_view argName) const;
     //! @brief The operator ([]) overloading of ArgumentRegister class.
-    //! @param argName argument name
+    //! @param argName - argument name
     //! @return reference of ArgumentRegister object
     ArgumentRegister& operator[](const std::string_view argName) const;
     //! @brief Get help message.
@@ -635,13 +634,13 @@ private:
     std::map<std::string_view, ListIterator, std::less<>> argumentMap;
 
     //! @brief Parse all input arguments for internal.
-    //! @param arguments vector of all arguments
+    //! @param arguments - vector of all arguments
     void parseArgsInternal(const std::vector<std::string>& arguments);
     //! @brief Get the length of the longest argument.
     //! @return length of the longest argument
     [[nodiscard]] std::size_t getLengthOfLongestArgument() const;
     //! @brief Make index for argumentMap.
-    //! @param iterator iterator in all argument registers
+    //! @param iterator - iterator in all argument registers
     void indexArgument(ListIterator iterator);
 
 protected:

@@ -12,8 +12,8 @@
 namespace utility::memory
 {
 //! @brief Memory pool.
-//! @tparam T type of object to allocate
-//! @tparam BlockSize size of the chunk's memory pool allocates
+//! @tparam T - type of object to allocate
+//! @tparam BlockSize - size of the chunk's memory pool allocates
 template <typename T, std::size_t BlockSize = 4096>
 class Memory
 {
@@ -23,21 +23,21 @@ public:
     //! @brief Destroy the Memory object.
     ~Memory() noexcept;
     //! @brief Construct a new Memory object.
-    //! @param memory the old object for copy constructor
+    //! @param memory - the old object for copy constructor
     Memory(const Memory& memory) noexcept;
     //! @brief Construct a new Memory object.
-    //! @param memory the old object for move constructor
+    //! @param memory - the old object for move constructor
     Memory(Memory&& memory) noexcept;
     //! @brief Construct a new Memory object
-    //! @tparam U type of object to allocate
-    //! @param memory the old object for copy constructor
+    //! @tparam U - type of object to allocate
+    //! @param memory - the old object for copy constructor
     template <class U>
     explicit Memory(const Memory<U>& memory) noexcept;
     //! @brief The operator (=) overloading of Memory class.
     //! @return reference of Memory object
     Memory& operator=(const Memory&) = delete;
     //! @brief The operator (=) overloading of Memory class.
-    //! @param memory the old object for move assignment operator
+    //! @param memory - the old object for move assignment operator
     //! @return reference of Memory object
     Memory& operator=(Memory&& memory) noexcept;
 
@@ -55,45 +55,45 @@ public:
     typedef std::size_t SizeType;
 
     //! @brief Get the pointer of the allocated object.
-    //! @param x reference of the allocated object
+    //! @param x - reference of the allocated object
     //! @return pointer of the allocated object
     inline Pointer address(Reference x) const noexcept;
     //! @brief Get the const pointer of the allocated object.
-    //! @param x const reference of the allocated object
+    //! @param x - const reference of the allocated object
     //! @return const pointer of the allocated object
     inline ConstPointer address(ConstReference x) const noexcept;
     //! @brief Allocate resource.
-    //! @param n resource size
-    //! @param hint const pointer of the allocated object
+    //! @param n - resource size
+    //! @param hint - const pointer of the allocated object
     //! @return pointer of the allocated object
     inline Pointer allocate(SizeType n = 1, ConstPointer hint = 0);
     //! @brief Deallocate resource.
-    //! @param p pointer of the allocated object
-    //! @param n resource size
+    //! @param p - pointer of the allocated object
+    //! @param n - resource size
     inline void deallocate(Pointer p, SizeType n = 1);
     [[nodiscard]] inline SizeType maxSize() const noexcept;
 
     //! @brief Construct object.
-    //! @tparam U type of allocated object
-    //! @tparam Args type of arguments for constructing the object
-    //! @param p pointer of the allocated object
-    //! @param args arguments for constructing the object
+    //! @tparam U - type of allocated object
+    //! @tparam Args - type of arguments for constructing the object
+    //! @param p - pointer of the allocated object
+    //! @param args - arguments for constructing the object
     template <class U, class... Args>
     inline void construct(U* p, Args&&... args);
     //! @brief Destroy object.
-    //! @tparam U type of allocated object
-    //! @param p pointer of the allocated object
+    //! @tparam U - type of allocated object
+    //! @param p - pointer of the allocated object
     template <class U>
     inline void destroy(U* p);
 
     //! @brief New an element.
-    //! @tparam Args type of arguments for constructing the object
-    //! @param args arguments for constructing the object
+    //! @tparam Args - type of arguments for constructing the object
+    //! @param args - arguments for constructing the object
     //! @return pointer of the allocated object
     template <class... Args>
     inline Pointer newElement(Args&&... args);
     //! @brief Delete an element.
-    //! @param p pointer of the allocated object
+    //! @param p - pointer of the allocated object
     inline void deleteElement(Pointer p);
 
 private:
@@ -123,8 +123,8 @@ private:
     SlotPointer freeSlots;
 
     //! @brief Pad the pointer of data in the element.
-    //! @param p pointer of data in the element
-    //! @param align align size
+    //! @param p - pointer of data in the element
+    //! @param align - align size
     //! @return size after padding
     inline SizeType padPointer(DataPointer p, SizeType align) const noexcept;
     //! @brief Allocate block.

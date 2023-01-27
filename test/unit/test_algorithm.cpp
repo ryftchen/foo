@@ -185,7 +185,7 @@ public:
     {
     public:
         //! @brief The operator (()) overloading of Griewank class.
-        //! @param x independent variable
+        //! @param x - independent variable
         //! @return dependent variable
         double operator()(const double x) const override
         {
@@ -207,7 +207,7 @@ public:
     {
     public:
         //! @brief The operator (()) overloading of Rastrigin class.
-        //! @param x independent variable
+        //! @param x - independent variable
         //! @return dependent variable
         double operator()(const double x) const override
         {

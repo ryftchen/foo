@@ -17,7 +17,7 @@ class NumericTask
 {
 public:
     //! @brief Represent the maximum value of an enum.
-    //! @tparam T type of specific enum
+    //! @tparam T - type of specific enum
     template <class T>
     struct Bottom;
 
@@ -39,7 +39,6 @@ public:
         division
     };
     //! @brief Store the maximum value of the ArithmeticMethod enum.
-    //! @tparam N/A
     template <>
     struct Bottom<ArithmeticMethod>
     {
@@ -53,7 +52,6 @@ public:
         stein
     };
     //! @brief Store the maximum value of the DivisorMethod enum.
-    //! @tparam N/A
     template <>
     struct Bottom<DivisorMethod>
     {
@@ -70,7 +68,6 @@ public:
         monteCarlo
     };
     //! @brief Store the maximum value of the IntegralMethod enum.
-    //! @tparam N/A
     template <>
     struct Bottom<IntegralMethod>
     {
@@ -84,7 +81,6 @@ public:
         euler
     };
     //! @brief Store the maximum value of the PrimeMethod enum.
-    //! @tparam N/A
     template <>
     struct Bottom<PrimeMethod>
     {
@@ -117,8 +113,8 @@ public:
 
 protected:
     //! @brief The operator (<<) overloading of the Type enum.
-    //! @param os output stream object
-    //! @param type the specific value of Type enum
+    //! @param os - output stream object
+    //! @param type - the specific value of Type enum
     //! @return reference of output stream object
     friend std::ostream& operator<<(std::ostream& os, const Type& type)
     {
@@ -146,7 +142,7 @@ protected:
 extern NumericTask& getTask();
 
 //! @brief Get the bit flags of the method in numeric tasks.
-//! @tparam T type of the method
+//! @tparam T - type of the method
 //! @return bit flags of the method
 template <typename T>
 auto getBit()
@@ -170,8 +166,8 @@ auto getBit()
 }
 
 //! @brief Set the bit flags of the method in numeric tasks
-//! @tparam T type of the method
-//! @param index method index
+//! @tparam T - type of the method
+//! @param index - method index
 template <typename T>
 void setBit(const int index)
 {

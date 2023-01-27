@@ -18,17 +18,17 @@ class Thread
 {
 public:
     //! @brief Construct a new Thread object.
-    //! @param count maximum number of threads
+    //! @param count - maximum number of threads
     explicit Thread(const uint32_t count);
     //! @brief Destroy the Thread object.
     virtual ~Thread();
 
     //! @brief Enqueue tasks that require multi-threading.
-    //! @tparam Func type of callable function
-    //! @tparam Args type of function arguments
-    //! @param name thread name
-    //! @param func callable function
-    //! @param args function arguments
+    //! @tparam Func - type of callable function
+    //! @tparam Args - type of function arguments
+    //! @param name - thread name
+    //! @param func - callable function
+    //! @param args - function arguments
     //! @return result of thread execution
     template <typename Func, typename... Args>
     decltype(auto) enqueue(const std::string& name, Func&& func, Args&&... args);

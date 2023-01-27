@@ -32,7 +32,7 @@ namespace application::app_ds
 //! @brief Alias for Type.
 using Type = DataStructureTask::Type;
 //! @brief Alias for Bottom.
-//! @tparam T type of specific enum
+//! @tparam T - type of specific enum
 template <class T>
 using Bottom = DataStructureTask::Bottom<T>;
 //! @brief Alias for LinearInstance.
@@ -49,7 +49,7 @@ DataStructureTask& getTask()
 }
 
 //! @brief Run linear tasks.
-//! @param targets vector of target instances
+//! @param targets - vector of target instances
 void runLinear(const std::vector<std::string>& targets)
 {
     if (getBit<LinearInstance>().none())
@@ -100,7 +100,7 @@ void runLinear(const std::vector<std::string>& targets)
 }
 
 //! @brief Update linear instances in tasks.
-//! @param target target instance
+//! @param target - target instance
 void updateLinearTask(const std::string& target)
 {
     using utility::hash::operator""_bkdrHash;
@@ -122,7 +122,7 @@ void updateLinearTask(const std::string& target)
 }
 
 //! @brief Run tree tasks.
-//! @param targets vector of target instances
+//! @param targets - vector of target instances
 void runTree(const std::vector<std::string>& targets)
 {
     if (getBit<TreeInstance>().none())
@@ -173,7 +173,7 @@ void runTree(const std::vector<std::string>& targets)
 }
 
 //! @brief Update tree instances in tasks.
-//! @param target target instance
+//! @param target - target instance
 void updateTreeTask(const std::string& target)
 {
     using utility::hash::operator""_bkdrHash;

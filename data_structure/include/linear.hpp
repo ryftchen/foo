@@ -23,71 +23,71 @@ typedef struct TagNode
 } Node, *DLL;
 
 //! @brief Create a node of the doubly linked list.
-//! @param pVal value of the target node
+//! @param pVal - value of the target node
 //! @return node
 static Node* createNode(void* const pVal);
 //! @brief Get the node of the doubly linked list by index.
-//! @param pHead head of the list
-//! @param index node index
+//! @param pHead - head of the list
+//! @param index - node index
 //! @return node
 static Node* getNode(DLL pHead, const int index);
 //! @brief Create a doubly linked list.
-//! @param dll doubly linked list
+//! @param dll - doubly linked list
 //! @return the value is 0 if successful, otherwise -1
 
 static int createDll(DLL* dll);
 //! @brief Destroy a doubly linked list.
-//! @param dll doubly linked list
+//! @param dll - doubly linked list
 //! @return the value is 0 if successful, otherwise -1
 static int destroyDll(DLL* dll);
 //! @brief Get the size of the doubly linked list.
-//! @param pHead head of the list
+//! @param pHead - head of the list
 //! @return size of the doubly linked list
 static int dllSize(DLL pHead);
 //! @brief Check whether any nodes do not exist in the doubly linked list.
-//! @param pHead head of the list
+//! @param pHead - head of the list
 //! @return any nodes do not exist or exist
 static bool dllIsEmpty(DLL pHead);
 //! @brief Get the node of the doubly linked list by index.
-//! @param pHead head of the list
-//! @param index node index
+//! @param pHead - head of the list
+//! @param index - node index
 //! @return node of the doubly linked list
 static void* dllGet(DLL pHead, const int index);
 //! @brief Get the first node of the doubly linked list.
-//! @param pHead head of the list
+//! @param pHead - head of the list
 //! @return first node of the doubly linked list
 static void* dllGetFirst(DLL pHead);
 //! @brief Get the last node of the doubly linked list.
-//! @param pHead head of the list
+//! @param pHead - head of the list
 //! @return last node of the doubly linked list
 static void* dllGetLast(DLL pHead);
 //! @brief Insert the target node into the doubly linked list by index.
-//! @param pHead head of the list
-//! @param index node index
-//! @param pVal value of the target node
+//! @param pHead - head of the list
+//! @param index - node index
+//! @param pVal - value of the target node
 //! @return the value is 0 if successful, otherwise -1
 static int dllInsert(DLL pHead, const int index, void* const pVal);
 //! @brief Insert the target node into the doubly linked list as the first node.
-//! @param pHead head of the list
-//! @param pVal value of the target node
+//! @param pHead - head of the list
+//! @param pVal - value of the target node
 //! @return the value is 0 if successful, otherwise -1
 static int dllInsertFirst(DLL pHead, void* const pVal);
 //! @brief Insert the target node into the doubly linked list as the last node.
-//! @param pHead head of the list
-//! @param pVal value of the target node
+//! @param pHead - head of the list
+//! @param pVal - value of the target node
 //! @return the value is 0 if successful, otherwise -1
 static int dllInsertLast(DLL pHead, void* const pVal);
 //! @brief Delete the target node from the doubly linked list by index.
-//! @param pHead head of the list
-//! @param index node index
+//! @param pHead - head of the list
+//! @param index - node index
 //! @return the value is 0 if successful, otherwise -1
 static int dllDelete(DLL pHead, const int index);
 //! @brief Delete the first node from the doubly linked list.
-//! @param pHead head of the list
+//! @param pHead - head of the list
 //! @return the value is 0 if successful, otherwise -1
 static int dllDeleteFirst(DLL pHead);
 //! @brief Delete the last node from the doubly linked list.
-//! @param pHead head of the list
+//! @param pHead - head of the list
 //! @return the value is 0 if successful, otherwise -1
 static int dllDeleteLast(DLL pHead);
 } // namespace doubly_linked_list
@@ -99,32 +99,32 @@ namespace stack
 using Stack = doubly_linked_list::DLL;
 
 //! @brief Create a stack.
-//! @param stack stack
+//! @param stack - stack
 //! @return the value is 0 if successful, otherwise -1
 static int createStack(Stack* stack);
 //! @brief Destroy a stack.
-//! @param stack stack
+//! @param stack - stack
 //! @return the value is 0 if successful, otherwise -1
 static int destroyStack(Stack* stack);
 //! @brief Push operation of the stack.
-//! @param pHead head of the stack
-//! @param pVal value of the target node
+//! @param pHead - head of the stack
+//! @param pVal - value of the target node
 //! @return the value is 0 if successful, otherwise -1
 static int stackPush(Stack pHead, void* const pVal);
 //! @brief Top operation of the stack.
-//! @param pHead head of the stack
+//! @param pHead - head of the stack
 //! @return target node
 static void* stackTop(Stack pHead);
 //! @brief Pop operation of the stack.
-//! @param pHead head of the stack
+//! @param pHead - head of the stack
 //! @return target node
 static void* stackPop(Stack pHead);
 //! @brief Get the size of the stack.
-//! @param pHead head of the stack
+//! @param pHead - head of the stack
 //! @return size of the stack
 static int stackSize(Stack pHead);
 //! @brief Check whether any nodes do not exist in the stack.
-//! @param pHead head of the stack
+//! @param pHead - head of the stack
 //! @return any nodes do not exist or exist
 static bool stackIsEmpty(Stack pHead);
 } // namespace stack
@@ -136,32 +136,32 @@ namespace queue
 using Queue = doubly_linked_list::DLL;
 
 //! @brief Create a queue.
-//! @param queue queue
+//! @param queue - queue
 //! @return the value is 0 if successful, otherwise -1
 static int createQueue(Queue* queue);
 //! @brief Destroy a queue.
-//! @param queue queue
+//! @param queue - queue
 //! @return the value is 0 if successful, otherwise -1
 static int destroyQueue(Queue* queue);
 //! @brief Push operation of the queue.
-//! @param pHead head of the queue
-//! @param pVal value of the target node
+//! @param pHead - head of the queue
+//! @param pVal - value of the target node
 //! @return the value is 0 if successful, otherwise -1
 static int queuePush(Queue pHead, void* const pVal);
 //! @brief Front operation of the queue.
-//! @param pHead head of the queue
+//! @param pHead - head of the queue
 //! @return target node
 static void* queueFront(Queue pHead);
 //! @brief Pop operation of the queue.
-//! @param pHead head of the queue
+//! @param pHead - head of the queue
 //! @return target node
 static void* queuePop(Queue pHead);
 //! @brief Get the size of the queue.
-//! @param pHead head of the queue
+//! @param pHead - head of the queue
 //! @return size of the queue
 static int queueSize(Queue pHead);
 //! @brief Check whether any nodes do not exist in the queue.
-//! @param pHead head of the queue
+//! @param pHead - head of the queue
 //! @return any nodes do not exist or exist
 static bool queueIsEmpty(Queue pHead);
 } // namespace queue
