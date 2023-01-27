@@ -64,10 +64,10 @@ void runLinear(const std::vector<std::string>& targets)
     auto* threads = command::getMemoryForMultithreading().newElement(std::min(
         static_cast<uint32_t>(getBit<LinearInstance>().count()), static_cast<uint32_t>(Bottom<LinearInstance>::value)));
 
-    const std::shared_ptr<LinearStructure> linear = std::make_shared<LinearStructure>();
+    const std::shared_ptr<LinearStructure> structure = std::make_shared<LinearStructure>();
     const auto linearFunctor = [&](const std::string& threadName, void (LinearStructure::*instancePtr)() const)
     {
-        threads->enqueue(threadName, instancePtr, linear);
+        threads->enqueue(threadName, instancePtr, structure);
     };
 
     for (int i = 0; i < Bottom<LinearInstance>::value; ++i)
@@ -137,10 +137,10 @@ void runTree(const std::vector<std::string>& targets)
     auto* threads = command::getMemoryForMultithreading().newElement(std::min(
         static_cast<uint32_t>(getBit<TreeInstance>().count()), static_cast<uint32_t>(Bottom<TreeInstance>::value)));
 
-    const std::shared_ptr<TreeStructure> tree = std::make_shared<TreeStructure>();
+    const std::shared_ptr<TreeStructure> structure = std::make_shared<TreeStructure>();
     const auto treeFunctor = [&](const std::string& threadName, void (TreeStructure::*instancePtr)() const)
     {
-        threads->enqueue(threadName, instancePtr, tree);
+        threads->enqueue(threadName, instancePtr, structure);
     };
 
     for (int i = 0; i < Bottom<TreeInstance>::value; ++i)

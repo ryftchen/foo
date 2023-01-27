@@ -287,7 +287,7 @@ public:
     void bsInstance() const;
     //! @brief The Adelson-Velsky-Landis instance.
     void avlInstance() const;
-    //! @brief splay instance.
+    //! @brief The splay instance.
     void splayInstance() const;
 };
 } // namespace date_structure::tree

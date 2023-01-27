@@ -68,10 +68,10 @@ void runBehavioral(const std::vector<std::string>& targets)
         static_cast<uint32_t>(getBit<BehavioralInstance>().count()),
         static_cast<uint32_t>(Bottom<BehavioralInstance>::value)));
 
-    const std::shared_ptr<BehavioralPattern> behavioral = std::make_shared<BehavioralPattern>();
+    const std::shared_ptr<BehavioralPattern> pattern = std::make_shared<BehavioralPattern>();
     const auto behavioralFunctor = [&](const std::string& threadName, void (BehavioralPattern::*instancePtr)() const)
     {
-        threads->enqueue(threadName, instancePtr, behavioral);
+        threads->enqueue(threadName, instancePtr, pattern);
     };
 
     for (int i = 0; i < Bottom<BehavioralInstance>::value; ++i)
@@ -190,10 +190,10 @@ void runCreational(const std::vector<std::string>& targets)
         static_cast<uint32_t>(getBit<CreationalInstance>().count()),
         static_cast<uint32_t>(Bottom<CreationalInstance>::value)));
 
-    const std::shared_ptr<CreationalPattern> creational = std::make_shared<CreationalPattern>();
+    const std::shared_ptr<CreationalPattern> pattern = std::make_shared<CreationalPattern>();
     const auto creationalFunctor = [&](const std::string& threadName, void (CreationalPattern::*instancePtr)() const)
     {
-        threads->enqueue(threadName, instancePtr, creational);
+        threads->enqueue(threadName, instancePtr, pattern);
     };
 
     for (int i = 0; i < Bottom<CreationalInstance>::value; ++i)
@@ -276,10 +276,10 @@ void runStructural(const std::vector<std::string>& targets)
         static_cast<uint32_t>(getBit<StructuralInstance>().count()),
         static_cast<uint32_t>(Bottom<StructuralInstance>::value)));
 
-    const std::shared_ptr<StructuralPattern> structural = std::make_shared<StructuralPattern>();
+    const std::shared_ptr<StructuralPattern> pattern = std::make_shared<StructuralPattern>();
     const auto structuralFunctor = [&](const std::string& threadName, void (StructuralPattern::*instancePtr)() const)
     {
-        threads->enqueue(threadName, instancePtr, structural);
+        threads->enqueue(threadName, instancePtr, pattern);
     };
 
     for (int i = 0; i < Bottom<StructuralInstance>::value; ++i)
