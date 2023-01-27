@@ -22,7 +22,7 @@ Command::Command()
             .nArgs(utility::argument::NArgsPattern::any)
             .defaultValue<std::vector<std::string>>({"help"})
             .appending()
-            .help("run commands(with quotes) on console mode and exit");
+            .help("run commands (with quotes) on console mode and exit");
 
         program.addArgument("-a", "--algorithm")
             .nArgs(1)
@@ -41,7 +41,7 @@ Command::Command()
                     }
                     throw std::runtime_error("Unknown algorithm category: " + value);
                 })
-            .help("category: match, notation, optimal, search, sort [add category with --help for task details]");
+            .help("select: match, notation, optimal, search, sort [add category with --help for task details]");
 
         program.addArgument("-ds", "--data-structure")
             .nArgs(1)
@@ -60,7 +60,7 @@ Command::Command()
                     }
                     throw std::runtime_error("Unknown data structure category: " + value);
                 })
-            .help("category: linear, tree [add category with --help for task details]");
+            .help("select: linear, tree [add category with --help for task details]");
 
         program.addArgument("-dp", "--design-pattern")
             .nArgs(1)
@@ -79,7 +79,7 @@ Command::Command()
                     }
                     throw std::runtime_error("Unknown design pattern category: " + value);
                 })
-            .help("category: behavioral, creational, structural [add category with --help for task details]");
+            .help("select: behavioral, creational, structural [add category with --help for task details]");
 
         program.addArgument("-n", "--numeric")
             .nArgs(1)
@@ -98,7 +98,7 @@ Command::Command()
                     }
                     throw std::runtime_error("Unknown numeric category: " + value);
                 })
-            .help("category: arithmetic, divisor, integral, prime [add category with --help for task details]");
+            .help("select: arithmetic, divisor, integral, prime [add category with --help for task details]");
 
         program.addArgument("tasks").remaining().help("specify tasks");
     }
@@ -522,7 +522,7 @@ void Command::registerOnConsole(utility::console::Console& console) const
             viewLogContent();
             return utility::console::Console::ReturnCode::success;
         },
-        "view log");
+        "view the log with highlights");
 }
 
 void Command::viewLogContent()
