@@ -2,7 +2,7 @@
 //! @author ryftchen
 //! @brief The definitions (optimal) in the algorithm module.
 //! @version 0.1
-//! @copyright Copyright (c) 2022
+//! @copyright Copyright (c) 2022-2023
 #include "optimal.hpp"
 #include <set>
 #ifndef _NO_PRINT_AT_RUNTIME

@@ -2,7 +2,7 @@
 //! @author ryftchen
 //! @brief The definitions (test_design_pattern) in the test module.
 //! @version 0.1
-//! @copyright Copyright (c) 2022
+//! @copyright Copyright (c) 2022-2023
 #include <gtest/gtest.h>
 #include "design_pattern/include/behavioral.hpp"
 #include "design_pattern/include/creational.hpp"

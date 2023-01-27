@@ -2,7 +2,7 @@
 //! @author ryftchen
 //! @brief The declarations (console) in the utility module.
 //! @version 0.1
-//! @copyright Copyright (c) 2022
+//! @copyright Copyright (c) 2022-2023
 #pragma once
 
 #include <readline/history.h>

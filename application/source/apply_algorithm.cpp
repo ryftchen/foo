@@ -2,7 +2,7 @@
 //! @author ryftchen
 //! @brief The definitions (apply_algorithm) in the application module.
 //! @version 0.1
-//! @copyright Copyright (c) 2022
+//! @copyright Copyright (c) 2022-2023
 #include "apply_algorithm.hpp"
 #include <variant>
 #include "algorithm/include/match.hpp"

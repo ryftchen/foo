@@ -2,7 +2,7 @@
 //! @author ryftchen
 //! @brief The declarations (linear) in the data structure module.
 //! @version 0.1
-//! @copyright Copyright (c) 2022
+//! @copyright Copyright (c) 2022-2023
 #pragma once
 
 //! @brief Linear-related functions in the data structure module.

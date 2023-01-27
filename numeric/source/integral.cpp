@@ -2,7 +2,7 @@
 //! @author ryftchen
 //! @brief The definitions (integral) in the numeric module.
 //! @version 0.1
-//! @copyright Copyright (c) 2022
+//! @copyright Copyright (c) 2022-2023
 #include "integral.hpp"
 #include <functional>
 #ifndef _NO_PRINT_AT_RUNTIME

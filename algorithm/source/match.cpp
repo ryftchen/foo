@@ -2,7 +2,7 @@
 //! @author ryftchen
 //! @brief The definitions (match) in the algorithm module.
 //! @version 0.1
-//! @copyright Copyright (c) 2022
+//! @copyright Copyright (c) 2022-2023
 #include "match.hpp"
 #include <mpfr.h>
 #include <cstring>

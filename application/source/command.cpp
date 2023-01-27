@@ -2,7 +2,7 @@
 //! @author ryftchen
 //! @brief The definitions (command) in the application module.
 //! @version 0.1
-//! @copyright Copyright (c) 2022
+//! @copyright Copyright (c) 2022-2023
 #include "command.hpp"
 #include <unistd.h>
 #include <climits>

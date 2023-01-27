@@ -2,7 +2,7 @@
 //! @author ryftchen
 //! @brief The definitions (apply_design_pattern) in the application module.
 //! @version 0.1
-//! @copyright Copyright (c) 2022
+//! @copyright Copyright (c) 2022-2023
 #include "apply_design_pattern.hpp"
 #include "application/include/command.hpp"
 #include "design_pattern/include/behavioral.hpp"
