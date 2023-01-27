@@ -2,7 +2,7 @@
 //! @author ryftchen
 //! @brief The definitions (divisor) in the numeric module.
 //! @version 0.1
-//! @copyright Copyright (c) 2022
+//! @copyright Copyright (c) 2022-2023
 #include "divisor.hpp"
 #ifndef _NO_PRINT_AT_RUNTIME
 #include "utility/include/common.hpp"

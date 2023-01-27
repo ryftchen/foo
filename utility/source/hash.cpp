@@ -2,7 +2,7 @@
 //! @author ryftchen
 //! @brief The definitions (hash) in the utility module.
 //! @version 0.1
-//! @copyright Copyright (c) 2022
+//! @copyright Copyright (c) 2022-2023
 #include "hash.hpp"
 
 namespace utility::hash

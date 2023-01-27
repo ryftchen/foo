@@ -2,7 +2,7 @@
 //! @author ryftchen
 //! @brief The declarations (creational) in the design pattern module.
 //! @version 0.1
-//! @copyright Copyright (c) 2022
+//! @copyright Copyright (c) 2022-2023
 #pragma once
 
 //! @brief Creational-related functions in the design pattern module.

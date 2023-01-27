@@ -2,7 +2,7 @@
 //! @author ryftchen
 //! @brief The definitions (notation) in the algorithm module.
 //! @version 0.1
-//! @copyright Copyright (c) 2022
+//! @copyright Copyright (c) 2022-2023
 #include "notation.hpp"
 #include <stack>
 #ifndef _NO_PRINT_AT_RUNTIME

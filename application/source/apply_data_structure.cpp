@@ -2,7 +2,7 @@
 //! @author ryftchen
 //! @brief The definitions (apply_data_structure) in the application module.
 //! @version 0.1
-//! @copyright Copyright (c) 2022
+//! @copyright Copyright (c) 2022-2023
 #include "apply_data_structure.hpp"
 #include "application/include/command.hpp"
 #include "data_structure/include/linear.hpp"

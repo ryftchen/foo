@@ -2,7 +2,7 @@
 //! @author ryftchen
 //! @brief The definitions (behavioral) in the data structure module.
 //! @version 0.1
-//! @copyright Copyright (c) 2022
+//! @copyright Copyright (c) 2022-2023
 #include "behavioral.hpp"
 #include <map>
 #include <memory>

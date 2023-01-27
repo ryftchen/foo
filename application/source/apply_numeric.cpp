@@ -2,7 +2,7 @@
 //! @author ryftchen
 //! @brief The definitions (apply_numeric) in the application module.
 //! @version 0.1
-//! @copyright Copyright (c) 2022
+//! @copyright Copyright (c) 2022-2023
 #include "apply_numeric.hpp"
 #include <variant>
 #include "application/include/command.hpp"

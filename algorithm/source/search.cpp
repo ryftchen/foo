@@ -2,7 +2,7 @@
 //! @author ryftchen
 //! @brief The definitions (search) in the algorithm module.
 //! @version 0.1
-//! @copyright Copyright (c) 2022
+//! @copyright Copyright (c) 2022-2023
 #include "search.hpp"
 #ifndef _NO_PRINT_AT_RUNTIME
 #include "utility/include/common.hpp"

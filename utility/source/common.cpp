@@ -2,7 +2,7 @@
 //! @author ryftchen
 //! @brief The definitions (common) in the utility module.
 //! @version 0.1
-//! @copyright Copyright (c) 2022
+//! @copyright Copyright (c) 2022-2023
 #include "common.hpp"
 #include <cstring>
 #include <iterator>

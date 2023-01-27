@@ -2,7 +2,7 @@
 //! @author ryftchen
 //! @brief The definitions (test_algorithm) in the test module.
 //! @version 0.1
-//! @copyright Copyright (c) 2022
+//! @copyright Copyright (c) 2022-2023
 #include <gtest/gtest.h>
 #include "algorithm/include/match.hpp"
 #include "algorithm/include/notation.hpp"

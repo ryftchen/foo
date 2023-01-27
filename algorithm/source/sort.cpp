@@ -2,7 +2,7 @@
 //! @author ryftchen
 //! @brief The definitions (sort) in the algorithm module.
 //! @version 0.1
-//! @copyright Copyright (c) 2022
+//! @copyright Copyright (c) 2022-2023
 #include "sort.hpp"
 #include <queue>
 #ifndef _NO_PRINT_AT_RUNTIME
