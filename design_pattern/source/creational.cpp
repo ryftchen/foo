@@ -18,7 +18,7 @@
 #include <sstream>
 
 //! @brief Print creational result content.
-#define CREATIONAL_PRINT_RESULT_CONTENT(method)
+#define CREATIONAL_PRINT_RESULT_CONTENT(method) output().clear()
 #endif
 
 namespace design_pattern::creational
@@ -202,13 +202,13 @@ class Product
 {
 public:
     //! @brief Make part A.
-    //! @param part target part
+    //! @param part - target part
     void makeA(const std::string& part) { partA = part; }
     //! @brief Make part B.
-    //! @param part target part
+    //! @param part - target part
     void makeB(const std::string& part) { partB = part; }
     //! @brief Make part C.
-    //! @param part target part
+    //! @param part - target part
     void makeC(const std::string& part) { partC = part; }
     //! @brief Get all parts.
     //! @return all parts
@@ -285,7 +285,7 @@ public:
     }
 
     //! @brief Set the builder.
-    //! @param b target builder.
+    //! @param b - target builder.
     void set(std::unique_ptr<Builder> b)
     {
         if (builder)
@@ -510,7 +510,7 @@ public:
         types[1].reset();
     }
     //! @brief Make by prototype index
-    //! @param index prototype index
+    //! @param index - prototype index
     //! @return cloning result
     static std::unique_ptr<Prototype> make(const int index)
     {

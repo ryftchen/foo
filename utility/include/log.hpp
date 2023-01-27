@@ -137,12 +137,12 @@ public:
     //! @return reference of Log object
     static inline Log& getInstance();
     //! @brief Flush log to queue.
-    //! @tparam Args type of arguments of format
-    //! @param level output level
-    //! @param codeFile current code file
-    //! @param codeLine current code line
-    //! @param format log format to be flushed
-    //! @param args arguments of format
+    //! @tparam Args - type of arguments of format
+    //! @param level - output level
+    //! @param codeFile - current code file
+    //! @param codeLine - current code line
+    //! @param format - log format to be flushed
+    //! @param args - arguments of format
     template <typename... Args>
     void flush(
         const OutputLevel level,
@@ -159,14 +159,14 @@ public:
 
 private:
     //! @brief Construct a new Log object.
-    //! @param initState initialization value of state
+    //! @param initState - initialization value of state
     explicit Log(const StateType initState = State::init) noexcept;
     //! @brief Construct a new Log object.
-    //! @param logFile log file
-    //! @param type output type
-    //! @param level output level
-    //! @param target output target
-    //! @param initState initialization value of state
+    //! @param logFile - log file
+    //! @param type - output type
+    //! @param level - output level
+    //! @param target - output target
+    //! @param initState - initialization value of state
     Log(const std::string& logFile,
         const OutputType type,
         const OutputLevel level,

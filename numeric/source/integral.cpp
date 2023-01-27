@@ -35,10 +35,10 @@
 namespace numeric::integral
 {
 //! @brief Calculate the value of the definite integral with the trapezoidal rule.
-//! @param expr target expression
-//! @param left left endpoint
-//! @param height height of trapezoidal
-//! @param step number of steps
+//! @param expr - target expression
+//! @param left - left endpoint
+//! @param height - height of trapezoidal
+//! @param step - number of steps
 //! @return result of definite integral
 double trapezoid(const expression::Expression& expr, const double left, const double height, const uint32_t step)
 {

@@ -29,71 +29,71 @@ public:
     virtual ~MatchSolution() = default;
 
     //! @brief The Rabin-Karp method.
-    //! @param text matching text
-    //! @param pattern single pattern
-    //! @param textLen length of matching text
-    //! @param patternLen length of single pattern
+    //! @param text - matching text
+    //! @param pattern - single pattern
+    //! @param textLen - length of matching text
+    //! @param patternLen - length of single pattern
     //! @return index in matching text
     static int rkMethod(const char* text, const char* pattern, const uint32_t textLen, const uint32_t patternLen);
     //! @brief The Knuth-Morris-Pratt method.
-    //! @param text matching text
-    //! @param pattern single pattern
-    //! @param textLen length of matching text
-    //! @param patternLen length of single pattern
+    //! @param text - matching text
+    //! @param pattern - single pattern
+    //! @param textLen - length of matching text
+    //! @param patternLen - length of single pattern
     //! @return index in matching text
     static int kmpMethod(const char* text, const char* pattern, const uint32_t textLen, const uint32_t patternLen);
     //! @brief The Boyer-Moore method.
-    //! @param text matching text
-    //! @param pattern single pattern
-    //! @param textLen length of matching text
-    //! @param patternLen length of single pattern
+    //! @param text - matching text
+    //! @param pattern - single pattern
+    //! @param textLen - length of matching text
+    //! @param patternLen - length of single pattern
     //! @return index in matching text
     static int bmMethod(const char* text, const char* pattern, const uint32_t textLen, const uint32_t patternLen);
     //! @brief The Horspool method.
-    //! @param text matching text
-    //! @param pattern single pattern
-    //! @param textLen length of matching text
-    //! @param patternLen length of single pattern
+    //! @param text - matching text
+    //! @param pattern - single pattern
+    //! @param textLen - length of matching text
+    //! @param patternLen - length of single pattern
     //! @return index in matching text
     static int horspoolMethod(const char* text, const char* pattern, const uint32_t textLen, const uint32_t patternLen);
     //! @brief The Sunday method.
-    //! @param text matching text
-    //! @param pattern single pattern
-    //! @param textLen length of matching text
-    //! @param patternLen length of single pattern
+    //! @param text - matching text
+    //! @param pattern - single pattern
+    //! @param textLen - length of matching text
+    //! @param patternLen - length of single pattern
     //! @return index in matching text
     static int sundayMethod(const char* text, const char* pattern, const uint32_t textLen, const uint32_t patternLen);
 
 private:
     //! @brief The rolling hash function.
-    //! @param str input data
-    //! @param length length of input data
-    //! @param hashBase hash base
-    //! @param hashMod hash mod
+    //! @param str - input data
+    //! @param length - length of input data
+    //! @param hashBase - hash base
+    //! @param hashMod - hash mod
     //! @return hash value
     static int rollingHash(const char* str, const uint32_t length, const uint32_t hashBase, const uint32_t hashMod);
     //! @brief Fill bad character rule table.
-    //! @param badCharRuleTable bad character rule table
-    //! @param pattern single pattern
-    //! @param patternLen length of single pattern
+    //! @param badCharRuleTable - bad character rule table
+    //! @param pattern - single pattern
+    //! @param patternLen - length of single pattern
     static void fillBadCharRuleTable(uint32_t badCharRuleTable[], const char* pattern, const uint32_t patternLen);
     //! @brief Fill good suffix rule table.
-    //! @param goodSuffixRuleTable good suffix rule table
-    //! @param pattern single pattern
-    //! @param patternLen length of single pattern
+    //! @param goodSuffixRuleTable - good suffix rule table
+    //! @param pattern - single pattern
+    //! @param patternLen - length of single pattern
     static void fillGoodSuffixRuleTable(uint32_t goodSuffixRuleTable[], const char* pattern, const uint32_t patternLen);
     //! @brief Fill the bad character shift table of the Horspool method.
-    //! @param badCharShiftTable bad character shift table
-    //! @param pattern single pattern
-    //! @param patternLen length of single pattern
+    //! @param badCharShiftTable - bad character shift table
+    //! @param pattern - single pattern
+    //! @param patternLen - length of single pattern
     static void fillBadCharShiftTableForHorspool(
         uint32_t badCharShiftTable[],
         const char* pattern,
         const uint32_t patternLen);
     //! @brief Fill the bad character shift table of the Sunday method.
-    //! @param badCharShiftTable bad character shift table
-    //! @param pattern single pattern
-    //! @param patternLen length of single pattern
+    //! @param badCharShiftTable - bad character shift table
+    //! @param pattern - single pattern
+    //! @param patternLen - length of single pattern
     static void fillBadCharShiftTableForSunday(
         uint32_t badCharShiftTable[],
         const char* pattern,
@@ -105,8 +105,8 @@ class TargetBuilder
 {
 public:
     //! @brief Construct a new TargetBuilder object.
-    //! @param textLen length of matching text
-    //! @param pattern single pattern
+    //! @param textLen - length of matching text
+    //! @param pattern - single pattern
     explicit TargetBuilder(const uint32_t textLen, const std::string_view pattern);
     //! @brief Destroy the TargetBuilder object.
     virtual ~TargetBuilder();
@@ -130,11 +130,11 @@ private:
     const std::string_view singlePattern;
 
     //! @brief Set the matching text.
-    //! @param text target matching text
-    //! @param textLen length of matching text
+    //! @param text - target matching text
+    //! @param textLen - length of matching text
     static void setMatchingText(char* text, const uint32_t textLen);
     //! @brief Calculate precision by digit.
-    //! @param digit digit for the target text
+    //! @param digit - digit for the target text
     //! @return precision converted from digit
     static inline int calculatePrecision(const uint32_t digit);
 };

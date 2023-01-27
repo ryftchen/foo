@@ -6,8 +6,8 @@
 #include <gtest/gtest.h>
 
 //! @brief The main function of the unit test.
-//! @param argc argument count
-//! @param argv argument vector
+//! @param argc - argument count
+//! @param argv - argument vector
 //! @return the argument to the implicit call to exit()
 int main(int argc, char* argv[])
 {

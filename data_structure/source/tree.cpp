@@ -18,7 +18,7 @@
 #include <iostream>
 
 //! @brief Print tree result content.
-#define TREE_PRINT_RESULT_CONTENT(method)
+#define TREE_PRINT_RESULT_CONTENT(method) output().clear()
 #endif
 
 namespace date_structure::tree

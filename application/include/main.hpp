@@ -18,7 +18,7 @@ namespace application
 [[using gnu: constructor]] static void switchToTargetPath();
 
 //! @brief Signal handler for SIGSEGV signal.
-//! @param sig signal type
+//! @param sig - signal type
 static void signalHandler(int sig)
 {
     void* callStack[128];

@@ -18,11 +18,11 @@ public:
     virtual ~NotationSolution() = default;
 
     //! @brief The prefix method.
-    //! @param infixNotation infix notation
+    //! @param infixNotation - infix notation
     //! @return prefix notation
     static std::string prefixMethod(const std::string& infixNotation);
     //! @brief The postfix method.
-    //! @param infixNotation infix notation
+    //! @param infixNotation - infix notation
     //! @return postfix notation
     static std::string postfixMethod(const std::string& infixNotation);
 
@@ -37,15 +37,15 @@ private:
     };
 
     //! @brief Convert infix notation to postfix notation.
-    //! @param infix infix notation
+    //! @param infix - infix notation
     //! @return postfix notation
     static std::string infixToPostfix(const std::string& infix);
     //! @brief Get the operator priority.
-    //! @param c character
+    //! @param c - character
     //! @return operator priority
     static Priority getPriority(const char c);
     //! @brief Check whether the character is the operator.
-    //! @param c character
+    //! @param c - character
     //! @return be operator or not
     static inline bool isOperator(const char c);
 };
@@ -60,7 +60,7 @@ class TargetBuilder
 {
 public:
     //! @brief Construct a new TargetBuilder object.
-    //! @param infixNotation infix notation
+    //! @param infixNotation - infix notation
     explicit TargetBuilder(const std::string_view infixNotation);
     //! @brief Destroy the TargetBuilder object.
     virtual ~TargetBuilder() = default;

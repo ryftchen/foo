@@ -43,8 +43,8 @@ public:
     //! @brief Get the time interval.
     [[nodiscard]] inline double getTimeInterval() const;
     //! @brief Set the blocking timer.
-    //! @param func callable function
-    //! @param interval time interval
+    //! @param func - callable function
+    //! @param interval - time interval
     void setBlockingTimer(auto func, const uint32_t interval);
     //! @brief Reset the blocking timer.
     inline void resetBlockingTimer();
@@ -62,7 +62,7 @@ protected:
 };
 
 //! @brief Perform millisecond-level sleep.
-//! @param duration sleep duration
+//! @param duration - sleep duration
 inline void millisecondLevelSleep(const uint32_t duration)
 {
     std::this_thread::sleep_until(std::chrono::steady_clock::now() + std::chrono::operator""ms(duration));

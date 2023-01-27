@@ -8,7 +8,7 @@
 namespace utility::hash
 {
 //! @brief The Brian-Kernighan Dennis-Ritchie hash function.
-//! @param str input data
+//! @param str - input data
 //! @return hash value
 uint32_t bkdrHash(const char* str)
 {

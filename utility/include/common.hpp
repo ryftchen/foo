@@ -73,16 +73,16 @@ enum class FileLockType
 };
 
 //! @brief Throw an exception when calling system API.
-//! @param api system API name
+//! @param api - system API name
 inline void throwCallSystemAPIException(const std::string& api)
 {
     throw std::runtime_error("common: Failed to call system API: " + api + ".");
 }
 
 //! @brief Throw an exception when operating the lock.
-//! @param name filename
-//! @param lockOperation lock operation type
-//! @param fileLock file lock type
+//! @param name - filename
+//! @param lockOperation - lock operation type
+//! @param fileLock - file lock type
 inline void throwOperateLockException(
     const std::string& name,
     const LockOperationType lockOperation,
@@ -94,8 +94,8 @@ inline void throwOperateLockException(
 }
 
 //! @brief Throw an exception when operating the file.
-//! @param name filename
-//! @param isToOpen to open or not
+//! @param name - filename
+//! @param isToOpen - to open or not
 inline void throwOperateFileException(const std::string& name, const bool isToOpen)
 {
     const std::string operate = isToOpen ? "open" : "close";
@@ -103,11 +103,11 @@ inline void throwOperateFileException(const std::string& name, const bool isToOp
 }
 
 //! @brief Try to operate the file lock.
-//! @tparam T type of file stream
-//! @param file file stream
-//! @param pathname target file to be operated
-//! @param lockOperation lock operation type
-//! @param fileLock file lock type
+//! @tparam T - type of file stream
+//! @param file - file stream
+//! @param pathname - target file to be operated
+//! @param lockOperation - lock operation type
+//! @param fileLock - file lock type
 template <class T>
 void tryToOperateFileLock(
     T& file,
@@ -127,7 +127,7 @@ void tryToOperateFileLock(
 }
 
 //! @brief Splice strings into constexpr type.
-//! @tparam Strings target strings to be spliced
+//! @tparam Strings - target strings to be spliced
 template <std::string_view const&... Strings>
 struct Join
 {
@@ -154,7 +154,7 @@ struct Join
     static constexpr std::string_view value{array.data(), array.size() - 1};
 };
 //! @brief Get the result of splicing strings.
-//! @tparam target strings to be spliced
+//! @tparam target - strings to be spliced
 template <std::string_view const&... Strings>
 static constexpr auto joinStr = Join<Strings...>::value;
 

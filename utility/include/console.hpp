@@ -17,7 +17,7 @@ class Console
 {
 public:
     //! @brief Construct a new Console object.
-    //! @param greeting default greeting information
+    //! @param greeting - default greeting information
     explicit Console(const std::string& greeting);
     //! @brief Destroy the Console object.
     virtual ~Console();
@@ -37,25 +37,25 @@ public:
     //! @brief Alias for the functor of command.
     using CommandFunctor = std::function<int(const Args&)>;
     //! @brief Register console command.
-    //! @param command command to be registered
-    //! @param func callable function
-    //! @param help help message
+    //! @param command - command to be registered
+    //! @param func - callable function
+    //! @param help - help message
     void registerCommand(const std::string& command, CommandFunctor func, const std::string& help);
     //! @brief Get help messages from all registered commands.
     //! @return all help messages
     [[nodiscard]] std::vector<std::pair<std::string, std::string>> getHelpOfRegisteredCommands() const;
     //! @brief Set greeting information.
-    //! @param greeting greeting information
+    //! @param greeting - greeting information
     void setGreeting(const std::string& greeting);
     //! @brief Get greeting information.
     //! @return greeting information
     [[nodiscard]] std::string getGreeting() const;
     //! @brief Execute the target console command.
-    //! @param command command to be executed
+    //! @param command - command to be executed
     //! @return value of ReturnCode
     int commandExecutor(const std::string& command);
     //! @brief Execute all console commands in the target file.
-    //! @param filename file to be executed
+    //! @param filename - file to be executed
     //! @return value of ReturnCode
     int fileExecutor(const std::string& filename);
     //! @brief Read console command line.
@@ -80,7 +80,7 @@ private:
     struct Impl
     {
         //! @brief Construct a new Impl object.
-        //! @param greeting default greeting information
+        //! @param greeting - default greeting information
         explicit Impl(const std::string& greeting) : greeting(greeting), RegCmds() {}
         //! @brief Destroy the Impl object.
         ~Impl() { delete history; }

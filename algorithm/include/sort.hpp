@@ -21,7 +21,7 @@ constexpr uint32_t maxAlignOfPrint = 16;
 constexpr uint32_t maxColumnOfPrint = 10;
 
 //! @brief Solution of sort.
-//! @tparam T type of the solution of sort
+//! @tparam T - type of the solution of sort
 template <class T>
 class SortSolution
 {
@@ -30,76 +30,76 @@ public:
     virtual ~SortSolution() = default;
 
     //! @brief The bubble method.
-    //! @param array array to be sorted
-    //! @param length length of array
+    //! @param array - array to be sorted
+    //! @param length - length of array
     //! @return array after sort
     static std::vector<T> bubbleMethod(T* const array, const uint32_t length);
     //! @brief The selection method.
-    //! @param array array to be sorted
-    //! @param length length of array
+    //! @param array - array to be sorted
+    //! @param length - length of array
     //! @return array after sort
     static std::vector<T> selectionMethod(T* const array, const uint32_t length);
     //! @brief The insertion method.
-    //! @param array array to be sorted
-    //! @param length length of array
+    //! @param array - array to be sorted
+    //! @param length - length of array
     //! @return array after sort
     static std::vector<T> insertionMethod(T* const array, const uint32_t length);
     //! @brief The shell method.
-    //! @param array array to be sorted
-    //! @param length length of array
+    //! @param array - array to be sorted
+    //! @param length - length of array
     //! @return array after sort
     static std::vector<T> shellMethod(T* const array, const uint32_t length);
     //! @brief The merge method.
-    //! @param array array to be sorted
-    //! @param length length of array
+    //! @param array - array to be sorted
+    //! @param length - length of array
     //! @return array after sort
     static std::vector<T> mergeMethod(T* const array, const uint32_t length);
     //! @brief The quick method.
-    //! @param array array to be sorted
-    //! @param length length of array
+    //! @param array - array to be sorted
+    //! @param length - length of array
     //! @return array after sort
     static std::vector<T> quickMethod(T* const array, const uint32_t length);
     //! @brief The heap method.
-    //! @param array array to be sorted
-    //! @param length length of array
+    //! @param array - array to be sorted
+    //! @param length - length of array
     //! @return array after sort
     static std::vector<T> heapMethod(T* const array, const uint32_t length);
     //! @brief The counting method.
-    //! @param array array to be sorted
-    //! @param length length of array
+    //! @param array - array to be sorted
+    //! @param length - length of array
     //! @return array after sort
     static std::vector<T> countingMethod(T* const array, const uint32_t length);
     //! @brief The bucket method.
-    //! @param array array to be sorted
-    //! @param length length of array
+    //! @param array - array to be sorted
+    //! @param length - length of array
     //! @return array after sort
     static std::vector<T> bucketMethod(T* const array, const uint32_t length);
     //! @brief The radix method.
-    //! @param array array to be sorted
-    //! @param length length of array
+    //! @param array - array to be sorted
+    //! @param length - length of array
     //! @return array after sort
     static std::vector<T> radixMethod(T* const array, const uint32_t length);
 
 private:
     //! @brief Recursive for the merge method.
-    //! @param sortArray array to be sorted
-    //! @param begin index of beginning
-    //! @param end index of ending
+    //! @param sortArray - array to be sorted
+    //! @param begin - index of beginning
+    //! @param end - index of ending
     static void mergeSortRecursive(T* const sortArray, const uint32_t begin, const uint32_t end);
     //! @brief Recursive for the quick method.
-    //! @param sortArray array to be sorted
-    //! @param begin index of beginning
-    //! @param end index of ending
+    //! @param sortArray - array to be sorted
+    //! @param begin - index of beginning
+    //! @param end - index of ending
     static void quickSortRecursive(T* const sortArray, const uint32_t begin, const uint32_t end);
     //! @brief Build max heap for the heap method.
-    //! @param sortArray array to be sorted
-    //! @param begin index of beginning
-    //! @param end index of ending
+    //! @param sortArray - array to be sorted
+    //! @param begin - index of beginning
+    //! @param end - index of ending
     static void buildMaxHeap(T* const sortArray, const uint32_t begin, const uint32_t end);
 };
 
 //! @brief Check whether it is the number type.
-//! @tparam T type of inspection to be performed
+//! @tparam T - type of inspection to be performed
 //! @return be number or not
 template <typename T>
 constexpr bool isNumber()
@@ -108,23 +108,23 @@ constexpr bool isNumber()
 }
 
 //! @brief Builder for the target.
-//! @tparam T type of builder for the target
+//! @tparam T - type of builder for the target
 template <class T>
 class TargetBuilder
 {
 public:
     //! @brief Construct a new TargetBuilder object.
-    //! @param length length of array
-    //! @param left the left boundary of the array
-    //! @param right the right boundary of the array
+    //! @param length - length of array
+    //! @param left - the left boundary of the array
+    //! @param right - the right boundary of the array
     TargetBuilder(const uint32_t length, const T left, const T right);
     //! @brief Destroy the TargetBuilder object.
     virtual ~TargetBuilder() = default;
     //! @brief Construct a new TargetBuilder object.
-    //! @param rhs right-hand side
+    //! @param rhs - right-hand side
     TargetBuilder(const TargetBuilder& rhs);
     //! @brief The operator (!=) overloading of TargetBuilder class.
-    //! @param rhs right-hand side
+    //! @param rhs - right-hand side
     //! @return reference of TargetBuilder object
     TargetBuilder<T>& operator=(const TargetBuilder& rhs);
 
@@ -135,11 +135,11 @@ public:
     //! @return length
     [[nodiscard]] inline uint32_t getLength() const;
     //! @brief Format array for printing.
-    //! @tparam V type of array
-    //! @param array array to be formatted
-    //! @param length length of array
-    //! @param buffer buffer for filling the formatted array
-    //! @param bufferSize size of buffer
+    //! @tparam V - type of array
+    //! @param array - array to be formatted
+    //! @param length - length of array
+    //! @param buffer - buffer for filling the formatted array
+    //! @param bufferSize - size of buffer
     //! @return buffer after format
     template <typename V>
     requires(isNumber<V>()) static char* formatArray(
@@ -155,14 +155,14 @@ private:
     const uint32_t length;
 
     //! @brief Deep copy for copy constructor.
-    //! @param rhs right-hand side
+    //! @param rhs - right-hand side
     void deepCopy(const TargetBuilder& rhs) const;
     //! @brief Set the random array.
-    //! @tparam V the specific type of integral
-    //! @param array random array
-    //! @param length length of the random array
-    //! @param left the left boundary of the random array
-    //! @param right the left right of the random array
+    //! @tparam V - the specific type of integral
+    //! @param array - random array
+    //! @param length - length of the random array
+    //! @param left - the left boundary of the random array
+    //! @param right - the left right of the random array
     template <typename V>
     requires std::is_integral<V>::value static void setRandomArray(
         T array[],
@@ -170,11 +170,11 @@ private:
         const T left,
         const T right);
     //! @brief Set the random array.
-    //! @tparam V the specific type of floating point
-    //! @param array random array
-    //! @param length length of the random array
-    //! @param left the left boundary of the random array
-    //! @param right the left right of the random array
+    //! @tparam V - the specific type of floating point
+    //! @param array - random array
+    //! @param length - length of the random array
+    //! @param left - the left boundary of the random array
+    //! @param right - the left right of the random array
     template <typename V>
     requires std::is_floating_point<V>::value static void setRandomArray(
         T array[],

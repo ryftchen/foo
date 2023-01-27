@@ -215,8 +215,8 @@ bool Log::isLogFileClose(const NoLogging& /*unused*/) const
 }
 
 //! @brief The operator (<<) overloading of the State enum.
-//! @param os output stream object
-//! @param state the specific value of State enum
+//! @param os - output stream object
+//! @param state - the specific value of State enum
 //! @return reference of output stream object
 std::ostream& operator<<(std::ostream& os, const Log::State& state)
 {
@@ -242,7 +242,7 @@ std::ostream& operator<<(std::ostream& os, const Log::State& state)
 }
 
 //! @brief Change line string to log style.
-//! @param line target line to be changed
+//! @param line - target line to be changed
 //! @return changed line
 std::string& changeToLogStyle(std::string& line)
 {

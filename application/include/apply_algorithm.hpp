@@ -17,7 +17,7 @@ class AlgorithmTask
 {
 public:
     //! @brief Represent the maximum value of an enum.
-    //! @tparam T type of specific enum
+    //! @tparam T - type of specific enum
     template <class T>
     struct Bottom;
 
@@ -41,7 +41,6 @@ public:
         sunday
     };
     //! @brief Store the maximum value of the MatchMethod enum.
-    //! @tparam N/A
     template <>
     struct Bottom<MatchMethod>
     {
@@ -55,7 +54,6 @@ public:
         postfix
     };
     //! @brief Store the maximum value of the NotationMethod enum.
-    //! @tparam N/A
     template <>
     struct Bottom<NotationMethod>
     {
@@ -71,7 +69,6 @@ public:
         genetic
     };
     //! @brief Store the maximum value of the OptimalMethod enum.
-    //! @tparam N/A
     template <>
     struct Bottom<OptimalMethod>
     {
@@ -86,7 +83,6 @@ public:
         fibonacci
     };
     //! @brief Store the maximum value of the SearchMethod enum.
-    //! @tparam N/A
     template <>
     struct Bottom<SearchMethod>
     {
@@ -108,7 +104,6 @@ public:
         radix
     };
     //! @brief Store the maximum value of the SortMethod enum.
-    //! @tparam N/A
     template <>
     struct Bottom<SortMethod>
     {
@@ -144,8 +139,8 @@ public:
 
 protected:
     //! @brief The operator (<<) overloading of the Type enum.
-    //! @param os output stream object
-    //! @param type the specific value of Type enum
+    //! @param os - output stream object
+    //! @param type - the specific value of Type enum
     //! @return reference of output stream object
     friend std::ostream& operator<<(std::ostream& os, const Type& type)
     {
@@ -176,7 +171,7 @@ protected:
 extern AlgorithmTask& getTask();
 
 //! @brief Get the bit flags of the method in algorithm tasks.
-//! @tparam T type of the method
+//! @tparam T - type of the method
 //! @return bit flags of the method
 template <typename T>
 auto getBit()
@@ -204,8 +199,8 @@ auto getBit()
 }
 
 //! @brief Set the bit flags of the method in algorithm tasks
-//! @tparam T type of the method
-//! @param index method index
+//! @tparam T - type of the method
+//! @param index - method index
 template <typename T>
 void setBit(const int index)
 {

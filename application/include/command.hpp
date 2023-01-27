@@ -34,8 +34,8 @@ public:
     //! @return reference of Command object
     static inline Command& getInstance();
     //! @brief Interface for running commander.
-    //! @param argc argument count
-    //! @param argv argument vector
+    //! @param argc - argument count
+    //! @param argv - argument vector
     void runCommander(const int argc, const char* const argv[]);
 
 private:
@@ -52,8 +52,8 @@ private:
     utility::argument::Argument program{utility::argument::Argument("foo", "0.1")};
 
     //! @brief Foreground handler for parsing command line arguments.
-    //! @param argc argument count
-    //! @param argv argument vector
+    //! @param argc - argument count
+    //! @param argv - argument vector
     void foregroundHandler(const int argc, const char* const argv[]);
     //! @brief Background handler for performing the specific task.
     void backgroundHandler();
@@ -73,7 +73,7 @@ private:
     {
     public:
         //! @brief Represent the maximum value of an enum.
-        //! @tparam T type of specific enum
+        //! @tparam T - type of specific enum
         template <class T>
         struct Bottom;
 
@@ -85,7 +85,6 @@ private:
             version
         };
         //! @brief Store the maximum value of the Category enum.
-        //! @tparam N/A
         template <>
         struct Bottom<Category>
         {
@@ -107,7 +106,7 @@ private:
     {
     public:
         //! @brief Represent the maximum value of an enum.
-        //! @tparam T type of specific enum
+        //! @tparam T - type of specific enum
         template <class T>
         struct Bottom;
 
@@ -120,7 +119,6 @@ private:
             numeric
         };
         //! @brief Store the maximum value of the category type enum.
-        //! @tparam N/A
         template <>
         struct Bottom<Category>
         {
@@ -190,16 +188,16 @@ private:
 
     //! @memberof application::command::Command
     //! @brief Get a member of TaskTypeTuple.
-    //! @tparam T type of member to be got
-    //! @param tuple a tuple containing the member types to be got
+    //! @tparam T - type of member to be got
+    //! @param tuple - a tuple containing the member types to be got
     //! @return member corresponding to the specific type
     template <typename T>
     auto get(const TaskTypeTuple& tuple) const;
 
     //! @memberof application::command::Command
     //! @brief Get a member of TaskFunctorTuple.
-    //! @tparam T type of member to be got
-    //! @param tuple a tuple containing the member types to be got
+    //! @tparam T - type of member to be got
+    //! @param tuple - a tuple containing the member types to be got
     //! @return member corresponding to the specific type
     template <typename T>
     auto get(const TaskFunctorTuple& tuple) const;
@@ -249,7 +247,7 @@ private:
     //! @brief Enter console mode.
     void enterConsoleMode() const;
     //! @brief Register the command line to console mode.
-    //! @param console console to be registered
+    //! @param console - console to be registered
     void registerOnConsole(utility::console::Console& console) const;
     //! @brief View log content.
     static void viewLogContent();

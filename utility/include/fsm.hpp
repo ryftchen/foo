@@ -12,22 +12,22 @@
 namespace utility::fsm
 {
 //! @brief Alias for invoke result.
-//! @tparam Func type of callable function
-//! @tparam Args type of function arguments
+//! @tparam Func - type of callable function
+//! @tparam Args - type of function arguments
 template <class Func, class... Args>
 using InvokeResult = std::invoke_result_t<Func, Args...>;
 
 //! @brief Alias for checking whether to be invocable.
-//! @tparam Func type of callable function
-//! @tparam Args type of function arguments
+//! @tparam Func - type of callable function
+//! @tparam Args - type of function arguments
 template <class Func, class... Args>
 using IsInvocable = std::is_invocable<Func, Args...>;
 
 //! @brief Invoke result.
-//! @tparam Func type of callable function
-//! @tparam Args type of function arguments
-//! @param func callable function
-//! @param args function arguments
+//! @tparam Func - type of callable function
+//! @tparam Args - type of function arguments
+//! @param func - callable function
+//! @param args - function arguments
 //! @return wrapping of calls
 template <class Func, class... Args>
 InvokeResult<Func, Args...> invokeResult(Func&& func, Args&&... args)
@@ -36,13 +36,13 @@ InvokeResult<Func, Args...> invokeResult(Func&& func, Args&&... args)
 }
 
 //! @brief Invoke result. Multiple objects.
-//! @tparam Ret type of return value
-//! @tparam T1 type of class to which the function belongs
-//! @tparam T2 type of object to which the function belongs
-//! @tparam Args type of function arguments
-//! @param func callable function
-//! @param obj object to which the function belongs
-//! @param args function arguments
+//! @tparam Ret - type of return value
+//! @tparam T1 - type of class to which the function belongs
+//! @tparam T2 - type of object to which the function belongs
+//! @tparam Args - type of function arguments
+//! @param func - callable function
+//! @param obj - object to which the function belongs
+//! @param args - function arguments
 //! @return wrapping of calls
 template <class Ret, class T1, class T2, class... Args>
 InvokeResult<Ret T1::*, T2, Args...> invokeResult(Ret T1::*func, T2&& obj, Args&&... args)
@@ -51,13 +51,13 @@ InvokeResult<Ret T1::*, T2, Args...> invokeResult(Ret T1::*func, T2&& obj, Args&
 }
 
 //! @brief Binary function helper.
-//! @tparam Func type of callable function
-//! @tparam Arg1 type of function arguments
-//! @tparam Arg2 type of function arguments
-//! @tparam val1 flag to indicate the value when exclude both Arg1 and Arg2
-//! @tparam val2 flag to indicate the value when include only Arg1
-//! @tparam val3 flag to indicate the value when include only Arg2
-//! @tparam val4 flag to indicate the value when include both Arg1 and Arg2
+//! @tparam Func - type of callable function
+//! @tparam Arg1 - type of function arguments
+//! @tparam Arg2 - type of function arguments
+//! @tparam val1 - flag to indicate the value when exclude both Arg1 and Arg2
+//! @tparam val2 - flag to indicate the value when include only Arg1
+//! @tparam val3 - flag to indicate the value when include only Arg2
+//! @tparam val4 - flag to indicate the value when include both Arg1 and Arg2
 template <
     class Func,
     class Arg1,
@@ -69,9 +69,9 @@ template <
 struct BinaryFuncHelper;
 
 //! @brief Binary function helper. Exclude both Arg1 and Arg2.
-//! @tparam Func type of callable function
-//! @tparam Arg1 type of function arguments
-//! @tparam Arg2 type of function arguments
+//! @tparam Func - type of callable function
+//! @tparam Arg1 - type of function arguments
+//! @tparam Arg2 - type of function arguments
 template <class Func, class Arg1, class Arg2>
 struct BinaryFuncHelper<Func, Arg1, Arg2, true, false, false, false>
 {
@@ -83,9 +83,9 @@ struct BinaryFuncHelper<Func, Arg1, Arg2, true, false, false, false>
 };
 
 //! @brief Binary function helper. Include only Arg1.
-//! @tparam Func type of callable function
-//! @tparam Arg1 type of function arguments
-//! @tparam Arg2 type of function arguments
+//! @tparam Func - type of callable function
+//! @tparam Arg1 - type of function arguments
+//! @tparam Arg2 - type of function arguments
 template <class Func, class Arg1, class Arg2>
 struct BinaryFuncHelper<Func, Arg1, Arg2, false, true, false, false>
 {
@@ -97,9 +97,9 @@ struct BinaryFuncHelper<Func, Arg1, Arg2, false, true, false, false>
 };
 
 //! @brief Binary function helper. Include only Arg2.
-//! @tparam Func type of callable function
-//! @tparam Arg1 type of function arguments
-//! @tparam Arg2 type of function arguments
+//! @tparam Func - type of callable function
+//! @tparam Arg1 - type of function arguments
+//! @tparam Arg2 - type of function arguments
 template <class Func, class Arg1, class Arg2>
 struct BinaryFuncHelper<Func, Arg1, Arg2, false, false, true, false>
 {
@@ -111,9 +111,9 @@ struct BinaryFuncHelper<Func, Arg1, Arg2, false, false, true, false>
 };
 
 //! @brief Binary function helper. Include both Arg1 and Arg2.
-//! @tparam Func type of callable function
-//! @tparam Arg1 type of function arguments
-//! @tparam Arg2 type of function arguments
+//! @tparam Func - type of callable function
+//! @tparam Arg1 - type of function arguments
+//! @tparam Arg2 - type of function arguments
 template <class Func, class Arg1, class Arg2>
 struct BinaryFuncHelper<Func, Arg1, Arg2, false, false, false, true>
 {
@@ -125,19 +125,19 @@ struct BinaryFuncHelper<Func, Arg1, Arg2, false, false, false, true>
 };
 
 //! @brief Alias for invoke result of binary function.
-//! @tparam Func type of callable function
-//! @tparam Arg1 type of function arguments
-//! @tparam Arg2 type of function arguments
+//! @tparam Func - type of callable function
+//! @tparam Arg1 - type of function arguments
+//! @tparam Arg2 - type of function arguments
 template <class Func, class Arg1, class Arg2>
 using InvokeAsBinaryFuncResult = typename BinaryFuncHelper<Func, Arg1, Arg2>::ResultType;
 
 //! @brief Invoke as binary function.
-//! @tparam Func type of callable function
-//! @tparam Arg1 type of function arguments
-//! @tparam Arg2 type of function arguments
-//! @param func callable function
-//! @param arg1 function arguments
-//! @param arg2 function arguments
+//! @tparam Func - type of callable function
+//! @tparam Arg1 - type of function arguments
+//! @tparam Arg2 - type of function arguments
+//! @param func - callable function
+//! @param arg1 - function arguments
+//! @param arg2 - function arguments
 //! @return invoke result of binary function
 template <class Func, class Arg1, class Arg2>
 InvokeAsBinaryFuncResult<Func, Arg1, Arg2> invokeAsBinaryFunc(Func&& func, Arg1&& arg1, Arg2&& arg2)
@@ -147,20 +147,20 @@ InvokeAsBinaryFuncResult<Func, Arg1, Arg2> invokeAsBinaryFunc(Func&& func, Arg1&
 }
 
 //! @brief The list of behaviors.
-//! @tparam Types type of behaviors
+//! @tparam Types - type of behaviors
 template <class... Types>
 struct List
 {
 };
 
 //! @brief Associate behaviors.
-//! @tparam Types type of behaviors
+//! @tparam Types - type of behaviors
 template <class... Types>
 struct Concat;
 
 //! @brief Associate events with behaviors.
-//! @tparam T type of triggered event
-//! @tparam Types type of behaviors
+//! @tparam T - type of triggered event
+//! @tparam Types - type of behaviors
 template <class T, class... Types>
 struct Concat<T, List<Types...>>
 {
@@ -169,7 +169,6 @@ struct Concat<T, List<Types...>>
 };
 
 //! @brief Associate.
-//! @tparam N/A
 template <>
 struct Concat<>
 {
@@ -178,15 +177,15 @@ struct Concat<>
 };
 
 //! @brief The filter of events and behaviors.
-//! @tparam Pred type of predicate
-//! @tparam Types type of behaviors
+//! @tparam Pred - type of predicate
+//! @tparam Types - type of behaviors
 template <template <typename> class Pred, class... Types>
 struct Filter;
 
 //! @brief The filter of events and behaviors. Based on conditions.
-//! @tparam Pred type of predicate
-//! @tparam T specific type for predicate
-//! @tparam Types type of behaviors
+//! @tparam Pred - type of predicate
+//! @tparam T - specific type for predicate
+//! @tparam Types - type of behaviors
 template <template <typename> class Pred, class T, class... Types>
 struct Filter<Pred, T, Types...>
 {
@@ -198,7 +197,7 @@ struct Filter<Pred, T, Types...>
 };
 
 //! @brief The filter of behaviors.
-//! @tparam Pred type of predicate
+//! @tparam Pred - type of predicate
 template <template <typename> class Pred>
 struct Filter<Pred>
 {
@@ -207,8 +206,8 @@ struct Filter<Pred>
 };
 
 //! @brief Finite state machine.
-//! @tparam Derived type of derived class
-//! @tparam State type of state
+//! @tparam Derived - type of derived class
+//! @tparam State - type of state
 template <class Derived, class State = int>
 class FSM
 {
@@ -216,12 +215,12 @@ public:
     //! @brief Alias for state.
     using StateType = State;
     //! @brief Construct a new FSM object.
-    //! @param initState initialization value of state
+    //! @param initState - initialization value of state
     explicit FSM(State initState = State());
 
     //! @brief Process the specific event.
-    //! @tparam Event type of triggered event
-    //! @param event event to be processed
+    //! @tparam Event - type of triggered event
+    //! @param event - event to be processed
     template <class Event>
     void processEvent(const Event& event);
     //! @brief Get current state.
@@ -230,9 +229,9 @@ public:
 
 private:
     //! @brief Row-based.
-    //! @tparam Source source state
-    //! @tparam Event type of triggered event
-    //! @tparam Target target state
+    //! @tparam Source - source state
+    //! @tparam Event - type of triggered event
+    //! @tparam Target - target state
     template <State Source, class Event, State Target>
     struct RowBased
     {
@@ -250,10 +249,10 @@ private:
 
     protected:
         //! @brief Process the specific event.
-        //! @tparam Action type of action function
-        //! @param action action function
-        //! @param self derived object
-        //! @param event event to be processed
+        //! @tparam Action - type of action function
+        //! @param action - action function
+        //! @param self - derived object
+        //! @param event - event to be processed
         template <class Action>
         static void processEvent(Action&& action, Derived& self, const Event& event)
         {
@@ -263,10 +262,10 @@ private:
         static constexpr void processEvent(std::nullptr_t, Derived& /*unused*/, const Event& /*unused*/) {}
 
         //! @brief Check guard condition.
-        //! @tparam Guard type of guard condition
-        //! @param guard guard condition
-        //! @param self derived object
-        //! @param event event to be processed
+        //! @tparam Guard - type of guard condition
+        //! @param guard - guard condition
+        //! @param self - derived object
+        //! @param event - event to be processed
         //! @return pass or not pass
         template <class Guard>
         static bool checkGuard(Guard&& guard, const Derived& self, const Event& event)
@@ -281,19 +280,19 @@ private:
     };
 
     //! @brief Classification by event type.
-    //! @tparam Event type of triggered event
-    //! @tparam Types type of behaviors
+    //! @tparam Event - type of triggered event
+    //! @tparam Types - type of behaviors
     template <class Event, class... Types>
     struct ByEventType;
 
     //! @brief Classification by event type. Include both event and behaviors.
-    //! @tparam Event type of triggered event
-    //! @tparam Types type of behaviors
+    //! @tparam Event - type of triggered event
+    //! @tparam Types - type of behaviors
     template <class Event, class... Types>
     struct ByEventType<Event, List<Types...>>
     {
         //! @brief Alias for predicate.
-        //! @tparam T type of class to which the struct belongs
+        //! @tparam T - type of class to which the struct belongs
         template <class T>
         using Pred = std::is_same<typename T::EventType, Event>;
         //! @brief Alias for filter type.
@@ -301,7 +300,7 @@ private:
     };
 
     //! @brief Classification by event type. Include only event.
-    //! @tparam Event type of triggered event
+    //! @tparam Event - type of triggered event
     template <class Event>
     struct ByEventType<Event, List<>>
     {
@@ -310,22 +309,22 @@ private:
     };
 
     //! @brief Handle the specific event.
-    //! @tparam Event type of triggered event
-    //! @tparam Types type of behaviors
+    //! @tparam Event - type of triggered event
+    //! @tparam Types - type of behaviors
     template <class Event, class... Types>
     struct handleEvent;
 
     //! @brief Handle the specific event. Include both event and behaviors.
-    //! @tparam Event type of triggered event
-    //! @tparam T type of derived class
-    //! @tparam Types type of behaviors
+    //! @tparam Event - type of triggered event
+    //! @tparam T - type of derived class
+    //! @tparam Types - type of behaviors
     template <class Event, class T, class... Types>
     struct handleEvent<Event, List<T, Types...>>
     {
         //! @brief Execute handling.
-        //! @param self derived object
-        //! @param event event to be processed
-        //! @param state source state
+        //! @param self - derived object
+        //! @param event - event to be processed
+        //! @param state - source state
         //! @return state after execute
         static State execute(Derived& self, const Event& event, State state)
         {
@@ -337,13 +336,13 @@ private:
     };
 
     //! @brief Handle the specific event. Include only event.
-    //! @tparam Event type of triggered event
+    //! @tparam Event - type of triggered event
     template <class Event>
     struct handleEvent<Event, List<>>
     {
         //! @brief Execute handling. No transition.
-        //! @param self derived object
-        //! @param event event to be processed
+        //! @param self - derived object
+        //! @param event - event to be processed
         //! @return state after execute
         static State execute(Derived& self, const Event& event, State /*unused*/) { return self.noTransition(event); }
     };
@@ -353,7 +352,7 @@ private:
     {
     public:
         //! @brief Construct a new ProcessingLock object.
-        //! @param fsm FSM object
+        //! @param fsm - FSM object
         explicit ProcessingLock(FSM& fsm) : isProcessing(fsm.isProcessing)
         {
             try
@@ -384,24 +383,24 @@ private:
 
 protected:
     //! @brief Alias for transition map.
-    //! @tparam Rows type of row-based
+    //! @tparam Rows - type of row-based
     template <class... Rows>
     using Map = List<Rows...>;
 
     //! @brief No transition can be found for the given event in its current state.
-    //! @tparam Event type of triggered event
+    //! @tparam Event - type of triggered event
     //! @return current state
     template <class Event>
     inline State noTransition(const Event& /*unused*/);
 
     //! @brief The basic row of the transition map.
-    //! @tparam Source source state
-    //! @tparam Event type of triggered event
-    //! @tparam Target target state
-    //! @tparam Action type of action function
-    //! @tparam action action function
-    //! @tparam Guard type of guard condition
-    //! @tparam guard guard condition
+    //! @tparam Source - source state
+    //! @tparam Event - type of triggered event
+    //! @tparam Target - target state
+    //! @tparam Action - type of action function
+    //! @tparam action - action function
+    //! @tparam Guard - type of guard condition
+    //! @tparam guard - guard condition
     template <
         State Source,
         class Event,
@@ -413,15 +412,15 @@ protected:
     struct BasicRow : public RowBased<Source, Event, Target>
     {
         //! @brief Process the specific event.
-        //! @param self derived object
-        //! @param event event to be processed
+        //! @param self - derived object
+        //! @param event - event to be processed
         static void processEvent(Derived& self, const Event& event)
         {
             RowBased<Source, Event, Target>::processEvent(action, self, event);
         }
         //! @brief Check guard condition.
-        //! @param self derived object
-        //! @param event event to be processed
+        //! @param self - derived object
+        //! @param event - event to be processed
         //! @return pass or not pass
         static bool checkGuard(const Derived& self, const Event& event)
         {
@@ -430,11 +429,11 @@ protected:
     };
 
     //! @brief Member function row of the transition map.
-    //! @tparam Source source state
-    //! @tparam Event type of triggered event
-    //! @tparam Target target state
-    //! @tparam action action function
-    //! @tparam guard guard condition
+    //! @tparam Source - source state
+    //! @tparam Event - type of triggered event
+    //! @tparam Target - target state
+    //! @tparam action - action function
+    //! @tparam guard - guard condition
     template <
         State Source,
         class Event,
@@ -444,8 +443,8 @@ protected:
     struct MemFuncRow : public RowBased<Source, Event, Target>
     {
         //! @brief Process the specific event.
-        //! @param self derived object
-        //! @param event event to be processed
+        //! @param self - derived object
+        //! @param event - event to be processed
         static void processEvent(Derived& self, const Event& event)
         {
             if (nullptr != action)
@@ -454,8 +453,8 @@ protected:
             }
         }
         //! @brief Check guard condition.
-        //! @param self derived object
-        //! @param event event to be processed
+        //! @param self - derived object
+        //! @param event - event to be processed
         //! @return pass or not pass
         static bool checkGuard(const Derived& self, const Event& event)
         {
@@ -468,24 +467,24 @@ protected:
     };
 
     //! @brief The generic row of the transition map.
-    //! @tparam Source source state
-    //! @tparam Event type of triggered event
-    //! @tparam Target target state
-    //! @tparam action action function
-    //! @tparam guard guard condition
+    //! @tparam Source - source state
+    //! @tparam Event - type of triggered event
+    //! @tparam Target - target state
+    //! @tparam action - action function
+    //! @tparam guard - guard condition
     template <State Source, class Event, State Target, auto action = nullptr, auto guard = nullptr>
     struct Row : public RowBased<Source, Event, Target>
     {
         //! @brief Process the specific event.
-        //! @param self derived object
-        //! @param event event to be processed
+        //! @param self - derived object
+        //! @param event - event to be processed
         static void processEvent(Derived& self, const Event& event)
         {
             RowBased<Source, Event, Target>::processEvent(action, self, event);
         }
         //! @brief Check guard condition.
-        //! @param self derived object
-        //! @param event event to be processed
+        //! @param self - derived object
+        //! @param event - event to be processed
         //! @return pass or not pass
         static bool checkGuard(const Derived& self, const Event& event)
         {

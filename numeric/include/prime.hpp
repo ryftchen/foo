@@ -24,11 +24,11 @@ public:
     virtual ~PrimeSolution() = default;
 
     //! @brief The Eratosthenes method.
-    //! @param max maximum positive integer
+    //! @param max - maximum positive integer
     //! @return all prime numbers that are not greater than the maximum positive integer
     static std::vector<uint32_t> eratosthenesMethod(const uint32_t max);
     //! @brief The Euler method.
-    //! @param max maximum positive integer
+    //! @param max - maximum positive integer
     //! @return all prime numbers that are not greater than the maximum positive integer
     static std::vector<uint32_t> eulerMethod(const uint32_t max);
 };
@@ -38,7 +38,7 @@ class TargetBuilder
 {
 public:
     //! @brief Construct a new TargetBuilder object.
-    //! @param maxPositiveInteger maximum positive integer
+    //! @param maxPositiveInteger - maximum positive integer
     explicit TargetBuilder(const uint32_t maxPositiveInteger);
     //! @brief Destroy the TargetBuilder object.
     virtual ~TargetBuilder() = default;
@@ -47,10 +47,10 @@ public:
     //! @return maximum positive integer
     [[nodiscard]] inline uint32_t getMaxPositiveInteger() const;
     //! @brief Format integer vector for printing.
-    //! @tparam T type of vector
-    //! @param vector vector to be formatted
-    //! @param buffer buffer for filling the formatted vector
-    //! @param bufferSize size of buffer
+    //! @tparam T - type of vector
+    //! @param vector - vector to be formatted
+    //! @param buffer - buffer for filling the formatted vector
+    //! @param bufferSize - size of buffer
     //! @return buffer after format
     template <typename T>
     requires std::is_integral<T>::value static char* formatIntegerVector(

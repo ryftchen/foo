@@ -105,8 +105,8 @@ std::size_t ArgumentRegister::getArgumentsLength() const
 }
 
 //! @brief The operator (<<) overloading of the ArgumentRegister class.
-//! @param os output stream object
-//! @param argument specific ArgumentRegister object
+//! @param os - output stream object
+//! @param argument - specific ArgumentRegister object
 //! @return reference of output stream object
 std::ostream& operator<<(std::ostream& os, const ArgumentRegister& argument)
 {
@@ -283,8 +283,8 @@ ArgumentRegister& Argument::operator[](const std::string_view argName) const
 }
 
 //! @brief The operator (<<) overloading of the Argument class.
-//! @param os output stream object
-//! @param parser specific Argument object
+//! @param os - output stream object
+//! @param parser - specific Argument object
 //! @return reference of output stream object
 auto operator<<(std::ostream& os, const Argument& parser) -> std::ostream&
 {
