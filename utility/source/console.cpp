@@ -55,7 +55,7 @@ Console::Console(const std::string& greeting) : impl(std::make_unique<Impl>(gree
             }
             return ReturnCode(fileExecutor(input[1]));
         },
-        "run batch commands from file");
+        "run batch commands from the file");
 }
 
 Console::~Console()
