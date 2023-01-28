@@ -107,7 +107,7 @@ void Log::waitStartForExternalUse()
             else
             {
                 ++waitCount;
-                std::cout << "log: Wait logger start... (" << waitCount << ")" << std::endl;
+                std::cout << "log: Wait for logger to start... (" << waitCount << ")" << std::endl;
             }
         },
         intervalOfWaitLogger);
@@ -138,7 +138,7 @@ void Log::waitStopForExternalUse()
             else
             {
                 ++waitCount;
-                std::cout << "log: Wait logger stop... (" << waitCount << ")" << std::endl;
+                std::cout << "log: Wait for logger to stop... (" << waitCount << ")" << std::endl;
             }
         },
         intervalOfWaitLogger);
