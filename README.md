@@ -3,12 +3,12 @@
 [![Pipeline](https://img.shields.io/github/actions/workflow/status/ryftchen/foo/pipeline.yml?branch=master&label=pipeline&logo=github&logoColor=white)](https://github.com/ryftchen/foo/actions/workflows/pipeline.yml)
 [![License](https://img.shields.io/github/license/ryftchen/foo?label=license&logo=github&logoColor=white)](https://github.com/ryftchen/foo/blob/master/LICENSE)
 
-The **Foo** is a personal roadmap for learning programming. Its main purpose is to use the C++ language to implement some common basic functions. It also contains comments for easy summarization and archiving. The goal is to develop good programming habits while improving programming skills.
+The **Foo** is a personal roadmap for learning programming. Its main purpose is to use the C++ language to implement some common basic functions. It also contains detailed comments for easy summarization and archiving. The goal is to improve programming skills while developing good programming habits.
 
 ## Status
 
 |commit|docs|
-|-|-|
+|:-:|:-:|
 |[![Last commit](https://img.shields.io/github/last-commit/ryftchen/foo/master?label=last%20commit&logo=git&logoColor=white)](https://github.com/ryftchen/foo/commits/master)|[![Latest docs](https://img.shields.io/github/last-commit/ryftchen/foo/gh-pages?label=latest%20docs&logo=git&logoColor=white)](https://ryftchen.github.io/foo/)|
 
 ---
@@ -19,26 +19,27 @@ The **Foo** is a personal roadmap for learning programming. Its main purpose is 
 - Related to [data structure](https://github.com/ryftchen/foo/tree/master/data_structure).
 - Related to [design pattern](https://github.com/ryftchen/foo/tree/master/design_pattern).
 - Related to [numeric](https://github.com/ryftchen/foo/tree/master/numeric).
+- Other [utility](https://github.com/ryftchen/foo/tree/master/utility) functions.
 
 ## Getting started
 
-- Prepare the environment:
+1. Prepare the environment:
 
     ```bash
     docker pull ryftchen/foo:latest
-    docker run -it --name foo -d ryftchen/foo:latest /bin/bash
-    docker exec -it foo /bin/bash
+    docker run -it --name foo_dev -d ryftchen/foo:latest /bin/bash
+    docker exec -it foo_dev /bin/bash
     ```
 
-    See the [Dockerfile](https://github.com/ryftchen/foo/blob/master/docker/Dockerfile) for environment dependencies.
-- Get the code:
+    For environment dependencies and container construction, see the [Dockerfile](https://github.com/ryftchen/foo/blob/master/docker/Dockerfile).
+2. Get the code:
 
     ```bash
     git clone https://github.com/ryftchen/foo.git
     cd ./foo
     ```
 
-## How to build
+### How to build
 
 > The [build script](https://github.com/ryftchen/foo/blob/master/script/build.sh) contains a number of parameters, please use the *-\-help* option first for detailed instructions.
 >
@@ -61,9 +62,9 @@ The **Foo** is a personal roadmap for learning programming. Its main purpose is 
   And the executed log will also be written to `foo/temporary/foo.log`.
 - The parameters are provided for static analysis. Build with options such as *-\-format*, *-\-lint*, etc.
 
-## How to run
+### How to run
 
-> The [run script](https://github.com/ryftchen/foo/blob/master/script/run.py) contains a number of parameters, please use the *`--`help* option first for detailed instructions.
+> The [run script](https://github.com/ryftchen/foo/blob/master/script/run.py) contains a number of parameters, please use the *-\-help* option first for detailed instructions.
 >
 > ```bash
 > ./script/run.py --help
@@ -85,6 +86,4 @@ The project documentation can be found on the [github pages](https://ryftchen.gi
 
 ## License
 
-Copyright (c) 2022-2023 ryftchen.
-
-Licensed under the [MIT License](https://github.com/ryftchen/foo/blob/master/LICENSE).
+Copyright (c) 2022-2023 [ryftchen](https://github.com/ryftchen). Released under the [MIT License](https://github.com/ryftchen/foo/blob/master/LICENSE).
