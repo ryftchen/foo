@@ -94,7 +94,7 @@ static void switchToTargetPath()
         const std::filesystem::path buildPath(std::filesystem::path{absolutePath.string().substr(0, pos)});
         if (!buildPath.has_parent_path())
         {
-            std::fprintf(stderr, "The project path isn't exist. Please check it.\n");
+            std::fprintf(stderr, "The project path doesn't exist. Please check it.\n");
             std::exit(-1);
         }
         std::filesystem::current_path(buildPath.parent_path());
@@ -105,7 +105,7 @@ static void switchToTargetPath()
             std::filesystem::path{(nullptr != std::getenv("HOME")) ? std::getenv("HOME") : "/root"});
         if (homePath.empty())
         {
-            std::fprintf(stderr, "The home path isn't exist. Please check it.\n");
+            std::fprintf(stderr, "The home path doesn't exist. Please check it.\n");
             std::exit(-1);
         }
         std::filesystem::current_path(homePath);

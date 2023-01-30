@@ -90,7 +90,7 @@ void runLinear(const std::vector<std::string>& targets)
                 linearFunctor(threadName, &LinearStructure::queueInstance);
                 break;
             default:
-                LOG_DBG("execute to run unknown linear instance.");
+                LOG_DBG("Execute to apply an unknown linear instance.");
                 break;
         }
     }
@@ -117,7 +117,7 @@ void updateLinearTask(const std::string& target)
             break;
         default:
             getBit<LinearInstance>().reset();
-            throw std::runtime_error("Unexpected task of linear: " + target);
+            throw std::runtime_error("Unexpected linear instance: " + target + ".");
     }
 }
 
@@ -163,7 +163,7 @@ void runTree(const std::vector<std::string>& targets)
                 treeFunctor(threadName, &TreeStructure::splayInstance);
                 break;
             default:
-                LOG_DBG("execute to run unknown tree instance.");
+                LOG_DBG("Execute to apply an unknown tree instance.");
                 break;
         }
     }
@@ -190,7 +190,7 @@ void updateTreeTask(const std::string& target)
             break;
         default:
             getBit<TreeInstance>().reset();
-            throw std::runtime_error("Unexpected task of tree: " + target);
+            throw std::runtime_error("Unexpected tree instance: " + target + ".");
     }
 }
 } // namespace application::app_ds

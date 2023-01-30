@@ -15,12 +15,15 @@
 //! @brief Print behavioral result content.
 #define BEHAVIORAL_PRINT_RESULT_CONTENT(method)                      \
     COMMON_PRINT(BEHAVIORAL_RESULT, method, output().str().c_str()); \
+    output().str("");                                                \
     output().clear()
 #else
 #include <sstream>
 
 //! @brief Print behavioral result content.
-#define BEHAVIORAL_PRINT_RESULT_CONTENT(method) output().clear()
+#define BEHAVIORAL_PRINT_RESULT_CONTENT(method) \
+    output().str("");                           \
+    output().clear()
 #endif
 
 namespace design_pattern::behavioral
@@ -28,7 +31,7 @@ namespace design_pattern::behavioral
 BehavioralPattern::BehavioralPattern()
 {
 #ifndef _NO_PRINT_AT_RUNTIME
-    std::cout << "\r\nBehavioral pattern:" << std::endl;
+    std::cout << "\r\nInstances of the behavioral pattern:" << std::endl;
 #endif
 }
 

@@ -154,7 +154,7 @@ void runArithmetic(const std::vector<std::string>& targets)
                 arithmeticFunctor(threadName, &ArithmeticSolution::divisionMethod);
                 break;
             default:
-                LOG_DBG("execute to run unknown arithmetic method.");
+                LOG_DBG("Execute to apply an unknown arithmetic method.");
                 break;
         }
     }
@@ -184,7 +184,7 @@ void updateArithmeticTask(const std::string& target)
             break;
         default:
             getBit<ArithmeticMethod>().reset();
-            throw std::runtime_error("Unexpected task of arithmetic: " + target);
+            throw std::runtime_error("Unexpected arithmetic method: " + target + ".");
     }
 }
 
@@ -230,7 +230,7 @@ void runDivisor(const std::vector<std::string>& targets)
                 divisorFunctor(threadName, &DivisorSolution::steinMethod);
                 break;
             default:
-                LOG_DBG("execute to run unknown divisor method.");
+                LOG_DBG("Execute to apply an unknown divisor method.");
                 break;
         }
     }
@@ -254,7 +254,7 @@ void updateDivisorTask(const std::string& target)
             break;
         default:
             getBit<DivisorMethod>().reset();
-            throw std::runtime_error("Unexpected task of divisor: " + target);
+            throw std::runtime_error("Unexpected divisor method: " + target + ".");
     }
 }
 
@@ -336,7 +336,7 @@ void runIntegral(const std::vector<std::string>& targets)
                     integralFunctor(threadName, std::make_shared<numeric::integral::MonteCarlo>(expression));
                     break;
                 default:
-                    LOG_DBG("execute to run unknown integral method.");
+                    LOG_DBG("Execute to apply an unknown integral method.");
                     break;
             }
         }
@@ -396,7 +396,7 @@ void updateIntegralTask(const std::string& target)
             break;
         default:
             getBit<IntegralMethod>().reset();
-            throw std::runtime_error("Unexpected task of integral: " + target);
+            throw std::runtime_error("Unexpected integral method: " + target + ".");
     }
 }
 
@@ -440,7 +440,7 @@ void runPrime(const std::vector<std::string>& targets)
                 primeFunctor(threadName, &PrimeSolution::eulerMethod);
                 break;
             default:
-                LOG_DBG("execute to run unknown prime method.");
+                LOG_DBG("Execute to apply an unknown prime method.");
                 break;
         }
     }
@@ -464,7 +464,7 @@ void updatePrimeTask(const std::string& target)
             break;
         default:
             getBit<PrimeMethod>().reset();
-            throw std::runtime_error("Unexpected task of prime: " + target);
+            throw std::runtime_error("Unexpected prime method: " + target + ".");
     }
 }
 } // namespace application::app_num

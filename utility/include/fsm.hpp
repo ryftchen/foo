@@ -359,7 +359,7 @@ private:
             {
                 if (isProcessing.load())
                 {
-                    throw std::logic_error("fsm: Call processEvent recursively.");
+                    throw std::logic_error("fsm: Call processEvent() recursively.");
                 }
                 isProcessing.store(true);
             }

@@ -309,7 +309,7 @@ std::vector<T> SortSolution<T>::countingMethod(T* const array, const uint32_t le
     if (!std::is_integral_v<T>)
     {
 #ifndef _NO_PRINT_AT_RUNTIME
-        COMMON_PRINT("\r\n*Counting  method:\r\nThe type of array isn't integral.\n");
+        COMMON_PRINT("\r\n*Counting  method:\r\nThe array type isn't integral.\n");
 #endif
         return std::vector<T>();
     }
@@ -396,7 +396,7 @@ std::vector<T> SortSolution<T>::radixMethod(T* const array, const uint32_t lengt
     if (!std::is_integral_v<T>)
     {
 #ifndef _NO_PRINT_AT_RUNTIME
-        COMMON_PRINT("\r\n*Radix     method:\r\nThe type of array isn't integral.\n");
+        COMMON_PRINT("\r\n*Radix     method:\r\nThe array type isn't integral.\n");
 #endif
         return std::vector<T>();
     }

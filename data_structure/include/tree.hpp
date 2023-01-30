@@ -45,14 +45,14 @@ static void postorderBSTree(BSTree tree);
 //! @param key - the key value of the node
 //! @param direction - node type, the left is -1, the root is 0, and the right is 1
 static void printBSTree(BSTree tree, const Type key, int direction);
-//! @brief Get the node where the maximum key value is located in the binary search tree.
-//! @param tree - tree root, the target binary search tree has this node as the root node
-//! @return node where the maximum key value is located
-static Node* getMaximum(BSTree tree);
 //! @brief Get the node where the minimum key value is located in the binary search tree.
 //! @param tree - tree root, the target binary search tree has this node as the root node
 //! @return node where the minimum key value is located
 static Node* getMinimum(BSTree tree);
+//! @brief Get the node where the maximum key value is located in the binary search tree.
+//! @param tree - tree root, the target binary search tree has this node as the root node
+//! @return node where the maximum key value is located
+static Node* getMaximum(BSTree tree);
 //! @brief Get the predecessor node of the current node.
 //!        The precursor of a node is the node that has the maximum key value in that node's left subtree.
 //! @param x - current node
@@ -140,14 +140,14 @@ static void printAVLTree(AVLTree tree, const Type key, const int direction);
 //! @param tree - tree root, the target AVL tree has this node as the root node
 //! @return height of the AVL tree
 static int getHeight(AVLTree tree);
-//! @brief Get the node where the maximum key value is located in the AVL tree.
-//! @param tree - tree root, the target AVL tree has this node as the root node
-//! @return node where the maximum key value is located
-static Node* getMaximum(AVLTree tree);
 //! @brief Get the node where the Minimum key value is located in the AVL tree.
 //! @param tree - tree root, the target AVL tree has this node as the root node
 //! @return node where the Minimum key value is located
 static Node* getMinimum(AVLTree tree);
+//! @brief Get the node where the maximum key value is located in the AVL tree.
+//! @param tree - tree root, the target AVL tree has this node as the root node
+//! @return node where the maximum key value is located
+static Node* getMaximum(AVLTree tree);
 //! @brief LL rotation. A single left rotation.
 //! @param k2 - the root node of the unbalanced AVL tree
 //! @return root node after rotation
@@ -229,15 +229,14 @@ static void postorderSplayTree(SplayTree tree);
 //! @param key - the key value of the node
 //! @param direction - node type, the left is -1, the root is 0, and the right is 1
 static void printSplayTree(SplayTree tree, const Type key, const int direction);
-
-//! @brief Get the node where the maximum key value is located in the splay tree.
-//! @param tree - tree root, the target splay tree has this node as the root node
-//! @return node where the maximum key value is located
-static Node* getMaximum(SplayTree tree);
 //! @brief Get the node where the minimum key value is located in the splay tree.
 //! @param tree - tree root, the target splay tree has this node as the root node
 //! @return node where the minimum key value is located
 static Node* getMinimum(SplayTree tree);
+//! @brief Get the node where the maximum key value is located in the splay tree.
+//! @param tree - tree root, the target splay tree has this node as the root node
+//! @return node where the maximum key value is located
+static Node* getMaximum(SplayTree tree);
 //! @brief Create a node of the splay tree.
 //! @param key - the key value of the node to be created
 //! @param left - the left child node of the node to be created

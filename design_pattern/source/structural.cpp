@@ -14,13 +14,16 @@
 //! @brief Print structural result content.
 #define STRUCTURAL_PRINT_RESULT_CONTENT(method)                      \
     COMMON_PRINT(STRUCTURAL_RESULT, method, output().str().c_str()); \
+    output().str("");                                                \
     output().clear()
 #else
 #include <memory>
 #include <sstream>
 
 //! @brief Print structural result content.
-#define STRUCTURAL_PRINT_RESULT_CONTENT(method) output().clear()
+#define STRUCTURAL_PRINT_RESULT_CONTENT(method) \
+    output().str("");                           \
+    output().clear()
 #endif
 
 namespace design_pattern::structural
@@ -28,7 +31,7 @@ namespace design_pattern::structural
 StructuralPattern::StructuralPattern()
 {
 #ifndef _NO_PRINT_AT_RUNTIME
-    std::cout << "\r\nStructural pattern:" << std::endl;
+    std::cout << "\r\nInstances of the structural pattern:" << std::endl;
 #endif
 }
 

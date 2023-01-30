@@ -139,7 +139,7 @@ int Console::commandExecutor(const std::string& command)
         return ReturnCode(static_cast<int>(std::get<0>(iterator->second)(inputs)));
     }
 
-    std::cerr << "console: Command on console \"" << inputs[0] << "\" not found." << std::endl;
+    std::cerr << "console: Console command \"" << inputs[0] << "\" not found." << std::endl;
     return ReturnCode::error;
 }
 
@@ -148,7 +148,7 @@ int Console::fileExecutor(const std::string& filename)
     std::ifstream input(filename);
     if (!input)
     {
-        std::cerr << "console: Can not find batch file to run." << std::endl;
+        std::cerr << "console: Could not find the batch file to run." << std::endl;
         return ReturnCode::error;
     }
 

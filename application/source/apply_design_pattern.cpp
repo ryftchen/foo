@@ -118,7 +118,7 @@ void runBehavioral(const std::vector<std::string>& targets)
                 behavioralFunctor(threadName, &BehavioralPattern::visitorInstance);
                 break;
             default:
-                LOG_DBG("execute to run unknown behavioral instance.");
+                LOG_DBG("Execute to apply an unknown behavioral instance.");
                 break;
         }
     }
@@ -169,7 +169,7 @@ void updateBehavioralTask(const std::string& target)
             break;
         default:
             getBit<BehavioralInstance>().reset();
-            throw std::runtime_error("Unexpected task of behavioral: " + target);
+            throw std::runtime_error("Unexpected behavioral instance: " + target + ".");
     }
 }
 
@@ -222,7 +222,7 @@ void runCreational(const std::vector<std::string>& targets)
                 creationalFunctor(threadName, &CreationalPattern::singletonInstance);
                 break;
             default:
-                LOG_DBG("execute to run unknown creational instance.");
+                LOG_DBG("Execute to apply an unknown creational instance.");
                 break;
         }
     }
@@ -255,7 +255,7 @@ void updateCreationalTask(const std::string& target)
             break;
         default:
             getBit<CreationalInstance>().reset();
-            throw std::runtime_error("Unexpected task of creational: " + target);
+            throw std::runtime_error("Unexpected creational instance: " + target + ".");
     }
 }
 
@@ -314,7 +314,7 @@ void runStructural(const std::vector<std::string>& targets)
                 structuralFunctor(threadName, &StructuralPattern::proxyInstance);
                 break;
             default:
-                LOG_DBG("execute to run unknown structural instance.");
+                LOG_DBG("Execute to apply an unknown structural instance.");
                 break;
         }
     }
@@ -353,7 +353,7 @@ void updateStructuralTask(const std::string& target)
             break;
         default:
             getBit<StructuralInstance>().reset();
-            throw std::runtime_error("Unexpected task of structural: " + target);
+            throw std::runtime_error("Unexpected structural instance: " + target + ".");
     }
 }
 } // namespace application::app_dp

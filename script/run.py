@@ -211,7 +211,7 @@ class Task:
 
     def parseArgs(self):
         parser = argparse.ArgumentParser(description="run script")
-        parser.add_argument("-t", "--test", nargs="?", type=int, const=1, help="only run unit test")
+        parser.add_argument("-t", "--test", nargs="?", type=int, const=1, help="run unit test only")
         parser.add_argument(
             "-c", "--check", choices=["cov", "mem"], nargs="+", help="run with check: coverage / memory"
         )
@@ -222,7 +222,7 @@ class Task:
 
         if args.check:
             if args.test:
-                Output.printException("No support for check in test.")
+                Output.printException("No support for --check during testing.")
             if "cov" in args.check:
                 stdout, _, _ = common.executeCommand("command -v llvm-profdata-12 llvm-cov-12 2>&1")
                 if stdout.find("llvm-profdata-12") != -1 and stdout.find("llvm-cov-12") != -1:
@@ -274,7 +274,7 @@ class Task:
         if not self.isUnitTest and not os.path.isfile(f"{self.binDir}/{self.binCmd}"):
             Output.printException("No executable file. Please build it.")
         if self.isUnitTest and not os.path.isfile(f"{self.testBinDir}/{self.testBinCmd}"):
-            Output.printException("No test executable file. Please build it.")
+            Output.printException("No executable file for testing. Please build it.")
         if not os.path.exists(self.tempDir):
             os.makedirs(self.tempDir)
 
@@ -305,7 +305,7 @@ class Task:
             common.executeCommand(f"rm -rf {self.tempDir}/*.profraw {self.tempDir}/*.profdata")
             print(f"\r\n<CHECK COVERAGE>\n{stdout}")
             if "error" in stdout:
-                print("Please rebuild the executable file and use --check option.")
+                print("Please rebuild the executable file and use the --check option.")
 
         sys.stdout = STDOUT
         self.progressBar.destroyProgressBar()

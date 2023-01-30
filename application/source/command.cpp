@@ -22,7 +22,7 @@ Command::Command()
             .nArgs(utility::argument::NArgsPattern::any)
             .defaultValue<std::vector<std::string>>({"help"})
             .appending()
-            .help("run commands (with quotes) on console mode and exit");
+            .help("run commands (with quotes) in console mode and exit");
 
         program.addArgument("-a", "--algorithm")
             .nArgs(1)
@@ -41,7 +41,7 @@ Command::Command()
                     }
                     throw std::runtime_error("Unknown algorithm category: " + value);
                 })
-            .help("select: match, notation, optimal, search, sort [add category with --help for task details]");
+            .help("select: match, notation, optimal, search, sort [add a category with --help for task details]");
 
         program.addArgument("-ds", "--data-structure")
             .nArgs(1)
@@ -60,7 +60,7 @@ Command::Command()
                     }
                     throw std::runtime_error("Unknown data structure category: " + value);
                 })
-            .help("select: linear, tree [add category with --help for task details]");
+            .help("select: linear, tree [add a category with --help for task details]");
 
         program.addArgument("-dp", "--design-pattern")
             .nArgs(1)
@@ -79,7 +79,7 @@ Command::Command()
                     }
                     throw std::runtime_error("Unknown design pattern category: " + value);
                 })
-            .help("select: behavioral, creational, structural [add category with --help for task details]");
+            .help("select: behavioral, creational, structural [add a category with --help for task details]");
 
         program.addArgument("-n", "--numeric")
             .nArgs(1)
@@ -98,7 +98,7 @@ Command::Command()
                     }
                     throw std::runtime_error("Unknown numeric category: " + value);
                 })
-            .help("select: arithmetic, divisor, integral, prime [add category with --help for task details]");
+            .help("select: arithmetic, divisor, integral, prime [add a category with --help for task details]");
 
         program.addArgument("tasks").remaining().help("specify tasks");
     }
@@ -496,7 +496,7 @@ void Command::enterConsoleMode() const
     char hostName[HOST_NAME_MAX + 1];
     if (gethostname(hostName, HOST_NAME_MAX + 1))
     {
-        throw std::runtime_error("Failed to get host name.");
+        throw std::runtime_error("Host name could not be obtained.");
     }
     const std::string greeting = std::string{(nullptr != std::getenv("USER")) ? std::getenv("USER") : "root"} + "@"
         + std::string{hostName} + " foo > ";

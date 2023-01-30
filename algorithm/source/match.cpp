@@ -12,9 +12,9 @@
 
 //! @brief Display match result.
 #define MATCH_RESULT(opt) \
-    "*%-16s method: Found the pattern \"%s\" starting(" #opt ") at index %d.  ==>Run time: %8.5f ms\n"
+    "*%-16s method: Pattern \"%s\" found starting (" #opt ") at index %d.  ==>Run time: %8.5f ms\n"
 //! @brief Display none match result.
-#define MATCH_NONE_RESULT "*%-16s method: Could not find the pattern \"%s\".  ==>Run time: %8.5f ms\n"
+#define MATCH_NONE_RESULT "*%-16s method: Pattern \"%s\" could not be found.  ==>Run time: %8.5f ms\n"
 //! @brief Print match result content.
 #define MATCH_PRINT_RESULT_CONTENT(method)                                                   \
     do                                                                                       \

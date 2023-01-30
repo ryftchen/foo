@@ -100,7 +100,7 @@ std::vector<uint32_t> PrimeSolution::eulerMethod(const uint32_t max)
 TargetBuilder::TargetBuilder(const uint32_t maxPositiveInteger) : maxPositiveInteger(maxPositiveInteger)
 {
 #ifndef _NO_PRINT_AT_RUNTIME
-    std::cout << "\r\nAll prime numbers less than " << maxPositiveInteger << ":" << std::endl;
+    std::cout << "\r\nAll prime numbers smaller than " << maxPositiveInteger << ":" << std::endl;
 #endif
 }
 } // namespace numeric::prime

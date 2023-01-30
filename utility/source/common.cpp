@@ -17,7 +17,7 @@ void executeCommand(const char* const cmd)
     FILE* file = popen(cmd, "r");
     if (nullptr == file)
     {
-        throwCallSystemAPIException("popen");
+        throwCallSystemAPIException("popen()");
     }
 
     char resultBuffer[maxBufferSize + 1] = {'\0'};
@@ -33,7 +33,7 @@ void executeCommand(const char* const cmd)
     const int status = pclose(file);
     if (-1 == status)
     {
-        throwCallSystemAPIException("pclose");
+        throwCallSystemAPIException("pclose()");
     }
     else if (WIFEXITED(status))
     {

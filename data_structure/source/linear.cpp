@@ -86,7 +86,7 @@ int destroyDll(DLL* dll)
 {
     if (!*dll)
     {
-        std::cerr << "Destroy doubly linked list failed, doubly linked list is null." << std::endl;
+        std::cerr << "Destroy failed, doubly linked list is null." << std::endl;
         return -1;
     }
 
@@ -128,7 +128,7 @@ void* dllGet(DLL pHead, const int index)
     Node* pIndex = getNode(pHead, index);
     if (!pIndex)
     {
-        std::cerr << "Doubly linked list get failed." << std::endl;
+        std::cerr << "Get node failed." << std::endl;
         return nullptr;
     }
 
@@ -209,7 +209,7 @@ int dllDelete(DLL pHead, const int index)
     Node* pIndex = getNode(pHead, index);
     if (!pIndex)
     {
-        std::cerr << "Doubly linked list delete failed, the index in out of bound." << std::endl;
+        std::cerr << "Delete node failed, the index in out of bound." << std::endl;
         return -1;
     }
 
@@ -323,7 +323,7 @@ typedef struct TagMeta
 LinearStructure::LinearStructure()
 {
 #ifndef _NO_PRINT_AT_RUNTIME
-    std::cout << "\r\nLinear structure:" << std::endl;
+    std::cout << "\r\nInstances of the linear structure:" << std::endl;
 #endif
 }
 
@@ -352,34 +352,33 @@ void LinearStructure::linkedListInstance() const // NOLINT(readability-convert-m
     DLL dll = nullptr;
     createDll(&dll);
     dllInsert(dll, 0, &meta[0]);
-    output << "doubly linked list insert(0): [" << meta[0].id << ", " << meta[0].name << "]" << std::endl;
+    output << "insert (0): {" << meta[0].id << ", " << meta[0].name << "}" << std::endl;
     dllInsert(dll, 0, &meta[1]);
-    output << "doubly linked list insert(0): [" << meta[1].id << ", " << meta[1].name << "]" << std::endl;
+    output << "insert (0): {" << meta[1].id << ", " << meta[1].name << "}" << std::endl;
     dllInsert(dll, 1, &meta[2]);
-    output << "doubly linked list insert(1): [" << meta[2].id << ", " << meta[2].name << "]" << std::endl;
+    output << "insert (1): {" << meta[2].id << ", " << meta[2].name << "}" << std::endl;
     dllDelete(dll, 2);
-    output << "doubly linked list delete(2)" << std::endl;
+    output << "delete (2)" << std::endl;
 
     dllInsertFirst(dll, &meta[0]);
-    output << "doubly linked list insert first: [" << meta[0].id << ", " << meta[0].name << "]" << std::endl;
+    output << "insert first: {" << meta[0].id << ", " << meta[0].name << "}" << std::endl;
     dllInsertLast(dll, &meta[metaSize - 1]);
-    output << "doubly linked list insert last: [" << meta[metaSize - 1].id << ", " << meta[metaSize - 1].name << "]"
-           << std::endl;
+    output << "insert last: {" << meta[metaSize - 1].id << ", " << meta[metaSize - 1].name << "}" << std::endl;
     pVal = static_cast<Meta*>(dllGetFirst(dll));
-    output << "doubly linked list get first: [" << pVal->id << ", " << pVal->name << "]" << std::endl;
+    output << "get first: {" << pVal->id << ", " << pVal->name << "}" << std::endl;
     pVal = static_cast<Meta*>(dllGetLast(dll));
-    output << "doubly linked list get last: [" << pVal->id << ", " << pVal->name << "]" << std::endl;
+    output << "get last: {" << pVal->id << ", " << pVal->name << "}" << std::endl;
     dllDeleteFirst(dll);
-    output << "doubly linked list delete first" << std::endl;
+    output << "delete first" << std::endl;
     dllDeleteLast(dll);
-    output << "doubly linked list delete last" << std::endl;
+    output << "delete last" << std::endl;
 
-    output << "doubly linked list is empty: " << dllIsEmpty(dll) << std::endl;
-    output << "doubly linked list size: " << dllSize(dll) << std::endl;
+    output << "whether it is empty: " << dllIsEmpty(dll) << std::endl;
+    output << "size: " << dllSize(dll) << std::endl;
     for (int i = 0; i < dllSize(dll); ++i)
     {
         pVal = static_cast<Meta*>(dllGet(dll, i));
-        output << "doubly linked list get(" << i << "): [" << pVal->id << ", " << pVal->name << "]" << std::endl;
+        output << "get (" << i << "): {" << pVal->id << ", " << pVal->name << "}" << std::endl;
     }
     destroyDll(&dll);
 
@@ -407,22 +406,22 @@ void LinearStructure::stackInstance() const // NOLINT(readability-convert-member
     for (int i = 0; i < (metaSize - 1); ++i)
     {
         stackPush(stack, &meta[i]);
-        output << "stack push: [" << meta[i].id << ", " << meta[i].name << "]" << std::endl;
+        output << "push: {" << meta[i].id << ", " << meta[i].name << "}" << std::endl;
     }
 
     pVal = static_cast<Meta*>(stackPop(stack));
-    output << "stack pop: [" << pVal->id << ", " << pVal->name << "]" << std::endl;
+    output << "pop: {" << pVal->id << ", " << pVal->name << "}" << std::endl;
     pVal = static_cast<Meta*>(stackTop(stack));
-    output << "stack top: [" << pVal->id << ", " << pVal->name << "]" << std::endl;
+    output << "top: {" << pVal->id << ", " << pVal->name << "}" << std::endl;
     stackPush(stack, &meta[metaSize - 1]);
-    output << "stack push: [" << meta[metaSize - 1].id << ", " << meta[metaSize - 1].name << "]" << std::endl;
+    output << "push: {" << meta[metaSize - 1].id << ", " << meta[metaSize - 1].name << "}" << std::endl;
 
-    output << "stack is empty: " << stackIsEmpty(stack) << std::endl;
-    output << "stack size: " << stackSize(stack) << std::endl;
+    output << "whether it is empty: " << stackIsEmpty(stack) << std::endl;
+    output << "size: " << stackSize(stack) << std::endl;
     while (!stackIsEmpty(stack))
     {
         pVal = static_cast<Meta*>(stackPop(stack));
-        output << "stack pop: [" << pVal->id << ", " << pVal->name << "]" << std::endl;
+        output << "pop: {" << pVal->id << ", " << pVal->name << "}" << std::endl;
     }
     destroyStack(&stack);
 
@@ -450,22 +449,22 @@ void LinearStructure::queueInstance() const // NOLINT(readability-convert-member
     for (int i = 0; i < (metaSize - 1); ++i)
     {
         queuePush(queue, &meta[i]);
-        output << "queue push: [" << meta[i].id << ", " << meta[i].name << "]" << std::endl;
+        output << "push: {" << meta[i].id << ", " << meta[i].name << "}" << std::endl;
     }
 
     pVal = static_cast<Meta*>(queuePop(queue));
-    output << "queue pop: [" << pVal->id << ", " << pVal->name << "]" << std::endl;
+    output << "pop: {" << pVal->id << ", " << pVal->name << "}" << std::endl;
     pVal = static_cast<Meta*>(queueFront(queue));
-    output << "queue front: [" << pVal->id << ", " << pVal->name << "]" << std::endl;
+    output << "front: {" << pVal->id << ", " << pVal->name << "}" << std::endl;
     queuePush(queue, &meta[metaSize - 1]);
-    output << "queue push: [" << meta[metaSize - 1].id << ", " << meta[metaSize - 1].name << "]" << std::endl;
+    output << "push: {" << meta[metaSize - 1].id << ", " << meta[metaSize - 1].name << "}" << std::endl;
 
-    output << "queue is empty: " << queueIsEmpty(queue) << std::endl;
-    output << "queue size: " << queueSize(queue) << std::endl;
+    output << "whether it is empty: " << queueIsEmpty(queue) << std::endl;
+    output << "size: " << queueSize(queue) << std::endl;
     while (!queueIsEmpty(queue))
     {
         pVal = static_cast<Meta*>(queuePop(queue));
-        output << "queue pop: [" << pVal->id << ", " << pVal->name << "]" << std::endl;
+        output << "pop: {" << pVal->id << ", " << pVal->name << "}" << std::endl;
     }
     destroyQueue(&queue);
 
