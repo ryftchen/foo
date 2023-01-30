@@ -237,7 +237,7 @@ std::optional<std::tuple<ValueY, ValueX>> Genetic::operator()(const double left,
     if (chrNum < minChrNum)
     {
 #ifndef _NO_PRINT_AT_RUNTIME
-        COMMON_PRINT("*Genetic   method: The precise %.5f isn't enough.\n", eps);
+        COMMON_PRINT("*Genetic   method: A precision of %.5f isn't sufficient.\n", eps);
 #endif
         return std::nullopt;
     }

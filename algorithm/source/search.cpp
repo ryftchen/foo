@@ -9,7 +9,7 @@
 #include "utility/include/time.hpp"
 
 //! @brief Display search result.
-#define SEARCH_RESULT "*%-13s method: Found the key \"%.5f\" appearing at index %d.  ==>Run time: %8.5f ms\n"
+#define SEARCH_RESULT "*%-13s method: Found the key \"%.5f\" that appears in the index %d.  ==>Run time: %8.5f ms\n"
 //! @brief Display none search result.
 #define SEARCH_NONE_RESULT "*%-13s method: Could not find the key \"%.5f\".  ==>Run time: %8.5f ms\n"
 //! @brief Print search result content.
@@ -126,7 +126,7 @@ int SearchSolution<T>::fibonacciMethod(const T* const array, const uint32_t leng
     if (constexpr uint32_t minSize = 3; n < minSize)
     {
 #ifndef _NO_PRINT_AT_RUNTIME
-        COMMON_PRINT("*Fibonacci     method: The length %u isn't enough.\n", length);
+        COMMON_PRINT("*Fibonacci     method: An array size of %u isn't sufficient.\n", length);
 #endif
         return index;
     }

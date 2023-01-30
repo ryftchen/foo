@@ -12,13 +12,16 @@
 //! @brief Print creational result content.
 #define CREATIONAL_PRINT_RESULT_CONTENT(method)                      \
     COMMON_PRINT(CREATIONAL_RESULT, method, output().str().c_str()); \
+    output().str("");                                                \
     output().clear()
 #else
 #include <memory>
 #include <sstream>
 
 //! @brief Print creational result content.
-#define CREATIONAL_PRINT_RESULT_CONTENT(method) output().clear()
+#define CREATIONAL_PRINT_RESULT_CONTENT(method) \
+    output().str("");                           \
+    output().clear()
 #endif
 
 namespace design_pattern::creational
@@ -26,7 +29,7 @@ namespace design_pattern::creational
 CreationalPattern::CreationalPattern()
 {
 #ifndef _NO_PRINT_AT_RUNTIME
-    std::cout << "\r\nCreational pattern:" << std::endl;
+    std::cout << "\r\nInstances of the creational pattern:" << std::endl;
 #endif
 }
 

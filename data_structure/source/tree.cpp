@@ -13,12 +13,15 @@
 //! @brief Print tree result content.
 #define TREE_PRINT_RESULT_CONTENT(method)                      \
     COMMON_PRINT(TREE_RESULT, method, output().str().c_str()); \
+    output().str("");                                          \
     output().clear()
 #else
 #include <iostream>
 
 //! @brief Print tree result content.
-#define TREE_PRINT_RESULT_CONTENT(method) output().clear()
+#define TREE_PRINT_RESULT_CONTENT(method) \
+    output().str("");                     \
+    output().clear()
 #endif
 
 namespace date_structure::tree
@@ -71,28 +74,13 @@ void printBSTree(BSTree tree, const Type key, int direction)
         }
         else
         {
-            output() << tree->key << " is " << key << "'s " << ((1 == direction) ? "right" : " left") << " child"
+            output() << tree->key << " is " << key << "'s " << ((1 == direction) ? "right" : "left") << " child"
                      << std::endl;
         }
 
         printBSTree(tree->left, tree->key, -1);
         printBSTree(tree->right, tree->key, 1);
     }
-}
-
-Node* getMaximum(BSTree tree)
-{
-    if (nullptr == tree)
-    {
-        return nullptr;
-    }
-
-    while (nullptr != tree->right)
-    {
-        tree = tree->right;
-    }
-
-    return tree;
 }
 
 Node* getMinimum(BSTree tree)
@@ -105,6 +93,21 @@ Node* getMinimum(BSTree tree)
     while (nullptr != tree->left)
     {
         tree = tree->left;
+    }
+
+    return tree;
+}
+
+Node* getMaximum(BSTree tree)
+{
+    if (nullptr == tree)
+    {
+        return nullptr;
+    }
+
+    while (nullptr != tree->right)
+    {
+        tree = tree->right;
     }
 
     return tree;
@@ -358,7 +361,7 @@ void printAVLTree(AVLTree tree, const Type key, const int direction)
         }
         else
         {
-            output() << tree->key << " is " << key << "'s " << ((1 == direction) ? "right" : " left") << " child"
+            output() << tree->key << " is " << key << "'s " << ((1 == direction) ? "right" : "left") << " child"
                      << std::endl;
         }
 
@@ -370,20 +373,6 @@ void printAVLTree(AVLTree tree, const Type key, const int direction)
 int getHeight(AVLTree tree)
 {
     return ((nullptr == tree) ? 0 : ((Node*)tree)->height);
-}
-
-Node* getMaximum(AVLTree tree)
-{
-    if (nullptr == tree)
-    {
-        return nullptr;
-    }
-
-    while (nullptr != tree->right)
-    {
-        tree = tree->right;
-    }
-    return tree;
 }
 
 Node* getMinimum(AVLTree tree)
@@ -398,6 +387,20 @@ Node* getMinimum(AVLTree tree)
         tree = tree->left;
     }
 
+    return tree;
+}
+
+Node* getMaximum(AVLTree tree)
+{
+    if (nullptr == tree)
+    {
+        return nullptr;
+    }
+
+    while (nullptr != tree->right)
+    {
+        tree = tree->right;
+    }
     return tree;
 }
 
@@ -547,7 +550,7 @@ Node* avlTreeInsert(AVLTree tree, const Type key)
         tree = createNode(key, nullptr, nullptr);
         if (nullptr == tree)
         {
-            std::cerr << "Create AVL tree node failed." << std::endl;
+            std::cerr << "Failed to create AVL tree node." << std::endl;
             return nullptr;
         }
     }
@@ -583,7 +586,7 @@ Node* avlTreeInsert(AVLTree tree, const Type key)
     }
     else
     {
-        std::cerr << "Do not allow to insert the same node." << std::endl;
+        std::cerr << "Do not allow the same node to be inserted." << std::endl;
     }
 
     tree->height = std::max(getHeight(tree->left), getHeight(tree->right)) + 1;
@@ -670,28 +673,13 @@ void printSplayTree(SplayTree tree, const Type key, const int direction)
         }
         else
         {
-            output() << tree->key << " is " << key << "'s " << ((1 == direction) ? "right" : " left") << " child"
+            output() << tree->key << " is " << key << "'s " << ((1 == direction) ? "right" : "left") << " child"
                      << std::endl;
         }
 
         printSplayTree(tree->left, tree->key, -1);
         printSplayTree(tree->right, tree->key, 1);
     }
-}
-
-Node* getMaximum(SplayTree tree)
-{
-    if (nullptr == tree)
-    {
-        return nullptr;
-    }
-
-    while (nullptr != tree->right)
-    {
-        tree = tree->right;
-    }
-
-    return tree;
 }
 
 Node* getMinimum(SplayTree tree)
@@ -704,6 +692,21 @@ Node* getMinimum(SplayTree tree)
     while (nullptr != tree->left)
     {
         tree = tree->left;
+    }
+
+    return tree;
+}
+
+Node* getMaximum(SplayTree tree)
+{
+    if (nullptr == tree)
+    {
+        return nullptr;
+    }
+
+    while (nullptr != tree->right)
+    {
+        tree = tree->right;
     }
 
     return tree;
@@ -742,7 +745,7 @@ Node* insertNode(SplayTree tree, Node* z)
         }
         else
         {
-            std::cerr << "Do not allow to insert the same node." << std::endl;
+            std::cerr << "Do not allow the same node to be inserted." << std::endl;
             delete z;
             return tree;
         }
@@ -914,7 +917,7 @@ void destroySplayTree(SplayTree tree)
 TreeStructure::TreeStructure()
 {
 #ifndef _NO_PRINT_AT_RUNTIME
-    std::cout << "\r\nTree structure:" << std::endl;
+    std::cout << "\r\nInstances of the tree structure:" << std::endl;
 #endif
 }
 
@@ -936,30 +939,31 @@ void TreeStructure::bsInstance() const // NOLINT(readability-convert-member-func
     constexpr int arraySize = 6;
     constexpr std::array<int, arraySize> array = {1, 5, 4, 3, 2, 6};
 
+    output().str("");
     output().clear();
-    output() << "Insert: ";
+    output() << "insert: ";
     for (int i = 0; i < arraySize; ++i)
     {
         output() << array.at(i) << " ";
         root = bsTreeInsert(root, array.at(i));
     }
 
-    output() << "\nPreorder traversal: ";
+    output() << "\npre-order traversal: ";
     preorderBSTree(root);
-    output() << "\nInorder traversal: ";
+    output() << "\nin-order traversal: ";
     inorderBSTree(root);
-    output() << "\nPostorder traversal: ";
+    output() << "\npost-order traversal: ";
     postorderBSTree(root);
 
-    output() << "\nMinimum: " << getMinimum(root)->key;
-    output() << "\nMaximum: " << getMaximum(root)->key;
-    output() << "\nTree verbose: " << std::endl;
+    output() << "\nminimum: " << getMinimum(root)->key;
+    output() << "\nmaximum: " << getMaximum(root)->key;
+    output() << "\ntree verbose: " << std::endl;
     printBSTree(root, root->key, 0);
 
     constexpr int deleteNode = 3;
-    output() << "Delete root node: " << deleteNode;
+    output() << "delete root node: " << deleteNode;
     root = bsTreeDelete(root, deleteNode);
-    output() << "\nInorder traversal: ";
+    output() << "\nin-order traversal: ";
     inorderBSTree(root);
     output() << std::endl;
 
@@ -987,36 +991,37 @@ void TreeStructure::avlInstance() const // NOLINT(readability-convert-member-fun
     constexpr int arraySize = 16;
     constexpr std::array<int, arraySize> array = {3, 2, 1, 4, 5, 6, 7, 16, 15, 14, 13, 12, 11, 10, 8, 9};
 
+    output().str("");
     output().clear();
-    output() << "Height: " << getHeight(root);
-    output() << "\nInsert: ";
+    output() << "height: " << getHeight(root);
+    output() << "\ninsert: ";
     for (int i = 0; i < arraySize; ++i)
     {
         output() << array.at(i) << " ";
         root = avlTreeInsert(root, array.at(i));
     }
 
-    output() << "\nPreorder traversal: ";
+    output() << "\npre-order traversal: ";
     preorderAVLTree(root);
-    output() << "\nInorder traversal: ";
+    output() << "\nin-order traversal: ";
     inorderAVLTree(root);
-    output() << "\nPostorder traversal: ";
+    output() << "\npost-order traversal: ";
     postorderAVLTree(root);
 
-    output() << "\nHeight: " << getHeight(root);
-    output() << "\nMinimum: " << getMinimum(root)->key;
-    output() << "\nMaximum: " << getMaximum(root)->key;
-    output() << "\nTree verbose: " << std::endl;
+    output() << "\nheight: " << getHeight(root);
+    output() << "\nminimum: " << getMinimum(root)->key;
+    output() << "\nmaximum: " << getMaximum(root)->key;
+    output() << "\ntree verbose: " << std::endl;
     printAVLTree(root, root->key, 0);
 
     constexpr int deleteNode = 8;
-    output() << "Delete root node: " << deleteNode;
+    output() << "delete root node: " << deleteNode;
     root = avlTreeDelete(root, deleteNode);
 
-    output() << "\nHeight: " << getHeight(root);
-    output() << "\nInorder traversal: ";
+    output() << "\nheight: " << getHeight(root);
+    output() << "\nin-order traversal: ";
     inorderAVLTree(root);
-    output() << "\nTree verbose: " << std::endl;
+    output() << "\ntree verbose: " << std::endl;
     printAVLTree(root, root->key, 0);
 
     destroyAVLTree(root);
@@ -1042,29 +1047,30 @@ void TreeStructure::splayInstance() const // NOLINT(readability-convert-member-f
     constexpr int arraySize = 6;
     constexpr std::array<int, arraySize> array = {10, 50, 40, 30, 20, 60};
 
+    output().str("");
     output().clear();
-    output() << "Insert: ";
+    output() << "insert: ";
     for (int i = 0; i < arraySize; ++i)
     {
         output() << array.at(i) << " ";
         root = splayTreeInsert(root, array.at(i));
     }
 
-    output() << "\nPreorder traversal: ";
+    output() << "\npre-order traversal: ";
     preorderSplayTree(root);
-    output() << "\nInorder traversal: ";
+    output() << "\nin-order traversal: ";
     inorderSplayTree(root);
-    output() << "\nPostorder traversal: ";
+    output() << "\npost-order traversal: ";
     postorderSplayTree(root);
 
-    output() << "\nMinimum: " << getMinimum(root)->key;
-    output() << "\nMaximum: " << getMaximum(root)->key;
-    output() << "\nTree verbose: " << std::endl;
+    output() << "\nminimum: " << getMinimum(root)->key;
+    output() << "\nmaximum: " << getMaximum(root)->key;
+    output() << "\ntree verbose: " << std::endl;
     printSplayTree(root, root->key, 0);
 
     constexpr int splayNode = 30;
-    output() << "Splay node as root node: " << splayNode;
-    output() << "\nTree verbose: " << std::endl;
+    output() << "splay node as root node: " << splayNode;
+    output() << "\ntree verbose: " << std::endl;
     root = splayTreeSplay(root, splayNode);
     printSplayTree(root, root->key, 0);
 

@@ -179,7 +179,7 @@ void runMatch(const std::vector<std::string>& targets)
                 matchFunctor(threadName, &MatchSolution::sundayMethod);
                 break;
             default:
-                LOG_DBG("execute to run unknown match method.");
+                LOG_DBG("Execute to apply an unknown match method.");
                 break;
         }
     }
@@ -212,7 +212,7 @@ void updateMatchTask(const std::string& target)
             break;
         default:
             getBit<MatchMethod>().reset();
-            throw std::runtime_error("Unexpected task of match: " + target);
+            throw std::runtime_error("Unexpected match method: " + target + ".");
     }
 }
 
@@ -256,7 +256,7 @@ void runNotation(const std::vector<std::string>& targets)
                 notationFunctor(threadName, &NotationSolution::postfixMethod);
                 break;
             default:
-                LOG_DBG("execute to run unknown notation method.");
+                LOG_DBG("Execute to apply an unknown notation method.");
                 break;
         }
     }
@@ -280,7 +280,7 @@ void updateNotationTask(const std::string& target)
             break;
         default:
             getBit<NotationMethod>().reset();
-            throw std::runtime_error("Unexpected task of notation: " + target);
+            throw std::runtime_error("Unexpected notation method: " + target + ".");
     }
 }
 
@@ -359,7 +359,7 @@ void runOptimal(const std::vector<std::string>& targets)
                     optimalFunctor(threadName, std::make_shared<algorithm::optimal::Genetic>(function));
                     break;
                 default:
-                    LOG_DBG("Unable to execute unknown optimal method.");
+                    LOG_DBG("Execute to apply an unknown optimal method.");
                     break;
             }
         }
@@ -416,7 +416,7 @@ void updateOptimalTask(const std::string& target)
             break;
         default:
             getBit<OptimalMethod>().reset();
-            throw std::runtime_error("Unexpected task of optimal: " + target);
+            throw std::runtime_error("Unexpected optimal method: " + target + ".");
     }
 }
 
@@ -470,7 +470,7 @@ void runSearch(const std::vector<std::string>& targets)
                 searchFunctor(threadName, &SearchSolution<double>::fibonacciMethod);
                 break;
             default:
-                LOG_DBG("execute to run unknown search method.");
+                LOG_DBG("Execute to apply an unknown search method.");
                 break;
         }
     }
@@ -497,7 +497,7 @@ void updateSearchTask(const std::string& target)
             break;
         default:
             getBit<SearchMethod>().reset();
-            throw std::runtime_error("Unexpected task of search: " + target);
+            throw std::runtime_error("Unexpected search method: " + target + ".");
     }
 }
 
@@ -571,7 +571,7 @@ void runSort(const std::vector<std::string>& targets)
                 sortFunctor(threadName, &SortSolution<int>::radixMethod);
                 break;
             default:
-                LOG_DBG("execute to run unknown sort method.");
+                LOG_DBG("Execute to apply an unknown sort method.");
                 break;
         }
     }
@@ -619,7 +619,7 @@ void updateSortTask(const std::string& target)
             break;
         default:
             getBit<SortMethod>().reset();
-            throw std::runtime_error("Unexpected task of sort: " + target);
+            throw std::runtime_error("Unexpected sort method: " + target + ".");
     }
 }
 } // namespace application::app_algo

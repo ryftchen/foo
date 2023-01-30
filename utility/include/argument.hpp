@@ -314,7 +314,7 @@ private:
         {
             if (minimum > maximum)
             {
-                throw std::logic_error("argument: Range of number of arguments is invalid.");
+                throw std::logic_error("argument: The range of number of arguments is invalid.");
             }
         }
 
@@ -544,7 +544,7 @@ T ArgumentRegister::get() const
         }
     }
 
-    throw std::logic_error("argument: No value provided for '" + names.back() + "'.");
+    throw std::logic_error("argument: No value specified for '" + names.back() + "'.");
 }
 
 template <typename T>

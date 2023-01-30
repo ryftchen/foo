@@ -63,7 +63,7 @@ signalHandler()
                 && mv ./"${testBuildFolder}"/"${COMPILE_COMMANDS}".bak ./"${testBuildFolder}"/"${COMPILE_COMMANDS}"
         fi
     fi
-    if [[ "${ARGS_DOXYGEN}" = true ]]; then
+    if [[ "${ARGS_DOXYGEN}" = true ]] && [[ "${ARGS_RELEASE}" = false ]]; then
         sed -i "s/\(^PROJECT_NUMBER[ ]\+=\).*/\1/" ./"${DOCUMENT_FOLDER}"/"${DOXYGEN_FILE}"
     fi
     exit 1
@@ -82,7 +82,7 @@ parseArgs()
         -r | --release) ARGS_RELEASE=true ;;
         -c | --container) ARGS_CONTAINER=true ;;
         -C | --cleanup) ARGS_CLEANUP=true ;;
-        *) printException "Unknown command line option: $1. Try with --help to get information." ;;
+        *) printException "Unknown command line option: $1. Try using the --help option for information." ;;
         esac
         shift
     done
@@ -99,7 +99,7 @@ checkDependencies()
     if [[ ! -d ./"${APPLICATION_FOLDER}" ]] || [[ ! -d ./"${UTILITY_FOLDER}" ]] || [[ ! -d ./"${ALGORITHM_FOLDER}" ]] \
         || [[ ! -d ./"${DATA_STRUCTURE_FOLDER}" ]] || [[ ! -d ./"${DESIGN_PATTERN_FOLDER}" ]] \
         || [[ ! -d ./"${NUMERIC_FOLDER}" ]] || [[ ! -d ./"${TEST_FOLDER}" ]] || [[ ! -d ./"${SCRIPT_FOLDER}" ]]; then
-        printException "Missing code folders in ${PROJECT_FOLDER} folder. Please check it."
+        printException "Missing necessary code folders in the ${PROJECT_FOLDER} folder. Please check it."
     fi
 
     if
@@ -117,7 +117,7 @@ checkDependencies()
         then
             if [[ ! -f ./"${FORMAT_CONFIG_CPP}" ]] || [[ ! -f ./"${FORMAT_CONFIG_PY}" ]] \
                 || [[ ! -f ./"${FORMAT_CONFIG_SH}" ]]; then
-                printException "Missing format config files in ${PROJECT_FOLDER} folder. Please check it."
+                printException "Missing format configuration files in the ${PROJECT_FOLDER} folder. Please check it."
             fi
         else
             printException "No clang-format, shfmt or black program. Please check it."
@@ -134,17 +134,17 @@ checkDependencies()
         then
             if [[ ! -f ./"${LINT_CONFIG_CPP}" ]] || [[ ! -f ./"${LINT_CONFIG_PY}" ]] \
                 || [[ ! -f ./"${LINT_CONFIG_SH}" ]]; then
-                printException "Missing lint config files in ${PROJECT_FOLDER} folder. Please check it."
+                printException "Missing lint configuration files in the ${PROJECT_FOLDER} folder. Please check it."
             fi
         else
-            printException "No clang-tidy (involving run-clang-tidy-12, compdb), shellcheck or pylint program. \
+            printException "No clang-tidy (including run-clang-tidy-12, compdb), shellcheck or pylint program. \
 Please check it."
         fi
     fi
 
     if [[ "${ARGS_BROWSER}" = true ]]; then
         if [[ ! -d ./"${DOCUMENT_FOLDER}" ]]; then
-            printException "Missing ${DOCUMENT_FOLDER} folder in ${PROJECT_FOLDER} folder. Please check it."
+            printException "Missing ${DOCUMENT_FOLDER} folder in the ${PROJECT_FOLDER} folder. Please check it."
         fi
         if
             ! command -v codebrowser_generator >/dev/null 2>&1 \
@@ -156,14 +156,14 @@ Please check it."
 
     if [[ "${ARGS_DOXYGEN}" = true ]]; then
         if [[ ! -d ./"${DOCUMENT_FOLDER}" ]]; then
-            printException "Missing ${DOCUMENT_FOLDER} folder in ${PROJECT_FOLDER} folder. Please check it."
+            printException "Missing ${DOCUMENT_FOLDER} folder in the ${PROJECT_FOLDER} folder. Please check it."
         fi
         if
             command -v doxygen >/dev/null 2>&1 \
                 && command -v dot >/dev/null 2>&1
         then
             if [[ ! -f ./"${DOCUMENT_FOLDER}"/"${DOXYGEN_FILE}" ]]; then
-                printException "No ${DOXYGEN_FILE} file in ${DOCUMENT_FOLDER} folder. Please check it."
+                printException "There is no ${DOXYGEN_FILE} file in the ${DOCUMENT_FOLDER} folder. Please check it."
             fi
         else
             printException "No doxygen or dot program. Please check it."
@@ -172,14 +172,14 @@ Please check it."
 
     if [[ "${ARGS_CONTAINER}" = true ]]; then
         if [[ ! -d ./"${DOCKER_FOLDER}" ]]; then
-            printException "Missing ${DOCKER_FOLDER} folder in ${PROJECT_FOLDER} folder. Please check it."
+            printException "Missing ${DOCKER_FOLDER} folder in the ${PROJECT_FOLDER} folder. Please check it."
         fi
         if command -v docker >/dev/null 2>&1; then
             if [[ ! -f ./"${DOCKER_FOLDER}"/"${DOCKER_FILE}" ]]; then
-                printException "No ${DOCKER_FILE} file in ${DOCKER_FOLDER} folder. Please check it."
+                printException "There is no ${DOCKER_FILE} file in the ${DOCKER_FOLDER} folder. Please check it."
             fi
 
-            echo "Please confirm further whether construct the docker container. (y or n)"
+            echo "Please confirm whether continue constructing the docker container. (y or n)"
             oldStty=$(stty -g)
             stty raw -echo
             answer=$(while ! head -c 1 | grep -i '[ny]'; do true; done)
@@ -209,14 +209,14 @@ generateCMakeFiles()
         bashCommand "cmake -S . -B ./${BUILD_FOLDER} -G Ninja -DCMAKE_CXX_COMPILER=clang++-12 \
 -DCMAKE_BUILD_TYPE=${buildType}"
     else
-        printException "No ${CMAKE_LISTS} file in ${PROJECT_FOLDER} folder. Please check it."
+        printException "There is no ${CMAKE_LISTS} file in the ${PROJECT_FOLDER} folder. Please check it."
     fi
 
     if [[ -f ./"${TEST_FOLDER}"/"${CMAKE_LISTS}" ]]; then
         bashCommand "cmake -S ./${TEST_FOLDER} -B ./${TEST_FOLDER}/${BUILD_FOLDER} -G Ninja \
 -DCMAKE_CXX_COMPILER=clang++-12 -DCMAKE_BUILD_TYPE=${buildType}"
     else
-        printException "No ${CMAKE_LISTS} file in ${PROJECT_FOLDER}/${TEST_FOLDER} folder. Please check it."
+        printException "There is no ${CMAKE_LISTS} file in the ${PROJECT_FOLDER}/${TEST_FOLDER} folder. Please check it."
     fi
 }
 
@@ -254,7 +254,7 @@ performLintOption()
 {
     if [[ "${ARGS_LINT}" = true ]]; then
         if [[ ! -f ./"${BUILD_FOLDER}"/"${COMPILE_COMMANDS}" ]]; then
-            printException "No ${COMPILE_COMMANDS} file in ${BUILD_FOLDER} folder. Please generate it."
+            printException "There is no ${COMPILE_COMMANDS} file in the ${BUILD_FOLDER} folder. Please generate it."
         fi
         compdb -p ./"${BUILD_FOLDER}" list >./"${COMPILE_COMMANDS}" \
             && mv ./"${BUILD_FOLDER}"/"${COMPILE_COMMANDS}" ./"${BUILD_FOLDER}"/"${COMPILE_COMMANDS}".bak \
@@ -278,7 +278,7 @@ performLintOption()
 
         testBuildFolder="${TEST_FOLDER}/${BUILD_FOLDER}"
         if [[ ! -f ./"${testBuildFolder}"/"${COMPILE_COMMANDS}" ]]; then
-            printException "No ${COMPILE_COMMANDS} file in ${testBuildFolder} folder. Please generate it."
+            printException "There is no ${COMPILE_COMMANDS} file in the ${testBuildFolder} folder. Please generate it."
         fi
         compdb -p ./"${testBuildFolder}" list >./"${COMPILE_COMMANDS}" \
             && mv ./"${testBuildFolder}"/"${COMPILE_COMMANDS}" ./"${testBuildFolder}"/"${COMPILE_COMMANDS}".bak \
@@ -328,7 +328,7 @@ ${timeDiff}s ago."
 tarHtmlForBrowser()
 {
     if [[ ! -f ./"${BUILD_FOLDER}"/"${COMPILE_COMMANDS}" ]]; then
-        printException "No ${COMPILE_COMMANDS} file in ${BUILD_FOLDER} folder. Please generate it."
+        printException "There is no ${COMPILE_COMMANDS} file in the ${BUILD_FOLDER} folder. Please generate it."
     fi
     browserFolder="browser"
     tarFile="${PROJECT_FOLDER}_${browserFolder}_$1.tar.bz2"
@@ -377,10 +377,15 @@ tarHtmlForDoxygen()
         ./"${DOCUMENT_FOLDER}"/"${doxygenFolder}"
 
     mkdir -p ./"${DOCUMENT_FOLDER}"/"${doxygenFolder}"
-    sed -i "s/\(^PROJECT_NUMBER[ ]\+=\)/\1 \"@ $(git rev-parse --short @)\"/" ./"${DOCUMENT_FOLDER}"/"${DOXYGEN_FILE}"
+    if [[ "${ARGS_RELEASE}" = false ]]; then
+        sed -i "s/\(^PROJECT_NUMBER[ ]\+=\)/\1 \"@ $(git rev-parse --short @)\"/" \
+            ./"${DOCUMENT_FOLDER}"/"${DOXYGEN_FILE}"
+    fi
     bashCommand "doxygen ./${DOCUMENT_FOLDER}/${DOXYGEN_FILE}"
     bashCommand "tar -jcvf ./${TEMPORARY_FOLDER}/${tarFile} -C ./${DOCUMENT_FOLDER} ${doxygenFolder} >/dev/null"
-    sed -i "s/\(^PROJECT_NUMBER[ ]\+=\).*/\1/" ./"${DOCUMENT_FOLDER}"/"${DOXYGEN_FILE}"
+    if [[ "${ARGS_RELEASE}" = false ]]; then
+        sed -i "s/\(^PROJECT_NUMBER[ ]\+=\).*/\1/" ./"${DOCUMENT_FOLDER}"/"${DOXYGEN_FILE}"
+    fi
 }
 
 performTestOption()
@@ -425,7 +430,7 @@ performContainerOption()
                 bashCommand "docker run -it --name ${PROJECT_FOLDER} -v ${PWD}:/root/${PROJECT_FOLDER} \
 -d ${imageRepo}:latest /bin/bash"
             else
-                printException "The container is exist."
+                printException "The container exists."
             fi
         else
             printException "Service docker status is not active."

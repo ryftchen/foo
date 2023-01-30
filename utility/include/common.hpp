@@ -76,7 +76,7 @@ enum class FileLockType
 //! @param api - system API name
 inline void throwCallSystemAPIException(const std::string& api)
 {
-    throw std::runtime_error("common: Failed to call system API: " + api + ".");
+    throw std::runtime_error("common: Failed to call the system API: " + api + ".");
 }
 
 //! @brief Throw an exception when operating the lock.
