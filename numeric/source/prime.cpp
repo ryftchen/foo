@@ -4,7 +4,7 @@
 //! @version 0.1
 //! @copyright Copyright (c) 2022-2023
 #include "prime.hpp"
-#ifndef _NO_PRINT_AT_RUNTIME
+#ifndef __RUNTIME_NO_PRINTING__
 #include "utility/include/common.hpp"
 #include "utility/include/time.hpp"
 
@@ -99,7 +99,7 @@ std::vector<uint32_t> PrimeSolution::eulerMethod(const uint32_t max)
 
 TargetBuilder::TargetBuilder(const uint32_t maxPositiveInteger) : maxPositiveInteger(maxPositiveInteger)
 {
-#ifndef _NO_PRINT_AT_RUNTIME
+#ifndef __RUNTIME_NO_PRINTING__
     std::cout << "\r\nAll prime numbers smaller than " << maxPositiveInteger << ":" << std::endl;
 #endif
 }

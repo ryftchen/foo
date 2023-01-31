@@ -5,7 +5,7 @@
 //! @copyright Copyright (c) 2022-2023
 #include "integral.hpp"
 #include <functional>
-#ifndef _NO_PRINT_AT_RUNTIME
+#ifndef __RUNTIME_NO_PRINTING__
 #include "utility/include/common.hpp"
 #include "utility/include/time.hpp"
 

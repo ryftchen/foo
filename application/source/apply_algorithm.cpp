@@ -297,7 +297,7 @@ void runOptimal(const std::vector<std::string>& targets)
     using input::Rastrigin;
     typedef std::variant<Griewank, Rastrigin> OptimalFuncTarget;
 
-#ifndef _NO_PRINT_AT_RUNTIME
+#ifndef __RUNTIME_NO_PRINTING__
     const auto printFunctor = [](const OptimalFuncTarget& function)
     {
         constexpr std::string_view prefix{"\r\nOptimal function: "};
@@ -377,7 +377,7 @@ void runOptimal(const std::vector<std::string>& targets)
             {{Rastrigin::range1, Rastrigin::range2, Rastrigin::funcDescr}, Rastrigin()}};
     for ([[maybe_unused]] const auto& [range, expression] : optimalFuncMap)
     {
-#ifndef _NO_PRINT_AT_RUNTIME
+#ifndef __RUNTIME_NO_PRINTING__
         printFunctor(expression);
 #endif
         switch (expression.index())
