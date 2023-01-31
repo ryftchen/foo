@@ -230,7 +230,7 @@ TEST_F(OptimalTestBase, gradient) // NOLINT(cert-err58-cpp)
 {
     std::shared_ptr<algorithm::optimal::OptimalSolution> gradient =
         std::make_shared<algorithm::optimal::Gradient>(griewank);
-#ifndef _NO_PRINT_AT_RUNTIME
+#ifndef __RUNTIME_NO_PRINTING__
     std::cout << "\r\nOptimal function: " << griewank.funcDescr << std::endl;
 #endif
     auto result = (*gradient)(griewank.range1, griewank.range2, algorithm::optimal::epsilon);
@@ -239,7 +239,7 @@ TEST_F(OptimalTestBase, gradient) // NOLINT(cert-err58-cpp)
     ASSERT_LT(get<0>(result.value()), 0.0 + 0.05);
 
     gradient = std::make_shared<algorithm::optimal::Gradient>(rastrigin);
-#ifndef _NO_PRINT_AT_RUNTIME
+#ifndef __RUNTIME_NO_PRINTING__
     std::cout << "\r\nOptimal function: " << rastrigin.funcDescr << std::endl;
 #endif
     result = (*gradient)(rastrigin.range1, rastrigin.range2, algorithm::optimal::epsilon);
@@ -253,7 +253,7 @@ TEST_F(OptimalTestBase, annealing) // NOLINT(cert-err58-cpp)
 {
     std::shared_ptr<algorithm::optimal::OptimalSolution> annealing =
         std::make_shared<algorithm::optimal::Annealing>(griewank);
-#ifndef _NO_PRINT_AT_RUNTIME
+#ifndef __RUNTIME_NO_PRINTING__
     std::cout << "\r\nOptimal function: " << griewank.funcDescr << std::endl;
 #endif
     auto result = (*annealing)(griewank.range1, griewank.range2, algorithm::optimal::epsilon);
@@ -262,7 +262,7 @@ TEST_F(OptimalTestBase, annealing) // NOLINT(cert-err58-cpp)
     ASSERT_LT(get<0>(result.value()), 0.0 + 0.05);
 
     annealing = std::make_shared<algorithm::optimal::Annealing>(rastrigin);
-#ifndef _NO_PRINT_AT_RUNTIME
+#ifndef __RUNTIME_NO_PRINTING__
     std::cout << "\r\nOptimal function: " << rastrigin.funcDescr << std::endl;
 #endif
     result = (*annealing)(rastrigin.range1, rastrigin.range2, algorithm::optimal::epsilon);
@@ -276,7 +276,7 @@ TEST_F(OptimalTestBase, particle) // NOLINT(cert-err58-cpp)
 {
     std::shared_ptr<algorithm::optimal::OptimalSolution> particle =
         std::make_shared<algorithm::optimal::Particle>(griewank);
-#ifndef _NO_PRINT_AT_RUNTIME
+#ifndef __RUNTIME_NO_PRINTING__
     std::cout << "\r\nOptimal function: " << griewank.funcDescr << std::endl;
 #endif
     auto result = (*particle)(griewank.range1, griewank.range2, algorithm::optimal::epsilon);
@@ -285,7 +285,7 @@ TEST_F(OptimalTestBase, particle) // NOLINT(cert-err58-cpp)
     ASSERT_LT(get<0>(result.value()), 0.0 + 0.05);
 
     particle = std::make_shared<algorithm::optimal::Particle>(rastrigin);
-#ifndef _NO_PRINT_AT_RUNTIME
+#ifndef __RUNTIME_NO_PRINTING__
     std::cout << "\r\nOptimal function: " << rastrigin.funcDescr << std::endl;
 #endif
     result = (*particle)(rastrigin.range1, rastrigin.range2, algorithm::optimal::epsilon);
@@ -299,7 +299,7 @@ TEST_F(OptimalTestBase, genetic) // NOLINT(cert-err58-cpp)
 {
     std::shared_ptr<algorithm::optimal::OptimalSolution> genetic =
         std::make_shared<algorithm::optimal::Genetic>(griewank);
-#ifndef _NO_PRINT_AT_RUNTIME
+#ifndef __RUNTIME_NO_PRINTING__
     std::cout << "\r\nOptimal function: " << griewank.funcDescr << std::endl;
 #endif
     auto result = (*genetic)(griewank.range1, griewank.range2, algorithm::optimal::epsilon);
@@ -308,7 +308,7 @@ TEST_F(OptimalTestBase, genetic) // NOLINT(cert-err58-cpp)
     ASSERT_LT(get<0>(result.value()), 0.0 + 0.05);
 
     genetic = std::make_shared<algorithm::optimal::Genetic>(rastrigin);
-#ifndef _NO_PRINT_AT_RUNTIME
+#ifndef __RUNTIME_NO_PRINTING__
     std::cout << "\r\nOptimal function: " << rastrigin.funcDescr << std::endl;
 #endif
     result = (*genetic)(rastrigin.range1, rastrigin.range2, algorithm::optimal::epsilon);

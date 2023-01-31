@@ -6,7 +6,7 @@
 #include "structural.hpp"
 #include <map>
 #include <vector>
-#ifndef _NO_PRINT_AT_RUNTIME
+#ifndef __RUNTIME_NO_PRINTING__
 #include "utility/include/common.hpp"
 
 //! @brief Display structural result.
@@ -30,7 +30,7 @@ namespace design_pattern::structural
 {
 StructuralPattern::StructuralPattern()
 {
-#ifndef _NO_PRINT_AT_RUNTIME
+#ifndef __RUNTIME_NO_PRINTING__
     std::cout << "\r\nInstances of the structural pattern:" << std::endl;
 #endif
 }

@@ -6,7 +6,7 @@
 #include "match.hpp"
 #include <mpfr.h>
 #include <cstring>
-#ifndef _NO_PRINT_AT_RUNTIME
+#ifndef __RUNTIME_NO_PRINTING__
 #include "utility/include/common.hpp"
 #include "utility/include/time.hpp"
 
@@ -354,7 +354,7 @@ void TargetBuilder::setMatchingText(char* text, const uint32_t textLen)
     assert('\0' != *text);
     text[textLen] = '\0';
 
-#ifndef _NO_PRINT_AT_RUNTIME
+#ifndef __RUNTIME_NO_PRINTING__
     std::string out(text);
     out.insert(1, ".");
     std::cout << "\r\nπ " << textLen << " digits:\r\n"

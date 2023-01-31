@@ -211,7 +211,7 @@ requires std::is_integral<V>::value void TargetBuilder<T>::setOrderedArray(
     }
     std::sort(array, array + length);
 
-#ifndef _NO_PRINT_AT_RUNTIME
+#ifndef __RUNTIME_NO_PRINTING__
     const uint32_t arrayBufferSize = length * maxAlignOfPrint;
     char arrayBuffer[arrayBufferSize + 1];
     arrayBuffer[0] = '\0';
@@ -237,7 +237,7 @@ requires std::is_floating_point<V>::value void TargetBuilder<T>::setOrderedArray
     }
     std::sort(array, array + length);
 
-#ifndef _NO_PRINT_AT_RUNTIME
+#ifndef __RUNTIME_NO_PRINTING__
     const uint32_t arrayBufferSize = length * maxAlignOfPrint;
     char arrayBuffer[arrayBufferSize + 1];
     arrayBuffer[0] = '\0';

@@ -5,7 +5,7 @@
 //! @copyright Copyright (c) 2022-2023
 #include "tree.hpp"
 #include <array>
-#ifndef _NO_PRINT_AT_RUNTIME
+#ifndef __RUNTIME_NO_PRINTING__
 #include "utility/include/common.hpp"
 
 //! @brief Display tree result.
@@ -916,7 +916,7 @@ void destroySplayTree(SplayTree tree)
 
 TreeStructure::TreeStructure()
 {
-#ifndef _NO_PRINT_AT_RUNTIME
+#ifndef __RUNTIME_NO_PRINTING__
     std::cout << "\r\nInstances of the tree structure:" << std::endl;
 #endif
 }
