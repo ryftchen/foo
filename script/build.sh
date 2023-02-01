@@ -223,12 +223,14 @@ compileSourceCode()
         printException "There is no ${CMAKE_LISTS} file in the ${PROJECT_FOLDER} folder. Please check it."
     fi
 
-    if [[ -f ./"${TEST_FOLDER}"/"${CMAKE_LISTS}" ]]; then
-        bashCommand "cmake -S ./${TEST_FOLDER} -B ./${TEST_FOLDER}/${BUILD_FOLDER} -G Ninja \
+    if [[ "${TO_COMPILE}" = false ]]; then
+        if [[ -f ./"${TEST_FOLDER}"/"${CMAKE_LISTS}" ]]; then
+            bashCommand "cmake -S ./${TEST_FOLDER} -B ./${TEST_FOLDER}/${BUILD_FOLDER} -G Ninja \
 -DCMAKE_CXX_COMPILER=clang++-12 -DCMAKE_BUILD_TYPE=${BUILD_VERSION}"
-    else
-        printException "There is no ${CMAKE_LISTS} file in the ${PROJECT_FOLDER}/${TEST_FOLDER} folder. \
+        else
+            printException "There is no ${CMAKE_LISTS} file in the ${PROJECT_FOLDER}/${TEST_FOLDER} folder. \
 Please check it."
+        fi
     fi
 
     if [[ "${TO_COMPILE}" = true ]]; then
