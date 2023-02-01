@@ -1,15 +1,14 @@
 #!/usr/bin/env bash
 
 ARGS_HELP=false
+ARGS_CLEANUP=false
+ARGS_TEST=false
+ARGS_RELEASE=false
 ARGS_FORMAT=false
 ARGS_LINT=false
 ARGS_BROWSER=false
 ARGS_DOXYGEN=false
-ARGS_TEST=false
-ARGS_RELEASE=false
 ARGS_CONTAINER=false
-ARGS_CLEANUP=false
-PERFORM_COMPILE=false
 
 PROJECT_FOLDER="foo"
 APPLICATION_FOLDER="application"
@@ -32,8 +31,11 @@ FORMAT_CONFIG_SH=".editorconfig"
 LINT_CONFIG_CPP=".clang-tidy"
 LINT_CONFIG_PY=".pylintrc"
 LINT_CONFIG_SH=".shellcheckrc"
-DOCKER_FILE="Dockerfile"
 DOXYGEN_FILE="Doxyfile"
+DOCKER_FILE="Dockerfile"
+
+TO_COMPILE=false
+BUILD_VERSION="Debug"
 
 bashCommand()
 {
@@ -74,39 +76,54 @@ parseArgs()
     while [[ "$#" -gt 0 ]]; do
         case $1 in
         -h | --help) ARGS_HELP=true ;;
+        -C | --cleanup) ARGS_CLEANUP=true ;;
+        -t | --test) ARGS_TEST=true ;;
+        -r | --release) ARGS_RELEASE=true ;;
         -f | --format) ARGS_FORMAT=true ;;
         -l | --lint) ARGS_LINT=true ;;
         -b | --browser) ARGS_BROWSER=true ;;
         -d | --doxygen) ARGS_DOXYGEN=true ;;
-        -t | --test) ARGS_TEST=true ;;
-        -r | --release) ARGS_RELEASE=true ;;
         -c | --container) ARGS_CONTAINER=true ;;
-        -C | --cleanup) ARGS_CLEANUP=true ;;
         *) printException "Unknown command line option: $1. Try using the --help option for information." ;;
         esac
         shift
     done
 }
 
-checkDependencies()
+checkBasicDependencies()
 {
-    if {
-        [[ "$#" -eq 1 ]] && [[ "${ARGS_RELEASE}" = true ]]
-    } || [[ "$#" -eq 0 ]]; then
-        PERFORM_COMPILE=true
+    if [[ "${ARGS_RELEASE}" = true ]]; then
+        BUILD_VERSION="Release"
     fi
-
-    if [[ ! -d ./"${APPLICATION_FOLDER}" ]] || [[ ! -d ./"${UTILITY_FOLDER}" ]] || [[ ! -d ./"${ALGORITHM_FOLDER}" ]] \
-        || [[ ! -d ./"${DATA_STRUCTURE_FOLDER}" ]] || [[ ! -d ./"${DESIGN_PATTERN_FOLDER}" ]] \
-        || [[ ! -d ./"${NUMERIC_FOLDER}" ]] || [[ ! -d ./"${TEST_FOLDER}" ]] || [[ ! -d ./"${SCRIPT_FOLDER}" ]]; then
-        printException "Missing necessary code folders in the ${PROJECT_FOLDER} folder. Please check it."
+    if [[ "$#" -eq 0 ]] || {
+        [[ "$#" -eq 1 ]] && [[ "${ARGS_RELEASE}" = true ]]
+    }; then
+        TO_COMPILE=true
     fi
 
     if
         ! command -v cmake >/dev/null 2>&1 \
             || ! command -v ninja >/dev/null 2>&1
     then
-        printException "No cmake or ninja program. Please check it."
+        printException "No cmake or ninja program. Please install it."
+    fi
+    if
+        ! command -v clang-12 >/dev/null 2>&1 \
+            || ! command -v clang++-12 >/dev/null 2>&1
+    then
+        printException "No clang-12 or clang++-12 program. Please install it."
+    fi
+}
+
+checkExtraDependencies()
+{
+    if [[ "${ARGS_FORMAT}" = true ]] || [[ "${ARGS_LINT}" = true ]]; then
+        if [[ ! -d ./"${APPLICATION_FOLDER}" ]] || [[ ! -d ./"${UTILITY_FOLDER}" ]] \
+            || [[ ! -d ./"${ALGORITHM_FOLDER}" ]] || [[ ! -d ./"${DATA_STRUCTURE_FOLDER}" ]] \
+            || [[ ! -d ./"${DESIGN_PATTERN_FOLDER}" ]] || [[ ! -d ./"${NUMERIC_FOLDER}" ]] \
+            || [[ ! -d ./"${TEST_FOLDER}" ]] || [[ ! -d ./"${SCRIPT_FOLDER}" ]]; then
+            printException "Missing necessary code folders in the ${PROJECT_FOLDER} folder. Please check it."
+        fi
     fi
 
     if [[ "${ARGS_FORMAT}" = true ]]; then
@@ -120,7 +137,7 @@ checkDependencies()
                 printException "Missing format configuration files in the ${PROJECT_FOLDER} folder. Please check it."
             fi
         else
-            printException "No clang-format, shfmt or black program. Please check it."
+            printException "No clang-format, shfmt or black program. Please install it."
         fi
     fi
 
@@ -138,7 +155,7 @@ checkDependencies()
             fi
         else
             printException "No clang-tidy (including run-clang-tidy-12, compdb), shellcheck or pylint program. \
-Please check it."
+Please install it."
         fi
     fi
 
@@ -150,7 +167,7 @@ Please check it."
             ! command -v codebrowser_generator >/dev/null 2>&1 \
                 || ! command -v codebrowser_indexgenerator >/dev/null 2>&1
         then
-            printException "No codebrowser_generator or codebrowser_indexgenerator program. Please check it."
+            printException "No codebrowser_generator or codebrowser_indexgenerator program. Please install it."
         fi
     fi
 
@@ -166,7 +183,7 @@ Please check it."
                 printException "There is no ${DOXYGEN_FILE} file in the ${DOCUMENT_FOLDER} folder. Please check it."
             fi
         else
-            printException "No doxygen or dot program. Please check it."
+            printException "No doxygen or dot program. Please install it."
         fi
     fi
 
@@ -191,32 +208,34 @@ Please check it."
                 ARGS_CONTAINER=false
             fi
         else
-            printException "No docker program. Please check it."
+            printException "No docker program. Please install it."
         fi
     fi
 }
 
-generateCMakeFiles()
+compileSourceCode()
 {
     export CC=/usr/bin/clang-12 CXX=/usr/bin/clang++-12
-    if [[ "${ARGS_RELEASE}" = true ]]; then
-        buildType="Release"
-    else
-        buildType="Debug"
-    fi
-
     if [[ -f ./"${CMAKE_LISTS}" ]]; then
         bashCommand "cmake -S . -B ./${BUILD_FOLDER} -G Ninja -DCMAKE_CXX_COMPILER=clang++-12 \
--DCMAKE_BUILD_TYPE=${buildType}"
+-DCMAKE_BUILD_TYPE=${BUILD_VERSION}"
     else
         printException "There is no ${CMAKE_LISTS} file in the ${PROJECT_FOLDER} folder. Please check it."
     fi
 
     if [[ -f ./"${TEST_FOLDER}"/"${CMAKE_LISTS}" ]]; then
         bashCommand "cmake -S ./${TEST_FOLDER} -B ./${TEST_FOLDER}/${BUILD_FOLDER} -G Ninja \
--DCMAKE_CXX_COMPILER=clang++-12 -DCMAKE_BUILD_TYPE=${buildType}"
+-DCMAKE_CXX_COMPILER=clang++-12 -DCMAKE_BUILD_TYPE=${BUILD_VERSION}"
     else
-        printException "There is no ${CMAKE_LISTS} file in the ${PROJECT_FOLDER}/${TEST_FOLDER} folder. Please check it."
+        printException "There is no ${CMAKE_LISTS} file in the ${PROJECT_FOLDER}/${TEST_FOLDER} folder. \
+Please check it."
+    fi
+
+    if [[ "${TO_COMPILE}" = true ]]; then
+        tput setaf 2 && tput bold
+        bashCommand "cmake --build ./${BUILD_FOLDER}"
+        tput sgr0
+        exit 0
     fi
 }
 
@@ -227,14 +246,43 @@ performHelpOption()
         echo
         echo "Optional:"
         echo "-h, --help         show help and exit"
-        echo "-f, --format       format code"
-        echo "-l, --lint         lint code"
+        echo "-C, --cleanup      cleanup and exit"
+        echo "-t, --test         build unit test and exit"
+        echo "-r, --release      set as release version"
+        echo "-f, --format       format all code"
+        echo "-l, --lint         lint all code"
         echo "-b, --browser      generate code browser"
         echo "-d, --doxygen      generate doxygen document"
-        echo "-t, --test         build unit test"
-        echo "-r, --release      build with release version"
         echo "-c, --container    construct docker container"
-        echo "-C, --cleanup      cleanup project"
+        exit 0
+    fi
+}
+
+performCleanupOption()
+{
+    if [[ "${ARGS_CLEANUP}" = true ]]; then
+        bashCommand "find ./ -maxdepth 2 -type d | sed 1d \
+| grep -E '(${BUILD_FOLDER}|${TEMPORARY_FOLDER}|browser|doxygen|__pycache__)$' | xargs -i rm -rf {}"
+        bashCommand "rm -rf ./core* ./vgcore* ./*.profraw"
+        exit 0
+    fi
+}
+
+performTestOption()
+{
+    if [[ "${ARGS_TEST}" = true ]]; then
+        export CC=/usr/bin/clang-12 CXX=/usr/bin/clang++-12
+        if [[ -f ./"${TEST_FOLDER}"/"${CMAKE_LISTS}" ]]; then
+            bashCommand "cmake -S ./${TEST_FOLDER} -B ./${TEST_FOLDER}/${BUILD_FOLDER} -G Ninja \
+-DCMAKE_CXX_COMPILER=clang++-12 -DCMAKE_BUILD_TYPE=${BUILD_VERSION}"
+        else
+            printException "There is no ${CMAKE_LISTS} file in the ${PROJECT_FOLDER}/${TEST_FOLDER} folder. \
+Please check it."
+        fi
+
+        tput setaf 2 && tput bold
+        bashCommand "cmake --build ./${TEST_FOLDER}/${BUILD_FOLDER}"
+        tput sgr0
         exit 0
     fi
 }
@@ -289,15 +337,6 @@ performLintOption()
 
         bashCommand "shellcheck ./${SCRIPT_FOLDER}/*.sh"
         bashCommand "pylint --rcfile=${LINT_CONFIG_PY} ./${SCRIPT_FOLDER}/*.py"
-    fi
-}
-
-performCleanupOption()
-{
-    if [[ "${ARGS_CLEANUP}" = true ]]; then
-        bashCommand "find ./ -maxdepth 2 -type d | sed 1d \
-| grep -E '(${BUILD_FOLDER}|${TEMPORARY_FOLDER}|browser|doxygen|__pycache__)$' | xargs -i rm -rf {}"
-        bashCommand "rm -rf ./core* ./vgcore* ./*.profraw"
     fi
 }
 
@@ -381,19 +420,10 @@ tarHtmlForDoxygen()
         sed -i "s/\(^PROJECT_NUMBER[ ]\+=\)/\1 \"@ $(git rev-parse --short @)\"/" \
             ./"${DOCUMENT_FOLDER}"/"${DOXYGEN_FILE}"
     fi
-    bashCommand "doxygen ./${DOCUMENT_FOLDER}/${DOXYGEN_FILE}"
+    bashCommand "doxygen ./${DOCUMENT_FOLDER}/${DOXYGEN_FILE} >/dev/null"
     bashCommand "tar -jcvf ./${TEMPORARY_FOLDER}/${tarFile} -C ./${DOCUMENT_FOLDER} ${doxygenFolder} >/dev/null"
     if [[ "${ARGS_RELEASE}" = false ]]; then
         sed -i "s/\(^PROJECT_NUMBER[ ]\+=\).*/\1/" ./"${DOCUMENT_FOLDER}"/"${DOXYGEN_FILE}"
-    fi
-}
-
-performTestOption()
-{
-    if [[ "${ARGS_TEST}" = true ]]; then
-        tput setaf 2 && tput bold
-        bashCommand "cmake --build ./${TEST_FOLDER}/${BUILD_FOLDER}"
-        tput sgr0
     fi
 }
 
@@ -438,15 +468,6 @@ performContainerOption()
     fi
 }
 
-compileCode()
-{
-    if [[ "${PERFORM_COMPILE}" = true ]]; then
-        tput setaf 2 && tput bold
-        bashCommand "cmake --build ./${BUILD_FOLDER}"
-        tput sgr0
-    fi
-}
-
 main()
 {
     cd "${0%%"${SCRIPT_FOLDER}"*}" || exit 1
@@ -457,17 +478,16 @@ main()
     performHelpOption
     performCleanupOption
 
-    checkDependencies "$@"
-    generateCMakeFiles
+    checkBasicDependencies "$@"
+    performTestOption
+    compileSourceCode
 
+    checkExtraDependencies
     performFormatOption
     performLintOption
     performBrowserOption
     performDoxygenOption
-    performTestOption
     performContainerOption
-
-    compileCode
 }
 
 main "$@"
