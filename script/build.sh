@@ -66,7 +66,8 @@ signalHandler()
         fi
     fi
     if [[ "${ARGS_DOXYGEN}" = true ]] && [[ "${ARGS_RELEASE}" = false ]]; then
-        sed -i "s/\(^PROJECT_NUMBER[ ]\+=\).*/\1/" ./"${DOCUMENT_FOLDER}"/"${DOXYGEN_FILE}"
+        sed -i "s/\(^PROJECT_NUMBER[ ]\+=\)\([ ]\+.*\)/\1/" ./"${DOCUMENT_FOLDER}"/"${DOXYGEN_FILE}"
+        sed -i "s/\(^HTML_TIMESTAMP[ ]\+=\)\([ ]\+YES\)/\1 NO/" ./"${DOCUMENT_FOLDER}"/"${DOXYGEN_FILE}"
     fi
     exit 1
 }
@@ -421,11 +422,13 @@ tarHtmlForDoxygen()
     if [[ "${ARGS_RELEASE}" = false ]]; then
         sed -i "s/\(^PROJECT_NUMBER[ ]\+=\)/\1 \"@ $(git rev-parse --short @)\"/" \
             ./"${DOCUMENT_FOLDER}"/"${DOXYGEN_FILE}"
+        sed -i "s/\(^HTML_TIMESTAMP[ ]\+=\)\([ ]\+NO\)/\1 YES/" ./"${DOCUMENT_FOLDER}"/"${DOXYGEN_FILE}"
     fi
     bashCommand "doxygen ./${DOCUMENT_FOLDER}/${DOXYGEN_FILE} >/dev/null"
     bashCommand "tar -jcvf ./${TEMPORARY_FOLDER}/${tarFile} -C ./${DOCUMENT_FOLDER} ${doxygenFolder} >/dev/null"
     if [[ "${ARGS_RELEASE}" = false ]]; then
-        sed -i "s/\(^PROJECT_NUMBER[ ]\+=\).*/\1/" ./"${DOCUMENT_FOLDER}"/"${DOXYGEN_FILE}"
+        sed -i "s/\(^PROJECT_NUMBER[ ]\+=\)\([ ]\+.*\)/\1/" ./"${DOCUMENT_FOLDER}"/"${DOXYGEN_FILE}"
+        sed -i "s/\(^HTML_TIMESTAMP[ ]\+=\)\([ ]\+YES\)/\1 NO/" ./"${DOCUMENT_FOLDER}"/"${DOXYGEN_FILE}"
     fi
 }
 
@@ -459,7 +462,7 @@ performContainerOption()
 ./${DOCKER_FOLDER}/"
                     fi
                 fi
-                bashCommand "docker run -it --name ${PROJECT_FOLDER} -v ${PWD}:/root/${PROJECT_FOLDER} \
+                bashCommand "docker run -it --name ${PROJECT_FOLDER}_dev -v ${PWD}:/root/${PROJECT_FOLDER} \
 -d ${imageRepo}:latest /bin/bash"
             else
                 printException "The container exists."
