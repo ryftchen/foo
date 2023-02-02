@@ -4,7 +4,7 @@
 //! @version 0.1
 //! @copyright Copyright (c) 2022-2023
 #include "divisor.hpp"
-#ifndef __RUNTIME_NO_PRINTING__
+#ifdef __RUNTIME_PRINTING__
 #include "utility/include/common.hpp"
 #include "utility/include/time.hpp"
 
@@ -139,7 +139,7 @@ std::vector<int> DivisorSolution::getAllDivisors(const int greatestCommonDivisor
 
 TargetBuilder::TargetBuilder(const int integer1, const int integer2) : integer1(integer1), integer2(integer2)
 {
-#ifndef __RUNTIME_NO_PRINTING__
+#ifdef __RUNTIME_PRINTING__
     std::cout << "\r\nAll common divisors of " << integer1 << " and " << integer2 << ":" << std::endl;
 #endif
 }

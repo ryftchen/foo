@@ -271,7 +271,7 @@ void runIntegral(const std::vector<std::string>& targets)
     using Expression2 = input::Expression2;
     typedef std::variant<Expression1, Expression2> IntegralExprTarget;
 
-#ifndef __RUNTIME_NO_PRINTING__
+#ifdef __RUNTIME_PRINTING__
     const auto printFunctor = [](const IntegralExprTarget& expression)
     {
         constexpr std::string_view prefix{"\r\nIntegral expression: "};
@@ -354,7 +354,7 @@ void runIntegral(const std::vector<std::string>& targets)
             {{Expression2::range1, Expression2::range2, Expression2::exprDescr}, Expression2()}};
     for ([[maybe_unused]] const auto& [range, expression] : integralExprMap)
     {
-#ifndef __RUNTIME_NO_PRINTING__
+#ifdef __RUNTIME_PRINTING__
         printFunctor(expression);
 #endif
         switch (expression.index())

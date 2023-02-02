@@ -6,7 +6,7 @@
 #include "linear.hpp"
 #include <iostream>
 #include <sstream>
-#ifndef __RUNTIME_NO_PRINTING__
+#ifdef __RUNTIME_PRINTING__
 #include "utility/include/common.hpp"
 
 //! @brief Display linear result.
@@ -322,7 +322,7 @@ typedef struct TagMeta
 
 LinearStructure::LinearStructure()
 {
-#ifndef __RUNTIME_NO_PRINTING__
+#ifdef __RUNTIME_PRINTING__
     std::cout << "\r\nInstances of the linear structure:" << std::endl;
 #endif
 }

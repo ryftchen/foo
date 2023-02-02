@@ -7,7 +7,7 @@
 #include <map>
 #include <memory>
 #include <vector>
-#ifndef __RUNTIME_NO_PRINTING__
+#ifdef __RUNTIME_PRINTING__
 #include "utility/include/common.hpp"
 
 //! @brief Display behavioral result.
@@ -30,7 +30,7 @@ namespace design_pattern::behavioral
 {
 BehavioralPattern::BehavioralPattern()
 {
-#ifndef __RUNTIME_NO_PRINTING__
+#ifdef __RUNTIME_PRINTING__
     std::cout << "\r\nInstances of the behavioral pattern:" << std::endl;
 #endif
 }
