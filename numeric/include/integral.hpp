@@ -237,13 +237,14 @@ public:
 private:
     //! @brief Target expression.
     const expression::Expression& expr;
+#ifndef INTEGRAL_MONTE_CARLO_NORMAL_DISTRIBUTION
     //! @brief Sample from the uniform distribution.
     //! @param lower - lower endpoint
     //! @param upper - upper endpoint
     //! @param eps - precision of calculation
     //! @return result of definite integral
     [[nodiscard]] double sampleFromUniformDistribution(const double lower, const double upper, const double eps) const;
-#ifdef INTEGRAL_MONTE_CARLO_NO_UNIFORM
+#else
     //! @brief Sample from the normal distribution.
     //! @param lower - lower endpoint
     //! @param upper - upper endpoint

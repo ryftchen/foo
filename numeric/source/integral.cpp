@@ -5,7 +5,7 @@
 //! @copyright Copyright (c) 2022-2023
 #include "integral.hpp"
 #include <functional>
-#ifndef __RUNTIME_NO_PRINTING__
+#ifdef __RUNTIME_PRINTING__
 #include "utility/include/common.hpp"
 #include "utility/include/time.hpp"
 
@@ -228,6 +228,7 @@ double MonteCarlo::operator()(double lower, double upper, const double eps) cons
     return sum;
 }
 
+#ifndef INTEGRAL_MONTE_CARLO_NORMAL_DISTRIBUTION
 double MonteCarlo::sampleFromUniformDistribution(const double lower, const double upper, const double eps) const
 {
     const uint32_t n = std::max<uint32_t>((upper - lower) / eps, 1000000);
@@ -243,8 +244,7 @@ double MonteCarlo::sampleFromUniformDistribution(const double lower, const doubl
 
     return sum;
 }
-
-#ifdef INTEGRAL_MONTE_CARLO_NO_UNIFORM
+#else
 double MonteCarlo::sampleFromNormalDistribution(const double lower, const double upper, const double eps) const
 {
     const uint32_t n = std::max<uint32_t>((upper - lower) / eps, 1000000);

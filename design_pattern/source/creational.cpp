@@ -4,7 +4,7 @@
 //! @version 0.1
 //! @copyright Copyright (c) 2022-2023
 #include "creational.hpp"
-#ifndef __RUNTIME_NO_PRINTING__
+#ifdef __RUNTIME_PRINTING__
 #include "utility/include/common.hpp"
 
 //! @brief Display creational result.
@@ -28,7 +28,7 @@ namespace design_pattern::creational
 {
 CreationalPattern::CreationalPattern()
 {
-#ifndef __RUNTIME_NO_PRINTING__
+#ifdef __RUNTIME_PRINTING__
     std::cout << "\r\nInstances of the creational pattern:" << std::endl;
 #endif
 }

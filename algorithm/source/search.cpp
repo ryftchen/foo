@@ -4,7 +4,7 @@
 //! @version 0.1
 //! @copyright Copyright (c) 2022-2023
 #include "search.hpp"
-#ifndef __RUNTIME_NO_PRINTING__
+#ifdef __RUNTIME_PRINTING__
 #include "utility/include/common.hpp"
 #include "utility/include/time.hpp"
 
@@ -125,7 +125,7 @@ int SearchSolution<T>::fibonacciMethod(const T* const array, const uint32_t leng
     uint32_t n = fib.size() - 1;
     if (constexpr uint32_t minSize = 3; n < minSize)
     {
-#ifndef __RUNTIME_NO_PRINTING__
+#ifdef __RUNTIME_PRINTING__
         COMMON_PRINT("*Fibonacci     method: An array size of %u isn't sufficient.\n", length);
 #endif
         return index;

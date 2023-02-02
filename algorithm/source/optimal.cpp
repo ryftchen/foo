@@ -5,7 +5,7 @@
 //! @copyright Copyright (c) 2022-2023
 #include "optimal.hpp"
 #include <set>
-#ifndef __RUNTIME_NO_PRINTING__
+#ifdef __RUNTIME_PRINTING__
 #include "utility/include/common.hpp"
 #include "utility/include/time.hpp"
 
@@ -236,7 +236,7 @@ std::optional<std::tuple<ValueY, ValueX>> Genetic::operator()(const double left,
     updateSpecies(left, right, eps);
     if (chrNum < minChrNum)
     {
-#ifndef __RUNTIME_NO_PRINTING__
+#ifdef __RUNTIME_PRINTING__
         COMMON_PRINT("*Genetic   method: A precision of %.5f isn't sufficient.\n", eps);
 #endif
         return std::nullopt;

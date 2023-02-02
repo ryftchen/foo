@@ -5,7 +5,7 @@
 //! @copyright Copyright (c) 2022-2023
 #include "notation.hpp"
 #include <stack>
-#ifndef __RUNTIME_NO_PRINTING__
+#ifdef __RUNTIME_PRINTING__
 #include "utility/include/common.hpp"
 
 //! @brief Display notation result.
@@ -117,7 +117,7 @@ NotationSolution::Priority NotationSolution::getPriority(const char c)
 
 TargetBuilder::TargetBuilder(const std::string_view infixNotation) : infixNotation(infixNotation)
 {
-#ifndef __RUNTIME_NO_PRINTING__
+#ifdef __RUNTIME_PRINTING__
     std::cout << "\r\nInfix notation: " << infixNotation << std::endl;
 #endif
 }
