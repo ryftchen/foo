@@ -149,7 +149,7 @@ public:
         const OutputLevel level,
         const std::string& codeFile,
         const uint32_t codeLine,
-        const char* const __restrict format,
+        const char* const format,
         Args&&... args);
     //! @brief Interface for running logger.
     void runLogger();
@@ -251,7 +251,7 @@ void Log::flush(
     const OutputLevel level,
     const std::string& codeFile,
     const uint32_t codeLine,
-    const char* const __restrict format,
+    const char* const format,
     Args&&... args)
 {
     if (State::work != currentState())

@@ -13,6 +13,11 @@
 #include <mutex>
 #include <random>
 
+#if defined(__clang__) || defined(__GNUC__)
+//! @brief The restrict type qualifier.
+#define restrict __restrict
+#endif
+
 //! @brief Sort-related functions in the algorithm module.
 namespace algorithm::sort
 {
@@ -144,9 +149,9 @@ public:
     //! @return buffer after format
     template <typename V>
     requires(isNumber<V>()) static char* formatArray(
-        const T* const array,
+        const T* const restrict array,
         const uint32_t length,
-        char* const buffer,
+        char* const restrict buffer,
         const uint32_t bufferSize);
 
 private:
@@ -184,7 +189,7 @@ private:
         const T right);
     //! @brief Get the random seed by time.
     //! @return random seed
-    inline static std::mt19937 getRandomSeedByTime();
+    static inline std::mt19937 getRandomSeedByTime();
 };
 
 template <class T>
@@ -223,9 +228,9 @@ inline uint32_t TargetBuilder<T>::getLength() const
 template <class T>
 template <typename V>
 requires(isNumber<V>()) char* TargetBuilder<T>::formatArray(
-    const T* const array,
+    const T* const restrict array,
     const uint32_t length,
-    char* const buffer,
+    char* const restrict buffer,
     const uint32_t bufferSize)
 {
     uint32_t align = 0;
@@ -334,3 +339,5 @@ inline std::mt19937 TargetBuilder<T>::getRandomSeedByTime()
     return std::mt19937(timeSeed.tv_sec * secToUsec + timeSeed.tv_usec);
 }
 } // namespace algorithm::sort
+
+#undef restrict

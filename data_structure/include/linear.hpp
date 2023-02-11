@@ -12,16 +12,19 @@ namespace date_structure::linear
 //! @brief The doubly linked list structure.
 namespace doubly_linked_list
 {
-//! @brief The node of the doubly linked list.
-typedef struct TagNode
+extern "C"
 {
-    //! @brief Pointer to the previous node.
-    struct TagNode* prev;
-    //! @brief Pointer to the next node.
-    struct TagNode* next;
-    //! @brief Pointer to node content.
-    void* p;
-} Node, *DLL;
+    //! @brief The node of the doubly linked list.
+    typedef struct TagNode
+    {
+        //! @brief Pointer to the previous node.
+        struct TagNode* prev;
+        //! @brief Pointer to the next node.
+        struct TagNode* next;
+        //! @brief Pointer to node content.
+        void* p;
+    } Node, *DLL;
+}
 
 //! @brief Create a node of the doubly linked list.
 //! @param pVal - value of the target node
