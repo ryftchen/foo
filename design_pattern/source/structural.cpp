@@ -3,10 +3,11 @@
 //! @brief The definitions (structural) in the data structure module.
 //! @version 0.1
 //! @copyright Copyright (c) 2022-2023
+
 #include "structural.hpp"
 #include <map>
 #include <vector>
-#ifdef __RUNTIME_PRINTING__
+#ifdef __RUNTIME_PRINTING
 #include "utility/include/common.hpp"
 
 //! @brief Display structural result.
@@ -30,7 +31,7 @@ namespace design_pattern::structural
 {
 StructuralPattern::StructuralPattern()
 {
-#ifdef __RUNTIME_PRINTING__
+#ifdef __RUNTIME_PRINTING
     std::cout << "\r\nInstances of the structural pattern:" << std::endl;
 #endif
 }

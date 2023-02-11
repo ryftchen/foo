@@ -3,6 +3,7 @@
 //! @brief The declarations (sort) in the algorithm module.
 //! @version 0.1
 //! @copyright Copyright (c) 2022-2023
+
 #pragma once
 
 #include <sys/time.h>
@@ -289,7 +290,7 @@ requires std::is_integral<V>::value void TargetBuilder<T>::setRandomArray(
         array[i] = randomX(seed);
     }
 
-#ifdef __RUNTIME_PRINTING__
+#ifdef __RUNTIME_PRINTING
     const uint32_t arrayBufferSize = length * maxAlignOfPrint;
     char arrayBuffer[arrayBufferSize + 1];
     arrayBuffer[0] = '\0';
@@ -313,7 +314,7 @@ requires std::is_floating_point<V>::value void TargetBuilder<T>::setRandomArray(
         array[i] = randomX(seed);
     }
 
-#ifdef __RUNTIME_PRINTING__
+#ifdef __RUNTIME_PRINTING
     const uint32_t arrayBufferSize = length * maxAlignOfPrint;
     char arrayBuffer[arrayBufferSize + 1];
     arrayBuffer[0] = '\0';

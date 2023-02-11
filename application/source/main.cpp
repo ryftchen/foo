@@ -3,6 +3,7 @@
 //! @brief The definitions (main) in the application module.
 //! @version 0.1
 //! @copyright Copyright (c) 2022-2023
+
 #include "main.hpp"
 #include "command.hpp"
 #include "utility/include/log.hpp"

@@ -3,11 +3,12 @@
 //! @brief The definitions (behavioral) in the data structure module.
 //! @version 0.1
 //! @copyright Copyright (c) 2022-2023
+
 #include "behavioral.hpp"
 #include <map>
 #include <memory>
 #include <vector>
-#ifdef __RUNTIME_PRINTING__
+#ifdef __RUNTIME_PRINTING
 #include "utility/include/common.hpp"
 
 //! @brief Display behavioral result.
@@ -30,7 +31,7 @@ namespace design_pattern::behavioral
 {
 BehavioralPattern::BehavioralPattern()
 {
-#ifdef __RUNTIME_PRINTING__
+#ifdef __RUNTIME_PRINTING
     std::cout << "\r\nInstances of the behavioral pattern:" << std::endl;
 #endif
 }

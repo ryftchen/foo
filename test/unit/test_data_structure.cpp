@@ -3,6 +3,7 @@
 //! @brief The definitions (test_data_structure) in the test module.
 //! @version 0.1
 //! @copyright Copyright (c) 2022-2023
+
 #include <gtest/gtest.h>
 #include "data_structure/include/linear.hpp"
 #include "data_structure/include/tree.hpp"

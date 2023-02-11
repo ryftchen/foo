@@ -3,6 +3,7 @@
 //! @brief The definitions (time) in the utility module.
 //! @version 0.1
 //! @copyright Copyright (c) 2022-2023
+
 #include "time.hpp"
 
 namespace utility::time

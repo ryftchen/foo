@@ -3,9 +3,10 @@
 //! @brief The definitions (optimal) in the algorithm module.
 //! @version 0.1
 //! @copyright Copyright (c) 2022-2023
+
 #include "optimal.hpp"
 #include <set>
-#ifdef __RUNTIME_PRINTING__
+#ifdef __RUNTIME_PRINTING
 #include "utility/include/common.hpp"
 #include "utility/include/time.hpp"
 
@@ -236,7 +237,7 @@ std::optional<std::tuple<ValueY, ValueX>> Genetic::operator()(const double left,
     updateSpecies(left, right, eps);
     if (chrNum < minChrNum)
     {
-#ifdef __RUNTIME_PRINTING__
+#ifdef __RUNTIME_PRINTING
         COMMON_PRINT("*Genetic   method: A precision of %.5f isn't sufficient.\n", eps);
 #endif
         return std::nullopt;

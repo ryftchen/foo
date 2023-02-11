@@ -3,9 +3,10 @@
 //! @brief The definitions (integral) in the numeric module.
 //! @version 0.1
 //! @copyright Copyright (c) 2022-2023
+
 #include "integral.hpp"
 #include <functional>
-#ifdef __RUNTIME_PRINTING__
+#ifdef __RUNTIME_PRINTING
 #include "utility/include/common.hpp"
 #include "utility/include/time.hpp"
 

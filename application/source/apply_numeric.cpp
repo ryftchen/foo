@@ -3,6 +3,7 @@
 //! @brief The definitions (apply_numeric) in the application module.
 //! @version 0.1
 //! @copyright Copyright (c) 2022-2023
+
 #include "apply_numeric.hpp"
 #include <variant>
 #include "application/include/command.hpp"
@@ -271,7 +272,7 @@ void runIntegral(const std::vector<std::string>& targets)
     using Expression2 = input::Expression2;
     typedef std::variant<Expression1, Expression2> IntegralExprTarget;
 
-#ifdef __RUNTIME_PRINTING__
+#ifdef __RUNTIME_PRINTING
     const auto printFunctor = [](const IntegralExprTarget& expression)
     {
         constexpr std::string_view prefix{"\r\nIntegral expression: "};
@@ -354,7 +355,7 @@ void runIntegral(const std::vector<std::string>& targets)
             {{Expression2::range1, Expression2::range2, Expression2::exprDescr}, Expression2()}};
     for ([[maybe_unused]] const auto& [range, expression] : integralExprMap)
     {
-#ifdef __RUNTIME_PRINTING__
+#ifdef __RUNTIME_PRINTING
         printFunctor(expression);
 #endif
         switch (expression.index())

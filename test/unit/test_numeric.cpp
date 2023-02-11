@@ -3,6 +3,7 @@
 //! @brief The definitions (test_numeric) in the test module.
 //! @version 0.1
 //! @copyright Copyright (c) 2022-2023
+
 #include <gtest/gtest.h>
 #include <cmath>
 #include "numeric/include/arithmetic.hpp"
@@ -210,7 +211,7 @@ TEST_F(IntegralTestBase, trapezoidal) // NOLINT(cert-err58-cpp)
 {
     std::shared_ptr<numeric::integral::IntegralSolution> trapezoidal =
         std::make_shared<numeric::integral::Trapezoidal>(expression1);
-#ifdef __RUNTIME_PRINTING__
+#ifdef __RUNTIME_PRINTING
     std::cout << "\r\nIntegral expression: " << expression1.exprDescr << std::endl;
 #endif
     auto result = (*trapezoidal)(expression1.range1, expression1.range2, numeric::integral::epsilon);
@@ -218,7 +219,7 @@ TEST_F(IntegralTestBase, trapezoidal) // NOLINT(cert-err58-cpp)
     ASSERT_LT(result, -4.08951 + 0.5);
 
     trapezoidal = std::make_shared<numeric::integral::Trapezoidal>(expression2);
-#ifdef __RUNTIME_PRINTING__
+#ifdef __RUNTIME_PRINTING
     std::cout << "\r\nIntegral expression: " << expression2.exprDescr << std::endl;
 #endif
     result = (*trapezoidal)(expression2.range1, expression2.range2, numeric::integral::epsilon);
@@ -231,7 +232,7 @@ TEST_F(IntegralTestBase, simpson) // NOLINT(cert-err58-cpp)
 {
     std::shared_ptr<numeric::integral::IntegralSolution> simpson =
         std::make_shared<numeric::integral::Simpson>(expression1);
-#ifdef __RUNTIME_PRINTING__
+#ifdef __RUNTIME_PRINTING
     std::cout << "\r\nIntegral expression: " << expression1.exprDescr << std::endl;
 #endif
     auto result = (*simpson)(expression1.range1, expression1.range2, numeric::integral::epsilon);
@@ -239,7 +240,7 @@ TEST_F(IntegralTestBase, simpson) // NOLINT(cert-err58-cpp)
     ASSERT_LT(result, -4.08951 + 0.5);
 
     simpson = std::make_shared<numeric::integral::Simpson>(expression2);
-#ifdef __RUNTIME_PRINTING__
+#ifdef __RUNTIME_PRINTING
     std::cout << "\r\nIntegral expression: " << expression2.exprDescr << std::endl;
 #endif
     result = (*simpson)(expression2.range1, expression2.range2, numeric::integral::epsilon);
@@ -252,7 +253,7 @@ TEST_F(IntegralTestBase, romberg) // NOLINT(cert-err58-cpp)
 {
     std::shared_ptr<numeric::integral::IntegralSolution> romberg =
         std::make_shared<numeric::integral::Romberg>(expression1);
-#ifdef __RUNTIME_PRINTING__
+#ifdef __RUNTIME_PRINTING
     std::cout << "\r\nIntegral expression: " << expression1.exprDescr << std::endl;
 #endif
     auto result = (*romberg)(expression1.range1, expression1.range2, numeric::integral::epsilon);
@@ -260,7 +261,7 @@ TEST_F(IntegralTestBase, romberg) // NOLINT(cert-err58-cpp)
     ASSERT_LT(result, -4.08951 + 0.5);
 
     romberg = std::make_shared<numeric::integral::Romberg>(expression2);
-#ifdef __RUNTIME_PRINTING__
+#ifdef __RUNTIME_PRINTING
     std::cout << "\r\nIntegral expression: " << expression2.exprDescr << std::endl;
 #endif
     result = (*romberg)(expression2.range1, expression2.range2, numeric::integral::epsilon);
@@ -273,7 +274,7 @@ TEST_F(IntegralTestBase, gauss) // NOLINT(cert-err58-cpp)
 {
     std::shared_ptr<numeric::integral::IntegralSolution> gauss =
         std::make_shared<numeric::integral::Gauss>(expression1);
-#ifdef __RUNTIME_PRINTING__
+#ifdef __RUNTIME_PRINTING
     std::cout << "\r\nIntegral expression: " << expression1.exprDescr << std::endl;
 #endif
     auto result = (*gauss)(expression1.range1, expression1.range2, numeric::integral::epsilon);
@@ -281,7 +282,7 @@ TEST_F(IntegralTestBase, gauss) // NOLINT(cert-err58-cpp)
     ASSERT_LT(result, -4.08951 + 0.5);
 
     gauss = std::make_shared<numeric::integral::Gauss>(expression2);
-#ifdef __RUNTIME_PRINTING__
+#ifdef __RUNTIME_PRINTING
     std::cout << "\r\nIntegral expression: " << expression2.exprDescr << std::endl;
 #endif
     result = (*gauss)(expression2.range1, expression2.range2, numeric::integral::epsilon);
@@ -294,7 +295,7 @@ TEST_F(IntegralTestBase, monteCarlo) // NOLINT(cert-err58-cpp)
 {
     std::shared_ptr<numeric::integral::IntegralSolution> monteCarlo =
         std::make_shared<numeric::integral::MonteCarlo>(expression1);
-#ifdef __RUNTIME_PRINTING__
+#ifdef __RUNTIME_PRINTING
     std::cout << "\r\nIntegral expression: " << expression1.exprDescr << std::endl;
 #endif
     auto result = (*monteCarlo)(expression1.range1, expression1.range2, numeric::integral::epsilon);
@@ -302,7 +303,7 @@ TEST_F(IntegralTestBase, monteCarlo) // NOLINT(cert-err58-cpp)
     ASSERT_LT(result, -4.08951 + 0.5);
 
     monteCarlo = std::make_shared<numeric::integral::MonteCarlo>(expression2);
-#ifdef __RUNTIME_PRINTING__
+#ifdef __RUNTIME_PRINTING
     std::cout << "\r\nIntegral expression: " << expression2.exprDescr << std::endl;
 #endif
     result = (*monteCarlo)(expression2.range1, expression2.range2, numeric::integral::epsilon);

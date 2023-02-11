@@ -3,6 +3,7 @@
 //! @brief The declarations (structural) in the design pattern module.
 //! @version 0.1
 //! @copyright Copyright (c) 2022-2023
+
 #pragma once
 
 //! @brief Structural-related functions in the design pattern module.

@@ -3,8 +3,9 @@
 //! @brief The definitions (creational) in the data structure module.
 //! @version 0.1
 //! @copyright Copyright (c) 2022-2023
+
 #include "creational.hpp"
-#ifdef __RUNTIME_PRINTING__
+#ifdef __RUNTIME_PRINTING
 #include "utility/include/common.hpp"
 
 //! @brief Display creational result.
@@ -28,7 +29,7 @@ namespace design_pattern::creational
 {
 CreationalPattern::CreationalPattern()
 {
-#ifdef __RUNTIME_PRINTING__
+#ifdef __RUNTIME_PRINTING
     std::cout << "\r\nInstances of the creational pattern:" << std::endl;
 #endif
 }

@@ -177,14 +177,14 @@ setCompileEnv()
     fi
 
     if [[ "${ENHANCED_DEV_CCACHE}" = true ]]; then
-        CMAKE_EXTRA_FLAG="${CMAKE_EXTRA_FLAG} -DTOOLCHAIN_CCACHE=ON"
+        CMAKE_EXTRA_FLAG="${CMAKE_EXTRA_FLAG} -D_TOOLCHAIN_CCACHE=ON"
         if [[ "${ENHANCED_DEV_DISTCC}" = true ]] \
             && command -v ccache >/dev/null 2>&1 && command -v distcc >/dev/null 2>&1; then
             export CCACHE_PREFIX=distcc
         fi
     fi
     if [[ "${ENHANCED_DEV_DISTCC}" = true ]]; then
-        CMAKE_EXTRA_FLAG="${CMAKE_EXTRA_FLAG} -DTOOLCHAIN_DISTCC=ON"
+        CMAKE_EXTRA_FLAG="${CMAKE_EXTRA_FLAG} -D_TOOLCHAIN_DISTCC=ON"
         if [[ -z "${DISTCC_HOSTS}" ]]; then
             export DISTCC_HOSTS=localhost
         fi

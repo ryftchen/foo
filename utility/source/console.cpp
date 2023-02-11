@@ -3,6 +3,7 @@
 //! @brief The definitions (console) in the utility module.
 //! @version 0.1
 //! @copyright Copyright (c) 2022-2023
+
 #include "console.hpp"
 #include <readline/readline.h>
 #include <fstream>

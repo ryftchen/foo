@@ -3,6 +3,7 @@
 //! @brief The declarations (tree) in the data structure module.
 //! @version 0.1
 //! @copyright Copyright (c) 2022-2023
+
 #pragma once
 
 #include <sstream>
