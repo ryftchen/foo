@@ -15,7 +15,7 @@
 
 #if defined(__clang__) || defined(__GNUC__)
 //! @brief The restrict type qualifier.
-#define restrict __restrict
+#define restrict __restrict // NOLINT(readability-identifier-naming)
 #endif
 
 //! @brief Sort-related functions in the algorithm module.
