@@ -16,12 +16,16 @@
 //! @brief The application module.
 namespace application
 {
-[[using gnu: constructor]] static void switchToTargetPath();
+volatile std::sig_atomic_t signalStatus = 0; // NOLINT(misc-definitions-in-headers)
 
-//! @brief Signal handler for SIGSEGV signal.
+[[using gnu: constructor]] static void init();
+[[using gnu: destructor]] static void fini();
+
+//! @brief Signal handler for SIGSEGV signal, etc.
 //! @param sig - signal type
 static void signalHandler(int sig)
 {
+    signalStatus = sig;
     void* callStack[128];
     const int maxFrame = sizeof(callStack) / sizeof(callStack[0]), numOfFrame = backtrace(callStack, maxFrame);
     char** symbols = backtrace_symbols(callStack, numOfFrame);
@@ -31,7 +35,6 @@ static void signalHandler(int sig)
     for (int i = 1; i < numOfFrame; ++i)
     {
         originalTrace << symbols[i] << "\n";
-
         Dl_info info;
         if (dladdr(callStack[i], &info) && info.dli_sname)
         {
@@ -71,19 +74,23 @@ static void signalHandler(int sig)
     {
         realTrace << "\r\n<TRUNCATED...>\n";
     }
-
     std::fprintf(
         stderr,
-        "\r\n<SIGNAL %d>\r\n<ORIGINAL BACKTRACE>\r\n%s\r\n<REAL BACKTRACE>\r\n%s\n",
+        "\r\n\r\n<SIGNAL %d>\r\n\r\n<BACKTRACE>\r\n%s\r\n<VERBOSE>\r\n%s\n",
         sig,
         originalTrace.str().c_str(),
         realTrace.str().c_str());
-    kill(getpid(), SIGKILL);
+
+    if (SIGINT != signalStatus)
+    {
+        kill(getpid(), SIGKILL);
+    }
 }
 
-//! @brief The constructor function before entering the main function for switching to the target path.
-static void switchToTargetPath()
+//! @brief The constructor function before starting the main function. Switch to the target path.
+static void init()
 {
+    std::signal(SIGABRT, signalHandler);
     std::signal(SIGSEGV, signalHandler);
     setenv("TERM", "linux", true);
     setenv("TERMINFO", "/etc/terminfo", true);
@@ -110,6 +117,15 @@ static void switchToTargetPath()
             std::exit(-1);
         }
         std::filesystem::current_path(homePath);
+    }
+}
+
+//! @brief The destructor function before finishing the main function. Check the signal status.
+static void fini()
+{
+    if (signalStatus)
+    {
+        std::fprintf(stdout, "Last signal ever received: signal %d.\n", signalStatus);
     }
 }
 } // namespace application
