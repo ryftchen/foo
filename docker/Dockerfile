@@ -1,14 +1,18 @@
 FROM ubuntu:20.04
 
+ENV FOO_ENV FOO_DEV
+
 SHELL ["/bin/bash", "-c"]
 
 RUN apt-get update \
 && DEBIAN_FRONTEND=noninteractive apt-get install -y sudo tzdata ca-certificates curl rsync zip \
 && sudo apt-get update \
-&& sudo apt-get install -y git python3 python3-pip build-essential cmake ninja-build gdb \
+&& sudo apt-get install -y git python3 python3-pip build-essential gdb cmake ninja-build ccache distcc \
 llvm-12 clang-12 libclang-12-dev libstdc++-10-dev libgtest-dev libreadline-dev libmpfrc++-dev \
 clang-format-12 clang-tidy-12 valgrind graphviz \
 && sudo apt-get clean \
+&& sudo update-ccache-symlinks \
+&& sudo update-distcc-symlinks \
 && sudo pip3 install -v requests pylint==2.15.5 black==22.10.0 shellcheck-py==0.8.0.4 shfmt-py==3.4.3.1 \
 compdb==0.2.0 ValgrindCI==0.2.0 \
 && cd /root \
@@ -18,7 +22,7 @@ compdb==0.2.0 ValgrindCI==0.2.0 \
 && make -C ./codebrowser/build -j \
 && sudo make -C ./codebrowser/build install \
 && rm -rf ./codebrowser \
-&& curl -L https://downloads.sourceforge.net/project/doxygen/rel-1.9.5/doxygen-1.9.5.linux.bin.tar.gz >doxygen-1.9.5.linux.bin.tar.gz \
+&& curl -L https://github.com/doxygen/doxygen/releases/download/Release_1_9_5/doxygen-1.9.5.linux.bin.tar.gz >doxygen-1.9.5.linux.bin.tar.gz \
 && tar -zxvf doxygen-1.9.5.linux.bin.tar.gz \
 && sudo make -C ./doxygen-1.9.5 install \
 && rm -rf ./doxygen-* \
