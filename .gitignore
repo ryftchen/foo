@@ -2,11 +2,12 @@
 .devcontainer/
 .vscode/
 build/
-document/browser
-document/doxygen
 temporary/
-script/__pycache__/
+browser/
+doxygen/
+__pycache__/
 
+.env
 core*
 vgcore*
 *.profraw
