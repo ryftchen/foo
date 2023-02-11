@@ -51,6 +51,7 @@ private:
     std::atomic<bool> isParsed{false};
     //! @brief A Argument object for parsing arguments.
     utility::argument::Argument program{utility::argument::Argument("foo", "0.1")};
+    static constexpr std::string_view copyrightInfo{"Copyright (c) 2022-2023 ryftchen."};
 
     //! @brief Foreground handler for parsing command line arguments.
     //! @param argc - argument count

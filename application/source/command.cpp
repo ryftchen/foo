@@ -487,7 +487,8 @@ void Command::printVersionInfo() const
     versionStr += getIconBanner();
     versionStr.pop_back();
     versionStr += "                    VERSION " + program.version;
-    versionStr += " \"; tput sgr0";
+    versionStr += " \"; tput sgr0; echo ";
+    versionStr += "\"" + std::string{copyrightInfo} + "\"";
 
     utility::common::executeCommand(versionStr.c_str());
 }
