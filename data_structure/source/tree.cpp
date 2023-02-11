@@ -3,9 +3,10 @@
 //! @brief The definitions (tree) in the data structure module.
 //! @version 0.1
 //! @copyright Copyright (c) 2022-2023
+
 #include "tree.hpp"
 #include <array>
-#ifdef __RUNTIME_PRINTING__
+#ifdef __RUNTIME_PRINTING
 #include "utility/include/common.hpp"
 
 //! @brief Display tree result.
@@ -916,7 +917,7 @@ void destroySplayTree(SplayTree tree)
 
 TreeStructure::TreeStructure()
 {
-#ifdef __RUNTIME_PRINTING__
+#ifdef __RUNTIME_PRINTING
     std::cout << "\r\nInstances of the tree structure:" << std::endl;
 #endif
 }

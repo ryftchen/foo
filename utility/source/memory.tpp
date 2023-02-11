@@ -3,6 +3,7 @@
 //! @brief The definitions (memory) in the utility module.
 //! @version 0.1
 //! @copyright Copyright (c) 2022-2023
+
 #pragma once
 
 #include "memory.hpp"

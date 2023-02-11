@@ -3,10 +3,11 @@
 //! @brief The definitions (linear) in the data structure module.
 //! @version 0.1
 //! @copyright Copyright (c) 2022-2023
+
 #include "linear.hpp"
 #include <iostream>
 #include <sstream>
-#ifdef __RUNTIME_PRINTING__
+#ifdef __RUNTIME_PRINTING
 #include "utility/include/common.hpp"
 
 //! @brief Display linear result.
@@ -322,7 +323,7 @@ typedef struct TagMeta
 
 LinearStructure::LinearStructure()
 {
-#ifdef __RUNTIME_PRINTING__
+#ifdef __RUNTIME_PRINTING
     std::cout << "\r\nInstances of the linear structure:" << std::endl;
 #endif
 }

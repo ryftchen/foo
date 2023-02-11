@@ -3,6 +3,7 @@
 //! @brief The definitions (main) in the test module.
 //! @version 0.1
 //! @copyright Copyright (c) 2022-2023
+
 #include <gtest/gtest.h>
 
 //! @brief The main function of the unit test.

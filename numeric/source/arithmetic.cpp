@@ -3,8 +3,9 @@
 //! @brief The definitions (arithmetic) in the numeric module.
 //! @version 0.1
 //! @copyright Copyright (c) 2022-2023
+
 #include "arithmetic.hpp"
-#ifdef __RUNTIME_PRINTING__
+#ifdef __RUNTIME_PRINTING
 #include "utility/include/common.hpp"
 
 //! @brief Display arithmetic result.
@@ -83,7 +84,7 @@ int ArithmeticSolution::divisionMethod(const int dividend, const int divisor)
 
 TargetBuilder::TargetBuilder(const int integer1, const int integer2) : integer1(integer1), integer2(integer2)
 {
-#ifdef __RUNTIME_PRINTING__
+#ifdef __RUNTIME_PRINTING
     std::cout << "\r\nElementary arithmetic of " << integer1 << " and " << integer2 << ":" << std::endl;
 #endif
 }

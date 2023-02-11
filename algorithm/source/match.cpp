@@ -3,10 +3,11 @@
 //! @brief The definitions (match) in the algorithm module.
 //! @version 0.1
 //! @copyright Copyright (c) 2022-2023
+
 #include "match.hpp"
 #include <mpfr.h>
 #include <cstring>
-#ifdef __RUNTIME_PRINTING__
+#ifdef __RUNTIME_PRINTING
 #include "utility/include/common.hpp"
 #include "utility/include/time.hpp"
 
@@ -354,7 +355,7 @@ void TargetBuilder::setMatchingText(char* text, const uint32_t textLen)
     assert('\0' != *text);
     text[textLen] = '\0';
 
-#ifdef __RUNTIME_PRINTING__
+#ifdef __RUNTIME_PRINTING
     std::string out(text);
     out.insert(1, ".");
     std::cout << "\r\nπ " << textLen << " digits:\r\n"

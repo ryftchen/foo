@@ -3,6 +3,7 @@
 //! @brief The definitions (apply_algorithm) in the application module.
 //! @version 0.1
 //! @copyright Copyright (c) 2022-2023
+
 #include "apply_algorithm.hpp"
 #include <variant>
 #include "algorithm/include/match.hpp"
@@ -297,7 +298,7 @@ void runOptimal(const std::vector<std::string>& targets)
     using input::Rastrigin;
     typedef std::variant<Griewank, Rastrigin> OptimalFuncTarget;
 
-#ifdef __RUNTIME_PRINTING__
+#ifdef __RUNTIME_PRINTING
     const auto printFunctor = [](const OptimalFuncTarget& function)
     {
         constexpr std::string_view prefix{"\r\nOptimal function: "};
@@ -377,7 +378,7 @@ void runOptimal(const std::vector<std::string>& targets)
             {{Rastrigin::range1, Rastrigin::range2, Rastrigin::funcDescr}, Rastrigin()}};
     for ([[maybe_unused]] const auto& [range, expression] : optimalFuncMap)
     {
-#ifdef __RUNTIME_PRINTING__
+#ifdef __RUNTIME_PRINTING
         printFunctor(expression);
 #endif
         switch (expression.index())

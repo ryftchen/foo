@@ -3,6 +3,7 @@
 //! @brief The declarations (log) in the utility module.
 //! @version 0.1
 //! @copyright Copyright (c) 2022-2023
+
 #pragma once
 
 #include <condition_variable>

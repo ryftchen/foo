@@ -3,9 +3,10 @@
 //! @brief The definitions (sort) in the algorithm module.
 //! @version 0.1
 //! @copyright Copyright (c) 2022-2023
+
 #include "sort.hpp"
 #include <queue>
-#ifdef __RUNTIME_PRINTING__
+#ifdef __RUNTIME_PRINTING
 #include "utility/include/common.hpp"
 #include "utility/include/time.hpp"
 
@@ -308,7 +309,7 @@ std::vector<T> SortSolution<T>::countingMethod(T* const array, const uint32_t le
 {
     if (!std::is_integral_v<T>)
     {
-#ifdef __RUNTIME_PRINTING__
+#ifdef __RUNTIME_PRINTING
         COMMON_PRINT("\r\n*Counting  method:\r\nThe array type isn't integral.\n");
 #endif
         return std::vector<T>();
@@ -395,7 +396,7 @@ std::vector<T> SortSolution<T>::radixMethod(T* const array, const uint32_t lengt
 {
     if (!std::is_integral_v<T>)
     {
-#ifdef __RUNTIME_PRINTING__
+#ifdef __RUNTIME_PRINTING
         COMMON_PRINT("\r\n*Radix     method:\r\nThe array type isn't integral.\n");
 #endif
         return std::vector<T>();

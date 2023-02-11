@@ -3,9 +3,10 @@
 //! @brief The definitions (notation) in the algorithm module.
 //! @version 0.1
 //! @copyright Copyright (c) 2022-2023
+
 #include "notation.hpp"
 #include <stack>
-#ifdef __RUNTIME_PRINTING__
+#ifdef __RUNTIME_PRINTING
 #include "utility/include/common.hpp"
 
 //! @brief Display notation result.
@@ -117,7 +118,7 @@ NotationSolution::Priority NotationSolution::getPriority(const char c)
 
 TargetBuilder::TargetBuilder(const std::string_view infixNotation) : infixNotation(infixNotation)
 {
-#ifdef __RUNTIME_PRINTING__
+#ifdef __RUNTIME_PRINTING
     std::cout << "\r\nInfix notation: " << infixNotation << std::endl;
 #endif
 }

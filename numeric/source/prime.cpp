@@ -3,8 +3,9 @@
 //! @brief The definitions (prime) in the numeric module.
 //! @version 0.1
 //! @copyright Copyright (c) 2022-2023
+
 #include "prime.hpp"
-#ifdef __RUNTIME_PRINTING__
+#ifdef __RUNTIME_PRINTING
 #include "utility/include/common.hpp"
 #include "utility/include/time.hpp"
 
@@ -99,7 +100,7 @@ std::vector<uint32_t> PrimeSolution::eulerMethod(const uint32_t max)
 
 TargetBuilder::TargetBuilder(const uint32_t maxPositiveInteger) : maxPositiveInteger(maxPositiveInteger)
 {
-#ifdef __RUNTIME_PRINTING__
+#ifdef __RUNTIME_PRINTING
     std::cout << "\r\nAll prime numbers smaller than " << maxPositiveInteger << ":" << std::endl;
 #endif
 }
