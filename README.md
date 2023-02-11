@@ -26,7 +26,7 @@ The **Foo** is a personal roadmap for learning programming. Its main purpose is 
 
     ```bash
     docker pull ryftchen/foo:latest
-    docker run -it --name foo_dev -d ryftchen/foo:latest /bin/bash
+    docker run -it --name foo_dev -d --privileged ryftchen/foo:latest /bin/bash
     docker exec -it foo_dev /bin/bash
     ```
 
