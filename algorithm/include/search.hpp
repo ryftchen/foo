@@ -13,6 +13,11 @@
 #include <mutex>
 #include <random>
 
+#if defined(__clang__) || defined(__GNUC__)
+//! @brief The restrict type qualifier.
+#define restrict __restrict
+#endif
+
 //! @brief Search-related functions in the algorithm module.
 namespace algorithm::search
 {
@@ -95,6 +100,19 @@ public:
     //! @brief Get the search key.
     //! @return T search key
     inline T getSearchKey() const;
+    //! @brief Format array for printing.
+    //! @tparam V - type of array
+    //! @param array - array to be formatted
+    //! @param length - length of array
+    //! @param buffer - buffer for filling the formatted array
+    //! @param bufferSize - size of buffer
+    //! @return buffer after format
+    template <typename V>
+    requires(isNumber<V>()) static char* formatArray(
+        const T* const restrict array,
+        const uint32_t length,
+        char* const restrict buffer,
+        const uint32_t bufferSize);
 
 private:
     //! @brief Ordered array.
@@ -131,22 +149,9 @@ private:
         const uint32_t length,
         const T left,
         const T right);
-    //! @brief Format array for printing.
-    //! @tparam V - type of array
-    //! @param array - array to be formatted
-    //! @param length - length of array
-    //! @param buffer - buffer for filling the formatted array
-    //! @param bufferSize - size of buffer
-    //! @return buffer after format
-    template <typename V>
-    requires(isNumber<V>()) static char* formatArray(
-        const T* const array,
-        const uint32_t length,
-        char* const buffer,
-        const uint32_t bufferSize);
     //! @brief Get the random seed by time.
     //! @return random seed
-    inline static std::mt19937 getRandomSeedByTime();
+    static inline std::mt19937 getRandomSeedByTime();
 };
 
 template <class T>
@@ -188,6 +193,55 @@ template <class T>
 inline T TargetBuilder<T>::getSearchKey() const
 {
     return searchKey;
+}
+
+template <class T>
+template <typename V>
+requires(isNumber<V>()) char* TargetBuilder<T>::formatArray(
+    const T* const restrict array,
+    const uint32_t length,
+    char* const restrict buffer,
+    const uint32_t bufferSize)
+{
+    uint32_t align = 0;
+    for (uint32_t i = 0; i < length; ++i)
+    {
+        align = std::max(static_cast<uint32_t>(std::to_string(*(array + i)).length()), align);
+    }
+
+    const char* format = " ";
+    if constexpr (std::is_integral<T>::value)
+    {
+        format = "%*d ";
+    }
+    else if constexpr (std::is_floating_point<T>::value)
+    {
+        format = "%*.5f ";
+    }
+
+    int formatSize = 0;
+    uint32_t completeSize = 0;
+    for (uint32_t i = 0; i < length; ++i)
+    {
+        formatSize = std::snprintf(buffer + completeSize, bufferSize - completeSize, format, align + 1, *(array + i));
+        if ((formatSize < 0) || (formatSize >= static_cast<int>(bufferSize - completeSize)))
+        {
+            break;
+        }
+        completeSize += formatSize;
+
+        if ((0 == (i + 1) % maxColumnOfPrint) && ((i + 1) != length))
+        {
+            formatSize = std::snprintf(buffer + completeSize, bufferSize - completeSize, "\n");
+            if ((formatSize < 0) || (formatSize >= static_cast<int>(bufferSize - completeSize)))
+            {
+                break;
+            }
+            completeSize += formatSize;
+        }
+    }
+
+    return buffer;
 }
 
 template <class T>
@@ -250,55 +304,6 @@ requires std::is_floating_point<V>::value void TargetBuilder<T>::setOrderedArray
 }
 
 template <class T>
-template <typename V>
-requires(isNumber<V>()) char* TargetBuilder<T>::formatArray(
-    const T* const array,
-    const uint32_t length,
-    char* const buffer,
-    const uint32_t bufferSize)
-{
-    uint32_t align = 0;
-    for (uint32_t i = 0; i < length; ++i)
-    {
-        align = std::max(static_cast<uint32_t>(std::to_string(*(array + i)).length()), align);
-    }
-
-    const char* format = " ";
-    if constexpr (std::is_integral<T>::value)
-    {
-        format = "%*d ";
-    }
-    else if constexpr (std::is_floating_point<T>::value)
-    {
-        format = "%*.5f ";
-    }
-
-    int formatSize = 0;
-    uint32_t completeSize = 0;
-    for (uint32_t i = 0; i < length; ++i)
-    {
-        formatSize = std::snprintf(buffer + completeSize, bufferSize - completeSize, format, align + 1, *(array + i));
-        if ((formatSize < 0) || (formatSize >= static_cast<int>(bufferSize - completeSize)))
-        {
-            break;
-        }
-        completeSize += formatSize;
-
-        if ((0 == (i + 1) % maxColumnOfPrint) && ((i + 1) != length))
-        {
-            formatSize = std::snprintf(buffer + completeSize, bufferSize - completeSize, "\n");
-            if ((formatSize < 0) || (formatSize >= static_cast<int>(bufferSize - completeSize)))
-            {
-                break;
-            }
-            completeSize += formatSize;
-        }
-    }
-
-    return buffer;
-}
-
-template <class T>
 inline std::mt19937 TargetBuilder<T>::getRandomSeedByTime()
 {
     constexpr uint32_t secToUsec = 1000000;
@@ -308,3 +313,5 @@ inline std::mt19937 TargetBuilder<T>::getRandomSeedByTime()
     return std::mt19937(timeSeed.tv_sec * secToUsec + timeSeed.tv_usec);
 }
 } // namespace algorithm::search
+
+#undef restrict

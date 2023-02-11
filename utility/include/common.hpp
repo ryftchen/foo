@@ -73,13 +73,6 @@ enum class FileLockType
     writerLock
 };
 
-//! @brief Throw an exception when calling system API.
-//! @param api - system API name
-inline void throwCallSystemAPIException(const std::string& api)
-{
-    throw std::runtime_error("common: Failed to call the system API: " + api + ".");
-}
-
 //! @brief Throw an exception when operating the lock.
 //! @param name - filename
 //! @param lockOperation - lock operation type

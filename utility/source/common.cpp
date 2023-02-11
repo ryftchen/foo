@@ -18,7 +18,7 @@ void executeCommand(const char* const cmd)
     FILE* file = popen(cmd, "r");
     if (nullptr == file)
     {
-        throwCallSystemAPIException("popen()");
+        throw std::runtime_error("common: Failed to call the system API: popen().");
     }
 
     char resultBuffer[maxBufferSize + 1] = {'\0'};
@@ -34,7 +34,7 @@ void executeCommand(const char* const cmd)
     const int status = pclose(file);
     if (-1 == status)
     {
-        throwCallSystemAPIException("pclose()");
+        throw std::runtime_error("common: Failed to call the system API: pclose().");
     }
     else if (WIFEXITED(status))
     {
@@ -71,6 +71,7 @@ void printFile(const char* const pathname, const bool reverse, const uint32_t ma
 
     std::string line;
     std::list<std::string> content(0);
+    file.seekg(std::ios::beg);
     if (!reverse)
     {
         while ((content.size() < maxLine) && std::getline(file, line))
@@ -80,18 +81,18 @@ void printFile(const char* const pathname, const bool reverse, const uint32_t ma
     }
     else
     {
-        std::ifstream fileTmp(pathname);
-        uint32_t lineNum = std::count(std::istreambuf_iterator<char>(fileTmp), std::istreambuf_iterator<char>(), '\n'),
-                 startLine = (lineNum > maxLine) ? (lineNum - maxLine + 1) : 1, currentLine = 0;
+        std::ifstream statistics(pathname);
+        const uint32_t lineNum = std::count(
+                           std::istreambuf_iterator<char>(statistics), std::istreambuf_iterator<char>(), '\n'),
+                       startLine = (lineNum > maxLine) ? (lineNum - maxLine + 1) : 1;
+        for (uint32_t i = 0; i < (startLine - 1); ++i)
+        {
+            file.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        }
         while (std::getline(file, line))
         {
-            ++currentLine;
-            if (currentLine >= startLine)
-            {
-                content.emplace_front(formatStyle(line));
-            }
+            content.emplace_front(formatStyle(line));
         }
-        assert(maxLine >= content.size());
     }
     std::copy(content.cbegin(), content.cend(), std::ostream_iterator<std::string>(std::cout, "\n"));
 

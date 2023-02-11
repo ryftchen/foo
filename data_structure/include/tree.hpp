@@ -16,18 +16,21 @@ namespace bs
 {
 //! @brief Alias for the type of key in the node of the binary search tree.
 typedef int Type;
-//! @brief The node of the binary search tree.
-typedef struct BSTreeNode
+extern "C"
 {
-    //! @brief Key value. Sort usage.
-    Type key;
-    //! @brief Pointer to the left child node.
-    struct BSTreeNode* left;
-    //! @brief Pointer to the right child node.
-    struct BSTreeNode* right;
-    //! @brief Pointer to the parent node.
-    struct BSTreeNode* parent;
-} Node, *BSTree;
+    //! @brief The node of the binary search tree.
+    typedef struct BSTreeNode
+    {
+        //! @brief Key value. Sort usage.
+        Type key;
+        //! @brief Pointer to the left child node.
+        struct BSTreeNode* left;
+        //! @brief Pointer to the right child node.
+        struct BSTreeNode* right;
+        //! @brief Pointer to the parent node.
+        struct BSTreeNode* parent;
+    } Node, *BSTree;
+}
 
 //! @brief Output stream for the binary search tree structure. Need to be cleared manually.
 //! @return reference of output stream object, which is on string based.
@@ -107,18 +110,21 @@ namespace avl
 {
 //! @brief Alias for the type of key in the node of the AVL tree.
 typedef int Type;
-//! @brief The node of the AVL tree.
-typedef struct AVLTreeNode
+extern "C"
 {
-    //! @brief Key value. Sort usage.
-    Type key;
-    //! @brief The height of an empty tree is 0, and the height of a non-empty tree is equal to its maximum level.
-    int height;
-    //! @brief Pointer to the left child node.
-    struct AVLTreeNode* left;
-    //! @brief Pointer to the right child node.
-    struct AVLTreeNode* right;
-} Node, *AVLTree;
+    //! @brief The node of the AVL tree.
+    typedef struct AVLTreeNode
+    {
+        //! @brief Key value. Sort usage.
+        Type key;
+        //! @brief The height of an empty tree is 0, and the height of a non-empty tree is equal to its maximum level.
+        int height;
+        //! @brief Pointer to the left child node.
+        struct AVLTreeNode* left;
+        //! @brief Pointer to the right child node.
+        struct AVLTreeNode* right;
+    } Node, *AVLTree;
+}
 
 //! @brief Output stream for the AVL tree structure. Need to be cleared manually.
 //! @return reference of output stream object, which is on string based.
@@ -202,16 +208,19 @@ namespace splay
 {
 //! @brief Alias for the type of key in the node of the splay tree.
 typedef int Type;
-//! @brief The node of the splay tree.
-typedef struct SplayTreeNode
+extern "C"
 {
-    //! @brief Key value. Sort usage.
-    Type key;
-    //! @brief Pointer to the left child node.
-    struct SplayTreeNode* left;
-    //! @brief Pointer to the right child node.
-    struct SplayTreeNode* right;
-} Node, *SplayTree;
+    //! @brief The node of the splay tree.
+    typedef struct SplayTreeNode
+    {
+        //! @brief Key value. Sort usage.
+        Type key;
+        //! @brief Pointer to the left child node.
+        struct SplayTreeNode* left;
+        //! @brief Pointer to the right child node.
+        struct SplayTreeNode* right;
+    } Node, *SplayTree;
+}
 
 //! @brief Output stream for the splay tree structure. Need to be cleared manually.
 //! @return reference of output stream object, which is on string based.

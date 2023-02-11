@@ -312,14 +312,17 @@ bool queueIsEmpty(Queue pHead)
 }
 } // namespace queue
 
-//! @brief Metadata, which is used in the instance.
-typedef struct TagMeta
+extern "C"
 {
-    //! @brief The ID of metadata.
-    int id;
-    //! @brief The name of metadata.
-    char name[4];
-} Meta;
+    //! @brief Metadata, which is used in the instance.
+    typedef struct TagMeta
+    {
+        //! @brief The ID of metadata.
+        int id;
+        //! @brief The name of metadata.
+        char name[4];
+    } Meta;
+}
 
 LinearStructure::LinearStructure()
 {
