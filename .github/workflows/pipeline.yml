@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: ryftchen/foo:latest
-      options: --privileged
+      options: --privileged --user root
 
     permissions:
       actions: read
