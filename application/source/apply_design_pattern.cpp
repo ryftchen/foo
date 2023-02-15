@@ -75,7 +75,7 @@ void runBehavioral(const std::vector<std::string>& targets)
         threads->enqueue(threadName, instancePtr, pattern);
     };
 
-    for (int i = 0; i < Bottom<BehavioralInstance>::value; ++i)
+    for (uint8_t i = 0; i < Bottom<BehavioralInstance>::value; ++i)
     {
         if (!getBit<BehavioralInstance>().test(BehavioralInstance(i)))
         {
@@ -197,7 +197,7 @@ void runCreational(const std::vector<std::string>& targets)
         threads->enqueue(threadName, instancePtr, pattern);
     };
 
-    for (int i = 0; i < Bottom<CreationalInstance>::value; ++i)
+    for (uint8_t i = 0; i < Bottom<CreationalInstance>::value; ++i)
     {
         if (!getBit<CreationalInstance>().test(CreationalInstance(i)))
         {
@@ -283,7 +283,7 @@ void runStructural(const std::vector<std::string>& targets)
         threads->enqueue(threadName, instancePtr, pattern);
     };
 
-    for (int i = 0; i < Bottom<StructuralInstance>::value; ++i)
+    for (uint8_t i = 0; i < Bottom<StructuralInstance>::value; ++i)
     {
         if (!getBit<StructuralInstance>().test(StructuralInstance(i)))
         {

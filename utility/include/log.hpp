@@ -105,13 +105,13 @@ public:
 
     friend class FSM<Log>;
     //! @brief Enumerate specific output types.
-    enum class OutputType
+    enum class OutputType : uint8_t
     {
         add,
         over
     };
     //! @brief Enumerate specific output levels.
-    enum class OutputLevel
+    enum class OutputLevel : uint8_t
     {
         debug,
         info,
@@ -119,14 +119,14 @@ public:
         error
     };
     //! @brief Enumerate specific output targets.
-    enum class OutputTarget
+    enum class OutputTarget : uint8_t
     {
         file,
         terminal,
         all
     };
     //! @brief Enumerate specific states for FSM.
-    enum State
+    enum State : uint8_t
     {
         init,
         idle,

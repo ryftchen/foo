@@ -60,14 +60,14 @@ constexpr uint32_t maxLineNumForPrintFile = 1000;
 constexpr uint32_t maxBufferSize = 4096;
 
 //! @brief Enumerate specific lock operation types.
-enum class LockOperationType
+enum class LockOperationType : uint8_t
 {
     lock,
     unlock
 };
 
 //! @brief Enumerate specific file lock types.
-enum class FileLockType
+enum class FileLockType : uint8_t
 {
     readerLock,
     writerLock

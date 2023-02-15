@@ -154,7 +154,7 @@ void runMatch(const std::vector<std::string>& targets)
             builder->getSinglePattern().length());
     };
 
-    for (int i = 0; i < Bottom<MatchMethod>::value; ++i)
+    for (uint8_t i = 0; i < Bottom<MatchMethod>::value; ++i)
     {
         if (!getBit<MatchMethod>().test(MatchMethod(i)))
         {
@@ -240,7 +240,7 @@ void runNotation(const std::vector<std::string>& targets)
         threads->enqueue(threadName, methodPtr, std::string{builder->getInfixNotation()});
     };
 
-    for (int i = 0; i < Bottom<NotationMethod>::value; ++i)
+    for (uint8_t i = 0; i < Bottom<NotationMethod>::value; ++i)
     {
         if (!getBit<NotationMethod>().test(NotationMethod(i)))
         {
@@ -337,7 +337,7 @@ void runOptimal(const std::vector<std::string>& targets)
         };
 
         using utility::hash::operator""_bkdrHash;
-        for (int i = 0; i < Bottom<OptimalMethod>::value; ++i)
+        for (uint8_t i = 0; i < Bottom<OptimalMethod>::value; ++i)
         {
             if (!getBit<OptimalMethod>().test(OptimalMethod(i)))
             {
@@ -451,7 +451,7 @@ void runSearch(const std::vector<std::string>& targets)
             threadName, methodPtr, builder->getOrderedArray().get(), builder->getLength(), builder->getSearchKey());
     };
 
-    for (int i = 0; i < Bottom<SearchMethod>::value; ++i)
+    for (uint8_t i = 0; i < Bottom<SearchMethod>::value; ++i)
     {
         if (!getBit<SearchMethod>().test(SearchMethod(i)))
         {
@@ -531,7 +531,7 @@ void runSort(const std::vector<std::string>& targets)
         threads->enqueue(threadName, methodPtr, builder->getRandomArray().get(), builder->getLength());
     };
 
-    for (int i = 0; i < Bottom<SortMethod>::value; ++i)
+    for (uint8_t i = 0; i < Bottom<SortMethod>::value; ++i)
     {
         if (!getBit<SortMethod>().test(SortMethod(i)))
         {

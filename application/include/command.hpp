@@ -80,7 +80,7 @@ private:
         struct Bottom;
 
         //! @brief Enumerate specific basic tasks.
-        enum Category
+        enum Category : uint8_t
         {
             console,
             help,
@@ -90,7 +90,7 @@ private:
         template <>
         struct Bottom<Category>
         {
-            static constexpr int value = 3;
+            static constexpr uint8_t value = 3;
         };
 
         //! @brief Bit flags for managing basic tasks.
@@ -113,7 +113,7 @@ private:
         struct Bottom;
 
         //! @brief Enumerate specific general tasks.
-        enum Category
+        enum Category : uint8_t
         {
             algorithm,
             dataStructure,
@@ -124,7 +124,7 @@ private:
         template <>
         struct Bottom<Category>
         {
-            static constexpr int value = 4;
+            static constexpr uint8_t value = 4;
         };
 
         //! @brief Check whether any general tasks do not exist.
