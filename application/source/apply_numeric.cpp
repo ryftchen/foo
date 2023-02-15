@@ -132,7 +132,7 @@ void runArithmetic(const std::vector<std::string>& targets)
             threadName, methodPtr, std::get<0>(builder->getIntegers()), std::get<1>(builder->getIntegers()));
     };
 
-    for (int i = 0; i < Bottom<ArithmeticMethod>::value; ++i)
+    for (uint8_t i = 0; i < Bottom<ArithmeticMethod>::value; ++i)
     {
         if (!getBit<ArithmeticMethod>().test(ArithmeticMethod(i)))
         {
@@ -214,7 +214,7 @@ void runDivisor(const std::vector<std::string>& targets)
             threadName, methodPtr, std::get<0>(builder->getIntegers()), std::get<1>(builder->getIntegers()));
     };
 
-    for (int i = 0; i < Bottom<DivisorMethod>::value; ++i)
+    for (uint8_t i = 0; i < Bottom<DivisorMethod>::value; ++i)
     {
         if (!getBit<DivisorMethod>().test(DivisorMethod(i)))
         {
@@ -311,7 +311,7 @@ void runIntegral(const std::vector<std::string>& targets)
         };
 
         using utility::hash::operator""_bkdrHash;
-        for (int i = 0; i < Bottom<IntegralMethod>::value; ++i)
+        for (uint8_t i = 0; i < Bottom<IntegralMethod>::value; ++i)
         {
             if (!getBit<IntegralMethod>().test(IntegralMethod(i)))
             {
@@ -424,7 +424,7 @@ void runPrime(const std::vector<std::string>& targets)
         threads->enqueue(threadName, methodPtr, builder->getMaxPositiveInteger());
     };
 
-    for (int i = 0; i < Bottom<PrimeMethod>::value; ++i)
+    for (uint8_t i = 0; i < Bottom<PrimeMethod>::value; ++i)
     {
         if (!getBit<PrimeMethod>().test(PrimeMethod(i)))
         {

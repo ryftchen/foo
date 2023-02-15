@@ -161,7 +161,7 @@ constexpr decltype(auto) applyScopedOne(Function&& func, Tuple&& tup, Extra&& ex
 }
 
 //! @brief Enumerate specific argument patterns.
-enum class NArgsPattern
+enum class NArgsPattern : uint8_t
 {
     optional,
     any,

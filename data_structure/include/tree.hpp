@@ -16,8 +16,10 @@ namespace bs
 {
 //! @brief Alias for the type of key in the node of the binary search tree.
 typedef int Type;
+#ifdef __cplusplus
 extern "C"
 {
+#endif
     //! @brief The node of the binary search tree.
     typedef struct BSTreeNode
     {
@@ -30,7 +32,9 @@ extern "C"
         //! @brief Pointer to the parent node.
         struct BSTreeNode* parent;
     } Node, *BSTree;
+#ifdef __cplusplus
 }
+#endif
 
 //! @brief Output stream for the binary search tree structure. Need to be cleared manually.
 //! @return reference of output stream object, which is on string based.
@@ -110,8 +114,10 @@ namespace avl
 {
 //! @brief Alias for the type of key in the node of the AVL tree.
 typedef int Type;
+#ifdef __cplusplus
 extern "C"
 {
+#endif
     //! @brief The node of the AVL tree.
     typedef struct AVLTreeNode
     {
@@ -124,7 +130,9 @@ extern "C"
         //! @brief Pointer to the right child node.
         struct AVLTreeNode* right;
     } Node, *AVLTree;
+#ifdef __cplusplus
 }
+#endif
 
 //! @brief Output stream for the AVL tree structure. Need to be cleared manually.
 //! @return reference of output stream object, which is on string based.
@@ -208,8 +216,10 @@ namespace splay
 {
 //! @brief Alias for the type of key in the node of the splay tree.
 typedef int Type;
+#ifdef __cplusplus
 extern "C"
 {
+#endif
     //! @brief The node of the splay tree.
     typedef struct SplayTreeNode
     {
@@ -220,7 +230,9 @@ extern "C"
         //! @brief Pointer to the right child node.
         struct SplayTreeNode* right;
     } Node, *SplayTree;
+#ifdef __cplusplus
 }
+#endif
 
 //! @brief Output stream for the splay tree structure. Need to be cleared manually.
 //! @return reference of output stream object, which is on string based.

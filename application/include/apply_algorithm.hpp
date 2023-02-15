@@ -23,7 +23,7 @@ public:
     struct Bottom;
 
     //! @brief Enumerate specific algorithm tasks.
-    enum Type
+    enum Type : uint8_t
     {
         match,
         notation,
@@ -33,7 +33,7 @@ public:
     };
 
     //! @brief Enumerate specific match methods.
-    enum MatchMethod
+    enum MatchMethod : uint8_t
     {
         rabinKarp,
         knuthMorrisPratt,
@@ -45,11 +45,11 @@ public:
     template <>
     struct Bottom<MatchMethod>
     {
-        static constexpr int value = 5;
+        static constexpr uint8_t value = 5;
     };
 
     //! @brief Enumerate specific notation methods.
-    enum NotationMethod
+    enum NotationMethod : uint8_t
     {
         prefix,
         postfix
@@ -58,11 +58,11 @@ public:
     template <>
     struct Bottom<NotationMethod>
     {
-        static constexpr int value = 2;
+        static constexpr uint8_t value = 2;
     };
 
     //! @brief Enumerate specific optimal methods.
-    enum OptimalMethod
+    enum OptimalMethod : uint8_t
     {
         gradient,
         annealing,
@@ -73,11 +73,11 @@ public:
     template <>
     struct Bottom<OptimalMethod>
     {
-        static constexpr int value = 4;
+        static constexpr uint8_t value = 4;
     };
 
     //! @brief Enumerate specific search methods.
-    enum SearchMethod
+    enum SearchMethod : uint8_t
     {
         binary,
         interpolation,
@@ -87,11 +87,11 @@ public:
     template <>
     struct Bottom<SearchMethod>
     {
-        static constexpr int value = 3;
+        static constexpr uint8_t value = 3;
     };
 
     //! @brief Enumerate specific sort methods.
-    enum SortMethod
+    enum SortMethod : uint8_t
     {
         bubble,
         selection,
@@ -108,7 +108,7 @@ public:
     template <>
     struct Bottom<SortMethod>
     {
-        static constexpr int value = 10;
+        static constexpr uint8_t value = 10;
     };
 
     //! @brief Bit flags for managing match methods.

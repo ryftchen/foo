@@ -23,7 +23,7 @@ public:
     struct Bottom;
 
     //! @brief Enumerate specific design pattern tasks.
-    enum Type
+    enum Type : uint8_t
     {
         behavioral,
         creational,
@@ -31,7 +31,7 @@ public:
     };
 
     //! @brief Enumerate specific behavioral instances.
-    enum BehavioralInstance
+    enum BehavioralInstance : uint8_t
     {
         chainOfResponsibility,
         command,
@@ -49,11 +49,11 @@ public:
     template <>
     struct Bottom<BehavioralInstance>
     {
-        static constexpr int value = 11;
+        static constexpr uint8_t value = 11;
     };
 
     //! @brief Enumerate specific creational instances.
-    enum CreationalInstance
+    enum CreationalInstance : uint8_t
     {
         abstractFactory,
         builder,
@@ -65,11 +65,11 @@ public:
     template <>
     struct Bottom<CreationalInstance>
     {
-        static constexpr int value = 5;
+        static constexpr uint8_t value = 5;
     };
 
     //! @brief Enumerate specific structural instances.
-    enum StructuralInstance
+    enum StructuralInstance : uint8_t
     {
         adapter,
         bridge,
@@ -83,7 +83,7 @@ public:
     template <>
     struct Bottom<StructuralInstance>
     {
-        static constexpr int value = 7;
+        static constexpr uint8_t value = 7;
     };
 
     //! @brief Bit flags for managing behavioral instances.

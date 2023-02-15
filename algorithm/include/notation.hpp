@@ -29,7 +29,7 @@ public:
 
 private:
     //! @brief Enumerate specific operator priorities.
-    enum class Priority
+    enum class Priority : uint8_t
     {
         none,
         low,

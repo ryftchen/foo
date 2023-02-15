@@ -23,7 +23,7 @@ public:
     struct Bottom;
 
     //! @brief Enumerate specific numeric tasks.
-    enum Type
+    enum Type : uint8_t
     {
         arithmetic,
         divisor,
@@ -32,7 +32,7 @@ public:
     };
 
     //! @brief Enumerate specific arithmetic methods.
-    enum ArithmeticMethod
+    enum ArithmeticMethod : uint8_t
     {
         addition,
         subtraction,
@@ -43,11 +43,11 @@ public:
     template <>
     struct Bottom<ArithmeticMethod>
     {
-        static constexpr int value = 4;
+        static constexpr uint8_t value = 4;
     };
 
     //! @brief Enumerate specific divisor methods.
-    enum DivisorMethod
+    enum DivisorMethod : uint8_t
     {
         euclidean,
         stein
@@ -56,11 +56,11 @@ public:
     template <>
     struct Bottom<DivisorMethod>
     {
-        static constexpr int value = 2;
+        static constexpr uint8_t value = 2;
     };
 
     //! @brief Enumerate specific integral methods.
-    enum IntegralMethod
+    enum IntegralMethod : uint8_t
     {
         trapezoidal,
         simpson,
@@ -72,11 +72,11 @@ public:
     template <>
     struct Bottom<IntegralMethod>
     {
-        static constexpr int value = 5;
+        static constexpr uint8_t value = 5;
     };
 
     //! @brief Enumerate specific prime methods.
-    enum PrimeMethod
+    enum PrimeMethod : uint8_t
     {
         eratosthenes,
         euler
@@ -85,7 +85,7 @@ public:
     template <>
     struct Bottom<PrimeMethod>
     {
-        static constexpr int value = 2;
+        static constexpr uint8_t value = 2;
     };
 
     //! @brief Bit flags for managing arithmetic methods.

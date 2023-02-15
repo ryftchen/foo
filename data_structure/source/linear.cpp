@@ -312,8 +312,10 @@ bool queueIsEmpty(Queue pHead)
 }
 } // namespace queue
 
+#ifdef __cplusplus
 extern "C"
 {
+#endif
     //! @brief Metadata, which is used in the instance.
     typedef struct TagMeta
     {
@@ -322,7 +324,9 @@ extern "C"
         //! @brief The name of metadata.
         char name[4];
     } Meta;
+#ifdef __cplusplus
 }
+#endif
 
 LinearStructure::LinearStructure()
 {

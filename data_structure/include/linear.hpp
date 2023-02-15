@@ -12,8 +12,10 @@ namespace date_structure::linear
 //! @brief The doubly linked list structure.
 namespace doubly_linked_list
 {
+#ifdef __cplusplus
 extern "C"
 {
+#endif
     //! @brief The node of the doubly linked list.
     typedef struct TagNode
     {
@@ -24,7 +26,9 @@ extern "C"
         //! @brief Pointer to node content.
         void* p;
     } Node, *DLL;
+#ifdef __cplusplus
 }
+#endif
 
 //! @brief Create a node of the doubly linked list.
 //! @param pVal - value of the target node

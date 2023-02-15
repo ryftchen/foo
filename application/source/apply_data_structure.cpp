@@ -71,7 +71,7 @@ void runLinear(const std::vector<std::string>& targets)
         threads->enqueue(threadName, instancePtr, structure);
     };
 
-    for (int i = 0; i < Bottom<LinearInstance>::value; ++i)
+    for (uint8_t i = 0; i < Bottom<LinearInstance>::value; ++i)
     {
         if (!getBit<LinearInstance>().test(LinearInstance(i)))
         {
@@ -144,7 +144,7 @@ void runTree(const std::vector<std::string>& targets)
         threads->enqueue(threadName, instancePtr, structure);
     };
 
-    for (int i = 0; i < Bottom<TreeInstance>::value; ++i)
+    for (uint8_t i = 0; i < Bottom<TreeInstance>::value; ++i)
     {
         if (!getBit<TreeInstance>().test(TreeInstance(i)))
         {
