@@ -24,9 +24,9 @@
 namespace utility::time
 {
 //! @brief Length of time format.
-constexpr uint32_t dateLength = 32;
+constexpr uint16_t dateLength = 32;
 //! @brief Start year of time format.
-constexpr uint32_t dateStartYear = 1900;
+constexpr uint16_t dateStartYear = 1900;
 //! @brief Multiplier from the second to the millisecond.
 constexpr uint32_t secToUsec = 1000000;
 

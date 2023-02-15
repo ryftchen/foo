@@ -13,9 +13,9 @@
 namespace numeric::prime
 {
 //! @brief Maximum alignment length per element of printing.
-constexpr uint32_t maxAlignOfPrint = 16;
+constexpr uint8_t maxAlignOfPrint = 16;
 //! @brief Maximum columns per row of printing.
-constexpr uint32_t maxColumnOfPrint = 10;
+constexpr uint8_t maxColumnOfPrint = 10;
 
 //! @brief Solution of prime.
 class PrimeSolution

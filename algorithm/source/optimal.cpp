@@ -233,9 +233,8 @@ Genetic::Genetic(const function::Function& func) : func(func), seed(std::random_
 std::optional<std::tuple<ValueY, ValueX>> Genetic::operator()(const double left, const double right, const double eps)
 {
     OPTIMAL_RUNTIME_BEGIN;
-    constexpr uint32_t minChrNum = 3;
     updateSpecies(left, right, eps);
-    if (chrNum < minChrNum)
+    if (constexpr uint32_t minChrNum = 3; chrNum < minChrNum)
     {
 #ifdef __RUNTIME_PRINTING
         COMMON_PRINT("*Genetic   method: A precision of %.5f isn't sufficient.\n", eps);

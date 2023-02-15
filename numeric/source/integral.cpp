@@ -61,7 +61,7 @@ Trapezoidal::Trapezoidal(const expression::Expression& expr) : expr(expr)
 double Trapezoidal::operator()(double lower, double upper, const double eps) const
 {
     INTEGRAL_RUNTIME_BEGIN;
-    const int sign = IntegralSolution::getSign(lower, upper);
+    const int sign = getSign(lower, upper);
     const uint32_t minStep = std::pow(2, 3);
     const double height = upper - lower;
     double sum = 0.0, s1 = 0.0, s2 = 0.0;
@@ -89,7 +89,7 @@ Simpson::Simpson(const expression::Expression& expr) : expr(expr)
 double Simpson::operator()(double lower, double upper, const double eps) const
 {
     INTEGRAL_RUNTIME_BEGIN;
-    const int sign = IntegralSolution::getSign(lower, upper);
+    const int sign = getSign(lower, upper);
 
     double sum = simpsonIntegral(lower, upper, eps);
     sum *= sign;
@@ -133,7 +133,7 @@ Romberg::Romberg(const expression::Expression& expr) : expr(expr)
 double Romberg::operator()(double lower, double upper, const double eps) const
 {
     INTEGRAL_RUNTIME_BEGIN;
-    const int sign = IntegralSolution::getSign(lower, upper);
+    const int sign = getSign(lower, upper);
     uint32_t k = 0;
     double sum = 0.0;
     const double height = upper - lower;
@@ -170,7 +170,7 @@ Gauss::Gauss(const expression::Expression& expr) : expr(expr)
 double Gauss::operator()(double lower, double upper, const double eps) const
 {
     INTEGRAL_RUNTIME_BEGIN;
-    const int sign = IntegralSolution::getSign(lower, upper);
+    const int sign = getSign(lower, upper);
     constexpr uint32_t gaussNodes = 5, gaussCoefficient = 2;
     constexpr std::array<std::array<double, gaussCoefficient>, gaussNodes> gaussLegendreTable = {
         {{-0.9061798459, +0.2369268851},
@@ -187,13 +187,12 @@ double Gauss::operator()(double lower, double upper, const double eps) const
         const double stepLength = (upper - lower) / n;
         for (uint32_t i = 0; i < n; ++i)
         {
-            const double left = lower + i * stepLength;
-            const double right = left + stepLength;
+            const double left = lower + i * stepLength, right = left + stepLength;
             for (uint32_t j = 0; j < gaussNodes; ++j)
             {
                 // x=1/2[(a+b)+(b-a)t]
-                const double x = ((right - left) * gaussLegendreTable.at(j).at(0) + (left + right)) / 2.0;
-                const double polynomial = expr(x) * gaussLegendreTable.at(j).at(1) * (right - left) / 2.0;
+                const double x = ((right - left) * gaussLegendreTable.at(j).at(0) + (left + right)) / 2.0,
+                             polynomial = expr(x) * gaussLegendreTable.at(j).at(1) * (right - left) / 2.0;
                 sum += polynomial;
             }
         }
@@ -216,7 +215,7 @@ MonteCarlo::MonteCarlo(const expression::Expression& expr) : expr(expr)
 double MonteCarlo::operator()(double lower, double upper, const double eps) const
 {
     INTEGRAL_RUNTIME_BEGIN;
-    const int sign = IntegralSolution::getSign(lower, upper);
+    const int sign = getSign(lower, upper);
 
     double sum = sampleFromUniformDistribution(lower, upper, eps);
 #ifdef INTEGRAL_MONTE_CARLO_NO_UNIFORM
@@ -232,13 +231,13 @@ double MonteCarlo::operator()(double lower, double upper, const double eps) cons
 #ifndef INTEGRAL_MONTE_CARLO_NORMAL_DISTRIBUTION
 double MonteCarlo::sampleFromUniformDistribution(const double lower, const double upper, const double eps) const
 {
-    const uint32_t n = std::max<uint32_t>((upper - lower) / eps, 1000000);
+    const uint32_t n = std::max<uint32_t>((upper - lower) / eps, 1e6);
     std::mt19937 seed(std::random_device{}());
-    std::uniform_real_distribution<double> randomX(lower, upper);
+    std::uniform_real_distribution<double> random(lower, upper);
     double sum = 0.0;
     for (uint32_t i = 0; i < n; ++i)
     {
-        double x = randomX(seed);
+        double x = random(seed);
         sum += expr(x);
     }
     sum *= (upper - lower) / n; // I≈(b-a)/N*[F(X1)+F(X2)+...+F(Xn)]
@@ -248,16 +247,16 @@ double MonteCarlo::sampleFromUniformDistribution(const double lower, const doubl
 #else
 double MonteCarlo::sampleFromNormalDistribution(const double lower, const double upper, const double eps) const
 {
-    const uint32_t n = std::max<uint32_t>((upper - lower) / eps, 1000000);
+    const uint32_t n = std::max<uint32_t>((upper - lower) / eps, 1e6);
     const double mu = (lower + upper) / 2.0, sigma = (upper - lower) / 6.0;
     std::mt19937 seed(std::random_device{}());
-    std::uniform_real_distribution<double> randomU(0.0, 1.0);
+    std::uniform_real_distribution<double> random(0.0, 1.0);
     double sum = 0.0, x = 0.0;
     for (uint32_t i = 0; i < n; ++i)
     {
         do
         {
-            double u1 = randomU(seed), u2 = randomU(seed), mag = sigma * std::sqrt(-2.0 * std::log(u1));
+            double u1 = random(seed), u2 = random(seed), mag = sigma * std::sqrt(-2.0 * std::log(u1));
             x = mag * std::sin(2.0 * M_PI * u2) + mu; // Box-Muller Transform
         }
         while ((x < lower) || (x > upper));

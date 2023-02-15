@@ -12,15 +12,15 @@
 namespace utility::hash
 {
 //! @brief The hash seed for BKDR hash function.
-constexpr uint32_t bkdrHashSeed = 131;
+constexpr uint64_t bkdrHashSeed = 131;
 //! @brief The hash size for BKDR hash function.
-constexpr int bkdrHashSize = 0x7FFFFFFF;
+constexpr uint64_t bkdrHashSize = 0x7FFFFFFF;
 
 //! @brief The Brian-Kernighan Dennis-Ritchie hash function in compile time.
 //! @param str - input data
 //! @param hash - previous hash value
 //! @return hash value
-constexpr uint32_t bkdrHashInCompile(const char* const str, const uint32_t hash = 0) noexcept
+constexpr uint64_t bkdrHashInCompile(const char* const str, const uint64_t hash = 0) noexcept
 {
     return (*str ? bkdrHashInCompile(str + 1, (hash * bkdrHashSeed + *str) & bkdrHashSize) : hash);
 }
@@ -33,5 +33,5 @@ constexpr uint64_t operator""_bkdrHash(const char* const str, const std::size_t 
     return bkdrHashInCompile(str);
 }
 
-extern uint32_t bkdrHash(const char* str);
+extern uint64_t bkdrHash(const char* str);
 } // namespace utility::hash

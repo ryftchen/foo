@@ -228,8 +228,7 @@ void SortSolution<T>::quickSortRecursive(T* const sortArray, const uint32_t begi
         return;
     }
     T pivot = sortArray[end];
-    uint32_t leftIndex = begin;
-    uint32_t rightIndex = end - 1;
+    uint32_t leftIndex = begin, rightIndex = end - 1;
 
     while (leftIndex < rightIndex)
     {
@@ -285,8 +284,7 @@ std::vector<T> SortSolution<T>::heapMethod(T* const array, const uint32_t length
 template <class T>
 void SortSolution<T>::buildMaxHeap(T* const sortArray, const uint32_t begin, const uint32_t end)
 {
-    uint32_t parent = begin;
-    uint32_t child = parent * 2 + 1;
+    uint32_t parent = begin, child = parent * 2 + 1;
     while (child <= end)
     {
         if (((child + 1) <= end) && (sortArray[child] < sortArray[child + 1]))
@@ -358,8 +356,7 @@ std::vector<T> SortSolution<T>::bucketMethod(T* const array, const uint32_t leng
     sortArray[0] = '\0';
     std::memcpy(sortArray, array, length * sizeof(T));
 
-    T max = std::numeric_limits<T>::min();
-    T min = std::numeric_limits<T>::max();
+    T max = std::numeric_limits<T>::min(), min = std::numeric_limits<T>::max();
     for (uint32_t i = 0; i < length; ++i)
     {
         max = std::max(sortArray[i], max);
@@ -371,9 +368,9 @@ std::vector<T> SortSolution<T>::bucketMethod(T* const array, const uint32_t leng
     std::vector<std::vector<T>> aggregation(bucketNum, std::vector<T>{});
     for (uint32_t i = 0; i < length; ++i)
     {
-        // min+(max-min)/(bucketNum-1)*(buckIndex-1)<=sortArray[i]
-        const uint32_t aggIndex = std::floor(static_cast<double>(sortArray[i] - min) / intervalSpan + 1) - 1;
-        aggregation.at(aggIndex).emplace_back(sortArray[i]);
+        // min+(max-min)/(bucketNum-1)*(bucketIndex-1)<=array[i]
+        const uint32_t bucketIndex = std::floor(static_cast<double>(sortArray[i] - min) / intervalSpan + 1) - 1;
+        aggregation.at(bucketIndex).emplace_back(sortArray[i]);
     }
 
     uint32_t index = 0;
@@ -407,8 +404,7 @@ std::vector<T> SortSolution<T>::radixMethod(T* const array, const uint32_t lengt
     sortArray[0] = '\0';
     std::memcpy(sortArray, array, length * sizeof(T));
 
-    T max = std::numeric_limits<T>::min();
-    T min = std::numeric_limits<T>::max();
+    T max = std::numeric_limits<T>::min(), min = std::numeric_limits<T>::max();
     bool positive = false, negative = false;
     for (uint32_t i = 0; i < length; ++i)
     {
@@ -418,14 +414,13 @@ std::vector<T> SortSolution<T>::radixMethod(T* const array, const uint32_t lengt
     }
     T absMax = std::max(max, -min);
     uint32_t digitMax = 0;
-    const uint32_t base = 10;
+    constexpr uint32_t base = 10;
     while (absMax)
     {
         absMax /= base;
         ++digitMax;
     }
 
-    // -9 ... -1 0 1 ... 9
     constexpr uint32_t naturalNumberBucket = 10, negativeIntegerBucket = 9;
     const uint32_t bucketNum =
         (positive ^ negative) ? naturalNumberBucket : (naturalNumberBucket + negativeIntegerBucket);
@@ -437,9 +432,9 @@ std::vector<T> SortSolution<T>::radixMethod(T* const array, const uint32_t lengt
     for (uint32_t i = 0; i < length; ++i)
     {
         const int sign = (sortArray[i] > 0) ? 1 : -1;
-        const uint32_t aggIndex = std::abs(sortArray[i]) / 1 % base * sign + offset;
-        aggregation[aggIndex].push(sortArray[i]);
-        ++countingNew[aggIndex];
+        const uint32_t bucketIndex = std::abs(sortArray[i]) / 1 % base * sign + offset;
+        aggregation[bucketIndex].push(sortArray[i]);
+        ++countingNew[bucketIndex];
     }
 
     constexpr uint32_t decimal = 10;
@@ -458,9 +453,9 @@ std::vector<T> SortSolution<T>::radixMethod(T* const array, const uint32_t lengt
             {
                 auto bucketElement = bucketIter->front();
                 const int sign = (bucketElement > 0) ? 1 : -1;
-                const uint32_t aggIndex = std::abs(bucketElement) / pow % base * sign + offset;
-                aggregation[aggIndex].push(bucketElement);
-                ++countingNew[aggIndex];
+                const uint32_t bucketIndex = std::abs(bucketElement) / pow % base * sign + offset;
+                aggregation[bucketIndex].push(bucketElement);
+                ++countingNew[bucketIndex];
                 bucketIter->pop();
                 --countingOld[countingIndex];
             }

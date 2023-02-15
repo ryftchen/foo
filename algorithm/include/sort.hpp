@@ -22,9 +22,9 @@
 namespace algorithm::sort
 {
 //! @brief Maximum alignment length per element of printing.
-constexpr uint32_t maxAlignOfPrint = 16;
+constexpr uint8_t maxAlignOfPrint = 16;
 //! @brief Maximum columns per row of printing.
-constexpr uint32_t maxColumnOfPrint = 10;
+constexpr uint8_t maxColumnOfPrint = 10;
 
 //! @brief Solution of sort.
 //! @tparam T - type of the solution of sort
@@ -289,10 +289,10 @@ requires std::is_integral<V>::value void TargetBuilder<T>::setRandomArray(
     const T right)
 {
     std::mt19937 seed{getRandomSeedByTime()};
-    std::uniform_int_distribution<int> randomX(left, right);
+    std::uniform_int_distribution<int> random(left, right);
     for (uint32_t i = 0; i < length; ++i)
     {
-        array[i] = randomX(seed);
+        array[i] = random(seed);
     }
 
 #ifdef __RUNTIME_PRINTING
@@ -313,10 +313,10 @@ requires std::is_floating_point<V>::value void TargetBuilder<T>::setRandomArray(
     const T right)
 {
     std::mt19937 seed{getRandomSeedByTime()};
-    std::uniform_real_distribution<double> randomX(left, right);
+    std::uniform_real_distribution<double> random(left, right);
     for (uint32_t i = 0; i < length; ++i)
     {
-        array[i] = randomX(seed);
+        array[i] = random(seed);
     }
 
 #ifdef __RUNTIME_PRINTING
