@@ -18,7 +18,7 @@ constexpr uint32_t maxNumPerLineOfPrint = 50;
 //! @brief Maximum digit for the target text.
 constexpr uint32_t maxDigit = 100000;
 //! @brief Maximum ASCII value.
-constexpr uint32_t maxASCII = 256;
+constexpr uint16_t maxASCII = 256;
 //! @brief Base number for converting the digit to precision.
 constexpr int mpfrBase = 10;
 
@@ -72,7 +72,11 @@ private:
     //! @param hashBase - hash base
     //! @param hashMod - hash mod
     //! @return hash value
-    static int rollingHash(const char* str, const uint32_t length, const uint32_t hashBase, const uint32_t hashMod);
+    static uint64_t rollingHash(
+        const char* str,
+        const uint64_t length,
+        const uint64_t hashBase,
+        const uint64_t hashMod);
     //! @brief Fill bad character rule table.
     //! @param badCharRuleTable - bad character rule table
     //! @param pattern - single pattern

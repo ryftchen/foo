@@ -54,14 +54,14 @@ int MatchSolution::rkMethod(const char* text, const char* pattern, const uint32_
 {
     MATCH_RUNTIME_BEGIN;
     int shift = -1;
-    constexpr uint32_t rollingHashBase = 10;
-    constexpr uint32_t rollingHashMod = 19260817;
-    long long textHash =
+    constexpr uint64_t rollingHashBase = 10;
+    constexpr uint64_t rollingHashMod = 19260817;
+    uint64_t textHash =
         rollingHash(std::string{text}.substr(0, patternLen).c_str(), patternLen, rollingHashBase, rollingHashMod);
-    long long patternHash = rollingHash(pattern, patternLen, rollingHashBase, rollingHashMod);
+    const uint64_t patternHash = rollingHash(pattern, patternLen, rollingHashBase, rollingHashMod);
     if (textHash != patternHash)
     {
-        long long pow = 1;
+        uint64_t pow = 1;
         for (uint32_t j = 0; j < patternLen - 1; ++j)
         {
             pow = (pow * rollingHashBase) % rollingHashMod;
@@ -69,9 +69,9 @@ int MatchSolution::rkMethod(const char* text, const char* pattern, const uint32_
 
         for (uint32_t i = 1; i <= textLen - patternLen; ++i)
         {
-            textHash = (textHash - static_cast<long long>(text[i - 1]) * pow);
+            textHash = (textHash - static_cast<uint64_t>(text[i - 1]) * pow);
             textHash = (textHash % rollingHashMod + rollingHashMod) % rollingHashMod;
-            textHash = (textHash * rollingHashBase + static_cast<int>(text[i + patternLen - 1])) % rollingHashMod;
+            textHash = (textHash * rollingHashBase + static_cast<uint64_t>(text[i + patternLen - 1])) % rollingHashMod;
             if (textHash == patternHash)
             {
                 shift = i;
@@ -89,12 +89,16 @@ int MatchSolution::rkMethod(const char* text, const char* pattern, const uint32_
     return shift;
 }
 
-int MatchSolution::rollingHash(const char* str, const uint32_t length, const uint32_t hashBase, const uint32_t hashMod)
+uint64_t MatchSolution::rollingHash(
+    const char* str,
+    const uint64_t length,
+    const uint64_t hashBase,
+    const uint64_t hashMod)
 {
-    int hash = 0;
-    for (uint32_t i = 0; i < length; ++i)
+    uint64_t hash = 0;
+    for (uint64_t i = 0; i < length; ++i)
     {
-        hash = ((hash * hashBase) % hashMod + static_cast<int>(str[i])) % hashMod;
+        hash = ((hash * hashBase) % hashMod + static_cast<uint64_t>(str[i])) % hashMod;
     }
     return hash;
 }
@@ -176,7 +180,7 @@ int MatchSolution::bmMethod(const char* text, const char* pattern, const uint32_
 
 void MatchSolution::fillBadCharRuleTable(uint32_t badCharRuleTable[], const char* pattern, const uint32_t patternLen)
 {
-    for (uint32_t i = 0; i < maxASCII; ++i)
+    for (uint16_t i = 0; i < maxASCII; ++i)
     {
         badCharRuleTable[i] = patternLen;
     }
@@ -267,7 +271,7 @@ void MatchSolution::fillBadCharShiftTableForHorspool(
     const char* pattern,
     const uint32_t patternLen)
 {
-    for (uint32_t i = 0; i < maxASCII; ++i)
+    for (uint16_t i = 0; i < maxASCII; ++i)
     {
         badCharShiftTable[i] = patternLen;
     }
@@ -320,7 +324,7 @@ void MatchSolution::fillBadCharShiftTableForSunday(
     const char* pattern,
     const uint32_t patternLen)
 {
-    for (uint32_t i = 0; i < maxASCII; ++i)
+    for (uint16_t i = 0; i < maxASCII; ++i)
     {
         badCharShiftTable[i] = patternLen + 1;
     }

@@ -121,7 +121,6 @@ int SearchSolution<T>::fibonacciMethod(const T* const array, const uint32_t leng
 {
     SEARCH_RUNTIME_BEGIN;
     int index = -1;
-    uint32_t lower = 0, upper = length - 1;
     std::vector<uint32_t> fib = generateFibonacciNumber(length);
     uint32_t n = fib.size() - 1;
     if (constexpr uint32_t minSize = 3; n < minSize)
@@ -132,6 +131,7 @@ int SearchSolution<T>::fibonacciMethod(const T* const array, const uint32_t leng
         return index;
     }
 
+    uint32_t lower = 0, upper = length - 1;
     std::unique_ptr<T[]> complementArray = std::make_unique<T[]>(fib[n] - 1);
     std::memcpy(complementArray.get(), array, length * sizeof(T));
     for (uint32_t i = upper; i < (fib[n] - 1); ++i)

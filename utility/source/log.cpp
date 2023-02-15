@@ -97,7 +97,7 @@ void Log::runLogger()
 void Log::waitStartForExternalUse()
 {
     utility::time::Time timer;
-    uint32_t waitCount = 0;
+    uint16_t waitCount = 0;
     timer.setBlockingTimer(
         [&]()
         {
@@ -128,7 +128,7 @@ void Log::waitStopForExternalUse()
     }
 
     utility::time::Time timer;
-    uint32_t waitCount = 0;
+    uint16_t waitCount = 0;
     timer.setBlockingTimer(
         [&]()
         {
