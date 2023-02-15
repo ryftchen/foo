@@ -1,0 +1,16 @@
+---
+version: "3.0"
+
+services:
+  foo_dev:
+    image: ryftchen/foo:latest
+    container_name: foo_dev
+    environment:
+      - FOO_ENV=foo_dev
+    volumes:
+      - ../:/root/foo
+    stdin_open: true
+    tty: true
+    privileged: true
+    command: /bin/bash
+...
