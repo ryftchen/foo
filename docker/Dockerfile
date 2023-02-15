@@ -1,7 +1,5 @@
 FROM ubuntu:20.04
 
-ENV FOO_ENV FOO_DEV
-
 SHELL ["/bin/bash", "-c"]
 
 RUN apt-get update \

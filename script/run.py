@@ -78,7 +78,7 @@ class Task:
     }
     isCheckCoverage = False
     isCheckMemory = False
-    envCoverage = "FOO_COV"
+    envCoverage = "foo_cov"
     isUnitTest = False
     buildFile = "./script/build.sh"
     logFile = "./temporary/foo_run.log"

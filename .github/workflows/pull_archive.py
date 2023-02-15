@@ -112,8 +112,8 @@ def pull():
     )
     env = os.getenv("FOO_ENV")
     if env:
-        if env != "FOO_DOC":
-            exception("The environment variable FOO_ENV must be FOO_DOC.")
+        if env != "foo_doc":
+            exception("The environment variable FOO_ENV must be foo_doc.")
     else:
         exception("Please export the environment variable FOO_ENV.")
 

@@ -165,13 +165,13 @@ setCompileEnv()
     if [[ -f ./"${SCRIPT_FOLDER}"/.env ]]; then
         # shellcheck source=/dev/null
         source ./"${SCRIPT_FOLDER}"/.env
-        if [[ -n "${FOO_ENHANCED_DEV_TMPFS}" ]] && [[ "${FOO_ENHANCED_DEV_TMPFS}" = "ON" ]]; then
+        if [[ -n "${FOO_ENHANCED_DEV_TMPFS}" ]] && [[ "${FOO_ENHANCED_DEV_TMPFS}" = "on" ]]; then
             ENHANCED_DEV_TMPFS=true
         fi
-        if [[ -n "${FOO_ENHANCED_DEV_CCACHE}" ]] && [[ "${FOO_ENHANCED_DEV_CCACHE}" = "ON" ]]; then
+        if [[ -n "${FOO_ENHANCED_DEV_CCACHE}" ]] && [[ "${FOO_ENHANCED_DEV_CCACHE}" = "on" ]]; then
             ENHANCED_DEV_CCACHE=true
         fi
-        if [[ -n "${FOO_ENHANCED_DEV_DISTCC}" ]] && [[ "${FOO_ENHANCED_DEV_DISTCC}" = "ON" ]]; then
+        if [[ -n "${FOO_ENHANCED_DEV_DISTCC}" ]] && [[ "${FOO_ENHANCED_DEV_DISTCC}" = "on" ]]; then
             ENHANCED_DEV_DISTCC=true
         fi
     fi
@@ -250,9 +250,9 @@ performEnvironmentOption()
         shellCommand "cat <<EOF >./${SCRIPT_FOLDER}/.env
 #!/bin/false
 
-FOO_ENHANCED_DEV_TMPFS=OFF
-FOO_ENHANCED_DEV_CCACHE=OFF
-FOO_ENHANCED_DEV_DISTCC=OFF
+FOO_ENHANCED_DEV_TMPFS=off
+FOO_ENHANCED_DEV_CCACHE=off
+FOO_ENHANCED_DEV_DISTCC=off
 
 export FOO_ENHANCED_DEV_TMPFS FOO_ENHANCED_DEV_CCACHE FOO_ENHANCED_DEV_DISTCC
 return 0
@@ -264,7 +264,7 @@ EOF"
 performContainerOption()
 {
     if [[ "${ARGS_CONTAINER}" = true ]]; then
-        if command -v docker >/dev/null 2>&1; then
+        if command -v docker >/dev/null 2>&1 && command -v docker-compose >/dev/null 2>&1; then
             echo "Please confirm whether continue constructing the docker container. (y or n)"
             local oldStty answer
             oldStty=$(stty -g)
@@ -278,13 +278,12 @@ performContainerOption()
                 exit 0
             fi
         else
-            exception "No docker program. Please install it."
+            exception "No docker or docker-compose program. Please install it."
         fi
 
         local imageRepo="ryftchen/${PROJECT_FOLDER}"
-        local containerName="${PROJECT_FOLDER}_dev"
         if ! docker ps -a --format "{{lower .Image}} {{lower .Names}}" \
-            | grep -q "${imageRepo}:latest ${containerName}" 2>/dev/null; then
+            | grep -q "${imageRepo}:latest ${PROJECT_FOLDER}_dev" 2>/dev/null; then
             if ! docker image ls -a --format "{{lower .Repository}} {{lower .Tag}}" \
                 | grep -q "${imageRepo} latest" 2>/dev/null; then
                 local toBuildImage=false
@@ -306,8 +305,7 @@ performContainerOption()
 ./${DOCKER_FOLDER}/"
                 fi
             fi
-            shellCommand "docker run -it --name ${containerName} -v ${PWD}:/root/${PROJECT_FOLDER} -d --privileged \
-${imageRepo}:latest /bin/bash"
+            shellCommand "docker-compose -f ./${DOCKER_FOLDER}/docker-compose.yml up -d"
             exit 0
         else
             exception "The container exists."
