@@ -6,7 +6,11 @@
 
 #pragma once
 
+#ifndef __PRECOMPILED_HEADER
 #include <sstream>
+#else
+#include "pch_data_structure.hpp"
+#endif
 
 //! @brief Tree-related functions in the data structure module.
 namespace date_structure::tree

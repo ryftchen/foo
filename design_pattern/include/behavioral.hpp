@@ -6,6 +6,11 @@
 
 #pragma once
 
+#ifndef __PRECOMPILED_HEADER
+#else
+#include "pch_design_pattern.hpp"
+#endif
+
 //! @brief Behavioral-related functions in the design pattern module.
 namespace design_pattern::behavioral
 {

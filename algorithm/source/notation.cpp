@@ -5,7 +5,9 @@
 //! @copyright Copyright (c) 2022-2023
 
 #include "notation.hpp"
+#ifndef __PRECOMPILED_HEADER
 #include <stack>
+#endif
 #ifdef __RUNTIME_PRINTING
 #include "utility/include/common.hpp"
 

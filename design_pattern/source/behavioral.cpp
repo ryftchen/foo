@@ -5,9 +5,11 @@
 //! @copyright Copyright (c) 2022-2023
 
 #include "behavioral.hpp"
+#ifndef __PRECOMPILED_HEADER
 #include <map>
 #include <memory>
 #include <vector>
+#endif
 #ifdef __RUNTIME_PRINTING
 #include "utility/include/common.hpp"
 

@@ -6,8 +6,12 @@
 
 #pragma once
 
+#ifndef __PRECOMPILED_HEADER
 #include <string_view>
 #include <tuple>
+#else
+#include "pch_numeric.hpp"
+#endif
 
 //! @brief Integral-related functions in the numeric module.
 namespace numeric::integral

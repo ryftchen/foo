@@ -5,7 +5,9 @@
 //! @copyright Copyright (c) 2022-2023
 
 #include "sort.hpp"
+#ifndef __PRECOMPILED_HEADER
 #include <queue>
+#endif
 #ifdef __RUNTIME_PRINTING
 #include "utility/include/common.hpp"
 #include "utility/include/time.hpp"

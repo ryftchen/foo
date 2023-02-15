@@ -6,12 +6,16 @@
 
 #pragma once
 
+#ifndef __PRECOMPILED_HEADER
 #include <sys/time.h>
 #include <cstring>
 #include <iostream>
 #include <memory>
 #include <mutex>
 #include <random>
+#else
+#include "pch_algorithm.hpp"
+#endif
 
 #if defined(__clang__) || defined(__GNUC__)
 //! @brief The restrict type qualifier.

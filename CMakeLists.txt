@@ -26,6 +26,7 @@ if(DEFINED ENV{FOO_ENV})
 endif()
 include(${CMAKE_SOURCE_DIR}/cmake/toolchain.cmake)
 set(RUNTIME_PRINTING ON CACHE BOOL "runtime printing" FORCE)
+set(PRECOMPILED_HEADER OFF CACHE BOOL "precompiled header" FORCE)
 include(${CMAKE_SOURCE_DIR}/cmake/condition.cmake)
 
 set(BIN_NAME foo)
@@ -62,3 +63,13 @@ target_link_libraries(
         foo::design_pattern
         foo::numeric
 )
+if(PRECOMPILED_HEADER)
+    target_precompile_headers(
+        ${BIN_NAME}
+        PRIVATE
+            ${CMAKE_SOURCE_DIR}/algorithm/pch_algorithm.hpp
+            ${CMAKE_SOURCE_DIR}/data_structure/pch_data_structure.hpp
+            ${CMAKE_SOURCE_DIR}/design_pattern/pch_design_pattern.hpp
+            ${CMAKE_SOURCE_DIR}/numeric/pch_numeric.hpp
+    )
+endif()

@@ -6,7 +6,11 @@
 
 #pragma once
 
+#ifndef __PRECOMPILED_HEADER
 #include <string>
+#else
+#include "pch_algorithm.hpp"
+#endif
 
 //! @brief Notation-related functions in the algorithm module.
 namespace algorithm::notation

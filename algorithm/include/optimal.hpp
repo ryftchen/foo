@@ -6,8 +6,12 @@
 
 #pragma once
 
+#ifndef __PRECOMPILED_HEADER
 #include <map>
 #include <random>
+#else
+#include "pch_algorithm.hpp"
+#endif
 
 //! @brief Optimal-related functions in the algorithm module.
 namespace algorithm::optimal
