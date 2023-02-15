@@ -5,8 +5,10 @@
 //! @copyright Copyright (c) 2022-2023
 
 #include "structural.hpp"
+#ifndef __PRECOMPILED_HEADER
 #include <map>
 #include <vector>
+#endif
 #ifdef __RUNTIME_PRINTING
 #include "utility/include/common.hpp"
 

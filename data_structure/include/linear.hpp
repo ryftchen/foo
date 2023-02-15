@@ -6,6 +6,11 @@
 
 #pragma once
 
+#ifndef __PRECOMPILED_HEADER
+#else
+#include "pch_data_structure.hpp"
+#endif
+
 //! @brief Linear-related functions in the data structure module.
 namespace date_structure::linear
 {

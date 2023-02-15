@@ -5,8 +5,10 @@
 //! @copyright Copyright (c) 2022-2023
 
 #include "linear.hpp"
+#ifndef __PRECOMPILED_HEADER
 #include <iostream>
 #include <sstream>
+#endif
 #ifdef __RUNTIME_PRINTING
 #include "utility/include/common.hpp"
 

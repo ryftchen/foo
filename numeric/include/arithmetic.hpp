@@ -6,7 +6,11 @@
 
 #pragma once
 
+#ifndef __PRECOMPILED_HEADER
 #include <utility>
+#else
+#include "pch_numeric.hpp"
+#endif
 
 //! @brief Arithmetic-related functions in the numeric module.
 namespace numeric::arithmetic

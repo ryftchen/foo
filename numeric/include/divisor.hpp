@@ -6,8 +6,12 @@
 
 #pragma once
 
+#ifndef __PRECOMPILED_HEADER
 #include <string>
 #include <vector>
+#else
+#include "pch_numeric.hpp"
+#endif
 
 //! @brief Divisor-related functions in the numeric module.
 namespace numeric::divisor

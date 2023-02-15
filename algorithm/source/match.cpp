@@ -5,8 +5,10 @@
 //! @copyright Copyright (c) 2022-2023
 
 #include "match.hpp"
+#ifndef __PRECOMPILED_HEADER
 #include <mpfr.h>
 #include <cstring>
+#endif
 #ifdef __RUNTIME_PRINTING
 #include "utility/include/common.hpp"
 #include "utility/include/time.hpp"
