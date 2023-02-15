@@ -1,0 +1,17 @@
+# type: short summary
+# ^--^  ^-----------^
+#   │         │
+#   │         +-> Present tense summary. Not capitalized. No period at the end.
+#   │
+#   +-> Commit type: build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test
+# build: changes that affect the build system or external dependencies
+# chore: environment updates, not production code changes
+# ci: changes to CI configuration files and scripts
+# docs: documentation only changes
+# feat: a new feature
+# fix: a bug fix
+# perf: a code change that improves performance
+# refactor: a code change that neither fixes a bug nor adds a feature
+# revert: multiple commits to be reverted
+# style: changes that do not affect the meaning of the code
+# test: add missing tests or fix existing tests
