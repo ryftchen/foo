@@ -1,0 +1,41 @@
+include_guard()
+
+option(_TOOLCHAIN_CCACHE "toolchain ccache" OFF)
+option(_TOOLCHAIN_DISTCC "toolchain distcc" OFF)
+if(_TOOLCHAIN_CCACHE)
+    find_program(CCACHE ccache)
+    if(CCACHE)
+        message(STATUS "Using ccache")
+        set(CMAKE_C_COMPILER_LAUNCHER ${CCACHE})
+        set(CMAKE_CXX_COMPILER_LAUNCHER ${CCACHE})
+    elseif()
+        message(STATUS "No ccache program")
+    endif()
+endif()
+if(_TOOLCHAIN_DISTCC)
+    find_program(DISTCC distcc)
+    if(DISTCC)
+        execute_process(
+            COMMAND service --status-all
+            COMMAND grep "\\[ + \\]  distcc"
+            OUTPUT_VARIABLE DISTCC_STATUS_OUTPUT
+            ERROR_VARIABLE DISTCC_STATUS_ERROR
+        )
+        if(NOT DISTCC_STATUS_OUTPUT STREQUAL "")
+            message(STATUS "Using distcc")
+            if(
+                NOT (_TOOLCHAIN_CCACHE AND CCACHE AND (DEFINED ENV{CCACHE_PREFIX})
+                    AND ("$ENV{CCACHE_PREFIX}" STREQUAL "distcc"))
+            )
+                set(CMAKE_C_COMPILER_LAUNCHER ${DISTCC})
+                set(CMAKE_CXX_COMPILER_LAUNCHER ${DISTCC})
+            endif()
+        else()
+            message(STATUS "The distcc service is not running")
+        endif()
+    elseif()
+        message(STATUS "No distcc program")
+    endif()
+endif()
+unset(_TOOLCHAIN_CCACHE CACHE)
+unset(_TOOLCHAIN_DISTCC CACHE)
