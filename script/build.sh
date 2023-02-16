@@ -1,20 +1,5 @@
 #!/usr/bin/env bash
 
-ARGS_HELP=false
-ARGS_CLEANUP=false
-ARGS_ENVIRONMENT=false
-ARGS_CONTAINER=false
-ARGS_TEST=false
-ARGS_RELEASE=false
-ARGS_FORMAT=false
-ARGS_LINT=false
-ARGS_BROWSER=false
-ARGS_DOXYGEN=false
-ENHANCED_DEV_PCH=false
-ENHANCED_DEV_CCACHE=false
-ENHANCED_DEV_DISTCC=false
-ENHANCED_DEV_TMPFS=false
-
 declare -r PROJECT_FOLDER="foo"
 declare -r APPLICATION_FOLDER="application"
 declare -r UTILITY_FOLDER="utility"
@@ -30,8 +15,25 @@ declare -r BUILD_FOLDER="build"
 declare -r TEMPORARY_FOLDER="temporary"
 declare -r COMPILE_COMMANDS="compile_commands.json"
 
-CMAKE_BUILD_TYPE="Debug"
-CMAKE_EXTRA_FLAG=""
+ARGS_HELP=false
+ARGS_CLEANUP=false
+ARGS_ENVIRONMENT=false
+ARGS_CONTAINER=false
+ARGS_TEST=false
+ARGS_RELEASE=false
+ARGS_FORMAT=false
+ARGS_LINT=false
+ARGS_BROWSER=false
+ARGS_DOXYGEN=false
+ENHANCED_DEV_PARALLEL=0
+ENHANCED_DEV_PCH=false
+ENHANCED_DEV_CCACHE=false
+ENHANCED_DEV_DISTCC=false
+ENHANCED_DEV_TMPFS=false
+
+CMAKE_CACHE_ENTRY=""
+CMAKE_BUILD_OPTION=""
+BUILD_TYPE="Debug"
 TO_COMPILE_SOURCE_ONLY=false
 
 shellCommand()
@@ -94,7 +96,7 @@ parseArguments()
 checkBasicDependencies()
 {
     if [[ "${ARGS_RELEASE}" = true ]]; then
-        CMAKE_BUILD_TYPE="Release"
+        BUILD_TYPE="Release"
     fi
     if [[ "$#" -eq 0 ]] || {
         [[ "$#" -eq 1 ]] && [[ "${ARGS_RELEASE}" = true ]]
@@ -166,6 +168,9 @@ setCompileEnv()
     if [[ -f ./"${SCRIPT_FOLDER}"/.env ]]; then
         # shellcheck source=/dev/null
         source ./"${SCRIPT_FOLDER}"/.env
+        if [[ -n "${FOO_BLD_PARALLEL}" ]] && [[ "${FOO_BLD_PARALLEL}" =~ ^[0-9]+$ ]]; then
+            ENHANCED_DEV_PARALLEL=${FOO_BLD_PARALLEL}
+        fi
         if [[ -n "${FOO_BLD_PCH}" ]] && [[ "${FOO_BLD_PCH}" = "on" ]]; then
             ENHANCED_DEV_PCH=true
         fi
@@ -180,18 +185,22 @@ setCompileEnv()
         fi
     fi
 
+    if [[ ! "${ENHANCED_DEV_PARALLEL}" -eq 0 ]]; then
+        CMAKE_BUILD_OPTION=" -j ${ENHANCED_DEV_PARALLEL}"
+    fi
+    CMAKE_CACHE_ENTRY=" -DCMAKE_BUILD_TYPE=${BUILD_TYPE}"
     if [[ "${ENHANCED_DEV_PCH}" = true ]]; then
-        CMAKE_EXTRA_FLAG="${CMAKE_EXTRA_FLAG} -D_TOOLCHAIN_PCH=ON"
+        CMAKE_CACHE_ENTRY="${CMAKE_CACHE_ENTRY} -D_TOOLCHAIN_PCH=ON"
     fi
     if [[ "${ENHANCED_DEV_CCACHE}" = true ]]; then
-        CMAKE_EXTRA_FLAG="${CMAKE_EXTRA_FLAG} -D_TOOLCHAIN_CCACHE=ON"
+        CMAKE_CACHE_ENTRY="${CMAKE_CACHE_ENTRY} -D_TOOLCHAIN_CCACHE=ON"
         if [[ "${ENHANCED_DEV_DISTCC}" = true ]] \
             && command -v ccache >/dev/null 2>&1 && command -v distcc >/dev/null 2>&1; then
             export CCACHE_PREFIX=distcc
         fi
     fi
     if [[ "${ENHANCED_DEV_DISTCC}" = true ]]; then
-        CMAKE_EXTRA_FLAG="${CMAKE_EXTRA_FLAG} -D_TOOLCHAIN_DISTCC=ON"
+        CMAKE_CACHE_ENTRY="${CMAKE_CACHE_ENTRY} -D_TOOLCHAIN_DISTCC=ON"
         if [[ -z "${DISTCC_HOSTS}" ]]; then
             export DISTCC_HOSTS=localhost
         fi
@@ -210,15 +219,14 @@ performBuilding()
         fi
     fi
 
-    shellCommand "cmake -S . -B ./${BUILD_FOLDER} -G Ninja -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}${CMAKE_EXTRA_FLAG}"
+    shellCommand "cmake -S . -B ./${BUILD_FOLDER} -G Ninja${CMAKE_CACHE_ENTRY}"
     if [[ "${TO_COMPILE_SOURCE_ONLY}" = true ]]; then
         tput setaf 2 && tput bold
-        shellCommand "cmake --build ./${BUILD_FOLDER}"
+        shellCommand "cmake --build ./${BUILD_FOLDER}${CMAKE_BUILD_OPTION}"
         tput sgr0
         exit 0
     fi
-    shellCommand "cmake -S ./${TEST_FOLDER} -B ./${TEST_FOLDER}/${BUILD_FOLDER} -G Ninja \
--DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}${CMAKE_EXTRA_FLAG}"
+    shellCommand "cmake -S ./${TEST_FOLDER} -B ./${TEST_FOLDER}/${BUILD_FOLDER} -G Ninja${CMAKE_CACHE_ENTRY}"
 }
 
 performHelpOption()
@@ -257,12 +265,13 @@ performEnvironmentOption()
         shellCommand "cat <<EOF >./${SCRIPT_FOLDER}/.env
 #!/bin/false
 
+FOO_BLD_PARALLEL=0
 FOO_BLD_PCH=off
 FOO_BLD_CCACHE=off
 FOO_BLD_DISTCC=off
 FOO_BLD_TMPFS=off
 
-export FOO_BLD_PCH FOO_BLD_CCACHE FOO_BLD_DISTCC FOO_BLD_TMPFS
+export FOO_BLD_PARALLEL FOO_BLD_PCH FOO_BLD_CCACHE FOO_BLD_DISTCC FOO_BLD_TMPFS
 return 0
 EOF"
         exit 0
@@ -334,10 +343,9 @@ performTestOption()
             fi
         fi
 
-        shellCommand "cmake -S ./${TEST_FOLDER} -B ./${TEST_FOLDER}/${BUILD_FOLDER} -G Ninja \
--DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}${CMAKE_EXTRA_FLAG}"
+        shellCommand "cmake -S ./${TEST_FOLDER} -B ./${TEST_FOLDER}/${BUILD_FOLDER} -G Ninja${CMAKE_CACHE_ENTRY}"
         tput setaf 2 && tput bold
-        shellCommand "cmake --build ./${TEST_FOLDER}/${BUILD_FOLDER}"
+        shellCommand "cmake --build ./${TEST_FOLDER}/${BUILD_FOLDER}${CMAKE_BUILD_OPTION}"
         tput sgr0
         exit 0
     fi
@@ -363,11 +371,10 @@ performLintOption()
         compdb -p ./"${BUILD_FOLDER}" list >./"${COMPILE_COMMANDS}" \
             && mv ./"${BUILD_FOLDER}"/"${COMPILE_COMMANDS}" ./"${BUILD_FOLDER}"/"${COMPILE_COMMANDS}".bak \
             && mv ./"${COMPILE_COMMANDS}" ./"${BUILD_FOLDER}"
-        local numberRegex="^[0-9]+$"
         while true; do
             local line
             line=$(grep -n '.tpp' ./"${BUILD_FOLDER}"/"${COMPILE_COMMANDS}" | head -n 1 | cut -d : -f 1)
-            if ! [[ "${line}" =~ ${numberRegex} ]]; then
+            if ! [[ "${line}" =~ ^[0-9]+$ ]]; then
                 break
             fi
             sed -i $(("${line}" - 2)),$(("${line}" + 3))d ./"${BUILD_FOLDER}"/"${COMPILE_COMMANDS}"
@@ -408,10 +415,10 @@ performBrowserOption()
         if [[ -d ./"${TEMPORARY_FOLDER}" ]]; then
             local lastTar="${PROJECT_FOLDER}_browser_${commitId}.tar.bz2"
             if [[ -f ./"${TEMPORARY_FOLDER}"/"${lastTar}" ]]; then
-                local timeDiff=$(($(date +%s) - $(stat -L --format %Y "./${TEMPORARY_FOLDER}/${lastTar}")))
-                if [[ "${timeDiff}" -lt "10" ]]; then
+                local timeInterval=$(($(date +%s) - $(stat -L --format %Y "./${TEMPORARY_FOLDER}/${lastTar}")))
+                if [[ "${timeInterval}" -lt "10" ]]; then
                     exception "The latest browser tarball ${TEMPORARY_FOLDER}/${lastTar} has been generated since \
-${timeDiff}s ago."
+${timeInterval}s ago."
                 fi
             fi
             tarHtmlForBrowser "${commitId}"
@@ -453,10 +460,10 @@ performDoxygenOption()
         if [[ -d ./"${TEMPORARY_FOLDER}" ]]; then
             local lastTar="${PROJECT_FOLDER}_doxygen_${commitId}.tar.bz2"
             if [[ -f ./"${TEMPORARY_FOLDER}"/"${lastTar}" ]]; then
-                local timeDiff=$(($(date +%s) - $(stat -L --format %Y "./${TEMPORARY_FOLDER}/${lastTar}")))
-                if [[ "${timeDiff}" -lt "10" ]]; then
+                local timeInterval=$(($(date +%s) - $(stat -L --format %Y "./${TEMPORARY_FOLDER}/${lastTar}")))
+                if [[ "${timeInterval}" -lt "10" ]]; then
                     exception "The latest doxygen tarball ${TEMPORARY_FOLDER}/${lastTar} has been generated since \
-${timeDiff}s ago."
+${timeInterval}s ago."
                 fi
             fi
             tarHtmlForDoxygen "${commitId}"
