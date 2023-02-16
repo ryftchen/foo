@@ -78,7 +78,6 @@ class Task:
     }
     isCheckCoverage = False
     isCheckMemory = False
-    envCoverage = "foo_cov"
     isUnitTest = False
     buildFile = "./script/build.sh"
     logFile = "./temporary/foo_run.log"
@@ -158,9 +157,9 @@ class Task:
             fullCommand = f"{self.testBinDir}/{command}"
         if self.isCheckMemory:
             fullCommand = f"valgrind --tool=memcheck --xml=yes \
---xml-file={self.tempDir}/foo_mem_{str(self.completeStep + 1)}.xml {fullCommand}"
+--xml-file={self.tempDir}/foo_chk_mem_{str(self.completeStep + 1)}.xml {fullCommand}"
         if self.isCheckCoverage:
-            fullCommand = f"LLVM_PROFILE_FILE=\"{self.tempDir}/foo_cov_{str(self.completeStep + 1)}.profraw\" \
+            fullCommand = f"LLVM_PROFILE_FILE=\"{self.tempDir}/foo_chk_cov_{str(self.completeStep + 1)}.profraw\" \
 {fullCommand}"
         align = max(
             len(command) + Output.alignExclCmdLen,
@@ -178,12 +177,12 @@ class Task:
             self.passStep += 1
             if self.isCheckMemory:
                 stdout, _, _ = common.executeCommand(
-                    f"valgrind-ci {self.tempDir}/foo_mem_{str(self.completeStep + 1)}.xml --summary"
+                    f"valgrind-ci {self.tempDir}/foo_chk_mem_{str(self.completeStep + 1)}.xml --summary"
                 )
                 if "error" in stdout:
                     print(f"\r\n<CHECK MEMORY>\n{stdout}")
                     common.executeCommand(
-                        f"valgrind-ci {self.tempDir}/foo_mem_{str(self.completeStep + 1)}.xml --source-dir=./ \
+                        f"valgrind-ci {self.tempDir}/foo_chk_mem_{str(self.completeStep + 1)}.xml --source-dir=./ \
 --output-dir={self.tempDir}/memory/case_task_{str(self.completeStep + 1)}"
                     )
                     self.passStep -= 1
@@ -224,7 +223,7 @@ class Task:
             if "cov" in args.check:
                 stdout, _, _ = common.executeCommand("command -v llvm-profdata-12 llvm-cov-12 2>&1")
                 if stdout.find("llvm-profdata-12") != -1 and stdout.find("llvm-cov-12") != -1:
-                    os.environ["FOO_ENV"] = self.envCoverage
+                    os.environ["FOO_CHK_COV"] = "on"
                     self.isCheckCoverage = True
                     common.executeCommand(f"rm -rf {self.tempDir}/coverage")
                 else:
@@ -285,17 +284,18 @@ class Task:
 
         if self.isCheckCoverage:
             common.executeCommand(
-                f"llvm-profdata-12 merge -sparse {self.tempDir}/foo_cov_*.profraw -o {self.tempDir}/foo_cov.profdata"
+                f"llvm-profdata-12 merge -sparse {self.tempDir}/foo_chk_cov_*.profraw \
+-o {self.tempDir}/foo_chk_cov.profdata"
             )
             common.executeCommand(
-                f"llvm-cov-12 show -instr-profile={self.tempDir}/foo_cov.profdata -show-branches=percent \
+                f"llvm-cov-12 show -instr-profile={self.tempDir}/foo_chk_cov.profdata -show-branches=percent \
 -show-expansions -show-regions -show-line-counts-or-regions -format=html -output-dir={self.tempDir}/coverage \
 -Xdemangler=c++filt -object={self.binDir}/{self.binCmd} "
                 + ' '.join([f"-object={self.libDir}/{lib}" for lib in self.libList])
                 + " 2>&1"
             )
             stdout, _, _ = common.executeCommand(
-                f"llvm-cov-12 report -instr-profile={self.tempDir}/foo_cov.profdata \
+                f"llvm-cov-12 report -instr-profile={self.tempDir}/foo_chk_cov.profdata \
 -object={self.binDir}/{self.binCmd} "
                 + ' '.join([f"-object={self.libDir}/{lib}" for lib in self.libList])
                 + " 2>&1"
