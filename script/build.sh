@@ -10,9 +10,10 @@ ARGS_FORMAT=false
 ARGS_LINT=false
 ARGS_BROWSER=false
 ARGS_DOXYGEN=false
-ENHANCED_DEV_TMPFS=false
+ENHANCED_DEV_PCH=false
 ENHANCED_DEV_CCACHE=false
 ENHANCED_DEV_DISTCC=false
+ENHANCED_DEV_TMPFS=false
 
 declare -r PROJECT_FOLDER="foo"
 declare -r APPLICATION_FOLDER="application"
@@ -165,17 +166,23 @@ setCompileEnv()
     if [[ -f ./"${SCRIPT_FOLDER}"/.env ]]; then
         # shellcheck source=/dev/null
         source ./"${SCRIPT_FOLDER}"/.env
-        if [[ -n "${FOO_ENHANCED_DEV_TMPFS}" ]] && [[ "${FOO_ENHANCED_DEV_TMPFS}" = "on" ]]; then
-            ENHANCED_DEV_TMPFS=true
+        if [[ -n "${FOO_BLD_PCH}" ]] && [[ "${FOO_BLD_PCH}" = "on" ]]; then
+            ENHANCED_DEV_PCH=true
         fi
-        if [[ -n "${FOO_ENHANCED_DEV_CCACHE}" ]] && [[ "${FOO_ENHANCED_DEV_CCACHE}" = "on" ]]; then
+        if [[ -n "${FOO_BLD_CCACHE}" ]] && [[ "${FOO_BLD_CCACHE}" = "on" ]]; then
             ENHANCED_DEV_CCACHE=true
         fi
-        if [[ -n "${FOO_ENHANCED_DEV_DISTCC}" ]] && [[ "${FOO_ENHANCED_DEV_DISTCC}" = "on" ]]; then
+        if [[ -n "${FOO_BLD_DISTCC}" ]] && [[ "${FOO_BLD_DISTCC}" = "on" ]]; then
             ENHANCED_DEV_DISTCC=true
+        fi
+        if [[ -n "${FOO_BLD_TMPFS}" ]] && [[ "${FOO_BLD_TMPFS}" = "on" ]]; then
+            ENHANCED_DEV_TMPFS=true
         fi
     fi
 
+    if [[ "${ENHANCED_DEV_PCH}" = true ]]; then
+        CMAKE_EXTRA_FLAG="${CMAKE_EXTRA_FLAG} -D_TOOLCHAIN_PCH=ON"
+    fi
     if [[ "${ENHANCED_DEV_CCACHE}" = true ]]; then
         CMAKE_EXTRA_FLAG="${CMAKE_EXTRA_FLAG} -D_TOOLCHAIN_CCACHE=ON"
         if [[ "${ENHANCED_DEV_DISTCC}" = true ]] \
@@ -250,11 +257,12 @@ performEnvironmentOption()
         shellCommand "cat <<EOF >./${SCRIPT_FOLDER}/.env
 #!/bin/false
 
-FOO_ENHANCED_DEV_TMPFS=off
-FOO_ENHANCED_DEV_CCACHE=off
-FOO_ENHANCED_DEV_DISTCC=off
+FOO_BLD_PCH=off
+FOO_BLD_CCACHE=off
+FOO_BLD_DISTCC=off
+FOO_BLD_TMPFS=off
 
-export FOO_ENHANCED_DEV_TMPFS FOO_ENHANCED_DEV_CCACHE FOO_ENHANCED_DEV_DISTCC
+export FOO_BLD_PCH FOO_BLD_CCACHE FOO_BLD_DISTCC FOO_BLD_TMPFS
 return 0
 EOF"
         exit 0

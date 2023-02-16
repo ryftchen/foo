@@ -9,10 +9,12 @@ check_include_file("mpfr.h" HAVE_MPFR_HEADER)
 check_include_file("sys/time.h" HAVE_SYS_TIME_HEADER)
 find_package(GTest REQUIRED)
 
+if(DEFINED ENV{FOO_ENV})
+    message(STATUS "The test project env: FOO_ENV=$ENV{FOO_ENV}")
+endif()
 include(${CMAKE_SOURCE_DIR}/../cmake/common.cmake)
 include(${CMAKE_SOURCE_DIR}/../cmake/toolchain.cmake)
 set(RUNTIME_PRINTING OFF CACHE BOOL "runtime printing" FORCE)
-set(PRECOMPILED_HEADER ON CACHE BOOL "precompiled header" FORCE)
 include(${CMAKE_SOURCE_DIR}/../cmake/condition.cmake)
 
 set(BIN_NAME foo_test)
