@@ -186,9 +186,9 @@ setCompileEnv()
     fi
 
     if [[ ! "${ENHANCED_DEV_PARALLEL}" -eq 0 ]]; then
-        CMAKE_BUILD_OPTION=" -j ${ENHANCED_DEV_PARALLEL}"
+        CMAKE_BUILD_OPTION="-j ${ENHANCED_DEV_PARALLEL}"
     fi
-    CMAKE_CACHE_ENTRY=" -DCMAKE_BUILD_TYPE=${BUILD_TYPE}"
+    CMAKE_CACHE_ENTRY="-DCMAKE_BUILD_TYPE=${BUILD_TYPE}"
     if [[ "${ENHANCED_DEV_PCH}" = true ]]; then
         CMAKE_CACHE_ENTRY="${CMAKE_CACHE_ENTRY} -D_TOOLCHAIN_PCH=ON"
     fi
@@ -215,18 +215,18 @@ performBuilding()
             mkdir "./${BUILD_FOLDER}"
         fi
         if ! df -h -t tmpfs | grep -q "${PROJECT_FOLDER}/${BUILD_FOLDER}" 2>/dev/null; then
-            shellCommand "mount -t tmpfs -o size=96m tmpfs ./${BUILD_FOLDER}"
+            shellCommand "mount -t tmpfs -o size=256m tmpfs ./${BUILD_FOLDER}"
         fi
     fi
 
-    shellCommand "cmake -S . -B ./${BUILD_FOLDER} -G Ninja${CMAKE_CACHE_ENTRY}"
+    shellCommand "cmake -S . -B ./${BUILD_FOLDER} -G Ninja ${CMAKE_CACHE_ENTRY}"
     if [[ "${TO_COMPILE_SOURCE_ONLY}" = true ]]; then
         tput setaf 2 && tput bold
-        shellCommand "cmake --build ./${BUILD_FOLDER}${CMAKE_BUILD_OPTION}"
+        shellCommand "cmake --build ./${BUILD_FOLDER} ${CMAKE_BUILD_OPTION}"
         tput sgr0
         exit 0
     fi
-    shellCommand "cmake -S ./${TEST_FOLDER} -B ./${TEST_FOLDER}/${BUILD_FOLDER} -G Ninja${CMAKE_CACHE_ENTRY}"
+    shellCommand "cmake -S ./${TEST_FOLDER} -B ./${TEST_FOLDER}/${BUILD_FOLDER} -G Ninja ${CMAKE_CACHE_ENTRY}"
 }
 
 performHelpOption()
@@ -339,13 +339,13 @@ performTestOption()
                 mkdir -p "./${TEST_FOLDER}/${BUILD_FOLDER}"
             fi
             if ! df -h -t tmpfs | grep -q "${PROJECT_FOLDER}/${TEST_FOLDER}/${BUILD_FOLDER}" 2>/dev/null; then
-                shellCommand "mount -t tmpfs -o size=48m tmpfs ./${TEST_FOLDER}/${BUILD_FOLDER}"
+                shellCommand "mount -t tmpfs -o size=128m tmpfs ./${TEST_FOLDER}/${BUILD_FOLDER}"
             fi
         fi
 
-        shellCommand "cmake -S ./${TEST_FOLDER} -B ./${TEST_FOLDER}/${BUILD_FOLDER} -G Ninja${CMAKE_CACHE_ENTRY}"
+        shellCommand "cmake -S ./${TEST_FOLDER} -B ./${TEST_FOLDER}/${BUILD_FOLDER} -G Ninja ${CMAKE_CACHE_ENTRY}"
         tput setaf 2 && tput bold
-        shellCommand "cmake --build ./${TEST_FOLDER}/${BUILD_FOLDER}${CMAKE_BUILD_OPTION}"
+        shellCommand "cmake --build ./${TEST_FOLDER}/${BUILD_FOLDER} ${CMAKE_BUILD_OPTION}"
         tput sgr0
         exit 0
     fi
