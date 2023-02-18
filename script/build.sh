@@ -162,8 +162,10 @@ Please install it."
     fi
 }
 
-setCompileEnv()
+setCompileEnvironment()
 {
+    local tmpfsSubFolder=$1 tmpfsSize=$2
+
     export CC=/usr/bin/clang-12 CXX=/usr/bin/clang++-12
     if [[ -f ./"${SCRIPT_FOLDER}"/.env ]]; then
         # shellcheck source=/dev/null
@@ -205,19 +207,21 @@ setCompileEnv()
             export DISTCC_HOSTS=localhost
         fi
     fi
+    if [[ "${ENHANCED_DEV_TMPFS}" = true ]]; then
+        if [[ ! -d ./${tmpfsSubFolder} ]]; then
+            mkdir "./${tmpfsSubFolder}"
+        fi
+        if ! df -h -t tmpfs | grep -q "${PROJECT_FOLDER}/${tmpfsSubFolder}" 2>/dev/null; then
+            shellCommand "mount -t tmpfs -o size=${tmpfsSize} tmpfs ./${tmpfsSubFolder}"
+        fi
+    elif df -h -t tmpfs | grep -q "${PROJECT_FOLDER}/${tmpfsSubFolder}" 2>/dev/null; then
+        shellCommand "umount ./${tmpfsSubFolder}"
+    fi
 }
 
 performBuilding()
 {
-    setCompileEnv
-    if [[ "${ENHANCED_DEV_TMPFS}" = true ]]; then
-        if [[ ! -d ./${BUILD_FOLDER} ]]; then
-            mkdir "./${BUILD_FOLDER}"
-        fi
-        if ! df -h -t tmpfs | grep -q "${PROJECT_FOLDER}/${BUILD_FOLDER}" 2>/dev/null; then
-            shellCommand "mount -t tmpfs -o size=256m tmpfs ./${BUILD_FOLDER}"
-        fi
-    fi
+    setCompileEnvironment "${BUILD_FOLDER}" "256m"
 
     shellCommand "cmake -S . -B ./${BUILD_FOLDER} -G Ninja ${CMAKE_CACHE_ENTRY}"
     if [[ "${TO_COMPILE_SOURCE_ONLY}" = true ]]; then
@@ -311,15 +315,7 @@ performContainerOption()
 performTestOption()
 {
     if [[ "${ARGS_TEST}" = true ]]; then
-        setCompileEnv
-        if [[ "${ENHANCED_DEV_TMPFS}" = true ]]; then
-            if [[ ! -d ./${TEST_FOLDER}/${BUILD_FOLDER} ]]; then
-                mkdir -p "./${TEST_FOLDER}/${BUILD_FOLDER}"
-            fi
-            if ! df -h -t tmpfs | grep -q "${PROJECT_FOLDER}/${TEST_FOLDER}/${BUILD_FOLDER}" 2>/dev/null; then
-                shellCommand "mount -t tmpfs -o size=128m tmpfs ./${TEST_FOLDER}/${BUILD_FOLDER}"
-            fi
-        fi
+        setCompileEnvironment "${TEST_FOLDER}/${BUILD_FOLDER}" "128m"
 
         shellCommand "cmake -S ./${TEST_FOLDER} -B ./${TEST_FOLDER}/${BUILD_FOLDER} -G Ninja ${CMAKE_CACHE_ENTRY}"
         tput setaf 2 && tput bold
@@ -409,19 +405,20 @@ ${timeInterval}s ago."
 
 tarHtmlForBrowser()
 {
+    local commitId=$1
+
     if [[ ! -f ./"${BUILD_FOLDER}"/"${COMPILE_COMMANDS}" ]]; then
         exception "There is no ${COMPILE_COMMANDS} file in the ${BUILD_FOLDER} folder. Please generate it."
     fi
-    local browserFolder="browser"
-    local tarFile="${PROJECT_FOLDER}_${browserFolder}_$1.tar.bz2"
+    local browserFolder="browser" tarFile="${PROJECT_FOLDER}_${browserFolder}_${commitId}.tar.bz2"
     rm -rf ./"${TEMPORARY_FOLDER}"/"${PROJECT_FOLDER}"_"${browserFolder}"_*.tar.bz2 \
         ./"${DOCUMENT_FOLDER}"/"${browserFolder}"
 
     mkdir -p ./"${DOCUMENT_FOLDER}"/"${browserFolder}"
     shellCommand "codebrowser_generator -color -a -b ./${BUILD_FOLDER}/${COMPILE_COMMANDS} \
--o ./${DOCUMENT_FOLDER}/${browserFolder} -p ${PROJECT_FOLDER}:.:$1 -d ./data"
+-o ./${DOCUMENT_FOLDER}/${browserFolder} -p ${PROJECT_FOLDER}:.:${commitId} -d ./data"
     shellCommand "codebrowser_generator -color -a -b ./${TEST_FOLDER}/${BUILD_FOLDER}/${COMPILE_COMMANDS} \
--o ./${DOCUMENT_FOLDER}/${browserFolder} -p ${PROJECT_FOLDER}:.:$1 -d ./data"
+-o ./${DOCUMENT_FOLDER}/${browserFolder} -p ${PROJECT_FOLDER}:.:${commitId} -d ./data"
     shellCommand "codebrowser_indexgenerator ./${DOCUMENT_FOLDER}/${browserFolder} -d ./data"
     shellCommand "cp -rf /usr/local/share/woboq/data ./${DOCUMENT_FOLDER}/${browserFolder}/"
     shellCommand "tar -jcvf ./${TEMPORARY_FOLDER}/${tarFile} -C ./${DOCUMENT_FOLDER} ${browserFolder} >/dev/null"
@@ -454,8 +451,9 @@ ${timeInterval}s ago."
 
 tarHtmlForDoxygen()
 {
-    local doxygenFolder="doxygen"
-    local tarFile="${PROJECT_FOLDER}_${doxygenFolder}_$1.tar.bz2"
+    local commitId=$1
+
+    local doxygenFolder="doxygen" tarFile="${PROJECT_FOLDER}_${doxygenFolder}_${commitId}.tar.bz2"
     rm -rf ./"${TEMPORARY_FOLDER}"/"${PROJECT_FOLDER}"_"${doxygenFolder}"_*.tar.bz2 \
         ./"${DOCUMENT_FOLDER}"/"${doxygenFolder}"
 
