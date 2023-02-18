@@ -32,7 +32,7 @@
 namespace utility::common
 {
 //! @brief Alias for print style.
-typedef std::string& (*PrintStyle)(std::string& line);
+typedef std::string& (*DisplayStyle)(std::string& line);
 
 //! @brief ANSI escape codes for red foreground color.
 inline constexpr std::string_view colorRed{"\033[0;31;40m"};
@@ -53,11 +53,22 @@ inline constexpr std::string_view colorForBackground{"\033[49m"};
 //! @brief ANSI escape codes for ending.
 inline constexpr std::string_view colorOff{"\033[0m"};
 //! @brief Print without style.
-inline constexpr PrintStyle nullStyle = nullptr;
+inline constexpr DisplayStyle nullStyle = nullptr;
 //! @brief Maximum number of lines to print.
 constexpr uint32_t maxLineNumForPrintFile = 1000;
 //! @brief Maximum size of output per line.
 constexpr uint32_t maxBufferSize = 4096;
+
+//! @brief Property for displaying the contents of the file.
+struct DisplayProperty
+{
+    //! @brief Be inverted or not inverted.
+    bool IsInverted{false};
+    //! @brief Maximum number of lines to display.
+    uint32_t maxLine{maxLineNumForPrintFile};
+    //! @brief Display style.
+    DisplayStyle style{nullStyle};
+};
 
 //! @brief Enumerate specific lock operation types.
 enum class LockOperationType : uint8_t
@@ -153,9 +164,5 @@ template <std::string_view const&... Strings>
 static constexpr auto joinStr = Join<Strings...>::value;
 
 extern void executeCommand(const char* const cmd);
-extern void printFile(
-    const char* const pathname,
-    const bool reverse = false,
-    const uint32_t maxLine = maxLineNumForPrintFile,
-    PrintStyle style = nullStyle);
+extern void displayContentOfFile(const char* const pathname, const DisplayProperty& property = {});
 } // namespace utility::common

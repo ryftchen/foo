@@ -120,7 +120,7 @@ void runArithmetic(const std::vector<std::string>& targets)
     using utility::hash::operator""_bkdrHash;
 
     APP_NUM_PRINT_TASK_BEGIN_TITLE(Type::arithmetic);
-    auto* threads = command::getMemoryForMultithreading().newElement(std::min(
+    auto* threads = command::getPoolForMultithreading().newElement(std::min(
         static_cast<uint32_t>(getBit<ArithmeticMethod>().count()),
         static_cast<uint32_t>(Bottom<ArithmeticMethod>::value)));
 
@@ -160,7 +160,7 @@ void runArithmetic(const std::vector<std::string>& targets)
         }
     }
 
-    command::getMemoryForMultithreading().deleteElement(threads);
+    command::getPoolForMultithreading().deleteElement(threads);
     APP_NUM_PRINT_TASK_END_TITLE(Type::arithmetic);
 }
 
@@ -203,7 +203,7 @@ void runDivisor(const std::vector<std::string>& targets)
     using utility::hash::operator""_bkdrHash;
 
     APP_NUM_PRINT_TASK_BEGIN_TITLE(Type::divisor);
-    auto* threads = command::getMemoryForMultithreading().newElement(std::min(
+    auto* threads = command::getPoolForMultithreading().newElement(std::min(
         static_cast<uint32_t>(getBit<DivisorMethod>().count()), static_cast<uint32_t>(Bottom<DivisorMethod>::value)));
 
     const std::shared_ptr<TargetBuilder> builder =
@@ -236,7 +236,7 @@ void runDivisor(const std::vector<std::string>& targets)
         }
     }
 
-    command::getMemoryForMultithreading().deleteElement(threads);
+    command::getPoolForMultithreading().deleteElement(threads);
     APP_NUM_PRINT_TASK_END_TITLE(Type::divisor);
 }
 
@@ -295,7 +295,7 @@ void runIntegral(const std::vector<std::string>& targets)
                                    const numeric::integral::expression::ExprRange<double, double>& range)
     {
         static_assert(numeric::integral::epsilon > 0.0);
-        auto* threads = command::getMemoryForMultithreading().newElement(std::min(
+        auto* threads = command::getPoolForMultithreading().newElement(std::min(
             static_cast<uint32_t>(getBit<IntegralMethod>().count()),
             static_cast<uint32_t>(Bottom<IntegralMethod>::value)));
         const auto integralFunctor =
@@ -341,7 +341,7 @@ void runIntegral(const std::vector<std::string>& targets)
                     break;
             }
         }
-        command::getMemoryForMultithreading().deleteElement(threads);
+        command::getPoolForMultithreading().deleteElement(threads);
     };
 
     APP_NUM_PRINT_TASK_BEGIN_TITLE(Type::integral);
@@ -415,7 +415,7 @@ void runPrime(const std::vector<std::string>& targets)
     using utility::hash::operator""_bkdrHash;
 
     APP_NUM_PRINT_TASK_BEGIN_TITLE(Type::prime);
-    auto* threads = command::getMemoryForMultithreading().newElement(std::min(
+    auto* threads = command::getPoolForMultithreading().newElement(std::min(
         static_cast<uint32_t>(getBit<PrimeMethod>().count()), static_cast<uint32_t>(Bottom<PrimeMethod>::value)));
 
     const std::shared_ptr<TargetBuilder> builder = std::make_shared<TargetBuilder>(input::maxPositiveIntegerForPrime);
@@ -446,7 +446,7 @@ void runPrime(const std::vector<std::string>& targets)
         }
     }
 
-    command::getMemoryForMultithreading().deleteElement(threads);
+    command::getPoolForMultithreading().deleteElement(threads);
     APP_NUM_PRINT_TASK_END_TITLE(Type::prime);
 }
 

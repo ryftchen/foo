@@ -47,10 +47,8 @@ void executeCommand(const char* const cmd)
 
 //! @brief Print file contents.
 //! @param pathname - target file to be printed
-//! @param reverse - reverse or not reverse
-//! @param maxLine - maximum number of lines to print
-//! @param style - print style
-void printFile(const char* const pathname, const bool reverse, const uint32_t maxLine, PrintStyle style)
+//! @param property - display property
+void displayContentOfFile(const char* const pathname, const DisplayProperty& property)
 {
     std::ifstream file;
     file.open(pathname, std::ios_base::in);
@@ -60,7 +58,7 @@ void printFile(const char* const pathname, const bool reverse, const uint32_t ma
     }
     tryToOperateFileLock(file, pathname, LockOperationType::lock, FileLockType::readerLock);
 
-    PrintStyle formatStyle = style;
+    DisplayStyle formatStyle = property.style;
     if (nullStyle == formatStyle)
     {
         formatStyle = [](std::string& line) -> std::string&
@@ -72,9 +70,9 @@ void printFile(const char* const pathname, const bool reverse, const uint32_t ma
     std::string line;
     std::list<std::string> content(0);
     file.seekg(std::ios::beg);
-    if (!reverse)
+    if (!property.IsInverted)
     {
-        while ((content.size() < maxLine) && std::getline(file, line))
+        while ((content.size() < property.maxLine) && std::getline(file, line))
         {
             content.emplace_back(formatStyle(line));
         }
@@ -84,7 +82,7 @@ void printFile(const char* const pathname, const bool reverse, const uint32_t ma
         std::ifstream statistics(pathname);
         const uint32_t lineNum = std::count(
                            std::istreambuf_iterator<char>(statistics), std::istreambuf_iterator<char>(), '\n'),
-                       startLine = (lineNum > maxLine) ? (lineNum - maxLine + 1) : 1;
+                       startLine = (lineNum > property.maxLine) ? (lineNum - property.maxLine + 1) : 1;
         for (uint32_t i = 0; i < (startLine - 1); ++i)
         {
             file.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
