@@ -65,7 +65,7 @@ void runBehavioral(const std::vector<std::string>& targets)
     using utility::hash::operator""_bkdrHash;
 
     APP_DP_PRINT_TASK_BEGIN_TITLE(Type::behavioral);
-    auto* threads = command::getMemoryForMultithreading().newElement(std::min(
+    auto* threads = command::getPoolForMultithreading().newElement(std::min(
         static_cast<uint32_t>(getBit<BehavioralInstance>().count()),
         static_cast<uint32_t>(Bottom<BehavioralInstance>::value)));
 
@@ -124,7 +124,7 @@ void runBehavioral(const std::vector<std::string>& targets)
         }
     }
 
-    command::getMemoryForMultithreading().deleteElement(threads);
+    command::getPoolForMultithreading().deleteElement(threads);
     APP_DP_PRINT_TASK_END_TITLE(Type::behavioral);
 }
 
@@ -187,7 +187,7 @@ void runCreational(const std::vector<std::string>& targets)
     using utility::hash::operator""_bkdrHash;
 
     APP_DP_PRINT_TASK_BEGIN_TITLE(Type::creational);
-    auto* threads = command::getMemoryForMultithreading().newElement(std::min(
+    auto* threads = command::getPoolForMultithreading().newElement(std::min(
         static_cast<uint32_t>(getBit<CreationalInstance>().count()),
         static_cast<uint32_t>(Bottom<CreationalInstance>::value)));
 
@@ -228,7 +228,7 @@ void runCreational(const std::vector<std::string>& targets)
         }
     }
 
-    command::getMemoryForMultithreading().deleteElement(threads);
+    command::getPoolForMultithreading().deleteElement(threads);
     APP_DP_PRINT_TASK_END_TITLE(Type::creational);
 }
 
@@ -273,7 +273,7 @@ void runStructural(const std::vector<std::string>& targets)
     using utility::hash::operator""_bkdrHash;
 
     APP_DP_PRINT_TASK_BEGIN_TITLE(Type::structural);
-    auto* threads = command::getMemoryForMultithreading().newElement(std::min(
+    auto* threads = command::getPoolForMultithreading().newElement(std::min(
         static_cast<uint32_t>(getBit<StructuralInstance>().count()),
         static_cast<uint32_t>(Bottom<StructuralInstance>::value)));
 
@@ -320,7 +320,7 @@ void runStructural(const std::vector<std::string>& targets)
         }
     }
 
-    command::getMemoryForMultithreading().deleteElement(threads);
+    command::getPoolForMultithreading().deleteElement(threads);
     APP_DP_PRINT_TASK_END_TITLE(Type::structural);
 }
 

@@ -62,7 +62,7 @@ void runLinear(const std::vector<std::string>& targets)
     using utility::hash::operator""_bkdrHash;
 
     APP_DS_PRINT_TASK_BEGIN_TITLE(Type::linear);
-    auto* threads = command::getMemoryForMultithreading().newElement(std::min(
+    auto* threads = command::getPoolForMultithreading().newElement(std::min(
         static_cast<uint32_t>(getBit<LinearInstance>().count()), static_cast<uint32_t>(Bottom<LinearInstance>::value)));
 
     const std::shared_ptr<LinearStructure> structure = std::make_shared<LinearStructure>();
@@ -96,7 +96,7 @@ void runLinear(const std::vector<std::string>& targets)
         }
     }
 
-    command::getMemoryForMultithreading().deleteElement(threads);
+    command::getPoolForMultithreading().deleteElement(threads);
     APP_DS_PRINT_TASK_END_TITLE(Type::linear);
 }
 
@@ -135,7 +135,7 @@ void runTree(const std::vector<std::string>& targets)
     using utility::hash::operator""_bkdrHash;
 
     APP_DS_PRINT_TASK_BEGIN_TITLE(Type::tree);
-    auto* threads = command::getMemoryForMultithreading().newElement(std::min(
+    auto* threads = command::getPoolForMultithreading().newElement(std::min(
         static_cast<uint32_t>(getBit<TreeInstance>().count()), static_cast<uint32_t>(Bottom<TreeInstance>::value)));
 
     const std::shared_ptr<TreeStructure> structure = std::make_shared<TreeStructure>();
@@ -169,7 +169,7 @@ void runTree(const std::vector<std::string>& targets)
         }
     }
 
-    command::getMemoryForMultithreading().deleteElement(threads);
+    command::getPoolForMultithreading().deleteElement(threads);
     APP_DS_PRINT_TASK_END_TITLE(Type::tree);
 }
 

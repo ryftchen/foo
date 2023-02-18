@@ -51,6 +51,7 @@ private:
     std::atomic<bool> isParsed{false};
     //! @brief A Argument object for parsing arguments.
     utility::argument::Argument program{utility::argument::Argument("foo", "0.1")};
+    //! @brief Copyright information.
     static constexpr std::string_view copyrightInfo{"Copyright (c) 2022-2023 ryftchen."};
 
     //! @brief Foreground handler for parsing command line arguments.
@@ -298,5 +299,8 @@ auto Command::get(const TaskFunctorTuple& tuple) const
     }
 }
 
-extern utility::memory::Memory<utility::thread::Thread>& getMemoryForMultithreading();
+//! @brief Alias for memory pool when making multi-threading.
+using PublicThreadPool = utility::memory::Memory<utility::thread::Thread>;
+
+extern PublicThreadPool& getPoolForMultithreading();
 } // namespace application::command

@@ -488,7 +488,7 @@ void Command::printVersionInfo() const
     versionStr.pop_back();
     versionStr += "                    VERSION " + program.version;
     versionStr += " \"; tput sgr0; echo ";
-    versionStr += "\"" + std::string{copyrightInfo} + "\"";
+    versionStr += "\"\n" + std::string{copyrightInfo} + "\"";
 
     utility::common::executeCommand(versionStr.c_str());
 }
@@ -531,8 +531,9 @@ void Command::viewLogContent()
 {
     LOG_TO_STOP;
 
-    utility::common::printFile(
-        utility::log::logPath.data(), true, maxLineNumForPrintLog, &utility::log::changeToLogStyle);
+    utility::common::displayContentOfFile(
+        utility::log::logPath.data(),
+        utility::common::DisplayProperty{true, maxLineNumForPrintLog, &utility::log::changeToLogStyle});
 }
 
 std::string Command::getIconBanner()
@@ -550,10 +551,10 @@ std::string Command::getIconBanner()
 }
 
 //! @brief Get memory pool when making multi-threading.
-//! @return reference of the Memory object
-utility::memory::Memory<utility::thread::Thread>& getMemoryForMultithreading()
+//! @return reference of the PublicThreadPool object
+PublicThreadPool& getPoolForMultithreading()
 {
-    static utility::memory::Memory<utility::thread::Thread> memory;
-    return memory;
+    static PublicThreadPool pool;
+    return pool;
 }
 } // namespace application::command

@@ -137,7 +137,7 @@ void runMatch(const std::vector<std::string>& targets)
 
     static_assert(algorithm::match::maxDigit > input::singlePatternForMatch.length());
     APP_ALGO_PRINT_TASK_BEGIN_TITLE(Type::match);
-    auto* threads = command::getMemoryForMultithreading().newElement(std::min(
+    auto* threads = command::getPoolForMultithreading().newElement(std::min(
         static_cast<uint32_t>(getBit<MatchMethod>().count()), static_cast<uint32_t>(Bottom<MatchMethod>::value)));
 
     const std::shared_ptr<TargetBuilder> builder =
@@ -185,7 +185,7 @@ void runMatch(const std::vector<std::string>& targets)
         }
     }
 
-    command::getMemoryForMultithreading().deleteElement(threads);
+    command::getPoolForMultithreading().deleteElement(threads);
     APP_ALGO_PRINT_TASK_END_TITLE(Type::match);
 }
 
@@ -231,7 +231,7 @@ void runNotation(const std::vector<std::string>& targets)
     using utility::hash::operator""_bkdrHash;
 
     APP_ALGO_PRINT_TASK_BEGIN_TITLE(Type::notation);
-    auto* threads = command::getMemoryForMultithreading().newElement(std::min(
+    auto* threads = command::getPoolForMultithreading().newElement(std::min(
         static_cast<uint32_t>(getBit<NotationMethod>().count()), static_cast<uint32_t>(Bottom<NotationMethod>::value)));
 
     const std::shared_ptr<TargetBuilder> builder = std::make_shared<TargetBuilder>(input::infixForNotation);
@@ -262,7 +262,7 @@ void runNotation(const std::vector<std::string>& targets)
         }
     }
 
-    command::getMemoryForMultithreading().deleteElement(threads);
+    command::getPoolForMultithreading().deleteElement(threads);
     APP_ALGO_PRINT_TASK_END_TITLE(Type::notation);
 }
 
@@ -321,7 +321,7 @@ void runOptimal(const std::vector<std::string>& targets)
                                    const algorithm::optimal::function::FuncRange<double, double>& range)
     {
         assert((range.range1 < range.range2) && (algorithm::optimal::epsilon > 0.0));
-        auto* threads = command::getMemoryForMultithreading().newElement(std::min(
+        auto* threads = command::getPoolForMultithreading().newElement(std::min(
             static_cast<uint32_t>(getBit<OptimalMethod>().count()),
             static_cast<uint32_t>(Bottom<OptimalMethod>::value)));
         const auto optimalFunctor =
@@ -364,7 +364,7 @@ void runOptimal(const std::vector<std::string>& targets)
                     break;
             }
         }
-        command::getMemoryForMultithreading().deleteElement(threads);
+        command::getPoolForMultithreading().deleteElement(threads);
     };
 
     APP_ALGO_PRINT_TASK_BEGIN_TITLE(Type::optimal);
@@ -439,7 +439,7 @@ void runSearch(const std::vector<std::string>& targets)
 
     static_assert((arrayRangeForSearch1 < arrayRangeForSearch2) && (arrayLengthForSearch > 0));
     APP_ALGO_PRINT_TASK_BEGIN_TITLE(Type::search);
-    auto* threads = command::getMemoryForMultithreading().newElement(std::min(
+    auto* threads = command::getPoolForMultithreading().newElement(std::min(
         static_cast<uint32_t>(getBit<SearchMethod>().count()), static_cast<uint32_t>(Bottom<SearchMethod>::value)));
 
     const std::shared_ptr<TargetBuilder<double>> builder =
@@ -476,7 +476,7 @@ void runSearch(const std::vector<std::string>& targets)
         }
     }
 
-    command::getMemoryForMultithreading().deleteElement(threads);
+    command::getPoolForMultithreading().deleteElement(threads);
     APP_ALGO_PRINT_TASK_END_TITLE(Type::search);
 }
 
@@ -520,7 +520,7 @@ void runSort(const std::vector<std::string>& targets)
 
     static_assert((arrayRangeForSort1 < arrayRangeForSort2) && (arrayLengthForSort > 0));
     APP_ALGO_PRINT_TASK_BEGIN_TITLE(Type::sort);
-    auto* threads = command::getMemoryForMultithreading().newElement(std::min(
+    auto* threads = command::getPoolForMultithreading().newElement(std::min(
         static_cast<uint32_t>(getBit<SortMethod>().count()), static_cast<uint32_t>(Bottom<SortMethod>::value)));
 
     const std::shared_ptr<TargetBuilder<int>> builder =
@@ -577,7 +577,7 @@ void runSort(const std::vector<std::string>& targets)
         }
     }
 
-    command::getMemoryForMultithreading().deleteElement(threads);
+    command::getPoolForMultithreading().deleteElement(threads);
     APP_ALGO_PRINT_TASK_END_TITLE(Type::sort);
 }
 
