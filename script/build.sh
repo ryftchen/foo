@@ -27,6 +27,7 @@ ARGS_BROWSER=false
 ARGS_DOXYGEN=false
 ENHANCED_DEV_PARALLEL=0
 ENHANCED_DEV_PCH=false
+ENHANCED_DEV_UNITY=false
 ENHANCED_DEV_CCACHE=false
 ENHANCED_DEV_DISTCC=false
 ENHANCED_DEV_TMPFS=false
@@ -176,6 +177,9 @@ setCompileEnvironment()
         if [[ -n "${FOO_BLD_PCH}" ]] && [[ "${FOO_BLD_PCH}" = "on" ]]; then
             ENHANCED_DEV_PCH=true
         fi
+        if [[ -n "${FOO_BLD_UNITY}" ]] && [[ "${FOO_BLD_UNITY}" = "on" ]]; then
+            ENHANCED_DEV_UNITY=true
+        fi
         if [[ -n "${FOO_BLD_CCACHE}" ]] && [[ "${FOO_BLD_CCACHE}" = "on" ]]; then
             ENHANCED_DEV_CCACHE=true
         fi
@@ -193,6 +197,9 @@ setCompileEnvironment()
     CMAKE_CACHE_ENTRY="-DCMAKE_BUILD_TYPE=${BUILD_TYPE}"
     if [[ "${ENHANCED_DEV_PCH}" = true ]]; then
         CMAKE_CACHE_ENTRY="${CMAKE_CACHE_ENTRY} -D_TOOLCHAIN_PCH=ON"
+    fi
+    if [[ "${ENHANCED_DEV_UNITY}" = true ]]; then
+        CMAKE_CACHE_ENTRY="${CMAKE_CACHE_ENTRY} -D_TOOLCHAIN_UNITY=ON"
     fi
     if [[ "${ENHANCED_DEV_CCACHE}" = true ]]; then
         CMAKE_CACHE_ENTRY="${CMAKE_CACHE_ENTRY} -D_TOOLCHAIN_CCACHE=ON"
@@ -271,11 +278,12 @@ performEnvironmentOption()
 
 FOO_BLD_PARALLEL=0
 FOO_BLD_PCH=off
+FOO_BLD_UNITY=off
 FOO_BLD_CCACHE=off
 FOO_BLD_DISTCC=off
 FOO_BLD_TMPFS=off
 
-export FOO_BLD_PARALLEL FOO_BLD_PCH FOO_BLD_CCACHE FOO_BLD_DISTCC FOO_BLD_TMPFS
+export FOO_BLD_PARALLEL FOO_BLD_PCH FOO_BLD_UNITY FOO_BLD_CCACHE FOO_BLD_DISTCC FOO_BLD_TMPFS
 return 0
 EOF"
         exit 0
