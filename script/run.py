@@ -105,6 +105,10 @@ class Task:
         self.taskQueue = queue.Queue()
 
     def run(self):
+        filePath = os.path.split(os.path.realpath(__file__))[0]
+        os.chdir(filePath.replace(filePath[filePath.index("script") :], ''))
+
+        self.parseArguments()
         self.prepareTask()
 
         if not self.isUnitTest:
@@ -207,18 +211,31 @@ class Task:
         sys.stdout = self.log
 
     def parseArguments(self):
+        def checkPositive(value):
+            value = int(value)
+            if value <= 0:
+                raise argparse.ArgumentTypeError(f"\"{value}\" is an invalid positive int value")
+            return value
+
         parser = argparse.ArgumentParser(description="run script")
-        parser.add_argument("-t", "--test", nargs="?", type=int, const=1, help="run unit test only")
         parser.add_argument(
-            "-c", "--check", choices=["cov", "mem"], nargs="+", help="run with check: coverage and memory"
+            "-t", "--test", nargs="?", const=1, type=checkPositive, help="run unit test only", metavar="times"
         )
         parser.add_argument(
-            "-b", "--build", choices=["dbg", "rls"], nargs="?", const="dbg", help="run with build: debug or release"
+            "-c", "--check", nargs="+", choices=["cov", "mem"], help="run with check: cov - coverage, mem - memory"
+        )
+        parser.add_argument(
+            "-b",
+            "--build",
+            nargs="?",
+            const="dbg",
+            choices=["dbg", "rls"],
+            help="run after build: dbg - debug, rls - release",
         )
         args = parser.parse_args()
 
-        if args.check:
-            if args.test:
+        if args.check is not None:
+            if args.test is not None:
                 Output.exception("No support for --check during testing.")
             if "cov" in args.check:
                 stdout, _, _ = common.executeCommand("command -v llvm-profdata-12 llvm-cov-12 2>&1")
@@ -237,10 +254,10 @@ class Task:
                 else:
                     Output.exception("No valgrind or valgrind-ci program. Please check it.")
 
-        if args.build:
+        if args.build is not None:
             if os.path.isfile(self.buildFile):
                 buildCmd = self.buildFile
-                if args.test:
+                if args.test is not None:
                     buildCmd += " --test"
                 if args.build == "dbg":
                     self.buildTarget(f"{buildCmd} 2>&1")
@@ -249,7 +266,7 @@ class Task:
             else:
                 Output.exception("No shell script build.sh in script folder.")
 
-        if args.test:
+        if args.test is not None:
             self.isUnitTest = True
             self.totalStep = args.test
 
@@ -264,10 +281,6 @@ class Task:
                 Output.exception(f"Failed to build target by shell script {self.buildFile}.")
 
     def prepareTask(self):
-        filePath = os.path.split(os.path.realpath(__file__))[0]
-        os.chdir(filePath.replace(filePath[filePath.index("script") :], ''))
-
-        self.parseArguments()
         if not self.isUnitTest and not os.path.isfile(f"{self.binDir}/{self.binCmd}"):
             Output.exception("No executable file. Please build it.")
         if self.isUnitTest and not os.path.isfile(f"{self.testBinDir}/{self.testBinCmd}"):
