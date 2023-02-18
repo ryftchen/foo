@@ -22,21 +22,20 @@ The **Foo** is a personal roadmap for learning programming. Its main purpose is 
 
 ## Getting started
 
-1. Prepare the environment:
-
-    ```bash
-    docker pull ryftchen/foo:latest
-    docker run -it --name foo_dev -d --privileged ryftchen/foo:latest /bin/bash
-    docker exec -it foo_dev /bin/bash
-    ```
-
-    For environment dependencies and container construction, see the [Dockerfile](https://github.com/ryftchen/foo/blob/master/docker/Dockerfile).
-2. Get the code:
+1. Get the code:
 
     ```bash
     git clone https://github.com/ryftchen/foo.git
-    cd ./foo
     ```
+
+2. Prepare the environment:
+
+    ```bash
+    docker-compose -f foo/docker/docker-compose.yml up -d
+    docker exec -it -w /workspace/foo foo_dev /bin/bash
+    ```
+
+    For environment dependencies and container construction, see the [Compose file](https://github.com/ryftchen/foo/blob/master/docker/docker-compose.yml).
 
 ### How to build
 
@@ -81,7 +80,7 @@ The **Foo** is a personal roadmap for learning programming. Its main purpose is 
 
 ## Documentation
 
-The project documentation can be found on the [github pages](https://ryftchen.github.io/foo/). When using local documentation via script, `foo/document` is used as the generation directory.
+The project documentation can be found on the [Github Pages](https://ryftchen.github.io/foo/). When using local documentation via script, `foo/document` is used as the generation directory.
 
 ## License
 
