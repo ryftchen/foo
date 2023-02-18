@@ -418,7 +418,8 @@ tarHtmlForBrowser()
     if [[ ! -f ./"${BUILD_FOLDER}"/"${COMPILE_COMMANDS}" ]]; then
         exception "There is no ${COMPILE_COMMANDS} file in the ${BUILD_FOLDER} folder. Please generate it."
     fi
-    local browserFolder="browser" tarFile="${PROJECT_FOLDER}_${browserFolder}_${commitId}.tar.bz2"
+    local browserFolder="browser"
+    local tarFile="${PROJECT_FOLDER}_${browserFolder}_${commitId}.tar.bz2"
     rm -rf ./"${TEMPORARY_FOLDER}"/"${PROJECT_FOLDER}"_"${browserFolder}"_*.tar.bz2 \
         ./"${DOCUMENT_FOLDER}"/"${browserFolder}"
 
@@ -461,7 +462,8 @@ tarHtmlForDoxygen()
 {
     local commitId=$1
 
-    local doxygenFolder="doxygen" tarFile="${PROJECT_FOLDER}_${doxygenFolder}_${commitId}.tar.bz2"
+    local doxygenFolder="doxygen"
+    local tarFile="${PROJECT_FOLDER}_${doxygenFolder}_${commitId}.tar.bz2"
     rm -rf ./"${TEMPORARY_FOLDER}"/"${PROJECT_FOLDER}"_"${doxygenFolder}"_*.tar.bz2 \
         ./"${DOCUMENT_FOLDER}"/"${doxygenFolder}"
 
