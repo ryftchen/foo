@@ -4,11 +4,15 @@ version: "3.0"
 services:
   foo_dev:
     image: ryftchen/foo:latest
+    build:
+      context: .
+      dockerfile: ./Dockerfile
     container_name: foo_dev
     environment:
       - FOO_ENV=foo_dev
     volumes:
-      - ../:/root/foo
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ../:/workspace/foo
     stdin_open: true
     tty: true
     privileged: true

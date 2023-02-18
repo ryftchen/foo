@@ -298,30 +298,8 @@ performContainerOption()
             exception "No docker or docker-compose program. Please install it."
         fi
 
-        local imageRepo="ryftchen/${PROJECT_FOLDER}"
         if ! docker ps -a --format "{{lower .Image}} {{lower .Names}}" \
-            | grep -q "${imageRepo}:latest ${PROJECT_FOLDER}_dev" 2>/dev/null; then
-            if ! docker image ls -a --format "{{lower .Repository}} {{lower .Tag}}" \
-                | grep -q "${imageRepo} latest" 2>/dev/null; then
-                local toBuildImage=false
-                if docker search "${imageRepo}" --format "{{lower .Name}}" | grep -q "${imageRepo}" 2>/dev/null; then
-                    local tags
-                    tags=$(curl -sS "https://registry.hub.docker.com/v2/repositories/${imageRepo}/tags" \
-                        | sed -Ee 's/("name":)"([^"]*)"/\n\1\2\n/g' | grep '"name":' \
-                        | awk -F: '{printf("%s\n", $2)}')
-                    if echo "${tags}" | grep -q 'latest' 2>/dev/null; then
-                        shellCommand "docker pull ${imageRepo}:latest"
-                    else
-                        toBuildImage=true
-                    fi
-                else
-                    toBuildImage=true
-                fi
-                if [[ "${toBuildImage}" = true ]]; then
-                    shellCommand "docker build -t ${imageRepo}:latest -f ./${DOCKER_FOLDER}/Dockerfile \
-./${DOCKER_FOLDER}/"
-                fi
-            fi
+            | grep -q "ryftchen/${PROJECT_FOLDER}:latest ${PROJECT_FOLDER}_dev" 2>/dev/null; then
             shellCommand "docker-compose -f ./${DOCKER_FOLDER}/docker-compose.yml up -d"
             exit 0
         else
