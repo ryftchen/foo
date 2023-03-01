@@ -7,7 +7,6 @@
 #pragma once
 
 #ifndef __PRECOMPILED_HEADER
-#include <sys/time.h>
 #include <cstring>
 #include <iostream>
 #include <memory>
@@ -310,11 +309,9 @@ requires std::is_floating_point<V>::value void TargetBuilder<T>::setOrderedArray
 template <class T>
 inline std::mt19937 TargetBuilder<T>::getRandomSeedByTime()
 {
-    constexpr uint32_t secToUsec = 1000000;
-    timeval timeSeed{};
-    gettimeofday(&timeSeed, nullptr);
-
-    return std::mt19937(timeSeed.tv_sec * secToUsec + timeSeed.tv_usec);
+    const auto now = std::chrono::system_clock::now();
+    const auto milliseconds = std::chrono::duration_cast<std::chrono::microseconds>(now.time_since_epoch()).count();
+    return std::mt19937(milliseconds);
 }
 } // namespace algorithm::search
 

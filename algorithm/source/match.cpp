@@ -6,7 +6,9 @@
 
 #include "match.hpp"
 #ifndef __PRECOMPILED_HEADER
+// #define NDEBUG
 #include <mpfr.h>
+#include <cassert>
 #include <cstring>
 #endif
 #ifdef __RUNTIME_PRINTING
@@ -39,8 +41,6 @@
 //! @brief Calculate match runtime interval.
 #define MATCH_RUNTIME_INTERVAL TIME_INTERVAL(timing)
 #else
-// #define NDEBUG
-#include <cassert>
 
 //! @brief Print match result content.
 #define MATCH_PRINT_RESULT_CONTENT(method)

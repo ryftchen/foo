@@ -6,7 +6,6 @@
 
 #pragma once
 
-#include <sys/time.h>
 #include <chrono>
 #include <random>
 #include <thread>
@@ -30,8 +29,8 @@ constexpr uint16_t dateStartYear = 1900;
 //! @brief Multiplier from the second to the millisecond.
 constexpr uint32_t secToUsec = 1000000;
 
-//! @brief Timer.
-class Time final
+//! @brief Timing.
+class Time
 {
 public:
     //! @brief Destroy the Time object.
@@ -43,31 +42,13 @@ public:
     inline void setEndTime();
     //! @brief Get the time interval.
     [[nodiscard]] inline double getTimeInterval() const;
-    //! @brief Set the blocking timer.
-    //! @param func - callable function
-    //! @param interval - time interval
-    void setBlockingTimer(auto func, const uint32_t interval);
-    //! @brief Reset the blocking timer.
-    inline void resetBlockingTimer();
 
 private:
     //! @brief Beginning time.
     std::chrono::steady_clock::time_point beginTime;
     //! @brief Ending time.
     std::chrono::steady_clock::time_point endTime;
-    //! @brief Flag to indicate whether the blocking timer is running.
-    std::atomic<bool> isBlockingTimerRunning{true};
-
-protected:
-    friend inline void millisecondLevelSleep(const uint32_t duration);
 };
-
-//! @brief Perform millisecond-level sleep.
-//! @param duration - sleep duration
-inline void millisecondLevelSleep(const uint32_t duration)
-{
-    std::this_thread::sleep_until(std::chrono::steady_clock::now() + std::chrono::operator""ms(duration));
-}
 
 inline void Time::setBeginTime()
 {
@@ -86,13 +67,42 @@ inline double Time::getTimeInterval() const
     return timeInterval.count();
 }
 
-void Time::setBlockingTimer(auto func, const uint32_t interval)
+//! @brief Blocking Timer.
+class BlockingTimer
 {
-    isBlockingTimerRunning.store(true);
+public:
+    //! @brief Destroy the BlockingTimer object.
+    virtual ~BlockingTimer() = default;
+
+    //! @brief Set the blocking timer.
+    //! @param func - callable function
+    //! @param interval - time interval
+    void set(auto func, const uint32_t interval);
+    //! @brief Reset the blocking timer.
+    inline void reset();
+
+private:
+    //! @brief Flag to indicate whether the blocking timer is running.
+    std::atomic<bool> isRunning{true};
+
+protected:
+    friend inline void millisecondLevelSleep(const uint32_t duration);
+};
+
+//! @brief Perform millisecond-level sleep.
+//! @param duration - sleep duration
+inline void millisecondLevelSleep(const uint32_t duration)
+{
+    std::this_thread::sleep_until(std::chrono::steady_clock::now() + std::chrono::operator""ms(duration));
+}
+
+void BlockingTimer::set(auto func, const uint32_t interval)
+{
+    isRunning.store(true);
     std::thread timerThread(
         [=]()
         {
-            while (isBlockingTimerRunning.load())
+            while (isRunning.load())
             {
                 millisecondLevelSleep(interval);
                 func();
@@ -103,9 +113,9 @@ void Time::setBlockingTimer(auto func, const uint32_t interval)
     timerThread.join();
 }
 
-inline void Time::resetBlockingTimer()
+inline void BlockingTimer::reset()
 {
-    isBlockingTimerRunning.store(false);
+    isRunning.store(false);
 }
 
 extern std::string getCurrentSystemTime();

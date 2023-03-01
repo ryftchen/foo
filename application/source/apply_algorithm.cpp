@@ -5,6 +5,7 @@
 //! @copyright Copyright (c) 2022-2023
 
 #include "apply_algorithm.hpp"
+#include <iomanip>
 #include <variant>
 #include "algorithm/include/match.hpp"
 #include "algorithm/include/notation.hpp"

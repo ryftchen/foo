@@ -5,6 +5,7 @@
 //! @copyright Copyright (c) 2022-2023
 
 #include "apply_data_structure.hpp"
+#include <iomanip>
 #include "application/include/command.hpp"
 #include "data_structure/include/linear.hpp"
 #include "data_structure/include/tree.hpp"

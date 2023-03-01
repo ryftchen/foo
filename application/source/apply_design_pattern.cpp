@@ -5,6 +5,7 @@
 //! @copyright Copyright (c) 2022-2023
 
 #include "apply_design_pattern.hpp"
+#include <iomanip>
 #include "application/include/command.hpp"
 #include "design_pattern/include/behavioral.hpp"
 #include "design_pattern/include/creational.hpp"

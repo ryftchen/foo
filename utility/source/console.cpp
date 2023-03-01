@@ -6,6 +6,7 @@
 
 #include "console.hpp"
 #include <readline/readline.h>
+#include <cstring>
 #include <fstream>
 #include <iomanip>
 #include <iostream>

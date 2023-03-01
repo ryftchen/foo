@@ -9,5 +9,6 @@
 #ifdef __PRECOMPILED_HEADER
 #include <map>
 #include <memory>
+#include <sstream>
 #include <vector>
 #endif

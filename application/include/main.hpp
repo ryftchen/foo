@@ -53,7 +53,7 @@ static void signalHandler(int sig)
                 callStack[i],
                 (0 == status) ? demangle : ((nullptr == info.dli_sname) ? symbols[i] : info.dli_sname),
                 static_cast<char*>(callStack[i]) - static_cast<char*>(info.dli_saddr));
-            free(demangle); // NOLINT(cppcoreguidelines-no-malloc)
+            std::free(demangle); // NOLINT(cppcoreguidelines-no-malloc)
         }
         else
         {
@@ -68,7 +68,7 @@ static void signalHandler(int sig)
         }
         realTrace << buffer;
     }
-    free(symbols); // NOLINT(cppcoreguidelines-no-malloc)
+    std::free(symbols); // NOLINT(cppcoreguidelines-no-malloc)
 
     if (numOfFrame == maxFrame)
     {

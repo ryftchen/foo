@@ -5,8 +5,6 @@
 //! @copyright Copyright (c) 2022-2023
 
 #include "search.hpp"
-#ifndef __PRECOMPILED_HEADER
-#endif
 #ifdef __RUNTIME_PRINTING
 #include "utility/include/common.hpp"
 #include "utility/include/time.hpp"

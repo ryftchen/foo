@@ -7,10 +7,13 @@
 #pragma once
 
 #ifdef __PRECOMPILED_HEADER
-#include <sys/time.h>
 #include <mpfr.h>
+// #define NDEBUG
+#include <cassert>
+#include <chrono>
 #include <cmath>
 #include <cstring>
+#include <functional>
 #include <iostream>
 #include <map>
 #include <memory>

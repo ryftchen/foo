@@ -5,6 +5,7 @@
 //! @copyright Copyright (c) 2022-2023
 
 #include "apply_numeric.hpp"
+#include <iomanip>
 #include <variant>
 #include "application/include/command.hpp"
 #include "numeric/include/arithmetic.hpp"

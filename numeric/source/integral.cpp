@@ -6,7 +6,9 @@
 
 #include "integral.hpp"
 #ifndef __PRECOMPILED_HEADER
+#include <cmath>
 #include <functional>
+#include <random>
 #endif
 #ifdef __RUNTIME_PRINTING
 #include "utility/include/common.hpp"
@@ -24,8 +26,6 @@
 //! @brief Calculate integral runtime interval.
 #define INTEGRAL_RUNTIME_INTERVAL TIME_INTERVAL(timing)
 #else
-#include <cmath>
-#include <random>
 
 //! @brief Print integral result content.
 #define INTEGRAL_PRINT_RESULT_CONTENT(method, sum)
