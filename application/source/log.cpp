@@ -1,6 +1,6 @@
 //! @file log.cpp
 //! @author ryftchen
-//! @brief The definitions (log) in the utility module.
+//! @brief The definitions (log) in the application module.
 //! @version 0.1
 //! @copyright Copyright (c) 2022-2023
 
@@ -8,7 +8,7 @@
 #include <filesystem>
 #include <regex>
 
-namespace utility::log
+namespace application::log
 {
 Log::Log(const StateType initState) noexcept : FSM(initState)
 {
@@ -279,4 +279,4 @@ std::string& changeToLogStyle(std::string& line)
 
     return line;
 }
-} // namespace utility::log
+} // namespace application::log

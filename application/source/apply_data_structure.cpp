@@ -7,10 +7,10 @@
 #include "apply_data_structure.hpp"
 #include <iomanip>
 #include "application/include/command.hpp"
+#include "application/include/log.hpp"
 #include "data_structure/include/linear.hpp"
 #include "data_structure/include/tree.hpp"
 #include "utility/include/hash.hpp"
-#include "utility/include/log.hpp"
 #include "utility/include/thread.hpp"
 
 //! @brief Title of printing when data structure tasks are beginning.

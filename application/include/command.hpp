@@ -6,7 +6,6 @@
 
 #pragma once
 
-#include <condition_variable>
 #include "apply_algorithm.hpp"
 #include "apply_data_structure.hpp"
 #include "apply_design_pattern.hpp"
@@ -20,7 +19,7 @@
 namespace application::command
 {
 //! @brief Execute the command line.
-class Command
+class Command final
 {
 public:
     //! @brief Destroy the Command object.
@@ -91,6 +90,7 @@ private:
         template <>
         struct Bottom<Category>
         {
+            //! @brief Maximum value of the Category enum.
             static constexpr uint8_t value = 3;
         };
 
@@ -121,10 +121,11 @@ private:
             designPattern,
             numeric
         };
-        //! @brief Store the maximum value of the category type enum.
+        //! @brief Store the maximum value of the Category enum.
         template <>
         struct Bottom<Category>
         {
+            //! @brief Maximum value of the Category enum.
             static constexpr uint8_t value = 4;
         };
 

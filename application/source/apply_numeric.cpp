@@ -8,12 +8,12 @@
 #include <iomanip>
 #include <variant>
 #include "application/include/command.hpp"
+#include "application/include/log.hpp"
 #include "numeric/include/arithmetic.hpp"
 #include "numeric/include/divisor.hpp"
 #include "numeric/include/integral.hpp"
 #include "numeric/include/prime.hpp"
 #include "utility/include/hash.hpp"
-#include "utility/include/log.hpp"
 #include "utility/include/thread.hpp"
 
 //! @brief Title of printing when numeric tasks are beginning.

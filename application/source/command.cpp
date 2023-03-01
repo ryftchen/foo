@@ -7,7 +7,7 @@
 #include "command.hpp"
 #include <unistd.h>
 #include <climits>
-#include "utility/include/log.hpp"
+#include "log.hpp"
 
 namespace application::command
 {
@@ -532,7 +532,7 @@ void Command::viewLogContent()
 {
     utility::common::displayFileContents(
         utility::common::FileProperty{LOG_PATHNAME, LOG_FILE_LOCK},
-        utility::common::DisplaySetting{true, maxLineNumForPrintLog, &utility::log::changeToLogStyle});
+        utility::common::DisplaySetting{true, maxLineNumForPrintLog, &log::changeToLogStyle});
 }
 
 std::string Command::getIconBanner()

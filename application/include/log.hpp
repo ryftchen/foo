@@ -1,39 +1,43 @@
 //! @file log.hpp
 //! @author ryftchen
-//! @brief The declarations (log) in the utility module.
+//! @brief The declarations (log) in the application module.
 //! @version 0.1
 //! @copyright Copyright (c) 2022-2023
 
 #pragma once
 
 #include <queue>
-#include "common.hpp"
-#include "fsm.hpp"
-#include "time.hpp"
+#include "utility/include/common.hpp"
+#include "utility/include/fsm.hpp"
+#include "utility/include/time.hpp"
 
 //! @brief Start to log.
-#define LOG_TO_START utility::log::Log::getInstance().interfaceToStart()
+#define LOG_TO_START application::log::Log::getInstance().interfaceToStart()
 //! @brief Stop to log.
-#define LOG_TO_STOP utility::log::Log::getInstance().interfaceToStop()
+#define LOG_TO_STOP application::log::Log::getInstance().interfaceToStop()
 //! @brief Log with debug level.
-#define LOG_DBG(format, args...) \
-    utility::log::Log::getInstance().flush(utility::log::Log::OutputLevel::debug, __FILE__, __LINE__, format, ##args)
+#define LOG_DBG(format, args...)                \
+    application::log::Log::getInstance().flush( \
+        application::log::Log::OutputLevel::debug, __FILE__, __LINE__, format, ##args)
 //! @brief Log with info level.
-#define LOG_INF(format, args...) \
-    utility::log::Log::getInstance().flush(utility::log::Log::OutputLevel::info, __FILE__, __LINE__, format, ##args)
+#define LOG_INF(format, args...)                \
+    application::log::Log::getInstance().flush( \
+        application::log::Log::OutputLevel::info, __FILE__, __LINE__, format, ##args)
 //! @brief Log with warning level.
-#define LOG_WRN(format, args...) \
-    utility::log::Log::getInstance().flush(utility::log::Log::OutputLevel::warn, __FILE__, __LINE__, format, ##args)
+#define LOG_WRN(format, args...)                \
+    application::log::Log::getInstance().flush( \
+        application::log::Log::OutputLevel::warn, __FILE__, __LINE__, format, ##args)
 //! @brief Log with error level.
-#define LOG_ERR(format, args...) \
-    utility::log::Log::getInstance().flush(utility::log::Log::OutputLevel::error, __FILE__, __LINE__, format, ##args)
+#define LOG_ERR(format, args...)                \
+    application::log::Log::getInstance().flush( \
+        application::log::Log::OutputLevel::error, __FILE__, __LINE__, format, ##args)
 //! @brief Log file path.
-#define LOG_PATHNAME utility::log::Log::getInstance().getPathname()
+#define LOG_PATHNAME application::log::Log::getInstance().getPathname()
 //! @brief Log file lock.
-#define LOG_FILE_LOCK utility::log::Log::getInstance().getFileLock()
+#define LOG_FILE_LOCK application::log::Log::getInstance().getFileLock()
 
-//! @brief Log-related functions in the utility module.
-namespace utility::log
+//! @brief Log-related functions in the application module.
+namespace application::log
 {
 //! @brief Length of the log file path.
 constexpr uint16_t logPathLength = 32;
@@ -318,4 +322,4 @@ inline utility::common::FileReadWriteLock& Log::getFileLock()
 }
 
 extern std::string& changeToLogStyle(std::string& line);
-} // namespace utility::log
+} // namespace application::log
