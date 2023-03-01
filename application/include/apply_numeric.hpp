@@ -43,6 +43,7 @@ public:
     template <>
     struct Bottom<ArithmeticMethod>
     {
+        //! @brief Maximum value of the ArithmeticMethod enum.
         static constexpr uint8_t value = 4;
     };
 
@@ -56,6 +57,7 @@ public:
     template <>
     struct Bottom<DivisorMethod>
     {
+        //! @brief Maximum value of the DivisorMethod enum.
         static constexpr uint8_t value = 2;
     };
 
@@ -72,6 +74,7 @@ public:
     template <>
     struct Bottom<IntegralMethod>
     {
+        //! @brief Maximum value of the IntegralMethod enum.
         static constexpr uint8_t value = 5;
     };
 
@@ -85,6 +88,7 @@ public:
     template <>
     struct Bottom<PrimeMethod>
     {
+        //! @brief Maximum value of the PrimeMethod enum.
         static constexpr uint8_t value = 2;
     };
 

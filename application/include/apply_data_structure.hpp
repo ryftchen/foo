@@ -40,6 +40,7 @@ public:
     template <>
     struct Bottom<LinearInstance>
     {
+        //! @brief Maximum value of the LinearInstance enum.
         static constexpr uint8_t value = 3;
     };
 
@@ -54,6 +55,7 @@ public:
     template <>
     struct Bottom<TreeInstance>
     {
+        //! @brief Maximum value of the TreeInstance enum.
         static constexpr uint8_t value = 3;
     };
 
