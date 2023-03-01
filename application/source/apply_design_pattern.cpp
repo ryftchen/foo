@@ -7,11 +7,11 @@
 #include "apply_design_pattern.hpp"
 #include <iomanip>
 #include "application/include/command.hpp"
+#include "application/include/log.hpp"
 #include "design_pattern/include/behavioral.hpp"
 #include "design_pattern/include/creational.hpp"
 #include "design_pattern/include/structural.hpp"
 #include "utility/include/hash.hpp"
-#include "utility/include/log.hpp"
 #include "utility/include/thread.hpp"
 
 //! @brief Title of printing when design pattern tasks are beginning.

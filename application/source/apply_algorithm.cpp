@@ -13,8 +13,8 @@
 #include "algorithm/include/search.hpp"
 #include "algorithm/include/sort.hpp"
 #include "application/include/command.hpp"
+#include "application/include/log.hpp"
 #include "utility/include/hash.hpp"
-#include "utility/include/log.hpp"
 #include "utility/include/thread.hpp"
 
 //! @brief Title of printing when algorithm tasks are beginning.
