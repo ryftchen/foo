@@ -7,7 +7,9 @@
 #pragma once
 
 #ifdef __PRECOMPILED_HEADER
+#include <cmath>
 #include <functional>
+#include <random>
 #include <string>
 #include <string_view>
 #include <tuple>

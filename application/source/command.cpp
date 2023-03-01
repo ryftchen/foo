@@ -490,11 +490,13 @@ void Command::printVersionInfo() const
     versionStr += " \"; tput sgr0; echo ";
     versionStr += "\"" + std::string{copyrightInfo} + "\"";
 
-    utility::common::executeCommand(versionStr.c_str());
+    COMMON_PRINT("%s", utility::common::executeCommand(versionStr).c_str());
 }
 
 void Command::enterConsoleMode() const
 {
+    COMMON_PRINT("%s", utility::common::executeCommand(("tput bel; echo " + getIconBanner())).c_str());
+
     char hostName[HOST_NAME_MAX + 1];
     if (gethostname(hostName, HOST_NAME_MAX + 1))
     {
@@ -502,10 +504,9 @@ void Command::enterConsoleMode() const
     }
     const std::string greeting = std::string{(nullptr != std::getenv("USER")) ? std::getenv("USER") : "root"} + "@"
         + std::string{hostName} + " foo > ";
-
-    utility::common::executeCommand(("tput bel; echo " + getIconBanner()).c_str());
     utility::console::Console console(greeting);
     registerOnConsole(console);
+
     int returnCode = 0;
     do
     {
@@ -529,11 +530,9 @@ void Command::registerOnConsole(utility::console::Console& console) const
 
 void Command::viewLogContent()
 {
-    LOG_TO_STOP;
-
-    utility::common::displayContentOfFile(
-        utility::log::logPath.data(),
-        utility::common::DisplayProperty{true, maxLineNumForPrintLog, &utility::log::changeToLogStyle});
+    utility::common::displayFileContents(
+        utility::common::FileProperty{LOG_PATHNAME, LOG_FILE_LOCK},
+        utility::common::DisplaySetting{true, maxLineNumForPrintLog, &utility::log::changeToLogStyle});
 }
 
 std::string Command::getIconBanner()

@@ -6,6 +6,8 @@
 
 #include "sort.hpp"
 #ifndef __PRECOMPILED_HEADER
+// #define NDEBUG
+#include <cassert>
 #include <queue>
 #endif
 #ifdef __RUNTIME_PRINTING
@@ -35,8 +37,6 @@
 //! @brief Calculate sort runtime interval.
 #define SORT_RUNTIME_INTERVAL TIME_INTERVAL(timing)
 #else
-// #define NDEBUG
-#include <cassert>
 
 //! @brief Print sort result content.
 #define SORT_PRINT_RESULT_CONTENT(method)

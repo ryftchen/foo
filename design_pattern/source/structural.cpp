@@ -7,6 +7,8 @@
 #include "structural.hpp"
 #ifndef __PRECOMPILED_HEADER
 #include <map>
+#include <memory>
+#include <sstream>
 #include <vector>
 #endif
 #ifdef __RUNTIME_PRINTING
@@ -20,8 +22,6 @@
     output().str("");                                                \
     output().clear()
 #else
-#include <memory>
-#include <sstream>
 
 //! @brief Print structural result content.
 #define STRUCTURAL_PRINT_RESULT_CONTENT(method) \

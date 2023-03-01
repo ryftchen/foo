@@ -15,8 +15,8 @@ std::string getCurrentSystemTime()
     char date[dateLength + 1] = {'\0'};
     const auto now = std::chrono::system_clock::now();
     const auto microseconds = std::chrono::duration_cast<std::chrono::microseconds>(now.time_since_epoch()) % secToUsec;
-    const time_t tt = std::chrono::system_clock::to_time_t(now);
-    const tm* tm = localtime(&tt);
+    const std::time_t tt = std::chrono::system_clock::to_time_t(now);
+    const std::tm* tm = std::localtime(&tt);
 
     std::snprintf(
         date,

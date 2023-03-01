@@ -6,6 +6,7 @@
 
 #include "divisor.hpp"
 #ifndef __PRECOMPILED_HEADER
+#include <cmath>
 #endif
 #ifdef __RUNTIME_PRINTING
 #include "utility/include/common.hpp"
@@ -34,7 +35,6 @@
 //! @brief Calculate divisor runtime interval.
 #define DIVISOR_RUNTIME_INTERVAL TIME_INTERVAL(timing)
 #else
-#include <cmath>
 
 //! @brief Print divisor result content.
 #define DIVISOR_PRINT_RESULT_CONTENT(method)

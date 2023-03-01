@@ -6,6 +6,10 @@
 
 #include "optimal.hpp"
 #ifndef __PRECOMPILED_HEADER
+// #define NDEBUG
+#include <cassert>
+#include <chrono>
+#include <functional>
 #include <set>
 #endif
 #ifdef __RUNTIME_PRINTING
@@ -24,10 +28,6 @@
 //! @brief Calculate optimal runtime interval.
 #define OPTIMAL_RUNTIME_INTERVAL TIME_INTERVAL(timing)
 #else
-#include <sys/time.h>
-// #define NDEBUG
-#include <cassert>
-#include <functional>
 
 //! @brief Print optimal result content.
 #define OPTIMAL_PRINT_RESULT_CONTENT(method, f, x)
@@ -43,11 +43,9 @@ namespace algorithm::optimal
 //! @return random seed
 std::mt19937 getRandomSeedByTime()
 {
-    constexpr uint32_t secToUsec = 1000000;
-    timeval timeSeed{};
-    gettimeofday(&timeSeed, nullptr);
-
-    return std::mt19937(timeSeed.tv_sec * secToUsec + timeSeed.tv_usec);
+    const auto now = std::chrono::system_clock::now();
+    const auto milliseconds = std::chrono::duration_cast<std::chrono::microseconds>(now.time_since_epoch()).count();
+    return std::mt19937(milliseconds);
 }
 
 Gradient::Gradient(const function::Function& func) : func(func)

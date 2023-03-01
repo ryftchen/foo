@@ -6,6 +6,8 @@
 
 #include "creational.hpp"
 #ifndef __PRECOMPILED_HEADER
+#include <memory>
+#include <sstream>
 #endif
 #ifdef __RUNTIME_PRINTING
 #include "utility/include/common.hpp"
@@ -18,8 +20,6 @@
     output().str("");                                                \
     output().clear()
 #else
-#include <memory>
-#include <sstream>
 
 //! @brief Print creational result content.
 #define CREATIONAL_PRINT_RESULT_CONTENT(method) \

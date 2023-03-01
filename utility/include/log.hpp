@@ -6,16 +6,15 @@
 
 #pragma once
 
-#include <condition_variable>
 #include <queue>
 #include "common.hpp"
 #include "fsm.hpp"
 #include "time.hpp"
 
 //! @brief Start to log.
-#define LOG_TO_START utility::log::Log::getInstance().waitStartForExternalUse()
+#define LOG_TO_START utility::log::Log::getInstance().interfaceToStart()
 //! @brief Stop to log.
-#define LOG_TO_STOP utility::log::Log::getInstance().waitStopForExternalUse()
+#define LOG_TO_STOP utility::log::Log::getInstance().interfaceToStop()
 //! @brief Log with debug level.
 #define LOG_DBG(format, args...) \
     utility::log::Log::getInstance().flush(utility::log::Log::OutputLevel::debug, __FILE__, __LINE__, format, ##args)
@@ -28,12 +27,14 @@
 //! @brief Log with error level.
 #define LOG_ERR(format, args...) \
     utility::log::Log::getInstance().flush(utility::log::Log::OutputLevel::error, __FILE__, __LINE__, format, ##args)
+//! @brief Log file path.
+#define LOG_PATHNAME utility::log::Log::getInstance().getPathname()
+//! @brief Log file lock.
+#define LOG_FILE_LOCK utility::log::Log::getInstance().getFileLock()
 
 //! @brief Log-related functions in the utility module.
 namespace utility::log
 {
-//! @brief Log file path.
-inline constexpr std::string_view logPath{"./temporary/foo.log"};
 //! @brief Length of the log file path.
 constexpr uint16_t logPathLength = 32;
 //! @brief The maximum number of times to wait for the logger to change to the target state.
@@ -154,9 +155,15 @@ public:
     //! @brief Interface for running logger.
     void runLogger();
     //! @brief Wait until the logger starts. External use.
-    void waitStartForExternalUse();
+    void interfaceToStart();
     //! @brief Wait until the logger stops. External use.
-    void waitStopForExternalUse();
+    void interfaceToStop();
+    //! @brief Get log file path.
+    //! @return log file path
+    inline std::string getPathname() const;
+    //! @brief Get log file lock.
+    //! @return log file lock
+    inline utility::common::FileReadWriteLock& getFileLock();
 
 private:
     //! @brief Construct a new Log object.
@@ -192,6 +199,8 @@ private:
     OutputTarget actualTarget{OutputTarget::all};
     //! @brief Log file path.
     char pathname[logPathLength + 1]{"./temporary/foo.log"};
+    //! @brief Log file lock.
+    utility::common::FileReadWriteLock fileLock;
 
     //! @brief FSM event. Open file.
     struct OpenFile
@@ -296,6 +305,16 @@ void Log::flush(
             lock.lock();
         }
     }
+}
+
+inline std::string Log::getPathname() const
+{
+    return pathname;
+}
+
+inline utility::common::FileReadWriteLock& Log::getFileLock()
+{
+    return fileLock;
 }
 
 extern std::string& changeToLogStyle(std::string& line);

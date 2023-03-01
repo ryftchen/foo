@@ -5,6 +5,7 @@
 //! @copyright Copyright (c) 2022-2023
 
 #include "log.hpp"
+#include <filesystem>
 #include <regex>
 
 namespace utility::log
@@ -57,6 +58,8 @@ void Log::runLogger()
                         return (!isLogging.load() || !logQueue.empty());
                     });
 
+                utility::common::FileReadWriteGuard guard(
+                    utility::common::FileReadWriteGuard::LockMode::write, fileLock);
                 while (!logQueue.empty())
                 {
                     switch (actualTarget)
@@ -94,16 +97,16 @@ void Log::runLogger()
     }
 }
 
-void Log::waitStartForExternalUse()
+void Log::interfaceToStart()
 {
-    utility::time::Time timer;
+    utility::time::BlockingTimer timer;
     uint16_t waitCount = 0;
-    timer.setBlockingTimer(
+    timer.set(
         [&]()
         {
             if ((State::work == currentState()) || (maxTimesOfWaitLogger == waitCount))
             {
-                timer.resetBlockingTimer();
+                timer.reset();
             }
             else
             {
@@ -112,10 +115,10 @@ void Log::waitStartForExternalUse()
             }
         },
         intervalOfWaitLogger);
-    timer.resetBlockingTimer();
+    timer.reset();
 }
 
-void Log::waitStopForExternalUse()
+void Log::interfaceToStop()
 {
     if (std::unique_lock<std::mutex> lock(queueMutex); true)
     {
@@ -127,14 +130,14 @@ void Log::waitStopForExternalUse()
         lock.lock();
     }
 
-    utility::time::Time timer;
+    utility::time::BlockingTimer timer;
     uint16_t waitCount = 0;
-    timer.setBlockingTimer(
+    timer.set(
         [&]()
         {
             if ((State::done == currentState()) || (maxTimesOfWaitLogger == waitCount))
             {
-                timer.resetBlockingTimer();
+                timer.reset();
             }
             else
             {
@@ -143,7 +146,7 @@ void Log::waitStopForExternalUse()
             }
         },
         intervalOfWaitLogger);
-    timer.resetBlockingTimer();
+    timer.reset();
 }
 
 void Log::openLogFile()
@@ -158,21 +161,14 @@ void Log::openLogFile()
     switch (writeType)
     {
         case OutputType::add:
-            ofs.open(pathname, std::ios_base::out | std::ios_base::app);
+            ofs = utility::common::openFile(pathname, false);
             break;
         case OutputType::over:
-            ofs.open(pathname, std::ios_base::out | std::ios_base::trunc);
+            ofs = utility::common::openFile(pathname, true);
             break;
         default:
             break;
     }
-
-    if (!ofs)
-    {
-        utility::common::throwOperateFileException(std::filesystem::path(pathname).filename().string(), true);
-    }
-    utility::common::tryToOperateFileLock(
-        ofs, pathname, utility::common::LockOperationType::lock, utility::common::FileLockType::writerLock);
 };
 
 void Log::startLogging()
@@ -185,12 +181,7 @@ void Log::startLogging()
 
 void Log::closeLogFile()
 {
-    utility::common::tryToOperateFileLock(
-        ofs, pathname, utility::common::LockOperationType::unlock, utility::common::FileLockType::writerLock);
-    if (ofs.is_open())
-    {
-        ofs.close();
-    }
+    utility::common::closeFile(ofs);
 };
 
 void Log::stopLogging()

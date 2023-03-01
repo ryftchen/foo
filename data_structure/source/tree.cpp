@@ -7,6 +7,7 @@
 #include "tree.hpp"
 #ifndef __PRECOMPILED_HEADER
 #include <array>
+#include <iostream>
 #endif
 #ifdef __RUNTIME_PRINTING
 #include "utility/include/common.hpp"
@@ -19,7 +20,6 @@
     output().str("");                                          \
     output().clear()
 #else
-#include <iostream>
 
 //! @brief Print tree result content.
 #define TREE_PRINT_RESULT_CONTENT(method) \
