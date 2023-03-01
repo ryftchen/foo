@@ -49,6 +49,7 @@ public:
     template <>
     struct Bottom<BehavioralInstance>
     {
+        //! @brief Maximum value of the BehavioralInstance enum.
         static constexpr uint8_t value = 11;
     };
 
@@ -65,6 +66,7 @@ public:
     template <>
     struct Bottom<CreationalInstance>
     {
+        //! @brief Maximum value of the CreationalInstance enum.
         static constexpr uint8_t value = 5;
     };
 
@@ -83,6 +85,7 @@ public:
     template <>
     struct Bottom<StructuralInstance>
     {
+        //! @brief Maximum value of the StructuralInstance enum.
         static constexpr uint8_t value = 7;
     };
 

@@ -45,6 +45,7 @@ public:
     template <>
     struct Bottom<MatchMethod>
     {
+        //! @brief Maximum value of the MatchMethod enum.
         static constexpr uint8_t value = 5;
     };
 
@@ -58,6 +59,7 @@ public:
     template <>
     struct Bottom<NotationMethod>
     {
+        //! @brief Maximum value of the NotationMethod enum.
         static constexpr uint8_t value = 2;
     };
 
@@ -73,6 +75,7 @@ public:
     template <>
     struct Bottom<OptimalMethod>
     {
+        //! @brief Maximum value of the OptimalMethod enum.
         static constexpr uint8_t value = 4;
     };
 
@@ -87,6 +90,7 @@ public:
     template <>
     struct Bottom<SearchMethod>
     {
+        //! @brief Maximum value of the SearchMethod enum.
         static constexpr uint8_t value = 3;
     };
 
@@ -108,6 +112,7 @@ public:
     template <>
     struct Bottom<SortMethod>
     {
+        //! @brief Maximum value of the SortMethod enum.
         static constexpr uint8_t value = 10;
     };
 
