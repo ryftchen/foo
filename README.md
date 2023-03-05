@@ -18,6 +18,7 @@ The **Foo** is a personal roadmap for learning programming. Its main purpose is 
 - Related to [data structure](https://github.com/ryftchen/foo/tree/master/data_structure).
 - Related to [design pattern](https://github.com/ryftchen/foo/tree/master/design_pattern).
 - Related to [numeric](https://github.com/ryftchen/foo/tree/master/numeric).
+- Specific [application](https://github.com/ryftchen/foo/tree/master/application) of the above.
 - Other [utility](https://github.com/ryftchen/foo/tree/master/utility) functions.
 
 ## Getting started
