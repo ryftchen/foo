@@ -188,9 +188,9 @@ private:
     //! @brief The queue of logs.
     std::queue<std::string> logQueue;
     //! @brief Mutex for controlling queue.
-    mutable std::mutex queueMutex;
-    //! @brief The synchronization condition for queue. Use with queueMutex.
-    std::condition_variable condition;
+    mutable std::mutex mtx;
+    //! @brief The synchronization condition for queue. Use with mtx.
+    std::condition_variable cv;
     //! @brief Flag to indicate whether it is logging.
     std::atomic<bool> isLogging{false};
     //! @brief Output file stream.
@@ -272,7 +272,7 @@ void Log::flush(
         return;
     }
 
-    if (std::unique_lock<std::mutex> lock(queueMutex); true)
+    if (std::unique_lock<std::mutex> lock(mtx); true)
     {
         if (level >= minLevel)
         {
@@ -304,7 +304,7 @@ void Log::flush(
             logQueue.push(std::move(output));
 
             lock.unlock();
-            condition.notify_one();
+            cv.notify_one();
             utility::time::millisecondLevelSleep(1);
             lock.lock();
         }

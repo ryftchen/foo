@@ -19,9 +19,9 @@ Thread::Thread(const uint32_t count)
                 {
                     std::string name;
                     std::packaged_task<void()> task;
-                    if (std::unique_lock<std::mutex> lock(queueMutex); true)
+                    if (std::unique_lock<std::mutex> lock(mtx); true)
                     {
-                        condition.wait(
+                        cv.wait(
                             lock,
                             [this]() -> decltype(auto)
                             {
@@ -53,7 +53,7 @@ Thread::Thread(const uint32_t count)
 
 Thread::~Thread()
 {
-    if (std::unique_lock<std::mutex> lock(queueMutex); true)
+    if (std::unique_lock<std::mutex> lock(mtx); true)
     {
         producer.wait(
             lock,
@@ -64,7 +64,7 @@ Thread::~Thread()
         releaseReady.store(true);
     }
 
-    condition.notify_all();
+    cv.notify_all();
     for (auto& thread : threadVector)
     {
         thread.join();
