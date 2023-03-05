@@ -5,39 +5,24 @@
 //! @copyright Copyright (c) 2022-2023
 
 #include "arithmetic.hpp"
-#ifdef __RUNTIME_PRINTING
-#include "utility/include/common.hpp"
-
-//! @brief Display arithmetic result.
-#define ARITHMETIC_RESULT "\r\n*%-14s method:\r\n(%d) %s (%d) = %d\n"
-//! @brief Print arithmetic result content.
-#define ARITHMETIC_PRINT_RESULT_CONTENT(method, a, operator, b, result) \
-    COMMON_PRINT(ARITHMETIC_RESULT, method, a, operator, b, result)
-#else
-
-//! @brief Print arithmetic result content.
-#define ARITHMETIC_PRINT_RESULT_CONTENT(method, a, operator, b, result)
-#endif
 
 namespace numeric::arithmetic
 {
-int ArithmeticSolution::additionMethod(const int augend, const int addend)
+int Arithmetic::addition(const int augend, const int addend)
 {
     const int sum = bitAdd(augend, addend);
 
-    ARITHMETIC_PRINT_RESULT_CONTENT("Addition", augend, "+", addend, sum);
     return sum;
 }
 
-int ArithmeticSolution::subtractionMethod(const int minuend, const int subtrahend)
+int Arithmetic::subtraction(const int minuend, const int subtrahend)
 {
     const int difference = bitAdd(minuend, bitAdd(~subtrahend, 1));
 
-    ARITHMETIC_PRINT_RESULT_CONTENT("Subtraction", minuend, "-", subtrahend, difference);
     return difference;
 }
 
-int ArithmeticSolution::multiplicationMethod(const int multiplier, const int multiplicand)
+int Arithmetic::multiplication(const int multiplier, const int multiplicand)
 {
     int product = 0;
 
@@ -50,11 +35,10 @@ int ArithmeticSolution::multiplicationMethod(const int multiplier, const int mul
         }
     }
 
-    ARITHMETIC_PRINT_RESULT_CONTENT("Multiplication", multiplier, "*", multiplicand, product);
     return product;
 }
 
-int ArithmeticSolution::divisionMethod(const int dividend, const int divisor)
+int Arithmetic::division(const int dividend, const int divisor)
 {
     if (0 == divisor)
     {
@@ -78,14 +62,6 @@ int ArithmeticSolution::divisionMethod(const int dividend, const int divisor)
         quotient = bitSub(0, quotient);
     }
 
-    ARITHMETIC_PRINT_RESULT_CONTENT("Division", dividend, "/", divisor, quotient);
     return quotient;
-}
-
-TargetBuilder::TargetBuilder(const int integer1, const int integer2) : integer1(integer1), integer2(integer2)
-{
-#ifdef __RUNTIME_PRINTING
-    std::cout << "\r\nElementary arithmetic of " << integer1 << " and " << integer2 << ":" << std::endl;
-#endif
 }
 } // namespace numeric::arithmetic

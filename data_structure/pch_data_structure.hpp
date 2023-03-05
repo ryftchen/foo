@@ -7,7 +7,6 @@
 #pragma once
 
 #ifdef __PRECOMPILED_HEADER
-#include <array>
 #include <iostream>
 #include <sstream>
 #endif

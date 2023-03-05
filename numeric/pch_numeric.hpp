@@ -8,11 +8,9 @@
 
 #ifdef __PRECOMPILED_HEADER
 #include <cmath>
+#include <cstdint>
 #include <functional>
 #include <random>
-#include <string>
-#include <string_view>
-#include <tuple>
 #include <utility>
 #include <vector>
 #endif

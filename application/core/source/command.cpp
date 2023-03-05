@@ -31,8 +31,8 @@ Command::Command()
                 [this](const std::string& value)
                 {
                     if (std::any_of(
-                            generalTaskMap.at("algorithm").cbegin(),
-                            generalTaskMap.at("algorithm").cend(),
+                            generalTaskDispatcher.at("algorithm").cbegin(),
+                            generalTaskDispatcher.at("algorithm").cend(),
                             [&value](const auto& taskCategoryMap)
                             {
                                 return (taskCategoryMap.first == value);
@@ -50,8 +50,8 @@ Command::Command()
                 [this](const std::string& value)
                 {
                     if (std::any_of(
-                            generalTaskMap.at("data-structure").cbegin(),
-                            generalTaskMap.at("data-structure").cend(),
+                            generalTaskDispatcher.at("data-structure").cbegin(),
+                            generalTaskDispatcher.at("data-structure").cend(),
                             [&value](const auto& taskCategoryMap)
                             {
                                 return (taskCategoryMap.first == value);
@@ -69,8 +69,8 @@ Command::Command()
                 [this](const std::string& value)
                 {
                     if (std::any_of(
-                            generalTaskMap.at("design-pattern").cbegin(),
-                            generalTaskMap.at("design-pattern").cend(),
+                            generalTaskDispatcher.at("design-pattern").cbegin(),
+                            generalTaskDispatcher.at("design-pattern").cend(),
                             [&value](const auto& taskCategoryMap)
                             {
                                 return (taskCategoryMap.first == value);
@@ -88,8 +88,8 @@ Command::Command()
                 [this](const std::string& value)
                 {
                     if (std::any_of(
-                            generalTaskMap.at("numeric").cbegin(),
-                            generalTaskMap.at("numeric").cend(),
+                            generalTaskDispatcher.at("numeric").cbegin(),
+                            generalTaskDispatcher.at("numeric").cend(),
                             [&value](const auto& taskCategoryMap)
                             {
                                 return (taskCategoryMap.first == value);
@@ -166,12 +166,12 @@ void Command::backgroundHandler()
 
         if (checkTask())
         {
-            performTask();
+            dispatchTask();
         }
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_WRN(error.what());
     }
 }
 
@@ -179,7 +179,7 @@ void Command::validateBasicTask()
 {
     for (uint8_t i = 0; i < BasicTask::Bottom<BasicTask::Category>::value; ++i)
     {
-        if (!program.isUsed(std::next(basicTaskMap.cbegin(), BasicTask::Category(i))->first))
+        if (!program.isUsed(std::next(basicTaskDispatcher.cbegin(), BasicTask::Category(i))->first))
         {
             continue;
         }
@@ -196,7 +196,7 @@ void Command::validateBasicTask()
 void Command::validateGeneralTask()
 {
     bool isToBeExcess = false;
-    for ([[maybe_unused]] const auto& [taskCategoryName, taskCategoryMap] : generalTaskMap)
+    for ([[maybe_unused]] const auto& [taskCategoryName, taskCategoryMap] : generalTaskDispatcher)
     {
         if (!program.isUsed(taskCategoryName))
         {
@@ -253,7 +253,7 @@ bool Command::checkTask() const
     return !assignedTask.empty();
 }
 
-void Command::performTask() const
+void Command::dispatchTask() const
 {
     if (!assignedTask.basicTask.empty())
     {
@@ -261,7 +261,7 @@ void Command::performTask() const
         {
             if (assignedTask.basicTask.primaryBit.test(BasicTask::Category(i)))
             {
-                (this->*std::next(basicTaskMap.cbegin(), BasicTask::Category(i))->second)();
+                (this->*std::next(basicTaskDispatcher.cbegin(), BasicTask::Category(i))->second)();
             }
         }
     }
@@ -300,7 +300,7 @@ void Command::performTask() const
             }
 
             for ([[maybe_unused]] const auto& [taskTypeName, taskTypeTuple] :
-                 std::next(generalTaskMap.cbegin(), GeneralTask::Category(i))->second)
+                 std::next(generalTaskDispatcher.cbegin(), GeneralTask::Category(i))->second)
             {
                 (*get<PerformTaskFunctor>(get<TaskFunctorTuple>(taskTypeTuple)))(get<TargetTaskVector>(taskTypeTuple));
             }
@@ -310,8 +310,8 @@ void Command::performTask() const
 
 void Command::printConsoleOutput() const
 {
-    const auto commands =
-        program.get<std::vector<std::string>>(std::next(basicTaskMap.cbegin(), BasicTask::Category::console)->first);
+    const auto commands = program.get<std::vector<std::string>>(
+        std::next(basicTaskDispatcher.cbegin(), BasicTask::Category::console)->first);
     if (commands.empty())
     {
         return;

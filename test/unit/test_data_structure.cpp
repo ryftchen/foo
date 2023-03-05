@@ -5,8 +5,7 @@
 //! @copyright Copyright (c) 2022-2023
 
 #include <gtest/gtest.h>
-#include "data_structure/include/linear.hpp"
-#include "data_structure/include/tree.hpp"
+#include "application/example/include/apply_data_structure.hpp"
 
 //! @brief Title of printing for data structure task tests.
 #define TST_DS_PRINT_TASK_TITLE(taskType, taskState)                                                   \
@@ -27,44 +26,34 @@ public:
     ~LinearTestBase() override = default;
 
     //! @brief Set up the test case.
-    static void SetUpTestCase()
-    {
-        TST_DS_PRINT_TASK_TITLE("LINEAR", "BEGIN");
-        structure = std::make_shared<date_structure::linear::LinearStructure>();
-    };
+    static void SetUpTestCase() { TST_DS_PRINT_TASK_TITLE("LINEAR", "BEGIN"); };
     //! @brief Tear down the test case.
-    static void TearDownTestCase()
-    {
-        TST_DS_PRINT_TASK_TITLE("LINEAR", "END");
-        structure.reset();
-    }
+    static void TearDownTestCase() { TST_DS_PRINT_TASK_TITLE("LINEAR", "END"); }
     //! @brief Set up.
     void SetUp() override{};
     //! @brief Tear down.
     void TearDown() override{};
-
-    //! @brief Structure Instance.
-    static std::shared_ptr<date_structure::linear::LinearStructure> structure;
 };
-
-std::shared_ptr<date_structure::linear::LinearStructure> LinearTestBase::structure = nullptr;
 
 //! @brief Test for the linked list instance in the structure of linear.
 TEST_F(LinearTestBase, linkedListInstance) // NOLINT(cert-err58-cpp)
 {
-    ASSERT_NO_THROW(structure->linkedListInstance()); // NOLINT(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
+    ASSERT_NO_THROW( // NOLINT(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
+        application::app_ds::linear::Linear::linkedList());
 }
 
 //! @brief Test for the stack instance in the structure of linear.
 TEST_F(LinearTestBase, stackInstance) // NOLINT(cert-err58-cpp)
 {
-    ASSERT_NO_THROW(structure->stackInstance()); // NOLINT(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
+    ASSERT_NO_THROW( // NOLINT(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
+        application::app_ds::linear::Linear::stack());
 }
 
 //! @brief Test for the queue instance in the structure of linear.
 TEST_F(LinearTestBase, queueInstance) // NOLINT(cert-err58-cpp)
 {
-    ASSERT_NO_THROW(structure->queueInstance()); // NOLINT(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
+    ASSERT_NO_THROW( // NOLINT(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
+        application::app_ds::linear::Linear::queue());
 }
 
 //! @brief Test base of tree.
@@ -77,43 +66,30 @@ public:
     ~TreeTestBase() override = default;
 
     //! @brief Set up the test case.
-    static void SetUpTestCase()
-    {
-        TST_DS_PRINT_TASK_TITLE("TREE", "BEGIN");
-        structure = std::make_shared<date_structure::tree::TreeStructure>();
-    };
+    static void SetUpTestCase() { TST_DS_PRINT_TASK_TITLE("TREE", "BEGIN"); };
     //! @brief Tear down the test case.
-    static void TearDownTestCase()
-    {
-        TST_DS_PRINT_TASK_TITLE("TREE", "END");
-        structure.reset();
-    }
+    static void TearDownTestCase() { TST_DS_PRINT_TASK_TITLE("TREE", "END"); }
     //! @brief Set up.
     void SetUp() override{};
     //! @brief Tear down.
     void TearDown() override{};
-
-    //! @brief Structure Instance.
-    static std::shared_ptr<date_structure::tree::TreeStructure> structure;
 };
-
-std::shared_ptr<date_structure::tree::TreeStructure> TreeTestBase::structure = nullptr;
 
 //! @brief Test for the binary search instance in the structure of tree.
 TEST_F(TreeTestBase, bsInstance) // NOLINT(cert-err58-cpp)
 {
-    ASSERT_NO_THROW(structure->bsInstance()); // NOLINT(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
+    ASSERT_NO_THROW(application::app_ds::tree::Tree::bs()); // NOLINT(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
 }
 
 //! @brief Test for the Adelson-Velsky-Landis instance in the structure of tree.
 TEST_F(TreeTestBase, avlInstance) // NOLINT(cert-err58-cpp)
 {
-    ASSERT_NO_THROW(structure->avlInstance()); // NOLINT(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
+    ASSERT_NO_THROW(application::app_ds::tree::Tree::avl()); // NOLINT(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
 }
 
 //! @brief Test for the splay instance in the structure of tree.
 TEST_F(TreeTestBase, splayInstance) // NOLINT(cert-err58-cpp)
 {
-    ASSERT_NO_THROW(structure->splayInstance()); // NOLINT(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
+    ASSERT_NO_THROW(application::app_ds::tree::Tree::splay()); // NOLINT(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
 }
 } // namespace test::tst_ds

@@ -13,7 +13,6 @@ target_include_directories(
         ${CMAKE_CURRENT_SOURCE_DIR}/include
     PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/source
 )
-target_link_libraries(${MODULE_NAME} PUBLIC foo::utility)
 if(PRECOMPILED_HEADER)
     target_precompile_headers(${MODULE_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/pch_design_pattern.hpp)
 endif()

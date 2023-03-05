@@ -15,21 +15,21 @@
 //! @brief Notation-related functions in the algorithm module.
 namespace algorithm::notation
 {
-//! @brief Solution of notation.
-class NotationSolution
+//! @brief Notation methods.
+class Notation
 {
 public:
-    //! @brief Destroy the NotationSolution object.
-    virtual ~NotationSolution() = default;
+    //! @brief Destroy the Notation object.
+    virtual ~Notation() = default;
 
-    //! @brief The prefix method.
+    //! @brief Prefix.
     //! @param infixNotation - infix notation
     //! @return prefix notation
-    static std::string prefixMethod(const std::string& infixNotation);
-    //! @brief The postfix method.
+    static std::string prefix(const std::string& infixNotation);
+    //! @brief Postfix.
     //! @param infixNotation - infix notation
     //! @return postfix notation
-    static std::string postfixMethod(const std::string& infixNotation);
+    static std::string postfix(const std::string& infixNotation);
 
 private:
     //! @brief Enumerate specific operator priorities.
@@ -55,32 +55,8 @@ private:
     static inline bool isOperator(const char c);
 };
 
-inline bool NotationSolution::isOperator(const char c)
+inline bool Notation::isOperator(const char c)
 {
     return (!std::isalpha(c) && !std::isdigit(c));
-}
-
-//! @brief Builder for the target.
-class TargetBuilder
-{
-public:
-    //! @brief Construct a new TargetBuilder object.
-    //! @param infixNotation - infix notation
-    explicit TargetBuilder(const std::string_view infixNotation);
-    //! @brief Destroy the TargetBuilder object.
-    virtual ~TargetBuilder() = default;
-
-    //! @brief Get the infix notation.
-    //! @return infix notation
-    [[nodiscard]] inline std::string_view getInfixNotation() const;
-
-private:
-    //! @brief Infix notation.
-    const std::string_view infixNotation;
-};
-
-inline std::string_view TargetBuilder::getInfixNotation() const
-{
-    return infixNotation;
 }
 } // namespace algorithm::notation
