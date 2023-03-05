@@ -8,6 +8,6 @@ doxygen/
 __pycache__/
 
 .env
-core*
-vgcore*
+core.*
+vgcore.*
 *.profraw
