@@ -6,15 +6,12 @@
 
 #include "apply_numeric.hpp"
 #include <iomanip>
-#include <variant>
-#include "application/include/command.hpp"
-#include "application/include/log.hpp"
+#include "application/core/include/command.hpp"
+#include "application/core/include/log.hpp"
 #include "numeric/include/arithmetic.hpp"
 #include "numeric/include/divisor.hpp"
-#include "numeric/include/integral.hpp"
 #include "numeric/include/prime.hpp"
 #include "utility/include/hash.hpp"
-#include "utility/include/thread.hpp"
 
 //! @brief Title of printing when numeric tasks are beginning.
 #define APP_NUM_PRINT_TASK_BEGIN_TITLE(taskType)                                                                   \
@@ -55,57 +52,66 @@ NumericTask& getTask()
     return task;
 }
 
-//! @brief Set input parameters.
-namespace input
+namespace arithmetic
 {
-//! @brief One of integers for arithmetic methods.
-constexpr int integerForArithmetic1 = 1073741823;
-//! @brief One of integers for arithmetic methods.
-constexpr int integerForArithmetic2 = -2;
-//! @brief One of integers for divisor methods.
-constexpr int integerForDivisor1 = 2 * 2 * 3 * 3 * 5 * 5 * 7 * 7;
-//! @brief One of integers for divisor methods.
-constexpr int integerForDivisor2 = 2 * 3 * 5 * 7 * 11 * 13 * 17;
-//! @brief Max positive integer for prime methods.
-constexpr uint32_t maxPositiveIntegerForPrime = 997;
+//! @brief Display arithmetic result.
+#define ARITHMETIC_RESULT "\r\n*%-14s method:\r\n(%d) %s (%d) = %d\n"
+//! @brief Print arithmetic result content.
+#define ARITHMETIC_PRINT_RESULT_CONTENT(method, a, operator, b, result) \
+    COMMON_PRINT(ARITHMETIC_RESULT, method, a, operator, b, result)
 
-//! @brief Expression example 1.
-class Expression1 : public numeric::integral::expression::Expression
+void ArithmeticSolution::additionMethod(const int augend, const int addend)
 {
-public:
-    //! @brief The operator (()) overloading of Expression1 class.
-    //! @param x - independent variable
-    //! @return dependent variable
-    double operator()(const double x) const override { return ((x * std::sin(x)) / (1.0 + std::cos(x) * std::cos(x))); }
-
-    //! @brief Left endpoint.
-    static constexpr double range1{-M_PI / 2.0};
-    //! @brief Right endpoint.
-    static constexpr double range2{2.0 * M_PI};
-    //! @brief Expression example 1.
-    static constexpr std::string_view exprDescr{"I=∫(-π/2→2π)x*sin(x)/(1+(cos(x))^2)dx"};
-};
-
-//! @brief Expression example 2.
-class Expression2 : public numeric::integral::expression::Expression
-{
-public:
-    //! @brief The operator (()) overloading of Expression2 class.
-    //! @param x - independent variable
-    //! @return dependent variable
-    double operator()(const double x) const override
+    try
     {
-        return (x + 10.0 * std::sin(5.0 * x) + 7.0 * std::cos(4.0 * x));
+        const auto sum = numeric::arithmetic::Arithmetic::addition(augend, addend);
+        ARITHMETIC_PRINT_RESULT_CONTENT("Addition", augend, "+", addend, sum);
     }
+    catch (const std::exception& error)
+    {
+        LOG_ERR(error.what());
+    }
+}
 
-    //! @brief Left endpoint.
-    static constexpr double range1{0.0};
-    //! @brief Right endpoint.
-    static constexpr double range2{9.0};
-    //! @brief Expression example 2.
-    static constexpr std::string_view exprDescr{"I=∫(0→9)x+10sin(5x)+7cos(4x)dx"};
-};
-} // namespace input
+void ArithmeticSolution::subtractionMethod(const int minuend, const int subtrahend)
+{
+    try
+    {
+        const auto difference = numeric::arithmetic::Arithmetic::subtraction(minuend, subtrahend);
+        ARITHMETIC_PRINT_RESULT_CONTENT("Subtraction", minuend, "-", subtrahend, difference);
+    }
+    catch (const std::exception& error)
+    {
+        LOG_ERR(error.what());
+    }
+}
+
+void ArithmeticSolution::multiplicationMethod(const int multiplier, const int multiplicand)
+{
+    try
+    {
+        const auto product = numeric::arithmetic::Arithmetic::multiplication(multiplier, multiplicand);
+        ARITHMETIC_PRINT_RESULT_CONTENT("Multiplication", multiplier, "*", multiplicand, product);
+    }
+    catch (const std::exception& error)
+    {
+        LOG_ERR(error.what());
+    }
+}
+
+void ArithmeticSolution::divisionMethod(const int dividend, const int divisor)
+{
+    try
+    {
+        const auto quotient = numeric::arithmetic::Arithmetic::division(dividend, divisor);
+        ARITHMETIC_PRINT_RESULT_CONTENT("Division", dividend, "/", divisor, quotient);
+    }
+    catch (const std::exception& error)
+    {
+        LOG_ERR(error.what());
+    }
+}
+} // namespace arithmetic
 
 //! @brief Run arithmetic tasks.
 //! @param targets - vector of target methods
@@ -116,8 +122,8 @@ void runArithmetic(const std::vector<std::string>& targets)
         return;
     }
 
-    using numeric::arithmetic::ArithmeticSolution;
-    using numeric::arithmetic::TargetBuilder;
+    using arithmetic::ArithmeticSolution;
+    using arithmetic::TargetBuilder;
     using utility::hash::operator""_bkdrHash;
 
     APP_NUM_PRINT_TASK_BEGIN_TITLE(Type::arithmetic);
@@ -127,7 +133,7 @@ void runArithmetic(const std::vector<std::string>& targets)
 
     const std::shared_ptr<TargetBuilder> builder =
         std::make_shared<TargetBuilder>(input::integerForArithmetic1, input::integerForArithmetic2);
-    const auto arithmeticFunctor = [&](const std::string& threadName, int (*methodPtr)(const int, const int))
+    const auto arithmeticFunctor = [&](const std::string& threadName, void (*methodPtr)(const int, const int))
     {
         threads->enqueue(
             threadName, methodPtr, std::get<0>(builder->getIntegers()), std::get<1>(builder->getIntegers()));
@@ -190,6 +196,56 @@ void updateArithmeticTask(const std::string& target)
     }
 }
 
+namespace divisor
+{
+//! @brief Display divisor result.
+#define DIVISOR_RESULT "\r\n*%-9s method:\r\n%s\r\n==>Run time: %8.5f ms\n"
+//! @brief Print divisor result content.
+#define DIVISOR_PRINT_RESULT_CONTENT(method)                                                                   \
+    do                                                                                                         \
+    {                                                                                                          \
+        const uint32_t arrayBufferSize = divisorVector.size() * maxAlignOfPrint;                               \
+        char arrayBuffer[arrayBufferSize + 1];                                                                 \
+        arrayBuffer[0] = '\0';                                                                                 \
+        COMMON_PRINT(                                                                                          \
+            DIVISOR_RESULT,                                                                                    \
+            method,                                                                                            \
+            TargetBuilder::template formatIntegerVector<int>(divisorVector, arrayBuffer, arrayBufferSize + 1), \
+            TIME_INTERVAL(timing));                                                                            \
+    }                                                                                                          \
+    while (0)
+
+void DivisorSolution::euclideanMethod(int a, int b)
+{
+    try
+    {
+        TIME_BEGIN(timing);
+        const auto divisorVector = numeric::divisor::Divisor::euclidean(a, b);
+        TIME_END(timing);
+        DIVISOR_PRINT_RESULT_CONTENT("Euclidean");
+    }
+    catch (const std::exception& error)
+    {
+        LOG_ERR(error.what());
+    }
+}
+
+void DivisorSolution::steinMethod(int a, int b)
+{
+    try
+    {
+        TIME_BEGIN(timing);
+        const auto divisorVector = numeric::divisor::Divisor::stein(a, b);
+        TIME_END(timing);
+        DIVISOR_PRINT_RESULT_CONTENT("Stein");
+    }
+    catch (const std::exception& error)
+    {
+        LOG_ERR(error.what());
+    }
+}
+} // namespace divisor
+
 //! @brief Run divisor tasks.
 //! @param targets - vector of target methods
 void runDivisor(const std::vector<std::string>& targets)
@@ -199,8 +255,8 @@ void runDivisor(const std::vector<std::string>& targets)
         return;
     }
 
-    using numeric::divisor::DivisorSolution;
-    using numeric::divisor::TargetBuilder;
+    using divisor::DivisorSolution;
+    using divisor::TargetBuilder;
     using utility::hash::operator""_bkdrHash;
 
     APP_NUM_PRINT_TASK_BEGIN_TITLE(Type::divisor);
@@ -209,7 +265,7 @@ void runDivisor(const std::vector<std::string>& targets)
 
     const std::shared_ptr<TargetBuilder> builder =
         std::make_shared<TargetBuilder>(input::integerForDivisor1, input::integerForDivisor2);
-    const auto divisorFunctor = [&](const std::string& threadName, std::vector<int> (*methodPtr)(int, int))
+    const auto divisorFunctor = [&](const std::string& threadName, void (*methodPtr)(int, int))
     {
         threads->enqueue(
             threadName, methodPtr, std::get<0>(builder->getIntegers()), std::get<1>(builder->getIntegers()));
@@ -260,6 +316,90 @@ void updateDivisorTask(const std::string& target)
     }
 }
 
+namespace integral
+{
+//! @brief Display integral result.
+#define INTEGRAL_RESULT(opt) "*%-11s method: I(" #opt ")=%+.5f  ==>Run time: %8.5f ms\n"
+//! @brief Print integral result content.
+#define INTEGRAL_PRINT_RESULT_CONTENT(method, sum) \
+    COMMON_PRINT(INTEGRAL_RESULT(def), method, sum, TIME_INTERVAL(timing))
+
+void IntegralSolution::trapezoidalMethod(const Expression& expr, double lower, double upper)
+{
+    try
+    {
+        TIME_BEGIN(timing);
+        const auto sum = numeric::integral::Trapezoidal(expr)(lower, upper, numeric::integral::epsilon);
+        TIME_END(timing);
+        INTEGRAL_PRINT_RESULT_CONTENT("Trapezoidal", sum);
+    }
+    catch (const std::exception& error)
+    {
+        LOG_ERR(error.what());
+    }
+}
+
+void IntegralSolution::adaptiveSimpsonMethod(const Expression& expr, const double lower, const double upper)
+{
+    try
+    {
+        TIME_BEGIN(timing);
+        const auto sum = numeric::integral::Trapezoidal(expr)(lower, upper, numeric::integral::epsilon);
+        TIME_END(timing);
+        INTEGRAL_PRINT_RESULT_CONTENT("Simpson", sum);
+    }
+    catch (const std::exception& error)
+    {
+        LOG_ERR(error.what());
+    }
+}
+
+void IntegralSolution::rombergMethod(const Expression& expr, const double lower, const double upper)
+{
+    try
+    {
+        TIME_BEGIN(timing);
+        const auto sum = numeric::integral::Romberg(expr)(lower, upper, numeric::integral::epsilon);
+        TIME_END(timing);
+        INTEGRAL_PRINT_RESULT_CONTENT("Romberg", sum);
+    }
+    catch (const std::exception& error)
+    {
+        LOG_ERR(error.what());
+    }
+}
+
+void IntegralSolution::gaussLegendreMethod(const Expression& expr, const double lower, const double upper)
+{
+    try
+    {
+        TIME_BEGIN(timing);
+        const auto sum = numeric::integral::Gauss(expr)(lower, upper, numeric::integral::epsilon);
+        TIME_END(timing);
+        INTEGRAL_PRINT_RESULT_CONTENT("Gauss", sum);
+    }
+    catch (const std::exception& error)
+    {
+        LOG_ERR(error.what());
+    }
+}
+
+void IntegralSolution::monteCarloMethod(const Expression& expr, const double lower, const double upper)
+{
+    try
+    {
+        TIME_BEGIN(timing);
+        const auto sum = numeric::integral::MonteCarlo(expr)(lower, upper, numeric::integral::epsilon);
+        TIME_END(timing);
+        INTEGRAL_PRINT_RESULT_CONTENT("MonteCarlo", sum);
+    }
+    catch (const std::exception& error)
+    {
+        LOG_ERR(error.what());
+    }
+}
+} // namespace integral
+
 //! @brief Run integral tasks.
 //! @param targets - vector of target methods
 void runIntegral(const std::vector<std::string>& targets)
@@ -272,13 +412,11 @@ void runIntegral(const std::vector<std::string>& targets)
     using Expression1 = input::Expression1;
     using Expression2 = input::Expression2;
     typedef std::variant<Expression1, Expression2> IntegralExprTarget;
-
-#ifdef __RUNTIME_PRINTING
     const auto printFunctor = [](const IntegralExprTarget& expression)
     {
         constexpr std::string_view prefix{"\r\nIntegral expression: "};
         std::visit(
-            numeric::integral::expression::ExprOverloaded{
+            integral::ExprOverloaded{
                 [&prefix](const Expression1& /*unused*/)
                 {
                     std::cout << prefix << Expression1::exprDescr << std::endl;
@@ -290,27 +428,19 @@ void runIntegral(const std::vector<std::string>& targets)
             },
             expression);
     };
-#endif
-    const auto resultFunctor = [targets](
-                                   const numeric::integral::expression::Expression& expression,
-                                   const numeric::integral::expression::ExprRange<double, double>& range)
+    const auto resultFunctor =
+        [targets](const integral::Expression& expression, const integral::ExprRange<double, double>& range)
     {
-        static_assert(numeric::integral::epsilon > 0.0);
         auto* threads = command::getPoolForMultithreading().newElement(std::min(
             static_cast<uint32_t>(getBit<IntegralMethod>().count()),
             static_cast<uint32_t>(Bottom<IntegralMethod>::value)));
-        const auto integralFunctor =
-            [&](const std::string& threadName, const std::shared_ptr<numeric::integral::IntegralSolution>& classPtr)
+        const auto integralFunctor = [&](const std::string& threadName,
+                                         void (*methodPtr)(const integral::Expression&, const double, const double))
         {
-            threads->enqueue(
-                threadName,
-                &numeric::integral::IntegralSolution::operator(),
-                classPtr,
-                range.range1,
-                range.range2,
-                numeric::integral::epsilon);
+            threads->enqueue(threadName, methodPtr, std::ref(expression), range.range1, range.range2);
         };
 
+        using integral::IntegralSolution;
         using utility::hash::operator""_bkdrHash;
         for (uint8_t i = 0; i < Bottom<IntegralMethod>::value; ++i)
         {
@@ -323,19 +453,19 @@ void runIntegral(const std::vector<std::string>& targets)
             switch (utility::hash::bkdrHash(targetMethod.data()))
             {
                 case "tra"_bkdrHash:
-                    integralFunctor(threadName, std::make_shared<numeric::integral::Trapezoidal>(expression));
+                    integralFunctor(threadName, &IntegralSolution::trapezoidalMethod);
                     break;
                 case "sim"_bkdrHash:
-                    integralFunctor(threadName, std::make_shared<numeric::integral::Simpson>(expression));
+                    integralFunctor(threadName, &IntegralSolution::adaptiveSimpsonMethod);
                     break;
                 case "rom"_bkdrHash:
-                    integralFunctor(threadName, std::make_shared<numeric::integral::Romberg>(expression));
+                    integralFunctor(threadName, &IntegralSolution::rombergMethod);
                     break;
                 case "gau"_bkdrHash:
-                    integralFunctor(threadName, std::make_shared<numeric::integral::Gauss>(expression));
+                    integralFunctor(threadName, &IntegralSolution::gaussLegendreMethod);
                     break;
                 case "mon"_bkdrHash:
-                    integralFunctor(threadName, std::make_shared<numeric::integral::MonteCarlo>(expression));
+                    integralFunctor(threadName, &IntegralSolution::monteCarloMethod);
                     break;
                 default:
                     LOG_DBG("Execute to apply an unknown integral method.");
@@ -347,18 +477,13 @@ void runIntegral(const std::vector<std::string>& targets)
 
     APP_NUM_PRINT_TASK_BEGIN_TITLE(Type::integral);
 
-    const std::unordered_multimap<
-        numeric::integral::expression::ExprRange<double, double>,
-        IntegralExprTarget,
-        numeric::integral::expression::ExprMapHash>
+    const std::unordered_multimap<integral::ExprRange<double, double>, IntegralExprTarget, integral::ExprMapHash>
         integralExprMap{
             {{Expression1::range1, Expression1::range2, Expression1::exprDescr}, Expression1()},
             {{Expression2::range1, Expression2::range2, Expression2::exprDescr}, Expression2()}};
     for ([[maybe_unused]] const auto& [range, expression] : integralExprMap)
     {
-#ifdef __RUNTIME_PRINTING
         printFunctor(expression);
-#endif
         switch (expression.index())
         {
             case 0:
@@ -402,6 +527,56 @@ void updateIntegralTask(const std::string& target)
     }
 }
 
+namespace prime
+{
+//! @brief Display prime result.
+#define PRIME_RESULT "\r\n*%-9s method:\r\n%s\r\n==>Run time: %8.5f ms\n"
+//! @brief Print prime result content.
+#define PRIME_PRINT_RESULT_CONTENT(method)                                                                        \
+    do                                                                                                            \
+    {                                                                                                             \
+        const uint32_t arrayBufferSize = primeVector.size() * maxAlignOfPrint;                                    \
+        char arrayBuffer[arrayBufferSize + 1];                                                                    \
+        arrayBuffer[0] = '\0';                                                                                    \
+        COMMON_PRINT(                                                                                             \
+            PRIME_RESULT,                                                                                         \
+            method,                                                                                               \
+            TargetBuilder::template formatIntegerVector<uint32_t>(primeVector, arrayBuffer, arrayBufferSize + 1), \
+            TIME_INTERVAL(timing));                                                                               \
+    }                                                                                                             \
+    while (0)
+
+void PrimeSolution::eratosthenesMethod(const uint32_t max)
+{
+    try
+    {
+        TIME_BEGIN(timing);
+        const auto primeVector = numeric::prime::Prime::eratosthenes(max);
+        TIME_END(timing);
+        PRIME_PRINT_RESULT_CONTENT("Eratosthenes");
+    }
+    catch (const std::exception& error)
+    {
+        LOG_ERR(error.what());
+    }
+}
+
+void PrimeSolution::eulerMethod(const uint32_t max)
+{
+    try
+    {
+        TIME_BEGIN(timing);
+        const auto primeVector = numeric::prime::Prime::euler(max);
+        TIME_END(timing);
+        PRIME_PRINT_RESULT_CONTENT("Euler");
+    }
+    catch (const std::exception& error)
+    {
+        LOG_ERR(error.what());
+    }
+}
+} // namespace prime
+
 //! @brief Run prime tasks.
 //! @param targets - vector of target methods
 void runPrime(const std::vector<std::string>& targets)
@@ -411,8 +586,8 @@ void runPrime(const std::vector<std::string>& targets)
         return;
     }
 
-    using numeric::prime::PrimeSolution;
-    using numeric::prime::TargetBuilder;
+    using prime::PrimeSolution;
+    using prime::TargetBuilder;
     using utility::hash::operator""_bkdrHash;
 
     APP_NUM_PRINT_TASK_BEGIN_TITLE(Type::prime);
@@ -420,7 +595,7 @@ void runPrime(const std::vector<std::string>& targets)
         static_cast<uint32_t>(getBit<PrimeMethod>().count()), static_cast<uint32_t>(Bottom<PrimeMethod>::value)));
 
     const std::shared_ptr<TargetBuilder> builder = std::make_shared<TargetBuilder>(input::maxPositiveIntegerForPrime);
-    const auto primeFunctor = [&](const std::string& threadName, std::vector<uint32_t> (*methodPtr)(const uint32_t))
+    const auto primeFunctor = [&](const std::string& threadName, void (*methodPtr)(const uint32_t))
     {
         threads->enqueue(threadName, methodPtr, builder->getMaxPositiveInteger());
     };

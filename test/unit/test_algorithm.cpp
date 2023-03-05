@@ -7,9 +7,9 @@
 #include <gtest/gtest.h>
 #include "algorithm/include/match.hpp"
 #include "algorithm/include/notation.hpp"
-#include "algorithm/include/optimal.hpp"
 #include "algorithm/include/search.hpp"
 #include "algorithm/include/sort.hpp"
+#include "application/example/include/apply_algorithm.hpp"
 
 //! @brief Title of printing for algorithm task tests.
 #define TST_ALGO_PRINT_TASK_TITLE(taskType, taskState)                                                             \
@@ -32,7 +32,8 @@ public:
     static void SetUpTestCase()
     {
         TST_ALGO_PRINT_TASK_TITLE("MATCH", "BEGIN");
-        builder = std::make_shared<algorithm::match::TargetBuilder>(algorithm::match::maxDigit, singlePatternForMatch);
+        builder = std::make_shared<application::app_algo::match::TargetBuilder>(
+            application::app_algo::input::singlePatternForMatch);
     };
     //! @brief Tear down the test case.
     static void TearDownTestCase()
@@ -46,19 +47,17 @@ public:
     void TearDown() override{};
 
     //! @brief Target builder.
-    static std::shared_ptr<algorithm::match::TargetBuilder> builder;
-    //! @brief Single pattern for match methods.
-    static constexpr std::string_view singlePatternForMatch{"12345"};
+    static std::shared_ptr<application::app_algo::match::TargetBuilder> builder;
 };
 
-std::shared_ptr<algorithm::match::TargetBuilder> MatchTestBase::builder = nullptr;
+std::shared_ptr<application::app_algo::match::TargetBuilder> MatchTestBase::builder = nullptr;
 
 //! @brief Test for the Rabin-Karp method in the solution of match.
 TEST_F(MatchTestBase, rkMethod) // NOLINT(cert-err58-cpp)
 {
     ASSERT_EQ(
         49702,
-        algorithm::match::MatchSolution::rkMethod(
+        algorithm::match::Match::rk(
             builder->getMatchingText().get(),
             builder->getSinglePattern().data(),
             std::string_view(builder->getMatchingText().get()).length(),
@@ -70,7 +69,7 @@ TEST_F(MatchTestBase, kmpMethod) // NOLINT(cert-err58-cpp)
 {
     ASSERT_EQ(
         49702,
-        algorithm::match::MatchSolution::kmpMethod(
+        algorithm::match::Match::kmp(
             builder->getMatchingText().get(),
             builder->getSinglePattern().data(),
             std::string_view(builder->getMatchingText().get()).length(),
@@ -82,7 +81,7 @@ TEST_F(MatchTestBase, bmMethod) // NOLINT(cert-err58-cpp)
 {
     ASSERT_EQ(
         49702,
-        algorithm::match::MatchSolution::bmMethod(
+        algorithm::match::Match::bm(
             builder->getMatchingText().get(),
             builder->getSinglePattern().data(),
             std::string_view(builder->getMatchingText().get()).length(),
@@ -94,7 +93,7 @@ TEST_F(MatchTestBase, horspoolMethod) // NOLINT(cert-err58-cpp)
 {
     ASSERT_EQ(
         49702,
-        algorithm::match::MatchSolution::horspoolMethod(
+        algorithm::match::Match::horspool(
             builder->getMatchingText().get(),
             builder->getSinglePattern().data(),
             std::string_view(builder->getMatchingText().get()).length(),
@@ -106,7 +105,7 @@ TEST_F(MatchTestBase, sundayMethod) // NOLINT(cert-err58-cpp)
 {
     ASSERT_EQ(
         49702,
-        algorithm::match::MatchSolution::sundayMethod(
+        algorithm::match::Match::sunday(
             builder->getMatchingText().get(),
             builder->getSinglePattern().data(),
             std::string_view(builder->getMatchingText().get()).length(),
@@ -126,7 +125,8 @@ public:
     static void SetUpTestCase()
     {
         TST_ALGO_PRINT_TASK_TITLE("NOTATION", "BEGIN");
-        builder = std::make_shared<algorithm::notation::TargetBuilder>(infixForNotation);
+        builder = std::make_shared<application::app_algo::notation::TargetBuilder>(
+            application::app_algo::input::infixForNotation);
     };
     //! @brief Tear down the test case.
     static void TearDownTestCase()
@@ -140,27 +140,21 @@ public:
     void TearDown() override{};
 
     //! @brief Target builder.
-    static std::shared_ptr<algorithm::notation::TargetBuilder> builder;
-    //! @brief Infix for notation methods.
-    static constexpr std::string_view infixForNotation{"a+b*(c^d-e)^(f+g*h)-i"};
+    static std::shared_ptr<application::app_algo::notation::TargetBuilder> builder;
 };
 
-std::shared_ptr<algorithm::notation::TargetBuilder> NotationTestBase::builder = nullptr;
+std::shared_ptr<application::app_algo::notation::TargetBuilder> NotationTestBase::builder = nullptr;
 
 //! @brief Test for the prefix method in the solution of notation.
 TEST_F(NotationTestBase, prefixMethod) // NOLINT(cert-err58-cpp)
 {
-    ASSERT_EQ(
-        "+a-*b^-^cde+f*ghi",
-        algorithm::notation::NotationSolution::prefixMethod(std::string{builder->getInfixNotation()}));
+    ASSERT_EQ("+a-*b^-^cde+f*ghi", algorithm::notation::Notation::prefix(std::string{builder->getInfixNotation()}));
 }
 
 //! @brief Test for the postfix method in the solution of notation.
 TEST_F(NotationTestBase, postfixMethod) // NOLINT(cert-err58-cpp)
 {
-    ASSERT_EQ(
-        "abcd^e-fgh*+^*+i-",
-        algorithm::notation::NotationSolution::postfixMethod(std::string{builder->getInfixNotation()}));
+    ASSERT_EQ("abcd^e-fgh*+^*+i-", algorithm::notation::Notation::postfix(std::string{builder->getInfixNotation()}));
 }
 
 //! @brief Test base of optimal.
@@ -181,68 +175,22 @@ public:
     //! @brief Tear down.
     void TearDown() override{};
 
-    //! @brief Griewank function.
-    class Griewank : public algorithm::optimal::function::Function
-    {
-    public:
-        //! @brief The operator (()) overloading of Griewank class.
-        //! @param x - independent variable
-        //! @return dependent variable
-        double operator()(const double x) const override
-        {
-            // f(x)=1+1/4000*Σ(1→n)[(Xi)^2]-Π(1→n)[cos(Xi/(i)^(1/2))],x∈[-600,600],f(min)=0
-            return (1.0 + 1.0 / 4000.0 * x * x - std::cos(x));
-        }
-
-        //! @brief Left endpoint.
-        static constexpr double range1{-600.0};
-        //! @brief Right endpoint.
-        static constexpr double range2{600.0};
-        //! @brief One-dimensional Griewank.
-        static constexpr std::string_view funcDescr{
-            "f(x)=1+1/4000*Σ(1→n)[(Xi)^2]-Π(1→n)[cos(Xi/(i)^(1/2))],x∈[-600,600] (one-dimensional Griewank)"};
-    } /** @brief Griewank function object. */ griewank;
-
-    //! @brief Rastrigin function.
-    class Rastrigin : public algorithm::optimal::function::Function
-    {
-    public:
-        //! @brief The operator (()) overloading of Rastrigin class.
-        //! @param x - independent variable
-        //! @return dependent variable
-        double operator()(const double x) const override
-        {
-            // f(x)=An+Σ(1→n)[(Xi)^2-Acos(2π*Xi)],A=10,x∈[-5.12,5.12],f(min)=0
-            return (x * x - 10.0 * std::cos(2.0 * M_PI * x) + 10.0);
-        }
-
-        //! @brief Left endpoint.
-        static constexpr double range1{-5.12};
-        //! @brief Right endpoint.
-        static constexpr double range2{5.12};
-        //! @brief One-dimensional Rastrigin.
-        static constexpr std::string_view funcDescr{
-            "f(x)=An+Σ(1→n)[(Xi)^2-Acos(2π*Xi)],A=10,x∈[-5.12,5.12] (one-dimensional Rastrigin)"};
-    } /** @brief Rastrigin function object. */ rastrigin;
+    //! @brief Griewank function object.
+    application::app_algo::input::Griewank griewank;
+    //! @brief Rastrigin function object.
+    application::app_algo::input::Rastrigin rastrigin;
 };
 
 //! @brief Test for the gradient descent method in the solution of optimal.
 TEST_F(OptimalTestBase, gradient) // NOLINT(cert-err58-cpp)
 {
-    std::shared_ptr<algorithm::optimal::OptimalSolution> gradient =
-        std::make_shared<algorithm::optimal::Gradient>(griewank);
-#ifdef __RUNTIME_PRINTING
-    std::cout << "\r\nOptimal function: " << griewank.funcDescr << std::endl;
-#endif
+    std::shared_ptr<algorithm::optimal::Optimal> gradient = std::make_shared<algorithm::optimal::Gradient>(griewank);
     auto result = (*gradient)(griewank.range1, griewank.range2, algorithm::optimal::epsilon);
     ASSERT_TRUE(result.has_value());
     ASSERT_GT(get<0>(result.value()), 0.0 - 0.05);
     ASSERT_LT(get<0>(result.value()), 0.0 + 0.05);
 
     gradient = std::make_shared<algorithm::optimal::Gradient>(rastrigin);
-#ifdef __RUNTIME_PRINTING
-    std::cout << "\r\nOptimal function: " << rastrigin.funcDescr << std::endl;
-#endif
     result = (*gradient)(rastrigin.range1, rastrigin.range2, algorithm::optimal::epsilon);
     ASSERT_TRUE(result.has_value());
     ASSERT_GT(get<0>(result.value()), 0.0 - 0.05);
@@ -252,20 +200,13 @@ TEST_F(OptimalTestBase, gradient) // NOLINT(cert-err58-cpp)
 //! @brief Test for the simulated annealing method in the solution of optimal.
 TEST_F(OptimalTestBase, annealing) // NOLINT(cert-err58-cpp)
 {
-    std::shared_ptr<algorithm::optimal::OptimalSolution> annealing =
-        std::make_shared<algorithm::optimal::Annealing>(griewank);
-#ifdef __RUNTIME_PRINTING
-    std::cout << "\r\nOptimal function: " << griewank.funcDescr << std::endl;
-#endif
+    std::shared_ptr<algorithm::optimal::Optimal> annealing = std::make_shared<algorithm::optimal::Annealing>(griewank);
     auto result = (*annealing)(griewank.range1, griewank.range2, algorithm::optimal::epsilon);
     ASSERT_TRUE(result.has_value());
     ASSERT_GT(get<0>(result.value()), 0.0 - 0.05);
     ASSERT_LT(get<0>(result.value()), 0.0 + 0.05);
 
     annealing = std::make_shared<algorithm::optimal::Annealing>(rastrigin);
-#ifdef __RUNTIME_PRINTING
-    std::cout << "\r\nOptimal function: " << rastrigin.funcDescr << std::endl;
-#endif
     result = (*annealing)(rastrigin.range1, rastrigin.range2, algorithm::optimal::epsilon);
     ASSERT_TRUE(result.has_value());
     ASSERT_GT(get<0>(result.value()), 0.0 - 0.05);
@@ -275,20 +216,13 @@ TEST_F(OptimalTestBase, annealing) // NOLINT(cert-err58-cpp)
 //! @brief Test for the particle swarm method in the solution of optimal.
 TEST_F(OptimalTestBase, particle) // NOLINT(cert-err58-cpp)
 {
-    std::shared_ptr<algorithm::optimal::OptimalSolution> particle =
-        std::make_shared<algorithm::optimal::Particle>(griewank);
-#ifdef __RUNTIME_PRINTING
-    std::cout << "\r\nOptimal function: " << griewank.funcDescr << std::endl;
-#endif
+    std::shared_ptr<algorithm::optimal::Optimal> particle = std::make_shared<algorithm::optimal::Particle>(griewank);
     auto result = (*particle)(griewank.range1, griewank.range2, algorithm::optimal::epsilon);
     ASSERT_TRUE(result.has_value());
     ASSERT_GT(get<0>(result.value()), 0.0 - 0.05);
     ASSERT_LT(get<0>(result.value()), 0.0 + 0.05);
 
     particle = std::make_shared<algorithm::optimal::Particle>(rastrigin);
-#ifdef __RUNTIME_PRINTING
-    std::cout << "\r\nOptimal function: " << rastrigin.funcDescr << std::endl;
-#endif
     result = (*particle)(rastrigin.range1, rastrigin.range2, algorithm::optimal::epsilon);
     ASSERT_TRUE(result.has_value());
     ASSERT_GT(get<0>(result.value()), 0.0 - 0.05);
@@ -298,20 +232,13 @@ TEST_F(OptimalTestBase, particle) // NOLINT(cert-err58-cpp)
 //! @brief Test for the genetic method in the solution of optimal.
 TEST_F(OptimalTestBase, genetic) // NOLINT(cert-err58-cpp)
 {
-    std::shared_ptr<algorithm::optimal::OptimalSolution> genetic =
-        std::make_shared<algorithm::optimal::Genetic>(griewank);
-#ifdef __RUNTIME_PRINTING
-    std::cout << "\r\nOptimal function: " << griewank.funcDescr << std::endl;
-#endif
+    std::shared_ptr<algorithm::optimal::Optimal> genetic = std::make_shared<algorithm::optimal::Genetic>(griewank);
     auto result = (*genetic)(griewank.range1, griewank.range2, algorithm::optimal::epsilon);
     ASSERT_TRUE(result.has_value());
     ASSERT_GT(get<0>(result.value()), 0.0 - 0.05);
     ASSERT_LT(get<0>(result.value()), 0.0 + 0.05);
 
     genetic = std::make_shared<algorithm::optimal::Genetic>(rastrigin);
-#ifdef __RUNTIME_PRINTING
-    std::cout << "\r\nOptimal function: " << rastrigin.funcDescr << std::endl;
-#endif
     result = (*genetic)(rastrigin.range1, rastrigin.range2, algorithm::optimal::epsilon);
     ASSERT_TRUE(result.has_value());
     ASSERT_GT(get<0>(result.value()), 0.0 - 0.05);
@@ -331,8 +258,10 @@ public:
     static void SetUpTestCase()
     {
         TST_ALGO_PRINT_TASK_TITLE("SEARCH", "BEGIN");
-        builder = std::make_shared<algorithm::search::TargetBuilder<double>>(
-            arrayLengthForSearch, arrayRangeForSearch1, arrayRangeForSearch2);
+        builder = std::make_shared<application::app_algo::search::TargetBuilder<double>>(
+            application::app_algo::input::arrayLengthForSearch,
+            application::app_algo::input::arrayRangeForSearch1,
+            application::app_algo::input::arrayRangeForSearch2);
     };
     //! @brief Tear down the test case.
     static void TearDownTestCase()
@@ -346,23 +275,17 @@ public:
     void TearDown() override{};
 
     //! @brief Target builder.
-    static std::shared_ptr<algorithm::search::TargetBuilder<double>> builder;
-    //! @brief Minimum of the array for search methods.
-    static constexpr double arrayRangeForSearch1{-50.0};
-    //! @brief Maximum of the array for search methods.
-    static constexpr double arrayRangeForSearch2{150.0};
-    //! @brief Length of the array for search methods.
-    static constexpr uint32_t arrayLengthForSearch{53};
+    static std::shared_ptr<application::app_algo::search::TargetBuilder<double>> builder;
 };
 
-std::shared_ptr<algorithm::search::TargetBuilder<double>> SearchTestBase::builder = nullptr;
+std::shared_ptr<application::app_algo::search::TargetBuilder<double>> SearchTestBase::builder = nullptr;
 
 //! @brief Test for the binary method in the solution of search.
 TEST_F(SearchTestBase, binaryMethod) // NOLINT(cert-err58-cpp)
 {
     ASSERT_EQ(
         builder->getLength() / 2,
-        algorithm::search::SearchSolution<double>::binaryMethod(
+        algorithm::search::Search<double>::binary(
             builder->getOrderedArray().get(), builder->getLength(), builder->getSearchKey()));
 }
 
@@ -371,7 +294,7 @@ TEST_F(SearchTestBase, interpolationMethod) // NOLINT(cert-err58-cpp)
 {
     ASSERT_EQ(
         builder->getLength() / 2,
-        algorithm::search::SearchSolution<double>::interpolationMethod(
+        algorithm::search::Search<double>::interpolation(
             builder->getOrderedArray().get(), builder->getLength(), builder->getSearchKey()));
 }
 
@@ -380,7 +303,7 @@ TEST_F(SearchTestBase, fibonacciMethod) // NOLINT(cert-err58-cpp)
 {
     ASSERT_EQ(
         builder->getLength() / 2,
-        algorithm::search::SearchSolution<double>::fibonacciMethod(
+        algorithm::search::Search<double>::fibonacci(
             builder->getOrderedArray().get(), builder->getLength(), builder->getSearchKey()));
 }
 
@@ -397,8 +320,10 @@ public:
     static void SetUpTestCase()
     {
         TST_ALGO_PRINT_TASK_TITLE("SORT", "BEGIN");
-        builder = std::make_shared<algorithm::sort::TargetBuilder<int>>(
-            arrayLengthForSort, arrayRangeForSort1, arrayRangeForSort2);
+        builder = std::make_shared<application::app_algo::sort::TargetBuilder<int>>(
+            application::app_algo::input::arrayLengthForSort,
+            application::app_algo::input::arrayRangeForSort1,
+            application::app_algo::input::arrayRangeForSort2);
     };
     //! @brief Tear down the test case.
     static void TearDownTestCase()
@@ -412,16 +337,10 @@ public:
     void TearDown() override{};
 
     //! @brief Target builder.
-    static std::shared_ptr<algorithm::sort::TargetBuilder<int>> builder;
-    //! @brief Minimum of the array for sort methods.
-    static constexpr int arrayRangeForSort1{-50};
-    //! @brief Maximum of the array for sort methods.
-    static constexpr int arrayRangeForSort2{150};
-    //! @brief Length of the array for sort methods.
-    static constexpr uint32_t arrayLengthForSort{53};
+    static std::shared_ptr<application::app_algo::sort::TargetBuilder<int>> builder;
 };
 
-std::shared_ptr<algorithm::sort::TargetBuilder<int>> SortTestBase::builder = nullptr;
+std::shared_ptr<application::app_algo::sort::TargetBuilder<int>> SortTestBase::builder = nullptr;
 
 //! @brief Test for the bubble method in the solution of sort.
 TEST_F(SortTestBase, bubbleMethod) // NOLINT(cert-err58-cpp)
@@ -429,9 +348,7 @@ TEST_F(SortTestBase, bubbleMethod) // NOLINT(cert-err58-cpp)
     std::vector<int> sortVector(
         builder->getRandomArray().get(), builder->getRandomArray().get() + builder->getLength());
     std::sort(sortVector.begin(), sortVector.end());
-    ASSERT_EQ(
-        sortVector,
-        algorithm::sort::SortSolution<int>::bubbleMethod(builder->getRandomArray().get(), builder->getLength()));
+    ASSERT_EQ(sortVector, algorithm::sort::Sort<int>::bubble(builder->getRandomArray().get(), builder->getLength()));
 }
 
 //! @brief Test for the selection method in the solution of sort.
@@ -440,9 +357,7 @@ TEST_F(SortTestBase, selectionMethod) // NOLINT(cert-err58-cpp)
     std::vector<int> sortVector(
         builder->getRandomArray().get(), builder->getRandomArray().get() + builder->getLength());
     std::sort(sortVector.begin(), sortVector.end());
-    ASSERT_EQ(
-        sortVector,
-        algorithm::sort::SortSolution<int>::selectionMethod(builder->getRandomArray().get(), builder->getLength()));
+    ASSERT_EQ(sortVector, algorithm::sort::Sort<int>::selection(builder->getRandomArray().get(), builder->getLength()));
 }
 
 //! @brief Test for the insertion method in the solution of sort.
@@ -451,9 +366,7 @@ TEST_F(SortTestBase, insertionMethod) // NOLINT(cert-err58-cpp)
     std::vector<int> sortVector(
         builder->getRandomArray().get(), builder->getRandomArray().get() + builder->getLength());
     std::sort(sortVector.begin(), sortVector.end());
-    ASSERT_EQ(
-        sortVector,
-        algorithm::sort::SortSolution<int>::insertionMethod(builder->getRandomArray().get(), builder->getLength()));
+    ASSERT_EQ(sortVector, algorithm::sort::Sort<int>::insertion(builder->getRandomArray().get(), builder->getLength()));
 }
 
 //! @brief Test for the shell method in the solution of sort.
@@ -462,9 +375,7 @@ TEST_F(SortTestBase, shellMethod) // NOLINT(cert-err58-cpp)
     std::vector<int> sortVector(
         builder->getRandomArray().get(), builder->getRandomArray().get() + builder->getLength());
     std::sort(sortVector.begin(), sortVector.end());
-    ASSERT_EQ(
-        sortVector,
-        algorithm::sort::SortSolution<int>::shellMethod(builder->getRandomArray().get(), builder->getLength()));
+    ASSERT_EQ(sortVector, algorithm::sort::Sort<int>::shell(builder->getRandomArray().get(), builder->getLength()));
 }
 
 //! @brief Test for the merge method in the solution of sort.
@@ -473,9 +384,7 @@ TEST_F(SortTestBase, mergeMethod) // NOLINT(cert-err58-cpp)
     std::vector<int> sortVector(
         builder->getRandomArray().get(), builder->getRandomArray().get() + builder->getLength());
     std::sort(sortVector.begin(), sortVector.end());
-    ASSERT_EQ(
-        sortVector,
-        algorithm::sort::SortSolution<int>::mergeMethod(builder->getRandomArray().get(), builder->getLength()));
+    ASSERT_EQ(sortVector, algorithm::sort::Sort<int>::merge(builder->getRandomArray().get(), builder->getLength()));
 }
 
 //! @brief Test for the quick method in the solution of sort.
@@ -484,9 +393,7 @@ TEST_F(SortTestBase, quickMethod) // NOLINT(cert-err58-cpp)
     std::vector<int> sortVector(
         builder->getRandomArray().get(), builder->getRandomArray().get() + builder->getLength());
     std::sort(sortVector.begin(), sortVector.end());
-    ASSERT_EQ(
-        sortVector,
-        algorithm::sort::SortSolution<int>::quickMethod(builder->getRandomArray().get(), builder->getLength()));
+    ASSERT_EQ(sortVector, algorithm::sort::Sort<int>::quick(builder->getRandomArray().get(), builder->getLength()));
 }
 
 //! @brief Test for the heap method in the solution of sort.
@@ -495,9 +402,7 @@ TEST_F(SortTestBase, heapMethod) // NOLINT(cert-err58-cpp)
     std::vector<int> sortVector(
         builder->getRandomArray().get(), builder->getRandomArray().get() + builder->getLength());
     std::sort(sortVector.begin(), sortVector.end());
-    ASSERT_EQ(
-        sortVector,
-        algorithm::sort::SortSolution<int>::heapMethod(builder->getRandomArray().get(), builder->getLength()));
+    ASSERT_EQ(sortVector, algorithm::sort::Sort<int>::heap(builder->getRandomArray().get(), builder->getLength()));
 }
 
 //! @brief Test for the counting method in the solution of sort.
@@ -506,9 +411,7 @@ TEST_F(SortTestBase, countingMethod) // NOLINT(cert-err58-cpp)
     std::vector<int> sortVector(
         builder->getRandomArray().get(), builder->getRandomArray().get() + builder->getLength());
     std::sort(sortVector.begin(), sortVector.end());
-    ASSERT_EQ(
-        sortVector,
-        algorithm::sort::SortSolution<int>::countingMethod(builder->getRandomArray().get(), builder->getLength()));
+    ASSERT_EQ(sortVector, algorithm::sort::Sort<int>::counting(builder->getRandomArray().get(), builder->getLength()));
 }
 
 //! @brief Test for the bucket method in the solution of sort.
@@ -517,9 +420,7 @@ TEST_F(SortTestBase, bucketMethod) // NOLINT(cert-err58-cpp)
     std::vector<int> sortVector(
         builder->getRandomArray().get(), builder->getRandomArray().get() + builder->getLength());
     std::sort(sortVector.begin(), sortVector.end());
-    ASSERT_EQ(
-        sortVector,
-        algorithm::sort::SortSolution<int>::bucketMethod(builder->getRandomArray().get(), builder->getLength()));
+    ASSERT_EQ(sortVector, algorithm::sort::Sort<int>::bucket(builder->getRandomArray().get(), builder->getLength()));
 }
 
 //! @brief Test for the radix method in the solution of sort.
@@ -528,8 +429,6 @@ TEST_F(SortTestBase, radixMethod) // NOLINT(cert-err58-cpp)
     std::vector<int> sortVector(
         builder->getRandomArray().get(), builder->getRandomArray().get() + builder->getLength());
     std::sort(sortVector.begin(), sortVector.end());
-    ASSERT_EQ(
-        sortVector,
-        algorithm::sort::SortSolution<int>::radixMethod(builder->getRandomArray().get(), builder->getLength()));
+    ASSERT_EQ(sortVector, algorithm::sort::Sort<int>::radix(builder->getRandomArray().get(), builder->getLength()));
 }
 } // namespace test::tst_algo

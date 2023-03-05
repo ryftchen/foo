@@ -32,8 +32,13 @@ set(BUILD_DIR ${CMAKE_SOURCE_DIR}/build)
 set(EXECUTABLE_OUTPUT_PATH ${BUILD_DIR}/bin)
 set(LIBRARY_OUTPUT_PATH ${BUILD_DIR}/lib)
 
-aux_source_directory(${CMAKE_SOURCE_DIR}/application/source APPLICATION_LIST)
-include_directories(${CMAKE_SOURCE_DIR})
+aux_source_directory(${CMAKE_SOURCE_DIR}/application/core/source APPLICATION_LIST)
+aux_source_directory(${CMAKE_SOURCE_DIR}/application/example/source APPLICATION_LIST)
+include_directories(
+    ${CMAKE_SOURCE_DIR}
+    ${CMAKE_SOURCE_DIR}/application/core/include
+    ${CMAKE_SOURCE_DIR}/application/example/include
+)
 
 add_subdirectory(${CMAKE_SOURCE_DIR}/utility)
 add_subdirectory(${CMAKE_SOURCE_DIR}/algorithm)
@@ -44,8 +49,12 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/numeric)
 add_executable(${BIN_NAME} ${APPLICATION_LIST})
 target_include_directories(
     ${BIN_NAME}
-    PUBLIC ${CMAKE_SOURCE_DIR}/application/include
-    PRIVATE ${CMAKE_SOURCE_DIR}/application/source
+    PUBLIC
+        ${CMAKE_SOURCE_DIR}/application/core/include
+        ${CMAKE_SOURCE_DIR}/application/example/include
+    PRIVATE
+        ${CMAKE_SOURCE_DIR}/application/core/source
+        ${CMAKE_SOURCE_DIR}/application/example/source
 )
 target_link_libraries(
     ${BIN_NAME}

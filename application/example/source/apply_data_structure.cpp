@@ -6,12 +6,9 @@
 
 #include "apply_data_structure.hpp"
 #include <iomanip>
-#include "application/include/command.hpp"
-#include "application/include/log.hpp"
-#include "data_structure/include/linear.hpp"
-#include "data_structure/include/tree.hpp"
+#include "application/core/include/command.hpp"
+#include "application/core/include/log.hpp"
 #include "utility/include/hash.hpp"
-#include "utility/include/thread.hpp"
 
 //! @brief Title of printing when data structure tasks are beginning.
 #define APP_DS_PRINT_TASK_BEGIN_TITLE(taskType)                                                                       \
@@ -50,6 +47,58 @@ DataStructureTask& getTask()
     return task;
 }
 
+namespace linear
+{
+//! @brief Display linear result.
+#define LINEAR_RESULT "\r\n*%-10s instance:\r\n%s"
+//! @brief Print linear result content.
+#define LINEAR_PRINT_RESULT_CONTENT(method) COMMON_PRINT(LINEAR_RESULT, method, output.str().c_str())
+
+LinearStructure::LinearStructure()
+{
+    std::cout << "\r\nInstances of the linear structure:" << std::endl;
+}
+
+void LinearStructure::linkedListInstance()
+{
+    try
+    {
+        const auto output = Linear::linkedList();
+        LINEAR_PRINT_RESULT_CONTENT("LinkedList");
+    }
+    catch (const std::exception& error)
+    {
+        LOG_ERR(error.what());
+    }
+}
+
+void LinearStructure::stackInstance()
+{
+    try
+    {
+        const auto output = Linear::stack();
+        LINEAR_PRINT_RESULT_CONTENT("Stack");
+    }
+    catch (const std::exception& error)
+    {
+        LOG_ERR(error.what());
+    }
+}
+
+void LinearStructure::queueInstance()
+{
+    try
+    {
+        const auto output = Linear::queue();
+        LINEAR_PRINT_RESULT_CONTENT("Queue");
+    }
+    catch (const std::exception& error)
+    {
+        LOG_ERR(error.what());
+    }
+}
+} // namespace linear
+
 //! @brief Run linear tasks.
 //! @param targets - vector of target instances
 void runLinear(const std::vector<std::string>& targets)
@@ -59,17 +108,16 @@ void runLinear(const std::vector<std::string>& targets)
         return;
     }
 
-    using date_structure::linear::LinearStructure;
+    using linear::LinearStructure;
     using utility::hash::operator""_bkdrHash;
 
     APP_DS_PRINT_TASK_BEGIN_TITLE(Type::linear);
     auto* threads = command::getPoolForMultithreading().newElement(std::min(
         static_cast<uint32_t>(getBit<LinearInstance>().count()), static_cast<uint32_t>(Bottom<LinearInstance>::value)));
 
-    const std::shared_ptr<LinearStructure> structure = std::make_shared<LinearStructure>();
-    const auto linearFunctor = [&](const std::string& threadName, void (LinearStructure::*instancePtr)() const)
+    const auto linearFunctor = [&](const std::string& threadName, void (*instancePtr)())
     {
-        threads->enqueue(threadName, instancePtr, structure);
+        threads->enqueue(threadName, instancePtr);
     };
 
     for (uint8_t i = 0; i < Bottom<LinearInstance>::value; ++i)
@@ -123,6 +171,58 @@ void updateLinearTask(const std::string& target)
     }
 }
 
+namespace tree
+{
+//! @brief Display tree result.
+#define TREE_RESULT "\r\n*%-19s instance:\r\n%s"
+//! @brief Print tree result content.
+#define TREE_PRINT_RESULT_CONTENT(method) COMMON_PRINT(TREE_RESULT, method, output.str().c_str());
+
+TreeStructure::TreeStructure()
+{
+    std::cout << "\r\nInstances of the tree structure:" << std::endl;
+}
+
+void TreeStructure::bsInstance()
+{
+    try
+    {
+        const auto output = Tree::bs();
+        TREE_PRINT_RESULT_CONTENT("BinarySearch");
+    }
+    catch (const std::exception& error)
+    {
+        LOG_ERR(error.what());
+    }
+}
+
+void TreeStructure::avlInstance()
+{
+    try
+    {
+        const auto output = Tree::avl();
+        TREE_PRINT_RESULT_CONTENT("AdelsonVelskyLandis");
+    }
+    catch (const std::exception& error)
+    {
+        LOG_ERR(error.what());
+    }
+}
+
+void TreeStructure::splayInstance()
+{
+    try
+    {
+        const auto output = Tree::splay();
+        TREE_PRINT_RESULT_CONTENT("Splay");
+    }
+    catch (const std::exception& error)
+    {
+        LOG_ERR(error.what());
+    }
+}
+} // namespace tree
+
 //! @brief Run tree tasks.
 //! @param targets - vector of target instances
 void runTree(const std::vector<std::string>& targets)
@@ -132,17 +232,16 @@ void runTree(const std::vector<std::string>& targets)
         return;
     }
 
-    using date_structure::tree::TreeStructure;
+    using tree::TreeStructure;
     using utility::hash::operator""_bkdrHash;
 
     APP_DS_PRINT_TASK_BEGIN_TITLE(Type::tree);
     auto* threads = command::getPoolForMultithreading().newElement(std::min(
         static_cast<uint32_t>(getBit<TreeInstance>().count()), static_cast<uint32_t>(Bottom<TreeInstance>::value)));
 
-    const std::shared_ptr<TreeStructure> structure = std::make_shared<TreeStructure>();
-    const auto treeFunctor = [&](const std::string& threadName, void (TreeStructure::*instancePtr)() const)
+    const auto treeFunctor = [&](const std::string& threadName, void (*instancePtr)())
     {
-        threads->enqueue(threadName, instancePtr, structure);
+        threads->enqueue(threadName, instancePtr);
     };
 
     for (uint8_t i = 0; i < Bottom<TreeInstance>::value; ++i)

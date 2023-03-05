@@ -16,9 +16,6 @@
 //! @brief Optimal-related functions in the algorithm module.
 namespace algorithm::optimal
 {
-//! @brief Target functions of optimization.
-namespace function
-{
 //! @brief Target functions.
 class Function
 {
@@ -32,88 +29,22 @@ public:
     virtual inline double operator()(const double x) const = 0;
 };
 
-//! @brief Function object's helper type for the visitor.
-//! @tparam Ts - type of visitor
-template <class... Ts>
-struct FuncOverloaded : Ts...
-{
-    using Ts::operator()...;
-};
-
-//! @brief Explicit deduction guide for FuncOverloaded.
-//! @tparam Ts - type of visitor
-template <class... Ts>
-FuncOverloaded(Ts...) -> FuncOverloaded<Ts...>;
-
-//! @brief Range properties of the function.
-//! @tparam T1 - type of left endpoint
-//! @tparam T2 - type of right endpoint
-template <typename T1, typename T2>
-struct FuncRange
-{
-    //! @brief Construct a new FuncRange object.
-    //! @param range1 - left endpoint
-    //! @param range2 - light endpoint
-    //! @param funcDescr - function description
-    FuncRange(const T1& range1, const T2& range2, const std::string_view funcDescr) :
-        range1(range1), range2(range2), funcDescr(funcDescr){};
-    //! @brief Construct a new FuncRange object.
-    FuncRange() = delete;
-    //! @brief Left endpoint.
-    T1 range1;
-    //! @brief Right endpoint.
-    T2 range2;
-    //! @brief Function description.
-    std::string_view funcDescr;
-
-    //! @brief The operator (==) overloading of FuncRange class.
-    //! @param rhs - right-hand side
-    //! @return be equal or not equal
-    bool operator==(const FuncRange& rhs) const
-    {
-        return (std::tie(rhs.range1, rhs.range2, rhs.funcDescr) == std::tie(range1, range2, funcDescr));
-    }
-};
-//! @brief Mapping hash value for the function.
-struct FuncMapHash
-{
-    //! @brief The operator (()) overloading of FuncMapHash class.
-    //! @tparam T1 - type of left endpoint
-    //! @tparam T2 - type of right endpoint
-    //! @param range - range properties of the function
-    //! @return hash value
-    template <typename T1, typename T2>
-    std::size_t operator()(const FuncRange<T1, T2>& range) const
-    {
-        std::size_t hash1 = std::hash<T1>()(range.range1);
-        std::size_t hash2 = std::hash<T2>()(range.range2);
-        std::size_t hash3 = std::hash<std::string_view>()(range.funcDescr);
-        return (hash1 ^ hash2 ^ hash3);
-    }
-};
-} // namespace function
-
-//! @brief Alias for the independent variable.
-using ValueX = double;
-//! @brief Alias for the dependent variable.
-using ValueY = double;
-
 //! @brief The precision of calculation.
 inline constexpr double epsilon = 1e-5;
 
-//! @brief Solution of optimal.
-class OptimalSolution
+//! @brief Optimal methods.
+class Optimal
 {
 public:
-    //! @brief Destroy the OptimalSolution object.
-    virtual ~OptimalSolution() = default;
+    //! @brief Destroy the Optimal object.
+    virtual ~Optimal() = default;
 
-    //! @brief The operator (()) overloading of OptimalSolution class.
+    //! @brief The operator (()) overloading of Optimal class.
     //! @param left - left endpoint
     //! @param right - right endpoint
     //! @param eps - precision of calculation
     //! @return result of optimal
-    virtual std::optional<std::tuple<ValueY, ValueX>> operator()(
+    virtual std::optional<std::tuple<double, double>> operator()(
         const double left,
         const double right,
         const double eps) = 0;
@@ -122,27 +53,27 @@ protected:
     friend std::mt19937 getRandomSeedByTime();
 };
 
-//! @brief The gradient descent method.
-class Gradient : public OptimalSolution
+//! @brief Gradient descent.
+class Gradient : public Optimal
 {
 public:
     //! @brief Construct a new Gradient object.
     //! @param func - target function
-    explicit Gradient(const function::Function& func);
+    explicit Gradient(const Function& func);
 
     //! @brief The operator (()) overloading of Gradient class.
     //! @param left - left endpoint
     //! @param right - right endpoint
     //! @param eps - precision of calculation
     //! @return result of optimal
-    [[nodiscard]] std::optional<std::tuple<ValueY, ValueX>> operator()(
+    [[nodiscard]] std::optional<std::tuple<double, double>> operator()(
         const double left,
         const double right,
         const double eps) override;
 
 private:
     //! @brief Target function.
-    const function::Function& func;
+    const Function& func;
     //! @brief Initial learning rate.
     static constexpr double initialLearningRate{0.01};
     //! @brief Decay.
@@ -157,27 +88,27 @@ private:
     [[nodiscard]] double calculateFirstDerivative(const double x, const double eps) const;
 };
 
-//! @brief The simulated annealing method.
-class Annealing : public OptimalSolution
+//! @brief Simulated annealing.
+class Annealing : public Optimal
 {
 public:
     //! @brief Construct a new Annealing object.
     //! @param func - target function
-    explicit Annealing(const function::Function& func);
+    explicit Annealing(const Function& func);
 
-    //! @brief The operator (()) overloading of Gradient class.
+    //! @brief The operator (()) overloading of Annealing class.
     //! @param left - left endpoint
     //! @param right - right endpoint
     //! @param eps - precision of calculation
     //! @return result of optimal
-    [[nodiscard]] std::optional<std::tuple<ValueY, ValueX>> operator()(
+    [[nodiscard]] std::optional<std::tuple<double, double>> operator()(
         const double left,
         const double right,
         const double eps) override;
 
 private:
     //! @brief Target function.
-    const function::Function& func;
+    const Function& func;
     //! @brief Initial temperature.
     static constexpr double initialT{100.0};
     //! @brief Minimal temperature.
@@ -188,27 +119,27 @@ private:
     static constexpr uint32_t markovChain{500};
 };
 
-//! @brief The particle swarm method.
-class Particle : public OptimalSolution
+//! @brief Particle swarm.
+class Particle : public Optimal
 {
 public:
     //! @brief Construct a new Particle object.
     //! @param func - target function
-    explicit Particle(const function::Function& func);
+    explicit Particle(const Function& func);
 
-    //! @brief The operator (()) overloading of Gradient class.
+    //! @brief The operator (()) overloading of Particle class.
     //! @param left - left endpoint
     //! @param right - right endpoint
     //! @param eps - precision of calculation
     //! @return result of optimal
-    [[nodiscard]] std::optional<std::tuple<ValueY, ValueX>> operator()(
+    [[nodiscard]] std::optional<std::tuple<double, double>> operator()(
         const double left,
         const double right,
         const double eps) override;
 
 private:
     //! @brief Target function.
-    const function::Function& func;
+    const Function& func;
     //! @brief Random seed.
     std::mt19937 seed;
     //! @brief Cognitive coefficient.
@@ -275,7 +206,7 @@ private:
     //! @brief Alias for the society information in the swarm.
     using Society = std::vector<Individual>;
     //! @brief Alias for the history information in the swarm.
-    using History = std::map<ValueY, ValueX, Smaller>;
+    using History = std::map<double, double, Smaller>;
     //! @brief Store the information of society and history in the swarm.
     struct alignas(64) Storage
     {
@@ -302,27 +233,27 @@ private:
     Storage storageInit(const double left, const double right);
 };
 
-//! @brief The genetic method.
-class Genetic : public OptimalSolution
+//! @brief Genetic.
+class Genetic : public Optimal
 {
 public:
     //! @brief Construct a new Genetic object.
     //! @param func - target function
-    explicit Genetic(const function::Function& func);
+    explicit Genetic(const Function& func);
 
-    //! @brief The operator (()) overloading of Gradient class.
+    //! @brief The operator (()) overloading of Genetic class.
     //! @param left - left endpoint
     //! @param right - right endpoint
     //! @param eps - precision of calculation
     //! @return result of optimal
-    [[nodiscard]] std::optional<std::tuple<ValueY, ValueX>> operator()(
+    [[nodiscard]] std::optional<std::tuple<double, double>> operator()(
         const double left,
         const double right,
         const double eps) override;
 
 private:
     //! @brief Target function.
-    const function::Function& func;
+    const Function& func;
     //! @brief Range properties of species.
     struct Range
     {

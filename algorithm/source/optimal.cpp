@@ -11,30 +11,7 @@
 #include <chrono>
 #include <functional>
 #include <set>
-#endif
-#ifdef __RUNTIME_PRINTING
-#include "utility/include/common.hpp"
-#include "utility/include/time.hpp"
-
-//! @brief Display optimal result.
-#define OPTIMAL_RESULT(opt) "*%-9s method: F(" #opt ")=%+.5f X=%+.5f  ==>Run time: %8.5f ms\n"
-//! @brief Print optimal result content.
-#define OPTIMAL_PRINT_RESULT_CONTENT(method, f, x) \
-    COMMON_PRINT(OPTIMAL_RESULT(min), method, f, x, OPTIMAL_RUNTIME_INTERVAL)
-//! @brief Store optimal beginning runtime.
-#define OPTIMAL_RUNTIME_BEGIN TIME_BEGIN(timing)
-//! @brief Store optimal ending runtime.
-#define OPTIMAL_RUNTIME_END TIME_END(timing)
-//! @brief Calculate optimal runtime interval.
-#define OPTIMAL_RUNTIME_INTERVAL TIME_INTERVAL(timing)
-#else
-
-//! @brief Print optimal result content.
-#define OPTIMAL_PRINT_RESULT_CONTENT(method, f, x)
-//! @brief Store optimal beginning runtime.
-#define OPTIMAL_RUNTIME_BEGIN
-//! @brief Store optimal ending runtime.
-#define OPTIMAL_RUNTIME_END
+#include <stdexcept>
 #endif
 
 namespace algorithm::optimal
@@ -48,13 +25,12 @@ std::mt19937 getRandomSeedByTime()
     return std::mt19937(milliseconds);
 }
 
-Gradient::Gradient(const function::Function& func) : func(func)
+Gradient::Gradient(const Function& func) : func(func)
 {
 }
 
-std::optional<std::tuple<ValueY, ValueX>> Gradient::operator()(const double left, const double right, const double eps)
+std::optional<std::tuple<double, double>> Gradient::operator()(const double left, const double right, const double eps)
 {
-    OPTIMAL_RUNTIME_BEGIN;
     std::mt19937 seed{getRandomSeedByTime()};
     double x = 0.0, y = 0.0;
     std::uniform_real_distribution<double> candidate(left, right);
@@ -64,7 +40,7 @@ std::optional<std::tuple<ValueY, ValueX>> Gradient::operator()(const double left
         climbing.insert(candidate(seed));
     }
 
-    std::vector<std::pair<ValueY, ValueX>> aggregation;
+    std::vector<std::pair<double, double>> aggregation;
     aggregation.reserve(climbing.size());
     for (const auto climber : climbing)
     {
@@ -93,8 +69,6 @@ std::optional<std::tuple<ValueY, ValueX>> Gradient::operator()(const double left
     y = std::get<0>(*best);
     x = std::get<1>(*best);
 
-    OPTIMAL_RUNTIME_END;
-    OPTIMAL_PRINT_RESULT_CONTENT("Gradient", y, x);
     return std::make_optional(std::make_tuple(y, x));
 }
 
@@ -104,13 +78,12 @@ double Gradient::calculateFirstDerivative(const double x, const double eps) cons
     return (func(x + differential) - func(x - differential)) / eps;
 }
 
-Annealing::Annealing(const function::Function& func) : func(func)
+Annealing::Annealing(const Function& func) : func(func)
 {
 }
 
-std::optional<std::tuple<ValueY, ValueX>> Annealing::operator()(const double left, const double right, const double eps)
+std::optional<std::tuple<double, double>> Annealing::operator()(const double left, const double right, const double eps)
 {
-    OPTIMAL_RUNTIME_BEGIN;
     std::uniform_real_distribution<double> perturbation(left, right);
     std::uniform_real_distribution<double> pr(0.0, 1.0);
 
@@ -144,18 +117,15 @@ std::optional<std::tuple<ValueY, ValueX>> Annealing::operator()(const double lef
         temperature *= coolingRate;
     }
 
-    OPTIMAL_RUNTIME_END;
-    OPTIMAL_PRINT_RESULT_CONTENT("Annealing", y, x);
     return std::make_optional(std::make_tuple(y, x));
 }
 
-Particle::Particle(const function::Function& func) : func(func), seed(std::random_device{}())
+Particle::Particle(const Function& func) : func(func), seed(std::random_device{}())
 {
 }
 
-std::optional<std::tuple<ValueY, ValueX>> Particle::operator()(const double left, const double right, const double eps)
+std::optional<std::tuple<double, double>> Particle::operator()(const double left, const double right, const double eps)
 {
-    OPTIMAL_RUNTIME_BEGIN;
     Storage rec = storageInit(left, right);
     const auto best = std::min_element(
         std::cbegin(rec.society),
@@ -195,13 +165,11 @@ std::optional<std::tuple<ValueY, ValueX>> Particle::operator()(const double left
                 xFitnessBest = ind.xFitness;
             }
         }
-        rec.history.insert(std::pair<ValueY, ValueX>(xFitnessBest, xBest));
+        rec.history.insert(std::pair<double, double>(xFitnessBest, xBest));
     }
     xFitnessBest = std::get<0>(*(rec.history.cbegin()));
     xBest = std::get<1>(*(rec.history.cbegin()));
 
-    OPTIMAL_RUNTIME_END;
-    OPTIMAL_PRINT_RESULT_CONTENT("Particle", xFitnessBest, xBest);
     return std::make_optional(std::make_tuple(xFitnessBest, xBest));
 }
 
@@ -226,20 +194,16 @@ Particle::Storage Particle::storageInit(const double left, const double right)
     return rec;
 }
 
-Genetic::Genetic(const function::Function& func) : func(func), seed(std::random_device{}())
+Genetic::Genetic(const Function& func) : func(func), seed(std::random_device{}())
 {
 }
 
-std::optional<std::tuple<ValueY, ValueX>> Genetic::operator()(const double left, const double right, const double eps)
+std::optional<std::tuple<double, double>> Genetic::operator()(const double left, const double right, const double eps)
 {
-    OPTIMAL_RUNTIME_BEGIN;
     updateSpecies(left, right, eps);
     if (constexpr uint32_t minChrNum = 3; chrNum < minChrNum)
     {
-#ifdef __RUNTIME_PRINTING
-        COMMON_PRINT("*Genetic   method: A precision of %.5f isn't sufficient.\n", eps);
-#endif
-        return std::nullopt;
+        throw std::runtime_error("A precision of " + std::to_string(eps) + " isn't sufficient.");
     }
 
     Population pop = populationInit();
@@ -251,8 +215,6 @@ std::optional<std::tuple<ValueY, ValueX>> Genetic::operator()(const double left,
     }
     const double x = geneticDecode(getBestIndividual(pop));
 
-    OPTIMAL_RUNTIME_END;
-    OPTIMAL_PRINT_RESULT_CONTENT("Genetic", func(x), x);
     return std::make_optional(std::make_tuple(func(x), x));
 }
 

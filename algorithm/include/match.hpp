@@ -7,9 +7,7 @@
 #pragma once
 
 #ifndef __PRECOMPILED_HEADER
-#include <cmath>
-#include <memory>
-#include <mutex>
+#include <cstdint>
 #else
 #include "pch_algorithm.hpp"
 #endif
@@ -17,59 +15,53 @@
 //! @brief Match-related functions in the algorithm module.
 namespace algorithm::match
 {
-//! @brief Maximum number per line of printing.
-constexpr uint32_t maxNumPerLineOfPrint = 50;
-//! @brief Maximum digit for the target text.
-constexpr uint32_t maxDigit = 100000;
-//! @brief Maximum ASCII value.
-constexpr uint16_t maxASCII = 256;
-//! @brief Base number for converting the digit to precision.
-constexpr int mpfrBase = 10;
-
-//! @brief Solution of match.
-class MatchSolution
+//! @brief Match methods.
+class Match
 {
 public:
-    //! @brief Destroy the MatchSolution object.
-    virtual ~MatchSolution() = default;
+    //! @brief Destroy the Match object.
+    virtual ~Match() = default;
 
-    //! @brief The Rabin-Karp method.
+    //! @brief Rabin-Karp.
     //! @param text - matching text
     //! @param pattern - single pattern
     //! @param textLen - length of matching text
     //! @param patternLen - length of single pattern
     //! @return index in matching text
-    static int rkMethod(const char* text, const char* pattern, const uint32_t textLen, const uint32_t patternLen);
-    //! @brief The Knuth-Morris-Pratt method.
+    static int rk(const char* text, const char* pattern, const uint32_t textLen, const uint32_t patternLen);
+    //! @brief Knuth-Morris-Pratt.
     //! @param text - matching text
     //! @param pattern - single pattern
     //! @param textLen - length of matching text
     //! @param patternLen - length of single pattern
     //! @return index in matching text
-    static int kmpMethod(const char* text, const char* pattern, const uint32_t textLen, const uint32_t patternLen);
-    //! @brief The Boyer-Moore method.
+    static int kmp(const char* text, const char* pattern, const uint32_t textLen, const uint32_t patternLen);
+    //! @brief Boyer-Moore.
     //! @param text - matching text
     //! @param pattern - single pattern
     //! @param textLen - length of matching text
     //! @param patternLen - length of single pattern
     //! @return index in matching text
-    static int bmMethod(const char* text, const char* pattern, const uint32_t textLen, const uint32_t patternLen);
-    //! @brief The Horspool method.
+    static int bm(const char* text, const char* pattern, const uint32_t textLen, const uint32_t patternLen);
+    //! @brief Horspool.
     //! @param text - matching text
     //! @param pattern - single pattern
     //! @param textLen - length of matching text
     //! @param patternLen - length of single pattern
     //! @return index in matching text
-    static int horspoolMethod(const char* text, const char* pattern, const uint32_t textLen, const uint32_t patternLen);
-    //! @brief The Sunday method.
+    static int horspool(const char* text, const char* pattern, const uint32_t textLen, const uint32_t patternLen);
+    //! @brief Sunday.
     //! @param text - matching text
     //! @param pattern - single pattern
     //! @param textLen - length of matching text
     //! @param patternLen - length of single pattern
     //! @return index in matching text
-    static int sundayMethod(const char* text, const char* pattern, const uint32_t textLen, const uint32_t patternLen);
+    static int sunday(const char* text, const char* pattern, const uint32_t textLen, const uint32_t patternLen);
 
 private:
+    //! @brief Maximum ASCII value.
+    static constexpr uint16_t maxASCII = 256;
+
     //! @brief The rolling hash function.
     //! @param str - input data
     //! @param length - length of input data
@@ -108,58 +100,4 @@ private:
         const char* pattern,
         const uint32_t patternLen);
 };
-
-//! @brief Builder for the target.
-class TargetBuilder
-{
-public:
-    //! @brief Construct a new TargetBuilder object.
-    //! @param textLen - length of matching text
-    //! @param pattern - single pattern
-    explicit TargetBuilder(const uint32_t textLen, const std::string_view pattern);
-    //! @brief Destroy the TargetBuilder object.
-    virtual ~TargetBuilder();
-    //! @brief Construct a new TargetBuilder object.
-    TargetBuilder(const TargetBuilder&) = delete;
-    //! @brief The operator (=) overloading of TargetBuilder class.
-    //! @return reference of TargetBuilder object
-    TargetBuilder& operator=(const TargetBuilder&) = delete;
-
-    //! @brief Get the matching text.
-    //! @return matching text
-    [[nodiscard]] inline const std::unique_ptr<char[]>& getMatchingText() const;
-    //! @brief Get the single pattern.
-    //! @return single pattern
-    [[nodiscard]] inline std::string_view getSinglePattern() const;
-
-private:
-    //! @brief Matching text.
-    const std::unique_ptr<char[]> marchingText;
-    //! @brief Single pattern.
-    const std::string_view singlePattern;
-
-    //! @brief Set the matching text.
-    //! @param text - target matching text
-    //! @param textLen - length of matching text
-    static void setMatchingText(char* text, const uint32_t textLen);
-    //! @brief Calculate precision by digit.
-    //! @param digit - digit for the target text
-    //! @return precision converted from digit
-    static inline int calculatePrecision(const uint32_t digit);
-};
-
-inline const std::unique_ptr<char[]>& TargetBuilder::getMatchingText() const
-{
-    return marchingText;
-}
-
-inline std::string_view TargetBuilder::getSinglePattern() const
-{
-    return singlePattern;
-}
-
-inline int TargetBuilder::calculatePrecision(const uint32_t digit)
-{
-    return static_cast<int>(std::ceil(static_cast<double>(digit) * std::log2(mpfrBase)));
-}
 } // namespace algorithm::match

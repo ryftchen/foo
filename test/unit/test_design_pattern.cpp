@@ -5,9 +5,7 @@
 //! @copyright Copyright (c) 2022-2023
 
 #include <gtest/gtest.h>
-#include "design_pattern/include/behavioral.hpp"
-#include "design_pattern/include/creational.hpp"
-#include "design_pattern/include/structural.hpp"
+#include "application/example/include/apply_design_pattern.hpp"
 
 //! @brief Title of printing for design pattern task tests.
 #define TST_DP_PRINT_TASK_TITLE(taskType, taskState)                                                   \
@@ -28,93 +26,90 @@ public:
     ~BehavioralTestBase() override = default;
 
     //! @brief Set up the test case.
-    static void SetUpTestCase()
-    {
-        TST_DP_PRINT_TASK_TITLE("BEHAVIORAL", "BEGIN");
-        pattern = std::make_shared<design_pattern::behavioral::BehavioralPattern>();
-    };
+    static void SetUpTestCase() { TST_DP_PRINT_TASK_TITLE("BEHAVIORAL", "BEGIN"); };
     //! @brief Tear down the test case.
-    static void TearDownTestCase()
-    {
-        TST_DP_PRINT_TASK_TITLE("BEHAVIORAL", "END");
-        pattern.reset();
-    }
+    static void TearDownTestCase() { TST_DP_PRINT_TASK_TITLE("BEHAVIORAL", "END"); }
     //! @brief Set up.
     void SetUp() override{};
     //! @brief Tear down.
     void TearDown() override{};
-
-    //! @brief Pattern Instance.
-    static std::shared_ptr<design_pattern::behavioral::BehavioralPattern> pattern;
 };
-
-std::shared_ptr<design_pattern::behavioral::BehavioralPattern> BehavioralTestBase::pattern = nullptr;
 
 //! @brief Test for the chain of responsibility instance in the pattern of behavioral.
 TEST_F(BehavioralTestBase, chainOfResponsibilityInstance) // NOLINT(cert-err58-cpp)
 {
     ASSERT_NO_THROW( // NOLINT(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
-        pattern->chainOfResponsibilityInstance());
+        application::app_dp::behavioral::Behavioral::chainOfResponsibility());
 }
 
 //! @brief Test for the command instance in the pattern of behavioral.
 TEST_F(BehavioralTestBase, commandInstance) // NOLINT(cert-err58-cpp)
 {
-    ASSERT_NO_THROW(pattern->commandInstance()); // NOLINT(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
+    ASSERT_NO_THROW( // NOLINT(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
+        application::app_dp::behavioral::Behavioral::command());
 }
 
 //! @brief Test for the interpreter instance in the pattern of behavioral.
 TEST_F(BehavioralTestBase, interpreterInstance) // NOLINT(cert-err58-cpp)
 {
-    ASSERT_NO_THROW(pattern->interpreterInstance()); // NOLINT(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
+    ASSERT_NO_THROW( // NOLINT(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
+        application::app_dp::behavioral::Behavioral::interpreter());
 }
 
 //! @brief Test for the iterator instance in the pattern of behavioral.
 TEST_F(BehavioralTestBase, iteratorInstance) // NOLINT(cert-err58-cpp)
 {
-    ASSERT_NO_THROW(pattern->iteratorInstance()); // NOLINT(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
+    ASSERT_NO_THROW( // NOLINT(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
+        application::app_dp::behavioral::Behavioral::iterator());
 }
 
 //! @brief Test for the mediator instance in the pattern of behavioral.
 TEST_F(BehavioralTestBase, mediatorInstance) // NOLINT(cert-err58-cpp)
 {
-    ASSERT_NO_THROW(pattern->mediatorInstance()); // NOLINT(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
+    ASSERT_NO_THROW( // NOLINT(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
+        application::app_dp::behavioral::Behavioral::mediator());
 }
 
 //! @brief Test for the memento instance in the pattern of behavioral.
 TEST_F(BehavioralTestBase, mementoInstance) // NOLINT(cert-err58-cpp)
 {
-    ASSERT_NO_THROW(pattern->mementoInstance()); // NOLINT(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
+    ASSERT_NO_THROW( // NOLINT(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
+        application::app_dp::behavioral::Behavioral::memento());
 }
 
 //! @brief Test for the observer instance in the pattern of behavioral.
 TEST_F(BehavioralTestBase, observerInstance) // NOLINT(cert-err58-cpp)
 {
-    ASSERT_NO_THROW(pattern->observerInstance()); // NOLINT(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
+    ASSERT_NO_THROW( // NOLINT(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
+        application::app_dp::behavioral::Behavioral::observer());
 }
 
 //! @brief Test for the state instance in the pattern of behavioral.
 TEST_F(BehavioralTestBase, stateInstance) // NOLINT(cert-err58-cpp)
 {
-    ASSERT_NO_THROW(pattern->stateInstance()); // NOLINT(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
+    ASSERT_NO_THROW( // NOLINT(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
+        application::app_dp::behavioral::Behavioral::state());
 }
 
 //! @brief Test for the strategy instance in the pattern of behavioral.
 TEST_F(BehavioralTestBase, strategyInstance) // NOLINT(cert-err58-cpp)
 {
-    ASSERT_NO_THROW(pattern->strategyInstance()); // NOLINT(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
+    ASSERT_NO_THROW( // NOLINT(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
+        application::app_dp::behavioral::Behavioral::strategy());
 }
 
 //! @brief Test for the template method instance in the pattern of behavioral.
 TEST_F(BehavioralTestBase, templateMethodInstance) // NOLINT(cert-err58-cpp)
 {
-    ASSERT_NO_THROW(pattern->templateMethodInstance()); // NOLINT(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
+    ASSERT_NO_THROW( // NOLINT(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
+        application::app_dp::behavioral::Behavioral::templateMethod());
 }
 
 //! @brief Test for the visitor instance in the pattern of behavioral.
 TEST_F(BehavioralTestBase, visitorInstance) // NOLINT(cert-err58-cpp)
 {
-    ASSERT_NO_THROW(pattern->visitorInstance()); // NOLINT(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
+    ASSERT_NO_THROW( // NOLINT(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
+        application::app_dp::behavioral::Behavioral::visitor());
 }
 
 //! @brief Test base of creational.
@@ -127,56 +122,48 @@ public:
     ~CreationalTestBase() override = default;
 
     //! @brief Set up the test case.
-    static void SetUpTestCase()
-    {
-        TST_DP_PRINT_TASK_TITLE("CREATIONAL", "BEGIN");
-        pattern = std::make_shared<design_pattern::creational::CreationalPattern>();
-    };
+    static void SetUpTestCase() { TST_DP_PRINT_TASK_TITLE("CREATIONAL", "BEGIN"); };
     //! @brief Tear down the test case.
-    static void TearDownTestCase()
-    {
-        TST_DP_PRINT_TASK_TITLE("CREATIONAL", "END");
-        pattern.reset();
-    }
+    static void TearDownTestCase() { TST_DP_PRINT_TASK_TITLE("CREATIONAL", "END"); }
     //! @brief Set up.
     void SetUp() override{};
     //! @brief Tear down.
     void TearDown() override{};
-
-    //! @brief Pattern Instance.
-    static std::shared_ptr<design_pattern::creational::CreationalPattern> pattern;
 };
-
-std::shared_ptr<design_pattern::creational::CreationalPattern> CreationalTestBase::pattern = nullptr;
 
 //! @brief Test for the abstract factory instance in the pattern of creational.
 TEST_F(CreationalTestBase, abstractFactoryInstance) // NOLINT(cert-err58-cpp)
 {
-    ASSERT_NO_THROW(pattern->abstractFactoryInstance()); // NOLINT(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
+    ASSERT_NO_THROW( // NOLINT(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
+        application::app_dp::creational::Creational::abstractFactory());
 }
 
 //! @brief Test for the builder instance in the pattern of creational.
 TEST_F(CreationalTestBase, builderInstance) // NOLINT(cert-err58-cpp)
 {
-    ASSERT_NO_THROW(pattern->builderInstance()); // NOLINT(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
+    ASSERT_NO_THROW( // NOLINT(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
+        application::app_dp::creational::Creational::builder());
 }
 
 //! @brief Test for the factory method instance in the pattern of creational.
 TEST_F(CreationalTestBase, factoryMethodInstance) // NOLINT(cert-err58-cpp)
 {
-    ASSERT_NO_THROW(pattern->factoryMethodInstance()); // NOLINT(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
+    ASSERT_NO_THROW( // NOLINT(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
+        application::app_dp::creational::Creational::factoryMethod());
 }
 
 //! @brief Test for the prototype instance in the pattern of creational.
 TEST_F(CreationalTestBase, prototypeInstance) // NOLINT(cert-err58-cpp)
 {
-    ASSERT_NO_THROW(pattern->prototypeInstance()); // NOLINT(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
+    ASSERT_NO_THROW( // NOLINT(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
+        application::app_dp::creational::Creational::prototype());
 }
 
 //! @brief Test for the singleton instance in the pattern of creational.
 TEST_F(CreationalTestBase, singletonInstance) // NOLINT(cert-err58-cpp)
 {
-    ASSERT_NO_THROW(pattern->singletonInstance()); // NOLINT(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
+    ASSERT_NO_THROW( // NOLINT(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
+        application::app_dp::creational::Creational::singleton());
 }
 
 //! @brief Test base of structural.
@@ -189,67 +176,61 @@ public:
     ~StructuralTestBase() override = default;
 
     //! @brief Set up the test case.
-    static void SetUpTestCase()
-    {
-        TST_DP_PRINT_TASK_TITLE("STRUCTURAL", "BEGIN");
-        pattern = std::make_shared<design_pattern::structural::StructuralPattern>();
-    };
+    static void SetUpTestCase() { TST_DP_PRINT_TASK_TITLE("STRUCTURAL", "BEGIN"); };
     //! @brief Tear down the test case.
-    static void TearDownTestCase()
-    {
-        TST_DP_PRINT_TASK_TITLE("STRUCTURAL", "END");
-        pattern.reset();
-    }
+    static void TearDownTestCase() { TST_DP_PRINT_TASK_TITLE("STRUCTURAL", "END"); }
     //! @brief Set up.
     void SetUp() override{};
     //! @brief Tear down.
     void TearDown() override{};
-
-    //! @brief Pattern Instance.
-    static std::shared_ptr<design_pattern::structural::StructuralPattern> pattern;
 };
-
-std::shared_ptr<design_pattern::structural::StructuralPattern> StructuralTestBase::pattern = nullptr;
 
 //! @brief Test for the adapter instance in the pattern of structural.
 TEST_F(StructuralTestBase, adapterInstance) // NOLINT(cert-err58-cpp)
 {
-    ASSERT_NO_THROW(pattern->adapterInstance()); // NOLINT(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
+    ASSERT_NO_THROW( // NOLINT(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
+        application::app_dp::structural::Structural::adapter());
 }
 
 //! @brief Test for the bridge instance in the pattern of structural.
 TEST_F(StructuralTestBase, bridgeInstance) // NOLINT(cert-err58-cpp)
 {
-    ASSERT_NO_THROW(pattern->bridgeInstance()); // NOLINT(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
+    ASSERT_NO_THROW( // NOLINT(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
+        application::app_dp::structural::Structural::bridge());
 }
 
 //! @brief Test for the composite instance in the pattern of structural.
 TEST_F(StructuralTestBase, compositeInstance) // NOLINT(cert-err58-cpp)
 {
-    ASSERT_NO_THROW(pattern->compositeInstance()); // NOLINT(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
+    ASSERT_NO_THROW( // NOLINT(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
+        application::app_dp::structural::Structural::composite());
 }
 
 //! @brief Test for the decorator instance in the pattern of structural.
 TEST_F(StructuralTestBase, decoratorInstance) // NOLINT(cert-err58-cpp)
 {
-    ASSERT_NO_THROW(pattern->decoratorInstance()); // NOLINT(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
+    ASSERT_NO_THROW( // NOLINT(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
+        application::app_dp::structural::Structural::decorator());
 }
 
 //! @brief Test for the facade instance in the pattern of structural.
 TEST_F(StructuralTestBase, facadeInstance) // NOLINT(cert-err58-cpp)
 {
-    ASSERT_NO_THROW(pattern->facadeInstance()); // NOLINT(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
+    ASSERT_NO_THROW( // NOLINT(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
+        application::app_dp::structural::Structural::facade());
 }
 
 //! @brief Test for the flyweight instance in the pattern of structural.
 TEST_F(StructuralTestBase, flyweightInstance) // NOLINT(cert-err58-cpp)
 {
-    ASSERT_NO_THROW(pattern->flyweightInstance()); // NOLINT(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
+    ASSERT_NO_THROW( // NOLINT(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
+        application::app_dp::structural::Structural::flyweight());
 }
 
 //! @brief Test for the proxy instance in the pattern of structural.
 TEST_F(StructuralTestBase, proxyInstance) // NOLINT(cert-err58-cpp)
 {
-    ASSERT_NO_THROW(pattern->proxyInstance()); // NOLINT(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
+    ASSERT_NO_THROW( // NOLINT(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
+        application::app_dp::structural::Structural::proxy());
 }
 } // namespace test::tst_dp

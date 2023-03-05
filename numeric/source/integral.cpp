@@ -6,33 +6,8 @@
 
 #include "integral.hpp"
 #ifndef __PRECOMPILED_HEADER
-#include <cmath>
 #include <functional>
 #include <random>
-#endif
-#ifdef __RUNTIME_PRINTING
-#include "utility/include/common.hpp"
-#include "utility/include/time.hpp"
-
-//! @brief Display integral result.
-#define INTEGRAL_RESULT(opt) "*%-11s method: I(" #opt ")=%+.5f  ==>Run time: %8.5f ms\n"
-//! @brief Print integral result content.
-#define INTEGRAL_PRINT_RESULT_CONTENT(method, sum) \
-    COMMON_PRINT(INTEGRAL_RESULT(def), method, sum, INTEGRAL_RUNTIME_INTERVAL)
-//! @brief Store integral beginning runtime.
-#define INTEGRAL_RUNTIME_BEGIN TIME_BEGIN(timing)
-//! @brief Store integral ending runtime.
-#define INTEGRAL_RUNTIME_END TIME_END(timing)
-//! @brief Calculate integral runtime interval.
-#define INTEGRAL_RUNTIME_INTERVAL TIME_INTERVAL(timing)
-#else
-
-//! @brief Print integral result content.
-#define INTEGRAL_PRINT_RESULT_CONTENT(method, sum)
-//! @brief Store integral beginning runtime.
-#define INTEGRAL_RUNTIME_BEGIN
-//! @brief Store integral ending runtime.
-#define INTEGRAL_RUNTIME_END
 #endif
 
 namespace numeric::integral
@@ -43,7 +18,7 @@ namespace numeric::integral
 //! @param height - height of trapezoidal
 //! @param step - number of steps
 //! @return result of definite integral
-double trapezoid(const expression::Expression& expr, const double left, const double height, const uint32_t step)
+double trapezoid(const Expression& expr, const double left, const double height, const uint32_t step)
 {
     double sum = 0.0, x = left;
     const double delta = height / step;
@@ -56,13 +31,12 @@ double trapezoid(const expression::Expression& expr, const double left, const do
     return sum;
 }
 
-Trapezoidal::Trapezoidal(const expression::Expression& expr) : expr(expr)
+Trapezoidal::Trapezoidal(const Expression& expr) : expr(expr)
 {
 }
 
 double Trapezoidal::operator()(double lower, double upper, const double eps) const
 {
-    INTEGRAL_RUNTIME_BEGIN;
     const int sign = getSign(lower, upper);
     const uint32_t minStep = std::pow(2, 3);
     const double height = upper - lower;
@@ -79,25 +53,20 @@ double Trapezoidal::operator()(double lower, double upper, const double eps) con
     while ((std::fabs(s1 - s2) > eps) || (n < minStep));
     sum = s2 * sign;
 
-    INTEGRAL_RUNTIME_END;
-    INTEGRAL_PRINT_RESULT_CONTENT("Trapezoidal", sum);
     return sum;
 }
 
-Simpson::Simpson(const expression::Expression& expr) : expr(expr)
+Simpson::Simpson(const Expression& expr) : expr(expr)
 {
 }
 
 double Simpson::operator()(double lower, double upper, const double eps) const
 {
-    INTEGRAL_RUNTIME_BEGIN;
     const int sign = getSign(lower, upper);
 
     double sum = simpsonIntegral(lower, upper, eps);
     sum *= sign;
 
-    INTEGRAL_RUNTIME_END;
-    INTEGRAL_PRINT_RESULT_CONTENT("Simpson", sum);
     return sum;
 }
 
@@ -128,13 +97,12 @@ double Simpson::simpsonOneThird(const double left, const double right) const
     return (expr(left) + 4.0 * expr((left + right) / 2.0) + expr(right)) / 6.0 * (right - left);
 }
 
-Romberg::Romberg(const expression::Expression& expr) : expr(expr)
+Romberg::Romberg(const Expression& expr) : expr(expr)
 {
 }
 
 double Romberg::operator()(double lower, double upper, const double eps) const
 {
-    INTEGRAL_RUNTIME_BEGIN;
     const int sign = getSign(lower, upper);
     uint32_t k = 0;
     double sum = 0.0;
@@ -160,18 +128,15 @@ double Romberg::operator()(double lower, double upper, const double eps) const
     }
     sum = trapezoidFunctor(std::pow(2, k)) * sign;
 
-    INTEGRAL_RUNTIME_END;
-    INTEGRAL_PRINT_RESULT_CONTENT("Romberg", sum);
     return sum;
 }
 
-Gauss::Gauss(const expression::Expression& expr) : expr(expr)
+Gauss::Gauss(const Expression& expr) : expr(expr)
 {
 }
 
 double Gauss::operator()(double lower, double upper, const double eps) const
 {
-    INTEGRAL_RUNTIME_BEGIN;
     const int sign = getSign(lower, upper);
     constexpr uint32_t gaussNodes = 5, gaussCoefficient = 2;
     constexpr std::array<std::array<double, gaussCoefficient>, gaussNodes> gaussLegendreTable = {
@@ -205,18 +170,15 @@ double Gauss::operator()(double lower, double upper, const double eps) const
     while (std::fabs(s1 - s2) > eps);
     sum = s2 * sign;
 
-    INTEGRAL_RUNTIME_END;
-    INTEGRAL_PRINT_RESULT_CONTENT("Gauss", sum);
     return sum;
 }
 
-MonteCarlo::MonteCarlo(const expression::Expression& expr) : expr(expr)
+MonteCarlo::MonteCarlo(const Expression& expr) : expr(expr)
 {
 }
 
 double MonteCarlo::operator()(double lower, double upper, const double eps) const
 {
-    INTEGRAL_RUNTIME_BEGIN;
     const int sign = getSign(lower, upper);
 
     double sum = sampleFromUniformDistribution(lower, upper, eps);
@@ -225,8 +187,6 @@ double MonteCarlo::operator()(double lower, double upper, const double eps) cons
 #endif
     sum *= sign;
 
-    INTEGRAL_RUNTIME_END;
-    INTEGRAL_PRINT_RESULT_CONTENT("MonteCarlo", sum);
     return sum;
 }
 

@@ -6,13 +6,9 @@
 
 #include "apply_design_pattern.hpp"
 #include <iomanip>
-#include "application/include/command.hpp"
-#include "application/include/log.hpp"
-#include "design_pattern/include/behavioral.hpp"
-#include "design_pattern/include/creational.hpp"
-#include "design_pattern/include/structural.hpp"
+#include "application/core/include/command.hpp"
+#include "application/core/include/log.hpp"
 #include "utility/include/hash.hpp"
-#include "utility/include/thread.hpp"
 
 //! @brief Title of printing when design pattern tasks are beginning.
 #define APP_DP_PRINT_TASK_BEGIN_TITLE(taskType)                                                                       \
@@ -53,6 +49,162 @@ DesignPatternTask& getTask()
     return task;
 }
 
+namespace behavioral
+{
+//! @brief Display behavioral result.
+#define BEHAVIORAL_RESULT "\r\n*%-21s instance:\r\n%s"
+//! @brief Print behavioral result content.
+#define BEHAVIORAL_PRINT_RESULT_CONTENT(method) COMMON_PRINT(BEHAVIORAL_RESULT, method, output.str().c_str());
+
+BehavioralPattern::BehavioralPattern()
+{
+    std::cout << "\r\nInstances of the behavioral pattern:" << std::endl;
+}
+
+void BehavioralPattern::chainOfResponsibilityInstance()
+{
+    try
+    {
+        const auto output = Behavioral::chainOfResponsibility();
+        BEHAVIORAL_PRINT_RESULT_CONTENT("ChainOfResponsibility");
+    }
+    catch (const std::exception& error)
+    {
+        LOG_ERR(error.what());
+    }
+}
+
+void BehavioralPattern::commandInstance()
+{
+    try
+    {
+        const auto output = Behavioral::command();
+        BEHAVIORAL_PRINT_RESULT_CONTENT("Command");
+    }
+    catch (const std::exception& error)
+    {
+        LOG_ERR(error.what());
+    }
+}
+
+void BehavioralPattern::interpreterInstance()
+{
+    try
+    {
+        const auto output = Behavioral::interpreter();
+        BEHAVIORAL_PRINT_RESULT_CONTENT("Interpreter");
+    }
+    catch (const std::exception& error)
+    {
+        LOG_ERR(error.what());
+    }
+}
+
+void BehavioralPattern::iteratorInstance()
+{
+    try
+    {
+        const auto output = Behavioral::iterator();
+        BEHAVIORAL_PRINT_RESULT_CONTENT("Iterator");
+    }
+    catch (const std::exception& error)
+    {
+        LOG_ERR(error.what());
+    }
+}
+
+void BehavioralPattern::mediatorInstance()
+{
+    try
+    {
+        const auto output = Behavioral::mediator();
+        BEHAVIORAL_PRINT_RESULT_CONTENT("Mediator");
+    }
+    catch (const std::exception& error)
+    {
+        LOG_ERR(error.what());
+    }
+}
+
+void BehavioralPattern::mementoInstance()
+{
+    try
+    {
+        const auto output = Behavioral::memento();
+        BEHAVIORAL_PRINT_RESULT_CONTENT("Memento");
+    }
+    catch (const std::exception& error)
+    {
+        LOG_ERR(error.what());
+    }
+}
+
+void BehavioralPattern::observerInstance()
+{
+    try
+    {
+        const auto output = Behavioral::observer();
+        BEHAVIORAL_PRINT_RESULT_CONTENT("Observer");
+    }
+    catch (const std::exception& error)
+    {
+        LOG_ERR(error.what());
+    }
+}
+
+void BehavioralPattern::stateInstance()
+{
+    try
+    {
+        const auto output = Behavioral::state();
+        BEHAVIORAL_PRINT_RESULT_CONTENT("State");
+    }
+    catch (const std::exception& error)
+    {
+        LOG_ERR(error.what());
+    }
+}
+
+void BehavioralPattern::strategyInstance()
+{
+    try
+    {
+        const auto output = Behavioral::strategy();
+        BEHAVIORAL_PRINT_RESULT_CONTENT("Strategy");
+    }
+    catch (const std::exception& error)
+    {
+        LOG_ERR(error.what());
+    }
+}
+
+void BehavioralPattern::templateMethodInstance()
+{
+    try
+    {
+        const auto output = Behavioral::templateMethod();
+        BEHAVIORAL_PRINT_RESULT_CONTENT("TemplateMethod");
+    }
+    catch (const std::exception& error)
+    {
+        LOG_ERR(error.what());
+    }
+}
+
+void BehavioralPattern::visitorInstance()
+{
+    try
+    {
+        const auto output = Behavioral::visitor();
+        BEHAVIORAL_PRINT_RESULT_CONTENT("Visitor");
+    }
+    catch (const std::exception& error)
+    {
+        LOG_ERR(error.what());
+    }
+}
+} // namespace behavioral
+
 //! @brief Run behavioral tasks.
 //! @param targets - vector of target instances
 void runBehavioral(const std::vector<std::string>& targets)
@@ -62,7 +214,7 @@ void runBehavioral(const std::vector<std::string>& targets)
         return;
     }
 
-    using design_pattern::behavioral::BehavioralPattern;
+    using behavioral::BehavioralPattern;
     using utility::hash::operator""_bkdrHash;
 
     APP_DP_PRINT_TASK_BEGIN_TITLE(Type::behavioral);
@@ -70,10 +222,9 @@ void runBehavioral(const std::vector<std::string>& targets)
         static_cast<uint32_t>(getBit<BehavioralInstance>().count()),
         static_cast<uint32_t>(Bottom<BehavioralInstance>::value)));
 
-    const std::shared_ptr<BehavioralPattern> pattern = std::make_shared<BehavioralPattern>();
-    const auto behavioralFunctor = [&](const std::string& threadName, void (BehavioralPattern::*instancePtr)() const)
+    const auto behavioralFunctor = [&](const std::string& threadName, void (*instancePtr)())
     {
-        threads->enqueue(threadName, instancePtr, pattern);
+        threads->enqueue(threadName, instancePtr);
     };
 
     for (uint8_t i = 0; i < Bottom<BehavioralInstance>::value; ++i)
@@ -175,6 +326,84 @@ void updateBehavioralTask(const std::string& target)
     }
 }
 
+namespace creational
+{
+//! @brief Display creational result.
+#define CREATIONAL_RESULT "\r\n*%-15s instance:\r\n%s"
+//! @brief Print creational result content.
+#define CREATIONAL_PRINT_RESULT_CONTENT(method) COMMON_PRINT(CREATIONAL_RESULT, method, output.str().c_str());
+
+CreationalPattern::CreationalPattern()
+{
+    std::cout << "\r\nInstances of the creational pattern:" << std::endl;
+}
+
+void CreationalPattern::abstractFactoryInstance()
+{
+    try
+    {
+        const auto output = Creational::abstractFactory();
+        CREATIONAL_PRINT_RESULT_CONTENT("AbstractFactory");
+    }
+    catch (const std::exception& error)
+    {
+        LOG_ERR(error.what());
+    }
+}
+
+void CreationalPattern::builderInstance()
+{
+    try
+    {
+        const auto output = Creational::builder();
+        CREATIONAL_PRINT_RESULT_CONTENT("Builder");
+    }
+    catch (const std::exception& error)
+    {
+        LOG_ERR(error.what());
+    }
+}
+
+void CreationalPattern::factoryMethodInstance()
+{
+    try
+    {
+        const auto output = Creational::factoryMethod();
+        CREATIONAL_PRINT_RESULT_CONTENT("FactoryMethod");
+    }
+    catch (const std::exception& error)
+    {
+        LOG_ERR(error.what());
+    }
+}
+
+void CreationalPattern::prototypeInstance()
+{
+    try
+    {
+        const auto output = Creational::prototype();
+        CREATIONAL_PRINT_RESULT_CONTENT("Prototype");
+    }
+    catch (const std::exception& error)
+    {
+        LOG_ERR(error.what());
+    }
+}
+
+void CreationalPattern::singletonInstance()
+{
+    try
+    {
+        const auto output = Creational::singleton();
+        CREATIONAL_PRINT_RESULT_CONTENT("Singleton");
+    }
+    catch (const std::exception& error)
+    {
+        LOG_ERR(error.what());
+    }
+}
+} // namespace creational
+
 //! @brief Run creational tasks.
 //! @param targets - vector of target instances
 void runCreational(const std::vector<std::string>& targets)
@@ -184,7 +413,7 @@ void runCreational(const std::vector<std::string>& targets)
         return;
     }
 
-    using design_pattern::creational::CreationalPattern;
+    using creational::CreationalPattern;
     using utility::hash::operator""_bkdrHash;
 
     APP_DP_PRINT_TASK_BEGIN_TITLE(Type::creational);
@@ -192,10 +421,9 @@ void runCreational(const std::vector<std::string>& targets)
         static_cast<uint32_t>(getBit<CreationalInstance>().count()),
         static_cast<uint32_t>(Bottom<CreationalInstance>::value)));
 
-    const std::shared_ptr<CreationalPattern> pattern = std::make_shared<CreationalPattern>();
-    const auto creationalFunctor = [&](const std::string& threadName, void (CreationalPattern::*instancePtr)() const)
+    const auto creationalFunctor = [&](const std::string& threadName, void (*instancePtr)())
     {
-        threads->enqueue(threadName, instancePtr, pattern);
+        threads->enqueue(threadName, instancePtr);
     };
 
     for (uint8_t i = 0; i < Bottom<CreationalInstance>::value; ++i)
@@ -261,6 +489,110 @@ void updateCreationalTask(const std::string& target)
     }
 }
 
+namespace structural
+{
+//! @brief Display structural result.
+#define STRUCTURAL_RESULT "\r\n*%-9s instance:\r\n%s"
+//! @brief Print structural result content.
+#define STRUCTURAL_PRINT_RESULT_CONTENT(method) COMMON_PRINT(STRUCTURAL_RESULT, method, output.str().c_str());
+
+StructuralPattern::StructuralPattern()
+{
+    std::cout << "\r\nInstances of the structural pattern:" << std::endl;
+}
+
+void StructuralPattern::adapterInstance()
+{
+    try
+    {
+        const auto output = Structural::adapter();
+        STRUCTURAL_PRINT_RESULT_CONTENT("Adapter");
+    }
+    catch (const std::exception& error)
+    {
+        LOG_ERR(error.what());
+    }
+}
+
+void StructuralPattern::bridgeInstance()
+{
+    try
+    {
+        const auto output = Structural::bridge();
+        STRUCTURAL_PRINT_RESULT_CONTENT("Bridge");
+    }
+    catch (const std::exception& error)
+    {
+        LOG_ERR(error.what());
+    }
+}
+
+void StructuralPattern::compositeInstance()
+{
+    try
+    {
+        const auto output = Structural::composite();
+        STRUCTURAL_PRINT_RESULT_CONTENT("Composite");
+    }
+    catch (const std::exception& error)
+    {
+        LOG_ERR(error.what());
+    }
+}
+
+void StructuralPattern::decoratorInstance()
+{
+    try
+    {
+        const auto output = Structural::decorator();
+        STRUCTURAL_PRINT_RESULT_CONTENT("Decorator");
+    }
+    catch (const std::exception& error)
+    {
+        LOG_ERR(error.what());
+    }
+}
+
+void StructuralPattern::facadeInstance()
+{
+    try
+    {
+        const auto output = Structural::facade();
+        STRUCTURAL_PRINT_RESULT_CONTENT("Facade");
+    }
+    catch (const std::exception& error)
+    {
+        LOG_ERR(error.what());
+    }
+}
+
+void StructuralPattern::flyweightInstance()
+{
+    try
+    {
+        const auto output = Structural::flyweight();
+        STRUCTURAL_PRINT_RESULT_CONTENT("Flyweight");
+    }
+    catch (const std::exception& error)
+    {
+        LOG_ERR(error.what());
+    }
+}
+
+void StructuralPattern::proxyInstance()
+{
+    try
+    {
+        const auto output = Structural::proxy();
+        STRUCTURAL_PRINT_RESULT_CONTENT("Proxy");
+    }
+    catch (const std::exception& error)
+    {
+        LOG_ERR(error.what());
+    }
+}
+} // namespace structural
+
 //! @brief Run structural tasks.
 //! @param targets - vector of target instances
 void runStructural(const std::vector<std::string>& targets)
@@ -270,7 +602,7 @@ void runStructural(const std::vector<std::string>& targets)
         return;
     }
 
-    using design_pattern::structural::StructuralPattern;
+    using structural::StructuralPattern;
     using utility::hash::operator""_bkdrHash;
 
     APP_DP_PRINT_TASK_BEGIN_TITLE(Type::structural);
@@ -278,10 +610,9 @@ void runStructural(const std::vector<std::string>& targets)
         static_cast<uint32_t>(getBit<StructuralInstance>().count()),
         static_cast<uint32_t>(Bottom<StructuralInstance>::value)));
 
-    const std::shared_ptr<StructuralPattern> pattern = std::make_shared<StructuralPattern>();
-    const auto structuralFunctor = [&](const std::string& threadName, void (StructuralPattern::*instancePtr)() const)
+    const auto structuralFunctor = [&](const std::string& threadName, void (*instancePtr)())
     {
-        threads->enqueue(threadName, instancePtr, pattern);
+        threads->enqueue(threadName, instancePtr);
     };
 
     for (uint8_t i = 0; i < Bottom<StructuralInstance>::value; ++i)

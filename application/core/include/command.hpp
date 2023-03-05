@@ -6,10 +6,10 @@
 
 #pragma once
 
-#include "apply_algorithm.hpp"
-#include "apply_data_structure.hpp"
-#include "apply_design_pattern.hpp"
-#include "apply_numeric.hpp"
+#include "application/example/include/apply_algorithm.hpp"
+#include "application/example/include/apply_data_structure.hpp"
+#include "application/example/include/apply_design_pattern.hpp"
+#include "application/example/include/apply_numeric.hpp"
 #include "utility/include/argument.hpp"
 #include "utility/include/console.hpp"
 #include "utility/include/memory.hpp"
@@ -66,8 +66,8 @@ private:
     //! @brief Check whether any tasks exist.
     //! @return any tasks exist or do not exist
     bool checkTask() const;
-    //! @brief Perform specific tasks.
-    void performTask() const;
+    //! @brief Dispatch specific tasks.
+    void dispatchTask() const;
 
 #pragma pack(8)
     //! @brief Manage basic tasks.
@@ -208,14 +208,14 @@ private:
 
     // clang-format off
     //! @brief Mapping table of all basic tasks.
-    const std::map<std::string, void (Command::*)() const> basicTaskMap{
+    const std::map<std::string, void (Command::*)() const> basicTaskDispatcher{
         // - Category -+----------- Run -----------
         { "console" , &Command::printConsoleOutput },
         { "help"    , &Command::printHelpMessage   },
         { "version" , &Command::printVersionInfo   },
     };
     //! @brief Mapping table of all general tasks.
-    const GeneralTaskMap generalTaskMap{
+    const GeneralTaskMap generalTaskDispatcher{
         // --- Category ---+----- Type -----+---------------- Target ----------------+----------- Run -----------+---------- UpdateTask ----------
         // ----------------+----------------+----------------------------------------+---------------------------+--------------------------------
         { "algorithm"      , {{ "match"      , {{ "rab", "knu", "boy", "hor", "sun" } , { &app_algo::runMatch     , &app_algo::updateMatchTask     }}},

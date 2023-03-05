@@ -6,55 +6,14 @@
 
 #include "match.hpp"
 #ifndef __PRECOMPILED_HEADER
-// #define NDEBUG
-#include <mpfr.h>
-#include <cassert>
+#include <algorithm>
 #include <cstring>
-#endif
-#ifdef __RUNTIME_PRINTING
-#include "utility/include/common.hpp"
-#include "utility/include/time.hpp"
-
-//! @brief Display match result.
-#define MATCH_RESULT(opt) \
-    "*%-16s method: Pattern \"%s\" found starting (" #opt ") at index %d.  ==>Run time: %8.5f ms\n"
-//! @brief Display none match result.
-#define MATCH_NONE_RESULT "*%-16s method: Pattern \"%s\" could not be found.  ==>Run time: %8.5f ms\n"
-//! @brief Print match result content.
-#define MATCH_PRINT_RESULT_CONTENT(method)                                                   \
-    do                                                                                       \
-    {                                                                                        \
-        if (-1 != shift)                                                                     \
-        {                                                                                    \
-            COMMON_PRINT(MATCH_RESULT(1st), method, pattern, shift, MATCH_RUNTIME_INTERVAL); \
-        }                                                                                    \
-        else                                                                                 \
-        {                                                                                    \
-            COMMON_PRINT(MATCH_NONE_RESULT, method, pattern, MATCH_RUNTIME_INTERVAL);        \
-        }                                                                                    \
-    }                                                                                        \
-    while (0)
-//! @brief Store match beginning runtime.
-#define MATCH_RUNTIME_BEGIN TIME_BEGIN(timing)
-//! @brief Store match ending runtime.
-#define MATCH_RUNTIME_END TIME_END(timing)
-//! @brief Calculate match runtime interval.
-#define MATCH_RUNTIME_INTERVAL TIME_INTERVAL(timing)
-#else
-
-//! @brief Print match result content.
-#define MATCH_PRINT_RESULT_CONTENT(method)
-//! @brief Store match beginning runtime.
-#define MATCH_RUNTIME_BEGIN
-//! @brief Store match ending runtime.
-#define MATCH_RUNTIME_END
 #endif
 
 namespace algorithm::match
 {
-int MatchSolution::rkMethod(const char* text, const char* pattern, const uint32_t textLen, const uint32_t patternLen)
+int Match::rk(const char* text, const char* pattern, const uint32_t textLen, const uint32_t patternLen)
 {
-    MATCH_RUNTIME_BEGIN;
     int shift = -1;
     constexpr uint64_t rollingHashBase = 10;
     constexpr uint64_t rollingHashMod = 19260817;
@@ -86,16 +45,10 @@ int MatchSolution::rkMethod(const char* text, const char* pattern, const uint32_
         shift = 0;
     }
 
-    MATCH_RUNTIME_END;
-    MATCH_PRINT_RESULT_CONTENT("RabinKarp");
     return shift;
 }
 
-uint64_t MatchSolution::rollingHash(
-    const char* str,
-    const uint64_t length,
-    const uint64_t hashBase,
-    const uint64_t hashMod)
+uint64_t Match::rollingHash(const char* str, const uint64_t length, const uint64_t hashBase, const uint64_t hashMod)
 {
     uint64_t hash = 0;
     for (uint64_t i = 0; i < length; ++i)
@@ -105,9 +58,8 @@ uint64_t MatchSolution::rollingHash(
     return hash;
 }
 
-int MatchSolution::kmpMethod(const char* text, const char* pattern, const uint32_t textLen, const uint32_t patternLen)
+int Match::kmp(const char* text, const char* pattern, const uint32_t textLen, const uint32_t patternLen)
 {
-    MATCH_RUNTIME_BEGIN;
     int shift = -1;
     uint32_t next[patternLen + 1];
 
@@ -143,14 +95,11 @@ int MatchSolution::kmpMethod(const char* text, const char* pattern, const uint32
         }
     }
 
-    MATCH_RUNTIME_END;
-    MATCH_PRINT_RESULT_CONTENT("KnuthMorrisPratt");
     return shift;
 }
 
-int MatchSolution::bmMethod(const char* text, const char* pattern, const uint32_t textLen, const uint32_t patternLen)
+int Match::bm(const char* text, const char* pattern, const uint32_t textLen, const uint32_t patternLen)
 {
-    MATCH_RUNTIME_BEGIN;
     int shift = -1;
     uint32_t badCharRuleTable[maxASCII], goodSuffixIndexTable[maxASCII];
 
@@ -175,12 +124,10 @@ int MatchSolution::bmMethod(const char* text, const char* pattern, const uint32_
         textIndex += std::max(badCharRuleTable[text[textIndex]], goodSuffixIndexTable[patternIndex]);
     }
 
-    MATCH_RUNTIME_END;
-    MATCH_PRINT_RESULT_CONTENT("BoyerMoore");
     return shift;
 }
 
-void MatchSolution::fillBadCharRuleTable(uint32_t badCharRuleTable[], const char* pattern, const uint32_t patternLen)
+void Match::fillBadCharRuleTable(uint32_t badCharRuleTable[], const char* pattern, const uint32_t patternLen)
 {
     for (uint16_t i = 0; i < maxASCII; ++i)
     {
@@ -193,10 +140,7 @@ void MatchSolution::fillBadCharRuleTable(uint32_t badCharRuleTable[], const char
     }
 }
 
-void MatchSolution::fillGoodSuffixRuleTable(
-    uint32_t goodSuffixRuleTable[],
-    const char* pattern,
-    const uint32_t patternLen)
+void Match::fillGoodSuffixRuleTable(uint32_t goodSuffixRuleTable[], const char* pattern, const uint32_t patternLen)
 {
     uint32_t lastPrefixIndex = 1;
     for (int pos = (patternLen - 1); pos >= 0; --pos)
@@ -233,13 +177,8 @@ void MatchSolution::fillGoodSuffixRuleTable(
     }
 }
 
-int MatchSolution::horspoolMethod(
-    const char* text,
-    const char* pattern,
-    const uint32_t textLen,
-    const uint32_t patternLen)
+int Match::horspool(const char* text, const char* pattern, const uint32_t textLen, const uint32_t patternLen)
 {
-    MATCH_RUNTIME_BEGIN;
     int shift = -1;
     uint32_t badCharShiftTable[maxASCII];
 
@@ -263,12 +202,10 @@ int MatchSolution::horspoolMethod(
         moveLen += badCharShiftTable[text[moveLen]];
     }
 
-    MATCH_RUNTIME_END;
-    MATCH_PRINT_RESULT_CONTENT("Horspool");
     return shift;
 }
 
-void MatchSolution::fillBadCharShiftTableForHorspool(
+void Match::fillBadCharShiftTableForHorspool(
     uint32_t badCharShiftTable[],
     const char* pattern,
     const uint32_t patternLen)
@@ -284,13 +221,8 @@ void MatchSolution::fillBadCharShiftTableForHorspool(
     }
 }
 
-int MatchSolution::sundayMethod(
-    const char* text,
-    const char* pattern,
-    const uint32_t textLen,
-    const uint32_t patternLen)
+int Match::sunday(const char* text, const char* pattern, const uint32_t textLen, const uint32_t patternLen)
 {
-    MATCH_RUNTIME_BEGIN;
     int shift = -1;
     uint32_t badCharShiftTable[maxASCII];
 
@@ -316,15 +248,10 @@ int MatchSolution::sundayMethod(
         }
     }();
 
-    MATCH_RUNTIME_END;
-    MATCH_PRINT_RESULT_CONTENT("Sunday");
     return shift;
 }
 
-void MatchSolution::fillBadCharShiftTableForSunday(
-    uint32_t badCharShiftTable[],
-    const char* pattern,
-    const uint32_t patternLen)
+void Match::fillBadCharShiftTableForSunday(uint32_t badCharShiftTable[], const char* pattern, const uint32_t patternLen)
 {
     for (uint16_t i = 0; i < maxASCII; ++i)
     {
@@ -335,50 +262,5 @@ void MatchSolution::fillBadCharShiftTableForSunday(
     {
         badCharShiftTable[pattern[j]] = patternLen - j;
     }
-}
-
-TargetBuilder::TargetBuilder(const uint32_t textLen, const std::string_view singlePattern) :
-    marchingText(std::make_unique<char[]>(calculatePrecision(textLen))), singlePattern(singlePattern)
-{
-    setMatchingText(marchingText.get(), textLen);
-}
-
-TargetBuilder::~TargetBuilder()
-{
-    mpfr_free_cache();
-}
-
-void TargetBuilder::setMatchingText(char* text, const uint32_t textLen)
-{
-    assert((nullptr != text) && (textLen > 0));
-    mpfr_t x;
-    mpfr_init2(x, calculatePrecision(textLen));
-    mpfr_const_pi(x, MPFR_RNDN);
-    mpfr_exp_t mpfrDecimalLocation;
-    mpfr_get_str(text, &mpfrDecimalLocation, mpfrBase, 0, x, MPFR_RNDN);
-    mpfr_clear(x);
-
-    assert('\0' != *text);
-    text[textLen] = '\0';
-
-#ifdef __RUNTIME_PRINTING
-    std::string out(text);
-    out.insert(1, ".");
-    std::cout << "\r\nπ " << textLen << " digits:\r\n"
-              << out.substr(0, std::min(textLen, maxNumPerLineOfPrint)) << std::endl;
-    if (textLen > maxNumPerLineOfPrint)
-    {
-        std::cout << "...\r\n...\r\n..." << std::endl;
-        if (textLen > maxNumPerLineOfPrint)
-        {
-            std::cout
-                << ((textLen > (maxNumPerLineOfPrint * 2))
-                        ? out.substr(out.length() - maxNumPerLineOfPrint, out.length())
-                        : out.substr(maxNumPerLineOfPrint + 1, out.length()))
-                << std::endl;
-        }
-    }
-    std::cout << std::endl;
-#endif
 }
 } // namespace algorithm::match

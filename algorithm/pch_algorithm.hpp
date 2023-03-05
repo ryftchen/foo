@@ -8,19 +8,21 @@
 
 #ifdef __PRECOMPILED_HEADER
 #include <mpfr.h>
+#include <algorithm>
 // #define NDEBUG
 #include <cassert>
 #include <chrono>
 #include <cmath>
+#include <cstdint>
 #include <cstring>
 #include <functional>
-#include <iostream>
 #include <map>
 #include <memory>
-#include <mutex>
 #include <queue>
 #include <random>
 #include <set>
 #include <stack>
+#include <stdexcept>
 #include <string>
+#include <vector>
 #endif
