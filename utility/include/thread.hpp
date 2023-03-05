@@ -40,9 +40,9 @@ private:
     //! @brief The queue of tasks.
     std::queue<std::pair<std::string, std::packaged_task<void()>>> taskQueue;
     //! @brief Mutex for controlling queue.
-    mutable std::mutex queueMutex;
-    //! @brief The synchronization condition for queue. Use with queueMutex.
-    std::condition_variable condition;
+    mutable std::mutex mtx;
+    //! @brief The synchronization condition for queue. Use with mtx.
+    std::condition_variable cv;
     //! @brief The synchronization condition for availability of resources.
     std::condition_variable producer;
     //! @brief Flag to indicate whether the release of resources is ready.
@@ -56,7 +56,7 @@ decltype(auto) Thread::enqueue(const std::string& name, Func&& func, Args&&... a
         std::bind(std::forward<Func>(func), std::forward<Args>(args)...));
     std::future<std::invoke_result_t<Func, Args...>> future = task.get_future();
 
-    if (std::unique_lock<std::mutex> lock(queueMutex); true)
+    if (std::unique_lock<std::mutex> lock(mtx); true)
     {
         if (releaseReady.load())
         {
@@ -64,7 +64,7 @@ decltype(auto) Thread::enqueue(const std::string& name, Func&& func, Args&&... a
         }
         taskQueue.emplace(std::make_pair(name, std::move(task)));
     }
-    condition.notify_one();
+    cv.notify_one();
     return future;
 }
 } // namespace utility::thread

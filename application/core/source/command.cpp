@@ -132,14 +132,14 @@ void Command::foregroundHandler(const int argc, const char* const argv[])
 {
     try
     {
-        std::unique_lock<std::mutex> lock(commandMutex);
+        std::unique_lock<std::mutex> lock(mtx);
         program.parseArgs(argc, argv);
         validateBasicTask();
         validateGeneralTask();
 
         isParsed.store(true);
         lock.unlock();
-        commandCondition.notify_one();
+        cv.notify_one();
         utility::time::millisecondLevelSleep(1);
         lock.lock();
     }
@@ -154,9 +154,9 @@ void Command::backgroundHandler()
 {
     try
     {
-        if (std::unique_lock<std::mutex> lock(commandMutex); true)
+        if (std::unique_lock<std::mutex> lock(mtx); true)
         {
-            commandCondition.wait(
+            cv.wait(
                 lock,
                 [this]() -> decltype(auto)
                 {

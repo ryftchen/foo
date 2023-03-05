@@ -49,9 +49,9 @@ void Log::runLogger()
         checkIfExceptedFSMState(State::work);
         while (isLogging.load())
         {
-            if (std::unique_lock<std::mutex> lock(queueMutex); true)
+            if (std::unique_lock<std::mutex> lock(mtx); true)
             {
-                condition.wait(
+                cv.wait(
                     lock,
                     [this]() -> decltype(auto)
                     {
@@ -120,12 +120,12 @@ void Log::interfaceToStart()
 
 void Log::interfaceToStop()
 {
-    if (std::unique_lock<std::mutex> lock(queueMutex); true)
+    if (std::unique_lock<std::mutex> lock(mtx); true)
     {
         isLogging.store(false);
 
         lock.unlock();
-        condition.notify_one();
+        cv.notify_one();
         utility::time::millisecondLevelSleep(1);
         lock.lock();
     }
@@ -173,7 +173,7 @@ void Log::openLogFile()
 
 void Log::startLogging()
 {
-    if (std::unique_lock<std::mutex> lock(queueMutex); true)
+    if (std::unique_lock<std::mutex> lock(mtx); true)
     {
         isLogging.store(true);
     }
@@ -186,7 +186,7 @@ void Log::closeLogFile()
 
 void Log::stopLogging()
 {
-    if (std::unique_lock<std::mutex> lock(queueMutex); true)
+    if (std::unique_lock<std::mutex> lock(mtx); true)
     {
         isLogging.store(false);
         while (!logQueue.empty())
