@@ -16,5 +16,7 @@ services:
     stdin_open: true
     tty: true
     privileged: true
+    ulimits:
+      core: -1
     command: /bin/bash
 ...
