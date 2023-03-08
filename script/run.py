@@ -19,11 +19,8 @@ STDOUT = sys.stdout
 
 
 class Output:
-    colorRed = "\033[0;31;40m"
-    colorGreen = "\033[0;32;40m"
-    colorYellow = "\033[0;33;40m"
-    colorBlue = "\033[0;34;40m"
-    colorForBackground = "\033[49m"
+    color = {"red": "\033[0;31;40m", "green": "\033[0;32;40m", "yellow": "\033[0;33;40m", "blue": "\033[0;34;40m"}
+    colorBack = "\033[49m"
     colorOff = "\033[0m"
     colorEscapeRegex = r"((\033\[.*?(m|s|u|A))|(\007|\017))"
     columnLength = 10
@@ -36,9 +33,9 @@ class Output:
         sys.exit(-1)
 
     @classmethod
-    def status(cls, colorForForeground, content):
+    def status(cls, colorFore, content):
         print(
-            f"""{colorForForeground}{cls.colorForBackground}{f"{'=' * cls.columnLength}"}\
+            f"""{colorFore}{cls.colorBack}{f"{'=' * cls.columnLength}"}\
 [ {datetime.strftime(datetime.now(), "%b %d %H:%M:%S")} | {content} ]{f"{'=' * cls.columnLength}"}{cls.colorOff}"""
         )
 
@@ -79,23 +76,23 @@ class Task:
     isCheckCoverage = False
     isCheckMemory = False
     isUnitTest = False
-    buildFile = "./script/build.sh"
-    logFile = "./temporary/foo_run.log"
+    buildScript = "./script/build.sh"
     tempDir = "./temporary"
-    passStep = 0
-    completeStep = 0
+    logFile = f"{tempDir}/foo_run.log"
+    passSteps = 0
+    completeSteps = 0
     basicTaskDict["--help"] = [
         f"{taskCategory} {taskType}"
         for taskCategory, taskCategoryMap in generalTaskDict.items()
         for taskType in taskCategoryMap.keys()
     ]
-    totalStep = 1 + len(basicTaskDict.keys())
+    totalSteps = 1 + len(basicTaskDict.keys())
     for taskCategoryList in basicTaskDict.values():
-        totalStep += len(taskCategoryList)
+        totalSteps += len(taskCategoryList)
     for taskCategoryMap in generalTaskDict.values():
-        totalStep += len(taskCategoryMap.keys())
+        totalSteps += len(taskCategoryMap.keys())
         for targetTaskList in taskCategoryMap.values():
-            totalStep += len(targetTaskList) + 1
+            totalSteps += len(targetTaskList) + 1
 
     def __init__(self):
         if not os.path.exists(self.tempDir):
@@ -109,7 +106,7 @@ class Task:
         os.chdir(filePath.replace(filePath[filePath.index("script") :], ''))
 
         self.parseArguments()
-        self.prepareTask()
+        self.prepare()
 
         if not self.isUnitTest:
             threadList = []
@@ -122,10 +119,10 @@ class Task:
             for thread in threadList:
                 thread.join()
         else:
-            while self.completeStep < self.totalStep:
+            while self.completeSteps < self.totalSteps:
                 self.runTask(self.testBinCmd)
 
-        self.completeTask()
+        self.complete()
         self.formatRunLog()
 
     def stop(self, message=""):
@@ -150,7 +147,7 @@ class Task:
 
     def performTasks(self):
         self.runTask(self.binCmd, "quit")
-        while self.completeStep < self.totalStep:
+        while self.completeSteps < self.totalSteps:
             cmd = self.taskQueue.get()
             self.runTask(cmd)
 
@@ -161,53 +158,55 @@ class Task:
             fullCommand = f"{self.testBinDir}/{command}"
         if self.isCheckMemory:
             fullCommand = f"valgrind --tool=memcheck --xml=yes \
---xml-file={self.tempDir}/foo_chk_mem_{str(self.completeStep + 1)}.xml {fullCommand}"
+--xml-file={self.tempDir}/foo_chk_mem_{str(self.completeSteps + 1)}.xml {fullCommand}"
         if self.isCheckCoverage:
-            fullCommand = f"LLVM_PROFILE_FILE=\"{self.tempDir}/foo_chk_cov_{str(self.completeStep + 1)}.profraw\" \
+            fullCommand = f"LLVM_PROFILE_FILE=\"{self.tempDir}/foo_chk_cov_{str(self.completeSteps + 1)}.profraw\" \
 {fullCommand}"
         align = max(
             len(command) + Output.alignExclCmdLen,
             Output.alignMinLen,
-            len(str(self.totalStep)) * 2 + len(" / ") + Output.alignExclCmdLen,
+            len(str(self.totalSteps)) * 2 + len(" / ") + Output.alignExclCmdLen,
         )
-        Output.status(Output.colorBlue, f"CASE TASK: {f'{command}':<{align - Output.alignExclCmdLen}} | START ")
+        Output.status(Output.color["blue"], f"CASE TASK: {f'{command}':<{align - Output.alignExclCmdLen}} | START ")
 
         stdout, stderr, returncode = common.executeCommand(fullCommand, enter)
         if stderr or returncode != 0:
             print(f"<STDOUT>\n{stdout}\n<STDERR>\n{stderr}\n<RETURN CODE>\n{returncode}")
-            Output.status(Output.colorRed, f"{f'CASE TASK: FAILURE NO.{str(self.completeStep + 1)}':<{align}}")
+            Output.status(Output.color["red"], f"{f'CASE TASK: FAILURE NO.{str(self.completeSteps + 1)}':<{align}}")
         else:
             print(stdout)
-            self.passStep += 1
+            self.passSteps += 1
             if self.isCheckMemory:
                 stdout, _, _ = common.executeCommand(
-                    f"valgrind-ci {self.tempDir}/foo_chk_mem_{str(self.completeStep + 1)}.xml --summary"
+                    f"valgrind-ci {self.tempDir}/foo_chk_mem_{str(self.completeSteps + 1)}.xml --summary"
                 )
                 if "error" in stdout:
                     print(f"\r\n<CHECK MEMORY>\n{stdout}")
                     common.executeCommand(
-                        f"valgrind-ci {self.tempDir}/foo_chk_mem_{str(self.completeStep + 1)}.xml --source-dir=./ \
---output-dir={self.tempDir}/memory/case_task_{str(self.completeStep + 1)}"
+                        f"valgrind-ci {self.tempDir}/foo_chk_mem_{str(self.completeSteps + 1)}.xml --source-dir=./ \
+--output-dir={self.tempDir}/memory/case_task_{str(self.completeSteps + 1)}"
                     )
-                    self.passStep -= 1
-                    Output.status(Output.colorRed, f"{f'CASE TASK: FAILURE NO.{str(self.completeStep + 1)}':<{align}}")
+                    self.passSteps -= 1
+                    Output.status(
+                        Output.color["red"], f"{f'CASE TASK: FAILURE NO.{str(self.completeSteps + 1)}':<{align}}"
+                    )
 
-        self.completeStep += 1
-        Output.status(Output.colorBlue, f"CASE TASK: {f'{command}':<{align - Output.alignExclCmdLen}} | FINISH")
+        self.completeSteps += 1
+        Output.status(Output.color["blue"], f"CASE TASK: {f'{command}':<{align - Output.alignExclCmdLen}} | FINISH")
 
-        if self.passStep != self.totalStep:
-            statusColor = Output.colorYellow
+        if self.passSteps != self.totalSteps:
+            statusColor = Output.color["yellow"]
         else:
-            statusColor = Output.colorGreen
+            statusColor = Output.color["green"]
         Output.status(
             statusColor,
             f"""\
-{f"CASE TASK: SUCCESS {f'{str(self.passStep)}':>{len(str(self.totalStep))}} / {str(self.totalStep)}":<{align}}""",
+{f"CASE TASK: SUCCESS {f'{str(self.passSteps)}':>{len(str(self.totalSteps))}} / {str(self.totalSteps)}":<{align}}""",
         )
         print("\n")
 
         sys.stdout = STDOUT
-        self.progressBar.drawProgressBar(int(self.completeStep / self.totalStep * 100))
+        self.progressBar.drawProgressBar(int(self.completeSteps / self.totalSteps * 100))
         sys.stdout = self.log
 
     def parseArguments(self):
@@ -249,38 +248,39 @@ class Task:
             if "mem" in args.check:
                 stdout, _, _ = common.executeCommand("command -v valgrind valgrind-ci 2>&1")
                 if stdout.find("valgrind") != -1 and stdout.find("valgrind-ci") != -1:
+                    os.environ["FOO_CHK_MEM"] = "on"
                     self.isCheckMemory = True
                     common.executeCommand(f"rm -rf {self.tempDir}/memory")
                 else:
                     Output.exception("No valgrind or valgrind-ci program. Please check it.")
 
         if args.build is not None:
-            if os.path.isfile(self.buildFile):
-                buildCmd = self.buildFile
+            if os.path.isfile(self.buildScript):
+                buildCmd = self.buildScript
                 if args.test is not None:
                     buildCmd += " --test"
                 if args.build == "dbg":
-                    self.buildTarget(f"{buildCmd} 2>&1")
+                    self.build(f"{buildCmd} 2>&1")
                 elif args.build == "rls":
-                    self.buildTarget(f"{buildCmd} --release 2>&1")
+                    self.build(f"{buildCmd} --release 2>&1")
             else:
                 Output.exception("No shell script build.sh in script folder.")
 
         if args.test is not None:
             self.isUnitTest = True
-            self.totalStep = args.test
+            self.totalSteps = args.test
 
-    def buildTarget(self, buildCmd):
+    def build(self, buildCmd):
         stdout, stderr, returncode = common.executeCommand(buildCmd)
         if stderr or returncode != 0:
             print(f"<STDOUT>\n{stdout}\n<STDERR>\n{stderr}\n<RETURN CODE>\n{returncode}")
-            Output.exception(f"Failed to run shell script {self.buildFile}.")
+            Output.exception(f"Failed to run shell script {self.buildScript}.")
         else:
             print(stdout)
             if "FAILED:" in stdout:
-                Output.exception(f"Failed to build target by shell script {self.buildFile}.")
+                Output.exception(f"Failed to build target by shell script {self.buildScript}.")
 
-    def prepareTask(self):
+    def prepare(self):
         if not self.isUnitTest and not os.path.isfile(f"{self.binDir}/{self.binCmd}"):
             Output.exception("No executable file. Please build it.")
         if self.isUnitTest and not os.path.isfile(f"{self.testBinDir}/{self.testBinCmd}"):
@@ -291,7 +291,7 @@ class Task:
         self.progressBar.setupProgressBar()
         sys.stdout = self.log
 
-    def completeTask(self):
+    def complete(self):
         if self.isCheckMemory:
             common.executeCommand(f"rm -rf {self.tempDir}/*.xml")
 
