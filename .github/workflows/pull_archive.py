@@ -18,8 +18,8 @@ WEBSITE_DIR = "/var/www/foo_web"
 PROXY_PORT = ""
 
 
-def command(cmd):
-    print(f'{datetime.strftime(datetime.now(), "%b %d %H:%M:%S")} command: {cmd}')
+def execute(cmd):
+    print(f"{datetime.strftime(datetime.now(), '%b %d %H:%M:%S')} execute: {cmd}")
     try:
         process = subprocess.run(
             cmd,
@@ -44,8 +44,8 @@ def command(cmd):
         sys.exit(-1)
 
 
-def exception(msg):
-    print(f'{datetime.strftime(datetime.now(), "%b %d %H:%M:%S")} exception: {msg}')
+def abandon(msg):
+    print(f"{datetime.strftime(datetime.now(), '%b %d %H:%M:%S')} abandon: {msg}")
     sys.exit(-1)
 
 
@@ -68,18 +68,18 @@ def parseArguments():
 
 def downloadArtifact():
     filePath = os.path.split(os.path.realpath(__file__))[0]
-    os.chdir(filePath.replace(filePath[filePath.index(".github") :], ''))
+    os.chdir(filePath.replace(filePath[filePath.index(".github") :], ""))
 
     if not os.path.exists(WEBSITE_DIR):
-        exception("Please create a foo_web folder in the /var/www directory.")
-    localCommitId, _ = command("git rev-parse HEAD")
-    remoteCommitId, _ = command(f"git ls-remote {GIT_URL} refs/heads/master | cut -f 1")
+        abandon("Please create a foo_web folder in the /var/www directory.")
+    localCommitId, _ = execute("git rev-parse HEAD")
+    remoteCommitId, _ = execute(f"git ls-remote {GIT_URL} refs/heads/master | cut -f 1")
     if not remoteCommitId:
-        exception("Failed to get the latest commit id.")
+        abandon("Failed to get the latest commit id.")
     if localCommitId != remoteCommitId:
-        command("git pull origin master")
+        execute("git pull origin master")
     elif os.path.exists(f"{WEBSITE_DIR}/browser") and os.path.exists(f"{WEBSITE_DIR}/doxygen"):
-        exception("No commit change.")
+        abandon("No commit change.")
 
     try:
         response = requests.get(ARTIFACT_URL, timeout=60)
@@ -107,23 +107,23 @@ def downloadArtifact():
         with open(f"{WEBSITE_DIR}/{ARTIFACT_NAME}.zip", "wb") as outputFile:
             outputFile.write(response.content)
     except requests.exceptions.HTTPError as error:
-        command(f"rm -rf {WEBSITE_DIR}/{ARTIFACT_NAME}.zip")
-        command(f"git reset --hard {localCommitId}")
-        exception(error)
+        execute(f"rm -rf {WEBSITE_DIR}/{ARTIFACT_NAME}.zip")
+        execute(f"git reset --hard {localCommitId}")
+        abandon(error)
 
-    validation, _ = command(f"zip -T {WEBSITE_DIR}/{ARTIFACT_NAME}.zip")
+    validation, _ = execute(f"zip -T {WEBSITE_DIR}/{ARTIFACT_NAME}.zip")
     if "zip error" in validation:
-        command(f"rm -rf {WEBSITE_DIR}/{ARTIFACT_NAME}.zip")
-        command(f"git reset --hard {localCommitId}")
-        exception(f"The {ARTIFACT_NAME}.zip file in the {WEBSITE_DIR} folder is corrupted.")
+        execute(f"rm -rf {WEBSITE_DIR}/{ARTIFACT_NAME}.zip")
+        execute(f"git reset --hard {localCommitId}")
+        abandon(f"The {ARTIFACT_NAME}.zip file in the {WEBSITE_DIR} folder is corrupted.")
 
 
 def updateDocument():
-    command(f"rm -rf {WEBSITE_DIR}/browser {WEBSITE_DIR}/doxygen")
-    command(f"unzip {WEBSITE_DIR}/{ARTIFACT_NAME}.zip -d {WEBSITE_DIR}")
-    command(f"tar -jxvf {WEBSITE_DIR}/foo_browser_*.tar.bz2 -C {WEBSITE_DIR} >/dev/null")
-    command(f"tar -jxvf {WEBSITE_DIR}/foo_doxygen_*.tar.bz2 -C {WEBSITE_DIR} >/dev/null")
-    command(f"rm -rf {WEBSITE_DIR}/*.zip {WEBSITE_DIR}/*.tar.bz2")
+    execute(f"rm -rf {WEBSITE_DIR}/browser {WEBSITE_DIR}/doxygen")
+    execute(f"unzip {WEBSITE_DIR}/{ARTIFACT_NAME}.zip -d {WEBSITE_DIR}")
+    execute(f"tar -jxvf {WEBSITE_DIR}/foo_browser_*.tar.bz2 -C {WEBSITE_DIR} >/dev/null")
+    execute(f"tar -jxvf {WEBSITE_DIR}/foo_doxygen_*.tar.bz2 -C {WEBSITE_DIR} >/dev/null")
+    execute(f"rm -rf {WEBSITE_DIR}/*.zip {WEBSITE_DIR}/*.tar.bz2")
 
 
 def pullArchive():
@@ -134,9 +134,9 @@ def pullArchive():
     env = os.getenv("FOO_ENV")
     if env:
         if env != "foo_doc":
-            exception("The environment variable FOO_ENV must be foo_doc.")
+            abandon("The environment variable FOO_ENV must be foo_doc.")
     else:
-        exception("Please export the environment variable FOO_ENV.")
+        abandon("Please export the environment variable FOO_ENV.")
 
     downloadArtifact()
     updateDocument()
