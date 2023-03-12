@@ -3,8 +3,8 @@
 declare -rA FOLDER=([proj]="foo" [app]="application" [util]="utility" [algo]="algorithm" [ds]="data_structure"
     [dp]="design_pattern" [num]="numeric" [tst]="test" [scr]="script" [doc]="document" [bld]="build" [temp]="temporary")
 declare -r COMP_CMD="compile_commands.json"
-declare -A ARGS=([help]=false [cleanup]=false [environment]=false [container]=false [test]=false [release]=false
-    [format]=false [lint]=false [browser]=false [doxygen]=false)
+declare -A ARGS=([help]=false [cleanup]=false [environment]=false [docker]=false [test]=false [release]=false
+    [format]=false [lint]=false [count]=false [browser]=false [doxygen]=false)
 declare -A DEV_OPT=([parallel]=0 [pch]=false [unity]=false [ccache]=false [distcc]=false [tmpfs]=false)
 declare CMAKE_CACHE_ENTRY=""
 declare CMAKE_BUILD_OPTION=""
@@ -53,11 +53,12 @@ function parseArguments()
         -h | --help) ARGS[help]=true ;;
         -C | --cleanup) ARGS[cleanup]=true ;;
         -e | --environment) ARGS[environment]=true ;;
-        -c | --container) ARGS[container]=true ;;
+        -D | --docker) ARGS[docker]=true ;;
         -t | --test) ARGS[test]=true ;;
         -r | --release) ARGS[release]=true ;;
         -f | --format) ARGS[format]=true ;;
         -l | --lint) ARGS[lint]=true ;;
+        -c | --count) ARGS[count]=true ;;
         -b | --browser) ARGS[browser]=true ;;
         -d | --doxygen) ARGS[doxygen]=true ;;
         *) abort "Unknown command line option: $1. Try using the --help option for information." ;;
@@ -100,6 +101,12 @@ function checkExtraDependencies()
             || ! command -v pylint >/dev/null 2>&1; then
             abort "No clang-tidy (including run-clang-tidy-12, compdb), shellcheck or pylint program. \
 Please install it."
+        fi
+    fi
+
+    if [[ ${ARGS[count]} = true ]]; then
+        if ! command -v cloc >/dev/null 2>&1; then
+            abort "No cloc program. Please install it."
         fi
     fi
 
@@ -204,11 +211,12 @@ function performHelpOption()
         echo "-h, --help           show help and exit"
         echo "-C, --cleanup        cleanup folder and exit"
         echo "-e, --environment    create env configuration and exit"
-        echo "-c, --container      construct docker container and exit"
+        echo "-D, --docker         construct docker container and exit"
         echo "-t, --test           build unit test and exit"
         echo "-r, --release        set as release version"
         echo "-f, --format         format all code"
         echo "-l, --lint           lint all code"
+        echo "-c, --count          count lines of code"
         echo "-b, --browser        document by code browser"
         echo "-d, --doxygen        document by doxygen"
         exit 0
@@ -247,7 +255,7 @@ EOF"
 
 function performContainerOption()
 {
-    if [[ ${ARGS[container]} = true ]]; then
+    if [[ ${ARGS[docker]} = true ]]; then
         if command -v docker >/dev/null 2>&1 && command -v docker-compose >/dev/null 2>&1; then
             echo "Please confirm whether continue constructing the docker container. (y or n)"
             local oldStty
@@ -335,6 +343,15 @@ function performLintOption()
 
         shellCommand "shellcheck ./${FOLDER[scr]}/*.sh"
         shellCommand "pylint --rcfile=./.pylintrc ./${FOLDER[scr]}/*.py"
+    fi
+}
+
+function performCountOption()
+{
+    if [[ ${ARGS[count]} = true ]]; then
+        shellCommand "find ./${FOLDER[app]} ./${FOLDER[util]} ./${FOLDER[algo]} ./${FOLDER[ds]} ./${FOLDER[dp]} \
+./${FOLDER[num]} ./${FOLDER[tst]} -name *.cpp -o -name *.hpp -o -name *.tpp | grep -v '/${FOLDER[bld]}/' \
+| xargs cloc --by-file-by-lang --force-lang='C++',tpp --include-lang='C++','C/C++ Header' --by-percent=cmb"
     fi
 }
 
@@ -449,6 +466,7 @@ function main()
     checkExtraDependencies
     performFormatOption
     performLintOption
+    performCountOption
     performBrowserOption
     performDoxygenOption
 }
