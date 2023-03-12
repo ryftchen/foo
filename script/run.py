@@ -28,7 +28,7 @@ class Output:
     alignExclCmdLen = 20
 
     @classmethod
-    def exception(cls, message):
+    def abort(cls, message):
         print(f"\r\nrun.py: {message}")
         sys.exit(-1)
 
@@ -103,7 +103,7 @@ class Task:
 
     def run(self):
         filePath = os.path.split(os.path.realpath(__file__))[0]
-        os.chdir(filePath.replace(filePath[filePath.index("script") :], ''))
+        os.chdir(filePath.replace(filePath[filePath.index("script") :], ""))
 
         self.parseArguments()
         self.prepare()
@@ -139,7 +139,119 @@ class Task:
             pass
         finally:
             if message:
-                Output.exception(message)
+                Output.abort(message)
+
+    def parseArguments(self):
+        def checkPositive(value):
+            value = int(value)
+            if value <= 0:
+                raise argparse.ArgumentTypeError(f"\"{value}\" is an invalid positive int value")
+            return value
+
+        parser = argparse.ArgumentParser(description="run script")
+        parser.add_argument(
+            "-t", "--test", nargs="?", const=1, type=checkPositive, help="run unit test only", metavar="times"
+        )
+        parser.add_argument(
+            "-c", "--check", nargs="+", choices=["cov", "mem"], help="run with check: cov - coverage, mem - memory"
+        )
+        parser.add_argument(
+            "-b",
+            "--build",
+            nargs="?",
+            const="dbg",
+            choices=["dbg", "rls"],
+            help="run after build: dbg - debug, rls - release",
+        )
+        args = parser.parse_args()
+
+        if args.check is not None:
+            if args.test is not None:
+                Output.abort("No support for the --check option during testing.")
+            if "cov" in args.check:
+                stdout, _, _ = common.executeCommand("command -v llvm-profdata-12 llvm-cov-12 2>&1")
+                if stdout.find("llvm-profdata-12") != -1 and stdout.find("llvm-cov-12") != -1:
+                    os.environ["FOO_CHK_COV"] = "on"
+                    self.isCheckCoverage = True
+                    common.executeCommand(f"rm -rf {self.tempDir}/coverage")
+                else:
+                    Output.abort("No llvm-profdata or llvm-cov program. Please check it.")
+
+            if "mem" in args.check:
+                stdout, _, _ = common.executeCommand("command -v valgrind valgrind-ci 2>&1")
+                if stdout.find("valgrind") != -1 and stdout.find("valgrind-ci") != -1:
+                    os.environ["FOO_CHK_MEM"] = "on"
+                    self.isCheckMemory = True
+                    common.executeCommand(f"rm -rf {self.tempDir}/memory")
+                else:
+                    Output.abort("No valgrind or valgrind-ci program. Please check it.")
+
+        if args.build is not None:
+            if os.path.isfile(self.buildScript):
+                buildCmd = self.buildScript
+                if args.test is not None:
+                    buildCmd += " --test"
+                if args.build == "dbg":
+                    self.buildExecutable(f"{buildCmd} 2>&1")
+                elif args.build == "rls":
+                    self.buildExecutable(f"{buildCmd} --release 2>&1")
+            else:
+                Output.abort("No shell script build.sh in script folder.")
+
+        if args.test is not None:
+            self.isUnitTest = True
+            self.totalSteps = args.test
+
+    def buildExecutable(self, buildCmd):
+        stdout, stderr, returncode = common.executeCommand(buildCmd)
+        if stderr or returncode != 0:
+            print(f"<STDOUT>\n{stdout}\n<STDERR>\n{stderr}\n<RETURN CODE>\n{returncode}")
+            Output.abort(f"Failed to run shell script {self.buildScript}.")
+        else:
+            print(stdout)
+            if "FAILED:" in stdout:
+                Output.abort(f"Failed to build the executable by shell script {self.buildScript}.")
+
+    def prepare(self):
+        if not self.isUnitTest and not os.path.isfile(f"{self.binDir}/{self.binCmd}"):
+            Output.abort("No executable file. Please use the --build option to build it.")
+        if self.isUnitTest and not os.path.isfile(f"{self.testBinDir}/{self.testBinCmd}"):
+            Output.abort("No executable file for testing. Please use the --build option to build it.")
+        common.executeCommand("ulimit -s unlimited")
+        common.executeCommand("echo 'core.%s.%e.%p' | tee /proc/sys/kernel/core_pattern")
+
+        if not os.path.exists(self.tempDir):
+            os.makedirs(self.tempDir)
+        self.progressBar.setupProgressBar()
+        sys.stdout = self.log
+
+    def complete(self):
+        if self.isCheckMemory:
+            common.executeCommand(f"rm -rf {self.tempDir}/*.xml")
+
+        if self.isCheckCoverage:
+            common.executeCommand(
+                f"llvm-profdata-12 merge -sparse {self.tempDir}/foo_chk_cov_*.profraw \
+-o {self.tempDir}/foo_chk_cov.profdata"
+            )
+            common.executeCommand(
+                f"llvm-cov-12 show -instr-profile={self.tempDir}/foo_chk_cov.profdata -show-branches=percent \
+-show-expansions -show-regions -show-line-counts-or-regions -format=html -output-dir={self.tempDir}/coverage \
+-Xdemangler=c++filt -object={self.binDir}/{self.binCmd} \
+{' '.join([f'-object={self.libDir}/{lib}' for lib in self.libList])} 2>&1"
+            )
+            stdout, _, _ = common.executeCommand(
+                f"llvm-cov-12 report -instr-profile={self.tempDir}/foo_chk_cov.profdata \
+-object={self.binDir}/{self.binCmd} {' '.join([f'-object={self.libDir}/{lib}' for lib in self.libList])} 2>&1"
+            )
+            common.executeCommand(f"rm -rf {self.tempDir}/*.profraw {self.tempDir}/*.profdata")
+            print(f"\r\n<CHECK COVERAGE>\n{stdout}")
+            if "error" in stdout:
+                print("Please rebuild the executable file with the --check option.")
+
+        sys.stdout = STDOUT
+        self.progressBar.destroyProgressBar()
+        del self.log
 
     def generateTasks(self):
         self.generateBasicTasks()
@@ -150,6 +262,20 @@ class Task:
         while self.completeSteps < self.totalSteps:
             cmd = self.taskQueue.get()
             self.runTask(cmd)
+
+    def generateBasicTasks(self):
+        for taskCategory, taskCategoryList in self.basicTaskDict.items():
+            self.taskQueue.put(f"{self.binCmd} {taskCategory}")
+            for option in taskCategoryList:
+                self.taskQueue.put(f"{self.binCmd} {taskCategory} {option}")
+
+    def generateGeneralTasks(self):
+        for taskCategory, taskCategoryMap in self.generalTaskDict.items():
+            for taskType, targetTaskList in taskCategoryMap.items():
+                self.taskQueue.put(f"{self.binCmd} {taskCategory} {taskType}")
+                for target in targetTaskList:
+                    self.taskQueue.put(f"{self.binCmd} {taskCategory} {taskType} {target}")
+                self.taskQueue.put(f"{self.binCmd} {taskCategory} {taskType} {' '.join(targetTaskList)}")
 
     def runTask(self, command, enter=""):
         if not self.isUnitTest:
@@ -209,119 +335,6 @@ class Task:
         self.progressBar.drawProgressBar(int(self.completeSteps / self.totalSteps * 100))
         sys.stdout = self.log
 
-    def parseArguments(self):
-        def checkPositive(value):
-            value = int(value)
-            if value <= 0:
-                raise argparse.ArgumentTypeError(f"\"{value}\" is an invalid positive int value")
-            return value
-
-        parser = argparse.ArgumentParser(description="run script")
-        parser.add_argument(
-            "-t", "--test", nargs="?", const=1, type=checkPositive, help="run unit test only", metavar="times"
-        )
-        parser.add_argument(
-            "-c", "--check", nargs="+", choices=["cov", "mem"], help="run with check: cov - coverage, mem - memory"
-        )
-        parser.add_argument(
-            "-b",
-            "--build",
-            nargs="?",
-            const="dbg",
-            choices=["dbg", "rls"],
-            help="run after build: dbg - debug, rls - release",
-        )
-        args = parser.parse_args()
-
-        if args.check is not None:
-            if args.test is not None:
-                Output.exception("No support for --check during testing.")
-            if "cov" in args.check:
-                stdout, _, _ = common.executeCommand("command -v llvm-profdata-12 llvm-cov-12 2>&1")
-                if stdout.find("llvm-profdata-12") != -1 and stdout.find("llvm-cov-12") != -1:
-                    os.environ["FOO_CHK_COV"] = "on"
-                    self.isCheckCoverage = True
-                    common.executeCommand(f"rm -rf {self.tempDir}/coverage")
-                else:
-                    Output.exception("No llvm-profdata or llvm-cov program. Please check it.")
-
-            if "mem" in args.check:
-                stdout, _, _ = common.executeCommand("command -v valgrind valgrind-ci 2>&1")
-                if stdout.find("valgrind") != -1 and stdout.find("valgrind-ci") != -1:
-                    os.environ["FOO_CHK_MEM"] = "on"
-                    self.isCheckMemory = True
-                    common.executeCommand(f"rm -rf {self.tempDir}/memory")
-                else:
-                    Output.exception("No valgrind or valgrind-ci program. Please check it.")
-
-        if args.build is not None:
-            if os.path.isfile(self.buildScript):
-                buildCmd = self.buildScript
-                if args.test is not None:
-                    buildCmd += " --test"
-                if args.build == "dbg":
-                    self.build(f"{buildCmd} 2>&1")
-                elif args.build == "rls":
-                    self.build(f"{buildCmd} --release 2>&1")
-            else:
-                Output.exception("No shell script build.sh in script folder.")
-
-        if args.test is not None:
-            self.isUnitTest = True
-            self.totalSteps = args.test
-
-    def build(self, buildCmd):
-        stdout, stderr, returncode = common.executeCommand(buildCmd)
-        if stderr or returncode != 0:
-            print(f"<STDOUT>\n{stdout}\n<STDERR>\n{stderr}\n<RETURN CODE>\n{returncode}")
-            Output.exception(f"Failed to run shell script {self.buildScript}.")
-        else:
-            print(stdout)
-            if "FAILED:" in stdout:
-                Output.exception(f"Failed to build target by shell script {self.buildScript}.")
-
-    def prepare(self):
-        if not self.isUnitTest and not os.path.isfile(f"{self.binDir}/{self.binCmd}"):
-            Output.exception("No executable file. Please build it.")
-        if self.isUnitTest and not os.path.isfile(f"{self.testBinDir}/{self.testBinCmd}"):
-            Output.exception("No executable file for testing. Please build it.")
-        if not os.path.exists(self.tempDir):
-            os.makedirs(self.tempDir)
-
-        self.progressBar.setupProgressBar()
-        sys.stdout = self.log
-
-    def complete(self):
-        if self.isCheckMemory:
-            common.executeCommand(f"rm -rf {self.tempDir}/*.xml")
-
-        if self.isCheckCoverage:
-            common.executeCommand(
-                f"llvm-profdata-12 merge -sparse {self.tempDir}/foo_chk_cov_*.profraw \
--o {self.tempDir}/foo_chk_cov.profdata"
-            )
-            common.executeCommand(
-                f"llvm-cov-12 show -instr-profile={self.tempDir}/foo_chk_cov.profdata -show-branches=percent \
--show-expansions -show-regions -show-line-counts-or-regions -format=html -output-dir={self.tempDir}/coverage \
--Xdemangler=c++filt -object={self.binDir}/{self.binCmd} "
-                + ' '.join([f"-object={self.libDir}/{lib}" for lib in self.libList])
-                + " 2>&1"
-            )
-            stdout, _, _ = common.executeCommand(
-                f"llvm-cov-12 report -instr-profile={self.tempDir}/foo_chk_cov.profdata \
--object={self.binDir}/{self.binCmd} "
-                + ' '.join([f"-object={self.libDir}/{lib}" for lib in self.libList])
-                + " 2>&1"
-            )
-            common.executeCommand(f"rm -rf {self.tempDir}/*.profraw {self.tempDir}/*.profdata")
-            print(f"\r\n<CHECK COVERAGE>\n{stdout}")
-            if "error" in stdout:
-                print("Please rebuild the executable file and use the --check option.")
-
-        sys.stdout = STDOUT
-        self.progressBar.destroyProgressBar()
-        del self.log
-
     def formatRunLog(self):
         refresh = ""
         with open(self.logFile, "rt", encoding="utf-8") as refresh:
@@ -329,20 +342,6 @@ class Task:
         outputContent = re.sub(Output.colorEscapeRegex, "", inputContent)
         with open(self.logFile, "w", encoding="utf-8") as refresh:
             refresh.write(outputContent)
-
-    def generateBasicTasks(self):
-        for taskCategory, taskCategoryList in self.basicTaskDict.items():
-            self.taskQueue.put(f"{self.binCmd} {taskCategory}")
-            for option in taskCategoryList:
-                self.taskQueue.put(f"{self.binCmd} {taskCategory} {option}")
-
-    def generateGeneralTasks(self):
-        for taskCategory, taskCategoryMap in self.generalTaskDict.items():
-            for taskType, targetTaskList in taskCategoryMap.items():
-                self.taskQueue.put(f"{self.binCmd} {taskCategory} {taskType}")
-                for target in targetTaskList:
-                    self.taskQueue.put(f"{self.binCmd} {taskCategory} {taskType} {target}")
-                self.taskQueue.put(f"{self.binCmd} {taskCategory} {taskType} {' '.join(targetTaskList)}")
 
 
 if __name__ == "__main__":
