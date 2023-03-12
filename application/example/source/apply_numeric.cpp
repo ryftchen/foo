@@ -61,7 +61,7 @@ void ArithmeticSolution::additionMethod(const int augend, const int addend)
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR("<APPLY NUMERIC> %s", error.what());
     }
 }
 
@@ -74,7 +74,7 @@ void ArithmeticSolution::subtractionMethod(const int minuend, const int subtrahe
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR("<APPLY NUMERIC> %s", error.what());
     }
 }
 
@@ -87,7 +87,7 @@ void ArithmeticSolution::multiplicationMethod(const int multiplier, const int mu
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR("<APPLY NUMERIC> %s", error.what());
     }
 }
 
@@ -100,7 +100,7 @@ void ArithmeticSolution::divisionMethod(const int dividend, const int divisor)
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR("<APPLY NUMERIC> %s", error.what());
     }
 }
 } // namespace arithmetic
@@ -119,7 +119,7 @@ void runArithmetic(const std::vector<std::string>& targets)
     using utility::hash::operator""_bkdrHash;
 
     APP_NUM_PRINT_TASK_BEGIN_TITLE(Type::arithmetic);
-    auto* threads = command::getPoolForMultithreading().newElement(std::min(
+    auto* threads = command::getPublicThreadPool().newElement(std::min(
         static_cast<uint32_t>(getBit<ArithmeticMethod>().count()),
         static_cast<uint32_t>(Bottom<ArithmeticMethod>::value)));
 
@@ -154,12 +154,12 @@ void runArithmetic(const std::vector<std::string>& targets)
                 arithmeticFunctor(threadName, &ArithmeticSolution::divisionMethod);
                 break;
             default:
-                LOG_DBG("Execute to apply an unknown arithmetic method.");
+                LOG_DBG("<APPLY NUMERIC> Execute to apply an unknown arithmetic method.");
                 break;
         }
     }
 
-    command::getPoolForMultithreading().deleteElement(threads);
+    command::getPublicThreadPool().deleteElement(threads);
     APP_NUM_PRINT_TASK_END_TITLE(Type::arithmetic);
 }
 
@@ -184,7 +184,7 @@ void updateArithmeticTask(const std::string& target)
             break;
         default:
             getBit<ArithmeticMethod>().reset();
-            throw std::runtime_error("Unexpected arithmetic method: " + target + ".");
+            throw std::runtime_error("<APPLY NUMERIC> Unexpected arithmetic method: " + target + ".");
     }
 }
 
@@ -218,7 +218,7 @@ void DivisorSolution::euclideanMethod(int a, int b)
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR("<APPLY NUMERIC> %s", error.what());
     }
 }
 
@@ -233,7 +233,7 @@ void DivisorSolution::steinMethod(int a, int b)
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR("<APPLY NUMERIC> %s", error.what());
     }
 }
 } // namespace divisor
@@ -252,7 +252,7 @@ void runDivisor(const std::vector<std::string>& targets)
     using utility::hash::operator""_bkdrHash;
 
     APP_NUM_PRINT_TASK_BEGIN_TITLE(Type::divisor);
-    auto* threads = command::getPoolForMultithreading().newElement(std::min(
+    auto* threads = command::getPublicThreadPool().newElement(std::min(
         static_cast<uint32_t>(getBit<DivisorMethod>().count()), static_cast<uint32_t>(Bottom<DivisorMethod>::value)));
 
     const std::shared_ptr<TargetBuilder> builder =
@@ -280,12 +280,12 @@ void runDivisor(const std::vector<std::string>& targets)
                 divisorFunctor(threadName, &DivisorSolution::steinMethod);
                 break;
             default:
-                LOG_DBG("Execute to apply an unknown divisor method.");
+                LOG_DBG("<APPLY NUMERIC> Execute to apply an unknown divisor method.");
                 break;
         }
     }
 
-    command::getPoolForMultithreading().deleteElement(threads);
+    command::getPublicThreadPool().deleteElement(threads);
     APP_NUM_PRINT_TASK_END_TITLE(Type::divisor);
 }
 
@@ -304,7 +304,7 @@ void updateDivisorTask(const std::string& target)
             break;
         default:
             getBit<DivisorMethod>().reset();
-            throw std::runtime_error("Unexpected divisor method: " + target + ".");
+            throw std::runtime_error("<APPLY NUMERIC> Unexpected divisor method: " + target + ".");
     }
 }
 
@@ -327,7 +327,7 @@ void IntegralSolution::trapezoidalMethod(const Expression& expr, double lower, d
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR("<APPLY NUMERIC> %s", error.what());
     }
 }
 
@@ -342,7 +342,7 @@ void IntegralSolution::adaptiveSimpsonMethod(const Expression& expr, const doubl
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR("<APPLY NUMERIC> %s", error.what());
     }
 }
 
@@ -357,7 +357,7 @@ void IntegralSolution::rombergMethod(const Expression& expr, const double lower,
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR("<APPLY NUMERIC> %s", error.what());
     }
 }
 
@@ -372,7 +372,7 @@ void IntegralSolution::gaussLegendreMethod(const Expression& expr, const double 
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR("<APPLY NUMERIC> %s", error.what());
     }
 }
 
@@ -387,7 +387,7 @@ void IntegralSolution::monteCarloMethod(const Expression& expr, const double low
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR("<APPLY NUMERIC> %s", error.what());
     }
 }
 } // namespace integral
@@ -423,7 +423,7 @@ void runIntegral(const std::vector<std::string>& targets)
     const auto resultFunctor =
         [targets](const integral::Expression& expression, const integral::ExprRange<double, double>& range)
     {
-        auto* threads = command::getPoolForMultithreading().newElement(std::min(
+        auto* threads = command::getPublicThreadPool().newElement(std::min(
             static_cast<uint32_t>(getBit<IntegralMethod>().count()),
             static_cast<uint32_t>(Bottom<IntegralMethod>::value)));
         const auto integralFunctor = [&](const std::string& threadName,
@@ -460,11 +460,11 @@ void runIntegral(const std::vector<std::string>& targets)
                     integralFunctor(threadName, &IntegralSolution::monteCarloMethod);
                     break;
                 default:
-                    LOG_DBG("Execute to apply an unknown integral method.");
+                    LOG_DBG("<APPLY NUMERIC> Execute to apply an unknown integral method.");
                     break;
             }
         }
-        command::getPoolForMultithreading().deleteElement(threads);
+        command::getPublicThreadPool().deleteElement(threads);
     };
 
     APP_NUM_PRINT_TASK_BEGIN_TITLE(Type::integral);
@@ -515,7 +515,7 @@ void updateIntegralTask(const std::string& target)
             break;
         default:
             getBit<IntegralMethod>().reset();
-            throw std::runtime_error("Unexpected integral method: " + target + ".");
+            throw std::runtime_error("<APPLY NUMERIC> Unexpected integral method: " + target + ".");
     }
 }
 
@@ -549,7 +549,7 @@ void PrimeSolution::eratosthenesMethod(const uint32_t max)
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR("<APPLY NUMERIC> %s", error.what());
     }
 }
 
@@ -564,7 +564,7 @@ void PrimeSolution::eulerMethod(const uint32_t max)
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR("<APPLY NUMERIC> %s", error.what());
     }
 }
 } // namespace prime
@@ -583,7 +583,7 @@ void runPrime(const std::vector<std::string>& targets)
     using utility::hash::operator""_bkdrHash;
 
     APP_NUM_PRINT_TASK_BEGIN_TITLE(Type::prime);
-    auto* threads = command::getPoolForMultithreading().newElement(std::min(
+    auto* threads = command::getPublicThreadPool().newElement(std::min(
         static_cast<uint32_t>(getBit<PrimeMethod>().count()), static_cast<uint32_t>(Bottom<PrimeMethod>::value)));
 
     const std::shared_ptr<TargetBuilder> builder = std::make_shared<TargetBuilder>(input::maxPositiveIntegerForPrime);
@@ -609,12 +609,12 @@ void runPrime(const std::vector<std::string>& targets)
                 primeFunctor(threadName, &PrimeSolution::eulerMethod);
                 break;
             default:
-                LOG_DBG("Execute to apply an unknown prime method.");
+                LOG_DBG("<APPLY NUMERIC> Execute to apply an unknown prime method.");
                 break;
         }
     }
 
-    command::getPoolForMultithreading().deleteElement(threads);
+    command::getPublicThreadPool().deleteElement(threads);
     APP_NUM_PRINT_TASK_END_TITLE(Type::prime);
 }
 
@@ -633,7 +633,7 @@ void updatePrimeTask(const std::string& target)
             break;
         default:
             getBit<PrimeMethod>().reset();
-            throw std::runtime_error("Unexpected prime method: " + target + ".");
+            throw std::runtime_error("<APPLY NUMERIC> Unexpected prime method: " + target + ".");
     }
 }
 } // namespace application::app_num

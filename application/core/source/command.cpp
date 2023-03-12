@@ -7,6 +7,7 @@
 #include "command.hpp"
 #include <unistd.h>
 #include <climits>
+#include <stdexcept>
 #include "log.hpp"
 
 namespace application::command
@@ -40,7 +41,7 @@ Command::Command()
                     {
                         return value;
                     }
-                    throw std::runtime_error("Unknown algorithm category: " + value);
+                    throw std::runtime_error("<COMMAND> Unknown algorithm category: " + value);
                 })
             .help("select: match, notation, optimal, search, sort [add a category with --help for task details]");
 
@@ -59,7 +60,7 @@ Command::Command()
                     {
                         return value;
                     }
-                    throw std::runtime_error("Unknown data structure category: " + value);
+                    throw std::runtime_error("<COMMAND> Unknown data structure category: " + value);
                 })
             .help("select: linear, tree [add a category with --help for task details]");
 
@@ -78,7 +79,7 @@ Command::Command()
                     {
                         return value;
                     }
-                    throw std::runtime_error("Unknown design pattern category: " + value);
+                    throw std::runtime_error("<COMMAND> Unknown design pattern category: " + value);
                 })
             .help("select: behavioral, creational, structural [add a category with --help for task details]");
 
@@ -97,7 +98,7 @@ Command::Command()
                     {
                         return value;
                     }
-                    throw std::runtime_error("Unknown numeric category: " + value);
+                    throw std::runtime_error("<COMMAND> Unknown numeric category: " + value);
                 })
             .help("select: arithmetic, divisor, integral, prime [add a category with --help for task details]");
 
@@ -121,9 +122,9 @@ void Command::runCommander(const int argc, const char* const argv[])
     }
     else
     {
-        LOG_INF("Enter console mode.");
+        LOG_INF("<COMMAND> Enter console mode.");
         enterConsoleMode();
-        LOG_INF("Exit console mode.");
+        LOG_INF("<COMMAND> Exit console mode.");
     }
 
     LOG_TO_STOP;
@@ -496,25 +497,32 @@ void Command::printVersionInfo() const
 
 void Command::enterConsoleMode() const
 {
-    COMMON_PRINT("%s", utility::common::executeCommand(("tput bel; echo " + getIconBanner())).c_str());
-
-    char hostName[HOST_NAME_MAX + 1];
-    if (gethostname(hostName, HOST_NAME_MAX + 1))
+    try
     {
-        throw std::runtime_error("Host name could not be obtained.");
-    }
-    const std::string greeting = std::string{(nullptr != std::getenv("USER")) ? std::getenv("USER") : "root"} + "@"
-        + std::string{hostName} + " foo > ";
-    utility::console::Console console(greeting);
-    registerOnConsole(console);
+        COMMON_PRINT("%s", utility::common::executeCommand(("tput bel; echo " + getIconBanner())).c_str());
 
-    int returnCode = 0;
-    do
-    {
-        returnCode = console.readCommandLine();
-        console.setGreeting(greeting);
+        char hostName[HOST_NAME_MAX + 1];
+        if (gethostname(hostName, HOST_NAME_MAX + 1))
+        {
+            throw std::runtime_error("<COMMAND> Host name could not be obtained.");
+        }
+        const std::string greeting = std::string{(nullptr != std::getenv("USER")) ? std::getenv("USER") : "root"} + "@"
+            + std::string{hostName} + " foo > ";
+        utility::console::Console console(greeting);
+        registerOnConsole(console);
+
+        int returnCode = 0;
+        do
+        {
+            returnCode = console.readCommandLine();
+            console.setGreeting(greeting);
+        }
+        while (utility::console::Console::ReturnCode::quit != returnCode);
     }
-    while (utility::console::Console::ReturnCode::quit != returnCode);
+    catch (const std::exception& error)
+    {
+        LOG_WRN(error.what());
+    }
 }
 
 void Command::registerOnConsole(utility::console::Console& console) const
@@ -552,7 +560,7 @@ std::string Command::getIconBanner()
 
 //! @brief Get memory pool when making multi-threading.
 //! @return reference of the PublicThreadPool object
-PublicThreadPool& getPoolForMultithreading()
+PublicThreadPool& getPublicThreadPool()
 {
     static PublicThreadPool pool;
     return pool;

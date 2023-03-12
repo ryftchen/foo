@@ -155,21 +155,21 @@ void ArgumentRegister::throwNArgsRangeValidationException() const
         stream << argNumArgsRange.getMin() << " or more";
     }
     stream << " argument(str) expected. " << values.size() << " provided.";
-    throw std::runtime_error("argument: " + stream.str());
+    throw std::runtime_error("<ARGUMENT> " + stream.str());
 }
 
 void ArgumentRegister::throwRequiredArgNotUsedException() const
 {
     std::stringstream stream;
     stream << names[0] << ": required";
-    throw std::runtime_error("argument: " + stream.str());
+    throw std::runtime_error("<ARGUMENT> " + stream.str());
 }
 
 void ArgumentRegister::throwRequiredArgNoValueProvidedException() const
 {
     std::stringstream stream;
     stream << usedNameStr << ": no value provided";
-    throw std::runtime_error("argument: " + stream.str());
+    throw std::runtime_error("<ARGUMENT> " + stream.str());
 }
 
 auto ArgumentRegister::lookAhead(const std::string_view str) -> int
@@ -276,7 +276,7 @@ ArgumentRegister& Argument::operator[](const std::string_view argName) const
             return *(iterator->second);
         }
     }
-    throw std::logic_error("argument: No such argument: " + std::string(argName));
+    throw std::logic_error("<ARGUMENT> No such argument: " + std::string(argName));
 }
 
 //! @brief The operator (<<) overloading of the Argument class.
@@ -343,7 +343,7 @@ void Argument::parseArgsInternal(const std::vector<std::string>& arguments)
         {
             if (std::end(nonOptionalArguments) == nonOptionalArgumentIter)
             {
-                throw std::runtime_error("argument: Maximum number of non-optional arguments exceeded.");
+                throw std::runtime_error("<ARGUMENT> Maximum number of non-optional arguments exceeded.");
             }
             auto argument = nonOptionalArgumentIter++;
             iterator = argument->consume(iterator, end);
@@ -371,13 +371,13 @@ void Argument::parseArgsInternal(const std::vector<std::string>& arguments)
                 }
                 else
                 {
-                    throw std::runtime_error("argument: Unknown argument: " + currentArgument);
+                    throw std::runtime_error("<ARGUMENT> Unknown argument: " + currentArgument);
                 }
             }
         }
         else
         {
-            throw std::runtime_error("argument: Unknown argument: " + currentArgument);
+            throw std::runtime_error("<ARGUMENT> Unknown argument: " + currentArgument);
         }
     }
     isParsed = true;
