@@ -47,14 +47,6 @@ using SearchMethod = AlgorithmTask::SearchMethod;
 //! @brief Alias for SortMethod.
 using SortMethod = AlgorithmTask::SortMethod;
 
-//! @brief Get the algorithm task.
-//! @return reference of AlgorithmTask object
-AlgorithmTask& getTask()
-{
-    static AlgorithmTask task;
-    return task;
-}
-
 namespace match
 {
 //! @brief Display match result.
@@ -82,7 +74,7 @@ void MatchSolution::rkMethod(const char* text, const char* pattern, const uint32
     try
     {
         TIME_BEGIN(timing);
-        const auto shift = algorithm::match::Match::rk(text, pattern, textLen, patternLen);
+        const auto shift = algorithm::match::Match().rk(text, pattern, textLen, patternLen);
         TIME_END(timing);
         MATCH_PRINT_RESULT_CONTENT("RabinKarp");
     }
@@ -97,7 +89,7 @@ void MatchSolution::kmpMethod(const char* text, const char* pattern, const uint3
     try
     {
         TIME_BEGIN(timing);
-        const auto shift = algorithm::match::Match::kmp(text, pattern, textLen, patternLen);
+        const auto shift = algorithm::match::Match().kmp(text, pattern, textLen, patternLen);
         TIME_END(timing);
         MATCH_PRINT_RESULT_CONTENT("KnuthMorrisPratt");
     }
@@ -112,7 +104,7 @@ void MatchSolution::bmMethod(const char* text, const char* pattern, const uint32
     try
     {
         TIME_BEGIN(timing);
-        const auto shift = algorithm::match::Match::bm(text, pattern, textLen, patternLen);
+        const auto shift = algorithm::match::Match().bm(text, pattern, textLen, patternLen);
         TIME_END(timing);
         MATCH_PRINT_RESULT_CONTENT("BoyerMoore");
     }
@@ -131,7 +123,7 @@ void MatchSolution::horspoolMethod(
     try
     {
         TIME_BEGIN(timing);
-        const auto shift = algorithm::match::Match::horspool(text, pattern, textLen, patternLen);
+        const auto shift = algorithm::match::Match().horspool(text, pattern, textLen, patternLen);
         TIME_END(timing);
         MATCH_PRINT_RESULT_CONTENT("Horspool");
     }
@@ -150,7 +142,7 @@ void MatchSolution::sundayMethod(
     try
     {
         TIME_BEGIN(timing);
-        const auto shift = algorithm::match::Match::sunday(text, pattern, textLen, patternLen);
+        const auto shift = algorithm::match::Match().sunday(text, pattern, textLen, patternLen);
         TIME_END(timing);
         MATCH_PRINT_RESULT_CONTENT("Sunday");
     }
@@ -267,7 +259,7 @@ void NotationSolution::prefixMethod(const std::string& infixNotation)
 {
     try
     {
-        const auto notationStr = algorithm::notation::Notation::prefix(infixNotation);
+        const auto notationStr = algorithm::notation::Notation().prefix(infixNotation);
         NOTATION_PRINT_RESULT_CONTENT("Prefix", "Polish notation");
     }
     catch (const std::exception& error)
@@ -280,7 +272,7 @@ void NotationSolution::postfixMethod(const std::string& infixNotation)
 {
     try
     {
-        const auto notationStr = algorithm::notation::Notation::postfix(infixNotation);
+        const auto notationStr = algorithm::notation::Notation().postfix(infixNotation);
         NOTATION_PRINT_RESULT_CONTENT("Postfix", "Reverse polish notation");
     }
     catch (const std::exception& error)
@@ -574,7 +566,7 @@ void SearchSolution::binaryMethod(const double* const array, const uint32_t leng
     try
     {
         TIME_BEGIN(timing);
-        const auto index = algorithm::search::Search<double>::binary(array, length, key);
+        const auto index = algorithm::search::Search<double>().binary(array, length, key);
         TIME_END(timing);
         SEARCH_PRINT_RESULT_CONTENT("Binary");
     }
@@ -589,7 +581,7 @@ void SearchSolution::interpolationMethod(const double* const array, const uint32
     try
     {
         TIME_BEGIN(timing);
-        const auto index = algorithm::search::Search<double>::interpolation(array, length, key);
+        const auto index = algorithm::search::Search<double>().interpolation(array, length, key);
         TIME_END(timing);
         SEARCH_PRINT_RESULT_CONTENT("Interpolation");
     }
@@ -604,7 +596,7 @@ void SearchSolution::fibonacciMethod(const double* const array, const uint32_t l
     try
     {
         TIME_BEGIN(timing);
-        const auto index = algorithm::search::Search<double>::fibonacci(array, length, key);
+        const auto index = algorithm::search::Search<double>().fibonacci(array, length, key);
         TIME_END(timing);
         SEARCH_PRINT_RESULT_CONTENT("Fibonacci");
     }
@@ -720,7 +712,7 @@ void SortSolution::bubbleMethod(int* const array, const uint32_t length)
     try
     {
         TIME_BEGIN(timing);
-        const auto sortArray = algorithm::sort::Sort<int>::bubble(array, length);
+        const auto sortArray = algorithm::sort::Sort<int>().bubble(array, length);
         TIME_END(timing);
         SORT_PRINT_RESULT_CONTENT("Bubble");
     }
@@ -735,7 +727,7 @@ void SortSolution::selectionMethod(int* const array, const uint32_t length)
     try
     {
         TIME_BEGIN(timing);
-        const auto sortArray = algorithm::sort::Sort<int>::selection(array, length);
+        const auto sortArray = algorithm::sort::Sort<int>().selection(array, length);
         TIME_END(timing);
         SORT_PRINT_RESULT_CONTENT("Selection");
     }
@@ -750,7 +742,7 @@ void SortSolution::insertionMethod(int* const array, const uint32_t length)
     try
     {
         TIME_BEGIN(timing);
-        const auto sortArray = algorithm::sort::Sort<int>::insertion(array, length);
+        const auto sortArray = algorithm::sort::Sort<int>().insertion(array, length);
         TIME_END(timing);
         SORT_PRINT_RESULT_CONTENT("Insertion");
     }
@@ -765,7 +757,7 @@ void SortSolution::shellMethod(int* const array, const uint32_t length)
     try
     {
         TIME_BEGIN(timing);
-        const auto sortArray = algorithm::sort::Sort<int>::shell(array, length);
+        const auto sortArray = algorithm::sort::Sort<int>().shell(array, length);
         TIME_END(timing);
         SORT_PRINT_RESULT_CONTENT("Shell");
     }
@@ -780,7 +772,7 @@ void SortSolution::mergeMethod(int* const array, const uint32_t length)
     try
     {
         TIME_BEGIN(timing);
-        const auto sortArray = algorithm::sort::Sort<int>::merge(array, length);
+        const auto sortArray = algorithm::sort::Sort<int>().merge(array, length);
         TIME_END(timing);
         SORT_PRINT_RESULT_CONTENT("Merge");
     }
@@ -795,7 +787,7 @@ void SortSolution::quickMethod(int* const array, const uint32_t length)
     try
     {
         TIME_BEGIN(timing);
-        const auto sortArray = algorithm::sort::Sort<int>::quick(array, length);
+        const auto sortArray = algorithm::sort::Sort<int>().quick(array, length);
         TIME_END(timing);
         SORT_PRINT_RESULT_CONTENT("Quick");
     }
@@ -810,7 +802,7 @@ void SortSolution::heapMethod(int* const array, const uint32_t length)
     try
     {
         TIME_BEGIN(timing);
-        const auto sortArray = algorithm::sort::Sort<int>::heap(array, length);
+        const auto sortArray = algorithm::sort::Sort<int>().heap(array, length);
         TIME_END(timing);
         SORT_PRINT_RESULT_CONTENT("Heap");
     }
@@ -825,7 +817,7 @@ void SortSolution::countingMethod(int* const array, const uint32_t length)
     try
     {
         TIME_BEGIN(timing);
-        const auto sortArray = algorithm::sort::Sort<int>::counting(array, length);
+        const auto sortArray = algorithm::sort::Sort<int>().counting(array, length);
         TIME_END(timing);
         SORT_PRINT_RESULT_CONTENT("Counting");
     }
@@ -840,7 +832,7 @@ void SortSolution::bucketMethod(int* const array, const uint32_t length)
     try
     {
         TIME_BEGIN(timing);
-        const auto sortArray = algorithm::sort::Sort<int>::bucket(array, length);
+        const auto sortArray = algorithm::sort::Sort<int>().bucket(array, length);
         TIME_END(timing);
         SORT_PRINT_RESULT_CONTENT("Bucket");
     }
@@ -855,7 +847,7 @@ void SortSolution::radixMethod(int* const array, const uint32_t length)
     try
     {
         TIME_BEGIN(timing);
-        const auto sortArray = algorithm::sort::Sort<int>::radix(array, length);
+        const auto sortArray = algorithm::sort::Sort<int>().radix(array, length);
         TIME_END(timing);
         SORT_PRINT_RESULT_CONTENT("Radix");
     }

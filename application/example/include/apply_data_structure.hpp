@@ -98,7 +98,13 @@ protected:
     }
 };
 
-extern DataStructureTask& getTask();
+//! @brief Get the data structure task.
+//! @return reference of DataStructureTask object
+inline DataStructureTask& getTask()
+{
+    static DataStructureTask task;
+    return task;
+}
 
 //! @brief Get the bit flags of the instance in data structure tasks.
 //! @tparam T - type of the instance
@@ -177,7 +183,7 @@ public:
         using date_structure::linear::doubly_linked_list::dllIsEmpty;
         using date_structure::linear::doubly_linked_list::dllSize;
 
-        std::ostringstream output;
+        date_structure::linear::Output output;
         Meta meta[] = {{'A', "foo"}, {'B', "bar"}, {'C', "baz"}, {'D', "qux"}};
         const int metaSize = sizeof(meta) / sizeof(meta[0]);
 
@@ -185,37 +191,39 @@ public:
         DLL dll = nullptr;
         createDll(&dll);
         dllInsert(dll, 0, &meta[0]);
-        output << "insert (0): {" << meta[0].id << ", " << meta[0].name << "}" << std::endl;
+        output.flush() << "insert (0): {" << meta[0].id << ", " << meta[0].name << "}" << std::endl;
         dllInsert(dll, 0, &meta[1]);
-        output << "insert (0): {" << meta[1].id << ", " << meta[1].name << "}" << std::endl;
+        output.flush() << "insert (0): {" << meta[1].id << ", " << meta[1].name << "}" << std::endl;
         dllInsert(dll, 1, &meta[2]);
-        output << "insert (1): {" << meta[2].id << ", " << meta[2].name << "}" << std::endl;
+        output.flush() << "insert (1): {" << meta[2].id << ", " << meta[2].name << "}" << std::endl;
         dllDelete(dll, 2);
-        output << "delete (2)" << std::endl;
+        output.flush() << "delete (2)" << std::endl;
 
         dllInsertFirst(dll, &meta[0]);
-        output << "insert first: {" << meta[0].id << ", " << meta[0].name << "}" << std::endl;
+        output.flush() << "insert first: {" << meta[0].id << ", " << meta[0].name << "}" << std::endl;
         dllInsertLast(dll, &meta[metaSize - 1]);
-        output << "insert last: {" << meta[metaSize - 1].id << ", " << meta[metaSize - 1].name << "}" << std::endl;
+        output.flush() << "insert last: {" << meta[metaSize - 1].id << ", " << meta[metaSize - 1].name << "}"
+                       << std::endl;
         pVal = static_cast<Meta*>(dllGetFirst(dll));
-        output << "get first: {" << pVal->id << ", " << pVal->name << "}" << std::endl;
+        output.flush() << "get first: {" << pVal->id << ", " << pVal->name << "}" << std::endl;
         pVal = static_cast<Meta*>(dllGetLast(dll));
-        output << "get last: {" << pVal->id << ", " << pVal->name << "}" << std::endl;
+        output.flush() << "get last: {" << pVal->id << ", " << pVal->name << "}" << std::endl;
         dllDeleteFirst(dll);
-        output << "delete first" << std::endl;
+        output.flush() << "delete first" << std::endl;
         dllDeleteLast(dll);
-        output << "delete last" << std::endl;
+        output.flush() << "delete last" << std::endl;
 
-        output << "whether it is empty: " << dllIsEmpty(dll) << std::endl;
-        output << "size: " << dllSize(dll) << std::endl;
+        output.flush() << "whether it is empty: " << dllIsEmpty(dll) << std::endl;
+        output.flush() << "size: " << dllSize(dll) << std::endl;
         for (int i = 0; i < dllSize(dll); ++i)
         {
             pVal = static_cast<Meta*>(dllGet(dll, i));
-            output << "get (" << i << "): {" << pVal->id << ", " << pVal->name << "}" << std::endl;
+            output.flush() << "get (" << i << "): {" << pVal->id << ", " << pVal->name << "}" << std::endl;
         }
         destroyDll(&dll);
 
-        return output;
+        std::ostringstream ret = std::ostringstream(output.flush().str());
+        return ret;
     }
     //! @brief Stack.
     //! @return procedure output
@@ -230,7 +238,7 @@ public:
         using date_structure::linear::stack::stackSize;
         using date_structure::linear::stack::stackTop;
 
-        std::ostringstream output;
+        date_structure::linear::Output output;
         Meta meta[] = {{'A', "foo"}, {'B', "bar"}, {'C', "baz"}, {'D', "qux"}};
         const int metaSize = sizeof(meta) / sizeof(meta[0]);
 
@@ -240,26 +248,27 @@ public:
         for (int i = 0; i < (metaSize - 1); ++i)
         {
             stackPush(stack, &meta[i]);
-            output << "push: {" << meta[i].id << ", " << meta[i].name << "}" << std::endl;
+            output.flush() << "push: {" << meta[i].id << ", " << meta[i].name << "}" << std::endl;
         }
 
         pVal = static_cast<Meta*>(stackPop(stack));
-        output << "pop: {" << pVal->id << ", " << pVal->name << "}" << std::endl;
+        output.flush() << "pop: {" << pVal->id << ", " << pVal->name << "}" << std::endl;
         pVal = static_cast<Meta*>(stackTop(stack));
-        output << "top: {" << pVal->id << ", " << pVal->name << "}" << std::endl;
+        output.flush() << "top: {" << pVal->id << ", " << pVal->name << "}" << std::endl;
         stackPush(stack, &meta[metaSize - 1]);
-        output << "push: {" << meta[metaSize - 1].id << ", " << meta[metaSize - 1].name << "}" << std::endl;
+        output.flush() << "push: {" << meta[metaSize - 1].id << ", " << meta[metaSize - 1].name << "}" << std::endl;
 
-        output << "whether it is empty: " << stackIsEmpty(stack) << std::endl;
-        output << "size: " << stackSize(stack) << std::endl;
+        output.flush() << "whether it is empty: " << stackIsEmpty(stack) << std::endl;
+        output.flush() << "size: " << stackSize(stack) << std::endl;
         while (!stackIsEmpty(stack))
         {
             pVal = static_cast<Meta*>(stackPop(stack));
-            output << "pop: {" << pVal->id << ", " << pVal->name << "}" << std::endl;
+            output.flush() << "pop: {" << pVal->id << ", " << pVal->name << "}" << std::endl;
         }
         destroyStack(&stack);
 
-        return output;
+        std::ostringstream ret = std::ostringstream(output.flush().str());
+        return ret;
     }
     //! @brief Queue.
     //! @return procedure output
@@ -274,7 +283,7 @@ public:
         using date_structure::linear::queue::queuePush;
         using date_structure::linear::queue::queueSize;
 
-        std::ostringstream output;
+        date_structure::linear::Output output;
         Meta meta[] = {{'A', "foo"}, {'B', "bar"}, {'C', "baz"}, {'D', "qux"}};
         const int metaSize = sizeof(meta) / sizeof(meta[0]);
 
@@ -284,26 +293,27 @@ public:
         for (int i = 0; i < (metaSize - 1); ++i)
         {
             queuePush(queue, &meta[i]);
-            output << "push: {" << meta[i].id << ", " << meta[i].name << "}" << std::endl;
+            output.flush() << "push: {" << meta[i].id << ", " << meta[i].name << "}" << std::endl;
         }
 
         pVal = static_cast<Meta*>(queuePop(queue));
-        output << "pop: {" << pVal->id << ", " << pVal->name << "}" << std::endl;
+        output.flush() << "pop: {" << pVal->id << ", " << pVal->name << "}" << std::endl;
         pVal = static_cast<Meta*>(queueFront(queue));
-        output << "front: {" << pVal->id << ", " << pVal->name << "}" << std::endl;
+        output.flush() << "front: {" << pVal->id << ", " << pVal->name << "}" << std::endl;
         queuePush(queue, &meta[metaSize - 1]);
-        output << "push: {" << meta[metaSize - 1].id << ", " << meta[metaSize - 1].name << "}" << std::endl;
+        output.flush() << "push: {" << meta[metaSize - 1].id << ", " << meta[metaSize - 1].name << "}" << std::endl;
 
-        output << "whether it is empty: " << queueIsEmpty(queue) << std::endl;
-        output << "size: " << queueSize(queue) << std::endl;
+        output.flush() << "whether it is empty: " << queueIsEmpty(queue) << std::endl;
+        output.flush() << "size: " << queueSize(queue) << std::endl;
         while (!queueIsEmpty(queue))
         {
             pVal = static_cast<Meta*>(queuePop(queue));
-            output << "pop: {" << pVal->id << ", " << pVal->name << "}" << std::endl;
+            output.flush() << "pop: {" << pVal->id << ", " << pVal->name << "}" << std::endl;
         }
         destroyQueue(&queue);
 
-        return output;
+        std::ostringstream ret = std::ostringstream(output.flush().str());
+        return ret;
     }
 };
 
@@ -347,49 +357,41 @@ public:
         using date_structure::tree::bs::destroyBSTree;
         using date_structure::tree::bs::getMaximum;
         using date_structure::tree::bs::getMinimum;
-        using date_structure::tree::bs::inorderBSTree;
-        using date_structure::tree::bs::output;
-        using date_structure::tree::bs::postorderBSTree;
-        using date_structure::tree::bs::preorderBSTree;
-        using date_structure::tree::bs::printBSTree;
 
+        date_structure::tree::bs::Output output;
         BSTree root = nullptr;
         constexpr int arraySize = 6;
         constexpr std::array<int, arraySize> array = {1, 5, 4, 3, 2, 6};
 
-        output().str("");
-        output().clear();
-        output() << "insert: ";
+        output.flush() << "insert: ";
         for (int i = 0; i < arraySize; ++i)
         {
-            output() << array.at(i) << " ";
+            output.flush() << array.at(i) << " ";
             root = bsTreeInsert(root, array.at(i));
         }
 
-        output() << "\npre-order traversal: ";
-        preorderBSTree(root);
-        output() << "\nin-order traversal: ";
-        inorderBSTree(root);
-        output() << "\npost-order traversal: ";
-        postorderBSTree(root);
+        output.flush() << "\npre-order traversal: ";
+        output.preorderBSTree(root);
+        output.flush() << "\nin-order traversal: ";
+        output.inorderBSTree(root);
+        output.flush() << "\npost-order traversal: ";
+        output.postorderBSTree(root);
 
-        output() << "\nminimum: " << getMinimum(root)->key;
-        output() << "\nmaximum: " << getMaximum(root)->key;
-        output() << "\ntree verbose: " << std::endl;
-        printBSTree(root, root->key, 0);
+        output.flush() << "\nminimum: " << getMinimum(root)->key;
+        output.flush() << "\nmaximum: " << getMaximum(root)->key;
+        output.flush() << "\ntree verbose: " << std::endl;
+        output.printBSTree(root, root->key, 0);
 
         constexpr int deleteNode = 3;
-        output() << "delete root node: " << deleteNode;
+        output.flush() << "delete root node: " << deleteNode;
         root = bsTreeDelete(root, deleteNode);
-        output() << "\nin-order traversal: ";
-        inorderBSTree(root);
-        output() << std::endl;
+        output.flush() << "\nin-order traversal: ";
+        output.inorderBSTree(root);
+        output.flush() << std::endl;
 
         destroyBSTree(root);
 
-        std::ostringstream ret = std::ostringstream(output().str());
-        output().str("");
-        output().clear();
+        std::ostringstream ret = std::ostringstream(output.flush().str());
         return ret;
     }
     //! @brief Adelson-Velsky-Landis.
@@ -403,54 +405,46 @@ public:
         using date_structure::tree::avl::getHeight;
         using date_structure::tree::avl::getMaximum;
         using date_structure::tree::avl::getMinimum;
-        using date_structure::tree::avl::inorderAVLTree;
-        using date_structure::tree::avl::output;
-        using date_structure::tree::avl::postorderAVLTree;
-        using date_structure::tree::avl::preorderAVLTree;
-        using date_structure::tree::avl::printAVLTree;
 
+        date_structure::tree::avl::Output output;
         AVLTree root = nullptr;
         constexpr int arraySize = 16;
         constexpr std::array<int, arraySize> array = {3, 2, 1, 4, 5, 6, 7, 16, 15, 14, 13, 12, 11, 10, 8, 9};
 
-        output().str("");
-        output().clear();
-        output() << "height: " << getHeight(root);
-        output() << "\ninsert: ";
+        output.flush() << "height: " << getHeight(root);
+        output.flush() << "\ninsert: ";
         for (int i = 0; i < arraySize; ++i)
         {
-            output() << array.at(i) << " ";
+            output.flush() << array.at(i) << " ";
             root = avlTreeInsert(root, array.at(i));
         }
 
-        output() << "\npre-order traversal: ";
-        preorderAVLTree(root);
-        output() << "\nin-order traversal: ";
-        inorderAVLTree(root);
-        output() << "\npost-order traversal: ";
-        postorderAVLTree(root);
+        output.flush() << "\npre-order traversal: ";
+        output.preorderAVLTree(root);
+        output.flush() << "\nin-order traversal: ";
+        output.inorderAVLTree(root);
+        output.flush() << "\npost-order traversal: ";
+        output.postorderAVLTree(root);
 
-        output() << "\nheight: " << getHeight(root);
-        output() << "\nminimum: " << getMinimum(root)->key;
-        output() << "\nmaximum: " << getMaximum(root)->key;
-        output() << "\ntree verbose: " << std::endl;
-        printAVLTree(root, root->key, 0);
+        output.flush() << "\nheight: " << getHeight(root);
+        output.flush() << "\nminimum: " << getMinimum(root)->key;
+        output.flush() << "\nmaximum: " << getMaximum(root)->key;
+        output.flush() << "\ntree verbose: " << std::endl;
+        output.printAVLTree(root, root->key, 0);
 
         constexpr int deleteNode = 8;
-        output() << "delete root node: " << deleteNode;
+        output.flush() << "delete root node: " << deleteNode;
         root = avlTreeDelete(root, deleteNode);
 
-        output() << "\nheight: " << getHeight(root);
-        output() << "\nin-order traversal: ";
-        inorderAVLTree(root);
-        output() << "\ntree verbose: " << std::endl;
-        printAVLTree(root, root->key, 0);
+        output.flush() << "\nheight: " << getHeight(root);
+        output.flush() << "\nin-order traversal: ";
+        output.inorderAVLTree(root);
+        output.flush() << "\ntree verbose: " << std::endl;
+        output.printAVLTree(root, root->key, 0);
 
         destroyAVLTree(root);
 
-        std::ostringstream ret = std::ostringstream(output().str());
-        output().str("");
-        output().clear();
+        std::ostringstream ret = std::ostringstream(output.flush().str());
         return ret;
     }
     //! @brief Splay.
@@ -460,51 +454,43 @@ public:
         using date_structure::tree::splay::destroySplayTree;
         using date_structure::tree::splay::getMaximum;
         using date_structure::tree::splay::getMinimum;
-        using date_structure::tree::splay::inorderSplayTree;
-        using date_structure::tree::splay::output;
-        using date_structure::tree::splay::postorderSplayTree;
-        using date_structure::tree::splay::preorderSplayTree;
-        using date_structure::tree::splay::printSplayTree;
         using date_structure::tree::splay::SplayTree;
         using date_structure::tree::splay::splayTreeInsert;
         using date_structure::tree::splay::splayTreeSplay;
 
+        date_structure::tree::splay::Output output;
         SplayTree root = nullptr;
         constexpr int arraySize = 6;
         constexpr std::array<int, arraySize> array = {10, 50, 40, 30, 20, 60};
 
-        output().str("");
-        output().clear();
-        output() << "insert: ";
+        output.flush() << "insert: ";
         for (int i = 0; i < arraySize; ++i)
         {
-            output() << array.at(i) << " ";
+            output.flush() << array.at(i) << " ";
             root = splayTreeInsert(root, array.at(i));
         }
 
-        output() << "\npre-order traversal: ";
-        preorderSplayTree(root);
-        output() << "\nin-order traversal: ";
-        inorderSplayTree(root);
-        output() << "\npost-order traversal: ";
-        postorderSplayTree(root);
+        output.flush() << "\npre-order traversal: ";
+        output.preorderSplayTree(root);
+        output.flush() << "\nin-order traversal: ";
+        output.inorderSplayTree(root);
+        output.flush() << "\npost-order traversal: ";
+        output.postorderSplayTree(root);
 
-        output() << "\nminimum: " << getMinimum(root)->key;
-        output() << "\nmaximum: " << getMaximum(root)->key;
-        output() << "\ntree verbose: " << std::endl;
-        printSplayTree(root, root->key, 0);
+        output.flush() << "\nminimum: " << getMinimum(root)->key;
+        output.flush() << "\nmaximum: " << getMaximum(root)->key;
+        output.flush() << "\ntree verbose: " << std::endl;
+        output.printSplayTree(root, root->key, 0);
 
         constexpr int splayNode = 30;
-        output() << "splay node as root node: " << splayNode;
-        output() << "\ntree verbose: " << std::endl;
+        output.flush() << "splay node as root node: " << splayNode;
+        output.flush() << "\ntree verbose: " << std::endl;
         root = splayTreeSplay(root, splayNode);
-        printSplayTree(root, root->key, 0);
+        output.printSplayTree(root, root->key, 0);
 
         destroySplayTree(root);
 
-        std::ostringstream ret = std::ostringstream(output().str());
-        output().str("");
-        output().clear();
+        std::ostringstream ret = std::ostringstream(output.flush().str());
         return ret;
     }
 };
