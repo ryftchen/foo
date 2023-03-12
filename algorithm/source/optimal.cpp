@@ -25,10 +25,6 @@ std::mt19937 getRandomSeedByTime()
     return std::mt19937(milliseconds);
 }
 
-Gradient::Gradient(const Function& func) : func(func)
-{
-}
-
 std::optional<std::tuple<double, double>> Gradient::operator()(const double left, const double right, const double eps)
 {
     std::mt19937 seed{getRandomSeedByTime()};
@@ -78,10 +74,6 @@ double Gradient::calculateFirstDerivative(const double x, const double eps) cons
     return (func(x + differential) - func(x - differential)) / eps;
 }
 
-Annealing::Annealing(const Function& func) : func(func)
-{
-}
-
 std::optional<std::tuple<double, double>> Annealing::operator()(const double left, const double right, const double eps)
 {
     std::uniform_real_distribution<double> perturbation(left, right);
@@ -118,10 +110,6 @@ std::optional<std::tuple<double, double>> Annealing::operator()(const double lef
     }
 
     return std::make_optional(std::make_tuple(y, x));
-}
-
-Particle::Particle(const Function& func) : func(func), seed(std::random_device{}())
-{
 }
 
 std::optional<std::tuple<double, double>> Particle::operator()(const double left, const double right, const double eps)
@@ -192,10 +180,6 @@ Particle::Storage Particle::storageInit(const double left, const double right)
     Storage rec{{}, {}};
     rec.society = societyInit;
     return rec;
-}
-
-Genetic::Genetic(const Function& func) : func(func), seed(std::random_device{}())
-{
 }
 
 std::optional<std::tuple<double, double>> Genetic::operator()(const double left, const double right, const double eps)

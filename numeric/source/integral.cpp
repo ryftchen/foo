@@ -31,10 +31,6 @@ double trapezoid(const Expression& expr, const double left, const double height,
     return sum;
 }
 
-Trapezoidal::Trapezoidal(const Expression& expr) : expr(expr)
-{
-}
-
 double Trapezoidal::operator()(double lower, double upper, const double eps) const
 {
     const int sign = getSign(lower, upper);
@@ -54,10 +50,6 @@ double Trapezoidal::operator()(double lower, double upper, const double eps) con
     sum = s2 * sign;
 
     return sum;
-}
-
-Simpson::Simpson(const Expression& expr) : expr(expr)
-{
 }
 
 double Simpson::operator()(double lower, double upper, const double eps) const
@@ -97,10 +89,6 @@ double Simpson::simpsonOneThird(const double left, const double right) const
     return (expr(left) + 4.0 * expr((left + right) / 2.0) + expr(right)) / 6.0 * (right - left);
 }
 
-Romberg::Romberg(const Expression& expr) : expr(expr)
-{
-}
-
 double Romberg::operator()(double lower, double upper, const double eps) const
 {
     const int sign = getSign(lower, upper);
@@ -129,10 +117,6 @@ double Romberg::operator()(double lower, double upper, const double eps) const
     sum = trapezoidFunctor(std::pow(2, k)) * sign;
 
     return sum;
-}
-
-Gauss::Gauss(const Expression& expr) : expr(expr)
-{
 }
 
 double Gauss::operator()(double lower, double upper, const double eps) const
@@ -171,10 +155,6 @@ double Gauss::operator()(double lower, double upper, const double eps) const
     sum = s2 * sign;
 
     return sum;
-}
-
-MonteCarlo::MonteCarlo(const Expression& expr) : expr(expr)
-{
 }
 
 double MonteCarlo::operator()(double lower, double upper, const double eps) const

@@ -172,7 +172,7 @@ public:
 private:
     //! @brief Construct a new Log object.
     //! @param initState - initialization value of state
-    explicit Log(const StateType initState = State::init) noexcept;
+    explicit Log(const StateType initState = State::init) noexcept : FSM(initState){};
     //! @brief Construct a new Log object.
     //! @param logFile - log file
     //! @param type - output type

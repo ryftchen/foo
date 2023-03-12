@@ -11,15 +11,6 @@
 namespace utility::memory
 {
 template <typename T, std::size_t BlockSize>
-Memory<T, BlockSize>::Memory() noexcept
-{
-    currentBlock = nullptr;
-    currentSlot = nullptr;
-    lastSlot = nullptr;
-    freeSlots = nullptr;
-}
-
-template <typename T, std::size_t BlockSize>
 Memory<T, BlockSize>::~Memory() noexcept
 {
     SlotPointer curr = currentBlock;
@@ -32,24 +23,13 @@ Memory<T, BlockSize>::~Memory() noexcept
 }
 
 template <typename T, std::size_t BlockSize>
-Memory<T, BlockSize>::Memory(const Memory& /*memory*/) noexcept : Memory()
+Memory<T, BlockSize>::Memory(Memory&& memory) noexcept :
+    currentBlock(memory.currentBlock),
+    currentSlot(memory.currentSlot),
+    lastSlot(memory.lastSlot),
+    freeSlots(memory.freeSlots)
 {
-}
-
-template <typename T, std::size_t BlockSize>
-template <class U>
-Memory<T, BlockSize>::Memory(const Memory<U>& /*memory*/) noexcept : Memory()
-{
-}
-
-template <typename T, std::size_t BlockSize>
-Memory<T, BlockSize>::Memory(Memory&& memory) noexcept
-{
-    currentBlock = memory.currentBlock;
     memory.currentBlock = nullptr;
-    currentSlot = memory.currentSlot;
-    lastSlot = memory.lastSlot;
-    freeSlots = memory.freeSlots;
 }
 
 template <typename T, std::size_t BlockSize>

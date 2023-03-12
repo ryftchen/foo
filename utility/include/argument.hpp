@@ -184,7 +184,8 @@ public:
     //! @tparam N - number of arguments
     //! @param array - array of arguments to be registered
     template <std::size_t N>
-    explicit ArgumentRegister(std::array<std::string_view, N>&& array);
+    explicit ArgumentRegister(std::array<std::string_view, N>&& array) :
+        ArgumentRegister(std::move(array), std::make_index_sequence<N>{}){};
 
     //! @brief Set help message.
     //! @param str - help message content
@@ -384,12 +385,6 @@ ArgumentRegister::ArgumentRegister(std::array<std::string_view, N>&& array, std:
         });
 }
 
-template <std::size_t N>
-ArgumentRegister::ArgumentRegister(std::array<std::string_view, N>&& array) :
-    ArgumentRegister(std::move(array), std::make_index_sequence<N>{})
-{
-}
-
 template <typename T>
 ArgumentRegister& ArgumentRegister::defaultValue(T&& value)
 {
@@ -571,7 +566,8 @@ public:
     //! @brief Construct a new Argument object.
     //! @param title - title name
     //! @param version - version information
-    explicit Argument(std::string title = {}, std::string version = "1.0");
+    explicit Argument(std::string title = {}, std::string version = "1.0") :
+        title(std::move(title)), version(std::move(version)){};
     //! @brief Destroy the Argument object.
     ~Argument() = default;
     //! @brief Construct a new Argument object.

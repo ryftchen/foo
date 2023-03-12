@@ -123,6 +123,7 @@ void Command::runCommander(const int argc, const char* const argv[])
     {
         LOG_INF("Enter console mode.");
         enterConsoleMode();
+        LOG_INF("Exit console mode.");
     }
 
     LOG_TO_STOP;

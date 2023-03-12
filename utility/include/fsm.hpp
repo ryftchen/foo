@@ -217,7 +217,7 @@ public:
     using StateType = State;
     //! @brief Construct a new FSM object.
     //! @param initState - initialization value of state
-    explicit FSM(State initState = State());
+    explicit FSM(State initState = State()) : state(initState){};
 
     //! @brief Process the specific event.
     //! @tparam Event - type of triggered event
