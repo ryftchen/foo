@@ -43,6 +43,7 @@ Console::Console(const std::string& greeting) : impl(std::make_unique<Impl>(gree
     impl->RegCmds["quit"] = std::make_pair(
         [this](const Args& /*unused*/)
         {
+            std::cout << "Exit." << std::endl;
             return ReturnCode::quit;
         },
         "exit console mode");
