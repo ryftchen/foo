@@ -11,11 +11,6 @@
 namespace utility::fsm
 {
 template <class Derived, class State>
-FSM<Derived, State>::FSM(State initState) : state(initState)
-{
-}
-
-template <class Derived, class State>
 template <class Event>
 void FSM<Derived, State>::processEvent(const Event& event)
 {

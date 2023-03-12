@@ -19,7 +19,7 @@ function shellCommand()
     echo "$(date "+%b %d %T") $* FINISH"
 }
 
-function exception()
+function abort()
 {
     echo
     echo "build.sh: $*"
@@ -60,7 +60,7 @@ function parseArguments()
         -l | --lint) ARGS[lint]=true ;;
         -b | --browser) ARGS[browser]=true ;;
         -d | --doxygen) ARGS[doxygen]=true ;;
-        *) exception "Unknown command line option: $1. Try using the --help option for information." ;;
+        *) abort "Unknown command line option: $1. Try using the --help option for information." ;;
         esac
         shift
     done
@@ -78,10 +78,10 @@ function checkBasicDependencies()
     fi
 
     if ! command -v cmake >/dev/null 2>&1 || ! command -v ninja >/dev/null 2>&1; then
-        exception "No cmake or ninja program. Please install it."
+        abort "No cmake or ninja program. Please install it."
     fi
     if ! command -v clang-12 >/dev/null 2>&1 || ! command -v clang++-12 >/dev/null 2>&1; then
-        exception "No clang-12 or clang++-12 program. Please install it."
+        abort "No clang-12 or clang++-12 program. Please install it."
     fi
 }
 
@@ -90,7 +90,7 @@ function checkExtraDependencies()
     if [[ ${ARGS[format]} = true ]]; then
         if ! command -v clang-format-12 >/dev/null 2>&1 || ! command -v shfmt >/dev/null 2>&1 \
             || ! command -v black >/dev/null 2>&1; then
-            exception "No clang-format, shfmt or black program. Please install it."
+            abort "No clang-format, shfmt or black program. Please install it."
         fi
     fi
 
@@ -98,7 +98,7 @@ function checkExtraDependencies()
         if ! command -v clang-tidy-12 >/dev/null 2>&1 || ! command -v run-clang-tidy-12 >/dev/null 2>&1 \
             || ! command -v compdb >/dev/null 2>&1 || ! command -v shellcheck >/dev/null 2>&1 \
             || ! command -v pylint >/dev/null 2>&1; then
-            exception "No clang-tidy (including run-clang-tidy-12, compdb), shellcheck or pylint program. \
+            abort "No clang-tidy (including run-clang-tidy-12, compdb), shellcheck or pylint program. \
 Please install it."
         fi
     fi
@@ -106,13 +106,13 @@ Please install it."
     if [[ ${ARGS[browser]} = true ]]; then
         if ! command -v codebrowser_generator >/dev/null 2>&1 \
             || ! command -v codebrowser_indexgenerator >/dev/null 2>&1; then
-            exception "No codebrowser_generator or codebrowser_indexgenerator program. Please install it."
+            abort "No codebrowser_generator or codebrowser_indexgenerator program. Please install it."
         fi
     fi
 
     if [[ ${ARGS[doxygen]} = true ]]; then
         if ! command -v doxygen >/dev/null 2>&1 || ! command -v dot >/dev/null 2>&1; then
-            exception "No doxygen or dot program. Please install it."
+            abort "No doxygen or dot program. Please install it."
         fi
     fi
 }
@@ -263,7 +263,7 @@ function performContainerOption()
                 exit 0
             fi
         else
-            exception "No docker or docker-compose program. Please install it."
+            abort "No docker or docker-compose program. Please install it."
         fi
 
         if ! docker ps -a --format "{{lower .Image}} {{lower .Names}}" \
@@ -271,7 +271,7 @@ function performContainerOption()
             shellCommand "docker-compose -f ./docker/docker-compose.yml up -d"
             exit 0
         else
-            exception "The container exists."
+            abort "The container exists."
         fi
     fi
 }
@@ -305,7 +305,7 @@ function performLintOption()
     if [[ ${ARGS[lint]} = true ]]; then
         local appCompCmd=${FOLDER[bld]}/${COMP_CMD}
         if [[ ! -f ./${appCompCmd} ]]; then
-            exception "There is no ${COMP_CMD} file in the ${FOLDER[bld]} folder. Please generate it."
+            abort "There is no ${COMP_CMD} file in the ${FOLDER[bld]} folder. Please generate it."
         fi
         compdb -p "./${FOLDER[bld]}" list >"./${COMP_CMD}" && mv "./${appCompCmd}" "./${appCompCmd}.bak" \
             && mv "./${COMP_CMD}" "./${FOLDER[bld]}"
@@ -325,7 +325,7 @@ function performLintOption()
 
         local tstCompCmd=${FOLDER[tst]}/${FOLDER[bld]}/${COMP_CMD}
         if [[ ! -f ./${tstCompCmd} ]]; then
-            exception "There is no ${COMP_CMD} file in the ${FOLDER[tst]}/${FOLDER[bld]} folder. Please generate it."
+            abort "There is no ${COMP_CMD} file in the ${FOLDER[tst]}/${FOLDER[bld]} folder. Please generate it."
         fi
         compdb -p "./${FOLDER[tst]}/${FOLDER[bld]}" list >"./${COMP_CMD}" \
             && mv "./${tstCompCmd}" "./${tstCompCmd}.bak" && mv "./${COMP_CMD}" "./${FOLDER[tst]}/${FOLDER[bld]}"
@@ -351,7 +351,7 @@ function performBrowserOption()
             if [[ -f ./${FOLDER[temp]}/${lastTar} ]]; then
                 local timeInterval=$(($(date +%s) - $(stat -L --format %Y "./${FOLDER[temp]}/${lastTar}")))
                 if [[ ${timeInterval} -lt 10 ]]; then
-                    exception "The latest browser tarball ${FOLDER[temp]}/${lastTar} has been generated since \
+                    abort "The latest browser tarball ${FOLDER[temp]}/${lastTar} has been generated since \
 ${timeInterval}s ago."
                 fi
             fi
@@ -368,7 +368,7 @@ function packageForBrowser()
     local commitId=$1
 
     if [[ ! -f ./${FOLDER[bld]}/${COMP_CMD} ]]; then
-        exception "There is no ${COMP_CMD} file in the ${FOLDER[bld]} folder. Please generate it."
+        abort "There is no ${COMP_CMD} file in the ${FOLDER[bld]} folder. Please generate it."
     fi
     local browserFolder="browser"
     local tarFile="${FOLDER[proj]}_${browserFolder}_${commitId}.tar.bz2"
@@ -397,7 +397,7 @@ function performDoxygenOption()
             if [[ -f ./${FOLDER[temp]}/${lastTar} ]]; then
                 local timeInterval=$(($(date +%s) - $(stat -L --format %Y "./${FOLDER[temp]}/${lastTar}")))
                 if [[ ${timeInterval} -lt 10 ]]; then
-                    exception "The latest doxygen tarball ${FOLDER[temp]}/${lastTar} has been generated since \
+                    abort "The latest doxygen tarball ${FOLDER[temp]}/${lastTar} has been generated since \
 ${timeInterval}s ago."
                 fi
             fi

@@ -20,20 +20,18 @@ class Memory
 {
 public:
     //! @brief Construct a new Memory object.
-    Memory() noexcept;
+    Memory() noexcept : currentBlock(nullptr), currentSlot(nullptr), lastSlot(nullptr), freeSlots(nullptr){};
     //! @brief Destroy the Memory object.
     ~Memory() noexcept;
     //! @brief Construct a new Memory object.
-    //! @param memory - the old object for copy constructor
-    Memory(const Memory& memory) noexcept;
+    Memory(const Memory& /*unused*/) noexcept : Memory(){};
+    //! @brief Construct a new Memory object
+    //! @tparam U - type of object to allocate
+    template <class U>
+    explicit Memory(const Memory<U>& /*unused*/) noexcept : Memory(){};
     //! @brief Construct a new Memory object.
     //! @param memory - the old object for move constructor
     Memory(Memory&& memory) noexcept;
-    //! @brief Construct a new Memory object
-    //! @tparam U - type of object to allocate
-    //! @param memory - the old object for copy constructor
-    template <class U>
-    explicit Memory(const Memory<U>& memory) noexcept;
     //! @brief The operator (=) overloading of Memory class.
     //! @return reference of Memory object
     Memory& operator=(const Memory&) = delete;
