@@ -39,14 +39,6 @@ using LinearInstance = DataStructureTask::LinearInstance;
 //! @brief Alias for TreeInstance.
 using TreeInstance = DataStructureTask::TreeInstance;
 
-//! @brief Get the data structure task.
-//! @return reference of DataStructureTask object
-DataStructureTask& getTask()
-{
-    static DataStructureTask task;
-    return task;
-}
-
 namespace linear
 {
 //! @brief Display linear result.
@@ -63,7 +55,7 @@ void LinearStructure::linkedListInstance()
 {
     try
     {
-        const auto output = Linear::linkedList();
+        const auto output = Linear().linkedList();
         LINEAR_PRINT_RESULT_CONTENT("LinkedList");
     }
     catch (const std::exception& error)
@@ -76,7 +68,7 @@ void LinearStructure::stackInstance()
 {
     try
     {
-        const auto output = Linear::stack();
+        const auto output = Linear().stack();
         LINEAR_PRINT_RESULT_CONTENT("Stack");
     }
     catch (const std::exception& error)
@@ -89,7 +81,7 @@ void LinearStructure::queueInstance()
 {
     try
     {
-        const auto output = Linear::queue();
+        const auto output = Linear().queue();
         LINEAR_PRINT_RESULT_CONTENT("Queue");
     }
     catch (const std::exception& error)
@@ -187,7 +179,7 @@ void TreeStructure::bsInstance()
 {
     try
     {
-        const auto output = Tree::bs();
+        const auto output = Tree().bs();
         TREE_PRINT_RESULT_CONTENT("BinarySearch");
     }
     catch (const std::exception& error)
@@ -200,7 +192,7 @@ void TreeStructure::avlInstance()
 {
     try
     {
-        const auto output = Tree::avl();
+        const auto output = Tree().avl();
         TREE_PRINT_RESULT_CONTENT("AdelsonVelskyLandis");
     }
     catch (const std::exception& error)
@@ -213,7 +205,7 @@ void TreeStructure::splayInstance()
 {
     try
     {
-        const auto output = Tree::splay();
+        const auto output = Tree().splay();
         TREE_PRINT_RESULT_CONTENT("Splay");
     }
     catch (const std::exception& error)

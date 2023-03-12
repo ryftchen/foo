@@ -7,6 +7,7 @@
 #pragma once
 
 #ifndef __PRECOMPILED_HEADER
+#include <sstream>
 #else
 #include "pch_data_structure.hpp"
 #endif
@@ -35,8 +36,6 @@ extern "C"
 }
 #endif
 
-static Node* createNode(void* const pVal);
-static Node* getNode(DLL pHead, const int index);
 extern int createDll(DLL* dll);
 extern int destroyDll(DLL* dll);
 extern int dllSize(DLL pHead);
@@ -81,4 +80,20 @@ extern void* queuePop(Queue pHead);
 extern int queueSize(Queue pHead);
 extern bool queueIsEmpty(Queue pHead);
 } // namespace queue
+
+//! @brief Output helper for the data structure.
+class Output
+{
+public:
+    //! @brief Destroy the Output object.
+    virtual ~Output() = default;
+
+    //! @brief Flush the output stream.
+    //! @return reference of output stream object, which is on string based.
+    inline std::ostringstream& flush() { return stream; }
+
+private:
+    //! @brief Output stream of the data structure.
+    std::ostringstream stream;
+};
 } // namespace date_structure::linear

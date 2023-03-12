@@ -44,14 +44,6 @@ using IntegralMethod = NumericTask::IntegralMethod;
 //! @brief Alias for PrimeMethod.
 using PrimeMethod = NumericTask::PrimeMethod;
 
-//! @brief Get the numeric task.
-//! @return reference of NumericTask object
-NumericTask& getTask()
-{
-    static NumericTask task;
-    return task;
-}
-
 namespace arithmetic
 {
 //! @brief Display arithmetic result.
@@ -64,7 +56,7 @@ void ArithmeticSolution::additionMethod(const int augend, const int addend)
 {
     try
     {
-        const auto sum = numeric::arithmetic::Arithmetic::addition(augend, addend);
+        const auto sum = numeric::arithmetic::Arithmetic().addition(augend, addend);
         ARITHMETIC_PRINT_RESULT_CONTENT("Addition", augend, "+", addend, sum);
     }
     catch (const std::exception& error)
@@ -77,7 +69,7 @@ void ArithmeticSolution::subtractionMethod(const int minuend, const int subtrahe
 {
     try
     {
-        const auto difference = numeric::arithmetic::Arithmetic::subtraction(minuend, subtrahend);
+        const auto difference = numeric::arithmetic::Arithmetic().subtraction(minuend, subtrahend);
         ARITHMETIC_PRINT_RESULT_CONTENT("Subtraction", minuend, "-", subtrahend, difference);
     }
     catch (const std::exception& error)
@@ -90,7 +82,7 @@ void ArithmeticSolution::multiplicationMethod(const int multiplier, const int mu
 {
     try
     {
-        const auto product = numeric::arithmetic::Arithmetic::multiplication(multiplier, multiplicand);
+        const auto product = numeric::arithmetic::Arithmetic().multiplication(multiplier, multiplicand);
         ARITHMETIC_PRINT_RESULT_CONTENT("Multiplication", multiplier, "*", multiplicand, product);
     }
     catch (const std::exception& error)
@@ -103,7 +95,7 @@ void ArithmeticSolution::divisionMethod(const int dividend, const int divisor)
 {
     try
     {
-        const auto quotient = numeric::arithmetic::Arithmetic::division(dividend, divisor);
+        const auto quotient = numeric::arithmetic::Arithmetic().division(dividend, divisor);
         ARITHMETIC_PRINT_RESULT_CONTENT("Division", dividend, "/", divisor, quotient);
     }
     catch (const std::exception& error)
@@ -220,7 +212,7 @@ void DivisorSolution::euclideanMethod(int a, int b)
     try
     {
         TIME_BEGIN(timing);
-        const auto divisorVector = numeric::divisor::Divisor::euclidean(a, b);
+        const auto divisorVector = numeric::divisor::Divisor().euclidean(a, b);
         TIME_END(timing);
         DIVISOR_PRINT_RESULT_CONTENT("Euclidean");
     }
@@ -235,7 +227,7 @@ void DivisorSolution::steinMethod(int a, int b)
     try
     {
         TIME_BEGIN(timing);
-        const auto divisorVector = numeric::divisor::Divisor::stein(a, b);
+        const auto divisorVector = numeric::divisor::Divisor().stein(a, b);
         TIME_END(timing);
         DIVISOR_PRINT_RESULT_CONTENT("Stein");
     }
@@ -551,7 +543,7 @@ void PrimeSolution::eratosthenesMethod(const uint32_t max)
     try
     {
         TIME_BEGIN(timing);
-        const auto primeVector = numeric::prime::Prime::eratosthenes(max);
+        const auto primeVector = numeric::prime::Prime().eratosthenes(max);
         TIME_END(timing);
         PRIME_PRINT_RESULT_CONTENT("Eratosthenes");
     }
@@ -566,7 +558,7 @@ void PrimeSolution::eulerMethod(const uint32_t max)
     try
     {
         TIME_BEGIN(timing);
-        const auto primeVector = numeric::prime::Prime::euler(max);
+        const auto primeVector = numeric::prime::Prime().euler(max);
         TIME_END(timing);
         PRIME_PRINT_RESULT_CONTENT("Euler");
     }

@@ -16,11 +16,11 @@ namespace doubly_linked_list
 //! @brief Create a node of the doubly linked list.
 //! @param pVal - value of the target node
 //! @return node
-Node* createNode(void* const pVal)
+static Node* createNode(void* const pVal)
 {
     Node* pNode = nullptr;
     pNode = new Node();
-    if (!pNode)
+    if (nullptr == pNode)
     {
         std::cerr << "Create node failed." << std::endl;
         return nullptr;
@@ -36,9 +36,16 @@ Node* createNode(void* const pVal)
 //! @param pHead - head of the list
 //! @param index - node index
 //! @return node
-Node* getNode(DLL pHead, const int index)
+static Node* getNode(DLL pHead, const int index)
 {
-    const int count = dllSize(pHead);
+    int count = 0;
+    Node* pNode = pHead->next;
+    while (pNode != pHead)
+    {
+        ++count;
+        pNode = pNode->next;
+    }
+
     if ((index < 0) || (index >= count))
     {
         std::cerr << "Get node failed, the index in out of bound." << std::endl;
@@ -74,7 +81,7 @@ Node* getNode(DLL pHead, const int index)
 int createDll(DLL* dll)
 {
     *dll = createNode(nullptr);
-    if (!*dll)
+    if (nullptr == *dll)
     {
         return -1;
     }
@@ -87,7 +94,7 @@ int createDll(DLL* dll)
 //! @return the value is 0 if successful, otherwise -1
 int destroyDll(DLL* dll)
 {
-    if (!*dll)
+    if (nullptr == *dll)
     {
         std::cerr << "Destroy failed, doubly linked list is null." << std::endl;
         return -1;
@@ -139,7 +146,7 @@ bool dllIsEmpty(DLL pHead)
 void* dllGet(DLL pHead, const int index)
 {
     Node* pIndex = getNode(pHead, index);
-    if (!pIndex)
+    if (nullptr == pIndex)
     {
         std::cerr << "Get node failed." << std::endl;
         return nullptr;
@@ -177,13 +184,13 @@ int dllInsert(DLL pHead, const int index, void* const pVal)
     }
 
     Node* pIndex = getNode(pHead, index);
-    if (!pIndex)
+    if (nullptr == pIndex)
     {
         return -1;
     }
 
     Node* pNode = createNode(pVal);
-    if (!pNode)
+    if (nullptr == pNode)
     {
         return -1;
     }
@@ -203,7 +210,7 @@ int dllInsert(DLL pHead, const int index, void* const pVal)
 int dllInsertFirst(DLL pHead, void* const pVal)
 {
     Node* pNode = createNode(pVal);
-    if (!pNode)
+    if (nullptr == pNode)
     {
         return -1;
     }
@@ -223,7 +230,7 @@ int dllInsertFirst(DLL pHead, void* const pVal)
 int dllInsertLast(DLL pHead, void* const pVal)
 {
     Node* pNode = createNode(pVal);
-    if (!pNode)
+    if (nullptr == pNode)
     {
         return -1;
     }
@@ -243,7 +250,7 @@ int dllInsertLast(DLL pHead, void* const pVal)
 int dllDelete(DLL pHead, const int index)
 {
     Node* pIndex = getNode(pHead, index);
-    if (!pIndex)
+    if (nullptr == pIndex)
     {
         std::cerr << "Delete node failed, the index in out of bound." << std::endl;
         return -1;
