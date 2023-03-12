@@ -80,7 +80,7 @@ void MatchSolution::rkMethod(const char* text, const char* pattern, const uint32
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR("<APPLY ALGORITHM> %s", error.what());
     }
 }
 
@@ -95,7 +95,7 @@ void MatchSolution::kmpMethod(const char* text, const char* pattern, const uint3
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR("<APPLY ALGORITHM> %s", error.what());
     }
 }
 
@@ -110,7 +110,7 @@ void MatchSolution::bmMethod(const char* text, const char* pattern, const uint32
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR("<APPLY ALGORITHM> %s", error.what());
     }
 }
 
@@ -129,7 +129,7 @@ void MatchSolution::horspoolMethod(
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR("<APPLY ALGORITHM> %s", error.what());
     }
 }
 
@@ -148,7 +148,7 @@ void MatchSolution::sundayMethod(
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR("<APPLY ALGORITHM> %s", error.what());
     }
 }
 } // namespace match
@@ -168,7 +168,7 @@ void runMatch(const std::vector<std::string>& targets)
 
     static_assert(TargetBuilder::maxDigit > input::singlePatternForMatch.length());
     APP_ALGO_PRINT_TASK_BEGIN_TITLE(Type::match);
-    auto* threads = command::getPoolForMultithreading().newElement(std::min(
+    auto* threads = command::getPublicThreadPool().newElement(std::min(
         static_cast<uint32_t>(getBit<MatchMethod>().count()), static_cast<uint32_t>(Bottom<MatchMethod>::value)));
 
     const std::shared_ptr<TargetBuilder> builder = std::make_shared<TargetBuilder>(input::singlePatternForMatch);
@@ -210,12 +210,12 @@ void runMatch(const std::vector<std::string>& targets)
                 matchFunctor(threadName, &MatchSolution::sundayMethod);
                 break;
             default:
-                LOG_DBG("Execute to apply an unknown match method.");
+                LOG_DBG("<APPLY ALGORITHM> Execute to apply an unknown match method.");
                 break;
         }
     }
 
-    command::getPoolForMultithreading().deleteElement(threads);
+    command::getPublicThreadPool().deleteElement(threads);
     APP_ALGO_PRINT_TASK_END_TITLE(Type::match);
 }
 
@@ -243,7 +243,7 @@ void updateMatchTask(const std::string& target)
             break;
         default:
             getBit<MatchMethod>().reset();
-            throw std::runtime_error("Unexpected match method: " + target + ".");
+            throw std::runtime_error("<APPLY ALGORITHM> Unexpected match method: " + target + ".");
     }
 }
 
@@ -264,7 +264,7 @@ void NotationSolution::prefixMethod(const std::string& infixNotation)
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR("<APPLY ALGORITHM> %s", error.what());
     }
 }
 
@@ -277,7 +277,7 @@ void NotationSolution::postfixMethod(const std::string& infixNotation)
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR("<APPLY ALGORITHM> %s", error.what());
     }
 }
 } // namespace notation
@@ -296,7 +296,7 @@ void runNotation(const std::vector<std::string>& targets)
     using utility::hash::operator""_bkdrHash;
 
     APP_ALGO_PRINT_TASK_BEGIN_TITLE(Type::notation);
-    auto* threads = command::getPoolForMultithreading().newElement(std::min(
+    auto* threads = command::getPublicThreadPool().newElement(std::min(
         static_cast<uint32_t>(getBit<NotationMethod>().count()), static_cast<uint32_t>(Bottom<NotationMethod>::value)));
 
     const std::shared_ptr<TargetBuilder> builder = std::make_shared<TargetBuilder>(input::infixForNotation);
@@ -322,12 +322,12 @@ void runNotation(const std::vector<std::string>& targets)
                 notationFunctor(threadName, &NotationSolution::postfixMethod);
                 break;
             default:
-                LOG_DBG("Execute to apply an unknown notation method.");
+                LOG_DBG("<APPLY ALGORITHM> Execute to apply an unknown notation method.");
                 break;
         }
     }
 
-    command::getPoolForMultithreading().deleteElement(threads);
+    command::getPublicThreadPool().deleteElement(threads);
     APP_ALGO_PRINT_TASK_END_TITLE(Type::notation);
 }
 
@@ -346,7 +346,7 @@ void updateNotationTask(const std::string& target)
             break;
         default:
             getBit<NotationMethod>().reset();
-            throw std::runtime_error("Unexpected notation method: " + target + ".");
+            throw std::runtime_error("<APPLY ALGORITHM> Unexpected notation method: " + target + ".");
     }
 }
 
@@ -368,7 +368,7 @@ void OptimalSolution::gradientDescentMethod(const Function& func, const double l
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR("<APPLY ALGORITHM> %s", error.what());
     }
 }
 
@@ -383,7 +383,7 @@ void OptimalSolution::simulatedAnnealingMethod(const Function& func, const doubl
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR("<APPLY ALGORITHM> %s", error.what());
     }
 }
 
@@ -398,7 +398,7 @@ void OptimalSolution::particleSwarmMethod(const Function& func, const double lef
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR("<APPLY ALGORITHM> %s", error.what());
     }
 }
 
@@ -413,7 +413,7 @@ void OptimalSolution::geneticMethod(const Function& func, const double left, con
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR("<APPLY ALGORITHM> %s", error.what());
     }
 }
 } // namespace optimal
@@ -450,7 +450,7 @@ void runOptimal(const std::vector<std::string>& targets)
         [targets](const optimal::Function& function, const optimal::FuncRange<double, double>& range)
     {
         assert(range.range1 < range.range2);
-        auto* threads = command::getPoolForMultithreading().newElement(std::min(
+        auto* threads = command::getPublicThreadPool().newElement(std::min(
             static_cast<uint32_t>(getBit<OptimalMethod>().count()),
             static_cast<uint32_t>(Bottom<OptimalMethod>::value)));
         const auto optimalFunctor =
@@ -484,11 +484,11 @@ void runOptimal(const std::vector<std::string>& targets)
                     optimalFunctor(threadName, &OptimalSolution::geneticMethod);
                     break;
                 default:
-                    LOG_DBG("Execute to apply an unknown optimal method.");
+                    LOG_DBG("<APPLY ALGORITHM> Execute to apply an unknown optimal method.");
                     break;
             }
         }
-        command::getPoolForMultithreading().deleteElement(threads);
+        command::getPublicThreadPool().deleteElement(threads);
     };
 
     APP_ALGO_PRINT_TASK_BEGIN_TITLE(Type::optimal);
@@ -536,7 +536,7 @@ void updateOptimalTask(const std::string& target)
             break;
         default:
             getBit<OptimalMethod>().reset();
-            throw std::runtime_error("Unexpected optimal method: " + target + ".");
+            throw std::runtime_error("<APPLY ALGORITHM> Unexpected optimal method: " + target + ".");
     }
 }
 
@@ -572,7 +572,7 @@ void SearchSolution::binaryMethod(const double* const array, const uint32_t leng
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR("<APPLY ALGORITHM> %s", error.what());
     }
 }
 
@@ -587,7 +587,7 @@ void SearchSolution::interpolationMethod(const double* const array, const uint32
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR("<APPLY ALGORITHM> %s", error.what());
     }
 }
 
@@ -602,7 +602,7 @@ void SearchSolution::fibonacciMethod(const double* const array, const uint32_t l
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR("<APPLY ALGORITHM> %s", error.what());
     }
 }
 } // namespace search
@@ -625,7 +625,7 @@ void runSearch(const std::vector<std::string>& targets)
 
     static_assert((arrayRangeForSearch1 < arrayRangeForSearch2) && (arrayLengthForSearch > 0));
     APP_ALGO_PRINT_TASK_BEGIN_TITLE(Type::search);
-    auto* threads = command::getPoolForMultithreading().newElement(std::min(
+    auto* threads = command::getPublicThreadPool().newElement(std::min(
         static_cast<uint32_t>(getBit<SearchMethod>().count()), static_cast<uint32_t>(Bottom<SearchMethod>::value)));
 
     const std::shared_ptr<TargetBuilder<double>> builder =
@@ -657,12 +657,12 @@ void runSearch(const std::vector<std::string>& targets)
                 searchFunctor(threadName, &SearchSolution::fibonacciMethod);
                 break;
             default:
-                LOG_DBG("Execute to apply an unknown search method.");
+                LOG_DBG("<APPLY ALGORITHM> Execute to apply an unknown search method.");
                 break;
         }
     }
 
-    command::getPoolForMultithreading().deleteElement(threads);
+    command::getPublicThreadPool().deleteElement(threads);
     APP_ALGO_PRINT_TASK_END_TITLE(Type::search);
 }
 
@@ -684,7 +684,7 @@ void updateSearchTask(const std::string& target)
             break;
         default:
             getBit<SearchMethod>().reset();
-            throw std::runtime_error("Unexpected search method: " + target + ".");
+            throw std::runtime_error("<APPLY ALGORITHM> Unexpected search method: " + target + ".");
     }
 }
 
@@ -718,7 +718,7 @@ void SortSolution::bubbleMethod(int* const array, const uint32_t length)
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR("<APPLY ALGORITHM> %s", error.what());
     }
 }
 
@@ -733,7 +733,7 @@ void SortSolution::selectionMethod(int* const array, const uint32_t length)
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR("<APPLY ALGORITHM> %s", error.what());
     }
 }
 
@@ -748,7 +748,7 @@ void SortSolution::insertionMethod(int* const array, const uint32_t length)
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR("<APPLY ALGORITHM> %s", error.what());
     }
 }
 
@@ -763,7 +763,7 @@ void SortSolution::shellMethod(int* const array, const uint32_t length)
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR("<APPLY ALGORITHM> %s", error.what());
     }
 }
 
@@ -778,7 +778,7 @@ void SortSolution::mergeMethod(int* const array, const uint32_t length)
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR("<APPLY ALGORITHM> %s", error.what());
     }
 }
 
@@ -793,7 +793,7 @@ void SortSolution::quickMethod(int* const array, const uint32_t length)
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR("<APPLY ALGORITHM> %s", error.what());
     }
 }
 
@@ -808,7 +808,7 @@ void SortSolution::heapMethod(int* const array, const uint32_t length)
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR("<APPLY ALGORITHM> %s", error.what());
     }
 }
 
@@ -823,7 +823,7 @@ void SortSolution::countingMethod(int* const array, const uint32_t length)
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR("<APPLY ALGORITHM> %s", error.what());
     }
 }
 
@@ -838,7 +838,7 @@ void SortSolution::bucketMethod(int* const array, const uint32_t length)
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR("<APPLY ALGORITHM> %s", error.what());
     }
 }
 
@@ -853,7 +853,7 @@ void SortSolution::radixMethod(int* const array, const uint32_t length)
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR("<APPLY ALGORITHM> %s", error.what());
     }
 }
 } // namespace sort
@@ -876,7 +876,7 @@ void runSort(const std::vector<std::string>& targets)
 
     static_assert((arrayRangeForSort1 < arrayRangeForSort2) && (arrayLengthForSort > 0));
     APP_ALGO_PRINT_TASK_BEGIN_TITLE(Type::sort);
-    auto* threads = command::getPoolForMultithreading().newElement(std::min(
+    auto* threads = command::getPublicThreadPool().newElement(std::min(
         static_cast<uint32_t>(getBit<SortMethod>().count()), static_cast<uint32_t>(Bottom<SortMethod>::value)));
 
     const std::shared_ptr<TargetBuilder<int>> builder =
@@ -927,12 +927,12 @@ void runSort(const std::vector<std::string>& targets)
                 sortFunctor(threadName, &SortSolution::radixMethod);
                 break;
             default:
-                LOG_DBG("Execute to apply an unknown sort method.");
+                LOG_DBG("<APPLY ALGORITHM> Execute to apply an unknown sort method.");
                 break;
         }
     }
 
-    command::getPoolForMultithreading().deleteElement(threads);
+    command::getPublicThreadPool().deleteElement(threads);
     APP_ALGO_PRINT_TASK_END_TITLE(Type::sort);
 }
 
@@ -975,7 +975,7 @@ void updateSortTask(const std::string& target)
             break;
         default:
             getBit<SortMethod>().reset();
-            throw std::runtime_error("Unexpected sort method: " + target + ".");
+            throw std::runtime_error("<APPLY ALGORITHM> Unexpected sort method: " + target + ".");
     }
 }
 } // namespace application::app_algo

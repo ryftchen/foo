@@ -60,7 +60,7 @@ decltype(auto) Thread::enqueue(const std::string& name, Func&& func, Args&&... a
     {
         if (releaseReady.load())
         {
-            throw std::logic_error("thread: Coming to destructure.");
+            throw std::logic_error("<THREAD> Coming to destructure.");
         }
         taskQueue.emplace(std::make_pair(name, std::move(task)));
     }

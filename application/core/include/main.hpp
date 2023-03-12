@@ -72,18 +72,19 @@ static void signalHandler(int sig)
 
     if (numOfFrame == maxFrame)
     {
-        realTrace << "\r\n<TRUNCATED...>\n";
+        realTrace << "\r\n[TRUNCATED...]\r\n";
     }
     std::fprintf(
         stderr,
-        "\r\n\r\n<SIGNAL %d>\r\n\r\n<BACKTRACE>\r\n%s\r\n<VERBOSE>\r\n%s\n",
+        "\r\n\r\n<MAIN>\r\n\r\n[SIGNAL]\r\n%d\r\n\r\n[BACKTRACE]\r\n%s\r\n[VERBOSE]\r\n%s\r\n",
         sig,
         originalTrace.str().c_str(),
         realTrace.str().c_str());
 
     if (SIGINT != signalStatus)
     {
-        kill(getpid(), SIGKILL);
+        std::signal(sig, SIG_DFL);
+        std::raise(sig);
     }
 }
 
@@ -102,7 +103,7 @@ static void init()
         const std::filesystem::path buildPath(std::filesystem::path{absolutePath.string().substr(0, pos)});
         if (!buildPath.has_parent_path())
         {
-            std::fprintf(stderr, "The project path doesn't exist. Please check it.\n");
+            std::fprintf(stderr, "<MAIN> The project path doesn't exist. Please check it.\n");
             std::exit(-1);
         }
         std::filesystem::current_path(buildPath.parent_path());
@@ -113,7 +114,7 @@ static void init()
             std::filesystem::path{(nullptr != std::getenv("HOME")) ? std::getenv("HOME") : "/root"});
         if (homePath.empty())
         {
-            std::fprintf(stderr, "The home path doesn't exist. Please check it.\n");
+            std::fprintf(stderr, "<MAIN> The home path doesn't exist. Please check it.\n");
             std::exit(-1);
         }
         std::filesystem::current_path(homePath);
@@ -125,7 +126,7 @@ static void fini()
 {
     if (signalStatus)
     {
-        std::fprintf(stdout, "Last signal ever received: signal %d.\n", signalStatus);
+        std::fprintf(stdout, "<MAIN> Last signal ever received: signal %d.\n", signalStatus);
     }
 }
 } // namespace application

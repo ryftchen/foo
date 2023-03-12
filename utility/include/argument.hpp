@@ -316,7 +316,7 @@ private:
         {
             if (minimum > maximum)
             {
-                throw std::logic_error("argument: The range of number of arguments is invalid.");
+                throw std::logic_error("<ARGUMENT> The range of number of arguments is invalid.");
             }
         }
 
@@ -422,7 +422,7 @@ Iterator ArgumentRegister::consume(Iterator start, Iterator end, const std::stri
 {
     if (!isRepeatable && isUsed)
     {
-        throw std::runtime_error("argument: Duplicate argument.");
+        throw std::runtime_error("<ARGUMENT> Duplicate argument.");
     }
     isUsed = true;
     usedNameStr = usedName;
@@ -453,7 +453,7 @@ Iterator ArgumentRegister::consume(Iterator start, Iterator end, const std::stri
             dist = static_cast<std::size_t>(std::distance(start, end));
             if (dist < numArgsMin)
             {
-                throw std::runtime_error("argument: Too few arguments.");
+                throw std::runtime_error("<ARGUMENT> Too few arguments.");
             }
         }
 
@@ -482,7 +482,7 @@ Iterator ArgumentRegister::consume(Iterator start, Iterator end, const std::stri
     {
         return start;
     }
-    throw std::runtime_error("argument: Too few arguments for '" + std::string(usedNameStr) + "'.");
+    throw std::runtime_error("<ARGUMENT> Too few arguments for '" + std::string(usedNameStr) + "'.");
 }
 
 template <typename T>
@@ -540,7 +540,7 @@ T ArgumentRegister::get() const
         }
     }
 
-    throw std::logic_error("argument: No value specified for '" + names.back() + "'.");
+    throw std::logic_error("<ARGUMENT> No value specified for '" + names.back() + "'.");
 }
 
 template <typename T>
@@ -664,7 +664,7 @@ T Argument::get(const std::string_view argName) const
 {
     if (!isParsed)
     {
-        throw std::logic_error("argument: Nothing parsed, no arguments are available.");
+        throw std::logic_error("<ARGUMENT> Nothing parsed, no arguments are available.");
     }
     return (*this)[argName].get<T>();
 }

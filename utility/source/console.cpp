@@ -53,7 +53,7 @@ Console::Console(const std::string& greeting) : impl(std::make_unique<Impl>(gree
         {
             if (input.size() < 2)
             {
-                std::cerr << "console: Please input \"" << input[0] << " Filename\" to run." << std::endl;
+                std::cerr << "<CONSOLE> Please input \"" << input[0] << " Filename\" to run." << std::endl;
                 return ReturnCode::error;
             }
             return ReturnCode(fileExecutor(input[1]));
@@ -142,7 +142,7 @@ int Console::commandExecutor(const std::string& command)
         return ReturnCode(static_cast<int>(std::get<0>(iterator->second)(inputs)));
     }
 
-    std::cerr << "console: Console command \"" << inputs[0] << "\" not found." << std::endl;
+    std::cerr << "<CONSOLE> Console command \"" << inputs[0] << "\" not found." << std::endl;
     return ReturnCode::error;
 }
 
@@ -151,7 +151,7 @@ int Console::fileExecutor(const std::string& filename)
     std::ifstream input(filename);
     if (!input)
     {
-        std::cerr << "console: Could not find the batch file to run." << std::endl;
+        std::cerr << "<CONSOLE> Could not find the batch file to run." << std::endl;
         return ReturnCode::error;
     }
 

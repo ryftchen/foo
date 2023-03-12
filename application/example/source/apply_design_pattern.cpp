@@ -62,7 +62,7 @@ void BehavioralPattern::chainOfResponsibilityInstance()
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR("<APPLY DESIGN PATTERN> %s", error.what());
     }
 }
 
@@ -75,7 +75,7 @@ void BehavioralPattern::commandInstance()
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR("<APPLY DESIGN PATTERN> %s", error.what());
     }
 }
 
@@ -88,7 +88,7 @@ void BehavioralPattern::interpreterInstance()
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR("<APPLY DESIGN PATTERN> %s", error.what());
     }
 }
 
@@ -101,7 +101,7 @@ void BehavioralPattern::iteratorInstance()
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR("<APPLY DESIGN PATTERN> %s", error.what());
     }
 }
 
@@ -114,7 +114,7 @@ void BehavioralPattern::mediatorInstance()
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR("<APPLY DESIGN PATTERN> %s", error.what());
     }
 }
 
@@ -127,7 +127,7 @@ void BehavioralPattern::mementoInstance()
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR("<APPLY DESIGN PATTERN> %s", error.what());
     }
 }
 
@@ -140,7 +140,7 @@ void BehavioralPattern::observerInstance()
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR("<APPLY DESIGN PATTERN> %s", error.what());
     }
 }
 
@@ -153,7 +153,7 @@ void BehavioralPattern::stateInstance()
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR("<APPLY DESIGN PATTERN> %s", error.what());
     }
 }
 
@@ -166,7 +166,7 @@ void BehavioralPattern::strategyInstance()
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR("<APPLY DESIGN PATTERN> %s", error.what());
     }
 }
 
@@ -179,7 +179,7 @@ void BehavioralPattern::templateMethodInstance()
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR("<APPLY DESIGN PATTERN> %s", error.what());
     }
 }
 
@@ -192,7 +192,7 @@ void BehavioralPattern::visitorInstance()
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR("<APPLY DESIGN PATTERN> %s", error.what());
     }
 }
 } // namespace behavioral
@@ -210,7 +210,7 @@ void runBehavioral(const std::vector<std::string>& targets)
     using utility::hash::operator""_bkdrHash;
 
     APP_DP_PRINT_TASK_BEGIN_TITLE(Type::behavioral);
-    auto* threads = command::getPoolForMultithreading().newElement(std::min(
+    auto* threads = command::getPublicThreadPool().newElement(std::min(
         static_cast<uint32_t>(getBit<BehavioralInstance>().count()),
         static_cast<uint32_t>(Bottom<BehavioralInstance>::value)));
 
@@ -263,12 +263,12 @@ void runBehavioral(const std::vector<std::string>& targets)
                 behavioralFunctor(threadName, &BehavioralPattern::visitorInstance);
                 break;
             default:
-                LOG_DBG("Execute to apply an unknown behavioral instance.");
+                LOG_DBG("<APPLY DESIGN PATTERN> Execute to apply an unknown behavioral instance.");
                 break;
         }
     }
 
-    command::getPoolForMultithreading().deleteElement(threads);
+    command::getPublicThreadPool().deleteElement(threads);
     APP_DP_PRINT_TASK_END_TITLE(Type::behavioral);
 }
 
@@ -314,7 +314,7 @@ void updateBehavioralTask(const std::string& target)
             break;
         default:
             getBit<BehavioralInstance>().reset();
-            throw std::runtime_error("Unexpected behavioral instance: " + target + ".");
+            throw std::runtime_error("<APPLY DESIGN PATTERN> Unexpected behavioral instance: " + target + ".");
     }
 }
 
@@ -339,7 +339,7 @@ void CreationalPattern::abstractFactoryInstance()
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR("<APPLY DESIGN PATTERN> %s", error.what());
     }
 }
 
@@ -352,7 +352,7 @@ void CreationalPattern::builderInstance()
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR("<APPLY DESIGN PATTERN> %s", error.what());
     }
 }
 
@@ -365,7 +365,7 @@ void CreationalPattern::factoryMethodInstance()
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR("<APPLY DESIGN PATTERN> %s", error.what());
     }
 }
 
@@ -378,7 +378,7 @@ void CreationalPattern::prototypeInstance()
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR("<APPLY DESIGN PATTERN> %s", error.what());
     }
 }
 
@@ -391,7 +391,7 @@ void CreationalPattern::singletonInstance()
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR("<APPLY DESIGN PATTERN> %s", error.what());
     }
 }
 } // namespace creational
@@ -409,7 +409,7 @@ void runCreational(const std::vector<std::string>& targets)
     using utility::hash::operator""_bkdrHash;
 
     APP_DP_PRINT_TASK_BEGIN_TITLE(Type::creational);
-    auto* threads = command::getPoolForMultithreading().newElement(std::min(
+    auto* threads = command::getPublicThreadPool().newElement(std::min(
         static_cast<uint32_t>(getBit<CreationalInstance>().count()),
         static_cast<uint32_t>(Bottom<CreationalInstance>::value)));
 
@@ -444,12 +444,12 @@ void runCreational(const std::vector<std::string>& targets)
                 creationalFunctor(threadName, &CreationalPattern::singletonInstance);
                 break;
             default:
-                LOG_DBG("Execute to apply an unknown creational instance.");
+                LOG_DBG("<APPLY DESIGN PATTERN> Execute to apply an unknown creational instance.");
                 break;
         }
     }
 
-    command::getPoolForMultithreading().deleteElement(threads);
+    command::getPublicThreadPool().deleteElement(threads);
     APP_DP_PRINT_TASK_END_TITLE(Type::creational);
 }
 
@@ -477,7 +477,7 @@ void updateCreationalTask(const std::string& target)
             break;
         default:
             getBit<CreationalInstance>().reset();
-            throw std::runtime_error("Unexpected creational instance: " + target + ".");
+            throw std::runtime_error("<APPLY DESIGN PATTERN> Unexpected creational instance: " + target + ".");
     }
 }
 
@@ -502,7 +502,7 @@ void StructuralPattern::adapterInstance()
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR("<APPLY DESIGN PATTERN> %s", error.what());
     }
 }
 
@@ -515,7 +515,7 @@ void StructuralPattern::bridgeInstance()
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR("<APPLY DESIGN PATTERN> %s", error.what());
     }
 }
 
@@ -528,7 +528,7 @@ void StructuralPattern::compositeInstance()
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR("<APPLY DESIGN PATTERN> %s", error.what());
     }
 }
 
@@ -541,7 +541,7 @@ void StructuralPattern::decoratorInstance()
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR("<APPLY DESIGN PATTERN> %s", error.what());
     }
 }
 
@@ -554,7 +554,7 @@ void StructuralPattern::facadeInstance()
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR("<APPLY DESIGN PATTERN> %s", error.what());
     }
 }
 
@@ -567,7 +567,7 @@ void StructuralPattern::flyweightInstance()
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR("<APPLY DESIGN PATTERN> %s", error.what());
     }
 }
 
@@ -580,7 +580,7 @@ void StructuralPattern::proxyInstance()
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR("<APPLY DESIGN PATTERN> %s", error.what());
     }
 }
 } // namespace structural
@@ -598,7 +598,7 @@ void runStructural(const std::vector<std::string>& targets)
     using utility::hash::operator""_bkdrHash;
 
     APP_DP_PRINT_TASK_BEGIN_TITLE(Type::structural);
-    auto* threads = command::getPoolForMultithreading().newElement(std::min(
+    auto* threads = command::getPublicThreadPool().newElement(std::min(
         static_cast<uint32_t>(getBit<StructuralInstance>().count()),
         static_cast<uint32_t>(Bottom<StructuralInstance>::value)));
 
@@ -639,12 +639,12 @@ void runStructural(const std::vector<std::string>& targets)
                 structuralFunctor(threadName, &StructuralPattern::proxyInstance);
                 break;
             default:
-                LOG_DBG("Execute to apply an unknown structural instance.");
+                LOG_DBG("<APPLY DESIGN PATTERN> Execute to apply an unknown structural instance.");
                 break;
         }
     }
 
-    command::getPoolForMultithreading().deleteElement(threads);
+    command::getPublicThreadPool().deleteElement(threads);
     APP_DP_PRINT_TASK_END_TITLE(Type::structural);
 }
 
@@ -678,7 +678,7 @@ void updateStructuralTask(const std::string& target)
             break;
         default:
             getBit<StructuralInstance>().reset();
-            throw std::runtime_error("Unexpected structural instance: " + target + ".");
+            throw std::runtime_error("<APPLY DESIGN PATTERN> Unexpected structural instance: " + target + ".");
     }
 }
 } // namespace application::app_dp

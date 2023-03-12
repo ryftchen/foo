@@ -9,6 +9,7 @@
 #include <filesystem>
 #include <iterator>
 #include <list>
+#include <stdexcept>
 #include <vector>
 
 namespace utility::common
@@ -100,7 +101,7 @@ std::string executeCommand(const std::string& cmd, const uint32_t timeout)
     std::FILE* pipe = popen(cmd.c_str(), "r");
     if (nullptr == pipe)
     {
-        throw std::runtime_error("common: Cannot open pipe when trying to execute command.");
+        throw std::runtime_error("<COMMON> Cannot open pipe when trying to execute command.");
     }
 
     std::string output;
@@ -115,7 +116,7 @@ std::string executeCommand(const std::string& cmd, const uint32_t timeout)
             if (elapsedTime.count() > timeout)
             {
                 pclose(pipe);
-                throw std::runtime_error("common: Execute command timeout.");
+                throw std::runtime_error("<COMMON> Execute command timeout.");
             }
         }
 
@@ -130,7 +131,7 @@ std::string executeCommand(const std::string& cmd, const uint32_t timeout)
     const int exitStatus = pclose(pipe);
     if (-1 == exitStatus)
     {
-        throw std::runtime_error("common: Cannot close pipe when trying to execute command.");
+        throw std::runtime_error("<COMMON> Cannot close pipe when trying to execute command.");
     }
     if (WIFEXITED(exitStatus))
     {
@@ -138,18 +139,18 @@ std::string executeCommand(const std::string& cmd, const uint32_t timeout)
         if (0 != exitCode)
         {
             throw std::runtime_error(
-                "common: Returns exit code " + std::to_string(exitCode) + " when the command is executed.");
+                "<COMMON> Returns exit code " + std::to_string(exitCode) + " when the command is executed.");
         }
     }
     else if (WIFSIGNALED(exitStatus))
     {
         const int signal = WTERMSIG(exitStatus);
         throw std::runtime_error(
-            "common: Terminated by signal " + std::to_string(signal) + " when the command is executed.");
+            "<COMMON> Terminated by signal " + std::to_string(signal) + " when the command is executed.");
     }
     else
     {
-        throw std::runtime_error("common: The termination status is unknown when the command is executed.");
+        throw std::runtime_error("<COMMON> The termination status is unknown when the command is executed.");
     }
 
     return output;
@@ -165,7 +166,7 @@ std::ifstream openFile(const std::string& filename)
     if (!ifs)
     {
         throw std::runtime_error(
-            "common: Failed to open file " + std::filesystem::path(filename).filename().string() + " for reading.");
+            "<COMMON> Failed to open file " + std::filesystem::path(filename).filename().string() + " for reading.");
     }
     return ifs;
 }
@@ -182,7 +183,7 @@ std::ofstream openFile(const std::string& filename, const bool isOverwrite)
     if (!ofs)
     {
         throw std::runtime_error(
-            "common: Failed to open file " + std::filesystem::path(filename).filename().string() + " for writing.");
+            "<COMMON> Failed to open file " + std::filesystem::path(filename).filename().string() + " for writing.");
     }
     return ofs;
 }

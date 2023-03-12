@@ -271,7 +271,7 @@ inline Command& Command::getInstance()
 inline void Command::throwExcessArgumentException()
 {
     assignedTask.reset();
-    throw std::runtime_error("Excess argument.");
+    throw std::runtime_error("<COMMAND> Excess argument.");
 }
 
 template <typename T>
@@ -303,5 +303,5 @@ auto Command::get(const TaskFunctorTuple& tuple) const
 //! @brief Alias for memory pool when making multi-threading.
 using PublicThreadPool = utility::memory::Memory<utility::thread::Thread>;
 
-extern PublicThreadPool& getPoolForMultithreading();
+extern PublicThreadPool& getPublicThreadPool();
 } // namespace application::command
