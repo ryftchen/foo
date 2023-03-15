@@ -20,4 +20,6 @@ disable=global-statement,
         missing-function-docstring,
         missing-module-docstring,
         too-many-branches,
-        too-many-instance-attributes
+        too-many-instance-attributes,
+        too-many-locals,
+        too-many-statements

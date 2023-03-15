@@ -24,8 +24,10 @@ class Output:
     colorOff = "\033[0m"
     colorEscapeRegex = r"((\033\[.*?(m|s|u|A))|(\007|\017))"
     columnLength = 10
-    alignMinLen = 30
-    alignExclCmdLen = 20
+    minAlignLen = 30
+    exclCmdAlignLen = 20
+    minKeyWidth = 20
+    minValueWidth = 80
 
     @classmethod
     def abort(cls, message):
@@ -38,6 +40,42 @@ class Output:
             f"""{colorFore}{cls.colorBack}{f"{'=' * cls.columnLength}"}\
 [ {datetime.strftime(datetime.now(), "%b %d %H:%M:%S")} | {content} ]{f"{'=' * cls.columnLength}"}{cls.colorOff}"""
         )
+
+    @classmethod
+    def formatAsTable(cls, data: dict, keyName="", valueName=""):
+        rows = []
+        rows.append("=" * (cls.minKeyWidth + 2 + cls.minValueWidth + 1))
+        rows.append(f"{keyName.ljust(cls.minKeyWidth)} | {valueName.ljust(cls.minValueWidth)}")
+        rows.append("=" * (cls.minKeyWidth + 2 + cls.minValueWidth + 1))
+
+        for key, value in data.items():
+            keyLines = []
+            for line in key.split("\n"):
+                lineLen = len(line)
+                for index in range(0, lineLen, cls.minKeyWidth):
+                    keyLines.append(line[index : index + cls.minKeyWidth].ljust(cls.minKeyWidth))
+
+            valueLines = []
+            for line in value.split("\n"):
+                lineLen = len(line)
+                for index in range(0, lineLen, cls.minValueWidth):
+                    valueLines.append(line[index : index + cls.minValueWidth].ljust(cls.minValueWidth))
+
+            lineCount = max(len(keyLines), len(valueLines))
+            for index in range(lineCount):
+                newLine = ""
+                if index < len(keyLines):
+                    newLine = f"{keyLines[index]} | "
+                else:
+                    newLine = f"{' ' * cls.minKeyWidth} | "
+                if index < len(valueLines):
+                    newLine += valueLines[index]
+                else:
+                    newLine += " " * cls.minValueWidth
+                rows.append(newLine)
+
+            rows.append("-" * (cls.minKeyWidth + 2 + cls.minValueWidth + 1))
+        return "\n".join(rows)
 
 
 class Task:
@@ -73,12 +111,11 @@ class Task:
             "prime": ["era", "eul"],
         },
     }
-    isCheckCoverage = False
-    isCheckMemory = False
-    isUnitTest = False
+    options = {"tst": False, "chk_cov": False, "chk_mem": False}
     buildScript = "./script/build.sh"
     tempDir = "./temporary"
     logFile = f"{tempDir}/foo_run.log"
+    reportFile = f"{tempDir}/foo_run.report"
     passSteps = 0
     completeSteps = 0
     basicTaskDict["--help"] = [
@@ -108,7 +145,7 @@ class Task:
         self.parseArguments()
         self.prepare()
 
-        if not self.isUnitTest:
+        if not self.options["tst"]:
             threadList = []
             producer = threading.Thread(target=self.generateTasks(), args=())
             producer.start()
@@ -124,13 +161,14 @@ class Task:
 
         self.complete()
         self.formatRunLog()
+        self.summarizeRunLog()
 
     def stop(self, message=""):
         try:
-            if self.isCheckMemory:
-                common.executeCommand(f"rm -rf {self.tempDir}/*.xml")
-            if self.isCheckCoverage:
+            if self.options["chk_cov"]:
                 common.executeCommand(f"rm -rf {self.tempDir}/*.profraw {self.tempDir}/*.profdata")
+            if self.options["chk_mem"]:
+                common.executeCommand(f"rm -rf {self.tempDir}/*.xml")
             sys.stdout = STDOUT
             self.progressBar.destroyProgressBar()
             del self.log
@@ -140,6 +178,7 @@ class Task:
         finally:
             if message:
                 Output.abort(message)
+            sys.exit(-1)
 
     def parseArguments(self):
         def checkPositive(value):
@@ -172,7 +211,7 @@ class Task:
                 stdout, _, _ = common.executeCommand("command -v llvm-profdata-12 llvm-cov-12 2>&1")
                 if stdout.find("llvm-profdata-12") != -1 and stdout.find("llvm-cov-12") != -1:
                     os.environ["FOO_CHK_COV"] = "on"
-                    self.isCheckCoverage = True
+                    self.options["chk_cov"] = True
                     common.executeCommand(f"rm -rf {self.tempDir}/coverage")
                 else:
                     Output.abort("No llvm-profdata or llvm-cov program. Please check it.")
@@ -181,7 +220,7 @@ class Task:
                 stdout, _, _ = common.executeCommand("command -v valgrind valgrind-ci 2>&1")
                 if stdout.find("valgrind") != -1 and stdout.find("valgrind-ci") != -1:
                     os.environ["FOO_CHK_MEM"] = "on"
-                    self.isCheckMemory = True
+                    self.options["chk_mem"] = True
                     common.executeCommand(f"rm -rf {self.tempDir}/memory")
                 else:
                     Output.abort("No valgrind or valgrind-ci program. Please check it.")
@@ -199,7 +238,7 @@ class Task:
                 Output.abort("No shell script build.sh in script folder.")
 
         if args.test is not None:
-            self.isUnitTest = True
+            self.options["tst"] = True
             self.totalSteps = args.test
 
     def buildExecutable(self, buildCmd):
@@ -213,9 +252,9 @@ class Task:
                 Output.abort(f"Failed to build the executable by shell script {self.buildScript}.")
 
     def prepare(self):
-        if not self.isUnitTest and not os.path.isfile(f"{self.binDir}/{self.binCmd}"):
+        if not self.options["tst"] and not os.path.isfile(f"{self.binDir}/{self.binCmd}"):
             Output.abort("No executable file. Please use the --build option to build it.")
-        if self.isUnitTest and not os.path.isfile(f"{self.testBinDir}/{self.testBinCmd}"):
+        if self.options["tst"] and not os.path.isfile(f"{self.testBinDir}/{self.testBinCmd}"):
             Output.abort("No executable file for testing. Please use the --build option to build it.")
         common.executeCommand("ulimit -s unlimited")
         common.executeCommand("echo 'core.%s.%e.%p' | tee /proc/sys/kernel/core_pattern")
@@ -226,10 +265,10 @@ class Task:
         sys.stdout = self.log
 
     def complete(self):
-        if self.isCheckMemory:
+        if self.options["chk_mem"]:
             common.executeCommand(f"rm -rf {self.tempDir}/*.xml")
 
-        if self.isCheckCoverage:
+        if self.options["chk_cov"]:
             common.executeCommand(
                 f"llvm-profdata-12 merge -sparse {self.tempDir}/foo_chk_cov_*.profraw \
 -o {self.tempDir}/foo_chk_cov.profdata"
@@ -254,22 +293,11 @@ class Task:
         del self.log
 
     def generateTasks(self):
-        self.generateBasicTasks()
-        self.generateGeneralTasks()
-
-    def performTasks(self):
-        self.runTask(self.binCmd, "quit")
-        while self.completeSteps < self.totalSteps:
-            cmd = self.taskQueue.get()
-            self.runTask(cmd)
-
-    def generateBasicTasks(self):
         for taskCategory, taskCategoryList in self.basicTaskDict.items():
             self.taskQueue.put(f"{self.binCmd} {taskCategory}")
             for option in taskCategoryList:
                 self.taskQueue.put(f"{self.binCmd} {taskCategory} {option}")
 
-    def generateGeneralTasks(self):
         for taskCategory, taskCategoryMap in self.generalTaskDict.items():
             for taskType, targetTaskList in taskCategoryMap.items():
                 self.taskQueue.put(f"{self.binCmd} {taskCategory} {taskType}")
@@ -277,36 +305,43 @@ class Task:
                     self.taskQueue.put(f"{self.binCmd} {taskCategory} {taskType} {target}")
                 self.taskQueue.put(f"{self.binCmd} {taskCategory} {taskType} {' '.join(targetTaskList)}")
 
+    def performTasks(self):
+        self.runTask(self.binCmd, "quit")
+        while self.completeSteps < self.totalSteps:
+            cmd = self.taskQueue.get()
+            self.runTask(cmd)
+
     def runTask(self, command, enter=""):
-        if not self.isUnitTest:
+        if not self.options["tst"]:
             fullCommand = f"{self.binDir}/{command}"
         else:
             fullCommand = f"{self.testBinDir}/{command}"
-        if self.isCheckMemory:
+        if self.options["chk_mem"]:
             fullCommand = f"valgrind --tool=memcheck --xml=yes \
 --xml-file={self.tempDir}/foo_chk_mem_{str(self.completeSteps + 1)}.xml {fullCommand}"
-        if self.isCheckCoverage:
+        if self.options["chk_cov"]:
             fullCommand = f"LLVM_PROFILE_FILE=\"{self.tempDir}/foo_chk_cov_{str(self.completeSteps + 1)}.profraw\" \
 {fullCommand}"
         align = max(
-            len(command) + Output.alignExclCmdLen,
-            Output.alignMinLen,
-            len(str(self.totalSteps)) * 2 + len(" / ") + Output.alignExclCmdLen,
+            len(command) + Output.exclCmdAlignLen,
+            Output.minAlignLen,
+            len(str(self.totalSteps)) * 2 + len(" / ") + Output.exclCmdAlignLen,
         )
-        Output.status(Output.color["blue"], f"CASE TASK: {f'{command}':<{align - Output.alignExclCmdLen}} | START ")
+        Output.status(Output.color["blue"], f"CASE TASK: {f'{command}':<{align - Output.exclCmdAlignLen}} | START ")
 
         stdout, stderr, returncode = common.executeCommand(fullCommand, enter)
-        if stderr or returncode != 0:
-            print(f"<STDOUT>\n{stdout}\n<STDERR>\n{stderr}\n<RETURN CODE>\n{returncode}")
+        if len(stdout.strip()) == 0 or stderr or returncode != 0:
+            print(f"\r\n<STDOUT>\n{stdout}\n<STDERR>\n{stderr}\n<RETURN CODE>\n{returncode}")
             Output.status(Output.color["red"], f"{f'CASE TASK: FAILURE NO.{str(self.completeSteps + 1)}':<{align}}")
         else:
             print(stdout)
             self.passSteps += 1
-            if self.isCheckMemory:
+            if self.options["chk_mem"]:
                 stdout, _, _ = common.executeCommand(
                     f"valgrind-ci {self.tempDir}/foo_chk_mem_{str(self.completeSteps + 1)}.xml --summary"
                 )
                 if "error" in stdout:
+                    stdout = stdout.replace("\t", "    ")
                     print(f"\r\n<CHECK MEMORY>\n{stdout}")
                     common.executeCommand(
                         f"valgrind-ci {self.tempDir}/foo_chk_mem_{str(self.completeSteps + 1)}.xml --source-dir=./ \
@@ -318,7 +353,7 @@ class Task:
                     )
 
         self.completeSteps += 1
-        Output.status(Output.color["blue"], f"CASE TASK: {f'{command}':<{align - Output.alignExclCmdLen}} | FINISH")
+        Output.status(Output.color["blue"], f"CASE TASK: {f'{command}':<{align - Output.exclCmdAlignLen}} | FINISH")
 
         if self.passSteps != self.totalSteps:
             statusColor = Output.color["yellow"]
@@ -342,6 +377,127 @@ class Task:
         outputContent = re.sub(Output.colorEscapeRegex, "", inputContent)
         with open(self.logFile, "w", encoding="utf-8") as refresh:
             refresh.write(outputContent)
+
+    def summarizeRunLog(self):
+        def analyzeForReport(readlines, startIndices, finishIndices, tags):
+            failRes = {}
+            covPer = {}
+            memErr = {}
+            for startIndex, finishIndex in zip(startIndices, finishIndices):
+                if "| CASE TASK: FAILURE" in readlines[finishIndex - 1]:
+                    failLine = readlines[finishIndex - 1]
+                    number = failLine[failLine.find("NO.") : failLine.find("]")].strip()
+                    cmdLine = readlines[startIndex]
+                    caseTask = number + ": " + cmdLine[cmdLine.find(self.binCmd) : cmdLine.find("| START")].strip()
+
+                    if tags["tst"] and "FAILED TEST" in "".join(readlines[startIndex + 1 : finishIndex]):
+                        utCase = ""
+                        utRunIndex = -1
+                        utRunIndices = []
+                        utFailIndices = []
+                        for index, line in enumerate(readlines[startIndex + 1 : finishIndex]):
+                            index += startIndex + 1
+                            if "[ RUN      ]" in line:
+                                utCase = line[line.find("]") + 2 : line.find("\n")]
+                                utRunIndex = index
+                            elif len(utCase) != 0 and f"[  FAILED  ] {utCase}" in line:
+                                utRunIndices.append(utRunIndex)
+                                utFailIndices.append(index)
+                                utCase = ""
+                        utFailRes = ""
+                        for utRunIndex, utFailIndex in zip(utRunIndices, utFailIndices):
+                            utFailRes += "".join(readlines[utRunIndex : utFailIndex + 1])
+                        failRes[caseTask] = utFailRes
+                        continue
+
+                    lastIndex = finishIndex
+                    if tags["chk_mem"]:
+                        for index, line in enumerate(readlines[startIndex + 1 : finishIndex]):
+                            if "<CHECK MEMORY>" in line:
+                                index += startIndex + 1
+                                memErr[caseTask] = "".join(readlines[index + 1 : finishIndex - 1])
+                                lastIndex = index
+                    failRes[caseTask] = "".join(readlines[startIndex + 1 : lastIndex - 1])
+
+            if tags["chk_cov"]:
+                category = ["Regions", "Functions", "Lines", "Branches"]
+                for line in readlines:
+                    if re.search(r"(^TOTAL(\s+\d+\s+\d+\s+\d+\.\d+%){4}$)", line):
+                        matches = re.findall(r"(\d+\.\d+%)", line)
+                        percentages = [str(float(s.strip("%"))) for s in matches]
+                        if len(percentages) == 4:
+                            for index, per in enumerate(percentages):
+                                covPer[category[index]] = str(per) + "%"
+                        break
+                if len(covPer) == 0:
+                    for cat in category:
+                        covPer[cat] = "-"
+
+            return failRes, covPer, memErr
+
+        tags = {"tst": False, "chk_cov": False, "chk_mem": False}
+        readlines = []
+        with open(self.logFile, "rt", encoding="utf-8") as runLog:
+            readlines = runLog.readlines()
+            runLog.seek(0)
+            content = runLog.read()
+            if self.testBinCmd in content:
+                tags["tst"] = True
+            if "<CHECK COVERAGE>" in content:
+                tags["chk_cov"] = True
+            if "<CHECK MEMORY>" in content:
+                tags["chk_mem"] = True
+        if (
+            (tags["tst"] != self.options["tst"])
+            or (tags["chk_cov"] != self.options["chk_cov"])
+            or (tags["chk_mem"] and not self.options["chk_mem"])
+        ):
+            Output.abort("Run options do not match the actual contents of the run log file.")
+        if tags["tst"] and (tags["chk_cov"] or tags["chk_mem"]):
+            Output.abort(f"The run log file {self.logFile} is complex. Please retry.")
+
+        startIndices = []
+        finishIndices = []
+        for index, line in enumerate(readlines):
+            if "| START" in line:
+                startIndices.append(index)
+            elif "| FINISH" in line:
+                finishIndices.append(index)
+        if len(startIndices) != len(finishIndices) or len(startIndices) != self.totalSteps:
+            Output.abort(f"The run log file {self.logFile} is incomplete. Please retry.")
+
+        failRes, covPer, memErr = analyzeForReport(readlines, startIndices, finishIndices, tags)
+        with open(self.reportFile, "w", encoding="utf-8") as runReport:
+            runStat = {"Passed": str(self.totalSteps - len(failRes)), "Failed": str(len(failRes))}
+            runStatRep = "REPORT FOR RUN STATISTICS"
+            if tags["tst"]:
+                runStatRep += " (UNIT TEST)"
+            runStatRep += ":\n" + Output().formatAsTable(runStat, "STATUS", "RUN STATISTICS") + "\n\n"
+            failResRep = ""
+            if failRes:
+                failResRep = (
+                    "\r\nREPORT FOR FAILURE RESULT:\n"
+                    + Output().formatAsTable(failRes, "CASE TASK", "FAILURE RESULT")
+                    + "\n\n"
+                )
+            covPerRep = ""
+            if covPer:
+                covPerRep = (
+                    "\r\nREPORT FOR COVERAGE PERCENT:\n"
+                    + Output().formatAsTable(covPer, "CATEGORY", "COVERAGE PERCENT")
+                    + "\n\n"
+                )
+            memErrRep = ""
+            if memErr:
+                memErrRep = (
+                    "\r\nREPORT FOR MEMORY ERROR:\n"
+                    + Output().formatAsTable(memErr, "CASE TASK", "MEMORY ERROR")
+                    + "\n\n"
+                )
+            runReport.write(runStatRep + failResRep + covPerRep + memErrRep)
+
+        if failRes:
+            sys.exit(1)
 
 
 if __name__ == "__main__":
