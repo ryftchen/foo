@@ -82,12 +82,12 @@ jobs:
 
       - name: Check
         run: |
-          ./script/build.sh --format --lint --release
+          ./script/build.sh --release --format --lint --count
           git status
 
       - name: Archive
         run: |
-          ./script/build.sh --browser --doxygen --release
+          ./script/build.sh --release --browser --doxygen
 
       - name: Upload artifact
         uses: actions/upload-artifact@v3
@@ -130,4 +130,8 @@ jobs:
       - name: Run
         run: |
           ./script/run.py --check cov mem --build rls
+
+      - name: Report
+        run: |
+          cat ./temporary/foo_run.report
 ...
