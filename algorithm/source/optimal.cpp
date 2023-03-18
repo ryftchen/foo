@@ -5,14 +5,12 @@
 //! @copyright Copyright (c) 2022-2023
 
 #include "optimal.hpp"
-#ifndef __PRECOMPILED_HEADER
 // #define NDEBUG
 #include <cassert>
 #include <chrono>
 #include <functional>
 #include <set>
 #include <stdexcept>
-#endif
 
 namespace algorithm::optimal
 {

@@ -5,10 +5,8 @@
 //! @copyright Copyright (c) 2022-2023
 
 #include "match.hpp"
-#ifndef __PRECOMPILED_HEADER
 #include <algorithm>
 #include <cstring>
-#endif
 
 namespace algorithm::match
 {

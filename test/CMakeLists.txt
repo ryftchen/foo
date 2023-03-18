@@ -29,13 +29,9 @@ aux_source_directory(${CMAKE_SOURCE_DIR}/../design_pattern/source TEST_LIST)
 aux_source_directory(${CMAKE_SOURCE_DIR}/../numeric/source TEST_LIST)
 include_directories(
     ${CMAKE_SOURCE_DIR}/..
-    ${CMAKE_SOURCE_DIR}/../algorithm
     ${CMAKE_SOURCE_DIR}/../algorithm/include
-    ${CMAKE_SOURCE_DIR}/../data_structure
     ${CMAKE_SOURCE_DIR}/../data_structure/include
-    ${CMAKE_SOURCE_DIR}/../design_pattern
     ${CMAKE_SOURCE_DIR}/../design_pattern/include
-    ${CMAKE_SOURCE_DIR}/../numeric
     ${CMAKE_SOURCE_DIR}/../numeric/include
 )
 
@@ -46,13 +42,10 @@ target_link_libraries(
         mpfr
         GTest::Main
 )
+
 if(PRECOMPILED_HEADER)
     target_precompile_headers(
         ${BIN_NAME}
-        PRIVATE
-            ${CMAKE_SOURCE_DIR}/../algorithm/pch_algorithm.hpp
-            ${CMAKE_SOURCE_DIR}/../data_structure/pch_data_structure.hpp
-            ${CMAKE_SOURCE_DIR}/../design_pattern/pch_design_pattern.hpp
-            ${CMAKE_SOURCE_DIR}/../numeric/pch_numeric.hpp
+        PRIVATE ${CMAKE_SOURCE_DIR}/../application/pch/precompiled_header.hpp
     )
 endif()

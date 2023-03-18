@@ -6,12 +6,8 @@
 
 #pragma once
 
-#ifndef __PRECOMPILED_HEADER
 #include <cstdint>
 #include <utility>
-#else
-#include "pch_numeric.hpp"
-#endif
 
 //! @brief Integral-related functions in the numeric module.
 namespace numeric::integral
@@ -157,6 +153,7 @@ private:
     const Expression& expr;
 };
 
+// #define INTEGRAL_MONTE_CARLO_NORMAL_DISTRIBUTION
 //! @brief The Monte-Carlo method.
 class MonteCarlo : public Integral
 {
@@ -189,6 +186,6 @@ private:
     //! @param eps - precision of calculation
     //! @return result of definite integral
     [[nodiscard]] double sampleFromNormalDistribution(const double lower, const double upper, const double eps) const;
-#endif
+#endif // INTEGRAL_MONTE_CARLO_NORMAL_DISTRIBUTION
 };
 } // namespace numeric::integral

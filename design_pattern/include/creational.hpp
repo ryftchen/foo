@@ -6,12 +6,8 @@
 
 #pragma once
 
-#ifndef __PRECOMPILED_HEADER
 #include <memory>
 #include <sstream>
-#else
-#include "pch_design_pattern.hpp"
-#endif
 
 //! @brief Creational-related functions in the design pattern module.
 namespace design_pattern::creational

@@ -6,7 +6,11 @@
 
 #pragma once
 
+#ifndef __PRECOMPILED_HEADER
 #include <bitset>
+#else
+#include "application/pch/precompiled_header.hpp"
+#endif // __PRECOMPILED_HEADER
 #include "design_pattern/include/behavioral.hpp"
 #include "design_pattern/include/creational.hpp"
 #include "design_pattern/include/structural.hpp"

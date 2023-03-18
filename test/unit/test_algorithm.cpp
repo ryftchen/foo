@@ -7,6 +7,7 @@
 #include <gtest/gtest.h>
 #include "algorithm/include/match.hpp"
 #include "algorithm/include/notation.hpp"
+#include "algorithm/include/optimal.hpp"
 #include "algorithm/include/search.hpp"
 #include "algorithm/include/sort.hpp"
 #include "application/example/include/apply_algorithm.hpp"

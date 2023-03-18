@@ -8,11 +8,6 @@ add_library(foo::${MODULE_NAME} ALIAS ${MODULE_NAME})
 
 target_include_directories(
     ${MODULE_NAME}
-    PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}
-        ${CMAKE_CURRENT_SOURCE_DIR}/include
+    PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include
     PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/source
 )
-if(PRECOMPILED_HEADER)
-    target_precompile_headers(${MODULE_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/pch_numeric.hpp)
-endif()

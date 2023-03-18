@@ -5,8 +5,12 @@
 //! @copyright Copyright (c) 2022-2023
 
 #include "log.hpp"
+#ifndef __PRECOMPILED_HEADER
 #include <filesystem>
 #include <regex>
+#else
+#include "application/pch/precompiled_header.hpp"
+#endif // __PRECOMPILED_HEADER
 
 namespace application::log
 {
@@ -109,7 +113,7 @@ void Log::interfaceToStart()
                 ++waitCount;
 #ifndef NDEBUG
                 std::cout << "<LOG> Wait for the logger to start... (" << waitCount << ")" << std::endl;
-#endif
+#endif // NDEBUG
             }
         },
         intervalOfWaitLogger);
@@ -142,7 +146,7 @@ void Log::interfaceToStop()
                 ++waitCount;
 #ifndef NDEBUG
                 std::cout << "<LOG> Wait for the logger to stop... (" << waitCount << ")" << std::endl;
-#endif
+#endif // NDEBUG
             }
         },
         intervalOfWaitLogger);

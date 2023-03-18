@@ -6,6 +6,9 @@
 
 #include <gtest/gtest.h>
 #include "application/example/include/apply_design_pattern.hpp"
+#include "design_pattern/include/behavioral.hpp"
+#include "design_pattern/include/creational.hpp"
+#include "design_pattern/include/structural.hpp"
 
 //! @brief Title of printing for design pattern task tests.
 #define TST_DP_PRINT_TASK_TITLE(taskType, taskState)                                                   \

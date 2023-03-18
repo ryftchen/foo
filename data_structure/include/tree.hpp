@@ -6,11 +6,7 @@
 
 #pragma once
 
-#ifndef __PRECOMPILED_HEADER
 #include <sstream>
-#else
-#include "pch_data_structure.hpp"
-#endif
 
 //! @brief Tree-related functions in the data structure module.
 namespace date_structure::tree
@@ -23,7 +19,7 @@ typedef int Type;
 #ifdef __cplusplus
 extern "C"
 {
-#endif
+#endif // __cplusplus
     //! @brief The node of the binary search tree.
     typedef struct BSTreeNode
     {
@@ -38,7 +34,7 @@ extern "C"
     } Node, *BSTree;
 #ifdef __cplusplus
 }
-#endif
+#endif // __cplusplus
 
 extern Node* getMinimum(BSTree tree);
 extern Node* getMaximum(BSTree tree);
@@ -134,7 +130,7 @@ typedef int Type;
 #ifdef __cplusplus
 extern "C"
 {
-#endif
+#endif // __cplusplus
     //! @brief The node of the AVL tree.
     typedef struct AVLTreeNode
     {
@@ -149,7 +145,7 @@ extern "C"
     } Node, *AVLTree;
 #ifdef __cplusplus
 }
-#endif
+#endif // __cplusplus
 
 extern int getHeight(AVLTree tree);
 extern Node* getMinimum(AVLTree tree);
@@ -246,7 +242,7 @@ typedef int Type;
 #ifdef __cplusplus
 extern "C"
 {
-#endif
+#endif // __cplusplus
     //! @brief The node of the splay tree.
     typedef struct SplayTreeNode
     {
@@ -259,7 +255,7 @@ extern "C"
     } Node, *SplayTree;
 #ifdef __cplusplus
 }
-#endif
+#endif // __cplusplus
 
 extern Node* getMinimum(SplayTree tree);
 extern Node* getMaximum(SplayTree tree);

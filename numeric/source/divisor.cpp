@@ -5,9 +5,7 @@
 //! @copyright Copyright (c) 2022-2023
 
 #include "divisor.hpp"
-#ifndef __PRECOMPILED_HEADER
 #include <cmath>
-#endif
 
 namespace numeric::divisor
 {

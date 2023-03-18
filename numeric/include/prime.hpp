@@ -6,12 +6,8 @@
 
 #pragma once
 
-#ifndef __PRECOMPILED_HEADER
 #include <cstdint>
 #include <vector>
-#else
-#include "pch_numeric.hpp"
-#endif
 
 //! @brief Prime-related functions in the numeric module.
 namespace numeric::prime

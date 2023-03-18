@@ -6,14 +6,10 @@
 
 #pragma once
 
-#ifndef __PRECOMPILED_HEADER
 #include <map>
 #include <memory>
 #include <sstream>
 #include <vector>
-#else
-#include "pch_design_pattern.hpp"
-#endif
 
 //! @brief Behavioral-related functions in the design pattern module.
 namespace design_pattern::behavioral
