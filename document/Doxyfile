@@ -123,7 +123,8 @@ FILE_PATTERNS          = *.c \
                          *.tpp \
                          README.md
 RECURSIVE              = YES
-EXCLUDE                = ./build \
+EXCLUDE                = ./application/pch \
+                         ./build \
                          ./document \
                          ./test/build
 EXCLUDE_SYMLINKS       = NO
