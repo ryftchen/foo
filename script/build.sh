@@ -102,6 +102,10 @@ function checkExtraDependencies()
             abort "No clang-tidy (including run-clang-tidy-12, compdb), shellcheck or pylint program. \
 Please install it."
         fi
+        if [[ ${DEV_OPT[pch]} = true ]] || [[ ${DEV_OPT[unity]} = true ]]; then
+            abort "Due to the unconventional ${COMP_CMD} file, the --lint option cannot run if the FOO_BLD_PCH or \
+FOO_BLD_UNITY is turned on."
+        fi
     fi
 
     if [[ ${ARGS[count]} = true ]]; then
@@ -114,6 +118,10 @@ Please install it."
         if ! command -v codebrowser_generator >/dev/null 2>&1 \
             || ! command -v codebrowser_indexgenerator >/dev/null 2>&1; then
             abort "No codebrowser_generator or codebrowser_indexgenerator program. Please install it."
+        fi
+        if [[ ${DEV_OPT[pch]} = true ]] || [[ ${DEV_OPT[unity]} = true ]]; then
+            abort "Due to the unconventional ${COMP_CMD} file, the --browser option cannot run if the FOO_BLD_PCH or \
+FOO_BLD_UNITY is turned on."
         fi
     fi
 
@@ -389,7 +397,7 @@ function packageForBrowser()
     fi
     local browserFolder="browser"
     local tarFile="${FOLDER[proj]}_${browserFolder}_${commitId}.tar.bz2"
-    rm -rf "./${FOLDER[temp]}/${FOLDER[proj]}_${browserFolder}_*.tar.bz2" "./${FOLDER[doc]}/${browserFolder}"
+    rm -r "./${FOLDER[temp]}/${FOLDER[proj]}_${browserFolder}"_*.tar.bz2 "./${FOLDER[doc]}/${browserFolder}"
 
     mkdir -p "./${FOLDER[doc]}/${browserFolder}"
     shellCommand "codebrowser_generator -color -a -b ./${FOLDER[bld]}/${COMP_CMD} -o ./${FOLDER[doc]}/${browserFolder} \
@@ -432,7 +440,7 @@ function packageForDoxygen()
 
     local doxygenFolder="doxygen"
     local tarFile="${FOLDER[proj]}_${doxygenFolder}_${commitId}.tar.bz2"
-    rm -rf "./${FOLDER[temp]}/${FOLDER[proj]}_${doxygenFolder}_*.tar.bz2" "./${FOLDER[doc]}/${doxygenFolder}"
+    rm -rf "./${FOLDER[temp]}/${FOLDER[proj]}_${doxygenFolder}"_*.tar.bz2 "./${FOLDER[doc]}/${doxygenFolder}"
 
     mkdir -p "./${FOLDER[doc]}/${doxygenFolder}"
     if [[ ${ARGS[release]} = false ]]; then
