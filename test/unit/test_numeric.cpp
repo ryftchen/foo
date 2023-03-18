@@ -8,6 +8,7 @@
 #include "application/example/include/apply_numeric.hpp"
 #include "numeric/include/arithmetic.hpp"
 #include "numeric/include/divisor.hpp"
+#include "numeric/include/integral.hpp"
 #include "numeric/include/prime.hpp"
 
 //! @brief Title of printing for numeric task tests.

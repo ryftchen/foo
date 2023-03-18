@@ -6,11 +6,7 @@
 
 #pragma once
 
-#ifndef __PRECOMPILED_HEADER
 #include <cstdint>
-#else
-#include "pch_algorithm.hpp"
-#endif
 
 //! @brief Match-related functions in the algorithm module.
 namespace algorithm::match

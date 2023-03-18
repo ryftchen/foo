@@ -70,13 +70,10 @@ target_link_libraries(
         foo::design_pattern
         foo::numeric
 )
+
 if(PRECOMPILED_HEADER)
     target_precompile_headers(
         ${BIN_NAME}
-        PRIVATE
-            ${CMAKE_SOURCE_DIR}/algorithm/pch_algorithm.hpp
-            ${CMAKE_SOURCE_DIR}/data_structure/pch_data_structure.hpp
-            ${CMAKE_SOURCE_DIR}/design_pattern/pch_design_pattern.hpp
-            ${CMAKE_SOURCE_DIR}/numeric/pch_numeric.hpp
+        PRIVATE ${CMAKE_SOURCE_DIR}/application/pch/precompiled_header.hpp
     )
 endif()

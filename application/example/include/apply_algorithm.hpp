@@ -6,6 +6,7 @@
 
 #pragma once
 
+#ifndef __PRECOMPILED_HEADER
 #include <mpfr.h>
 #include <bitset>
 // #define NDEBUG
@@ -14,12 +15,15 @@
 #include <cstring>
 #include <iostream>
 #include <memory>
+#else
+#include "application/pch/precompiled_header.hpp"
+#endif // __PRECOMPILED_HEADER
 #include "algorithm/include/optimal.hpp"
 
 #if defined(__clang__) || defined(__GNUC__)
 //! @brief The restrict type qualifier.
 #define restrict __restrict // NOLINT(readability-identifier-naming)
-#endif
+#endif // defined(__clang__) || defined(__GNUC__)
 
 //! @brief Algorithm-applying-related functions in the application module.
 namespace application::app_algo
@@ -436,7 +440,7 @@ private:
             }
         }
         std::cout << std::endl;
-#endif
+#endif // __RUNTIME_PRINTING
     }
     //! @brief Calculate precision by digit.
     //! @param digit - digit for the target text
@@ -478,7 +482,7 @@ public:
     {
 #ifdef __RUNTIME_PRINTING
         std::cout << "\r\nInfix notation: " << infixNotation << std::endl;
-#endif
+#endif // __RUNTIME_PRINTING
     }
     //! @brief Destroy the TargetBuilder object.
     virtual ~TargetBuilder() = default;
@@ -776,7 +780,7 @@ private:
                   << ":\r\n"
                   << formatArray<T>(array, length, arrayBuffer, arrayBufferSize + 1) << "\r\n"
                   << std::endl;
-#endif
+#endif // __RUNTIME_PRINTING
     }
     //! @brief Set the ordered array.
     //! @tparam V - the specific type of floating point
@@ -807,7 +811,7 @@ private:
                   << ":\r\n"
                   << formatArray<T>(array, length, arrayBuffer, arrayBufferSize + 1) << "\r\n"
                   << std::endl;
-#endif
+#endif // __RUNTIME_PRINTING
     }
     //! @brief Get the random seed by time.
     //! @return random seed
@@ -1020,7 +1024,7 @@ private:
         arrayBuffer[0] = '\0';
         std::cout << "\r\nGenerate " << length << " random integral numbers from " << left << " to " << right << ":\r\n"
                   << formatArray<T>(array, length, arrayBuffer, arrayBufferSize + 1) << std::endl;
-#endif
+#endif // __RUNTIME_PRINTING
     }
     //! @brief Set the random array.
     //! @tparam V - the specific type of floating point
@@ -1049,7 +1053,7 @@ private:
         std::cout << "\r\nGenerate " << length << " random floating point numbers from " << left << " to " << right
                   << ":\r\n"
                   << formatArray<T>(array, length, arrayBuffer, arrayBufferSize + 1) << std::endl;
-#endif
+#endif // __RUNTIME_PRINTING
     }
     //! @brief Get the random seed by time.
     //! @return random seed

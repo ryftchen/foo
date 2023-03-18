@@ -5,10 +5,8 @@
 //! @copyright Copyright (c) 2022-2023
 
 #include "integral.hpp"
-#ifndef __PRECOMPILED_HEADER
 #include <functional>
 #include <random>
-#endif
 
 namespace numeric::integral
 {
@@ -164,7 +162,7 @@ double MonteCarlo::operator()(double lower, double upper, const double eps) cons
     double sum = sampleFromUniformDistribution(lower, upper, eps);
 #ifdef INTEGRAL_MONTE_CARLO_NO_UNIFORM
     double sum = sampleFromNormalDistribution(lower, upper, eps);
-#endif
+#endif // INTEGRAL_MONTE_CARLO_NORMAL_DISTRIBUTION
     sum *= sign;
 
     return sum;
@@ -210,5 +208,5 @@ double MonteCarlo::sampleFromNormalDistribution(const double lower, const double
 
     return sum;
 }
-#endif
+#endif // INTEGRAL_MONTE_CARLO_NORMAL_DISTRIBUTION
 } // namespace numeric::integral

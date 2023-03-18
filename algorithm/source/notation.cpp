@@ -5,9 +5,7 @@
 //! @copyright Copyright (c) 2022-2023
 
 #include "notation.hpp"
-#ifndef __PRECOMPILED_HEADER
 #include <stack>
-#endif
 
 namespace algorithm::notation
 {

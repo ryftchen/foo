@@ -6,7 +6,11 @@
 
 #pragma once
 
+#ifndef __PRECOMPILED_HEADER
 #include <queue>
+#else
+#include "application/pch/precompiled_header.hpp"
+#endif // __PRECOMPILED_HEADER
 #include "utility/include/common.hpp"
 #include "utility/include/fsm.hpp"
 #include "utility/include/time.hpp"

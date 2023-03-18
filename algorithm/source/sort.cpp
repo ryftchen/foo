@@ -5,14 +5,12 @@
 //! @copyright Copyright (c) 2022-2023
 
 #include "sort.hpp"
-#ifndef __PRECOMPILED_HEADER
 // #define NDEBUG
 #include <cassert>
 #include <cmath>
 #include <cstring>
 #include <memory>
 #include <queue>
-#endif
 
 namespace algorithm::sort
 {

@@ -5,11 +5,16 @@
 //! @copyright Copyright (c) 2022-2023
 
 #include "apply_numeric.hpp"
+#ifndef __PRECOMPILED_HEADER
 #include <iomanip>
+#else
+#include "application/pch/precompiled_header.hpp"
+#endif // __PRECOMPILED_HEADER
 #include "application/core/include/command.hpp"
 #include "application/core/include/log.hpp"
 #include "numeric/include/arithmetic.hpp"
 #include "numeric/include/divisor.hpp"
+#include "numeric/include/integral.hpp"
 #include "numeric/include/prime.hpp"
 #include "utility/include/hash.hpp"
 

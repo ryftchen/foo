@@ -6,11 +6,15 @@
 
 #pragma once
 
+#ifndef __PRECOMPILED_HEADER
 #include <bitset>
 #include <cmath>
 #include <iostream>
 #include <tuple>
 #include <vector>
+#else
+#include "application/pch/precompiled_header.hpp"
+#endif // __PRECOMPILED_HEADER
 #include "numeric/include/integral.hpp"
 
 //! @brief Numeric-applying-related functions in the application module.

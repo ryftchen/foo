@@ -5,9 +5,13 @@
 //! @copyright Copyright (c) 2022-2023
 
 #include "command.hpp"
+#ifndef __PRECOMPILED_HEADER
 #include <unistd.h>
 #include <climits>
 #include <stdexcept>
+#else
+#include "application/pch/precompiled_header.hpp"
+#endif // __PRECOMPILED_HEADER
 #include "log.hpp"
 
 namespace application::command

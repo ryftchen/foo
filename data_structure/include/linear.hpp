@@ -6,11 +6,7 @@
 
 #pragma once
 
-#ifndef __PRECOMPILED_HEADER
 #include <sstream>
-#else
-#include "pch_data_structure.hpp"
-#endif
 
 //! @brief Linear-related functions in the data structure module.
 namespace date_structure::linear
@@ -21,7 +17,7 @@ namespace doubly_linked_list
 #ifdef __cplusplus
 extern "C"
 {
-#endif
+#endif // __cplusplus
     //! @brief The node of the doubly linked list.
     typedef struct TagNode
     {
@@ -34,7 +30,7 @@ extern "C"
     } Node, *DLL;
 #ifdef __cplusplus
 }
-#endif
+#endif // __cplusplus
 
 extern int createDll(DLL* dll);
 extern int destroyDll(DLL* dll);

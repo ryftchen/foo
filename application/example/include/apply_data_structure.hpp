@@ -6,9 +6,13 @@
 
 #pragma once
 
+#ifndef __PRECOMPILED_HEADER
 #include <array>
 #include <bitset>
 #include <vector>
+#else
+#include "application/pch/precompiled_header.hpp"
+#endif // __PRECOMPILED_HEADER
 #include "data_structure/include/linear.hpp"
 #include "data_structure/include/tree.hpp"
 
@@ -144,7 +148,7 @@ namespace linear
 #ifdef __cplusplus
 extern "C"
 {
-#endif
+#endif // __cplusplus
     //! @brief Metadata, which is used in the instance.
     typedef struct TagMeta
     {
@@ -155,7 +159,7 @@ extern "C"
     } Meta;
 #ifdef __cplusplus
 }
-#endif
+#endif // __cplusplus
 
 //! @brief Linear instances.
 class Linear

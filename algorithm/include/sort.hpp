@@ -6,12 +6,8 @@
 
 #pragma once
 
-#ifndef __PRECOMPILED_HEADER
 #include <cstdint>
 #include <vector>
-#else
-#include "pch_algorithm.hpp"
-#endif
 
 //! @brief Sort-related functions in the algorithm module.
 namespace algorithm::sort

@@ -6,10 +6,8 @@
 
 #include "search.hpp"
 
-#ifndef __PRECOMPILED_HEADER
 #include <cstring>
 #include <memory>
-#endif
 
 namespace algorithm::search
 {

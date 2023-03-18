@@ -6,6 +6,8 @@
 
 #include <gtest/gtest.h>
 #include "application/example/include/apply_data_structure.hpp"
+#include "data_structure/include/linear.hpp"
+#include "data_structure/include/tree.hpp"
 
 //! @brief Title of printing for data structure task tests.
 #define TST_DS_PRINT_TASK_TITLE(taskType, taskState)                                                   \

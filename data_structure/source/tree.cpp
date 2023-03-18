@@ -5,9 +5,7 @@
 //! @copyright Copyright (c) 2022-2023
 
 #include "tree.hpp"
-#ifndef __PRECOMPILED_HEADER
 #include <iostream>
-#endif
 
 namespace date_structure::tree
 {
