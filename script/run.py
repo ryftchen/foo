@@ -235,21 +235,21 @@ class Task:
                 elif args.build == "rls":
                     self.buildExecutable(f"{buildCmd} --release 2>&1")
             else:
-                Output.abort("No shell script build.sh in script folder.")
+                Output.abort(f"No shell script {self.buildScript} file.")
 
         if args.test is not None:
             self.options["tst"] = True
             self.totalSteps = args.test
 
     def buildExecutable(self, buildCmd):
-        stdout, stderr, returncode = common.executeCommand(buildCmd)
-        if stderr or returncode != 0:
-            print(f"<STDOUT>\n{stdout}\n<STDERR>\n{stderr}\n<RETURN CODE>\n{returncode}")
-            Output.abort(f"Failed to run shell script {self.buildScript}.")
+        stdout, stderr, returnCode = common.executeCommand(buildCmd)
+        if stderr or returnCode != 0:
+            print(f"\r\n[STDOUT]\n{stdout}\n[STDERR]\n{stderr}\n[RETURN CODE]\n{returnCode}")
+            Output.abort(f"Failed to run shell script {self.buildScript} file.")
         else:
             print(stdout)
             if "FAILED:" in stdout:
-                Output.abort(f"Failed to build the executable by shell script {self.buildScript}.")
+                Output.abort(f"Failed to build the executable by shell script {self.buildScript} file.")
 
     def prepare(self):
         if not self.options["tst"] and not os.path.isfile(f"{self.binDir}/{self.binCmd}"):
@@ -284,7 +284,7 @@ class Task:
 -object={self.binDir}/{self.binCmd} {' '.join([f'-object={self.libDir}/{lib}' for lib in self.libList])} 2>&1"
             )
             common.executeCommand(f"rm -rf {self.tempDir}/*.profraw {self.tempDir}/*.profdata")
-            print(f"\r\n<CHECK COVERAGE>\n{stdout}")
+            print(f"\r\n[CHECK COVERAGE]\n{stdout}")
             if "error" in stdout:
                 print("Please rebuild the executable file with the --check option.")
 
@@ -329,9 +329,9 @@ class Task:
         )
         Output.status(Output.color["blue"], f"CASE TASK: {f'{command}':<{align - Output.exclCmdAlignLen}} | START ")
 
-        stdout, stderr, returncode = common.executeCommand(fullCommand, enter)
-        if len(stdout.strip()) == 0 or stderr or returncode != 0:
-            print(f"\r\n<STDOUT>\n{stdout}\n<STDERR>\n{stderr}\n<RETURN CODE>\n{returncode}")
+        stdout, stderr, returnCode = common.executeCommand(fullCommand, enter)
+        if len(stdout.strip()) == 0 or stderr or returnCode != 0:
+            print(f"\r\n[STDOUT]\n{stdout}\n[STDERR]\n{stderr}\n[RETURN CODE]\n{returnCode}")
             Output.status(Output.color["red"], f"{f'CASE TASK: FAILURE NO.{str(self.completeSteps + 1)}':<{align}}")
         else:
             print(stdout)
@@ -342,7 +342,7 @@ class Task:
                 )
                 if "error" in stdout:
                     stdout = stdout.replace("\t", "    ")
-                    print(f"\r\n<CHECK MEMORY>\n{stdout}")
+                    print(f"\r\n[CHECK MEMORY]\n{stdout}")
                     common.executeCommand(
                         f"valgrind-ci {self.tempDir}/foo_chk_mem_{str(self.completeSteps + 1)}.xml --source-dir=./ \
 --output-dir={self.tempDir}/memory/case_task_{str(self.completeSteps + 1)}"
@@ -413,7 +413,7 @@ class Task:
                     lastIndex = finishIndex
                     if tags["chk_mem"]:
                         for index, line in enumerate(readlines[startIndex + 1 : finishIndex]):
-                            if "<CHECK MEMORY>" in line:
+                            if "[CHECK MEMORY]" in line:
                                 index += startIndex + 1
                                 memErr[caseTask] = "".join(readlines[index + 1 : finishIndex - 1])
                                 lastIndex = index
@@ -443,18 +443,18 @@ class Task:
             content = runLog.read()
             if self.testBinCmd in content:
                 tags["tst"] = True
-            if "<CHECK COVERAGE>" in content:
+            if "[CHECK COVERAGE]" in content:
                 tags["chk_cov"] = True
-            if "<CHECK MEMORY>" in content:
+            if "[CHECK MEMORY]" in content:
                 tags["chk_mem"] = True
         if (
             (tags["tst"] != self.options["tst"])
             or (tags["chk_cov"] != self.options["chk_cov"])
             or (tags["chk_mem"] and not self.options["chk_mem"])
         ):
-            Output.abort("Run options do not match the actual contents of the run log file.")
+            Output.abort(f"Run options do not match the actual contents of the run log {self.logFile} file.")
         if tags["tst"] and (tags["chk_cov"] or tags["chk_mem"]):
-            Output.abort(f"The run log file {self.logFile} is complex. Please retry.")
+            Output.abort(f"The run log {self.logFile} file is complex. Please retry.")
 
         startIndices = []
         finishIndices = []
@@ -464,7 +464,7 @@ class Task:
             elif "| FINISH" in line:
                 finishIndices.append(index)
         if len(startIndices) != len(finishIndices) or len(startIndices) != self.totalSteps:
-            Output.abort(f"The run log file {self.logFile} is incomplete. Please retry.")
+            Output.abort(f"The run log {self.logFile} file is incomplete. Please retry.")
 
         failRes, covPer, memErr = analyzeForReport(readlines, startIndices, finishIndices, tags)
         with open(self.reportFile, "w", encoding="utf-8") as runReport:
