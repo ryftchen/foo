@@ -27,7 +27,7 @@
     std::cout << "\r\n"                                                                                             \
               << "DATA STRUCTURE TASK: " << std::setiosflags(std::ios_base::left) << std::setfill('.')              \
               << std::setw(50) << taskType << "END" << std::resetiosflags(std::ios_base::left) << std::setfill(' ') \
-              << "\r\n"                                                                                             \
+              << "\n"                                                                                               \
               << std::endl;
 
 namespace application::app_ds
@@ -46,7 +46,7 @@ using TreeInstance = DataStructureTask::TreeInstance;
 namespace linear
 {
 //! @brief Display linear result.
-#define LINEAR_RESULT "\r\n*%-10s instance:\r\n%s"
+#define LINEAR_RESULT "\r\n*%-10s instance:\n%s"
 //! @brief Print linear result content.
 #define LINEAR_PRINT_RESULT_CONTENT(method) COMMON_PRINT(LINEAR_RESULT, method, output.str().c_str())
 
@@ -170,7 +170,7 @@ void updateLinearTask(const std::string& target)
 namespace tree
 {
 //! @brief Display tree result.
-#define TREE_RESULT "\r\n*%-19s instance:\r\n%s"
+#define TREE_RESULT "\r\n*%-19s instance:\n%s"
 //! @brief Print tree result content.
 #define TREE_PRINT_RESULT_CONTENT(method) COMMON_PRINT(TREE_RESULT, method, output.str().c_str());
 

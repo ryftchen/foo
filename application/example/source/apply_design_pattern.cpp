@@ -27,7 +27,7 @@
     std::cout << "\r\n"                                                                                             \
               << "DESIGN PATTERN TASK: " << std::setiosflags(std::ios_base::left) << std::setfill('.')              \
               << std::setw(50) << taskType << "END" << std::resetiosflags(std::ios_base::left) << std::setfill(' ') \
-              << "\r\n"                                                                                             \
+              << "\n"                                                                                               \
               << std::endl;
 
 namespace application::app_dp
@@ -48,7 +48,7 @@ using StructuralInstance = DesignPatternTask::StructuralInstance;
 namespace behavioral
 {
 //! @brief Display behavioral result.
-#define BEHAVIORAL_RESULT "\r\n*%-21s instance:\r\n%s"
+#define BEHAVIORAL_RESULT "\r\n*%-21s instance:\n%s"
 //! @brief Print behavioral result content.
 #define BEHAVIORAL_PRINT_RESULT_CONTENT(method) COMMON_PRINT(BEHAVIORAL_RESULT, method, output.str().c_str());
 
@@ -325,7 +325,7 @@ void updateBehavioralTask(const std::string& target)
 namespace creational
 {
 //! @brief Display creational result.
-#define CREATIONAL_RESULT "\r\n*%-15s instance:\r\n%s"
+#define CREATIONAL_RESULT "\r\n*%-15s instance:\n%s"
 //! @brief Print creational result content.
 #define CREATIONAL_PRINT_RESULT_CONTENT(method) COMMON_PRINT(CREATIONAL_RESULT, method, output.str().c_str());
 
@@ -488,7 +488,7 @@ void updateCreationalTask(const std::string& target)
 namespace structural
 {
 //! @brief Display structural result.
-#define STRUCTURAL_RESULT "\r\n*%-9s instance:\r\n%s"
+#define STRUCTURAL_RESULT "\r\n*%-9s instance:\n%s"
 //! @brief Print structural result content.
 #define STRUCTURAL_PRINT_RESULT_CONTENT(method) COMMON_PRINT(STRUCTURAL_RESULT, method, output.str().c_str());
 

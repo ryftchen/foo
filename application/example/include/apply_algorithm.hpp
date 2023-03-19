@@ -425,11 +425,11 @@ private:
 #ifdef __RUNTIME_PRINTING
         std::string out(text);
         out.insert(1, ".");
-        std::cout << "\r\nπ " << textLen << " digits:\r\n"
+        std::cout << "\r\nπ " << textLen << " digits:\n"
                   << out.substr(0, std::min(textLen, maxNumPerLineOfPrint)) << std::endl;
         if (textLen > maxNumPerLineOfPrint)
         {
-            std::cout << "...\r\n...\r\n..." << std::endl;
+            std::cout << "...\n...\n..." << std::endl;
             if (textLen > maxNumPerLineOfPrint)
             {
                 std::cout
@@ -776,9 +776,8 @@ private:
         const uint32_t arrayBufferSize = length * maxAlignOfPrint;
         char arrayBuffer[arrayBufferSize + 1];
         arrayBuffer[0] = '\0';
-        std::cout << "\r\nGenerate " << length << " ordered integral numbers from " << left << " to " << right
-                  << ":\r\n"
-                  << formatArray<T>(array, length, arrayBuffer, arrayBufferSize + 1) << "\r\n"
+        std::cout << "\r\nGenerate " << length << " ordered integral numbers from " << left << " to " << right << ":\n"
+                  << formatArray<T>(array, length, arrayBuffer, arrayBufferSize + 1) << "\n"
                   << std::endl;
 #endif // __RUNTIME_PRINTING
     }
@@ -808,8 +807,8 @@ private:
         char arrayBuffer[arrayBufferSize + 1];
         arrayBuffer[0] = '\0';
         std::cout << "\r\nGenerate " << length << " ordered floating point numbers from " << left << " to " << right
-                  << ":\r\n"
-                  << formatArray<T>(array, length, arrayBuffer, arrayBufferSize + 1) << "\r\n"
+                  << ":\n"
+                  << formatArray<T>(array, length, arrayBuffer, arrayBufferSize + 1) << "\n"
                   << std::endl;
 #endif // __RUNTIME_PRINTING
     }
@@ -1022,7 +1021,7 @@ private:
         const uint32_t arrayBufferSize = length * maxAlignOfPrint;
         char arrayBuffer[arrayBufferSize + 1];
         arrayBuffer[0] = '\0';
-        std::cout << "\r\nGenerate " << length << " random integral numbers from " << left << " to " << right << ":\r\n"
+        std::cout << "\r\nGenerate " << length << " random integral numbers from " << left << " to " << right << ":\n"
                   << formatArray<T>(array, length, arrayBuffer, arrayBufferSize + 1) << std::endl;
 #endif // __RUNTIME_PRINTING
     }
@@ -1051,7 +1050,7 @@ private:
         char arrayBuffer[arrayBufferSize + 1];
         arrayBuffer[0] = '\0';
         std::cout << "\r\nGenerate " << length << " random floating point numbers from " << left << " to " << right
-                  << ":\r\n"
+                  << ":\n"
                   << formatArray<T>(array, length, arrayBuffer, arrayBufferSize + 1) << std::endl;
 #endif // __RUNTIME_PRINTING
     }
