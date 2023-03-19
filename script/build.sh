@@ -397,7 +397,7 @@ function packageForBrowser()
     fi
     local browserFolder="browser"
     local tarFile="${FOLDER[proj]}_${browserFolder}_${commitId}.tar.bz2"
-    rm -r "./${FOLDER[temp]}/${FOLDER[proj]}_${browserFolder}"_*.tar.bz2 "./${FOLDER[doc]}/${browserFolder}"
+    rm -rf "./${FOLDER[temp]}/${FOLDER[proj]}_${browserFolder}"_*.tar.bz2 "./${FOLDER[doc]}/${browserFolder}"
 
     mkdir -p "./${FOLDER[doc]}/${browserFolder}"
     shellCommand "codebrowser_generator -color -a -b ./${FOLDER[bld]}/${COMP_CMD} -o ./${FOLDER[doc]}/${browserFolder} \
