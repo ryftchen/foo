@@ -2,6 +2,7 @@
 
 try:
     import argparse
+    import fcntl
     import os
     import queue
     import re
@@ -371,12 +372,16 @@ class Task:
         sys.stdout = self.log
 
     def formatRunLog(self):
-        refresh = ""
-        with open(self.logFile, "rt", encoding="utf-8") as refresh:
-            inputContent = refresh.read()
-        outputContent = re.sub(Output.colorEscapeRegex, "", inputContent)
-        with open(self.logFile, "w", encoding="utf-8") as refresh:
-            refresh.write(outputContent)
+        runLog = ""
+        with open(self.logFile, "rt", encoding="utf-8") as runLog:
+            fcntl.flock(runLog.fileno(), fcntl.LOCK_EX)
+            oldContent = runLog.read()
+            fcntl.flock(runLog.fileno(), fcntl.LOCK_UN)
+        newContent = re.sub(Output.colorEscapeRegex, "", oldContent)
+        with open(self.logFile, "w", encoding="utf-8") as runLog:
+            fcntl.flock(runLog.fileno(), fcntl.LOCK_EX)
+            runLog.write(newContent)
+            fcntl.flock(runLog.fileno(), fcntl.LOCK_UN)
 
     def summarizeRunLog(self):
         def analyzeForReport(readlines, startIndices, finishIndices, tags):
@@ -438,6 +443,7 @@ class Task:
         tags = {"tst": False, "chk_cov": False, "chk_mem": False}
         readlines = []
         with open(self.logFile, "rt", encoding="utf-8") as runLog:
+            fcntl.flock(runLog.fileno(), fcntl.LOCK_EX)
             readlines = runLog.readlines()
             runLog.seek(0)
             content = runLog.read()
@@ -447,6 +453,7 @@ class Task:
                 tags["chk_cov"] = True
             if "[CHECK MEMORY]" in content:
                 tags["chk_mem"] = True
+            fcntl.flock(runLog.fileno(), fcntl.LOCK_UN)
         if (
             (tags["tst"] != self.options["tst"])
             or (tags["chk_cov"] != self.options["chk_cov"])
@@ -468,6 +475,7 @@ class Task:
 
         failRes, covPer, memErr = analyzeForReport(readlines, startIndices, finishIndices, tags)
         with open(self.reportFile, "w", encoding="utf-8") as runReport:
+            fcntl.flock(runReport.fileno(), fcntl.LOCK_EX)
             runStat = {"Passed": str(self.totalSteps - len(failRes)), "Failed": str(len(failRes))}
             runStatRep = "REPORT FOR RUN STATISTICS"
             if tags["tst"]:
@@ -495,6 +503,7 @@ class Task:
                     + "\n\n"
                 )
             runReport.write(runStatRep + failResRep + covPerRep + memErrRep)
+            fcntl.flock(runReport.fileno(), fcntl.LOCK_UN)
 
         if failRes:
             sys.exit(1)

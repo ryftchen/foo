@@ -35,21 +35,21 @@ class Log:
     def __init__(self, filename, stream=sys.stdout):
         self.terminal = stream
         self.log = open(filename, "w", encoding="utf-8")  # pylint: disable=consider-using-with
-        fcntl.flock(self.log, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        fcntl.flock(self.log.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
 
     def write(self, message):
         self.terminal.write(message)
         try:
             self.log.write(message)
         except IOError:
-            fcntl.flock(self.log, fcntl.LOCK_UN)
+            fcntl.flock(self.log.fileno(), fcntl.LOCK_UN)
             self.log.close()
 
     def flush(self):
         pass
 
     def __del__(self):
-        fcntl.flock(self.log, fcntl.LOCK_UN)
+        fcntl.flock(self.log.fileno(), fcntl.LOCK_UN)
         self.log.close()
 
 
