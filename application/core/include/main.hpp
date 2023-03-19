@@ -76,11 +76,11 @@ static void signalHandler(int sig)
 
     if (numOfFrame == maxFrame)
     {
-        realTrace << "\r\n[TRUNCATED...]\r\n";
+        realTrace << "\r\n[TRUNCATED...]\n";
     }
     std::fprintf(
         stderr,
-        "\r\n\r\n<MAIN>\r\n\r\n[SIGNAL]\r\n%d\r\n\r\n[BACKTRACE]\r\n%s\r\n[VERBOSE]\r\n%s\r\n",
+        "\r\n\r\n<MAIN>\n\n[SIGNAL]\n%d\n\n[BACKTRACE]\n%s\n[VERBOSE]\n%s\n",
         sig,
         originalTrace.str().c_str(),
         realTrace.str().c_str());

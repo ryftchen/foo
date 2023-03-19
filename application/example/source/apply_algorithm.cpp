@@ -30,7 +30,7 @@
     }                                                                                                              \
     std::cout << "\r\n"                                                                                            \
               << "ALGORITHM TASK: " << std::setiosflags(std::ios_base::left) << std::setfill('.') << std::setw(50) \
-              << taskType << "END" << std::resetiosflags(std::ios_base::left) << std::setfill(' ') << "\r\n"       \
+              << taskType << "END" << std::resetiosflags(std::ios_base::left) << std::setfill(' ') << "\n"         \
               << std::endl;
 
 namespace application::app_algo
@@ -255,7 +255,7 @@ void updateMatchTask(const std::string& target)
 namespace notation
 {
 //! @brief Display notation result.
-#define NOTATION_RESULT "\r\n*%-7s method:\r\n%s: %s\n"
+#define NOTATION_RESULT "\r\n*%-7s method:\n%s: %s\n"
 //! @brief Print notation result content.
 #define NOTATION_PRINT_RESULT_CONTENT(method, describe) \
     COMMON_PRINT(NOTATION_RESULT, method, describe, notationStr.data())
@@ -696,7 +696,7 @@ void updateSearchTask(const std::string& target)
 namespace sort
 {
 //! @brief Display sort result.
-#define SORT_RESULT(opt) "\r\n*%-9s method: (" #opt ")\r\n%s\r\n==>Run time: %8.5f ms\n"
+#define SORT_RESULT(opt) "\r\n*%-9s method: (" #opt ")\n%s\n==>Run time: %8.5f ms\n"
 //! @brief Print sort result content.
 #define SORT_PRINT_RESULT_CONTENT(method)                                                                           \
     do                                                                                                              \

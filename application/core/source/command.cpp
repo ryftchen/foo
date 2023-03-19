@@ -346,46 +346,51 @@ void Command::printHelpMessage() const
         std::cout << "Usage: foo -a, --algorithm ";
         if (!getBit<AlgorithmTask::MatchMethod>().none())
         {
-            std::puts("match [tasks...]\r\n\r\nNon-optional:\r\n"
-                      "rab    Rabin-Karp\r\n"
-                      "knu    Knuth-Morris-Pratt\r\n"
-                      "boy    Boyer-Moore\r\n"
-                      "hor    Horspool\r\n"
+            std::puts("match [tasks...]\n"
+                      "\r\nNon-optional:\n"
+                      "rab    Rabin-Karp\n"
+                      "knu    Knuth-Morris-Pratt\n"
+                      "boy    Boyer-Moore\n"
+                      "hor    Horspool\n"
                       "sun    Sunday");
         }
         else if (!getBit<AlgorithmTask::NotationMethod>().none())
         {
-            std::puts("notation [tasks...]\r\n\r\nNon-optional:\r\n"
-                      "pre    Prefix\r\n"
+            std::puts("notation [tasks...]\n"
+                      "\r\nNon-optional:\n"
+                      "pre    Prefix\n"
                       "pos    Postfix");
         }
         else if (!getBit<AlgorithmTask::OptimalMethod>().none())
         {
-            std::puts("optimal [tasks...]\r\n\r\nNon-optional:\r\n"
-                      "gra    Gradient Descent\r\n"
-                      "ann    Simulated Annealing\r\n"
-                      "par    Particle Swarm\r\n"
+            std::puts("optimal [tasks...]\n"
+                      "\r\nNon-optional:\n"
+                      "gra    Gradient Descent\n"
+                      "ann    Simulated Annealing\n"
+                      "par    Particle Swarm\n"
                       "gen    Genetic");
         }
         else if (!getBit<AlgorithmTask::SearchMethod>().none())
         {
-            std::puts("search [tasks...]\r\n\r\nNon-optional:\r\n"
-                      "bin    Binary\r\n"
-                      "int    Interpolation\r\n"
+            std::puts("search [tasks...]\n"
+                      "\r\nNon-optional:\n"
+                      "bin    Binary\n"
+                      "int    Interpolation\n"
                       "fib    Fibonacci");
         }
         else if (!getBit<AlgorithmTask::SortMethod>().none())
         {
-            std::puts("search [tasks...]\r\n\r\nNon-optional:\r\n"
-                      "bub    Bubble\r\n"
-                      "sel    Selection\r\n"
-                      "ins    Insertion\r\n"
-                      "she    Shell\r\n"
-                      "mer    Merge\r\n"
-                      "qui    Quick\r\n"
-                      "hea    Heap\r\n"
-                      "cou    Counting\r\n"
-                      "buc    Bucket\r\n"
+            std::puts("search [tasks...]\n"
+                      "\r\nNon-optional:\n"
+                      "bub    Bubble\n"
+                      "sel    Selection\n"
+                      "ins    Insertion\n"
+                      "she    Shell\n"
+                      "mer    Merge\n"
+                      "qui    Quick\n"
+                      "hea    Heap\n"
+                      "cou    Counting\n"
+                      "buc    Bucket\n"
                       "rad    Radix");
         }
     }
@@ -396,16 +401,18 @@ void Command::printHelpMessage() const
         std::cout << "Usage: foo -ds, --data-structure ";
         if (!getBit<DataStructureTask::LinearInstance>().none())
         {
-            std::puts("linear [tasks...]\r\n\r\nNon-optional:\r\n"
-                      "lin    Linked List\r\n"
-                      "sta    Stack\r\n"
+            std::puts("linear [tasks...]\n"
+                      "\r\nNon-optional:\n"
+                      "lin    Linked List\n"
+                      "sta    Stack\n"
                       "que    Queue");
         }
         else if (!getBit<DataStructureTask::TreeInstance>().none())
         {
-            std::puts("tree [tasks...]\r\n\r\nNon-optional:\r\n"
-                      "bin    Binary Search\r\n"
-                      "ade    Adelson-Velsky-Landis\r\n"
+            std::puts("tree [tasks...]\n"
+                      "\r\nNon-optional:\n"
+                      "bin    Binary Search\n"
+                      "ade    Adelson-Velsky-Landis\n"
                       "spl    Splay");
         }
     }
@@ -416,37 +423,40 @@ void Command::printHelpMessage() const
         std::cout << "Usage: foo -dp, --design-pattern ";
         if (!getBit<DesignPatternTask::BehavioralInstance>().none())
         {
-            std::puts("behavioral [tasks...]\r\n\r\nNon-optional:\r\n"
-                      "cha    Chain Of Responsibility\r\n"
-                      "com    Command\r\n"
-                      "int    Interpreter\r\n"
-                      "ite    Iterator\r\n"
-                      "med    Mediator\r\n"
-                      "mem    Memento\r\n"
-                      "obs    Observer\r\n"
-                      "sta    State\r\n"
-                      "str    Strategy\r\n"
-                      "tem    Template Method\r\n"
+            std::puts("behavioral [tasks...]\n"
+                      "\r\nNon-optional:\n"
+                      "cha    Chain Of Responsibility\n"
+                      "com    Command\n"
+                      "int    Interpreter\n"
+                      "ite    Iterator\n"
+                      "med    Mediator\n"
+                      "mem    Memento\n"
+                      "obs    Observer\n"
+                      "sta    State\n"
+                      "str    Strategy\n"
+                      "tem    Template Method\n"
                       "vis    Visitor");
         }
         else if (!getBit<DesignPatternTask::CreationalInstance>().none())
         {
-            std::puts("creational [tasks...]\r\n\r\nNon-optional:\r\n"
-                      "abs    Abstract Factory\r\n"
-                      "bui    Builder\r\n"
-                      "fac    Factory Method\r\n"
-                      "pro    Prototype\r\n"
+            std::puts("creational [tasks...]\n"
+                      "\r\nNon-optional:\n"
+                      "abs    Abstract Factory\n"
+                      "bui    Builder\n"
+                      "fac    Factory Method\n"
+                      "pro    Prototype\n"
                       "sin    Singleton");
         }
         else if (!getBit<DesignPatternTask::StructuralInstance>().none())
         {
-            std::puts("structural [tasks...]\r\n\r\nNon-optional:\r\n"
-                      "ada    Adapter\r\n"
-                      "bri    Bridge\r\n"
-                      "com    Composite\r\n"
-                      "dec    Decorator\r\n"
-                      "fac    Facade\r\n"
-                      "fly    Flyweight\r\n"
+            std::puts("structural [tasks...]\n"
+                      "\r\nNon-optional:\n"
+                      "ada    Adapter\n"
+                      "bri    Bridge\n"
+                      "com    Composite\n"
+                      "dec    Decorator\n"
+                      "fac    Facade\n"
+                      "fly    Flyweight\n"
                       "pro    Proxy");
         }
     }
@@ -457,31 +467,35 @@ void Command::printHelpMessage() const
         std::cout << "Usage: foo -n, --numeric ";
         if (!getBit<NumericTask::ArithmeticMethod>().none())
         {
-            std::puts("arithmetic [tasks...]\r\n\r\nNon-optional:\r\n"
-                      "add    Addition\r\n"
-                      "sub    Subtraction\r\n"
-                      "mul    Multiplication\r\n"
+            std::puts("arithmetic [tasks...]\n"
+                      "\r\nNon-optional:\n"
+                      "add    Addition\n"
+                      "sub    Subtraction\n"
+                      "mul    Multiplication\n"
                       "div    Division");
         }
         else if (!getBit<NumericTask::DivisorMethod>().none())
         {
-            std::puts("divisor [tasks...]\r\n\r\nNon-optional:\r\n"
-                      "euc    Euclidean\r\n"
+            std::puts("divisor [tasks...]\n"
+                      "\r\nNon-optional:\n"
+                      "euc    Euclidean\n"
                       "ste    Stein");
         }
         else if (!getBit<NumericTask::IntegralMethod>().none())
         {
-            std::puts("integral [tasks...]\r\n\r\nNon-optional:\r\n"
-                      "tra    Trapezoidal\r\n"
-                      "sim    Adaptive Simpson's 1/3\r\n"
-                      "rom    Romberg\r\n"
-                      "gau    Gauss-Legendre's 5-Points\r\n"
+            std::puts("integral [tasks...]\n"
+                      "\r\nNon-optional:\n"
+                      "tra    Trapezoidal\n"
+                      "sim    Adaptive Simpson's 1/3\n"
+                      "rom    Romberg\n"
+                      "gau    Gauss-Legendre's 5-Points\n"
                       "mon    Monte-Carlo");
         }
         else if (!getBit<NumericTask::PrimeMethod>().none())
         {
-            std::puts("prime [tasks...]\r\n\r\nNon-optional:\r\n"
-                      "era    Eratosthenes\r\n"
+            std::puts("prime [tasks...]\n"
+                      "\r\nNon-optional:\n"
+                      "era    Eratosthenes\n"
                       "eul    Euler");
         }
     }

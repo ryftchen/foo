@@ -29,7 +29,7 @@
     }                                                                                                            \
     std::cout << "\r\n"                                                                                          \
               << "NUMERIC TASK: " << std::setiosflags(std::ios_base::left) << std::setfill('.') << std::setw(50) \
-              << taskType << "END" << std::resetiosflags(std::ios_base::left) << std::setfill(' ') << "\r\n"     \
+              << taskType << "END" << std::resetiosflags(std::ios_base::left) << std::setfill(' ') << "\n"       \
               << std::endl;
 
 namespace application::app_num
@@ -52,7 +52,7 @@ using PrimeMethod = NumericTask::PrimeMethod;
 namespace arithmetic
 {
 //! @brief Display arithmetic result.
-#define ARITHMETIC_RESULT "\r\n*%-14s method:\r\n(%d) %s (%d) = %d\n"
+#define ARITHMETIC_RESULT "\r\n*%-14s method:\n(%d) %s (%d) = %d\n"
 //! @brief Print arithmetic result content.
 #define ARITHMETIC_PRINT_RESULT_CONTENT(method, a, operator, b, result) \
     COMMON_PRINT(ARITHMETIC_RESULT, method, a, operator, b, result)
@@ -196,7 +196,7 @@ void updateArithmeticTask(const std::string& target)
 namespace divisor
 {
 //! @brief Display divisor result.
-#define DIVISOR_RESULT "\r\n*%-9s method:\r\n%s\r\n==>Run time: %8.5f ms\n"
+#define DIVISOR_RESULT "\r\n*%-9s method:\n%s\n==>Run time: %8.5f ms\n"
 //! @brief Print divisor result content.
 #define DIVISOR_PRINT_RESULT_CONTENT(method)                                                                   \
     do                                                                                                         \
@@ -527,7 +527,7 @@ void updateIntegralTask(const std::string& target)
 namespace prime
 {
 //! @brief Display prime result.
-#define PRIME_RESULT "\r\n*%-9s method:\r\n%s\r\n==>Run time: %8.5f ms\n"
+#define PRIME_RESULT "\r\n*%-9s method:\n%s\n==>Run time: %8.5f ms\n"
 //! @brief Print prime result content.
 #define PRIME_PRINT_RESULT_CONTENT(method)                                                                        \
     do                                                                                                            \
