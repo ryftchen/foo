@@ -145,7 +145,7 @@ public:
 
     //! @brief Get the Log instance.
     //! @return reference of Log object
-    static inline Log& getInstance();
+    static Log& getInstance();
     //! @brief Flush log to queue.
     //! @tparam Args - type of arguments of format
     //! @param level - output level
@@ -256,12 +256,6 @@ private:
 protected:
     friend std::ostream& operator<<(std::ostream& os, const Log::State& state);
 };
-
-inline Log& Log::getInstance()
-{
-    static Log logger;
-    return logger;
-}
 
 template <typename... Args>
 void Log::flush(

@@ -32,7 +32,7 @@ public:
 
     //! @brief Get the Command instance.
     //! @return reference of Command object
-    static inline Command& getInstance();
+    static Command& getInstance();
     //! @brief Interface for running commander.
     //! @param argc - argument count
     //! @param argv - argument vector
@@ -261,12 +261,6 @@ private:
     //! @brief Throw an exception when excess arguments.
     [[noreturn]] inline void throwExcessArgumentException();
 };
-
-inline Command& Command::getInstance()
-{
-    static Command commander;
-    return commander;
-}
 
 inline void Command::throwExcessArgumentException()
 {

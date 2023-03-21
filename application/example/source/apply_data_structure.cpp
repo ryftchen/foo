@@ -43,6 +43,14 @@ using LinearInstance = DataStructureTask::LinearInstance;
 //! @brief Alias for TreeInstance.
 using TreeInstance = DataStructureTask::TreeInstance;
 
+//! @brief Get the data structure task.
+//! @return reference of DataStructureTask object
+DataStructureTask& getTask()
+{
+    static DataStructureTask task;
+    return task;
+}
+
 namespace linear
 {
 //! @brief Display linear result.

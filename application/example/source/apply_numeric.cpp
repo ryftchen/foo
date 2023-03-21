@@ -49,6 +49,14 @@ using IntegralMethod = NumericTask::IntegralMethod;
 //! @brief Alias for PrimeMethod.
 using PrimeMethod = NumericTask::PrimeMethod;
 
+//! @brief Get the numeric task.
+//! @return reference of NumericTask object
+NumericTask& getTask()
+{
+    static NumericTask task;
+    return task;
+}
+
 namespace arithmetic
 {
 //! @brief Display arithmetic result.

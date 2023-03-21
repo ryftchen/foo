@@ -45,6 +45,14 @@ using CreationalInstance = DesignPatternTask::CreationalInstance;
 //! @brief Alias for StructuralInstance.
 using StructuralInstance = DesignPatternTask::StructuralInstance;
 
+//! @brief Get the design pattern task.
+//! @return reference of DesignPatternTask object
+DesignPatternTask& getTask()
+{
+    static DesignPatternTask task;
+    return task;
+}
+
 namespace behavioral
 {
 //! @brief Display behavioral result.

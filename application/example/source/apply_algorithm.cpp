@@ -52,6 +52,14 @@ using SearchMethod = AlgorithmTask::SearchMethod;
 //! @brief Alias for SortMethod.
 using SortMethod = AlgorithmTask::SortMethod;
 
+//! @brief Get the algorithm task.
+//! @return reference of AlgorithmTask object
+AlgorithmTask& getTask()
+{
+    static AlgorithmTask task;
+    return task;
+}
+
 namespace match
 {
 //! @brief Display match result.

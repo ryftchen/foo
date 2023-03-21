@@ -26,6 +26,12 @@ Log::Log(
     pathname[logPathLength] = '\0';
 }
 
+Log& Log::getInstance()
+{
+    static Log logger;
+    return logger;
+}
+
 void Log::runLogger()
 {
     State expectedState = State::init;

@@ -150,14 +150,7 @@ protected:
         return os;
     }
 };
-
-//! @brief Get the numeric task.
-//! @return reference of NumericTask object
-inline NumericTask& getTask()
-{
-    static NumericTask task;
-    return task;
-}
+extern NumericTask& getTask();
 
 //! @brief Get the bit flags of the method in numeric tasks.
 //! @tparam T - type of the method
