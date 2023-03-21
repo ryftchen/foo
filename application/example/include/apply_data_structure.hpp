@@ -101,14 +101,7 @@ protected:
         return os;
     }
 };
-
-//! @brief Get the data structure task.
-//! @return reference of DataStructureTask object
-inline DataStructureTask& getTask()
-{
-    static DataStructureTask task;
-    return task;
-}
+extern DataStructureTask& getTask();
 
 //! @brief Get the bit flags of the instance in data structure tasks.
 //! @tparam T - type of the instance

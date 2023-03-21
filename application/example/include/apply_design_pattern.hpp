@@ -139,14 +139,7 @@ protected:
         return os;
     }
 };
-
-//! @brief Get the design pattern task.
-//! @return reference of DesignPatternTask object
-inline DesignPatternTask& getTask()
-{
-    static DesignPatternTask task;
-    return task;
-}
+extern DesignPatternTask& getTask();
 
 //! @brief Get the bit flags of the instance in design pattern tasks.
 //! @tparam T - type of the instance

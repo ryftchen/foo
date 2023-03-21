@@ -188,14 +188,7 @@ protected:
         return os;
     }
 };
-
-//! @brief Get the algorithm task.
-//! @return reference of AlgorithmTask object
-inline AlgorithmTask& getTask()
-{
-    static AlgorithmTask task;
-    return task;
-}
+extern AlgorithmTask& getTask();
 
 //! @brief Get the bit flags of the method in algorithm tasks.
 //! @tparam T - type of the method

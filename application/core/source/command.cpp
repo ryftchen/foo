@@ -114,6 +114,12 @@ Command::Command()
     }
 }
 
+Command& Command::getInstance()
+{
+    static Command commander;
+    return commander;
+}
+
 void Command::runCommander(const int argc, const char* const argv[])
 {
     LOG_TO_START;
