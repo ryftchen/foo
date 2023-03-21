@@ -416,9 +416,6 @@ private:
     //! @brief The number of types.
     static int nTypes;
 };
-
-// std::unique_ptr<Prototype> Client::types[2];
-// int Client::nTypes = 2;
 } // namespace prototype
 
 //! @brief The singleton factory pattern.
@@ -465,7 +462,5 @@ private:
     //! @brief The instance of the singleton.
     static std::shared_ptr<Singleton> instance;
 };
-
-// std::shared_ptr<Singleton> Singleton::instance = nullptr;
 } // namespace singleton
 } // namespace design_pattern::creational
