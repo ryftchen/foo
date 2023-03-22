@@ -1,13 +1,13 @@
 [BASIC]
-argument-naming-style=camelCase
-attr-naming-style=camelCase
-class-attribute-naming-style=camelCase
+argument-naming-style=snake_case
+attr-naming-style=snake_case
+class-attribute-naming-style=snake_case
 class-naming-style=PascalCase
 const-naming-style=UPPER_CASE
-function-naming-style=camelCase
-method-naming-style=camelCase
+function-naming-style=snake_case
+method-naming-style=snake_case
 module-naming-style=snake_case
-variable-naming-style=camelCase
+variable-naming-style=snake_case
 
 [FORMAT]
 indent-after-paren=4
