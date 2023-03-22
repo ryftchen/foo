@@ -11,7 +11,7 @@ declare CMAKE_BUILD_OPTION=""
 declare BUILD_TYPE="Debug"
 declare BUILD_APP_ONLY=false
 
-function shellCommand()
+function shell_command()
 {
     echo
     echo "$(date "+%b %d %T") $* START"
@@ -26,17 +26,17 @@ function abort()
     exit 1
 }
 
-function signalHandler()
+function signal_handler()
 {
     tput sgr0
     if [[ ${ARGS[lint]} = true ]]; then
-        local appCompCmd=${FOLDER[bld]}/${COMP_CMD}
-        if [[ -f ./${appCompCmd}.bak ]]; then
-            rm -rf "./${appCompCmd}" && mv "./${appCompCmd}.bak" "./${appCompCmd}"
+        local app_comp_cmd=${FOLDER[bld]}/${COMP_CMD}
+        if [[ -f ./${app_comp_cmd}.bak ]]; then
+            rm -rf "./${app_comp_cmd}" && mv "./${app_comp_cmd}.bak" "./${app_comp_cmd}"
         fi
-        local tstCompCmd=${FOLDER[tst]}/${FOLDER[bld]}/${COMP_CMD}
-        if [[ -f ./${tstCompCmd}.bak ]]; then
-            rm -rf "./${tstCompCmd}" && mv "./${tstCompCmd}.bak" "./${tstCompCmd}"
+        local tst_comp_cmd=${FOLDER[tst]}/${FOLDER[bld]}/${COMP_CMD}
+        if [[ -f ./${tst_comp_cmd}.bak ]]; then
+            rm -rf "./${tst_comp_cmd}" && mv "./${tst_comp_cmd}.bak" "./${tst_comp_cmd}"
         fi
     fi
     if [[ ${ARGS[doxygen]} = true ]] && [[ ${ARGS[release]} = false ]]; then
@@ -46,7 +46,7 @@ function signalHandler()
     exit 1
 }
 
-function parseArguments()
+function parse_arguments()
 {
     while [[ $# -gt 0 ]]; do
         case $1 in
@@ -67,7 +67,7 @@ function parseArguments()
     done
 }
 
-function checkBasicDependencies()
+function check_basic_dependencies()
 {
     if [[ ${ARGS[release]} = true ]]; then
         BUILD_TYPE="Release"
@@ -86,7 +86,7 @@ function checkBasicDependencies()
     fi
 }
 
-function checkExtraDependencies()
+function check_extra_dependencies()
 {
     if [[ ${ARGS[format]} = true ]]; then
         if ! command -v clang-format-12 >/dev/null 2>&1 || ! command -v shfmt >/dev/null 2>&1 \
@@ -132,9 +132,9 @@ FOO_BLD_UNITY is turned on."
     fi
 }
 
-function setCompileEnvironment()
+function set_compile_environment()
 {
-    local tmpfsSubFolder=$1 tmpfsSize=$2
+    local tmpfs_subfolder=$1 tmpfs_size=$2
 
     export CC=/usr/bin/clang-12 CXX=/usr/bin/clang++-12
     if [[ -f ./${FOLDER[scr]}/.env ]]; then
@@ -185,32 +185,32 @@ function setCompileEnvironment()
         fi
     fi
     if [[ ${DEV_OPT[tmpfs]} = true ]]; then
-        if [[ ! -d ./${tmpfsSubFolder} ]]; then
-            mkdir "./${tmpfsSubFolder}"
+        if [[ ! -d ./${tmpfs_subfolder} ]]; then
+            mkdir "./${tmpfs_subfolder}"
         fi
-        if ! df -h -t tmpfs | grep -q "${FOLDER[proj]}/${tmpfsSubFolder}" 2>/dev/null; then
-            shellCommand "mount -t tmpfs -o size=${tmpfsSize} tmpfs ./${tmpfsSubFolder}"
+        if ! df -h -t tmpfs | grep -q "${FOLDER[proj]}/${tmpfs_subfolder}" 2>/dev/null; then
+            shell_command "mount -t tmpfs -o size=${tmpfs_size} tmpfs ./${tmpfs_subfolder}"
         fi
-    elif df -h -t tmpfs | grep -q "${FOLDER[proj]}/${tmpfsSubFolder}" 2>/dev/null; then
-        shellCommand "umount ./${tmpfsSubFolder}"
+    elif df -h -t tmpfs | grep -q "${FOLDER[proj]}/${tmpfs_subfolder}" 2>/dev/null; then
+        shell_command "umount ./${tmpfs_subfolder}"
     fi
 }
 
-function performBuilding()
+function build_target()
 {
-    setCompileEnvironment "${FOLDER[bld]}" "256m"
+    set_compile_environment "${FOLDER[bld]}" "256m"
 
-    shellCommand "cmake -S . -B ./${FOLDER[bld]} -G Ninja""${CMAKE_CACHE_ENTRY}"
+    shell_command "cmake -S . -B ./${FOLDER[bld]} -G Ninja""${CMAKE_CACHE_ENTRY}"
     if [[ ${BUILD_APP_ONLY} = true ]]; then
         tput setaf 2 && tput bold
-        shellCommand "cmake --build ./${FOLDER[bld]}""${CMAKE_BUILD_OPTION}"
+        shell_command "cmake --build ./${FOLDER[bld]}""${CMAKE_BUILD_OPTION}"
         tput sgr0
         exit 0
     fi
-    shellCommand "cmake -S ./${FOLDER[tst]} -B ./${FOLDER[tst]}/${FOLDER[bld]} -G Ninja""${CMAKE_CACHE_ENTRY}"
+    shell_command "cmake -S ./${FOLDER[tst]} -B ./${FOLDER[tst]}/${FOLDER[bld]} -G Ninja""${CMAKE_CACHE_ENTRY}"
 }
 
-function performHelpOption()
+function perform_help_option()
 {
     if [[ ${ARGS[help]} = true ]]; then
         echo "Usage: build.sh <options...>"
@@ -231,20 +231,20 @@ function performHelpOption()
     fi
 }
 
-function performCleanupOption()
+function perform_cleanup_option()
 {
     if [[ ${ARGS[cleanup]} = true ]]; then
-        shellCommand "find ./ -maxdepth 2 -type d | sed 1d \
+        shell_command "find ./ -maxdepth 2 -type d | sed 1d \
 | grep -E '(${FOLDER[bld]}|${FOLDER[temp]}|browser|doxygen|__pycache__)$' | xargs -i rm -rf {}"
-        shellCommand "rm -rf ./${FOLDER[scr]}/.env ./core.* ./vgcore.* ./*.profraw"
+        shell_command "rm -rf ./${FOLDER[scr]}/.env ./core.* ./vgcore.* ./*.profraw"
         exit 0
     fi
 }
 
-function performEnvironmentOption()
+function perform_environment_option()
 {
     if [[ ${ARGS[environment]} = true ]]; then
-        shellCommand "cat <<EOF >./${FOLDER[scr]}/.env
+        shell_command "cat <<EOF >./${FOLDER[scr]}/.env
 #!/bin/false
 
 FOO_BLD_PARALLEL=0
@@ -261,17 +261,17 @@ EOF"
     fi
 }
 
-function performContainerOption()
+function perform_container_option()
 {
     if [[ ${ARGS[docker]} = true ]]; then
         if command -v docker >/dev/null 2>&1 && command -v docker-compose >/dev/null 2>&1; then
             echo "Please confirm whether continue constructing the docker container. (y or n)"
-            local oldStty
-            oldStty=$(stty -g)
+            local old_stty
+            old_stty=$(stty -g)
             stty raw -echo
             local answer
             answer=$(while ! head -c 1 | grep -i '[ny]'; do true; done)
-            stty "${oldStty}"
+            stty "${old_stty}"
             if echo "${answer}" | grep -iq '^y'; then
                 echo "Yes"
             else
@@ -284,7 +284,7 @@ function performContainerOption()
 
         if ! docker ps -a --format "{{lower .Image}} {{lower .Names}}" \
             | grep -q "ryftchen/${FOLDER[proj]}:latest" "${FOLDER[proj]}_dev" 2>/dev/null; then
-            shellCommand "docker-compose -f ./docker/docker-compose.yml up -d"
+            shell_command "docker-compose -f ./docker/docker-compose.yml up -d"
             exit 0
         else
             abort "The container exists."
@@ -292,163 +292,163 @@ function performContainerOption()
     fi
 }
 
-function performTestOption()
+function perform_test_option()
 {
     if [[ ${ARGS[test]} = true ]]; then
-        setCompileEnvironment "${FOLDER[tst]}/${FOLDER[bld]}" "128m"
+        set_compile_environment "${FOLDER[tst]}/${FOLDER[bld]}" "128m"
 
-        shellCommand "cmake -S ./${FOLDER[tst]} -B ./${FOLDER[tst]}/${FOLDER[bld]} -G Ninja""${CMAKE_CACHE_ENTRY}"
+        shell_command "cmake -S ./${FOLDER[tst]} -B ./${FOLDER[tst]}/${FOLDER[bld]} -G Ninja""${CMAKE_CACHE_ENTRY}"
         tput setaf 2 && tput bold
-        shellCommand "cmake --build ./${FOLDER[tst]}/${FOLDER[bld]}""${CMAKE_BUILD_OPTION}"
+        shell_command "cmake --build ./${FOLDER[tst]}/${FOLDER[bld]}""${CMAKE_BUILD_OPTION}"
         tput sgr0
         exit 0
     fi
 }
 
-function performFormatOption()
+function perform_format_option()
 {
     if [[ ${ARGS[format]} = true ]]; then
-        shellCommand "find ./${FOLDER[app]} ./${FOLDER[util]} ./${FOLDER[algo]} ./${FOLDER[ds]} ./${FOLDER[dp]} \
+        shell_command "find ./${FOLDER[app]} ./${FOLDER[util]} ./${FOLDER[algo]} ./${FOLDER[ds]} ./${FOLDER[dp]} \
 ./${FOLDER[num]} ./${FOLDER[tst]} -name *.cpp -o -name *.hpp -o -name *.tpp | grep -v '/${FOLDER[bld]}/' \
 | xargs clang-format-12 -i --verbose --Werror"
-        shellCommand "shfmt -l -w ./${FOLDER[scr]}/*.sh"
-        shellCommand "black --config ./.toml ./${FOLDER[scr]}/*.py"
+        shell_command "shfmt -l -w ./${FOLDER[scr]}/*.sh"
+        shell_command "black --config ./.toml ./${FOLDER[scr]}/*.py"
     fi
 }
 
-function performLintOption()
+function perform_lint_option()
 {
     if [[ ${ARGS[lint]} = true ]]; then
-        local appCompCmd=${FOLDER[bld]}/${COMP_CMD}
-        if [[ ! -f ./${appCompCmd} ]]; then
+        local app_comp_cmd=${FOLDER[bld]}/${COMP_CMD}
+        if [[ ! -f ./${app_comp_cmd} ]]; then
             abort "There is no ${COMP_CMD} file in the ${FOLDER[bld]} folder. Please generate it."
         fi
-        compdb -p "./${FOLDER[bld]}" list >"./${COMP_CMD}" && mv "./${appCompCmd}" "./${appCompCmd}.bak" \
+        compdb -p "./${FOLDER[bld]}" list >"./${COMP_CMD}" && mv "./${app_comp_cmd}" "./${app_comp_cmd}.bak" \
             && mv "./${COMP_CMD}" "./${FOLDER[bld]}"
         while true; do
             local line
-            line=$(grep -n '.tpp' "./${appCompCmd}" | head -n 1 | cut -d : -f 1)
+            line=$(grep -n '.tpp' "./${app_comp_cmd}" | head -n 1 | cut -d : -f 1)
             if ! [[ ${line} =~ ^[0-9]+$ ]]; then
                 break
             fi
-            sed -i $(("${line}" - 2)),$(("${line}" + 3))d "./${appCompCmd}"
+            sed -i $(("${line}" - 2)),$(("${line}" + 3))d "./${app_comp_cmd}"
         done
-        shellCommand "find ./${FOLDER[app]} ./${FOLDER[util]} ./${FOLDER[algo]} ./${FOLDER[ds]} ./${FOLDER[dp]} \
+        shell_command "find ./${FOLDER[app]} ./${FOLDER[util]} ./${FOLDER[algo]} ./${FOLDER[ds]} ./${FOLDER[dp]} \
 ./${FOLDER[num]} -name *.cpp -o -name *.hpp | xargs run-clang-tidy-12 -p ./${FOLDER[bld]} -quiet"
-        shellCommand "find ./${FOLDER[app]} ./${FOLDER[util]} ./${FOLDER[algo]} ./${FOLDER[ds]} ./${FOLDER[dp]} \
+        shell_command "find ./${FOLDER[app]} ./${FOLDER[util]} ./${FOLDER[algo]} ./${FOLDER[ds]} ./${FOLDER[dp]} \
 ./${FOLDER[num]} -name *.tpp | xargs clang-tidy-12 --use-color -p ./${FOLDER[bld]} -quiet"
-        rm -rf "./${appCompCmd}" && mv "./${appCompCmd}.bak" "./${appCompCmd}"
+        rm -rf "./${app_comp_cmd}" && mv "./${app_comp_cmd}.bak" "./${app_comp_cmd}"
 
-        local tstCompCmd=${FOLDER[tst]}/${FOLDER[bld]}/${COMP_CMD}
-        if [[ ! -f ./${tstCompCmd} ]]; then
+        local tst_comp_cmd=${FOLDER[tst]}/${FOLDER[bld]}/${COMP_CMD}
+        if [[ ! -f ./${tst_comp_cmd} ]]; then
             abort "There is no ${COMP_CMD} file in the ${FOLDER[tst]}/${FOLDER[bld]} folder. Please generate it."
         fi
         compdb -p "./${FOLDER[tst]}/${FOLDER[bld]}" list >"./${COMP_CMD}" \
-            && mv "./${tstCompCmd}" "./${tstCompCmd}.bak" && mv "./${COMP_CMD}" "./${FOLDER[tst]}/${FOLDER[bld]}"
-        shellCommand "find ./${FOLDER[tst]} -name *.cpp \
+            && mv "./${tst_comp_cmd}" "./${tst_comp_cmd}.bak" && mv "./${COMP_CMD}" "./${FOLDER[tst]}/${FOLDER[bld]}"
+        shell_command "find ./${FOLDER[tst]} -name *.cpp \
 | xargs run-clang-tidy-12 -p ./${FOLDER[tst]}/${FOLDER[bld]} -quiet"
-        rm -rf "./${tstCompCmd}" && mv "./${tstCompCmd}.bak" "./${tstCompCmd}"
+        rm -rf "./${tst_comp_cmd}" && mv "./${tst_comp_cmd}.bak" "./${tst_comp_cmd}"
 
-        shellCommand "shellcheck ./${FOLDER[scr]}/*.sh"
-        shellCommand "pylint --rcfile=./.pylintrc ./${FOLDER[scr]}/*.py"
+        shell_command "shellcheck ./${FOLDER[scr]}/*.sh"
+        shell_command "pylint --rcfile=./.pylintrc ./${FOLDER[scr]}/*.py"
     fi
 }
 
-function performCountOption()
+function perform_count_option()
 {
     if [[ ${ARGS[count]} = true ]]; then
-        shellCommand "find ./${FOLDER[app]} ./${FOLDER[util]} ./${FOLDER[algo]} ./${FOLDER[ds]} ./${FOLDER[dp]} \
+        shell_command "find ./${FOLDER[app]} ./${FOLDER[util]} ./${FOLDER[algo]} ./${FOLDER[ds]} ./${FOLDER[dp]} \
 ./${FOLDER[num]} ./${FOLDER[tst]} -name *.cpp -o -name *.hpp -o -name *.tpp | grep -v '/${FOLDER[bld]}/' \
 | xargs cloc --by-file-by-lang --force-lang='C++',tpp --include-lang='C++','C/C++ Header' --by-percent=cmb"
     fi
 }
 
-function performBrowserOption()
+function perform_browser_option()
 {
     if [[ ${ARGS[browser]} = true ]]; then
-        local commitId
-        commitId=$(git rev-parse --short @)
-        if [[ -z ${commitId} ]]; then
-            commitId="local"
+        local commit_id
+        commit_id=$(git rev-parse --short @)
+        if [[ -z ${commit_id} ]]; then
+            commit_id="local"
         fi
         if [[ -d ./${FOLDER[temp]} ]]; then
-            local lastTar="${FOLDER[proj]}_browser_${commitId}.tar.bz2"
-            if [[ -f ./${FOLDER[temp]}/${lastTar} ]]; then
-                local timeInterval=$(($(date +%s) - $(stat -L --format %Y "./${FOLDER[temp]}/${lastTar}")))
-                if [[ ${timeInterval} -lt 10 ]]; then
-                    abort "The latest browser tarball ${FOLDER[temp]}/${lastTar} has been generated since \
-${timeInterval}s ago."
+            local last_tar="${FOLDER[proj]}_browser_${commit_id}.tar.bz2"
+            if [[ -f ./${FOLDER[temp]}/${last_tar} ]]; then
+                local time_interval=$(($(date +%s) - $(stat -L --format %Y "./${FOLDER[temp]}/${last_tar}")))
+                if [[ ${time_interval} -lt 10 ]]; then
+                    abort "The latest browser tarball ${FOLDER[temp]}/${last_tar} has been generated since \
+${time_interval}s ago."
                 fi
             fi
-            packageForBrowser "${commitId}"
+            package_for_browser "${commit_id}"
         else
             mkdir "./${FOLDER[temp]}"
-            packageForBrowser "${commitId}"
+            package_for_browser "${commit_id}"
         fi
     fi
 }
 
-function packageForBrowser()
+function package_for_browser()
 {
-    local commitId=$1
+    local commit_id=$1
 
     if [[ ! -f ./${FOLDER[bld]}/${COMP_CMD} ]]; then
         abort "There is no ${COMP_CMD} file in the ${FOLDER[bld]} folder. Please generate it."
     fi
-    local browserFolder="browser"
-    local tarFile="${FOLDER[proj]}_${browserFolder}_${commitId}.tar.bz2"
-    rm -rf "./${FOLDER[temp]}/${FOLDER[proj]}_${browserFolder}"_*.tar.bz2 "./${FOLDER[doc]}/${browserFolder}"
+    local browser_folder="browser"
+    local tar_file="${FOLDER[proj]}_${browser_folder}_${commit_id}.tar.bz2"
+    rm -rf "./${FOLDER[temp]}/${FOLDER[proj]}_${browser_folder}"_*.tar.bz2 "./${FOLDER[doc]}/${browser_folder}"
 
-    mkdir -p "./${FOLDER[doc]}/${browserFolder}"
-    shellCommand "codebrowser_generator -color -a -b ./${FOLDER[bld]}/${COMP_CMD} -o ./${FOLDER[doc]}/${browserFolder} \
--p ${FOLDER[proj]}:.:${commitId} -d ./data"
-    shellCommand "codebrowser_generator -color -a -b ./${FOLDER[tst]}/${FOLDER[bld]}/${COMP_CMD} \
--o ./${FOLDER[doc]}/${browserFolder} -p ${FOLDER[proj]}:.:${commitId} -d ./data"
-    shellCommand "codebrowser_indexgenerator ./${FOLDER[doc]}/${browserFolder} -d ./data"
-    shellCommand "cp -rf /usr/local/share/woboq/data ./${FOLDER[doc]}/${browserFolder}/"
-    shellCommand "tar -jcvf ./${FOLDER[temp]}/${tarFile} -C ./${FOLDER[doc]} ${browserFolder} >/dev/null"
+    mkdir -p "./${FOLDER[doc]}/${browser_folder}"
+    shell_command "codebrowser_generator -color -a -b ./${FOLDER[bld]}/${COMP_CMD} \
+-o ./${FOLDER[doc]}/${browser_folder} -p ${FOLDER[proj]}:.:${commit_id} -d ./data"
+    shell_command "codebrowser_generator -color -a -b ./${FOLDER[tst]}/${FOLDER[bld]}/${COMP_CMD} \
+-o ./${FOLDER[doc]}/${browser_folder} -p ${FOLDER[proj]}:.:${commit_id} -d ./data"
+    shell_command "codebrowser_indexgenerator ./${FOLDER[doc]}/${browser_folder} -d ./data"
+    shell_command "cp -rf /usr/local/share/woboq/data ./${FOLDER[doc]}/${browser_folder}/"
+    shell_command "tar -jcvf ./${FOLDER[temp]}/${tar_file} -C ./${FOLDER[doc]} ${browser_folder} >/dev/null"
 }
 
-function performDoxygenOption()
+function perform_doxygen_option()
 {
     if [[ ${ARGS[doxygen]} = true ]]; then
-        local commitId
-        commitId=$(git rev-parse --short @)
-        if [[ -z ${commitId} ]]; then
-            commitId="local"
+        local commit_id
+        commit_id=$(git rev-parse --short @)
+        if [[ -z ${commit_id} ]]; then
+            commit_id="local"
         fi
         if [[ -d ./${FOLDER[temp]} ]]; then
-            local lastTar="${FOLDER[proj]}_doxygen_${commitId}.tar.bz2"
-            if [[ -f ./${FOLDER[temp]}/${lastTar} ]]; then
-                local timeInterval=$(($(date +%s) - $(stat -L --format %Y "./${FOLDER[temp]}/${lastTar}")))
-                if [[ ${timeInterval} -lt 10 ]]; then
-                    abort "The latest doxygen tarball ${FOLDER[temp]}/${lastTar} has been generated since \
-${timeInterval}s ago."
+            local last_tar="${FOLDER[proj]}_doxygen_${commit_id}.tar.bz2"
+            if [[ -f ./${FOLDER[temp]}/${last_tar} ]]; then
+                local time_interval=$(($(date +%s) - $(stat -L --format %Y "./${FOLDER[temp]}/${last_tar}")))
+                if [[ ${time_interval} -lt 10 ]]; then
+                    abort "The latest doxygen tarball ${FOLDER[temp]}/${last_tar} has been generated since \
+${time_interval}s ago."
                 fi
             fi
-            packageForDoxygen "${commitId}"
+            package_for_doxygen "${commit_id}"
         else
             mkdir "./${FOLDER[temp]}"
-            packageForDoxygen "${commitId}"
+            package_for_doxygen "${commit_id}"
         fi
     fi
 }
 
-function packageForDoxygen()
+function package_for_doxygen()
 {
-    local commitId=$1
+    local commit_id=$1
 
-    local doxygenFolder="doxygen"
-    local tarFile="${FOLDER[proj]}_${doxygenFolder}_${commitId}.tar.bz2"
-    rm -rf "./${FOLDER[temp]}/${FOLDER[proj]}_${doxygenFolder}"_*.tar.bz2 "./${FOLDER[doc]}/${doxygenFolder}"
+    local doxygen_folder="doxygen"
+    local tar_file="${FOLDER[proj]}_${doxygen_folder}_${commit_id}.tar.bz2"
+    rm -rf "./${FOLDER[temp]}/${FOLDER[proj]}_${doxygen_folder}"_*.tar.bz2 "./${FOLDER[doc]}/${doxygen_folder}"
 
-    mkdir -p "./${FOLDER[doc]}/${doxygenFolder}"
+    mkdir -p "./${FOLDER[doc]}/${doxygen_folder}"
     if [[ ${ARGS[release]} = false ]]; then
         sed -i "s/\(^PROJECT_NUMBER[ ]\+=\)/\1 \"@ $(git rev-parse --short @)\"/" "./${FOLDER[doc]}/Doxyfile"
         sed -i "s/\(^HTML_TIMESTAMP[ ]\+=\)\([ ]\+NO\)/\1 YES/" "./${FOLDER[doc]}/Doxyfile"
     fi
-    shellCommand "doxygen ./${FOLDER[doc]}/Doxyfile >/dev/null"
-    shellCommand "tar -jcvf ./${FOLDER[temp]}/${tarFile} -C ./${FOLDER[doc]} ${doxygenFolder} >/dev/null"
+    shell_command "doxygen ./${FOLDER[doc]}/Doxyfile >/dev/null"
+    shell_command "tar -jcvf ./${FOLDER[temp]}/${tar_file} -C ./${FOLDER[doc]} ${doxygen_folder} >/dev/null"
     if [[ ${ARGS[release]} = false ]]; then
         sed -i "s/\(^PROJECT_NUMBER[ ]\+=\)\([ ]\+.*\)/\1/" "./${FOLDER[doc]}/Doxyfile"
         sed -i "s/\(^HTML_TIMESTAMP[ ]\+=\)\([ ]\+YES\)/\1 NO/" "./${FOLDER[doc]}/Doxyfile"
@@ -459,24 +459,24 @@ function main()
 {
     cd "${0%%"${FOLDER[scr]}"*}" || exit 1
     export TERM=linux TERMINFO=/etc/terminfo
-    trap "signalHandler" INT TERM
+    trap "signal_handler" INT TERM
 
-    parseArguments "$@"
-    performHelpOption
-    performCleanupOption
-    performEnvironmentOption
-    performContainerOption
+    parse_arguments "$@"
+    perform_help_option
+    perform_cleanup_option
+    perform_environment_option
+    perform_container_option
 
-    checkBasicDependencies "$@"
-    performTestOption
-    performBuilding
+    check_basic_dependencies "$@"
+    perform_test_option
+    build_target
 
-    checkExtraDependencies
-    performFormatOption
-    performLintOption
-    performCountOption
-    performBrowserOption
-    performDoxygenOption
+    check_extra_dependencies
+    perform_format_option
+    perform_lint_option
+    perform_count_option
+    perform_browser_option
+    perform_doxygen_option
 }
 
 main "$@"
