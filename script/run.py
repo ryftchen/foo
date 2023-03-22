@@ -21,14 +21,14 @@ STDOUT = sys.stdout
 
 class Output:
     color = {"red": "\033[0;31;40m", "green": "\033[0;32;40m", "yellow": "\033[0;33;40m", "blue": "\033[0;34;40m"}
-    colorBack = "\033[49m"
-    colorOff = "\033[0m"
-    colorEscapeRegex = r"((\033\[.*?(m|s|u|A))|(\007|\017))"
-    columnLength = 10
-    minAlignLen = 30
-    exclCmdAlignLen = 20
-    minKeyWidth = 20
-    minValueWidth = 80
+    color_background = "\033[49m"
+    color_off = "\033[0m"
+    color_escape_regex = r"((\033\[.*?(m|s|u|A))|(\007|\017))"
+    column_length = 10
+    min_align_len = 30
+    align_len_excl_cmd = 20
+    min_key_width = 20
+    min_value_width = 80
 
     @classmethod
     def abort(cls, message):
@@ -36,62 +36,62 @@ class Output:
         sys.exit(-1)
 
     @classmethod
-    def status(cls, colorFore, content):
+    def status(cls, color_foreground, content):
         print(
-            f"""{colorFore}{cls.colorBack}{f"{'=' * cls.columnLength}"}\
-[ {datetime.strftime(datetime.now(), "%b %d %H:%M:%S")} | {content} ]{f"{'=' * cls.columnLength}"}{cls.colorOff}"""
+            f"""{color_foreground}{cls.color_background}{f"{'=' * cls.column_length}"}\
+[ {datetime.strftime(datetime.now(), "%b %d %H:%M:%S")} | {content} ]{f"{'=' * cls.column_length}"}{cls.color_off}"""
         )
 
     @classmethod
-    def formatAsTable(cls, data: dict, keyName="", valueName=""):
+    def format_as_table(cls, data: dict, key_name="", value_name=""):
         rows = []
-        rows.append("=" * (cls.minKeyWidth + 2 + cls.minValueWidth + 1))
-        rows.append(f"{keyName.ljust(cls.minKeyWidth)} | {valueName.ljust(cls.minValueWidth)}")
-        rows.append("=" * (cls.minKeyWidth + 2 + cls.minValueWidth + 1))
+        rows.append("=" * (cls.min_key_width + 2 + cls.min_value_width + 1))
+        rows.append(f"{key_name.ljust(cls.min_key_width)} | {value_name.ljust(cls.min_value_width)}")
+        rows.append("=" * (cls.min_key_width + 2 + cls.min_value_width + 1))
 
         for key, value in data.items():
-            keyLines = []
+            key_lines = []
             for line in key.split("\n"):
-                lineLen = len(line)
-                for index in range(0, lineLen, cls.minKeyWidth):
-                    keyLines.append(line[index : index + cls.minKeyWidth].ljust(cls.minKeyWidth))
+                line_len = len(line)
+                for index in range(0, line_len, cls.min_key_width):
+                    key_lines.append(line[index : index + cls.min_key_width].ljust(cls.min_key_width))
 
-            valueLines = []
+            value_lines = []
             for line in value.split("\n"):
-                lineLen = len(line)
-                for index in range(0, lineLen, cls.minValueWidth):
-                    valueLines.append(line[index : index + cls.minValueWidth].ljust(cls.minValueWidth))
+                line_len = len(line)
+                for index in range(0, line_len, cls.min_value_width):
+                    value_lines.append(line[index : index + cls.min_value_width].ljust(cls.min_value_width))
 
-            lineCount = max(len(keyLines), len(valueLines))
-            for index in range(lineCount):
-                newLine = ""
-                if index < len(keyLines):
-                    newLine = f"{keyLines[index]} | "
+            line_count = max(len(key_lines), len(value_lines))
+            for index in range(line_count):
+                new_line = ""
+                if index < len(key_lines):
+                    new_line = f"{key_lines[index]} | "
                 else:
-                    newLine = f"{' ' * cls.minKeyWidth} | "
-                if index < len(valueLines):
-                    newLine += valueLines[index]
+                    new_line = f"{' ' * cls.min_key_width} | "
+                if index < len(value_lines):
+                    new_line += value_lines[index]
                 else:
-                    newLine += " " * cls.minValueWidth
-                rows.append(newLine)
+                    new_line += " " * cls.min_value_width
+                rows.append(new_line)
 
-            rows.append("-" * (cls.minKeyWidth + 2 + cls.minValueWidth + 1))
+            rows.append("-" * (cls.min_key_width + 2 + cls.min_value_width + 1))
         return "\n".join(rows)
 
 
 class Task:
-    binCmd = "foo"
-    binDir = "./build/bin"
-    testBinCmd = "foo_test"
-    testBinDir = "./test/build/bin"
-    libList = ["libutility.so", "libalgorithm.so", "libdata_structure.so", "libdesign_pattern.so", "libnumeric.so"]
-    libDir = "./build/lib"
-    basicTaskDict = {
+    app_bin_cmd = "foo"
+    app_bin_dir = "./build/bin"
+    tst_bin_cmd = "foo_test"
+    tst_bin_dir = "./test/build/bin"
+    lib_list = ["libutility.so", "libalgorithm.so", "libdata_structure.so", "libdesign_pattern.so", "libnumeric.so"]
+    lib_dir = "./build/lib"
+    basic_task_dict = {
         "--console": [r"'help'", r"'quit'", r"'batch ./script/console_batch.txt'", r"'log'"],
         "--help": "",
         "--version": "",
     }
-    generalTaskDict = {
+    general_task_dict = {
         "--algorithm": {
             "match": ["rab", "knu", "boy", "hor", "sun"],
             "notation": ["pre", "pos"],
@@ -113,67 +113,67 @@ class Task:
         },
     }
     options = {"tst": False, "chk_cov": False, "chk_mem": False}
-    buildScript = "./script/build.sh"
-    tempDir = "./temporary"
-    logFile = f"{tempDir}/foo_run.log"
-    reportFile = f"{tempDir}/foo_run.report"
-    passSteps = 0
-    completeSteps = 0
-    basicTaskDict["--help"] = [
-        f"{taskCategory} {taskType}"
-        for taskCategory, taskCategoryMap in generalTaskDict.items()
-        for taskType in taskCategoryMap.keys()
+    build_script = "./script/build.sh"
+    temp_dir = "./temporary"
+    log_file = f"{temp_dir}/foo_run.log"
+    report_file = f"{temp_dir}/foo_run.report"
+    pass_steps = 0
+    complete_steps = 0
+    basic_task_dict["--help"] = [
+        f"{task_category} {task_type}"
+        for task_category, task_category_map in general_task_dict.items()
+        for task_type in task_category_map.keys()
     ]
-    totalSteps = 1 + len(basicTaskDict.keys())
-    for taskCategoryList in basicTaskDict.values():
-        totalSteps += len(taskCategoryList)
-    for taskCategoryMap in generalTaskDict.values():
-        totalSteps += len(taskCategoryMap.keys())
-        for targetTaskList in taskCategoryMap.values():
-            totalSteps += len(targetTaskList) + 1
+    total_steps = 1 + len(basic_task_dict.keys())
+    for task_category_list in basic_task_dict.values():
+        total_steps += len(task_category_list)
+    for task_category_map in general_task_dict.values():
+        total_steps += len(task_category_map.keys())
+        for target_task_list in task_category_map.values():
+            total_steps += len(target_task_list) + 1
 
     def __init__(self):
-        if not os.path.exists(self.tempDir):
-            os.mkdir(self.tempDir)
-        self.log = common.Log(self.logFile)
-        self.progressBar = common.ProgressBar()
-        self.taskQueue = queue.Queue()
+        if not os.path.exists(self.temp_dir):
+            os.mkdir(self.temp_dir)
+        self.log = common.Log(self.log_file)
+        self.progress_bar = common.ProgressBar()
+        self.task_queue = queue.Queue()
 
     def run(self):
-        filePath = os.path.split(os.path.realpath(__file__))[0]
-        os.chdir(filePath.replace(filePath[filePath.index("script") :], ""))
+        file_path = os.path.split(os.path.realpath(__file__))[0]
+        os.chdir(file_path.replace(file_path[file_path.index("script") :], ""))
 
-        self.parseArguments()
+        self.parse_arguments()
         self.prepare()
 
         if not self.options["tst"]:
-            threadList = []
-            producer = threading.Thread(target=self.generateTasks(), args=())
+            thread_list = []
+            producer = threading.Thread(target=self.generate_tasks(), args=())
             producer.start()
-            threadList.append(producer)
-            consumer = threading.Thread(target=self.performTasks(), args=())
+            thread_list.append(producer)
+            consumer = threading.Thread(target=self.perform_tasks(), args=())
             consumer.start()
-            threadList.append(consumer)
-            for thread in threadList:
+            thread_list.append(consumer)
+            for thread in thread_list:
                 thread.join()
         else:
-            while self.completeSteps < self.totalSteps:
-                self.runTask(self.testBinCmd)
+            while self.complete_steps < self.total_steps:
+                self.run_task(self.tst_bin_cmd)
 
         self.complete()
-        self.formatRunLog()
-        self.summarizeRunLog()
+        self.format_run_log()
+        self.summarize_run_log()
 
     def stop(self, message=""):
         try:
             if self.options["chk_cov"]:
-                common.executeCommand(f"rm -rf {self.tempDir}/*.profraw {self.tempDir}/*.profdata")
+                common.execute_command(f"rm -rf {self.temp_dir}/*.profraw {self.temp_dir}/*.profdata")
             if self.options["chk_mem"]:
-                common.executeCommand(f"rm -rf {self.tempDir}/*.xml")
+                common.execute_command(f"rm -rf {self.temp_dir}/*.xml")
             sys.stdout = STDOUT
-            self.progressBar.destroyProgressBar()
+            self.progress_bar.destroy_progress_bar()
             del self.log
-            self.formatRunLog()
+            self.format_run_log()
         except Exception:  # pylint: disable=broad-except
             pass
         finally:
@@ -181,8 +181,8 @@ class Task:
                 Output.abort(message)
             sys.exit(-1)
 
-    def parseArguments(self):
-        def checkPositive(value):
+    def parse_arguments(self):
+        def check_positive(value):
             value = int(value)
             if value <= 0:
                 raise argparse.ArgumentTypeError(f"\"{value}\" is an invalid positive int value")
@@ -190,7 +190,7 @@ class Task:
 
         parser = argparse.ArgumentParser(description="run script")
         parser.add_argument(
-            "-t", "--test", nargs="?", const=1, type=checkPositive, help="run unit test only", metavar="times"
+            "-t", "--test", nargs="?", const=1, type=check_positive, help="run unit test only", metavar="times"
         )
         parser.add_argument(
             "-c", "--check", nargs="+", choices=["cov", "mem"], help="run with check: cov - coverage, mem - memory"
@@ -209,220 +209,223 @@ class Task:
             if args.test is not None:
                 Output.abort("No support for the --check option during testing.")
             if "cov" in args.check:
-                stdout, _, _ = common.executeCommand("command -v llvm-profdata-12 llvm-cov-12 2>&1")
+                stdout, _, _ = common.execute_command("command -v llvm-profdata-12 llvm-cov-12 2>&1")
                 if stdout.find("llvm-profdata-12") != -1 and stdout.find("llvm-cov-12") != -1:
                     os.environ["FOO_CHK_COV"] = "on"
                     self.options["chk_cov"] = True
-                    common.executeCommand(f"rm -rf {self.tempDir}/coverage")
+                    common.execute_command(f"rm -rf {self.temp_dir}/coverage")
                 else:
                     Output.abort("No llvm-profdata or llvm-cov program. Please check it.")
 
             if "mem" in args.check:
-                stdout, _, _ = common.executeCommand("command -v valgrind valgrind-ci 2>&1")
+                stdout, _, _ = common.execute_command("command -v valgrind valgrind-ci 2>&1")
                 if stdout.find("valgrind") != -1 and stdout.find("valgrind-ci") != -1:
                     os.environ["FOO_CHK_MEM"] = "on"
                     self.options["chk_mem"] = True
-                    common.executeCommand(f"rm -rf {self.tempDir}/memory")
+                    common.execute_command(f"rm -rf {self.temp_dir}/memory")
                 else:
                     Output.abort("No valgrind or valgrind-ci program. Please check it.")
 
         if args.build is not None:
-            if os.path.isfile(self.buildScript):
-                buildCmd = self.buildScript
+            if os.path.isfile(self.build_script):
+                build_cmd = self.build_script
                 if args.test is not None:
-                    buildCmd += " --test"
+                    build_cmd += " --test"
                 if args.build == "dbg":
-                    self.buildExecutable(f"{buildCmd} 2>&1")
+                    self.build_executable(f"{build_cmd} 2>&1")
                 elif args.build == "rls":
-                    self.buildExecutable(f"{buildCmd} --release 2>&1")
+                    self.build_executable(f"{build_cmd} --release 2>&1")
             else:
-                Output.abort(f"No shell script {self.buildScript} file.")
+                Output.abort(f"No shell script {self.build_script} file.")
 
         if args.test is not None:
             self.options["tst"] = True
-            self.totalSteps = args.test
+            self.total_steps = args.test
 
-    def buildExecutable(self, buildCmd):
-        stdout, stderr, returnCode = common.executeCommand(buildCmd)
-        if stderr or returnCode != 0:
-            print(f"\r\n[STDOUT]\n{stdout}\n[STDERR]\n{stderr}\n[RETURN CODE]\n{returnCode}")
-            Output.abort(f"Failed to run shell script {self.buildScript} file.")
+    def build_executable(self, build_cmd):
+        stdout, stderr, return_code = common.execute_command(build_cmd)
+        if stderr or return_code != 0:
+            print(f"\r\n[STDOUT]\n{stdout}\n[STDERR]\n{stderr}\n[RETURN CODE]\n{return_code}")
+            Output.abort(f"Failed to run shell script {self.build_script} file.")
         else:
             print(stdout)
             if "FAILED:" in stdout:
-                Output.abort(f"Failed to build the executable by shell script {self.buildScript} file.")
+                Output.abort(f"Failed to build the executable by shell script {self.build_script} file.")
 
     def prepare(self):
-        if not self.options["tst"] and not os.path.isfile(f"{self.binDir}/{self.binCmd}"):
+        if not self.options["tst"] and not os.path.isfile(f"{self.app_bin_dir}/{self.app_bin_cmd}"):
             Output.abort("No executable file. Please use the --build option to build it.")
-        if self.options["tst"] and not os.path.isfile(f"{self.testBinDir}/{self.testBinCmd}"):
+        if self.options["tst"] and not os.path.isfile(f"{self.tst_bin_dir}/{self.tst_bin_cmd}"):
             Output.abort("No executable file for testing. Please use the --build option to build it.")
-        common.executeCommand("ulimit -s unlimited")
-        common.executeCommand("echo 'core.%s.%e.%p' | tee /proc/sys/kernel/core_pattern")
+        common.execute_command("ulimit -s unlimited")
+        common.execute_command("echo 'core.%s.%e.%p' | tee /proc/sys/kernel/core_pattern")
 
-        if not os.path.exists(self.tempDir):
-            os.makedirs(self.tempDir)
-        self.progressBar.setupProgressBar()
+        if not os.path.exists(self.temp_dir):
+            os.makedirs(self.temp_dir)
+        self.progress_bar.setup_progress_bar()
         sys.stdout = self.log
 
     def complete(self):
         if self.options["chk_mem"]:
-            common.executeCommand(f"rm -rf {self.tempDir}/*.xml")
+            common.execute_command(f"rm -rf {self.temp_dir}/*.xml")
 
         if self.options["chk_cov"]:
-            common.executeCommand(
-                f"llvm-profdata-12 merge -sparse {self.tempDir}/foo_chk_cov_*.profraw \
--o {self.tempDir}/foo_chk_cov.profdata"
+            common.execute_command(
+                f"llvm-profdata-12 merge -sparse {self.temp_dir}/foo_chk_cov_*.profraw \
+-o {self.temp_dir}/foo_chk_cov.profdata"
             )
-            common.executeCommand(
-                f"llvm-cov-12 show -instr-profile={self.tempDir}/foo_chk_cov.profdata -show-branches=percent \
--show-expansions -show-regions -show-line-counts-or-regions -format=html -output-dir={self.tempDir}/coverage \
--Xdemangler=c++filt -object={self.binDir}/{self.binCmd} \
-{' '.join([f'-object={self.libDir}/{lib}' for lib in self.libList])} 2>&1"
+            common.execute_command(
+                f"llvm-cov-12 show -instr-profile={self.temp_dir}/foo_chk_cov.profdata -show-branches=percent \
+-show-expansions -show-regions -show-line-counts-or-regions -format=html -output-dir={self.temp_dir}/coverage \
+-Xdemangler=c++filt -object={self.app_bin_dir}/{self.app_bin_cmd} \
+{' '.join([f'-object={self.lib_dir}/{lib}' for lib in self.lib_list])} 2>&1"
             )
-            stdout, _, _ = common.executeCommand(
-                f"llvm-cov-12 report -instr-profile={self.tempDir}/foo_chk_cov.profdata \
--object={self.binDir}/{self.binCmd} {' '.join([f'-object={self.libDir}/{lib}' for lib in self.libList])} 2>&1"
+            stdout, _, _ = common.execute_command(
+                f"llvm-cov-12 report -instr-profile={self.temp_dir}/foo_chk_cov.profdata \
+-object={self.app_bin_dir}/{self.app_bin_cmd} {' '.join([f'-object={self.lib_dir}/{lib}' for lib in self.lib_list])} \
+2>&1"
             )
-            common.executeCommand(f"rm -rf {self.tempDir}/*.profraw {self.tempDir}/*.profdata")
+            common.execute_command(f"rm -rf {self.temp_dir}/*.profraw {self.temp_dir}/*.profdata")
             print(f"\r\n[CHECK COVERAGE]\n{stdout}")
             if "error" in stdout:
                 print("Please rebuild the executable file with the --check option.")
 
         sys.stdout = STDOUT
-        self.progressBar.destroyProgressBar()
+        self.progress_bar.destroy_progress_bar()
         del self.log
 
-    def generateTasks(self):
-        for taskCategory, taskCategoryList in self.basicTaskDict.items():
-            self.taskQueue.put(f"{self.binCmd} {taskCategory}")
-            for option in taskCategoryList:
-                self.taskQueue.put(f"{self.binCmd} {taskCategory} {option}")
+    def generate_tasks(self):
+        for task_category, task_category_list in self.basic_task_dict.items():
+            self.task_queue.put(f"{self.app_bin_cmd} {task_category}")
+            for option in task_category_list:
+                self.task_queue.put(f"{self.app_bin_cmd} {task_category} {option}")
 
-        for taskCategory, taskCategoryMap in self.generalTaskDict.items():
-            for taskType, targetTaskList in taskCategoryMap.items():
-                self.taskQueue.put(f"{self.binCmd} {taskCategory} {taskType}")
-                for target in targetTaskList:
-                    self.taskQueue.put(f"{self.binCmd} {taskCategory} {taskType} {target}")
-                self.taskQueue.put(f"{self.binCmd} {taskCategory} {taskType} {' '.join(targetTaskList)}")
+        for task_category, task_category_map in self.general_task_dict.items():
+            for task_type, target_task_list in task_category_map.items():
+                self.task_queue.put(f"{self.app_bin_cmd} {task_category} {task_type}")
+                for target in target_task_list:
+                    self.task_queue.put(f"{self.app_bin_cmd} {task_category} {task_type} {target}")
+                self.task_queue.put(f"{self.app_bin_cmd} {task_category} {task_type} {' '.join(target_task_list)}")
 
-    def performTasks(self):
-        self.runTask(self.binCmd, "quit")
-        while self.completeSteps < self.totalSteps:
-            cmd = self.taskQueue.get()
-            self.runTask(cmd)
+    def perform_tasks(self):
+        self.run_task(self.app_bin_cmd, "quit")
+        while self.complete_steps < self.total_steps:
+            cmd = self.task_queue.get()
+            self.run_task(cmd)
 
-    def runTask(self, command, enter=""):
+    def run_task(self, command, enter=""):
         if not self.options["tst"]:
-            fullCommand = f"{self.binDir}/{command}"
+            full_cmd = f"{self.app_bin_dir}/{command}"
         else:
-            fullCommand = f"{self.testBinDir}/{command}"
+            full_cmd = f"{self.tst_bin_dir}/{command}"
         if self.options["chk_mem"]:
-            fullCommand = f"valgrind --tool=memcheck --xml=yes \
---xml-file={self.tempDir}/foo_chk_mem_{str(self.completeSteps + 1)}.xml {fullCommand}"
+            full_cmd = f"valgrind --tool=memcheck --xml=yes \
+--xml-file={self.temp_dir}/foo_chk_mem_{str(self.complete_steps + 1)}.xml {full_cmd}"
         if self.options["chk_cov"]:
-            fullCommand = f"LLVM_PROFILE_FILE=\"{self.tempDir}/foo_chk_cov_{str(self.completeSteps + 1)}.profraw\" \
-{fullCommand}"
+            full_cmd = f"LLVM_PROFILE_FILE=\"{self.temp_dir}/foo_chk_cov_{str(self.complete_steps + 1)}.profraw\" \
+{full_cmd}"
         align = max(
-            len(command) + Output.exclCmdAlignLen,
-            Output.minAlignLen,
-            len(str(self.totalSteps)) * 2 + len(" / ") + Output.exclCmdAlignLen,
+            len(command) + Output.align_len_excl_cmd,
+            Output.min_align_len,
+            len(str(self.total_steps)) * 2 + len(" / ") + Output.align_len_excl_cmd,
         )
-        Output.status(Output.color["blue"], f"CASE TASK: {f'{command}':<{align - Output.exclCmdAlignLen}} | START ")
+        Output.status(Output.color["blue"], f"CASE TASK: {f'{command}':<{align - Output.align_len_excl_cmd}} | START ")
 
-        stdout, stderr, returnCode = common.executeCommand(fullCommand, enter)
-        if len(stdout.strip()) == 0 or stderr or returnCode != 0:
-            print(f"\r\n[STDOUT]\n{stdout}\n[STDERR]\n{stderr}\n[RETURN CODE]\n{returnCode}")
-            Output.status(Output.color["red"], f"{f'CASE TASK: FAILURE NO.{str(self.completeSteps + 1)}':<{align}}")
+        stdout, stderr, return_code = common.execute_command(full_cmd, enter)
+        if len(stdout.strip()) == 0 or stderr or return_code != 0:
+            print(f"\r\n[STDOUT]\n{stdout}\n[STDERR]\n{stderr}\n[RETURN CODE]\n{return_code}")
+            Output.status(Output.color["red"], f"{f'CASE TASK: FAILURE NO.{str(self.complete_steps + 1)}':<{align}}")
         else:
             print(stdout)
-            self.passSteps += 1
+            self.pass_steps += 1
             if self.options["chk_mem"]:
-                stdout, _, _ = common.executeCommand(
-                    f"valgrind-ci {self.tempDir}/foo_chk_mem_{str(self.completeSteps + 1)}.xml --summary"
+                stdout, _, _ = common.execute_command(
+                    f"valgrind-ci {self.temp_dir}/foo_chk_mem_{str(self.complete_steps + 1)}.xml --summary"
                 )
                 if "error" in stdout:
                     stdout = stdout.replace("\t", "    ")
                     print(f"\r\n[CHECK MEMORY]\n{stdout}")
-                    common.executeCommand(
-                        f"valgrind-ci {self.tempDir}/foo_chk_mem_{str(self.completeSteps + 1)}.xml --source-dir=./ \
---output-dir={self.tempDir}/memory/case_task_{str(self.completeSteps + 1)}"
+                    common.execute_command(
+                        f"valgrind-ci {self.temp_dir}/foo_chk_mem_{str(self.complete_steps + 1)}.xml --source-dir=./ \
+--output-dir={self.temp_dir}/memory/case_task_{str(self.complete_steps + 1)}"
                     )
-                    self.passSteps -= 1
+                    self.pass_steps -= 1
                     Output.status(
-                        Output.color["red"], f"{f'CASE TASK: FAILURE NO.{str(self.completeSteps + 1)}':<{align}}"
+                        Output.color["red"], f"{f'CASE TASK: FAILURE NO.{str(self.complete_steps + 1)}':<{align}}"
                     )
 
-        self.completeSteps += 1
-        Output.status(Output.color["blue"], f"CASE TASK: {f'{command}':<{align - Output.exclCmdAlignLen}} | FINISH")
+        self.complete_steps += 1
+        Output.status(Output.color["blue"], f"CASE TASK: {f'{command}':<{align - Output.align_len_excl_cmd}} | FINISH")
 
-        if self.passSteps != self.totalSteps:
-            statusColor = Output.color["yellow"]
+        if self.pass_steps != self.total_steps:
+            status_color = Output.color["yellow"]
         else:
-            statusColor = Output.color["green"]
+            status_color = Output.color["green"]
         Output.status(
-            statusColor,
+            status_color,
             f"""\
-{f"CASE TASK: SUCCESS {f'{str(self.passSteps)}':>{len(str(self.totalSteps))}} / {str(self.totalSteps)}":<{align}}""",
+{f"CASE TASK: SUCCESS {f'{str(self.pass_steps)}':>{len(str(self.total_steps))}} / {str(self.total_steps)}":<{align}}""",
         )
         print("\n")
 
         sys.stdout = STDOUT
-        self.progressBar.drawProgressBar(int(self.completeSteps / self.totalSteps * 100))
+        self.progress_bar.draw_progress_bar(int(self.complete_steps / self.total_steps * 100))
         sys.stdout = self.log
 
-    def formatRunLog(self):
-        runLog = ""
-        with open(self.logFile, "rt", encoding="utf-8") as runLog:
-            fcntl.flock(runLog.fileno(), fcntl.LOCK_EX)
-            oldContent = runLog.read()
-            fcntl.flock(runLog.fileno(), fcntl.LOCK_UN)
-        newContent = re.sub(Output.colorEscapeRegex, "", oldContent)
-        with open(self.logFile, "w", encoding="utf-8") as runLog:
-            fcntl.flock(runLog.fileno(), fcntl.LOCK_EX)
-            runLog.write(newContent)
-            fcntl.flock(runLog.fileno(), fcntl.LOCK_UN)
+    def format_run_log(self):
+        run_log = ""
+        with open(self.log_file, "rt", encoding="utf-8") as run_log:
+            fcntl.flock(run_log.fileno(), fcntl.LOCK_EX)
+            old_content = run_log.read()
+            fcntl.flock(run_log.fileno(), fcntl.LOCK_UN)
+        new_content = re.sub(Output.color_escape_regex, "", old_content)
+        with open(self.log_file, "w", encoding="utf-8") as run_log:
+            fcntl.flock(run_log.fileno(), fcntl.LOCK_EX)
+            run_log.write(new_content)
+            fcntl.flock(run_log.fileno(), fcntl.LOCK_UN)
 
-    def summarizeRunLog(self):
-        def analyzeForReport(readlines, startIndices, finishIndices, tags):
-            failRes = {}
-            covPer = {}
-            memErr = {}
-            for startIndex, finishIndex in zip(startIndices, finishIndices):
-                if "| CASE TASK: FAILURE" in readlines[finishIndex - 1]:
-                    failLine = readlines[finishIndex - 1]
-                    number = failLine[failLine.find("NO.") : failLine.find("]")].strip()
-                    cmdLine = readlines[startIndex]
-                    caseTask = number + ": " + cmdLine[cmdLine.find(self.binCmd) : cmdLine.find("| START")].strip()
+    def summarize_run_log(self):
+        def analyze_for_report(readlines, start_indices, finish_indices, tags):
+            fail_res = {}
+            cov_per = {}
+            mem_err = {}
+            for start_index, finish_index in zip(start_indices, finish_indices):
+                if "| CASE TASK: FAILURE" in readlines[finish_index - 1]:
+                    fail_line = readlines[finish_index - 1]
+                    number = fail_line[fail_line.find("NO.") : fail_line.find("]")].strip()
+                    cmd_line = readlines[start_index]
+                    case_task = (
+                        number + ": " + cmd_line[cmd_line.find(self.app_bin_cmd) : cmd_line.find("| START")].strip()
+                    )
 
-                    if tags["tst"] and "FAILED TEST" in "".join(readlines[startIndex + 1 : finishIndex]):
-                        utCase = ""
-                        utRunIndex = -1
-                        utRunIndices = []
-                        utFailIndices = []
-                        for index, line in enumerate(readlines[startIndex + 1 : finishIndex]):
-                            index += startIndex + 1
+                    if tags["tst"] and "FAILED TEST" in "".join(readlines[start_index + 1 : finish_index]):
+                        ut_case = ""
+                        ut_run_index = -1
+                        ut_run_indices = []
+                        ut_fail_indices = []
+                        for index, line in enumerate(readlines[start_index + 1 : finish_index]):
+                            index += start_index + 1
                             if "[ RUN      ]" in line:
-                                utCase = line[line.find("]") + 2 : line.find("\n")]
-                                utRunIndex = index
-                            elif len(utCase) != 0 and f"[  FAILED  ] {utCase}" in line:
-                                utRunIndices.append(utRunIndex)
-                                utFailIndices.append(index)
-                                utCase = ""
-                        utFailRes = ""
-                        for utRunIndex, utFailIndex in zip(utRunIndices, utFailIndices):
-                            utFailRes += "".join(readlines[utRunIndex : utFailIndex + 1])
-                        failRes[caseTask] = utFailRes
+                                ut_case = line[line.find("]") + 2 : line.find("\n")]
+                                ut_run_index = index
+                            elif len(ut_case) != 0 and f"[  FAILED  ] {ut_case}" in line:
+                                ut_run_indices.append(ut_run_index)
+                                ut_fail_indices.append(index)
+                                ut_case = ""
+                        ut_fail_res = ""
+                        for ut_run_index, ut_fail_index in zip(ut_run_indices, ut_fail_indices):
+                            ut_fail_res += "".join(readlines[ut_run_index : ut_fail_index + 1])
+                        fail_res[case_task] = ut_fail_res
                         continue
 
-                    lastIndex = finishIndex
+                    last_index = finish_index
                     if tags["chk_mem"]:
-                        for index, line in enumerate(readlines[startIndex + 1 : finishIndex]):
+                        for index, line in enumerate(readlines[start_index + 1 : finish_index]):
                             if "[CHECK MEMORY]" in line:
-                                index += startIndex + 1
-                                memErr[caseTask] = "".join(readlines[index + 1 : finishIndex - 1])
-                                lastIndex = index
-                    failRes[caseTask] = "".join(readlines[startIndex + 1 : lastIndex - 1])
+                                index += start_index + 1
+                                mem_err[case_task] = "".join(readlines[index + 1 : finish_index - 1])
+                                last_index = index
+                    fail_res[case_task] = "".join(readlines[start_index + 1 : last_index - 1])
 
             if tags["chk_cov"]:
                 category = ["Regions", "Functions", "Lines", "Branches"]
@@ -432,80 +435,80 @@ class Task:
                         percentages = [str(float(s.strip("%"))) for s in matches]
                         if len(percentages) == 4:
                             for index, per in enumerate(percentages):
-                                covPer[category[index]] = str(per) + "%"
+                                cov_per[category[index]] = str(per) + "%"
                         break
-                if len(covPer) == 0:
+                if len(cov_per) == 0:
                     for cat in category:
-                        covPer[cat] = "-"
+                        cov_per[cat] = "-"
 
-            return failRes, covPer, memErr
+            return fail_res, cov_per, mem_err
 
         tags = {"tst": False, "chk_cov": False, "chk_mem": False}
         readlines = []
-        with open(self.logFile, "rt", encoding="utf-8") as runLog:
-            fcntl.flock(runLog.fileno(), fcntl.LOCK_EX)
-            readlines = runLog.readlines()
-            runLog.seek(0)
-            content = runLog.read()
-            if self.testBinCmd in content:
+        with open(self.log_file, "rt", encoding="utf-8") as run_log:
+            fcntl.flock(run_log.fileno(), fcntl.LOCK_EX)
+            readlines = run_log.readlines()
+            run_log.seek(0)
+            content = run_log.read()
+            if self.tst_bin_cmd in content:
                 tags["tst"] = True
             if "[CHECK COVERAGE]" in content:
                 tags["chk_cov"] = True
             if "[CHECK MEMORY]" in content:
                 tags["chk_mem"] = True
-            fcntl.flock(runLog.fileno(), fcntl.LOCK_UN)
+            fcntl.flock(run_log.fileno(), fcntl.LOCK_UN)
         if (
             (tags["tst"] != self.options["tst"])
             or (tags["chk_cov"] != self.options["chk_cov"])
             or (tags["chk_mem"] and not self.options["chk_mem"])
         ):
-            Output.abort(f"Run options do not match the actual contents of the run log {self.logFile} file.")
+            Output.abort(f"Run options do not match the actual contents of the run log {self.log_file} file.")
         if tags["tst"] and (tags["chk_cov"] or tags["chk_mem"]):
-            Output.abort(f"The run log {self.logFile} file is complex. Please retry.")
+            Output.abort(f"The run log {self.log_file} file is complex. Please retry.")
 
-        startIndices = []
-        finishIndices = []
+        start_indices = []
+        finish_indices = []
         for index, line in enumerate(readlines):
             if "| START" in line:
-                startIndices.append(index)
+                start_indices.append(index)
             elif "| FINISH" in line:
-                finishIndices.append(index)
-        if len(startIndices) != len(finishIndices) or len(startIndices) != self.totalSteps:
-            Output.abort(f"The run log {self.logFile} file is incomplete. Please retry.")
+                finish_indices.append(index)
+        if len(start_indices) != len(finish_indices) or len(start_indices) != self.total_steps:
+            Output.abort(f"The run log {self.log_file} file is incomplete. Please retry.")
 
-        failRes, covPer, memErr = analyzeForReport(readlines, startIndices, finishIndices, tags)
-        with open(self.reportFile, "w", encoding="utf-8") as runReport:
-            fcntl.flock(runReport.fileno(), fcntl.LOCK_EX)
-            runStat = {"Passed": str(self.totalSteps - len(failRes)), "Failed": str(len(failRes))}
-            runStatRep = "REPORT FOR RUN STATISTICS"
+        fail_res, cov_per, mem_err = analyze_for_report(readlines, start_indices, finish_indices, tags)
+        with open(self.report_file, "w", encoding="utf-8") as run_report:
+            fcntl.flock(run_report.fileno(), fcntl.LOCK_EX)
+            run_stat = {"Passed": str(self.total_steps - len(fail_res)), "Failed": str(len(fail_res))}
+            run_stat_rep = "REPORT FOR RUN STATISTICS"
             if tags["tst"]:
-                runStatRep += " (UNIT TEST)"
-            runStatRep += ":\n" + Output().formatAsTable(runStat, "STATUS", "RUN STATISTICS") + "\n\n"
-            failResRep = ""
-            if failRes:
-                failResRep = (
+                run_stat_rep += " (UNIT TEST)"
+            run_stat_rep += ":\n" + Output().format_as_table(run_stat, "STATUS", "RUN STATISTICS") + "\n\n"
+            fail_res_rep = ""
+            if fail_res:
+                fail_res_rep = (
                     "\r\nREPORT FOR FAILURE RESULT:\n"
-                    + Output().formatAsTable(failRes, "CASE TASK", "FAILURE RESULT")
+                    + Output().format_as_table(fail_res, "CASE TASK", "FAILURE RESULT")
                     + "\n\n"
                 )
-            covPerRep = ""
-            if covPer:
-                covPerRep = (
+            cov_per_rep = ""
+            if cov_per:
+                cov_per_rep = (
                     "\r\nREPORT FOR COVERAGE PERCENT:\n"
-                    + Output().formatAsTable(covPer, "CATEGORY", "COVERAGE PERCENT")
+                    + Output().format_as_table(cov_per, "CATEGORY", "COVERAGE PERCENT")
                     + "\n\n"
                 )
-            memErrRep = ""
-            if memErr:
-                memErrRep = (
+            mem_err_rep = ""
+            if mem_err:
+                mem_err_rep = (
                     "\r\nREPORT FOR MEMORY ERROR:\n"
-                    + Output().formatAsTable(memErr, "CASE TASK", "MEMORY ERROR")
+                    + Output().format_as_table(mem_err, "CASE TASK", "MEMORY ERROR")
                     + "\n\n"
                 )
-            runReport.write(runStatRep + failResRep + covPerRep + memErrRep)
-            fcntl.flock(runReport.fileno(), fcntl.LOCK_UN)
+            run_report.write(run_stat_rep + fail_res_rep + cov_per_rep + mem_err_rep)
+            fcntl.flock(run_report.fileno(), fcntl.LOCK_UN)
 
-        if failRes:
+        if fail_res:
             sys.exit(1)
 
 

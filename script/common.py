@@ -11,7 +11,7 @@ except ImportError as err:
     raise ImportError(err) from err
 
 
-def executeCommand(command, setInput="", setTimeout=300):
+def execute_command(command, set_input="", set_timeout=300):
     try:
         process = subprocess.run(
             command,
@@ -21,8 +21,8 @@ def executeCommand(command, setInput="", setTimeout=300):
             capture_output=True,
             check=True,
             encoding="utf-8",
-            input=setInput,
-            timeout=setTimeout,
+            input=set_input,
+            timeout=set_timeout,
         )
         return process.stdout.strip(), process.stderr.strip(), process.returncode
     except subprocess.CalledProcessError as error:
@@ -54,101 +54,101 @@ class Log:
 
 
 class ProgressBar:
-    saveCursor = "\033[s"
-    restoreCursor = "\033[u"
-    moveUpCursor = "\033[1A"
-    foreColor = "\033[30m"
-    backColor = "\033[42m"
-    defaultForeColor = "\033[39m"
-    defaultBackColor = "\033[49m"
-    currentLines = 0
-    placeholderLength = 20
-    setTrap = False
-    defaultSignal = None
+    save_cursor = "\033[s"
+    restore_cursor = "\033[u"
+    move_up_cursor = "\033[1A"
+    fore_color = "\033[30m"
+    back_color = "\033[42m"
+    default_fore_color = "\033[39m"
+    default_back_color = "\033[49m"
+    current_lines = 0
+    placeholder_length = 20
+    set_trap = False
+    default_signal = None
 
-    def setupProgressBar(self):
+    def setup_progress_bar(self):
         curses.setupterm()
 
-        self.trapDueToInterrupt()
+        self.trap_due_to_interrupt()
 
-        self.currentLines = self.tputLines()
-        lines = self.currentLines - 1
-        self.printProgress("\n")
+        self.current_lines = self.tput_lines()
+        lines = self.current_lines - 1
+        self.print_progress("\n")
 
-        self.printProgress(self.saveCursor)
-        self.printProgress(f"\033[0;{str(lines)}r")
+        self.print_progress(self.save_cursor)
+        self.print_progress(f"\033[0;{str(lines)}r")
 
-        self.printProgress(self.restoreCursor)
-        self.printProgress(self.moveUpCursor)
-        self.drawProgressBar(0)
+        self.print_progress(self.restore_cursor)
+        self.print_progress(self.move_up_cursor)
+        self.draw_progress_bar(0)
 
-    def drawProgressBar(self, percentage):
-        lines = self.tputLines()
-        if lines != self.currentLines:
-            self.setupProgressBar()
+    def draw_progress_bar(self, percentage):
+        lines = self.tput_lines()
+        if lines != self.current_lines:
+            self.setup_progress_bar()
 
-        self.printProgress(self.saveCursor)
-        self.printProgress(f"\033[{str(lines)};0f")
+        self.print_progress(self.save_cursor)
+        self.print_progress(f"\033[{str(lines)};0f")
 
         self.tput()
-        self.printBar(percentage)
-        self.printProgress(self.restoreCursor)
+        self.print_bar(percentage)
+        self.print_progress(self.restore_cursor)
         time.sleep(0.01)
 
-    def destroyProgressBar(self):
-        lines = self.tputLines()
-        self.printProgress(self.saveCursor)
-        self.printProgress(f"\033[0;{str(lines)}r")
+    def destroy_progress_bar(self):
+        lines = self.tput_lines()
+        self.print_progress(self.save_cursor)
+        self.print_progress(f"\033[0;{str(lines)}r")
 
-        self.printProgress(self.restoreCursor)
-        self.printProgress(self.moveUpCursor)
+        self.print_progress(self.restore_cursor)
+        self.print_progress(self.move_up_cursor)
 
-        self.clearProgressBar()
-        self.printProgress("\n\n")
-        if self.setTrap:
-            signal.signal(signal.SIGINT, self.defaultSignal)
+        self.clear_progress_bar()
+        self.print_progress("\n\n")
+        if self.set_trap:
+            signal.signal(signal.SIGINT, self.default_signal)
 
-    def clearProgressBar(self):
-        lines = self.tputLines()
-        self.printProgress(self.saveCursor)
-        self.printProgress(f"\033[{str(lines)};0f")
+    def clear_progress_bar(self):
+        lines = self.tput_lines()
+        self.print_progress(self.save_cursor)
+        self.print_progress(f"\033[{str(lines)};0f")
 
         self.tput()
-        self.printProgress(self.restoreCursor)
+        self.print_progress(self.restore_cursor)
 
-    def trapDueToInterrupt(self):
-        self.setTrap = True
-        self.defaultSignal = signal.getsignal(signal.SIGINT)
-        signal.signal(signal.SIGINT, self.clearDueToInterrupt)
+    def trap_due_to_interrupt(self):
+        self.set_trap = True
+        self.default_signal = signal.getsignal(signal.SIGINT)
+        signal.signal(signal.SIGINT, self.clear_due_to_interrupt)
 
-    def clearDueToInterrupt(self, sign, frame):
+    def clear_due_to_interrupt(self, sign, frame):
         _ = (sign, frame)
-        self.destroyProgressBar()
+        self.destroy_progress_bar()
         raise KeyboardInterrupt
 
-    def printBar(self, percentage):
-        cols = self.tputCols()
-        barSize = cols - self.placeholderLength
-        color = f"{self.foreColor}{self.backColor}"
-        defaultColor = f"{self.defaultForeColor}{self.defaultBackColor}"
+    def print_bar(self, percentage):
+        cols = self.tput_cols()
+        bar_size = cols - self.placeholder_length
+        color = f"{self.fore_color}{self.back_color}"
+        default_color = f"{self.default_fore_color}{self.default_back_color}"
 
-        completeSize = int((barSize * percentage) / 100)
-        remainderSize = barSize - completeSize
-        progressBar = f"[{color}{'#' * int(completeSize)}{defaultColor}{'.' * int(remainderSize)}]"
-        self.printProgress(f" Progress {percentage:>3}% {progressBar}\r")
+        complete_size = int((bar_size * percentage) / 100)
+        remainder_size = bar_size - complete_size
+        progress_bar = f"[{color}{'#' * int(complete_size)}{default_color}{'.' * int(remainder_size)}]"
+        self.print_progress(f" Progress {percentage:>3}% {progress_bar}\r")
 
     @staticmethod
-    def printProgress(text):
+    def print_progress(text):
         print(text, end="")
 
     @staticmethod
-    def tputLines():
-        stdout, _, _ = executeCommand("tput lines")
+    def tput_lines():
+        stdout, _, _ = execute_command("tput lines")
         return int(stdout)
 
     @staticmethod
-    def tputCols():
-        stdout, _, _ = executeCommand("tput cols")
+    def tput_cols():
+        stdout, _, _ = execute_command("tput cols")
         return int(stdout)
 
     @staticmethod
