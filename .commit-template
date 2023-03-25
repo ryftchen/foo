@@ -1,8 +1,8 @@
 # type: short summary
 # ^--^  ^-----------^
-#   │         │
-#   │         +-> Present tense summary. Not capitalized. No period at the end.
-#   │
+#   |         |
+#   |         +-> Present tense summary. Not capitalized. No period at the end.
+#   |
 #   +-> Commit type: build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test
 #
 # build: changes that affect the build system or external dependencies
