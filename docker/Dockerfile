@@ -9,7 +9,7 @@ RUN apt-get update \
 llvm-12 clang-12 libclang-12-dev libstdc++-10-dev libgtest-dev libreadline-dev libmpfrc++-dev \
 clang-format-12 clang-tidy-12 valgrind cloc graphviz docker-compose \
 && sudo apt-get clean \
-&& sudo pip3 install --no-cache-dir -v requests pylint==2.15.5 black==22.10.0 shellcheck-py==0.8.0.4 shfmt-py==3.4.3.1 \
+&& sudo pip3 install --no-cache-dir -v requests pre-commit==3.2.0 pylint==2.15.5 black==22.10.0 shellcheck-py==0.8.0.4 shfmt-py==3.4.3.1 \
 compdb==0.2.0 ValgrindCI==0.2.0 \
 && cd /root \
 && git clone https://github.com/KDAB/codebrowser.git \
