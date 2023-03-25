@@ -8,6 +8,7 @@
 
 #include <cstdint>
 #include <utility>
+#include <vector>
 
 //! @brief Integral-related functions in the numeric module.
 namespace numeric::integral
@@ -172,6 +173,8 @@ public:
 private:
     //! @brief Target expression.
     const Expression& expr;
+    //! @brief Random cache.
+    std::vector<double> cache;
 #ifndef INTEGRAL_MONTE_CARLO_NORMAL_DISTRIBUTION
     //! @brief Sample from the uniform distribution.
     //! @param lower - lower endpoint
@@ -187,5 +190,10 @@ private:
     //! @return result of definite integral
     [[nodiscard]] double sampleFromNormalDistribution(const double lower, const double upper, const double eps) const;
 #endif // INTEGRAL_MONTE_CARLO_NORMAL_DISTRIBUTION
+    //! @brief Refresh the random cache.
+    //! @param cache - target cache
+    //! @param min - minimum value
+    //! @param max - maximum value
+    static void refreshRandomCache(std::vector<double>& cache, const double min, const double max);
 };
 } // namespace numeric::integral
