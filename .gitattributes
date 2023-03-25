@@ -17,6 +17,7 @@
 .editorconfig text eol=lf
 .gitattributes text eol=lf
 .gitignore text eol=lf
+.pre-commit-config.yaml text eol=lf
 .pylintrc text eol=lf
 .shellcheckrc text eol=lf
 .supp text eol=lf
