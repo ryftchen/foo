@@ -173,14 +173,15 @@ double MonteCarlo::operator()(double lower, double upper, const double eps) cons
 double MonteCarlo::sampleFromUniformDistribution(const double lower, const double upper, const double eps) const
 {
     const uint32_t n = std::max<uint32_t>((upper - lower) / eps, 1e6);
-    std::mt19937 seed(std::random_device{}());
-    std::uniform_real_distribution<double> random(lower, upper);
+    std::vector<double> cache(n);
+
+    refreshRandomCache(cache, lower, upper);
     double sum = 0.0;
     for (uint32_t i = 0; i < n; ++i)
     {
-        double x = random(seed);
-        sum += expr(x);
+        sum += expr(cache.at(i));
     }
+
     sum *= (upper - lower) / n; // I≈(b-a)/N*[F(X1)+F(X2)+...+F(Xn)]
 
     return sum;
@@ -191,13 +192,13 @@ double MonteCarlo::sampleFromNormalDistribution(const double lower, const double
     const uint32_t n = std::max<uint32_t>((upper - lower) / eps, 1e6);
     const double mu = (lower + upper) / 2.0, sigma = (upper - lower) / 6.0;
     std::mt19937 seed(std::random_device{}());
-    std::uniform_real_distribution<double> random(0.0, 1.0);
+    std::uniform_real_distribution<double> distribution(0.0, 1.0);
     double sum = 0.0, x = 0.0;
     for (uint32_t i = 0; i < n; ++i)
     {
         do
         {
-            double u1 = random(seed), u2 = random(seed), mag = sigma * std::sqrt(-2.0 * std::log(u1));
+            double u1 = distribution(seed), u2 = distribution(seed), mag = sigma * std::sqrt(-2.0 * std::log(u1));
             x = mag * std::sin(2.0 * M_PI * u2) + mu; // Box-Muller Transform
         }
         while ((x < lower) || (x > upper));
@@ -210,4 +211,18 @@ double MonteCarlo::sampleFromNormalDistribution(const double lower, const double
     return sum;
 }
 #endif // INTEGRAL_MONTE_CARLO_NORMAL_DISTRIBUTION
+
+void MonteCarlo::refreshRandomCache(std::vector<double>& cache, const double min, const double max)
+{
+    std::uniform_real_distribution<double> distribution(min, max);
+    std::mt19937 seed(std::random_device{}());
+
+    std::for_each(
+        cache.begin(),
+        cache.end(),
+        [&distribution, &seed](double& x)
+        {
+            x = distribution(seed);
+        });
+}
 } // namespace numeric::integral
