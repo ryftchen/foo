@@ -12,7 +12,7 @@
 *.yml text eol=lf
 .clang-format text eol=lf
 .clang-tidy text eol=lf
-.commit_template text eol=lf
+.commit-template text eol=lf
 .dockerignore text eol=lf
 .editorconfig text eol=lf
 .gitattributes text eol=lf
