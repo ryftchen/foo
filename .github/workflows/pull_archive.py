@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 
 try:
+    import argparse
     import json
     import os
-    import argparse
+    import requests
     import subprocess
     import sys
+    import traceback
     from datetime import datetime
-    import requests
 except ImportError as err:
     raise ImportError(err) from err
 
@@ -18,8 +19,8 @@ WEBSITE_DIR = "/var/www/foo_web"
 PROXY_PORT = ""
 
 
-def execute(cmd):
-    print(f"{datetime.strftime(datetime.now(), '%b %d %H:%M:%S')} execute: {cmd}")
+def command(cmd):
+    print(f"{datetime.strftime(datetime.now(), '%b %d %H:%M:%S')} command: {cmd}")
     try:
         process = subprocess.run(
             cmd,
@@ -44,26 +45,9 @@ def execute(cmd):
         sys.exit(-1)
 
 
-def abandon(msg):
-    print(f"{datetime.strftime(datetime.now(), '%b %d %H:%M:%S')} abandon: {msg}")
+def abort(msg):
+    print(f"{datetime.strftime(datetime.now(), '%b %d %H:%M:%S')} abort: {msg}")
     sys.exit(-1)
-
-
-def parse_arguments():
-    parser = argparse.ArgumentParser(description="pull archive script")
-    parser.add_argument(
-        "-p",
-        "--port",
-        nargs="?",
-        type=int,
-        choices=range(0, 65535 + 1),
-        help="proxy port",
-        metavar="[0-65535]",
-    )
-    args = parser.parse_args()
-    if args.port is not None:
-        global PROXY_PORT
-        PROXY_PORT = args.port
 
 
 def download_artifact():
@@ -71,15 +55,15 @@ def download_artifact():
     os.chdir(file_path.replace(file_path[file_path.index(".github") :], ""))
 
     if not os.path.exists(WEBSITE_DIR):
-        abandon("Please create a foo_web folder in the /var/www directory.")
-    local_commit_id, _ = execute("git rev-parse HEAD")
-    remote_commit_id, _ = execute(f"git ls-remote {GIT_URL} refs/heads/master | cut -f 1")
+        abort("Please create a foo_web folder in the /var/www directory.")
+    local_commit_id, _ = command("git rev-parse HEAD")
+    remote_commit_id, _ = command(f"git ls-remote {GIT_URL} refs/heads/master | cut -f 1")
     if not remote_commit_id:
-        abandon("Failed to get the latest commit id.")
+        abort("Failed to get the latest commit id.")
     if local_commit_id != remote_commit_id:
-        execute("git pull origin master")
+        command("git pull origin master")
     elif os.path.exists(f"{WEBSITE_DIR}/browser") and os.path.exists(f"{WEBSITE_DIR}/doxygen"):
-        abandon("No commit change.")
+        abort("No commit change.")
 
     try:
         response = requests.get(ARTIFACT_URL, timeout=60)
@@ -107,41 +91,58 @@ def download_artifact():
         with open(f"{WEBSITE_DIR}/{ARTIFACT_NAME}.zip", "wb") as output_file:
             output_file.write(response.content)
     except requests.exceptions.HTTPError as error:
-        execute(f"rm -rf {WEBSITE_DIR}/{ARTIFACT_NAME}.zip")
-        execute(f"git reset --hard {local_commit_id}")
-        abandon(error)
+        command(f"rm -rf {WEBSITE_DIR}/{ARTIFACT_NAME}.zip")
+        command(f"git reset --hard {local_commit_id}")
+        abort(error)
 
-    validation, _ = execute(f"zip -T {WEBSITE_DIR}/{ARTIFACT_NAME}.zip")
+    validation, _ = command(f"zip -T {WEBSITE_DIR}/{ARTIFACT_NAME}.zip")
     if "zip error" in validation:
-        execute(f"rm -rf {WEBSITE_DIR}/{ARTIFACT_NAME}.zip")
-        execute(f"git reset --hard {local_commit_id}")
-        abandon(f"The {ARTIFACT_NAME}.zip file in the {WEBSITE_DIR} folder is corrupted.")
+        command(f"rm -rf {WEBSITE_DIR}/{ARTIFACT_NAME}.zip")
+        command(f"git reset --hard {local_commit_id}")
+        abort(f"The {ARTIFACT_NAME}.zip file in the {WEBSITE_DIR} folder is corrupted.")
 
 
 def update_document():
-    execute(f"rm -rf {WEBSITE_DIR}/browser {WEBSITE_DIR}/doxygen")
-    execute(f"unzip {WEBSITE_DIR}/{ARTIFACT_NAME}.zip -d {WEBSITE_DIR}")
-    execute(f"tar -jxvf {WEBSITE_DIR}/foo_browser_*.tar.bz2 -C {WEBSITE_DIR} >/dev/null")
-    execute(f"tar -jxvf {WEBSITE_DIR}/foo_doxygen_*.tar.bz2 -C {WEBSITE_DIR} >/dev/null")
-    execute(f"rm -rf {WEBSITE_DIR}/*.zip {WEBSITE_DIR}/*.tar.bz2")
+    command(f"rm -rf {WEBSITE_DIR}/browser {WEBSITE_DIR}/doxygen")
+    command(f"unzip {WEBSITE_DIR}/{ARTIFACT_NAME}.zip -d {WEBSITE_DIR}")
+    command(f"tar -jxvf {WEBSITE_DIR}/foo_browser_*.tar.bz2 -C {WEBSITE_DIR} >/dev/null")
+    command(f"tar -jxvf {WEBSITE_DIR}/foo_doxygen_*.tar.bz2 -C {WEBSITE_DIR} >/dev/null")
+    command(f"rm -rf {WEBSITE_DIR}/*.zip {WEBSITE_DIR}/*.tar.bz2")
 
 
 def pull_archive():
+    parser = argparse.ArgumentParser(description="pull archive script")
+    parser.add_argument(
+        "-p",
+        "--port",
+        nargs="?",
+        type=int,
+        choices=range(0, 65535 + 1),
+        help="proxy port",
+        metavar="[0-65535]",
+    )
+    args = parser.parse_args()
+    if args.port is not None:
+        global PROXY_PORT
+        PROXY_PORT = args.port
+
     print(
-        f'\r\n{datetime.strftime(datetime.now(), "%b %d %H:%M:%S")} \
->>>>>>>>>>>>>>>>>>>>>>>>> PULL ARCHIVE <<<<<<<<<<<<<<<<<<<<<<<<<'
+        f"\r\n{datetime.strftime(datetime.now(), '%b %d %H:%M:%S')} \
+>>>>>>>>>>>>>>>>>>>>>>>>> PULL ARCHIVE <<<<<<<<<<<<<<<<<<<<<<<<<"
     )
     env = os.getenv("FOO_ENV")
-    if env:
+    if env is not None:
         if env != "foo_doc":
-            abandon("The environment variable FOO_ENV must be foo_doc.")
+            abort("The environment variable FOO_ENV must be foo_doc.")
     else:
-        abandon("Please export the environment variable FOO_ENV.")
+        abort("Please export the environment variable FOO_ENV.")
 
     download_artifact()
     update_document()
 
 
 if __name__ == "__main__":
-    parse_arguments()
-    pull_archive()
+    try:
+        pull_archive()
+    except Exception:  # pylint: disable=broad-except
+        abort(traceback.format_exc())

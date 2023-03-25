@@ -31,12 +31,12 @@ class Output:
     min_value_width = 80
 
     @classmethod
-    def abort(cls, message):
-        print(f"\r\nrun.py: {message}")
+    def exit_with_error(cls, message):
+        print(f"\r\n{os.path.basename(__file__)}: {message}")
         sys.exit(-1)
 
     @classmethod
-    def status(cls, color_foreground, content):
+    def refresh_status(cls, color_foreground, content):
         print(
             f"""{color_foreground}{cls.color_background}{f"{'=' * cls.column_length}"}\
 [ {datetime.strftime(datetime.now(), "%b %d %H:%M:%S")} | {content} ]{f"{'=' * cls.column_length}"}{cls.color_off}"""
@@ -178,7 +178,7 @@ class Task:
             pass
         finally:
             if message:
-                Output.abort(message)
+                Output.exit_with_error(message)
             sys.exit(-1)
 
     def parse_arguments(self):
@@ -207,7 +207,7 @@ class Task:
 
         if args.check is not None:
             if args.test is not None:
-                Output.abort("No support for the --check option during testing.")
+                Output.exit_with_error("No support for the --check option during testing.")
             if "cov" in args.check:
                 stdout, _, _ = common.execute_command("command -v llvm-profdata-12 llvm-cov-12 2>&1")
                 if stdout.find("llvm-profdata-12") != -1 and stdout.find("llvm-cov-12") != -1:
@@ -215,7 +215,7 @@ class Task:
                     self.options["chk_cov"] = True
                     common.execute_command(f"rm -rf {self.temp_dir}/coverage")
                 else:
-                    Output.abort("No llvm-profdata or llvm-cov program. Please check it.")
+                    Output.exit_with_error("No llvm-profdata or llvm-cov program. Please check it.")
 
             if "mem" in args.check:
                 stdout, _, _ = common.execute_command("command -v valgrind valgrind-ci 2>&1")
@@ -224,7 +224,7 @@ class Task:
                     self.options["chk_mem"] = True
                     common.execute_command(f"rm -rf {self.temp_dir}/memory")
                 else:
-                    Output.abort("No valgrind or valgrind-ci program. Please check it.")
+                    Output.exit_with_error("No valgrind or valgrind-ci program. Please check it.")
 
         if args.build is not None:
             if os.path.isfile(self.build_script):
@@ -236,7 +236,7 @@ class Task:
                 elif args.build == "rls":
                     self.build_executable(f"{build_cmd} --release 2>&1")
             else:
-                Output.abort(f"No shell script {self.build_script} file.")
+                Output.exit_with_error(f"No shell script {self.build_script} file.")
 
         if args.test is not None:
             self.options["tst"] = True
@@ -246,17 +246,17 @@ class Task:
         stdout, stderr, return_code = common.execute_command(build_cmd)
         if stderr or return_code != 0:
             print(f"\r\n[STDOUT]\n{stdout}\n[STDERR]\n{stderr}\n[RETURN CODE]\n{return_code}")
-            Output.abort(f"Failed to run shell script {self.build_script} file.")
+            Output.exit_with_error(f"Failed to run shell script {self.build_script} file.")
         else:
             print(stdout)
             if "FAILED:" in stdout:
-                Output.abort(f"Failed to build the executable by shell script {self.build_script} file.")
+                Output.exit_with_error(f"Failed to build the executable by shell script {self.build_script} file.")
 
     def prepare(self):
         if not self.options["tst"] and not os.path.isfile(f"{self.app_bin_dir}/{self.app_bin_cmd}"):
-            Output.abort("No executable file. Please use the --build option to build it.")
+            Output.exit_with_error("No executable file. Please use the --build option to build it.")
         if self.options["tst"] and not os.path.isfile(f"{self.tst_bin_dir}/{self.tst_bin_cmd}"):
-            Output.abort("No executable file for testing. Please use the --build option to build it.")
+            Output.exit_with_error("No executable file for testing. Please use the --build option to build it.")
         common.execute_command("ulimit -s unlimited")
         common.execute_command("echo 'core.%s.%e.%p' | tee /proc/sys/kernel/core_pattern")
 
@@ -329,12 +329,16 @@ class Task:
             Output.min_align_len,
             len(str(self.total_steps)) * 2 + len(" / ") + Output.align_len_excl_cmd,
         )
-        Output.status(Output.color["blue"], f"CASE TASK: {f'{command}':<{align - Output.align_len_excl_cmd}} | START ")
+        Output.refresh_status(
+            Output.color["blue"], f"CASE TASK: {f'{command}':<{align - Output.align_len_excl_cmd}} | START "
+        )
 
         stdout, stderr, return_code = common.execute_command(full_cmd, enter)
         if len(stdout.strip()) == 0 or stderr or return_code != 0:
             print(f"\r\n[STDOUT]\n{stdout}\n[STDERR]\n{stderr}\n[RETURN CODE]\n{return_code}")
-            Output.status(Output.color["red"], f"{f'CASE TASK: FAILURE NO.{str(self.complete_steps + 1)}':<{align}}")
+            Output.refresh_status(
+                Output.color["red"], f"{f'CASE TASK: FAILURE NO.{str(self.complete_steps + 1)}':<{align}}"
+            )
         else:
             print(stdout)
             self.pass_steps += 1
@@ -350,18 +354,20 @@ class Task:
 --output-dir={self.temp_dir}/memory/case_task_{str(self.complete_steps + 1)}"
                     )
                     self.pass_steps -= 1
-                    Output.status(
+                    Output.refresh_status(
                         Output.color["red"], f"{f'CASE TASK: FAILURE NO.{str(self.complete_steps + 1)}':<{align}}"
                     )
 
         self.complete_steps += 1
-        Output.status(Output.color["blue"], f"CASE TASK: {f'{command}':<{align - Output.align_len_excl_cmd}} | FINISH")
+        Output.refresh_status(
+            Output.color["blue"], f"CASE TASK: {f'{command}':<{align - Output.align_len_excl_cmd}} | FINISH"
+        )
 
         if self.pass_steps != self.total_steps:
             status_color = Output.color["yellow"]
         else:
             status_color = Output.color["green"]
-        Output.status(
+        Output.refresh_status(
             status_color,
             f"""\
 {f"CASE TASK: SUCCESS {f'{str(self.pass_steps)}':>{len(str(self.total_steps))}} / {str(self.total_steps)}":<{align}}""",
@@ -462,9 +468,9 @@ class Task:
             or (tags["chk_cov"] != self.options["chk_cov"])
             or (tags["chk_mem"] and not self.options["chk_mem"])
         ):
-            Output.abort(f"Run options do not match the actual contents of the run log {self.log_file} file.")
+            Output.exit_with_error(f"Run options do not match the actual contents of the run log {self.log_file} file.")
         if tags["tst"] and (tags["chk_cov"] or tags["chk_mem"]):
-            Output.abort(f"The run log {self.log_file} file is complex. Please retry.")
+            Output.exit_with_error(f"The run log {self.log_file} file is complex. Please retry.")
 
         start_indices = []
         finish_indices = []
@@ -474,7 +480,7 @@ class Task:
             elif "| FINISH" in line:
                 finish_indices.append(index)
         if len(start_indices) != len(finish_indices) or len(start_indices) != self.total_steps:
-            Output.abort(f"The run log {self.log_file} file is incomplete. Please retry.")
+            Output.exit_with_error(f"The run log {self.log_file} file is incomplete. Please retry.")
 
         fail_res, cov_per, mem_err = analyze_for_report(readlines, start_indices, finish_indices, tags)
         with open(self.report_file, "w", encoding="utf-8") as run_report:
