@@ -35,6 +35,7 @@
         "libutility",
         "memcheck",
         "mpfr",
+        "precheck",
         "profdata",
         "profraw",
         "pylintrc",
