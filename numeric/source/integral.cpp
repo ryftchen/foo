@@ -159,8 +159,9 @@ double MonteCarlo::operator()(double lower, double upper, const double eps) cons
 {
     const int sign = getSign(lower, upper);
 
+#ifndef INTEGRAL_MONTE_CARLO_NORMAL_DISTRIBUTION
     double sum = sampleFromUniformDistribution(lower, upper, eps);
-#ifdef INTEGRAL_MONTE_CARLO_NO_UNIFORM
+#else
     double sum = sampleFromNormalDistribution(lower, upper, eps);
 #endif // INTEGRAL_MONTE_CARLO_NORMAL_DISTRIBUTION
     sum *= sign;
