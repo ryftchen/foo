@@ -49,7 +49,7 @@ jobs:
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v2
         with:
-          config-file: ./.github/codeql/codeql-config.yml
+          config-file: ./.github/actions/codeql/codeql-config.yml
           languages: cpp
 
       - name: Manual build
