@@ -183,7 +183,7 @@ public:
 };
 
 //! @brief Test for the gradient descent method in the solution of optimal.
-TEST_F(OptimalTestBase, gradient) // NOLINT(cert-err58-cpp)
+TEST_F(OptimalTestBase, gradientDescentMethod) // NOLINT(cert-err58-cpp)
 {
     std::shared_ptr<algorithm::optimal::Optimal> gradient = std::make_shared<algorithm::optimal::Gradient>(griewank);
     auto result = (*gradient)(griewank.range1, griewank.range2, algorithm::optimal::epsilon);
@@ -199,7 +199,7 @@ TEST_F(OptimalTestBase, gradient) // NOLINT(cert-err58-cpp)
 }
 
 //! @brief Test for the simulated annealing method in the solution of optimal.
-TEST_F(OptimalTestBase, annealing) // NOLINT(cert-err58-cpp)
+TEST_F(OptimalTestBase, simulatedAnnealingMethod) // NOLINT(cert-err58-cpp)
 {
     std::shared_ptr<algorithm::optimal::Optimal> annealing = std::make_shared<algorithm::optimal::Annealing>(griewank);
     auto result = (*annealing)(griewank.range1, griewank.range2, algorithm::optimal::epsilon);
@@ -215,7 +215,7 @@ TEST_F(OptimalTestBase, annealing) // NOLINT(cert-err58-cpp)
 }
 
 //! @brief Test for the particle swarm method in the solution of optimal.
-TEST_F(OptimalTestBase, particle) // NOLINT(cert-err58-cpp)
+TEST_F(OptimalTestBase, particleSwarmMethod) // NOLINT(cert-err58-cpp)
 {
     std::shared_ptr<algorithm::optimal::Optimal> particle = std::make_shared<algorithm::optimal::Particle>(griewank);
     auto result = (*particle)(griewank.range1, griewank.range2, algorithm::optimal::epsilon);
@@ -231,7 +231,7 @@ TEST_F(OptimalTestBase, particle) // NOLINT(cert-err58-cpp)
 }
 
 //! @brief Test for the genetic method in the solution of optimal.
-TEST_F(OptimalTestBase, genetic) // NOLINT(cert-err58-cpp)
+TEST_F(OptimalTestBase, geneticMethod) // NOLINT(cert-err58-cpp)
 {
     std::shared_ptr<algorithm::optimal::Optimal> genetic = std::make_shared<algorithm::optimal::Genetic>(griewank);
     auto result = (*genetic)(griewank.range1, griewank.range2, algorithm::optimal::epsilon);
