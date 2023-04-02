@@ -7,31 +7,21 @@
 #include "optimal.hpp"
 // #define NDEBUG
 #include <cassert>
-#include <chrono>
 #include <functional>
 #include <set>
 #include <stdexcept>
 
 namespace algorithm::optimal
 {
-//! @brief Get the random seed by time.
-//! @return random seed
-std::mt19937 getRandomSeedByTime()
-{
-    const auto now = std::chrono::system_clock::now();
-    const auto milliseconds = std::chrono::duration_cast<std::chrono::microseconds>(now.time_since_epoch()).count();
-    return std::mt19937(milliseconds);
-}
-
 std::optional<std::tuple<double, double>> Gradient::operator()(const double left, const double right, const double eps)
 {
-    std::mt19937 seed{getRandomSeedByTime()};
+    std::mt19937 engine{std::random_device{}()};
     double x = 0.0, y = 0.0;
     std::uniform_real_distribution<double> candidate(left, right);
     std::set<double> climbing;
     while (climbing.size() < loopTime)
     {
-        climbing.insert(candidate(seed));
+        climbing.insert(candidate(engine));
     }
 
     std::vector<std::pair<double, double>> aggregation;
@@ -77,17 +67,17 @@ std::optional<std::tuple<double, double>> Annealing::operator()(const double lef
     std::uniform_real_distribution<double> perturbation(left, right);
     std::uniform_real_distribution<double> pr(0.0, 1.0);
 
-    std::mt19937 seed{getRandomSeedByTime()};
-    double temperature = initialT, x = perturbation(seed), y = func(x);
+    std::mt19937 engine{std::random_device{}()};
+    double temperature = initialT, x = perturbation(engine), y = func(x);
     while (temperature > minimalT)
     {
         double xBest = x, yBest = y;
         bool found = false;
         for (uint32_t i = 0; i < markovChain; ++i)
         {
-            double xNew = static_cast<int>(perturbation(seed) * static_cast<uint32_t>(1.0 / eps)) * eps,
+            double xNew = static_cast<int>(perturbation(engine) * static_cast<uint32_t>(1.0 / eps)) * eps,
                    yNew = func(xNew);
-            if ((yNew <= y) || (std::exp(-(yNew - y) / temperature) > pr(seed)))
+            if ((yNew <= y) || (std::exp(-(yNew - y) / temperature) > pr(engine)))
             {
                 found = true;
                 x = xNew;
@@ -122,14 +112,14 @@ std::optional<std::tuple<double, double>> Particle::operator()(const double left
         });
     double xBest = best->x, xFitnessBest = best->xFitness;
 
-    std::uniform_real_distribution<double> random(0.0, 1.0);
+    std::uniform_real_distribution<double> coeff(0.0, 1.0);
     for (uint32_t i = 0; i < numOfIteration; ++i)
     {
         const double w = wBegin - (wBegin - wEnd) * std::pow(static_cast<double>(i + 1) / numOfIteration, 2);
         for (auto& ind : rec.society)
         {
-            const double rand1 = static_cast<uint32_t>(random(seed) * static_cast<uint32_t>(1.0 / eps)) * eps;
-            const double rand2 = static_cast<uint32_t>(random(seed) * static_cast<uint32_t>(1.0 / eps)) * eps;
+            const double rand1 = static_cast<uint32_t>(coeff(engine) * static_cast<uint32_t>(1.0 / eps)) * eps;
+            const double rand2 = static_cast<uint32_t>(coeff(engine) * static_cast<uint32_t>(1.0 / eps)) * eps;
             ind.velocity = w * ind.velocity + c1 * rand1 * (ind.positionBest - ind.x) + c2 * rand2 * (xBest - ind.x);
             (ind.velocity > vMax) ? ind.velocity = vMax : ((ind.velocity < vMin) ? ind.velocity = vMin : ind.velocity);
 
@@ -161,29 +151,26 @@ std::optional<std::tuple<double, double>> Particle::operator()(const double left
 
 Particle::Storage Particle::storageInit(const double left, const double right)
 {
-    seed = std::mt19937{getRandomSeedByTime()};
-    std::uniform_real_distribution<double> candidate(left, right), randomV(vMin, vMax);
+    std::uniform_real_distribution<double> candidate(left, right), v(vMin, vMax);
+    Storage rec{{}, {}};
 
-    const Individual individualInit{};
-    Society societyInit(size, individualInit);
+    rec.society = Society(size, Individual{});
     std::generate(
-        societyInit.begin(),
-        societyInit.end(),
+        rec.society.begin(),
+        rec.society.end(),
         [&]
         {
-            const double x = candidate(seed);
-            const Individual individual(x, randomV(seed), x, func(x), func(x));
+            const double x = candidate(engine);
+            const Individual individual(x, v(engine), x, func(x), func(x));
             return individual;
         });
-    Storage rec{{}, {}};
-    rec.society = societyInit;
     return rec;
 }
 
 std::optional<std::tuple<double, double>> Genetic::operator()(const double left, const double right, const double eps)
 {
     updateSpecies(left, right, eps);
-    if (constexpr uint32_t minChrNum = 3; chrNum < minChrNum)
+    if (constexpr uint32_t minChrNum = 3; chromosomeNum < minChrNum)
     {
         throw std::runtime_error("A precision of " + std::to_string(eps) + " isn't sufficient.");
     }
@@ -202,51 +189,50 @@ std::optional<std::tuple<double, double>> Genetic::operator()(const double left,
 
 void Genetic::updateSpecies(const double left, const double right, const double eps)
 {
-    range.lower = left;
-    range.upper = right;
-    range.eps = eps;
-    seed = std::mt19937{getRandomSeedByTime()};
+    decodeAttr.lower = left;
+    decodeAttr.upper = right;
+    decodeAttr.eps = eps;
 
     uint32_t num = 0;
-    const double max = (range.upper - range.lower) * (1.0 / range.eps);
+    const double max = (decodeAttr.upper - decodeAttr.lower) * (1.0 / decodeAttr.eps);
     while ((max <= std::pow(2, num)) || (max >= std::pow(2, num + 1)))
     {
         ++num;
     }
-    chrNum = num + 1;
+    chromosomeNum = num + 1;
 }
 
 void Genetic::geneticCode(Chromosome& chr)
 {
-    std::uniform_int_distribution<int> random(0, 1);
+    std::uniform_int_distribution<int> bit(0, 1);
     std::generate(
         chr.begin(),
         chr.end(),
         [&]
         {
-            return static_cast<uint8_t>(random(seed));
+            return static_cast<uint8_t>(bit(engine));
         });
 }
 
 double Genetic::geneticDecode(const Chromosome& chr) const
 {
-    const double max = std::pow(2, chrNum) - 1.0;
-    double temp = 0.0;
-    uint32_t i = 0;
+    const double max = std::pow(2, chromosomeNum) - 1.0;
+    double convert = 0.0;
+    uint32_t index = 0;
     std::for_each(
         chr.cbegin(),
         chr.cend(),
-        [&temp, &i](const auto bit)
+        [&convert, &index](const auto bit)
         {
-            temp += bit * std::pow(2, i);
-            ++i;
+            convert += bit * std::pow(2, index);
+            ++index;
         });
-    return range.lower + (range.upper - range.lower) * temp / max;
+    return decodeAttr.lower + (decodeAttr.upper - decodeAttr.lower) * convert / max;
 }
 
 Genetic::Population Genetic::populationInit()
 {
-    const Chromosome chrInit(chrNum, 0);
+    const Chromosome chrInit(chromosomeNum, 0);
     Population pop(size, chrInit);
     std::for_each(
         pop.begin(),
@@ -264,7 +250,8 @@ void Genetic::geneticCross(Chromosome& chr1, Chromosome& chr2)
     chrTemp.reserve(chr1.size());
     std::copy(chr1.cbegin(), chr1.cend(), std::back_inserter(chrTemp));
 
-    uint32_t crossBegin = getRandomNumber(chrNum - 1), crossEnd = getRandomNumber(chrNum - 1);
+    uint32_t crossBegin = getRandomLessThanLimit(chromosomeNum - 1),
+             crossEnd = getRandomLessThanLimit(chromosomeNum - 1);
     if (crossBegin > crossEnd)
     {
         std::swap(crossBegin, crossEnd);
@@ -279,7 +266,7 @@ void Genetic::crossover(Population& pop)
     popCross.reserve(pop.size());
 
     std::vector<std::reference_wrapper<Chromosome>> crossContainer(pop.begin(), pop.end());
-    std::shuffle(crossContainer.begin(), crossContainer.end(), seed);
+    std::shuffle(crossContainer.begin(), crossContainer.end(), engine);
     for (auto chrIter = crossContainer.begin();
          (crossContainer.end() != chrIter) && (std::next(chrIter, 1) != crossContainer.end());
          std::advance(chrIter, 2))
@@ -304,9 +291,9 @@ void Genetic::crossover(Population& pop)
 
 void Genetic::geneticMutation(Chromosome& chr)
 {
-    uint32_t flip = getRandomNumber(chrNum - 1) + 1;
+    uint32_t flip = getRandomLessThanLimit(chromosomeNum - 1) + 1;
     std::vector<std::reference_wrapper<uint8_t>> mutateChr(chr.begin(), chr.end());
-    std::shuffle(mutateChr.begin(), mutateChr.end(), seed);
+    std::shuffle(mutateChr.begin(), mutateChr.end(), engine);
     for (auto geneIter = mutateChr.begin(); (mutateChr.end() != geneIter) && (0 != flip); ++geneIter, --flip)
     {
         geneIter->get() = !geneIter->get();
@@ -347,7 +334,7 @@ std::optional<std::pair<double, double>> Genetic::fitnessLinearTransformation(co
 
     const double reFitnessMin = *(std::min_element(std::cbegin(reFitness), std::cend(reFitness))),
                  reFitnessAvg = std::accumulate(std::cbegin(reFitness), std::cend(reFitness), 0.0) / reFitness.size();
-    if (std::fabs(reFitnessMin - reFitnessAvg) < (range.eps * range.eps))
+    if (std::fabs(reFitnessMin - reFitnessAvg) < decodeAttr.eps)
     {
         return std::nullopt;
     }

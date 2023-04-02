@@ -11,7 +11,6 @@
 #include <bitset>
 // #define NDEBUG
 #include <cassert>
-#include <chrono>
 #include <cstring>
 #include <iostream>
 #include <memory>
@@ -757,11 +756,11 @@ private:
         const T left,
         const T right)
     {
-        std::mt19937 seed{getRandomSeedByTime()};
-        std::uniform_int_distribution<int> random(left, right);
+        std::mt19937 engine{std::random_device{}()};
+        std::uniform_int_distribution<int> dist(left, right);
         for (uint32_t i = 0; i < length; ++i)
         {
-            array[i] = random(seed);
+            array[i] = dist(engine);
         }
         std::sort(array, array + length);
 
@@ -787,11 +786,11 @@ private:
         const T left,
         const T right)
     {
-        std::mt19937 seed{getRandomSeedByTime()};
-        std::uniform_real_distribution<double> random(left, right);
+        std::mt19937 engine{std::random_device{}()};
+        std::uniform_real_distribution<double> dist(left, right);
         for (uint32_t i = 0; i < length; ++i)
         {
-            array[i] = random(seed);
+            array[i] = dist(engine);
         }
         std::sort(array, array + length);
 
@@ -804,14 +803,6 @@ private:
                   << formatArray<T>(array, length, arrayBuffer, arrayBufferSize + 1) << "\n"
                   << std::endl;
 #endif // __RUNTIME_PRINTING
-    }
-    //! @brief Get the random seed by time.
-    //! @return random seed
-    static inline std::mt19937 getRandomSeedByTime()
-    {
-        const auto now = std::chrono::system_clock::now();
-        const auto milliseconds = std::chrono::duration_cast<std::chrono::microseconds>(now.time_since_epoch()).count();
-        return std::mt19937(milliseconds);
     }
 };
 } // namespace search
@@ -1003,11 +994,11 @@ private:
         const T left,
         const T right)
     {
-        std::mt19937 seed{getRandomSeedByTime()};
-        std::uniform_int_distribution<int> random(left, right);
+        std::mt19937 engine{std::random_device{}()};
+        std::uniform_int_distribution<int> dist(left, right);
         for (uint32_t i = 0; i < length; ++i)
         {
-            array[i] = random(seed);
+            array[i] = dist(engine);
         }
 
 #ifdef __RUNTIME_PRINTING
@@ -1031,11 +1022,11 @@ private:
         const T left,
         const T right)
     {
-        std::mt19937 seed{getRandomSeedByTime()};
-        std::uniform_real_distribution<double> random(left, right);
+        std::mt19937 engine{std::random_device{}()};
+        std::uniform_real_distribution<double> dist(left, right);
         for (uint32_t i = 0; i < length; ++i)
         {
-            array[i] = random(seed);
+            array[i] = dist(engine);
         }
 
 #ifdef __RUNTIME_PRINTING
@@ -1046,14 +1037,6 @@ private:
                   << ":\n"
                   << formatArray<T>(array, length, arrayBuffer, arrayBufferSize + 1) << std::endl;
 #endif // __RUNTIME_PRINTING
-    }
-    //! @brief Get the random seed by time.
-    //! @return random seed
-    static inline std::mt19937 getRandomSeedByTime()
-    {
-        const auto now = std::chrono::system_clock::now();
-        const auto milliseconds = std::chrono::duration_cast<std::chrono::microseconds>(now.time_since_epoch()).count();
-        return std::mt19937(milliseconds);
     }
 };
 } // namespace sort
