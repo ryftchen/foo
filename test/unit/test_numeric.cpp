@@ -164,7 +164,7 @@ public:
 };
 
 //! @brief Test for the trapezoidal method in the solution of integral.
-TEST_F(IntegralTestBase, trapezoidal) // NOLINT(cert-err58-cpp)
+TEST_F(IntegralTestBase, trapezoidalMethod) // NOLINT(cert-err58-cpp)
 {
     std::shared_ptr<numeric::integral::Integral> trapezoidal =
         std::make_shared<numeric::integral::Trapezoidal>(expression1);
@@ -179,7 +179,7 @@ TEST_F(IntegralTestBase, trapezoidal) // NOLINT(cert-err58-cpp)
 }
 
 //! @brief Test for the adaptive Simpson's 1/3 method in the solution of integral.
-TEST_F(IntegralTestBase, simpson) // NOLINT(cert-err58-cpp)
+TEST_F(IntegralTestBase, adaptiveSimpsonMethod) // NOLINT(cert-err58-cpp)
 {
     std::shared_ptr<numeric::integral::Integral> simpson = std::make_shared<numeric::integral::Simpson>(expression1);
     auto result = (*simpson)(expression1.range1, expression1.range2, numeric::integral::epsilon);
@@ -193,7 +193,7 @@ TEST_F(IntegralTestBase, simpson) // NOLINT(cert-err58-cpp)
 }
 
 //! @brief Test for the Romberg method in the solution of integral.
-TEST_F(IntegralTestBase, romberg) // NOLINT(cert-err58-cpp)
+TEST_F(IntegralTestBase, rombergMethod) // NOLINT(cert-err58-cpp)
 {
     std::shared_ptr<numeric::integral::Integral> romberg = std::make_shared<numeric::integral::Romberg>(expression1);
     auto result = (*romberg)(expression1.range1, expression1.range2, numeric::integral::epsilon);
@@ -207,7 +207,7 @@ TEST_F(IntegralTestBase, romberg) // NOLINT(cert-err58-cpp)
 }
 
 //! @brief Test for the Gauss-Legendre's 5-points method in the solution of integral.
-TEST_F(IntegralTestBase, gauss) // NOLINT(cert-err58-cpp)
+TEST_F(IntegralTestBase, gaussLegendreMethod) // NOLINT(cert-err58-cpp)
 {
     std::shared_ptr<numeric::integral::Integral> gauss = std::make_shared<numeric::integral::Gauss>(expression1);
     auto result = (*gauss)(expression1.range1, expression1.range2, numeric::integral::epsilon);
@@ -221,7 +221,7 @@ TEST_F(IntegralTestBase, gauss) // NOLINT(cert-err58-cpp)
 }
 
 //! @brief Test for the Monte-Carlo method in the solution of integral.
-TEST_F(IntegralTestBase, monteCarlo) // NOLINT(cert-err58-cpp)
+TEST_F(IntegralTestBase, monteCarloMethod) // NOLINT(cert-err58-cpp)
 {
     std::shared_ptr<numeric::integral::Integral> monteCarlo =
         std::make_shared<numeric::integral::MonteCarlo>(expression1);
