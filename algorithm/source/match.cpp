@@ -226,26 +226,24 @@ int Match::sunday(const char* text, const char* pattern, const uint32_t textLen,
 
     fillBadCharShiftTableForSunday(badCharShiftTable, pattern, patternLen);
 
-    [&]
+    uint32_t textIndex = 0;
+    while (textIndex <= (textLen - patternLen))
     {
-        uint32_t textIndex = 0;
-        while (textIndex <= (textLen - patternLen))
+        uint32_t matchLen = 0;
+        while (text[textIndex + matchLen] == pattern[matchLen])
         {
-            uint32_t matchLen = 0;
-            while (text[textIndex + matchLen] == pattern[matchLen])
+            ++matchLen;
+            if (matchLen == patternLen)
             {
-                ++matchLen;
-                if (matchLen == patternLen)
-                {
-                    shift = textIndex;
-                    return;
-                }
+                shift = textIndex;
+                goto gotoReturn;
             }
-
-            textIndex += badCharShiftTable[text[textIndex + patternLen]];
         }
-    }();
 
+        textIndex += badCharShiftTable[text[textIndex + patternLen]];
+    }
+
+gotoReturn:
     return shift;
 }
 
