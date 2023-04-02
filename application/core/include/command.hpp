@@ -23,7 +23,7 @@ class Command final
 {
 public:
     //! @brief Destroy the Command object.
-    virtual ~Command() = default;
+    virtual ~Command();
     //! @brief Construct a new Command object.
     Command(const Command&) = delete;
     //! @brief The operator (=) overloading of Command class.

@@ -114,6 +114,18 @@ Command::Command()
     }
 }
 
+Command::~Command()
+{
+    try
+    {
+        assignedTask.reset();
+    }
+    catch (const std::exception& error)
+    {
+        std::cerr << error.what() << std::endl;
+    }
+}
+
 Command& Command::getInstance()
 {
     static Command commander;
@@ -122,22 +134,29 @@ Command& Command::getInstance()
 
 void Command::runCommander(const int argc, const char* const argv[])
 {
-    LOG_TO_START;
-
-    if (0 != argc - 1)
+    try
     {
-        std::shared_ptr<utility::thread::Thread> thread = std::make_shared<utility::thread::Thread>(2);
-        thread->enqueue("commander_fore", &Command::foregroundHandler, this, argc, argv);
-        thread->enqueue("commander_back", &Command::backgroundHandler, this);
-    }
-    else
-    {
-        LOG_INF("<COMMAND> Enter console mode.");
-        enterConsoleMode();
-        LOG_INF("<COMMAND> Exit console mode.");
-    }
+        LOG_TO_START;
 
-    LOG_TO_STOP;
+        if (0 != argc - 1)
+        {
+            std::shared_ptr<utility::thread::Thread> thread = std::make_shared<utility::thread::Thread>(2);
+            thread->enqueue("commander_fore", &Command::foregroundHandler, this, argc, argv);
+            thread->enqueue("commander_back", &Command::backgroundHandler, this);
+        }
+        else
+        {
+            LOG_INF("<COMMAND> Enter console mode.");
+            enterConsoleMode();
+            LOG_INF("<COMMAND> Exit console mode.");
+        }
+
+        LOG_TO_STOP;
+    }
+    catch (const std::exception& error)
+    {
+        std::cerr << error.what() << std::endl;
+    }
 }
 
 void Command::foregroundHandler(const int argc, const char* const argv[])
