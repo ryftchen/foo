@@ -1,7 +1,0 @@
----
-name: CodeQL
-
-paths-ignore:
-  - build
-  - test/build
-...
