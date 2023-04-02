@@ -44,9 +44,6 @@ public:
         const double left,
         const double right,
         const double eps) = 0;
-
-protected:
-    friend std::mt19937 getRandomSeedByTime();
 };
 
 //! @brief Gradient descent.
@@ -121,7 +118,7 @@ class Particle : public Optimal
 public:
     //! @brief Construct a new Particle object.
     //! @param func - target function
-    explicit Particle(const Function& func) : func(func), seed(std::random_device{}()){};
+    explicit Particle(const Function& func) : func(func){};
 
     //! @brief The operator (()) overloading of Particle class.
     //! @param left - left endpoint
@@ -136,8 +133,8 @@ public:
 private:
     //! @brief Target function.
     const Function& func;
-    //! @brief Random seed.
-    std::mt19937 seed;
+    //! @brief Random engine.
+    std::mt19937 engine{std::random_device{}()};
     //! @brief Cognitive coefficient.
     static constexpr double c1{1.5};
     //! @brief Social coefficient.
@@ -179,15 +176,15 @@ private:
         Individual() = default;
 
         //! @brief Independent variable.
-        double x;
+        double x{0.0};
         //! @brief Velocity value.
-        double velocity;
+        double velocity{0.0};
         //! @brief The best position.
-        double positionBest;
+        double positionBest{0.0};
         //! @brief Fitness of independent variable.
-        double xFitness;
+        double xFitness{0.0};
         //! @brief Fitness of the best position.
-        double fitnessPositionBest;
+        double fitnessPositionBest{0.0};
     };
     //! @brief Compare the value in history.
     struct Smaller
@@ -216,10 +213,10 @@ private:
         //! @brief Construct a new Storage object.
         Storage() = default;
 
-        //! @brief society information
-        Society society;
-        //! @brief history information
-        History history;
+        //! @brief Society information
+        Society society{};
+        //! @brief History information
+        History history{};
     };
 
     //! @brief Initialize the storage in the swarm.
@@ -235,7 +232,7 @@ class Genetic : public Optimal
 public:
     //! @brief Construct a new Genetic object.
     //! @param func - target function
-    explicit Genetic(const Function& func) : func(func), seed(std::random_device{}()){};
+    explicit Genetic(const Function& func) : func(func){};
 
     //! @brief The operator (()) overloading of Genetic class.
     //! @param left - left endpoint
@@ -250,20 +247,10 @@ public:
 private:
     //! @brief Target function.
     const Function& func;
-    //! @brief Range properties of species.
-    struct Range
-    {
-        //! @brief Left endpoint.
-        double lower{0.0};
-        //! @brief Right endpoint.
-        double upper{0.0};
-        //! @brief The precision of calculation.
-        double eps{0.0};
-    } /** @brief A Range object for storing range properties of species. */ range{};
-    //! @brief Random seed.
-    std::mt19937 seed;
+    //! @brief Random engine.
+    std::mt19937 engine{std::random_device{}()};
     //! @brief The number of chromosomes.
-    uint32_t chrNum{0};
+    uint32_t chromosomeNum{0};
     //! @brief Crossover probability.
     static constexpr double crossPr{0.75};
     //! @brief Mutation probability.
@@ -277,6 +264,16 @@ private:
     using Chromosome = std::vector<uint8_t>;
     //! @brief Alias for the population in species.
     using Population = std::vector<Chromosome>;
+    //! @brief Decode attributes of species.
+    struct DecodeAttribute
+    {
+        //! @brief Left endpoint.
+        double lower{0.0};
+        //! @brief Right endpoint.
+        double upper{0.0};
+        //! @brief The precision of calculation.
+        double eps{0.0};
+    } /** @brief A DecodeAttribute object for storing decode attributes of species. */ decodeAttr{};
     //! @brief Update species.
     //! @param left - left endpoint
     //! @param right - right endpoint
@@ -335,18 +332,18 @@ private:
     //! @brief Get a random number from 0 to the limit.
     //! @param limit - maximum random number
     //! @return random number
-    inline uint32_t getRandomNumber(const uint32_t limit);
+    inline uint32_t getRandomLessThanLimit(const uint32_t limit);
 };
 
 inline double Genetic::probability()
 {
     std::uniform_real_distribution<double> pr(0.0, 1.0);
-    return pr(seed);
+    return pr(engine);
 }
 
-inline uint32_t Genetic::getRandomNumber(const uint32_t limit)
+inline uint32_t Genetic::getRandomLessThanLimit(const uint32_t limit)
 {
-    std::uniform_int_distribution<int> randomNumber(0, limit);
-    return randomNumber(seed);
+    std::uniform_int_distribution<int> num(0, limit);
+    return num(engine);
 }
 } // namespace algorithm::optimal

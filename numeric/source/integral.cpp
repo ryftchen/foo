@@ -191,14 +191,14 @@ double MonteCarlo::sampleFromNormalDistribution(const double lower, const double
 {
     const uint32_t n = std::max<uint32_t>((upper - lower) / eps, 1e6);
     const double mu = (lower + upper) / 2.0, sigma = (upper - lower) / 6.0;
-    std::mt19937 seed(std::random_device{}());
-    std::uniform_real_distribution<double> distribution(0.0, 1.0);
+    std::mt19937 engine{std::random_device{}()};
+    std::uniform_real_distribution<double> dist(0.0, 1.0);
     double sum = 0.0, x = 0.0;
     for (uint32_t i = 0; i < n; ++i)
     {
         do
         {
-            double u1 = distribution(seed), u2 = distribution(seed), mag = sigma * std::sqrt(-2.0 * std::log(u1));
+            double u1 = dist(engine), u2 = dist(engine), mag = sigma * std::sqrt(-2.0 * std::log(u1));
             x = mag * std::sin(2.0 * M_PI * u2) + mu; // Box-Muller Transform
         }
         while ((x < lower) || (x > upper));
@@ -214,15 +214,15 @@ double MonteCarlo::sampleFromNormalDistribution(const double lower, const double
 
 void MonteCarlo::refreshRandomCache(std::vector<double>& cache, const double min, const double max)
 {
-    std::uniform_real_distribution<double> distribution(min, max);
-    std::mt19937 seed(std::random_device{}());
+    std::uniform_real_distribution<double> dist(min, max);
+    std::mt19937 engine(std::random_device{}());
 
-    std::for_each(
+    std::generate(
         cache.begin(),
         cache.end(),
-        [&distribution, &seed](double& x)
+        [&dist, &engine]()
         {
-            x = distribution(seed);
+            return dist(engine);
         });
 }
 } // namespace numeric::integral
