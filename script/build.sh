@@ -13,9 +13,9 @@ declare BUILD_TYPE="Debug"
 function shell_command()
 {
     echo
-    echo "$(date "+%b %d %T") $* START"
+    echo "$(tput bold)$(date "+%b %d %T") $* START$(tput sgr0)"
     /bin/bash -c "$@"
-    echo "$(date "+%b %d %T") $* FINISH"
+    echo "$(tput bold)$(date "+%b %d %T") $* FINISH$(tput sgr0)"
 }
 
 function die()
@@ -301,8 +301,8 @@ FOO_BLD_UNITY is turned on."
 function perform_precheck_option()
 {
     if [[ ${ARGS[precheck]} = true ]]; then
-        shell_command "pre-commit install"
-        shell_command "pre-commit run --all-files"
+        shell_command "pre-commit install --config ./.pre-commit-config"
+        shell_command "pre-commit run --all-files --config ./.pre-commit-config"
     fi
 }
 
@@ -350,7 +350,7 @@ function perform_lint_option()
 | xargs run-clang-tidy-12 -p ./${FOLDER[tst]}/${FOLDER[bld]} -quiet"
         rm -rf "./${tst_comp_cmd}" && mv "./${tst_comp_cmd}.bak" "./${tst_comp_cmd}"
 
-        shell_command "shellcheck ./${FOLDER[scr]}/*.sh"
+        shell_command "shellcheck -a ./${FOLDER[scr]}/*.sh"
         shell_command "pylint --rcfile=./.pylintrc ./${FOLDER[scr]}/*.py"
     fi
 }
@@ -360,11 +360,9 @@ function perform_count_option()
     if [[ ${ARGS[count]} = true ]]; then
         shell_command "find ./${FOLDER[app]} ./${FOLDER[util]} ./${FOLDER[algo]} ./${FOLDER[ds]} ./${FOLDER[dp]} \
 ./${FOLDER[num]} ./${FOLDER[tst]} -name *.cpp -o -name *.hpp -o -name *.tpp | grep -v '/${FOLDER[bld]}/' \
-| xargs cloc --by-file-by-lang --force-lang='C++',tpp --include-lang='C++','C/C++ Header' --by-percent=cmb"
-        shell_command "find ./${FOLDER[scr]} -name *.sh | xargs cloc --by-file-by-lang --include-lang='Bourne Shell' \
---by-percent=cmb"
-        shell_command "find ./${FOLDER[scr]} -name *.py | xargs cloc --by-file-by-lang --include-lang='Python' \
---by-percent=cmb"
+| xargs cloc --config ./.cloc-option --force-lang='C++',tpp"
+        shell_command "find ./${FOLDER[scr]} -name *.sh | xargs cloc --config ./.cloc-option"
+        shell_command "find ./${FOLDER[scr]} -name *.py | xargs cloc --config ./.cloc-option"
     fi
 }
 
@@ -475,9 +473,9 @@ function build_target()
     if [[ ${ARGS[test]} = true ]]; then
         set_compile_condition "${FOLDER[tst]}/${FOLDER[bld]}" "128m"
         shell_command "cmake -S ./${FOLDER[tst]} -B ./${FOLDER[tst]}/${FOLDER[bld]} -G Ninja""${CMAKE_CACHE_ENTRY}"
-        tput setaf 2 && tput bold
+        NINJA_STATUS=$(echo -e "\e[92m[\e[92m%f/\e[92m%t\e[92m]\e[39m\e[49m ")
+        export NINJA_STATUS
         shell_command "cmake --build ./${FOLDER[tst]}/${FOLDER[bld]}""${CMAKE_BUILD_OPTION}"
-        tput sgr0
         exit 0
     fi
 
@@ -486,9 +484,9 @@ function build_target()
     if [[ $# -eq 0 ]] || {
         [[ $# -eq 1 ]] && [[ ${ARGS[release]} = true ]]
     }; then
-        tput setaf 2 && tput bold
+        NINJA_STATUS=$(echo -e "\e[92m[\e[92m%f/\e[92m%t\e[92m]\e[39m\e[49m ")
+        export NINJA_STATUS
         shell_command "cmake --build ./${FOLDER[bld]}""${CMAKE_BUILD_OPTION}"
-        tput sgr0
         exit 0
     fi
     shell_command "cmake -S ./${FOLDER[tst]} -B ./${FOLDER[tst]}/${FOLDER[bld]} -G Ninja""${CMAKE_CACHE_ENTRY}"
@@ -560,7 +558,6 @@ function set_compile_condition()
 
 function signal_handler()
 {
-    tput sgr0
     if [[ ${ARGS[lint]} = true ]]; then
         local app_comp_cmd=${FOLDER[bld]}/${COMP_CMD}
         if [[ -f ./${app_comp_cmd}.bak ]]; then

@@ -12,12 +12,13 @@
 *.yml text eol=lf
 .clang-format text eol=lf
 .clang-tidy text eol=lf
+.cloc-option text eol=lf
 .commit-template text eol=lf
 .dockerignore text eol=lf
 .editorconfig text eol=lf
 .gitattributes text eol=lf
 .gitignore text eol=lf
-.pre-commit-config.yaml text eol=lf
+.pre-commit-config text eol=lf
 .pylintrc text eol=lf
 .shellcheckrc text eol=lf
 .supp text eol=lf
