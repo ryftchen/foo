@@ -47,7 +47,12 @@ Command::Command()
                     }
                     throw std::runtime_error("<COMMAND> Unknown algorithm category: " + value);
                 })
-            .help("select: match, notation, optimal, search, sort [add a category with --help for task details]");
+            .help("run algorithm tasks with a category:\n"
+                  "- match       Match Method\n"
+                  "- notation    Notation Method\n"
+                  "- optimal     Optimal Method\n"
+                  "- search      Search Method\n"
+                  "- sort        Sort Method");
 
         program.addArgument("-ds", "--data-structure")
             .nArgs(1)
@@ -66,7 +71,9 @@ Command::Command()
                     }
                     throw std::runtime_error("<COMMAND> Unknown data structure category: " + value);
                 })
-            .help("select: linear, tree [add a category with --help for task details]");
+            .help("run data structure tasks with a category:\n"
+                  "- linear    Linear Structure\n"
+                  "- tree      Tree Structure");
 
         program.addArgument("-dp", "--design-pattern")
             .nArgs(1)
@@ -85,7 +92,10 @@ Command::Command()
                     }
                     throw std::runtime_error("<COMMAND> Unknown design pattern category: " + value);
                 })
-            .help("select: behavioral, creational, structural [add a category with --help for task details]");
+            .help("run design pattern tasks with a category:\n"
+                  "- behavioral    Behavioral Pattern\n"
+                  "- creational    Creational Pattern\n"
+                  "- structural    Structural Pattern");
 
         program.addArgument("-n", "--numeric")
             .nArgs(1)
@@ -104,9 +114,13 @@ Command::Command()
                     }
                     throw std::runtime_error("<COMMAND> Unknown numeric category: " + value);
                 })
-            .help("select: arithmetic, divisor, integral, prime [add a category with --help for task details]");
+            .help("run numeric tasks with a category:\n"
+                  "- arithmetic    Arithmetic Method\n"
+                  "- divisor       Divisor Method\n"
+                  "- integral      Integral Method\n"
+                  "- prime         Prime Method");
 
-        program.addArgument("tasks").remaining().help("specify tasks");
+        program.addArgument("tasks").remaining().help("add a category with --help for task details");
     }
     catch (const std::exception& error)
     {

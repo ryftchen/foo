@@ -245,6 +245,10 @@ public:
     //! @brief Get the length of all arguments.
     //! @return the length of all arguments
     [[nodiscard]] std::size_t getArgumentsLength() const;
+    //! @brief Split help message with delimiter.
+    //! @param delim - delimiter
+    //! @return the substrings obtained by splitting
+    [[nodiscard]] std::vector<std::string> splitHelpMessageWithDelimiter(const char delim) const;
     //! @brief The operator (!=) overloading of ArgumentRegister class.
     //! @tparam T - type of right-hand side
     //! @param rhs - right-hand side

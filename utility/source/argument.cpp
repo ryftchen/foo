@@ -5,6 +5,7 @@
 //! @copyright Copyright (c) 2022-2023
 
 #include "argument.hpp"
+#include <iterator>
 #include <numeric>
 
 namespace utility::argument
@@ -105,6 +106,38 @@ std::size_t ArgumentRegister::getArgumentsLength() const
         });
 }
 
+std::vector<std::string> ArgumentRegister::splitHelpMessageWithDelimiter(const char delim) const
+{
+    std::string origin = helpStr;
+    if (0 == origin.find_first_of(delim))
+    {
+        origin.erase(0, 1);
+    }
+    if (origin.length() == (origin.find_last_of(delim) + 1))
+    {
+        origin.pop_back();
+    }
+
+    std::vector<std::string> split;
+    std::size_t pos = 0, prevPos = 0;
+    do
+    {
+        pos = origin.substr(prevPos).find(delim);
+        if (pos == std::string::npos)
+        {
+            split.emplace_back(origin.substr(prevPos));
+            break;
+        }
+
+        pos += prevPos;
+        split.emplace_back(origin.substr(prevPos, pos - prevPos));
+        prevPos = pos + 1;
+    }
+    while (true);
+
+    return split;
+}
+
 //! @brief The operator (<<) overloading of the ArgumentRegister class.
 //! @param os - output stream object
 //! @param argument - specific ArgumentRegister object
@@ -114,7 +147,19 @@ std::ostream& operator<<(std::ostream& os, const ArgumentRegister& argument)
     std::stringstream nameStream;
     std::copy(
         std::begin(argument.names), std::end(argument.names), std::ostream_iterator<std::string>(nameStream, ", "));
-    os << nameStream.str().substr(0, nameStream.str().length() - 2) << "    " << argument.helpStr;
+    const auto osLastPos = os.tellp();
+    os << nameStream.str().substr(0, nameStream.str().length() - 2);
+    const auto alignmentLength = os.tellp() - osLastPos;
+    os << "    ";
+
+    std::vector<std::string> helpMsg =
+        (!argument.helpStr.empty()) ? argument.splitHelpMessageWithDelimiter('\n') : std::vector<std::string>{};
+    if (helpMsg.size() > 0)
+    {
+        os << *helpMsg.cbegin();
+        helpMsg.erase(helpMsg.cbegin());
+    }
+
     if (argument.defaultValues.has_value())
     {
         if (!argument.helpStr.empty())
@@ -131,6 +176,22 @@ std::ostream& operator<<(std::ostream& os, const ArgumentRegister& argument)
         }
         os << "[required]";
     }
+
+    if (helpMsg.size() > 0)
+    {
+        os << '\n';
+        std::string alignStr = "    ";
+        alignStr.insert(0, alignmentLength, ' ');
+        for (auto lineIter = std::cbegin(helpMsg); std::cend(helpMsg) != lineIter; ++lineIter)
+        {
+            os << alignStr << *lineIter;
+            if (std::cend(helpMsg) != (lineIter + 1))
+            {
+                os << '\n';
+            }
+        }
+    }
+
     os << std::endl;
     return os;
 }
