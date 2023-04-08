@@ -30,7 +30,7 @@
     }                                                                                                              \
     std::cout << "\r\n"                                                                                            \
               << "ALGORITHM TASK: " << std::setiosflags(std::ios_base::left) << std::setfill('.') << std::setw(50) \
-              << taskType << "END" << std::resetiosflags(std::ios_base::left) << std::setfill(' ') << "\n"         \
+              << taskType << "END" << std::resetiosflags(std::ios_base::left) << std::setfill(' ') << '\n'         \
               << std::endl;
 
 namespace application::app_algo

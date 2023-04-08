@@ -38,7 +38,7 @@ static void signalHandler(int sig)
 
     for (int i = 1; i < numOfFrame; ++i)
     {
-        originalTrace << symbols[i] << "\n";
+        originalTrace << symbols[i] << '\n';
         Dl_info info;
         if (dladdr(callStack[i], &info) && info.dli_sname)
         {
