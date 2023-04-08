@@ -82,21 +82,21 @@ jobs:
 
       - name: Check
         run: |
-          ./script/build.sh --release --format --lint --count
+          ./script/build.sh --release --precheck --format --lint --count
           git status
 
       - name: Archive
         run: |
           ./script/build.sh --release --browser --doxygen
 
-      - name: Upload artifact
+      - name: Upload
         uses: actions/upload-artifact@v3
         with:
           name: foo_artifact
           path: ./temporary/foo_*.tar.bz2
           retention-days: 7
 
-      - name: Deploy to github pages
+      - name: Deploy
         uses: JamesIves/github-pages-deploy-action@v4.4.1
         if: github.event_name == 'workflow_dispatch'
         with:
