@@ -769,7 +769,7 @@ private:
         char arrayBuffer[arrayBufferSize + 1];
         arrayBuffer[0] = '\0';
         std::cout << "\r\nGenerate " << length << " ordered integral numbers from " << left << " to " << right << ":\n"
-                  << formatArray<T>(array, length, arrayBuffer, arrayBufferSize + 1) << "\n"
+                  << formatArray<T>(array, length, arrayBuffer, arrayBufferSize + 1) << '\n'
                   << std::endl;
 #endif // __RUNTIME_PRINTING
     }
@@ -800,7 +800,7 @@ private:
         arrayBuffer[0] = '\0';
         std::cout << "\r\nGenerate " << length << " ordered floating point numbers from " << left << " to " << right
                   << ":\n"
-                  << formatArray<T>(array, length, arrayBuffer, arrayBufferSize + 1) << "\n"
+                  << formatArray<T>(array, length, arrayBuffer, arrayBufferSize + 1) << '\n'
                   << std::endl;
 #endif // __RUNTIME_PRINTING
     }

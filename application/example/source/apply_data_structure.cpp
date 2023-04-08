@@ -27,7 +27,7 @@
     std::cout << "\r\n"                                                                                             \
               << "DATA STRUCTURE TASK: " << std::setiosflags(std::ios_base::left) << std::setfill('.')              \
               << std::setw(50) << taskType << "END" << std::resetiosflags(std::ios_base::left) << std::setfill(' ') \
-              << "\n"                                                                                               \
+              << '\n'                                                                                               \
               << std::endl;
 
 namespace application::app_ds
