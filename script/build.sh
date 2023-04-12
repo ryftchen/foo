@@ -189,6 +189,8 @@ FOO_BLD_TMPFS=off
 export FOO_BLD_PARALLEL FOO_BLD_PCH FOO_BLD_UNITY FOO_BLD_CCACHE FOO_BLD_DISTCC FOO_BLD_TMPFS
 return 0
 EOF"
+        shell_command "ulimit -s unlimited"
+        shell_command "echo 'core.%s.%e.%p' | tee /proc/sys/kernel/core_pattern"
         exit 0
     fi
 }
