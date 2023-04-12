@@ -440,18 +440,13 @@ void runOptimal(const std::vector<std::string>& targets)
         return;
     }
 
-    using input::Griewank;
     using input::Rastrigin;
-    typedef std::variant<Griewank, Rastrigin> OptimalFuncTarget;
+    typedef std::variant<Rastrigin> OptimalFuncTarget;
     const auto printFunctor = [](const OptimalFuncTarget& function)
     {
         constexpr std::string_view prefix{"\r\nOptimal function: "};
         std::visit(
             optimal::FuncOverloaded{
-                [&prefix](const Griewank& /*unused*/)
-                {
-                    std::cout << prefix << Griewank::funcDescr << std::endl;
-                },
                 [&prefix](const Rastrigin& /*unused*/)
                 {
                     std::cout << prefix << Rastrigin::funcDescr << std::endl;
@@ -507,9 +502,7 @@ void runOptimal(const std::vector<std::string>& targets)
     APP_ALGO_PRINT_TASK_BEGIN_TITLE(Type::optimal);
 
     const std::unordered_multimap<optimal::FuncRange<double, double>, OptimalFuncTarget, optimal::FuncMapHash>
-        optimalFuncMap{
-            {{Griewank::range1, Griewank::range2, Griewank::funcDescr}, Griewank()},
-            {{Rastrigin::range1, Rastrigin::range2, Rastrigin::funcDescr}, Rastrigin()}};
+        optimalFuncMap{{{Rastrigin::range1, Rastrigin::range2, Rastrigin::funcDescr}, Rastrigin()}};
     for ([[maybe_unused]] const auto& [range, function] : optimalFuncMap)
     {
         printFunctor(function);
@@ -517,9 +510,6 @@ void runOptimal(const std::vector<std::string>& targets)
         {
             case 0:
                 resultFunctor(std::get<0>(function), range);
-                break;
-            case 1:
-                resultFunctor(std::get<1>(function), range);
                 break;
                 [[unlikely]] default : break;
         }

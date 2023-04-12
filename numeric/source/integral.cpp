@@ -159,20 +159,15 @@ double MonteCarlo::operator()(double lower, double upper, const double eps) cons
 {
     const int sign = getSign(lower, upper);
 
-#ifndef INTEGRAL_MONTE_CARLO_NORMAL_DISTRIBUTION
     double sum = sampleFromUniformDistribution(lower, upper, eps);
-#else
-    double sum = sampleFromNormalDistribution(lower, upper, eps);
-#endif // INTEGRAL_MONTE_CARLO_NORMAL_DISTRIBUTION
     sum *= sign;
 
     return sum;
 }
 
-#ifndef INTEGRAL_MONTE_CARLO_NORMAL_DISTRIBUTION
 double MonteCarlo::sampleFromUniformDistribution(const double lower, const double upper, const double eps) const
 {
-    const uint32_t n = std::max<uint32_t>((upper - lower) / eps, 1e6);
+    const uint32_t n = std::max<uint32_t>((upper - lower) / eps, 1.0 / eps);
     std::vector<double> cache(n);
 
     refreshRandomCache(cache, lower, upper);
@@ -186,10 +181,10 @@ double MonteCarlo::sampleFromUniformDistribution(const double lower, const doubl
 
     return sum;
 }
-#else
+
 double MonteCarlo::sampleFromNormalDistribution(const double lower, const double upper, const double eps) const
 {
-    const uint32_t n = std::max<uint32_t>((upper - lower) / eps, 1e6);
+    const uint32_t n = std::max<uint32_t>((upper - lower) / eps, 1.0 / eps);
     const double mu = (lower + upper) / 2.0, sigma = (upper - lower) / 6.0;
     std::mt19937 engine{std::random_device{}()};
     std::uniform_real_distribution<double> dist(0.0, 1.0);
@@ -210,7 +205,6 @@ double MonteCarlo::sampleFromNormalDistribution(const double lower, const double
 
     return sum;
 }
-#endif // INTEGRAL_MONTE_CARLO_NORMAL_DISTRIBUTION
 
 void MonteCarlo::refreshRandomCache(std::vector<double>& cache, const double min, const double max)
 {

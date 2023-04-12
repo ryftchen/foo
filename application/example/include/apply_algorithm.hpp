@@ -265,28 +265,6 @@ constexpr int arrayRangeForSort2 = 150;
 //! @brief Length of the array for sort methods.
 constexpr uint32_t arrayLengthForSort = 53;
 
-//! @brief Griewank function.
-class Griewank : public algorithm::optimal::Function
-{
-public:
-    //! @brief The operator (()) overloading of Griewank class.
-    //! @param x - independent variable
-    //! @return dependent variable
-    double operator()(const double x) const override
-    {
-        // f(x)=1+1/4000*Σ(1→n)[(Xi)^2]-Π(1→n)[cos(Xi/(i)^(1/2))],x∈[-600,600],f(min)=0
-        return (1.0 + 1.0 / 4000.0 * x * x - std::cos(x));
-    }
-
-    //! @brief Left endpoint.
-    static constexpr double range1{-600.0};
-    //! @brief Right endpoint.
-    static constexpr double range2{600.0};
-    //! @brief One-dimensional Griewank.
-    static constexpr std::string_view funcDescr{
-        "f(x)=1+1/4000*Σ(1→n)[(Xi)^2]-Π(1→n)[cos(Xi/(i)^(1/2))],x∈[-600,600] (one-dimensional Griewank)"};
-};
-
 //! @brief Rastrigin function.
 class Rastrigin : public algorithm::optimal::Function
 {
@@ -307,6 +285,28 @@ public:
     //! @brief One-dimensional Rastrigin.
     static constexpr std::string_view funcDescr{
         "f(x)=An+Σ(1→n)[(Xi)^2-Acos(2π*Xi)],A=10,x∈[-5.12,5.12] (one-dimensional Rastrigin)"};
+};
+
+//! @brief Griewank function.
+class Griewank : public algorithm::optimal::Function
+{
+public:
+    //! @brief The operator (()) overloading of Griewank class.
+    //! @param x - independent variable
+    //! @return dependent variable
+    double operator()(const double x) const override
+    {
+        // f(x)=1+1/4000*Σ(1→n)[(Xi)^2]-Π(1→n)[cos(Xi/(i)^(1/2))],x∈[-600,600],f(min)=0
+        return (1.0 + 1.0 / 4000.0 * x * x - std::cos(x));
+    }
+
+    //! @brief Left endpoint.
+    static constexpr double range1{-600.0};
+    //! @brief Right endpoint.
+    static constexpr double range2{600.0};
+    //! @brief One-dimensional Griewank.
+    static constexpr std::string_view funcDescr{
+        "f(x)=1+1/4000*Σ(1→n)[(Xi)^2]-Π(1→n)[cos(Xi/(i)^(1/2))],x∈[-600,600] (one-dimensional Griewank)"};
 };
 } // namespace input
 
