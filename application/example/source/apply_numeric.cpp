@@ -420,10 +420,12 @@ void runIntegral(const std::vector<std::string>& targets)
     {
         constexpr std::string_view prefix{"\r\nIntegral expression: "};
         std::visit(
-            integral::ExprOverloaded{[&prefix](const Expression1& /*unused*/)
-                                     {
-                                         std::cout << prefix << Expression1::exprDescr << std::endl;
-                                     }},
+            integral::ExprOverloaded{
+                [&prefix](const Expression1& /*unused*/)
+                {
+                    std::cout << prefix << Expression1::exprDescr << std::endl;
+                },
+            },
             expression);
     };
     const auto resultFunctor =
@@ -476,7 +478,9 @@ void runIntegral(const std::vector<std::string>& targets)
     APP_NUM_PRINT_TASK_BEGIN_TITLE(Type::integral);
 
     const std::unordered_multimap<integral::ExprRange<double, double>, IntegralExprTarget, integral::ExprMapHash>
-        integralExprMap{{{Expression1::range1, Expression1::range2, Expression1::exprDescr}, Expression1()}};
+        integralExprMap{
+            {{Expression1::range1, Expression1::range2, Expression1::exprDescr}, Expression1()},
+        };
     for ([[maybe_unused]] const auto& [range, expression] : integralExprMap)
     {
         printFunctor(expression);
