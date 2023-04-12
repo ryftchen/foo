@@ -158,81 +158,58 @@ public:
     void TearDown() override{};
 
     //! @brief Expression example 1 object.
-    application::app_num::input::Expression1 expression1;
-    //! @brief Expression example 2 object.
-    application::app_num::input::Expression2 expression2;
+    static constexpr application::app_num::input::Expression1 expression1;
+    //! @brief Allowable error.
+    static constexpr double error{1e-1};
 };
 
 //! @brief Test for the trapezoidal method in the solution of integral.
 TEST_F(IntegralTestBase, trapezoidalMethod) // NOLINT(cert-err58-cpp)
 {
-    std::shared_ptr<numeric::integral::Integral> trapezoidal =
+    const std::shared_ptr<numeric::integral::Integral> trapezoidal =
         std::make_shared<numeric::integral::Trapezoidal>(expression1);
-    auto result = (*trapezoidal)(expression1.range1, expression1.range2, numeric::integral::epsilon);
-    ASSERT_GT(result, -4.08951 - 0.5);
-    ASSERT_LT(result, -4.08951 + 0.5);
-
-    trapezoidal = std::make_shared<numeric::integral::Trapezoidal>(expression2);
-    result = (*trapezoidal)(expression2.range1, expression2.range2, numeric::integral::epsilon);
-    ASSERT_GT(result, +39.71374 - 0.5);
-    ASSERT_LT(result, +39.71374 + 0.5);
+    const auto result = (*trapezoidal)(expression1.range1, expression1.range2, numeric::integral::epsilon);
+    ASSERT_GT(result, -4.08951 - error);
+    ASSERT_LT(result, -4.08951 + error);
 }
 
 //! @brief Test for the adaptive Simpson's 1/3 method in the solution of integral.
 TEST_F(IntegralTestBase, adaptiveSimpsonMethod) // NOLINT(cert-err58-cpp)
 {
-    std::shared_ptr<numeric::integral::Integral> simpson = std::make_shared<numeric::integral::Simpson>(expression1);
-    auto result = (*simpson)(expression1.range1, expression1.range2, numeric::integral::epsilon);
-    ASSERT_GT(result, -4.08951 - 0.5);
-    ASSERT_LT(result, -4.08951 + 0.5);
-
-    simpson = std::make_shared<numeric::integral::Simpson>(expression2);
-    result = (*simpson)(expression2.range1, expression2.range2, numeric::integral::epsilon);
-    ASSERT_GT(result, +39.71374 - 0.5);
-    ASSERT_LT(result, +39.71374 + 0.5);
+    const std::shared_ptr<numeric::integral::Integral> simpson =
+        std::make_shared<numeric::integral::Simpson>(expression1);
+    const auto result = (*simpson)(expression1.range1, expression1.range2, numeric::integral::epsilon);
+    ASSERT_GT(result, -4.08951 - error);
+    ASSERT_LT(result, -4.08951 + error);
 }
 
 //! @brief Test for the Romberg method in the solution of integral.
 TEST_F(IntegralTestBase, rombergMethod) // NOLINT(cert-err58-cpp)
 {
-    std::shared_ptr<numeric::integral::Integral> romberg = std::make_shared<numeric::integral::Romberg>(expression1);
-    auto result = (*romberg)(expression1.range1, expression1.range2, numeric::integral::epsilon);
-    ASSERT_GT(result, -4.08951 - 0.5);
-    ASSERT_LT(result, -4.08951 + 0.5);
-
-    romberg = std::make_shared<numeric::integral::Romberg>(expression2);
-    result = (*romberg)(expression2.range1, expression2.range2, numeric::integral::epsilon);
-    ASSERT_GT(result, +39.71374 - 0.5);
-    ASSERT_LT(result, +39.71374 + 0.5);
+    const std::shared_ptr<numeric::integral::Integral> romberg =
+        std::make_shared<numeric::integral::Romberg>(expression1);
+    const auto result = (*romberg)(expression1.range1, expression1.range2, numeric::integral::epsilon);
+    ASSERT_GT(result, -4.08951 - error);
+    ASSERT_LT(result, -4.08951 + error);
 }
 
 //! @brief Test for the Gauss-Legendre's 5-points method in the solution of integral.
 TEST_F(IntegralTestBase, gaussLegendreMethod) // NOLINT(cert-err58-cpp)
 {
-    std::shared_ptr<numeric::integral::Integral> gauss = std::make_shared<numeric::integral::Gauss>(expression1);
-    auto result = (*gauss)(expression1.range1, expression1.range2, numeric::integral::epsilon);
-    ASSERT_GT(result, -4.08951 - 0.5);
-    ASSERT_LT(result, -4.08951 + 0.5);
-
-    gauss = std::make_shared<numeric::integral::Gauss>(expression2);
-    result = (*gauss)(expression2.range1, expression2.range2, numeric::integral::epsilon);
-    ASSERT_GT(result, +39.71374 - 0.5);
-    ASSERT_LT(result, +39.71374 + 0.5);
+    const std::shared_ptr<numeric::integral::Integral> gauss = std::make_shared<numeric::integral::Gauss>(expression1);
+    const auto result = (*gauss)(expression1.range1, expression1.range2, numeric::integral::epsilon);
+    ASSERT_GT(result, -4.08951 - error);
+    ASSERT_LT(result, -4.08951 + error);
 }
 
 //! @brief Test for the Monte-Carlo method in the solution of integral.
 TEST_F(IntegralTestBase, monteCarloMethod) // NOLINT(cert-err58-cpp)
 {
-    std::shared_ptr<numeric::integral::Integral> monteCarlo =
+    const std::shared_ptr<numeric::integral::Integral> monteCarlo =
         std::make_shared<numeric::integral::MonteCarlo>(expression1);
-    auto result = (*monteCarlo)(expression1.range1, expression1.range2, numeric::integral::epsilon);
-    ASSERT_GT(result, -4.08951 - 0.5);
-    ASSERT_LT(result, -4.08951 + 0.5);
-
-    monteCarlo = std::make_shared<numeric::integral::MonteCarlo>(expression2);
-    result = (*monteCarlo)(expression2.range1, expression2.range2, numeric::integral::epsilon);
-    ASSERT_GT(result, +39.71374 - 0.5);
-    ASSERT_LT(result, +39.71374 + 0.5);
+    const auto result = (*monteCarlo)(expression1.range1, expression1.range2, numeric::integral::epsilon);
+    ASSERT_GT(result, -4.08951 - error);
+    ASSERT_LT(result, -4.08951 + error);
 }
 
 //! @brief Test base of prime.

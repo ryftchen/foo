@@ -154,7 +154,6 @@ private:
     const Expression& expr;
 };
 
-// #define INTEGRAL_MONTE_CARLO_NORMAL_DISTRIBUTION
 //! @brief The Monte-Carlo method.
 class MonteCarlo : public Integral
 {
@@ -174,22 +173,19 @@ private:
     //! @brief Target expression.
     const Expression& expr;
     //! @brief Random cache.
-    std::vector<double> cache;
-#ifndef INTEGRAL_MONTE_CARLO_NORMAL_DISTRIBUTION
+    std::vector<double> cache{};
     //! @brief Sample from the uniform distribution.
     //! @param lower - lower endpoint
     //! @param upper - upper endpoint
     //! @param eps - precision of calculation
     //! @return result of definite integral
     [[nodiscard]] double sampleFromUniformDistribution(const double lower, const double upper, const double eps) const;
-#else
     //! @brief Sample from the normal distribution.
     //! @param lower - lower endpoint
     //! @param upper - upper endpoint
     //! @param eps - precision of calculation
     //! @return result of definite integral
     [[nodiscard]] double sampleFromNormalDistribution(const double lower, const double upper, const double eps) const;
-#endif // INTEGRAL_MONTE_CARLO_NORMAL_DISTRIBUTION
     //! @brief Refresh the random cache.
     //! @param cache - target cache
     //! @param min - minimum value

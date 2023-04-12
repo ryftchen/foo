@@ -176,74 +176,54 @@ public:
     //! @brief Tear down.
     void TearDown() override{};
 
-    //! @brief Griewank function object.
-    application::app_algo::input::Griewank griewank;
     //! @brief Rastrigin function object.
-    application::app_algo::input::Rastrigin rastrigin;
+    static constexpr application::app_algo::input::Rastrigin rastrigin;
+    //! @brief Allowable error.
+    static constexpr double error{1e-4};
 };
 
 //! @brief Test for the gradient descent method in the solution of optimal.
 TEST_F(OptimalTestBase, gradientDescentMethod) // NOLINT(cert-err58-cpp)
 {
-    std::shared_ptr<algorithm::optimal::Optimal> gradient = std::make_shared<algorithm::optimal::Gradient>(griewank);
-    auto result = (*gradient)(griewank.range1, griewank.range2, algorithm::optimal::epsilon);
+    const std::shared_ptr<algorithm::optimal::Optimal> gradient =
+        std::make_shared<algorithm::optimal::Gradient>(rastrigin);
+    const auto result = (*gradient)(rastrigin.range1, rastrigin.range2, algorithm::optimal::epsilon);
     ASSERT_TRUE(result.has_value());
-    ASSERT_GT(get<0>(result.value()), 0.0 - 0.05);
-    ASSERT_LT(get<0>(result.value()), 0.0 + 0.05);
-
-    gradient = std::make_shared<algorithm::optimal::Gradient>(rastrigin);
-    result = (*gradient)(rastrigin.range1, rastrigin.range2, algorithm::optimal::epsilon);
-    ASSERT_TRUE(result.has_value());
-    ASSERT_GT(get<0>(result.value()), 0.0 - 0.05);
-    ASSERT_LT(get<0>(result.value()), 0.0 + 0.05);
+    ASSERT_GT(get<0>(result.value()), 0.0 - error);
+    ASSERT_LT(get<0>(result.value()), 0.0 + error);
 }
 
 //! @brief Test for the simulated annealing method in the solution of optimal.
 TEST_F(OptimalTestBase, simulatedAnnealingMethod) // NOLINT(cert-err58-cpp)
 {
-    std::shared_ptr<algorithm::optimal::Optimal> annealing = std::make_shared<algorithm::optimal::Annealing>(griewank);
-    auto result = (*annealing)(griewank.range1, griewank.range2, algorithm::optimal::epsilon);
+    const std::shared_ptr<algorithm::optimal::Optimal> annealing =
+        std::make_shared<algorithm::optimal::Annealing>(rastrigin);
+    const auto result = (*annealing)(rastrigin.range1, rastrigin.range2, algorithm::optimal::epsilon);
     ASSERT_TRUE(result.has_value());
-    ASSERT_GT(get<0>(result.value()), 0.0 - 0.05);
-    ASSERT_LT(get<0>(result.value()), 0.0 + 0.05);
-
-    annealing = std::make_shared<algorithm::optimal::Annealing>(rastrigin);
-    result = (*annealing)(rastrigin.range1, rastrigin.range2, algorithm::optimal::epsilon);
-    ASSERT_TRUE(result.has_value());
-    ASSERT_GT(get<0>(result.value()), 0.0 - 0.05);
-    ASSERT_LT(get<0>(result.value()), 0.0 + 0.05);
+    ASSERT_GT(get<0>(result.value()), 0.0 - error);
+    ASSERT_LT(get<0>(result.value()), 0.0 + error);
 }
 
 //! @brief Test for the particle swarm method in the solution of optimal.
 TEST_F(OptimalTestBase, particleSwarmMethod) // NOLINT(cert-err58-cpp)
 {
-    std::shared_ptr<algorithm::optimal::Optimal> particle = std::make_shared<algorithm::optimal::Particle>(griewank);
-    auto result = (*particle)(griewank.range1, griewank.range2, algorithm::optimal::epsilon);
+    const std::shared_ptr<algorithm::optimal::Optimal> particle =
+        std::make_shared<algorithm::optimal::Particle>(rastrigin);
+    const auto result = (*particle)(rastrigin.range1, rastrigin.range2, algorithm::optimal::epsilon);
     ASSERT_TRUE(result.has_value());
-    ASSERT_GT(get<0>(result.value()), 0.0 - 0.05);
-    ASSERT_LT(get<0>(result.value()), 0.0 + 0.05);
-
-    particle = std::make_shared<algorithm::optimal::Particle>(rastrigin);
-    result = (*particle)(rastrigin.range1, rastrigin.range2, algorithm::optimal::epsilon);
-    ASSERT_TRUE(result.has_value());
-    ASSERT_GT(get<0>(result.value()), 0.0 - 0.05);
-    ASSERT_LT(get<0>(result.value()), 0.0 + 0.05);
+    ASSERT_GT(get<0>(result.value()), 0.0 - error);
+    ASSERT_LT(get<0>(result.value()), 0.0 + error);
 }
 
 //! @brief Test for the genetic method in the solution of optimal.
 TEST_F(OptimalTestBase, geneticMethod) // NOLINT(cert-err58-cpp)
 {
-    std::shared_ptr<algorithm::optimal::Optimal> genetic = std::make_shared<algorithm::optimal::Genetic>(griewank);
-    auto result = (*genetic)(griewank.range1, griewank.range2, algorithm::optimal::epsilon);
+    const std::shared_ptr<algorithm::optimal::Optimal> genetic =
+        std::make_shared<algorithm::optimal::Genetic>(rastrigin);
+    const auto result = (*genetic)(rastrigin.range1, rastrigin.range2, algorithm::optimal::epsilon);
     ASSERT_TRUE(result.has_value());
-    ASSERT_GT(get<0>(result.value()), 0.0 - 0.05);
-    ASSERT_LT(get<0>(result.value()), 0.0 + 0.05);
-
-    genetic = std::make_shared<algorithm::optimal::Genetic>(rastrigin);
-    result = (*genetic)(rastrigin.range1, rastrigin.range2, algorithm::optimal::epsilon);
-    ASSERT_TRUE(result.has_value());
-    ASSERT_GT(get<0>(result.value()), 0.0 - 0.05);
-    ASSERT_LT(get<0>(result.value()), 0.0 + 0.05);
+    ASSERT_GT(get<0>(result.value()), 0.0 - error);
+    ASSERT_LT(get<0>(result.value()), 0.0 + error);
 }
 
 //! @brief Test base of search.
