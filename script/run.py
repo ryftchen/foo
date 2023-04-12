@@ -22,6 +22,7 @@ STDOUT = sys.stdout
 class Output:
     color = {"red": "\033[0;31;40m", "green": "\033[0;32;40m", "yellow": "\033[0;33;40m", "blue": "\033[0;34;40m"}
     color_background = "\033[49m"
+    color_bold = "\033[1m"
     color_off = "\033[0m"
     color_escape_regex = r"((\033\[.*?(m|s|u|A))|(\007|\017))"
     column_length = 10
@@ -38,7 +39,7 @@ class Output:
     @classmethod
     def refresh_status(cls, color_foreground, content):
         print(
-            f"""{color_foreground}{cls.color_background}{f"{'=' * cls.column_length}"}\
+            f"""{color_foreground}{cls.color_bold}{cls.color_background}{f"{'=' * cls.column_length}"}\
 [ {datetime.strftime(datetime.now(), "%b %d %H:%M:%S")} | {content} ]{f"{'=' * cls.column_length}"}{cls.color_off}"""
         )
 
@@ -257,8 +258,6 @@ class Task:
             Output.exit_with_error("No executable file. Please use the --build option to build it.")
         if self.options["tst"] and not os.path.isfile(f"{self.tst_bin_dir}/{self.tst_bin_cmd}"):
             Output.exit_with_error("No executable file for testing. Please use the --build option to build it.")
-        common.execute_command("ulimit -s unlimited")
-        common.execute_command("echo 'core.%s.%e.%p' | tee /proc/sys/kernel/core_pattern")
 
         if not os.path.exists(self.temp_dir):
             os.makedirs(self.temp_dir)
