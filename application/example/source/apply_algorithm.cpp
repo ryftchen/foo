@@ -17,7 +17,6 @@
 #include "algorithm/include/sort.hpp"
 #include "application/core/include/command.hpp"
 #include "application/core/include/log.hpp"
-#include "utility/include/hash.hpp"
 
 //! @brief Title of printing when algorithm tasks are beginning.
 #define APP_ALGO_PRINT_TASK_BEGIN_TITLE(taskType)                                                                  \
@@ -177,7 +176,7 @@ void runMatch(const std::vector<std::string>& targets)
 
     using match::MatchSolution;
     using match::TargetBuilder;
-    using utility::hash::operator""_bkdrHash;
+    using utility::common::operator""_bkdrHash;
 
     static_assert(TargetBuilder::maxDigit > input::singlePatternForMatch.length());
     APP_ALGO_PRINT_TASK_BEGIN_TITLE(Type::match);
@@ -205,7 +204,7 @@ void runMatch(const std::vector<std::string>& targets)
         }
 
         const std::string targetMethod = targets.at(i), threadName = "m_" + targetMethod;
-        switch (utility::hash::bkdrHash(targetMethod.data()))
+        switch (utility::common::bkdrHash(targetMethod.data()))
         {
             case "rab"_bkdrHash:
                 matchFunctor(threadName, &MatchSolution::rkMethod);
@@ -236,8 +235,8 @@ void runMatch(const std::vector<std::string>& targets)
 //! @param target - target method
 void updateMatchTask(const std::string& target)
 {
-    using utility::hash::operator""_bkdrHash;
-    switch (utility::hash::bkdrHash(target.c_str()))
+    using utility::common::operator""_bkdrHash;
+    switch (utility::common::bkdrHash(target.c_str()))
     {
         case "rab"_bkdrHash:
             setBit<MatchMethod>(MatchMethod::rabinKarp);
@@ -306,7 +305,7 @@ void runNotation(const std::vector<std::string>& targets)
 
     using notation::NotationSolution;
     using notation::TargetBuilder;
-    using utility::hash::operator""_bkdrHash;
+    using utility::common::operator""_bkdrHash;
 
     APP_ALGO_PRINT_TASK_BEGIN_TITLE(Type::notation);
     auto* threads = command::getPublicThreadPool().newElement(std::min(
@@ -326,7 +325,7 @@ void runNotation(const std::vector<std::string>& targets)
         }
 
         const std::string targetMethod = targets.at(i), threadName = "n_" + targetMethod;
-        switch (utility::hash::bkdrHash(targetMethod.data()))
+        switch (utility::common::bkdrHash(targetMethod.data()))
         {
             case "pre"_bkdrHash:
                 notationFunctor(threadName, &NotationSolution::prefixMethod);
@@ -348,8 +347,8 @@ void runNotation(const std::vector<std::string>& targets)
 //! @param target - target method
 void updateNotationTask(const std::string& target)
 {
-    using utility::hash::operator""_bkdrHash;
-    switch (utility::hash::bkdrHash(target.c_str()))
+    using utility::common::operator""_bkdrHash;
+    switch (utility::common::bkdrHash(target.c_str()))
     {
         case "pre"_bkdrHash:
             setBit<NotationMethod>(NotationMethod::prefix);
@@ -468,7 +467,7 @@ void runOptimal(const std::vector<std::string>& targets)
         };
 
         using optimal::OptimalSolution;
-        using utility::hash::operator""_bkdrHash;
+        using utility::common::operator""_bkdrHash;
         for (uint8_t i = 0; i < Bottom<OptimalMethod>::value; ++i)
         {
             if (!getBit<OptimalMethod>().test(OptimalMethod(i)))
@@ -477,7 +476,7 @@ void runOptimal(const std::vector<std::string>& targets)
             }
 
             const std::string targetMethod = targets.at(i), threadName = "o_" + targetMethod;
-            switch (utility::hash::bkdrHash(targetMethod.data()))
+            switch (utility::common::bkdrHash(targetMethod.data()))
             {
                 case "gra"_bkdrHash:
                     optimalFunctor(threadName, &OptimalSolution::gradientDescentMethod);
@@ -524,8 +523,8 @@ void runOptimal(const std::vector<std::string>& targets)
 //! @param target - target method
 void updateOptimalTask(const std::string& target)
 {
-    using utility::hash::operator""_bkdrHash;
-    switch (utility::hash::bkdrHash(target.c_str()))
+    using utility::common::operator""_bkdrHash;
+    switch (utility::common::bkdrHash(target.c_str()))
     {
         case "gra"_bkdrHash:
             setBit<OptimalMethod>(OptimalMethod::gradient);
@@ -626,7 +625,7 @@ void runSearch(const std::vector<std::string>& targets)
     using input::arrayRangeForSearch2;
     using search::SearchSolution;
     using search::TargetBuilder;
-    using utility::hash::operator""_bkdrHash;
+    using utility::common::operator""_bkdrHash;
 
     static_assert((arrayRangeForSearch1 < arrayRangeForSearch2) && (arrayLengthForSearch > 0));
     APP_ALGO_PRINT_TASK_BEGIN_TITLE(Type::search);
@@ -650,7 +649,7 @@ void runSearch(const std::vector<std::string>& targets)
         }
 
         const std::string targetMethod = targets.at(i), threadName = "s_" + targetMethod;
-        switch (utility::hash::bkdrHash(targetMethod.data()))
+        switch (utility::common::bkdrHash(targetMethod.data()))
         {
             case "bin"_bkdrHash:
                 searchFunctor(threadName, &SearchSolution::binaryMethod);
@@ -675,8 +674,8 @@ void runSearch(const std::vector<std::string>& targets)
 //! @param target - target method
 void updateSearchTask(const std::string& target)
 {
-    using utility::hash::operator""_bkdrHash;
-    switch (utility::hash::bkdrHash(target.c_str()))
+    using utility::common::operator""_bkdrHash;
+    switch (utility::common::bkdrHash(target.c_str()))
     {
         case "bin"_bkdrHash:
             setBit<SearchMethod>(SearchMethod::binary);
@@ -877,7 +876,7 @@ void runSort(const std::vector<std::string>& targets)
     using input::arrayRangeForSort2;
     using sort::SortSolution;
     using sort::TargetBuilder;
-    using utility::hash::operator""_bkdrHash;
+    using utility::common::operator""_bkdrHash;
 
     static_assert((arrayRangeForSort1 < arrayRangeForSort2) && (arrayLengthForSort > 0));
     APP_ALGO_PRINT_TASK_BEGIN_TITLE(Type::sort);
@@ -899,7 +898,7 @@ void runSort(const std::vector<std::string>& targets)
         }
 
         const std::string targetMethod = targets.at(i), threadName = "s_" + targetMethod;
-        switch (utility::hash::bkdrHash(targetMethod.data()))
+        switch (utility::common::bkdrHash(targetMethod.data()))
         {
             case "bub"_bkdrHash:
                 sortFunctor(threadName, &SortSolution::bubbleMethod);
@@ -945,8 +944,8 @@ void runSort(const std::vector<std::string>& targets)
 //! @param target - target method
 void updateSortTask(const std::string& target)
 {
-    using utility::hash::operator""_bkdrHash;
-    switch (utility::hash::bkdrHash(target.c_str()))
+    using utility::common::operator""_bkdrHash;
+    switch (utility::common::bkdrHash(target.c_str()))
     {
         case "bub"_bkdrHash:
             setBit<SortMethod>(SortMethod::bubble);

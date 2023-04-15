@@ -12,7 +12,6 @@
 #endif // __PRECOMPILED_HEADER
 #include "application/core/include/command.hpp"
 #include "application/core/include/log.hpp"
-#include "utility/include/hash.hpp"
 
 //! @brief Title of printing when design pattern tasks are beginning.
 #define APP_DP_PRINT_TASK_BEGIN_TITLE(taskType)                                                                       \
@@ -219,7 +218,7 @@ void runBehavioral(const std::vector<std::string>& targets)
     }
 
     using behavioral::BehavioralPattern;
-    using utility::hash::operator""_bkdrHash;
+    using utility::common::operator""_bkdrHash;
 
     APP_DP_PRINT_TASK_BEGIN_TITLE(Type::behavioral);
     auto* threads = command::getPublicThreadPool().newElement(std::min(
@@ -239,7 +238,7 @@ void runBehavioral(const std::vector<std::string>& targets)
         }
 
         const std::string targetInstance = targets.at(i), threadName = "b_" + targetInstance;
-        switch (utility::hash::bkdrHash(targetInstance.data()))
+        switch (utility::common::bkdrHash(targetInstance.data()))
         {
             case "cha"_bkdrHash:
                 behavioralFunctor(threadName, &BehavioralPattern::chainOfResponsibilityInstance);
@@ -288,8 +287,8 @@ void runBehavioral(const std::vector<std::string>& targets)
 //! @param target - target instance
 void updateBehavioralTask(const std::string& target)
 {
-    using utility::hash::operator""_bkdrHash;
-    switch (utility::hash::bkdrHash(target.c_str()))
+    using utility::common::operator""_bkdrHash;
+    switch (utility::common::bkdrHash(target.c_str()))
     {
         case "cha"_bkdrHash:
             setBit<BehavioralInstance>(BehavioralInstance::chainOfResponsibility);
@@ -418,7 +417,7 @@ void runCreational(const std::vector<std::string>& targets)
     }
 
     using creational::CreationalPattern;
-    using utility::hash::operator""_bkdrHash;
+    using utility::common::operator""_bkdrHash;
 
     APP_DP_PRINT_TASK_BEGIN_TITLE(Type::creational);
     auto* threads = command::getPublicThreadPool().newElement(std::min(
@@ -438,7 +437,7 @@ void runCreational(const std::vector<std::string>& targets)
         }
 
         const std::string targetInstance = targets.at(i), threadName = "c_" + targetInstance;
-        switch (utility::hash::bkdrHash(targetInstance.data()))
+        switch (utility::common::bkdrHash(targetInstance.data()))
         {
             case "abs"_bkdrHash:
                 creationalFunctor(threadName, &CreationalPattern::abstractFactoryInstance);
@@ -469,8 +468,8 @@ void runCreational(const std::vector<std::string>& targets)
 //! @param target - target instance
 void updateCreationalTask(const std::string& target)
 {
-    using utility::hash::operator""_bkdrHash;
-    switch (utility::hash::bkdrHash(target.c_str()))
+    using utility::common::operator""_bkdrHash;
+    switch (utility::common::bkdrHash(target.c_str()))
     {
         case "abs"_bkdrHash:
             setBit<CreationalInstance>(CreationalInstance::abstractFactory);
@@ -607,7 +606,7 @@ void runStructural(const std::vector<std::string>& targets)
     }
 
     using structural::StructuralPattern;
-    using utility::hash::operator""_bkdrHash;
+    using utility::common::operator""_bkdrHash;
 
     APP_DP_PRINT_TASK_BEGIN_TITLE(Type::structural);
     auto* threads = command::getPublicThreadPool().newElement(std::min(
@@ -627,7 +626,7 @@ void runStructural(const std::vector<std::string>& targets)
         }
 
         const std::string targetInstance = targets.at(i), threadName = "s_" + targetInstance;
-        switch (utility::hash::bkdrHash(targetInstance.data()))
+        switch (utility::common::bkdrHash(targetInstance.data()))
         {
             case "ada"_bkdrHash:
                 structuralFunctor(threadName, &StructuralPattern::adapterInstance);
@@ -664,8 +663,8 @@ void runStructural(const std::vector<std::string>& targets)
 //! @param target - target instance
 void updateStructuralTask(const std::string& target)
 {
-    using utility::hash::operator""_bkdrHash;
-    switch (utility::hash::bkdrHash(target.c_str()))
+    using utility::common::operator""_bkdrHash;
+    switch (utility::common::bkdrHash(target.c_str()))
     {
         case "ada"_bkdrHash:
             setBit<StructuralInstance>(StructuralInstance::adapter);

@@ -5,91 +5,22 @@
 //! @copyright Copyright (c) 2022-2023
 
 #include "common.hpp"
-#include <cstring>
-#include <filesystem>
-#include <iterator>
-#include <list>
-#include <stdexcept>
 #include <vector>
 
 namespace utility::common
 {
-void FileReadWriteLock::readLock()
+//! @brief The Brian-Kernighan Dennis-Ritchie hash function.
+//! @param str - input data
+//! @return hash value
+uint64_t bkdrHash(const char* str)
 {
-    std::shared_lock<std::shared_mutex> rdLock(rwLock);
-    if (std::unique_lock<std::mutex> lock(mtx); true)
+    const uint64_t seed = bkdrHashSeed; // 31 131 1313 13131 131313 etc...
+    uint64_t hash = 0;
+    while (*str)
     {
-        cv.wait(
-            lock,
-            [this]() -> decltype(auto)
-            {
-                return (writer.load() == 0);
-            });
-        reader.fetch_add(1);
+        hash = hash * seed + (*str++);
     }
-}
-
-void FileReadWriteLock::readUnlock()
-{
-    std::unique_lock<std::mutex> lock(mtx);
-    reader.fetch_sub(1);
-    lock.unlock();
-    cv.notify_all();
-    lock.lock();
-}
-
-void FileReadWriteLock::writeLock()
-{
-    std::unique_lock<std::shared_mutex> wrLock(rwLock);
-    if (std::unique_lock<std::mutex> lock(mtx); true)
-    {
-        cv.wait(
-            lock,
-            [this]() -> decltype(auto)
-            {
-                return ((reader.load() == 0) && (writer.load() == 0));
-            });
-        writer.fetch_add(1);
-    }
-}
-
-void FileReadWriteLock::writeUnlock()
-{
-    std::unique_lock<std::mutex> lock(mtx);
-    writer.fetch_sub(1);
-    lock.unlock();
-    cv.notify_all();
-    lock.lock();
-}
-
-FileReadWriteGuard::FileReadWriteGuard(const LockMode mode, FileReadWriteLock& lock) : mode(mode), lock(lock)
-{
-    switch (mode)
-    {
-        case LockMode::read:
-            lock.readLock();
-            break;
-        case LockMode::write:
-            lock.writeLock();
-            break;
-        default:
-            break;
-    }
-}
-
-FileReadWriteGuard::~FileReadWriteGuard()
-{
-    switch (mode)
-    {
-        case LockMode::read:
-            lock.readUnlock();
-            break;
-        case LockMode::write:
-            lock.writeUnlock();
-            break;
-        default:
-            break;
-    }
+    return (hash & bkdrHashSize);
 }
 
 //! @brief Execute the command line.
@@ -155,103 +86,4 @@ std::string executeCommand(const std::string& cmd, const uint32_t timeout)
 
     return output;
 };
-
-//! @brief Open file.
-//! @param filename - file path
-//! @return input file stream.
-std::ifstream openFile(const std::string& filename)
-{
-    std::ifstream ifs;
-    ifs.open(filename, std::ios_base::in);
-    if (!ifs)
-    {
-        throw std::runtime_error(
-            "<COMMON> Failed to open file " + std::filesystem::path(filename).filename().string() + " for reading.");
-    }
-    return ifs;
-}
-
-//! @brief Open file.
-//! @param filename - file path
-//! @param isOverwrite - be overwrite or not
-//! @return output file stream
-std::ofstream openFile(const std::string& filename, const bool isOverwrite)
-{
-    std::ofstream ofs;
-    const std::ios_base::openmode mode = std::ios_base::out | (isOverwrite ? std::ios_base::trunc : std::ios_base::app);
-    ofs.open(filename, mode);
-    if (!ofs)
-    {
-        throw std::runtime_error(
-            "<COMMON> Failed to open file " + std::filesystem::path(filename).filename().string() + " for writing.");
-    }
-    return ofs;
-}
-
-//! @brief Close file.
-//! @param ifs - input file stream
-void closeFile(std::ifstream& ifs)
-{
-    if (ifs.is_open())
-    {
-        ifs.close();
-    }
-}
-
-//! @brief Close file.
-//! @param ofs - output file stream
-void closeFile(std::ofstream& ofs)
-{
-    if (ofs.is_open())
-    {
-        ofs.close();
-    }
-}
-
-//! @brief Display file contents.
-//! @param property - file property
-//! @param setting - display setting
-void displayFileContents(const FileProperty& property, const DisplaySetting& setting)
-{
-    FileReadWriteGuard guard(FileReadWriteGuard::LockMode::read, property.lock);
-    std::ifstream ifs = openFile(property.path);
-
-    DisplaySetting::FormatStyle formatStyle = setting.style;
-    if (nullptr == formatStyle)
-    {
-        formatStyle = [](std::string& line) -> std::string&
-        {
-            return line;
-        };
-    }
-
-    std::string line;
-    std::list<std::string> content(0);
-    ifs.seekg(std::ios::beg);
-    if (!setting.isInverted)
-    {
-        while ((content.size() < setting.maxLine) && std::getline(ifs, line))
-        {
-            content.emplace_back(formatStyle(line));
-        }
-    }
-    else
-    {
-        std::ifstream statistics(property.path);
-        const uint32_t lineNum = std::count(
-                           std::istreambuf_iterator<char>(statistics), std::istreambuf_iterator<char>(), '\n'),
-                       startLine = (lineNum > setting.maxLine) ? (lineNum - setting.maxLine + 1) : 1;
-        for (uint32_t i = 0; i < (startLine - 1); ++i)
-        {
-            ifs.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        }
-        while (std::getline(ifs, line))
-        {
-            content.emplace_front(formatStyle(line));
-        }
-    }
-    std::copy(content.cbegin(), content.cend(), std::ostream_iterator<std::string>(std::cout, "\n"));
-
-    closeFile(ifs);
-}
 } // namespace utility::common

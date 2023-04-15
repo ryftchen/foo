@@ -16,7 +16,6 @@
 #include "numeric/include/divisor.hpp"
 #include "numeric/include/integral.hpp"
 #include "numeric/include/prime.hpp"
-#include "utility/include/hash.hpp"
 
 //! @brief Title of printing when numeric tasks are beginning.
 #define APP_NUM_PRINT_TASK_BEGIN_TITLE(taskType)                                                                   \
@@ -129,7 +128,7 @@ void runArithmetic(const std::vector<std::string>& targets)
 
     using arithmetic::ArithmeticSolution;
     using arithmetic::TargetBuilder;
-    using utility::hash::operator""_bkdrHash;
+    using utility::common::operator""_bkdrHash;
 
     APP_NUM_PRINT_TASK_BEGIN_TITLE(Type::arithmetic);
     auto* threads = command::getPublicThreadPool().newElement(std::min(
@@ -152,7 +151,7 @@ void runArithmetic(const std::vector<std::string>& targets)
         }
 
         const std::string targetMethod = targets.at(i), threadName = "a_" + targetMethod;
-        switch (utility::hash::bkdrHash(targetMethod.data()))
+        switch (utility::common::bkdrHash(targetMethod.data()))
         {
             case "add"_bkdrHash:
                 arithmeticFunctor(threadName, &ArithmeticSolution::additionMethod);
@@ -180,8 +179,8 @@ void runArithmetic(const std::vector<std::string>& targets)
 //! @param target - target method
 void updateArithmeticTask(const std::string& target)
 {
-    using utility::hash::operator""_bkdrHash;
-    switch (utility::hash::bkdrHash(target.c_str()))
+    using utility::common::operator""_bkdrHash;
+    switch (utility::common::bkdrHash(target.c_str()))
     {
         case "add"_bkdrHash:
             setBit<ArithmeticMethod>(ArithmeticMethod::addition);
@@ -262,7 +261,7 @@ void runDivisor(const std::vector<std::string>& targets)
 
     using divisor::DivisorSolution;
     using divisor::TargetBuilder;
-    using utility::hash::operator""_bkdrHash;
+    using utility::common::operator""_bkdrHash;
 
     APP_NUM_PRINT_TASK_BEGIN_TITLE(Type::divisor);
     auto* threads = command::getPublicThreadPool().newElement(std::min(
@@ -284,7 +283,7 @@ void runDivisor(const std::vector<std::string>& targets)
         }
 
         const std::string targetMethod = targets.at(i), threadName = "d_" + targetMethod;
-        switch (utility::hash::bkdrHash(targetMethod.data()))
+        switch (utility::common::bkdrHash(targetMethod.data()))
         {
             case "euc"_bkdrHash:
                 divisorFunctor(threadName, &DivisorSolution::euclideanMethod);
@@ -306,8 +305,8 @@ void runDivisor(const std::vector<std::string>& targets)
 //! @param target - target method
 void updateDivisorTask(const std::string& target)
 {
-    using utility::hash::operator""_bkdrHash;
-    switch (utility::hash::bkdrHash(target.c_str()))
+    using utility::common::operator""_bkdrHash;
+    switch (utility::common::bkdrHash(target.c_str()))
     {
         case "euc"_bkdrHash:
             setBit<DivisorMethod>(DivisorMethod::euclidean);
@@ -441,7 +440,7 @@ void runIntegral(const std::vector<std::string>& targets)
         };
 
         using integral::IntegralSolution;
-        using utility::hash::operator""_bkdrHash;
+        using utility::common::operator""_bkdrHash;
         for (uint8_t i = 0; i < Bottom<IntegralMethod>::value; ++i)
         {
             if (!getBit<IntegralMethod>().test(IntegralMethod(i)))
@@ -450,7 +449,7 @@ void runIntegral(const std::vector<std::string>& targets)
             }
 
             const std::string targetMethod = targets.at(i), threadName = "i_" + targetMethod;
-            switch (utility::hash::bkdrHash(targetMethod.data()))
+            switch (utility::common::bkdrHash(targetMethod.data()))
             {
                 case "tra"_bkdrHash:
                     integralFunctor(threadName, &IntegralSolution::trapezoidalMethod);
@@ -500,8 +499,8 @@ void runIntegral(const std::vector<std::string>& targets)
 //! @param target - target method
 void updateIntegralTask(const std::string& target)
 {
-    using utility::hash::operator""_bkdrHash;
-    switch (utility::hash::bkdrHash(target.c_str()))
+    using utility::common::operator""_bkdrHash;
+    switch (utility::common::bkdrHash(target.c_str()))
     {
         case "tra"_bkdrHash:
             setBit<IntegralMethod>(IntegralMethod::trapezoidal);
@@ -585,7 +584,7 @@ void runPrime(const std::vector<std::string>& targets)
 
     using prime::PrimeSolution;
     using prime::TargetBuilder;
-    using utility::hash::operator""_bkdrHash;
+    using utility::common::operator""_bkdrHash;
 
     APP_NUM_PRINT_TASK_BEGIN_TITLE(Type::prime);
     auto* threads = command::getPublicThreadPool().newElement(std::min(
@@ -605,7 +604,7 @@ void runPrime(const std::vector<std::string>& targets)
         }
 
         const std::string targetMethod = targets.at(i), threadName = "p_" + targetMethod;
-        switch (utility::hash::bkdrHash(targetMethod.data()))
+        switch (utility::common::bkdrHash(targetMethod.data()))
         {
             case "era"_bkdrHash:
                 primeFunctor(threadName, &PrimeSolution::eratosthenesMethod);
@@ -627,8 +626,8 @@ void runPrime(const std::vector<std::string>& targets)
 //! @param target - target method
 void updatePrimeTask(const std::string& target)
 {
-    using utility::hash::operator""_bkdrHash;
-    switch (utility::hash::bkdrHash(target.c_str()))
+    using utility::common::operator""_bkdrHash;
+    switch (utility::common::bkdrHash(target.c_str()))
     {
         case "era"_bkdrHash:
             setBit<PrimeMethod>(PrimeMethod::eratosthenes);

@@ -7,8 +7,6 @@
 #include "command.hpp"
 #ifndef __PRECOMPILED_HEADER
 #include <unistd.h>
-#include <climits>
-#include <stdexcept>
 #else
 #include "application/pch/precompiled_header.hpp"
 #endif // __PRECOMPILED_HEADER
@@ -596,9 +594,9 @@ void Command::registerOnConsole(utility::console::Console& console) const
 
 void Command::viewLogContent()
 {
-    utility::common::displayFileContents(
-        utility::common::FileProperty{LOG_PATHNAME, LOG_FILE_LOCK},
-        utility::common::DisplaySetting{true, maxLineNumForPrintLog, &log::changeToLogStyle});
+    utility::file::displayFileContents(
+        utility::file::FileProperty{LOG_PATHNAME, LOG_FILE_LOCK},
+        utility::file::DisplaySetting{true, maxViewNumOfLines, &log::changeToLogStyle});
 }
 
 std::string Command::getIconBanner()

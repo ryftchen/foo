@@ -239,8 +239,8 @@ private:
         // ----------------+----------------+----------------------------------------+---------------------------+--------------------------------
     };
     // clang-format on
-    //! @brief Max line numbers for printing log.
-    static constexpr uint32_t maxLineNumForPrintLog{50};
+    //! @brief Maximum line numbers for viewing log.
+    static constexpr uint32_t maxViewNumOfLines{50};
 
     //! @brief Print output of the console mode command line.
     void printConsoleOutput() const;
