@@ -64,8 +64,7 @@ void Log::runLogger()
                         return (!isLogging.load() || !logQueue.empty());
                     });
 
-                utility::common::FileReadWriteGuard guard(
-                    utility::common::FileReadWriteGuard::LockMode::write, fileLock);
+                utility::file::FileReadWriteGuard guard(utility::file::FileReadWriteGuard::LockMode::write, fileLock);
                 while (!logQueue.empty())
                 {
                     switch (actualTarget)
@@ -171,10 +170,10 @@ void Log::openLogFile()
     switch (writeType)
     {
         case OutputType::add:
-            ofs = utility::common::openFile(pathname, false);
+            ofs = utility::file::openFile(pathname, false);
             break;
         case OutputType::over:
-            ofs = utility::common::openFile(pathname, true);
+            ofs = utility::file::openFile(pathname, true);
             break;
         default:
             break;
@@ -191,7 +190,7 @@ void Log::startLogging()
 
 void Log::closeLogFile()
 {
-    utility::common::closeFile(ofs);
+    utility::file::closeFile(ofs);
 };
 
 void Log::stopLogging()
@@ -246,7 +245,7 @@ std::ostream& operator<<(std::ostream& os, const Log::State& state)
 //! @brief Change line string to log style.
 //! @param line - target line to be changed
 //! @return changed line
-std::string& changeToLogStyle(std::string& line)
+const std::string& changeToLogStyle(std::string& line)
 {
     if (std::regex_search(line, std::regex(std::string{debugLevelPrefixRegex})))
     {

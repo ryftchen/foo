@@ -8,8 +8,6 @@
 
 // #define NDEBUG
 #include <cassert>
-#include <fstream>
-#include <iostream>
 #include <shared_mutex>
 
 //! @brief Format as a string.
@@ -48,89 +46,29 @@ inline constexpr std::string_view colorUnderLine{"\033[4m"};
 inline constexpr std::string_view colorForBackground{"\033[49m"};
 //! @brief ANSI escape codes for ending.
 inline constexpr std::string_view colorOff{"\033[0m"};
-//! @brief Maximum number of lines to print.
-constexpr uint32_t maxLineNumForPrintFile = 1000;
+//! @brief The hash seed for BKDR hash function.
+constexpr uint64_t bkdrHashSeed = 131;
+//! @brief The hash size for BKDR hash function.
+constexpr uint64_t bkdrHashSize = 0x7FFFFFFF;
 //! @brief Maximum size of output per line.
 constexpr uint32_t maxBufferSize = 4096;
 
-//! @brief Lock for reading and writing files.
-class FileReadWriteLock
+//! @brief The Brian-Kernighan Dennis-Ritchie hash function in compile time.
+//! @param str - input data
+//! @param hash - previous hash value
+//! @return hash value
+constexpr uint64_t bkdrHashInCompile(const char* const str, const uint64_t hash = 0) noexcept
 {
-public:
-    //! @brief Construct a new FileReadWriteLock object.
-    FileReadWriteLock() = default;
-    //! @brief Destroy the FileReadWriteLock object.
-    virtual ~FileReadWriteLock() = default;
+    return (*str ? bkdrHashInCompile(str + 1, (hash * bkdrHashSeed + *str) & bkdrHashSize) : hash);
+}
 
-    //! @brief Acquire a read lock.
-    void readLock();
-    //! @brief Release a read lock.
-    void readUnlock();
-    //! @brief Acquire a write lock.
-    void writeLock();
-    //! @brief Release a write lock.
-    void writeUnlock();
-
-private:
-    //! @brief Handling of shared and exclusive locks.
-    std::shared_mutex rwLock{};
-    //! @brief Counter of readers that have acquired the shared lock.
-    std::atomic_uint_fast16_t reader{0};
-    //! @brief Counter of writers that have acquired the exclusive lock.
-    std::atomic_uint_fast16_t writer{0};
-    //! @brief Mutex for counters.
-    mutable std::mutex mtx;
-    //! @brief The synchronization condition for counters. Use with mtx.
-    std::condition_variable cv;
-};
-
-//! @brief Manage the lifetime of a lock on a file.
-class FileReadWriteGuard
+//! @brief The operator ("") overloading with BKDR hash function.
+//! @param str - input data
+//! @return hash value
+constexpr uint64_t operator""_bkdrHash(const char* const str, const std::size_t /*unused*/) noexcept
 {
-public:
-    //! @brief Enumerate specific file lock modes.
-    enum class LockMode : uint8_t
-    {
-        read,
-        write
-    };
-
-    //! @brief Construct a new FileReadWriteGuard object.
-    //! @param mode - lock mode
-    //! @param lock - object managed by the guard
-    FileReadWriteGuard(const LockMode mode, FileReadWriteLock& lock);
-    //! @brief Destroy the FileReadWriteGuard object.
-    virtual ~FileReadWriteGuard();
-
-private:
-    //! @brief Object managed by the guard.
-    FileReadWriteLock& lock;
-    //! @brief Lock mode.
-    const LockMode mode;
-};
-
-//! @brief Property of the file.
-struct FileProperty
-{
-    //! @brief File path.
-    std::string path;
-    //! @brief File lock.
-    FileReadWriteLock& lock;
-};
-
-//! @brief Setting to display content.
-struct DisplaySetting
-{
-    //! @brief Alias for format style.
-    typedef std::string& (*FormatStyle)(std::string& line);
-
-    //! @brief Be inverted or not.
-    bool isInverted{false};
-    //! @brief Maximum number of lines to display.
-    uint32_t maxLine{maxLineNumForPrintFile};
-    //! @brief Format style.
-    FormatStyle style{nullptr};
-};
+    return bkdrHashInCompile(str);
+}
 
 //! @brief Splice strings into constexpr type.
 //! @tparam Strings - target strings to be spliced
@@ -164,10 +102,6 @@ struct Join
 template <std::string_view const&... Strings>
 static constexpr auto joinStr = Join<Strings...>::value;
 
+extern uint64_t bkdrHash(const char* str);
 extern std::string executeCommand(const std::string& cmd, const uint32_t timeout = 0);
-extern std::ifstream openFile(const std::string& filename);
-extern std::ofstream openFile(const std::string& filename, const bool isOverwrite);
-extern void closeFile(std::ifstream& ifs);
-extern void closeFile(std::ofstream& ofs);
-extern void displayFileContents(const FileProperty& property, const DisplaySetting& setting = {});
 } // namespace utility::common

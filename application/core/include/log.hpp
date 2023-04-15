@@ -7,11 +7,13 @@
 #pragma once
 
 #ifndef __PRECOMPILED_HEADER
+#include <fstream>
 #include <queue>
 #else
 #include "application/pch/precompiled_header.hpp"
 #endif // __PRECOMPILED_HEADER
 #include "utility/include/common.hpp"
+#include "utility/include/file.hpp"
 #include "utility/include/fsm.hpp"
 #include "utility/include/time.hpp"
 
@@ -171,7 +173,7 @@ public:
     inline std::string getPathname() const;
     //! @brief Get log file lock.
     //! @return log file lock
-    inline utility::common::FileReadWriteLock& getFileLock();
+    inline utility::file::FileReadWriteLock& getFileLock();
 
 private:
     //! @brief Construct a new Log object.
@@ -208,7 +210,7 @@ private:
     //! @brief Log file path.
     char pathname[logPathLength + 1]{"./temporary/foo.log"};
     //! @brief Log file lock.
-    utility::common::FileReadWriteLock fileLock;
+    utility::file::FileReadWriteLock fileLock;
 
     //! @brief FSM event. Open file.
     struct OpenFile
@@ -314,10 +316,10 @@ inline std::string Log::getPathname() const
     return pathname;
 }
 
-inline utility::common::FileReadWriteLock& Log::getFileLock()
+inline utility::file::FileReadWriteLock& Log::getFileLock()
 {
     return fileLock;
 }
 
-extern std::string& changeToLogStyle(std::string& line);
+extern const std::string& changeToLogStyle(std::string& line);
 } // namespace application::log

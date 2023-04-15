@@ -12,7 +12,6 @@
 #endif // __PRECOMPILED_HEADER
 #include "application/core/include/command.hpp"
 #include "application/core/include/log.hpp"
-#include "utility/include/hash.hpp"
 
 //! @brief Title of printing when data structure tasks are beginning.
 #define APP_DS_PRINT_TASK_BEGIN_TITLE(taskType)                                                                       \
@@ -113,7 +112,7 @@ void runLinear(const std::vector<std::string>& targets)
     }
 
     using linear::LinearStructure;
-    using utility::hash::operator""_bkdrHash;
+    using utility::common::operator""_bkdrHash;
 
     APP_DS_PRINT_TASK_BEGIN_TITLE(Type::linear);
     auto* threads = command::getPublicThreadPool().newElement(std::min(
@@ -132,7 +131,7 @@ void runLinear(const std::vector<std::string>& targets)
         }
 
         const std::string targetInstance = targets.at(i), threadName = "l_" + targetInstance;
-        switch (utility::hash::bkdrHash(targetInstance.data()))
+        switch (utility::common::bkdrHash(targetInstance.data()))
         {
             case "lin"_bkdrHash:
                 linearFunctor(threadName, &LinearStructure::linkedListInstance);
@@ -157,8 +156,8 @@ void runLinear(const std::vector<std::string>& targets)
 //! @param target - target instance
 void updateLinearTask(const std::string& target)
 {
-    using utility::hash::operator""_bkdrHash;
-    switch (utility::hash::bkdrHash(target.c_str()))
+    using utility::common::operator""_bkdrHash;
+    switch (utility::common::bkdrHash(target.c_str()))
     {
         case "lin"_bkdrHash:
             setBit<LinearInstance>(LinearInstance::linkedList);
@@ -237,7 +236,7 @@ void runTree(const std::vector<std::string>& targets)
     }
 
     using tree::TreeStructure;
-    using utility::hash::operator""_bkdrHash;
+    using utility::common::operator""_bkdrHash;
 
     APP_DS_PRINT_TASK_BEGIN_TITLE(Type::tree);
     auto* threads = command::getPublicThreadPool().newElement(std::min(
@@ -256,7 +255,7 @@ void runTree(const std::vector<std::string>& targets)
         }
 
         const std::string targetInstance = targets.at(i), threadName = "t_" + targetInstance;
-        switch (utility::hash::bkdrHash(targetInstance.data()))
+        switch (utility::common::bkdrHash(targetInstance.data()))
         {
             case "bin"_bkdrHash:
                 treeFunctor(threadName, &TreeStructure::bsInstance);
@@ -281,8 +280,8 @@ void runTree(const std::vector<std::string>& targets)
 //! @param target - target instance
 void updateTreeTask(const std::string& target)
 {
-    using utility::hash::operator""_bkdrHash;
-    switch (utility::hash::bkdrHash(target.c_str()))
+    using utility::common::operator""_bkdrHash;
+    switch (utility::common::bkdrHash(target.c_str()))
     {
         case "bin"_bkdrHash:
             setBit<TreeInstance>(TreeInstance::binarySearch);
