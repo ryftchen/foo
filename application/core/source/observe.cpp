@@ -48,14 +48,14 @@ bool Packet::read(void* pDst, const uint32_t offset)
     return (pRead < pEndData) ? true : false;
 }
 
-int tlvDecode(char* pBuf, int len, TLVValue* pVal)
+int tlvDecode(char* pbuf, const int len, TLVValue& val)
 {
-    if (!pVal || !pBuf)
+    if (!pbuf)
     {
         return -1;
     }
 
-    Packet dec(pBuf, len);
+    Packet dec(pbuf, len);
     int type = 0, length = 0, sum = 0;
 
     dec.read<int>(&type);
@@ -73,11 +73,11 @@ int tlvDecode(char* pBuf, int len, TLVValue* pVal)
         switch (type)
         {
             case TLVType::quit:
-                dec.read<bool>(&pVal->quitFlag);
+                dec.read<bool>(&val.quitFlag);
                 sum -= (offset + sizeof(bool));
                 break;
             case TLVType::log:
-                dec.read<int>(&pVal->logShmId);
+                dec.read<int>(&val.logShmId);
                 sum -= (offset + sizeof(int));
                 break;
             default:
@@ -88,26 +88,26 @@ int tlvDecode(char* pBuf, int len, TLVValue* pVal)
     return 0;
 }
 
-int tlvEncode(char* pBuf, int& len, TLVValue* pVal)
+int tlvEncode(char* pbuf, int& len, const TLVValue& val)
 {
-    if (!pVal || !pBuf)
+    if (!pbuf)
     {
         return -1;
     }
 
     constexpr int offset = sizeof(int) + sizeof(int);
     constexpr int sum = (offset + sizeof(bool)) + (offset + sizeof(int));
-    Packet enc(pBuf, len);
+    Packet enc(pbuf, len);
     enc.write<int>(TLVType::root);
     enc.write<int>(sum);
 
     enc.write<int>(TLVType::quit);
     enc.write<int>(sizeof(bool));
-    enc.write<bool>(pVal->quitFlag);
+    enc.write<bool>(val.quitFlag);
 
     enc.write<int>(TLVType::log);
     enc.write<int>(sizeof(int));
-    enc.write<int>(pVal->logShmId);
+    enc.write<int>(val.logShmId);
 
     len = offset + sum;
 
@@ -317,16 +317,15 @@ tlv::TLVValue Observe::parseTLVPacket(char* buffer, const int length)
 {
     using utility::socket::Socket;
     tlv::TLVValue value;
-    std::memset(&value, 0, sizeof(tlv::TLVValue));
-    tlv::tlvDecode(buffer, length, &value);
+    tlv::tlvDecode(buffer, length, value);
 
     if (value.quitFlag)
     {
         return value;
     }
 
-    int shmId = 0;
-    if ((shmId = value.logShmId) > 0)
+    int shmId = -1;
+    if ((shmId = value.logShmId) >= 0)
     {
         void* shm = shmat(shmId, nullptr, 0);
         if (nullptr == shm)
@@ -388,12 +387,8 @@ int Observe::buildPacketForLog(char* buffer)
     }
     shmdt(shm);
 
-    tlv::TLVValue value;
-    std::memset(&value, 0, sizeof(tlv::TLVValue));
-    value.logShmId = shmId;
-
     int length = 0;
-    if (tlv::tlvEncode(buffer, length, &value))
+    if (tlv::tlvEncode(buffer, length, tlv::TLVValue{.logShmId = shmId}) < 0)
     {
         length = 0;
     }
@@ -402,12 +397,8 @@ int Observe::buildPacketForLog(char* buffer)
 
 int Observe::buildPacketForQuit(char* buffer)
 {
-    tlv::TLVValue value;
-    std::memset(&value, 0, sizeof(tlv::TLVValue));
-    value.quitFlag = true;
-
     int length = 0;
-    if (tlv::tlvEncode(buffer, length, &value))
+    if (tlv::tlvEncode(buffer, length, tlv::TLVValue{.quitFlag = true}) < 0)
     {
         length = 0;
     }
