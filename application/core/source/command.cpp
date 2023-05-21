@@ -11,6 +11,7 @@
 #include "application/pch/precompiled_header.hpp"
 #endif // __PRECOMPILED_HEADER
 #include "log.hpp"
+#include "observe.hpp"
 
 namespace application::command
 {
@@ -149,6 +150,7 @@ void Command::runCommander(const int argc, const char* const argv[])
     try
     {
         LOG_TO_START;
+        OBSERVE_TO_START;
 
         if (0 != argc - 1)
         {
@@ -164,6 +166,7 @@ void Command::runCommander(const int argc, const char* const argv[])
         }
 
         LOG_TO_STOP;
+        OBSERVE_TO_STOP;
     }
     catch (const std::exception& error)
     {
@@ -360,12 +363,37 @@ void Command::printConsoleOutput() const
         return;
     }
 
-    utility::console::Console console(" > ");
-    registerOnConsole(console);
+    OBSERVE_ENABLE_ALTERNATE;
+    using observe::Observe;
+    using utility::console::Console;
+    using utility::socket::UDPSocket;
+
+    UDPSocket udpClient;
+    udpClient.onRawMessageReceived =
+        [&](char* buffer, const int length, const std::string& /*ipv4*/, const uint16_t /*port*/)
+    {
+        if (Observe::parseTLVPacket(buffer, length).quitFlag)
+        {
+            udpClient.cancelWait();
+        }
+    };
+    udpClient.toReceive();
+    udpClient.toConnect(std::string{Observe::udpHost}, Observe::udpPort);
+    utility::time::millisecondLevelSleep(latency);
+
+    Console console(" > ");
+    registerOnConsole<UDPSocket>(console, udpClient);
     for (const auto& command : commands)
     {
         console.commandExecutor(command);
     }
+
+    udpClient.toSend("quit");
+    while (udpClient.isRecvAlive())
+    {
+        utility::time::millisecondLevelSleep(latency);
+    }
+    udpClient.toClose();
 }
 
 void Command::printHelpMessage() const
@@ -556,6 +584,20 @@ void Command::enterConsoleMode() const
     {
         COMMON_PRINT("%s", utility::common::executeCommand(("tput bel; echo " + getIconBanner())).c_str());
 
+        using observe::Observe;
+        using utility::console::Console;
+        using utility::socket::TCPSocket;
+        TCPSocket tcpClient;
+        tcpClient.onRawMessageReceived = [&](char* buffer, const int length)
+        {
+            if (Observe::parseTLVPacket(buffer, length).quitFlag)
+            {
+                tcpClient.cancelWait();
+            }
+        };
+        tcpClient.toConnect(std::string{Observe::tcpHost}, Observe::tcpPort);
+        utility::time::millisecondLevelSleep(latency);
+
         char hostName[HOST_NAME_MAX + 1];
         if (gethostname(hostName, HOST_NAME_MAX + 1))
         {
@@ -563,16 +605,23 @@ void Command::enterConsoleMode() const
         }
         const std::string greeting = std::string{(nullptr != std::getenv("USER")) ? std::getenv("USER") : "root"} + "@"
             + std::string{hostName} + " foo > ";
-        utility::console::Console console(greeting);
-        registerOnConsole(console);
+        Console console(greeting);
+        registerOnConsole<TCPSocket>(console, tcpClient);
 
-        int returnCode = 0;
+        int retVal = 0;
         do
         {
-            returnCode = console.readCommandLine();
+            retVal = console.readCommandLine();
             console.setGreeting(greeting);
         }
-        while (utility::console::Console::ReturnCode::quit != returnCode);
+        while (Console::ReturnCode::quit != retVal);
+
+        tcpClient.toSend("quit");
+        while (tcpClient.isRecvAlive())
+        {
+            utility::time::millisecondLevelSleep(latency);
+        }
+        tcpClient.toClose();
     }
     catch (const std::exception& error)
     {
@@ -580,23 +629,18 @@ void Command::enterConsoleMode() const
     }
 }
 
-void Command::registerOnConsole(utility::console::Console& console) const
+template <typename T>
+void Command::registerOnConsole(utility::console::Console& console, T& client) const
 {
     console.registerCommand(
         "log",
-        [this](const std::vector<std::string>& /*unused*/) -> decltype(auto)
+        [this, &client](const std::vector<std::string>& /*unused*/) -> decltype(auto)
         {
-            viewLogContent();
+            client.toSend("log");
+            utility::time::millisecondLevelSleep(maxLatency);
             return utility::console::Console::ReturnCode::success;
         },
         "view the log with highlights");
-}
-
-void Command::viewLogContent()
-{
-    utility::file::displayFileContents(
-        utility::file::FileProperty{LOG_PATHNAME, LOG_FILE_LOCK},
-        utility::file::DisplaySetting{true, maxViewNumOfLines, &log::changeToLogStyle});
 }
 
 std::string Command::getIconBanner()

@@ -146,7 +146,8 @@ void closeFile(std::ofstream& ofs)
 //! @brief Display file contents.
 //! @param property - file property
 //! @param setting - display setting
-void displayFileContents(const FileProperty& property, const DisplaySetting& setting)
+//! @return contents string
+std::string displayFileContents(const FileProperty& property, const DisplaySetting& setting)
 {
     FileReadWriteGuard guard(FileReadWriteGuard::LockMode::read, property.lock);
     std::ifstream ifs = openFile(property.path);
@@ -185,8 +186,10 @@ void displayFileContents(const FileProperty& property, const DisplaySetting& set
             content.emplace_front(formatStyle(line));
         }
     }
-    std::copy(content.cbegin(), content.cend(), std::ostream_iterator<std::string>(std::cout, "\n"));
+    std::ostringstream os;
+    std::copy(content.cbegin(), content.cend(), std::ostream_iterator<std::string>(os, "\n"));
 
     closeFile(ifs);
+    return os.str();
 }
 } // namespace utility::file

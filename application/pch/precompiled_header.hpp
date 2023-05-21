@@ -7,6 +7,9 @@
 #pragma once
 
 #ifdef __PRECOMPILED_HEADER
+#include <sys/ipc.h>
+#include <sys/shm.h>
+#include <sys/stat.h>
 #include <cxxabi.h>
 #include <dlfcn.h>
 #include <execinfo.h>

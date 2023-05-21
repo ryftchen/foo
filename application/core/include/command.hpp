@@ -239,8 +239,10 @@ private:
         // ----------------+----------------+----------------------------------------+---------------------------+--------------------------------
     };
     // clang-format on
-    //! @brief Maximum line numbers for viewing log.
-    static constexpr uint32_t maxViewNumOfLines{50};
+    //! @brief Latency for console.
+    static constexpr uint16_t latency{50};
+    //! @brief Maximum latency for console.
+    static constexpr uint16_t maxLatency{latency * 10};
 
     //! @brief Print output of the console mode command line.
     void printConsoleOutput() const;
@@ -251,10 +253,11 @@ private:
     //! @brief Enter console mode.
     void enterConsoleMode() const;
     //! @brief Register the command line to console mode.
+    //! @tparam T type of client
     //! @param console - console to be registered
-    void registerOnConsole(utility::console::Console& console) const;
-    //! @brief View log content.
-    static void viewLogContent();
+    //! @param client - client used to send
+    template <typename T>
+    void registerOnConsole(utility::console::Console& console, T& client) const;
     //! @brief Get ASCII banner text.
     //! @return ASCII banner text content
     static std::string getIconBanner();
