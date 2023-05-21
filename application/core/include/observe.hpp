@@ -33,11 +33,11 @@ enum TLVType : int
     log = 0x2
 };
 
-typedef struct TLVValue
+struct TLVValue
 {
-    bool quitFlag;
-    int logShmId;
-} TLVValue;
+    bool quitFlag{false};
+    int logShmId{-1};
+};
 
 class Packet
 {
@@ -63,8 +63,8 @@ private:
     char* pRead{nullptr};
 };
 
-extern int tlvDecode(char* pBuf, int len, TLVValue* pVal);
-extern int tlvEncode(char* pBuf, int& len, TLVValue* pVal);
+extern int tlvDecode(char* pbuf, const int len, TLVValue& val);
+extern int tlvEncode(char* pbuf, int& len, const TLVValue& val);
 } // namespace tlv
 
 class Observe final : public utility::fsm::FSM<Observe>
