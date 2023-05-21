@@ -98,5 +98,5 @@ extern std::ifstream openFile(const std::string& filename);
 extern std::ofstream openFile(const std::string& filename, const bool isOverwrite);
 extern void closeFile(std::ifstream& ifs);
 extern void closeFile(std::ofstream& ofs);
-extern void displayFileContents(const FileProperty& property, const DisplaySetting& setting = {});
+extern std::string displayFileContents(const FileProperty& property, const DisplaySetting& setting = {});
 } // namespace utility::file
