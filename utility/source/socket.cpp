@@ -18,7 +18,7 @@ Socket::Socket(const Type sockType, const int socketId)
     {
         if ((sock = ::socket(AF_INET, sockType, 0)) == -1)
         {
-            std::cerr << "Socket creation error, errno: " << errno << '.' << std::endl;
+            std::cerr << "<SOCKET> Socket creation error, errno: " << errno << '.' << std::endl;
         }
     }
     else
@@ -31,6 +31,19 @@ void Socket::toClose() const
 {
     shutdown(sock, SHUT_RDWR);
     close(sock);
+}
+
+void Socket::waitIfAlive()
+{
+    if (!thrFut.valid())
+    {
+        throw std::logic_error("<SOCKET> Never use asynchronous.");
+    }
+
+    if (thrFut.wait_until(std::chrono::system_clock::now()) != std::future_status::ready)
+    {
+        thrFut.wait();
+    }
 }
 
 std::string Socket::getRemoteAddress() const
@@ -48,12 +61,6 @@ int Socket::getFileDescriptor() const
     return sock;
 }
 
-void Socket::cancelWait()
-{
-    setTimeout(1);
-    updateTimeout();
-}
-
 std::string Socket::ipToString(const sockaddr_in& addr)
 {
     char ip[INET_ADDRSTRLEN];
@@ -63,18 +70,13 @@ std::string Socket::ipToString(const sockaddr_in& addr)
     return std::string{ip};
 }
 
-void Socket::setTimeout(const int microseconds)
-{
-    duration = microseconds;
-}
-
-void Socket::updateTimeout() const
+void Socket::setTimeout(const int microseconds) const
 {
     struct timeval tv
     {
     };
     tv.tv_sec = 0;
-    tv.tv_usec = duration;
+    tv.tv_usec = microseconds;
 
     setsockopt(
         sock,
@@ -100,9 +102,9 @@ sockaddr_in TCPSocket::getAddress() const
     return address;
 }
 
-int TCPSocket::toSend(const char* bytes, const std::size_t bytesLength)
+int TCPSocket::toSend(const char* bytes, const std::size_t length)
 {
-    return send(sock, bytes, bytesLength, 0);
+    return send(sock, bytes, length, 0);
 }
 
 int TCPSocket::toSend(const std::string& message)
@@ -138,16 +140,11 @@ void TCPSocket::toConnect(const std::string& host, const uint16_t port, const st
 
     freeaddrinfo(res);
 
-    toConnect(static_cast<uint32_t>(address.sin_addr.s_addr), port, onConnected);
-}
-
-void TCPSocket::toConnect(const uint32_t ipv4, const uint16_t port, const std::function<void()> onConnected)
-{
     address.sin_family = AF_INET;
     address.sin_port = htons(port);
-    address.sin_addr.s_addr = ipv4;
+    address.sin_addr.s_addr = static_cast<uint32_t>(address.sin_addr.s_addr);
 
-    updateTimeout();
+    setBlocking();
     if (connect(
             sock,
             reinterpret_cast<const sockaddr*>(&address), // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
@@ -161,15 +158,17 @@ void TCPSocket::toConnect(const uint32_t ipv4, const uint16_t port, const std::f
     toReceive();
 }
 
-void TCPSocket::toListen()
+void TCPSocket::toReceive(const bool detach)
 {
-    std::thread t(toRecv, this);
-    t.detach();
-}
-
-bool TCPSocket::isRecvAlive()
-{
-    return recvFut.valid() && (recvFut.wait_until(std::chrono::system_clock::now()) != std::future_status::ready);
+    if (!detach)
+    {
+        thrFut = std::async(std::launch::async, toRecv, this);
+    }
+    else
+    {
+        std::thread t(toRecv, this);
+        t.detach();
+    }
 }
 
 void TCPSocket::toRecv(TCPSocket* socket)
@@ -196,15 +195,10 @@ void TCPSocket::toRecv(TCPSocket* socket)
     {
         socket->onSocketClosed(errno);
     }
-    if (socket->isDeleteLater.load())
+    if (socket->activeRelease.load())
     {
         delete socket;
     }
-}
-
-void TCPSocket::toReceive()
-{
-    recvFut = std::async(std::launch::async, toRecv, this);
 }
 
 TCPServer::TCPServer() : Socket(tcp)
@@ -214,9 +208,9 @@ TCPServer::TCPServer() : Socket(tcp)
     setsockopt(sock, SOL_SOCKET, SO_REUSEPORT, &opt2, sizeof(int));
 }
 
-void TCPServer::toBind(const char* addr, const uint16_t port)
+void TCPServer::toBind(const std::string& host, const uint16_t port)
 {
-    if (inet_pton(AF_INET, addr, &address.sin_addr) == -1)
+    if (inet_pton(AF_INET, host.c_str(), &address.sin_addr) == -1)
     {
         throw std::runtime_error(
             "<SOCKET> Invalid address, address type not supported, errno: " + std::to_string(errno) + '.');
@@ -225,7 +219,7 @@ void TCPServer::toBind(const char* addr, const uint16_t port)
     address.sin_family = AF_INET;
     address.sin_port = htons(port);
 
-    updateTimeout();
+    setBlocking();
     if (bind(
             sock,
             reinterpret_cast<const sockaddr*>( // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
@@ -237,7 +231,7 @@ void TCPServer::toBind(const char* addr, const uint16_t port)
     }
 }
 
-void TCPServer::toBind(const int port)
+void TCPServer::toBind(const uint16_t port)
 {
     toBind("0.0.0.0", port);
 }
@@ -248,9 +242,28 @@ void TCPServer::toListen()
     {
         throw std::runtime_error("<SOCKET> Server can't listen on the socket, errno: " + std::to_string(errno) + '.');
     }
+}
 
-    std::thread t(toAccept, this);
-    t.detach();
+void TCPServer::toAccept(const bool detach)
+{
+    if (!detach)
+    {
+        thrFut = std::async(
+            std::launch::async,
+            [=]
+            {
+                toAccept(this);
+            });
+    }
+    else
+    {
+        std::thread t(
+            [=]
+            {
+                toAccept(this);
+            });
+        t.detach();
+    }
 }
 
 void TCPServer::toAccept(TCPServer* server)
@@ -277,15 +290,15 @@ void TCPServer::toAccept(TCPServer* server)
         }
 
         TCPSocket* newSocket = new TCPSocket(newSock);
-        newSocket->isDeleteLater.store(true);
+        newSocket->activeRelease.store(true);
         newSocket->setAddress(newSocketInfo);
 
         server->onNewConnection(newSocket);
-        newSocket->toListen();
+        newSocket->toReceive(true);
     }
 }
 
-int UDPSocket::toSendTo(const char* bytes, const std::size_t bytesLength, const std::string& host, const uint16_t port)
+int UDPSocket::toSendTo(const char* bytes, const std::size_t length, const std::string& host, const uint16_t port)
 {
     sockaddr_in hostAddr{};
 
@@ -322,7 +335,7 @@ int UDPSocket::toSendTo(const char* bytes, const std::size_t bytesLength, const 
     if ((sent = sendto(
              sock,
              bytes,
-             bytesLength,
+             length,
              0,
              reinterpret_cast<sockaddr*>(&hostAddr), // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
              sizeof(hostAddr)))
@@ -339,31 +352,14 @@ int UDPSocket::toSendTo(const std::string& message, const std::string& host, con
     return toSendTo(message.c_str(), message.length(), host, port);
 }
 
-int UDPSocket::toSend(const char* bytes, const std::size_t bytesLength)
+int UDPSocket::toSend(const char* bytes, const std::size_t length)
 {
-    return send(sock, bytes, bytesLength, 0);
+    return send(sock, bytes, length, 0);
 }
 
 int UDPSocket::toSend(const std::string& message)
 {
     return toSend(message.c_str(), message.length());
-}
-
-void UDPSocket::toConnect(const uint32_t ipv4, const uint16_t port)
-{
-    address.sin_family = AF_INET;
-    address.sin_port = htons(port);
-    address.sin_addr.s_addr = ipv4;
-
-    updateTimeout();
-    if (connect(
-            sock,
-            reinterpret_cast<const sockaddr*>(&address), // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
-            sizeof(sockaddr_in))
-        == -1)
-    {
-        throw std::runtime_error("<SOCKET> Failed to connect to the host, errno: " + std::to_string(errno) + '.');
-    }
 }
 
 void UDPSocket::toConnect(const std::string& host, const uint16_t port)
@@ -394,23 +390,45 @@ void UDPSocket::toConnect(const std::string& host, const uint16_t port)
 
     freeaddrinfo(res);
 
-    toConnect(static_cast<uint32_t>(address.sin_addr.s_addr), port);
+    address.sin_family = AF_INET;
+    address.sin_port = htons(port);
+    address.sin_addr.s_addr = static_cast<uint32_t>(address.sin_addr.s_addr);
+
+    setBlocking();
+    if (connect(
+            sock,
+            reinterpret_cast<const sockaddr*>(&address), // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
+            sizeof(sockaddr_in))
+        == -1)
+    {
+        throw std::runtime_error("<SOCKET> Failed to connect to the host, errno: " + std::to_string(errno) + '.');
+    }
 }
 
-void UDPSocket::toReceive()
+void UDPSocket::toReceive(const bool detach)
 {
-    recvFut = std::async(std::launch::async, toRecv, this);
+    if (!detach)
+    {
+        thrFut = std::async(std::launch::async, toRecv, this);
+    }
+    else
+    {
+        std::thread t(toRecv, this);
+        t.detach();
+    }
 }
 
-void UDPSocket::toReceiveFrom()
+void UDPSocket::toReceiveFrom(const bool detach)
 {
-    std::thread t(toRecvFrom, this);
-    t.detach();
-}
-
-bool UDPSocket::isRecvAlive()
-{
-    return recvFut.valid() && (recvFut.wait_until(std::chrono::system_clock::now()) != std::future_status::ready);
+    if (!detach)
+    {
+        thrFut = std::async(std::launch::async, toRecvFrom, this);
+    }
+    else
+    {
+        std::thread t(toRecvFrom, this);
+        t.detach();
+    }
 }
 
 void UDPSocket::toRecv(UDPSocket* socket)
@@ -466,16 +484,9 @@ void UDPSocket::toRecvFrom(UDPSocket* socket)
     }
 }
 
-UDPServer::UDPServer() : UDPSocket()
+void UDPServer::toBind(const std::string& host, const uint16_t port)
 {
-    int opt = 0;
-    setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(int));
-    setsockopt(sock, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof(int));
-}
-
-void UDPServer::toBind(const std::string& ipv4, const uint16_t port)
-{
-    if (inet_pton(AF_INET, ipv4.c_str(), &address.sin_addr) == -1)
+    if (inet_pton(AF_INET, host.c_str(), &address.sin_addr) == -1)
     {
         throw std::runtime_error(
             "<SOCKET> Invalid address, address type not supported, errno: " + std::to_string(errno) + '.');
@@ -484,7 +495,7 @@ void UDPServer::toBind(const std::string& ipv4, const uint16_t port)
     address.sin_family = AF_INET;
     address.sin_port = htons(port);
 
-    updateTimeout();
+    setBlocking();
     if (bind(
             sock,
             reinterpret_cast<const sockaddr*>(&address), // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
@@ -495,7 +506,7 @@ void UDPServer::toBind(const std::string& ipv4, const uint16_t port)
     }
 }
 
-void UDPServer::toBind(const int port)
+void UDPServer::toBind(const uint16_t port)
 {
     toBind("0.0.0.0", port);
 }

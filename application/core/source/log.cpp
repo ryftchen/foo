@@ -40,7 +40,7 @@ void Log::runLogger()
         expectedState = state;
         if (currentState() != expectedState)
         {
-            throw std::logic_error("");
+            throw std::logic_error("<LOG> Abnormal logger state.");
         }
     };
 
@@ -94,9 +94,9 @@ void Log::runLogger()
 
         checkIfExceptedFSMState(State::done);
     }
-    catch (const std::exception&)
+    catch (const std::exception& error)
     {
-        std::cerr << "Abnormal logger state, expected state: " << expectedState
+        std::cerr << error.what() << " Expected state: " << expectedState
                   << ", current state: " << State(currentState()) << "." << std::endl;
         stopLogging();
     }
@@ -117,7 +117,7 @@ void Log::interfaceToStart()
             {
                 ++waitCount;
 #ifndef NDEBUG
-                std::cout << "Wait for the logger to start... (" << waitCount << ")" << std::endl;
+                std::cout << "<LOG> Wait for the logger to start... (" << waitCount << ")" << std::endl;
 #endif // NDEBUG
             }
         },
@@ -150,7 +150,7 @@ void Log::interfaceToStop()
             {
                 ++waitCount;
 #ifndef NDEBUG
-                std::cout << "Wait for the logger to stop... (" << waitCount << ")" << std::endl;
+                std::cout << "<LOG> Wait for the logger to stop... (" << waitCount << ")" << std::endl;
 #endif // NDEBUG
             }
         },
