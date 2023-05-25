@@ -8,9 +8,9 @@
 
 namespace utility::thread
 {
-Thread::Thread(const uint32_t count)
+Thread::Thread(const std::uint32_t count)
 {
-    for (uint32_t i = 0; i < count; ++i)
+    for (std::uint32_t i = 0; i < count; ++i)
     {
         threadVector.emplace_back(
             [this]() -> decltype(auto)

@@ -29,7 +29,7 @@ std::optional<std::tuple<double, double>> Gradient::operator()(const double left
     for (const auto climber : climbing)
     {
         x = climber;
-        uint32_t numOfIteration = 0;
+        std::uint32_t numOfIteration = 0;
         double learningRate = initialLearningRate, gradient = calculateFirstDerivative(x, eps),
                dx = learningRate * gradient;
         while ((std::fabs(dx) > eps) && ((x - dx) >= left) && ((x - dx) <= right))
@@ -73,9 +73,9 @@ std::optional<std::tuple<double, double>> Annealing::operator()(const double lef
     {
         double xBest = x, yBest = y;
         bool found = false;
-        for (uint32_t i = 0; i < markovChain; ++i)
+        for (std::uint32_t i = 0; i < markovChain; ++i)
         {
-            double xNew = static_cast<int>(perturbation(engine) * static_cast<uint32_t>(1.0 / eps)) * eps,
+            double xNew = static_cast<int>(perturbation(engine) * static_cast<std::uint32_t>(1.0 / eps)) * eps,
                    yNew = func(xNew);
             if ((yNew <= y) || (std::exp(-(yNew - y) / temperature) > pr(engine)))
             {
@@ -113,13 +113,15 @@ std::optional<std::tuple<double, double>> Particle::operator()(const double left
     double xBest = best->x, xFitnessBest = best->xFitness;
 
     std::uniform_real_distribution<double> coeff(0.0, 1.0);
-    for (uint32_t i = 0; i < numOfIteration; ++i)
+    for (std::uint32_t i = 0; i < numOfIteration; ++i)
     {
         const double w = wBegin - (wBegin - wEnd) * std::pow(static_cast<double>(i + 1) / numOfIteration, 2);
         for (auto& ind : rec.society)
         {
-            const double rand1 = static_cast<uint32_t>(coeff(engine) * static_cast<uint32_t>(1.0 / eps)) * eps;
-            const double rand2 = static_cast<uint32_t>(coeff(engine) * static_cast<uint32_t>(1.0 / eps)) * eps;
+            const double rand1 =
+                static_cast<std::uint32_t>(coeff(engine) * static_cast<std::uint32_t>(1.0 / eps)) * eps;
+            const double rand2 =
+                static_cast<std::uint32_t>(coeff(engine) * static_cast<std::uint32_t>(1.0 / eps)) * eps;
             ind.velocity = w * ind.velocity + c1 * rand1 * (ind.positionBest - ind.x) + c2 * rand2 * (xBest - ind.x);
             (ind.velocity > vMax) ? ind.velocity = vMax : ((ind.velocity < vMin) ? ind.velocity = vMin : ind.velocity);
 
@@ -170,13 +172,13 @@ Particle::Storage Particle::storageInit(const double left, const double right)
 std::optional<std::tuple<double, double>> Genetic::operator()(const double left, const double right, const double eps)
 {
     updateSpecies(left, right, eps);
-    if (constexpr uint32_t minChrNum = 3; chromosomeNum < minChrNum)
+    if (constexpr std::uint32_t minChrNum = 3; chromosomeNum < minChrNum)
     {
         throw std::runtime_error("A precision of " + std::to_string(eps) + " isn't sufficient.");
     }
 
     Population pop = populationInit();
-    for (uint32_t i = 0; i < numOfIteration; ++i)
+    for (std::uint32_t i = 0; i < numOfIteration; ++i)
     {
         select(pop);
         crossover(pop);
@@ -193,7 +195,7 @@ void Genetic::updateSpecies(const double left, const double right, const double 
     decodeAttr.upper = right;
     decodeAttr.eps = eps;
 
-    uint32_t num = 0;
+    std::uint32_t num = 0;
     const double max = (decodeAttr.upper - decodeAttr.lower) * (1.0 / decodeAttr.eps);
     while ((max <= std::pow(2, num)) || (max >= std::pow(2, num + 1)))
     {
@@ -210,7 +212,7 @@ void Genetic::geneticCode(Chromosome& chr)
         chr.end(),
         [&]
         {
-            return static_cast<uint8_t>(bit(engine));
+            return static_cast<std::uint8_t>(bit(engine));
         });
 }
 
@@ -218,7 +220,7 @@ double Genetic::geneticDecode(const Chromosome& chr) const
 {
     const double max = std::pow(2, chromosomeNum) - 1.0;
     double convert = 0.0;
-    uint32_t index = 0;
+    std::uint32_t index = 0;
     std::for_each(
         chr.cbegin(),
         chr.cend(),
@@ -250,8 +252,8 @@ void Genetic::geneticCross(Chromosome& chr1, Chromosome& chr2)
     chrTemp.reserve(chr1.size());
     std::copy(chr1.cbegin(), chr1.cend(), std::back_inserter(chrTemp));
 
-    uint32_t crossBegin = getRandomLessThanLimit(chromosomeNum - 1),
-             crossEnd = getRandomLessThanLimit(chromosomeNum - 1);
+    std::uint32_t crossBegin = getRandomLessThanLimit(chromosomeNum - 1),
+                  crossEnd = getRandomLessThanLimit(chromosomeNum - 1);
     if (crossBegin > crossEnd)
     {
         std::swap(crossBegin, crossEnd);
@@ -291,8 +293,8 @@ void Genetic::crossover(Population& pop)
 
 void Genetic::geneticMutation(Chromosome& chr)
 {
-    uint32_t flip = getRandomLessThanLimit(chromosomeNum - 1) + 1;
-    std::vector<std::reference_wrapper<uint8_t>> mutateChr(chr.begin(), chr.end());
+    std::uint32_t flip = getRandomLessThanLimit(chromosomeNum - 1) + 1;
+    std::vector<std::reference_wrapper<std::uint8_t>> mutateChr(chr.begin(), chr.end());
     std::shuffle(mutateChr.begin(), mutateChr.end(), engine);
     for (auto geneIter = mutateChr.begin(); (mutateChr.end() != geneIter) && (0 != flip); ++geneIter, --flip)
     {

@@ -174,10 +174,10 @@ std::string displayFileContents(const FileProperty& property, const DisplaySetti
     else
     {
         std::ifstream ifsTemp(property.path);
-        const uint32_t lineNum =
-                           std::count(std::istreambuf_iterator<char>(ifsTemp), std::istreambuf_iterator<char>(), '\n'),
-                       startLine = (lineNum > setting.numOfLines) ? (lineNum - setting.numOfLines + 1) : 1;
-        for (uint32_t i = 0; i < (startLine - 1); ++i)
+        const std::uint32_t lineNum = std::count(
+                                std::istreambuf_iterator<char>(ifsTemp), std::istreambuf_iterator<char>(), '\n'),
+                            startLine = (lineNum > setting.numOfLines) ? (lineNum - setting.numOfLines + 1) : 1;
+        for (std::uint32_t i = 0; i < (startLine - 1); ++i)
         {
             ifs.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         }

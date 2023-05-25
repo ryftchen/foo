@@ -284,7 +284,7 @@ class ConcreteAggregate : public Aggregate, public std::enable_shared_from_this<
 public:
     //! @brief Construct a new ConcreteAggregate object.
     //! @param size - size of the concrete aggregate
-    explicit ConcreteAggregate(const uint32_t size)
+    explicit ConcreteAggregate(const std::uint32_t size)
     {
         list = std::make_unique<int[]>(size);
         std::fill(list.get(), list.get() + size, 1);
@@ -298,17 +298,17 @@ public:
     inline std::shared_ptr<Iterator> createIterator() override;
     //! @brief Get the size of the concrete aggregate.
     //! @return size of the concrete aggregate
-    [[nodiscard]] uint32_t size() const { return count; }
+    [[nodiscard]] std::uint32_t size() const { return count; }
     //! @brief Get the item by index.
     //! @param index - index of item
     //! @return item
-    int at(uint32_t index) { return list[index]; }
+    int at(std::uint32_t index) { return list[index]; }
 
 private:
     //! @brief Collection of items.
     std::unique_ptr<int[]> list;
     //! @brief Size of the concrete aggregate.
-    uint32_t count;
+    std::uint32_t count;
 };
 
 //! @brief Manage the current index of the iterator. A set of methods for traversing over items.
@@ -362,7 +362,7 @@ private:
     //! @brief Collection of items.
     std::shared_ptr<ConcreteAggregate> list;
     //! @brief Current Index.
-    uint32_t index;
+    std::uint32_t index;
 };
 
 inline std::shared_ptr<Iterator> ConcreteAggregate::createIterator()
@@ -386,13 +386,13 @@ public:
     //! @brief Construct a new Colleague object.
     //! @param mediator - target mediator
     //! @param id - target id
-    Colleague(const std::shared_ptr<Mediator> mediator, const uint32_t id) : mediator(mediator), id(id) {}
+    Colleague(const std::shared_ptr<Mediator> mediator, const std::uint32_t id) : mediator(mediator), id(id) {}
     //! @brief Destroy the Colleague object.
     virtual ~Colleague() = default;
 
     //! @brief Get the id of the colleague.
     //! @return id of the colleague
-    [[nodiscard]] uint32_t getID() const { return id; }
+    [[nodiscard]] std::uint32_t getID() const { return id; }
     //! @brief Send message.
     //! @param msg - sending message
     virtual void send(const std::string& msg) = 0;
@@ -404,7 +404,7 @@ protected:
     //! @brief Mediator of the colleague.
     std::weak_ptr<Mediator> mediator;
     //! @brief ID of the colleague.
-    uint32_t id;
+    std::uint32_t id;
 };
 
 //! @brief Implement cooperative behavior by coordinating colleagues.
@@ -434,7 +434,7 @@ public:
     //! @brief Construct a new ConcreteColleague object.
     //! @param mediator - target mediator
     //! @param id - target id
-    ConcreteColleague(const std::shared_ptr<Mediator>& mediator, const uint32_t id) : Colleague(mediator, id) {}
+    ConcreteColleague(const std::shared_ptr<Mediator>& mediator, const std::uint32_t id) : Colleague(mediator, id) {}
     //! @brief Destroy the ConcreteColleague object.
     ~ConcreteColleague() override = default;
 

@@ -132,8 +132,8 @@ void runArithmetic(const std::vector<std::string>& targets)
 
     APP_NUM_PRINT_TASK_BEGIN_TITLE(Type::arithmetic);
     auto* threads = command::getPublicThreadPool().newElement(std::min(
-        static_cast<uint32_t>(getBit<ArithmeticMethod>().count()),
-        static_cast<uint32_t>(Bottom<ArithmeticMethod>::value)));
+        static_cast<std::uint32_t>(getBit<ArithmeticMethod>().count()),
+        static_cast<std::uint32_t>(Bottom<ArithmeticMethod>::value)));
 
     const std::shared_ptr<TargetBuilder> builder =
         std::make_shared<TargetBuilder>(input::integerForArithmetic1, input::integerForArithmetic2);
@@ -143,7 +143,7 @@ void runArithmetic(const std::vector<std::string>& targets)
             threadName, methodPtr, std::get<0>(builder->getIntegers()), std::get<1>(builder->getIntegers()));
     };
 
-    for (uint8_t i = 0; i < Bottom<ArithmeticMethod>::value; ++i)
+    for (std::uint8_t i = 0; i < Bottom<ArithmeticMethod>::value; ++i)
     {
         if (!getBit<ArithmeticMethod>().test(ArithmeticMethod(i)))
         {
@@ -208,7 +208,7 @@ namespace divisor
 #define DIVISOR_PRINT_RESULT_CONTENT(method)                                                                   \
     do                                                                                                         \
     {                                                                                                          \
-        const uint32_t arrayBufferSize = divisorVector.size() * maxAlignOfPrint;                               \
+        const std::uint32_t arrayBufferSize = divisorVector.size() * maxAlignOfPrint;                          \
         char arrayBuffer[arrayBufferSize + 1];                                                                 \
         arrayBuffer[0] = '\0';                                                                                 \
         COMMON_PRINT(                                                                                          \
@@ -265,7 +265,8 @@ void runDivisor(const std::vector<std::string>& targets)
 
     APP_NUM_PRINT_TASK_BEGIN_TITLE(Type::divisor);
     auto* threads = command::getPublicThreadPool().newElement(std::min(
-        static_cast<uint32_t>(getBit<DivisorMethod>().count()), static_cast<uint32_t>(Bottom<DivisorMethod>::value)));
+        static_cast<std::uint32_t>(getBit<DivisorMethod>().count()),
+        static_cast<std::uint32_t>(Bottom<DivisorMethod>::value)));
 
     const std::shared_ptr<TargetBuilder> builder =
         std::make_shared<TargetBuilder>(input::integerForDivisor1, input::integerForDivisor2);
@@ -275,7 +276,7 @@ void runDivisor(const std::vector<std::string>& targets)
             threadName, methodPtr, std::get<0>(builder->getIntegers()), std::get<1>(builder->getIntegers()));
     };
 
-    for (uint8_t i = 0; i < Bottom<DivisorMethod>::value; ++i)
+    for (std::uint8_t i = 0; i < Bottom<DivisorMethod>::value; ++i)
     {
         if (!getBit<DivisorMethod>().test(DivisorMethod(i)))
         {
@@ -431,8 +432,8 @@ void runIntegral(const std::vector<std::string>& targets)
         [targets](const integral::Expression& expression, const integral::ExprRange<double, double>& range)
     {
         auto* threads = command::getPublicThreadPool().newElement(std::min(
-            static_cast<uint32_t>(getBit<IntegralMethod>().count()),
-            static_cast<uint32_t>(Bottom<IntegralMethod>::value)));
+            static_cast<std::uint32_t>(getBit<IntegralMethod>().count()),
+            static_cast<std::uint32_t>(Bottom<IntegralMethod>::value)));
         const auto integralFunctor = [&](const std::string& threadName,
                                          void (*methodPtr)(const integral::Expression&, const double, const double))
         {
@@ -441,7 +442,7 @@ void runIntegral(const std::vector<std::string>& targets)
 
         using integral::IntegralSolution;
         using utility::common::operator""_bkdrHash;
-        for (uint8_t i = 0; i < Bottom<IntegralMethod>::value; ++i)
+        for (std::uint8_t i = 0; i < Bottom<IntegralMethod>::value; ++i)
         {
             if (!getBit<IntegralMethod>().test(IntegralMethod(i)))
             {
@@ -528,21 +529,21 @@ namespace prime
 //! @brief Display prime result.
 #define PRIME_RESULT "\r\n*%-9s method:\n%s\n==>Run time: %8.5f ms\n"
 //! @brief Print prime result content.
-#define PRIME_PRINT_RESULT_CONTENT(method)                                                                        \
-    do                                                                                                            \
-    {                                                                                                             \
-        const uint32_t arrayBufferSize = primeVector.size() * maxAlignOfPrint;                                    \
-        char arrayBuffer[arrayBufferSize + 1];                                                                    \
-        arrayBuffer[0] = '\0';                                                                                    \
-        COMMON_PRINT(                                                                                             \
-            PRIME_RESULT,                                                                                         \
-            method,                                                                                               \
-            TargetBuilder::template formatIntegerVector<uint32_t>(primeVector, arrayBuffer, arrayBufferSize + 1), \
-            TIME_INTERVAL(timing));                                                                               \
-    }                                                                                                             \
+#define PRIME_PRINT_RESULT_CONTENT(method)                                                                             \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        const std::uint32_t arrayBufferSize = primeVector.size() * maxAlignOfPrint;                                    \
+        char arrayBuffer[arrayBufferSize + 1];                                                                         \
+        arrayBuffer[0] = '\0';                                                                                         \
+        COMMON_PRINT(                                                                                                  \
+            PRIME_RESULT,                                                                                              \
+            method,                                                                                                    \
+            TargetBuilder::template formatIntegerVector<std::uint32_t>(primeVector, arrayBuffer, arrayBufferSize + 1), \
+            TIME_INTERVAL(timing));                                                                                    \
+    }                                                                                                                  \
     while (0)
 
-void PrimeSolution::eratosthenesMethod(const uint32_t max)
+void PrimeSolution::eratosthenesMethod(const std::uint32_t max)
 {
     try
     {
@@ -557,7 +558,7 @@ void PrimeSolution::eratosthenesMethod(const uint32_t max)
     }
 }
 
-void PrimeSolution::eulerMethod(const uint32_t max)
+void PrimeSolution::eulerMethod(const std::uint32_t max)
 {
     try
     {
@@ -588,15 +589,16 @@ void runPrime(const std::vector<std::string>& targets)
 
     APP_NUM_PRINT_TASK_BEGIN_TITLE(Type::prime);
     auto* threads = command::getPublicThreadPool().newElement(std::min(
-        static_cast<uint32_t>(getBit<PrimeMethod>().count()), static_cast<uint32_t>(Bottom<PrimeMethod>::value)));
+        static_cast<std::uint32_t>(getBit<PrimeMethod>().count()),
+        static_cast<std::uint32_t>(Bottom<PrimeMethod>::value)));
 
     const std::shared_ptr<TargetBuilder> builder = std::make_shared<TargetBuilder>(input::maxPositiveIntegerForPrime);
-    const auto primeFunctor = [&](const std::string& threadName, void (*methodPtr)(const uint32_t))
+    const auto primeFunctor = [&](const std::string& threadName, void (*methodPtr)(const std::uint32_t))
     {
         threads->enqueue(threadName, methodPtr, builder->getMaxPositiveInteger());
     };
 
-    for (uint8_t i = 0; i < Bottom<PrimeMethod>::value; ++i)
+    for (std::uint8_t i = 0; i < Bottom<PrimeMethod>::value; ++i)
     {
         if (!getBit<PrimeMethod>().test(PrimeMethod(i)))
         {

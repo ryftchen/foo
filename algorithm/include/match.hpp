@@ -24,35 +24,43 @@ public:
     //! @param textLen - length of matching text
     //! @param patternLen - length of single pattern
     //! @return index in matching text
-    static int rk(const char* text, const char* pattern, const uint32_t textLen, const uint32_t patternLen);
+    static int rk(const char* text, const char* pattern, const std::uint32_t textLen, const std::uint32_t patternLen);
     //! @brief Knuth-Morris-Pratt.
     //! @param text - matching text
     //! @param pattern - single pattern
     //! @param textLen - length of matching text
     //! @param patternLen - length of single pattern
     //! @return index in matching text
-    static int kmp(const char* text, const char* pattern, const uint32_t textLen, const uint32_t patternLen);
+    static int kmp(const char* text, const char* pattern, const std::uint32_t textLen, const std::uint32_t patternLen);
     //! @brief Boyer-Moore.
     //! @param text - matching text
     //! @param pattern - single pattern
     //! @param textLen - length of matching text
     //! @param patternLen - length of single pattern
     //! @return index in matching text
-    static int bm(const char* text, const char* pattern, const uint32_t textLen, const uint32_t patternLen);
+    static int bm(const char* text, const char* pattern, const std::uint32_t textLen, const std::uint32_t patternLen);
     //! @brief Horspool.
     //! @param text - matching text
     //! @param pattern - single pattern
     //! @param textLen - length of matching text
     //! @param patternLen - length of single pattern
     //! @return index in matching text
-    static int horspool(const char* text, const char* pattern, const uint32_t textLen, const uint32_t patternLen);
+    static int horspool(
+        const char* text,
+        const char* pattern,
+        const std::uint32_t textLen,
+        const std::uint32_t patternLen);
     //! @brief Sunday.
     //! @param text - matching text
     //! @param pattern - single pattern
     //! @param textLen - length of matching text
     //! @param patternLen - length of single pattern
     //! @return index in matching text
-    static int sunday(const char* text, const char* pattern, const uint32_t textLen, const uint32_t patternLen);
+    static int sunday(
+        const char* text,
+        const char* pattern,
+        const std::uint32_t textLen,
+        const std::uint32_t patternLen);
 
 private:
     //! @brief Maximum ASCII value.
@@ -64,36 +72,42 @@ private:
     //! @param hashBase - hash base
     //! @param hashMod - hash mod
     //! @return hash value
-    static uint64_t rollingHash(
+    static std::uint64_t rollingHash(
         const char* str,
-        const uint64_t length,
-        const uint64_t hashBase,
-        const uint64_t hashMod);
+        const std::uint64_t length,
+        const std::uint64_t hashBase,
+        const std::uint64_t hashMod);
     //! @brief Fill bad character rule table.
     //! @param badCharRuleTable - bad character rule table
     //! @param pattern - single pattern
     //! @param patternLen - length of single pattern
-    static void fillBadCharRuleTable(uint32_t badCharRuleTable[], const char* pattern, const uint32_t patternLen);
+    static void fillBadCharRuleTable(
+        std::uint32_t badCharRuleTable[],
+        const char* pattern,
+        const std::uint32_t patternLen);
     //! @brief Fill good suffix rule table.
     //! @param goodSuffixRuleTable - good suffix rule table
     //! @param pattern - single pattern
     //! @param patternLen - length of single pattern
-    static void fillGoodSuffixRuleTable(uint32_t goodSuffixRuleTable[], const char* pattern, const uint32_t patternLen);
+    static void fillGoodSuffixRuleTable(
+        std::uint32_t goodSuffixRuleTable[],
+        const char* pattern,
+        const std::uint32_t patternLen);
     //! @brief Fill the bad character shift table of the Horspool method.
     //! @param badCharShiftTable - bad character shift table
     //! @param pattern - single pattern
     //! @param patternLen - length of single pattern
     static void fillBadCharShiftTableForHorspool(
-        uint32_t badCharShiftTable[],
+        std::uint32_t badCharShiftTable[],
         const char* pattern,
-        const uint32_t patternLen);
+        const std::uint32_t patternLen);
     //! @brief Fill the bad character shift table of the Sunday method.
     //! @param badCharShiftTable - bad character shift table
     //! @param pattern - single pattern
     //! @param patternLen - length of single pattern
     static void fillBadCharShiftTableForSunday(
-        uint32_t badCharShiftTable[],
+        std::uint32_t badCharShiftTable[],
         const char* pattern,
-        const uint32_t patternLen);
+        const std::uint32_t patternLen);
 };
 } // namespace algorithm::match

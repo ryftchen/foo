@@ -26,24 +26,24 @@ public:
     //! @param length - length of array
     //! @param key - search key
     //! @return index of the first occurrence of key
-    static int binary(const T* const array, const uint32_t length, const T key);
+    static int binary(const T* const array, const std::uint32_t length, const T key);
     //! @brief Interpolation.
     //! @param array - array to be searched
     //! @param length - length of array
     //! @param key - search key
     //! @return index of the first occurrence of key
-    static int interpolation(const T* const array, const uint32_t length, const T key);
+    static int interpolation(const T* const array, const std::uint32_t length, const T key);
     //! @brief Fibonacci.
     //! @param array - array to be searched
     //! @param length - length of array
     //! @param key - search key
     //! @return index of the first occurrence of key
-    static int fibonacci(const T* const array, const uint32_t length, const T key);
+    static int fibonacci(const T* const array, const std::uint32_t length, const T key);
 
 private:
     //! @brief Generate Fibonacci number.
     //! @param max - the smallest integer that is not greater than the maximum value of the Fibonacci sequence
     //! @return Fibonacci sequence
-    static std::vector<uint32_t> generateFibonacciNumber(const uint32_t max);
+    static std::vector<std::uint32_t> generateFibonacciNumber(const std::uint32_t max);
 };
 } // namespace algorithm::search

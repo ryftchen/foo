@@ -20,8 +20,8 @@ namespace application::observe
 {
 constexpr uint16_t maxTimesOfWaitObserver = 10;
 constexpr uint16_t intervalOfWaitObserver = 5;
-constexpr uint32_t bufferSize = 8192;
-constexpr uint32_t maxBufferSize = bufferSize * 10;
+constexpr std::uint32_t bufferSize = 8192;
+constexpr std::uint32_t maxBufferSize = bufferSize * 10;
 
 namespace tlv
 {
@@ -41,7 +41,7 @@ struct TLVValue
 class Packet
 {
 public:
-    Packet(char* pBuf, const uint32_t len) :
+    Packet(char* pBuf, const std::uint32_t len) :
         pData(pBuf), length(len), pEndData(pData + len), pWrite(pData), pRead(pData)
     {
     }
@@ -49,14 +49,14 @@ public:
 
     template <typename T>
     bool write(T data);
-    bool write(const void* pDst, const uint32_t offset);
+    bool write(const void* pDst, const std::uint32_t offset);
     template <typename T>
     bool read(T* data);
-    bool read(void* pDst, const uint32_t offset);
+    bool read(void* pDst, const std::uint32_t offset);
 
 private:
     char* pData{nullptr};
-    const uint32_t length{0};
+    const std::uint32_t length{0};
     char* pEndData{nullptr};
     char* pWrite{nullptr};
     char* pRead{nullptr};
@@ -74,7 +74,7 @@ public:
     Observe& operator=(const Observe&) = delete;
 
     friend class FSM<Observe>;
-    enum State : uint8_t
+    enum State : std::uint8_t
     {
         init,
         idle,
@@ -140,7 +140,7 @@ private:
 
     static int buildPacketForStop(char* buffer);
     static int buildPacketForLog(char* buffer);
-    static constexpr uint32_t maxViewNumOfLines{50};
+    static constexpr std::uint32_t maxViewNumOfLines{50};
 
 protected:
     friend std::ostream& operator<<(std::ostream& os, const Observe::State& state);

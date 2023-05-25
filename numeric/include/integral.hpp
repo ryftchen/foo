@@ -49,7 +49,7 @@ protected:
     //! @param upper - upper endpoint
     //! @return sign
     static inline int getSign(double& lower, double& upper);
-    friend double trapezoid(const Expression& expr, const double left, const double height, const uint32_t step);
+    friend double trapezoid(const Expression& expr, const double left, const double height, const std::uint32_t step);
 };
 
 inline int Integral::getSign(double& lower, double& upper)
@@ -106,7 +106,8 @@ private:
     //! @param right - right endpoint
     //! @param step - number of steps
     //! @return result of definite integral
-    [[nodiscard]] double compositeSimpsonOneThird(const double left, const double right, const uint32_t step) const;
+    [[nodiscard]] double compositeSimpsonOneThird(const double left, const double right, const std::uint32_t step)
+        const;
     //! @brief Simpson's 1/3 formula.
     //! @param left - left endpoint
     //! @param right - right endpoint

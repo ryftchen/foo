@@ -28,7 +28,7 @@ public:
     struct Bottom;
 
     //! @brief Enumerate specific design pattern tasks.
-    enum Type : uint8_t
+    enum Type : std::uint8_t
     {
         behavioral,
         creational,
@@ -36,7 +36,7 @@ public:
     };
 
     //! @brief Enumerate specific behavioral instances.
-    enum BehavioralInstance : uint8_t
+    enum BehavioralInstance : std::uint8_t
     {
         chainOfResponsibility,
         command,
@@ -55,11 +55,11 @@ public:
     struct Bottom<BehavioralInstance>
     {
         //! @brief Maximum value of the BehavioralInstance enum.
-        static constexpr uint8_t value = 11;
+        static constexpr std::uint8_t value = 11;
     };
 
     //! @brief Enumerate specific creational instances.
-    enum CreationalInstance : uint8_t
+    enum CreationalInstance : std::uint8_t
     {
         abstractFactory,
         builder,
@@ -72,11 +72,11 @@ public:
     struct Bottom<CreationalInstance>
     {
         //! @brief Maximum value of the CreationalInstance enum.
-        static constexpr uint8_t value = 5;
+        static constexpr std::uint8_t value = 5;
     };
 
     //! @brief Enumerate specific structural instances.
-    enum StructuralInstance : uint8_t
+    enum StructuralInstance : std::uint8_t
     {
         adapter,
         bridge,
@@ -91,7 +91,7 @@ public:
     struct Bottom<StructuralInstance>
     {
         //! @brief Maximum value of the StructuralInstance enum.
-        static constexpr uint8_t value = 7;
+        static constexpr std::uint8_t value = 7;
     };
 
     //! @brief Bit flags for managing behavioral instances.
@@ -263,7 +263,7 @@ public:
         using design_pattern::behavioral::iterator::Iterator;
         using design_pattern::behavioral::iterator::output;
 
-        constexpr uint32_t size = 5;
+        constexpr std::uint32_t size = 5;
         std::shared_ptr<ConcreteAggregate> list = std::make_shared<ConcreteAggregate>(size);
         std::shared_ptr<Iterator> iter = list->createIterator();
 
@@ -287,7 +287,7 @@ public:
         using design_pattern::behavioral::mediator::Mediator;
         using design_pattern::behavioral::mediator::output;
 
-        constexpr uint32_t id1 = 1, id2 = 2, id3 = 3;
+        constexpr std::uint32_t id1 = 1, id2 = 2, id3 = 3;
         std::shared_ptr<Mediator> mediator = std::make_shared<ConcreteMediator>();
         std::shared_ptr<Colleague> c1 = std::make_shared<ConcreteColleague>(mediator, id1);
         std::shared_ptr<Colleague> c2 = std::make_shared<ConcreteColleague>(mediator, id2);
@@ -694,10 +694,10 @@ public:
         using design_pattern::structural::composite::Leaf;
         using design_pattern::structural::composite::output;
 
-        constexpr uint32_t count = 5;
+        constexpr std::uint32_t count = 5;
         Composite composite;
 
-        for (uint32_t i = 0; i < count; ++i)
+        for (std::uint32_t i = 0; i < count; ++i)
         {
             composite.add(std::make_shared<Leaf>(i));
         }

@@ -80,7 +80,7 @@ private:
         struct Bottom;
 
         //! @brief Enumerate specific basic tasks.
-        enum Category : uint8_t
+        enum Category : std::uint8_t
         {
             console,
             help,
@@ -91,7 +91,7 @@ private:
         struct Bottom<Category>
         {
             //! @brief Maximum value of the Category enum.
-            static constexpr uint8_t value = 3;
+            static constexpr std::uint8_t value = 3;
         };
 
         //! @brief Bit flags for managing basic tasks.
@@ -114,7 +114,7 @@ private:
         struct Bottom;
 
         //! @brief Enumerate specific general tasks.
-        enum Category : uint8_t
+        enum Category : std::uint8_t
         {
             algorithm,
             dataStructure,
@@ -126,7 +126,7 @@ private:
         struct Bottom<Category>
         {
             //! @brief Maximum value of the Category enum.
-            static constexpr uint8_t value = 4;
+            static constexpr std::uint8_t value = 4;
         };
 
         //! @brief Check whether any general tasks do not exist.

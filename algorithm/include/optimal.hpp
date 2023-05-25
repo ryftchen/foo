@@ -72,7 +72,7 @@ private:
     //! @brief Decay.
     static constexpr double decay{0.001};
     //! @brief Loop time.
-    static constexpr uint32_t loopTime{1000};
+    static constexpr std::uint32_t loopTime{1000};
 
     //! @brief Calculate the first derivative.
     //! @param x - independent variable
@@ -109,7 +109,7 @@ private:
     //! @brief Cooling rate.
     static constexpr double coolingRate{0.98};
     //! @brief Length of Markov chain.
-    static constexpr uint32_t markovChain{500};
+    static constexpr std::uint32_t markovChain{500};
 };
 
 //! @brief Particle swarm.
@@ -148,9 +148,9 @@ private:
     //! @brief Minimum velocity.
     static constexpr double vMin{-0.5};
     //! @brief Swarm size.
-    static constexpr uint32_t size{100};
+    static constexpr std::uint32_t size{100};
     //! @brief The number of iterations.
-    static constexpr uint32_t numOfIteration{500};
+    static constexpr std::uint32_t numOfIteration{500};
 
     //! @brief Individual information in the swarm.
     struct Individual
@@ -250,18 +250,18 @@ private:
     //! @brief Random engine.
     std::mt19937 engine{std::random_device{}()};
     //! @brief The number of chromosomes.
-    uint32_t chromosomeNum{0};
+    std::uint32_t chromosomeNum{0};
     //! @brief Crossover probability.
     static constexpr double crossPr{0.75};
     //! @brief Mutation probability.
     static constexpr double mutatePr{0.035};
     //! @brief Population size.
-    static constexpr uint32_t size{100};
+    static constexpr std::uint32_t size{100};
     //! @brief The number of iterations.
-    static constexpr uint32_t numOfIteration{500};
+    static constexpr std::uint32_t numOfIteration{500};
 
     //! @brief Alias for the individual's chromosome in species.
-    using Chromosome = std::vector<uint8_t>;
+    using Chromosome = std::vector<std::uint8_t>;
     //! @brief Alias for the population in species.
     using Population = std::vector<Chromosome>;
     //! @brief Decode attributes of species.
@@ -332,7 +332,7 @@ private:
     //! @brief Get a random number from 0 to the limit.
     //! @param limit - maximum random number
     //! @return random number
-    inline uint32_t getRandomLessThanLimit(const uint32_t limit);
+    inline std::uint32_t getRandomLessThanLimit(const std::uint32_t limit);
 };
 
 inline double Genetic::probability()
@@ -341,7 +341,7 @@ inline double Genetic::probability()
     return pr(engine);
 }
 
-inline uint32_t Genetic::getRandomLessThanLimit(const uint32_t limit)
+inline std::uint32_t Genetic::getRandomLessThanLimit(const std::uint32_t limit)
 {
     std::uniform_int_distribution<int> num(0, limit);
     return num(engine);

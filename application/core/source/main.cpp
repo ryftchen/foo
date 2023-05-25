@@ -19,7 +19,7 @@ int main(int argc, char* argv[])
     using application::log::Log;
     using application::observe::Observe;
 
-    constexpr uint32_t threadNum = 3;
+    constexpr std::uint32_t threadNum = 3;
     std::shared_ptr<utility::thread::Thread> thread = std::make_shared<utility::thread::Thread>(threadNum);
     thread->enqueue("commander", &Command::runCommander, &Command::getInstance(), argc, argv);
     thread->enqueue("logger", &Log::runLogger, &Log::getInstance());

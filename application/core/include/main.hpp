@@ -10,7 +10,6 @@
 #include <cxxabi.h>
 #include <dlfcn.h>
 #include <execinfo.h>
-#include <unistd.h>
 #include <csignal>
 #include <filesystem>
 #else

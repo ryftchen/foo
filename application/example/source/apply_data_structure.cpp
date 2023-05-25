@@ -116,14 +116,15 @@ void runLinear(const std::vector<std::string>& targets)
 
     APP_DS_PRINT_TASK_BEGIN_TITLE(Type::linear);
     auto* threads = command::getPublicThreadPool().newElement(std::min(
-        static_cast<uint32_t>(getBit<LinearInstance>().count()), static_cast<uint32_t>(Bottom<LinearInstance>::value)));
+        static_cast<std::uint32_t>(getBit<LinearInstance>().count()),
+        static_cast<std::uint32_t>(Bottom<LinearInstance>::value)));
 
     const auto linearFunctor = [&](const std::string& threadName, void (*instancePtr)())
     {
         threads->enqueue(threadName, instancePtr);
     };
 
-    for (uint8_t i = 0; i < Bottom<LinearInstance>::value; ++i)
+    for (std::uint8_t i = 0; i < Bottom<LinearInstance>::value; ++i)
     {
         if (!getBit<LinearInstance>().test(LinearInstance(i)))
         {
@@ -240,14 +241,15 @@ void runTree(const std::vector<std::string>& targets)
 
     APP_DS_PRINT_TASK_BEGIN_TITLE(Type::tree);
     auto* threads = command::getPublicThreadPool().newElement(std::min(
-        static_cast<uint32_t>(getBit<TreeInstance>().count()), static_cast<uint32_t>(Bottom<TreeInstance>::value)));
+        static_cast<std::uint32_t>(getBit<TreeInstance>().count()),
+        static_cast<std::uint32_t>(Bottom<TreeInstance>::value)));
 
     const auto treeFunctor = [&](const std::string& threadName, void (*instancePtr)())
     {
         threads->enqueue(threadName, instancePtr);
     };
 
-    for (uint8_t i = 0; i < Bottom<TreeInstance>::value; ++i)
+    for (std::uint8_t i = 0; i < Bottom<TreeInstance>::value; ++i)
     {
         if (!getBit<TreeInstance>().test(TreeInstance(i)))
         {

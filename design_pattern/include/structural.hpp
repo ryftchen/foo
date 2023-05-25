@@ -138,11 +138,11 @@ public:
     virtual ~Component() = default;
 
     //! @brief Get the child component by index.
-    virtual std::shared_ptr<Component> getChild(const uint32_t /*unused*/) { return nullptr; }
+    virtual std::shared_ptr<Component> getChild(const std::uint32_t /*unused*/) { return nullptr; }
     //! @brief Add the child component.
     virtual void add(const std::shared_ptr<Component>& /*unused*/) {}
     //! @brief Remove the child component by index.
-    virtual void remove(const uint32_t /*unused*/) {}
+    virtual void remove(const std::uint32_t /*unused*/) {}
     //! @brief Execute all child components' operations.
     virtual void operation() = 0;
 };
@@ -166,13 +166,13 @@ public:
     //! @brief Get the child component by index.
     //! @param index - child component index
     //! @return child component
-    std::shared_ptr<Component> getChild(const uint32_t index) override { return children[index]; }
+    std::shared_ptr<Component> getChild(const std::uint32_t index) override { return children[index]; }
     //! @brief Add the child component.
     //! @param component - child component to be added
     void add(const std::shared_ptr<Component>& component) override { children.emplace_back(component); }
     //! @brief Remove the child component by index.
     //! @param index - child component index
-    void remove(const uint32_t index) override
+    void remove(const std::uint32_t index) override
     {
         std::shared_ptr<Component> child = children[index];
         children.erase(children.begin() + index);

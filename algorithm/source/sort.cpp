@@ -15,27 +15,27 @@
 namespace algorithm::sort
 {
 template class Sort<int>;
-template std::vector<int> Sort<int>::bubble(int* const array, const uint32_t length);
-template std::vector<int> Sort<int>::selection(int* const array, const uint32_t length);
-template std::vector<int> Sort<int>::insertion(int* const array, const uint32_t length);
-template std::vector<int> Sort<int>::shell(int* const array, const uint32_t length);
-template std::vector<int> Sort<int>::merge(int* const array, const uint32_t length);
-template std::vector<int> Sort<int>::quick(int* const array, const uint32_t length);
-template std::vector<int> Sort<int>::heap(int* const array, const uint32_t length);
-template std::vector<int> Sort<int>::counting(int* const array, const uint32_t length);
-template std::vector<int> Sort<int>::bucket(int* const array, const uint32_t length);
-template std::vector<int> Sort<int>::radix(int* const array, const uint32_t length);
+template std::vector<int> Sort<int>::bubble(int* const array, const std::uint32_t length);
+template std::vector<int> Sort<int>::selection(int* const array, const std::uint32_t length);
+template std::vector<int> Sort<int>::insertion(int* const array, const std::uint32_t length);
+template std::vector<int> Sort<int>::shell(int* const array, const std::uint32_t length);
+template std::vector<int> Sort<int>::merge(int* const array, const std::uint32_t length);
+template std::vector<int> Sort<int>::quick(int* const array, const std::uint32_t length);
+template std::vector<int> Sort<int>::heap(int* const array, const std::uint32_t length);
+template std::vector<int> Sort<int>::counting(int* const array, const std::uint32_t length);
+template std::vector<int> Sort<int>::bucket(int* const array, const std::uint32_t length);
+template std::vector<int> Sort<int>::radix(int* const array, const std::uint32_t length);
 
 template <class T>
-std::vector<T> Sort<T>::bubble(T* const array, const uint32_t length)
+std::vector<T> Sort<T>::bubble(T* const array, const std::uint32_t length)
 {
     T sortArray[length];
     sortArray[0] = '\0';
     std::memcpy(sortArray, array, length * sizeof(T));
 
-    for (uint32_t i = 0; i < length - 1; ++i)
+    for (std::uint32_t i = 0; i < length - 1; ++i)
     {
-        for (uint32_t j = 0; j < length - 1 - i; ++j)
+        for (std::uint32_t j = 0; j < length - 1 - i; ++j)
         {
             if (sortArray[j] > sortArray[j + 1])
             {
@@ -48,16 +48,16 @@ std::vector<T> Sort<T>::bubble(T* const array, const uint32_t length)
 }
 
 template <class T>
-std::vector<T> Sort<T>::selection(T* const array, const uint32_t length)
+std::vector<T> Sort<T>::selection(T* const array, const std::uint32_t length)
 {
     T sortArray[length];
     sortArray[0] = '\0';
     std::memcpy(sortArray, array, length * sizeof(T));
 
-    for (uint32_t i = 0; i < length - 1; ++i)
+    for (std::uint32_t i = 0; i < length - 1; ++i)
     {
-        uint32_t min = i;
-        for (uint32_t j = i + 1; j < length; ++j)
+        std::uint32_t min = i;
+        for (std::uint32_t j = i + 1; j < length; ++j)
         {
             if (sortArray[j] < sortArray[min])
             {
@@ -71,13 +71,13 @@ std::vector<T> Sort<T>::selection(T* const array, const uint32_t length)
 }
 
 template <class T>
-std::vector<T> Sort<T>::insertion(T* const array, const uint32_t length)
+std::vector<T> Sort<T>::insertion(T* const array, const std::uint32_t length)
 {
     T sortArray[length];
     sortArray[0] = '\0';
     std::memcpy(sortArray, array, length * sizeof(T));
 
-    for (uint32_t i = 1; i < length; ++i)
+    for (std::uint32_t i = 1; i < length; ++i)
     {
         int n = i - 1;
         T temp = sortArray[i];
@@ -93,18 +93,18 @@ std::vector<T> Sort<T>::insertion(T* const array, const uint32_t length)
 }
 
 template <class T>
-std::vector<T> Sort<T>::shell(T* const array, const uint32_t length)
+std::vector<T> Sort<T>::shell(T* const array, const std::uint32_t length)
 {
     T sortArray[length];
     sortArray[0] = '\0';
     std::memcpy(sortArray, array, length * sizeof(T));
 
-    uint32_t gap = length / 2;
+    std::uint32_t gap = length / 2;
     while (gap >= 1)
     {
-        for (uint32_t i = gap; i < length; ++i)
+        for (std::uint32_t i = gap; i < length; ++i)
         {
-            for (uint32_t j = i; (j >= gap) && (sortArray[j] < sortArray[j - gap]); j -= gap)
+            for (std::uint32_t j = i; (j >= gap) && (sortArray[j] < sortArray[j - gap]); j -= gap)
             {
                 std::swap(sortArray[j], sortArray[j - gap]);
             }
@@ -116,7 +116,7 @@ std::vector<T> Sort<T>::shell(T* const array, const uint32_t length)
 }
 
 template <class T>
-std::vector<T> Sort<T>::merge(T* const array, const uint32_t length)
+std::vector<T> Sort<T>::merge(T* const array, const std::uint32_t length)
 {
     T sortArray[length];
     sortArray[0] = '\0';
@@ -128,22 +128,22 @@ std::vector<T> Sort<T>::merge(T* const array, const uint32_t length)
 }
 
 template <class T>
-void Sort<T>::mergeSortRecursive(T* const sortArray, const uint32_t begin, const uint32_t end)
+void Sort<T>::mergeSortRecursive(T* const sortArray, const std::uint32_t begin, const std::uint32_t end)
 {
     if (begin >= end)
     {
         return;
     }
-    const uint32_t mid = (begin + end) / 2;
+    const std::uint32_t mid = (begin + end) / 2;
     mergeSortRecursive(sortArray, begin, mid);
     mergeSortRecursive(sortArray, mid + 1, end);
 
-    uint32_t leftIndex = 0, rightIndex = 0;
+    std::uint32_t leftIndex = 0, rightIndex = 0;
     std::vector<T> leftSubArray(sortArray + begin, sortArray + mid + 1);
     std::vector<T> rightSubArray(sortArray + mid + 1, sortArray + end + 1);
     leftSubArray.insert(leftSubArray.cend(), std::numeric_limits<T>::max());
     rightSubArray.insert(rightSubArray.cend(), std::numeric_limits<T>::max());
-    for (uint32_t i = begin; i <= end; ++i)
+    for (std::uint32_t i = begin; i <= end; ++i)
     {
         if (leftSubArray.at(leftIndex) < rightSubArray.at(rightIndex))
         {
@@ -159,7 +159,7 @@ void Sort<T>::mergeSortRecursive(T* const sortArray, const uint32_t begin, const
 }
 
 template <class T>
-std::vector<T> Sort<T>::quick(T* const array, const uint32_t length)
+std::vector<T> Sort<T>::quick(T* const array, const std::uint32_t length)
 {
     T sortArray[length];
     sortArray[0] = '\0';
@@ -171,14 +171,14 @@ std::vector<T> Sort<T>::quick(T* const array, const uint32_t length)
 }
 
 template <class T>
-void Sort<T>::quickSortRecursive(T* const sortArray, const uint32_t begin, const uint32_t end)
+void Sort<T>::quickSortRecursive(T* const sortArray, const std::uint32_t begin, const std::uint32_t end)
 {
     if (begin >= end)
     {
         return;
     }
     T pivot = sortArray[end];
-    uint32_t leftIndex = begin, rightIndex = end - 1;
+    std::uint32_t leftIndex = begin, rightIndex = end - 1;
 
     while (leftIndex < rightIndex)
     {
@@ -209,7 +209,7 @@ void Sort<T>::quickSortRecursive(T* const sortArray, const uint32_t begin, const
 }
 
 template <class T>
-std::vector<T> Sort<T>::heap(T* const array, const uint32_t length)
+std::vector<T> Sort<T>::heap(T* const array, const std::uint32_t length)
 {
     T sortArray[length];
     sortArray[0] = '\0';
@@ -229,9 +229,9 @@ std::vector<T> Sort<T>::heap(T* const array, const uint32_t length)
 }
 
 template <class T>
-void Sort<T>::buildMaxHeap(T* const sortArray, const uint32_t begin, const uint32_t end)
+void Sort<T>::buildMaxHeap(T* const sortArray, const std::uint32_t begin, const std::uint32_t end)
 {
-    uint32_t parent = begin, child = parent * 2 + 1;
+    std::uint32_t parent = begin, child = parent * 2 + 1;
     while (child <= end)
     {
         if (((child + 1) <= end) && (sortArray[child] < sortArray[child + 1]))
@@ -250,7 +250,7 @@ void Sort<T>::buildMaxHeap(T* const sortArray, const uint32_t begin, const uint3
 }
 
 template <class T>
-std::vector<T> Sort<T>::counting(T* const array, const uint32_t length)
+std::vector<T> Sort<T>::counting(T* const array, const std::uint32_t length)
 {
     if (!std::is_integral_v<T>)
     {
@@ -263,7 +263,7 @@ std::vector<T> Sort<T>::counting(T* const array, const uint32_t length)
 
     T max = std::numeric_limits<T>::min();
     T min = std::numeric_limits<T>::max();
-    for (uint32_t i = 0; i < length; ++i)
+    for (std::uint32_t i = 0; i < length; ++i)
     {
         max = std::max(sortArray[i], max);
         min = std::min(sortArray[i], min);
@@ -272,11 +272,11 @@ std::vector<T> Sort<T>::counting(T* const array, const uint32_t length)
     const T countingLen = max - min + 1;
     assert(countingLen > 0);
     std::unique_ptr<T[]> counting = std::make_unique<T[]>(countingLen);
-    for (uint32_t i = 0; i < length; ++i)
+    for (std::uint32_t i = 0; i < length; ++i)
     {
         ++counting[sortArray[i] - min];
     }
-    uint32_t index = 0;
+    std::uint32_t index = 0;
     for (T j = 0; j < countingLen; ++j)
     {
         while (counting[j])
@@ -290,30 +290,30 @@ std::vector<T> Sort<T>::counting(T* const array, const uint32_t length)
 }
 
 template <class T>
-std::vector<T> Sort<T>::bucket(T* const array, const uint32_t length)
+std::vector<T> Sort<T>::bucket(T* const array, const std::uint32_t length)
 {
     T sortArray[length];
     sortArray[0] = '\0';
     std::memcpy(sortArray, array, length * sizeof(T));
 
     T max = std::numeric_limits<T>::min(), min = std::numeric_limits<T>::max();
-    for (uint32_t i = 0; i < length; ++i)
+    for (std::uint32_t i = 0; i < length; ++i)
     {
         max = std::max(sortArray[i], max);
         min = std::min(sortArray[i], min);
     }
 
-    const uint32_t bucketNum = length;
+    const std::uint32_t bucketNum = length;
     const double intervalSpan = static_cast<double>(max - min) / static_cast<double>(bucketNum - 1);
     std::vector<std::vector<T>> aggregation(bucketNum, std::vector<T>{});
-    for (uint32_t i = 0; i < length; ++i)
+    for (std::uint32_t i = 0; i < length; ++i)
     {
         // min+(max-min)/(bucketNum-1)*(bucketIndex-1)<=array[i]
-        const uint32_t bucketIndex = std::floor(static_cast<double>(sortArray[i] - min) / intervalSpan + 1) - 1;
+        const std::uint32_t bucketIndex = std::floor(static_cast<double>(sortArray[i] - min) / intervalSpan + 1) - 1;
         aggregation.at(bucketIndex).emplace_back(sortArray[i]);
     }
 
-    uint32_t index = 0;
+    std::uint32_t index = 0;
     for (auto& bucketUpdate : aggregation)
     {
         std::sort(bucketUpdate.begin(), bucketUpdate.end());
@@ -327,7 +327,7 @@ std::vector<T> Sort<T>::bucket(T* const array, const uint32_t length)
 }
 
 template <class T>
-std::vector<T> Sort<T>::radix(T* const array, const uint32_t length)
+std::vector<T> Sort<T>::radix(T* const array, const std::uint32_t length)
 {
     if (!std::is_integral_v<T>)
     {
@@ -340,39 +340,39 @@ std::vector<T> Sort<T>::radix(T* const array, const uint32_t length)
 
     T max = std::numeric_limits<T>::min(), min = std::numeric_limits<T>::max();
     bool positive = false, negative = false;
-    for (uint32_t i = 0; i < length; ++i)
+    for (std::uint32_t i = 0; i < length; ++i)
     {
         max = std::max(sortArray[i], max);
         min = std::min(sortArray[i], min);
         (sortArray[i] > 0) ? positive = true : ((sortArray[i] < 0) ? negative = true : sortArray[i]);
     }
     T absMax = std::max(max, -min);
-    uint32_t digitMax = 0;
-    constexpr uint32_t base = 10;
+    std::uint32_t digitMax = 0;
+    constexpr std::uint32_t base = 10;
     while (absMax)
     {
         absMax /= base;
         ++digitMax;
     }
 
-    constexpr uint32_t naturalNumberBucket = 10, negativeIntegerBucket = 9;
-    const uint32_t bucketNum =
+    constexpr std::uint32_t naturalNumberBucket = 10, negativeIntegerBucket = 9;
+    const std::uint32_t bucketNum =
         (positive ^ negative) ? naturalNumberBucket : (naturalNumberBucket + negativeIntegerBucket);
     assert(bucketNum > 0);
     std::unique_ptr<T[]> countingOld = std::make_unique<T[]>(bucketNum), countingNew = std::make_unique<T[]>(bucketNum);
     std::queue<T> bucket;
     std::vector<std::queue<T>> aggregation(bucketNum, bucket);
-    const uint32_t offset = (!negative) ? 0 : negativeIntegerBucket;
-    for (uint32_t i = 0; i < length; ++i)
+    const std::uint32_t offset = (!negative) ? 0 : negativeIntegerBucket;
+    for (std::uint32_t i = 0; i < length; ++i)
     {
         const int sign = (sortArray[i] > 0) ? 1 : -1;
-        const uint32_t bucketIndex = std::abs(sortArray[i]) / 1 % base * sign + offset;
+        const std::uint32_t bucketIndex = std::abs(sortArray[i]) / 1 % base * sign + offset;
         aggregation[bucketIndex].push(sortArray[i]);
         ++countingNew[bucketIndex];
     }
 
-    constexpr uint32_t decimal = 10;
-    for (uint32_t i = 1, pow = decimal; i < digitMax; ++i, pow *= base)
+    constexpr std::uint32_t decimal = 10;
+    for (std::uint32_t i = 1, pow = decimal; i < digitMax; ++i, pow *= base)
     {
         std::memcpy(countingOld.get(), countingNew.get(), bucketNum * sizeof(T));
         std::memset(countingNew.get(), 0, bucketNum * sizeof(T));
@@ -382,12 +382,12 @@ std::vector<T> Sort<T>::radix(T* const array, const uint32_t length)
             {
                 continue;
             }
-            const uint32_t countingIndex = bucketIter - aggregation.begin();
+            const std::uint32_t countingIndex = bucketIter - aggregation.begin();
             while (countingOld[countingIndex])
             {
                 auto bucketElement = bucketIter->front();
                 const int sign = (bucketElement > 0) ? 1 : -1;
-                const uint32_t bucketIndex = std::abs(bucketElement) / pow % base * sign + offset;
+                const std::uint32_t bucketIndex = std::abs(bucketElement) / pow % base * sign + offset;
                 aggregation[bucketIndex].push(bucketElement);
                 ++countingNew[bucketIndex];
                 bucketIter->pop();
@@ -396,7 +396,7 @@ std::vector<T> Sort<T>::radix(T* const array, const uint32_t length)
         }
     }
 
-    uint32_t index = 0;
+    std::uint32_t index = 0;
     for (auto& bucketInfo : aggregation)
     {
         while (bucketInfo.size())

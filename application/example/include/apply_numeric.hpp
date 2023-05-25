@@ -30,7 +30,7 @@ public:
     struct Bottom;
 
     //! @brief Enumerate specific numeric tasks.
-    enum Type : uint8_t
+    enum Type : std::uint8_t
     {
         arithmetic,
         divisor,
@@ -39,7 +39,7 @@ public:
     };
 
     //! @brief Enumerate specific arithmetic methods.
-    enum ArithmeticMethod : uint8_t
+    enum ArithmeticMethod : std::uint8_t
     {
         addition,
         subtraction,
@@ -51,11 +51,11 @@ public:
     struct Bottom<ArithmeticMethod>
     {
         //! @brief Maximum value of the ArithmeticMethod enum.
-        static constexpr uint8_t value = 4;
+        static constexpr std::uint8_t value = 4;
     };
 
     //! @brief Enumerate specific divisor methods.
-    enum DivisorMethod : uint8_t
+    enum DivisorMethod : std::uint8_t
     {
         euclidean,
         stein
@@ -65,11 +65,11 @@ public:
     struct Bottom<DivisorMethod>
     {
         //! @brief Maximum value of the DivisorMethod enum.
-        static constexpr uint8_t value = 2;
+        static constexpr std::uint8_t value = 2;
     };
 
     //! @brief Enumerate specific integral methods.
-    enum IntegralMethod : uint8_t
+    enum IntegralMethod : std::uint8_t
     {
         trapezoidal,
         simpson,
@@ -82,11 +82,11 @@ public:
     struct Bottom<IntegralMethod>
     {
         //! @brief Maximum value of the IntegralMethod enum.
-        static constexpr uint8_t value = 5;
+        static constexpr std::uint8_t value = 5;
     };
 
     //! @brief Enumerate specific prime methods.
-    enum PrimeMethod : uint8_t
+    enum PrimeMethod : std::uint8_t
     {
         eratosthenes,
         euler
@@ -96,7 +96,7 @@ public:
     struct Bottom<PrimeMethod>
     {
         //! @brief Maximum value of the PrimeMethod enum.
-        static constexpr uint8_t value = 2;
+        static constexpr std::uint8_t value = 2;
     };
 
     //! @brief Bit flags for managing arithmetic methods.
@@ -212,7 +212,7 @@ constexpr int integerForDivisor1 = 2 * 2 * 3 * 3 * 5 * 5 * 7 * 7;
 //! @brief One of integers for divisor methods.
 constexpr int integerForDivisor2 = 2 * 3 * 5 * 7 * 11 * 13 * 17;
 //! @brief Max positive integer for prime methods.
-constexpr uint32_t maxPositiveIntegerForPrime = 997;
+constexpr std::uint32_t maxPositiveIntegerForPrime = 997;
 
 //! @brief Expression example 1.
 class Expression1 : public numeric::integral::Expression
@@ -331,9 +331,9 @@ public:
 };
 
 //! @brief Maximum alignment length per element of printing.
-constexpr uint8_t maxAlignOfPrint = 16;
+constexpr std::uint8_t maxAlignOfPrint = 16;
 //! @brief Maximum columns per row of printing.
-constexpr uint8_t maxColumnOfPrint = 10;
+constexpr std::uint8_t maxColumnOfPrint = 10;
 
 //! @brief Builder for the target.
 class TargetBuilder
@@ -364,17 +364,17 @@ public:
     requires std::is_integral<T>::value static char* formatIntegerVector(
         const std::vector<T>& vector,
         char* const buffer,
-        const uint32_t bufferSize)
+        const std::uint32_t bufferSize)
     {
-        uint32_t align = 0;
-        for (uint32_t i = 0; i < vector.size(); ++i)
+        std::uint32_t align = 0;
+        for (std::uint32_t i = 0; i < vector.size(); ++i)
         {
-            align = std::max(static_cast<uint32_t>(std::to_string(vector.at(i)).length()), align);
+            align = std::max(static_cast<std::uint32_t>(std::to_string(vector.at(i)).length()), align);
         }
 
         int formatSize = 0;
-        uint32_t completeSize = 0;
-        for (uint32_t i = 0; i < vector.size(); ++i)
+        std::uint32_t completeSize = 0;
+        for (std::uint32_t i = 0; i < vector.size(); ++i)
         {
             formatSize =
                 std::snprintf(buffer + completeSize, bufferSize - completeSize, "%*d ", align + 1, vector.at(i));
@@ -522,16 +522,16 @@ public:
 
     //! @brief The Eratosthenes method.
     //! @param max - maximum positive integer
-    static void eratosthenesMethod(const uint32_t max);
+    static void eratosthenesMethod(const std::uint32_t max);
     //! @brief The Euler method.
     //! @param max - maximum positive integer
-    static void eulerMethod(const uint32_t max);
+    static void eulerMethod(const std::uint32_t max);
 };
 
 //! @brief Maximum alignment length per element of printing.
-constexpr uint8_t maxAlignOfPrint = 16;
+constexpr std::uint8_t maxAlignOfPrint = 16;
 //! @brief Maximum columns per row of printing.
-constexpr uint8_t maxColumnOfPrint = 10;
+constexpr std::uint8_t maxColumnOfPrint = 10;
 
 //! @brief Builder for the target.
 class TargetBuilder
@@ -539,7 +539,7 @@ class TargetBuilder
 public:
     //! @brief Construct a new TargetBuilder object.
     //! @param maxPositiveInteger - maximum positive integer
-    explicit TargetBuilder(const uint32_t maxPositiveInteger) : maxPositiveInteger(maxPositiveInteger)
+    explicit TargetBuilder(const std::uint32_t maxPositiveInteger) : maxPositiveInteger(maxPositiveInteger)
     {
 #ifdef __RUNTIME_PRINTING
         std::cout << "\r\nAll prime numbers smaller than " << maxPositiveInteger << ":" << std::endl;
@@ -550,7 +550,7 @@ public:
 
     //! @brief Get the Maximum positive integer.
     //! @return maximum positive integer
-    [[nodiscard]] inline uint32_t getMaxPositiveInteger() const { return maxPositiveInteger; }
+    [[nodiscard]] inline std::uint32_t getMaxPositiveInteger() const { return maxPositiveInteger; }
     //! @brief Format integer vector for printing.
     //! @tparam T - type of vector
     //! @param vector - vector to be formatted
@@ -561,17 +561,17 @@ public:
     requires std::is_integral<T>::value static char* formatIntegerVector(
         const std::vector<T>& vector,
         char* const buffer,
-        const uint32_t bufferSize)
+        const std::uint32_t bufferSize)
     {
-        uint32_t align = 0;
-        for (uint32_t i = 0; i < vector.size(); ++i)
+        std::uint32_t align = 0;
+        for (std::uint32_t i = 0; i < vector.size(); ++i)
         {
-            align = std::max(static_cast<uint32_t>(std::to_string(vector.at(i)).length()), align);
+            align = std::max(static_cast<std::uint32_t>(std::to_string(vector.at(i)).length()), align);
         }
 
         int formatSize = 0;
-        uint32_t completeSize = 0;
-        for (uint32_t i = 0; i < vector.size(); ++i)
+        std::uint32_t completeSize = 0;
+        for (std::uint32_t i = 0; i < vector.size(); ++i)
         {
             formatSize =
                 std::snprintf(buffer + completeSize, bufferSize - completeSize, "%*d ", align + 1, vector.at(i));
@@ -597,7 +597,7 @@ public:
 
 private:
     //! @brief Maximum positive integer.
-    const uint32_t maxPositiveInteger;
+    const std::uint32_t maxPositiveInteger;
 };
 } // namespace prime
 extern void runPrime(const std::vector<std::string>& targets);

@@ -222,15 +222,15 @@ void runBehavioral(const std::vector<std::string>& targets)
 
     APP_DP_PRINT_TASK_BEGIN_TITLE(Type::behavioral);
     auto* threads = command::getPublicThreadPool().newElement(std::min(
-        static_cast<uint32_t>(getBit<BehavioralInstance>().count()),
-        static_cast<uint32_t>(Bottom<BehavioralInstance>::value)));
+        static_cast<std::uint32_t>(getBit<BehavioralInstance>().count()),
+        static_cast<std::uint32_t>(Bottom<BehavioralInstance>::value)));
 
     const auto behavioralFunctor = [&](const std::string& threadName, void (*instancePtr)())
     {
         threads->enqueue(threadName, instancePtr);
     };
 
-    for (uint8_t i = 0; i < Bottom<BehavioralInstance>::value; ++i)
+    for (std::uint8_t i = 0; i < Bottom<BehavioralInstance>::value; ++i)
     {
         if (!getBit<BehavioralInstance>().test(BehavioralInstance(i)))
         {
@@ -421,15 +421,15 @@ void runCreational(const std::vector<std::string>& targets)
 
     APP_DP_PRINT_TASK_BEGIN_TITLE(Type::creational);
     auto* threads = command::getPublicThreadPool().newElement(std::min(
-        static_cast<uint32_t>(getBit<CreationalInstance>().count()),
-        static_cast<uint32_t>(Bottom<CreationalInstance>::value)));
+        static_cast<std::uint32_t>(getBit<CreationalInstance>().count()),
+        static_cast<std::uint32_t>(Bottom<CreationalInstance>::value)));
 
     const auto creationalFunctor = [&](const std::string& threadName, void (*instancePtr)())
     {
         threads->enqueue(threadName, instancePtr);
     };
 
-    for (uint8_t i = 0; i < Bottom<CreationalInstance>::value; ++i)
+    for (std::uint8_t i = 0; i < Bottom<CreationalInstance>::value; ++i)
     {
         if (!getBit<CreationalInstance>().test(CreationalInstance(i)))
         {
@@ -610,15 +610,15 @@ void runStructural(const std::vector<std::string>& targets)
 
     APP_DP_PRINT_TASK_BEGIN_TITLE(Type::structural);
     auto* threads = command::getPublicThreadPool().newElement(std::min(
-        static_cast<uint32_t>(getBit<StructuralInstance>().count()),
-        static_cast<uint32_t>(Bottom<StructuralInstance>::value)));
+        static_cast<std::uint32_t>(getBit<StructuralInstance>().count()),
+        static_cast<std::uint32_t>(Bottom<StructuralInstance>::value)));
 
     const auto structuralFunctor = [&](const std::string& threadName, void (*instancePtr)())
     {
         threads->enqueue(threadName, instancePtr);
     };
 
-    for (uint8_t i = 0; i < Bottom<StructuralInstance>::value; ++i)
+    for (std::uint8_t i = 0; i < Bottom<StructuralInstance>::value; ++i)
     {
         if (!getBit<StructuralInstance>().test(StructuralInstance(i)))
         {

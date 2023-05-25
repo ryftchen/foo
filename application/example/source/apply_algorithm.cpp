@@ -81,7 +81,11 @@ namespace match
     }                                                                                       \
     while (0)
 
-void MatchSolution::rkMethod(const char* text, const char* pattern, const uint32_t textLen, const uint32_t patternLen)
+void MatchSolution::rkMethod(
+    const char* text,
+    const char* pattern,
+    const std::uint32_t textLen,
+    const std::uint32_t patternLen)
 {
     try
     {
@@ -96,7 +100,11 @@ void MatchSolution::rkMethod(const char* text, const char* pattern, const uint32
     }
 }
 
-void MatchSolution::kmpMethod(const char* text, const char* pattern, const uint32_t textLen, const uint32_t patternLen)
+void MatchSolution::kmpMethod(
+    const char* text,
+    const char* pattern,
+    const std::uint32_t textLen,
+    const std::uint32_t patternLen)
 {
     try
     {
@@ -111,7 +119,11 @@ void MatchSolution::kmpMethod(const char* text, const char* pattern, const uint3
     }
 }
 
-void MatchSolution::bmMethod(const char* text, const char* pattern, const uint32_t textLen, const uint32_t patternLen)
+void MatchSolution::bmMethod(
+    const char* text,
+    const char* pattern,
+    const std::uint32_t textLen,
+    const std::uint32_t patternLen)
 {
     try
     {
@@ -129,8 +141,8 @@ void MatchSolution::bmMethod(const char* text, const char* pattern, const uint32
 void MatchSolution::horspoolMethod(
     const char* text,
     const char* pattern,
-    const uint32_t textLen,
-    const uint32_t patternLen)
+    const std::uint32_t textLen,
+    const std::uint32_t patternLen)
 {
     try
     {
@@ -148,8 +160,8 @@ void MatchSolution::horspoolMethod(
 void MatchSolution::sundayMethod(
     const char* text,
     const char* pattern,
-    const uint32_t textLen,
-    const uint32_t patternLen)
+    const std::uint32_t textLen,
+    const std::uint32_t patternLen)
 {
     try
     {
@@ -181,11 +193,12 @@ void runMatch(const std::vector<std::string>& targets)
     static_assert(TargetBuilder::maxDigit > input::singlePatternForMatch.length());
     APP_ALGO_PRINT_TASK_BEGIN_TITLE(Type::match);
     auto* threads = command::getPublicThreadPool().newElement(std::min(
-        static_cast<uint32_t>(getBit<MatchMethod>().count()), static_cast<uint32_t>(Bottom<MatchMethod>::value)));
+        static_cast<std::uint32_t>(getBit<MatchMethod>().count()),
+        static_cast<std::uint32_t>(Bottom<MatchMethod>::value)));
 
     const std::shared_ptr<TargetBuilder> builder = std::make_shared<TargetBuilder>(input::singlePatternForMatch);
-    const auto matchFunctor =
-        [&](const std::string& threadName, void (*methodPtr)(const char*, const char*, const uint32_t, const uint32_t))
+    const auto matchFunctor = [&](const std::string& threadName,
+                                  void (*methodPtr)(const char*, const char*, const std::uint32_t, const std::uint32_t))
     {
         threads->enqueue(
             threadName,
@@ -196,7 +209,7 @@ void runMatch(const std::vector<std::string>& targets)
             builder->getSinglePattern().length());
     };
 
-    for (uint8_t i = 0; i < Bottom<MatchMethod>::value; ++i)
+    for (std::uint8_t i = 0; i < Bottom<MatchMethod>::value; ++i)
     {
         if (!getBit<MatchMethod>().test(MatchMethod(i)))
         {
@@ -309,7 +322,8 @@ void runNotation(const std::vector<std::string>& targets)
 
     APP_ALGO_PRINT_TASK_BEGIN_TITLE(Type::notation);
     auto* threads = command::getPublicThreadPool().newElement(std::min(
-        static_cast<uint32_t>(getBit<NotationMethod>().count()), static_cast<uint32_t>(Bottom<NotationMethod>::value)));
+        static_cast<std::uint32_t>(getBit<NotationMethod>().count()),
+        static_cast<std::uint32_t>(Bottom<NotationMethod>::value)));
 
     const std::shared_ptr<TargetBuilder> builder = std::make_shared<TargetBuilder>(input::infixForNotation);
     const auto notationFunctor = [&](const std::string& threadName, void (*methodPtr)(const std::string&))
@@ -317,7 +331,7 @@ void runNotation(const std::vector<std::string>& targets)
         threads->enqueue(threadName, methodPtr, std::string{builder->getInfixNotation()});
     };
 
-    for (uint8_t i = 0; i < Bottom<NotationMethod>::value; ++i)
+    for (std::uint8_t i = 0; i < Bottom<NotationMethod>::value; ++i)
     {
         if (!getBit<NotationMethod>().test(NotationMethod(i)))
         {
@@ -458,8 +472,8 @@ void runOptimal(const std::vector<std::string>& targets)
     {
         assert(range.range1 < range.range2);
         auto* threads = command::getPublicThreadPool().newElement(std::min(
-            static_cast<uint32_t>(getBit<OptimalMethod>().count()),
-            static_cast<uint32_t>(Bottom<OptimalMethod>::value)));
+            static_cast<std::uint32_t>(getBit<OptimalMethod>().count()),
+            static_cast<std::uint32_t>(Bottom<OptimalMethod>::value)));
         const auto optimalFunctor =
             [&](const std::string& threadName, void (*methodPtr)(const optimal::Function&, const double, const double))
         {
@@ -468,7 +482,7 @@ void runOptimal(const std::vector<std::string>& targets)
 
         using optimal::OptimalSolution;
         using utility::common::operator""_bkdrHash;
-        for (uint8_t i = 0; i < Bottom<OptimalMethod>::value; ++i)
+        for (std::uint8_t i = 0; i < Bottom<OptimalMethod>::value; ++i)
         {
             if (!getBit<OptimalMethod>().test(OptimalMethod(i)))
             {
@@ -565,7 +579,7 @@ namespace search
     }                                                                               \
     while (0)
 
-void SearchSolution::binaryMethod(const double* const array, const uint32_t length, const double key)
+void SearchSolution::binaryMethod(const double* const array, const std::uint32_t length, const double key)
 {
     try
     {
@@ -580,7 +594,7 @@ void SearchSolution::binaryMethod(const double* const array, const uint32_t leng
     }
 }
 
-void SearchSolution::interpolationMethod(const double* const array, const uint32_t length, const double key)
+void SearchSolution::interpolationMethod(const double* const array, const std::uint32_t length, const double key)
 {
     try
     {
@@ -595,7 +609,7 @@ void SearchSolution::interpolationMethod(const double* const array, const uint32
     }
 }
 
-void SearchSolution::fibonacciMethod(const double* const array, const uint32_t length, const double key)
+void SearchSolution::fibonacciMethod(const double* const array, const std::uint32_t length, const double key)
 {
     try
     {
@@ -630,18 +644,19 @@ void runSearch(const std::vector<std::string>& targets)
     static_assert((arrayRangeForSearch1 < arrayRangeForSearch2) && (arrayLengthForSearch > 0));
     APP_ALGO_PRINT_TASK_BEGIN_TITLE(Type::search);
     auto* threads = command::getPublicThreadPool().newElement(std::min(
-        static_cast<uint32_t>(getBit<SearchMethod>().count()), static_cast<uint32_t>(Bottom<SearchMethod>::value)));
+        static_cast<std::uint32_t>(getBit<SearchMethod>().count()),
+        static_cast<std::uint32_t>(Bottom<SearchMethod>::value)));
 
     const std::shared_ptr<TargetBuilder<double>> builder =
         std::make_shared<TargetBuilder<double>>(arrayLengthForSearch, arrayRangeForSearch1, arrayRangeForSearch2);
     const auto searchFunctor =
-        [&](const std::string& threadName, void (*methodPtr)(const double* const, const uint32_t, const double))
+        [&](const std::string& threadName, void (*methodPtr)(const double* const, const std::uint32_t, const double))
     {
         threads->enqueue(
             threadName, methodPtr, builder->getOrderedArray().get(), builder->getLength(), builder->getSearchKey());
     };
 
-    for (uint8_t i = 0; i < Bottom<SearchMethod>::value; ++i)
+    for (std::uint8_t i = 0; i < Bottom<SearchMethod>::value; ++i)
     {
         if (!getBit<SearchMethod>().test(SearchMethod(i)))
         {
@@ -700,7 +715,7 @@ namespace sort
 #define SORT_PRINT_RESULT_CONTENT(method)                                                                           \
     do                                                                                                              \
     {                                                                                                               \
-        const uint32_t arrayBufferSize = length * maxAlignOfPrint;                                                  \
+        const std::uint32_t arrayBufferSize = length * maxAlignOfPrint;                                             \
         char arrayBuffer[arrayBufferSize + 1];                                                                      \
         arrayBuffer[0] = '\0';                                                                                      \
         COMMON_PRINT(                                                                                               \
@@ -711,7 +726,7 @@ namespace sort
     }                                                                                                               \
     while (0)
 
-void SortSolution::bubbleMethod(int* const array, const uint32_t length)
+void SortSolution::bubbleMethod(int* const array, const std::uint32_t length)
 {
     try
     {
@@ -726,7 +741,7 @@ void SortSolution::bubbleMethod(int* const array, const uint32_t length)
     }
 }
 
-void SortSolution::selectionMethod(int* const array, const uint32_t length)
+void SortSolution::selectionMethod(int* const array, const std::uint32_t length)
 {
     try
     {
@@ -741,7 +756,7 @@ void SortSolution::selectionMethod(int* const array, const uint32_t length)
     }
 }
 
-void SortSolution::insertionMethod(int* const array, const uint32_t length)
+void SortSolution::insertionMethod(int* const array, const std::uint32_t length)
 {
     try
     {
@@ -756,7 +771,7 @@ void SortSolution::insertionMethod(int* const array, const uint32_t length)
     }
 }
 
-void SortSolution::shellMethod(int* const array, const uint32_t length)
+void SortSolution::shellMethod(int* const array, const std::uint32_t length)
 {
     try
     {
@@ -771,7 +786,7 @@ void SortSolution::shellMethod(int* const array, const uint32_t length)
     }
 }
 
-void SortSolution::mergeMethod(int* const array, const uint32_t length)
+void SortSolution::mergeMethod(int* const array, const std::uint32_t length)
 {
     try
     {
@@ -786,7 +801,7 @@ void SortSolution::mergeMethod(int* const array, const uint32_t length)
     }
 }
 
-void SortSolution::quickMethod(int* const array, const uint32_t length)
+void SortSolution::quickMethod(int* const array, const std::uint32_t length)
 {
     try
     {
@@ -801,7 +816,7 @@ void SortSolution::quickMethod(int* const array, const uint32_t length)
     }
 }
 
-void SortSolution::heapMethod(int* const array, const uint32_t length)
+void SortSolution::heapMethod(int* const array, const std::uint32_t length)
 {
     try
     {
@@ -816,7 +831,7 @@ void SortSolution::heapMethod(int* const array, const uint32_t length)
     }
 }
 
-void SortSolution::countingMethod(int* const array, const uint32_t length)
+void SortSolution::countingMethod(int* const array, const std::uint32_t length)
 {
     try
     {
@@ -831,7 +846,7 @@ void SortSolution::countingMethod(int* const array, const uint32_t length)
     }
 }
 
-void SortSolution::bucketMethod(int* const array, const uint32_t length)
+void SortSolution::bucketMethod(int* const array, const std::uint32_t length)
 {
     try
     {
@@ -846,7 +861,7 @@ void SortSolution::bucketMethod(int* const array, const uint32_t length)
     }
 }
 
-void SortSolution::radixMethod(int* const array, const uint32_t length)
+void SortSolution::radixMethod(int* const array, const std::uint32_t length)
 {
     try
     {
@@ -881,16 +896,17 @@ void runSort(const std::vector<std::string>& targets)
     static_assert((arrayRangeForSort1 < arrayRangeForSort2) && (arrayLengthForSort > 0));
     APP_ALGO_PRINT_TASK_BEGIN_TITLE(Type::sort);
     auto* threads = command::getPublicThreadPool().newElement(std::min(
-        static_cast<uint32_t>(getBit<SortMethod>().count()), static_cast<uint32_t>(Bottom<SortMethod>::value)));
+        static_cast<std::uint32_t>(getBit<SortMethod>().count()),
+        static_cast<std::uint32_t>(Bottom<SortMethod>::value)));
 
     const std::shared_ptr<TargetBuilder<int>> builder =
         std::make_shared<TargetBuilder<int>>(arrayLengthForSort, arrayRangeForSort1, arrayRangeForSort2);
-    const auto sortFunctor = [&](const std::string& threadName, void (*methodPtr)(int* const, const uint32_t))
+    const auto sortFunctor = [&](const std::string& threadName, void (*methodPtr)(int* const, const std::uint32_t))
     {
         threads->enqueue(threadName, methodPtr, builder->getRandomArray().get(), builder->getLength());
     };
 
-    for (uint8_t i = 0; i < Bottom<SortMethod>::value; ++i)
+    for (std::uint8_t i = 0; i < Bottom<SortMethod>::value; ++i)
     {
         if (!getBit<SortMethod>().test(SortMethod(i)))
         {
