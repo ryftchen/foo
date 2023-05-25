@@ -132,7 +132,7 @@ int Match::bm(const char* text, const char* pattern, const std::uint32_t textLen
 
 void Match::fillBadCharRuleTable(std::uint32_t badCharRuleTable[], const char* pattern, const std::uint32_t patternLen)
 {
-    for (uint16_t i = 0; i < maxASCII; ++i)
+    for (std::uint16_t i = 0; i < maxASCII; ++i)
     {
         badCharRuleTable[i] = patternLen;
     }
@@ -216,7 +216,7 @@ void Match::fillBadCharShiftTableForHorspool(
     const char* pattern,
     const std::uint32_t patternLen)
 {
-    for (uint16_t i = 0; i < maxASCII; ++i)
+    for (std::uint16_t i = 0; i < maxASCII; ++i)
     {
         badCharShiftTable[i] = patternLen;
     }
@@ -260,7 +260,7 @@ void Match::fillBadCharShiftTableForSunday(
     const char* pattern,
     const std::uint32_t patternLen)
 {
-    for (uint16_t i = 0; i < maxASCII; ++i)
+    for (std::uint16_t i = 0; i < maxASCII; ++i)
     {
         badCharShiftTable[i] = patternLen + 1;
     }

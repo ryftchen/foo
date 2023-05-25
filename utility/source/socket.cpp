@@ -112,7 +112,7 @@ int TCPSocket::toSend(const std::string& message)
     return toSend(message.c_str(), message.length());
 }
 
-void TCPSocket::toConnect(const std::string& host, const uint16_t port, const std::function<void()> onConnected)
+void TCPSocket::toConnect(const std::string& host, const std::uint16_t port, const std::function<void()> onConnected)
 {
     struct addrinfo hints
     {
@@ -208,7 +208,7 @@ TCPServer::TCPServer() : Socket(tcp)
     setsockopt(sock, SOL_SOCKET, SO_REUSEPORT, &opt2, sizeof(int));
 }
 
-void TCPServer::toBind(const std::string& host, const uint16_t port)
+void TCPServer::toBind(const std::string& host, const std::uint16_t port)
 {
     if (inet_pton(AF_INET, host.c_str(), &address.sin_addr) == -1)
     {
@@ -231,7 +231,7 @@ void TCPServer::toBind(const std::string& host, const uint16_t port)
     }
 }
 
-void TCPServer::toBind(const uint16_t port)
+void TCPServer::toBind(const std::uint16_t port)
 {
     toBind("0.0.0.0", port);
 }
@@ -298,7 +298,7 @@ void TCPServer::toAccept(TCPServer* server)
     }
 }
 
-int UDPSocket::toSendTo(const char* bytes, const std::size_t length, const std::string& host, const uint16_t port)
+int UDPSocket::toSendTo(const char* bytes, const std::size_t length, const std::string& host, const std::uint16_t port)
 {
     sockaddr_in hostAddr{};
 
@@ -347,7 +347,7 @@ int UDPSocket::toSendTo(const char* bytes, const std::size_t length, const std::
     return sent;
 }
 
-int UDPSocket::toSendTo(const std::string& message, const std::string& host, const uint16_t port)
+int UDPSocket::toSendTo(const std::string& message, const std::string& host, const std::uint16_t port)
 {
     return toSendTo(message.c_str(), message.length(), host, port);
 }
@@ -362,7 +362,7 @@ int UDPSocket::toSend(const std::string& message)
     return toSend(message.c_str(), message.length());
 }
 
-void UDPSocket::toConnect(const std::string& host, const uint16_t port)
+void UDPSocket::toConnect(const std::string& host, const std::uint16_t port)
 {
     struct addrinfo hints
     {
@@ -484,7 +484,7 @@ void UDPSocket::toRecvFrom(UDPSocket* socket)
     }
 }
 
-void UDPServer::toBind(const std::string& host, const uint16_t port)
+void UDPServer::toBind(const std::string& host, const std::uint16_t port)
 {
     if (inet_pton(AF_INET, host.c_str(), &address.sin_addr) == -1)
     {
@@ -506,7 +506,7 @@ void UDPServer::toBind(const std::string& host, const uint16_t port)
     }
 }
 
-void UDPServer::toBind(const uint16_t port)
+void UDPServer::toBind(const std::uint16_t port)
 {
     toBind("0.0.0.0", port);
 }

@@ -24,7 +24,7 @@ public:
     inline void setBlocking() const;
     inline void setNonBlocking() const;
 
-    static constexpr uint16_t bufferSize{0xFFFF};
+    static constexpr std::uint16_t bufferSize{0xFFFF};
     sockaddr_in address{};
     enum Type
     {
@@ -63,7 +63,7 @@ public:
     int toSend(const std::string& message);
     void toConnect(
         const std::string& host,
-        const uint16_t port,
+        const std::uint16_t port,
         const std::function<void()> onConnected =
             []()
         {
@@ -83,8 +83,8 @@ class TCPServer : public Socket
 public:
     explicit TCPServer();
 
-    void toBind(const std::string& host, const uint16_t port);
-    void toBind(const uint16_t port);
+    void toBind(const std::string& host, const std::uint16_t port);
+    void toBind(const std::uint16_t port);
     void toListen();
     void toAccept(const bool detach = false);
     std::function<void(TCPSocket*)> onNewConnection{};
@@ -99,15 +99,15 @@ class UDPSocket : public Socket
 public:
     explicit UDPSocket(const int socketId = -1) : Socket(Type::udp, socketId){};
 
-    int toSendTo(const char* bytes, const std::size_t length, const std::string& host, const uint16_t port);
-    int toSendTo(const std::string& message, const std::string& host, const uint16_t port);
+    int toSendTo(const char* bytes, const std::size_t length, const std::string& host, const std::uint16_t port);
+    int toSendTo(const std::string& message, const std::string& host, const std::uint16_t port);
     int toSend(const char* bytes, const std::size_t length);
     int toSend(const std::string& message);
-    void toConnect(const std::string& host, const uint16_t port);
+    void toConnect(const std::string& host, const std::uint16_t port);
     void toReceive(const bool detach = false);
     void toReceiveFrom(const bool detach = false);
-    std::function<void(const std::string&, const std::string&, const uint16_t)> onMessageReceived{};
-    std::function<void(char*, const int, const std::string&, const uint16_t)> onRawMessageReceived{};
+    std::function<void(const std::string&, const std::string&, const std::uint16_t)> onMessageReceived{};
+    std::function<void(char*, const int, const std::string&, const std::uint16_t)> onRawMessageReceived{};
 
 private:
     static void toRecv(UDPSocket* socket);
@@ -117,8 +117,8 @@ private:
 class UDPServer : public UDPSocket
 {
 public:
-    void toBind(const std::string& host, const uint16_t port);
-    void toBind(const uint16_t port);
+    void toBind(const std::string& host, const std::uint16_t port);
+    void toBind(const std::uint16_t port);
     void setBroadcast();
 };
 } // namespace utility::socket
