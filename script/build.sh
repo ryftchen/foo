@@ -527,6 +527,9 @@ function set_compile_condition()
     CMAKE_CACHE_ENTRY=" -DCMAKE_BUILD_TYPE=${BUILD_TYPE}"
     if [[ ${DEV_OPT[pch]} = true ]]; then
         CMAKE_CACHE_ENTRY="${CMAKE_CACHE_ENTRY} -D_TOOLCHAIN_PCH=ON"
+        if [[ ${DEV_OPT[ccache]} = true ]]; then
+            export CCACHE_PCH_EXTSUM=true
+        fi
     fi
     if [[ ${DEV_OPT[unity]} = true ]]; then
         CMAKE_CACHE_ENTRY="${CMAKE_CACHE_ENTRY} -D_TOOLCHAIN_UNITY=ON"
