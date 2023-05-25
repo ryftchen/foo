@@ -105,7 +105,7 @@ void Log::runLogger()
 void Log::interfaceToStart()
 {
     utility::time::BlockingTimer timer;
-    uint16_t waitCount = 0;
+    std::uint16_t waitCount = 0;
     timer.set(
         [&]()
         {
@@ -138,7 +138,7 @@ void Log::interfaceToStop()
     }
 
     utility::time::BlockingTimer timer;
-    uint16_t waitCount = 0;
+    std::uint16_t waitCount = 0;
     timer.set(
         [&]()
         {

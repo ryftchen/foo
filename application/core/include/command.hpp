@@ -239,9 +239,9 @@ private:
     };
     // clang-format on
     //! @brief Latency for console.
-    static constexpr uint16_t latency{50};
+    static constexpr std::uint16_t latency{50};
     //! @brief Maximum latency for console.
-    static constexpr uint16_t maxLatency{latency * 10};
+    static constexpr std::uint16_t maxLatency{latency * 10};
 
     //! @brief Print output of the console mode command line.
     void printConsoleOutput() const;

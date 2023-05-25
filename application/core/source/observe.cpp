@@ -176,7 +176,7 @@ void Observe::runObserver()
 void Observe::interfaceToStart()
 {
     utility::time::BlockingTimer timer;
-    uint16_t waitCount = 0;
+    std::uint16_t waitCount = 0;
     timer.set(
         [&]()
         {
@@ -209,7 +209,7 @@ void Observe::interfaceToStop()
     }
 
     utility::time::BlockingTimer timer;
-    uint16_t waitCount = 0;
+    std::uint16_t waitCount = 0;
     timer.set(
         [&]()
         {
@@ -267,7 +267,7 @@ void Observe::createObserveServer()
         };
     };
 
-    udpServer.onMessageReceived = [&](const std::string& message, const std::string& host, const uint16_t port)
+    udpServer.onMessageReceived = [&](const std::string& message, const std::string& host, const std::uint16_t port)
     {
         try
         {

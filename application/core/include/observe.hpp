@@ -18,8 +18,8 @@
 
 namespace application::observe
 {
-constexpr uint16_t maxTimesOfWaitObserver = 10;
-constexpr uint16_t intervalOfWaitObserver = 5;
+constexpr std::uint16_t maxTimesOfWaitObserver = 10;
+constexpr std::uint16_t intervalOfWaitObserver = 5;
 constexpr std::uint32_t bufferSize = 8192;
 constexpr std::uint32_t maxBufferSize = bufferSize * 10;
 
@@ -89,9 +89,9 @@ public:
     void enableAlternate();
     static tlv::TLVValue parseTLVPacket(char* buffer, const int length);
     static constexpr std::string_view tcpHost{"localhost"};
-    static constexpr uint16_t tcpPort{61501};
+    static constexpr std::uint16_t tcpPort{61501};
     static constexpr std::string_view udpHost{"localhost"};
-    static constexpr uint16_t udpPort{61502};
+    static constexpr std::uint16_t udpPort{61502};
 
     struct ShareMemory
     {

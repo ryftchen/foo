@@ -46,11 +46,11 @@
 namespace application::log
 {
 //! @brief Length of the log file path.
-constexpr uint16_t logPathLength = 32;
+constexpr std::uint16_t logPathLength = 32;
 //! @brief The maximum number of times to wait for the logger to change to the target state.
-constexpr uint16_t maxTimesOfWaitLogger = 10;
+constexpr std::uint16_t maxTimesOfWaitLogger = 10;
 //! @brief The time interval (ms) to wait for the logger to change to the target state.
-constexpr uint16_t intervalOfWaitLogger = 5;
+constexpr std::uint16_t intervalOfWaitLogger = 5;
 //! @brief Log file directory.
 constexpr std::string_view logDirectory{"./temporary"};
 //! @brief Prefix of debug level in log.

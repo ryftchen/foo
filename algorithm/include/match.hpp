@@ -64,7 +64,7 @@ public:
 
 private:
     //! @brief Maximum ASCII value.
-    static constexpr uint16_t maxASCII = 256;
+    static constexpr std::uint16_t maxASCII = 256;
 
     //! @brief The rolling hash function.
     //! @param str - input data
