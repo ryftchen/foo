@@ -131,7 +131,7 @@ Command::~Command()
 {
     try
     {
-        assignedTask.reset();
+        dispatchedTask.reset();
     }
     catch (const std::exception& error)
     {
@@ -235,7 +235,7 @@ void Command::validateBasicTask()
             throwExcessArgumentException();
         }
 
-        assignedTask.basicTask.primaryBit.set(BasicTask::Category(i));
+        dispatchedTask.basicTask.primaryBit.set(BasicTask::Category(i));
     }
 }
 
@@ -296,22 +296,23 @@ void Command::validateGeneralTask()
 
 bool Command::checkTask() const
 {
-    return !assignedTask.empty();
+    return !dispatchedTask.empty();
 }
 
 void Command::dispatchTask() const
 {
-    if (!assignedTask.basicTask.empty())
+    if (!dispatchedTask.basicTask.empty())
     {
         for (std::uint8_t i = 0; i < BasicTask::Bottom<BasicTask::Category>::value; ++i)
         {
-            if (assignedTask.basicTask.primaryBit.test(BasicTask::Category(i)))
+            if (dispatchedTask.basicTask.primaryBit.test(BasicTask::Category(i)))
             {
                 (this->*std::next(basicTaskDispatcher.cbegin(), BasicTask::Category(i))->second)();
             }
         }
     }
-    else if (!assignedTask.generalTask.empty() && !assignedTask.basicTask.primaryBit.test(BasicTask::Category::help))
+    else if (
+        !dispatchedTask.generalTask.empty() && !dispatchedTask.basicTask.primaryBit.test(BasicTask::Category::help))
     {
         for (std::uint8_t i = 0; i < GeneralTask::Bottom<GeneralTask::Category>::value; ++i)
         {
@@ -394,7 +395,7 @@ void Command::printConsoleOutput() const
 
 void Command::printHelpMessage() const
 {
-    if (assignedTask.generalTask.empty())
+    if (dispatchedTask.generalTask.empty())
     {
         std::cout << program.help().str();
         return;

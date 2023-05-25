@@ -148,10 +148,10 @@ private:
     };
 #pragma pack()
     //! @brief Manage all types of tasks.
-    struct AssignedTask
+    struct DispatchedTask
     {
-        //! @brief Construct a new AssignedTask object.
-        AssignedTask() = default;
+        //! @brief Construct a new DispatchedTask object.
+        DispatchedTask() = default;
 
         //! @brief A BasicTask object for managing basic type tasks.
         BasicTask basicTask;
@@ -167,7 +167,7 @@ private:
             basicTask.reset();
             generalTask.reset();
         };
-    } /** @brief A AssignedTask object for managing all types of tasks. */ assignedTask{};
+    } /** @brief A DispatchedTask object for managing all types of tasks. */ dispatchedTask{};
 
     //! @brief Alias for the functor to perform the task.
     typedef void (*PerformTaskFunctor)(const std::vector<std::string>&);
@@ -267,7 +267,7 @@ private:
 
 inline void Command::throwExcessArgumentException()
 {
-    assignedTask.reset();
+    dispatchedTask.reset();
     throw std::runtime_error("<COMMAND> Excess argument.");
 }
 
