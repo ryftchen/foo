@@ -69,9 +69,8 @@ private:
     //! @brief Dispatch specific tasks.
     void dispatchTask() const;
 
-#pragma pack(8)
     //! @brief Manage basic tasks.
-    class BasicTask
+    class alignas(8) BasicTask
     {
     public:
         //! @brief Represent the maximum value of an enum.
@@ -105,7 +104,7 @@ private:
     };
 
     //! @brief Manage general tasks.
-    class GeneralTask
+    class alignas(8) GeneralTask
     {
     public:
         //! @brief Represent the maximum value of an enum.
@@ -146,7 +145,7 @@ private:
             app_num::getTask().reset();
         }
     };
-#pragma pack()
+
     //! @brief Manage all types of tasks.
     struct DispatchedTask
     {
