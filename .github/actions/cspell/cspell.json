@@ -21,6 +21,7 @@
         "DCMAKE",
         "distcc",
         "Doxyfile",
+        "EXTSUM",
         "Griewank",
         "indexgenerator",
         "inorder",
