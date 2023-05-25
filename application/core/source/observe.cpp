@@ -5,8 +5,6 @@
 //! @copyright Copyright (c) 2022-2023
 
 #include "observe.hpp"
-#include <exception>
-#include <iostream>
 #include "log.hpp"
 #ifndef __PRECOMPILED_HEADER
 #include <sys/ipc.h>
@@ -16,6 +14,9 @@
 #else
 #include "application/pch/precompiled_header.hpp"
 #endif // __PRECOMPILED_HEADER
+#include "utility/include/common.hpp"
+#include "utility/include/file.hpp"
+#include "utility/include/time.hpp"
 
 namespace application::observe
 {
@@ -61,7 +62,7 @@ int tlvDecode(char* pbuf, const int len, TLVValue& val)
     int type = 0, length = 0, sum = 0;
 
     dec.read<int>(&type);
-    if (TLVType::root != type)
+    if (TLVType::header != type)
     {
         return -1;
     }
@@ -74,7 +75,7 @@ int tlvDecode(char* pbuf, const int len, TLVValue& val)
         dec.read<int>(&length);
         switch (type)
         {
-            case TLVType::quit:
+            case TLVType::stop:
                 dec.read<bool>(&val.stopFlag);
                 sum -= (offset + sizeof(bool));
                 break;
@@ -100,10 +101,10 @@ int tlvEncode(char* pbuf, int& len, const TLVValue& val)
     constexpr int offset = sizeof(int) + sizeof(int);
     constexpr int sum = (offset + sizeof(bool)) + (offset + sizeof(int));
     Packet enc(pbuf, len);
-    enc.write<int>(TLVType::root);
+    enc.write<int>(TLVType::header);
     enc.write<int>(sum);
 
-    enc.write<int>(TLVType::quit);
+    enc.write<int>(TLVType::stop);
     enc.write<int>(sizeof(bool));
     enc.write<bool>(val.stopFlag);
 
@@ -237,50 +238,62 @@ void Observe::createObserveServer()
     {
         newSocket->onMessageReceived = [newSocket](const std::string& message)
         {
-            char buffer[bufferSize] = {'\0'};
-            switch (utility::common::bkdrHash(message.data()))
+            try
             {
-                case "stop"_bkdrHash:
-                    if (buildPacketForStop(buffer) > 0)
-                    {
-                        newSocket->toSend(buffer, sizeof(buffer));
-                        newSocket->setNonBlocking();
-                    }
-                    break;
-                case "log"_bkdrHash:
-                    if (buildPacketForLog(buffer) > 0)
-                    {
-                        newSocket->toSend(buffer, sizeof(buffer));
-                    }
-                    break;
-                default:
-                    LOG_WRN("<OBSERVE> Unknown TCP message type.");
-                    break;
+                char buffer[bufferSize] = {'\0'};
+                switch (utility::common::bkdrHash(message.data()))
+                {
+                    case "stop"_bkdrHash:
+                        if (buildPacketForStop(buffer) > 0)
+                        {
+                            newSocket->toSend(buffer, sizeof(buffer));
+                            newSocket->setNonBlocking();
+                        }
+                        break;
+                    case "log"_bkdrHash:
+                        if (buildPacketForLog(buffer) > 0)
+                        {
+                            newSocket->toSend(buffer, sizeof(buffer));
+                        }
+                        break;
+                    default:
+                        throw std::logic_error("<OBSERVE> Unknown TCP message.");
+                }
+            }
+            catch (std::exception& error)
+            {
+                LOG_WRN(error.what());
             }
         };
     };
 
     udpServer.onMessageReceived = [&](const std::string& message, const std::string& host, const uint16_t port)
     {
-        char buffer[bufferSize] = {'\0'};
-        switch (utility::common::bkdrHash(message.data()))
+        try
         {
-            case "stop"_bkdrHash:
-                if (buildPacketForStop(buffer) > 0)
-                {
-                    udpServer.toSendTo(buffer, sizeof(buffer), host, port);
-                    udpServer.setNonBlocking();
-                }
-                break;
-            case "log"_bkdrHash:
-                if (buildPacketForLog(buffer) > 0)
-                {
-                    udpServer.toSendTo(buffer, sizeof(buffer), host, port);
-                }
-                break;
-            default:
-                LOG_WRN("<OBSERVE> Unknown UDP message type.");
-                break;
+            char buffer[bufferSize] = {'\0'};
+            switch (utility::common::bkdrHash(message.data()))
+            {
+                case "stop"_bkdrHash:
+                    if (buildPacketForStop(buffer) > 0)
+                    {
+                        udpServer.toSendTo(buffer, sizeof(buffer), host, port);
+                        udpServer.setNonBlocking();
+                    }
+                    break;
+                case "log"_bkdrHash:
+                    if (buildPacketForLog(buffer) > 0)
+                    {
+                        udpServer.toSendTo(buffer, sizeof(buffer), host, port);
+                    }
+                    break;
+                default:
+                    throw std::logic_error("<OBSERVE> Unknown UDP message.");
+            }
+        }
+        catch (std::exception& error)
+        {
+            LOG_WRN(error.what());
         }
     };
 }
@@ -331,18 +344,18 @@ tlv::TLVValue Observe::parseTLVPacket(char* buffer, const int length)
         void* shm = shmat(shmId, nullptr, 0);
         if (nullptr == shm)
         {
-            throw std::logic_error("<OBSERVE> Failed to attach shared memory.");
+            throw std::runtime_error("<OBSERVE> Failed to attach shared memory.");
         }
-        application::observe::Observe::ShareMemory* shareMemory =
+        application::observe::Observe::ShareMemory* shareMem =
             reinterpret_cast< // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
                 application::observe::Observe::ShareMemory*>(shm);
-        shareMemory->signal.store(true);
+        shareMem->signal.store(true);
         while (true)
         {
-            if (shareMemory->signal.load())
+            if (shareMem->signal.load())
             {
-                std::cout << "\r\n" << shareMemory->buffer << std::endl;
-                shareMemory->signal.store(false);
+                std::cout << "\r\n" << shareMem->buffer << std::endl;
+                shareMem->signal.store(false);
                 break;
             }
             utility::time::millisecondLevelSleep(1);
@@ -362,12 +375,12 @@ int Observe::buildPacketForLog(char* buffer)
         IPC_CREAT | IPC_EXCL | S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
     if (-1 == shmId)
     {
-        throw std::logic_error("<OBSERVE> Failed to create shared memory.");
+        throw std::runtime_error("<OBSERVE> Failed to create shared memory.");
     }
     void* shm = shmat(shmId, nullptr, 0);
     if (nullptr == shm)
     {
-        throw std::logic_error("<OBSERVE> Failed to attach shared memory.");
+        throw std::runtime_error("<OBSERVE> Failed to attach shared memory.");
     }
     ShareMemory* shareMemory =
         reinterpret_cast<ShareMemory*>(shm); // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
