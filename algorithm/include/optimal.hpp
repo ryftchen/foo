@@ -201,7 +201,7 @@ private:
     //! @brief Alias for the history information in the swarm.
     using History = std::map<double, double, Smaller>;
     //! @brief Store the information of society and history in the swarm.
-    struct alignas(64) Storage
+    struct Storage
     {
         //! @brief Construct a new Storage object.
         //! @param society - society information

@@ -20,6 +20,7 @@ typedef int Type;
 extern "C"
 {
 #endif // __cplusplus
+#pragma pack(8)
     //! @brief The node of the binary search tree.
     typedef struct BSTreeNode
     {
@@ -32,6 +33,7 @@ extern "C"
         //! @brief Pointer to the parent node.
         struct BSTreeNode* parent;
     } Node, *BSTree;
+#pragma pack()
 #ifdef __cplusplus
 }
 #endif // __cplusplus
@@ -131,6 +133,7 @@ typedef int Type;
 extern "C"
 {
 #endif // __cplusplus
+#pragma pack(8)
     //! @brief The node of the AVL tree.
     typedef struct AVLTreeNode
     {
@@ -143,6 +146,7 @@ extern "C"
         //! @brief Pointer to the right child node.
         struct AVLTreeNode* right;
     } Node, *AVLTree;
+#pragma pack()
 #ifdef __cplusplus
 }
 #endif // __cplusplus
@@ -243,6 +247,7 @@ typedef int Type;
 extern "C"
 {
 #endif // __cplusplus
+#pragma pack(8)
     //! @brief The node of the splay tree.
     typedef struct SplayTreeNode
     {
@@ -253,6 +258,7 @@ extern "C"
         //! @brief Pointer to the right child node.
         struct SplayTreeNode* right;
     } Node, *SplayTree;
+#pragma pack()
 #ifdef __cplusplus
 }
 #endif // __cplusplus
