@@ -37,7 +37,7 @@ public:
     struct Bottom;
 
     //! @brief Enumerate specific algorithm tasks.
-    enum Type : uint8_t
+    enum Type : std::uint8_t
     {
         match,
         notation,
@@ -47,7 +47,7 @@ public:
     };
 
     //! @brief Enumerate specific match methods.
-    enum MatchMethod : uint8_t
+    enum MatchMethod : std::uint8_t
     {
         rabinKarp,
         knuthMorrisPratt,
@@ -60,11 +60,11 @@ public:
     struct Bottom<MatchMethod>
     {
         //! @brief Maximum value of the MatchMethod enum.
-        static constexpr uint8_t value = 5;
+        static constexpr std::uint8_t value = 5;
     };
 
     //! @brief Enumerate specific notation methods.
-    enum NotationMethod : uint8_t
+    enum NotationMethod : std::uint8_t
     {
         prefix,
         postfix
@@ -74,11 +74,11 @@ public:
     struct Bottom<NotationMethod>
     {
         //! @brief Maximum value of the NotationMethod enum.
-        static constexpr uint8_t value = 2;
+        static constexpr std::uint8_t value = 2;
     };
 
     //! @brief Enumerate specific optimal methods.
-    enum OptimalMethod : uint8_t
+    enum OptimalMethod : std::uint8_t
     {
         gradient,
         annealing,
@@ -90,11 +90,11 @@ public:
     struct Bottom<OptimalMethod>
     {
         //! @brief Maximum value of the OptimalMethod enum.
-        static constexpr uint8_t value = 4;
+        static constexpr std::uint8_t value = 4;
     };
 
     //! @brief Enumerate specific search methods.
-    enum SearchMethod : uint8_t
+    enum SearchMethod : std::uint8_t
     {
         binary,
         interpolation,
@@ -105,11 +105,11 @@ public:
     struct Bottom<SearchMethod>
     {
         //! @brief Maximum value of the SearchMethod enum.
-        static constexpr uint8_t value = 3;
+        static constexpr std::uint8_t value = 3;
     };
 
     //! @brief Enumerate specific sort methods.
-    enum SortMethod : uint8_t
+    enum SortMethod : std::uint8_t
     {
         bubble,
         selection,
@@ -127,7 +127,7 @@ public:
     struct Bottom<SortMethod>
     {
         //! @brief Maximum value of the SortMethod enum.
-        static constexpr uint8_t value = 10;
+        static constexpr std::uint8_t value = 10;
     };
 
     //! @brief Bit flags for managing match methods.
@@ -257,13 +257,13 @@ constexpr double arrayRangeForSearch1 = -50.0;
 //! @brief Maximum of the array for search methods.
 constexpr double arrayRangeForSearch2 = 150.0;
 //! @brief Length of the array for search methods.
-constexpr uint32_t arrayLengthForSearch = 53;
+constexpr std::uint32_t arrayLengthForSearch = 53;
 //! @brief Minimum of the array for sort methods.
 constexpr int arrayRangeForSort1 = -50;
 //! @brief Maximum of the array for sort methods.
 constexpr int arrayRangeForSort2 = 150;
 //! @brief Length of the array for sort methods.
-constexpr uint32_t arrayLengthForSort = 53;
+constexpr std::uint32_t arrayLengthForSort = 53;
 
 //! @brief Rastrigin function.
 class Rastrigin : public algorithm::optimal::Function
@@ -325,19 +325,31 @@ public:
     //! @param pattern - single pattern
     //! @param textLen - length of matching text
     //! @param patternLen - length of single pattern
-    static void rkMethod(const char* text, const char* pattern, const uint32_t textLen, const uint32_t patternLen);
+    static void rkMethod(
+        const char* text,
+        const char* pattern,
+        const std::uint32_t textLen,
+        const std::uint32_t patternLen);
     //! @brief The Knuth-Morris-Pratt method.
     //! @param text - matching text
     //! @param pattern - single pattern
     //! @param textLen - length of matching text
     //! @param patternLen - length of single pattern
-    static void kmpMethod(const char* text, const char* pattern, const uint32_t textLen, const uint32_t patternLen);
+    static void kmpMethod(
+        const char* text,
+        const char* pattern,
+        const std::uint32_t textLen,
+        const std::uint32_t patternLen);
     //! @brief The Boyer-Moore method.
     //! @param text - matching text
     //! @param pattern - single pattern
     //! @param textLen - length of matching text
     //! @param patternLen - length of single pattern
-    static void bmMethod(const char* text, const char* pattern, const uint32_t textLen, const uint32_t patternLen);
+    static void bmMethod(
+        const char* text,
+        const char* pattern,
+        const std::uint32_t textLen,
+        const std::uint32_t patternLen);
     //! @brief The Horspool method.
     //! @param text - matching text
     //! @param pattern - single pattern
@@ -346,18 +358,22 @@ public:
     static void horspoolMethod(
         const char* text,
         const char* pattern,
-        const uint32_t textLen,
-        const uint32_t patternLen);
+        const std::uint32_t textLen,
+        const std::uint32_t patternLen);
     //! @brief The Sunday method.
     //! @param text - matching text
     //! @param pattern - single pattern
     //! @param textLen - length of matching text
     //! @param patternLen - length of single pattern
-    static void sundayMethod(const char* text, const char* pattern, const uint32_t textLen, const uint32_t patternLen);
+    static void sundayMethod(
+        const char* text,
+        const char* pattern,
+        const std::uint32_t textLen,
+        const std::uint32_t patternLen);
 };
 
 //! @brief Maximum number per line of printing.
-constexpr uint32_t maxNumPerLineOfPrint = 50;
+constexpr std::uint32_t maxNumPerLineOfPrint = 50;
 
 //! @brief Builder for the target.
 class TargetBuilder
@@ -380,7 +396,7 @@ public:
     TargetBuilder& operator=(const TargetBuilder&) = delete;
 
     //! @brief Maximum digit for the target text.
-    static constexpr uint32_t maxDigit{100000};
+    static constexpr std::uint32_t maxDigit{100000};
 
     //! @brief Get the matching text.
     //! @return matching text
@@ -401,7 +417,7 @@ private:
     //! @brief Set the matching text.
     //! @param text - target matching text
     //! @param textLen - length of matching text
-    static void setMatchingText(char* text, const uint32_t textLen)
+    static void setMatchingText(char* text, const std::uint32_t textLen)
     {
         assert((nullptr != text) && (textLen > 0));
         mpfr_t x;
@@ -437,7 +453,7 @@ private:
     //! @brief Calculate precision by digit.
     //! @param digit - digit for the target text
     //! @return precision converted from digit
-    static inline int calculatePrecision(const uint32_t digit)
+    static inline int calculatePrecision(const std::uint32_t digit)
     {
         return static_cast<int>(std::ceil(static_cast<double>(digit) * std::log2(mpfrBase)));
     }
@@ -603,23 +619,23 @@ public:
     //! @param array - array to be searched
     //! @param length - length of array
     //! @param key - search key
-    static void binaryMethod(const double* const array, const uint32_t length, const double key);
+    static void binaryMethod(const double* const array, const std::uint32_t length, const double key);
     //! @brief Interpolation.
     //! @param array - array to be searched
     //! @param length - length of array
     //! @param key - search key
-    static void interpolationMethod(const double* const array, const uint32_t length, const double key);
+    static void interpolationMethod(const double* const array, const std::uint32_t length, const double key);
     //! @brief Fibonacci.
     //! @param array - array to be searched
     //! @param length - length of array
     //! @param key - search key
-    static void fibonacciMethod(const double* const array, const uint32_t length, const double key);
+    static void fibonacciMethod(const double* const array, const std::uint32_t length, const double key);
 };
 
 //! @brief Maximum alignment length per element of printing.
-constexpr uint8_t maxAlignOfPrint = 16;
+constexpr std::uint8_t maxAlignOfPrint = 16;
 //! @brief Maximum columns per row of printing.
-constexpr uint8_t maxColumnOfPrint = 10;
+constexpr std::uint8_t maxColumnOfPrint = 10;
 
 //! @brief Check whether it is the number type.
 //! @tparam T - type of inspection to be performed
@@ -640,7 +656,7 @@ public:
     //! @param length - length of array
     //! @param left - the left boundary of the array
     //! @param right - the right boundary of the array
-    TargetBuilder(const uint32_t length, const T left, const T right) :
+    TargetBuilder(const std::uint32_t length, const T left, const T right) :
         length(length), orderedArray(std::make_unique<T[]>(length))
     {
         setOrderedArray<T>(orderedArray.get(), length, left, right);
@@ -669,7 +685,7 @@ public:
     inline const std::unique_ptr<T[]>& getOrderedArray() const { return orderedArray; }
     //! @brief Get the length.
     //! @return length
-    [[nodiscard]] inline uint32_t getLength() const { return length; }
+    [[nodiscard]] inline std::uint32_t getLength() const { return length; }
     //! @brief Get the search key.
     //! @return T search key
     inline T getSearchKey() const { return searchKey; }
@@ -683,14 +699,14 @@ public:
     template <typename V>
     requires(isNumber<V>()) static char* formatArray(
         const T* const restrict array,
-        const uint32_t length,
+        const std::uint32_t length,
         char* const restrict buffer,
-        const uint32_t bufferSize)
+        const std::uint32_t bufferSize)
     {
-        uint32_t align = 0;
-        for (uint32_t i = 0; i < length; ++i)
+        std::uint32_t align = 0;
+        for (std::uint32_t i = 0; i < length; ++i)
         {
-            align = std::max(static_cast<uint32_t>(std::to_string(*(array + i)).length()), align);
+            align = std::max(static_cast<std::uint32_t>(std::to_string(*(array + i)).length()), align);
         }
 
         const char* format = " ";
@@ -704,8 +720,8 @@ public:
         }
 
         int formatSize = 0;
-        uint32_t completeSize = 0;
-        for (uint32_t i = 0; i < length; ++i)
+        std::uint32_t completeSize = 0;
+        for (std::uint32_t i = 0; i < length; ++i)
         {
             formatSize =
                 std::snprintf(buffer + completeSize, bufferSize - completeSize, format, align + 1, *(array + i));
@@ -733,7 +749,7 @@ private:
     //! @brief Ordered array.
     const std::unique_ptr<T[]> orderedArray;
     //! @brief Length of the ordered array.
-    const uint32_t length;
+    const std::uint32_t length;
     //! @brief Search key.
     T searchKey{0};
 
@@ -752,20 +768,20 @@ private:
     template <typename V>
     requires std::is_integral<V>::value static void setOrderedArray(
         T array[],
-        const uint32_t length,
+        const std::uint32_t length,
         const T left,
         const T right)
     {
         std::mt19937 engine{std::random_device{}()};
         std::uniform_int_distribution<int> dist(left, right);
-        for (uint32_t i = 0; i < length; ++i)
+        for (std::uint32_t i = 0; i < length; ++i)
         {
             array[i] = dist(engine);
         }
         std::sort(array, array + length);
 
 #ifdef __RUNTIME_PRINTING
-        const uint32_t arrayBufferSize = length * maxAlignOfPrint;
+        const std::uint32_t arrayBufferSize = length * maxAlignOfPrint;
         char arrayBuffer[arrayBufferSize + 1];
         arrayBuffer[0] = '\0';
         std::cout << "\r\nGenerate " << length << " ordered integral numbers from " << left << " to " << right << ":\n"
@@ -782,20 +798,20 @@ private:
     template <typename V>
     requires std::is_floating_point<V>::value static void setOrderedArray(
         T array[],
-        const uint32_t length,
+        const std::uint32_t length,
         const T left,
         const T right)
     {
         std::mt19937 engine{std::random_device{}()};
         std::uniform_real_distribution<double> dist(left, right);
-        for (uint32_t i = 0; i < length; ++i)
+        for (std::uint32_t i = 0; i < length; ++i)
         {
             array[i] = dist(engine);
         }
         std::sort(array, array + length);
 
 #ifdef __RUNTIME_PRINTING
-        const uint32_t arrayBufferSize = length * maxAlignOfPrint;
+        const std::uint32_t arrayBufferSize = length * maxAlignOfPrint;
         char arrayBuffer[arrayBufferSize + 1];
         arrayBuffer[0] = '\0';
         std::cout << "\r\nGenerate " << length << " ordered floating point numbers from " << left << " to " << right
@@ -822,49 +838,49 @@ public:
     //! @brief The bubble method.
     //! @param array - array to be sorted
     //! @param length - length of array
-    static void bubbleMethod(int* const array, const uint32_t length);
+    static void bubbleMethod(int* const array, const std::uint32_t length);
     //! @brief The selection method.
     //! @param array - array to be sorted
     //! @param length - length of array
-    static void selectionMethod(int* const array, const uint32_t length);
+    static void selectionMethod(int* const array, const std::uint32_t length);
     //! @brief The insertion method.
     //! @param array - array to be sorted
     //! @param length - length of array
-    static void insertionMethod(int* const array, const uint32_t length);
+    static void insertionMethod(int* const array, const std::uint32_t length);
     //! @brief The shell method.
     //! @param array - array to be sorted
     //! @param length - length of array
-    static void shellMethod(int* const array, const uint32_t length);
+    static void shellMethod(int* const array, const std::uint32_t length);
     //! @brief The merge method.
     //! @param array - array to be sorted
     //! @param length - length of array
-    static void mergeMethod(int* const array, const uint32_t length);
+    static void mergeMethod(int* const array, const std::uint32_t length);
     //! @brief The quick method.
     //! @param array - array to be sorted
     //! @param length - length of array
-    static void quickMethod(int* const array, const uint32_t length);
+    static void quickMethod(int* const array, const std::uint32_t length);
     //! @brief The heap method.
     //! @param array - array to be sorted
     //! @param length - length of array
-    static void heapMethod(int* const array, const uint32_t length);
+    static void heapMethod(int* const array, const std::uint32_t length);
     //! @brief The counting method.
     //! @param array - array to be sorted
     //! @param length - length of array
-    static void countingMethod(int* const array, const uint32_t length);
+    static void countingMethod(int* const array, const std::uint32_t length);
     //! @brief The bucket method.
     //! @param array - array to be sorted
     //! @param length - length of array
-    static void bucketMethod(int* const array, const uint32_t length);
+    static void bucketMethod(int* const array, const std::uint32_t length);
     //! @brief The radix method.
     //! @param array - array to be sorted
     //! @param length - length of array
-    static void radixMethod(int* const array, const uint32_t length);
+    static void radixMethod(int* const array, const std::uint32_t length);
 };
 
 //! @brief Maximum alignment length per element of printing.
-constexpr uint8_t maxAlignOfPrint = 16;
+constexpr std::uint8_t maxAlignOfPrint = 16;
 //! @brief Maximum columns per row of printing.
-constexpr uint8_t maxColumnOfPrint = 10;
+constexpr std::uint8_t maxColumnOfPrint = 10;
 
 //! @brief Check whether it is the number type.
 //! @tparam T - type of inspection to be performed
@@ -885,7 +901,7 @@ public:
     //! @param length - length of array
     //! @param left - the left boundary of the array
     //! @param right - the right boundary of the array
-    TargetBuilder(const uint32_t length, const T left, const T right) :
+    TargetBuilder(const std::uint32_t length, const T left, const T right) :
         length(length), randomArray(std::make_unique<T[]>(length))
     {
         setRandomArray<T>(randomArray.get(), length, left, right);
@@ -912,7 +928,7 @@ public:
     inline const std::unique_ptr<T[]>& getRandomArray() const { return randomArray; }
     //! @brief Get the length.
     //! @return length
-    [[nodiscard]] inline uint32_t getLength() const { return length; }
+    [[nodiscard]] inline std::uint32_t getLength() const { return length; }
     //! @brief Format array for printing.
     //! @tparam V - type of array
     //! @param array - array to be formatted
@@ -923,14 +939,14 @@ public:
     template <typename V>
     requires(isNumber<V>()) static char* formatArray(
         const T* const restrict array,
-        const uint32_t length,
+        const std::uint32_t length,
         char* const restrict buffer,
-        const uint32_t bufferSize)
+        const std::uint32_t bufferSize)
     {
-        uint32_t align = 0;
-        for (uint32_t i = 0; i < length; ++i)
+        std::uint32_t align = 0;
+        for (std::uint32_t i = 0; i < length; ++i)
         {
-            align = std::max(static_cast<uint32_t>(std::to_string(*(array + i)).length()), align);
+            align = std::max(static_cast<std::uint32_t>(std::to_string(*(array + i)).length()), align);
         }
 
         const char* format = " ";
@@ -944,8 +960,8 @@ public:
         }
 
         int formatSize = 0;
-        uint32_t completeSize = 0;
-        for (uint32_t i = 0; i < length; ++i)
+        std::uint32_t completeSize = 0;
+        for (std::uint32_t i = 0; i < length; ++i)
         {
             formatSize =
                 std::snprintf(buffer + completeSize, bufferSize - completeSize, format, align + 1, *(array + i));
@@ -973,7 +989,7 @@ private:
     //! @brief Random array.
     const std::unique_ptr<T[]> randomArray;
     //! @brief Length of the random array.
-    const uint32_t length;
+    const std::uint32_t length;
 
     //! @brief Deep copy for copy constructor.
     //! @param rhs - right-hand side
@@ -990,19 +1006,19 @@ private:
     template <typename V>
     requires std::is_integral<V>::value static void setRandomArray(
         T array[],
-        const uint32_t length,
+        const std::uint32_t length,
         const T left,
         const T right)
     {
         std::mt19937 engine{std::random_device{}()};
         std::uniform_int_distribution<int> dist(left, right);
-        for (uint32_t i = 0; i < length; ++i)
+        for (std::uint32_t i = 0; i < length; ++i)
         {
             array[i] = dist(engine);
         }
 
 #ifdef __RUNTIME_PRINTING
-        const uint32_t arrayBufferSize = length * maxAlignOfPrint;
+        const std::uint32_t arrayBufferSize = length * maxAlignOfPrint;
         char arrayBuffer[arrayBufferSize + 1];
         arrayBuffer[0] = '\0';
         std::cout << "\r\nGenerate " << length << " random integral numbers from " << left << " to " << right << ":\n"
@@ -1018,19 +1034,19 @@ private:
     template <typename V>
     requires std::is_floating_point<V>::value static void setRandomArray(
         T array[],
-        const uint32_t length,
+        const std::uint32_t length,
         const T left,
         const T right)
     {
         std::mt19937 engine{std::random_device{}()};
         std::uniform_real_distribution<double> dist(left, right);
-        for (uint32_t i = 0; i < length; ++i)
+        for (std::uint32_t i = 0; i < length; ++i)
         {
             array[i] = dist(engine);
         }
 
 #ifdef __RUNTIME_PRINTING
-        const uint32_t arrayBufferSize = length * maxAlignOfPrint;
+        const std::uint32_t arrayBufferSize = length * maxAlignOfPrint;
         char arrayBuffer[arrayBufferSize + 1];
         arrayBuffer[0] = '\0';
         std::cout << "\r\nGenerate " << length << " random floating point numbers from " << left << " to " << right

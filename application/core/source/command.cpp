@@ -223,7 +223,7 @@ void Command::backgroundHandler()
 
 void Command::validateBasicTask()
 {
-    for (uint8_t i = 0; i < BasicTask::Bottom<BasicTask::Category>::value; ++i)
+    for (std::uint8_t i = 0; i < BasicTask::Bottom<BasicTask::Category>::value; ++i)
     {
         if (!program.isUsed(std::next(basicTaskDispatcher.cbegin(), BasicTask::Category(i))->first))
         {
@@ -303,7 +303,7 @@ void Command::dispatchTask() const
 {
     if (!assignedTask.basicTask.empty())
     {
-        for (uint8_t i = 0; i < BasicTask::Bottom<BasicTask::Category>::value; ++i)
+        for (std::uint8_t i = 0; i < BasicTask::Bottom<BasicTask::Category>::value; ++i)
         {
             if (assignedTask.basicTask.primaryBit.test(BasicTask::Category(i)))
             {
@@ -313,7 +313,7 @@ void Command::dispatchTask() const
     }
     else if (!assignedTask.generalTask.empty() && !assignedTask.basicTask.primaryBit.test(BasicTask::Category::help))
     {
-        for (uint8_t i = 0; i < GeneralTask::Bottom<GeneralTask::Category>::value; ++i)
+        for (std::uint8_t i = 0; i < GeneralTask::Bottom<GeneralTask::Category>::value; ++i)
         {
             switch (GeneralTask::Category(i))
             {

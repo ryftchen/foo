@@ -116,13 +116,13 @@ public:
 
     friend class FSM<Log>;
     //! @brief Enumerate specific output types.
-    enum class OutputType : uint8_t
+    enum class OutputType : std::uint8_t
     {
         add,
         over
     };
     //! @brief Enumerate specific output levels.
-    enum class OutputLevel : uint8_t
+    enum class OutputLevel : std::uint8_t
     {
         debug,
         info,
@@ -130,14 +130,14 @@ public:
         error
     };
     //! @brief Enumerate specific output targets.
-    enum class OutputTarget : uint8_t
+    enum class OutputTarget : std::uint8_t
     {
         file,
         terminal,
         all
     };
     //! @brief Enumerate specific states for FSM.
-    enum State : uint8_t
+    enum State : std::uint8_t
     {
         init,
         idle,
@@ -159,7 +159,7 @@ public:
     void flush(
         const OutputLevel level,
         const std::string& codeFile,
-        const uint32_t codeLine,
+        const std::uint32_t codeLine,
         const char* const format,
         Args&&... args);
     //! @brief Interface for running logger.
@@ -263,7 +263,7 @@ template <typename... Args>
 void Log::flush(
     const OutputLevel level,
     const std::string& codeFile,
-    const uint32_t codeLine,
+    const std::uint32_t codeLine,
     const char* const format,
     Args&&... args)
 {

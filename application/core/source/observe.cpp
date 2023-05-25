@@ -28,7 +28,7 @@ bool Packet::write(T data)
     return write(&temp, sizeof(T));
 }
 
-bool Packet::write(const void* pDst, const uint32_t offset)
+bool Packet::write(const void* pDst, const std::uint32_t offset)
 {
     std::memcpy(pWrite, pDst, offset);
     pWrite += offset;
@@ -43,7 +43,7 @@ bool Packet::read(T* data)
     return true;
 }
 
-bool Packet::read(void* pDst, const uint32_t offset)
+bool Packet::read(void* pDst, const std::uint32_t offset)
 {
     std::memcpy(pDst, pRead, offset);
     pRead += offset;

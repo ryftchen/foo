@@ -29,14 +29,14 @@ public:
     struct Bottom;
 
     //! @brief Enumerate specific data structure tasks.
-    enum Type : uint8_t
+    enum Type : std::uint8_t
     {
         linear,
         tree
     };
 
     //! @brief Enumerate specific linear instances.
-    enum LinearInstance : uint8_t
+    enum LinearInstance : std::uint8_t
     {
         linkedList,
         stack,
@@ -47,11 +47,11 @@ public:
     struct Bottom<LinearInstance>
     {
         //! @brief Maximum value of the LinearInstance enum.
-        static constexpr uint8_t value = 3;
+        static constexpr std::uint8_t value = 3;
     };
 
     //! @brief Enumerate specific tree instances.
-    enum TreeInstance : uint8_t
+    enum TreeInstance : std::uint8_t
     {
         binarySearch,
         adelsonVelskyLandis,
@@ -62,7 +62,7 @@ public:
     struct Bottom<TreeInstance>
     {
         //! @brief Maximum value of the TreeInstance enum.
-        static constexpr uint8_t value = 3;
+        static constexpr std::uint8_t value = 3;
     };
 
     //! @brief Bit flags for managing linear instances.

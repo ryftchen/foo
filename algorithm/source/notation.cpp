@@ -14,7 +14,7 @@ std::string Notation::prefix(const std::string& infixNotation)
     std::string infix = infixNotation;
 
     std::reverse(infix.begin(), infix.end());
-    for (uint32_t i = 0; i < infix.size(); ++i)
+    for (std::uint32_t i = 0; i < infix.size(); ++i)
     {
         if ('(' == infix.at(i))
         {
@@ -43,7 +43,7 @@ std::string Notation::infixToPostfix(const std::string& infix)
     std::string postfix;
     std::stack<char> charStack;
 
-    for (uint32_t i = 0; i < infix.size(); ++i)
+    for (std::uint32_t i = 0; i < infix.size(); ++i)
     {
         if (!isOperator(infix.at(i)))
         {

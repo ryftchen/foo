@@ -142,7 +142,7 @@ void TCPSocket::toConnect(const std::string& host, const uint16_t port, const st
 
     address.sin_family = AF_INET;
     address.sin_port = htons(port);
-    address.sin_addr.s_addr = static_cast<uint32_t>(address.sin_addr.s_addr);
+    address.sin_addr.s_addr = static_cast<std::uint32_t>(address.sin_addr.s_addr);
 
     setBlocking();
     if (connect(
@@ -392,7 +392,7 @@ void UDPSocket::toConnect(const std::string& host, const uint16_t port)
 
     address.sin_family = AF_INET;
     address.sin_port = htons(port);
-    address.sin_addr.s_addr = static_cast<uint32_t>(address.sin_addr.s_addr);
+    address.sin_addr.s_addr = static_cast<std::uint32_t>(address.sin_addr.s_addr);
 
     setBlocking();
     if (connect(

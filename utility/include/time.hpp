@@ -27,7 +27,7 @@ constexpr uint16_t dateLength = 32;
 //! @brief Start year of time format.
 constexpr uint16_t dateStartYear = 1900;
 //! @brief Multiplier from the second to the millisecond.
-constexpr uint32_t secToUsec = 1000000;
+constexpr std::uint32_t secToUsec = 1000000;
 
 //! @brief Timing.
 class Time
@@ -77,7 +77,7 @@ public:
     //! @brief Set the blocking timer.
     //! @param func - callable function
     //! @param interval - time interval
-    void set(auto func, const uint32_t interval);
+    void set(auto func, const std::uint32_t interval);
     //! @brief Reset the blocking timer.
     inline void reset();
 
@@ -86,17 +86,17 @@ private:
     std::atomic<bool> isRunning{true};
 
 protected:
-    friend inline void millisecondLevelSleep(const uint32_t duration);
+    friend inline void millisecondLevelSleep(const std::uint32_t duration);
 };
 
 //! @brief Perform millisecond-level sleep.
 //! @param duration - sleep duration
-inline void millisecondLevelSleep(const uint32_t duration)
+inline void millisecondLevelSleep(const std::uint32_t duration)
 {
     std::this_thread::sleep_until(std::chrono::steady_clock::now() + std::chrono::operator""ms(duration));
 }
 
-void BlockingTimer::set(auto func, const uint32_t interval)
+void BlockingTimer::set(auto func, const std::uint32_t interval)
 {
     isRunning.store(true);
     std::thread timerThread(

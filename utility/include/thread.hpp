@@ -20,7 +20,7 @@ class Thread
 public:
     //! @brief Construct a new Thread object.
     //! @param count - maximum number of threads
-    explicit Thread(const uint32_t count);
+    explicit Thread(const std::uint32_t count);
     //! @brief Destroy the Thread object.
     virtual ~Thread();
 

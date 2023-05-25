@@ -13,7 +13,7 @@
 namespace utility::file
 {
 //! @brief Maximum display number of lines.
-constexpr uint32_t maxDisNumOfLines = 1000;
+constexpr std::uint32_t maxDisNumOfLines = 1000;
 
 //! @brief Lock for reading and writing files.
 class FileReadWriteLock
@@ -51,7 +51,7 @@ class FileReadWriteGuard
 {
 public:
     //! @brief Enumerate specific file lock modes.
-    enum class LockMode : uint8_t
+    enum class LockMode : std::uint8_t
     {
         read,
         write
@@ -89,7 +89,7 @@ struct DisplaySetting
     //! @brief Be inverted or not.
     bool isInverted{false};
     //! @brief Number of lines to display.
-    uint32_t numOfLines{maxDisNumOfLines};
+    std::uint32_t numOfLines{maxDisNumOfLines};
     //! @brief Format style.
     FormatStyle style{nullptr};
 };

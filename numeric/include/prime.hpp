@@ -22,10 +22,10 @@ public:
     //! @brief Eratosthenes.
     //! @param max - maximum positive integer
     //! @return all prime numbers that are not greater than the maximum positive integer
-    static std::vector<uint32_t> eratosthenes(const uint32_t max);
+    static std::vector<std::uint32_t> eratosthenes(const std::uint32_t max);
     //! @brief Euler.
     //! @param max - maximum positive integer
     //! @return all prime numbers that are not greater than the maximum positive integer
-    static std::vector<uint32_t> euler(const uint32_t max);
+    static std::vector<std::uint32_t> euler(const std::uint32_t max);
 };
 } // namespace numeric::prime

@@ -16,11 +16,11 @@ namespace numeric::integral
 //! @param height - height of trapezoidal
 //! @param step - number of steps
 //! @return result of definite integral
-double trapezoid(const Expression& expr, const double left, const double height, const uint32_t step)
+double trapezoid(const Expression& expr, const double left, const double height, const std::uint32_t step)
 {
     double sum = 0.0, x = left;
     const double delta = height / step;
-    for (uint32_t i = 0; i < step; ++i)
+    for (std::uint32_t i = 0; i < step; ++i)
     {
         const double area = (expr(x) + expr(x + delta)) * delta / 2.0; // S=(a+b)*h/2
         sum += area;
@@ -32,10 +32,10 @@ double trapezoid(const Expression& expr, const double left, const double height,
 double Trapezoidal::operator()(double lower, double upper, const double eps) const
 {
     const int sign = getSign(lower, upper);
-    const uint32_t minStep = std::pow(2, 3);
+    const std::uint32_t minStep = std::pow(2, 3);
     const double height = upper - lower;
     double sum = 0.0, s1 = 0.0, s2 = 0.0;
-    uint32_t n = 1;
+    std::uint32_t n = 1;
 
     do
     {
@@ -70,11 +70,11 @@ double Simpson::simpsonIntegral(const double left, const double right, const dou
     return sum;
 }
 
-double Simpson::compositeSimpsonOneThird(const double left, const double right, const uint32_t step) const
+double Simpson::compositeSimpsonOneThird(const double left, const double right, const std::uint32_t step) const
 {
     const double stepLength = (right - left) / step;
     double sum = 0.0;
-    for (uint32_t i = 0; i < step; ++i)
+    for (std::uint32_t i = 0; i < step; ++i)
     {
         // I≈(b-a)/6[Y0+Y2n+4(Y1+...+Y2n-1)+6(Y2+...+Y2n-2)]
         sum += simpsonOneThird(left + i * stepLength, left + (i + 1) * stepLength);
@@ -90,7 +90,7 @@ double Simpson::simpsonOneThird(const double left, const double right) const
 double Romberg::operator()(double lower, double upper, const double eps) const
 {
     const int sign = getSign(lower, upper);
-    uint32_t k = 0;
+    std::uint32_t k = 0;
     double sum = 0.0;
     const double height = upper - lower;
     const auto trapezoidFunctor = std::bind(trapezoid, std::ref(expr), lower, height, std::placeholders::_1);
@@ -106,7 +106,7 @@ double Romberg::operator()(double lower, double upper, const double eps) const
         ++k;
         t0 = t1;
         t1Zero = trapezoidFunctor(std::pow(2, k));
-        for (uint32_t i = 1; i <= k; ++i)
+        for (std::uint32_t i = 1; i <= k; ++i)
         {
             t1 = std::pow(4, i) / (std::pow(4, i) - 1) * trapezoidFunctor(std::pow(2, i + 1))
                 - 1.0 / std::pow(4, i) * t1Zero;
@@ -120,7 +120,7 @@ double Romberg::operator()(double lower, double upper, const double eps) const
 double Gauss::operator()(double lower, double upper, const double eps) const
 {
     const int sign = getSign(lower, upper);
-    constexpr uint32_t gaussNodes = 5, gaussCoefficient = 2;
+    constexpr std::uint32_t gaussNodes = 5, gaussCoefficient = 2;
     constexpr std::array<std::array<double, gaussCoefficient>, gaussNodes> gaussLegendreTable = {
         {{-0.9061798459, +0.2369268851},
          {-0.5384693101, +0.4786286705},
@@ -128,16 +128,16 @@ double Gauss::operator()(double lower, double upper, const double eps) const
          {+0.5384693101, +0.4786286705},
          {+0.9061798459, +0.2369268851}}};
     double sum = 0.0, s1 = 0.0, s2 = 0.0;
-    uint32_t n = 1;
+    std::uint32_t n = 1;
 
     do
     {
         sum = 0.0;
         const double stepLength = (upper - lower) / n;
-        for (uint32_t i = 0; i < n; ++i)
+        for (std::uint32_t i = 0; i < n; ++i)
         {
             const double left = lower + i * stepLength, right = left + stepLength;
-            for (uint32_t j = 0; j < gaussNodes; ++j)
+            for (std::uint32_t j = 0; j < gaussNodes; ++j)
             {
                 // x=1/2[(a+b)+(b-a)t]
                 const double x = ((right - left) * gaussLegendreTable.at(j).at(0) + (left + right)) / 2.0,
@@ -167,12 +167,12 @@ double MonteCarlo::operator()(double lower, double upper, const double eps) cons
 
 double MonteCarlo::sampleFromUniformDistribution(const double lower, const double upper, const double eps) const
 {
-    const uint32_t n = std::max<uint32_t>((upper - lower) / eps, 1.0 / eps);
+    const std::uint32_t n = std::max<std::uint32_t>((upper - lower) / eps, 1.0 / eps);
     std::vector<double> cache(n);
 
     refreshRandomCache(cache, lower, upper);
     double sum = 0.0;
-    for (uint32_t i = 0; i < n; ++i)
+    for (std::uint32_t i = 0; i < n; ++i)
     {
         sum += expr(cache.at(i));
     }
@@ -184,12 +184,12 @@ double MonteCarlo::sampleFromUniformDistribution(const double lower, const doubl
 
 double MonteCarlo::sampleFromNormalDistribution(const double lower, const double upper, const double eps) const
 {
-    const uint32_t n = std::max<uint32_t>((upper - lower) / eps, 1.0 / eps);
+    const std::uint32_t n = std::max<std::uint32_t>((upper - lower) / eps, 1.0 / eps);
     const double mu = (lower + upper) / 2.0, sigma = (upper - lower) / 6.0;
     std::mt19937 engine{std::random_device{}()};
     std::uniform_real_distribution<double> dist(0.0, 1.0);
     double sum = 0.0, x = 0.0;
-    for (uint32_t i = 0; i < n; ++i)
+    for (std::uint32_t i = 0; i < n; ++i)
     {
         do
         {

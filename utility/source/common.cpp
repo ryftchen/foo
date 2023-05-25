@@ -12,10 +12,10 @@ namespace utility::common
 //! @brief The Brian-Kernighan Dennis-Ritchie hash function.
 //! @param str - input data
 //! @return hash value
-uint64_t bkdrHash(const char* str)
+std::uint64_t bkdrHash(const char* str)
 {
-    const uint64_t seed = bkdrHashSeed; // 31 131 1313 13131 131313 etc...
-    uint64_t hash = 0;
+    const std::uint64_t seed = bkdrHashSeed; // 31 131 1313 13131 131313 etc...
+    std::uint64_t hash = 0;
     while (*str)
     {
         hash = hash * seed + (*str++);
@@ -27,7 +27,7 @@ uint64_t bkdrHash(const char* str)
 //! @param cmd - target command line to be executed
 //! @param timeout - timeout period
 //! @return command line output
-std::string executeCommand(const std::string& cmd, const uint32_t timeout)
+std::string executeCommand(const std::string& cmd, const std::uint32_t timeout)
 {
     std::FILE* pipe = popen(cmd.c_str(), "r");
     if (nullptr == pipe)
