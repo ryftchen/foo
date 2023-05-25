@@ -5,6 +5,8 @@
 //! @copyright Copyright (c) 2022-2023
 
 #include "observe.hpp"
+#include <exception>
+#include <iostream>
 #include "log.hpp"
 #ifndef __PRECOMPILED_HEADER
 #include <sys/ipc.h>
@@ -73,7 +75,7 @@ int tlvDecode(char* pbuf, const int len, TLVValue& val)
         switch (type)
         {
             case TLVType::quit:
-                dec.read<bool>(&val.quitFlag);
+                dec.read<bool>(&val.stopFlag);
                 sum -= (offset + sizeof(bool));
                 break;
             case TLVType::log:
@@ -103,7 +105,7 @@ int tlvEncode(char* pbuf, int& len, const TLVValue& val)
 
     enc.write<int>(TLVType::quit);
     enc.write<int>(sizeof(bool));
-    enc.write<bool>(val.quitFlag);
+    enc.write<bool>(val.stopFlag);
 
     enc.write<int>(TLVType::log);
     enc.write<int>(sizeof(int));
@@ -129,7 +131,7 @@ void Observe::runObserver()
         expectedState = state;
         if (currentState() != expectedState)
         {
-            throw std::logic_error("");
+            throw std::logic_error("<OBSERVE> Abnormal observer state.");
         }
     };
 
@@ -162,9 +164,9 @@ void Observe::runObserver()
 
         checkIfExceptedFSMState(State::done);
     }
-    catch (const std::exception&)
+    catch (const std::exception& error)
     {
-        std::cerr << "Abnormal observer state, expected state: " << expectedState
+        std::cerr << error.what() << " Expected state: " << expectedState
                   << ", current state: " << State(currentState()) << "." << std::endl;
         stopObserving();
     }
@@ -185,7 +187,7 @@ void Observe::interfaceToStart()
             {
                 ++waitCount;
 #ifndef NDEBUG
-                std::cout << "Wait for the observer to start... (" << waitCount << ")" << std::endl;
+                std::cout << "<LOG> Wait for the observer to start... (" << waitCount << ")" << std::endl;
 #endif // NDEBUG
             }
         },
@@ -218,7 +220,7 @@ void Observe::interfaceToStop()
             {
                 ++waitCount;
 #ifndef NDEBUG
-                std::cout << "Wait for the observer to stop... (" << waitCount << ")" << std::endl;
+                std::cout << "<LOG> Wait for the observer to stop... (" << waitCount << ")" << std::endl;
 #endif // NDEBUG
             }
         },
@@ -226,35 +228,29 @@ void Observe::interfaceToStop()
     timer.reset();
 }
 
-void Observe::enableAlternate()
-{
-    udpServer.toBind(udpPort);
-    udpServer.toReceiveFrom();
-}
-
 void Observe::createObserveServer()
 {
     using utility::socket::Socket;
     using utility::common::operator""_bkdrHash;
 
-    tcpServer.onNewConnection = [](utility::socket::TCPSocket* newClient)
+    tcpServer.onNewConnection = [](utility::socket::TCPSocket* newSocket)
     {
-        newClient->onMessageReceived = [newClient](const std::string& message)
+        newSocket->onMessageReceived = [newSocket](const std::string& message)
         {
             char buffer[bufferSize] = {'\0'};
             switch (utility::common::bkdrHash(message.data()))
             {
-                case "quit"_bkdrHash:
-                    if (buildPacketForQuit(buffer) > 0)
+                case "stop"_bkdrHash:
+                    if (buildPacketForStop(buffer) > 0)
                     {
-                        newClient->toSend(buffer, sizeof(buffer));
-                        newClient->cancelWait();
+                        newSocket->toSend(buffer, sizeof(buffer));
+                        newSocket->setNonBlocking();
                     }
                     break;
                 case "log"_bkdrHash:
                     if (buildPacketForLog(buffer) > 0)
                     {
-                        newClient->toSend(buffer, sizeof(buffer));
+                        newSocket->toSend(buffer, sizeof(buffer));
                     }
                     break;
                 default:
@@ -264,22 +260,22 @@ void Observe::createObserveServer()
         };
     };
 
-    udpServer.onMessageReceived = [&](const std::string& message, const std::string& ipv4, const uint16_t port)
+    udpServer.onMessageReceived = [&](const std::string& message, const std::string& host, const uint16_t port)
     {
         char buffer[bufferSize] = {'\0'};
         switch (utility::common::bkdrHash(message.data()))
         {
-            case "quit"_bkdrHash:
-                if (buildPacketForQuit(buffer) > 0)
+            case "stop"_bkdrHash:
+                if (buildPacketForStop(buffer) > 0)
                 {
-                    udpServer.toSendTo(buffer, sizeof(buffer), ipv4, port);
-                    udpServer.cancelWait();
+                    udpServer.toSendTo(buffer, sizeof(buffer), host, port);
+                    udpServer.setNonBlocking();
                 }
                 break;
             case "log"_bkdrHash:
                 if (buildPacketForLog(buffer) > 0)
                 {
-                    udpServer.toSendTo(buffer, sizeof(buffer), ipv4, port);
+                    udpServer.toSendTo(buffer, sizeof(buffer), host, port);
                 }
                 break;
             default:
@@ -296,6 +292,9 @@ void Observe::startObserving()
         isObserving.store(true);
         tcpServer.toBind(tcpPort);
         tcpServer.toListen();
+        tcpServer.toAccept();
+        udpServer.toBind(udpPort);
+        udpServer.toReceiveFrom();
     }
 }
 
@@ -310,6 +309,8 @@ void Observe::stopObserving()
     if (std::unique_lock<std::mutex> lock(mtx); true)
     {
         isObserving.store(false);
+        tcpServer.waitIfAlive();
+        udpServer.waitIfAlive();
     }
 }
 
@@ -319,7 +320,7 @@ tlv::TLVValue Observe::parseTLVPacket(char* buffer, const int length)
     tlv::TLVValue value;
     tlv::tlvDecode(buffer, length, value);
 
-    if (value.quitFlag)
+    if (value.stopFlag)
     {
         return value;
     }
@@ -395,10 +396,10 @@ int Observe::buildPacketForLog(char* buffer)
     return length;
 }
 
-int Observe::buildPacketForQuit(char* buffer)
+int Observe::buildPacketForStop(char* buffer)
 {
     int length = 0;
-    if (tlv::tlvEncode(buffer, length, tlv::TLVValue{.quitFlag = true}) < 0)
+    if (tlv::tlvEncode(buffer, length, tlv::TLVValue{.stopFlag = true}) < 0)
     {
         length = 0;
     }

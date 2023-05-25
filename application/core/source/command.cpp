@@ -363,18 +363,17 @@ void Command::printConsoleOutput() const
         return;
     }
 
-    OBSERVE_ENABLE_ALTERNATE;
     using observe::Observe;
     using utility::console::Console;
     using utility::socket::UDPSocket;
 
     UDPSocket udpClient;
     udpClient.onRawMessageReceived =
-        [&](char* buffer, const int length, const std::string& /*ipv4*/, const uint16_t /*port*/)
+        [&](char* buffer, const int length, const std::string& /*host*/, const uint16_t /*port*/)
     {
-        if (Observe::parseTLVPacket(buffer, length).quitFlag)
+        if (Observe::parseTLVPacket(buffer, length).stopFlag)
         {
-            udpClient.cancelWait();
+            udpClient.setNonBlocking();
         }
     };
     udpClient.toReceive();
@@ -388,11 +387,8 @@ void Command::printConsoleOutput() const
         console.commandExecutor(command);
     }
 
-    udpClient.toSend("quit");
-    while (udpClient.isRecvAlive())
-    {
-        utility::time::millisecondLevelSleep(latency);
-    }
+    udpClient.toSend("stop");
+    udpClient.waitIfAlive();
     udpClient.toClose();
 }
 
@@ -590,9 +586,9 @@ void Command::enterConsoleMode() const
         TCPSocket tcpClient;
         tcpClient.onRawMessageReceived = [&](char* buffer, const int length)
         {
-            if (Observe::parseTLVPacket(buffer, length).quitFlag)
+            if (Observe::parseTLVPacket(buffer, length).stopFlag)
             {
-                tcpClient.cancelWait();
+                tcpClient.setNonBlocking();
             }
         };
         tcpClient.toConnect(std::string{Observe::tcpHost}, Observe::tcpPort);
@@ -616,11 +612,8 @@ void Command::enterConsoleMode() const
         }
         while (Console::ReturnCode::quit != retVal);
 
-        tcpClient.toSend("quit");
-        while (tcpClient.isRecvAlive())
-        {
-            utility::time::millisecondLevelSleep(latency);
-        }
+        tcpClient.toSend("stop");
+        tcpClient.waitIfAlive();
         tcpClient.toClose();
     }
     catch (const std::exception& error)

@@ -15,7 +15,6 @@
 
 #define OBSERVE_TO_START application::observe::Observe::getInstance().interfaceToStart()
 #define OBSERVE_TO_STOP application::observe::Observe::getInstance().interfaceToStop()
-#define OBSERVE_ENABLE_ALTERNATE application::observe::Observe::getInstance().enableAlternate()
 
 namespace application::observe
 {
@@ -35,7 +34,7 @@ enum TLVType : int
 
 struct TLVValue
 {
-    bool quitFlag{false};
+    bool stopFlag{false};
     int logShmId{-1};
 };
 
@@ -139,7 +138,7 @@ private:
         >;
     // clang-format on
 
-    static int buildPacketForQuit(char* buffer);
+    static int buildPacketForStop(char* buffer);
     static int buildPacketForLog(char* buffer);
     static constexpr uint32_t maxViewNumOfLines{50};
 
