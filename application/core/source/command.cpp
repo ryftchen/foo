@@ -372,9 +372,16 @@ void Command::printConsoleOutput() const
     udpClient.onRawMessageReceived =
         [&](char* buffer, const int length, const std::string& /*host*/, const uint16_t /*port*/)
     {
-        if (Observe::parseTLVPacket(buffer, length).stopFlag)
+        try
         {
-            udpClient.setNonBlocking();
+            if (Observe::parseTLVPacket(buffer, length).stopFlag)
+            {
+                udpClient.setNonBlocking();
+            }
+        }
+        catch (std::exception& error)
+        {
+            LOG_WRN(error.what());
         }
     };
     udpClient.toReceive();
@@ -584,12 +591,20 @@ void Command::enterConsoleMode() const
         using observe::Observe;
         using utility::console::Console;
         using utility::socket::TCPSocket;
+
         TCPSocket tcpClient;
         tcpClient.onRawMessageReceived = [&](char* buffer, const int length)
         {
-            if (Observe::parseTLVPacket(buffer, length).stopFlag)
+            try
             {
-                tcpClient.setNonBlocking();
+                if (Observe::parseTLVPacket(buffer, length).stopFlag)
+                {
+                    tcpClient.setNonBlocking();
+                }
+            }
+            catch (std::exception& error)
+            {
+                LOG_WRN(error.what());
             }
         };
         tcpClient.toConnect(std::string{Observe::tcpHost}, Observe::tcpPort);

@@ -27,8 +27,8 @@ namespace tlv
 {
 enum TLVType : int
 {
-    root = 0x125e591,
-    quit = 0x1,
+    header = 0x125e591,
+    stop = 0x1,
     log = 0x2
 };
 
