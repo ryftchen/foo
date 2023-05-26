@@ -104,14 +104,14 @@ void Log::runLogger()
 
 void Log::interfaceToStart()
 {
-    utility::time::BlockingTimer timer;
+    utility::time::BlockingTimer expiryTimer;
     std::uint16_t waitCount = 0;
-    timer.set(
+    expiryTimer.set(
         [&]()
         {
             if ((State::work == currentState()) || (maxTimesOfWaitLogger == waitCount))
             {
-                timer.reset();
+                expiryTimer.reset();
             }
             else
             {
@@ -122,7 +122,7 @@ void Log::interfaceToStart()
             }
         },
         intervalOfWaitLogger);
-    timer.reset();
+    expiryTimer.reset();
 }
 
 void Log::interfaceToStop()
@@ -137,14 +137,14 @@ void Log::interfaceToStop()
         lock.lock();
     }
 
-    utility::time::BlockingTimer timer;
+    utility::time::BlockingTimer expiryTimer;
     std::uint16_t waitCount = 0;
-    timer.set(
+    expiryTimer.set(
         [&]()
         {
             if ((State::done == currentState()) || (maxTimesOfWaitLogger == waitCount))
             {
-                timer.reset();
+                expiryTimer.reset();
             }
             else
             {
@@ -155,7 +155,7 @@ void Log::interfaceToStop()
             }
         },
         intervalOfWaitLogger);
-    timer.reset();
+    expiryTimer.reset();
 }
 
 void Log::openLogFile()

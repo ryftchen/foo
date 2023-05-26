@@ -33,7 +33,7 @@ bool Packet::write(const void* pDst, const std::uint32_t offset)
 {
     std::memcpy(pWrite, pDst, offset);
     pWrite += offset;
-    return (pWrite < pEndData) ? true : false;
+    return (pWrite < pEnd) ? true : false;
 }
 
 template <typename T>
@@ -48,7 +48,7 @@ bool Packet::read(void* pDst, const std::uint32_t offset)
 {
     std::memcpy(pDst, pRead, offset);
     pRead += offset;
-    return (pRead < pEndData) ? true : false;
+    return (pRead < pEnd) ? true : false;
 }
 
 int tlvDecode(char* pbuf, const int len, TLVValue& val)
@@ -175,25 +175,25 @@ void Observe::runObserver()
 
 void Observe::interfaceToStart()
 {
-    utility::time::BlockingTimer timer;
+    utility::time::BlockingTimer expiryTimer;
     std::uint16_t waitCount = 0;
-    timer.set(
+    expiryTimer.set(
         [&]()
         {
             if ((State::work == currentState()) || (maxTimesOfWaitObserver == waitCount))
             {
-                timer.reset();
+                expiryTimer.reset();
             }
             else
             {
                 ++waitCount;
 #ifndef NDEBUG
-                std::cout << "<LOG> Wait for the observer to start... (" << waitCount << ")" << std::endl;
+                std::cout << "<OBSERVE> Wait for the observer to start... (" << waitCount << ")" << std::endl;
 #endif // NDEBUG
             }
         },
         intervalOfWaitObserver);
-    timer.reset();
+    expiryTimer.reset();
 }
 
 void Observe::interfaceToStop()
@@ -208,25 +208,25 @@ void Observe::interfaceToStop()
         lock.lock();
     }
 
-    utility::time::BlockingTimer timer;
+    utility::time::BlockingTimer expiryTimer;
     std::uint16_t waitCount = 0;
-    timer.set(
+    expiryTimer.set(
         [&]()
         {
             if ((State::done == currentState()) || (maxTimesOfWaitObserver == waitCount))
             {
-                timer.reset();
+                expiryTimer.reset();
             }
             else
             {
                 ++waitCount;
 #ifndef NDEBUG
-                std::cout << "<LOG> Wait for the observer to stop... (" << waitCount << ")" << std::endl;
+                std::cout << "<OBSERVE> Wait for the observer to stop... (" << waitCount << ")" << std::endl;
 #endif // NDEBUG
             }
         },
         intervalOfWaitObserver);
-    timer.reset();
+    expiryTimer.reset();
 }
 
 void Observe::createObserveServer()
@@ -329,7 +329,6 @@ void Observe::stopObserving()
 
 tlv::TLVValue Observe::parseTLVPacket(char* buffer, const int length)
 {
-    using utility::socket::Socket;
     tlv::TLVValue value;
     tlv::tlvDecode(buffer, length, value);
 
@@ -346,16 +345,16 @@ tlv::TLVValue Observe::parseTLVPacket(char* buffer, const int length)
         {
             throw std::runtime_error("<OBSERVE> Failed to attach shared memory.");
         }
-        application::observe::Observe::ShareMemory* shareMem =
-            reinterpret_cast< // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
-                application::observe::Observe::ShareMemory*>(shm);
-        shareMem->signal.store(true);
+        SharedMemory* shrMem =
+            reinterpret_cast<SharedMemory*>(shm); // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
+
+        shrMem->signal.store(true);
         while (true)
         {
-            if (shareMem->signal.load())
+            if (shrMem->signal.load())
             {
-                std::cout << "\r\n" << shareMem->buffer << std::endl;
-                shareMem->signal.store(false);
+                std::cout << "\r\n" << shrMem->buffer << std::endl;
+                shrMem->signal.store(false);
                 break;
             }
             utility::time::millisecondLevelSleep(1);
@@ -371,7 +370,7 @@ int Observe::buildPacketForLog(char* buffer)
 {
     int shmId = shmget(
         (key_t)0,
-        sizeof(ShareMemory),
+        sizeof(SharedMemory),
         IPC_CREAT | IPC_EXCL | S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
     if (-1 == shmId)
     {
@@ -382,19 +381,19 @@ int Observe::buildPacketForLog(char* buffer)
     {
         throw std::runtime_error("<OBSERVE> Failed to attach shared memory.");
     }
-    ShareMemory* shareMemory =
-        reinterpret_cast<ShareMemory*>(shm); // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
-    shareMemory->signal.store(false);
+    SharedMemory* shrMem = reinterpret_cast<SharedMemory*>(shm); // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
+
+    shrMem->signal.store(false);
     while (true)
     {
-        if (!shareMemory->signal.load())
+        if (!shrMem->signal.load())
         {
-            std::memset(shareMemory->buffer, 0, sizeof(shareMemory->buffer));
+            std::memset(shrMem->buffer, 0, sizeof(shrMem->buffer));
             const std::string content = utility::file::displayFileContents(
                 utility::file::FileProperty{LOG_PATHNAME, LOG_FILE_LOCK},
                 utility::file::DisplaySetting{true, maxViewNumOfLines, &log::changeToLogStyle});
-            std::memcpy(shareMemory->buffer, content.c_str(), content.length());
-            shareMemory->signal.store(true);
+            std::memcpy(shrMem->buffer, content.c_str(), content.length());
+            shrMem->signal.store(true);
             break;
         }
         utility::time::millisecondLevelSleep(1);
