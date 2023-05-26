@@ -70,7 +70,7 @@ private:
     void dispatchTask() const;
 
     //! @brief Manage basic tasks.
-    class alignas(8) BasicTask
+    class BasicTask
     {
     public:
         //! @brief Represent the maximum value of an enum.
@@ -104,7 +104,7 @@ private:
     };
 
     //! @brief Manage general tasks.
-    class alignas(8) GeneralTask
+    class GeneralTask
     {
     public:
         //! @brief Represent the maximum value of an enum.
@@ -239,9 +239,7 @@ private:
     };
     // clang-format on
     //! @brief Latency for console.
-    static constexpr std::uint16_t latency{50};
-    //! @brief Maximum latency for console.
-    static constexpr std::uint16_t maxLatency{latency * 10};
+    static constexpr std::uint16_t latency{10};
 
     //! @brief Print output of the console mode command line.
     void printConsoleOutput() const;

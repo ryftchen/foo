@@ -412,7 +412,7 @@ void Command::printHelpMessage() const
     {
         using app_algo::AlgorithmTask;
         using app_algo::getBit;
-        std::cout << "Usage: foo -a, --algorithm ";
+        std::printf("Usage: foo -a, --algorithm ");
         if (!getBit<AlgorithmTask::MatchMethod>().none())
         {
             std::puts("match [tasks...]\n"
@@ -449,7 +449,7 @@ void Command::printHelpMessage() const
         }
         else if (!getBit<AlgorithmTask::SortMethod>().none())
         {
-            std::puts("search [tasks...]\n"
+            std::puts("sort [tasks...]\n"
                       "\r\nNon-optional:\n"
                       "bub    Bubble\n"
                       "sel    Selection\n"
@@ -467,7 +467,7 @@ void Command::printHelpMessage() const
     {
         using app_ds::DataStructureTask;
         using app_ds::getBit;
-        std::cout << "Usage: foo -ds, --data-structure ";
+        std::printf("Usage: foo -ds, --data-structure ");
         if (!getBit<DataStructureTask::LinearInstance>().none())
         {
             std::puts("linear [tasks...]\n"
@@ -489,7 +489,7 @@ void Command::printHelpMessage() const
     {
         using app_dp::DesignPatternTask;
         using app_dp::getBit;
-        std::cout << "Usage: foo -dp, --design-pattern ";
+        std::printf("Usage: foo -dp, --design-pattern ");
         if (!getBit<DesignPatternTask::BehavioralInstance>().none())
         {
             std::puts("behavioral [tasks...]\n"
@@ -533,7 +533,7 @@ void Command::printHelpMessage() const
     {
         using app_num::getBit;
         using app_num::NumericTask;
-        std::cout << "Usage: foo -n, --numeric ";
+        std::printf("Usage: foo -n, --numeric ");
         if (!getBit<NumericTask::ArithmeticMethod>().none())
         {
             std::puts("arithmetic [tasks...]\n"
@@ -620,7 +620,7 @@ void Command::enterConsoleMode() const
         Console console(greeting);
         registerOnConsole<TCPSocket>(console, tcpClient);
 
-        int retVal = 0;
+        int retVal = Console::ReturnCode::success;
         do
         {
             retVal = console.readCommandLine();
@@ -641,13 +641,26 @@ void Command::enterConsoleMode() const
 template <typename T>
 void Command::registerOnConsole(utility::console::Console& console, T& client) const
 {
+    using utility::console::Console;
+
     console.registerCommand(
         "log",
         [this, &client](const std::vector<std::string>& /*unused*/) -> decltype(auto)
         {
-            client.toSend("log");
-            utility::time::millisecondLevelSleep(maxLatency);
-            return utility::console::Console::ReturnCode::success;
+            int retVal = Console::ReturnCode::success;
+            try
+            {
+                static constexpr std::uint16_t maxLatency = 500;
+                client.toSend("log");
+                utility::time::millisecondLevelSleep(maxLatency);
+            }
+            catch (const std::exception& error)
+            {
+                retVal = Console::ReturnCode::error;
+                LOG_WRN(error.what());
+            }
+
+            return retVal;
         },
         "view the log with highlights");
 }
