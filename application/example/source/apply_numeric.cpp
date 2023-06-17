@@ -59,7 +59,7 @@ NumericTask& getTask()
 namespace arithmetic
 {
 //! @brief Display arithmetic result.
-#define ARITHMETIC_RESULT "\r\n*%-14s method:\n(%d) %s (%d) = %d\n"
+#define ARITHMETIC_RESULT "\r\n*%-14s method:\n(%d) %c (%d) = %d\n"
 //! @brief Print arithmetic result content.
 #define ARITHMETIC_PRINT_RESULT_CONTENT(method, a, operator, b, result) \
     COMMON_PRINT(ARITHMETIC_RESULT, method, a, operator, b, result)
@@ -69,7 +69,7 @@ void ArithmeticSolution::additionMethod(const int augend, const int addend)
     try
     {
         const auto sum = numeric::arithmetic::Arithmetic().addition(augend, addend);
-        ARITHMETIC_PRINT_RESULT_CONTENT("Addition", augend, "+", addend, sum);
+        ARITHMETIC_PRINT_RESULT_CONTENT("Addition", augend, '+', addend, sum);
     }
     catch (const std::exception& error)
     {
@@ -82,7 +82,7 @@ void ArithmeticSolution::subtractionMethod(const int minuend, const int subtrahe
     try
     {
         const auto difference = numeric::arithmetic::Arithmetic().subtraction(minuend, subtrahend);
-        ARITHMETIC_PRINT_RESULT_CONTENT("Subtraction", minuend, "-", subtrahend, difference);
+        ARITHMETIC_PRINT_RESULT_CONTENT("Subtraction", minuend, '-', subtrahend, difference);
     }
     catch (const std::exception& error)
     {
@@ -95,7 +95,7 @@ void ArithmeticSolution::multiplicationMethod(const int multiplier, const int mu
     try
     {
         const auto product = numeric::arithmetic::Arithmetic().multiplication(multiplier, multiplicand);
-        ARITHMETIC_PRINT_RESULT_CONTENT("Multiplication", multiplier, "*", multiplicand, product);
+        ARITHMETIC_PRINT_RESULT_CONTENT("Multiplication", multiplier, '*', multiplicand, product);
     }
     catch (const std::exception& error)
     {
@@ -108,7 +108,7 @@ void ArithmeticSolution::divisionMethod(const int dividend, const int divisor)
     try
     {
         const auto quotient = numeric::arithmetic::Arithmetic().division(dividend, divisor);
-        ARITHMETIC_PRINT_RESULT_CONTENT("Division", dividend, "/", divisor, quotient);
+        ARITHMETIC_PRINT_RESULT_CONTENT("Division", dividend, '/', divisor, quotient);
     }
     catch (const std::exception& error)
     {
@@ -196,7 +196,7 @@ void updateArithmeticTask(const std::string& target)
             break;
         default:
             getBit<ArithmeticMethod>().reset();
-            throw std::runtime_error("<APPLY NUMERIC> Unexpected arithmetic method: " + target + ".");
+            throw std::runtime_error("<APPLY NUMERIC> Unexpected arithmetic method: " + target + '.');
     }
 }
 
@@ -317,7 +317,7 @@ void updateDivisorTask(const std::string& target)
             break;
         default:
             getBit<DivisorMethod>().reset();
-            throw std::runtime_error("<APPLY NUMERIC> Unexpected divisor method: " + target + ".");
+            throw std::runtime_error("<APPLY NUMERIC> Unexpected divisor method: " + target + '.');
     }
 }
 
@@ -520,7 +520,7 @@ void updateIntegralTask(const std::string& target)
             break;
         default:
             getBit<IntegralMethod>().reset();
-            throw std::runtime_error("<APPLY NUMERIC> Unexpected integral method: " + target + ".");
+            throw std::runtime_error("<APPLY NUMERIC> Unexpected integral method: " + target + '.');
     }
 }
 
@@ -639,7 +639,7 @@ void updatePrimeTask(const std::string& target)
             break;
         default:
             getBit<PrimeMethod>().reset();
-            throw std::runtime_error("<APPLY NUMERIC> Unexpected prime method: " + target + ".");
+            throw std::runtime_error("<APPLY NUMERIC> Unexpected prime method: " + target + '.');
     }
 }
 } // namespace application::app_num

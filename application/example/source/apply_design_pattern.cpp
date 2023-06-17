@@ -325,7 +325,7 @@ void updateBehavioralTask(const std::string& target)
             break;
         default:
             getBit<BehavioralInstance>().reset();
-            throw std::runtime_error("<APPLY DESIGN PATTERN> Unexpected behavioral instance: " + target + ".");
+            throw std::runtime_error("<APPLY DESIGN PATTERN> Unexpected behavioral instance: " + target + '.');
     }
 }
 
@@ -488,7 +488,7 @@ void updateCreationalTask(const std::string& target)
             break;
         default:
             getBit<CreationalInstance>().reset();
-            throw std::runtime_error("<APPLY DESIGN PATTERN> Unexpected creational instance: " + target + ".");
+            throw std::runtime_error("<APPLY DESIGN PATTERN> Unexpected creational instance: " + target + '.');
     }
 }
 
@@ -689,7 +689,7 @@ void updateStructuralTask(const std::string& target)
             break;
         default:
             getBit<StructuralInstance>().reset();
-            throw std::runtime_error("<APPLY DESIGN PATTERN> Unexpected structural instance: " + target + ".");
+            throw std::runtime_error("<APPLY DESIGN PATTERN> Unexpected structural instance: " + target + '.');
     }
 }
 } // namespace application::app_dp

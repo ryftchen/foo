@@ -280,7 +280,7 @@ void Command::validateGeneralTask()
                         tasks.end(),
                         [](const std::string& task) -> bool
                         {
-                            return (std::string::npos == task.find_first_not_of(" "));
+                            return (std::string::npos == task.find_first_not_of(' '));
                         }),
                     std::end(tasks));
             }
@@ -577,7 +577,7 @@ void Command::printVersionInfo() const
     versionStr.pop_back();
     versionStr += "                    VERSION " + program.version;
     versionStr += " \"; tput sgr0; echo ";
-    versionStr += "\"" + std::string{copyrightInfo} + "\"";
+    versionStr += '\"' + std::string{copyrightInfo} + '\"';
 
     COMMON_PRINT("%s", utility::common::executeCommand(versionStr).c_str());
 }
@@ -615,7 +615,7 @@ void Command::enterConsoleMode() const
         {
             throw std::runtime_error("<COMMAND> Host name could not be obtained.");
         }
-        const std::string greeting = std::string{(nullptr != std::getenv("USER")) ? std::getenv("USER") : "root"} + "@"
+        const std::string greeting = std::string{(nullptr != std::getenv("USER")) ? std::getenv("USER") : "root"} + '@'
             + std::string{hostName} + " foo > ";
         Console console(greeting);
         registerOnConsole<TCPSocket>(console, tcpClient);

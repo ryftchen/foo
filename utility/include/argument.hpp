@@ -85,7 +85,7 @@ std::string represent(T const& val)
     else if constexpr (isContainer<T>)
     {
         std::stringstream out;
-        out << "{";
+        out << '{';
         const auto size = val.size();
         if (size > 1)
         {
@@ -95,11 +95,11 @@ std::string represent(T const& val)
                 std::next(val.begin(), std::min<std::size_t>(size, representMaxContainerSize) - 1),
                 [&out](const auto& v)
                 {
-                    out << " " << represent(v);
+                    out << ' ' << represent(v);
                 });
             if (size <= representMaxContainerSize)
             {
-                out << " ";
+                out << ' ';
             }
             else
             {
@@ -110,7 +110,7 @@ std::string represent(T const& val)
         {
             out << represent(*std::prev(val.end()));
         }
-        out << "}";
+        out << '}';
         return out.str();
     }
     else if constexpr (isStreamable<T>)

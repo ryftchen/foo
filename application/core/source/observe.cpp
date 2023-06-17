@@ -194,7 +194,7 @@ void Observe::runObserver()
     catch (const std::exception& error)
     {
         std::cerr << error.what() << " Expected state: " << expectedState
-                  << ", current state: " << State(currentState()) << "." << std::endl;
+                  << ", current state: " << State(currentState()) << '.' << std::endl;
         stopObserving();
     }
 }
@@ -214,7 +214,7 @@ void Observe::interfaceToStart()
             {
                 ++waitCount;
 #ifndef NDEBUG
-                std::cout << "<OBSERVE> Wait for the observer to start... (" << waitCount << ")" << std::endl;
+                std::cout << "<OBSERVE> Wait for the observer to start... (" << waitCount << ')' << std::endl;
 #endif // NDEBUG
             }
         },
@@ -247,7 +247,7 @@ void Observe::interfaceToStop()
             {
                 ++waitCount;
 #ifndef NDEBUG
-                std::cout << "<OBSERVE> Wait for the observer to stop... (" << waitCount << ")" << std::endl;
+                std::cout << "<OBSERVE> Wait for the observer to stop... (" << waitCount << ')' << std::endl;
 #endif // NDEBUG
             }
         },

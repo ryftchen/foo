@@ -164,15 +164,15 @@ std::ostream& operator<<(std::ostream& os, const ArgumentRegister& argument)
     {
         if (!argument.helpStr.empty())
         {
-            os << " ";
+            os << ' ';
         }
-        os << "[default: " << argument.defaultValueRepresent << "]";
+        os << "[default: " << argument.defaultValueRepresent << ']';
     }
     else if (argument.isRequired)
     {
         if (!argument.helpStr.empty())
         {
-            os << " ";
+            os << ' ';
         }
         os << "[required]";
     }
@@ -323,14 +323,14 @@ ArgumentRegister& Argument::operator[](const std::string_view argName) const
     {
         std::string name(argName);
 
-        name = "-" + name;
+        name = '-' + name;
         iterator = argumentMap.find(name);
         if (argumentMap.end() != iterator)
         {
             return *(iterator->second);
         }
 
-        name = "-" + name;
+        name = '-' + name;
         iterator = argumentMap.find(name);
         if (argumentMap.end() != iterator)
         {
@@ -352,7 +352,7 @@ auto operator<<(std::ostream& os, const Argument& parser) -> std::ostream&
 
     for (const auto& argument : parser.nonOptionalArguments)
     {
-        os << "[" << argument.names.front() << "...] ";
+        os << '[' << argument.names.front() << "...] ";
     }
     os << '\n' << std::endl;
 

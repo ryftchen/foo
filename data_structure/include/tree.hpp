@@ -68,7 +68,7 @@ public:
     {
         if (nullptr != tree)
         {
-            flush() << tree->key << " ";
+            flush() << tree->key << ' ';
             preorderBSTree(tree->left);
             preorderBSTree(tree->right);
         }
@@ -80,7 +80,7 @@ public:
         if (nullptr != tree)
         {
             inorderBSTree(tree->left);
-            flush() << tree->key << " ";
+            flush() << tree->key << ' ';
             inorderBSTree(tree->right);
         }
     }
@@ -92,7 +92,7 @@ public:
         {
             postorderBSTree(tree->left);
             postorderBSTree(tree->right);
-            flush() << tree->key << " ";
+            flush() << tree->key << ' ';
         }
     }
     //! @brief Print the binary search tree.
@@ -182,7 +182,7 @@ public:
     {
         if (nullptr != tree)
         {
-            flush() << tree->key << " ";
+            flush() << tree->key << ' ';
             preorderAVLTree(tree->left);
             preorderAVLTree(tree->right);
         }
@@ -194,7 +194,7 @@ public:
         if (nullptr != tree)
         {
             inorderAVLTree(tree->left);
-            flush() << tree->key << " ";
+            flush() << tree->key << ' ';
             inorderAVLTree(tree->right);
         }
     }
@@ -206,7 +206,7 @@ public:
         {
             postorderAVLTree(tree->left);
             postorderAVLTree(tree->right);
-            flush() << tree->key << " ";
+            flush() << tree->key << ' ';
         }
     }
     //! @brief Print the AVL tree.
@@ -290,7 +290,7 @@ public:
     {
         if (nullptr != tree)
         {
-            flush() << tree->key << " ";
+            flush() << tree->key << ' ';
             preorderSplayTree(tree->left);
             preorderSplayTree(tree->right);
         }
@@ -302,7 +302,7 @@ public:
         if (nullptr != tree)
         {
             inorderSplayTree(tree->left);
-            flush() << tree->key << " ";
+            flush() << tree->key << ' ';
             inorderSplayTree(tree->right);
         }
     }
@@ -314,7 +314,7 @@ public:
         {
             postorderSplayTree(tree->left);
             postorderSplayTree(tree->right);
-            flush() << tree->key << " ";
+            flush() << tree->key << ' ';
         }
     }
     //! @brief Print the splay tree.

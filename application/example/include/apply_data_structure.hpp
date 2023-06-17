@@ -188,23 +188,23 @@ public:
         DLL dll = nullptr;
         createDll(&dll);
         dllInsert(dll, 0, &meta[0]);
-        output.flush() << "insert (0): {" << meta[0].id << ", " << meta[0].name << "}" << std::endl;
+        output.flush() << "insert (0): {" << meta[0].id << ", " << meta[0].name << '}' << std::endl;
         dllInsert(dll, 0, &meta[1]);
-        output.flush() << "insert (0): {" << meta[1].id << ", " << meta[1].name << "}" << std::endl;
+        output.flush() << "insert (0): {" << meta[1].id << ", " << meta[1].name << '}' << std::endl;
         dllInsert(dll, 1, &meta[2]);
-        output.flush() << "insert (1): {" << meta[2].id << ", " << meta[2].name << "}" << std::endl;
+        output.flush() << "insert (1): {" << meta[2].id << ", " << meta[2].name << '}' << std::endl;
         dllDelete(dll, 2);
         output.flush() << "delete (2)" << std::endl;
 
         dllInsertFirst(dll, &meta[0]);
-        output.flush() << "insert first: {" << meta[0].id << ", " << meta[0].name << "}" << std::endl;
+        output.flush() << "insert first: {" << meta[0].id << ", " << meta[0].name << '}' << std::endl;
         dllInsertLast(dll, &meta[metaSize - 1]);
-        output.flush() << "insert last: {" << meta[metaSize - 1].id << ", " << meta[metaSize - 1].name << "}"
+        output.flush() << "insert last: {" << meta[metaSize - 1].id << ", " << meta[metaSize - 1].name << '}'
                        << std::endl;
         pVal = static_cast<Meta*>(dllGetFirst(dll));
-        output.flush() << "get first: {" << pVal->id << ", " << pVal->name << "}" << std::endl;
+        output.flush() << "get first: {" << pVal->id << ", " << pVal->name << '}' << std::endl;
         pVal = static_cast<Meta*>(dllGetLast(dll));
-        output.flush() << "get last: {" << pVal->id << ", " << pVal->name << "}" << std::endl;
+        output.flush() << "get last: {" << pVal->id << ", " << pVal->name << '}' << std::endl;
         dllDeleteFirst(dll);
         output.flush() << "delete first" << std::endl;
         dllDeleteLast(dll);
@@ -215,7 +215,7 @@ public:
         for (int i = 0; i < dllSize(dll); ++i)
         {
             pVal = static_cast<Meta*>(dllGet(dll, i));
-            output.flush() << "get (" << i << "): {" << pVal->id << ", " << pVal->name << "}" << std::endl;
+            output.flush() << "get (" << i << "): {" << pVal->id << ", " << pVal->name << '}' << std::endl;
         }
         destroyDll(&dll);
 
@@ -245,22 +245,22 @@ public:
         for (int i = 0; i < (metaSize - 1); ++i)
         {
             stackPush(stack, &meta[i]);
-            output.flush() << "push: {" << meta[i].id << ", " << meta[i].name << "}" << std::endl;
+            output.flush() << "push: {" << meta[i].id << ", " << meta[i].name << '}' << std::endl;
         }
 
         pVal = static_cast<Meta*>(stackPop(stack));
-        output.flush() << "pop: {" << pVal->id << ", " << pVal->name << "}" << std::endl;
+        output.flush() << "pop: {" << pVal->id << ", " << pVal->name << '}' << std::endl;
         pVal = static_cast<Meta*>(stackTop(stack));
-        output.flush() << "top: {" << pVal->id << ", " << pVal->name << "}" << std::endl;
+        output.flush() << "top: {" << pVal->id << ", " << pVal->name << '}' << std::endl;
         stackPush(stack, &meta[metaSize - 1]);
-        output.flush() << "push: {" << meta[metaSize - 1].id << ", " << meta[metaSize - 1].name << "}" << std::endl;
+        output.flush() << "push: {" << meta[metaSize - 1].id << ", " << meta[metaSize - 1].name << '}' << std::endl;
 
         output.flush() << "whether it is empty: " << stackIsEmpty(stack) << std::endl;
         output.flush() << "size: " << stackSize(stack) << std::endl;
         while (!stackIsEmpty(stack))
         {
             pVal = static_cast<Meta*>(stackPop(stack));
-            output.flush() << "pop: {" << pVal->id << ", " << pVal->name << "}" << std::endl;
+            output.flush() << "pop: {" << pVal->id << ", " << pVal->name << '}' << std::endl;
         }
         destroyStack(&stack);
 
@@ -290,22 +290,22 @@ public:
         for (int i = 0; i < (metaSize - 1); ++i)
         {
             queuePush(queue, &meta[i]);
-            output.flush() << "push: {" << meta[i].id << ", " << meta[i].name << "}" << std::endl;
+            output.flush() << "push: {" << meta[i].id << ", " << meta[i].name << '}' << std::endl;
         }
 
         pVal = static_cast<Meta*>(queuePop(queue));
-        output.flush() << "pop: {" << pVal->id << ", " << pVal->name << "}" << std::endl;
+        output.flush() << "pop: {" << pVal->id << ", " << pVal->name << '}' << std::endl;
         pVal = static_cast<Meta*>(queueFront(queue));
-        output.flush() << "front: {" << pVal->id << ", " << pVal->name << "}" << std::endl;
+        output.flush() << "front: {" << pVal->id << ", " << pVal->name << '}' << std::endl;
         queuePush(queue, &meta[metaSize - 1]);
-        output.flush() << "push: {" << meta[metaSize - 1].id << ", " << meta[metaSize - 1].name << "}" << std::endl;
+        output.flush() << "push: {" << meta[metaSize - 1].id << ", " << meta[metaSize - 1].name << '}' << std::endl;
 
         output.flush() << "whether it is empty: " << queueIsEmpty(queue) << std::endl;
         output.flush() << "size: " << queueSize(queue) << std::endl;
         while (!queueIsEmpty(queue))
         {
             pVal = static_cast<Meta*>(queuePop(queue));
-            output.flush() << "pop: {" << pVal->id << ", " << pVal->name << "}" << std::endl;
+            output.flush() << "pop: {" << pVal->id << ", " << pVal->name << '}' << std::endl;
         }
         destroyQueue(&queue);
 
@@ -363,7 +363,7 @@ public:
         output.flush() << "insert: ";
         for (int i = 0; i < arraySize; ++i)
         {
-            output.flush() << array.at(i) << " ";
+            output.flush() << array.at(i) << ' ';
             root = bsTreeInsert(root, array.at(i));
         }
 
@@ -412,7 +412,7 @@ public:
         output.flush() << "\ninsert: ";
         for (int i = 0; i < arraySize; ++i)
         {
-            output.flush() << array.at(i) << " ";
+            output.flush() << array.at(i) << ' ';
             root = avlTreeInsert(root, array.at(i));
         }
 
@@ -463,7 +463,7 @@ public:
         output.flush() << "insert: ";
         for (int i = 0; i < arraySize; ++i)
         {
-            output.flush() << array.at(i) << " ";
+            output.flush() << array.at(i) << ' ';
             root = splayTreeInsert(root, array.at(i));
         }
 

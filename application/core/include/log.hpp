@@ -296,7 +296,7 @@ void Log::flush(
             }
 
             std::string output = std::string{prefix} + ":[" + utility::time::getCurrentSystemTime() + "]:["
-                + codeFile.substr(codeFile.find("/") + 1, codeFile.length()) + "#" + std::to_string(codeLine) + "]: ";
+                + codeFile.substr(codeFile.find('/') + 1, codeFile.length()) + '#' + std::to_string(codeLine) + "]: ";
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat-security"
             output.append(COMMON_FORMAT_TO_STRING(format, std::forward<Args>(args)...));
