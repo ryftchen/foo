@@ -51,7 +51,7 @@ public:
     struct Bottom<ArithmeticMethod>
     {
         //! @brief Maximum value of the ArithmeticMethod enum.
-        static constexpr std::uint8_t value = 4;
+        static constexpr std::uint8_t value{4};
     };
 
     //! @brief Enumerate specific divisor methods.
@@ -65,7 +65,7 @@ public:
     struct Bottom<DivisorMethod>
     {
         //! @brief Maximum value of the DivisorMethod enum.
-        static constexpr std::uint8_t value = 2;
+        static constexpr std::uint8_t value{2};
     };
 
     //! @brief Enumerate specific integral methods.
@@ -82,7 +82,7 @@ public:
     struct Bottom<IntegralMethod>
     {
         //! @brief Maximum value of the IntegralMethod enum.
-        static constexpr std::uint8_t value = 5;
+        static constexpr std::uint8_t value{5};
     };
 
     //! @brief Enumerate specific prime methods.
@@ -96,7 +96,7 @@ public:
     struct Bottom<PrimeMethod>
     {
         //! @brief Maximum value of the PrimeMethod enum.
-        static constexpr std::uint8_t value = 2;
+        static constexpr std::uint8_t value{2};
     };
 
     //! @brief Bit flags for managing arithmetic methods.

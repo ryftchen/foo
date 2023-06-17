@@ -55,7 +55,7 @@ public:
     struct Bottom<BehavioralInstance>
     {
         //! @brief Maximum value of the BehavioralInstance enum.
-        static constexpr std::uint8_t value = 11;
+        static constexpr std::uint8_t value{11};
     };
 
     //! @brief Enumerate specific creational instances.
@@ -72,7 +72,7 @@ public:
     struct Bottom<CreationalInstance>
     {
         //! @brief Maximum value of the CreationalInstance enum.
-        static constexpr std::uint8_t value = 5;
+        static constexpr std::uint8_t value{5};
     };
 
     //! @brief Enumerate specific structural instances.
@@ -91,7 +91,7 @@ public:
     struct Bottom<StructuralInstance>
     {
         //! @brief Maximum value of the StructuralInstance enum.
-        static constexpr std::uint8_t value = 7;
+        static constexpr std::uint8_t value{7};
     };
 
     //! @brief Bit flags for managing behavioral instances.

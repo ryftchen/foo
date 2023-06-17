@@ -17,7 +17,7 @@ Memory<T, BlockSize>::~Memory() noexcept
     while (nullptr != curr)
     {
         SlotPointer prev = curr->next;
-        operator delete(reinterpret_cast<void*>(curr)); // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
+        operator delete(reinterpret_cast<void*>(curr));
         curr = prev;
     }
 }
@@ -62,7 +62,7 @@ inline typename Memory<T, BlockSize>::Pointer Memory<T, BlockSize>::allocate(Siz
 {
     if (nullptr != freeSlots)
     {
-        Pointer result = reinterpret_cast<Pointer>(freeSlots); // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
+        Pointer result = reinterpret_cast<Pointer>(freeSlots);
         freeSlots = freeSlots->next;
         return result;
     }
@@ -72,7 +72,7 @@ inline typename Memory<T, BlockSize>::Pointer Memory<T, BlockSize>::allocate(Siz
         {
             allocateBlock();
         }
-        return reinterpret_cast<Pointer>(currentSlot++); // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
+        return reinterpret_cast<Pointer>(currentSlot++);
     }
 }
 
@@ -81,8 +81,8 @@ inline void Memory<T, BlockSize>::deallocate(Pointer p, SizeType /*n*/)
 {
     if (nullptr != p)
     {
-        reinterpret_cast<SlotPointer>(p)->next = freeSlots; // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
-        freeSlots = reinterpret_cast<SlotPointer>(p); // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
+        reinterpret_cast<SlotPointer>(p)->next = freeSlots;
+        freeSlots = reinterpret_cast<SlotPointer>(p);
     }
 }
 
@@ -130,23 +130,20 @@ template <typename T, std::size_t BlockSize>
 inline typename Memory<T, BlockSize>::SizeType Memory<T, BlockSize>::padPointer(DataPointer p, SizeType align)
     const noexcept
 {
-    std::uintptr_t result = reinterpret_cast<std::uintptr_t>(p); // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
+    std::uintptr_t result = reinterpret_cast<std::uintptr_t>(p);
     return ((align - result) % align);
 }
 
 template <typename T, std::size_t BlockSize>
 void Memory<T, BlockSize>::allocateBlock()
 {
-    DataPointer newBlock =
-        reinterpret_cast<DataPointer>(operator new(BlockSize)); // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
-    reinterpret_cast<SlotPointer>(newBlock)->next = currentBlock; // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
-    currentBlock = reinterpret_cast<SlotPointer>(newBlock); // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
+    DataPointer newBlock = reinterpret_cast<DataPointer>(operator new(BlockSize));
+    reinterpret_cast<SlotPointer>(newBlock)->next = currentBlock;
+    currentBlock = reinterpret_cast<SlotPointer>(newBlock);
 
     DataPointer body = newBlock + sizeof(SlotPointer);
     SizeType bodyPadding = padPointer(body, alignof(SlotType));
-    currentSlot =
-        reinterpret_cast<SlotPointer>(body + bodyPadding); // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
-    lastSlot = reinterpret_cast<SlotPointer>( // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
-        newBlock + BlockSize - sizeof(SlotType) + 1);
+    currentSlot = reinterpret_cast<SlotPointer>(body + bodyPadding);
+    lastSlot = reinterpret_cast<SlotPointer>(newBlock + BlockSize - sizeof(SlotType) + 1);
 }
 } // namespace utility::memory

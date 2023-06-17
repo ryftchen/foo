@@ -75,7 +75,7 @@ private:
 struct FileProperty
 {
     //! @brief File path.
-    std::string path;
+    const std::string path;
     //! @brief File lock.
     FileReadWriteLock& lock;
 };

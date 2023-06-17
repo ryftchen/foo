@@ -60,7 +60,7 @@ public:
     struct Bottom<MatchMethod>
     {
         //! @brief Maximum value of the MatchMethod enum.
-        static constexpr std::uint8_t value = 5;
+        static constexpr std::uint8_t value{5};
     };
 
     //! @brief Enumerate specific notation methods.
@@ -74,7 +74,7 @@ public:
     struct Bottom<NotationMethod>
     {
         //! @brief Maximum value of the NotationMethod enum.
-        static constexpr std::uint8_t value = 2;
+        static constexpr std::uint8_t value{2};
     };
 
     //! @brief Enumerate specific optimal methods.
@@ -90,7 +90,7 @@ public:
     struct Bottom<OptimalMethod>
     {
         //! @brief Maximum value of the OptimalMethod enum.
-        static constexpr std::uint8_t value = 4;
+        static constexpr std::uint8_t value{4};
     };
 
     //! @brief Enumerate specific search methods.
@@ -105,7 +105,7 @@ public:
     struct Bottom<SearchMethod>
     {
         //! @brief Maximum value of the SearchMethod enum.
-        static constexpr std::uint8_t value = 3;
+        static constexpr std::uint8_t value{3};
     };
 
     //! @brief Enumerate specific sort methods.
@@ -127,7 +127,7 @@ public:
     struct Bottom<SortMethod>
     {
         //! @brief Maximum value of the SortMethod enum.
-        static constexpr std::uint8_t value = 10;
+        static constexpr std::uint8_t value{10};
     };
 
     //! @brief Bit flags for managing match methods.
