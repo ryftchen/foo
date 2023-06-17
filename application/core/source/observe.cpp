@@ -25,7 +25,19 @@ namespace tlv
 template <typename T>
 bool Packet::write(T data)
 {
-    T temp = htonl(data);
+    T temp = 0;
+    if constexpr (sizeof(T) == sizeof(std::uint32_t))
+    {
+        temp = htonl(data);
+    }
+    else if constexpr (sizeof(T) == sizeof(std::uint16_t))
+    {
+        temp = htons(data);
+    }
+    else
+    {
+        temp = data;
+    }
     return write(&temp, sizeof(T));
 }
 
@@ -33,32 +45,72 @@ bool Packet::write(const void* pDst, const std::uint32_t offset)
 {
     std::memcpy(pWrite, pDst, offset);
     pWrite += offset;
-    return (pWrite < pEnd) ? true : false;
+    return (pWrite < pTail) ? true : false;
 }
 
 template <typename T>
 bool Packet::read(T* data)
 {
-    read(data, sizeof(T));
-    *data = ntohl(*data);
-    return true;
+    const bool isEnd = read(data, sizeof(T));
+    if constexpr (sizeof(T) == sizeof(std::uint32_t))
+    {
+        *data = ntohl(*data);
+    }
+    else if constexpr (sizeof(T) == sizeof(std::uint16_t))
+    {
+        *data = ntohs(*data);
+    }
+    return isEnd;
 }
 
 bool Packet::read(void* pDst, const std::uint32_t offset)
 {
     std::memcpy(pDst, pRead, offset);
     pRead += offset;
-    return (pRead < pEnd) ? true : false;
+    return (pRead < pTail) ? true : false;
 }
 
-int tlvDecode(char* pbuf, const int len, TLVValue& val)
+int tlvEncode(char* pBuf, int& len, const TLVValue& val)
 {
-    if (!pbuf)
+    if (!pBuf)
     {
         return -1;
     }
 
-    Packet dec(pbuf, len);
+    constexpr int offset = sizeof(int) + sizeof(int);
+    int sum = 0;
+
+    Packet enc(pBuf, len);
+    enc.write<int>(TLVType::header);
+    enc.write<int>(sum);
+
+    enc.write<int>(TLVType::stop);
+    enc.write<int>(sizeof(bool));
+    enc.write<bool>(val.stopFlag);
+    sum += (offset + sizeof(bool));
+
+    if (invalidShmId != val.logShmId)
+    {
+        enc.write<int>(TLVType::log);
+        enc.write<int>(sizeof(int));
+        enc.write<int>(val.logShmId);
+        sum += (offset + sizeof(int));
+    }
+
+    *reinterpret_cast<int*>(pBuf + sizeof(int)) = htonl(sum); // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
+    len = offset + sum;
+
+    return 0;
+}
+
+int tlvDecode(char* pBuf, const int len, TLVValue& val)
+{
+    if (!pBuf)
+    {
+        return -1;
+    }
+
+    Packet dec(pBuf, len);
     int type = 0, length = 0, sum = 0;
 
     dec.read<int>(&type);
@@ -87,32 +139,6 @@ int tlvDecode(char* pbuf, const int len, TLVValue& val)
                 break;
         }
     }
-
-    return 0;
-}
-
-int tlvEncode(char* pbuf, int& len, const TLVValue& val)
-{
-    if (!pbuf)
-    {
-        return -1;
-    }
-
-    constexpr int offset = sizeof(int) + sizeof(int);
-    constexpr int sum = (offset + sizeof(bool)) + (offset + sizeof(int));
-    Packet enc(pbuf, len);
-    enc.write<int>(TLVType::header);
-    enc.write<int>(sum);
-
-    enc.write<int>(TLVType::stop);
-    enc.write<int>(sizeof(bool));
-    enc.write<bool>(val.stopFlag);
-
-    enc.write<int>(TLVType::log);
-    enc.write<int>(sizeof(int));
-    enc.write<int>(val.logShmId);
-
-    len = offset + sum;
 
     return 0;
 }
@@ -240,18 +266,18 @@ void Observe::createObserveServer()
         {
             try
             {
-                char buffer[bufferSize] = {'\0'};
+                char buffer[maxMsgLength] = {'\0'};
                 switch (utility::common::bkdrHash(message.data()))
                 {
                     case "stop"_bkdrHash:
-                        if (buildPacketForStop(buffer) > 0)
+                        if (buildStopPacket(buffer) > 0)
                         {
                             newSocket->toSend(buffer, sizeof(buffer));
                             newSocket->setNonBlocking();
                         }
                         break;
                     case "log"_bkdrHash:
-                        if (buildPacketForLog(buffer) > 0)
+                        if (buildLogPacket(buffer) > 0)
                         {
                             newSocket->toSend(buffer, sizeof(buffer));
                         }
@@ -267,24 +293,24 @@ void Observe::createObserveServer()
         };
     };
 
-    udpServer.onMessageReceived = [&](const std::string& message, const std::string& host, const std::uint16_t port)
+    udpServer.onMessageReceived = [&](const std::string& message, const std::string& ip, const std::uint16_t port)
     {
         try
         {
-            char buffer[bufferSize] = {'\0'};
+            char buffer[maxMsgLength] = {'\0'};
             switch (utility::common::bkdrHash(message.data()))
             {
                 case "stop"_bkdrHash:
-                    if (buildPacketForStop(buffer) > 0)
+                    if (buildStopPacket(buffer) > 0)
                     {
-                        udpServer.toSendTo(buffer, sizeof(buffer), host, port);
+                        udpServer.toSendTo(buffer, sizeof(buffer), ip, port);
                         udpServer.setNonBlocking();
                     }
                     break;
                 case "log"_bkdrHash:
-                    if (buildPacketForLog(buffer) > 0)
+                    if (buildLogPacket(buffer) > 0)
                     {
-                        udpServer.toSendTo(buffer, sizeof(buffer), host, port);
+                        udpServer.toSendTo(buffer, sizeof(buffer), ip, port);
                     }
                     break;
                 default:
@@ -332,14 +358,9 @@ tlv::TLVValue Observe::parseTLVPacket(char* buffer, const int length)
     tlv::TLVValue value;
     tlv::tlvDecode(buffer, length, value);
 
-    if (value.stopFlag)
+    if (invalidShmId != value.logShmId)
     {
-        return value;
-    }
-
-    int shmId = -1;
-    if ((shmId = value.logShmId) >= 0)
-    {
+        const int shmId = value.logShmId;
         void* shm = shmat(shmId, nullptr, 0);
         if (nullptr == shm)
         {
@@ -366,10 +387,10 @@ tlv::TLVValue Observe::parseTLVPacket(char* buffer, const int length)
     return value;
 }
 
-int Observe::buildPacketForLog(char* buffer)
+int Observe::buildLogPacket(char* buffer)
 {
     int shmId = shmget(
-        (key_t)0,
+        static_cast<key_t>(0),
         sizeof(SharedMemory),
         IPC_CREAT | IPC_EXCL | S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
     if (-1 == shmId)
@@ -408,7 +429,7 @@ int Observe::buildPacketForLog(char* buffer)
     return length;
 }
 
-int Observe::buildPacketForStop(char* buffer)
+int Observe::buildStopPacket(char* buffer)
 {
     int length = 0;
     if (tlv::tlvEncode(buffer, length, tlv::TLVValue{.stopFlag = true}) < 0)
@@ -418,6 +439,10 @@ int Observe::buildPacketForStop(char* buffer)
     return length;
 }
 
+//! @brief The operator (<<) overloading of the State enum.
+//! @param os - output stream object
+//! @param state - the specific value of State enum
+//! @return reference of output stream object
 std::ostream& operator<<(std::ostream& os, const Observe::State& state)
 {
     switch (state)

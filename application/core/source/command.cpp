@@ -370,7 +370,7 @@ void Command::printConsoleOutput() const
 
     UDPSocket udpClient;
     udpClient.onRawMessageReceived =
-        [&](char* buffer, const int length, const std::string& /*host*/, const std::uint16_t /*port*/)
+        [&](char* buffer, const int length, const std::string& /*ip*/, const std::uint16_t /*port*/)
     {
         try
         {
