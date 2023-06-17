@@ -29,23 +29,23 @@
 namespace utility::common
 {
 //! @brief ANSI escape codes for red foreground color.
-inline constexpr std::string_view colorRed{"\033[0;31;40m"};
+inline constexpr std::string_view colorRed = "\033[0;31;40m";
 //! @brief ANSI escape codes for green foreground color.
-inline constexpr std::string_view colorGreen{"\033[0;32;40m"};
+inline constexpr std::string_view colorGreen = "\033[0;32;40m";
 //! @brief ANSI escape codes for yellow foreground color.
-inline constexpr std::string_view colorYellow{"\033[0;33;40m"};
+inline constexpr std::string_view colorYellow = "\033[0;33;40m";
 //! @brief ANSI escape codes for blue foreground color.
-inline constexpr std::string_view colorBlue{"\033[0;34;40m"};
+inline constexpr std::string_view colorBlue = "\033[0;34;40m";
 //! @brief ANSI escape codes for gray foreground color.
-inline constexpr std::string_view colorGray{"\033[0;37;40m"};
+inline constexpr std::string_view colorGray = "\033[0;37;40m";
 //! @brief ANSI escape codes for the bold font.
-inline constexpr std::string_view colorBold{"\033[1m"};
+inline constexpr std::string_view colorBold = "\033[1m";
 //! @brief ANSI escape codes for the underline font.
-inline constexpr std::string_view colorUnderLine{"\033[4m"};
+inline constexpr std::string_view colorUnderLine = "\033[4m";
 //! @brief ANSI escape codes for default background color.
-inline constexpr std::string_view colorForBackground{"\033[49m"};
+inline constexpr std::string_view colorForBackground = "\033[49m";
 //! @brief ANSI escape codes for ending.
-inline constexpr std::string_view colorOff{"\033[0m"};
+inline constexpr std::string_view colorOff = "\033[0m";
 //! @brief The hash seed for BKDR hash function.
 constexpr std::uint64_t bkdrHashSeed = 131;
 //! @brief The hash size for BKDR hash function.

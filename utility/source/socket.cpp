@@ -78,18 +78,8 @@ void Socket::setTimeout(const int microseconds) const
     tv.tv_sec = 0;
     tv.tv_usec = microseconds;
 
-    setsockopt(
-        sock,
-        SOL_SOCKET,
-        SO_RCVTIMEO,
-        reinterpret_cast<char*>(&tv), // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
-        sizeof(tv));
-    setsockopt(
-        sock,
-        SOL_SOCKET,
-        SO_SNDTIMEO,
-        reinterpret_cast<char*>(&tv), // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
-        sizeof(tv));
+    setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, reinterpret_cast<char*>(&tv), sizeof(tv));
+    setsockopt(sock, SOL_SOCKET, SO_SNDTIMEO, reinterpret_cast<char*>(&tv), sizeof(tv));
 }
 
 void TCPSocket::setAddress(const sockaddr_in& addr)
@@ -145,11 +135,7 @@ void TCPSocket::toConnect(const std::string& ip, const std::uint16_t port, const
     sockAddr.sin_addr.s_addr = static_cast<std::uint32_t>(sockAddr.sin_addr.s_addr);
 
     setBlocking();
-    if (connect(
-            sock,
-            reinterpret_cast<const sockaddr*>(&sockAddr), // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
-            sizeof(sockaddr_in))
-        == -1)
+    if (connect(sock, reinterpret_cast<const sockaddr*>(&sockAddr), sizeof(sockaddr_in)) == -1)
     {
         throw std::runtime_error("<SOCKET> Could not connect to the socket, errno: " + std::to_string(errno) + '.');
     }
@@ -220,12 +206,7 @@ void TCPServer::toBind(const std::string& ip, const std::uint16_t port)
     sockAddr.sin_port = htons(port);
 
     setBlocking();
-    if (bind(
-            sock,
-            reinterpret_cast<const sockaddr*>( // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
-                &sockAddr),
-            sizeof(sockAddr))
-        == -1)
+    if (bind(sock, reinterpret_cast<const sockaddr*>(&sockAddr), sizeof(sockAddr)) == -1)
     {
         throw std::runtime_error("<SOCKET> Could not bind the socket, errno: " + std::to_string(errno) + '.');
     }
@@ -274,11 +255,7 @@ void TCPServer::toAccept(TCPServer* server)
     int newSock = 0;
     while (true)
     {
-        if ((newSock = accept(
-                 server->sock,
-                 reinterpret_cast<sockaddr*>(&newSocketInfo), // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
-                 &newSocketInfoLength))
-            == -1)
+        if ((newSock = accept(server->sock, reinterpret_cast<sockaddr*>(&newSocketInfo), &newSocketInfoLength)) == -1)
         {
             if ((EBADF == errno) || (EINVAL == errno))
             {
@@ -331,14 +308,7 @@ int UDPSocket::toSendTo(const char* bytes, const std::size_t length, const std::
     hostAddr.sin_family = AF_INET;
 
     int sent = 0;
-    if ((sent = sendto(
-             sock,
-             bytes,
-             length,
-             0,
-             reinterpret_cast<sockaddr*>(&hostAddr), // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
-             sizeof(hostAddr)))
-        == -1)
+    if ((sent = sendto(sock, bytes, length, 0, reinterpret_cast<sockaddr*>(&hostAddr), sizeof(hostAddr))) == -1)
     {
         throw std::runtime_error("<SOCKET> Unable to send message to address, errno: " + std::to_string(errno) + '.');
     }
@@ -393,11 +363,7 @@ void UDPSocket::toConnect(const std::string& ip, const std::uint16_t port)
     sockAddr.sin_addr.s_addr = static_cast<std::uint32_t>(sockAddr.sin_addr.s_addr);
 
     setBlocking();
-    if (connect(
-            sock,
-            reinterpret_cast<const sockaddr*>(&sockAddr), // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
-            sizeof(sockaddr_in))
-        == -1)
+    if (connect(sock, reinterpret_cast<const sockaddr*>(&sockAddr), sizeof(sockaddr_in)) == -1)
     {
         throw std::runtime_error("<SOCKET> Could not connect to the socket, errno: " + std::to_string(errno) + '.');
     }
@@ -460,12 +426,7 @@ void UDPSocket::toRecvFrom(UDPSocket* socket)
     tempBuffer[0] = '\0';
     int messageLength = 0;
     while ((messageLength = recvfrom(
-                socket->sock,
-                tempBuffer,
-                socket->bufferSize,
-                0,
-                reinterpret_cast<sockaddr*>(&hostAddr), // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
-                &hostAddrSize))
+                socket->sock, tempBuffer, socket->bufferSize, 0, reinterpret_cast<sockaddr*>(&hostAddr), &hostAddrSize))
            != -1)
     {
         tempBuffer[messageLength] = '\0';
@@ -494,11 +455,7 @@ void UDPServer::toBind(const std::string& ip, const std::uint16_t port)
     sockAddr.sin_port = htons(port);
 
     setBlocking();
-    if (bind(
-            sock,
-            reinterpret_cast<const sockaddr*>(&sockAddr), // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
-            sizeof(sockAddr))
-        == -1)
+    if (bind(sock, reinterpret_cast<const sockaddr*>(&sockAddr), sizeof(sockAddr)) == -1)
     {
         throw std::runtime_error("<SOCKET> Could not bind the socket, errno: " + std::to_string(errno) + '.');
     }

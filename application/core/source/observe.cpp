@@ -97,7 +97,7 @@ int tlvEncode(char* pBuf, int& len, const TLVValue& val)
         sum += (offset + sizeof(int));
     }
 
-    *reinterpret_cast<int*>(pBuf + sizeof(int)) = htonl(sum); // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
+    *reinterpret_cast<int*>(pBuf + sizeof(int)) = htonl(sum);
     len = offset + sum;
 
     return 0;
@@ -366,8 +366,7 @@ tlv::TLVValue Observe::parseTLVPacket(char* buffer, const int length)
         {
             throw std::runtime_error("<OBSERVE> Failed to attach shared memory.");
         }
-        SharedMemory* shrMem =
-            reinterpret_cast<SharedMemory*>(shm); // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
+        SharedMemory* shrMem = reinterpret_cast<SharedMemory*>(shm);
 
         shrMem->signal.store(true);
         while (true)
@@ -402,7 +401,7 @@ int Observe::buildLogPacket(char* buffer)
     {
         throw std::runtime_error("<OBSERVE> Failed to attach shared memory.");
     }
-    SharedMemory* shrMem = reinterpret_cast<SharedMemory*>(shm); // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
+    SharedMemory* shrMem = reinterpret_cast<SharedMemory*>(shm);
 
     shrMem->signal.store(false);
     while (true)

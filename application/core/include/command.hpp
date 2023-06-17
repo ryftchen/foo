@@ -90,7 +90,7 @@ private:
         struct Bottom<Category>
         {
             //! @brief Maximum value of the Category enum.
-            static constexpr std::uint8_t value = 3;
+            static constexpr std::uint8_t value{3};
         };
 
         //! @brief Bit flags for managing basic tasks.
@@ -125,7 +125,7 @@ private:
         struct Bottom<Category>
         {
             //! @brief Maximum value of the Category enum.
-            static constexpr std::uint8_t value = 4;
+            static constexpr std::uint8_t value{4};
         };
 
         //! @brief Check whether any general tasks do not exist.

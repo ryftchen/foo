@@ -47,7 +47,7 @@ public:
     struct Bottom<LinearInstance>
     {
         //! @brief Maximum value of the LinearInstance enum.
-        static constexpr std::uint8_t value = 3;
+        static constexpr std::uint8_t value{3};
     };
 
     //! @brief Enumerate specific tree instances.
@@ -62,7 +62,7 @@ public:
     struct Bottom<TreeInstance>
     {
         //! @brief Maximum value of the TreeInstance enum.
-        static constexpr std::uint8_t value = 3;
+        static constexpr std::uint8_t value{3};
     };
 
     //! @brief Bit flags for managing linear instances.

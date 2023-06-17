@@ -47,60 +47,60 @@ namespace application::log
 {
 //! @brief Length of the log file path.
 constexpr std::uint16_t logPathLength = 32;
-//! @brief The maximum number of times to wait for the logger to change to the target state.
+//! @brief Maximum number of times to wait for the logger to change to the target state.
 constexpr std::uint16_t maxTimesOfWaitLogger = 10;
-//! @brief The time interval (ms) to wait for the logger to change to the target state.
+//! @brief Time interval (ms) to wait for the logger to change to the target state.
 constexpr std::uint16_t intervalOfWaitLogger = 10;
 //! @brief Log file directory.
-constexpr std::string_view logDirectory{"./temporary"};
+constexpr std::string_view logDirectory = "./temporary";
 //! @brief Prefix of debug level in log.
-constexpr std::string_view debugLevelPrefix{"[DBG]"};
+constexpr std::string_view debugLevelPrefix = "[DBG]";
 //! @brief Prefix of info level in log.
-constexpr std::string_view infoLevelPrefix{"[INF]"};
+constexpr std::string_view infoLevelPrefix = "[INF]";
 //! @brief Prefix of warning level in log.
-constexpr std::string_view warnLevelPrefix{"[WRN]"};
+constexpr std::string_view warnLevelPrefix = "[WRN]";
 //! @brief Prefix of error level in log.
-constexpr std::string_view errorLevelPrefix{"[ERR]"};
+constexpr std::string_view errorLevelPrefix = "[ERR]";
 //! @brief Regular expression of debug level in log.
-constexpr std::string_view debugLevelPrefixRegex{R"(^\[DBG\])"};
+constexpr std::string_view debugLevelPrefixRegex = R"(^\[DBG\])";
 //! @brief Regular expression of info level in log.
-constexpr std::string_view infoLevelPrefixRegex{R"(^\[INF\])"};
+constexpr std::string_view infoLevelPrefixRegex = R"(^\[INF\])";
 //! @brief Regular expression of warning level in log.
-constexpr std::string_view warnLevelPrefixRegex{R"(^\[WRN\])"};
+constexpr std::string_view warnLevelPrefixRegex = R"(^\[WRN\])";
 //! @brief Regular expression of error level in log.
-constexpr std::string_view errorLevelPrefixRegex{R"(^\[ERR\])"};
+constexpr std::string_view errorLevelPrefixRegex = R"(^\[ERR\])";
 //! @brief Regular expression of date in log.
-constexpr std::string_view dateRegex{R"(\[(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})\.(\d{6}) (\w{3})\])"};
+constexpr std::string_view dateRegex = R"(\[(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})\.(\d{6}) (\w{3})\])";
 //! @brief Regular expression of code file in log.
-constexpr std::string_view codeFileRegex{R"(\[[^:]+\.(c|h|cc|hh|cpp|hpp|tpp|cxx|hxx|C|H)+#\d+\])"};
+constexpr std::string_view codeFileRegex = R"(\[[^:]+\.(c|h|cc|hh|cpp|hpp|tpp|cxx|hxx|C|H)+#\d+\])";
 //! @brief Prefix of debug level. Include ANSI escape codes.
-constexpr auto debugLevelPrefixColorForLog{utility::common::joinStr<
+constexpr auto debugLevelPrefixColorForLog = utility::common::joinStr<
     utility::common::colorBlue,
     utility::common::colorBold,
     utility::common::colorForBackground,
     debugLevelPrefix,
-    utility::common::colorOff>};
+    utility::common::colorOff>;
 //! @brief Prefix of info level. Include ANSI escape codes.
-constexpr auto infoLevelPrefixColorForLog{utility::common::joinStr<
+constexpr auto infoLevelPrefixColorForLog = utility::common::joinStr<
     utility::common::colorGreen,
     utility::common::colorBold,
     utility::common::colorForBackground,
     infoLevelPrefix,
-    utility::common::colorOff>};
+    utility::common::colorOff>;
 //! @brief Prefix of warning level. Include ANSI escape codes.
-constexpr auto warnLevelPrefixColorForLog{utility::common::joinStr<
+constexpr auto warnLevelPrefixColorForLog = utility::common::joinStr<
     utility::common::colorYellow,
     utility::common::colorBold,
     utility::common::colorForBackground,
     warnLevelPrefix,
-    utility::common::colorOff>};
+    utility::common::colorOff>;
 //! @brief Prefix of error level. Include ANSI escape codes.
-constexpr auto errorLevelPrefixColorForLog{utility::common::joinStr<
+constexpr auto errorLevelPrefixColorForLog = utility::common::joinStr<
     utility::common::colorRed,
     utility::common::colorBold,
     utility::common::colorForBackground,
     errorLevelPrefix,
-    utility::common::colorOff>};
+    utility::common::colorOff>;
 
 //! @brief Logger.
 class Log final : public utility::fsm::FSM<Log>

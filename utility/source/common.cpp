@@ -32,7 +32,7 @@ std::string executeCommand(const std::string& cmd, const std::uint32_t timeout)
     std::FILE* pipe = popen(cmd.c_str(), "r");
     if (nullptr == pipe)
     {
-        throw std::runtime_error("<COMMON> Cannot open pipe when trying to execute command.");
+        throw std::runtime_error("<COMMON> Could not open pipe when trying to execute command.");
     }
 
     std::string output;
@@ -51,18 +51,18 @@ std::string executeCommand(const std::string& cmd, const std::uint32_t timeout)
             }
         }
 
-        const std::size_t n = std::fread(buffer.data(), 1, buffer.size(), pipe);
-        if (0 == n)
+        const std::size_t len = std::fread(buffer.data(), 1, buffer.size(), pipe);
+        if (0 == len)
         {
             break;
         }
-        output.append(buffer.data(), n);
+        output.append(buffer.data(), len);
     }
 
     const int exitStatus = pclose(pipe);
     if (-1 == exitStatus)
     {
-        throw std::runtime_error("<COMMON> Cannot close pipe when trying to execute command.");
+        throw std::runtime_error("<COMMON> Could not close pipe when trying to execute command.");
     }
     if (WIFEXITED(exitStatus))
     {
