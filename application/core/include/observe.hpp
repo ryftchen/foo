@@ -13,18 +13,27 @@
 #include "utility/include/fsm.hpp"
 #include "utility/include/socket.hpp"
 
+//! @brief Start to observe
 #define OBSERVE_TO_START application::observe::Observe::getInstance().interfaceToStart()
+//! @brief Stop to observe
 #define OBSERVE_TO_STOP application::observe::Observe::getInstance().interfaceToStop()
 
+//! @brief Observe-server-related functions in the application module.
 namespace application::observe
 {
+//! @brief Maximum number of times to wait for the observer to change to the target state.
 constexpr std::uint16_t maxTimesOfWaitObserver = 10;
+//! @brief Time interval (ms) to wait for the observer to change to the target state.
 constexpr std::uint16_t intervalOfWaitObserver = 10;
-constexpr std::uint32_t bufferSize = 8192;
-constexpr std::uint32_t maxBufferSize = bufferSize * 10;
+//! @brief Maximum length of the message.
+constexpr std::uint32_t maxMsgLength = 8192;
+//! @brief Invalid Shm id.
+constexpr int invalidShmId = -1;
 
+//! @brief Type-length-value scheme.
 namespace tlv
 {
+//! @brief Enumerate the types in TLV.
 enum TLVType : int
 {
     header = 0x125e591,
@@ -32,48 +41,93 @@ enum TLVType : int
     log
 };
 
+//! @brief Value in TLV.
 struct TLVValue
 {
+    //! @brief Flag for stopping the connection.
     bool stopFlag{false};
-    int logShmId{-1};
+    //! @brief Shm id of the log contents.
+    int logShmId{invalidShmId};
 };
 
+//! @brief TLV packet.
 class Packet
 {
 public:
+    //! @brief Construct a new Packet object.
+    //! @param pBuf - TVL packet buffer
+    //! @param len - buffer length
     Packet(char* pBuf, const std::uint32_t len) :
-        pData(pBuf), length(len), pEnd(pData + len), pWrite(pData), pRead(pData)
+        pData(pBuf), length(len), pTail(pData + len), pWrite(pData), pRead(pData)
     {
     }
+    //! @brief Destroy the Packet object.
     virtual ~Packet() = default;
 
+    //! @brief Write data to the packet buffer.
+    //! @tparam T type of data to be written
+    //! @param data - original data
+    //! @return whether it is continuously writable
     template <typename T>
     bool write(T data);
+    //! @brief Write data to the packet buffer.
+    //! @param pDst - data after conversion
+    //! @param offset - data offset
+    //! @return whether it is continuously writable
     bool write(const void* pDst, const std::uint32_t offset);
+    //! @brief Read data to the packet buffer.
+    //! @tparam T type of data to be read
+    //! @param data - original data
+    //! @return whether it is continuously readable
     template <typename T>
     bool read(T* data);
+    //! @brief Read data to the packet buffer.
+    //! @param pDst - data after conversion
+    //! @param offset - data offset
+    //! @return whether it is continuously readable
     bool read(void* pDst, const std::uint32_t offset);
 
 private:
+    //! @brief TLV packet buffer pointer.
     char* pData{nullptr};
+    //! @brief Buffer length.
     const std::uint32_t length{0};
-    char* pEnd{nullptr};
+    //! @brief Pointer to the end of the buffer.
+    char* pTail{nullptr};
+    //! @brief Pointer to the current writing location.
     char* pWrite{nullptr};
+    //! @brief Pointer to the current reading location.
     char* pRead{nullptr};
 };
 
-int tlvDecode(char* pbuf, const int len, TLVValue& val);
-int tlvEncode(char* pbuf, int& len, const TLVValue& val);
+//! @brief Encode the TLV packet.
+//! @param pBuf - TLV packet buffer
+//! @param len -  buffer length
+//! @param val - value of TLV after encoding
+//! @return the value is 0 if successful, otherwise -1
+int tlvEncode(char* pBuf, int& len, const TLVValue& val);
+//! @brief Decode the TLV packet.
+//! @param pBuf - TLV packet buffer
+//! @param len -  buffer length
+//! @param val - value of TLV after decoding
+//! @return the value is 0 if successful, otherwise -1
+int tlvDecode(char* pBuf, const int len, TLVValue& val);
 } // namespace tlv
 
+//! @brief Observer.
 class Observe final : public utility::fsm::FSM<Observe>
 {
 public:
+    //! @brief Destroy the Observe object.
     virtual ~Observe() = default;
+    //! @brief Construct a new Observe object.
     Observe(const Observe&) = delete;
+    //! @brief The operator (=) overloading of Observe class.
+    //! @return reference of Observe object
     Observe& operator=(const Observe&) = delete;
 
     friend class FSM<Observe>;
+    //! @brief Enumerate specific states for FSM.
     enum State : std::uint8_t
     {
         init,
@@ -82,50 +136,84 @@ public:
         done
     };
 
+    //! @brief Get the Observe instance.
+    //! @return reference of Observe object
     static Observe& getInstance();
+    //! @brief Interface for running observer.
     void runObserver();
+    //! @brief Wait until the observer starts. External use.
     void interfaceToStart();
+    //! @brief Wait until the observer stops. External use.
     void interfaceToStop();
+    //! @brief Parse the TLV packet.
+    //! @param buffer - TLV packet buffer
+    //! @param length - buffer length
+    //! @return value of TLV after parsing
     static tlv::TLVValue parseTLVPacket(char* buffer, const int length);
+    //! @brief TCP server host address.
     static constexpr std::string_view tcpHost{"localhost"};
+    //! @brief TCP server port number.
     static constexpr std::uint16_t tcpPort{61501};
+    //! @brief UDP server host address.
     static constexpr std::string_view udpHost{"localhost"};
+    //! @brief UDP server port number.
     static constexpr std::uint16_t udpPort{61502};
 
+    //! @brief Maximum size of the shared memory.
+    static constexpr std::uint32_t maxShmSize{8192 * 10};
+    //! @brief Memory that can be accessed by multiple programs simultaneously.
     struct alignas(64) SharedMemory
     {
+        //! @brief Flag for operable.
         std::atomic<bool> signal{false};
-        char buffer[maxBufferSize]{'\0'};
+        //! @brief Shared memory buffer.
+        char buffer[maxShmSize]{'\0'};
     };
 
 private:
+    //! @brief Construct a new Observe object.
+    //! @param initState - initialization value of state
     explicit Observe(const StateType initState = State::init) noexcept : FSM(initState){};
 
+    //! @brief TCP server.
     utility::socket::TCPServer tcpServer;
+    //! @brief UDP server.
     utility::socket::UDPServer udpServer;
+    //! @brief Mutex for controlling server.
     mutable std::mutex mtx;
+    //! @brief The synchronization condition for server. Use with mtx.
     std::condition_variable cv;
+    //! @brief Flag to indicate whether it is observing.
     std::atomic<bool> isObserving{false};
 
+    //! @brief FSM event. Create server.
     struct CreateServer
     {
     };
+    //! @brief FSM event. Destroy server.
     struct DestroyServer
     {
     };
+    //! @brief FSM event. Go observing.
     struct GoObserving
     {
     };
+    //! @brief FSM event. NO observing.
     struct NoObserving
     {
     };
 
+    //! @brief Create the observe server.
     void createObserveServer();
+    //! @brief Start observing.
     void startObserving();
+    //! @brief Destroy the observe server.
     void destroyObserveServer();
+    //! @brief Stop observing.
     void stopObserving();
 
     // clang-format off
+    //! @brief Alias for the transition map of the observer.
     using TransitionMap = Map<
         // --- Source ---+----- Event -----+--- Target ---+------------ Action ------------+--- Guard(Optional) ---
         // --------------+-----------------+--------------+--------------------------------+-----------------------
@@ -137,9 +225,16 @@ private:
         >;
     // clang-format on
 
-    static int buildPacketForStop(char* buffer);
-    static int buildPacketForLog(char* buffer);
-    static constexpr std::uint32_t maxViewNumOfLines{50};
+    //! @brief Build the TLV packet to stop connection.
+    //! @param buffer - TLV packet buffer
+    //! @return buffer length
+    static int buildStopPacket(char* buffer);
+    //! @brief Build the TLV packet to view log contents.
+    //! @param buffer - TLV packet buffer
+    //! @return buffer length
+    static int buildLogPacket(char* buffer);
+    //! @brief Maximum number of lines to view log contents.
+    static constexpr std::uint32_t maxViewNumOfLines{20};
 
 protected:
     friend std::ostream& operator<<(std::ostream& os, const Observe::State& state);
