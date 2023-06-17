@@ -156,7 +156,7 @@ public:
     void makeC(const std::string& part) { partC = part; }
     //! @brief Get all parts.
     //! @return all parts
-    std::string get() { return (partA + " " + partB + " " + partC); }
+    std::string get() { return (partA + ' ' + partB + ' ' + partC); }
 
 private:
     //! @brief Part A.

@@ -268,7 +268,7 @@ void updateMatchTask(const std::string& target)
             break;
         default:
             getBit<MatchMethod>().reset();
-            throw std::runtime_error("<APPLY ALGORITHM> Unexpected match method: " + target + ".");
+            throw std::runtime_error("<APPLY ALGORITHM> Unexpected match method: " + target + '.');
     }
 }
 
@@ -372,7 +372,7 @@ void updateNotationTask(const std::string& target)
             break;
         default:
             getBit<NotationMethod>().reset();
-            throw std::runtime_error("<APPLY ALGORITHM> Unexpected notation method: " + target + ".");
+            throw std::runtime_error("<APPLY ALGORITHM> Unexpected notation method: " + target + '.');
     }
 }
 
@@ -554,7 +554,7 @@ void updateOptimalTask(const std::string& target)
             break;
         default:
             getBit<OptimalMethod>().reset();
-            throw std::runtime_error("<APPLY ALGORITHM> Unexpected optimal method: " + target + ".");
+            throw std::runtime_error("<APPLY ALGORITHM> Unexpected optimal method: " + target + '.');
     }
 }
 
@@ -703,7 +703,7 @@ void updateSearchTask(const std::string& target)
             break;
         default:
             getBit<SearchMethod>().reset();
-            throw std::runtime_error("<APPLY ALGORITHM> Unexpected search method: " + target + ".");
+            throw std::runtime_error("<APPLY ALGORITHM> Unexpected search method: " + target + '.');
     }
 }
 
@@ -995,7 +995,7 @@ void updateSortTask(const std::string& target)
             break;
         default:
             getBit<SortMethod>().reset();
-            throw std::runtime_error("<APPLY ALGORITHM> Unexpected sort method: " + target + ".");
+            throw std::runtime_error("<APPLY ALGORITHM> Unexpected sort method: " + target + '.');
     }
 }
 } // namespace application::app_algo

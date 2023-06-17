@@ -97,7 +97,7 @@ void Log::runLogger()
     catch (const std::exception& error)
     {
         std::cerr << error.what() << " Expected state: " << expectedState
-                  << ", current state: " << State(currentState()) << "." << std::endl;
+                  << ", current state: " << State(currentState()) << '.' << std::endl;
         stopLogging();
     }
 }
@@ -117,7 +117,7 @@ void Log::interfaceToStart()
             {
                 ++waitCount;
 #ifndef NDEBUG
-                std::cout << "<LOG> Wait for the logger to start... (" << waitCount << ")" << std::endl;
+                std::cout << "<LOG> Wait for the logger to start... (" << waitCount << ')' << std::endl;
 #endif // NDEBUG
             }
         },
@@ -150,7 +150,7 @@ void Log::interfaceToStop()
             {
                 ++waitCount;
 #ifndef NDEBUG
-                std::cout << "<LOG> Wait for the logger to stop... (" << waitCount << ")" << std::endl;
+                std::cout << "<LOG> Wait for the logger to stop... (" << waitCount << ')' << std::endl;
 #endif // NDEBUG
             }
         },

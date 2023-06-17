@@ -163,7 +163,7 @@ int Console::fileExecutor(const std::string& filename)
         {
             continue;
         }
-        std::cout << "[" << counter << "] " << command << std::endl;
+        std::cout << '[' << counter << "] " << command << std::endl;
 
         result = commandExecutor(command);
         if (result)

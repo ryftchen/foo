@@ -290,7 +290,7 @@ public:
     TargetBuilder(const int integer1, const int integer2) : integer1(integer1), integer2(integer2)
     {
 #ifdef __RUNTIME_PRINTING
-        std::cout << "\r\nElementary arithmetic of " << integer1 << " and " << integer2 << ":" << std::endl;
+        std::cout << "\r\nElementary arithmetic of " << integer1 << " and " << integer2 << ':' << std::endl;
 #endif
     }
     //! @brief Destroy the TargetBuilder object.
@@ -345,7 +345,7 @@ public:
     TargetBuilder(const int integer1, const int integer2) : integer1(integer1), integer2(integer2)
     {
 #ifdef __RUNTIME_PRINTING
-        std::cout << "\r\nAll common divisors of " << integer1 << " and " << integer2 << ":" << std::endl;
+        std::cout << "\r\nAll common divisors of " << integer1 << " and " << integer2 << ':' << std::endl;
 #endif
     }
     //! @brief Destroy the TargetBuilder object.
@@ -542,7 +542,7 @@ public:
     explicit TargetBuilder(const std::uint32_t maxPositiveInteger) : maxPositiveInteger(maxPositiveInteger)
     {
 #ifdef __RUNTIME_PRINTING
-        std::cout << "\r\nAll prime numbers smaller than " << maxPositiveInteger << ":" << std::endl;
+        std::cout << "\r\nAll prime numbers smaller than " << maxPositiveInteger << ':' << std::endl;
 #endif
     }
     //! @brief Destroy the TargetBuilder object.

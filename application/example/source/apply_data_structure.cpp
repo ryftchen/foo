@@ -171,7 +171,7 @@ void updateLinearTask(const std::string& target)
             break;
         default:
             getBit<LinearInstance>().reset();
-            throw std::runtime_error("<APPLY DATA STRUCTURE> Unexpected linear instance: " + target + ".");
+            throw std::runtime_error("<APPLY DATA STRUCTURE> Unexpected linear instance: " + target + '.');
     }
 }
 
@@ -296,7 +296,7 @@ void updateTreeTask(const std::string& target)
             break;
         default:
             getBit<TreeInstance>().reset();
-            throw std::runtime_error("<APPLY DATA STRUCTURE> Unexpected tree instance: " + target + ".");
+            throw std::runtime_error("<APPLY DATA STRUCTURE> Unexpected tree instance: " + target + '.');
     }
 }
 } // namespace application::app_ds
