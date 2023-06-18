@@ -208,15 +208,17 @@ private:
     // clang-format off
     //! @brief Mapping table of all basic tasks.
     const std::map<std::string, void (Command::*)() const> basicTaskDispatcher{
-        // - Category -+----------- Run -----------
-        { "console" , &Command::printConsoleOutput },
-        { "help"    , &Command::printHelpMessage   },
-        { "version" , &Command::printVersionInfo   },
+        // - Category -+------------ Run ------------
+        // ------------+-----------------------------
+        { "console"    , &Command::printConsoleOutput },
+        { "help"       , &Command::printHelpMessage   },
+        { "version"    , &Command::printVersionInfo   },
+        // ------------+-----------------------------
     };
     //! @brief Mapping table of all general tasks.
     const GeneralTaskMap generalTaskDispatcher{
-        // --- Category ---+----- Type -----+---------------- Target ----------------+----------- Run -----------+---------- UpdateTask ----------
-        // ----------------+----------------+----------------------------------------+---------------------------+--------------------------------
+        // --- Category ---+----- Type -----+----------------- Task -----------------+----------- Run -----------+---------- Update Task ----------
+        // ----------------+----------------+----------------------------------------+---------------------------+---------------------------------
         { "algorithm"      , {{ "match"      , {{ "rab", "knu", "boy", "hor", "sun" } , { &app_algo::runMatch     , &app_algo::updateMatchTask     }}},
                               { "notation"   , {{ "pre", "pos"                      } , { &app_algo::runNotation  , &app_algo::updateNotationTask  }}},
                               { "optimal"    , {{ "gra", "ann", "par", "gen"        } , { &app_algo::runOptimal   , &app_algo::updateOptimalTask   }}},
@@ -235,11 +237,13 @@ private:
                               { "divisor"    , {{ "euc", "ste"                      } , { &app_num::runDivisor    , &app_num::updateDivisorTask    }}},
                               { "integral"   , {{ "tra", "sim", "rom", "gau", "mon" } , { &app_num::runIntegral   , &app_num::updateIntegralTask   }}},
                               { "prime"      , {{ "era", "eul"                      } , { &app_num::runPrime      , &app_num::updatePrimeTask      }}}}}
-        // ----------------+----------------+----------------------------------------+---------------------------+--------------------------------
+        // ----------------+----------------+----------------------------------------+---------------------------+---------------------------------
     };
     // clang-format on
     //! @brief Latency for console.
     static constexpr std::uint16_t latency{10};
+    //! @brief Maximum latency for console.
+    static constexpr std::uint16_t maxLatency{200};
 
     //! @brief Print output of the console mode command line.
     void printConsoleOutput() const;

@@ -7,16 +7,19 @@
 #pragma once
 
 #ifndef __PRECOMPILED_HEADER
+#include <vector>
 #else
 #include "application/pch/precompiled_header.hpp"
 #endif // __PRECOMPILED_HEADER
 #include "utility/include/fsm.hpp"
 #include "utility/include/socket.hpp"
 
-//! @brief Start to observe
+//! @brief Start to observe.
 #define OBSERVE_TO_START application::observe::Observe::getInstance().interfaceToStart()
-//! @brief Stop to observe
+//! @brief Stop to observe.
 #define OBSERVE_TO_STOP application::observe::Observe::getInstance().interfaceToStop()
+//! @brief Get all observer options.
+#define OBSERVE_OPTIONS application::observe::Observe::getInstance().getObserverOptions()
 
 //! @brief Observe-server-related functions in the application module.
 namespace application::observe
@@ -145,6 +148,9 @@ public:
     void interfaceToStart();
     //! @brief Wait until the observer stops. External use.
     void interfaceToStop();
+    //! @brief Get the observer options.
+    //! @return observer options
+    inline std::vector<std::pair<std::string, std::string>> getObserverOptions() const;
     //! @brief Parse the TLV packet.
     //! @param buffer - TLV packet buffer
     //! @param length - buffer length
@@ -174,6 +180,36 @@ private:
     //! @brief Construct a new Observe object.
     //! @param initState - initialization value of state
     explicit Observe(const StateType initState = State::init) noexcept : FSM(initState){};
+
+    // clang-format off
+    //! @brief Observer options.
+    const std::vector<std::pair<std::string, std::string>> options{
+        // - Option -+------------- Help -------------
+        // ----------+--------------------------------
+        { "log"      , "view the log with highlights" }
+        // ----------+--------------------------------
+    };
+    // clang-format on
+    //! @brief Build the TLV packet to stop connection.
+    //! @param buffer - TLV packet buffer
+    //! @return buffer length
+    static int buildStopPacket(char* buffer);
+    //! @brief Build the TLV packet to view log contents.
+    //! @param buffer - TLV packet buffer
+    //! @return buffer length
+    static int buildLogPacket(char* buffer);
+    //! @brief Fill the shared memory.
+    //! @param contents - contents to be filled
+    //! @return shm id
+    static int fillSharedMemory(const std::string& contents);
+    //! @brief Print the shared memory.
+    //! @param shmId - shm id
+    static void printSharedMemory(const int shmId);
+    //! @brief Get the log Contents.
+    //! @return log contents
+    static std::string getLogContents();
+    //! @brief Maximum number of lines to view log contents.
+    static constexpr std::uint32_t maxViewNumOfLines{20};
 
     //! @brief TCP server.
     utility::socket::TCPServer tcpServer;
@@ -225,28 +261,12 @@ private:
         >;
     // clang-format on
 
-    //! @brief Build the TLV packet to stop connection.
-    //! @param buffer - TLV packet buffer
-    //! @return buffer length
-    static int buildStopPacket(char* buffer);
-    //! @brief Build the TLV packet to view log contents.
-    //! @param buffer - TLV packet buffer
-    //! @return buffer length
-    static int buildLogPacket(char* buffer);
-    //! @brief Fill the shared memory.
-    //! @param contents - contents to be filled
-    //! @return shm id
-    static int fillSharedMemory(const std::string& contents);
-    //! @brief Print the shared memory.
-    //! @param shmId - shm id
-    static void printSharedMemory(const int shmId);
-    //! @brief Get the log Contents.
-    //! @return log contents
-    static std::string getLogContents();
-    //! @brief Maximum number of lines to view log contents.
-    static constexpr std::uint32_t maxViewNumOfLines{20};
-
 protected:
     friend std::ostream& operator<<(std::ostream& os, const Observe::State& state);
 };
+
+inline std::vector<std::pair<std::string, std::string>> Observe::getObserverOptions() const
+{
+    return options;
+}
 } // namespace application::observe

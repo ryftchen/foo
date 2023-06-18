@@ -643,26 +643,29 @@ void Command::registerOnConsole(utility::console::Console& console, T& client) c
 {
     using utility::console::Console;
 
-    console.registerCommand(
-        "log",
-        [this, &client](const std::vector<std::string>& /*unused*/) -> decltype(auto)
-        {
-            int retVal = Console::ReturnCode::success;
-            try
+    for (const auto& option : OBSERVE_OPTIONS)
+    {
+        const auto& cmd = option.first;
+        const auto& helpInfo = option.second;
+        console.registerCommand(
+            cmd,
+            [cmd, &client](const std::vector<std::string>& /*unused*/) -> decltype(auto)
             {
-                static constexpr std::uint16_t maxLatency = 200;
-                client.toSend("log");
-                utility::time::millisecondLevelSleep(maxLatency);
-            }
-            catch (const std::exception& error)
-            {
-                retVal = Console::ReturnCode::error;
-                LOG_WRN(error.what());
-            }
-
-            return retVal;
-        },
-        "view the log with highlights");
+                int retVal = Console::ReturnCode::success;
+                try
+                {
+                    client.toSend(cmd);
+                    utility::time::millisecondLevelSleep(maxLatency);
+                }
+                catch (const std::exception& error)
+                {
+                    retVal = Console::ReturnCode::error;
+                    LOG_WRN(error.what());
+                }
+                return retVal;
+            },
+            helpInfo);
+    }
 }
 
 std::string Command::getIconBanner()
