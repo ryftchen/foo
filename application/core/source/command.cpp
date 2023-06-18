@@ -11,7 +11,7 @@
 #include "application/pch/precompiled_header.hpp"
 #endif // __PRECOMPILED_HEADER
 #include "log.hpp"
-#include "observe.hpp"
+#include "view.hpp"
 
 namespace application::command
 {
@@ -150,7 +150,7 @@ void Command::runCommander(const int argc, const char* const argv[])
     try
     {
         LOG_TO_START;
-        OBSERVE_TO_START;
+        VIEW_TO_START;
 
         if (0 != argc - 1)
         {
@@ -166,7 +166,7 @@ void Command::runCommander(const int argc, const char* const argv[])
         }
 
         LOG_TO_STOP;
-        OBSERVE_TO_STOP;
+        VIEW_TO_STOP;
     }
     catch (const std::exception& error)
     {
@@ -364,9 +364,9 @@ void Command::printConsoleOutput() const
         return;
     }
 
-    using observe::Observe;
     using utility::console::Console;
     using utility::socket::UDPSocket;
+    using view::View;
 
     UDPSocket udpClient;
     udpClient.onRawMessageReceived =
@@ -374,7 +374,7 @@ void Command::printConsoleOutput() const
     {
         try
         {
-            if (Observe::parseTLVPacket(buffer, length).stopFlag)
+            if (View::parseTLVPacket(buffer, length).stopFlag)
             {
                 udpClient.setNonBlocking();
             }
@@ -385,7 +385,7 @@ void Command::printConsoleOutput() const
         }
     };
     udpClient.toReceive();
-    udpClient.toConnect(std::string{Observe::udpHost}, Observe::udpPort);
+    udpClient.toConnect(std::string{View::udpHost}, View::udpPort);
     utility::time::millisecondLevelSleep(latency);
 
     Console console(" > ");
@@ -588,16 +588,16 @@ void Command::enterConsoleMode() const
     {
         COMMON_PRINT("%s", utility::common::executeCommand(("tput bel; echo " + getIconBanner())).c_str());
 
-        using observe::Observe;
         using utility::console::Console;
         using utility::socket::TCPSocket;
+        using view::View;
 
         TCPSocket tcpClient;
         tcpClient.onRawMessageReceived = [&](char* buffer, const int length)
         {
             try
             {
-                if (Observe::parseTLVPacket(buffer, length).stopFlag)
+                if (View::parseTLVPacket(buffer, length).stopFlag)
                 {
                     tcpClient.setNonBlocking();
                 }
@@ -607,7 +607,7 @@ void Command::enterConsoleMode() const
                 LOG_WRN(error.what());
             }
         };
-        tcpClient.toConnect(std::string{Observe::tcpHost}, Observe::tcpPort);
+        tcpClient.toConnect(std::string{View::tcpHost}, View::tcpPort);
         utility::time::millisecondLevelSleep(latency);
 
         char hostName[HOST_NAME_MAX + 1];
@@ -641,13 +641,13 @@ void Command::enterConsoleMode() const
 template <typename T>
 void Command::registerOnConsole(utility::console::Console& console, T& client) const
 {
-    using observe::Observe;
     using utility::console::Console;
+    using view::View;
 
-    for (const auto& [option, optionTuple] : OBSERVE_OPTIONS)
+    for (const auto& [option, optionTuple] : VIEW_OPTIONS)
     {
         const auto& cmd = option;
-        const auto& helpInfo = Observe::get<Observe::HelpInfo>(optionTuple);
+        const auto& helpInfo = View::get<View::HelpInfo>(optionTuple);
         console.registerCommand(
             cmd,
             [cmd, &client](const std::vector<std::string>& /*unused*/) -> decltype(auto)

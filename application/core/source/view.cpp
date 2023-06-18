@@ -1,10 +1,10 @@
-//! @file observe.cpp
+//! @file view.cpp
 //! @author ryftchen
-//! @brief The definitions (observe) in the application module.
+//! @brief The definitions (view) in the application module.
 //! @version 0.1
 //! @copyright Copyright (c) 2022-2023
 
-#include "observe.hpp"
+#include "view.hpp"
 #include "log.hpp"
 #ifndef __PRECOMPILED_HEADER
 #include <sys/ipc.h>
@@ -18,7 +18,7 @@
 #include "utility/include/file.hpp"
 #include "utility/include/time.hpp"
 
-namespace application::observe
+namespace application::view
 {
 namespace tlv
 {
@@ -155,13 +155,13 @@ int tlvDecode(char* pBuf, const int len, TLVValue& val)
 }
 } // namespace tlv
 
-Observe& Observe::getInstance()
+View& View::getInstance()
 {
-    static Observe observer;
-    return observer;
+    static View viewer;
+    return viewer;
 }
 
-void Observe::runObserver()
+void View::runViewer()
 {
     State expectedState = State::init;
     auto checkIfExceptedFSMState = [&](const State state) -> void
@@ -169,7 +169,7 @@ void Observe::runObserver()
         expectedState = state;
         if (currentState() != expectedState)
         {
-            throw std::logic_error("<OBSERVE> Abnormal observer state.");
+            throw std::logic_error("<VIEW> Abnormal viewer state.");
         }
     };
 
@@ -179,10 +179,10 @@ void Observe::runObserver()
         processEvent(CreateServer());
 
         checkIfExceptedFSMState(State::idle);
-        processEvent(GoObserving());
+        processEvent(GoViewing());
 
         checkIfExceptedFSMState(State::work);
-        while (isObserving.load())
+        while (isViewing.load())
         {
             if (std::unique_lock<std::mutex> lock(mtx); true)
             {
@@ -190,7 +190,7 @@ void Observe::runObserver()
                     lock,
                     [this]() -> decltype(auto)
                     {
-                        return !isObserving.load();
+                        return !isViewing.load();
                     });
             }
         }
@@ -198,7 +198,7 @@ void Observe::runObserver()
         processEvent(DestroyServer());
 
         checkIfExceptedFSMState(State::idle);
-        processEvent(NoObserving());
+        processEvent(NoViewing());
 
         checkIfExceptedFSMState(State::done);
     }
@@ -206,18 +206,18 @@ void Observe::runObserver()
     {
         std::cerr << error.what() << " Expected state: " << expectedState
                   << ", current state: " << State(currentState()) << '.' << std::endl;
-        stopObserving();
+        stopViewing();
     }
 }
 
-void Observe::interfaceToStart()
+void View::interfaceToStart()
 {
     utility::time::BlockingTimer expiryTimer;
     std::uint16_t waitCount = 0;
     expiryTimer.set(
         [&]()
         {
-            if ((State::work == currentState()) || (maxTimesOfWaitObserver == waitCount))
+            if ((State::work == currentState()) || (maxTimesOfWaitViewer == waitCount))
             {
                 expiryTimer.reset();
             }
@@ -225,19 +225,19 @@ void Observe::interfaceToStart()
             {
                 ++waitCount;
 #ifndef NDEBUG
-                std::cout << "<OBSERVE> Wait for the observer to start... (" << waitCount << ')' << std::endl;
+                std::cout << "<VIEW> Wait for the viewer to start... (" << waitCount << ')' << std::endl;
 #endif // NDEBUG
             }
         },
-        intervalOfWaitObserver);
+        intervalOfWaitViewer);
     expiryTimer.reset();
 }
 
-void Observe::interfaceToStop()
+void View::interfaceToStop()
 {
     if (std::unique_lock<std::mutex> lock(mtx); true)
     {
-        isObserving.store(false);
+        isViewing.store(false);
 
         lock.unlock();
         cv.notify_one();
@@ -250,7 +250,7 @@ void Observe::interfaceToStop()
     expiryTimer.set(
         [&]()
         {
-            if ((State::done == currentState()) || (maxTimesOfWaitObserver == waitCount))
+            if ((State::done == currentState()) || (maxTimesOfWaitViewer == waitCount))
             {
                 expiryTimer.reset();
             }
@@ -258,15 +258,15 @@ void Observe::interfaceToStop()
             {
                 ++waitCount;
 #ifndef NDEBUG
-                std::cout << "<OBSERVE> Wait for the observer to stop... (" << waitCount << ')' << std::endl;
+                std::cout << "<VIEW> Wait for the viewer to stop... (" << waitCount << ')' << std::endl;
 #endif // NDEBUG
             }
         },
-        intervalOfWaitObserver);
+        intervalOfWaitViewer);
     expiryTimer.reset();
 }
 
-tlv::TLVValue Observe::parseTLVPacket(char* buffer, const int length)
+tlv::TLVValue View::parseTLVPacket(char* buffer, const int length)
 {
     tlv::TLVValue value;
     tlv::tlvDecode(buffer, length, value);
@@ -283,39 +283,39 @@ tlv::TLVValue Observe::parseTLVPacket(char* buffer, const int length)
     return value;
 }
 
-int Observe::buildStopPacket(char* buffer)
+int View::buildStopPacket(char* buffer)
 {
     int length = 0;
     if (tlv::tlvEncode(buffer, length, tlv::TLVValue{.stopFlag = true}) < 0)
     {
-        throw std::runtime_error("<OBSERVE> Failed to build packet to stop");
+        throw std::runtime_error("<VIEW> Failed to build packet to stop");
     }
     return length;
 }
 
-int Observe::buildLogPacket(char* buffer)
+int View::buildLogPacket(char* buffer)
 {
     const int shmId = fillSharedMemory(getLogContents());
     int length = 0;
     if (tlv::tlvEncode(buffer, length, tlv::TLVValue{.logShmId = shmId}) < 0)
     {
-        throw std::runtime_error("<OBSERVE> Failed to build packet for the log option.");
+        throw std::runtime_error("<VIEW> Failed to build packet for the log option.");
     }
     return length;
 }
 
-int Observe::buildStatPacket(char* buffer)
+int View::buildStatPacket(char* buffer)
 {
     const int shmId = fillSharedMemory(getStatInformation());
     int length = 0;
     if (tlv::tlvEncode(buffer, length, tlv::TLVValue{.statShmId = shmId}) < 0)
     {
-        throw std::runtime_error("<OBSERVE> Failed to build packet for the stat option.");
+        throw std::runtime_error("<VIEW> Failed to build packet for the stat option.");
     }
     return length;
 }
 
-int Observe::fillSharedMemory(const std::string& contents)
+int View::fillSharedMemory(const std::string& contents)
 {
     int shmId = shmget(
         static_cast<key_t>(0),
@@ -323,12 +323,12 @@ int Observe::fillSharedMemory(const std::string& contents)
         IPC_CREAT | IPC_EXCL | S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
     if (-1 == shmId)
     {
-        throw std::runtime_error("<OBSERVE> Failed to create shared memory.");
+        throw std::runtime_error("<VIEW> Failed to create shared memory.");
     }
     void* shm = shmat(shmId, nullptr, 0);
     if (nullptr == shm)
     {
-        throw std::runtime_error("<OBSERVE> Failed to attach shared memory.");
+        throw std::runtime_error("<VIEW> Failed to attach shared memory.");
     }
     SharedMemory* shrMem = reinterpret_cast<SharedMemory*>(shm);
 
@@ -349,12 +349,12 @@ int Observe::fillSharedMemory(const std::string& contents)
     return shmId;
 }
 
-void Observe::printSharedMemory(const int shmId)
+void View::printSharedMemory(const int shmId)
 {
     void* shm = shmat(shmId, nullptr, 0);
     if (nullptr == shm)
     {
-        throw std::runtime_error("<OBSERVE> Failed to attach shared memory.");
+        throw std::runtime_error("<VIEW> Failed to attach shared memory.");
     }
     SharedMemory* shrMem = reinterpret_cast<SharedMemory*>(shm);
 
@@ -373,7 +373,7 @@ void Observe::printSharedMemory(const int shmId)
     shmctl(shmId, IPC_RMID, nullptr);
 }
 
-std::string Observe::getLogContents()
+std::string View::getLogContents()
 {
     utility::file::ReadWriteGuard guard(utility::file::LockMode::read, LOG_FILE_LOCK);
     auto contents = utility::file::getFileContents(LOG_PATHNAME, true, maxViewNumOfLines);
@@ -389,14 +389,14 @@ std::string Observe::getLogContents()
     return os.str();
 }
 
-std::string Observe::getStatInformation()
+std::string View::getStatInformation()
 {
     const std::string showStat =
         R"(tail -n +1 /proc/$(ps -aux | grep foo | head -n 1 | awk '{split($0, a, " "); print a[2]}')/task/*/status)";
     return utility::common::executeCommand(showStat);
 }
 
-void Observe::createObserveServer()
+void View::createViewServer()
 {
     using utility::socket::Socket;
     using utility::common::operator""_bkdrHash;
@@ -419,7 +419,7 @@ void Observe::createObserveServer()
                 const auto optionIter = optionDispatcher.find(message);
                 if (optionDispatcher.end() == optionIter)
                 {
-                    throw std::logic_error("<OBSERVE> Unknown TCP message.");
+                    throw std::logic_error("<VIEW> Unknown TCP message.");
                 }
                 (*get<BuildFunctor>(optionIter->second))(buffer);
                 newSocket->toSend(buffer, sizeof(buffer));
@@ -447,7 +447,7 @@ void Observe::createObserveServer()
             const auto optionIter = optionDispatcher.find(message);
             if (optionDispatcher.end() == optionIter)
             {
-                throw std::logic_error("<OBSERVE> Unknown UDP message.");
+                throw std::logic_error("<VIEW> Unknown UDP message.");
             }
             (*get<BuildFunctor>(optionIter->second))(buffer);
             udpServer.toSendTo(buffer, sizeof(buffer), ip, port);
@@ -459,11 +459,11 @@ void Observe::createObserveServer()
     };
 }
 
-void Observe::startObserving()
+void View::startViewing()
 {
     if (std::unique_lock<std::mutex> lock(mtx); true)
     {
-        isObserving.store(true);
+        isViewing.store(true);
         tcpServer.toBind(tcpPort);
         tcpServer.toListen();
         tcpServer.toAccept();
@@ -472,17 +472,17 @@ void Observe::startObserving()
     }
 }
 
-void Observe::destroyObserveServer()
+void View::destroyViewServer()
 {
     tcpServer.toClose();
     udpServer.toClose();
 }
 
-void Observe::stopObserving()
+void View::stopViewing()
 {
     if (std::unique_lock<std::mutex> lock(mtx); true)
     {
-        isObserving.store(false);
+        isViewing.store(false);
         tcpServer.waitIfAlive();
         udpServer.waitIfAlive();
     }
@@ -492,26 +492,26 @@ void Observe::stopObserving()
 //! @param os - output stream object
 //! @param state - the specific value of State enum
 //! @return reference of output stream object
-std::ostream& operator<<(std::ostream& os, const Observe::State& state)
+std::ostream& operator<<(std::ostream& os, const View::State& state)
 {
     switch (state)
     {
-        case Observe::State::init:
+        case View::State::init:
             os << "INIT";
             break;
-        case Observe::State::idle:
+        case View::State::idle:
             os << "IDLE";
             break;
-        case Observe::State::work:
+        case View::State::work:
             os << "WORK";
             break;
-        case Observe::State::done:
+        case View::State::done:
             os << "DONE";
             break;
         default:
-            os << "UNKNOWN: " << static_cast<std::underlying_type_t<Observe::State>>(state);
+            os << "UNKNOWN: " << static_cast<std::underlying_type_t<View::State>>(state);
     }
 
     return os;
 }
-} // namespace application::observe
+} // namespace application::view
