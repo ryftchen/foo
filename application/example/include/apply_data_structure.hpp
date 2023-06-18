@@ -165,20 +165,21 @@ public:
     //! @return procedure output
     static std::ostringstream linkedList()
     {
-        using date_structure::linear::doubly_linked_list::createDll;
-        using date_structure::linear::doubly_linked_list::destroyDll;
-        using date_structure::linear::doubly_linked_list::DLL;
-        using date_structure::linear::doubly_linked_list::dllDelete;
-        using date_structure::linear::doubly_linked_list::dllDeleteFirst;
-        using date_structure::linear::doubly_linked_list::dllDeleteLast;
-        using date_structure::linear::doubly_linked_list::dllGet;
-        using date_structure::linear::doubly_linked_list::dllGetFirst;
-        using date_structure::linear::doubly_linked_list::dllGetLast;
-        using date_structure::linear::doubly_linked_list::dllInsert;
-        using date_structure::linear::doubly_linked_list::dllInsertFirst;
-        using date_structure::linear::doubly_linked_list::dllInsertLast;
-        using date_structure::linear::doubly_linked_list::dllIsEmpty;
-        using date_structure::linear::doubly_linked_list::dllSize;
+        namespace doubly_linked_list = date_structure::linear::doubly_linked_list;
+        using doubly_linked_list::createDll;
+        using doubly_linked_list::destroyDll;
+        using doubly_linked_list::DLL;
+        using doubly_linked_list::dllDelete;
+        using doubly_linked_list::dllDeleteFirst;
+        using doubly_linked_list::dllDeleteLast;
+        using doubly_linked_list::dllGet;
+        using doubly_linked_list::dllGetFirst;
+        using doubly_linked_list::dllGetLast;
+        using doubly_linked_list::dllInsert;
+        using doubly_linked_list::dllInsertFirst;
+        using doubly_linked_list::dllInsertLast;
+        using doubly_linked_list::dllIsEmpty;
+        using doubly_linked_list::dllSize;
 
         date_structure::linear::Output output;
         Meta meta[] = {{'A', "foo"}, {'B', "bar"}, {'C', "baz"}, {'D', "qux"}};
@@ -219,98 +220,100 @@ public:
         }
         destroyDll(&dll);
 
-        std::ostringstream ret = std::ostringstream(output.flush().str());
-        return ret;
+        std::ostringstream os = std::ostringstream(output.flush().str());
+        return os;
     }
     //! @brief Stack.
     //! @return procedure output
     static std::ostringstream stack()
     {
-        using date_structure::linear::stack::createStack;
-        using date_structure::linear::stack::destroyStack;
-        using date_structure::linear::stack::Stack;
-        using date_structure::linear::stack::stackIsEmpty;
-        using date_structure::linear::stack::stackPop;
-        using date_structure::linear::stack::stackPush;
-        using date_structure::linear::stack::stackSize;
-        using date_structure::linear::stack::stackTop;
+        namespace stack = date_structure::linear::stack;
+        using stack::createStack;
+        using stack::destroyStack;
+        using stack::Stack;
+        using stack::stackIsEmpty;
+        using stack::stackPop;
+        using stack::stackPush;
+        using stack::stackSize;
+        using stack::stackTop;
 
         date_structure::linear::Output output;
         Meta meta[] = {{'A', "foo"}, {'B', "bar"}, {'C', "baz"}, {'D', "qux"}};
         const int metaSize = sizeof(meta) / sizeof(meta[0]);
 
         Meta* pVal = nullptr;
-        Stack stack = nullptr;
-        createStack(&stack);
+        Stack stacks = nullptr;
+        createStack(&stacks);
         for (int i = 0; i < (metaSize - 1); ++i)
         {
-            stackPush(stack, &meta[i]);
+            stackPush(stacks, &meta[i]);
             output.flush() << "push: {" << meta[i].id << ", " << meta[i].name << '}' << std::endl;
         }
 
-        pVal = static_cast<Meta*>(stackPop(stack));
+        pVal = static_cast<Meta*>(stackPop(stacks));
         output.flush() << "pop: {" << pVal->id << ", " << pVal->name << '}' << std::endl;
-        pVal = static_cast<Meta*>(stackTop(stack));
+        pVal = static_cast<Meta*>(stackTop(stacks));
         output.flush() << "top: {" << pVal->id << ", " << pVal->name << '}' << std::endl;
-        stackPush(stack, &meta[metaSize - 1]);
+        stackPush(stacks, &meta[metaSize - 1]);
         output.flush() << "push: {" << meta[metaSize - 1].id << ", " << meta[metaSize - 1].name << '}' << std::endl;
 
-        output.flush() << "whether it is empty: " << stackIsEmpty(stack) << std::endl;
-        output.flush() << "size: " << stackSize(stack) << std::endl;
-        while (!stackIsEmpty(stack))
+        output.flush() << "whether it is empty: " << stackIsEmpty(stacks) << std::endl;
+        output.flush() << "size: " << stackSize(stacks) << std::endl;
+        while (!stackIsEmpty(stacks))
         {
-            pVal = static_cast<Meta*>(stackPop(stack));
+            pVal = static_cast<Meta*>(stackPop(stacks));
             output.flush() << "pop: {" << pVal->id << ", " << pVal->name << '}' << std::endl;
         }
-        destroyStack(&stack);
+        destroyStack(&stacks);
 
-        std::ostringstream ret = std::ostringstream(output.flush().str());
-        return ret;
+        std::ostringstream os = std::ostringstream(output.flush().str());
+        return os;
     }
     //! @brief Queue.
     //! @return procedure output
     static std::ostringstream queue()
     {
-        using date_structure::linear::queue::createQueue;
-        using date_structure::linear::queue::destroyQueue;
-        using date_structure::linear::queue::Queue;
-        using date_structure::linear::queue::queueFront;
-        using date_structure::linear::queue::queueIsEmpty;
-        using date_structure::linear::queue::queuePop;
-        using date_structure::linear::queue::queuePush;
-        using date_structure::linear::queue::queueSize;
+        namespace queue = date_structure::linear::queue;
+        using queue::createQueue;
+        using queue::destroyQueue;
+        using queue::Queue;
+        using queue::queueFront;
+        using queue::queueIsEmpty;
+        using queue::queuePop;
+        using queue::queuePush;
+        using queue::queueSize;
 
         date_structure::linear::Output output;
         Meta meta[] = {{'A', "foo"}, {'B', "bar"}, {'C', "baz"}, {'D', "qux"}};
         const int metaSize = sizeof(meta) / sizeof(meta[0]);
 
         Meta* pVal = nullptr;
-        Queue queue = nullptr;
-        createQueue(&queue);
+        Queue queues = nullptr;
+        createQueue(&queues);
         for (int i = 0; i < (metaSize - 1); ++i)
         {
-            queuePush(queue, &meta[i]);
+            queuePush(queues, &meta[i]);
             output.flush() << "push: {" << meta[i].id << ", " << meta[i].name << '}' << std::endl;
         }
 
-        pVal = static_cast<Meta*>(queuePop(queue));
+        pVal = static_cast<Meta*>(queuePop(queues));
         output.flush() << "pop: {" << pVal->id << ", " << pVal->name << '}' << std::endl;
-        pVal = static_cast<Meta*>(queueFront(queue));
+        pVal = static_cast<Meta*>(queueFront(queues));
         output.flush() << "front: {" << pVal->id << ", " << pVal->name << '}' << std::endl;
-        queuePush(queue, &meta[metaSize - 1]);
+        queuePush(queues, &meta[metaSize - 1]);
         output.flush() << "push: {" << meta[metaSize - 1].id << ", " << meta[metaSize - 1].name << '}' << std::endl;
 
-        output.flush() << "whether it is empty: " << queueIsEmpty(queue) << std::endl;
-        output.flush() << "size: " << queueSize(queue) << std::endl;
-        while (!queueIsEmpty(queue))
+        output.flush() << "whether it is empty: " << queueIsEmpty(queues) << std::endl;
+        output.flush() << "size: " << queueSize(queues) << std::endl;
+        while (!queueIsEmpty(queues))
         {
-            pVal = static_cast<Meta*>(queuePop(queue));
+            pVal = static_cast<Meta*>(queuePop(queues));
             output.flush() << "pop: {" << pVal->id << ", " << pVal->name << '}' << std::endl;
         }
-        destroyQueue(&queue);
+        destroyQueue(&queues);
 
-        std::ostringstream ret = std::ostringstream(output.flush().str());
-        return ret;
+        std::ostringstream os = std::ostringstream(output.flush().str());
+        return os;
     }
 };
 
@@ -348,12 +351,13 @@ public:
     //! @return procedure output
     static std::ostringstream bs()
     {
-        using date_structure::tree::bs::BSTree;
-        using date_structure::tree::bs::bsTreeDelete;
-        using date_structure::tree::bs::bsTreeInsert;
-        using date_structure::tree::bs::destroyBSTree;
-        using date_structure::tree::bs::getMaximum;
-        using date_structure::tree::bs::getMinimum;
+        namespace bs = date_structure::tree::bs;
+        using bs::BSTree;
+        using bs::bsTreeDelete;
+        using bs::bsTreeInsert;
+        using bs::destroyBSTree;
+        using bs::getMaximum;
+        using bs::getMinimum;
 
         date_structure::tree::bs::Output output;
         BSTree root = nullptr;
@@ -388,20 +392,21 @@ public:
 
         destroyBSTree(root);
 
-        std::ostringstream ret = std::ostringstream(output.flush().str());
-        return ret;
+        std::ostringstream os = std::ostringstream(output.flush().str());
+        return os;
     }
     //! @brief Adelson-Velsky-Landis.
     //! @return procedure output
     static std::ostringstream avl()
     {
-        using date_structure::tree::avl::AVLTree;
-        using date_structure::tree::avl::avlTreeDelete;
-        using date_structure::tree::avl::avlTreeInsert;
-        using date_structure::tree::avl::destroyAVLTree;
-        using date_structure::tree::avl::getHeight;
-        using date_structure::tree::avl::getMaximum;
-        using date_structure::tree::avl::getMinimum;
+        namespace avl = date_structure::tree::avl;
+        using avl::AVLTree;
+        using avl::avlTreeDelete;
+        using avl::avlTreeInsert;
+        using avl::destroyAVLTree;
+        using avl::getHeight;
+        using avl::getMaximum;
+        using avl::getMinimum;
 
         date_structure::tree::avl::Output output;
         AVLTree root = nullptr;
@@ -441,19 +446,20 @@ public:
 
         destroyAVLTree(root);
 
-        std::ostringstream ret = std::ostringstream(output.flush().str());
-        return ret;
+        std::ostringstream os = std::ostringstream(output.flush().str());
+        return os;
     }
     //! @brief Splay.
     //! @return procedure output
     static std::ostringstream splay()
     {
-        using date_structure::tree::splay::destroySplayTree;
-        using date_structure::tree::splay::getMaximum;
-        using date_structure::tree::splay::getMinimum;
-        using date_structure::tree::splay::SplayTree;
-        using date_structure::tree::splay::splayTreeInsert;
-        using date_structure::tree::splay::splayTreeSplay;
+        namespace splay = date_structure::tree::splay;
+        using splay::destroySplayTree;
+        using splay::getMaximum;
+        using splay::getMinimum;
+        using splay::SplayTree;
+        using splay::splayTreeInsert;
+        using splay::splayTreeSplay;
 
         date_structure::tree::splay::Output output;
         SplayTree root = nullptr;
@@ -487,8 +493,8 @@ public:
 
         destroySplayTree(root);
 
-        std::ostringstream ret = std::ostringstream(output.flush().str());
-        return ret;
+        std::ostringstream os = std::ostringstream(output.flush().str());
+        return os;
     }
 };
 

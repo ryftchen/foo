@@ -195,9 +195,9 @@ public:
     //! @return procedure output
     static std::ostringstream chainOfResponsibility()
     {
-        using design_pattern::behavioral::chain_of_responsibility::ConcreteHandler1;
-        using design_pattern::behavioral::chain_of_responsibility::ConcreteHandler2;
-        using design_pattern::behavioral::chain_of_responsibility::output;
+        namespace chain_of_responsibility = design_pattern::behavioral::chain_of_responsibility;
+        using chain_of_responsibility::ConcreteHandler1;
+        using chain_of_responsibility::ConcreteHandler2;
 
         std::shared_ptr<ConcreteHandler1> handler1 = std::make_shared<ConcreteHandler1>();
         std::shared_ptr<ConcreteHandler2> handler2 = std::make_shared<ConcreteHandler2>();
@@ -205,40 +205,41 @@ public:
         handler1->setHandler(handler2);
         handler1->handleRequest();
 
-        std::ostringstream ret = std::ostringstream(output().str());
-        output().str("");
-        output().clear();
-        return ret;
+        std::ostringstream os = std::ostringstream(chain_of_responsibility::output().str());
+        chain_of_responsibility::output().str("");
+        chain_of_responsibility::output().clear();
+        return os;
     }
     //! @brief Command.
     //! @return procedure output
     static std::ostringstream command()
     {
-        using design_pattern::behavioral::command::Command;
-        using design_pattern::behavioral::command::ConcreteCommand;
-        using design_pattern::behavioral::command::Invoker;
-        using design_pattern::behavioral::command::output;
-        using design_pattern::behavioral::command::Receiver;
+        namespace command = design_pattern::behavioral::command;
+        using command::Command;
+        using command::ConcreteCommand;
+        using command::Invoker;
+        using command::Receiver;
 
-        std::shared_ptr<ConcreteCommand> command = std::make_shared<ConcreteCommand>((std::make_shared<Receiver>()));
+        std::shared_ptr<ConcreteCommand> commands = std::make_shared<ConcreteCommand>((std::make_shared<Receiver>()));
 
         Invoker invoker;
-        invoker.set(command);
+        invoker.set(commands);
         invoker.confirm();
-        std::ostringstream ret = std::ostringstream(output().str());
-        output().str("");
-        output().clear();
-        return ret;
+
+        std::ostringstream os = std::ostringstream(command::output().str());
+        command::output().str("");
+        command::output().clear();
+        return os;
     }
     //! @brief Interpreter.
     //! @return procedure output
     static std::ostringstream interpreter()
     {
-        using design_pattern::behavioral::interpreter::AbstractExpression;
-        using design_pattern::behavioral::interpreter::Context;
-        using design_pattern::behavioral::interpreter::NonTerminalExpression;
-        using design_pattern::behavioral::interpreter::output;
-        using design_pattern::behavioral::interpreter::TerminalExpression;
+        namespace interpreter = design_pattern::behavioral::interpreter;
+        using interpreter::AbstractExpression;
+        using interpreter::Context;
+        using interpreter::NonTerminalExpression;
+        using interpreter::TerminalExpression;
 
         std::shared_ptr<AbstractExpression> a = std::make_shared<TerminalExpression>("A");
         std::shared_ptr<AbstractExpression> b = std::make_shared<TerminalExpression>("B");
@@ -248,20 +249,21 @@ public:
         context->set("A", true);
         context->set("B", false);
 
-        output() << context->get("A") << " AND " << context->get("B");
-        output() << " = " << exp->interpret(context) << std::endl;
-        std::ostringstream ret = std::ostringstream(output().str());
-        output().str("");
-        output().clear();
-        return ret;
+        interpreter::output() << context->get("A") << " AND " << context->get("B");
+        interpreter::output() << " = " << exp->interpret(context) << std::endl;
+
+        std::ostringstream os = std::ostringstream(interpreter::output().str());
+        interpreter::output().str("");
+        interpreter::output().clear();
+        return os;
     }
     //! @brief Iterator.
     //! @return procedure output
     static std::ostringstream iterator()
     {
-        using design_pattern::behavioral::iterator::ConcreteAggregate;
-        using design_pattern::behavioral::iterator::Iterator;
-        using design_pattern::behavioral::iterator::output;
+        namespace iterator = design_pattern::behavioral::iterator;
+        using iterator::ConcreteAggregate;
+        using iterator::Iterator;
 
         constexpr std::uint32_t size = 5;
         std::shared_ptr<ConcreteAggregate> list = std::make_shared<ConcreteAggregate>(size);
@@ -269,48 +271,48 @@ public:
 
         for (; !iter->isDone(); iter->next())
         {
-            output() << "item value: " << iter->currentItem() << std::endl;
+            iterator::output() << "item value: " << iter->currentItem() << std::endl;
         }
 
-        std::ostringstream ret = std::ostringstream(output().str());
-        output().str("");
-        output().clear();
-        return ret;
+        std::ostringstream os = std::ostringstream(iterator::output().str());
+        iterator::output().str("");
+        iterator::output().clear();
+        return os;
     }
     //! @brief Mediator.
     //! @return procedure output
     static std::ostringstream mediator()
     {
-        using design_pattern::behavioral::mediator::Colleague;
-        using design_pattern::behavioral::mediator::ConcreteColleague;
-        using design_pattern::behavioral::mediator::ConcreteMediator;
-        using design_pattern::behavioral::mediator::Mediator;
-        using design_pattern::behavioral::mediator::output;
+        namespace mediator = design_pattern::behavioral::mediator;
+        using mediator::Colleague;
+        using mediator::ConcreteColleague;
+        using mediator::ConcreteMediator;
+        using mediator::Mediator;
 
         constexpr std::uint32_t id1 = 1, id2 = 2, id3 = 3;
-        std::shared_ptr<Mediator> mediator = std::make_shared<ConcreteMediator>();
-        std::shared_ptr<Colleague> c1 = std::make_shared<ConcreteColleague>(mediator, id1);
-        std::shared_ptr<Colleague> c2 = std::make_shared<ConcreteColleague>(mediator, id2);
-        std::shared_ptr<Colleague> c3 = std::make_shared<ConcreteColleague>(mediator, id3);
+        std::shared_ptr<Mediator> mediators = std::make_shared<ConcreteMediator>();
+        std::shared_ptr<Colleague> c1 = std::make_shared<ConcreteColleague>(mediators, id1);
+        std::shared_ptr<Colleague> c2 = std::make_shared<ConcreteColleague>(mediators, id2);
+        std::shared_ptr<Colleague> c3 = std::make_shared<ConcreteColleague>(mediators, id3);
 
-        mediator->add(c1);
-        mediator->add(c2);
-        mediator->add(c3);
+        mediators->add(c1);
+        mediators->add(c2);
+        mediators->add(c3);
         c1->send("Hi!");
         c3->send("Hello!");
 
-        std::ostringstream ret = std::ostringstream(output().str());
-        output().str("");
-        output().clear();
-        return ret;
+        std::ostringstream os = std::ostringstream(mediator::output().str());
+        mediator::output().str("");
+        mediator::output().clear();
+        return os;
     }
     //! @brief Memento.
     //! @return procedure output
     static std::ostringstream memento()
     {
-        using design_pattern::behavioral::memento::CareTaker;
-        using design_pattern::behavioral::memento::Originator;
-        using design_pattern::behavioral::memento::output;
+        namespace memento = design_pattern::behavioral::memento;
+        using memento::CareTaker;
+        using memento::Originator;
 
         constexpr int state1 = 1, state2 = 2, state3 = 3;
         std::shared_ptr<Originator> originator = std::make_shared<Originator>();
@@ -323,28 +325,28 @@ public:
         originator->setState(state3);
         caretaker->undo();
 
-        output() << "actual state is " << originator->getState() << std::endl;
+        memento::output() << "actual state is " << originator->getState() << std::endl;
 
-        std::ostringstream ret = std::ostringstream(output().str());
-        output().str("");
-        output().clear();
-        return ret;
+        std::ostringstream os = std::ostringstream(memento::output().str());
+        memento::output().str("");
+        memento::output().clear();
+        return os;
     }
     //! @brief Observer.
     //! @return procedure output
     static std::ostringstream observer()
     {
-        using design_pattern::behavioral::observer::ConcreteObserver;
-        using design_pattern::behavioral::observer::ConcreteSubject;
-        using design_pattern::behavioral::observer::output;
-        using design_pattern::behavioral::observer::Subject;
+        namespace observer = design_pattern::behavioral::observer;
+        using observer::ConcreteObserver;
+        using observer::ConcreteSubject;
+        using observer::Subject;
 
         constexpr int state1 = 1, state2 = 2, state3 = 3;
         std::shared_ptr<ConcreteObserver> observer1 = std::make_shared<ConcreteObserver>(state1);
         std::shared_ptr<ConcreteObserver> observer2 = std::make_shared<ConcreteObserver>(state2);
 
-        output() << "observer1 state: " << observer1->getState() << std::endl;
-        output() << "observer2 state: " << observer2->getState() << std::endl;
+        observer::output() << "observer1 state: " << observer1->getState() << std::endl;
+        observer::output() << "observer2 state: " << observer2->getState() << std::endl;
 
         std::shared_ptr<Subject> subject = std::make_shared<ConcreteSubject>();
         subject->attach(observer1);
@@ -352,22 +354,22 @@ public:
         subject->setState(state3);
         subject->notify();
 
-        output() << "observer1 state: " << observer1->getState() << std::endl;
-        output() << "observer2 state: " << observer2->getState() << std::endl;
+        observer::output() << "observer1 state: " << observer1->getState() << std::endl;
+        observer::output() << "observer2 state: " << observer2->getState() << std::endl;
 
-        std::ostringstream ret = std::ostringstream(output().str());
-        output().str("");
-        output().clear();
-        return ret;
+        std::ostringstream os = std::ostringstream(observer::output().str());
+        observer::output().str("");
+        observer::output().clear();
+        return os;
     }
     //! @brief State.
     //! @return procedure output
     static std::ostringstream state()
     {
-        using design_pattern::behavioral::state::ConcreteStateA;
-        using design_pattern::behavioral::state::ConcreteStateB;
-        using design_pattern::behavioral::state::Context;
-        using design_pattern::behavioral::state::output;
+        namespace state = design_pattern::behavioral::state;
+        using state::ConcreteStateA;
+        using state::ConcreteStateB;
+        using state::Context;
 
         std::shared_ptr<Context> context = std::make_shared<Context>();
 
@@ -377,19 +379,19 @@ public:
         context->setState(std::make_unique<ConcreteStateB>());
         context->request();
 
-        std::ostringstream ret = std::ostringstream(output().str());
-        output().str("");
-        output().clear();
-        return ret;
+        std::ostringstream os = std::ostringstream(state::output().str());
+        state::output().str("");
+        state::output().clear();
+        return os;
     }
     //! @brief Strategy.
     //! @return procedure output
     static std::ostringstream strategy()
     {
-        using design_pattern::behavioral::strategy::ConcreteStrategyA;
-        using design_pattern::behavioral::strategy::ConcreteStrategyB;
-        using design_pattern::behavioral::strategy::Context;
-        using design_pattern::behavioral::strategy::output;
+        namespace strategy = design_pattern::behavioral::strategy;
+        using strategy::ConcreteStrategyA;
+        using strategy::ConcreteStrategyB;
+        using strategy::Context;
 
         Context contextA(std::make_unique<ConcreteStrategyA>());
         contextA.contextInterface();
@@ -397,36 +399,36 @@ public:
         Context contextB(std::make_unique<ConcreteStrategyB>());
         contextB.contextInterface();
 
-        std::ostringstream ret = std::ostringstream(output().str());
-        output().str("");
-        output().clear();
-        return ret;
+        std::ostringstream os = std::ostringstream(strategy::output().str());
+        strategy::output().str("");
+        strategy::output().clear();
+        return os;
     }
     //! @brief Template method.
     //! @return procedure output
     static std::ostringstream templateMethod()
     {
-        using design_pattern::behavioral::template_method::AbstractClass;
-        using design_pattern::behavioral::template_method::ConcreteClass;
-        using design_pattern::behavioral::template_method::output;
+        namespace template_method = design_pattern::behavioral::template_method;
+        using template_method::AbstractClass;
+        using template_method::ConcreteClass;
 
         std::shared_ptr<AbstractClass> tm = std::make_shared<ConcreteClass>();
         tm->templateMethod();
 
-        std::ostringstream ret = std::ostringstream(output().str());
-        output().str("");
-        output().clear();
-        return ret;
+        std::ostringstream os = std::ostringstream(template_method::output().str());
+        template_method::output().str("");
+        template_method::output().clear();
+        return os;
     }
     //! @brief Visitor.
     //! @return procedure output
     static std::ostringstream visitor()
     {
-        using design_pattern::behavioral::visitor::ConcreteElementA;
-        using design_pattern::behavioral::visitor::ConcreteElementB;
-        using design_pattern::behavioral::visitor::ConcreteVisitor1;
-        using design_pattern::behavioral::visitor::ConcreteVisitor2;
-        using design_pattern::behavioral::visitor::output;
+        namespace visitor = design_pattern::behavioral::visitor;
+        using visitor::ConcreteElementA;
+        using visitor::ConcreteElementB;
+        using visitor::ConcreteVisitor1;
+        using visitor::ConcreteVisitor2;
 
         std::shared_ptr<ConcreteElementA> elementA = std::make_shared<ConcreteElementA>();
         std::shared_ptr<ConcreteElementB> elementB = std::make_shared<ConcreteElementB>();
@@ -438,10 +440,10 @@ public:
         elementB->accept(visitor1);
         elementB->accept(visitor2);
 
-        std::ostringstream ret = std::ostringstream(output().str());
-        output().str("");
-        output().clear();
-        return ret;
+        std::ostringstream os = std::ostringstream(visitor::output().str());
+        visitor::output().str("");
+        visitor::output().clear();
+        return os;
     }
 };
 
@@ -495,120 +497,119 @@ public:
     //! @return procedure output
     static std::ostringstream abstractFactory()
     {
-        using design_pattern::creational::abstract_factory::ConcreteFactoryX;
-        using design_pattern::creational::abstract_factory::ConcreteFactoryY;
-        using design_pattern::creational::abstract_factory::output;
-        using design_pattern::creational::abstract_factory::ProductA;
-        using design_pattern::creational::abstract_factory::ProductB;
+        namespace abstract_factory = design_pattern::creational::abstract_factory;
+        using abstract_factory::ConcreteFactoryX;
+        using abstract_factory::ConcreteFactoryY;
+        using abstract_factory::ProductA;
+        using abstract_factory::ProductB;
 
         std::shared_ptr<ConcreteFactoryX> factoryX = std::make_shared<ConcreteFactoryX>();
         std::shared_ptr<ConcreteFactoryY> factoryY = std::make_shared<ConcreteFactoryY>();
 
         std::unique_ptr<ProductA> p1 = factoryX->createProductA();
-        output() << "product: " << p1->getName() << std::endl;
+        abstract_factory::output() << "product: " << p1->getName() << std::endl;
 
         std::unique_ptr<ProductA> p2 = factoryY->createProductA();
-        output() << "product: " << p2->getName() << std::endl;
+        abstract_factory::output() << "product: " << p2->getName() << std::endl;
 
         std::unique_ptr<ProductB> p3 = factoryX->createProductB();
-        output() << "product: " << p3->getName() << std::endl;
+        abstract_factory::output() << "product: " << p3->getName() << std::endl;
 
         std::unique_ptr<ProductB> p4 = factoryY->createProductB();
-        output() << "product: " << p4->getName() << std::endl;
+        abstract_factory::output() << "product: " << p4->getName() << std::endl;
 
-        std::ostringstream ret = std::ostringstream(output().str());
-        output().str("");
-        output().clear();
-        return ret;
+        std::ostringstream os = std::ostringstream(abstract_factory::output().str());
+        abstract_factory::output().str("");
+        abstract_factory::output().clear();
+        return os;
     }
     //! @brief Builder.
     //! @return procedure output
     static std::ostringstream builder()
     {
-        using design_pattern::creational::builder::ConcreteBuilderX;
-        using design_pattern::creational::builder::ConcreteBuilderY;
-        using design_pattern::creational::builder::Director;
-        using design_pattern::creational::builder::output;
-        using design_pattern::creational::builder::Product;
+        namespace builder = design_pattern::creational::builder;
+        using builder::ConcreteBuilderX;
+        using builder::ConcreteBuilderY;
+        using builder::Director;
+        using builder::Product;
 
         Director director;
-
         director.set(std::make_unique<ConcreteBuilderX>());
         director.construct();
         Product product1 = director.get();
-        output() << "1st product parts: " << product1.get() << std::endl;
+        builder::output() << "1st product parts: " << product1.get() << std::endl;
 
         director.set(std::make_unique<ConcreteBuilderY>());
         director.construct();
         Product product2 = director.get();
-        output() << "2nd product parts: " << product2.get() << std::endl;
+        builder::output() << "2nd product parts: " << product2.get() << std::endl;
 
-        std::ostringstream ret = std::ostringstream(output().str());
-        output().str("");
-        output().clear();
-        return ret;
+        std::ostringstream os = std::ostringstream(builder::output().str());
+        builder::output().str("");
+        builder::output().clear();
+        return os;
     }
     //! @brief Factory method.
     //! @return procedure output
     static std::ostringstream factoryMethod()
     {
-        using design_pattern::creational::factory_method::ConcreteCreator;
-        using design_pattern::creational::factory_method::Creator;
-        using design_pattern::creational::factory_method::output;
-        using design_pattern::creational::factory_method::Product;
+        namespace factory_method = design_pattern::creational::factory_method;
+        using factory_method::ConcreteCreator;
+        using factory_method::Creator;
+        using factory_method::Product;
 
         std::shared_ptr<Creator> creator = std::make_shared<ConcreteCreator>();
 
         std::unique_ptr<Product> p1 = creator->createProductA();
-        output() << "product: " << p1->getName() << std::endl;
+        factory_method::output() << "product: " << p1->getName() << std::endl;
         creator->removeProduct(p1);
 
         std::unique_ptr<Product> p2 = creator->createProductB();
-        output() << "product: " << p2->getName() << std::endl;
+        factory_method::output() << "product: " << p2->getName() << std::endl;
         creator->removeProduct(p2);
 
-        std::ostringstream ret = std::ostringstream(output().str());
-        output().str("");
-        output().clear();
-        return ret;
+        std::ostringstream os = std::ostringstream(factory_method::output().str());
+        factory_method::output().str("");
+        factory_method::output().clear();
+        return os;
     }
     //! @brief Prototype.
     //! @return procedure output
     static std::ostringstream prototype()
     {
-        using design_pattern::creational::prototype::Client;
-        using design_pattern::creational::prototype::output;
-        using design_pattern::creational::prototype::Prototype;
+        namespace prototype = design_pattern::creational::prototype;
+        using prototype::Client;
+        using prototype::Prototype;
 
         Client::init();
 
         std::unique_ptr<Prototype> prototype1 = Client::make(0);
-        output() << "prototype: " << prototype1->type() << std::endl;
+        prototype::output() << "prototype: " << prototype1->type() << std::endl;
 
         std::unique_ptr<Prototype> prototype2 = Client::make(1);
-        output() << "prototype: " << prototype2->type() << std::endl;
+        prototype::output() << "prototype: " << prototype2->type() << std::endl;
 
         Client::remove();
 
-        std::ostringstream ret = std::ostringstream(output().str());
-        output().str("");
-        output().clear();
-        return ret;
+        std::ostringstream os = std::ostringstream(prototype::output().str());
+        prototype::output().str("");
+        prototype::output().clear();
+        return os;
     }
     //! @brief Singleton.
     //! @return procedure output
     static std::ostringstream singleton()
     {
-        using design_pattern::creational::singleton::output;
-        using design_pattern::creational::singleton::Singleton;
+        namespace singleton = design_pattern::creational::singleton;
+        using singleton::Singleton;
 
         Singleton::get()->tell();
         Singleton::restart();
 
-        std::ostringstream ret = std::ostringstream(output().str());
-        output().str("");
-        output().clear();
-        return ret;
+        std::ostringstream os = std::ostringstream(singleton::output().str());
+        singleton::output().str("");
+        singleton::output().clear();
+        return os;
     }
 };
 
@@ -650,28 +651,28 @@ public:
     //! @return procedure output
     static std::ostringstream adapter()
     {
-        using design_pattern::structural::adapter::Adapter;
-        using design_pattern::structural::adapter::output;
-        using design_pattern::structural::adapter::Target;
+        namespace adapter = design_pattern::structural::adapter;
+        using adapter::Adapter;
+        using adapter::Target;
 
         std::shared_ptr<Target> t = std::make_shared<Adapter>();
         t->request();
 
-        std::ostringstream ret = std::ostringstream(output().str());
-        output().str("");
-        output().clear();
-        return ret;
+        std::ostringstream os = std::ostringstream(adapter::output().str());
+        adapter::output().str("");
+        adapter::output().clear();
+        return os;
     }
     //! @brief Bridge.
     //! @return procedure output
     static std::ostringstream bridge()
     {
-        using design_pattern::structural::bridge::Abstraction;
-        using design_pattern::structural::bridge::ConcreteImplementorA;
-        using design_pattern::structural::bridge::ConcreteImplementorB;
-        using design_pattern::structural::bridge::Implementor;
-        using design_pattern::structural::bridge::output;
-        using design_pattern::structural::bridge::RefinedAbstraction;
+        namespace bridge = design_pattern::structural::bridge;
+        using bridge::Abstraction;
+        using bridge::ConcreteImplementorA;
+        using bridge::ConcreteImplementorB;
+        using bridge::Implementor;
+        using bridge::RefinedAbstraction;
 
         std::unique_ptr<Abstraction> abstract1 =
             std::make_unique<RefinedAbstraction>(std::make_unique<ConcreteImplementorA>());
@@ -681,43 +682,43 @@ public:
             std::make_unique<RefinedAbstraction>(std::make_unique<ConcreteImplementorB>());
         abstract2->operation();
 
-        std::ostringstream ret = std::ostringstream(output().str());
-        output().str("");
-        output().clear();
-        return ret;
+        std::ostringstream os = std::ostringstream(bridge::output().str());
+        bridge::output().str("");
+        bridge::output().clear();
+        return os;
     }
     //! @brief Composite.
     //! @return procedure output
     static std::ostringstream composite()
     {
-        using design_pattern::structural::composite::Composite;
-        using design_pattern::structural::composite::Leaf;
-        using design_pattern::structural::composite::output;
+        namespace composite = design_pattern::structural::composite;
+        using composite::Composite;
+        using composite::Leaf;
 
         constexpr std::uint32_t count = 5;
-        Composite composite;
+        Composite composites;
 
         for (std::uint32_t i = 0; i < count; ++i)
         {
-            composite.add(std::make_shared<Leaf>(i));
+            composites.add(std::make_shared<Leaf>(i));
         }
-        composite.remove(0);
-        composite.operation();
+        composites.remove(0);
+        composites.operation();
 
-        std::ostringstream ret = std::ostringstream(output().str());
-        output().str("");
-        output().clear();
-        return ret;
+        std::ostringstream os = std::ostringstream(composite::output().str());
+        composite::output().str("");
+        composite::output().clear();
+        return os;
     }
     //! @brief Decorator.
     //! @return procedure output
     static std::ostringstream decorator()
     {
-        using design_pattern::structural::decorator::Component;
-        using design_pattern::structural::decorator::ConcreteComponent;
-        using design_pattern::structural::decorator::ConcreteDecoratorA;
-        using design_pattern::structural::decorator::ConcreteDecoratorB;
-        using design_pattern::structural::decorator::output;
+        namespace decorator = design_pattern::structural::decorator;
+        using decorator::Component;
+        using decorator::ConcreteComponent;
+        using decorator::ConcreteDecoratorA;
+        using decorator::ConcreteDecoratorB;
 
         std::shared_ptr<ConcreteComponent> cc = std::make_shared<ConcreteComponent>();
         std::shared_ptr<ConcreteDecoratorA> da = std::make_shared<ConcreteDecoratorA>(cc);
@@ -726,57 +727,57 @@ public:
         std::shared_ptr<Component> component = db;
         component->operation();
 
-        std::ostringstream ret = std::ostringstream(output().str());
-        output().str("");
-        output().clear();
-        return ret;
+        std::ostringstream os = std::ostringstream(decorator::output().str());
+        decorator::output().str("");
+        decorator::output().clear();
+        return os;
     }
     //! @brief Facade.
     //! @return procedure output
     static std::ostringstream facade()
     {
-        using design_pattern::structural::facade::Facade;
-        using design_pattern::structural::facade::output;
+        namespace facade = design_pattern::structural::facade;
+        using facade::Facade;
 
-        std::shared_ptr<Facade> facade = std::make_shared<Facade>();
-        facade->operation1();
-        facade->operation2();
+        std::shared_ptr<Facade> facades = std::make_shared<Facade>();
+        facades->operation1();
+        facades->operation2();
 
-        std::ostringstream ret = std::ostringstream(output().str());
-        output().str("");
-        output().clear();
-        return ret;
+        std::ostringstream os = std::ostringstream(facade::output().str());
+        facade::output().str("");
+        facade::output().clear();
+        return os;
     }
     //! @brief Flyweight.
     //! @return procedure output
     static std::ostringstream flyweight()
     {
-        using design_pattern::structural::flyweight::FlyweightFactory;
-        using design_pattern::structural::flyweight::output;
+        namespace flyweight = design_pattern::structural::flyweight;
+        using flyweight::FlyweightFactory;
 
         std::shared_ptr<FlyweightFactory> factory = std::make_shared<FlyweightFactory>();
         factory->getFlyweight(1)->operation();
         factory->getFlyweight(2)->operation();
 
-        std::ostringstream ret = std::ostringstream(output().str());
-        output().str("");
-        output().clear();
-        return ret;
+        std::ostringstream os = std::ostringstream(flyweight::output().str());
+        flyweight::output().str("");
+        flyweight::output().clear();
+        return os;
     }
     //! @brief Proxy.
     //! @return procedure output
     static std::ostringstream proxy()
     {
-        using design_pattern::structural::proxy::output;
-        using design_pattern::structural::proxy::Proxy;
+        namespace proxy = design_pattern::structural::proxy;
+        using proxy::Proxy;
 
-        std::shared_ptr<Proxy> proxy = std::make_shared<Proxy>();
-        proxy->request();
+        std::shared_ptr<Proxy> proxies = std::make_shared<Proxy>();
+        proxies->request();
 
-        std::ostringstream ret = std::ostringstream(output().str());
-        output().str("");
-        output().clear();
-        return ret;
+        std::ostringstream os = std::ostringstream(proxy::output().str());
+        proxy::output().str("");
+        proxy::output().clear();
+        return os;
     }
 };
 
