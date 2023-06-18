@@ -7,7 +7,7 @@
 #pragma once
 
 #ifndef __PRECOMPILED_HEADER
-#include <vector>
+#include <map>
 #else
 #include "application/pch/precompiled_header.hpp"
 #endif // __PRECOMPILED_HEADER
@@ -151,9 +151,26 @@ public:
     void interfaceToStart();
     //! @brief Wait until the observer stops. External use.
     void interfaceToStop();
+
+    //! @brief Alias for the functor to build the TLV packet.
+    typedef int (*BuildFunctor)(char*);
+    //! @brief Alias for the option name.
+    using Option = std::string;
+    //! @brief Alias for the option help information.
+    using HelpInfo = std::string;
+    //! @brief Alias for the tuple of OptionHelp and BuildFunctor.
+    using OptionTuple = std::tuple<HelpInfo, BuildFunctor>;
+    //! @brief Alias for the map of Option and OptionTuple.
+    using OptionMap = std::map<Option, OptionTuple>;
     //! @brief Get the observer options.
     //! @return observer options
-    inline std::vector<std::pair<std::string, std::string>> getObserverOptions() const;
+    inline OptionMap getObserverOptions() const;
+    //! @brief Get a member of OptionTuple.
+    //! @tparam T - type of member to be got
+    //! @param tuple - a tuple containing the member types to be got
+    //! @return member corresponding to the specific type
+    template <typename T>
+    static auto get(const OptionTuple& tuple);
     //! @brief Parse the TLV packet.
     //! @param buffer - TLV packet buffer
     //! @param length - buffer length
@@ -185,13 +202,13 @@ private:
     explicit Observe(const StateType initState = State::init) noexcept : FSM(initState){};
 
     // clang-format off
-    //! @brief Observer options.
-    const std::vector<std::pair<std::string, std::string>> options{
-        // - Option -+------------- Help -------------
-        // ----------+--------------------------------
-        { "log"      , "view the log with highlights" },
-        { "stat"     , "show the stat of the process" }
-        // ----------+--------------------------------
+    //! @brief Mapping table of all observer options.
+    const OptionMap optionDispatcher{
+        // - Option -+------------- Help -------------+-- Build Packet --
+        // ----------+--------------------------------+------------------
+        { "log"      , { "view the log with highlights", &buildLogPacket  }},
+        { "stat"     , { "show the stat of the process", &buildStatPacket }}
+        // ----------+--------------------------------+------------------
     };
     // clang-format on
     //! @brief Build the TLV packet to stop connection.
@@ -276,8 +293,21 @@ protected:
     friend std::ostream& operator<<(std::ostream& os, const Observe::State& state);
 };
 
-inline std::vector<std::pair<std::string, std::string>> Observe::getObserverOptions() const
+inline Observe::OptionMap Observe::getObserverOptions() const
 {
-    return options;
+    return optionDispatcher;
+}
+
+template <typename T>
+auto Observe::get(const OptionTuple& tuple)
+{
+    if constexpr (std::is_same_v<T, HelpInfo>)
+    {
+        return std::get<0>(tuple);
+    }
+    else if constexpr (std::is_same_v<T, BuildFunctor>)
+    {
+        return std::get<1>(tuple);
+    }
 }
 } // namespace application::observe

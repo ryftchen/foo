@@ -17,6 +17,7 @@
 #include <unistd.h>
 #include <array>
 #include <bitset>
+#include <map>
 // #define NDEBUG
 #include <cassert>
 #include <cmath>
