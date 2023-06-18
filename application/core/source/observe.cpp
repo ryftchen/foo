@@ -15,7 +15,6 @@
 #else
 #include "application/pch/precompiled_header.hpp"
 #endif // __PRECOMPILED_HEADER
-#include "utility/include/common.hpp"
 #include "utility/include/file.hpp"
 #include "utility/include/time.hpp"
 
@@ -402,37 +401,28 @@ void Observe::createObserveServer()
     using utility::socket::Socket;
     using utility::common::operator""_bkdrHash;
 
-    tcpServer.onNewConnection = [](utility::socket::TCPSocket* newSocket)
+    tcpServer.onNewConnection = [this](utility::socket::TCPSocket* newSocket)
     {
-        newSocket->onMessageReceived = [newSocket](const std::string& message)
+        newSocket->onMessageReceived = [this, newSocket](const std::string& message)
         {
             try
             {
                 char buffer[maxMsgLength] = {'\0'};
-                switch (utility::common::bkdrHash(message.data()))
+                if ("stop" == message)
                 {
-                    case "stop"_bkdrHash:
-                        if (buildStopPacket(buffer) > 0)
-                        {
-                            newSocket->toSend(buffer, sizeof(buffer));
-                            newSocket->setNonBlocking();
-                        }
-                        break;
-                    case "log"_bkdrHash:
-                        if (buildLogPacket(buffer) > 0)
-                        {
-                            newSocket->toSend(buffer, sizeof(buffer));
-                        }
-                        break;
-                    case "stat"_bkdrHash:
-                        if (buildStatPacket(buffer) > 0)
-                        {
-                            newSocket->toSend(buffer, sizeof(buffer));
-                        }
-                        break;
-                    default:
-                        throw std::logic_error("<OBSERVE> Unknown TCP message.");
+                    buildStopPacket(buffer);
+                    newSocket->toSend(buffer, sizeof(buffer));
+                    newSocket->setNonBlocking();
+                    return;
                 }
+
+                const auto optionIter = optionDispatcher.find(message);
+                if (optionDispatcher.end() == optionIter)
+                {
+                    throw std::logic_error("<OBSERVE> Unknown TCP message.");
+                }
+                (*get<BuildFunctor>(optionIter->second))(buffer);
+                newSocket->toSend(buffer, sizeof(buffer));
             }
             catch (std::exception& error)
             {
@@ -441,35 +431,26 @@ void Observe::createObserveServer()
         };
     };
 
-    udpServer.onMessageReceived = [&](const std::string& message, const std::string& ip, const std::uint16_t port)
+    udpServer.onMessageReceived = [this](const std::string& message, const std::string& ip, const std::uint16_t port)
     {
         try
         {
             char buffer[maxMsgLength] = {'\0'};
-            switch (utility::common::bkdrHash(message.data()))
+            if ("stop" == message)
             {
-                case "stop"_bkdrHash:
-                    if (buildStopPacket(buffer) > 0)
-                    {
-                        udpServer.toSendTo(buffer, sizeof(buffer), ip, port);
-                        udpServer.setNonBlocking();
-                    }
-                    break;
-                case "log"_bkdrHash:
-                    if (buildLogPacket(buffer) > 0)
-                    {
-                        udpServer.toSendTo(buffer, sizeof(buffer), ip, port);
-                    }
-                    break;
-                case "stat"_bkdrHash:
-                    if (buildStatPacket(buffer) > 0)
-                    {
-                        udpServer.toSendTo(buffer, sizeof(buffer), ip, port);
-                    }
-                    break;
-                default:
-                    throw std::logic_error("<OBSERVE> Unknown UDP message.");
+                buildStopPacket(buffer);
+                udpServer.toSendTo(buffer, sizeof(buffer), ip, port);
+                udpServer.setNonBlocking();
+                return;
             }
+
+            const auto optionIter = optionDispatcher.find(message);
+            if (optionDispatcher.end() == optionIter)
+            {
+                throw std::logic_error("<OBSERVE> Unknown UDP message.");
+            }
+            (*get<BuildFunctor>(optionIter->second))(buffer);
+            udpServer.toSendTo(buffer, sizeof(buffer), ip, port);
         }
         catch (std::exception& error)
         {

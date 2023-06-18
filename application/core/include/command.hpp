@@ -196,7 +196,6 @@ private:
     //! @return member corresponding to the specific type
     template <typename T>
     auto get(const TaskTypeTuple& tuple) const;
-
     //! @memberof application::command::Command
     //! @brief Get a member of TaskFunctorTuple.
     //! @tparam T - type of member to be got

@@ -641,12 +641,13 @@ void Command::enterConsoleMode() const
 template <typename T>
 void Command::registerOnConsole(utility::console::Console& console, T& client) const
 {
+    using observe::Observe;
     using utility::console::Console;
 
-    for (const auto& option : OBSERVE_OPTIONS)
+    for (const auto& [option, optionTuple] : OBSERVE_OPTIONS)
     {
-        const auto& cmd = option.first;
-        const auto& helpInfo = option.second;
+        const auto& cmd = option;
+        const auto& helpInfo = Observe::get<Observe::HelpInfo>(optionTuple);
         console.registerCommand(
             cmd,
             [cmd, &client](const std::vector<std::string>& /*unused*/) -> decltype(auto)
