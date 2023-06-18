@@ -41,7 +41,8 @@ enum TLVType : int
 {
     header = 0x125e591,
     stop = 0,
-    log
+    log,
+    stat
 };
 
 //! @brief Value in TLV.
@@ -51,6 +52,8 @@ struct TLVValue
     bool stopFlag{false};
     //! @brief Shm id of the log contents.
     int logShmId{invalidShmId};
+    //! @brief Shm id of the stat information.
+    int statShmId{invalidShmId};
 };
 
 //! @brief TLV packet.
@@ -186,7 +189,8 @@ private:
     const std::vector<std::pair<std::string, std::string>> options{
         // - Option -+------------- Help -------------
         // ----------+--------------------------------
-        { "log"      , "view the log with highlights" }
+        { "log"      , "view the log with highlights" },
+        { "stat"     , "show the stat of the process" }
         // ----------+--------------------------------
     };
     // clang-format on
@@ -198,6 +202,10 @@ private:
     //! @param buffer - TLV packet buffer
     //! @return buffer length
     static int buildLogPacket(char* buffer);
+    //! @brief Build the TLV packet to show stat information.
+    //! @param buffer - TLV packet buffer
+    //! @return buffer length
+    static int buildStatPacket(char* buffer);
     //! @brief Fill the shared memory.
     //! @param contents - contents to be filled
     //! @return shm id
@@ -208,6 +216,9 @@ private:
     //! @brief Get the log Contents.
     //! @return log contents
     static std::string getLogContents();
+    //! @brief Get the stat information.
+    //! @return stat information
+    static std::string getStatInformation();
     //! @brief Maximum number of lines to view log contents.
     static constexpr std::uint32_t maxViewNumOfLines{20};
 

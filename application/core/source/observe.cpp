@@ -97,6 +97,13 @@ int tlvEncode(char* pBuf, int& len, const TLVValue& val)
         enc.write<int>(val.logShmId);
         sum += (offset + sizeof(int));
     }
+    else if (invalidShmId != val.statShmId)
+    {
+        enc.write<int>(TLVType::stat);
+        enc.write<int>(sizeof(int));
+        enc.write<int>(val.statShmId);
+        sum += (offset + sizeof(int));
+    }
 
     *reinterpret_cast<int*>(pBuf + sizeof(int)) = htonl(sum);
     len = offset + sum;
@@ -134,6 +141,10 @@ int tlvDecode(char* pBuf, const int len, TLVValue& val)
                 break;
             case TLVType::log:
                 dec.read<int>(&val.logShmId);
+                sum -= (offset + sizeof(int));
+                break;
+            case TLVType::stat:
+                dec.read<int>(&val.statShmId);
                 sum -= (offset + sizeof(int));
                 break;
             default:
@@ -265,6 +276,10 @@ tlv::TLVValue Observe::parseTLVPacket(char* buffer, const int length)
     {
         printSharedMemory(value.logShmId);
     }
+    else if (invalidShmId != value.statShmId)
+    {
+        printSharedMemory(value.statShmId);
+    }
 
     return value;
 }
@@ -286,6 +301,17 @@ int Observe::buildLogPacket(char* buffer)
     if (tlv::tlvEncode(buffer, length, tlv::TLVValue{.logShmId = shmId}) < 0)
     {
         throw std::runtime_error("<OBSERVE> Failed to build packet for the log option.");
+    }
+    return length;
+}
+
+int Observe::buildStatPacket(char* buffer)
+{
+    const int shmId = fillSharedMemory(getStatInformation());
+    int length = 0;
+    if (tlv::tlvEncode(buffer, length, tlv::TLVValue{.statShmId = shmId}) < 0)
+    {
+        throw std::runtime_error("<OBSERVE> Failed to build packet for the stat option.");
     }
     return length;
 }
@@ -364,6 +390,13 @@ std::string Observe::getLogContents()
     return os.str();
 }
 
+std::string Observe::getStatInformation()
+{
+    const std::string showStat =
+        R"(tail -n +1 /proc/$(ps -aux | grep foo | head -n 1 | awk '{split($0, a, " "); print a[2]}')/task/*/status)";
+    return utility::common::executeCommand(showStat);
+}
+
 void Observe::createObserveServer()
 {
     using utility::socket::Socket;
@@ -387,6 +420,12 @@ void Observe::createObserveServer()
                         break;
                     case "log"_bkdrHash:
                         if (buildLogPacket(buffer) > 0)
+                        {
+                            newSocket->toSend(buffer, sizeof(buffer));
+                        }
+                        break;
+                    case "stat"_bkdrHash:
+                        if (buildStatPacket(buffer) > 0)
                         {
                             newSocket->toSend(buffer, sizeof(buffer));
                         }
@@ -418,6 +457,12 @@ void Observe::createObserveServer()
                     break;
                 case "log"_bkdrHash:
                     if (buildLogPacket(buffer) > 0)
+                    {
+                        udpServer.toSendTo(buffer, sizeof(buffer), ip, port);
+                    }
+                    break;
+                case "stat"_bkdrHash:
+                    if (buildStatPacket(buffer) > 0)
                     {
                         udpServer.toSendTo(buffer, sizeof(buffer), ip, port);
                     }
