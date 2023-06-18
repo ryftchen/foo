@@ -1,6 +1,6 @@
-//! @file observe.hpp
+//! @file view.hpp
 //! @author ryftchen
-//! @brief The declarations (observe) in the application module.
+//! @brief The declarations (view) in the application module.
 //! @version 0.1
 //! @copyright Copyright (c) 2022-2023
 
@@ -14,20 +14,20 @@
 #include "utility/include/fsm.hpp"
 #include "utility/include/socket.hpp"
 
-//! @brief Start to observe.
-#define OBSERVE_TO_START application::observe::Observe::getInstance().interfaceToStart()
-//! @brief Stop to observe.
-#define OBSERVE_TO_STOP application::observe::Observe::getInstance().interfaceToStop()
-//! @brief Get all observer options.
-#define OBSERVE_OPTIONS application::observe::Observe::getInstance().getObserverOptions()
+//! @brief Start to view.
+#define VIEW_TO_START application::view::View::getInstance().interfaceToStart()
+//! @brief Stop to view.
+#define VIEW_TO_STOP application::view::View::getInstance().interfaceToStop()
+//! @brief Get all viewer options.
+#define VIEW_OPTIONS application::view::View::getInstance().getViewerOptions()
 
-//! @brief Observe-server-related functions in the application module.
-namespace application::observe
+//! @brief View-server-related functions in the application module.
+namespace application::view
 {
-//! @brief Maximum number of times to wait for the observer to change to the target state.
-constexpr std::uint16_t maxTimesOfWaitObserver = 10;
-//! @brief Time interval (ms) to wait for the observer to change to the target state.
-constexpr std::uint16_t intervalOfWaitObserver = 10;
+//! @brief Maximum number of times to wait for the viewer to change to the target state.
+constexpr std::uint16_t maxTimesOfWaitViewer = 10;
+//! @brief Time interval (ms) to wait for the viewer to change to the target state.
+constexpr std::uint16_t intervalOfWaitViewer = 10;
 //! @brief Maximum length of the message.
 constexpr std::uint32_t maxMsgLength = 8192;
 //! @brief Invalid Shm id.
@@ -120,19 +120,19 @@ int tlvEncode(char* pBuf, int& len, const TLVValue& val);
 int tlvDecode(char* pBuf, const int len, TLVValue& val);
 } // namespace tlv
 
-//! @brief Observer.
-class Observe final : public utility::fsm::FSM<Observe>
+//! @brief Viewer.
+class View final : public utility::fsm::FSM<View>
 {
 public:
-    //! @brief Destroy the Observe object.
-    virtual ~Observe() = default;
-    //! @brief Construct a new Observe object.
-    Observe(const Observe&) = delete;
-    //! @brief The operator (=) overloading of Observe class.
-    //! @return reference of Observe object
-    Observe& operator=(const Observe&) = delete;
+    //! @brief Destroy the View object.
+    virtual ~View() = default;
+    //! @brief Construct a new View object.
+    View(const View&) = delete;
+    //! @brief The operator (=) overloading of View class.
+    //! @return reference of View object
+    View& operator=(const View&) = delete;
 
-    friend class FSM<Observe>;
+    friend class FSM<View>;
     //! @brief Enumerate specific states for FSM.
     enum State : std::uint8_t
     {
@@ -142,14 +142,14 @@ public:
         done
     };
 
-    //! @brief Get the Observe instance.
-    //! @return reference of Observe object
-    static Observe& getInstance();
-    //! @brief Interface for running observer.
-    void runObserver();
-    //! @brief Wait until the observer starts. External use.
+    //! @brief Get the View instance.
+    //! @return reference of View object
+    static View& getInstance();
+    //! @brief Interface for running viewer.
+    void runViewer();
+    //! @brief Wait until the viewer starts. External use.
     void interfaceToStart();
-    //! @brief Wait until the observer stops. External use.
+    //! @brief Wait until the viewer stops. External use.
     void interfaceToStop();
 
     //! @brief Alias for the functor to build the TLV packet.
@@ -162,9 +162,9 @@ public:
     using OptionTuple = std::tuple<HelpInfo, BuildFunctor>;
     //! @brief Alias for the map of Option and OptionTuple.
     using OptionMap = std::map<Option, OptionTuple>;
-    //! @brief Get the observer options.
-    //! @return observer options
-    inline OptionMap getObserverOptions() const;
+    //! @brief Get the viewer options.
+    //! @return viewer options
+    inline OptionMap getViewerOptions() const;
     //! @brief Get a member of OptionTuple.
     //! @tparam T - type of member to be got
     //! @param tuple - a tuple containing the member types to be got
@@ -197,12 +197,12 @@ public:
     };
 
 private:
-    //! @brief Construct a new Observe object.
+    //! @brief Construct a new View object.
     //! @param initState - initialization value of state
-    explicit Observe(const StateType initState = State::init) noexcept : FSM(initState){};
+    explicit View(const StateType initState = State::init) noexcept : FSM(initState){};
 
     // clang-format off
-    //! @brief Mapping table of all observer options.
+    //! @brief Mapping table of all viewer options.
     const OptionMap optionDispatcher{
         // - Option -+------------- Help -------------+-- Build Packet --
         // ----------+--------------------------------+------------------
@@ -247,8 +247,8 @@ private:
     mutable std::mutex mtx;
     //! @brief The synchronization condition for server. Use with mtx.
     std::condition_variable cv;
-    //! @brief Flag to indicate whether it is observing.
-    std::atomic<bool> isObserving{false};
+    //! @brief Flag to indicate whether it is viewing.
+    std::atomic<bool> isViewing{false};
 
     //! @brief FSM event. Create server.
     struct CreateServer
@@ -258,48 +258,48 @@ private:
     struct DestroyServer
     {
     };
-    //! @brief FSM event. Go observing.
-    struct GoObserving
+    //! @brief FSM event. Go viewing.
+    struct GoViewing
     {
     };
-    //! @brief FSM event. NO observing.
-    struct NoObserving
+    //! @brief FSM event. NO viewing.
+    struct NoViewing
     {
     };
 
-    //! @brief Create the observe server.
-    void createObserveServer();
-    //! @brief Start observing.
-    void startObserving();
-    //! @brief Destroy the observe server.
-    void destroyObserveServer();
-    //! @brief Stop observing.
-    void stopObserving();
+    //! @brief Create the view server.
+    void createViewServer();
+    //! @brief Start viewing.
+    void startViewing();
+    //! @brief Destroy the view server.
+    void destroyViewServer();
+    //! @brief Stop viewing.
+    void stopViewing();
 
     // clang-format off
-    //! @brief Alias for the transition map of the observer.
+    //! @brief Alias for the transition map of the viewer.
     using TransitionMap = Map<
-        // --- Source ---+----- Event -----+--- Target ---+------------ Action ------------+--- Guard(Optional) ---
-        // --------------+-----------------+--------------+--------------------------------+-----------------------
-        Row< State::init ,  CreateServer   , State::idle  , &Observe::createObserveServer                         >,
-        Row< State::idle ,  GoObserving    , State::work  , &Observe::startObserving                              >,
-        Row< State::work ,  DestroyServer  , State::idle  , &Observe::destroyObserveServer                        >,
-        Row< State::idle ,  NoObserving    , State::done  , &Observe::stopObserving                               >
-        // --------------+-----------------+--------------+--------------------------------+-----------------------
+        // --- Source ---+---- Event ----+--- Target ---+--------- Action ---------+--- Guard(Optional) ---
+        // --------------+---------------+--------------+--------------------------+-----------------------
+        Row< State::init , CreateServer  , State::idle  , &View::createViewServer                         >,
+        Row< State::idle , GoViewing     , State::work  , &View::startViewing                             >,
+        Row< State::work , DestroyServer , State::idle  , &View::destroyViewServer                        >,
+        Row< State::idle , NoViewing     , State::done  , &View::stopViewing                              >
+        // --------------+---------------+--------------+--------------------------+-----------------------
         >;
     // clang-format on
 
 protected:
-    friend std::ostream& operator<<(std::ostream& os, const Observe::State& state);
+    friend std::ostream& operator<<(std::ostream& os, const View::State& state);
 };
 
-inline Observe::OptionMap Observe::getObserverOptions() const
+inline View::OptionMap View::getViewerOptions() const
 {
     return optionDispatcher;
 }
 
 template <typename T>
-auto Observe::get(const OptionTuple& tuple)
+auto View::get(const OptionTuple& tuple)
 {
     if constexpr (std::is_same_v<T, HelpInfo>)
     {
@@ -310,4 +310,4 @@ auto Observe::get(const OptionTuple& tuple)
         return std::get<1>(tuple);
     }
 }
-} // namespace application::observe
+} // namespace application::view

@@ -7,7 +7,7 @@
 #include "main.hpp"
 #include "command.hpp"
 #include "log.hpp"
-#include "observe.hpp"
+#include "view.hpp"
 
 //! @brief The main function.
 //! @param argc - argument count
@@ -17,13 +17,13 @@ int main(int argc, char* argv[])
 {
     using application::command::Command;
     using application::log::Log;
-    using application::observe::Observe;
+    using application::view::View;
 
     constexpr std::uint32_t threadNum = 3;
     std::shared_ptr<utility::thread::Thread> thread = std::make_shared<utility::thread::Thread>(threadNum);
     thread->enqueue("commander", &Command::runCommander, &Command::getInstance(), argc, argv);
     thread->enqueue("logger", &Log::runLogger, &Log::getInstance());
-    thread->enqueue("observer", &Observe::runObserver, &Observe::getInstance());
+    thread->enqueue("viewer", &View::runViewer, &View::getInstance());
 
     return 0;
 }
