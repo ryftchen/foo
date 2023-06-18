@@ -120,7 +120,15 @@ static void init()
             std::fprintf(stderr, "<MAIN> The home path doesn't exist. Please check it.\n");
             std::exit(-1);
         }
-        std::filesystem::current_path(homePath);
+
+        const std::string tempPath = homePath.string() + "/.foo";
+        if (!std::filesystem::exists(tempPath))
+        {
+            std::filesystem::create_directory(tempPath);
+            std::filesystem::permissions(
+                tempPath, std::filesystem::perms::owner_all, std::filesystem::perm_options::add);
+        }
+        std::filesystem::current_path(tempPath);
     }
 }
 
