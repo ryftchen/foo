@@ -29,6 +29,7 @@
 #include <memory>
 #include <queue>
 #include <regex>
+#include <sstream>
 #include <tuple>
 #include <vector>
 #endif // __PRECOMPILED_HEADER

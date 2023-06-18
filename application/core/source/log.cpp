@@ -5,6 +5,7 @@
 //! @copyright Copyright (c) 2022-2023
 
 #include "log.hpp"
+#include "file.hpp"
 #ifndef __PRECOMPILED_HEADER
 #include <filesystem>
 #include <regex>
@@ -53,6 +54,7 @@ void Log::runLogger()
         processEvent(GoLogging());
 
         checkIfExceptedFSMState(State::work);
+        namespace file = utility::file;
         while (isLogging.load())
         {
             if (std::unique_lock<std::mutex> lock(mtx); true)
@@ -64,7 +66,8 @@ void Log::runLogger()
                         return (!isLogging.load() || !logQueue.empty());
                     });
 
-                utility::file::FileReadWriteGuard guard(utility::file::FileReadWriteGuard::LockMode::write, fileLock);
+                file::ReadWriteGuard guard(file::LockMode::write, fileLock);
+                file::fdLock(ofs, file::LockMode::write);
                 while (!logQueue.empty())
                 {
                     switch (actualTarget)
@@ -84,6 +87,7 @@ void Log::runLogger()
                     }
                     logQueue.pop();
                 }
+                file::fdUnlock(ofs);
             }
         }
 

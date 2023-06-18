@@ -6,23 +6,29 @@
 
 #pragma once
 
+#include <ext/stdio_filebuf.h>
+#include <sys/file.h>
+#include <list>
 #include <shared_mutex>
-#include <string>
 
 //! @brief File-operation-related functions in the utility module.
 namespace utility::file
 {
-//! @brief Maximum display number of lines.
-constexpr std::uint32_t maxDisNumOfLines = 1000;
+//! @brief Enumerate specific file lock modes.
+enum class LockMode : std::uint8_t
+{
+    read,
+    write
+};
 
 //! @brief Lock for reading and writing files.
-class FileReadWriteLock
+class ReadWriteLock
 {
 public:
-    //! @brief Construct a new FileReadWriteLock object.
-    FileReadWriteLock() = default;
-    //! @brief Destroy the FileReadWriteLock object.
-    virtual ~FileReadWriteLock() = default;
+    //! @brief Construct a new ReadWriteLock object.
+    ReadWriteLock() = default;
+    //! @brief Destroy the ReadWriteLock object.
+    virtual ~ReadWriteLock() = default;
 
     //! @brief Acquire a read lock.
     void readLock();
@@ -47,56 +53,57 @@ private:
 };
 
 //! @brief Manage the lifetime of a lock on a file.
-class FileReadWriteGuard
+class ReadWriteGuard
 {
 public:
-    //! @brief Enumerate specific file lock modes.
-    enum class LockMode : std::uint8_t
-    {
-        read,
-        write
-    };
-
-    //! @brief Construct a new FileReadWriteGuard object.
+    //! @brief Construct a new ReadWriteGuard object.
     //! @param mode - lock mode
     //! @param lock - object managed by the guard
-    FileReadWriteGuard(const LockMode mode, FileReadWriteLock& lock);
-    //! @brief Destroy the FileReadWriteGuard object.
-    virtual ~FileReadWriteGuard();
+    ReadWriteGuard(const LockMode mode, ReadWriteLock& lock);
+    //! @brief Destroy the ReadWriteGuard object.
+    virtual ~ReadWriteGuard();
 
 private:
     //! @brief Object managed by the guard.
-    FileReadWriteLock& lock;
+    ReadWriteLock& lock;
     //! @brief Lock mode.
     const LockMode mode;
 };
 
-//! @brief Property of the file.
-struct FileProperty
+//! @brief FD lock operation
+//! @tparam T type of file stream
+//! @param file - file stream
+//! @param mode - lock mode
+template <typename T>
+void fdLock(T& file, const LockMode mode)
 {
-    //! @brief File path.
-    const std::string path;
-    //! @brief File lock.
-    FileReadWriteLock& lock;
-};
+    const int fd = static_cast<__gnu_cxx::stdio_filebuf<char>*const>(file.rdbuf())->fd(),
+              operate = (LockMode::read == mode ? LOCK_SH : LOCK_EX) | LOCK_NB;
+    if (flock(fd, operate))
+    {
+        throw std::runtime_error("Failed to lock FD.");
+    }
+}
 
-//! @brief Setting to display content.
-struct DisplaySetting
+//! @brief FD unlock operation
+//! @tparam T type of file stream
+//! @param file - file stream
+template <typename T>
+void fdUnlock(T& file)
 {
-    //! @brief Alias for format style.
-    typedef const std::string& (*FormatStyle)(std::string& line);
-
-    //! @brief Be inverted or not.
-    bool isInverted{false};
-    //! @brief Number of lines to display.
-    std::uint32_t numOfLines{maxDisNumOfLines};
-    //! @brief Format style.
-    FormatStyle style{nullptr};
-};
+    const int fd = static_cast<__gnu_cxx::stdio_filebuf<char>* const>(file.rdbuf())->fd();
+    if (flock(fd, LOCK_UN))
+    {
+        throw std::runtime_error("Failed to unlock FD.");
+    }
+}
 
 extern std::ifstream openFile(const std::string& filename);
 extern std::ofstream openFile(const std::string& filename, const bool isOverwrite);
 extern void closeFile(std::ifstream& ifs);
 extern void closeFile(std::ofstream& ofs);
-extern std::string displayFileContents(const FileProperty& property, const DisplaySetting& setting = {});
+extern std::list<std::string> getFileContents(
+    const std::string& filename,
+    const bool reverse,
+    const std::uint32_t totalRows);
 } // namespace utility::file

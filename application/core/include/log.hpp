@@ -173,7 +173,7 @@ public:
     inline std::string getPathname() const;
     //! @brief Get log file lock.
     //! @return log file lock
-    inline utility::file::FileReadWriteLock& getFileLock();
+    inline utility::file::ReadWriteLock& getFileLock();
 
 private:
     //! @brief Construct a new Log object.
@@ -210,7 +210,7 @@ private:
     //! @brief Log file path.
     char pathname[logPathLength + 1]{"./temporary/foo.log"};
     //! @brief Log file lock.
-    utility::file::FileReadWriteLock fileLock;
+    utility::file::ReadWriteLock fileLock;
 
     //! @brief FSM event. Open file.
     struct OpenFile
@@ -316,7 +316,7 @@ inline std::string Log::getPathname() const
     return pathname;
 }
 
-inline utility::file::FileReadWriteLock& Log::getFileLock()
+inline utility::file::ReadWriteLock& Log::getFileLock()
 {
     return fileLock;
 }

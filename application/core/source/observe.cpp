@@ -11,6 +11,7 @@
 #include <sys/shm.h>
 #include <sys/stat.h>
 #include <cstring>
+#include <sstream>
 #else
 #include "application/pch/precompiled_header.hpp"
 #endif // __PRECOMPILED_HEADER
@@ -360,33 +361,34 @@ tlv::TLVValue Observe::parseTLVPacket(char* buffer, const int length)
 
     if (invalidShmId != value.logShmId)
     {
-        const int shmId = value.logShmId;
-        void* shm = shmat(shmId, nullptr, 0);
-        if (nullptr == shm)
-        {
-            throw std::runtime_error("<OBSERVE> Failed to attach shared memory.");
-        }
-        SharedMemory* shrMem = reinterpret_cast<SharedMemory*>(shm);
-
-        shrMem->signal.store(true);
-        while (true)
-        {
-            if (shrMem->signal.load())
-            {
-                std::cout << "\r\n" << shrMem->buffer << std::endl;
-                shrMem->signal.store(false);
-                break;
-            }
-            utility::time::millisecondLevelSleep(1);
-        }
-        shmdt(shm);
-        shmctl(shmId, IPC_RMID, nullptr);
+        printSharedMemory(value.logShmId);
     }
 
     return value;
 }
 
+int Observe::buildStopPacket(char* buffer)
+{
+    int length = 0;
+    if (tlv::tlvEncode(buffer, length, tlv::TLVValue{.stopFlag = true}) < 0)
+    {
+        throw std::runtime_error("<OBSERVE> Failed to build packet to stop");
+    }
+    return length;
+}
+
 int Observe::buildLogPacket(char* buffer)
+{
+    const int shmId = fillSharedMemory(getLogContents());
+    int length = 0;
+    if (tlv::tlvEncode(buffer, length, tlv::TLVValue{.logShmId = shmId}) < 0)
+    {
+        throw std::runtime_error("<OBSERVE> Failed to build packet for the log option.");
+    }
+    return length;
+}
+
+int Observe::fillSharedMemory(const std::string& contents)
 {
     int shmId = shmget(
         static_cast<key_t>(0),
@@ -409,10 +411,7 @@ int Observe::buildLogPacket(char* buffer)
         if (!shrMem->signal.load())
         {
             std::memset(shrMem->buffer, 0, sizeof(shrMem->buffer));
-            const std::string content = utility::file::displayFileContents(
-                utility::file::FileProperty{LOG_PATHNAME, LOG_FILE_LOCK},
-                utility::file::DisplaySetting{true, maxViewNumOfLines, &log::changeToLogStyle});
-            std::memcpy(shrMem->buffer, content.c_str(), content.length());
+            std::memcpy(shrMem->buffer, contents.c_str(), contents.length());
             shrMem->signal.store(true);
             break;
         }
@@ -420,22 +419,47 @@ int Observe::buildLogPacket(char* buffer)
     }
     shmdt(shm);
 
-    int length = 0;
-    if (tlv::tlvEncode(buffer, length, tlv::TLVValue{.logShmId = shmId}) < 0)
-    {
-        length = 0;
-    }
-    return length;
+    return shmId;
 }
 
-int Observe::buildStopPacket(char* buffer)
+void Observe::printSharedMemory(const int shmId)
 {
-    int length = 0;
-    if (tlv::tlvEncode(buffer, length, tlv::TLVValue{.stopFlag = true}) < 0)
+    void* shm = shmat(shmId, nullptr, 0);
+    if (nullptr == shm)
     {
-        length = 0;
+        throw std::runtime_error("<OBSERVE> Failed to attach shared memory.");
     }
-    return length;
+    SharedMemory* shrMem = reinterpret_cast<SharedMemory*>(shm);
+
+    shrMem->signal.store(true);
+    while (true)
+    {
+        if (shrMem->signal.load())
+        {
+            std::cout << "\r\n" << shrMem->buffer << std::endl;
+            shrMem->signal.store(false);
+            break;
+        }
+        utility::time::millisecondLevelSleep(1);
+    }
+    shmdt(shm);
+    shmctl(shmId, IPC_RMID, nullptr);
+}
+
+std::string Observe::getLogContents()
+{
+    utility::file::ReadWriteGuard guard(utility::file::LockMode::read, LOG_FILE_LOCK);
+    auto contents = utility::file::getFileContents(LOG_PATHNAME, true, maxViewNumOfLines);
+    std::for_each(
+        contents.begin(),
+        contents.end(),
+        [](auto& line)
+        {
+            return log::changeToLogStyle(line);
+        });
+    std::ostringstream os;
+    std::copy(contents.cbegin(), contents.cend(), std::ostream_iterator<std::string>(os, "\n"));
+    return os.str();
 }
 
 //! @brief The operator (<<) overloading of the State enum.
