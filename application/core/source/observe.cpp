@@ -256,104 +256,6 @@ void Observe::interfaceToStop()
     expiryTimer.reset();
 }
 
-void Observe::createObserveServer()
-{
-    using utility::socket::Socket;
-    using utility::common::operator""_bkdrHash;
-
-    tcpServer.onNewConnection = [](utility::socket::TCPSocket* newSocket)
-    {
-        newSocket->onMessageReceived = [newSocket](const std::string& message)
-        {
-            try
-            {
-                char buffer[maxMsgLength] = {'\0'};
-                switch (utility::common::bkdrHash(message.data()))
-                {
-                    case "stop"_bkdrHash:
-                        if (buildStopPacket(buffer) > 0)
-                        {
-                            newSocket->toSend(buffer, sizeof(buffer));
-                            newSocket->setNonBlocking();
-                        }
-                        break;
-                    case "log"_bkdrHash:
-                        if (buildLogPacket(buffer) > 0)
-                        {
-                            newSocket->toSend(buffer, sizeof(buffer));
-                        }
-                        break;
-                    default:
-                        throw std::logic_error("<OBSERVE> Unknown TCP message.");
-                }
-            }
-            catch (std::exception& error)
-            {
-                LOG_WRN(error.what());
-            }
-        };
-    };
-
-    udpServer.onMessageReceived = [&](const std::string& message, const std::string& ip, const std::uint16_t port)
-    {
-        try
-        {
-            char buffer[maxMsgLength] = {'\0'};
-            switch (utility::common::bkdrHash(message.data()))
-            {
-                case "stop"_bkdrHash:
-                    if (buildStopPacket(buffer) > 0)
-                    {
-                        udpServer.toSendTo(buffer, sizeof(buffer), ip, port);
-                        udpServer.setNonBlocking();
-                    }
-                    break;
-                case "log"_bkdrHash:
-                    if (buildLogPacket(buffer) > 0)
-                    {
-                        udpServer.toSendTo(buffer, sizeof(buffer), ip, port);
-                    }
-                    break;
-                default:
-                    throw std::logic_error("<OBSERVE> Unknown UDP message.");
-            }
-        }
-        catch (std::exception& error)
-        {
-            LOG_WRN(error.what());
-        }
-    };
-}
-
-void Observe::startObserving()
-{
-    if (std::unique_lock<std::mutex> lock(mtx); true)
-    {
-        isObserving.store(true);
-        tcpServer.toBind(tcpPort);
-        tcpServer.toListen();
-        tcpServer.toAccept();
-        udpServer.toBind(udpPort);
-        udpServer.toReceiveFrom();
-    }
-}
-
-void Observe::destroyObserveServer()
-{
-    tcpServer.toClose();
-    udpServer.toClose();
-}
-
-void Observe::stopObserving()
-{
-    if (std::unique_lock<std::mutex> lock(mtx); true)
-    {
-        isObserving.store(false);
-        tcpServer.waitIfAlive();
-        udpServer.waitIfAlive();
-    }
-}
-
 tlv::TLVValue Observe::parseTLVPacket(char* buffer, const int length)
 {
     tlv::TLVValue value;
@@ -460,6 +362,104 @@ std::string Observe::getLogContents()
     std::ostringstream os;
     std::copy(contents.cbegin(), contents.cend(), std::ostream_iterator<std::string>(os, "\n"));
     return os.str();
+}
+
+void Observe::createObserveServer()
+{
+    using utility::socket::Socket;
+    using utility::common::operator""_bkdrHash;
+
+    tcpServer.onNewConnection = [](utility::socket::TCPSocket* newSocket)
+    {
+        newSocket->onMessageReceived = [newSocket](const std::string& message)
+        {
+            try
+            {
+                char buffer[maxMsgLength] = {'\0'};
+                switch (utility::common::bkdrHash(message.data()))
+                {
+                    case "stop"_bkdrHash:
+                        if (buildStopPacket(buffer) > 0)
+                        {
+                            newSocket->toSend(buffer, sizeof(buffer));
+                            newSocket->setNonBlocking();
+                        }
+                        break;
+                    case "log"_bkdrHash:
+                        if (buildLogPacket(buffer) > 0)
+                        {
+                            newSocket->toSend(buffer, sizeof(buffer));
+                        }
+                        break;
+                    default:
+                        throw std::logic_error("<OBSERVE> Unknown TCP message.");
+                }
+            }
+            catch (std::exception& error)
+            {
+                LOG_WRN(error.what());
+            }
+        };
+    };
+
+    udpServer.onMessageReceived = [&](const std::string& message, const std::string& ip, const std::uint16_t port)
+    {
+        try
+        {
+            char buffer[maxMsgLength] = {'\0'};
+            switch (utility::common::bkdrHash(message.data()))
+            {
+                case "stop"_bkdrHash:
+                    if (buildStopPacket(buffer) > 0)
+                    {
+                        udpServer.toSendTo(buffer, sizeof(buffer), ip, port);
+                        udpServer.setNonBlocking();
+                    }
+                    break;
+                case "log"_bkdrHash:
+                    if (buildLogPacket(buffer) > 0)
+                    {
+                        udpServer.toSendTo(buffer, sizeof(buffer), ip, port);
+                    }
+                    break;
+                default:
+                    throw std::logic_error("<OBSERVE> Unknown UDP message.");
+            }
+        }
+        catch (std::exception& error)
+        {
+            LOG_WRN(error.what());
+        }
+    };
+}
+
+void Observe::startObserving()
+{
+    if (std::unique_lock<std::mutex> lock(mtx); true)
+    {
+        isObserving.store(true);
+        tcpServer.toBind(tcpPort);
+        tcpServer.toListen();
+        tcpServer.toAccept();
+        udpServer.toBind(udpPort);
+        udpServer.toReceiveFrom();
+    }
+}
+
+void Observe::destroyObserveServer()
+{
+    tcpServer.toClose();
+    udpServer.toClose();
+}
+
+void Observe::stopObserving()
+{
+    if (std::unique_lock<std::mutex> lock(mtx); true)
+    {
+        isObserving.store(false);
+        tcpServer.waitIfAlive();
+        udpServer.waitIfAlive();
+    }
 }
 
 //! @brief The operator (<<) overloading of the State enum.
