@@ -233,6 +233,16 @@ private:
     //! @param buffer - TLV packet buffer
     //! @return buffer length
     static int buildLogPacket(char* buffer);
+    //! @brief Fill the shared memory.
+    //! @param contents - contents to be filled
+    //! @return shm id
+    static int fillSharedMemory(const std::string& contents);
+    //! @brief Print the shared memory.
+    //! @param shmId - shm id
+    static void printSharedMemory(const int shmId);
+    //! @brief Get the log Contents.
+    //! @return log contents
+    static std::string getLogContents();
     //! @brief Maximum number of lines to view log contents.
     static constexpr std::uint32_t maxViewNumOfLines{20};
 

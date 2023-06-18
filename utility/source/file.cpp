@@ -6,14 +6,10 @@
 
 #include "file.hpp"
 #include <filesystem>
-#include <fstream>
-#include <iostream>
-#include <iterator>
-#include <list>
 
 namespace utility::file
 {
-void FileReadWriteLock::readLock()
+void ReadWriteLock::readLock()
 {
     std::shared_lock<std::shared_mutex> rdLock(rwLock);
     if (std::unique_lock<std::mutex> lock(mtx); true)
@@ -28,7 +24,7 @@ void FileReadWriteLock::readLock()
     }
 }
 
-void FileReadWriteLock::readUnlock()
+void ReadWriteLock::readUnlock()
 {
     std::unique_lock<std::mutex> lock(mtx);
     reader.fetch_sub(1);
@@ -37,7 +33,7 @@ void FileReadWriteLock::readUnlock()
     lock.lock();
 }
 
-void FileReadWriteLock::writeLock()
+void ReadWriteLock::writeLock()
 {
     std::unique_lock<std::shared_mutex> wrLock(rwLock);
     if (std::unique_lock<std::mutex> lock(mtx); true)
@@ -52,7 +48,7 @@ void FileReadWriteLock::writeLock()
     }
 }
 
-void FileReadWriteLock::writeUnlock()
+void ReadWriteLock::writeUnlock()
 {
     std::unique_lock<std::mutex> lock(mtx);
     writer.fetch_sub(1);
@@ -61,7 +57,7 @@ void FileReadWriteLock::writeUnlock()
     lock.lock();
 }
 
-FileReadWriteGuard::FileReadWriteGuard(const LockMode mode, FileReadWriteLock& lock) : mode(mode), lock(lock)
+ReadWriteGuard::ReadWriteGuard(const LockMode mode, ReadWriteLock& lock) : mode(mode), lock(lock)
 {
     switch (mode)
     {
@@ -76,7 +72,7 @@ FileReadWriteGuard::FileReadWriteGuard(const LockMode mode, FileReadWriteLock& l
     }
 }
 
-FileReadWriteGuard::~FileReadWriteGuard()
+ReadWriteGuard::~ReadWriteGuard()
 {
     switch (mode)
     {
@@ -143,53 +139,44 @@ void closeFile(std::ofstream& ofs)
     }
 }
 
-//! @brief Display file contents.
-//! @param property - file property
-//! @param setting - display setting
-//! @return contents string
-std::string displayFileContents(const FileProperty& property, const DisplaySetting& setting)
+//! @brief Get the file contents.
+//! @param filename - file path
+//! @param reverse - reverse or not
+//! @param totalRows - number of rows
+//! @return file contents
+std::list<std::string> getFileContents(const std::string& filename, const bool reverse, const std::uint32_t totalRows)
 {
-    FileReadWriteGuard guard(FileReadWriteGuard::LockMode::read, property.lock);
-    std::ifstream ifs = openFile(property.path);
-
-    DisplaySetting::FormatStyle formatStyle = setting.style;
-    if (nullptr == formatStyle)
-    {
-        formatStyle = [](std::string& line) -> const std::string&
-        {
-            return line;
-        };
-    }
+    std::ifstream ifs = openFile(filename);
+    fdLock(ifs, LockMode::read);
 
     std::string line;
-    std::list<std::string> content(0);
+    std::list<std::string> contents(0);
     ifs.seekg(std::ios::beg);
-    if (!setting.isInverted)
+    if (!reverse)
     {
-        while ((content.size() < setting.numOfLines) && std::getline(ifs, line))
+        while ((contents.size() < totalRows) && std::getline(ifs, line))
         {
-            content.emplace_back(formatStyle(line));
+            contents.emplace_back(line);
         }
     }
     else
     {
-        std::ifstream ifsTemp(property.path);
+        std::ifstream ifsTemp(filename);
         const std::uint32_t lineNum = std::count(
                                 std::istreambuf_iterator<char>(ifsTemp), std::istreambuf_iterator<char>(), '\n'),
-                            startLine = (lineNum > setting.numOfLines) ? (lineNum - setting.numOfLines + 1) : 1;
+                            startLine = (lineNum > totalRows) ? (lineNum - totalRows + 1) : 1;
         for (std::uint32_t i = 0; i < (startLine - 1); ++i)
         {
             ifs.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         }
         while (std::getline(ifs, line))
         {
-            content.emplace_front(formatStyle(line));
+            contents.emplace_front(line);
         }
     }
-    std::ostringstream os;
-    std::copy(content.cbegin(), content.cend(), std::ostream_iterator<std::string>(os, "\n"));
 
+    fdUnlock(ifs);
     closeFile(ifs);
-    return os.str();
+    return contents;
 }
 } // namespace utility::file
