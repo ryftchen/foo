@@ -650,7 +650,7 @@ void Command::registerOnConsole(utility::console::Console& console, T& client) c
             int retVal = Console::ReturnCode::success;
             try
             {
-                static constexpr std::uint16_t maxLatency = 500;
+                static constexpr std::uint16_t maxLatency = 200;
                 client.toSend("log");
                 utility::time::millisecondLevelSleep(maxLatency);
             }
