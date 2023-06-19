@@ -204,11 +204,11 @@ private:
     // clang-format off
     //! @brief Mapping table of all viewer options.
     const OptionMap optionDispatcher{
-        // - Option -+------------- Help -------------+-- Build Packet --
-        // ----------+--------------------------------+------------------
+        // - Option -+------------- Help -------------+--- Build Packet ---
+        // ----------+--------------------------------+--------------------
         { "log"      , { "view the log with highlights", &buildLogPacket  }},
         { "stat"     , { "show the stat of the process", &buildStatPacket }}
-        // ----------+--------------------------------+------------------
+        // ----------+--------------------------------+--------------------
     };
     // clang-format on
     //! @brief Build the TLV packet to stop connection.

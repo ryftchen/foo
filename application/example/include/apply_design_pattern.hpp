@@ -250,7 +250,7 @@ public:
         context->set("B", false);
 
         interpreter::output() << context->get("A") << " AND " << context->get("B");
-        interpreter::output() << " = " << exp->interpret(context) << std::endl;
+        interpreter::output() << " = " << exp->interpret(context) << '\n';
 
         std::ostringstream os = std::ostringstream(interpreter::output().str());
         interpreter::output().str("");
@@ -271,7 +271,7 @@ public:
 
         for (; !iter->isDone(); iter->next())
         {
-            iterator::output() << "item value: " << iter->currentItem() << std::endl;
+            iterator::output() << "item value: " << iter->currentItem() << '\n';
         }
 
         std::ostringstream os = std::ostringstream(iterator::output().str());
@@ -325,7 +325,7 @@ public:
         originator->setState(state3);
         caretaker->undo();
 
-        memento::output() << "actual state is " << originator->getState() << std::endl;
+        memento::output() << "actual state is " << originator->getState() << '\n';
 
         std::ostringstream os = std::ostringstream(memento::output().str());
         memento::output().str("");
@@ -345,8 +345,8 @@ public:
         std::shared_ptr<ConcreteObserver> observer1 = std::make_shared<ConcreteObserver>(state1);
         std::shared_ptr<ConcreteObserver> observer2 = std::make_shared<ConcreteObserver>(state2);
 
-        observer::output() << "observer1 state: " << observer1->getState() << std::endl;
-        observer::output() << "observer2 state: " << observer2->getState() << std::endl;
+        observer::output() << "observer1 state: " << observer1->getState() << '\n';
+        observer::output() << "observer2 state: " << observer2->getState() << '\n';
 
         std::shared_ptr<Subject> subject = std::make_shared<ConcreteSubject>();
         subject->attach(observer1);
@@ -354,8 +354,8 @@ public:
         subject->setState(state3);
         subject->notify();
 
-        observer::output() << "observer1 state: " << observer1->getState() << std::endl;
-        observer::output() << "observer2 state: " << observer2->getState() << std::endl;
+        observer::output() << "observer1 state: " << observer1->getState() << '\n';
+        observer::output() << "observer2 state: " << observer2->getState() << '\n';
 
         std::ostringstream os = std::ostringstream(observer::output().str());
         observer::output().str("");
@@ -480,7 +480,7 @@ public:
     static void visitorInstance();
 };
 } // namespace behavioral
-extern void runBehavioral(const std::vector<std::string>& targets);
+extern void runBehavioralTasks(const std::vector<std::string>& targets);
 extern void updateBehavioralTask(const std::string& target);
 
 //! @brief Apply creational.
@@ -507,16 +507,16 @@ public:
         std::shared_ptr<ConcreteFactoryY> factoryY = std::make_shared<ConcreteFactoryY>();
 
         std::unique_ptr<ProductA> p1 = factoryX->createProductA();
-        abstract_factory::output() << "product: " << p1->getName() << std::endl;
+        abstract_factory::output() << "product: " << p1->getName() << '\n';
 
         std::unique_ptr<ProductA> p2 = factoryY->createProductA();
-        abstract_factory::output() << "product: " << p2->getName() << std::endl;
+        abstract_factory::output() << "product: " << p2->getName() << '\n';
 
         std::unique_ptr<ProductB> p3 = factoryX->createProductB();
-        abstract_factory::output() << "product: " << p3->getName() << std::endl;
+        abstract_factory::output() << "product: " << p3->getName() << '\n';
 
         std::unique_ptr<ProductB> p4 = factoryY->createProductB();
-        abstract_factory::output() << "product: " << p4->getName() << std::endl;
+        abstract_factory::output() << "product: " << p4->getName() << '\n';
 
         std::ostringstream os = std::ostringstream(abstract_factory::output().str());
         abstract_factory::output().str("");
@@ -537,12 +537,12 @@ public:
         director.set(std::make_unique<ConcreteBuilderX>());
         director.construct();
         Product product1 = director.get();
-        builder::output() << "1st product parts: " << product1.get() << std::endl;
+        builder::output() << "1st product parts: " << product1.get() << '\n';
 
         director.set(std::make_unique<ConcreteBuilderY>());
         director.construct();
         Product product2 = director.get();
-        builder::output() << "2nd product parts: " << product2.get() << std::endl;
+        builder::output() << "2nd product parts: " << product2.get() << '\n';
 
         std::ostringstream os = std::ostringstream(builder::output().str());
         builder::output().str("");
@@ -561,11 +561,11 @@ public:
         std::shared_ptr<Creator> creator = std::make_shared<ConcreteCreator>();
 
         std::unique_ptr<Product> p1 = creator->createProductA();
-        factory_method::output() << "product: " << p1->getName() << std::endl;
+        factory_method::output() << "product: " << p1->getName() << '\n';
         creator->removeProduct(p1);
 
         std::unique_ptr<Product> p2 = creator->createProductB();
-        factory_method::output() << "product: " << p2->getName() << std::endl;
+        factory_method::output() << "product: " << p2->getName() << '\n';
         creator->removeProduct(p2);
 
         std::ostringstream os = std::ostringstream(factory_method::output().str());
@@ -584,10 +584,10 @@ public:
         Client::init();
 
         std::unique_ptr<Prototype> prototype1 = Client::make(0);
-        prototype::output() << "prototype: " << prototype1->type() << std::endl;
+        prototype::output() << "prototype: " << prototype1->type() << '\n';
 
         std::unique_ptr<Prototype> prototype2 = Client::make(1);
-        prototype::output() << "prototype: " << prototype2->type() << std::endl;
+        prototype::output() << "prototype: " << prototype2->type() << '\n';
 
         Client::remove();
 
@@ -634,7 +634,7 @@ public:
     static void singletonInstance();
 };
 } // namespace creational
-extern void runCreational(const std::vector<std::string>& targets);
+extern void runCreationalTasks(const std::vector<std::string>& targets);
 extern void updateCreationalTask(const std::string& target);
 
 //! @brief Apply structural.
@@ -806,6 +806,6 @@ public:
     static void proxyInstance();
 };
 } // namespace structural
-extern void runStructural(const std::vector<std::string>& targets);
+extern void runStructuralTasks(const std::vector<std::string>& targets);
 extern void updateStructuralTask(const std::string& target);
 } // namespace application::app_dp

@@ -119,7 +119,7 @@ void ArithmeticSolution::divisionMethod(const int dividend, const int divisor)
 
 //! @brief Run arithmetic tasks.
 //! @param targets - vector of target methods
-void runArithmetic(const std::vector<std::string>& targets)
+void runArithmeticTasks(const std::vector<std::string>& targets)
 {
     if (getBit<ArithmeticMethod>().none())
     {
@@ -252,7 +252,7 @@ void DivisorSolution::steinMethod(int a, int b)
 
 //! @brief Run divisor tasks.
 //! @param targets - vector of target methods
-void runDivisor(const std::vector<std::string>& targets)
+void runDivisorTasks(const std::vector<std::string>& targets)
 {
     if (getBit<DivisorMethod>().none())
     {
@@ -407,7 +407,7 @@ void IntegralSolution::monteCarloMethod(const Expression& expr, const double low
 
 //! @brief Run integral tasks.
 //! @param targets - vector of target methods
-void runIntegral(const std::vector<std::string>& targets)
+void runIntegralTasks(const std::vector<std::string>& targets)
 {
     if (getBit<IntegralMethod>().none())
     {
@@ -576,7 +576,7 @@ void PrimeSolution::eulerMethod(const std::uint32_t max)
 
 //! @brief Run prime tasks.
 //! @param targets - vector of target methods
-void runPrime(const std::vector<std::string>& targets)
+void runPrimeTasks(const std::vector<std::string>& targets)
 {
     if (getBit<PrimeMethod>().none())
     {

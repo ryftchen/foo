@@ -189,39 +189,37 @@ public:
         DLL dll = nullptr;
         createDll(&dll);
         dllInsert(dll, 0, &meta[0]);
-        output.flush() << "insert (0): {" << meta[0].id << ", " << meta[0].name << '}' << std::endl;
+        output.flush() << "insert (0): {" << meta[0].id << ", " << meta[0].name << "}\n";
         dllInsert(dll, 0, &meta[1]);
-        output.flush() << "insert (0): {" << meta[1].id << ", " << meta[1].name << '}' << std::endl;
+        output.flush() << "insert (0): {" << meta[1].id << ", " << meta[1].name << "}\n";
         dllInsert(dll, 1, &meta[2]);
-        output.flush() << "insert (1): {" << meta[2].id << ", " << meta[2].name << '}' << std::endl;
+        output.flush() << "insert (1): {" << meta[2].id << ", " << meta[2].name << "}\n";
         dllDelete(dll, 2);
-        output.flush() << "delete (2)" << std::endl;
+        output.flush() << "delete (2)\n";
 
         dllInsertFirst(dll, &meta[0]);
-        output.flush() << "insert first: {" << meta[0].id << ", " << meta[0].name << '}' << std::endl;
+        output.flush() << "insert first: {" << meta[0].id << ", " << meta[0].name << "}\n";
         dllInsertLast(dll, &meta[metaSize - 1]);
-        output.flush() << "insert last: {" << meta[metaSize - 1].id << ", " << meta[metaSize - 1].name << '}'
-                       << std::endl;
+        output.flush() << "insert last: {" << meta[metaSize - 1].id << ", " << meta[metaSize - 1].name << "}\n";
         pVal = static_cast<Meta*>(dllGetFirst(dll));
-        output.flush() << "get first: {" << pVal->id << ", " << pVal->name << '}' << std::endl;
+        output.flush() << "get first: {" << pVal->id << ", " << pVal->name << "}\n";
         pVal = static_cast<Meta*>(dllGetLast(dll));
-        output.flush() << "get last: {" << pVal->id << ", " << pVal->name << '}' << std::endl;
+        output.flush() << "get last: {" << pVal->id << ", " << pVal->name << "}\n";
         dllDeleteFirst(dll);
-        output.flush() << "delete first" << std::endl;
+        output.flush() << "delete first\n";
         dllDeleteLast(dll);
-        output.flush() << "delete last" << std::endl;
+        output.flush() << "delete last\n";
 
-        output.flush() << "whether it is empty: " << dllIsEmpty(dll) << std::endl;
-        output.flush() << "size: " << dllSize(dll) << std::endl;
+        output.flush() << "whether it is empty: " << dllIsEmpty(dll) << '\n';
+        output.flush() << "size: " << dllSize(dll) << '\n';
         for (int i = 0; i < dllSize(dll); ++i)
         {
             pVal = static_cast<Meta*>(dllGet(dll, i));
-            output.flush() << "get (" << i << "): {" << pVal->id << ", " << pVal->name << '}' << std::endl;
+            output.flush() << "get (" << i << "): {" << pVal->id << ", " << pVal->name << "}\n";
         }
         destroyDll(&dll);
 
-        std::ostringstream os = std::ostringstream(output.flush().str());
-        return os;
+        return std::ostringstream(output.flush().str());
     }
     //! @brief Stack.
     //! @return procedure output
@@ -247,27 +245,26 @@ public:
         for (int i = 0; i < (metaSize - 1); ++i)
         {
             stackPush(stacks, &meta[i]);
-            output.flush() << "push: {" << meta[i].id << ", " << meta[i].name << '}' << std::endl;
+            output.flush() << "push: {" << meta[i].id << ", " << meta[i].name << "}\n";
         }
 
         pVal = static_cast<Meta*>(stackPop(stacks));
-        output.flush() << "pop: {" << pVal->id << ", " << pVal->name << '}' << std::endl;
+        output.flush() << "pop: {" << pVal->id << ", " << pVal->name << "}\n";
         pVal = static_cast<Meta*>(stackTop(stacks));
-        output.flush() << "top: {" << pVal->id << ", " << pVal->name << '}' << std::endl;
+        output.flush() << "top: {" << pVal->id << ", " << pVal->name << "}\n";
         stackPush(stacks, &meta[metaSize - 1]);
-        output.flush() << "push: {" << meta[metaSize - 1].id << ", " << meta[metaSize - 1].name << '}' << std::endl;
+        output.flush() << "push: {" << meta[metaSize - 1].id << ", " << meta[metaSize - 1].name << "}\n";
 
-        output.flush() << "whether it is empty: " << stackIsEmpty(stacks) << std::endl;
-        output.flush() << "size: " << stackSize(stacks) << std::endl;
+        output.flush() << "whether it is empty: " << stackIsEmpty(stacks) << '\n';
+        output.flush() << "size: " << stackSize(stacks) << '\n';
         while (!stackIsEmpty(stacks))
         {
             pVal = static_cast<Meta*>(stackPop(stacks));
-            output.flush() << "pop: {" << pVal->id << ", " << pVal->name << '}' << std::endl;
+            output.flush() << "pop: {" << pVal->id << ", " << pVal->name << "}\n";
         }
         destroyStack(&stacks);
 
-        std::ostringstream os = std::ostringstream(output.flush().str());
-        return os;
+        return std::ostringstream(output.flush().str());
     }
     //! @brief Queue.
     //! @return procedure output
@@ -293,27 +290,26 @@ public:
         for (int i = 0; i < (metaSize - 1); ++i)
         {
             queuePush(queues, &meta[i]);
-            output.flush() << "push: {" << meta[i].id << ", " << meta[i].name << '}' << std::endl;
+            output.flush() << "push: {" << meta[i].id << ", " << meta[i].name << "}\n";
         }
 
         pVal = static_cast<Meta*>(queuePop(queues));
-        output.flush() << "pop: {" << pVal->id << ", " << pVal->name << '}' << std::endl;
+        output.flush() << "pop: {" << pVal->id << ", " << pVal->name << "}\n";
         pVal = static_cast<Meta*>(queueFront(queues));
-        output.flush() << "front: {" << pVal->id << ", " << pVal->name << '}' << std::endl;
+        output.flush() << "front: {" << pVal->id << ", " << pVal->name << "}\n";
         queuePush(queues, &meta[metaSize - 1]);
-        output.flush() << "push: {" << meta[metaSize - 1].id << ", " << meta[metaSize - 1].name << '}' << std::endl;
+        output.flush() << "push: {" << meta[metaSize - 1].id << ", " << meta[metaSize - 1].name << "}\n";
 
-        output.flush() << "whether it is empty: " << queueIsEmpty(queues) << std::endl;
-        output.flush() << "size: " << queueSize(queues) << std::endl;
+        output.flush() << "whether it is empty: " << queueIsEmpty(queues) << '\n';
+        output.flush() << "size: " << queueSize(queues) << '\n';
         while (!queueIsEmpty(queues))
         {
             pVal = static_cast<Meta*>(queuePop(queues));
-            output.flush() << "pop: {" << pVal->id << ", " << pVal->name << '}' << std::endl;
+            output.flush() << "pop: {" << pVal->id << ", " << pVal->name << "}\n";
         }
         destroyQueue(&queues);
 
-        std::ostringstream os = std::ostringstream(output.flush().str());
-        return os;
+        return std::ostringstream(output.flush().str());
     }
 };
 
@@ -334,7 +330,7 @@ public:
     static void queueInstance();
 };
 } // namespace linear
-extern void runLinear(const std::vector<std::string>& targets);
+extern void runLinearTasks(const std::vector<std::string>& targets);
 extern void updateLinearTask(const std::string& target);
 
 //! @brief Apply tree.
@@ -380,7 +376,7 @@ public:
 
         output.flush() << "\nminimum: " << getMinimum(root)->key;
         output.flush() << "\nmaximum: " << getMaximum(root)->key;
-        output.flush() << "\ntree verbose: " << std::endl;
+        output.flush() << "\ntree verbose:\n";
         output.printBSTree(root, root->key, 0);
 
         constexpr int deleteNode = 3;
@@ -388,12 +384,11 @@ public:
         root = bsTreeDelete(root, deleteNode);
         output.flush() << "\nin-order traversal: ";
         output.inorderBSTree(root);
-        output.flush() << std::endl;
+        output.flush() << '\n';
 
         destroyBSTree(root);
 
-        std::ostringstream os = std::ostringstream(output.flush().str());
-        return os;
+        return std::ostringstream(output.flush().str());
     }
     //! @brief Adelson-Velsky-Landis.
     //! @return procedure output
@@ -431,7 +426,7 @@ public:
         output.flush() << "\nheight: " << getHeight(root);
         output.flush() << "\nminimum: " << getMinimum(root)->key;
         output.flush() << "\nmaximum: " << getMaximum(root)->key;
-        output.flush() << "\ntree verbose: " << std::endl;
+        output.flush() << "\ntree verbose:\n";
         output.printAVLTree(root, root->key, 0);
 
         constexpr int deleteNode = 8;
@@ -441,13 +436,12 @@ public:
         output.flush() << "\nheight: " << getHeight(root);
         output.flush() << "\nin-order traversal: ";
         output.inorderAVLTree(root);
-        output.flush() << "\ntree verbose: " << std::endl;
+        output.flush() << "\ntree verbose:\n";
         output.printAVLTree(root, root->key, 0);
 
         destroyAVLTree(root);
 
-        std::ostringstream os = std::ostringstream(output.flush().str());
-        return os;
+        return std::ostringstream(output.flush().str());
     }
     //! @brief Splay.
     //! @return procedure output
@@ -482,19 +476,18 @@ public:
 
         output.flush() << "\nminimum: " << getMinimum(root)->key;
         output.flush() << "\nmaximum: " << getMaximum(root)->key;
-        output.flush() << "\ntree verbose: " << std::endl;
+        output.flush() << "\ntree verbose:\n";
         output.printSplayTree(root, root->key, 0);
 
         constexpr int splayNode = 30;
         output.flush() << "splay node as root node: " << splayNode;
-        output.flush() << "\ntree verbose: " << std::endl;
+        output.flush() << "\ntree verbose:\n";
         root = splayTreeSplay(root, splayNode);
         output.printSplayTree(root, root->key, 0);
 
         destroySplayTree(root);
 
-        std::ostringstream os = std::ostringstream(output.flush().str());
-        return os;
+        return std::ostringstream(output.flush().str());
     }
 };
 
@@ -515,6 +508,6 @@ public:
     static void splayInstance();
 };
 } // namespace tree
-extern void runTree(const std::vector<std::string>& targets);
+extern void runTreeTasks(const std::vector<std::string>& targets);
 extern void updateTreeTask(const std::string& target);
 } // namespace application::app_ds

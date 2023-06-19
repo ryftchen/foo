@@ -192,7 +192,7 @@ std::ostream& operator<<(std::ostream& os, const ArgumentRegister& argument)
         }
     }
 
-    os << std::endl;
+    os << '\n';
     return os;
 }
 
@@ -354,11 +354,11 @@ auto operator<<(std::ostream& os, const Argument& parser) -> std::ostream&
     {
         os << '[' << argument.names.front() << "...] ";
     }
-    os << '\n' << std::endl;
+    os << "\n\n";
 
     if (!parser.optionalArguments.empty())
     {
-        os << "Optional:" << std::endl;
+        os << "Optional:\n";
     }
 
     for (const auto& argument : parser.optionalArguments)
@@ -366,11 +366,11 @@ auto operator<<(std::ostream& os, const Argument& parser) -> std::ostream&
         os.width(longestArgLength);
         os << argument;
     }
-    os << std::endl;
+    os << '\n';
 
     if (!parser.nonOptionalArguments.empty())
     {
-        os << "Non-optional:" << std::endl;
+        os << "Non-optional:\n";
     }
 
     for (const auto& argument : parser.nonOptionalArguments)

@@ -210,7 +210,7 @@ void BehavioralPattern::visitorInstance()
 
 //! @brief Run behavioral tasks.
 //! @param targets - vector of target instances
-void runBehavioral(const std::vector<std::string>& targets)
+void runBehavioralTasks(const std::vector<std::string>& targets)
 {
     if (getBit<BehavioralInstance>().none())
     {
@@ -409,7 +409,7 @@ void CreationalPattern::singletonInstance()
 
 //! @brief Run creational tasks.
 //! @param targets - vector of target instances
-void runCreational(const std::vector<std::string>& targets)
+void runCreationalTasks(const std::vector<std::string>& targets)
 {
     if (getBit<CreationalInstance>().none())
     {
@@ -598,7 +598,7 @@ void StructuralPattern::proxyInstance()
 
 //! @brief Run structural tasks.
 //! @param targets - vector of target instances
-void runStructural(const std::vector<std::string>& targets)
+void runStructuralTasks(const std::vector<std::string>& targets)
 {
     if (getBit<StructuralInstance>().none())
     {

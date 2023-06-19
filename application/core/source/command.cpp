@@ -404,7 +404,7 @@ void Command::printHelpMessage() const
 {
     if (dispatchedTask.generalTask.empty())
     {
-        std::cout << program.help().str();
+        std::cout << program.help().str() << std::flush;
         return;
     }
 
@@ -579,14 +579,14 @@ void Command::printVersionInfo() const
     versionStr += " \"; tput sgr0; echo ";
     versionStr += '\"' + std::string{copyrightInfo} + '\"';
 
-    COMMON_PRINT("%s", utility::common::executeCommand(versionStr).c_str());
+    std::cout << utility::common::executeCommand(versionStr) << std::flush;
 }
 
 void Command::enterConsoleMode() const
 {
     try
     {
-        COMMON_PRINT("%s", utility::common::executeCommand(("tput bel; echo " + getIconBanner())).c_str());
+        std::cout << utility::common::executeCommand(("tput bel; echo " + getIconBanner())) << std::flush;
 
         using utility::console::Console;
         using utility::socket::TCPSocket;
