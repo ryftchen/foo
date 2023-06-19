@@ -434,17 +434,17 @@ private:
         std::string out(text);
         out.insert(1, ".");
         std::cout << "\r\nπ " << textLen << " digits:\n"
-                  << out.substr(0, std::min(textLen, maxNumPerLineOfPrint)) << std::endl;
+                  << out.substr(0, std::min(textLen, maxNumPerLineOfPrint)) << '\n';
         if (textLen > maxNumPerLineOfPrint)
         {
-            std::cout << "...\n...\n..." << std::endl;
+            std::cout << "...\n...\n...\n";
             if (textLen > maxNumPerLineOfPrint)
             {
                 std::cout
                     << ((textLen > (maxNumPerLineOfPrint * 2))
                             ? out.substr(out.length() - maxNumPerLineOfPrint, out.length())
                             : out.substr(maxNumPerLineOfPrint + 1, out.length()))
-                    << std::endl;
+                    << '\n';
             }
         }
         std::cout << std::endl;
@@ -459,7 +459,7 @@ private:
     }
 };
 } // namespace match
-extern void runMatch(const std::vector<std::string>& targets);
+extern void runMatchTasks(const std::vector<std::string>& targets);
 extern void updateMatchTask(const std::string& target);
 
 //! @brief Apply notation.
@@ -504,7 +504,7 @@ private:
     const std::string_view infixNotation;
 };
 } // namespace notation
-extern void runNotation(const std::vector<std::string>& targets);
+extern void runNotationTasks(const std::vector<std::string>& targets);
 extern void updateNotationTask(const std::string& target);
 
 //! @brief Apply optimal.
@@ -602,7 +602,7 @@ struct FuncMapHash
     }
 };
 } // namespace optimal
-extern void runOptimal(const std::vector<std::string>& targets);
+extern void runOptimalTasks(const std::vector<std::string>& targets);
 extern void updateOptimalTask(const std::string& target);
 
 //! @brief Apply search.
@@ -822,7 +822,7 @@ private:
     }
 };
 } // namespace search
-extern void runSearch(const std::vector<std::string>& targets);
+extern void runSearchTasks(const std::vector<std::string>& targets);
 extern void updateSearchTask(const std::string& target);
 
 //! @brief Apply sort.
@@ -1056,7 +1056,7 @@ private:
     }
 };
 } // namespace sort
-extern void runSort(const std::vector<std::string>& targets);
+extern void runSortTasks(const std::vector<std::string>& targets);
 extern void updateSortTask(const std::string& target);
 } // namespace application::app_algo
 

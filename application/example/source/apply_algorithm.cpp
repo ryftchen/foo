@@ -179,7 +179,7 @@ void MatchSolution::sundayMethod(
 
 //! @brief Run match tasks.
 //! @param targets - vector of target methods
-void runMatch(const std::vector<std::string>& targets)
+void runMatchTasks(const std::vector<std::string>& targets)
 {
     if (getBit<MatchMethod>().none())
     {
@@ -309,7 +309,7 @@ void NotationSolution::postfixMethod(const std::string& infixNotation)
 
 //! @brief Run notation tasks.
 //! @param targets - vector of target methods
-void runNotation(const std::vector<std::string>& targets)
+void runNotationTasks(const std::vector<std::string>& targets)
 {
     if (getBit<NotationMethod>().none())
     {
@@ -446,7 +446,7 @@ void OptimalSolution::geneticMethod(const Function& func, const double left, con
 
 //! @brief Run optimal tasks.
 //! @param targets - vector of target methods
-void runOptimal(const std::vector<std::string>& targets)
+void runOptimalTasks(const std::vector<std::string>& targets)
 {
     if (getBit<OptimalMethod>().none())
     {
@@ -627,7 +627,7 @@ void SearchSolution::fibonacciMethod(const double* const array, const std::uint3
 
 //! @brief Run search tasks.
 //! @param targets - vector of target methods
-void runSearch(const std::vector<std::string>& targets)
+void runSearchTasks(const std::vector<std::string>& targets)
 {
     if (getBit<SearchMethod>().none())
     {
@@ -879,7 +879,7 @@ void SortSolution::radixMethod(int* const array, const std::uint32_t length)
 
 //! @brief Run sort tasks.
 //! @param targets - vector of target methods
-void runSort(const std::vector<std::string>& targets)
+void runSortTasks(const std::vector<std::string>& targets)
 {
     if (getBit<SortMethod>().none())
     {

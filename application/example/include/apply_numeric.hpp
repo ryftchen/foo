@@ -307,7 +307,7 @@ private:
     const int integer2;
 };
 } // namespace arithmetic
-extern void runArithmetic(const std::vector<std::string>& targets);
+extern void runArithmeticTasks(const std::vector<std::string>& targets);
 extern void updateArithmeticTask(const std::string& target);
 
 //! @brief Apply divisor.
@@ -405,7 +405,7 @@ private:
     const int integer2;
 };
 } // namespace divisor
-extern void runDivisor(const std::vector<std::string>& targets);
+extern void runDivisorTasks(const std::vector<std::string>& targets);
 extern void updateDivisorTask(const std::string& target);
 
 //! @brief Apply integral.
@@ -507,7 +507,7 @@ struct ExprMapHash
     }
 };
 } // namespace integral
-extern void runIntegral(const std::vector<std::string>& targets);
+extern void runIntegralTasks(const std::vector<std::string>& targets);
 extern void updateIntegralTask(const std::string& target);
 
 //! @brief Apply prime.
@@ -600,6 +600,6 @@ private:
     const std::uint32_t maxPositiveInteger;
 };
 } // namespace prime
-extern void runPrime(const std::vector<std::string>& targets);
+extern void runPrimeTasks(const std::vector<std::string>& targets);
 extern void updatePrimeTask(const std::string& target);
 } // namespace application::app_num

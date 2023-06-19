@@ -58,11 +58,11 @@ public:
     {
         if (canHandle())
         {
-            output() << "handled by concrete handler 1" << std::endl;
+            output() << "handled by concrete handler 1\n";
         }
         else
         {
-            output() << "cannot be handled by handler 1" << std::endl;
+            output() << "cannot be handled by handler 1\n";
             Handler::handleRequest();
         }
     }
@@ -83,11 +83,11 @@ public:
     {
         if (canHandle())
         {
-            output() << "handled by handler 2" << std::endl;
+            output() << "handled by handler 2\n";
         }
         else
         {
-            output() << "cannot be handled by handler 2" << std::endl;
+            output() << "cannot be handled by handler 2\n";
             Handler::handleRequest();
         }
     }
@@ -104,7 +104,7 @@ class Receiver
 {
 public:
     //! @brief Perform the operations associated with carrying out the request.
-    static void action() { output() << "receiver: execute action" << std::endl; }
+    static void action() { output() << "receiver: execute action\n"; }
 };
 
 //! @brief Implement the execution in command.
@@ -442,14 +442,14 @@ public:
     //! @param msg - sending message
     void send(const std::string& msg) override
     {
-        output() << "message \"" << msg << "\" sent by colleague " << id << std::endl;
+        output() << "message \"" << msg << "\" sent by colleague " << id << '\n';
         mediator.lock()->distribute(shared_from_this(), msg);
     }
     //! @brief Receive message.
     //! @param msg - receiving message
     void receive(const std::string& msg) override
     {
-        output() << "message \"" << msg << "\" received by colleague " << id << std::endl;
+        output() << "message \"" << msg << "\" received by colleague " << id << '\n';
     }
 };
 
@@ -532,7 +532,7 @@ public:
     //! @param s - target state
     void setState(const int s)
     {
-        output() << "set state to " << s << std::endl;
+        output() << "set state to " << s << '\n';
         state = s;
     }
     //! @brief Get the state of originator.
@@ -576,7 +576,7 @@ public:
     //! @brief Save the current state to history.
     void save()
     {
-        output() << "save state" << std::endl;
+        output() << "save state\n";
         history.emplace_back(originator->createMemento());
     }
     //! @brief Undo the last state.
@@ -584,13 +584,13 @@ public:
     {
         if (history.empty())
         {
-            output() << "unable to undo state" << std::endl;
+            output() << "unable to undo state\n";
             return;
         }
 
         std::shared_ptr<Memento> memento = history.back();
         originator->setMemento(memento);
-        output() << "undo state" << std::endl;
+        output() << "undo state\n";
 
         history.pop_back();
         memento.reset();
@@ -680,7 +680,7 @@ public:
     void update(const std::shared_ptr<Subject>& subject) override
     {
         observerState = subject->getState();
-        output() << "observer state updated" << std::endl;
+        output() << "observer state updated\n";
     }
 
 private:
@@ -734,7 +734,7 @@ public:
     ~ConcreteStateA() override = default;
 
     //! @brief Handle in the state.
-    void handle() override { output() << "state A handled" << std::endl; }
+    void handle() override { output() << "state A handled\n"; }
 };
 
 //! @brief The concrete state.
@@ -745,7 +745,7 @@ public:
     ~ConcreteStateB() override = default;
 
     //! @brief Handle in the state.
-    void handle() override { output() << "state B handled" << std::endl; }
+    void handle() override { output() << "state B handled\n"; }
 };
 
 //! @brief Interest in clients.
@@ -801,7 +801,7 @@ public:
     ~ConcreteStrategyA() override = default;
 
     //! @brief The interface of the algorithm.
-    void algorithmInterface() override { output() << "concrete strategy A" << std::endl; }
+    void algorithmInterface() override { output() << "concrete strategy A\n"; }
 };
 
 //! @brief The concrete strategy.
@@ -812,7 +812,7 @@ public:
     ~ConcreteStrategyB() override = default;
 
     //! @brief The interface of the algorithm.
-    void algorithmInterface() override { output() << "concrete strategy B" << std::endl; }
+    void algorithmInterface() override { output() << "concrete strategy B\n"; }
 };
 
 //! @brief Maintain reference to the strategy object.
@@ -866,9 +866,9 @@ public:
     ~ConcreteClass() override = default;
 
     //! @brief The primitive operation 1.
-    void primitiveOperation1() override { output() << "primitive operation 1" << std::endl; }
+    void primitiveOperation1() override { output() << "primitive operation 1\n"; }
     //! @brief The primitive operation 2.
-    void primitiveOperation2() override { output() << "primitive operation 2" << std::endl; }
+    void primitiveOperation2() override { output() << "primitive operation 2\n"; }
 };
 } // namespace template_method
 
@@ -906,12 +906,12 @@ public:
     //! @brief Visit element A.
     void visitElementA(const std::shared_ptr<ConcreteElementA>& /*element*/) override
     {
-        output() << "concrete visitor 1: element A visited" << std::endl;
+        output() << "concrete visitor 1: element A visited\n";
     }
     //! @brief Visit element B.
     void visitElementB(const std::shared_ptr<ConcreteElementB>& /*element*/) override
     {
-        output() << "concrete visitor 1: element B visited" << std::endl;
+        output() << "concrete visitor 1: element B visited\n";
     }
 };
 
@@ -925,12 +925,12 @@ public:
     //! @brief Visit element A.
     void visitElementA(const std::shared_ptr<ConcreteElementA>& /*element*/) override
     {
-        output() << "concrete visitor 2: element A visited" << std::endl;
+        output() << "concrete visitor 2: element A visited\n";
     }
     //! @brief Visit element B.
     void visitElementB(const std::shared_ptr<ConcreteElementB>& /*element*/) override
     {
-        output() << "concrete visitor 2: element B visited" << std::endl;
+        output() << "concrete visitor 2: element B visited\n";
     }
 };
 

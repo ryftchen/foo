@@ -23,7 +23,7 @@
             str;                                                              \
         })
 //! @brief Format as a string and printing.
-#define COMMON_PRINT(format, args...) std::cout << COMMON_FORMAT_TO_STRING(format, ##args)
+#define COMMON_PRINT(format, args...) std::cout << COMMON_FORMAT_TO_STRING(format, ##args) << std::flush
 
 //! @brief Common-interface-related functions in the utility module.
 namespace utility::common

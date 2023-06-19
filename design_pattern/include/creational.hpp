@@ -453,7 +453,7 @@ public:
         }
     }
     //! @brief Tell external.
-    static void tell() { output() << "this is singleton" << std::endl; }
+    static void tell() { output() << "this is singleton\n"; }
 
 private:
     //! @brief Construct a new Singleton object.

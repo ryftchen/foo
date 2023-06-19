@@ -35,7 +35,7 @@ class Adaptee
 {
 public:
     //! @brief The specific request.
-    static void specificRequest() { output() << "specific request" << std::endl; }
+    static void specificRequest() { output() << "specific request\n"; }
 };
 
 //! @brief Delegate the call to an adaptee when getting a method call.
@@ -81,7 +81,7 @@ public:
     ~ConcreteImplementorA() override = default;
 
     //! @brief Implemented action.
-    void action() override { output() << "concrete implementor A" << std::endl; }
+    void action() override { output() << "concrete implementor A\n"; }
 };
 
 //! @brief The concrete implementor.
@@ -92,7 +92,7 @@ public:
     ~ConcreteImplementorB() override = default;
 
     //! @brief Implemented action.
-    void action() override { output() << "concrete implementor B" << std::endl; }
+    void action() override { output() << "concrete implementor B\n"; }
 };
 
 //! @brief The interface for abstraction.
@@ -206,7 +206,7 @@ public:
     ~Leaf() override = default;
 
     //! @brief Execute operation.
-    void operation() override { output() << "leaf " << id << " operation" << std::endl; }
+    void operation() override { output() << "leaf " << id << " operation\n"; }
 
 private:
     //! @brief Leaf node id.
@@ -238,7 +238,7 @@ public:
     ~ConcreteComponent() override = default;
 
     //! @brief The related operation.
-    void operation() override { output() << "concrete component operation" << std::endl; }
+    void operation() override { output() << "concrete component operation\n"; }
 };
 
 //! @brief Reference to the component. Add responsibilities to the component.
@@ -271,7 +271,7 @@ public:
     void operation() override
     {
         Decorator::operation();
-        output() << "decorator A" << std::endl;
+        output() << "decorator A\n";
     }
 };
 
@@ -287,7 +287,7 @@ public:
     void operation() override
     {
         Decorator::operation();
-        output() << "decorator B" << std::endl;
+        output() << "decorator B\n";
     }
 };
 } // namespace decorator
@@ -302,7 +302,7 @@ class SubsystemA
 {
 public:
     //! @brief The sub-operation.
-    static void suboperation() { output() << "subsystem A method" << std::endl; }
+    static void suboperation() { output() << "subsystem A method\n"; }
 };
 
 //! @brief Implement complex subsystem functionality.
@@ -310,7 +310,7 @@ class SubsystemB
 {
 public:
     //! @brief The sub-operation.
-    static void suboperation() { output() << "subsystem B method" << std::endl; }
+    static void suboperation() { output() << "subsystem B method\n"; }
 };
 
 //! @brief Implement complex subsystem functionality.
@@ -318,7 +318,7 @@ class SubsystemC
 {
 public:
     //! @brief The sub-operation.
-    static void suboperation() { output() << "subsystem C method" << std::endl; }
+    static void suboperation() { output() << "subsystem C method\n"; }
 };
 
 //! @brief Delegate client requests to appropriate subsystem and unified interface.
@@ -374,7 +374,7 @@ public:
     ~UnsharedConcreteFlyweight() override = default;
 
     //! @brief The related operation.
-    void operation() override { output() << "unshared flyweight with state " << state << std::endl; }
+    void operation() override { output() << "unshared flyweight with state " << state << '\n'; }
 
 private:
     //! @brief Intrinsic state.
@@ -392,7 +392,7 @@ public:
     ~ConcreteFlyweight() override = default;
 
     //! @brief The related operation.
-    void operation() override { output() << "concrete flyweight with state " << state << std::endl; }
+    void operation() override { output() << "concrete flyweight with state " << state << '\n'; }
 
 private:
     //! @brief Intrinsic state.
@@ -457,7 +457,7 @@ class RealSubject : public Subject
 {
 public:
     //! @brief The specific request.
-    void request() override { output() << "real subject request" << std::endl; }
+    void request() override { output() << "real subject request\n"; }
 };
 
 //! @brief Let the proxy access the real subject.
