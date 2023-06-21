@@ -29,8 +29,8 @@ Socket::Socket(const Type socketType, const int socketId)
 
 void Socket::toClose() const
 {
-    shutdown(sock, SHUT_RDWR);
-    close(sock);
+    ::shutdown(sock, ::SHUT_RDWR);
+    ::close(sock);
 }
 
 std::string Socket::getTransportAddress() const
@@ -40,7 +40,7 @@ std::string Socket::getTransportAddress() const
 
 int Socket::getTransportPort() const
 {
-    return ntohs(sockAddr.sin_port);
+    return ::ntohs(sockAddr.sin_port);
 }
 
 int Socket::getFileDescriptor() const
@@ -61,40 +61,39 @@ void Socket::waitIfAlive()
     }
 }
 
-std::string Socket::ipString(const sockaddr_in& addr)
+std::string Socket::ipString(const ::sockaddr_in& addr)
 {
-    char ip[INET_ADDRSTRLEN];
-    ip[0] = '\0';
-    inet_ntop(AF_INET, &(addr.sin_addr), ip, INET_ADDRSTRLEN);
+    char ip[INET_ADDRSTRLEN + 1] = {'\0'};
+    ::inet_ntop(AF_INET, &(addr.sin_addr), ip, INET_ADDRSTRLEN);
 
     return std::string{ip};
 }
 
 void Socket::setTimeout(const int microseconds) const
 {
-    struct timeval tv
+    struct ::timeval tv
     {
     };
     tv.tv_sec = 0;
     tv.tv_usec = microseconds;
 
-    setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, reinterpret_cast<char*>(&tv), sizeof(tv));
-    setsockopt(sock, SOL_SOCKET, SO_SNDTIMEO, reinterpret_cast<char*>(&tv), sizeof(tv));
+    ::setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, reinterpret_cast<char*>(&tv), sizeof(tv));
+    ::setsockopt(sock, SOL_SOCKET, SO_SNDTIMEO, reinterpret_cast<char*>(&tv), sizeof(tv));
 }
 
-void TCPSocket::setAddress(const sockaddr_in& addr)
+void TCPSocket::setAddress(const ::sockaddr_in& addr)
 {
     sockAddr = addr;
 }
 
-sockaddr_in TCPSocket::getAddress() const
+::sockaddr_in TCPSocket::getAddress() const
 {
     return sockAddr;
 }
 
 int TCPSocket::toSend(const char* bytes, const std::size_t length)
 {
-    return send(sock, bytes, length, 0);
+    return ::send(sock, bytes, length, 0);
 }
 
 int TCPSocket::toSend(const std::string& message)
@@ -104,7 +103,7 @@ int TCPSocket::toSend(const std::string& message)
 
 void TCPSocket::toConnect(const std::string& ip, const std::uint16_t port, const std::function<void()> onConnected)
 {
-    struct addrinfo hints
+    struct ::addrinfo hints
     {
     }, *res, *it;
     std::memset(&hints, 0, sizeof(hints));
@@ -112,10 +111,10 @@ void TCPSocket::toConnect(const std::string& ip, const std::uint16_t port, const
     hints.ai_socktype = SOCK_STREAM;
 
     int status = 0;
-    if ((status = getaddrinfo(ip.c_str(), nullptr, &hints, &res)) != 0)
+    if ((status = ::getaddrinfo(ip.c_str(), nullptr, &hints, &res)) != 0)
     {
         throw std::runtime_error(
-            "<SOCKET> Invalid address, status: " + std::string(gai_strerror(status))
+            "<SOCKET> Invalid address, status: " + std::string(::gai_strerror(status))
             + ", errno: " + std::to_string(errno) + '.');
     }
 
@@ -123,19 +122,18 @@ void TCPSocket::toConnect(const std::string& ip, const std::uint16_t port, const
     {
         if (AF_INET == it->ai_family)
         {
-            std::memcpy(static_cast<void*>(&sockAddr), static_cast<void*>(it->ai_addr), sizeof(sockaddr_in));
+            std::memcpy(static_cast<void*>(&sockAddr), static_cast<void*>(it->ai_addr), sizeof(::sockaddr_in));
             break;
         }
     }
-
-    freeaddrinfo(res);
+    ::freeaddrinfo(res);
 
     sockAddr.sin_family = AF_INET;
-    sockAddr.sin_port = htons(port);
+    sockAddr.sin_port = ::htons(port);
     sockAddr.sin_addr.s_addr = static_cast<std::uint32_t>(sockAddr.sin_addr.s_addr);
 
     setBlocking();
-    if (connect(sock, reinterpret_cast<const sockaddr*>(&sockAddr), sizeof(sockaddr_in)) == -1)
+    if (::connect(sock, reinterpret_cast<const sockaddr*>(&sockAddr), sizeof(::sockaddr_in)) == -1)
     {
         throw std::runtime_error("<SOCKET> Could not connect to the socket, errno: " + std::to_string(errno) + '.');
     }
@@ -159,10 +157,10 @@ void TCPSocket::toReceive(const bool detach)
 
 void TCPSocket::toRecv(TCPSocket* socket)
 {
-    char tempBuffer[socket->bufferSize];
+    char tempBuffer[socket->bufferSize + 1];
     tempBuffer[0] = '\0';
     int messageLength = 0;
-    while ((messageLength = recv(socket->sock, tempBuffer, socket->bufferSize, 0)) > 0)
+    while ((messageLength = ::recv(socket->sock, tempBuffer, socket->bufferSize, 0)) > 0)
     {
         tempBuffer[messageLength] = '\0';
         if (socket->onMessageReceived)
@@ -190,23 +188,23 @@ void TCPSocket::toRecv(TCPSocket* socket)
 TCPServer::TCPServer() : Socket(tcp)
 {
     int opt1 = 1, opt2 = 0;
-    setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &opt1, sizeof(int));
-    setsockopt(sock, SOL_SOCKET, SO_REUSEPORT, &opt2, sizeof(int));
+    ::setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &opt1, sizeof(int));
+    ::setsockopt(sock, SOL_SOCKET, SO_REUSEPORT, &opt2, sizeof(int));
 }
 
 void TCPServer::toBind(const std::string& ip, const std::uint16_t port)
 {
-    if (inet_pton(AF_INET, ip.c_str(), &sockAddr.sin_addr) == -1)
+    if (::inet_pton(AF_INET, ip.c_str(), &sockAddr.sin_addr) == -1)
     {
         throw std::runtime_error(
             "<SOCKET> Invalid address, address type is not supported, errno: " + std::to_string(errno) + '.');
     }
 
     sockAddr.sin_family = AF_INET;
-    sockAddr.sin_port = htons(port);
+    sockAddr.sin_port = ::htons(port);
 
     setBlocking();
-    if (bind(sock, reinterpret_cast<const sockaddr*>(&sockAddr), sizeof(sockAddr)) == -1)
+    if (::bind(sock, reinterpret_cast<const sockaddr*>(&sockAddr), sizeof(sockAddr)) == -1)
     {
         throw std::runtime_error("<SOCKET> Could not bind the socket, errno: " + std::to_string(errno) + '.');
     }
@@ -219,7 +217,7 @@ void TCPServer::toBind(const std::uint16_t port)
 
 void TCPServer::toListen()
 {
-    if (listen(sock, retryTimes) == -1)
+    if (::listen(sock, retryTimes) == -1)
     {
         throw std::runtime_error("<SOCKET> Server can't listen on the socket, errno: " + std::to_string(errno) + '.');
     }
@@ -249,13 +247,13 @@ void TCPServer::toAccept(const bool detach)
 
 void TCPServer::toAccept(TCPServer* server)
 {
-    sockaddr_in newSocketInfo{};
-    socklen_t newSocketInfoLength = sizeof(newSocketInfo);
+    ::sockaddr_in newSocketInfo{};
+    ::socklen_t newSocketInfoLength = sizeof(newSocketInfo);
 
     int newSock = 0;
     while (true)
     {
-        if ((newSock = accept(server->sock, reinterpret_cast<sockaddr*>(&newSocketInfo), &newSocketInfoLength)) == -1)
+        if ((newSock = ::accept(server->sock, reinterpret_cast<sockaddr*>(&newSocketInfo), &newSocketInfoLength)) == -1)
         {
             if ((EBADF == errno) || (EINVAL == errno))
             {
@@ -277,20 +275,20 @@ void TCPServer::toAccept(TCPServer* server)
 
 int UDPSocket::toSendTo(const char* bytes, const std::size_t length, const std::string& ip, const std::uint16_t port)
 {
-    sockaddr_in hostAddr{};
+    ::sockaddr_in addr{};
 
-    struct addrinfo hints
+    struct ::addrinfo hints
     {
     }, *res, *it;
     std::memset(&hints, 0, sizeof(hints));
     hints.ai_family = AF_INET;
-    hints.ai_socktype = SOCK_DGRAM;
+    hints.ai_socktype = ::SOCK_DGRAM;
 
     int status = 0;
-    if ((status = getaddrinfo(ip.c_str(), nullptr, &hints, &res)) != 0)
+    if ((status = ::getaddrinfo(ip.c_str(), nullptr, &hints, &res)) != 0)
     {
         throw std::runtime_error(
-            "<SOCKET> Invalid address, status: " + std::string(gai_strerror(status))
+            "<SOCKET> Invalid address, status: " + std::string(::gai_strerror(status))
             + ", errno: " + std::to_string(errno) + '.');
     }
 
@@ -298,17 +296,17 @@ int UDPSocket::toSendTo(const char* bytes, const std::size_t length, const std::
     {
         if (AF_INET == it->ai_family)
         {
-            std::memcpy(static_cast<void*>(&hostAddr), static_cast<void*>(it->ai_addr), sizeof(sockaddr_in));
+            std::memcpy(static_cast<void*>(&addr), static_cast<void*>(it->ai_addr), sizeof(::sockaddr_in));
             break;
         }
     }
-    freeaddrinfo(res);
+    ::freeaddrinfo(res);
 
-    hostAddr.sin_port = htons(port);
-    hostAddr.sin_family = AF_INET;
+    addr.sin_port = ::htons(port);
+    addr.sin_family = AF_INET;
 
     int sent = 0;
-    if ((sent = sendto(sock, bytes, length, 0, reinterpret_cast<sockaddr*>(&hostAddr), sizeof(hostAddr))) == -1)
+    if ((sent = ::sendto(sock, bytes, length, 0, reinterpret_cast<sockaddr*>(&addr), sizeof(addr))) == -1)
     {
         throw std::runtime_error("<SOCKET> Unable to send message to address, errno: " + std::to_string(errno) + '.');
     }
@@ -323,7 +321,7 @@ int UDPSocket::toSendTo(const std::string& message, const std::string& ip, const
 
 int UDPSocket::toSend(const char* bytes, const std::size_t length)
 {
-    return send(sock, bytes, length, 0);
+    return ::send(sock, bytes, length, 0);
 }
 
 int UDPSocket::toSend(const std::string& message)
@@ -333,18 +331,18 @@ int UDPSocket::toSend(const std::string& message)
 
 void UDPSocket::toConnect(const std::string& ip, const std::uint16_t port)
 {
-    struct addrinfo hints
+    struct ::addrinfo hints
     {
     }, *res, *it;
     std::memset(&hints, 0, sizeof(hints));
     hints.ai_family = AF_INET;
-    hints.ai_socktype = SOCK_DGRAM;
+    hints.ai_socktype = ::SOCK_DGRAM;
 
     int status = 0;
-    if ((status = getaddrinfo(ip.c_str(), nullptr, &hints, &res)) != 0)
+    if ((status = ::getaddrinfo(ip.c_str(), nullptr, &hints, &res)) != 0)
     {
         throw std::runtime_error(
-            "<SOCKET> Invalid address, status: " + std::string(gai_strerror(status))
+            "<SOCKET> Invalid address, status: " + std::string(::gai_strerror(status))
             + ", errno: " + std::to_string(errno) + '.');
     }
 
@@ -352,18 +350,18 @@ void UDPSocket::toConnect(const std::string& ip, const std::uint16_t port)
     {
         if (AF_INET == it->ai_family)
         {
-            std::memcpy(static_cast<void*>(&sockAddr), static_cast<void*>(it->ai_addr), sizeof(sockaddr_in));
+            std::memcpy(static_cast<void*>(&sockAddr), static_cast<void*>(it->ai_addr), sizeof(::sockaddr_in));
             break;
         }
     }
-    freeaddrinfo(res);
+    ::freeaddrinfo(res);
 
     sockAddr.sin_family = AF_INET;
-    sockAddr.sin_port = htons(port);
+    sockAddr.sin_port = ::htons(port);
     sockAddr.sin_addr.s_addr = static_cast<std::uint32_t>(sockAddr.sin_addr.s_addr);
 
     setBlocking();
-    if (connect(sock, reinterpret_cast<const sockaddr*>(&sockAddr), sizeof(sockaddr_in)) == -1)
+    if (::connect(sock, reinterpret_cast<const sockaddr*>(&sockAddr), sizeof(::sockaddr_in)) == -1)
     {
         throw std::runtime_error("<SOCKET> Could not connect to the socket, errno: " + std::to_string(errno) + '.');
     }
@@ -397,65 +395,64 @@ void UDPSocket::toReceiveFrom(const bool detach)
 
 void UDPSocket::toRecv(UDPSocket* socket)
 {
-    char tempBuffer[socket->bufferSize];
+    char tempBuffer[socket->bufferSize + 1];
     tempBuffer[0] = '\0';
     int messageLength = 0;
-    while ((messageLength = recv(socket->sock, tempBuffer, socket->bufferSize, 0)) != -1)
+    while ((messageLength = ::recv(socket->sock, tempBuffer, socket->bufferSize, 0)) != -1)
     {
         tempBuffer[messageLength] = '\0';
         if (socket->onMessageReceived)
         {
             socket->onMessageReceived(
-                std::string(tempBuffer, messageLength), ipString(socket->sockAddr), ntohs(socket->sockAddr.sin_port));
+                std::string(tempBuffer, messageLength), ipString(socket->sockAddr), ::ntohs(socket->sockAddr.sin_port));
         }
 
         if (socket->onRawMessageReceived)
         {
             socket->onRawMessageReceived(
-                tempBuffer, messageLength, ipString(socket->sockAddr), ntohs(socket->sockAddr.sin_port));
+                tempBuffer, messageLength, ipString(socket->sockAddr), ::ntohs(socket->sockAddr.sin_port));
         }
     }
 }
 
 void UDPSocket::toRecvFrom(UDPSocket* socket)
 {
-    sockaddr_in hostAddr{};
-    socklen_t hostAddrSize = sizeof(hostAddr);
+    ::sockaddr_in addr{};
+    ::socklen_t hostAddrSize = sizeof(addr);
 
-    char tempBuffer[socket->bufferSize];
+    char tempBuffer[socket->bufferSize + 1];
     tempBuffer[0] = '\0';
     int messageLength = 0;
-    while ((messageLength = recvfrom(
-                socket->sock, tempBuffer, socket->bufferSize, 0, reinterpret_cast<sockaddr*>(&hostAddr), &hostAddrSize))
+    while ((messageLength = ::recvfrom(
+                socket->sock, tempBuffer, socket->bufferSize, 0, reinterpret_cast<sockaddr*>(&addr), &hostAddrSize))
            != -1)
     {
         tempBuffer[messageLength] = '\0';
         if (socket->onMessageReceived)
         {
-            socket->onMessageReceived(
-                std::string(tempBuffer, messageLength), ipString(hostAddr), ntohs(hostAddr.sin_port));
+            socket->onMessageReceived(std::string(tempBuffer, messageLength), ipString(addr), ::ntohs(addr.sin_port));
         }
 
         if (socket->onRawMessageReceived)
         {
-            socket->onRawMessageReceived(tempBuffer, messageLength, ipString(hostAddr), ntohs(hostAddr.sin_port));
+            socket->onRawMessageReceived(tempBuffer, messageLength, ipString(addr), ::ntohs(addr.sin_port));
         }
     }
 }
 
 void UDPServer::toBind(const std::string& ip, const std::uint16_t port)
 {
-    if (inet_pton(AF_INET, ip.c_str(), &sockAddr.sin_addr) == -1)
+    if (::inet_pton(AF_INET, ip.c_str(), &sockAddr.sin_addr) == -1)
     {
         throw std::runtime_error(
             "<SOCKET> Invalid address, address type is not supported, errno: " + std::to_string(errno) + '.');
     }
 
     sockAddr.sin_family = AF_INET;
-    sockAddr.sin_port = htons(port);
+    sockAddr.sin_port = ::htons(port);
 
     setBlocking();
-    if (bind(sock, reinterpret_cast<const sockaddr*>(&sockAddr), sizeof(sockAddr)) == -1)
+    if (::bind(sock, reinterpret_cast<const sockaddr*>(&sockAddr), sizeof(sockAddr)) == -1)
     {
         throw std::runtime_error("<SOCKET> Could not bind the socket, errno: " + std::to_string(errno) + '.');
     }
@@ -469,6 +466,6 @@ void UDPServer::toBind(const std::uint16_t port)
 void UDPServer::setBroadcast()
 {
     int broadcast = 1;
-    setsockopt(sock, SOL_SOCKET, SO_BROADCAST, &broadcast, sizeof(broadcast));
+    ::setsockopt(sock, SOL_SOCKET, SO_BROADCAST, &broadcast, sizeof(broadcast));
 }
 } // namespace utility::socket

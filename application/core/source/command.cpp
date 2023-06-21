@@ -610,8 +610,8 @@ void Command::enterConsoleMode() const
         tcpClient.toConnect(std::string{View::tcpHost}, View::tcpPort);
         utility::time::millisecondLevelSleep(latency);
 
-        char hostName[HOST_NAME_MAX + 1];
-        if (gethostname(hostName, HOST_NAME_MAX + 1))
+        char hostName[HOST_NAME_MAX + 1] = {'\0'};
+        if (::gethostname(hostName, HOST_NAME_MAX))
         {
             throw std::runtime_error("<COMMAND> Host name could not be obtained.");
         }

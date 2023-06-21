@@ -128,7 +128,7 @@ protected:
     //! @param os - output stream object
     //! @param type - the specific value of Type enum
     //! @return reference of output stream object
-    friend std::ostream& operator<<(std::ostream& os, const Type& type)
+    friend std::ostream& operator<<(std::ostream& os, const Type type)
     {
         switch (type)
         {

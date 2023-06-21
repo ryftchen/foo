@@ -285,7 +285,7 @@ void NotationSolution::prefixMethod(const std::string& infixNotation)
     try
     {
         const auto notationStr = algorithm::notation::Notation().prefix(infixNotation);
-        NOTATION_PRINT_RESULT_CONTENT("Prefix", "Polish notation");
+        NOTATION_PRINT_RESULT_CONTENT("Prefix", "polish notation");
     }
     catch (const std::exception& error)
     {
@@ -298,7 +298,7 @@ void NotationSolution::postfixMethod(const std::string& infixNotation)
     try
     {
         const auto notationStr = algorithm::notation::Notation().postfix(infixNotation);
-        NOTATION_PRINT_RESULT_CONTENT("Postfix", "Reverse polish notation");
+        NOTATION_PRINT_RESULT_CONTENT("Postfix", "reverse polish notation");
     }
     catch (const std::exception& error)
     {

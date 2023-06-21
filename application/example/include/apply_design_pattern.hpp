@@ -120,7 +120,7 @@ protected:
     //! @param os - output stream object
     //! @param type - the specific value of Type enum
     //! @return reference of output stream object
-    friend std::ostream& operator<<(std::ostream& os, const Type& type)
+    friend std::ostream& operator<<(std::ostream& os, const Type type)
     {
         switch (type)
         {
@@ -298,8 +298,8 @@ public:
         mediators->add(c1);
         mediators->add(c2);
         mediators->add(c3);
-        c1->send("Hi!");
-        c3->send("Hello!");
+        c1->send("hi!");
+        c3->send("hello!");
 
         std::ostringstream os = std::ostringstream(mediator::output().str());
         mediator::output().str("");

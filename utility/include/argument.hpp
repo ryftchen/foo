@@ -245,10 +245,10 @@ public:
     //! @brief Get the length of all arguments.
     //! @return the length of all arguments
     [[nodiscard]] std::size_t getArgumentsLength() const;
-    //! @brief Split help message with delimiter.
+    //! @brief Split help string with delimiter.
     //! @param delim - delimiter
     //! @return the substrings obtained by splitting
-    [[nodiscard]] std::vector<std::string> splitHelpMessageWithDelimiter(const char delim) const;
+    [[nodiscard]] std::vector<std::string> splitHelpStringWithDelimiter(const char delim) const;
     //! @brief The operator (!=) overloading of ArgumentRegister class.
     //! @tparam T - type of right-hand side
     //! @param rhs - right-hand side
@@ -262,7 +262,7 @@ public:
     template <typename T>
     bool operator==(const T& rhs) const;
     friend class Argument;
-    friend auto operator<<(std::ostream& os, const Argument& parser) -> std::ostream&;
+    friend std::ostream& operator<<(std::ostream& os, const Argument& parser);
     friend std::ostream& operator<<(std::ostream& os, const ArgumentRegister& argument);
 
 private:
@@ -645,7 +645,7 @@ private:
     void indexArgument(ListIterator iterator);
 
 protected:
-    friend auto operator<<(std::ostream& os, const Argument& parser) -> std::ostream&;
+    friend std::ostream& operator<<(std::ostream& os, const Argument& parser);
 };
 
 template <typename... Args>

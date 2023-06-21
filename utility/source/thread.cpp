@@ -43,7 +43,7 @@ Thread::Thread(const std::uint32_t count)
                     }
                     if (!name.empty())
                     {
-                        pthread_setname_np(pthread_self(), name.c_str());
+                        ::pthread_setname_np(::pthread_self(), name.c_str());
                     }
                     task();
                 }
@@ -67,7 +67,10 @@ Thread::~Thread()
     cv.notify_all();
     for (auto& thread : threadVector)
     {
-        thread.join();
+        if (thread.joinable())
+        {
+            thread.join();
+        }
     }
 }
 } // namespace utility::thread

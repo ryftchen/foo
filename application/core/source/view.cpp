@@ -28,11 +28,11 @@ bool Packet::write(T data)
     T temp = 0;
     if constexpr (sizeof(T) == sizeof(std::uint32_t))
     {
-        temp = htonl(data);
+        temp = ::htonl(data);
     }
     else if constexpr (sizeof(T) == sizeof(std::uint16_t))
     {
-        temp = htons(data);
+        temp = ::htons(data);
     }
     else
     {
@@ -41,11 +41,11 @@ bool Packet::write(T data)
     return write(&temp, sizeof(T));
 }
 
-bool Packet::write(const void* pDst, const std::uint32_t offset)
+bool Packet::write(const void* dst, const std::uint32_t offset)
 {
-    std::memcpy(pWrite, pDst, offset);
-    pWrite += offset;
-    return (pWrite < pTail) ? true : false;
+    std::memcpy(writer, dst, offset);
+    writer += offset;
+    return (writer < tail) ? true : false;
 }
 
 template <typename T>
@@ -54,25 +54,25 @@ bool Packet::read(T* data)
     const bool isEnd = read(data, sizeof(T));
     if constexpr (sizeof(T) == sizeof(std::uint32_t))
     {
-        *data = ntohl(*data);
+        *data = ::ntohl(*data);
     }
     else if constexpr (sizeof(T) == sizeof(std::uint16_t))
     {
-        *data = ntohs(*data);
+        *data = ::ntohs(*data);
     }
     return isEnd;
 }
 
-bool Packet::read(void* pDst, const std::uint32_t offset)
+bool Packet::read(void* dst, const std::uint32_t offset)
 {
-    std::memcpy(pDst, pRead, offset);
-    pRead += offset;
-    return (pRead < pTail) ? true : false;
+    std::memcpy(dst, reader, offset);
+    reader += offset;
+    return (reader < tail) ? true : false;
 }
 
-int tlvEncode(char* pBuf, int& len, const TLVValue& val)
+int tlvEncode(char* buf, int& len, const TLVValue& val)
 {
-    if (!pBuf)
+    if (nullptr == buf)
     {
         return -1;
     }
@@ -80,7 +80,7 @@ int tlvEncode(char* pBuf, int& len, const TLVValue& val)
     constexpr int offset = sizeof(int) + sizeof(int);
     int sum = 0;
 
-    Packet enc(pBuf, len);
+    Packet enc(buf, len);
     enc.write<int>(TLVType::header);
     enc.write<int>(sum);
 
@@ -104,20 +104,20 @@ int tlvEncode(char* pBuf, int& len, const TLVValue& val)
         sum += (offset + sizeof(int));
     }
 
-    *reinterpret_cast<int*>(pBuf + sizeof(int)) = htonl(sum);
+    *reinterpret_cast<int*>(buf + sizeof(int)) = ::htonl(sum);
     len = offset + sum;
 
     return 0;
 }
 
-int tlvDecode(char* pBuf, const int len, TLVValue& val)
+int tlvDecode(char* buf, const int len, TLVValue& val)
 {
-    if (!pBuf)
+    if (nullptr == buf)
     {
         return -1;
     }
 
-    Packet dec(pBuf, len);
+    Packet dec(buf, len);
     int type = 0, length = 0, sum = 0;
 
     dec.read<int>(&type);
@@ -317,15 +317,15 @@ int View::buildStatPacket(char* buffer)
 
 int View::fillSharedMemory(const std::string& contents)
 {
-    int shmId = shmget(
-        static_cast<key_t>(0),
+    int shmId = ::shmget(
+        static_cast<::key_t>(0),
         sizeof(SharedMemory),
         IPC_CREAT | IPC_EXCL | S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
     if (-1 == shmId)
     {
         throw std::runtime_error("<VIEW> Failed to create shared memory.");
     }
-    void* shm = shmat(shmId, nullptr, 0);
+    void* shm = ::shmat(shmId, nullptr, 0);
     if (nullptr == shm)
     {
         throw std::runtime_error("<VIEW> Failed to attach shared memory.");
@@ -344,14 +344,14 @@ int View::fillSharedMemory(const std::string& contents)
         }
         utility::time::millisecondLevelSleep(1);
     }
-    shmdt(shm);
+    ::shmdt(shm);
 
     return shmId;
 }
 
 void View::printSharedMemory(const int shmId)
 {
-    void* shm = shmat(shmId, nullptr, 0);
+    void* shm = ::shmat(shmId, nullptr, 0);
     if (nullptr == shm)
     {
         throw std::runtime_error("<VIEW> Failed to attach shared memory.");
@@ -369,8 +369,8 @@ void View::printSharedMemory(const int shmId)
         }
         utility::time::millisecondLevelSleep(1);
     }
-    shmdt(shm);
-    shmctl(shmId, IPC_RMID, nullptr);
+    ::shmdt(shm);
+    ::shmctl(shmId, IPC_RMID, nullptr);
 }
 
 std::string View::getLogContents()
@@ -407,7 +407,7 @@ void View::createViewServer()
         {
             try
             {
-                char buffer[maxMsgLength] = {'\0'};
+                char buffer[maxMsgLength + 1] = {'\0'};
                 if ("stop" == message)
                 {
                     buildStopPacket(buffer);
@@ -435,7 +435,7 @@ void View::createViewServer()
     {
         try
         {
-            char buffer[maxMsgLength] = {'\0'};
+            char buffer[maxMsgLength + 1] = {'\0'};
             if ("stop" == message)
             {
                 buildStopPacket(buffer);
@@ -492,7 +492,7 @@ void View::stopViewing()
 //! @param os - output stream object
 //! @param state - the specific value of State enum
 //! @return reference of output stream object
-std::ostream& operator<<(std::ostream& os, const View::State& state)
+std::ostream& operator<<(std::ostream& os, const View::State state)
 {
     switch (state)
     {

@@ -30,22 +30,22 @@ static void signalHandler(int sig)
 {
     signalStatus = sig;
     void* callStack[128];
-    const int maxFrame = sizeof(callStack) / sizeof(callStack[0]), numOfFrame = backtrace(callStack, maxFrame);
-    char** symbols = backtrace_symbols(callStack, numOfFrame);
-    char buffer[1024];
+    const int maxFrame = sizeof(callStack) / sizeof(callStack[0]), numOfFrame = ::backtrace(callStack, maxFrame);
+    char** symbols = ::backtrace_symbols(callStack, numOfFrame);
+    char buffer[1024] = {'\0'};
     std::ostringstream originalTrace, realTrace;
 
     for (int i = 1; i < numOfFrame; ++i)
     {
         originalTrace << symbols[i] << '\n';
-        Dl_info info;
-        if (dladdr(callStack[i], &info) && info.dli_sname)
+        ::Dl_info info;
+        if (::dladdr(callStack[i], &info) && info.dli_sname)
         {
             char* demangle = nullptr;
             int status = -1;
             if ('_' == info.dli_sname[0])
             {
-                demangle = abi::__cxa_demangle(info.dli_sname, nullptr, nullptr, &status);
+                demangle = ::abi::__cxa_demangle(info.dli_sname, nullptr, nullptr, &status);
             }
             std::snprintf(
                 buffer,
@@ -78,7 +78,7 @@ static void signalHandler(int sig)
         realTrace << "\r\n[TRUNCATED...]\n";
     }
     std::fprintf(
-        stderr,
+        ::stderr,
         "\r\n\r\n<MAIN>\n\n[SIGNAL]\n%d\n\n[BACKTRACE]\n%s\n[VERBOSE]\n%s\n",
         sig,
         originalTrace.str().c_str(),
@@ -96,8 +96,8 @@ static void init()
 {
     std::signal(SIGABRT, signalHandler);
     std::signal(SIGSEGV, signalHandler);
-    setenv("TERM", "linux", true);
-    setenv("TERMINFO", "/etc/terminfo", true);
+    ::setenv("TERM", "linux", true);
+    ::setenv("TERMINFO", "/etc/terminfo", true);
 
     const std::filesystem::path absolutePath = std::filesystem::canonical(std::filesystem::path{"/proc/self/exe"});
     const std::size_t pos = absolutePath.string().find("build/bin");
@@ -106,7 +106,7 @@ static void init()
         const std::filesystem::path buildPath(std::filesystem::path{absolutePath.string().substr(0, pos)});
         if (!buildPath.has_parent_path())
         {
-            std::fprintf(stderr, "<MAIN> The project path doesn't exist. Please check it.\n");
+            std::fprintf(::stderr, "<MAIN> The project path doesn't exist. Please check it.\n");
             std::exit(-1);
         }
         std::filesystem::current_path(buildPath.parent_path());
@@ -117,7 +117,7 @@ static void init()
             std::filesystem::path{(nullptr != std::getenv("HOME")) ? std::getenv("HOME") : "/root"});
         if (homePath.empty())
         {
-            std::fprintf(stderr, "<MAIN> The home path doesn't exist. Please check it.\n");
+            std::fprintf(::stderr, "<MAIN> The home path doesn't exist. Please check it.\n");
             std::exit(-1);
         }
 
@@ -137,7 +137,7 @@ static void fini()
 {
     if (signalStatus)
     {
-        std::fprintf(stdout, "<MAIN> Last signal ever received: signal %d.\n", signalStatus);
+        std::fprintf(::stdout, "<MAIN> Last signal ever received: signal %d.\n", signalStatus);
     }
 }
 } // namespace application

@@ -29,7 +29,7 @@ std::uint64_t bkdrHash(const char* str)
 //! @return command line output
 std::string executeCommand(const std::string& cmd, const std::uint32_t timeout)
 {
-    std::FILE* pipe = popen(cmd.c_str(), "r");
+    std::FILE* pipe = ::popen(cmd.c_str(), "r");
     if (nullptr == pipe)
     {
         throw std::runtime_error("<COMMON> Could not open pipe when trying to execute command.");
@@ -46,7 +46,7 @@ std::string executeCommand(const std::string& cmd, const std::uint32_t timeout)
                 std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - startTime);
             if (elapsedTime.count() > timeout)
             {
-                pclose(pipe);
+                ::pclose(pipe);
                 throw std::runtime_error("<COMMON> Execute command timeout.");
             }
         }
@@ -59,7 +59,7 @@ std::string executeCommand(const std::string& cmd, const std::uint32_t timeout)
         output.append(buffer.data(), len);
     }
 
-    const int exitStatus = pclose(pipe);
+    const int exitStatus = ::pclose(pipe);
     if (-1 == exitStatus)
     {
         throw std::runtime_error("<COMMON> Could not close pipe when trying to execute command.");

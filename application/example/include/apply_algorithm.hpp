@@ -162,7 +162,7 @@ protected:
     //! @param os - output stream object
     //! @param type - the specific value of Type enum
     //! @return reference of output stream object
-    friend std::ostream& operator<<(std::ostream& os, const Type& type)
+    friend std::ostream& operator<<(std::ostream& os, const Type type)
     {
         switch (type)
         {
@@ -387,7 +387,7 @@ public:
         setMatchingText(marchingText.get(), maxDigit);
     }
     //! @brief Destroy the TargetBuilder object.
-    virtual ~TargetBuilder() { mpfr_free_cache(); }
+    virtual ~TargetBuilder() { ::mpfr_free_cache(); }
 
     //! @brief Construct a new TargetBuilder object.
     TargetBuilder(const TargetBuilder&) = delete;
@@ -420,12 +420,12 @@ private:
     static void setMatchingText(char* text, const std::uint32_t textLen)
     {
         assert((nullptr != text) && (textLen > 0));
-        mpfr_t x;
-        mpfr_init2(x, calculatePrecision(textLen));
-        mpfr_const_pi(x, MPFR_RNDN);
-        mpfr_exp_t mpfrDecimalLocation;
-        mpfr_get_str(text, &mpfrDecimalLocation, mpfrBase, 0, x, MPFR_RNDN);
-        mpfr_clear(x);
+        ::mpfr_t x;
+        ::mpfr_init2(x, calculatePrecision(textLen));
+        ::mpfr_const_pi(x, ::MPFR_RNDN);
+        ::mpfr_exp_t mpfrDecimalLocation;
+        ::mpfr_get_str(text, &mpfrDecimalLocation, mpfrBase, 0, x, ::MPFR_RNDN);
+        ::mpfr_clear(x);
 
         assert('\0' != *text);
         text[textLen] = '\0';

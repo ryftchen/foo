@@ -85,7 +85,7 @@ protected:
     //! @param os - output stream object
     //! @param type - the specific value of Type enum
     //! @return reference of output stream object
-    friend std::ostream& operator<<(std::ostream& os, const Type& type)
+    friend std::ostream& operator<<(std::ostream& os, const Type type)
     {
         switch (type)
         {
@@ -138,21 +138,14 @@ void setBit(const int index)
 //! @brief Apply linear.
 namespace linear
 {
-#ifdef __cplusplus
-extern "C"
+//! @brief Metadata, which is used in the instance.
+struct Meta
 {
-#endif // __cplusplus
-    //! @brief Metadata, which is used in the instance.
-    typedef struct TagMeta
-    {
-        //! @brief The ID of metadata.
-        int id;
-        //! @brief The name of metadata.
-        char name[4];
-    } Meta;
-#ifdef __cplusplus
-}
-#endif // __cplusplus
+    //! @brief ID of the metadata.
+    int id;
+    //! @brief Name of the metadata.
+    char name[4];
+};
 
 //! @brief Linear instances.
 class Linear

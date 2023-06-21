@@ -108,8 +108,6 @@ void BlockingTimer::set(auto func, const std::uint32_t interval)
                 func();
             }
         });
-
-    pthread_setname_np(timerThread.native_handle(), "timer");
     timerThread.join();
 }
 

@@ -239,10 +239,6 @@ private:
         // ----------------+----------------+----------------------------------------+---------------------------------+-----------------------------------
     };
     // clang-format on
-    //! @brief Latency for console.
-    static constexpr std::uint16_t latency{10};
-    //! @brief Maximum latency for console.
-    static constexpr std::uint16_t maxLatency{200};
 
     //! @brief Print output of the console mode command line.
     void printConsoleOutput() const;
@@ -263,6 +259,11 @@ private:
     static std::string getIconBanner();
     //! @brief Throw an exception when excess arguments.
     [[noreturn]] inline void throwExcessArgumentException();
+
+    //! @brief Latency for console.
+    static constexpr std::uint16_t latency{10};
+    //! @brief Maximum latency for console.
+    static constexpr std::uint16_t maxLatency{200};
 };
 
 inline void Command::throwExcessArgumentException()

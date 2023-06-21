@@ -39,7 +39,7 @@ namespace tlv
 //! @brief Enumerate the types in TLV.
 enum TLVType : int
 {
-    header = 0x125e591,
+    header = 0x0125e591,
     stop = 0,
     log,
     stat
@@ -61,10 +61,10 @@ class Packet
 {
 public:
     //! @brief Construct a new Packet object.
-    //! @param pBuf - TVL packet buffer
+    //! @param buf - TVL packet buffer
     //! @param len - buffer length
-    Packet(char* pBuf, const std::uint32_t len) :
-        pData(pBuf), length(len), pTail(pData + len), pWrite(pData), pRead(pData)
+    Packet(char* buf, const std::uint32_t len) :
+        buffer(buf), length(len), tail(buffer + len), writer(buffer), reader(buffer)
     {
     }
     //! @brief Destroy the Packet object.
@@ -77,10 +77,10 @@ public:
     template <typename T>
     bool write(T data);
     //! @brief Write data to the packet buffer.
-    //! @param pDst - data after conversion
+    //! @param dst - data after conversion
     //! @param offset - data offset
     //! @return whether it is continuously writable
-    bool write(const void* pDst, const std::uint32_t offset);
+    bool write(const void* dst, const std::uint32_t offset);
     //! @brief Read data to the packet buffer.
     //! @tparam T type of data to be read
     //! @param data - original data
@@ -88,36 +88,36 @@ public:
     template <typename T>
     bool read(T* data);
     //! @brief Read data to the packet buffer.
-    //! @param pDst - data after conversion
+    //! @param dst - data after conversion
     //! @param offset - data offset
     //! @return whether it is continuously readable
-    bool read(void* pDst, const std::uint32_t offset);
+    bool read(void* dst, const std::uint32_t offset);
 
 private:
     //! @brief TLV packet buffer pointer.
-    char* pData{nullptr};
+    char* buffer{nullptr};
     //! @brief Buffer length.
     const std::uint32_t length{0};
     //! @brief Pointer to the end of the buffer.
-    char* pTail{nullptr};
+    char* tail{nullptr};
     //! @brief Pointer to the current writing location.
-    char* pWrite{nullptr};
+    char* writer{nullptr};
     //! @brief Pointer to the current reading location.
-    char* pRead{nullptr};
+    char* reader{nullptr};
 };
 
 //! @brief Encode the TLV packet.
-//! @param pBuf - TLV packet buffer
+//! @param buf - TLV packet buffer
 //! @param len -  buffer length
 //! @param val - value of TLV after encoding
 //! @return the value is 0 if successful, otherwise -1
-int tlvEncode(char* pBuf, int& len, const TLVValue& val);
+int tlvEncode(char* buf, int& len, const TLVValue& val);
 //! @brief Decode the TLV packet.
-//! @param pBuf - TLV packet buffer
+//! @param buf - TLV packet buffer
 //! @param len -  buffer length
 //! @param val - value of TLV after decoding
 //! @return the value is 0 if successful, otherwise -1
-int tlvDecode(char* pBuf, const int len, TLVValue& val);
+int tlvDecode(char* buf, const int len, TLVValue& val);
 } // namespace tlv
 
 //! @brief Viewer.
@@ -158,7 +158,7 @@ public:
     using Option = std::string;
     //! @brief Alias for the option help information.
     using HelpInfo = std::string;
-    //! @brief Alias for the tuple of OptionHelp and BuildFunctor.
+    //! @brief Alias for the tuple of HelpInfo and BuildFunctor.
     using OptionTuple = std::tuple<HelpInfo, BuildFunctor>;
     //! @brief Alias for the map of Option and OptionTuple.
     using OptionMap = std::map<Option, OptionTuple>;
@@ -193,7 +193,7 @@ public:
         //! @brief Flag for operable.
         std::atomic<bool> signal{false};
         //! @brief Shared memory buffer.
-        char buffer[maxShmSize]{'\0'};
+        char buffer[maxShmSize + 1]{'\0'};
     };
 
 private:
@@ -211,6 +211,7 @@ private:
         // ----------+--------------------------------+--------------------
     };
     // clang-format on
+
     //! @brief Build the TLV packet to stop connection.
     //! @param buffer - TLV packet buffer
     //! @return buffer length
@@ -290,7 +291,7 @@ private:
     // clang-format on
 
 protected:
-    friend std::ostream& operator<<(std::ostream& os, const View::State& state);
+    friend std::ostream& operator<<(std::ostream& os, const View::State state);
 };
 
 inline View::OptionMap View::getViewerOptions() const
