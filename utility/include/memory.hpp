@@ -40,37 +40,24 @@ public:
     //! @return reference of Memory object
     Memory& operator=(Memory&& memory) noexcept;
 
-    //! @brief Alias for the type of object to allocate.
-    typedef T ValueType;
-    //! @brief Alias for the pointer of the object to allocate.
-    typedef T* Pointer;
-    //! @brief Alias for the reference of the object to allocate.
-    typedef T& Reference;
-    //! @brief Alias for the const pointer of the object to allocate.
-    typedef const T* ConstPointer;
-    //! @brief Alias for the const reference of the object to allocate.
-    typedef const T& ConstReference;
-    //! @brief Alias for size type.
-    typedef std::size_t SizeType;
-
     //! @brief Get the pointer of the allocated object.
     //! @param x - reference of the allocated object
     //! @return pointer of the allocated object
-    inline Pointer address(Reference x) const noexcept;
+    inline T* address(T& x) const noexcept;
     //! @brief Get the const pointer of the allocated object.
     //! @param x - const reference of the allocated object
     //! @return const pointer of the allocated object
-    inline ConstPointer address(ConstReference x) const noexcept;
+    inline const T* address(const T& x) const noexcept;
     //! @brief Allocate resource.
     //! @param n - resource size
     //! @param hint - const pointer of the allocated object
     //! @return pointer of the allocated object
-    inline Pointer allocate(SizeType n = 1, ConstPointer hint = 0);
+    inline T* allocate(const std::size_t n = 1, const T* hint = 0);
     //! @brief Deallocate resource.
     //! @param p - pointer of the allocated object
     //! @param n - resource size
-    inline void deallocate(Pointer p, SizeType n = 1);
-    [[nodiscard]] inline SizeType maxSize() const noexcept;
+    inline void deallocate(T* p, const std::size_t n = 1);
+    [[nodiscard]] inline std::size_t maxSize() const noexcept;
 
     //! @brief Construct object.
     //! @tparam U - type of allocated object
@@ -90,46 +77,39 @@ public:
     //! @param args - arguments for constructing the object
     //! @return pointer of the allocated object
     template <class... Args>
-    inline Pointer newElement(Args&&... args);
+    inline T* newElement(Args&&... args);
     //! @brief Delete an element.
     //! @param p - pointer of the allocated object
-    inline void deleteElement(Pointer p);
+    inline void deleteElement(T* p);
 
 private:
     //! @brief Union for the slot that stores element information.
     union Slot
     {
         //! @brief Allocated object.
-        ValueType element;
+        T element;
         //! @brief Next pointer of the slot.
         Slot* next;
     };
 
-    //! @brief Alias for the pointer of data in the element.
-    typedef char* DataPointer;
-    //! @brief Alias for the type of slot.
-    typedef Slot SlotType;
-    //! @brief Alias for the pointer of the slot.
-    typedef Slot* SlotPointer;
-
-    //! @brief The pointer of the current block.
-    SlotPointer currentBlock;
-    //! @brief The pointer of the current slot.
-    SlotPointer currentSlot;
-    //! @brief The pointer of the last slot.
-    SlotPointer lastSlot;
-    //! @brief The pointer of the free slots.
-    SlotPointer freeSlots;
+    //! @brief Pointer to the current block.
+    Slot* currentBlock;
+    //! @brief Pointer to the current slot.
+    Slot* currentSlot;
+    //! @brief Pointer to the last slot.
+    Slot* lastSlot;
+    //! @brief Pointer to the free slots.
+    Slot* freeSlots;
 
     //! @brief Pad the pointer of data in the element.
     //! @param p - pointer of data in the element
     //! @param align - align size
     //! @return size after padding
-    inline SizeType padPointer(DataPointer p, SizeType align) const noexcept;
+    inline std::size_t padPointer(char* p, const std::size_t align) const noexcept;
     //! @brief Allocate block.
     void allocateBlock();
 
-    static_assert(BlockSize >= (2 * sizeof(SlotType)), "<MEMORY> BlockSize is too small.");
+    static_assert(BlockSize >= (2 * sizeof(Slot)), "<MEMORY> BlockSize is too small.");
 };
 } // namespace utility::memory
 

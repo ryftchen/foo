@@ -37,13 +37,13 @@ public:
     //! @brief Bytes buffer size.
     static constexpr std::uint16_t bufferSize{0xFFFF};
     //! @brief Transport information.
-    sockaddr_in sockAddr{};
+    ::sockaddr_in sockAddr{};
 
     //! @brief Enumerate specific socket types.
     enum Type
     {
-        tcp = SOCK_STREAM,
-        udp = SOCK_DGRAM
+        tcp = ::SOCK_STREAM,
+        udp = ::SOCK_DGRAM
     };
 
 protected:
@@ -57,7 +57,7 @@ protected:
     //! @brief Get the ip address from transport information.
     //! @param addr - transport information
     //! @return ip address string
-    static std::string ipString(const sockaddr_in& addr);
+    static std::string ipString(const ::sockaddr_in& addr);
     //! @brief Set the timeout period.
     //! @param microseconds - timeout period
     void setTimeout(const int microseconds) const;
@@ -88,10 +88,10 @@ public:
 
     //! @brief Set the transport information.
     //! @param addr - transport information
-    void setAddress(const sockaddr_in& addr);
+    void setAddress(const ::sockaddr_in& addr);
     //! @brief Get the transport information.
     //! @return transport information
-    [[nodiscard]] sockaddr_in getAddress() const;
+    [[nodiscard]] ::sockaddr_in getAddress() const;
     //! @brief Send bytes from the buffer to socket FD.
     //! @param bytes - bytes buffer
     //! @param length - length of buffer

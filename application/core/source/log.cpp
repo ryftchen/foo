@@ -223,7 +223,7 @@ bool Log::isLogFileClose(const NoLogging& /*unused*/) const
 //! @param os - output stream object
 //! @param state - the specific value of State enum
 //! @return reference of output stream object
-std::ostream& operator<<(std::ostream& os, const Log::State& state)
+std::ostream& operator<<(std::ostream& os, const Log::State state)
 {
     switch (state)
     {

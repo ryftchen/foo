@@ -53,7 +53,7 @@ Console::Console(const std::string& greeting) : impl(std::make_unique<Impl>(gree
         {
             if (input.size() < 2)
             {
-                std::cerr << "<CONSOLE> Please input \"" << input[0] << " Filename\" to run." << std::endl;
+                std::cerr << "<CONSOLE> Please input \"" << input[0] << " FILENAME\" to run." << std::endl;
                 return ReturnCode::error;
             }
             return ReturnCode(fileExecutor(input[1]));
@@ -63,10 +63,10 @@ Console::Console(const std::string& greeting) : impl(std::make_unique<Impl>(gree
 
 Console::~Console()
 {
-    rl_free(emptyHistory);
+    ::rl_free(emptyHistory);
 
-    rl_clear_history();
-    rl_restore_prompt();
+    ::rl_clear_history();
+    ::rl_restore_prompt();
 }
 
 void Console::registerCommand(const std::string& command, CommandFunctor func, const std::string& help)
@@ -87,8 +87,8 @@ std::vector<std::pair<std::string, std::string>> Console::getHelpOfRegisteredCom
 
 void Console::saveState()
 {
-    rl_free(impl->history);
-    impl->history = history_get_history_state();
+    ::rl_free(impl->history);
+    impl->history = ::history_get_history_state();
 }
 
 void Console::reserveConsole()
@@ -98,18 +98,18 @@ void Console::reserveConsole()
         return;
     }
 
-    if (currentConsole)
+    if (nullptr != currentConsole)
     {
         currentConsole->saveState();
     }
 
-    if (!impl->history)
+    if (nullptr == impl->history)
     {
-        history_set_history_state(emptyHistory);
+        ::history_set_history_state(emptyHistory);
     }
     else
     {
-        history_set_history_state(impl->history);
+        ::history_set_history_state(impl->history);
     }
 
     currentConsole = this;
@@ -181,8 +181,8 @@ int Console::readCommandLine()
 {
     reserveConsole();
 
-    char* buffer = readline(getGreeting().c_str());
-    if (!buffer)
+    char* buffer = ::readline(getGreeting().c_str());
+    if (nullptr == buffer)
     {
         std::cout << std::endl;
         return ReturnCode::quit;
@@ -190,11 +190,11 @@ int Console::readCommandLine()
 
     if ('\0' != buffer[0])
     {
-        add_history(buffer);
+        ::add_history(buffer);
     }
 
     std::string line(buffer);
-    rl_free(buffer);
+    ::rl_free(buffer);
     return ReturnCode(commandExecutor(line));
 }
 
@@ -203,7 +203,7 @@ char** Console::getCommandCompleter(const char* text, int start, int /*unused*/)
     char** completionList = nullptr;
     if (!start)
     {
-        completionList = rl_completion_matches(text, &Console::getCommandIterator);
+        completionList = ::rl_completion_matches(text, &Console::getCommandIterator);
     }
 
     return completionList;
@@ -212,7 +212,7 @@ char** Console::getCommandCompleter(const char* text, int start, int /*unused*/)
 char* Console::getCommandIterator(const char* text, int state)
 {
     static Impl::RegisteredCommands::iterator iterator;
-    if (!currentConsole)
+    if (nullptr == currentConsole)
     {
         return nullptr;
     }
@@ -229,7 +229,7 @@ char* Console::getCommandIterator(const char* text, int state)
         ++iterator;
         if (std::string::npos != command.find(text))
         {
-            return strdup(command.c_str());
+            return ::strdup(command.c_str());
         }
     }
 

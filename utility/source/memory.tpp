@@ -13,10 +13,10 @@ namespace utility::memory
 template <typename T, std::size_t BlockSize>
 Memory<T, BlockSize>::~Memory() noexcept
 {
-    SlotPointer curr = currentBlock;
+    Slot* curr = currentBlock;
     while (nullptr != curr)
     {
-        SlotPointer prev = curr->next;
+        Slot* prev = curr->next;
         operator delete(reinterpret_cast<void*>(curr));
         curr = prev;
     }
@@ -46,23 +46,23 @@ Memory<T, BlockSize>& Memory<T, BlockSize>::operator=(Memory&& memory) noexcept
 }
 
 template <typename T, std::size_t BlockSize>
-inline typename Memory<T, BlockSize>::Pointer Memory<T, BlockSize>::address(Reference x) const noexcept
+inline T* Memory<T, BlockSize>::address(T& x) const noexcept
 {
     return &x;
 }
 
 template <typename T, std::size_t BlockSize>
-inline typename Memory<T, BlockSize>::ConstPointer Memory<T, BlockSize>::address(ConstReference x) const noexcept
+inline const T* Memory<T, BlockSize>::address(const T& x) const noexcept
 {
     return &x;
 }
 
 template <typename T, std::size_t BlockSize>
-inline typename Memory<T, BlockSize>::Pointer Memory<T, BlockSize>::allocate(SizeType /*n*/, ConstPointer /*hint*/)
+inline T* Memory<T, BlockSize>::allocate(const std::size_t /*n*/, const T* /*hint*/)
 {
     if (nullptr != freeSlots)
     {
-        Pointer result = reinterpret_cast<Pointer>(freeSlots);
+        T* result = reinterpret_cast<T*>(freeSlots);
         freeSlots = freeSlots->next;
         return result;
     }
@@ -72,25 +72,25 @@ inline typename Memory<T, BlockSize>::Pointer Memory<T, BlockSize>::allocate(Siz
         {
             allocateBlock();
         }
-        return reinterpret_cast<Pointer>(currentSlot++);
+        return reinterpret_cast<T*>(currentSlot++);
     }
 }
 
 template <typename T, std::size_t BlockSize>
-inline void Memory<T, BlockSize>::deallocate(Pointer p, SizeType /*n*/)
+inline void Memory<T, BlockSize>::deallocate(T* p, const std::size_t /*n*/)
 {
     if (nullptr != p)
     {
-        reinterpret_cast<SlotPointer>(p)->next = freeSlots;
-        freeSlots = reinterpret_cast<SlotPointer>(p);
+        reinterpret_cast<Slot*>(p)->next = freeSlots;
+        freeSlots = reinterpret_cast<Slot*>(p);
     }
 }
 
 template <typename T, std::size_t BlockSize>
-inline typename Memory<T, BlockSize>::SizeType Memory<T, BlockSize>::maxSize() const noexcept
+inline std::size_t Memory<T, BlockSize>::maxSize() const noexcept
 {
-    SizeType maxBlocks = -1 / BlockSize;
-    return (BlockSize - sizeof(DataPointer)) / sizeof(SlotType) * maxBlocks;
+    const std::size_t maxBlocks = -1 / BlockSize;
+    return (BlockSize - sizeof(char*)) / sizeof(Slot) * maxBlocks;
 }
 
 template <typename T, std::size_t BlockSize>
@@ -109,41 +109,40 @@ inline void Memory<T, BlockSize>::destroy(U* p)
 
 template <typename T, std::size_t BlockSize>
 template <class... Args>
-inline typename Memory<T, BlockSize>::Pointer Memory<T, BlockSize>::newElement(Args&&... args)
+inline T* Memory<T, BlockSize>::newElement(Args&&... args)
 {
-    Pointer result = allocate();
-    construct<ValueType>(result, std::forward<Args>(args)...);
+    T* result = allocate();
+    construct<T>(result, std::forward<Args>(args)...);
     return result;
 }
 
 template <typename T, std::size_t BlockSize>
-inline void Memory<T, BlockSize>::deleteElement(Pointer p)
+inline void Memory<T, BlockSize>::deleteElement(T* p)
 {
     if (nullptr != p)
     {
-        p->~ValueType();
+        p->~T();
         deallocate(p);
     }
 }
 
 template <typename T, std::size_t BlockSize>
-inline typename Memory<T, BlockSize>::SizeType Memory<T, BlockSize>::padPointer(DataPointer p, SizeType align)
-    const noexcept
+inline std::size_t Memory<T, BlockSize>::padPointer(char* p, const std::size_t align) const noexcept
 {
-    std::uintptr_t result = reinterpret_cast<std::uintptr_t>(p);
+    const std::uintptr_t result = reinterpret_cast<std::uintptr_t>(p);
     return ((align - result) % align);
 }
 
 template <typename T, std::size_t BlockSize>
 void Memory<T, BlockSize>::allocateBlock()
 {
-    DataPointer newBlock = reinterpret_cast<DataPointer>(operator new(BlockSize));
-    reinterpret_cast<SlotPointer>(newBlock)->next = currentBlock;
-    currentBlock = reinterpret_cast<SlotPointer>(newBlock);
+    char* newBlock = reinterpret_cast<char*>(operator new(BlockSize));
+    reinterpret_cast<Slot*>(newBlock)->next = currentBlock;
+    currentBlock = reinterpret_cast<Slot*>(newBlock);
 
-    DataPointer body = newBlock + sizeof(SlotPointer);
-    SizeType bodyPadding = padPointer(body, alignof(SlotType));
-    currentSlot = reinterpret_cast<SlotPointer>(body + bodyPadding);
-    lastSlot = reinterpret_cast<SlotPointer>(newBlock + BlockSize - sizeof(SlotType) + 1);
+    char* body = newBlock + sizeof(Slot*);
+    const std::size_t bodyPadding = padPointer(body, alignof(Slot));
+    currentSlot = reinterpret_cast<Slot*>(body + bodyPadding);
+    lastSlot = reinterpret_cast<Slot*>(newBlock + BlockSize - sizeof(Slot) + 1);
 }
 } // namespace utility::memory

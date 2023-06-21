@@ -714,7 +714,7 @@ Node* splayTreeSearch(SplayTree tree, const Type key)
 Node* splayTreeSplay(SplayTree tree, const Type key)
 {
     Node n, *l, *r, *c;
-    if (tree == nullptr)
+    if (nullptr == tree)
     {
         return tree;
     }

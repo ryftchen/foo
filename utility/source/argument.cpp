@@ -106,7 +106,7 @@ std::size_t ArgumentRegister::getArgumentsLength() const
         });
 }
 
-std::vector<std::string> ArgumentRegister::splitHelpMessageWithDelimiter(const char delim) const
+std::vector<std::string> ArgumentRegister::splitHelpStringWithDelimiter(const char delim) const
 {
     std::string origin = helpStr;
     if (0 == origin.find_first_of(delim))
@@ -118,24 +118,24 @@ std::vector<std::string> ArgumentRegister::splitHelpMessageWithDelimiter(const c
         origin.pop_back();
     }
 
-    std::vector<std::string> split;
+    std::vector<std::string> splits;
     std::size_t pos = 0, prevPos = 0;
     do
     {
         pos = origin.substr(prevPos).find(delim);
         if (pos == std::string::npos)
         {
-            split.emplace_back(origin.substr(prevPos));
+            splits.emplace_back(origin.substr(prevPos));
             break;
         }
 
         pos += prevPos;
-        split.emplace_back(origin.substr(prevPos, pos - prevPos));
+        splits.emplace_back(origin.substr(prevPos, pos - prevPos));
         prevPos = pos + 1;
     }
     while (true);
 
-    return split;
+    return splits;
 }
 
 //! @brief The operator (<<) overloading of the ArgumentRegister class.
@@ -153,7 +153,7 @@ std::ostream& operator<<(std::ostream& os, const ArgumentRegister& argument)
     os << "    ";
 
     std::vector<std::string> helpMsg =
-        (!argument.helpStr.empty()) ? argument.splitHelpMessageWithDelimiter('\n') : std::vector<std::string>{};
+        (!argument.helpStr.empty()) ? argument.splitHelpStringWithDelimiter('\n') : std::vector<std::string>{};
     if (helpMsg.size() > 0)
     {
         os << *helpMsg.cbegin();
@@ -344,7 +344,7 @@ ArgumentRegister& Argument::operator[](const std::string_view argName) const
 //! @param os - output stream object
 //! @param parser - specific Argument object
 //! @return reference of output stream object
-auto operator<<(std::ostream& os, const Argument& parser) -> std::ostream&
+std::ostream& operator<<(std::ostream& os, const Argument& parser)
 {
     os.setf(std::ios_base::left);
     os << "Usage: " << parser.title << " <options...> ";

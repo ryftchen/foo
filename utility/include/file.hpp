@@ -77,9 +77,9 @@ private:
 template <typename T>
 void fdLock(T& file, const LockMode mode)
 {
-    const int fd = static_cast<__gnu_cxx::stdio_filebuf<char>*const>(file.rdbuf())->fd(),
+    const int fd = static_cast<::__gnu_cxx::stdio_filebuf<char>*const>(file.rdbuf())->fd(),
               operate = (LockMode::read == mode ? LOCK_SH : LOCK_EX) | LOCK_NB;
-    if (flock(fd, operate))
+    if (::flock(fd, operate))
     {
         throw std::runtime_error("Failed to lock FD.");
     }
@@ -91,8 +91,8 @@ void fdLock(T& file, const LockMode mode)
 template <typename T>
 void fdUnlock(T& file)
 {
-    const int fd = static_cast<__gnu_cxx::stdio_filebuf<char>* const>(file.rdbuf())->fd();
-    if (flock(fd, LOCK_UN))
+    const int fd = static_cast<::__gnu_cxx::stdio_filebuf<char>* const>(file.rdbuf())->fd();
+    if (::flock(fd, LOCK_UN))
     {
         throw std::runtime_error("Failed to unlock FD.");
     }
