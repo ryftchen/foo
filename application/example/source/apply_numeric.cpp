@@ -59,7 +59,7 @@ NumericTask& getTask()
 namespace arithmetic
 {
 //! @brief Display arithmetic result.
-#define ARITHMETIC_RESULT "\r\n*%-14s method:\n(%d) %c (%d) = %d\n"
+#define ARITHMETIC_RESULT "\r\n==> %-14s Method <==\n(%d) %c (%d) = %d\n"
 //! @brief Print arithmetic result content.
 #define ARITHMETIC_PRINT_RESULT_CONTENT(method, a, operator, b, result) \
     COMMON_PRINT(ARITHMETIC_RESULT, method, a, operator, b, result)
@@ -203,7 +203,7 @@ void updateArithmeticTask(const std::string& target)
 namespace divisor
 {
 //! @brief Display divisor result.
-#define DIVISOR_RESULT "\r\n*%-9s method:\n%s\n==>Run time: %8.5f ms\n"
+#define DIVISOR_RESULT "\r\n==> %-9s Method <==\n%s\nrun time: %8.5f ms\n"
 //! @brief Print divisor result content.
 #define DIVISOR_PRINT_RESULT_CONTENT(method)                                                                   \
     do                                                                                                         \
@@ -324,7 +324,7 @@ void updateDivisorTask(const std::string& target)
 namespace integral
 {
 //! @brief Display integral result.
-#define INTEGRAL_RESULT(opt) "*%-11s method: I(" #opt ")=%+.5f  ==>Run time: %8.5f ms\n"
+#define INTEGRAL_RESULT(opt) "\r\n==> %-11s Method <==\nI(" #opt ")=%+.5f, run time: %8.5f ms\n"
 //! @brief Print integral result content.
 #define INTEGRAL_PRINT_RESULT_CONTENT(method, sum) \
     COMMON_PRINT(INTEGRAL_RESULT(def), method, sum, TIME_INTERVAL(timing))
@@ -418,7 +418,7 @@ void runIntegralTasks(const std::vector<std::string>& targets)
     typedef std::variant<Expression1> IntegralExprTarget;
     const auto printFunctor = [](const IntegralExprTarget& expression)
     {
-        constexpr std::string_view prefix{"\r\nIntegral expression: "};
+        constexpr std::string_view prefix{"\r\nIntegral expression:\n"};
         std::visit(
             integral::ExprOverloaded{
                 [&prefix](const Expression1& /*unused*/)
@@ -527,7 +527,7 @@ void updateIntegralTask(const std::string& target)
 namespace prime
 {
 //! @brief Display prime result.
-#define PRIME_RESULT "\r\n*%-9s method:\n%s\n==>Run time: %8.5f ms\n"
+#define PRIME_RESULT "\r\n==> %-9s Method <==\n%s\nrun time: %8.5f ms\n"
 //! @brief Print prime result content.
 #define PRIME_PRINT_RESULT_CONTENT(method)                                                                             \
     do                                                                                                                 \

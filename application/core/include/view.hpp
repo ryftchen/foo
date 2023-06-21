@@ -156,10 +156,10 @@ public:
     typedef int (*BuildFunctor)(char*);
     //! @brief Alias for the option name.
     using Option = std::string;
-    //! @brief Alias for the option help information.
-    using HelpInfo = std::string;
-    //! @brief Alias for the tuple of HelpInfo and BuildFunctor.
-    using OptionTuple = std::tuple<HelpInfo, BuildFunctor>;
+    //! @brief Alias for the option help message.
+    using HelpMessage = std::string;
+    //! @brief Alias for the tuple of HelpMessage and BuildFunctor.
+    using OptionTuple = std::tuple<HelpMessage, BuildFunctor>;
     //! @brief Alias for the map of Option and OptionTuple.
     using OptionMap = std::map<Option, OptionTuple>;
     //! @brief Get the viewer options.
@@ -302,7 +302,7 @@ inline View::OptionMap View::getViewerOptions() const
 template <typename T>
 auto View::get(const OptionTuple& tuple)
 {
-    if constexpr (std::is_same_v<T, HelpInfo>)
+    if constexpr (std::is_same_v<T, HelpMessage>)
     {
         return std::get<0>(tuple);
     }

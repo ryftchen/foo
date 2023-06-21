@@ -434,20 +434,15 @@ private:
         std::string out(text);
         out.insert(1, ".");
         std::cout << "\r\nπ " << textLen << " digits:\n"
-                  << out.substr(0, std::min(textLen, maxNumPerLineOfPrint)) << '\n';
+                  << out.substr(0, std::min(textLen, maxNumPerLineOfPrint)) << std::endl;
         if (textLen > maxNumPerLineOfPrint)
         {
-            std::cout << "...\n...\n...\n";
-            if (textLen > maxNumPerLineOfPrint)
-            {
-                std::cout
-                    << ((textLen > (maxNumPerLineOfPrint * 2))
-                            ? out.substr(out.length() - maxNumPerLineOfPrint, out.length())
-                            : out.substr(maxNumPerLineOfPrint + 1, out.length()))
-                    << '\n';
-            }
+            std::cout << "...\n...\n...\n"
+                      << ((textLen > (maxNumPerLineOfPrint * 2))
+                              ? out.substr(out.length() - maxNumPerLineOfPrint, out.length())
+                              : out.substr(maxNumPerLineOfPrint + 1, out.length()))
+                      << std::endl;
         }
-        std::cout << std::endl;
 #endif // __RUNTIME_PRINTING
     }
     //! @brief Calculate precision by digit.
@@ -784,9 +779,8 @@ private:
         const std::uint32_t arrayBufferSize = length * maxAlignOfPrint;
         char arrayBuffer[arrayBufferSize + 1];
         arrayBuffer[0] = '\0';
-        std::cout << "\r\nGenerate " << length << " ordered integral numbers from " << left << " to " << right << ":\n"
-                  << formatArray<T>(array, length, arrayBuffer, arrayBufferSize + 1) << '\n'
-                  << std::endl;
+        std::cout << "\r\ngenerate " << length << " ordered integral numbers from " << left << " to " << right << ":\n"
+                  << formatArray<T>(array, length, arrayBuffer, arrayBufferSize + 1) << std::endl;
 #endif // __RUNTIME_PRINTING
     }
     //! @brief Set the ordered array.
@@ -816,8 +810,7 @@ private:
         arrayBuffer[0] = '\0';
         std::cout << "\r\nGenerate " << length << " ordered floating point numbers from " << left << " to " << right
                   << ":\n"
-                  << formatArray<T>(array, length, arrayBuffer, arrayBufferSize + 1) << '\n'
-                  << std::endl;
+                  << formatArray<T>(array, length, arrayBuffer, arrayBufferSize + 1) << std::endl;
 #endif // __RUNTIME_PRINTING
     }
 };

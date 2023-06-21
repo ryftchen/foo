@@ -36,7 +36,7 @@ Log& Log::getInstance()
 void Log::runLogger()
 {
     State expectedState = State::init;
-    auto checkIfExceptedFSMState = [&](const State state) -> void
+    const auto checkIfExceptedFSMState = [&](const State state) -> void
     {
         expectedState = state;
         if (currentState() != expectedState)
@@ -113,16 +113,21 @@ void Log::interfaceToStart()
     expiryTimer.set(
         [&]()
         {
-            if ((State::work == currentState()) || (maxTimesOfWaitLogger == waitCount))
+            if (State::work == currentState())
             {
                 expiryTimer.reset();
             }
             else
             {
                 ++waitCount;
+            }
+
+            if (maxTimesOfWaitLogger == waitCount)
+            {
 #ifndef NDEBUG
-                std::cout << "<LOG> Wait for the logger to start... (" << waitCount << ')' << std::endl;
+                std::cerr << "<LOG> Wait for the logger to start.." << std::endl;
 #endif // NDEBUG
+                expiryTimer.reset();
             }
         },
         intervalOfWaitLogger);
@@ -146,16 +151,21 @@ void Log::interfaceToStop()
     expiryTimer.set(
         [&]()
         {
-            if ((State::done == currentState()) || (maxTimesOfWaitLogger == waitCount))
+            if (State::done == currentState())
             {
                 expiryTimer.reset();
             }
             else
             {
                 ++waitCount;
+            }
+
+            if (maxTimesOfWaitLogger == waitCount)
+            {
 #ifndef NDEBUG
-                std::cout << "<LOG> Wait for the logger to stop... (" << waitCount << ')' << std::endl;
+                std::cerr << "<LOG> Wait for the logger to stop..." << std::endl;
 #endif // NDEBUG
+                expiryTimer.reset();
             }
         },
         intervalOfWaitLogger);

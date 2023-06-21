@@ -207,12 +207,12 @@ private:
     // clang-format off
     //! @brief Mapping table of all basic tasks.
     const std::map<std::string, void (Command::*)() const> basicTaskDispatcher{
-        // - Category -+------------ Print ------------
-        // ------------+-------------------------------
-        { "console"    , &Command::printConsoleOutput },
-        { "help"       , &Command::printHelpMessage   },
-        { "version"    , &Command::printVersionInfo   },
-        // ------------+-------------------------------
+        // - Category -+------------ Show ------------
+        // ------------+------------------------------
+        { "console"    , &Command::showConsoleOutput },
+        { "help"       , &Command::showHelpMessage   },
+        { "version"    , &Command::showVersionInfo   },
+        // ------------+------------------------------
     };
     //! @brief Mapping table of all general tasks.
     const GeneralTaskMap generalTaskDispatcher{
@@ -241,11 +241,11 @@ private:
     // clang-format on
 
     //! @brief Print output of the console mode command line.
-    void printConsoleOutput() const;
+    void showConsoleOutput() const;
     //! @brief Print help message.
-    void printHelpMessage() const;
+    void showHelpMessage() const;
     //! @brief Print version information.
-    void printVersionInfo() const;
+    void showVersionInfo() const;
     //! @brief Enter console mode.
     void enterConsoleMode() const;
     //! @brief Register the command line to console mode.
