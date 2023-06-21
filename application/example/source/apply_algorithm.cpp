@@ -63,9 +63,9 @@ namespace match
 {
 //! @brief Display match result.
 #define MATCH_RESULT(opt) \
-    "*%-16s method: Pattern \"%s\" found starting (" #opt ") at index %d.  ==>Run time: %8.5f ms\n"
+    "\r\n==> %-16s Method <==\npattern \"%s\" found starting (" #opt ") at index %d, run time: %8.5f ms\n"
 //! @brief Display none match result.
-#define MATCH_NONE_RESULT "*%-16s method: Pattern \"%s\" could not be found.  ==>Run time: %8.5f ms\n"
+#define MATCH_NONE_RESULT "\r\n==> %-16s Method <==\npattern \"%s\" could not be found, run time: %8.5f ms\n"
 //! @brief Print match result content.
 #define MATCH_PRINT_RESULT_CONTENT(method)                                                  \
     do                                                                                      \
@@ -275,7 +275,7 @@ void updateMatchTask(const std::string& target)
 namespace notation
 {
 //! @brief Display notation result.
-#define NOTATION_RESULT "\r\n*%-7s method:\n%s: %s\n"
+#define NOTATION_RESULT "\r\n==> %-7s Method <==\n%s: %s\n"
 //! @brief Print notation result content.
 #define NOTATION_PRINT_RESULT_CONTENT(method, describe) \
     COMMON_PRINT(NOTATION_RESULT, method, describe, notationStr.data())
@@ -379,7 +379,7 @@ void updateNotationTask(const std::string& target)
 namespace optimal
 {
 //! @brief Display optimal result.
-#define OPTIMAL_RESULT(opt) "*%-9s method: F(" #opt ")=%+.5f X=%+.5f  ==>Run time: %8.5f ms\n"
+#define OPTIMAL_RESULT(opt) "\r\n==> %-9s Method <==\nF(" #opt ")=%+.5f X=%+.5f, run time: %8.5f ms\n"
 //! @brief Print optimal result content.
 #define OPTIMAL_PRINT_RESULT_CONTENT(method) COMMON_PRINT(OPTIMAL_RESULT(min), method, fx, x, TIME_INTERVAL(timing))
 
@@ -457,7 +457,7 @@ void runOptimalTasks(const std::vector<std::string>& targets)
     typedef std::variant<Rastrigin> OptimalFuncTarget;
     const auto printFunctor = [](const OptimalFuncTarget& function)
     {
-        constexpr std::string_view prefix{"\r\nOptimal function: "};
+        constexpr std::string_view prefix{"\r\nOptimal function:\n"};
         std::visit(
             optimal::FuncOverloaded{
                 [&prefix](const Rastrigin& /*unused*/)
@@ -561,9 +561,10 @@ void updateOptimalTask(const std::string& target)
 namespace search
 {
 //! @brief Display search result.
-#define SEARCH_RESULT "*%-13s method: Found the key \"%.5f\" that appears in the index %d.  ==>Run time: %8.5f ms\n"
+#define SEARCH_RESULT \
+    "\r\n==> %-13s Method <==\nfound the key \"%.5f\" that appears in the index %d, run time: %8.5f ms\n"
 //! @brief Display none search result.
-#define SEARCH_NONE_RESULT "*%-13s method: Could not find the key \"%.5f\".  ==>Run time: %8.5f ms\n"
+#define SEARCH_NONE_RESULT "\r\n==> %-13s Method <==\ncould not find the key \"%.5f\", run time: %8.5f ms\n"
 //! @brief Print search result content.
 #define SEARCH_PRINT_RESULT_CONTENT(method)                                         \
     do                                                                              \
@@ -710,7 +711,7 @@ void updateSearchTask(const std::string& target)
 namespace sort
 {
 //! @brief Display sort result.
-#define SORT_RESULT(opt) "\r\n*%-9s method: (" #opt ")\n%s\n==>Run time: %8.5f ms\n"
+#define SORT_RESULT(opt) "\r\n==> %-9s Method <==\n%s\n(" #opt ") run time: %8.5f ms\n"
 //! @brief Print sort result content.
 #define SORT_PRINT_RESULT_CONTENT(method)                                                                           \
     do                                                                                                              \

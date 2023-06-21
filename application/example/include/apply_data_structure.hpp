@@ -310,8 +310,6 @@ public:
 class LinearStructure
 {
 public:
-    //! @brief Construct a new LinearStructure object.
-    LinearStructure();
     //! @brief Destroy the LinearStructure object.
     virtual ~LinearStructure() = default;
 
@@ -488,8 +486,6 @@ public:
 class TreeStructure
 {
 public:
-    //! @brief Construct a new TreeStructure object.
-    TreeStructure();
     //! @brief Destroy the TreeStructure object.
     virtual ~TreeStructure() = default;
 

@@ -51,7 +51,8 @@ Command::Command()
                   "- notation    Notation Method\n"
                   "- optimal     Optimal Method\n"
                   "- search      Search Method\n"
-                  "- sort        Sort Method");
+                  "- sort        Sort Method\n"
+                  "for more help, use the -h, --help option with a category");
 
         program.addArgument("-ds", "--data-structure")
             .nArgs(1)
@@ -72,7 +73,8 @@ Command::Command()
                 })
             .help("run data structure tasks with a category:\n"
                   "- linear    Linear Structure\n"
-                  "- tree      Tree Structure");
+                  "- tree      Tree Structure\n"
+                  "for more help, use the -h, --help option with a category");
 
         program.addArgument("-dp", "--design-pattern")
             .nArgs(1)
@@ -94,7 +96,8 @@ Command::Command()
             .help("run design pattern tasks with a category:\n"
                   "- behavioral    Behavioral Pattern\n"
                   "- creational    Creational Pattern\n"
-                  "- structural    Structural Pattern");
+                  "- structural    Structural Pattern\n"
+                  "for more help, use the -h, --help option with a category");
 
         program.addArgument("-n", "--numeric")
             .nArgs(1)
@@ -117,9 +120,10 @@ Command::Command()
                   "- arithmetic    Arithmetic Method\n"
                   "- divisor       Divisor Method\n"
                   "- integral      Integral Method\n"
-                  "- prime         Prime Method");
+                  "- prime         Prime Method\n"
+                  "for more help, use the -h, --help option with a category");
 
-        program.addArgument("tasks").remaining().help("add a category with --help for task details");
+        program.addArgument("tasks").remaining().help("tasks under the specific category");
     }
     catch (const std::exception& error)
     {
@@ -355,7 +359,7 @@ void Command::dispatchTask() const
     }
 }
 
-void Command::printConsoleOutput() const
+void Command::showConsoleOutput() const
 {
     const auto commands = program.get<std::vector<std::string>>(
         std::next(basicTaskDispatcher.cbegin(), BasicTask::Category::console)->first);
@@ -400,7 +404,7 @@ void Command::printConsoleOutput() const
     udpClient.toClose();
 }
 
-void Command::printHelpMessage() const
+void Command::showHelpMessage() const
 {
     if (dispatchedTask.generalTask.empty())
     {
@@ -570,7 +574,7 @@ void Command::printHelpMessage() const
     }
 }
 
-void Command::printVersionInfo() const
+void Command::showVersionInfo() const
 {
     std::string versionStr = "tput rev; echo ";
     versionStr += getIconBanner();
@@ -647,7 +651,7 @@ void Command::registerOnConsole(utility::console::Console& console, T& client) c
     for (const auto& [option, optionTuple] : VIEW_OPTIONS)
     {
         const auto& cmd = option;
-        const auto& helpInfo = View::get<View::HelpInfo>(optionTuple);
+        const auto& help = View::get<View::HelpMessage>(optionTuple);
         console.registerCommand(
             cmd,
             [cmd, &client](const std::vector<std::string>& /*unused*/) -> decltype(auto)
@@ -665,7 +669,7 @@ void Command::registerOnConsole(utility::console::Console& console, T& client) c
                 }
                 return retVal;
             },
-            helpInfo);
+            help);
     }
 }
 

@@ -164,7 +164,7 @@ View& View::getInstance()
 void View::runViewer()
 {
     State expectedState = State::init;
-    auto checkIfExceptedFSMState = [&](const State state) -> void
+    const auto checkIfExceptedFSMState = [&](const State state) -> void
     {
         expectedState = state;
         if (currentState() != expectedState)
@@ -217,16 +217,21 @@ void View::interfaceToStart()
     expiryTimer.set(
         [&]()
         {
-            if ((State::work == currentState()) || (maxTimesOfWaitViewer == waitCount))
+            if (State::work == currentState())
             {
                 expiryTimer.reset();
             }
             else
             {
                 ++waitCount;
+            }
+
+            if (maxTimesOfWaitViewer == waitCount)
+            {
 #ifndef NDEBUG
-                std::cout << "<VIEW> Wait for the viewer to start... (" << waitCount << ')' << std::endl;
+                std::cerr << "<VIEW> Wait for the viewer to start..." << std::endl;
 #endif // NDEBUG
+                expiryTimer.reset();
             }
         },
         intervalOfWaitViewer);
@@ -250,16 +255,21 @@ void View::interfaceToStop()
     expiryTimer.set(
         [&]()
         {
-            if ((State::done == currentState()) || (maxTimesOfWaitViewer == waitCount))
+            if (State::done == currentState())
             {
                 expiryTimer.reset();
             }
             else
             {
                 ++waitCount;
+            }
+
+            if (maxTimesOfWaitViewer == waitCount)
+            {
 #ifndef NDEBUG
-                std::cout << "<VIEW> Wait for the viewer to stop... (" << waitCount << ')' << std::endl;
+                std::cerr << "<VIEW> Wait for the viewer to stop..." << std::endl;
 #endif // NDEBUG
+                expiryTimer.reset();
             }
         },
         intervalOfWaitViewer);

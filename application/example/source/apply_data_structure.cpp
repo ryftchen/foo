@@ -53,14 +53,9 @@ DataStructureTask& getTask()
 namespace linear
 {
 //! @brief Display linear result.
-#define LINEAR_RESULT "\r\n*%-10s instance:\n%s"
+#define LINEAR_RESULT "\r\n==> %-10s Structure <==\n%s"
 //! @brief Print linear result content.
-#define LINEAR_PRINT_RESULT_CONTENT(method) COMMON_PRINT(LINEAR_RESULT, method, output.str().c_str())
-
-LinearStructure::LinearStructure()
-{
-    std::cout << "\r\nInstances of the linear structure:" << std::endl;
-}
+#define LINEAR_PRINT_RESULT_CONTENT(structure) COMMON_PRINT(LINEAR_RESULT, structure, output.str().c_str())
 
 void LinearStructure::linkedListInstance()
 {
@@ -124,6 +119,7 @@ void runLinearTasks(const std::vector<std::string>& targets)
         threads->enqueue(threadName, instancePtr);
     };
 
+    std::cout << "\r\nInstances of the linear structure:" << std::endl;
     for (std::uint8_t i = 0; i < Bottom<LinearInstance>::value; ++i)
     {
         if (!getBit<LinearInstance>().test(LinearInstance(i)))
@@ -178,14 +174,9 @@ void updateLinearTask(const std::string& target)
 namespace tree
 {
 //! @brief Display tree result.
-#define TREE_RESULT "\r\n*%-19s instance:\n%s"
+#define TREE_RESULT "\r\n==> %-19s Structure <==\n%s"
 //! @brief Print tree result content.
-#define TREE_PRINT_RESULT_CONTENT(method) COMMON_PRINT(TREE_RESULT, method, output.str().c_str());
-
-TreeStructure::TreeStructure()
-{
-    std::cout << "\r\nInstances of the tree structure:" << std::endl;
-}
+#define TREE_PRINT_RESULT_CONTENT(structure) COMMON_PRINT(TREE_RESULT, structure, output.str().c_str());
 
 void TreeStructure::bsInstance()
 {
@@ -249,6 +240,7 @@ void runTreeTasks(const std::vector<std::string>& targets)
         threads->enqueue(threadName, instancePtr);
     };
 
+    std::cout << "\r\nInstances of the tree structure:" << std::endl;
     for (std::uint8_t i = 0; i < Bottom<TreeInstance>::value; ++i)
     {
         if (!getBit<TreeInstance>().test(TreeInstance(i)))

@@ -55,14 +55,9 @@ DesignPatternTask& getTask()
 namespace behavioral
 {
 //! @brief Display behavioral result.
-#define BEHAVIORAL_RESULT "\r\n*%-21s instance:\n%s"
+#define BEHAVIORAL_RESULT "\r\n==> %-21s Pattern <==\n%s"
 //! @brief Print behavioral result content.
-#define BEHAVIORAL_PRINT_RESULT_CONTENT(method) COMMON_PRINT(BEHAVIORAL_RESULT, method, output.str().c_str());
-
-BehavioralPattern::BehavioralPattern()
-{
-    std::cout << "\r\nInstances of the behavioral pattern:" << std::endl;
-}
+#define BEHAVIORAL_PRINT_RESULT_CONTENT(pattern) COMMON_PRINT(BEHAVIORAL_RESULT, pattern, output.str().c_str());
 
 void BehavioralPattern::chainOfResponsibilityInstance()
 {
@@ -230,6 +225,7 @@ void runBehavioralTasks(const std::vector<std::string>& targets)
         threads->enqueue(threadName, instancePtr);
     };
 
+    std::cout << "\r\nInstances of the behavioral pattern:" << std::endl;
     for (std::uint8_t i = 0; i < Bottom<BehavioralInstance>::value; ++i)
     {
         if (!getBit<BehavioralInstance>().test(BehavioralInstance(i)))
@@ -332,14 +328,9 @@ void updateBehavioralTask(const std::string& target)
 namespace creational
 {
 //! @brief Display creational result.
-#define CREATIONAL_RESULT "\r\n*%-15s instance:\n%s"
+#define CREATIONAL_RESULT "\r\n==> %-15s Pattern <==\n%s"
 //! @brief Print creational result content.
-#define CREATIONAL_PRINT_RESULT_CONTENT(method) COMMON_PRINT(CREATIONAL_RESULT, method, output.str().c_str());
-
-CreationalPattern::CreationalPattern()
-{
-    std::cout << "\r\nInstances of the creational pattern:" << std::endl;
-}
+#define CREATIONAL_PRINT_RESULT_CONTENT(pattern) COMMON_PRINT(CREATIONAL_RESULT, pattern, output.str().c_str());
 
 void CreationalPattern::abstractFactoryInstance()
 {
@@ -429,6 +420,7 @@ void runCreationalTasks(const std::vector<std::string>& targets)
         threads->enqueue(threadName, instancePtr);
     };
 
+    std::cout << "\r\nInstances of the creational pattern:" << std::endl;
     for (std::uint8_t i = 0; i < Bottom<CreationalInstance>::value; ++i)
     {
         if (!getBit<CreationalInstance>().test(CreationalInstance(i)))
@@ -495,14 +487,9 @@ void updateCreationalTask(const std::string& target)
 namespace structural
 {
 //! @brief Display structural result.
-#define STRUCTURAL_RESULT "\r\n*%-9s instance:\n%s"
+#define STRUCTURAL_RESULT "\r\n==> %-9s Pattern <==\n%s"
 //! @brief Print structural result content.
-#define STRUCTURAL_PRINT_RESULT_CONTENT(method) COMMON_PRINT(STRUCTURAL_RESULT, method, output.str().c_str());
-
-StructuralPattern::StructuralPattern()
-{
-    std::cout << "\r\nInstances of the structural pattern:" << std::endl;
-}
+#define STRUCTURAL_PRINT_RESULT_CONTENT(pattern) COMMON_PRINT(STRUCTURAL_RESULT, pattern, output.str().c_str());
 
 void StructuralPattern::adapterInstance()
 {
@@ -618,6 +605,7 @@ void runStructuralTasks(const std::vector<std::string>& targets)
         threads->enqueue(threadName, instancePtr);
     };
 
+    std::cout << "\r\nInstances of the structural pattern:" << std::endl;
     for (std::uint8_t i = 0; i < Bottom<StructuralInstance>::value; ++i)
     {
         if (!getBit<StructuralInstance>().test(StructuralInstance(i)))

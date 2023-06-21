@@ -451,8 +451,6 @@ public:
 class BehavioralPattern
 {
 public:
-    //! @brief Construct a new BehavioralPattern object.
-    BehavioralPattern();
     //! @brief Destroy the BehavioralPattern object.
     virtual ~BehavioralPattern() = default;
 
@@ -617,8 +615,6 @@ public:
 class CreationalPattern
 {
 public:
-    //! @brief Construct a new CreationalPattern object.
-    CreationalPattern();
     //! @brief Destroy the CreationalPattern object.
     virtual ~CreationalPattern() = default;
 
@@ -785,8 +781,6 @@ public:
 class StructuralPattern
 {
 public:
-    //! @brief Construct a new StructuralPattern object.
-    StructuralPattern();
     //! @brief Destroy the StructuralPattern object.
     virtual ~StructuralPattern() = default;
 
