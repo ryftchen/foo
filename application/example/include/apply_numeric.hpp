@@ -1,7 +1,7 @@
 //! @file apply_numeric.hpp
 //! @author ryftchen
 //! @brief The declarations (apply_numeric) in the application module.
-//! @version 0.1
+//! @version 1.0
 //! @copyright Copyright (c) 2022-2023
 
 #pragma once

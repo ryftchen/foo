@@ -1,7 +1,7 @@
 //! @file prime.hpp
 //! @author ryftchen
 //! @brief The declarations (prime) in the numeric module.
-//! @version 0.1
+//! @version 1.0
 //! @copyright Copyright (c) 2022-2023
 
 #pragma once

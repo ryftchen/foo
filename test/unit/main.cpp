@@ -1,7 +1,7 @@
 //! @file main.cpp
 //! @author ryftchen
 //! @brief The definitions (main) in the test module.
-//! @version 0.1
+//! @version 1.0
 //! @copyright Copyright (c) 2022-2023
 
 #include <gtest/gtest.h>
