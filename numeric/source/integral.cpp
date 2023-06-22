@@ -1,7 +1,7 @@
 //! @file integral.cpp
 //! @author ryftchen
 //! @brief The definitions (integral) in the numeric module.
-//! @version 0.1
+//! @version 1.0
 //! @copyright Copyright (c) 2022-2023
 
 #include "integral.hpp"

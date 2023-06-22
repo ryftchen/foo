@@ -1,7 +1,7 @@
 //! @file command.cpp
 //! @author ryftchen
 //! @brief The definitions (command) in the application module.
-//! @version 0.1
+//! @version 1.0
 //! @copyright Copyright (c) 2022-2023
 
 #include "command.hpp"

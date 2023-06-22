@@ -1,7 +1,7 @@
 //! @file command.hpp
 //! @author ryftchen
 //! @brief The declarations (command) in the application module.
-//! @version 0.1
+//! @version 1.0
 //! @copyright Copyright (c) 2022-2023
 
 #pragma once
@@ -49,7 +49,7 @@ private:
     //! @brief Flag to indicate whether parsing of arguments is completed.
     std::atomic<bool> isParsed{false};
     //! @brief A Argument object for parsing arguments.
-    utility::argument::Argument program{utility::argument::Argument("foo", "0.1")};
+    utility::argument::Argument program{utility::argument::Argument("foo", "1.0")};
     //! @brief Copyright information.
     static constexpr std::string_view copyrightInfo{"Copyright (c) 2022-2023 ryftchen"};
 

@@ -1,7 +1,7 @@
 //! @file behavioral.cpp
 //! @author ryftchen
 //! @brief The definitions (behavioral) in the data structure module.
-//! @version 0.1
+//! @version 1.0
 //! @copyright Copyright (c) 2022-2023
 
 #include "behavioral.hpp"

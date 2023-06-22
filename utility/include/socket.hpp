@@ -1,7 +1,7 @@
 //! @file socket.hpp
 //! @author ryftchen
 //! @brief The declarations (socket) in the utility module.
-//! @version 0.1
+//! @version 1.0
 //! @copyright Copyright (c) 2022-2023
 
 #pragma once
