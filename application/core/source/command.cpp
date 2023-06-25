@@ -47,11 +47,11 @@ Command::Command()
                     throw std::runtime_error("<COMMAND> Unknown algorithm category: " + value);
                 })
             .help("run algorithm tasks with a category:\n"
-                  "- match       Match Method\n"
-                  "- notation    Notation Method\n"
-                  "- optimal     Optimal Method\n"
-                  "- search      Search Method\n"
-                  "- sort        Sort Method\n"
+                  "- match       Match Solution\n"
+                  "- notation    Notation Solution\n"
+                  "- optimal     Optimal Solution\n"
+                  "- search      Search Solution\n"
+                  "- sort        Sort Solution\n"
                   "for more help, use the -h, --help option with a category");
 
         program.addArgument("-ds", "--data-structure")
@@ -117,10 +117,10 @@ Command::Command()
                     throw std::runtime_error("<COMMAND> Unknown numeric category: " + value);
                 })
             .help("run numeric tasks with a category:\n"
-                  "- arithmetic    Arithmetic Method\n"
-                  "- divisor       Divisor Method\n"
-                  "- integral      Integral Method\n"
-                  "- prime         Prime Method\n"
+                  "- arithmetic    Arithmetic Solution\n"
+                  "- divisor       Divisor Solution\n"
+                  "- integral      Integral Solution\n"
+                  "- prime         Prime Solution\n"
                   "for more help, use the -h, --help option with a category");
 
         program.addArgument("tasks").remaining().help("tasks under the specific category");
