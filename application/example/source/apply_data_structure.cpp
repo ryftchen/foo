@@ -53,7 +53,7 @@ DataStructureTask& getTask()
 namespace linear
 {
 //! @brief Display linear result.
-#define LINEAR_RESULT "\r\n==> %-10s Structure <==\n%s"
+#define LINEAR_RESULT "\r\n==> %-10s Instance <==\n%s"
 //! @brief Print linear result content.
 #define LINEAR_PRINT_RESULT_CONTENT(structure) COMMON_PRINT(LINEAR_RESULT, structure, output.str().c_str())
 
@@ -174,7 +174,7 @@ void updateLinearTask(const std::string& target)
 namespace tree
 {
 //! @brief Display tree result.
-#define TREE_RESULT "\r\n==> %-19s Structure <==\n%s"
+#define TREE_RESULT "\r\n==> %-19s Instance <==\n%s"
 //! @brief Print tree result content.
 #define TREE_PRINT_RESULT_CONTENT(structure) COMMON_PRINT(TREE_RESULT, structure, output.str().c_str());
 

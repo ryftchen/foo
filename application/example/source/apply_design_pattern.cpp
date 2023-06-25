@@ -55,7 +55,7 @@ DesignPatternTask& getTask()
 namespace behavioral
 {
 //! @brief Display behavioral result.
-#define BEHAVIORAL_RESULT "\r\n==> %-21s Pattern <==\n%s"
+#define BEHAVIORAL_RESULT "\r\n==> %-21s Instance <==\n%s"
 //! @brief Print behavioral result content.
 #define BEHAVIORAL_PRINT_RESULT_CONTENT(pattern) COMMON_PRINT(BEHAVIORAL_RESULT, pattern, output.str().c_str());
 
@@ -328,7 +328,7 @@ void updateBehavioralTask(const std::string& target)
 namespace creational
 {
 //! @brief Display creational result.
-#define CREATIONAL_RESULT "\r\n==> %-15s Pattern <==\n%s"
+#define CREATIONAL_RESULT "\r\n==> %-15s Instance <==\n%s"
 //! @brief Print creational result content.
 #define CREATIONAL_PRINT_RESULT_CONTENT(pattern) COMMON_PRINT(CREATIONAL_RESULT, pattern, output.str().c_str());
 
@@ -487,7 +487,7 @@ void updateCreationalTask(const std::string& target)
 namespace structural
 {
 //! @brief Display structural result.
-#define STRUCTURAL_RESULT "\r\n==> %-9s Pattern <==\n%s"
+#define STRUCTURAL_RESULT "\r\n==> %-9s Instance <==\n%s"
 //! @brief Print structural result content.
 #define STRUCTURAL_PRINT_RESULT_CONTENT(pattern) COMMON_PRINT(STRUCTURAL_RESULT, pattern, output.str().c_str());
 
