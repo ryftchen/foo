@@ -1,21 +1,17 @@
-//! @file search.cpp
+//! @file search.tpp
 //! @author ryftchen
 //! @brief The definitions (search) in the algorithm module.
 //! @version 1.0
 //! @copyright Copyright (c) 2022-2023
 
-#include "search.hpp"
+#pragma once
 
 #include <cstring>
 #include <memory>
+#include "search.hpp"
 
 namespace algorithm::search
 {
-template class Search<double>;
-template int Search<double>::binary(const double* const array, const std::uint32_t length, const double key);
-template int Search<double>::interpolation(const double* const array, const std::uint32_t length, const double key);
-template int Search<double>::fibonacci(const double* const array, const std::uint32_t length, const double key);
-
 template <class T>
 int Search<T>::binary(const T* const array, const std::uint32_t length, const T key)
 {

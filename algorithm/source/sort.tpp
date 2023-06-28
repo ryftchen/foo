@@ -1,8 +1,10 @@
-//! @file sort.cpp
+//! @file sort.tpp
 //! @author ryftchen
 //! @brief The definitions (sort) in the algorithm module.
 //! @version 1.0
 //! @copyright Copyright (c) 2022-2023
+
+#pragma once
 
 #include "sort.hpp"
 // #define NDEBUG
@@ -14,18 +16,6 @@
 
 namespace algorithm::sort
 {
-template class Sort<int>;
-template std::vector<int> Sort<int>::bubble(int* const array, const std::uint32_t length);
-template std::vector<int> Sort<int>::selection(int* const array, const std::uint32_t length);
-template std::vector<int> Sort<int>::insertion(int* const array, const std::uint32_t length);
-template std::vector<int> Sort<int>::shell(int* const array, const std::uint32_t length);
-template std::vector<int> Sort<int>::merge(int* const array, const std::uint32_t length);
-template std::vector<int> Sort<int>::quick(int* const array, const std::uint32_t length);
-template std::vector<int> Sort<int>::heap(int* const array, const std::uint32_t length);
-template std::vector<int> Sort<int>::counting(int* const array, const std::uint32_t length);
-template std::vector<int> Sort<int>::bucket(int* const array, const std::uint32_t length);
-template std::vector<int> Sort<int>::radix(int* const array, const std::uint32_t length);
-
 template <class T>
 std::vector<T> Sort<T>::bubble(T* const array, const std::uint32_t length)
 {

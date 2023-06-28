@@ -47,3 +47,5 @@ private:
     static std::vector<std::uint32_t> generateFibonacciNumber(const std::uint32_t max);
 };
 } // namespace algorithm::search
+
+#include "algorithm/source/search.tpp"
