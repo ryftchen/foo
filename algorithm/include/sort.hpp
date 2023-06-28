@@ -90,3 +90,5 @@ private:
     static void buildMaxHeap(T* const sortArray, const std::uint32_t begin, const std::uint32_t end);
 };
 } // namespace algorithm::sort
+
+#include "algorithm/source/sort.tpp"
