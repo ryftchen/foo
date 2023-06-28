@@ -83,7 +83,7 @@ private:
     //! @param begin - index of beginning
     //! @param end - index of ending
     static void quickSortRecursive(T* const sortArray, const std::uint32_t begin, const std::uint32_t end);
-    //! @brief Build max heap for the heap method.
+    //! @brief Build maximum heap for the heap method.
     //! @param sortArray - array to be sorted
     //! @param begin - index of beginning
     //! @param end - index of ending

@@ -249,9 +249,9 @@ void setBit(const int index)
 namespace input
 {
 //! @brief Single pattern for match methods.
-constexpr std::string_view singlePatternForMatch{"12345"};
+constexpr std::string_view singlePatternForMatch = "12345";
 //! @brief Infix for notation methods.
-constexpr std::string_view infixForNotation{"a+b*(c^d-e)^(f+g*h)-i"};
+constexpr std::string_view infixForNotation = "a+b*(c^d-e)^(f+g*h)-i";
 //! @brief Minimum of the array for search methods.
 constexpr double arrayRangeForSearch1 = -50.0;
 //! @brief Maximum of the array for search methods.

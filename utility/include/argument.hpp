@@ -64,7 +64,7 @@ struct HasStreamableTraits<T, std::void_t<decltype(std::declval<std::ostream&>()
 template <typename T>
 static constexpr bool isStreamable = HasStreamableTraits<T>::value;
 
-//! @brief Max container size for representing.
+//! @brief Maximum container size for representing.
 constexpr std::size_t representMaxContainerSize = 5;
 
 //! @brief Represent target value.
