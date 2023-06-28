@@ -211,7 +211,7 @@ constexpr int integerForArithmetic2 = -2;
 constexpr int integerForDivisor1 = 2 * 2 * 3 * 3 * 5 * 5 * 7 * 7;
 //! @brief One of integers for divisor methods.
 constexpr int integerForDivisor2 = 2 * 3 * 5 * 7 * 11 * 13 * 17;
-//! @brief Max positive integer for prime methods.
+//! @brief Maximum positive integer for prime methods.
 constexpr std::uint32_t maxPositiveIntegerForPrime = 997;
 
 //! @brief Expression example 1.
