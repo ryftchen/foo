@@ -58,7 +58,6 @@ jobs:
           cmake --build ./build
           cmake -S ./test -B ./test/build -G Ninja -DCMAKE_BUILD_TYPE=Release
           cmake --build ./test/build
-          rm -rf ./build/CMakeFiles ./test/build/CMakeFiles
 
       - name: Perform CodeQL analysis
         uses: github/codeql-action/analyze@v2
