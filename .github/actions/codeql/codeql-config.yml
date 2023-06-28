@@ -1,0 +1,6 @@
+---
+name: "CodeQL config"
+paths-ignore:
+  - build
+  - test/build
+...
