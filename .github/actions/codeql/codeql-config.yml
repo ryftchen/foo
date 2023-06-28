@@ -1,6 +1,5 @@
 ---
 name: "CodeQL config"
-languages: cpp
 paths-ignore:
   - build
   - test/build
