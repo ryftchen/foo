@@ -50,7 +50,6 @@ jobs:
         uses: github/codeql-action/init@v2
         with:
           config-file: ./.github/actions/codeql/codeql-config.yml
-          languages: cpp, python
 
       - name: Manual build
         run: |
