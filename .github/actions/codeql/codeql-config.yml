@@ -1,7 +1,10 @@
 ---
 name: "CodeQL config"
-disable-default-queries: true
-packs:
-  cpp:
-    - codeql/cpp-all
+queries:
+  - uses: code-scanning
+  - uses: lgtm-full
+  - uses: lgtm
+  - uses: security-and-quality
+  - uses: security-experimental
+  - uses: security-extended
 ...
