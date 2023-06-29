@@ -1,6 +1,6 @@
 ---
 name: "CodeQL config"
-paths-ignore:
-  - build
-  - test/build
+packs:
+  cpp:
+    - codeql/cpp-all
 ...
