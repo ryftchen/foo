@@ -6,7 +6,6 @@
 
 #pragma once
 
-// #define NDEBUG
 #include <cassert>
 #include <shared_mutex>
 

@@ -6,13 +6,12 @@
 
 #pragma once
 
-#include "sort.hpp"
-// #define NDEBUG
 #include <cassert>
 #include <cmath>
 #include <cstring>
 #include <memory>
 #include <queue>
+#include "sort.hpp"
 
 namespace algorithm::sort
 {

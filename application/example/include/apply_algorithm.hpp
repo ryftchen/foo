@@ -9,7 +9,6 @@
 #ifndef __PRECOMPILED_HEADER
 #include <mpfr.h>
 #include <bitset>
-// #define NDEBUG
 #include <cassert>
 #include <cstring>
 #include <iostream>
