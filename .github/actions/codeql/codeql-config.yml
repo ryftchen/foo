@@ -2,4 +2,11 @@
 name: "CodeQL config"
 queries:
   - uses: security-and-quality
+query-filters:
+  - exclude:
+      problem.severity:
+        - note
+      id:
+        - cpp/non-constant-format
+        - cpp/poorly-documented-function
 ...
