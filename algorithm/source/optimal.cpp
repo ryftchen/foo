@@ -5,7 +5,6 @@
 //! @copyright Copyright (c) 2022-2023
 
 #include "optimal.hpp"
-// #define NDEBUG
 #include <cassert>
 #include <functional>
 #include <set>
