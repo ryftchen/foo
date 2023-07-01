@@ -4,9 +4,9 @@ queries:
   - uses: security-and-quality
 query-filters:
   - exclude:
-      problem.severity:
-        - note
-      id:
-        - cpp/non-constant-format
-        - cpp/poorly-documented-function
+      problem.severity: note
+  - exclude:
+      id: cpp/non-constant-format
+  - exclude:
+      id: cpp/poorly-documented-function
 ...
