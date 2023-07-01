@@ -27,6 +27,11 @@ Socket::Socket(const Type socketType, const int socketId)
     }
 }
 
+Socket::~Socket()
+{
+    toClose();
+}
+
 void Socket::toClose() const
 {
     ::shutdown(sock, ::SHUT_RDWR);
