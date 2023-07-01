@@ -122,11 +122,26 @@ std::optional<std::tuple<double, double>> Particle::operator()(const double left
                 static_cast<std::uint32_t>(coeff(engine) * static_cast<std::uint32_t>(1.0 / eps)) * eps;
             const double rand2 =
                 static_cast<std::uint32_t>(coeff(engine) * static_cast<std::uint32_t>(1.0 / eps)) * eps;
+
             ind.velocity = w * ind.velocity + c1 * rand1 * (ind.positionBest - ind.x) + c2 * rand2 * (xBest - ind.x);
-            (ind.velocity > vMax) ? ind.velocity = vMax : ((ind.velocity < vMin) ? ind.velocity = vMin : ind.velocity);
+            if (ind.velocity > vMax)
+            {
+                ind.velocity = vMax;
+            }
+            else if (ind.velocity < vMin)
+            {
+                ind.velocity = vMin;
+            }
 
             ind.x += ind.velocity;
-            (ind.x > right) ? ind.x = right : ((ind.x < left) ? ind.x = left : ind.x);
+            if (ind.x > right)
+            {
+                ind.x = right;
+            }
+            else if (ind.x < left)
+            {
+                ind.x = left;
+            }
             ind.xFitness = func(ind.x);
         }
 
