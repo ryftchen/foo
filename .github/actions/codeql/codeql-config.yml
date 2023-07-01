@@ -6,7 +6,7 @@ query-filters:
   - exclude:
       problem.severity: recommendation
   - exclude:
-      id: cpp/non-constant-format
-  - exclude:
-      id: cpp/poorly-documented-function
+      id:
+        - cpp/non-constant-format
+        - cpp/poorly-documented-function
 ...
