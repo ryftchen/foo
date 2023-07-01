@@ -24,11 +24,6 @@ jobs:
       image: ryftchen/foo:latest
       options: --privileged
 
-    permissions:
-      actions: read
-      contents: read
-      security-events: write
-
     steps:
       - name: Prepare
         run: |
@@ -46,29 +41,14 @@ jobs:
           config: ./.github/actions/cspell/cspell.json
           verbose: true
 
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@v2
-        with:
-          languages: cpp
-          config-file: ./.github/actions/codeql/codeql-config.yml
-
-      - name: Manual build
-        run: |
-          export CC=/usr/bin/clang-12 CXX=/usr/bin/clang++-12
-          cmake -S . -B ./build -G Ninja -DCMAKE_BUILD_TYPE=Release
-          cmake --build ./build
-          cmake -S ./test -B ./test/build -G Ninja -DCMAKE_BUILD_TYPE=Release
-          cmake --build ./test/build
-
-      - name: Perform CodeQL analysis
-        uses: github/codeql-action/analyze@v2
-
   static_analysis:
     name: Static analysis
     needs: precheck
     if: always() && ((needs.precheck.result == 'success') || (needs.precheck.result == 'skipped'))
     runs-on: ubuntu-latest
-    container: ryftchen/foo:latest
+    container:
+      image: ryftchen/foo:latest
+      options: --privileged
 
     permissions:
       contents: write
@@ -110,7 +90,9 @@ jobs:
     needs: precheck
     if: always() && ((needs.precheck.result == 'success') || (needs.precheck.result == 'skipped'))
     runs-on: ubuntu-latest
-    container: ryftchen/foo:latest
+    container:
+      image: ryftchen/foo:latest
+      options: --privileged
 
     steps:
       - name: Prepare
@@ -135,4 +117,43 @@ jobs:
       - name: Report
         run: |
           cat ./temporary/foo_run.report
+
+  extended_analysis:
+    name: Extended analysis
+    needs: precheck
+    if: always() && (needs.precheck.result == 'success')
+    runs-on: ubuntu-latest
+    container:
+      image: ryftchen/foo:latest
+      options: --privileged
+
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    steps:
+      - name: Prepare
+        run: |
+          git config --global --add safe.directory '*'
+
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v2
+        with:
+          languages: cpp
+          config-file: ./.github/actions/codeql/codeql-config.yml
+
+      - name: Manual build
+        run: |
+          export CC=/usr/bin/clang-12 CXX=/usr/bin/clang++-12
+          cmake -S . -B ./build -G Ninja -DCMAKE_BUILD_TYPE=Release
+          cmake --build ./build
+          cmake -S ./test -B ./test/build -G Ninja -DCMAKE_BUILD_TYPE=Release
+          cmake --build ./test/build
+
+      - name: Perform CodeQL analysis
+        uses: github/codeql-action/analyze@v2
 ...
