@@ -16,20 +16,21 @@ std::string getCurrentSystemTime()
     const auto now = std::chrono::system_clock::now();
     const auto microseconds = std::chrono::duration_cast<std::chrono::microseconds>(now.time_since_epoch()) % secToUsec;
     const std::time_t tt = std::chrono::system_clock::to_time_t(now);
-    const std::tm* tm = std::localtime(&tt);
+    std::tm tm{};
+    ::localtime_r(&tt, &tm);
 
     std::snprintf(
         date,
         dateLength + 1,
         "%04u-%02u-%02u %02u:%02u:%02u.%06lu %.3s",
-        tm->tm_year + dateStartYear,
-        tm->tm_mon + 1,
-        tm->tm_mday,
-        tm->tm_hour,
-        tm->tm_min,
-        tm->tm_sec,
+        tm.tm_year + dateStartYear,
+        tm.tm_mon + 1,
+        tm.tm_mday,
+        tm.tm_hour,
+        tm.tm_min,
+        tm.tm_sec,
         microseconds.count(),
-        tm->tm_zone);
+        tm.tm_zone);
     std::string dateStr(date);
 
     return dateStr;
