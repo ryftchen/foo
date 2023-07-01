@@ -97,8 +97,7 @@ Node* getSuccessor(Node* x)
 //! @return new node after creating
 Node* createNode(const Type key, Node* parent, Node* left, Node* right)
 {
-    Node* p = nullptr;
-    p = new Node();
+    Node* p = new (std::nothrow) Node;
     if (nullptr == p)
     {
         return nullptr;
@@ -385,8 +384,7 @@ Node* rightLeftRotation(AVLTree k1)
 //! @return new node after creating
 Node* createNode(const Type key, Node* left, Node* right)
 {
-    Node* p = nullptr;
-    p = new Node();
+    Node* p = new (std::nothrow) Node;
     if (nullptr == p)
     {
         return nullptr;
@@ -629,7 +627,7 @@ Node* getMaximum(SplayTree tree)
 //! @return new node after creating
 Node* createNode(const Type key, Node* left, Node* right)
 {
-    Node* p = new Node();
+    Node* p = new (std::nothrow) Node;
     if (nullptr == p)
     {
         return nullptr;
