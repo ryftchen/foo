@@ -4,7 +4,7 @@ queries:
   - uses: security-and-quality
 query-filters:
   - exclude:
-      problem.severity: note
+      problem.severity: recommendation
   - exclude:
       id: cpp/non-constant-format
   - exclude:
