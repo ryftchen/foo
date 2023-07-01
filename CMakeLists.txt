@@ -4,18 +4,10 @@ project(foo)
 
 include(CheckCXXCompilerFlag)
 include(CheckIncludeFile)
-include(CheckIncludeFiles)
 check_cxx_compiler_flag(-std=c++20 COMPILER_SUPPORTS_CXX20)
-check_include_file("cxxabi.h" HAVE_CXXABI_HEADER)
-check_include_file("dlfcn.h" HAVE_DLFCN_HEADER)
-check_include_file("execinfo.h" HAVE_EXECINFO_HEADER)
-check_include_file("mpfr.h" HAVE_MPFR_HEADER)
-check_include_file("netdb.h" HAVE_NETDB_HEADER)
-check_include_file("unistd.h" HAVE_UNISTD_HEADER)
-check_include_files("arpa/inet.h" HAVE_ARPA_HEADERS)
-check_include_files("ext/stdio_filebuf.h" HAVE_EXT_HEADERS)
-check_include_files("readline/history.h;readline/readline.h" HAVE_READLINE_HEADERS)
-check_include_files("sys/file.h;sys/ipc.h;sys/shm.h;sys/stat.h" HAVE_SYS_HEADERS)
+check_include_file("mpfr.h" EXIST_MPFR_HEADER)
+check_include_file("readline/history.h" EXIST_READLINE_HISTORY_HEADER)
+check_include_file("readline/readline.h" EXIST_READLINE_READLINE_HEADER)
 find_package(Threads REQUIRED)
 
 if(DEFINED ENV{FOO_ENV})
@@ -62,17 +54,8 @@ target_include_directories(
 )
 target_link_libraries(
     ${BIN_NAME}
-    PUBLIC
-        dl
-        pthread
-        readline
-        mpfr
-    PRIVATE
-        foo::utility
-        foo::algorithm
-        foo::data_structure
-        foo::design_pattern
-        foo::numeric
+    PUBLIC dl pthread readline mpfr
+    PRIVATE foo::utility foo::algorithm foo::data_structure foo::design_pattern foo::numeric
 )
 
 if(PRECOMPILED_HEADER)
@@ -81,3 +64,12 @@ if(PRECOMPILED_HEADER)
         PRIVATE ${CMAKE_SOURCE_DIR}/application/pch/precompiled_header.hpp
     )
 endif()
+
+set(CMAKE_INSTALL_PREFIX "/opt/${PROJECT_NAME}")
+install(
+    TARGETS ${BIN_NAME} utility algorithm data_structure design_pattern numeric
+    RUNTIME DESTINATION "${CMAKE_INSTALL_PREFIX}/bin"
+    LIBRARY DESTINATION "${CMAKE_INSTALL_PREFIX}/lib"
+)
+install(DIRECTORY DESTINATION ${CMAKE_INSTALL_PREFIX})
+set_target_properties(${BIN_NAME} PROPERTIES INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")

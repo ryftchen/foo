@@ -3,8 +3,9 @@
 declare -rA FOLDER=([proj]="foo" [app]="application" [util]="utility" [algo]="algorithm" [ds]="data_structure"
     [dp]="design_pattern" [num]="numeric" [tst]="test" [scr]="script" [doc]="document" [bld]="build" [temp]="temporary")
 declare -r COMP_CMD="compile_commands.json"
-declare -A ARGS=([help]=false [initialize]=false [cleanup]=false [docker]=false [test]=false [release]=false
-    [precheck]=false [format]=false [lint]=false [count]=false [browser]=false [doxygen]=false)
+declare -A ARGS=([help]=false [initialize]=false [cleanup]=false [docker]=false [install]=false [uninstall]=false
+    [test]=false [release]=false [precheck]=false [format]=false [lint]=false [count]=false [browser]=false
+    [doxygen]=false)
 declare -A DEV_OPT=([parallel]=0 [pch]=false [unity]=false [ccache]=false [distcc]=false [tmpfs]=false)
 declare CMAKE_CACHE_ENTRY=""
 declare CMAKE_BUILD_OPTION=""
@@ -44,6 +45,14 @@ function parse_parameters()
         -D | --docker)
             check_single_choice_parameters_validity "$1"
             ARGS[docker]=true
+            ;;
+        -I | --install)
+            check_single_choice_parameters_validity "$1"
+            ARGS[install]=true
+            ;;
+        -u | --uninstall)
+            check_single_choice_parameters_validity "$1"
+            ARGS[uninstall]=true
             ;;
         -t | --test)
             if {
@@ -117,7 +126,8 @@ function exist_single_choice_parameters()
     for key in "${!ARGS[@]}"; do
         if [[ ${ARGS[${key}]} = true ]]; then
             if [[ ${key} == "help" ]] || [[ ${key} == "initialize" ]] || [[ ${key} == "cleanup" ]] \
-                || [[ ${key} == "docker" ]] || [[ ${key} == "test" ]]; then
+                || [[ ${key} == "docker" ]] || [[ ${key} == "install" ]] || [[ ${key} == "uninstall" ]] \
+                || [[ ${key} == "test" ]]; then
                 number+=1
             fi
         fi
@@ -147,7 +157,9 @@ function try_to_perform_single_choice_options()
     perform_help_option
     perform_initialize_option
     perform_cleanup_option
-    perform_container_option
+    perform_docker_option
+    perform_install_option
+    perform_uninstall_option
 }
 
 function perform_help_option()
@@ -160,6 +172,8 @@ function perform_help_option()
         echo "-i, --initialize    initialize environment and exit"
         echo "-C, --cleanup       cleanup folder and exit"
         echo "-D, --docker        construct docker container and exit"
+        echo "-I, --install       install binary and library and exit"
+        echo "-u, --uninstall     uninstall binary and library and exit"
         echo "-t, --test          build unit test and exit"
         echo "-r, --release       set as release version"
         echo "-p, --precheck      precheck all files before commit"
@@ -189,7 +203,7 @@ FOO_BLD_TMPFS=off
 export FOO_BLD_PARALLEL FOO_BLD_PCH FOO_BLD_UNITY FOO_BLD_CCACHE FOO_BLD_DISTCC FOO_BLD_TMPFS
 return 0
 EOF"
-        shell_command "echo 'core.%s.%e.%p' | tee /proc/sys/kernel/core_pattern"
+        shell_command "echo 'core.%s.%e.%p' | sudo tee /proc/sys/kernel/core_pattern"
         exit 0
     fi
 }
@@ -204,7 +218,7 @@ function perform_cleanup_option()
     fi
 }
 
-function perform_container_option()
+function perform_docker_option()
 {
     if [[ ${ARGS[docker]} = true ]]; then
         if command -v docker >/dev/null 2>&1 && command -v docker-compose >/dev/null 2>&1; then
@@ -232,6 +246,31 @@ function perform_container_option()
         else
             die "The container exists."
         fi
+    fi
+}
+
+function perform_install_option()
+{
+    if [[ ${ARGS[install]} = true ]]; then
+        if [[ ! -f ./${FOLDER[bld]}/bin/foo ]]; then
+            die "There is no binary file in the ${FOLDER[bld]} folder. Please compile it."
+        fi
+        shell_command "sudo cmake --install ./${FOLDER[bld]}"
+        exit 0
+    fi
+}
+
+function perform_uninstall_option()
+{
+    if [[ ${ARGS[uninstall]} = true ]]; then
+        local manifest_file="install_manifest.txt"
+        if [[ ! -f ./${FOLDER[bld]}/${manifest_file} ]]; then
+            die "There is no ${manifest_file} file in the ${FOLDER[bld]} folder. Please generate it."
+        fi
+        shell_command "cat ./${FOLDER[bld]}/${manifest_file} | sudo xargs rm"
+        shell_command "cat ./${FOLDER[bld]}/${manifest_file} | xargs -L1 dirname | sudo xargs rmdir -p 2>/dev/null"
+        shell_command "rm -rf ~/.${FOLDER[proj]}"
+        exit 0
     fi
 }
 
@@ -553,10 +592,10 @@ function set_compile_condition()
             mkdir "./${tmpfs_subfolder}"
         fi
         if ! df -h -t tmpfs | grep -q "${FOLDER[proj]}/${tmpfs_subfolder}" 2>/dev/null; then
-            shell_command "mount -t tmpfs -o size=${tmpfs_size} tmpfs ./${tmpfs_subfolder}"
+            shell_command "sudo mount -t tmpfs -o size=${tmpfs_size} tmpfs ./${tmpfs_subfolder}"
         fi
     elif df -h -t tmpfs | grep -q "${FOLDER[proj]}/${tmpfs_subfolder}" 2>/dev/null; then
-        shell_command "umount ./${tmpfs_subfolder}"
+        shell_command "sudo umount ./${tmpfs_subfolder}"
     fi
 }
 
