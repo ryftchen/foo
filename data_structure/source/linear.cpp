@@ -16,8 +16,7 @@ namespace doubly_linked_list
 //! @return node
 static Node* createNode(void* const pVal)
 {
-    Node* pNode = nullptr;
-    pNode = new Node();
+    Node* pNode = new (std::nothrow) Node;
     if (nullptr == pNode)
     {
         std::cerr << "Create node failed." << std::endl;
