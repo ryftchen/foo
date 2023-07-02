@@ -15,8 +15,6 @@ namespace design_pattern::creational
 //! @brief The abstract factory pattern.
 namespace abstract_factory
 {
-extern std::ostringstream& output();
-
 //! @brief Implement the same interface. The others can refer to the interface not the concrete product.
 class ProductA
 {
@@ -38,7 +36,7 @@ public:
 
     //! @brief Get the product name.
     //! @return product name
-    std::string getName() override { return "A-X"; }
+    std::string getName() override;
 };
 
 //! @brief The concrete product.
@@ -50,7 +48,7 @@ public:
 
     //! @brief Get the product name.
     //! @return product name
-    std::string getName() override { return "A-Y"; }
+    std::string getName() override;
 };
 
 //! @brief Implement the same interface. The others can refer to the interface not the concrete product.
@@ -74,7 +72,7 @@ public:
 
     //! @brief Get the product name.
     //! @return product name
-    std::string getName() override { return "B-X"; }
+    std::string getName() override;
 };
 
 //! @brief The concrete product.
@@ -86,7 +84,7 @@ public:
 
     //! @brief Get the product name.
     //! @return product name
-    std::string getName() override { return "B-Y"; }
+    std::string getName() override;
 };
 
 //! @brief Provide the abstract interface for creating the family of products.
@@ -114,10 +112,10 @@ public:
 
     //! @brief Create product A.
     //! @return product A
-    std::unique_ptr<ProductA> createProductA() override { return std::make_unique<ConcreteProductAX>(); }
+    std::unique_ptr<ProductA> createProductA() override;
     //! @brief Create product B.
     //! @return product B
-    std::unique_ptr<ProductB> createProductB() override { return std::make_unique<ConcreteProductBX>(); }
+    std::unique_ptr<ProductB> createProductB() override;
 };
 
 //! @brief The concrete factory.
@@ -129,34 +127,34 @@ public:
 
     //! @brief Create product A.
     //! @return product A
-    std::unique_ptr<ProductA> createProductA() override { return std::make_unique<ConcreteProductAY>(); }
+    std::unique_ptr<ProductA> createProductA() override;
     //! @brief Create product B.
     //! @return product B
-    std::unique_ptr<ProductB> createProductB() override { return std::make_unique<ConcreteProductBY>(); }
+    std::unique_ptr<ProductB> createProductB() override;
 };
+
+extern std::ostringstream& output();
 } // namespace abstract_factory
 
 //! @brief The builder pattern.
 namespace builder
 {
-extern std::ostringstream& output();
-
 //! @brief Product properties.
 class Product
 {
 public:
     //! @brief Make part A.
     //! @param part - target part
-    void makeA(const std::string& part) { partA = part; }
+    void makeA(const std::string& part);
     //! @brief Make part B.
     //! @param part - target part
-    void makeB(const std::string& part) { partB = part; }
+    void makeB(const std::string& part);
     //! @brief Make part C.
     //! @param part - target part
-    void makeC(const std::string& part) { partC = part; }
+    void makeC(const std::string& part);
     //! @brief Get all parts.
     //! @return all parts
-    std::string get() { return (partA + ' ' + partB + ' ' + partC); }
+    std::string get();
 
 private:
     //! @brief Part A.
@@ -176,7 +174,7 @@ public:
 
     //! @brief Get the product.
     //! @return product
-    Product get() { return product; }
+    Product get();
     //! @brief Build part A.
     virtual void buildPartA() = 0;
     //! @brief Build part B.
@@ -194,11 +192,11 @@ class ConcreteBuilderX : public Builder
 {
 public:
     //! @brief Build part A.
-    void buildPartA() override { product.makeA("A-X"); }
+    void buildPartA() override;
     //! @brief Build part B.
-    void buildPartB() override { product.makeB("B-X"); }
+    void buildPartB() override;
     //! @brief Build part C.
-    void buildPartC() override { product.makeC("C-X"); }
+    void buildPartC() override;
 };
 
 //! @brief The concrete builder.
@@ -206,11 +204,11 @@ class ConcreteBuilderY : public Builder
 {
 public:
     //! @brief Build part A.
-    void buildPartA() override { product.makeA("A-Y"); }
+    void buildPartA() override;
     //! @brief Build part B.
-    void buildPartB() override { product.makeB("B-Y"); }
+    void buildPartB() override;
     //! @brief Build part C.
-    void buildPartC() override { product.makeC("C-Y"); }
+    void buildPartC() override;
 };
 
 //! @brief Manage the correct sequence of creation.
@@ -220,46 +218,28 @@ public:
     //! @brief Construct a new Director object.
     Director() : builder(){};
     //! @brief Destroy the Director object.
-    ~Director()
-    {
-        if (builder)
-        {
-            builder.reset();
-        }
-    }
+    ~Director();
 
     //! @brief Set the builder.
     //! @param b - target builder.
-    void set(std::unique_ptr<Builder> b)
-    {
-        if (builder)
-        {
-            builder.reset();
-        }
-        builder = std::move(b);
-    }
+    void set(std::unique_ptr<Builder> b);
     //! @brief Get the product from the builder.
     //! @return product
-    Product get() { return builder->get(); }
+    Product get();
     //! @brief Construct products by the builder.
-    void construct()
-    {
-        builder->buildPartA();
-        builder->buildPartB();
-        builder->buildPartC();
-    }
+    void construct();
 
 private:
     //! @brief The builder.
     std::unique_ptr<Builder> builder;
 };
+
+extern std::ostringstream& output();
 } // namespace builder
 
 //! @brief The factory method pattern.
 namespace factory_method
 {
-extern std::ostringstream& output();
-
 //! @brief Implement the same interface. The others can refer to the interface not the concrete product.
 class Product
 {
@@ -281,7 +261,7 @@ public:
 
     //! @brief Get the product name.
     //! @return product name
-    std::string getName() override { return "type A"; }
+    std::string getName() override;
 };
 
 //! @brief The concrete product.
@@ -293,7 +273,7 @@ public:
 
     //! @brief Get the product name.
     //! @return product name
-    std::string getName() override { return "type B"; }
+    std::string getName() override;
 };
 
 //! @brief Contain the implementation for all methods to manipulate products except for the factory method.
@@ -323,20 +303,20 @@ public:
 
     //! @brief Create product A.
     //! @return product A
-    std::unique_ptr<Product> createProductA() override { return std::make_unique<ConcreteProductA>(); }
+    std::unique_ptr<Product> createProductA() override;
     //! @brief Create product B.
     //! @return product B
-    std::unique_ptr<Product> createProductB() override { return std::make_unique<ConcreteProductB>(); }
+    std::unique_ptr<Product> createProductB() override;
     //! @brief Remove product.
-    void removeProduct(std::unique_ptr<Product>& product) override { product.reset(); }
+    void removeProduct(std::unique_ptr<Product>& product) override;
 };
+
+extern std::ostringstream& output();
 } // namespace factory_method
 
 //! @brief The prototype pattern.
 namespace prototype
 {
-extern std::ostringstream& output();
-
 //! @brief The interface for cloning itself.
 class Prototype
 {
@@ -361,10 +341,10 @@ public:
 
     //! @brief Clone self.
     //! @return cloning of self
-    std::unique_ptr<Prototype> clone() override { return std::make_unique<ConcretePrototypeA>(); }
+    std::unique_ptr<Prototype> clone() override;
     //! @brief Get the type.
     //! @return type
-    std::string type() override { return "type A"; }
+    std::string type() override;
 };
 
 //! @brief The concrete prototype.
@@ -376,10 +356,10 @@ public:
 
     //! @brief Clone self.
     //! @return cloning of self
-    std::unique_ptr<Prototype> clone() override { return std::make_unique<ConcretePrototypeB>(); }
+    std::unique_ptr<Prototype> clone() override;
     //! @brief Get the type.
     //! @return type
-    std::string type() override { return "type B"; }
+    std::string type() override;
 };
 
 //! @brief Create by asking the prototype to clone itself.
@@ -387,28 +367,13 @@ class Client
 {
 public:
     //! @brief Initialize all prototypes.
-    static void init()
-    {
-        types[0] = std::make_unique<ConcretePrototypeA>();
-        types[1] = std::make_unique<ConcretePrototypeB>();
-    }
+    static void init();
     //! @brief Remove all prototypes.
-    static void remove()
-    {
-        types[0].reset();
-        types[1].reset();
-    }
+    static void remove();
     //! @brief Make by prototype index
     //! @param index - prototype index
     //! @return cloning result
-    static std::unique_ptr<Prototype> make(const int index)
-    {
-        if (index >= nTypes)
-        {
-            return nullptr;
-        }
-        return types[index]->clone();
-    }
+    static std::unique_ptr<Prototype> make(const int index);
 
 private:
     //! @brief Collection of prototypes.
@@ -416,13 +381,13 @@ private:
     //! @brief The number of types.
     static int nTypes;
 };
+
+extern std::ostringstream& output();
 } // namespace prototype
 
 //! @brief The singleton factory pattern.
 namespace singleton
 {
-extern std::ostringstream& output();
-
 //! @brief Have a private static variable to hold one instance of the singleton.
 //!        It gives a way to instantiate the singleton.
 class Singleton
@@ -436,24 +401,11 @@ public:
 
     //! @brief Get the instance of the singleton.
     //! @return the instance of the singleton
-    static std::shared_ptr<Singleton> get()
-    {
-        if (!instance)
-        {
-            instance = std::shared_ptr<Singleton>(new Singleton);
-        }
-        return instance;
-    }
+    static std::shared_ptr<Singleton> get();
     //! @brief Restart the instance of the singleton.
-    static void restart()
-    {
-        if (instance)
-        {
-            instance.reset();
-        }
-    }
+    static void restart();
     //! @brief Tell external.
-    static void tell() { output() << "this is singleton\n"; }
+    static void tell();
 
 private:
     //! @brief Construct a new Singleton object.
@@ -462,5 +414,7 @@ private:
     //! @brief The instance of the singleton.
     static std::shared_ptr<Singleton> instance;
 };
+
+extern std::ostringstream& output();
 } // namespace singleton
 } // namespace design_pattern::creational

@@ -17,8 +17,6 @@ namespace design_pattern::behavioral
 //! @brief The chain of responsibility pattern.
 namespace chain_of_responsibility
 {
-extern std::ostringstream& output();
-
 //! @brief Handle requests that they are responsible for. Optionally implement the successor link.
 class Handler
 {
@@ -28,15 +26,9 @@ public:
 
     //! @brief Set the handler.
     //! @param handler - target handler
-    virtual void setHandler(std::shared_ptr<Handler> handler) { successor = std::move(handler); }
+    virtual void setHandler(std::shared_ptr<Handler> handler);
     //! @brief Handle the request.
-    virtual void handleRequest()
-    {
-        if (successor)
-        {
-            successor->handleRequest();
-        }
-    }
+    virtual void handleRequest();
 
 private:
     //! @brief The successor.
@@ -52,20 +44,9 @@ public:
 
     //! @brief Check whether it can handle the request.
     //! @return can handle or not
-    static bool canHandle() { return false; }
+    static bool canHandle();
     //! @brief Handle the request.
-    void handleRequest() override
-    {
-        if (canHandle())
-        {
-            output() << "handled by concrete handler 1\n";
-        }
-        else
-        {
-            output() << "cannot be handled by handler 1\n";
-            Handler::handleRequest();
-        }
-    }
+    void handleRequest() override;
 };
 
 //! @brief The concrete handler.
@@ -77,34 +58,23 @@ public:
 
     //! @brief Check whether it can handle the request.
     //! @return can handle or not
-    static bool canHandle() { return true; }
+    static bool canHandle();
     //! @brief Handle the request.
-    void handleRequest() override
-    {
-        if (canHandle())
-        {
-            output() << "handled by handler 2\n";
-        }
-        else
-        {
-            output() << "cannot be handled by handler 2\n";
-            Handler::handleRequest();
-        }
-    }
+    void handleRequest() override;
 };
+
+extern std::ostringstream& output();
 } // namespace chain_of_responsibility
 
 //! @brief The command pattern.
 namespace command
 {
-extern std::ostringstream& output();
-
 //! @brief Receiver associated with the command.
 class Receiver
 {
 public:
     //! @brief Perform the operations associated with carrying out the request.
-    static void action() { output() << "receiver: execute action\n"; }
+    static void action();
 };
 
 //! @brief Implement the execution in command.
@@ -129,18 +99,11 @@ public:
     //! @brief Construct a new ConcreteCommand object.
     //! @param receiver - receiver associated with the command
     explicit ConcreteCommand(const std::shared_ptr<Receiver>& receiver) : receiver(receiver) {}
-
     //! @brief Destroy the ConcreteCommand object.
-    ~ConcreteCommand() override
-    {
-        if (auto r = receiver.lock())
-        {
-            r.reset();
-        }
-    }
+    ~ConcreteCommand() override;
 
     //! @brief Execute the command.
-    void execute() override { receiver.lock()->action(); }
+    void execute() override;
 
 private:
     //! @brief The receiver.
@@ -153,27 +116,21 @@ class Invoker
 public:
     //! @brief Set the command.
     //! @param c - command
-    void set(const std::shared_ptr<Command>& c) { command = c; }
+    void set(const std::shared_ptr<Command>& c);
     //! @brief Ask the command to carry out the request.
-    void confirm()
-    {
-        if (const auto c = command.lock())
-        {
-            c->execute();
-        }
-    }
+    void confirm();
 
 private:
     //! @brief The command.
     std::weak_ptr<Command> command;
 };
+
+extern std::ostringstream& output();
 } // namespace command
 
 //! @brief The interpreter pattern.
 namespace interpreter
 {
-extern std::ostringstream& output();
-
 //! @brief Global context.
 class Context
 {
@@ -181,11 +138,11 @@ public:
     //! @brief Set the pair of the expression and the value.
     //! @param expr - expression
     //! @param val - value
-    void set(const std::string& expr, const bool val) { vars.insert(std::pair<std::string, bool>(expr, val)); }
+    void set(const std::string& expr, const bool val);
     //! @brief Get the value by expression.
     //! @param expr - expression
     //! @return value
-    bool get(const std::string& expr) { return vars[expr]; }
+    bool get(const std::string& expr);
 
 private:
     //! @brief The variables.
@@ -200,8 +157,9 @@ public:
     virtual ~AbstractExpression() = default;
 
     //! @brief The interpret that is common to all nodes in the abstract syntax tree.
+    //! @param context - global context
     //! @return value
-    virtual bool interpret(const std::shared_ptr<Context> /*unused*/) { return false; }
+    virtual bool interpret(const std::shared_ptr<Context> context);
 };
 
 //! @brief The terminal interpret operation. An instance is required for every terminal symbol in a sentence.
@@ -217,7 +175,7 @@ public:
     //! @brief The interpret that associated with terminal symbols in the grammar.
     //! @param context - global context
     //! @return value
-    bool interpret(const std::shared_ptr<Context> context) override { return context->get(value); }
+    bool interpret(const std::shared_ptr<Context> context) override;
 
 private:
     //! @brief The value of the terminal expression.
@@ -236,19 +194,12 @@ public:
     {
     }
     //! @brief Destroy the NonTerminalExpression object.
-    ~NonTerminalExpression() override
-    {
-        leftOp.reset();
-        rightOp.reset();
-    }
+    ~NonTerminalExpression() override;
 
     //! @brief The interpret that associated with non-terminal symbols in the grammar.
     //! @param context - global context
     //! @return value
-    bool interpret(const std::shared_ptr<Context> context) override
-    {
-        return (leftOp->interpret(context) && rightOp->interpret(context));
-    }
+    bool interpret(const std::shared_ptr<Context> context) override;
 
 private:
     //! @brief The left operation of the non-terminal expression.
@@ -256,61 +207,13 @@ private:
     //! @brief The right operation of the non-terminal expression.
     std::shared_ptr<AbstractExpression> rightOp;
 };
+
+extern std::ostringstream& output();
 } // namespace interpreter
 
 //! @brief The iterator pattern.
 namespace iterator
 {
-extern std::ostringstream& output();
-
-class Iterator;
-class ConcreteAggregate;
-
-//! @brief The aggregate decouples the client from the implementation of the collection of items.
-class Aggregate
-{
-public:
-    //! @brief Destroy the Aggregate object.
-    virtual ~Aggregate() = default;
-
-    //! @brief Create an iterator.
-    //! @return iterator
-    virtual std::shared_ptr<Iterator> createIterator() = 0;
-};
-
-//! @brief The concrete aggregate.
-class ConcreteAggregate : public Aggregate, public std::enable_shared_from_this<ConcreteAggregate>
-{
-public:
-    //! @brief Construct a new ConcreteAggregate object.
-    //! @param size - size of the concrete aggregate
-    explicit ConcreteAggregate(const std::uint32_t size)
-    {
-        list = std::make_unique<int[]>(size);
-        std::fill(list.get(), list.get() + size, 1);
-        count = size;
-    }
-    //! @brief Destroy the ConcreteAggregate object.
-    ~ConcreteAggregate() override { list.reset(); }
-
-    //! @brief Create an iterator.
-    //! @return iterator
-    inline std::shared_ptr<Iterator> createIterator() override;
-    //! @brief Get the size of the concrete aggregate.
-    //! @return size of the concrete aggregate
-    [[nodiscard]] std::uint32_t size() const { return count; }
-    //! @brief Get the item by index.
-    //! @param index - index of item
-    //! @return item
-    int at(std::uint32_t index) { return list[index]; }
-
-private:
-    //! @brief Collection of items.
-    std::unique_ptr<int[]> list;
-    //! @brief Size of the concrete aggregate.
-    std::uint32_t count;
-};
-
 //! @brief Manage the current index of the iterator. A set of methods for traversing over items.
 class Iterator
 {
@@ -330,6 +233,46 @@ public:
     [[nodiscard]] virtual int currentItem() const = 0;
 };
 
+//! @brief The aggregate decouples the client from the implementation of the collection of items.
+class Aggregate
+{
+public:
+    //! @brief Destroy the Aggregate object.
+    virtual ~Aggregate() = default;
+
+    //! @brief Create an iterator.
+    //! @return iterator
+    virtual std::shared_ptr<Iterator> createIterator() = 0;
+};
+
+//! @brief The concrete aggregate.
+class ConcreteAggregate : public Aggregate, public std::enable_shared_from_this<ConcreteAggregate>
+{
+public:
+    //! @brief Construct a new ConcreteAggregate object.
+    //! @param size - size of the concrete aggregate
+    explicit ConcreteAggregate(const std::uint32_t size);
+    //! @brief Destroy the ConcreteAggregate object.
+    ~ConcreteAggregate() override;
+
+    //! @brief Create an iterator.
+    //! @return iterator
+    std::shared_ptr<Iterator> createIterator() override;
+    //! @brief Get the size of the concrete aggregate.
+    //! @return size of the concrete aggregate
+    [[nodiscard]] std::uint32_t size() const;
+    //! @brief Get the item by index.
+    //! @param index - index of item
+    //! @return item
+    int at(std::uint32_t index);
+
+private:
+    //! @brief Collection of items.
+    std::unique_ptr<int[]> list;
+    //! @brief Size of the concrete aggregate.
+    std::uint32_t count;
+};
+
 //! @brief The concrete iterator.
 class ConcreteIterator : public Iterator
 {
@@ -341,22 +284,15 @@ public:
     ~ConcreteIterator() override = default;
 
     //! @brief Set the current index to the first.
-    void first() override { index = 0; }
+    void first() override;
     //! @brief Set the current index to the next.
-    void next() override { ++index; }
+    void next() override;
     //! @brief Check whether the traversal is done.
     //! @return be done or not
-    [[nodiscard]] bool isDone() const override { return (index >= list->size()); }
+    [[nodiscard]] bool isDone() const override;
     //! @brief Get the item by current index.
     //! @return current item
-    [[nodiscard]] int currentItem() const override
-    {
-        if (isDone())
-        {
-            return -1;
-        }
-        return list->at(index);
-    }
+    [[nodiscard]] int currentItem() const override;
 
 private:
     //! @brief Collection of items.
@@ -365,47 +301,13 @@ private:
     std::uint32_t index;
 };
 
-inline std::shared_ptr<Iterator> ConcreteAggregate::createIterator()
-{
-    return std::make_shared<ConcreteIterator>(shared_from_this());
-}
+extern std::ostringstream& output();
 } // namespace iterator
 
 //! @brief The mediator pattern.
 namespace mediator
 {
-extern std::ostringstream& output();
-
-class Mediator;
-
-//! @brief The colleague communicates with its mediator.
-//!        Whenever it would have otherwise communicated with another colleague.
-class Colleague
-{
-public:
-    //! @brief Construct a new Colleague object.
-    //! @param mediator - target mediator
-    //! @param id - target id
-    Colleague(const std::shared_ptr<Mediator> mediator, const std::uint32_t id) : mediator(mediator), id(id) {}
-    //! @brief Destroy the Colleague object.
-    virtual ~Colleague() = default;
-
-    //! @brief Get the id of the colleague.
-    //! @return id of the colleague
-    [[nodiscard]] std::uint32_t getID() const { return id; }
-    //! @brief Send message.
-    //! @param msg - sending message
-    virtual void send(const std::string& msg) = 0;
-    //! @brief Receive message.
-    //! @param msg - receiving message
-    virtual void receive(const std::string& msg) = 0;
-
-protected:
-    //! @brief Mediator of the colleague.
-    std::weak_ptr<Mediator> mediator;
-    //! @brief ID of the colleague.
-    std::uint32_t id;
-};
+class Colleague;
 
 //! @brief Implement cooperative behavior by coordinating colleagues.
 class Mediator
@@ -427,6 +329,55 @@ protected:
     Mediator() = default;
 };
 
+//! @brief The concrete mediator.
+class ConcreteMediator : public Mediator
+{
+public:
+    //! @brief Destroy the ConcreteMediator object.
+    ~ConcreteMediator() override;
+
+    //! @brief Add colleague.
+    //! @param colleague - target colleague
+    void add(const std::shared_ptr<Colleague>& colleague) override;
+    //! @brief Distribute message.
+    //! @param sender - sender in colleagues
+    //! @param msg - message from sender
+    void distribute(const std::shared_ptr<Colleague>& sender, const std::string& msg) override;
+
+private:
+    //! @brief Collection of colleagues.
+    std::vector<std::weak_ptr<Colleague>> colleagues;
+};
+
+//! @brief The colleague communicates with its mediator.
+//!        Whenever it would have otherwise communicated with another colleague.
+class Colleague
+{
+public:
+    //! @brief Construct a new Colleague object.
+    //! @param mediator - target mediator
+    //! @param id - target id
+    Colleague(const std::shared_ptr<Mediator> mediator, const std::uint32_t id) : mediator(mediator), id(id) {}
+    //! @brief Destroy the Colleague object.
+    virtual ~Colleague() = default;
+
+    //! @brief Get the id of the colleague.
+    //! @return id of the colleague
+    [[nodiscard]] std::uint32_t getID() const;
+    //! @brief Send message.
+    //! @param msg - sending message
+    virtual void send(const std::string& msg) = 0;
+    //! @brief Receive message.
+    //! @param msg - receiving message
+    virtual void receive(const std::string& msg) = 0;
+
+protected:
+    //! @brief Mediator of the colleague.
+    std::weak_ptr<Mediator> mediator;
+    //! @brief ID of the colleague.
+    std::uint32_t id;
+};
+
 //! @brief The concrete colleague.
 class ConcreteColleague : public Colleague, public std::enable_shared_from_this<ConcreteColleague>
 {
@@ -440,70 +391,18 @@ public:
 
     //! @brief Send message.
     //! @param msg - sending message
-    void send(const std::string& msg) override
-    {
-        output() << "message \"" << msg << "\" sent by colleague " << id << '\n';
-        mediator.lock()->distribute(shared_from_this(), msg);
-    }
+    void send(const std::string& msg) override;
     //! @brief Receive message.
     //! @param msg - receiving message
-    void receive(const std::string& msg) override
-    {
-        output() << "message \"" << msg << "\" received by colleague " << id << '\n';
-    }
+    void receive(const std::string& msg) override;
 };
 
-//! @brief The concrete mediator.
-class ConcreteMediator : public Mediator
-{
-public:
-    //! @brief Destroy the ConcreteMediator object.
-    ~ConcreteMediator() override
-    {
-        std::for_each(
-            colleagues.begin(),
-            colleagues.end(),
-            [](auto& colleague)
-            {
-                colleague.reset();
-            });
-        colleagues.clear();
-    }
-
-    //! @brief Add colleague.
-    //! @param colleague - target colleague
-    void add(const std::shared_ptr<Colleague>& colleague) override { colleagues.emplace_back(colleague); }
-    //! @brief Distribute message.
-    //! @param sender - sender in colleagues
-    //! @param msg - message from sender
-    void distribute(const std::shared_ptr<Colleague>& sender, const std::string& msg) override
-    {
-        std::for_each(
-            colleagues.cbegin(),
-            colleagues.cend(),
-            [&sender, &msg](const auto& colleague)
-            {
-                if (const auto c = colleague.lock())
-                {
-                    if (c->getID() != sender->getID())
-                    {
-                        c->receive(msg);
-                    }
-                }
-            });
-    }
-
-private:
-    //! @brief Collection of colleagues.
-    std::vector<std::weak_ptr<Colleague>> colleagues;
-};
+extern std::ostringstream& output();
 } // namespace mediator
 
 //! @brief The memento pattern.
 namespace memento
 {
-extern std::ostringstream& output();
-
 //! @brief Store the internal state of the originator. Protect against access by other than the originator.
 class Memento
 {
@@ -517,10 +416,10 @@ private:
     int state;
     //! @brief Set the state of memento.
     //! @param s - target state
-    void setState(const int s) { state = s; }
+    void setState(const int s);
     //! @brief Get the state of memento.
     //! @return state of memento
-    [[nodiscard]] int getState() const { return state; }
+    [[nodiscard]] int getState() const;
 };
 
 //! @brief Create a memento containing a snapshot of its current internal state.
@@ -530,23 +429,16 @@ class Originator
 public:
     //! @brief Set the state of originator.
     //! @param s - target state
-    void setState(const int s)
-    {
-        output() << "set state to " << s << '\n';
-        state = s;
-    }
+    void setState(const int s);
     //! @brief Get the state of originator.
     //! @return state of originator
-    [[nodiscard]] int getState() const { return state; }
+    [[nodiscard]] int getState() const;
     //! @brief Set the state of originator by memento.
     //! @param memento - target memento
-    void setMemento(const std::shared_ptr<Memento> memento) { state = memento->getState(); }
+    void setMemento(const std::shared_ptr<Memento> memento);
     //! @brief Create a memento.
     //! @return memento
-    [[nodiscard]] std::shared_ptr<Memento> createMemento() const
-    {
-        return std::shared_ptr<Memento>(new Memento(state));
-    }
+    [[nodiscard]] std::shared_ptr<Memento> createMemento() const;
 
 private:
     //! @brief State of originator.
@@ -561,40 +453,12 @@ public:
     //! @param originator - target originator
     explicit CareTaker(const std::shared_ptr<Originator> originator) : originator(originator) {}
     //! @brief Destroy the CareTaker object.
-    ~CareTaker()
-    {
-        std::for_each(
-            history.begin(),
-            history.end(),
-            [](auto& memento)
-            {
-                memento.reset();
-            });
-        history.clear();
-    }
+    ~CareTaker();
 
     //! @brief Save the current state to history.
-    void save()
-    {
-        output() << "save state\n";
-        history.emplace_back(originator->createMemento());
-    }
+    void save();
     //! @brief Undo the last state.
-    void undo()
-    {
-        if (history.empty())
-        {
-            output() << "unable to undo state\n";
-            return;
-        }
-
-        std::shared_ptr<Memento> memento = history.back();
-        originator->setMemento(memento);
-        output() << "undo state\n";
-
-        history.pop_back();
-        memento.reset();
-    }
+    void undo();
 
 private:
     //! @brief Specific originator.
@@ -602,13 +466,13 @@ private:
     //! @brief State history.
     std::vector<std::shared_ptr<Memento>> history;
 };
+
+extern std::ostringstream& output();
 } // namespace memento
 
 //! @brief The observer pattern.
 namespace observer
 {
-extern std::ostringstream& output();
-
 class Subject;
 
 //! @brief Store state of interest to the observer. Send a notification to its observers when its state changes.
@@ -635,21 +499,12 @@ public:
 
     //! @brief Attach observer.
     //! @param observer - observer to be attached
-    void attach(const std::shared_ptr<Observer>& observer) { observers.emplace_back(observer); }
+    void attach(const std::shared_ptr<Observer>& observer);
     //! @brief Detach observer by index.
     //! @param index - observer index
-    void detach(const int index) { observers.erase(observers.begin() + index); }
+    void detach(const int index);
     //! @brief Notify all observers.
-    void notify()
-    {
-        std::for_each(
-            observers.cbegin(),
-            observers.cend(),
-            [this](const auto& observer)
-            {
-                observer->update(shared_from_this());
-            });
-    }
+    void notify();
     //! @brief Get the state of subject.
     //! @return state of subject
     virtual int getState() = 0;
@@ -674,14 +529,10 @@ public:
 
     //! @brief Get the state of observer.
     //! @return state of observer
-    int getState() override { return observerState; }
+    int getState() override;
     //! @brief Update the state of observer by subject.
     //! @param subject - target subject
-    void update(const std::shared_ptr<Subject>& subject) override
-    {
-        observerState = subject->getState();
-        output() << "observer state updated\n";
-    }
+    void update(const std::shared_ptr<Subject>& subject) override;
 
 private:
     //! @brief State of observer.
@@ -699,22 +550,22 @@ public:
 
     //! @brief Get the state of subject.
     //! @return state of subject
-    int getState() override { return subjectState; }
+    int getState() override;
     //! @brief Set the state of subject.
     //! @param s - target state of subject
-    void setState(const int s) override { subjectState = s; }
+    void setState(const int s) override;
 
 private:
     //! @brief State of subject.
     int subjectState;
 };
+
+extern std::ostringstream& output();
 } // namespace observer
 
 //! @brief The state pattern.
 namespace state
 {
-extern std::ostringstream& output();
-
 //! @brief Behaviors associated with a particular state of the context.
 class State
 {
@@ -734,7 +585,7 @@ public:
     ~ConcreteStateA() override = default;
 
     //! @brief Handle in the state.
-    void handle() override { output() << "state A handled\n"; }
+    void handle() override;
 };
 
 //! @brief The concrete state.
@@ -745,7 +596,7 @@ public:
     ~ConcreteStateB() override = default;
 
     //! @brief Handle in the state.
-    void handle() override { output() << "state B handled\n"; }
+    void handle() override;
 };
 
 //! @brief Interest in clients.
@@ -755,33 +606,25 @@ public:
     //! @brief Construct a new Context object.
     Context() : state() {}
     //! @brief Destroy the Context object.
-    ~Context() { state.reset(); }
+    ~Context();
 
     //! @brief Set the state of context.
     //! @param s - target state
-    void setState(std::unique_ptr<State> s)
-    {
-        if (state)
-        {
-            state.reset();
-        }
-        state = std::move(s);
-    }
-
+    void setState(std::unique_ptr<State> s);
     //! @brief Request handling.
-    void request() { state->handle(); }
+    void request();
 
 private:
     //! @brief State of context.
     std::unique_ptr<State> state;
 };
+
+extern std::ostringstream& output();
 } // namespace state
 
 //! @brief The strategy pattern.
 namespace strategy
 {
-extern std::ostringstream& output();
-
 //! @brief Implement the algorithm using the strategy interface. Common to all supported algorithms.
 class Strategy
 {
@@ -801,7 +644,7 @@ public:
     ~ConcreteStrategyA() override = default;
 
     //! @brief The interface of the algorithm.
-    void algorithmInterface() override { output() << "concrete strategy A\n"; }
+    void algorithmInterface() override;
 };
 
 //! @brief The concrete strategy.
@@ -812,7 +655,7 @@ public:
     ~ConcreteStrategyB() override = default;
 
     //! @brief The interface of the algorithm.
-    void algorithmInterface() override { output() << "concrete strategy B\n"; }
+    void algorithmInterface() override;
 };
 
 //! @brief Maintain reference to the strategy object.
@@ -823,22 +666,22 @@ public:
     //! @param strategy - target strategy
     explicit Context(std::unique_ptr<Strategy> strategy) : strategy(std::move(strategy)) {}
     //! @brief Destroy the Context object.
-    ~Context() { strategy.reset(); }
+    ~Context();
 
     //! @brief The interface of the context.
-    void contextInterface() { strategy->algorithmInterface(); }
+    void contextInterface();
 
 private:
     //! @brief Strategy of context.
     std::unique_ptr<Strategy> strategy;
 };
+
+extern std::ostringstream& output();
 } // namespace strategy
 
 //! @brief The template method pattern.
 namespace template_method
 {
-extern std::ostringstream& output();
-
 //! @brief Implement the template method defining the skeleton of the algorithm.
 class AbstractClass
 {
@@ -847,11 +690,7 @@ public:
     virtual ~AbstractClass() = default;
 
     //! @brief The template method.
-    void templateMethod()
-    {
-        primitiveOperation1();
-        primitiveOperation2();
-    }
+    void templateMethod();
     //! @brief The primitive operation 1.
     virtual void primitiveOperation1() = 0;
     //! @brief The primitive operation 2.
@@ -866,18 +705,17 @@ public:
     ~ConcreteClass() override = default;
 
     //! @brief The primitive operation 1.
-    void primitiveOperation1() override { output() << "primitive operation 1\n"; }
+    void primitiveOperation1() override;
     //! @brief The primitive operation 2.
-    void primitiveOperation2() override { output() << "primitive operation 2\n"; }
+    void primitiveOperation2() override;
 };
+
+extern std::ostringstream& output();
 } // namespace template_method
 
 //! @brief The visitor pattern.
 namespace visitor
 {
-extern std::ostringstream& output();
-
-class Element;
 class ConcreteElementA;
 class ConcreteElementB;
 
@@ -904,15 +742,11 @@ public:
     ~ConcreteVisitor1() override = default;
 
     //! @brief Visit element A.
-    void visitElementA(const std::shared_ptr<ConcreteElementA>& /*element*/) override
-    {
-        output() << "concrete visitor 1: element A visited\n";
-    }
+    //! @param element - element to be visited
+    void visitElementA(const std::shared_ptr<ConcreteElementA>& element) override;
     //! @brief Visit element B.
-    void visitElementB(const std::shared_ptr<ConcreteElementB>& /*element*/) override
-    {
-        output() << "concrete visitor 1: element B visited\n";
-    }
+    //! @param element - element to be visited
+    void visitElementB(const std::shared_ptr<ConcreteElementB>& element) override;
 };
 
 //! @brief The concrete visitor.
@@ -923,15 +757,11 @@ public:
     ~ConcreteVisitor2() override = default;
 
     //! @brief Visit element A.
-    void visitElementA(const std::shared_ptr<ConcreteElementA>& /*element*/) override
-    {
-        output() << "concrete visitor 2: element A visited\n";
-    }
+    //! @param element - element to be visited
+    void visitElementA(const std::shared_ptr<ConcreteElementA>& element) override;
     //! @brief Visit element B.
-    void visitElementB(const std::shared_ptr<ConcreteElementB>& /*element*/) override
-    {
-        output() << "concrete visitor 2: element B visited\n";
-    }
+    //! @param element - element to be visited
+    void visitElementB(const std::shared_ptr<ConcreteElementB>& element) override;
 };
 
 //! @brief Implement the accept operation that takes a visitor as an argument.
@@ -955,7 +785,7 @@ public:
 
     //! @brief Accept visitor.
     //! @param visitor - visitor to be accepted
-    void accept(Visitor& visitor) override { visitor.visitElementA(shared_from_this()); }
+    void accept(Visitor& visitor) override;
 };
 
 //! @brief The concrete element.
@@ -967,7 +797,9 @@ public:
 
     //! @brief Accept visitor.
     //! @param visitor - visitor to be accepted
-    void accept(Visitor& visitor) override { visitor.visitElementB(shared_from_this()); }
+    void accept(Visitor& visitor) override;
 };
+
+extern std::ostringstream& output();
 } // namespace visitor
 } // namespace design_pattern::behavioral

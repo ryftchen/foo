@@ -88,10 +88,15 @@ public:
 
     //! @brief Flush the output stream.
     //! @return reference of output stream object, which is on string based.
-    inline std::ostringstream& flush() { return stream; }
+    inline std::ostringstream& flush();
 
 private:
     //! @brief Output stream of the data structure.
     std::ostringstream stream;
 };
+
+inline std::ostringstream& Output::flush()
+{
+    return stream;
+}
 } // namespace date_structure::linear
