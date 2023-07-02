@@ -2,7 +2,7 @@
 //! @author ryftchen
 //! @brief The definitions (log) in the application module.
 //! @version 1.0
-//! @copyright Copyright (c) 2022-2023
+//! @copyright Copyright (c) 2022-2023 ryftchen.
 
 #include "log.hpp"
 #include "file.hpp"

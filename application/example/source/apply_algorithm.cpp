@@ -2,7 +2,7 @@
 //! @author ryftchen
 //! @brief The definitions (apply_algorithm) in the application module.
 //! @version 1.0
-//! @copyright Copyright (c) 2022-2023
+//! @copyright Copyright (c) 2022-2023 ryftchen.
 
 #include "apply_algorithm.hpp"
 #ifndef __PRECOMPILED_HEADER
