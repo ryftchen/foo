@@ -158,7 +158,7 @@ public:
     void TearDown() override{};
 
     //! @brief Expression example 1 object.
-    static constexpr application::app_num::input::Expression1 expression1{};
+    const application::app_num::input::Expression1 expression1{};
     //! @brief Allowable error.
     static constexpr double error{1e-1};
 };
