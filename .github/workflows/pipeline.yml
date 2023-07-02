@@ -148,11 +148,8 @@ jobs:
 
       - name: Manual build
         run: |
-          export CC=/usr/bin/clang-12 CXX=/usr/bin/clang++-12
-          cmake -S . -B ./build -G Ninja -DCMAKE_BUILD_TYPE=Debug
-          cmake --build ./build
-          cmake -S ./test -B ./test/build -G Ninja -DCMAKE_BUILD_TYPE=Debug
-          cmake --build ./test/build
+          ./script/build.sh
+          ./script/build.sh --test
 
       - name: Perform CodeQL analysis
         uses: github/codeql-action/analyze@v2
