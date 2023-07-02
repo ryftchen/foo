@@ -19,67 +19,6 @@ os.environ["TERMINFO"] = "/etc/terminfo"
 STDOUT = sys.stdout
 
 
-class Output:
-    color = {"red": "\033[0;31;40m", "green": "\033[0;32;40m", "yellow": "\033[0;33;40m", "blue": "\033[0;34;40m"}
-    color_background = "\033[49m"
-    color_bold = "\033[1m"
-    color_off = "\033[0m"
-    color_escape_regex = r"((\033\[.*?(m|s|u|A))|(\007|\017))"
-    column_length = 10
-    min_align_len = 30
-    align_len_excl_cmd = 20
-    min_key_width = 20
-    min_value_width = 80
-
-    @classmethod
-    def exit_with_error(cls, message):
-        print(f"\r\n{os.path.basename(__file__)}: {message}")
-        sys.exit(-1)
-
-    @classmethod
-    def refresh_status(cls, color_foreground, content):
-        print(
-            f"""{color_foreground}{cls.color_bold}{cls.color_background}{f"{'=' * cls.column_length}"}\
-[ {datetime.strftime(datetime.now(), "%b %d %H:%M:%S")} | {content} ]{f"{'=' * cls.column_length}"}{cls.color_off}"""
-        )
-
-    @classmethod
-    def format_as_table(cls, data: dict, key_name="", value_name=""):
-        rows = []
-        rows.append("=" * (cls.min_key_width + 2 + cls.min_value_width + 1))
-        rows.append(f"{key_name.ljust(cls.min_key_width)} | {value_name.ljust(cls.min_value_width)}")
-        rows.append("=" * (cls.min_key_width + 2 + cls.min_value_width + 1))
-
-        for key, value in data.items():
-            key_lines = []
-            for line in key.split("\n"):
-                line_len = len(line)
-                for index in range(0, line_len, cls.min_key_width):
-                    key_lines.append(line[index : index + cls.min_key_width].ljust(cls.min_key_width))
-
-            value_lines = []
-            for line in value.split("\n"):
-                line_len = len(line)
-                for index in range(0, line_len, cls.min_value_width):
-                    value_lines.append(line[index : index + cls.min_value_width].ljust(cls.min_value_width))
-
-            line_count = max(len(key_lines), len(value_lines))
-            for index in range(line_count):
-                new_line = ""
-                if index < len(key_lines):
-                    new_line = f"{key_lines[index]} | "
-                else:
-                    new_line = f"{' ' * cls.min_key_width} | "
-                if index < len(value_lines):
-                    new_line += value_lines[index]
-                else:
-                    new_line += " " * cls.min_value_width
-                rows.append(new_line)
-
-            rows.append("-" * (cls.min_key_width + 2 + cls.min_value_width + 1))
-        return "\n".join(rows)
-
-
 class Task:
     app_bin_cmd = "foo"
     app_bin_dir = "./build/bin"
@@ -515,6 +454,67 @@ class Task:
 
         if fail_res:
             sys.exit(1)
+
+
+class Output:
+    color = {"red": "\033[0;31;40m", "green": "\033[0;32;40m", "yellow": "\033[0;33;40m", "blue": "\033[0;34;40m"}
+    color_background = "\033[49m"
+    color_bold = "\033[1m"
+    color_off = "\033[0m"
+    color_escape_regex = r"((\033\[.*?(m|s|u|A))|(\007|\017))"
+    column_length = 10
+    min_align_len = 30
+    align_len_excl_cmd = 20
+    min_key_width = 20
+    min_value_width = 80
+
+    @classmethod
+    def exit_with_error(cls, message):
+        print(f"\r\n{os.path.basename(__file__)}: {message}")
+        sys.exit(-1)
+
+    @classmethod
+    def refresh_status(cls, color_foreground, content):
+        print(
+            f"""{color_foreground}{cls.color_bold}{cls.color_background}{f"{'=' * cls.column_length}"}\
+[ {datetime.strftime(datetime.now(), "%b %d %H:%M:%S")} | {content} ]{f"{'=' * cls.column_length}"}{cls.color_off}"""
+        )
+
+    @classmethod
+    def format_as_table(cls, data: dict, key_name="", value_name=""):
+        rows = []
+        rows.append("=" * (cls.min_key_width + 2 + cls.min_value_width + 1))
+        rows.append(f"{key_name.ljust(cls.min_key_width)} | {value_name.ljust(cls.min_value_width)}")
+        rows.append("=" * (cls.min_key_width + 2 + cls.min_value_width + 1))
+
+        for key, value in data.items():
+            key_lines = []
+            for line in key.split("\n"):
+                line_len = len(line)
+                for index in range(0, line_len, cls.min_key_width):
+                    key_lines.append(line[index : index + cls.min_key_width].ljust(cls.min_key_width))
+
+            value_lines = []
+            for line in value.split("\n"):
+                line_len = len(line)
+                for index in range(0, line_len, cls.min_value_width):
+                    value_lines.append(line[index : index + cls.min_value_width].ljust(cls.min_value_width))
+
+            line_count = max(len(key_lines), len(value_lines))
+            for index in range(line_count):
+                new_line = ""
+                if index < len(key_lines):
+                    new_line = f"{key_lines[index]} | "
+                else:
+                    new_line = f"{' ' * cls.min_key_width} | "
+                if index < len(value_lines):
+                    new_line += value_lines[index]
+                else:
+                    new_line += " " * cls.min_value_width
+                rows.append(new_line)
+
+            rows.append("-" * (cls.min_key_width + 2 + cls.min_value_width + 1))
+        return "\n".join(rows)
 
 
 if __name__ == "__main__":
