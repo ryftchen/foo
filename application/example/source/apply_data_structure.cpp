@@ -2,7 +2,7 @@
 //! @author ryftchen
 //! @brief The definitions (apply_data_structure) in the application module.
 //! @version 1.0
-//! @copyright Copyright (c) 2022-2023
+//! @copyright Copyright (c) 2022-2023 ryftchen.
 
 #include "apply_data_structure.hpp"
 #ifndef __PRECOMPILED_HEADER

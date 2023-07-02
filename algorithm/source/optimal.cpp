@@ -2,7 +2,7 @@
 //! @author ryftchen
 //! @brief The definitions (optimal) in the algorithm module.
 //! @version 1.0
-//! @copyright Copyright (c) 2022-2023
+//! @copyright Copyright (c) 2022-2023 ryftchen.
 
 #include "optimal.hpp"
 #include <cassert>
