@@ -479,7 +479,7 @@ void runIntegralTasks(const std::vector<std::string>& targets)
 
     const std::unordered_multimap<integral::ExprRange<double, double>, IntegralExprTarget, integral::ExprMapHash>
         integralExprMap{
-            {{Expression1::range1, Expression1::range2, Expression1::exprDescr}, Expression1()},
+            {{Expression1::range1, Expression1::range2, Expression1::exprDescr}, Expression1{}},
         };
     for ([[maybe_unused]] const auto& [range, expression] : integralExprMap)
     {
