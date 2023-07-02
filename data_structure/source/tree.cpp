@@ -280,6 +280,54 @@ void destroyBSTree(BSTree tree)
 
     delete tree;
 }
+
+void Output::preorderBSTree(BSTree tree)
+{
+    if (nullptr != tree)
+    {
+        flush() << tree->key << ' ';
+        preorderBSTree(tree->left);
+        preorderBSTree(tree->right);
+    }
+}
+
+void Output::inorderBSTree(BSTree tree)
+{
+    if (nullptr != tree)
+    {
+        inorderBSTree(tree->left);
+        flush() << tree->key << ' ';
+        inorderBSTree(tree->right);
+    }
+}
+
+void Output::postorderBSTree(BSTree tree)
+{
+    if (nullptr != tree)
+    {
+        postorderBSTree(tree->left);
+        postorderBSTree(tree->right);
+        flush() << tree->key << ' ';
+    }
+}
+
+void Output::printBSTree(BSTree tree, const Type key, int direction)
+{
+    if (nullptr != tree)
+    {
+        if (0 == direction)
+        {
+            flush() << tree->key << " is root\n";
+        }
+        else
+        {
+            flush() << tree->key << " is " << key << "'s " << ((1 == direction) ? "right" : "left") << " child\n";
+        }
+
+        printBSTree(tree->left, tree->key, -1);
+        printBSTree(tree->right, tree->key, 1);
+    }
+}
 } // namespace bs
 
 namespace avl
@@ -580,6 +628,54 @@ void destroyAVLTree(AVLTree tree)
 
     delete tree;
 }
+
+void Output::preorderAVLTree(AVLTree tree)
+{
+    if (nullptr != tree)
+    {
+        flush() << tree->key << ' ';
+        preorderAVLTree(tree->left);
+        preorderAVLTree(tree->right);
+    }
+}
+
+void Output::inorderAVLTree(AVLTree tree)
+{
+    if (nullptr != tree)
+    {
+        inorderAVLTree(tree->left);
+        flush() << tree->key << ' ';
+        inorderAVLTree(tree->right);
+    }
+}
+
+void Output::postorderAVLTree(AVLTree tree)
+{
+    if (nullptr != tree)
+    {
+        postorderAVLTree(tree->left);
+        postorderAVLTree(tree->right);
+        flush() << tree->key << ' ';
+    }
+}
+
+void Output::printAVLTree(AVLTree tree, const Type key, const int direction)
+{
+    if (nullptr != tree)
+    {
+        if (0 == direction)
+        {
+            flush() << tree->key << " is root\n";
+        }
+        else
+        {
+            flush() << tree->key << " is " << key << "'s " << ((1 == direction) ? "right" : "left") << " child\n";
+        }
+
+        printAVLTree(tree->left, tree->key, -1);
+        printAVLTree(tree->right, tree->key, 1);
+    }
+}
 } // namespace avl
 
 namespace splay
@@ -846,6 +942,54 @@ void destroySplayTree(SplayTree tree)
     }
 
     delete tree;
+}
+
+void Output::preorderSplayTree(SplayTree tree)
+{
+    if (nullptr != tree)
+    {
+        flush() << tree->key << ' ';
+        preorderSplayTree(tree->left);
+        preorderSplayTree(tree->right);
+    }
+}
+
+void Output::inorderSplayTree(SplayTree tree)
+{
+    if (nullptr != tree)
+    {
+        inorderSplayTree(tree->left);
+        flush() << tree->key << ' ';
+        inorderSplayTree(tree->right);
+    }
+}
+
+void Output::postorderSplayTree(SplayTree tree)
+{
+    if (nullptr != tree)
+    {
+        postorderSplayTree(tree->left);
+        postorderSplayTree(tree->right);
+        flush() << tree->key << ' ';
+    }
+}
+
+void Output::printSplayTree(SplayTree tree, const Type key, const int direction)
+{
+    if (nullptr != tree)
+    {
+        if (0 == direction)
+        {
+            flush() << tree->key << " is root\n";
+        }
+        else
+        {
+            flush() << tree->key << " is " << key << "'s " << ((1 == direction) ? "right" : "left") << " child\n";
+        }
+
+        printSplayTree(tree->left, tree->key, -1);
+        printSplayTree(tree->right, tree->key, 1);
+    }
 }
 } // namespace splay
 } // namespace date_structure::tree

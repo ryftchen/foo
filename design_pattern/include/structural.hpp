@@ -17,8 +17,6 @@ namespace design_pattern::structural
 //! @brief The adapter pattern.
 namespace adapter
 {
-extern std::ostringstream& output();
-
 //! @brief The specific interface that the client uses.
 class Target
 {
@@ -35,7 +33,7 @@ class Adaptee
 {
 public:
     //! @brief The specific request.
-    static void specificRequest() { output() << "specific request\n"; }
+    static void specificRequest();
 };
 
 //! @brief Delegate the call to an adaptee when getting a method call.
@@ -45,23 +43,22 @@ public:
     //! @brief Construct a new Adapter object.
     Adapter() : adaptee(std::make_unique<Adaptee>()) {}
     //! @brief Destroy the Adapter object.
-    ~Adapter() override { adaptee.reset(); }
+    ~Adapter() override;
 
     //! @brief Generate a request.
-    void request() override { adaptee->specificRequest(); }
+    void request() override;
 
 private:
-    //! @brief
+    //! @brief The adaptee.
     std::unique_ptr<Adaptee> adaptee;
 };
 
+extern std::ostringstream& output();
 } // namespace adapter
 
 //! @brief The bridge pattern.
 namespace bridge
 {
-extern std::ostringstream& output();
-
 //! @brief The interface for implementation.
 class Implementor
 {
@@ -81,7 +78,7 @@ public:
     ~ConcreteImplementorA() override = default;
 
     //! @brief Implemented action.
-    void action() override { output() << "concrete implementor A\n"; }
+    void action() override;
 };
 
 //! @brief The concrete implementor.
@@ -92,7 +89,7 @@ public:
     ~ConcreteImplementorB() override = default;
 
     //! @brief Implemented action.
-    void action() override { output() << "concrete implementor B\n"; }
+    void action() override;
 };
 
 //! @brief The interface for abstraction.
@@ -117,19 +114,19 @@ public:
     ~RefinedAbstraction() override = default;
 
     //! @brief Abstracted operation.
-    void operation() override { return implementor->action(); }
+    void operation() override;
 
 private:
     //! @brief The implementor.
     std::unique_ptr<Implementor> implementor;
 };
+
+extern std::ostringstream& output();
 } // namespace bridge
 
 //! @brief The composite pattern.
 namespace composite
 {
-extern std::ostringstream& output();
-
 //! @brief Both the composite and the leaf nodes are in the composition.
 class Component
 {
@@ -138,11 +135,14 @@ public:
     virtual ~Component() = default;
 
     //! @brief Get the child component by index.
-    virtual std::shared_ptr<Component> getChild(const std::uint32_t /*unused*/) { return nullptr; }
+    //! @param index - child component index
+    virtual std::shared_ptr<Component> getChild(const std::uint32_t index);
     //! @brief Add the child component.
-    virtual void add(const std::shared_ptr<Component>& /*unused*/) {}
+    //! @param component - child component to be added
+    virtual void add(const std::shared_ptr<Component>& component);
     //! @brief Remove the child component by index.
-    virtual void remove(const std::uint32_t /*unused*/) {}
+    //! @param index - child component index
+    virtual void remove(const std::uint32_t index);
     //! @brief Execute all child components' operations.
     virtual void operation() = 0;
 };
@@ -152,43 +152,20 @@ class Composite : public Component
 {
 public:
     //! @brief Destroy the Composite object.
-    ~Composite() override
-    {
-        std::for_each(
-            children.begin(),
-            children.end(),
-            [](auto& component)
-            {
-                component.reset();
-            });
-    }
+    ~Composite() override;
 
     //! @brief Get the child component by index.
     //! @param index - child component index
     //! @return child component
-    std::shared_ptr<Component> getChild(const std::uint32_t index) override { return children[index]; }
+    std::shared_ptr<Component> getChild(const std::uint32_t index) override;
     //! @brief Add the child component.
     //! @param component - child component to be added
-    void add(const std::shared_ptr<Component>& component) override { children.emplace_back(component); }
+    void add(const std::shared_ptr<Component>& component) override;
     //! @brief Remove the child component by index.
     //! @param index - child component index
-    void remove(const std::uint32_t index) override
-    {
-        std::shared_ptr<Component> child = children[index];
-        children.erase(children.begin() + index);
-        child.reset();
-    }
+    void remove(const std::uint32_t index) override;
     //! @brief Execute operation.
-    void operation() override
-    {
-        std::for_each(
-            children.cbegin(),
-            children.cend(),
-            [](const auto& component)
-            {
-                component->operation();
-            });
-    }
+    void operation() override;
 
 private:
     //! @brief Child components.
@@ -206,19 +183,19 @@ public:
     ~Leaf() override = default;
 
     //! @brief Execute operation.
-    void operation() override { output() << "leaf " << id << " operation\n"; }
+    void operation() override;
 
 private:
     //! @brief Leaf node id.
     int id;
 };
+
+extern std::ostringstream& output();
 } // namespace composite
 
 //! @brief The decorator pattern.
 namespace decorator
 {
-extern std::ostringstream& output();
-
 //! @brief The component to which additional responsibilities can be attached.
 class Component
 {
@@ -238,7 +215,7 @@ public:
     ~ConcreteComponent() override = default;
 
     //! @brief The related operation.
-    void operation() override { output() << "concrete component operation\n"; }
+    void operation() override;
 };
 
 //! @brief Reference to the component. Add responsibilities to the component.
@@ -252,7 +229,7 @@ public:
     ~Decorator() override = default;
 
     //! @brief The related operation.
-    void operation() override { component->operation(); }
+    void operation() override;
 
 private:
     //! @brief The component.
@@ -268,11 +245,7 @@ public:
     explicit ConcreteDecoratorA(std::shared_ptr<Component> decorator) : Decorator(std::move(decorator)) {}
 
     //! @brief The related operation.
-    void operation() override
-    {
-        Decorator::operation();
-        output() << "decorator A\n";
-    }
+    void operation() override;
 };
 
 //! @brief The concrete decorator.
@@ -284,25 +257,21 @@ public:
     explicit ConcreteDecoratorB(std::shared_ptr<Component> decorator) : Decorator(std::move(decorator)) {}
 
     //! @brief The related operation.
-    void operation() override
-    {
-        Decorator::operation();
-        output() << "decorator B\n";
-    }
+    void operation() override;
 };
+
+extern std::ostringstream& output();
 } // namespace decorator
 
 //! @brief The facade pattern.
 namespace facade
 {
-extern std::ostringstream& output();
-
 //! @brief Implement complex subsystem functionality.
 class SubsystemA
 {
 public:
     //! @brief The sub-operation.
-    static void suboperation() { output() << "subsystem A method\n"; }
+    static void suboperation();
 };
 
 //! @brief Implement complex subsystem functionality.
@@ -310,7 +279,7 @@ class SubsystemB
 {
 public:
     //! @brief The sub-operation.
-    static void suboperation() { output() << "subsystem B method\n"; }
+    static void suboperation();
 };
 
 //! @brief Implement complex subsystem functionality.
@@ -318,7 +287,7 @@ class SubsystemC
 {
 public:
     //! @brief The sub-operation.
-    static void suboperation() { output() << "subsystem C method\n"; }
+    static void suboperation();
 };
 
 //! @brief Delegate client requests to appropriate subsystem and unified interface.
@@ -329,13 +298,9 @@ public:
     Facade() : subsystemA(), subsystemB(), subsystemC() {}
 
     //! @brief The operation 1.
-    void operation1()
-    {
-        subsystemA->suboperation();
-        subsystemB->suboperation();
-    }
+    void operation1();
     //! @brief The operation 2.
-    void operation2() { subsystemC->suboperation(); }
+    void operation2();
 
 private:
     //! @brief Subsystem A.
@@ -345,13 +310,13 @@ private:
     //! @brief Subsystem C.
     std::shared_ptr<SubsystemC> subsystemC;
 };
+
+extern std::ostringstream& output();
 } // namespace facade
 
 //! @brief The flyweight pattern.
 namespace flyweight
 {
-extern std::ostringstream& output();
-
 //! @brief Receive and act on the extrinsic state through which flyweights.
 class Flyweight
 {
@@ -374,7 +339,7 @@ public:
     ~UnsharedConcreteFlyweight() override = default;
 
     //! @brief The related operation.
-    void operation() override { output() << "unshared flyweight with state " << state << '\n'; }
+    void operation() override;
 
 private:
     //! @brief Intrinsic state.
@@ -392,7 +357,7 @@ public:
     ~ConcreteFlyweight() override = default;
 
     //! @brief The related operation.
-    void operation() override { output() << "concrete flyweight with state " << state << '\n'; }
+    void operation() override;
 
 private:
     //! @brief Intrinsic state.
@@ -404,43 +369,24 @@ class FlyweightFactory
 {
 public:
     //! @brief Destroy the FlyweightFactory object.
-    ~FlyweightFactory()
-    {
-        std::for_each(
-            flies.begin(),
-            flies.end(),
-            [](auto& file)
-            {
-                file.second.reset();
-            });
-        flies.clear();
-    }
+    ~FlyweightFactory();
 
     //! @brief Get the flyweight by key value.
     //! @param key - key value
     //! @return flyweight
-    std::unique_ptr<Flyweight>& getFlyweight(const int key)
-    {
-        if (flies.find(key) != flies.cend())
-        {
-            return flies[key];
-        }
-        std::unique_ptr<Flyweight> fly = std::make_unique<ConcreteFlyweight>(key);
-        flies.insert(std::pair<int, std::unique_ptr<Flyweight>>(key, std::move(fly)));
-        return flies[key];
-    }
+    std::unique_ptr<Flyweight>& getFlyweight(const int key);
 
 private:
     //! @brief The flies.
     std::map<int, std::unique_ptr<Flyweight>> flies;
 };
+
+extern std::ostringstream& output();
 } // namespace flyweight
 
 //! @brief The proxy pattern.
 namespace proxy
 {
-extern std::ostringstream& output();
-
 //! @brief Make the proxy can be used anywhere a real subject is expected.
 class Subject
 {
@@ -457,7 +403,7 @@ class RealSubject : public Subject
 {
 public:
     //! @brief The specific request.
-    void request() override { output() << "real subject request\n"; }
+    void request() override;
 };
 
 //! @brief Let the proxy access the real subject.
@@ -465,16 +411,10 @@ class Proxy : public Subject
 {
 public:
     //! @brief Destroy the Proxy object.
-    ~Proxy() override
-    {
-        if (subject)
-        {
-            subject.reset();
-        }
-    }
+    ~Proxy() override;
 
     //! @brief The specific request.
-    void request() override { realSubject().request(); }
+    void request() override;
 
 private:
     //! @brief Real subject.
@@ -483,14 +423,9 @@ private:
 protected:
     //! @brief Get the real subject.
     //! @return real subject
-    RealSubject& realSubject()
-    {
-        if (!subject)
-        {
-            subject = std::make_unique<RealSubject>();
-        }
-        return *subject;
-    }
+    RealSubject& realSubject();
 };
+
+extern std::ostringstream& output();
 } // namespace proxy
 } // namespace design_pattern::structural

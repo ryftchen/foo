@@ -60,67 +60,32 @@ public:
 
     //! @brief Flush the output stream.
     //! @return reference of output stream object, which is on string based.
-    inline std::ostringstream& flush() { return stream; }
+    inline std::ostringstream& flush();
 
     //! @brief The pre-order traversal of the binary search tree.
     //! @param tree - tree root, the target binary search tree has this node as the root node
-    void preorderBSTree(BSTree tree)
-    {
-        if (nullptr != tree)
-        {
-            flush() << tree->key << ' ';
-            preorderBSTree(tree->left);
-            preorderBSTree(tree->right);
-        }
-    }
+    void preorderBSTree(BSTree tree);
     //! @brief The in-order traversal of the binary search tree.
     //! @param tree - tree root, the target binary search tree has this node as the root node
-    void inorderBSTree(BSTree tree)
-    {
-        if (nullptr != tree)
-        {
-            inorderBSTree(tree->left);
-            flush() << tree->key << ' ';
-            inorderBSTree(tree->right);
-        }
-    }
+    void inorderBSTree(BSTree tree);
     //! @brief The post-order traversal of the binary search tree.
     //! @param tree - tree root, the target binary search tree has this node as the root node
-    void postorderBSTree(BSTree tree)
-    {
-        if (nullptr != tree)
-        {
-            postorderBSTree(tree->left);
-            postorderBSTree(tree->right);
-            flush() << tree->key << ' ';
-        }
-    }
+    void postorderBSTree(BSTree tree);
     //! @brief Print the binary search tree.
     //! @param tree - tree root, the target binary search tree has this node as the root node
     //! @param key - the key value of the node
     //! @param direction - node type, the left is -1, the root is 0, and the right is 1
-    void printBSTree(BSTree tree, const Type key, int direction)
-    {
-        if (nullptr != tree)
-        {
-            if (0 == direction)
-            {
-                flush() << tree->key << " is root\n";
-            }
-            else
-            {
-                flush() << tree->key << " is " << key << "'s " << ((1 == direction) ? "right" : "left") << " child\n";
-            }
-
-            printBSTree(tree->left, tree->key, -1);
-            printBSTree(tree->right, tree->key, 1);
-        }
-    }
+    void printBSTree(BSTree tree, const Type key, int direction);
 
 private:
     //! @brief Output stream of the binary search tree structure.
     std::ostringstream stream;
 };
+
+inline std::ostringstream& Output::flush()
+{
+    return stream;
+}
 } // namespace bs
 
 //! @brief The Adelson-Velsky-Landis tree structure.
@@ -174,66 +139,31 @@ public:
 
     //! @brief Flush the output stream.
     //! @return reference of output stream object, which is on string based.
-    inline std::ostringstream& flush() { return stream; }
+    inline std::ostringstream& flush();
     //! @brief The pre-order traversal of the AVL tree.
     //! @param tree - tree root, the target AVL tree has this node as the root node
-    void preorderAVLTree(AVLTree tree)
-    {
-        if (nullptr != tree)
-        {
-            flush() << tree->key << ' ';
-            preorderAVLTree(tree->left);
-            preorderAVLTree(tree->right);
-        }
-    }
+    void preorderAVLTree(AVLTree tree);
     //! @brief The in-order traversal of the AVL tree.
     //! @param tree - tree root, the target AVL tree has this node as the root node
-    void inorderAVLTree(AVLTree tree)
-    {
-        if (nullptr != tree)
-        {
-            inorderAVLTree(tree->left);
-            flush() << tree->key << ' ';
-            inorderAVLTree(tree->right);
-        }
-    }
+    void inorderAVLTree(AVLTree tree);
     //! @brief The post-order traversal of the AVL tree.
     //! @param tree - tree root, the target AVL tree has this node as the root node
-    void postorderAVLTree(AVLTree tree)
-    {
-        if (nullptr != tree)
-        {
-            postorderAVLTree(tree->left);
-            postorderAVLTree(tree->right);
-            flush() << tree->key << ' ';
-        }
-    }
+    void postorderAVLTree(AVLTree tree);
     //! @brief Print the AVL tree.
     //! @param tree - tree root, the target AVL tree has this node as the root node
     //! @param key - the key value of the node
     //! @param direction - node type, the left is -1, the root is 0, and the right is 1
-    void printAVLTree(AVLTree tree, const Type key, const int direction)
-    {
-        if (nullptr != tree)
-        {
-            if (0 == direction)
-            {
-                flush() << tree->key << " is root\n";
-            }
-            else
-            {
-                flush() << tree->key << " is " << key << "'s " << ((1 == direction) ? "right" : "left") << " child\n";
-            }
-
-            printAVLTree(tree->left, tree->key, -1);
-            printAVLTree(tree->right, tree->key, 1);
-        }
-    }
+    void printAVLTree(AVLTree tree, const Type key, const int direction);
 
 private:
     //! @brief Output stream of the AVL tree structure.
     std::ostringstream stream;
 };
+
+inline std::ostringstream& Output::flush()
+{
+    return stream;
+}
 } // namespace avl
 
 //! @brief The splay tree structure.
@@ -281,65 +211,30 @@ public:
 
     //! @brief Flush the output stream.
     //! @return reference of output stream object, which is on string based.
-    inline std::ostringstream& flush() { return stream; }
+    inline std::ostringstream& flush();
     //! @brief The pre-order traversal of the splay tree.
     //! @param tree - tree root, the target splay tree has this node as the root node
-    void preorderSplayTree(SplayTree tree)
-    {
-        if (nullptr != tree)
-        {
-            flush() << tree->key << ' ';
-            preorderSplayTree(tree->left);
-            preorderSplayTree(tree->right);
-        }
-    }
+    void preorderSplayTree(SplayTree tree);
     //! @brief The in-order traversal of the splay tree.
     //! @param tree - tree root, the target splay tree has this node as the root node
-    void inorderSplayTree(SplayTree tree)
-    {
-        if (nullptr != tree)
-        {
-            inorderSplayTree(tree->left);
-            flush() << tree->key << ' ';
-            inorderSplayTree(tree->right);
-        }
-    }
+    void inorderSplayTree(SplayTree tree);
     //! @brief The post-order traversal of the splay tree.
     //! @param tree - tree root, the target splay tree has this node as the root node
-    void postorderSplayTree(SplayTree tree)
-    {
-        if (nullptr != tree)
-        {
-            postorderSplayTree(tree->left);
-            postorderSplayTree(tree->right);
-            flush() << tree->key << ' ';
-        }
-    }
+    void postorderSplayTree(SplayTree tree);
     //! @brief Print the splay tree.
     //! @param tree - tree root, the target splay tree has this node as the root node
     //! @param key - the key value of the node
     //! @param direction - node type, the left is -1, the root is 0, and the right is 1
-    void printSplayTree(SplayTree tree, const Type key, const int direction)
-    {
-        if (nullptr != tree)
-        {
-            if (0 == direction)
-            {
-                flush() << tree->key << " is root\n";
-            }
-            else
-            {
-                flush() << tree->key << " is " << key << "'s " << ((1 == direction) ? "right" : "left") << " child\n";
-            }
-
-            printSplayTree(tree->left, tree->key, -1);
-            printSplayTree(tree->right, tree->key, 1);
-        }
-    }
+    void printSplayTree(SplayTree tree, const Type key, const int direction);
 
 private:
     //! @brief Output stream of the splay tree structure.
     std::ostringstream stream;
 };
+
+inline std::ostringstream& Output::flush()
+{
+    return stream;
+}
 } // namespace splay
 } // namespace date_structure::tree
