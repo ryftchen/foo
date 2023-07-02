@@ -516,7 +516,7 @@ void runOptimalTasks(const std::vector<std::string>& targets)
 
     const std::unordered_multimap<optimal::FuncRange<double, double>, OptimalFuncTarget, optimal::FuncMapHash>
         optimalFuncMap{
-            {{Rastrigin::range1, Rastrigin::range2, Rastrigin::funcDescr}, Rastrigin()},
+            {{Rastrigin::range1, Rastrigin::range2, Rastrigin::funcDescr}, Rastrigin{}},
         };
     for ([[maybe_unused]] const auto& [range, function] : optimalFuncMap)
     {

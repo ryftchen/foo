@@ -177,7 +177,7 @@ public:
     void TearDown() override{};
 
     //! @brief Rastrigin function object.
-    static constexpr application::app_algo::input::Rastrigin rastrigin;
+    static constexpr application::app_algo::input::Rastrigin rastrigin{};
     //! @brief Allowable error.
     static constexpr double error{1e-4};
 };
