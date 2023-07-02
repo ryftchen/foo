@@ -187,10 +187,13 @@ TEST_F(OptimalTestBase, gradientDescentMethod) // NOLINT(cert-err58-cpp)
 {
     const std::shared_ptr<algorithm::optimal::Optimal> gradient =
         std::make_shared<algorithm::optimal::Gradient>(rastrigin);
-    const auto result = (*gradient)(rastrigin.range1, rastrigin.range2, algorithm::optimal::epsilon);
+    std::optional<std::tuple<double, double>> result = std::nullopt;
+
+    // NOLINTNEXTLINE(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
+    ASSERT_NO_THROW(result = (*gradient)(rastrigin.range1, rastrigin.range2, algorithm::optimal::epsilon));
     ASSERT_TRUE(result.has_value());
-    ASSERT_GT(get<0>(result.value()), 0.0 - error);
-    ASSERT_LT(get<0>(result.value()), 0.0 + error);
+    EXPECT_GT(get<0>(result.value()), 0.0 - error);
+    EXPECT_LT(get<0>(result.value()), 0.0 + error);
 }
 
 //! @brief Test for the simulated annealing method in the solution of optimal.
@@ -198,10 +201,13 @@ TEST_F(OptimalTestBase, simulatedAnnealingMethod) // NOLINT(cert-err58-cpp)
 {
     const std::shared_ptr<algorithm::optimal::Optimal> annealing =
         std::make_shared<algorithm::optimal::Annealing>(rastrigin);
-    const auto result = (*annealing)(rastrigin.range1, rastrigin.range2, algorithm::optimal::epsilon);
+    std::optional<std::tuple<double, double>> result = std::nullopt;
+
+    // NOLINTNEXTLINE(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
+    ASSERT_NO_THROW(result = (*annealing)(rastrigin.range1, rastrigin.range2, algorithm::optimal::epsilon));
     ASSERT_TRUE(result.has_value());
-    ASSERT_GT(get<0>(result.value()), 0.0 - error);
-    ASSERT_LT(get<0>(result.value()), 0.0 + error);
+    EXPECT_GT(get<0>(result.value()), 0.0 - error);
+    EXPECT_LT(get<0>(result.value()), 0.0 + error);
 }
 
 //! @brief Test for the particle swarm method in the solution of optimal.
@@ -209,10 +215,13 @@ TEST_F(OptimalTestBase, particleSwarmMethod) // NOLINT(cert-err58-cpp)
 {
     const std::shared_ptr<algorithm::optimal::Optimal> particle =
         std::make_shared<algorithm::optimal::Particle>(rastrigin);
-    const auto result = (*particle)(rastrigin.range1, rastrigin.range2, algorithm::optimal::epsilon);
+    std::optional<std::tuple<double, double>> result = std::nullopt;
+
+    // NOLINTNEXTLINE(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
+    ASSERT_NO_THROW(result = (*particle)(rastrigin.range1, rastrigin.range2, algorithm::optimal::epsilon));
     ASSERT_TRUE(result.has_value());
-    ASSERT_GT(get<0>(result.value()), 0.0 - error);
-    ASSERT_LT(get<0>(result.value()), 0.0 + error);
+    EXPECT_GT(get<0>(result.value()), 0.0 - error);
+    EXPECT_LT(get<0>(result.value()), 0.0 + error);
 }
 
 //! @brief Test for the genetic method in the solution of optimal.
@@ -220,10 +229,13 @@ TEST_F(OptimalTestBase, geneticMethod) // NOLINT(cert-err58-cpp)
 {
     const std::shared_ptr<algorithm::optimal::Optimal> genetic =
         std::make_shared<algorithm::optimal::Genetic>(rastrigin);
-    const auto result = (*genetic)(rastrigin.range1, rastrigin.range2, algorithm::optimal::epsilon);
+    std::optional<std::tuple<double, double>> result = std::nullopt;
+
+    // NOLINTNEXTLINE(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
+    ASSERT_NO_THROW(result = (*genetic)(rastrigin.range1, rastrigin.range2, algorithm::optimal::epsilon));
     ASSERT_TRUE(result.has_value());
-    ASSERT_GT(get<0>(result.value()), 0.0 - error);
-    ASSERT_LT(get<0>(result.value()), 0.0 + error);
+    EXPECT_GT(get<0>(result.value()), 0.0 - error);
+    EXPECT_LT(get<0>(result.value()), 0.0 + error);
 }
 
 //! @brief Test base of search.
