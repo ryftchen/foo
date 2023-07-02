@@ -168,9 +168,12 @@ TEST_F(IntegralTestBase, trapezoidalMethod) // NOLINT(cert-err58-cpp)
 {
     const std::shared_ptr<numeric::integral::Integral> trapezoidal =
         std::make_shared<numeric::integral::Trapezoidal>(expression1);
-    const auto result = (*trapezoidal)(expression1.range1, expression1.range2, numeric::integral::epsilon);
-    ASSERT_GT(result, -4.08951 - error);
-    ASSERT_LT(result, -4.08951 + error);
+    double result = 0.0;
+
+    // NOLINTNEXTLINE(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
+    ASSERT_NO_THROW(result = (*trapezoidal)(expression1.range1, expression1.range2, numeric::integral::epsilon));
+    EXPECT_GT(result, -4.08951 - error);
+    EXPECT_LT(result, -4.08951 + error);
 }
 
 //! @brief Test for the adaptive Simpson's 1/3 method in the solution of integral.
@@ -178,9 +181,12 @@ TEST_F(IntegralTestBase, adaptiveSimpsonMethod) // NOLINT(cert-err58-cpp)
 {
     const std::shared_ptr<numeric::integral::Integral> simpson =
         std::make_shared<numeric::integral::Simpson>(expression1);
-    const auto result = (*simpson)(expression1.range1, expression1.range2, numeric::integral::epsilon);
-    ASSERT_GT(result, -4.08951 - error);
-    ASSERT_LT(result, -4.08951 + error);
+    double result = 0.0;
+
+    // NOLINTNEXTLINE(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
+    ASSERT_NO_THROW(result = (*simpson)(expression1.range1, expression1.range2, numeric::integral::epsilon));
+    EXPECT_GT(result, -4.08951 - error);
+    EXPECT_LT(result, -4.08951 + error);
 }
 
 //! @brief Test for the Romberg method in the solution of integral.
@@ -188,18 +194,24 @@ TEST_F(IntegralTestBase, rombergMethod) // NOLINT(cert-err58-cpp)
 {
     const std::shared_ptr<numeric::integral::Integral> romberg =
         std::make_shared<numeric::integral::Romberg>(expression1);
-    const auto result = (*romberg)(expression1.range1, expression1.range2, numeric::integral::epsilon);
-    ASSERT_GT(result, -4.08951 - error);
-    ASSERT_LT(result, -4.08951 + error);
+    double result = 0.0;
+
+    // NOLINTNEXTLINE(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
+    ASSERT_NO_THROW(result = (*romberg)(expression1.range1, expression1.range2, numeric::integral::epsilon));
+    EXPECT_GT(result, -4.08951 - error);
+    EXPECT_LT(result, -4.08951 + error);
 }
 
 //! @brief Test for the Gauss-Legendre's 5-points method in the solution of integral.
 TEST_F(IntegralTestBase, gaussLegendreMethod) // NOLINT(cert-err58-cpp)
 {
     const std::shared_ptr<numeric::integral::Integral> gauss = std::make_shared<numeric::integral::Gauss>(expression1);
-    const auto result = (*gauss)(expression1.range1, expression1.range2, numeric::integral::epsilon);
-    ASSERT_GT(result, -4.08951 - error);
-    ASSERT_LT(result, -4.08951 + error);
+    double result = 0.0;
+
+    // NOLINTNEXTLINE(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
+    ASSERT_NO_THROW(result = (*gauss)(expression1.range1, expression1.range2, numeric::integral::epsilon));
+    EXPECT_GT(result, -4.08951 - error);
+    EXPECT_LT(result, -4.08951 + error);
 }
 
 //! @brief Test for the Monte-Carlo method in the solution of integral.
@@ -207,9 +219,12 @@ TEST_F(IntegralTestBase, monteCarloMethod) // NOLINT(cert-err58-cpp)
 {
     const std::shared_ptr<numeric::integral::Integral> monteCarlo =
         std::make_shared<numeric::integral::MonteCarlo>(expression1);
-    const auto result = (*monteCarlo)(expression1.range1, expression1.range2, numeric::integral::epsilon);
-    ASSERT_GT(result, -4.08951 - error);
-    ASSERT_LT(result, -4.08951 + error);
+    double result = 0.0;
+
+    // NOLINTNEXTLINE(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
+    ASSERT_NO_THROW(result = (*monteCarlo)(expression1.range1, expression1.range2, numeric::integral::epsilon));
+    EXPECT_GT(result, -4.08951 - error);
+    EXPECT_LT(result, -4.08951 + error);
 }
 
 //! @brief Test base of prime.
