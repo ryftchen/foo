@@ -96,7 +96,7 @@ void MatchSolution::rkMethod(
     }
     catch (const std::exception& error)
     {
-        LOG_ERR("<APPLY ALGORITHM> %s", error.what());
+        LOG_ERR(error.what());
     }
 }
 
@@ -115,7 +115,7 @@ void MatchSolution::kmpMethod(
     }
     catch (const std::exception& error)
     {
-        LOG_ERR("<APPLY ALGORITHM> %s", error.what());
+        LOG_ERR(error.what());
     }
 }
 
@@ -134,7 +134,7 @@ void MatchSolution::bmMethod(
     }
     catch (const std::exception& error)
     {
-        LOG_ERR("<APPLY ALGORITHM> %s", error.what());
+        LOG_ERR(error.what());
     }
 }
 
@@ -153,7 +153,7 @@ void MatchSolution::horspoolMethod(
     }
     catch (const std::exception& error)
     {
-        LOG_ERR("<APPLY ALGORITHM> %s", error.what());
+        LOG_ERR(error.what());
     }
 }
 
@@ -172,7 +172,7 @@ void MatchSolution::sundayMethod(
     }
     catch (const std::exception& error)
     {
-        LOG_ERR("<APPLY ALGORITHM> %s", error.what());
+        LOG_ERR(error.what());
     }
 }
 } // namespace match
@@ -235,7 +235,7 @@ void runMatchTasks(const std::vector<std::string>& targets)
                 matchFunctor(threadName, &MatchSolution::sundayMethod);
                 break;
             default:
-                LOG_DBG("<APPLY ALGORITHM> Execute to apply an unknown match method.");
+                LOG_DBG("Execute to apply an unknown match method.");
                 break;
         }
     }
@@ -268,7 +268,7 @@ void updateMatchTask(const std::string& target)
             break;
         default:
             getBit<MatchMethod>().reset();
-            throw std::runtime_error("<APPLY ALGORITHM> Unexpected match method: " + target + '.');
+            throw std::runtime_error("Unexpected match method: " + target + '.');
     }
 }
 
@@ -289,7 +289,7 @@ void NotationSolution::prefixMethod(const std::string& infixNotation)
     }
     catch (const std::exception& error)
     {
-        LOG_ERR("<APPLY ALGORITHM> %s", error.what());
+        LOG_ERR(error.what());
     }
 }
 
@@ -302,7 +302,7 @@ void NotationSolution::postfixMethod(const std::string& infixNotation)
     }
     catch (const std::exception& error)
     {
-        LOG_ERR("<APPLY ALGORITHM> %s", error.what());
+        LOG_ERR(error.what());
     }
 }
 } // namespace notation
@@ -348,7 +348,7 @@ void runNotationTasks(const std::vector<std::string>& targets)
                 notationFunctor(threadName, &NotationSolution::postfixMethod);
                 break;
             default:
-                LOG_DBG("<APPLY ALGORITHM> Execute to apply an unknown notation method.");
+                LOG_DBG("Execute to apply an unknown notation method.");
                 break;
         }
     }
@@ -372,7 +372,7 @@ void updateNotationTask(const std::string& target)
             break;
         default:
             getBit<NotationMethod>().reset();
-            throw std::runtime_error("<APPLY ALGORITHM> Unexpected notation method: " + target + '.');
+            throw std::runtime_error("Unexpected notation method: " + target + '.');
     }
 }
 
@@ -394,7 +394,7 @@ void OptimalSolution::gradientDescentMethod(const Function& func, const double l
     }
     catch (const std::exception& error)
     {
-        LOG_ERR("<APPLY ALGORITHM> %s", error.what());
+        LOG_ERR(error.what());
     }
 }
 
@@ -409,7 +409,7 @@ void OptimalSolution::simulatedAnnealingMethod(const Function& func, const doubl
     }
     catch (const std::exception& error)
     {
-        LOG_ERR("<APPLY ALGORITHM> %s", error.what());
+        LOG_ERR(error.what());
     }
 }
 
@@ -424,7 +424,7 @@ void OptimalSolution::particleSwarmMethod(const Function& func, const double lef
     }
     catch (const std::exception& error)
     {
-        LOG_ERR("<APPLY ALGORITHM> %s", error.what());
+        LOG_ERR(error.what());
     }
 }
 
@@ -439,7 +439,7 @@ void OptimalSolution::geneticMethod(const Function& func, const double left, con
     }
     catch (const std::exception& error)
     {
-        LOG_ERR("<APPLY ALGORITHM> %s", error.what());
+        LOG_ERR(error.what());
     }
 }
 } // namespace optimal
@@ -505,7 +505,7 @@ void runOptimalTasks(const std::vector<std::string>& targets)
                     optimalFunctor(threadName, &OptimalSolution::geneticMethod);
                     break;
                 default:
-                    LOG_DBG("<APPLY ALGORITHM> Execute to apply an unknown optimal method.");
+                    LOG_DBG("Execute to apply an unknown optimal method.");
                     break;
             }
         }
@@ -554,7 +554,7 @@ void updateOptimalTask(const std::string& target)
             break;
         default:
             getBit<OptimalMethod>().reset();
-            throw std::runtime_error("<APPLY ALGORITHM> Unexpected optimal method: " + target + '.');
+            throw std::runtime_error("Unexpected optimal method: " + target + '.');
     }
 }
 
@@ -591,7 +591,7 @@ void SearchSolution::binaryMethod(const double* const array, const std::uint32_t
     }
     catch (const std::exception& error)
     {
-        LOG_ERR("<APPLY ALGORITHM> %s", error.what());
+        LOG_ERR(error.what());
     }
 }
 
@@ -606,7 +606,7 @@ void SearchSolution::interpolationMethod(const double* const array, const std::u
     }
     catch (const std::exception& error)
     {
-        LOG_ERR("<APPLY ALGORITHM> %s", error.what());
+        LOG_ERR(error.what());
     }
 }
 
@@ -621,7 +621,7 @@ void SearchSolution::fibonacciMethod(const double* const array, const std::uint3
     }
     catch (const std::exception& error)
     {
-        LOG_ERR("<APPLY ALGORITHM> %s", error.what());
+        LOG_ERR(error.what());
     }
 }
 } // namespace search
@@ -677,7 +677,7 @@ void runSearchTasks(const std::vector<std::string>& targets)
                 searchFunctor(threadName, &SearchSolution::fibonacciMethod);
                 break;
             default:
-                LOG_DBG("<APPLY ALGORITHM> Execute to apply an unknown search method.");
+                LOG_DBG("Execute to apply an unknown search method.");
                 break;
         }
     }
@@ -704,7 +704,7 @@ void updateSearchTask(const std::string& target)
             break;
         default:
             getBit<SearchMethod>().reset();
-            throw std::runtime_error("<APPLY ALGORITHM> Unexpected search method: " + target + '.');
+            throw std::runtime_error("Unexpected search method: " + target + '.');
     }
 }
 
@@ -738,7 +738,7 @@ void SortSolution::bubbleMethod(int* const array, const std::uint32_t length)
     }
     catch (const std::exception& error)
     {
-        LOG_ERR("<APPLY ALGORITHM> %s", error.what());
+        LOG_ERR(error.what());
     }
 }
 
@@ -753,7 +753,7 @@ void SortSolution::selectionMethod(int* const array, const std::uint32_t length)
     }
     catch (const std::exception& error)
     {
-        LOG_ERR("<APPLY ALGORITHM> %s", error.what());
+        LOG_ERR(error.what());
     }
 }
 
@@ -768,7 +768,7 @@ void SortSolution::insertionMethod(int* const array, const std::uint32_t length)
     }
     catch (const std::exception& error)
     {
-        LOG_ERR("<APPLY ALGORITHM> %s", error.what());
+        LOG_ERR(error.what());
     }
 }
 
@@ -783,7 +783,7 @@ void SortSolution::shellMethod(int* const array, const std::uint32_t length)
     }
     catch (const std::exception& error)
     {
-        LOG_ERR("<APPLY ALGORITHM> %s", error.what());
+        LOG_ERR(error.what());
     }
 }
 
@@ -798,7 +798,7 @@ void SortSolution::mergeMethod(int* const array, const std::uint32_t length)
     }
     catch (const std::exception& error)
     {
-        LOG_ERR("<APPLY ALGORITHM> %s", error.what());
+        LOG_ERR(error.what());
     }
 }
 
@@ -813,7 +813,7 @@ void SortSolution::quickMethod(int* const array, const std::uint32_t length)
     }
     catch (const std::exception& error)
     {
-        LOG_ERR("<APPLY ALGORITHM> %s", error.what());
+        LOG_ERR(error.what());
     }
 }
 
@@ -828,7 +828,7 @@ void SortSolution::heapMethod(int* const array, const std::uint32_t length)
     }
     catch (const std::exception& error)
     {
-        LOG_ERR("<APPLY ALGORITHM> %s", error.what());
+        LOG_ERR(error.what());
     }
 }
 
@@ -843,7 +843,7 @@ void SortSolution::countingMethod(int* const array, const std::uint32_t length)
     }
     catch (const std::exception& error)
     {
-        LOG_ERR("<APPLY ALGORITHM> %s", error.what());
+        LOG_ERR(error.what());
     }
 }
 
@@ -858,7 +858,7 @@ void SortSolution::bucketMethod(int* const array, const std::uint32_t length)
     }
     catch (const std::exception& error)
     {
-        LOG_ERR("<APPLY ALGORITHM> %s", error.what());
+        LOG_ERR(error.what());
     }
 }
 
@@ -873,7 +873,7 @@ void SortSolution::radixMethod(int* const array, const std::uint32_t length)
     }
     catch (const std::exception& error)
     {
-        LOG_ERR("<APPLY ALGORITHM> %s", error.what());
+        LOG_ERR(error.what());
     }
 }
 } // namespace sort
@@ -948,7 +948,7 @@ void runSortTasks(const std::vector<std::string>& targets)
                 sortFunctor(threadName, &SortSolution::radixMethod);
                 break;
             default:
-                LOG_DBG("<APPLY ALGORITHM> Execute to apply an unknown sort method.");
+                LOG_DBG("Execute to apply an unknown sort method.");
                 break;
         }
     }
@@ -996,7 +996,7 @@ void updateSortTask(const std::string& target)
             break;
         default:
             getBit<SortMethod>().reset();
-            throw std::runtime_error("<APPLY ALGORITHM> Unexpected sort method: " + target + '.');
+            throw std::runtime_error("Unexpected sort method: " + target + '.');
     }
 }
 } // namespace application::app_algo

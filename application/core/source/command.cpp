@@ -44,7 +44,7 @@ Command::Command()
                     {
                         return value;
                     }
-                    throw std::runtime_error("<COMMAND> Unknown algorithm category: " + value);
+                    throw std::runtime_error("Unknown algorithm category: " + value);
                 })
             .help("run algorithm tasks with a category:\n"
                   "- match       Match Solution\n"
@@ -69,7 +69,7 @@ Command::Command()
                     {
                         return value;
                     }
-                    throw std::runtime_error("<COMMAND> Unknown data structure category: " + value);
+                    throw std::runtime_error("Unknown data structure category: " + value);
                 })
             .help("run data structure tasks with a category:\n"
                   "- linear    Linear Structure\n"
@@ -91,7 +91,7 @@ Command::Command()
                     {
                         return value;
                     }
-                    throw std::runtime_error("<COMMAND> Unknown design pattern category: " + value);
+                    throw std::runtime_error("Unknown design pattern category: " + value);
                 })
             .help("run design pattern tasks with a category:\n"
                   "- behavioral    Behavioral Pattern\n"
@@ -114,7 +114,7 @@ Command::Command()
                     {
                         return value;
                     }
-                    throw std::runtime_error("<COMMAND> Unknown numeric category: " + value);
+                    throw std::runtime_error("Unknown numeric category: " + value);
                 })
             .help("run numeric tasks with a category:\n"
                   "- arithmetic    Arithmetic Solution\n"
@@ -164,9 +164,9 @@ void Command::runCommander(const int argc, const char* const argv[])
         }
         else
         {
-            LOG_INF("<COMMAND> Enter console mode.");
+            LOG_INF("Enter console mode.");
             enterConsoleMode();
-            LOG_INF("<COMMAND> Exit console mode.");
+            LOG_INF("Exit console mode.");
         }
 
         LOG_TO_STOP;
@@ -401,7 +401,6 @@ void Command::showConsoleOutput() const
 
     udpClient.toSend("stop");
     udpClient.waitIfAlive();
-    udpClient.toClose();
 }
 
 void Command::showHelpMessage() const
@@ -617,7 +616,7 @@ void Command::enterConsoleMode() const
         char hostName[HOST_NAME_MAX + 1] = {'\0'};
         if (::gethostname(hostName, HOST_NAME_MAX))
         {
-            throw std::runtime_error("<COMMAND> Host name could not be obtained.");
+            throw std::runtime_error("Host name could not be obtained.");
         }
         const std::string greeting = std::string{(nullptr != std::getenv("USER")) ? std::getenv("USER") : "root"} + '@'
             + std::string{hostName} + " foo > ";
@@ -634,7 +633,6 @@ void Command::enterConsoleMode() const
 
         tcpClient.toSend("stop");
         tcpClient.waitIfAlive();
-        tcpClient.toClose();
     }
     catch (const std::exception& error)
     {

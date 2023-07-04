@@ -73,7 +73,7 @@ void ArithmeticSolution::additionMethod(const int augend, const int addend)
     }
     catch (const std::exception& error)
     {
-        LOG_ERR("<APPLY NUMERIC> %s", error.what());
+        LOG_ERR(error.what());
     }
 }
 
@@ -86,7 +86,7 @@ void ArithmeticSolution::subtractionMethod(const int minuend, const int subtrahe
     }
     catch (const std::exception& error)
     {
-        LOG_ERR("<APPLY NUMERIC> %s", error.what());
+        LOG_ERR(error.what());
     }
 }
 
@@ -99,7 +99,7 @@ void ArithmeticSolution::multiplicationMethod(const int multiplier, const int mu
     }
     catch (const std::exception& error)
     {
-        LOG_ERR("<APPLY NUMERIC> %s", error.what());
+        LOG_ERR(error.what());
     }
 }
 
@@ -112,7 +112,7 @@ void ArithmeticSolution::divisionMethod(const int dividend, const int divisor)
     }
     catch (const std::exception& error)
     {
-        LOG_ERR("<APPLY NUMERIC> %s", error.what());
+        LOG_ERR(error.what());
     }
 }
 } // namespace arithmetic
@@ -166,7 +166,7 @@ void runArithmeticTasks(const std::vector<std::string>& targets)
                 arithmeticFunctor(threadName, &ArithmeticSolution::divisionMethod);
                 break;
             default:
-                LOG_DBG("<APPLY NUMERIC> Execute to apply an unknown arithmetic method.");
+                LOG_DBG("Execute to apply an unknown arithmetic method.");
                 break;
         }
     }
@@ -196,7 +196,7 @@ void updateArithmeticTask(const std::string& target)
             break;
         default:
             getBit<ArithmeticMethod>().reset();
-            throw std::runtime_error("<APPLY NUMERIC> Unexpected arithmetic method: " + target + '.');
+            throw std::runtime_error("Unexpected arithmetic method: " + target + '.');
     }
 }
 
@@ -230,7 +230,7 @@ void DivisorSolution::euclideanMethod(int a, int b)
     }
     catch (const std::exception& error)
     {
-        LOG_ERR("<APPLY NUMERIC> %s", error.what());
+        LOG_ERR(error.what());
     }
 }
 
@@ -245,7 +245,7 @@ void DivisorSolution::steinMethod(int a, int b)
     }
     catch (const std::exception& error)
     {
-        LOG_ERR("<APPLY NUMERIC> %s", error.what());
+        LOG_ERR(error.what());
     }
 }
 } // namespace divisor
@@ -293,7 +293,7 @@ void runDivisorTasks(const std::vector<std::string>& targets)
                 divisorFunctor(threadName, &DivisorSolution::steinMethod);
                 break;
             default:
-                LOG_DBG("<APPLY NUMERIC> Execute to apply an unknown divisor method.");
+                LOG_DBG("Execute to apply an unknown divisor method.");
                 break;
         }
     }
@@ -317,7 +317,7 @@ void updateDivisorTask(const std::string& target)
             break;
         default:
             getBit<DivisorMethod>().reset();
-            throw std::runtime_error("<APPLY NUMERIC> Unexpected divisor method: " + target + '.');
+            throw std::runtime_error("Unexpected divisor method: " + target + '.');
     }
 }
 
@@ -340,7 +340,7 @@ void IntegralSolution::trapezoidalMethod(const Expression& expr, double lower, d
     }
     catch (const std::exception& error)
     {
-        LOG_ERR("<APPLY NUMERIC> %s", error.what());
+        LOG_ERR(error.what());
     }
 }
 
@@ -355,7 +355,7 @@ void IntegralSolution::adaptiveSimpsonMethod(const Expression& expr, const doubl
     }
     catch (const std::exception& error)
     {
-        LOG_ERR("<APPLY NUMERIC> %s", error.what());
+        LOG_ERR(error.what());
     }
 }
 
@@ -370,7 +370,7 @@ void IntegralSolution::rombergMethod(const Expression& expr, const double lower,
     }
     catch (const std::exception& error)
     {
-        LOG_ERR("<APPLY NUMERIC> %s", error.what());
+        LOG_ERR(error.what());
     }
 }
 
@@ -385,7 +385,7 @@ void IntegralSolution::gaussLegendreMethod(const Expression& expr, const double 
     }
     catch (const std::exception& error)
     {
-        LOG_ERR("<APPLY NUMERIC> %s", error.what());
+        LOG_ERR(error.what());
     }
 }
 
@@ -400,7 +400,7 @@ void IntegralSolution::monteCarloMethod(const Expression& expr, const double low
     }
     catch (const std::exception& error)
     {
-        LOG_ERR("<APPLY NUMERIC> %s", error.what());
+        LOG_ERR(error.what());
     }
 }
 } // namespace integral
@@ -468,7 +468,7 @@ void runIntegralTasks(const std::vector<std::string>& targets)
                     integralFunctor(threadName, &IntegralSolution::monteCarloMethod);
                     break;
                 default:
-                    LOG_DBG("<APPLY NUMERIC> Execute to apply an unknown integral method.");
+                    LOG_DBG("Execute to apply an unknown integral method.");
                     break;
             }
         }
@@ -520,7 +520,7 @@ void updateIntegralTask(const std::string& target)
             break;
         default:
             getBit<IntegralMethod>().reset();
-            throw std::runtime_error("<APPLY NUMERIC> Unexpected integral method: " + target + '.');
+            throw std::runtime_error("Unexpected integral method: " + target + '.');
     }
 }
 
@@ -554,7 +554,7 @@ void PrimeSolution::eratosthenesMethod(const std::uint32_t max)
     }
     catch (const std::exception& error)
     {
-        LOG_ERR("<APPLY NUMERIC> %s", error.what());
+        LOG_ERR(error.what());
     }
 }
 
@@ -569,7 +569,7 @@ void PrimeSolution::eulerMethod(const std::uint32_t max)
     }
     catch (const std::exception& error)
     {
-        LOG_ERR("<APPLY NUMERIC> %s", error.what());
+        LOG_ERR(error.what());
     }
 }
 } // namespace prime
@@ -615,7 +615,7 @@ void runPrimeTasks(const std::vector<std::string>& targets)
                 primeFunctor(threadName, &PrimeSolution::eulerMethod);
                 break;
             default:
-                LOG_DBG("<APPLY NUMERIC> Execute to apply an unknown prime method.");
+                LOG_DBG("Execute to apply an unknown prime method.");
                 break;
         }
     }
@@ -639,7 +639,7 @@ void updatePrimeTask(const std::string& target)
             break;
         default:
             getBit<PrimeMethod>().reset();
-            throw std::runtime_error("<APPLY NUMERIC> Unexpected prime method: " + target + '.');
+            throw std::runtime_error("Unexpected prime method: " + target + '.');
     }
 }
 } // namespace application::app_num

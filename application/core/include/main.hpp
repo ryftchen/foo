@@ -106,7 +106,7 @@ static void init()
         const std::filesystem::path buildPath(std::filesystem::path{absolutePath.string().substr(0, pos)});
         if (!buildPath.has_parent_path())
         {
-            std::fprintf(::stderr, "<MAIN> The project path doesn't exist. Please check it.\n");
+            std::fprintf(::stderr, "The code project path doesn't exist. Please check it.\n");
             std::exit(-1);
         }
         std::filesystem::current_path(buildPath.parent_path());
@@ -117,7 +117,7 @@ static void init()
             std::filesystem::path{(nullptr != std::getenv("HOME")) ? std::getenv("HOME") : "/root"});
         if (homePath.empty())
         {
-            std::fprintf(::stderr, "<MAIN> The home path doesn't exist. Please check it.\n");
+            std::fprintf(::stderr, "The home path doesn't exist. Please check it.\n");
             std::exit(-1);
         }
 
@@ -137,7 +137,7 @@ static void fini()
 {
     if (signalStatus)
     {
-        std::fprintf(::stdout, "<MAIN> Last signal ever received: signal %d.\n", signalStatus);
+        std::fprintf(::stdout, "Last signal ever received: signal %d.\n", signalStatus);
     }
 }
 } // namespace application
