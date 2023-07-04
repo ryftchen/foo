@@ -41,7 +41,7 @@ void Log::runLogger()
         expectedState = state;
         if (currentState() != expectedState)
         {
-            throw std::logic_error("<LOG> Abnormal logger state.");
+            throw std::logic_error("Abnormal logger state.");
         }
     };
 
@@ -125,7 +125,7 @@ void Log::interfaceToStart()
             if (maxTimesOfWaitLogger == waitCount)
             {
 #ifndef NDEBUG
-                std::cerr << "<LOG> Wait for the logger to start.." << std::endl;
+                std::cerr << "Wait for the logger to start.." << std::endl;
 #endif // NDEBUG
                 expiryTimer.reset();
             }
@@ -163,7 +163,7 @@ void Log::interfaceToStop()
             if (maxTimesOfWaitLogger == waitCount)
             {
 #ifndef NDEBUG
-                std::cerr << "<LOG> Wait for the logger to stop..." << std::endl;
+                std::cerr << "Wait for the logger to stop..." << std::endl;
 #endif // NDEBUG
                 expiryTimer.reset();
             }

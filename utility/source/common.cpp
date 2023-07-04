@@ -32,13 +32,13 @@ std::string executeCommand(const std::string& cmd, const std::uint32_t timeout)
     std::FILE* pipe = ::popen(cmd.c_str(), "r");
     if (nullptr == pipe)
     {
-        throw std::runtime_error("<COMMON> Could not open pipe when trying to execute command.");
+        throw std::runtime_error("Could not open pipe when trying to execute command.");
     }
 
     std::string output;
     std::vector<char> buffer(maxBufferSize);
     const auto startTime = std::chrono::steady_clock::now();
-    while (true)
+    for (;;)
     {
         if (timeout > 0)
         {
@@ -47,7 +47,7 @@ std::string executeCommand(const std::string& cmd, const std::uint32_t timeout)
             if (elapsedTime.count() > timeout)
             {
                 ::pclose(pipe);
-                throw std::runtime_error("<COMMON> Execute command timeout.");
+                throw std::runtime_error("Execute command timeout.");
             }
         }
 
@@ -62,7 +62,7 @@ std::string executeCommand(const std::string& cmd, const std::uint32_t timeout)
     const int exitStatus = ::pclose(pipe);
     if (-1 == exitStatus)
     {
-        throw std::runtime_error("<COMMON> Could not close pipe when trying to execute command.");
+        throw std::runtime_error("Could not close pipe when trying to execute command.");
     }
     if (WIFEXITED(exitStatus))
     {
@@ -70,18 +70,17 @@ std::string executeCommand(const std::string& cmd, const std::uint32_t timeout)
         if (0 != exitCode)
         {
             throw std::runtime_error(
-                "<COMMON> Returns exit code " + std::to_string(exitCode) + " when the command is executed.");
+                "Returns exit code " + std::to_string(exitCode) + " when the command is executed.");
         }
     }
     else if (WIFSIGNALED(exitStatus))
     {
         const int signal = WTERMSIG(exitStatus);
-        throw std::runtime_error(
-            "<COMMON> Terminated by signal " + std::to_string(signal) + " when the command is executed.");
+        throw std::runtime_error("Terminated by signal " + std::to_string(signal) + " when the command is executed.");
     }
     else
     {
-        throw std::runtime_error("<COMMON> The termination status is unknown when the command is executed.");
+        throw std::runtime_error("The termination status is unknown when the command is executed.");
     }
 
     return output;

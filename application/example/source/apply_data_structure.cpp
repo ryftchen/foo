@@ -66,7 +66,7 @@ void LinearStructure::linkedListInstance()
     }
     catch (const std::exception& error)
     {
-        LOG_ERR("<APPLY DATA STRUCTURE> %s", error.what());
+        LOG_ERR(error.what());
     }
 }
 
@@ -79,7 +79,7 @@ void LinearStructure::stackInstance()
     }
     catch (const std::exception& error)
     {
-        LOG_ERR("<APPLY DATA STRUCTURE> %s", error.what());
+        LOG_ERR(error.what());
     }
 }
 
@@ -92,7 +92,7 @@ void LinearStructure::queueInstance()
     }
     catch (const std::exception& error)
     {
-        LOG_ERR("<APPLY DATA STRUCTURE> %s", error.what());
+        LOG_ERR(error.what());
     }
 }
 } // namespace linear
@@ -140,7 +140,7 @@ void runLinearTasks(const std::vector<std::string>& targets)
                 linearFunctor(threadName, &LinearStructure::queueInstance);
                 break;
             default:
-                LOG_DBG("<APPLY DATA STRUCTURE> Execute to apply an unknown linear instance.");
+                LOG_DBG("Execute to apply an unknown linear instance.");
                 break;
         }
     }
@@ -167,7 +167,7 @@ void updateLinearTask(const std::string& target)
             break;
         default:
             getBit<LinearInstance>().reset();
-            throw std::runtime_error("<APPLY DATA STRUCTURE> Unexpected linear instance: " + target + '.');
+            throw std::runtime_error("Unexpected linear instance: " + target + '.');
     }
 }
 
@@ -187,7 +187,7 @@ void TreeStructure::bsInstance()
     }
     catch (const std::exception& error)
     {
-        LOG_ERR("<APPLY DATA STRUCTURE> %s", error.what());
+        LOG_ERR(error.what());
     }
 }
 
@@ -200,7 +200,7 @@ void TreeStructure::avlInstance()
     }
     catch (const std::exception& error)
     {
-        LOG_ERR("<APPLY DATA STRUCTURE> %s", error.what());
+        LOG_ERR(error.what());
     }
 }
 
@@ -213,7 +213,7 @@ void TreeStructure::splayInstance()
     }
     catch (const std::exception& error)
     {
-        LOG_ERR("<APPLY DATA STRUCTURE> %s", error.what());
+        LOG_ERR(error.what());
     }
 }
 } // namespace tree
@@ -261,7 +261,7 @@ void runTreeTasks(const std::vector<std::string>& targets)
                 treeFunctor(threadName, &TreeStructure::splayInstance);
                 break;
             default:
-                LOG_DBG("<APPLY DATA STRUCTURE> Execute to apply an unknown tree instance.");
+                LOG_DBG("Execute to apply an unknown tree instance.");
                 break;
         }
     }
@@ -288,7 +288,7 @@ void updateTreeTask(const std::string& target)
             break;
         default:
             getBit<TreeInstance>().reset();
-            throw std::runtime_error("<APPLY DATA STRUCTURE> Unexpected tree instance: " + target + '.');
+            throw std::runtime_error("Unexpected tree instance: " + target + '.');
     }
 }
 } // namespace application::app_ds

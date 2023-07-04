@@ -121,8 +121,8 @@ public:
     std::function<void(char*, const int)> onRawMessageReceived{};
     //! @brief Handling on socket closed.
     std::function<void(const int)> onSocketClosed{};
-    //! @brief Flag for proactive release.
-    std::atomic<bool> proactiveRelease{false};
+    //! @brief Flag for automatic release.
+    std::atomic<bool> autoRelease{false};
 
 private:
     //! @brief Receive bytes from socket FD.

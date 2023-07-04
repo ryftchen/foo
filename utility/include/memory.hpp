@@ -109,7 +109,7 @@ private:
     //! @brief Allocate block.
     void allocateBlock();
 
-    static_assert(BlockSize >= (2 * sizeof(Slot)), "<MEMORY> BlockSize is too small.");
+    static_assert(BlockSize >= (2 * sizeof(Slot)), "Block size is too small.");
 };
 } // namespace utility::memory
 

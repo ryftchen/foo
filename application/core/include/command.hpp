@@ -269,7 +269,7 @@ private:
 inline void Command::throwExcessArgumentException()
 {
     dispatchedTask.reset();
-    throw std::runtime_error("<COMMAND> Excess argument.");
+    throw std::runtime_error("Excess argument.");
 }
 
 template <typename T>

@@ -97,7 +97,7 @@ std::ifstream openFile(const std::string& filename)
     if (!ifs)
     {
         throw std::runtime_error(
-            "<FILE> Failed to open file " + std::filesystem::path(filename).filename().string() + " for reading.");
+            "Failed to open file " + std::filesystem::path(filename).filename().string() + " for reading.");
     }
     return ifs;
 }
@@ -114,7 +114,7 @@ std::ofstream openFile(const std::string& filename, const bool isOverwrite)
     if (!ofs)
     {
         throw std::runtime_error(
-            "<FILE> Failed to open file " + std::filesystem::path(filename).filename().string() + " for writing.");
+            "Failed to open file " + std::filesystem::path(filename).filename().string() + " for writing.");
     }
     return ofs;
 }
