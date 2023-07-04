@@ -203,7 +203,7 @@ FOO_BLD_TMPFS=off
 export FOO_BLD_PARALLEL FOO_BLD_PCH FOO_BLD_UNITY FOO_BLD_CCACHE FOO_BLD_DISTCC FOO_BLD_TMPFS
 return 0
 EOF"
-        shell_command "echo 'core.%s.%e.%p' | sudo tee /proc/sys/kernel/core_pattern"
+        shell_command "echo 'core.%s.%e.%p' | tee /proc/sys/kernel/core_pattern"
         exit 0
     fi
 }
@@ -255,7 +255,7 @@ function perform_install_option()
         if [[ ! -f ./${FOLDER[bld]}/bin/foo ]]; then
             die "There is no binary file in the ${FOLDER[bld]} folder. Please compile it."
         fi
-        shell_command "sudo cmake --install ./${FOLDER[bld]}"
+        shell_command "cmake --install ./${FOLDER[bld]}"
         exit 0
     fi
 }
@@ -267,8 +267,8 @@ function perform_uninstall_option()
         if [[ ! -f ./${FOLDER[bld]}/${manifest_file} ]]; then
             die "There is no ${manifest_file} file in the ${FOLDER[bld]} folder. Please generate it."
         fi
-        shell_command "cat ./${FOLDER[bld]}/${manifest_file} | sudo xargs rm"
-        shell_command "cat ./${FOLDER[bld]}/${manifest_file} | xargs -L1 dirname | sudo xargs rmdir -p 2>/dev/null"
+        shell_command "cat ./${FOLDER[bld]}/${manifest_file} | xargs rm"
+        shell_command "cat ./${FOLDER[bld]}/${manifest_file} | xargs -L1 dirname | xargs rmdir -p 2>/dev/null"
         shell_command "rm -rf ~/.${FOLDER[proj]}"
         exit 0
     fi
@@ -592,10 +592,10 @@ function set_compile_condition()
             mkdir "./${tmpfs_subfolder}"
         fi
         if ! df -h -t tmpfs | grep -q "${FOLDER[proj]}/${tmpfs_subfolder}" 2>/dev/null; then
-            shell_command "sudo mount -t tmpfs -o size=${tmpfs_size} tmpfs ./${tmpfs_subfolder}"
+            shell_command "mount -t tmpfs -o size=${tmpfs_size} tmpfs ./${tmpfs_subfolder}"
         fi
     elif df -h -t tmpfs | grep -q "${FOLDER[proj]}/${tmpfs_subfolder}" 2>/dev/null; then
-        shell_command "sudo umount ./${tmpfs_subfolder}"
+        shell_command "umount ./${tmpfs_subfolder}"
     fi
 }
 
