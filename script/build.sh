@@ -34,7 +34,7 @@ function parse_parameters()
             check_single_choice_parameters_validity "$1"
             ARGS[help]=true
             ;;
-        -i | --initialize)
+        -I | --initialize)
             check_single_choice_parameters_validity "$1"
             ARGS[initialize]=true
             ;;
@@ -46,7 +46,7 @@ function parse_parameters()
             check_single_choice_parameters_validity "$1"
             ARGS[docker]=true
             ;;
-        -I | --install)
+        -i | --install)
             check_single_choice_parameters_validity "$1"
             ARGS[install]=true
             ;;
@@ -169,11 +169,11 @@ function perform_help_option()
         echo
         echo "Optional:"
         echo "-h, --help          show help and exit"
-        echo "-i, --initialize    initialize environment and exit"
+        echo "-I, --initialize    initialize environment and exit"
         echo "-C, --cleanup       cleanup folder and exit"
         echo "-D, --docker        construct docker container and exit"
-        echo "-I, --install       install binary and library and exit"
-        echo "-u, --uninstall     uninstall binary and library and exit"
+        echo "-i, --install       install binary with library and exit"
+        echo "-u, --uninstall     uninstall binary with library and exit"
         echo "-t, --test          build unit test and exit"
         echo "-r, --release       set as release version"
         echo "-p, --precheck      precheck all files before commit"
@@ -189,7 +189,9 @@ function perform_help_option()
 function perform_initialize_option()
 {
     if [[ ${ARGS[initialize]} = true ]]; then
-        shell_command "git config --local commit.template ./.commit-template"
+        if [[ -z ${FOO_ENV} ]] || [[ ${FOO_ENV} != "FOO_DEV" ]]; then
+            shell_command "echo 'export FOO_ENV=FOO_DEV' >>~/.bashrc"
+        fi
         shell_command "cat <<EOF >./${FOLDER[scr]}/.env
 #!/bin/false
 
@@ -204,6 +206,7 @@ export FOO_BLD_PARALLEL FOO_BLD_PCH FOO_BLD_UNITY FOO_BLD_CCACHE FOO_BLD_DISTCC 
 return 0
 EOF"
         shell_command "echo 'core.%s.%e.%p' | tee /proc/sys/kernel/core_pattern"
+        shell_command "git config --local commit.template ./.commit-template"
         exit 0
     fi
 }
@@ -211,9 +214,15 @@ EOF"
 function perform_cleanup_option()
 {
     if [[ ${ARGS[cleanup]} = true ]]; then
+        shell_command "sed -i '/export FOO_ENV=FOO_DEV/d' ~/.bashrc"
         shell_command "find ./ -maxdepth 2 -type d | sed 1d \
 | grep -E '(${FOLDER[bld]}|${FOLDER[temp]}|browser|doxygen|__pycache__)$' | xargs -i rm -rf {}"
         shell_command "rm -rf ./${FOLDER[scr]}/.env ./core.* ./vgcore.* ./*.profraw"
+        shell_command "git config --local --unset commit.template"
+
+        if [[ -f .git/hooks/pre-commit ]]; then
+            shell_command "pre-commit uninstall"
+        fi
         exit 0
     fi
 }
@@ -253,9 +262,13 @@ function perform_install_option()
 {
     if [[ ${ARGS[install]} = true ]]; then
         if [[ ! -f ./${FOLDER[bld]}/bin/foo ]]; then
-            die "There is no binary file in the ${FOLDER[bld]} folder. Please compile it."
+            die "There is no binary file in the ${FOLDER[bld]} folder. Please finish compiling first."
         fi
+
         shell_command "cmake --install ./${FOLDER[bld]}"
+        if [[ :${PATH}: != *:/opt/foo/bin:* ]]; then
+            shell_command "echo 'export PATH=/opt/foo/bin:\$PATH' >>~/.bashrc"
+        fi
         exit 0
     fi
 }
@@ -267,9 +280,11 @@ function perform_uninstall_option()
         if [[ ! -f ./${FOLDER[bld]}/${manifest_file} ]]; then
             die "There is no ${manifest_file} file in the ${FOLDER[bld]} folder. Please generate it."
         fi
+
         shell_command "cat ./${FOLDER[bld]}/${manifest_file} | xargs rm"
         shell_command "cat ./${FOLDER[bld]}/${manifest_file} | xargs -L1 dirname | xargs rmdir -p 2>/dev/null"
         shell_command "rm -rf ~/.${FOLDER[proj]}"
+        shell_command "sed -i '/export PATH=\/opt\/foo\/bin:\$PATH/d' ~/.bashrc"
         exit 0
     fi
 }
