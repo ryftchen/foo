@@ -580,16 +580,16 @@ function set_compile_condition()
     fi
     CMAKE_CACHE_ENTRY=" -DCMAKE_BUILD_TYPE=${BUILD_TYPE}"
     if [[ ${DEV_OPT[pch]} = true ]]; then
-        CMAKE_CACHE_ENTRY="${CMAKE_CACHE_ENTRY} -D_TOOLCHAIN_PCH=ON"
+        CMAKE_CACHE_ENTRY="${CMAKE_CACHE_ENTRY} -DTOOLCHAIN_PCH=ON"
         if [[ ${DEV_OPT[ccache]} = true ]]; then
             export CCACHE_PCH_EXTSUM=true
         fi
     fi
     if [[ ${DEV_OPT[unity]} = true ]]; then
-        CMAKE_CACHE_ENTRY="${CMAKE_CACHE_ENTRY} -D_TOOLCHAIN_UNITY=ON"
+        CMAKE_CACHE_ENTRY="${CMAKE_CACHE_ENTRY} -DTOOLCHAIN_UNITY=ON"
     fi
     if [[ ${DEV_OPT[ccache]} = true ]]; then
-        CMAKE_CACHE_ENTRY="${CMAKE_CACHE_ENTRY} -D_TOOLCHAIN_CCACHE=ON"
+        CMAKE_CACHE_ENTRY="${CMAKE_CACHE_ENTRY} -DTOOLCHAIN_CCACHE=ON"
         if [[ ${DEV_OPT[distcc]} = true ]]; then
             if command -v ccache >/dev/null 2>&1 && command -v distcc >/dev/null 2>&1; then
                 export CCACHE_PREFIX=distcc
@@ -597,7 +597,7 @@ function set_compile_condition()
         fi
     fi
     if [[ ${DEV_OPT[distcc]} = true ]]; then
-        CMAKE_CACHE_ENTRY="${CMAKE_CACHE_ENTRY} -D_TOOLCHAIN_DISTCC=ON"
+        CMAKE_CACHE_ENTRY="${CMAKE_CACHE_ENTRY} -DTOOLCHAIN_DISTCC=ON"
         if [[ -z ${DISTCC_HOSTS} ]]; then
             export DISTCC_HOSTS=localhost
         fi
