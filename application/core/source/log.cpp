@@ -57,38 +57,36 @@ void Log::runLogger()
         namespace file = utility::file;
         while (isLogging.load())
         {
-            if (std::unique_lock<std::mutex> lock(mtx); true)
-            {
-                cv.wait(
-                    lock,
-                    [this]() -> decltype(auto)
-                    {
-                        return (!isLogging.load() || !logQueue.empty());
-                    });
-
-                file::ReadWriteGuard guard(file::LockMode::write, fileLock);
-                file::fdLock(ofs, file::LockMode::write);
-                while (!logQueue.empty())
+            std::unique_lock<std::mutex> lock(mtx);
+            cv.wait(
+                lock,
+                [this]() -> decltype(auto)
                 {
-                    switch (actualTarget)
-                    {
-                        case OutputTarget::file:
-                            ofs << logQueue.front() << std::endl;
-                            break;
-                        case OutputTarget::terminal:
-                            std::cout << changeToLogStyle(logQueue.front()) << std::endl;
-                            break;
-                        case OutputTarget::all:
-                            ofs << logQueue.front() << std::endl;
-                            std::cout << changeToLogStyle(logQueue.front()) << std::endl;
-                            break;
-                        default:
-                            break;
-                    }
-                    logQueue.pop();
+                    return (!isLogging.load() || !logQueue.empty());
+                });
+
+            file::ReadWriteGuard guard(file::LockMode::write, fileLock);
+            file::fdLock(ofs, file::LockMode::write);
+            while (!logQueue.empty())
+            {
+                switch (actualTarget)
+                {
+                    case OutputTarget::file:
+                        ofs << logQueue.front() << std::endl;
+                        break;
+                    case OutputTarget::terminal:
+                        std::cout << changeToLogStyle(logQueue.front()) << std::endl;
+                        break;
+                    case OutputTarget::all:
+                        ofs << logQueue.front() << std::endl;
+                        std::cout << changeToLogStyle(logQueue.front()) << std::endl;
+                        break;
+                    default:
+                        break;
                 }
-                file::fdUnlock(ofs);
+                logQueue.pop();
             }
+            file::fdUnlock(ofs);
         }
 
         processEvent(CloseFile());
@@ -100,8 +98,10 @@ void Log::runLogger()
     }
     catch (const std::exception& error)
     {
-        std::cerr << error.what() << " Expected state: " << expectedState
-                  << ", current state: " << State(currentState()) << '.' << std::endl;
+        std::ostringstream os;
+        os << error.what() << " Expected logger state: " << expectedState
+           << ", current logger state: " << State(currentState()) << '.';
+        LOG_ERR(os.str().c_str());
         stopLogging();
     }
 }
@@ -125,7 +125,7 @@ void Log::interfaceToStart()
             if (maxTimesOfWaitLogger == waitCount)
             {
 #ifndef NDEBUG
-                std::cerr << "Wait for the logger to start.." << std::endl;
+                LOG_ERR("Wait for the logger to start..");
 #endif // NDEBUG
                 expiryTimer.reset();
             }
@@ -163,7 +163,7 @@ void Log::interfaceToStop()
             if (maxTimesOfWaitLogger == waitCount)
             {
 #ifndef NDEBUG
-                std::cerr << "Wait for the logger to stop..." << std::endl;
+                LOG_ERR("Wait for the logger to stop...");
 #endif // NDEBUG
                 expiryTimer.reset();
             }
@@ -196,10 +196,8 @@ void Log::openLogFile()
 
 void Log::startLogging()
 {
-    if (std::unique_lock<std::mutex> lock(mtx); true)
-    {
-        isLogging.store(true);
-    }
+    std::unique_lock<std::mutex> lock(mtx);
+    isLogging.store(true);
 };
 
 void Log::closeLogFile()
@@ -209,13 +207,11 @@ void Log::closeLogFile()
 
 void Log::stopLogging()
 {
-    if (std::unique_lock<std::mutex> lock(mtx); true)
+    std::unique_lock<std::mutex> lock(mtx);
+    isLogging.store(false);
+    while (!logQueue.empty())
     {
-        isLogging.store(false);
-        while (!logQueue.empty())
-        {
-            logQueue.pop();
-        }
+        logQueue.pop();
     }
 }
 

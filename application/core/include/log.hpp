@@ -259,6 +259,8 @@ protected:
     friend std::ostream& operator<<(std::ostream& os, const Log::State state);
 };
 
+extern const std::string& changeToLogStyle(std::string& line);
+
 template <typename... Args>
 void Log::flush(
     const OutputLevel level,
@@ -267,8 +269,21 @@ void Log::flush(
     const char* const format,
     Args&&... args)
 {
+    const auto outputFormatter = [&](const std::string_view& prefix)
+    {
+        std::string output = std::string{prefix} + ":[" + utility::time::getCurrentSystemTime() + "]:["
+            + codeFile.substr(codeFile.find('/') + 1, codeFile.length()) + '#' + std::to_string(codeLine) + "]: ";
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat-security"
+        output.append(COMMON_FORMAT_TO_STRING(format, std::forward<Args>(args)...));
+#pragma GCC diagnostic pop
+        return output;
+    };
+
     if (State::work != currentState())
     {
+        std::string output = outputFormatter(errorLevelPrefix);
+        std::cerr << changeToLogStyle(output) << std::endl;
         return;
     }
 
@@ -295,14 +310,8 @@ void Log::flush(
                     break;
             }
 
-            std::string output = std::string{prefix} + ":[" + utility::time::getCurrentSystemTime() + "]:["
-                + codeFile.substr(codeFile.find('/') + 1, codeFile.length()) + '#' + std::to_string(codeLine) + "]: ";
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wformat-security"
-            output.append(COMMON_FORMAT_TO_STRING(format, std::forward<Args>(args)...));
-#pragma GCC diagnostic pop
+            std::string output = outputFormatter(prefix);
             logQueue.push(std::move(output));
-
             lock.unlock();
             cv.notify_one();
             utility::time::millisecondLevelSleep(1);
@@ -320,6 +329,4 @@ inline utility::file::ReadWriteLock& Log::getFileLock()
 {
     return fileLock;
 }
-
-extern const std::string& changeToLogStyle(std::string& line);
 } // namespace application::log

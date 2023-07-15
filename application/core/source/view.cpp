@@ -184,15 +184,13 @@ void View::runViewer()
         checkIfExceptedFSMState(State::work);
         while (isViewing.load())
         {
-            if (std::unique_lock<std::mutex> lock(mtx); true)
-            {
-                cv.wait(
-                    lock,
-                    [this]() -> decltype(auto)
-                    {
-                        return !isViewing.load();
-                    });
-            }
+            std::unique_lock<std::mutex> lock(mtx);
+            cv.wait(
+                lock,
+                [this]() -> decltype(auto)
+                {
+                    return !isViewing.load();
+                });
         }
 
         processEvent(DestroyServer());
@@ -204,8 +202,10 @@ void View::runViewer()
     }
     catch (const std::exception& error)
     {
-        std::cerr << error.what() << " Expected state: " << expectedState
-                  << ", current state: " << State(currentState()) << '.' << std::endl;
+        std::ostringstream os;
+        os << error.what() << " Expected viewer state: " << expectedState
+           << ", current viewer state: " << State(currentState()) << '.';
+        LOG_ERR(os.str().c_str());
         stopViewing();
     }
 }
@@ -229,7 +229,7 @@ void View::interfaceToStart()
             if (maxTimesOfWaitViewer == waitCount)
             {
 #ifndef NDEBUG
-                std::cerr << "Wait for the viewer to start..." << std::endl;
+                LOG_ERR("Wait for the viewer to start...");
 #endif // NDEBUG
                 expiryTimer.reset();
             }
@@ -267,7 +267,7 @@ void View::interfaceToStop()
             if (maxTimesOfWaitViewer == waitCount)
             {
 #ifndef NDEBUG
-                std::cerr << "Wait for the viewer to stop..." << std::endl;
+                LOG_ERR("Wait for the viewer to stop...");
 #endif // NDEBUG
                 expiryTimer.reset();
             }
@@ -417,6 +417,11 @@ void View::createViewServer()
         {
             try
             {
+                if (0 == message.length())
+                {
+                    return;
+                }
+
                 char buffer[maxMsgLength + 1] = {'\0'};
                 if ("stop" == message)
                 {
@@ -445,6 +450,11 @@ void View::createViewServer()
     {
         try
         {
+            if (0 == message.length())
+            {
+                return;
+            }
+
             char buffer[maxMsgLength + 1] = {'\0'};
             if ("stop" == message)
             {
@@ -471,15 +481,13 @@ void View::createViewServer()
 
 void View::startViewing()
 {
-    if (std::unique_lock<std::mutex> lock(mtx); true)
-    {
-        isViewing.store(true);
-        tcpServer.toBind(tcpPort);
-        tcpServer.toListen();
-        tcpServer.toAccept();
-        udpServer.toBind(udpPort);
-        udpServer.toReceiveFrom();
-    }
+    std::unique_lock<std::mutex> lock(mtx);
+    isViewing.store(true);
+    tcpServer.toBind(tcpPort);
+    tcpServer.toListen();
+    tcpServer.toAccept();
+    udpServer.toBind(udpPort);
+    udpServer.toReceiveFrom();
 }
 
 void View::destroyViewServer()
@@ -490,12 +498,10 @@ void View::destroyViewServer()
 
 void View::stopViewing()
 {
-    if (std::unique_lock<std::mutex> lock(mtx); true)
-    {
-        isViewing.store(false);
-        tcpServer.waitIfAlive();
-        udpServer.waitIfAlive();
-    }
+    std::unique_lock<std::mutex> lock(mtx);
+    isViewing.store(false);
+    tcpServer.waitIfAlive();
+    udpServer.waitIfAlive();
 }
 
 //! @brief The operator (<<) overloading of the State enum.
