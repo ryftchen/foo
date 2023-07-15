@@ -29,22 +29,40 @@ Command::Command()
             .appending()
             .help("run commands (with quotes) in console mode and exit");
 
+        const auto validateCategory = [this](const TaskCategory& category, const std::string& input)
+        {
+            TaskCategory completion;
+            if (std::any_of(
+                    generalTaskDispatcher.at(category).cbegin(),
+                    generalTaskDispatcher.at(category).cend(),
+                    [&input, &completion](const auto& taskCategoryMap)
+                    {
+                        if (input.length() <= taskCategoryMap.first.length())
+                        {
+                            constexpr std::size_t minMatchLen = 4;
+                            if (taskCategoryMap.first.compare(0, std::max(minMatchLen, input.length()), input) == 0)
+                            {
+                                completion = taskCategoryMap.first;
+                                return true;
+                            }
+                        }
+                        return false;
+                    }))
+            {
+                return completion;
+            }
+
+            auto unknownCategory = category;
+            std::replace(unknownCategory.begin(), unknownCategory.end(), '-', ' ');
+            throw std::runtime_error("Unknown " + unknownCategory + " category: " + input);
+        };
+
         program.addArgument("-a", "--algorithm")
             .nArgs(1)
             .action(
-                [this](const std::string& value)
+                [&](const std::string& value)
                 {
-                    if (std::any_of(
-                            generalTaskDispatcher.at("algorithm").cbegin(),
-                            generalTaskDispatcher.at("algorithm").cend(),
-                            [&value](const auto& taskCategoryMap)
-                            {
-                                return (taskCategoryMap.first == value);
-                            }))
-                    {
-                        return value;
-                    }
-                    throw std::runtime_error("Unknown algorithm category: " + value);
+                    return validateCategory("algorithm", value);
                 })
             .help("run algorithm tasks with a category:\n"
                   "- match       Match Solution\n"
@@ -57,19 +75,9 @@ Command::Command()
         program.addArgument("-ds", "--data-structure")
             .nArgs(1)
             .action(
-                [this](const std::string& value)
+                [&](const std::string& value)
                 {
-                    if (std::any_of(
-                            generalTaskDispatcher.at("data-structure").cbegin(),
-                            generalTaskDispatcher.at("data-structure").cend(),
-                            [&value](const auto& taskCategoryMap)
-                            {
-                                return (taskCategoryMap.first == value);
-                            }))
-                    {
-                        return value;
-                    }
-                    throw std::runtime_error("Unknown data structure category: " + value);
+                    return validateCategory("data-structure", value);
                 })
             .help("run data structure tasks with a category:\n"
                   "- linear    Linear Structure\n"
@@ -79,19 +87,9 @@ Command::Command()
         program.addArgument("-dp", "--design-pattern")
             .nArgs(1)
             .action(
-                [this](const std::string& value)
+                [&](const std::string& value)
                 {
-                    if (std::any_of(
-                            generalTaskDispatcher.at("design-pattern").cbegin(),
-                            generalTaskDispatcher.at("design-pattern").cend(),
-                            [&value](const auto& taskCategoryMap)
-                            {
-                                return (taskCategoryMap.first == value);
-                            }))
-                    {
-                        return value;
-                    }
-                    throw std::runtime_error("Unknown design pattern category: " + value);
+                    return validateCategory("design-pattern", value);
                 })
             .help("run design pattern tasks with a category:\n"
                   "- behavioral    Behavioral Pattern\n"
@@ -102,19 +100,9 @@ Command::Command()
         program.addArgument("-n", "--numeric")
             .nArgs(1)
             .action(
-                [this](const std::string& value)
+                [&](const std::string& value)
                 {
-                    if (std::any_of(
-                            generalTaskDispatcher.at("numeric").cbegin(),
-                            generalTaskDispatcher.at("numeric").cend(),
-                            [&value](const auto& taskCategoryMap)
-                            {
-                                return (taskCategoryMap.first == value);
-                            }))
-                    {
-                        return value;
-                    }
-                    throw std::runtime_error("Unknown numeric category: " + value);
+                    return validateCategory("numeric", value);
                 })
             .help("run numeric tasks with a category:\n"
                   "- arithmetic    Arithmetic Solution\n"
@@ -127,7 +115,7 @@ Command::Command()
     }
     catch (const std::exception& error)
     {
-        std::cerr << error.what() << std::endl;
+        LOG_ERR(error.what());
     }
 }
 
@@ -139,7 +127,7 @@ Command::~Command()
     }
     catch (const std::exception& error)
     {
-        std::cerr << error.what() << std::endl;
+        LOG_ERR(error.what());
     }
 }
 
@@ -214,7 +202,7 @@ void Command::backgroundHandler()
                 });
         }
 
-        if (checkTask())
+        if (hasAnyTask())
         {
             dispatchTask();
         }
@@ -234,7 +222,7 @@ void Command::validateBasicTask()
             continue;
         }
 
-        if (checkTask())
+        if (hasAnyTask())
         {
             throwExcessArgumentException();
         }
@@ -246,21 +234,21 @@ void Command::validateBasicTask()
 void Command::validateGeneralTask()
 {
     bool isToBeExcess = false;
-    for ([[maybe_unused]] const auto& [taskCategoryName, taskCategoryMap] : generalTaskDispatcher)
+    for ([[maybe_unused]] const auto& [taskCategory, taskCategoryMap] : generalTaskDispatcher)
     {
-        if (!program.isUsed(taskCategoryName))
+        if (!program.isUsed(taskCategory))
         {
             continue;
         }
 
-        if (isToBeExcess || (checkTask() && !program.isUsed("help")))
+        if (isToBeExcess || (hasAnyTask() && !program.isUsed("help")))
         {
             throwExcessArgumentException();
         }
 
-        for ([[maybe_unused]] const auto& [taskTypeName, taskTypeTuple] : taskCategoryMap)
+        for ([[maybe_unused]] const auto& [taskType, taskTypeTuple] : taskCategoryMap)
         {
-            if (taskTypeName != program[taskCategoryName])
+            if (taskType != program[taskCategory])
             {
                 continue;
             }
@@ -282,7 +270,7 @@ void Command::validateGeneralTask()
                     std::remove_if(
                         tasks.begin(),
                         tasks.end(),
-                        [](const std::string& task) -> bool
+                        [](const TargetTask& task) -> bool
                         {
                             return (std::string::npos == task.find_first_not_of(' '));
                         }),
@@ -298,7 +286,7 @@ void Command::validateGeneralTask()
     }
 }
 
-bool Command::checkTask() const
+bool Command::hasAnyTask() const
 {
     return !dispatchedTask.empty();
 }
@@ -350,7 +338,7 @@ void Command::dispatchTask() const
                     break;
             }
 
-            for ([[maybe_unused]] const auto& [taskTypeName, taskTypeTuple] :
+            for ([[maybe_unused]] const auto& [taskType, taskTypeTuple] :
                  std::next(generalTaskDispatcher.cbegin(), GeneralTask::Category(i))->second)
             {
                 (*get<PerformTaskFunctor>(get<TaskFunctorTuple>(taskTypeTuple)))(get<TargetTaskVector>(taskTypeTuple));

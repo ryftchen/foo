@@ -65,7 +65,7 @@ private:
     void validateGeneralTask();
     //! @brief Check whether any tasks exist.
     //! @return any tasks exist or do not exist
-    bool checkTask() const;
+    bool hasAnyTask() const;
     //! @brief Dispatch specific tasks.
     void dispatchTask() const;
 
@@ -172,22 +172,22 @@ private:
     typedef void (*PerformTaskFunctor)(const std::vector<std::string>&);
     //! @brief Alias for the functor to update the task.
     typedef void (*UpdateTaskFunctor)(const std::string&);
-    //! @brief Alias for the task category name.
-    using TaskCategoryName = std::string;
-    //! @brief Alias for the task type name.
-    using TaskTypeName = std::string;
-    //! @brief Alias for the target task name.
-    using TargetTaskName = std::string;
-    //! @brief Alias for the vector of TargetTaskName.
-    using TargetTaskVector = std::vector<TargetTaskName>;
+    //! @brief Alias for the task category.
+    using TaskCategory = std::string;
+    //! @brief Alias for the task type.
+    using TaskType = std::string;
+    //! @brief Alias for the target task.
+    using TargetTask = std::string;
+    //! @brief Alias for the vector of TargetTask.
+    using TargetTaskVector = std::vector<TargetTask>;
     //! @brief Alias for the tuple of PerformTaskFunctor and UpdateTaskFunctor.
     using TaskFunctorTuple = std::tuple<PerformTaskFunctor, UpdateTaskFunctor>;
     //! @brief Alias for the tuple of TargetTaskVector and TaskFunctorTuple.
     using TaskTypeTuple = std::tuple<TargetTaskVector, TaskFunctorTuple>;
-    //! @brief Alias for the map of TaskTypeName and TaskTypeTuple.
-    using TaskCategoryMap = std::map<TaskTypeName, TaskTypeTuple>;
-    //! @brief Alias for the map of TaskCategoryName and TaskCategoryMap.
-    using GeneralTaskMap = std::map<TaskCategoryName, TaskCategoryMap>;
+    //! @brief Alias for the map of TaskType and TaskTypeTuple.
+    using TaskCategoryMap = std::map<TaskType, TaskTypeTuple>;
+    //! @brief Alias for the map of TaskCategory and TaskCategoryMap.
+    using GeneralTaskMap = std::map<TaskCategory, TaskCategoryMap>;
 
     //! @memberof application::command::Command
     //! @brief Get a member of TaskTypeTuple.
