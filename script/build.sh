@@ -189,9 +189,13 @@ function perform_help_option()
 function perform_initialize_option()
 {
     if [[ ${ARGS[initialize]} = true ]]; then
-        if [[ -z ${FOO_ENV} ]] || [[ ${FOO_ENV} != "FOO_DEV" ]]; then
-            shell_command "echo 'export FOO_ENV=FOO_DEV' >>~/.bashrc"
+        local export_cmd="export FOO_ENV=foo_dev"
+        if ! grep -Fxq "${export_cmd}" ~/.bashrc 2>/dev/null && {
+            [[ -z ${FOO_ENV} ]] || [[ ${FOO_ENV} != "foo_dev" ]]
+        }; then
+            shell_command "echo '${export_cmd}' >>~/.bashrc"
         fi
+
         shell_command "cat <<EOF >./${FOLDER[scr]}/.env
 #!/bin/false
 
@@ -205,7 +209,7 @@ FOO_BLD_TMPFS=off
 export FOO_BLD_PARALLEL FOO_BLD_PCH FOO_BLD_UNITY FOO_BLD_CCACHE FOO_BLD_DISTCC FOO_BLD_TMPFS
 return 0
 EOF"
-        shell_command "echo 'core.%s.%e.%p' | tee /proc/sys/kernel/core_pattern"
+        shell_command "echo 'core.%s.%e.%p' | sudo tee /proc/sys/kernel/core_pattern"
         shell_command "git config --local commit.template ./.commit-template"
         exit 0
     fi
@@ -214,7 +218,7 @@ EOF"
 function perform_cleanup_option()
 {
     if [[ ${ARGS[cleanup]} = true ]]; then
-        shell_command "sed -i '/export FOO_ENV=FOO_DEV/d' ~/.bashrc"
+        shell_command "sed -i '/export FOO_ENV=foo_dev/d' ~/.bashrc"
         shell_command "find ./ -maxdepth 2 -type d | sed 1d \
 | grep -E '(${FOLDER[bld]}|${FOLDER[temp]}|browser|doxygen|__pycache__)$' | xargs -i rm -rf {}"
         shell_command "rm -rf ./${FOLDER[scr]}/.env ./core.* ./vgcore.* ./*.profraw"
@@ -265,9 +269,21 @@ function perform_install_option()
             die "There is no binary file in the ${FOLDER[bld]} folder. Please finish compiling first."
         fi
 
-        shell_command "cmake --install ./${FOLDER[bld]}"
-        if [[ :${PATH}: != *:/opt/foo/bin:* ]]; then
-            shell_command "echo 'export PATH=/opt/foo/bin:\$PATH' >>~/.bashrc"
+        shell_command "sudo cmake --install ./${FOLDER[bld]}"
+        local bin_path=/opt/foo/bin
+        local export_cmd="export PATH=${bin_path}:\$PATH"
+        if [[ :${PATH}: != *:${bin_path}:* ]] && ! grep -Fxq "${export_cmd}" ~/.bashrc 2>/dev/null; then
+            shell_command "echo '${export_cmd}' >>~/.bashrc"
+        fi
+
+        local lib_path=/opt/foo/lib
+        if [[ -d ${lib_path} ]]; then
+            local completion_file="bash_completion"
+            local export_cmd="[ -s ${lib_path}/${completion_file} ] && \. ${lib_path}/${completion_file}"
+            shell_command "sudo cp ./${FOLDER[scr]}/${completion_file}.sh ${lib_path}/${completion_file}"
+            if ! grep -Fxq "${export_cmd}" ~/.bashrc 2>/dev/null; then
+                shell_command "echo '${export_cmd}' >>~/.bashrc"
+            fi
         fi
         exit 0
     fi
@@ -281,10 +297,14 @@ function perform_uninstall_option()
             die "There is no ${manifest_file} file in the ${FOLDER[bld]} folder. Please generate it."
         fi
 
-        shell_command "cat ./${FOLDER[bld]}/${manifest_file} | xargs rm"
-        shell_command "cat ./${FOLDER[bld]}/${manifest_file} | xargs -L1 dirname | xargs rmdir -p 2>/dev/null"
+        local completion_file="bash_completion"
         shell_command "rm -rf ~/.${FOLDER[proj]}"
+        shell_command "cat ./${FOLDER[bld]}/${manifest_file} | xargs sudo rm -rf && \
+sudo rm -rf /opt/foo/lib/${completion_file}"
+        shell_command "cat ./${FOLDER[bld]}/${manifest_file} | xargs -L1 dirname | xargs sudo rmdir -p 2>/dev/null"
         shell_command "sed -i '/export PATH=\/opt\/foo\/bin:\$PATH/d' ~/.bashrc"
+        shell_command "sed -i '/[ -s \/opt\/foo\/lib\/${completion_file} ] && \
+\\\. \/opt\/foo\/lib\/${completion_file}/d' ~/.bashrc"
         exit 0
     fi
 }
@@ -607,10 +627,10 @@ function set_compile_condition()
             mkdir "./${tmpfs_subfolder}"
         fi
         if ! df -h -t tmpfs | grep -q "${FOLDER[proj]}/${tmpfs_subfolder}" 2>/dev/null; then
-            shell_command "mount -t tmpfs -o size=${tmpfs_size} tmpfs ./${tmpfs_subfolder}"
+            shell_command "sudo mount -t tmpfs -o size=${tmpfs_size} tmpfs ./${tmpfs_subfolder}"
         fi
     elif df -h -t tmpfs | grep -q "${FOLDER[proj]}/${tmpfs_subfolder}" 2>/dev/null; then
-        shell_command "umount ./${tmpfs_subfolder}"
+        shell_command "sudo umount ./${tmpfs_subfolder}"
     fi
 }
 
