@@ -184,6 +184,7 @@ void Command::foregroundHandler(const int argc, const char* const argv[])
     catch (const std::exception& error)
     {
         isParsed.store(true);
+        cv.notify_one();
         LOG_WRN(error.what());
     }
 }
