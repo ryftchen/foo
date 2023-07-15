@@ -3,10 +3,10 @@ FROM ubuntu:20.04
 SHELL ["/bin/bash", "-c"]
 
 RUN apt-get update \
-&& DEBIAN_FRONTEND=noninteractive apt-get install -y sudo tzdata ca-certificates curl rsync zip \
+&& DEBIAN_FRONTEND=noninteractive apt-get install -y sudo tzdata ca-certificates bash-completion curl rsync zip \
 && sudo apt-get update \
 && sudo apt-get install -y git python3 python3-pip build-essential gdb cmake ninja-build ccache distcc \
-llvm-12 clang-12 libclang-12-dev libstdc++-10-dev libgtest-dev libreadline-dev libmpfrc++-dev \
+llvm-12 clang-12 lld-12 libclang-12-dev libstdc++-10-dev libgtest-dev libreadline-dev libmpfrc++-dev \
 clang-format-12 clang-tidy-12 valgrind cloc graphviz docker-compose \
 && sudo apt-get clean \
 && sudo pip3 install --no-cache-dir -v requests pre-commit==3.2.0 pylint==2.15.5 black==22.10.0 shellcheck-py==0.8.0.4 shfmt-py==3.4.3.1 \
