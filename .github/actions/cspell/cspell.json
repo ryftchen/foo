@@ -36,6 +36,7 @@
         "libutility",
         "memcheck",
         "mpfr",
+        "jxvf",
         "precheck",
         "profdata",
         "profraw",
