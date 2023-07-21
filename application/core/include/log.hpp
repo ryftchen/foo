@@ -17,10 +17,10 @@
 #include "utility/include/fsm.hpp"
 #include "utility/include/time.hpp"
 
-//! @brief Start to log.
-#define LOG_TO_START application::log::Log::getInstance().interfaceToStart()
-//! @brief Stop to log.
-#define LOG_TO_STOP application::log::Log::getInstance().interfaceToStop()
+//! @brief Try to start logging.
+#define LOG_WAIT_TO_START application::log::Log::getInstance().waitToStart()
+//! @brief Try to stop logging.
+#define LOG_WAIT_TO_STOP application::log::Log::getInstance().waitToStop()
 //! @brief Log with debug level.
 #define LOG_DBG(format, args...)                \
     application::log::Log::getInstance().flush( \
@@ -164,10 +164,10 @@ public:
         Args&&... args);
     //! @brief Interface for running logger.
     void runLogger();
-    //! @brief Wait until the logger starts. External use.
-    void interfaceToStart();
-    //! @brief Wait until the logger stops. External use.
-    void interfaceToStop();
+    //! @brief Wait for the logger to start. External use.
+    void waitToStart();
+    //! @brief Wait for the logger to stop. External use.
+    void waitToStop();
     //! @brief Get log file path.
     //! @return log file path
     inline std::string getPathname() const;
@@ -206,7 +206,7 @@ private:
     //! @brief Minimum level.
     OutputLevel minLevel{OutputLevel::debug};
     //! @brief Actual target.
-    OutputTarget actualTarget{OutputTarget::all};
+    OutputTarget actTarget{OutputTarget::all};
     //! @brief Log file path.
     char pathname[logPathLength + 1]{"./temporary/foo.log"};
     //! @brief Log file lock.

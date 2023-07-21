@@ -14,10 +14,10 @@
 #include "utility/include/fsm.hpp"
 #include "utility/include/socket.hpp"
 
-//! @brief Start to view.
-#define VIEW_TO_START application::view::View::getInstance().interfaceToStart()
-//! @brief Stop to view.
-#define VIEW_TO_STOP application::view::View::getInstance().interfaceToStop()
+//! @brief Try to start viewing.
+#define VIEW_WAIT_TO_START application::view::View::getInstance().waitToStart()
+//! @brief Try to stop viewing.
+#define VIEW_WAIT_TO_STOP application::view::View::getInstance().waitToStop()
 //! @brief Get all viewer options.
 #define VIEW_OPTIONS application::view::View::getInstance().getViewerOptions()
 
@@ -147,10 +147,10 @@ public:
     static View& getInstance();
     //! @brief Interface for running viewer.
     void runViewer();
-    //! @brief Wait until the viewer starts. External use.
-    void interfaceToStart();
-    //! @brief Wait until the viewer stops. External use.
-    void interfaceToStop();
+    //! @brief Wait for the viewer to start. External use.
+    void waitToStart();
+    //! @brief Wait for the viewer to stop. External use.
+    void waitToStop();
 
     //! @brief Alias for the functor to build the TLV packet.
     typedef int (*BuildFunctor)(char*);

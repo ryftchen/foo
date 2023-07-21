@@ -141,8 +141,8 @@ void Command::runCommander(const int argc, const char* const argv[])
 {
     try
     {
-        LOG_TO_START;
-        VIEW_TO_START;
+        LOG_WAIT_TO_START;
+        VIEW_WAIT_TO_START;
 
         if (0 != argc - 1)
         {
@@ -157,8 +157,8 @@ void Command::runCommander(const int argc, const char* const argv[])
             LOG_INF("Exit console mode.");
         }
 
-        LOG_TO_STOP;
-        VIEW_TO_STOP;
+        LOG_WAIT_TO_STOP;
+        VIEW_WAIT_TO_STOP;
     }
     catch (const std::exception& error)
     {

@@ -61,10 +61,12 @@ class ProgressBar:
     back_color = "\033[42m"
     default_fore_color = "\033[39m"
     default_back_color = "\033[49m"
-    current_lines = 0
     placeholder_length = 20
-    set_trap = False
-    default_signal = None
+
+    def __init__(self):
+        self.current_lines = 0
+        self.set_trap = False
+        self.default_signal = None
 
     def setup_progress_bar(self):
         curses.setupterm()
