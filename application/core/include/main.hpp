@@ -121,14 +121,14 @@ static void init()
             std::exit(-1);
         }
 
-        const std::string tempPath = homePath.string() + "/.foo";
-        if (!std::filesystem::exists(tempPath))
+        const std::string procTempPath = homePath / ".foo";
+        if (!std::filesystem::exists(procTempPath))
         {
-            std::filesystem::create_directory(tempPath);
+            std::filesystem::create_directory(procTempPath);
             std::filesystem::permissions(
-                tempPath, std::filesystem::perms::owner_all, std::filesystem::perm_options::add);
+                procTempPath, std::filesystem::perms::owner_all, std::filesystem::perm_options::add);
         }
-        std::filesystem::current_path(tempPath);
+        std::filesystem::current_path(procTempPath);
     }
 }
 

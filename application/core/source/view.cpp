@@ -386,7 +386,7 @@ void View::printSharedMemory(const int shmId)
 std::string View::getLogContents()
 {
     utility::file::ReadWriteGuard guard(utility::file::LockMode::read, LOG_FILE_LOCK);
-    auto contents = utility::file::getFileContents(LOG_PATHNAME, true, maxViewNumOfLines);
+    auto contents = utility::file::getFileContents(LOG_FILE_PATH, true, maxViewNumOfLines);
     std::for_each(
         contents.begin(),
         contents.end(),
