@@ -115,7 +115,7 @@ Command::Command()
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        std::cerr << error.what() << std::endl;
     }
 }
 
@@ -127,7 +127,7 @@ Command::~Command()
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        std::cerr << error.what() << std::endl;
     }
 }
 
@@ -162,7 +162,7 @@ void Command::runCommander(const int argc, const char* const argv[])
     }
     catch (const std::exception& error)
     {
-        std::cerr << error.what() << std::endl;
+        LOG_ERR(error.what());
     }
 }
 

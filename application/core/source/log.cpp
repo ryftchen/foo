@@ -7,7 +7,6 @@
 #include "log.hpp"
 #include "file.hpp"
 #ifndef __PRECOMPILED_HEADER
-#include <filesystem>
 #include <regex>
 #else
 #include "application/pch/precompiled_header.hpp"
@@ -16,15 +15,23 @@
 namespace application::log
 {
 Log::Log(
-    const std::string& logFile,
+    const char* const logFile,
     const OutputType type,
     const OutputLevel level,
     const OutputTarget target,
     const StateType initState) noexcept :
     writeType(type), minLevel(level), actTarget(target), FSM(initState)
 {
-    std::strncpy(pathname, logFile.c_str(), logPathLength);
-    pathname[logPathLength] = '\0';
+    if (std::filesystem::absolute(std::filesystem::path{defaultLogFolderPath})
+        != std::filesystem::absolute(logFile).parent_path())
+    {
+        std::strncpy(filePath, logFile, logPathLength);
+        filePath[logPathLength] = '\0';
+    }
+    else
+    {
+        std::cerr << "Illegal log file path." << std::endl;
+    }
 }
 
 Log& Log::getInstance()
@@ -174,20 +181,21 @@ void Log::waitToStop()
 
 void Log::openLogFile()
 {
-    if (!std::filesystem::exists(logDirectory))
+    const std::filesystem::path logFolderPath = std::filesystem::absolute(filePath).parent_path();
+    if (!std::filesystem::exists(logFolderPath))
     {
-        std::filesystem::create_directory(logDirectory);
+        std::filesystem::create_directory(logFolderPath);
         std::filesystem::permissions(
-            logDirectory, std::filesystem::perms::owner_all, std::filesystem::perm_options::add);
+            logFolderPath, std::filesystem::perms::owner_all, std::filesystem::perm_options::add);
     }
 
     switch (writeType)
     {
         case OutputType::add:
-            ofs = utility::file::openFile(pathname, false);
+            ofs = utility::file::openFile(filePath, false);
             break;
         case OutputType::over:
-            ofs = utility::file::openFile(pathname, true);
+            ofs = utility::file::openFile(filePath, true);
             break;
         default:
             break;
@@ -203,6 +211,10 @@ void Log::startLogging()
 void Log::closeLogFile()
 {
     utility::file::closeFile(ofs);
+    if (std::filesystem::exists(filePath) && (std::filesystem::file_size(filePath) == 0))
+    {
+        std::filesystem::remove_all(std::filesystem::absolute(filePath).parent_path());
+    }
 };
 
 void Log::stopLogging()
