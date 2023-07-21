@@ -21,7 +21,7 @@ Log::Log(
     const OutputLevel level,
     const OutputTarget target,
     const StateType initState) noexcept :
-    writeType(type), minLevel(level), actualTarget(target), FSM(initState)
+    writeType(type), minLevel(level), actTarget(target), FSM(initState)
 {
     std::strncpy(pathname, logFile.c_str(), logPathLength);
     pathname[logPathLength] = '\0';
@@ -69,7 +69,7 @@ void Log::runLogger()
             file::fdLock(ofs, file::LockMode::write);
             while (!logQueue.empty())
             {
-                switch (actualTarget)
+                switch (actTarget)
                 {
                     case OutputTarget::file:
                         ofs << logQueue.front() << std::endl;
@@ -106,7 +106,7 @@ void Log::runLogger()
     }
 }
 
-void Log::interfaceToStart()
+void Log::waitToStart()
 {
     utility::time::BlockingTimer expiryTimer;
     std::uint16_t waitCount = 0;
@@ -134,7 +134,7 @@ void Log::interfaceToStart()
     expiryTimer.reset();
 }
 
-void Log::interfaceToStop()
+void Log::waitToStop()
 {
     if (std::unique_lock<std::mutex> lock(mtx); true)
     {

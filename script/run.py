@@ -14,8 +14,6 @@ try:
 except ImportError as err:
     raise ImportError(err) from err
 
-os.environ["TERM"] = "linux"
-os.environ["TERMINFO"] = "/etc/terminfo"
 STDOUT = sys.stdout
 
 
@@ -57,25 +55,26 @@ class Task:
     temp_dir = "./temporary"
     log_file = f"{temp_dir}/foo_run.log"
     report_file = f"{temp_dir}/foo_run.report"
-    pass_steps = 0
-    complete_steps = 0
-    basic_task_dict["--help"] = [
-        f"{task_category} {task_type}"
-        for task_category, task_category_map in general_task_dict.items()
-        for task_type in task_category_map.keys()
-    ]
-    total_steps = 1 + len(basic_task_dict.keys())
-    for task_category_list in basic_task_dict.values():
-        total_steps += len(task_category_list)
-    for task_category_map in general_task_dict.values():
-        total_steps += len(task_category_map.keys())
-        for target_task_list in task_category_map.values():
-            total_steps += len(target_task_list) + 1
 
     def __init__(self):
+        self.basic_task_dict["--help"] = [
+            f"{task_category} {task_type}"
+            for task_category, task_category_map in self.general_task_dict.items()
+            for task_type in task_category_map
+        ]
+        self.pass_steps = 0
+        self.complete_steps = 0
+        self.total_steps = 1 + len(self.basic_task_dict.keys())
+        for task_category_list in self.basic_task_dict.values():
+            self.total_steps += len(task_category_list)
+        for task_category_map in self.general_task_dict.values():
+            self.total_steps += len(task_category_map.keys())
+            for target_task_list in task_category_map.values():
+                self.total_steps += len(target_task_list) + 1
+
         if not os.path.exists(self.temp_dir):
             os.mkdir(self.temp_dir)
-        self.log = common.Log(self.log_file)
+        self.logger = common.Log(self.log_file)
         self.progress_bar = common.ProgressBar()
         self.task_queue = queue.Queue()
 
@@ -112,7 +111,7 @@ class Task:
                 common.execute_command(f"rm -rf {self.temp_dir}/*.xml")
             sys.stdout = STDOUT
             self.progress_bar.destroy_progress_bar()
-            del self.log
+            del self.logger
             self.format_run_log()
         except Exception:  # pylint: disable=broad-except
             pass
@@ -201,7 +200,7 @@ class Task:
         if not os.path.exists(self.temp_dir):
             os.makedirs(self.temp_dir)
         self.progress_bar.setup_progress_bar()
-        sys.stdout = self.log
+        sys.stdout = self.logger
 
     def complete(self):
         if self.options["chk_mem"]:
@@ -230,7 +229,7 @@ class Task:
 
         sys.stdout = STDOUT
         self.progress_bar.destroy_progress_bar()
-        del self.log
+        del self.logger
 
     def generate_tasks(self):
         for task_category, task_category_list in self.basic_task_dict.items():
@@ -314,7 +313,7 @@ class Task:
 
         sys.stdout = STDOUT
         self.progress_bar.draw_progress_bar(int(self.complete_steps / self.total_steps * 100))
-        sys.stdout = self.log
+        sys.stdout = self.logger
 
     def format_run_log(self):
         run_log = ""
@@ -519,6 +518,8 @@ class Output:
 
 if __name__ == "__main__":
     try:
+        os.environ["TERM"] = "linux"
+        os.environ["TERMINFO"] = "/etc/terminfo"
         task = Task()
         task.run()
     except Exception:  # pylint: disable=broad-except

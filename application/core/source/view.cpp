@@ -210,7 +210,7 @@ void View::runViewer()
     }
 }
 
-void View::interfaceToStart()
+void View::waitToStart()
 {
     utility::time::BlockingTimer expiryTimer;
     std::uint16_t waitCount = 0;
@@ -238,7 +238,7 @@ void View::interfaceToStart()
     expiryTimer.reset();
 }
 
-void View::interfaceToStop()
+void View::waitToStop()
 {
     if (std::unique_lock<std::mutex> lock(mtx); true)
     {

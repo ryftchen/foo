@@ -18,9 +18,9 @@ class Documentation:
     artifact_url = "https://api.github.com/repos/ryftchen/foo/actions/artifacts?per_page=5"
     artifact_file = "foo_artifact"
     website_dir = "/var/www/foo_web"
-    proxy_port = ""
 
     def __init__(self):
+        self.proxy_port = ""
         env = os.getenv("FOO_ENV")
         if env is not None:
             if env != "foo_doc":
