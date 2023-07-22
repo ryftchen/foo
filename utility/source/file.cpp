@@ -162,10 +162,10 @@ std::list<std::string> getFileContents(const std::string& filename, const bool r
     else
     {
         std::ifstream ifsTemp(filename);
-        const std::uint32_t lineNum = std::count(
-                                std::istreambuf_iterator<char>(ifsTemp), std::istreambuf_iterator<char>(), '\n'),
-                            startLine = (lineNum > totalRows) ? (lineNum - totalRows + 1) : 1;
-        for (std::uint32_t i = 0; i < (startLine - 1); ++i)
+        const std::size_t lineNum = std::count(
+                              std::istreambuf_iterator<char>(ifsTemp), std::istreambuf_iterator<char>(), '\n'),
+                          startLine = (lineNum > totalRows) ? (lineNum - totalRows + 1) : 1;
+        for (std::size_t i = 0; i < (startLine - 1); ++i)
         {
             ifs.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         }

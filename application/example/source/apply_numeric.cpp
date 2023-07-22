@@ -421,7 +421,7 @@ void runIntegralTasks(const std::vector<std::string>& targets)
         constexpr std::string_view prefix{"\r\nIntegral expression:\n"};
         std::visit(
             integral::ExprOverloaded{
-                [&prefix](const Expression1& /*unused*/)
+                [&prefix](const Expression1& /*expr*/)
                 {
                     std::cout << prefix << Expression1::exprDescr << std::endl;
                 },

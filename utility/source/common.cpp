@@ -12,13 +12,12 @@ namespace utility::common
 //! @brief The Brian-Kernighan Dennis-Ritchie hash function.
 //! @param str - input data
 //! @return hash value
-std::uint64_t bkdrHash(const char* str)
+std::size_t bkdrHash(const char* str)
 {
-    const std::uint64_t seed = bkdrHashSeed; // 31 131 1313 13131 131313 etc...
-    std::uint64_t hash = 0;
+    std::size_t hash = 0;
     while (*str)
     {
-        hash = hash * seed + (*str++);
+        hash = hash * bkdrHashSeed + (*str++);
     }
     return (hash & bkdrHashSize);
 }

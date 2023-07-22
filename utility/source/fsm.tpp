@@ -29,7 +29,7 @@ inline State FSM<Derived, State>::currentState() const
 
 template <class Derived, class State>
 template <class Event>
-inline State FSM<Derived, State>::noTransition(const Event& /*unused*/)
+inline State FSM<Derived, State>::noTransition(const Event& /*event*/)
 {
     return state;
 }

@@ -460,7 +460,7 @@ void runOptimalTasks(const std::vector<std::string>& targets)
         constexpr std::string_view prefix{"\r\nOptimal function:\n"};
         std::visit(
             optimal::FuncOverloaded{
-                [&prefix](const Rastrigin& /*unused*/)
+                [&prefix](const Rastrigin& /*func*/)
                 {
                     std::cout << prefix << Rastrigin::funcDescr << std::endl;
                 },

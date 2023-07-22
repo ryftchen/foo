@@ -45,10 +45,10 @@ inline constexpr std::string_view colorUnderLine = "\033[4m";
 inline constexpr std::string_view colorForBackground = "\033[49m";
 //! @brief ANSI escape codes for ending.
 inline constexpr std::string_view colorOff = "\033[0m";
-//! @brief The hash seed for BKDR hash function.
-constexpr std::uint64_t bkdrHashSeed = 131;
-//! @brief The hash size for BKDR hash function.
-constexpr std::uint64_t bkdrHashSize = 0x7FFFFFFF;
+//! @brief Hash seed for BKDR hash function.
+constexpr std::size_t bkdrHashSeed = 131;
+//! @brief Hash size for BKDR hash function.
+constexpr std::size_t bkdrHashSize = 0x7FFFFFFF;
 //! @brief Maximum size of output per line.
 constexpr std::uint32_t maxBufferSize = 4096;
 
@@ -56,7 +56,7 @@ constexpr std::uint32_t maxBufferSize = 4096;
 //! @param str - input data
 //! @param hash - previous hash value
 //! @return hash value
-constexpr std::uint64_t bkdrHashInCompile(const char* const str, const std::uint64_t hash = 0) noexcept
+constexpr std::size_t bkdrHashInCompile(const char* const str, const std::size_t hash = 0) noexcept
 {
     return (*str ? bkdrHashInCompile(str + 1, (hash * bkdrHashSeed + *str) & bkdrHashSize) : hash);
 }
@@ -64,7 +64,7 @@ constexpr std::uint64_t bkdrHashInCompile(const char* const str, const std::uint
 //! @brief The operator ("") overloading with BKDR hash function.
 //! @param str - input data
 //! @return hash value
-constexpr std::uint64_t operator""_bkdrHash(const char* const str, const std::size_t /*unused*/) noexcept
+constexpr std::size_t operator""_bkdrHash(const char* const str, const std::size_t /*len*/) noexcept
 {
     return bkdrHashInCompile(str);
 }
@@ -101,6 +101,6 @@ struct Join
 template <std::string_view const&... Strings>
 static constexpr auto joinStr = Join<Strings...>::value;
 
-extern std::uint64_t bkdrHash(const char* str);
+extern std::size_t bkdrHash(const char* str);
 extern std::string executeCommand(const std::string& cmd, const std::uint32_t timeout = 0);
 } // namespace utility::common

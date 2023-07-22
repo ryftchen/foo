@@ -79,8 +79,9 @@ struct BinaryFuncHelper<Func, Arg1, Arg2, true, false, false, false>
     //! @brief Alias for invoke result.
     using ResultType = InvokeResult<Func>;
     //! @brief Invoke operation.
+    //! @param func - callable function
     //! @return invoke result
-    static ResultType invoke(Func&& func, Arg1&& /*unused*/, Arg2&& /*unused*/) { return invokeResult(func); }
+    static ResultType invoke(Func&& func, Arg1&& /*arg1*/, Arg2&& /*arg2*/) { return invokeResult(func); }
 };
 
 //! @brief Binary function helper. Include only Arg1.
@@ -93,8 +94,10 @@ struct BinaryFuncHelper<Func, Arg1, Arg2, false, true, false, false>
     //! @brief Alias for invoke result.
     using ResultType = InvokeResult<Func, Arg1>;
     //! @brief Invoke operation.
+    //! @param func - callable function
+    //! @param arg1 - function argument
     //! @return invoke result
-    static ResultType invoke(Func&& func, Arg1&& arg1, Arg2&& /*unused*/) { return invokeResult(func, arg1); }
+    static ResultType invoke(Func&& func, Arg1&& arg1, Arg2&& /*arg2*/) { return invokeResult(func, arg1); }
 };
 
 //! @brief Binary function helper. Include only Arg2.
@@ -107,8 +110,10 @@ struct BinaryFuncHelper<Func, Arg1, Arg2, false, false, true, false>
     //! @brief Alias for invoke result.
     using ResultType = InvokeResult<Func, Arg2>;
     //! @brief Invoke operation.
+    //! @param func - callable function
+    //! @param arg2 - function arguments
     //! @return invoke result
-    static ResultType invoke(Func&& func, Arg1&& /*unused*/, Arg2&& arg2) { return invokeResult(func, arg2); }
+    static ResultType invoke(Func&& func, Arg1&& /*arg1*/, Arg2&& arg2) { return invokeResult(func, arg2); }
 };
 
 //! @brief Binary function helper. Include both Arg1 and Arg2.
@@ -121,6 +126,9 @@ struct BinaryFuncHelper<Func, Arg1, Arg2, false, false, false, true>
     //! @brief Alias for invoke result.
     using ResultType = InvokeResult<Func, Arg1, Arg2>;
     //! @brief Invoke operation.
+    //! @param func - callable function
+    //! @param arg1 - function arguments
+    //! @param arg2 - function arguments
     //! @return invoke result
     static ResultType invoke(Func&& func, Arg1&& arg1, Arg2&& arg2) { return invokeResult(func, arg1, arg2); }
 };
@@ -260,7 +268,7 @@ private:
             invokeAsBinaryFunc(action, self, event);
         }
         //! @brief Process the specific event by default.
-        static constexpr void processEvent(std::nullptr_t, Derived& /*unused*/, const Event& /*unused*/) {}
+        static constexpr void processEvent(std::nullptr_t /*null*/, Derived& /*self*/, const Event& /*event*/) {}
 
         //! @brief Check guard condition.
         //! @tparam Guard - type of guard condition
@@ -274,7 +282,8 @@ private:
             return invokeAsBinaryFunc(guard, self, event);
         }
         //! @brief Check guard condition by default.
-        static constexpr bool checkGuard(std::nullptr_t, const Derived& /*unused*/, const Event& /*unused*/)
+        //! @return pass or not pass
+        static constexpr bool checkGuard(std::nullptr_t /*null*/, const Derived& /*self*/, const Event& /*event*/)
         {
             return true;
         }
@@ -345,7 +354,7 @@ private:
         //! @param self - derived object
         //! @param event - event to be processed
         //! @return state after execute
-        static State execute(Derived& self, const Event& event, State /*unused*/) { return self.noTransition(event); }
+        static State execute(Derived& self, const Event& event, State /*state*/) { return self.noTransition(event); }
     };
 
     //! @brief Lock of FSM processing.
@@ -390,9 +399,10 @@ protected:
 
     //! @brief No transition can be found for the given event in its current state.
     //! @tparam Event - type of triggered event
+    //! @param event - event to be processed
     //! @return current state
     template <class Event>
-    inline State noTransition(const Event& /*unused*/);
+    inline State noTransition(const Event& event);
 
     //! @brief The basic row of the transition map.
     //! @tparam Source - source state
