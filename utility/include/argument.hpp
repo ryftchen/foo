@@ -136,7 +136,7 @@ constexpr decltype(auto) applyScopedOneImpl(
     Function&& func,
     Tuple&& tup,
     Extra&& ext,
-    std::index_sequence<I...> /*unused*/)
+    std::index_sequence<I...> /*sequence*/)
 {
     return std::invoke(
         std::forward<Function>(func), std::get<I>(std::forward<Tuple>(tup))..., std::forward<Extra>(ext));
@@ -176,10 +176,11 @@ class ArgumentRegister
 public:
     //! @brief Construct a new ArgumentRegister object.
     //! @tparam N - number of arguments
-    //! @tparam I - number of sequences related to arguments
+    //! @tparam I - index of sequences related to arguments
     //! @param array - array of arguments to be registered
+    //! @param sequence - sequences related to arguments
     template <std::size_t N, std::size_t... I>
-    explicit ArgumentRegister(std::array<std::string_view, N>&& array, std::index_sequence<I...> /*unused*/);
+    explicit ArgumentRegister(std::array<std::string_view, N>&& array, std::index_sequence<I...> sequence);
     //! @brief Construct a new ArgumentRegister object.
     //! @tparam N - number of arguments
     //! @param array - array of arguments to be registered
@@ -376,7 +377,7 @@ private:
 };
 
 template <std::size_t N, std::size_t... I>
-ArgumentRegister::ArgumentRegister(std::array<std::string_view, N>&& array, std::index_sequence<I...> /*unused*/) :
+ArgumentRegister::ArgumentRegister(std::array<std::string_view, N>&& array, std::index_sequence<I...> /*sequence*/) :
     isOptional((checkIfOptional(array[I]) || ...)), isRequired(false), isRepeatable(false), isUsed(false)
 {
     ((void)names.emplace_back(array[I]), ...);

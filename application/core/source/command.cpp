@@ -641,7 +641,7 @@ void Command::registerOnConsole(utility::console::Console& console, T& client) c
         const auto& help = View::get<View::HelpMessage>(optionTuple);
         console.registerCommand(
             cmd,
-            [cmd, &client](const std::vector<std::string>& /*unused*/) -> decltype(auto)
+            [cmd, &client](const Console::Args& /*input*/) -> decltype(auto)
             {
                 int retVal = Console::ReturnCode::success;
                 try

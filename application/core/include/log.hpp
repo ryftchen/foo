@@ -240,9 +240,13 @@ private:
     void stopLogging();
 
     //! @brief Check whether the log file is opened.
-    bool isLogFileOpen(const GoLogging& /*unused*/) const;
+    //! @param event - FSM event
+    //! @return whether the log file is open or not
+    bool isLogFileOpen(const GoLogging& event) const;
     //! @brief Check whether the log file is closed.
-    bool isLogFileClose(const NoLogging& /*unused*/) const;
+    //! @param event - FSM event
+    //! @return whether the log file is close or not
+    bool isLogFileClose(const NoLogging& event) const;
     // clang-format off
     //! @brief Alias for the transition map of the logger.
     using TransitionMap = Map<

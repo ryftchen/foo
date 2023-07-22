@@ -227,12 +227,12 @@ void Log::stopLogging()
     }
 }
 
-bool Log::isLogFileOpen(const GoLogging& /*unused*/) const
+bool Log::isLogFileOpen(const GoLogging& /*event*/) const
 {
     return ofs.is_open();
 }
 
-bool Log::isLogFileClose(const NoLogging& /*unused*/) const
+bool Log::isLogFileClose(const NoLogging& /*event*/) const
 {
     return !ofs.is_open();
 }

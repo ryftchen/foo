@@ -19,8 +19,8 @@ class Thread
 {
 public:
     //! @brief Construct a new Thread object.
-    //! @param count - maximum number of threads
-    explicit Thread(const std::uint32_t count);
+    //! @param size - maximum number of threads
+    explicit Thread(const std::size_t size);
     //! @brief Destroy the Thread object.
     virtual ~Thread();
 

@@ -21,7 +21,7 @@ Console::Console(const std::string& greeting) : impl(std::make_unique<Impl>(gree
     rl_attempted_completion_function = &Console::getCommandCompleter;
 
     impl->RegCmds["help"] = std::make_pair(
-        [this](const Args& /*unused*/)
+        [this](const Args& /*input*/)
         {
             const auto commandsHelp = getHelpOfRegisteredCommands();
             std::size_t maxLength = 0;
@@ -41,7 +41,7 @@ Console::Console(const std::string& greeting) : impl(std::make_unique<Impl>(gree
         "show help");
 
     impl->RegCmds["quit"] = std::make_pair(
-        [this](const Args& /*unused*/)
+        [this](const Args& /*input*/)
         {
             std::cout << "Exit." << std::endl;
             return ReturnCode::quit;
@@ -198,7 +198,7 @@ int Console::readCommandLine()
     return ReturnCode(commandExecutor(line));
 }
 
-char** Console::getCommandCompleter(const char* text, int start, int /*unused*/)
+char** Console::getCommandCompleter(const char* text, int start, int /*end*/)
 {
     char** completionList = nullptr;
     if (!start)
