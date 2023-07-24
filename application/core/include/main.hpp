@@ -79,7 +79,7 @@ static void signalHandler(int sig)
     }
     std::fprintf(
         ::stderr,
-        "\r\n\r\n<MAIN>\n\n[SIGNAL]\n%d\n\n[BACKTRACE]\n%s\n[VERBOSE]\n%s\n",
+        "\r\n[SIGNAL]\n%d\n\n[BACKTRACE]\n%s\n[VERBOSE]\n%s\n",
         sig,
         originalTrace.str().c_str(),
         realTrace.str().c_str());

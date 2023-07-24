@@ -29,40 +29,12 @@ Command::Command()
             .appending()
             .help("run commands (with quotes) in console mode and exit");
 
-        const auto validateCategory = [this](const TaskCategory& category, const std::string& input)
-        {
-            TaskCategory completion;
-            if (std::any_of(
-                    generalTaskDispatcher.at(category).cbegin(),
-                    generalTaskDispatcher.at(category).cend(),
-                    [&input, &completion](const auto& taskCategoryMap)
-                    {
-                        if (input.length() <= taskCategoryMap.first.length())
-                        {
-                            constexpr std::size_t minMatchLen = 4;
-                            if (taskCategoryMap.first.compare(0, std::max(minMatchLen, input.length()), input) == 0)
-                            {
-                                completion = taskCategoryMap.first;
-                                return true;
-                            }
-                        }
-                        return false;
-                    }))
-            {
-                return completion;
-            }
-
-            auto unknownCategory = category;
-            std::replace(unknownCategory.begin(), unknownCategory.end(), '-', ' ');
-            throw std::runtime_error("Unknown " + unknownCategory + " category: " + input);
-        };
-
         program.addArgument("-a", "--algorithm")
             .nArgs(1)
             .action(
-                [&](const std::string& value)
+                [this](const std::string& value)
                 {
-                    return validateCategory("algorithm", value);
+                    return getCategoryCompletionForVerification("algorithm", value);
                 })
             .help("run algorithm tasks with a category:\n"
                   "- match       Match Solution\n"
@@ -75,9 +47,9 @@ Command::Command()
         program.addArgument("-ds", "--data-structure")
             .nArgs(1)
             .action(
-                [&](const std::string& value)
+                [this](const std::string& value)
                 {
-                    return validateCategory("data-structure", value);
+                    return getCategoryCompletionForVerification("data-structure", value);
                 })
             .help("run data structure tasks with a category:\n"
                   "- linear    Linear Structure\n"
@@ -87,9 +59,9 @@ Command::Command()
         program.addArgument("-dp", "--design-pattern")
             .nArgs(1)
             .action(
-                [&](const std::string& value)
+                [this](const std::string& value)
                 {
-                    return validateCategory("design-pattern", value);
+                    return getCategoryCompletionForVerification("design-pattern", value);
                 })
             .help("run design pattern tasks with a category:\n"
                   "- behavioral    Behavioral Pattern\n"
@@ -100,9 +72,9 @@ Command::Command()
         program.addArgument("-n", "--numeric")
             .nArgs(1)
             .action(
-                [&](const std::string& value)
+                [this](const std::string& value)
                 {
-                    return validateCategory("numeric", value);
+                    return getCategoryCompletionForVerification("numeric", value);
                 })
             .help("run numeric tasks with a category:\n"
                   "- arithmetic    Arithmetic Solution\n"
@@ -346,6 +318,36 @@ void Command::dispatchTask() const
             }
         }
     }
+}
+
+Command::TaskCategory Command::getCategoryCompletionForVerification(
+    const TaskCategory& category,
+    const std::string& input) const
+{
+    TaskCategory completion;
+    if (std::any_of(
+            generalTaskDispatcher.at(category).cbegin(),
+            generalTaskDispatcher.at(category).cend(),
+            [&input, &completion](const auto& taskCategoryMap)
+            {
+                if (input.length() <= taskCategoryMap.first.length())
+                {
+                    constexpr std::size_t minMatchLen = 4;
+                    if (taskCategoryMap.first.compare(0, std::max(minMatchLen, input.length()), input) == 0)
+                    {
+                        completion = taskCategoryMap.first;
+                        return true;
+                    }
+                }
+                return false;
+            }))
+    {
+        return completion;
+    }
+
+    auto unknownCategory = category;
+    std::replace(unknownCategory.begin(), unknownCategory.end(), '-', ' ');
+    throw std::runtime_error("Unknown " + unknownCategory + " category: " + input);
 }
 
 void Command::showConsoleOutput() const
