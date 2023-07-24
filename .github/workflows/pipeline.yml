@@ -108,17 +108,21 @@ jobs:
       - name: Build
         run: |
           ./script/build.sh --release
-
-      - name: Test
-        run: |
-          ./script/run.py --test --build rls
+          ./script/build.sh --release --test
 
       - name: Run
         run: |
-          ./script/run.py --check cov mem --build rls
+          ./script/run.py
+          cat ./temporary/foo_run.report
 
-      - name: Report
+      - name: Test
         run: |
+          ./script/run.py --test
+          cat ./temporary/foo_run.report
+
+      - name: Check
+        run: |
+          ./script/run.py --check cov mem --build rls
           cat ./temporary/foo_run.report
 
   extended_analysis:
