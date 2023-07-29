@@ -2,7 +2,7 @@
 //! @author ryftchen
 //! @brief The declarations (console) in the utility module.
 //! @version 1.0
-//! @copyright Copyright (c) 2022-2023 ryftchen.
+//! @copyright Copyright (c) 2022-2023 ryftchen. All rights reserved.
 
 #pragma once
 

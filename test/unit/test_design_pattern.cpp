@@ -2,7 +2,7 @@
 //! @author ryftchen
 //! @brief The definitions (test_design_pattern) in the test module.
 //! @version 1.0
-//! @copyright Copyright (c) 2022-2023 ryftchen.
+//! @copyright Copyright (c) 2022-2023 ryftchen. All rights reserved.
 
 #include <gtest/gtest.h>
 #include "application/example/include/apply_design_pattern.hpp"

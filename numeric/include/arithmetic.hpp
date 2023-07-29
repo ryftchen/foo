@@ -2,7 +2,7 @@
 //! @author ryftchen
 //! @brief The declarations (arithmetic) in the numeric module.
 //! @version 1.0
-//! @copyright Copyright (c) 2022-2023 ryftchen.
+//! @copyright Copyright (c) 2022-2023 ryftchen. All rights reserved.
 
 #pragma once
 
