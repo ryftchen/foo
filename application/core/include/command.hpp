@@ -48,7 +48,7 @@ private:
     std::condition_variable cv;
     //! @brief Flag to indicate whether parsing of arguments is completed.
     std::atomic<bool> isParsed{false};
-    //! @brief A Argument object for parsing arguments.
+    //! @brief Parse arguments helper.
     utility::argument::Argument program{utility::argument::Argument("foo", "1.0")};
     //! @brief Copyright information.
     static constexpr std::string_view copyrightInfo{"Copyright (c) 2022-2023 ryftchen"};
@@ -229,9 +229,9 @@ private:
         //! @brief Construct a new DispatchedTask object.
         DispatchedTask() = default;
 
-        //! @brief A BasicTask object for managing basic type tasks.
+        //! @brief Dispatch basic type tasks.
         BasicTask basicTask;
-        //! @brief A GeneralTask object for managing general type tasks.
+        //! @brief Dispatch general type tasks.
         GeneralTask generalTask;
 
         //! @brief Check whether any tasks do not exist.
@@ -243,7 +243,7 @@ private:
             basicTask.reset();
             generalTask.reset();
         };
-    } /** @brief A DispatchedTask object for managing all types of tasks. */ dispatchedTask{};
+    } /** @brief Dispatch all types of tasks. */ dispatchedTask{};
 
     //! @brief Print output of the console mode command line.
     void showConsoleOutput() const;
