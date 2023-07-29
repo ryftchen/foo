@@ -9,21 +9,27 @@ RUN apt-get update \
 llvm-12 clang-12 lld-12 libclang-12-dev libstdc++-10-dev libgtest-dev libreadline-dev libmpfrc++-dev \
 clang-format-12 clang-tidy-12 valgrind cloc graphviz docker-compose \
 && sudo apt-get clean \
-&& sudo pip3 install --no-cache-dir -v requests pre-commit==3.2.0 pylint==2.15.5 black==22.10.0 shellcheck-py==0.8.0.4 shfmt-py==3.4.3.1 \
-compdb==0.2.0 ValgrindCI==0.2.0 \
+&& sudo pip3 install --no-cache-dir -v requests pylint==2.15.5 black==22.10.0 pre-commit compdb ValgrindCI \
 && cd /root \
+&& curl -L https://github.com/koalaman/shellcheck/releases/download/v0.8.0/shellcheck-v0.8.0.linux.x86_64.tar.xz >shellcheck-v0.8.0.linux.x86_64.tar.xz \
+&& tar -xvf ./shellcheck-v0.8.0.linux.x86_64.tar.xz \
+&& sudo mv ./shellcheck-v0.8.0/shellcheck /usr/local/bin/ \
+&& sudo chmod +x /usr/local/bin/shellcheck \
+&& rm -rf ./shellcheck-* \
+&& curl -L https://github.com/mvdan/sh/releases/download/v3.4.3/shfmt_v3.4.3_linux_amd64 >shfmt_v3.4.3_linux_amd64 \
+&& sudo mv ./shfmt_v3.4.3_linux_amd64 /usr/local/bin/shfmt \
+&& sudo chmod +x /usr/local/bin/shfmt \
+&& curl -L https://github.com/doxygen/doxygen/releases/download/Release_1_9_6/doxygen-1.9.6.linux.bin.tar.gz >doxygen-1.9.6.linux.bin.tar.gz \
+&& tar -zxvf ./doxygen-1.9.6.linux.bin.tar.gz \
+&& sudo make -C ./doxygen-1.9.6 install \
+&& rm -rf ./doxygen-* \
+&& curl -L https://github.com/jothepro/doxygen-awesome-css/archive/refs/tags/v2.2.0.tar.gz >doxygen-awesome-css-2.2.0.tar.gz \
+&& tar -zxvf ./doxygen-awesome-css-2.2.0.tar.gz \
+&& sudo make -C ./doxygen-awesome-css-2.2.0 install \
+&& rm -rf ./doxygen-awesome-css-* \
 && git clone https://github.com/KDAB/codebrowser.git \
 && git -C ./codebrowser reset --hard e7bce1618726657d0615f0976f0db11a4f70f1f7 \
 && cmake -S ./codebrowser -B ./codebrowser/build -DCMAKE_CXX_COMPILER=clang++-12 -DCMAKE_BUILD_TYPE=Release \
 && make -C ./codebrowser/build -j \
 && sudo make -C ./codebrowser/build install \
-&& rm -rf ./codebrowser \
-&& curl -L https://github.com/doxygen/doxygen/releases/download/Release_1_9_5/doxygen-1.9.5.linux.bin.tar.gz >doxygen-1.9.5.linux.bin.tar.gz \
-&& tar -zxvf doxygen-1.9.5.linux.bin.tar.gz \
-&& sudo make -C ./doxygen-1.9.5 install \
-&& rm -rf ./doxygen-* \
-&& curl -L https://github.com/jothepro/doxygen-awesome-css/archive/refs/tags/v2.1.0.tar.gz >doxygen-awesome-css-2.1.0.tar.gz \
-&& tar -zxvf doxygen-awesome-css-2.1.0.tar.gz \
-&& sudo mkdir -p /usr/local/share/doxygen-awesome-css \
-&& sudo install -m 644 ./doxygen-awesome-css-2.1.0/doxygen-awesome* /usr/local/share/doxygen-awesome-css/ \
-&& rm -rf ./doxygen-awesome-css-*
+&& rm -rf ./codebrowser
