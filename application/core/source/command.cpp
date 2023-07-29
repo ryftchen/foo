@@ -118,9 +118,10 @@ void Command::runCommander(const int argc, const char* const argv[])
 
         if (0 != argc - 1)
         {
-            std::shared_ptr<utility::thread::Thread> thread = std::make_shared<utility::thread::Thread>(2);
-            thread->enqueue("commander_fore", &Command::foregroundHandler, this, argc, argv);
-            thread->enqueue("commander_back", &Command::backgroundHandler, this);
+            constexpr std::uint32_t childThdNum = 2;
+            auto threads = std::make_shared<utility::thread::Thread>(childThdNum);
+            threads->enqueue("commander_fore", &Command::foregroundHandler, this, argc, argv);
+            threads->enqueue("commander_back", &Command::backgroundHandler, this);
         }
         else
         {

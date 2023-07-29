@@ -21,11 +21,11 @@ int main(int argc, char* argv[])
         using application::log::Log;
         using application::view::View;
 
-        constexpr std::uint32_t threadNum = 3;
-        std::shared_ptr<utility::thread::Thread> thread = std::make_shared<utility::thread::Thread>(threadNum);
-        thread->enqueue("commander", &Command::runCommander, &Command::getInstance(), argc, argv);
-        thread->enqueue("logger", &Log::runLogger, &Log::getInstance());
-        thread->enqueue("viewer", &View::runViewer, &View::getInstance());
+        constexpr std::uint32_t childThdNum = 3;
+        auto threads = std::make_shared<utility::thread::Thread>(childThdNum);
+        threads->enqueue("commander", &Command::runCommander, &Command::getInstance(), argc, argv);
+        threads->enqueue("logger", &Log::runLogger, &Log::getInstance());
+        threads->enqueue("viewer", &View::runViewer, &View::getInstance());
     }
     catch (const std::exception& error)
     {
