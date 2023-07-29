@@ -2,7 +2,7 @@
 //! @author ryftchen
 //! @brief The definitions (main) in the application module.
 //! @version 1.0
-//! @copyright Copyright (c) 2022-2023 ryftchen.
+//! @copyright Copyright (c) 2022-2023 ryftchen. All rights reserved.
 
 #include "main.hpp"
 #include "command.hpp"
