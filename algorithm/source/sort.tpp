@@ -294,16 +294,16 @@ std::vector<T> Sort<T>::bucket(T* const array, const std::uint32_t length)
 
     const std::uint32_t bucketNum = length;
     const double intervalSpan = static_cast<double>(max - min) / static_cast<double>(bucketNum - 1);
-    std::vector<std::vector<T>> aggregation(bucketNum, std::vector<T>{});
+    std::vector<std::vector<T>> container(bucketNum, std::vector<T>{});
     for (std::uint32_t i = 0; i < length; ++i)
     {
         // min+(max-min)/(bucketNum-1)*(bucketIndex-1)<=array[i]
         const std::uint32_t bucketIndex = std::floor(static_cast<double>(sortArray[i] - min) / intervalSpan + 1) - 1;
-        aggregation.at(bucketIndex).emplace_back(sortArray[i]);
+        container.at(bucketIndex).emplace_back(sortArray[i]);
     }
 
     std::uint32_t index = 0;
-    for (auto& bucketUpdate : aggregation)
+    for (auto& bucketUpdate : container)
     {
         std::sort(bucketUpdate.begin(), bucketUpdate.end());
         for (const auto bucketElement : bucketUpdate)
@@ -350,13 +350,13 @@ std::vector<T> Sort<T>::radix(T* const array, const std::uint32_t length)
     assert(bucketNum > 0);
     std::unique_ptr<T[]> countingOld = std::make_unique<T[]>(bucketNum), countingNew = std::make_unique<T[]>(bucketNum);
     std::queue<T> bucket;
-    std::vector<std::queue<T>> aggregation(bucketNum, bucket);
+    std::vector<std::queue<T>> container(bucketNum, bucket);
     const std::uint32_t offset = (!negative) ? 0 : negativeIntegerBucket;
     for (std::uint32_t i = 0; i < length; ++i)
     {
         const int sign = (sortArray[i] > 0) ? 1 : -1;
         const std::uint32_t bucketIndex = std::abs(sortArray[i]) / 1 % base * sign + offset;
-        aggregation[bucketIndex].push(sortArray[i]);
+        container[bucketIndex].push(sortArray[i]);
         ++countingNew[bucketIndex];
     }
 
@@ -365,19 +365,19 @@ std::vector<T> Sort<T>::radix(T* const array, const std::uint32_t length)
     {
         std::memcpy(countingOld.get(), countingNew.get(), bucketNum * sizeof(T));
         std::memset(countingNew.get(), 0, bucketNum * sizeof(T));
-        for (auto bucketIter = aggregation.begin(); aggregation.end() != bucketIter; ++bucketIter)
+        for (auto bucketIter = container.begin(); container.end() != bucketIter; ++bucketIter)
         {
             if (!bucketIter->size())
             {
                 continue;
             }
-            const std::uint32_t countingIndex = bucketIter - aggregation.begin();
+            const std::uint32_t countingIndex = bucketIter - container.begin();
             while (countingOld[countingIndex])
             {
                 auto bucketElement = bucketIter->front();
                 const int sign = (bucketElement > 0) ? 1 : -1;
                 const std::uint32_t bucketIndex = std::abs(bucketElement) / pow % base * sign + offset;
-                aggregation[bucketIndex].push(bucketElement);
+                container[bucketIndex].push(bucketElement);
                 ++countingNew[bucketIndex];
                 bucketIter->pop();
                 --countingOld[countingIndex];
@@ -386,7 +386,7 @@ std::vector<T> Sort<T>::radix(T* const array, const std::uint32_t length)
     }
 
     std::uint32_t index = 0;
-    for (auto& bucketInfo : aggregation)
+    for (auto& bucketInfo : container)
     {
         while (bucketInfo.size())
         {

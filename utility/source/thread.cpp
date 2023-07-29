@@ -12,8 +12,8 @@ Thread::Thread(const std::size_t size)
 {
     for (std::size_t i = 0; i < size; ++i)
     {
-        threadVector.emplace_back(
-            [this]() -> decltype(auto)
+        threadContainer.emplace_back(
+            [this]()
             {
                 for (;;)
                 {
@@ -23,7 +23,7 @@ Thread::Thread(const std::size_t size)
                     {
                         cv.wait(
                             lock,
-                            [this]() -> decltype(auto)
+                            [this]()
                             {
                                 return (releaseReady.load() || !taskQueue.empty());
                             });
@@ -57,7 +57,7 @@ Thread::~Thread()
     {
         producer.wait(
             lock,
-            [this]() -> decltype(auto)
+            [this]()
             {
                 return taskQueue.empty();
             });
@@ -65,7 +65,7 @@ Thread::~Thread()
     }
 
     cv.notify_all();
-    for (auto& thread : threadVector)
+    for (auto& thread : threadContainer)
     {
         if (thread.joinable())
         {

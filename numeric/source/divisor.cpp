@@ -21,9 +21,9 @@ std::vector<int> Divisor::euclidean(int a, int b)
         b = temp;
     }
     const int greatestCommonDivisor = a;
-    std::vector<int> divisorVector = getAllDivisors(greatestCommonDivisor);
+    std::vector<int> divisorContainer = getAllDivisors(greatestCommonDivisor);
 
-    return divisorVector;
+    return divisorContainer;
 }
 
 std::vector<int> Divisor::stein(int a, int b)
@@ -47,9 +47,9 @@ std::vector<int> Divisor::stein(int a, int b)
     {
         greatestCommonDivisor = steinRecursive(b, a) << c;
     }
-    std::vector<int> divisorVector = getAllDivisors(greatestCommonDivisor);
+    std::vector<int> divisorContainer = getAllDivisors(greatestCommonDivisor);
 
-    return divisorVector;
+    return divisorContainer;
 }
 
 int Divisor::steinRecursive(int a, int b)

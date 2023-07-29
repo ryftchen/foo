@@ -338,90 +338,93 @@ std::shared_ptr<application::app_algo::sort::TargetBuilder<int>> SortTestBase::b
 //! @brief Test for the bubble method in the solution of sort.
 TEST_F(SortTestBase, bubbleMethod) // NOLINT(cert-err58-cpp)
 {
-    std::vector<int> sortVector(
+    std::vector<int> sortContainer(
         builder->getRandomArray().get(), builder->getRandomArray().get() + builder->getLength());
-    std::sort(sortVector.begin(), sortVector.end());
-    ASSERT_EQ(sortVector, algorithm::sort::Sort<int>::bubble(builder->getRandomArray().get(), builder->getLength()));
+    std::sort(sortContainer.begin(), sortContainer.end());
+    ASSERT_EQ(sortContainer, algorithm::sort::Sort<int>::bubble(builder->getRandomArray().get(), builder->getLength()));
 }
 
 //! @brief Test for the selection method in the solution of sort.
 TEST_F(SortTestBase, selectionMethod) // NOLINT(cert-err58-cpp)
 {
-    std::vector<int> sortVector(
+    std::vector<int> sortContainer(
         builder->getRandomArray().get(), builder->getRandomArray().get() + builder->getLength());
-    std::sort(sortVector.begin(), sortVector.end());
-    ASSERT_EQ(sortVector, algorithm::sort::Sort<int>::selection(builder->getRandomArray().get(), builder->getLength()));
+    std::sort(sortContainer.begin(), sortContainer.end());
+    ASSERT_EQ(
+        sortContainer, algorithm::sort::Sort<int>::selection(builder->getRandomArray().get(), builder->getLength()));
 }
 
 //! @brief Test for the insertion method in the solution of sort.
 TEST_F(SortTestBase, insertionMethod) // NOLINT(cert-err58-cpp)
 {
-    std::vector<int> sortVector(
+    std::vector<int> sortContainer(
         builder->getRandomArray().get(), builder->getRandomArray().get() + builder->getLength());
-    std::sort(sortVector.begin(), sortVector.end());
-    ASSERT_EQ(sortVector, algorithm::sort::Sort<int>::insertion(builder->getRandomArray().get(), builder->getLength()));
+    std::sort(sortContainer.begin(), sortContainer.end());
+    ASSERT_EQ(
+        sortContainer, algorithm::sort::Sort<int>::insertion(builder->getRandomArray().get(), builder->getLength()));
 }
 
 //! @brief Test for the shell method in the solution of sort.
 TEST_F(SortTestBase, shellMethod) // NOLINT(cert-err58-cpp)
 {
-    std::vector<int> sortVector(
+    std::vector<int> sortContainer(
         builder->getRandomArray().get(), builder->getRandomArray().get() + builder->getLength());
-    std::sort(sortVector.begin(), sortVector.end());
-    ASSERT_EQ(sortVector, algorithm::sort::Sort<int>::shell(builder->getRandomArray().get(), builder->getLength()));
+    std::sort(sortContainer.begin(), sortContainer.end());
+    ASSERT_EQ(sortContainer, algorithm::sort::Sort<int>::shell(builder->getRandomArray().get(), builder->getLength()));
 }
 
 //! @brief Test for the merge method in the solution of sort.
 TEST_F(SortTestBase, mergeMethod) // NOLINT(cert-err58-cpp)
 {
-    std::vector<int> sortVector(
+    std::vector<int> sortContainer(
         builder->getRandomArray().get(), builder->getRandomArray().get() + builder->getLength());
-    std::sort(sortVector.begin(), sortVector.end());
-    ASSERT_EQ(sortVector, algorithm::sort::Sort<int>::merge(builder->getRandomArray().get(), builder->getLength()));
+    std::sort(sortContainer.begin(), sortContainer.end());
+    ASSERT_EQ(sortContainer, algorithm::sort::Sort<int>::merge(builder->getRandomArray().get(), builder->getLength()));
 }
 
 //! @brief Test for the quick method in the solution of sort.
 TEST_F(SortTestBase, quickMethod) // NOLINT(cert-err58-cpp)
 {
-    std::vector<int> sortVector(
+    std::vector<int> sortContainer(
         builder->getRandomArray().get(), builder->getRandomArray().get() + builder->getLength());
-    std::sort(sortVector.begin(), sortVector.end());
-    ASSERT_EQ(sortVector, algorithm::sort::Sort<int>::quick(builder->getRandomArray().get(), builder->getLength()));
+    std::sort(sortContainer.begin(), sortContainer.end());
+    ASSERT_EQ(sortContainer, algorithm::sort::Sort<int>::quick(builder->getRandomArray().get(), builder->getLength()));
 }
 
 //! @brief Test for the heap method in the solution of sort.
 TEST_F(SortTestBase, heapMethod) // NOLINT(cert-err58-cpp)
 {
-    std::vector<int> sortVector(
+    std::vector<int> sortContainer(
         builder->getRandomArray().get(), builder->getRandomArray().get() + builder->getLength());
-    std::sort(sortVector.begin(), sortVector.end());
-    ASSERT_EQ(sortVector, algorithm::sort::Sort<int>::heap(builder->getRandomArray().get(), builder->getLength()));
+    std::sort(sortContainer.begin(), sortContainer.end());
+    ASSERT_EQ(sortContainer, algorithm::sort::Sort<int>::heap(builder->getRandomArray().get(), builder->getLength()));
 }
 
 //! @brief Test for the counting method in the solution of sort.
 TEST_F(SortTestBase, countingMethod) // NOLINT(cert-err58-cpp)
 {
-    std::vector<int> sortVector(
+    std::vector<int> sortContainer(
         builder->getRandomArray().get(), builder->getRandomArray().get() + builder->getLength());
-    std::sort(sortVector.begin(), sortVector.end());
-    ASSERT_EQ(sortVector, algorithm::sort::Sort<int>::counting(builder->getRandomArray().get(), builder->getLength()));
+    std::sort(sortContainer.begin(), sortContainer.end());
+    ASSERT_EQ(
+        sortContainer, algorithm::sort::Sort<int>::counting(builder->getRandomArray().get(), builder->getLength()));
 }
 
 //! @brief Test for the bucket method in the solution of sort.
 TEST_F(SortTestBase, bucketMethod) // NOLINT(cert-err58-cpp)
 {
-    std::vector<int> sortVector(
+    std::vector<int> sortContainer(
         builder->getRandomArray().get(), builder->getRandomArray().get() + builder->getLength());
-    std::sort(sortVector.begin(), sortVector.end());
-    ASSERT_EQ(sortVector, algorithm::sort::Sort<int>::bucket(builder->getRandomArray().get(), builder->getLength()));
+    std::sort(sortContainer.begin(), sortContainer.end());
+    ASSERT_EQ(sortContainer, algorithm::sort::Sort<int>::bucket(builder->getRandomArray().get(), builder->getLength()));
 }
 
 //! @brief Test for the radix method in the solution of sort.
 TEST_F(SortTestBase, radixMethod) // NOLINT(cert-err58-cpp)
 {
-    std::vector<int> sortVector(
+    std::vector<int> sortContainer(
         builder->getRandomArray().get(), builder->getRandomArray().get() + builder->getLength());
-    std::sort(sortVector.begin(), sortVector.end());
-    ASSERT_EQ(sortVector, algorithm::sort::Sort<int>::radix(builder->getRandomArray().get(), builder->getLength()));
+    std::sort(sortContainer.begin(), sortContainer.end());
+    ASSERT_EQ(sortContainer, algorithm::sort::Sort<int>::radix(builder->getRandomArray().get(), builder->getLength()));
 }
 } // namespace test::tst_algo

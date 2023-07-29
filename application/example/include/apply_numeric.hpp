@@ -354,37 +354,37 @@ public:
     //! @brief Get the pair of integers.
     //! @return pair of integers
     [[nodiscard]] inline std::pair<int, int> getIntegers() const { return std::make_pair(integer1, integer2); }
-    //! @brief Format integer vector for printing.
-    //! @tparam T - type of vector
-    //! @param vector - vector to be formatted
-    //! @param buffer - buffer for filling the formatted vector
+    //! @brief Splice all integers for printing.
+    //! @tparam T - type of container
+    //! @param vector - integer container
+    //! @param buffer - buffer for printing
     //! @param bufferSize - size of buffer
-    //! @return buffer after format
+    //! @return buffer after splicing
     template <typename T>
-    requires std::is_integral<T>::value static char* formatIntegerVector(
-        const std::vector<T>& vector,
+    requires std::is_integral<T>::value static char* spliceAllIntegers(
+        const std::vector<T>& container,
         char* const buffer,
         const std::uint32_t bufferSize)
     {
         std::uint32_t align = 0;
-        for (std::uint32_t i = 0; i < vector.size(); ++i)
+        for (std::uint32_t i = 0; i < container.size(); ++i)
         {
-            align = std::max(static_cast<std::uint32_t>(std::to_string(vector.at(i)).length()), align);
+            align = std::max(static_cast<std::uint32_t>(std::to_string(container.at(i)).length()), align);
         }
 
         int formatSize = 0;
         std::uint32_t completeSize = 0;
-        for (std::uint32_t i = 0; i < vector.size(); ++i)
+        for (std::uint32_t i = 0; i < container.size(); ++i)
         {
             formatSize =
-                std::snprintf(buffer + completeSize, bufferSize - completeSize, "%*d ", align + 1, vector.at(i));
+                std::snprintf(buffer + completeSize, bufferSize - completeSize, "%*d ", align + 1, container.at(i));
             if ((formatSize < 0) || (formatSize >= static_cast<int>(bufferSize - completeSize)))
             {
                 break;
             }
             completeSize += formatSize;
 
-            if ((0 == (i + 1) % maxColumnOfPrint) && ((i + 1) != vector.size()))
+            if ((0 == (i + 1) % maxColumnOfPrint) && ((i + 1) != container.size()))
             {
                 formatSize = std::snprintf(buffer + completeSize, bufferSize - completeSize, "\n");
                 if ((formatSize < 0) || (formatSize >= static_cast<int>(bufferSize - completeSize)))
@@ -551,37 +551,37 @@ public:
     //! @brief Get the Maximum positive integer.
     //! @return maximum positive integer
     [[nodiscard]] inline std::uint32_t getMaxPositiveInteger() const { return maxPositiveInteger; }
-    //! @brief Format integer vector for printing.
-    //! @tparam T - type of vector
-    //! @param vector - vector to be formatted
-    //! @param buffer - buffer for filling the formatted vector
+    //! @brief Splice all integers for printing.
+    //! @tparam T - type of container
+    //! @param vector - integer container
+    //! @param buffer - buffer for printing
     //! @param bufferSize - size of buffer
-    //! @return buffer after format
+    //! @return buffer after splicing
     template <typename T>
-    requires std::is_integral<T>::value static char* formatIntegerVector(
-        const std::vector<T>& vector,
+    requires std::is_integral<T>::value static char* spliceAllIntegers(
+        const std::vector<T>& container,
         char* const buffer,
         const std::uint32_t bufferSize)
     {
         std::uint32_t align = 0;
-        for (std::uint32_t i = 0; i < vector.size(); ++i)
+        for (std::uint32_t i = 0; i < container.size(); ++i)
         {
-            align = std::max(static_cast<std::uint32_t>(std::to_string(vector.at(i)).length()), align);
+            align = std::max(static_cast<std::uint32_t>(std::to_string(container.at(i)).length()), align);
         }
 
         int formatSize = 0;
         std::uint32_t completeSize = 0;
-        for (std::uint32_t i = 0; i < vector.size(); ++i)
+        for (std::uint32_t i = 0; i < container.size(); ++i)
         {
             formatSize =
-                std::snprintf(buffer + completeSize, bufferSize - completeSize, "%*d ", align + 1, vector.at(i));
+                std::snprintf(buffer + completeSize, bufferSize - completeSize, "%*d ", align + 1, container.at(i));
             if ((formatSize < 0) || (formatSize >= static_cast<int>(bufferSize - completeSize)))
             {
                 break;
             }
             completeSize += formatSize;
 
-            if ((0 == (i + 1) % maxColumnOfPrint) && ((i + 1) != vector.size()))
+            if ((0 == (i + 1) % maxColumnOfPrint) && ((i + 1) != container.size()))
             {
                 formatSize = std::snprintf(buffer + completeSize, bufferSize - completeSize, "\n");
                 if ((formatSize < 0) || (formatSize >= static_cast<int>(bufferSize - completeSize)))

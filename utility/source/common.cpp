@@ -5,6 +5,8 @@
 //! @copyright Copyright (c) 2022-2023 ryftchen.
 
 #include "common.hpp"
+#include <chrono>
+#include <stdexcept>
 #include <vector>
 
 namespace utility::common

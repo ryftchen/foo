@@ -10,7 +10,7 @@ namespace numeric::prime
 {
 std::vector<std::uint32_t> Prime::eratosthenes(const std::uint32_t max)
 {
-    std::vector<std::uint32_t> primeVector(0);
+    std::vector<std::uint32_t> primeContainer(0);
     std::vector<bool> isPrime(max + 1, true);
 
     isPrime.at(0) = false;
@@ -23,16 +23,16 @@ std::vector<std::uint32_t> Prime::eratosthenes(const std::uint32_t max)
             {
                 isPrime.at(j) = false;
             }
-            primeVector.emplace_back(i);
+            primeContainer.emplace_back(i);
         }
     }
 
-    return primeVector;
+    return primeContainer;
 }
 
 std::vector<std::uint32_t> Prime::euler(const std::uint32_t max)
 {
-    std::vector<std::uint32_t> primeVector(0);
+    std::vector<std::uint32_t> primeContainer(0);
     std::vector<bool> isPrime(max + 1, true);
 
     isPrime.at(0) = false;
@@ -41,19 +41,19 @@ std::vector<std::uint32_t> Prime::euler(const std::uint32_t max)
     {
         if (isPrime.at(i))
         {
-            primeVector.emplace_back(i);
+            primeContainer.emplace_back(i);
         }
 
-        for (std::uint32_t j = 1; (j <= primeVector.size()) && ((i * primeVector.at(j - 1)) <= max); ++j)
+        for (std::uint32_t j = 1; (j <= primeContainer.size()) && ((i * primeContainer.at(j - 1)) <= max); ++j)
         {
-            isPrime.at(static_cast<std::uint32_t>(i * primeVector.at(j - 1))) = false;
-            if (0 == (i % primeVector.at(j - 1)))
+            isPrime.at(static_cast<std::uint32_t>(i * primeContainer.at(j - 1))) = false;
+            if (0 == (i % primeContainer.at(j - 1)))
             {
                 break;
             }
         }
     }
 
-    return primeVector;
+    return primeContainer;
 }
 } // namespace numeric::prime

@@ -6,8 +6,9 @@
 
 #pragma once
 
+#include <array>
 #include <cassert>
-#include <shared_mutex>
+#include <string>
 
 //! @brief Format as a string.
 #define COMMON_FORMAT_TO_STRING(format, args...)                              \

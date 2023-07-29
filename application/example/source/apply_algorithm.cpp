@@ -178,7 +178,7 @@ void MatchSolution::sundayMethod(
 } // namespace match
 
 //! @brief Run match tasks.
-//! @param targets - vector of target methods
+//! @param targets - container of target methods
 void runMatchTasks(const std::vector<std::string>& targets)
 {
     if (getBit<MatchMethod>().none())
@@ -196,7 +196,7 @@ void runMatchTasks(const std::vector<std::string>& targets)
         static_cast<std::uint32_t>(getBit<MatchMethod>().count()),
         static_cast<std::uint32_t>(Bottom<MatchMethod>::value)));
 
-    const std::shared_ptr<TargetBuilder> builder = std::make_shared<TargetBuilder>(input::singlePatternForMatch);
+    const auto builder = std::make_shared<TargetBuilder>(input::singlePatternForMatch);
     const auto matchFunctor = [&](const std::string& threadName,
                                   void (*methodPtr)(const char*, const char*, const std::uint32_t, const std::uint32_t))
     {
@@ -308,7 +308,7 @@ void NotationSolution::postfixMethod(const std::string& infixNotation)
 } // namespace notation
 
 //! @brief Run notation tasks.
-//! @param targets - vector of target methods
+//! @param targets - container of target methods
 void runNotationTasks(const std::vector<std::string>& targets)
 {
     if (getBit<NotationMethod>().none())
@@ -325,7 +325,7 @@ void runNotationTasks(const std::vector<std::string>& targets)
         static_cast<std::uint32_t>(getBit<NotationMethod>().count()),
         static_cast<std::uint32_t>(Bottom<NotationMethod>::value)));
 
-    const std::shared_ptr<TargetBuilder> builder = std::make_shared<TargetBuilder>(input::infixForNotation);
+    const auto builder = std::make_shared<TargetBuilder>(input::infixForNotation);
     const auto notationFunctor = [&](const std::string& threadName, void (*methodPtr)(const std::string&))
     {
         threads->enqueue(threadName, methodPtr, std::string{builder->getInfixNotation()});
@@ -445,7 +445,7 @@ void OptimalSolution::geneticMethod(const Function& func, const double left, con
 } // namespace optimal
 
 //! @brief Run optimal tasks.
-//! @param targets - vector of target methods
+//! @param targets - container of target methods
 void runOptimalTasks(const std::vector<std::string>& targets)
 {
     if (getBit<OptimalMethod>().none())
@@ -627,7 +627,7 @@ void SearchSolution::fibonacciMethod(const double* const array, const std::uint3
 } // namespace search
 
 //! @brief Run search tasks.
-//! @param targets - vector of target methods
+//! @param targets - container of target methods
 void runSearchTasks(const std::vector<std::string>& targets)
 {
     if (getBit<SearchMethod>().none())
@@ -648,7 +648,7 @@ void runSearchTasks(const std::vector<std::string>& targets)
         static_cast<std::uint32_t>(getBit<SearchMethod>().count()),
         static_cast<std::uint32_t>(Bottom<SearchMethod>::value)));
 
-    const std::shared_ptr<TargetBuilder<double>> builder =
+    const auto builder =
         std::make_shared<TargetBuilder<double>>(arrayLengthForSearch, arrayRangeForSearch1, arrayRangeForSearch2);
     const auto searchFunctor =
         [&](const std::string& threadName, void (*methodPtr)(const double* const, const std::uint32_t, const double))
@@ -713,18 +713,18 @@ namespace sort
 //! @brief Display sort result.
 #define SORT_RESULT(opt) "\r\n==> %-9s Method <==\n%s\n(" #opt ") run time: %8.5f ms\n"
 //! @brief Print sort result content.
-#define SORT_PRINT_RESULT_CONTENT(method)                                                                           \
-    do                                                                                                              \
-    {                                                                                                               \
-        const std::uint32_t arrayBufferSize = length * maxAlignOfPrint;                                             \
-        char arrayBuffer[arrayBufferSize + 1];                                                                      \
-        arrayBuffer[0] = '\0';                                                                                      \
-        COMMON_PRINT(                                                                                               \
-            SORT_RESULT(asc),                                                                                       \
-            method,                                                                                                 \
-            TargetBuilder<int>::template formatArray<int>(&sortArray[0], length, arrayBuffer, arrayBufferSize + 1), \
-            TIME_INTERVAL(timing));                                                                                 \
-    }                                                                                                               \
+#define SORT_PRINT_RESULT_CONTENT(method)                                                                         \
+    do                                                                                                            \
+    {                                                                                                             \
+        const std::uint32_t arrayBufferSize = length * maxAlignOfPrint;                                           \
+        char arrayBuffer[arrayBufferSize + 1];                                                                    \
+        arrayBuffer[0] = '\0';                                                                                    \
+        COMMON_PRINT(                                                                                             \
+            SORT_RESULT(asc),                                                                                     \
+            method,                                                                                               \
+            TargetBuilder<int>::template spliceAll<int>(&sortArray[0], length, arrayBuffer, arrayBufferSize + 1), \
+            TIME_INTERVAL(timing));                                                                               \
+    }                                                                                                             \
     while (0)
 
 void SortSolution::bubbleMethod(int* const array, const std::uint32_t length)
@@ -879,7 +879,7 @@ void SortSolution::radixMethod(int* const array, const std::uint32_t length)
 } // namespace sort
 
 //! @brief Run sort tasks.
-//! @param targets - vector of target methods
+//! @param targets - container of target methods
 void runSortTasks(const std::vector<std::string>& targets)
 {
     if (getBit<SortMethod>().none())
@@ -900,7 +900,7 @@ void runSortTasks(const std::vector<std::string>& targets)
         static_cast<std::uint32_t>(getBit<SortMethod>().count()),
         static_cast<std::uint32_t>(Bottom<SortMethod>::value)));
 
-    const std::shared_ptr<TargetBuilder<int>> builder =
+    const auto builder =
         std::make_shared<TargetBuilder<int>>(arrayLengthForSort, arrayRangeForSort1, arrayRangeForSort2);
     const auto sortFunctor = [&](const std::string& threadName, void (*methodPtr)(int* const, const std::uint32_t))
     {

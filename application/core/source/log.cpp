@@ -5,7 +5,6 @@
 //! @copyright Copyright (c) 2022-2023 ryftchen.
 
 #include "log.hpp"
-#include "file.hpp"
 #ifndef __PRECOMPILED_HEADER
 #include <regex>
 #else
@@ -43,7 +42,7 @@ Log& Log::getInstance()
 void Log::runLogger()
 {
     State expectedState = State::init;
-    const auto checkIfExceptedFSMState = [&](const State state) -> void
+    const auto checkIfExceptedFSMState = [&](const State state)
     {
         expectedState = state;
         if (currentState() != expectedState)
@@ -67,7 +66,7 @@ void Log::runLogger()
             std::unique_lock<std::mutex> lock(mtx);
             cv.wait(
                 lock,
-                [this]() -> decltype(auto)
+                [this]()
                 {
                     return (!isLogging.load() || !logQueue.empty());
                 });
@@ -132,7 +131,7 @@ void Log::waitToStart()
             if (maxTimesOfWaitLogger == waitCount)
             {
 #ifndef NDEBUG
-                LOG_ERR("Wait for the logger to start..");
+                LOG_ERR("Wait for the logger to start...");
 #endif // NDEBUG
                 expiryTimer.reset();
             }
