@@ -683,15 +683,15 @@ public:
     //! @brief Get the search key.
     //! @return T search key
     inline T getSearchKey() const { return searchKey; }
-    //! @brief Format array for printing.
+    //! @brief Splice from array for printing.
     //! @tparam V - type of array
-    //! @param array - array to be formatted
+    //! @param array - target array
     //! @param length - length of array
-    //! @param buffer - buffer for filling the formatted array
+    //! @param buffer - buffer for printing
     //! @param bufferSize - size of buffer
-    //! @return buffer after format
+    //! @return buffer after splicing
     template <typename V>
-    requires(isNumber<V>()) static char* formatArray(
+    requires(isNumber<V>()) static char* spliceAll(
         const T* const restrict array,
         const std::uint32_t length,
         char* const restrict buffer,
@@ -779,7 +779,7 @@ private:
         char arrayBuffer[arrayBufferSize + 1];
         arrayBuffer[0] = '\0';
         std::cout << "\r\ngenerate " << length << " ordered integral numbers from " << left << " to " << right << ":\n"
-                  << formatArray<T>(array, length, arrayBuffer, arrayBufferSize + 1) << std::endl;
+                  << spliceAll<T>(array, length, arrayBuffer, arrayBufferSize + 1) << std::endl;
 #endif // __RUNTIME_PRINTING
     }
     //! @brief Set the ordered array.
@@ -809,7 +809,7 @@ private:
         arrayBuffer[0] = '\0';
         std::cout << "\r\nGenerate " << length << " ordered floating point numbers from " << left << " to " << right
                   << ":\n"
-                  << formatArray<T>(array, length, arrayBuffer, arrayBufferSize + 1) << std::endl;
+                  << spliceAll<T>(array, length, arrayBuffer, arrayBufferSize + 1) << std::endl;
 #endif // __RUNTIME_PRINTING
     }
 };
@@ -921,15 +921,15 @@ public:
     //! @brief Get the length.
     //! @return length
     [[nodiscard]] inline std::uint32_t getLength() const { return length; }
-    //! @brief Format array for printing.
+    //! @brief Splice from array for printing.
     //! @tparam V - type of array
-    //! @param array - array to be formatted
+    //! @param array - target array
     //! @param length - length of array
-    //! @param buffer - buffer for filling the formatted array
+    //! @param buffer - buffer for printing
     //! @param bufferSize - size of buffer
-    //! @return buffer after format
+    //! @return buffer after splicing
     template <typename V>
-    requires(isNumber<V>()) static char* formatArray(
+    requires(isNumber<V>()) static char* spliceAll(
         const T* const restrict array,
         const std::uint32_t length,
         char* const restrict buffer,
@@ -1014,7 +1014,7 @@ private:
         char arrayBuffer[arrayBufferSize + 1];
         arrayBuffer[0] = '\0';
         std::cout << "\r\nGenerate " << length << " random integral numbers from " << left << " to " << right << ":\n"
-                  << formatArray<T>(array, length, arrayBuffer, arrayBufferSize + 1) << std::endl;
+                  << spliceAll<T>(array, length, arrayBuffer, arrayBufferSize + 1) << std::endl;
 #endif // __RUNTIME_PRINTING
     }
     //! @brief Set the random array.
@@ -1043,7 +1043,7 @@ private:
         arrayBuffer[0] = '\0';
         std::cout << "\r\nGenerate " << length << " random floating point numbers from " << left << " to " << right
                   << ":\n"
-                  << formatArray<T>(array, length, arrayBuffer, arrayBufferSize + 1) << std::endl;
+                  << spliceAll<T>(array, length, arrayBuffer, arrayBufferSize + 1) << std::endl;
 #endif // __RUNTIME_PRINTING
     }
 };

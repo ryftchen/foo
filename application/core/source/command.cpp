@@ -169,7 +169,7 @@ void Command::backgroundHandler()
         {
             cv.wait(
                 lock,
-                [this]() -> decltype(auto)
+                [this]()
                 {
                     return isParsed.load();
                 });
@@ -226,30 +226,13 @@ void Command::validateGeneralTask()
                 continue;
             }
 
-            TargetTaskVector tasks;
-            if (program.isUsed("tasks"))
+            if (program.isUsed("tasks") && program.isUsed("help"))
             {
-                tasks = program.get<std::vector<std::string>>("tasks");
-                if (program.isUsed("help"))
-                {
-                    throwExcessArgumentException();
-                }
-            }
-            else
-            {
-                const auto taskMethodVector = get<TargetTaskVector>(taskTypeTuple);
-                tasks.assign(taskMethodVector.cbegin(), taskMethodVector.cend());
-                tasks.erase(
-                    std::remove_if(
-                        tasks.begin(),
-                        tasks.end(),
-                        [](const TargetTask& task) -> bool
-                        {
-                            return (std::string::npos == task.find_first_not_of(' '));
-                        }),
-                    std::end(tasks));
+                throwExcessArgumentException();
             }
 
+            const auto tasks = program.isUsed("tasks") ? program.get<std::vector<std::string>>("tasks")
+                                                       : get<TargetTaskContainer>(taskTypeTuple);
             for (const auto& task : tasks)
             {
                 (*get<UpdateTaskFunctor>(get<TaskFunctorTuple>(taskTypeTuple)))(task);
@@ -314,7 +297,8 @@ void Command::dispatchTask() const
             for ([[maybe_unused]] const auto& [taskType, taskTypeTuple] :
                  std::next(generalTaskDispatcher.cbegin(), GeneralTask::Category(i))->second)
             {
-                (*get<PerformTaskFunctor>(get<TaskFunctorTuple>(taskTypeTuple)))(get<TargetTaskVector>(taskTypeTuple));
+                (*get<PerformTaskFunctor>(get<TaskFunctorTuple>(taskTypeTuple)))(
+                    get<TargetTaskContainer>(taskTypeTuple));
             }
         }
     }
@@ -564,7 +548,7 @@ void Command::showHelpMessage() const
     }
 }
 
-void Command::showVersionInfo() const
+void Command::showVersionIcon() const
 {
     std::string versionStr = "tput rev; echo ";
     versionStr += getIconBanner();
@@ -643,7 +627,7 @@ void Command::registerOnConsole(utility::console::Console& console, T& client) c
         const auto& help = View::get<View::HelpMessage>(optionTuple);
         console.registerCommand(
             cmd,
-            [cmd, &client](const Console::Args& /*input*/) -> decltype(auto)
+            [cmd, &client](const Console::Args& /*input*/)
             {
                 int retVal = Console::ReturnCode::success;
                 try

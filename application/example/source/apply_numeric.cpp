@@ -118,7 +118,7 @@ void ArithmeticSolution::divisionMethod(const int dividend, const int divisor)
 } // namespace arithmetic
 
 //! @brief Run arithmetic tasks.
-//! @param targets - vector of target methods
+//! @param targets - container of target methods
 void runArithmeticTasks(const std::vector<std::string>& targets)
 {
     if (getBit<ArithmeticMethod>().none())
@@ -135,8 +135,7 @@ void runArithmeticTasks(const std::vector<std::string>& targets)
         static_cast<std::uint32_t>(getBit<ArithmeticMethod>().count()),
         static_cast<std::uint32_t>(Bottom<ArithmeticMethod>::value)));
 
-    const std::shared_ptr<TargetBuilder> builder =
-        std::make_shared<TargetBuilder>(input::integerForArithmetic1, input::integerForArithmetic2);
+    const auto builder = std::make_shared<TargetBuilder>(input::integerForArithmetic1, input::integerForArithmetic2);
     const auto arithmeticFunctor = [&](const std::string& threadName, void (*methodPtr)(const int, const int))
     {
         threads->enqueue(
@@ -205,18 +204,18 @@ namespace divisor
 //! @brief Display divisor result.
 #define DIVISOR_RESULT "\r\n==> %-9s Method <==\n%s\nrun time: %8.5f ms\n"
 //! @brief Print divisor result content.
-#define DIVISOR_PRINT_RESULT_CONTENT(method)                                                                   \
-    do                                                                                                         \
-    {                                                                                                          \
-        const std::uint32_t arrayBufferSize = divisorVector.size() * maxAlignOfPrint;                          \
-        char arrayBuffer[arrayBufferSize + 1];                                                                 \
-        arrayBuffer[0] = '\0';                                                                                 \
-        COMMON_PRINT(                                                                                          \
-            DIVISOR_RESULT,                                                                                    \
-            method,                                                                                            \
-            TargetBuilder::template formatIntegerVector<int>(divisorVector, arrayBuffer, arrayBufferSize + 1), \
-            TIME_INTERVAL(timing));                                                                            \
-    }                                                                                                          \
+#define DIVISOR_PRINT_RESULT_CONTENT(method)                                                                    \
+    do                                                                                                          \
+    {                                                                                                           \
+        const std::uint32_t arrayBufferSize = divisorContainer.size() * maxAlignOfPrint;                        \
+        char arrayBuffer[arrayBufferSize + 1];                                                                  \
+        arrayBuffer[0] = '\0';                                                                                  \
+        COMMON_PRINT(                                                                                           \
+            DIVISOR_RESULT,                                                                                     \
+            method,                                                                                             \
+            TargetBuilder::template spliceAllIntegers<int>(divisorContainer, arrayBuffer, arrayBufferSize + 1), \
+            TIME_INTERVAL(timing));                                                                             \
+    }                                                                                                           \
     while (0)
 
 void DivisorSolution::euclideanMethod(int a, int b)
@@ -224,7 +223,7 @@ void DivisorSolution::euclideanMethod(int a, int b)
     try
     {
         TIME_BEGIN(timing);
-        const auto divisorVector = numeric::divisor::Divisor().euclidean(a, b);
+        const auto divisorContainer = numeric::divisor::Divisor().euclidean(a, b);
         TIME_END(timing);
         DIVISOR_PRINT_RESULT_CONTENT("Euclidean");
     }
@@ -239,7 +238,7 @@ void DivisorSolution::steinMethod(int a, int b)
     try
     {
         TIME_BEGIN(timing);
-        const auto divisorVector = numeric::divisor::Divisor().stein(a, b);
+        const auto divisorContainer = numeric::divisor::Divisor().stein(a, b);
         TIME_END(timing);
         DIVISOR_PRINT_RESULT_CONTENT("Stein");
     }
@@ -251,7 +250,7 @@ void DivisorSolution::steinMethod(int a, int b)
 } // namespace divisor
 
 //! @brief Run divisor tasks.
-//! @param targets - vector of target methods
+//! @param targets - container of target methods
 void runDivisorTasks(const std::vector<std::string>& targets)
 {
     if (getBit<DivisorMethod>().none())
@@ -268,8 +267,7 @@ void runDivisorTasks(const std::vector<std::string>& targets)
         static_cast<std::uint32_t>(getBit<DivisorMethod>().count()),
         static_cast<std::uint32_t>(Bottom<DivisorMethod>::value)));
 
-    const std::shared_ptr<TargetBuilder> builder =
-        std::make_shared<TargetBuilder>(input::integerForDivisor1, input::integerForDivisor2);
+    const auto builder = std::make_shared<TargetBuilder>(input::integerForDivisor1, input::integerForDivisor2);
     const auto divisorFunctor = [&](const std::string& threadName, void (*methodPtr)(int, int))
     {
         threads->enqueue(
@@ -406,7 +404,7 @@ void IntegralSolution::monteCarloMethod(const Expression& expr, const double low
 } // namespace integral
 
 //! @brief Run integral tasks.
-//! @param targets - vector of target methods
+//! @param targets - container of target methods
 void runIntegralTasks(const std::vector<std::string>& targets)
 {
     if (getBit<IntegralMethod>().none())
@@ -529,18 +527,19 @@ namespace prime
 //! @brief Display prime result.
 #define PRIME_RESULT "\r\n==> %-9s Method <==\n%s\nrun time: %8.5f ms\n"
 //! @brief Print prime result content.
-#define PRIME_PRINT_RESULT_CONTENT(method)                                                                             \
-    do                                                                                                                 \
-    {                                                                                                                  \
-        const std::uint32_t arrayBufferSize = primeVector.size() * maxAlignOfPrint;                                    \
-        char arrayBuffer[arrayBufferSize + 1];                                                                         \
-        arrayBuffer[0] = '\0';                                                                                         \
-        COMMON_PRINT(                                                                                                  \
-            PRIME_RESULT,                                                                                              \
-            method,                                                                                                    \
-            TargetBuilder::template formatIntegerVector<std::uint32_t>(primeVector, arrayBuffer, arrayBufferSize + 1), \
-            TIME_INTERVAL(timing));                                                                                    \
-    }                                                                                                                  \
+#define PRIME_PRINT_RESULT_CONTENT(method)                                             \
+    do                                                                                 \
+    {                                                                                  \
+        const std::uint32_t arrayBufferSize = primeContainer.size() * maxAlignOfPrint; \
+        char arrayBuffer[arrayBufferSize + 1];                                         \
+        arrayBuffer[0] = '\0';                                                         \
+        COMMON_PRINT(                                                                  \
+            PRIME_RESULT,                                                              \
+            method,                                                                    \
+            TargetBuilder::template spliceAllIntegers<std::uint32_t>(                  \
+                primeContainer, arrayBuffer, arrayBufferSize + 1),                     \
+            TIME_INTERVAL(timing));                                                    \
+    }                                                                                  \
     while (0)
 
 void PrimeSolution::eratosthenesMethod(const std::uint32_t max)
@@ -548,7 +547,7 @@ void PrimeSolution::eratosthenesMethod(const std::uint32_t max)
     try
     {
         TIME_BEGIN(timing);
-        const auto primeVector = numeric::prime::Prime().eratosthenes(max);
+        const auto primeContainer = numeric::prime::Prime().eratosthenes(max);
         TIME_END(timing);
         PRIME_PRINT_RESULT_CONTENT("Eratosthenes");
     }
@@ -563,7 +562,7 @@ void PrimeSolution::eulerMethod(const std::uint32_t max)
     try
     {
         TIME_BEGIN(timing);
-        const auto primeVector = numeric::prime::Prime().euler(max);
+        const auto primeContainer = numeric::prime::Prime().euler(max);
         TIME_END(timing);
         PRIME_PRINT_RESULT_CONTENT("Euler");
     }
@@ -575,7 +574,7 @@ void PrimeSolution::eulerMethod(const std::uint32_t max)
 } // namespace prime
 
 //! @brief Run prime tasks.
-//! @param targets - vector of target methods
+//! @param targets - container of target methods
 void runPrimeTasks(const std::vector<std::string>& targets)
 {
     if (getBit<PrimeMethod>().none())
@@ -592,7 +591,7 @@ void runPrimeTasks(const std::vector<std::string>& targets)
         static_cast<std::uint32_t>(getBit<PrimeMethod>().count()),
         static_cast<std::uint32_t>(Bottom<PrimeMethod>::value)));
 
-    const std::shared_ptr<TargetBuilder> builder = std::make_shared<TargetBuilder>(input::maxPositiveIntegerForPrime);
+    const auto builder = std::make_shared<TargetBuilder>(input::maxPositiveIntegerForPrime);
     const auto primeFunctor = [&](const std::string& threadName, void (*methodPtr)(const std::uint32_t))
     {
         threads->enqueue(threadName, methodPtr, builder->getMaxPositiveInteger());

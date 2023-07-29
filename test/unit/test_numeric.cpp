@@ -118,7 +118,7 @@ public:
     //! @brief Target builder.
     static std::shared_ptr<application::app_num::divisor::TargetBuilder> builder;
     //! @brief Expected result.
-    const std::vector<int> divisorVector{1, 2, 3, 5, 6, 7, 10, 14, 15, 21, 30, 35, 42, 70, 105, 210};
+    const std::vector<int> divisorContainer{1, 2, 3, 5, 6, 7, 10, 14, 15, 21, 30, 35, 42, 70, 105, 210};
 };
 
 std::shared_ptr<application::app_num::divisor::TargetBuilder> DivisorTestBase::builder = nullptr;
@@ -127,7 +127,7 @@ std::shared_ptr<application::app_num::divisor::TargetBuilder> DivisorTestBase::b
 TEST_F(DivisorTestBase, euclideanMethod) // NOLINT(cert-err58-cpp)
 {
     ASSERT_EQ(
-        divisorVector,
+        divisorContainer,
         numeric::divisor::Divisor::euclidean(std::get<0>(builder->getIntegers()), std::get<1>(builder->getIntegers())));
 }
 
@@ -135,7 +135,7 @@ TEST_F(DivisorTestBase, euclideanMethod) // NOLINT(cert-err58-cpp)
 TEST_F(DivisorTestBase, steinMethod) // NOLINT(cert-err58-cpp)
 {
     ASSERT_EQ(
-        divisorVector,
+        divisorContainer,
         numeric::divisor::Divisor::stein(std::get<0>(builder->getIntegers()), std::get<1>(builder->getIntegers())));
 }
 
@@ -257,7 +257,7 @@ public:
     //! @brief Target builder.
     static std::shared_ptr<application::app_num::prime::TargetBuilder> builder;
     //! @brief Expected result.
-    const std::vector<std::uint32_t> primeVector{
+    const std::vector<std::uint32_t> primeContainer{
         2,   3,   5,   7,   11,  13,  17,  19,  23,  29,  31,  37,  41,  43,  47,  53,  59,  61,  67,  71,  73,
         79,  83,  89,  97,  101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167, 173, 179, 181,
         191, 193, 197, 199, 211, 223, 227, 229, 233, 239, 241, 251, 257, 263, 269, 271, 277, 281, 283, 293, 307,
@@ -273,12 +273,12 @@ std::shared_ptr<application::app_num::prime::TargetBuilder> PrimeTestBase::build
 //! @brief Test for the Eratosthenes method in the solution of prime.
 TEST_F(PrimeTestBase, eratosthenesMethod) // NOLINT(cert-err58-cpp)
 {
-    ASSERT_EQ(primeVector, numeric::prime::Prime::eratosthenes(builder->getMaxPositiveInteger()));
+    ASSERT_EQ(primeContainer, numeric::prime::Prime::eratosthenes(builder->getMaxPositiveInteger()));
 }
 
 //! @brief Test for the Euler method in the solution of prime.
 TEST_F(PrimeTestBase, eulerMethod) // NOLINT(cert-err58-cpp)
 {
-    ASSERT_EQ(primeVector, numeric::prime::Prime::euler(builder->getMaxPositiveInteger()));
+    ASSERT_EQ(primeContainer, numeric::prime::Prime::euler(builder->getMaxPositiveInteger()));
 }
 } // namespace test::tst_num

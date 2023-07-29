@@ -35,8 +35,8 @@ public:
     decltype(auto) enqueue(const std::string& name, Func&& func, Args&&... args);
 
 private:
-    //! @brief The vector of target threads to join.
-    std::vector<std::thread> threadVector;
+    //! @brief The container of target threads to join.
+    std::vector<std::thread> threadContainer;
     //! @brief The queue of tasks.
     std::queue<std::pair<std::string, std::packaged_task<void()>>> taskQueue;
     //! @brief Mutex for controlling queue.

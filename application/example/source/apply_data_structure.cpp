@@ -98,7 +98,7 @@ void LinearStructure::queueInstance()
 } // namespace linear
 
 //! @brief Run linear tasks.
-//! @param targets - vector of target instances
+//! @param targets - container of target instances
 void runLinearTasks(const std::vector<std::string>& targets)
 {
     if (getBit<LinearInstance>().none())
@@ -219,7 +219,7 @@ void TreeStructure::splayInstance()
 } // namespace tree
 
 //! @brief Run tree tasks.
-//! @param targets - vector of target instances
+//! @param targets - container of target instances
 void runTreeTasks(const std::vector<std::string>& targets)
 {
     if (getBit<TreeInstance>().none())

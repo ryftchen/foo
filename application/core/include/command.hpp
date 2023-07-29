@@ -79,12 +79,12 @@ private:
     using TaskType = std::string;
     //! @brief Alias for the target task.
     using TargetTask = std::string;
-    //! @brief Alias for the vector of TargetTask.
-    using TargetTaskVector = std::vector<TargetTask>;
+    //! @brief Alias for the container of TargetTask.
+    using TargetTaskContainer = std::vector<TargetTask>;
     //! @brief Alias for the tuple of PerformTaskFunctor and UpdateTaskFunctor.
     using TaskFunctorTuple = std::tuple<PerformTaskFunctor, UpdateTaskFunctor>;
-    //! @brief Alias for the tuple of TargetTaskVector and TaskFunctorTuple.
-    using TaskTypeTuple = std::tuple<TargetTaskVector, TaskFunctorTuple>;
+    //! @brief Alias for the tuple of TargetTaskContainer and TaskFunctorTuple.
+    using TaskTypeTuple = std::tuple<TargetTaskContainer, TaskFunctorTuple>;
     //! @brief Alias for the map of TaskType and TaskTypeTuple.
     using TaskCategoryMap = std::map<TaskType, TaskTypeTuple>;
     //! @brief Alias for the map of TaskCategory and TaskCategoryMap.
@@ -117,7 +117,7 @@ private:
         // ------------+------------------------------
         { "console"    , &Command::showConsoleOutput },
         { "help"       , &Command::showHelpMessage   },
-        { "version"    , &Command::showVersionInfo   },
+        { "version"    , &Command::showVersionIcon   },
         // ------------+------------------------------
     };
     //! @brief Mapping table of all general tasks.
@@ -249,8 +249,8 @@ private:
     void showConsoleOutput() const;
     //! @brief Print help message.
     void showHelpMessage() const;
-    //! @brief Print version information.
-    void showVersionInfo() const;
+    //! @brief Print version icon.
+    void showVersionIcon() const;
     //! @brief Enter console mode.
     void enterConsoleMode() const;
     //! @brief Register the command line to console mode.
@@ -280,7 +280,7 @@ inline void Command::throwExcessArgumentException()
 template <typename T>
 auto Command::get(const TaskTypeTuple& tuple) const
 {
-    if constexpr (std::is_same_v<T, TargetTaskVector>)
+    if constexpr (std::is_same_v<T, TargetTaskContainer>)
     {
         return std::get<0>(tuple);
     }

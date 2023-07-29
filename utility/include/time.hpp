@@ -99,7 +99,7 @@ inline void millisecondLevelSleep(const std::uint32_t duration)
 void BlockingTimer::set(auto func, const std::uint32_t interval)
 {
     isRunning.store(true);
-    std::thread timerThread(
+    std::thread timer(
         [=]()
         {
             while (isRunning.load())
@@ -108,7 +108,7 @@ void BlockingTimer::set(auto func, const std::uint32_t interval)
                 func();
             }
         });
-    timerThread.join();
+    timer.join();
 }
 
 inline void BlockingTimer::reset()

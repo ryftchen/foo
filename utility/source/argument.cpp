@@ -10,9 +10,9 @@
 
 namespace utility::argument
 {
-ArgumentRegister& ArgumentRegister::help(std::string str)
+ArgumentRegister& ArgumentRegister::help(const std::string& str)
 {
-    helpStr = std::move(str);
+    helpStr = str;
     return *this;
 }
 
@@ -41,19 +41,19 @@ ArgumentRegister& ArgumentRegister::remaining()
     return nArgs(NArgsPattern::any);
 }
 
-ArgumentRegister& ArgumentRegister::nArgs(std::size_t numArgs)
+ArgumentRegister& ArgumentRegister::nArgs(const std::size_t numArgs)
 {
     argNumArgsRange = NArgsRange{numArgs, numArgs};
     return *this;
 }
 
-ArgumentRegister& ArgumentRegister::nArgs(std::size_t numArgsMin, std::size_t numArgsMax)
+ArgumentRegister& ArgumentRegister::nArgs(const std::size_t numArgsMin, const std::size_t numArgsMax)
 {
     argNumArgsRange = NArgsRange{numArgsMin, numArgsMax};
     return *this;
 }
 
-ArgumentRegister& ArgumentRegister::nArgs(NArgsPattern pattern)
+ArgumentRegister& ArgumentRegister::nArgs(const NArgsPattern pattern)
 {
     switch (pattern)
     {
@@ -102,7 +102,7 @@ std::size_t ArgumentRegister::getArgumentsLength() const
         std::size_t(0),
         [](const auto& sum, const auto& str)
         {
-            return sum + str.size() + 1;
+            return (sum + str.size() + 1);
         });
 }
 
@@ -233,7 +233,7 @@ void ArgumentRegister::throwRequiredArgNoValueProvidedException() const
     throw std::runtime_error(stream.str());
 }
 
-auto ArgumentRegister::lookAhead(const std::string_view str) -> int
+int ArgumentRegister::lookAhead(const std::string_view str)
 {
     if (str.empty())
     {
@@ -358,7 +358,7 @@ std::ostream& operator<<(std::ostream& os, const Argument& parser)
 
     if (!parser.optionalArguments.empty())
     {
-        os << "Optional:\n";
+        os << "optional:\n";
     }
 
     for (const auto& argument : parser.optionalArguments)
@@ -370,7 +370,7 @@ std::ostream& operator<<(std::ostream& os, const Argument& parser)
 
     if (!parser.nonOptionalArguments.empty())
     {
-        os << "Non-optional:\n";
+        os << "non-optional:\n";
     }
 
     for (const auto& argument : parser.nonOptionalArguments)
@@ -382,7 +382,7 @@ std::ostream& operator<<(std::ostream& os, const Argument& parser)
     return os;
 }
 
-auto Argument::help() const -> std::stringstream
+std::stringstream Argument::help() const
 {
     std::stringstream out;
     out << *this;

@@ -191,7 +191,7 @@ public:
     //! @brief Set help message.
     //! @param str - help message content
     //! @return reference of ArgumentRegister object
-    ArgumentRegister& help(std::string str);
+    ArgumentRegister& help(const std::string& str);
     //! @brief Set default value.
     //! @tparam T - type of default value
     //! @param value - default value
@@ -219,20 +219,20 @@ public:
     //! @return reference of ArgumentRegister object
     template <class Function, class... Args>
     auto action(Function&& callable, Args&&... boundArgs)
-        -> std::enable_if_t<std::is_invocable_v<Function, Args..., std::string const>, ArgumentRegister&>;
+        -> std::enable_if_t<std::is_invocable_v<Function, Args..., const std::string>, ArgumentRegister&>;
     //! @brief Set number of arguments.
     //! @param numArgs - number of arguments
     //! @return reference of ArgumentRegister object
-    ArgumentRegister& nArgs(std::size_t numArgs);
+    ArgumentRegister& nArgs(const std::size_t numArgs);
     //! @brief Set minimum number and maximum number of arguments.
     //! @param numArgsMin - minimum number
     //! @param numArgsMax - maximum number
     //! @return reference of ArgumentRegister object
-    ArgumentRegister& nArgs(std::size_t numArgsMin, std::size_t numArgsMax);
+    ArgumentRegister& nArgs(const std::size_t numArgsMin, const std::size_t numArgsMax);
     //! @brief Set number of arguments with pattern.
     //! @param pattern - argument pattern
     //! @return reference of ArgumentRegister object
-    ArgumentRegister& nArgs(NArgsPattern pattern);
+    ArgumentRegister& nArgs(const NArgsPattern pattern);
     //! @brief Consume arguments.
     //! @tparam Iterator - type of argument iterator
     //! @param start - start argument iterator
@@ -317,7 +317,7 @@ private:
         //! @brief Construct a new NArgsRange object
         //! @param minimum - minimum of range
         //! @param maximum - maximum of range
-        NArgsRange(std::size_t minimum, std::size_t maximum) : min(minimum), max(maximum)
+        NArgsRange(const std::size_t minimum, const std::size_t maximum) : min(minimum), max(maximum)
         {
             if (minimum > maximum)
             {
@@ -328,7 +328,7 @@ private:
         //! @brief Check if the number of arguments is within the range.
         //! @param value - number of arguments
         //! @return be contain or not contain
-        [[nodiscard]] bool isContain(std::size_t value) const { return (value >= min) && (value <= max); }
+        [[nodiscard]] bool isContain(const std::size_t value) const { return (value >= min) && (value <= max); }
         //! @brief Check if the number of arguments is exact.
         //! @return be exact or not exact
         [[nodiscard]] bool isExact() const { return (min == max); }
@@ -354,7 +354,7 @@ private:
     //! @brief Find the character in the argument.
     //! @param str - name of argument
     //! @return character
-    static auto lookAhead(const std::string_view str) -> int;
+    static int lookAhead(const std::string_view str);
     //! @brief Check if the argument is optional.
     //! @param name - name of argument
     //! @return be optional or not optional
@@ -373,7 +373,7 @@ private:
     //! @param operand - container to be converted
     //! @return container after converting type
     template <typename T>
-    static auto anyCastContainer(const std::vector<std::any>& operand) -> T;
+    static T anyCastContainer(const std::vector<std::any>& operand);
 };
 
 template <std::size_t N, std::size_t... I>
@@ -400,10 +400,10 @@ ArgumentRegister& ArgumentRegister::defaultValue(T&& value)
 
 template <class Function, class... Args>
 auto ArgumentRegister::action(Function&& callable, Args&&... boundArgs)
-    -> std::enable_if_t<std::is_invocable_v<Function, Args..., std::string const>, ArgumentRegister&>
+    -> std::enable_if_t<std::is_invocable_v<Function, Args..., const std::string>, ArgumentRegister&>
 {
     using ActionType = std::conditional_t<
-        std::is_void_v<std::invoke_result_t<Function, Args..., std::string const>>,
+        std::is_void_v<std::invoke_result_t<Function, Args..., const std::string>>,
         VoidAction,
         ValuedAction>;
     if constexpr (!sizeof...(Args))
@@ -414,7 +414,7 @@ auto ArgumentRegister::action(Function&& callable, Args&&... boundArgs)
     {
         actions.emplace<ActionType>(
             [func = std::forward<Function>(callable),
-             tup = std::make_tuple(std::forward<Args>(boundArgs)...)](std::string const& opt) mutable
+             tup = std::make_tuple(std::forward<Args>(boundArgs)...)](const std::string& opt) mutable
             {
                 return applyScopedOne(func, tup, opt);
             });
@@ -549,7 +549,7 @@ T ArgumentRegister::get() const
 }
 
 template <typename T>
-auto ArgumentRegister::anyCastContainer(const std::vector<std::any>& operand) -> T
+T ArgumentRegister::anyCastContainer(const std::vector<std::any>& operand)
 {
     using ValueType = typename T::value_type;
     T result;
@@ -595,7 +595,7 @@ public:
     template <typename... Args>
     ArgumentRegister& addArgument(Args... fewArgs);
     //! @brief Parse all input arguments.
-    //! @param arguments - vector of all arguments
+    //! @param arguments - container of all arguments
     void parseArgs(const std::vector<std::string>& arguments);
     //! @brief Parse all input arguments.
     //! @param argc - argument count
@@ -616,8 +616,8 @@ public:
     //! @return reference of ArgumentRegister object
     ArgumentRegister& operator[](const std::string_view argName) const;
     //! @brief Get help message.
-    //! @return Help message content.
-    [[nodiscard]] auto help() const -> std::stringstream;
+    //! @return help message content
+    [[nodiscard]] std::stringstream help() const;
     //! @brief Title name.
     std::string title;
     //! @brief Version information.
@@ -636,7 +636,7 @@ private:
     std::map<std::string_view, ListIterator, std::less<>> argumentMap;
 
     //! @brief Parse all input arguments for internal.
-    //! @param arguments - vector of all arguments
+    //! @param arguments - container of all arguments
     void parseArgsInternal(const std::vector<std::string>& arguments);
     //! @brief Get the length of the longest argument.
     //! @return length of the longest argument

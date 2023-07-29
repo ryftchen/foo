@@ -261,7 +261,7 @@ private:
     // clang-format on
 
 protected:
-    friend std::ostream& operator<<(std::ostream& os, const Log::State state);
+    friend std::ostream& operator<<(std::ostream& os, const State state);
 };
 
 extern const std::string& changeToLogStyle(std::string& line);

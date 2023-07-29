@@ -16,7 +16,7 @@ void ReadWriteLock::readLock()
     {
         cv.wait(
             lock,
-            [this]() -> decltype(auto)
+            [this]()
             {
                 return (writer.load() == 0);
             });
@@ -40,7 +40,7 @@ void ReadWriteLock::writeLock()
     {
         cv.wait(
             lock,
-            [this]() -> decltype(auto)
+            [this]()
             {
                 return ((reader.load() == 0) && (writer.load() == 0));
             });

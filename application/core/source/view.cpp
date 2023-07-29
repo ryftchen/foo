@@ -164,7 +164,7 @@ View& View::getInstance()
 void View::runViewer()
 {
     State expectedState = State::init;
-    const auto checkIfExceptedFSMState = [&](const State state) -> void
+    const auto checkIfExceptedFSMState = [&](const State state)
     {
         expectedState = state;
         if (currentState() != expectedState)
@@ -187,7 +187,7 @@ void View::runViewer()
             std::unique_lock<std::mutex> lock(mtx);
             cv.wait(
                 lock,
-                [this]() -> decltype(auto)
+                [this]()
                 {
                     return !isViewing.load();
                 });

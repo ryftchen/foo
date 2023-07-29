@@ -291,7 +291,7 @@ private:
     // clang-format on
 
 protected:
-    friend std::ostream& operator<<(std::ostream& os, const View::State state);
+    friend std::ostream& operator<<(std::ostream& os, const State state);
 };
 
 inline View::OptionMap View::getViewerOptions() const

@@ -33,7 +33,7 @@ public:
     //! @return reference of Console object
     Console& operator=(Console&&) = delete;
 
-    //! @brief Alias for the vector of arguments.
+    //! @brief Alias for the container of arguments.
     using Args = std::vector<std::string>;
     //! @brief Alias for the functor of command.
     using CommandFunctor = std::function<int(const Args&)>;

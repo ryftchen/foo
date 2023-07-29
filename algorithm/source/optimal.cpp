@@ -23,8 +23,8 @@ std::optional<std::tuple<double, double>> Gradient::operator()(const double left
         climbing.insert(candidate(engine));
     }
 
-    std::vector<std::pair<double, double>> aggregation;
-    aggregation.reserve(climbing.size());
+    std::vector<std::pair<double, double>> container;
+    container.reserve(climbing.size());
     for (const auto climber : climbing)
     {
         x = climber;
@@ -39,12 +39,12 @@ std::optional<std::tuple<double, double>> Gradient::operator()(const double left
             gradient = calculateFirstDerivative(x, eps);
             dx = learningRate * gradient;
         }
-        aggregation.emplace_back(func(x), x);
+        container.emplace_back(func(x), x);
     }
 
     const auto best = std::min_element(
-        std::cbegin(aggregation),
-        std::cend(aggregation),
+        std::cbegin(container),
+        std::cend(container),
         [](const auto& min1, const auto& min2)
         {
             return std::get<0>(min1) < std::get<0>(min2);
@@ -58,7 +58,7 @@ std::optional<std::tuple<double, double>> Gradient::operator()(const double left
 double Gradient::calculateFirstDerivative(const double x, const double eps) const
 {
     const double differential = eps / 2.0;
-    return (func(x + differential) - func(x - differential)) / eps;
+    return ((func(x + differential) - func(x - differential)) / eps);
 }
 
 std::optional<std::tuple<double, double>> Annealing::operator()(const double left, const double right, const double eps)
@@ -174,7 +174,7 @@ Particle::Storage Particle::storageInit(const double left, const double right)
     std::generate(
         rec.society.begin(),
         rec.society.end(),
-        [&]
+        [&]()
         {
             const double x = candidate(engine);
             const Individual individual(x, v(engine), x, func(x), func(x));
@@ -224,7 +224,7 @@ void Genetic::geneticCode(Chromosome& chr)
     std::generate(
         chr.begin(),
         chr.end(),
-        [&]
+        [&]()
         {
             return static_cast<std::uint8_t>(bit(engine));
         });
@@ -243,7 +243,7 @@ double Genetic::geneticDecode(const Chromosome& chr) const
             convert += bit * std::pow(2, index);
             ++index;
         });
-    return decodeAttr.lower + (decodeAttr.upper - decodeAttr.lower) * convert / max;
+    return (decodeAttr.lower + (decodeAttr.upper - decodeAttr.lower) * convert / max);
 }
 
 Genetic::Population Genetic::populationInit()
@@ -420,7 +420,7 @@ void Genetic::select(Population& pop)
         std::back_inserter(fitnessAvg),
         [&sum](const auto fitVal)
         {
-            return fitVal / sum;
+            return (fitVal / sum);
         });
 
     double previous = 0.0;
