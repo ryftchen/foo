@@ -356,7 +356,7 @@ public:
     [[nodiscard]] inline std::pair<int, int> getIntegers() const { return std::make_pair(integer1, integer2); }
     //! @brief Splice all integers for printing.
     //! @tparam T - type of container
-    //! @param vector - integer container
+    //! @param container - integer container
     //! @param buffer - buffer for printing
     //! @param bufferSize - size of buffer
     //! @return buffer after splicing
@@ -553,7 +553,7 @@ public:
     [[nodiscard]] inline std::uint32_t getMaxPositiveInteger() const { return maxPositiveInteger; }
     //! @brief Splice all integers for printing.
     //! @tparam T - type of container
-    //! @param vector - integer container
+    //! @param container - integer container
     //! @param buffer - buffer for printing
     //! @param bufferSize - size of buffer
     //! @return buffer after splicing
