@@ -13,7 +13,7 @@
 namespace algorithm::sort
 {
 //! @brief Sort methods.
-//! @tparam T - type of the sort methods
+//! @tparam T - type of sort methods
 template <class T>
 class Sort
 {

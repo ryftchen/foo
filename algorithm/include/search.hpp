@@ -13,7 +13,7 @@
 namespace algorithm::search
 {
 //! @brief Search methods.
-//! @tparam T - type of the search methods
+//! @tparam T - type of search methods
 template <class T>
 class Search
 {

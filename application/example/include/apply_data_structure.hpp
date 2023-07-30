@@ -104,10 +104,10 @@ protected:
 extern DataStructureTask& getTask();
 
 //! @brief Get the bit flags of the instance in data structure tasks.
-//! @tparam T - type of the instance
-//! @return bit flags of the instance
+//! @tparam T - type of instance
+//! @return reference of the instance bit flags
 template <typename T>
-auto getBit()
+auto& getBit()
 {
     if constexpr (std::is_same_v<T, DataStructureTask::LinearInstance>)
     {
@@ -120,7 +120,7 @@ auto getBit()
 }
 
 //! @brief Set the bit flags of the instance in data structure tasks.
-//! @tparam T - type of the instance
+//! @tparam T - type of instance
 //! @param index - instance index
 template <typename T>
 void setBit(const int index)
