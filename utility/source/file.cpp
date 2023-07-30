@@ -147,11 +147,10 @@ void closeFile(std::ofstream& ofs)
 std::list<std::string> getFileContents(const std::string& filename, const bool reverse, const std::uint32_t totalRows)
 {
     std::ifstream ifs = openFile(filename);
-    fdLock(ifs, LockMode::read);
+    ifs.seekg(std::ios::beg);
 
     std::string line;
     std::list<std::string> contents(0);
-    ifs.seekg(std::ios::beg);
     if (!reverse)
     {
         while ((contents.size() < totalRows) && std::getline(ifs, line))
@@ -175,7 +174,6 @@ std::list<std::string> getFileContents(const std::string& filename, const bool r
         }
     }
 
-    fdUnlock(ifs);
     closeFile(ifs);
     return contents;
 }
