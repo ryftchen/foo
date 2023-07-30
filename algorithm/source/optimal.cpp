@@ -174,7 +174,7 @@ Particle::Storage Particle::storageInit(const double left, const double right)
     std::generate(
         rec.society.begin(),
         rec.society.end(),
-        [&]()
+        [this, &candidate, &v]()
         {
             const double x = candidate(engine);
             const Individual individual(x, v(engine), x, func(x), func(x));
@@ -224,7 +224,7 @@ void Genetic::geneticCode(Chromosome& chr)
     std::generate(
         chr.begin(),
         chr.end(),
-        [&]()
+        [this, &bit]()
         {
             return static_cast<std::uint8_t>(bit(engine));
         });
@@ -404,7 +404,7 @@ void Genetic::select(Population& pop)
         pop.cbegin(),
         pop.cend(),
         std::back_inserter(fitnessVal),
-        [&](const auto& ind)
+        [this, alpha, beta, &sum](const auto& ind)
         {
             const double fitVal = alpha * calculateFitness(ind) + beta;
             sum += fitVal;

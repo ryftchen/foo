@@ -42,7 +42,7 @@ Log& Log::getInstance()
 void Log::runLogger()
 {
     State expectedState = State::init;
-    const auto checkIfExceptedFSMState = [&](const State state)
+    const auto checkIfExceptedFSMState = [this, &expectedState](const State state)
     {
         expectedState = state;
         if (currentState() != expectedState)
@@ -117,7 +117,7 @@ void Log::waitToStart()
     utility::time::BlockingTimer expiryTimer;
     std::uint16_t waitCount = 0;
     expiryTimer.set(
-        [&]()
+        [this, &expiryTimer, &waitCount]()
         {
             if (State::work == currentState())
             {
@@ -155,7 +155,7 @@ void Log::waitToStop()
     utility::time::BlockingTimer expiryTimer;
     std::uint16_t waitCount = 0;
     expiryTimer.set(
-        [&]()
+        [this, &expiryTimer, &waitCount]()
         {
             if (State::done == currentState())
             {

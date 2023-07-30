@@ -197,7 +197,8 @@ void runMatchTasks(const std::vector<std::string>& targets)
         static_cast<std::uint32_t>(Bottom<MatchMethod>::value)));
 
     const auto builder = std::make_shared<TargetBuilder>(input::singlePatternForMatch);
-    const auto matchFunctor = [&](const std::string& threadName,
+    const auto matchFunctor = [threads, builder](
+                                  const std::string& threadName,
                                   void (*methodPtr)(const char*, const char*, const std::uint32_t, const std::uint32_t))
     {
         threads->enqueue(
@@ -326,7 +327,8 @@ void runNotationTasks(const std::vector<std::string>& targets)
         static_cast<std::uint32_t>(Bottom<NotationMethod>::value)));
 
     const auto builder = std::make_shared<TargetBuilder>(input::infixForNotation);
-    const auto notationFunctor = [&](const std::string& threadName, void (*methodPtr)(const std::string&))
+    const auto notationFunctor =
+        [threads, builder](const std::string& threadName, void (*methodPtr)(const std::string&))
     {
         threads->enqueue(threadName, methodPtr, std::string{builder->getInfixNotation()});
     };
@@ -475,7 +477,8 @@ void runOptimalTasks(const std::vector<std::string>& targets)
             static_cast<std::uint32_t>(getBit<OptimalMethod>().count()),
             static_cast<std::uint32_t>(Bottom<OptimalMethod>::value)));
         const auto optimalFunctor =
-            [&](const std::string& threadName, void (*methodPtr)(const optimal::Function&, const double, const double))
+            [threads, &function, range](
+                const std::string& threadName, void (*methodPtr)(const optimal::Function&, const double, const double))
         {
             threads->enqueue(threadName, methodPtr, std::ref(function), range.range1, range.range2);
         };
@@ -651,7 +654,8 @@ void runSearchTasks(const std::vector<std::string>& targets)
     const auto builder =
         std::make_shared<TargetBuilder<double>>(arrayLengthForSearch, arrayRangeForSearch1, arrayRangeForSearch2);
     const auto searchFunctor =
-        [&](const std::string& threadName, void (*methodPtr)(const double* const, const std::uint32_t, const double))
+        [threads, builder](
+            const std::string& threadName, void (*methodPtr)(const double* const, const std::uint32_t, const double))
     {
         threads->enqueue(
             threadName, methodPtr, builder->getOrderedArray().get(), builder->getLength(), builder->getSearchKey());
@@ -902,7 +906,8 @@ void runSortTasks(const std::vector<std::string>& targets)
 
     const auto builder =
         std::make_shared<TargetBuilder<int>>(arrayLengthForSort, arrayRangeForSort1, arrayRangeForSort2);
-    const auto sortFunctor = [&](const std::string& threadName, void (*methodPtr)(int* const, const std::uint32_t))
+    const auto sortFunctor =
+        [threads, builder](const std::string& threadName, void (*methodPtr)(int* const, const std::uint32_t))
     {
         threads->enqueue(threadName, methodPtr, builder->getRandomArray().get(), builder->getLength());
     };

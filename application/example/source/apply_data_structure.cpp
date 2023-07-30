@@ -114,7 +114,7 @@ void runLinearTasks(const std::vector<std::string>& targets)
         static_cast<std::uint32_t>(getBit<LinearInstance>().count()),
         static_cast<std::uint32_t>(Bottom<LinearInstance>::value)));
 
-    const auto linearFunctor = [&](const std::string& threadName, void (*instancePtr)())
+    const auto linearFunctor = [threads](const std::string& threadName, void (*instancePtr)())
     {
         threads->enqueue(threadName, instancePtr);
     };
@@ -235,7 +235,7 @@ void runTreeTasks(const std::vector<std::string>& targets)
         static_cast<std::uint32_t>(getBit<TreeInstance>().count()),
         static_cast<std::uint32_t>(Bottom<TreeInstance>::value)));
 
-    const auto treeFunctor = [&](const std::string& threadName, void (*instancePtr)())
+    const auto treeFunctor = [threads](const std::string& threadName, void (*instancePtr)())
     {
         threads->enqueue(threadName, instancePtr);
     };
