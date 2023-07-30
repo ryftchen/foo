@@ -7,23 +7,10 @@
 #pragma once
 
 #include <array>
-#include <cassert>
 #include <string>
 
-//! @brief Format as a string.
-#define COMMON_FORMAT_TO_STRING(format, args...)                              \
-    (                                                                         \
-        {                                                                     \
-            const int bufferSize = std::snprintf(nullptr, 0, format, ##args); \
-            assert(bufferSize >= 0);                                          \
-            char buffer[bufferSize + 1];                                      \
-            buffer[0] = '\0';                                                 \
-            std::snprintf(buffer, bufferSize + 1, format, ##args);            \
-            const std::string str(buffer);                                    \
-            str;                                                              \
-        })
 //! @brief Format as a string and printing.
-#define COMMON_PRINT(format, args...) std::cout << COMMON_FORMAT_TO_STRING(format, ##args) << std::flush
+#define COMMON_PRINT(format, args...) std::cout << utility::common::formatString(format, ##args) << std::flush
 
 //! @brief Common-interface-related functions in the utility module.
 namespace utility::common
@@ -103,5 +90,6 @@ template <std::string_view const&... Strings>
 static constexpr auto joinStr = Join<Strings...>::value;
 
 extern std::size_t bkdrHash(const char* str);
+extern std::string formatString(const char* const format, ...);
 extern std::string executeCommand(const std::string& cmd, const std::uint32_t timeout = 0);
 } // namespace utility::common

@@ -31,8 +31,7 @@ std::string getCurrentSystemTime()
         tm.tm_sec,
         microseconds.count(),
         tm.tm_zone);
-    std::string dateStr(date);
 
-    return dateStr;
+    return std::string{date};
 }
 } // namespace utility::time
