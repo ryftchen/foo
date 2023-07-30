@@ -136,7 +136,8 @@ void runArithmeticTasks(const std::vector<std::string>& targets)
         static_cast<std::uint32_t>(Bottom<ArithmeticMethod>::value)));
 
     const auto builder = std::make_shared<TargetBuilder>(input::integerForArithmetic1, input::integerForArithmetic2);
-    const auto arithmeticFunctor = [&](const std::string& threadName, void (*methodPtr)(const int, const int))
+    const auto arithmeticFunctor =
+        [threads, builder](const std::string& threadName, void (*methodPtr)(const int, const int))
     {
         threads->enqueue(
             threadName, methodPtr, std::get<0>(builder->getIntegers()), std::get<1>(builder->getIntegers()));
@@ -268,7 +269,7 @@ void runDivisorTasks(const std::vector<std::string>& targets)
         static_cast<std::uint32_t>(Bottom<DivisorMethod>::value)));
 
     const auto builder = std::make_shared<TargetBuilder>(input::integerForDivisor1, input::integerForDivisor2);
-    const auto divisorFunctor = [&](const std::string& threadName, void (*methodPtr)(int, int))
+    const auto divisorFunctor = [threads, builder](const std::string& threadName, void (*methodPtr)(int, int))
     {
         threads->enqueue(
             threadName, methodPtr, std::get<0>(builder->getIntegers()), std::get<1>(builder->getIntegers()));
@@ -432,7 +433,8 @@ void runIntegralTasks(const std::vector<std::string>& targets)
         auto* threads = command::getPublicThreadPool().newElement(std::min(
             static_cast<std::uint32_t>(getBit<IntegralMethod>().count()),
             static_cast<std::uint32_t>(Bottom<IntegralMethod>::value)));
-        const auto integralFunctor = [&](const std::string& threadName,
+        const auto integralFunctor = [threads, &expression, range](
+                                         const std::string& threadName,
                                          void (*methodPtr)(const integral::Expression&, const double, const double))
         {
             threads->enqueue(threadName, methodPtr, std::ref(expression), range.range1, range.range2);
@@ -592,7 +594,7 @@ void runPrimeTasks(const std::vector<std::string>& targets)
         static_cast<std::uint32_t>(Bottom<PrimeMethod>::value)));
 
     const auto builder = std::make_shared<TargetBuilder>(input::maxPositiveIntegerForPrime);
-    const auto primeFunctor = [&](const std::string& threadName, void (*methodPtr)(const std::uint32_t))
+    const auto primeFunctor = [threads, builder](const std::string& threadName, void (*methodPtr)(const std::uint32_t))
     {
         threads->enqueue(threadName, methodPtr, builder->getMaxPositiveInteger());
     };

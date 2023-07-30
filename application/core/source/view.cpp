@@ -164,7 +164,7 @@ View& View::getInstance()
 void View::runViewer()
 {
     State expectedState = State::init;
-    const auto checkIfExceptedFSMState = [&](const State state)
+    const auto checkIfExceptedFSMState = [this, &expectedState](const State state)
     {
         expectedState = state;
         if (currentState() != expectedState)
@@ -215,7 +215,7 @@ void View::waitToStart()
     utility::time::BlockingTimer expiryTimer;
     std::uint16_t waitCount = 0;
     expiryTimer.set(
-        [&]()
+        [this, &expiryTimer, &waitCount]()
         {
             if (State::work == currentState())
             {
@@ -253,7 +253,7 @@ void View::waitToStop()
     utility::time::BlockingTimer expiryTimer;
     std::uint16_t waitCount = 0;
     expiryTimer.set(
-        [&]()
+        [this, &expiryTimer, &waitCount]()
         {
             if (State::done == currentState())
             {

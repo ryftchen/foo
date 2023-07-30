@@ -220,7 +220,7 @@ void runBehavioralTasks(const std::vector<std::string>& targets)
         static_cast<std::uint32_t>(getBit<BehavioralInstance>().count()),
         static_cast<std::uint32_t>(Bottom<BehavioralInstance>::value)));
 
-    const auto behavioralFunctor = [&](const std::string& threadName, void (*instancePtr)())
+    const auto behavioralFunctor = [threads](const std::string& threadName, void (*instancePtr)())
     {
         threads->enqueue(threadName, instancePtr);
     };
@@ -415,7 +415,7 @@ void runCreationalTasks(const std::vector<std::string>& targets)
         static_cast<std::uint32_t>(getBit<CreationalInstance>().count()),
         static_cast<std::uint32_t>(Bottom<CreationalInstance>::value)));
 
-    const auto creationalFunctor = [&](const std::string& threadName, void (*instancePtr)())
+    const auto creationalFunctor = [threads](const std::string& threadName, void (*instancePtr)())
     {
         threads->enqueue(threadName, instancePtr);
     };
@@ -600,7 +600,7 @@ void runStructuralTasks(const std::vector<std::string>& targets)
         static_cast<std::uint32_t>(getBit<StructuralInstance>().count()),
         static_cast<std::uint32_t>(Bottom<StructuralInstance>::value)));
 
-    const auto structuralFunctor = [&](const std::string& threadName, void (*instancePtr)())
+    const auto structuralFunctor = [threads](const std::string& threadName, void (*instancePtr)())
     {
         threads->enqueue(threadName, instancePtr);
     };

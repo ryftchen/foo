@@ -350,7 +350,7 @@ void Command::showConsoleOutput() const
 
     UDPSocket udpClient;
     udpClient.onRawMessageReceived =
-        [&](char* buffer, const int length, const std::string& /*ip*/, const std::uint16_t /*port*/)
+        [&udpClient](char* buffer, const int length, const std::string& /*ip*/, const std::uint16_t /*port*/)
     {
         try
         {
@@ -572,7 +572,7 @@ void Command::enterConsoleMode() const
         using view::View;
 
         TCPSocket tcpClient;
-        tcpClient.onRawMessageReceived = [&](char* buffer, const int length)
+        tcpClient.onRawMessageReceived = [&tcpClient](char* buffer, const int length)
         {
             try
             {
