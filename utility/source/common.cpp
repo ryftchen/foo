@@ -5,6 +5,7 @@
 //! @copyright Copyright (c) 2022-2023 ryftchen. All rights reserved.
 
 #include "common.hpp"
+#include <cassert>
 #include <chrono>
 #include <stdexcept>
 #include <vector>
@@ -22,6 +23,28 @@ std::size_t bkdrHash(const char* str)
         hash = hash * bkdrHashSeed + (*str++);
     }
     return (hash & bkdrHashSize);
+}
+
+//! @brief Format as a string.
+//! @param format - null-terminated multibyte string specifying how to interpret the data
+//! @param ... - arguments
+//! @return string after formatting
+std::string formatString(const char* const format, ...)
+{
+    ::va_list list;
+    ::va_start(list, format);
+    int bufferSize = std::vsnprintf(nullptr, 0, format, list);
+    va_end(list);
+    assert(bufferSize >= 0);
+    ++bufferSize;
+
+    ::va_start(list, format);
+    char buffer[bufferSize + 1];
+    buffer[0] = '\0';
+    std::vsnprintf(buffer, bufferSize + 1, format, list);
+    ::va_end(list);
+
+    return std::string{buffer};
 }
 
 //! @brief Execute the command line.

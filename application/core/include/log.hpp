@@ -277,11 +277,8 @@ void Log::flush(
     const auto outputFormatter = [&](const std::string_view& prefix)
     {
         std::string output = std::string{prefix} + ":[" + utility::time::getCurrentSystemTime() + "]:["
-            + codeFile.substr(codeFile.find('/') + 1, codeFile.length()) + '#' + std::to_string(codeLine) + "]: ";
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wformat-security"
-        output.append(COMMON_FORMAT_TO_STRING(format, std::forward<Args>(args)...));
-#pragma GCC diagnostic pop
+            + codeFile.substr(codeFile.find('/') + 1, codeFile.length()) + '#' + std::to_string(codeLine)
+            + "]: " + utility::common::formatString(format, std::forward<Args>(args)...);
         return output;
     };
 
