@@ -189,10 +189,10 @@ protected:
 extern AlgorithmTask& getTask();
 
 //! @brief Get the bit flags of the method in algorithm tasks.
-//! @tparam T - type of the method
-//! @return bit flags of the method
+//! @tparam T - type of method
+//! @return reference of the method bit flags
 template <typename T>
-auto getBit()
+auto& getBit()
 {
     if constexpr (std::is_same_v<T, AlgorithmTask::MatchMethod>)
     {
@@ -217,7 +217,7 @@ auto getBit()
 }
 
 //! @brief Set the bit flags of the method in algorithm tasks
-//! @tparam T - type of the method
+//! @tparam T - type of method
 //! @param index - method index
 template <typename T>
 void setBit(const int index)
