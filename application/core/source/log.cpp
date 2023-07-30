@@ -5,6 +5,7 @@
 //! @copyright Copyright (c) 2022-2023 ryftchen. All rights reserved.
 
 #include "log.hpp"
+#include "file.hpp"
 #ifndef __PRECOMPILED_HEADER
 #include <regex>
 #else
@@ -60,7 +61,6 @@ void Log::runLogger()
         processEvent(GoLogging());
 
         checkIfExceptedFSMState(State::work);
-        namespace file = utility::file;
         while (isLogging.load())
         {
             std::unique_lock<std::mutex> lock(mtx);
@@ -71,8 +71,7 @@ void Log::runLogger()
                     return (!isLogging.load() || !logQueue.empty());
                 });
 
-            file::ReadWriteGuard guard(file::LockMode::write, fileLock);
-            file::fdLock(ofs, file::LockMode::write);
+            utility::file::ReadWriteGuard guard(utility::file::LockMode::write, fileLock);
             while (!logQueue.empty())
             {
                 switch (actTarget)
@@ -92,7 +91,6 @@ void Log::runLogger()
                 }
                 logQueue.pop();
             }
-            file::fdUnlock(ofs);
         }
 
         processEvent(CloseFile());
@@ -188,17 +186,19 @@ void Log::openLogFile()
             logFolderPath, std::filesystem::perms::owner_all, std::filesystem::perm_options::add);
     }
 
+    namespace file = utility::file;
     switch (writeType)
     {
         case OutputType::add:
-            ofs = utility::file::openFile(filePath, false);
+            ofs = file::openFile(filePath, false);
             break;
         case OutputType::over:
-            ofs = utility::file::openFile(filePath, true);
+            ofs = file::openFile(filePath, true);
             break;
         default:
             break;
     }
+    file::fdLock(ofs, file::LockMode::write);
 };
 
 void Log::startLogging()
@@ -209,7 +209,10 @@ void Log::startLogging()
 
 void Log::closeLogFile()
 {
-    utility::file::closeFile(ofs);
+    namespace file = utility::file;
+
+    file::fdUnlock(ofs);
+    file::closeFile(ofs);
     if (std::filesystem::exists(filePath) && (std::filesystem::file_size(filePath) == 0))
     {
         std::filesystem::remove_all(std::filesystem::absolute(filePath).parent_path());
