@@ -122,6 +122,7 @@ jobs:
 
       - name: Check
         run: |
+          ./script/build.sh --cleanup
           ./script/run.py --check cov mem --build rls
           cat ./temporary/foo_run.report
 
