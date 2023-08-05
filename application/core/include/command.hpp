@@ -49,7 +49,7 @@ private:
     //! @brief Flag to indicate whether parsing of arguments is completed.
     std::atomic<bool> isParsed{false};
     //! @brief Parse arguments helper.
-    utility::argument::Argument program{utility::argument::Argument("foo", "1.0")};
+    utility::argument::Argument cliHelper{utility::argument::Argument("foo", "1.0")};
     //! @brief Copyright information.
     static constexpr std::string_view copyrightInfo{"Copyright (c) 2022-2023 ryftchen"};
 
@@ -61,8 +61,8 @@ private:
     void backgroundHandler();
     //! @brief Pre-check the basic task.
     void validateBasicTask();
-    //! @brief Pre-check the general task.
-    void validateGeneralTask();
+    //! @brief Pre-check the regular task.
+    void validateRegularTask();
     //! @brief Check whether any tasks exist.
     //! @return any tasks exist or do not exist
     bool hasAnyTask() const;
@@ -88,7 +88,7 @@ private:
     //! @brief Alias for the map of TaskType and TaskTypeTuple.
     using TaskCategoryMap = std::map<TaskType, TaskTypeTuple>;
     //! @brief Alias for the map of TaskCategory and TaskCategoryMap.
-    using GeneralTaskMap = std::map<TaskCategory, TaskCategoryMap>;
+    using RegularTaskMap = std::map<TaskCategory, TaskCategoryMap>;
 
     //! @brief Get category completion for verification.
     //! @param category - expected category
@@ -120,8 +120,8 @@ private:
         { "version"    , &Command::showVersionIcon   },
         // ------------+------------------------------
     };
-    //! @brief Mapping table of all general tasks.
-    const GeneralTaskMap generalTaskDispatcher{
+    //! @brief Mapping table of all regular tasks.
+    const RegularTaskMap regularTaskDispatcher{
         // --- Category ---+----- Type -----+----------------- Task -----------------+----------- Run Tasks -----------+----------- Update Task -----------
         // ----------------+----------------+----------------------------------------+---------------------------------+-----------------------------------
         { "algorithm"      , {{ "match"      , {{ "rab", "knu", "boy", "hor", "sun" } , { &app_algo::runMatchTasks     , &app_algo::updateMatchTask     }}},
@@ -180,8 +180,8 @@ private:
         inline void reset() { primaryBit.reset(); }
     };
 
-    //! @brief Manage general tasks.
-    class GeneralTask
+    //! @brief Manage regular tasks.
+    class RegularTask
     {
     public:
         //! @brief Represent the maximum value of an enum.
@@ -189,7 +189,7 @@ private:
         template <class T>
         struct Bottom;
 
-        //! @brief Enumerate specific general tasks.
+        //! @brief Enumerate specific regular tasks.
         enum Category : std::uint8_t
         {
             algorithm,
@@ -205,15 +205,15 @@ private:
             static constexpr std::uint8_t value{4};
         };
 
-        //! @brief Check whether any general tasks do not exist.
-        //! @return any general tasks do not exist or exist
+        //! @brief Check whether any regular tasks do not exist.
+        //! @return any regular tasks do not exist or exist
         [[nodiscard]] static inline bool empty()
         {
             return (
                 app_algo::getTask().empty() && app_ds::getTask().empty() && app_dp::getTask().empty()
                 && app_num::getTask().empty());
         }
-        //! @brief Reset bit flags that manage general tasks.
+        //! @brief Reset bit flags that manage regular tasks.
         static inline void reset()
         {
             app_algo::getTask().reset();
@@ -226,22 +226,19 @@ private:
     //! @brief Manage all types of tasks.
     struct DispatchedTask
     {
-        //! @brief Construct a new DispatchedTask object.
-        DispatchedTask() = default;
-
         //! @brief Dispatch basic type tasks.
         BasicTask basicTask;
-        //! @brief Dispatch general type tasks.
-        GeneralTask generalTask;
+        //! @brief Dispatch regular type tasks.
+        RegularTask regularTask;
 
         //! @brief Check whether any tasks do not exist.
         //! @return any tasks do not exist or exist
-        [[nodiscard]] bool inline empty() const { return (basicTask.empty() && generalTask.empty()); }
+        [[nodiscard]] bool inline empty() const { return (basicTask.empty() && regularTask.empty()); }
         //! @brief Reset bit flags that manage all tasks.
         inline void reset()
         {
             basicTask.reset();
-            generalTask.reset();
+            regularTask.reset();
         };
     } /** @brief Dispatch all types of tasks. */ dispatchedTask{};
 

@@ -19,6 +19,9 @@
 //! @brief Numeric-testing-related functions in the test module.
 namespace test::tst_num
 {
+//! @brief Alias for the namespace of numeric-applying-related functions.
+namespace app_num = application::app_num;
+
 //! @brief Test base of arithmetic.
 class ArithmeticTestBase : public ::testing::Test
 {
@@ -32,8 +35,8 @@ public:
     static void SetUpTestCase()
     {
         TST_NUM_PRINT_TASK_TITLE("ARITHMETIC", "BEGIN");
-        builder = std::make_shared<application::app_num::arithmetic::TargetBuilder>(
-            application::app_num::input::integerForArithmetic1, application::app_num::input::integerForArithmetic2);
+        builder = std::make_shared<app_num::arithmetic::TargetBuilder>(
+            app_num::input::integerForArithmetic1, app_num::input::integerForArithmetic2);
     };
     //! @brief Tear down the test case.
     static void TearDownTestCase()
@@ -47,10 +50,10 @@ public:
     void TearDown() override{};
 
     //! @brief Target builder.
-    static std::shared_ptr<application::app_num::arithmetic::TargetBuilder> builder;
+    static std::shared_ptr<app_num::arithmetic::TargetBuilder> builder;
 };
 
-std::shared_ptr<application::app_num::arithmetic::TargetBuilder> ArithmeticTestBase::builder = nullptr;
+std::shared_ptr<app_num::arithmetic::TargetBuilder> ArithmeticTestBase::builder = nullptr;
 
 //! @brief Test for the addition method in the solution of arithmetic.
 TEST_F(ArithmeticTestBase, additionMethod) // NOLINT(cert-err58-cpp)
@@ -101,8 +104,8 @@ public:
     static void SetUpTestCase()
     {
         TST_NUM_PRINT_TASK_TITLE("DIVISOR", "BEGIN");
-        builder = std::make_shared<application::app_num::divisor::TargetBuilder>(
-            application::app_num::input::integerForDivisor1, application::app_num::input::integerForDivisor2);
+        builder = std::make_shared<app_num::divisor::TargetBuilder>(
+            app_num::input::integerForDivisor1, app_num::input::integerForDivisor2);
     };
     //! @brief Tear down the test case.
     static void TearDownTestCase()
@@ -116,12 +119,12 @@ public:
     void TearDown() override{};
 
     //! @brief Target builder.
-    static std::shared_ptr<application::app_num::divisor::TargetBuilder> builder;
+    static std::shared_ptr<app_num::divisor::TargetBuilder> builder;
     //! @brief Expected result.
     const std::vector<int> divisorContainer{1, 2, 3, 5, 6, 7, 10, 14, 15, 21, 30, 35, 42, 70, 105, 210};
 };
 
-std::shared_ptr<application::app_num::divisor::TargetBuilder> DivisorTestBase::builder = nullptr;
+std::shared_ptr<app_num::divisor::TargetBuilder> DivisorTestBase::builder = nullptr;
 
 //! @brief Test for the Euclidean method in the solution of divisor.
 TEST_F(DivisorTestBase, euclideanMethod) // NOLINT(cert-err58-cpp)
@@ -158,7 +161,7 @@ public:
     void TearDown() override{};
 
     //! @brief Expression example 1 object.
-    const application::app_num::input::Expression1 expression1{};
+    const app_num::input::Expression1 expression1{};
     //! @brief Allowable error.
     static constexpr double error{1e-1};
 };
@@ -240,8 +243,7 @@ public:
     static void SetUpTestCase()
     {
         TST_NUM_PRINT_TASK_TITLE("PRIME", "BEGIN");
-        builder = std::make_shared<application::app_num::prime::TargetBuilder>(
-            application::app_num::input::maxPositiveIntegerForPrime);
+        builder = std::make_shared<app_num::prime::TargetBuilder>(app_num::input::maxPositiveIntegerForPrime);
     };
     //! @brief Tear down the test case.
     static void TearDownTestCase()
@@ -255,7 +257,7 @@ public:
     void TearDown() override{};
 
     //! @brief Target builder.
-    static std::shared_ptr<application::app_num::prime::TargetBuilder> builder;
+    static std::shared_ptr<app_num::prime::TargetBuilder> builder;
     //! @brief Expected result.
     const std::vector<std::uint32_t> primeContainer{
         2,   3,   5,   7,   11,  13,  17,  19,  23,  29,  31,  37,  41,  43,  47,  53,  59,  61,  67,  71,  73,
@@ -268,7 +270,7 @@ public:
         857, 859, 863, 877, 881, 883, 887, 907, 911, 919, 929, 937, 941, 947, 953, 967, 971, 977, 983, 991, 997};
 };
 
-std::shared_ptr<application::app_num::prime::TargetBuilder> PrimeTestBase::builder = nullptr;
+std::shared_ptr<app_num::prime::TargetBuilder> PrimeTestBase::builder = nullptr;
 
 //! @brief Test for the Eratosthenes method in the solution of prime.
 TEST_F(PrimeTestBase, eratosthenesMethod) // NOLINT(cert-err58-cpp)

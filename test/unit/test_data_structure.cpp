@@ -18,6 +18,9 @@
 //! @brief Data-structure-testing-related functions in the test module.
 namespace test::tst_ds
 {
+//! @brief Alias for the namespace of data-structure-applying-related functions.
+namespace app_ds = application::app_ds;
+
 //! @brief Test base of linear.
 class LinearTestBase : public ::testing::Test
 {
@@ -41,21 +44,21 @@ public:
 TEST_F(LinearTestBase, linkedListInstance) // NOLINT(cert-err58-cpp)
 {
     // NOLINTNEXTLINE(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
-    ASSERT_NO_THROW(application::app_ds::linear::Linear::linkedList());
+    ASSERT_NO_THROW(app_ds::linear::Linear::linkedList());
 }
 
 //! @brief Test for the stack instance in the structure of linear.
 TEST_F(LinearTestBase, stackInstance) // NOLINT(cert-err58-cpp)
 {
     // NOLINTNEXTLINE(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
-    ASSERT_NO_THROW(application::app_ds::linear::Linear::stack());
+    ASSERT_NO_THROW(app_ds::linear::Linear::stack());
 }
 
 //! @brief Test for the queue instance in the structure of linear.
 TEST_F(LinearTestBase, queueInstance) // NOLINT(cert-err58-cpp)
 {
     // NOLINTNEXTLINE(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
-    ASSERT_NO_THROW(application::app_ds::linear::Linear::queue());
+    ASSERT_NO_THROW(app_ds::linear::Linear::queue());
 }
 
 //! @brief Test base of tree.
@@ -81,20 +84,20 @@ public:
 TEST_F(TreeTestBase, bsInstance) // NOLINT(cert-err58-cpp)
 {
     // NOLINTNEXTLINE(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
-    ASSERT_NO_THROW(application::app_ds::tree::Tree::bs());
+    ASSERT_NO_THROW(app_ds::tree::Tree::bs());
 }
 
 //! @brief Test for the Adelson-Velsky-Landis instance in the structure of tree.
 TEST_F(TreeTestBase, avlInstance) // NOLINT(cert-err58-cpp)
 {
     // NOLINTNEXTLINE(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
-    ASSERT_NO_THROW(application::app_ds::tree::Tree::avl());
+    ASSERT_NO_THROW(app_ds::tree::Tree::avl());
 }
 
 //! @brief Test for the splay instance in the structure of tree.
 TEST_F(TreeTestBase, splayInstance) // NOLINT(cert-err58-cpp)
 {
     // NOLINTNEXTLINE(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
-    ASSERT_NO_THROW(application::app_ds::tree::Tree::splay());
+    ASSERT_NO_THROW(app_ds::tree::Tree::splay());
 }
 } // namespace test::tst_ds

@@ -34,7 +34,7 @@ std::string formatString(const char* const format, ...)
     ::va_list list;
     ::va_start(list, format);
     int bufferSize = std::vsnprintf(nullptr, 0, format, list);
-    va_end(list);
+    ::va_end(list);
     assert(bufferSize >= 0);
     ++bufferSize;
 

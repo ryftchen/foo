@@ -30,7 +30,7 @@ class Task:
         "--help": "",
         "--version": "",
     }
-    general_task_dict = {
+    regular_task_dict = {
         "--algorithm": {
             "match": ["rab", "knu", "boy", "hor", "sun"],
             "notation": ["pre", "pos"],
@@ -60,7 +60,7 @@ class Task:
     def __init__(self):
         self.basic_task_dict["--help"] = [
             f"{task_category} {task_type}"
-            for task_category, task_category_map in self.general_task_dict.items()
+            for task_category, task_category_map in self.regular_task_dict.items()
             for task_type in task_category_map
         ]
         self.pass_steps = 0
@@ -68,7 +68,7 @@ class Task:
         self.total_steps = 1 + len(self.basic_task_dict.keys())
         for task_category_list in self.basic_task_dict.values():
             self.total_steps += len(task_category_list)
-        for task_category_map in self.general_task_dict.values():
+        for task_category_map in self.regular_task_dict.values():
             self.total_steps += len(task_category_map.keys())
             for target_task_list in task_category_map.values():
                 self.total_steps += len(target_task_list) + 1
@@ -240,7 +240,7 @@ class Task:
             for option in task_category_list:
                 self.task_queue.put(f"{self.app_bin_cmd} {task_category} {option}")
 
-        for task_category, task_category_map in self.general_task_dict.items():
+        for task_category, task_category_map in self.regular_task_dict.items():
             for task_type, target_task_list in task_category_map.items():
                 self.task_queue.put(f"{self.app_bin_cmd} {task_category} {task_type}")
                 for target in target_task_list:

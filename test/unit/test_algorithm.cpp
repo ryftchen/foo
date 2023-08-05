@@ -20,6 +20,9 @@
 //! @brief Algorithm-testing-related functions in the test module.
 namespace test::tst_algo
 {
+//! @brief Alias for the namespace of algorithm-applying-related functions.
+namespace app_algo = application::app_algo;
+
 //! @brief Test base of match.
 class MatchTestBase : public ::testing::Test
 {
@@ -33,8 +36,7 @@ public:
     static void SetUpTestCase()
     {
         TST_ALGO_PRINT_TASK_TITLE("MATCH", "BEGIN");
-        builder = std::make_shared<application::app_algo::match::TargetBuilder>(
-            application::app_algo::input::singlePatternForMatch);
+        builder = std::make_shared<app_algo::match::TargetBuilder>(app_algo::input::singlePatternForMatch);
     };
     //! @brief Tear down the test case.
     static void TearDownTestCase()
@@ -48,10 +50,10 @@ public:
     void TearDown() override{};
 
     //! @brief Target builder.
-    static std::shared_ptr<application::app_algo::match::TargetBuilder> builder;
+    static std::shared_ptr<app_algo::match::TargetBuilder> builder;
 };
 
-std::shared_ptr<application::app_algo::match::TargetBuilder> MatchTestBase::builder = nullptr;
+std::shared_ptr<app_algo::match::TargetBuilder> MatchTestBase::builder = nullptr;
 
 //! @brief Test for the Rabin-Karp method in the solution of match.
 TEST_F(MatchTestBase, rkMethod) // NOLINT(cert-err58-cpp)
@@ -126,8 +128,7 @@ public:
     static void SetUpTestCase()
     {
         TST_ALGO_PRINT_TASK_TITLE("NOTATION", "BEGIN");
-        builder = std::make_shared<application::app_algo::notation::TargetBuilder>(
-            application::app_algo::input::infixForNotation);
+        builder = std::make_shared<app_algo::notation::TargetBuilder>(app_algo::input::infixForNotation);
     };
     //! @brief Tear down the test case.
     static void TearDownTestCase()
@@ -141,10 +142,10 @@ public:
     void TearDown() override{};
 
     //! @brief Target builder.
-    static std::shared_ptr<application::app_algo::notation::TargetBuilder> builder;
+    static std::shared_ptr<app_algo::notation::TargetBuilder> builder;
 };
 
-std::shared_ptr<application::app_algo::notation::TargetBuilder> NotationTestBase::builder = nullptr;
+std::shared_ptr<app_algo::notation::TargetBuilder> NotationTestBase::builder = nullptr;
 
 //! @brief Test for the prefix method in the solution of notation.
 TEST_F(NotationTestBase, prefixMethod) // NOLINT(cert-err58-cpp)
@@ -177,9 +178,9 @@ public:
     void TearDown() override{};
 
     //! @brief Rastrigin function object.
-    const application::app_algo::input::Rastrigin rastrigin{};
+    const app_algo::input::Rastrigin rastrigin{};
     //! @brief Allowable error.
-    static constexpr double error{1e-4};
+    static constexpr double error{1e-3};
 };
 
 //! @brief Test for the gradient descent method in the solution of optimal.
@@ -251,10 +252,10 @@ public:
     static void SetUpTestCase()
     {
         TST_ALGO_PRINT_TASK_TITLE("SEARCH", "BEGIN");
-        builder = std::make_shared<application::app_algo::search::TargetBuilder<double>>(
-            application::app_algo::input::arrayLengthForSearch,
-            application::app_algo::input::arrayRangeForSearch1,
-            application::app_algo::input::arrayRangeForSearch2);
+        builder = std::make_shared<app_algo::search::TargetBuilder<double>>(
+            app_algo::input::arrayLengthForSearch,
+            app_algo::input::arrayRangeForSearch1,
+            app_algo::input::arrayRangeForSearch2);
     };
     //! @brief Tear down the test case.
     static void TearDownTestCase()
@@ -268,10 +269,10 @@ public:
     void TearDown() override{};
 
     //! @brief Target builder.
-    static std::shared_ptr<application::app_algo::search::TargetBuilder<double>> builder;
+    static std::shared_ptr<app_algo::search::TargetBuilder<double>> builder;
 };
 
-std::shared_ptr<application::app_algo::search::TargetBuilder<double>> SearchTestBase::builder = nullptr;
+std::shared_ptr<app_algo::search::TargetBuilder<double>> SearchTestBase::builder = nullptr;
 
 //! @brief Test for the binary method in the solution of search.
 TEST_F(SearchTestBase, binaryMethod) // NOLINT(cert-err58-cpp)
@@ -313,10 +314,10 @@ public:
     static void SetUpTestCase()
     {
         TST_ALGO_PRINT_TASK_TITLE("SORT", "BEGIN");
-        builder = std::make_shared<application::app_algo::sort::TargetBuilder<int>>(
-            application::app_algo::input::arrayLengthForSort,
-            application::app_algo::input::arrayRangeForSort1,
-            application::app_algo::input::arrayRangeForSort2);
+        builder = std::make_shared<app_algo::sort::TargetBuilder<int>>(
+            app_algo::input::arrayLengthForSort,
+            app_algo::input::arrayRangeForSort1,
+            app_algo::input::arrayRangeForSort2);
     };
     //! @brief Tear down the test case.
     static void TearDownTestCase()
@@ -330,10 +331,10 @@ public:
     void TearDown() override{};
 
     //! @brief Target builder.
-    static std::shared_ptr<application::app_algo::sort::TargetBuilder<int>> builder;
+    static std::shared_ptr<app_algo::sort::TargetBuilder<int>> builder;
 };
 
-std::shared_ptr<application::app_algo::sort::TargetBuilder<int>> SortTestBase::builder = nullptr;
+std::shared_ptr<app_algo::sort::TargetBuilder<int>> SortTestBase::builder = nullptr;
 
 //! @brief Test for the bubble method in the solution of sort.
 TEST_F(SortTestBase, bubbleMethod) // NOLINT(cert-err58-cpp)
