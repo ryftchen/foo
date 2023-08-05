@@ -9,7 +9,7 @@ RUN apt-get update \
 llvm-12 clang-12 lld-12 libclang-12-dev libstdc++-10-dev libgtest-dev libreadline-dev libmpfrc++-dev \
 clang-format-12 clang-tidy-12 valgrind cloc graphviz docker-compose \
 && sudo apt-get clean \
-&& sudo pip3 install --no-cache-dir -v requests pylint==2.15.5 black==22.10.0 pre-commit compdb ValgrindCI \
+&& sudo pip3 install --no-cache-dir -v pylint==2.15.5 black==22.10.0 pre-commit compdb ValgrindCI \
 && cd /root \
 && curl -L https://github.com/koalaman/shellcheck/releases/download/v0.8.0/shellcheck-v0.8.0.linux.x86_64.tar.xz >shellcheck-v0.8.0.linux.x86_64.tar.xz \
 && tar -xvf ./shellcheck-v0.8.0.linux.x86_64.tar.xz \
