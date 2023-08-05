@@ -36,35 +36,32 @@ public:
     //! @brief Alias for the container of arguments.
     using Args = std::vector<std::string>;
     //! @brief Alias for the functor of command.
-    using CommandFunctor = std::function<int(const Args&)>;
+    using CmdFunctor = std::function<int(const Args&)>;
     //! @brief Register console command.
     //! @param command - command to be registered
     //! @param func - callable function
     //! @param help - help message
-    void registerCommand(const std::string& command, CommandFunctor func, const std::string& help);
-    //! @brief Get help messages from all registered commands.
-    //! @return all help messages
-    [[nodiscard]] std::vector<std::pair<std::string, std::string>> getHelpOfRegisteredCommands() const;
+    void registerCmd(const std::string& command, CmdFunctor func, const std::string& help);
     //! @brief Set greeting information.
     //! @param greeting - greeting information
-    void setGreeting(const std::string& greeting);
+    inline void setGreeting(const std::string& greeting);
     //! @brief Get greeting information.
     //! @return greeting information
-    [[nodiscard]] std::string getGreeting() const;
+    [[nodiscard]] inline std::string getGreeting() const;
     //! @brief Execute the target console command.
     //! @param command - command to be executed
-    //! @return value of ReturnCode
-    int commandExecutor(const std::string& command);
+    //! @return value of RetCode
+    int cmdExecutor(const std::string& command);
     //! @brief Execute all console commands in the target file.
     //! @param filename - file to be executed
-    //! @return value of ReturnCode
+    //! @return value of RetCode
     int fileExecutor(const std::string& filename);
     //! @brief Read console command line.
-    //! @return value of ReturnCode
-    int readCommandLine();
+    //! @return value of RetCode
+    int readCmdLine();
 
     //! @brief Enumerate specific return code.
-    enum ReturnCode : int
+    enum RetCode : int
     {
         quit = -1,
         success = 0,
@@ -72,17 +69,26 @@ public:
     };
 
 private:
+    //! @brief Alias for the command name.
+    using Cmd = std::string;
+    //! @brief Alias for the help message.
+    using Help = std::string;
+    //! @brief Alias for help messages of all registered commands.
+    using CmdsHelp = std::vector<std::pair<Cmd, Help>>;
+    //! @brief Get help messages for all registered commands.
+    //! @return all help messages
+    [[nodiscard]] CmdsHelp getHelpOfRegisteredCmds() const;
+
     //! @brief Alias for the history state.
     using HistoryState = ::HISTORY_STATE;
     //! @brief Saved empty history state.
     HistoryState* emptyHistory = ::history_get_history_state();
-
     //! @brief Implementation of running console.
     struct Impl
     {
         //! @brief Construct a new Impl object.
         //! @param greeting - default greeting information
-        explicit Impl(const std::string& greeting) : greeting(greeting), RegCmds() {}
+        explicit Impl(const std::string& greeting) : greeting(greeting), regCmds() {}
         //! @brief Destroy the Impl object.
         ~Impl() { delete history; }
         //! @brief Construct a new Impl object.
@@ -99,9 +105,9 @@ private:
         //! @brief Greeting information.
         std::string greeting;
         //! @brief Alias for the map of command and function in console.
-        using RegisteredCommands = std::unordered_map<std::string, std::pair<CommandFunctor, std::string>>;
+        using RegisteredCmds = std::unordered_map<Cmd, std::pair<CmdFunctor, Help>>;
         //! @brief Mapping table of all registered commands.
-        RegisteredCommands RegCmds;
+        RegisteredCmds regCmds;
         //! @brief Saved history state.
         HistoryState* history{nullptr};
     };
@@ -114,12 +120,22 @@ private:
     void reserveConsole();
 
     //! @brief Alias for the functor of command completer.
-    using CommandCompleterFunctor = char**(const char* text, int start, int end);
+    using CmdCompleterFunctor = char**(const char* text, int start, int end);
     //! @brief Alias for the functor of command iterator.
-    using CommandIteratorFunctor = char*(const char* text, int state);
+    using CmdIteratorFunctor = char*(const char* text, int state);
     //! @brief Get the command completer. Wrap the interface.
-    static CommandCompleterFunctor getCommandCompleter;
+    static CmdCompleterFunctor getCmdCompleter;
     //! @brief Get the command iterator.
-    static CommandIteratorFunctor getCommandIterator;
+    static CmdIteratorFunctor getCmdIterator;
 };
+
+inline void Console::setGreeting(const std::string& greeting)
+{
+    impl->greeting = greeting;
+}
+
+inline std::string Console::getGreeting() const
+{
+    return impl->greeting;
+}
 } // namespace utility::console

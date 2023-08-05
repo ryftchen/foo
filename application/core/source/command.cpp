@@ -372,7 +372,7 @@ void Command::showConsoleOutput() const
     registerOnConsole<UDPSocket>(console, udpClient);
     for (const auto& command : commands)
     {
-        console.commandExecutor(command);
+        console.cmdExecutor(command);
     }
 
     udpClient.toSend("stop");
@@ -599,13 +599,13 @@ void Command::enterConsoleMode() const
         Console console(greeting);
         registerOnConsole<TCPSocket>(console, tcpClient);
 
-        int retVal = Console::ReturnCode::success;
+        int retVal = Console::RetCode::success;
         do
         {
-            retVal = console.readCommandLine();
+            retVal = console.readCmdLine();
             console.setGreeting(greeting);
         }
-        while (Console::ReturnCode::quit != retVal);
+        while (Console::RetCode::quit != retVal);
 
         tcpClient.toSend("stop");
         tcpClient.waitIfAlive();
@@ -626,11 +626,11 @@ void Command::registerOnConsole(utility::console::Console& console, T& client) c
     {
         const auto& cmd = option;
         const auto& help = View::get<View::HelpMessage>(optionTuple);
-        console.registerCommand(
+        console.registerCmd(
             cmd,
             [cmd, &client](const Console::Args& /*input*/)
             {
-                int retVal = Console::ReturnCode::success;
+                int retVal = Console::RetCode::success;
                 try
                 {
                     client.toSend(cmd);
@@ -638,7 +638,7 @@ void Command::registerOnConsole(utility::console::Console& console, T& client) c
                 }
                 catch (const std::exception& error)
                 {
-                    retVal = Console::ReturnCode::error;
+                    retVal = Console::RetCode::error;
                     LOG_WRN(error.what());
                 }
                 return retVal;

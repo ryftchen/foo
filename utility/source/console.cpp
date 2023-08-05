@@ -18,12 +18,12 @@ static Console* currentConsole = nullptr;
 
 Console::Console(const std::string& greeting) : impl(std::make_unique<Impl>(greeting))
 {
-    rl_attempted_completion_function = &Console::getCommandCompleter;
+    ::rl_attempted_completion_function = &Console::getCmdCompleter;
 
-    impl->RegCmds["help"] = std::make_pair(
+    impl->regCmds["help"] = std::make_pair(
         [this](const Args& /*input*/)
         {
-            const auto commandsHelp = getHelpOfRegisteredCommands();
+            const auto commandsHelp = getHelpOfRegisteredCmds();
             std::size_t maxLength = 0;
             for ([[maybe_unused]] const auto& [command, help] : commandsHelp)
             {
@@ -36,27 +36,27 @@ Console::Console(const std::string& greeting) : impl(std::make_unique<Impl>(gree
                 std::cout << std::setiosflags(std::ios_base::left) << std::setw(maxLength) << reverseIter->first
                           << "    " << reverseIter->second << std::resetiosflags(std::ios_base::left) << std::endl;
             }
-            return ReturnCode::success;
+            return RetCode::success;
         },
         "show help");
 
-    impl->RegCmds["quit"] = std::make_pair(
+    impl->regCmds["quit"] = std::make_pair(
         [this](const Args& /*input*/)
         {
             std::cout << "Exit." << std::endl;
-            return ReturnCode::quit;
+            return RetCode::quit;
         },
         "exit console mode");
 
-    impl->RegCmds["batch"] = std::make_pair(
+    impl->regCmds["batch"] = std::make_pair(
         [this](const Args& input)
         {
             if (input.size() < 2)
             {
                 std::cerr << "Please input \"" << input[0] << " FILENAME\" to run." << std::endl;
-                return ReturnCode::error;
+                return RetCode::error;
             }
-            return ReturnCode(fileExecutor(input[1]));
+            return RetCode(fileExecutor(input[1]));
         },
         "run batch commands from the file");
 }
@@ -69,15 +69,88 @@ Console::~Console()
     ::rl_restore_prompt();
 }
 
-void Console::registerCommand(const std::string& command, CommandFunctor func, const std::string& help)
+void Console::registerCmd(const std::string& command, CmdFunctor func, const std::string& help)
 {
-    impl->RegCmds[command] = std::make_pair(func, help);
+    impl->regCmds[command] = std::make_pair(func, help);
 }
 
-std::vector<std::pair<std::string, std::string>> Console::getHelpOfRegisteredCommands() const
+int Console::cmdExecutor(const std::string& command)
 {
-    std::vector<std::pair<std::string, std::string>> allCommandsHelp;
-    for (const auto& pair : impl->RegCmds)
+    std::vector<std::string> inputs;
+    std::istringstream is(command);
+    std::copy(std::istream_iterator<std::string>(is), std::istream_iterator<std::string>(), std::back_inserter(inputs));
+
+    if (inputs.size() == 0)
+    {
+        return RetCode::success;
+    }
+
+    Impl::RegisteredCmds::iterator iterator = impl->regCmds.find(inputs[0]);
+    if (std::end(impl->regCmds) != iterator)
+    {
+        return RetCode(static_cast<int>(std::get<0>(iterator->second)(inputs)));
+    }
+
+    std::cerr << "Console command \"" << inputs[0] << "\" not found." << std::endl;
+    return RetCode::error;
+}
+
+int Console::fileExecutor(const std::string& filename)
+{
+    std::ifstream input(filename);
+    if (!input)
+    {
+        std::cerr << "Could not find the batch file to run." << std::endl;
+        return RetCode::error;
+    }
+
+    std::string command;
+    int counter = 0, result = 0;
+    while (std::getline(input, command))
+    {
+        if ('#' == command[0])
+        {
+            continue;
+        }
+        std::cout << '[' << counter << "] " << command << std::endl;
+
+        result = cmdExecutor(command);
+        if (result)
+        {
+            return RetCode(result);
+        }
+        ++counter;
+        std::cout << std::endl;
+    }
+
+    return RetCode::success;
+}
+
+int Console::readCmdLine()
+{
+    reserveConsole();
+
+    char* buffer = ::readline(getGreeting().c_str());
+    if (nullptr == buffer)
+    {
+        std::cout << std::endl;
+        return RetCode::quit;
+    }
+
+    if ('\0' != buffer[0])
+    {
+        ::add_history(buffer);
+    }
+
+    std::string line(buffer);
+    ::rl_free(buffer);
+    return RetCode(cmdExecutor(line));
+}
+
+Console::CmdsHelp Console::getHelpOfRegisteredCmds() const
+{
+    CmdsHelp allCommandsHelp;
+    for (const auto& pair : impl->regCmds)
     {
         allCommandsHelp.emplace_back(pair.first, std::get<1>(pair.second));
     }
@@ -115,110 +188,27 @@ void Console::reserveConsole()
     currentConsole = this;
 }
 
-void Console::setGreeting(const std::string& greeting)
-{
-    impl->greeting = greeting;
-}
-
-std::string Console::getGreeting() const
-{
-    return impl->greeting;
-}
-
-int Console::commandExecutor(const std::string& command)
-{
-    std::vector<std::string> inputs;
-    std::istringstream is(command);
-    std::copy(std::istream_iterator<std::string>(is), std::istream_iterator<std::string>(), std::back_inserter(inputs));
-
-    if (!inputs.size())
-    {
-        return ReturnCode::success;
-    }
-
-    Impl::RegisteredCommands::iterator iterator = impl->RegCmds.find(inputs[0]);
-    if (std::end(impl->RegCmds) != iterator)
-    {
-        return ReturnCode(static_cast<int>(std::get<0>(iterator->second)(inputs)));
-    }
-
-    std::cerr << "Console command \"" << inputs[0] << "\" not found." << std::endl;
-    return ReturnCode::error;
-}
-
-int Console::fileExecutor(const std::string& filename)
-{
-    std::ifstream input(filename);
-    if (!input)
-    {
-        std::cerr << "Could not find the batch file to run." << std::endl;
-        return ReturnCode::error;
-    }
-
-    std::string command;
-    int counter = 0, result = 0;
-    while (std::getline(input, command))
-    {
-        if ('#' == command[0])
-        {
-            continue;
-        }
-        std::cout << '[' << counter << "] " << command << std::endl;
-
-        result = commandExecutor(command);
-        if (result)
-        {
-            return ReturnCode(result);
-        }
-        ++counter;
-        std::cout << std::endl;
-    }
-
-    return ReturnCode::success;
-}
-
-int Console::readCommandLine()
-{
-    reserveConsole();
-
-    char* buffer = ::readline(getGreeting().c_str());
-    if (nullptr == buffer)
-    {
-        std::cout << std::endl;
-        return ReturnCode::quit;
-    }
-
-    if ('\0' != buffer[0])
-    {
-        ::add_history(buffer);
-    }
-
-    std::string line(buffer);
-    ::rl_free(buffer);
-    return ReturnCode(commandExecutor(line));
-}
-
-char** Console::getCommandCompleter(const char* text, int start, int /*end*/)
+char** Console::getCmdCompleter(const char* text, int start, int /*end*/)
 {
     char** completionList = nullptr;
-    if (!start)
+    if (0 == start)
     {
-        completionList = ::rl_completion_matches(text, &Console::getCommandIterator);
+        completionList = ::rl_completion_matches(text, &Console::getCmdIterator);
     }
 
     return completionList;
 }
 
-char* Console::getCommandIterator(const char* text, int state)
+char* Console::getCmdIterator(const char* text, int state)
 {
-    static Impl::RegisteredCommands::iterator iterator;
+    static Impl::RegisteredCmds::iterator iterator;
     if (nullptr == currentConsole)
     {
         return nullptr;
     }
 
-    auto& commands = currentConsole->impl->RegCmds;
-    if (!state)
+    auto& commands = currentConsole->impl->regCmds;
+    if (0 == state)
     {
         iterator = std::begin(commands);
     }
