@@ -279,7 +279,8 @@ function perform_install_option()
         local lib_path=/opt/foo/lib
         if [[ -d ${lib_path} ]]; then
             local completion_file="bash_completion"
-            local export_cmd="[ -s ${lib_path}/${completion_file} ] && \. ${lib_path}/${completion_file}"
+            local export_cmd="[ \"\${BASH_COMPLETION_VERSINFO}\" != \"\" ] && [ -s ${lib_path}/${completion_file} ] && \
+\. ${lib_path}/${completion_file}"
             shell_command "sudo cp ./${FOLDER[scr]}/${completion_file}.sh ${lib_path}/${completion_file}"
             if ! grep -Fxq "${export_cmd}" ~/.bashrc 2>/dev/null; then
                 shell_command "echo '${export_cmd}' >>~/.bashrc"
@@ -303,8 +304,7 @@ function perform_uninstall_option()
 sudo rm -rf /opt/foo/lib/${completion_file}"
         shell_command "cat ./${FOLDER[bld]}/${manifest_file} | xargs -L1 dirname | xargs sudo rmdir -p 2>/dev/null"
         shell_command "sed -i '/export PATH=\/opt\/foo\/bin:\$PATH/d' ~/.bashrc"
-        shell_command "sed -i '/[ -s \/opt\/foo\/lib\/${completion_file} ] && \
-\\\. \/opt\/foo\/lib\/${completion_file}/d' ~/.bashrc"
+        shell_command "sed -i '/\\\. \/opt\/foo\/lib\/${completion_file}/d' ~/.bashrc"
         exit 0
     fi
 }

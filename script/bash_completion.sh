@@ -7,39 +7,39 @@ function _foo()
     curr=$(_get_cword)
     prev=${COMP_WORDS[COMP_CWORD - 1]}
 
-    _expand || return 0
+    _expand || return
 
     case ${prev} in
     -@(h|-help))
         mapfile -t COMPREPLY < <(compgen -W "-a -ds -dp -n \
 --algorithm --data-structure --design-pattern --numeric" -- "${curr}")
-        return 0
+        return
         ;;
     -@(v|-version|c|-console))
-        return 0
+        return
         ;;
     -@(a|-algorithm))
         mapfile -t COMPREPLY < <(compgen -W "match notation optimal search sort" -- "${curr}")
-        return 0
+        return
         ;;
     -@(ds|-data-structure))
         mapfile -t COMPREPLY < <(compgen -W "linear tree" -- "${curr}")
-        return 0
+        return
         ;;
     -@(dp|-design-pattern))
         mapfile -t COMPREPLY < <(compgen -W "behavioral creational structural" -- "${curr}")
-        return 0
+        return
         ;;
     -@(n|-numeric))
         mapfile -t COMPREPLY < <(compgen -W "arithmetic divisor integral prime" -- "${curr}")
-        return 0
+        return
         ;;
     match | notation | optimal | search | sort | \
         linear | tree | \
         behavioral | creational | structural | \
         arithmetic | divisor | integral | prime)
         mapfile -t COMPREPLY < <(compgen -W "-h --help" -- "${curr}")
-        return 0
+        return
         ;;
     *)
         _filedir
@@ -53,8 +53,6 @@ function _foo()
         ;;
     *) ;;
     esac
-
-    return 0
 }
 
 complete -F _foo foo
