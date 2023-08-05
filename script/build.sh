@@ -7,6 +7,7 @@ declare -A ARGS=([help]=false [initialize]=false [cleanup]=false [docker]=false 
     [test]=false [release]=false [precheck]=false [format]=false [lint]=false [count]=false [browser]=false
     [doxygen]=false)
 declare -A DEV_OPT=([parallel]=0 [pch]=false [unity]=false [ccache]=false [distcc]=false [tmpfs]=false)
+declare SUDO=""
 declare CMAKE_CACHE_ENTRY=""
 declare CMAKE_BUILD_OPTION=""
 declare BUILD_TYPE="Debug"
@@ -209,7 +210,7 @@ FOO_BLD_TMPFS=off
 export FOO_BLD_PARALLEL FOO_BLD_PCH FOO_BLD_UNITY FOO_BLD_CCACHE FOO_BLD_DISTCC FOO_BLD_TMPFS
 return 0
 EOF"
-        shell_command "echo 'core.%s.%e.%p' | sudo tee /proc/sys/kernel/core_pattern"
+        shell_command "echo 'core.%s.%e.%p' | ${SUDO}tee /proc/sys/kernel/core_pattern"
         shell_command "git config --local commit.template ./.commit-template"
         exit 0
     fi
@@ -269,7 +270,7 @@ function perform_install_option()
             die "There is no binary file in the ${FOLDER[bld]} folder. Please finish compiling first."
         fi
 
-        shell_command "sudo cmake --install ./${FOLDER[bld]}"
+        shell_command "${SUDO}cmake --install ./${FOLDER[bld]}"
         local bin_path=/opt/foo/bin
         local export_cmd="export PATH=${bin_path}:\$PATH"
         if [[ :${PATH}: != *:${bin_path}:* ]] && ! grep -Fxq "${export_cmd}" ~/.bashrc 2>/dev/null; then
@@ -281,7 +282,7 @@ function perform_install_option()
             local completion_file="bash_completion"
             local export_cmd="[ \"\${BASH_COMPLETION_VERSINFO}\" != \"\" ] && [ -s ${lib_path}/${completion_file} ] && \
 \. ${lib_path}/${completion_file}"
-            shell_command "sudo cp ./${FOLDER[scr]}/${completion_file}.sh ${lib_path}/${completion_file}"
+            shell_command "${SUDO}cp ./${FOLDER[scr]}/${completion_file}.sh ${lib_path}/${completion_file}"
             if ! grep -Fxq "${export_cmd}" ~/.bashrc 2>/dev/null; then
                 shell_command "echo '${export_cmd}' >>~/.bashrc"
             fi
@@ -300,9 +301,9 @@ function perform_uninstall_option()
 
         local completion_file="bash_completion"
         shell_command "rm -rf ~/.${FOLDER[proj]}"
-        shell_command "cat ./${FOLDER[bld]}/${manifest_file} | xargs sudo rm -rf && \
-sudo rm -rf /opt/foo/lib/${completion_file}"
-        shell_command "cat ./${FOLDER[bld]}/${manifest_file} | xargs -L1 dirname | xargs sudo rmdir -p 2>/dev/null"
+        shell_command "cat ./${FOLDER[bld]}/${manifest_file} | xargs ${SUDO}rm -rf && \
+${SUDO}rm -rf /opt/foo/lib/${completion_file}"
+        shell_command "cat ./${FOLDER[bld]}/${manifest_file} | xargs -L1 dirname | xargs ${SUDO}rmdir -p 2>/dev/null"
         shell_command "sed -i '/export PATH=\/opt\/foo\/bin:\$PATH/d' ~/.bashrc"
         shell_command "sed -i '/\\\. \/opt\/foo\/lib\/${completion_file}/d' ~/.bashrc"
         exit 0
@@ -627,10 +628,10 @@ function set_compile_condition()
             mkdir "./${tmpfs_subfolder}"
         fi
         if ! df -h -t tmpfs | grep -q "${FOLDER[proj]}/${tmpfs_subfolder}" 2>/dev/null; then
-            shell_command "sudo mount -t tmpfs -o size=${tmpfs_size} tmpfs ./${tmpfs_subfolder}"
+            shell_command "${SUDO}mount -t tmpfs -o size=${tmpfs_size} tmpfs ./${tmpfs_subfolder}"
         fi
     elif df -h -t tmpfs | grep -q "${FOLDER[proj]}/${tmpfs_subfolder}" 2>/dev/null; then
-        shell_command "sudo umount ./${tmpfs_subfolder}"
+        shell_command "${SUDO}umount ./${tmpfs_subfolder}"
     fi
 }
 
@@ -664,6 +665,10 @@ function main()
 
     export TERM=linux TERMINFO=/etc/terminfo
     trap "signal_handler" INT TERM
+
+    if [[ ${EUID} -ne 0 ]]; then
+        SUDO="sudo "
+    fi
 
     parse_parameters "$@"
     try_to_perform_single_choice_options
