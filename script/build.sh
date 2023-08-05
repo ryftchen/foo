@@ -219,7 +219,7 @@ EOF"
 function perform_cleanup_option()
 {
     if [[ ${ARGS[cleanup]} = true ]]; then
-        shell_command "sed -i '/export FOO_ENV=foo_dev/d' ~/.bashrc"
+        shell_command "sed -i '/export FOO_ENV=foo_dev/d' ~/.bashrc 2>/dev/null"
         shell_command "find ./ -maxdepth 2 -type d | sed 1d \
 | grep -E '(${FOLDER[bld]}|${FOLDER[temp]}|browser|doxygen|__pycache__)$' | xargs -i rm -rf {}"
         shell_command "rm -rf ./${FOLDER[scr]}/.env ./core.* ./vgcore.* ./*.profraw"
@@ -304,8 +304,8 @@ function perform_uninstall_option()
         shell_command "cat ./${FOLDER[bld]}/${manifest_file} | xargs ${SUDO}rm -rf && \
 ${SUDO}rm -rf /opt/foo/lib/${completion_file}"
         shell_command "cat ./${FOLDER[bld]}/${manifest_file} | xargs -L1 dirname | xargs ${SUDO}rmdir -p 2>/dev/null"
-        shell_command "sed -i '/export PATH=\/opt\/foo\/bin:\$PATH/d' ~/.bashrc"
-        shell_command "sed -i '/\\\. \/opt\/foo\/lib\/${completion_file}/d' ~/.bashrc"
+        shell_command "sed -i '/export PATH=\/opt\/foo\/bin:\$PATH/d' ~/.bashrc 2>/dev/null"
+        shell_command "sed -i '/\\\. \/opt\/foo\/lib\/${completion_file}/d' ~/.bashrc 2>/dev/null"
         exit 0
     fi
 }

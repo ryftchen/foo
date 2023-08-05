@@ -101,17 +101,7 @@ static void init()
 
     const std::filesystem::path absolutePath = std::filesystem::canonical(std::filesystem::path{"/proc/self/exe"});
     const std::size_t pos = absolutePath.string().find("build/bin");
-    if (std::string::npos != pos)
-    {
-        const std::filesystem::path buildPath(std::filesystem::path{absolutePath.string().substr(0, pos)});
-        if (!buildPath.has_parent_path())
-        {
-            std::fprintf(::stderr, "The code project path doesn't exist. Please check it.\n");
-            std::exit(-1);
-        }
-        std::filesystem::current_path(buildPath.parent_path());
-    }
-    else
+    if (std::string::npos == pos)
     {
         const std::filesystem::path homePath(
             std::filesystem::path{(nullptr != std::getenv("HOME")) ? std::getenv("HOME") : "/root"});
@@ -129,6 +119,16 @@ static void init()
                 procTempPath, std::filesystem::perms::owner_all, std::filesystem::perm_options::add);
         }
         std::filesystem::current_path(procTempPath);
+    }
+    else
+    {
+        const std::filesystem::path buildPath(std::filesystem::path{absolutePath.string().substr(0, pos)});
+        if (!buildPath.has_parent_path())
+        {
+            std::fprintf(::stderr, "The project path doesn't exist. Please check it.\n");
+            std::exit(-1);
+        }
+        std::filesystem::current_path(buildPath.parent_path());
     }
 }
 

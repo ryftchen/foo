@@ -19,17 +19,17 @@ Command::Command()
 {
     try
     {
-        program.addArgument("-h", "--help").nArgs(0).implicitValue(true).help("show help and exit");
+        cliHelper.addArgument("-h", "--help").nArgs(0).implicitValue(true).help("show help and exit");
 
-        program.addArgument("-v", "--version").nArgs(0).implicitValue(true).help("show version and exit");
+        cliHelper.addArgument("-v", "--version").nArgs(0).implicitValue(true).help("show version and exit");
 
-        program.addArgument("-c", "--console")
+        cliHelper.addArgument("-c", "--console")
             .nArgs(utility::argument::NArgsPattern::any)
             .defaultValue<std::vector<std::string>>({"help"})
             .appending()
             .help("run commands (with quotes) in console mode and exit");
 
-        program.addArgument("-a", "--algorithm")
+        cliHelper.addArgument("-a", "--algorithm")
             .nArgs(1)
             .action(
                 [this](const std::string& value)
@@ -44,7 +44,7 @@ Command::Command()
                   "- sort        Sort Solution\n"
                   "for more help, use the -h, --help option with a category");
 
-        program.addArgument("-ds", "--data-structure")
+        cliHelper.addArgument("-ds", "--data-structure")
             .nArgs(1)
             .action(
                 [this](const std::string& value)
@@ -56,7 +56,7 @@ Command::Command()
                   "- tree      Tree Structure\n"
                   "for more help, use the -h, --help option with a category");
 
-        program.addArgument("-dp", "--design-pattern")
+        cliHelper.addArgument("-dp", "--design-pattern")
             .nArgs(1)
             .action(
                 [this](const std::string& value)
@@ -69,7 +69,7 @@ Command::Command()
                   "- structural    Structural Pattern\n"
                   "for more help, use the -h, --help option with a category");
 
-        program.addArgument("-n", "--numeric")
+        cliHelper.addArgument("-n", "--numeric")
             .nArgs(1)
             .action(
                 [this](const std::string& value)
@@ -83,7 +83,7 @@ Command::Command()
                   "- prime         Prime Solution\n"
                   "for more help, use the -h, --help option with a category");
 
-        program.addArgument("tasks").remaining().help("tasks under the specific category");
+        cliHelper.addArgument("tasks").remaining().help("tasks under the specific category");
     }
     catch (const std::exception& error)
     {
@@ -144,9 +144,9 @@ void Command::foregroundHandler(const int argc, const char* const argv[])
     try
     {
         std::unique_lock<std::mutex> lock(mtx);
-        program.parseArgs(argc, argv);
+        cliHelper.parseArgs(argc, argv);
         validateBasicTask();
-        validateGeneralTask();
+        validateRegularTask();
 
         isParsed.store(true);
         lock.unlock();
@@ -191,7 +191,7 @@ void Command::validateBasicTask()
 {
     for (std::uint8_t i = 0; i < BasicTask::Bottom<BasicTask::Category>::value; ++i)
     {
-        if (!program.isUsed(std::next(basicTaskDispatcher.cbegin(), BasicTask::Category(i))->first))
+        if (!cliHelper.isUsed(std::next(basicTaskDispatcher.cbegin(), BasicTask::Category(i))->first))
         {
             continue;
         }
@@ -205,35 +205,35 @@ void Command::validateBasicTask()
     }
 }
 
-void Command::validateGeneralTask()
+void Command::validateRegularTask()
 {
     bool isToBeExcess = false;
-    for ([[maybe_unused]] const auto& [taskCategory, taskCategoryMap] : generalTaskDispatcher)
+    for ([[maybe_unused]] const auto& [taskCategory, taskCategoryMap] : regularTaskDispatcher)
     {
-        if (!program.isUsed(taskCategory))
+        if (!cliHelper.isUsed(taskCategory))
         {
             continue;
         }
 
-        if (isToBeExcess || (hasAnyTask() && !program.isUsed("help")))
+        if (isToBeExcess || (hasAnyTask() && !cliHelper.isUsed("help")))
         {
             throwExcessArgumentException();
         }
 
         for ([[maybe_unused]] const auto& [taskType, taskTypeTuple] : taskCategoryMap)
         {
-            if (taskType != program[taskCategory])
+            if (taskType != cliHelper[taskCategory])
             {
                 continue;
             }
 
-            if (program.isUsed("tasks") && program.isUsed("help"))
+            if (cliHelper.isUsed("tasks") && cliHelper.isUsed("help"))
             {
                 throwExcessArgumentException();
             }
 
-            const auto tasks = program.isUsed("tasks") ? program.get<std::vector<std::string>>("tasks")
-                                                       : get<TargetTaskContainer>(taskTypeTuple);
+            const auto tasks = cliHelper.isUsed("tasks") ? cliHelper.get<std::vector<std::string>>("tasks")
+                                                         : get<TargetTaskContainer>(taskTypeTuple);
             for (const auto& task : tasks)
             {
                 (*get<UpdateTaskFunctor>(get<TaskFunctorTuple>(taskTypeTuple)))(task);
@@ -261,31 +261,31 @@ void Command::dispatchTask() const
         }
     }
     else if (
-        !dispatchedTask.generalTask.empty() && !dispatchedTask.basicTask.primaryBit.test(BasicTask::Category::help))
+        !dispatchedTask.regularTask.empty() && !dispatchedTask.basicTask.primaryBit.test(BasicTask::Category::help))
     {
-        for (std::uint8_t i = 0; i < GeneralTask::Bottom<GeneralTask::Category>::value; ++i)
+        for (std::uint8_t i = 0; i < RegularTask::Bottom<RegularTask::Category>::value; ++i)
         {
-            switch (GeneralTask::Category(i))
+            switch (RegularTask::Category(i))
             {
-                case GeneralTask::Category::algorithm:
+                case RegularTask::Category::algorithm:
                     if (app_algo::getTask().empty())
                     {
                         continue;
                     }
                     break;
-                case GeneralTask::Category::dataStructure:
+                case RegularTask::Category::dataStructure:
                     if (app_ds::getTask().empty())
                     {
                         continue;
                     }
                     break;
-                case GeneralTask::Category::designPattern:
+                case RegularTask::Category::designPattern:
                     if (app_dp::getTask().empty())
                     {
                         continue;
                     }
                     break;
-                case GeneralTask::Category::numeric:
+                case RegularTask::Category::numeric:
                     if (app_num::getTask().empty())
                     {
                         continue;
@@ -296,7 +296,7 @@ void Command::dispatchTask() const
             }
 
             for ([[maybe_unused]] const auto& [taskType, taskTypeTuple] :
-                 std::next(generalTaskDispatcher.cbegin(), GeneralTask::Category(i))->second)
+                 std::next(regularTaskDispatcher.cbegin(), RegularTask::Category(i))->second)
             {
                 (*get<PerformTaskFunctor>(get<TaskFunctorTuple>(taskTypeTuple)))(
                     get<TargetTaskContainer>(taskTypeTuple));
@@ -311,8 +311,8 @@ Command::TaskCategory Command::getCategoryCompletionForVerification(
 {
     TaskCategory completion;
     if (std::any_of(
-            generalTaskDispatcher.at(category).cbegin(),
-            generalTaskDispatcher.at(category).cend(),
+            regularTaskDispatcher.at(category).cbegin(),
+            regularTaskDispatcher.at(category).cend(),
             [&input, &completion](const auto& taskCategoryMap)
             {
                 if (input.length() <= taskCategoryMap.first.length())
@@ -337,7 +337,7 @@ Command::TaskCategory Command::getCategoryCompletionForVerification(
 
 void Command::showConsoleOutput() const
 {
-    const auto commands = program.get<std::vector<std::string>>(
+    const auto commands = cliHelper.get<std::vector<std::string>>(
         std::next(basicTaskDispatcher.cbegin(), BasicTask::Category::console)->first);
     if (commands.empty())
     {
@@ -381,9 +381,9 @@ void Command::showConsoleOutput() const
 
 void Command::showHelpMessage() const
 {
-    if (dispatchedTask.generalTask.empty())
+    if (dispatchedTask.regularTask.empty())
     {
-        std::cout << program.help().str() << std::flush;
+        std::cout << cliHelper.help().str() << std::flush;
         return;
     }
 
@@ -554,7 +554,7 @@ void Command::showVersionIcon() const
     std::string versionStr = "tput rev; echo ";
     versionStr += getIconBanner();
     versionStr.pop_back();
-    versionStr += "                    VERSION " + program.version;
+    versionStr += "                    VERSION " + cliHelper.version;
     versionStr += " \"; tput sgr0; echo ";
     versionStr += '\"' + std::string{copyrightInfo} + '\"';
 

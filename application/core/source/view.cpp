@@ -229,7 +229,7 @@ void View::waitToStart()
             if (maxTimesOfWaitViewer == waitCount)
             {
 #ifndef NDEBUG
-                LOG_ERR("Wait for the viewer to start...");
+                LOG_ERR("The viewer did not start properly...");
 #endif // NDEBUG
                 expiryTimer.reset();
             }
@@ -267,7 +267,7 @@ void View::waitToStop()
             if (maxTimesOfWaitViewer == waitCount)
             {
 #ifndef NDEBUG
-                LOG_ERR("Wait for the viewer to stop...");
+                LOG_ERR("The viewer did not stop properly...");
 #endif // NDEBUG
                 expiryTimer.reset();
             }
