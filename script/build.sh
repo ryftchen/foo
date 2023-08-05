@@ -655,7 +655,13 @@ function signal_handler()
 
 function main()
 {
-    cd "${0%%"${FOLDER[scr]}"*}" || exit 1
+    local script_path
+    script_path=$(cd "$(dirname "${0}")" &>/dev/null && pwd)
+    if [[ ${script_path} != *"${FOLDER[proj]}/${FOLDER[scr]}" ]]; then
+        die "Illegal path to current script."
+    fi
+    cd "$(dirname "${script_path}")" || exit 1
+
     export TERM=linux TERMINFO=/etc/terminfo
     trap "signal_handler" INT TERM
 

@@ -2,6 +2,7 @@
 
 try:
     import argparse
+    import fnmatch
     import json
     import os
     import requests
@@ -20,6 +21,7 @@ class Documentation:
     website_dir = "/var/www/foo_web"
 
     def __init__(self):
+        self.project_path = ""
         self.proxy_port = ""
         env = os.getenv("FOO_ENV")
         if env is not None:
@@ -29,6 +31,11 @@ class Documentation:
             abort("Please export the environment variable FOO_ENV.")
 
     def pull_archive(self):
+        script_path = os.path.split(os.path.realpath(__file__))[0]
+        if not fnmatch.fnmatch(script_path, "*foo/script"):
+            abort("Illegal path to current script.")
+        self.project_path = os.path.dirname(script_path)
+
         parser = argparse.ArgumentParser(description="pull archive script")
         parser.add_argument(
             "-p",
@@ -47,21 +54,20 @@ class Documentation:
             f"\r\n{datetime.strftime(datetime.now(), '%b %d %H:%M:%S')} \
 >>>>>>>>>>>>>>>>>>>>>>>>> PULL ARCHIVE <<<<<<<<<<<<<<<<<<<<<<<<<"
         )
-        file_path = os.path.split(os.path.realpath(__file__))[0]
-        os.chdir(file_path.replace(file_path[file_path.index("script") :], ""))
-
         self.download_artifact()
         self.update_document()
 
     def download_artifact(self):
         if not os.path.exists(self.website_dir):
             abort("Please create a foo_web folder in the /var/www directory.")
-        local_commit_id, _, _ = execute("git rev-parse HEAD")
-        remote_commit_id, _, _ = execute(f"git ls-remote {self.github_url} refs/heads/master | cut -f 1")
+        local_commit_id, _, _ = execute(f"git -C {self.project_path} rev-parse HEAD")
+        remote_commit_id, _, _ = execute(
+            f"git -C {self.project_path} ls-remote {self.github_url} refs/heads/master | cut -f 1"
+        )
         if not remote_commit_id:
             abort("Failed to get the latest commit id.")
         if local_commit_id != remote_commit_id:
-            execute("git pull origin master")
+            execute(f"git -C {self.project_path} pull origin master")
         elif os.path.exists(f"{self.website_dir}/browser") and os.path.exists(f"{self.website_dir}/doxygen"):
             abort("No commit change.")
 
@@ -92,13 +98,13 @@ class Documentation:
                 output_file.write(response.content)
         except requests.exceptions.HTTPError as error:
             execute(f"rm -rf {self.website_dir}/{self.artifact_file}.zip")
-            execute(f"git reset --hard {local_commit_id}")
+            execute(f"git -C {self.project_path} reset --hard {local_commit_id}")
             abort(error)
 
         validation, _, _ = execute(f"zip -T {self.website_dir}/{self.artifact_file}.zip")
         if "zip error" in validation:
             execute(f"rm -rf {self.website_dir}/{self.artifact_file}.zip")
-            execute(f"git reset --hard {local_commit_id}")
+            execute(f"git -C {self.project_path} reset --hard {local_commit_id}")
             abort(f"The {self.artifact_file}.zip file in the {self.website_dir} folder is corrupted.")
 
     def update_document(self):
