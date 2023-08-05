@@ -3,6 +3,7 @@
 try:
     import argparse
     import fcntl
+    import fnmatch
     import os
     import queue
     import re
@@ -79,8 +80,10 @@ class Task:
         self.task_queue = queue.Queue()
 
     def run(self):
-        file_path = os.path.split(os.path.realpath(__file__))[0]
-        os.chdir(file_path.replace(file_path[file_path.index("script") :], ""))
+        script_path = os.path.split(os.path.realpath(__file__))[0]
+        if not fnmatch.fnmatch(script_path, "*foo/script"):
+            Output.exit_with_error("Illegal path to current script.")
+        os.chdir(os.path.dirname(script_path))
 
         self.parse_arguments()
         self.prepare()
