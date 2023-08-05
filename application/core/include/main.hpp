@@ -33,7 +33,7 @@ static void signalHandler(int sig)
     const int maxFrame = sizeof(callStack) / sizeof(callStack[0]), numOfFrame = ::backtrace(callStack, maxFrame);
     char** symbols = ::backtrace_symbols(callStack, numOfFrame);
     char buffer[1024] = {'\0'};
-    std::ostringstream originalTrace, realTrace;
+    std::ostringstream originalTrace, detailedTrace;
 
     for (int i = 1; i < numOfFrame; ++i)
     {
@@ -69,20 +69,20 @@ static void signalHandler(int sig)
                 callStack[i],
                 symbols[i]);
         }
-        realTrace << buffer;
+        detailedTrace << buffer;
     }
     std::free(symbols); // NOLINT(cppcoreguidelines-no-malloc)
 
     if (numOfFrame == maxFrame)
     {
-        realTrace << "\r\n<TRUNCATED...>\n";
+        detailedTrace << "\r\n<TRUNCATED...>\n";
     }
     std::fprintf(
         ::stderr,
         "\r\n<SIGNAL>\n%d\n\n<BACKTRACE>\n%s\n<VERBOSE>\n%s\n",
         sig,
         originalTrace.str().c_str(),
-        realTrace.str().c_str());
+        detailedTrace.str().c_str());
 
     if (SIGINT != signalStatus)
     {
@@ -100,18 +100,17 @@ static void init()
     ::setenv("TERMINFO", "/etc/terminfo", true);
 
     const std::filesystem::path absolutePath = std::filesystem::canonical(std::filesystem::path{"/proc/self/exe"});
-    const std::size_t pos = absolutePath.string().find("build/bin");
+    const std::size_t pos = absolutePath.string().find("/foo/build");
     if (std::string::npos == pos)
     {
-        const std::filesystem::path homePath(
-            std::filesystem::path{(nullptr != std::getenv("HOME")) ? std::getenv("HOME") : "/root"});
-        if (homePath.empty())
+        const std::filesystem::path homePath{(nullptr != std::getenv("HOME")) ? std::getenv("HOME") : "/root"};
+        if (!std::filesystem::exists(homePath))
         {
             std::fprintf(::stderr, "The home path doesn't exist. Please check it.\n");
             std::exit(-1);
         }
 
-        const std::string procTempPath = homePath / ".foo";
+        const std::filesystem::path procTempPath{homePath / ".foo"};
         if (!std::filesystem::exists(procTempPath))
         {
             std::filesystem::create_directory(procTempPath);
@@ -122,13 +121,8 @@ static void init()
     }
     else
     {
-        const std::filesystem::path buildPath(std::filesystem::path{absolutePath.string().substr(0, pos)});
-        if (!buildPath.has_parent_path())
-        {
-            std::fprintf(::stderr, "The project path doesn't exist. Please check it.\n");
-            std::exit(-1);
-        }
-        std::filesystem::current_path(buildPath.parent_path());
+        const std::filesystem::path projPath{absolutePath.string().substr(0, pos + 4)};
+        std::filesystem::current_path(projPath);
     }
 }
 
