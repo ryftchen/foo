@@ -89,7 +89,7 @@ ReadWriteGuard::~ReadWriteGuard()
 
 //! @brief Open file.
 //! @param filename - file path
-//! @return input file stream.
+//! @return input file stream
 std::ifstream openFile(const std::string& filename)
 {
     std::ifstream ifs;
