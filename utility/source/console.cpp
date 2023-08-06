@@ -13,8 +13,7 @@
 
 namespace utility::console
 {
-//! @brief Save current console instance.
-static Console* currentConsole = nullptr;
+Console* Console::currentConsole = nullptr;
 
 Console::Console(const std::string& greeting) : impl(std::make_unique<Impl>(greeting))
 {
