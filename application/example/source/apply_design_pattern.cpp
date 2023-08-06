@@ -68,7 +68,7 @@ void BehavioralPattern::chainOfResponsibilityInstance()
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR << error.what();
     }
 }
 
@@ -81,7 +81,7 @@ void BehavioralPattern::commandInstance()
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR << error.what();
     }
 }
 
@@ -94,7 +94,7 @@ void BehavioralPattern::interpreterInstance()
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR << error.what();
     }
 }
 
@@ -107,7 +107,7 @@ void BehavioralPattern::iteratorInstance()
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR << error.what();
     }
 }
 
@@ -120,7 +120,7 @@ void BehavioralPattern::mediatorInstance()
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR << error.what();
     }
 }
 
@@ -133,7 +133,7 @@ void BehavioralPattern::mementoInstance()
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR << error.what();
     }
 }
 
@@ -146,7 +146,7 @@ void BehavioralPattern::observerInstance()
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR << error.what();
     }
 }
 
@@ -159,7 +159,7 @@ void BehavioralPattern::stateInstance()
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR << error.what();
     }
 }
 
@@ -172,7 +172,7 @@ void BehavioralPattern::strategyInstance()
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR << error.what();
     }
 }
 
@@ -185,7 +185,7 @@ void BehavioralPattern::templateMethodInstance()
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR << error.what();
     }
 }
 
@@ -198,7 +198,7 @@ void BehavioralPattern::visitorInstance()
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR << error.what();
     }
 }
 } // namespace behavioral
@@ -270,7 +270,7 @@ void runBehavioralTasks(const std::vector<std::string>& targets)
                 behavioralFunctor(threadName, &BehavioralPattern::visitorInstance);
                 break;
             default:
-                LOG_DBG("Execute to apply an unknown behavioral instance.");
+                LOG_DBG << "Execute to apply an unknown behavioral instance.";
                 break;
         }
     }
@@ -341,7 +341,7 @@ void CreationalPattern::abstractFactoryInstance()
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR << error.what();
     }
 }
 
@@ -354,7 +354,7 @@ void CreationalPattern::builderInstance()
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR << error.what();
     }
 }
 
@@ -367,7 +367,7 @@ void CreationalPattern::factoryMethodInstance()
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR << error.what();
     }
 }
 
@@ -380,7 +380,7 @@ void CreationalPattern::prototypeInstance()
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR << error.what();
     }
 }
 
@@ -393,7 +393,7 @@ void CreationalPattern::singletonInstance()
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR << error.what();
     }
 }
 } // namespace creational
@@ -447,7 +447,7 @@ void runCreationalTasks(const std::vector<std::string>& targets)
                 creationalFunctor(threadName, &CreationalPattern::singletonInstance);
                 break;
             default:
-                LOG_DBG("Execute to apply an unknown creational instance.");
+                LOG_DBG << "Execute to apply an unknown creational instance.";
                 break;
         }
     }
@@ -500,7 +500,7 @@ void StructuralPattern::adapterInstance()
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR << error.what();
     }
 }
 
@@ -513,7 +513,7 @@ void StructuralPattern::bridgeInstance()
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR << error.what();
     }
 }
 
@@ -526,7 +526,7 @@ void StructuralPattern::compositeInstance()
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR << error.what();
     }
 }
 
@@ -539,7 +539,7 @@ void StructuralPattern::decoratorInstance()
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR << error.what();
     }
 }
 
@@ -552,7 +552,7 @@ void StructuralPattern::facadeInstance()
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR << error.what();
     }
 }
 
@@ -565,7 +565,7 @@ void StructuralPattern::flyweightInstance()
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR << error.what();
     }
 }
 
@@ -578,7 +578,7 @@ void StructuralPattern::proxyInstance()
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR << error.what();
     }
 }
 } // namespace structural
@@ -638,7 +638,7 @@ void runStructuralTasks(const std::vector<std::string>& targets)
                 structuralFunctor(threadName, &StructuralPattern::proxyInstance);
                 break;
             default:
-                LOG_DBG("Execute to apply an unknown structural instance.");
+                LOG_DBG << "Execute to apply an unknown structural instance.";
                 break;
         }
     }

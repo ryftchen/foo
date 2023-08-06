@@ -96,7 +96,7 @@ void MatchSolution::rkMethod(
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR << error.what();
     }
 }
 
@@ -115,7 +115,7 @@ void MatchSolution::kmpMethod(
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR << error.what();
     }
 }
 
@@ -134,7 +134,7 @@ void MatchSolution::bmMethod(
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR << error.what();
     }
 }
 
@@ -153,7 +153,7 @@ void MatchSolution::horspoolMethod(
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR << error.what();
     }
 }
 
@@ -172,7 +172,7 @@ void MatchSolution::sundayMethod(
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR << error.what();
     }
 }
 } // namespace match
@@ -236,7 +236,7 @@ void runMatchTasks(const std::vector<std::string>& targets)
                 matchFunctor(threadName, &MatchSolution::sundayMethod);
                 break;
             default:
-                LOG_DBG("Execute to apply an unknown match method.");
+                LOG_DBG << "Execute to apply an unknown match method.";
                 break;
         }
     }
@@ -290,7 +290,7 @@ void NotationSolution::prefixMethod(const std::string& infixNotation)
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR << error.what();
     }
 }
 
@@ -303,7 +303,7 @@ void NotationSolution::postfixMethod(const std::string& infixNotation)
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR << error.what();
     }
 }
 } // namespace notation
@@ -350,7 +350,7 @@ void runNotationTasks(const std::vector<std::string>& targets)
                 notationFunctor(threadName, &NotationSolution::postfixMethod);
                 break;
             default:
-                LOG_DBG("Execute to apply an unknown notation method.");
+                LOG_DBG << "Execute to apply an unknown notation method.";
                 break;
         }
     }
@@ -396,7 +396,7 @@ void OptimalSolution::gradientDescentMethod(const Function& func, const double l
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR << error.what();
     }
 }
 
@@ -411,7 +411,7 @@ void OptimalSolution::simulatedAnnealingMethod(const Function& func, const doubl
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR << error.what();
     }
 }
 
@@ -426,7 +426,7 @@ void OptimalSolution::particleSwarmMethod(const Function& func, const double lef
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR << error.what();
     }
 }
 
@@ -441,7 +441,7 @@ void OptimalSolution::geneticMethod(const Function& func, const double left, con
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR << error.what();
     }
 }
 } // namespace optimal
@@ -508,7 +508,7 @@ void runOptimalTasks(const std::vector<std::string>& targets)
                     optimalFunctor(threadName, &OptimalSolution::geneticMethod);
                     break;
                 default:
-                    LOG_DBG("Execute to apply an unknown optimal method.");
+                    LOG_DBG << "Execute to apply an unknown optimal method.";
                     break;
             }
         }
@@ -594,7 +594,7 @@ void SearchSolution::binaryMethod(const double* const array, const std::uint32_t
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR << error.what();
     }
 }
 
@@ -609,7 +609,7 @@ void SearchSolution::interpolationMethod(const double* const array, const std::u
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR << error.what();
     }
 }
 
@@ -624,7 +624,7 @@ void SearchSolution::fibonacciMethod(const double* const array, const std::uint3
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR << error.what();
     }
 }
 } // namespace search
@@ -681,7 +681,7 @@ void runSearchTasks(const std::vector<std::string>& targets)
                 searchFunctor(threadName, &SearchSolution::fibonacciMethod);
                 break;
             default:
-                LOG_DBG("Execute to apply an unknown search method.");
+                LOG_DBG << "Execute to apply an unknown search method.";
                 break;
         }
     }
@@ -742,7 +742,7 @@ void SortSolution::bubbleMethod(int* const array, const std::uint32_t length)
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR << error.what();
     }
 }
 
@@ -757,7 +757,7 @@ void SortSolution::selectionMethod(int* const array, const std::uint32_t length)
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR << error.what();
     }
 }
 
@@ -772,7 +772,7 @@ void SortSolution::insertionMethod(int* const array, const std::uint32_t length)
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR << error.what();
     }
 }
 
@@ -787,7 +787,7 @@ void SortSolution::shellMethod(int* const array, const std::uint32_t length)
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR << error.what();
     }
 }
 
@@ -802,7 +802,7 @@ void SortSolution::mergeMethod(int* const array, const std::uint32_t length)
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR << error.what();
     }
 }
 
@@ -817,7 +817,7 @@ void SortSolution::quickMethod(int* const array, const std::uint32_t length)
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR << error.what();
     }
 }
 
@@ -832,7 +832,7 @@ void SortSolution::heapMethod(int* const array, const std::uint32_t length)
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR << error.what();
     }
 }
 
@@ -847,7 +847,7 @@ void SortSolution::countingMethod(int* const array, const std::uint32_t length)
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR << error.what();
     }
 }
 
@@ -862,7 +862,7 @@ void SortSolution::bucketMethod(int* const array, const std::uint32_t length)
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR << error.what();
     }
 }
 
@@ -877,7 +877,7 @@ void SortSolution::radixMethod(int* const array, const std::uint32_t length)
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR << error.what();
     }
 }
 } // namespace sort
@@ -953,7 +953,7 @@ void runSortTasks(const std::vector<std::string>& targets)
                 sortFunctor(threadName, &SortSolution::radixMethod);
                 break;
             default:
-                LOG_DBG("Execute to apply an unknown sort method.");
+                LOG_DBG << "Execute to apply an unknown sort method.";
                 break;
         }
     }

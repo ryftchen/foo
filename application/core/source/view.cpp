@@ -202,10 +202,8 @@ void View::runViewer()
     }
     catch (const std::exception& error)
     {
-        std::ostringstream os;
-        os << error.what() << " Expected viewer state: " << expectedState
-           << ", current viewer state: " << State(currentState()) << '.';
-        LOG_ERR(os.str().c_str());
+        LOG_ERR << error.what() << " Expected viewer state: " << expectedState
+                << ", current viewer state: " << State(currentState()) << '.';
         stopViewing();
     }
 }
@@ -229,7 +227,7 @@ void View::waitToStart()
             if (maxTimesOfWaitViewer == waitCount)
             {
 #ifndef NDEBUG
-                LOG_ERR("The viewer did not start properly...");
+                LOG_ERR << "The viewer did not start properly...";
 #endif // NDEBUG
                 expiryTimer.reset();
             }
@@ -267,7 +265,7 @@ void View::waitToStop()
             if (maxTimesOfWaitViewer == waitCount)
             {
 #ifndef NDEBUG
-                LOG_ERR("The viewer did not stop properly...");
+                LOG_ERR << "The viewer did not stop properly...";
 #endif // NDEBUG
                 expiryTimer.reset();
             }
@@ -441,7 +439,7 @@ void View::createViewServer()
             }
             catch (std::exception& error)
             {
-                LOG_WRN(error.what());
+                LOG_WRN << error.what();
             }
         };
     };
@@ -474,7 +472,7 @@ void View::createViewServer()
         }
         catch (std::exception& error)
         {
-            LOG_WRN(error.what());
+            LOG_WRN << error.what();
         }
     };
 }
