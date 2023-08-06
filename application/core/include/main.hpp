@@ -106,7 +106,7 @@ static void init()
         const std::filesystem::path homePath{(nullptr != std::getenv("HOME")) ? std::getenv("HOME") : "/root"};
         if (!std::filesystem::exists(homePath))
         {
-            std::fprintf(::stderr, "The home path doesn't exist. Please check it.\n");
+            std::fprintf(::stderr, "The home path does not exist. Please check it.\n");
             std::exit(-1);
         }
 

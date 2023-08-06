@@ -188,7 +188,7 @@ std::optional<std::tuple<double, double>> Genetic::operator()(const double left,
     updateSpecies(left, right, eps);
     if (constexpr std::uint32_t minChrNum = 3; chromosomeNum < minChrNum)
     {
-        throw std::runtime_error("A precision of " + std::to_string(eps) + " isn't sufficient.");
+        throw std::runtime_error("A precision of " + std::to_string(eps) + " is not sufficient.");
     }
 
     Population pop = populationInit();

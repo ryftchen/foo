@@ -243,7 +243,7 @@ std::vector<T> Sort<T>::counting(T* const array, const std::uint32_t length)
 {
     if (!std::is_integral_v<T>)
     {
-        throw std::runtime_error("The array type isn't integral.");
+        throw std::runtime_error("The array type is not integral.");
     }
 
     T sortArray[length];
@@ -320,7 +320,7 @@ std::vector<T> Sort<T>::radix(T* const array, const std::uint32_t length)
 {
     if (!std::is_integral_v<T>)
     {
-        throw std::runtime_error("The array type isn't integral.");
+        throw std::runtime_error("The array type is not integral.");
     }
 
     T sortArray[length];

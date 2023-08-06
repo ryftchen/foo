@@ -74,7 +74,7 @@ int Search<T>::fibonacci(const T* const array, const std::uint32_t length, const
     std::uint32_t n = fib.size() - 1;
     if (constexpr std::uint32_t minSize = 3; n < minSize)
     {
-        throw std::runtime_error("An array size of " + std::to_string(length) + " isn't sufficient.");
+        throw std::runtime_error("An array size of " + std::to_string(length) + " is not sufficient.");
     }
 
     std::uint32_t lower = 0, upper = length - 1;
