@@ -20,13 +20,10 @@ include(${CMAKE_SOURCE_DIR}/../cmake/condition.cmake)
 set(BIN_NAME foo_test)
 set(BUILD_DIR ${CMAKE_SOURCE_DIR}/build)
 set(EXECUTABLE_OUTPUT_PATH ${BUILD_DIR}/bin)
+set(LIBRARY_OUTPUT_PATH ${BUILD_DIR}/lib)
+include(${CMAKE_SOURCE_DIR}/ut_module.cmake)
 
-file(GLOB TEST_LIST)
-aux_source_directory(${CMAKE_SOURCE_DIR}/unit TEST_LIST)
-aux_source_directory(${CMAKE_SOURCE_DIR}/../algorithm/source TEST_LIST)
-aux_source_directory(${CMAKE_SOURCE_DIR}/../data_structure/source TEST_LIST)
-aux_source_directory(${CMAKE_SOURCE_DIR}/../design_pattern/source TEST_LIST)
-aux_source_directory(${CMAKE_SOURCE_DIR}/../numeric/source TEST_LIST)
+file(GLOB TEST_LIST ${CMAKE_SOURCE_DIR}/unit/main.cpp)
 include_directories(
     ${CMAKE_SOURCE_DIR}/..
     ${CMAKE_SOURCE_DIR}/../algorithm/include
@@ -39,6 +36,7 @@ add_executable(${BIN_NAME} ${TEST_LIST})
 target_link_libraries(
     ${BIN_NAME}
     PUBLIC mpfr GTest::Main
+    PRIVATE foo_test::test_algorithm foo_test::test_data_structure foo_test::test_design_pattern foo_test::test_numeric
 )
 
 if(PRECOMPILED_HEADER)
