@@ -118,8 +118,6 @@ private:
     void saveState();
     //! @brief Reserve usage to the calling console instance.
     void reserveConsole();
-    //! @brief Save current console instance.
-    static Console* currentConsole;
 
     //! @brief Alias for the functor of command completer.
     using CmdCompleterFunctor = char**(const char* text, int start, int end);
