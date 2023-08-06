@@ -59,7 +59,7 @@ public:
     virtual ~Output() = default;
 
     //! @brief Flush the output stream.
-    //! @return reference of output stream object, which is on string based.
+    //! @return reference of output stream object, which is on string based
     inline std::ostringstream& flush();
 
     //! @brief The pre-order traversal of the binary search tree.
@@ -138,7 +138,7 @@ public:
     virtual ~Output() = default;
 
     //! @brief Flush the output stream.
-    //! @return reference of output stream object, which is on string based.
+    //! @return reference of output stream object, which is on string based
     inline std::ostringstream& flush();
     //! @brief The pre-order traversal of the AVL tree.
     //! @param tree - tree root, the target AVL tree has this node as the root node
@@ -210,7 +210,7 @@ public:
     virtual ~Output() = default;
 
     //! @brief Flush the output stream.
-    //! @return reference of output stream object, which is on string based.
+    //! @return reference of output stream object, which is on string based
     inline std::ostringstream& flush();
     //! @brief The pre-order traversal of the splay tree.
     //! @param tree - tree root, the target splay tree has this node as the root node
