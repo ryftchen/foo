@@ -23,7 +23,7 @@ class Task:
     app_bin_dir = "./build/bin"
     tst_bin_cmd = "foo_test"
     tst_bin_dir = "./test/build/bin"
-    lib_list = ["libutility.a", "libalgorithm.so", "libdata_structure.so", "libdesign_pattern.so", "libnumeric.so"]
+    lib_list = ["libutility.so", "libalgorithm.so", "libdata_structure.so", "libdesign_pattern.so", "libnumeric.so"]
     lib_dir = "./build/lib"
     basic_task_dict = {
         "--console": [r"'help'", r"'quit'", r"'batch ./script/console_batch.txt'", r"'log'", r"'stat'"],

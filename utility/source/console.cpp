@@ -16,13 +16,6 @@ namespace utility::console
 //! @brief Current console instance.
 static Console* currentConsole = nullptr;
 
-//! @brief Save the current console instance.
-//! @param console - console instance
-static void saveCurrentConsole(Console* console)
-{
-    currentConsole = console;
-}
-
 Console::Console(const std::string& greeting) : impl(std::make_unique<Impl>(greeting))
 {
     ::rl_attempted_completion_function = &Console::getCmdCompleter;
@@ -192,7 +185,7 @@ void Console::reserveConsole()
         ::history_set_history_state(impl->history);
     }
 
-    saveCurrentConsole(this);
+    currentConsole = this;
 }
 
 char** Console::getCmdCompleter(const char* text, int start, int /*end*/)
