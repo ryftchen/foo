@@ -23,7 +23,7 @@ set(EXECUTABLE_OUTPUT_PATH ${BUILD_DIR}/bin)
 set(LIBRARY_OUTPUT_PATH ${BUILD_DIR}/lib)
 include(${CMAKE_SOURCE_DIR}/ut_module.cmake)
 
-file(GLOB TEST_LIST ${CMAKE_SOURCE_DIR}/unit/main.cpp)
+aux_source_directory(${CMAKE_SOURCE_DIR}/unit TEST_LIST)
 include_directories(
     ${CMAKE_SOURCE_DIR}/..
     ${CMAKE_SOURCE_DIR}/../algorithm/include
@@ -36,7 +36,7 @@ add_executable(${BIN_NAME} ${TEST_LIST})
 target_link_libraries(
     ${BIN_NAME}
     PUBLIC mpfr GTest::Main
-    PRIVATE foo_test::test_algorithm foo_test::test_data_structure foo_test::test_design_pattern foo_test::test_numeric
+    PRIVATE foo_test::algorithm foo_test::data_structure foo_test::design_pattern foo_test::numeric
 )
 
 if(PRECOMPILED_HEADER)
