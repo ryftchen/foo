@@ -224,7 +224,7 @@ void TCPServer::toListen()
 {
     if (::listen(sock, retryTimes) == -1)
     {
-        throw std::runtime_error("Server can't listen on the socket, errno: " + std::to_string(errno) + '.');
+        throw std::runtime_error("Server can not listen on the socket, errno: " + std::to_string(errno) + '.');
     }
 }
 

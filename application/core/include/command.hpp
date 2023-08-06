@@ -49,7 +49,7 @@ private:
     //! @brief Flag to indicate whether parsing of arguments is completed.
     std::atomic<bool> isParsed{false};
     //! @brief Parse arguments helper.
-    utility::argument::Argument cliHelper{utility::argument::Argument("foo", "1.0")};
+    utility::argument::Argument cliHelper{"foo", "1.0"};
     //! @brief Copyright information.
     static constexpr std::string_view copyrightInfo{"Copyright (c) 2022-2023 ryftchen"};
 

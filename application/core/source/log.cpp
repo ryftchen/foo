@@ -289,21 +289,19 @@ const std::string& changeToLogStyle(std::string& line)
             line, std::regex(std::string{errorLevelPrefixRegex}), std::string{errorLevelPrefixColorForLog});
     }
 
+    namespace common = utility::common;
     if (const std::regex date(std::string{dateRegex}); std::regex_search(line, date))
     {
         const auto searchIter = std::sregex_iterator(line.begin(), line.end(), date);
-        const std::string timeColorForLog = std::string{utility::common::colorGray}
-            + std::string{utility::common::colorBold} + std::string{utility::common::colorForBackground}
-            + (*searchIter).str() + std::string{utility::common::colorOff};
+        const std::string timeColorForLog = std::string{common::colorGray} + std::string{common::colorBold}
+            + std::string{common::colorForBackground} + (*searchIter).str() + std::string{common::colorOff};
         line = std::regex_replace(line, std::regex(std::string{dateRegex}), timeColorForLog);
     }
-
     if (const std::regex codeFile(std::string{codeFileRegex}); std::regex_search(line, codeFile))
     {
         const auto searchIter = std::sregex_iterator(line.begin(), line.end(), codeFile);
-        const std::string codeFileColorForLog = std::string{utility::common::colorUnderLine}
-            + std::string{utility::common::colorForBackground} + (*searchIter).str()
-            + std::string{utility::common::colorOff};
+        const std::string codeFileColorForLog = std::string{common::colorUnderLine}
+            + std::string{common::colorForBackground} + (*searchIter).str() + std::string{common::colorOff};
         line = std::regex_replace(line, std::regex(std::string{codeFileRegex}), codeFileColorForLog);
     }
 
