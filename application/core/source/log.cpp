@@ -101,10 +101,8 @@ void Log::runLogger()
     }
     catch (const std::exception& error)
     {
-        std::ostringstream os;
-        os << error.what() << " Expected logger state: " << expectedState
-           << ", current logger state: " << State(currentState()) << '.';
-        LOG_ERR(os.str().c_str());
+        LOG_ERR << error.what() << " Expected logger state: " << expectedState
+                << ", current logger state: " << State(currentState()) << '.';
         stopLogging();
     }
 }
@@ -128,7 +126,7 @@ void Log::waitToStart()
             if (maxTimesOfWaitLogger == waitCount)
             {
 #ifndef NDEBUG
-                LOG_ERR("The logger did not start properly...");
+                LOG_ERR << "The logger did not start properly...";
 #endif // NDEBUG
                 expiryTimer.reset();
             }
@@ -166,7 +164,7 @@ void Log::waitToStop()
             if (maxTimesOfWaitLogger == waitCount)
             {
 #ifndef NDEBUG
-                LOG_ERR("The logger did not stop properly...");
+                LOG_ERR << "The logger did not stop properly...";
 #endif // NDEBUG
                 expiryTimer.reset();
             }

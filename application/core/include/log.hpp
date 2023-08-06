@@ -18,26 +18,18 @@
 #include "utility/include/fsm.hpp"
 #include "utility/include/time.hpp"
 
+//! @brief Log with debug level.
+#define LOG_DBG application::log::Log::Flush<application::log::Log::OutputLevel::debug>(__FILE__, __LINE__).getStream()
+//! @brief Log with info level.
+#define LOG_INF application::log::Log::Flush<application::log::Log::OutputLevel::info>(__FILE__, __LINE__).getStream()
+//! @brief Log with warning level.
+#define LOG_WRN application::log::Log::Flush<application::log::Log::OutputLevel::warn>(__FILE__, __LINE__).getStream()
+//! @brief Log with error level.
+#define LOG_ERR application::log::Log::Flush<application::log::Log::OutputLevel::error>(__FILE__, __LINE__).getStream()
 //! @brief Try to start logging.
 #define LOG_WAIT_TO_START application::log::Log::getInstance().waitToStart()
 //! @brief Try to stop logging.
 #define LOG_WAIT_TO_STOP application::log::Log::getInstance().waitToStop()
-//! @brief Log with debug level.
-#define LOG_DBG(format, args...)                \
-    application::log::Log::getInstance().flush( \
-        application::log::Log::OutputLevel::debug, __FILE__, __LINE__, format, ##args)
-//! @brief Log with info level.
-#define LOG_INF(format, args...)                \
-    application::log::Log::getInstance().flush( \
-        application::log::Log::OutputLevel::info, __FILE__, __LINE__, format, ##args)
-//! @brief Log with warning level.
-#define LOG_WRN(format, args...)                \
-    application::log::Log::getInstance().flush( \
-        application::log::Log::OutputLevel::warn, __FILE__, __LINE__, format, ##args)
-//! @brief Log with error level.
-#define LOG_ERR(format, args...)                \
-    application::log::Log::getInstance().flush( \
-        application::log::Log::OutputLevel::error, __FILE__, __LINE__, format, ##args)
 //! @brief Log file path.
 #define LOG_FILE_PATH application::log::Log::getInstance().getFilePath()
 //! @brief Log file lock.
@@ -149,6 +141,12 @@ public:
     //! @brief Get the Log instance.
     //! @return reference of Log object
     static Log& getInstance();
+    //! @brief Interface for running logger.
+    void runLogger();
+    //! @brief Wait for the logger to start. External use.
+    void waitToStart();
+    //! @brief Wait for the logger to stop. External use.
+    void waitToStop();
     //! @brief Flush log to queue.
     //! @tparam Args - type of arguments of format
     //! @param level - output level
@@ -163,12 +161,33 @@ public:
         const std::uint32_t codeLine,
         const char* const format,
         Args&&... args);
-    //! @brief Interface for running logger.
-    void runLogger();
-    //! @brief Wait for the logger to start. External use.
-    void waitToStart();
-    //! @brief Wait for the logger to stop. External use.
-    void waitToStop();
+    //! @brief Log flush helper.
+    //! @tparam Lv - type of output level
+    template <OutputLevel Lv>
+    class Flush
+    {
+    public:
+        //! @brief Construct a new Flush object.
+        //! @param codeFile - current code file
+        //! @param codeLine - current code line
+        Flush(const std::string& codeFile, const std::uint32_t codeLine) : file(codeFile), line(codeLine){};
+        //! @brief Destroy the Flush object.
+        virtual ~Flush() { flush(); };
+
+        //! @brief Get the output stream for flushing.
+        //! @return reference of output stream object, which is on string based
+        inline std::ostringstream& getStream() { return stream; };
+        //! @brief Flush the output stream.
+        inline void flush() { getInstance().flush(Lv, file, line, stream.str().c_str()); };
+
+    private:
+        //! @brief Output stream for flushing.
+        std::ostringstream stream;
+        //! @brief Code file.
+        const std::string& file;
+        //! @brief Code line.
+        const std::uint32_t line;
+    };
     //! @brief Get log file path.
     //! @return log file path
     inline std::string getFilePath() const;

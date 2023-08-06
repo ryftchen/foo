@@ -125,9 +125,9 @@ void Command::runCommander(const int argc, const char* const argv[])
         }
         else
         {
-            LOG_INF("Enter console mode.");
+            LOG_INF << "Enter console mode.";
             enterConsoleMode();
-            LOG_INF("Exit console mode.");
+            LOG_INF << "Exit console mode.";
         }
 
         LOG_WAIT_TO_STOP;
@@ -135,7 +135,7 @@ void Command::runCommander(const int argc, const char* const argv[])
     }
     catch (const std::exception& error)
     {
-        LOG_ERR(error.what());
+        LOG_ERR << error.what();
     }
 }
 
@@ -158,7 +158,7 @@ void Command::foregroundHandler(const int argc, const char* const argv[])
     {
         isParsed.store(true);
         cv.notify_one();
-        LOG_WRN(error.what());
+        LOG_WRN << error.what();
     }
 }
 
@@ -183,7 +183,7 @@ void Command::backgroundHandler()
     }
     catch (const std::exception& error)
     {
-        LOG_WRN(error.what());
+        LOG_WRN << error.what();
     }
 }
 
@@ -361,7 +361,7 @@ void Command::showConsoleOutput() const
         }
         catch (std::exception& error)
         {
-            LOG_WRN(error.what());
+            LOG_WRN << error.what();
         }
     };
     udpClient.toReceive();
@@ -583,7 +583,7 @@ void Command::enterConsoleMode() const
             }
             catch (std::exception& error)
             {
-                LOG_WRN(error.what());
+                LOG_WRN << error.what();
             }
         };
         tcpClient.toConnect(std::string{View::tcpHost}, View::tcpPort);
@@ -612,7 +612,7 @@ void Command::enterConsoleMode() const
     }
     catch (const std::exception& error)
     {
-        LOG_WRN(error.what());
+        LOG_WRN << error.what();
     }
 }
 
@@ -639,7 +639,7 @@ void Command::registerOnConsole(utility::console::Console& console, T& client) c
                 catch (const std::exception& error)
                 {
                     retVal = Console::RetCode::error;
-                    LOG_WRN(error.what());
+                    LOG_WRN << error.what();
                 }
                 return retVal;
             },
