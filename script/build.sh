@@ -479,12 +479,16 @@ function package_for_browser()
     rm -rf "./${FOLDER[temp]}/${FOLDER[proj]}_${browser_folder}"_*.tar.bz2 "./${FOLDER[doc]}/${browser_folder}"
 
     mkdir -p "./${FOLDER[doc]}/${browser_folder}"
+    shell_command "cp -rf /usr/local/share/woboq/data ./${FOLDER[doc]}/${browser_folder}/"
     shell_command "codebrowser_generator -color -a -b ./${FOLDER[bld]}/${COMP_CMD} \
 -o ./${FOLDER[doc]}/${browser_folder} -p ${FOLDER[proj]}:.:${commit_id} -d ./data"
     shell_command "codebrowser_generator -color -a -b ./${FOLDER[tst]}/${FOLDER[bld]}/${COMP_CMD} \
 -o ./${FOLDER[doc]}/${browser_folder} -p ${FOLDER[proj]}:.:${commit_id} -d ./data"
     shell_command "codebrowser_indexgenerator ./${FOLDER[doc]}/${browser_folder} -d ./data"
-    shell_command "cp -rf /usr/local/share/woboq/data ./${FOLDER[doc]}/${browser_folder}/"
+
+    local icon_rel="<link rel=\"shortcut icon\" href=\"https://woboq.com/favicon.ico\" type=\"image/x-icon\" />"
+    find "./${FOLDER[doc]}/${browser_folder}/index.html" "./${FOLDER[doc]}/${browser_folder}/${FOLDER[proj]}" \
+        -name "*.html" -exec sed -i "/^<\/head>$/i ${icon_rel}" {} +
     shell_command "tar -jcvf ./${FOLDER[temp]}/${tar_file} -C ./${FOLDER[doc]} ${browser_folder} >/dev/null"
 }
 
@@ -522,16 +526,13 @@ function package_for_doxygen()
     rm -rf "./${FOLDER[temp]}/${FOLDER[proj]}_${doxygen_folder}"_*.tar.bz2 "./${FOLDER[doc]}/${doxygen_folder}"
 
     mkdir -p "./${FOLDER[doc]}/${doxygen_folder}"
-    if [[ ${ARGS[release]} = false ]]; then
-        sed -i "s/\(^PROJECT_NUMBER[ ]\+=\)/\1 \"@ $(git rev-parse --short @)\"/" "./${FOLDER[doc]}/Doxyfile"
-        sed -i "s/\(^HTML_TIMESTAMP[ ]\+=\)\([ ]\+NO\)/\1 YES/" "./${FOLDER[doc]}/Doxyfile"
+    if [[ ${ARGS[release]} = true ]]; then
+        shell_command "doxygen ./${FOLDER[doc]}/Doxyfile >/dev/null"
+    else
+        shell_command "(cat ./${FOLDER[doc]}/Doxyfile ; echo 'PROJECT_NUMBER=\"@ $(git rev-parse --short @)\"' ; \
+echo 'HTML_TIMESTAMP=YES') | doxygen - >/dev/null"
     fi
-    shell_command "doxygen ./${FOLDER[doc]}/Doxyfile >/dev/null"
     shell_command "tar -jcvf ./${FOLDER[temp]}/${tar_file} -C ./${FOLDER[doc]} ${doxygen_folder} >/dev/null"
-    if [[ ${ARGS[release]} = false ]]; then
-        sed -i "s/\(^PROJECT_NUMBER[ ]\+=\)\([ ]\+.*\)/\1/" "./${FOLDER[doc]}/Doxyfile"
-        sed -i "s/\(^HTML_TIMESTAMP[ ]\+=\)\([ ]\+YES\)/\1 NO/" "./${FOLDER[doc]}/Doxyfile"
-    fi
 }
 
 function build_target()
@@ -646,10 +647,6 @@ function signal_handler()
         if [[ -f ./${tst_comp_cmd}.bak ]]; then
             rm -rf "./${tst_comp_cmd}" && mv "./${tst_comp_cmd}.bak" "./${tst_comp_cmd}"
         fi
-    fi
-    if [[ ${ARGS[doxygen]} = true ]] && [[ ${ARGS[release]} = false ]]; then
-        sed -i "s/\(^PROJECT_NUMBER[ ]\+=\)\([ ]\+.*\)/\1/" "./${FOLDER[doc]}/Doxyfile"
-        sed -i "s/\(^HTML_TIMESTAMP[ ]\+=\)\([ ]\+YES\)/\1 NO/" "./${FOLDER[doc]}/Doxyfile"
     fi
     exit 1
 }
