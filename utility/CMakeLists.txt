@@ -1,4 +1,4 @@
-set(MODULE_NAME utility)
+set(MODULE_NAME foo_util)
 
 aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/source UTILITY_LIST)
 

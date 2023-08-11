@@ -1,4 +1,4 @@
-set(MODULE_NAME design_pattern)
+set(MODULE_NAME foo_dp)
 
 aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/source DESIGN_PATTERN_LIST)
 include_directories(${CMAKE_SOURCE_DIR})

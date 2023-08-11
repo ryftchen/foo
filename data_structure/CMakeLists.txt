@@ -1,4 +1,4 @@
-set(MODULE_NAME data_structure)
+set(MODULE_NAME foo_ds)
 
 aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/source DATA_STRUCTURE_LIST)
 include_directories(${CMAKE_SOURCE_DIR})

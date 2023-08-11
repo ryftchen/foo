@@ -1,4 +1,4 @@
-set(MODULE_NAME algorithm)
+set(MODULE_NAME foo_algo)
 
 aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/source ALGORITHM_LIST)
 include_directories(${CMAKE_SOURCE_DIR})

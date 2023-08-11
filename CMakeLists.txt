@@ -55,7 +55,7 @@ target_include_directories(
 target_link_libraries(
     ${BIN_NAME}
     PUBLIC dl pthread readline mpfr
-    PRIVATE foo::utility foo::algorithm foo::data_structure foo::design_pattern foo::numeric
+    PRIVATE foo::foo_util foo::foo_algo foo::foo_ds foo::foo_dp foo::foo_num
 )
 
 if(PRECOMPILED_HEADER)
@@ -67,7 +67,7 @@ endif()
 
 set(CMAKE_INSTALL_PREFIX "/opt/${PROJECT_NAME}")
 install(
-    TARGETS ${BIN_NAME} utility algorithm data_structure design_pattern numeric
+    TARGETS ${BIN_NAME} foo_util foo_algo foo_ds foo_dp foo_num
     RUNTIME DESTINATION "${CMAKE_INSTALL_PREFIX}/bin"
     LIBRARY DESTINATION "${CMAKE_INSTALL_PREFIX}/lib"
 )

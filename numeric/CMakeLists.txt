@@ -1,4 +1,4 @@
-set(MODULE_NAME numeric)
+set(MODULE_NAME foo_num)
 
 aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/source NUMERIC_LIST)
 include_directories(${CMAKE_SOURCE_DIR})
