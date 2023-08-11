@@ -265,42 +265,46 @@ class Task:
             full_cmd = f"LLVM_PROFILE_FILE=\"{self.temp_dir}/foo_chk_cov_{str(self.complete_steps + 1)}.profraw\" \
 {full_cmd}"
         align = max(
-            len(command) + Output.align_len_excl_cmd,
-            Output.min_align_len,
-            len(str(self.total_steps)) * 2 + len(" / ") + Output.align_len_excl_cmd,
+            len(command) + Output.stat_cont_len_excl_cmd,
+            Output.stat_min_cont_len,
+            len(str(self.total_steps)) * 2 + len(" / ") + Output.stat_cont_len_excl_cmd,
         )
         Output.refresh_status(
-            Output.color["blue"], f"CASE TASK: {f'{command}':<{align - Output.align_len_excl_cmd}} | START "
+            Output.color["blue"], f"CASE: {f'{command}':<{align - Output.stat_cont_len_excl_cmd}} | START "
         )
 
         stdout, stderr, return_code = common.execute_command(full_cmd, enter)
         if len(stdout.strip()) == 0 or stderr or return_code != 0:
             print(f"\r\n[STDOUT]\n{stdout}\n[STDERR]\n{stderr}\n[RETURN CODE]\n{return_code}")
-            Output.refresh_status(
-                Output.color["red"], f"{f'CASE TASK: FAILURE NO.{str(self.complete_steps + 1)}':<{align}}"
-            )
+            Output.refresh_status(Output.color["red"], f"{f'STAT: FAILURE NO.{str(self.complete_steps + 1)}':<{align}}")
         else:
+            stdout = stdout.replace("\t", "    ")
             print(stdout)
             self.pass_steps += 1
-            if self.options["chk_mem"]:
+            if ("[ERR]" in stdout or "[WRN]" in stdout) and ("log" not in command and "log" not in enter):
+                self.pass_steps -= 1
+                Output.refresh_status(
+                    Output.color["red"], f"{f'STAT: FAILURE NO.{str(self.complete_steps + 1)}':<{align}}"
+                )
+            elif self.options["chk_mem"]:
                 stdout, _, _ = common.execute_command(
                     f"valgrind-ci {self.temp_dir}/foo_chk_mem_{str(self.complete_steps + 1)}.xml --summary"
                 )
-                if "error" in stdout:
+                if "errors" in stdout:
                     stdout = stdout.replace("\t", "    ")
                     print(f"\r\n[CHECK MEMORY]\n{stdout}")
                     common.execute_command(
                         f"valgrind-ci {self.temp_dir}/foo_chk_mem_{str(self.complete_steps + 1)}.xml --source-dir=./ \
---output-dir={self.temp_dir}/memory/case_task_{str(self.complete_steps + 1)}"
+--output-dir={self.temp_dir}/memory/case_{str(self.complete_steps + 1)}"
                     )
                     self.pass_steps -= 1
                     Output.refresh_status(
-                        Output.color["red"], f"{f'CASE TASK: FAILURE NO.{str(self.complete_steps + 1)}':<{align}}"
+                        Output.color["red"], f"{f'STAT: FAILURE NO.{str(self.complete_steps + 1)}':<{align}}"
                     )
 
         self.complete_steps += 1
         Output.refresh_status(
-            Output.color["blue"], f"CASE TASK: {f'{command}':<{align - Output.align_len_excl_cmd}} | FINISH"
+            Output.color["blue"], f"CASE: {f'{command}':<{align - Output.stat_cont_len_excl_cmd}} | FINISH"
         )
 
         if self.pass_steps != self.total_steps:
@@ -310,7 +314,7 @@ class Task:
         Output.refresh_status(
             status_color,
             f"""\
-{f"CASE TASK: SUCCESS {f'{str(self.pass_steps)}':>{len(str(self.total_steps))}} / {str(self.total_steps)}":<{align}}""",
+{f"STAT: SUCCESS {f'{str(self.pass_steps)}':>{len(str(self.total_steps))}} / {str(self.total_steps)}":<{align}}""",
         )
         print("\n")
 
@@ -324,7 +328,7 @@ class Task:
             fcntl.flock(run_log.fileno(), fcntl.LOCK_EX)
             old_content = run_log.read()
             fcntl.flock(run_log.fileno(), fcntl.LOCK_UN)
-        new_content = re.sub(Output.color_escape_regex, "", old_content)
+        new_content = re.sub(Output.color_esc_regex, "", old_content)
         with open(self.log_file, "w", encoding="utf-8") as run_log:
             fcntl.flock(run_log.fileno(), fcntl.LOCK_EX)
             run_log.write(new_content)
@@ -336,7 +340,7 @@ class Task:
             cov_per = {}
             mem_err = {}
             for start_index, finish_index in zip(start_indices, finish_indices):
-                if "| CASE TASK: FAILURE" in readlines[finish_index - 1]:
+                if "| STAT: FAILURE" in readlines[finish_index - 1]:
                     fail_line = readlines[finish_index - 1]
                     number = fail_line[fail_line.find("NO.") : fail_line.find("]")].strip()
                     cmd_line = readlines[start_index]
@@ -434,7 +438,7 @@ class Task:
             if fail_res:
                 fail_res_rep = (
                     "\r\nREPORT FOR FAILURE RESULT:\n"
-                    + Output().format_as_table(fail_res, "CASE TASK", "FAILURE RESULT")
+                    + Output().format_as_table(fail_res, "CASE", "FAILURE RESULT")
                     + "\n\n"
                 )
             cov_per_rep = ""
@@ -448,7 +452,7 @@ class Task:
             if mem_err:
                 mem_err_rep = (
                     "\r\nREPORT FOR MEMORY ERROR:\n"
-                    + Output().format_as_table(mem_err, "CASE TASK", "MEMORY ERROR")
+                    + Output().format_as_table(mem_err, "CASE", "MEMORY ERROR")
                     + "\n\n"
                 )
             run_report.write(run_stat_rep + fail_res_rep + cov_per_rep + mem_err_rep)
@@ -460,15 +464,14 @@ class Task:
 
 class Output:
     color = {"red": "\033[0;31;40m", "green": "\033[0;32;40m", "yellow": "\033[0;33;40m", "blue": "\033[0;34;40m"}
-    color_background = "\033[49m"
+    color_bg = "\033[49m"
     color_bold = "\033[1m"
     color_off = "\033[0m"
-    color_escape_regex = r"((\033\[.*?(m|s|u|A))|(\007|\017))"
-    column_length = 10
-    min_align_len = 30
-    align_len_excl_cmd = 20
-    min_key_width = 20
-    min_value_width = 80
+    color_esc_regex = r"((\033\[.*?(m|s|u|A))|(\007|\017))"
+    stat_min_cont_len = 55
+    stat_cont_len_excl_cmd = 15
+    tbl_min_key_width = 20
+    tbl_min_value_width = 80
 
     @classmethod
     def exit_with_error(cls, message):
@@ -476,31 +479,31 @@ class Output:
         sys.exit(-1)
 
     @classmethod
-    def refresh_status(cls, color_foreground, content):
+    def refresh_status(cls, color_fg, content):
         print(
-            f"""{color_foreground}{cls.color_bold}{cls.color_background}{f"{'=' * cls.column_length}"}\
-[ {datetime.strftime(datetime.now(), "%b %d %H:%M:%S")} | {content} ]{f"{'=' * cls.column_length}"}{cls.color_off}"""
+            f"""{color_fg}{cls.color_bold}{cls.color_bg}[ {datetime.strftime(datetime.now(), "%b %d %H:%M:%S")} \
+| {content} ]{cls.color_off}"""
         )
 
     @classmethod
     def format_as_table(cls, data: dict, key_name="", value_name=""):
         rows = []
-        rows.append("=" * (cls.min_key_width + 2 + cls.min_value_width + 1))
-        rows.append(f"{key_name.ljust(cls.min_key_width)} | {value_name.ljust(cls.min_value_width)}")
-        rows.append("=" * (cls.min_key_width + 2 + cls.min_value_width + 1))
+        rows.append("=" * (cls.tbl_min_key_width + 2 + cls.tbl_min_value_width + 1))
+        rows.append(f"{key_name.ljust(cls.tbl_min_key_width)} | {value_name.ljust(cls.tbl_min_value_width)}")
+        rows.append("=" * (cls.tbl_min_key_width + 2 + cls.tbl_min_value_width + 1))
 
         for key, value in data.items():
             key_lines = []
             for line in key.split("\n"):
                 line_len = len(line)
-                for index in range(0, line_len, cls.min_key_width):
-                    key_lines.append(line[index : index + cls.min_key_width].ljust(cls.min_key_width))
+                for index in range(0, line_len, cls.tbl_min_key_width):
+                    key_lines.append(line[index : index + cls.tbl_min_key_width].ljust(cls.tbl_min_key_width))
 
             value_lines = []
             for line in value.split("\n"):
                 line_len = len(line)
-                for index in range(0, line_len, cls.min_value_width):
-                    value_lines.append(line[index : index + cls.min_value_width].ljust(cls.min_value_width))
+                for index in range(0, line_len, cls.tbl_min_value_width):
+                    value_lines.append(line[index : index + cls.tbl_min_value_width].ljust(cls.tbl_min_value_width))
 
             line_count = max(len(key_lines), len(value_lines))
             for index in range(line_count):
@@ -508,14 +511,14 @@ class Output:
                 if index < len(key_lines):
                     new_line = f"{key_lines[index]} | "
                 else:
-                    new_line = f"{' ' * cls.min_key_width} | "
+                    new_line = f"{' ' * cls.tbl_min_key_width} | "
                 if index < len(value_lines):
                     new_line += value_lines[index]
                 else:
-                    new_line += " " * cls.min_value_width
+                    new_line += " " * cls.tbl_min_value_width
                 rows.append(new_line)
 
-            rows.append("-" * (cls.min_key_width + 2 + cls.min_value_width + 1))
+            rows.append("-" * (cls.tbl_min_key_width + 2 + cls.tbl_min_value_width + 1))
         return "\n".join(rows)
 
 
