@@ -116,12 +116,12 @@ class Documentation:
 
 
 def execute(cmd):
-    print(f"{datetime.strftime(datetime.now(), '%b %d %H:%M:%S')} execute: {cmd}")
+    print(f"{datetime.strftime(datetime.now(), '%b %d %H:%M:%S')} EXECUTE: {cmd}")
     return common.execute_command(cmd)
 
 
 def abort(msg):
-    print(f"{datetime.strftime(datetime.now(), '%b %d %H:%M:%S')} abort: {msg}")
+    print(f"{datetime.strftime(datetime.now(), '%b %d %H:%M:%S')} ABORT: {msg}")
     sys.exit(-1)
 
 
