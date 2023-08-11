@@ -23,7 +23,7 @@ template <typename T, typename = void>
 struct HasContainerTraits : std::false_type
 {
 };
-//! @brief Confirm container traits(std::string). Value is false.
+//! @brief Confirm container traits (std::string). Value is false.
 template <>
 struct HasContainerTraits<std::string> : std::false_type
 {
