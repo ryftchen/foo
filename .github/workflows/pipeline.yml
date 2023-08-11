@@ -65,7 +65,7 @@ jobs:
 
       - name: Check
         run: |
-          ./script/build.sh --release --precheck --format --lint --count
+          ./script/build.sh --precheck --format --lint --count
           git status
 
       - name: Archive
@@ -105,25 +105,19 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Build
+      - name: Check
         run: |
-          ./script/build.sh --release
-          ./script/build.sh --release --test
-
-      - name: Run
-        run: |
-          ./script/run.py
+          ./script/run.py --check cov mem --build dbg
           cat ./temporary/foo_run.report
 
       - name: Test
         run: |
-          ./script/run.py --test
+          ./script/run.py --test --build rls
           cat ./temporary/foo_run.report
 
-      - name: Check
+      - name: Run
         run: |
-          ./script/build.sh --cleanup
-          ./script/run.py --check cov mem --build rls
+          ./script/run.py --build rls
           cat ./temporary/foo_run.report
 
   extended_analysis:
