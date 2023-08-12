@@ -395,7 +395,7 @@ void Command::showHelpMessage() const
         if (!getBit<AlgorithmTask::MatchMethod>().none())
         {
             std::puts("match [tasks...]\n"
-                      "\r\nNon-optional:\n"
+                      "\r\nnon-optional:\n"
                       "rab    Rabin-Karp\n"
                       "knu    Knuth-Morris-Pratt\n"
                       "boy    Boyer-Moore\n"
@@ -405,14 +405,14 @@ void Command::showHelpMessage() const
         else if (!getBit<AlgorithmTask::NotationMethod>().none())
         {
             std::puts("notation [tasks...]\n"
-                      "\r\nNon-optional:\n"
+                      "\r\nnon-optional:\n"
                       "pre    Prefix\n"
                       "pos    Postfix");
         }
         else if (!getBit<AlgorithmTask::OptimalMethod>().none())
         {
             std::puts("optimal [tasks...]\n"
-                      "\r\nNon-optional:\n"
+                      "\r\nnon-optional:\n"
                       "gra    Gradient Descent\n"
                       "ann    Simulated Annealing\n"
                       "par    Particle Swarm\n"
@@ -421,7 +421,7 @@ void Command::showHelpMessage() const
         else if (!getBit<AlgorithmTask::SearchMethod>().none())
         {
             std::puts("search [tasks...]\n"
-                      "\r\nNon-optional:\n"
+                      "\r\nnon-optional:\n"
                       "bin    Binary\n"
                       "int    Interpolation\n"
                       "fib    Fibonacci");
@@ -429,7 +429,7 @@ void Command::showHelpMessage() const
         else if (!getBit<AlgorithmTask::SortMethod>().none())
         {
             std::puts("sort [tasks...]\n"
-                      "\r\nNon-optional:\n"
+                      "\r\nnon-optional:\n"
                       "bub    Bubble\n"
                       "sel    Selection\n"
                       "ins    Insertion\n"
@@ -450,7 +450,7 @@ void Command::showHelpMessage() const
         if (!getBit<DataStructureTask::LinearInstance>().none())
         {
             std::puts("linear [tasks...]\n"
-                      "\r\nNon-optional:\n"
+                      "\r\nnon-optional:\n"
                       "lin    Linked List\n"
                       "sta    Stack\n"
                       "que    Queue");
@@ -458,7 +458,7 @@ void Command::showHelpMessage() const
         else if (!getBit<DataStructureTask::TreeInstance>().none())
         {
             std::puts("tree [tasks...]\n"
-                      "\r\nNon-optional:\n"
+                      "\r\nnon-optional:\n"
                       "bin    Binary Search\n"
                       "ade    Adelson-Velsky-Landis\n"
                       "spl    Splay");
@@ -472,7 +472,7 @@ void Command::showHelpMessage() const
         if (!getBit<DesignPatternTask::BehavioralInstance>().none())
         {
             std::puts("behavioral [tasks...]\n"
-                      "\r\nNon-optional:\n"
+                      "\r\nnon-optional:\n"
                       "cha    Chain Of Responsibility\n"
                       "com    Command\n"
                       "int    Interpreter\n"
@@ -488,7 +488,7 @@ void Command::showHelpMessage() const
         else if (!getBit<DesignPatternTask::CreationalInstance>().none())
         {
             std::puts("creational [tasks...]\n"
-                      "\r\nNon-optional:\n"
+                      "\r\nnon-optional:\n"
                       "abs    Abstract Factory\n"
                       "bui    Builder\n"
                       "fac    Factory Method\n"
@@ -498,7 +498,7 @@ void Command::showHelpMessage() const
         else if (!getBit<DesignPatternTask::StructuralInstance>().none())
         {
             std::puts("structural [tasks...]\n"
-                      "\r\nNon-optional:\n"
+                      "\r\nnon-optional:\n"
                       "ada    Adapter\n"
                       "bri    Bridge\n"
                       "com    Composite\n"
@@ -516,7 +516,7 @@ void Command::showHelpMessage() const
         if (!getBit<NumericTask::ArithmeticMethod>().none())
         {
             std::puts("arithmetic [tasks...]\n"
-                      "\r\nNon-optional:\n"
+                      "\r\nnon-optional:\n"
                       "add    Addition\n"
                       "sub    Subtraction\n"
                       "mul    Multiplication\n"
@@ -525,14 +525,14 @@ void Command::showHelpMessage() const
         else if (!getBit<NumericTask::DivisorMethod>().none())
         {
             std::puts("divisor [tasks...]\n"
-                      "\r\nNon-optional:\n"
+                      "\r\nnon-optional:\n"
                       "euc    Euclidean\n"
                       "ste    Stein");
         }
         else if (!getBit<NumericTask::IntegralMethod>().none())
         {
             std::puts("integral [tasks...]\n"
-                      "\r\nNon-optional:\n"
+                      "\r\nnon-optional:\n"
                       "tra    Trapezoidal\n"
                       "sim    Adaptive Simpson's 1/3\n"
                       "rom    Romberg\n"
@@ -542,7 +542,7 @@ void Command::showHelpMessage() const
         else if (!getBit<NumericTask::PrimeMethod>().none())
         {
             std::puts("prime [tasks...]\n"
-                      "\r\nNon-optional:\n"
+                      "\r\nnon-optional:\n"
                       "era    Eratosthenes\n"
                       "eul    Euler");
         }
