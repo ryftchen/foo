@@ -5,21 +5,33 @@
 //! @copyright Copyright (c) 2022-2023 ryftchen. All rights reserved.
 
 #include "argument.hpp"
+#include <iomanip>
 #include <iterator>
 #include <numeric>
 
 namespace utility::argument
 {
-ArgumentRegister& ArgumentRegister::help(const std::string& str)
+ArgumentRegister& ArgumentRegister::help(const std::string& content)
 {
-    helpStr = str;
+    helpContent = content;
     return *this;
+}
+
+ArgumentRegister& ArgumentRegister::metavar(const std::string& content)
+{
+    metavarContent = content;
+    return *this;
+}
+
+ArgumentRegister& ArgumentRegister::defaultValue(const char* value)
+{
+    return defaultValue(std::string(value));
 }
 
 ArgumentRegister& ArgumentRegister::implicitValue(std::any value)
 {
     implicitValues = std::move(value);
-    argNumArgsRange = NArgsRange{0, 0};
+    numArgsRange = NArgsRange{0, 0};
     return *this;
 }
 
@@ -43,13 +55,13 @@ ArgumentRegister& ArgumentRegister::remaining()
 
 ArgumentRegister& ArgumentRegister::nArgs(const std::size_t numArgs)
 {
-    argNumArgsRange = NArgsRange{numArgs, numArgs};
+    numArgsRange = NArgsRange{numArgs, numArgs};
     return *this;
 }
 
 ArgumentRegister& ArgumentRegister::nArgs(const std::size_t numArgsMin, const std::size_t numArgsMax)
 {
-    argNumArgsRange = NArgsRange{numArgsMin, numArgsMax};
+    numArgsRange = NArgsRange{numArgsMin, numArgsMax};
     return *this;
 }
 
@@ -58,13 +70,13 @@ ArgumentRegister& ArgumentRegister::nArgs(const NArgsPattern pattern)
     switch (pattern)
     {
         case NArgsPattern::optional:
-            argNumArgsRange = NArgsRange{0, 1};
+            numArgsRange = NArgsRange{0, 1};
             break;
         case NArgsPattern::any:
-            argNumArgsRange = NArgsRange{0, std::numeric_limits<std::size_t>::max()};
+            numArgsRange = NArgsRange{0, (std::numeric_limits<std::size_t>::max)()};
             break;
         case NArgsPattern::atLeastOne:
-            argNumArgsRange = NArgsRange{1, std::numeric_limits<std::size_t>::max()};
+            numArgsRange = NArgsRange{1, (std::numeric_limits<std::size_t>::max)()};
             break;
         default:
             break;
@@ -87,200 +99,255 @@ void ArgumentRegister::validate() const
     }
     else
     {
-        if (!argNumArgsRange.isContain(values.size()) && !defaultValues.has_value())
+        if (!numArgsRange.isContain(values.size()) && !defaultValues.has_value())
         {
             throwNArgsRangeValidationException();
         }
     }
 }
 
+std::string ArgumentRegister::getInlineUsage() const
+{
+    std::stringstream usage;
+    std::string longestName = names.front();
+    for (const auto& str : names)
+    {
+        if (str.size() > longestName.size())
+        {
+            longestName = str;
+        }
+    }
+    if (!isRequired)
+    {
+        usage << '[';
+    }
+    usage << longestName;
+    const std::string metavar = !metavarContent.empty() ? metavarContent : "VAR";
+    if (numArgsRange.getMax() > 0)
+    {
+        usage << ' ' << metavar;
+        if (numArgsRange.getMax() > 1)
+        {
+            usage << "...";
+        }
+    }
+    if (!isRequired)
+    {
+        usage << ']';
+    }
+    return usage.str();
+}
+
 std::size_t ArgumentRegister::getArgumentsLength() const
 {
-    return std::accumulate(
-        std::begin(names),
-        std::end(names),
+    const std::size_t namesSize = std::accumulate(
+        std::cbegin(names),
+        std::cend(names),
         std::size_t(0),
         [](const auto& sum, const auto& str)
         {
-            return (sum + str.size() + 1);
+            return sum + str.size();
         });
-}
 
-std::vector<std::string> ArgumentRegister::splitHelpStringWithDelimiter(const char delim) const
-{
-    std::string origin = helpStr;
-    if (0 == origin.find_first_of(delim))
+    if (checkIfNonOptional(names.front(), prefixChars))
     {
-        origin.erase(0, 1);
-    }
-    if (origin.length() == (origin.find_last_of(delim) + 1))
-    {
-        origin.pop_back();
-    }
-
-    std::vector<std::string> splits;
-    std::size_t pos = 0, prevPos = 0;
-    do
-    {
-        pos = origin.substr(prevPos).find(delim);
-        if (pos == std::string::npos)
+        if (!metavarContent.empty())
         {
-            splits.emplace_back(origin.substr(prevPos));
-            break;
+            return 2 + metavarContent.size();
         }
 
-        pos += prevPos;
-        splits.emplace_back(origin.substr(prevPos, pos - prevPos));
-        prevPos = pos + 1;
+        return 2 + namesSize + (names.size() - 1);
     }
-    while (true);
-
-    return splits;
-}
-
-//! @brief The operator (<<) overloading of the ArgumentRegister class.
-//! @param os - output stream object
-//! @param argument - specific ArgumentRegister object
-//! @return reference of output stream object
-std::ostream& operator<<(std::ostream& os, const ArgumentRegister& argument)
-{
-    std::stringstream nameStream;
-    std::copy(
-        std::begin(argument.names), std::end(argument.names), std::ostream_iterator<std::string>(nameStream, ", "));
-    const auto osLastPos = os.tellp();
-    os << nameStream.str().substr(0, nameStream.str().length() - 2);
-    const auto alignmentLength = os.tellp() - osLastPos;
-    os << "    ";
-
-    std::vector<std::string> helpMsg =
-        (!argument.helpStr.empty()) ? argument.splitHelpStringWithDelimiter('\n') : std::vector<std::string>{};
-    if (helpMsg.size() > 0)
+    std::size_t size = namesSize + 2 * (names.size() - 1);
+    if (!metavarContent.empty() && numArgsRange == NArgsRange{1, 1})
     {
-        os << *helpMsg.cbegin();
-        helpMsg.erase(helpMsg.cbegin());
+        size += metavarContent.size() + 1;
     }
-
-    if (argument.defaultValues.has_value())
-    {
-        if (!argument.helpStr.empty())
-        {
-            os << ' ';
-        }
-        os << "[default: " << argument.defaultValueRepresent << ']';
-    }
-    else if (argument.isRequired)
-    {
-        if (!argument.helpStr.empty())
-        {
-            os << ' ';
-        }
-        os << "[required]";
-    }
-
-    if (helpMsg.size() > 0)
-    {
-        os << '\n';
-        std::string alignStr = "    ";
-        alignStr.insert(0, alignmentLength, ' ');
-        for (auto lineIter = std::cbegin(helpMsg); std::cend(helpMsg) != lineIter; ++lineIter)
-        {
-            os << alignStr << *lineIter;
-            if (std::cend(helpMsg) != (lineIter + 1))
-            {
-                os << '\n';
-            }
-        }
-    }
-
-    os << '\n';
-    return os;
+    return size + 2;
 }
 
 void ArgumentRegister::throwNArgsRangeValidationException() const
 {
     std::stringstream stream;
-    if (!usedNameStr.empty())
+    if (!usedName.empty())
     {
-        stream << usedNameStr << ": ";
-    }
-    if (argNumArgsRange.isExact())
-    {
-        stream << argNumArgsRange.getMin();
-    }
-    else if (argNumArgsRange.isRightBounded())
-    {
-        stream << argNumArgsRange.getMin() << " to " << argNumArgsRange.getMax();
+        stream << usedName << ": ";
     }
     else
     {
-        stream << argNumArgsRange.getMin() << " or more";
+        stream << names.front() << ": ";
     }
-    stream << " argument(str) expected. " << values.size() << " provided.";
+    if (numArgsRange.isExact())
+    {
+        stream << numArgsRange.getMin();
+    }
+    else if (numArgsRange.isRightBounded())
+    {
+        stream << numArgsRange.getMin() << " to " << numArgsRange.getMax();
+    }
+    else
+    {
+        stream << numArgsRange.getMin() << " or more";
+    }
+    stream << " argument(s) expected. " << values.size() << " provided.";
     throw std::runtime_error(stream.str());
 }
 
 void ArgumentRegister::throwRequiredArgNotUsedException() const
 {
     std::stringstream stream;
-    stream << names[0] << ": required";
+    stream << names.front() << ": required";
     throw std::runtime_error(stream.str());
 }
 
 void ArgumentRegister::throwRequiredArgNoValueProvidedException() const
 {
     std::stringstream stream;
-    stream << usedNameStr << ": no value provided";
+    stream << usedName << ": no value provided";
     throw std::runtime_error(stream.str());
 }
 
-int ArgumentRegister::lookAhead(const std::string_view str)
+int ArgumentRegister::lookAhead(const std::string_view name)
 {
-    if (str.empty())
+    if (name.empty())
     {
         return eof;
     }
-    return static_cast<int>(static_cast<unsigned char>(str[0]));
+    return static_cast<int>(static_cast<unsigned char>(name[0]));
 }
 
-bool ArgumentRegister::checkIfOptional(std::string_view name)
+bool ArgumentRegister::checkIfOptional(std::string_view name, const std::string_view prefix)
 {
-    return !checkIfNonOptional(name);
+    return !checkIfNonOptional(name, prefix);
 }
 
-bool ArgumentRegister::checkIfNonOptional(std::string_view name)
+bool ArgumentRegister::checkIfNonOptional(std::string_view name, const std::string_view prefix)
 {
-    switch (lookAhead(name))
+    const int first = lookAhead(name);
+    if (eof == first)
     {
-        case '-':
-        {
-            name.remove_prefix(1);
-            if (name.empty())
-            {
-                return true;
-            }
-            return false;
-        }
-        case eof:
-            [[fallthrough]];
-        default:
-            return true;
+        return true;
     }
+    else if (prefix.find(static_cast<char>(first)) != std::string_view::npos)
+    {
+        name.remove_prefix(1);
+        if (name.empty())
+        {
+            return true;
+        }
+        return false;
+    }
+    return true;
+}
+
+//! @brief The operator (<<) overloading of the ArgumentRegister class.
+//! @param os - output stream object
+//! @param argReg - specific ArgumentRegister object
+//! @return reference of output stream object
+std::ostream& operator<<(std::ostream& os, const ArgumentRegister& argReg)
+{
+    std::stringstream nameStream;
+    nameStream << "  ";
+    if (argReg.checkIfNonOptional(argReg.names.front(), argReg.prefixChars))
+    {
+        if (!argReg.metavarContent.empty())
+        {
+            nameStream << argReg.metavarContent;
+        }
+        else
+        {
+            nameStream << join(argReg.names.cbegin(), argReg.names.cend(), " ");
+        }
+    }
+    else
+    {
+        nameStream << join(argReg.names.cbegin(), argReg.names.cend(), ", ");
+        if (!argReg.metavarContent.empty() && (ArgumentRegister::NArgsRange{1, 1} == argReg.numArgsRange))
+        {
+            nameStream << ' ' << argReg.metavarContent;
+        }
+    }
+
+    const auto streamWidth = os.width();
+    const std::string namePadding = std::string(nameStream.str().size(), ' ');
+    std::size_t pos = 0;
+    std::size_t prev = 0;
+    bool firstLine = true;
+    const char* hspace = "  ";
+    os << nameStream.str();
+    std::string_view helpView(argReg.helpContent);
+    while ((pos = argReg.helpContent.find('\n', prev)) != std::string::npos)
+    {
+        auto line = helpView.substr(prev, pos - prev + 1);
+        if (firstLine)
+        {
+            os << hspace << line;
+            firstLine = false;
+        }
+        else
+        {
+            os.width(streamWidth);
+            os << namePadding << hspace << line;
+        }
+        prev += pos - prev + 1;
+    }
+    if (firstLine)
+    {
+        os << hspace << argReg.helpContent;
+    }
+    else
+    {
+        const auto leftover = helpView.substr(prev, argReg.helpContent.size() - prev);
+        if (!leftover.empty())
+        {
+            os.width(streamWidth);
+            os << namePadding << hspace << leftover;
+        }
+    }
+
+    if (!argReg.helpContent.empty())
+    {
+        os << ' ';
+    }
+    os << argReg.numArgsRange;
+
+    if (argReg.defaultValues.has_value() && argReg.numArgsRange != ArgumentRegister::NArgsRange{0, 0})
+    {
+        os << "[default: " << argReg.defaultValueRepresent << ']';
+    }
+    else if (argReg.isRequired)
+    {
+        os << "[required]";
+    }
+
+    os << '\n';
+    return os;
 }
 
 Argument::Argument(const Argument& arg) :
     title(arg.title),
     version(arg.version),
+    descrText(arg.descrText),
+    prefixChars(arg.prefixChars),
+    assignChars(arg.assignChars),
     isParsed(arg.isParsed),
     nonOptionalArguments(arg.nonOptionalArguments),
-    optionalArguments(arg.optionalArguments)
+    optionalArguments(arg.optionalArguments),
+    parserPath(arg.parserPath),
+    subParsers(arg.subParsers)
 {
-    for (auto iterator = std::begin(nonOptionalArguments); std::end(nonOptionalArguments) != iterator; ++iterator)
+    for (auto iterator = std::begin(nonOptionalArguments); iterator != std::end(nonOptionalArguments); ++iterator)
     {
         indexArgument(iterator);
     }
-    for (auto iterator = std::begin(optionalArguments); std::end(optionalArguments) != iterator; ++iterator)
+    for (auto iterator = std::begin(optionalArguments); iterator != std::end(optionalArguments); ++iterator)
     {
         indexArgument(iterator);
+    }
+    for (auto iterator = std::begin(subParsers); iterator != std::end(subParsers); ++iterator)
+    {
+        subParserMap.insert_or_assign(iterator->get().title, iterator);
+        subParserUsed.insert_or_assign(iterator->get().title, false);
     }
 }
 
@@ -288,6 +355,44 @@ Argument& Argument::operator=(const Argument& arg)
 {
     auto temp = arg;
     std::swap(*this, temp);
+    return *this;
+}
+
+Argument::operator bool() const
+{
+    const auto isArgUsed = std::any_of(
+        argumentMap.cbegin(),
+        argumentMap.cend(),
+        [](const auto& iterator)
+        {
+            return iterator.second->isUsed;
+        });
+    const auto isSubParserUsed = std::any_of(
+        subParserUsed.cbegin(),
+        subParserUsed.cend(),
+        [](const auto& iterator)
+        {
+            return iterator.second;
+        });
+
+    return isParsed && (isArgUsed || isSubParserUsed);
+}
+
+Argument& Argument::addDescription(const std::string& text)
+{
+    descrText = text;
+    return *this;
+}
+
+Argument& Argument::setPrefixChars(const std::string& prefix)
+{
+    prefixChars = prefix;
+    return *this;
+}
+
+Argument& Argument::setAssignChars(const std::string& assign)
+{
+    assignChars = assign;
     return *this;
 }
 
@@ -300,11 +405,24 @@ void Argument::parseArgs(const std::vector<std::string>& arguments)
     }
 }
 
-void Argument::parseArgs(int argc, const char* const argv[])
+void Argument::parseArgs(const int argc, const char* const argv[])
 {
-    std::vector<std::string> arguments;
-    std::copy(argv, argv + argc, std::back_inserter(arguments));
-    parseArgs(arguments);
+    parseArgs({argv, argv + argc});
+}
+
+std::vector<std::string> Argument::parseKnownArgs(const std::vector<std::string>& arguments)
+{
+    auto unknownArguments = parseKnownArgsInternal(arguments);
+    for ([[maybe_unused]] const auto& [unused, argument] : argumentMap)
+    {
+        argument->validate();
+    }
+    return unknownArguments;
+}
+
+std::vector<std::string> Argument::parseKnownArgs(const int argc, const char* const argv[])
+{
+    return parseKnownArgs({argv, argv + argc});
 }
 
 bool Argument::isUsed(const std::string_view argName) const
@@ -312,74 +430,44 @@ bool Argument::isUsed(const std::string_view argName) const
     return (*this)[argName].isUsed;
 }
 
+auto Argument::isSubCommandUsed(const std::string_view subCommandName) const
+{
+    return subParserUsed.at(subCommandName);
+}
+
+auto Argument::isSubCommandUsed(const Argument& subParser) const
+{
+    return isSubCommandUsed(subParser.title);
+}
+
 ArgumentRegister& Argument::operator[](const std::string_view argName) const
 {
     auto iterator = argumentMap.find(argName);
-    if (argumentMap.end() != iterator)
+    if (iterator != argumentMap.cend())
     {
         return *(iterator->second);
     }
-    if ('-' != argName.front())
+    if (!isValidPrefixChar(argName.front()))
     {
         std::string name(argName);
+        const auto legalPrefixChar = getAnyValidPrefixChar();
+        const auto prefix = std::string(1, legalPrefixChar);
 
-        name = '-' + name;
+        name = prefix + name;
         iterator = argumentMap.find(name);
-        if (argumentMap.end() != iterator)
+        if (iterator != argumentMap.cend())
         {
             return *(iterator->second);
         }
 
-        name = '-' + name;
+        name = prefix + name;
         iterator = argumentMap.find(name);
-        if (argumentMap.end() != iterator)
+        if (iterator != argumentMap.cend())
         {
             return *(iterator->second);
         }
     }
     throw std::logic_error("No such argument: " + std::string(argName));
-}
-
-//! @brief The operator (<<) overloading of the Argument class.
-//! @param os - output stream object
-//! @param parser - specific Argument object
-//! @return reference of output stream object
-std::ostream& operator<<(std::ostream& os, const Argument& parser)
-{
-    os.setf(std::ios_base::left);
-    os << "Usage: " << parser.title << " <options...> ";
-    std::size_t longestArgLength = parser.getLengthOfLongestArgument();
-
-    for (const auto& argument : parser.nonOptionalArguments)
-    {
-        os << '[' << argument.names.front() << "...] ";
-    }
-    os << "\n\n";
-
-    if (!parser.optionalArguments.empty())
-    {
-        os << "optional:\n";
-    }
-
-    for (const auto& argument : parser.optionalArguments)
-    {
-        os.width(longestArgLength);
-        os << argument;
-    }
-    os << '\n';
-
-    if (!parser.nonOptionalArguments.empty())
-    {
-        os << "non-optional:\n";
-    }
-
-    for (const auto& argument : parser.nonOptionalArguments)
-    {
-        os.width(longestArgLength);
-        os << argument;
-    }
-
-    return os;
 }
 
 std::stringstream Argument::help() const
@@ -389,43 +477,166 @@ std::stringstream Argument::help() const
     return out;
 }
 
-void Argument::parseArgsInternal(const std::vector<std::string>& arguments)
+std::string Argument::usage() const
 {
+    std::stringstream stream;
+    stream << "Usage: " << title;
+
+    for (const auto& argument : optionalArguments)
+    {
+        stream << ' ' << argument.getInlineUsage();
+    }
+    for (const auto& argument : nonOptionalArguments)
+    {
+        if (!argument.metavarContent.empty())
+        {
+            stream << ' ' << argument.metavarContent;
+        }
+        else
+        {
+            stream << ' ' << argument.names.front();
+        }
+    }
+
+    if (!subParserMap.empty())
+    {
+        stream << " {";
+        std::size_t i = 0;
+        for (const auto& [command, unused] : subParserMap)
+        {
+            if (0 == i)
+            {
+                stream << command;
+            }
+            else
+            {
+                stream << ',' << command;
+            }
+            ++i;
+        }
+        stream << '}';
+    }
+
+    return stream.str();
+}
+
+void Argument::addSubParser(Argument& parser)
+{
+    parser.parserPath = title + ' ' + parser.title;
+    auto iterator = subParsers.emplace(std::cend(subParsers), parser);
+    subParserMap.insert_or_assign(parser.title, iterator);
+    subParserUsed.insert_or_assign(parser.title, false);
+}
+
+bool Argument::isValidPrefixChar(const char c) const
+{
+    return prefixChars.find(c) != std::string::npos;
+}
+
+char Argument::getAnyValidPrefixChar() const
+{
+    return prefixChars[0];
+}
+
+std::vector<std::string> Argument::preprocessArguments(const std::vector<std::string>& rawArguments) const
+{
+    std::vector<std::string> arguments{};
+    for (const auto& arg : rawArguments)
+    {
+        const auto argumentStartsWithPrefixChars = [this](const std::string& str)
+        {
+            if (!str.empty())
+            {
+                const auto legalPrefix = [this](char c)
+                {
+                    return prefixChars.find(c) != std::string::npos;
+                };
+
+                const auto windowsStyle = legalPrefix('/');
+                if (windowsStyle)
+                {
+                    if (legalPrefix(str[0]))
+                    {
+                        return true;
+                    }
+                }
+                else
+                {
+                    if (str.size() > 1)
+                    {
+                        return (legalPrefix(str[0]) && legalPrefix(str[1]));
+                    }
+                }
+            }
+            return false;
+        };
+
+        const auto assignCharPos = arg.find_first_of(assignChars);
+        if ((argumentMap.find(arg) == argumentMap.cend()) && argumentStartsWithPrefixChars(arg)
+            && (std::string::npos != assignCharPos))
+        {
+            const std::string optName = arg.substr(0, assignCharPos);
+            if (argumentMap.find(optName) != argumentMap.cend())
+            {
+                arguments.emplace_back(optName);
+                arguments.emplace_back(arg.substr(assignCharPos + 1));
+                continue;
+            }
+        }
+        arguments.emplace_back(arg);
+    }
+    return arguments;
+}
+
+void Argument::parseArgsInternal(const std::vector<std::string>& rawArguments)
+{
+    const auto arguments = preprocessArguments(rawArguments);
     if (title.empty() && !arguments.empty())
     {
         title = arguments.front();
     }
-    auto end = std::end(arguments);
+
+    const auto end = std::cend(arguments);
     auto nonOptionalArgumentIter = std::begin(nonOptionalArguments);
     for (auto iterator = std::next(std::begin(arguments)); end != iterator;)
     {
         const auto& currentArgument = *iterator;
-        if (ArgumentRegister::checkIfNonOptional(currentArgument))
+        if (ArgumentRegister::checkIfNonOptional(currentArgument, prefixChars))
         {
-            if (std::end(nonOptionalArguments) == nonOptionalArgumentIter)
+            if (std::cend(nonOptionalArguments) == nonOptionalArgumentIter)
             {
+                const std::string_view maybeCommand = currentArgument;
+                const auto subParserIter = subParserMap.find(maybeCommand);
+                if (subParserMap.cend() != subParserIter)
+                {
+                    const auto unprocessedArguments = std::vector<std::string>(iterator, end);
+                    isParsed = true;
+                    subParserUsed[maybeCommand] = true;
+                    return subParserIter->second->get().parseArgs(unprocessedArguments);
+                }
+
                 throw std::runtime_error("Maximum number of non-optional arguments exceeded.");
             }
-            auto argument = nonOptionalArgumentIter++;
+            const auto argument = nonOptionalArgumentIter++;
             iterator = argument->consume(iterator, end);
             continue;
         }
 
-        auto argMapIter = argumentMap.find(currentArgument);
-        if (argumentMap.end() != argMapIter)
+        const auto argMapIter = argumentMap.find(currentArgument);
+        if (argumentMap.cend() != argMapIter)
         {
-            auto argument = argMapIter->second;
+            const auto argument = argMapIter->second;
             iterator = argument->consume(std::next(iterator), end, argMapIter->first);
         }
         else if (const auto& compoundArg = currentArgument;
-                 (compoundArg.size() > 1) && ('-' == compoundArg[0]) && ('-' != compoundArg[1]))
+                 (compoundArg.size() > 1) && isValidPrefixChar(compoundArg[0]) && !isValidPrefixChar(compoundArg[1]))
         {
             ++iterator;
             for (std::size_t i = 1; i < compoundArg.size(); ++i)
             {
-                auto hypotheticalArg = std::string{'-', compoundArg[i]};
-                auto argMapIter2 = argumentMap.find(hypotheticalArg);
-                if (argumentMap.end() != argMapIter2)
+                const auto hypotheticalArg = std::string{'-', compoundArg[i]};
+                const auto argMapIter2 = argumentMap.find(hypotheticalArg);
+                if (argumentMap.cend() != argMapIter2)
                 {
                     auto argument = argMapIter2->second;
                     iterator = argument->consume(iterator, end, argMapIter2->first);
@@ -444,6 +655,81 @@ void Argument::parseArgsInternal(const std::vector<std::string>& arguments)
     isParsed = true;
 }
 
+std::vector<std::string> Argument::parseKnownArgsInternal(const std::vector<std::string>& rawArguments)
+{
+    const auto arguments = preprocessArguments(rawArguments);
+    std::vector<std::string> unknownArguments{};
+    if (title.empty() && !arguments.empty())
+    {
+        title = arguments.front();
+    }
+
+    const auto end = std::cend(arguments);
+    auto nonOptionalArgumentIter = std::begin(nonOptionalArguments);
+    for (auto iterator = std::next(std::begin(arguments)); end != iterator;)
+    {
+        const auto& currentArgument = *iterator;
+        if (ArgumentRegister::checkIfNonOptional(currentArgument, prefixChars))
+        {
+            if (std::cend(nonOptionalArguments) == nonOptionalArgumentIter)
+            {
+                const std::string_view maybeCommand = currentArgument;
+                const auto subParserIter = subParserMap.find(maybeCommand);
+                if (subParserMap.cend() != subParserIter)
+                {
+                    const auto unprocessedArguments = std::vector<std::string>(iterator, end);
+                    isParsed = true;
+                    subParserUsed[maybeCommand] = true;
+                    return subParserIter->second->get().parseKnownArgsInternal(unprocessedArguments);
+                }
+
+                unknownArguments.emplace_back(currentArgument);
+                ++iterator;
+            }
+            else
+            {
+                const auto argument = nonOptionalArgumentIter++;
+                iterator = argument->consume(iterator, end);
+            }
+            continue;
+        }
+
+        const auto argMapIter = argumentMap.find(currentArgument);
+        if (argumentMap.cend() != argMapIter)
+        {
+            const auto argument = argMapIter->second;
+            iterator = argument->consume(std::next(iterator), end, argMapIter->first);
+        }
+        else if (const auto& compoundArg = currentArgument;
+                 (compoundArg.size() > 1) && isValidPrefixChar(compoundArg[0]) && !isValidPrefixChar(compoundArg[1]))
+        {
+            ++iterator;
+            for (std::size_t i = 1; i < compoundArg.size(); ++i)
+            {
+                const auto hypotheticalArg = std::string{'-', compoundArg[i]};
+                const auto argMapIter2 = argumentMap.find(hypotheticalArg);
+                if (argumentMap.cend() != argMapIter2)
+                {
+                    const auto argument = argMapIter2->second;
+                    iterator = argument->consume(iterator, end, argMapIter2->first);
+                }
+                else
+                {
+                    unknownArguments.emplace_back(currentArgument);
+                    break;
+                }
+            }
+        }
+        else
+        {
+            unknownArguments.emplace_back(currentArgument);
+            ++iterator;
+        }
+    }
+    isParsed = true;
+    return unknownArguments;
+}
+
 std::size_t Argument::getLengthOfLongestArgument() const
 {
     if (argumentMap.empty())
@@ -453,16 +739,71 @@ std::size_t Argument::getLengthOfLongestArgument() const
     std::size_t maxSize = 0;
     for ([[maybe_unused]] const auto& [unused, argument] : argumentMap)
     {
-        maxSize = std::max(maxSize, argument->getArgumentsLength());
+        maxSize = std::max<std::size_t>(maxSize, argument->getArgumentsLength());
+    }
+    for ([[maybe_unused]] const auto& [command, unused] : subParserMap)
+    {
+        maxSize = std::max<std::size_t>(maxSize, command.size());
     }
     return maxSize;
 }
 
-void Argument::indexArgument(ListIterator iterator)
+void Argument::indexArgument(ArgumentRegisterIter iterator)
 {
     for (const auto& name : std::as_const(iterator->names))
     {
         argumentMap.insert_or_assign(name, iterator);
     }
+}
+
+//! @brief The operator (<<) overloading of the Argument class.
+//! @param os - output stream object
+//! @param arg - specific Argument object
+//! @return reference of output stream object
+std::ostream& operator<<(std::ostream& os, const Argument& arg)
+{
+    os.setf(std::ios_base::left);
+    const auto longestArgLength = arg.getLengthOfLongestArgument();
+
+    os << arg.usage() << "\n\n";
+
+    if (!arg.descrText.empty())
+    {
+        os << arg.descrText << "\n\n";
+    }
+
+    if (!arg.optionalArguments.empty())
+    {
+        os << "optional:\n";
+    }
+    for (const auto& argument : arg.optionalArguments)
+    {
+        os.width(static_cast<std::streamsize>(longestArgLength));
+        os << argument;
+    }
+
+    if (!arg.nonOptionalArguments.empty())
+    {
+        os << (arg.optionalArguments.empty() ? "" : "\n") << "non-optional:\n";
+    }
+    for (const auto& argument : arg.nonOptionalArguments)
+    {
+        os.width(static_cast<std::streamsize>(longestArgLength));
+        os << argument;
+    }
+
+    if (!arg.subParserMap.empty())
+    {
+        os << (arg.optionalArguments.empty() ? (arg.nonOptionalArguments.empty() ? "" : "\n") : "\n")
+           << "sub-commands:\n";
+        for (const auto& [command, subParser] : arg.subParserMap)
+        {
+            os << std::setw(2) << ' ';
+            os << std::setw(static_cast<int>(longestArgLength - 2)) << command;
+            os << ' ' << subParser->get().descrText << '\n';
+        }
+    }
+
+    return os;
 }
 } // namespace utility::argument
