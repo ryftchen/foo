@@ -386,7 +386,7 @@ function perform_format_option()
 {
     if [[ ${ARGS[format]} = true ]]; then
         shell_command "find ./${FOLDER[app]} ./${FOLDER[util]} ./${FOLDER[algo]} ./${FOLDER[ds]} ./${FOLDER[dp]} \
-./${FOLDER[num]} ./${FOLDER[tst]} -name *.cpp -o -name *.hpp -o -name *.tpp | grep -v '/${FOLDER[bld]}/' \
+./${FOLDER[num]} ./${FOLDER[tst]} -name '*.cpp' -o -name '*.hpp' -o -name '*.tpp' | grep -v '/${FOLDER[bld]}/' \
 | xargs clang-format-12 -i --verbose --Werror"
         shell_command "shfmt -l -w ./${FOLDER[scr]}/*.sh"
         shell_command "black --config ./.toml ./${FOLDER[scr]}/*.py"
@@ -411,9 +411,9 @@ function perform_lint_option()
             sed -i $(("${line}" - 2)),$(("${line}" + 3))d "./${app_comp_cmd}"
         done
         shell_command "find ./${FOLDER[app]} ./${FOLDER[util]} ./${FOLDER[algo]} ./${FOLDER[ds]} ./${FOLDER[dp]} \
-./${FOLDER[num]} -name *.cpp -o -name *.hpp | xargs run-clang-tidy-12 -p ./${FOLDER[bld]} -quiet"
+./${FOLDER[num]} -name '*.cpp' -o -name '*.hpp' | xargs run-clang-tidy-12 -p ./${FOLDER[bld]} -quiet"
         shell_command "find ./${FOLDER[app]} ./${FOLDER[util]} ./${FOLDER[algo]} ./${FOLDER[ds]} ./${FOLDER[dp]} \
-./${FOLDER[num]} -name *.tpp | xargs clang-tidy-12 --use-color -p ./${FOLDER[bld]} -quiet"
+./${FOLDER[num]} -name '*.tpp' | xargs clang-tidy-12 --use-color -p ./${FOLDER[bld]} -quiet"
         rm -rf "./${app_comp_cmd}" && mv "./${app_comp_cmd}.bak" "./${app_comp_cmd}"
 
         local tst_comp_cmd=${FOLDER[tst]}/${FOLDER[bld]}/${COMP_CMD}
@@ -422,7 +422,7 @@ function perform_lint_option()
         fi
         compdb -p "./${FOLDER[tst]}/${FOLDER[bld]}" list >"./${COMP_CMD}" \
             && mv "./${tst_comp_cmd}" "./${tst_comp_cmd}.bak" && mv "./${COMP_CMD}" "./${FOLDER[tst]}/${FOLDER[bld]}"
-        shell_command "find ./${FOLDER[tst]} -name *.cpp \
+        shell_command "find ./${FOLDER[tst]} -name '*.cpp' \
 | xargs run-clang-tidy-12 -p ./${FOLDER[tst]}/${FOLDER[bld]} -quiet"
         rm -rf "./${tst_comp_cmd}" && mv "./${tst_comp_cmd}.bak" "./${tst_comp_cmd}"
 
@@ -435,10 +435,10 @@ function perform_count_option()
 {
     if [[ ${ARGS[count]} = true ]]; then
         shell_command "find ./${FOLDER[app]} ./${FOLDER[util]} ./${FOLDER[algo]} ./${FOLDER[ds]} ./${FOLDER[dp]} \
-./${FOLDER[num]} ./${FOLDER[tst]} -name *.cpp -o -name *.hpp -o -name *.tpp | grep -v '/${FOLDER[bld]}/' \
+./${FOLDER[num]} ./${FOLDER[tst]} -name '*.cpp' -o -name '*.hpp' -o -name '*.tpp' | grep -v '/${FOLDER[bld]}/' \
 | xargs cloc --config ./.cloc-option --force-lang='C++',tpp"
-        shell_command "find ./${FOLDER[scr]} -name *.sh | xargs cloc --config ./.cloc-option"
-        shell_command "find ./${FOLDER[scr]} -name *.py | xargs cloc --config ./.cloc-option"
+        shell_command "find ./${FOLDER[scr]} -name '*.sh' | xargs cloc --config ./.cloc-option"
+        shell_command "find ./${FOLDER[scr]} -name '*.py' | xargs cloc --config ./.cloc-option"
     fi
 }
 
