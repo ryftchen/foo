@@ -184,38 +184,68 @@ void View::runViewer()
         }
     };
 
-    try
+    for (;;)
     {
-        checkIfExceptedFSMState(State::init);
-        processEvent(CreateServer());
-
-        checkIfExceptedFSMState(State::idle);
-        processEvent(GoViewing());
-
-        checkIfExceptedFSMState(State::work);
-        while (isViewing.load())
+        try
         {
-            std::unique_lock<std::mutex> lock(mtx);
-            cv.wait(
-                lock,
-                [this]()
+            checkIfExceptedFSMState(State::init);
+            processEvent(CreateServer());
+
+            checkIfExceptedFSMState(State::idle);
+            processEvent(GoViewing());
+
+            checkIfExceptedFSMState(State::work);
+            while (isViewing.load())
+            {
+                std::unique_lock<std::mutex> lock(mtx);
+                cv.wait(
+                    lock,
+                    [this]()
+                    {
+                        return (!isViewing.load() || restartRequest.load());
+                    });
+
+                if (restartRequest.load())
                 {
-                    return !isViewing.load();
-                });
+                    break;
+                }
+            }
+
+            if (restartRequest.load())
+            {
+                processEvent(Relaunch());
+                continue;
+            }
+            processEvent(DestroyServer());
+
+            checkIfExceptedFSMState(State::idle);
+            processEvent(NoViewing());
+
+            checkIfExceptedFSMState(State::done);
         }
+        catch (const std::exception& error)
+        {
+            LOG_ERR << error.what() << " Expected viewer state: " << expectedState
+                    << ", current viewer state: " << State(currentState()) << '.';
+            if (std::unique_lock<std::mutex> lock(mtx); true)
+            {
+                cv.wait(lock);
+            }
 
-        processEvent(DestroyServer());
-
-        checkIfExceptedFSMState(State::idle);
-        processEvent(NoViewing());
-
-        checkIfExceptedFSMState(State::done);
-    }
-    catch (const std::exception& error)
-    {
-        LOG_ERR << error.what() << " Expected viewer state: " << expectedState
-                << ", current viewer state: " << State(currentState()) << '.';
-        stopViewing();
+            if (restartRequest.load())
+            {
+                processEvent(Relaunch());
+                if (currentState() == State::init)
+                {
+                    continue;
+                }
+                else
+                {
+                    LOG_ERR << "Failed to restart viewer.";
+                }
+            }
+        }
+        break;
     }
 }
 
@@ -250,6 +280,7 @@ void View::waitToStop()
     if (std::unique_lock<std::mutex> lock(mtx); true)
     {
         isViewing.store(false);
+        restartRequest.store(false);
 
         lock.unlock();
         cv.notify_one();
@@ -279,6 +310,16 @@ void View::waitToStop()
         },
         intervalOfWaitViewer);
     expiryTimer.reset();
+}
+
+void View::requestToRestart()
+{
+    std::unique_lock<std::mutex> lock(mtx);
+    restartRequest.store(true);
+    lock.unlock();
+    cv.notify_one();
+    utility::time::millisecondLevelSleep(1);
+    lock.lock();
 }
 
 tlv::TLVValue View::parseTLVPacket(char* buffer, const int length)
@@ -351,7 +392,7 @@ void View::cleanUpOutputs()
     LOG_REQUEST_TO_RESTART;
     LOG_WAIT_TO_START;
     utility::time::millisecondLevelSleep(log::intervalOfWaitLogger);
-    LOG_INF << "Clean up the outputs.";
+    LOG_INF << "Cleaned up the outputs.";
 }
 
 int View::fillSharedMemory(const std::string& contents)
@@ -440,7 +481,8 @@ void View::createViewServer()
     using utility::socket::Socket;
     using utility::common::operator""_bkdrHash;
 
-    tcpServer.onNewConnection = [this](utility::socket::TCPSocket* newSocket)
+    tcpServer = std::make_shared<utility::socket::TCPServer>();
+    tcpServer->onNewConnection = [this](utility::socket::TCPSocket* newSocket)
     {
         newSocket->onMessageReceived = [this, newSocket](const std::string& message)
         {
@@ -475,7 +517,8 @@ void View::createViewServer()
         };
     };
 
-    udpServer.onMessageReceived = [this](const std::string& message, const std::string& ip, const std::uint16_t port)
+    udpServer = std::make_shared<utility::socket::UDPServer>();
+    udpServer->onMessageReceived = [this](const std::string& message, const std::string& ip, const std::uint16_t port)
     {
         try
         {
@@ -488,8 +531,8 @@ void View::createViewServer()
             if ("stop" == message)
             {
                 buildStopPacket(buffer);
-                udpServer.toSendTo(buffer, sizeof(buffer), ip, port);
-                udpServer.setNonBlocking();
+                udpServer->toSendTo(buffer, sizeof(buffer), ip, port);
+                udpServer->setNonBlocking();
                 return;
             }
 
@@ -499,7 +542,7 @@ void View::createViewServer()
                 throw std::logic_error("Unknown UDP message.");
             }
             (*get<BuildFunctor>(optionIter->second))(buffer);
-            udpServer.toSendTo(buffer, sizeof(buffer), ip, port);
+            udpServer->toSendTo(buffer, sizeof(buffer), ip, port);
         }
         catch (std::exception& error)
         {
@@ -512,25 +555,36 @@ void View::startViewing()
 {
     std::unique_lock<std::mutex> lock(mtx);
     isViewing.store(true);
-    tcpServer.toBind(tcpPort);
-    tcpServer.toListen();
-    tcpServer.toAccept();
-    udpServer.toBind(udpPort);
-    udpServer.toReceiveFrom();
+    tcpServer->toBind(tcpPort);
+    tcpServer->toListen();
+    tcpServer->toAccept();
+    udpServer->toBind(udpPort);
+    udpServer->toReceiveFrom();
 }
 
 void View::destroyViewServer()
 {
-    tcpServer.toClose();
-    udpServer.toClose();
+    tcpServer->toClose();
+    udpServer->toClose();
 }
 
 void View::stopViewing()
 {
     std::unique_lock<std::mutex> lock(mtx);
     isViewing.store(false);
-    tcpServer.waitIfAlive();
-    udpServer.waitIfAlive();
+    restartRequest.store(false);
+    tcpServer->waitIfAlive();
+    udpServer->waitIfAlive();
+}
+
+void View::rollBack()
+{
+    std::unique_lock<std::mutex> lock(mtx);
+    isViewing.store(false);
+    restartRequest.store(false);
+
+    tcpServer.reset();
+    udpServer.reset();
 }
 
 //! @brief The operator (<<) overloading of the State enum.

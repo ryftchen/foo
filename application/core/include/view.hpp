@@ -18,6 +18,8 @@
 #define VIEW_WAIT_TO_START application::view::View::getInstance().waitToStart()
 //! @brief Try to stop viewing.
 #define VIEW_WAIT_TO_STOP application::view::View::getInstance().waitToStop()
+//! @brief Try to restart viewing.
+#define VIEW_REQUEST_TO_RESTART application::view::View::getInstance().requestToRestart()
 //! @brief Get all viewer options.
 #define VIEW_OPTIONS application::view::View::getInstance().getViewerOptions()
 
@@ -154,6 +156,8 @@ public:
     void waitToStart();
     //! @brief Wait for the viewer to stop. External use.
     void waitToStop();
+    //! @brief Request to restart the viewer. External use.
+    void requestToRestart();
 
     //! @brief Alias for the functor to build the TLV packet.
     typedef int (*BuildFunctor)(char*);
@@ -251,15 +255,17 @@ private:
     static constexpr std::uint32_t maxViewNumOfLines{20};
 
     //! @brief TCP server.
-    utility::socket::TCPServer tcpServer;
+    std::shared_ptr<utility::socket::TCPServer> tcpServer;
     //! @brief UDP server.
-    utility::socket::UDPServer udpServer;
+    std::shared_ptr<utility::socket::UDPServer> udpServer;
     //! @brief Mutex for controlling server.
     mutable std::mutex mtx;
     //! @brief The synchronization condition for server. Use with mtx.
     std::condition_variable cv;
     //! @brief Flag to indicate whether it is viewing.
     std::atomic<bool> isViewing{false};
+    //! @brief Flag for restart request.
+    std::atomic<bool> restartRequest{false};
 
     //! @brief FSM event. Create server.
     struct CreateServer
@@ -277,6 +283,10 @@ private:
     struct NoViewing
     {
     };
+    //! @brief FSM event. Relaunch.
+    struct Relaunch
+    {
+    };
 
     //! @brief Create the view server.
     void createViewServer();
@@ -286,6 +296,8 @@ private:
     void destroyViewServer();
     //! @brief Stop viewing.
     void stopViewing();
+    //! @brief Roll back.
+    void rollBack();
 
     // clang-format off
     //! @brief Alias for the transition map of the viewer.
@@ -295,7 +307,9 @@ private:
         Row< State::init , CreateServer  , State::idle  , &View::createViewServer                         >,
         Row< State::idle , GoViewing     , State::work  , &View::startViewing                             >,
         Row< State::work , DestroyServer , State::idle  , &View::destroyViewServer                        >,
-        Row< State::idle , NoViewing     , State::done  , &View::stopViewing                              >
+        Row< State::idle , NoViewing     , State::done  , &View::stopViewing                              >,
+        Row< State::idle , Relaunch      , State::init  , &View::rollBack                                 >,
+        Row< State::work , Relaunch      , State::init  , &View::rollBack                                 >
         // --------------+---------------+--------------+--------------------------+-----------------------
         >;
     // clang-format on
