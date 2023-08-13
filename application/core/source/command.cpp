@@ -259,8 +259,8 @@ void Command::runCommander(const int argc, const char* const argv[])
         {
             constexpr std::uint32_t childThdNum = 2;
             auto threads = std::make_shared<utility::thread::Thread>(childThdNum);
-            threads->enqueue("commander_fore", &Command::foregroundHandler, this, argc, argv);
-            threads->enqueue("commander_back", &Command::backgroundHandler, this);
+            threads->enqueue("commander_fg", &Command::foregroundHandler, this, argc, argv);
+            threads->enqueue("commander_bg", &Command::backgroundHandler, this);
         }
         else
         {
@@ -338,11 +338,7 @@ void Command::validateBasicTask()
         {
             continue;
         }
-
-        if (hasAnyTask())
-        {
-            throwExcessArgumentException();
-        }
+        checkForExcessArguments();
 
         dispatchedTask.basicTask.primaryBit.set(BasicTask::Category(i));
     }
@@ -356,10 +352,7 @@ void Command::validateRegularTask()
         {
             continue;
         }
-        if (hasAnyTask())
-        {
-            throwExcessArgumentException();
-        }
+        checkForExcessArguments();
 
         const auto& subCLI = mainCLI.at<utility::argument::Argument>(taskCategory);
         if (!subCLI)
@@ -378,10 +371,7 @@ void Command::validateRegularTask()
             {
                 continue;
             }
-            if (hasAnyTask())
-            {
-                throwExcessArgumentException();
-            }
+            checkForExcessArguments();
 
             const auto tasks = subCLI.get<std::vector<std::string>>(taskType);
             for (const auto& task : tasks)
@@ -630,6 +620,15 @@ std::string Command::getIconBanner()
     banner += R"(")";
 
     return banner;
+}
+
+void Command::checkForExcessArguments()
+{
+    if (hasAnyTask())
+    {
+        dispatchedTask.reset();
+        throw std::runtime_error("Excess arguments.");
+    }
 }
 
 //! @brief Get memory pool when making multi-threading.

@@ -208,7 +208,7 @@ private:
             static constexpr std::uint8_t value{4};
         };
 
-        //! @brief Flag to indicate whether the task is help only.
+        //! @brief Flag for help only.
         bool helpOnly{false};
 
         //! @brief Check whether any regular tasks do not exist.
@@ -266,20 +266,14 @@ private:
     //! @brief Get ASCII banner text.
     //! @return ASCII banner text content
     static std::string getIconBanner();
-    //! @brief Throw an exception when excess arguments.
-    [[noreturn]] inline void throwExcessArgumentException();
+    //! @brief Check for excess arguments.
+    void checkForExcessArguments();
 
     //! @brief Latency for console.
     static constexpr std::uint16_t latency{10};
     //! @brief Maximum latency for console.
     static constexpr std::uint16_t maxLatency{200};
 };
-
-inline void Command::throwExcessArgumentException()
-{
-    dispatchedTask.reset();
-    throw std::runtime_error("Excess argument.");
-}
 
 template <typename T>
 auto Command::get(const TaskTypeTuple& tuple) const
