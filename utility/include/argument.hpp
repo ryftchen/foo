@@ -193,7 +193,7 @@ std::string join(StrIter first, StrIter last, const std::string& separator)
 }
 
 //! @brief Enumerate specific argument patterns.
-enum class NArgsPattern : std::uint8_t
+enum class ArgsNumPattern : std::uint8_t
 {
     optional,
     any,
@@ -203,81 +203,81 @@ enum class NArgsPattern : std::uint8_t
 class Argument;
 
 //! @brief Argument register.
-class ArgumentRegister
+class Register
 {
 public:
-    //! @brief Construct a new ArgumentRegister object.
+    //! @brief Construct a new Register object.
     //! @tparam N - number of arguments
     //! @tparam I - index of sequences related to arguments
     //! @param prefix - prefix characters
     //! @param array - array of arguments to be registered
     //! @param sequence - sequences related to arguments
     template <std::size_t N, std::size_t... I>
-    explicit ArgumentRegister(
+    explicit Register(
         std::string_view prefix,
         std::array<std::string_view, N>&& array,
         std::index_sequence<I...> sequence);
-    //! @brief Construct a new ArgumentRegister object.
+    //! @brief Construct a new Register object.
     //! @tparam N - number of arguments
     //! @param prefix - prefix characters
     //! @param array - array of arguments to be registered
     template <std::size_t N>
-    explicit ArgumentRegister(std::string_view prefix, std::array<std::string_view, N>&& array) :
-        ArgumentRegister(prefix, std::move(array), std::make_index_sequence<N>{}){};
+    explicit Register(std::string_view prefix, std::array<std::string_view, N>&& array) :
+        Register(prefix, std::move(array), std::make_index_sequence<N>{}){};
 
     //! @brief Set help message.
     //! @param content - help message content
-    //! @return reference of ArgumentRegister object
-    ArgumentRegister& help(const std::string& content);
+    //! @return reference of Register object
+    Register& help(const std::string& content);
     //! @brief Set metavar message.
     //! @param content - metavar message content
-    //! @return reference of ArgumentRegister object
-    ArgumentRegister& metavar(const std::string& content);
+    //! @return reference of Register object
+    Register& metavar(const std::string& content);
     //! @brief Set default value.
     //! @tparam T - type of default value
     //! @param value - default value
-    //! @return reference of ArgumentRegister object
+    //! @return reference of Register object
     template <typename T>
-    ArgumentRegister& defaultValue(T&& value);
+    Register& defaultVal(T&& value);
     //! @brief Set default value.
     //! @param value - default value
-    //! @return reference of ArgumentRegister object
-    ArgumentRegister& defaultValue(const char* value);
+    //! @return reference of Register object
+    Register& defaultVal(const char* value);
     //! @brief Set implicit value
     //! @param value - implicit value
-    //! @return reference of ArgumentRegister object
-    ArgumentRegister& implicitValue(std::any value);
+    //! @return reference of Register object
+    Register& implicitVal(std::any value);
     //! @brief Set the argument property to be required.
-    //! @return reference of ArgumentRegister object
-    ArgumentRegister& required();
+    //! @return reference of Register object
+    Register& required();
     //! @brief Set the argument property to be appending.
-    //! @return reference of ArgumentRegister object
-    ArgumentRegister& appending();
+    //! @return reference of Register object
+    Register& appending();
     //! @brief Set the argument property to be remaining.
-    //! @return reference of ArgumentRegister object
-    ArgumentRegister& remaining();
+    //! @return reference of Register object
+    Register& remaining();
     //! @brief The action of specific arguments.
     //! @tparam Function - type of callable function
     //! @tparam Args - type of bound arguments
     //! @param callable - callable function
     //! @param boundArgs - bound arguments
-    //! @return reference of ArgumentRegister object
+    //! @return reference of Register object
     template <class Function, class... Args>
     auto action(Function&& callable, Args&&... boundArgs)
-        -> std::enable_if_t<std::is_invocable_v<Function, Args..., const std::string>, ArgumentRegister&>;
+        -> std::enable_if_t<std::is_invocable_v<Function, Args..., const std::string&>, Register&>;
     //! @brief Set number of arguments.
-    //! @param numArgs - number of arguments
-    //! @return reference of ArgumentRegister object
-    ArgumentRegister& nArgs(const std::size_t numArgs);
+    //! @param num - number of arguments
+    //! @return reference of Register object
+    Register& argsNum(const std::size_t num);
     //! @brief Set minimum number and maximum number of arguments.
-    //! @param numArgsMin - minimum number
-    //! @param numArgsMax - maximum number
-    //! @return reference of ArgumentRegister object
-    ArgumentRegister& nArgs(const std::size_t numArgsMin, const std::size_t numArgsMax);
+    //! @param numMin - minimum number
+    //! @param numMax - maximum number
+    //! @return reference of Register object
+    Register& argsNum(const std::size_t numMin, const std::size_t numMax);
     //! @brief Set number of arguments with pattern.
     //! @param pattern - argument pattern
-    //! @return reference of ArgumentRegister object
-    ArgumentRegister& nArgs(const NArgsPattern pattern);
+    //! @return reference of Register object
+    Register& argsNum(const ArgsNumPattern pattern);
     //! @brief Consume arguments.
     //! @tparam Iterator - type of argument iterator
     //! @param start - start argument iterator
@@ -294,13 +294,13 @@ public:
     //! @brief Get the length of all arguments.
     //! @return length of all arguments
     [[nodiscard]] std::size_t getArgumentsLength() const;
-    //! @brief The operator (!=) overloading of ArgumentRegister class.
+    //! @brief The operator (!=) overloading of Register class.
     //! @tparam T - type of right-hand side
     //! @param rhs - right-hand side
     //! @return be not equal or equal
     template <typename T>
     bool operator!=(const T& rhs) const;
-    //! @brief The operator (==) overloading of ArgumentRegister class.
+    //! @brief The operator (==) overloading of Register class.
     //! @tparam T - type of right-hand side
     //! @param rhs - right-hand side
     //! @return be equal or not equal
@@ -321,12 +321,12 @@ private:
     std::string helpContent;
     //! @brief Metavar message content.
     std::string metavarContent;
-    //! @brief Default values.
-    std::any defaultValues;
+    //! @brief Default value.
+    std::any defaultValue;
     //! @brief Default value content to be represented.
     std::string defaultValueRepresent;
-    //! @brief Implicit values.
-    std::any implicitValues;
+    //! @brief Implicit value.
+    std::any implicitValue;
     //! @brief All actions of arguments.
     std::variant<ValuedAction, VoidAction> actions{
         std::in_place_type<ValuedAction>,
@@ -352,7 +352,7 @@ private:
     std::string_view prefixChars;
 
     //! @brief Indicate the range for the number of arguments.
-    class NArgsRange
+    class ArgsNumRange
     {
         //! @brief Minimum of range.
         std::size_t min;
@@ -360,10 +360,10 @@ private:
         std::size_t max;
 
     public:
-        //! @brief Construct a new NArgsRange object
+        //! @brief Construct a new ArgsNumRange object
         //! @param minimum - minimum of range
         //! @param maximum - maximum of range
-        NArgsRange(const std::size_t minimum, const std::size_t maximum) : min(minimum), max(maximum)
+        ArgsNumRange(const std::size_t minimum, const std::size_t maximum) : min(minimum), max(maximum)
         {
             if (minimum > maximum)
             {
@@ -387,11 +387,11 @@ private:
         //! @brief Get the maximum of the range.
         //! @return maximum of range
         [[nodiscard]] std::size_t getMax() const { return max; }
-        //! @brief The operator (<<) overloading of the NArgsRange class.
+        //! @brief The operator (<<) overloading of the ArgsNumRange class.
         //! @param os - output stream object
-        //! @param range - specific NArgsRange object
+        //! @param range - specific ArgsNumRange object
         //! @return reference of output stream object
-        friend std::ostream& operator<<(std::ostream& os, const NArgsRange& range)
+        friend std::ostream& operator<<(std::ostream& os, const ArgsNumRange& range)
         {
             if (range.min == range.max)
             {
@@ -414,11 +414,11 @@ private:
             return os;
         }
 
-        bool operator==(const NArgsRange& rhs) const { return (rhs.min == min) && (rhs.max == max); }
-        bool operator!=(const NArgsRange& rhs) const { return !(*this == rhs); }
+        bool operator==(const ArgsNumRange& rhs) const { return (rhs.min == min) && (rhs.max == max); }
+        bool operator!=(const ArgsNumRange& rhs) const { return !(*this == rhs); }
     };
     //! @brief The range for the number of arguments.
-    NArgsRange numArgsRange{1, 1};
+    ArgsNumRange argsNumRange{1, 1};
 
     //! @brief Throw an exception when NargsRange is invalid.
     void throwNArgsRangeValidationException() const;
@@ -458,12 +458,12 @@ private:
     static T anyCastContainer(const std::vector<std::any>& operand);
 
 protected:
-    friend std::ostream& operator<<(std::ostream& os, const ArgumentRegister& argReg);
+    friend std::ostream& operator<<(std::ostream& os, const Register& reg);
     friend std::ostream& operator<<(std::ostream& os, const Argument& arg);
 };
 
 template <std::size_t N, std::size_t... I>
-ArgumentRegister::ArgumentRegister(
+Register::Register(
     std::string_view prefix,
     std::array<std::string_view, N>&& array,
     std::index_sequence<I...> /*sequence*/) :
@@ -485,19 +485,19 @@ ArgumentRegister::ArgumentRegister(
 }
 
 template <typename T>
-ArgumentRegister& ArgumentRegister::defaultValue(T&& value)
+Register& Register::defaultVal(T&& value)
 {
     defaultValueRepresent = represent(value);
-    defaultValues = std::forward<T>(value);
+    defaultValue = std::forward<T>(value);
     return *this;
 }
 
 template <class Function, class... Args>
-auto ArgumentRegister::action(Function&& callable, Args&&... boundArgs)
-    -> std::enable_if_t<std::is_invocable_v<Function, Args..., const std::string>, ArgumentRegister&>
+auto Register::action(Function&& callable, Args&&... boundArgs)
+    -> std::enable_if_t<std::is_invocable_v<Function, Args..., const std::string&>, Register&>
 {
     using ActionType = std::conditional_t<
-        std::is_void_v<std::invoke_result_t<Function, Args..., const std::string>>,
+        std::is_void_v<std::invoke_result_t<Function, Args..., const std::string&>>,
         VoidAction,
         ValuedAction>;
     if constexpr (!sizeof...(Args))
@@ -517,7 +517,7 @@ auto ArgumentRegister::action(Function&& callable, Args&&... boundArgs)
 }
 
 template <typename Iterator>
-Iterator ArgumentRegister::consume(Iterator start, Iterator end, const std::string_view argName)
+Iterator Register::consume(Iterator start, Iterator end, const std::string_view argName)
 {
     if (!isRepeatable && isUsed)
     {
@@ -526,12 +526,12 @@ Iterator ArgumentRegister::consume(Iterator start, Iterator end, const std::stri
 
     isUsed = true;
     usedName = argName;
-    const auto numArgsMax = numArgsRange.getMax();
-    const auto numArgsMin = numArgsRange.getMin();
+    const auto numMax = argsNumRange.getMax();
+    const auto numMin = argsNumRange.getMin();
     std::size_t dist = 0;
-    if (0 == numArgsMax)
+    if (0 == numMax)
     {
-        values.emplace_back(implicitValues);
+        values.emplace_back(implicitValue);
         std::visit(
             [](const auto& func)
             {
@@ -540,17 +540,17 @@ Iterator ArgumentRegister::consume(Iterator start, Iterator end, const std::stri
             actions);
         return start;
     }
-    if ((dist = static_cast<std::size_t>(std::distance(start, end))) >= numArgsMin)
+    if ((dist = static_cast<std::size_t>(std::distance(start, end))) >= numMin)
     {
-        if (numArgsMax < dist)
+        if (numMax < dist)
         {
-            end = std::next(start, static_cast<typename Iterator::difference_type>(numArgsMax));
+            end = std::next(start, static_cast<typename Iterator::difference_type>(numMax));
         }
         if (!isAcceptOptionalLikeValue)
         {
             end = std::find_if(start, end, std::bind(checkIfOptional, std::placeholders::_1, prefixChars));
             dist = static_cast<std::size_t>(std::distance(start, end));
-            if (dist < numArgsMin)
+            if (dist < numMin)
             {
                 throw std::runtime_error("Too few arguments.");
             }
@@ -562,7 +562,7 @@ Iterator ArgumentRegister::consume(Iterator start, Iterator end, const std::stri
             void operator()(VoidAction& func)
             {
                 std::for_each(first, last, func);
-                if (!self.defaultValues.has_value())
+                if (!self.defaultValue.has_value())
                 {
                     if (!self.isAcceptOptionalLikeValue)
                     {
@@ -573,12 +573,12 @@ Iterator ArgumentRegister::consume(Iterator start, Iterator end, const std::stri
 
             Iterator first;
             Iterator last;
-            ArgumentRegister& self;
+            Register& self;
         };
         std::visit(ActionApply{start, end, *this}, actions);
         return end;
     }
-    if (defaultValues.has_value())
+    if (defaultValue.has_value())
     {
         return start;
     }
@@ -586,13 +586,13 @@ Iterator ArgumentRegister::consume(Iterator start, Iterator end, const std::stri
 }
 
 template <typename T>
-bool ArgumentRegister::operator!=(const T& rhs) const
+bool Register::operator!=(const T& rhs) const
 {
     return !(*this == rhs);
 }
 
 template <typename T>
-bool ArgumentRegister::operator==(const T& rhs) const
+bool Register::operator==(const T& rhs) const
 {
     if constexpr (!isContainer<T>)
     {
@@ -615,7 +615,7 @@ bool ArgumentRegister::operator==(const T& rhs) const
 }
 
 template <typename T>
-T ArgumentRegister::get() const
+T Register::get() const
 {
     if (!values.empty())
     {
@@ -628,9 +628,9 @@ T ArgumentRegister::get() const
             return std::any_cast<T>(values.front());
         }
     }
-    if (defaultValues.has_value())
+    if (defaultValue.has_value())
     {
-        return std::any_cast<T>(defaultValues);
+        return std::any_cast<T>(defaultValue);
     }
     if constexpr (isContainer<T>)
     {
@@ -644,9 +644,9 @@ T ArgumentRegister::get() const
 }
 
 template <typename T>
-std::optional<T> ArgumentRegister::present() const
+std::optional<T> Register::present() const
 {
-    if (defaultValues.has_value())
+    if (defaultValue.has_value())
     {
         throw std::logic_error("Default value always presents.");
     }
@@ -662,7 +662,7 @@ std::optional<T> ArgumentRegister::present() const
 }
 
 template <typename T>
-T ArgumentRegister::anyCastContainer(const std::vector<std::any>& operand)
+T Register::anyCastContainer(const std::vector<std::any>& operand)
 {
     using ValueType = typename T::value_type;
     T result;
@@ -706,31 +706,19 @@ public:
     //! @brief Add a single argument.
     //! @tparam Args - type of argument
     //! @param fewArgs - argument name
-    //! @return reference of ArgumentRegister object
+    //! @return reference of Register object
     template <typename... TArgs>
-    ArgumentRegister& addArgument(TArgs... fewArgs);
-    //! @brief Add a parent argument.
-    //! @tparam Args - type of argument
-    //! @param fewArgs - argument name
-    //! @return reference of ArgumentRegister object
-    template <typename... TArgs>
-    Argument& addParents(const TArgs&... fewArgs);
+    Register& addArgument(TArgs... fewArgs);
     //! @brief Add a descrText.
     //! @param text - descrText text
-    //! @return reference of ArgumentRegister object
+    //! @return reference of Register object
     Argument& addDescription(const std::string& text);
-    //! @brief Get the ArgumentRegister or Argument instance by name.
+    //! @brief Get the Register or Argument instance by name.
     //! @tparam T - type of instance
     //! @param name - instance name
-    //! @return ArgumentRegister or Argument instance
-    template <typename T = ArgumentRegister>
+    //! @return Register or Argument instance
+    template <typename T = Register>
     T& at(const std::string_view name);
-    //! @brief Set the prefix characters
-    //! @param prefix - prefix characters
-    Argument& setPrefixChars(const std::string& prefix);
-    //! @brief Set the assign characters
-    //! @param assign - assign characters
-    Argument& setAssignChars(const std::string& assign);
     //! @brief Parse all input arguments.
     //! @param arguments - container of all arguments
     void parseArgs(const std::vector<std::string>& arguments);
@@ -738,15 +726,6 @@ public:
     //! @param argc - argument count
     //! @param argv - argument vector
     void parseArgs(const int argc, const char* const argv[]);
-    //! @brief Parse only known arguments.
-    //! @param arguments - container of all arguments
-    //! @return container of remaining arguments
-    std::vector<std::string> parseKnownArgs(const std::vector<std::string>& arguments);
-    //! @brief Parse only known arguments.
-    //! @param argc - argument count
-    //! @param argv - argument vector
-    //! @return container of remaining arguments
-    std::vector<std::string> parseKnownArgs(const int argc, const char* const argv[]);
     //! @brief Get argument value by name.
     //! @tparam T - type of argument
     //! @param argName - target argument name
@@ -766,15 +745,15 @@ public:
     //! @brief Check if the sub-command is used.
     //! @param subCommandName - target sub-command name
     //! @return be used or not used
-    [[nodiscard]] auto isSubCommandUsed(const std::string_view subCommandName) const;
+    [[nodiscard]] inline auto isSubCommandUsed(const std::string_view subCommandName) const;
     //! @brief Check if the sub-command is used.
     //! @param subParser - target sub-parser
     //! @return be used or not used
-    [[nodiscard]] auto isSubCommandUsed(const Argument& subParser) const;
-    //! @brief The operator ([]) overloading of ArgumentRegister class.
+    [[nodiscard]] inline auto isSubCommandUsed(const Argument& subParser) const;
+    //! @brief The operator ([]) overloading of Register class.
     //! @param argName - argument name
-    //! @return reference of ArgumentRegister object
-    ArgumentRegister& operator[](const std::string_view argName) const;
+    //! @return reference of Register object
+    Register& operator[](const std::string_view argName) const;
     //! @brief Get the help message content.
     //! @return help message content
     [[nodiscard]] std::stringstream help() const;
@@ -791,8 +770,8 @@ public:
     std::string version;
 
 private:
-    //! @brief Alias for iterator in all ArgumentRegister instance.
-    using ArgumentRegisterIter = std::list<ArgumentRegister>::iterator;
+    //! @brief Alias for iterator in all Register instance.
+    using RegisterIter = std::list<Register>::iterator;
     //! @brief Alias for iterator in all Argument instance.
     using ArgumentIter = std::list<std::reference_wrapper<Argument>>::iterator;
     //! @brief Description text.
@@ -804,11 +783,11 @@ private:
     //! @brief Flag to indicate whether to be parsed.
     bool isParsed{false};
     //! @brief List of non-optional arguments.
-    std::list<ArgumentRegister> nonOptionalArguments;
+    std::list<Register> nonOptionalArguments;
     //! @brief List of optional arguments.
-    std::list<ArgumentRegister> optionalArguments;
+    std::list<Register> optionalArguments;
     //! @brief Mapping table of argument.
-    std::map<std::string_view, ArgumentRegisterIter> argumentMap;
+    std::map<std::string_view, RegisterIter> argumentMap;
     //! @brief Current parser path.
     std::string parserPath;
     //! @brief List of sub-parsers.
@@ -832,23 +811,19 @@ private:
     //! @brief Parse all input arguments for internal.
     //! @param rawArguments - container of all raw arguments
     void parseArgsInternal(const std::vector<std::string>& rawArguments);
-    //! @brief Parse only known arguments for internal.
-    //! @param rawArguments - container of all raw arguments
-    //! @return container of remaining arguments
-    std::vector<std::string> parseKnownArgsInternal(const std::vector<std::string>& rawArguments);
     //! @brief Get the length of the longest argument.
     //! @return length of the longest argument
     [[nodiscard]] std::size_t getLengthOfLongestArgument() const;
     //! @brief Make index for argumentMap.
     //! @param iterator - iterator in all argument registers
-    void indexArgument(ArgumentRegisterIter iterator);
+    void indexArgument(RegisterIter iterator);
 
 protected:
     friend std::ostream& operator<<(std::ostream& os, const Argument& arg);
 };
 
 template <typename... TArgs>
-ArgumentRegister& Argument::addArgument(TArgs... fewArgs)
+Register& Argument::addArgument(TArgs... fewArgs)
 {
     using ArrayOfSv = std::array<std::string_view, sizeof...(TArgs)>;
 
@@ -862,29 +837,10 @@ ArgumentRegister& Argument::addArgument(TArgs... fewArgs)
     return *argument;
 }
 
-template <typename... TArgs>
-Argument& Argument::addParents(const TArgs&... fewArgs)
-{
-    for (const Argument& parentParser : {std::ref(fewArgs)...})
-    {
-        for (const auto& argument : parentParser.nonOptionalArguments)
-        {
-            const auto iterator = nonOptionalArguments.insert(std::cend(nonOptionalArguments), argument);
-            indexArgument(iterator);
-        }
-        for (const auto& argument : parentParser.optionalArguments)
-        {
-            const auto iterator = optionalArguments.insert(std::cend(optionalArguments), argument);
-            indexArgument(iterator);
-        }
-    }
-    return *this;
-}
-
 template <typename T>
 T& Argument::at(const std::string_view name)
 {
-    if constexpr (std::is_same_v<T, ArgumentRegister>)
+    if constexpr (std::is_same_v<T, Register>)
     {
         return (*this)[name];
     }
@@ -913,5 +869,15 @@ template <typename T>
 std::optional<T> Argument::present(const std::string_view argName) const
 {
     return (*this)[argName].present<T>();
+}
+
+inline auto Argument::isSubCommandUsed(const std::string_view subCommandName) const
+{
+    return subParserUsed.at(subCommandName);
+}
+
+inline auto Argument::isSubCommandUsed(const Argument& subParser) const
+{
+    return isSubCommandUsed(subParser.title);
 }
 } // namespace utility::argument

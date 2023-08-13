@@ -35,7 +35,7 @@ Log::Log(
 
 Log& Log::getInstance()
 {
-    static Log logger;
+    static Log logger{};
     return logger;
 }
 
@@ -125,9 +125,7 @@ void Log::waitToStart()
 
             if (maxTimesOfWaitLogger == waitCount)
             {
-#ifndef NDEBUG
                 LOG_ERR << "The logger did not start properly...";
-#endif // NDEBUG
                 expiryTimer.reset();
             }
         },
@@ -163,9 +161,7 @@ void Log::waitToStop()
 
             if (maxTimesOfWaitLogger == waitCount)
             {
-#ifndef NDEBUG
                 LOG_ERR << "The logger did not stop properly...";
-#endif // NDEBUG
                 expiryTimer.reset();
             }
         },

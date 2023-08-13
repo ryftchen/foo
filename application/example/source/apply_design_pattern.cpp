@@ -48,7 +48,7 @@ using StructuralInstance = DesignPatternTask::StructuralInstance;
 //! @return reference of DesignPatternTask object
 DesignPatternTask& getTask()
 {
-    static DesignPatternTask task;
+    static DesignPatternTask task{};
     return task;
 }
 
@@ -270,7 +270,7 @@ void runBehavioralTasks(const std::vector<std::string>& targets)
                 behavioralFunctor(threadName, &BehavioralPattern::visitorInstance);
                 break;
             default:
-                LOG_DBG << "Execute to apply an unknown behavioral instance.";
+                LOG_INF << "Execute to apply an unknown behavioral instance.";
                 break;
         }
     }
@@ -447,7 +447,7 @@ void runCreationalTasks(const std::vector<std::string>& targets)
                 creationalFunctor(threadName, &CreationalPattern::singletonInstance);
                 break;
             default:
-                LOG_DBG << "Execute to apply an unknown creational instance.";
+                LOG_INF << "Execute to apply an unknown creational instance.";
                 break;
         }
     }
@@ -638,7 +638,7 @@ void runStructuralTasks(const std::vector<std::string>& targets)
                 structuralFunctor(threadName, &StructuralPattern::proxyInstance);
                 break;
             default:
-                LOG_DBG << "Execute to apply an unknown structural instance.";
+                LOG_INF << "Execute to apply an unknown structural instance.";
                 break;
         }
     }

@@ -48,8 +48,16 @@ private:
     std::condition_variable cv;
     //! @brief Flag to indicate whether parsing of arguments is completed.
     std::atomic<bool> isParsed{false};
-    //! @brief Parse arguments helper.
-    utility::argument::Argument cliHelper{"foo", "1.0"};
+    //! @brief Parse arguments helper for commander.
+    utility::argument::Argument mainCLI{"foo", "1.0"};
+    //! @brief Parse arguments helper to apply algorithm.
+    utility::argument::Argument subAppAlgoCLI{"app-algo"};
+    //! @brief Parse arguments helper to apply design pattern.
+    utility::argument::Argument subAppDpCLI{"app-dp"};
+    //! @brief Parse arguments helper to apply data structure.
+    utility::argument::Argument subAppDsCLI{"app-ds"};
+    //! @brief Parse arguments helper to apply numeric.
+    utility::argument::Argument subAppNumCLI{"app-num"};
     //! @brief Copyright information.
     static constexpr std::string_view copyrightInfo{"Copyright (c) 2022-2023 ryftchen"};
 
@@ -67,7 +75,7 @@ private:
     //! @return any tasks exist or do not exist
     bool hasAnyTask() const;
     //! @brief Dispatch specific tasks.
-    void dispatchTask() const;
+    void dispatchTask();
 
     //! @brief Alias for the functor to perform the task.
     typedef void (*PerformTaskFunctor)(const std::vector<std::string>&);
@@ -90,11 +98,6 @@ private:
     //! @brief Alias for the map of TaskCategory and TaskCategoryMap.
     using RegularTaskMap = std::map<TaskCategory, TaskCategoryMap>;
 
-    //! @brief Get category completion for verification.
-    //! @param category - expected category
-    //! @param input - input value to be verified
-    //! @return category after completing
-    TaskCategory getCategoryCompletionForVerification(const TaskCategory& category, const std::string& input) const;
     //! @memberof application::command::Command
     //! @brief Get a member of TaskTypeTuple.
     //! @tparam T - type of member to be got
@@ -122,27 +125,27 @@ private:
     };
     //! @brief Mapping table of all regular tasks.
     const RegularTaskMap regularTaskDispatcher{
-        // --- Category ---+----- Type -----+----------------- Task -----------------+----------- Run Tasks -----------+----------- Update Task -----------
-        // ----------------+----------------+----------------------------------------+---------------------------------+-----------------------------------
-        { "algorithm"      , {{ "match"      , {{ "rab", "knu", "boy", "hor", "sun" } , { &app_algo::runMatchTasks     , &app_algo::updateMatchTask     }}},
-                              { "notation"   , {{ "pre", "pos"                      } , { &app_algo::runNotationTasks  , &app_algo::updateNotationTask  }}},
-                              { "optimal"    , {{ "gra", "ann", "par", "gen"        } , { &app_algo::runOptimalTasks   , &app_algo::updateOptimalTask   }}},
-                              { "search"     , {{ "bin", "int", "fib"               } , { &app_algo::runSearchTasks    , &app_algo::updateSearchTask    }}},
-                              { "sort"       , {{ "bub", "sel", "ins", "she", "mer",
-                                                  "qui", "hea", "cou", "buc", "rad" } , { &app_algo::runSortTasks      , &app_algo::updateSortTask      }}}}},
-        { "data-structure" , {{ "linear"     , {{ "lin", "sta", "que"               } , { &app_ds::runLinearTasks      , &app_ds::updateLinearTask      }}},
-                              { "tree"       , {{ "bin", "ade", "spl"               } , { &app_ds::runTreeTasks        , &app_ds::updateTreeTask        }}}}},
-        { "design-pattern" , {{ "behavioral" , {{ "cha", "com", "int", "ite", "med",
-                                                  "mem", "obs", "sta", "str", "tem",
-                                                  "vis"                             } , { &app_dp::runBehavioralTasks  , &app_dp::updateBehavioralTask  }}},
-                              { "creational" , {{ "abs", "bui", "fac", "pro", "sin" } , { &app_dp::runCreationalTasks  , &app_dp::updateCreationalTask  }}},
-                              { "structural" , {{ "ada", "bri", "com", "dec", "fac",
-                                                  "fly", "pro"                      } , { &app_dp::runStructuralTasks  , &app_dp::updateStructuralTask  }}}}},
-        { "numeric"        , {{ "arithmetic" , {{ "add", "sub", "mul", "div"        } , { &app_num::runArithmeticTasks , &app_num::updateArithmeticTask }}},
-                              { "divisor"    , {{ "euc", "ste"                      } , { &app_num::runDivisorTasks    , &app_num::updateDivisorTask    }}},
-                              { "integral"   , {{ "tra", "sim", "rom", "gau", "mon" } , { &app_num::runIntegralTasks   , &app_num::updateIntegralTask   }}},
-                              { "prime"      , {{ "era", "eul"                      } , { &app_num::runPrimeTasks      , &app_num::updatePrimeTask      }}}}}
-        // ----------------+----------------+----------------------------------------+---------------------------------+-----------------------------------
+        // - Category -+----- Type -----+----------------- Task -----------------+----------- Run Tasks -----------+----------- Update Task -----------
+        // ------------+----------------+----------------------------------------+---------------------------------+-----------------------------------
+        { "app-algo"   , {{ "match"      , {{ "rab", "knu", "boy", "hor", "sun" } , { &app_algo::runMatchTasks     , &app_algo::updateMatchTask     }}},
+                          { "notation"   , {{ "pre", "pos"                      } , { &app_algo::runNotationTasks  , &app_algo::updateNotationTask  }}},
+                          { "optimal"    , {{ "gra", "ann", "par", "gen"        } , { &app_algo::runOptimalTasks   , &app_algo::updateOptimalTask   }}},
+                          { "search"     , {{ "bin", "int", "fib"               } , { &app_algo::runSearchTasks    , &app_algo::updateSearchTask    }}},
+                          { "sort"       , {{ "bub", "sel", "ins", "she", "mer",
+                                              "qui", "hea", "cou", "buc", "rad" } , { &app_algo::runSortTasks      , &app_algo::updateSortTask      }}}}},
+        { "app-dp"     , {{ "behavioral" , {{ "cha", "com", "int", "ite", "med",
+                                              "mem", "obs", "sta", "str", "tem",
+                                              "vis"                             } , { &app_dp::runBehavioralTasks  , &app_dp::updateBehavioralTask  }}},
+                          { "creational" , {{ "abs", "bui", "fac", "pro", "sin" } , { &app_dp::runCreationalTasks  , &app_dp::updateCreationalTask  }}},
+                          { "structural" , {{ "ada", "bri", "com", "dec", "fac",
+                                              "fly", "pro"                      } , { &app_dp::runStructuralTasks  , &app_dp::updateStructuralTask  }}}}},
+        { "app-ds"     , {{ "linear"     , {{ "lin", "sta", "que"               } , { &app_ds::runLinearTasks      , &app_ds::updateLinearTask      }}},
+                          { "tree"       , {{ "bin", "ade", "spl"               } , { &app_ds::runTreeTasks        , &app_ds::updateTreeTask        }}}}},
+        { "app-num"    , {{ "arithmetic" , {{ "add", "sub", "mul", "div"        } , { &app_num::runArithmeticTasks , &app_num::updateArithmeticTask }}},
+                          { "divisor"    , {{ "euc", "ste"                      } , { &app_num::runDivisorTasks    , &app_num::updateDivisorTask    }}},
+                          { "integral"   , {{ "tra", "sim", "rom", "gau", "mon" } , { &app_num::runIntegralTasks   , &app_num::updateIntegralTask   }}},
+                          { "prime"      , {{ "era", "eul"                      } , { &app_num::runPrimeTasks      , &app_num::updatePrimeTask      }}}}}
+        // ------------+----------------+----------------------------------------+---------------------------------+-----------------------------------
     };
     // clang-format on
 
@@ -180,7 +183,7 @@ private:
         inline void reset() { primaryBit.reset(); }
     };
 
-    //! @brief Manage regular tasks.
+    //! @brief Manage regular tasks by sub-cli.
     class RegularTask
     {
     public:
@@ -193,8 +196,8 @@ private:
         enum Category : std::uint8_t
         {
             algorithm,
-            dataStructure,
             designPattern,
+            dataStructure,
             numeric
         };
         //! @brief Store the maximum value of the Category enum.
@@ -205,21 +208,25 @@ private:
             static constexpr std::uint8_t value{4};
         };
 
+        //! @brief Flag to indicate whether the task is help only.
+        bool helpOnly{false};
+
         //! @brief Check whether any regular tasks do not exist.
         //! @return any regular tasks do not exist or exist
-        [[nodiscard]] static inline bool empty()
+        [[nodiscard]] inline bool empty() const
         {
             return (
                 app_algo::getTask().empty() && app_ds::getTask().empty() && app_dp::getTask().empty()
-                && app_num::getTask().empty());
+                && app_num::getTask().empty() && !helpOnly);
         }
         //! @brief Reset bit flags that manage regular tasks.
-        static inline void reset()
+        inline void reset()
         {
             app_algo::getTask().reset();
             app_ds::getTask().reset();
             app_dp::getTask().reset();
             app_num::getTask().reset();
+            helpOnly = false;
         }
     };
 

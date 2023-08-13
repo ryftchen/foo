@@ -52,7 +52,7 @@ using PrimeMethod = NumericTask::PrimeMethod;
 //! @return reference of NumericTask object
 NumericTask& getTask()
 {
-    static NumericTask task;
+    static NumericTask task{};
     return task;
 }
 
@@ -166,7 +166,7 @@ void runArithmeticTasks(const std::vector<std::string>& targets)
                 arithmeticFunctor(threadName, &ArithmeticSolution::divisionMethod);
                 break;
             default:
-                LOG_DBG << "Execute to apply an unknown arithmetic method.";
+                LOG_INF << "Execute to apply an unknown arithmetic method.";
                 break;
         }
     }
@@ -292,7 +292,7 @@ void runDivisorTasks(const std::vector<std::string>& targets)
                 divisorFunctor(threadName, &DivisorSolution::steinMethod);
                 break;
             default:
-                LOG_DBG << "Execute to apply an unknown divisor method.";
+                LOG_INF << "Execute to apply an unknown divisor method.";
                 break;
         }
     }
@@ -468,7 +468,7 @@ void runIntegralTasks(const std::vector<std::string>& targets)
                     integralFunctor(threadName, &IntegralSolution::monteCarloMethod);
                     break;
                 default:
-                    LOG_DBG << "Execute to apply an unknown integral method.";
+                    LOG_INF << "Execute to apply an unknown integral method.";
                     break;
             }
         }
@@ -616,7 +616,7 @@ void runPrimeTasks(const std::vector<std::string>& targets)
                 primeFunctor(threadName, &PrimeSolution::eulerMethod);
                 break;
             default:
-                LOG_DBG << "Execute to apply an unknown prime method.";
+                LOG_INF << "Execute to apply an unknown prime method.";
                 break;
         }
     }

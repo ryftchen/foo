@@ -19,71 +19,210 @@ Command::Command()
 {
     try
     {
-        cliHelper.addArgument("-h", "--help").nArgs(0).implicitValue(true).help("show help and exit");
+        mainCLI.addArgument("-h", "--help").argsNum(0).implicitVal(true).help("show help and exit");
 
-        cliHelper.addArgument("-v", "--version").nArgs(0).implicitValue(true).help("show version and exit");
+        mainCLI.addArgument("-v", "--version").argsNum(0).implicitVal(true).help("show version and exit");
 
-        cliHelper.addArgument("-c", "--console")
-            .nArgs(utility::argument::NArgsPattern::any)
-            .defaultValue<std::vector<std::string>>({"help"})
+        mainCLI.addArgument("-c", "--console")
+            .argsNum(utility::argument::ArgsNumPattern::any)
+            .defaultVal<std::vector<std::string>>({"help"})
             .appending()
-            .help("run commands (with quotes) in console mode and exit");
-
-        cliHelper.addArgument("-a", "--algorithm")
-            .nArgs(1)
             .action(
-                [this](const std::string& value)
+                [](const std::string& value)
                 {
-                    return getCategoryCompletionForVerification("algorithm", value);
+                    if (value.find_first_not_of(' ') != std::string::npos)
+                    {
+                        return value;
+                    }
+                    throw std::logic_error("Invalid console command.");
                 })
-            .help("run algorithm tasks with a category:\n"
-                  "- match       Match Solution\n"
-                  "- notation    Notation Solution\n"
-                  "- optimal     Optimal Solution\n"
-                  "- search      Search Solution\n"
-                  "- sort        Sort Solution\n"
-                  "for more help, use the -h, --help option with a category");
+            .metavar("CMD")
+            .help("run commands in console mode and exit\n"
+                  "separate with quotes");
 
-        cliHelper.addArgument("-ds", "--data-structure")
-            .nArgs(1)
-            .action(
-                [this](const std::string& value)
-                {
-                    return getCategoryCompletionForVerification("data-structure", value);
-                })
-            .help("run data structure tasks with a category:\n"
-                  "- linear    Linear Structure\n"
-                  "- tree      Tree Structure\n"
-                  "for more help, use the -h, --help option with a category");
+        const auto& algoTbl = regularTaskDispatcher.at(subAppAlgoCLI.title);
+        subAppAlgoCLI.addDescription("apply algorithm");
+        subAppAlgoCLI.addArgument("-h", "--help").argsNum(0).implicitVal(true).help("show help and exit");
+        subAppAlgoCLI.addArgument("-m", "--match")
+            .argsNum(0, get<TargetTaskContainer>(algoTbl.at("match")).size())
+            .defaultVal<std::vector<std::string>>(get<TargetTaskContainer>(algoTbl.at("match")))
+            .remaining()
+            .metavar("OPT")
+            .help("run match tasks\n"
+                  "- rab    Rabin-Karp\n"
+                  "- knu    Knuth-Morris-Pratt\n"
+                  "- boy    Boyer-Moore\n"
+                  "- hor    Horspool\n"
+                  "- sun    Sunday\n"
+                  "add the tasks listed above");
+        subAppAlgoCLI.addArgument("-n", "--notation")
+            .argsNum(0, get<TargetTaskContainer>(algoTbl.at("notation")).size())
+            .defaultVal<std::vector<std::string>>(get<TargetTaskContainer>(algoTbl.at("notation")))
+            .remaining()
+            .metavar("OPT")
+            .help("run notation tasks\n"
+                  "- pre    Prefix\n"
+                  "- pos    Postfix\n"
+                  "add the tasks listed above");
+        subAppAlgoCLI.addArgument("-o", "--optimal")
+            .argsNum(0, get<TargetTaskContainer>(algoTbl.at("optimal")).size())
+            .defaultVal<std::vector<std::string>>(get<TargetTaskContainer>(algoTbl.at("optimal")))
+            .remaining()
+            .metavar("OPT")
+            .help("run optimal tasks\n"
+                  "- gra    Gradient Descent\n"
+                  "- ann    Simulated Annealing\n"
+                  "- par    Particle Swarm\n"
+                  "- gen    Genetic\n"
+                  "add the tasks listed above");
+        subAppAlgoCLI.addArgument("-s", "--search")
+            .argsNum(0, get<TargetTaskContainer>(algoTbl.at("search")).size())
+            .defaultVal<std::vector<std::string>>(get<TargetTaskContainer>(algoTbl.at("search")))
+            .remaining()
+            .metavar("OPT")
+            .help("run search tasks\n"
+                  "- bin    Binary\n"
+                  "- int    Interpolation\n"
+                  "- fib    Fibonacci\n"
+                  "add the tasks listed above");
+        subAppAlgoCLI.addArgument("-S", "--sort")
+            .argsNum(0, get<TargetTaskContainer>(algoTbl.at("sort")).size())
+            .defaultVal<std::vector<std::string>>(get<TargetTaskContainer>(algoTbl.at("sort")))
+            .remaining()
+            .metavar("OPT")
+            .help("run sort tasks\n"
+                  "- bub    Bubble\n"
+                  "- sel    Selection\n"
+                  "- ins    Insertion\n"
+                  "- she    Shell\n"
+                  "- mer    Merge\n"
+                  "- qui    Quick\n"
+                  "- hea    Heap\n"
+                  "- cou    Counting\n"
+                  "- buc    Bucket\n"
+                  "- rad    Radix\n"
+                  "add the tasks listed above");
+        mainCLI.addSubParser(subAppAlgoCLI);
 
-        cliHelper.addArgument("-dp", "--design-pattern")
-            .nArgs(1)
-            .action(
-                [this](const std::string& value)
-                {
-                    return getCategoryCompletionForVerification("design-pattern", value);
-                })
-            .help("run design pattern tasks with a category:\n"
-                  "- behavioral    Behavioral Pattern\n"
-                  "- creational    Creational Pattern\n"
-                  "- structural    Structural Pattern\n"
-                  "for more help, use the -h, --help option with a category");
+        const auto& dpTbl = regularTaskDispatcher.at(subAppDpCLI.title);
+        subAppDpCLI.addDescription("apply design pattern");
+        subAppDpCLI.addArgument("-h", "--help").argsNum(0).implicitVal(true).help("show help and exit");
+        subAppDpCLI.addArgument("-b", "--behavioral")
+            .argsNum(0, get<TargetTaskContainer>(dpTbl.at("behavioral")).size())
+            .defaultVal<std::vector<std::string>>(get<TargetTaskContainer>(dpTbl.at("behavioral")))
+            .remaining()
+            .metavar("OPT")
+            .help("run behavioral tasks\n"
+                  "- cha    Chain Of Responsibility\n"
+                  "- com    Command\n"
+                  "- int    Interpreter\n"
+                  "- ite    Iterator\n"
+                  "- med    Mediator\n"
+                  "- mem    Memento\n"
+                  "- obs    Observer\n"
+                  "- sta    State\n"
+                  "- str    Strategy\n"
+                  "- tem    Template Method\n"
+                  "- vis    Visitor\n"
+                  "add the tasks listed above");
+        subAppDpCLI.addArgument("-c", "--creational")
+            .argsNum(0, get<TargetTaskContainer>(dpTbl.at("creational")).size())
+            .defaultVal<std::vector<std::string>>(get<TargetTaskContainer>(dpTbl.at("creational")))
+            .remaining()
+            .metavar("OPT")
+            .help("run creational tasks\n"
+                  "- abs    Abstract Factory\n"
+                  "- bui    Builder\n"
+                  "- fac    Factory Method\n"
+                  "- pro    Prototype\n"
+                  "- sin    Singleton\n"
+                  "add the tasks listed above");
+        subAppDpCLI.addArgument("-s", "--structural")
+            .argsNum(0, get<TargetTaskContainer>(dpTbl.at("structural")).size())
+            .defaultVal<std::vector<std::string>>(get<TargetTaskContainer>(dpTbl.at("structural")))
+            .remaining()
+            .metavar("OPT")
+            .help("run creational tasks\n"
+                  "- ada    Adapter\n"
+                  "- bri    Bridge\n"
+                  "- com    Composite\n"
+                  "- dec    Decorator\n"
+                  "- fac    Facade\n"
+                  "- fly    Flyweight\n"
+                  "- pro    Proxy\n"
+                  "add the tasks listed above");
+        mainCLI.addSubParser(subAppDpCLI);
 
-        cliHelper.addArgument("-n", "--numeric")
-            .nArgs(1)
-            .action(
-                [this](const std::string& value)
-                {
-                    return getCategoryCompletionForVerification("numeric", value);
-                })
-            .help("run numeric tasks with a category:\n"
-                  "- arithmetic    Arithmetic Solution\n"
-                  "- divisor       Divisor Solution\n"
-                  "- integral      Integral Solution\n"
-                  "- prime         Prime Solution\n"
-                  "for more help, use the -h, --help option with a category");
+        const auto& dsTbl = regularTaskDispatcher.at(subAppDsCLI.title);
+        subAppDsCLI.addDescription("apply data structure");
+        subAppDsCLI.addArgument("-h", "--help").argsNum(0).implicitVal(true).help("show help and exit");
+        subAppDsCLI.addArgument("-l", "--linear")
+            .argsNum(0, get<TargetTaskContainer>(dsTbl.at("linear")).size())
+            .defaultVal<std::vector<std::string>>(get<TargetTaskContainer>(dsTbl.at("linear")))
+            .remaining()
+            .metavar("OPT")
+            .help("run linear tasks\n"
+                  "- lin    Linked List\n"
+                  "- sta    Stack\n"
+                  "- que    Queue\n"
+                  "add the tasks listed above");
+        subAppDsCLI.addArgument("-t", "--tree")
+            .argsNum(0, get<TargetTaskContainer>(dsTbl.at("tree")).size())
+            .defaultVal<std::vector<std::string>>(get<TargetTaskContainer>(dsTbl.at("tree")))
+            .remaining()
+            .metavar("OPT")
+            .help("run tree tasks\n"
+                  "- bin    Binary Search\n"
+                  "- ade    Adelson-Velsky-Landis\n"
+                  "- spl    Splay\n"
+                  "add the tasks listed above");
+        mainCLI.addSubParser(subAppDsCLI);
 
-        cliHelper.addArgument("tasks").remaining().help("tasks under the specific category");
+        const auto& numTbl = regularTaskDispatcher.at(subAppNumCLI.title);
+        subAppNumCLI.addDescription("apply numeric");
+        subAppNumCLI.addArgument("-h", "--help").argsNum(0).implicitVal(true).help("show help and exit");
+        subAppNumCLI.addArgument("-a", "--arithmetic")
+            .argsNum(0, get<TargetTaskContainer>(numTbl.at("arithmetic")).size())
+            .defaultVal<std::vector<std::string>>(get<TargetTaskContainer>(numTbl.at("arithmetic")))
+            .remaining()
+            .metavar("OPT")
+            .help("run arithmetic tasks\n"
+                  "- add    Addition\n"
+                  "- sub    Subtraction\n"
+                  "- mul    Multiplication\n"
+                  "- div    Division\n"
+                  "add the tasks listed above");
+        subAppNumCLI.addArgument("-d", "--divisor")
+            .argsNum(0, get<TargetTaskContainer>(numTbl.at("divisor")).size())
+            .defaultVal<std::vector<std::string>>(get<TargetTaskContainer>(numTbl.at("divisor")))
+            .remaining()
+            .metavar("OPT")
+            .help("run divisor tasks\n"
+                  "- euc    Euclidean\n"
+                  "- ste    Stein\n"
+                  "add the tasks listed above");
+        subAppNumCLI.addArgument("-i", "--integral")
+            .argsNum(0, get<TargetTaskContainer>(numTbl.at("integral")).size())
+            .defaultVal<std::vector<std::string>>(get<TargetTaskContainer>(numTbl.at("integral")))
+            .remaining()
+            .metavar("OPT")
+            .help("run integral tasks\n"
+                  "- tra    Trapezoidal\n"
+                  "- sim    Adaptive Simpson's 1/3\n"
+                  "- rom    Romberg\n"
+                  "- gau    Gauss-Legendre's 5-Points\n"
+                  "- mon    Monte-Carlo\n"
+                  "add the tasks listed above");
+        subAppNumCLI.addArgument("-p", "--prime")
+            .argsNum(0, get<TargetTaskContainer>(numTbl.at("prime")).size())
+            .defaultVal<std::vector<std::string>>(get<TargetTaskContainer>(numTbl.at("prime")))
+            .remaining()
+            .metavar("OPT")
+            .help("run prime tasks\n"
+                  "- era    Eratosthenes\n"
+                  "- eul    Euler\n"
+                  "add the tasks listed above");
+        mainCLI.addSubParser(subAppNumCLI);
     }
     catch (const std::exception& error)
     {
@@ -105,7 +244,7 @@ Command::~Command()
 
 Command& Command::getInstance()
 {
-    static Command commander;
+    static Command commander{};
     return commander;
 }
 
@@ -125,9 +264,13 @@ void Command::runCommander(const int argc, const char* const argv[])
         }
         else
         {
-            LOG_INF << "Enter console mode.";
+#ifndef NDEBUG
+            LOG_DBG << "Enter console mode.";
+#endif // NDEBUG
             enterConsoleMode();
-            LOG_INF << "Exit console mode.";
+#ifndef NDEBUG
+            LOG_DBG << "Exit console mode.";
+#endif // NDEBUG
         }
 
         LOG_WAIT_TO_STOP;
@@ -144,7 +287,7 @@ void Command::foregroundHandler(const int argc, const char* const argv[])
     try
     {
         std::unique_lock<std::mutex> lock(mtx);
-        cliHelper.parseArgs(argc, argv);
+        mainCLI.parseArgs(argc, argv);
         validateBasicTask();
         validateRegularTask();
 
@@ -191,7 +334,7 @@ void Command::validateBasicTask()
 {
     for (std::uint8_t i = 0; i < BasicTask::Bottom<BasicTask::Category>::value; ++i)
     {
-        if (!cliHelper.isUsed(std::next(basicTaskDispatcher.cbegin(), BasicTask::Category(i))->first))
+        if (!mainCLI.isUsed(std::next(basicTaskDispatcher.cbegin(), BasicTask::Category(i))->first))
         {
             continue;
         }
@@ -207,38 +350,44 @@ void Command::validateBasicTask()
 
 void Command::validateRegularTask()
 {
-    bool isToBeExcess = false;
     for ([[maybe_unused]] const auto& [taskCategory, taskCategoryMap] : regularTaskDispatcher)
     {
-        if (!cliHelper.isUsed(taskCategory))
+        if (!mainCLI.isSubCommandUsed(taskCategory))
         {
             continue;
         }
-
-        if (isToBeExcess || (hasAnyTask() && !cliHelper.isUsed("help")))
+        if (hasAnyTask())
         {
             throwExcessArgumentException();
         }
 
+        const auto& subCLI = mainCLI.at<utility::argument::Argument>(taskCategory);
+        if (!subCLI)
+        {
+            dispatchedTask.regularTask.helpOnly = true;
+            return;
+        }
+
+        if (subCLI.isUsed("help"))
+        {
+            dispatchedTask.regularTask.helpOnly = true;
+        }
         for ([[maybe_unused]] const auto& [taskType, taskTypeTuple] : taskCategoryMap)
         {
-            if (taskType != cliHelper[taskCategory])
+            if (!subCLI.isUsed(taskType))
             {
                 continue;
             }
-
-            if (cliHelper.isUsed("tasks") && cliHelper.isUsed("help"))
+            if (hasAnyTask())
             {
                 throwExcessArgumentException();
             }
 
-            const auto tasks = cliHelper.isUsed("tasks") ? cliHelper.get<std::vector<std::string>>("tasks")
-                                                         : get<TargetTaskContainer>(taskTypeTuple);
+            const auto tasks = subCLI.get<std::vector<std::string>>(taskType);
             for (const auto& task : tasks)
             {
                 (*get<UpdateTaskFunctor>(get<TaskFunctorTuple>(taskTypeTuple)))(task);
             }
-            isToBeExcess = true;
         }
     }
 }
@@ -248,7 +397,7 @@ bool Command::hasAnyTask() const
     return !dispatchedTask.empty();
 }
 
-void Command::dispatchTask() const
+void Command::dispatchTask()
 {
     if (!dispatchedTask.basicTask.empty())
     {
@@ -260,11 +409,21 @@ void Command::dispatchTask() const
             }
         }
     }
-    else if (
-        !dispatchedTask.regularTask.empty() && !dispatchedTask.basicTask.primaryBit.test(BasicTask::Category::help))
+    else if (!dispatchedTask.regularTask.empty())
     {
         for (std::uint8_t i = 0; i < RegularTask::Bottom<RegularTask::Category>::value; ++i)
         {
+            if (dispatchedTask.regularTask.helpOnly)
+            {
+                const auto category = std::next(regularTaskDispatcher.cbegin(), RegularTask::Category(i))->first;
+                if (mainCLI.isSubCommandUsed(category))
+                {
+                    const auto& subCLI = mainCLI.at<utility::argument::Argument>(category);
+                    std::cout << subCLI.help().str() << std::flush;
+                    break;
+                }
+            }
+
             switch (RegularTask::Category(i))
             {
                 case RegularTask::Category::algorithm:
@@ -273,14 +432,14 @@ void Command::dispatchTask() const
                         continue;
                     }
                     break;
-                case RegularTask::Category::dataStructure:
-                    if (app_ds::getTask().empty())
+                case RegularTask::Category::designPattern:
+                    if (app_dp::getTask().empty())
                     {
                         continue;
                     }
                     break;
-                case RegularTask::Category::designPattern:
-                    if (app_dp::getTask().empty())
+                case RegularTask::Category::dataStructure:
+                    if (app_ds::getTask().empty())
                     {
                         continue;
                     }
@@ -305,39 +464,9 @@ void Command::dispatchTask() const
     }
 }
 
-Command::TaskCategory Command::getCategoryCompletionForVerification(
-    const TaskCategory& category,
-    const std::string& input) const
-{
-    TaskCategory completion;
-    if (std::any_of(
-            regularTaskDispatcher.at(category).cbegin(),
-            regularTaskDispatcher.at(category).cend(),
-            [&input, &completion](const auto& taskCategoryMap)
-            {
-                if (input.length() <= taskCategoryMap.first.length())
-                {
-                    constexpr std::size_t minMatchLen = 4;
-                    if (taskCategoryMap.first.compare(0, std::max(minMatchLen, input.length()), input) == 0)
-                    {
-                        completion = taskCategoryMap.first;
-                        return true;
-                    }
-                }
-                return false;
-            }))
-    {
-        return completion;
-    }
-
-    auto unknownCategory = category;
-    std::replace(unknownCategory.begin(), unknownCategory.end(), '-', ' ');
-    throw std::runtime_error("Unknown " + unknownCategory + " category: " + input);
-}
-
 void Command::showConsoleOutput() const
 {
-    const auto commands = cliHelper.get<std::vector<std::string>>(
+    const auto commands = mainCLI.get<std::vector<std::string>>(
         std::next(basicTaskDispatcher.cbegin(), BasicTask::Category::console)->first);
     if (commands.empty())
     {
@@ -381,172 +510,7 @@ void Command::showConsoleOutput() const
 
 void Command::showHelpMessage() const
 {
-    if (dispatchedTask.regularTask.empty())
-    {
-        std::cout << cliHelper.help().str() << std::flush;
-        return;
-    }
-
-    if (!app_algo::getTask().empty())
-    {
-        using app_algo::AlgorithmTask;
-        using app_algo::getBit;
-        std::printf("Usage: foo -a, --algorithm ");
-        if (!getBit<AlgorithmTask::MatchMethod>().none())
-        {
-            std::puts("match [tasks...]\n"
-                      "\r\nnon-optional:\n"
-                      "rab    Rabin-Karp\n"
-                      "knu    Knuth-Morris-Pratt\n"
-                      "boy    Boyer-Moore\n"
-                      "hor    Horspool\n"
-                      "sun    Sunday");
-        }
-        else if (!getBit<AlgorithmTask::NotationMethod>().none())
-        {
-            std::puts("notation [tasks...]\n"
-                      "\r\nnon-optional:\n"
-                      "pre    Prefix\n"
-                      "pos    Postfix");
-        }
-        else if (!getBit<AlgorithmTask::OptimalMethod>().none())
-        {
-            std::puts("optimal [tasks...]\n"
-                      "\r\nnon-optional:\n"
-                      "gra    Gradient Descent\n"
-                      "ann    Simulated Annealing\n"
-                      "par    Particle Swarm\n"
-                      "gen    Genetic");
-        }
-        else if (!getBit<AlgorithmTask::SearchMethod>().none())
-        {
-            std::puts("search [tasks...]\n"
-                      "\r\nnon-optional:\n"
-                      "bin    Binary\n"
-                      "int    Interpolation\n"
-                      "fib    Fibonacci");
-        }
-        else if (!getBit<AlgorithmTask::SortMethod>().none())
-        {
-            std::puts("sort [tasks...]\n"
-                      "\r\nnon-optional:\n"
-                      "bub    Bubble\n"
-                      "sel    Selection\n"
-                      "ins    Insertion\n"
-                      "she    Shell\n"
-                      "mer    Merge\n"
-                      "qui    Quick\n"
-                      "hea    Heap\n"
-                      "cou    Counting\n"
-                      "buc    Bucket\n"
-                      "rad    Radix");
-        }
-    }
-    else if (!app_ds::getTask().empty())
-    {
-        using app_ds::DataStructureTask;
-        using app_ds::getBit;
-        std::printf("Usage: foo -ds, --data-structure ");
-        if (!getBit<DataStructureTask::LinearInstance>().none())
-        {
-            std::puts("linear [tasks...]\n"
-                      "\r\nnon-optional:\n"
-                      "lin    Linked List\n"
-                      "sta    Stack\n"
-                      "que    Queue");
-        }
-        else if (!getBit<DataStructureTask::TreeInstance>().none())
-        {
-            std::puts("tree [tasks...]\n"
-                      "\r\nnon-optional:\n"
-                      "bin    Binary Search\n"
-                      "ade    Adelson-Velsky-Landis\n"
-                      "spl    Splay");
-        }
-    }
-    else if (!app_dp::getTask().empty())
-    {
-        using app_dp::DesignPatternTask;
-        using app_dp::getBit;
-        std::printf("Usage: foo -dp, --design-pattern ");
-        if (!getBit<DesignPatternTask::BehavioralInstance>().none())
-        {
-            std::puts("behavioral [tasks...]\n"
-                      "\r\nnon-optional:\n"
-                      "cha    Chain Of Responsibility\n"
-                      "com    Command\n"
-                      "int    Interpreter\n"
-                      "ite    Iterator\n"
-                      "med    Mediator\n"
-                      "mem    Memento\n"
-                      "obs    Observer\n"
-                      "sta    State\n"
-                      "str    Strategy\n"
-                      "tem    Template Method\n"
-                      "vis    Visitor");
-        }
-        else if (!getBit<DesignPatternTask::CreationalInstance>().none())
-        {
-            std::puts("creational [tasks...]\n"
-                      "\r\nnon-optional:\n"
-                      "abs    Abstract Factory\n"
-                      "bui    Builder\n"
-                      "fac    Factory Method\n"
-                      "pro    Prototype\n"
-                      "sin    Singleton");
-        }
-        else if (!getBit<DesignPatternTask::StructuralInstance>().none())
-        {
-            std::puts("structural [tasks...]\n"
-                      "\r\nnon-optional:\n"
-                      "ada    Adapter\n"
-                      "bri    Bridge\n"
-                      "com    Composite\n"
-                      "dec    Decorator\n"
-                      "fac    Facade\n"
-                      "fly    Flyweight\n"
-                      "pro    Proxy");
-        }
-    }
-    else if (!app_num::getTask().empty())
-    {
-        using app_num::getBit;
-        using app_num::NumericTask;
-        std::printf("Usage: foo -n, --numeric ");
-        if (!getBit<NumericTask::ArithmeticMethod>().none())
-        {
-            std::puts("arithmetic [tasks...]\n"
-                      "\r\nnon-optional:\n"
-                      "add    Addition\n"
-                      "sub    Subtraction\n"
-                      "mul    Multiplication\n"
-                      "div    Division");
-        }
-        else if (!getBit<NumericTask::DivisorMethod>().none())
-        {
-            std::puts("divisor [tasks...]\n"
-                      "\r\nnon-optional:\n"
-                      "euc    Euclidean\n"
-                      "ste    Stein");
-        }
-        else if (!getBit<NumericTask::IntegralMethod>().none())
-        {
-            std::puts("integral [tasks...]\n"
-                      "\r\nnon-optional:\n"
-                      "tra    Trapezoidal\n"
-                      "sim    Adaptive Simpson's 1/3\n"
-                      "rom    Romberg\n"
-                      "gau    Gauss-Legendre's 5-Points\n"
-                      "mon    Monte-Carlo");
-        }
-        else if (!getBit<NumericTask::PrimeMethod>().none())
-        {
-            std::puts("prime [tasks...]\n"
-                      "\r\nnon-optional:\n"
-                      "era    Eratosthenes\n"
-                      "eul    Euler");
-        }
-    }
+    std::cout << mainCLI.help().str() << std::flush;
 }
 
 void Command::showVersionIcon() const
@@ -554,7 +518,7 @@ void Command::showVersionIcon() const
     std::string versionStr = "tput rev; echo ";
     versionStr += getIconBanner();
     versionStr.pop_back();
-    versionStr += "                    VERSION " + cliHelper.version;
+    versionStr += "                    VERSION " + mainCLI.version;
     versionStr += " \"; tput sgr0; echo ";
     versionStr += '\"' + std::string{copyrightInfo} + '\"';
 
@@ -602,8 +566,15 @@ void Command::enterConsoleMode() const
         int retVal = Console::RetCode::success;
         do
         {
-            retVal = console.readCmdLine();
-            console.setGreeting(greeting);
+            try
+            {
+                retVal = console.readCmdLine();
+                console.setGreeting(greeting);
+            }
+            catch (const std::exception& error)
+            {
+                LOG_WRN << error.what();
+            }
         }
         while (Console::RetCode::quit != retVal);
 
@@ -612,7 +583,7 @@ void Command::enterConsoleMode() const
     }
     catch (const std::exception& error)
     {
-        LOG_WRN << error.what();
+        LOG_ERR << error.what();
     }
 }
 
