@@ -25,10 +25,10 @@ Thread::Thread(const std::size_t size)
                             lock,
                             [this]()
                             {
-                                return (releaseReady.load() || !taskQueue.empty());
+                                return (readyRelease.load() || !taskQueue.empty());
                             });
 
-                        if (releaseReady.load() && taskQueue.empty())
+                        if (readyRelease.load() && taskQueue.empty())
                         {
                             return;
                         }
@@ -61,7 +61,7 @@ Thread::~Thread()
             {
                 return taskQueue.empty();
             });
-        releaseReady.store(true);
+        readyRelease.store(true);
     }
 
     cv.notify_all();

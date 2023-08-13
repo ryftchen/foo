@@ -45,8 +45,8 @@ private:
     std::condition_variable cv;
     //! @brief The synchronization condition for availability of resources.
     std::condition_variable producer;
-    //! @brief Flag to indicate whether the release of resources is ready.
-    std::atomic<bool> releaseReady{false};
+    //! @brief Flag for ready release.
+    std::atomic<bool> readyRelease{false};
 };
 
 template <typename Func, typename... Args>
@@ -58,7 +58,7 @@ decltype(auto) Thread::enqueue(const std::string& name, Func&& func, Args&&... a
 
     if (std::unique_lock<std::mutex> lock(mtx); true)
     {
-        if (releaseReady.load())
+        if (readyRelease.load())
         {
             throw std::logic_error("Coming to destructure.");
         }

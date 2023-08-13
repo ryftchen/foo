@@ -101,7 +101,7 @@ void Register::validate() const
     {
         if (!argsNumRange.isContain(values.size()) && !defaultValue.has_value())
         {
-            throwNArgsRangeValidationException();
+            throwArgsNumRangeValidationException();
         }
     }
 }
@@ -166,7 +166,7 @@ std::size_t Register::getArgumentsLength() const
     return size;
 }
 
-void Register::throwNArgsRangeValidationException() const
+void Register::throwArgsNumRangeValidationException() const
 {
     std::stringstream stream;
     if (!usedName.empty())

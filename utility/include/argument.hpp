@@ -134,35 +134,34 @@ std::string represent(const T& val)
 }
 
 //! @brief Implementation of wrapping function calls that have scope.
-//! @tparam Function - type of callable function
+//! @tparam Func - type of callable function
 //! @tparam Tuple - type of bound arguments tuple
 //! @tparam Extra - type of extra option
 //! @tparam I - number of sequence which converted from bound arguments tuple
 //! @return wrapping of calls
-template <class Function, class Tuple, class Extra, std::size_t... I>
+template <class Func, class Tuple, class Extra, std::size_t... I>
 constexpr decltype(auto) applyScopedOneImpl(
-    Function&& func,
+    Func&& func,
     Tuple&& tup,
     Extra&& ext,
     std::index_sequence<I...> /*sequence*/)
 {
-    return std::invoke(
-        std::forward<Function>(func), std::get<I>(std::forward<Tuple>(tup))..., std::forward<Extra>(ext));
+    return std::invoke(std::forward<Func>(func), std::get<I>(std::forward<Tuple>(tup))..., std::forward<Extra>(ext));
 }
 
 //! @brief Wrap function calls that have scope.
-//! @tparam Function - type of callable function
+//! @tparam Func - type of callable function
 //! @tparam Tuple - type of bound arguments tuple
 //! @tparam Extra - type of extra option
 //! @param func - callable function
 //! @param tup - bound arguments tuple
 //! @param ext - extra option
 //! @return wrapping of calls
-template <class Function, class Tuple, class Extra>
-constexpr decltype(auto) applyScopedOne(Function&& func, Tuple&& tup, Extra&& ext)
+template <class Func, class Tuple, class Extra>
+constexpr decltype(auto) applyScopedOne(Func&& func, Tuple&& tup, Extra&& ext)
 {
     return applyScopedOneImpl(
-        std::forward<Function>(func),
+        std::forward<Func>(func),
         std::forward<Tuple>(tup),
         std::forward<Extra>(ext),
         std::make_index_sequence<std::tuple_size_v<std::remove_reference_t<Tuple>>>{});
@@ -257,14 +256,14 @@ public:
     //! @return reference of Register object
     Register& remaining();
     //! @brief The action of specific arguments.
-    //! @tparam Function - type of callable function
+    //! @tparam Func - type of callable function
     //! @tparam Args - type of bound arguments
     //! @param callable - callable function
     //! @param boundArgs - bound arguments
     //! @return reference of Register object
-    template <class Function, class... Args>
-    auto action(Function&& callable, Args&&... boundArgs)
-        -> std::enable_if_t<std::is_invocable_v<Function, Args..., const std::string&>, Register&>;
+    template <class Func, class... Args>
+    auto action(Func&& callable, Args&&... boundArgs)
+        -> std::enable_if_t<std::is_invocable_v<Func, Args..., const std::string&>, Register&>;
     //! @brief Set number of arguments.
     //! @param num - number of arguments
     //! @return reference of Register object
@@ -282,7 +281,7 @@ public:
     //! @tparam Iterator - type of argument iterator
     //! @param start - start argument iterator
     //! @param end - end argument iterator
-    //! @param argName - name of argument
+    //! @param argName - target argument name
     //! @return argument iterator between start and end
     template <typename Iterator>
     Iterator consume(Iterator start, Iterator end, const std::string_view argName = {});
@@ -420,12 +419,12 @@ private:
     //! @brief The range for the number of arguments.
     ArgsNumRange argsNumRange{1, 1};
 
-    //! @brief Throw an exception when NargsRange is invalid.
-    void throwNArgsRangeValidationException() const;
+    //! @brief Throw an exception when ArgsNumRange is invalid.
+    [[noreturn]] void throwArgsNumRangeValidationException() const;
     //! @brief Throw an exception when the required argument is not used.
-    void throwRequiredArgNotUsedException() const;
+    [[noreturn]] void throwRequiredArgNotUsedException() const;
     //! @brief Throw an exception when the required argument has no value provided.
-    void throwRequiredArgNoValueProvidedException() const;
+    [[noreturn]] void throwRequiredArgNoValueProvidedException() const;
     //! @brief Find the character in the argument.
     //! @param name - name of argument
     //! @return character
@@ -492,22 +491,22 @@ Register& Register::defaultVal(T&& value)
     return *this;
 }
 
-template <class Function, class... Args>
-auto Register::action(Function&& callable, Args&&... boundArgs)
-    -> std::enable_if_t<std::is_invocable_v<Function, Args..., const std::string&>, Register&>
+template <class Func, class... Args>
+auto Register::action(Func&& callable, Args&&... boundArgs)
+    -> std::enable_if_t<std::is_invocable_v<Func, Args..., const std::string&>, Register&>
 {
     using ActionType = std::conditional_t<
-        std::is_void_v<std::invoke_result_t<Function, Args..., const std::string&>>,
+        std::is_void_v<std::invoke_result_t<Func, Args..., const std::string&>>,
         VoidAction,
         ValuedAction>;
     if constexpr (!sizeof...(Args))
     {
-        actions.emplace<ActionType>(std::forward<Function>(callable));
+        actions.emplace<ActionType>(std::forward<Func>(callable));
     }
     else
     {
         actions.emplace<ActionType>(
-            [func = std::forward<Function>(callable),
+            [func = std::forward<Func>(callable),
              tup = std::make_tuple(std::forward<Args>(boundArgs)...)](const std::string& opt) mutable
             {
                 return applyScopedOne(func, tup, opt);
@@ -751,7 +750,7 @@ public:
     //! @return be used or not used
     [[nodiscard]] inline auto isSubCommandUsed(const Argument& subParser) const;
     //! @brief The operator ([]) overloading of Register class.
-    //! @param argName - argument name
+    //! @param argName - target argument name
     //! @return reference of Register object
     Register& operator[](const std::string_view argName) const;
     //! @brief Get the help message content.
