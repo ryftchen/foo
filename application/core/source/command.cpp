@@ -465,26 +465,9 @@ void Command::showConsoleOutput() const
 
     using utility::console::Console;
     using utility::socket::UDPSocket;
-    using view::View;
 
-    UDPSocket udpClient;
-    udpClient.onRawMessageReceived =
-        [&udpClient](char* buffer, const int length, const std::string& /*ip*/, const std::uint16_t /*port*/)
-    {
-        try
-        {
-            if (View::parseTLVPacket(buffer, length).stopFlag)
-            {
-                udpClient.setNonBlocking();
-            }
-        }
-        catch (std::exception& error)
-        {
-            LOG_WRN << error.what();
-        }
-    };
-    udpClient.toReceive();
-    udpClient.toConnect(std::string{View::udpHost}, View::udpPort);
+    auto udpClient = std::make_shared<UDPSocket>();
+    launchClient<UDPSocket>(udpClient);
     utility::time::millisecondLevelSleep(latency);
 
     Console console(" > ");
@@ -494,8 +477,8 @@ void Command::showConsoleOutput() const
         console.cmdExecutor(command);
     }
 
-    udpClient.toSend("stop");
-    udpClient.waitIfAlive();
+    udpClient->toSend("stop");
+    udpClient->waitIfAlive();
 }
 
 void Command::showHelpMessage() const
@@ -523,24 +506,9 @@ void Command::enterConsoleMode() const
 
         using utility::console::Console;
         using utility::socket::TCPSocket;
-        using view::View;
 
-        TCPSocket tcpClient;
-        tcpClient.onRawMessageReceived = [&tcpClient](char* buffer, const int length)
-        {
-            try
-            {
-                if (View::parseTLVPacket(buffer, length).stopFlag)
-                {
-                    tcpClient.setNonBlocking();
-                }
-            }
-            catch (std::exception& error)
-            {
-                LOG_WRN << error.what();
-            }
-        };
-        tcpClient.toConnect(std::string{View::tcpHost}, View::tcpPort);
+        auto tcpClient = std::make_shared<TCPSocket>();
+        launchClient<TCPSocket>(tcpClient);
         utility::time::millisecondLevelSleep(latency);
 
         char hostName[HOST_NAME_MAX + 1] = {'\0'};
@@ -568,8 +536,8 @@ void Command::enterConsoleMode() const
         }
         while (Console::RetCode::quit != retVal);
 
-        tcpClient.toSend("stop");
-        tcpClient.waitIfAlive();
+        tcpClient->toSend("stop");
+        tcpClient->waitIfAlive();
     }
     catch (const std::exception& error)
     {
@@ -578,7 +546,54 @@ void Command::enterConsoleMode() const
 }
 
 template <typename T>
-void Command::registerOnConsole(utility::console::Console& console, T& client) const
+void Command::launchClient(std::shared_ptr<T>& client)
+{
+    using utility::socket::TCPSocket;
+    using utility::socket::UDPSocket;
+    using view::View;
+
+    if constexpr (std::is_same_v<T, TCPSocket>)
+    {
+        client->onRawMessageReceived = [&client](char* buffer, const int length)
+        {
+            try
+            {
+                if (View::parseTLVPacket(buffer, length).stopFlag)
+                {
+                    client->setNonBlocking();
+                }
+            }
+            catch (std::exception& error)
+            {
+                LOG_WRN << error.what();
+            }
+        };
+        client->toConnect(std::string{View::tcpHost}, View::tcpPort);
+    }
+    else if constexpr (std::is_same_v<T, UDPSocket>)
+    {
+        client->onRawMessageReceived =
+            [&client](char* buffer, const int length, const std::string& /*ip*/, const std::uint16_t /*port*/)
+        {
+            try
+            {
+                if (View::parseTLVPacket(buffer, length).stopFlag)
+                {
+                    client->setNonBlocking();
+                }
+            }
+            catch (std::exception& error)
+            {
+                LOG_WRN << error.what();
+            }
+        };
+        client->toReceive();
+        client->toConnect(std::string{View::udpHost}, View::udpPort);
+    }
+}
+
+template <typename T>
+void Command::registerOnConsole(utility::console::Console& console, std::shared_ptr<T>& client) const
 {
     using utility::console::Console;
     using view::View;
@@ -594,7 +609,7 @@ void Command::registerOnConsole(utility::console::Console& console, T& client) c
                 int retVal = Console::RetCode::success;
                 try
                 {
-                    client.toSend(cmd);
+                    client->toSend(cmd);
                     utility::time::millisecondLevelSleep(maxLatency);
                 }
                 catch (const std::exception& error)
@@ -606,6 +621,35 @@ void Command::registerOnConsole(utility::console::Console& console, T& client) c
             },
             help);
     }
+
+    console.registerCmd(
+        "reconnect",
+        [&client](const Console::Args& /*input*/)
+        {
+            int retVal = Console::RetCode::success;
+            try
+            {
+                client->toSend("stop");
+                client->waitIfAlive();
+                client->toClose();
+                client.reset();
+
+                VIEW_REQUEST_TO_RESTART;
+                VIEW_WAIT_TO_START;
+
+                client = std::make_shared<T>();
+                launchClient<T>(client);
+                utility::time::millisecondLevelSleep(latency);
+                LOG_INF << "Reconnected to the server.";
+            }
+            catch (const std::exception& error)
+            {
+                retVal = Console::RetCode::error;
+                LOG_WRN << error.what();
+            }
+            return retVal;
+        },
+        "reconnect to the server");
 }
 
 std::string Command::getIconBanner()

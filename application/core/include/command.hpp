@@ -257,12 +257,17 @@ private:
     void showVersionIcon() const;
     //! @brief Enter console mode.
     void enterConsoleMode() const;
+    //! @brief Launch the client for console mode.
+    //! @tparam T type of client
+    //! @param client - client to be launched
+    template <typename T>
+    static void launchClient(std::shared_ptr<T>& client);
     //! @brief Register the command line to console mode.
     //! @tparam T type of client
     //! @param console - console to be registered
     //! @param client - client used to send
     template <typename T>
-    void registerOnConsole(utility::console::Console& console, T& client) const;
+    void registerOnConsole(utility::console::Console& console, std::shared_ptr<T>& client) const;
     //! @brief Get ASCII banner text.
     //! @return ASCII banner text content
     static std::string getIconBanner();

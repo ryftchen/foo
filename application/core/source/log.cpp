@@ -256,10 +256,6 @@ void Log::stopLogging()
     std::unique_lock<std::mutex> lock(mtx);
     isLogging.store(false);
     restartRequest.store(false);
-    while (!logQueue.empty())
-    {
-        logQueue.pop();
-    }
 }
 
 void Log::rollBack()
@@ -271,7 +267,14 @@ void Log::rollBack()
         auto tempOfs = utility::file::openFile(filePath, true);
         utility::file::closeFile(tempOfs);
     }
-    stopLogging();
+
+    std::unique_lock<std::mutex> lock(mtx);
+    isLogging.store(false);
+    restartRequest.store(false);
+    while (!logQueue.empty())
+    {
+        logQueue.pop();
+    }
 }
 
 bool Log::isLogFileOpen(const GoLogging& /*event*/) const
