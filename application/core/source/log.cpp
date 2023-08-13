@@ -51,59 +51,89 @@ void Log::runLogger()
         }
     };
 
-    try
+    for (;;)
     {
-        checkIfExceptedFSMState(State::init);
-        processEvent(OpenFile());
-
-        checkIfExceptedFSMState(State::idle);
-        processEvent(GoLogging());
-
-        checkIfExceptedFSMState(State::work);
-        while (isLogging.load())
+        try
         {
-            std::unique_lock<std::mutex> lock(mtx);
-            cv.wait(
-                lock,
-                [this]()
-                {
-                    return (!isLogging.load() || !logQueue.empty());
-                });
+            checkIfExceptedFSMState(State::init);
+            processEvent(OpenFile());
 
-            utility::file::ReadWriteGuard guard(utility::file::LockMode::write, fileLock);
-            while (!logQueue.empty())
+            checkIfExceptedFSMState(State::idle);
+            processEvent(GoLogging());
+
+            checkIfExceptedFSMState(State::work);
+            while (isLogging.load())
             {
-                switch (actTarget)
+                std::unique_lock<std::mutex> lock(mtx);
+                cv.wait(
+                    lock,
+                    [this]()
+                    {
+                        return (!isLogging.load() || !logQueue.empty() || restartRequest.load());
+                    });
+
+                utility::file::ReadWriteGuard guard(utility::file::LockMode::write, fileLock);
+                while (!logQueue.empty())
                 {
-                    case OutputTarget::file:
-                        ofs << logQueue.front() << std::endl;
-                        break;
-                    case OutputTarget::terminal:
-                        std::cout << changeToLogStyle(logQueue.front()) << std::endl;
-                        break;
-                    case OutputTarget::all:
-                        ofs << logQueue.front() << std::endl;
-                        std::cout << changeToLogStyle(logQueue.front()) << std::endl;
-                        break;
-                    default:
-                        break;
+                    switch (actTarget)
+                    {
+                        case OutputTarget::file:
+                            ofs << logQueue.front() << std::endl;
+                            break;
+                        case OutputTarget::terminal:
+                            std::cout << changeToLogStyle(logQueue.front()) << std::endl;
+                            break;
+                        case OutputTarget::all:
+                            ofs << logQueue.front() << std::endl;
+                            std::cout << changeToLogStyle(logQueue.front()) << std::endl;
+                            break;
+                        default:
+                            break;
+                    }
+                    logQueue.pop();
                 }
-                logQueue.pop();
+
+                if (restartRequest.load())
+                {
+                    break;
+                }
+            }
+
+            if (restartRequest.load())
+            {
+                processEvent(Relaunch());
+                continue;
+            }
+            processEvent(CloseFile());
+
+            checkIfExceptedFSMState(State::idle);
+            processEvent(NoLogging());
+
+            checkIfExceptedFSMState(State::done);
+        }
+        catch (const std::exception& error)
+        {
+            LOG_ERR << error.what() << " Expected logger state: " << expectedState
+                    << ", current logger state: " << State(currentState()) << '.';
+            if (std::unique_lock<std::mutex> lock(mtx); true)
+            {
+                cv.wait(lock);
+            }
+
+            if (restartRequest.load())
+            {
+                processEvent(Relaunch());
+                if (currentState() == State::init)
+                {
+                    continue;
+                }
+                else
+                {
+                    LOG_ERR << "Failed to restart logger.";
+                }
             }
         }
-
-        processEvent(CloseFile());
-
-        checkIfExceptedFSMState(State::idle);
-        processEvent(NoLogging());
-
-        checkIfExceptedFSMState(State::done);
-    }
-    catch (const std::exception& error)
-    {
-        LOG_ERR << error.what() << " Expected logger state: " << expectedState
-                << ", current logger state: " << State(currentState()) << '.';
-        stopLogging();
+        break;
     }
 }
 
@@ -138,6 +168,7 @@ void Log::waitToStop()
     if (std::unique_lock<std::mutex> lock(mtx); true)
     {
         isLogging.store(false);
+        restartRequest.store(false);
 
         lock.unlock();
         cv.notify_one();
@@ -167,6 +198,16 @@ void Log::waitToStop()
         },
         intervalOfWaitLogger);
     expiryTimer.reset();
+}
+
+void Log::requestToRestart()
+{
+    std::unique_lock<std::mutex> lock(mtx);
+    restartRequest.store(true);
+    lock.unlock();
+    cv.notify_one();
+    utility::time::millisecondLevelSleep(1);
+    lock.lock();
 }
 
 void Log::openLogFile()
@@ -202,10 +243,8 @@ void Log::startLogging()
 
 void Log::closeLogFile()
 {
-    namespace file = utility::file;
-
-    file::fdUnlock(ofs);
-    file::closeFile(ofs);
+    utility::file::fdUnlock(ofs);
+    utility::file::closeFile(ofs);
     if (std::filesystem::exists(filePath) && (std::filesystem::file_size(filePath) == 0))
     {
         std::filesystem::remove_all(std::filesystem::absolute(filePath).parent_path());
@@ -216,10 +255,23 @@ void Log::stopLogging()
 {
     std::unique_lock<std::mutex> lock(mtx);
     isLogging.store(false);
+    restartRequest.store(false);
     while (!logQueue.empty())
     {
         logQueue.pop();
     }
+}
+
+void Log::rollBack()
+{
+    if (ofs.is_open())
+    {
+        closeLogFile();
+
+        auto tempOfs = utility::file::openFile(filePath, true);
+        utility::file::closeFile(tempOfs);
+    }
+    stopLogging();
 }
 
 bool Log::isLogFileOpen(const GoLogging& /*event*/) const

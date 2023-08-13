@@ -89,7 +89,14 @@ int tlvEncode(char* buf, int& len, const TLVValue& val)
     enc.write<bool>(val.stopFlag);
     sum += (offset + sizeof(bool));
 
-    if (invalidShmId != val.logShmId)
+    if (val.clearFlag)
+    {
+        enc.write<int>(TLVType::clear);
+        enc.write<int>(sizeof(bool));
+        enc.write<bool>(val.clearFlag);
+        sum += (offset + sizeof(bool));
+    }
+    else if (invalidShmId != val.logShmId)
     {
         enc.write<int>(TLVType::log);
         enc.write<int>(sizeof(int));
@@ -136,6 +143,10 @@ int tlvDecode(char* buf, const int len, TLVValue& val)
         {
             case TLVType::stop:
                 dec.read<bool>(&val.stopFlag);
+                sum -= (offset + sizeof(bool));
+                break;
+            case TLVType::clear:
+                dec.read<bool>(&val.clearFlag);
                 sum -= (offset + sizeof(bool));
                 break;
             case TLVType::log:
@@ -275,7 +286,11 @@ tlv::TLVValue View::parseTLVPacket(char* buffer, const int length)
     tlv::TLVValue value;
     tlv::tlvDecode(buffer, length, value);
 
-    if (invalidShmId != value.logShmId)
+    if (value.clearFlag)
+    {
+        cleanUpOutputs();
+    }
+    else if (invalidShmId != value.logShmId)
     {
         printSharedMemory(value.logShmId);
     }
@@ -293,6 +308,16 @@ int View::buildStopPacket(char* buffer)
     if (tlv::tlvEncode(buffer, length, tlv::TLVValue{.stopFlag = true}) < 0)
     {
         throw std::runtime_error("Failed to build packet to stop");
+    }
+    return length;
+}
+
+int View::buildClearPacket(char* buffer)
+{
+    int length = 0;
+    if (tlv::tlvEncode(buffer, length, tlv::TLVValue{.clearFlag = true}) < 0)
+    {
+        throw std::runtime_error("Failed to build packet for the clear option.");
     }
     return length;
 }
@@ -317,6 +342,16 @@ int View::buildStatPacket(char* buffer)
         throw std::runtime_error("Failed to build packet for the stat option.");
     }
     return length;
+}
+
+void View::cleanUpOutputs()
+{
+    std::cout << utility::common::executeCommand("clear") << std::endl;
+
+    LOG_REQUEST_TO_RESTART;
+    LOG_WAIT_TO_START;
+    utility::time::millisecondLevelSleep(log::intervalOfWaitLogger);
+    LOG_INF << "Clean up the outputs.";
 }
 
 int View::fillSharedMemory(const std::string& contents)
