@@ -55,7 +55,7 @@ std::unique_ptr<ProductB> ConcreteFactoryY::createProductB()
 //! @return reference of output stream object, which is on string based
 std::ostringstream& output()
 {
-    static std::ostringstream stream;
+    static std::ostringstream stream{};
     return stream;
 }
 } // namespace abstract_factory
@@ -151,7 +151,7 @@ void Director::construct()
 //! @return reference of output stream object, which is on string based
 std::ostringstream& output()
 {
-    static std::ostringstream stream;
+    static std::ostringstream stream{};
     return stream;
 }
 } // namespace builder
@@ -188,7 +188,7 @@ void ConcreteCreator::removeProduct(std::unique_ptr<Product>& product)
 //! @return reference of output stream object, which is on string based
 std::ostringstream& output()
 {
-    static std::ostringstream stream;
+    static std::ostringstream stream{};
     return stream;
 }
 } // namespace factory_method
@@ -244,7 +244,7 @@ std::unique_ptr<Prototype> Client::make(const int index)
 //! @return reference of output stream object, which is on string based
 std::ostringstream& output()
 {
-    static std::ostringstream stream;
+    static std::ostringstream stream{};
     return stream;
 }
 } // namespace prototype
@@ -280,7 +280,7 @@ void Singleton::tell()
 //! @return reference of output stream object, which is on string based
 std::ostringstream& output()
 {
-    static std::ostringstream stream;
+    static std::ostringstream stream{};
     return stream;
 }
 } // namespace singleton

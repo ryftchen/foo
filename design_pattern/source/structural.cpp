@@ -30,7 +30,7 @@ void Adapter::request()
 //! @return reference of output stream object, which is on string based
 std::ostringstream& output()
 {
-    static std::ostringstream stream;
+    static std::ostringstream stream{};
     return stream;
 }
 } // namespace adapter
@@ -57,7 +57,7 @@ void RefinedAbstraction::operation()
 //! @return reference of output stream object, which is on string based
 std::ostringstream& output()
 {
-    static std::ostringstream stream;
+    static std::ostringstream stream{};
     return stream;
 }
 } // namespace bridge
@@ -126,7 +126,7 @@ void Leaf::operation()
 //! @return reference of output stream object, which is on string based
 std::ostringstream& output()
 {
-    static std::ostringstream stream;
+    static std::ostringstream stream{};
     return stream;
 }
 } // namespace composite
@@ -161,7 +161,7 @@ void ConcreteDecoratorB::operation()
 //! @return reference of output stream object, which is on string based
 std::ostringstream& output()
 {
-    static std::ostringstream stream;
+    static std::ostringstream stream{};
     return stream;
 }
 } // namespace decorator
@@ -199,7 +199,7 @@ void Facade::operation2()
 //! @return reference of output stream object, which is on string based
 std::ostringstream& output()
 {
-    static std::ostringstream stream;
+    static std::ostringstream stream{};
     return stream;
 }
 } // namespace facade
@@ -245,7 +245,7 @@ std::unique_ptr<Flyweight>& FlyweightFactory::getFlyweight(const int key)
 //! @return reference of output stream object, which is on string based
 std::ostringstream& output()
 {
-    static std::ostringstream stream;
+    static std::ostringstream stream{};
     return stream;
 }
 } // namespace flyweight
@@ -284,7 +284,7 @@ RealSubject& Proxy::realSubject()
 //! @return reference of output stream object, which is on string based
 std::ostringstream& output()
 {
-    static std::ostringstream stream;
+    static std::ostringstream stream{};
     return stream;
 }
 } // namespace proxy
