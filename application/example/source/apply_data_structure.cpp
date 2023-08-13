@@ -46,7 +46,7 @@ using TreeInstance = DataStructureTask::TreeInstance;
 //! @return reference of DataStructureTask object
 DataStructureTask& getTask()
 {
-    static DataStructureTask task;
+    static DataStructureTask task{};
     return task;
 }
 
@@ -140,7 +140,7 @@ void runLinearTasks(const std::vector<std::string>& targets)
                 linearFunctor(threadName, &LinearStructure::queueInstance);
                 break;
             default:
-                LOG_DBG << "Execute to apply an unknown linear instance.";
+                LOG_INF << "Execute to apply an unknown linear instance.";
                 break;
         }
     }
@@ -261,7 +261,7 @@ void runTreeTasks(const std::vector<std::string>& targets)
                 treeFunctor(threadName, &TreeStructure::splayInstance);
                 break;
             default:
-                LOG_DBG << "Execute to apply an unknown tree instance.";
+                LOG_INF << "Execute to apply an unknown tree instance.";
                 break;
         }
     }

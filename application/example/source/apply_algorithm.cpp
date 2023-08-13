@@ -55,7 +55,7 @@ using SortMethod = AlgorithmTask::SortMethod;
 //! @return reference of AlgorithmTask object
 AlgorithmTask& getTask()
 {
-    static AlgorithmTask task;
+    static AlgorithmTask task{};
     return task;
 }
 
@@ -236,7 +236,7 @@ void runMatchTasks(const std::vector<std::string>& targets)
                 matchFunctor(threadName, &MatchSolution::sundayMethod);
                 break;
             default:
-                LOG_DBG << "Execute to apply an unknown match method.";
+                LOG_INF << "Execute to apply an unknown match method.";
                 break;
         }
     }
@@ -350,7 +350,7 @@ void runNotationTasks(const std::vector<std::string>& targets)
                 notationFunctor(threadName, &NotationSolution::postfixMethod);
                 break;
             default:
-                LOG_DBG << "Execute to apply an unknown notation method.";
+                LOG_INF << "Execute to apply an unknown notation method.";
                 break;
         }
     }
@@ -508,7 +508,7 @@ void runOptimalTasks(const std::vector<std::string>& targets)
                     optimalFunctor(threadName, &OptimalSolution::geneticMethod);
                     break;
                 default:
-                    LOG_DBG << "Execute to apply an unknown optimal method.";
+                    LOG_INF << "Execute to apply an unknown optimal method.";
                     break;
             }
         }
@@ -681,7 +681,7 @@ void runSearchTasks(const std::vector<std::string>& targets)
                 searchFunctor(threadName, &SearchSolution::fibonacciMethod);
                 break;
             default:
-                LOG_DBG << "Execute to apply an unknown search method.";
+                LOG_INF << "Execute to apply an unknown search method.";
                 break;
         }
     }
@@ -953,7 +953,7 @@ void runSortTasks(const std::vector<std::string>& targets)
                 sortFunctor(threadName, &SortSolution::radixMethod);
                 break;
             default:
-                LOG_DBG << "Execute to apply an unknown sort method.";
+                LOG_INF << "Execute to apply an unknown sort method.";
                 break;
         }
     }

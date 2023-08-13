@@ -31,24 +31,24 @@ class Task:
         "--version": "",
     }
     regular_task_dict = {
-        "--algorithm": {
-            "match": ["rab", "knu", "boy", "hor", "sun"],
-            "notation": ["pre", "pos"],
-            "optimal": ["gra", "ann", "par", "gen"],
-            "search": ["bin", "int", "fib"],
-            "sort": ["bub", "sel", "ins", "she", "mer", "qui", "hea", "cou", "buc", "rad"],
+        "app-algo": {
+            "--match": ["rab", "knu", "boy", "hor", "sun"],
+            "--notation": ["pre", "pos"],
+            "--optimal": ["gra", "ann", "par", "gen"],
+            "--search": ["bin", "int", "fib"],
+            "--sort": ["bub", "sel", "ins", "she", "mer", "qui", "hea", "cou", "buc", "rad"],
         },
-        "--data-structure": {"linear": ["lin", "sta", "que"], "tree": ["bin", "ade", "spl"]},
-        "--design-pattern": {
-            "behavioral": ["cha", "com", "int", "ite", "med", "mem", "obs", "sta", "str", "tem", "vis"],
-            "creational": ["abs", "bui", "fac", "pro", "sin"],
-            "structural": ["ada", "bri", "com", "dec", "fac", "fly", "pro"],
+        "app-dp": {
+            "--behavioral": ["cha", "com", "int", "ite", "med", "mem", "obs", "sta", "str", "tem", "vis"],
+            "--creational": ["abs", "bui", "fac", "pro", "sin"],
+            "--structural": ["ada", "bri", "com", "dec", "fac", "fly", "pro"],
         },
-        "--numeric": {
-            "arithmetic": ["add", "sub", "mul", "div"],
-            "divisor": ["euc", "ste"],
-            "integral": ["tra", "sim", "rom", "gau", "mon"],
-            "prime": ["era", "eul"],
+        "app-ds": {"--linear": ["lin", "sta", "que"], "--tree": ["bin", "ade", "spl"]},
+        "app-num": {
+            "--arithmetic": ["add", "sub", "mul", "div"],
+            "--divisor": ["euc", "ste"],
+            "--integral": ["tra", "sim", "rom", "gau", "mon"],
+            "--prime": ["era", "eul"],
         },
     }
     options = {"tst": False, "chk_cov": False, "chk_mem": False}
@@ -58,18 +58,13 @@ class Task:
     report_file = f"{temp_dir}/foo_run.report"
 
     def __init__(self):
-        self.basic_task_dict["--help"] = [
-            f"{task_category} {task_type}"
-            for task_category, task_category_map in self.regular_task_dict.items()
-            for task_type in task_category_map
-        ]
         self.pass_steps = 0
         self.complete_steps = 0
         self.total_steps = 1 + len(self.basic_task_dict.keys())
         for task_category_list in self.basic_task_dict.values():
             self.total_steps += len(task_category_list)
         for task_category_map in self.regular_task_dict.values():
-            self.total_steps += len(task_category_map.keys())
+            self.total_steps += 1 + len(task_category_map.keys())
             for target_task_list in task_category_map.values():
                 self.total_steps += len(target_task_list) + 1
 
@@ -241,6 +236,7 @@ class Task:
                 self.task_queue.put(f"{self.app_bin_cmd} {task_category} {option}")
 
         for task_category, task_category_map in self.regular_task_dict.items():
+            self.task_queue.put(f"{self.app_bin_cmd} {task_category} --help")
             for task_type, target_task_list in task_category_map.items():
                 self.task_queue.put(f"{self.app_bin_cmd} {task_category} {task_type}")
                 for target in target_task_list:

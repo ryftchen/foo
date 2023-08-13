@@ -157,7 +157,7 @@ int tlvDecode(char* buf, const int len, TLVValue& val)
 
 View& View::getInstance()
 {
-    static View viewer;
+    static View viewer{};
     return viewer;
 }
 
@@ -226,9 +226,7 @@ void View::waitToStart()
 
             if (maxTimesOfWaitViewer == waitCount)
             {
-#ifndef NDEBUG
                 LOG_ERR << "The viewer did not start properly...";
-#endif // NDEBUG
                 expiryTimer.reset();
             }
         },
@@ -264,9 +262,7 @@ void View::waitToStop()
 
             if (maxTimesOfWaitViewer == waitCount)
             {
-#ifndef NDEBUG
                 LOG_ERR << "The viewer did not stop properly...";
-#endif // NDEBUG
                 expiryTimer.reset();
             }
         },

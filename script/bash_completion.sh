@@ -10,35 +10,28 @@ function _foo()
     _expand || return
 
     case ${prev} in
-    -@(h|-help))
-        mapfile -t COMPREPLY < <(compgen -W "-a -ds -dp -n \
---algorithm --data-structure --design-pattern --numeric" -- "${curr}")
+    -@(h|-help|v|-version|c|-console))
         return
         ;;
-    -@(v|-version|c|-console))
+    app-algo)
+        mapfile -t COMPREPLY < <(compgen -W "-h --help -m  --match -n --notation -o --optimal -s --search \
+-S --sort" -- "${curr}")
         return
         ;;
-    -@(a|-algorithm))
-        mapfile -t COMPREPLY < <(compgen -W "match notation optimal search sort" -- "${curr}")
+    app-dp)
+        mapfile -t COMPREPLY < <(compgen -W "-h --help -b --behavioral -c --creational -s --structural" -- "${curr}")
         return
         ;;
-    -@(ds|-data-structure))
-        mapfile -t COMPREPLY < <(compgen -W "linear tree" -- "${curr}")
+    app-ds)
+        mapfile -t COMPREPLY < <(compgen -W "-h --help -l --linear -t --tree" -- "${curr}")
         return
         ;;
-    -@(dp|-design-pattern))
-        mapfile -t COMPREPLY < <(compgen -W "behavioral creational structural" -- "${curr}")
+    app-num)
+        mapfile -t COMPREPLY < <(compgen -W "-h --help -a --arithmetic -d --divisor -i --integral \
+-p- -prime" -- "${curr}")
         return
         ;;
-    -@(n|-numeric))
-        mapfile -t COMPREPLY < <(compgen -W "arithmetic divisor integral prime" -- "${curr}")
-        return
-        ;;
-    match | notation | optimal | search | sort | \
-        linear | tree | \
-        behavioral | creational | structural | \
-        arithmetic | divisor | integral | prime)
-        mapfile -t COMPREPLY < <(compgen -W "-h --help" -- "${curr}")
+    -*)
         return
         ;;
     *)
@@ -47,11 +40,10 @@ function _foo()
     esac
 
     case ${curr} in
-    -*)
-        mapfile -t COMPREPLY < <(compgen -W "-h -v -c -a -ds -dp -n \
---help --version --console --algorithm --data-structure --design-pattern --numeric" -- "${curr}")
+    *)
+        mapfile -t COMPREPLY < <(compgen -W "-h --help -v --version -c --console \
+app-algo app-dp app-ds app-num" -- "${curr}")
         ;;
-    *) ;;
     esac
 }
 

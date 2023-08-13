@@ -53,10 +53,9 @@ Console::Console(const std::string& greeting) : impl(std::make_unique<Impl>(gree
         {
             if (input.size() < 2)
             {
-                std::cerr << "Please input \"" << input[0] << " FILENAME\" to run." << std::endl;
-                return RetCode::error;
+                throw std::logic_error("Please input '" + input.at(0) + " FILENAME' to run.");
             }
-            return RetCode(fileExecutor(input[1]));
+            return RetCode(fileExecutor(input.at(1)));
         },
         "run batch commands from the file");
 }
@@ -85,14 +84,13 @@ int Console::cmdExecutor(const std::string& command)
         return RetCode::success;
     }
 
-    Impl::RegisteredCmds::iterator iterator = impl->regCmds.find(inputs[0]);
+    Impl::RegisteredCmds::iterator iterator = impl->regCmds.find(inputs.at(0));
     if (std::end(impl->regCmds) != iterator)
     {
         return RetCode(static_cast<int>(std::get<0>(iterator->second)(inputs)));
     }
 
-    std::cerr << "Console command \"" << inputs[0] << "\" not found." << std::endl;
-    return RetCode::error;
+    throw std::logic_error("The console command '" + inputs.at(0) + "' could not be found.");
 }
 
 int Console::fileExecutor(const std::string& filename)
@@ -100,15 +98,14 @@ int Console::fileExecutor(const std::string& filename)
     std::ifstream input(filename);
     if (!input)
     {
-        std::cerr << "Could not find the batch file to run." << std::endl;
-        return RetCode::error;
+        throw std::runtime_error("Could not find the batch file to run.");
     }
 
     std::string command;
     int counter = 0, result = 0;
     while (std::getline(input, command))
     {
-        if ('#' == command[0])
+        if ('#' == command.at(0))
         {
             continue;
         }
