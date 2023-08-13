@@ -41,6 +41,7 @@ enum TLVType : int
 {
     header = 0x0125e591,
     stop = 0,
+    clear,
     log,
     stat
 };
@@ -50,6 +51,8 @@ struct TLVValue
 {
     //! @brief Flag for stopping the connection.
     bool stopFlag{false};
+    //! @brief Flag for clearing the output.
+    bool clearFlag{false};
     //! @brief Shm id of the log contents.
     int logShmId{invalidShmId};
     //! @brief Shm id of the stat information.
@@ -204,11 +207,12 @@ private:
     // clang-format off
     //! @brief Mapping table of all viewer options.
     const OptionMap optionDispatcher{
-        // - Option -+------------- Help -------------+--- Build Packet ---
-        // ----------+--------------------------------+--------------------
-        { "log"      , { "view the log with highlights", &buildLogPacket  }},
-        { "stat"     , { "show the stat of the process", &buildStatPacket }}
-        // ----------+--------------------------------+--------------------
+        // - Option -+------------- Help -------------+---- Build Packet ----
+        // ----------+--------------------------------+----------------------
+        { "clear"    , { "clean up the outputs"        , &buildClearPacket }},
+        { "log"      , { "view the log with highlights", &buildLogPacket   }},
+        { "stat"     , { "show the stat of the process", &buildStatPacket  }}
+        // ----------+--------------------------------+----------------------
     };
     // clang-format on
 
@@ -216,6 +220,10 @@ private:
     //! @param buffer - TLV packet buffer
     //! @return buffer length
     static int buildStopPacket(char* buffer);
+    //! @brief Build the TLV packet to clean up outputs.
+    //! @param buffer - TLV packet buffer
+    //! @return buffer length
+    static int buildClearPacket(char* buffer);
     //! @brief Build the TLV packet to view log contents.
     //! @param buffer - TLV packet buffer
     //! @return buffer length
@@ -224,6 +232,8 @@ private:
     //! @param buffer - TLV packet buffer
     //! @return buffer length
     static int buildStatPacket(char* buffer);
+    //! @brief Clean up the outputs.
+    static void cleanUpOutputs();
     //! @brief Fill the shared memory.
     //! @param contents - contents to be filled
     //! @return shm id

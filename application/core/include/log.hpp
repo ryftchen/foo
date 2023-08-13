@@ -30,6 +30,8 @@
 #define LOG_WAIT_TO_START application::log::Log::getInstance().waitToStart()
 //! @brief Try to stop logging.
 #define LOG_WAIT_TO_STOP application::log::Log::getInstance().waitToStop()
+//! @brief Try to restart logging.
+#define LOG_REQUEST_TO_RESTART application::log::Log::getInstance().requestToRestart()
 //! @brief Log file path.
 #define LOG_FILE_PATH application::log::Log::getInstance().getFilePath()
 //! @brief Log file lock.
@@ -147,6 +149,8 @@ public:
     void waitToStart();
     //! @brief Wait for the logger to stop. External use.
     void waitToStop();
+    //! @brief Request to restart the logger. External use.
+    void requestToRestart();
     //! @brief Flush log to queue.
     //! @tparam Args - type of arguments of format
     //! @param level - output level
@@ -219,6 +223,8 @@ private:
     std::condition_variable cv;
     //! @brief Flag to indicate whether it is logging.
     std::atomic<bool> isLogging{false};
+    //! @brief Flag for restart request.
+    std::atomic<bool> restartRequest{false};
     //! @brief Output file stream.
     std::ofstream ofs;
     //! @brief Write type.
@@ -248,6 +254,10 @@ private:
     struct NoLogging
     {
     };
+    //! @brief FSM event. Relaunch.
+    struct Relaunch
+    {
+    };
 
     //! @brief Open the log file.
     void openLogFile();
@@ -257,6 +267,8 @@ private:
     void closeLogFile();
     //! @brief Stop logging.
     void stopLogging();
+    //! @brief Roll back.
+    void rollBack();
 
     //! @brief Check whether the log file is opened.
     //! @param event - FSM event
@@ -274,7 +286,9 @@ private:
         Row< State::init ,  OpenFile   , State::idle  , &Log::openLogFile                         >,
         Row< State::idle ,  GoLogging  , State::work  , &Log::startLogging , &Log::isLogFileOpen  >,
         Row< State::work ,  CloseFile  , State::idle  , &Log::closeLogFile                        >,
-        Row< State::idle ,  NoLogging  , State::done  , &Log::stopLogging  , &Log::isLogFileClose >
+        Row< State::idle ,  NoLogging  , State::done  , &Log::stopLogging  , &Log::isLogFileClose >,
+        Row< State::idle ,  Relaunch   , State::init  , &Log::rollBack                            >,
+        Row< State::work ,  Relaunch   , State::init  , &Log::rollBack                            >
         // --------------+-------------+--------------+--------------------+-----------------------
         >;
     // clang-format on

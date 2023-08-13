@@ -26,7 +26,7 @@ class Task:
     lib_list = ["libfoo_util.so", "libfoo_algo.so", "libfoo_ds.so", "libfoo_dp.so", "libfoo_num.so"]
     lib_dir = "./build/lib"
     basic_task_dict = {
-        "--console": [r"'help'", r"'quit'", r"'batch ./script/console_batch.txt'", r"'log'", r"'stat'"],
+        "--console": [r"'help'", r"'quit'", r"'batch ./script/console_batch.txt'", r"'clear'", r"'log'", r"'stat'"],
         "--help": "",
         "--version": "",
     }
@@ -463,7 +463,7 @@ class Output:
     color_bg = "\033[49m"
     color_bold = "\033[1m"
     color_off = "\033[0m"
-    color_esc_regex = r"((\033\[.*?(m|s|u|A))|(\007|\017))"
+    color_esc_regex = r"((\033\[.*?(m|s|u|A|J))|(\007|\017))"
     stat_min_cont_len = 55
     stat_cont_len_excl_cmd = 15
     tbl_min_key_width = 20
