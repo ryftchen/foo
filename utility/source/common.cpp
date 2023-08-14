@@ -75,7 +75,7 @@ std::string executeCommand(const std::string& cmd, const std::uint32_t timeout)
             }
         }
 
-        const std::size_t len = std::fread(buffer.data(), 1, buffer.size(), pipe);
+        const std::size_t len = std::fread(&buffer.at(0), sizeof(buffer.at(0)), buffer.size(), pipe);
         if (0 == len)
         {
             break;
