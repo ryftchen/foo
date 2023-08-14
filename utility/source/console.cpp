@@ -31,14 +31,17 @@ Console::Console(const std::string& greeting) : impl(std::make_unique<Impl>(gree
             }
 
             std::cout << "Console command:\n" << std::endl;
-            for (auto reverseIter = commandsHelp.rbegin(); commandsHelp.rend() != reverseIter; ++reverseIter)
+            for (const auto& [command, help] : commandsHelp)
             {
-                std::cout << std::setiosflags(std::ios_base::left) << std::setw(maxLength) << reverseIter->first
-                          << "    " << reverseIter->second << std::resetiosflags(std::ios_base::left) << std::endl;
+                std::cout << std::setiosflags(std::ios_base::left) << std::setw(maxLength) << command << "    " << help
+                          << std::resetiosflags(std::ios_base::left) << '\n';
             }
+
+            std::cout << std::flush;
             return RetCode::success;
         },
         "show help");
+    impl->regOrder.emplace_back("help");
 
     impl->regCmds["quit"] = std::make_pair(
         [this](const Args& /*input*/)
@@ -47,6 +50,7 @@ Console::Console(const std::string& greeting) : impl(std::make_unique<Impl>(gree
             return RetCode::quit;
         },
         "exit console mode");
+    impl->regOrder.emplace_back("quit");
 
     impl->regCmds["batch"] = std::make_pair(
         [this](const Args& input)
@@ -58,6 +62,7 @@ Console::Console(const std::string& greeting) : impl(std::make_unique<Impl>(gree
             return RetCode(fileExecutor(input.at(1)));
         },
         "run batch commands from the file");
+    impl->regOrder.emplace_back("batch");
 }
 
 Console::~Console()
@@ -71,6 +76,7 @@ Console::~Console()
 void Console::registerCmd(const std::string& command, CmdFunctor func, const std::string& help)
 {
     impl->regCmds[command] = std::make_pair(func, help);
+    impl->regOrder.emplace_back(command);
 }
 
 int Console::cmdExecutor(const std::string& command)
@@ -147,9 +153,9 @@ int Console::readCmdLine()
 Console::CmdsHelp Console::getHelpOfRegisteredCmds() const
 {
     CmdsHelp allCommandsHelp;
-    for (const auto& pair : impl->regCmds)
+    for (const auto& cmd : impl->regOrder)
     {
-        allCommandsHelp.emplace_back(pair.first, std::get<1>(pair.second));
+        allCommandsHelp.emplace_back(cmd, impl->regCmds.at(cmd).second);
     }
 
     return allCommandsHelp;

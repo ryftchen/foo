@@ -781,12 +781,12 @@ private:
     std::string assignChars{"="};
     //! @brief Flag to indicate whether to be parsed.
     bool isParsed{false};
-    //! @brief List of non-optional arguments.
-    std::list<Register> nonOptionalArguments;
     //! @brief List of optional arguments.
     std::list<Register> optionalArguments;
+    //! @brief List of non-optional arguments.
+    std::list<Register> nonOptionalArguments;
     //! @brief Mapping table of argument.
-    std::map<std::string_view, RegisterIter> argumentMap;
+    std::unordered_map<std::string_view, RegisterIter> argumentMap;
     //! @brief Current parser path.
     std::string parserPath;
     //! @brief List of sub-parsers.

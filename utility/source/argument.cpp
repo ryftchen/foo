@@ -331,16 +331,16 @@ Argument::Argument(const Argument& arg) :
     prefixChars(arg.prefixChars),
     assignChars(arg.assignChars),
     isParsed(arg.isParsed),
-    nonOptionalArguments(arg.nonOptionalArguments),
     optionalArguments(arg.optionalArguments),
+    nonOptionalArguments(arg.nonOptionalArguments),
     parserPath(arg.parserPath),
     subParsers(arg.subParsers)
 {
-    for (auto iterator = std::begin(nonOptionalArguments); iterator != std::end(nonOptionalArguments); ++iterator)
+    for (auto iterator = std::begin(optionalArguments); iterator != std::end(optionalArguments); ++iterator)
     {
         indexArgument(iterator);
     }
-    for (auto iterator = std::begin(optionalArguments); iterator != std::end(optionalArguments); ++iterator)
+    for (auto iterator = std::begin(nonOptionalArguments); iterator != std::end(nonOptionalArguments); ++iterator)
     {
         indexArgument(iterator);
     }

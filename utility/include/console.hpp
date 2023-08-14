@@ -8,6 +8,7 @@
 
 #include <readline/history.h>
 #include <functional>
+#include <list>
 #include <memory>
 
 //! @brief Console-mode-related functions in the utility module.
@@ -108,6 +109,8 @@ private:
         using RegisteredCmds = std::unordered_map<Cmd, std::pair<CmdFunctor, Help>>;
         //! @brief Mapping table of all registered commands.
         RegisteredCmds regCmds;
+        //! @brief Register order.
+        std::list<Cmd> regOrder;
         //! @brief Saved history state.
         HistoryState* history{nullptr};
     };
