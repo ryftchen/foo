@@ -76,6 +76,12 @@ private:
     bool hasAnyTask() const;
     //! @brief Dispatch specific tasks.
     void dispatchTask();
+    //! @brief Print output of the console mode command line.
+    void showConsoleOutput() const;
+    //! @brief Print help message.
+    void showHelpMessage() const;
+    //! @brief Print version icon.
+    void showVersionIcon() const;
 
     //! @brief Alias for the functor to perform the task.
     typedef void (*PerformTaskFunctor)(const std::vector<std::string>&);
@@ -249,25 +255,19 @@ private:
         };
     } /** @brief Dispatch all types of tasks. */ dispatchedTask{};
 
-    //! @brief Print output of the console mode command line.
-    void showConsoleOutput() const;
-    //! @brief Print help message.
-    void showHelpMessage() const;
-    //! @brief Print version icon.
-    void showVersionIcon() const;
     //! @brief Enter console mode.
     void enterConsoleMode() const;
-    //! @brief Launch the client for console mode.
-    //! @tparam T type of client
-    //! @param client - client to be launched
-    template <typename T>
-    static void launchClient(std::shared_ptr<T>& client);
     //! @brief Register the command line to console mode.
     //! @tparam T type of client
     //! @param console - console to be registered
     //! @param client - client used to send
     template <typename T>
     void registerOnConsole(utility::console::Console& console, std::shared_ptr<T>& client) const;
+    //! @brief Launch the client for console mode.
+    //! @tparam T type of client
+    //! @param client - client to be launched
+    template <typename T>
+    static void launchClient(std::shared_ptr<T>& client);
     //! @brief Get ASCII banner text.
     //! @return ASCII banner text content
     static std::string getIconBanner();
