@@ -26,6 +26,8 @@ class Task:
     lib_list = ["libfoo_util.so", "libfoo_algo.so", "libfoo_ds.so", "libfoo_dp.so", "libfoo_num.so"]
     lib_dir = "./build/lib"
     basic_task_dict = {
+        "--help": "",
+        "--version": "",
         "--console": [
             r"'help'",
             r"'quit'",
@@ -35,8 +37,6 @@ class Task:
             r"'log'",
             r"'stat'",
         ],
-        "--help": "",
-        "--version": "",
     }
     regular_task_dict = {
         "app-algo": {
