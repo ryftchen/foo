@@ -10,6 +10,7 @@
 #include <sys/ipc.h>
 #include <sys/shm.h>
 #include <sys/stat.h>
+#include <unistd.h>
 #include <cstring>
 #include <sstream>
 #else
@@ -89,14 +90,7 @@ int tlvEncode(char* buf, int& len, const TLVValue& val)
     enc.write<bool>(val.stopFlag);
     sum += (offset + sizeof(bool));
 
-    if (val.clearFlag)
-    {
-        enc.write<int>(TLVType::clear);
-        enc.write<int>(sizeof(bool));
-        enc.write<bool>(val.clearFlag);
-        sum += (offset + sizeof(bool));
-    }
-    else if (invalidShmId != val.logShmId)
+    if (invalidShmId != val.logShmId)
     {
         enc.write<int>(TLVType::log);
         enc.write<int>(sizeof(int));
@@ -143,10 +137,6 @@ int tlvDecode(char* buf, const int len, TLVValue& val)
         {
             case TLVType::stop:
                 dec.read<bool>(&val.stopFlag);
-                sum -= (offset + sizeof(bool));
-                break;
-            case TLVType::clear:
-                dec.read<bool>(&val.clearFlag);
                 sum -= (offset + sizeof(bool));
                 break;
             case TLVType::log:
@@ -327,11 +317,7 @@ tlv::TLVValue View::parseTLVPacket(char* buffer, const int length)
     tlv::TLVValue value;
     tlv::tlvDecode(buffer, length, value);
 
-    if (value.clearFlag)
-    {
-        cleanUpOutputs();
-    }
-    else if (invalidShmId != value.logShmId)
+    if (invalidShmId != value.logShmId)
     {
         printSharedMemory(value.logShmId);
     }
@@ -349,16 +335,6 @@ int View::buildStopPacket(char* buffer)
     if (tlv::tlvEncode(buffer, length, tlv::TLVValue{.stopFlag = true}) < 0)
     {
         throw std::runtime_error("Failed to build packet to stop");
-    }
-    return length;
-}
-
-int View::buildClearPacket(char* buffer)
-{
-    int length = 0;
-    if (tlv::tlvEncode(buffer, length, tlv::TLVValue{.clearFlag = true}) < 0)
-    {
-        throw std::runtime_error("Failed to build packet for the clear option.");
     }
     return length;
 }
@@ -383,16 +359,6 @@ int View::buildStatPacket(char* buffer)
         throw std::runtime_error("Failed to build packet for the stat option.");
     }
     return length;
-}
-
-void View::cleanUpOutputs()
-{
-    std::cout << utility::common::executeCommand("clear") << std::endl;
-
-    LOG_REQUEST_TO_RESTART;
-    LOG_WAIT_TO_START;
-    utility::time::millisecondLevelSleep(log::intervalOfWaitLogger);
-    LOG_INF << "Cleaned up the outputs.";
 }
 
 int View::fillSharedMemory(const std::string& contents)
@@ -471,9 +437,28 @@ std::string View::getLogContents()
 
 std::string View::getStatInformation()
 {
-    const std::string showStat =
-        R"(tail -n +1 /proc/$(ps -aux | grep foo | head -n 1 | awk '{split($0, a, " "); print a[2]}')/task/*/status)";
-    return utility::common::executeCommand(showStat);
+    const std::string pid = std::to_string(::getpid());
+    const std::string queryCmd = R"(ps -T -p )" + pid + R"( | awk 'NR>1 {split($0, a, " "); print a[2]}')";
+    const std::string queryResult = utility::common::executeCommand(queryCmd);
+
+    std::vector<std::string> tids;
+    std::size_t pos = 0, prev = 0;
+    while ((pos = queryResult.find('\n', prev)) != std::string::npos)
+    {
+        tids.emplace_back(queryResult.substr(prev, pos - prev));
+        prev = pos + 1;
+    }
+
+    std::string statInfo;
+    for (const auto& tid : tids)
+    {
+        std::string showCmd = R"(head -n 10 /proc/)" + pid + R"(/task/)" + tid + R"(/status)";
+        showCmd += R"( && echo 'Stack:' && )";
+        showCmd += R"(cat /proc/)" + pid + R"(/task/)" + tid + R"(/stack)";
+        statInfo += utility::common::executeCommand(showCmd) + '\n';
+    }
+
+    return statInfo;
 }
 
 void View::createViewServer()
