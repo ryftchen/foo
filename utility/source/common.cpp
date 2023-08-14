@@ -53,7 +53,7 @@ std::string formatString(const char* const format, ...)
 //! @return command line output
 std::string executeCommand(const std::string& cmd, const std::uint32_t timeout)
 {
-    std::FILE* pipe = ::popen(cmd.data(), "r");
+    std::FILE* pipe = ::popen(cmd.c_str(), "r");
     if (nullptr == pipe)
     {
         throw std::runtime_error("Could not open pipe when trying to execute command.");
