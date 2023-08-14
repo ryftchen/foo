@@ -488,12 +488,12 @@ void Command::showHelpMessage() const
 
 void Command::showVersionIcon() const
 {
-    std::string versionStr = "tput rev; echo ";
+    std::string versionStr = R"(tput rev; echo )";
     versionStr += getIconBanner();
     versionStr.pop_back();
-    versionStr += "                    VERSION " + mainCLI.version;
-    versionStr += " \"; tput sgr0; echo ";
-    versionStr += '\"' + std::string{copyrightInfo} + '\"';
+    versionStr += R"(                    VERSION )" + mainCLI.version;
+    versionStr += R"( "; tput sgr0; echo )";
+    versionStr += R"(")" + std::string{copyrightInfo} + R"(")";
 
     std::cout << utility::common::executeCommand(versionStr) << std::flush;
 }
@@ -502,7 +502,7 @@ void Command::enterConsoleMode() const
 {
     try
     {
-        std::cout << utility::common::executeCommand(("tput bel; echo " + getIconBanner())) << std::flush;
+        std::cout << utility::common::executeCommand((R"(tput bel; echo )" + getIconBanner())) << std::flush;
 
         using utility::console::Console;
         using utility::socket::TCPSocket;
@@ -596,12 +596,63 @@ template <typename T>
 void Command::registerOnConsole(utility::console::Console& console, std::shared_ptr<T>& client) const
 {
     using utility::console::Console;
-    using view::View;
+
+    console.registerCmd(
+        "refresh",
+        [&client](const Console::Args& /*input*/)
+        {
+            int retVal = Console::RetCode::success;
+            try
+            {
+                std::cout << utility::common::executeCommand(R"(clear)") << std::endl;
+
+                LOG_REQUEST_TO_RESTART;
+                LOG_WAIT_TO_START;
+
+                utility::time::millisecondLevelSleep(latency);
+                LOG_INF << "Refresh the outputs.";
+            }
+            catch (const std::exception& error)
+            {
+                retVal = Console::RetCode::error;
+                LOG_WRN << error.what();
+            }
+            return retVal;
+        },
+        "refresh the outputs");
+
+    console.registerCmd(
+        "reconnect",
+        [&client](const Console::Args& /*input*/)
+        {
+            int retVal = Console::RetCode::success;
+            try
+            {
+                client->toSend("stop");
+                client->waitIfAlive();
+                client.reset();
+
+                VIEW_REQUEST_TO_RESTART;
+                VIEW_WAIT_TO_START;
+
+                client = std::make_shared<T>();
+                launchClient<T>(client);
+                utility::time::millisecondLevelSleep(latency);
+                LOG_INF << "Reconnected to the server.";
+            }
+            catch (const std::exception& error)
+            {
+                retVal = Console::RetCode::error;
+                LOG_WRN << error.what();
+            }
+            return retVal;
+        },
+        "reconnect to the server");
 
     for (const auto& [option, optionTuple] : VIEW_OPTIONS)
     {
         const auto& cmd = option;
-        const auto& help = View::get<View::HelpMessage>(optionTuple);
+        const auto& help = view::View::get<view::View::HelpMessage>(optionTuple);
         console.registerCmd(
             cmd,
             [cmd, &client](const Console::Args& /*input*/)
@@ -621,35 +672,6 @@ void Command::registerOnConsole(utility::console::Console& console, std::shared_
             },
             help);
     }
-
-    console.registerCmd(
-        "reconnect",
-        [&client](const Console::Args& /*input*/)
-        {
-            int retVal = Console::RetCode::success;
-            try
-            {
-                client->toSend("stop");
-                client->waitIfAlive();
-                client->toClose();
-                client.reset();
-
-                VIEW_REQUEST_TO_RESTART;
-                VIEW_WAIT_TO_START;
-
-                client = std::make_shared<T>();
-                launchClient<T>(client);
-                utility::time::millisecondLevelSleep(latency);
-                LOG_INF << "Reconnected to the server.";
-            }
-            catch (const std::exception& error)
-            {
-                retVal = Console::RetCode::error;
-                LOG_WRN << error.what();
-            }
-            return retVal;
-        },
-        "reconnect to the server");
 }
 
 std::string Command::getIconBanner()
