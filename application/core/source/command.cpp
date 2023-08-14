@@ -488,14 +488,14 @@ void Command::showHelpMessage() const
 
 void Command::showVersionIcon() const
 {
-    std::string versionStr = R"(tput rev; echo )";
-    versionStr += getIconBanner();
-    versionStr.pop_back();
-    versionStr += R"(                    VERSION )" + mainCLI.version;
-    versionStr += R"( "; tput sgr0; echo )";
-    versionStr += R"(")" + std::string{copyrightInfo} + R"(")";
+    std::string versionIcon = R"(tput rev; echo )";
+    versionIcon += getIconBanner();
+    versionIcon.pop_back();
+    versionIcon += R"(                    VERSION )" + mainCLI.version;
+    versionIcon += R"( "; tput sgr0; echo )";
+    versionIcon += R"(")" + std::string{copyrightInfo} + R"(")";
 
-    std::cout << utility::common::executeCommand(versionStr) << std::flush;
+    std::cout << utility::common::executeCommand(versionIcon) << std::flush;
 }
 
 void Command::enterConsoleMode() const

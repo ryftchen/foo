@@ -438,8 +438,8 @@ std::string View::getLogContents()
 std::string View::getStatInformation()
 {
     const std::string pid = std::to_string(::getpid());
-    const std::string queryCmd = R"(ps -T -p )" + pid + R"( | awk 'NR>1 {split($0, a, " "); print a[2]}')";
-    const std::string queryResult = utility::common::executeCommand(queryCmd);
+    const std::string queryResult =
+        utility::common::executeCommand(R"(ps -T -p )" + pid + R"( | awk 'NR>1 {split($0, a, " "); print a[2]}')");
 
     std::vector<std::string> tids;
     std::size_t pos = 0, prev = 0;
@@ -449,16 +449,16 @@ std::string View::getStatInformation()
         prev = pos + 1;
     }
 
-    std::string statInfo;
+    std::string statList;
     for (const auto& tid : tids)
     {
-        std::string showCmd = R"(head -n 10 /proc/)" + pid + R"(/task/)" + tid + R"(/status)";
-        showCmd += R"( && echo 'Stack:' && )";
-        showCmd += R"(cat /proc/)" + pid + R"(/task/)" + tid + R"(/stack)";
-        statInfo += utility::common::executeCommand(showCmd) + '\n';
+        std::string statInfo = R"(head -n 10 /proc/)" + pid + R"(/task/)" + tid + R"(/status)";
+        statInfo += R"( && echo 'Stack:' && )";
+        statInfo += R"(cat /proc/)" + pid + R"(/task/)" + tid + R"(/stack)";
+        statList += utility::common::executeCommand(statInfo) + '\n';
     }
 
-    return statInfo;
+    return statList;
 }
 
 void View::createViewServer()
