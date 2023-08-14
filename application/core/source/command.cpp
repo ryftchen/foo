@@ -546,53 +546,6 @@ void Command::enterConsoleMode() const
 }
 
 template <typename T>
-void Command::launchClient(std::shared_ptr<T>& client)
-{
-    using utility::socket::TCPSocket;
-    using utility::socket::UDPSocket;
-    using view::View;
-
-    if constexpr (std::is_same_v<T, TCPSocket>)
-    {
-        client->onRawMessageReceived = [&client](char* buffer, const int length)
-        {
-            try
-            {
-                if (View::parseTLVPacket(buffer, length).stopFlag)
-                {
-                    client->setNonBlocking();
-                }
-            }
-            catch (std::exception& error)
-            {
-                LOG_WRN << error.what();
-            }
-        };
-        client->toConnect(std::string{View::tcpHost}, View::tcpPort);
-    }
-    else if constexpr (std::is_same_v<T, UDPSocket>)
-    {
-        client->onRawMessageReceived =
-            [&client](char* buffer, const int length, const std::string& /*ip*/, const std::uint16_t /*port*/)
-        {
-            try
-            {
-                if (View::parseTLVPacket(buffer, length).stopFlag)
-                {
-                    client->setNonBlocking();
-                }
-            }
-            catch (std::exception& error)
-            {
-                LOG_WRN << error.what();
-            }
-        };
-        client->toReceive();
-        client->toConnect(std::string{View::udpHost}, View::udpPort);
-    }
-}
-
-template <typename T>
 void Command::registerOnConsole(utility::console::Console& console, std::shared_ptr<T>& client) const
 {
     using utility::console::Console;
@@ -671,6 +624,53 @@ void Command::registerOnConsole(utility::console::Console& console, std::shared_
                 return retVal;
             },
             help);
+    }
+}
+
+template <typename T>
+void Command::launchClient(std::shared_ptr<T>& client)
+{
+    using utility::socket::TCPSocket;
+    using utility::socket::UDPSocket;
+    using view::View;
+
+    if constexpr (std::is_same_v<T, TCPSocket>)
+    {
+        client->onRawMessageReceived = [&client](char* buffer, const int length)
+        {
+            try
+            {
+                if (View::parseTLVPacket(buffer, length).stopFlag)
+                {
+                    client->setNonBlocking();
+                }
+            }
+            catch (std::exception& error)
+            {
+                LOG_WRN << error.what();
+            }
+        };
+        client->toConnect(std::string{View::tcpHost}, View::tcpPort);
+    }
+    else if constexpr (std::is_same_v<T, UDPSocket>)
+    {
+        client->onRawMessageReceived =
+            [&client](char* buffer, const int length, const std::string& /*ip*/, const std::uint16_t /*port*/)
+        {
+            try
+            {
+                if (View::parseTLVPacket(buffer, length).stopFlag)
+                {
+                    client->setNonBlocking();
+                }
+            }
+            catch (std::exception& error)
+            {
+                LOG_WRN << error.what();
+            }
+        };
+        client->toReceive();
+        client->toConnect(std::string{View::udpHost}, View::udpPort);
     }
 }
 
