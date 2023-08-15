@@ -52,19 +52,21 @@ std::string formatString(const char* const format, ...)
 //! @return command line output
 std::string executeCommand(const std::string& command, const std::uint32_t timeout)
 {
-    if (!std::regex_match(command, std::regex(R"(^[a-zA-Z0-9`~!@#$%^&*()-_=+\[\]{}\\|;:'\",.<>\/? ]*$)")))
+    char input[commandLength + 1] = {'\0'};
+    std::snprintf(input, commandLength + 1, "%s", command.c_str());
+    if (!std::regex_match(input, std::regex(R"(^[a-zA-Z0-9`~!@#$%^&*()-_=+\[\]{}\\|;:'\",.<>\/? ]*$)")))
     {
         throw std::runtime_error("Illegal command.");
     }
 
-    std::FILE* pipe = ::popen(command.data(), "r");
+    std::FILE* pipe = ::popen(input, "r");
     if (nullptr == pipe)
     {
         throw std::runtime_error("Could not open pipe when trying to execute command.");
     }
 
     std::string output;
-    std::vector<char> buffer(maxBufferSize);
+    std::vector<char> buffer(4096);
     const auto startTime = std::chrono::steady_clock::now();
     for (;;)
     {
@@ -79,12 +81,12 @@ std::string executeCommand(const std::string& command, const std::uint32_t timeo
             }
         }
 
-        const std::size_t len = std::fread(buffer.data(), sizeof(char), buffer.size(), pipe);
-        if (0 == len)
+        const std::size_t length = std::fread(buffer.data(), sizeof(char), buffer.size(), pipe);
+        if (0 == length)
         {
             break;
         }
-        output.append(buffer.data(), len);
+        output.append(buffer.data(), length);
     }
 
     const int exitStatus = ::pclose(pipe);

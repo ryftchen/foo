@@ -37,8 +37,8 @@ inline constexpr std::string_view colorOff = "\033[0m";
 constexpr std::size_t bkdrHashSeed = 131;
 //! @brief Hash size for BKDR hash function.
 constexpr std::size_t bkdrHashSize = 0x7FFFFFFF;
-//! @brief Maximum size of output per line.
-constexpr std::uint32_t maxBufferSize = 4096;
+//! @brief Length of the command line.
+constexpr std::uint32_t commandLength = 1024;
 
 //! @brief The Brian-Kernighan Dennis-Ritchie hash function in compile time.
 //! @param str - input data
