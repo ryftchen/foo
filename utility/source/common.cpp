@@ -48,12 +48,13 @@ std::string formatString(const char* const format, ...)
 }
 
 //! @brief Execute the command line.
-//! @param cmd - target command line to be executed
+//! @param command - target command line to be executed
 //! @param timeout - timeout period
 //! @return command line output
-std::string executeCommand(const std::string& cmd, const std::uint32_t timeout)
+std::string executeCommand(const std::string& command, const std::uint32_t timeout)
 {
-    std::FILE* pipe = ::popen(cmd.c_str(), "r");
+    const char* const cmd = command.data();
+    std::FILE* pipe = ::popen(cmd, "r");
     if (nullptr == pipe)
     {
         throw std::runtime_error("Could not open pipe when trying to execute command.");

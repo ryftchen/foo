@@ -468,8 +468,6 @@ void Command::showConsoleOutput() const
 
     auto udpClient = std::make_shared<UDPSocket>();
     launchClient<UDPSocket>(udpClient);
-    utility::time::millisecondLevelSleep(latency);
-
     Console console(" > ");
     registerOnConsole<UDPSocket>(console, udpClient);
     for (const auto& command : commands)
@@ -509,7 +507,6 @@ void Command::enterConsoleMode() const
 
         auto tcpClient = std::make_shared<TCPSocket>();
         launchClient<TCPSocket>(tcpClient);
-        utility::time::millisecondLevelSleep(latency);
 
         char hostName[HOST_NAME_MAX + 1] = {'\0'};
         if (::gethostname(hostName, HOST_NAME_MAX))
@@ -562,7 +559,7 @@ void Command::registerOnConsole(utility::console::Console& console, std::shared_
                 LOG_REQUEST_TO_RESTART;
                 LOG_WAIT_TO_START;
 
-                utility::time::millisecondLevelSleep(latency);
+                utility::time::millisecondLevelSleep(maxLatency);
                 LOG_INF << "Refreshed the outputs.";
             }
             catch (const std::exception& error)
@@ -590,7 +587,7 @@ void Command::registerOnConsole(utility::console::Console& console, std::shared_
 
                 client = std::make_shared<T>();
                 launchClient<T>(client);
-                utility::time::millisecondLevelSleep(latency);
+                utility::time::millisecondLevelSleep(maxLatency);
                 LOG_INF << "Reconnected to the servers.";
             }
             catch (const std::exception& error)
