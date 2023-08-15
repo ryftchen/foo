@@ -26,8 +26,8 @@ class Task:
     lib_list = ["libfoo_util.so", "libfoo_algo.so", "libfoo_ds.so", "libfoo_dp.so", "libfoo_num.so"]
     lib_dir = "./build/lib"
     basic_task_dict = {
-        "--help": "",
-        "--version": "",
+        "--help": [],
+        "--version": [],
         "--console": [
             r"'help'",
             r"'quit'",
@@ -40,6 +40,7 @@ class Task:
     }
     regular_task_dict = {
         "app-algo": {
+            "--help": [],
             "--match": ["rab", "knu", "boy", "hor", "sun"],
             "--notation": ["pre", "pos"],
             "--optimal": ["gra", "ann", "par", "gen"],
@@ -47,12 +48,14 @@ class Task:
             "--sort": ["bub", "sel", "ins", "she", "mer", "qui", "hea", "cou", "buc", "rad"],
         },
         "app-dp": {
+            "--help": [],
             "--behavioral": ["cha", "com", "int", "ite", "med", "mem", "obs", "sta", "str", "tem", "vis"],
             "--creational": ["abs", "bui", "fac", "pro", "sin"],
             "--structural": ["ada", "bri", "com", "dec", "fac", "fly", "pro"],
         },
-        "app-ds": {"--linear": ["lin", "sta", "que"], "--tree": ["bin", "ade", "spl"]},
+        "app-ds": {"--help": [], "--linear": ["lin", "sta", "que"], "--tree": ["bin", "ade", "spl"]},
         "app-num": {
+            "--help": [],
             "--arithmetic": ["add", "sub", "mul", "div"],
             "--divisor": ["euc", "ste"],
             "--integral": ["tra", "sim", "rom", "gau", "mon"],
@@ -68,13 +71,15 @@ class Task:
     def __init__(self):
         self.pass_steps = 0
         self.complete_steps = 0
-        self.total_steps = 1 + len(self.basic_task_dict.keys())
+        self.total_steps = len(self.basic_task_dict["--console"])
+        self.total_steps += len(self.basic_task_dict.keys())
         for task_category_list in self.basic_task_dict.values():
             self.total_steps += len(task_category_list)
         for sub_cli_map in self.regular_task_dict.values():
             self.total_steps += 1 + len(sub_cli_map.keys())
             for task_category_list in sub_cli_map.values():
-                self.total_steps += len(task_category_list) + 1
+                if task_category_list:
+                    self.total_steps += len(task_category_list) + 1
 
         if not os.path.exists(self.temp_dir):
             os.mkdir(self.temp_dir)
@@ -244,15 +249,18 @@ class Task:
                 self.task_queue.put(f"{self.app_bin_cmd} {task_category} {option}")
 
         for sub_cli, sub_cli_map in self.regular_task_dict.items():
-            self.task_queue.put(f"{self.app_bin_cmd} {sub_cli} --help")
+            self.task_queue.put(f"{self.app_bin_cmd} {sub_cli}")
             for task_category, target_task_list in sub_cli_map.items():
                 self.task_queue.put(f"{self.app_bin_cmd} {sub_cli} {task_category}")
                 for target in target_task_list:
                     self.task_queue.put(f"{self.app_bin_cmd} {sub_cli} {task_category} {target}")
-                self.task_queue.put(f"{self.app_bin_cmd} {sub_cli} {task_category} {' '.join(target_task_list)}")
+                if target_task_list:
+                    self.task_queue.put(f"{self.app_bin_cmd} {sub_cli} {task_category} {' '.join(target_task_list)}")
 
     def perform_tasks(self):
-        self.run_task(self.app_bin_cmd, "quit")
+        for option in self.basic_task_dict["--console"]:
+            self.run_task(self.app_bin_cmd, option.replace("'", "") + "\nquit")
+
         while self.complete_steps < self.total_steps:
             cmd = self.task_queue.get()
             self.run_task(cmd)
