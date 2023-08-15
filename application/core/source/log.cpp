@@ -339,6 +339,11 @@ const std::string& changeToLogStyle(std::string& line)
         line = std::regex_replace(
             line, std::regex(std::string{errorLevelPrefixRegex}), std::string{errorLevelPrefixColorForLog});
     }
+    else if (std::regex_search(line, std::regex(std::string{unknownLevelPrefixRegex})))
+    {
+        line = std::regex_replace(
+            line, std::regex(std::string{unknownLevelPrefixRegex}), std::string{unknownLevelPrefixColorForLog});
+    }
 
     namespace common = utility::common;
     if (const std::regex date(std::string{dateRegex}); std::regex_search(line, date))
