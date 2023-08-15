@@ -87,10 +87,10 @@ private:
     typedef void (*PerformTaskFunctor)(const std::vector<std::string>&);
     //! @brief Alias for the functor to update the task.
     typedef void (*UpdateTaskFunctor)(const std::string&);
+    //! @brief Alias for the sub-cli.
+    using SubCLI = std::string;
     //! @brief Alias for the task category.
     using TaskCategory = std::string;
-    //! @brief Alias for the task type.
-    using TaskType = std::string;
     //! @brief Alias for the target task.
     using TargetTask = std::string;
     //! @brief Alias for the container of TargetTask.
@@ -98,19 +98,19 @@ private:
     //! @brief Alias for the tuple of PerformTaskFunctor and UpdateTaskFunctor.
     using TaskFunctorTuple = std::tuple<PerformTaskFunctor, UpdateTaskFunctor>;
     //! @brief Alias for the tuple of TargetTaskContainer and TaskFunctorTuple.
-    using TaskTypeTuple = std::tuple<TargetTaskContainer, TaskFunctorTuple>;
-    //! @brief Alias for the map of TaskType and TaskTypeTuple.
-    using TaskCategoryMap = std::map<TaskType, TaskTypeTuple>;
-    //! @brief Alias for the map of TaskCategory and TaskCategoryMap.
-    using RegularTaskMap = std::map<TaskCategory, TaskCategoryMap>;
+    using TaskCategoryTuple = std::tuple<TargetTaskContainer, TaskFunctorTuple>;
+    //! @brief Alias for the map of TaskCategory and TaskCategoryTuple.
+    using SubCLIMap = std::map<TaskCategory, TaskCategoryTuple>;
+    //! @brief Alias for the map of SubCLI and SubCLIMap.
+    using RegularTaskMap = std::map<SubCLI, SubCLIMap>;
 
     //! @memberof application::command::Command
-    //! @brief Get a member of TaskTypeTuple.
+    //! @brief Get a member of TaskCategoryTuple.
     //! @tparam T - type of member to be got
     //! @param tuple - a tuple containing the member types to be got
     //! @return member corresponding to the specific type
     template <typename T>
-    auto get(const TaskTypeTuple& tuple) const;
+    auto get(const TaskCategoryTuple& tuple) const;
     //! @memberof application::command::Command
     //! @brief Get a member of TaskFunctorTuple.
     //! @tparam T - type of member to be got
@@ -122,36 +122,36 @@ private:
     // clang-format off
     //! @brief Mapping table of all basic tasks.
     const std::map<std::string, void (Command::*)() const> basicTaskDispatcher{
-        // - Category -+------------ Show ------------
+        // - Category -+---------- RUN Task ----------
         // ------------+------------------------------
         { "console"    , &Command::showConsoleOutput },
         { "help"       , &Command::showHelpMessage   },
-        { "version"    , &Command::showVersionIcon   },
+        { "version"    , &Command::showVersionIcon   }
         // ------------+------------------------------
     };
     //! @brief Mapping table of all regular tasks.
     const RegularTaskMap regularTaskDispatcher{
-        // - Category -+----- Type -----+----------------- Task -----------------+----------- Run Tasks -----------+----------- Update Task -----------
-        // ------------+----------------+----------------------------------------+---------------------------------+-----------------------------------
-        { "app-algo"   , {{ "match"      , {{ "rab", "knu", "boy", "hor", "sun" } , { &app_algo::runMatchTasks     , &app_algo::updateMatchTask     }}},
-                          { "notation"   , {{ "pre", "pos"                      } , { &app_algo::runNotationTasks  , &app_algo::updateNotationTask  }}},
-                          { "optimal"    , {{ "gra", "ann", "par", "gen"        } , { &app_algo::runOptimalTasks   , &app_algo::updateOptimalTask   }}},
-                          { "search"     , {{ "bin", "int", "fib"               } , { &app_algo::runSearchTasks    , &app_algo::updateSearchTask    }}},
-                          { "sort"       , {{ "bub", "sel", "ins", "she", "mer",
-                                              "qui", "hea", "cou", "buc", "rad" } , { &app_algo::runSortTasks      , &app_algo::updateSortTask      }}}}},
-        { "app-dp"     , {{ "behavioral" , {{ "cha", "com", "int", "ite", "med",
-                                              "mem", "obs", "sta", "str", "tem",
-                                              "vis"                             } , { &app_dp::runBehavioralTasks  , &app_dp::updateBehavioralTask  }}},
-                          { "creational" , {{ "abs", "bui", "fac", "pro", "sin" } , { &app_dp::runCreationalTasks  , &app_dp::updateCreationalTask  }}},
-                          { "structural" , {{ "ada", "bri", "com", "dec", "fac",
-                                              "fly", "pro"                      } , { &app_dp::runStructuralTasks  , &app_dp::updateStructuralTask  }}}}},
-        { "app-ds"     , {{ "linear"     , {{ "lin", "sta", "que"               } , { &app_ds::runLinearTasks      , &app_ds::updateLinearTask      }}},
-                          { "tree"       , {{ "bin", "ade", "spl"               } , { &app_ds::runTreeTasks        , &app_ds::updateTreeTask        }}}}},
-        { "app-num"    , {{ "arithmetic" , {{ "add", "sub", "mul", "div"        } , { &app_num::runArithmeticTasks , &app_num::updateArithmeticTask }}},
-                          { "divisor"    , {{ "euc", "ste"                      } , { &app_num::runDivisorTasks    , &app_num::updateDivisorTask    }}},
-                          { "integral"   , {{ "tra", "sim", "rom", "gau", "mon" } , { &app_num::runIntegralTasks   , &app_num::updateIntegralTask   }}},
-                          { "prime"      , {{ "era", "eul"                      } , { &app_num::runPrimeTasks      , &app_num::updatePrimeTask      }}}}}
-        // ------------+----------------+----------------------------------------+---------------------------------+-----------------------------------
+        // - Sub-CLI -+--- Category ---+----------------- Task -----------------+----------- Run Tasks -----------+----------- Update Task -----------
+        // -----------+----------------+----------------------------------------+---------------------------------+-----------------------------------
+        { "app-algo"  , {{ "match"      , {{ "rab", "knu", "boy", "hor", "sun" } , { &app_algo::runMatchTasks     , &app_algo::updateMatchTask     }}},
+                         { "notation"   , {{ "pre", "pos"                      } , { &app_algo::runNotationTasks  , &app_algo::updateNotationTask  }}},
+                         { "optimal"    , {{ "gra", "ann", "par", "gen"        } , { &app_algo::runOptimalTasks   , &app_algo::updateOptimalTask   }}},
+                         { "search"     , {{ "bin", "int", "fib"               } , { &app_algo::runSearchTasks    , &app_algo::updateSearchTask    }}},
+                         { "sort"       , {{ "bub", "sel", "ins", "she", "mer",
+                                             "qui", "hea", "cou", "buc", "rad" } , { &app_algo::runSortTasks      , &app_algo::updateSortTask      }}}}},
+        { "app-dp"    , {{ "behavioral" , {{ "cha", "com", "int", "ite", "med",
+                                             "mem", "obs", "sta", "str", "tem",
+                                             "vis"                             } , { &app_dp::runBehavioralTasks  , &app_dp::updateBehavioralTask  }}},
+                         { "creational" , {{ "abs", "bui", "fac", "pro", "sin" } , { &app_dp::runCreationalTasks  , &app_dp::updateCreationalTask  }}},
+                         { "structural" , {{ "ada", "bri", "com", "dec", "fac",
+                                             "fly", "pro"                      } , { &app_dp::runStructuralTasks  , &app_dp::updateStructuralTask  }}}}},
+        { "app-ds"    , {{ "linear"     , {{ "lin", "sta", "que"               } , { &app_ds::runLinearTasks      , &app_ds::updateLinearTask      }}},
+                         { "tree"       , {{ "bin", "ade", "spl"               } , { &app_ds::runTreeTasks        , &app_ds::updateTreeTask        }}}}},
+        { "app-num"   , {{ "arithmetic" , {{ "add", "sub", "mul", "div"        } , { &app_num::runArithmeticTasks , &app_num::updateArithmeticTask }}},
+                         { "divisor"    , {{ "euc", "ste"                      } , { &app_num::runDivisorTasks    , &app_num::updateDivisorTask    }}},
+                         { "integral"   , {{ "tra", "sim", "rom", "gau", "mon" } , { &app_num::runIntegralTasks   , &app_num::updateIntegralTask   }}},
+                         { "prime"      , {{ "era", "eul"                      } , { &app_num::runPrimeTasks      , &app_num::updatePrimeTask      }}}}}
+        // -----------+----------------+----------------------------------------+---------------------------------+-----------------------------------
     };
     // clang-format on
 
@@ -281,7 +281,7 @@ private:
 };
 
 template <typename T>
-auto Command::get(const TaskTypeTuple& tuple) const
+auto Command::get(const TaskCategoryTuple& tuple) const
 {
     if constexpr (std::is_same_v<T, TargetTaskContainer>)
     {
