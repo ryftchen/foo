@@ -502,10 +502,10 @@ void Command::enterConsoleMode() const
 {
     try
     {
-        std::cout << utility::common::executeCommand((R"(tput bel; echo )" + getIconBanner())) << std::flush;
-
         using utility::console::Console;
         using utility::socket::TCPSocket;
+
+        std::cout << utility::common::executeCommand((R"(tput bel; echo )" + getIconBanner())) << std::flush;
 
         auto tcpClient = std::make_shared<TCPSocket>();
         launchClient<TCPSocket>(tcpClient);
@@ -552,7 +552,7 @@ void Command::registerOnConsole(utility::console::Console& console, std::shared_
 
     console.registerCmd(
         "refresh",
-        [&client](const Console::Args& /*input*/)
+        [](const Console::Args& /*input*/)
         {
             int retVal = Console::RetCode::success;
             try
@@ -563,7 +563,7 @@ void Command::registerOnConsole(utility::console::Console& console, std::shared_
                 LOG_WAIT_TO_START;
 
                 utility::time::millisecondLevelSleep(latency);
-                LOG_INF << "Refresh the outputs.";
+                LOG_INF << "Refreshed the outputs.";
             }
             catch (const std::exception& error)
             {
@@ -640,7 +640,8 @@ void Command::launchClient(std::shared_ptr<T>& client)
         {
             try
             {
-                if (View::parseTLVPacket(buffer, length).stopFlag)
+                const auto tcpRep = View::parseTLVPacket(buffer, length);
+                if (tcpRep.stopFlag)
                 {
                     client->setNonBlocking();
                 }
@@ -659,7 +660,8 @@ void Command::launchClient(std::shared_ptr<T>& client)
         {
             try
             {
-                if (View::parseTLVPacket(buffer, length).stopFlag)
+                const auto udpRep = View::parseTLVPacket(buffer, length);
+                if (udpRep.stopFlag)
                 {
                     client->setNonBlocking();
                 }
