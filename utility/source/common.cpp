@@ -52,6 +52,7 @@ std::string formatString(const char* const format, ...)
 //! @return command line output
 std::string executeCommand(const std::string& command, const std::uint32_t timeout)
 {
+    constexpr std::uint16_t commandLength = 1024;
     char input[commandLength + 1] = {'\0'};
     std::snprintf(input, commandLength + 1, "%s", command.c_str());
     if (!std::regex_match(input, std::regex(R"(^[a-zA-Z0-9`~!@#$%^&*()-_=+\[\]{}\\|;:'\",.<>\/? ]*$)")))

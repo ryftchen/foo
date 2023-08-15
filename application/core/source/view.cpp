@@ -437,35 +437,43 @@ std::string View::getLogContents()
 
 std::string View::getStatInformation()
 {
-    const std::string pid = std::to_string(::getpid());
-    const std::string queryResult =
-        utility::common::executeCommand(R"(ps -T -p )" + pid + R"( | awk 'NR>1 {split($0, a, " "); print a[2]}')");
-
-    std::vector<std::string> tids;
+    const std::string queryResult = utility::common::executeCommand(commandToQueryAllThreadIDs());
+    std::vector<std::string> tidContainer;
     std::size_t pos = 0, prev = 0;
     while ((pos = queryResult.find('\n', prev)) != std::string::npos)
     {
-        tids.emplace_back(queryResult.substr(prev, pos - prev));
+        tidContainer.emplace_back(queryResult.substr(prev, pos - prev));
         prev = pos + 1;
     }
 
     std::string statList;
-    for (const auto& tid : tids)
+    for (const auto& tid : tidContainer)
     {
-        std::string statInfo = R"(head -n 10 /proc/)" + pid + R"(/task/)" + tid + R"(/status)";
-        statInfo += R"( && echo 'Stack:')";
-        if (std::to_string(::gettid()) != tid)
-        {
-            statInfo += R"( && (timeout --signal=2 0.02 strace -qq -ttT -vyy -s 128 -p )" + tid + R"( 2>&1 || exit 0))";
-        }
-        else
-        {
-            statInfo += R"( && echo 'N/A')";
-        }
-        statList += utility::common::executeCommand(statInfo) + '\n';
+        statList += utility::common::executeCommand(commandToPrintThreadStatus(tid)) + '\n';
     }
 
     return statList;
+}
+
+std::string View::commandToQueryAllThreadIDs()
+{
+    return std::string{
+        R"(ps -T -p )" + std::to_string(::getpid()) + R"( | awk 'NR>1 {split($0, a, " "); print a[2]}')"};
+}
+
+std::string View::commandToPrintThreadStatus(const std::string& tid)
+{
+    std::string print = R"(head -n 10 /proc/)" + std::to_string(::getpid()) + R"(/task/)" + tid + R"(/status)";
+    print += R"( && echo 'Strace:')";
+    if (std::to_string(::gettid()) != tid)
+    {
+        print += R"( && (timeout --signal=2 0.02 strace -qq -ttT -vyy -s 128 -p )" + tid + R"( 2>&1 || exit 0))";
+    }
+    else
+    {
+        print += R"( && echo 'N/A')";
+    }
+    return print;
 }
 
 void View::createViewServer()
