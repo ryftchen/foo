@@ -71,10 +71,10 @@ class Task:
         self.total_steps = 1 + len(self.basic_task_dict.keys())
         for task_category_list in self.basic_task_dict.values():
             self.total_steps += len(task_category_list)
-        for task_category_map in self.regular_task_dict.values():
-            self.total_steps += 1 + len(task_category_map.keys())
-            for target_task_list in task_category_map.values():
-                self.total_steps += len(target_task_list) + 1
+        for sub_cli_map in self.regular_task_dict.values():
+            self.total_steps += 1 + len(sub_cli_map.keys())
+            for task_category_list in sub_cli_map.values():
+                self.total_steps += len(task_category_list) + 1
 
         if not os.path.exists(self.temp_dir):
             os.mkdir(self.temp_dir)
@@ -243,13 +243,13 @@ class Task:
             for option in task_category_list:
                 self.task_queue.put(f"{self.app_bin_cmd} {task_category} {option}")
 
-        for task_category, task_category_map in self.regular_task_dict.items():
-            self.task_queue.put(f"{self.app_bin_cmd} {task_category} --help")
-            for task_type, target_task_list in task_category_map.items():
-                self.task_queue.put(f"{self.app_bin_cmd} {task_category} {task_type}")
+        for sub_cli, sub_cli_map in self.regular_task_dict.items():
+            self.task_queue.put(f"{self.app_bin_cmd} {sub_cli} --help")
+            for task_category, target_task_list in sub_cli_map.items():
+                self.task_queue.put(f"{self.app_bin_cmd} {sub_cli} {task_category}")
                 for target in target_task_list:
-                    self.task_queue.put(f"{self.app_bin_cmd} {task_category} {task_type} {target}")
-                self.task_queue.put(f"{self.app_bin_cmd} {task_category} {task_type} {' '.join(target_task_list)}")
+                    self.task_queue.put(f"{self.app_bin_cmd} {sub_cli} {task_category} {target}")
+                self.task_queue.put(f"{self.app_bin_cmd} {sub_cli} {task_category} {' '.join(target_task_list)}")
 
     def perform_tasks(self):
         self.run_task(self.app_bin_cmd, "quit")
