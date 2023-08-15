@@ -12,9 +12,10 @@ namespace utility::time
 //! @return current system time
 std::string getCurrentSystemTime()
 {
+    constexpr std::uint16_t dateLength = 32, dateStartYear = 1900;
     char date[dateLength + 1] = {'\0'};
     const auto now = std::chrono::system_clock::now();
-    const auto microseconds = std::chrono::duration_cast<std::chrono::microseconds>(now.time_since_epoch()) % secToUsec;
+    const auto microseconds = std::chrono::duration_cast<std::chrono::microseconds>(now.time_since_epoch()) % 1000000;
     const std::time_t tt = std::chrono::system_clock::to_time_t(now);
     std::tm tm{};
     ::localtime_r(&tt, &tm);

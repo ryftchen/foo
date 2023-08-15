@@ -7,7 +7,6 @@
 #pragma once
 
 #include <chrono>
-#include <random>
 #include <thread>
 
 //! @brief Store beginning time.
@@ -22,13 +21,6 @@
 //! @brief Timing-related functions in the utility module.
 namespace utility::time
 {
-//! @brief Length of time format.
-constexpr std::uint16_t dateLength = 32;
-//! @brief Start year of time format.
-constexpr std::uint16_t dateStartYear = 1900;
-//! @brief Multiplier from the second to the millisecond.
-constexpr std::uint32_t secToUsec = 1000000;
-
 //! @brief Timing.
 class Time
 {
