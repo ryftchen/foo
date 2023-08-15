@@ -7,8 +7,7 @@
 #include "common.hpp"
 #include <cassert>
 #include <chrono>
-#include <stdexcept>
-#include <vector>
+#include <regex>
 
 namespace utility::common
 {
@@ -53,8 +52,12 @@ std::string formatString(const char* const format, ...)
 //! @return command line output
 std::string executeCommand(const std::string& command, const std::uint32_t timeout)
 {
-    const char* const cmd = command.data();
-    std::FILE* pipe = ::popen(cmd, "r");
+    if (!std::regex_match(command, std::regex(R"(^[a-zA-Z0-9`~!@#$%^&*()-_=+\[\]{}\\|;:'\",.<>\/? ]*$)")))
+    {
+        throw std::runtime_error("Illegal command.");
+    }
+
+    std::FILE* pipe = ::popen(command.data(), "r");
     if (nullptr == pipe)
     {
         throw std::runtime_error("Could not open pipe when trying to execute command.");
