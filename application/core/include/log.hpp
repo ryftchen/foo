@@ -56,6 +56,8 @@ constexpr std::string_view infoLevelPrefix = "[INF]";
 constexpr std::string_view warnLevelPrefix = "[WRN]";
 //! @brief Prefix of error level in log.
 constexpr std::string_view errorLevelPrefix = "[ERR]";
+//! @brief Prefix of unknown level in log.
+constexpr std::string_view unknownLevelPrefix = "[UNK]";
 //! @brief Regular expression of debug level in log.
 constexpr std::string_view debugLevelPrefixRegex = R"(^\[DBG\])";
 //! @brief Regular expression of info level in log.
@@ -64,6 +66,8 @@ constexpr std::string_view infoLevelPrefixRegex = R"(^\[INF\])";
 constexpr std::string_view warnLevelPrefixRegex = R"(^\[WRN\])";
 //! @brief Regular expression of error level in log.
 constexpr std::string_view errorLevelPrefixRegex = R"(^\[ERR\])";
+//! @brief Regular expression of unknown level in log.
+constexpr std::string_view unknownLevelPrefixRegex = R"(^\[UNK\])";
 //! @brief Regular expression of date in log.
 constexpr std::string_view dateRegex = R"(\[(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})\.(\d{6}) (\w{3})\])";
 //! @brief Regular expression of code file in log.
@@ -95,6 +99,12 @@ constexpr auto errorLevelPrefixColorForLog = utility::common::joinStr<
     utility::common::colorBold,
     utility::common::colorForBackground,
     errorLevelPrefix,
+    utility::common::colorOff>;
+//! @brief Prefix of unknown level. Include ANSI escape codes.
+constexpr auto unknownLevelPrefixColorForLog = utility::common::joinStr<
+    utility::common::colorBold,
+    utility::common::colorForBackground,
+    unknownLevelPrefix,
     utility::common::colorOff>;
 
 //! @brief Logger.
@@ -317,7 +327,7 @@ void Log::flush(
 
     if (State::work != currentState())
     {
-        std::string output = outputFormatter(errorLevelPrefix);
+        std::string output = outputFormatter(unknownLevelPrefix);
         std::cerr << changeToLogStyle(output) << std::endl;
         return;
     }
