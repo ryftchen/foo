@@ -7,6 +7,5 @@ query-filters:
       problem.severity: recommendation
   - exclude:
       id:
-        - cpp/uncontrolled-process-operation
         - cpp/poorly-documented-function
 ...

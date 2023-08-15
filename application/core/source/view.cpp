@@ -454,9 +454,14 @@ std::string View::getStatInformation()
     {
         std::string statInfo = R"(head -n 10 /proc/)" + pid + R"(/task/)" + tid + R"(/status)";
         statInfo += R"( && echo 'Stack:')";
-        statInfo += (std::to_string(::gettid()) != tid)
-            ? (R"( && (timeout --signal=2 0.02 strace -qq -ttT -vyy -s 128 -p )" + tid + R"( 2>&1 || exit 0))")
-            : R"( && echo 'N/A')";
+        if (std::to_string(::gettid()) != tid)
+        {
+            statInfo += R"( && (timeout --signal=2 0.02 strace -qq -ttT -vyy -s 128 -p )" + tid + R"( 2>&1 || exit 0))";
+        }
+        else
+        {
+            statInfo += R"( && echo 'N/A')";
+        }
         statList += utility::common::executeCommand(statInfo) + '\n';
     }
 

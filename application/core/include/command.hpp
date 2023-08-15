@@ -274,8 +274,6 @@ private:
     //! @brief Check for excess arguments.
     void checkForExcessArguments();
 
-    //! @brief Latency for console.
-    static constexpr std::uint16_t latency{10};
     //! @brief Maximum latency for console.
     static constexpr std::uint16_t maxLatency{200};
 };
