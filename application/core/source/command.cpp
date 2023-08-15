@@ -591,7 +591,7 @@ void Command::registerOnConsole(utility::console::Console& console, std::shared_
                 client = std::make_shared<T>();
                 launchClient<T>(client);
                 utility::time::millisecondLevelSleep(latency);
-                LOG_INF << "Reconnected to the server.";
+                LOG_INF << "Reconnected to the servers.";
             }
             catch (const std::exception& error)
             {
@@ -600,7 +600,7 @@ void Command::registerOnConsole(utility::console::Console& console, std::shared_
             }
             return retVal;
         },
-        "reconnect to the server");
+        "reconnect to the servers");
 
     for (const auto& [option, optionTuple] : VIEW_OPTIONS)
     {
