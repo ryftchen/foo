@@ -453,8 +453,10 @@ std::string View::getStatInformation()
     for (const auto& tid : tids)
     {
         std::string statInfo = R"(head -n 10 /proc/)" + pid + R"(/task/)" + tid + R"(/status)";
-        statInfo += R"( && echo 'Stack:' && )";
-        statInfo += R"(cat /proc/)" + pid + R"(/task/)" + tid + R"(/stack)";
+        statInfo += R"( && echo 'Stack:')";
+        statInfo += (std::to_string(::gettid()) != tid)
+            ? (R"( && (timeout --signal=2 0.02 strace -qq -ttT -vyy -s 128 -p )" + tid + R"( 2>&1 || exit 0))")
+            : R"( && echo 'N/A')";
         statList += utility::common::executeCommand(statInfo) + '\n';
     }
 
@@ -517,7 +519,6 @@ void View::createViewServer()
             {
                 buildStopPacket(buffer);
                 udpServer->toSendTo(buffer, sizeof(buffer), ip, port);
-                udpServer->setNonBlocking();
                 return;
             }
 
@@ -549,8 +550,8 @@ void View::startViewing()
 
 void View::destroyViewServer()
 {
-    tcpServer->toClose();
-    udpServer->toClose();
+    tcpServer.reset();
+    udpServer.reset();
 }
 
 void View::stopViewing()
@@ -558,18 +559,22 @@ void View::stopViewing()
     std::unique_lock<std::mutex> lock(mtx);
     isViewing.store(false);
     restartRequest.store(false);
-    tcpServer->waitIfAlive();
-    udpServer->waitIfAlive();
 }
 
 void View::rollBack()
 {
+    if (tcpServer)
+    {
+        tcpServer.reset();
+    }
+    if (udpServer)
+    {
+        udpServer.reset();
+    }
+
     std::unique_lock<std::mutex> lock(mtx);
     isViewing.store(false);
     restartRequest.store(false);
-
-    tcpServer.reset();
-    udpServer.reset();
 }
 
 //! @brief The operator (<<) overloading of the State enum.
