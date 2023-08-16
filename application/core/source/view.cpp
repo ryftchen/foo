@@ -443,16 +443,16 @@ std::string View::getStatInformation()
     std::snprintf(cmd, len + 1, "ps -T -p %d | awk 'NR>1 {split($0, a, \" \"); print a[2]}'", pid);
     const std::string queryRes = utility::common::executeCommand(cmd);
 
-    std::vector<int> tids;
+    std::vector<int> tidContainer;
     std::size_t pos = 0, prev = 0;
     while ((pos = queryRes.find('\n', prev)) != std::string::npos)
     {
-        tids.emplace_back(std::stoi(queryRes.substr(prev, pos - prev)));
+        tidContainer.emplace_back(std::stoi(queryRes.substr(prev, pos - prev)));
         prev = pos + 1;
     }
 
-    std::string statList;
-    for (const auto& tid : tids)
+    std::string statInfo;
+    for (const auto& tid : tidContainer)
     {
         char cmd[len + 1] = {'\0'};
         if (::gettid() != tid)
@@ -470,10 +470,10 @@ std::string View::getStatInformation()
         {
             std::snprintf(cmd, len + 1, "head -n 10 /proc/%d/task/%d/status && echo 'Stack:' && echo 'N/A'", pid, tid);
         }
-        statList += utility::common::executeCommand(cmd) + '\n';
+        statInfo += utility::common::executeCommand(cmd) + '\n';
     }
 
-    return statList;
+    return statInfo;
 }
 
 void View::createViewServer()
