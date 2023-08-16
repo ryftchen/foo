@@ -241,13 +241,6 @@ private:
     //! @brief Get the stat information.
     //! @return stat information
     static std::string getStatInformation();
-    //! @brief Command to query all thread ids.
-    //! @return command line
-    static std::string commandToQueryAllThreadIDs();
-    //! @brief Command to print thread status.
-    //! @param tid - thread id
-    //! @return command line
-    static std::string commandToPrintThreadStatus(const std::string& tid);
     //! @brief Maximum number of lines to view log contents.
     static constexpr std::uint32_t maxViewNumOfLines{20};
 

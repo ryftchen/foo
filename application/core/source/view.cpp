@@ -437,43 +437,43 @@ std::string View::getLogContents()
 
 std::string View::getStatInformation()
 {
-    const std::string queryResult = utility::common::executeCommand(commandToQueryAllThreadIDs());
-    std::vector<std::string> tidContainer;
+    const int pid = ::getpid();
+    constexpr std::uint16_t len = 256;
+    char cmd[len + 1] = {'\0'};
+    std::snprintf(cmd, len + 1, "ps -T -p %d | awk 'NR>1 {split($0, a, \" \"); print a[2]}'", pid);
+    const std::string queryRes = utility::common::executeCommand(cmd);
+
+    std::vector<int> tids;
     std::size_t pos = 0, prev = 0;
-    while ((pos = queryResult.find('\n', prev)) != std::string::npos)
+    while ((pos = queryRes.find('\n', prev)) != std::string::npos)
     {
-        tidContainer.emplace_back(queryResult.substr(prev, pos - prev));
+        tids.emplace_back(std::stoi(queryRes.substr(prev, pos - prev)));
         prev = pos + 1;
     }
 
     std::string statList;
-    for (const auto& tid : tidContainer)
+    for (const auto& tid : tids)
     {
-        statList += utility::common::executeCommand(commandToPrintThreadStatus(tid)) + '\n';
+        char cmd[len + 1] = {'\0'};
+        if (::gettid() != tid)
+        {
+            std::snprintf(
+                cmd,
+                len + 1,
+                "head -n 10 /proc/%d/task/%d/status "
+                "&& echo 'Stack:' && (timeout --signal=2 0.02 strace -qq -ttT -vyy -s 96 -p %d 2>&1 || exit 0)",
+                pid,
+                tid,
+                tid);
+        }
+        else
+        {
+            std::snprintf(cmd, len + 1, "head -n 10 /proc/%d/task/%d/status && echo 'Stack:' && echo 'N/A'", pid, tid);
+        }
+        statList += utility::common::executeCommand(cmd) + '\n';
     }
 
     return statList;
-}
-
-std::string View::commandToQueryAllThreadIDs()
-{
-    return std::string{
-        R"(ps -T -p )" + std::to_string(::getpid()) + R"( | awk 'NR>1 {split($0, a, " "); print a[2]}')"};
-}
-
-std::string View::commandToPrintThreadStatus(const std::string& tid)
-{
-    std::string print = R"(head -n 10 /proc/)" + std::to_string(::getpid()) + R"(/task/)" + tid + R"(/status)";
-    print += R"( && echo 'Strace:')";
-    if (std::to_string(::gettid()) != tid)
-    {
-        print += R"( && (timeout --signal=2 0.02 strace -qq -ttT -vyy -s 128 -p )" + tid + R"( 2>&1 || exit 0))";
-    }
-    else
-    {
-        print += R"( && echo 'N/A')";
-    }
-    return print;
 }
 
 void View::createViewServer()
