@@ -441,21 +441,16 @@ std::string View::getStatInformation()
     constexpr std::uint16_t len = 256;
     char cmd[len + 1] = {'\0'};
     std::snprintf(cmd, len + 1, "ps -T -p %d | awk 'NR>1 {split($0, a, \" \"); print a[2]}'", pid);
-    const std::string queryRes = utility::common::executeCommand(cmd);
+    const std::string queryResult = utility::common::executeCommand(cmd);
 
-    std::vector<int> tidContainer;
+    std::vector<std::string> cmdContainer;
     std::size_t pos = 0, prev = 0;
-    while ((pos = queryRes.find('\n', prev)) != std::string::npos)
+    const int currTid = ::gettid();
+    while ((pos = queryResult.find('\n', prev)) != std::string::npos)
     {
-        tidContainer.emplace_back(std::stoi(queryRes.substr(prev, pos - prev)));
-        prev = pos + 1;
-    }
-
-    std::string statInfo;
-    for (const auto& tid : tidContainer)
-    {
+        const int tid = std::stoi(queryResult.substr(prev, pos - prev));
         char cmd[len + 1] = {'\0'};
-        if (::gettid() != tid)
+        if (currTid != tid)
         {
             std::snprintf(
                 cmd,
@@ -470,8 +465,18 @@ std::string View::getStatInformation()
         {
             std::snprintf(cmd, len + 1, "head -n 10 /proc/%d/task/%d/status && echo 'Stack:' && echo 'N/A'", pid, tid);
         }
-        statInfo += utility::common::executeCommand(cmd) + '\n';
+        cmdContainer.emplace_back(cmd);
+        prev = pos + 1;
     }
+
+    std::string statInfo;
+    std::for_each(
+        cmdContainer.cbegin(),
+        cmdContainer.cend(),
+        [&statInfo](const auto& cmd)
+        {
+            statInfo += utility::common::executeCommand(cmd) + '\n';
+        });
 
     return statInfo;
 }
