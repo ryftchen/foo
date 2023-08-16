@@ -456,9 +456,9 @@ void Command::dispatchTask()
 
 void Command::showConsoleOutput() const
 {
-    const auto commands = mainCLI.get<std::vector<std::string>>(
+    const auto cmdContainer = mainCLI.get<std::vector<std::string>>(
         std::next(basicTaskDispatcher.cbegin(), BasicTask::Category::console)->first);
-    if (commands.empty())
+    if (cmdContainer.empty())
     {
         return;
     }
@@ -470,9 +470,9 @@ void Command::showConsoleOutput() const
     launchClient<UDPSocket>(udpClient);
     Console console(" > ");
     registerOnConsole<UDPSocket>(console, udpClient);
-    for (const auto& command : commands)
+    for (const auto& cmd : cmdContainer)
     {
-        console.cmdExecutor(command);
+        console.cmdExecutor(cmd);
     }
 
     udpClient->toSend("stop");
@@ -507,7 +507,6 @@ void Command::enterConsoleMode() const
 
         auto tcpClient = std::make_shared<TCPSocket>();
         launchClient<TCPSocket>(tcpClient);
-
         char hostName[HOST_NAME_MAX + 1] = {'\0'};
         if (::gethostname(hostName, HOST_NAME_MAX))
         {
@@ -555,11 +554,10 @@ void Command::registerOnConsole(utility::console::Console& console, std::shared_
             try
             {
                 std::cout << utility::common::executeCommand(R"(clear)") << std::endl;
-
                 LOG_REQUEST_TO_RESTART;
                 LOG_WAIT_TO_START;
-
                 utility::time::millisecondLevelSleep(maxLatency);
+
                 LOG_INF << "Refreshed the outputs.";
             }
             catch (const std::exception& error)
@@ -581,13 +579,12 @@ void Command::registerOnConsole(utility::console::Console& console, std::shared_
                 client->toSend("stop");
                 client->waitIfAlive();
                 client.reset();
-
                 VIEW_REQUEST_TO_RESTART;
                 VIEW_WAIT_TO_START;
+                utility::time::millisecondLevelSleep(maxLatency);
 
                 client = std::make_shared<T>();
                 launchClient<T>(client);
-                utility::time::millisecondLevelSleep(maxLatency);
                 LOG_INF << "Reconnected to the servers.";
             }
             catch (const std::exception& error)
