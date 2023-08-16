@@ -71,15 +71,8 @@ class Task:
     def __init__(self):
         self.pass_steps = 0
         self.complete_steps = 0
-        self.total_steps = len(self.basic_task_dict["--console"])
-        self.total_steps += len(self.basic_task_dict.keys())
-        for task_category_list in self.basic_task_dict.values():
-            self.total_steps += len(task_category_list)
-        for sub_cli_map in self.regular_task_dict.values():
-            self.total_steps += 1 + len(sub_cli_map.keys())
-            for task_category_list in sub_cli_map.values():
-                if task_category_list:
-                    self.total_steps += len(task_category_list) + 1
+        self.total_steps = 0
+        self.repeat_count = 1
 
         if not os.path.exists(self.temp_dir):
             os.mkdir(self.temp_dir)
@@ -107,8 +100,10 @@ class Task:
             for thread in thread_list:
                 thread.join()
         else:
-            while self.complete_steps < self.total_steps:
+            self.total_steps = self.repeat_count
+            while self.repeat_count:
                 self.run_task(self.tst_bin_cmd)
+                self.repeat_count -= 1
 
         self.complete()
         self.format_run_log()
@@ -135,15 +130,20 @@ class Task:
         def check_positive(value):
             value = int(value)
             if value <= 0:
-                raise argparse.ArgumentTypeError(f"\"{value}\" is an invalid positive int value")
+                raise argparse.ArgumentTypeError(f"\"{value}\" is an invalid positive int value.")
             return value
 
-        parser = argparse.ArgumentParser(description="run script")
+        parser = argparse.ArgumentParser(description="run script", formatter_class=argparse.RawTextHelpFormatter)
+        parser.add_argument("-t", "--test", action="store_true", default=False, help="run unit test only")
         parser.add_argument(
-            "-t", "--test", nargs="?", const=1, type=check_positive, help="run unit test only", metavar="times"
+            "-r", "--repeat", nargs="?", const=1, type=check_positive, help="run repeatedly", metavar="times"
         )
         parser.add_argument(
-            "-c", "--check", nargs="+", choices=["cov", "mem"], help="run with check: cov - coverage, mem - memory"
+            "-c",
+            "--check",
+            nargs="+",
+            choices=["cov", "mem"],
+            help="run with check\n- cov    coverage\n- mem    memory",
         )
         parser.add_argument(
             "-b",
@@ -151,12 +151,18 @@ class Task:
             nargs="?",
             const="dbg",
             choices=["dbg", "rls"],
-            help="run after build: dbg - debug, rls - release",
+            help="run after build\n- dbg    debug\n- rls    release",
         )
+
         args = parser.parse_args()
+        if args.test:
+            self.options["tst"] = True
+
+        if args.repeat is not None:
+            self.repeat_count = args.repeat
 
         if args.check is not None:
-            if args.test is not None:
+            if self.options["tst"]:
                 Output.exit_with_error("No support for the --check option during testing.")
             if "cov" in args.check:
                 stdout, _, _ = common.execute_command("command -v llvm-profdata-12 llvm-cov-12 2>&1")
@@ -179,7 +185,7 @@ class Task:
         if args.build is not None:
             if os.path.isfile(self.build_script):
                 build_cmd = self.build_script
-                if args.test is not None:
+                if self.options["tst"]:
                     build_cmd += " --test"
                 if args.build == "dbg":
                     self.build_executable(f"{build_cmd} 2>&1")
@@ -187,10 +193,6 @@ class Task:
                     self.build_executable(f"{build_cmd} --release 2>&1")
             else:
                 Output.exit_with_error(f"No shell script {self.build_script} file.")
-
-        if args.test is not None:
-            self.options["tst"] = True
-            self.total_steps = args.test
 
     def build_executable(self, build_cmd):
         stdout, stderr, return_code = common.execute_command(build_cmd)
@@ -212,6 +214,17 @@ class Task:
             os.makedirs(self.temp_dir)
         self.progress_bar.setup_progress_bar()
         sys.stdout = self.logger
+
+        self.total_steps = len(self.basic_task_dict["--console"])
+        self.total_steps += len(self.basic_task_dict.keys())
+        for task_category_list in self.basic_task_dict.values():
+            self.total_steps += len(task_category_list)
+        for sub_cli_map in self.regular_task_dict.values():
+            self.total_steps += 1 + len(sub_cli_map.keys())
+            for task_category_list in sub_cli_map.values():
+                if task_category_list:
+                    self.total_steps += len(task_category_list) + 1
+        self.total_steps *= self.repeat_count
 
     def complete(self):
         if self.options["chk_mem"]:
@@ -243,27 +256,32 @@ class Task:
         del self.logger
 
     def generate_tasks(self):
-        for task_category, task_category_list in self.basic_task_dict.items():
-            self.task_queue.put(f"{self.app_bin_cmd} {task_category}")
-            for option in task_category_list:
-                self.task_queue.put(f"{self.app_bin_cmd} {task_category} {option}")
+        while self.repeat_count:
+            for target_task in self.basic_task_dict["--console"]:
+                target_task = target_task.replace("'", "")
+                self.task_queue.put((self.app_bin_cmd, f"{target_task}\nquit"))
 
-        for sub_cli, sub_cli_map in self.regular_task_dict.items():
-            self.task_queue.put(f"{self.app_bin_cmd} {sub_cli}")
-            for task_category, target_task_list in sub_cli_map.items():
-                self.task_queue.put(f"{self.app_bin_cmd} {sub_cli} {task_category}")
-                for target in target_task_list:
-                    self.task_queue.put(f"{self.app_bin_cmd} {sub_cli} {task_category} {target}")
-                if target_task_list:
-                    self.task_queue.put(f"{self.app_bin_cmd} {sub_cli} {task_category} {' '.join(target_task_list)}")
+            for task_category, task_category_list in self.basic_task_dict.items():
+                self.task_queue.put((f"{self.app_bin_cmd} {task_category}", ""))
+                for target_task in task_category_list:
+                    self.task_queue.put((f"{self.app_bin_cmd} {task_category} {target_task}", ""))
+
+            for sub_cli, sub_cli_map in self.regular_task_dict.items():
+                self.task_queue.put((f"{self.app_bin_cmd} {sub_cli}", ""))
+                for task_category, target_task_list in sub_cli_map.items():
+                    self.task_queue.put((f"{self.app_bin_cmd} {sub_cli} {task_category}", ""))
+                    for target_task in target_task_list:
+                        self.task_queue.put((f"{self.app_bin_cmd} {sub_cli} {task_category} {target_task}", ""))
+                    if target_task_list:
+                        self.task_queue.put(
+                            (f"{self.app_bin_cmd} {sub_cli} {task_category} {' '.join(target_task_list)}", "")
+                        )
+            self.repeat_count -= 1
 
     def perform_tasks(self):
-        for option in self.basic_task_dict["--console"]:
-            self.run_task(self.app_bin_cmd, option.replace("'", "") + "\nquit")
-
-        while self.complete_steps < self.total_steps:
-            cmd = self.task_queue.get()
-            self.run_task(cmd)
+        while not self.task_queue.empty():
+            command, enter = self.task_queue.get()
+            self.run_task(command, enter)
 
     def run_task(self, command, enter=""):
         if not self.options["tst"]:
