@@ -751,7 +751,7 @@ private:
     //! @param rhs - right-hand side
     void deepCopy(const TargetBuilder& rhs) const
     {
-        std::memcpy(this->orderedArray.get(), rhs.orderedArray.get(), this->length * sizeof(T));
+        std::memcpy(orderedArray.get(), rhs.orderedArray.get(), length * sizeof(T));
     }
     //! @brief Set the ordered array.
     //! @tparam V - the specific type of integral
@@ -987,7 +987,7 @@ private:
     //! @param rhs - right-hand side
     void deepCopy(const TargetBuilder& rhs) const
     {
-        std::memcpy(this->randomArray.get(), rhs.randomArray.get(), this->length * sizeof(T));
+        std::memcpy(randomArray.get(), rhs.randomArray.get(), length * sizeof(T));
     }
     //! @brief Set the random array.
     //! @tparam V - the specific type of integral

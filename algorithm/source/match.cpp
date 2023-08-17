@@ -244,14 +244,14 @@ int Match::sunday(const char* text, const char* pattern, const std::uint32_t tex
             if (matchLen == patternLen)
             {
                 shift = textIndex;
-                goto gotoReturn;
+                goto returnValue;
             }
         }
 
         textIndex += badCharShiftTable[text[textIndex + patternLen]];
     }
 
-gotoReturn:
+returnValue:
     return shift;
 }
 

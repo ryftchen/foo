@@ -486,12 +486,10 @@ void Command::showHelpMessage() const
 
 void Command::showVersionIcon() const
 {
-    std::string versionIcon = R"(tput rev; echo )";
-    versionIcon += getIconBanner();
+    std::string versionIcon = "tput rev ; echo " + getIconBanner();
     versionIcon.pop_back();
-    versionIcon += R"(                    VERSION )" + mainCLI.version;
-    versionIcon += R"( "; tput sgr0; echo )";
-    versionIcon += R"(")" + std::string{copyrightInfo} + R"(")";
+    versionIcon +=
+        "                    VERSION " + mainCLI.version + " ' ; tput sgr0 ; echo '" + std::string{copyrightInfo} + "'";
 
     std::cout << utility::common::executeCommand(versionIcon) << std::flush;
 }
@@ -503,7 +501,7 @@ void Command::enterConsoleMode() const
         using utility::console::Console;
         using utility::socket::TCPSocket;
 
-        std::cout << utility::common::executeCommand((R"(tput bel; echo )" + getIconBanner())) << std::flush;
+        std::cout << utility::common::executeCommand("tput bel ; echo " + getIconBanner()) << std::flush;
 
         auto tcpClient = std::make_shared<TCPSocket>();
         launchClient<TCPSocket>(tcpClient);
@@ -553,7 +551,7 @@ void Command::registerOnConsole(utility::console::Console& console, std::shared_
             int retVal = Console::RetCode::success;
             try
             {
-                std::cout << utility::common::executeCommand(R"(clear)") << std::endl;
+                std::cout << utility::common::executeCommand("clear") << std::endl;
                 LOG_REQUEST_TO_RESTART;
                 LOG_WAIT_TO_START;
                 utility::time::millisecondLevelSleep(maxLatency);
@@ -673,13 +671,13 @@ void Command::launchClient(std::shared_ptr<T>& client)
 std::string Command::getIconBanner()
 {
     std::string banner;
-    banner += R"(")";
+    banner += R"(')";
     banner += R"(  ______   ______     ______    \n)";
     banner += R"( /\  ___\ /\  __ \   /\  __ \   \n)";
     banner += R"( \ \  __\ \ \ \/\ \  \ \ \/\ \  \n)";
     banner += R"(  \ \_\    \ \_____\  \ \_____\ \n)";
     banner += R"(   \/_/     \/_____/   \/_____/ \n)";
-    banner += R"(")";
+    banner += R"(')";
 
     return banner;
 }
