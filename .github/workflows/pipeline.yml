@@ -76,7 +76,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: foo_artifact
-          path: ./temporary/foo_*.tar.bz2
+          path: ./.cache/foo_*.tar.bz2
           retention-days: 7
 
       - name: Deploy
@@ -108,17 +108,17 @@ jobs:
       - name: Check
         run: |
           ./script/run.py --check cov mem --build dbg
-          cat ./temporary/foo_run.report
+          cat ./.cache/foo_run.report
 
       - name: Test
         run: |
           ./script/run.py --test --build rls
-          cat ./temporary/foo_run.report
+          cat ./.cache/foo_run.report
 
       - name: Run
         run: |
           ./script/run.py --build rls
-          cat ./temporary/foo_run.report
+          cat ./.cache/foo_run.report
 
   extended_analysis:
     name: Extended analysis
