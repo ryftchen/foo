@@ -47,7 +47,7 @@ constexpr std::uint16_t intervalOfWaitLogger = 10;
 //! @brief Length of the log file path.
 constexpr std::uint16_t logPathLength = 32;
 //! @brief Default log folder path.
-constexpr std::string_view defaultLogFolderPath = "./temporary";
+constexpr std::string_view defaultLogFolderPath = "./.cache";
 //! @brief Prefix of debug level in log.
 constexpr std::string_view debugLevelPrefix = "[DBG]";
 //! @brief Prefix of info level in log.
@@ -244,7 +244,7 @@ private:
     //! @brief Actual target.
     OutputTarget actTarget{OutputTarget::all};
     //! @brief Log file path.
-    char filePath[logPathLength + 1]{"./temporary/foo.log"};
+    char filePath[logPathLength + 1]{"./.cache/foo.log"};
     //! @brief Log file lock.
     utility::file::ReadWriteLock fileLock;
 

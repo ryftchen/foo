@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 declare -rA FOLDER=([proj]="foo" [app]="application" [util]="utility" [algo]="algorithm" [ds]="data_structure"
-    [dp]="design_pattern" [num]="numeric" [tst]="test" [scr]="script" [doc]="document" [bld]="build" [temp]="temporary")
+    [dp]="design_pattern" [num]="numeric" [tst]="test" [scr]="script" [doc]="document" [bld]="build" [cache]=".cache")
 declare -r COMP_CMD="compile_commands.json"
 declare -A ARGS=([help]=false [initialize]=false [cleanup]=false [docker]=false [install]=false [uninstall]=false
     [test]=false [release]=false [precheck]=false [format]=false [lint]=false [count]=false [browser]=false
@@ -221,7 +221,7 @@ function perform_cleanup_option()
     if [[ ${ARGS[cleanup]} = true ]]; then
         shell_command "sed -i '/export FOO_ENV=foo_dev/d' ~/.bashrc 2>/dev/null"
         shell_command "find ./ -maxdepth 2 -type d | sed 1d \
-| grep -E '(${FOLDER[bld]}|${FOLDER[temp]}|browser|doxygen|__pycache__)$' | xargs -i rm -rf {}"
+| grep -E '(${FOLDER[bld]}|${FOLDER[cache]}|browser|doxygen|__pycache__)$' | xargs -i rm -rf {}"
         shell_command "rm -rf ./${FOLDER[scr]}/.env ./core.* ./vgcore.* ./*.profraw"
         shell_command "git config --local --unset commit.template"
 
@@ -450,18 +450,18 @@ function perform_browser_option()
         if [[ -z ${commit_id} ]]; then
             commit_id="local"
         fi
-        if [[ -d ./${FOLDER[temp]} ]]; then
+        if [[ -d ./${FOLDER[cache]} ]]; then
             local last_tar="${FOLDER[proj]}_browser_${commit_id}.tar.bz2"
-            if [[ -f ./${FOLDER[temp]}/${last_tar} ]]; then
-                local time_interval=$(($(date +%s) - $(stat -L --format %Y "./${FOLDER[temp]}/${last_tar}")))
+            if [[ -f ./${FOLDER[cache]}/${last_tar} ]]; then
+                local time_interval=$(($(date +%s) - $(stat -L --format %Y "./${FOLDER[cache]}/${last_tar}")))
                 if [[ ${time_interval} -lt 10 ]]; then
-                    die "The latest browser tarball ${FOLDER[temp]}/${last_tar} has been generated since \
+                    die "The latest browser tarball ${FOLDER[cache]}/${last_tar} has been generated since \
 ${time_interval}s ago."
                 fi
             fi
             package_for_browser "${commit_id}"
         else
-            mkdir "./${FOLDER[temp]}"
+            mkdir "./${FOLDER[cache]}"
             package_for_browser "${commit_id}"
         fi
     fi
@@ -476,7 +476,7 @@ function package_for_browser()
     fi
     local browser_folder="browser"
     local tar_file="${FOLDER[proj]}_${browser_folder}_${commit_id}.tar.bz2"
-    rm -rf "./${FOLDER[temp]}/${FOLDER[proj]}_${browser_folder}"_*.tar.bz2 "./${FOLDER[doc]}/${browser_folder}"
+    rm -rf "./${FOLDER[cache]}/${FOLDER[proj]}_${browser_folder}"_*.tar.bz2 "./${FOLDER[doc]}/${browser_folder}"
 
     mkdir -p "./${FOLDER[doc]}/${browser_folder}"
     shell_command "cp -rf /usr/local/share/woboq/data ./${FOLDER[doc]}/${browser_folder}/"
@@ -489,7 +489,7 @@ function package_for_browser()
     local icon_rel="<link rel=\"shortcut icon\" href=\"https://woboq.com/favicon.ico\" type=\"image/x-icon\" />"
     find "./${FOLDER[doc]}/${browser_folder}/index.html" "./${FOLDER[doc]}/${browser_folder}/${FOLDER[proj]}" \
         -name "*.html" -exec sed -i "/^<\/head>$/i ${icon_rel}" {} +
-    shell_command "tar -jcvf ./${FOLDER[temp]}/${tar_file} -C ./${FOLDER[doc]} ${browser_folder} >/dev/null"
+    shell_command "tar -jcvf ./${FOLDER[cache]}/${tar_file} -C ./${FOLDER[doc]} ${browser_folder} >/dev/null"
 }
 
 function perform_doxygen_option()
@@ -500,18 +500,18 @@ function perform_doxygen_option()
         if [[ -z ${commit_id} ]]; then
             commit_id="local"
         fi
-        if [[ -d ./${FOLDER[temp]} ]]; then
+        if [[ -d ./${FOLDER[cache]} ]]; then
             local last_tar="${FOLDER[proj]}_doxygen_${commit_id}.tar.bz2"
-            if [[ -f ./${FOLDER[temp]}/${last_tar} ]]; then
-                local time_interval=$(($(date +%s) - $(stat -L --format %Y "./${FOLDER[temp]}/${last_tar}")))
+            if [[ -f ./${FOLDER[cache]}/${last_tar} ]]; then
+                local time_interval=$(($(date +%s) - $(stat -L --format %Y "./${FOLDER[cache]}/${last_tar}")))
                 if [[ ${time_interval} -lt 10 ]]; then
-                    die "The latest doxygen tarball ${FOLDER[temp]}/${last_tar} has been generated since \
+                    die "The latest doxygen tarball ${FOLDER[cache]}/${last_tar} has been generated since \
 ${time_interval}s ago."
                 fi
             fi
             package_for_doxygen "${commit_id}"
         else
-            mkdir "./${FOLDER[temp]}"
+            mkdir "./${FOLDER[cache]}"
             package_for_doxygen "${commit_id}"
         fi
     fi
@@ -523,7 +523,7 @@ function package_for_doxygen()
 
     local doxygen_folder="doxygen"
     local tar_file="${FOLDER[proj]}_${doxygen_folder}_${commit_id}.tar.bz2"
-    rm -rf "./${FOLDER[temp]}/${FOLDER[proj]}_${doxygen_folder}"_*.tar.bz2 "./${FOLDER[doc]}/${doxygen_folder}"
+    rm -rf "./${FOLDER[cache]}/${FOLDER[proj]}_${doxygen_folder}"_*.tar.bz2 "./${FOLDER[doc]}/${doxygen_folder}"
 
     mkdir -p "./${FOLDER[doc]}/${doxygen_folder}"
     if [[ ${ARGS[release]} = true ]]; then
@@ -532,7 +532,7 @@ function package_for_doxygen()
         shell_command "(cat ./${FOLDER[doc]}/Doxyfile ; echo 'PROJECT_NUMBER=\"@ $(git rev-parse --short @)\"' ; \
 echo 'HTML_TIMESTAMP=YES') | doxygen - >/dev/null"
     fi
-    shell_command "tar -jcvf ./${FOLDER[temp]}/${tar_file} -C ./${FOLDER[doc]} ${doxygen_folder} >/dev/null"
+    shell_command "tar -jcvf ./${FOLDER[cache]}/${tar_file} -C ./${FOLDER[doc]} ${doxygen_folder} >/dev/null"
 }
 
 function build_target()
@@ -612,6 +612,7 @@ function set_compile_condition()
     fi
     if [[ ${DEV_OPT[ccache]} = true ]]; then
         CMAKE_CACHE_ENTRY="${CMAKE_CACHE_ENTRY} -DTOOLCHAIN_CCACHE=ON"
+        export CCACHE_DIR=${PWD}/${FOLDER[cache]}/ccache
         if [[ ${DEV_OPT[distcc]} = true ]]; then
             if command -v ccache >/dev/null 2>&1 && command -v distcc >/dev/null 2>&1; then
                 export CCACHE_PREFIX=distcc

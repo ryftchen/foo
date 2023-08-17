@@ -58,7 +58,7 @@ The **Foo** is a personal roadmap for learning programming. Its main purpose is 
   ./build/bin/foo --help
   ```
 
-  And the executed log will also be written to `foo/temporary/foo.log`.
+  And the executed log will also be written to `foo/.cache/foo.log`.
 - The parameters are provided for static analysis. Build with options such as *-\-format*, *-\-lint*, etc.
 
 ### How to run
@@ -75,7 +75,7 @@ The **Foo** is a personal roadmap for learning programming. Its main purpose is 
   ./script/run.py
   ```
 
-  Also, add the *-\-build* option to support building before running. The result of running will also be written to `foo/temporary/foo_run.log`.
+  Also, add the *-\-build* option to support building before running. The result of running will also be written to `foo/.cache/foo_run.log`.
 
 - The parameters are provided for dynamic analysis. Run with options such as *-\-check cov*, *-\-check mem*, etc.
 

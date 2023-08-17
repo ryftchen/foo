@@ -2,7 +2,6 @@
 .devcontainer/
 .vscode/
 build/
-temporary/
 browser/
 doxygen/
 __pycache__/
