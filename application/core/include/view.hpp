@@ -222,6 +222,14 @@ private:
     //! @param buffer - TLV packet buffer
     //! @return buffer length
     static int buildTLVPacket2Stat(char* buffer);
+    //! @brief Encrypt the message with AES-128-CFB-128.
+    //! @param buf - message buffer
+    //! @param len - buffer length
+    static void encryptMessage(char* buf, const int len);
+    //! @brief Decrypt the message with AES-128-CFB-128.
+    //! @param buf - message buffer
+    //! @param len - buffer length
+    static void decryptMessage(char* buf, const int len);
     //! @brief Fill the shared memory.
     //! @param contents - contents to be filled
     //! @return shm id

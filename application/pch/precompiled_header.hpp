@@ -7,6 +7,7 @@
 #pragma once
 
 #ifdef __PRECOMPILED_HEADER
+#include <openssl/evp.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
 #include <sys/stat.h>
