@@ -13,7 +13,7 @@ namespace utility::time
 std::string getCurrentSystemTime()
 {
     constexpr std::uint16_t dateLength = 32, dateStartYear = 1900;
-    char date[dateLength + 1] = {'\0'};
+    char date[dateLength] = {'\0'};
     const auto now = std::chrono::system_clock::now();
     const auto microseconds = std::chrono::duration_cast<std::chrono::microseconds>(now.time_since_epoch()) % 1000000;
     const std::time_t tt = std::chrono::system_clock::to_time_t(now);
@@ -22,7 +22,7 @@ std::string getCurrentSystemTime()
 
     std::snprintf(
         date,
-        dateLength + 1,
+        dateLength,
         "%04u-%02u-%02u %02u:%02u:%02u.%06lu %.3s",
         tm.tm_year + dateStartYear,
         tm.tm_mon + 1,

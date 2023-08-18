@@ -68,7 +68,7 @@ void Socket::waitIfAlive()
 
 std::string Socket::ipString(const ::sockaddr_in& addr)
 {
-    char ip[INET_ADDRSTRLEN + 1] = {'\0'};
+    char ip[INET_ADDRSTRLEN] = {'\0'};
     ::inet_ntop(AF_INET, &(addr.sin_addr), ip, INET_ADDRSTRLEN);
 
     return std::string{ip};
@@ -162,7 +162,7 @@ void TCPSocket::toReceive(const bool detach)
 
 void TCPSocket::toRecv(TCPSocket* socket)
 {
-    char tempBuffer[socket->bufferSize + 1];
+    char tempBuffer[socket->bufferSize];
     tempBuffer[0] = '\0';
     int messageLength = 0;
     while ((messageLength = ::recv(socket->sock, tempBuffer, socket->bufferSize, 0)) > 0)
@@ -399,7 +399,7 @@ void UDPSocket::toReceiveFrom(const bool detach)
 
 void UDPSocket::toRecv(UDPSocket* socket)
 {
-    char tempBuffer[socket->bufferSize + 1];
+    char tempBuffer[socket->bufferSize];
     tempBuffer[0] = '\0';
     int messageLength = 0;
     while ((messageLength = ::recv(socket->sock, tempBuffer, socket->bufferSize, 0)) != -1)
@@ -424,7 +424,7 @@ void UDPSocket::toRecvFrom(UDPSocket* socket)
     ::sockaddr_in addr{};
     ::socklen_t hostAddrSize = sizeof(addr);
 
-    char tempBuffer[socket->bufferSize + 1];
+    char tempBuffer[socket->bufferSize];
     tempBuffer[0] = '\0';
     int messageLength = 0;
     while ((messageLength = ::recvfrom(
