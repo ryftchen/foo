@@ -7,6 +7,7 @@
 #include "view.hpp"
 #include "log.hpp"
 #ifndef __PRECOMPILED_HEADER
+#include <openssl/evp.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
 #include <sys/stat.h>
@@ -314,7 +315,9 @@ void View::requestToRestart()
 
 tlv::TLVValue View::parseTLVPacket(char* buffer, const int length)
 {
-    tlv::TLVValue value;
+    decryptMessage(buffer, length);
+
+    tlv::TLVValue value{};
     tlv::tlvDecode(buffer, length, value);
 
     if (invalidShmId != value.logShmId)
@@ -336,6 +339,7 @@ int View::buildTLVPacket2Stop(char* buffer)
     {
         throw std::runtime_error("Failed to build packet to stop");
     }
+    encryptMessage(buffer, length);
     return length;
 }
 
@@ -347,6 +351,7 @@ int View::buildTLVPacket2Log(char* buffer)
     {
         throw std::runtime_error("Failed to build packet for the log option.");
     }
+    encryptMessage(buffer, length);
     return length;
 }
 
@@ -358,7 +363,62 @@ int View::buildTLVPacket2Stat(char* buffer)
     {
         throw std::runtime_error("Failed to build packet for the stat option.");
     }
+    encryptMessage(buffer, length);
     return length;
+}
+
+void View::encryptMessage(char* buf, const int len)
+{
+    constexpr unsigned char
+        key[16] = {0x37, 0x47, 0x10, 0x33, 0x6F, 0x18, 0xC8, 0x9A, 0x4B, 0xC1, 0x2B, 0x97, 0x92, 0x19, 0x25, 0x6D},
+        iv[16] = {0x9F, 0x7B, 0x0E, 0x68, 0x2D, 0x2F, 0x4E, 0x7F, 0x1A, 0xFA, 0x61, 0xD3, 0xC6, 0x18, 0xF4, 0xC1};
+    ::EVP_CIPHER_CTX* ctx = ::EVP_CIPHER_CTX_new();
+    do
+    {
+        int outLen = 0, tempLen = 0;
+        if (!::EVP_EncryptInit_ex(ctx, ::EVP_aes_128_cfb128(), nullptr, key, iv))
+        {
+            break;
+        }
+        if (!::EVP_EncryptUpdate(
+                ctx, reinterpret_cast<unsigned char*>(buf), &outLen, reinterpret_cast<unsigned char*>(buf), len))
+        {
+            break;
+        }
+        if (!::EVP_EncryptFinal_ex(ctx, reinterpret_cast<unsigned char*>(buf) + outLen, &tempLen))
+        {
+            break;
+        }
+    }
+    while (0);
+    ::EVP_CIPHER_CTX_free(ctx);
+}
+
+void View::decryptMessage(char* buf, const int len)
+{
+    constexpr unsigned char
+        key[16] = {0x37, 0x47, 0x10, 0x33, 0x6F, 0x18, 0xC8, 0x9A, 0x4B, 0xC1, 0x2B, 0x97, 0x92, 0x19, 0x25, 0x6D},
+        iv[16] = {0x9F, 0x7B, 0x0E, 0x68, 0x2D, 0x2F, 0x4E, 0x7F, 0x1A, 0xFA, 0x61, 0xD3, 0xC6, 0x18, 0xF4, 0xC1};
+    ::EVP_CIPHER_CTX* ctx = ::EVP_CIPHER_CTX_new();
+    do
+    {
+        int outLen = 0, tempLen = 0;
+        if (!::EVP_DecryptInit_ex(ctx, ::EVP_aes_128_cfb128(), nullptr, key, iv))
+        {
+            break;
+        }
+        if (!::EVP_DecryptUpdate(
+                ctx, reinterpret_cast<unsigned char*>(buf), &outLen, reinterpret_cast<unsigned char*>(buf), len))
+        {
+            break;
+        }
+        if (!::EVP_DecryptFinal_ex(ctx, reinterpret_cast<unsigned char*>(buf) + outLen, &tempLen))
+        {
+            break;
+        }
+    }
+    while (0);
+    ::EVP_CIPHER_CTX_free(ctx);
 }
 
 int View::fillSharedMemory(const std::string& contents)
