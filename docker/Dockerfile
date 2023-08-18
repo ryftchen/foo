@@ -6,7 +6,7 @@ RUN apt-get update \
 && DEBIAN_FRONTEND=noninteractive apt-get install -y sudo tzdata ca-certificates bash-completion curl rsync zip \
 && sudo apt-get update \
 && sudo apt-get install -y git python3 python3-pip build-essential gdb strace cmake ninja-build ccache distcc \
-llvm-12 clang-12 lld-12 libclang-12-dev libstdc++-10-dev libgtest-dev libreadline-dev libmpfrc++-dev \
+llvm-12 clang-12 lld-12 libclang-12-dev libstdc++-10-dev libgtest-dev libssl-dev libreadline-dev libmpfrc++-dev \
 clang-format-12 clang-tidy-12 valgrind cloc graphviz docker-compose \
 && sudo apt-get clean \
 && sudo pip3 install --no-cache-dir -v pylint==2.15.5 black==22.10.0 pre-commit compdb ValgrindCI \
