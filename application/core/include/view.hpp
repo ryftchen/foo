@@ -26,12 +26,6 @@
 //! @brief View-server-related functions in the application module.
 namespace application::view
 {
-//! @brief Maximum number of times to wait for the viewer to change to the target state.
-constexpr std::uint16_t maxTimesOfWaitViewer = 10;
-//! @brief Time interval (ms) to wait for the viewer to change to the target state.
-constexpr std::uint16_t intervalOfWaitViewer = 10;
-//! @brief Maximum length of the message.
-constexpr std::uint32_t maxMsgLength = 8192;
 //! @brief Invalid Shm id.
 constexpr int invalidShmId = -1;
 
@@ -197,7 +191,7 @@ public:
         //! @brief Flag for operable.
         std::atomic<bool> signal{false};
         //! @brief Shared memory buffer.
-        char buffer[maxShmSize + 1]{'\0'};
+        char buffer[maxShmSize]{'\0'};
     };
 
 private:
@@ -208,26 +202,26 @@ private:
     // clang-format off
     //! @brief Mapping table of all viewer options.
     const OptionMap optionDispatcher{
-        // - Option -+-------------- Help --------------+--- Build Packet ---
-        // ----------+----------------------------------+--------------------
-        { "log"      , { "view the log with highlights" , &buildLogPacket  }},
-        { "stat"     , { "show the stat of the process" , &buildStatPacket }}
-        // ----------+----------------------------------+--------------------
+        // - Option -+-------------- Help --------------+----- Build Packet -----
+        // ----------+----------------------------------+------------------------
+        { "log"      , { "view the log with highlights" , &buildTLVPacket2Log  }},
+        { "stat"     , { "show the stat of the process" , &buildTLVPacket2Stat }}
+        // ----------+----------------------------------+------------------------
     };
     // clang-format on
 
     //! @brief Build the TLV packet to stop connection.
     //! @param buffer - TLV packet buffer
     //! @return buffer length
-    static int buildStopPacket(char* buffer);
+    static int buildTLVPacket2Stop(char* buffer);
     //! @brief Build the TLV packet to view log contents.
     //! @param buffer - TLV packet buffer
     //! @return buffer length
-    static int buildLogPacket(char* buffer);
+    static int buildTLVPacket2Log(char* buffer);
     //! @brief Build the TLV packet to show stat information.
     //! @param buffer - TLV packet buffer
     //! @return buffer length
-    static int buildStatPacket(char* buffer);
+    static int buildTLVPacket2Stat(char* buffer);
     //! @brief Fill the shared memory.
     //! @param contents - contents to be filled
     //! @return shm id
@@ -244,6 +238,12 @@ private:
     //! @brief Maximum number of lines to view log contents.
     static constexpr std::uint32_t maxViewNumOfLines{20};
 
+    //! @brief Maximum number of times to wait for the viewer to change to the target state.
+    static constexpr std::uint16_t maxTimesOfWaitViewer{10};
+    //! @brief Time interval (ms) to wait for the viewer to change to the target state.
+    static constexpr std::uint16_t intervalOfWaitViewer{10};
+    //! @brief Maximum length of the message.
+    static constexpr std::uint32_t maxMsgLength{1024};
     //! @brief TCP server.
     std::shared_ptr<utility::socket::TCPServer> tcpServer;
     //! @brief UDP server.

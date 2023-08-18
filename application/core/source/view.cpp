@@ -329,7 +329,7 @@ tlv::TLVValue View::parseTLVPacket(char* buffer, const int length)
     return value;
 }
 
-int View::buildStopPacket(char* buffer)
+int View::buildTLVPacket2Stop(char* buffer)
 {
     int length = 0;
     if (tlv::tlvEncode(buffer, length, tlv::TLVValue{.stopFlag = true}) < 0)
@@ -339,7 +339,7 @@ int View::buildStopPacket(char* buffer)
     return length;
 }
 
-int View::buildLogPacket(char* buffer)
+int View::buildTLVPacket2Log(char* buffer)
 {
     const int shmId = fillSharedMemory(getLogContents());
     int length = 0;
@@ -350,7 +350,7 @@ int View::buildLogPacket(char* buffer)
     return length;
 }
 
-int View::buildStatPacket(char* buffer)
+int View::buildTLVPacket2Stat(char* buffer)
 {
     const int shmId = fillSharedMemory(getStatInformation());
     int length = 0;
@@ -376,15 +376,15 @@ int View::fillSharedMemory(const std::string& contents)
     {
         throw std::runtime_error("Failed to attach shared memory.");
     }
-    SharedMemory* shrMem = reinterpret_cast<SharedMemory*>(shm);
 
+    auto* shrMem = reinterpret_cast<SharedMemory*>(shm);
     shrMem->signal.store(false);
     for (;;)
     {
         if (!shrMem->signal.load())
         {
             std::memset(shrMem->buffer, 0, sizeof(shrMem->buffer));
-            std::memcpy(shrMem->buffer, contents.c_str(), contents.length());
+            std::memcpy(shrMem->buffer, contents.c_str(), std::min(sizeof(shrMem->buffer), contents.length()));
             shrMem->signal.store(true);
             break;
         }
@@ -402,14 +402,14 @@ void View::printSharedMemory(const int shmId)
     {
         throw std::runtime_error("Failed to attach shared memory.");
     }
-    SharedMemory* shrMem = reinterpret_cast<SharedMemory*>(shm);
 
+    auto* shrMem = reinterpret_cast<SharedMemory*>(shm);
     shrMem->signal.store(true);
     for (;;)
     {
         if (shrMem->signal.load())
         {
-            std::cout << "\r\n" << shrMem->buffer << std::endl;
+            std::printf("\r\n%s\n", shrMem->buffer);
             shrMem->signal.store(false);
             break;
         }
@@ -438,9 +438,9 @@ std::string View::getLogContents()
 std::string View::getStatInformation()
 {
     const int pid = ::getpid();
-    constexpr std::uint16_t len = 256;
-    char cmd[len + 1] = {'\0'};
-    std::snprintf(cmd, len + 1, "ps -T -p %d | awk 'NR>1 {split($0, a, \" \"); print a[2]}'", pid);
+    constexpr std::uint16_t cmdLen = 512;
+    char cmd[cmdLen] = {'\0'};
+    std::snprintf(cmd, cmdLen, "ps -T -p %d | awk 'NR>1 {split($0, a, \" \"); print a[2]}'", pid);
     const std::string queryResult = utility::common::executeCommand(cmd);
 
     std::vector<std::string> cmdContainer;
@@ -449,21 +449,26 @@ std::string View::getStatInformation()
     while ((pos = queryResult.find('\n', prev)) != std::string::npos)
     {
         const int tid = std::stoi(queryResult.substr(prev, pos - prev));
-        char cmd[len + 1] = {'\0'};
+        char cmd[cmdLen] = {'\0'};
+        const int usedLen = std::snprintf(
+            cmd,
+            cmdLen,
+            "if [ -f /proc/%d/task/%d/status ] ; then head -n 10 /proc/%d/task/%d/status && echo 'Strace:' ",
+            pid,
+            tid,
+            pid,
+            tid);
         if (currTid != tid)
         {
             std::snprintf(
-                cmd,
-                len + 1,
-                "head -n 10 /proc/%d/task/%d/status "
-                "&& echo 'Stack:' && (timeout --signal=2 0.02 strace -qq -ttT -vyy -s 96 -p %d 2>&1 || exit 0)",
-                pid,
-                tid,
+                cmd + usedLen,
+                cmdLen - usedLen,
+                "&& (timeout --preserve-status --signal=2 0.02 strace -qq -ttT -vyy -s 96 -p %d 2>&1 || exit 0) ; fi",
                 tid);
         }
         else
         {
-            std::snprintf(cmd, len + 1, "head -n 10 /proc/%d/task/%d/status && echo 'Stack:' && echo 'N/A'", pid, tid);
+            std::strncpy(cmd + usedLen, "&& echo 'N/A' ; fi", cmdLen - usedLen);
         }
         cmdContainer.emplace_back(cmd);
         prev = pos + 1;
@@ -483,9 +488,6 @@ std::string View::getStatInformation()
 
 void View::createViewServer()
 {
-    using utility::socket::Socket;
-    using utility::common::operator""_bkdrHash;
-
     tcpServer = std::make_shared<utility::socket::TCPServer>();
     tcpServer->onNewConnection = [this](utility::socket::TCPSocket* newSocket)
     {
@@ -498,10 +500,10 @@ void View::createViewServer()
                     return;
                 }
 
-                char buffer[maxMsgLength + 1] = {'\0'};
+                char buffer[maxMsgLength] = {'\0'};
                 if ("stop" == message)
                 {
-                    buildStopPacket(buffer);
+                    buildTLVPacket2Stop(buffer);
                     newSocket->toSend(buffer, sizeof(buffer));
                     newSocket->setNonBlocking();
                     return;
@@ -532,10 +534,10 @@ void View::createViewServer()
                 return;
             }
 
-            char buffer[maxMsgLength + 1] = {'\0'};
+            char buffer[maxMsgLength] = {'\0'};
             if ("stop" == message)
             {
-                buildStopPacket(buffer);
+                buildTLVPacket2Stop(buffer);
                 udpServer->toSendTo(buffer, sizeof(buffer), ip, port);
                 return;
             }

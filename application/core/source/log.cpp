@@ -22,10 +22,9 @@ Log::Log(
     writeType(type), minLevel(level), actTarget(target), FSM(initState)
 {
     if (std::filesystem::absolute(std::filesystem::path{defaultLogFolderPath})
-        != std::filesystem::absolute(logFile).parent_path())
+        == std::filesystem::absolute(logFile).parent_path())
     {
-        std::strncpy(filePath, logFile, logPathLength);
-        filePath[logPathLength] = '\0';
+        filePath = logFile;
     }
     else
     {

@@ -505,7 +505,7 @@ void Command::enterConsoleMode() const
 
         auto tcpClient = std::make_shared<TCPSocket>();
         launchClient<TCPSocket>(tcpClient);
-        char hostName[HOST_NAME_MAX + 1] = {'\0'};
+        char hostName[HOST_NAME_MAX] = {'\0'};
         if (::gethostname(hostName, HOST_NAME_MAX))
         {
             throw std::runtime_error("Host name could not be obtained.");

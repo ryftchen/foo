@@ -38,8 +38,8 @@ include_directories(
 
 add_subdirectory(${CMAKE_SOURCE_DIR}/utility)
 add_subdirectory(${CMAKE_SOURCE_DIR}/algorithm)
-add_subdirectory(${CMAKE_SOURCE_DIR}/data_structure)
 add_subdirectory(${CMAKE_SOURCE_DIR}/design_pattern)
+add_subdirectory(${CMAKE_SOURCE_DIR}/data_structure)
 add_subdirectory(${CMAKE_SOURCE_DIR}/numeric)
 
 add_executable(${BIN_NAME} ${APPLICATION_LIST})
@@ -55,7 +55,7 @@ target_include_directories(
 target_link_libraries(
     ${BIN_NAME}
     PUBLIC dl pthread readline mpfr
-    PRIVATE foo::foo_util foo::foo_algo foo::foo_ds foo::foo_dp foo::foo_num
+    PRIVATE foo::foo_util foo::foo_algo foo::foo_dp foo::foo_ds foo::foo_num
 )
 
 if(PRECOMPILED_HEADER)
@@ -67,7 +67,7 @@ endif()
 
 set(CMAKE_INSTALL_PREFIX "/opt/${PROJECT_NAME}")
 install(
-    TARGETS ${BIN_NAME} foo_util foo_algo foo_ds foo_dp foo_num
+    TARGETS ${BIN_NAME} foo_util foo_algo foo_dp foo_ds foo_num
     RUNTIME DESTINATION "${CMAKE_INSTALL_PREFIX}/bin"
     LIBRARY DESTINATION "${CMAKE_INSTALL_PREFIX}/lib"
 )
