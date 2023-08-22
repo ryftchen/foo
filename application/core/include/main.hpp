@@ -19,6 +19,7 @@
 //! @brief The application module.
 namespace application
 {
+//! @brief Status of the signal.
 volatile std::sig_atomic_t signalStatus = 0; // NOLINT(misc-definitions-in-headers)
 
 [[using gnu: constructor]] static void init();
@@ -108,7 +109,7 @@ static void init()
         if (!std::filesystem::exists(homePath))
         {
             std::fprintf(::stderr, "The home path does not exist. Please check it.\n");
-            std::exit(-1);
+            std::exit(EXIT_FAILURE);
         }
 
         const std::filesystem::path procTempPath{homePath / ".foo"};

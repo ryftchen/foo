@@ -695,7 +695,7 @@ void Command::checkForExcessArguments()
 //! @return reference of the PublicThreadPool object
 PublicThreadPool& getPublicThreadPool()
 {
-    static PublicThreadPool pool;
+    static PublicThreadPool pool{};
     return pool;
 }
 } // namespace application::command
