@@ -35,7 +35,7 @@ include_directories(
 add_executable(${BIN_NAME} ${TEST_LIST})
 target_link_libraries(
     ${BIN_NAME}
-    PUBLIC mpfr GTest::Main
+    PUBLIC GTest::Main mpfr
     PRIVATE foo_test::foo_test_algo foo_test::foo_test_dp foo_test::foo_test_ds foo_test::foo_test_num
 )
 
