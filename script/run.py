@@ -231,25 +231,7 @@ class Task:
             common.execute_command(f"rm -rf {self.cache_dir}/*.xml")
 
         if self.options["chk_cov"]:
-            common.execute_command(
-                f"llvm-profdata-12 merge -sparse {self.cache_dir}/foo_chk_cov_*.profraw \
--o {self.cache_dir}/foo_chk_cov.profdata"
-            )
-            common.execute_command(
-                f"llvm-cov-12 show -instr-profile={self.cache_dir}/foo_chk_cov.profdata -show-branches=percent \
--show-expansions -show-regions -show-line-counts-or-regions -format=html -output-dir={self.cache_dir}/coverage \
--Xdemangler=c++filt -object={self.app_bin_dir}/{self.app_bin_cmd} \
-{' '.join([f'-object={self.lib_dir}/{lib}' for lib in self.lib_list])} 2>&1"
-            )
-            stdout, _, _ = common.execute_command(
-                f"llvm-cov-12 report -instr-profile={self.cache_dir}/foo_chk_cov.profdata \
--object={self.app_bin_dir}/{self.app_bin_cmd} {' '.join([f'-object={self.lib_dir}/{lib}' for lib in self.lib_list])} \
-2>&1"
-            )
-            common.execute_command(f"rm -rf {self.cache_dir}/*.profraw {self.cache_dir}/*.profdata")
-            print(f"\r\n[CHECK COVERAGE]\n{stdout}")
-            if "error" in stdout:
-                print("Please rebuild the executable file with the --check option.")
+            self.check_coverage()
 
         sys.stdout = STDOUT
         self.progress_bar.destroy_progress_bar()
@@ -294,19 +276,21 @@ class Task:
         if self.options["chk_cov"]:
             full_cmd = f"LLVM_PROFILE_FILE=\"{self.cache_dir}/foo_chk_cov_{str(self.complete_steps + 1)}.profraw\" \
 {full_cmd}"
-        align = max(
+        align_len = max(
             len(command) + Output.stat_cont_len_excl_cmd,
             Output.stat_min_cont_len,
             len(str(self.total_steps)) * 2 + len(" / ") + Output.stat_cont_len_excl_cmd,
         )
         Output.refresh_status(
-            Output.color["blue"], f"CASE: {f'{command}':<{align - Output.stat_cont_len_excl_cmd}} | START "
+            Output.color["blue"], f"CASE: {f'{command}':<{align_len - Output.stat_cont_len_excl_cmd}} | START "
         )
 
         stdout, stderr, return_code = common.execute_command(full_cmd, enter)
         if len(stdout.strip()) == 0 or stderr or return_code != 0:
             print(f"\r\n[STDOUT]\n{stdout}\n[STDERR]\n{stderr}\n[RETURN CODE]\n{return_code}")
-            Output.refresh_status(Output.color["red"], f"{f'STAT: FAILURE NO.{str(self.complete_steps + 1)}':<{align}}")
+            Output.refresh_status(
+                Output.color["red"], f"{f'STAT: FAILURE NO.{str(self.complete_steps + 1)}':<{align_len}}"
+            )
         else:
             stdout = stdout.replace("\t", "    ")
             print(stdout)
@@ -314,27 +298,14 @@ class Task:
             if ("[ERR]" in stdout or "[WRN]" in stdout) and ("log" not in command and "log" not in enter):
                 self.pass_steps -= 1
                 Output.refresh_status(
-                    Output.color["red"], f"{f'STAT: FAILURE NO.{str(self.complete_steps + 1)}':<{align}}"
+                    Output.color["red"], f"{f'STAT: FAILURE NO.{str(self.complete_steps + 1)}':<{align_len}}"
                 )
             elif self.options["chk_mem"]:
-                stdout, _, _ = common.execute_command(
-                    f"valgrind-ci {self.cache_dir}/foo_chk_mem_{str(self.complete_steps + 1)}.xml --summary"
-                )
-                if "errors" in stdout:
-                    stdout = stdout.replace("\t", "    ")
-                    print(f"\r\n[CHECK MEMORY]\n{stdout}")
-                    common.execute_command(
-                        f"valgrind-ci {self.cache_dir}/foo_chk_mem_{str(self.complete_steps + 1)}.xml --source-dir=./ \
---output-dir={self.cache_dir}/memory/case_{str(self.complete_steps + 1)}"
-                    )
-                    self.pass_steps -= 1
-                    Output.refresh_status(
-                        Output.color["red"], f"{f'STAT: FAILURE NO.{str(self.complete_steps + 1)}':<{align}}"
-                    )
+                self.check_memory(align_len)
 
         self.complete_steps += 1
         Output.refresh_status(
-            Output.color["blue"], f"CASE: {f'{command}':<{align - Output.stat_cont_len_excl_cmd}} | FINISH"
+            Output.color["blue"], f"CASE: {f'{command}':<{align_len - Output.stat_cont_len_excl_cmd}} | FINISH"
         )
 
         if self.pass_steps != self.total_steps:
@@ -344,13 +315,86 @@ class Task:
         Output.refresh_status(
             status_color,
             f"""\
-{f"STAT: SUCCESS {f'{str(self.pass_steps)}':>{len(str(self.total_steps))}} / {str(self.total_steps)}":<{align}}""",
+{f"STAT: SUCCESS {f'{str(self.pass_steps)}':>{len(str(self.total_steps))}} / {str(self.total_steps)}":<{align_len}}""",
         )
         print("\n")
 
         sys.stdout = STDOUT
         self.progress_bar.draw_progress_bar(int(self.complete_steps / self.total_steps * 100))
         sys.stdout = self.logger
+
+    def check_coverage(self):
+        common.execute_command(
+            f"llvm-profdata-12 merge -sparse {self.cache_dir}/foo_chk_cov_*.profraw \
+-o {self.cache_dir}/foo_chk_cov.profdata"
+        )
+        common.execute_command(
+            f"llvm-cov-12 show -instr-profile={self.cache_dir}/foo_chk_cov.profdata -show-branches=percent \
+-show-expansions -show-regions -show-line-counts-or-regions -format=html -output-dir={self.cache_dir}/coverage \
+-Xdemangler=c++filt -object={self.app_bin_dir}/{self.app_bin_cmd} \
+{' '.join([f'-object={self.lib_dir}/{lib}' for lib in self.lib_list])} 2>&1"
+        )
+        stdout, _, _ = common.execute_command(
+            f"llvm-cov-12 report -instr-profile={self.cache_dir}/foo_chk_cov.profdata \
+-object={self.app_bin_dir}/{self.app_bin_cmd} {' '.join([f'-object={self.lib_dir}/{lib}' for lib in self.lib_list])} \
+2>&1"
+        )
+        common.execute_command(f"rm -rf {self.cache_dir}/*.profraw {self.cache_dir}/*.profdata")
+        print(f"\r\n[CHECK COVERAGE]\n{stdout}")
+        if "error" in stdout:
+            print("Please rebuild the executable file with the --check option.")
+
+    def check_memory(self, align_len):
+        inst_num = 0
+        xml_filename = f"{self.cache_dir}/foo_chk_mem_{str(self.complete_steps + 1)}"
+        with open(f"{xml_filename}.xml", "rt", encoding="utf-8") as mem_xml:
+            inst_num = mem_xml.read().count("</valgrindoutput>")
+        stdout = ""
+        if inst_num == 1:
+            stdout, _, _ = common.execute_command(f"valgrind-ci {xml_filename}.xml --summary")
+        elif inst_num == 2:
+            common.execute_command(
+                f"cp {xml_filename}.xml {xml_filename}_inst_1.xml && \
+mv {xml_filename}.xml {xml_filename}_inst_2.xml"
+            )
+            common.execute_command(
+                f"a=$(sed -n '/<\\/status>/!d;=;Q' {xml_filename}_inst_1.xml) ; \
+b=$(sed -n '/<\\/valgrindoutput>/!d;=;Q' {xml_filename}_inst_1.xml) ; \
+sed -i $(($a + 1)),$(($b))d {xml_filename}_inst_1.xml"
+            )
+            common.execute_command(f"sed -i '/<\\/valgrindoutput>/q' {xml_filename}_inst_2.xml")
+            stdout, _, _ = common.execute_command(
+                f"valgrind-ci {xml_filename}_inst_1.xml --summary && \
+valgrind-ci {xml_filename}_inst_2.xml --summary"
+            )
+
+        if "errors" in stdout:
+            stdout = stdout.replace("\t", "    ")
+            print(f"\r\n[CHECK MEMORY]\n{stdout}")
+            if inst_num == 1:
+                common.execute_command(
+                    f"valgrind-ci {xml_filename}.xml --source-dir=./ \
+--output-dir={self.cache_dir}/memory/case_{str(self.complete_steps + 1)}"
+                )
+            elif inst_num == 2:
+                common.execute_command(
+                    f"valgrind-ci {xml_filename}_inst_1.xml --source-dir=./ \
+--output-dir={self.cache_dir}/memory/case_{str(self.complete_steps + 1)}_inst_1"
+                )
+                common.execute_command(
+                    f"valgrind-ci {xml_filename}_inst_2.xml --source-dir=./ \
+--output-dir={self.cache_dir}/memory/case_{str(self.complete_steps + 1)}_inst_2"
+                )
+            self.pass_steps -= 1
+            Output.refresh_status(
+                Output.color["red"], f"{f'STAT: FAILURE NO.{str(self.complete_steps + 1)}':<{align_len}}"
+            )
+        elif inst_num == 0 or inst_num > 2:
+            self.pass_steps -= 1
+            print("\r\n[CHECK MEMORY]\nUnsupported valgrind output xml file content.")
+            Output.refresh_status(
+                Output.color["red"], f"{f'STAT: FAILURE NO.{str(self.complete_steps + 1)}':<{align_len}}"
+            )
 
     def format_run_log(self):
         run_log = ""
