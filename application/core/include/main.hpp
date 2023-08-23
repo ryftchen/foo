@@ -52,7 +52,7 @@ static void signalHandler(int sig)
             std::snprintf(
                 buffer,
                 bufferSize,
-                "%-3d %*p %s + %zd\n",
+                "%-3d %*p %.960s + %zd\n",
                 i,
                 static_cast<int>(2 + sizeof(void*) * 2),
                 callStack[i],
@@ -65,7 +65,7 @@ static void signalHandler(int sig)
             std::snprintf(
                 buffer,
                 bufferSize,
-                "%-3d %*p %s\n",
+                "%-3d %*p %.960s\n",
                 i,
                 static_cast<int>(2 + sizeof(void*) * 2),
                 callStack[i],
