@@ -7,7 +7,7 @@
 #include "common.hpp"
 #include <cassert>
 #include <chrono>
-#include <cstring>
+#include <cstdarg>
 #include <regex>
 
 namespace utility::common
@@ -36,7 +36,6 @@ std::string formatString(const char* const format, ...)
     int bufferSize = std::vsnprintf(nullptr, 0, format, list);
     ::va_end(list);
     assert(bufferSize >= 0);
-    ++bufferSize;
 
     ::va_start(list, format);
     char buffer[bufferSize + 1];
@@ -99,7 +98,7 @@ std::string executeCommand(const std::string& command, const std::uint32_t timeo
     if (WIFEXITED(exitStatus))
     {
         const int exitCode = WEXITSTATUS(exitStatus);
-        if (0 != exitCode)
+        if (EXIT_SUCCESS != exitCode)
         {
             throw std::runtime_error(
                 "Returns exit code " + std::to_string(exitCode) + " when the command is executed.");
