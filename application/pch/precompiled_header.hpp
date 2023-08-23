@@ -9,8 +9,10 @@
 #ifdef __PRECOMPILED_HEADER
 #include <openssl/evp.h>
 #include <sys/ipc.h>
+#include <sys/prctl.h>
 #include <sys/shm.h>
 #include <sys/stat.h>
+#include <sys/wait.h>
 #include <cxxabi.h>
 #include <dlfcn.h>
 #include <execinfo.h>
