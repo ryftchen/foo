@@ -14,14 +14,14 @@
 namespace utility::common
 {
 //! @brief The Brian-Kernighan Dennis-Ritchie hash function.
-//! @param data - input data
+//! @param str - input data
 //! @return hash value
-std::size_t bkdrHash(const char* data)
+std::size_t bkdrHash(const char* str)
 {
     std::size_t hash = 0;
-    while (*data)
+    while (*str)
     {
-        hash = hash * bkdrHashSeed + (*data++);
+        hash = hash * bkdrHashSeed + (*str++);
     }
     return (hash & bkdrHashSize);
 }
