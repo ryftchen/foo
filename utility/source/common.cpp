@@ -8,19 +8,20 @@
 #include <cassert>
 #include <chrono>
 #include <cstdarg>
-#include <regex>
+#include <stdexcept>
+#include <vector>
 
 namespace utility::common
 {
 //! @brief The Brian-Kernighan Dennis-Ritchie hash function.
-//! @param str - input data
+//! @param data - input data
 //! @return hash value
-std::size_t bkdrHash(const char* str)
+std::size_t bkdrHash(const char* data)
 {
     std::size_t hash = 0;
-    while (*str)
+    while (*data)
     {
-        hash = hash * bkdrHashSeed + (*str++);
+        hash = hash * bkdrHashSeed + (*data++);
     }
     return (hash & bkdrHashSize);
 }
