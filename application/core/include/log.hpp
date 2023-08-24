@@ -218,7 +218,7 @@ private:
         const StateType initState = State::init) noexcept;
 
     //! @brief Default log folder path.
-    static constexpr std::string_view defaultLogFolderPath{"./.cache"};
+    static constexpr std::string_view defaultLogFolderPath{"./log"};
     //! @brief Maximum number of times to wait for the logger to change to the target state.
     static constexpr std::uint16_t maxTimesOfWaitLogger{10};
     //! @brief Time interval (ms) to wait for the logger to change to the target state.
@@ -242,7 +242,7 @@ private:
     //! @brief Actual target.
     OutputTarget actTarget{OutputTarget::all};
     //! @brief Log file path.
-    std::string filePath{"./.cache/foo.log"};
+    std::string filePath{"./log/foo.log"};
     //! @brief Log file lock.
     utility::file::ReadWriteLock fileLock;
 
