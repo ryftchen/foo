@@ -52,13 +52,13 @@ The **Foo** is a personal roadmap for learning programming. Its main purpose is 
   ./script/build.sh
   ```
 
-  The binary and the libraries will be created in the `foo/build` directory. Then execute the binary, such as:
+  The binary and the libraries will be created in the `./build` directory. Then execute the binary, such as:
 
   ```bash
   ./build/bin/foo --help
   ```
 
-  And the executed log will also be written to `foo/.cache/foo.log`.
+  And the executed log will also be written to `$HOME/.foo/log/foo.log`.
 - The parameters are provided for static analysis. Build with options such as *-\-format*, *-\-lint*, etc.
 
 ### How to run
@@ -75,13 +75,13 @@ The **Foo** is a personal roadmap for learning programming. Its main purpose is 
   ./script/run.py
   ```
 
-  Also, add the *-\-build* option to support building before running. The result of running will also be written to `foo/.cache/foo_run.log`.
+  Also, add the *-\-build* option to support building before running. The result of running will also be written to `./.cache/foo_run.log` and the analysis will be generated in `./.cache/foo_run.report`.
 
 - The parameters are provided for dynamic analysis. Run with options such as *-\-check cov*, *-\-check mem*, etc.
 
 ## Documentation
 
-The project documentation can be found on the [Github Pages](https://ryftchen.github.io/foo/). When using local documentation via script, `foo/document` is used as the generation directory.
+The project documentation can be found on the [Github Pages](https://ryftchen.github.io/foo/). When using local documentation via script, `./document` is used as the generation directory.
 
 ## License
 
