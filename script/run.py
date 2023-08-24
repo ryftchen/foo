@@ -31,7 +31,7 @@ class Task:
         "--console": [
             r"'help'",
             r"'quit'",
-            r"'batch ./script/console_batch.txt'",
+            r"'batch " + os.path.abspath("./script/console_batch.txt") + r"'",
             r"'refresh'",
             r"'reconnect'",
             r"'log'",
@@ -274,8 +274,8 @@ class Task:
             full_cmd = f"valgrind --tool=memcheck --xml=yes \
 --xml-file={self.cache_dir}/foo_chk_mem_{str(self.complete_steps + 1)}.xml {full_cmd}"
         if self.options["chk_cov"]:
-            full_cmd = f"LLVM_PROFILE_FILE=\"{self.cache_dir}/foo_chk_cov_{str(self.complete_steps + 1)}.profraw\" \
-{full_cmd}"
+            full_cmd = f"LLVM_PROFILE_FILE=\
+\"{os.environ['HOME']}/.foo/.cache/foo_chk_cov_{str(self.complete_steps + 1)}.profraw\" {full_cmd}"
         align_len = max(
             len(command) + Output.stat_cont_len_excl_cmd,
             Output.stat_min_cont_len,
@@ -324,6 +324,7 @@ class Task:
         sys.stdout = self.logger
 
     def check_coverage(self):
+        common.execute_command(f"mv {os.environ['HOME']}/.foo/.cache/foo_chk_cov_*.profraw {self.cache_dir}/")
         common.execute_command(
             f"llvm-profdata-12 merge -sparse {self.cache_dir}/foo_chk_cov_*.profraw \
 -o {self.cache_dir}/foo_chk_cov.profdata"
