@@ -39,20 +39,20 @@ constexpr std::size_t bkdrHashSeed = 131;
 constexpr std::size_t bkdrHashSize = 0x7FFFFFFF;
 
 //! @brief The Brian-Kernighan Dennis-Ritchie hash function in compile time.
-//! @param data - input data
+//! @param str - input data
 //! @param hash - previous hash value
 //! @return hash value
-constexpr std::size_t bkdrHashInCompile(const char* const data, const std::size_t hash = 0) noexcept
+constexpr std::size_t bkdrHashInCompile(const char* const str, const std::size_t hash = 0) noexcept
 {
-    return (*data ? bkdrHashInCompile(data + 1, (hash * bkdrHashSeed + *data) & bkdrHashSize) : hash);
+    return (*str ? bkdrHashInCompile(str + 1, (hash * bkdrHashSeed + *str) & bkdrHashSize) : hash);
 }
 
 //! @brief The operator ("") overloading with BKDR hash function.
-//! @param data - input data
+//! @param str - input data
 //! @return hash value
-constexpr std::size_t operator""_bkdrHash(const char* const data, const std::size_t /*len*/) noexcept
+constexpr std::size_t operator""_bkdrHash(const char* const str, const std::size_t /*len*/) noexcept
 {
-    return bkdrHashInCompile(data);
+    return bkdrHashInCompile(str);
 }
 
 //! @brief Splice strings into constexpr type.
@@ -87,7 +87,7 @@ struct Join
 template <const std::string_view&... Strings>
 static constexpr auto joinStr = Join<Strings...>::value;
 
-extern std::size_t bkdrHash(const char* data);
+extern std::size_t bkdrHash(const char* str);
 extern std::string base64Encode(const std::string& data);
 extern std::string base64Decode(const std::string& data);
 extern std::string formatString(const char* const format, ...);
