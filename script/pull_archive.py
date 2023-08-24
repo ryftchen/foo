@@ -122,7 +122,7 @@ def execute(cmd):
 
 def abort(msg):
     print(f"{datetime.strftime(datetime.now(), '%b %d %H:%M:%S')} ABORT: {msg}")
-    sys.exit(-1)
+    sys.exit(1)
 
 
 if __name__ == "__main__":

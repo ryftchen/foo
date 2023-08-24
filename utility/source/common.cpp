@@ -52,15 +52,7 @@ std::string formatString(const char* const format, ...)
 //! @return command line output
 std::string executeCommand(const std::string& command, const std::uint32_t timeout)
 {
-    constexpr std::uint16_t inputLen = 1024;
-    char input[inputLen] = {'\0'};
-    std::strncpy(input, command.c_str(), inputLen);
-    if (!std::regex_match(input, std::regex(R"(^[a-zA-Z0-9`~!@#$%^&*()-_=+\[\]{}\\|;:'\",.<>\/? ]*$)")))
-    {
-        throw std::runtime_error("Illegal command.");
-    }
-
-    std::FILE* pipe = ::popen(input, "r");
+    std::FILE* pipe = ::popen(command.c_str(), "r");
     if (nullptr == pipe)
     {
         throw std::runtime_error("Could not open pipe when trying to execute command.");
