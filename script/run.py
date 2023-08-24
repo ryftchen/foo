@@ -124,7 +124,7 @@ class Task:
         finally:
             if message:
                 Output.exit_with_error(message)
-            sys.exit(-1)
+            sys.exit(1)
 
     def parse_arguments(self):
         def check_positive(value):
@@ -550,7 +550,7 @@ class Output:
     @classmethod
     def exit_with_error(cls, message):
         print(f"\r\n{os.path.basename(__file__)}: {message}")
-        sys.exit(-1)
+        sys.exit(1)
 
     @classmethod
     def refresh_status(cls, color_fg, content):
