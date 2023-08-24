@@ -26,6 +26,109 @@ std::size_t bkdrHash(const char* data)
     return (hash & bkdrHashSize);
 }
 
+//! @brief Base64 encoding.
+//! @param data - decoded data
+//! @return encoded data
+std::string base64Encode(const std::string& data)
+{
+    std::size_t counter = 0, offset = 0;
+    std::uint32_t bitStream = 0;
+    std::string encoded;
+    constexpr std::string_view base64Chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                                             "abcdefghijklmnopqrstuvwxyz"
+                                             "0123456789+/";
+
+    for (const unsigned char c : data)
+    {
+        const auto numVal = static_cast<unsigned int>(c);
+        offset = 16 - counter % 3 * 8; // NOLINT(readability-magic-numbers)
+        bitStream += numVal << offset;
+        switch (offset)
+        {
+            case 16:
+                encoded += base64Chars.at(bitStream >> 18 & 0x3F); // NOLINT(readability-magic-numbers)
+                break;
+            case 8:
+                encoded += base64Chars.at(bitStream >> 12 & 0x3F); // NOLINT(readability-magic-numbers)
+                break;
+            case 0:
+                if (3 != counter) // NOLINT(readability-magic-numbers)
+                {
+                    encoded += base64Chars.at(bitStream >> 6 & 0x3F); // NOLINT(readability-magic-numbers)
+                    encoded += base64Chars.at(bitStream & 0x3F); // NOLINT(readability-magic-numbers)
+                    bitStream = 0;
+                }
+                break;
+            default:
+                break;
+        }
+        ++counter;
+    }
+
+    switch (offset)
+    {
+        case 16:
+            encoded += base64Chars.at(bitStream >> 12 & 0x3F); // NOLINT(readability-magic-numbers)
+            encoded += "==";
+            break;
+        case 8:
+            encoded += base64Chars.at(bitStream >> 6 & 0x3F); // NOLINT(readability-magic-numbers)
+            encoded += '=';
+            break;
+        default:
+            break;
+    }
+    return encoded;
+}
+
+//! @brief Base64 decoding.
+//! @param data - encoded data
+//! @return decoded data
+std::string base64Decode(const std::string& data)
+{
+    std::size_t counter = 0, offset = 0;
+    std::uint32_t bitStream = 0;
+    std::string decoded;
+    constexpr std::string_view base64Chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                                             "abcdefghijklmnopqrstuvwxyz"
+                                             "0123456789+/";
+
+    for (const unsigned char c : data)
+    {
+        const auto numVal = base64Chars.find(c);
+        if (std::string::npos != numVal)
+        {
+            offset = 18 - counter % 4 * 6; // NOLINT(readability-magic-numbers)
+            bitStream += numVal << offset;
+            switch (offset)
+            {
+                case 12: // NOLINT(readability-magic-numbers)
+                    decoded += static_cast<char>(bitStream >> 16 & 0xFF); // NOLINT(readability-magic-numbers)
+                    break;
+                case 6: // NOLINT(readability-magic-numbers)
+                    decoded += static_cast<char>(bitStream >> 8 & 0xFF); // NOLINT(readability-magic-numbers)
+                    break;
+                case 0:
+                    if (4 != counter)
+                    {
+                        decoded += static_cast<char>(bitStream & 0xFF); // NOLINT(readability-magic-numbers)
+                        bitStream = 0;
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+        else if ('=' != c)
+        {
+            throw std::runtime_error("Invalid base64 encoded data.");
+        }
+        ++counter;
+    }
+
+    return decoded;
+}
+
 //! @brief Format as a string.
 //! @param format - null-terminated multibyte string specifying how to interpret the data
 //! @param ... - arguments

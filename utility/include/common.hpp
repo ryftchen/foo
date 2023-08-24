@@ -88,6 +88,8 @@ template <const std::string_view&... Strings>
 static constexpr auto joinStr = Join<Strings...>::value;
 
 extern std::size_t bkdrHash(const char* data);
+extern std::string base64Encode(const std::string& data);
+extern std::string base64Decode(const std::string& data);
 extern std::string formatString(const char* const format, ...);
 extern std::string executeCommand(const std::string& command, const std::uint32_t timeout = 0);
 } // namespace utility::common

@@ -561,7 +561,8 @@ void View::createViewServer()
                 }
 
                 char buffer[maxMsgLength] = {'\0'};
-                if ("stop" == message)
+                const auto msg = utility::common::base64Decode(message);
+                if ("stop" == msg)
                 {
                     buildTLVPacket2Stop(buffer);
                     newSocket->toSend(buffer, sizeof(buffer));
@@ -569,7 +570,7 @@ void View::createViewServer()
                     return;
                 }
 
-                const auto optionIter = optionDispatcher.find(message);
+                const auto optionIter = optionDispatcher.find(msg);
                 if (optionDispatcher.end() == optionIter)
                 {
                     throw std::logic_error("Unknown TCP message.");
@@ -595,14 +596,15 @@ void View::createViewServer()
             }
 
             char buffer[maxMsgLength] = {'\0'};
-            if ("stop" == message)
+            const auto msg = utility::common::base64Decode(message);
+            if ("stop" == msg)
             {
                 buildTLVPacket2Stop(buffer);
                 udpServer->toSendTo(buffer, sizeof(buffer), ip, port);
                 return;
             }
 
-            const auto optionIter = optionDispatcher.find(message);
+            const auto optionIter = optionDispatcher.find(msg);
             if (optionDispatcher.end() == optionIter)
             {
                 throw std::logic_error("Unknown UDP message.");

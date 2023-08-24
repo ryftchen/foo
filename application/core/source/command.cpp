@@ -475,7 +475,7 @@ void Command::showConsoleOutput() const
         console.cmdExecutor(cmd);
     }
 
-    udpClient->toSend("stop");
+    udpClient->toSend(utility::common::base64Encode("stop"));
     udpClient->waitIfAlive();
 }
 
@@ -530,7 +530,7 @@ void Command::enterConsoleMode() const
         }
         while (Console::RetCode::quit != retVal);
 
-        tcpClient->toSend("stop");
+        tcpClient->toSend(utility::common::base64Encode("stop"));
         tcpClient->waitIfAlive();
     }
     catch (const std::exception& error)
@@ -574,7 +574,7 @@ void Command::registerOnConsole(utility::console::Console& console, std::shared_
             int retVal = Console::RetCode::success;
             try
             {
-                client->toSend("stop");
+                client->toSend(utility::common::base64Encode("stop"));
                 client->waitIfAlive();
                 client.reset();
                 VIEW_REQUEST_TO_RESTART;
@@ -605,7 +605,7 @@ void Command::registerOnConsole(utility::console::Console& console, std::shared_
                 int retVal = Console::RetCode::success;
                 try
                 {
-                    client->toSend(cmd);
+                    client->toSend(utility::common::base64Encode(cmd));
                     utility::time::millisecondLevelSleep(maxLatency);
                 }
                 catch (const std::exception& error)
