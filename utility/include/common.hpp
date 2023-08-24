@@ -39,25 +39,25 @@ constexpr std::size_t bkdrHashSeed = 131;
 constexpr std::size_t bkdrHashSize = 0x7FFFFFFF;
 
 //! @brief The Brian-Kernighan Dennis-Ritchie hash function in compile time.
-//! @param str - input data
+//! @param data - input data
 //! @param hash - previous hash value
 //! @return hash value
-constexpr std::size_t bkdrHashInCompile(const char* const str, const std::size_t hash = 0) noexcept
+constexpr std::size_t bkdrHashInCompile(const char* const data, const std::size_t hash = 0) noexcept
 {
-    return (*str ? bkdrHashInCompile(str + 1, (hash * bkdrHashSeed + *str) & bkdrHashSize) : hash);
+    return (*data ? bkdrHashInCompile(data + 1, (hash * bkdrHashSeed + *data) & bkdrHashSize) : hash);
 }
 
 //! @brief The operator ("") overloading with BKDR hash function.
-//! @param str - input data
+//! @param data - input data
 //! @return hash value
-constexpr std::size_t operator""_bkdrHash(const char* const str, const std::size_t /*len*/) noexcept
+constexpr std::size_t operator""_bkdrHash(const char* const data, const std::size_t /*len*/) noexcept
 {
-    return bkdrHashInCompile(str);
+    return bkdrHashInCompile(data);
 }
 
 //! @brief Splice strings into constexpr type.
 //! @tparam Strings - target strings to be spliced
-template <std::string_view const&... Strings>
+template <const std::string_view&... Strings>
 struct Join
 {
     //! @brief Implementation of splicing strings.
@@ -84,10 +84,10 @@ struct Join
 };
 //! @brief Get the result of splicing strings.
 //! @tparam target - strings to be spliced
-template <std::string_view const&... Strings>
+template <const std::string_view&... Strings>
 static constexpr auto joinStr = Join<Strings...>::value;
 
-extern std::size_t bkdrHash(const char* str);
+extern std::size_t bkdrHash(const char* data);
 extern std::string formatString(const char* const format, ...);
 extern std::string executeCommand(const std::string& command, const std::uint32_t timeout = 0);
 } // namespace utility::common
