@@ -101,31 +101,21 @@ static void init()
     ::setenv("TERM", "linux", true);
     ::setenv("TERMINFO", "/etc/terminfo", true);
 
-    const std::filesystem::path absolutePath = std::filesystem::canonical(std::filesystem::path{"/proc/self/exe"});
-    const std::size_t pos = absolutePath.string().find("/foo/build");
-    if (std::string::npos == pos)
+    const std::filesystem::path homePath{(nullptr != std::getenv("HOME")) ? std::getenv("HOME") : "/root"};
+    if (!std::filesystem::exists(homePath))
     {
-        const std::filesystem::path homePath{(nullptr != std::getenv("HOME")) ? std::getenv("HOME") : "/root"};
-        if (!std::filesystem::exists(homePath))
-        {
-            std::fprintf(::stderr, "The home path does not exist. Please check it.\n");
-            std::exit(EXIT_FAILURE);
-        }
+        std::fprintf(::stderr, "Unable to access the home directory.\n");
+        std::exit(EXIT_FAILURE);
+    }
 
-        const std::filesystem::path procTempPath{homePath / ".foo"};
-        if (!std::filesystem::exists(procTempPath))
-        {
-            std::filesystem::create_directory(procTempPath);
-            std::filesystem::permissions(
-                procTempPath, std::filesystem::perms::owner_all, std::filesystem::perm_options::add);
-        }
-        std::filesystem::current_path(procTempPath);
-    }
-    else
+    const std::filesystem::path processPath{homePath / ".foo"};
+    if (!std::filesystem::exists(processPath))
     {
-        const std::filesystem::path projPath{absolutePath.string().substr(0, pos + 4)};
-        std::filesystem::current_path(projPath);
+        std::filesystem::create_directory(processPath);
+        std::filesystem::permissions(
+            processPath, std::filesystem::perms::owner_all, std::filesystem::perm_options::add);
     }
+    std::filesystem::current_path(processPath);
 }
 
 //! @brief The destructor function before finishing the main function. Check the signal status.
