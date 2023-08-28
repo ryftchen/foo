@@ -13,25 +13,6 @@
 
 namespace application::log
 {
-Log::Log(
-    const char* const logFile,
-    const OutputType type,
-    const OutputLevel level,
-    const OutputTarget target,
-    const StateType initState) noexcept :
-    writeType(type), minLevel(level), actTarget(target), FSM(initState)
-{
-    if (std::filesystem::absolute(std::filesystem::path{defaultLogFolderPath})
-        == std::filesystem::absolute(logFile).parent_path())
-    {
-        filePath = logFile;
-    }
-    else
-    {
-        std::cerr << "Illegal log file path." << std::endl;
-    }
-}
-
 Log& Log::getInstance()
 {
     static Log logger{};

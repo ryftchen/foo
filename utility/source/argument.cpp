@@ -443,7 +443,7 @@ std::stringstream Argument::help() const
 std::string Argument::usage() const
 {
     std::stringstream stream;
-    stream << "Usage: " << ((parserPath.find(' ' + title) == std::string::npos) ? title : parserPath);
+    stream << "usage: " << ((parserPath.find(' ' + title) == std::string::npos) ? title : parserPath);
 
     for (const auto& argument : optionalArguments)
     {

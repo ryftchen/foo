@@ -9,6 +9,7 @@
 #ifndef __PRECOMPILED_HEADER
 #include <filesystem>
 #include <fstream>
+#include <iostream>
 #include <queue>
 #else
 #include "application/pch/precompiled_header.hpp"
@@ -215,12 +216,11 @@ private:
         const OutputType type,
         const OutputLevel level,
         const OutputTarget target,
-        const StateType initState = State::init) noexcept;
+        const StateType initState = State::init) noexcept :
+        filePath(logFile), writeType(type), minLevel(level), actTarget(target), FSM(initState){};
 
-    //! @brief Default log folder path.
-    static constexpr std::string_view defaultLogFolderPath{"./log"};
     //! @brief Maximum number of times to wait for the logger to change to the target state.
-    static constexpr std::uint16_t maxTimesOfWaitLogger{10};
+    static constexpr std::uint16_t maxTimesOfWaitLogger{20};
     //! @brief Time interval (ms) to wait for the logger to change to the target state.
     static constexpr std::uint16_t intervalOfWaitLogger{10};
     //! @brief The queue of logs.
@@ -235,14 +235,14 @@ private:
     std::atomic<bool> restartRequest{false};
     //! @brief Output file stream.
     std::ofstream ofs;
+    //! @brief Log file path.
+    std::string filePath{"./log/foo.log"};
     //! @brief Write type.
     OutputType writeType{OutputType::add};
     //! @brief Minimum level.
     OutputLevel minLevel{OutputLevel::debug};
     //! @brief Actual target.
     OutputTarget actTarget{OutputTarget::all};
-    //! @brief Log file path.
-    std::string filePath{"./log/foo.log"};
     //! @brief Log file lock.
     utility::file::ReadWriteLock fileLock;
 

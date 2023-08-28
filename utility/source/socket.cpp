@@ -8,7 +8,6 @@
 #include <netdb.h>
 #include <unistd.h>
 #include <cstring>
-#include <iostream>
 
 namespace utility::socket
 {
@@ -18,7 +17,7 @@ Socket::Socket(const Type socketType, const int socketId)
     {
         if ((sock = ::socket(AF_INET, socketType, 0)) == -1)
         {
-            std::cerr << "Socket creation error, errno: " << errno << '.' << std::endl;
+            throw std::runtime_error("Socket creation error, errno: " + std::to_string(errno) + '.');
         }
     }
     else

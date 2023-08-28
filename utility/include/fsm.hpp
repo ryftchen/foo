@@ -7,7 +7,7 @@
 #pragma once
 
 #include <atomic>
-#include <iostream>
+#include <stdexcept>
 
 //! @brief Finite-state-machine-related functions in the utility module.
 namespace utility::fsm
@@ -365,18 +365,11 @@ private:
         //! @param fsm - FSM object
         explicit ProcessingLock(FSM& fsm) : isProcessing(fsm.isProcessing)
         {
-            try
+            if (isProcessing.load())
             {
-                if (isProcessing.load())
-                {
-                    throw std::logic_error("Call process event recursively.");
-                }
-                isProcessing.store(true);
+                throw std::logic_error("Call process event recursively.");
             }
-            catch (const std::exception& error)
-            {
-                std::cerr << error.what() << std::endl;
-            }
+            isProcessing.store(true);
         }
         //! @brief Destroy the ProcessingLock object.
         ~ProcessingLock() { isProcessing.store(false); }
