@@ -84,11 +84,11 @@ T Config::getNumericValue(const std::string& key)
         }
         else if (typeid(float) == typeid(T))
         {
-            value = std::stof((*this)[key]);
+            value = static_cast<float>(std::stof((*this)[key]));
         }
         else if (typeid(double) == typeid(T))
         {
-            value = std::stod((*this)[key]);
+            value = static_cast<double>(std::stod((*this)[key]));
         }
     }
     catch (const std::invalid_argument& error)
