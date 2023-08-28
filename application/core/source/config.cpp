@@ -70,7 +70,7 @@ bool Config::getBool(const std::string& key)
 template <class T>
 T Config::getNumericValue(const std::string& key)
 {
-    T value;
+    T value = 0;
 
     try
     {
