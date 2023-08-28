@@ -22,8 +22,12 @@ namespace application
 //! @brief Status of the signal.
 volatile std::sig_atomic_t signalStatus = 0; // NOLINT(misc-definitions-in-headers)
 
-[[using gnu: constructor]] static void init();
-[[using gnu: destructor]] static void fini();
+//! @brief Get the executable name.
+//! @return executable name
+inline static std::string getExecutableName()
+{
+    return std::filesystem::canonical(std::filesystem::path{"/proc/self/exe"}).filename();
+}
 
 //! @brief Signal handler for SIGSEGV signal, etc.
 //! @param sig - signal type
@@ -81,7 +85,8 @@ static void signalHandler(int sig)
     }
     std::fprintf(
         ::stderr,
-        "\r\n<SIGNAL>\n%d\n\n<BACKTRACE>\n%s\n<VERBOSE>\n%s\n",
+        "\r\n%s:\n<SIGNAL>\n%d\n\n<BACKTRACE>\n%s\n<VERBOSE>\n%s\n",
+        getExecutableName().c_str(),
         sig,
         originalTrace.str().c_str(),
         detailedTrace.str().c_str());
@@ -94,7 +99,7 @@ static void signalHandler(int sig)
 }
 
 //! @brief The constructor function before starting the main function. Switch to the target path.
-static void init()
+[[using gnu: constructor]] static void init()
 {
     std::signal(SIGABRT, signalHandler);
     std::signal(SIGSEGV, signalHandler);
@@ -104,7 +109,7 @@ static void init()
     const std::filesystem::path homePath{(nullptr != std::getenv("HOME")) ? std::getenv("HOME") : "/root"};
     if (!std::filesystem::exists(homePath))
     {
-        std::fprintf(::stderr, "Unable to access the home directory.\n");
+        std::fprintf(::stdout, "%s: Unable to access the home directory.\n", getExecutableName().c_str());
         std::exit(EXIT_FAILURE);
     }
 
@@ -119,11 +124,12 @@ static void init()
 }
 
 //! @brief The destructor function before finishing the main function. Check the signal status.
-static void fini()
+[[using gnu: destructor]] static void fini()
 {
     if (signalStatus)
     {
-        std::fprintf(::stdout, "Last signal ever received: signal %d.\n", signalStatus);
+        std::fprintf(
+            ::stdout, "%s: Last signal ever received: signal %d.\n", getExecutableName().c_str(), signalStatus);
     }
 }
 } // namespace application

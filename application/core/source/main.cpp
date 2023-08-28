@@ -38,7 +38,7 @@ static int run(int argc, char* argv[])
     }
     catch (const std::exception& error)
     {
-        std::cerr << error.what() << std::endl;
+        std::cerr << application::getExecutableName() << ": " << error.what() << std::endl;
         return EXIT_FAILURE;
     }
 
@@ -76,7 +76,7 @@ int main(int argc, char* argv[])
         const ::pid_t ppidBeforeFork = ::getpid(), pid = ::fork();
         if (pid < 0)
         {
-            std::cerr << "Failed to create a child process." << std::endl;
+            std::cerr << application::getExecutableName() << ": Failed to create a child process." << std::endl;
             return EXIT_FAILURE;
         }
         else if (pid == 0)
@@ -100,7 +100,8 @@ int main(int argc, char* argv[])
             if (::waitpid(pid, nullptr, WNOHANG) == 0)
             {
                 ::kill(pid, SIGKILL);
-                std::cerr << "Kill the child process due to timeout." << std::endl;
+                std::cerr << application::getExecutableName() << ": Kill the child process due to timeout."
+                          << std::endl;
             }
             return EXIT_FAILURE;
         }

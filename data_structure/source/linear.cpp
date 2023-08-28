@@ -5,7 +5,6 @@
 //! @copyright Copyright (c) 2022-2023 ryftchen. All rights reserved.
 
 #include "linear.hpp"
-#include <iostream>
 
 namespace date_structure::linear
 {
@@ -19,7 +18,6 @@ static Node* createNode(void* const pVal)
     Node* pNode = new (std::nothrow) Node;
     if (nullptr == pNode)
     {
-        std::cerr << "Create node failed." << std::endl;
         return nullptr;
     }
 
@@ -45,7 +43,6 @@ static Node* getNode(DLL pHead, const int index)
 
     if ((index < 0) || (index >= count))
     {
-        std::cerr << "Get node failed, the index in out of bound." << std::endl;
         return nullptr;
     }
 
@@ -93,7 +90,6 @@ int destroyDll(DLL* dll)
 {
     if (nullptr == *dll)
     {
-        std::cerr << "Destroy failed, doubly linked list is null." << std::endl;
         return -1;
     }
 
@@ -145,7 +141,6 @@ void* dllGet(DLL pHead, const int index)
     Node* pIndex = getNode(pHead, index);
     if (nullptr == pIndex)
     {
-        std::cerr << "Get node failed." << std::endl;
         return nullptr;
     }
 
@@ -249,7 +244,6 @@ int dllDelete(DLL pHead, const int index)
     Node* pIndex = getNode(pHead, index);
     if (nullptr == pIndex)
     {
-        std::cerr << "Delete node failed, the index in out of bound." << std::endl;
         return -1;
     }
 

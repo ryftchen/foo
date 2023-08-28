@@ -166,9 +166,9 @@ function try_to_perform_single_choice_options()
 function perform_help_option()
 {
     if [[ ${ARGS[help]} = true ]]; then
-        echo "Usage: $(basename "${0}") <options...>"
+        echo "usage: $(basename "${0}") [options...]"
         echo
-        echo "Optional:"
+        echo "optional:"
         echo "-h, --help          show help and exit"
         echo "-I, --initialize    initialize environment and exit"
         echo "-C, --cleanup       cleanup folder and exit"

@@ -5,7 +5,6 @@
 //! @copyright Copyright (c) 2022-2023 ryftchen. All rights reserved.
 
 #include "tree.hpp"
-#include <iostream>
 
 namespace date_structure::tree
 {
@@ -549,7 +548,6 @@ Node* avlTreeInsert(AVLTree tree, const Type key)
         tree = createNode(key, nullptr, nullptr);
         if (nullptr == tree)
         {
-            std::cerr << "Failed to create AVL tree node." << std::endl;
             return nullptr;
         }
     }
@@ -582,10 +580,6 @@ Node* avlTreeInsert(AVLTree tree, const Type key)
                 tree = rightLeftRotation(tree);
             }
         }
-    }
-    else
-    {
-        std::cerr << "Do not allow the same node to be inserted." << std::endl;
     }
 
     tree->height = std::max(getHeight(tree->left), getHeight(tree->right)) + 1;
@@ -758,7 +752,6 @@ Node* insertNode(SplayTree tree, Node* z)
         }
         else
         {
-            std::cerr << "Do not allow the same node to be inserted." << std::endl;
             delete z;
             return tree;
         }

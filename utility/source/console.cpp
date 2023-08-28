@@ -6,9 +6,8 @@
 
 #include "console.hpp"
 #include <readline/readline.h>
-#include <cstring>
+#include <filesystem>
 #include <fstream>
-#include <iomanip>
 #include <iostream>
 
 namespace utility::console
@@ -30,7 +29,7 @@ Console::Console(const std::string& greeting) : impl(std::make_unique<Impl>(gree
                 maxLength = std::max(maxLength, command.length());
             }
 
-            std::cout << "Console command:\n" << std::endl;
+            std::cout << "console command:\n" << std::endl;
             for (const auto& [command, help] : commandsHelp)
             {
                 std::cout << std::setiosflags(std::ios_base::left) << std::setw(maxLength) << command << "    " << help
@@ -46,7 +45,7 @@ Console::Console(const std::string& greeting) : impl(std::make_unique<Impl>(gree
     impl->regCmds["quit"] = std::make_pair(
         [this](const Args& /*input*/)
         {
-            std::cout << "Exit." << std::endl;
+            std::cout << "exit" << std::endl;
             return RetCode::quit;
         },
         "exit console mode");
@@ -61,7 +60,7 @@ Console::Console(const std::string& greeting) : impl(std::make_unique<Impl>(gree
             }
             return RetCode(fileExecutor(input.at(1)));
         },
-        "run batch commands from the file");
+        "run batch commands from the file (absolute path)");
     impl->regOrder.emplace_back("batch");
 }
 
@@ -101,6 +100,11 @@ int Console::cmdExecutor(const std::string& command)
 
 int Console::fileExecutor(const std::string& filename)
 {
+    if (!std::filesystem::path{filename}.is_absolute())
+    {
+        throw std::runtime_error("The path to the batch file is not an absolute path.");
+    }
+
     std::ifstream input(filename);
     if (!input)
     {
