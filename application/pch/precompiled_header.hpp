@@ -34,6 +34,7 @@
 #include <queue>
 #include <regex>
 #include <sstream>
+#include <string>
 #include <tuple>
 #include <vector>
 #endif // __PRECOMPILED_HEADER
