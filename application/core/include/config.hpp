@@ -13,21 +13,68 @@
 #include "application/pch/precompiled_header.hpp"
 #endif // __PRECOMPILED_HEADER
 
+//! @brief Get configuration about "active_helper".
+#define CONFIG_ACTIVE_HELPER application::config::Config::getInstance().getBool("active_helper")
+//! @brief Get configuration about "logger_path".
+#define CONFIG_LOGGER_PATH application::config::Config::getInstance().getString("logger_path")
+//! @brief Get configuration about "logger_type".
+#define CONFIG_LOGGER_TYPE application::config::Config::getInstance().getUnsignedInteger("logger_type")
+//! @brief Get configuration about "logger_level".
+#define CONFIG_LOGGER_LEVEL application::config::Config::getInstance().getUnsignedInteger("logger_level")
+//! @brief Get configuration about "logger_target".
+#define CONFIG_LOGGER_TARGET application::config::Config::getInstance().getUnsignedInteger("logger_target")
+//! @brief Get configuration about "viewer_tcp_host".
+#define CONFIG_VIEWER_TCP_HOST application::config::Config::getInstance().getString("viewer_tcp_host")
+//! @brief Get configuration about "viewer_tcp_port".
+#define CONFIG_VIEWER_TCP_PORT application::config::Config::getInstance().getUnsignedInteger("viewer_tcp_port")
+//! @brief Get configuration about "viewer_udp_host".
+#define CONFIG_VIEWER_UDP_HOST application::config::Config::getInstance().getString("viewer_udp_host")
+//! @brief Get configuration about "viewer_udp_port".
+#define CONFIG_VIEWER_UDP_PORT application::config::Config::getInstance().getUnsignedInteger("viewer_udp_port")
+
 //! @brief Configuration-related functions in the application module.
-namespace config
+namespace application::config
 {
+//! @brief Default configuration file path.
+constexpr std::string_view defaultConfigFile = "./foo.cfg";
+//! @brief Default configuration content.
+constexpr std::string_view defaultConfiguration = "# foo configuration\n"
+                                                  "\n"
+                                                  "# active logger & viewer (0 = disable 1 = enable)\n"
+                                                  "active_helper = 1\n"
+                                                  "# logger file path (character string)\n"
+                                                  "logger_path = ./log/foo.log\n"
+                                                  "# logger write type (0 = add 1 = over)\n"
+                                                  "logger_type = 0\n"
+                                                  "# logger minimum level (0 = debug 1 = info 2 = warn 3 = error)\n"
+                                                  "logger_level = 0\n"
+                                                  "# logger actual target (0 = file 1 = terminal 2 = all)\n"
+                                                  "logger_target = 2\n"
+                                                  "# viewer tcp server host (character string)\n"
+                                                  "viewer_tcp_host = localhost\n"
+                                                  "# viewer tcp server port (0-65536)\n"
+                                                  "viewer_tcp_port = 61501\n"
+                                                  "# viewer udp server host (character string)\n"
+                                                  "viewer_udp_host = localhost\n"
+                                                  "# viewer udp server port (0-65536)\n"
+                                                  "viewer_udp_port = 61502\n"
+                                                  "\n";
+
 //! @brief Configuration.
 class Config
 {
 public:
-    //! @brief Construct a new Config object.
-    //! @param filename - configuration file
-    //! @param delim - delimiter
-    //! @param commentDelim - comment delimiter
-    explicit Config(const std::string& filename, const char delim = '=', const char commentDelim = '#');
     //! @brief Destroy the Config object.
     virtual ~Config() = default;
+    //! @brief Construct a new Config object.
+    Config(const Config&) = delete;
+    //! @brief The operator (=) overloading of Config class.
+    //! @return reference of Config object
+    Config& operator=(const Config&) = delete;
 
+    //! @brief Get the Config instance.
+    //! @return reference of Config object
+    static Config& getInstance();
     //! @brief The operator ([]) overloading of the Config class.
     //! @param key - index key
     //! @return value of the string type
@@ -58,6 +105,15 @@ public:
     bool getBool(const std::string& key);
 
 private:
+    //! @brief Construct a new Config object.
+    //! @param filename - configuration file
+    //! @param delim - delimiter
+    //! @param commentDelim - comment delimiter
+    explicit Config(
+        const std::string& filename = std::string{defaultConfigFile},
+        const char delim = '=',
+        const char commentDelim = '#');
+
     //! @brief Delimiter.
     const char delimiter{'='};
     //! @brief Comment delimiter.
@@ -94,4 +150,6 @@ private:
     //! @return string after removing spaces from both ends
     static std::string trimLine(const std::string& line);
 };
-} // namespace config
+
+extern void initializeConfiguration(const std::string& filename = std::string{defaultConfigFile});
+} // namespace application::config

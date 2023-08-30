@@ -76,10 +76,12 @@ private:
     bool hasAnyTask() const;
     //! @brief Dispatch specific tasks.
     void dispatchTask();
-    //! @brief Print output of the console mode command line.
-    void showConsoleOutput() const;
+    //! @brief Execute the console mode command line.
+    void executeConsoleCommand() const;
     //! @brief Print help message.
     void showHelpMessage() const;
+    //! @brief Regenerate and print the configuration.
+    void regenerateConfiguration() const;
     //! @brief Print version icon.
     void showVersionIcon() const;
 
@@ -122,12 +124,13 @@ private:
     // clang-format off
     //! @brief Mapping table of all basic tasks.
     const std::map<std::string, void (Command::*)() const> basicTaskDispatcher{
-        // - Category -+---------- RUN Task ----------
-        // ------------+------------------------------
-        { "console"    , &Command::showConsoleOutput },
-        { "help"       , &Command::showHelpMessage   },
-        { "version"    , &Command::showVersionIcon   }
-        // ------------+------------------------------
+        // - Category -+------------- Run Task -------------
+        // ------------+------------------------------------
+        { "console"    , &Command::executeConsoleCommand   },
+        { "help"       , &Command::showHelpMessage         },
+        { "reconfig"   , &Command::regenerateConfiguration },
+        { "version"    , &Command::showVersionIcon         }
+        // ------------+------------------------------------
     };
     //! @brief Mapping table of all regular tasks.
     const RegularTaskMap regularTaskDispatcher{
@@ -169,6 +172,7 @@ private:
         {
             console,
             help,
+            reconfig,
             version
         };
         //! @brief Store the maximum value of the Category enum.
@@ -176,7 +180,7 @@ private:
         struct Bottom<Category>
         {
             //! @brief Maximum value of the Category enum.
-            static constexpr std::uint8_t value{3};
+            static constexpr std::uint8_t value{4};
         };
 
         //! @brief Bit flags for managing basic tasks.

@@ -28,6 +28,7 @@ class Task:
     basic_task_dict = {
         "--help": [],
         "--version": [],
+        "--reconfig": [],
         "--console": [
             r"'help'",
             r"'quit'",
