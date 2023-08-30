@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include "config.hpp"
 #ifndef __PRECOMPILED_HEADER
 #include <filesystem>
 #include <fstream>
@@ -20,19 +21,33 @@
 #include "utility/include/time.hpp"
 
 //! @brief Log with debug level.
-#define LOG_DBG application::log::Log::Flush<application::log::Log::OutputLevel::debug>(__FILE__, __LINE__).getStream()
+#define LOG_DBG               \
+    if (CONFIG_ACTIVE_HELPER) \
+    application::log::Log::Flush<application::log::Log::OutputLevel::debug>(__FILE__, __LINE__).getStream()
 //! @brief Log with info level.
-#define LOG_INF application::log::Log::Flush<application::log::Log::OutputLevel::info>(__FILE__, __LINE__).getStream()
+#define LOG_INF               \
+    if (CONFIG_ACTIVE_HELPER) \
+    application::log::Log::Flush<application::log::Log::OutputLevel::info>(__FILE__, __LINE__).getStream()
 //! @brief Log with warning level.
-#define LOG_WRN application::log::Log::Flush<application::log::Log::OutputLevel::warn>(__FILE__, __LINE__).getStream()
+#define LOG_WRN               \
+    if (CONFIG_ACTIVE_HELPER) \
+    application::log::Log::Flush<application::log::Log::OutputLevel::warn>(__FILE__, __LINE__).getStream()
 //! @brief Log with error level.
-#define LOG_ERR application::log::Log::Flush<application::log::Log::OutputLevel::error>(__FILE__, __LINE__).getStream()
+#define LOG_ERR               \
+    if (CONFIG_ACTIVE_HELPER) \
+    application::log::Log::Flush<application::log::Log::OutputLevel::error>(__FILE__, __LINE__).getStream()
 //! @brief Try to start logging.
-#define LOG_WAIT_TO_START application::log::Log::getInstance().waitToStart()
+#define LOG_WAIT_TO_START     \
+    if (CONFIG_ACTIVE_HELPER) \
+    application::log::Log::getInstance().waitToStart()
 //! @brief Try to stop logging.
-#define LOG_WAIT_TO_STOP application::log::Log::getInstance().waitToStop()
+#define LOG_WAIT_TO_STOP      \
+    if (CONFIG_ACTIVE_HELPER) \
+    application::log::Log::getInstance().waitToStop()
 //! @brief Try to restart logging.
-#define LOG_REQUEST_TO_RESTART application::log::Log::getInstance().requestToRestart()
+#define LOG_REQUEST_TO_RESTART \
+    if (CONFIG_ACTIVE_HELPER)  \
+    application::log::Log::getInstance().requestToRestart()
 //! @brief Log file path.
 #define LOG_FILE_PATH application::log::Log::getInstance().getFilePath()
 //! @brief Log file lock.
@@ -205,14 +220,19 @@ public:
 private:
     //! @brief Construct a new Log object.
     //! @param initState - initialization value of state
-    explicit Log(const StateType initState = State::init) noexcept : FSM(initState){};
+    explicit Log(const StateType initState = State::init) noexcept :
+        filePath(CONFIG_LOGGER_PATH),
+        writeType(OutputType(CONFIG_LOGGER_TYPE)),
+        minLevel(OutputLevel(CONFIG_LOGGER_LEVEL)),
+        actTarget(OutputTarget(CONFIG_LOGGER_TARGET)),
+        FSM(initState){};
     //! @brief Construct a new Log object.
     //! @param logFile - log file
     //! @param type - output type
     //! @param level - output level
     //! @param target - output target
     //! @param initState - initialization value of state
-    Log(const char* const logFile,
+    Log(const std::string& logFile,
         const OutputType type,
         const OutputLevel level,
         const OutputTarget target,
@@ -220,7 +240,7 @@ private:
         filePath(logFile), writeType(type), minLevel(level), actTarget(target), FSM(initState){};
 
     //! @brief Maximum number of times to wait for the logger to change to the target state.
-    static constexpr std::uint16_t maxTimesOfWaitLogger{20};
+    static constexpr std::uint16_t maxTimesOfWaitLogger{10};
     //! @brief Time interval (ms) to wait for the logger to change to the target state.
     static constexpr std::uint16_t intervalOfWaitLogger{10};
     //! @brief The queue of logs.
@@ -236,13 +256,13 @@ private:
     //! @brief Output file stream.
     std::ofstream ofs;
     //! @brief Log file path.
-    std::string filePath{"./log/foo.log"};
+    const std::string filePath{"./log/foo.log"};
     //! @brief Write type.
-    OutputType writeType{OutputType::add};
+    const OutputType writeType{OutputType::add};
     //! @brief Minimum level.
-    OutputLevel minLevel{OutputLevel::debug};
+    const OutputLevel minLevel{OutputLevel::debug};
     //! @brief Actual target.
-    OutputTarget actTarget{OutputTarget::all};
+    const OutputTarget actTarget{OutputTarget::all};
     //! @brief Log file lock.
     utility::file::ReadWriteLock fileLock;
 

@@ -5,13 +5,13 @@
 //! @copyright Copyright (c) 2022-2023 ryftchen. All rights reserved.
 
 #include "command.hpp"
+#include "log.hpp"
+#include "view.hpp"
 #ifndef __PRECOMPILED_HEADER
 #include <unistd.h>
 #else
 #include "application/pch/precompiled_header.hpp"
 #endif // __PRECOMPILED_HEADER
-#include "log.hpp"
-#include "view.hpp"
 
 namespace application::command
 {
@@ -20,6 +20,11 @@ Command::Command()
     mainCLI.addArgument("-h", "--help").argsNum(0).implicitVal(true).help("show help and exit");
 
     mainCLI.addArgument("-v", "--version").argsNum(0).implicitVal(true).help("show version and exit");
+
+    mainCLI.addArgument("-r", "--reconfig")
+        .argsNum(0)
+        .implicitVal(true)
+        .help("regenerate the default configuration and exit");
 
     mainCLI.addArgument("-c", "--console")
         .argsNum(utility::argument::ArgsNumPattern::any)
@@ -259,8 +264,8 @@ void Command::runCommander(const int argc, const char* const argv[])
 #endif // NDEBUG
         }
 
-        LOG_WAIT_TO_STOP;
         VIEW_WAIT_TO_STOP;
+        LOG_WAIT_TO_STOP;
     }
     catch (const std::exception& error)
     {
@@ -440,8 +445,13 @@ void Command::dispatchTask()
     }
 }
 
-void Command::showConsoleOutput() const
+void Command::executeConsoleCommand() const
 {
+    if (!CONFIG_ACTIVE_HELPER)
+    {
+        return;
+    }
+
     const auto cmdContainer = mainCLI.get<std::vector<std::string>>(
         std::next(basicTaskDispatcher.cbegin(), BasicTask::Category::console)->first);
     if (cmdContainer.empty())
@@ -470,6 +480,21 @@ void Command::showHelpMessage() const
     std::cout << mainCLI.help().str() << std::flush;
 }
 
+void Command::regenerateConfiguration() const // NOLINT(readability-convert-member-functions-to-static)
+{
+    namespace file = utility::file;
+    std::ofstream ofs = file::openFile(std::string{config::defaultConfigFile}, true);
+    file::fdLock(ofs, file::LockMode::write);
+    ofs << config::defaultConfiguration;
+    file::fdUnlock(ofs);
+    file::closeFile(ofs);
+
+    const auto configs = file::getFileContents(std::string{config::defaultConfigFile});
+    std::ostringstream os;
+    std::copy(configs.cbegin(), configs.cend(), std::ostream_iterator<std::string>(os, "\n"));
+    std::cout << os.str() << std::flush;
+}
+
 void Command::showVersionIcon() const
 {
     std::string versionIcon = "tput rev ; echo " + getIconBanner();
@@ -482,6 +507,11 @@ void Command::showVersionIcon() const
 
 void Command::enterConsoleMode() const
 {
+    if (!CONFIG_ACTIVE_HELPER)
+    {
+        return;
+    }
+
     try
     {
         using utility::console::Console;
@@ -629,7 +659,7 @@ void Command::launchClient(std::shared_ptr<T>& client)
                 LOG_WRN << error.what();
             }
         };
-        client->toConnect(std::string{View::tcpHost}, View::tcpPort);
+        client->toConnect(VIEW_TCP_HOST, VIEW_TCP_PORT);
     }
     else if constexpr (std::is_same_v<T, UDPSocket>)
     {
@@ -650,7 +680,7 @@ void Command::launchClient(std::shared_ptr<T>& client)
             }
         };
         client->toReceive();
-        client->toConnect(std::string{View::udpHost}, View::udpPort);
+        client->toConnect(VIEW_UDP_HOST, VIEW_UDP_PORT);
     }
 }
 

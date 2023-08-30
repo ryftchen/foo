@@ -157,7 +157,7 @@ private:
     //! @param server - target server
     static void toAccept(TCPServer* server);
     //! @brief Retry times for listening.
-    static constexpr int retryTimes{20};
+    static constexpr int retryTimes{10};
 };
 
 //! @brief UDP socket.

@@ -10,7 +10,7 @@ function _foo()
     _expand || return
 
     case ${prev} in
-    -@(h|-help|v|-version|c|-console))
+    -@(h|-help|v|-version|r|-reconfig|c|-console))
         return
         ;;
     app-algo)
@@ -41,7 +41,7 @@ function _foo()
 
     case ${curr} in
     *)
-        mapfile -t COMPREPLY < <(compgen -W "-h --help -v --version -c --console \
+        mapfile -t COMPREPLY < <(compgen -W "-h --help -v --version -r --reconfig -c --console \
 app-algo app-dp app-ds app-num" -- "${curr}")
         ;;
     esac

@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include "config.hpp"
 #ifndef __PRECOMPILED_HEADER
 #include <map>
 #else
@@ -15,11 +16,25 @@
 #include "utility/include/socket.hpp"
 
 //! @brief Try to start viewing.
-#define VIEW_WAIT_TO_START application::view::View::getInstance().waitToStart()
+#define VIEW_WAIT_TO_START    \
+    if (CONFIG_ACTIVE_HELPER) \
+    application::view::View::getInstance().waitToStart()
 //! @brief Try to stop viewing.
-#define VIEW_WAIT_TO_STOP application::view::View::getInstance().waitToStop()
+#define VIEW_WAIT_TO_STOP     \
+    if (CONFIG_ACTIVE_HELPER) \
+    application::view::View::getInstance().waitToStop()
 //! @brief Try to restart viewing.
-#define VIEW_REQUEST_TO_RESTART application::view::View::getInstance().requestToRestart()
+#define VIEW_REQUEST_TO_RESTART \
+    if (CONFIG_ACTIVE_HELPER)   \
+    application::view::View::getInstance().requestToRestart()
+//! @brief Get the TCP host address of the viewer.
+#define VIEW_TCP_HOST application::view::View::getInstance().getViewerTCPHost()
+//! @brief Get the TCP port number of the viewer.
+#define VIEW_TCP_PORT application::view::View::getInstance().getViewerTCPPort()
+//! @brief Get the UDP host address of the viewer.
+#define VIEW_UDP_HOST application::view::View::getInstance().getViewerUDPHost()
+//! @brief Get the UDP port number of the viewer.
+#define VIEW_UDP_PORT application::view::View::getInstance().getViewerUDPPort()
 //! @brief Get all viewer options.
 #define VIEW_OPTIONS application::view::View::getInstance().getViewerOptions()
 
@@ -60,9 +75,7 @@ public:
     //! @param buf - TVL packet buffer
     //! @param len - buffer length
     Packet(char* buf, const std::uint32_t len) :
-        buffer(buf), length(len), tail(buffer + len), writer(buffer), reader(buffer)
-    {
-    }
+        buffer(buf), length(len), tail(buffer + len), writer(buffer), reader(buffer){};
     //! @brief Destroy the Packet object.
     virtual ~Packet() = default;
 
@@ -169,19 +182,23 @@ public:
     //! @return member corresponding to the specific type
     template <typename T>
     static auto get(const OptionTuple& tuple);
+    //! @brief Get the TCP server host address.
+    //! @return TCP server host address
+    inline std::string getViewerTCPHost() const;
+    //! @brief Get the TCP server port number.
+    //! @return TCP server port number
+    inline std::uint16_t getViewerTCPPort() const;
+    //! @brief Get the UDP server host address.
+    //! @return UDP server host address
+    inline std::string getViewerUDPHost() const;
+    //! @brief Get the UDP server port number.
+    //! @return UDP server port number
+    inline std::uint16_t getViewerUDPPort() const;
     //! @brief Parse the TLV packet.
     //! @param buffer - TLV packet buffer
     //! @param length - buffer length
     //! @return value of TLV after parsing
     static tlv::TLVValue parseTLVPacket(char* buffer, const int length);
-    //! @brief TCP server host address.
-    static constexpr std::string_view tcpHost{"localhost"};
-    //! @brief TCP server port number.
-    static constexpr std::uint16_t tcpPort{61501};
-    //! @brief UDP server host address.
-    static constexpr std::string_view udpHost{"localhost"};
-    //! @brief UDP server port number.
-    static constexpr std::uint16_t udpPort{61502};
 
     //! @brief Maximum size of the shared memory.
     static constexpr std::uint32_t maxShmSize{8192 * 10};
@@ -197,7 +214,12 @@ public:
 private:
     //! @brief Construct a new View object.
     //! @param initState - initialization value of state
-    explicit View(const StateType initState = State::init) noexcept : FSM(initState){};
+    explicit View(const StateType initState = State::init) noexcept :
+        tcpHost(CONFIG_VIEWER_TCP_HOST),
+        tcpPort(CONFIG_VIEWER_TCP_PORT),
+        udpHost(CONFIG_VIEWER_UDP_HOST),
+        udpPort(CONFIG_VIEWER_UDP_PORT),
+        FSM(initState){};
 
     // clang-format off
     //! @brief Mapping table of all viewer options.
@@ -210,6 +232,14 @@ private:
     };
     // clang-format on
 
+    //! @brief TCP server host address.
+    const std::string tcpHost{"localhost"};
+    //! @brief TCP server port number.
+    const std::uint16_t tcpPort{61501};
+    //! @brief UDP server host address.
+    const std::string udpHost{"localhost"};
+    //! @brief UDP server port number.
+    const std::uint16_t udpPort{61502};
     //! @brief Build the TLV packet to stop connection.
     //! @param buffer - TLV packet buffer
     //! @return buffer length
@@ -247,7 +277,7 @@ private:
     static constexpr std::uint32_t maxViewNumOfLines{20};
 
     //! @brief Maximum number of times to wait for the viewer to change to the target state.
-    static constexpr std::uint16_t maxTimesOfWaitViewer{20};
+    static constexpr std::uint16_t maxTimesOfWaitViewer{10};
     //! @brief Time interval (ms) to wait for the viewer to change to the target state.
     static constexpr std::uint16_t intervalOfWaitViewer{10};
     //! @brief Maximum length of the message.
@@ -332,5 +362,25 @@ auto View::get(const OptionTuple& tuple)
     {
         return std::get<1>(tuple);
     }
+}
+
+inline std::string View::getViewerTCPHost() const
+{
+    return tcpHost;
+}
+
+inline std::uint16_t View::getViewerTCPPort() const
+{
+    return tcpPort;
+}
+
+inline std::string View::getViewerUDPHost() const
+{
+    return udpHost;
+}
+
+inline std::uint16_t View::getViewerUDPPort() const
+{
+    return udpPort;
 }
 } // namespace application::view

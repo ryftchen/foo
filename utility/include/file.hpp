@@ -104,6 +104,6 @@ extern void closeFile(std::ifstream& ifs);
 extern void closeFile(std::ofstream& ofs);
 extern std::list<std::string> getFileContents(
     const std::string& filename,
-    const bool reverse,
-    const std::uint32_t totalRows);
+    const bool reverse = false,
+    const std::uint32_t totalRows = 100);
 } // namespace utility::file

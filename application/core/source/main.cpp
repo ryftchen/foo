@@ -6,6 +6,7 @@
 
 #include "main.hpp"
 #include "command.hpp"
+#include "config.hpp"
 #include "log.hpp"
 #include "view.hpp"
 #ifndef __PRECOMPILED_HEADER
@@ -26,19 +27,23 @@ static int run(int argc, char* argv[])
 {
     try
     {
-        using application::command::Command;
-        using application::log::Log;
-        using application::view::View;
+        using command::Command;
+        using log::Log;
+        using view::View;
 
+        config::initializeConfiguration();
         constexpr std::uint32_t childThdNum = 3;
         auto threads = std::make_shared<utility::thread::Thread>(childThdNum);
         threads->enqueue("commander", &Command::runCommander, &Command::getInstance(), argc, argv);
-        threads->enqueue("logger", &Log::runLogger, &Log::getInstance());
-        threads->enqueue("viewer", &View::runViewer, &View::getInstance());
+        if (CONFIG_ACTIVE_HELPER)
+        {
+            threads->enqueue("logger", &Log::runLogger, &Log::getInstance());
+            threads->enqueue("viewer", &View::runViewer, &View::getInstance());
+        }
     }
     catch (const std::exception& error)
     {
-        std::cerr << application::getExecutableName() << ": " << error.what() << std::endl;
+        std::cerr << getExecutableName() << ": " << error.what() << std::endl;
         return EXIT_FAILURE;
     }
 

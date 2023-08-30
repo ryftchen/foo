@@ -6,18 +6,26 @@
 
 #include "config.hpp"
 #ifndef __PRECOMPILED_HEADER
+#include <filesystem>
 #include <fstream>
 #include <sstream>
 #else
 #include "application/pch/precompiled_header.hpp"
 #endif // __PRECOMPILED_HEADER
+#include "utility/include/file.hpp"
 
-namespace config
+namespace application::config
 {
 Config::Config(const std::string& filename, const char delim, const char commentDelim) :
     delimiter(delim), commentDelimiter(commentDelim)
 {
     parseFile(filename);
+}
+
+Config& Config::getInstance()
+{
+    static Config config{};
+    return config;
 }
 
 std::string Config::operator[](const std::string& key)
@@ -93,11 +101,11 @@ T Config::getNumericValue(const std::string& key)
     }
     catch (const std::invalid_argument& error)
     {
-        throw std::runtime_error("Numeric config value is malformed: value for key '" + key + "' cannot be converted.");
+        throw std::runtime_error("Numeric config value is malformed, value for key '" + key + "' cannot be converted.");
     }
     catch (const std::out_of_range& error)
     {
-        throw std::runtime_error("Numeric config value is malformed: value for key '" + key + "' is out of range.");
+        throw std::runtime_error("Numeric config value is malformed, value for key '" + key + "' is out of range.");
     }
 
     return value;
@@ -110,19 +118,21 @@ bool Config::elementExists(const std::string& key) const
 
 void Config::parseFile(const std::string& filename)
 {
-    if (!std::ifstream(filename))
+    if (!std::filesystem::exists(filename))
     {
-        throw std::runtime_error("Config file is missing: " + filename);
+        throw std::runtime_error("Config file " + filename + " is missing.");
     }
 
+    namespace file = utility::file;
+    std::ifstream ifs = utility::file::openFile(filename);
+    file::fdLock(ifs, file::LockMode::read);
     std::string line;
-    std::ifstream ifs;
-    ifs.open(filename, std::ifstream::out | std::ifstream::app);
     while (std::getline(ifs, line))
     {
         parseLine(line);
     }
-    ifs.close();
+    file::fdUnlock(ifs);
+    utility::file::closeFile(ifs);
 }
 
 void Config::parseLine(const std::string& line)
@@ -153,12 +163,12 @@ void Config::parseLine(const std::string& line)
         }
         else
         {
-            throw std::runtime_error("Config file is malformed: '" + key + "' has multiple occurrences.");
+            throw std::runtime_error("Config file is malformed, '" + key + "' has multiple occurrences.");
         }
     }
     else
     {
-        throw std::runtime_error("Config file is malformed: line " + line);
+        throw std::runtime_error("Config file is malformed, line " + line);
     }
 }
 
@@ -171,7 +181,11 @@ bool Config::isFormatValid(const std::string& line) const
 bool Config::isComment(const std::string& line) const
 {
     const auto tempLine = trimLine(line);
-    return (commentDelimiter == tempLine.at(0));
+    if (tempLine.size())
+    {
+        return (commentDelimiter == tempLine.at(0));
+    }
+    return true;
 }
 
 std::string Config::trimLine(const std::string& line)
@@ -185,4 +199,21 @@ std::string Config::trimLine(const std::string& line)
     const std::size_t lastChar = line.find_last_not_of(' ');
     return line.substr(firstChar, (lastChar - firstChar + 1));
 }
-} // namespace config
+
+//! @brief Initialize the configuration.
+//! @param filename - configuration file
+void initializeConfiguration(const std::string& filename)
+{
+    if (!std::filesystem::exists(filename))
+    {
+        namespace file = utility::file;
+        std::ofstream ofs = file::openFile(filename, false);
+        file::fdLock(ofs, file::LockMode::write);
+        ofs << defaultConfiguration;
+        file::fdUnlock(ofs);
+        file::closeFile(ofs);
+    }
+
+    Config::getInstance();
+}
+} // namespace application::config
