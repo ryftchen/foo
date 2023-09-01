@@ -8,7 +8,6 @@
 #ifndef __PRECOMPILED_HEADER
 #include <filesystem>
 #include <fstream>
-#include <sstream>
 #else
 #include "application/pch/precompiled_header.hpp"
 #endif // __PRECOMPILED_HEADER

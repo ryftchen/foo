@@ -166,8 +166,8 @@ class Task:
             if self.options["tst"]:
                 Output.exit_with_error("No support for the --check option during testing.")
             if "cov" in args.check:
-                stdout, _, _ = common.execute_command("command -v llvm-profdata-12 llvm-cov-12 2>&1")
-                if stdout.find("llvm-profdata-12") != -1 and stdout.find("llvm-cov-12") != -1:
+                stdout, _, _ = common.execute_command("command -v llvm-profdata-15 llvm-cov-15 2>&1")
+                if stdout.find("llvm-profdata-15") != -1 and stdout.find("llvm-cov-15") != -1:
                     os.environ["FOO_CHK_COV"] = "on"
                     self.options["chk_cov"] = True
                     common.execute_command(f"rm -rf {self.cache_dir}/coverage")
@@ -327,17 +327,17 @@ class Task:
     def check_coverage(self):
         common.execute_command(f"mv {os.environ['HOME']}/.foo/foo_chk_cov_*.profraw {self.cache_dir}/")
         common.execute_command(
-            f"llvm-profdata-12 merge -sparse {self.cache_dir}/foo_chk_cov_*.profraw \
+            f"llvm-profdata-15 merge -sparse {self.cache_dir}/foo_chk_cov_*.profraw \
 -o {self.cache_dir}/foo_chk_cov.profdata"
         )
         common.execute_command(
-            f"llvm-cov-12 show -instr-profile={self.cache_dir}/foo_chk_cov.profdata -show-branches=percent \
+            f"llvm-cov-15 show -instr-profile={self.cache_dir}/foo_chk_cov.profdata -show-branches=percent \
 -show-expansions -show-regions -show-line-counts-or-regions -format=html -output-dir={self.cache_dir}/coverage \
 -Xdemangler=c++filt -object={self.app_bin_dir}/{self.app_bin_cmd} \
 {' '.join([f'-object={self.lib_dir}/{lib}' for lib in self.lib_list])} 2>&1"
         )
         stdout, _, _ = common.execute_command(
-            f"llvm-cov-12 report -instr-profile={self.cache_dir}/foo_chk_cov.profdata \
+            f"llvm-cov-15 report -instr-profile={self.cache_dir}/foo_chk_cov.profdata \
 -object={self.app_bin_dir}/{self.app_bin_cmd} {' '.join([f'-object={self.lib_dir}/{lib}' for lib in self.lib_list])} \
 2>&1"
         )

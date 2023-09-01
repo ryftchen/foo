@@ -33,7 +33,7 @@ The **Foo** is a personal roadmap for learning programming. Its main purpose is 
 
     ```bash
     docker-compose -f foo/docker/docker-compose.yml up -d
-    docker exec -it -w /workspace/foo foo_dev /bin/bash
+    docker exec -it -w /workspaces/foo foo_dev /bin/bash
     ```
 
     For environment dependencies and container construction, see the [Compose file](https://github.com/ryftchen/foo/blob/master/docker/docker-compose.yml).

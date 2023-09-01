@@ -489,7 +489,8 @@ void runIntegralTasks(const std::vector<std::string>& targets)
             case 0:
                 resultFunctor(std::get<0>(expression), range);
                 break;
-                [[unlikely]] default : break;
+            [[unlikely]] default:
+                break;
         }
     }
 

@@ -6,7 +6,6 @@
 
 #include "socket.hpp"
 #include <netdb.h>
-#include <unistd.h>
 #include <cstring>
 
 namespace utility::socket

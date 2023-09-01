@@ -5,6 +5,7 @@ try:
     import fcntl
     import signal
     import sys
+    import shutil
     import subprocess
     import time
 except ImportError as err:
@@ -145,13 +146,13 @@ class ProgressBar:
 
     @staticmethod
     def tput_lines():
-        stdout, _, _ = execute_command("tput lines")
-        return int(stdout)
+        _, lines = shutil.get_terminal_size()
+        return int(lines)
 
     @staticmethod
     def tput_cols():
-        stdout, _, _ = execute_command("tput cols")
-        return int(stdout)
+        cols, _ = shutil.get_terminal_size()
+        return int(cols)
 
     @staticmethod
     def tput():

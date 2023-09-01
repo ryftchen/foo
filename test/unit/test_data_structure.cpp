@@ -41,23 +41,20 @@ public:
 };
 
 //! @brief Test for the linked list instance in the structure of linear.
-TEST_F(LinearTestBase, linkedListInstance) // NOLINT(cert-err58-cpp)
+TEST_F(LinearTestBase, linkedListInstance)
 {
-    // NOLINTNEXTLINE(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
     ASSERT_NO_THROW(app_ds::linear::Linear::linkedList());
 }
 
 //! @brief Test for the stack instance in the structure of linear.
-TEST_F(LinearTestBase, stackInstance) // NOLINT(cert-err58-cpp)
+TEST_F(LinearTestBase, stackInstance)
 {
-    // NOLINTNEXTLINE(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
     ASSERT_NO_THROW(app_ds::linear::Linear::stack());
 }
 
 //! @brief Test for the queue instance in the structure of linear.
-TEST_F(LinearTestBase, queueInstance) // NOLINT(cert-err58-cpp)
+TEST_F(LinearTestBase, queueInstance)
 {
-    // NOLINTNEXTLINE(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
     ASSERT_NO_THROW(app_ds::linear::Linear::queue());
 }
 
@@ -81,23 +78,20 @@ public:
 };
 
 //! @brief Test for the binary search instance in the structure of tree.
-TEST_F(TreeTestBase, bsInstance) // NOLINT(cert-err58-cpp)
+TEST_F(TreeTestBase, bsInstance)
 {
-    // NOLINTNEXTLINE(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
     ASSERT_NO_THROW(app_ds::tree::Tree::bs());
 }
 
 //! @brief Test for the Adelson-Velsky-Landis instance in the structure of tree.
-TEST_F(TreeTestBase, avlInstance) // NOLINT(cert-err58-cpp)
+TEST_F(TreeTestBase, avlInstance)
 {
-    // NOLINTNEXTLINE(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
     ASSERT_NO_THROW(app_ds::tree::Tree::avl());
 }
 
 //! @brief Test for the splay instance in the structure of tree.
-TEST_F(TreeTestBase, splayInstance) // NOLINT(cert-err58-cpp)
+TEST_F(TreeTestBase, splayInstance)
 {
-    // NOLINTNEXTLINE(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
     ASSERT_NO_THROW(app_ds::tree::Tree::splay());
 }
 } // namespace test::tst_ds

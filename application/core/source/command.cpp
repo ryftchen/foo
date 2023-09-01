@@ -8,7 +8,7 @@
 #include "log.hpp"
 #include "view.hpp"
 #ifndef __PRECOMPILED_HEADER
-#include <unistd.h>
+#include <iterator>
 #else
 #include "application/pch/precompiled_header.hpp"
 #endif // __PRECOMPILED_HEADER
@@ -337,15 +337,15 @@ void Command::validateBasicTask()
 
 void Command::validateRegularTask()
 {
-    for ([[maybe_unused]] const auto& [taskCategory, taskCategoryMap] : regularTaskDispatcher)
+    for ([[maybe_unused]] const auto& [subCLIName, subCLIMap] : regularTaskDispatcher)
     {
-        if (!mainCLI.isSubCommandUsed(taskCategory))
+        if (!mainCLI.isSubCommandUsed(subCLIName))
         {
             continue;
         }
         checkForExcessArguments();
 
-        const auto& subCLI = mainCLI.at<utility::argument::Argument>(taskCategory);
+        const auto& subCLI = mainCLI.at<utility::argument::Argument>(subCLIName);
         if (!subCLI)
         {
             dispatchedTask.regularTask.helpOnly = true;
@@ -356,18 +356,18 @@ void Command::validateRegularTask()
         {
             dispatchedTask.regularTask.helpOnly = true;
         }
-        for ([[maybe_unused]] const auto& [taskType, taskTypeTuple] : taskCategoryMap)
+        for ([[maybe_unused]] const auto& [taskCategory, taskCategoryTuple] : subCLIMap)
         {
-            if (!subCLI.isUsed(taskType))
+            if (!subCLI.isUsed(taskCategory))
             {
                 continue;
             }
             checkForExcessArguments();
 
-            const auto tasks = subCLI.get<std::vector<std::string>>(taskType);
+            const auto tasks = subCLI.get<std::vector<std::string>>(taskCategory);
             for (const auto& task : tasks)
             {
-                (*get<UpdateTaskFunctor>(get<TaskFunctorTuple>(taskTypeTuple)))(task);
+                (*get<UpdateTaskFunctor>(get<TaskFunctorTuple>(taskCategoryTuple)))(task);
             }
         }
     }
@@ -435,11 +435,11 @@ void Command::dispatchTask()
                     break;
             }
 
-            for ([[maybe_unused]] const auto& [taskType, taskTypeTuple] :
+            for ([[maybe_unused]] const auto& [taskCategory, taskCategoryTuple] :
                  std::next(regularTaskDispatcher.cbegin(), RegularTask::Category(i))->second)
             {
-                (*get<PerformTaskFunctor>(get<TaskFunctorTuple>(taskTypeTuple)))(
-                    get<TargetTaskContainer>(taskTypeTuple));
+                (*get<PerformTaskFunctor>(get<TaskFunctorTuple>(taskCategoryTuple)))(
+                    get<TargetTaskContainer>(taskCategoryTuple));
             }
         }
     }
@@ -480,7 +480,8 @@ void Command::showHelpMessage() const
     std::cout << mainCLI.help().str() << std::flush;
 }
 
-void Command::regenerateConfiguration() const // NOLINT(readability-convert-member-functions-to-static)
+// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
+void Command::regenerateConfiguration() const
 {
     namespace file = utility::file;
     std::ofstream ofs = file::openFile(std::string{config::defaultConfigFile}, true);
@@ -521,13 +522,17 @@ void Command::enterConsoleMode() const
 
         auto tcpClient = std::make_shared<TCPSocket>();
         launchClient<TCPSocket>(tcpClient);
+        std::string user;
+        if (nullptr != std::getenv("USER"))
+        {
+            user = std::getenv("USER");
+        }
         char hostName[HOST_NAME_MAX] = {'\0'};
         if (::gethostname(hostName, HOST_NAME_MAX))
         {
-            throw std::runtime_error("Host name could not be obtained.");
+            std::memset(hostName, 0, HOST_NAME_MAX);
         }
-        const std::string greeting = std::string{(nullptr != std::getenv("USER")) ? std::getenv("USER") : "root"} + '@'
-            + std::string{hostName} + " foo > ";
+        const std::string greeting = user + '@' + std::string{hostName} + " foo > ";
         Console console(greeting);
         registerOnConsole<TCPSocket>(console, tcpClient);
 
@@ -567,7 +572,6 @@ void Command::registerOnConsole(utility::console::Console& console, std::shared_
             int retVal = Console::RetCode::success;
             try
             {
-                std::cout << utility::common::executeCommand("clear") << std::endl;
                 LOG_REQUEST_TO_RESTART;
                 LOG_WAIT_TO_START;
                 utility::time::millisecondLevelSleep(maxLatency);

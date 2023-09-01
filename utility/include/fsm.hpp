@@ -7,7 +7,6 @@
 #pragma once
 
 #include <atomic>
-#include <stdexcept>
 
 //! @brief Finite-state-machine-related functions in the utility module.
 namespace utility::fsm

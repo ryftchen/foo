@@ -17,7 +17,7 @@
 #include <dlfcn.h>
 #include <execinfo.h>
 #include <mpfr.h>
-#include <unistd.h>
+#include <algorithm>
 #include <array>
 #include <bitset>
 // #define NDEBUG
@@ -29,11 +29,11 @@
 #include <fstream>
 #include <iomanip>
 #include <iostream>
+#include <iterator>
 #include <map>
 #include <memory>
 #include <queue>
 #include <regex>
-#include <sstream>
 #include <string>
 #include <tuple>
 #include <vector>

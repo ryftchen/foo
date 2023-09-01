@@ -11,7 +11,6 @@
 #include <cmath>
 #include <iostream>
 #include <tuple>
-#include <vector>
 #else
 #include "application/pch/precompiled_header.hpp"
 #endif // __PRECOMPILED_HEADER
@@ -361,10 +360,8 @@ public:
     //! @param bufferSize - size of buffer
     //! @return buffer after splicing
     template <typename T>
-    requires std::is_integral<T>::value static char* spliceAllIntegers(
-        const std::vector<T>& container,
-        char* const buffer,
-        const std::uint32_t bufferSize)
+    requires std::is_integral<T>::value
+    static char* spliceAllIntegers(const std::vector<T>& container, char* const buffer, const std::uint32_t bufferSize)
     {
         std::uint32_t align = 0;
         for (std::uint32_t i = 0; i < container.size(); ++i)
@@ -558,10 +555,8 @@ public:
     //! @param bufferSize - size of buffer
     //! @return buffer after splicing
     template <typename T>
-    requires std::is_integral<T>::value static char* spliceAllIntegers(
-        const std::vector<T>& container,
-        char* const buffer,
-        const std::uint32_t bufferSize)
+    requires std::is_integral<T>::value
+    static char* spliceAllIntegers(const std::vector<T>& container, char* const buffer, const std::uint32_t bufferSize)
     {
         std::uint32_t align = 0;
         for (std::uint32_t i = 0; i < container.size(); ++i)

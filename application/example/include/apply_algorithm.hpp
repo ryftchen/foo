@@ -8,6 +8,7 @@
 
 #ifndef __PRECOMPILED_HEADER
 #include <mpfr.h>
+#include <algorithm>
 #include <bitset>
 #include <cassert>
 #include <cstring>
@@ -691,7 +692,8 @@ public:
     //! @param bufferSize - size of buffer
     //! @return buffer after splicing
     template <typename V>
-    requires(isNumber<V>()) static char* spliceAll(
+    requires(isNumber<V>())
+    static char* spliceAll(
         const T* const restrict array,
         const std::uint32_t length,
         char* const restrict buffer,
@@ -760,11 +762,8 @@ private:
     //! @param left - the left boundary of the ordered array
     //! @param right - the left right of the ordered array
     template <typename V>
-    requires std::is_integral<V>::value static void setOrderedArray(
-        T array[],
-        const std::uint32_t length,
-        const T left,
-        const T right)
+    requires std::is_integral<V>::value
+    static void setOrderedArray(T array[], const std::uint32_t length, const T left, const T right)
     {
         std::mt19937 engine{std::random_device{}()};
         std::uniform_int_distribution<int> dist(left, right);
@@ -789,11 +788,8 @@ private:
     //! @param left - the left boundary of the ordered array
     //! @param right - the left right of the ordered array
     template <typename V>
-    requires std::is_floating_point<V>::value static void setOrderedArray(
-        T array[],
-        const std::uint32_t length,
-        const T left,
-        const T right)
+    requires std::is_floating_point<V>::value
+    static void setOrderedArray(T array[], const std::uint32_t length, const T left, const T right)
     {
         std::mt19937 engine{std::random_device{}()};
         std::uniform_real_distribution<double> dist(left, right);
@@ -929,7 +925,8 @@ public:
     //! @param bufferSize - size of buffer
     //! @return buffer after splicing
     template <typename V>
-    requires(isNumber<V>()) static char* spliceAll(
+    requires(isNumber<V>())
+    static char* spliceAll(
         const T* const restrict array,
         const std::uint32_t length,
         char* const restrict buffer,
@@ -996,11 +993,8 @@ private:
     //! @param left - the left boundary of the random array
     //! @param right - the left right of the random array
     template <typename V>
-    requires std::is_integral<V>::value static void setRandomArray(
-        T array[],
-        const std::uint32_t length,
-        const T left,
-        const T right)
+    requires std::is_integral<V>::value
+    static void setRandomArray(T array[], const std::uint32_t length, const T left, const T right)
     {
         std::mt19937 engine{std::random_device{}()};
         std::uniform_int_distribution<int> dist(left, right);
@@ -1024,11 +1018,8 @@ private:
     //! @param left - the left boundary of the random array
     //! @param right - the left right of the random array
     template <typename V>
-    requires std::is_floating_point<V>::value static void setRandomArray(
-        T array[],
-        const std::uint32_t length,
-        const T left,
-        const T right)
+    requires std::is_floating_point<V>::value
+    static void setRandomArray(T array[], const std::uint32_t length, const T left, const T right)
     {
         std::mt19937 engine{std::random_device{}()};
         std::uniform_real_distribution<double> dist(left, right);
