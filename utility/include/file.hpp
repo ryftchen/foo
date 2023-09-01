@@ -8,6 +8,7 @@
 
 #include <ext/stdio_filebuf.h>
 #include <sys/file.h>
+#include <condition_variable>
 #include <list>
 #include <shared_mutex>
 
@@ -77,7 +78,7 @@ private:
 template <typename T>
 void fdLock(T& file, const LockMode mode)
 {
-    const int fd = static_cast<::__gnu_cxx::stdio_filebuf<char>*const>(file.rdbuf())->fd(),
+    const int fd = static_cast<::__gnu_cxx::stdio_filebuf<char>* const>(file.rdbuf())->fd(),
               operate = (LockMode::read == mode ? LOCK_SH : LOCK_EX) | LOCK_NB;
     if (::flock(fd, operate))
     {

@@ -37,25 +37,25 @@ std::string base64Encode(const std::string& data)
     constexpr std::string_view base64Chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
                                              "abcdefghijklmnopqrstuvwxyz"
                                              "0123456789+/";
-
+    // NOLINTBEGIN(readability-magic-numbers)
     for (const unsigned char c : data)
     {
         const auto numVal = static_cast<unsigned int>(c);
-        offset = 16 - counter % 3 * 8; // NOLINT(readability-magic-numbers)
+        offset = 16 - counter % 3 * 8;
         bitStream += numVal << offset;
         switch (offset)
         {
             case 16:
-                encoded += base64Chars.at(bitStream >> 18 & 0x3F); // NOLINT(readability-magic-numbers)
+                encoded += base64Chars.at(bitStream >> 18 & 0x3F);
                 break;
             case 8:
-                encoded += base64Chars.at(bitStream >> 12 & 0x3F); // NOLINT(readability-magic-numbers)
+                encoded += base64Chars.at(bitStream >> 12 & 0x3F);
                 break;
             case 0:
-                if (3 != counter) // NOLINT(readability-magic-numbers)
+                if (3 != counter)
                 {
-                    encoded += base64Chars.at(bitStream >> 6 & 0x3F); // NOLINT(readability-magic-numbers)
-                    encoded += base64Chars.at(bitStream & 0x3F); // NOLINT(readability-magic-numbers)
+                    encoded += base64Chars.at(bitStream >> 6 & 0x3F);
+                    encoded += base64Chars.at(bitStream & 0x3F);
                     bitStream = 0;
                 }
                 break;
@@ -68,16 +68,17 @@ std::string base64Encode(const std::string& data)
     switch (offset)
     {
         case 16:
-            encoded += base64Chars.at(bitStream >> 12 & 0x3F); // NOLINT(readability-magic-numbers)
+            encoded += base64Chars.at(bitStream >> 12 & 0x3F);
             encoded += "==";
             break;
         case 8:
-            encoded += base64Chars.at(bitStream >> 6 & 0x3F); // NOLINT(readability-magic-numbers)
+            encoded += base64Chars.at(bitStream >> 6 & 0x3F);
             encoded += '=';
             break;
         default:
             break;
     }
+    // NOLINTEND(readability-magic-numbers)
     return encoded;
 }
 
@@ -92,26 +93,26 @@ std::string base64Decode(const std::string& data)
     constexpr std::string_view base64Chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
                                              "abcdefghijklmnopqrstuvwxyz"
                                              "0123456789+/";
-
+    // NOLINTBEGIN(readability-magic-numbers)
     for (const unsigned char c : data)
     {
         const auto numVal = base64Chars.find(c);
         if (std::string::npos != numVal)
         {
-            offset = 18 - counter % 4 * 6; // NOLINT(readability-magic-numbers)
+            offset = 18 - counter % 4 * 6;
             bitStream += numVal << offset;
             switch (offset)
             {
-                case 12: // NOLINT(readability-magic-numbers)
-                    decoded += static_cast<char>(bitStream >> 16 & 0xFF); // NOLINT(readability-magic-numbers)
+                case 12:
+                    decoded += static_cast<char>(bitStream >> 16 & 0xFF);
                     break;
-                case 6: // NOLINT(readability-magic-numbers)
-                    decoded += static_cast<char>(bitStream >> 8 & 0xFF); // NOLINT(readability-magic-numbers)
+                case 6:
+                    decoded += static_cast<char>(bitStream >> 8 & 0xFF);
                     break;
                 case 0:
                     if (4 != counter)
                     {
-                        decoded += static_cast<char>(bitStream & 0xFF); // NOLINT(readability-magic-numbers)
+                        decoded += static_cast<char>(bitStream & 0xFF);
                         bitStream = 0;
                     }
                     break;
@@ -125,7 +126,7 @@ std::string base64Decode(const std::string& data)
         }
         ++counter;
     }
-
+    // NOLINTEND(readability-magic-numbers)
     return decoded;
 }
 

@@ -6,8 +6,7 @@
 
 #include "argument.hpp"
 #include <iomanip>
-#include <iterator>
-#include <numeric>
+#include <utility>
 
 namespace utility::argument
 {
@@ -73,10 +72,10 @@ Register& Register::argsNum(const ArgsNumPattern pattern)
             argsNumRange = ArgsNumRange{0, 1};
             break;
         case ArgsNumPattern::any:
-            argsNumRange = ArgsNumRange{0, (std::numeric_limits<std::size_t>::max)()};
+            argsNumRange = ArgsNumRange{0, std::numeric_limits<std::size_t>::max()};
             break;
         case ArgsNumPattern::atLeastOne:
-            argsNumRange = ArgsNumRange{1, (std::numeric_limits<std::size_t>::max)()};
+            argsNumRange = ArgsNumRange{1, std::numeric_limits<std::size_t>::max()};
             break;
         default:
             break;
@@ -108,7 +107,7 @@ void Register::validate() const
 
 std::string Register::getInlineUsage() const
 {
-    std::stringstream usage;
+    std::ostringstream usage;
     std::string longestName = names.front();
     for (const auto& str : names)
     {
@@ -168,7 +167,7 @@ std::size_t Register::getArgumentsLength() const
 
 void Register::throwArgsNumRangeValidationException() const
 {
-    std::stringstream stream;
+    std::ostringstream stream;
     if (!usedName.empty())
     {
         stream << usedName << ": ";
@@ -195,14 +194,14 @@ void Register::throwArgsNumRangeValidationException() const
 
 void Register::throwRequiredArgNotUsedException() const
 {
-    std::stringstream stream;
+    std::ostringstream stream;
     stream << names.front() << ": required.";
     throw std::runtime_error(stream.str());
 }
 
 void Register::throwRequiredArgNoValueProvidedException() const
 {
-    std::stringstream stream;
+    std::ostringstream stream;
     stream << usedName << ": no value provided.";
     throw std::runtime_error(stream.str());
 }
@@ -246,7 +245,7 @@ bool Register::checkIfNonOptional(std::string_view name, const std::string_view 
 //! @return reference of output stream object
 std::ostream& operator<<(std::ostream& os, const Register& reg)
 {
-    std::stringstream nameStream;
+    std::ostringstream nameStream;
     if (reg.checkIfNonOptional(reg.names.front(), reg.prefixChars))
     {
         if (!reg.metavarContent.empty())
@@ -433,16 +432,16 @@ Register& Argument::operator[](const std::string_view argName) const
     throw std::logic_error("No such argument: " + std::string(argName) + '.');
 }
 
-std::stringstream Argument::help() const
+std::ostringstream Argument::help() const
 {
-    std::stringstream out;
+    std::ostringstream out;
     out << *this;
     return out;
 }
 
 std::string Argument::usage() const
 {
-    std::stringstream stream;
+    std::ostringstream stream;
     stream << "usage: " << ((parserPath.find(' ' + title) == std::string::npos) ? title : parserPath);
 
     for (const auto& argument : optionalArguments)

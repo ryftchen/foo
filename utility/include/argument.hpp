@@ -6,10 +6,12 @@
 
 #pragma once
 
-#include <algorithm>
 #include <any>
+#include <functional>
 #include <list>
 #include <map>
+#include <numeric>
+#include <optional>
 #include <sstream>
 #include <variant>
 
@@ -89,7 +91,7 @@ std::string represent(const T& val)
     }
     else if constexpr (isContainer<T>)
     {
-        std::stringstream out;
+        std::ostringstream out;
         out << '{';
         const auto size = val.size();
         if (size > 1)
@@ -123,7 +125,7 @@ std::string represent(const T& val)
     }
     else if constexpr (isStreamable<T>)
     {
-        std::stringstream out;
+        std::ostringstream out;
         out << val;
         return out.str();
     }
@@ -180,7 +182,7 @@ std::string join(StrIter first, StrIter last, const std::string& separator)
     {
         return "";
     }
-    std::stringstream value;
+    std::ostringstream value;
     value << *first;
     ++first;
     while (first != last)
@@ -379,7 +381,7 @@ private:
         [[nodiscard]] bool isExact() const { return (min == max); }
         //! @brief Check that the range's maximum is not greater than the type's maximum.
         //! @return be not greater or greater
-        [[nodiscard]] bool isRightBounded() const { return max < (std::numeric_limits<std::size_t>::max)(); }
+        [[nodiscard]] bool isRightBounded() const { return (max < std::numeric_limits<std::size_t>::max()); }
         //! @brief Get the minimum of the range.
         //! @return minimum of range
         [[nodiscard]] std::size_t getMin() const { return min; }
@@ -401,7 +403,7 @@ private:
             }
             else
             {
-                if ((std::numeric_limits<std::size_t>::max)() == range.max)
+                if (std::numeric_limits<std::size_t>::max() == range.max)
                 {
                     os << "[args: " << range.min << " or more] ";
                 }
@@ -755,7 +757,7 @@ public:
     Register& operator[](const std::string_view argName) const;
     //! @brief Get the help message content.
     //! @return help message content
-    [[nodiscard]] std::stringstream help() const;
+    [[nodiscard]] std::ostringstream help() const;
     //! @brief Get the usage content.
     //! @return usage content
     [[nodiscard]] std::string usage() const;

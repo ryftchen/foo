@@ -56,7 +56,7 @@ public:
 std::shared_ptr<app_algo::match::TargetBuilder> MatchTestBase::builder = nullptr;
 
 //! @brief Test for the Rabin-Karp method in the solution of match.
-TEST_F(MatchTestBase, rkMethod) // NOLINT(cert-err58-cpp)
+TEST_F(MatchTestBase, rkMethod)
 {
     ASSERT_EQ(
         49702,
@@ -68,7 +68,7 @@ TEST_F(MatchTestBase, rkMethod) // NOLINT(cert-err58-cpp)
 }
 
 //! @brief Test for the Knuth-Morris-Pratt method in the solution of match.
-TEST_F(MatchTestBase, kmpMethod) // NOLINT(cert-err58-cpp)
+TEST_F(MatchTestBase, kmpMethod)
 {
     ASSERT_EQ(
         49702,
@@ -80,7 +80,7 @@ TEST_F(MatchTestBase, kmpMethod) // NOLINT(cert-err58-cpp)
 }
 
 //! @brief Test for the Boyer-Moore method in the solution of match.
-TEST_F(MatchTestBase, bmMethod) // NOLINT(cert-err58-cpp)
+TEST_F(MatchTestBase, bmMethod)
 {
     ASSERT_EQ(
         49702,
@@ -92,7 +92,7 @@ TEST_F(MatchTestBase, bmMethod) // NOLINT(cert-err58-cpp)
 }
 
 //! @brief Test for the Horspool method in the solution of match.
-TEST_F(MatchTestBase, horspoolMethod) // NOLINT(cert-err58-cpp)
+TEST_F(MatchTestBase, horspoolMethod)
 {
     ASSERT_EQ(
         49702,
@@ -104,7 +104,7 @@ TEST_F(MatchTestBase, horspoolMethod) // NOLINT(cert-err58-cpp)
 }
 
 //! @brief Test for the Sunday method in the solution of match.
-TEST_F(MatchTestBase, sundayMethod) // NOLINT(cert-err58-cpp)
+TEST_F(MatchTestBase, sundayMethod)
 {
     ASSERT_EQ(
         49702,
@@ -148,13 +148,13 @@ public:
 std::shared_ptr<app_algo::notation::TargetBuilder> NotationTestBase::builder = nullptr;
 
 //! @brief Test for the prefix method in the solution of notation.
-TEST_F(NotationTestBase, prefixMethod) // NOLINT(cert-err58-cpp)
+TEST_F(NotationTestBase, prefixMethod)
 {
     ASSERT_EQ("+a-*b^-^cde+f*ghi", algorithm::notation::Notation::prefix(std::string{builder->getInfixNotation()}));
 }
 
 //! @brief Test for the postfix method in the solution of notation.
-TEST_F(NotationTestBase, postfixMethod) // NOLINT(cert-err58-cpp)
+TEST_F(NotationTestBase, postfixMethod)
 {
     ASSERT_EQ("abcd^e-fgh*+^*+i-", algorithm::notation::Notation::postfix(std::string{builder->getInfixNotation()}));
 }
@@ -184,13 +184,12 @@ public:
 };
 
 //! @brief Test for the gradient descent method in the solution of optimal.
-TEST_F(OptimalTestBase, gradientDescentMethod) // NOLINT(cert-err58-cpp)
+TEST_F(OptimalTestBase, gradientDescentMethod)
 {
     const std::shared_ptr<algorithm::optimal::Optimal> gradient =
         std::make_shared<algorithm::optimal::Gradient>(rastrigin);
     std::optional<std::tuple<double, double>> result = std::nullopt;
 
-    // NOLINTNEXTLINE(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
     ASSERT_NO_THROW(result = (*gradient)(rastrigin.range1, rastrigin.range2, algorithm::optimal::epsilon));
     ASSERT_TRUE(result.has_value());
     EXPECT_GT(get<0>(result.value()), 0.0 - error);
@@ -198,13 +197,12 @@ TEST_F(OptimalTestBase, gradientDescentMethod) // NOLINT(cert-err58-cpp)
 }
 
 //! @brief Test for the simulated annealing method in the solution of optimal.
-TEST_F(OptimalTestBase, simulatedAnnealingMethod) // NOLINT(cert-err58-cpp)
+TEST_F(OptimalTestBase, simulatedAnnealingMethod)
 {
     const std::shared_ptr<algorithm::optimal::Optimal> annealing =
         std::make_shared<algorithm::optimal::Annealing>(rastrigin);
     std::optional<std::tuple<double, double>> result = std::nullopt;
 
-    // NOLINTNEXTLINE(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
     ASSERT_NO_THROW(result = (*annealing)(rastrigin.range1, rastrigin.range2, algorithm::optimal::epsilon));
     ASSERT_TRUE(result.has_value());
     EXPECT_GT(get<0>(result.value()), 0.0 - error);
@@ -212,13 +210,12 @@ TEST_F(OptimalTestBase, simulatedAnnealingMethod) // NOLINT(cert-err58-cpp)
 }
 
 //! @brief Test for the particle swarm method in the solution of optimal.
-TEST_F(OptimalTestBase, particleSwarmMethod) // NOLINT(cert-err58-cpp)
+TEST_F(OptimalTestBase, particleSwarmMethod)
 {
     const std::shared_ptr<algorithm::optimal::Optimal> particle =
         std::make_shared<algorithm::optimal::Particle>(rastrigin);
     std::optional<std::tuple<double, double>> result = std::nullopt;
 
-    // NOLINTNEXTLINE(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
     ASSERT_NO_THROW(result = (*particle)(rastrigin.range1, rastrigin.range2, algorithm::optimal::epsilon));
     ASSERT_TRUE(result.has_value());
     EXPECT_GT(get<0>(result.value()), 0.0 - error);
@@ -226,13 +223,12 @@ TEST_F(OptimalTestBase, particleSwarmMethod) // NOLINT(cert-err58-cpp)
 }
 
 //! @brief Test for the genetic method in the solution of optimal.
-TEST_F(OptimalTestBase, geneticMethod) // NOLINT(cert-err58-cpp)
+TEST_F(OptimalTestBase, geneticMethod)
 {
     const std::shared_ptr<algorithm::optimal::Optimal> genetic =
         std::make_shared<algorithm::optimal::Genetic>(rastrigin);
     std::optional<std::tuple<double, double>> result = std::nullopt;
 
-    // NOLINTNEXTLINE(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
     ASSERT_NO_THROW(result = (*genetic)(rastrigin.range1, rastrigin.range2, algorithm::optimal::epsilon));
     ASSERT_TRUE(result.has_value());
     EXPECT_GT(get<0>(result.value()), 0.0 - error);
@@ -275,7 +271,7 @@ public:
 std::shared_ptr<app_algo::search::TargetBuilder<double>> SearchTestBase::builder = nullptr;
 
 //! @brief Test for the binary method in the solution of search.
-TEST_F(SearchTestBase, binaryMethod) // NOLINT(cert-err58-cpp)
+TEST_F(SearchTestBase, binaryMethod)
 {
     ASSERT_EQ(
         builder->getLength() / 2,
@@ -284,7 +280,7 @@ TEST_F(SearchTestBase, binaryMethod) // NOLINT(cert-err58-cpp)
 }
 
 //! @brief Test for the interpolation method in the solution of search.
-TEST_F(SearchTestBase, interpolationMethod) // NOLINT(cert-err58-cpp)
+TEST_F(SearchTestBase, interpolationMethod)
 {
     ASSERT_EQ(
         builder->getLength() / 2,
@@ -293,7 +289,7 @@ TEST_F(SearchTestBase, interpolationMethod) // NOLINT(cert-err58-cpp)
 }
 
 //! @brief Test for the Fibonacci method in the solution of search.
-TEST_F(SearchTestBase, fibonacciMethod) // NOLINT(cert-err58-cpp)
+TEST_F(SearchTestBase, fibonacciMethod)
 {
     ASSERT_EQ(
         builder->getLength() / 2,
@@ -337,7 +333,7 @@ public:
 std::shared_ptr<app_algo::sort::TargetBuilder<int>> SortTestBase::builder = nullptr;
 
 //! @brief Test for the bubble method in the solution of sort.
-TEST_F(SortTestBase, bubbleMethod) // NOLINT(cert-err58-cpp)
+TEST_F(SortTestBase, bubbleMethod)
 {
     std::vector<int> sortContainer(
         builder->getRandomArray().get(), builder->getRandomArray().get() + builder->getLength());
@@ -346,7 +342,7 @@ TEST_F(SortTestBase, bubbleMethod) // NOLINT(cert-err58-cpp)
 }
 
 //! @brief Test for the selection method in the solution of sort.
-TEST_F(SortTestBase, selectionMethod) // NOLINT(cert-err58-cpp)
+TEST_F(SortTestBase, selectionMethod)
 {
     std::vector<int> sortContainer(
         builder->getRandomArray().get(), builder->getRandomArray().get() + builder->getLength());
@@ -356,7 +352,7 @@ TEST_F(SortTestBase, selectionMethod) // NOLINT(cert-err58-cpp)
 }
 
 //! @brief Test for the insertion method in the solution of sort.
-TEST_F(SortTestBase, insertionMethod) // NOLINT(cert-err58-cpp)
+TEST_F(SortTestBase, insertionMethod)
 {
     std::vector<int> sortContainer(
         builder->getRandomArray().get(), builder->getRandomArray().get() + builder->getLength());
@@ -366,7 +362,7 @@ TEST_F(SortTestBase, insertionMethod) // NOLINT(cert-err58-cpp)
 }
 
 //! @brief Test for the shell method in the solution of sort.
-TEST_F(SortTestBase, shellMethod) // NOLINT(cert-err58-cpp)
+TEST_F(SortTestBase, shellMethod)
 {
     std::vector<int> sortContainer(
         builder->getRandomArray().get(), builder->getRandomArray().get() + builder->getLength());
@@ -375,7 +371,7 @@ TEST_F(SortTestBase, shellMethod) // NOLINT(cert-err58-cpp)
 }
 
 //! @brief Test for the merge method in the solution of sort.
-TEST_F(SortTestBase, mergeMethod) // NOLINT(cert-err58-cpp)
+TEST_F(SortTestBase, mergeMethod)
 {
     std::vector<int> sortContainer(
         builder->getRandomArray().get(), builder->getRandomArray().get() + builder->getLength());
@@ -384,7 +380,7 @@ TEST_F(SortTestBase, mergeMethod) // NOLINT(cert-err58-cpp)
 }
 
 //! @brief Test for the quick method in the solution of sort.
-TEST_F(SortTestBase, quickMethod) // NOLINT(cert-err58-cpp)
+TEST_F(SortTestBase, quickMethod)
 {
     std::vector<int> sortContainer(
         builder->getRandomArray().get(), builder->getRandomArray().get() + builder->getLength());
@@ -393,7 +389,7 @@ TEST_F(SortTestBase, quickMethod) // NOLINT(cert-err58-cpp)
 }
 
 //! @brief Test for the heap method in the solution of sort.
-TEST_F(SortTestBase, heapMethod) // NOLINT(cert-err58-cpp)
+TEST_F(SortTestBase, heapMethod)
 {
     std::vector<int> sortContainer(
         builder->getRandomArray().get(), builder->getRandomArray().get() + builder->getLength());
@@ -402,7 +398,7 @@ TEST_F(SortTestBase, heapMethod) // NOLINT(cert-err58-cpp)
 }
 
 //! @brief Test for the counting method in the solution of sort.
-TEST_F(SortTestBase, countingMethod) // NOLINT(cert-err58-cpp)
+TEST_F(SortTestBase, countingMethod)
 {
     std::vector<int> sortContainer(
         builder->getRandomArray().get(), builder->getRandomArray().get() + builder->getLength());
@@ -412,7 +408,7 @@ TEST_F(SortTestBase, countingMethod) // NOLINT(cert-err58-cpp)
 }
 
 //! @brief Test for the bucket method in the solution of sort.
-TEST_F(SortTestBase, bucketMethod) // NOLINT(cert-err58-cpp)
+TEST_F(SortTestBase, bucketMethod)
 {
     std::vector<int> sortContainer(
         builder->getRandomArray().get(), builder->getRandomArray().get() + builder->getLength());
@@ -421,7 +417,7 @@ TEST_F(SortTestBase, bucketMethod) // NOLINT(cert-err58-cpp)
 }
 
 //! @brief Test for the radix method in the solution of sort.
-TEST_F(SortTestBase, radixMethod) // NOLINT(cert-err58-cpp)
+TEST_F(SortTestBase, radixMethod)
 {
     std::vector<int> sortContainer(
         builder->getRandomArray().get(), builder->getRandomArray().get() + builder->getLength());

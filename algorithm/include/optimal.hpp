@@ -7,6 +7,7 @@
 #pragma once
 
 #include <map>
+#include <optional>
 #include <random>
 
 //! @brief Optimal-related functions in the algorithm module.

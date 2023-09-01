@@ -529,7 +529,8 @@ void runOptimalTasks(const std::vector<std::string>& targets)
             case 0:
                 resultFunctor(std::get<0>(function), range);
                 break;
-                [[unlikely]] default : break;
+            [[unlikely]] default:
+                break;
         }
     }
 

@@ -11,9 +11,9 @@
 #include <sys/ipc.h>
 #include <sys/shm.h>
 #include <sys/stat.h>
-#include <unistd.h>
+#include <algorithm>
 #include <cstring>
-#include <sstream>
+#include <iterator>
 #else
 #include "application/pch/precompiled_header.hpp"
 #endif // __PRECOMPILED_HEADER

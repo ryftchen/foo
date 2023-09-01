@@ -106,14 +106,19 @@ static void signalHandler(int sig)
     ::setenv("TERM", "linux", true);
     ::setenv("TERMINFO", "/etc/terminfo", true);
 
-    const std::filesystem::path homePath{(nullptr != std::getenv("HOME")) ? std::getenv("HOME") : "/root"};
-    if (!std::filesystem::exists(homePath))
+    std::string home = "/root";
+    if (nullptr != std::getenv("HOME"))
+    {
+        home = std::getenv("HOME");
+    }
+    const std::filesystem::path targetPath{home};
+    if (!std::filesystem::exists(targetPath))
     {
         std::fprintf(::stdout, "%s: Unable to access the home directory.\n", getExecutableName().c_str());
         std::exit(EXIT_FAILURE);
     }
 
-    const std::filesystem::path processPath{homePath / ".foo"};
+    const std::filesystem::path processPath{targetPath / ".foo"};
     if (!std::filesystem::exists(processPath))
     {
         std::filesystem::create_directory(processPath);

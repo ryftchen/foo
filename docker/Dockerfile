@@ -1,24 +1,16 @@
-FROM ubuntu:20.04
+FROM ubuntu:22.04
 
 SHELL ["/bin/bash", "-c"]
 
 RUN apt-get update \
-&& DEBIAN_FRONTEND=noninteractive apt-get install -y sudo tzdata ca-certificates bash-completion curl rsync zip \
+&& DEBIAN_FRONTEND=noninteractive apt-get install -y sudo tzdata ca-certificates curl bash-completion rsync zip \
 && sudo apt-get update \
 && sudo apt-get install -y git python3 python3-pip build-essential gdb strace cmake ninja-build ccache distcc \
-llvm-12 clang-12 lld-12 libclang-12-dev libstdc++-10-dev libgtest-dev libssl-dev libreadline-dev libmpfrc++-dev \
-clang-format-12 clang-tidy-12 valgrind cloc graphviz docker-compose \
+clang-15 lld-15 libgtest-dev libssl-dev libreadline-dev libmpfrc++-dev llvm-15 libclang-15-dev \
+clang-format-15 clang-tidy-15 shfmt shellcheck black pylint valgrind cloc pre-commit graphviz docker-compose \
 && sudo apt-get clean \
-&& sudo pip3 install --no-cache-dir -v pylint==2.15.5 black==22.10.0 pre-commit compdb ValgrindCI \
+&& sudo pip3 install --no-cache-dir compdb ValgrindCI \
 && cd /root \
-&& curl -L https://github.com/koalaman/shellcheck/releases/download/v0.8.0/shellcheck-v0.8.0.linux.x86_64.tar.xz >shellcheck-v0.8.0.linux.x86_64.tar.xz \
-&& tar -xvf ./shellcheck-v0.8.0.linux.x86_64.tar.xz \
-&& sudo mv ./shellcheck-v0.8.0/shellcheck /usr/local/bin/ \
-&& sudo chmod +x /usr/local/bin/shellcheck \
-&& rm -rf ./shellcheck-* \
-&& curl -L https://github.com/mvdan/sh/releases/download/v3.4.3/shfmt_v3.4.3_linux_amd64 >shfmt_v3.4.3_linux_amd64 \
-&& sudo mv ./shfmt_v3.4.3_linux_amd64 /usr/local/bin/shfmt \
-&& sudo chmod +x /usr/local/bin/shfmt \
 && curl -L https://github.com/doxygen/doxygen/releases/download/Release_1_9_6/doxygen-1.9.6.linux.bin.tar.gz >doxygen-1.9.6.linux.bin.tar.gz \
 && tar -zxvf ./doxygen-1.9.6.linux.bin.tar.gz \
 && sudo make -C ./doxygen-1.9.6 install \
@@ -28,8 +20,8 @@ clang-format-12 clang-tidy-12 valgrind cloc graphviz docker-compose \
 && sudo make -C ./doxygen-awesome-css-2.2.0 install \
 && rm -rf ./doxygen-awesome-css-* \
 && git clone https://github.com/KDAB/codebrowser.git \
-&& git -C ./codebrowser reset --hard e7bce1618726657d0615f0976f0db11a4f70f1f7 \
-&& cmake -S ./codebrowser -B ./codebrowser/build -DCMAKE_CXX_COMPILER=clang++-12 -DCMAKE_BUILD_TYPE=Release \
+&& git -C ./codebrowser reset --hard 85834c9cb99d36051912d3007697087d871faa83 \
+&& cmake -S ./codebrowser -B ./codebrowser/build -DCMAKE_CXX_COMPILER=clang++-15 -DCMAKE_BUILD_TYPE=Release \
 && make -C ./codebrowser/build -j \
 && sudo make -C ./codebrowser/build install \
 && rm -rf ./codebrowser

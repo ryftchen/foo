@@ -85,7 +85,7 @@ protected:
 //! @param duration - sleep duration
 inline void millisecondLevelSleep(const std::uint32_t duration)
 {
-    std::this_thread::sleep_until(std::chrono::steady_clock::now() + std::chrono::operator""ms(duration));
+    std::this_thread::sleep_for(std::chrono::operator""ms(duration));
 }
 
 void BlockingTimer::set(auto func, const std::uint32_t interval)
