@@ -112,7 +112,7 @@ T Config::getNumericValue(const std::string& key)
 
 bool Config::elementExists(const std::string& key) const
 {
-    return (data.find(key) != data.end());
+    return (data.find(key) != data.cend());
 }
 
 void Config::parseFile(const std::string& filename)

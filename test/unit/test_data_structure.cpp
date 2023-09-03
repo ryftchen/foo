@@ -5,15 +5,16 @@
 //! @copyright Copyright (c) 2022-2023 ryftchen. All rights reserved.
 
 #include <gtest/gtest.h>
+#include <syncstream>
 #include "application/example/include/apply_data_structure.hpp"
 #include "data_structure/include/linear.hpp"
 #include "data_structure/include/tree.hpp"
 
 //! @brief Title of printing for data structure task tests.
-#define TST_DS_PRINT_TASK_TITLE(taskType, taskState)                                                   \
-    std::cout << "TEST DATA STRUCTURE: " << std::setiosflags(std::ios_base::left) << std::setfill('.') \
-              << std::setw(50) << taskType << taskState << std::resetiosflags(std::ios_base::left)     \
-              << std::setfill(' ') << std::endl;
+#define TST_DS_PRINT_TASK_TITLE(category, state)                                                    \
+    std::osyncstream(std::cout) << "TEST DATA STRUCTURE: " << std::setiosflags(std::ios_base::left) \
+                                << std::setfill('.') << std::setw(50) << category << state          \
+                                << std::resetiosflags(std::ios_base::left) << std::setfill(' ') << std::endl;
 
 //! @brief Data-structure-testing-related functions in the test module.
 namespace test::tst_ds

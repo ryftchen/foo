@@ -5,6 +5,7 @@
 //! @copyright Copyright (c) 2022-2023 ryftchen. All rights reserved.
 
 #include <gtest/gtest.h>
+#include <syncstream>
 #include "application/example/include/apply_numeric.hpp"
 #include "numeric/include/arithmetic.hpp"
 #include "numeric/include/divisor.hpp"
@@ -12,9 +13,10 @@
 #include "numeric/include/prime.hpp"
 
 //! @brief Title of printing for numeric task tests.
-#define TST_NUM_PRINT_TASK_TITLE(taskType, taskState)                                                            \
-    std::cout << "TEST NUMERIC: " << std::setiosflags(std::ios_base::left) << std::setfill('.') << std::setw(50) \
-              << taskType << taskState << std::resetiosflags(std::ios_base::left) << std::setfill(' ') << std::endl;
+#define TST_NUM_PRINT_TASK_TITLE(category, state)                                                                 \
+    std::osyncstream(std::cout) << "TEST NUMERIC: " << std::setiosflags(std::ios_base::left) << std::setfill('.') \
+                                << std::setw(50) << category << state << std::resetiosflags(std::ios_base::left)  \
+                                << std::setfill(' ') << std::endl;
 
 //! @brief Numeric-testing-related functions in the test module.
 namespace test::tst_num

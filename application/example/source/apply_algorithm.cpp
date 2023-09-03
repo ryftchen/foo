@@ -6,7 +6,7 @@
 
 #include "apply_algorithm.hpp"
 #ifndef __PRECOMPILED_HEADER
-#include <iomanip>
+#include <syncstream>
 #else
 #include "application/pch/precompiled_header.hpp"
 #endif // __PRECOMPILED_HEADER
@@ -19,23 +19,25 @@
 #include "application/core/include/log.hpp"
 
 //! @brief Title of printing when algorithm tasks are beginning.
-#define APP_ALGO_PRINT_TASK_BEGIN_TITLE(taskType)                                                                  \
-    std::cout << "\r\n"                                                                                            \
-              << "ALGORITHM TASK: " << std::setiosflags(std::ios_base::left) << std::setfill('.') << std::setw(50) \
-              << taskType << "BEGIN" << std::resetiosflags(std::ios_base::left) << std::setfill(' ') << std::endl; \
+#define APP_ALGO_PRINT_TASK_BEGIN_TITLE(category)                                                                   \
+    std::osyncstream(std::cout) << "\r\n"                                                                           \
+                                << "ALGORITHM TASK: " << std::setiosflags(std::ios_base::left) << std::setfill('.') \
+                                << std::setw(50) << category << "BEGIN" << std::resetiosflags(std::ios_base::left)  \
+                                << std::setfill(' ') << std::endl;                                                  \
     {
 //! @brief Title of printing when algorithm tasks are ending.
-#define APP_ALGO_PRINT_TASK_END_TITLE(taskType)                                                                    \
-    }                                                                                                              \
-    std::cout << "\r\n"                                                                                            \
-              << "ALGORITHM TASK: " << std::setiosflags(std::ios_base::left) << std::setfill('.') << std::setw(50) \
-              << taskType << "END" << std::resetiosflags(std::ios_base::left) << std::setfill(' ') << '\n'         \
-              << std::endl;
+#define APP_ALGO_PRINT_TASK_END_TITLE(category)                                                                     \
+    }                                                                                                               \
+    std::osyncstream(std::cout) << "\r\n"                                                                           \
+                                << "ALGORITHM TASK: " << std::setiosflags(std::ios_base::left) << std::setfill('.') \
+                                << std::setw(50) << category << "END" << std::resetiosflags(std::ios_base::left)    \
+                                << std::setfill(' ') << '\n'                                                        \
+                                << std::endl;
 
 namespace application::app_algo
 {
-//! @brief Alias for Type.
-using Type = AlgorithmTask::Type;
+//! @brief Alias for Category.
+using Category = AlgorithmTask::Category;
 //! @brief Alias for Bottom.
 //! @tparam T - type of specific enum
 template <class T>
@@ -192,7 +194,7 @@ void runMatchTasks(const std::vector<std::string>& targets)
     using utility::common::operator""_bkdrHash;
 
     static_assert(TargetBuilder::maxDigit > singlePattern.length());
-    APP_ALGO_PRINT_TASK_BEGIN_TITLE(Type::match);
+    APP_ALGO_PRINT_TASK_BEGIN_TITLE(Category::match);
     auto* threads = command::getPublicThreadPool().newElement(std::min(
         static_cast<std::uint32_t>(getBit<MatchMethod>().count()),
         static_cast<std::uint32_t>(Bottom<MatchMethod>::value)));
@@ -243,7 +245,7 @@ void runMatchTasks(const std::vector<std::string>& targets)
     }
 
     command::getPublicThreadPool().deleteElement(threads);
-    APP_ALGO_PRINT_TASK_END_TITLE(Type::match);
+    APP_ALGO_PRINT_TASK_END_TITLE(Category::match);
 }
 
 //! @brief Update match methods in tasks.
@@ -323,7 +325,7 @@ void runNotationTasks(const std::vector<std::string>& targets)
     using notation::input::infixString;
     using utility::common::operator""_bkdrHash;
 
-    APP_ALGO_PRINT_TASK_BEGIN_TITLE(Type::notation);
+    APP_ALGO_PRINT_TASK_BEGIN_TITLE(Category::notation);
     auto* threads = command::getPublicThreadPool().newElement(std::min(
         static_cast<std::uint32_t>(getBit<NotationMethod>().count()),
         static_cast<std::uint32_t>(Bottom<NotationMethod>::value)));
@@ -358,7 +360,7 @@ void runNotationTasks(const std::vector<std::string>& targets)
     }
 
     command::getPublicThreadPool().deleteElement(threads);
-    APP_ALGO_PRINT_TASK_END_TITLE(Type::notation);
+    APP_ALGO_PRINT_TASK_END_TITLE(Category::notation);
 }
 
 //! @brief Update notation methods in tasks.
@@ -517,7 +519,7 @@ void runOptimalTasks(const std::vector<std::string>& targets)
         command::getPublicThreadPool().deleteElement(threads);
     };
 
-    APP_ALGO_PRINT_TASK_BEGIN_TITLE(Type::optimal);
+    APP_ALGO_PRINT_TASK_BEGIN_TITLE(Category::optimal);
 
     const std::unordered_multimap<optimal::FuncRange<double, double>, OptimalFuncTarget, optimal::FuncMapHash>
         optimalFuncMap{
@@ -536,7 +538,7 @@ void runOptimalTasks(const std::vector<std::string>& targets)
         }
     }
 
-    APP_ALGO_PRINT_TASK_END_TITLE(Type::optimal);
+    APP_ALGO_PRINT_TASK_END_TITLE(Category::optimal);
 }
 
 //! @brief Update optimal methods in tasks.
@@ -649,7 +651,7 @@ void runSearchTasks(const std::vector<std::string>& targets)
     using utility::common::operator""_bkdrHash;
 
     static_assert((arrayRange1 < arrayRange2) && (arrayLength > 0));
-    APP_ALGO_PRINT_TASK_BEGIN_TITLE(Type::search);
+    APP_ALGO_PRINT_TASK_BEGIN_TITLE(Category::search);
     auto* threads = command::getPublicThreadPool().newElement(std::min(
         static_cast<std::uint32_t>(getBit<SearchMethod>().count()),
         static_cast<std::uint32_t>(Bottom<SearchMethod>::value)));
@@ -689,7 +691,7 @@ void runSearchTasks(const std::vector<std::string>& targets)
     }
 
     command::getPublicThreadPool().deleteElement(threads);
-    APP_ALGO_PRINT_TASK_END_TITLE(Type::search);
+    APP_ALGO_PRINT_TASK_END_TITLE(Category::search);
 }
 
 //! @brief Update search methods in tasks.
@@ -901,7 +903,7 @@ void runSortTasks(const std::vector<std::string>& targets)
     using utility::common::operator""_bkdrHash;
 
     static_assert((arrayRange1 < arrayRange2) && (arrayLength > 0));
-    APP_ALGO_PRINT_TASK_BEGIN_TITLE(Type::sort);
+    APP_ALGO_PRINT_TASK_BEGIN_TITLE(Category::sort);
     auto* threads = command::getPublicThreadPool().newElement(std::min(
         static_cast<std::uint32_t>(getBit<SortMethod>().count()),
         static_cast<std::uint32_t>(Bottom<SortMethod>::value)));
@@ -960,7 +962,7 @@ void runSortTasks(const std::vector<std::string>& targets)
     }
 
     command::getPublicThreadPool().deleteElement(threads);
-    APP_ALGO_PRINT_TASK_END_TITLE(Type::sort);
+    APP_ALGO_PRINT_TASK_END_TITLE(Category::sort);
 }
 
 //! @brief Update sort methods in tasks.

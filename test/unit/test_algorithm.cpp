@@ -5,6 +5,7 @@
 //! @copyright Copyright (c) 2022-2023 ryftchen. All rights reserved.
 
 #include <gtest/gtest.h>
+#include <syncstream>
 #include "algorithm/include/match.hpp"
 #include "algorithm/include/notation.hpp"
 #include "algorithm/include/optimal.hpp"
@@ -13,9 +14,10 @@
 #include "application/example/include/apply_algorithm.hpp"
 
 //! @brief Title of printing for algorithm task tests.
-#define TST_ALGO_PRINT_TASK_TITLE(taskType, taskState)                                                             \
-    std::cout << "TEST ALGORITHM: " << std::setiosflags(std::ios_base::left) << std::setfill('.') << std::setw(50) \
-              << taskType << taskState << std::resetiosflags(std::ios_base::left) << std::setfill(' ') << std::endl;
+#define TST_ALGO_PRINT_TASK_TITLE(category, state)                                                                  \
+    std::osyncstream(std::cout) << "TEST ALGORITHM: " << std::setiosflags(std::ios_base::left) << std::setfill('.') \
+                                << std::setw(50) << category << state << std::resetiosflags(std::ios_base::left)    \
+                                << std::setfill(' ') << std::endl;
 
 //! @brief Algorithm-testing-related functions in the test module.
 namespace test::tst_algo

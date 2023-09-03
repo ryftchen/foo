@@ -29,7 +29,7 @@ public:
     struct Bottom;
 
     //! @brief Enumerate specific data structure tasks.
-    enum Type : std::uint8_t
+    enum Category : std::uint8_t
     {
         linear,
         tree
@@ -81,22 +81,22 @@ public:
     }
 
 protected:
-    //! @brief The operator (<<) overloading of the Type enum.
+    //! @brief The operator (<<) overloading of the Category enum.
     //! @param os - output stream object
-    //! @param type - the specific value of Type enum
+    //! @param cat - the specific value of Category enum
     //! @return reference of output stream object
-    friend std::ostream& operator<<(std::ostream& os, const Type type)
+    friend std::ostream& operator<<(std::ostream& os, const Category cat)
     {
-        switch (type)
+        switch (cat)
         {
-            case Type::linear:
+            case Category::linear:
                 os << "LINEAR";
                 break;
-            case Type::tree:
+            case Category::tree:
                 os << "TREE";
                 break;
             default:
-                os << "UNKNOWN: " << static_cast<std::underlying_type_t<Type>>(type);
+                os << "UNKNOWN: " << static_cast<std::underlying_type_t<Category>>(cat);
         }
         return os;
     }

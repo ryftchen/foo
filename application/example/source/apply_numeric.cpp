@@ -6,7 +6,7 @@
 
 #include "apply_numeric.hpp"
 #ifndef __PRECOMPILED_HEADER
-#include <iomanip>
+#include <syncstream>
 #else
 #include "application/pch/precompiled_header.hpp"
 #endif // __PRECOMPILED_HEADER
@@ -18,23 +18,25 @@
 #include "numeric/include/prime.hpp"
 
 //! @brief Title of printing when numeric tasks are beginning.
-#define APP_NUM_PRINT_TASK_BEGIN_TITLE(taskType)                                                                   \
-    std::cout << "\r\n"                                                                                            \
-              << "NUMERIC TASK: " << std::setiosflags(std::ios_base::left) << std::setfill('.') << std::setw(50)   \
-              << taskType << "BEGIN" << std::resetiosflags(std::ios_base::left) << std::setfill(' ') << std::endl; \
+#define APP_NUM_PRINT_TASK_BEGIN_TITLE(category)                                                                   \
+    std::osyncstream(std::cout) << "\r\n"                                                                          \
+                                << "NUMERIC TASK: " << std::setiosflags(std::ios_base::left) << std::setfill('.')  \
+                                << std::setw(50) << category << "BEGIN" << std::resetiosflags(std::ios_base::left) \
+                                << std::setfill(' ') << std::endl;                                                 \
     {
 //! @brief Title of printing when numeric tasks are ending.
-#define APP_NUM_PRINT_TASK_END_TITLE(taskType)                                                                   \
-    }                                                                                                            \
-    std::cout << "\r\n"                                                                                          \
-              << "NUMERIC TASK: " << std::setiosflags(std::ios_base::left) << std::setfill('.') << std::setw(50) \
-              << taskType << "END" << std::resetiosflags(std::ios_base::left) << std::setfill(' ') << '\n'       \
-              << std::endl;
+#define APP_NUM_PRINT_TASK_END_TITLE(category)                                                                    \
+    }                                                                                                             \
+    std::osyncstream(std::cout) << "\r\n"                                                                         \
+                                << "NUMERIC TASK: " << std::setiosflags(std::ios_base::left) << std::setfill('.') \
+                                << std::setw(50) << category << "END" << std::resetiosflags(std::ios_base::left)  \
+                                << std::setfill(' ') << '\n'                                                      \
+                                << std::endl;
 
 namespace application::app_num
 {
-//! @brief Alias for Type.
-using Type = NumericTask::Type;
+//! @brief Alias for Category.
+using Category = NumericTask::Category;
 //! @brief Alias for Bottom.
 //! @tparam T - type of specific enum
 template <class T>
@@ -132,7 +134,7 @@ void runArithmeticTasks(const std::vector<std::string>& targets)
     using arithmetic::input::integerB;
     using utility::common::operator""_bkdrHash;
 
-    APP_NUM_PRINT_TASK_BEGIN_TITLE(Type::arithmetic);
+    APP_NUM_PRINT_TASK_BEGIN_TITLE(Category::arithmetic);
     auto* threads = command::getPublicThreadPool().newElement(std::min(
         static_cast<std::uint32_t>(getBit<ArithmeticMethod>().count()),
         static_cast<std::uint32_t>(Bottom<ArithmeticMethod>::value)));
@@ -174,7 +176,7 @@ void runArithmeticTasks(const std::vector<std::string>& targets)
     }
 
     command::getPublicThreadPool().deleteElement(threads);
-    APP_NUM_PRINT_TASK_END_TITLE(Type::arithmetic);
+    APP_NUM_PRINT_TASK_END_TITLE(Category::arithmetic);
 }
 
 //! @brief Update arithmetic methods in tasks.
@@ -267,7 +269,7 @@ void runDivisorTasks(const std::vector<std::string>& targets)
     using divisor::input::integerB;
     using utility::common::operator""_bkdrHash;
 
-    APP_NUM_PRINT_TASK_BEGIN_TITLE(Type::divisor);
+    APP_NUM_PRINT_TASK_BEGIN_TITLE(Category::divisor);
     auto* threads = command::getPublicThreadPool().newElement(std::min(
         static_cast<std::uint32_t>(getBit<DivisorMethod>().count()),
         static_cast<std::uint32_t>(Bottom<DivisorMethod>::value)));
@@ -302,7 +304,7 @@ void runDivisorTasks(const std::vector<std::string>& targets)
     }
 
     command::getPublicThreadPool().deleteElement(threads);
-    APP_NUM_PRINT_TASK_END_TITLE(Type::divisor);
+    APP_NUM_PRINT_TASK_END_TITLE(Category::divisor);
 }
 
 //! @brief Update divisor methods in tasks.
@@ -479,7 +481,7 @@ void runIntegralTasks(const std::vector<std::string>& targets)
         command::getPublicThreadPool().deleteElement(threads);
     };
 
-    APP_NUM_PRINT_TASK_BEGIN_TITLE(Type::integral);
+    APP_NUM_PRINT_TASK_BEGIN_TITLE(Category::integral);
 
     const std::unordered_multimap<integral::ExprRange<double, double>, IntegralExprTarget, integral::ExprMapHash>
         integralExprMap{
@@ -498,7 +500,7 @@ void runIntegralTasks(const std::vector<std::string>& targets)
         }
     }
 
-    APP_NUM_PRINT_TASK_END_TITLE(Type::integral);
+    APP_NUM_PRINT_TASK_END_TITLE(Category::integral);
 }
 
 //! @brief Update integral methods in tasks.
@@ -594,7 +596,7 @@ void runPrimeTasks(const std::vector<std::string>& targets)
     using prime::input::maxPositiveInteger;
     using utility::common::operator""_bkdrHash;
 
-    APP_NUM_PRINT_TASK_BEGIN_TITLE(Type::prime);
+    APP_NUM_PRINT_TASK_BEGIN_TITLE(Category::prime);
     auto* threads = command::getPublicThreadPool().newElement(std::min(
         static_cast<std::uint32_t>(getBit<PrimeMethod>().count()),
         static_cast<std::uint32_t>(Bottom<PrimeMethod>::value)));
@@ -628,7 +630,7 @@ void runPrimeTasks(const std::vector<std::string>& targets)
     }
 
     command::getPublicThreadPool().deleteElement(threads);
-    APP_NUM_PRINT_TASK_END_TITLE(Type::prime);
+    APP_NUM_PRINT_TASK_END_TITLE(Category::prime);
 }
 
 //! @brief Update prime methods in tasks.

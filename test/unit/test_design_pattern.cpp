@@ -5,16 +5,17 @@
 //! @copyright Copyright (c) 2022-2023 ryftchen. All rights reserved.
 
 #include <gtest/gtest.h>
+#include <syncstream>
 #include "application/example/include/apply_design_pattern.hpp"
 #include "design_pattern/include/behavioral.hpp"
 #include "design_pattern/include/creational.hpp"
 #include "design_pattern/include/structural.hpp"
 
 //! @brief Title of printing for design pattern task tests.
-#define TST_DP_PRINT_TASK_TITLE(taskType, taskState)                                                   \
-    std::cout << "TEST DESIGN PATTERN: " << std::setiosflags(std::ios_base::left) << std::setfill('.') \
-              << std::setw(50) << taskType << taskState << std::resetiosflags(std::ios_base::left)     \
-              << std::setfill(' ') << std::endl;
+#define TST_DP_PRINT_TASK_TITLE(category, state)                                                    \
+    std::osyncstream(std::cout) << "TEST DESIGN PATTERN: " << std::setiosflags(std::ios_base::left) \
+                                << std::setfill('.') << std::setw(50) << category << state          \
+                                << std::resetiosflags(std::ios_base::left) << std::setfill(' ') << std::endl;
 
 //! @brief Design-pattern-testing-related functions in the test module.
 namespace test::tst_dp

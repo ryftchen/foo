@@ -9,7 +9,6 @@
 #include <filesystem>
 #include <fstream>
 #include <iostream>
-#include <iterator>
 
 namespace utility::console
 {
@@ -91,7 +90,7 @@ int Console::cmdExecutor(const std::string& command)
     }
 
     Impl::RegisteredCmds::iterator iterator = impl->regCmds.find(inputs.at(0));
-    if (std::end(impl->regCmds) != iterator)
+    if (std::cend(impl->regCmds) != iterator)
     {
         return RetCode(static_cast<int>(std::get<0>(iterator->second)(inputs)));
     }

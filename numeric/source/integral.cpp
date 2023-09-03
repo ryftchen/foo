@@ -194,10 +194,10 @@ double MonteCarlo::sampleFromNormalDistribution(const double lower, const double
         do
         {
             double u1 = dist(engine), u2 = dist(engine), mag = sigma * std::sqrt(-2.0 * std::log(u1));
-            x = mag * std::sin(2.0 * M_PI * u2) + mu; // Box-Muller Transform
+            x = mag * std::sin(2.0 * std::numbers::pi * u2) + mu; // Box-Muller Transform
         }
         while ((x < lower) || (x > upper));
-        const double probabilityDensityFunction = (1.0 / std::sqrt(2.0 * M_PI * sigma * sigma))
+        const double probabilityDensityFunction = (1.0 / std::sqrt(2.0 * std::numbers::pi * sigma * sigma))
             * std::pow(M_E, (-(x - mu) * (x - mu)) / (2.0 * sigma * sigma));
         sum += expr(x) / probabilityDensityFunction; // I≈1/N*[F(X1)/P(X1)+...+F(Xn)/P(Xn)]
     }

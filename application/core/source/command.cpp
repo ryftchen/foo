@@ -8,7 +8,7 @@
 #include "log.hpp"
 #include "view.hpp"
 #ifndef __PRECOMPILED_HEADER
-#include <iterator>
+#include <fstream>
 #else
 #include "application/pch/precompiled_header.hpp"
 #endif // __PRECOMPILED_HEADER
@@ -400,40 +400,40 @@ void Command::dispatchTask()
     }
     else if (!dispatchedTask.regularTask.empty())
     {
-        for (std::uint8_t i = 0; i < RegularTask::Bottom<RegularTask::Category>::value; ++i)
+        for (std::uint8_t i = 0; i < RegularTask::Bottom<RegularTask::SubTask>::value; ++i)
         {
             if (dispatchedTask.regularTask.helpOnly)
             {
-                const auto category = std::next(regularTaskDispatcher.cbegin(), RegularTask::Category(i))->first;
-                if (mainCLI.isSubCommandUsed(category))
+                const auto subCLIName = std::next(regularTaskDispatcher.cbegin(), RegularTask::SubTask(i))->first;
+                if (mainCLI.isSubCommandUsed(subCLIName))
                 {
-                    const auto& subCLI = mainCLI.at<utility::argument::Argument>(category);
+                    const auto& subCLI = mainCLI.at<utility::argument::Argument>(subCLIName);
                     std::cout << subCLI.help().str() << std::flush;
                     break;
                 }
             }
 
-            switch (RegularTask::Category(i))
+            switch (RegularTask::SubTask(i))
             {
-                case RegularTask::Category::algorithm:
+                case RegularTask::SubTask::algorithm:
                     if (app_algo::getTask().empty())
                     {
                         continue;
                     }
                     break;
-                case RegularTask::Category::designPattern:
+                case RegularTask::SubTask::designPattern:
                     if (app_dp::getTask().empty())
                     {
                         continue;
                     }
                     break;
-                case RegularTask::Category::dataStructure:
+                case RegularTask::SubTask::dataStructure:
                     if (app_ds::getTask().empty())
                     {
                         continue;
                     }
                     break;
-                case RegularTask::Category::numeric:
+                case RegularTask::SubTask::numeric:
                     if (app_num::getTask().empty())
                     {
                         continue;
@@ -444,7 +444,7 @@ void Command::dispatchTask()
             }
 
             for ([[maybe_unused]] const auto& [taskCategory, taskCategoryTuple] :
-                 std::next(regularTaskDispatcher.cbegin(), RegularTask::Category(i))->second)
+                 std::next(regularTaskDispatcher.cbegin(), RegularTask::SubTask(i))->second)
             {
                 (*get<PerformTaskFunctor>(get<TaskFunctorTuple>(taskCategoryTuple)))(
                     get<TargetTaskContainer>(taskCategoryTuple));
