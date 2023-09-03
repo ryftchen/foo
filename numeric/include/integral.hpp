@@ -7,7 +7,6 @@
 #pragma once
 
 #include <cstdint>
-#include <utility>
 #include <vector>
 
 //! @brief Integral-related functions in the numeric module.
