@@ -106,14 +106,12 @@ private:
     //! @brief Alias for the map of SubCLI and SubCLIMap.
     using RegularTaskMap = std::map<SubCLI, SubCLIMap>;
 
-    //! @memberof application::command::Command
     //! @brief Get a member of TaskCategoryTuple.
     //! @tparam T - type of member to be got
     //! @param tuple - a tuple containing the member types to be got
     //! @return member corresponding to the specific type
     template <typename T>
     auto get(const TaskCategoryTuple& tuple) const;
-    //! @memberof application::command::Command
     //! @brief Get a member of TaskFunctorTuple.
     //! @tparam T - type of member to be got
     //! @param tuple - a tuple containing the member types to be got
@@ -280,6 +278,11 @@ private:
 
     //! @brief Maximum latency for console.
     static constexpr std::uint16_t maxLatency{200};
+
+protected:
+    template <typename Container, typename Predicate>
+    requires std::regular_invocable<Predicate, typename Container::value_type>
+    friend auto operator|(const Container& container, Predicate predicate);
 };
 
 template <typename T>
@@ -308,8 +311,22 @@ auto Command::get(const TaskFunctorTuple& tuple) const
     }
 }
 
+//! @brief The operator (|) overloading of the container type.
+//! @tparam Container type of container
+//! @tparam Predicate type of predicate
+//! @param container - original container
+//! @param predicate - predicate of filter
+//! @return container after filtered
+template <typename Container, typename Predicate>
+requires std::regular_invocable<Predicate, typename Container::value_type>
+auto operator|(const Container& container, Predicate predicate)
+{
+    Container result{};
+    std::copy_if(container.cbegin(), container.cend(), std::inserter(result, result.end()), predicate);
+    return result;
+}
+
 //! @brief Alias for memory pool when making multi-threading.
 using PublicThreadPool = utility::memory::Memory<utility::thread::Thread>;
-
 extern PublicThreadPool& getPublicThreadPool();
 } // namespace application::command

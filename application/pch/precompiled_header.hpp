@@ -20,7 +20,6 @@
 #include <algorithm>
 #include <array>
 #include <bitset>
-// #define NDEBUG
 #include <cassert>
 #include <cmath>
 #include <csignal>

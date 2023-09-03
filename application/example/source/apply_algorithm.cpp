@@ -188,15 +188,16 @@ void runMatchTasks(const std::vector<std::string>& targets)
 
     using match::MatchSolution;
     using match::TargetBuilder;
+    using match::input::singlePattern;
     using utility::common::operator""_bkdrHash;
 
-    static_assert(TargetBuilder::maxDigit > input::singlePatternForMatch.length());
+    static_assert(TargetBuilder::maxDigit > singlePattern.length());
     APP_ALGO_PRINT_TASK_BEGIN_TITLE(Type::match);
     auto* threads = command::getPublicThreadPool().newElement(std::min(
         static_cast<std::uint32_t>(getBit<MatchMethod>().count()),
         static_cast<std::uint32_t>(Bottom<MatchMethod>::value)));
 
-    const auto builder = std::make_shared<TargetBuilder>(input::singlePatternForMatch);
+    const auto builder = std::make_shared<TargetBuilder>(singlePattern);
     const auto matchFunctor = [threads, builder](
                                   const std::string& threadName,
                                   void (*methodPtr)(const char*, const char*, const std::uint32_t, const std::uint32_t))
@@ -319,6 +320,7 @@ void runNotationTasks(const std::vector<std::string>& targets)
 
     using notation::NotationSolution;
     using notation::TargetBuilder;
+    using notation::input::infixString;
     using utility::common::operator""_bkdrHash;
 
     APP_ALGO_PRINT_TASK_BEGIN_TITLE(Type::notation);
@@ -326,7 +328,7 @@ void runNotationTasks(const std::vector<std::string>& targets)
         static_cast<std::uint32_t>(getBit<NotationMethod>().count()),
         static_cast<std::uint32_t>(Bottom<NotationMethod>::value)));
 
-    const auto builder = std::make_shared<TargetBuilder>(input::infixForNotation);
+    const auto builder = std::make_shared<TargetBuilder>(infixString);
     const auto notationFunctor =
         [threads, builder](const std::string& threadName, void (*methodPtr)(const std::string&))
     {
@@ -455,7 +457,7 @@ void runOptimalTasks(const std::vector<std::string>& targets)
         return;
     }
 
-    using input::Rastrigin;
+    using optimal::input::Rastrigin;
     typedef std::variant<Rastrigin> OptimalFuncTarget;
     const auto printFunctor = [](const OptimalFuncTarget& function)
     {
@@ -639,21 +641,20 @@ void runSearchTasks(const std::vector<std::string>& targets)
         return;
     }
 
-    using input::arrayLengthForSearch;
-    using input::arrayRangeForSearch1;
-    using input::arrayRangeForSearch2;
     using search::SearchSolution;
     using search::TargetBuilder;
+    using search::input::arrayLength;
+    using search::input::arrayRange1;
+    using search::input::arrayRange2;
     using utility::common::operator""_bkdrHash;
 
-    static_assert((arrayRangeForSearch1 < arrayRangeForSearch2) && (arrayLengthForSearch > 0));
+    static_assert((arrayRange1 < arrayRange2) && (arrayLength > 0));
     APP_ALGO_PRINT_TASK_BEGIN_TITLE(Type::search);
     auto* threads = command::getPublicThreadPool().newElement(std::min(
         static_cast<std::uint32_t>(getBit<SearchMethod>().count()),
         static_cast<std::uint32_t>(Bottom<SearchMethod>::value)));
 
-    const auto builder =
-        std::make_shared<TargetBuilder<double>>(arrayLengthForSearch, arrayRangeForSearch1, arrayRangeForSearch2);
+    const auto builder = std::make_shared<TargetBuilder<double>>(arrayLength, arrayRange1, arrayRange2);
     const auto searchFunctor =
         [threads, builder](
             const std::string& threadName, void (*methodPtr)(const double* const, const std::uint32_t, const double))
@@ -892,21 +893,20 @@ void runSortTasks(const std::vector<std::string>& targets)
         return;
     }
 
-    using input::arrayLengthForSort;
-    using input::arrayRangeForSort1;
-    using input::arrayRangeForSort2;
     using sort::SortSolution;
     using sort::TargetBuilder;
+    using sort::input::arrayLength;
+    using sort::input::arrayRange1;
+    using sort::input::arrayRange2;
     using utility::common::operator""_bkdrHash;
 
-    static_assert((arrayRangeForSort1 < arrayRangeForSort2) && (arrayLengthForSort > 0));
+    static_assert((arrayRange1 < arrayRange2) && (arrayLength > 0));
     APP_ALGO_PRINT_TASK_BEGIN_TITLE(Type::sort);
     auto* threads = command::getPublicThreadPool().newElement(std::min(
         static_cast<std::uint32_t>(getBit<SortMethod>().count()),
         static_cast<std::uint32_t>(Bottom<SortMethod>::value)));
 
-    const auto builder =
-        std::make_shared<TargetBuilder<int>>(arrayLengthForSort, arrayRangeForSort1, arrayRangeForSort2);
+    const auto builder = std::make_shared<TargetBuilder<int>>(arrayLength, arrayRange1, arrayRange2);
     const auto sortFunctor =
         [threads, builder](const std::string& threadName, void (*methodPtr)(int* const, const std::uint32_t))
     {

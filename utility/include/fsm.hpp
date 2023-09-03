@@ -185,29 +185,29 @@ struct Concat<>
 };
 
 //! @brief The filter of events and behaviors.
-//! @tparam Pred - type of predicate
+//! @tparam Predicate - type of predicate
 //! @tparam Types - type of behaviors
-template <template <typename> class Pred, class... Types>
+template <template <typename> class Predicate, class... Types>
 struct Filter;
 
 //! @brief The filter of events and behaviors. Based on conditions.
-//! @tparam Pred - type of predicate
+//! @tparam Predicate - type of predicate
 //! @tparam T - specific type for predicate
 //! @tparam Types - type of behaviors
-template <template <typename> class Pred, class T, class... Types>
-struct Filter<Pred, T, Types...>
+template <template <typename> class Predicate, class T, class... Types>
+struct Filter<Predicate, T, Types...>
 {
     //! @brief Alias for concat or filter.
     using Type = typename std::conditional<
-        Pred<T>::value,
-        typename Concat<T, typename Filter<Pred, Types...>::Type>::Type,
-        typename Filter<Pred, Types...>::Type>::type;
+        Predicate<T>::value,
+        typename Concat<T, typename Filter<Predicate, Types...>::Type>::Type,
+        typename Filter<Predicate, Types...>::Type>::type;
 };
 
 //! @brief The filter of behaviors.
-//! @tparam Pred - type of predicate
-template <template <typename> class Pred>
-struct Filter<Pred>
+//! @tparam Predicate - type of predicate
+template <template <typename> class Predicate>
+struct Filter<Predicate>
 {
     //! @brief Alias for list.
     using Type = List<>;
@@ -303,9 +303,9 @@ private:
         //! @brief Alias for predicate.
         //! @tparam T - type of class to which the struct belongs
         template <class T>
-        using Pred = std::is_same<typename T::EventType, Event>;
+        using Predicate = std::is_same<typename T::EventType, Event>;
         //! @brief Alias for filter type.
-        using Type = typename Filter<Pred, Types...>::Type;
+        using Type = typename Filter<Predicate, Types...>::Type;
     };
 
     //! @brief Classification by event type. Include only event.

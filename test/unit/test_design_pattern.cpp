@@ -19,8 +19,8 @@
 //! @brief Design-pattern-testing-related functions in the test module.
 namespace test::tst_dp
 {
-//! @brief Alias for the namespace of design-pattern-applying-related functions.
-namespace app_dp = application::app_dp;
+//! @brief Alias for the namespace of applying behavioral.
+namespace behavioral = application::app_dp::behavioral;
 
 //! @brief Test base of behavioral.
 class BehavioralTestBase : public ::testing::Test
@@ -44,68 +44,71 @@ public:
 //! @brief Test for the chain of responsibility instance in the pattern of behavioral.
 TEST_F(BehavioralTestBase, chainOfResponsibilityInstance)
 {
-    ASSERT_NO_THROW(app_dp::behavioral::Behavioral::chainOfResponsibility());
+    ASSERT_NO_THROW(behavioral::Behavioral::chainOfResponsibility());
 }
 
 //! @brief Test for the command instance in the pattern of behavioral.
 TEST_F(BehavioralTestBase, commandInstance)
 {
-    ASSERT_NO_THROW(app_dp::behavioral::Behavioral::command());
+    ASSERT_NO_THROW(behavioral::Behavioral::command());
 }
 
 //! @brief Test for the interpreter instance in the pattern of behavioral.
 TEST_F(BehavioralTestBase, interpreterInstance)
 {
-    ASSERT_NO_THROW(app_dp::behavioral::Behavioral::interpreter());
+    ASSERT_NO_THROW(behavioral::Behavioral::interpreter());
 }
 
 //! @brief Test for the iterator instance in the pattern of behavioral.
 TEST_F(BehavioralTestBase, iteratorInstance)
 {
-    ASSERT_NO_THROW(app_dp::behavioral::Behavioral::iterator());
+    ASSERT_NO_THROW(behavioral::Behavioral::iterator());
 }
 
 //! @brief Test for the mediator instance in the pattern of behavioral.
 TEST_F(BehavioralTestBase, mediatorInstance)
 {
-    ASSERT_NO_THROW(app_dp::behavioral::Behavioral::mediator());
+    ASSERT_NO_THROW(behavioral::Behavioral::mediator());
 }
 
 //! @brief Test for the memento instance in the pattern of behavioral.
 TEST_F(BehavioralTestBase, mementoInstance)
 {
-    ASSERT_NO_THROW(app_dp::behavioral::Behavioral::memento());
+    ASSERT_NO_THROW(behavioral::Behavioral::memento());
 }
 
 //! @brief Test for the observer instance in the pattern of behavioral.
 TEST_F(BehavioralTestBase, observerInstance)
 {
-    ASSERT_NO_THROW(app_dp::behavioral::Behavioral::observer());
+    ASSERT_NO_THROW(behavioral::Behavioral::observer());
 }
 
 //! @brief Test for the state instance in the pattern of behavioral.
 TEST_F(BehavioralTestBase, stateInstance)
 {
-    ASSERT_NO_THROW(app_dp::behavioral::Behavioral::state());
+    ASSERT_NO_THROW(behavioral::Behavioral::state());
 }
 
 //! @brief Test for the strategy instance in the pattern of behavioral.
 TEST_F(BehavioralTestBase, strategyInstance)
 {
-    ASSERT_NO_THROW(app_dp::behavioral::Behavioral::strategy());
+    ASSERT_NO_THROW(behavioral::Behavioral::strategy());
 }
 
 //! @brief Test for the template method instance in the pattern of behavioral.
 TEST_F(BehavioralTestBase, templateMethodInstance)
 {
-    ASSERT_NO_THROW(app_dp::behavioral::Behavioral::templateMethod());
+    ASSERT_NO_THROW(behavioral::Behavioral::templateMethod());
 }
 
 //! @brief Test for the visitor instance in the pattern of behavioral.
 TEST_F(BehavioralTestBase, visitorInstance)
 {
-    ASSERT_NO_THROW(app_dp::behavioral::Behavioral::visitor());
+    ASSERT_NO_THROW(behavioral::Behavioral::visitor());
 }
+
+//! @brief Alias for the namespace of applying creational.
+namespace creational = application::app_dp::creational;
 
 //! @brief Test base of creational.
 class CreationalTestBase : public ::testing::Test
@@ -129,32 +132,35 @@ public:
 //! @brief Test for the abstract factory instance in the pattern of creational.
 TEST_F(CreationalTestBase, abstractFactoryInstance)
 {
-    ASSERT_NO_THROW(app_dp::creational::Creational::abstractFactory());
+    ASSERT_NO_THROW(creational::Creational::abstractFactory());
 }
 
 //! @brief Test for the builder instance in the pattern of creational.
 TEST_F(CreationalTestBase, builderInstance)
 {
-    ASSERT_NO_THROW(app_dp::creational::Creational::builder());
+    ASSERT_NO_THROW(creational::Creational::builder());
 }
 
 //! @brief Test for the factory method instance in the pattern of creational.
 TEST_F(CreationalTestBase, factoryMethodInstance)
 {
-    ASSERT_NO_THROW(app_dp::creational::Creational::factoryMethod());
+    ASSERT_NO_THROW(creational::Creational::factoryMethod());
 }
 
 //! @brief Test for the prototype instance in the pattern of creational.
 TEST_F(CreationalTestBase, prototypeInstance)
 {
-    ASSERT_NO_THROW(app_dp::creational::Creational::prototype());
+    ASSERT_NO_THROW(creational::Creational::prototype());
 }
 
 //! @brief Test for the singleton instance in the pattern of creational.
 TEST_F(CreationalTestBase, singletonInstance)
 {
-    ASSERT_NO_THROW(app_dp::creational::Creational::singleton());
+    ASSERT_NO_THROW(creational::Creational::singleton());
 }
+
+//! @brief Alias for the namespace of applying structural.
+namespace structural = application::app_dp::structural;
 
 //! @brief Test base of structural.
 class StructuralTestBase : public ::testing::Test
@@ -178,42 +184,42 @@ public:
 //! @brief Test for the adapter instance in the pattern of structural.
 TEST_F(StructuralTestBase, adapterInstance)
 {
-    ASSERT_NO_THROW(app_dp::structural::Structural::adapter());
+    ASSERT_NO_THROW(structural::Structural::adapter());
 }
 
 //! @brief Test for the bridge instance in the pattern of structural.
 TEST_F(StructuralTestBase, bridgeInstance)
 {
-    ASSERT_NO_THROW(app_dp::structural::Structural::bridge());
+    ASSERT_NO_THROW(structural::Structural::bridge());
 }
 
 //! @brief Test for the composite instance in the pattern of structural.
 TEST_F(StructuralTestBase, compositeInstance)
 {
-    ASSERT_NO_THROW(app_dp::structural::Structural::composite());
+    ASSERT_NO_THROW(structural::Structural::composite());
 }
 
 //! @brief Test for the decorator instance in the pattern of structural.
 TEST_F(StructuralTestBase, decoratorInstance)
 {
-    ASSERT_NO_THROW(app_dp::structural::Structural::decorator());
+    ASSERT_NO_THROW(structural::Structural::decorator());
 }
 
 //! @brief Test for the facade instance in the pattern of structural.
 TEST_F(StructuralTestBase, facadeInstance)
 {
-    ASSERT_NO_THROW(app_dp::structural::Structural::facade());
+    ASSERT_NO_THROW(structural::Structural::facade());
 }
 
 //! @brief Test for the flyweight instance in the pattern of structural.
 TEST_F(StructuralTestBase, flyweightInstance)
 {
-    ASSERT_NO_THROW(app_dp::structural::Structural::flyweight());
+    ASSERT_NO_THROW(structural::Structural::flyweight());
 }
 
 //! @brief Test for the proxy instance in the pattern of structural.
 TEST_F(StructuralTestBase, proxyInstance)
 {
-    ASSERT_NO_THROW(app_dp::structural::Structural::proxy());
+    ASSERT_NO_THROW(structural::Structural::proxy());
 }
 } // namespace test::tst_dp

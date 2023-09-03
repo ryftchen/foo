@@ -52,11 +52,11 @@ constexpr std::string_view defaultConfiguration = "# foo configuration\n"
                                                   "logger_target = 2\n"
                                                   "# viewer tcp server host (character string)\n"
                                                   "viewer_tcp_host = localhost\n"
-                                                  "# viewer tcp server port (0-65536)\n"
+                                                  "# viewer tcp server port (0-65535)\n"
                                                   "viewer_tcp_port = 61501\n"
                                                   "# viewer udp server host (character string)\n"
                                                   "viewer_udp_host = localhost\n"
-                                                  "# viewer udp server port (0-65536)\n"
+                                                  "# viewer udp server port (0-65535)\n"
                                                   "viewer_udp_port = 61502\n"
                                                   "\n";
 

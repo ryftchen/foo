@@ -245,74 +245,16 @@ void setBit(const int index)
     }
 }
 
+//! @brief Apply match.
+namespace match
+{
 //! @brief Set input parameters.
 namespace input
 {
 //! @brief Single pattern for match methods.
-constexpr std::string_view singlePatternForMatch = "12345";
-//! @brief Infix for notation methods.
-constexpr std::string_view infixForNotation = "a+b*(c^d-e)^(f+g*h)-i";
-//! @brief Minimum of the array for search methods.
-constexpr double arrayRangeForSearch1 = -50.0;
-//! @brief Maximum of the array for search methods.
-constexpr double arrayRangeForSearch2 = 150.0;
-//! @brief Length of the array for search methods.
-constexpr std::uint32_t arrayLengthForSearch = 53;
-//! @brief Minimum of the array for sort methods.
-constexpr int arrayRangeForSort1 = -50;
-//! @brief Maximum of the array for sort methods.
-constexpr int arrayRangeForSort2 = 150;
-//! @brief Length of the array for sort methods.
-constexpr std::uint32_t arrayLengthForSort = 53;
-
-//! @brief Rastrigin function.
-class Rastrigin : public algorithm::optimal::Function
-{
-public:
-    //! @brief The operator (()) overloading of Rastrigin class.
-    //! @param x - independent variable
-    //! @return dependent variable
-    double operator()(const double x) const override
-    {
-        // f(x)=An+Σ(1→n)[(Xi)^2-Acos(2π*Xi)],A=10,x∈[-5.12,5.12],f(min)=0
-        return (x * x - 10.0 * std::cos(2.0 * M_PI * x) + 10.0);
-    }
-
-    //! @brief Left endpoint.
-    static constexpr double range1{-5.12};
-    //! @brief Right endpoint.
-    static constexpr double range2{5.12};
-    //! @brief One-dimensional Rastrigin.
-    static constexpr std::string_view funcDescr{
-        "f(x)=An+Σ(1→n)[(Xi)^2-Acos(2π*Xi)],A=10,x∈[-5.12,5.12] (one-dimensional Rastrigin)"};
-};
-
-//! @brief Griewank function.
-class Griewank : public algorithm::optimal::Function
-{
-public:
-    //! @brief The operator (()) overloading of Griewank class.
-    //! @param x - independent variable
-    //! @return dependent variable
-    double operator()(const double x) const override
-    {
-        // f(x)=1+1/4000*Σ(1→n)[(Xi)^2]-Π(1→n)[cos(Xi/(i)^(1/2))],x∈[-600,600],f(min)=0
-        return (1.0 + 1.0 / 4000.0 * x * x - std::cos(x));
-    }
-
-    //! @brief Left endpoint.
-    static constexpr double range1{-600.0};
-    //! @brief Right endpoint.
-    static constexpr double range2{600.0};
-    //! @brief One-dimensional Griewank.
-    static constexpr std::string_view funcDescr{
-        "f(x)=1+1/4000*Σ(1→n)[(Xi)^2]-Π(1→n)[cos(Xi/(i)^(1/2))],x∈[-600,600] (one-dimensional Griewank)"};
-};
+constexpr std::string_view singlePattern = "12345";
 } // namespace input
 
-//! @brief Apply match.
-namespace match
-{
 //! @brief Solution of match.
 class MatchSolution
 {
@@ -460,6 +402,13 @@ extern void updateMatchTask(const std::string& target);
 //! @brief Apply notation.
 namespace notation
 {
+//! @brief Set input parameters.
+namespace input
+{
+//! @brief Infix string for notation methods.
+constexpr std::string_view infixString = "a+b*(c^d-e)^(f+g*h)-i";
+} // namespace input
+
 //! @brief Solution of notation.
 class NotationSolution
 {
@@ -505,6 +454,54 @@ extern void updateNotationTask(const std::string& target);
 //! @brief Apply optimal.
 namespace optimal
 {
+//! @brief Set input parameters.
+namespace input
+{
+//! @brief Rastrigin function.
+class Rastrigin : public algorithm::optimal::Function
+{
+public:
+    //! @brief The operator (()) overloading of Rastrigin class.
+    //! @param x - independent variable
+    //! @return dependent variable
+    double operator()(const double x) const override
+    {
+        // f(x)=An+Σ(1→n)[(Xi)^2-Acos(2π*Xi)],A=10,x∈[-5.12,5.12],f(min)=0
+        return (x * x - 10.0 * std::cos(2.0 * M_PI * x) + 10.0);
+    }
+
+    //! @brief Left endpoint.
+    static constexpr double range1{-5.12};
+    //! @brief Right endpoint.
+    static constexpr double range2{5.12};
+    //! @brief One-dimensional Rastrigin.
+    static constexpr std::string_view funcDescr{
+        "f(x)=An+Σ(1→n)[(Xi)^2-Acos(2π*Xi)],A=10,x∈[-5.12,5.12] (one-dimensional Rastrigin)"};
+};
+
+//! @brief Griewank function.
+class Griewank : public algorithm::optimal::Function
+{
+public:
+    //! @brief The operator (()) overloading of Griewank class.
+    //! @param x - independent variable
+    //! @return dependent variable
+    double operator()(const double x) const override
+    {
+        // f(x)=1+1/4000*Σ(1→n)[(Xi)^2]-Π(1→n)[cos(Xi/(i)^(1/2))],x∈[-600,600],f(min)=0
+        return (1.0 + 1.0 / 4000.0 * x * x - std::cos(x));
+    }
+
+    //! @brief Left endpoint.
+    static constexpr double range1{-600.0};
+    //! @brief Right endpoint.
+    static constexpr double range2{600.0};
+    //! @brief One-dimensional Griewank.
+    static constexpr std::string_view funcDescr{
+        "f(x)=1+1/4000*Σ(1→n)[(Xi)^2]-Π(1→n)[cos(Xi/(i)^(1/2))],x∈[-600,600] (one-dimensional Griewank)"};
+};
+} // namespace input
+
 //! @brief Alias for the target function.
 using Function = algorithm::optimal::Function;
 
@@ -603,6 +600,17 @@ extern void updateOptimalTask(const std::string& target);
 //! @brief Apply search.
 namespace search
 {
+//! @brief Set input parameters.
+namespace input
+{
+//! @brief Minimum of the array for search methods.
+constexpr double arrayRange1 = -50.0;
+//! @brief Maximum of the array for search methods.
+constexpr double arrayRange2 = 150.0;
+//! @brief Length of the array for search methods.
+constexpr std::uint32_t arrayLength = 53;
+} // namespace input
+
 //! @brief Solution of search.
 class SearchSolution
 {
@@ -816,6 +824,17 @@ extern void updateSearchTask(const std::string& target);
 //! @brief Apply sort.
 namespace sort
 {
+//! @brief Set input parameters.
+namespace input
+{
+//! @brief Minimum of the array for sort methods.
+constexpr int arrayRange1 = -50;
+//! @brief Maximum of the array for sort methods.
+constexpr int arrayRange2 = 150;
+//! @brief Length of the array for sort methods.
+constexpr std::uint32_t arrayLength = 53;
+} // namespace input
+
 //! @brief Solution of sort.
 class SortSolution
 {

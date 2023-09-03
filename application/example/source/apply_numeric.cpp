@@ -128,6 +128,8 @@ void runArithmeticTasks(const std::vector<std::string>& targets)
 
     using arithmetic::ArithmeticSolution;
     using arithmetic::TargetBuilder;
+    using arithmetic::input::integerA;
+    using arithmetic::input::integerB;
     using utility::common::operator""_bkdrHash;
 
     APP_NUM_PRINT_TASK_BEGIN_TITLE(Type::arithmetic);
@@ -135,7 +137,7 @@ void runArithmeticTasks(const std::vector<std::string>& targets)
         static_cast<std::uint32_t>(getBit<ArithmeticMethod>().count()),
         static_cast<std::uint32_t>(Bottom<ArithmeticMethod>::value)));
 
-    const auto builder = std::make_shared<TargetBuilder>(input::integerForArithmetic1, input::integerForArithmetic2);
+    const auto builder = std::make_shared<TargetBuilder>(integerA, integerB);
     const auto arithmeticFunctor =
         [threads, builder](const std::string& threadName, void (*methodPtr)(const int, const int))
     {
@@ -261,6 +263,8 @@ void runDivisorTasks(const std::vector<std::string>& targets)
 
     using divisor::DivisorSolution;
     using divisor::TargetBuilder;
+    using divisor::input::integerA;
+    using divisor::input::integerB;
     using utility::common::operator""_bkdrHash;
 
     APP_NUM_PRINT_TASK_BEGIN_TITLE(Type::divisor);
@@ -268,7 +272,7 @@ void runDivisorTasks(const std::vector<std::string>& targets)
         static_cast<std::uint32_t>(getBit<DivisorMethod>().count()),
         static_cast<std::uint32_t>(Bottom<DivisorMethod>::value)));
 
-    const auto builder = std::make_shared<TargetBuilder>(input::integerForDivisor1, input::integerForDivisor2);
+    const auto builder = std::make_shared<TargetBuilder>(integerA, integerB);
     const auto divisorFunctor = [threads, builder](const std::string& threadName, void (*methodPtr)(int, int))
     {
         threads->enqueue(
@@ -413,7 +417,7 @@ void runIntegralTasks(const std::vector<std::string>& targets)
         return;
     }
 
-    using Expression1 = input::Expression1;
+    using integral::input::Expression1;
     typedef std::variant<Expression1> IntegralExprTarget;
     const auto printFunctor = [](const IntegralExprTarget& expression)
     {
@@ -587,6 +591,7 @@ void runPrimeTasks(const std::vector<std::string>& targets)
 
     using prime::PrimeSolution;
     using prime::TargetBuilder;
+    using prime::input::maxPositiveInteger;
     using utility::common::operator""_bkdrHash;
 
     APP_NUM_PRINT_TASK_BEGIN_TITLE(Type::prime);
@@ -594,7 +599,7 @@ void runPrimeTasks(const std::vector<std::string>& targets)
         static_cast<std::uint32_t>(getBit<PrimeMethod>().count()),
         static_cast<std::uint32_t>(Bottom<PrimeMethod>::value)));
 
-    const auto builder = std::make_shared<TargetBuilder>(input::maxPositiveIntegerForPrime);
+    const auto builder = std::make_shared<TargetBuilder>(maxPositiveInteger);
     const auto primeFunctor = [threads, builder](const std::string& threadName, void (*methodPtr)(const std::uint32_t))
     {
         threads->enqueue(threadName, methodPtr, builder->getMaxPositiveInteger());

@@ -20,8 +20,8 @@
 //! @brief Algorithm-testing-related functions in the test module.
 namespace test::tst_algo
 {
-//! @brief Alias for the namespace of algorithm-applying-related functions.
-namespace app_algo = application::app_algo;
+//! @brief Alias for the namespace of applying match.
+namespace match = application::app_algo::match;
 
 //! @brief Test base of match.
 class MatchTestBase : public ::testing::Test
@@ -36,7 +36,7 @@ public:
     static void SetUpTestCase()
     {
         TST_ALGO_PRINT_TASK_TITLE("MATCH", "BEGIN");
-        builder = std::make_shared<app_algo::match::TargetBuilder>(app_algo::input::singlePatternForMatch);
+        builder = std::make_shared<match::TargetBuilder>(match::input::singlePattern);
     };
     //! @brief Tear down the test case.
     static void TearDownTestCase()
@@ -50,10 +50,10 @@ public:
     void TearDown() override{};
 
     //! @brief Target builder.
-    static std::shared_ptr<app_algo::match::TargetBuilder> builder;
+    static std::shared_ptr<match::TargetBuilder> builder;
 };
 
-std::shared_ptr<app_algo::match::TargetBuilder> MatchTestBase::builder = nullptr;
+std::shared_ptr<match::TargetBuilder> MatchTestBase::builder = nullptr;
 
 //! @brief Test for the Rabin-Karp method in the solution of match.
 TEST_F(MatchTestBase, rkMethod)
@@ -115,6 +115,9 @@ TEST_F(MatchTestBase, sundayMethod)
             builder->getSinglePattern().length()));
 }
 
+//! @brief Alias for the namespace of applying notation.
+namespace notation = application::app_algo::notation;
+
 //! @brief Test base of notation.
 class NotationTestBase : public ::testing::Test
 {
@@ -128,7 +131,7 @@ public:
     static void SetUpTestCase()
     {
         TST_ALGO_PRINT_TASK_TITLE("NOTATION", "BEGIN");
-        builder = std::make_shared<app_algo::notation::TargetBuilder>(app_algo::input::infixForNotation);
+        builder = std::make_shared<notation::TargetBuilder>(notation::input::infixString);
     };
     //! @brief Tear down the test case.
     static void TearDownTestCase()
@@ -142,10 +145,10 @@ public:
     void TearDown() override{};
 
     //! @brief Target builder.
-    static std::shared_ptr<app_algo::notation::TargetBuilder> builder;
+    static std::shared_ptr<notation::TargetBuilder> builder;
 };
 
-std::shared_ptr<app_algo::notation::TargetBuilder> NotationTestBase::builder = nullptr;
+std::shared_ptr<notation::TargetBuilder> NotationTestBase::builder = nullptr;
 
 //! @brief Test for the prefix method in the solution of notation.
 TEST_F(NotationTestBase, prefixMethod)
@@ -158,6 +161,9 @@ TEST_F(NotationTestBase, postfixMethod)
 {
     ASSERT_EQ("abcd^e-fgh*+^*+i-", algorithm::notation::Notation::postfix(std::string{builder->getInfixNotation()}));
 }
+
+//! @brief Alias for the namespace of applying optimal.
+namespace optimal = application::app_algo::optimal;
 
 //! @brief Test base of optimal.
 class OptimalTestBase : public ::testing::Test
@@ -178,7 +184,7 @@ public:
     void TearDown() override{};
 
     //! @brief Rastrigin function object.
-    const app_algo::input::Rastrigin rastrigin{};
+    const optimal::input::Rastrigin rastrigin{};
     //! @brief Allowable error.
     static constexpr double error{1e-3};
 };
@@ -235,6 +241,9 @@ TEST_F(OptimalTestBase, geneticMethod)
     EXPECT_LT(get<0>(result.value()), 0.0 + error);
 }
 
+//! @brief Alias for the namespace of applying search.
+namespace search = application::app_algo::search;
+
 //! @brief Test base of search.
 class SearchTestBase : public ::testing::Test
 {
@@ -248,10 +257,8 @@ public:
     static void SetUpTestCase()
     {
         TST_ALGO_PRINT_TASK_TITLE("SEARCH", "BEGIN");
-        builder = std::make_shared<app_algo::search::TargetBuilder<double>>(
-            app_algo::input::arrayLengthForSearch,
-            app_algo::input::arrayRangeForSearch1,
-            app_algo::input::arrayRangeForSearch2);
+        builder = std::make_shared<search::TargetBuilder<double>>(
+            search::input::arrayLength, search::input::arrayRange1, search::input::arrayRange2);
     };
     //! @brief Tear down the test case.
     static void TearDownTestCase()
@@ -265,10 +272,10 @@ public:
     void TearDown() override{};
 
     //! @brief Target builder.
-    static std::shared_ptr<app_algo::search::TargetBuilder<double>> builder;
+    static std::shared_ptr<search::TargetBuilder<double>> builder;
 };
 
-std::shared_ptr<app_algo::search::TargetBuilder<double>> SearchTestBase::builder = nullptr;
+std::shared_ptr<search::TargetBuilder<double>> SearchTestBase::builder = nullptr;
 
 //! @brief Test for the binary method in the solution of search.
 TEST_F(SearchTestBase, binaryMethod)
@@ -297,6 +304,9 @@ TEST_F(SearchTestBase, fibonacciMethod)
             builder->getOrderedArray().get(), builder->getLength(), builder->getSearchKey()));
 }
 
+//! @brief Alias for the namespace of applying sort.
+namespace sort = application::app_algo::sort;
+
 //! @brief Test base of sort.
 class SortTestBase : public ::testing::Test
 {
@@ -310,10 +320,8 @@ public:
     static void SetUpTestCase()
     {
         TST_ALGO_PRINT_TASK_TITLE("SORT", "BEGIN");
-        builder = std::make_shared<app_algo::sort::TargetBuilder<int>>(
-            app_algo::input::arrayLengthForSort,
-            app_algo::input::arrayRangeForSort1,
-            app_algo::input::arrayRangeForSort2);
+        builder = std::make_shared<sort::TargetBuilder<int>>(
+            sort::input::arrayLength, sort::input::arrayRange1, sort::input::arrayRange2);
     };
     //! @brief Tear down the test case.
     static void TearDownTestCase()
@@ -327,10 +335,10 @@ public:
     void TearDown() override{};
 
     //! @brief Target builder.
-    static std::shared_ptr<app_algo::sort::TargetBuilder<int>> builder;
+    static std::shared_ptr<sort::TargetBuilder<int>> builder;
 };
 
-std::shared_ptr<app_algo::sort::TargetBuilder<int>> SortTestBase::builder = nullptr;
+std::shared_ptr<sort::TargetBuilder<int>> SortTestBase::builder = nullptr;
 
 //! @brief Test for the bubble method in the solution of sort.
 TEST_F(SortTestBase, bubbleMethod)

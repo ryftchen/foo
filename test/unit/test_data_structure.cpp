@@ -18,8 +18,8 @@
 //! @brief Data-structure-testing-related functions in the test module.
 namespace test::tst_ds
 {
-//! @brief Alias for the namespace of data-structure-applying-related functions.
-namespace app_ds = application::app_ds;
+//! @brief Alias for the namespace of applying linear.
+namespace linear = application::app_ds::linear;
 
 //! @brief Test base of linear.
 class LinearTestBase : public ::testing::Test
@@ -43,20 +43,23 @@ public:
 //! @brief Test for the linked list instance in the structure of linear.
 TEST_F(LinearTestBase, linkedListInstance)
 {
-    ASSERT_NO_THROW(app_ds::linear::Linear::linkedList());
+    ASSERT_NO_THROW(linear::Linear::linkedList());
 }
 
 //! @brief Test for the stack instance in the structure of linear.
 TEST_F(LinearTestBase, stackInstance)
 {
-    ASSERT_NO_THROW(app_ds::linear::Linear::stack());
+    ASSERT_NO_THROW(linear::Linear::stack());
 }
 
 //! @brief Test for the queue instance in the structure of linear.
 TEST_F(LinearTestBase, queueInstance)
 {
-    ASSERT_NO_THROW(app_ds::linear::Linear::queue());
+    ASSERT_NO_THROW(linear::Linear::queue());
 }
+
+//! @brief Alias for the namespace of applying tree.
+namespace tree = application::app_ds::tree;
 
 //! @brief Test base of tree.
 class TreeTestBase : public ::testing::Test
@@ -80,18 +83,18 @@ public:
 //! @brief Test for the binary search instance in the structure of tree.
 TEST_F(TreeTestBase, bsInstance)
 {
-    ASSERT_NO_THROW(app_ds::tree::Tree::bs());
+    ASSERT_NO_THROW(tree::Tree::bs());
 }
 
 //! @brief Test for the Adelson-Velsky-Landis instance in the structure of tree.
 TEST_F(TreeTestBase, avlInstance)
 {
-    ASSERT_NO_THROW(app_ds::tree::Tree::avl());
+    ASSERT_NO_THROW(tree::Tree::avl());
 }
 
 //! @brief Test for the splay instance in the structure of tree.
 TEST_F(TreeTestBase, splayInstance)
 {
-    ASSERT_NO_THROW(app_ds::tree::Tree::splay());
+    ASSERT_NO_THROW(tree::Tree::splay());
 }
 } // namespace test::tst_ds
