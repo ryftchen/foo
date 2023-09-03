@@ -6,7 +6,7 @@
 
 #include "apply_data_structure.hpp"
 #ifndef __PRECOMPILED_HEADER
-#include <iomanip>
+#include <syncstream>
 #else
 #include "application/pch/precompiled_header.hpp"
 #endif // __PRECOMPILED_HEADER
@@ -14,25 +14,25 @@
 #include "application/core/include/log.hpp"
 
 //! @brief Title of printing when data structure tasks are beginning.
-#define APP_DS_PRINT_TASK_BEGIN_TITLE(taskType)                                                                       \
-    std::cout << "\r\n"                                                                                               \
-              << "DATA STRUCTURE TASK: " << std::setiosflags(std::ios_base::left) << std::setfill('.')                \
-              << std::setw(50) << taskType << "BEGIN" << std::resetiosflags(std::ios_base::left) << std::setfill(' ') \
-              << std::endl;                                                                                           \
+#define APP_DS_PRINT_TASK_BEGIN_TITLE(category)                                                               \
+    std::osyncstream(std::cout) << "\r\n"                                                                     \
+                                << "DATA STRUCTURE TASK: " << std::setiosflags(std::ios_base::left)           \
+                                << std::setfill('.') << std::setw(50) << category << "BEGIN"                  \
+                                << std::resetiosflags(std::ios_base::left) << std::setfill(' ') << std::endl; \
     {
 //! @brief Title of printing when data structure tasks are ending.
-#define APP_DS_PRINT_TASK_END_TITLE(taskType)                                                                       \
-    }                                                                                                               \
-    std::cout << "\r\n"                                                                                             \
-              << "DATA STRUCTURE TASK: " << std::setiosflags(std::ios_base::left) << std::setfill('.')              \
-              << std::setw(50) << taskType << "END" << std::resetiosflags(std::ios_base::left) << std::setfill(' ') \
-              << '\n'                                                                                               \
-              << std::endl;
+#define APP_DS_PRINT_TASK_END_TITLE(category)                                                           \
+    }                                                                                                   \
+    std::osyncstream(std::cout) << "\r\n"                                                               \
+                                << "DATA STRUCTURE TASK: " << std::setiosflags(std::ios_base::left)     \
+                                << std::setfill('.') << std::setw(50) << category << "END"              \
+                                << std::resetiosflags(std::ios_base::left) << std::setfill(' ') << '\n' \
+                                << std::endl;
 
 namespace application::app_ds
 {
-//! @brief Alias for Type.
-using Type = DataStructureTask::Type;
+//! @brief Alias for Category.
+using Category = DataStructureTask::Category;
 //! @brief Alias for Bottom.
 //! @tparam T - type of specific enum
 template <class T>
@@ -109,7 +109,7 @@ void runLinearTasks(const std::vector<std::string>& targets)
     using linear::LinearStructure;
     using utility::common::operator""_bkdrHash;
 
-    APP_DS_PRINT_TASK_BEGIN_TITLE(Type::linear);
+    APP_DS_PRINT_TASK_BEGIN_TITLE(Category::linear);
     auto* threads = command::getPublicThreadPool().newElement(std::min(
         static_cast<std::uint32_t>(getBit<LinearInstance>().count()),
         static_cast<std::uint32_t>(Bottom<LinearInstance>::value)));
@@ -146,7 +146,7 @@ void runLinearTasks(const std::vector<std::string>& targets)
     }
 
     command::getPublicThreadPool().deleteElement(threads);
-    APP_DS_PRINT_TASK_END_TITLE(Type::linear);
+    APP_DS_PRINT_TASK_END_TITLE(Category::linear);
 }
 
 //! @brief Update linear instances in tasks.
@@ -230,7 +230,7 @@ void runTreeTasks(const std::vector<std::string>& targets)
     using tree::TreeStructure;
     using utility::common::operator""_bkdrHash;
 
-    APP_DS_PRINT_TASK_BEGIN_TITLE(Type::tree);
+    APP_DS_PRINT_TASK_BEGIN_TITLE(Category::tree);
     auto* threads = command::getPublicThreadPool().newElement(std::min(
         static_cast<std::uint32_t>(getBit<TreeInstance>().count()),
         static_cast<std::uint32_t>(Bottom<TreeInstance>::value)));
@@ -267,7 +267,7 @@ void runTreeTasks(const std::vector<std::string>& targets)
     }
 
     command::getPublicThreadPool().deleteElement(threads);
-    APP_DS_PRINT_TASK_END_TITLE(Type::tree);
+    APP_DS_PRINT_TASK_END_TITLE(Category::tree);
 }
 
 //! @brief Update tree instances in tasks.

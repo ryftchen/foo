@@ -201,18 +201,18 @@ private:
         struct Bottom;
 
         //! @brief Enumerate specific regular tasks.
-        enum Category : std::uint8_t
+        enum SubTask : std::uint8_t
         {
             algorithm,
             designPattern,
             dataStructure,
             numeric
         };
-        //! @brief Store the maximum value of the Category enum.
+        //! @brief Store the maximum value of the SubTask enum.
         template <>
-        struct Bottom<Category>
+        struct Bottom<SubTask>
         {
-            //! @brief Maximum value of the Category enum.
+            //! @brief Maximum value of the SubTask enum.
             static constexpr std::uint8_t value{4};
         };
 
@@ -282,7 +282,7 @@ private:
 protected:
     template <typename Container, typename Predicate>
     requires std::regular_invocable<Predicate, typename Container::value_type>
-    friend auto operator|(const Container& container, Predicate predicate);
+    friend inline auto operator|(const Container& container, Predicate predicate);
 };
 
 template <typename T>
@@ -319,7 +319,7 @@ auto Command::get(const TaskFunctorTuple& tuple) const
 //! @return container after filtered
 template <typename Container, typename Predicate>
 requires std::regular_invocable<Predicate, typename Container::value_type>
-auto operator|(const Container& container, Predicate predicate)
+inline auto operator|(const Container& container, Predicate predicate)
 {
     Container result{};
     std::copy_if(container.cbegin(), container.cend(), std::inserter(result, result.end()), predicate);

@@ -13,7 +13,8 @@
 #include <sys/stat.h>
 #include <algorithm>
 #include <cstring>
-#include <iterator>
+#include <iostream>
+#include <sstream>
 #else
 #include "application/pch/precompiled_header.hpp"
 #endif // __PRECOMPILED_HEADER
@@ -469,7 +470,7 @@ void View::printSharedMemory(const int shmId)
     {
         if (shrMem->signal.load())
         {
-            std::printf("\r\n%s\n", shrMem->buffer);
+            std::cout << "\r\n" << shrMem->buffer << std::endl;
             shrMem->signal.store(false);
             break;
         }

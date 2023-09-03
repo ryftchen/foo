@@ -6,7 +6,6 @@
 
 #include "argument.hpp"
 #include <iomanip>
-#include <utility>
 
 namespace utility::argument
 {
@@ -492,7 +491,7 @@ void Argument::addSubParser(Argument& parser)
 
 bool Argument::isValidPrefixChar(const char c) const
 {
-    return prefixChars.find(c) != std::string::npos;
+    return (prefixChars.find(c) != std::string::npos);
 }
 
 char Argument::getAnyValidPrefixChar() const
@@ -511,7 +510,7 @@ std::vector<std::string> Argument::preprocessArguments(const std::vector<std::st
             {
                 const auto legalPrefix = [this](const char c)
                 {
-                    return prefixChars.find(c) != std::string::npos;
+                    return (prefixChars.find(c) != std::string::npos);
                 };
 
                 const auto windowsStyle = legalPrefix('/');

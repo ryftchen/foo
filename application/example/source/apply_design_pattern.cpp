@@ -6,7 +6,7 @@
 
 #include "apply_design_pattern.hpp"
 #ifndef __PRECOMPILED_HEADER
-#include <iomanip>
+#include <syncstream>
 #else
 #include "application/pch/precompiled_header.hpp"
 #endif // __PRECOMPILED_HEADER
@@ -14,25 +14,25 @@
 #include "application/core/include/log.hpp"
 
 //! @brief Title of printing when design pattern tasks are beginning.
-#define APP_DP_PRINT_TASK_BEGIN_TITLE(taskType)                                                                       \
-    std::cout << "\r\n"                                                                                               \
-              << "DESIGN PATTERN TASK: " << std::setiosflags(std::ios_base::left) << std::setfill('.')                \
-              << std::setw(50) << taskType << "BEGIN" << std::resetiosflags(std::ios_base::left) << std::setfill(' ') \
-              << std::endl;                                                                                           \
+#define APP_DP_PRINT_TASK_BEGIN_TITLE(category)                                                               \
+    std::osyncstream(std::cout) << "\r\n"                                                                     \
+                                << "DESIGN PATTERN TASK: " << std::setiosflags(std::ios_base::left)           \
+                                << std::setfill('.') << std::setw(50) << category << "BEGIN"                  \
+                                << std::resetiosflags(std::ios_base::left) << std::setfill(' ') << std::endl; \
     {
 //! @brief Title of printing when design pattern tasks are ending.
-#define APP_DP_PRINT_TASK_END_TITLE(taskType)                                                                       \
-    }                                                                                                               \
-    std::cout << "\r\n"                                                                                             \
-              << "DESIGN PATTERN TASK: " << std::setiosflags(std::ios_base::left) << std::setfill('.')              \
-              << std::setw(50) << taskType << "END" << std::resetiosflags(std::ios_base::left) << std::setfill(' ') \
-              << '\n'                                                                                               \
-              << std::endl;
+#define APP_DP_PRINT_TASK_END_TITLE(category)                                                           \
+    }                                                                                                   \
+    std::osyncstream(std::cout) << "\r\n"                                                               \
+                                << "DESIGN PATTERN TASK: " << std::setiosflags(std::ios_base::left)     \
+                                << std::setfill('.') << std::setw(50) << category << "END"              \
+                                << std::resetiosflags(std::ios_base::left) << std::setfill(' ') << '\n' \
+                                << std::endl;
 
 namespace application::app_dp
 {
-//! @brief Alias for Type.
-using Type = DesignPatternTask::Type;
+//! @brief Alias for Category.
+using Category = DesignPatternTask::Category;
 //! @brief Alias for Bottom.
 //! @tparam T - type of specific enum
 template <class T>
@@ -215,7 +215,7 @@ void runBehavioralTasks(const std::vector<std::string>& targets)
     using behavioral::BehavioralPattern;
     using utility::common::operator""_bkdrHash;
 
-    APP_DP_PRINT_TASK_BEGIN_TITLE(Type::behavioral);
+    APP_DP_PRINT_TASK_BEGIN_TITLE(Category::behavioral);
     auto* threads = command::getPublicThreadPool().newElement(std::min(
         static_cast<std::uint32_t>(getBit<BehavioralInstance>().count()),
         static_cast<std::uint32_t>(Bottom<BehavioralInstance>::value)));
@@ -276,7 +276,7 @@ void runBehavioralTasks(const std::vector<std::string>& targets)
     }
 
     command::getPublicThreadPool().deleteElement(threads);
-    APP_DP_PRINT_TASK_END_TITLE(Type::behavioral);
+    APP_DP_PRINT_TASK_END_TITLE(Category::behavioral);
 }
 
 //! @brief Update behavioral instances in tasks.
@@ -410,7 +410,7 @@ void runCreationalTasks(const std::vector<std::string>& targets)
     using creational::CreationalPattern;
     using utility::common::operator""_bkdrHash;
 
-    APP_DP_PRINT_TASK_BEGIN_TITLE(Type::creational);
+    APP_DP_PRINT_TASK_BEGIN_TITLE(Category::creational);
     auto* threads = command::getPublicThreadPool().newElement(std::min(
         static_cast<std::uint32_t>(getBit<CreationalInstance>().count()),
         static_cast<std::uint32_t>(Bottom<CreationalInstance>::value)));
@@ -453,7 +453,7 @@ void runCreationalTasks(const std::vector<std::string>& targets)
     }
 
     command::getPublicThreadPool().deleteElement(threads);
-    APP_DP_PRINT_TASK_END_TITLE(Type::creational);
+    APP_DP_PRINT_TASK_END_TITLE(Category::creational);
 }
 
 //! @brief Update creational instances in tasks.
@@ -595,7 +595,7 @@ void runStructuralTasks(const std::vector<std::string>& targets)
     using structural::StructuralPattern;
     using utility::common::operator""_bkdrHash;
 
-    APP_DP_PRINT_TASK_BEGIN_TITLE(Type::structural);
+    APP_DP_PRINT_TASK_BEGIN_TITLE(Category::structural);
     auto* threads = command::getPublicThreadPool().newElement(std::min(
         static_cast<std::uint32_t>(getBit<StructuralInstance>().count()),
         static_cast<std::uint32_t>(Bottom<StructuralInstance>::value)));
@@ -644,7 +644,7 @@ void runStructuralTasks(const std::vector<std::string>& targets)
     }
 
     command::getPublicThreadPool().deleteElement(threads);
-    APP_DP_PRINT_TASK_END_TITLE(Type::structural);
+    APP_DP_PRINT_TASK_END_TITLE(Category::structural);
 }
 
 //! @brief Update structural instances in tasks.

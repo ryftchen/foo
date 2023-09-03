@@ -37,7 +37,7 @@ public:
     struct Bottom;
 
     //! @brief Enumerate specific algorithm tasks.
-    enum Type : std::uint8_t
+    enum Category : std::uint8_t
     {
         match,
         notation,
@@ -158,31 +158,31 @@ public:
     }
 
 protected:
-    //! @brief The operator (<<) overloading of the Type enum.
+    //! @brief The operator (<<) overloading of the Category enum.
     //! @param os - output stream object
-    //! @param type - the specific value of Type enum
+    //! @param cat - the specific value of Category enum
     //! @return reference of output stream object
-    friend std::ostream& operator<<(std::ostream& os, const Type type)
+    friend std::ostream& operator<<(std::ostream& os, const Category cat)
     {
-        switch (type)
+        switch (cat)
         {
-            case Type::match:
+            case Category::match:
                 os << "MATCH";
                 break;
-            case Type::notation:
+            case Category::notation:
                 os << "NOTATION";
                 break;
-            case Type::optimal:
+            case Category::optimal:
                 os << "OPTIMAL";
                 break;
-            case Type::search:
+            case Category::search:
                 os << "SEARCH";
                 break;
-            case Type::sort:
+            case Category::sort:
                 os << "SORT";
                 break;
             default:
-                os << "UNKNOWN: " << static_cast<std::underlying_type_t<Type>>(type);
+                os << "UNKNOWN: " << static_cast<std::underlying_type_t<Category>>(cat);
         }
         return os;
     }
@@ -467,7 +467,7 @@ public:
     double operator()(const double x) const override
     {
         // f(x)=An+Σ(1→n)[(Xi)^2-Acos(2π*Xi)],A=10,x∈[-5.12,5.12],f(min)=0
-        return (x * x - 10.0 * std::cos(2.0 * M_PI * x) + 10.0);
+        return (x * x - 10.0 * std::cos(2.0 * std::numbers::pi * x) + 10.0);
     }
 
     //! @brief Left endpoint.
@@ -785,7 +785,7 @@ private:
         const std::uint32_t arrayBufferSize = length * maxAlignOfPrint;
         char arrayBuffer[arrayBufferSize + 1];
         arrayBuffer[0] = '\0';
-        std::cout << "\r\ngenerate " << length << " ordered integral numbers from " << left << " to " << right << ":\n"
+        std::cout << "\r\nGenerate " << length << " ordered integral numbers from " << left << " to " << right << ":\n"
                   << spliceAll<T>(array, length, arrayBuffer, arrayBufferSize + 1) << std::endl;
 #endif // __RUNTIME_PRINTING
     }

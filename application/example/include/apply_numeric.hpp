@@ -29,7 +29,7 @@ public:
     struct Bottom;
 
     //! @brief Enumerate specific numeric tasks.
-    enum Type : std::uint8_t
+    enum Category : std::uint8_t
     {
         arithmetic,
         divisor,
@@ -123,28 +123,28 @@ public:
     }
 
 protected:
-    //! @brief The operator (<<) overloading of the Type enum.
+    //! @brief The operator (<<) overloading of the Category enum.
     //! @param os - output stream object
-    //! @param type - the specific value of Type enum
+    //! @param cat - the specific value of Category enum
     //! @return reference of output stream object
-    friend std::ostream& operator<<(std::ostream& os, const Type type)
+    friend std::ostream& operator<<(std::ostream& os, const Category cat)
     {
-        switch (type)
+        switch (cat)
         {
-            case Type::arithmetic:
+            case Category::arithmetic:
                 os << "ARITHMETIC";
                 break;
-            case Type::divisor:
+            case Category::divisor:
                 os << "DIVISOR";
                 break;
-            case Type::integral:
+            case Category::integral:
                 os << "INTEGRAL";
                 break;
-            case Type::prime:
+            case Category::prime:
                 os << "PRIME";
                 break;
             default:
-                os << "UNKNOWN: " << static_cast<std::underlying_type_t<Type>>(type);
+                os << "UNKNOWN: " << static_cast<std::underlying_type_t<Category>>(cat);
         }
         return os;
     }
@@ -387,9 +387,9 @@ public:
     double operator()(const double x) const override { return ((x * std::sin(x)) / (1.0 + std::cos(x) * std::cos(x))); }
 
     //! @brief Left endpoint.
-    static constexpr double range1{-M_PI / 2.0};
+    static constexpr double range1{-std::numbers::pi / 2.0};
     //! @brief Right endpoint.
-    static constexpr double range2{2.0 * M_PI};
+    static constexpr double range2{2.0 * std::numbers::pi};
     //! @brief Expression example 1.
     static constexpr std::string_view exprDescr{"I=∫(-π/2→2π)x*sin(x)/(1+(cos(x))^2)dx"};
 };
