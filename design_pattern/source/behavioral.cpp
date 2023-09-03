@@ -5,7 +5,6 @@
 //! @copyright Copyright (c) 2022-2023 ryftchen. All rights reserved.
 
 #include "behavioral.hpp"
-#include <algorithm>
 
 namespace design_pattern::behavioral
 {
