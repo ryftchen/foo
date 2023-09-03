@@ -166,23 +166,25 @@ function try_to_perform_single_choice_options()
 function perform_help_option()
 {
     if [[ ${ARGS[help]} = true ]]; then
-        echo "usage: $(basename "${0}") [options...]"
+        echo "usage: $(basename "${0}") [-h] [-I] [-C] [-D] [-i] [-u] [-t {-r}] [[{-p, -f, -l, -c, -b, -d} ...] {-r}]"
         echo
-        echo "optional:"
-        echo "-h, --help          show help and exit"
-        echo "-I, --initialize    initialize environment and exit"
-        echo "-C, --cleanup       cleanup folder and exit"
-        echo "-D, --docker        construct docker container and exit"
-        echo "-i, --install       install binary with library and exit"
-        echo "-u, --uninstall     uninstall binary with library and exit"
-        echo "-t, --test          build unit test and exit"
-        echo "-r, --release       set as release version"
-        echo "-p, --precheck      precheck all files before commit"
-        echo "-f, --format        format all code"
-        echo "-l, --lint          lint all code"
-        echo "-c, --count         count lines of code"
-        echo "-b, --browser       document by code browser"
-        echo "-d, --doxygen       document by doxygen"
+        echo "build script"
+        echo
+        echo "options:"
+        echo "  -h, --help            show help and exit"
+        echo "  -I, --initialize      initialize environment and exit"
+        echo "  -C, --cleanup         cleanup folder and exit"
+        echo "  -D, --docker          construct docker container and exit"
+        echo "  -i, --install         install binary with library and exit"
+        echo "  -u, --uninstall       uninstall binary with library and exit"
+        echo "  -t, --test            build unit test and exit"
+        echo "  -r, --release         set as release version"
+        echo "  -p, --precheck        precheck all files before commit"
+        echo "  -f, --format          format all code"
+        echo "  -l, --lint            lint all code"
+        echo "  -c, --count           count lines of code"
+        echo "  -b, --browser         document by code browser"
+        echo "  -d, --doxygen         document by doxygen"
         exit 0
     fi
 }
@@ -203,7 +205,7 @@ function perform_initialize_option()
 FOO_BLD_PARALLEL=0
 FOO_BLD_PCH=off
 FOO_BLD_UNITY=off
-FOO_BLD_CCACHE=off
+FOO_BLD_CCACHE=on
 FOO_BLD_DISTCC=off
 FOO_BLD_TMPFS=off
 

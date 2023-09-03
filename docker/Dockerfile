@@ -22,6 +22,5 @@ clang-format-15 clang-tidy-15 shfmt shellcheck black pylint valgrind cloc pre-co
 && git clone https://github.com/KDAB/codebrowser.git \
 && git -C ./codebrowser reset --hard 85834c9cb99d36051912d3007697087d871faa83 \
 && cmake -S ./codebrowser -B ./codebrowser/build -DCMAKE_CXX_COMPILER=clang++-15 -DCMAKE_BUILD_TYPE=Release \
-&& make -C ./codebrowser/build -j \
 && sudo make -C ./codebrowser/build install \
 && rm -rf ./codebrowser

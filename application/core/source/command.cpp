@@ -337,14 +337,18 @@ void Command::validateBasicTask()
 
 void Command::validateRegularTask()
 {
-    for ([[maybe_unused]] const auto& [subCLIName, subCLIMap] : regularTaskDispatcher)
+    const auto isSubCLIUsed = [this](const auto& subCLIPair)
     {
-        if (!mainCLI.isSubCommandUsed(subCLIName))
+        if (mainCLI.isSubCommandUsed(subCLIPair.first))
         {
-            continue;
+            checkForExcessArguments();
+            return true;
         }
-        checkForExcessArguments();
+        return false;
+    };
 
+    for ([[maybe_unused]] const auto& [subCLIName, subCLIMap] : regularTaskDispatcher | isSubCLIUsed)
+    {
         const auto& subCLI = mainCLI.at<utility::argument::Argument>(subCLIName);
         if (!subCLI)
         {
@@ -356,14 +360,18 @@ void Command::validateRegularTask()
         {
             dispatchedTask.regularTask.helpOnly = true;
         }
-        for ([[maybe_unused]] const auto& [taskCategory, taskCategoryTuple] : subCLIMap)
+        const auto isCategoryUsed = [this, subCLI](const auto& categoryPair)
         {
-            if (!subCLI.isUsed(taskCategory))
+            if (subCLI.isUsed(categoryPair.first))
             {
-                continue;
+                checkForExcessArguments();
+                return true;
             }
-            checkForExcessArguments();
+            return false;
+        };
 
+        for ([[maybe_unused]] const auto& [taskCategory, taskCategoryTuple] : subCLIMap | isCategoryUsed)
+        {
             const auto tasks = subCLI.get<std::vector<std::string>>(taskCategory);
             for (const auto& task : tasks)
             {

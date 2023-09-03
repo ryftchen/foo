@@ -199,61 +199,18 @@ void setBit(const int index)
     }
 }
 
+//! @brief Apply arithmetic.
+namespace arithmetic
+{
 //! @brief Set input parameters.
 namespace input
 {
 //! @brief One of integers for arithmetic methods.
-constexpr int integerForArithmetic1 = 1073741823;
+constexpr int integerA = 1073741823;
 //! @brief One of integers for arithmetic methods.
-constexpr int integerForArithmetic2 = -2;
-//! @brief One of integers for divisor methods.
-constexpr int integerForDivisor1 = 2 * 2 * 3 * 3 * 5 * 5 * 7 * 7;
-//! @brief One of integers for divisor methods.
-constexpr int integerForDivisor2 = 2 * 3 * 5 * 7 * 11 * 13 * 17;
-//! @brief Maximum positive integer for prime methods.
-constexpr std::uint32_t maxPositiveIntegerForPrime = 997;
-
-//! @brief Expression example 1.
-class Expression1 : public numeric::integral::Expression
-{
-public:
-    //! @brief The operator (()) overloading of Expression1 class.
-    //! @param x - independent variable
-    //! @return dependent variable
-    double operator()(const double x) const override { return ((x * std::sin(x)) / (1.0 + std::cos(x) * std::cos(x))); }
-
-    //! @brief Left endpoint.
-    static constexpr double range1{-M_PI / 2.0};
-    //! @brief Right endpoint.
-    static constexpr double range2{2.0 * M_PI};
-    //! @brief Expression example 1.
-    static constexpr std::string_view exprDescr{"I=∫(-π/2→2π)x*sin(x)/(1+(cos(x))^2)dx"};
-};
-
-//! @brief Expression example 2.
-class Expression2 : public numeric::integral::Expression
-{
-public:
-    //! @brief The operator (()) overloading of Expression2 class.
-    //! @param x - independent variable
-    //! @return dependent variable
-    double operator()(const double x) const override
-    {
-        return (x + 10.0 * std::sin(5.0 * x) + 7.0 * std::cos(4.0 * x));
-    }
-
-    //! @brief Left endpoint.
-    static constexpr double range1{0.0};
-    //! @brief Right endpoint.
-    static constexpr double range2{9.0};
-    //! @brief Expression example 2.
-    static constexpr std::string_view exprDescr{"I=∫(0→9)x+10sin(5x)+7cos(4x)dx"};
-};
+constexpr int integerB = -2;
 } // namespace input
 
-//! @brief Apply arithmetic.
-namespace arithmetic
-{
 //! @brief Solution of arithmetic.
 class ArithmeticSolution
 {
@@ -312,6 +269,15 @@ extern void updateArithmeticTask(const std::string& target);
 //! @brief Apply divisor.
 namespace divisor
 {
+//! @brief Set input parameters.
+namespace input
+{
+//! @brief One of integers for divisor methods.
+constexpr int integerA = 2 * 2 * 3 * 3 * 5 * 5 * 7 * 7;
+//! @brief One of integers for divisor methods.
+constexpr int integerB = 2 * 3 * 5 * 7 * 11 * 13 * 17;
+} // namespace input
+
 //! @brief Solution of divisor.
 class DivisorSolution
 {
@@ -408,6 +374,47 @@ extern void updateDivisorTask(const std::string& target);
 //! @brief Apply integral.
 namespace integral
 {
+//! @brief Set input parameters.
+namespace input
+{
+//! @brief Expression example 1.
+class Expression1 : public numeric::integral::Expression
+{
+public:
+    //! @brief The operator (()) overloading of Expression1 class.
+    //! @param x - independent variable
+    //! @return dependent variable
+    double operator()(const double x) const override { return ((x * std::sin(x)) / (1.0 + std::cos(x) * std::cos(x))); }
+
+    //! @brief Left endpoint.
+    static constexpr double range1{-M_PI / 2.0};
+    //! @brief Right endpoint.
+    static constexpr double range2{2.0 * M_PI};
+    //! @brief Expression example 1.
+    static constexpr std::string_view exprDescr{"I=∫(-π/2→2π)x*sin(x)/(1+(cos(x))^2)dx"};
+};
+
+//! @brief Expression example 2.
+class Expression2 : public numeric::integral::Expression
+{
+public:
+    //! @brief The operator (()) overloading of Expression2 class.
+    //! @param x - independent variable
+    //! @return dependent variable
+    double operator()(const double x) const override
+    {
+        return (x + 10.0 * std::sin(5.0 * x) + 7.0 * std::cos(4.0 * x));
+    }
+
+    //! @brief Left endpoint.
+    static constexpr double range1{0.0};
+    //! @brief Right endpoint.
+    static constexpr double range2{9.0};
+    //! @brief Expression example 2.
+    static constexpr std::string_view exprDescr{"I=∫(0→9)x+10sin(5x)+7cos(4x)dx"};
+};
+} // namespace input
+
 //! @brief Alias for the target expression.
 using Expression = numeric::integral::Expression;
 
@@ -510,6 +517,13 @@ extern void updateIntegralTask(const std::string& target);
 //! @brief Apply prime.
 namespace prime
 {
+//! @brief Set input parameters.
+namespace input
+{
+//! @brief Maximum positive integer for prime methods.
+constexpr std::uint32_t maxPositiveInteger = 997;
+} // namespace input
+
 //! @brief Solution of prime.
 class PrimeSolution
 {
