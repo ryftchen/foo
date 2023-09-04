@@ -296,7 +296,7 @@ class Task:
             stdout = stdout.replace("\t", "    ")
             print(stdout)
             self.pass_steps += 1
-            if ("[ERR]" in stdout or "[WRN]" in stdout) and ("log" not in command and "log" not in enter):
+            if "[ERR]" in stdout or "[WRN]" in stdout:
                 self.pass_steps -= 1
                 Output.refresh_status(
                     Output.color["red"], f"{f'STAT: FAILURE NO.{str(self.complete_steps + 1)}':<{align_len}}"
