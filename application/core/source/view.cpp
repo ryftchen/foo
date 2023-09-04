@@ -314,6 +314,31 @@ void View::requestToRestart()
     lock.lock();
 }
 
+View::OptionMap View::getViewerOptions() const
+{
+    return optionDispatcher;
+}
+
+std::string View::getViewerTCPHost() const
+{
+    return tcpHost;
+}
+
+std::uint16_t View::getViewerTCPPort() const
+{
+    return tcpPort;
+}
+
+std::string View::getViewerUDPHost() const
+{
+    return udpHost;
+}
+
+std::uint16_t View::getViewerUDPPort() const
+{
+    return udpPort;
+}
+
 tlv::TLVValue View::parseTLVPacket(char* buffer, const int length)
 {
     decryptMessage(buffer, length);

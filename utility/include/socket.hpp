@@ -30,9 +30,9 @@ public:
     //! @brief When using asynchronous, wait for the receiving thread to exit.
     void waitIfAlive();
     //! @brief Set the blocking mode.
-    inline void setBlocking() const;
+    void setBlocking() const;
     //! @brief Set the non-blocking mode.
-    inline void setNonBlocking() const;
+    void setNonBlocking() const;
 
     //! @brief Bytes buffer size.
     static constexpr std::uint16_t bufferSize{0xFFFF};
@@ -67,16 +67,6 @@ protected:
     //! @brief Result of asynchronous operations for the receiving thread.
     std::future<void> fut{};
 };
-
-inline void Socket::setBlocking() const
-{
-    setTimeout(0);
-}
-
-inline void Socket::setNonBlocking() const
-{
-    setTimeout(1);
-}
 
 //! @brief TCP socket.
 class TCPSocket : public Socket

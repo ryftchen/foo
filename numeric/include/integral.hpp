@@ -47,14 +47,9 @@ protected:
     //! @param lower - lower endpoint
     //! @param upper - upper endpoint
     //! @return sign
-    static inline int getSign(double& lower, double& upper);
+    static int getSign(double& lower, double& upper);
     friend double trapezoid(const Expression& expr, const double left, const double height, const std::uint32_t step);
 };
-
-inline int Integral::getSign(double& lower, double& upper)
-{
-    return (lower < upper) ? 1 : ((lower > upper) ? (std::swap(lower, upper), -1) : 0);
-}
 
 //! @brief The trapezoidal method.
 class Trapezoidal : public Integral

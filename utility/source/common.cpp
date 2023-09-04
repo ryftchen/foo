@@ -136,7 +136,7 @@ std::string base64Decode(const std::string& data)
 //! @return string after formatting
 std::string formatString(const char* const format, ...)
 {
-    ::va_list list;
+    std::va_list list;
     ::va_start(list, format);
     int bufferSize = std::vsnprintf(nullptr, 0, format, list);
     ::va_end(list);

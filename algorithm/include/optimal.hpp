@@ -329,22 +329,10 @@ private:
     Chromosome getBestIndividual(const Population& pop);
     //! @brief The probability of a possible event.
     //! @return probability from 0 to 1
-    inline double probability();
+    double probability();
     //! @brief Get a random number from 0 to the limit.
     //! @param limit - maximum random number
     //! @return random number
-    inline std::uint32_t getRandomLessThanLimit(const std::uint32_t limit);
+    std::uint32_t getRandomLessThanLimit(const std::uint32_t limit);
 };
-
-inline double Genetic::probability()
-{
-    std::uniform_real_distribution<double> pr(0.0, 1.0);
-    return pr(engine);
-}
-
-inline std::uint32_t Genetic::getRandomLessThanLimit(const std::uint32_t limit)
-{
-    std::uniform_int_distribution<int> num(0, limit);
-    return num(engine);
-}
 } // namespace algorithm::optimal

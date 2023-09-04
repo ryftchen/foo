@@ -394,4 +394,9 @@ bool queueIsEmpty(Queue pHead)
     return dllIsEmpty(pHead);
 }
 } // namespace queue
+
+std::ostringstream& Output::flush()
+{
+    return stream;
+}
 } // namespace date_structure::linear

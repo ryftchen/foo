@@ -60,8 +60,7 @@ public:
 
     //! @brief Flush the output stream.
     //! @return reference of output stream object, which is on string based
-    inline std::ostringstream& flush();
-
+    std::ostringstream& flush();
     //! @brief The pre-order traversal of the binary search tree.
     //! @param tree - tree root, the target binary search tree has this node as the root node
     void preorderBSTree(BSTree tree);
@@ -81,11 +80,6 @@ private:
     //! @brief Output stream of the binary search tree structure.
     std::ostringstream stream;
 };
-
-inline std::ostringstream& Output::flush()
-{
-    return stream;
-}
 } // namespace bs
 
 //! @brief The Adelson-Velsky-Landis tree structure.
@@ -139,7 +133,7 @@ public:
 
     //! @brief Flush the output stream.
     //! @return reference of output stream object, which is on string based
-    inline std::ostringstream& flush();
+    std::ostringstream& flush();
     //! @brief The pre-order traversal of the AVL tree.
     //! @param tree - tree root, the target AVL tree has this node as the root node
     void preorderAVLTree(AVLTree tree);
@@ -159,11 +153,6 @@ private:
     //! @brief Output stream of the AVL tree structure.
     std::ostringstream stream;
 };
-
-inline std::ostringstream& Output::flush()
-{
-    return stream;
-}
 } // namespace avl
 
 //! @brief The splay tree structure.
@@ -211,7 +200,7 @@ public:
 
     //! @brief Flush the output stream.
     //! @return reference of output stream object, which is on string based
-    inline std::ostringstream& flush();
+    std::ostringstream& flush();
     //! @brief The pre-order traversal of the splay tree.
     //! @param tree - tree root, the target splay tree has this node as the root node
     void preorderSplayTree(SplayTree tree);
@@ -231,10 +220,5 @@ private:
     //! @brief Output stream of the splay tree structure.
     std::ostringstream stream;
 };
-
-inline std::ostringstream& Output::flush()
-{
-    return stream;
-}
 } // namespace splay
 } // namespace date_structure::tree

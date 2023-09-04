@@ -453,4 +453,16 @@ Genetic::Chromosome Genetic::getBestIndividual(const Population& pop)
 
     return *indBestIter;
 }
+
+double Genetic::probability()
+{
+    std::uniform_real_distribution<double> pr(0.0, 1.0);
+    return pr(engine);
+}
+
+std::uint32_t Genetic::getRandomLessThanLimit(const std::uint32_t limit)
+{
+    std::uniform_int_distribution<int> num(0, limit);
+    return num(engine);
+}
 } // namespace algorithm::optimal

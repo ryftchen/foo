@@ -48,11 +48,6 @@ private:
     //! @brief Check whether the character is the operator.
     //! @param c - character
     //! @return be operator or not
-    static inline bool isOperator(const char c);
+    static bool isOperator(const char c);
 };
-
-inline bool Notation::isOperator(const char c)
-{
-    return (!std::isalpha(c) && !std::isdigit(c));
-}
 } // namespace algorithm::notation
