@@ -190,16 +190,16 @@ void runMatchTasks(const std::vector<std::string>& targets)
 
     using match::MatchSolution;
     using match::TargetBuilder;
-    using match::input::singlePattern;
+    using match::input::patternString;
     using utility::common::operator""_bkdrHash;
 
-    static_assert(TargetBuilder::maxDigit > singlePattern.length());
+    static_assert(TargetBuilder::maxDigit > patternString.length());
     APP_ALGO_PRINT_TASK_BEGIN_TITLE(Category::match);
     auto* threads = command::getPublicThreadPool().newElement(std::min(
         static_cast<std::uint32_t>(getBit<MatchMethod>().count()),
         static_cast<std::uint32_t>(Bottom<MatchMethod>::value)));
 
-    const auto builder = std::make_shared<TargetBuilder>(singlePattern);
+    const auto builder = std::make_shared<TargetBuilder>(patternString);
     const auto matchFunctor = [threads, builder](
                                   const std::string& threadName,
                                   void (*methodPtr)(const char*, const char*, const std::uint32_t, const std::uint32_t))

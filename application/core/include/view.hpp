@@ -175,7 +175,7 @@ public:
     using OptionMap = std::map<Option, OptionTuple>;
     //! @brief Get the viewer options.
     //! @return viewer options
-    inline OptionMap getViewerOptions() const;
+    OptionMap getViewerOptions() const;
     //! @brief Get a member of OptionTuple.
     //! @tparam T - type of member to be got
     //! @param tuple - a tuple containing the member types to be got
@@ -184,16 +184,16 @@ public:
     static auto get(const OptionTuple& tuple);
     //! @brief Get the TCP server host address.
     //! @return TCP server host address
-    inline std::string getViewerTCPHost() const;
+    std::string getViewerTCPHost() const;
     //! @brief Get the TCP server port number.
     //! @return TCP server port number
-    inline std::uint16_t getViewerTCPPort() const;
+    std::uint16_t getViewerTCPPort() const;
     //! @brief Get the UDP server host address.
     //! @return UDP server host address
-    inline std::string getViewerUDPHost() const;
+    std::string getViewerUDPHost() const;
     //! @brief Get the UDP server port number.
     //! @return UDP server port number
-    inline std::uint16_t getViewerUDPPort() const;
+    std::uint16_t getViewerUDPPort() const;
     //! @brief Parse the TLV packet.
     //! @param buffer - TLV packet buffer
     //! @param length - buffer length
@@ -346,11 +346,6 @@ protected:
     friend std::ostream& operator<<(std::ostream& os, const State state);
 };
 
-inline View::OptionMap View::getViewerOptions() const
-{
-    return optionDispatcher;
-}
-
 template <typename T>
 auto View::get(const OptionTuple& tuple)
 {
@@ -362,25 +357,5 @@ auto View::get(const OptionTuple& tuple)
     {
         return std::get<1>(tuple);
     }
-}
-
-inline std::string View::getViewerTCPHost() const
-{
-    return tcpHost;
-}
-
-inline std::uint16_t View::getViewerTCPPort() const
-{
-    return tcpPort;
-}
-
-inline std::string View::getViewerUDPHost() const
-{
-    return udpHost;
-}
-
-inline std::uint16_t View::getViewerUDPPort() const
-{
-    return udpPort;
 }
 } // namespace application::view

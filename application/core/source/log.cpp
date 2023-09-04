@@ -190,6 +190,16 @@ void Log::requestToRestart()
     lock.lock();
 }
 
+std::string Log::getFilePath() const
+{
+    return std::filesystem::absolute(filePath).string();
+}
+
+utility::file::ReadWriteLock& Log::getFileLock()
+{
+    return fileLock;
+}
+
 void Log::openLogFile()
 {
     const std::filesystem::path logFolderPath = std::filesystem::absolute(filePath).parent_path();

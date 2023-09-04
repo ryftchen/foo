@@ -280,6 +280,11 @@ void destroyBSTree(BSTree tree)
     delete tree;
 }
 
+std::ostringstream& Output::flush()
+{
+    return stream;
+}
+
 void Output::preorderBSTree(BSTree tree)
 {
     if (nullptr != tree)
@@ -623,6 +628,11 @@ void destroyAVLTree(AVLTree tree)
     delete tree;
 }
 
+std::ostringstream& Output::flush()
+{
+    return stream;
+}
+
 void Output::preorderAVLTree(AVLTree tree)
 {
     if (nullptr != tree)
@@ -935,6 +945,11 @@ void destroySplayTree(SplayTree tree)
     }
 
     delete tree;
+}
+
+std::ostringstream& Output::flush()
+{
+    return stream;
 }
 
 void Output::preorderSplayTree(SplayTree tree)

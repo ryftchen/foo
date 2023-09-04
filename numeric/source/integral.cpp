@@ -10,6 +10,11 @@
 
 namespace numeric::integral
 {
+int Integral::getSign(double& lower, double& upper)
+{
+    return (lower < upper) ? 1 : ((lower > upper) ? (std::swap(lower, upper), -1) : 0);
+}
+
 //! @brief Calculate the value of the definite integral with the trapezoidal rule.
 //! @param expr - target expression
 //! @param left - left endpoint

@@ -42,32 +42,15 @@ private:
     //! @param a - augend
     //! @param b - augend
     //! @return sum
-    static inline int bitAdd(const int a, const int b);
+    static int bitAdd(const int a, const int b);
     //! @brief Bitwise operation for subtract.
     //! @param a - minuend
     //! @param b - subtrahend
     //! @return difference
-    static inline int bitSub(const int a, const int b);
+    static int bitSub(const int a, const int b);
     //! @brief Bitwise operation for absolute value.
     //! @param a - value
     //! @return absolute value
-    static inline int bitAbs(const int a);
+    static int bitAbs(const int a);
 };
-
-inline int Arithmetic::bitAdd(const int a, const int b)
-{
-    const int sum = a ^ b, carry = (a & b) << 1;
-    return ((sum & carry) ? bitAdd(sum, carry) : (sum ^ carry));
-}
-
-inline int Arithmetic::bitSub(const int a, const int b)
-{
-    return bitAdd(a, bitAdd(~b, 1));
-}
-
-inline int Arithmetic::bitAbs(const int a)
-{
-    const int mask = a >> (sizeof(int) * 8 - 1);
-    return ((a ^ mask) - mask);
-}
 } // namespace numeric::arithmetic

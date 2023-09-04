@@ -64,4 +64,21 @@ int Arithmetic::division(const int dividend, const int divisor)
 
     return quotient;
 }
+
+int Arithmetic::bitAdd(const int a, const int b)
+{
+    const int sum = a ^ b, carry = (a & b) << 1;
+    return ((sum & carry) ? bitAdd(sum, carry) : (sum ^ carry));
+}
+
+int Arithmetic::bitSub(const int a, const int b)
+{
+    return bitAdd(a, bitAdd(~b, 1));
+}
+
+int Arithmetic::bitAbs(const int a)
+{
+    const int mask = a >> (sizeof(int) * 8 - 1);
+    return ((a ^ mask) - mask);
+}
 } // namespace numeric::arithmetic

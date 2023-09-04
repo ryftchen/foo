@@ -252,7 +252,7 @@ namespace match
 namespace input
 {
 //! @brief Single pattern for match methods.
-constexpr std::string_view singlePattern = "12345";
+constexpr std::string_view patternString = "12345";
 } // namespace input
 
 //! @brief Solution of match.

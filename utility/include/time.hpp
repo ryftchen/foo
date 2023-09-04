@@ -29,11 +29,11 @@ public:
     virtual ~Time() = default;
 
     //! @brief Set the beginning time.
-    inline void setBeginTime();
+    void setBeginTime();
     //! @brief Set the ending time.
-    inline void setEndTime();
+    void setEndTime();
     //! @brief Get the time interval.
-    [[nodiscard]] inline double getTimeInterval() const;
+    [[nodiscard]] double getTimeInterval() const;
 
 private:
     //! @brief Beginning time.
@@ -41,23 +41,6 @@ private:
     //! @brief Ending time.
     std::chrono::steady_clock::time_point endTime;
 };
-
-inline void Time::setBeginTime()
-{
-    beginTime = std::chrono::steady_clock::now();
-}
-
-inline void Time::setEndTime()
-{
-    endTime = std::chrono::steady_clock::now();
-}
-
-inline double Time::getTimeInterval() const
-{
-    const std::chrono::duration<double, std::milli> timeInterval =
-        std::chrono::duration<double, std::milli>(endTime - beginTime);
-    return timeInterval.count();
-}
 
 //! @brief Blocking Timer.
 class BlockingTimer
@@ -71,22 +54,14 @@ public:
     //! @param interval - time interval
     void set(auto func, const std::uint32_t interval);
     //! @brief Reset the blocking timer.
-    inline void reset();
+    void reset();
 
 private:
     //! @brief Flag to indicate whether the blocking timer is running.
     std::atomic<bool> isRunning{true};
-
-protected:
-    friend inline void millisecondLevelSleep(const std::uint32_t duration);
 };
 
-//! @brief Perform millisecond-level sleep.
-//! @param duration - sleep duration
-inline void millisecondLevelSleep(const std::uint32_t duration)
-{
-    std::this_thread::sleep_for(std::chrono::operator""ms(duration));
-}
+extern void millisecondLevelSleep(const std::uint32_t duration);
 
 void BlockingTimer::set(auto func, const std::uint32_t interval)
 {
@@ -101,11 +76,6 @@ void BlockingTimer::set(auto func, const std::uint32_t interval)
             }
         });
     timer.join();
-}
-
-inline void BlockingTimer::reset()
-{
-    isRunning.store(false);
 }
 
 extern std::string getCurrentSystemTime();

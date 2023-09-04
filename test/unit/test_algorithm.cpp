@@ -38,7 +38,7 @@ public:
     static void SetUpTestCase()
     {
         TST_ALGO_PRINT_TASK_TITLE("MATCH", "BEGIN");
-        builder = std::make_shared<match::TargetBuilder>(match::input::singlePattern);
+        builder = std::make_shared<match::TargetBuilder>(match::input::patternString);
     };
     //! @brief Tear down the test case.
     static void TearDownTestCase()

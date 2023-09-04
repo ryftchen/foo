@@ -100,4 +100,9 @@ Notation::Priority Notation::getPriority(const char c)
             return Priority::none;
     }
 }
+
+bool Notation::isOperator(const char c)
+{
+    return (!std::isalpha(c) && !std::isdigit(c));
+}
 } // namespace algorithm::notation

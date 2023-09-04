@@ -78,6 +78,16 @@ void Console::registerCmd(const std::string& command, CmdFunctor func, const std
     impl->regOrder.emplace_back(command);
 }
 
+void Console::setGreeting(const std::string& greeting)
+{
+    impl->greeting = greeting;
+}
+
+std::string Console::getGreeting() const
+{
+    return impl->greeting;
+}
+
 int Console::cmdExecutor(const std::string& command)
 {
     std::vector<std::string> inputs;

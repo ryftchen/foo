@@ -45,10 +45,10 @@ public:
     void registerCmd(const std::string& command, CmdFunctor func, const std::string& help);
     //! @brief Set greeting information.
     //! @param greeting - greeting information
-    inline void setGreeting(const std::string& greeting);
+    void setGreeting(const std::string& greeting);
     //! @brief Get greeting information.
     //! @return greeting information
-    [[nodiscard]] inline std::string getGreeting() const;
+    [[nodiscard]] std::string getGreeting() const;
     //! @brief Execute the target console command.
     //! @param command - command to be executed
     //! @return value of RetCode
@@ -131,14 +131,4 @@ private:
     //! @brief Get the command iterator.
     static CmdIteratorFunctor getCmdIterator;
 };
-
-inline void Console::setGreeting(const std::string& greeting)
-{
-    impl->greeting = greeting;
-}
-
-inline std::string Console::getGreeting() const
-{
-    return impl->greeting;
-}
 } // namespace utility::console

@@ -169,6 +169,13 @@ public:
     void waitToStop();
     //! @brief Request to restart the logger. External use.
     void requestToRestart();
+    //! @brief Get log file path.
+    //! @return log file path
+    std::string getFilePath() const;
+    //! @brief Get log file lock.
+    //! @return log file lock
+    utility::file::ReadWriteLock& getFileLock();
+
     //! @brief Flush log to queue.
     //! @tparam Args - type of arguments of format
     //! @param level - output level
@@ -210,12 +217,6 @@ public:
         //! @brief Code line.
         const std::uint32_t line;
     };
-    //! @brief Get log file path.
-    //! @return log file path
-    inline std::string getFilePath() const;
-    //! @brief Get log file lock.
-    //! @return log file lock
-    inline utility::file::ReadWriteLock& getFileLock();
 
 private:
     //! @brief Construct a new Log object.
@@ -381,15 +382,5 @@ void Log::flush(
             lock.lock();
         }
     }
-}
-
-inline std::string Log::getFilePath() const
-{
-    return std::filesystem::absolute(filePath).string();
-}
-
-inline utility::file::ReadWriteLock& Log::getFileLock()
-{
-    return fileLock;
 }
 } // namespace application::log
