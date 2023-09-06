@@ -1,2 +1,3 @@
+--force-lang=C++,tpp
 --by-percent=cmb
 --quiet

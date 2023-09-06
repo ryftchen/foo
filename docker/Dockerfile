@@ -6,8 +6,8 @@ RUN apt-get update \
 && DEBIAN_FRONTEND=noninteractive apt-get install -y sudo tzdata ca-certificates curl bash-completion rsync zip \
 && sudo apt-get update \
 && sudo apt-get install -y git python3 python3-pip build-essential gdb strace cmake ninja-build ccache distcc \
-clang-15 lld-15 libgtest-dev libssl-dev libreadline-dev libmpfrc++-dev llvm-15 libclang-15-dev \
-clang-format-15 clang-tidy-15 shfmt shellcheck black pylint valgrind cloc pre-commit graphviz docker-compose \
+clang-15 lld-15 libgtest-dev libssl-dev libreadline-dev libmpfrc++-dev llvm-15-dev libclang-15-dev \
+clangd-15 clang-format-15 clang-tidy-15 shfmt shellcheck black pylint valgrind cloc pre-commit graphviz docker-compose \
 && sudo apt-get clean \
 && sudo pip3 install --no-cache-dir compdb ValgrindCI \
 && cd /root \
