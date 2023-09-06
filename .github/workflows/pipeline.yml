@@ -65,7 +65,7 @@ jobs:
 
       - name: Check
         run: |
-          ./script/build.sh --precheck --format --lint --count
+          ./script/build.sh --hook --check --format --lint --statistics
           git status
 
       - name: Archive
@@ -107,17 +107,17 @@ jobs:
 
       - name: Check
         run: |
-          ./script/run.py --check cov mem --build dbg
+          ./script/run.py --check cov mem --build dbg --repeat 1
           cat ./.cache/foo_run.report
 
       - name: Test
         run: |
-          ./script/run.py --test --build rls
+          ./script/run.py --test --build rls --repeat 1
           cat ./.cache/foo_run.report
 
       - name: Run
         run: |
-          ./script/run.py --build rls
+          ./script/run.py --build rls --repeat 1
           cat ./.cache/foo_run.report
 
   extended_analysis:

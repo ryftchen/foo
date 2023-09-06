@@ -42,6 +42,7 @@ public:
     void TearDown() override{};
 };
 
+// NOLINTBEGIN(cert-err58-cpp, hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
 //! @brief Test for the chain of responsibility instance in the pattern of behavioral.
 TEST_F(BehavioralTestBase, chainOfResponsibilityInstance)
 {
@@ -107,6 +108,7 @@ TEST_F(BehavioralTestBase, visitorInstance)
 {
     ASSERT_NO_THROW(behavioral::Behavioral::visitor());
 }
+// NOLINTEND(cert-err58-cpp, hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
 
 //! @brief Alias for the namespace of applying creational.
 namespace creational = application::app_dp::creational;
@@ -130,6 +132,7 @@ public:
     void TearDown() override{};
 };
 
+// NOLINTBEGIN(cert-err58-cpp, hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
 //! @brief Test for the abstract factory instance in the pattern of creational.
 TEST_F(CreationalTestBase, abstractFactoryInstance)
 {
@@ -159,6 +162,7 @@ TEST_F(CreationalTestBase, singletonInstance)
 {
     ASSERT_NO_THROW(creational::Creational::singleton());
 }
+// NOLINTEND(cert-err58-cpp, hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
 
 //! @brief Alias for the namespace of applying structural.
 namespace structural = application::app_dp::structural;
@@ -182,6 +186,7 @@ public:
     void TearDown() override{};
 };
 
+// NOLINTBEGIN(cert-err58-cpp, hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
 //! @brief Test for the adapter instance in the pattern of structural.
 TEST_F(StructuralTestBase, adapterInstance)
 {
@@ -223,4 +228,5 @@ TEST_F(StructuralTestBase, proxyInstance)
 {
     ASSERT_NO_THROW(structural::Structural::proxy());
 }
+// NOLINTEND(cert-err58-cpp, hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
 } // namespace test::tst_dp

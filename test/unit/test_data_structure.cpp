@@ -41,6 +41,7 @@ public:
     void TearDown() override{};
 };
 
+// NOLINTBEGIN(cert-err58-cpp, hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
 //! @brief Test for the linked list instance in the structure of linear.
 TEST_F(LinearTestBase, linkedListInstance)
 {
@@ -58,6 +59,7 @@ TEST_F(LinearTestBase, queueInstance)
 {
     ASSERT_NO_THROW(linear::Linear::queue());
 }
+// NOLINTEND(cert-err58-cpp, hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
 
 //! @brief Alias for the namespace of applying tree.
 namespace tree = application::app_ds::tree;
@@ -81,6 +83,7 @@ public:
     void TearDown() override{};
 };
 
+// NOLINTBEGIN(cert-err58-cpp, hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
 //! @brief Test for the binary search instance in the structure of tree.
 TEST_F(TreeTestBase, bsInstance)
 {
@@ -98,4 +101,5 @@ TEST_F(TreeTestBase, splayInstance)
 {
     ASSERT_NO_THROW(tree::Tree::splay());
 }
+// NOLINTEND(cert-err58-cpp, hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
 } // namespace test::tst_ds

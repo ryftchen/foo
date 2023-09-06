@@ -4,8 +4,8 @@ declare -rA FOLDER=([proj]="foo" [app]="application" [util]="utility" [algo]="al
     [dp]="design_pattern" [num]="numeric" [tst]="test" [scr]="script" [doc]="document" [bld]="build" [cache]=".cache")
 declare -r COMP_CMD="compile_commands.json"
 declare -A ARGS=([help]=false [initialize]=false [cleanup]=false [docker]=false [install]=false [uninstall]=false
-    [test]=false [release]=false [precheck]=false [format]=false [lint]=false [count]=false [browser]=false
-    [doxygen]=false)
+    [test]=false [release]=false [hook]=false [check]=false [format]=false [lint]=false [statistics]=false
+    [browser]=false [doxygen]=false)
 declare -A DEV_OPT=([parallel]=0 [pch]=false [unity]=false [ccache]=false [distcc]=false [tmpfs]=false)
 declare SUDO=""
 declare CMAKE_CACHE_ENTRY=""
@@ -75,9 +75,13 @@ function parse_parameters()
             fi
             ARGS[release]=true
             ;;
-        -p | --precheck)
+        -H | --hook)
             check_multiple_choice_parameters_validity "$1"
-            ARGS[precheck]=true
+            ARGS[hook]=true
+            ;;
+        -c | --check)
+            check_multiple_choice_parameters_validity "$1"
+            ARGS[check]=true
             ;;
         -f | --format)
             check_multiple_choice_parameters_validity "$1"
@@ -87,9 +91,9 @@ function parse_parameters()
             check_multiple_choice_parameters_validity "$1"
             ARGS[lint]=true
             ;;
-        -c | --count)
+        -s | --statistics)
             check_multiple_choice_parameters_validity "$1"
-            ARGS[count]=true
+            ARGS[statistics]=true
             ;;
         -b | --browser)
             check_multiple_choice_parameters_validity "$1"
@@ -142,9 +146,9 @@ function exist_multiple_choice_parameters()
     local number=0
     for key in "${!ARGS[@]}"; do
         if [[ ${ARGS[${key}]} = true ]]; then
-            if [[ ${key} == "release" ]] || [[ ${key} == "precheck" ]] || [[ ${key} == "format" ]] \
-                || [[ ${key} == "lint" ]] || [[ ${key} == "count" ]] || [[ ${key} == "browser" ]] \
-                || [[ ${key} == "doxygen" ]]; then
+            if [[ ${key} == "release" ]] || [[ ${key} == "hook" ]] || [[ ${key} == "check" ]] \
+                || [[ ${key} == "format" ]] || [[ ${key} == "lint" ]] || [[ ${key} == "statistics" ]] \
+                || [[ ${key} == "browser" ]] || [[ ${key} == "doxygen" ]]; then
                 number+=1
             fi
         fi
@@ -166,25 +170,27 @@ function try_to_perform_single_choice_options()
 function perform_help_option()
 {
     if [[ ${ARGS[help]} = true ]]; then
-        echo "usage: $(basename "${0}") [-h] [-I] [-C] [-D] [-i] [-u] [-t {-r}] [[{-p, -f, -l, -c, -b, -d} ...] {-r}]"
+        echo "usage: $(basename "${0}") [-h] [-I] [-C] [-D] [-i] [-u] [-t {-r}] \
+[[{-H, -c, -f, -l, -s, -b, -d} ...] {-r}]"
         echo
         echo "build script"
         echo
         echo "options:"
         echo "  -h, --help            show help and exit"
         echo "  -I, --initialize      initialize environment and exit"
-        echo "  -C, --cleanup         cleanup folder and exit"
+        echo "  -C, --cleanup         cleanup project folder and exit"
         echo "  -D, --docker          construct docker container and exit"
-        echo "  -i, --install         install binary with library and exit"
-        echo "  -u, --uninstall       uninstall binary with library and exit"
+        echo "  -i, --install         install binary with libraries and exit"
+        echo "  -u, --uninstall       uninstall binary with libraries and exit"
         echo "  -t, --test            build unit test and exit"
         echo "  -r, --release         set as release version"
-        echo "  -p, --precheck        precheck all files before commit"
-        echo "  -f, --format          format all code"
-        echo "  -l, --lint            lint all code"
-        echo "  -c, --count           count lines of code"
-        echo "  -b, --browser         document by code browser"
-        echo "  -d, --doxygen         document by doxygen"
+        echo "  -H, --hook            run hook before commit"
+        echo "  -c, --check           fast syntax checking without compilation"
+        echo "  -f, --format          format all code files"
+        echo "  -l, --lint            lint all code files"
+        echo "  -s, --statistics      code statistics"
+        echo "  -b, --browser         generate code browser like IDE"
+        echo "  -d, --doxygen         documentation with doxygen"
         exit 0
     fi
 }
@@ -316,19 +322,26 @@ function try_to_perform_multiple_choice_options()
 {
     check_extra_dependencies
 
-    perform_precheck_option
+    perform_hook_option
+    perform_check_option
     perform_format_option
     perform_lint_option
-    perform_count_option
+    perform_statistics_option
     perform_browser_option
     perform_doxygen_option
 }
 
 function check_extra_dependencies()
 {
-    if [[ ${ARGS[precheck]} = true ]]; then
+    if [[ ${ARGS[hook]} = true ]]; then
         if ! command -v pre-commit >/dev/null 2>&1; then
             die "No pre-commit program. Please install it."
+        fi
+    fi
+
+    if [[ ${ARGS[check]} = true ]]; then
+        if ! command -v clang-check-15 >/dev/null 2>&1; then
+            die "No clang-check-15 program. Please install it."
         fi
     fi
 
@@ -352,7 +365,7 @@ FOO_BLD_UNITY is turned on."
         fi
     fi
 
-    if [[ ${ARGS[count]} = true ]]; then
+    if [[ ${ARGS[statistics]} = true ]]; then
         if ! command -v cloc >/dev/null 2>&1; then
             die "No cloc program. Please install it."
         fi
@@ -376,11 +389,20 @@ FOO_BLD_UNITY is turned on."
     fi
 }
 
-function perform_precheck_option()
+function perform_hook_option()
 {
-    if [[ ${ARGS[precheck]} = true ]]; then
+    if [[ ${ARGS[hook]} = true ]]; then
         shell_command "pre-commit install --config ./.pre-commit-config"
         shell_command "pre-commit run --all-files --config ./.pre-commit-config"
+    fi
+}
+
+function perform_check_option()
+{
+    if [[ ${ARGS[check]} = true ]]; then
+        shell_command "find ./${FOLDER[app]} ./${FOLDER[util]} ./${FOLDER[algo]} ./${FOLDER[ds]} ./${FOLDER[dp]} \
+./${FOLDER[num]} -name '*.cpp' -o -name '*.hpp' -o -name '*.tpp' | xargs clang-check-15 -p ./${FOLDER[bld]}"
+        shell_command "find ./${FOLDER[tst]} -name '*.cpp' | xargs clang-check-15 -p ./${FOLDER[tst]}/${FOLDER[bld]}"
     fi
 }
 
@@ -433,12 +455,12 @@ function perform_lint_option()
     fi
 }
 
-function perform_count_option()
+function perform_statistics_option()
 {
-    if [[ ${ARGS[count]} = true ]]; then
+    if [[ ${ARGS[statistics]} = true ]]; then
         shell_command "find ./${FOLDER[app]} ./${FOLDER[util]} ./${FOLDER[algo]} ./${FOLDER[ds]} ./${FOLDER[dp]} \
 ./${FOLDER[num]} ./${FOLDER[tst]} -name '*.cpp' -o -name '*.hpp' -o -name '*.tpp' | grep -v '/${FOLDER[bld]}/' \
-| xargs cloc --config ./.cloc-option --force-lang='C++',tpp"
+| xargs cloc --config ./.cloc-option"
         shell_command "find ./${FOLDER[scr]} -name '*.sh' | xargs cloc --config ./.cloc-option"
         shell_command "find ./${FOLDER[scr]} -name '*.py' | xargs cloc --config ./.cloc-option"
     fi
@@ -639,18 +661,21 @@ function set_compile_condition()
     fi
 }
 
+function remove_temporary_files()
+{
+    local app_comp_cmd=${FOLDER[bld]}/${COMP_CMD}
+    if [[ -f ./${app_comp_cmd}.bak ]]; then
+        rm -rf "./${app_comp_cmd}" && mv "./${app_comp_cmd}.bak" "./${app_comp_cmd}"
+    fi
+    local tst_comp_cmd=${FOLDER[tst]}/${FOLDER[bld]}/${COMP_CMD}
+    if [[ -f ./${tst_comp_cmd}.bak ]]; then
+        rm -rf "./${tst_comp_cmd}" && mv "./${tst_comp_cmd}.bak" "./${tst_comp_cmd}"
+    fi
+}
+
 function signal_handler()
 {
-    if [[ ${ARGS[lint]} = true ]]; then
-        local app_comp_cmd=${FOLDER[bld]}/${COMP_CMD}
-        if [[ -f ./${app_comp_cmd}.bak ]]; then
-            rm -rf "./${app_comp_cmd}" && mv "./${app_comp_cmd}.bak" "./${app_comp_cmd}"
-        fi
-        local tst_comp_cmd=${FOLDER[tst]}/${FOLDER[bld]}/${COMP_CMD}
-        if [[ -f ./${tst_comp_cmd}.bak ]]; then
-            rm -rf "./${tst_comp_cmd}" && mv "./${tst_comp_cmd}.bak" "./${tst_comp_cmd}"
-        fi
-    fi
+    remove_temporary_files
     exit 1
 }
 
@@ -664,11 +689,11 @@ function main()
     cd "$(dirname "${script_path}")" || exit 1
 
     export TERM=linux TERMINFO=/etc/terminfo
-    trap "signal_handler" INT TERM
-
     if [[ ${EUID} -ne 0 ]]; then
         SUDO="sudo "
     fi
+    trap signal_handler SIGINT SIGTERM
+    remove_temporary_files
 
     parse_parameters "$@"
     try_to_perform_single_choice_options
