@@ -13,8 +13,7 @@ namespace algorithm::match
 int Match::rk(const char* text, const char* pattern, const std::uint32_t textLen, const std::uint32_t patternLen)
 {
     int shift = -1;
-    constexpr std::uint64_t rollingHashBase = 10;
-    constexpr std::uint64_t rollingHashMod = 19260817;
+    constexpr std::uint64_t rollingHashBase = 10, rollingHashMod = 19260817;
     std::uint64_t textHash =
         rollingHash(std::string{text}.substr(0, patternLen).c_str(), patternLen, rollingHashBase, rollingHashMod);
     const std::uint64_t patternHash = rollingHash(pattern, patternLen, rollingHashBase, rollingHashMod);
