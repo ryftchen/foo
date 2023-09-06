@@ -18,7 +18,7 @@ namespace doubly_linked_list
 extern "C"
 {
 #endif // __cplusplus
-#pragma pack(8)
+#pragma pack(push, 8)
     //! @brief The node of the doubly linked list.
     typedef struct TagNode
     {
@@ -29,7 +29,7 @@ extern "C"
         //! @brief Pointer to node content.
         void* p;
     } Node, *DLL;
-#pragma pack()
+#pragma pack(pop)
 #ifdef __cplusplus
 }
 #endif // __cplusplus
