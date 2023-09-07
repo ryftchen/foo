@@ -1,4 +1,8 @@
 {
+    "files":
+    [
+        "**/*.{cpp,hpp,tpp,sh,py,md}"
+    ],
     "dictionaries":
     [
         "bash",
@@ -6,22 +10,23 @@
         "en_GB",
         "en_US",
         "filetypes",
+        "fullstack",
+        "git",
+        "markdown",
+        "public-licenses",
         "python",
         "software-terms",
         "shell"
     ],
     "words":
     [
-        "Adaptee",
+        "adaptee",
         "Adelson",
         "bkdr",
         "codebrowser",
         "compdb",
-        "clangd",
         "creational",
         "cword",
-        "DCMAKE",
-        "DTOOLCHAIN",
         "distcc",
         "Doxyfile",
         "EXTSUM",
@@ -37,7 +42,6 @@
         "libfoo",
         "memcheck",
         "mpfr",
-        "NOLINT",
         "PDEATHSIG",
         "profdata",
         "profraw",
@@ -48,7 +52,6 @@
         "Ritchie",
         "RNDN",
         "ryftchen",
-        "setaf",
         "suboperation",
         "tmpfs",
         "tparam",
@@ -67,14 +70,12 @@
     ],
     "ignorePaths":
     [
-        ".github",
-        "docker",
-        "document"
+        ".github"
     ],
     "useGitignore": true,
     "ignoreRegExpList":
     [
-        "\/\/ NOLINT.*",
+        "// NOLINT.*",
         "# pylint:.*",
         "# shellcheck.*"
     ],
