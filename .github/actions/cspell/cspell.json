@@ -70,14 +70,14 @@
     ],
     "ignorePaths":
     [
-        ".github"
+        "**/.github"
     ],
     "useGitignore": true,
     "ignoreRegExpList":
     [
         "// NOLINT.*",
-        "# pylint:.*",
-        "# shellcheck.*"
+        "# shellcheck.*",
+        "# pylint:.*"
     ],
     "overrides":
     [
