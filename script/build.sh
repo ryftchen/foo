@@ -503,7 +503,7 @@ function package_for_browser()
     rm -rf "./${FOLDER[cache]}/${FOLDER[proj]}_${browser_folder}"_*.tar.bz2 "./${FOLDER[doc]}/${browser_folder}"
 
     mkdir -p "./${FOLDER[doc]}/${browser_folder}"
-    shell_command "cp -rf /usr/local/share/woboq/data ./${FOLDER[doc]}/${browser_folder}/"
+    cp -rf /usr/local/share/woboq/data "./${FOLDER[doc]}/${browser_folder}/"
     shell_command "codebrowser_generator -color -a -b ./${FOLDER[bld]}/${COMP_CMD} \
 -o ./${FOLDER[doc]}/${browser_folder} -p ${FOLDER[proj]}:.:${commit_id} -d ./data"
     shell_command "codebrowser_generator -color -a -b ./${FOLDER[tst]}/${FOLDER[bld]}/${COMP_CMD} \
@@ -550,12 +550,8 @@ function package_for_doxygen()
     rm -rf "./${FOLDER[cache]}/${FOLDER[proj]}_${doxygen_folder}"_*.tar.bz2 "./${FOLDER[doc]}/${doxygen_folder}"
 
     mkdir -p "./${FOLDER[doc]}/${doxygen_folder}"
-    if [[ ${ARGS[release]} = true ]]; then
-        shell_command "doxygen ./${FOLDER[doc]}/Doxyfile >/dev/null"
-    else
-        shell_command "(cat ./${FOLDER[doc]}/Doxyfile ; echo 'PROJECT_NUMBER=\"@ $(git rev-parse --short @)\"' ; \
-echo 'HTML_TIMESTAMP=YES') | doxygen - >/dev/null"
-    fi
+    shell_command "(cat ./${FOLDER[doc]}/Doxyfile ; echo 'PROJECT_NUMBER=\"@ $(git rev-parse --short @)\"') \
+| doxygen - >/dev/null"
     shell_command "tar -jcvf ./${FOLDER[cache]}/${tar_file} -C ./${FOLDER[doc]} ${doxygen_folder} >/dev/null"
 }
 
@@ -624,18 +620,18 @@ function set_compile_condition()
     if [[ ! ${DEV_OPT[parallel]} -eq 0 ]]; then
         CMAKE_BUILD_OPTION=" -j ${DEV_OPT[parallel]}"
     fi
-    CMAKE_CACHE_ENTRY=" -DCMAKE_BUILD_TYPE=${BUILD_TYPE}"
+    CMAKE_CACHE_ENTRY=" -D CMAKE_BUILD_TYPE=${BUILD_TYPE}"
     if [[ ${DEV_OPT[pch]} = true ]]; then
-        CMAKE_CACHE_ENTRY="${CMAKE_CACHE_ENTRY} -DTOOLCHAIN_PCH=ON"
+        CMAKE_CACHE_ENTRY="${CMAKE_CACHE_ENTRY} -D TOOLCHAIN_PCH=ON"
         if [[ ${DEV_OPT[ccache]} = true ]]; then
             export CCACHE_PCH_EXTSUM=true
         fi
     fi
     if [[ ${DEV_OPT[unity]} = true ]]; then
-        CMAKE_CACHE_ENTRY="${CMAKE_CACHE_ENTRY} -DTOOLCHAIN_UNITY=ON"
+        CMAKE_CACHE_ENTRY="${CMAKE_CACHE_ENTRY} -D TOOLCHAIN_UNITY=ON"
     fi
     if [[ ${DEV_OPT[ccache]} = true ]]; then
-        CMAKE_CACHE_ENTRY="${CMAKE_CACHE_ENTRY} -DTOOLCHAIN_CCACHE=ON"
+        CMAKE_CACHE_ENTRY="${CMAKE_CACHE_ENTRY} -D TOOLCHAIN_CCACHE=ON"
         export CCACHE_DIR=${PWD}/${FOLDER[cache]}/ccache
         if [[ ${DEV_OPT[distcc]} = true ]]; then
             if command -v ccache >/dev/null 2>&1 && command -v distcc >/dev/null 2>&1; then
@@ -644,7 +640,7 @@ function set_compile_condition()
         fi
     fi
     if [[ ${DEV_OPT[distcc]} = true ]]; then
-        CMAKE_CACHE_ENTRY="${CMAKE_CACHE_ENTRY} -DTOOLCHAIN_DISTCC=ON"
+        CMAKE_CACHE_ENTRY="${CMAKE_CACHE_ENTRY} -D TOOLCHAIN_DISTCC=ON"
         if [[ -z ${DISTCC_HOSTS} ]]; then
             export DISTCC_HOSTS=localhost
         fi
