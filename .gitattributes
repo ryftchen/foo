@@ -2,7 +2,6 @@
 *.cpp text eol=lf
 *.hpp text eol=lf
 *.html text eol=lf
-*.json text eol=lf
 *.md text eol=lf
 *.py text eol=lf
 *.sh text eol=lf
@@ -12,13 +11,14 @@
 *.yml text eol=lf
 .clang-format text eol=lf
 .clang-tidy text eol=lf
-.cloc-option text eol=lf
-.commit-template text eol=lf
+.cloc text eol=lf
+.cspell.json text eol=lf
 .dockerignore text eol=lf
 .editorconfig text eol=lf
 .gitattributes text eol=lf
+.gitcommit.template text eol=lf
 .gitignore text eol=lf
-.pre-commit-config text eol=lf
+.pre-commit text eol=lf
 .pylintrc text eol=lf
 .shellcheckrc text eol=lf
 .supp text eol=lf

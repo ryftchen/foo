@@ -16,36 +16,8 @@ on:
     - cron: '0 0 * * MON'
 
 jobs:
-  precheck:
-    name: Precheck
-    if: github.event_name == 'push'
-    runs-on: ubuntu-latest
-    container:
-      image: ryftchen/foo:latest
-      options: --privileged
-    timeout-minutes: 15
-
-    steps:
-      - name: Prepare
-        run: |
-          git config --global --add safe.directory '*'
-
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Check spelling
-        uses: streetsidesoftware/cspell-action@v2.13.0
-        with:
-          files: |
-            **/*.{cpp,hpp,tpp,sh,py,md}
-          incremental_files_only: false
-          config: ./.github/actions/cspell/cspell.json
-          verbose: true
-
   static_analysis:
     name: Static analysis
-    needs: precheck
-    if: always() && ((needs.precheck.result == 'success') || (needs.precheck.result == 'skipped'))
     runs-on: ubuntu-latest
     container:
       image: ryftchen/foo:latest
@@ -65,7 +37,7 @@ jobs:
 
       - name: Check
         run: |
-          ./script/build.sh --hook --check --format --lint --statistics
+          ./script/build.sh --hook --spell --check --format --lint --statistics
           git status
 
       - name: Archive
@@ -89,8 +61,6 @@ jobs:
 
   dynamic_analysis:
     name: Dynamic analysis
-    needs: precheck
-    if: always() && ((needs.precheck.result == 'success') || (needs.precheck.result == 'skipped'))
     runs-on: ubuntu-latest
     container:
       image: ryftchen/foo:latest
@@ -122,8 +92,7 @@ jobs:
 
   extended_analysis:
     name: Extended analysis
-    needs: precheck
-    if: always() && (needs.precheck.result == 'success')
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     container:
       image: ryftchen/foo:latest
