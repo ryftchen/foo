@@ -4,7 +4,7 @@ declare -rA FOLDER=([proj]="foo" [app]="application" [util]="utility" [algo]="al
     [dp]="design_pattern" [num]="numeric" [tst]="test" [scr]="script" [doc]="document" [bld]="build" [cache]=".cache")
 declare -r COMP_CMD="compile_commands.json"
 declare -A ARGS=([help]=false [initialize]=false [cleanup]=false [docker]=false [install]=false [uninstall]=false
-    [test]=false [release]=false [hook]=false [check]=false [format]=false [lint]=false [statistics]=false
+    [test]=false [release]=false [hook]=false [spell]=false [check]=false [format]=false [lint]=false [statistics]=false
     [browser]=false [doxygen]=false)
 declare -A DEV_OPT=([parallel]=0 [pch]=false [unity]=false [ccache]=false [distcc]=false [tmpfs]=false)
 declare SUDO=""
@@ -79,6 +79,10 @@ function parse_parameters()
             check_multiple_choice_parameters_validity "$1"
             ARGS[hook]=true
             ;;
+        -s | --spell)
+            check_multiple_choice_parameters_validity "$1"
+            ARGS[spell]=true
+            ;;
         -c | --check)
             check_multiple_choice_parameters_validity "$1"
             ARGS[check]=true
@@ -91,7 +95,7 @@ function parse_parameters()
             check_multiple_choice_parameters_validity "$1"
             ARGS[lint]=true
             ;;
-        -s | --statistics)
+        -S | --statistics)
             check_multiple_choice_parameters_validity "$1"
             ARGS[statistics]=true
             ;;
@@ -146,9 +150,9 @@ function exist_multiple_choice_parameters()
     local number=0
     for key in "${!ARGS[@]}"; do
         if [[ ${ARGS[${key}]} = true ]]; then
-            if [[ ${key} == "release" ]] || [[ ${key} == "hook" ]] || [[ ${key} == "check" ]] \
-                || [[ ${key} == "format" ]] || [[ ${key} == "lint" ]] || [[ ${key} == "statistics" ]] \
-                || [[ ${key} == "browser" ]] || [[ ${key} == "doxygen" ]]; then
+            if [[ ${key} == "release" ]] || [[ ${key} == "hook" ]] || [[ ${key} == "spell" ]] \
+                || [[ ${key} == "check" ]] || [[ ${key} == "format" ]] || [[ ${key} == "lint" ]] \
+                || [[ ${key} == "statistics" ]] || [[ ${key} == "browser" ]] || [[ ${key} == "doxygen" ]]; then
                 number+=1
             fi
         fi
@@ -171,7 +175,7 @@ function perform_help_option()
 {
     if [[ ${ARGS[help]} = true ]]; then
         echo "usage: $(basename "${0}") [-h] [-I] [-C] [-D] [-i] [-u] [-t {-r}] \
-[[{-H, -c, -f, -l, -s, -b, -d} ...] {-r}]"
+[[{-H, -c, -f, -l, -S, -b, -d} ...] {-r}]"
         echo
         echo "build script"
         echo
@@ -185,10 +189,11 @@ function perform_help_option()
         echo "  -t, --test            build unit test and exit"
         echo "  -r, --release         set as release version"
         echo "  -H, --hook            run hook before commit"
+        echo "  -s, --spell           spell check against dictionaries"
         echo "  -c, --check           fast syntax checking without compilation"
         echo "  -f, --format          format all code files"
         echo "  -l, --lint            lint all code files"
-        echo "  -s, --statistics      code statistics"
+        echo "  -S, --statistics      code statistics"
         echo "  -b, --browser         generate code browser like IDE"
         echo "  -d, --doxygen         documentation with doxygen"
         exit 0
@@ -219,7 +224,7 @@ export FOO_BLD_PARALLEL FOO_BLD_PCH FOO_BLD_UNITY FOO_BLD_CCACHE FOO_BLD_DISTCC 
 return 0
 EOF"
         shell_command "echo 'core.%s.%e.%p' | ${SUDO}tee /proc/sys/kernel/core_pattern"
-        shell_command "git config --local commit.template ./.commit-template"
+        shell_command "git config --local commit.template ./.gitcommit.template"
         exit 0
     fi
 }
@@ -323,6 +328,7 @@ function try_to_perform_multiple_choice_options()
     check_extra_dependencies
 
     perform_hook_option
+    perform_spell_option
     perform_check_option
     perform_format_option
     perform_lint_option
@@ -336,6 +342,12 @@ function check_extra_dependencies()
     if [[ ${ARGS[hook]} = true ]]; then
         if ! command -v pre-commit >/dev/null 2>&1; then
             die "No pre-commit program. Please install it."
+        fi
+    fi
+
+    if [[ ${ARGS[spell]} = true ]]; then
+        if ! command -v cspell >/dev/null 2>&1; then
+            die "No cspell program. Please install it."
         fi
     fi
 
@@ -392,8 +404,15 @@ FOO_BLD_UNITY is turned on."
 function perform_hook_option()
 {
     if [[ ${ARGS[hook]} = true ]]; then
-        shell_command "pre-commit install --config ./.pre-commit-config"
-        shell_command "pre-commit run --all-files --config ./.pre-commit-config"
+        shell_command "pre-commit install --config ./.pre-commit"
+        shell_command "pre-commit run --all-files --config ./.pre-commit"
+    fi
+}
+
+function perform_spell_option()
+{
+    if [[ ${ARGS[spell]} = true ]]; then
+        shell_command "cspell lint --config ./.cspell.json"
     fi
 }
 
@@ -411,7 +430,7 @@ function perform_format_option()
     if [[ ${ARGS[format]} = true ]]; then
         shell_command "find ./${FOLDER[app]} ./${FOLDER[util]} ./${FOLDER[algo]} ./${FOLDER[ds]} ./${FOLDER[dp]} \
 ./${FOLDER[num]} ./${FOLDER[tst]} -name '*.cpp' -o -name '*.hpp' -o -name '*.tpp' | grep -v '/${FOLDER[bld]}/' \
-| xargs clang-format-15 -i --verbose --Werror"
+| xargs clang-format-15 --Werror -i --style=file:./.clang-format --verbose"
         shell_command "shfmt -l -w ./${FOLDER[scr]}/*.sh"
         shell_command "black --config ./.toml ./${FOLDER[scr]}/*.py"
     fi
@@ -435,9 +454,11 @@ function perform_lint_option()
             sed -i $(("${line}" - 2)),$(("${line}" + 3))d "./${app_comp_cmd}"
         done
         shell_command "find ./${FOLDER[app]} ./${FOLDER[util]} ./${FOLDER[algo]} ./${FOLDER[ds]} ./${FOLDER[dp]} \
-./${FOLDER[num]} -name '*.cpp' -o -name '*.hpp' | xargs run-clang-tidy-15 -p ./${FOLDER[bld]} -quiet"
+./${FOLDER[num]} -name '*.cpp' -o -name '*.hpp' | xargs run-clang-tidy-15 -config-file=./.clang-tidy \
+-p ./${FOLDER[bld]} -quiet"
         shell_command "find ./${FOLDER[app]} ./${FOLDER[util]} ./${FOLDER[algo]} ./${FOLDER[ds]} ./${FOLDER[dp]} \
-./${FOLDER[num]} -name '*.tpp' | xargs clang-tidy-15 --use-color -p ./${FOLDER[bld]} -quiet"
+./${FOLDER[num]} -name '*.tpp' | xargs clang-tidy-15 --config-file=./.clang-tidy -p ./${FOLDER[bld]} --quiet \
+--use-color"
         rm -rf "./${app_comp_cmd}" && mv "./${app_comp_cmd}.bak" "./${app_comp_cmd}"
 
         local tst_comp_cmd=${FOLDER[tst]}/${FOLDER[bld]}/${COMP_CMD}
@@ -447,7 +468,7 @@ function perform_lint_option()
         compdb -p "./${FOLDER[tst]}/${FOLDER[bld]}" list >"./${COMP_CMD}" \
             && mv "./${tst_comp_cmd}" "./${tst_comp_cmd}.bak" && mv "./${COMP_CMD}" "./${FOLDER[tst]}/${FOLDER[bld]}"
         shell_command "find ./${FOLDER[tst]} -name '*.cpp' \
-| xargs run-clang-tidy-15 -p ./${FOLDER[tst]}/${FOLDER[bld]} -quiet"
+| xargs run-clang-tidy-15 -config-file=./.clang-tidy -p ./${FOLDER[tst]}/${FOLDER[bld]} -quiet"
         rm -rf "./${tst_comp_cmd}" && mv "./${tst_comp_cmd}.bak" "./${tst_comp_cmd}"
 
         shell_command "shellcheck -a ./${FOLDER[scr]}/*.sh"
@@ -460,9 +481,9 @@ function perform_statistics_option()
     if [[ ${ARGS[statistics]} = true ]]; then
         shell_command "find ./${FOLDER[app]} ./${FOLDER[util]} ./${FOLDER[algo]} ./${FOLDER[ds]} ./${FOLDER[dp]} \
 ./${FOLDER[num]} ./${FOLDER[tst]} -name '*.cpp' -o -name '*.hpp' -o -name '*.tpp' | grep -v '/${FOLDER[bld]}/' \
-| xargs cloc --config ./.cloc-option"
-        shell_command "find ./${FOLDER[scr]} -name '*.sh' | xargs cloc --config ./.cloc-option"
-        shell_command "find ./${FOLDER[scr]} -name '*.py' | xargs cloc --config ./.cloc-option"
+| xargs cloc --config ./.cloc"
+        shell_command "find ./${FOLDER[scr]} -name '*.sh' | xargs cloc --config ./.cloc"
+        shell_command "find ./${FOLDER[scr]} -name '*.py' | xargs cloc --config ./.cloc"
     fi
 }
 

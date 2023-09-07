@@ -1,7 +1,7 @@
 {
     "files":
     [
-        "**/*.{cpp,hpp,tpp,sh,py,md}"
+        "**/*.{cpp,hpp,tpp,sh,py}"
     ],
     "dictionaries":
     [
@@ -12,7 +12,6 @@
         "filetypes",
         "fullstack",
         "git",
-        "markdown",
         "public-licenses",
         "python",
         "software-terms",
