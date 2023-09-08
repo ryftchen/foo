@@ -412,7 +412,7 @@ function perform_hook_option()
 function perform_spell_option()
 {
     if [[ ${ARGS[spell]} = true ]]; then
-        shell_command "cspell lint --config ./.cspell.json"
+        shell_command "cspell lint --config ./.cspell --show-context --no-cache"
     fi
 }
 
@@ -457,8 +457,7 @@ function perform_lint_option()
 ./${FOLDER[num]} -name '*.cpp' -o -name '*.hpp' | xargs run-clang-tidy-15 -config-file=./.clang-tidy \
 -p ./${FOLDER[bld]} -quiet"
         shell_command "find ./${FOLDER[app]} ./${FOLDER[util]} ./${FOLDER[algo]} ./${FOLDER[ds]} ./${FOLDER[dp]} \
-./${FOLDER[num]} -name '*.tpp' | xargs clang-tidy-15 --config-file=./.clang-tidy -p ./${FOLDER[bld]} --quiet \
---use-color"
+./${FOLDER[num]} -name '*.tpp' | xargs clang-tidy-15 --config-file=./.clang-tidy -p ./${FOLDER[bld]} --quiet"
         rm -rf "./${app_comp_cmd}" && mv "./${app_comp_cmd}.bak" "./${app_comp_cmd}"
 
         local tst_comp_cmd=${FOLDER[tst]}/${FOLDER[bld]}/${COMP_CMD}

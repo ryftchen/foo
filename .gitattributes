@@ -12,7 +12,7 @@
 .clang-format text eol=lf
 .clang-tidy text eol=lf
 .cloc text eol=lf
-.cspell.json text eol=lf
+.cspell text eol=lf
 .dockerignore text eol=lf
 .editorconfig text eol=lf
 .gitattributes text eol=lf
