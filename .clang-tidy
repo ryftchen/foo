@@ -155,7 +155,6 @@ Checks: >
   readability-simplify-subscript-expr,
   readability-uniqueptr-delete-release,
   readability-uppercase-literal-suffix
-AnalyzeTemporaryDtors: false
 CheckOptions:
   - key: cppcoreguidelines-special-member-functions.AllowSoleDefaultDtor
     value: '1'
@@ -182,31 +181,29 @@ CheckOptions:
   - key: readability-function-size.ParameterThreshold
     value: '5'
   - key: readability-function-size.StatementThreshold
-    value: '100'
+    value: '80'
   - key: readability-identifier-naming.ClassCase
     value: CamelCase
   - key: readability-identifier-naming.ConstantCase
     value: camelBack
-  - key: readability-identifier-naming.ConstantParameterCase
-    value: camelBack
   - key: readability-identifier-naming.EnumCase
     value: CamelCase
-  - key: readability-identifier-naming.EnumConstantCase
-    value: camelBack
   - key: readability-identifier-naming.FunctionCase
-    value: camelBack
-  - key: readability-identifier-naming.LocalConstantCase
     value: camelBack
   - key: readability-identifier-naming.MacroDefinitionCase
     value: UPPER_CASE
+  - key: readability-identifier-naming.MemberCase
+    value: camelBack
+  - key: readability-identifier-naming.MemberPrefix
+    value: ''
+  - key: readability-identifier-naming.MemberSuffix
+    value: ''
   - key: readability-identifier-naming.MethodCase
     value: camelBack
   - key: readability-identifier-naming.NamespaceCase
     value: lower_case
-  - key: readability-identifier-naming.PrivateMemberPrefix
-    value: ''
-  - key: readability-identifier-naming.PrivateMemberSuffix
-    value: ''
+  - key: readability-identifier-naming.ParameterCase
+    value: camelBack
   - key: readability-identifier-naming.StructCase
     value: CamelCase
   - key: readability-identifier-naming.TypedefCase
@@ -221,8 +218,6 @@ CheckOptions:
     value: CamelCase
   - key: readability-identifier-naming.VariableCase
     value: camelBack
-  - key: readability-identifier-naming.VariablePrefix
-    value: ''
   - key: readability-magic-numbers.IgnoreAllFloatingPointValues
     value: 'true'
   - key: readability-magic-numbers.IgnoreBitFieldsWidths
@@ -237,4 +232,6 @@ CheckOptions:
     value: '1'
   - key: readability-implicit-bool-conversion.AllowPointerConditions
     value: '1'
+AnalyzeTemporaryDtors: false
+UseColor: true
 ...
