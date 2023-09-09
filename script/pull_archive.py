@@ -18,7 +18,7 @@ class Documentation:
     github_url = "https://github.com/ryftchen/foo.git"
     artifact_url = "https://api.github.com/repos/ryftchen/foo/actions/artifacts?per_page=5"
     artifact_file = "foo_artifact"
-    website_dir = "/var/www/foo_web"
+    website_dir = "/var/www/foo_doc"
 
     def __init__(self):
         self.project_path = ""
@@ -51,15 +51,15 @@ class Documentation:
             self.proxy_port = args.port
 
         print(
-            f"\r\n{datetime.strftime(datetime.now(), '%b %d %H:%M:%S')} \
->>>>>>>>>>>>>>>>>>>>>>>>> PULL ARCHIVE <<<<<<<<<<<<<<<<<<<<<<<<<"
+            f"\r\n[ {datetime.strftime(datetime.now(), '%b %d %H:%M:%S')} ] \
+>>>>>>>>>>>>>>>>>>>>>>> PULL ARCHIVE <<<<<<<<<<<<<<<<<<<<<<<"
         )
         self.download_artifact()
         self.update_document()
 
     def download_artifact(self):
         if not os.path.exists(self.website_dir):
-            abort("Please create a foo_web folder in the /var/www directory.")
+            abort("Please manually create a foo_doc folder in the /var/www directory.")
         local_commit_id, _, _ = execute(f"git -C {self.project_path} rev-parse HEAD")
         remote_commit_id, _, _ = execute(
             f"git -C {self.project_path} ls-remote {self.github_url} refs/heads/master | cut -f 1"
@@ -116,12 +116,12 @@ class Documentation:
 
 
 def execute(cmd):
-    print(f"{datetime.strftime(datetime.now(), '%b %d %H:%M:%S')} EXECUTE: {cmd}")
+    print(f"[ {datetime.strftime(datetime.now(), '%b %d %H:%M:%S')} ] EXECUTE: {cmd}")
     return common.execute_command(cmd)
 
 
 def abort(msg):
-    print(f"{datetime.strftime(datetime.now(), '%b %d %H:%M:%S')} ABORT: {msg}")
+    print(f"[ {datetime.strftime(datetime.now(), '%b %d %H:%M:%S')} ] ABORT: {msg}")
     sys.exit(1)
 
 
