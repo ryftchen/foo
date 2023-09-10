@@ -1,24 +1,24 @@
 # Foo
 
-[![Pipeline](https://img.shields.io/github/actions/workflow/status/ryftchen/foo/pipeline.yml?branch=master&label=pipeline&logo=github&logoColor=white)](https://github.com/ryftchen/foo/actions/workflows/pipeline.yml) [![License](https://img.shields.io/github/license/ryftchen/foo?label=license&logo=github&logoColor=white)](https://github.com/ryftchen/foo/blob/master/LICENSE)
+[![pipeline](https://img.shields.io/github/actions/workflow/status/ryftchen/foo/pipeline.yml?branch=master&label=pipeline&logo=github&logoColor=white)](https://github.com/ryftchen/foo/actions/workflows/pipeline.yml) [![license](https://img.shields.io/github/license/ryftchen/foo?label=license&logo=github&logoColor=white)](https://github.com/ryftchen/foo/blob/master/LICENSE)
 
 The **Foo** is a personal roadmap for learning programming, like a demo. Its main purpose is to use the C++ language to implement or improve some common basic functions. It also contains detailed comments for easy summary and archive. The goal is to improve programming skills while developing good programming habits.
 
+---
+
 ## Status
 
-|commit|docs|
-|:-:|:-:|
-|[![Last commit](https://img.shields.io/github/last-commit/ryftchen/foo/master?label=last%20commit&logo=git&logoColor=white)](https://github.com/ryftchen/foo/commits/master)|[![Latest docs](https://img.shields.io/github/last-commit/ryftchen/foo/gh-pages?label=latest%20docs&logo=git&logoColor=white)](https://ryftchen.github.io/foo/)|
+[![last commit](https://img.shields.io/github/last-commit/ryftchen/foo/master?label=last%20commit&logo=git&logoColor=white)](https://github.com/ryftchen/foo/commits/master) [![latest docs](https://img.shields.io/github/last-commit/ryftchen/foo/gh-pages?label=latest%20docs&logo=git&logoColor=white)](https://ryftchen.github.io/foo/)
 
----
+[![repository](https://github-readme-stats.vercel.app/api/pin/?username=ryftchen&theme=transparent&repo=foo&show_owner=true)](https://github.com/ryftchen/foo)
 
 ## Features
 
-- Related to [algorithm](https://github.com/ryftchen/foo/tree/master/algorithm).
-- Related to [design pattern](https://github.com/ryftchen/foo/tree/master/design_pattern).
-- Related to [data structure](https://github.com/ryftchen/foo/tree/master/data_structure).
-- Related to [numeric](https://github.com/ryftchen/foo/tree/master/numeric).
-- Specific [application](https://github.com/ryftchen/foo/tree/master/application) of the above.
+- Specific [application](https://github.com/ryftchen/foo/tree/master/application) of the following:
+  - Related to [algorithm](https://github.com/ryftchen/foo/tree/master/algorithm).
+  - Related to [design pattern](https://github.com/ryftchen/foo/tree/master/design_pattern).
+  - Related to [data structure](https://github.com/ryftchen/foo/tree/master/data_structure).
+  - Related to [numeric](https://github.com/ryftchen/foo/tree/master/numeric).
 - Other [utility](https://github.com/ryftchen/foo/tree/master/utility) functions.
 
 ## Getting started
@@ -59,7 +59,7 @@ The **Foo** is a personal roadmap for learning programming, like a demo. Its mai
   ```
 
   And the executed log will also be written to `$HOME/.foo/log/foo.log`.
-- The parameters are provided for static analysis. Build with options such as *-\-format*, *-\-lint*, etc.
+- The parameters are provided for building or static analysis. Build with options such as *-\-format*, *-\-lint*, etc.
 
 ### How to run
 
@@ -77,7 +77,7 @@ The **Foo** is a personal roadmap for learning programming, like a demo. Its mai
 
   Also, add the *-\-build* option to support building before running. The result of running will also be written to `./.cache/foo_run.log` and the analysis will be generated in `./.cache/foo_run.report`.
 
-- The parameters are provided for dynamic analysis. Run with options such as *-\-check cov*, *-\-check mem*, etc.
+- The parameters are provided for running or dynamic analysis. Run with options such as *-\-check cov*, *-\-check mem*, etc.
 
 ## Documentation
 
