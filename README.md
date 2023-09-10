@@ -1,16 +1,16 @@
-# Foo
+# foo
 
 [![pipeline](https://img.shields.io/github/actions/workflow/status/ryftchen/foo/pipeline.yml?branch=master&label=pipeline&logo=github&logoColor=white)](https://github.com/ryftchen/foo/actions/workflows/pipeline.yml) [![license](https://img.shields.io/github/license/ryftchen/foo?label=license&logo=github&logoColor=white)](https://github.com/ryftchen/foo/blob/master/LICENSE)
 
-The **Foo** is a personal roadmap for learning programming, like a demo. Its main purpose is to use the C++ language to implement or improve some common basic functions. It also contains detailed comments for easy summary and archive. The goal is to improve programming skills while developing good programming habits.
+The **foo** is a personal roadmap for learning programming, like a demo. Its main purpose is to use the C++ language to implement or improve some common basic functions. It also contains detailed comments for easy summary and archive. The goal is to improve programming skills while developing good programming habits.
 
 ---
 
 ## Status
 
-[![last commit](https://img.shields.io/github/last-commit/ryftchen/foo/master?label=last%20commit&logo=git&logoColor=white)](https://github.com/ryftchen/foo/commits/master) [![latest docs](https://img.shields.io/github/last-commit/ryftchen/foo/gh-pages?label=latest%20docs&logo=git&logoColor=white)](https://ryftchen.github.io/foo/)
-
 [![repository](https://github-readme-stats.vercel.app/api/pin/?username=ryftchen&theme=transparent&repo=foo&show_owner=true)](https://github.com/ryftchen/foo)
+
+[![last commit](https://img.shields.io/github/last-commit/ryftchen/foo/master?label=last%20commit&logo=git&logoColor=white)](https://github.com/ryftchen/foo/commits/master) [![latest docs](https://img.shields.io/github/last-commit/ryftchen/foo/gh-pages?label=latest%20docs&logo=git&logoColor=white)](https://ryftchen.github.io/foo/)
 
 ## Features
 
