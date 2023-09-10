@@ -23,19 +23,19 @@
 //! @brief Log with debug level.
 #define LOG_DBG               \
     if (CONFIG_ACTIVE_HELPER) \
-    application::log::Log::Flush<application::log::Log::OutputLevel::debug>(__FILE__, __LINE__).getStream()
+    application::log::Log::Holder<application::log::Log::OutputLevel::debug>(__FILE__, __LINE__).getStream()
 //! @brief Log with info level.
 #define LOG_INF               \
     if (CONFIG_ACTIVE_HELPER) \
-    application::log::Log::Flush<application::log::Log::OutputLevel::info>(__FILE__, __LINE__).getStream()
+    application::log::Log::Holder<application::log::Log::OutputLevel::info>(__FILE__, __LINE__).getStream()
 //! @brief Log with warning level.
 #define LOG_WRN               \
     if (CONFIG_ACTIVE_HELPER) \
-    application::log::Log::Flush<application::log::Log::OutputLevel::warn>(__FILE__, __LINE__).getStream()
+    application::log::Log::Holder<application::log::Log::OutputLevel::warn>(__FILE__, __LINE__).getStream()
 //! @brief Log with error level.
 #define LOG_ERR               \
     if (CONFIG_ACTIVE_HELPER) \
-    application::log::Log::Flush<application::log::Log::OutputLevel::error>(__FILE__, __LINE__).getStream()
+    application::log::Log::Holder<application::log::Log::OutputLevel::error>(__FILE__, __LINE__).getStream()
 //! @brief Try to start logging.
 #define LOG_WAIT_TO_START     \
     if (CONFIG_ACTIVE_HELPER) \
@@ -190,18 +190,18 @@ public:
         const std::uint32_t codeLine,
         const std::string& format,
         Args&&... args);
-    //! @brief Log flush helper.
+    //! @brief Log holder for flushing.
     //! @tparam Lv - type of output level
     template <OutputLevel Lv>
-    class Flush
+    class Holder
     {
     public:
-        //! @brief Construct a new Flush object.
+        //! @brief Construct a new Holder object.
         //! @param codeFile - current code file
         //! @param codeLine - current code line
-        Flush(const std::string& codeFile, const std::uint32_t codeLine) : file(codeFile), line(codeLine){};
-        //! @brief Destroy the Flush object.
-        virtual ~Flush() { flush(); };
+        Holder(const std::string& codeFile, const std::uint32_t codeLine) : file(codeFile), line(codeLine){};
+        //! @brief Destroy the Holder object.
+        virtual ~Holder() { flush(); };
 
         //! @brief Get the output stream for flushing.
         //! @return reference of output stream object, which is on string based
