@@ -188,7 +188,7 @@ public:
         const OutputLevel level,
         const std::string& codeFile,
         const std::uint32_t codeLine,
-        const char* const format,
+        const std::string& format,
         Args&&... args);
     //! @brief Log flush helper.
     //! @tparam Lv - type of output level
@@ -207,7 +207,7 @@ public:
         //! @return reference of output stream object, which is on string based
         inline std::ostringstream& getStream() { return stream; };
         //! @brief Flush the output stream.
-        inline void flush() { getInstance().flush(Lv, file, line, stream.str().c_str()); };
+        inline void flush() { getInstance().flush(Lv, file, line, stream.str()); };
 
     private:
         //! @brief Output stream for flushing.
@@ -333,14 +333,17 @@ void Log::flush(
     const OutputLevel level,
     const std::string& codeFile,
     const std::uint32_t codeLine,
-    const char* const format,
+    const std::string& format,
     Args&&... args)
 {
     const auto outputFormatter = [&](const std::string_view& prefix)
     {
+        std::string newFormat = format;
+        newFormat.erase(std::remove(newFormat.begin(), newFormat.end(), '\r'), newFormat.end());
+        std::replace(newFormat.begin(), newFormat.end(), '\n', ' ');
         std::string output = std::string{prefix} + ":[" + utility::time::getCurrentSystemTime() + "]:["
             + codeFile.substr(codeFile.find('/') + 1, codeFile.length()) + '#' + std::to_string(codeLine)
-            + "]: " + utility::common::formatString(format, std::forward<Args>(args)...);
+            + "]: " + utility::common::formatString(newFormat.c_str(), std::forward<Args>(args)...);
         return output;
     };
 
