@@ -15,28 +15,28 @@
 #include "utility/include/fsm.hpp"
 #include "utility/include/socket.hpp"
 
+//! @brief Get the viewer instance.
+#define VIEW_GET_INSTANCE application::view::View::getInstance()
+//! @brief Get the viewer instance if enabled.
+#define VIEW_GET_INSTANCE_IF_ENABLED \
+    if (CONFIG_ACTIVE_HELPER)        \
+    VIEW_GET_INSTANCE
 //! @brief Try to start viewing.
-#define VIEW_WAIT_TO_START    \
-    if (CONFIG_ACTIVE_HELPER) \
-    application::view::View::getInstance().waitToStart()
+#define VIEW_WAIT_TO_START VIEW_GET_INSTANCE_IF_ENABLED.waitToStart()
 //! @brief Try to stop viewing.
-#define VIEW_WAIT_TO_STOP     \
-    if (CONFIG_ACTIVE_HELPER) \
-    application::view::View::getInstance().waitToStop()
+#define VIEW_WAIT_TO_STOP VIEW_GET_INSTANCE_IF_ENABLED.waitToStop()
 //! @brief Try to restart viewing.
-#define VIEW_REQUEST_TO_RESTART \
-    if (CONFIG_ACTIVE_HELPER)   \
-    application::view::View::getInstance().requestToRestart()
+#define VIEW_REQUEST_TO_RESTART VIEW_GET_INSTANCE_IF_ENABLED.requestToRestart()
 //! @brief Get the TCP host address of the viewer.
-#define VIEW_TCP_HOST application::view::View::getInstance().getViewerTCPHost()
+#define VIEW_TCP_HOST VIEW_GET_INSTANCE.getViewerTCPHost()
 //! @brief Get the TCP port number of the viewer.
-#define VIEW_TCP_PORT application::view::View::getInstance().getViewerTCPPort()
+#define VIEW_TCP_PORT VIEW_GET_INSTANCE.getViewerTCPPort()
 //! @brief Get the UDP host address of the viewer.
-#define VIEW_UDP_HOST application::view::View::getInstance().getViewerUDPHost()
+#define VIEW_UDP_HOST VIEW_GET_INSTANCE.getViewerUDPHost()
 //! @brief Get the UDP port number of the viewer.
-#define VIEW_UDP_PORT application::view::View::getInstance().getViewerUDPPort()
+#define VIEW_UDP_PORT VIEW_GET_INSTANCE.getViewerUDPPort()
 //! @brief Get all viewer options.
-#define VIEW_OPTIONS application::view::View::getInstance().getViewerOptions()
+#define VIEW_OPTIONS VIEW_GET_INSTANCE.getViewerOptions()
 
 //! @brief View-server-related functions in the application module.
 namespace application::view

@@ -13,24 +13,26 @@
 #include "application/pch/precompiled_header.hpp"
 #endif // __PRECOMPILED_HEADER
 
+//! @brief Get the config instance.
+#define CONFIG_GET_INSTANCE application::config::Config::getInstance()
 //! @brief Get configuration about "active_helper".
-#define CONFIG_ACTIVE_HELPER application::config::Config::getInstance().getBool("active_helper")
+#define CONFIG_ACTIVE_HELPER CONFIG_GET_INSTANCE.getBool("active_helper")
 //! @brief Get configuration about "logger_path".
-#define CONFIG_LOGGER_PATH application::config::Config::getInstance().getString("logger_path")
+#define CONFIG_LOGGER_PATH CONFIG_GET_INSTANCE.getString("logger_path")
 //! @brief Get configuration about "logger_type".
-#define CONFIG_LOGGER_TYPE application::config::Config::getInstance().getUnsignedInteger("logger_type")
+#define CONFIG_LOGGER_TYPE CONFIG_GET_INSTANCE.getUnsignedInteger("logger_type")
 //! @brief Get configuration about "logger_level".
-#define CONFIG_LOGGER_LEVEL application::config::Config::getInstance().getUnsignedInteger("logger_level")
+#define CONFIG_LOGGER_LEVEL CONFIG_GET_INSTANCE.getUnsignedInteger("logger_level")
 //! @brief Get configuration about "logger_target".
-#define CONFIG_LOGGER_TARGET application::config::Config::getInstance().getUnsignedInteger("logger_target")
+#define CONFIG_LOGGER_TARGET CONFIG_GET_INSTANCE.getUnsignedInteger("logger_target")
 //! @brief Get configuration about "viewer_tcp_host".
-#define CONFIG_VIEWER_TCP_HOST application::config::Config::getInstance().getString("viewer_tcp_host")
+#define CONFIG_VIEWER_TCP_HOST CONFIG_GET_INSTANCE.getString("viewer_tcp_host")
 //! @brief Get configuration about "viewer_tcp_port".
-#define CONFIG_VIEWER_TCP_PORT application::config::Config::getInstance().getUnsignedInteger("viewer_tcp_port")
+#define CONFIG_VIEWER_TCP_PORT CONFIG_GET_INSTANCE.getUnsignedInteger("viewer_tcp_port")
 //! @brief Get configuration about "viewer_udp_host".
-#define CONFIG_VIEWER_UDP_HOST application::config::Config::getInstance().getString("viewer_udp_host")
+#define CONFIG_VIEWER_UDP_HOST CONFIG_GET_INSTANCE.getString("viewer_udp_host")
 //! @brief Get configuration about "viewer_udp_port".
-#define CONFIG_VIEWER_UDP_PORT application::config::Config::getInstance().getUnsignedInteger("viewer_udp_port")
+#define CONFIG_VIEWER_UDP_PORT CONFIG_GET_INSTANCE.getUnsignedInteger("viewer_udp_port")
 
 //! @brief Configuration-related functions in the application module.
 namespace application::config

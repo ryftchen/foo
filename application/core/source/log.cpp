@@ -15,6 +15,11 @@ namespace application::log
 {
 Log& Log::getInstance()
 {
+    if (!CONFIG_ACTIVE_HELPER)
+    {
+        throw std::runtime_error("The logger is disabled.");
+    }
+
     static Log logger{};
     return logger;
 }
@@ -202,6 +207,9 @@ utility::file::ReadWriteLock& Log::getFileLock()
 
 void Log::openLogFile()
 {
+    namespace file = utility::file;
+    file::ReadWriteGuard guard(file::LockMode::write, fileLock);
+
     const std::filesystem::path logFolderPath = std::filesystem::absolute(filePath).parent_path();
     if (!std::filesystem::exists(logFolderPath))
     {
@@ -210,7 +218,6 @@ void Log::openLogFile()
             logFolderPath, std::filesystem::perms::owner_all, std::filesystem::perm_options::add);
     }
 
-    namespace file = utility::file;
     switch (writeType)
     {
         case OutputType::add:
@@ -233,8 +240,11 @@ void Log::startLogging()
 
 void Log::closeLogFile()
 {
-    utility::file::fdUnlock(ofs);
-    utility::file::closeFile(ofs);
+    namespace file = utility::file;
+    file::ReadWriteGuard guard(file::LockMode::write, fileLock);
+
+    file::fdUnlock(ofs);
+    file::closeFile(ofs);
     if (std::filesystem::exists(filePath) && (std::filesystem::file_size(filePath) == 0))
     {
         std::filesystem::remove_all(std::filesystem::absolute(filePath).parent_path());
