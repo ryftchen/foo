@@ -42,7 +42,7 @@ public:
 
 private:
     //! @brief Handling of shared and exclusive locks.
-    std::shared_mutex rwLock{};
+    std::shared_mutex rwLock;
     //! @brief Counter of readers that have acquired the shared lock.
     std::atomic_uint_fast16_t reader{0};
     //! @brief Counter of writers that have acquired the exclusive lock.

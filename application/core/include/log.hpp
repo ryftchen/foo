@@ -20,38 +20,34 @@
 #include "utility/include/fsm.hpp"
 #include "utility/include/time.hpp"
 
+//! @brief Flush log if enabled.
+#define LOG_FLUSH_IF_ENABLED(level) \
+    if (CONFIG_ACTIVE_HELPER)       \
+    application::log::Log::Holder<application::log::Log::OutputLevel::level>(__FILE__, __LINE__).getStream()
 //! @brief Log with debug level.
-#define LOG_DBG               \
-    if (CONFIG_ACTIVE_HELPER) \
-    application::log::Log::Holder<application::log::Log::OutputLevel::debug>(__FILE__, __LINE__).getStream()
+#define LOG_DBG LOG_FLUSH_IF_ENABLED(debug)
 //! @brief Log with info level.
-#define LOG_INF               \
-    if (CONFIG_ACTIVE_HELPER) \
-    application::log::Log::Holder<application::log::Log::OutputLevel::info>(__FILE__, __LINE__).getStream()
+#define LOG_INF LOG_FLUSH_IF_ENABLED(info)
 //! @brief Log with warning level.
-#define LOG_WRN               \
-    if (CONFIG_ACTIVE_HELPER) \
-    application::log::Log::Holder<application::log::Log::OutputLevel::warn>(__FILE__, __LINE__).getStream()
+#define LOG_WRN LOG_FLUSH_IF_ENABLED(warn)
 //! @brief Log with error level.
-#define LOG_ERR               \
-    if (CONFIG_ACTIVE_HELPER) \
-    application::log::Log::Holder<application::log::Log::OutputLevel::error>(__FILE__, __LINE__).getStream()
+#define LOG_ERR LOG_FLUSH_IF_ENABLED(error)
+//! @brief Get the logger instance.
+#define LOG_GET_INSTANCE application::log::Log::getInstance()
+//! @brief Get the logger instance if enabled.
+#define LOG_GET_INSTANCE_IF_ENABLED \
+    if (CONFIG_ACTIVE_HELPER)       \
+    LOG_GET_INSTANCE
 //! @brief Try to start logging.
-#define LOG_WAIT_TO_START     \
-    if (CONFIG_ACTIVE_HELPER) \
-    application::log::Log::getInstance().waitToStart()
+#define LOG_WAIT_TO_START LOG_GET_INSTANCE_IF_ENABLED.waitToStart()
 //! @brief Try to stop logging.
-#define LOG_WAIT_TO_STOP      \
-    if (CONFIG_ACTIVE_HELPER) \
-    application::log::Log::getInstance().waitToStop()
+#define LOG_WAIT_TO_STOP LOG_GET_INSTANCE_IF_ENABLED.waitToStop()
 //! @brief Try to restart logging.
-#define LOG_REQUEST_TO_RESTART \
-    if (CONFIG_ACTIVE_HELPER)  \
-    application::log::Log::getInstance().requestToRestart()
+#define LOG_REQUEST_TO_RESTART LOG_GET_INSTANCE_IF_ENABLED.requestToRestart()
 //! @brief Log file path.
-#define LOG_FILE_PATH application::log::Log::getInstance().getFilePath()
+#define LOG_FILE_PATH LOG_GET_INSTANCE.getFilePath()
 //! @brief Log file lock.
-#define LOG_FILE_LOCK application::log::Log::getInstance().getFileLock()
+#define LOG_FILE_LOCK LOG_GET_INSTANCE.getFileLock()
 
 //! @brief Log-related functions in the application module.
 namespace application::log

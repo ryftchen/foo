@@ -160,6 +160,11 @@ int tlvDecode(char* buf, const int len, TLVValue& val)
 
 View& View::getInstance()
 {
+    if (!CONFIG_ACTIVE_HELPER)
+    {
+        throw std::runtime_error("The viewer is disabled.");
+    }
+
     static View viewer{};
     return viewer;
 }
