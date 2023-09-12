@@ -338,7 +338,7 @@ void Log::flush(
         newFormat.erase(std::remove(newFormat.begin(), newFormat.end(), '\r'), newFormat.end());
         std::replace(newFormat.begin(), newFormat.end(), '\n', ' ');
         std::string output = std::string{prefix} + ":[" + utility::time::getCurrentSystemTime() + "]:["
-            + codeFile.substr(codeFile.find('/') + 1, codeFile.length()) + '#' + std::to_string(codeLine)
+            + codeFile.substr(codeFile.find("foo/") + 4, codeFile.length()) + '#' + std::to_string(codeLine)
             + "]: " + utility::common::formatString(newFormat.c_str(), std::forward<Args>(args)...);
         return output;
     };
