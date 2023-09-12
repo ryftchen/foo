@@ -195,11 +195,6 @@ private:
     class RegularTask
     {
     public:
-        //! @brief Represent the maximum value of an enum.
-        //! @tparam T - type of specific enum
-        template <class T>
-        struct Bottom;
-
         //! @brief Enumerate specific regular tasks.
         enum SubTask : std::uint8_t
         {
@@ -208,14 +203,6 @@ private:
             dataStructure,
             numeric
         };
-        //! @brief Store the maximum value of the SubTask enum.
-        template <>
-        struct Bottom<SubTask>
-        {
-            //! @brief Maximum value of the SubTask enum.
-            static constexpr std::uint8_t value{4};
-        };
-
         //! @brief Flag for help only.
         bool helpOnly{false};
 
