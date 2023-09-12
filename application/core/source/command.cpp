@@ -400,55 +400,47 @@ void Command::dispatchTask()
     }
     else if (!dispatchedTask.regularTask.empty())
     {
-        for (std::uint8_t i = 0; i < RegularTask::Bottom<RegularTask::SubTask>::value; ++i)
+        if (dispatchedTask.regularTask.helpOnly)
         {
-            if (dispatchedTask.regularTask.helpOnly)
+            const auto isSubCLIUsed = [this](const auto& subCLIPair)
             {
-                const auto subCLIName = std::next(regularTaskDispatcher.cbegin(), RegularTask::SubTask(i))->first;
-                if (mainCLI.isSubCommandUsed(subCLIName))
-                {
-                    const auto& subCLI = mainCLI.at<utility::argument::Argument>(subCLIName);
-                    std::cout << subCLI.help().str() << std::flush;
-                    break;
-                }
-            }
+                return mainCLI.isSubCommandUsed(subCLIPair.first);
+            };
 
-            switch (RegularTask::SubTask(i))
+            for ([[maybe_unused]] const auto& [subCLIName, subCLIMap] : regularTaskDispatcher | isSubCLIUsed)
             {
-                case RegularTask::SubTask::algorithm:
-                    if (app_algo::getTask().empty())
-                    {
-                        continue;
-                    }
-                    break;
-                case RegularTask::SubTask::designPattern:
-                    if (app_dp::getTask().empty())
-                    {
-                        continue;
-                    }
-                    break;
-                case RegularTask::SubTask::dataStructure:
-                    if (app_ds::getTask().empty())
-                    {
-                        continue;
-                    }
-                    break;
-                case RegularTask::SubTask::numeric:
-                    if (app_num::getTask().empty())
-                    {
-                        continue;
-                    }
-                    break;
-                default:
-                    break;
+                const auto& subCLI = mainCLI.at<utility::argument::Argument>(subCLIName);
+                std::cout << subCLI.help().str() << std::flush;
+                return;
             }
+        }
 
+        using SubTask = RegularTask::SubTask;
+        const auto performTask = [this](const SubTask subTask)
+        {
             for ([[maybe_unused]] const auto& [taskCategory, taskCategoryTuple] :
-                 std::next(regularTaskDispatcher.cbegin(), RegularTask::SubTask(i))->second)
+                 std::next(regularTaskDispatcher.cbegin(), subTask)->second)
             {
                 (*get<PerformTaskFunctor>(get<TaskFunctorTuple>(taskCategoryTuple)))(
                     get<TargetTaskContainer>(taskCategoryTuple));
             }
+        };
+
+        if (!app_algo::getTask().empty())
+        {
+            performTask(SubTask::algorithm);
+        }
+        else if (!app_dp::getTask().empty())
+        {
+            performTask(SubTask::designPattern);
+        }
+        else if (!app_ds::getTask().empty())
+        {
+            performTask(SubTask::dataStructure);
+        }
+        else if (!app_num::getTask().empty())
+        {
+            performTask(SubTask::numeric);
         }
     }
 }
