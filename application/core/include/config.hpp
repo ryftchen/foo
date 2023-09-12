@@ -23,8 +23,8 @@
 #define CONFIG_LOGGER_TYPE CONFIG_GET_INSTANCE.getUnsignedInteger("logger_type")
 //! @brief Get configuration about "logger_level".
 #define CONFIG_LOGGER_LEVEL CONFIG_GET_INSTANCE.getUnsignedInteger("logger_level")
-//! @brief Get configuration about "logger_target".
-#define CONFIG_LOGGER_TARGET CONFIG_GET_INSTANCE.getUnsignedInteger("logger_target")
+//! @brief Get configuration about "logger_destination".
+#define CONFIG_LOGGER_DESTINATION CONFIG_GET_INSTANCE.getUnsignedInteger("logger_destination")
 //! @brief Get configuration about "viewer_tcp_host".
 #define CONFIG_VIEWER_TCP_HOST CONFIG_GET_INSTANCE.getString("viewer_tcp_host")
 //! @brief Get configuration about "viewer_tcp_port".
@@ -48,10 +48,10 @@ constexpr std::string_view defaultConfiguration = "# foo configuration\n"
                                                   "logger_path = ./log/foo.log\n"
                                                   "# logger write type (0 = add 1 = over)\n"
                                                   "logger_type = 0\n"
-                                                  "# logger minimum level (0 = debug 1 = info 2 = warn 3 = error)\n"
+                                                  "# logger minimum level (0 = debug 1 = info 2 = warning 3 = error)\n"
                                                   "logger_level = 0\n"
-                                                  "# logger actual target (0 = file 1 = terminal 2 = all)\n"
-                                                  "logger_target = 2\n"
+                                                  "# logger actual destination (0 = file 1 = terminal 2 = both)\n"
+                                                  "logger_destination = 2\n"
                                                   "# viewer tcp server host (character string)\n"
                                                   "viewer_tcp_host = localhost\n"
                                                   "# viewer tcp server port (0-65535)\n"

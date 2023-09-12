@@ -60,15 +60,15 @@ void Log::runLogger()
                 utility::file::ReadWriteGuard guard(utility::file::LockMode::write, fileLock);
                 while (!logQueue.empty())
                 {
-                    switch (actTarget)
+                    switch (actDestination)
                     {
-                        case OutputTarget::file:
+                        case OutputDestination::file:
                             ofs << logQueue.front() << std::endl;
                             break;
-                        case OutputTarget::terminal:
+                        case OutputDestination::terminal:
                             std::cout << changeToLogStyle(logQueue.front()) << std::endl;
                             break;
-                        case OutputTarget::all:
+                        case OutputDestination::both:
                             ofs << logQueue.front() << std::endl;
                             std::cout << changeToLogStyle(logQueue.front()) << std::endl;
                             break;

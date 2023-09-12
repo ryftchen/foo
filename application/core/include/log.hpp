@@ -29,7 +29,7 @@
 //! @brief Log with info level.
 #define LOG_INF LOG_FLUSH_IF_ENABLED(info)
 //! @brief Log with warning level.
-#define LOG_WRN LOG_FLUSH_IF_ENABLED(warn)
+#define LOG_WRN LOG_FLUSH_IF_ENABLED(warning)
 //! @brief Log with error level.
 #define LOG_ERR LOG_FLUSH_IF_ENABLED(error)
 //! @brief Get the logger instance.
@@ -135,15 +135,15 @@ public:
     {
         debug,
         info,
-        warn,
+        warning,
         error
     };
-    //! @brief Enumerate specific output targets.
-    enum class OutputTarget : std::uint8_t
+    //! @brief Enumerate specific output destinations.
+    enum class OutputDestination : std::uint8_t
     {
         file,
         terminal,
-        all
+        both
     };
     //! @brief Enumerate specific states for FSM.
     enum State : std::uint8_t
@@ -221,20 +221,20 @@ private:
         filePath(CONFIG_LOGGER_PATH),
         writeType(OutputType(CONFIG_LOGGER_TYPE)),
         minLevel(OutputLevel(CONFIG_LOGGER_LEVEL)),
-        actTarget(OutputTarget(CONFIG_LOGGER_TARGET)),
+        actDestination(OutputDestination(CONFIG_LOGGER_DESTINATION)),
         FSM(initState){};
     //! @brief Construct a new Log object.
     //! @param logFile - log file
     //! @param type - output type
     //! @param level - output level
-    //! @param target - output target
+    //! @param destination - output destination
     //! @param initState - initialization value of state
     Log(const std::string& logFile,
         const OutputType type,
         const OutputLevel level,
-        const OutputTarget target,
+        const OutputDestination destination,
         const StateType initState = State::init) noexcept :
-        filePath(logFile), writeType(type), minLevel(level), actTarget(target), FSM(initState){};
+        filePath(logFile), writeType(type), minLevel(level), actDestination(destination), FSM(initState){};
 
     //! @brief Maximum number of times to wait for the logger to change to the target state.
     static constexpr std::uint16_t maxTimesOfWaitLogger{10};
@@ -258,8 +258,8 @@ private:
     const OutputType writeType{OutputType::add};
     //! @brief Minimum level.
     const OutputLevel minLevel{OutputLevel::debug};
-    //! @brief Actual target.
-    const OutputTarget actTarget{OutputTarget::all};
+    //! @brief Actual destination.
+    const OutputDestination actDestination{OutputDestination::both};
     //! @brief Log file lock.
     utility::file::ReadWriteLock fileLock;
 
@@ -363,7 +363,7 @@ void Log::flush(
                 case OutputLevel::info:
                     prefix = infoLevelPrefix;
                     break;
-                case OutputLevel::warn:
+                case OutputLevel::warning:
                     prefix = warnLevelPrefix;
                     break;
                 case OutputLevel::error:
