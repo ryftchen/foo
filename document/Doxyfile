@@ -2,7 +2,7 @@ DOXYFILE_ENCODING      = UTF-8
 PROJECT_NAME           = "foo"
 PROJECT_NUMBER         =
 PROJECT_BRIEF          = "bar"
-PROJECT_LOGO           = ./document/favicon.svg
+PROJECT_LOGO           =
 OUTPUT_DIRECTORY       = ./document
 CREATE_SUBDIRS         = YES
 CREATE_SUBDIRS_LEVEL   = 8
@@ -159,7 +159,7 @@ IGNORE_PREFIX          =
 GENERATE_HTML          = YES
 HTML_OUTPUT            = doxygen
 HTML_FILE_EXTENSION    = .html
-HTML_HEADER            = ./document/header.html
+HTML_HEADER            = ./document/doxygen_header.html
 HTML_FOOTER            =
 HTML_STYLESHEET        =
 HTML_EXTRA_STYLESHEET  = /usr/local/share/doxygen-awesome-css/doxygen-awesome.css \
@@ -168,7 +168,8 @@ HTML_EXTRA_STYLESHEET  = /usr/local/share/doxygen-awesome-css/doxygen-awesome.cs
 HTML_EXTRA_FILES       = /usr/local/share/doxygen-awesome-css/doxygen-awesome-darkmode-toggle.js \
                          /usr/local/share/doxygen-awesome-css/doxygen-awesome-fragment-copy-button.js \
                          /usr/local/share/doxygen-awesome-css/doxygen-awesome-paragraph-link.js \
-                         /usr/local/share/doxygen-awesome-css/doxygen-awesome-interactive-toc.js
+                         /usr/local/share/doxygen-awesome-css/doxygen-awesome-interactive-toc.js \
+                         ./document/doxygen_favicon.png
 HTML_COLORSTYLE        = AUTO_LIGHT
 HTML_COLORSTYLE_HUE    = 220
 HTML_COLORSTYLE_SAT    = 100

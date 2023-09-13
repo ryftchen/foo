@@ -478,11 +478,9 @@ function perform_lint_option()
 function perform_statistics_option()
 {
     if [[ ${ARGS[statistics]} = true ]]; then
-        shell_command "find ./${FOLDER[app]} ./${FOLDER[util]} ./${FOLDER[algo]} ./${FOLDER[ds]} ./${FOLDER[dp]} \
-./${FOLDER[num]} ./${FOLDER[tst]} -name '*.cpp' -o -name '*.hpp' -o -name '*.tpp' | grep -v '/${FOLDER[bld]}/' \
-| xargs cloc --config ./.cloc"
-        shell_command "find ./${FOLDER[scr]} -name '*.sh' | xargs cloc --config ./.cloc"
-        shell_command "find ./${FOLDER[scr]} -name '*.py' | xargs cloc --config ./.cloc"
+        shell_command "cloc --config ./.cloc --include-lang='C,C++,C/C++ Header'"
+        shell_command "cloc --config ./.cloc --include-lang='Bourne Shell'"
+        shell_command "cloc --config ./.cloc --include-lang='Python'"
     fi
 }
 
@@ -532,7 +530,7 @@ function package_for_browser()
 
     local icon_rel="<link rel=\"shortcut icon\" href=\"https://woboq.com/favicon.ico\" type=\"image/x-icon\" />"
     find "./${FOLDER[doc]}/${browser_folder}/index.html" "./${FOLDER[doc]}/${browser_folder}/${FOLDER[proj]}" \
-        -name "*.html" -exec sed -i "/^<\/head>$/i ${icon_rel}" {} +
+        "./${FOLDER[doc]}/${browser_folder}/include" -name "*.html" -exec sed -i "/^<\/head>$/i ${icon_rel}" {} +
     shell_command "tar -jcvf ./${FOLDER[cache]}/${tar_file} -C ./${FOLDER[doc]} ${browser_folder} >/dev/null"
 }
 

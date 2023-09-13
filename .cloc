@@ -1,3 +1,4 @@
+--vcs=git
 --by-file-by-lang
 --force-lang=C++,tpp
 --by-percent=cmb

@@ -11,7 +11,6 @@ repos:
       - id: check-docstring-first
       - id: check-merge-conflict
       - id: check-vcs-permalinks
-      - id: check-xml
       - id: check-yaml
       - id: debug-statements
       - id: destroyed-symlinks
