@@ -342,7 +342,7 @@ function perform_website_option()
 {
     if [[ ${ARGS[website]} = true ]]; then
         if command -v rustc >/dev/null 2>&1 && command -v cargo >/dev/null 2>&1; then
-            shell_command "cargo build --release --offline --manifest-path ./${FOLDER[doc]}/server/Cargo.toml"
+            shell_command "cargo build --release --manifest-path ./${FOLDER[doc]}/server/Cargo.toml"
             if ! pgrep -f foo_doc >/dev/null 2>&1; then
                 echo "Please confirm whether continue launching the document servers. (y or n)"
                 local input
