@@ -522,7 +522,7 @@ function perform_lint_option()
 
         shell_command "shellcheck -a ./${FOLDER[scr]}/*.sh"
         shell_command "pylint --rcfile=./.pylintrc ./${FOLDER[scr]}/*.py"
-        shell_command "cargo clippy --no-deps --offline --release --manifest-path ./${FOLDER[doc]}/server/Cargo.toml"
+        shell_command "cargo clippy --no-deps --release --manifest-path ./${FOLDER[doc]}/server/Cargo.toml"
     fi
 }
 
