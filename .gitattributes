@@ -5,7 +5,9 @@
 *.md text eol=lf
 *.png binary
 *.py text eol=lf
+*.rs text eol=lf
 *.sh text eol=lf
+*.toml text eol=lf
 *.tpp text eol=lf
 *.txt text eol=lf
 *.yml text eol=lf

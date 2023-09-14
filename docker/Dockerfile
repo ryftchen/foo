@@ -7,7 +7,8 @@ RUN apt-get update \
 && sudo apt-get update \
 && sudo apt-get install -y git python3 python3-pip build-essential cmake ninja-build ccache distcc gdb strace \
 clang-15 lld-15 libgtest-dev libssl-dev libreadline-dev libmpfrc++-dev llvm-15-dev libclang-15-dev \
-clang-format-15 clang-tidy-15 shfmt shellcheck black pylint valgrind cloc pre-commit graphviz docker docker-compose npm \
+clang-format-15 clang-tidy-15 shfmt shellcheck black pylint rustfmt rust-clippy rustc cargo \
+valgrind cloc pre-commit graphviz docker docker-compose npm \
 && sudo apt-get clean \
 && sudo pip3 install --no-cache-dir compdb ValgrindCI \
 && sudo npm install --no-save --global --no-package-lock cspell@5 \
