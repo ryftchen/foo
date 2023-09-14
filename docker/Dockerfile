@@ -3,11 +3,11 @@ FROM ubuntu:22.04
 SHELL ["/bin/bash", "-c"]
 
 RUN apt-get update \
-&& DEBIAN_FRONTEND=noninteractive apt-get install -y sudo tzdata ca-certificates curl bash-completion rsync zip \
+&& DEBIAN_FRONTEND=noninteractive apt-get install -y sudo tzdata ca-certificates psmisc bash-completion curl rsync zip \
 && sudo apt-get update \
 && sudo apt-get install -y git python3 python3-pip build-essential cmake ninja-build ccache distcc gdb strace \
 clang-15 lld-15 libgtest-dev libssl-dev libreadline-dev libmpfrc++-dev llvm-15-dev libclang-15-dev \
-clang-format-15 clang-tidy-15 shfmt shellcheck black pylint rustfmt rust-clippy rustc cargo \
+clang-format-15 clang-tidy-15 shfmt shellcheck black pylint rustc cargo rustfmt rust-clippy \
 valgrind cloc pre-commit graphviz docker docker-compose npm \
 && sudo apt-get clean \
 && sudo pip3 install --no-cache-dir compdb ValgrindCI \
