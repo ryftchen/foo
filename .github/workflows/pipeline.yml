@@ -22,7 +22,7 @@ jobs:
     container:
       image: ryftchen/foo:latest
       options: --privileged
-    timeout-minutes: 15
+    timeout-minutes: 20
 
     permissions:
       contents: write
@@ -65,7 +65,7 @@ jobs:
     container:
       image: ryftchen/foo:latest
       options: --privileged
-    timeout-minutes: 15
+    timeout-minutes: 20
 
     steps:
       - name: Prepare
@@ -97,7 +97,7 @@ jobs:
     container:
       image: ryftchen/foo:latest
       options: --privileged
-    timeout-minutes: 15
+    timeout-minutes: 20
 
     permissions:
       actions: read
