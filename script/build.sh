@@ -3,9 +3,9 @@
 declare -rA FOLDER=([proj]="foo" [app]="application" [util]="utility" [algo]="algorithm" [ds]="data_structure"
     [dp]="design_pattern" [num]="numeric" [tst]="test" [scr]="script" [doc]="document" [bld]="build" [cache]=".cache")
 declare -r COMP_CMD="compile_commands.json"
-declare -A ARGS=([help]=false [initialize]=false [cleanup]=false [docker]=false [install]=false [uninstall]=false
-    [test]=false [release]=false [hook]=false [spell]=false [check]=false [format]=false [lint]=false [statistics]=false
-    [browser]=false [doxygen]=false)
+declare -A ARGS=([help]=false [initialize]=false [cleanup]=false [install]=false [uninstall]=false [docker]=false
+    [website]=false [test]=false [release]=false [hook]=false [spell]=false [check]=false [format]=false [lint]=false
+    [statistics]=false [browser]=false [doxygen]=false)
 declare -A DEV_OPT=([parallel]=0 [pch]=false [unity]=false [ccache]=false [distcc]=false [tmpfs]=false)
 declare SUDO=""
 declare CMAKE_CACHE_ENTRY=""
@@ -27,6 +27,19 @@ function die()
     exit 1
 }
 
+function wait_until_get_input()
+{
+    local old_stty
+    old_stty=$(stty -g)
+    stty raw -echo
+    local answer
+    answer=$(while ! head -c 1 | grep -i '[ny]'; do true; done)
+    stty "${old_stty}"
+
+    echo "${answer}"
+    return 0
+}
+
 function parse_parameters()
 {
     while [[ $# -gt 0 ]]; do
@@ -43,10 +56,6 @@ function parse_parameters()
             check_single_choice_parameters_validity "$1"
             ARGS[cleanup]=true
             ;;
-        -D | --docker)
-            check_single_choice_parameters_validity "$1"
-            ARGS[docker]=true
-            ;;
         -i | --install)
             check_single_choice_parameters_validity "$1"
             ARGS[install]=true
@@ -54,6 +63,14 @@ function parse_parameters()
         -u | --uninstall)
             check_single_choice_parameters_validity "$1"
             ARGS[uninstall]=true
+            ;;
+        -D | --docker)
+            check_single_choice_parameters_validity "$1"
+            ARGS[docker]=true
+            ;;
+        -w | --website)
+            check_single_choice_parameters_validity "$1"
+            ARGS[website]=true
             ;;
         -t | --test)
             if {
@@ -135,8 +152,8 @@ function exist_single_choice_parameters()
     for key in "${!ARGS[@]}"; do
         if [[ ${ARGS[${key}]} = true ]]; then
             if [[ ${key} == "help" ]] || [[ ${key} == "initialize" ]] || [[ ${key} == "cleanup" ]] \
-                || [[ ${key} == "docker" ]] || [[ ${key} == "install" ]] || [[ ${key} == "uninstall" ]] \
-                || [[ ${key} == "test" ]]; then
+                || [[ ${key} == "install" ]] || [[ ${key} == "uninstall" ]] || [[ ${key} == "docker" ]] \
+                || [[ ${key} == "website" ]] || [[ ${key} == "test" ]]; then
                 number+=1
             fi
         fi
@@ -166,15 +183,16 @@ function try_to_perform_single_choice_options()
     perform_help_option
     perform_initialize_option
     perform_cleanup_option
-    perform_docker_option
     perform_install_option
     perform_uninstall_option
+    perform_docker_option
+    perform_website_option
 }
 
 function perform_help_option()
 {
     if [[ ${ARGS[help]} = true ]]; then
-        echo "usage: $(basename "${0}") [-h] [-I] [-C] [-D] [-i] [-u] [-t {-r}] \
+        echo "usage: $(basename "${0}") [-h] [-I] [-C] [-i] [-u] [-D] [-w] [-t {-r}] \
 [[{-H, -c, -f, -l, -S, -b, -d} ...] {-r}]"
         echo
         echo "build script"
@@ -183,9 +201,10 @@ function perform_help_option()
         echo "  -h, --help            show help and exit"
         echo "  -I, --initialize      initialize environment and exit"
         echo "  -C, --cleanup         cleanup project folder and exit"
-        echo "  -D, --docker          construct docker container and exit"
         echo "  -i, --install         install binary with libraries and exit"
         echo "  -u, --uninstall       uninstall binary with libraries and exit"
+        echo "  -D, --docker          construct docker container and exit"
+        echo "  -w, --website         launch/terminate web server and exit"
         echo "  -t, --test            build unit test and exit"
         echo "  -r, --release         set as release version"
         echo "  -H, --hook            run hook before commit"
@@ -234,45 +253,14 @@ function perform_cleanup_option()
     if [[ ${ARGS[cleanup]} = true ]]; then
         shell_command "sed -i '/export FOO_ENV=foo_dev/d' ~/.bashrc 2>/dev/null"
         shell_command "find ./ -maxdepth 2 -type d | sed 1d \
-| grep -E '(${FOLDER[bld]}|${FOLDER[cache]}|browser|doxygen|__pycache__)$' | xargs -i rm -rf {}"
-        shell_command "rm -rf ./${FOLDER[scr]}/.env ./core.* ./vgcore.* ./*.profraw"
+| grep -E '(${FOLDER[bld]}|${FOLDER[cache]}|target|browser|doxygen|__pycache__)$' | xargs -i rm -rf {}"
+        shell_command "rm -rf ./${FOLDER[scr]}/.env ./${FOLDER[doc]}/server/Cargo.lock ./core.* ./vgcore.* ./*.profraw"
         shell_command "git config --local --unset commit.template"
 
         if [[ -f .git/hooks/pre-commit ]]; then
             shell_command "pre-commit uninstall"
         fi
         exit 0
-    fi
-}
-
-function perform_docker_option()
-{
-    if [[ ${ARGS[docker]} = true ]]; then
-        if command -v docker >/dev/null 2>&1 && command -v docker-compose >/dev/null 2>&1; then
-            echo "Please confirm whether continue constructing the docker container. (y or n)"
-            local old_stty
-            old_stty=$(stty -g)
-            stty raw -echo
-            local answer
-            answer=$(while ! head -c 1 | grep -i '[ny]'; do true; done)
-            stty "${old_stty}"
-            if echo "${answer}" | grep -iq '^y'; then
-                echo "Yes"
-            else
-                echo "No"
-                exit 0
-            fi
-        else
-            die "No docker or docker-compose program. Please install it."
-        fi
-
-        if ! docker ps -a --format "{{lower .Image}} {{lower .Names}}" \
-            | grep -q "ryftchen/${FOLDER[proj]}:latest" "${FOLDER[proj]}_dev" 2>/dev/null; then
-            shell_command "docker-compose -f ./docker/docker-compose.yml up -d"
-            exit 0
-        else
-            die "The container exists."
-        fi
     fi
 }
 
@@ -323,6 +311,67 @@ ${SUDO}rm -rf /opt/foo/lib/${completion_file}"
     fi
 }
 
+function perform_docker_option()
+{
+    if [[ ${ARGS[docker]} = true ]]; then
+        if command -v docker >/dev/null 2>&1 && command -v docker-compose >/dev/null 2>&1; then
+            echo "Please confirm whether continue constructing the docker container. (y or n)"
+            local input
+            input=$(wait_until_get_input)
+            if echo "${input}" | grep -iq '^y'; then
+                echo "Yes"
+            else
+                echo "No"
+                exit 0
+            fi
+        else
+            die "No docker or docker-compose program. Please install it."
+        fi
+
+        if ! docker ps -a --format "{{lower .Image}} {{lower .Names}}" \
+            | grep -q "ryftchen/${FOLDER[proj]}:latest" "${FOLDER[proj]}_dev" 2>/dev/null; then
+            shell_command "docker-compose -f ./docker/docker-compose.yml up -d"
+            exit 0
+        else
+            die "The container exists."
+        fi
+    fi
+}
+
+function perform_website_option()
+{
+    if [[ ${ARGS[website]} = true ]]; then
+        if command -v rustc >/dev/null 2>&1 && command -v cargo >/dev/null 2>&1; then
+            shell_command "cargo build --release --offline --manifest-path ./${FOLDER[doc]}/server/Cargo.toml"
+            if ! pgrep -f foo_doc >/dev/null 2>&1; then
+                echo "Please confirm whether continue launching the document servers. (y or n)"
+                local input
+                input=$(wait_until_get_input)
+                if echo "${input}" | grep -iq '^y'; then
+                    echo "Yes"
+                    shell_command "./${FOLDER[doc]}/server/target/release/foo_doc &"
+                else
+                    echo "No"
+                fi
+            else
+                echo "Please confirm whether continue terminating the document servers. (y or n)"
+                local input
+                input=$(wait_until_get_input)
+                if echo "${input}" | grep -iq '^y'; then
+                    echo "Yes"
+                    shell_command "ps axf | grep foo_doc | grep -v grep | awk '{print \"kill -9 \" \$1}'"
+                    shell_command "fuser -k 61503/tcp 61504/tcp"
+                else
+                    echo "No"
+                fi
+            fi
+            exit 0
+        else
+            die "No rustc or cargo program. Please install it."
+        fi
+    fi
+}
+
 function try_to_perform_multiple_choice_options()
 {
     check_extra_dependencies
@@ -359,16 +408,16 @@ function check_extra_dependencies()
 
     if [[ ${ARGS[format]} = true ]]; then
         if ! command -v clang-format-15 >/dev/null 2>&1 || ! command -v shfmt >/dev/null 2>&1 \
-            || ! command -v black >/dev/null 2>&1; then
-            die "No clang-format, shfmt or black program. Please install it."
+            || ! command -v black >/dev/null 2>&1 || ! command -v rustfmt >/dev/null 2>&1; then
+            die "No clang-format, shfmt, black or rustfmt program. Please install it."
         fi
     fi
 
     if [[ ${ARGS[lint]} = true ]]; then
         if ! command -v clang-tidy-15 >/dev/null 2>&1 || ! command -v run-clang-tidy-15 >/dev/null 2>&1 \
             || ! command -v compdb >/dev/null 2>&1 || ! command -v shellcheck >/dev/null 2>&1 \
-            || ! command -v pylint >/dev/null 2>&1; then
-            die "No clang-tidy (including run-clang-tidy-15, compdb), shellcheck or pylint program. \
+            || ! command -v pylint >/dev/null 2>&1 || ! command -v clippy-driver >/dev/null 2>&1; then
+            die "No clang-tidy (including run-clang-tidy-15, compdb), shellcheck, pylint or clippy program. \
 Please install it."
         fi
         if [[ ${DEV_OPT[pch]} = true ]] || [[ ${DEV_OPT[unity]} = true ]]; then
@@ -433,6 +482,7 @@ function perform_format_option()
 | xargs clang-format-15 --Werror -i --style=file:./.clang-format --verbose"
         shell_command "shfmt -l -w ./${FOLDER[scr]}/*.sh"
         shell_command "black --config ./.toml ./${FOLDER[scr]}/*.py"
+        shell_command "cargo fmt --all --verbose --manifest-path ./${FOLDER[doc]}/server/Cargo.toml"
     fi
 }
 
@@ -472,6 +522,7 @@ function perform_lint_option()
 
         shell_command "shellcheck -a ./${FOLDER[scr]}/*.sh"
         shell_command "pylint --rcfile=./.pylintrc ./${FOLDER[scr]}/*.py"
+        shell_command "cargo clippy --no-deps --offline --release --manifest-path ./${FOLDER[doc]}/server/Cargo.toml"
     fi
 }
 
@@ -481,6 +532,7 @@ function perform_statistics_option()
         shell_command "cloc --config ./.cloc --include-lang='C,C++,C/C++ Header'"
         shell_command "cloc --config ./.cloc --include-lang='Bourne Shell'"
         shell_command "cloc --config ./.cloc --include-lang='Python'"
+        shell_command "cloc --config ./.cloc --include-lang='Rust'"
     fi
 }
 

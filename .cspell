@@ -1,7 +1,7 @@
 ---
 language: en
 files:
-  - '**/*.{cpp,hpp,tpp,sh,py}'
+  - '**/*.{cpp,hpp,tpp,sh,py,rs}'
 dictionaries:
   - bash
   - cpp
@@ -11,6 +11,7 @@ dictionaries:
   - fullstack
   - git
   - python
+  - rust
   - software-terms
   - shell
 words:
@@ -25,6 +26,7 @@ words:
   - Doxyfile
   - EXTSUM
   - filedir
+  - fuser
   - Griewank
   - indexgenerator
   - inorder
@@ -37,15 +39,19 @@ words:
   - memcheck
   - mpfr
   - PDEATHSIG
+  - pgrep
   - profdata
   - profraw
   - pylintrc
   - Rastrigin
   - rcfile
   - reconfig
+  - rustc
+  - rustfmt
   - Ritchie
   - RNDN
   - ryftchen
+  - staticfile
   - suboperation
   - tmpfs
   - tparam
@@ -66,6 +72,7 @@ ignoreRegExpList:
   - '// NOLINT.*'
   - '# shellcheck.*'
   - '# pylint:.*'
+  - '#![.*'
 overrides:
   - filename: '**/*.tpp'
     languageId: cpp

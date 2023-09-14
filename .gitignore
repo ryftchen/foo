@@ -4,9 +4,11 @@
 build/
 browser/
 doxygen/
+target/
 __pycache__/
 .env
 core*
+Cargo.lock
 vgcore*
 *.profraw
 

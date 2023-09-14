@@ -1,0 +1,13 @@
+[package]
+name = "foo_doc"
+version = "1.0.0"
+edition = "2021"
+rust-version = "1.66"
+
+[dependencies]
+hyper = {version = "1.0.0-rc.4", features = ["http1", "server"]}
+hyper-staticfile = "0.10.0-alpha.7"
+hyper-util = {git = "https://github.com/hyperium/hyper-util.git", rev = "f898015"}
+futures-util = "0.3.0"
+http = "0.2.0"
+tokio = {version = "1.0.0", features = ["macros", "rt-multi-thread", "net", "io-util"]}
