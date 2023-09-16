@@ -15,16 +15,15 @@
 
 namespace application::config
 {
-Config::Config(const std::string& filename, const char delim, const char commentDelim) :
-    delimiter(delim), commentDelimiter(commentDelim)
+Config::Config()
 {
-    parseFile(filename);
+    parseFile(filePath);
 }
 
 Config& Config::getInstance()
 {
-    static Config config{};
-    return config;
+    static Config configuration{};
+    return configuration;
 }
 
 std::string Config::operator[](const std::string& key)
@@ -42,6 +41,11 @@ std::string Config::operator[](const std::string& key)
     }
 
     return value;
+}
+
+std::string Config::getFilePath() const
+{
+    return filePath;
 }
 
 std::string Config::getString(const std::string& key)
@@ -72,6 +76,21 @@ double Config::getDouble(const std::string& key)
 bool Config::getBool(const std::string& key)
 {
     return getInteger(key);
+}
+
+std::string Config::getFullDefaultConfigPath()
+{
+    std::string processHome;
+    if (nullptr != std::getenv("FOO_HOME"))
+    {
+        processHome = std::getenv("FOO_HOME");
+    }
+    else
+    {
+        throw std::runtime_error("The environment variable FOO_HOME is not set.");
+    }
+
+    return processHome + '/' + std::string{defaultConfigFile};
 }
 
 template <class T>
@@ -145,7 +164,7 @@ void Config::parseLine(const std::string& line)
     {
         std::string key, value;
         std::istringstream is(line);
-        std::getline(is, key, delimiter);
+        std::getline(is, key, basicDelimiter);
         key = trimLine(key);
 
         std::getline(is, value);
@@ -171,13 +190,13 @@ void Config::parseLine(const std::string& line)
     }
 }
 
-bool Config::isFormatValid(const std::string& line) const
+bool Config::isFormatValid(const std::string& line)
 {
     const auto tempLine = trimLine(line);
-    return (tempLine.find(delimiter) != 0);
+    return (tempLine.find(basicDelimiter) != 0);
 }
 
-bool Config::isComment(const std::string& line) const
+bool Config::isComment(const std::string& line)
 {
     const auto tempLine = trimLine(line);
     if (tempLine.size())
@@ -200,7 +219,7 @@ std::string Config::trimLine(const std::string& line)
 }
 
 //! @brief Initialize the configuration.
-//! @param filename - configuration file
+//! @param filename - config file
 void initializeConfiguration(const std::string& filename)
 {
     if (!std::filesystem::exists(filename))

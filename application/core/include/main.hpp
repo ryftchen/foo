@@ -114,7 +114,7 @@ static void signalHandler(int sig)
     const std::filesystem::path targetPath{home};
     if (!std::filesystem::exists(targetPath))
     {
-        std::fprintf(::stdout, "%s: Unable to access the home directory.\n", getExecutableName().c_str());
+        std::fprintf(::stdout, "%s: Could not find the home directory.\n", getExecutableName().c_str());
         std::exit(EXIT_FAILURE);
     }
 
@@ -125,7 +125,7 @@ static void signalHandler(int sig)
         std::filesystem::permissions(
             processPath, std::filesystem::perms::owner_all, std::filesystem::perm_options::add);
     }
-    std::filesystem::current_path(processPath);
+    ::setenv("FOO_HOME", processPath.string().c_str(), true);
 }
 
 //! @brief The destructor function before finishing the main function. Check the signal status.

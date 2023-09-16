@@ -484,13 +484,13 @@ void Command::showHelpMessage() const
 void Command::regenerateConfiguration() const
 {
     namespace file = utility::file;
-    std::ofstream ofs = file::openFile(std::string{config::defaultConfigFile}, true);
+    std::ofstream ofs = file::openFile(CONFIG_FILE_PATH, true);
     file::fdLock(ofs, file::LockMode::write);
     ofs << config::defaultConfiguration;
     file::fdUnlock(ofs);
     file::closeFile(ofs);
 
-    const auto configs = file::getFileContents(std::string{config::defaultConfigFile});
+    const auto configs = file::getFileContents(CONFIG_FILE_PATH);
     std::ostringstream os;
     std::copy(configs.cbegin(), configs.cend(), std::ostream_iterator<std::string>(os, "\n"));
     std::cout << os.str() << std::flush;

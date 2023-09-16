@@ -58,7 +58,7 @@ The **foo** is a personal roadmap for learning programming, like a demo. Its mai
   ./build/bin/foo --help
   ```
 
-  And the executed log will also be written to `$HOME/.foo/log/foo.log`.
+  Configuration information is stored in `$HOME/.foo/foo.cfg`, and the executed log is also written to `$HOME/.foo/log/foo.log`.
 - The parameters are provided for building or static analysis. Build with options such as *-\-format*, *-\-lint*, etc.
 
 ### How to run
