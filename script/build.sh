@@ -191,45 +191,50 @@ function try_to_perform_single_choice_options()
 
 function perform_help_option()
 {
-    if [[ ${ARGS[help]} = true ]]; then
-        echo "usage: $(basename "${0}") [-h] [-I] [-C] [-i] [-u] [-D] [-w] [-t {-r}] \
-[[{-H, -c, -f, -l, -S, -b, -d} ...] {-r}]"
-        echo
-        echo "build script"
-        echo
-        echo "options:"
-        echo "  -h, --help            show help and exit"
-        echo "  -I, --initialize      initialize environment and exit"
-        echo "  -C, --cleanup         cleanup project folder and exit"
-        echo "  -i, --install         install binary with libraries and exit"
-        echo "  -u, --uninstall       uninstall binary with libraries and exit"
-        echo "  -D, --docker          construct docker container and exit"
-        echo "  -w, --website         launch/terminate web server and exit"
-        echo "  -t, --test            build unit test and exit"
-        echo "  -r, --release         set as release version"
-        echo "  -H, --hook            run hook before commit"
-        echo "  -s, --spell           spell check against dictionaries"
-        echo "  -c, --check           fast syntax checking without compilation"
-        echo "  -f, --format          format all code files"
-        echo "  -l, --lint            lint all code files"
-        echo "  -S, --statistics      code statistics"
-        echo "  -b, --browser         generate code browser like IDE"
-        echo "  -d, --doxygen         documentation with doxygen"
-        exit 0
+    if [[ ${ARGS[help]} = false ]]; then
+        return
     fi
+
+    echo "usage: $(basename "${0}") [-h] [-I] [-C] [-i] [-u] [-D] [-w] [-t {-r}] \
+[[{-H, -c, -f, -l, -S, -b, -d} ...] {-r}]"
+    echo
+    echo "build script"
+    echo
+    echo "options:"
+    echo "  -h, --help            show help and exit"
+    echo "  -I, --initialize      initialize environment and exit"
+    echo "  -C, --cleanup         cleanup project folder and exit"
+    echo "  -i, --install         install binary with libraries and exit"
+    echo "  -u, --uninstall       uninstall binary with libraries and exit"
+    echo "  -D, --docker          construct docker container and exit"
+    echo "  -w, --website         launch/terminate web server and exit"
+    echo "  -t, --test            build unit test and exit"
+    echo "  -r, --release         set as release version"
+    echo "  -H, --hook            run hook before commit"
+    echo "  -s, --spell           spell check against dictionaries"
+    echo "  -c, --check           fast syntax checking without compilation"
+    echo "  -f, --format          format all code files"
+    echo "  -l, --lint            lint all code files"
+    echo "  -S, --statistics      code statistics"
+    echo "  -b, --browser         generate code browser like IDE"
+    echo "  -d, --doxygen         documentation with doxygen"
+    exit 0
 }
 
 function perform_initialize_option()
 {
-    if [[ ${ARGS[initialize]} = true ]]; then
-        local export_cmd="export FOO_ENV=foo_dev"
-        if ! grep -Fxq "${export_cmd}" ~/.bashrc 2>/dev/null && {
-            [[ -z ${FOO_ENV} ]] || [[ ${FOO_ENV} != "foo_dev" ]]
-        }; then
-            shell_command "echo '${export_cmd}' >>~/.bashrc"
-        fi
+    if [[ ${ARGS[initialize]} = false ]]; then
+        return
+    fi
 
-        shell_command "cat <<EOF >./${FOLDER[scr]}/.env
+    local export_cmd="export FOO_ENV=foo_dev"
+    if ! grep -Fxq "${export_cmd}" ~/.bashrc 2>/dev/null && {
+        [[ -z ${FOO_ENV} ]] || [[ ${FOO_ENV} != "foo_dev" ]]
+    }; then
+        shell_command "echo '${export_cmd}' >>~/.bashrc"
+    fi
+
+    shell_command "cat <<EOF >./${FOLDER[scr]}/.env
 #!/bin/false
 
 FOO_BLD_PARALLEL=0
@@ -242,137 +247,146 @@ FOO_BLD_TMPFS=off
 export FOO_BLD_PARALLEL FOO_BLD_PCH FOO_BLD_UNITY FOO_BLD_CCACHE FOO_BLD_DISTCC FOO_BLD_TMPFS
 return 0
 EOF"
-        shell_command "echo 'core.%s.%e.%p' | ${SUDO}tee /proc/sys/kernel/core_pattern"
-        shell_command "git config --local commit.template ./.gitcommit.template"
-        exit 0
-    fi
+    shell_command "echo 'core.%s.%e.%p' | ${SUDO}tee /proc/sys/kernel/core_pattern"
+    shell_command "git config --local commit.template ./.gitcommit.template"
+    exit 0
 }
 
 function perform_cleanup_option()
 {
-    if [[ ${ARGS[cleanup]} = true ]]; then
-        shell_command "sed -i '/export FOO_ENV=foo_dev/d' ~/.bashrc 2>/dev/null"
-        shell_command "find ./ -maxdepth 3 -type d | sed 1d \
-| grep -E '(${FOLDER[bld]}|${FOLDER[cache]}|target|browser|doxygen|__pycache__)$' | xargs -i rm -rf {}"
-        shell_command "rm -rf ./${FOLDER[scr]}/.env ./${FOLDER[doc]}/server/Cargo.lock ./core.* ./vgcore.* ./*.profraw"
-        shell_command "git config --local --unset commit.template"
-
-        if [[ -f .git/hooks/pre-commit ]]; then
-            shell_command "pre-commit uninstall"
-        fi
-        exit 0
+    if [[ ${ARGS[cleanup]} = false ]]; then
+        return
     fi
+
+    shell_command "sed -i '/export FOO_ENV=foo_dev/d' ~/.bashrc 2>/dev/null"
+    shell_command "find ./ -maxdepth 3 -type d | sed 1d \
+| grep -E '(${FOLDER[bld]}|${FOLDER[cache]}|target|browser|doxygen|__pycache__)$' | xargs -i rm -rf {}"
+    shell_command "rm -rf ./${FOLDER[scr]}/.env ./${FOLDER[doc]}/server/Cargo.lock ./core.* ./vgcore.* ./*.profraw"
+    shell_command "git config --local --unset commit.template"
+
+    if [[ -f .git/hooks/pre-commit ]]; then
+        shell_command "pre-commit uninstall"
+    fi
+    exit 0
 }
 
 function perform_install_option()
 {
-    if [[ ${ARGS[install]} = true ]]; then
-        if [[ ! -f ./${FOLDER[bld]}/bin/foo ]]; then
-            die "There is no binary file in the ${FOLDER[bld]} folder. Please finish compiling first."
-        fi
+    if [[ ${ARGS[install]} = false ]]; then
+        return
+    fi
 
-        shell_command "${SUDO}cmake --install ./${FOLDER[bld]}"
-        local bin_path=/opt/foo/bin
-        local export_cmd="export PATH=${bin_path}:\$PATH"
-        if [[ :${PATH}: != *:${bin_path}:* ]] && ! grep -Fxq "${export_cmd}" ~/.bashrc 2>/dev/null; then
+    if [[ ! -f ./${FOLDER[bld]}/bin/foo ]]; then
+        die "There is no binary file in the ${FOLDER[bld]} folder. Please finish compiling first."
+    fi
+
+    shell_command "${SUDO}cmake --install ./${FOLDER[bld]}"
+    local bin_path=/opt/foo/bin
+    local export_cmd="export PATH=${bin_path}:\$PATH"
+    if [[ :${PATH}: != *:${bin_path}:* ]] && ! grep -Fxq "${export_cmd}" ~/.bashrc 2>/dev/null; then
+        shell_command "echo '${export_cmd}' >>~/.bashrc"
+    fi
+
+    local lib_path=/opt/foo/lib
+    if [[ -d ${lib_path} ]]; then
+        local completion_file="bash_completion"
+        local export_cmd="[ \"\${BASH_COMPLETION_VERSINFO}\" != \"\" ] && [ -s ${lib_path}/${completion_file} ] && \
+\. ${lib_path}/${completion_file}"
+        shell_command "${SUDO}cp ./${FOLDER[scr]}/${completion_file}.sh ${lib_path}/${completion_file}"
+        if ! grep -Fxq "${export_cmd}" ~/.bashrc 2>/dev/null; then
             shell_command "echo '${export_cmd}' >>~/.bashrc"
         fi
-
-        local lib_path=/opt/foo/lib
-        if [[ -d ${lib_path} ]]; then
-            local completion_file="bash_completion"
-            local export_cmd="[ \"\${BASH_COMPLETION_VERSINFO}\" != \"\" ] && [ -s ${lib_path}/${completion_file} ] && \
-\. ${lib_path}/${completion_file}"
-            shell_command "${SUDO}cp ./${FOLDER[scr]}/${completion_file}.sh ${lib_path}/${completion_file}"
-            if ! grep -Fxq "${export_cmd}" ~/.bashrc 2>/dev/null; then
-                shell_command "echo '${export_cmd}' >>~/.bashrc"
-            fi
-        fi
-        exit 0
     fi
+    exit 0
 }
 
 function perform_uninstall_option()
 {
-    if [[ ${ARGS[uninstall]} = true ]]; then
-        local manifest_file="install_manifest.txt"
-        if [[ ! -f ./${FOLDER[bld]}/${manifest_file} ]]; then
-            die "There is no ${manifest_file} file in the ${FOLDER[bld]} folder. Please generate it."
-        fi
-
-        local completion_file="bash_completion"
-        shell_command "rm -rf ~/.${FOLDER[proj]}"
-        shell_command "cat ./${FOLDER[bld]}/${manifest_file} | xargs ${SUDO}rm -rf && \
-${SUDO}rm -rf /opt/foo/lib/${completion_file}"
-        shell_command "cat ./${FOLDER[bld]}/${manifest_file} | xargs -L1 dirname | xargs ${SUDO}rmdir -p 2>/dev/null"
-        shell_command "sed -i '/export PATH=\/opt\/foo\/bin:\$PATH/d' ~/.bashrc 2>/dev/null"
-        shell_command "sed -i '/\\\. \/opt\/foo\/lib\/${completion_file}/d' ~/.bashrc 2>/dev/null"
-        exit 0
+    if [[ ${ARGS[uninstall]} = false ]]; then
+        return
     fi
+
+    local manifest_file="install_manifest.txt"
+    if [[ ! -f ./${FOLDER[bld]}/${manifest_file} ]]; then
+        die "There is no ${manifest_file} file in the ${FOLDER[bld]} folder. Please generate it."
+    fi
+
+    local completion_file="bash_completion"
+    shell_command "rm -rf ~/.${FOLDER[proj]}"
+    shell_command "cat ./${FOLDER[bld]}/${manifest_file} | xargs ${SUDO}rm -rf && \
+${SUDO}rm -rf /opt/foo/lib/${completion_file}"
+    shell_command "cat ./${FOLDER[bld]}/${manifest_file} | xargs -L1 dirname | xargs ${SUDO}rmdir -p 2>/dev/null"
+    shell_command "sed -i '/export PATH=\/opt\/foo\/bin:\$PATH/d' ~/.bashrc 2>/dev/null"
+    shell_command "sed -i '/\\\. \/opt\/foo\/lib\/${completion_file}/d' ~/.bashrc 2>/dev/null"
+    exit 0
 }
 
 function perform_docker_option()
 {
-    if [[ ${ARGS[docker]} = true ]]; then
-        if command -v docker >/dev/null 2>&1 && command -v docker-compose >/dev/null 2>&1; then
-            echo "Please confirm whether continue constructing the docker container. (y or n)"
-            local input
-            input=$(wait_until_get_input)
-            if echo "${input}" | grep -iq '^y'; then
-                echo "Yes"
-            else
-                echo "No"
-                exit 0
-            fi
-        else
-            die "No docker or docker-compose program. Please install it."
-        fi
-
-        if ! docker ps -a --format "{{lower .Image}} {{lower .Names}}" \
-            | grep -q "ryftchen/${FOLDER[proj]}:latest" "${FOLDER[proj]}_dev" 2>/dev/null; then
-            shell_command "docker-compose -f ./docker/docker-compose.yml up -d"
-            exit 0
-        else
-            die "The container exists."
-        fi
+    if [[ ${ARGS[docker]} = false ]]; then
+        return
     fi
+
+    if command -v docker >/dev/null 2>&1 && command -v docker-compose >/dev/null 2>&1; then
+        echo "Please confirm whether continue constructing the docker container. (y or n)"
+        local input
+        input=$(wait_until_get_input)
+        if echo "${input}" | grep -iq '^y'; then
+            echo "Yes"
+        else
+            echo "No"
+            exit 0
+        fi
+    else
+        die "No docker or docker-compose program. Please install it."
+    fi
+
+    if ! docker ps -a --format "{{lower .Image}} {{lower .Names}}" \
+        | grep -q "ryftchen/${FOLDER[proj]}:latest" "${FOLDER[proj]}_dev" 2>/dev/null; then
+        shell_command "docker-compose -f ./docker/docker-compose.yml up -d"
+    else
+        die "The container exists."
+    fi
+    exit 0
 }
 
 function perform_website_option()
 {
-    if [[ ${ARGS[website]} = true ]]; then
-        if command -v rustc >/dev/null 2>&1 && command -v cargo >/dev/null 2>&1; then
-            if [[ ! -f ./${FOLDER[doc]}/server/Cargo.lock ]]; then
-                shell_command "cargo check --release --manifest-path ./${FOLDER[doc]}/server/Cargo.toml"
-            fi
-            shell_command "cargo build --offline --release --manifest-path ./${FOLDER[doc]}/server/Cargo.toml"
-            if ! pgrep -f foo_doc >/dev/null 2>&1; then
-                echo "Please confirm whether continue launching the document server. (y or n)"
-                local input
-                input=$(wait_until_get_input)
-                if echo "${input}" | grep -iq '^y'; then
-                    echo "Yes"
-                    shell_command "./${FOLDER[doc]}/server/target/release/foo_doc --root-dir . &"
-                else
-                    echo "No"
-                fi
-            else
-                echo "Please confirm whether continue terminating the document server. (y or n)"
-                local input
-                input=$(wait_until_get_input)
-                if echo "${input}" | grep -iq '^y'; then
-                    echo "Yes"
-                    shell_command "ps axf | grep foo_doc | grep -v grep | awk '{print \"kill -9 \" \$1}'"
-                    shell_command "fuser -k 61503/tcp 61504/tcp"
-                else
-                    echo "No"
-                fi
-            fi
-            exit 0
-        else
-            die "No rustc or cargo program. Please install it."
-        fi
+    if [[ ${ARGS[website]} = false ]]; then
+        return
     fi
+
+    if command -v rustc >/dev/null 2>&1 && command -v cargo >/dev/null 2>&1; then
+        if [[ ! -f ./${FOLDER[doc]}/server/Cargo.lock ]]; then
+            shell_command "cargo check --release --manifest-path ./${FOLDER[doc]}/server/Cargo.toml"
+        fi
+        shell_command "cargo build --offline --release --manifest-path ./${FOLDER[doc]}/server/Cargo.toml"
+        if ! pgrep -f foo_doc >/dev/null 2>&1; then
+            echo "Please confirm whether continue launching the document server. (y or n)"
+            local input
+            input=$(wait_until_get_input)
+            if echo "${input}" | grep -iq '^y'; then
+                echo "Yes"
+                shell_command "./${FOLDER[doc]}/server/target/release/foo_doc --root-dir . &"
+            else
+                echo "No"
+            fi
+        else
+            echo "Please confirm whether continue terminating the document server. (y or n)"
+            local input
+            input=$(wait_until_get_input)
+            if echo "${input}" | grep -iq '^y'; then
+                echo "Yes"
+                shell_command "ps axf | grep foo_doc | grep -v grep | awk '{print \"kill -9 \" \$1}'"
+                shell_command "fuser -k 61503/tcp 61504/tcp"
+            else
+                echo "No"
+            fi
+        fi
+    else
+        die "No rustc or cargo program. Please install it."
+    fi
+    exit 0
 }
 
 function try_to_perform_multiple_choice_options()
@@ -455,115 +469,129 @@ FOO_BLD_UNITY is turned on."
 
 function perform_hook_option()
 {
-    if [[ ${ARGS[hook]} = true ]]; then
-        shell_command "pre-commit install --config ./.pre-commit"
-        shell_command "pre-commit run --all-files --config ./.pre-commit"
+    if [[ ${ARGS[hook]} = false ]]; then
+        return
     fi
+
+    shell_command "pre-commit install --config ./.pre-commit"
+    shell_command "pre-commit run --all-files --config ./.pre-commit"
 }
 
 function perform_spell_option()
 {
-    if [[ ${ARGS[spell]} = true ]]; then
-        shell_command "cspell lint --config ./.cspell --show-context --no-cache"
+    if [[ ${ARGS[spell]} = false ]]; then
+        return
     fi
+
+    shell_command "cspell lint --config ./.cspell --show-context --no-cache"
 }
 
 function perform_check_option()
 {
-    if [[ ${ARGS[check]} = true ]]; then
-        shell_command "find ./${FOLDER[app]} ./${FOLDER[util]} ./${FOLDER[algo]} ./${FOLDER[ds]} ./${FOLDER[dp]} \
-./${FOLDER[num]} -name '*.cpp' -o -name '*.hpp' -o -name '*.tpp' | xargs clang-check-15 -p ./${FOLDER[bld]}"
-        shell_command "find ./${FOLDER[tst]} -name '*.cpp' | xargs clang-check-15 -p ./${FOLDER[tst]}/${FOLDER[bld]}"
+    if [[ ${ARGS[check]} = false ]]; then
+        return
     fi
+
+    shell_command "find ./${FOLDER[app]} ./${FOLDER[util]} ./${FOLDER[algo]} ./${FOLDER[ds]} ./${FOLDER[dp]} \
+./${FOLDER[num]} -name '*.cpp' -o -name '*.hpp' -o -name '*.tpp' | xargs clang-check-15 -p ./${FOLDER[bld]}"
+    shell_command "find ./${FOLDER[tst]} -name '*.cpp' | xargs clang-check-15 -p ./${FOLDER[tst]}/${FOLDER[bld]}"
 }
 
 function perform_format_option()
 {
-    if [[ ${ARGS[format]} = true ]]; then
-        shell_command "find ./${FOLDER[app]} ./${FOLDER[util]} ./${FOLDER[algo]} ./${FOLDER[ds]} ./${FOLDER[dp]} \
+    if [[ ${ARGS[format]} = false ]]; then
+        return
+    fi
+
+    shell_command "find ./${FOLDER[app]} ./${FOLDER[util]} ./${FOLDER[algo]} ./${FOLDER[ds]} ./${FOLDER[dp]} \
 ./${FOLDER[num]} ./${FOLDER[tst]} -name '*.cpp' -o -name '*.hpp' -o -name '*.tpp' | grep -v '/${FOLDER[bld]}/' \
 | xargs clang-format-15 --Werror -i --style=file:./.clang-format --verbose"
-        shell_command "shfmt -l -w ./${FOLDER[scr]}/*.sh"
-        shell_command "black --config ./.toml ./${FOLDER[scr]}/*.py"
-        shell_command "cargo fmt --all --verbose --manifest-path ./${FOLDER[doc]}/server/Cargo.toml"
-    fi
+    shell_command "shfmt -l -w ./${FOLDER[scr]}/*.sh"
+    shell_command "black --config ./.toml ./${FOLDER[scr]}/*.py"
+    shell_command "cargo fmt --all --verbose --manifest-path ./${FOLDER[doc]}/server/Cargo.toml"
 }
 
 function perform_lint_option()
 {
-    if [[ ${ARGS[lint]} = true ]]; then
-        local app_comp_cmd=${FOLDER[bld]}/${COMP_CMD}
-        if [[ ! -f ./${app_comp_cmd} ]]; then
-            die "There is no ${COMP_CMD} file in the ${FOLDER[bld]} folder. Please generate it."
+    if [[ ${ARGS[lint]} = false ]]; then
+        return
+    fi
+
+    local app_comp_cmd=${FOLDER[bld]}/${COMP_CMD}
+    if [[ ! -f ./${app_comp_cmd} ]]; then
+        die "There is no ${COMP_CMD} file in the ${FOLDER[bld]} folder. Please generate it."
+    fi
+    compdb -p "./${FOLDER[bld]}" list >"./${COMP_CMD}" && mv "./${app_comp_cmd}" "./${app_comp_cmd}.bak" \
+        && mv "./${COMP_CMD}" "./${FOLDER[bld]}"
+    while true; do
+        local line
+        line=$(grep -n '.tpp' "./${app_comp_cmd}" | head -n 1 | cut -d : -f 1)
+        if ! [[ ${line} =~ ^[0-9]+$ ]]; then
+            break
         fi
-        compdb -p "./${FOLDER[bld]}" list >"./${COMP_CMD}" && mv "./${app_comp_cmd}" "./${app_comp_cmd}.bak" \
-            && mv "./${COMP_CMD}" "./${FOLDER[bld]}"
-        while true; do
-            local line
-            line=$(grep -n '.tpp' "./${app_comp_cmd}" | head -n 1 | cut -d : -f 1)
-            if ! [[ ${line} =~ ^[0-9]+$ ]]; then
-                break
-            fi
-            sed -i $(("${line}" - 2)),$(("${line}" + 3))d "./${app_comp_cmd}"
-        done
-        shell_command "find ./${FOLDER[app]} ./${FOLDER[util]} ./${FOLDER[algo]} ./${FOLDER[ds]} ./${FOLDER[dp]} \
+        sed -i $(("${line}" - 2)),$(("${line}" + 3))d "./${app_comp_cmd}"
+    done
+    shell_command "find ./${FOLDER[app]} ./${FOLDER[util]} ./${FOLDER[algo]} ./${FOLDER[ds]} ./${FOLDER[dp]} \
 ./${FOLDER[num]} -name '*.cpp' -o -name '*.hpp' | xargs run-clang-tidy-15 -config-file=./.clang-tidy \
 -p ./${FOLDER[bld]} -quiet"
-        shell_command "find ./${FOLDER[app]} ./${FOLDER[util]} ./${FOLDER[algo]} ./${FOLDER[ds]} ./${FOLDER[dp]} \
+    shell_command "find ./${FOLDER[app]} ./${FOLDER[util]} ./${FOLDER[algo]} ./${FOLDER[ds]} ./${FOLDER[dp]} \
 ./${FOLDER[num]} -name '*.tpp' | xargs clang-tidy-15 --config-file=./.clang-tidy -p ./${FOLDER[bld]} --quiet"
-        rm -rf "./${app_comp_cmd}" && mv "./${app_comp_cmd}.bak" "./${app_comp_cmd}"
+    rm -rf "./${app_comp_cmd}" && mv "./${app_comp_cmd}.bak" "./${app_comp_cmd}"
 
-        local tst_comp_cmd=${FOLDER[tst]}/${FOLDER[bld]}/${COMP_CMD}
-        if [[ ! -f ./${tst_comp_cmd} ]]; then
-            die "There is no ${COMP_CMD} file in the ${FOLDER[tst]}/${FOLDER[bld]} folder. Please generate it."
-        fi
-        compdb -p "./${FOLDER[tst]}/${FOLDER[bld]}" list >"./${COMP_CMD}" \
-            && mv "./${tst_comp_cmd}" "./${tst_comp_cmd}.bak" && mv "./${COMP_CMD}" "./${FOLDER[tst]}/${FOLDER[bld]}"
-        shell_command "find ./${FOLDER[tst]} -name '*.cpp' \
-| xargs run-clang-tidy-15 -config-file=./.clang-tidy -p ./${FOLDER[tst]}/${FOLDER[bld]} -quiet"
-        rm -rf "./${tst_comp_cmd}" && mv "./${tst_comp_cmd}.bak" "./${tst_comp_cmd}"
-
-        shell_command "shellcheck -a ./${FOLDER[scr]}/*.sh"
-        shell_command "pylint --rcfile=./.pylintrc ./${FOLDER[scr]}/*.py"
-        if [[ ! -f ./${FOLDER[doc]}/server/Cargo.lock ]]; then
-            shell_command "cargo check --release --manifest-path ./${FOLDER[doc]}/server/Cargo.toml"
-        fi
-        shell_command "cargo clippy --no-deps --offline --release --manifest-path ./${FOLDER[doc]}/server/Cargo.toml"
+    local tst_comp_cmd=${FOLDER[tst]}/${FOLDER[bld]}/${COMP_CMD}
+    if [[ ! -f ./${tst_comp_cmd} ]]; then
+        die "There is no ${COMP_CMD} file in the ${FOLDER[tst]}/${FOLDER[bld]} folder. Please generate it."
     fi
+    compdb -p "./${FOLDER[tst]}/${FOLDER[bld]}" list >"./${COMP_CMD}" \
+        && mv "./${tst_comp_cmd}" "./${tst_comp_cmd}.bak" && mv "./${COMP_CMD}" "./${FOLDER[tst]}/${FOLDER[bld]}"
+    shell_command "find ./${FOLDER[tst]} -name '*.cpp' | xargs run-clang-tidy-15 -config-file=./.clang-tidy \
+-p ./${FOLDER[tst]}/${FOLDER[bld]} -quiet"
+    rm -rf "./${tst_comp_cmd}" && mv "./${tst_comp_cmd}.bak" "./${tst_comp_cmd}"
+
+    shell_command "shellcheck -a ./${FOLDER[scr]}/*.sh"
+    shell_command "pylint --rcfile=./.pylintrc ./${FOLDER[scr]}/*.py"
+    if [[ ! -f ./${FOLDER[doc]}/server/Cargo.lock ]]; then
+        shell_command "cargo check --release --manifest-path ./${FOLDER[doc]}/server/Cargo.toml"
+    fi
+    shell_command "cargo clippy --no-deps --offline --release --manifest-path ./${FOLDER[doc]}/server/Cargo.toml"
 }
 
 function perform_statistics_option()
 {
-    if [[ ${ARGS[statistics]} = true ]]; then
-        shell_command "cloc --config ./.cloc --include-lang='C,C++,C/C++ Header'"
-        shell_command "cloc --config ./.cloc --include-lang='Bourne Shell'"
-        shell_command "cloc --config ./.cloc --include-lang='Python'"
-        shell_command "cloc --config ./.cloc --include-lang='Rust'"
+    if [[ ${ARGS[statistics]} = false ]]; then
+        return
     fi
+
+    shell_command "cloc --config ./.cloc --include-lang='C,C++,C/C++ Header'"
+    shell_command "cloc --config ./.cloc --include-lang='Bourne Shell'"
+    shell_command "cloc --config ./.cloc --include-lang='Python'"
+    shell_command "cloc --config ./.cloc --include-lang='Rust'"
 }
 
 function perform_browser_option()
 {
-    if [[ ${ARGS[browser]} = true ]]; then
-        local commit_id
-        commit_id=$(git rev-parse --short @)
-        if [[ -z ${commit_id} ]]; then
-            commit_id="local"
-        fi
-        if [[ -d ./${FOLDER[cache]} ]]; then
-            local last_tar="${FOLDER[proj]}_browser_${commit_id}.tar.bz2"
-            if [[ -f ./${FOLDER[cache]}/${last_tar} ]]; then
-                local time_interval=$(($(date +%s) - $(stat -L --format %Y "./${FOLDER[cache]}/${last_tar}")))
-                if [[ ${time_interval} -lt 10 ]]; then
-                    die "The latest browser tarball ${FOLDER[cache]}/${last_tar} has been generated since \
+    if [[ ${ARGS[browser]} = false ]]; then
+        return
+    fi
+
+    local commit_id
+    commit_id=$(git rev-parse --short @)
+    if [[ -z ${commit_id} ]]; then
+        commit_id="local"
+    fi
+    if [[ -d ./${FOLDER[cache]} ]]; then
+        local last_tar="${FOLDER[proj]}_browser_${commit_id}.tar.bz2"
+        if [[ -f ./${FOLDER[cache]}/${last_tar} ]]; then
+            local time_interval=$(($(date +%s) - $(stat -L --format %Y "./${FOLDER[cache]}/${last_tar}")))
+            if [[ ${time_interval} -lt 10 ]]; then
+                die "The latest browser tarball ${FOLDER[cache]}/${last_tar} has been generated since \
 ${time_interval}s ago."
-                fi
             fi
-            package_for_browser "${commit_id}"
-        else
-            mkdir "./${FOLDER[cache]}"
-            package_for_browser "${commit_id}"
         fi
+        package_for_browser "${commit_id}"
+    else
+        mkdir "./${FOLDER[cache]}"
+        package_for_browser "${commit_id}"
     fi
 }
 
@@ -594,26 +622,28 @@ function package_for_browser()
 
 function perform_doxygen_option()
 {
-    if [[ ${ARGS[doxygen]} = true ]]; then
-        local commit_id
-        commit_id=$(git rev-parse --short @)
-        if [[ -z ${commit_id} ]]; then
-            commit_id="local"
-        fi
-        if [[ -d ./${FOLDER[cache]} ]]; then
-            local last_tar="${FOLDER[proj]}_doxygen_${commit_id}.tar.bz2"
-            if [[ -f ./${FOLDER[cache]}/${last_tar} ]]; then
-                local time_interval=$(($(date +%s) - $(stat -L --format %Y "./${FOLDER[cache]}/${last_tar}")))
-                if [[ ${time_interval} -lt 10 ]]; then
-                    die "The latest doxygen tarball ${FOLDER[cache]}/${last_tar} has been generated since \
+    if [[ ${ARGS[doxygen]} = false ]]; then
+        return
+    fi
+
+    local commit_id
+    commit_id=$(git rev-parse --short @)
+    if [[ -z ${commit_id} ]]; then
+        commit_id="local"
+    fi
+    if [[ -d ./${FOLDER[cache]} ]]; then
+        local last_tar="${FOLDER[proj]}_doxygen_${commit_id}.tar.bz2"
+        if [[ -f ./${FOLDER[cache]}/${last_tar} ]]; then
+            local time_interval=$(($(date +%s) - $(stat -L --format %Y "./${FOLDER[cache]}/${last_tar}")))
+            if [[ ${time_interval} -lt 10 ]]; then
+                die "The latest doxygen tarball ${FOLDER[cache]}/${last_tar} has been generated since \
 ${time_interval}s ago."
-                fi
             fi
-            package_for_doxygen "${commit_id}"
-        else
-            mkdir "./${FOLDER[cache]}"
-            package_for_doxygen "${commit_id}"
         fi
+        package_for_doxygen "${commit_id}"
+    else
+        mkdir "./${FOLDER[cache]}"
+        package_for_doxygen "${commit_id}"
     fi
 }
 
