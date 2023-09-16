@@ -252,7 +252,7 @@ function perform_cleanup_option()
 {
     if [[ ${ARGS[cleanup]} = true ]]; then
         shell_command "sed -i '/export FOO_ENV=foo_dev/d' ~/.bashrc 2>/dev/null"
-        shell_command "find ./ -maxdepth 2 -type d | sed 1d \
+        shell_command "find ./ -maxdepth 3 -type d | sed 1d \
 | grep -E '(${FOLDER[bld]}|${FOLDER[cache]}|target|browser|doxygen|__pycache__)$' | xargs -i rm -rf {}"
         shell_command "rm -rf ./${FOLDER[scr]}/.env ./${FOLDER[doc]}/server/Cargo.lock ./core.* ./vgcore.* ./*.profraw"
         shell_command "git config --local --unset commit.template"
@@ -342,19 +342,22 @@ function perform_website_option()
 {
     if [[ ${ARGS[website]} = true ]]; then
         if command -v rustc >/dev/null 2>&1 && command -v cargo >/dev/null 2>&1; then
-            shell_command "cargo build --release --manifest-path ./${FOLDER[doc]}/server/Cargo.toml"
+            if [[ ! -f ./${FOLDER[doc]}/server/Cargo.lock ]]; then
+                shell_command "cargo check --release --manifest-path ./${FOLDER[doc]}/server/Cargo.toml"
+            fi
+            shell_command "cargo build --offline --release --manifest-path ./${FOLDER[doc]}/server/Cargo.toml"
             if ! pgrep -f foo_doc >/dev/null 2>&1; then
-                echo "Please confirm whether continue launching the document servers. (y or n)"
+                echo "Please confirm whether continue launching the document server. (y or n)"
                 local input
                 input=$(wait_until_get_input)
                 if echo "${input}" | grep -iq '^y'; then
                     echo "Yes"
-                    shell_command "./${FOLDER[doc]}/server/target/release/foo_doc &"
+                    shell_command "./${FOLDER[doc]}/server/target/release/foo_doc --root-dir . &"
                 else
                     echo "No"
                 fi
             else
-                echo "Please confirm whether continue terminating the document servers. (y or n)"
+                echo "Please confirm whether continue terminating the document server. (y or n)"
                 local input
                 input=$(wait_until_get_input)
                 if echo "${input}" | grep -iq '^y'; then
@@ -522,7 +525,10 @@ function perform_lint_option()
 
         shell_command "shellcheck -a ./${FOLDER[scr]}/*.sh"
         shell_command "pylint --rcfile=./.pylintrc ./${FOLDER[scr]}/*.py"
-        shell_command "cargo clippy --no-deps --release --manifest-path ./${FOLDER[doc]}/server/Cargo.toml"
+        if [[ ! -f ./${FOLDER[doc]}/server/Cargo.lock ]]; then
+            shell_command "cargo check --release --manifest-path ./${FOLDER[doc]}/server/Cargo.toml"
+        fi
+        shell_command "cargo clippy --no-deps --offline --release --manifest-path ./${FOLDER[doc]}/server/Cargo.toml"
     fi
 }
 
