@@ -38,6 +38,7 @@ words:
   - libfoo
   - memcheck
   - mpfr
+  - optflag
   - PDEATHSIG
   - pgrep
   - profdata
@@ -51,6 +52,7 @@ words:
   - Ritchie
   - RNDN
   - ryftchen
+  - shellexpand
   - staticfile
   - suboperation
   - tmpfs
