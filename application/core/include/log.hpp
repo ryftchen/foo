@@ -52,6 +52,8 @@
 //! @brief Log-related functions in the application module.
 namespace application::log
 {
+//! @brief Default log filename.
+constexpr std::string_view defaultLogFile = "log/foo.log";
 //! @brief Prefix of debug level in log.
 constexpr std::string_view debugLevelPrefix = "[DBG]";
 //! @brief Prefix of info level in log.
@@ -218,23 +220,11 @@ private:
     //! @brief Construct a new Log object.
     //! @param initState - initialization value of state
     explicit Log(const StateType initState = State::init) noexcept :
-        filePath(CONFIG_LOGGER_PATH),
+        filePath(getFullDefaultLogPath(CONFIG_LOGGER_PATH)),
         writeType(OutputType(CONFIG_LOGGER_TYPE)),
         minLevel(OutputLevel(CONFIG_LOGGER_LEVEL)),
         actDestination(OutputDestination(CONFIG_LOGGER_DESTINATION)),
         FSM(initState){};
-    //! @brief Construct a new Log object.
-    //! @param logFile - log file
-    //! @param type - output type
-    //! @param level - output level
-    //! @param destination - output destination
-    //! @param initState - initialization value of state
-    Log(const std::string& logFile,
-        const OutputType type,
-        const OutputLevel level,
-        const OutputDestination destination,
-        const StateType initState = State::init) noexcept :
-        filePath(logFile), writeType(type), minLevel(level), actDestination(destination), FSM(initState){};
 
     //! @brief Maximum number of times to wait for the logger to change to the target state.
     static constexpr std::uint16_t maxTimesOfWaitLogger{10};
@@ -252,8 +242,8 @@ private:
     std::atomic<bool> restartRequest{false};
     //! @brief Output file stream.
     std::ofstream ofs;
-    //! @brief Log file path.
-    const std::string filePath{"./log/foo.log"};
+    //! @brief Log file absolute path.
+    const std::string filePath{getFullDefaultLogPath()};
     //! @brief Write type.
     const OutputType writeType{OutputType::add};
     //! @brief Minimum level.
@@ -262,6 +252,10 @@ private:
     const OutputDestination actDestination{OutputDestination::both};
     //! @brief Log file lock.
     utility::file::ReadWriteLock fileLock;
+    //! @brief Get the full path to the default log file.
+    //! @param filename - default filename
+    //! @return full path to the default log file
+    static std::string getFullDefaultLogPath(const std::string& filename = std::string{defaultLogFile});
 
     //! @brief FSM event. Open file.
     struct OpenFile

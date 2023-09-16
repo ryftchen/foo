@@ -197,12 +197,27 @@ void Log::requestToRestart()
 
 std::string Log::getFilePath() const
 {
-    return std::filesystem::absolute(filePath).string();
+    return filePath;
 }
 
 utility::file::ReadWriteLock& Log::getFileLock()
 {
     return fileLock;
+}
+
+std::string Log::getFullDefaultLogPath(const std::string& filename)
+{
+    std::string processHome;
+    if (nullptr != std::getenv("FOO_HOME"))
+    {
+        processHome = std::getenv("FOO_HOME");
+    }
+    else
+    {
+        throw std::runtime_error("The environment variable FOO_HOME is not set.");
+    }
+
+    return processHome + '/' + filename;
 }
 
 void Log::openLogFile()

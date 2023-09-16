@@ -6,8 +6,8 @@
 
 #include "console.hpp"
 #include <readline/readline.h>
-#include <filesystem>
 #include <fstream>
+#include <iomanip>
 #include <iostream>
 
 namespace utility::console
@@ -60,7 +60,7 @@ Console::Console(const std::string& greeting) : impl(std::make_unique<Impl>(gree
             }
             return RetCode(fileExecutor(input.at(1)));
         },
-        "run batch commands from the file (absolute path)");
+        "run batch commands from the file");
     impl->regOrder.emplace_back("batch");
 }
 
@@ -110,11 +110,6 @@ int Console::cmdExecutor(const std::string& command)
 
 int Console::fileExecutor(const std::string& filename)
 {
-    if (!std::filesystem::path{filename}.is_absolute())
-    {
-        throw std::runtime_error("The path to the batch file is not an absolute path.");
-    }
-
     std::ifstream input(filename);
     if (!input)
     {
