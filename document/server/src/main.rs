@@ -18,8 +18,8 @@ async fn run(root_dir: &str) {
     }
 
     print!(
-        "The document server starts listening under the {} directory...\n\
-        {prompt}",
+        "\r\nThe document server starts listening under the {} directory...\n\
+        {prompt}\n",
         util::get_abs_path(root_dir).unwrap()
     );
     let _ret = futures_util::future::join_all(srv_vec).await;
