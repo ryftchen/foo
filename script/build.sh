@@ -5,7 +5,7 @@ declare -rA FOLDER=([proj]="foo" [app]="application" [util]="utility" [algo]="al
 declare -r COMP_CMD="compile_commands.json"
 declare -A ARGS=([help]=false [initialize]=false [cleanup]=false [install]=false [uninstall]=false [docker]=false
     [website]=false [test]=false [release]=false [hook]=false [spell]=false [check]=false [format]=false [lint]=false
-    [statistics]=false [browser]=false [doxygen]=false)
+    [statistics]=false [doxygen]=false [browser]=false)
 declare -A DEV_OPT=([parallel]=0 [pch]=false [unity]=false [ccache]=false [distcc]=false [tmpfs]=false)
 declare SUDO=""
 declare CMAKE_CACHE_ENTRY=""
@@ -116,13 +116,13 @@ function parse_parameters()
             check_multiple_choice_parameters_validity "$1"
             ARGS[statistics]=true
             ;;
-        -b | --browser)
-            check_multiple_choice_parameters_validity "$1"
-            ARGS[browser]=true
-            ;;
         -d | --doxygen)
             check_multiple_choice_parameters_validity "$1"
             ARGS[doxygen]=true
+            ;;
+        -b | --browser)
+            check_multiple_choice_parameters_validity "$1"
+            ARGS[browser]=true
             ;;
         *)
             die "Unknown command line option: $1. Try using the --help option for information."
@@ -169,7 +169,7 @@ function exist_multiple_choice_parameters()
         if [[ ${ARGS[${key}]} = true ]]; then
             if [[ ${key} == "release" ]] || [[ ${key} == "hook" ]] || [[ ${key} == "spell" ]] \
                 || [[ ${key} == "check" ]] || [[ ${key} == "format" ]] || [[ ${key} == "lint" ]] \
-                || [[ ${key} == "statistics" ]] || [[ ${key} == "browser" ]] || [[ ${key} == "doxygen" ]]; then
+                || [[ ${key} == "statistics" ]] || [[ ${key} == "doxygen" ]] || [[ ${key} == "browser" ]]; then
                 number+=1
             fi
         fi
@@ -216,8 +216,8 @@ function perform_help_option()
     echo "  -f, --format          format all code files"
     echo "  -l, --lint            lint all code files"
     echo "  -S, --statistics      code statistics"
-    echo "  -b, --browser         generate code browser like IDE"
     echo "  -d, --doxygen         documentation with doxygen"
+    echo "  -b, --browser         generate code browser like IDE"
     exit 0
 }
 
@@ -260,7 +260,7 @@ function perform_cleanup_option()
 
     shell_command "sed -i '/export FOO_ENV=foo_dev/d' ~/.bashrc 2>/dev/null"
     shell_command "find ./ -maxdepth 3 -type d | sed 1d \
-| grep -E '(${FOLDER[bld]}|${FOLDER[cache]}|target|browser|doxygen|__pycache__)$' | xargs -i rm -rf {}"
+| grep -E '(${FOLDER[bld]}|${FOLDER[cache]}|target|doxygen|browser|__pycache__)$' | xargs -i rm -rf {}"
     shell_command "rm -rf ./${FOLDER[scr]}/.env ./${FOLDER[doc]}/server/Cargo.lock ./core.* ./vgcore.* ./*.profraw"
     shell_command "git config --local --unset commit.template"
 
@@ -399,8 +399,8 @@ function try_to_perform_multiple_choice_options()
     perform_format_option
     perform_lint_option
     perform_statistics_option
-    perform_browser_option
     perform_doxygen_option
+    perform_browser_option
 }
 
 function check_extra_dependencies()
@@ -449,6 +449,12 @@ FOO_BLD_UNITY is turned on."
         fi
     fi
 
+    if [[ ${ARGS[doxygen]} = true ]]; then
+        if ! command -v doxygen >/dev/null 2>&1 || ! command -v dot >/dev/null 2>&1; then
+            die "No doxygen or dot program. Please install it."
+        fi
+    fi
+
     if [[ ${ARGS[browser]} = true ]]; then
         if ! command -v codebrowser_generator >/dev/null 2>&1 \
             || ! command -v codebrowser_indexgenerator >/dev/null 2>&1; then
@@ -457,12 +463,6 @@ FOO_BLD_UNITY is turned on."
         if [[ ${DEV_OPT[pch]} = true ]] || [[ ${DEV_OPT[unity]} = true ]]; then
             die "Due to the unconventional ${COMP_CMD} file, the --browser option cannot run if the FOO_BLD_PCH or \
 FOO_BLD_UNITY is turned on."
-        fi
-    fi
-
-    if [[ ${ARGS[doxygen]} = true ]]; then
-        if ! command -v doxygen >/dev/null 2>&1 || ! command -v dot >/dev/null 2>&1; then
-            die "No doxygen or dot program. Please install it."
         fi
     fi
 }
@@ -568,6 +568,46 @@ function perform_statistics_option()
     shell_command "cloc --config ./.cloc --include-lang='Rust'"
 }
 
+function perform_doxygen_option()
+{
+    if [[ ${ARGS[doxygen]} = false ]]; then
+        return
+    fi
+
+    local commit_id
+    commit_id=$(git rev-parse --short @)
+    if [[ -z ${commit_id} ]]; then
+        commit_id="local"
+    fi
+    if [[ -d ./${FOLDER[cache]}/archive ]]; then
+        local last_tar="${FOLDER[proj]}_doxygen_${commit_id}.tar.bz2"
+        if [[ -f ./${FOLDER[cache]}/archive/${last_tar} ]]; then
+            local time_interval=$(($(date +%s) - $(stat -L --format %Y "./${FOLDER[cache]}/archive/${last_tar}")))
+            if [[ ${time_interval} -lt 60 ]]; then
+                die "The latest doxygen archive ${last_tar} has been generated since ${time_interval}s ago."
+            fi
+        fi
+        package_for_doxygen "${commit_id}"
+    else
+        mkdir -p "./${FOLDER[cache]}/archive"
+        package_for_doxygen "${commit_id}"
+    fi
+}
+
+function package_for_doxygen()
+{
+    local commit_id=$1
+
+    local doxygen_folder="doxygen"
+    local tar_file="${FOLDER[proj]}_${doxygen_folder}_${commit_id}.tar.bz2"
+    rm -rf "./${FOLDER[cache]}/archive/${FOLDER[proj]}_${doxygen_folder}"_*.tar.bz2 "./${FOLDER[doc]}/${doxygen_folder}"
+
+    mkdir -p "./${FOLDER[doc]}/${doxygen_folder}"
+    shell_command "(cat ./${FOLDER[doc]}/Doxyfile ; echo 'PROJECT_NUMBER=\"@ $(git rev-parse --short @)\"') \
+| doxygen - >/dev/null"
+    shell_command "tar -jcvf ./${FOLDER[cache]}/archive/${tar_file} -C ./${FOLDER[doc]} ${doxygen_folder} >/dev/null"
+}
+
 function perform_browser_option()
 {
     if [[ ${ARGS[browser]} = false ]]; then
@@ -617,46 +657,6 @@ function package_for_browser()
     find "./${FOLDER[doc]}/${browser_folder}/index.html" "./${FOLDER[doc]}/${browser_folder}/${FOLDER[proj]}" \
         "./${FOLDER[doc]}/${browser_folder}/include" -name "*.html" -exec sed -i "/^<\/head>$/i ${icon_rel}" {} +
     shell_command "tar -jcvf ./${FOLDER[cache]}/archive/${tar_file} -C ./${FOLDER[doc]} ${browser_folder} >/dev/null"
-}
-
-function perform_doxygen_option()
-{
-    if [[ ${ARGS[doxygen]} = false ]]; then
-        return
-    fi
-
-    local commit_id
-    commit_id=$(git rev-parse --short @)
-    if [[ -z ${commit_id} ]]; then
-        commit_id="local"
-    fi
-    if [[ -d ./${FOLDER[cache]}/archive ]]; then
-        local last_tar="${FOLDER[proj]}_doxygen_${commit_id}.tar.bz2"
-        if [[ -f ./${FOLDER[cache]}/archive/${last_tar} ]]; then
-            local time_interval=$(($(date +%s) - $(stat -L --format %Y "./${FOLDER[cache]}/archive/${last_tar}")))
-            if [[ ${time_interval} -lt 60 ]]; then
-                die "The latest doxygen archive ${last_tar} has been generated since ${time_interval}s ago."
-            fi
-        fi
-        package_for_doxygen "${commit_id}"
-    else
-        mkdir -p "./${FOLDER[cache]}/archive"
-        package_for_doxygen "${commit_id}"
-    fi
-}
-
-function package_for_doxygen()
-{
-    local commit_id=$1
-
-    local doxygen_folder="doxygen"
-    local tar_file="${FOLDER[proj]}_${doxygen_folder}_${commit_id}.tar.bz2"
-    rm -rf "./${FOLDER[cache]}/archive/${FOLDER[proj]}_${doxygen_folder}"_*.tar.bz2 "./${FOLDER[doc]}/${doxygen_folder}"
-
-    mkdir -p "./${FOLDER[doc]}/${doxygen_folder}"
-    shell_command "(cat ./${FOLDER[doc]}/Doxyfile ; echo 'PROJECT_NUMBER=\"@ $(git rev-parse --short @)\"') \
-| doxygen - >/dev/null"
-    shell_command "tar -jcvf ./${FOLDER[cache]}/archive/${tar_file} -C ./${FOLDER[doc]} ${doxygen_folder} >/dev/null"
 }
 
 function build_target()
@@ -736,7 +736,11 @@ function set_compile_condition()
     fi
     if [[ ${DEV_OPT[ccache]} = true ]]; then
         CMAKE_CACHE_ENTRY="${CMAKE_CACHE_ENTRY} -D TOOLCHAIN_CCACHE=ON"
-        export CCACHE_DIR=${PWD}/${FOLDER[cache]}/ccache
+        if [[ ${ARGS[test]} = false ]]; then
+            export CCACHE_DIR=${PWD}/${FOLDER[cache]}/ccache
+        else
+            export CCACHE_DIR=${PWD}/${FOLDER[tst]}/${FOLDER[cache]}/ccache
+        fi
         if [[ ${DEV_OPT[distcc]} = true ]]; then
             if command -v ccache >/dev/null 2>&1 && command -v distcc >/dev/null 2>&1; then
                 export CCACHE_PREFIX=distcc
