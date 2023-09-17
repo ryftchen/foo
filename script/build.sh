@@ -352,10 +352,7 @@ function perform_website_option()
     fi
 
     if command -v rustc >/dev/null 2>&1 && command -v cargo >/dev/null 2>&1; then
-        if [[ ! -f ./${FOLDER[doc]}/server/Cargo.lock ]]; then
-            shell_command "cargo check --release --manifest-path ./${FOLDER[doc]}/server/Cargo.toml"
-        fi
-        shell_command "cargo build --offline --release --manifest-path ./${FOLDER[doc]}/server/Cargo.toml"
+        shell_command "cargo build --release --manifest-path ./${FOLDER[doc]}/server/Cargo.toml"
         if ! pgrep -f foo_doc >/dev/null 2>&1; then
             echo "Please confirm whether continue launching the document server. (y or n)"
             local input
@@ -527,10 +524,7 @@ function perform_lint_option()
 
     shell_command "shellcheck -a ./${FOLDER[scr]}/*.sh"
     shell_command "pylint --rcfile=./.pylintrc ./${FOLDER[scr]}/*.py"
-    if [[ ! -f ./${FOLDER[doc]}/server/Cargo.lock ]]; then
-        shell_command "cargo check --release --manifest-path ./${FOLDER[doc]}/server/Cargo.toml"
-    fi
-    shell_command "cargo clippy --no-deps --offline --release --manifest-path ./${FOLDER[doc]}/server/Cargo.toml"
+    shell_command "cargo clippy --release --manifest-path ./${FOLDER[doc]}/server/Cargo.toml"
 }
 
 function perform_statistics_option()
