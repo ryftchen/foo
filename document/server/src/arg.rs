@@ -1,12 +1,6 @@
-use crate::util;
+use crate::{die, exec_name, util};
 use getopts::Options;
-
-macro_rules! args_err {
-    ($msg:expr) => {
-        eprintln!("{}: {}", util::get_exec_name().unwrap(), $msg);
-        std::process::exit(1);
-    };
-}
+use std::path::Path;
 
 #[derive(Debug)]
 pub struct Args {
@@ -21,24 +15,34 @@ pub fn parse_args() -> Args {
     let matches = match opts.parse(&args[1..]) {
         Ok(m) => m,
         Err(f) => {
-            args_err!(format!("{}.", f));
+            die!("{}.", f);
         }
     };
 
-    if args.len() == 1 || matches.opt_present("h") {
-        if matches.opt_present("r") {
-            args_err!("Excess arguments.");
-        }
+    if !matches.free.is_empty() {
+        die!("Unknown argument.");
+    }
+    if matches.opt_present("h") && matches.opt_present("r") {
+        die!("Excessive arguments.");
+    }
+
+    if matches.opt_present("h") || args.len() == 1 {
         show_help();
     }
 
+    if !matches.opt_present("r") {
+        die!("Require to specify root directory.");
+    }
     let root_dir = matches.opt_str("r").unwrap_or_else(|| ".".to_string());
+    if !Path::new(&root_dir).exists() {
+        die!("Illegal root directory.");
+    }
 
     Args { root_dir }
 }
 
 fn show_help() {
-    println!("usage: {} [-h] [-r DIR]", util::get_exec_name().unwrap());
+    println!("usage: {} [-h] [-r DIR]", exec_name!());
     println!();
     println!("document server");
     println!();

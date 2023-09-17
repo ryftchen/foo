@@ -1,3 +1,4 @@
+use crate::{die, util};
 use http::response::Builder as ResponseBuilder;
 use hyper::server::conn::http1;
 use hyper_staticfile::{Body, Static};
@@ -9,12 +10,12 @@ pub async fn do_service(addr: std::net::SocketAddr, root_dir: &str, sub_dir: &'s
     let serving = Static::new(Path::new(root_dir));
     let listener = TcpListener::bind(addr)
         .await
-        .unwrap_or_else(|_| panic!("Failed to create TCP listener for {sub_dir} online."));
+        .unwrap_or_else(|_| die!("Failed to create TCP listener for {} online.", sub_dir));
     loop {
         let (stream, _) = listener
             .accept()
             .await
-            .unwrap_or_else(|_| panic!("Failed to accept TCP connection {sub_dir} online."));
+            .unwrap_or_else(|_| die!("Failed to accept TCP connection for {} online.", sub_dir));
 
         let serving = serving.clone();
         tokio::spawn(async move {
@@ -25,7 +26,7 @@ pub async fn do_service(addr: std::net::SocketAddr, root_dir: &str, sub_dir: &'s
                 )
                 .await
             {
-                eprintln!("Error serving connection {sub_dir} online: {:?}.", err);
+                die!("Error serving connection for {} online: {:?}.", sub_dir, err);
             }
         });
     }
@@ -39,9 +40,9 @@ async fn handle_request<B>(
     if req.uri().path() == "/" {
         let res = ResponseBuilder::new()
             .status(http::StatusCode::MOVED_PERMANENTLY)
-            .header(http::header::LOCATION, format!("/{sub_dir}/"))
+            .header(http::header::LOCATION, format!("/{}/", sub_dir))
             .body(Body::Empty)
-            .expect("Unable to build response.");
+            .unwrap_or_else(|_| die!("Unable to build response for {} online.", sub_dir));
         Ok(res)
     } else {
         serving.clone().serve(req).await

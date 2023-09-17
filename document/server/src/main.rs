@@ -1,12 +1,11 @@
-use std::net::SocketAddr;
-
 mod arg;
 mod srv;
 mod util;
 
-async fn run(root_dir: &str) {
+async fn run(args: arg::Args) {
+    let root_dir = &args.root_dir;
     let folder_vec: Vec<&str> = vec!["document/doxygen", "document/browser"];
-    let addr_vec: Vec<SocketAddr> = vec![([127, 0, 0, 1], 61503).into(), ([127, 0, 0, 1], 61504).into()];
+    let addr_vec: Vec<std::net::SocketAddr> = vec![([127, 0, 0, 1], 61503).into(), ([127, 0, 0, 1], 61504).into()];
     let mut srv_vec = vec![];
     let mut prompt: String = "".to_string();
 
@@ -19,8 +18,9 @@ async fn run(root_dir: &str) {
 
     print!(
         "\r\nThe document server starts listening under the {} directory...\n\
-        {prompt}\n",
-        util::get_abs_path(root_dir).unwrap()
+        {}\n",
+        abs_path!(root_dir),
+        prompt
     );
     let _ret = futures_util::future::join_all(srv_vec).await;
 }
@@ -29,7 +29,7 @@ async fn run(root_dir: &str) {
 async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     let args = arg::parse_args();
 
-    run(&args.root_dir).await;
+    run(args).await;
 
     Ok(())
 }
