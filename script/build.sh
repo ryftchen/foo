@@ -4,7 +4,7 @@ declare -rA FOLDER=([proj]="foo" [app]="application" [util]="utility" [algo]="al
     [dp]="design_pattern" [num]="numeric" [tst]="test" [scr]="script" [doc]="document" [bld]="build" [cache]=".cache")
 declare -r COMP_CMD="compile_commands.json"
 declare -A ARGS=([help]=false [initialize]=false [cleanup]=false [install]=false [uninstall]=false [docker]=false
-    [website]=false [test]=false [release]=false [hook]=false [spell]=false [check]=false [format]=false [lint]=false
+    [website]=false [test]=false [release]=false [hook]=false [spell]=false [format]=false [lint]=false
     [statistics]=false [doxygen]=false [browser]=false)
 declare -A DEV_OPT=([parallel]=0 [pch]=false [unity]=false [ccache]=false [distcc]=false [tmpfs]=false)
 declare SUDO=""
@@ -100,10 +100,6 @@ function parse_parameters()
             check_multiple_choice_parameters_validity "$1"
             ARGS[spell]=true
             ;;
-        -c | --check)
-            check_multiple_choice_parameters_validity "$1"
-            ARGS[check]=true
-            ;;
         -f | --format)
             check_multiple_choice_parameters_validity "$1"
             ARGS[format]=true
@@ -168,8 +164,8 @@ function exist_multiple_choice_parameters()
     for key in "${!ARGS[@]}"; do
         if [[ ${ARGS[${key}]} = true ]]; then
             if [[ ${key} == "release" ]] || [[ ${key} == "hook" ]] || [[ ${key} == "spell" ]] \
-                || [[ ${key} == "check" ]] || [[ ${key} == "format" ]] || [[ ${key} == "lint" ]] \
-                || [[ ${key} == "statistics" ]] || [[ ${key} == "doxygen" ]] || [[ ${key} == "browser" ]]; then
+                || [[ ${key} == "format" ]] || [[ ${key} == "lint" ]] || [[ ${key} == "statistics" ]] \
+                || [[ ${key} == "doxygen" ]] || [[ ${key} == "browser" ]]; then
                 number+=1
             fi
         fi
@@ -212,7 +208,6 @@ function perform_help_option()
     echo "  -r, --release         set as release version"
     echo "  -H, --hook            run hook before commit"
     echo "  -s, --spell           spell check against dictionaries"
-    echo "  -c, --check           fast syntax checking without compilation"
     echo "  -f, --format          format all code files"
     echo "  -l, --lint            lint all code files"
     echo "  -S, --statistics      code statistics"
@@ -395,7 +390,6 @@ function try_to_perform_multiple_choice_options()
 
     perform_hook_option
     perform_spell_option
-    perform_check_option
     perform_format_option
     perform_lint_option
     perform_statistics_option
@@ -414,12 +408,6 @@ function check_extra_dependencies()
     if [[ ${ARGS[spell]} = true ]]; then
         if ! command -v cspell >/dev/null 2>&1; then
             die "No cspell program. Please install it."
-        fi
-    fi
-
-    if [[ ${ARGS[check]} = true ]]; then
-        if ! command -v clang-check-15 >/dev/null 2>&1; then
-            die "No clang-check-15 program. Please install it."
         fi
     fi
 
@@ -484,17 +472,6 @@ function perform_spell_option()
     fi
 
     shell_command "cspell lint --config ./.cspell --show-context --no-cache"
-}
-
-function perform_check_option()
-{
-    if [[ ${ARGS[check]} = false ]]; then
-        return
-    fi
-
-    shell_command "find ./${FOLDER[app]} ./${FOLDER[util]} ./${FOLDER[algo]} ./${FOLDER[ds]} ./${FOLDER[dp]} \
-./${FOLDER[num]} -name '*.cpp' -o -name '*.hpp' -o -name '*.tpp' | xargs clang-check-15 -p ./${FOLDER[bld]}"
-    shell_command "find ./${FOLDER[tst]} -name '*.cpp' | xargs clang-check-15 -p ./${FOLDER[tst]}/${FOLDER[bld]}"
 }
 
 function perform_format_option()
