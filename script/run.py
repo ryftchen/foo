@@ -113,9 +113,11 @@ class Task:
     def stop(self, message=""):
         try:
             if self.options["chk_cov"]:
-                common.execute_command(f"rm -rf {self.cache_dir}/*.profraw {self.cache_dir}/*.profdata")
+                common.execute_command(
+                    f"rm -rf {self.cache_dir}/coverage/*.profraw {self.cache_dir}/coverage/*.profdata"
+                )
             if self.options["chk_mem"]:
-                common.execute_command(f"rm -rf {self.cache_dir}/*.xml")
+                common.execute_command(f"rm -rf {self.cache_dir}/memory/*.xml")
             sys.stdout = STDOUT
             self.progress_bar.destroy_progress_bar()
             del self.logger
@@ -171,6 +173,7 @@ class Task:
                     os.environ["FOO_CHK_COV"] = "on"
                     self.options["chk_cov"] = True
                     common.execute_command(f"rm -rf {self.cache_dir}/coverage")
+                    common.execute_command(f"mkdir -p {self.cache_dir}/coverage")
                 else:
                     Output.exit_with_error("No llvm-profdata or llvm-cov program. Please check it.")
 
@@ -180,6 +183,7 @@ class Task:
                     os.environ["FOO_CHK_MEM"] = "on"
                     self.options["chk_mem"] = True
                     common.execute_command(f"rm -rf {self.cache_dir}/memory")
+                    common.execute_command(f"mkdir -p {self.cache_dir}/memory")
                 else:
                     Output.exit_with_error("No valgrind or valgrind-ci program. Please check it.")
 
@@ -229,7 +233,7 @@ class Task:
 
     def complete(self):
         if self.options["chk_mem"]:
-            common.execute_command(f"rm -rf {self.cache_dir}/*.xml")
+            common.execute_command(f"rm -rf {self.cache_dir}/memory/*.xml")
 
         if self.options["chk_cov"]:
             self.check_coverage()
@@ -273,10 +277,10 @@ class Task:
             full_cmd = f"{self.tst_bin_dir}/{command}"
         if self.options["chk_mem"]:
             full_cmd = f"valgrind --tool=memcheck --xml=yes \
---xml-file={self.cache_dir}/foo_chk_mem_{str(self.complete_steps + 1)}.xml {full_cmd}"
+--xml-file={self.cache_dir}/memory/foo_chk_mem_{str(self.complete_steps + 1)}.xml {full_cmd}"
         if self.options["chk_cov"]:
-            full_cmd = f"LLVM_PROFILE_FILE=\"{self.cache_dir}/foo_chk_cov_{str(self.complete_steps + 1)}.profraw\" \
-{full_cmd}"
+            full_cmd = f"LLVM_PROFILE_FILE=\
+\"{self.cache_dir}/coverage/foo_chk_cov_{str(self.complete_steps + 1)}.profraw\" {full_cmd}"
         align_len = max(
             len(command) + Output.stat_cont_len_excl_cmd,
             Output.stat_min_cont_len,
@@ -326,28 +330,28 @@ class Task:
 
     def check_coverage(self):
         common.execute_command(
-            f"llvm-profdata-15 merge -sparse {self.cache_dir}/foo_chk_cov_*.profraw \
--o {self.cache_dir}/foo_chk_cov.profdata"
+            f"llvm-profdata-15 merge -sparse {self.cache_dir}/coverage/foo_chk_cov_*.profraw \
+-o {self.cache_dir}/coverage/foo_chk_cov.profdata"
         )
         common.execute_command(
-            f"llvm-cov-15 show -instr-profile={self.cache_dir}/foo_chk_cov.profdata -show-branches=percent \
+            f"llvm-cov-15 show -instr-profile={self.cache_dir}/coverage/foo_chk_cov.profdata -show-branches=percent \
 -show-expansions -show-regions -show-line-counts-or-regions -format=html -output-dir={self.cache_dir}/coverage \
 -Xdemangler=c++filt -object={self.app_bin_dir}/{self.app_bin_cmd} \
 {' '.join([f'-object={self.lib_dir}/{lib}' for lib in self.lib_list])} 2>&1"
         )
         stdout, _, _ = common.execute_command(
-            f"llvm-cov-15 report -instr-profile={self.cache_dir}/foo_chk_cov.profdata \
+            f"llvm-cov-15 report -instr-profile={self.cache_dir}/coverage/foo_chk_cov.profdata \
 -object={self.app_bin_dir}/{self.app_bin_cmd} {' '.join([f'-object={self.lib_dir}/{lib}' for lib in self.lib_list])} \
 2>&1"
         )
-        common.execute_command(f"rm -rf {self.cache_dir}/*.profraw {self.cache_dir}/*.profdata")
+        common.execute_command(f"rm -rf {self.cache_dir}/coverage/*.profraw {self.cache_dir}/coverage/*.profdata")
         print(f"\r\n[CHECK COVERAGE]\n{stdout}")
         if "error" in stdout:
             print("Please rebuild the executable file with the --check option.")
 
     def check_memory(self, align_len):
         inst_num = 0
-        xml_filename = f"{self.cache_dir}/foo_chk_mem_{str(self.complete_steps + 1)}"
+        xml_filename = f"{self.cache_dir}/memory/foo_chk_mem_{str(self.complete_steps + 1)}"
         with open(f"{xml_filename}.xml", "rt", encoding="utf-8") as mem_xml:
             inst_num = mem_xml.read().count("</valgrindoutput>")
         stdout = ""
