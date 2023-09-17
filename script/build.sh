@@ -260,7 +260,7 @@ function perform_cleanup_option()
 
     shell_command "sed -i '/export FOO_ENV=foo_dev/d' ~/.bashrc 2>/dev/null"
     shell_command "find ./ -maxdepth 3 -type d | sed 1d \
-| grep -E '(${FOLDER[bld]}|${FOLDER[cache]}|target|doxygen|browser|__pycache__)$' | xargs -i rm -rf {}"
+| grep -E '(${FOLDER[bld]}|${FOLDER[cache]}|target|doxygen|browser|archive|__pycache__)$' | xargs -i rm -rf {}"
     shell_command "rm -rf ./${FOLDER[scr]}/.env ./${FOLDER[doc]}/server/Cargo.lock ./core.* ./vgcore.* ./*.profraw"
     shell_command "git config --local --unset commit.template"
 
@@ -579,17 +579,17 @@ function perform_doxygen_option()
     if [[ -z ${commit_id} ]]; then
         commit_id="local"
     fi
-    if [[ -d ./${FOLDER[cache]}/archive ]]; then
+    if [[ -d ./${FOLDER[doc]}/archive ]]; then
         local last_tar="${FOLDER[proj]}_doxygen_${commit_id}.tar.bz2"
-        if [[ -f ./${FOLDER[cache]}/archive/${last_tar} ]]; then
-            local time_interval=$(($(date +%s) - $(stat -L --format %Y "./${FOLDER[cache]}/archive/${last_tar}")))
+        if [[ -f ./${FOLDER[doc]}/archive/${last_tar} ]]; then
+            local time_interval=$(($(date +%s) - $(stat -L --format %Y "./${FOLDER[doc]}/archive/${last_tar}")))
             if [[ ${time_interval} -lt 60 ]]; then
                 die "The latest doxygen archive ${last_tar} has been generated since ${time_interval}s ago."
             fi
         fi
         package_for_doxygen "${commit_id}"
     else
-        mkdir -p "./${FOLDER[cache]}/archive"
+        mkdir "./${FOLDER[doc]}/archive"
         package_for_doxygen "${commit_id}"
     fi
 }
@@ -600,12 +600,12 @@ function package_for_doxygen()
 
     local doxygen_folder="doxygen"
     local tar_file="${FOLDER[proj]}_${doxygen_folder}_${commit_id}.tar.bz2"
-    rm -rf "./${FOLDER[cache]}/archive/${FOLDER[proj]}_${doxygen_folder}"_*.tar.bz2 "./${FOLDER[doc]}/${doxygen_folder}"
+    rm -rf "./${FOLDER[doc]}/archive/${FOLDER[proj]}_${doxygen_folder}"_*.tar.bz2 "./${FOLDER[doc]}/${doxygen_folder}"
 
     mkdir -p "./${FOLDER[doc]}/${doxygen_folder}"
     shell_command "(cat ./${FOLDER[doc]}/Doxyfile ; echo 'PROJECT_NUMBER=\"@ $(git rev-parse --short @)\"') \
 | doxygen - >/dev/null"
-    shell_command "tar -jcvf ./${FOLDER[cache]}/archive/${tar_file} -C ./${FOLDER[doc]} ${doxygen_folder} >/dev/null"
+    shell_command "tar -jcvf ./${FOLDER[doc]}/archive/${tar_file} -C ./${FOLDER[doc]} ${doxygen_folder} >/dev/null"
 }
 
 function perform_browser_option()
@@ -619,17 +619,17 @@ function perform_browser_option()
     if [[ -z ${commit_id} ]]; then
         commit_id="local"
     fi
-    if [[ -d ./${FOLDER[cache]}/archive ]]; then
+    if [[ -d ./${FOLDER[doc]}/archive ]]; then
         local last_tar="${FOLDER[proj]}_browser_${commit_id}.tar.bz2"
-        if [[ -f ./${FOLDER[cache]}/archive/${last_tar} ]]; then
-            local time_interval=$(($(date +%s) - $(stat -L --format %Y "./${FOLDER[cache]}/archive/${last_tar}")))
+        if [[ -f ./${FOLDER[doc]}/archive/${last_tar} ]]; then
+            local time_interval=$(($(date +%s) - $(stat -L --format %Y "./${FOLDER[doc]}/archive/${last_tar}")))
             if [[ ${time_interval} -lt 60 ]]; then
                 die "The latest browser archive ${last_tar} has been generated since ${time_interval}s ago."
             fi
         fi
         package_for_browser "${commit_id}"
     else
-        mkdir -p "./${FOLDER[cache]}/archive"
+        mkdir "./${FOLDER[doc]}/archive"
         package_for_browser "${commit_id}"
     fi
 }
@@ -643,7 +643,7 @@ function package_for_browser()
     fi
     local browser_folder="browser"
     local tar_file="${FOLDER[proj]}_${browser_folder}_${commit_id}.tar.bz2"
-    rm -rf "./${FOLDER[cache]}/archive/${FOLDER[proj]}_${browser_folder}"_*.tar.bz2 "./${FOLDER[doc]}/${browser_folder}"
+    rm -rf "./${FOLDER[doc]}/archive/${FOLDER[proj]}_${browser_folder}"_*.tar.bz2 "./${FOLDER[doc]}/${browser_folder}"
 
     mkdir -p "./${FOLDER[doc]}/${browser_folder}"
     cp -rf /usr/local/share/woboq/data "./${FOLDER[doc]}/${browser_folder}/"
@@ -656,7 +656,7 @@ function package_for_browser()
     local icon_rel="<link rel=\"shortcut icon\" href=\"https://woboq.com/favicon.ico\" type=\"image/x-icon\" />"
     find "./${FOLDER[doc]}/${browser_folder}/index.html" "./${FOLDER[doc]}/${browser_folder}/${FOLDER[proj]}" \
         "./${FOLDER[doc]}/${browser_folder}/include" -name "*.html" -exec sed -i "/^<\/head>$/i ${icon_rel}" {} +
-    shell_command "tar -jcvf ./${FOLDER[cache]}/archive/${tar_file} -C ./${FOLDER[doc]} ${browser_folder} >/dev/null"
+    shell_command "tar -jcvf ./${FOLDER[doc]}/archive/${tar_file} -C ./${FOLDER[doc]} ${browser_folder} >/dev/null"
 }
 
 function build_target()

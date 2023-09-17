@@ -1,8 +1,9 @@
 .cache/
 .devcontainer/
 .vscode/
-build/
+archive/
 browser/
+build/
 doxygen/
 target/
 __pycache__/

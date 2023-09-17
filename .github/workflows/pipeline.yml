@@ -48,7 +48,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: foo_artifact
-          path: ./.cache/archive/foo_*.tar.bz2
+          path: ./document/archive/foo_*.tar.bz2
           retention-days: 7
 
       - name: Deploy
