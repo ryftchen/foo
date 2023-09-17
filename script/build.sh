@@ -579,18 +579,17 @@ function perform_browser_option()
     if [[ -z ${commit_id} ]]; then
         commit_id="local"
     fi
-    if [[ -d ./${FOLDER[cache]} ]]; then
+    if [[ -d ./${FOLDER[cache]}/archive ]]; then
         local last_tar="${FOLDER[proj]}_browser_${commit_id}.tar.bz2"
-        if [[ -f ./${FOLDER[cache]}/${last_tar} ]]; then
-            local time_interval=$(($(date +%s) - $(stat -L --format %Y "./${FOLDER[cache]}/${last_tar}")))
-            if [[ ${time_interval} -lt 10 ]]; then
-                die "The latest browser tarball ${FOLDER[cache]}/${last_tar} has been generated since \
-${time_interval}s ago."
+        if [[ -f ./${FOLDER[cache]}/archive/${last_tar} ]]; then
+            local time_interval=$(($(date +%s) - $(stat -L --format %Y "./${FOLDER[cache]}/archive/${last_tar}")))
+            if [[ ${time_interval} -lt 60 ]]; then
+                die "The latest browser archive ${last_tar} has been generated since ${time_interval}s ago."
             fi
         fi
         package_for_browser "${commit_id}"
     else
-        mkdir "./${FOLDER[cache]}"
+        mkdir -p "./${FOLDER[cache]}/archive"
         package_for_browser "${commit_id}"
     fi
 }
@@ -604,7 +603,7 @@ function package_for_browser()
     fi
     local browser_folder="browser"
     local tar_file="${FOLDER[proj]}_${browser_folder}_${commit_id}.tar.bz2"
-    rm -rf "./${FOLDER[cache]}/${FOLDER[proj]}_${browser_folder}"_*.tar.bz2 "./${FOLDER[doc]}/${browser_folder}"
+    rm -rf "./${FOLDER[cache]}/archive/${FOLDER[proj]}_${browser_folder}"_*.tar.bz2 "./${FOLDER[doc]}/${browser_folder}"
 
     mkdir -p "./${FOLDER[doc]}/${browser_folder}"
     cp -rf /usr/local/share/woboq/data "./${FOLDER[doc]}/${browser_folder}/"
@@ -617,7 +616,7 @@ function package_for_browser()
     local icon_rel="<link rel=\"shortcut icon\" href=\"https://woboq.com/favicon.ico\" type=\"image/x-icon\" />"
     find "./${FOLDER[doc]}/${browser_folder}/index.html" "./${FOLDER[doc]}/${browser_folder}/${FOLDER[proj]}" \
         "./${FOLDER[doc]}/${browser_folder}/include" -name "*.html" -exec sed -i "/^<\/head>$/i ${icon_rel}" {} +
-    shell_command "tar -jcvf ./${FOLDER[cache]}/${tar_file} -C ./${FOLDER[doc]} ${browser_folder} >/dev/null"
+    shell_command "tar -jcvf ./${FOLDER[cache]}/archive/${tar_file} -C ./${FOLDER[doc]} ${browser_folder} >/dev/null"
 }
 
 function perform_doxygen_option()
@@ -631,18 +630,17 @@ function perform_doxygen_option()
     if [[ -z ${commit_id} ]]; then
         commit_id="local"
     fi
-    if [[ -d ./${FOLDER[cache]} ]]; then
+    if [[ -d ./${FOLDER[cache]}/archive ]]; then
         local last_tar="${FOLDER[proj]}_doxygen_${commit_id}.tar.bz2"
-        if [[ -f ./${FOLDER[cache]}/${last_tar} ]]; then
-            local time_interval=$(($(date +%s) - $(stat -L --format %Y "./${FOLDER[cache]}/${last_tar}")))
-            if [[ ${time_interval} -lt 10 ]]; then
-                die "The latest doxygen tarball ${FOLDER[cache]}/${last_tar} has been generated since \
-${time_interval}s ago."
+        if [[ -f ./${FOLDER[cache]}/archive/${last_tar} ]]; then
+            local time_interval=$(($(date +%s) - $(stat -L --format %Y "./${FOLDER[cache]}/archive/${last_tar}")))
+            if [[ ${time_interval} -lt 60 ]]; then
+                die "The latest doxygen archive ${last_tar} has been generated since ${time_interval}s ago."
             fi
         fi
         package_for_doxygen "${commit_id}"
     else
-        mkdir "./${FOLDER[cache]}"
+        mkdir -p "./${FOLDER[cache]}/archive"
         package_for_doxygen "${commit_id}"
     fi
 }
@@ -653,12 +651,12 @@ function package_for_doxygen()
 
     local doxygen_folder="doxygen"
     local tar_file="${FOLDER[proj]}_${doxygen_folder}_${commit_id}.tar.bz2"
-    rm -rf "./${FOLDER[cache]}/${FOLDER[proj]}_${doxygen_folder}"_*.tar.bz2 "./${FOLDER[doc]}/${doxygen_folder}"
+    rm -rf "./${FOLDER[cache]}/archive/${FOLDER[proj]}_${doxygen_folder}"_*.tar.bz2 "./${FOLDER[doc]}/${doxygen_folder}"
 
     mkdir -p "./${FOLDER[doc]}/${doxygen_folder}"
     shell_command "(cat ./${FOLDER[doc]}/Doxyfile ; echo 'PROJECT_NUMBER=\"@ $(git rev-parse --short @)\"') \
 | doxygen - >/dev/null"
-    shell_command "tar -jcvf ./${FOLDER[cache]}/${tar_file} -C ./${FOLDER[doc]} ${doxygen_folder} >/dev/null"
+    shell_command "tar -jcvf ./${FOLDER[cache]}/archive/${tar_file} -C ./${FOLDER[doc]} ${doxygen_folder} >/dev/null"
 }
 
 function build_target()
