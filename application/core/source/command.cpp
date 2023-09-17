@@ -329,7 +329,7 @@ void Command::validateBasicTask()
         {
             continue;
         }
-        checkForExcessArguments();
+        checkForExcessiveArguments();
 
         dispatchedTask.basicTask.primaryBit.set(BasicTask::Category(i));
     }
@@ -341,7 +341,7 @@ void Command::validateRegularTask()
     {
         if (mainCLI.isSubCommandUsed(subCLIPair.first))
         {
-            checkForExcessArguments();
+            checkForExcessiveArguments();
             return true;
         }
         return false;
@@ -364,7 +364,7 @@ void Command::validateRegularTask()
         {
             if (subCLI.isUsed(categoryPair.first))
             {
-                checkForExcessArguments();
+                checkForExcessiveArguments();
                 return true;
             }
             return false;
@@ -702,12 +702,12 @@ std::string Command::getIconBanner()
     return banner;
 }
 
-void Command::checkForExcessArguments()
+void Command::checkForExcessiveArguments()
 {
     if (hasAnyTask())
     {
         dispatchedTask.reset();
-        throw std::runtime_error("Excess arguments.");
+        throw std::runtime_error("Excessive arguments.");
     }
 }
 

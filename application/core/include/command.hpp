@@ -260,8 +260,8 @@ private:
     //! @brief Get ASCII banner text.
     //! @return ASCII banner text content
     static std::string getIconBanner();
-    //! @brief Check for excess arguments.
-    void checkForExcessArguments();
+    //! @brief Check for excessive arguments.
+    void checkForExcessiveArguments();
 
     //! @brief Maximum latency for console.
     static constexpr std::uint16_t maxLatency{200};
