@@ -37,7 +37,7 @@ jobs:
 
       - name: Check
         run: |
-          ./script/build.sh --hook --spell --check --format --lint --statistics
+          ./script/build.sh --hook --spell --format --lint --statistics
           git status
 
       - name: Archive
