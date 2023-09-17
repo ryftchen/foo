@@ -246,14 +246,7 @@ void Command::runCommander(const int argc, const char* const argv[])
         LOG_WAIT_TO_START;
         VIEW_WAIT_TO_START;
 
-        if (0 != argc - 1)
-        {
-            constexpr std::uint32_t childThdNum = 2;
-            auto threads = std::make_shared<utility::thread::Thread>(childThdNum);
-            threads->enqueue("commander_fg", &Command::foregroundHandler, this, argc, argv);
-            threads->enqueue("commander_bg", &Command::backgroundHandler, this);
-        }
-        else
+        if (1 == argc)
         {
 #ifndef NDEBUG
             LOG_DBG << "Enter console mode.";
@@ -262,6 +255,13 @@ void Command::runCommander(const int argc, const char* const argv[])
 #ifndef NDEBUG
             LOG_DBG << "Exit console mode.";
 #endif // NDEBUG
+        }
+        else
+        {
+            constexpr std::uint32_t childThdNum = 2;
+            auto threads = std::make_shared<utility::thread::Thread>(childThdNum);
+            threads->enqueue("commander_fg", &Command::foregroundHandler, this, argc, argv);
+            threads->enqueue("commander_bg", &Command::backgroundHandler, this);
         }
 
         VIEW_WAIT_TO_STOP;

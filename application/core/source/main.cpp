@@ -75,53 +75,50 @@ static void setChildInterrupted(int sig)
 //! @return the argument to the implicit call to exit()
 int main(int argc, char* argv[])
 {
-    if (0 != argc - 1)
-    {
-        const ::pid_t ppidBeforeFork = ::getpid(), pid = ::fork();
-        if (pid < 0)
-        {
-            std::cerr << application::getExecutableName() << ": Failed to create a child process." << std::endl;
-            return EXIT_FAILURE;
-        }
-        else if (pid == 0)
-        {
-            ::prctl(PR_SET_PDEATHSIG, SIGTERM);
-            if (::getppid() != ppidBeforeFork)
-            {
-                return EXIT_FAILURE;
-            }
-
-            return application::run(argc, argv);
-        }
-
-        std::signal(SIGALRM, application::setAlarmInterrupted);
-        std::signal(SIGCHLD, application::setChildInterrupted);
-        constexpr std::uint8_t timeout = 60;
-        ::alarm(timeout);
-        ::pause();
-        if (application::alarmInterrupted)
-        {
-            if (::waitpid(pid, nullptr, WNOHANG) == 0)
-            {
-                ::kill(pid, SIGKILL);
-                std::cerr << application::getExecutableName() << ": Kill the child process due to timeout."
-                          << std::endl;
-            }
-            return EXIT_FAILURE;
-        }
-        else if (application::childInterrupted)
-        {
-            int status = 0;
-            ::wait(&status);
-            if (WIFEXITED(status) && (WEXITSTATUS(status) != EXIT_SUCCESS))
-            {
-                return EXIT_FAILURE;
-            }
-        }
-    }
-    else
+    if (1 == argc)
     {
         return application::run(argc, argv);
+    }
+
+    const ::pid_t ppidBeforeFork = ::getpid(), pid = ::fork();
+    if (pid < 0)
+    {
+        std::cerr << application::getExecutableName() << ": Failed to create a child process." << std::endl;
+        return EXIT_FAILURE;
+    }
+    else if (pid == 0)
+    {
+        ::prctl(PR_SET_PDEATHSIG, SIGTERM);
+        if (::getppid() != ppidBeforeFork)
+        {
+            return EXIT_FAILURE;
+        }
+
+        return application::run(argc, argv);
+    }
+
+    std::signal(SIGALRM, application::setAlarmInterrupted);
+    std::signal(SIGCHLD, application::setChildInterrupted);
+    constexpr std::uint8_t timeout = 60;
+    ::alarm(timeout);
+    ::pause();
+    if (application::alarmInterrupted)
+    {
+        if (::waitpid(pid, nullptr, WNOHANG) == 0)
+        {
+            ::kill(pid, SIGKILL);
+            std::cerr << application::getExecutableName() << ": Kill the child process due to timeout." << std::endl;
+        }
+        return EXIT_FAILURE;
+    }
+    else if (application::childInterrupted)
+    {
+        int status = 0;
+        ::wait(&status);
+        if (WIFEXITED(status) && (WEXITSTATUS(status) != EXIT_SUCCESS))
+        {
+            return EXIT_FAILURE;
+        }
     }
 
     return EXIT_SUCCESS;
