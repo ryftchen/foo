@@ -256,6 +256,8 @@ private:
     //! @param filename - default filename
     //! @return full path to the default log file
     static std::string getFullDefaultLogPath(const std::string& filename = std::string{defaultLogFile});
+    //! @brief Try to create the log folder.
+    void tryToCreateLogFolder() const;
 
     //! @brief FSM event. Open file.
     struct OpenFile
@@ -277,18 +279,16 @@ private:
     struct Relaunch
     {
     };
-
     //! @brief Open the log file.
     void openLogFile();
-    //! @brief Start logging.
-    void startLogging();
     //! @brief Close the log file.
     void closeLogFile();
+    //! @brief Start logging.
+    void startLogging();
     //! @brief Stop logging.
     void stopLogging();
     //! @brief Roll back.
     void rollBack();
-
     //! @brief Check whether the log file is opened.
     //! @param event - FSM event
     //! @return whether the log file is open or not
@@ -311,6 +311,9 @@ private:
         // --------------+-------------+--------------+--------------------+-----------------------
         >;
     // clang-format on
+    //! @brief Await notification and check for restart.
+    //! @return whether restart is required or not
+    bool awaitNotificationAndCheckForRestart();
 
 protected:
     friend std::ostream& operator<<(std::ostream& os, const State state);
@@ -337,7 +340,7 @@ void Log::flush(
         return output;
     };
 
-    if (State::work != currentState())
+    if ((State::work != currentState()) || restartRequest.load())
     {
         std::string output = outputFormatter(unknownLevelPrefix);
         std::cerr << changeToLogStyle(output) << std::endl;

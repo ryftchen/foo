@@ -315,18 +315,16 @@ private:
     struct Relaunch
     {
     };
-
     //! @brief Create the view server.
     void createViewServer();
-    //! @brief Start viewing.
-    void startViewing();
     //! @brief Destroy the view server.
     void destroyViewServer();
+    //! @brief Start viewing.
+    void startViewing();
     //! @brief Stop viewing.
     void stopViewing();
     //! @brief Roll back.
     void rollBack();
-
     // clang-format off
     //! @brief Alias for the transition map of the viewer.
     using TransitionMap = Map<
@@ -341,6 +339,9 @@ private:
         // --------------+---------------+--------------+--------------------------+-----------------------
         >;
     // clang-format on
+    //! @brief Await notification and check for restart.
+    //! @return whether restart is required or not
+    bool awaitNotificationAndCheckForRestart();
 
 protected:
     friend std::ostream& operator<<(std::ostream& os, const State state);
