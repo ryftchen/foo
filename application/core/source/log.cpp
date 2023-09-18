@@ -26,6 +26,7 @@ Log& Log::getInstance()
 
 void Log::runLogger()
 {
+    namespace file = utility::file;
     State expectedState = State::init;
     const auto checkIfExceptedFSMState = [this, &expectedState](const State state)
     {
@@ -57,7 +58,7 @@ void Log::runLogger()
                         return (!isLogging.load() || !logQueue.empty() || restartRequest.load());
                     });
 
-                utility::file::ReadWriteGuard guard(utility::file::LockMode::write, fileLock);
+                file::ReadWriteGuard guard(file::LockMode::write, fileLock);
                 while (!logQueue.empty())
                 {
                     switch (actDestination)
@@ -95,30 +96,17 @@ void Log::runLogger()
             processEvent(NoLogging());
 
             checkIfExceptedFSMState(State::done);
+            return;
         }
         catch (const std::exception& error)
         {
             LOG_ERR << error.what() << " Expected logger state: " << expectedState
                     << ", current logger state: " << State(currentState()) << '.';
-            if (std::unique_lock<std::mutex> lock(mtx); true)
+            if (!awaitNotificationAndCheckForRestart())
             {
-                cv.wait(lock);
-            }
-
-            if (restartRequest.load())
-            {
-                processEvent(Relaunch());
-                if (currentState() == State::init)
-                {
-                    continue;
-                }
-                else
-                {
-                    LOG_ERR << "Failed to restart logger.";
-                }
+                return;
             }
         }
-        break;
     }
 }
 
@@ -220,18 +208,18 @@ std::string Log::getFullDefaultLogPath(const std::string& filename)
     return processHome + '/' + filename;
 }
 
+void Log::tryToCreateLogFolder() const
+{
+    const std::filesystem::path logFolderPath = std::filesystem::absolute(filePath).parent_path();
+    std::filesystem::create_directories(logFolderPath);
+    std::filesystem::permissions(logFolderPath, std::filesystem::perms::owner_all, std::filesystem::perm_options::add);
+}
+
 void Log::openLogFile()
 {
     namespace file = utility::file;
     file::ReadWriteGuard guard(file::LockMode::write, fileLock);
-
-    const std::filesystem::path logFolderPath = std::filesystem::absolute(filePath).parent_path();
-    if (!std::filesystem::exists(logFolderPath))
-    {
-        std::filesystem::create_directory(logFolderPath);
-        std::filesystem::permissions(
-            logFolderPath, std::filesystem::perms::owner_all, std::filesystem::perm_options::add);
-    }
+    tryToCreateLogFolder();
 
     switch (writeType)
     {
@@ -247,12 +235,6 @@ void Log::openLogFile()
     file::fdLock(ofs, file::LockMode::write);
 };
 
-void Log::startLogging()
-{
-    std::unique_lock<std::mutex> lock(mtx);
-    isLogging.store(true);
-};
-
 void Log::closeLogFile()
 {
     namespace file = utility::file;
@@ -264,7 +246,14 @@ void Log::closeLogFile()
     {
         std::filesystem::remove_all(std::filesystem::absolute(filePath).parent_path());
     }
-};
+}
+
+void Log::startLogging()
+{
+    std::unique_lock<std::mutex> lock(mtx);
+    isLogging.store(true);
+    restartRequest.store(false);
+}
 
 void Log::stopLogging()
 {
@@ -275,20 +264,22 @@ void Log::stopLogging()
 
 void Log::rollBack()
 {
-    if (ofs.is_open())
-    {
-        closeLogFile();
-
-        auto tempOfs = utility::file::openFile(filePath, true);
-        utility::file::closeFile(tempOfs);
-    }
-
     std::unique_lock<std::mutex> lock(mtx);
     isLogging.store(false);
     restartRequest.store(false);
     while (!logQueue.empty())
     {
         logQueue.pop();
+    }
+
+    if (ofs.is_open())
+    {
+        namespace file = utility::file;
+        closeLogFile();
+        tryToCreateLogFolder();
+
+        auto tempOfs = file::openFile(filePath, true);
+        file::closeFile(tempOfs);
     }
 }
 
@@ -300,6 +291,26 @@ bool Log::isLogFileOpen(const GoLogging& /*event*/) const
 bool Log::isLogFileClose(const NoLogging& /*event*/) const
 {
     return !ofs.is_open();
+}
+
+bool Log::awaitNotificationAndCheckForRestart()
+{
+    if (std::unique_lock<std::mutex> lock(mtx); true)
+    {
+        cv.wait(lock);
+    }
+
+    if (restartRequest.load())
+    {
+        processEvent(Relaunch());
+        if (currentState() == State::init)
+        {
+            return true;
+        }
+        LOG_ERR << "Failed to restart logger.";
+    }
+
+    return false;
 }
 
 //! @brief The operator (<<) overloading of the State enum.

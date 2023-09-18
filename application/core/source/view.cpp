@@ -219,30 +219,17 @@ void View::runViewer()
             processEvent(NoViewing());
 
             checkIfExceptedFSMState(State::done);
+            return;
         }
         catch (const std::exception& error)
         {
             LOG_ERR << error.what() << " Expected viewer state: " << expectedState
                     << ", current viewer state: " << State(currentState()) << '.';
-            if (std::unique_lock<std::mutex> lock(mtx); true)
+            if (!awaitNotificationAndCheckForRestart())
             {
-                cv.wait(lock);
-            }
-
-            if (restartRequest.load())
-            {
-                processEvent(Relaunch());
-                if (currentState() == State::init)
-                {
-                    continue;
-                }
-                else
-                {
-                    LOG_ERR << "Failed to restart viewer.";
-                }
+                return;
             }
         }
-        break;
     }
 }
 
@@ -650,21 +637,22 @@ void View::createViewServer()
     };
 }
 
+void View::destroyViewServer()
+{
+    tcpServer.reset();
+    udpServer.reset();
+}
+
 void View::startViewing()
 {
     std::unique_lock<std::mutex> lock(mtx);
     isViewing.store(true);
+    restartRequest.store(false);
     tcpServer->toBind(tcpPort);
     tcpServer->toListen();
     tcpServer->toAccept();
     udpServer->toBind(udpPort);
     udpServer->toReceiveFrom();
-}
-
-void View::destroyViewServer()
-{
-    tcpServer.reset();
-    udpServer.reset();
 }
 
 void View::stopViewing()
@@ -676,6 +664,10 @@ void View::stopViewing()
 
 void View::rollBack()
 {
+    std::unique_lock<std::mutex> lock(mtx);
+    isViewing.store(false);
+    restartRequest.store(false);
+
     if (tcpServer)
     {
         tcpServer.reset();
@@ -684,10 +676,26 @@ void View::rollBack()
     {
         udpServer.reset();
     }
+}
 
-    std::unique_lock<std::mutex> lock(mtx);
-    isViewing.store(false);
-    restartRequest.store(false);
+bool View::awaitNotificationAndCheckForRestart()
+{
+    if (std::unique_lock<std::mutex> lock(mtx); true)
+    {
+        cv.wait(lock);
+    }
+
+    if (restartRequest.load())
+    {
+        processEvent(Relaunch());
+        if (currentState() == State::init)
+        {
+            return true;
+        }
+        LOG_ERR << "Failed to restart viewer.";
+    }
+
+    return false;
 }
 
 //! @brief The operator (<<) overloading of the State enum.

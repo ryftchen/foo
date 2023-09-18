@@ -574,9 +574,9 @@ void Command::registerOnConsole(utility::console::Console& console, std::shared_
             {
                 LOG_REQUEST_TO_RESTART;
                 LOG_WAIT_TO_START;
-                utility::time::millisecondLevelSleep(maxLatency);
 
                 LOG_INF << "Refreshed the outputs.";
+                utility::time::millisecondLevelSleep(maxLatency);
             }
             catch (const std::exception& error)
             {
@@ -599,11 +599,11 @@ void Command::registerOnConsole(utility::console::Console& console, std::shared_
                 client.reset();
                 VIEW_REQUEST_TO_RESTART;
                 VIEW_WAIT_TO_START;
-                utility::time::millisecondLevelSleep(maxLatency);
 
                 client = std::make_shared<T>();
                 launchClient<T>(client);
                 LOG_INF << "Reconnected to the servers.";
+                utility::time::millisecondLevelSleep(maxLatency);
             }
             catch (const std::exception& error)
             {
