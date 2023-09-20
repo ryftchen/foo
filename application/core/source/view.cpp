@@ -25,6 +25,100 @@ namespace application::view
 {
 namespace tlv
 {
+//! @brief Encode the TLV packet.
+//! @param buf - TLV packet buffer
+//! @param len -  buffer length
+//! @param val - value of TLV after encoding
+//! @return the value is 0 if successful, otherwise -1
+int tlvEncode(char* buf, int& len, const TLVValue& val)
+{
+    if (nullptr == buf)
+    {
+        return -1;
+    }
+
+    constexpr int offset = sizeof(int) + sizeof(int);
+    int sum = 0;
+
+    Packet enc(buf, len);
+    enc.write<int>(TLVType::header);
+    enc.write<int>(sum);
+
+    enc.write<int>(TLVType::stop);
+    enc.write<int>(sizeof(bool));
+    enc.write<bool>(val.stopFlag);
+    sum += (offset + sizeof(bool));
+
+    if (invalidShmId != val.logShmId)
+    {
+        enc.write<int>(TLVType::log);
+        enc.write<int>(sizeof(int));
+        enc.write<int>(val.logShmId);
+        sum += (offset + sizeof(int));
+    }
+    else if (invalidShmId != val.statShmId)
+    {
+        enc.write<int>(TLVType::stat);
+        enc.write<int>(sizeof(int));
+        enc.write<int>(val.statShmId);
+        sum += (offset + sizeof(int));
+    }
+
+    *reinterpret_cast<int*>(buf + sizeof(int)) = ::htonl(sum);
+    len = offset + sum;
+
+    return 0;
+}
+
+//! @brief Decode the TLV packet.
+//! @param buf - TLV packet buffer
+//! @param len -  buffer length
+//! @param val - value of TLV after decoding
+//! @return the value is 0 if successful, otherwise -1
+int tlvDecode(char* buf, const int len, TLVValue& val)
+{
+    if (nullptr == buf)
+    {
+        return -1;
+    }
+
+    Packet dec(buf, len);
+    int type = 0, length = 0, sum = 0;
+
+    dec.read<int>(&type);
+    if (TLVType::header != type)
+    {
+        return -1;
+    }
+    dec.read<int>(&sum);
+
+    constexpr int offset = sizeof(int) + sizeof(int);
+    while (sum > 0)
+    {
+        dec.read<int>(&type);
+        dec.read<int>(&length);
+        switch (type)
+        {
+            case TLVType::stop:
+                dec.read<bool>(&val.stopFlag);
+                sum -= (offset + sizeof(bool));
+                break;
+            case TLVType::log:
+                dec.read<int>(&val.logShmId);
+                sum -= (offset + sizeof(int));
+                break;
+            case TLVType::stat:
+                dec.read<int>(&val.statShmId);
+                sum -= (offset + sizeof(int));
+                break;
+            default:
+                break;
+        }
+    }
+
+    return 0;
+}
+
 template <typename T>
 bool Packet::write(T data)
 {
@@ -72,90 +166,6 @@ bool Packet::read(void* dst, const std::uint32_t offset)
     reader += offset;
     return (reader < tail) ? true : false;
 }
-
-int tlvEncode(char* buf, int& len, const TLVValue& val)
-{
-    if (nullptr == buf)
-    {
-        return -1;
-    }
-
-    constexpr int offset = sizeof(int) + sizeof(int);
-    int sum = 0;
-
-    Packet enc(buf, len);
-    enc.write<int>(TLVType::header);
-    enc.write<int>(sum);
-
-    enc.write<int>(TLVType::stop);
-    enc.write<int>(sizeof(bool));
-    enc.write<bool>(val.stopFlag);
-    sum += (offset + sizeof(bool));
-
-    if (invalidShmId != val.logShmId)
-    {
-        enc.write<int>(TLVType::log);
-        enc.write<int>(sizeof(int));
-        enc.write<int>(val.logShmId);
-        sum += (offset + sizeof(int));
-    }
-    else if (invalidShmId != val.statShmId)
-    {
-        enc.write<int>(TLVType::stat);
-        enc.write<int>(sizeof(int));
-        enc.write<int>(val.statShmId);
-        sum += (offset + sizeof(int));
-    }
-
-    *reinterpret_cast<int*>(buf + sizeof(int)) = ::htonl(sum);
-    len = offset + sum;
-
-    return 0;
-}
-
-int tlvDecode(char* buf, const int len, TLVValue& val)
-{
-    if (nullptr == buf)
-    {
-        return -1;
-    }
-
-    Packet dec(buf, len);
-    int type = 0, length = 0, sum = 0;
-
-    dec.read<int>(&type);
-    if (TLVType::header != type)
-    {
-        return -1;
-    }
-    dec.read<int>(&sum);
-
-    constexpr int offset = sizeof(int) + sizeof(int);
-    while (sum > 0)
-    {
-        dec.read<int>(&type);
-        dec.read<int>(&length);
-        switch (type)
-        {
-            case TLVType::stop:
-                dec.read<bool>(&val.stopFlag);
-                sum -= (offset + sizeof(bool));
-                break;
-            case TLVType::log:
-                dec.read<int>(&val.logShmId);
-                sum -= (offset + sizeof(int));
-                break;
-            case TLVType::stat:
-                dec.read<int>(&val.statShmId);
-                sum -= (offset + sizeof(int));
-                break;
-            default:
-                break;
-        }
-    }
-
-    return 0;
-}
 } // namespace tlv
 
 View& View::getInstance()
@@ -199,16 +209,16 @@ void View::runViewer()
                     lock,
                     [this]()
                     {
-                        return (!isViewing.load() || restartRequest.load());
+                        return (!isViewing.load() || rollbackRequest.load());
                     });
 
-                if (restartRequest.load())
+                if (rollbackRequest.load())
                 {
                     break;
                 }
             }
 
-            if (restartRequest.load())
+            if (rollbackRequest.load())
             {
                 processEvent(Relaunch());
                 continue;
@@ -225,7 +235,7 @@ void View::runViewer()
         {
             LOG_ERR << error.what() << " Expected viewer state: " << expectedState
                     << ", current viewer state: " << State(currentState()) << '.';
-            if (!awaitNotificationAndCheckForRestart())
+            if (!awaitNotificationAndCheckForRollback())
             {
                 return;
             }
@@ -237,26 +247,44 @@ void View::waitToStart()
 {
     utility::time::BlockingTimer expiryTimer;
     std::uint16_t waitCount = 0;
-    expiryTimer.set(
-        [this, &expiryTimer, &waitCount]()
+    State targetState = State::idle;
+    std::string errorLog = "The viewer did not initialize successfully...";
+    const auto checkState = [&]()
+    {
+        if ((currentState() == targetState) && !rollbackRequest.load())
         {
-            if (State::work == currentState())
-            {
-                expiryTimer.reset();
-            }
-            else
-            {
-                ++waitCount;
-            }
+            expiryTimer.reset();
+        }
+        else
+        {
+            ++waitCount;
+        }
 
-            if (maxTimesOfWaitViewer == waitCount)
-            {
-                LOG_ERR << "The viewer did not start properly...";
-                expiryTimer.reset();
-            }
-        },
-        intervalOfWaitViewer);
-    expiryTimer.reset();
+        if (maxTimesOfWaitViewer == waitCount)
+        {
+            LOG_ERR << errorLog;
+            expiryTimer.reset();
+        }
+    };
+
+    expiryTimer.set(checkState, intervalOfWaitViewer);
+    if (maxTimesOfWaitViewer == waitCount)
+    {
+        return;
+    }
+
+    if (std::unique_lock<std::mutex> lock(mtx); true)
+    {
+        isViewing.store(true);
+
+        lock.unlock();
+        cv.notify_one();
+    }
+
+    waitCount = 0;
+    targetState = State::work;
+    errorLog = "The viewer did not start properly...";
+    expiryTimer.set(checkState, intervalOfWaitViewer);
 }
 
 void View::waitToStop()
@@ -264,46 +292,42 @@ void View::waitToStop()
     if (std::unique_lock<std::mutex> lock(mtx); true)
     {
         isViewing.store(false);
-        restartRequest.store(false);
 
         lock.unlock();
         cv.notify_one();
-        utility::time::millisecondLevelSleep(1);
-        lock.lock();
     }
 
     utility::time::BlockingTimer expiryTimer;
     std::uint16_t waitCount = 0;
-    expiryTimer.set(
-        [this, &expiryTimer, &waitCount]()
+    const State targetState = State::done;
+    const std::string errorLog = "The viewer did not stop properly...";
+    const auto checkState = [&]()
+    {
+        if ((currentState() == targetState) && !rollbackRequest.load())
         {
-            if (State::done == currentState())
-            {
-                expiryTimer.reset();
-            }
-            else
-            {
-                ++waitCount;
-            }
+            expiryTimer.reset();
+        }
+        else
+        {
+            ++waitCount;
+        }
 
-            if (maxTimesOfWaitViewer == waitCount)
-            {
-                LOG_ERR << "The viewer did not stop properly...";
-                expiryTimer.reset();
-            }
-        },
-        intervalOfWaitViewer);
-    expiryTimer.reset();
+        if (maxTimesOfWaitViewer == waitCount)
+        {
+            LOG_ERR << errorLog;
+            expiryTimer.reset();
+        }
+    };
+
+    expiryTimer.set(checkState, intervalOfWaitViewer);
 }
 
-void View::requestToRestart()
+void View::requestToRollback()
 {
     std::unique_lock<std::mutex> lock(mtx);
-    restartRequest.store(true);
+    rollbackRequest.store(true);
     lock.unlock();
     cv.notify_one();
-    utility::time::millisecondLevelSleep(1);
-    lock.lock();
 }
 
 View::OptionMap View::getViewerOptions() const
@@ -646,8 +670,13 @@ void View::destroyViewServer()
 void View::startViewing()
 {
     std::unique_lock<std::mutex> lock(mtx);
-    isViewing.store(true);
-    restartRequest.store(false);
+    cv.wait(
+        lock,
+        [this]()
+        {
+            return isViewing.load();
+        });
+
     tcpServer->toBind(tcpPort);
     tcpServer->toListen();
     tcpServer->toAccept();
@@ -659,14 +688,14 @@ void View::stopViewing()
 {
     std::unique_lock<std::mutex> lock(mtx);
     isViewing.store(false);
-    restartRequest.store(false);
+    rollbackRequest.store(false);
 }
 
-void View::rollBack()
+void View::doRollback()
 {
     std::unique_lock<std::mutex> lock(mtx);
     isViewing.store(false);
-    restartRequest.store(false);
+    rollbackRequest.store(false);
 
     if (tcpServer)
     {
@@ -678,21 +707,21 @@ void View::rollBack()
     }
 }
 
-bool View::awaitNotificationAndCheckForRestart()
+bool View::awaitNotificationAndCheckForRollback()
 {
     if (std::unique_lock<std::mutex> lock(mtx); true)
     {
         cv.wait(lock);
     }
 
-    if (restartRequest.load())
+    if (rollbackRequest.load())
     {
         processEvent(Relaunch());
         if (currentState() == State::init)
         {
             return true;
         }
-        LOG_ERR << "Failed to restart viewer.";
+        LOG_ERR << "Failed to rollback viewer.";
     }
 
     return false;

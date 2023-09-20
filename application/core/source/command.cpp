@@ -248,13 +248,7 @@ void Command::runCommander(const int argc, const char* const argv[])
 
         if (1 == argc)
         {
-#ifndef NDEBUG
-            LOG_DBG << "Enter console mode.";
-#endif // NDEBUG
             enterConsoleMode();
-#ifndef NDEBUG
-            LOG_DBG << "Exit console mode.";
-#endif // NDEBUG
         }
         else
         {
@@ -285,8 +279,6 @@ void Command::foregroundHandler(const int argc, const char* const argv[])
         isParsed.store(true);
         lock.unlock();
         cv.notify_one();
-        utility::time::millisecondLevelSleep(1);
-        lock.lock();
     }
     catch (const std::exception& error)
     {
@@ -466,6 +458,7 @@ void Command::executeConsoleCommand() const
     launchClient<UDPSocket>(udpClient);
     Console console(" > ");
     registerOnConsole<UDPSocket>(console, udpClient);
+
     for (const auto& cmd : cmdContainer)
     {
         console.cmdExecutor(cmd);
@@ -515,11 +508,14 @@ void Command::enterConsoleMode() const
 
     try
     {
+#ifndef NDEBUG
+        LOG_DBG << "Enter console mode.";
+#endif // NDEBUG
         using utility::console::Console;
         using utility::socket::TCPSocket;
 
-        std::cout << utility::common::executeCommand("tput bel ; echo " + getIconBanner()) << std::flush;
-
+        std::cout << utility::common::executeCommand("tput bel ; echo " + getIconBanner() + " ; sleep 0.1s")
+                  << std::flush;
         auto tcpClient = std::make_shared<TCPSocket>();
         launchClient<TCPSocket>(tcpClient);
         std::string user;
@@ -553,6 +549,9 @@ void Command::enterConsoleMode() const
 
         tcpClient->toSend(utility::common::base64Encode("stop"));
         tcpClient->waitIfAlive();
+#ifndef NDEBUG
+        LOG_DBG << "Exit console mode.";
+#endif // NDEBUG
     }
     catch (const std::exception& error)
     {
@@ -572,7 +571,7 @@ void Command::registerOnConsole(utility::console::Console& console, std::shared_
             int retVal = Console::RetCode::success;
             try
             {
-                LOG_REQUEST_TO_RESTART;
+                LOG_REQUEST_TO_ROLLBACK;
                 LOG_WAIT_TO_START;
 
                 LOG_INF << "Refreshed the outputs.";
@@ -597,7 +596,7 @@ void Command::registerOnConsole(utility::console::Console& console, std::shared_
                 client->toSend(utility::common::base64Encode("stop"));
                 client->waitIfAlive();
                 client.reset();
-                VIEW_REQUEST_TO_RESTART;
+                VIEW_REQUEST_TO_ROLLBACK;
                 VIEW_WAIT_TO_START;
 
                 client = std::make_shared<T>();
