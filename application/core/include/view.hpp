@@ -264,7 +264,7 @@ private:
     static constexpr std::uint32_t maxViewNumOfLines{20};
 
     //! @brief Maximum number of times to wait for the viewer to change to the target state.
-    static constexpr std::uint16_t maxTimesOfWaitViewer{50};
+    static constexpr std::uint16_t maxTimesOfWaitViewer{100};
     //! @brief Time interval (ms) to wait for the viewer to change to the target state.
     static constexpr std::uint16_t intervalOfWaitViewer{10};
     //! @brief Maximum length of the message.
