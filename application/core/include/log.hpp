@@ -42,8 +42,8 @@
 #define LOG_WAIT_TO_START LOG_GET_INSTANCE_IF_ENABLED.waitToStart()
 //! @brief Try to stop logging.
 #define LOG_WAIT_TO_STOP LOG_GET_INSTANCE_IF_ENABLED.waitToStop()
-//! @brief Try to restart logging.
-#define LOG_REQUEST_TO_RESTART LOG_GET_INSTANCE_IF_ENABLED.requestToRestart()
+//! @brief Try to rollback the logger.
+#define LOG_REQUEST_TO_ROLLBACK LOG_GET_INSTANCE_IF_ENABLED.requestToRollback()
 //! @brief Log file path.
 #define LOG_FILE_PATH LOG_GET_INSTANCE.getFilePath()
 //! @brief Log file lock.
@@ -165,8 +165,8 @@ public:
     void waitToStart();
     //! @brief Wait for the logger to stop. External use.
     void waitToStop();
-    //! @brief Request to restart the logger. External use.
-    void requestToRestart();
+    //! @brief Request to rollback the logger. External use.
+    void requestToRollback();
     //! @brief Get log file path.
     //! @return log file path
     std::string getFilePath() const;
@@ -227,7 +227,7 @@ private:
         FSM(initState){};
 
     //! @brief Maximum number of times to wait for the logger to change to the target state.
-    static constexpr std::uint16_t maxTimesOfWaitLogger{10};
+    static constexpr std::uint16_t maxTimesOfWaitLogger{50};
     //! @brief Time interval (ms) to wait for the logger to change to the target state.
     static constexpr std::uint16_t intervalOfWaitLogger{10};
     //! @brief The queue of logs.
@@ -238,8 +238,8 @@ private:
     std::condition_variable cv;
     //! @brief Flag to indicate whether it is logging.
     std::atomic<bool> isLogging{false};
-    //! @brief Flag for restart request.
-    std::atomic<bool> restartRequest{false};
+    //! @brief Flag for rollback request.
+    std::atomic<bool> rollbackRequest{false};
     //! @brief Output file stream.
     std::ofstream ofs;
     //! @brief Log file absolute path.
@@ -252,6 +252,9 @@ private:
     const OutputDestination actDestination{OutputDestination::both};
     //! @brief Log file lock.
     utility::file::ReadWriteLock fileLock;
+
+    //! @brief Handle the log queue.
+    void handleLogQueue();
     //! @brief Get the full path to the default log file.
     //! @param filename - default filename
     //! @return full path to the default log file
@@ -287,8 +290,8 @@ private:
     void startLogging();
     //! @brief Stop logging.
     void stopLogging();
-    //! @brief Roll back.
-    void rollBack();
+    //! @brief Do rollback.
+    void doRollback();
     //! @brief Check whether the log file is opened.
     //! @param event - FSM event
     //! @return whether the log file is open or not
@@ -306,14 +309,15 @@ private:
         Row< State::idle ,  GoLogging  , State::work  , &Log::startLogging , &Log::isLogFileOpen  >,
         Row< State::work ,  CloseFile  , State::idle  , &Log::closeLogFile                        >,
         Row< State::idle ,  NoLogging  , State::done  , &Log::stopLogging  , &Log::isLogFileClose >,
-        Row< State::idle ,  Relaunch   , State::init  , &Log::rollBack                            >,
-        Row< State::work ,  Relaunch   , State::init  , &Log::rollBack                            >
+        Row< State::init ,  Relaunch   , State::init  , &Log::doRollback                          >,
+        Row< State::idle ,  Relaunch   , State::init  , &Log::doRollback                          >,
+        Row< State::work ,  Relaunch   , State::init  , &Log::doRollback                          >
         // --------------+-------------+--------------+--------------------+-----------------------
         >;
     // clang-format on
-    //! @brief Await notification and check for restart.
-    //! @return whether restart is required or not
-    bool awaitNotificationAndCheckForRestart();
+    //! @brief Await notification and check for rollback.
+    //! @return whether rollback is required or not
+    bool awaitNotificationAndCheckForRollback();
 
 protected:
     friend std::ostream& operator<<(std::ostream& os, const State state);
@@ -340,7 +344,7 @@ void Log::flush(
         return output;
     };
 
-    if ((State::work != currentState()) || restartRequest.load())
+    if (!((State::work == currentState()) && !rollbackRequest.load()))
     {
         std::string output = outputFormatter(unknownLevelPrefix);
         std::cerr << changeToLogStyle(output) << std::endl;
@@ -374,8 +378,6 @@ void Log::flush(
             logQueue.push(std::move(output));
             lock.unlock();
             cv.notify_one();
-            utility::time::millisecondLevelSleep(1);
-            lock.lock();
         }
     }
 }

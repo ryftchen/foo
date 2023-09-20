@@ -99,7 +99,7 @@ int main(int argc, char* argv[])
 
     std::signal(SIGALRM, application::setAlarmInterrupted);
     std::signal(SIGCHLD, application::setChildInterrupted);
-    constexpr std::uint8_t timeout = 60;
+    constexpr std::uint8_t timeout = 120;
     ::alarm(timeout);
     ::pause();
     if (application::alarmInterrupted)

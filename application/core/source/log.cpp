@@ -26,7 +26,6 @@ Log& Log::getInstance()
 
 void Log::runLogger()
 {
-    namespace file = utility::file;
     State expectedState = State::init;
     const auto checkIfExceptedFSMState = [this, &expectedState](const State state)
     {
@@ -55,37 +54,17 @@ void Log::runLogger()
                     lock,
                     [this]()
                     {
-                        return (!isLogging.load() || !logQueue.empty() || restartRequest.load());
+                        return (!isLogging.load() || !logQueue.empty() || rollbackRequest.load());
                     });
 
-                file::ReadWriteGuard guard(file::LockMode::write, fileLock);
-                while (!logQueue.empty())
-                {
-                    switch (actDestination)
-                    {
-                        case OutputDestination::file:
-                            ofs << logQueue.front() << std::endl;
-                            break;
-                        case OutputDestination::terminal:
-                            std::cout << changeToLogStyle(logQueue.front()) << std::endl;
-                            break;
-                        case OutputDestination::both:
-                            ofs << logQueue.front() << std::endl;
-                            std::cout << changeToLogStyle(logQueue.front()) << std::endl;
-                            break;
-                        default:
-                            break;
-                    }
-                    logQueue.pop();
-                }
-
-                if (restartRequest.load())
+                if (rollbackRequest.load())
                 {
                     break;
                 }
+                handleLogQueue();
             }
 
-            if (restartRequest.load())
+            if (rollbackRequest.load())
             {
                 processEvent(Relaunch());
                 continue;
@@ -102,7 +81,7 @@ void Log::runLogger()
         {
             LOG_ERR << error.what() << " Expected logger state: " << expectedState
                     << ", current logger state: " << State(currentState()) << '.';
-            if (!awaitNotificationAndCheckForRestart())
+            if (!awaitNotificationAndCheckForRollback())
             {
                 return;
             }
@@ -114,26 +93,44 @@ void Log::waitToStart()
 {
     utility::time::BlockingTimer expiryTimer;
     std::uint16_t waitCount = 0;
-    expiryTimer.set(
-        [this, &expiryTimer, &waitCount]()
+    State targetState = State::idle;
+    std::string errorLog = "The logger did not initialize successfully...";
+    const auto checkState = [&]()
+    {
+        if ((currentState() == targetState) && !rollbackRequest.load())
         {
-            if (State::work == currentState())
-            {
-                expiryTimer.reset();
-            }
-            else
-            {
-                ++waitCount;
-            }
+            expiryTimer.reset();
+        }
+        else
+        {
+            ++waitCount;
+        }
 
-            if (maxTimesOfWaitLogger == waitCount)
-            {
-                LOG_ERR << "The logger did not start properly...";
-                expiryTimer.reset();
-            }
-        },
-        intervalOfWaitLogger);
-    expiryTimer.reset();
+        if (maxTimesOfWaitLogger == waitCount)
+        {
+            LOG_ERR << errorLog;
+            expiryTimer.reset();
+        }
+    };
+
+    expiryTimer.set(checkState, intervalOfWaitLogger);
+    if (maxTimesOfWaitLogger == waitCount)
+    {
+        return;
+    }
+
+    if (std::unique_lock<std::mutex> lock(mtx); true)
+    {
+        isLogging.store(true);
+
+        lock.unlock();
+        cv.notify_one();
+    }
+
+    waitCount = 0;
+    targetState = State::work;
+    errorLog = "The logger did not start properly...";
+    expiryTimer.set(checkState, maxTimesOfWaitLogger);
 }
 
 void Log::waitToStop()
@@ -141,46 +138,42 @@ void Log::waitToStop()
     if (std::unique_lock<std::mutex> lock(mtx); true)
     {
         isLogging.store(false);
-        restartRequest.store(false);
 
         lock.unlock();
         cv.notify_one();
-        utility::time::millisecondLevelSleep(1);
-        lock.lock();
     }
 
     utility::time::BlockingTimer expiryTimer;
     std::uint16_t waitCount = 0;
-    expiryTimer.set(
-        [this, &expiryTimer, &waitCount]()
+    const State targetState = State::done;
+    const std::string errorLog = "The logger did not stop properly...";
+    const auto checkState = [&]()
+    {
+        if ((currentState() == targetState) && !rollbackRequest.load())
         {
-            if (State::done == currentState())
-            {
-                expiryTimer.reset();
-            }
-            else
-            {
-                ++waitCount;
-            }
+            expiryTimer.reset();
+        }
+        else
+        {
+            ++waitCount;
+        }
 
-            if (maxTimesOfWaitLogger == waitCount)
-            {
-                LOG_ERR << "The logger did not stop properly...";
-                expiryTimer.reset();
-            }
-        },
-        intervalOfWaitLogger);
-    expiryTimer.reset();
+        if (maxTimesOfWaitLogger == waitCount)
+        {
+            LOG_ERR << errorLog;
+            expiryTimer.reset();
+        }
+    };
+
+    expiryTimer.set(checkState, intervalOfWaitLogger);
 }
 
-void Log::requestToRestart()
+void Log::requestToRollback()
 {
     std::unique_lock<std::mutex> lock(mtx);
-    restartRequest.store(true);
+    rollbackRequest.store(true);
     lock.unlock();
     cv.notify_one();
-    utility::time::millisecondLevelSleep(1);
-    lock.lock();
 }
 
 std::string Log::getFilePath() const
@@ -191,6 +184,30 @@ std::string Log::getFilePath() const
 utility::file::ReadWriteLock& Log::getFileLock()
 {
     return fileLock;
+}
+
+void Log::handleLogQueue()
+{
+    utility::file::ReadWriteGuard guard(utility::file::LockMode::write, fileLock);
+    while (!logQueue.empty())
+    {
+        switch (actDestination)
+        {
+            case OutputDestination::file:
+                ofs << logQueue.front() << std::endl;
+                break;
+            case OutputDestination::terminal:
+                std::cout << changeToLogStyle(logQueue.front()) << std::endl;
+                break;
+            case OutputDestination::both:
+                ofs << logQueue.front() << std::endl;
+                std::cout << changeToLogStyle(logQueue.front()) << std::endl;
+                break;
+            default:
+                break;
+        }
+        logQueue.pop();
+    }
 }
 
 std::string Log::getFullDefaultLogPath(const std::string& filename)
@@ -251,22 +268,30 @@ void Log::closeLogFile()
 void Log::startLogging()
 {
     std::unique_lock<std::mutex> lock(mtx);
-    isLogging.store(true);
-    restartRequest.store(false);
+    cv.wait(
+        lock,
+        [this]()
+        {
+            return isLogging.load();
+        });
 }
 
 void Log::stopLogging()
 {
     std::unique_lock<std::mutex> lock(mtx);
     isLogging.store(false);
-    restartRequest.store(false);
+    rollbackRequest.store(false);
+    while (!logQueue.empty())
+    {
+        logQueue.pop();
+    }
 }
 
-void Log::rollBack()
+void Log::doRollback()
 {
     std::unique_lock<std::mutex> lock(mtx);
     isLogging.store(false);
-    restartRequest.store(false);
+    rollbackRequest.store(false);
     while (!logQueue.empty())
     {
         logQueue.pop();
@@ -274,12 +299,11 @@ void Log::rollBack()
 
     if (ofs.is_open())
     {
-        namespace file = utility::file;
         closeLogFile();
         tryToCreateLogFolder();
 
-        auto tempOfs = file::openFile(filePath, true);
-        file::closeFile(tempOfs);
+        auto tempOfs = utility::file::openFile(filePath, true);
+        utility::file::closeFile(tempOfs);
     }
 }
 
@@ -293,21 +317,21 @@ bool Log::isLogFileClose(const NoLogging& /*event*/) const
     return !ofs.is_open();
 }
 
-bool Log::awaitNotificationAndCheckForRestart()
+bool Log::awaitNotificationAndCheckForRollback()
 {
     if (std::unique_lock<std::mutex> lock(mtx); true)
     {
         cv.wait(lock);
     }
 
-    if (restartRequest.load())
+    if (rollbackRequest.load())
     {
         processEvent(Relaunch());
         if (currentState() == State::init)
         {
             return true;
         }
-        LOG_ERR << "Failed to restart logger.";
+        LOG_ERR << "Failed to rollback logger.";
     }
 
     return false;

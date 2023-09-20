@@ -25,8 +25,8 @@
 #define VIEW_WAIT_TO_START VIEW_GET_INSTANCE_IF_ENABLED.waitToStart()
 //! @brief Try to stop viewing.
 #define VIEW_WAIT_TO_STOP VIEW_GET_INSTANCE_IF_ENABLED.waitToStop()
-//! @brief Try to restart viewing.
-#define VIEW_REQUEST_TO_RESTART VIEW_GET_INSTANCE_IF_ENABLED.requestToRestart()
+//! @brief Try to rollback the viewer.
+#define VIEW_REQUEST_TO_ROLLBACK VIEW_GET_INSTANCE_IF_ENABLED.requestToRollback()
 //! @brief Get the TCP host address of the viewer.
 #define VIEW_TCP_HOST VIEW_GET_INSTANCE.getViewerTCPHost()
 //! @brief Get the TCP port number of the viewer.
@@ -114,19 +114,6 @@ private:
     //! @brief Pointer to the current reading location.
     char* reader{nullptr};
 };
-
-//! @brief Encode the TLV packet.
-//! @param buf - TLV packet buffer
-//! @param len -  buffer length
-//! @param val - value of TLV after encoding
-//! @return the value is 0 if successful, otherwise -1
-int tlvEncode(char* buf, int& len, const TLVValue& val);
-//! @brief Decode the TLV packet.
-//! @param buf - TLV packet buffer
-//! @param len -  buffer length
-//! @param val - value of TLV after decoding
-//! @return the value is 0 if successful, otherwise -1
-int tlvDecode(char* buf, const int len, TLVValue& val);
 } // namespace tlv
 
 //! @brief Viewer.
@@ -160,8 +147,8 @@ public:
     void waitToStart();
     //! @brief Wait for the viewer to stop. External use.
     void waitToStop();
-    //! @brief Request to restart the viewer. External use.
-    void requestToRestart();
+    //! @brief Request to rollback the viewer. External use.
+    void requestToRollback();
 
     //! @brief Alias for the functor to build the TLV packet.
     typedef int (*BuildFunctor)(char*);
@@ -277,7 +264,7 @@ private:
     static constexpr std::uint32_t maxViewNumOfLines{20};
 
     //! @brief Maximum number of times to wait for the viewer to change to the target state.
-    static constexpr std::uint16_t maxTimesOfWaitViewer{10};
+    static constexpr std::uint16_t maxTimesOfWaitViewer{50};
     //! @brief Time interval (ms) to wait for the viewer to change to the target state.
     static constexpr std::uint16_t intervalOfWaitViewer{10};
     //! @brief Maximum length of the message.
@@ -292,8 +279,8 @@ private:
     std::condition_variable cv;
     //! @brief Flag to indicate whether it is viewing.
     std::atomic<bool> isViewing{false};
-    //! @brief Flag for restart request.
-    std::atomic<bool> restartRequest{false};
+    //! @brief Flag for rollback request.
+    std::atomic<bool> rollbackRequest{false};
 
     //! @brief FSM event. Create server.
     struct CreateServer
@@ -323,8 +310,8 @@ private:
     void startViewing();
     //! @brief Stop viewing.
     void stopViewing();
-    //! @brief Roll back.
-    void rollBack();
+    //! @brief Do rollback.
+    void doRollback();
     // clang-format off
     //! @brief Alias for the transition map of the viewer.
     using TransitionMap = Map<
@@ -334,14 +321,15 @@ private:
         Row< State::idle , GoViewing     , State::work  , &View::startViewing                             >,
         Row< State::work , DestroyServer , State::idle  , &View::destroyViewServer                        >,
         Row< State::idle , NoViewing     , State::done  , &View::stopViewing                              >,
-        Row< State::idle , Relaunch      , State::init  , &View::rollBack                                 >,
-        Row< State::work , Relaunch      , State::init  , &View::rollBack                                 >
+        Row< State::init , Relaunch      , State::init  , &View::doRollback                               >,
+        Row< State::idle , Relaunch      , State::init  , &View::doRollback                               >,
+        Row< State::work , Relaunch      , State::init  , &View::doRollback                               >
         // --------------+---------------+--------------+--------------------------+-----------------------
         >;
     // clang-format on
-    //! @brief Await notification and check for restart.
-    //! @return whether restart is required or not
-    bool awaitNotificationAndCheckForRestart();
+    //! @brief Await notification and check for rollback.
+    //! @return whether rollback is required or not
+    bool awaitNotificationAndCheckForRollback();
 
 protected:
     friend std::ostream& operator<<(std::ostream& os, const State state);
