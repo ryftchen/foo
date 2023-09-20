@@ -227,7 +227,7 @@ private:
         FSM(initState){};
 
     //! @brief Maximum number of times to wait for the logger to change to the target state.
-    static constexpr std::uint16_t maxTimesOfWaitLogger{50};
+    static constexpr std::uint16_t maxTimesOfWaitLogger{100};
     //! @brief Time interval (ms) to wait for the logger to change to the target state.
     static constexpr std::uint16_t intervalOfWaitLogger{10};
     //! @brief The queue of logs.
