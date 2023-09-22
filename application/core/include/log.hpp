@@ -140,8 +140,8 @@ public:
         warning,
         error
     };
-    //! @brief Enumerate specific output destinations.
-    enum class OutputDestination : std::uint8_t
+    //! @brief Enumerate specific output medium.
+    enum class OutputMedium : std::uint8_t
     {
         file,
         terminal,
@@ -224,7 +224,7 @@ private:
         filePath(getFullDefaultLogPath(CONFIG_LOGGER_PATH)),
         writeType(OutputType(CONFIG_LOGGER_TYPE)),
         minLevel(OutputLevel(CONFIG_LOGGER_LEVEL)),
-        actDestination(OutputDestination(CONFIG_LOGGER_DESTINATION)),
+        usedMedium(OutputMedium(CONFIG_LOGGER_MEDIUM)),
         FSM(initState){};
 
     //! @brief Maximum number of times to wait for the logger to change to the target state.
@@ -249,8 +249,8 @@ private:
     const OutputType writeType{OutputType::add};
     //! @brief Minimum level.
     const OutputLevel minLevel{OutputLevel::debug};
-    //! @brief Actual destination.
-    const OutputDestination actDestination{OutputDestination::both};
+    //! @brief Used medium.
+    const OutputMedium usedMedium{OutputMedium::both};
     //! @brief Log file lock.
     utility::file::ReadWriteLock fileLock;
 

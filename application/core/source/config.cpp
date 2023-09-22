@@ -6,11 +6,14 @@
 
 #include "config.hpp"
 #ifndef __PRECOMPILED_HEADER
+#include <cassert>
 #include <filesystem>
 #include <fstream>
+#include <iterator>
 #else
 #include "application/pch/precompiled_header.hpp"
 #endif // __PRECOMPILED_HEADER
+#include "utility/include/common.hpp"
 #include "utility/include/file.hpp"
 
 namespace application::config
@@ -26,21 +29,9 @@ Config& Config::getInstance()
     return configuration;
 }
 
-std::string Config::operator[](const std::string& key)
+utility::json::JSON& Config::getData()
 {
-    if (!elementExists(key))
-    {
-        throw std::runtime_error("Key '" + key + "' not found in config file.");
-    }
-
-    std::string value;
-    const auto pos = data.find(key);
-    if (data.end() != pos)
-    {
-        value = pos->second;
-    }
-
-    return value;
+    return data;
 }
 
 std::string Config::getFilePath() const
@@ -48,37 +39,112 @@ std::string Config::getFilePath() const
     return filePath;
 }
 
-std::string Config::getString(const std::string& key)
+void Config::parseFile(const std::string& filename)
 {
-    return (*this)[key];
+    if (!std::filesystem::exists(filename))
+    {
+        throw std::runtime_error("Config file " + filename + " is missing.");
+    }
+
+    const auto configs = utility::file::getFileContents(filename);
+    std::ostringstream os;
+    std::copy(configs.cbegin(), configs.cend(), std::ostream_iterator<std::string>(os, ""));
+    data = utility::json::JSON::load(os.str());
+    verifyData();
 }
 
-int Config::getInteger(const std::string& key)
+void Config::verifyData()
 {
-    return getNumericValue<int>(key);
+    bool isVerified = data.at("activeHelper").isBooleanType();
+    isVerified &= data.at("helperSetting").isObjectType();
+    if (!isVerified)
+    {
+        throw std::runtime_error("Illegal configuration: " + data.toUnescapedString());
+    }
+
+    using utility::common::operator""_bkdrHash;
+    using utility::common::bkdrHash;
+
+    const auto loggerObject = data.at("helperSetting").at("logger");
+    isVerified &= loggerObject.isObjectType();
+    const auto loggerProperties = loggerObject.at("properties"), loggerRequired = loggerObject.at("required");
+    isVerified &= loggerProperties.isObjectType();
+    isVerified &= loggerRequired.isArrayType();
+    isVerified &= (loggerProperties.size() == loggerRequired.length());
+    for (const auto& elem : loggerRequired.arrayRange())
+    {
+        isVerified &= elem.isStringType();
+        isVerified &= loggerProperties.hasKey(elem.toString());
+    }
+    for (const auto& [name, elem] : loggerProperties.objectRange())
+    {
+        switch (bkdrHash(name.data()))
+        {
+            case "filePath"_bkdrHash:
+                isVerified &= elem.isStringType();
+                break;
+            case "minimumLevel"_bkdrHash:
+                isVerified &= elem.isIntegralType();
+                break;
+            case "usedMedium"_bkdrHash:
+                isVerified &= elem.isIntegralType();
+                break;
+            case "writeType"_bkdrHash:
+                isVerified &= elem.isIntegralType();
+                break;
+            default:
+                isVerified &= false;
+                break;
+        }
+    }
+    if (!isVerified)
+    {
+        throw std::runtime_error(
+            R"(Illegal configuration, "logger" object in "helperSetting" object: )" + loggerObject.toUnescapedString());
+    }
+
+    const auto viewerObject = data.at("helperSetting").at("viewer");
+    isVerified &= viewerObject.isObjectType();
+    const auto viewerProperties = viewerObject.at("properties"), viewerRequired = viewerObject.at("required");
+    isVerified &= viewerProperties.isObjectType();
+    isVerified &= viewerRequired.isArrayType();
+    isVerified &= (viewerProperties.size() == viewerRequired.length());
+    for (const auto& elem : viewerRequired.arrayRange())
+    {
+        isVerified &= elem.isStringType();
+        isVerified &= viewerProperties.hasKey(elem.toString());
+    }
+    for (const auto& [name, elem] : viewerProperties.objectRange())
+    {
+        switch (bkdrHash(name.data()))
+        {
+            case "tcpHost"_bkdrHash:
+                isVerified &= elem.isStringType();
+                break;
+            case "tcpPort"_bkdrHash:
+                isVerified &= elem.isIntegralType();
+                break;
+            case "udpHost"_bkdrHash:
+                isVerified &= elem.isStringType();
+                break;
+            case "udpPort"_bkdrHash:
+                isVerified &= elem.isIntegralType();
+                break;
+            default:
+                isVerified &= false;
+                break;
+        }
+    }
+    if (!isVerified)
+    {
+        throw std::runtime_error(
+            R"(Illegal configuration, "viewer" object in "helperSetting" object: )" + viewerObject.toUnescapedString());
+    }
 }
 
-unsigned int Config::getUnsignedInteger(const std::string& key)
-{
-    return getNumericValue<unsigned int>(key);
-}
-
-float Config::getFloat(const std::string& key)
-{
-    return getNumericValue<float>(key);
-}
-
-double Config::getDouble(const std::string& key)
-{
-    return getNumericValue<double>(key);
-}
-
-bool Config::getBool(const std::string& key)
-{
-    return getInteger(key);
-}
-
-std::string Config::getFullDefaultConfigPath()
+//! @brief Get the full path to the default config file.
+//! @return full path to the default config file
+std::string getFullDefaultConfigPath()
 {
     std::string processHome;
     if (nullptr != std::getenv("FOO_HOME"))
@@ -89,133 +155,41 @@ std::string Config::getFullDefaultConfigPath()
     {
         throw std::runtime_error("The environment variable FOO_HOME is not set.");
     }
-
     return processHome + '/' + std::string{defaultConfigFile};
 }
 
-template <class T>
-T Config::getNumericValue(const std::string& key)
+//! @brief Get the default configuration.
+//! @return default configuration
+utility::json::JSON getDefaultConfiguration()
 {
-    T value = 0;
+    namespace json = utility::json;
 
-    try
-    {
-        if (typeid(int) == typeid(T))
-        {
-            value = std::stoi((*this)[key]);
-        }
-        else if (typeid(unsigned int) == typeid(T))
-        {
-            value = static_cast<unsigned int>(std::stoul((*this)[key]));
-        }
-        else if (typeid(float) == typeid(T))
-        {
-            value = static_cast<float>(std::stof((*this)[key]));
-        }
-        else if (typeid(double) == typeid(T))
-        {
-            value = static_cast<double>(std::stod((*this)[key]));
-        }
-    }
-    catch (const std::invalid_argument& error)
-    {
-        throw std::runtime_error("Numeric config value is malformed, value for key '" + key + "' cannot be converted.");
-    }
-    catch (const std::out_of_range& error)
-    {
-        throw std::runtime_error("Numeric config value is malformed, value for key '" + key + "' is out of range.");
-    }
+    auto loggerProperties = json::object();
+    loggerProperties.at("filePath") = "log/foo.log";
+    loggerProperties.at("minimumLevel") = 0;
+    loggerProperties.at("usedMedium") = 2;
+    loggerProperties.at("writeType") = 0;
+    auto loggerRequired = json::array();
+    loggerRequired.append("filePath", "minimumLevel", "usedMedium", "writeType");
+    assert(loggerProperties.size() == loggerRequired.length());
 
-    return value;
-}
+    auto viewerProperties = json::object();
+    viewerProperties.at("tcpHost") = "localhost";
+    viewerProperties.at("tcpPort") = 61501; // NOLINT(readability-magic-numbers)
+    viewerProperties.at("udpHost") = "localhost";
+    viewerProperties.at("udpPort") = 61502; // NOLINT(readability-magic-numbers)
+    auto viewerRequired = json::array();
+    viewerRequired.append("tcpHost", "tcpPort", "udpHost", "udpPort");
+    assert(viewerProperties.size() == viewerRequired.length());
 
-bool Config::elementExists(const std::string& key) const
-{
-    return (data.find(key) != data.cend());
-}
-
-void Config::parseFile(const std::string& filename)
-{
-    if (!std::filesystem::exists(filename))
-    {
-        throw std::runtime_error("Config file " + filename + " is missing.");
-    }
-
-    namespace file = utility::file;
-    std::ifstream ifs = utility::file::openFile(filename);
-    file::fdLock(ifs, file::LockMode::read);
-    std::string line;
-    while (std::getline(ifs, line))
-    {
-        parseLine(line);
-    }
-    file::fdUnlock(ifs);
-    utility::file::closeFile(ifs);
-}
-
-void Config::parseLine(const std::string& line)
-{
-    if (isComment(line))
-    {
-        return;
-    }
-
-    if (isFormatValid(line))
-    {
-        std::string key, value;
-        std::istringstream is(line);
-        std::getline(is, key, basicDelimiter);
-        key = trimLine(key);
-
-        std::getline(is, value);
-        const std::size_t lineEnd = value.find_first_of("\r\n");
-        if (std::string::npos != lineEnd)
-        {
-            value.substr(0, lineEnd);
-        }
-
-        value = trimLine(value);
-        if (!elementExists(key))
-        {
-            data[key] = value;
-        }
-        else
-        {
-            throw std::runtime_error("Config file is malformed, '" + key + "' has multiple occurrences.");
-        }
-    }
-    else
-    {
-        throw std::runtime_error("Config file is malformed, line " + line);
-    }
-}
-
-bool Config::isFormatValid(const std::string& line)
-{
-    const auto tempLine = trimLine(line);
-    return (tempLine.find(basicDelimiter) != 0);
-}
-
-bool Config::isComment(const std::string& line)
-{
-    const auto tempLine = trimLine(line);
-    if (tempLine.size())
-    {
-        return (commentDelimiter == tempLine.at(0));
-    }
-    return true;
-}
-
-std::string Config::trimLine(const std::string& line)
-{
-    const std::size_t firstChar = line.find_first_not_of(' ');
-    if (std::string::npos == firstChar)
-    {
-        return "";
-    }
-
-    const std::size_t lastChar = line.find_last_not_of(' ');
-    return line.substr(firstChar, (lastChar - firstChar + 1));
+    return utility::json::JSON(
+        {"activeHelper",
+         true,
+         "helperSetting",
+         {"logger",
+          {"properties", loggerProperties, "required", loggerRequired},
+          "viewer",
+          {"properties", viewerProperties, "required", viewerRequired}}});
 }
 
 //! @brief Initialize the configuration.
@@ -227,7 +201,7 @@ void initializeConfiguration(const std::string& filename)
         namespace file = utility::file;
         std::ofstream ofs = file::openFile(filename, false);
         file::fdLock(ofs, file::LockMode::write);
-        ofs << defaultConfiguration;
+        ofs << getDefaultConfiguration();
         file::fdUnlock(ofs);
         file::closeFile(ofs);
     }

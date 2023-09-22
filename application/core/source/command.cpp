@@ -21,10 +21,7 @@ Command::Command()
 
     mainCLI.addArgument("-v", "--version").argsNum(0).implicitVal(true).help("show version and exit");
 
-    mainCLI.addArgument("-r", "--reconfig")
-        .argsNum(0)
-        .implicitVal(true)
-        .help("regenerate the default configuration and exit");
+    mainCLI.addArgument("-d", "--dump").argsNum(0).implicitVal(true).help("dump the default configuration and exit");
 
     mainCLI.addArgument("-c", "--console")
         .argsNum(utility::argument::ArgsNumPattern::any)
@@ -474,12 +471,12 @@ void Command::showHelpMessage() const
 }
 
 // NOLINTNEXTLINE(readability-convert-member-functions-to-static)
-void Command::regenerateConfiguration() const
+void Command::dumpConfiguration() const
 {
     namespace file = utility::file;
     std::ofstream ofs = file::openFile(CONFIG_FILE_PATH, true);
     file::fdLock(ofs, file::LockMode::write);
-    ofs << config::defaultConfiguration;
+    ofs << config::getDefaultConfiguration();
     file::fdUnlock(ofs);
     file::closeFile(ofs);
 

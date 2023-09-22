@@ -304,7 +304,7 @@ void View::waitToStop()
     expiryTimer.set(
         [this, &expiryTimer, &waitCount]()
         {
-            if ((currentState() == State::work) && !rollbackRequest.load())
+            if ((currentState() == State::done) && !rollbackRequest.load())
             {
                 expiryTimer.reset();
             }

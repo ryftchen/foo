@@ -46,7 +46,6 @@ words:
   - pylintrc
   - Rastrigin
   - rcfile
-  - reconfig
   - rustc
   - rustfmt
   - Ritchie
