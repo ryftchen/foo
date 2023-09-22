@@ -76,12 +76,12 @@ private:
     bool hasAnyTask() const;
     //! @brief Dispatch specific tasks.
     void dispatchTask();
-    //! @brief Execute the console mode command line.
+    //! @brief Execute the command line of console mode.
     void executeConsoleCommand() const;
     //! @brief Print help message.
     void showHelpMessage() const;
-    //! @brief Regenerate and print the configuration.
-    void regenerateConfiguration() const;
+    //! @brief Dump configuration.
+    void dumpConfiguration() const;
     //! @brief Print version icon.
     void showVersionIcon() const;
 
@@ -122,13 +122,13 @@ private:
     // clang-format off
     //! @brief Mapping table of all basic tasks.
     const std::map<std::string, void (Command::*)() const> basicTaskDispatcher{
-        // - Category -+------------- Run Task -------------
-        // ------------+------------------------------------
-        { "console"    , &Command::executeConsoleCommand   },
-        { "help"       , &Command::showHelpMessage         },
-        { "reconfig"   , &Command::regenerateConfiguration },
-        { "version"    , &Command::showVersionIcon         }
-        // ------------+------------------------------------
+        // - Category -+------------ Run Task ------------
+        // ------------+----------------------------------
+        { "console"    , &Command::executeConsoleCommand },
+        { "dump"       , &Command::dumpConfiguration     },
+        { "help"       , &Command::showHelpMessage       },
+        { "version"    , &Command::showVersionIcon       }
+        // ------------+----------------------------------
     };
     //! @brief Mapping table of all regular tasks.
     const RegularTaskMap regularTaskDispatcher{
@@ -169,8 +169,8 @@ private:
         enum Category : std::uint8_t
         {
             console,
+            dump,
             help,
-            reconfig,
             version
         };
         //! @brief Store the maximum value of the Category enum.

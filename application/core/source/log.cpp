@@ -191,15 +191,15 @@ void Log::handleLogQueue()
     utility::file::ReadWriteGuard guard(utility::file::LockMode::write, fileLock);
     while (!logQueue.empty())
     {
-        switch (actDestination)
+        switch (usedMedium)
         {
-            case OutputDestination::file:
+            case OutputMedium::file:
                 ofs << logQueue.front() << std::endl;
                 break;
-            case OutputDestination::terminal:
+            case OutputMedium::terminal:
                 std::cout << changeToLogStyle(logQueue.front()) << std::endl;
                 break;
-            case OutputDestination::both:
+            case OutputMedium::both:
                 ofs << logQueue.front() << std::endl;
                 std::cout << changeToLogStyle(logQueue.front()) << std::endl;
                 break;
