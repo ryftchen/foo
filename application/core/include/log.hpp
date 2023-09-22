@@ -153,7 +153,8 @@ public:
         init,
         idle,
         work,
-        done
+        done,
+        hold
     };
 
     //! @brief Get the Log instance.
@@ -227,7 +228,7 @@ private:
         FSM(initState){};
 
     //! @brief Maximum number of times to wait for the logger to change to the target state.
-    static constexpr std::uint16_t maxTimesOfWaitLogger{100};
+    static constexpr std::uint16_t maxTimesOfWaitLogger{20};
     //! @brief Time interval (ms) to wait for the logger to change to the target state.
     static constexpr std::uint16_t intervalOfWaitLogger{10};
     //! @brief The queue of logs.
@@ -278,6 +279,10 @@ private:
     struct NoLogging
     {
     };
+    //! @brief FSM event. Standby.
+    struct Standby
+    {
+    };
     //! @brief FSM event. Relaunch.
     struct Relaunch
     {
@@ -290,6 +295,8 @@ private:
     void startLogging();
     //! @brief Stop logging.
     void stopLogging();
+    //! @brief Do toggle.
+    void doToggle();
     //! @brief Do rollback.
     void doRollback();
     //! @brief Check whether the log file is opened.
@@ -309,9 +316,12 @@ private:
         Row< State::idle ,  GoLogging  , State::work  , &Log::startLogging , &Log::isLogFileOpen  >,
         Row< State::work ,  CloseFile  , State::idle  , &Log::closeLogFile                        >,
         Row< State::idle ,  NoLogging  , State::done  , &Log::stopLogging  , &Log::isLogFileClose >,
-        Row< State::init ,  Relaunch   , State::init  , &Log::doRollback                          >,
-        Row< State::idle ,  Relaunch   , State::init  , &Log::doRollback                          >,
-        Row< State::work ,  Relaunch   , State::init  , &Log::doRollback                          >
+        Row< State::init ,  Standby    , State::hold  , &Log::doToggle                            >,
+        Row< State::idle ,  Standby    , State::hold  , &Log::doToggle                            >,
+        Row< State::work ,  Standby    , State::hold  , &Log::doToggle                            >,
+        Row< State::done ,  Standby    , State::hold  , &Log::doToggle                            >,
+        Row< State::work ,  Relaunch   , State::init  , &Log::doRollback                          >,
+        Row< State::hold ,  Relaunch   , State::init  , &Log::doRollback                          >
         // --------------+-------------+--------------+--------------------+-----------------------
         >;
     // clang-format on

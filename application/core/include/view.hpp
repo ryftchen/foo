@@ -135,7 +135,8 @@ public:
         init,
         idle,
         work,
-        done
+        done,
+        hold
     };
 
     //! @brief Get the View instance.
@@ -264,7 +265,7 @@ private:
     static constexpr std::uint32_t maxViewNumOfLines{20};
 
     //! @brief Maximum number of times to wait for the viewer to change to the target state.
-    static constexpr std::uint16_t maxTimesOfWaitViewer{100};
+    static constexpr std::uint16_t maxTimesOfWaitViewer{20};
     //! @brief Time interval (ms) to wait for the viewer to change to the target state.
     static constexpr std::uint16_t intervalOfWaitViewer{10};
     //! @brief Maximum length of the message.
@@ -298,6 +299,10 @@ private:
     struct NoViewing
     {
     };
+    //! @brief FSM event. Standby.
+    struct Standby
+    {
+    };
     //! @brief FSM event. Relaunch.
     struct Relaunch
     {
@@ -310,6 +315,8 @@ private:
     void startViewing();
     //! @brief Stop viewing.
     void stopViewing();
+    //! @brief Do toggle.
+    void doToggle();
     //! @brief Do rollback.
     void doRollback();
     // clang-format off
@@ -321,9 +328,12 @@ private:
         Row< State::idle , GoViewing     , State::work  , &View::startViewing                             >,
         Row< State::work , DestroyServer , State::idle  , &View::destroyViewServer                        >,
         Row< State::idle , NoViewing     , State::done  , &View::stopViewing                              >,
-        Row< State::init , Relaunch      , State::init  , &View::doRollback                               >,
-        Row< State::idle , Relaunch      , State::init  , &View::doRollback                               >,
-        Row< State::work , Relaunch      , State::init  , &View::doRollback                               >
+        Row< State::init , Standby       , State::hold  , &View::doToggle                                 >,
+        Row< State::idle , Standby       , State::hold  , &View::doToggle                                 >,
+        Row< State::work , Standby       , State::hold  , &View::doToggle                                 >,
+        Row< State::done , Standby       , State::hold  , &View::doToggle                                 >,
+        Row< State::work , Relaunch      , State::init  , &View::doRollback                               >,
+        Row< State::hold , Relaunch      , State::init  , &View::doRollback                               >
         // --------------+---------------+--------------+--------------------------+-----------------------
         >;
     // clang-format on

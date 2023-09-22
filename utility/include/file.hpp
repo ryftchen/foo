@@ -82,7 +82,6 @@ void fdLock(T& file, const LockMode mode)
               operate = (LockMode::read == mode ? LOCK_SH : LOCK_EX) | LOCK_NB;
     if (::flock(fd, operate))
     {
-        file.close();
         throw std::runtime_error("Failed to lock FD.");
     }
 }
@@ -96,7 +95,6 @@ void fdUnlock(T& file)
     const int fd = static_cast<::__gnu_cxx::stdio_filebuf<char>* const>(file.rdbuf())->fd();
     if (::flock(fd, LOCK_UN))
     {
-        file.close();
         throw std::runtime_error("Failed to unlock FD.");
     }
 }
@@ -108,5 +106,5 @@ extern void closeFile(std::ofstream& ofs);
 extern std::list<std::string> getFileContents(
     const std::string& filename,
     const bool reverse = false,
-    const std::uint32_t totalRows = 100);
+    const std::uint32_t totalRows = 1000);
 } // namespace utility::file

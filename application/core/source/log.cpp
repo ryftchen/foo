@@ -81,6 +81,9 @@ void Log::runLogger()
         {
             LOG_ERR << error.what() << " Expected logger state: " << expectedState
                     << ", current logger state: " << State(currentState()) << '.';
+            processEvent(Standby());
+
+            checkIfExceptedFSMState(State::hold);
             if (!awaitNotificationAndCheckForRollback())
             {
                 return;
@@ -91,32 +94,14 @@ void Log::runLogger()
 
 void Log::waitToStart()
 {
-    utility::time::BlockingTimer expiryTimer;
-    std::uint16_t waitCount = 0;
-    State targetState = State::idle;
-    std::string errorLog = "The logger did not initialize successfully...";
-    const auto checkState = [&]()
+    while (!((currentState() == State::idle) && !rollbackRequest.load()))
     {
-        if ((currentState() == targetState) && !rollbackRequest.load())
+        if ((currentState() == State::hold) && !rollbackRequest.load())
         {
-            expiryTimer.reset();
+            LOG_ERR << "The logger did not initialize successfully...";
+            return;
         }
-        else
-        {
-            ++waitCount;
-        }
-
-        if (maxTimesOfWaitLogger == waitCount)
-        {
-            LOG_ERR << errorLog;
-            expiryTimer.reset();
-        }
-    };
-
-    expiryTimer.set(checkState, intervalOfWaitLogger);
-    if (maxTimesOfWaitLogger == waitCount)
-    {
-        return;
+        utility::time::millisecondLevelSleep(intervalOfWaitLogger);
     }
 
     if (std::unique_lock<std::mutex> lock(mtx); true)
@@ -127,10 +112,27 @@ void Log::waitToStart()
         cv.notify_one();
     }
 
-    waitCount = 0;
-    targetState = State::work;
-    errorLog = "The logger did not start properly...";
-    expiryTimer.set(checkState, maxTimesOfWaitLogger);
+    utility::time::BlockingTimer expiryTimer;
+    std::uint16_t waitCount = 0;
+    expiryTimer.set(
+        [this, &expiryTimer, &waitCount]()
+        {
+            if ((currentState() == State::work) && !rollbackRequest.load())
+            {
+                expiryTimer.reset();
+            }
+            else
+            {
+                ++waitCount;
+            }
+
+            if (maxTimesOfWaitLogger == waitCount)
+            {
+                LOG_ERR << "The logger did not start properly...";
+                expiryTimer.reset();
+            }
+        },
+        intervalOfWaitLogger);
 }
 
 void Log::waitToStop()
@@ -145,27 +147,25 @@ void Log::waitToStop()
 
     utility::time::BlockingTimer expiryTimer;
     std::uint16_t waitCount = 0;
-    const State targetState = State::done;
-    const std::string errorLog = "The logger did not stop properly...";
-    const auto checkState = [&]()
-    {
-        if ((currentState() == targetState) && !rollbackRequest.load())
+    expiryTimer.set(
+        [this, &expiryTimer, &waitCount]()
         {
-            expiryTimer.reset();
-        }
-        else
-        {
-            ++waitCount;
-        }
+            if ((currentState() == State::done) && !rollbackRequest.load())
+            {
+                expiryTimer.reset();
+            }
+            else
+            {
+                ++waitCount;
+            }
 
-        if (maxTimesOfWaitLogger == waitCount)
-        {
-            LOG_ERR << errorLog;
-            expiryTimer.reset();
-        }
-    };
-
-    expiryTimer.set(checkState, intervalOfWaitLogger);
+            if (maxTimesOfWaitLogger == waitCount)
+            {
+                LOG_ERR << "The logger did not stop properly...";
+                expiryTimer.reset();
+            }
+        },
+        intervalOfWaitLogger);
 }
 
 void Log::requestToRollback()
@@ -287,6 +287,10 @@ void Log::stopLogging()
     }
 }
 
+void Log::doToggle()
+{
+}
+
 void Log::doRollback()
 {
     std::unique_lock<std::mutex> lock(mtx);
@@ -299,11 +303,20 @@ void Log::doRollback()
 
     if (ofs.is_open())
     {
+        namespace file = utility::file;
+        try
+        {
+            file::fdLock(ofs, file::LockMode::write);
+        }
+        catch (...)
+        {
+            return;
+        }
+
         closeLogFile();
         tryToCreateLogFolder();
-
-        auto tempOfs = utility::file::openFile(filePath, true);
-        utility::file::closeFile(tempOfs);
+        auto tempOfs = file::openFile(filePath, true);
+        file::closeFile(tempOfs);
     }
 }
 
@@ -356,6 +369,9 @@ std::ostream& operator<<(std::ostream& os, const Log::State state)
             break;
         case Log::State::done:
             os << "DONE";
+            break;
+        case Log::State::hold:
+            os << "HOLD";
             break;
         default:
             os << "UNKNOWN: " << static_cast<std::underlying_type_t<Log::State>>(state);
