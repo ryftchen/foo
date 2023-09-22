@@ -72,7 +72,7 @@ private:
 };
 
 //! @brief FD lock operation
-//! @tparam T type of file stream
+//! @tparam T - type of file stream
 //! @param file - file stream
 //! @param mode - lock mode
 template <typename T>
@@ -87,7 +87,7 @@ void fdLock(T& file, const LockMode mode)
 }
 
 //! @brief FD unlock operation
-//! @tparam T type of file stream
+//! @tparam T - type of file stream
 //! @param file - file stream
 template <typename T>
 void fdUnlock(T& file)

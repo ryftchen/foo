@@ -396,7 +396,7 @@ public:
     //! @brief Construct a new Singleton object.
     Singleton(Singleton const&) = delete;
     //! @brief The operator (=) overloading of Singleton class.
-    //! @return reference of Singleton object
+    //! @return reference of the Singleton object
     Singleton& operator=(Singleton const&) = delete;
 
     //! @brief Get the instance of the singleton.

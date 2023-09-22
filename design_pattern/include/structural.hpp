@@ -371,8 +371,8 @@ public:
     //! @brief Destroy the FlyweightFactory object.
     ~FlyweightFactory();
 
-    //! @brief Get the flyweight by key value.
-    //! @param key - key value
+    //! @brief Get the flyweight by key.
+    //! @param key - key of the flyweight
     //! @return flyweight
     std::unique_ptr<Flyweight>& getFlyweight(const int key);
 

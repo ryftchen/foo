@@ -59,7 +59,7 @@ public:
     virtual ~Output() = default;
 
     //! @brief Flush the output stream.
-    //! @return reference of output stream object, which is on string based
+    //! @return reference of the output stream object, which is on string based
     std::ostringstream& flush();
     //! @brief The pre-order traversal of the binary search tree.
     //! @param tree - tree root, the target binary search tree has this node as the root node
@@ -72,7 +72,7 @@ public:
     void postorderBSTree(BSTree tree);
     //! @brief Print the binary search tree.
     //! @param tree - tree root, the target binary search tree has this node as the root node
-    //! @param key - the key value of the node
+    //! @param key - key of the node
     //! @param direction - node type, the left is -1, the root is 0, and the right is 1
     void printBSTree(BSTree tree, const Type key, int direction);
 
@@ -132,7 +132,7 @@ public:
     virtual ~Output() = default;
 
     //! @brief Flush the output stream.
-    //! @return reference of output stream object, which is on string based
+    //! @return reference of the output stream object, which is on string based
     std::ostringstream& flush();
     //! @brief The pre-order traversal of the AVL tree.
     //! @param tree - tree root, the target AVL tree has this node as the root node
@@ -145,7 +145,7 @@ public:
     void postorderAVLTree(AVLTree tree);
     //! @brief Print the AVL tree.
     //! @param tree - tree root, the target AVL tree has this node as the root node
-    //! @param key - the key value of the node
+    //! @param key - key of the node
     //! @param direction - node type, the left is -1, the root is 0, and the right is 1
     void printAVLTree(AVLTree tree, const Type key, const int direction);
 
@@ -199,7 +199,7 @@ public:
     virtual ~Output() = default;
 
     //! @brief Flush the output stream.
-    //! @return reference of output stream object, which is on string based
+    //! @return reference of the output stream object, which is on string based
     std::ostringstream& flush();
     //! @brief The pre-order traversal of the splay tree.
     //! @param tree - tree root, the target splay tree has this node as the root node
@@ -212,7 +212,7 @@ public:
     void postorderSplayTree(SplayTree tree);
     //! @brief Print the splay tree.
     //! @param tree - tree root, the target splay tree has this node as the root node
-    //! @param key - the key value of the node
+    //! @param key - key of the node
     //! @param direction - node type, the left is -1, the root is 0, and the right is 1
     void printSplayTree(SplayTree tree, const Type key, const int direction);
 

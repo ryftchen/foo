@@ -20,7 +20,6 @@ namespace utility::argument
 {
 //! @brief Confirm container traits. Value is false.
 //! @tparam T - type to be confirmed
-//! @tparam typename - valid type or expression
 template <typename T, typename = void>
 struct HasContainerTraits : std::false_type
 {
@@ -54,7 +53,6 @@ static constexpr bool isContainer = HasContainerTraits<T>::value;
 
 //! @brief Confirm streamable traits. Value is false.
 //! @tparam T - type to be confirmed
-//! @tparam typename - valid type or expression
 template <typename T, typename = void>
 struct HasStreamableTraits : std::false_type
 {
@@ -228,56 +226,56 @@ public:
 
     //! @brief Set help message.
     //! @param content - help message content
-    //! @return reference of Register object
+    //! @return reference of the Register object
     Register& help(const std::string& content);
     //! @brief Set metavar message.
     //! @param content - metavar message content
-    //! @return reference of Register object
+    //! @return reference of the Register object
     Register& metavar(const std::string& content);
     //! @brief Set default value.
     //! @tparam T - type of default value
     //! @param value - default value
-    //! @return reference of Register object
+    //! @return reference of the Register object
     template <typename T>
     Register& defaultVal(T&& value);
     //! @brief Set default value.
     //! @param value - default value
-    //! @return reference of Register object
+    //! @return reference of the Register object
     Register& defaultVal(const char* value);
     //! @brief Set implicit value
     //! @param value - implicit value
-    //! @return reference of Register object
+    //! @return reference of the Register object
     Register& implicitVal(std::any value);
     //! @brief Set the argument property to be required.
-    //! @return reference of Register object
+    //! @return reference of the Register object
     Register& required();
     //! @brief Set the argument property to be appending.
-    //! @return reference of Register object
+    //! @return reference of the Register object
     Register& appending();
     //! @brief Set the argument property to be remaining.
-    //! @return reference of Register object
+    //! @return reference of the Register object
     Register& remaining();
     //! @brief The action of specific arguments.
     //! @tparam Func - type of callable function
     //! @tparam Args - type of bound arguments
     //! @param callable - callable function
     //! @param boundArgs - bound arguments
-    //! @return reference of Register object
+    //! @return reference of the Register object
     template <class Func, class... Args>
     auto action(Func&& callable, Args&&... boundArgs)
         -> std::enable_if_t<std::is_invocable_v<Func, Args..., const std::string&>, Register&>;
     //! @brief Set number of arguments.
     //! @param num - number of arguments
-    //! @return reference of Register object
+    //! @return reference of the Register object
     Register& argsNum(const std::size_t num);
     //! @brief Set minimum number and maximum number of arguments.
     //! @param numMin - minimum number
     //! @param numMax - maximum number
-    //! @return reference of Register object
+    //! @return reference of the Register object
     Register& argsNum(const std::size_t numMin, const std::size_t numMax);
     //! @brief Set number of arguments with pattern.
     //! @param pattern - argument pattern
-    //! @return reference of Register object
+    //! @return reference of the Register object
     Register& argsNum(const ArgsNumPattern pattern);
     //! @brief Consume arguments.
     //! @tparam Iterator - type of argument iterator
@@ -391,7 +389,7 @@ private:
         //! @brief The operator (<<) overloading of the ArgsNumRange class.
         //! @param os - output stream object
         //! @param range - specific ArgsNumRange object
-        //! @return reference of output stream object
+        //! @return reference of the output stream object
         friend std::ostream& operator<<(std::ostream& os, const ArgsNumRange& range)
         {
             if (range.min == range.max)
@@ -696,10 +694,10 @@ public:
     Argument(Argument&&) noexcept = default;
     //! @brief The operator (=) overloading of Argument class.
     //! @param arg - the old object for copy assignment operator
-    //! @return reference of Argument object
+    //! @return reference of the Argument object
     Argument& operator=(const Argument& arg);
     //! @brief The operator (=) overloading of Argument class.
-    //! @return reference of Argument object
+    //! @return reference of the Argument object
     Argument& operator=(Argument&&) = default;
     //! @brief The operator (bool) overloading of Argument class.
     explicit operator bool() const;
@@ -707,12 +705,12 @@ public:
     //! @brief Add a single argument.
     //! @tparam Args - type of argument
     //! @param fewArgs - argument name
-    //! @return reference of Register object
+    //! @return reference of the Register object
     template <typename... TArgs>
     Register& addArgument(TArgs... fewArgs);
     //! @brief Add a descrText.
     //! @param text - descrText text
-    //! @return reference of Register object
+    //! @return reference of the Register object
     Argument& addDescription(const std::string& text);
     //! @brief Get the Register or Argument instance by name.
     //! @tparam T - type of instance
@@ -753,7 +751,7 @@ public:
     [[nodiscard]] inline auto isSubCommandUsed(const Argument& subParser) const;
     //! @brief The operator ([]) overloading of Register class.
     //! @param argName - target argument name
-    //! @return reference of Register object
+    //! @return reference of the Register object
     Register& operator[](const std::string_view argName) const;
     //! @brief Get the help message content.
     //! @return help message content

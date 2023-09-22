@@ -10,9 +10,9 @@ namespace date_structure::tree
 {
 namespace bs
 {
-//! @brief Get the node where the minimum key value is located in the binary search tree.
+//! @brief Get the node where the minimum key is located in the binary search tree.
 //! @param tree - tree root, the target binary search tree has this node as the root node
-//! @return node where the minimum key value is located
+//! @return node where the minimum key is located
 Node* getMinimum(BSTree tree)
 {
     if (nullptr == tree)
@@ -28,9 +28,9 @@ Node* getMinimum(BSTree tree)
     return tree;
 }
 
-//! @brief Get the node where the maximum key value is located in the binary search tree.
+//! @brief Get the node where the maximum key is located in the binary search tree.
 //! @param tree - tree root, the target binary search tree has this node as the root node
-//! @return node where the maximum key value is located
+//! @return node where the maximum key is located
 Node* getMaximum(BSTree tree)
 {
     if (nullptr == tree)
@@ -47,7 +47,7 @@ Node* getMaximum(BSTree tree)
 }
 
 //! @brief Get the predecessor node of the current node.
-//!        The precursor of a node is the node that has the maximum key value in that node's left subtree.
+//!        The precursor of a node is the node that has the maximum key in that node's left subtree.
 //! @param x - current node
 //! @return predecessor node
 Node* getPredecessor(Node* x)
@@ -68,7 +68,7 @@ Node* getPredecessor(Node* x)
 }
 
 //! @brief Get the successor node of the current node.
-//!        The precursor of a node is the node that has the minimum key value in that node's right subtree.
+//!        The precursor of a node is the node that has the minimum key in that node's right subtree.
 //! @param x - current node
 //! @return successor node
 Node* getSuccessor(Node* x)
@@ -89,7 +89,7 @@ Node* getSuccessor(Node* x)
 }
 
 //! @brief Create a node of the binary search tree.
-//! @param key - the key value of the node to be created
+//! @param key - key of the node to be created
 //! @param parent - the parent node of the node to be created
 //! @param left - the left child node of the node to be created
 //! @param right - the right child node of the node to be created
@@ -110,7 +110,7 @@ Node* createNode(const Type key, Node* parent, Node* left, Node* right)
     return p;
 }
 
-//! @brief Insert target node into the binary search tree. Allow inserting node with the same key value.
+//! @brief Insert target node into the binary search tree. Allow inserting node with the same key.
 //! @param tree - tree root, the target binary search tree has this node as the root node
 //! @param z - target node
 //! @return root node after inserting
@@ -208,10 +208,10 @@ Node* deleteNode(BSTree tree, Node* z)
     return tree;
 }
 
-//! @brief Search the node of binary search tree by key value.
+//! @brief Search the node of binary search tree by key.
 //! @param tree - tree root, the target binary search tree has this node as the root node
-//! @param key - the key value of the node
-//! @return node where the key value is located
+//! @param key - key of the node
+//! @return node where the key is located
 Node* bsTreeSearch(BSTree tree, const Type key)
 {
     if ((nullptr == tree) || (tree->key == key))
@@ -229,9 +229,9 @@ Node* bsTreeSearch(BSTree tree, const Type key)
     }
 }
 
-//! @brief Insert target node into the binary search tree. Allow inserting node with the same key value.
+//! @brief Insert target node into the binary search tree. Allow inserting node with the same key.
 //! @param tree - tree root, the target binary search tree has this node as the root node
-//! @param key - the key value of the target node
+//! @param key - key of the target node
 //! @return root node after inserting
 Node* bsTreeInsert(BSTree tree, const Type key)
 {
@@ -246,7 +246,7 @@ Node* bsTreeInsert(BSTree tree, const Type key)
 
 //! @brief Delete target node into the binary search tree.
 //! @param tree - tree root, the target binary search tree has this node as the root node
-//! @param key - the key value of the target node
+//! @param key - key of the target node
 //! @return root node after deleting
 Node* bsTreeDelete(BSTree tree, const Type key)
 {
@@ -344,9 +344,9 @@ int getHeight(AVLTree tree)
     return ((nullptr == tree) ? 0 : ((Node*)tree)->height);
 }
 
-//! @brief Get the node where the Minimum key value is located in the AVL tree.
+//! @brief Get the node where the Minimum key is located in the AVL tree.
 //! @param tree - tree root, the target AVL tree has this node as the root node
-//! @return node where the Minimum key value is located
+//! @return node where the minimum key is located
 Node* getMinimum(AVLTree tree)
 {
     if (nullptr == tree)
@@ -362,9 +362,9 @@ Node* getMinimum(AVLTree tree)
     return tree;
 }
 
-//! @brief Get the node where the maximum key value is located in the AVL tree.
+//! @brief Get the node where the maximum key is located in the AVL tree.
 //! @param tree - tree root, the target AVL tree has this node as the root node
-//! @return node where the maximum key value is located
+//! @return node where the maximum key is located
 Node* getMaximum(AVLTree tree)
 {
     if (nullptr == tree)
@@ -430,7 +430,7 @@ Node* rightLeftRotation(AVLTree k1)
 }
 
 //! @brief Create a node of the AVL tree.
-//! @param key - the key value of the node to be created
+//! @param key - key of the node to be created
 //! @param left - the left child node of the node to be created
 //! @param right - the right child node of the node to be created
 //! @return new node after creating
@@ -521,10 +521,10 @@ Node* deleteNode(AVLTree tree, Node* z)
     return tree;
 }
 
-//! @brief Search the node of AVL tree by key value.
+//! @brief Search the node of AVL tree by key.
 //! @param tree - tree root, the target AVL tree has this node as the root node
-//! @param key - the key value of the node
-//! @return node where the key value is located
+//! @param key - key of the node
+//! @return node where the key is located
 Node* avlTreeSearch(AVLTree tree, const Type key)
 {
     if ((nullptr == tree) || (tree->key == key))
@@ -542,9 +542,9 @@ Node* avlTreeSearch(AVLTree tree, const Type key)
     }
 }
 
-//! @brief Insert target node into the AVL tree. Not allow inserting node with the same key value.
+//! @brief Insert target node into the AVL tree. Not allow inserting node with the same key.
 //! @param tree - tree root, the target AVL tree has this node as the root node
-//! @param key - the key value of the target node
+//! @param key - key of the target node
 //! @return root node after inserting
 Node* avlTreeInsert(AVLTree tree, const Type key)
 {
@@ -594,7 +594,7 @@ Node* avlTreeInsert(AVLTree tree, const Type key)
 
 //! @brief Delete target node into the AVL tree.
 //! @param tree - tree root, the target AVL tree has this node as the root node
-//! @param key - the key value of the target node
+//! @param key - key of the target node
 //! @return root node after deleting
 Node* avlTreeDelete(AVLTree tree, const Type key)
 {
@@ -684,9 +684,9 @@ void Output::printAVLTree(AVLTree tree, const Type key, const int direction)
 
 namespace splay
 {
-//! @brief Get the node where the minimum key value is located in the splay tree.
+//! @brief Get the node where the minimum key is located in the splay tree.
 //! @param tree - tree root, the target splay tree has this node as the root node
-//! @return node where the minimum key value is located
+//! @return node where the minimum key is located
 Node* getMinimum(SplayTree tree)
 {
     if (nullptr == tree)
@@ -702,9 +702,9 @@ Node* getMinimum(SplayTree tree)
     return tree;
 }
 
-//! @brief Get the node where the maximum key value is located in the splay tree.
+//! @brief Get the node where the maximum key is located in the splay tree.
 //! @param tree - tree root, the target splay tree has this node as the root node
-//! @return node where the maximum key value is located
+//! @return node where the maximum key is located
 Node* getMaximum(SplayTree tree)
 {
     if (nullptr == tree)
@@ -721,7 +721,7 @@ Node* getMaximum(SplayTree tree)
 }
 
 //! @brief Create a node of the splay tree.
-//! @param key - the key value of the node to be created
+//! @param key - key of the node to be created
 //! @param left - the left child node of the node to be created
 //! @param right - the right child node of the node to be created
 //! @return new node after creating
@@ -740,7 +740,7 @@ Node* createNode(const Type key, Node* left, Node* right)
     return p;
 }
 
-//! @brief Insert target node into the splay tree. Not splay. Not allow inserting node with the same key value.
+//! @brief Insert target node into the splay tree. Not splay. Not allow inserting node with the same key.
 //! @param tree - tree root, the target splay tree has this node as the root node
 //! @param z - target node
 //! @return root node after inserting
@@ -783,10 +783,10 @@ Node* insertNode(SplayTree tree, Node* z)
     return tree;
 }
 
-//! @brief Search the node of splay tree by key value.
+//! @brief Search the node of splay tree by key.
 //! @param tree - tree root, the target splay tree has this node as the root node
-//! @param key - the key value of the node
-//! @return node where the key value is located
+//! @param key - key of the node
+//! @return node where the key is located
 Node* splayTreeSearch(SplayTree tree, const Type key)
 {
     if ((nullptr == tree) || (key == tree->key))
@@ -806,7 +806,7 @@ Node* splayTreeSearch(SplayTree tree, const Type key)
 
 //! @brief Splay target node in the splay tree. Make to be the root node.
 //! @param tree - tree root, the target splay tree has this node as the root node
-//! @param key - the key value of the target node
+//! @param key - key of the target node
 //! @return root node after splaying
 Node* splayTreeSplay(SplayTree tree, const Type key)
 {
@@ -876,9 +876,9 @@ Node* splayTreeSplay(SplayTree tree, const Type key)
     return tree;
 }
 
-//! @brief Insert target node into the splay tree. Not allow inserting node with the same key value.
+//! @brief Insert target node into the splay tree. Not allow inserting node with the same key.
 //! @param tree - tree root, the target splay tree has this node as the root node
-//! @param key - the key value of the target node
+//! @param key - key of the target node
 //! @return root node after inserting
 Node* splayTreeInsert(SplayTree tree, const Type key)
 {
@@ -896,7 +896,7 @@ Node* splayTreeInsert(SplayTree tree, const Type key)
 
 //! @brief Delete target node into the splay tree.
 //! @param tree - tree root, the target splay tree has this node as the root node
-//! @param key - the key value of the target node
+//! @param key - key of the target node
 //! @return root node after deleting
 Node* splayTreeDelete(SplayTree tree, const Type key)
 {

@@ -43,7 +43,7 @@ using LinearInstance = DataStructureTask::LinearInstance;
 using TreeInstance = DataStructureTask::TreeInstance;
 
 //! @brief Get the data structure task.
-//! @return reference of DataStructureTask object
+//! @return reference of the DataStructureTask object
 DataStructureTask& getTask()
 {
     static DataStructureTask task{};

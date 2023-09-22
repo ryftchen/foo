@@ -80,7 +80,7 @@ public:
     virtual ~Packet() = default;
 
     //! @brief Write data to the packet buffer.
-    //! @tparam T type of data to be written
+    //! @tparam T - type of data to be written
     //! @param data - original data
     //! @return whether it is continuously writable
     template <typename T>
@@ -91,7 +91,7 @@ public:
     //! @return whether it is continuously writable
     bool write(const void* dst, const std::uint32_t offset);
     //! @brief Read data to the packet buffer.
-    //! @tparam T type of data to be read
+    //! @tparam T - type of data to be read
     //! @param data - original data
     //! @return whether it is continuously readable
     template <typename T>
@@ -125,7 +125,7 @@ public:
     //! @brief Construct a new View object.
     View(const View&) = delete;
     //! @brief The operator (=) overloading of View class.
-    //! @return reference of View object
+    //! @return reference of the View object
     View& operator=(const View&) = delete;
 
     friend class FSM<View>;
@@ -140,7 +140,7 @@ public:
     };
 
     //! @brief Get the View instance.
-    //! @return reference of View object
+    //! @return reference of the View object
     static View& getInstance();
     //! @brief Interface for running viewer.
     void runViewer();

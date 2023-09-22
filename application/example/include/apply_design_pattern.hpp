@@ -119,7 +119,7 @@ protected:
     //! @brief The operator (<<) overloading of the Category enum.
     //! @param os - output stream object
     //! @param cat - the specific value of Category enum
-    //! @return reference of output stream object
+    //! @return reference of the output stream object
     friend std::ostream& operator<<(std::ostream& os, const Category cat)
     {
         switch (cat)

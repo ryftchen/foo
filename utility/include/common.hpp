@@ -83,7 +83,7 @@ struct Join
     static constexpr std::string_view value{array.data(), array.size() - 1};
 };
 //! @brief Get the result of splicing strings.
-//! @tparam target - strings to be spliced
+//! @tparam Strings - target strings to be spliced
 template <const std::string_view&... Strings>
 static constexpr auto joinStr = Join<Strings...>::value;
 
