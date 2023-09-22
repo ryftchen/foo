@@ -235,6 +235,9 @@ void View::runViewer()
         {
             LOG_ERR << error.what() << " Expected viewer state: " << expectedState
                     << ", current viewer state: " << State(currentState()) << '.';
+            processEvent(Standby());
+
+            checkIfExceptedFSMState(State::hold);
             if (!awaitNotificationAndCheckForRollback())
             {
                 return;
@@ -245,32 +248,14 @@ void View::runViewer()
 
 void View::waitToStart()
 {
-    utility::time::BlockingTimer expiryTimer;
-    std::uint16_t waitCount = 0;
-    State targetState = State::idle;
-    std::string errorLog = "The viewer did not initialize successfully...";
-    const auto checkState = [&]()
+    while (!((currentState() == State::idle) && !rollbackRequest.load()))
     {
-        if ((currentState() == targetState) && !rollbackRequest.load())
+        if ((currentState() == State::hold) && !rollbackRequest.load())
         {
-            expiryTimer.reset();
+            LOG_ERR << "The viewer did not initialize successfully...";
+            return;
         }
-        else
-        {
-            ++waitCount;
-        }
-
-        if (maxTimesOfWaitViewer == waitCount)
-        {
-            LOG_ERR << errorLog;
-            expiryTimer.reset();
-        }
-    };
-
-    expiryTimer.set(checkState, intervalOfWaitViewer);
-    if (maxTimesOfWaitViewer == waitCount)
-    {
-        return;
+        utility::time::millisecondLevelSleep(intervalOfWaitViewer);
     }
 
     if (std::unique_lock<std::mutex> lock(mtx); true)
@@ -281,10 +266,27 @@ void View::waitToStart()
         cv.notify_one();
     }
 
-    waitCount = 0;
-    targetState = State::work;
-    errorLog = "The viewer did not start properly...";
-    expiryTimer.set(checkState, intervalOfWaitViewer);
+    utility::time::BlockingTimer expiryTimer;
+    std::uint16_t waitCount = 0;
+    expiryTimer.set(
+        [this, &expiryTimer, &waitCount]()
+        {
+            if ((currentState() == State::work) && !rollbackRequest.load())
+            {
+                expiryTimer.reset();
+            }
+            else
+            {
+                ++waitCount;
+            }
+
+            if (maxTimesOfWaitViewer == waitCount)
+            {
+                LOG_ERR << "The viewer did not start properly...";
+                expiryTimer.reset();
+            }
+        },
+        intervalOfWaitViewer);
 }
 
 void View::waitToStop()
@@ -299,27 +301,25 @@ void View::waitToStop()
 
     utility::time::BlockingTimer expiryTimer;
     std::uint16_t waitCount = 0;
-    const State targetState = State::done;
-    const std::string errorLog = "The viewer did not stop properly...";
-    const auto checkState = [&]()
-    {
-        if ((currentState() == targetState) && !rollbackRequest.load())
+    expiryTimer.set(
+        [this, &expiryTimer, &waitCount]()
         {
-            expiryTimer.reset();
-        }
-        else
-        {
-            ++waitCount;
-        }
+            if ((currentState() == State::work) && !rollbackRequest.load())
+            {
+                expiryTimer.reset();
+            }
+            else
+            {
+                ++waitCount;
+            }
 
-        if (maxTimesOfWaitViewer == waitCount)
-        {
-            LOG_ERR << errorLog;
-            expiryTimer.reset();
-        }
-    };
-
-    expiryTimer.set(checkState, intervalOfWaitViewer);
+            if (maxTimesOfWaitViewer == waitCount)
+            {
+                LOG_ERR << "The viewer did not stop properly...";
+                expiryTimer.reset();
+            }
+        },
+        intervalOfWaitViewer);
 }
 
 void View::requestToRollback()
@@ -691,6 +691,10 @@ void View::stopViewing()
     rollbackRequest.store(false);
 }
 
+void View::doToggle()
+{
+}
+
 void View::doRollback()
 {
     std::unique_lock<std::mutex> lock(mtx);
@@ -746,6 +750,9 @@ std::ostream& operator<<(std::ostream& os, const View::State state)
             break;
         case View::State::done:
             os << "DONE";
+            break;
+        case View::State::hold:
+            os << "HOLD";
             break;
         default:
             os << "UNKNOWN: " << static_cast<std::underlying_type_t<View::State>>(state);
