@@ -74,7 +74,7 @@ class TCPSocket : public Socket
 public:
     //! @brief Construct a new TCPSocket object.
     //! @param socketId - socket id
-    explicit TCPSocket(const int socketId = -1) : Socket(tcp, socketId) {}
+    explicit TCPSocket(const int socketId = -1) : Socket(tcp, socketId){};
 
     //! @brief Set the transport information.
     //! @param addr - transport information

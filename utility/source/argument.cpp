@@ -501,7 +501,7 @@ char Argument::getAnyValidPrefixChar() const
 
 std::vector<std::string> Argument::preprocessArguments(const std::vector<std::string>& rawArguments) const
 {
-    std::vector<std::string> arguments{};
+    std::vector<std::string> arguments;
     for (const auto& arg : rawArguments)
     {
         const auto argumentStartsWithPrefixChars = [this](const std::string& str)

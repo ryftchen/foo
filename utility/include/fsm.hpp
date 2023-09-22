@@ -267,7 +267,7 @@ private:
             invokeAsBinaryFunc(action, self, event);
         }
         //! @brief Process the specific event by default.
-        static constexpr void processEvent(std::nullptr_t /*null*/, Derived& /*self*/, const Event& /*event*/) {}
+        static constexpr void processEvent(std::nullptr_t /*null*/, Derived& /*self*/, const Event& /*event*/){};
 
         //! @brief Check guard condition.
         //! @tparam Guard - type of guard condition
