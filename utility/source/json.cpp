@@ -84,7 +84,7 @@ JSON parseObject(const std::string& fmt, std::size_t& offset)
         consumeWhitespace(fmt, offset);
         if (':' != fmt.at(offset))
         {
-            throw std::runtime_error("Object in JSON: Expected colon, found '" + std::string{fmt.at(offset)} + "'.");
+            throw std::runtime_error("JSON object: Expected colon, found '" + std::string{fmt.at(offset)} + "'.");
         }
         consumeWhitespace(fmt, ++offset);
         JSON value = parseNext(fmt, offset);
@@ -103,7 +103,7 @@ JSON parseObject(const std::string& fmt, std::size_t& offset)
         }
         else
         {
-            throw std::runtime_error("Object in JSON: Expected comm, found '" + std::string{fmt.at(offset)} + "'.");
+            throw std::runtime_error("JSON object: Expected comma, found '" + std::string{fmt.at(offset)} + "'.");
         }
     }
     return object;
@@ -142,8 +142,7 @@ JSON parseArray(const std::string& fmt, std::size_t& offset)
         }
         else
         {
-            throw std::runtime_error(
-                "Array in JSON: Expected ',' or ']', found '" + std::string{fmt.at(offset)} + "'.");
+            throw std::runtime_error("JSON array: Expected ',' or ']', found '" + std::string{fmt.at(offset)} + "'.");
         }
     }
     return array;
@@ -198,7 +197,7 @@ JSON parseString(const std::string& fmt, std::size_t& offset)
                         else
                         {
                             throw std::runtime_error(
-                                "String in JSON: Expected hex character in unicode escape, found '" + std::string{c}
+                                "JSON string: Expected hex character in unicode escape, found '" + std::string{c}
                                 + "'.");
                         }
                     }
@@ -268,7 +267,7 @@ JSON parseNumber(const std::string& fmt, std::size_t& offset)
             else if (!std::isspace(c) && (c != ',') && (c != ']') && (c != '}'))
             {
                 throw std::runtime_error(
-                    "Number in JSON: Expected a number for exponent, found '" + std::string{c} + "'.");
+                    "JSON number: Expected a number for exponent, found '" + std::string{c} + "'.");
             }
             else
             {
@@ -279,7 +278,7 @@ JSON parseNumber(const std::string& fmt, std::size_t& offset)
     }
     else if (!std::isspace(c) && (c != ',') && (c != ']') && (c != '}'))
     {
-        throw std::runtime_error("Number in JSON: Unexpected character'" + std::string{c} + "'.");
+        throw std::runtime_error("JSON number: Unexpected character '" + std::string{c} + "'.");
     }
     --offset;
 
@@ -320,7 +319,7 @@ JSON parseBoolean(const std::string& fmt, std::size_t& offset)
     else
     {
         throw std::runtime_error(
-            "Boolean in JSON: Expected 'true' or 'false', found '" + fmt.substr(offset, falseStr.length()) + "'.");
+            "JSON boolean: Expected 'true' or 'false', found '" + fmt.substr(offset, falseStr.length()) + "'.");
     }
     offset += (boolVal.toBool() ? trueStr.length() : falseStr.length());
     return boolVal;
@@ -334,8 +333,7 @@ JSON parseNull(const std::string& fmt, std::size_t& offset)
     const std::string nullStr = "null";
     if (fmt.substr(offset, nullStr.length()) != nullStr)
     {
-        throw std::runtime_error(
-            "Null in JSON: Expected 'null', found '" + fmt.substr(offset, nullStr.length()) + "'.");
+        throw std::runtime_error("JSON null: Expected 'null', found '" + fmt.substr(offset, nullStr.length()) + "'.");
     }
     offset += nullStr.length();
     return {};
@@ -369,7 +367,7 @@ JSON parseNext(const std::string& fmt, std::size_t& offset)
                 return parseNumber(fmt, offset);
             }
     }
-    throw std::runtime_error("JSON parsed: Unknown starting character '" + std::string{value} + "'.");
+    throw std::runtime_error("JSON syntax error, unknown starting character '" + std::string{value} + "'.");
 }
 
 JSON::JSON(const JSON::Type type) : JSON()
@@ -656,12 +654,13 @@ double JSON::toFloat() const
             }
             catch (const std::exception& error)
             {
-                throw std::runtime_error("JSON parsed: Parsing float failed, " + std::string{error.what()} + ".");
+                throw std::logic_error(
+                    "Failed to convert the string value to float in JSON, " + std::string{error.what()} + '.');
             }
             return parsed;
         }
         default:
-            break;
+            throw std::logic_error("Failed to convert the value to float in JSON.");
     }
     return 0.0;
 }
@@ -685,9 +684,10 @@ long long JSON::toInt() const
             {
                 return parsed;
             }
+            throw std::logic_error("Failed to convert the string value to int in JSON.");
         }
         default:
-            break;
+            throw std::logic_error("Failed to convert the value to int in JSON.");
     }
     return 0;
 }
@@ -719,9 +719,10 @@ bool JSON::toBool() const
             {
                 return parsed;
             }
+            throw std::logic_error("Failed to convert the string value to bool in JSON.");
         }
         default:
-            break;
+            throw std::logic_error("Failed to convert the value to bool in JSON.");
     }
     return false;
 }

@@ -168,7 +168,7 @@ private:
     //! @brief Target expression.
     const Expression& expr;
     //! @brief Random cache.
-    std::vector<double> cache{};
+    std::vector<double> cache;
     //! @brief Sample from the uniform distribution.
     //! @param lower - lower endpoint
     //! @param upper - upper endpoint

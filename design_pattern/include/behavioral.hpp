@@ -98,7 +98,7 @@ class ConcreteCommand : public Command
 public:
     //! @brief Construct a new ConcreteCommand object.
     //! @param receiver - receiver associated with the command
-    explicit ConcreteCommand(const std::shared_ptr<Receiver>& receiver) : receiver(receiver) {}
+    explicit ConcreteCommand(const std::shared_ptr<Receiver>& receiver) : receiver(receiver){};
     //! @brief Destroy the ConcreteCommand object.
     ~ConcreteCommand() override;
 
@@ -168,7 +168,7 @@ class TerminalExpression : public AbstractExpression
 public:
     //! @brief Construct a new TerminalExpression object.
     //! @param value - target value
-    explicit TerminalExpression(const std::string& value) : value(value) {}
+    explicit TerminalExpression(const std::string& value) : value(value){};
     //! @brief Destroy the TerminalExpression object.
     ~TerminalExpression() override = default;
 
@@ -279,7 +279,7 @@ class ConcreteIterator : public Iterator
 public:
     //! @brief Construct a new ConcreteIterator object.
     //! @param list - target collection of items
-    explicit ConcreteIterator(std::shared_ptr<ConcreteAggregate> list) : list(list), index(0) {}
+    explicit ConcreteIterator(std::shared_ptr<ConcreteAggregate> list) : list(list), index(0){};
     //! @brief Destroy the ConcreteIterator object.
     ~ConcreteIterator() override = default;
 
@@ -357,7 +357,7 @@ public:
     //! @brief Construct a new Colleague object.
     //! @param mediator - target mediator
     //! @param id - target id
-    Colleague(const std::shared_ptr<Mediator> mediator, const std::uint32_t id) : mediator(mediator), id(id) {}
+    Colleague(const std::shared_ptr<Mediator> mediator, const std::uint32_t id) : mediator(mediator), id(id){};
     //! @brief Destroy the Colleague object.
     virtual ~Colleague() = default;
 
@@ -385,7 +385,7 @@ public:
     //! @brief Construct a new ConcreteColleague object.
     //! @param mediator - target mediator
     //! @param id - target id
-    ConcreteColleague(const std::shared_ptr<Mediator>& mediator, const std::uint32_t id) : Colleague(mediator, id) {}
+    ConcreteColleague(const std::shared_ptr<Mediator>& mediator, const std::uint32_t id) : Colleague(mediator, id){};
     //! @brief Destroy the ConcreteColleague object.
     ~ConcreteColleague() override = default;
 
@@ -410,7 +410,7 @@ private:
     friend class Originator;
     //! @brief Construct a new Memento object.
     //! @param state - target state
-    explicit Memento(const int state) : state(state) {}
+    explicit Memento(const int state) : state(state){};
 
     //! @brief State of memento.
     int state;
@@ -451,7 +451,7 @@ class CareTaker
 public:
     //! @brief Construct a new CareTaker object.
     //! @param originator - target originator
-    explicit CareTaker(const std::shared_ptr<Originator> originator) : originator(originator) {}
+    explicit CareTaker(const std::shared_ptr<Originator> originator) : originator(originator){};
     //! @brief Destroy the CareTaker object.
     ~CareTaker();
 
@@ -523,7 +523,7 @@ class ConcreteObserver : public Observer
 public:
     //! @brief Construct a new ConcreteObserver object.
     //! @param state - target state of observer
-    explicit ConcreteObserver(const int state) : observerState(state) {}
+    explicit ConcreteObserver(const int state) : observerState(state){};
     //! @brief Destroy the ConcreteObserver object.
     ~ConcreteObserver() override = default;
 
@@ -544,7 +544,7 @@ class ConcreteSubject : public Subject
 {
 public:
     //! @brief Construct a new ConcreteSubject object.
-    ConcreteSubject() : subjectState() {}
+    ConcreteSubject() : subjectState(){};
     //! @brief Destroy the ConcreteSubject object.
     ~ConcreteSubject() override = default;
 
@@ -604,7 +604,7 @@ class Context
 {
 public:
     //! @brief Construct a new Context object.
-    Context() : state() {}
+    Context() : state(){};
     //! @brief Destroy the Context object.
     ~Context();
 
@@ -664,7 +664,7 @@ class Context
 public:
     //! @brief Construct a new Context object.
     //! @param strategy - target strategy
-    explicit Context(std::unique_ptr<Strategy> strategy) : strategy(std::move(strategy)) {}
+    explicit Context(std::unique_ptr<Strategy> strategy) : strategy(std::move(strategy)){};
     //! @brief Destroy the Context object.
     ~Context();
 
