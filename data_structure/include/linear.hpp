@@ -87,7 +87,7 @@ public:
     virtual ~Output() = default;
 
     //! @brief Flush the output stream.
-    //! @return reference of output stream object, which is on string based
+    //! @return reference of the output stream object, which is on string based
     std::ostringstream& flush();
 
 private:

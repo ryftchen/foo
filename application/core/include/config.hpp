@@ -46,7 +46,7 @@ namespace application::config
 //! @brief Default config filename.
 constexpr std::string_view defaultConfigFile = "foo.json";
 
-std::string getFullDefaultConfigPath();
+extern std::string getFullDefaultConfigPath();
 
 //! @brief Configuration.
 class Config
@@ -57,14 +57,14 @@ public:
     //! @brief Construct a new Config object.
     Config(const Config&) = delete;
     //! @brief The operator (=) overloading of Config class.
-    //! @return reference of Config object
+    //! @return reference of the Config object
     Config& operator=(const Config&) = delete;
 
     //! @brief Get the Config instance.
-    //! @return reference of Config object
+    //! @return reference of the Config object
     static Config& getInstance();
     //! @brief Get the data.
-    //! @return reference of data
+    //! @return reference of the data
     utility::json::JSON& getData();
     //! @brief Get config file path.
     //! @return config file path

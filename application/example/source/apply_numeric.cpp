@@ -51,7 +51,7 @@ using IntegralMethod = NumericTask::IntegralMethod;
 using PrimeMethod = NumericTask::PrimeMethod;
 
 //! @brief Get the numeric task.
-//! @return reference of NumericTask object
+//! @return reference of the NumericTask object
 NumericTask& getTask()
 {
     static NumericTask task{};

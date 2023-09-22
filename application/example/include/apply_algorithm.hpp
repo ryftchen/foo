@@ -161,7 +161,7 @@ protected:
     //! @brief The operator (<<) overloading of the Category enum.
     //! @param os - output stream object
     //! @param cat - the specific value of Category enum
-    //! @return reference of output stream object
+    //! @return reference of the output stream object
     friend std::ostream& operator<<(std::ostream& os, const Category cat)
     {
         switch (cat)
@@ -334,7 +334,7 @@ public:
     //! @brief Construct a new TargetBuilder object.
     TargetBuilder(const TargetBuilder&) = delete;
     //! @brief The operator (=) overloading of TargetBuilder class.
-    //! @return reference of TargetBuilder object
+    //! @return reference of the TargetBuilder object
     TargetBuilder& operator=(const TargetBuilder&) = delete;
 
     //! @brief Maximum digit for the target text.
@@ -676,7 +676,7 @@ public:
     }
     //! @brief The operator (!=) overloading of TargetBuilder class.
     //! @param rhs - right-hand side
-    //! @return reference of TargetBuilder object
+    //! @return reference of the TargetBuilder object
     TargetBuilder<T>& operator=(const TargetBuilder& rhs)
     {
         deepCopy(rhs);
@@ -923,7 +923,7 @@ public:
     }
     //! @brief The operator (!=) overloading of TargetBuilder class.
     //! @param rhs - right-hand side
-    //! @return reference of TargetBuilder object
+    //! @return reference of the TargetBuilder object
     TargetBuilder<T>& operator=(const TargetBuilder& rhs)
     {
         deepCopy(rhs);

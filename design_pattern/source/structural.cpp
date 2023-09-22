@@ -27,7 +27,7 @@ void Adapter::request()
 }
 
 //! @brief Output stream for the adapter pattern. Need to be cleared manually.
-//! @return reference of output stream object, which is on string based
+//! @return reference of the output stream object, which is on string based
 std::ostringstream& output()
 {
     static std::ostringstream stream{};
@@ -54,7 +54,7 @@ void RefinedAbstraction::operation()
 }
 
 //! @brief Output stream for the bridge pattern. Need to be cleared manually.
-//! @return reference of output stream object, which is on string based
+//! @return reference of the output stream object, which is on string based
 std::ostringstream& output()
 {
     static std::ostringstream stream{};
@@ -123,7 +123,7 @@ void Leaf::operation()
 }
 
 //! @brief Output stream for the composite pattern. Need to be cleared manually.
-//! @return reference of output stream object, which is on string based
+//! @return reference of the output stream object, which is on string based
 std::ostringstream& output()
 {
     static std::ostringstream stream{};
@@ -158,7 +158,7 @@ void ConcreteDecoratorB::operation()
 }
 
 //! @brief Output stream for the decorator pattern. Need to be cleared manually.
-//! @return reference of output stream object, which is on string based
+//! @return reference of the output stream object, which is on string based
 std::ostringstream& output()
 {
     static std::ostringstream stream{};
@@ -196,7 +196,7 @@ void Facade::operation2()
 }
 
 //! @brief Output stream for the facade pattern. Need to be cleared manually.
-//! @return reference of output stream object, which is on string based
+//! @return reference of the output stream object, which is on string based
 std::ostringstream& output()
 {
     static std::ostringstream stream{};
@@ -242,7 +242,7 @@ std::unique_ptr<Flyweight>& FlyweightFactory::getFlyweight(const int key)
 }
 
 //! @brief Output stream for the flyweight pattern. Need to be cleared manually.
-//! @return reference of output stream object, which is on string based
+//! @return reference of the output stream object, which is on string based
 std::ostringstream& output()
 {
     static std::ostringstream stream{};
@@ -281,7 +281,7 @@ RealSubject& Proxy::realSubject()
 }
 
 //! @brief Output stream for the proxy pattern. Need to be cleared manually.
-//! @return reference of output stream object, which is on string based
+//! @return reference of the output stream object, which is on string based
 std::ostringstream& output()
 {
     static std::ostringstream stream{};

@@ -241,7 +241,7 @@ bool Register::checkIfNonOptional(std::string_view name, const std::string_view 
 //! @brief The operator (<<) overloading of the Register class.
 //! @param os - output stream object
 //! @param reg - specific Register object
-//! @return reference of output stream object
+//! @return reference of the output stream object
 std::ostream& operator<<(std::ostream& os, const Register& reg)
 {
     std::ostringstream nameStream;
@@ -645,7 +645,7 @@ void Argument::indexArgument(RegisterIter iterator)
 //! @brief The operator (<<) overloading of the Argument class.
 //! @param os - output stream object
 //! @param arg - specific Argument object
-//! @return reference of output stream object
+//! @return reference of the output stream object
 std::ostream& operator<<(std::ostream& os, const Argument& arg)
 {
     os.setf(std::ios_base::left);

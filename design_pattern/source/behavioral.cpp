@@ -61,7 +61,7 @@ void ConcreteHandler2::handleRequest()
 }
 
 //! @brief Output stream for the chain of responsibility pattern. Need to be cleared manually.
-//! @return reference of output stream object, which is on string based
+//! @return reference of the output stream object, which is on string based
 std::ostringstream& output()
 {
     static std::ostringstream stream{};
@@ -104,7 +104,7 @@ void Invoker::confirm()
 }
 
 //! @brief Output stream for the command pattern. Need to be cleared manually.
-//! @return reference of output stream object, which is on string based
+//! @return reference of the output stream object, which is on string based
 std::ostringstream& output()
 {
     static std::ostringstream stream{};
@@ -147,7 +147,7 @@ bool NonTerminalExpression::interpret(const std::shared_ptr<Context> context)
 }
 
 //! @brief Output stream for the interpreter pattern. Need to be cleared manually.
-//! @return reference of output stream object, which is on string based
+//! @return reference of the output stream object, which is on string based
 std::ostringstream& output()
 {
     static std::ostringstream stream{};
@@ -210,7 +210,7 @@ int ConcreteIterator::currentItem() const
 }
 
 //! @brief Output stream for the iterator pattern. Need to be cleared manually.
-//! @return reference of output stream object, which is on string based
+//! @return reference of the output stream object, which is on string based
 std::ostringstream& output()
 {
     static std::ostringstream stream{};
@@ -272,7 +272,7 @@ void ConcreteColleague::receive(const std::string& msg)
 }
 
 //! @brief Output stream for the mediator pattern. Need to be cleared manually.
-//! @return reference of output stream object, which is on string based
+//! @return reference of the output stream object, which is on string based
 std::ostringstream& output()
 {
     static std::ostringstream stream{};
@@ -349,7 +349,7 @@ void CareTaker::undo()
 }
 
 //! @brief Output stream for the memento pattern. Need to be cleared manually.
-//! @return reference of output stream object, which is on string based
+//! @return reference of the output stream object, which is on string based
 std::ostringstream& output()
 {
     static std::ostringstream stream{};
@@ -403,7 +403,7 @@ void ConcreteSubject::setState(const int s)
 }
 
 //! @brief Output stream for the observer pattern. Need to be cleared manually.
-//! @return reference of output stream object, which is on string based
+//! @return reference of the output stream object, which is on string based
 std::ostringstream& output()
 {
     static std::ostringstream stream{};
@@ -444,7 +444,7 @@ void Context::request()
 }
 
 //! @brief Output stream for the state pattern. Need to be cleared manually.
-//! @return reference of output stream object, which is on string based
+//! @return reference of the output stream object, which is on string based
 std::ostringstream& output()
 {
     static std::ostringstream stream{};
@@ -476,7 +476,7 @@ void Context::contextInterface()
 }
 
 //! @brief Output stream for the strategy pattern. Need to be cleared manually.
-//! @return reference of output stream object, which is on string based
+//! @return reference of the output stream object, which is on string based
 std::ostringstream& output()
 {
     static std::ostringstream stream{};
@@ -504,7 +504,7 @@ void ConcreteClass::primitiveOperation2()
 }
 
 //! @brief Output stream for the template method pattern. Need to be cleared manually.
-//! @return reference of output stream object, which is on string based
+//! @return reference of the output stream object, which is on string based
 std::ostringstream& output()
 {
     static std::ostringstream stream{};
@@ -546,7 +546,7 @@ void ConcreteElementB::accept(Visitor& visitor)
 }
 
 //! @brief Output stream for the visitor pattern. Need to be cleared manually.
-//! @return reference of output stream object, which is on string based
+//! @return reference of the output stream object, which is on string based
 std::ostringstream& output()
 {
     static std::ostringstream stream{};

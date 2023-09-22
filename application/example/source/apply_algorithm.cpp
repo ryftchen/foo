@@ -54,7 +54,7 @@ using SearchMethod = AlgorithmTask::SearchMethod;
 using SortMethod = AlgorithmTask::SortMethod;
 
 //! @brief Get the algorithm task.
-//! @return reference of AlgorithmTask object
+//! @return reference of the AlgorithmTask object
 AlgorithmTask& getTask()
 {
     static AlgorithmTask task{};

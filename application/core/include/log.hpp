@@ -122,7 +122,7 @@ public:
     //! @brief Construct a new Log object.
     Log(const Log&) = delete;
     //! @brief The operator (=) overloading of Log class.
-    //! @return reference of Log object
+    //! @return reference of the Log object
     Log& operator=(const Log&) = delete;
 
     friend class FSM<Log>;
@@ -158,7 +158,7 @@ public:
     };
 
     //! @brief Get the Log instance.
-    //! @return reference of Log object
+    //! @return reference of the Log object
     static Log& getInstance();
     //! @brief Interface for running logger.
     void runLogger();
@@ -203,7 +203,7 @@ public:
         virtual ~Holder() { flush(); };
 
         //! @brief Get the output stream for flushing.
-        //! @return reference of output stream object, which is on string based
+        //! @return reference of the output stream object, which is on string based
         inline std::ostringstream& getStream() { return stream; };
         //! @brief Flush the output stream.
         inline void flush() { getInstance().flush(Lv, file, line, stream.str()); };

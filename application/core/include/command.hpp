@@ -27,11 +27,11 @@ public:
     //! @brief Construct a new Command object.
     Command(const Command&) = delete;
     //! @brief The operator (=) overloading of Command class.
-    //! @return reference of Command object
+    //! @return reference of the Command object
     Command& operator=(const Command&) = delete;
 
     //! @brief Get the Command instance.
-    //! @return reference of Command object
+    //! @return reference of the Command object
     static Command& getInstance();
     //! @brief Interface for running commander.
     //! @param argc - argument count
@@ -247,13 +247,13 @@ private:
     //! @brief Enter console mode.
     void enterConsoleMode() const;
     //! @brief Register the command line to console mode.
-    //! @tparam T type of client
+    //! @tparam T - type of client
     //! @param console - console to be registered
     //! @param client - client used to send
     template <typename T>
     void registerOnConsole(utility::console::Console& console, std::shared_ptr<T>& client) const;
     //! @brief Launch the client for console mode.
-    //! @tparam T type of client
+    //! @tparam T - type of client
     //! @param client - client to be launched
     template <typename T>
     static void launchClient(std::shared_ptr<T>& client);
@@ -299,8 +299,8 @@ auto Command::get(const TaskFunctorTuple& tuple) const
 }
 
 //! @brief The operator (|) overloading of the container type.
-//! @tparam Container type of container
-//! @tparam Predicate type of predicate
+//! @tparam Container - type of container
+//! @tparam Predicate - type of predicate
 //! @param container - original container
 //! @param predicate - predicate of filter
 //! @return container after filtered

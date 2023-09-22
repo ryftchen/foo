@@ -28,10 +28,10 @@ public:
     //! @brief Construct a new Console object.
     Console(Console&&) = delete;
     //! @brief The operator (=) overloading of Console class.
-    //! @return reference of Console object
+    //! @return reference of the Console object
     Console& operator=(const Console&) = delete;
     //! @brief The operator (=) overloading of Console class.
-    //! @return reference of Console object
+    //! @return reference of the Console object
     Console& operator=(Console&&) = delete;
 
     //! @brief Alias for the container of arguments.
@@ -97,10 +97,10 @@ private:
         //! @brief Construct a new Impl object.
         Impl(Impl&&) = delete;
         //! @brief The operator (=) overloading of Impl class.
-        //! @return reference of Impl object
+        //! @return reference of the Impl object
         Impl& operator=(const Impl&) = delete;
         //! @brief The operator (=) overloading of Impl class.
-        //! @return reference of Impl object
+        //! @return reference of the Impl object
         Impl& operator=(Impl&&) = delete;
 
         //! @brief Greeting information.

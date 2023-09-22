@@ -33,11 +33,11 @@ public:
     //! @param memory - the old object for move constructor
     Memory(Memory&& memory) noexcept;
     //! @brief The operator (=) overloading of Memory class.
-    //! @return reference of Memory object
+    //! @return reference of the Memory object
     Memory& operator=(const Memory&) = delete;
     //! @brief The operator (=) overloading of Memory class.
     //! @param memory - the old object for move assignment operator
-    //! @return reference of Memory object
+    //! @return reference of the Memory object
     Memory& operator=(Memory&& memory) noexcept;
 
     //! @brief Get the pointer of the allocated object.
