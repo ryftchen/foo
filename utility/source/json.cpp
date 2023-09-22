@@ -11,14 +11,17 @@
 
 namespace utility::json
 {
-JSON parseNext(const std::string& str, std::size_t& offset);
+JSON parseNext(const std::string& fmt, std::size_t& offset);
 
-std::string jsonEscape(const std::string& str)
+//! @brief Escape for JSON.
+//! @param fmt - formatted string
+//! @return string after escape
+std::string jsonEscape(const std::string& fmt)
 {
     std::string output;
-    for (std::size_t i = 0; i < str.length(); ++i)
+    for (std::size_t i = 0; i < fmt.length(); ++i)
     {
-        switch (str.at(i))
+        switch (fmt.at(i))
         {
             case '\"':
                 output += "\\\"";
@@ -42,28 +45,34 @@ std::string jsonEscape(const std::string& str)
                 output += "\\t";
                 break;
             default:
-                output += str.at(i);
+                output += fmt.at(i);
                 break;
         }
     }
     return output;
 }
 
-void consumeWhitespace(const std::string& str, std::size_t& offset)
+//! @brief Consume whitespace.
+//! @param fmt - formatted string
+//! @param offset - data offset
+void consumeWhitespace(const std::string& fmt, std::size_t& offset)
 {
-    while (std::isspace(str.at(offset)))
+    while (std::isspace(fmt.at(offset)))
     {
         ++offset;
     }
 }
 
-JSON parseObject(const std::string& str, std::size_t& offset)
+//! @brief Parse object in JSON.
+//! @param fmt - formatted string
+//! @param offset - data offset
+JSON parseObject(const std::string& fmt, std::size_t& offset)
 {
     JSON object = JSON::make(JSON::Type::object);
 
     ++offset;
-    consumeWhitespace(str, offset);
-    if ('}' == str.at(offset))
+    consumeWhitespace(fmt, offset);
+    if ('}' == fmt.at(offset))
     {
         ++offset;
         return object;
@@ -71,43 +80,46 @@ JSON parseObject(const std::string& str, std::size_t& offset)
 
     while (true)
     {
-        JSON key = parseNext(str, offset);
-        consumeWhitespace(str, offset);
-        if (':' != str.at(offset))
+        JSON key = parseNext(fmt, offset);
+        consumeWhitespace(fmt, offset);
+        if (':' != fmt.at(offset))
         {
-            throw std::runtime_error("Object in JSON: Expected colon, found '" + std::string{str.at(offset)} + "'.");
+            throw std::runtime_error("Object in JSON: Expected colon, found '" + std::string{fmt.at(offset)} + "'.");
         }
-        consumeWhitespace(str, ++offset);
-        JSON value = parseNext(str, offset);
+        consumeWhitespace(fmt, ++offset);
+        JSON value = parseNext(fmt, offset);
         object[key.toString()] = value;
 
-        consumeWhitespace(str, offset);
-        if (',' == str.at(offset))
+        consumeWhitespace(fmt, offset);
+        if (',' == fmt.at(offset))
         {
             ++offset;
             continue;
         }
-        else if ('}' == str.at(offset))
+        else if ('}' == fmt.at(offset))
         {
             ++offset;
             break;
         }
         else
         {
-            throw std::runtime_error("Object in JSON: Expected comm, found '" + std::string{str.at(offset)} + "'.");
+            throw std::runtime_error("Object in JSON: Expected comm, found '" + std::string{fmt.at(offset)} + "'.");
         }
     }
     return object;
 }
 
-JSON parseArray(const std::string& str, std::size_t& offset)
+//! @brief Parse array in JSON.
+//! @param fmt - formatted string
+//! @param offset - data offset
+JSON parseArray(const std::string& fmt, std::size_t& offset)
 {
     JSON array = JSON::make(JSON::Type::array);
     std::size_t index = 0;
 
     ++offset;
-    consumeWhitespace(str, offset);
-    if (']' == str.at(offset))
+    consumeWhitespace(fmt, offset);
+    if (']' == fmt.at(offset))
     {
         ++offset;
         return array;
@@ -115,15 +127,15 @@ JSON parseArray(const std::string& str, std::size_t& offset)
 
     while (true)
     {
-        array[index++] = parseNext(str, offset);
-        consumeWhitespace(str, offset);
+        array[index++] = parseNext(fmt, offset);
+        consumeWhitespace(fmt, offset);
 
-        if (',' == str.at(offset))
+        if (',' == fmt.at(offset))
         {
             ++offset;
             continue;
         }
-        else if (']' == str.at(offset))
+        else if (']' == fmt.at(offset))
         {
             ++offset;
             break;
@@ -131,20 +143,23 @@ JSON parseArray(const std::string& str, std::size_t& offset)
         else
         {
             throw std::runtime_error(
-                "Array in JSON: Expected ',' or ']', found '" + std::string{str.at(offset)} + "'.");
+                "Array in JSON: Expected ',' or ']', found '" + std::string{fmt.at(offset)} + "'.");
         }
     }
     return array;
 }
 
-JSON parseString(const std::string& str, std::size_t& offset)
+//! @brief Parse string in JSON.
+//! @param fmt - formatted string
+//! @param offset - data offset
+JSON parseString(const std::string& fmt, std::size_t& offset)
 {
     std::string val;
-    for (char c = str.at(++offset); '\"' != c; c = str.at(++offset))
+    for (char c = fmt.at(++offset); '\"' != c; c = fmt.at(++offset))
     {
         if (c == '\\')
         {
-            switch (str.at(++offset))
+            switch (fmt.at(++offset))
             {
                 case '\"':
                     val += '\"';
@@ -175,7 +190,7 @@ JSON parseString(const std::string& str, std::size_t& offset)
                     val += "\\u";
                     for (std::uint8_t i = 1; i <= 4; ++i)
                     {
-                        c = str.at(offset + i);
+                        c = fmt.at(offset + i);
                         if (((c >= '0') && (c <= '9')) || ((c >= 'a') && (c <= 'f')) || ((c >= 'A') && (c <= 'F')))
                         {
                             val += c;
@@ -204,7 +219,10 @@ JSON parseString(const std::string& str, std::size_t& offset)
     return JSON(val); // NOLINT(modernize-return-braced-init-list)
 }
 
-JSON parseNumber(const std::string& str, std::size_t& offset)
+//! @brief Parse number in JSON.
+//! @param fmt - formatted string
+//! @param offset - data offset
+JSON parseNumber(const std::string& fmt, std::size_t& offset)
 {
     JSON number;
     std::string val, expStr;
@@ -213,7 +231,7 @@ JSON parseNumber(const std::string& str, std::size_t& offset)
     long long exp = 0;
     while (true)
     {
-        c = str.at(offset++);
+        c = fmt.at(offset++);
         if (('-' == c) || ((c >= '0') && (c <= '9')))
         {
             val += c;
@@ -230,7 +248,7 @@ JSON parseNumber(const std::string& str, std::size_t& offset)
     }
     if (('E' == c) || ('e' == c))
     {
-        c = str.at(offset);
+        c = fmt.at(offset);
         if ('-' == c)
         {
             ++offset;
@@ -242,7 +260,7 @@ JSON parseNumber(const std::string& str, std::size_t& offset)
         }
         while (true)
         {
-            c = str.at(offset++);
+            c = fmt.at(offset++);
             if ((c >= '0') && (c <= '9'))
             {
                 expStr += c;
@@ -284,62 +302,71 @@ JSON parseNumber(const std::string& str, std::size_t& offset)
     return number;
 }
 
-JSON parseBool(const std::string& str, std::size_t& offset)
+//! @brief Parse boolean in JSON.
+//! @param fmt - formatted string
+//! @param offset - data offset
+JSON parseBoolean(const std::string& fmt, std::size_t& offset)
 {
     const std::string trueStr = "true", falseStr = "false";
     JSON boolVal;
-    if (str.substr(offset, trueStr.length()) == trueStr)
+    if (fmt.substr(offset, trueStr.length()) == trueStr)
     {
         boolVal = true;
     }
-    else if (str.substr(offset, falseStr.length()) == falseStr)
+    else if (fmt.substr(offset, falseStr.length()) == falseStr)
     {
         boolVal = false;
     }
     else
     {
         throw std::runtime_error(
-            "Bool in JSON: Expected 'true' or 'false', found '" + str.substr(offset, falseStr.length()) + "'.");
+            "Boolean in JSON: Expected 'true' or 'false', found '" + fmt.substr(offset, falseStr.length()) + "'.");
     }
     offset += (boolVal.toBool() ? trueStr.length() : falseStr.length());
     return boolVal;
 }
 
-JSON parseNull(const std::string& str, std::size_t& offset)
+//! @brief Parse null in JSON.
+//! @param fmt - formatted string
+//! @param offset - data offset
+JSON parseNull(const std::string& fmt, std::size_t& offset)
 {
     const std::string nullStr = "null";
-    if (str.substr(offset, nullStr.length()) != nullStr)
+    if (fmt.substr(offset, nullStr.length()) != nullStr)
     {
         throw std::runtime_error(
-            "Null in JSON: Expected 'null', found '" + str.substr(offset, nullStr.length()) + "'.");
+            "Null in JSON: Expected 'null', found '" + fmt.substr(offset, nullStr.length()) + "'.");
     }
     offset += nullStr.length();
     return {};
 }
 
-JSON parseNext(const std::string& str, std::size_t& offset)
+//! @brief Parse the next data in JSON.
+//! @param fmt - formatted string
+//! @param offset - data offset
+JSON parseNext(const std::string& fmt, std::size_t& offset)
 {
     char value;
-    consumeWhitespace(str, offset);
-    value = str.at(offset);
+    consumeWhitespace(fmt, offset);
+    value = fmt.at(offset);
     switch (value)
     {
         case '[':
-            return parseArray(str, offset);
+            return parseArray(fmt, offset);
         case '{':
-            return parseObject(str, offset);
+            return parseObject(fmt, offset);
         case '\"':
-            return parseString(str, offset);
+            return parseString(fmt, offset);
         case 't':
             [[fallthrough]];
         case 'f':
-            return parseBool(str, offset);
+            return parseBoolean(fmt, offset);
         case 'n':
-            return parseNull(str, offset);
+            return parseNull(fmt, offset);
         default:
             if (((value <= '9') && (value >= '0')) || ('-' == value))
             {
-                return parseNumber(str, offset);
+                return parseNumber(fmt, offset);
             }
     }
     throw std::runtime_error("JSON parsed: Unknown starting character '" + std::string{value} + "'.");
@@ -368,6 +395,15 @@ JSON::~JSON()
     }
 }
 
+JSON::JSON(const std::initializer_list<JSON>& list) : JSON()
+{
+    setType(Type::object);
+    for (auto iter = list.begin(), end = list.end(); iter != end; ++iter, ++iter)
+    {
+        operator[](iter->toString()) = *std::next(iter);
+    }
+}
+
 JSON::JSON(const JSON& json)
 {
     switch (json.type)
@@ -392,15 +428,6 @@ JSON::JSON(JSON&& json) noexcept : data(json.data), type(json.type)
 {
     json.type = Type::null;
     json.data.mapVal = nullptr;
-}
-
-JSON::JSON(std::initializer_list<JSON> list) : JSON()
-{
-    setType(Type::object);
-    for (auto iter = list.begin(), end = list.end(); iter != end; ++iter, ++iter)
-    {
-        operator[](iter->toString()) = *std::next(iter);
-    }
 }
 
 JSON& JSON::operator=(const JSON& json)
@@ -444,15 +471,15 @@ JSON& JSON::operator=(JSON&& json) noexcept
     return *this;
 }
 
-JSON JSON::make(JSON::Type type)
+JSON JSON::make(const JSON::Type type)
 {
     return JSON(type);
 }
 
-JSON JSON::load(const std::string& str)
+JSON JSON::load(const std::string& fmt)
 {
     std::size_t offset = 0;
-    return parseNext(str, offset);
+    return parseNext(fmt, offset);
 }
 
 JSON& JSON::operator[](const std::string& key)
@@ -500,15 +527,6 @@ int JSON::length() const
     return -1;
 }
 
-bool JSON::hasKey(const std::string& key) const
-{
-    if (Type::object == type)
-    {
-        return data.mapVal->find(key) != data.mapVal->end();
-    }
-    return false;
-}
-
 int JSON::size() const
 {
     if (Type::object == type)
@@ -522,7 +540,16 @@ int JSON::size() const
     return -1;
 }
 
-JSON::Type JSON::jsonType() const
+bool JSON::hasKey(const std::string& key) const
+{
+    if (Type::object == type)
+    {
+        return data.mapVal->find(key) != data.mapVal->end();
+    }
+    return false;
+}
+
+JSON::Type JSON::getType() const
 {
     return type;
 }
@@ -735,7 +762,7 @@ JSON::JSONConstWrapper<std::deque<JSON>> JSON::arrayRange() const
     return JSONConstWrapper<std::deque<JSON>>(nullptr);
 }
 
-std::string JSON::dump(int depth, std::string tab) const
+std::string JSON::dump(const int depth, const std::string& tab) const
 {
     switch (type)
     {
@@ -900,17 +927,25 @@ void JSON::clearData()
     }
 }
 
+//! @brief The operator (<<) overloading of the JSON class.
+//! @param os - output stream object
+//! @param json - specific JSON object
+//! @return reference of the output stream object
 std::ostream& operator<<(std::ostream& os, const JSON& json)
 {
     os << json.dump();
     return os;
 }
 
+//! @brief Make an JSON array.
+//! @return JSON array
 JSON array()
 {
     return JSON::make(JSON::Type::array);
 }
 
+//! @brief Make an JSON object.
+//! @return JSON object
 JSON object()
 {
     return JSON::make(JSON::Type::object);
