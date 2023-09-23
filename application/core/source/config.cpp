@@ -76,6 +76,7 @@ void Config::verifyData()
         isVerified &= item.isStringType();
         isVerified &= loggerProperties.hasKey(item.toString());
     }
+    // NOLINTBEGIN(readability-magic-numbers)
     for (const auto& [key, item] : loggerProperties.objectRange())
     {
         switch (bkdrHash(key.data()))
@@ -85,18 +86,22 @@ void Config::verifyData()
                 break;
             case "minimumLevel"_bkdrHash:
                 isVerified &= item.isIntegralType();
+                isVerified &= ((item.toIntegral() >= 0) && (item.toIntegral() <= 3));
                 break;
             case "usedMedium"_bkdrHash:
                 isVerified &= item.isIntegralType();
+                isVerified &= ((item.toIntegral() >= 0) && (item.toIntegral() <= 2));
                 break;
             case "writeType"_bkdrHash:
                 isVerified &= item.isIntegralType();
+                isVerified &= ((item.toIntegral() >= 0) && (item.toIntegral() <= 1));
                 break;
             default:
                 isVerified &= false;
                 break;
         }
     }
+    // NOLINTEND(readability-magic-numbers)
     if (!isVerified)
     {
         throw std::runtime_error(
@@ -114,6 +119,7 @@ void Config::verifyData()
         isVerified &= item.isStringType();
         isVerified &= viewerProperties.hasKey(item.toString());
     }
+    // NOLINTBEGIN(readability-magic-numbers)
     for (const auto& [key, item] : viewerProperties.objectRange())
     {
         switch (bkdrHash(key.data()))
@@ -123,18 +129,21 @@ void Config::verifyData()
                 break;
             case "tcpPort"_bkdrHash:
                 isVerified &= item.isIntegralType();
+                isVerified &= ((item.toIntegral() >= 0) && (item.toIntegral() <= 65535));
                 break;
             case "udpHost"_bkdrHash:
                 isVerified &= item.isStringType();
                 break;
             case "udpPort"_bkdrHash:
                 isVerified &= item.isIntegralType();
+                isVerified &= ((item.toIntegral() >= 0) && (item.toIntegral() <= 65535));
                 break;
             default:
                 isVerified &= false;
                 break;
         }
     }
+    // NOLINTEND(readability-magic-numbers)
     if (!isVerified)
     {
         throw std::runtime_error(
@@ -164,6 +173,7 @@ utility::json::JSON getDefaultConfiguration()
 {
     namespace json = utility::json;
 
+    // NOLINTBEGIN(readability-magic-numbers)
     auto loggerProperties = json::object();
     loggerProperties.at("filePath") = "log/foo.log";
     loggerProperties.at("minimumLevel") = 0;
@@ -175,12 +185,13 @@ utility::json::JSON getDefaultConfiguration()
 
     auto viewerProperties = json::object();
     viewerProperties.at("tcpHost") = "localhost";
-    viewerProperties.at("tcpPort") = 61501; // NOLINT(readability-magic-numbers)
+    viewerProperties.at("tcpPort") = 61501;
     viewerProperties.at("udpHost") = "localhost";
-    viewerProperties.at("udpPort") = 61502; // NOLINT(readability-magic-numbers)
+    viewerProperties.at("udpPort") = 61502;
     auto viewerRequired = json::array();
     viewerRequired.append("tcpHost", "tcpPort", "udpHost", "udpPort");
     assert(viewerProperties.size() == viewerRequired.length());
+    // NOLINTEND(readability-magic-numbers)
 
     // clang-format off
     return utility::json::JSON(
