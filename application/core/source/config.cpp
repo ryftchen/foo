@@ -71,26 +71,26 @@ void Config::verifyData()
     isVerified &= loggerProperties.isObjectType();
     isVerified &= loggerRequired.isArrayType();
     isVerified &= (loggerProperties.size() == loggerRequired.length());
-    for (const auto& elem : loggerRequired.arrayRange())
+    for (const auto& item : loggerRequired.arrayRange())
     {
-        isVerified &= elem.isStringType();
-        isVerified &= loggerProperties.hasKey(elem.toString());
+        isVerified &= item.isStringType();
+        isVerified &= loggerProperties.hasKey(item.toString());
     }
-    for (const auto& [name, elem] : loggerProperties.objectRange())
+    for (const auto& [key, item] : loggerProperties.objectRange())
     {
-        switch (bkdrHash(name.data()))
+        switch (bkdrHash(key.data()))
         {
             case "filePath"_bkdrHash:
-                isVerified &= elem.isStringType();
+                isVerified &= item.isStringType();
                 break;
             case "minimumLevel"_bkdrHash:
-                isVerified &= elem.isIntegralType();
+                isVerified &= item.isIntegralType();
                 break;
             case "usedMedium"_bkdrHash:
-                isVerified &= elem.isIntegralType();
+                isVerified &= item.isIntegralType();
                 break;
             case "writeType"_bkdrHash:
-                isVerified &= elem.isIntegralType();
+                isVerified &= item.isIntegralType();
                 break;
             default:
                 isVerified &= false;
@@ -109,26 +109,26 @@ void Config::verifyData()
     isVerified &= viewerProperties.isObjectType();
     isVerified &= viewerRequired.isArrayType();
     isVerified &= (viewerProperties.size() == viewerRequired.length());
-    for (const auto& elem : viewerRequired.arrayRange())
+    for (const auto& item : viewerRequired.arrayRange())
     {
-        isVerified &= elem.isStringType();
-        isVerified &= viewerProperties.hasKey(elem.toString());
+        isVerified &= item.isStringType();
+        isVerified &= viewerProperties.hasKey(item.toString());
     }
-    for (const auto& [name, elem] : viewerProperties.objectRange())
+    for (const auto& [key, item] : viewerProperties.objectRange())
     {
-        switch (bkdrHash(name.data()))
+        switch (bkdrHash(key.data()))
         {
             case "tcpHost"_bkdrHash:
-                isVerified &= elem.isStringType();
+                isVerified &= item.isStringType();
                 break;
             case "tcpPort"_bkdrHash:
-                isVerified &= elem.isIntegralType();
+                isVerified &= item.isIntegralType();
                 break;
             case "udpHost"_bkdrHash:
-                isVerified &= elem.isStringType();
+                isVerified &= item.isStringType();
                 break;
             case "udpPort"_bkdrHash:
-                isVerified &= elem.isIntegralType();
+                isVerified &= item.isIntegralType();
                 break;
             default:
                 isVerified &= false;
@@ -182,14 +182,25 @@ utility::json::JSON getDefaultConfiguration()
     viewerRequired.append("tcpHost", "tcpPort", "udpHost", "udpPort");
     assert(viewerProperties.size() == viewerRequired.length());
 
+    // clang-format off
     return utility::json::JSON(
-        {"activeHelper",
-         true,
-         "helperSetting",
-         {"logger",
-          {"properties", loggerProperties, "required", loggerRequired},
-          "viewer",
-          {"properties", viewerProperties, "required", viewerRequired}}});
+    {
+        "activeHelper", true,
+        "helperSetting",
+        {
+            "logger",
+            {
+                "properties", loggerProperties,
+                "required", loggerRequired
+            },
+            "viewer",
+            {
+                "properties", viewerProperties,
+                "required", viewerRequired
+            }
+        }
+    });
+    // clang-format on
 }
 
 //! @brief Initialize the configuration.

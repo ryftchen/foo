@@ -78,16 +78,16 @@ JSON parseObject(const std::string& fmt, std::size_t& offset)
         return object;
     }
 
-    while (true)
+    for (;;)
     {
-        JSON key = parseNext(fmt, offset);
+        const JSON key = parseNext(fmt, offset);
         consumeWhitespace(fmt, offset);
         if (':' != fmt.at(offset))
         {
             throw std::runtime_error("JSON object: Expected colon, found '" + std::string{fmt.at(offset)} + "'.");
         }
         consumeWhitespace(fmt, ++offset);
-        JSON value = parseNext(fmt, offset);
+        const JSON value = parseNext(fmt, offset);
         object[key.toString()] = value;
 
         consumeWhitespace(fmt, offset);
@@ -115,8 +115,6 @@ JSON parseObject(const std::string& fmt, std::size_t& offset)
 JSON parseArray(const std::string& fmt, std::size_t& offset)
 {
     JSON array = JSON::make(JSON::Type::array);
-    std::size_t index = 0;
-
     ++offset;
     consumeWhitespace(fmt, offset);
     if (']' == fmt.at(offset))
@@ -125,7 +123,8 @@ JSON parseArray(const std::string& fmt, std::size_t& offset)
         return array;
     }
 
-    while (true)
+    std::size_t index = 0;
+    for (;;)
     {
         array[index++] = parseNext(fmt, offset);
         consumeWhitespace(fmt, offset);
@@ -224,11 +223,10 @@ JSON parseString(const std::string& fmt, std::size_t& offset)
 JSON parseNumber(const std::string& fmt, std::size_t& offset)
 {
     JSON number;
-    std::string val, expStr;
+    std::string val;
     char c;
-    bool isDouble = false;
-    long long exp = 0;
-    while (true)
+    bool isFloating = false;
+    for (;;)
     {
         c = fmt.at(offset++);
         if (('-' == c) || ((c >= '0') && (c <= '9')))
@@ -238,13 +236,16 @@ JSON parseNumber(const std::string& fmt, std::size_t& offset)
         else if ('.' == c)
         {
             val += c;
-            isDouble = true;
+            isFloating = true;
         }
         else
         {
             break;
         }
     }
+
+    long long exp = 0;
+    std::string expStr;
     if (('E' == c) || ('e' == c))
     {
         c = fmt.at(offset);
@@ -257,7 +258,7 @@ JSON parseNumber(const std::string& fmt, std::size_t& offset)
         {
             ++offset;
         }
-        while (true)
+        for (;;)
         {
             c = fmt.at(offset++);
             if ((c >= '0') && (c <= '9'))
@@ -283,7 +284,7 @@ JSON parseNumber(const std::string& fmt, std::size_t& offset)
     --offset;
 
     constexpr std::uint8_t base = 10;
-    if (isDouble)
+    if (isFloating)
     {
         number = std::stod(val) * std::pow(base, exp);
     }
@@ -306,23 +307,23 @@ JSON parseNumber(const std::string& fmt, std::size_t& offset)
 //! @param offset - data offset
 JSON parseBoolean(const std::string& fmt, std::size_t& offset)
 {
+    JSON boolean;
     const std::string trueStr = "true", falseStr = "false";
-    JSON boolVal;
     if (fmt.substr(offset, trueStr.length()) == trueStr)
     {
-        boolVal = true;
+        boolean = true;
     }
     else if (fmt.substr(offset, falseStr.length()) == falseStr)
     {
-        boolVal = false;
+        boolean = false;
     }
     else
     {
         throw std::runtime_error(
             "JSON boolean: Expected 'true' or 'false', found '" + fmt.substr(offset, falseStr.length()) + "'.");
     }
-    offset += (boolVal.toBool() ? trueStr.length() : falseStr.length());
-    return boolVal;
+    offset += (boolean.toBoolean() ? trueStr.length() : falseStr.length());
+    return boolean;
 }
 
 //! @brief Parse null in JSON.
@@ -344,15 +345,14 @@ JSON parseNull(const std::string& fmt, std::size_t& offset)
 //! @param offset - data offset
 JSON parseNext(const std::string& fmt, std::size_t& offset)
 {
-    char value;
     consumeWhitespace(fmt, offset);
-    value = fmt.at(offset);
+    char value = fmt.at(offset);
     switch (value)
     {
-        case '[':
-            return parseArray(fmt, offset);
         case '{':
             return parseObject(fmt, offset);
+        case '[':
+            return parseArray(fmt, offset);
         case '\"':
             return parseString(fmt, offset);
         case 't':
@@ -362,7 +362,7 @@ JSON parseNext(const std::string& fmt, std::size_t& offset)
         case 'n':
             return parseNull(fmt, offset);
         default:
-            if (((value <= '9') && (value >= '0')) || ('-' == value))
+            if (((value >= '0') && (value <= '9')) || ('-' == value))
             {
                 return parseNumber(fmt, offset);
             }
@@ -379,14 +379,14 @@ JSON::~JSON()
 {
     switch (type)
     {
-        case Type::array:
-            delete data.listVal;
-            break;
         case Type::object:
-            delete data.mapVal;
+            delete data.map;
+            break;
+        case Type::array:
+            delete data.list;
             break;
         case Type::string:
-            delete data.stringVal;
+            delete data.string;
             break;
         default:
             break;
@@ -396,9 +396,10 @@ JSON::~JSON()
 JSON::JSON(const std::initializer_list<JSON>& list) : JSON()
 {
     setType(Type::object);
-    for (auto iter = list.begin(), end = list.end(); iter != end; ++iter, ++iter)
+    for (const auto* iter = list.begin(); list.end() != iter; ++iter)
     {
         operator[](iter->toString()) = *std::next(iter);
+        ++iter;
     }
 }
 
@@ -407,13 +408,13 @@ JSON::JSON(const JSON& json)
     switch (json.type)
     {
         case Type::object:
-            data.mapVal = new std::map<std::string, JSON>(json.data.mapVal->cbegin(), json.data.mapVal->cend());
+            data.map = new std::map<std::string, JSON>(json.data.map->cbegin(), json.data.map->cend());
             break;
         case Type::array:
-            data.listVal = new std::deque<JSON>(json.data.listVal->cbegin(), json.data.listVal->cend());
+            data.list = new std::deque<JSON>(json.data.list->cbegin(), json.data.list->cend());
             break;
         case Type::string:
-            data.stringVal = new std::string(*json.data.stringVal);
+            data.string = new std::string(*json.data.string);
             break;
         default:
             data = json.data;
@@ -425,7 +426,7 @@ JSON::JSON(const JSON& json)
 JSON::JSON(JSON&& json) noexcept : data(json.data), type(json.type)
 {
     json.type = Type::null;
-    json.data.mapVal = nullptr;
+    json.data.map = nullptr;
 }
 
 JSON& JSON::operator=(const JSON& json)
@@ -434,21 +435,21 @@ JSON& JSON::operator=(const JSON& json)
     switch (json.type)
     {
         case Type::object:
-            if (nullptr != json.data.mapVal)
+            if (nullptr != json.data.map)
             {
-                data.mapVal = new std::map<std::string, JSON>(json.data.mapVal->cbegin(), json.data.mapVal->cend());
+                data.map = new std::map<std::string, JSON>(json.data.map->cbegin(), json.data.map->cend());
             }
             break;
         case Type::array:
-            if (nullptr != json.data.listVal)
+            if (nullptr != json.data.list)
             {
-                data.listVal = new std::deque<JSON>(json.data.listVal->cbegin(), json.data.listVal->cend());
+                data.list = new std::deque<JSON>(json.data.list->cbegin(), json.data.list->cend());
             }
             break;
         case Type::string:
-            if (nullptr != json.data.stringVal)
+            if (nullptr != json.data.string)
             {
-                data.stringVal = new std::string(*json.data.stringVal);
+                data.string = new std::string(*json.data.string);
             }
             break;
         default:
@@ -464,7 +465,7 @@ JSON& JSON::operator=(JSON&& json) noexcept
     clearData();
     data = json.data;
     type = json.type;
-    json.data.mapVal = nullptr;
+    json.data.map = nullptr;
     json.type = Type::null;
     return *this;
 }
@@ -483,17 +484,17 @@ JSON JSON::load(const std::string& fmt)
 JSON& JSON::operator[](const std::string& key)
 {
     setType(Type::object);
-    return data.mapVal->operator[](key);
+    return data.map->operator[](key);
 }
 
 JSON& JSON::operator[](std::size_t index)
 {
     setType(Type::array);
-    if (index >= data.listVal->size())
+    if (index >= data.list->size())
     {
-        data.listVal->resize(index + 1);
+        data.list->resize(index + 1);
     }
-    return data.listVal->operator[](index);
+    return data.list->operator[](index);
 }
 
 JSON& JSON::at(const std::string& key)
@@ -503,7 +504,7 @@ JSON& JSON::at(const std::string& key)
 
 const JSON& JSON::at(const std::string& key) const
 {
-    return data.mapVal->at(key);
+    return data.map->at(key);
 }
 
 JSON& JSON::at(std::size_t index)
@@ -513,14 +514,14 @@ JSON& JSON::at(std::size_t index)
 
 const JSON& JSON::at(std::size_t index) const
 {
-    return data.listVal->at(index);
+    return data.list->at(index);
 }
 
 int JSON::length() const
 {
     if (Type::array == type)
     {
-        return static_cast<int>(data.listVal->size());
+        return static_cast<int>(data.list->size());
     }
     return -1;
 }
@@ -529,11 +530,11 @@ int JSON::size() const
 {
     if (Type::object == type)
     {
-        return static_cast<int>(data.mapVal->size());
+        return static_cast<int>(data.map->size());
     }
     else if (Type::array == type)
     {
-        return static_cast<int>(data.listVal->size());
+        return static_cast<int>(data.list->size());
     }
     return -1;
 }
@@ -542,7 +543,7 @@ bool JSON::hasKey(const std::string& key) const
 {
     if (Type::object == type)
     {
-        return data.mapVal->find(key) != data.mapVal->end();
+        return data.map->find(key) != data.map->end();
     }
     return false;
 }
@@ -557,14 +558,19 @@ bool JSON::isNullType() const
     return Type::null == type;
 }
 
+bool JSON::isObjectType() const
+{
+    return Type::object == type;
+}
+
 bool JSON::isArrayType() const
 {
     return Type::array == type;
 }
 
-bool JSON::isBooleanType() const
+bool JSON::isStringType() const
 {
-    return Type::boolean == type;
+    return Type::string == type;
 }
 
 bool JSON::isFloatingType() const
@@ -577,14 +583,9 @@ bool JSON::isIntegralType() const
     return Type::integral == type;
 }
 
-bool JSON::isStringType() const
+bool JSON::isBooleanType() const
 {
-    return Type::string == type;
-}
-
-bool JSON::isObjectType() const
-{
-    return Type::object == type;
+    return Type::boolean == type;
 }
 
 std::string JSON::toString() const
@@ -592,17 +593,17 @@ std::string JSON::toString() const
     switch (type)
     {
         case Type::string:
-            return jsonEscape(*data.stringVal);
+            return jsonEscape(*data.string);
         case Type::object:
             return dumpMinified();
         case Type::array:
             return dumpMinified();
-        case Type::boolean:
-            return data.boolVal ? std::string{"true"} : std::string{"false"};
         case Type::floating:
-            return std::to_string(data.floatVal);
+            return std::to_string(data.floating);
         case Type::integral:
-            return std::to_string(data.intVal);
+            return std::to_string(data.integral);
+        case Type::boolean:
+            return data.boolean ? std::string{"true"} : std::string{"false"};
         case Type::null:
             return std::string{"null"};
         default:
@@ -616,17 +617,17 @@ std::string JSON::toUnescapedString() const
     switch (type)
     {
         case Type::string:
-            return std::string{*data.stringVal};
+            return std::string{*data.string};
         case Type::object:
             return dumpMinified();
         case Type::array:
             return dumpMinified();
-        case Type::boolean:
-            return data.boolVal ? std::string{"true"} : std::string{"false"};
         case Type::floating:
-            return std::to_string(data.floatVal);
+            return std::to_string(data.floating);
         case Type::integral:
-            return std::to_string(data.intVal);
+            return std::to_string(data.integral);
+        case Type::boolean:
+            return data.boolean ? std::string{"true"} : std::string{"false"};
         case Type::null:
             return std::string{"null"};
         default:
@@ -635,94 +636,94 @@ std::string JSON::toUnescapedString() const
     return std::string{""};
 }
 
-double JSON::toFloat() const
+double JSON::toFloating() const
 {
     switch (type)
     {
         case Type::floating:
-            return data.floatVal;
-        case Type::boolean:
-            return data.boolVal;
+            return data.floating;
         case Type::integral:
-            return data.intVal;
+            return data.integral;
+        case Type::boolean:
+            return data.boolean;
         case Type::string:
         {
             double parsed = 0.0;
             try
             {
-                parsed = std::stod(*data.stringVal);
+                parsed = std::stod(*data.string);
             }
             catch (const std::exception& error)
             {
                 throw std::logic_error(
-                    "Failed to convert the string value to float in JSON, " + std::string{error.what()} + '.');
+                    "Failed to convert the string value to floating in JSON, " + std::string{error.what()} + '.');
             }
             return parsed;
         }
         default:
-            throw std::logic_error("Failed to convert the value to float in JSON.");
+            throw std::logic_error("Failed to convert the value to floating in JSON.");
     }
     return 0.0;
 }
 
-long long JSON::toInt() const
+long long JSON::toIntegral() const
 {
     switch (type)
     {
         case Type::integral:
-            return data.intVal;
+            return data.integral;
         case Type::boolean:
-            return data.boolVal;
+            return data.boolean;
         case Type::floating:
-            return data.floatVal;
+            return data.floating;
         case Type::string:
         {
             long long parsed = 0;
             const std::from_chars_result result =
-                std::from_chars(data.stringVal->data(), data.stringVal->data() + data.stringVal->size(), parsed);
+                std::from_chars(data.string->data(), data.string->data() + data.string->size(), parsed);
             if (!static_cast<bool>(result.ec))
             {
                 return parsed;
             }
-            throw std::logic_error("Failed to convert the string value to int in JSON.");
+            throw std::logic_error("Failed to convert the string value to integral in JSON.");
         }
         default:
-            throw std::logic_error("Failed to convert the value to int in JSON.");
+            throw std::logic_error("Failed to convert the value to integral in JSON.");
     }
     return 0;
 }
 
-bool JSON::toBool() const
+bool JSON::toBoolean() const
 {
     switch (type)
     {
         case Type::boolean:
-            return data.boolVal;
-        case Type::integral:
-            return data.intVal;
+            return data.boolean;
         case Type::floating:
-            return data.floatVal;
+            return data.floating;
+        case Type::integral:
+            return data.integral;
         case Type::string:
         {
-            if (data.stringVal->find("true") != std::string::npos)
+            if (data.string->find("true") != std::string::npos)
             {
                 return true;
             }
-            if (data.stringVal->find("false") != std::string::npos)
+            if (data.string->find("false") != std::string::npos)
             {
                 return false;
             }
             int parsed = 0;
             const std::from_chars_result result =
-                std::from_chars(data.stringVal->data(), data.stringVal->data() + data.stringVal->size(), parsed);
+                std::from_chars(data.string->data(), data.string->data() + data.string->size(), parsed);
             if (!static_cast<bool>(result.ec))
             {
                 return parsed;
             }
-            throw std::logic_error("Failed to convert the string value to bool in JSON.");
+            throw std::logic_error("Failed to convert the string value to boolean in JSON.");
         }
         default:
-            throw std::logic_error("Failed to convert the value to bool in JSON.");
+            throw std::logic_error("Failed to convert the value to boolean in JSON.");
     }
     return false;
 }
@@ -731,7 +732,7 @@ JSON::JSONWrapper<std::map<std::string, JSON>> JSON::objectRange()
 {
     if (Type::object == type)
     {
-        return JSONWrapper<std::map<std::string, JSON>>(data.mapVal);
+        return JSONWrapper<std::map<std::string, JSON>>(data.map);
     }
     return JSONWrapper<std::map<std::string, JSON>>(nullptr);
 }
@@ -740,7 +741,7 @@ JSON::JSONWrapper<std::deque<JSON>> JSON::arrayRange()
 {
     if (Type::array == type)
     {
-        return JSONWrapper<std::deque<JSON>>(data.listVal);
+        return JSONWrapper<std::deque<JSON>>(data.list);
     }
     return JSONWrapper<std::deque<JSON>>(nullptr);
 }
@@ -749,7 +750,7 @@ JSON::JSONConstWrapper<std::map<std::string, JSON>> JSON::objectRange() const
 {
     if (Type::object == type)
     {
-        return JSONConstWrapper<std::map<std::string, JSON>>(data.mapVal);
+        return JSONConstWrapper<std::map<std::string, JSON>>(data.map);
     }
     return JSONConstWrapper<std::map<std::string, JSON>>(nullptr);
 }
@@ -758,7 +759,7 @@ JSON::JSONConstWrapper<std::deque<JSON>> JSON::arrayRange() const
 {
     if (Type::array == type)
     {
-        return JSONConstWrapper<std::deque<JSON>>(data.listVal);
+        return JSONConstWrapper<std::deque<JSON>>(data.list);
     }
     return JSONConstWrapper<std::deque<JSON>>(nullptr);
 }
@@ -772,12 +773,14 @@ std::string JSON::dump(const int depth, const std::string& tab) const
         case Type::object:
         {
             std::string pad;
-            for (int i = 0; i < depth; ++i, pad += tab)
+            for (int i = 0; i < depth - 1; ++i)
             {
+                pad += tab;
             }
-            std::string s = "{\n";
+            std::string s = ((depth > 1) ? "\n" : "") + pad + "{\n";
+            pad += tab;
             bool skip = true;
-            for (auto& p : *data.mapVal)
+            for (const auto& p : *data.map)
             {
                 if (!skip)
                 {
@@ -793,7 +796,7 @@ std::string JSON::dump(const int depth, const std::string& tab) const
         {
             std::string s = "[";
             bool skip = true;
-            for (auto& p : *data.listVal)
+            for (const auto& p : *data.list)
             {
                 if (!skip)
                 {
@@ -806,13 +809,13 @@ std::string JSON::dump(const int depth, const std::string& tab) const
             return s;
         }
         case Type::string:
-            return '\"' + jsonEscape(*data.stringVal) + '\"';
+            return '\"' + jsonEscape(*data.string) + '\"';
         case Type::floating:
-            return std::to_string(data.floatVal);
+            return std::to_string(data.floating);
         case Type::integral:
-            return std::to_string(data.intVal);
+            return std::to_string(data.integral);
         case Type::boolean:
-            return data.boolVal ? "true" : "false";
+            return data.boolean ? "true" : "false";
         default:
             break;
     }
@@ -829,7 +832,7 @@ std::string JSON::dumpMinified() const
         {
             std::string s = "{";
             bool skip = true;
-            for (auto& p : *data.mapVal)
+            for (const auto& p : *data.map)
             {
                 if (!skip)
                 {
@@ -845,7 +848,7 @@ std::string JSON::dumpMinified() const
         {
             std::string s = "[";
             bool skip = true;
-            for (auto& p : *data.listVal)
+            for (const auto& p : *data.list)
             {
                 if (!skip)
                 {
@@ -858,13 +861,13 @@ std::string JSON::dumpMinified() const
             return s;
         }
         case Type::string:
-            return '\"' + jsonEscape(*data.stringVal) + '\"';
+            return '\"' + jsonEscape(*data.string) + '\"';
         case Type::floating:
-            return std::to_string(data.floatVal);
+            return std::to_string(data.floating);
         case Type::integral:
-            return std::to_string(data.intVal);
+            return std::to_string(data.integral);
         case Type::boolean:
-            return data.boolVal ? "true" : "false";
+            return data.boolean ? "true" : "false";
         default:
             break;
     }
@@ -882,25 +885,25 @@ void JSON::setType(const JSON::Type t)
     switch (t)
     {
         case Type::null:
-            data.mapVal = nullptr;
+            data.map = nullptr;
             break;
         case Type::object:
-            data.mapVal = new std::map<std::string, JSON>();
+            data.map = new std::map<std::string, JSON>();
             break;
         case Type::array:
-            data.listVal = new std::deque<JSON>();
+            data.list = new std::deque<JSON>();
             break;
         case Type::string:
-            data.stringVal = new std::string();
+            data.string = new std::string();
             break;
         case Type::floating:
-            data.floatVal = 0.0;
+            data.floating = 0.0;
             break;
         case Type::integral:
-            data.intVal = 0;
+            data.integral = 0;
             break;
         case Type::boolean:
-            data.boolVal = false;
+            data.boolean = false;
             break;
     }
 
@@ -912,16 +915,16 @@ void JSON::clearData()
     switch (type)
     {
         case Type::object:
-            delete data.mapVal;
-            data.mapVal = nullptr;
+            delete data.map;
+            data.map = nullptr;
             break;
         case Type::array:
-            delete data.listVal;
-            data.listVal = nullptr;
+            delete data.list;
+            data.list = nullptr;
             break;
         case Type::string:
-            delete data.stringVal;
-            data.stringVal = nullptr;
+            delete data.string;
+            data.string = nullptr;
             break;
         default:
             break;
