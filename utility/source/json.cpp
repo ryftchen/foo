@@ -764,7 +764,7 @@ JSON::JSONConstWrapper<std::deque<JSON>> JSON::arrayRange() const
     return JSONConstWrapper<std::deque<JSON>>(nullptr);
 }
 
-std::string JSON::dump(const int depth, const std::string& tab) const
+std::string JSON::dump(const std::uint32_t depth, const std::string& tab) const
 {
     switch (type)
     {
@@ -773,12 +773,11 @@ std::string JSON::dump(const int depth, const std::string& tab) const
         case Type::object:
         {
             std::string pad;
-            for (int i = 0; i < depth - 1; ++i)
+            for (std::uint32_t i = 0; i < depth; ++i)
             {
                 pad += tab;
             }
-            std::string s = ((depth > 1) ? "\n" : "") + pad + "{\n";
-            pad += tab;
+            std::string s = "{\n";
             bool skip = true;
             for (const auto& p : *data.map)
             {

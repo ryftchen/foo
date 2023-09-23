@@ -123,7 +123,7 @@ public:
         //! @brief Construct a new JSONWrapper object.
         explicit JSONWrapper(std::nullptr_t /*n*/) : object(nullptr){};
 
-        //! @brief JSON object.
+        //! @brief Pointer to the JSON object.
         Container* object;
         //! @brief Get the first iterator.
         //! @return first iterator
@@ -160,7 +160,7 @@ public:
         //! @brief Construct a new JSONWrapper object.
         explicit JSONConstWrapper(std::nullptr_t /*n*/) : object(nullptr){};
 
-        //! @brief JSON object.
+        //! @brief Const pointer to the JSON object.
         const Container* object;
         //! @brief Get the first const iterator.
         //! @return first const iterator
@@ -285,7 +285,7 @@ public:
     //! @param depth - target depth
     //! @param tab - tab string
     //! @return formatted string
-    [[nodiscard]] std::string dump(const int depth = 1, const std::string& tab = "    ") const;
+    [[nodiscard]] std::string dump(const std::uint32_t depth = 1, const std::string& tab = "    ") const;
     //! @brief Dump as minified formatted string.
     //! @return minified formatted string
     [[nodiscard]] std::string dumpMinified() const;
