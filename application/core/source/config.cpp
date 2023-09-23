@@ -56,7 +56,7 @@ void Config::parseFile(const std::string& filename)
 void Config::verifyData()
 {
     bool isVerified = data.at("activeHelper").isBooleanType();
-    isVerified &= data.at("helperSetting").isObjectType();
+    isVerified &= data.at("helperTable").isObjectType();
     if (!isVerified)
     {
         throw std::runtime_error("Illegal configuration: " + data.toUnescapedString());
@@ -65,7 +65,7 @@ void Config::verifyData()
     using utility::common::operator""_bkdrHash;
     using utility::common::bkdrHash;
 
-    const auto loggerObject = data.at("helperSetting").at("logger");
+    const auto loggerObject = data.at("helperTable").at("logger");
     isVerified &= loggerObject.isObjectType();
     const auto loggerProperties = loggerObject.at("properties"), loggerRequired = loggerObject.at("required");
     isVerified &= loggerProperties.isObjectType();
@@ -105,10 +105,10 @@ void Config::verifyData()
     if (!isVerified)
     {
         throw std::runtime_error(
-            R"(Illegal configuration, "logger" object in "helperSetting" object: )" + loggerObject.toUnescapedString());
+            R"(Illegal configuration, "logger" object in "helperTable" object: )" + loggerObject.toUnescapedString());
     }
 
-    const auto viewerObject = data.at("helperSetting").at("viewer");
+    const auto viewerObject = data.at("helperTable").at("viewer");
     isVerified &= viewerObject.isObjectType();
     const auto viewerProperties = viewerObject.at("properties"), viewerRequired = viewerObject.at("required");
     isVerified &= viewerProperties.isObjectType();
@@ -147,7 +147,7 @@ void Config::verifyData()
     if (!isVerified)
     {
         throw std::runtime_error(
-            R"(Illegal configuration, "viewer" object in "helperSetting" object: )" + viewerObject.toUnescapedString());
+            R"(Illegal configuration, "viewer" object in "helperTable" object: )" + viewerObject.toUnescapedString());
     }
 }
 
@@ -197,15 +197,12 @@ utility::json::JSON getDefaultConfiguration()
     return utility::json::JSON(
     {
         "activeHelper", true,
-        "helperSetting",
-        {
-            "logger",
-            {
+        "helperTable", {
+            "logger", {
                 "properties", loggerProperties,
                 "required", loggerRequired
             },
-            "viewer",
-            {
+            "viewer", {
                 "properties", viewerProperties,
                 "required", viewerRequired
             }
@@ -221,6 +218,7 @@ void initializeConfiguration(const std::string& filename)
     if (!std::filesystem::exists(filename))
     {
         namespace file = utility::file;
+
         std::ofstream ofs = file::openFile(filename, false);
         file::fdLock(ofs, file::LockMode::write);
         ofs << getDefaultConfiguration();

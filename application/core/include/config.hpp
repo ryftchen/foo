@@ -18,28 +18,29 @@
 //! @brief "activeHelper" configuration.
 #define CONFIG_ACTIVE_HELPER CONFIG_GET_INSTANCE.getData()["activeHelper"].toBoolean()
 //! @brief "filePath" configuration in the logger properties.
-#define CONFIG_LOGGER_PATH CONFIG_GET_INSTANCE.getData()["helperSetting"]["logger"]["properties"]["filePath"].toString()
-//! @brief "writeType" configuration in the logger properties.
-#define CONFIG_LOGGER_TYPE \
-    CONFIG_GET_INSTANCE.getData()["helperSetting"]["logger"]["properties"]["writeType"].toIntegral()
+#define CONFIG_LOGGER_FILE_PATH \
+    CONFIG_GET_INSTANCE.getData()["helperTable"]["logger"]["properties"]["filePath"].toString()
 //! @brief "minimumLevel" configuration in the logger properties.
-#define CONFIG_LOGGER_LEVEL \
-    CONFIG_GET_INSTANCE.getData()["helperSetting"]["logger"]["properties"]["minimumLevel"].toIntegral()
+#define CONFIG_LOGGER_MINIMUM_LEVEL \
+    CONFIG_GET_INSTANCE.getData()["helperTable"]["logger"]["properties"]["minimumLevel"].toIntegral()
 //! @brief "usedMedium" configuration in the logger properties.
-#define CONFIG_LOGGER_MEDIUM \
-    CONFIG_GET_INSTANCE.getData()["helperSetting"]["logger"]["properties"]["usedMedium"].toIntegral()
+#define CONFIG_LOGGER_USED_MEDIUM \
+    CONFIG_GET_INSTANCE.getData()["helperTable"]["logger"]["properties"]["usedMedium"].toIntegral()
+//! @brief "writeType" configuration in the logger properties.
+#define CONFIG_LOGGER_WRITE_TYPE \
+    CONFIG_GET_INSTANCE.getData()["helperTable"]["logger"]["properties"]["writeType"].toIntegral()
 //! @brief "tcpHost" configuration in the viewer properties.
 #define CONFIG_VIEWER_TCP_HOST \
-    CONFIG_GET_INSTANCE.getData()["helperSetting"]["viewer"]["properties"]["tcpHost"].toString()
+    CONFIG_GET_INSTANCE.getData()["helperTable"]["viewer"]["properties"]["tcpHost"].toString()
 //! @brief "tcpPort" configuration in the viewer properties.
 #define CONFIG_VIEWER_TCP_PORT \
-    CONFIG_GET_INSTANCE.getData()["helperSetting"]["viewer"]["properties"]["tcpPort"].toIntegral()
+    CONFIG_GET_INSTANCE.getData()["helperTable"]["viewer"]["properties"]["tcpPort"].toIntegral()
 //! @brief "udpHost" configuration in the viewer properties.
 #define CONFIG_VIEWER_UDP_HOST \
-    CONFIG_GET_INSTANCE.getData()["helperSetting"]["viewer"]["properties"]["udpHost"].toString()
+    CONFIG_GET_INSTANCE.getData()["helperTable"]["viewer"]["properties"]["udpHost"].toString()
 //! @brief "udpPort" configuration in the viewer properties.
 #define CONFIG_VIEWER_UDP_PORT \
-    CONFIG_GET_INSTANCE.getData()["helperSetting"]["viewer"]["properties"]["udpPort"].toIntegral()
+    CONFIG_GET_INSTANCE.getData()["helperTable"]["viewer"]["properties"]["udpPort"].toIntegral()
 //! @brief Config file path.
 #define CONFIG_FILE_PATH CONFIG_GET_INSTANCE.getFilePath()
 

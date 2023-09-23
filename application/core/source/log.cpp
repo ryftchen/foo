@@ -235,9 +235,9 @@ void Log::tryToCreateLogFolder() const
 void Log::openLogFile()
 {
     namespace file = utility::file;
+
     file::ReadWriteGuard guard(file::LockMode::write, fileLock);
     tryToCreateLogFolder();
-
     switch (writeType)
     {
         case OutputType::add:
@@ -255,8 +255,8 @@ void Log::openLogFile()
 void Log::closeLogFile()
 {
     namespace file = utility::file;
-    file::ReadWriteGuard guard(file::LockMode::write, fileLock);
 
+    file::ReadWriteGuard guard(file::LockMode::write, fileLock);
     file::fdUnlock(ofs);
     file::closeFile(ofs);
     if (std::filesystem::exists(filePath) && (std::filesystem::file_size(filePath) == 0))

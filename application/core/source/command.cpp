@@ -474,6 +474,7 @@ void Command::showHelpMessage() const
 void Command::dumpConfiguration() const
 {
     namespace file = utility::file;
+
     std::ofstream ofs = file::openFile(CONFIG_FILE_PATH, true);
     file::fdLock(ofs, file::LockMode::write);
     ofs << config::getDefaultConfiguration();

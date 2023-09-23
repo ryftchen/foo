@@ -221,10 +221,10 @@ private:
     //! @brief Construct a new Log object.
     //! @param initState - initialization value of state
     explicit Log(const StateType initState = State::init) noexcept :
-        filePath(getFullDefaultLogPath(CONFIG_LOGGER_PATH)),
-        writeType(OutputType(CONFIG_LOGGER_TYPE)),
-        minLevel(OutputLevel(CONFIG_LOGGER_LEVEL)),
-        usedMedium(OutputMedium(CONFIG_LOGGER_MEDIUM)),
+        filePath(getFullDefaultLogPath(CONFIG_LOGGER_FILE_PATH)),
+        writeType(OutputType(CONFIG_LOGGER_WRITE_TYPE)),
+        minimumLevel(OutputLevel(CONFIG_LOGGER_MINIMUM_LEVEL)),
+        usedMedium(OutputMedium(CONFIG_LOGGER_USED_MEDIUM)),
         FSM(initState){};
 
     //! @brief Maximum number of times to wait for the logger to change to the target state.
@@ -248,7 +248,7 @@ private:
     //! @brief Write type.
     const OutputType writeType{OutputType::add};
     //! @brief Minimum level.
-    const OutputLevel minLevel{OutputLevel::debug};
+    const OutputLevel minimumLevel{OutputLevel::debug};
     //! @brief Used medium.
     const OutputMedium usedMedium{OutputMedium::both};
     //! @brief Log file lock.
@@ -363,7 +363,7 @@ void Log::flush(
 
     if (std::unique_lock<std::mutex> lock(mtx); true)
     {
-        if (level >= minLevel)
+        if (level >= minimumLevel)
         {
             std::string_view prefix;
             switch (level)
