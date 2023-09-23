@@ -55,59 +55,60 @@ public:
 
     // NOLINTBEGIN(google-explicit-constructor)
     //! @brief Construct a new JSON object.
-    //! @tparam T - type of boolean value
-    //! @param b - boolean value
+    JSON(std::nullptr_t /*n*/) : data(), type(Type::null){};
+    //! @brief Construct a new JSON object.
+    //! @tparam T - type of string value
+    //! @param s - string value
     template <typename T>
-    JSON(T b, typename std::enable_if<std::is_same<T, bool>::value>::type* /*type*/ = 0) :
-        data(b), type(Type::boolean){};
+    JSON(const T s, typename std::enable_if<std::is_convertible<T, std::string>::value>::type* /*type*/ = nullptr) :
+        data(std::string(s)), type(Type::string){};
+    //! @brief Construct a new JSON object.
+    //! @tparam T - type of floating value
+    //! @param f - floating value
+    template <typename T>
+    JSON(const T f, typename std::enable_if<std::is_floating_point<T>::value>::type* /*type*/ = 0) :
+        data(static_cast<double>(f)), type(Type::floating){};
     //! @brief Construct a new JSON object.
     //! @tparam T - type of integral value
     //! @param i - integral value
     template <typename T>
     JSON(
-        T i,
+        const T i,
         typename std::enable_if<std::is_integral<T>::value && !std::is_same<T, bool>::value>::type* /*type*/ = 0) :
         data(static_cast<long long>(i)), type(Type::integral){};
     //! @brief Construct a new JSON object.
-    //! @tparam T - type of floating value
-    //! @param f - floating value
+    //! @tparam T - type of boolean value
+    //! @param b - boolean value
     template <typename T>
-    JSON(T f, typename std::enable_if<std::is_floating_point<T>::value>::type* /*type*/ = 0) :
-        data(static_cast<double>(f)), type(Type::floating){};
-    //! @brief Construct a new JSON object.
-    //! @tparam T - type of string value
-    //! @param s - string value
-    template <typename T>
-    JSON(T s, typename std::enable_if<std::is_convertible<T, std::string>::value>::type* /*type*/ = nullptr) :
-        data(std::string(s)), type(Type::string){};
-    //! @brief Construct a new JSON object.
-    JSON(std::nullptr_t /*n*/) : data(), type(Type::null){};
+    JSON(const T b, typename std::enable_if<std::is_same<T, bool>::value>::type* /*type*/ = 0) :
+        data(b), type(Type::boolean){};
     // NOLINTEND(google-explicit-constructor)
     // NOLINTBEGIN(misc-unconventional-assign-operator)
     //! @brief The operator (=) overloading of JSON class.
-    //! @tparam T - type of boolean value
-    //! @param b - boolean value
+    //! @tparam T - type of string value
+    //! @param s - string value
     //! @return reference of the JSON object
     template <typename T>
-    typename std::enable_if<std::is_same<T, bool>::value, JSON&>::type operator=(T b);
+    typename std::enable_if<std::is_convertible<T, std::string>::value, JSON&>::type operator=(const T s);
+    //! @brief The operator (=) overloading of JSON class.
+    //! @tparam T - type of floating value
+    //! @param f - floating value
+    //! @return reference of the JSON object
+    template <typename T>
+    typename std::enable_if<std::is_floating_point<T>::value, JSON&>::type operator=(const T f);
     //! @brief The operator (=) overloading of JSON class.
     //! @tparam T - type of integral value
     //! @param i - integral value
     //! @return reference of the JSON object
     template <typename T>
-    typename std::enable_if<std::is_integral<T>::value && !std::is_same<T, bool>::value, JSON&>::type operator=(T i);
+    typename std::enable_if<std::is_integral<T>::value && !std::is_same<T, bool>::value, JSON&>::type operator=(
+        const T i);
     //! @brief The operator (=) overloading of JSON class.
-    //! @tparam T - type of floating value
-    //! @param f - floating value
+    //! @tparam T - type of boolean value
+    //! @param b - boolean value
     //! @return reference of the JSON object
     template <typename T>
-    typename std::enable_if<std::is_floating_point<T>::value, JSON&>::type operator=(T f);
-    //! @brief The operator (=) overloading of JSON class.
-    //! @tparam T - type of string value
-    //! @param s - string value
-    //! @return reference of the JSON object
-    template <typename T>
-    typename std::enable_if<std::is_convertible<T, std::string>::value, JSON&>::type operator=(T s);
+    typename std::enable_if<std::is_same<T, bool>::value, JSON&>::type operator=(const T b);
     // NOLINTEND(misc-unconventional-assign-operator)
 
     //! @brief JSON wrapper.
@@ -187,14 +188,14 @@ public:
     //! @tparam T - type of arg
     //! @param arg - item
     template <typename T>
-    void append(T arg);
+    void append(const T arg);
     //! @brief Append multiple items to array. Convert to array type.
     //! @tparam T - type of arg
     //! @tparam U - type of args
     //! @param arg - item
     //! @param args - multiple items
     template <typename T, typename... U>
-    void append(T arg, U... args);
+    void append(const T arg, const U... args);
     //! @brief The operator ([]) overloading of JSON class.
     //! @param key - target key
     //! @return reference of the JSON object
@@ -235,39 +236,39 @@ public:
     //! @brief Check if the type is null.
     //! @return null or not
     [[nodiscard]] bool isNullType() const;
+    //! @brief Check if the type is object.
+    //! @return object or not
+    [[nodiscard]] bool isObjectType() const;
     //! @brief Check if the type is array.
     //! @return array or not
     [[nodiscard]] bool isArrayType() const;
-    //! @brief Check if the type is boolean.
-    //! @return boolean or not
-    [[nodiscard]] bool isBooleanType() const;
+    //! @brief Check if the type is string.
+    //! @return string or not
+    [[nodiscard]] bool isStringType() const;
     //! @brief Check if the type is floating.
     //! @return floating or not
     [[nodiscard]] bool isFloatingType() const;
     //! @brief Check if the type is integral.
     //! @return integral or not
     [[nodiscard]] bool isIntegralType() const;
-    //! @brief Check if the type is string.
-    //! @return string or not
-    [[nodiscard]] bool isStringType() const;
-    //! @brief Check if the type is object.
-    //! @return object or not
-    [[nodiscard]] bool isObjectType() const;
+    //! @brief Check if the type is boolean.
+    //! @return boolean or not
+    [[nodiscard]] bool isBooleanType() const;
     //! @brief Convert to string value.
     //! @return string value
     [[nodiscard]] std::string toString() const;
     //! @brief Convert to unescaped string value.
     //! @return unescaped string value
     [[nodiscard]] std::string toUnescapedString() const;
-    //! @brief Convert to float value.
-    //! @return float value
-    [[nodiscard]] double toFloat() const;
-    //! @brief Convert to int value.
-    //! @return int value
-    [[nodiscard]] long long toInt() const;
-    //! @brief Convert to bool value.
-    //! @return bool value
-    [[nodiscard]] bool toBool() const;
+    //! @brief Convert to floating value.
+    //! @return floating value
+    [[nodiscard]] double toFloating() const;
+    //! @brief Convert to integral value.
+    //! @return integral value
+    [[nodiscard]] long long toIntegral() const;
+    //! @brief Convert to boolean value.
+    //! @return boolean value
+    [[nodiscard]] bool toBoolean() const;
     //! @brief Get the wrapper of the object range.
     //! @return wrapper of the object range
     JSONWrapper<std::map<std::string, JSON>> objectRange();
@@ -284,7 +285,7 @@ public:
     //! @param depth - target depth
     //! @param tab - tab string
     //! @return formatted string
-    [[nodiscard]] std::string dump(const int depth = 1, const std::string& tab = "  ") const;
+    [[nodiscard]] std::string dump(const int depth = 1, const std::string& tab = "    ") const;
     //! @brief Dump as minified formatted string.
     //! @return minified formatted string
     [[nodiscard]] std::string dumpMinified() const;
@@ -293,32 +294,32 @@ public:
     union Data
     {
         //! @brief Construct a new Data object.
-        Data() : intVal(0){};
+        Data() : integral(0){};
         //! @brief Construct a new Data object.
-        //! @param d - double value
-        explicit Data(double d) : floatVal(d){};
+        //! @param f - floating value
+        explicit Data(const double f) : floating(f){};
         //! @brief Construct a new Data object.
-        //! @param i - int value
-        explicit Data(long long i) : intVal(i){};
+        //! @param i - integral value
+        explicit Data(const long long i) : integral(i){};
         //! @brief Construct a new Data object.
-        //! @param b - bool value
-        explicit Data(bool b) : boolVal(b){};
+        //! @param b - boolean value
+        explicit Data(const bool b) : boolean(b){};
         //! @brief Construct a new Data object.
         //! @param s - string value
-        explicit Data(std::string s) : stringVal(new std::string(s)){};
+        explicit Data(const std::string& s) : string(new std::string(s)){};
 
-        //! @brief Pointer to the list value.
-        std::deque<JSON>* listVal;
-        //! @brief Pointer to the map value.
-        std::map<std::string, JSON>* mapVal;
+        //! @brief Pointer to the object or null value.
+        std::map<std::string, JSON>* map;
+        //! @brief Pointer to the array value.
+        std::deque<JSON>* list;
         //! @brief Pointer to the string value.
-        std::string* stringVal;
-        //! @brief Float value.
-        double floatVal;
-        //! @brief Int value.
-        long long intVal;
-        //! @brief Bool value.
-        bool boolVal;
+        std::string* string;
+        //! @brief Floating value.
+        double floating;
+        //! @brief Integral value.
+        long long integral;
+        //! @brief Boolean value.
+        bool boolean;
     } /** @brief JSON valid data. */ data;
 
 private:
@@ -337,47 +338,48 @@ protected:
 
 // NOLINTBEGIN(misc-unconventional-assign-operator)
 template <typename T>
-typename std::enable_if<std::is_same<T, bool>::value, JSON&>::type JSON::operator=(T b)
-{
-    setType(Type::boolean);
-    data.boolVal = b;
-    return *this;
-}
-
-template <typename T>
-typename std::enable_if<std::is_integral<T>::value && !std::is_same<T, bool>::value, JSON&>::type JSON::operator=(T i)
-{
-    setType(Type::integral);
-    data.intVal = i;
-    return *this;
-}
-
-template <typename T>
-typename std::enable_if<std::is_floating_point<T>::value, JSON&>::type JSON::operator=(T f)
-{
-    setType(Type::floating);
-    data.floatVal = f;
-    return *this;
-}
-
-template <typename T>
-typename std::enable_if<std::is_convertible<T, std::string>::value, JSON&>::type JSON::operator=(T s)
+typename std::enable_if<std::is_convertible<T, std::string>::value, JSON&>::type JSON::operator=(const T s)
 {
     setType(Type::string);
-    *data.stringVal = std::string(s);
+    *data.string = std::string(s);
+    return *this;
+}
+
+template <typename T>
+typename std::enable_if<std::is_floating_point<T>::value, JSON&>::type JSON::operator=(const T f)
+{
+    setType(Type::floating);
+    data.floating = f;
+    return *this;
+}
+
+template <typename T>
+typename std::enable_if<std::is_integral<T>::value && !std::is_same<T, bool>::value, JSON&>::type JSON::operator=(
+    const T i)
+{
+    setType(Type::integral);
+    data.integral = i;
+    return *this;
+}
+
+template <typename T>
+typename std::enable_if<std::is_same<T, bool>::value, JSON&>::type JSON::operator=(const T b)
+{
+    setType(Type::boolean);
+    data.boolean = b;
     return *this;
 }
 // NOLINTEND(misc-unconventional-assign-operator)
 
 template <typename T>
-void JSON::append(T arg)
+void JSON::append(const T arg)
 {
     setType(Type::array);
-    data.listVal->emplace_back(arg);
+    data.list->emplace_back(arg);
 }
 
 template <typename T, typename... U>
-void JSON::append(T arg, U... args)
+void JSON::append(const T arg, const U... args)
 {
     append(arg);
     append(args...);
