@@ -157,6 +157,8 @@ private:
     struct Individual
     {
         //! @brief Construct a new Individual object.
+        Individual() = default;
+        //! @brief Construct a new Individual object.
         //! @param x - independent variable
         //! @param velocity - velocity value
         //! @param positionBest - the best position
@@ -173,8 +175,6 @@ private:
             positionBest(positionBest),
             xFitness(xFitness),
             fitnessPositionBest(fitnessPositionBest){};
-        //! @brief Construct a new Individual object.
-        Individual() = default;
 
         //! @brief Independent variable.
         double x{0.0};
@@ -204,13 +204,6 @@ private:
     //! @brief Store the information of society and history in the swarm.
     struct Storage
     {
-        //! @brief Construct a new Storage object.
-        //! @param society - society information
-        //! @param history - history information
-        Storage(
-            const std::initializer_list<Society::value_type>& society,
-            const std::initializer_list<History::value_type>& history) :
-            society(society), history(history){};
         //! @brief Construct a new Storage object.
         Storage() = default;
 

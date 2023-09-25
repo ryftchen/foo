@@ -167,10 +167,10 @@ std::optional<std::tuple<double, double>> Particle::operator()(const double left
 
 Particle::Storage Particle::storageInit(const double left, const double right)
 {
-    std::uniform_real_distribution<double> candidate(left, right), v(vMin, vMax);
-    Storage rec{{}, {}};
-
+    Storage rec{};
     rec.society = Society(size, Individual{});
+
+    std::uniform_real_distribution<double> candidate(left, right), v(vMin, vMax);
     std::generate(
         rec.society.begin(),
         rec.society.end(),
