@@ -11,12 +11,12 @@
 
 namespace utility::json
 {
-JSON parseNext(const std::string& fmt, std::size_t& offset);
+static JSON parseNext(const std::string& fmt, std::size_t& offset);
 
 //! @brief Escape for JSON.
 //! @param fmt - formatted string
 //! @return string after escape
-std::string jsonEscape(const std::string& fmt)
+static std::string jsonEscape(const std::string& fmt)
 {
     std::string output;
     for (std::size_t i = 0; i < fmt.length(); ++i)
@@ -55,7 +55,7 @@ std::string jsonEscape(const std::string& fmt)
 //! @brief Consume whitespace.
 //! @param fmt - formatted string
 //! @param offset - data offset
-void consumeWhitespace(const std::string& fmt, std::size_t& offset)
+static void consumeWhitespace(const std::string& fmt, std::size_t& offset)
 {
     while (std::isspace(fmt.at(offset)))
     {
@@ -66,7 +66,7 @@ void consumeWhitespace(const std::string& fmt, std::size_t& offset)
 //! @brief Parse object in JSON.
 //! @param fmt - formatted string
 //! @param offset - data offset
-JSON parseObject(const std::string& fmt, std::size_t& offset)
+static JSON parseObject(const std::string& fmt, std::size_t& offset)
 {
     JSON object = JSON::make(JSON::Type::object);
 
@@ -112,7 +112,7 @@ JSON parseObject(const std::string& fmt, std::size_t& offset)
 //! @brief Parse array in JSON.
 //! @param fmt - formatted string
 //! @param offset - data offset
-JSON parseArray(const std::string& fmt, std::size_t& offset)
+static JSON parseArray(const std::string& fmt, std::size_t& offset)
 {
     JSON array = JSON::make(JSON::Type::array);
     ++offset;
@@ -150,7 +150,7 @@ JSON parseArray(const std::string& fmt, std::size_t& offset)
 //! @brief Parse string in JSON.
 //! @param fmt - formatted string
 //! @param offset - data offset
-JSON parseString(const std::string& fmt, std::size_t& offset)
+static JSON parseString(const std::string& fmt, std::size_t& offset)
 {
     std::string val;
     for (char c = fmt.at(++offset); '\"' != c; c = fmt.at(++offset))
@@ -220,7 +220,7 @@ JSON parseString(const std::string& fmt, std::size_t& offset)
 //! @brief Parse number in JSON.
 //! @param fmt - formatted string
 //! @param offset - data offset
-JSON parseNumber(const std::string& fmt, std::size_t& offset)
+static JSON parseNumber(const std::string& fmt, std::size_t& offset)
 {
     JSON number;
     std::string val;
@@ -305,7 +305,7 @@ JSON parseNumber(const std::string& fmt, std::size_t& offset)
 //! @brief Parse boolean in JSON.
 //! @param fmt - formatted string
 //! @param offset - data offset
-JSON parseBoolean(const std::string& fmt, std::size_t& offset)
+static JSON parseBoolean(const std::string& fmt, std::size_t& offset)
 {
     JSON boolean;
     const std::string trueStr = "true", falseStr = "false";
@@ -329,7 +329,7 @@ JSON parseBoolean(const std::string& fmt, std::size_t& offset)
 //! @brief Parse null in JSON.
 //! @param fmt - formatted string
 //! @param offset - data offset
-JSON parseNull(const std::string& fmt, std::size_t& offset)
+static JSON parseNull(const std::string& fmt, std::size_t& offset)
 {
     const std::string nullStr = "null";
     if (fmt.substr(offset, nullStr.length()) != nullStr)
@@ -343,7 +343,7 @@ JSON parseNull(const std::string& fmt, std::size_t& offset)
 //! @brief Parse the next data in JSON.
 //! @param fmt - formatted string
 //! @param offset - data offset
-JSON parseNext(const std::string& fmt, std::size_t& offset)
+static JSON parseNext(const std::string& fmt, std::size_t& offset)
 {
     consumeWhitespace(fmt, offset);
     char value = fmt.at(offset);

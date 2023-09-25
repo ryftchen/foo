@@ -20,6 +20,9 @@
 //! @brief Design-pattern-testing-related functions in the test module.
 namespace test::tst_dp
 {
+//! @brief Alias for the enumeration of design pattern tasks.
+using Category = application::app_dp::DesignPatternTask::Category;
+
 //! @brief Alias for the namespace of applying behavioral.
 namespace behavioral = application::app_dp::behavioral;
 
@@ -33,9 +36,9 @@ public:
     ~BehavioralTestBase() override = default;
 
     //! @brief Set up the test case.
-    static void SetUpTestCase() { TST_DP_PRINT_TASK_TITLE("BEHAVIORAL", "BEGIN"); };
+    static void SetUpTestCase() { TST_DP_PRINT_TASK_TITLE(Category::behavioral, "BEGIN"); };
     //! @brief Tear down the test case.
-    static void TearDownTestCase() { TST_DP_PRINT_TASK_TITLE("BEHAVIORAL", "END"); }
+    static void TearDownTestCase() { TST_DP_PRINT_TASK_TITLE(Category::behavioral, "END"); }
     //! @brief Set up.
     void SetUp() override{};
     //! @brief Tear down.
@@ -123,9 +126,9 @@ public:
     ~CreationalTestBase() override = default;
 
     //! @brief Set up the test case.
-    static void SetUpTestCase() { TST_DP_PRINT_TASK_TITLE("CREATIONAL", "BEGIN"); };
+    static void SetUpTestCase() { TST_DP_PRINT_TASK_TITLE(Category::creational, "BEGIN"); };
     //! @brief Tear down the test case.
-    static void TearDownTestCase() { TST_DP_PRINT_TASK_TITLE("CREATIONAL", "END"); }
+    static void TearDownTestCase() { TST_DP_PRINT_TASK_TITLE(Category::creational, "END"); }
     //! @brief Set up.
     void SetUp() override{};
     //! @brief Tear down.
@@ -177,9 +180,9 @@ public:
     ~StructuralTestBase() override = default;
 
     //! @brief Set up the test case.
-    static void SetUpTestCase() { TST_DP_PRINT_TASK_TITLE("STRUCTURAL", "BEGIN"); };
+    static void SetUpTestCase() { TST_DP_PRINT_TASK_TITLE(Category::structural, "BEGIN"); };
     //! @brief Tear down the test case.
-    static void TearDownTestCase() { TST_DP_PRINT_TASK_TITLE("STRUCTURAL", "END"); }
+    static void TearDownTestCase() { TST_DP_PRINT_TASK_TITLE(Category::structural, "END"); }
     //! @brief Set up.
     void SetUp() override{};
     //! @brief Tear down.

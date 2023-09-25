@@ -22,6 +22,9 @@
 //! @brief Algorithm-testing-related functions in the test module.
 namespace test::tst_algo
 {
+//! @brief Alias for the enumeration of algorithm tasks.
+using Category = application::app_algo::AlgorithmTask::Category;
+
 //! @brief Alias for the namespace of applying match.
 namespace match = application::app_algo::match;
 
@@ -37,13 +40,13 @@ public:
     //! @brief Set up the test case.
     static void SetUpTestCase()
     {
-        TST_ALGO_PRINT_TASK_TITLE("MATCH", "BEGIN");
+        TST_ALGO_PRINT_TASK_TITLE(Category::match, "BEGIN");
         builder = std::make_shared<match::TargetBuilder>(match::input::patternString);
     };
     //! @brief Tear down the test case.
     static void TearDownTestCase()
     {
-        TST_ALGO_PRINT_TASK_TITLE("MATCH", "END");
+        TST_ALGO_PRINT_TASK_TITLE(Category::match, "END");
         builder.reset();
     }
     //! @brief Set up.
@@ -134,13 +137,13 @@ public:
     //! @brief Set up the test case.
     static void SetUpTestCase()
     {
-        TST_ALGO_PRINT_TASK_TITLE("NOTATION", "BEGIN");
+        TST_ALGO_PRINT_TASK_TITLE(Category::notation, "BEGIN");
         builder = std::make_shared<notation::TargetBuilder>(notation::input::infixString);
     };
     //! @brief Tear down the test case.
     static void TearDownTestCase()
     {
-        TST_ALGO_PRINT_TASK_TITLE("NOTATION", "END");
+        TST_ALGO_PRINT_TASK_TITLE(Category::notation, "END");
         builder.reset();
     }
     //! @brief Set up.
@@ -181,9 +184,9 @@ public:
     ~OptimalTestBase() override = default;
 
     //! @brief Set up the test case.
-    static void SetUpTestCase() { TST_ALGO_PRINT_TASK_TITLE("OPTIMAL", "BEGIN"); };
+    static void SetUpTestCase() { TST_ALGO_PRINT_TASK_TITLE(Category::optimal, "BEGIN"); };
     //! @brief Tear down the test case.
-    static void TearDownTestCase() { TST_ALGO_PRINT_TASK_TITLE("OPTIMAL", "END"); }
+    static void TearDownTestCase() { TST_ALGO_PRINT_TASK_TITLE(Category::optimal, "END"); }
     //! @brief Set up.
     void SetUp() override{};
     //! @brief Tear down.
@@ -264,14 +267,14 @@ public:
     //! @brief Set up the test case.
     static void SetUpTestCase()
     {
-        TST_ALGO_PRINT_TASK_TITLE("SEARCH", "BEGIN");
+        TST_ALGO_PRINT_TASK_TITLE(Category::search, "BEGIN");
         builder = std::make_shared<search::TargetBuilder<double>>(
             search::input::arrayLength, search::input::arrayRange1, search::input::arrayRange2);
     };
     //! @brief Tear down the test case.
     static void TearDownTestCase()
     {
-        TST_ALGO_PRINT_TASK_TITLE("SEARCH", "END");
+        TST_ALGO_PRINT_TASK_TITLE(Category::search, "END");
         builder.reset();
     }
     //! @brief Set up.
@@ -329,14 +332,14 @@ public:
     //! @brief Set up the test case.
     static void SetUpTestCase()
     {
-        TST_ALGO_PRINT_TASK_TITLE("SORT", "BEGIN");
+        TST_ALGO_PRINT_TASK_TITLE(Category::sort, "BEGIN");
         builder = std::make_shared<sort::TargetBuilder<int>>(
             sort::input::arrayLength, sort::input::arrayRange1, sort::input::arrayRange2);
     };
     //! @brief Tear down the test case.
     static void TearDownTestCase()
     {
-        TST_ALGO_PRINT_TASK_TITLE("SORT", "END");
+        TST_ALGO_PRINT_TASK_TITLE(Category::sort, "END");
         builder.reset();
     }
     //! @brief Set up.

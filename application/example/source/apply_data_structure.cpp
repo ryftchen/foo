@@ -55,14 +55,31 @@ namespace linear
 //! @brief Display linear result.
 #define LINEAR_RESULT "\r\n==> %-10s Instance <==\n%s"
 //! @brief Print linear result content.
-#define LINEAR_PRINT_RESULT_CONTENT(structure) COMMON_PRINT(LINEAR_RESULT, structure, output.str().c_str())
+#define LINEAR_PRINT_RESULT_CONTENT(instance) \
+    COMMON_PRINT(LINEAR_RESULT, toString(instance).data(), output.str().c_str())
+//! @brief Mapping table for enum and string about linear instances.
+#define LINEAR_INSTANCE_TABLE      \
+    ELEM(linkedList, "LinkedList") \
+    ELEM(stack, "Stack")           \
+    ELEM(queue, "Queue")
+
+//! @brief Convert instance enumeration to string.
+//! @param instance - the specific value of LinearInstance enum
+//! @return instance name
+constexpr std::string_view toString(const LinearInstance instance)
+{
+#define ELEM(enum, str) str,
+    constexpr std::string_view table[] = {LINEAR_INSTANCE_TABLE};
+#undef ELEM
+    return table[instance];
+}
 
 void LinearStructure::linkedListInstance()
 {
     try
     {
         const auto output = Linear().linkedList();
-        LINEAR_PRINT_RESULT_CONTENT("LinkedList");
+        LINEAR_PRINT_RESULT_CONTENT(LinearInstance::linkedList);
     }
     catch (const std::exception& error)
     {
@@ -75,7 +92,7 @@ void LinearStructure::stackInstance()
     try
     {
         const auto output = Linear().stack();
-        LINEAR_PRINT_RESULT_CONTENT("Stack");
+        LINEAR_PRINT_RESULT_CONTENT(LinearInstance::stack);
     }
     catch (const std::exception& error)
     {
@@ -88,13 +105,17 @@ void LinearStructure::queueInstance()
     try
     {
         const auto output = Linear().queue();
-        LINEAR_PRINT_RESULT_CONTENT("Queue");
+        LINEAR_PRINT_RESULT_CONTENT(LinearInstance::queue);
     }
     catch (const std::exception& error)
     {
         LOG_ERR << error.what();
     }
 }
+
+#undef LINEAR_RESULT
+#undef LINEAR_PRINT_RESULT_CONTENT
+#undef LINEAR_INSTANCE_TABLE
 } // namespace linear
 
 //! @brief Run linear tasks.
@@ -176,14 +197,30 @@ namespace tree
 //! @brief Display tree result.
 #define TREE_RESULT "\r\n==> %-19s Instance <==\n%s"
 //! @brief Print tree result content.
-#define TREE_PRINT_RESULT_CONTENT(structure) COMMON_PRINT(TREE_RESULT, structure, output.str().c_str());
+#define TREE_PRINT_RESULT_CONTENT(instance) COMMON_PRINT(TREE_RESULT, toString(instance).data(), output.str().c_str());
+//! @brief Mapping table for enum and string about tree instances.
+#define TREE_INSTANCE_TABLE                          \
+    ELEM(binarySearch, "BinarySearch")               \
+    ELEM(adelsonVelskyLandis, "AdelsonVelskyLandis") \
+    ELEM(splay, "Splay")
+
+//! @brief Convert instance enumeration to string.
+//! @param instance - the specific value of TreeInstance enum
+//! @return instance name
+constexpr std::string_view toString(const TreeInstance instance)
+{
+#define ELEM(enum, str) str,
+    constexpr std::string_view table[] = {TREE_INSTANCE_TABLE};
+#undef ELEM
+    return table[instance];
+}
 
 void TreeStructure::bsInstance()
 {
     try
     {
         const auto output = Tree().bs();
-        TREE_PRINT_RESULT_CONTENT("BinarySearch");
+        TREE_PRINT_RESULT_CONTENT(TreeInstance::binarySearch);
     }
     catch (const std::exception& error)
     {
@@ -196,7 +233,7 @@ void TreeStructure::avlInstance()
     try
     {
         const auto output = Tree().avl();
-        TREE_PRINT_RESULT_CONTENT("AdelsonVelskyLandis");
+        TREE_PRINT_RESULT_CONTENT(TreeInstance::adelsonVelskyLandis);
     }
     catch (const std::exception& error)
     {
@@ -209,13 +246,17 @@ void TreeStructure::splayInstance()
     try
     {
         const auto output = Tree().splay();
-        TREE_PRINT_RESULT_CONTENT("Splay");
+        TREE_PRINT_RESULT_CONTENT(TreeInstance::splay);
     }
     catch (const std::exception& error)
     {
         LOG_ERR << error.what();
     }
 }
+
+#undef TREE_RESULT
+#undef TREE_PRINT_RESULT_CONTENT
+#undef TREE_INSTANCE_TABLE
 } // namespace tree
 
 //! @brief Run tree tasks.

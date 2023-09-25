@@ -64,14 +64,31 @@ namespace arithmetic
 #define ARITHMETIC_RESULT "\r\n==> %-14s Method <==\n(%d) %c (%d) = %d\n"
 //! @brief Print arithmetic result content.
 #define ARITHMETIC_PRINT_RESULT_CONTENT(method, a, operator, b, result) \
-    COMMON_PRINT(ARITHMETIC_RESULT, method, a, operator, b, result)
+    COMMON_PRINT(ARITHMETIC_RESULT, toString(method).data(), a, operator, b, result)
+//! @brief Mapping table for enum and string about arithmetic methods.
+#define ARITHMETIC_METHOD_TABLE            \
+    ELEM(addition, "Addition")             \
+    ELEM(subtraction, "Subtraction")       \
+    ELEM(multiplication, "Multiplication") \
+    ELEM(division, "Division")
+
+//! @brief Convert method enumeration to string.
+//! @param method - the specific value of ArithmeticMethod enum
+//! @return method name
+constexpr std::string_view toString(const ArithmeticMethod method)
+{
+#define ELEM(enum, str) str,
+    constexpr std::string_view table[] = {ARITHMETIC_METHOD_TABLE};
+#undef ELEM
+    return table[method];
+}
 
 void ArithmeticSolution::additionMethod(const int augend, const int addend)
 {
     try
     {
         const auto sum = numeric::arithmetic::Arithmetic().addition(augend, addend);
-        ARITHMETIC_PRINT_RESULT_CONTENT("Addition", augend, '+', addend, sum);
+        ARITHMETIC_PRINT_RESULT_CONTENT(ArithmeticMethod::addition, augend, '+', addend, sum);
     }
     catch (const std::exception& error)
     {
@@ -84,7 +101,7 @@ void ArithmeticSolution::subtractionMethod(const int minuend, const int subtrahe
     try
     {
         const auto difference = numeric::arithmetic::Arithmetic().subtraction(minuend, subtrahend);
-        ARITHMETIC_PRINT_RESULT_CONTENT("Subtraction", minuend, '-', subtrahend, difference);
+        ARITHMETIC_PRINT_RESULT_CONTENT(ArithmeticMethod::subtraction, minuend, '-', subtrahend, difference);
     }
     catch (const std::exception& error)
     {
@@ -97,7 +114,7 @@ void ArithmeticSolution::multiplicationMethod(const int multiplier, const int mu
     try
     {
         const auto product = numeric::arithmetic::Arithmetic().multiplication(multiplier, multiplicand);
-        ARITHMETIC_PRINT_RESULT_CONTENT("Multiplication", multiplier, '*', multiplicand, product);
+        ARITHMETIC_PRINT_RESULT_CONTENT(ArithmeticMethod::multiplication, multiplier, '*', multiplicand, product);
     }
     catch (const std::exception& error)
     {
@@ -110,13 +127,17 @@ void ArithmeticSolution::divisionMethod(const int dividend, const int divisor)
     try
     {
         const auto quotient = numeric::arithmetic::Arithmetic().division(dividend, divisor);
-        ARITHMETIC_PRINT_RESULT_CONTENT("Division", dividend, '/', divisor, quotient);
+        ARITHMETIC_PRINT_RESULT_CONTENT(ArithmeticMethod::division, dividend, '/', divisor, quotient);
     }
     catch (const std::exception& error)
     {
         LOG_ERR << error.what();
     }
 }
+
+#undef ARITHMETIC_RESULT
+#undef ARITHMETIC_PRINT_RESULT_CONTENT
+#undef ARITHMETIC_METHOD_TABLE
 } // namespace arithmetic
 
 //! @brief Run arithmetic tasks.
@@ -217,11 +238,26 @@ namespace divisor
         arrayBuffer[0] = '\0';                                                                                  \
         COMMON_PRINT(                                                                                           \
             DIVISOR_RESULT,                                                                                     \
-            method,                                                                                             \
+            toString(method).data(),                                                                            \
             TargetBuilder::template spliceAllIntegers<int>(divisorContainer, arrayBuffer, arrayBufferSize + 1), \
             TIME_INTERVAL(timing));                                                                             \
     }                                                                                                           \
     while (0)
+//! @brief Mapping table for enum and string about divisor methods.
+#define DIVISOR_METHOD_TABLE     \
+    ELEM(euclidean, "Euclidean") \
+    ELEM(stein, "Stein")
+
+//! @brief Convert method enumeration to string.
+//! @param method - the specific value of DivisorMethod enum
+//! @return method name
+constexpr std::string_view toString(const DivisorMethod method)
+{
+#define ELEM(enum, str) str,
+    constexpr std::string_view table[] = {DIVISOR_METHOD_TABLE};
+#undef ELEM
+    return table[method];
+}
 
 void DivisorSolution::euclideanMethod(int a, int b)
 {
@@ -230,7 +266,7 @@ void DivisorSolution::euclideanMethod(int a, int b)
         TIME_BEGIN(timing);
         const auto divisorContainer = numeric::divisor::Divisor().euclidean(a, b);
         TIME_END(timing);
-        DIVISOR_PRINT_RESULT_CONTENT("Euclidean");
+        DIVISOR_PRINT_RESULT_CONTENT(DivisorMethod::euclidean);
     }
     catch (const std::exception& error)
     {
@@ -245,13 +281,17 @@ void DivisorSolution::steinMethod(int a, int b)
         TIME_BEGIN(timing);
         const auto divisorContainer = numeric::divisor::Divisor().stein(a, b);
         TIME_END(timing);
-        DIVISOR_PRINT_RESULT_CONTENT("Stein");
+        DIVISOR_PRINT_RESULT_CONTENT(DivisorMethod::stein);
     }
     catch (const std::exception& error)
     {
         LOG_ERR << error.what();
     }
 }
+
+#undef DIVISOR_RESULT
+#undef DIVISOR_PRINT_RESULT_CONTENT
+#undef DIVISOR_METHOD_TABLE
 } // namespace divisor
 
 //! @brief Run divisor tasks.
@@ -332,7 +372,25 @@ namespace integral
 #define INTEGRAL_RESULT(opt) "\r\n==> %-11s Method <==\nI(" #opt ")=%+.5f, run time: %8.5f ms\n"
 //! @brief Print integral result content.
 #define INTEGRAL_PRINT_RESULT_CONTENT(method, sum) \
-    COMMON_PRINT(INTEGRAL_RESULT(def), method, sum, TIME_INTERVAL(timing))
+    COMMON_PRINT(INTEGRAL_RESULT(def), toString(method).data(), sum, TIME_INTERVAL(timing))
+//! @brief Mapping table for enum and string about integral methods.
+#define INTEGRAL_METHOD_TABLE        \
+    ELEM(trapezoidal, "Trapezoidal") \
+    ELEM(simpson, "Simpson")         \
+    ELEM(romberg, "Romberg")         \
+    ELEM(gauss, "Gauss")             \
+    ELEM(monteCarlo, "MonteCarlo")
+
+//! @brief Convert method enumeration to string.
+//! @param method - the specific value of IntegralMethod enum
+//! @return method name
+constexpr std::string_view toString(const IntegralMethod method)
+{
+#define ELEM(enum, str) str,
+    constexpr std::string_view table[] = {INTEGRAL_METHOD_TABLE};
+#undef ELEM
+    return table[method];
+}
 
 void IntegralSolution::trapezoidalMethod(const Expression& expr, double lower, double upper)
 {
@@ -341,7 +399,7 @@ void IntegralSolution::trapezoidalMethod(const Expression& expr, double lower, d
         TIME_BEGIN(timing);
         const auto sum = numeric::integral::Trapezoidal(expr)(lower, upper, numeric::integral::epsilon);
         TIME_END(timing);
-        INTEGRAL_PRINT_RESULT_CONTENT("Trapezoidal", sum);
+        INTEGRAL_PRINT_RESULT_CONTENT(IntegralMethod::trapezoidal, sum);
     }
     catch (const std::exception& error)
     {
@@ -356,7 +414,7 @@ void IntegralSolution::adaptiveSimpsonMethod(const Expression& expr, const doubl
         TIME_BEGIN(timing);
         const auto sum = numeric::integral::Trapezoidal(expr)(lower, upper, numeric::integral::epsilon);
         TIME_END(timing);
-        INTEGRAL_PRINT_RESULT_CONTENT("Simpson", sum);
+        INTEGRAL_PRINT_RESULT_CONTENT(IntegralMethod::simpson, sum);
     }
     catch (const std::exception& error)
     {
@@ -371,7 +429,7 @@ void IntegralSolution::rombergMethod(const Expression& expr, const double lower,
         TIME_BEGIN(timing);
         const auto sum = numeric::integral::Romberg(expr)(lower, upper, numeric::integral::epsilon);
         TIME_END(timing);
-        INTEGRAL_PRINT_RESULT_CONTENT("Romberg", sum);
+        INTEGRAL_PRINT_RESULT_CONTENT(IntegralMethod::romberg, sum);
     }
     catch (const std::exception& error)
     {
@@ -386,7 +444,7 @@ void IntegralSolution::gaussLegendreMethod(const Expression& expr, const double 
         TIME_BEGIN(timing);
         const auto sum = numeric::integral::Gauss(expr)(lower, upper, numeric::integral::epsilon);
         TIME_END(timing);
-        INTEGRAL_PRINT_RESULT_CONTENT("Gauss", sum);
+        INTEGRAL_PRINT_RESULT_CONTENT(IntegralMethod::gauss, sum);
     }
     catch (const std::exception& error)
     {
@@ -401,13 +459,17 @@ void IntegralSolution::monteCarloMethod(const Expression& expr, const double low
         TIME_BEGIN(timing);
         const auto sum = numeric::integral::MonteCarlo(expr)(lower, upper, numeric::integral::epsilon);
         TIME_END(timing);
-        INTEGRAL_PRINT_RESULT_CONTENT("MonteCarlo", sum);
+        INTEGRAL_PRINT_RESULT_CONTENT(IntegralMethod::monteCarlo, sum);
     }
     catch (const std::exception& error)
     {
         LOG_ERR << error.what();
     }
 }
+
+#undef INTEGRAL_RESULT
+#undef INTEGRAL_PRINT_RESULT_CONTENT
+#undef INTEGRAL_METHOD_TABLE
 } // namespace integral
 
 //! @brief Run integral tasks.
@@ -544,12 +606,27 @@ namespace prime
         arrayBuffer[0] = '\0';                                                         \
         COMMON_PRINT(                                                                  \
             PRIME_RESULT,                                                              \
-            method,                                                                    \
+            toString(method).data(),                                                   \
             TargetBuilder::template spliceAllIntegers<std::uint32_t>(                  \
                 primeContainer, arrayBuffer, arrayBufferSize + 1),                     \
             TIME_INTERVAL(timing));                                                    \
     }                                                                                  \
     while (0)
+//! @brief Mapping table for enum and string about prime methods.
+#define PRIME_METHOD_TABLE             \
+    ELEM(eratosthenes, "Eratosthenes") \
+    ELEM(euler, "Euler")
+
+//! @brief Convert method enumeration to string.
+//! @param method - the specific value of PrimeMethod enum
+//! @return method name
+constexpr std::string_view toString(const PrimeMethod method)
+{
+#define ELEM(enum, str) str,
+    constexpr std::string_view table[] = {PRIME_METHOD_TABLE};
+#undef ELEM
+    return table[method];
+}
 
 void PrimeSolution::eratosthenesMethod(const std::uint32_t max)
 {
@@ -558,7 +635,7 @@ void PrimeSolution::eratosthenesMethod(const std::uint32_t max)
         TIME_BEGIN(timing);
         const auto primeContainer = numeric::prime::Prime().eratosthenes(max);
         TIME_END(timing);
-        PRIME_PRINT_RESULT_CONTENT("Eratosthenes");
+        PRIME_PRINT_RESULT_CONTENT(PrimeMethod::eratosthenes);
     }
     catch (const std::exception& error)
     {
@@ -573,13 +650,17 @@ void PrimeSolution::eulerMethod(const std::uint32_t max)
         TIME_BEGIN(timing);
         const auto primeContainer = numeric::prime::Prime().euler(max);
         TIME_END(timing);
-        PRIME_PRINT_RESULT_CONTENT("Euler");
+        PRIME_PRINT_RESULT_CONTENT(PrimeMethod::euler);
     }
     catch (const std::exception& error)
     {
         LOG_ERR << error.what();
     }
 }
+
+#undef PRIME_RESULT
+#undef PRIME_PRINT_RESULT_CONTENT
+#undef PRIME_METHOD_TABLE
 } // namespace prime
 
 //! @brief Run prime tasks.

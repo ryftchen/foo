@@ -69,19 +69,37 @@ namespace match
 //! @brief Display none match result.
 #define MATCH_NONE_RESULT "\r\n==> %-16s Method <==\npattern \"%s\" could not be found, run time: %8.5f ms\n"
 //! @brief Print match result content.
-#define MATCH_PRINT_RESULT_CONTENT(method)                                                  \
-    do                                                                                      \
-    {                                                                                       \
-        if (-1 != shift)                                                                    \
-        {                                                                                   \
-            COMMON_PRINT(MATCH_RESULT(1st), method, pattern, shift, TIME_INTERVAL(timing)); \
-        }                                                                                   \
-        else                                                                                \
-        {                                                                                   \
-            COMMON_PRINT(MATCH_NONE_RESULT, method, pattern, TIME_INTERVAL(timing));        \
-        }                                                                                   \
-    }                                                                                       \
+#define MATCH_PRINT_RESULT_CONTENT(method)                                                                   \
+    do                                                                                                       \
+    {                                                                                                        \
+        if (-1 != shift)                                                                                     \
+        {                                                                                                    \
+            COMMON_PRINT(MATCH_RESULT(1st), toString(method).data(), pattern, shift, TIME_INTERVAL(timing)); \
+        }                                                                                                    \
+        else                                                                                                 \
+        {                                                                                                    \
+            COMMON_PRINT(MATCH_NONE_RESULT, toString(method).data(), pattern, TIME_INTERVAL(timing));        \
+        }                                                                                                    \
+    }                                                                                                        \
     while (0)
+//! @brief Mapping table for enum and string about match methods.
+#define MATCH_METHOD_TABLE                     \
+    ELEM(rabinKarp, "RabinKarp")               \
+    ELEM(knuthMorrisPratt, "KnuthMorrisPratt") \
+    ELEM(boyerMoore, "BoyerMoore")             \
+    ELEM(horspool, "Horspool")                 \
+    ELEM(sunday, "Sunday")
+
+//! @brief Convert method enumeration to string.
+//! @param method - the specific value of MatchMethod enum
+//! @return method name
+constexpr std::string_view toString(const MatchMethod method)
+{
+#define ELEM(enum, str) str,
+    constexpr std::string_view table[] = {MATCH_METHOD_TABLE};
+#undef ELEM
+    return table[method];
+}
 
 void MatchSolution::rkMethod(
     const char* text,
@@ -94,7 +112,7 @@ void MatchSolution::rkMethod(
         TIME_BEGIN(timing);
         const auto shift = algorithm::match::Match().rk(text, pattern, textLen, patternLen);
         TIME_END(timing);
-        MATCH_PRINT_RESULT_CONTENT("RabinKarp");
+        MATCH_PRINT_RESULT_CONTENT(MatchMethod::rabinKarp);
     }
     catch (const std::exception& error)
     {
@@ -113,7 +131,7 @@ void MatchSolution::kmpMethod(
         TIME_BEGIN(timing);
         const auto shift = algorithm::match::Match().kmp(text, pattern, textLen, patternLen);
         TIME_END(timing);
-        MATCH_PRINT_RESULT_CONTENT("KnuthMorrisPratt");
+        MATCH_PRINT_RESULT_CONTENT(MatchMethod::knuthMorrisPratt);
     }
     catch (const std::exception& error)
     {
@@ -132,7 +150,7 @@ void MatchSolution::bmMethod(
         TIME_BEGIN(timing);
         const auto shift = algorithm::match::Match().bm(text, pattern, textLen, patternLen);
         TIME_END(timing);
-        MATCH_PRINT_RESULT_CONTENT("BoyerMoore");
+        MATCH_PRINT_RESULT_CONTENT(MatchMethod::boyerMoore);
     }
     catch (const std::exception& error)
     {
@@ -151,7 +169,7 @@ void MatchSolution::horspoolMethod(
         TIME_BEGIN(timing);
         const auto shift = algorithm::match::Match().horspool(text, pattern, textLen, patternLen);
         TIME_END(timing);
-        MATCH_PRINT_RESULT_CONTENT("Horspool");
+        MATCH_PRINT_RESULT_CONTENT(MatchMethod::horspool);
     }
     catch (const std::exception& error)
     {
@@ -170,13 +188,18 @@ void MatchSolution::sundayMethod(
         TIME_BEGIN(timing);
         const auto shift = algorithm::match::Match().sunday(text, pattern, textLen, patternLen);
         TIME_END(timing);
-        MATCH_PRINT_RESULT_CONTENT("Sunday");
+        MATCH_PRINT_RESULT_CONTENT(MatchMethod::sunday);
     }
     catch (const std::exception& error)
     {
         LOG_ERR << error.what();
     }
 }
+
+#undef MATCH_RESULT
+#undef MATCH_NONE_RESULT
+#undef MATCH_PRINT_RESULT_CONTENT
+#undef MATCH_METHOD_TABLE
 } // namespace match
 
 //! @brief Run match tasks.
@@ -282,14 +305,29 @@ namespace notation
 #define NOTATION_RESULT "\r\n==> %-7s Method <==\n%s: %s\n"
 //! @brief Print notation result content.
 #define NOTATION_PRINT_RESULT_CONTENT(method, describe) \
-    COMMON_PRINT(NOTATION_RESULT, method, describe, notationStr.data())
+    COMMON_PRINT(NOTATION_RESULT, toString(method).data(), describe, notationStr.data())
+//! @brief Mapping table for enum and string about notation methods.
+#define NOTATION_METHOD_TABLE \
+    ELEM(prefix, "Prefix")    \
+    ELEM(postfix, "Postfix")
+
+//! @brief Convert method enumeration to string.
+//! @param method - the specific value of NotationMethod enum
+//! @return method name
+constexpr std::string_view toString(const NotationMethod method)
+{
+#define ELEM(enum, str) str,
+    constexpr std::string_view table[] = {NOTATION_METHOD_TABLE};
+#undef ELEM
+    return table[method];
+}
 
 void NotationSolution::prefixMethod(const std::string& infixNotation)
 {
     try
     {
         const auto notationStr = algorithm::notation::Notation().prefix(infixNotation);
-        NOTATION_PRINT_RESULT_CONTENT("Prefix", "polish notation");
+        NOTATION_PRINT_RESULT_CONTENT(NotationMethod::prefix, "polish notation");
     }
     catch (const std::exception& error)
     {
@@ -302,13 +340,17 @@ void NotationSolution::postfixMethod(const std::string& infixNotation)
     try
     {
         const auto notationStr = algorithm::notation::Notation().postfix(infixNotation);
-        NOTATION_PRINT_RESULT_CONTENT("Postfix", "reverse polish notation");
+        NOTATION_PRINT_RESULT_CONTENT(NotationMethod::postfix, "reverse polish notation");
     }
     catch (const std::exception& error)
     {
         LOG_ERR << error.what();
     }
 }
+
+#undef NOTATION_RESULT
+#undef NOTATION_PRINT_RESULT_CONTENT
+#undef NOTATION_METHOD_TABLE
 } // namespace notation
 
 //! @brief Run notation tasks.
@@ -387,7 +429,25 @@ namespace optimal
 //! @brief Display optimal result.
 #define OPTIMAL_RESULT(opt) "\r\n==> %-9s Method <==\nF(" #opt ")=%+.5f X=%+.5f, run time: %8.5f ms\n"
 //! @brief Print optimal result content.
-#define OPTIMAL_PRINT_RESULT_CONTENT(method) COMMON_PRINT(OPTIMAL_RESULT(min), method, fx, x, TIME_INTERVAL(timing))
+#define OPTIMAL_PRINT_RESULT_CONTENT(method) \
+    COMMON_PRINT(OPTIMAL_RESULT(min), toString(method).data(), fx, x, TIME_INTERVAL(timing))
+//! @brief Mapping table for enum and string about optimal methods.
+#define OPTIMAL_METHOD_TABLE     \
+    ELEM(gradient, "Gradient")   \
+    ELEM(annealing, "Annealing") \
+    ELEM(particle, "Particle")   \
+    ELEM(genetic, "Genetic")
+
+//! @brief Convert method enumeration to string.
+//! @param method - the specific value of OptimalMethod enum
+//! @return method name
+constexpr std::string_view toString(const OptimalMethod method)
+{
+#define ELEM(enum, str) str,
+    constexpr std::string_view table[] = {OPTIMAL_METHOD_TABLE};
+#undef ELEM
+    return table[method];
+}
 
 void OptimalSolution::gradientDescentMethod(const Function& func, const double left, const double right)
 {
@@ -396,7 +456,7 @@ void OptimalSolution::gradientDescentMethod(const Function& func, const double l
         TIME_BEGIN(timing);
         const auto [fx, x] = algorithm::optimal::Gradient(func)(left, right, algorithm::optimal::epsilon).value();
         TIME_END(timing);
-        OPTIMAL_PRINT_RESULT_CONTENT("Gradient");
+        OPTIMAL_PRINT_RESULT_CONTENT(OptimalMethod::gradient);
     }
     catch (const std::exception& error)
     {
@@ -411,7 +471,7 @@ void OptimalSolution::simulatedAnnealingMethod(const Function& func, const doubl
         TIME_BEGIN(timing);
         const auto [fx, x] = algorithm::optimal::Annealing(func)(left, right, algorithm::optimal::epsilon).value();
         TIME_END(timing);
-        OPTIMAL_PRINT_RESULT_CONTENT("Annealing");
+        OPTIMAL_PRINT_RESULT_CONTENT(OptimalMethod::annealing);
     }
     catch (const std::exception& error)
     {
@@ -426,7 +486,7 @@ void OptimalSolution::particleSwarmMethod(const Function& func, const double lef
         TIME_BEGIN(timing);
         const auto [fx, x] = algorithm::optimal::Particle(func)(left, right, algorithm::optimal::epsilon).value();
         TIME_END(timing);
-        OPTIMAL_PRINT_RESULT_CONTENT("Particle");
+        OPTIMAL_PRINT_RESULT_CONTENT(OptimalMethod::particle);
     }
     catch (const std::exception& error)
     {
@@ -441,13 +501,17 @@ void OptimalSolution::geneticMethod(const Function& func, const double left, con
         TIME_BEGIN(timing);
         const auto [fx, x] = algorithm::optimal::Genetic(func)(left, right, algorithm::optimal::epsilon).value();
         TIME_END(timing);
-        OPTIMAL_PRINT_RESULT_CONTENT("Genetic");
+        OPTIMAL_PRINT_RESULT_CONTENT(OptimalMethod::genetic);
     }
     catch (const std::exception& error)
     {
         LOG_ERR << error.what();
     }
 }
+
+#undef OPTIMAL_RESULT
+#undef OPTIMAL_PRINT_RESULT_CONTENT
+#undef OPTIMAL_METHOD_TABLE
 } // namespace optimal
 
 //! @brief Run optimal tasks.
@@ -574,19 +638,35 @@ namespace search
 //! @brief Display none search result.
 #define SEARCH_NONE_RESULT "\r\n==> %-13s Method <==\ncould not find the key \"%.5f\", run time: %8.5f ms\n"
 //! @brief Print search result content.
-#define SEARCH_PRINT_RESULT_CONTENT(method)                                         \
-    do                                                                              \
-    {                                                                               \
-        if (-1 != index)                                                            \
-        {                                                                           \
-            COMMON_PRINT(SEARCH_RESULT, method, key, index, TIME_INTERVAL(timing)); \
-        }                                                                           \
-        else                                                                        \
-        {                                                                           \
-            COMMON_PRINT(SEARCH_NONE_RESULT, method, key, TIME_INTERVAL(timing));   \
-        }                                                                           \
-    }                                                                               \
+#define SEARCH_PRINT_RESULT_CONTENT(method)                                                          \
+    do                                                                                               \
+    {                                                                                                \
+        if (-1 != index)                                                                             \
+        {                                                                                            \
+            COMMON_PRINT(SEARCH_RESULT, toString(method).data(), key, index, TIME_INTERVAL(timing)); \
+        }                                                                                            \
+        else                                                                                         \
+        {                                                                                            \
+            COMMON_PRINT(SEARCH_NONE_RESULT, toString(method).data(), key, TIME_INTERVAL(timing));   \
+        }                                                                                            \
+    }                                                                                                \
     while (0)
+//! @brief Mapping table for enum and string about search methods.
+#define SEARCH_METHOD_TABLE              \
+    ELEM(binary, "Binary")               \
+    ELEM(interpolation, "Interpolation") \
+    ELEM(fibonacci, "Fibonacci")
+
+//! @brief Convert method enumeration to string.
+//! @param method - the specific value of SearchMethod enum
+//! @return method name
+constexpr std::string_view toString(const SearchMethod method)
+{
+#define ELEM(enum, str) str,
+    constexpr std::string_view table[] = {SEARCH_METHOD_TABLE};
+#undef ELEM
+    return table[method];
+}
 
 void SearchSolution::binaryMethod(const double* const array, const std::uint32_t length, const double key)
 {
@@ -595,7 +675,7 @@ void SearchSolution::binaryMethod(const double* const array, const std::uint32_t
         TIME_BEGIN(timing);
         const auto index = algorithm::search::Search<double>().binary(array, length, key);
         TIME_END(timing);
-        SEARCH_PRINT_RESULT_CONTENT("Binary");
+        SEARCH_PRINT_RESULT_CONTENT(SearchMethod::binary);
     }
     catch (const std::exception& error)
     {
@@ -610,7 +690,7 @@ void SearchSolution::interpolationMethod(const double* const array, const std::u
         TIME_BEGIN(timing);
         const auto index = algorithm::search::Search<double>().interpolation(array, length, key);
         TIME_END(timing);
-        SEARCH_PRINT_RESULT_CONTENT("Interpolation");
+        SEARCH_PRINT_RESULT_CONTENT(SearchMethod::interpolation);
     }
     catch (const std::exception& error)
     {
@@ -625,13 +705,18 @@ void SearchSolution::fibonacciMethod(const double* const array, const std::uint3
         TIME_BEGIN(timing);
         const auto index = algorithm::search::Search<double>().fibonacci(array, length, key);
         TIME_END(timing);
-        SEARCH_PRINT_RESULT_CONTENT("Fibonacci");
+        SEARCH_PRINT_RESULT_CONTENT(SearchMethod::fibonacci);
     }
     catch (const std::exception& error)
     {
         LOG_ERR << error.what();
     }
 }
+
+#undef SEARCH_RESULT
+#undef SEARCH_NONE_RESULT
+#undef SEARCH_PRINT_RESULT_CONTENT
+#undef SEARCH_METHOD_TABLE
 } // namespace search
 
 //! @brief Run search tasks.
@@ -729,11 +814,34 @@ namespace sort
         arrayBuffer[0] = '\0';                                                                                    \
         COMMON_PRINT(                                                                                             \
             SORT_RESULT(asc),                                                                                     \
-            method,                                                                                               \
+            toString(method).data(),                                                                              \
             TargetBuilder<int>::template spliceAll<int>(&sortArray[0], length, arrayBuffer, arrayBufferSize + 1), \
             TIME_INTERVAL(timing));                                                                               \
     }                                                                                                             \
     while (0)
+//! @brief Mapping table for enum and string about sort methods.
+#define SORT_METHOD_TABLE        \
+    ELEM(bubble, "Bubble")       \
+    ELEM(selection, "Selection") \
+    ELEM(insertion, "Insertion") \
+    ELEM(shell, "Shell")         \
+    ELEM(merge, "Merge")         \
+    ELEM(quick, "Quick")         \
+    ELEM(heap, "Heap")           \
+    ELEM(counting, "Counting")   \
+    ELEM(bucket, "Bucket")       \
+    ELEM(radix, "Radix")
+
+//! @brief Convert method enumeration to string.
+//! @param method - the specific value of SortMethod enum
+//! @return method name
+constexpr std::string_view toString(const SortMethod method)
+{
+#define ELEM(enum, str) str,
+    constexpr std::string_view table[] = {SORT_METHOD_TABLE};
+#undef ELEM
+    return table[method];
+}
 
 void SortSolution::bubbleMethod(int* const array, const std::uint32_t length)
 {
@@ -742,7 +850,7 @@ void SortSolution::bubbleMethod(int* const array, const std::uint32_t length)
         TIME_BEGIN(timing);
         const auto sortArray = algorithm::sort::Sort<int>().bubble(array, length);
         TIME_END(timing);
-        SORT_PRINT_RESULT_CONTENT("Bubble");
+        SORT_PRINT_RESULT_CONTENT(SortMethod::bubble);
     }
     catch (const std::exception& error)
     {
@@ -757,7 +865,7 @@ void SortSolution::selectionMethod(int* const array, const std::uint32_t length)
         TIME_BEGIN(timing);
         const auto sortArray = algorithm::sort::Sort<int>().selection(array, length);
         TIME_END(timing);
-        SORT_PRINT_RESULT_CONTENT("Selection");
+        SORT_PRINT_RESULT_CONTENT(SortMethod::selection);
     }
     catch (const std::exception& error)
     {
@@ -772,7 +880,7 @@ void SortSolution::insertionMethod(int* const array, const std::uint32_t length)
         TIME_BEGIN(timing);
         const auto sortArray = algorithm::sort::Sort<int>().insertion(array, length);
         TIME_END(timing);
-        SORT_PRINT_RESULT_CONTENT("Insertion");
+        SORT_PRINT_RESULT_CONTENT(SortMethod::insertion);
     }
     catch (const std::exception& error)
     {
@@ -787,7 +895,7 @@ void SortSolution::shellMethod(int* const array, const std::uint32_t length)
         TIME_BEGIN(timing);
         const auto sortArray = algorithm::sort::Sort<int>().shell(array, length);
         TIME_END(timing);
-        SORT_PRINT_RESULT_CONTENT("Shell");
+        SORT_PRINT_RESULT_CONTENT(SortMethod::shell);
     }
     catch (const std::exception& error)
     {
@@ -802,7 +910,7 @@ void SortSolution::mergeMethod(int* const array, const std::uint32_t length)
         TIME_BEGIN(timing);
         const auto sortArray = algorithm::sort::Sort<int>().merge(array, length);
         TIME_END(timing);
-        SORT_PRINT_RESULT_CONTENT("Merge");
+        SORT_PRINT_RESULT_CONTENT(SortMethod::merge);
     }
     catch (const std::exception& error)
     {
@@ -817,7 +925,7 @@ void SortSolution::quickMethod(int* const array, const std::uint32_t length)
         TIME_BEGIN(timing);
         const auto sortArray = algorithm::sort::Sort<int>().quick(array, length);
         TIME_END(timing);
-        SORT_PRINT_RESULT_CONTENT("Quick");
+        SORT_PRINT_RESULT_CONTENT(SortMethod::quick);
     }
     catch (const std::exception& error)
     {
@@ -832,7 +940,7 @@ void SortSolution::heapMethod(int* const array, const std::uint32_t length)
         TIME_BEGIN(timing);
         const auto sortArray = algorithm::sort::Sort<int>().heap(array, length);
         TIME_END(timing);
-        SORT_PRINT_RESULT_CONTENT("Heap");
+        SORT_PRINT_RESULT_CONTENT(SortMethod::heap);
     }
     catch (const std::exception& error)
     {
@@ -847,7 +955,7 @@ void SortSolution::countingMethod(int* const array, const std::uint32_t length)
         TIME_BEGIN(timing);
         const auto sortArray = algorithm::sort::Sort<int>().counting(array, length);
         TIME_END(timing);
-        SORT_PRINT_RESULT_CONTENT("Counting");
+        SORT_PRINT_RESULT_CONTENT(SortMethod::counting);
     }
     catch (const std::exception& error)
     {
@@ -862,7 +970,7 @@ void SortSolution::bucketMethod(int* const array, const std::uint32_t length)
         TIME_BEGIN(timing);
         const auto sortArray = algorithm::sort::Sort<int>().bucket(array, length);
         TIME_END(timing);
-        SORT_PRINT_RESULT_CONTENT("Bucket");
+        SORT_PRINT_RESULT_CONTENT(SortMethod::bucket);
     }
     catch (const std::exception& error)
     {
@@ -877,13 +985,17 @@ void SortSolution::radixMethod(int* const array, const std::uint32_t length)
         TIME_BEGIN(timing);
         const auto sortArray = algorithm::sort::Sort<int>().radix(array, length);
         TIME_END(timing);
-        SORT_PRINT_RESULT_CONTENT("Radix");
+        SORT_PRINT_RESULT_CONTENT(SortMethod::radix);
     }
     catch (const std::exception& error)
     {
         LOG_ERR << error.what();
     }
 }
+
+#undef SORT_RESULT
+#undef SORT_PRINT_RESULT_CONTENT
+#undef SORT_METHOD_TABLE
 } // namespace sort
 
 //! @brief Run sort tasks.

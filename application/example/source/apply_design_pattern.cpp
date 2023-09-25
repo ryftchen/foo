@@ -57,14 +57,39 @@ namespace behavioral
 //! @brief Display behavioral result.
 #define BEHAVIORAL_RESULT "\r\n==> %-21s Instance <==\n%s"
 //! @brief Print behavioral result content.
-#define BEHAVIORAL_PRINT_RESULT_CONTENT(pattern) COMMON_PRINT(BEHAVIORAL_RESULT, pattern, output.str().c_str());
+#define BEHAVIORAL_PRINT_RESULT_CONTENT(instance) \
+    COMMON_PRINT(BEHAVIORAL_RESULT, toString(instance).data(), output.str().c_str());
+//! @brief Mapping table for enum and string about behavioral instances.
+#define BEHAVIORAL_INSTANCE_TABLE                        \
+    ELEM(chainOfResponsibility, "ChainOfResponsibility") \
+    ELEM(command, "Command")                             \
+    ELEM(interpreter, "Interpreter")                     \
+    ELEM(iterator, "Iterator")                           \
+    ELEM(mediator, "Mediator")                           \
+    ELEM(memento, "Memento")                             \
+    ELEM(observer, "Observer")                           \
+    ELEM(state, "State")                                 \
+    ELEM(strategy, "Strategy")                           \
+    ELEM(templateMethod, "TemplateMethod")               \
+    ELEM(visitor, "Visitor")
+
+//! @brief Convert instance enumeration to string.
+//! @param instance - the specific value of BehavioralInstance enum
+//! @return instance name
+constexpr std::string_view toString(const BehavioralInstance instance)
+{
+#define ELEM(enum, str) str,
+    constexpr std::string_view table[] = {BEHAVIORAL_INSTANCE_TABLE};
+#undef ELEM
+    return table[instance];
+}
 
 void BehavioralPattern::chainOfResponsibilityInstance()
 {
     try
     {
         const auto output = Behavioral().chainOfResponsibility();
-        BEHAVIORAL_PRINT_RESULT_CONTENT("ChainOfResponsibility");
+        BEHAVIORAL_PRINT_RESULT_CONTENT(BehavioralInstance::chainOfResponsibility);
     }
     catch (const std::exception& error)
     {
@@ -77,7 +102,7 @@ void BehavioralPattern::commandInstance()
     try
     {
         const auto output = Behavioral().command();
-        BEHAVIORAL_PRINT_RESULT_CONTENT("Command");
+        BEHAVIORAL_PRINT_RESULT_CONTENT(BehavioralInstance::command);
     }
     catch (const std::exception& error)
     {
@@ -90,7 +115,7 @@ void BehavioralPattern::interpreterInstance()
     try
     {
         const auto output = Behavioral().interpreter();
-        BEHAVIORAL_PRINT_RESULT_CONTENT("Interpreter");
+        BEHAVIORAL_PRINT_RESULT_CONTENT(BehavioralInstance::interpreter);
     }
     catch (const std::exception& error)
     {
@@ -103,7 +128,7 @@ void BehavioralPattern::iteratorInstance()
     try
     {
         const auto output = Behavioral().iterator();
-        BEHAVIORAL_PRINT_RESULT_CONTENT("Iterator");
+        BEHAVIORAL_PRINT_RESULT_CONTENT(BehavioralInstance::iterator);
     }
     catch (const std::exception& error)
     {
@@ -116,7 +141,7 @@ void BehavioralPattern::mediatorInstance()
     try
     {
         const auto output = Behavioral().mediator();
-        BEHAVIORAL_PRINT_RESULT_CONTENT("Mediator");
+        BEHAVIORAL_PRINT_RESULT_CONTENT(BehavioralInstance::mediator);
     }
     catch (const std::exception& error)
     {
@@ -129,7 +154,7 @@ void BehavioralPattern::mementoInstance()
     try
     {
         const auto output = Behavioral().memento();
-        BEHAVIORAL_PRINT_RESULT_CONTENT("Memento");
+        BEHAVIORAL_PRINT_RESULT_CONTENT(BehavioralInstance::memento);
     }
     catch (const std::exception& error)
     {
@@ -142,7 +167,7 @@ void BehavioralPattern::observerInstance()
     try
     {
         const auto output = Behavioral().observer();
-        BEHAVIORAL_PRINT_RESULT_CONTENT("Observer");
+        BEHAVIORAL_PRINT_RESULT_CONTENT(BehavioralInstance::observer);
     }
     catch (const std::exception& error)
     {
@@ -155,7 +180,7 @@ void BehavioralPattern::stateInstance()
     try
     {
         const auto output = Behavioral().state();
-        BEHAVIORAL_PRINT_RESULT_CONTENT("State");
+        BEHAVIORAL_PRINT_RESULT_CONTENT(BehavioralInstance::state);
     }
     catch (const std::exception& error)
     {
@@ -168,7 +193,7 @@ void BehavioralPattern::strategyInstance()
     try
     {
         const auto output = Behavioral().strategy();
-        BEHAVIORAL_PRINT_RESULT_CONTENT("Strategy");
+        BEHAVIORAL_PRINT_RESULT_CONTENT(BehavioralInstance::strategy);
     }
     catch (const std::exception& error)
     {
@@ -181,7 +206,7 @@ void BehavioralPattern::templateMethodInstance()
     try
     {
         const auto output = Behavioral().templateMethod();
-        BEHAVIORAL_PRINT_RESULT_CONTENT("TemplateMethod");
+        BEHAVIORAL_PRINT_RESULT_CONTENT(BehavioralInstance::templateMethod);
     }
     catch (const std::exception& error)
     {
@@ -194,13 +219,17 @@ void BehavioralPattern::visitorInstance()
     try
     {
         const auto output = Behavioral().visitor();
-        BEHAVIORAL_PRINT_RESULT_CONTENT("Visitor");
+        BEHAVIORAL_PRINT_RESULT_CONTENT(BehavioralInstance::visitor);
     }
     catch (const std::exception& error)
     {
         LOG_ERR << error.what();
     }
 }
+
+#undef BEHAVIORAL_RESULT
+#undef BEHAVIORAL_PRINT_RESULT_CONTENT
+#undef BEHAVIORAL_INSTANCE_TABLE
 } // namespace behavioral
 
 //! @brief Run behavioral tasks.
@@ -330,14 +359,33 @@ namespace creational
 //! @brief Display creational result.
 #define CREATIONAL_RESULT "\r\n==> %-15s Instance <==\n%s"
 //! @brief Print creational result content.
-#define CREATIONAL_PRINT_RESULT_CONTENT(pattern) COMMON_PRINT(CREATIONAL_RESULT, pattern, output.str().c_str());
+#define CREATIONAL_PRINT_RESULT_CONTENT(instance) \
+    COMMON_PRINT(CREATIONAL_RESULT, toString(instance).data(), output.str().c_str());
+//! @brief Mapping table for enum and string about creational instances.
+#define CREATIONAL_INSTANCE_TABLE            \
+    ELEM(abstractFactory, "AbstractFactory") \
+    ELEM(builder, "Builder")                 \
+    ELEM(factoryMethod, "FactoryMethod")     \
+    ELEM(prototype, "Prototype")             \
+    ELEM(singleton, "Singleton")
+
+//! @brief Convert instance enumeration to string.
+//! @param instance - the specific value of CreationalInstance enum
+//! @return instance name
+constexpr std::string_view toString(const CreationalInstance instance)
+{
+#define ELEM(enum, str) str,
+    constexpr std::string_view table[] = {CREATIONAL_INSTANCE_TABLE};
+#undef ELEM
+    return table[instance];
+}
 
 void CreationalPattern::abstractFactoryInstance()
 {
     try
     {
         const auto output = Creational().abstractFactory();
-        CREATIONAL_PRINT_RESULT_CONTENT("AbstractFactory");
+        CREATIONAL_PRINT_RESULT_CONTENT(CreationalInstance::abstractFactory);
     }
     catch (const std::exception& error)
     {
@@ -350,7 +398,7 @@ void CreationalPattern::builderInstance()
     try
     {
         const auto output = Creational().builder();
-        CREATIONAL_PRINT_RESULT_CONTENT("Builder");
+        CREATIONAL_PRINT_RESULT_CONTENT(CreationalInstance::builder);
     }
     catch (const std::exception& error)
     {
@@ -363,7 +411,7 @@ void CreationalPattern::factoryMethodInstance()
     try
     {
         const auto output = Creational().factoryMethod();
-        CREATIONAL_PRINT_RESULT_CONTENT("FactoryMethod");
+        CREATIONAL_PRINT_RESULT_CONTENT(CreationalInstance::factoryMethod);
     }
     catch (const std::exception& error)
     {
@@ -376,7 +424,7 @@ void CreationalPattern::prototypeInstance()
     try
     {
         const auto output = Creational().prototype();
-        CREATIONAL_PRINT_RESULT_CONTENT("Prototype");
+        CREATIONAL_PRINT_RESULT_CONTENT(CreationalInstance::prototype);
     }
     catch (const std::exception& error)
     {
@@ -389,13 +437,17 @@ void CreationalPattern::singletonInstance()
     try
     {
         const auto output = Creational().singleton();
-        CREATIONAL_PRINT_RESULT_CONTENT("Singleton");
+        CREATIONAL_PRINT_RESULT_CONTENT(CreationalInstance::singleton);
     }
     catch (const std::exception& error)
     {
         LOG_ERR << error.what();
     }
 }
+
+#undef CREATIONAL_RESULT
+#undef CREATIONAL_PRINT_RESULT_CONTENT
+#undef CREATIONAL_INSTANCE_TABLE
 } // namespace creational
 
 //! @brief Run creational tasks.
@@ -489,14 +541,35 @@ namespace structural
 //! @brief Display structural result.
 #define STRUCTURAL_RESULT "\r\n==> %-9s Instance <==\n%s"
 //! @brief Print structural result content.
-#define STRUCTURAL_PRINT_RESULT_CONTENT(pattern) COMMON_PRINT(STRUCTURAL_RESULT, pattern, output.str().c_str());
+#define STRUCTURAL_PRINT_RESULT_CONTENT(instance) \
+    COMMON_PRINT(STRUCTURAL_RESULT, toString(instance).data(), output.str().c_str());
+//! @brief Mapping table for enum and string about structural instances.
+#define STRUCTURAL_INSTANCE_TABLE \
+    ELEM(adapter, "Adapter")      \
+    ELEM(bridge, "Bridge")        \
+    ELEM(composite, "Composite")  \
+    ELEM(decorator, "Decorator")  \
+    ELEM(facade, "Facade")        \
+    ELEM(flyweight, "Flyweight")  \
+    ELEM(proxy, "Proxy")
+
+//! @brief Convert instance enumeration to string.
+//! @param instance - the specific value of StructuralInstance enum
+//! @return instance name
+constexpr std::string_view toString(const StructuralInstance instance)
+{
+#define ELEM(enum, str) str,
+    constexpr std::string_view table[] = {STRUCTURAL_INSTANCE_TABLE};
+#undef ELEM
+    return table[instance];
+}
 
 void StructuralPattern::adapterInstance()
 {
     try
     {
         const auto output = Structural().adapter();
-        STRUCTURAL_PRINT_RESULT_CONTENT("Adapter");
+        STRUCTURAL_PRINT_RESULT_CONTENT(StructuralInstance::adapter);
     }
     catch (const std::exception& error)
     {
@@ -509,7 +582,7 @@ void StructuralPattern::bridgeInstance()
     try
     {
         const auto output = Structural().bridge();
-        STRUCTURAL_PRINT_RESULT_CONTENT("Bridge");
+        STRUCTURAL_PRINT_RESULT_CONTENT(StructuralInstance::bridge);
     }
     catch (const std::exception& error)
     {
@@ -522,7 +595,7 @@ void StructuralPattern::compositeInstance()
     try
     {
         const auto output = Structural().composite();
-        STRUCTURAL_PRINT_RESULT_CONTENT("Composite");
+        STRUCTURAL_PRINT_RESULT_CONTENT(StructuralInstance::composite);
     }
     catch (const std::exception& error)
     {
@@ -535,7 +608,7 @@ void StructuralPattern::decoratorInstance()
     try
     {
         const auto output = Structural().decorator();
-        STRUCTURAL_PRINT_RESULT_CONTENT("Decorator");
+        STRUCTURAL_PRINT_RESULT_CONTENT(StructuralInstance::decorator);
     }
     catch (const std::exception& error)
     {
@@ -548,7 +621,7 @@ void StructuralPattern::facadeInstance()
     try
     {
         const auto output = Structural().facade();
-        STRUCTURAL_PRINT_RESULT_CONTENT("Facade");
+        STRUCTURAL_PRINT_RESULT_CONTENT(StructuralInstance::facade);
     }
     catch (const std::exception& error)
     {
@@ -561,7 +634,7 @@ void StructuralPattern::flyweightInstance()
     try
     {
         const auto output = Structural().flyweight();
-        STRUCTURAL_PRINT_RESULT_CONTENT("Flyweight");
+        STRUCTURAL_PRINT_RESULT_CONTENT(StructuralInstance::flyweight);
     }
     catch (const std::exception& error)
     {
@@ -574,13 +647,17 @@ void StructuralPattern::proxyInstance()
     try
     {
         const auto output = Structural().proxy();
-        STRUCTURAL_PRINT_RESULT_CONTENT("Proxy");
+        STRUCTURAL_PRINT_RESULT_CONTENT(StructuralInstance::proxy);
     }
     catch (const std::exception& error)
     {
         LOG_ERR << error.what();
     }
 }
+
+#undef STRUCTURAL_RESULT
+#undef STRUCTURAL_PRINT_RESULT_CONTENT
+#undef STRUCTURAL_INSTANCE_TABLE
 } // namespace structural
 
 //! @brief Run structural tasks.
