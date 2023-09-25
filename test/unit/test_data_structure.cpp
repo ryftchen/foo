@@ -19,6 +19,9 @@
 //! @brief Data-structure-testing-related functions in the test module.
 namespace test::tst_ds
 {
+//! @brief Alias for the enumeration of data structure tasks.
+using Category = application::app_ds::DataStructureTask::Category;
+
 //! @brief Alias for the namespace of applying linear.
 namespace linear = application::app_ds::linear;
 
@@ -32,9 +35,9 @@ public:
     ~LinearTestBase() override = default;
 
     //! @brief Set up the test case.
-    static void SetUpTestCase() { TST_DS_PRINT_TASK_TITLE("LINEAR", "BEGIN"); };
+    static void SetUpTestCase() { TST_DS_PRINT_TASK_TITLE(Category::linear, "BEGIN"); };
     //! @brief Tear down the test case.
-    static void TearDownTestCase() { TST_DS_PRINT_TASK_TITLE("LINEAR", "END"); }
+    static void TearDownTestCase() { TST_DS_PRINT_TASK_TITLE(Category::linear, "END"); }
     //! @brief Set up.
     void SetUp() override{};
     //! @brief Tear down.
@@ -74,9 +77,9 @@ public:
     ~TreeTestBase() override = default;
 
     //! @brief Set up the test case.
-    static void SetUpTestCase() { TST_DS_PRINT_TASK_TITLE("TREE", "BEGIN"); };
+    static void SetUpTestCase() { TST_DS_PRINT_TASK_TITLE(Category::tree, "BEGIN"); };
     //! @brief Tear down the test case.
-    static void TearDownTestCase() { TST_DS_PRINT_TASK_TITLE("TREE", "END"); }
+    static void TearDownTestCase() { TST_DS_PRINT_TASK_TITLE(Category::tree, "END"); }
     //! @brief Set up.
     void SetUp() override{};
     //! @brief Tear down.

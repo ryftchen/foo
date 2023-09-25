@@ -21,6 +21,9 @@
 //! @brief Numeric-testing-related functions in the test module.
 namespace test::tst_num
 {
+//! @brief Alias for the enumeration of numeric tasks.
+using Category = application::app_num::NumericTask::Category;
+
 //! @brief Alias for the namespace of applying arithmetic.
 namespace arithmetic = application::app_num::arithmetic;
 
@@ -36,13 +39,13 @@ public:
     //! @brief Set up the test case.
     static void SetUpTestCase()
     {
-        TST_NUM_PRINT_TASK_TITLE("ARITHMETIC", "BEGIN");
+        TST_NUM_PRINT_TASK_TITLE(Category::arithmetic, "BEGIN");
         builder = std::make_shared<arithmetic::TargetBuilder>(arithmetic::input::integerA, arithmetic::input::integerB);
     };
     //! @brief Tear down the test case.
     static void TearDownTestCase()
     {
-        TST_NUM_PRINT_TASK_TITLE("ARITHMETIC", "END");
+        TST_NUM_PRINT_TASK_TITLE(Category::arithmetic, "END");
         builder.reset();
     }
     //! @brief Set up.
@@ -109,13 +112,13 @@ public:
     //! @brief Set up the test case.
     static void SetUpTestCase()
     {
-        TST_NUM_PRINT_TASK_TITLE("DIVISOR", "BEGIN");
+        TST_NUM_PRINT_TASK_TITLE(Category::divisor, "BEGIN");
         builder = std::make_shared<divisor::TargetBuilder>(divisor::input::integerA, divisor::input::integerB);
     };
     //! @brief Tear down the test case.
     static void TearDownTestCase()
     {
-        TST_NUM_PRINT_TASK_TITLE("DIVISOR", "END");
+        TST_NUM_PRINT_TASK_TITLE(Category::divisor, "END");
         builder.reset();
     }
     //! @brief Set up.
@@ -162,9 +165,9 @@ public:
     ~IntegralTestBase() override = default;
 
     //! @brief Set up the test case.
-    static void SetUpTestCase() { TST_NUM_PRINT_TASK_TITLE("INTEGRAL", "BEGIN"); };
+    static void SetUpTestCase() { TST_NUM_PRINT_TASK_TITLE(Category::integral, "BEGIN"); };
     //! @brief Tear down the test case.
-    static void TearDownTestCase() { TST_NUM_PRINT_TASK_TITLE("INTEGRAL", "END"); }
+    static void TearDownTestCase() { TST_NUM_PRINT_TASK_TITLE(Category::integral, "END"); }
     //! @brief Set up.
     void SetUp() override{};
     //! @brief Tear down.
@@ -252,13 +255,13 @@ public:
     //! @brief Set up the test case.
     static void SetUpTestCase()
     {
-        TST_NUM_PRINT_TASK_TITLE("PRIME", "BEGIN");
+        TST_NUM_PRINT_TASK_TITLE(Category::prime, "BEGIN");
         builder = std::make_shared<prime::TargetBuilder>(prime::input::maxPositiveInteger);
     };
     //! @brief Tear down the test case.
     static void TearDownTestCase()
     {
-        TST_NUM_PRINT_TASK_TITLE("PRIME", "END");
+        TST_NUM_PRINT_TASK_TITLE(Category::prime, "END");
         builder.reset();
     }
     //! @brief Set up.
