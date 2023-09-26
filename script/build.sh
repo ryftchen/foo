@@ -337,7 +337,7 @@ function perform_docker_option()
     fi
 
     if ! docker ps -a --format "{{lower .Image}} {{lower .Names}}" \
-        | grep -q "ryftchen/${FOLDER[proj]}:latest" "${FOLDER[proj]}_dev" 2>/dev/null; then
+        | grep -q "ryftchen/${FOLDER[proj]}:latest ${FOLDER[proj]}_dev" 2>/dev/null; then
         shell_command "docker-compose -f ./docker/docker-compose.yml up -d"
     else
         die "The container exists."
@@ -353,6 +353,7 @@ function perform_website_option()
 
     if command -v rustc >/dev/null 2>&1 && command -v cargo >/dev/null 2>&1; then
         shell_command "cargo build --release --manifest-path ./${FOLDER[doc]}/server/Cargo.toml"
+        echo ""
         if ! pgrep -f foo_doc >/dev/null 2>&1; then
             echo "Please confirm whether continue launching the document server. (y or n)"
             local input
@@ -365,6 +366,9 @@ function perform_website_option()
             fi
         else
             echo "Please confirm whether continue terminating the document server. (y or n)"
+            echo "The document server starts listening under the ${PWD} directory..."
+            echo "=> ${FOLDER[doc]}/doxygen online: http://127.0.0.1:61503/"
+            echo "=> ${FOLDER[doc]}/browser online: http://127.0.0.1:61504/"
             local input
             input=$(wait_until_get_input)
             if echo "${input}" | grep -iq '^y'; then
