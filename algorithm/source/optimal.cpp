@@ -101,21 +101,33 @@ std::optional<std::tuple<double, double>> Annealing::operator()(const double lef
 
 std::optional<std::tuple<double, double>> Particle::operator()(const double left, const double right, const double eps)
 {
-    Storage rec = storageInit(left, right);
-    const auto best = std::min_element(
-        std::cbegin(rec.society),
-        std::cend(rec.society),
+    std::uniform_real_distribution<double> candidate(left, right), v(vMin, vMax);
+    auto swarm = Swarm(size, Individual{});
+    std::generate(
+        swarm.begin(),
+        swarm.end(),
+        [this, &candidate, &v]()
+        {
+            const double x = candidate(engine);
+            const Individual individual(x, v(engine), x, func(x), func(x));
+            return individual;
+        });
+    const auto initialBest = std::min_element(
+        std::cbegin(swarm),
+        std::cend(swarm),
         [](const auto min1, const auto min2)
         {
             return min1.xFitness < min2.xFitness;
         });
-    double xBest = best->x, xFitnessBest = best->xFitness;
+    double xBest = initialBest->x, xFitnessBest = initialBest->xFitness;
 
     std::uniform_real_distribution<double> coeff(0.0, 1.0);
+    std::vector<std::pair<double, double>> container;
+    container.reserve(swarm.size());
     for (std::uint32_t i = 0; i < numOfIteration; ++i)
     {
         const double w = wBegin - (wBegin - wEnd) * std::pow(static_cast<double>(i + 1) / numOfIteration, 2);
-        for (auto& ind : rec.society)
+        for (auto& ind : swarm)
         {
             const double rand1 =
                 static_cast<std::uint32_t>(coeff(engine) * static_cast<std::uint32_t>(1.0 / eps)) * eps;
@@ -144,7 +156,7 @@ std::optional<std::tuple<double, double>> Particle::operator()(const double left
             ind.xFitness = func(ind.x);
         }
 
-        for (auto& ind : rec.society)
+        for (auto& ind : swarm)
         {
             if (ind.xFitness < ind.fitnessPositionBest)
             {
@@ -157,30 +169,20 @@ std::optional<std::tuple<double, double>> Particle::operator()(const double left
                 xFitnessBest = ind.xFitness;
             }
         }
-        rec.history.insert(std::pair<double, double>(xFitnessBest, xBest));
+        container.emplace_back(xFitnessBest, xBest);
     }
-    xFitnessBest = std::get<0>(*(rec.history.cbegin()));
-    xBest = std::get<1>(*(rec.history.cbegin()));
+
+    const auto best = std::min_element(
+        std::cbegin(container),
+        std::cend(container),
+        [](const auto& min1, const auto& min2)
+        {
+            return std::get<0>(min1) < std::get<0>(min2);
+        });
+    xFitnessBest = std::get<0>(*best);
+    xBest = std::get<1>(*best);
 
     return std::make_optional(std::make_tuple(xFitnessBest, xBest));
-}
-
-Particle::Storage Particle::storageInit(const double left, const double right)
-{
-    Storage rec{};
-    rec.society = Society(size, Individual{});
-
-    std::uniform_real_distribution<double> candidate(left, right), v(vMin, vMax);
-    std::generate(
-        rec.society.begin(),
-        rec.society.end(),
-        [this, &candidate, &v]()
-        {
-            const double x = candidate(engine);
-            const Individual individual(x, v(engine), x, func(x), func(x));
-            return individual;
-        });
-    return rec;
 }
 
 std::optional<std::tuple<double, double>> Genetic::operator()(const double left, const double right, const double eps)

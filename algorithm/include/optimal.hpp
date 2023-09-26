@@ -6,7 +6,6 @@
 
 #pragma once
 
-#include <map>
 #include <optional>
 #include <random>
 
@@ -187,37 +186,8 @@ private:
         //! @brief Fitness of the best position.
         double fitnessPositionBest{0.0};
     };
-    //! @brief Compare the value in history.
-    struct Smaller
-    {
-        //! @brief The operator (()) overloading of Smaller class.
-        //! @param left - the first value
-        //! @param right - the second value
-        //! @return be smaller or not
-        bool operator()(const double left, const double right) const { return left < right; }
-    };
-
-    //! @brief Alias for the society information in the swarm.
-    using Society = std::vector<Individual>;
-    //! @brief Alias for the history information in the swarm.
-    using History = std::map<double, double, Smaller>;
-    //! @brief Store the information of society and history in the swarm.
-    struct Storage
-    {
-        //! @brief Construct a new Storage object.
-        Storage() = default;
-
-        //! @brief Society information
-        Society society{};
-        //! @brief History information
-        History history{};
-    };
-
-    //! @brief Initialize the storage in the swarm.
-    //! @param left - left endpoint
-    //! @param right - right endpoint
-    //! @return storage which includes information about society and history
-    Storage storageInit(const double left, const double right);
+    //! @brief Alias for the swarm information.
+    using Swarm = std::vector<Individual>;
 };
 
 //! @brief Genetic.
