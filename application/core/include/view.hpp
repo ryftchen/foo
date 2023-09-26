@@ -203,10 +203,10 @@ private:
     //! @brief Construct a new View object.
     //! @param initState - initialization value of state
     explicit View(const StateType initState = State::init) noexcept :
-        tcpHost(CONFIG_VIEWER_TCP_HOST),
-        tcpPort(CONFIG_VIEWER_TCP_PORT),
-        udpHost(CONFIG_VIEWER_UDP_HOST),
-        udpPort(CONFIG_VIEWER_UDP_PORT),
+        tcpHost(CONFIG_HELPER_VIEWER_TCP_HOST),
+        tcpPort(CONFIG_HELPER_VIEWER_TCP_PORT),
+        udpHost(CONFIG_HELPER_VIEWER_UDP_HOST),
+        udpPort(CONFIG_HELPER_VIEWER_UDP_PORT),
         FSM(initState){};
 
     // clang-format off
