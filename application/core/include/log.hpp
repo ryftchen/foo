@@ -221,10 +221,10 @@ private:
     //! @brief Construct a new Log object.
     //! @param initState - initialization value of state
     explicit Log(const StateType initState = State::init) noexcept :
-        filePath(getFullDefaultLogPath(CONFIG_LOGGER_FILE_PATH)),
-        writeType(OutputType(CONFIG_LOGGER_WRITE_TYPE)),
-        minimumLevel(OutputLevel(CONFIG_LOGGER_MINIMUM_LEVEL)),
-        usedMedium(OutputMedium(CONFIG_LOGGER_USED_MEDIUM)),
+        filePath(getFullDefaultLogPath(CONFIG_HELPER_LOGGER_FILE_PATH)),
+        writeType(OutputType(CONFIG_HELPER_LOGGER_WRITE_TYPE)),
+        minimumLevel(OutputLevel(CONFIG_HELPER_LOGGER_MINIMUM_LEVEL)),
+        usedMedium(OutputMedium(CONFIG_HELPER_LOGGER_USED_MEDIUM)),
         FSM(initState){};
 
     //! @brief Maximum number of times to wait for the logger to change to the target state.
