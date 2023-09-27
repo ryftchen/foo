@@ -42,7 +42,7 @@ public:
     {
         TST_ALGO_PRINT_TASK_TITLE(Category::match, "BEGIN");
         builder = std::make_shared<match::TargetBuilder>(match::input::patternString);
-    };
+    }
     //! @brief Tear down the test case.
     static void TearDownTestCase()
     {
@@ -139,7 +139,7 @@ public:
     {
         TST_ALGO_PRINT_TASK_TITLE(Category::notation, "BEGIN");
         builder = std::make_shared<notation::TargetBuilder>(notation::input::infixString);
-    };
+    }
     //! @brief Tear down the test case.
     static void TearDownTestCase()
     {
@@ -184,7 +184,7 @@ public:
     ~OptimalTestBase() override = default;
 
     //! @brief Set up the test case.
-    static void SetUpTestCase() { TST_ALGO_PRINT_TASK_TITLE(Category::optimal, "BEGIN"); };
+    static void SetUpTestCase() { TST_ALGO_PRINT_TASK_TITLE(Category::optimal, "BEGIN"); }
     //! @brief Tear down the test case.
     static void TearDownTestCase() { TST_ALGO_PRINT_TASK_TITLE(Category::optimal, "END"); }
     //! @brief Set up.
@@ -270,7 +270,7 @@ public:
         TST_ALGO_PRINT_TASK_TITLE(Category::search, "BEGIN");
         builder = std::make_shared<search::TargetBuilder<double>>(
             search::input::arrayLength, search::input::arrayRange1, search::input::arrayRange2);
-    };
+    }
     //! @brief Tear down the test case.
     static void TearDownTestCase()
     {
@@ -335,7 +335,7 @@ public:
         TST_ALGO_PRINT_TASK_TITLE(Category::sort, "BEGIN");
         builder = std::make_shared<sort::TargetBuilder<int>>(
             sort::input::arrayLength, sort::input::arrayRange1, sort::input::arrayRange2);
-    };
+    }
     //! @brief Tear down the test case.
     static void TearDownTestCase()
     {

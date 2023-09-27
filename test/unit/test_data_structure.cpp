@@ -35,7 +35,7 @@ public:
     ~LinearTestBase() override = default;
 
     //! @brief Set up the test case.
-    static void SetUpTestCase() { TST_DS_PRINT_TASK_TITLE(Category::linear, "BEGIN"); };
+    static void SetUpTestCase() { TST_DS_PRINT_TASK_TITLE(Category::linear, "BEGIN"); }
     //! @brief Tear down the test case.
     static void TearDownTestCase() { TST_DS_PRINT_TASK_TITLE(Category::linear, "END"); }
     //! @brief Set up.
@@ -77,7 +77,7 @@ public:
     ~TreeTestBase() override = default;
 
     //! @brief Set up the test case.
-    static void SetUpTestCase() { TST_DS_PRINT_TASK_TITLE(Category::tree, "BEGIN"); };
+    static void SetUpTestCase() { TST_DS_PRINT_TASK_TITLE(Category::tree, "BEGIN"); }
     //! @brief Tear down the test case.
     static void TearDownTestCase() { TST_DS_PRINT_TASK_TITLE(Category::tree, "END"); }
     //! @brief Set up.

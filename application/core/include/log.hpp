@@ -200,13 +200,13 @@ public:
         //! @param codeLine - current code line
         Holder(const std::string& codeFile, const std::uint32_t codeLine) : file(codeFile), line(codeLine){};
         //! @brief Destroy the Holder object.
-        virtual ~Holder() { flush(); };
+        virtual ~Holder() { flush(); }
 
         //! @brief Get the output stream for flushing.
         //! @return reference of the output stream object, which is on string based
-        inline std::ostringstream& getStream() { return stream; };
+        inline std::ostringstream& getStream() { return stream; }
         //! @brief Flush the output stream.
-        inline void flush() { getInstance().flush(Lv, file, line, stream.str()); };
+        inline void flush() { getInstance().flush(Lv, file, line, stream.str()); }
 
     private:
         //! @brief Output stream for flushing.
@@ -345,12 +345,19 @@ void Log::flush(
 {
     const auto outputFormatter = [&](const std::string_view& prefix)
     {
-        std::string newFormat = format;
-        newFormat.erase(std::remove(newFormat.begin(), newFormat.end(), '\r'), newFormat.end());
-        std::replace(newFormat.begin(), newFormat.end(), '\n', ' ');
+        std::string validFormat = format;
+        validFormat.erase(
+            std::remove_if(
+                begin(validFormat),
+                end(validFormat),
+                [l = std::locale{}](const auto c)
+                {
+                    return ((' ' != c) && std::isspace(c, l));
+                }),
+            end(validFormat));
         std::string output = std::string{prefix} + ":[" + utility::time::getCurrentSystemTime() + "]:["
             + codeFile.substr(codeFile.find("foo/") + 4, codeFile.length()) + '#' + std::to_string(codeLine)
-            + "]: " + utility::common::formatString(newFormat.c_str(), std::forward<Args>(args)...);
+            + "]: " + utility::common::formatString(validFormat.c_str(), std::forward<Args>(args)...);
         return output;
     };
 

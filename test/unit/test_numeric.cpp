@@ -41,7 +41,7 @@ public:
     {
         TST_NUM_PRINT_TASK_TITLE(Category::arithmetic, "BEGIN");
         builder = std::make_shared<arithmetic::TargetBuilder>(arithmetic::input::integerA, arithmetic::input::integerB);
-    };
+    }
     //! @brief Tear down the test case.
     static void TearDownTestCase()
     {
@@ -114,7 +114,7 @@ public:
     {
         TST_NUM_PRINT_TASK_TITLE(Category::divisor, "BEGIN");
         builder = std::make_shared<divisor::TargetBuilder>(divisor::input::integerA, divisor::input::integerB);
-    };
+    }
     //! @brief Tear down the test case.
     static void TearDownTestCase()
     {
@@ -165,7 +165,7 @@ public:
     ~IntegralTestBase() override = default;
 
     //! @brief Set up the test case.
-    static void SetUpTestCase() { TST_NUM_PRINT_TASK_TITLE(Category::integral, "BEGIN"); };
+    static void SetUpTestCase() { TST_NUM_PRINT_TASK_TITLE(Category::integral, "BEGIN"); }
     //! @brief Tear down the test case.
     static void TearDownTestCase() { TST_NUM_PRINT_TASK_TITLE(Category::integral, "END"); }
     //! @brief Set up.
@@ -257,7 +257,7 @@ public:
     {
         TST_NUM_PRINT_TASK_TITLE(Category::prime, "BEGIN");
         builder = std::make_shared<prime::TargetBuilder>(prime::input::maxPositiveInteger);
-    };
+    }
     //! @brief Tear down the test case.
     static void TearDownTestCase()
     {

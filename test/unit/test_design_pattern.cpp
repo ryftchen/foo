@@ -36,7 +36,7 @@ public:
     ~BehavioralTestBase() override = default;
 
     //! @brief Set up the test case.
-    static void SetUpTestCase() { TST_DP_PRINT_TASK_TITLE(Category::behavioral, "BEGIN"); };
+    static void SetUpTestCase() { TST_DP_PRINT_TASK_TITLE(Category::behavioral, "BEGIN"); }
     //! @brief Tear down the test case.
     static void TearDownTestCase() { TST_DP_PRINT_TASK_TITLE(Category::behavioral, "END"); }
     //! @brief Set up.
@@ -126,7 +126,7 @@ public:
     ~CreationalTestBase() override = default;
 
     //! @brief Set up the test case.
-    static void SetUpTestCase() { TST_DP_PRINT_TASK_TITLE(Category::creational, "BEGIN"); };
+    static void SetUpTestCase() { TST_DP_PRINT_TASK_TITLE(Category::creational, "BEGIN"); }
     //! @brief Tear down the test case.
     static void TearDownTestCase() { TST_DP_PRINT_TASK_TITLE(Category::creational, "END"); }
     //! @brief Set up.
@@ -180,7 +180,7 @@ public:
     ~StructuralTestBase() override = default;
 
     //! @brief Set up the test case.
-    static void SetUpTestCase() { TST_DP_PRINT_TASK_TITLE(Category::structural, "BEGIN"); };
+    static void SetUpTestCase() { TST_DP_PRINT_TASK_TITLE(Category::structural, "BEGIN"); }
     //! @brief Tear down the test case.
     static void TearDownTestCase() { TST_DP_PRINT_TASK_TITLE(Category::structural, "END"); }
     //! @brief Set up.
