@@ -361,6 +361,7 @@ function perform_website_option()
             if echo "${input}" | grep -iq '^y'; then
                 echo "Yes"
                 shell_command "./${FOLDER[doc]}/server/target/release/foo_doc --root-dir . &"
+                sleep 0.1s
             else
                 echo "No"
             fi
@@ -579,7 +580,7 @@ function package_for_doxygen()
 
     mkdir -p "./${FOLDER[doc]}/${doxygen_folder}"
     shell_command "(cat ./${FOLDER[doc]}/Doxyfile ; echo 'PROJECT_NUMBER=\"@ $(git rev-parse --short @)\"') \
-| doxygen - >/dev/null"
+| doxygen -"
     shell_command "tar -jcvf ./${FOLDER[doc]}/archive/${tar_file} -C ./${FOLDER[doc]} ${doxygen_folder} >/dev/null"
 }
 
