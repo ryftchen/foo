@@ -77,7 +77,7 @@ namespace arithmetic
 //! @return method name
 constexpr std::string_view toString(const ArithmeticMethod method)
 {
-#define ELEM(enum, str) str,
+#define ELEM(val, str) str,
     constexpr std::string_view table[] = {ARITHMETIC_METHOD_TABLE};
 #undef ELEM
     return table[method];
@@ -253,7 +253,7 @@ namespace divisor
 //! @return method name
 constexpr std::string_view toString(const DivisorMethod method)
 {
-#define ELEM(enum, str) str,
+#define ELEM(val, str) str,
     constexpr std::string_view table[] = {DIVISOR_METHOD_TABLE};
 #undef ELEM
     return table[method];
@@ -386,7 +386,7 @@ namespace integral
 //! @return method name
 constexpr std::string_view toString(const IntegralMethod method)
 {
-#define ELEM(enum, str) str,
+#define ELEM(val, str) str,
     constexpr std::string_view table[] = {INTEGRAL_METHOD_TABLE};
 #undef ELEM
     return table[method];
@@ -622,7 +622,7 @@ namespace prime
 //! @return method name
 constexpr std::string_view toString(const PrimeMethod method)
 {
-#define ELEM(enum, str) str,
+#define ELEM(val, str) str,
     constexpr std::string_view table[] = {PRIME_METHOD_TABLE};
 #undef ELEM
     return table[method];

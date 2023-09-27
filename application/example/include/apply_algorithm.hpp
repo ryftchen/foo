@@ -39,20 +39,30 @@ public:
     //! @brief Enumerate specific algorithm tasks.
     enum Category : std::uint8_t
     {
+        //! @brief Match.
         match,
+        //! @brief Notation.
         notation,
+        //! @brief Optimal.
         optimal,
+        //! @brief Search.
         search,
+        //! @brief Sort.
         sort
     };
 
     //! @brief Enumerate specific match methods.
     enum MatchMethod : std::uint8_t
     {
+        //! @brief Rabin-Karp.
         rabinKarp,
+        //! @brief Knuth-Morris-Pratt.
         knuthMorrisPratt,
+        //! @brief Boyer-Moore.
         boyerMoore,
+        //! @brief Horspool.
         horspool,
+        //! @brief Sunday.
         sunday
     };
     //! @brief Store the maximum value of the MatchMethod enum.
@@ -66,7 +76,9 @@ public:
     //! @brief Enumerate specific notation methods.
     enum NotationMethod : std::uint8_t
     {
+        //! @brief Prefix.
         prefix,
+        //! @brief Postfix.
         postfix
     };
     //! @brief Store the maximum value of the NotationMethod enum.
@@ -80,9 +92,13 @@ public:
     //! @brief Enumerate specific optimal methods.
     enum OptimalMethod : std::uint8_t
     {
+        //! @brief Gradient.
         gradient,
+        //! @brief Annealing.
         annealing,
+        //! @brief Particle.
         particle,
+        //! @brief Genetic.
         genetic
     };
     //! @brief Store the maximum value of the OptimalMethod enum.
@@ -96,8 +112,11 @@ public:
     //! @brief Enumerate specific search methods.
     enum SearchMethod : std::uint8_t
     {
+        //! @brief Binary.
         binary,
+        //! @brief Interpolation.
         interpolation,
+        //! @brief Fibonacci.
         fibonacci
     };
     //! @brief Store the maximum value of the SearchMethod enum.
@@ -111,15 +130,25 @@ public:
     //! @brief Enumerate specific sort methods.
     enum SortMethod : std::uint8_t
     {
+        //! @brief Bubble.
         bubble,
+        //! @brief Selection.
         selection,
+        //! @brief Insertion.
         insertion,
+        //! @brief Shell.
         shell,
+        //! @brief Merge.
         merge,
+        //! @brief Quick.
         quick,
+        //! @brief Heap.
         heap,
+        //! @brief Counting.
         counting,
+        //! @brief Bucket.
         bucket,
+        //! @brief Radix.
         radix
     };
     //! @brief Store the maximum value of the SortMethod enum.

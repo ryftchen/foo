@@ -18,7 +18,9 @@ namespace utility::file
 //! @brief Enumerate specific file lock modes.
 enum class LockMode : std::uint8_t
 {
+    //! @brief Read.
     read,
+    //! @brief Write.
     write
 };
 

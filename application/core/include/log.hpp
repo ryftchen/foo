@@ -129,31 +129,45 @@ public:
     //! @brief Enumerate specific output types.
     enum class OutputType : std::uint8_t
     {
+        //! @brief Add.
         add,
+        //! @brief Over.
         over
     };
     //! @brief Enumerate specific output levels.
     enum class OutputLevel : std::uint8_t
     {
+        //! @brief Debug.
         debug,
+        //! @brief Info.
         info,
+        //! @brief Warning.
         warning,
+        //! @brief Error.
         error
     };
     //! @brief Enumerate specific output medium.
     enum class OutputMedium : std::uint8_t
     {
+        //! @brief File.
         file,
+        //! @brief Terminal.
         terminal,
+        //! @brief Both.
         both
     };
     //! @brief Enumerate specific states for FSM.
     enum State : std::uint8_t
     {
+        //! @brief Init.
         init,
+        //! @brief Idle.
         idle,
+        //! @brief Work.
         work,
+        //! @brief Done.
         done,
+        //! @brief Hold.
         hold
     };
 

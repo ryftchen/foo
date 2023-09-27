@@ -50,9 +50,13 @@ namespace tlv
 //! @brief Enumerate the types in TLV.
 enum TLVType : int
 {
+    //! @brief Header.
     header = 0x0125e591,
+    //! @brief Stop.
     stop = 0,
+    //! @brief Log.
     log,
+    //! @brief Stat.
     stat
 };
 
@@ -132,10 +136,15 @@ public:
     //! @brief Enumerate specific states for FSM.
     enum State : std::uint8_t
     {
+        //! @brief Init.
         init,
+        //! @brief Idle.
         idle,
+        //! @brief Work.
         work,
+        //! @brief Done.
         done,
+        //! @brief Hold.
         hold
     };
 

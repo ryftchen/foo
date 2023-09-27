@@ -64,8 +64,11 @@ public:
     //! @brief Enumerate specific return code.
     enum RetCode : int
     {
+        //! @brief Quit.
         quit = -1,
+        //! @brief Success.
         success = 0,
+        //! @brief Error.
         error = 1
     };
 

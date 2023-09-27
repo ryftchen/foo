@@ -95,7 +95,7 @@ namespace match
 //! @return method name
 constexpr std::string_view toString(const MatchMethod method)
 {
-#define ELEM(enum, str) str,
+#define ELEM(val, str) str,
     constexpr std::string_view table[] = {MATCH_METHOD_TABLE};
 #undef ELEM
     return table[method];
@@ -316,7 +316,7 @@ namespace notation
 //! @return method name
 constexpr std::string_view toString(const NotationMethod method)
 {
-#define ELEM(enum, str) str,
+#define ELEM(val, str) str,
     constexpr std::string_view table[] = {NOTATION_METHOD_TABLE};
 #undef ELEM
     return table[method];
@@ -443,7 +443,7 @@ namespace optimal
 //! @return method name
 constexpr std::string_view toString(const OptimalMethod method)
 {
-#define ELEM(enum, str) str,
+#define ELEM(val, str) str,
     constexpr std::string_view table[] = {OPTIMAL_METHOD_TABLE};
 #undef ELEM
     return table[method];
@@ -662,7 +662,7 @@ namespace search
 //! @return method name
 constexpr std::string_view toString(const SearchMethod method)
 {
-#define ELEM(enum, str) str,
+#define ELEM(val, str) str,
     constexpr std::string_view table[] = {SEARCH_METHOD_TABLE};
 #undef ELEM
     return table[method];
@@ -837,7 +837,7 @@ namespace sort
 //! @return method name
 constexpr std::string_view toString(const SortMethod method)
 {
-#define ELEM(enum, str) str,
+#define ELEM(val, str) str,
     constexpr std::string_view table[] = {SORT_METHOD_TABLE};
 #undef ELEM
     return table[method];

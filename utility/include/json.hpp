@@ -20,12 +20,19 @@ public:
     //! @brief Enumerate specific data types.
     enum class Type
     {
+        //! @brief Null.
         null,
+        //! @brief Object.
         object,
+        //! @brief Array.
         array,
+        //! @brief String.
         string,
+        //! @brief Floating.
         floating,
+        //! @brief Integral.
         integral,
+        //! @brief Boolean.
         boolean
     };
     //! @brief Construct a new JSON object.

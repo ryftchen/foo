@@ -31,18 +31,26 @@ public:
     //! @brief Enumerate specific numeric tasks.
     enum Category : std::uint8_t
     {
+        //! @brief Arithmetic.
         arithmetic,
+        //! @brief Divisor.
         divisor,
+        //! @brief Integral.
         integral,
+        //! @brief Prime.
         prime
     };
 
     //! @brief Enumerate specific arithmetic methods.
     enum ArithmeticMethod : std::uint8_t
     {
+        //! @brief Addition.
         addition,
+        //! @brief Subtraction.
         subtraction,
+        //! @brief Multiplication.
         multiplication,
+        //! @brief Division.
         division
     };
     //! @brief Store the maximum value of the ArithmeticMethod enum.
@@ -56,7 +64,9 @@ public:
     //! @brief Enumerate specific divisor methods.
     enum DivisorMethod : std::uint8_t
     {
+        //! @brief Euclidean.
         euclidean,
+        //! @brief Stein.
         stein
     };
     //! @brief Store the maximum value of the DivisorMethod enum.
@@ -70,10 +80,15 @@ public:
     //! @brief Enumerate specific integral methods.
     enum IntegralMethod : std::uint8_t
     {
+        //! @brief Trapezoidal.
         trapezoidal,
+        //! @brief Simpson.
         simpson,
+        //! @brief Romberg.
         romberg,
+        //! @brief Gauss.
         gauss,
+        //! @brief Monte-Carlo.
         monteCarlo
     };
     //! @brief Store the maximum value of the IntegralMethod enum.
@@ -87,7 +102,9 @@ public:
     //! @brief Enumerate specific prime methods.
     enum PrimeMethod : std::uint8_t
     {
+        //! @brief Eratosthenes.
         eratosthenes,
+        //! @brief Euler.
         euler
     };
     //! @brief Store the maximum value of the PrimeMethod enum.

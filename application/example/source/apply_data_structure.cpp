@@ -68,7 +68,7 @@ namespace linear
 //! @return instance name
 constexpr std::string_view toString(const LinearInstance instance)
 {
-#define ELEM(enum, str) str,
+#define ELEM(val, str) str,
     constexpr std::string_view table[] = {LINEAR_INSTANCE_TABLE};
 #undef ELEM
     return table[instance];
@@ -209,7 +209,7 @@ namespace tree
 //! @return instance name
 constexpr std::string_view toString(const TreeInstance instance)
 {
-#define ELEM(enum, str) str,
+#define ELEM(val, str) str,
     constexpr std::string_view table[] = {TREE_INSTANCE_TABLE};
 #undef ELEM
     return table[instance];

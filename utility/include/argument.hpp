@@ -194,8 +194,11 @@ std::string join(StrIter first, StrIter last, const std::string& separator)
 //! @brief Enumerate specific argument patterns.
 enum class ArgsNumPattern : std::uint8_t
 {
+    //! @brief Optional.
     optional,
+    //! @brief Any.
     any,
+    //! @brief At least one.
     atLeastOne
 };
 
