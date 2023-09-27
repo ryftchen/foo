@@ -83,7 +83,7 @@ public:
         factoryMethod,
         //! @brief Prototype.
         prototype,
-        //! @brief Singletion.
+        //! @brief Singleton.
         singleton
     };
     //! @brief Store the maximum value of the CreationalInstance enum.
