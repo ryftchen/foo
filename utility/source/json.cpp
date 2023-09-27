@@ -155,7 +155,7 @@ static JSON parseString(const std::string& fmt, std::size_t& offset)
     std::string val;
     for (char c = fmt.at(++offset); '\"' != c; c = fmt.at(++offset))
     {
-        if (c == '\\')
+        if ('\\' == c)
         {
             switch (fmt.at(++offset))
             {
@@ -214,7 +214,7 @@ static JSON parseString(const std::string& fmt, std::size_t& offset)
         }
     }
     ++offset;
-    return JSON(val); // NOLINT(modernize-return-braced-init-list)
+    return val;
 }
 
 //! @brief Parse number in JSON.
@@ -265,7 +265,7 @@ static JSON parseNumber(const std::string& fmt, std::size_t& offset)
             {
                 expStr += c;
             }
-            else if (!std::isspace(c) && (c != ',') && (c != ']') && (c != '}'))
+            else if (!std::isspace(c) && (',' != c) && (']' != c) && ('}' != c))
             {
                 throw std::runtime_error(
                     "JSON number: Expected a number for exponent, found '" + std::string{c} + "'.");
@@ -277,7 +277,7 @@ static JSON parseNumber(const std::string& fmt, std::size_t& offset)
         }
         exp = std::stol(expStr);
     }
-    else if (!std::isspace(c) && (c != ',') && (c != ']') && (c != '}'))
+    else if (!std::isspace(c) && (',' != c) && (']' != c) && ('}' != c))
     {
         throw std::runtime_error("JSON number: Unexpected character '" + std::string{c} + "'.");
     }
@@ -288,16 +288,13 @@ static JSON parseNumber(const std::string& fmt, std::size_t& offset)
     {
         number = std::stod(val) * std::pow(base, exp);
     }
+    else if (!expStr.empty())
+    {
+        number = std::stol(val) * std::pow(base, exp);
+    }
     else
     {
-        if (!expStr.empty())
-        {
-            number = std::stol(val) * std::pow(base, exp);
-        }
-        else
-        {
-            number = std::stol(val);
-        }
+        number = std::stol(val);
     }
     return number;
 }

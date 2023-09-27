@@ -241,7 +241,7 @@ private:
         {
             basicTask.reset();
             regularTask.reset();
-        };
+        }
     } /** @brief Dispatch all types of tasks. */ dispatchedTask{};
 
     //! @brief Enter console mode.
