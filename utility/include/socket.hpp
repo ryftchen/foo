@@ -42,7 +42,9 @@ public:
     //! @brief Enumerate specific socket types.
     enum Type
     {
+        //! @brief TCP.
         tcp = ::SOCK_STREAM,
+        //! @brief UDP.
         udp = ::SOCK_DGRAM
     };
 

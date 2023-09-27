@@ -168,9 +168,13 @@ private:
         //! @brief Enumerate specific basic tasks.
         enum Category : std::uint8_t
         {
+            //! @brief Console.
             console,
+            //! @brief Dump.
             dump,
+            //! @brief Help.
             help,
+            //! @brief Version.
             version
         };
         //! @brief Store the maximum value of the Category enum.
@@ -198,9 +202,13 @@ private:
         //! @brief Enumerate specific regular tasks.
         enum SubTask : std::uint8_t
         {
+            //! @brief Algorithm.
             algorithm,
+            //! @brief Design pattern.
             designPattern,
+            //! @brief Data structure.
             dataStructure,
+            //! @brief Numeric.
             numeric
         };
         //! @brief Flag for help only.

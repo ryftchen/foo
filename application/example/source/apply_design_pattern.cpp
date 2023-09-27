@@ -78,7 +78,7 @@ namespace behavioral
 //! @return instance name
 constexpr std::string_view toString(const BehavioralInstance instance)
 {
-#define ELEM(enum, str) str,
+#define ELEM(val, str) str,
     constexpr std::string_view table[] = {BEHAVIORAL_INSTANCE_TABLE};
 #undef ELEM
     return table[instance];
@@ -374,7 +374,7 @@ namespace creational
 //! @return instance name
 constexpr std::string_view toString(const CreationalInstance instance)
 {
-#define ELEM(enum, str) str,
+#define ELEM(val, str) str,
     constexpr std::string_view table[] = {CREATIONAL_INSTANCE_TABLE};
 #undef ELEM
     return table[instance];
@@ -558,7 +558,7 @@ namespace structural
 //! @return instance name
 constexpr std::string_view toString(const StructuralInstance instance)
 {
-#define ELEM(enum, str) str,
+#define ELEM(val, str) str,
     constexpr std::string_view table[] = {STRUCTURAL_INSTANCE_TABLE};
 #undef ELEM
     return table[instance];

@@ -31,9 +31,13 @@ private:
     //! @brief Enumerate specific operator priorities.
     enum class Priority : std::uint8_t
     {
+        //! @brief None.
         none,
+        //! @brief Low.
         low,
+        //! @brief Medium.
         medium,
+        //! @brief High.
         high
     };
 

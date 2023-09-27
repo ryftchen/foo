@@ -31,15 +31,20 @@ public:
     //! @brief Enumerate specific data structure tasks.
     enum Category : std::uint8_t
     {
+        //! @brief Linear.
         linear,
+        //! @brief Tree.
         tree
     };
 
     //! @brief Enumerate specific linear instances.
     enum LinearInstance : std::uint8_t
     {
+        //! @brief Linked list.
         linkedList,
+        //! @brief Stack.
         stack,
+        //! @brief Queue.
         queue
     };
     //! @brief Store the maximum value of the LinearInstance enum.
@@ -53,8 +58,11 @@ public:
     //! @brief Enumerate specific tree instances.
     enum TreeInstance : std::uint8_t
     {
+        //! @brief Binary search.
         binarySearch,
+        //! @brief Adelson-Velsky-Landis.
         adelsonVelskyLandis,
+        //! @brief Splay.
         splay
     };
     //! @brief Store the maximum value of the TreeInstance enum.

@@ -30,24 +30,38 @@ public:
     //! @brief Enumerate specific design pattern tasks.
     enum Category : std::uint8_t
     {
+        //! @brief Behavioral.
         behavioral,
+        //! @brief Creational.
         creational,
+        //! @brief Structural.
         structural
     };
 
     //! @brief Enumerate specific behavioral instances.
     enum BehavioralInstance : std::uint8_t
     {
+        //! @brief Chain of responsibility.
         chainOfResponsibility,
+        //! @brief Command.
         command,
+        //! @brief Interpreter.
         interpreter,
+        //! @brief Iterator.
         iterator,
+        //! @brief Mediator.
         mediator,
+        //! @brief Memento.
         memento,
+        //! @brief Observer.
         observer,
+        //! @brief State.
         state,
+        //! @brief Strategy.
         strategy,
+        //! @brief Template method.
         templateMethod,
+        //! @brief Visitor.
         visitor
     };
     //! @brief Store the maximum value of the BehavioralInstance enum.
@@ -61,10 +75,15 @@ public:
     //! @brief Enumerate specific creational instances.
     enum CreationalInstance : std::uint8_t
     {
+        //! @brief Abstract factory.
         abstractFactory,
+        //! @brief Builder.
         builder,
+        //! @brief Factory method.
         factoryMethod,
+        //! @brief Prototype.
         prototype,
+        //! @brief Singletion.
         singleton
     };
     //! @brief Store the maximum value of the CreationalInstance enum.
@@ -78,12 +97,19 @@ public:
     //! @brief Enumerate specific structural instances.
     enum StructuralInstance : std::uint8_t
     {
+        //! @brief Adapter.
         adapter,
+        //! @brief Bridge.
         bridge,
+        //! @brief Composite.
         composite,
+        //! @brief Decorator.
         decorator,
+        //! @brief Facade.
         facade,
+        //! @brief Flyweight.
         flyweight,
+        //! @brief Proxy.
         proxy
     };
     //! @brief Store the maximum value of the StructuralInstance enum.
