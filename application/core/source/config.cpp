@@ -217,8 +217,12 @@ void initializeConfiguration(const std::string& filename)
 {
     if (!std::filesystem::exists(filename))
     {
-        namespace file = utility::file;
+        const std::filesystem::path configFolderPath = std::filesystem::absolute(filename).parent_path();
+        std::filesystem::create_directories(configFolderPath);
+        std::filesystem::permissions(
+            configFolderPath, std::filesystem::perms::owner_all, std::filesystem::perm_options::add);
 
+        namespace file = utility::file;
         std::ofstream ofs = file::openFile(filename, false);
         file::fdLock(ofs, file::LockMode::write);
         ofs << getDefaultConfiguration();
