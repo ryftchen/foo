@@ -271,25 +271,33 @@ function perform_install_option()
         return
     fi
 
-    if [[ ! -f ./${FOLDER[bld]}/bin/foo ]]; then
+    if [[ ! -f ./${FOLDER[bld]}/bin/${FOLDER[proj]} ]]; then
         die "There is no binary file in the ${FOLDER[bld]} folder. Please finish compiling first."
     fi
 
     shell_command "${SUDO}cmake --install ./${FOLDER[bld]}"
-    local bin_path=/opt/foo/bin
-    local export_cmd="export PATH=${bin_path}:\$PATH"
-    if [[ :${PATH}: != *:${bin_path}:* ]] && ! grep -Fxq "${export_cmd}" ~/.bashrc 2>/dev/null; then
-        shell_command "echo '${export_cmd}' >>~/.bashrc"
-    fi
+    local install_path=/opt/${FOLDER[proj]}
+    if [[ -d ${install_path} ]]; then
+        local bin_path=${install_path}/bin
+        local export_cmd="export PATH=${bin_path}:\$PATH"
+        if [[ :${PATH}: != *:${bin_path}:* ]] && ! grep -Fxq "${export_cmd}" ~/.bashrc 2>/dev/null; then
+            shell_command "echo '${export_cmd}' >>~/.bashrc"
+        fi
 
-    local lib_path=/opt/foo/lib
-    if [[ -d ${lib_path} ]]; then
         local completion_file="bash_completion"
-        local export_cmd="[ \"\${BASH_COMPLETION_VERSINFO}\" != \"\" ] && [ -s ${lib_path}/${completion_file} ] && \
-\. ${lib_path}/${completion_file}"
-        shell_command "${SUDO}cp ./${FOLDER[scr]}/${completion_file}.sh ${lib_path}/${completion_file}"
+        export_cmd="[ \"\${BASH_COMPLETION_VERSINFO}\" != \"\" ] && [ -s ${install_path}/${completion_file} ] && \
+\. ${install_path}/${completion_file}"
+        shell_command "${SUDO}cp ./${FOLDER[scr]}/${completion_file}.sh ${install_path}/${completion_file}"
         if ! grep -Fxq "${export_cmd}" ~/.bashrc 2>/dev/null; then
             shell_command "echo '${export_cmd}' >>~/.bashrc"
+        fi
+
+        local man_path=${install_path}/man
+        export_cmd="MANDATORY_MANPATH ${man_path}"
+        shell_command "${SUDO}mkdir -p ${man_path}/man1 && \
+${SUDO}cp ./${FOLDER[doc]}/man.1 ${man_path}/man1/${FOLDER[proj]}.1"
+        if ! grep -Fxq "${export_cmd}" ~/.manpath 2>/dev/null; then
+            shell_command "echo '${export_cmd}' >>~/.manpath"
         fi
     fi
 
@@ -312,10 +320,15 @@ function perform_uninstall_option()
     local completion_file="bash_completion"
     shell_command "rm -rf ~/.${FOLDER[proj]}"
     shell_command "cat ./${FOLDER[bld]}/${manifest_file} | xargs ${SUDO}rm -rf && \
-${SUDO}rm -rf /opt/foo/lib/${completion_file}"
+${SUDO}rm -rf /opt/${FOLDER[proj]}/${completion_file} /opt/${FOLDER[proj]}/man"
     shell_command "cat ./${FOLDER[bld]}/${manifest_file} | xargs -L1 dirname | xargs ${SUDO}rmdir -p 2>/dev/null"
-    shell_command "sed -i '/export PATH=\/opt\/foo\/bin:\$PATH/d' ~/.bashrc 2>/dev/null"
-    shell_command "sed -i '/\\\. \/opt\/foo\/lib\/${completion_file}/d' ~/.bashrc 2>/dev/null"
+    if [[ -f ~/.bashrc ]]; then
+        shell_command "sed -i '/export PATH=\/opt\/${FOLDER[proj]}\/bin:\$PATH/d' ~/.bashrc"
+        shell_command "sed -i '/\\\. \/opt\/${FOLDER[proj]}\/${completion_file}/d' ~/.bashrc"
+    fi
+    if [[ -f ~/.manpath ]]; then
+        shell_command "sed -i '/MANDATORY_MANPATH \/opt\/${FOLDER[proj]}\/man/d' ~/.manpath"
+    fi
 
     echo
     echo "Manually type 'exec bash' to uninstall for effect."
