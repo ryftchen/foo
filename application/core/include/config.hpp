@@ -44,7 +44,7 @@
 namespace application::config
 {
 //! @brief Default config filename.
-constexpr std::string_view defaultConfigFile = "foo.json";
+constexpr std::string_view defaultConfigFile = "config/foo.json";
 
 extern std::string getFullDefaultConfigPath();
 
