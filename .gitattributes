@@ -11,6 +11,7 @@
 *.tpp text eol=lf
 *.txt text eol=lf
 *.yml text eol=lf
+*.1 text eol=lf
 .clang-format text eol=lf
 .clang-tidy text eol=lf
 .cloc text eol=lf

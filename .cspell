@@ -36,6 +36,7 @@ words:
   - Kernighan
   - Landis
   - libfoo
+  - manpath
   - memcheck
   - mpfr
   - optflag
