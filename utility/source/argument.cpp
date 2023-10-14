@@ -147,7 +147,7 @@ std::size_t Register::getArgumentsLength() const
             return sum + str.size();
         });
 
-    if (checkIfNonOptional(names.front(), prefixChars))
+    if (checkIfPositional(names.front(), prefixChars))
     {
         if (!metavarContent.empty())
         {
@@ -216,10 +216,10 @@ int Register::lookAhead(const std::string_view name)
 
 bool Register::checkIfOptional(std::string_view name, const std::string_view prefix)
 {
-    return !checkIfNonOptional(name, prefix);
+    return !checkIfPositional(name, prefix);
 }
 
-bool Register::checkIfNonOptional(std::string_view name, const std::string_view prefix)
+bool Register::checkIfPositional(std::string_view name, const std::string_view prefix)
 {
     const int first = lookAhead(name);
     if (eof == first)
@@ -245,7 +245,7 @@ bool Register::checkIfNonOptional(std::string_view name, const std::string_view 
 std::ostream& operator<<(std::ostream& os, const Register& reg)
 {
     std::ostringstream nameStream;
-    if (reg.checkIfNonOptional(reg.names.front(), reg.prefixChars))
+    if (reg.checkIfPositional(reg.names.front(), reg.prefixChars))
     {
         if (!reg.metavarContent.empty())
         {
@@ -330,7 +330,7 @@ Argument::Argument(const Argument& arg) :
     assignChars(arg.assignChars),
     isParsed(arg.isParsed),
     optionalArguments(arg.optionalArguments),
-    nonOptionalArguments(arg.nonOptionalArguments),
+    positionalArguments(arg.positionalArguments),
     parserPath(arg.parserPath),
     subParsers(arg.subParsers)
 {
@@ -338,7 +338,7 @@ Argument::Argument(const Argument& arg) :
     {
         indexArgument(iterator);
     }
-    for (auto iterator = std::begin(nonOptionalArguments); iterator != std::end(nonOptionalArguments); ++iterator)
+    for (auto iterator = std::begin(positionalArguments); iterator != std::end(positionalArguments); ++iterator)
     {
         indexArgument(iterator);
     }
@@ -447,7 +447,7 @@ std::string Argument::usage() const
     {
         stream << ' ' << argument.getInlineUsage();
     }
-    for (const auto& argument : nonOptionalArguments)
+    for (const auto& argument : positionalArguments)
     {
         if (!argument.metavarContent.empty())
         {
@@ -558,13 +558,13 @@ void Argument::parseArgsInternal(const std::vector<std::string>& rawArguments)
     }
 
     const auto end = std::cend(arguments);
-    auto nonOptionalArgumentIter = std::begin(nonOptionalArguments);
+    auto positionalArgumentIter = std::begin(positionalArguments);
     for (auto iterator = std::next(std::begin(arguments)); end != iterator;)
     {
         const auto& currentArgument = *iterator;
-        if (Register::checkIfNonOptional(currentArgument, prefixChars))
+        if (Register::checkIfPositional(currentArgument, prefixChars))
         {
-            if (std::cend(nonOptionalArguments) == nonOptionalArgumentIter)
+            if (std::cend(positionalArguments) == positionalArgumentIter)
             {
                 const std::string_view maybeCommand = currentArgument;
                 const auto subParserIter = subParserMap.find(maybeCommand);
@@ -576,9 +576,9 @@ void Argument::parseArgsInternal(const std::vector<std::string>& rawArguments)
                     return subParserIter->second->get().parseArgs(unprocessedArguments);
                 }
 
-                throw std::runtime_error("Maximum number of non-optional arguments exceeded.");
+                throw std::runtime_error("Maximum number of positional arguments exceeded.");
             }
-            const auto argument = nonOptionalArgumentIter++;
+            const auto argument = positionalArgumentIter++;
             iterator = argument->consume(iterator, end);
             continue;
         }
@@ -668,11 +668,11 @@ std::ostream& operator<<(std::ostream& os, const Argument& arg)
         os << argument;
     }
 
-    if (!arg.nonOptionalArguments.empty())
+    if (!arg.positionalArguments.empty())
     {
-        os << (arg.optionalArguments.empty() ? "" : "\n") << "non-optional:\n";
+        os << (arg.optionalArguments.empty() ? "" : "\n") << "positional:\n";
     }
-    for (const auto& argument : arg.nonOptionalArguments)
+    for (const auto& argument : arg.positionalArguments)
     {
         os.width(static_cast<std::streamsize>(longestArgLength));
         os << argument;
@@ -680,7 +680,7 @@ std::ostream& operator<<(std::ostream& os, const Argument& arg)
 
     if (!arg.subParserMap.empty())
     {
-        os << (arg.optionalArguments.empty() ? (arg.nonOptionalArguments.empty() ? "" : "\n") : "\n")
+        os << (arg.optionalArguments.empty() ? (arg.positionalArguments.empty() ? "" : "\n") : "\n")
            << "sub-command:\n";
         for (const auto& [command, subParser] : arg.subParserMap)
         {

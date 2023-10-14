@@ -437,11 +437,11 @@ private:
     //! @param prefix - prefix characters
     //! @return be optional or not optional
     static bool checkIfOptional(std::string_view name, const std::string_view prefix);
-    //! @brief Check if the argument is non-optional.
+    //! @brief Check if the argument is positional.
     //! @param name - name of argument
     //! @param prefix - prefix characters
-    //! @return be non-optional or not non-optional
-    static bool checkIfNonOptional(std::string_view name, const std::string_view prefix);
+    //! @return be positional or not positional
+    static bool checkIfPositional(std::string_view name, const std::string_view prefix);
     //! @brief Get the member.
     //! @tparam T - type of member to be got
     //! @return member corresponding to the specific type
@@ -786,8 +786,8 @@ private:
     bool isParsed{false};
     //! @brief List of optional arguments.
     std::list<Register> optionalArguments;
-    //! @brief List of non-optional arguments.
-    std::list<Register> nonOptionalArguments;
+    //! @brief List of positional arguments.
+    std::list<Register> positionalArguments;
     //! @brief Mapping table of argument.
     std::unordered_map<std::string_view, RegisterIter> argumentMap;
     //! @brief Current parser path.
@@ -832,7 +832,7 @@ Register& Argument::addArgument(TArgs... fewArgs)
     const auto argument = optionalArguments.emplace(std::cend(optionalArguments), prefixChars, ArrayOfSv{fewArgs...});
     if (!argument->isOptional)
     {
-        nonOptionalArguments.splice(std::cend(nonOptionalArguments), optionalArguments, argument);
+        positionalArguments.splice(std::cend(positionalArguments), optionalArguments, argument);
     }
 
     indexArgument(argument);

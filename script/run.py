@@ -139,7 +139,7 @@ class Task:
         parser = argparse.ArgumentParser(description="run script", formatter_class=argparse.RawTextHelpFormatter)
         parser.add_argument("-t", "--test", action="store_true", default=False, help="run unit test only")
         parser.add_argument(
-            "-r", "--repeat", nargs="?", const=1, type=check_positive, help="run repeatedly", metavar="times"
+            "-r", "--repeat", nargs="?", const=1, type=check_positive, help="run repeatedly", metavar="TIMES"
         )
         parser.add_argument(
             "-c",

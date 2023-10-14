@@ -42,13 +42,14 @@ pub fn parse_args() -> Args {
 }
 
 fn show_help() {
-    println!("usage: {} [-h] [-r DIR]", exec_name!());
+    println!("usage: {} [-h] [-r [DIR]]", exec_name!());
     println!();
     println!("document server");
     println!();
     println!("options:");
-    println!("  -h, --help        show help and exit");
-    println!("  -r, --root-dir    set root directory");
+    println!("  -h, --help            show help and exit");
+    println!("  -r [DIR], --root-dir [DIR]");
+    println!("                        set root directory");
 
     std::process::exit(0);
 }
