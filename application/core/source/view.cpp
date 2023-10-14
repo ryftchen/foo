@@ -548,6 +548,7 @@ std::string View::getStatInformation()
     std::vector<std::string> cmdContainer;
     std::size_t pos = 0, prev = 0;
     const int currTid = ::gettid();
+    const bool foundStrace = ::system("which strace >/dev/null 2>&1") == EXIT_SUCCESS;
     while ((pos = queryResult.find('\n', prev)) != std::string::npos)
     {
         const int tid = std::stoi(queryResult.substr(prev, pos - prev));
@@ -555,22 +556,31 @@ std::string View::getStatInformation()
         const int usedLen = std::snprintf(
             cmd,
             cmdLen,
-            "if [ -f /proc/%d/task/%d/status ] ; then head -n 10 /proc/%d/task/%d/status && echo 'Strace:' ",
+            "if [ -f /proc/%d/task/%d/status ] ; then head -n 10 /proc/%d/task/%d/status ",
             pid,
             tid,
             pid,
             tid);
-        if (currTid != tid)
+        if (foundStrace)
         {
-            std::snprintf(
-                cmd + usedLen,
-                cmdLen - usedLen,
-                "&& (timeout --preserve-status --signal=2 0.02 strace -qq -ttT -vyy -s 96 -p %d 2>&1 || exit 0) ; fi",
-                tid);
+            if (currTid != tid)
+            {
+                std::snprintf(
+                    cmd + usedLen,
+                    cmdLen - usedLen,
+                    "&& echo 'Strace:' "
+                    "&& (timeout --preserve-status --signal=2 0.02 strace -qq -ttT -vyy -s 96 -p %d 2>&1 || exit 0) "
+                    "; fi",
+                    tid);
+            }
+            else
+            {
+                std::strncpy(cmd + usedLen, "&& echo 'Strace:' && echo 'N/A' ; fi", cmdLen - usedLen);
+            }
         }
         else
         {
-            std::strncpy(cmd + usedLen, "&& echo 'N/A' ; fi", cmdLen - usedLen);
+            std::strncpy(cmd + usedLen, "; fi", cmdLen - usedLen);
         }
         cmdContainer.emplace_back(cmd);
         prev = pos + 1;
