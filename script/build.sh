@@ -15,9 +15,9 @@ declare BUILD_TYPE="Debug"
 function shell_command()
 {
     echo
-    echo "$(tput bold)$(date "+%b %d %T") $* START$(tput sgr0)"
+    printf "%s%-40s%s\n" "$(tput bold)[ $(date "+%b %d %T") | CMD: " "$*" " | START  ]$(tput sgr0)"
     /bin/bash -c "$@"
-    echo "$(tput bold)$(date "+%b %d %T") $* FINISH$(tput sgr0)"
+    printf "%s%-40s%s\n" "$(tput bold)[ $(date "+%b %d %T") | CMD: " "$*" " | FINISH ]$(tput sgr0)"
 }
 
 function die()
@@ -292,6 +292,9 @@ function perform_install_option()
             shell_command "echo '${export_cmd}' >>~/.bashrc"
         fi
     fi
+
+    echo
+    echo "Manually type 'exec bash' to install for effect."
     exit 0
 }
 
@@ -313,6 +316,9 @@ ${SUDO}rm -rf /opt/foo/lib/${completion_file}"
     shell_command "cat ./${FOLDER[bld]}/${manifest_file} | xargs -L1 dirname | xargs ${SUDO}rmdir -p 2>/dev/null"
     shell_command "sed -i '/export PATH=\/opt\/foo\/bin:\$PATH/d' ~/.bashrc 2>/dev/null"
     shell_command "sed -i '/\\\. \/opt\/foo\/lib\/${completion_file}/d' ~/.bashrc 2>/dev/null"
+
+    echo
+    echo "Manually type 'exec bash' to uninstall for effect."
     exit 0
 }
 
@@ -366,16 +372,15 @@ function perform_website_option()
                 echo "No"
             fi
         else
-            echo "Please confirm whether continue terminating the document server. (y or n)"
             echo "The document server starts listening under the ${PWD} directory..."
             echo "=> ${FOLDER[doc]}/doxygen online: http://127.0.0.1:61503/"
             echo "=> ${FOLDER[doc]}/browser online: http://127.0.0.1:61504/"
+            echo "Please confirm whether continue terminating the document server. (y or n)"
             local input
             input=$(wait_until_get_input)
             if echo "${input}" | grep -iq '^y'; then
                 echo "Yes"
-                shell_command "ps axf | grep foo_doc | grep -v grep | awk '{print \"kill -9 \" \$1}'"
-                shell_command "fuser -k 61503/tcp 61504/tcp"
+                shell_command "fuser -k 61503/tcp && fuser -k 61504/tcp"
             else
                 echo "No"
             fi
