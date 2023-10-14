@@ -22,7 +22,8 @@ valgrind cloc pre-commit graphviz docker docker-compose npm \
 && tar -zxvf ./doxygen-awesome-css-2.2.0.tar.gz \
 && sudo make -C ./doxygen-awesome-css-2.2.0 install \
 && rm -rf ./doxygen-awesome-css-* \
-&& sudo curl -L https://gcc.gnu.org/onlinedocs/gcc-11.4.0/libstdc++/api/libstdc++.tag >/usr/local/share/doxygen-awesome-css/libstdc++.tag \
+&& sudo mkdir /usr/local/share/doxygen-tag \
+&& sudo curl -L https://gcc.gnu.org/onlinedocs/gcc-11.4.0/libstdc++/api/libstdc++.tag >/usr/local/share/doxygen-tag/libstdc++.tag \
 && git clone https://github.com/KDAB/codebrowser.git \
 && git -C ./codebrowser reset --hard 85834c9cb99d36051912d3007697087d871faa83 \
 && cmake -S ./codebrowser -B ./codebrowser/build -DCMAKE_CXX_COMPILER=clang++-15 -DCMAKE_BUILD_TYPE=Release \
