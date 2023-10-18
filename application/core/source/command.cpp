@@ -21,7 +21,7 @@ Command::Command()
 
     mainCLI.addArgument("-v", "--version").argsNum(0).implicitVal(true).help("show version and exit");
 
-    mainCLI.addArgument("-d", "--dump").argsNum(0).implicitVal(true).help("dump the default configuration and exit");
+    mainCLI.addArgument("-d", "--dump").argsNum(0).implicitVal(true).help("dump default configuration and exit");
 
     mainCLI.addArgument("-c", "--console")
         .argsNum(utility::argument::ArgsNumPattern::any)
