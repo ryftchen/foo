@@ -13,16 +13,21 @@ try:
 except ImportError as err:
     raise ImportError(err) from err
 
+STDOUT = sys.stdout
+
 
 class Documentation:
     github_url = "https://github.com/ryftchen/foo.git"
     artifact_url = "https://api.github.com/repos/ryftchen/foo/actions/artifacts?per_page=5"
     artifact_file = "foo_artifact"
     website_dir = "/var/www/foo_doc"
+    log_file = "/tmp/foo_doc.log"
 
     def __init__(self):
         self.project_path = ""
         self.proxy_port = ""
+        self.logger = common.Log(self.log_file, "a")
+
         env = os.getenv("FOO_ENV")
         if env is not None:
             if env != "foo_doc":
@@ -50,12 +55,15 @@ class Documentation:
         if args.port is not None:
             self.proxy_port = args.port
 
+        sys.stdout = self.logger
         print(
             f"\r\n[ {datetime.strftime(datetime.now(), '%b %d %H:%M:%S')} ] \
 >>>>>>>>>>>>>>>>>>>>>>> PULL ARCHIVE <<<<<<<<<<<<<<<<<<<<<<<"
         )
         self.download_artifact()
         self.update_document()
+        sys.stdout = STDOUT
+        del self.logger
 
     def download_artifact(self):
         if not os.path.exists(self.website_dir):
