@@ -549,8 +549,8 @@ class Output:
     color_esc_regex = r"((\033\[.*?(m|s|u|A|J))|(\007|\017))"
     stat_min_cont_len = 55
     stat_cont_len_excl_cmd = 15
-    tbl_min_key_width = 20
-    tbl_min_value_width = 80
+    tbl_min_key_width = 15
+    tbl_min_value_width = 60
 
     @classmethod
     def exit_with_error(cls, message):
