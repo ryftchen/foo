@@ -659,9 +659,9 @@ void View::createViewServer()
                 }
 
                 std::vector<std::string> args;
-                std::istringstream iss(msg);
+                std::istringstream is(msg);
                 std::string token;
-                while (iss >> token)
+                while (is >> token)
                 {
                     args.emplace_back(token);
                 }
@@ -702,9 +702,9 @@ void View::createViewServer()
             }
 
             std::vector<std::string> args;
-            std::istringstream iss(msg);
+            std::istringstream is(msg);
             std::string token;
-            while (iss >> token)
+            while (is >> token)
             {
                 args.emplace_back(token);
             }

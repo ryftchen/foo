@@ -388,7 +388,7 @@ std::vector<T> Sort<T>::radix(T* const array, const std::uint32_t length)
     std::uint32_t index = 0;
     for (auto& bucketInfo : container)
     {
-        while (bucketInfo.size())
+        while (!bucketInfo.empty())
         {
             sortArray[index++] = bucketInfo.front();
             bucketInfo.pop();
