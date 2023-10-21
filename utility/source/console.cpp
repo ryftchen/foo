@@ -94,7 +94,7 @@ int Console::cmdExecutor(const std::string& command)
     std::istringstream is(command);
     std::copy(std::istream_iterator<std::string>(is), std::istream_iterator<std::string>(), std::back_inserter(inputs));
 
-    if (inputs.size() == 0)
+    if (inputs.empty())
     {
         return RetCode::success;
     }
