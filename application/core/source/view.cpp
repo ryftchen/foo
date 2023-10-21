@@ -46,10 +46,17 @@ int tlvEncode(char* buf, int& len, const TLVValue& val)
 
     enc.write<int>(TLVType::stop);
     enc.write<int>(sizeof(bool));
-    enc.write<bool>(val.stopFlag);
+    enc.write<bool>(val.stopTag);
     sum += (offset + sizeof(bool));
 
-    if (invalidShmId != val.logShmId)
+    if (invalidShmId != val.bashShmId)
+    {
+        enc.write<int>(TLVType::bash);
+        enc.write<int>(sizeof(int));
+        enc.write<int>(val.bashShmId);
+        sum += (offset + sizeof(int));
+    }
+    else if (invalidShmId != val.logShmId)
     {
         enc.write<int>(TLVType::log);
         enc.write<int>(sizeof(int));
@@ -100,8 +107,12 @@ int tlvDecode(char* buf, const int len, TLVValue& val)
         switch (type)
         {
             case TLVType::stop:
-                dec.read<bool>(&val.stopFlag);
+                dec.read<bool>(&val.stopTag);
                 sum -= (offset + sizeof(bool));
+                break;
+            case TLVType::bash:
+                dec.read<int>(&val.bashShmId);
+                sum -= (offset + sizeof(int));
                 break;
             case TLVType::log:
                 dec.read<int>(&val.logShmId);
@@ -362,7 +373,11 @@ tlv::TLVValue View::parseTLVPacket(char* buffer, const int length)
     tlv::TLVValue value{};
     tlv::tlvDecode(buffer, length, value);
 
-    if (invalidShmId != value.logShmId)
+    if (invalidShmId != value.bashShmId)
+    {
+        printSharedMemory(value.bashShmId);
+    }
+    else if (invalidShmId != value.logShmId)
     {
         printSharedMemory(value.logShmId);
     }
@@ -377,7 +392,7 @@ tlv::TLVValue View::parseTLVPacket(char* buffer, const int length)
 int View::buildTLVPacket2Stop(char* buffer)
 {
     int length = 0;
-    if (tlv::tlvEncode(buffer, length, tlv::TLVValue{.stopFlag = true}) < 0)
+    if (tlv::tlvEncode(buffer, length, tlv::TLVValue{.stopTag = true}) < 0)
     {
         throw std::runtime_error("Failed to build packet to stop");
     }
@@ -385,7 +400,28 @@ int View::buildTLVPacket2Stop(char* buffer)
     return length;
 }
 
-int View::buildTLVPacket2Log(char* buffer)
+int View::buildTLVPacket2Bash(const std::vector<std::string>& args, char* buffer)
+{
+    std::string cmds;
+    for (const auto& arg : args)
+    {
+        cmds += arg + ' ';
+    }
+    if (!args.empty())
+    {
+        cmds.pop_back();
+    }
+    const int shmId = fillSharedMemory(utility::common::executeCommand("/bin/bash -c " + cmds, 5000));
+    int length = 0;
+    if (tlv::tlvEncode(buffer, length, tlv::TLVValue{.bashShmId = shmId}) < 0)
+    {
+        throw std::runtime_error("Failed to build packet for the bash option.");
+    }
+    encryptMessage(buffer, length);
+    return length;
+}
+
+int View::buildTLVPacket2Log(const std::vector<std::string>& /*args*/, char* buffer)
 {
     const int shmId = fillSharedMemory(getLogContents());
     int length = 0;
@@ -397,7 +433,7 @@ int View::buildTLVPacket2Log(char* buffer)
     return length;
 }
 
-int View::buildTLVPacket2Stat(char* buffer)
+int View::buildTLVPacket2Stat(const std::vector<std::string>& /*args*/, char* buffer)
 {
     const int shmId = fillSharedMemory(getStatInformation());
     int length = 0;
@@ -622,12 +658,21 @@ void View::createViewServer()
                     return;
                 }
 
-                const auto optionIter = optionDispatcher.find(msg);
+                std::vector<std::string> args;
+                std::istringstream iss(msg);
+                std::string token;
+                while (iss >> token)
+                {
+                    args.emplace_back(token);
+                }
+
+                const auto optionIter = optionDispatcher.find(args.at(0));
                 if (optionDispatcher.end() == optionIter)
                 {
                     throw std::logic_error("Unknown TCP message.");
                 }
-                (*get<BuildFunctor>(optionIter->second))(buffer);
+                args.erase(args.begin());
+                (*get<BuildFunctor>(optionIter->second))(args, buffer);
                 newSocket->toSend(buffer, sizeof(buffer));
             }
             catch (std::exception& error)
@@ -656,12 +701,21 @@ void View::createViewServer()
                 return;
             }
 
-            const auto optionIter = optionDispatcher.find(msg);
+            std::vector<std::string> args;
+            std::istringstream iss(msg);
+            std::string token;
+            while (iss >> token)
+            {
+                args.emplace_back(token);
+            }
+
+            const auto optionIter = optionDispatcher.find(args.at(0));
             if (optionDispatcher.end() == optionIter)
             {
                 throw std::logic_error("Unknown UDP message.");
             }
-            (*get<BuildFunctor>(optionIter->second))(buffer);
+            args.erase(args.begin());
+            (*get<BuildFunctor>(optionIter->second))(args, buffer);
             udpServer->toSendTo(buffer, sizeof(buffer), ip, port);
         }
         catch (std::exception& error)
