@@ -9,6 +9,7 @@
 #include "config.hpp"
 #ifndef __PRECOMPILED_HEADER
 #include <map>
+#include <vector>
 #else
 #include "application/pch/precompiled_header.hpp"
 #endif // __PRECOMPILED_HEADER
@@ -54,6 +55,8 @@ enum TLVType : int
     header = 0x0125e591,
     //! @brief Stop.
     stop = 0,
+    //! @brief Bash.
+    bash,
     //! @brief Log.
     log,
     //! @brief Stat.
@@ -64,7 +67,9 @@ enum TLVType : int
 struct TLVValue
 {
     //! @brief Flag for stopping the connection.
-    bool stopFlag{false};
+    bool stopTag{false};
+    //! @brief Shm id of the bash outputs.
+    int bashShmId{invalidShmId};
     //! @brief Shm id of the log contents.
     int logShmId{invalidShmId};
     //! @brief Shm id of the stat information.
@@ -161,7 +166,7 @@ public:
     void requestToRollback();
 
     //! @brief Alias for the functor to build the TLV packet.
-    typedef int (*BuildFunctor)(char*);
+    typedef int (*BuildFunctor)(const std::vector<std::string>&, char*);
     //! @brief Alias for the option name.
     using Option = std::string;
     //! @brief Alias for the option help message.
@@ -221,11 +226,12 @@ private:
     // clang-format off
     //! @brief Mapping table of all viewer options.
     const OptionMap optionDispatcher{
-        // - Option -+-------------- Help --------------+----- Build Packet -----
-        // ----------+----------------------------------+------------------------
-        { "log"      , { "view the log with highlights" , &buildTLVPacket2Log  }},
-        { "stat"     , { "show the stat of the process" , &buildTLVPacket2Stat }}
-        // ----------+----------------------------------+------------------------
+        // - Option -+--------------- Help ---------------+----- Build Packet -----
+        // ----------+------------------------------------+------------------------
+        { "bash"     , { "execute bash commands in quotes" , &buildTLVPacket2Bash }},
+        { "log"      , { "view the log with highlights"    , &buildTLVPacket2Log  }},
+        { "stat"     , { "show the stat of the process"    , &buildTLVPacket2Stat }}
+        // ----------+------------------------------------+------------------------
     };
     // clang-format on
 
@@ -241,14 +247,21 @@ private:
     //! @param buffer - TLV packet buffer
     //! @return buffer length
     static int buildTLVPacket2Stop(char* buffer);
+    //! @brief Build the TLV packet to get bash outputs.
+    //! @param args - container of arguments
+    //! @param buffer - TLV packet buffer
+    //! @return buffer length
+    static int buildTLVPacket2Bash(const std::vector<std::string>& args, char* buffer);
     //! @brief Build the TLV packet to view log contents.
+    //! @param args - container of arguments
     //! @param buffer - TLV packet buffer
     //! @return buffer length
-    static int buildTLVPacket2Log(char* buffer);
+    static int buildTLVPacket2Log(const std::vector<std::string>& args, char* buffer);
     //! @brief Build the TLV packet to show stat information.
+    //! @param args - container of arguments
     //! @param buffer - TLV packet buffer
     //! @return buffer length
-    static int buildTLVPacket2Stat(char* buffer);
+    static int buildTLVPacket2Stat(const std::vector<std::string>& args, char* buffer);
     //! @brief Encrypt the message with AES-128-CFB-128.
     //! @param buf - message buffer
     //! @param len - buffer length

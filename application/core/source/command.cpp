@@ -613,16 +613,24 @@ void Command::registerOnConsole(utility::console::Console& console, std::shared_
 
     for (const auto& [option, optionTuple] : VIEW_OPTIONS)
     {
-        const auto& cmd = option;
-        const auto& help = view::View::get<view::View::HelpMessage>(optionTuple);
         console.registerCmd(
-            cmd,
-            [cmd, &client](const Console::Args& /*input*/)
+            option,
+            [&client](const Console::Args& input)
             {
                 int retVal = Console::RetCode::success;
                 try
                 {
-                    client->toSend(utility::common::base64Encode(cmd));
+                    std::string cmds;
+                    for (const auto& arg : input)
+                    {
+                        cmds += arg + ' ';
+                    }
+                    if (!cmds.empty())
+                    {
+                        cmds.pop_back();
+                    }
+
+                    client->toSend(utility::common::base64Encode(cmds));
                     utility::time::millisecondLevelSleep(maxLatency);
                 }
                 catch (const std::exception& error)
@@ -632,7 +640,7 @@ void Command::registerOnConsole(utility::console::Console& console, std::shared_
                 }
                 return retVal;
             },
-            help);
+            view::View::get<view::View::HelpMessage>(optionTuple));
     }
 }
 
@@ -650,7 +658,7 @@ void Command::launchClient(std::shared_ptr<T>& client)
             try
             {
                 const auto tcpRep = View::parseTLVPacket(buffer, length);
-                if (tcpRep.stopFlag)
+                if (tcpRep.stopTag)
                 {
                     client->setNonBlocking();
                 }
@@ -670,7 +678,7 @@ void Command::launchClient(std::shared_ptr<T>& client)
             try
             {
                 const auto udpRep = View::parseTLVPacket(buffer, length);
-                if (udpRep.stopFlag)
+                if (udpRep.stopTag)
                 {
                     client->setNonBlocking();
                 }
