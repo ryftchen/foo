@@ -36,17 +36,17 @@ extern "C"
 
 extern int createDll(DLL* dll);
 extern int destroyDll(DLL* dll);
-extern int dllSize(DLL pHead);
-extern bool dllIsEmpty(DLL pHead);
-extern void* dllGet(DLL pHead, const int index);
-extern void* dllGetFirst(DLL pHead);
-extern void* dllGetLast(DLL pHead);
-extern int dllInsert(DLL pHead, const int index, void* const pVal);
-extern int dllInsertFirst(DLL pHead, void* const pVal);
-extern int dllInsertLast(DLL pHead, void* const pVal);
-extern int dllDelete(DLL pHead, const int index);
-extern int dllDeleteFirst(DLL pHead);
-extern int dllDeleteLast(DLL pHead);
+extern int dllSize(DLL head);
+extern bool dllIsEmpty(DLL head);
+extern void* dllGet(DLL head, const int index);
+extern void* dllGetFirst(DLL head);
+extern void* dllGetLast(DLL head);
+extern int dllInsert(DLL head, const int index, void* const val);
+extern int dllInsertFirst(DLL head, void* const val);
+extern int dllInsertLast(DLL head, void* const val);
+extern int dllDelete(DLL head, const int index);
+extern int dllDeleteFirst(DLL head);
+extern int dllDeleteLast(DLL head);
 } // namespace doubly_linked_list
 
 //! @brief The stack structure.
@@ -57,11 +57,11 @@ using Stack = doubly_linked_list::DLL;
 
 extern int createStack(Stack* stack);
 extern int destroyStack(Stack* stack);
-extern int stackPush(Stack pHead, void* const pVal);
-extern void* stackTop(Stack pHead);
-extern void* stackPop(Stack pHead);
-extern int stackSize(Stack pHead);
-extern bool stackIsEmpty(Stack pHead);
+extern int stackPush(Stack head, void* const val);
+extern void* stackTop(Stack head);
+extern void* stackPop(Stack head);
+extern int stackSize(Stack head);
+extern bool stackIsEmpty(Stack head);
 } // namespace stack
 
 //! @brief The queue structure.
@@ -72,11 +72,11 @@ using Queue = doubly_linked_list::DLL;
 
 extern int createQueue(Queue* queue);
 extern int destroyQueue(Queue* queue);
-extern int queuePush(Queue pHead, void* const pVal);
-extern void* queueFront(Queue pHead);
-extern void* queuePop(Queue pHead);
-extern int queueSize(Queue pHead);
-extern bool queueIsEmpty(Queue pHead);
+extern int queuePush(Queue head, void* const val);
+extern void* queueFront(Queue head);
+extern void* queuePop(Queue head);
+extern int queueSize(Queue head);
+extern bool queueIsEmpty(Queue head);
 } // namespace queue
 
 //! @brief Output helper for the data structure.

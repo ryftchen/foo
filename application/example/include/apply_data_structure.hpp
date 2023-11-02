@@ -186,7 +186,7 @@ public:
         Meta meta[] = {{'A', "foo"}, {'B', "bar"}, {'C', "baz"}, {'D', "qux"}};
         const int metaSize = sizeof(meta) / sizeof(meta[0]);
 
-        Meta* pVal = nullptr;
+        Meta* val = nullptr;
         DLL dll = nullptr;
         createDll(&dll);
         dllInsert(dll, 0, &meta[0]);
@@ -202,10 +202,10 @@ public:
         output.flush() << "insert first: {" << meta[0].id << ", " << meta[0].name << "}\n";
         dllInsertLast(dll, &meta[metaSize - 1]);
         output.flush() << "insert last: {" << meta[metaSize - 1].id << ", " << meta[metaSize - 1].name << "}\n";
-        pVal = static_cast<Meta*>(dllGetFirst(dll));
-        output.flush() << "get first: {" << pVal->id << ", " << pVal->name << "}\n";
-        pVal = static_cast<Meta*>(dllGetLast(dll));
-        output.flush() << "get last: {" << pVal->id << ", " << pVal->name << "}\n";
+        val = static_cast<Meta*>(dllGetFirst(dll));
+        output.flush() << "get first: {" << val->id << ", " << val->name << "}\n";
+        val = static_cast<Meta*>(dllGetLast(dll));
+        output.flush() << "get last: {" << val->id << ", " << val->name << "}\n";
         dllDeleteFirst(dll);
         output.flush() << "delete first\n";
         dllDeleteLast(dll);
@@ -215,8 +215,8 @@ public:
         output.flush() << "size: " << dllSize(dll) << '\n';
         for (int i = 0; i < dllSize(dll); ++i)
         {
-            pVal = static_cast<Meta*>(dllGet(dll, i));
-            output.flush() << "get (" << i << "): {" << pVal->id << ", " << pVal->name << "}\n";
+            val = static_cast<Meta*>(dllGet(dll, i));
+            output.flush() << "get (" << i << "): {" << val->id << ", " << val->name << "}\n";
         }
         destroyDll(&dll);
 
@@ -240,7 +240,7 @@ public:
         Meta meta[] = {{'A', "foo"}, {'B', "bar"}, {'C', "baz"}, {'D', "qux"}};
         const int metaSize = sizeof(meta) / sizeof(meta[0]);
 
-        Meta* pVal = nullptr;
+        Meta* val = nullptr;
         Stack stacks = nullptr;
         createStack(&stacks);
         for (int i = 0; i < (metaSize - 1); ++i)
@@ -249,10 +249,10 @@ public:
             output.flush() << "push: {" << meta[i].id << ", " << meta[i].name << "}\n";
         }
 
-        pVal = static_cast<Meta*>(stackPop(stacks));
-        output.flush() << "pop: {" << pVal->id << ", " << pVal->name << "}\n";
-        pVal = static_cast<Meta*>(stackTop(stacks));
-        output.flush() << "top: {" << pVal->id << ", " << pVal->name << "}\n";
+        val = static_cast<Meta*>(stackPop(stacks));
+        output.flush() << "pop: {" << val->id << ", " << val->name << "}\n";
+        val = static_cast<Meta*>(stackTop(stacks));
+        output.flush() << "top: {" << val->id << ", " << val->name << "}\n";
         stackPush(stacks, &meta[metaSize - 1]);
         output.flush() << "push: {" << meta[metaSize - 1].id << ", " << meta[metaSize - 1].name << "}\n";
 
@@ -260,8 +260,8 @@ public:
         output.flush() << "size: " << stackSize(stacks) << '\n';
         while (!stackIsEmpty(stacks))
         {
-            pVal = static_cast<Meta*>(stackPop(stacks));
-            output.flush() << "pop: {" << pVal->id << ", " << pVal->name << "}\n";
+            val = static_cast<Meta*>(stackPop(stacks));
+            output.flush() << "pop: {" << val->id << ", " << val->name << "}\n";
         }
         destroyStack(&stacks);
 
@@ -285,7 +285,7 @@ public:
         Meta meta[] = {{'A', "foo"}, {'B', "bar"}, {'C', "baz"}, {'D', "qux"}};
         const int metaSize = sizeof(meta) / sizeof(meta[0]);
 
-        Meta* pVal = nullptr;
+        Meta* val = nullptr;
         Queue queues = nullptr;
         createQueue(&queues);
         for (int i = 0; i < (metaSize - 1); ++i)
@@ -294,10 +294,10 @@ public:
             output.flush() << "push: {" << meta[i].id << ", " << meta[i].name << "}\n";
         }
 
-        pVal = static_cast<Meta*>(queuePop(queues));
-        output.flush() << "pop: {" << pVal->id << ", " << pVal->name << "}\n";
-        pVal = static_cast<Meta*>(queueFront(queues));
-        output.flush() << "front: {" << pVal->id << ", " << pVal->name << "}\n";
+        val = static_cast<Meta*>(queuePop(queues));
+        output.flush() << "pop: {" << val->id << ", " << val->name << "}\n";
+        val = static_cast<Meta*>(queueFront(queues));
+        output.flush() << "front: {" << val->id << ", " << val->name << "}\n";
         queuePush(queues, &meta[metaSize - 1]);
         output.flush() << "push: {" << meta[metaSize - 1].id << ", " << meta[metaSize - 1].name << "}\n";
 
@@ -305,8 +305,8 @@ public:
         output.flush() << "size: " << queueSize(queues) << '\n';
         while (!queueIsEmpty(queues))
         {
-            pVal = static_cast<Meta*>(queuePop(queues));
-            output.flush() << "pop: {" << pVal->id << ", " << pVal->name << "}\n";
+            val = static_cast<Meta*>(queuePop(queues));
+            output.flush() << "pop: {" << val->id << ", " << val->name << "}\n";
         }
         destroyQueue(&queues);
 

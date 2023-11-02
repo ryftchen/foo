@@ -221,7 +221,8 @@ class Task:
         self.progress_bar.setup_progress_bar()
         sys.stdout = self.logger
 
-        self.total_steps = len(self.basic_task_dict["--console"])
+        if "--console" in self.basic_task_dict:
+            self.total_steps += len(self.basic_task_dict["--console"])
         self.total_steps += len(self.basic_task_dict.keys())
         for task_category_list in self.basic_task_dict.values():
             self.total_steps += len(task_category_list)
@@ -245,9 +246,10 @@ class Task:
 
     def generate_tasks(self):
         while self.repeat_count:
-            for target_task in self.basic_task_dict["--console"]:
-                target_task = target_task.replace("'", "")
-                self.task_queue.put((self.app_bin_cmd, f"{target_task}\nquit"))
+            if "--console" in self.basic_task_dict:
+                for target_task in self.basic_task_dict["--console"]:
+                    target_task = target_task.replace("'", "")
+                    self.task_queue.put((self.app_bin_cmd, f"{target_task}\nquit"))
 
             for task_category, task_category_list in self.basic_task_dict.items():
                 self.task_queue.put((f"{self.app_bin_cmd} {task_category}", ""))

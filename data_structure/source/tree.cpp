@@ -96,18 +96,18 @@ Node* getSuccessor(Node* x)
 //! @return new node after creating
 Node* createNode(const Type key, Node* parent, Node* left, Node* right)
 {
-    Node* p = new (std::nothrow) Node;
-    if (nullptr == p)
+    Node* node = new (std::nothrow) Node;
+    if (nullptr == node)
     {
         return nullptr;
     }
 
-    p->key = key;
-    p->left = left;
-    p->right = right;
-    p->parent = parent;
+    node->key = key;
+    node->left = left;
+    node->right = right;
+    node->parent = parent;
 
-    return p;
+    return node;
 }
 
 //! @brief Insert target node into the binary search tree. Allow inserting node with the same key.
@@ -436,18 +436,18 @@ Node* rightLeftRotation(AVLTree k1)
 //! @return new node after creating
 Node* createNode(const Type key, Node* left, Node* right)
 {
-    Node* p = new (std::nothrow) Node;
-    if (nullptr == p)
+    Node* node = new (std::nothrow) Node;
+    if (nullptr == node)
     {
         return nullptr;
     }
 
-    p->key = key;
-    p->height = 0;
-    p->left = left;
-    p->right = right;
+    node->key = key;
+    node->height = 0;
+    node->left = left;
+    node->right = right;
 
-    return p;
+    return node;
 }
 
 //! @brief Delete target node from the AVL tree.
@@ -727,17 +727,17 @@ Node* getMaximum(SplayTree tree)
 //! @return new node after creating
 Node* createNode(const Type key, Node* left, Node* right)
 {
-    Node* p = new (std::nothrow) Node;
-    if (nullptr == p)
+    Node* node = new (std::nothrow) Node;
+    if (nullptr == node)
     {
         return nullptr;
     }
 
-    p->key = key;
-    p->left = left;
-    p->right = right;
+    node->key = key;
+    node->left = left;
+    node->right = right;
 
-    return p;
+    return node;
 }
 
 //! @brief Insert target node into the splay tree. Not splay. Not allow inserting node with the same key.

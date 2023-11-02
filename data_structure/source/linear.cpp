@@ -11,34 +11,34 @@ namespace date_structure::linear
 namespace doubly_linked_list
 {
 //! @brief Create a node of the doubly linked list.
-//! @param pVal - value of the target node
+//! @param val - value of the target node
 //! @return node
-static Node* createNode(void* const pVal)
+static Node* createNode(void* const val)
 {
-    Node* pNode = new (std::nothrow) Node;
-    if (nullptr == pNode)
+    Node* node = new (std::nothrow) Node;
+    if (nullptr == node)
     {
         return nullptr;
     }
 
-    pNode->prev = pNode->next = pNode;
-    pNode->p = pVal;
+    node->prev = node->next = node;
+    node->p = val;
 
-    return pNode;
+    return node;
 }
 
 //! @brief Get the node of the doubly linked list by index.
-//! @param pHead - head of the list
+//! @param head - head of the list
 //! @param index - node index
 //! @return node
-static Node* getNode(DLL pHead, const int index)
+static Node* getNode(DLL head, const int index)
 {
     int count = 0;
-    Node* pNode = pHead->next;
-    while (pNode != pHead)
+    Node* node = head->next;
+    while (node != head)
     {
         ++count;
-        pNode = pNode->next;
+        node = node->next;
     }
 
     if ((index < 0) || (index >= count))
@@ -49,18 +49,18 @@ static Node* getNode(DLL pHead, const int index)
     if (index <= (count / 2))
     {
         int i = 0;
-        Node* pNode = pHead->next;
+        Node* node = head->next;
         while ((i++) < index)
         {
-            pNode = pNode->next;
+            node = node->next;
         }
 
-        return pNode;
+        return node;
     }
 
     int j = 0;
     const int rIndex = count - index - 1;
-    Node* rNode = pHead->prev;
+    Node* rNode = head->prev;
     while ((j++) < rIndex)
     {
         rNode = rNode->prev;
@@ -93,13 +93,13 @@ int destroyDll(DLL* dll)
         return -1;
     }
 
-    Node* pNode = (*dll)->next;
-    Node* pTemp = nullptr;
-    while (pNode != *dll)
+    Node* node = (*dll)->next;
+    Node* temp = nullptr;
+    while (node != *dll)
     {
-        pTemp = pNode;
-        pNode = pNode->next;
-        delete pTemp;
+        temp = node;
+        node = node->next;
+        delete temp;
     }
 
     delete *dll;
@@ -109,165 +109,165 @@ int destroyDll(DLL* dll)
 }
 
 //! @brief Get the size of the doubly linked list.
-//! @param pHead - head of the list
+//! @param head - head of the list
 //! @return size of the doubly linked list
-int dllSize(DLL pHead)
+int dllSize(DLL head)
 {
     int count = 0;
-    Node* pNode = pHead->next;
-    while (pNode != pHead)
+    Node* node = head->next;
+    while (node != head)
     {
         ++count;
-        pNode = pNode->next;
+        node = node->next;
     }
 
     return count;
 }
 
 //! @brief Check whether any nodes do not exist in the doubly linked list.
-//! @param pHead - head of the list
+//! @param head - head of the list
 //! @return any nodes do not exist or exist
-bool dllIsEmpty(DLL pHead)
+bool dllIsEmpty(DLL head)
 {
-    return (0 == dllSize(pHead));
+    return (0 == dllSize(head));
 }
 
 //! @brief Get the node of the doubly linked list by index.
-//! @param pHead - head of the list
+//! @param head - head of the list
 //! @param index - node index
 //! @return node of the doubly linked list
-void* dllGet(DLL pHead, const int index)
+void* dllGet(DLL head, const int index)
 {
-    Node* pIndex = getNode(pHead, index);
-    if (nullptr == pIndex)
+    Node* node = getNode(head, index);
+    if (nullptr == node)
     {
         return nullptr;
     }
 
-    return pIndex->p;
+    return node->p;
 }
 
 //! @brief Get the first node of the doubly linked list.
-//! @param pHead - head of the list
+//! @param head - head of the list
 //! @return first node of the doubly linked list
-void* dllGetFirst(DLL pHead)
+void* dllGetFirst(DLL head)
 {
-    return dllGet(pHead, 0);
+    return dllGet(head, 0);
 }
 
 //! @brief Get the last node of the doubly linked list.
-//! @param pHead - head of the list
+//! @param head - head of the list
 //! @return last node of the doubly linked list
-void* dllGetLast(DLL pHead)
+void* dllGetLast(DLL head)
 {
-    return dllGet(pHead, dllSize(pHead) - 1);
+    return dllGet(head, dllSize(head) - 1);
 }
 
 //! @brief Insert the target node into the doubly linked list by index.
-//! @param pHead - head of the list
+//! @param head - head of the list
 //! @param index - node index
-//! @param pVal - value of the target node
+//! @param val - value of the target node
 //! @return the value is 0 if successful, otherwise -1
-int dllInsert(DLL pHead, const int index, void* const pVal)
+int dllInsert(DLL head, const int index, void* const val)
 {
     if (0 == index)
     {
-        return dllInsertFirst(pHead, pVal);
+        return dllInsertFirst(head, val);
     }
 
-    Node* pIndex = getNode(pHead, index);
-    if (nullptr == pIndex)
+    Node* node = getNode(head, index);
+    if (nullptr == node)
     {
         return -1;
     }
 
-    Node* pNode = createNode(pVal);
-    if (nullptr == pNode)
+    Node* newNode = createNode(val);
+    if (nullptr == newNode)
     {
         return -1;
     }
 
-    pNode->prev = pIndex->prev;
-    pNode->next = pIndex;
-    pIndex->prev->next = pNode;
-    pIndex->prev = pNode;
+    newNode->prev = node->prev;
+    newNode->next = node;
+    node->prev->next = newNode;
+    node->prev = newNode;
 
     return 0;
 }
 
 //! @brief Insert the target node into the doubly linked list as the first node.
-//! @param pHead - head of the list
-//! @param pVal - value of the target node
+//! @param head - head of the list
+//! @param val - value of the target node
 //! @return the value is 0 if successful, otherwise -1
-int dllInsertFirst(DLL pHead, void* const pVal)
+int dllInsertFirst(DLL head, void* const val)
 {
-    Node* pNode = createNode(pVal);
-    if (nullptr == pNode)
+    Node* node = createNode(val);
+    if (nullptr == node)
     {
         return -1;
     }
 
-    pNode->prev = pHead;
-    pNode->next = pHead->next;
-    pHead->next->prev = pNode;
-    pHead->next = pNode;
+    node->prev = head;
+    node->next = head->next;
+    head->next->prev = node;
+    head->next = node;
 
     return 0;
 }
 
 //! @brief Insert the target node into the doubly linked list as the last node.
-//! @param pHead - head of the list
-//! @param pVal - value of the target node
+//! @param head - head of the list
+//! @param val - value of the target node
 //! @return the value is 0 if successful, otherwise -1
-int dllInsertLast(DLL pHead, void* const pVal)
+int dllInsertLast(DLL head, void* const val)
 {
-    Node* pNode = createNode(pVal);
-    if (nullptr == pNode)
+    Node* node = createNode(val);
+    if (nullptr == node)
     {
         return -1;
     }
 
-    pNode->next = pHead;
-    pNode->prev = pHead->prev;
-    pHead->prev->next = pNode;
-    pHead->prev = pNode;
+    node->next = head;
+    node->prev = head->prev;
+    head->prev->next = node;
+    head->prev = node;
 
     return 0;
 }
 
 //! @brief Delete the target node from the doubly linked list by index.
-//! @param pHead - head of the list
+//! @param head - head of the list
 //! @param index - node index
 //! @return the value is 0 if successful, otherwise -1
-int dllDelete(DLL pHead, const int index)
+int dllDelete(DLL head, const int index)
 {
-    Node* pIndex = getNode(pHead, index);
-    if (nullptr == pIndex)
+    Node* node = getNode(head, index);
+    if (nullptr == node)
     {
         return -1;
     }
 
-    pIndex->next->prev = pIndex->prev;
-    pIndex->prev->next = pIndex->next;
-    delete pIndex;
+    node->next->prev = node->prev;
+    node->prev->next = node->next;
+    delete node;
 
     return 0;
 }
 
 //! @brief Delete the first node from the doubly linked list.
-//! @param pHead - head of the list
+//! @param head - head of the list
 //! @return the value is 0 if successful, otherwise -1
-int dllDeleteFirst(DLL pHead)
+int dllDeleteFirst(DLL head)
 {
-    return dllDelete(pHead, 0);
+    return dllDelete(head, 0);
 }
 
 //! @brief Delete the last node from the doubly linked list.
-//! @param pHead - head of the list
+//! @param head - head of the list
 //! @return the value is 0 if successful, otherwise -1
-int dllDeleteLast(DLL pHead)
+int dllDeleteLast(DLL head)
 {
-    return dllDelete(pHead, dllSize(pHead) - 1);
+    return dllDelete(head, dllSize(head) - 1);
 }
 } // namespace doubly_linked_list
 
@@ -290,46 +290,46 @@ int destroyStack(Stack* stack)
 }
 
 //! @brief Push operation of the stack.
-//! @param pHead - head of the stack
-//! @param pVal - value of the target node
+//! @param head - head of the stack
+//! @param val - value of the target node
 //! @return the value is 0 if successful, otherwise -1
-int stackPush(Stack pHead, void* const pVal)
+int stackPush(Stack head, void* const val)
 {
-    return dllInsertFirst(pHead, pVal);
+    return dllInsertFirst(head, val);
 }
 
 //! @brief Top operation of the stack.
-//! @param pHead - head of the stack
+//! @param head - head of the stack
 //! @return target node
-void* stackTop(Stack pHead)
+void* stackTop(Stack head)
 {
-    return dllGetFirst(pHead);
+    return dllGetFirst(head);
 }
 
 //! @brief Pop operation of the stack.
-//! @param pHead - head of the stack
+//! @param head - head of the stack
 //! @return target node
-void* stackPop(Stack pHead)
+void* stackPop(Stack head)
 {
-    void* p = stackTop(pHead);
-    dllDeleteFirst(pHead);
+    void* p = stackTop(head);
+    dllDeleteFirst(head);
     return p;
 }
 
 //! @brief Get the size of the stack.
-//! @param pHead - head of the stack
+//! @param head - head of the stack
 //! @return size of the stack
-int stackSize(Stack pHead)
+int stackSize(Stack head)
 {
-    return dllSize(pHead);
+    return dllSize(head);
 }
 
 //! @brief Check whether any nodes do not exist in the stack.
-//! @param pHead - head of the stack
+//! @param head - head of the stack
 //! @return any nodes do not exist or exist
-bool stackIsEmpty(Stack pHead)
+bool stackIsEmpty(Stack head)
 {
-    return dllIsEmpty(pHead);
+    return dllIsEmpty(head);
 }
 } // namespace stack
 
@@ -352,46 +352,46 @@ int destroyQueue(Queue* queue)
 }
 
 //! @brief Push operation of the queue.
-//! @param pHead - head of the queue
-//! @param pVal - value of the target node
+//! @param head - head of the queue
+//! @param val - value of the target node
 //! @return the value is 0 if successful, otherwise -1
-int queuePush(Queue pHead, void* const pVal)
+int queuePush(Queue head, void* const val)
 {
-    return dllInsertLast(pHead, pVal);
+    return dllInsertLast(head, val);
 }
 
 //! @brief Front operation of the queue.
-//! @param pHead - head of the queue
+//! @param head - head of the queue
 //! @return target node
-void* queueFront(Queue pHead)
+void* queueFront(Queue head)
 {
-    return dllGetFirst(pHead);
+    return dllGetFirst(head);
 }
 
 //! @brief Pop operation of the queue.
-//! @param pHead - head of the queue
+//! @param head - head of the queue
 //! @return target node
-void* queuePop(Queue pHead)
+void* queuePop(Queue head)
 {
-    void* p = dllGetFirst(pHead);
-    dllDeleteFirst(pHead);
+    void* p = dllGetFirst(head);
+    dllDeleteFirst(head);
     return p;
 }
 
 //! @brief Get the size of the queue.
-//! @param pHead - head of the queue
+//! @param head - head of the queue
 //! @return size of the queue
-int queueSize(Queue pHead)
+int queueSize(Queue head)
 {
-    return dllSize(pHead);
+    return dllSize(head);
 }
 
 //! @brief Check whether any nodes do not exist in the queue.
-//! @param pHead - head of the queue
+//! @param head - head of the queue
 //! @return any nodes do not exist or exist
-bool queueIsEmpty(Queue pHead)
+bool queueIsEmpty(Queue head)
 {
-    return dllIsEmpty(pHead);
+    return dllIsEmpty(head);
 }
 } // namespace queue
 
