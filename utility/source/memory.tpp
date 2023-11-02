@@ -46,19 +46,19 @@ Memory<T, BlockSize>& Memory<T, BlockSize>::operator=(Memory&& memory) noexcept
 }
 
 template <typename T, std::size_t BlockSize>
-inline T* Memory<T, BlockSize>::address(T& x) const noexcept
+inline T* Memory<T, BlockSize>::address(T& obj) const noexcept
 {
-    return &x;
+    return &obj;
 }
 
 template <typename T, std::size_t BlockSize>
-inline const T* Memory<T, BlockSize>::address(const T& x) const noexcept
+inline const T* Memory<T, BlockSize>::address(const T& obj) const noexcept
 {
-    return &x;
+    return &obj;
 }
 
 template <typename T, std::size_t BlockSize>
-inline T* Memory<T, BlockSize>::allocate(const std::size_t /*n*/, const T* /*hint*/)
+inline T* Memory<T, BlockSize>::allocate(const std::size_t /*size*/, const T* /*hint*/)
 {
     if (nullptr != freeSlots)
     {
@@ -77,12 +77,12 @@ inline T* Memory<T, BlockSize>::allocate(const std::size_t /*n*/, const T* /*hin
 }
 
 template <typename T, std::size_t BlockSize>
-inline void Memory<T, BlockSize>::deallocate(T* p, const std::size_t /*n*/)
+inline void Memory<T, BlockSize>::deallocate(T* obj, const std::size_t /*size*/)
 {
-    if (nullptr != p)
+    if (nullptr != obj)
     {
-        reinterpret_cast<Slot*>(p)->next = freeSlots;
-        freeSlots = reinterpret_cast<Slot*>(p);
+        reinterpret_cast<Slot*>(obj)->next = freeSlots;
+        freeSlots = reinterpret_cast<Slot*>(obj);
     }
 }
 
@@ -95,16 +95,16 @@ inline std::size_t Memory<T, BlockSize>::maxSize() const noexcept
 
 template <typename T, std::size_t BlockSize>
 template <class U, class... Args>
-inline void Memory<T, BlockSize>::construct(U* p, Args&&... args)
+inline void Memory<T, BlockSize>::construct(U* obj, Args&&... args)
 {
-    new (p) U(std::forward<Args>(args)...);
+    new (obj) U(std::forward<Args>(args)...);
 }
 
 template <typename T, std::size_t BlockSize>
 template <class U>
-inline void Memory<T, BlockSize>::destroy(U* p)
+inline void Memory<T, BlockSize>::destroy(U* obj)
 {
-    p->~U();
+    obj->~U();
 }
 
 template <typename T, std::size_t BlockSize>
@@ -117,19 +117,19 @@ inline T* Memory<T, BlockSize>::newElement(Args&&... args)
 }
 
 template <typename T, std::size_t BlockSize>
-inline void Memory<T, BlockSize>::deleteElement(T* p)
+inline void Memory<T, BlockSize>::deleteElement(T* obj)
 {
-    if (nullptr != p)
+    if (nullptr != obj)
     {
-        p->~T();
-        deallocate(p);
+        obj->~T();
+        deallocate(obj);
     }
 }
 
 template <typename T, std::size_t BlockSize>
-inline std::size_t Memory<T, BlockSize>::padPointer(char* p, const std::size_t align) const noexcept
+inline std::size_t Memory<T, BlockSize>::padPointer(char* data, const std::size_t align) const noexcept
 {
-    const std::uintptr_t result = reinterpret_cast<std::uintptr_t>(p);
+    const std::uintptr_t result = reinterpret_cast<std::uintptr_t>(data);
     return ((align - result) % align);
 }
 
