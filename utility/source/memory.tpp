@@ -4,6 +4,9 @@
 //! @version 1.0
 //! @copyright Copyright (c) 2022-2023 ryftchen. All rights reserved.
 
+#include <cstdint>
+#include <utility>
+
 #pragma once
 
 #include "memory.hpp"

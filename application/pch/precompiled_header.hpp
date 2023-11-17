@@ -31,6 +31,7 @@
 #include <map>
 #include <memory>
 #include <queue>
+#include <ranges>
 #include <regex>
 #include <sstream>
 #include <string>

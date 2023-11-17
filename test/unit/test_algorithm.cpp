@@ -60,7 +60,6 @@ public:
 
 std::shared_ptr<match::TargetBuilder> MatchTestBase::builder = nullptr;
 
-// NOLINTBEGIN(cert-err58-cpp)
 //! @brief Test for the Rabin-Karp method in the solution of match.
 TEST_F(MatchTestBase, rkMethod)
 {
@@ -120,7 +119,6 @@ TEST_F(MatchTestBase, sundayMethod)
             std::string_view(builder->getMatchingText().get()).length(),
             builder->getSinglePattern().length()));
 }
-// NOLINTEND(cert-err58-cpp)
 
 //! @brief Alias for the namespace of applying notation.
 namespace notation = application::app_algo::notation;
@@ -157,7 +155,6 @@ public:
 
 std::shared_ptr<notation::TargetBuilder> NotationTestBase::builder = nullptr;
 
-// NOLINTBEGIN(cert-err58-cpp)
 //! @brief Test for the prefix method in the solution of notation.
 TEST_F(NotationTestBase, prefixMethod)
 {
@@ -169,7 +166,6 @@ TEST_F(NotationTestBase, postfixMethod)
 {
     ASSERT_EQ("abcd^e-fgh*+^*+i-", algorithm::notation::Notation::postfix(std::string{builder->getInfixNotation()}));
 }
-// NOLINTEND(cert-err58-cpp)
 
 //! @brief Alias for the namespace of applying optimal.
 namespace optimal = application::app_algo::optimal;
@@ -198,7 +194,6 @@ public:
     static constexpr double error{1e-3};
 };
 
-// NOLINTBEGIN(cert-err58-cpp, hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
 //! @brief Test for the gradient descent method in the solution of optimal.
 TEST_F(OptimalTestBase, gradientDescentMethod)
 {
@@ -250,7 +245,6 @@ TEST_F(OptimalTestBase, geneticMethod)
     EXPECT_GT(get<0>(result.value()), 0.0 - error);
     EXPECT_LT(get<0>(result.value()), 0.0 + error);
 }
-// NOLINTEND(cert-err58-cpp, hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
 
 //! @brief Alias for the namespace of applying search.
 namespace search = application::app_algo::search;
@@ -288,7 +282,6 @@ public:
 
 std::shared_ptr<search::TargetBuilder<double>> SearchTestBase::builder = nullptr;
 
-// NOLINTBEGIN(cert-err58-cpp)
 //! @brief Test for the binary method in the solution of search.
 TEST_F(SearchTestBase, binaryMethod)
 {
@@ -315,7 +308,6 @@ TEST_F(SearchTestBase, fibonacciMethod)
         algorithm::search::Search<double>::fibonacci(
             builder->getOrderedArray().get(), builder->getLength(), builder->getSearchKey()));
 }
-// NOLINTEND(cert-err58-cpp)
 
 //! @brief Alias for the namespace of applying sort.
 namespace sort = application::app_algo::sort;
@@ -353,7 +345,6 @@ public:
 
 std::shared_ptr<sort::TargetBuilder<int>> SortTestBase::builder = nullptr;
 
-// NOLINTBEGIN(cert-err58-cpp)
 //! @brief Test for the bubble method in the solution of sort.
 TEST_F(SortTestBase, bubbleMethod)
 {
@@ -446,5 +437,4 @@ TEST_F(SortTestBase, radixMethod)
     std::sort(sortContainer.begin(), sortContainer.end());
     ASSERT_EQ(sortContainer, algorithm::sort::Sort<int>::radix(builder->getRandomArray().get(), builder->getLength()));
 }
-// NOLINTEND(cert-err58-cpp)
 } // namespace test::tst_algo

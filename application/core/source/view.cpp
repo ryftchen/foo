@@ -14,6 +14,7 @@
 #include <algorithm>
 #include <cstring>
 #include <iostream>
+#include <iterator>
 #include <sstream>
 #else
 #include "application/pch/precompiled_header.hpp"

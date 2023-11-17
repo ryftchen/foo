@@ -6,8 +6,7 @@
 
 #pragma once
 
-#include <cstdint>
-#include <utility>
+#include <cstddef>
 
 //! @brief Memory-pool-related functions in the utility module.
 namespace utility::memory

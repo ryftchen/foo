@@ -9,6 +9,8 @@
 #include "view.hpp"
 #ifndef __PRECOMPILED_HEADER
 #include <fstream>
+#include <iterator>
+#include <ranges>
 #else
 #include "application/pch/precompiled_header.hpp"
 #endif // __PRECOMPILED_HEADER
@@ -336,7 +338,8 @@ void Command::validateRegularTask()
         return false;
     };
 
-    for ([[maybe_unused]] const auto& [subCLIName, subCLIMap] : regularTaskDispatcher | isSubCLIUsed)
+    for ([[maybe_unused]] const auto& [subCLIName, subCLIMap] :
+         regularTaskDispatcher | std::views::filter(isSubCLIUsed))
     {
         const auto& subCLI = mainCLI.at<utility::argument::Argument>(subCLIName);
         if (!subCLI)
@@ -359,7 +362,8 @@ void Command::validateRegularTask()
             return false;
         };
 
-        for ([[maybe_unused]] const auto& [taskCategory, taskCategoryTuple] : subCLIMap | isCategoryUsed)
+        for ([[maybe_unused]] const auto& [taskCategory, taskCategoryTuple] :
+             subCLIMap | std::views::filter(isCategoryUsed))
         {
             const auto tasks = subCLI.get<std::vector<std::string>>(taskCategory);
             for (const auto& task : tasks)
@@ -396,7 +400,8 @@ void Command::dispatchTask()
                 return mainCLI.isSubCommandUsed(subCLIPair.first);
             };
 
-            for ([[maybe_unused]] const auto& [subCLIName, subCLIMap] : regularTaskDispatcher | isSubCLIUsed)
+            for ([[maybe_unused]] const auto& [subCLIName, subCLIMap] :
+                 regularTaskDispatcher | std::views::filter(isSubCLIUsed))
             {
                 const auto& subCLI = mainCLI.at<utility::argument::Argument>(subCLIName);
                 std::cout << subCLI.help().str() << std::flush;
