@@ -6,6 +6,8 @@
 
 #include "argument.hpp"
 #include <iomanip>
+#include <numeric>
+#include <utility>
 
 namespace utility::argument
 {

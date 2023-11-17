@@ -8,10 +8,11 @@
 
 #include "config.hpp"
 #ifndef __PRECOMPILED_HEADER
-#include <filesystem>
+#include <algorithm>
 #include <fstream>
 #include <iostream>
 #include <queue>
+#include <sstream>
 #else
 #include "application/pch/precompiled_header.hpp"
 #endif // __PRECOMPILED_HEADER

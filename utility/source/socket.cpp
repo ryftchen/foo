@@ -238,7 +238,7 @@ void TCPServer::toAccept(const bool detach)
     {
         fut = std::async(
             std::launch::async,
-            [=]
+            [=, this]
             {
                 toAccept(this);
             });
@@ -246,7 +246,7 @@ void TCPServer::toAccept(const bool detach)
     else
     {
         std::thread t(
-            [=]
+            [=, this]
             {
                 toAccept(this);
             });

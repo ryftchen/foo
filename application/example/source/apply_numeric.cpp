@@ -6,6 +6,7 @@
 
 #include "apply_numeric.hpp"
 #ifndef __PRECOMPILED_HEADER
+#include <iomanip>
 #include <syncstream>
 #else
 #include "application/pch/precompiled_header.hpp"

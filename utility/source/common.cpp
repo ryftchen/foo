@@ -8,7 +8,6 @@
 #include <cassert>
 #include <chrono>
 #include <cstdarg>
-#include <stdexcept>
 #include <vector>
 
 namespace utility::common

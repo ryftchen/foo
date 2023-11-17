@@ -8,9 +8,9 @@
 
 #include <any>
 #include <functional>
+#include <limits>
 #include <list>
 #include <map>
-#include <numeric>
 #include <optional>
 #include <sstream>
 #include <variant>

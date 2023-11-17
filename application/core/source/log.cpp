@@ -6,6 +6,7 @@
 
 #include "log.hpp"
 #ifndef __PRECOMPILED_HEADER
+#include <filesystem>
 #include <regex>
 #else
 #include "application/pch/precompiled_header.hpp"

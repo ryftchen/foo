@@ -59,7 +59,6 @@ public:
 
 std::shared_ptr<arithmetic::TargetBuilder> ArithmeticTestBase::builder = nullptr;
 
-// NOLINTBEGIN(cert-err58-cpp)
 //! @brief Test for the addition method in the solution of arithmetic.
 TEST_F(ArithmeticTestBase, additionMethod)
 {
@@ -95,7 +94,6 @@ TEST_F(ArithmeticTestBase, divisionMethod)
         numeric::arithmetic::Arithmetic::division(
             std::get<0>(builder->getIntegers()), std::get<1>(builder->getIntegers())));
 }
-// NOLINTEND(cert-err58-cpp)
 
 //! @brief Alias for the namespace of applying divisor.
 namespace divisor = application::app_num::divisor;
@@ -134,7 +132,6 @@ public:
 
 std::shared_ptr<divisor::TargetBuilder> DivisorTestBase::builder = nullptr;
 
-// NOLINTBEGIN(cert-err58-cpp)
 //! @brief Test for the Euclidean method in the solution of divisor.
 TEST_F(DivisorTestBase, euclideanMethod)
 {
@@ -150,7 +147,6 @@ TEST_F(DivisorTestBase, steinMethod)
         divisorContainer,
         numeric::divisor::Divisor::stein(std::get<0>(builder->getIntegers()), std::get<1>(builder->getIntegers())));
 }
-// NOLINTEND(cert-err58-cpp)
 
 //! @brief Alias for the namespace of applying integral.
 namespace integral = application::app_num::integral;
@@ -179,7 +175,6 @@ public:
     static constexpr double error{1e-1};
 };
 
-// NOLINTBEGIN(cert-err58-cpp, hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
 //! @brief Test for the trapezoidal method in the solution of integral.
 TEST_F(IntegralTestBase, trapezoidalMethod)
 {
@@ -238,7 +233,6 @@ TEST_F(IntegralTestBase, monteCarloMethod)
     EXPECT_GT(result, -4.08951 - error);
     EXPECT_LT(result, -4.08951 + error);
 }
-// NOLINTEND(cert-err58-cpp, hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
 
 //! @brief Alias for the namespace of applying prime.
 namespace prime = application::app_num::prime;
@@ -285,7 +279,6 @@ public:
 
 std::shared_ptr<prime::TargetBuilder> PrimeTestBase::builder = nullptr;
 
-// NOLINTBEGIN(cert-err58-cpp)
 //! @brief Test for the Eratosthenes method in the solution of prime.
 TEST_F(PrimeTestBase, eratosthenesMethod)
 {
@@ -297,5 +290,4 @@ TEST_F(PrimeTestBase, eulerMethod)
 {
     ASSERT_EQ(primeContainer, numeric::prime::Prime::euler(builder->getMaxPositiveInteger()));
 }
-// NOLINTEND(cert-err58-cpp)
 } // namespace test::tst_num

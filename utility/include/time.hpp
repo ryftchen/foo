@@ -6,7 +6,6 @@
 
 #pragma once
 
-#include <chrono>
 #include <thread>
 
 //! @brief Store beginning time.
@@ -67,7 +66,7 @@ void BlockingTimer::set(auto func, const std::uint32_t interval)
 {
     isRunning.store(true);
     std::thread timer(
-        [=]()
+        [=, this]()
         {
             while (isRunning.load())
             {

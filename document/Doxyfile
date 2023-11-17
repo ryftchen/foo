@@ -1,7 +1,7 @@
 DOXYFILE_ENCODING      = UTF-8
-PROJECT_NAME           = "foo"
+PROJECT_NAME           = foo
 PROJECT_NUMBER         =
-PROJECT_BRIEF          = "bar"
+PROJECT_BRIEF          = bar
 PROJECT_LOGO           =
 OUTPUT_DIRECTORY       = ./document
 CREATE_SUBDIRS         = YES
@@ -44,6 +44,7 @@ OPTIMIZE_OUTPUT_SLICE  = NO
 EXTENSION_MAPPING      = tpp=C++
 MARKDOWN_SUPPORT       = YES
 TOC_INCLUDE_HEADINGS   = 5
+MARKDOWN_ID_STYLE      = DOXYGEN
 AUTOLINK_SUPPORT       = YES
 BUILTIN_STL_SUPPORT    = NO
 CPP_CLI_SUPPORT        = NO
@@ -57,6 +58,7 @@ INLINE_SIMPLE_STRUCTS  = NO
 TYPEDEF_HIDES_STRUCT   = NO
 LOOKUP_CACHE_SIZE      = 0
 NUM_PROC_THREADS       = 0
+TIMESTAMP              = NO
 EXTRACT_ALL            = YES
 EXTRACT_PRIVATE        = YES
 EXTRACT_PRIV_VIRTUAL   = YES
@@ -162,19 +164,18 @@ HTML_FILE_EXTENSION    = .html
 HTML_HEADER            = ./document/template/header.html
 HTML_FOOTER            =
 HTML_STYLESHEET        =
-HTML_EXTRA_STYLESHEET  = /usr/local/share/doxygen-awesome-css/doxygen-awesome.css \
-                         /usr/local/share/doxygen-awesome-css/doxygen-awesome-sidebar-only.css \
-                         /usr/local/share/doxygen-awesome-css/doxygen-awesome-sidebar-only-darkmode-toggle.css
-HTML_EXTRA_FILES       = /usr/local/share/doxygen-awesome-css/doxygen-awesome-darkmode-toggle.js \
-                         /usr/local/share/doxygen-awesome-css/doxygen-awesome-fragment-copy-button.js \
-                         /usr/local/share/doxygen-awesome-css/doxygen-awesome-paragraph-link.js \
-                         /usr/local/share/doxygen-awesome-css/doxygen-awesome-interactive-toc.js \
+HTML_EXTRA_STYLESHEET  = /usr/local/lib/node_modules/@jothepro/doxygen-awesome-css/doxygen-awesome.css \
+                         /usr/local/lib/node_modules/@jothepro/doxygen-awesome-css/doxygen-awesome-sidebar-only.css \
+                         /usr/local/lib/node_modules/@jothepro/doxygen-awesome-css/doxygen-awesome-sidebar-only-darkmode-toggle.css
+HTML_EXTRA_FILES       = /usr/local/lib/node_modules/@jothepro/doxygen-awesome-css/doxygen-awesome-darkmode-toggle.js \
+                         /usr/local/lib/node_modules/@jothepro/doxygen-awesome-css/doxygen-awesome-fragment-copy-button.js \
+                         /usr/local/lib/node_modules/@jothepro/doxygen-awesome-css/doxygen-awesome-paragraph-link.js \
+                         /usr/local/lib/node_modules/@jothepro/doxygen-awesome-css/doxygen-awesome-interactive-toc.js \
                          ./document/template/favicon.png
 HTML_COLORSTYLE        = AUTO_LIGHT
 HTML_COLORSTYLE_HUE    = 220
 HTML_COLORSTYLE_SAT    = 100
 HTML_COLORSTYLE_GAMMA  = 80
-HTML_TIMESTAMP         = NO
 HTML_DYNAMIC_MENUS     = YES
 HTML_DYNAMIC_SECTIONS  = NO
 HTML_INDEX_NUM_ENTRIES = 100
@@ -191,6 +192,7 @@ GENERATE_CHI           = NO
 CHM_INDEX_ENCODING     =
 BINARY_TOC             = NO
 TOC_EXPAND             = NO
+SITEMAP_URL            =
 GENERATE_QHP           = NO
 QCH_FILE               =
 QHP_NAMESPACE          = org.doxygen.Project
@@ -241,7 +243,6 @@ USE_PDFLATEX           = YES
 LATEX_BATCHMODE        = NO
 LATEX_HIDE_INDICES     = NO
 LATEX_BIB_STYLE        = plain
-LATEX_TIMESTAMP        = NO
 LATEX_EMOJI_DIRECTORY  =
 GENERATE_RTF           = NO
 RTF_OUTPUT             = rtf
@@ -274,12 +275,11 @@ INCLUDE_FILE_PATTERNS  =
 PREDEFINED             = __cplusplus
 EXPAND_AS_DEFINED      =
 SKIP_FUNCTION_MACROS   = NO
-TAGFILES               = /usr/local/share/doxygen-tag/libstdc++.tag=https://gcc.gnu.org/onlinedocs/gcc-11.4.0/libstdc++/api
+TAGFILES               = /usr/local/share/doxygen-tag/libstdc++.tag=https://gcc.gnu.org/onlinedocs/gcc-12.3.0/libstdc++/api
 GENERATE_TAGFILE       =
 ALLEXTERNALS           = NO
 EXTERNAL_GROUPS        = NO
 EXTERNAL_PAGES         = NO
-DIA_PATH               =
 HIDE_UNDOC_RELATIONS   = YES
 HAVE_DOT               = YES
 DOT_NUM_THREADS        = 0
@@ -306,7 +306,7 @@ DOT_IMAGE_FORMAT       = svg
 INTERACTIVE_SVG        = NO
 DOT_PATH               =
 DOTFILE_DIRS           =
-MSCFILE_DIRS           =
+DIA_PATH               =
 DIAFILE_DIRS           =
 PLANTUML_JAR_PATH      =
 PLANTUML_CFG_FILE      =
@@ -316,3 +316,5 @@ MAX_DOT_GRAPH_DEPTH    = 0
 DOT_MULTI_TARGETS      = NO
 GENERATE_LEGEND        = YES
 DOT_CLEANUP            = YES
+MSCGEN_TOOL            =
+MSCFILE_DIRS           =

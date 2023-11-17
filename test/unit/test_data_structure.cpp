@@ -7,8 +7,6 @@
 #include <gtest/gtest.h>
 #include <syncstream>
 #include "application/example/include/apply_data_structure.hpp"
-#include "data_structure/include/linear.hpp"
-#include "data_structure/include/tree.hpp"
 
 //! @brief Title of printing for data structure task tests.
 #define TST_DS_PRINT_TASK_TITLE(category, state)                                                    \
@@ -44,7 +42,6 @@ public:
     void TearDown() override{};
 };
 
-// NOLINTBEGIN(cert-err58-cpp, hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
 //! @brief Test for the linked list instance in the structure of linear.
 TEST_F(LinearTestBase, linkedListInstance)
 {
@@ -62,7 +59,6 @@ TEST_F(LinearTestBase, queueInstance)
 {
     ASSERT_NO_THROW(linear::Linear::queue());
 }
-// NOLINTEND(cert-err58-cpp, hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
 
 //! @brief Alias for the namespace of applying tree.
 namespace tree = application::app_ds::tree;
@@ -86,7 +82,6 @@ public:
     void TearDown() override{};
 };
 
-// NOLINTBEGIN(cert-err58-cpp, hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
 //! @brief Test for the binary search instance in the structure of tree.
 TEST_F(TreeTestBase, bsInstance)
 {
@@ -104,5 +99,4 @@ TEST_F(TreeTestBase, splayInstance)
 {
     ASSERT_NO_THROW(tree::Tree::splay());
 }
-// NOLINTEND(cert-err58-cpp, hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
 } // namespace test::tst_ds
