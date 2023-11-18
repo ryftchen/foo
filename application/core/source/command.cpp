@@ -500,7 +500,7 @@ void Command::showVersionIcon() const
                                    "other processor",
 #endif // __TARGET_PROCESSOR
                                buildDate = "" __DATE__ " " __TIME__ "";
-    const auto getCXXCompiler = []()
+    constexpr auto getCXXCompiler = []()
     {
         std::ostringstream os;
 #ifdef __clang__

@@ -484,7 +484,7 @@ void runIntegralTasks(const std::vector<std::string>& targets)
 
     using integral::input::Expression1;
     typedef std::variant<Expression1> IntegralExprTarget;
-    const auto printFunctor = [](const IntegralExprTarget& expression)
+    constexpr auto printFunctor = [](const IntegralExprTarget& expression)
     {
         constexpr std::string_view prefix{"\r\nIntegral expression:\n"};
         std::visit(
