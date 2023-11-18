@@ -29,15 +29,123 @@
 //! @brief Algorithm-applying-related functions in the application module.
 namespace application::app_algo
 {
+//! @brief Represent the maximum value of an enum.
+//! @tparam T - type of specific enum
+template <class T>
+struct Bottom;
+
+//! @brief Enumerate specific match methods.
+enum MatchMethod : std::uint8_t
+{
+    //! @brief Rabin-Karp.
+    rabinKarp,
+    //! @brief Knuth-Morris-Pratt.
+    knuthMorrisPratt,
+    //! @brief Boyer-Moore.
+    boyerMoore,
+    //! @brief Horspool.
+    horspool,
+    //! @brief Sunday.
+    sunday
+};
+//! @brief Store the maximum value of the MatchMethod enum.
+template <>
+struct Bottom<MatchMethod>
+{
+    //! @brief Maximum value of the MatchMethod enum.
+    static constexpr std::uint8_t value{5};
+};
+
+//! @brief Enumerate specific notation methods.
+enum NotationMethod : std::uint8_t
+{
+    //! @brief Prefix.
+    prefix,
+    //! @brief Postfix.
+    postfix
+};
+//! @brief Store the maximum value of the NotationMethod enum.
+template <>
+struct Bottom<NotationMethod>
+{
+    //! @brief Maximum value of the NotationMethod enum.
+    static constexpr std::uint8_t value{2};
+};
+
+//! @brief Enumerate specific optimal methods.
+enum OptimalMethod : std::uint8_t
+{
+    //! @brief Gradient.
+    gradient,
+    //! @brief Annealing.
+    annealing,
+    //! @brief Particle.
+    particle,
+    //! @brief Genetic.
+    genetic
+};
+//! @brief Store the maximum value of the OptimalMethod enum.
+template <>
+struct Bottom<OptimalMethod>
+{
+    //! @brief Maximum value of the OptimalMethod enum.
+    static constexpr std::uint8_t value{4};
+};
+
+//! @brief Enumerate specific search methods.
+enum SearchMethod : std::uint8_t
+{
+    //! @brief Binary.
+    binary,
+    //! @brief Interpolation.
+    interpolation,
+    //! @brief Fibonacci.
+    fibonacci
+};
+//! @brief Store the maximum value of the SearchMethod enum.
+template <>
+struct Bottom<SearchMethod>
+{
+    //! @brief Maximum value of the SearchMethod enum.
+    static constexpr std::uint8_t value{3};
+};
+
+//! @brief Enumerate specific sort methods.
+enum SortMethod : std::uint8_t
+{
+    //! @brief Bubble.
+    bubble,
+    //! @brief Selection.
+    selection,
+    //! @brief Insertion.
+    insertion,
+    //! @brief Shell.
+    shell,
+    //! @brief Merge.
+    merge,
+    //! @brief Quick.
+    quick,
+    //! @brief Heap.
+    heap,
+    //! @brief Counting.
+    counting,
+    //! @brief Bucket.
+    bucket,
+    //! @brief Radix.
+    radix
+};
+//! @brief Store the maximum value of the SortMethod enum.
+template <>
+struct Bottom<SortMethod>
+{
+    //! @brief Maximum value of the SortMethod enum.
+    static constexpr std::uint8_t value{10};
+};
+
 //! @brief Manage algorithm tasks.
 class AlgorithmTask
 {
 public:
-    //! @brief Represent the maximum value of an enum.
-    //! @tparam T - type of specific enum
-    template <class T>
-    struct Bottom;
-
     //! @brief Enumerate specific algorithm tasks.
     enum Category : std::uint8_t
     {
@@ -51,114 +159,6 @@ public:
         search,
         //! @brief Sort.
         sort
-    };
-
-    //! @brief Enumerate specific match methods.
-    enum MatchMethod : std::uint8_t
-    {
-        //! @brief Rabin-Karp.
-        rabinKarp,
-        //! @brief Knuth-Morris-Pratt.
-        knuthMorrisPratt,
-        //! @brief Boyer-Moore.
-        boyerMoore,
-        //! @brief Horspool.
-        horspool,
-        //! @brief Sunday.
-        sunday
-    };
-    //! @brief Store the maximum value of the MatchMethod enum.
-    template <>
-    struct Bottom<MatchMethod>
-    {
-        //! @brief Maximum value of the MatchMethod enum.
-        static constexpr std::uint8_t value{5};
-    };
-
-    //! @brief Enumerate specific notation methods.
-    enum NotationMethod : std::uint8_t
-    {
-        //! @brief Prefix.
-        prefix,
-        //! @brief Postfix.
-        postfix
-    };
-    //! @brief Store the maximum value of the NotationMethod enum.
-    template <>
-    struct Bottom<NotationMethod>
-    {
-        //! @brief Maximum value of the NotationMethod enum.
-        static constexpr std::uint8_t value{2};
-    };
-
-    //! @brief Enumerate specific optimal methods.
-    enum OptimalMethod : std::uint8_t
-    {
-        //! @brief Gradient.
-        gradient,
-        //! @brief Annealing.
-        annealing,
-        //! @brief Particle.
-        particle,
-        //! @brief Genetic.
-        genetic
-    };
-    //! @brief Store the maximum value of the OptimalMethod enum.
-    template <>
-    struct Bottom<OptimalMethod>
-    {
-        //! @brief Maximum value of the OptimalMethod enum.
-        static constexpr std::uint8_t value{4};
-    };
-
-    //! @brief Enumerate specific search methods.
-    enum SearchMethod : std::uint8_t
-    {
-        //! @brief Binary.
-        binary,
-        //! @brief Interpolation.
-        interpolation,
-        //! @brief Fibonacci.
-        fibonacci
-    };
-    //! @brief Store the maximum value of the SearchMethod enum.
-    template <>
-    struct Bottom<SearchMethod>
-    {
-        //! @brief Maximum value of the SearchMethod enum.
-        static constexpr std::uint8_t value{3};
-    };
-
-    //! @brief Enumerate specific sort methods.
-    enum SortMethod : std::uint8_t
-    {
-        //! @brief Bubble.
-        bubble,
-        //! @brief Selection.
-        selection,
-        //! @brief Insertion.
-        insertion,
-        //! @brief Shell.
-        shell,
-        //! @brief Merge.
-        merge,
-        //! @brief Quick.
-        quick,
-        //! @brief Heap.
-        heap,
-        //! @brief Counting.
-        counting,
-        //! @brief Bucket.
-        bucket,
-        //! @brief Radix.
-        radix
-    };
-    //! @brief Store the maximum value of the SortMethod enum.
-    template <>
-    struct Bottom<SortMethod>
-    {
-        //! @brief Maximum value of the SortMethod enum.
-        static constexpr std::uint8_t value{10};
     };
 
     //! @brief Bit flags for managing match methods.
@@ -226,23 +226,23 @@ extern AlgorithmTask& getTask();
 template <typename T>
 auto& getBit()
 {
-    if constexpr (std::is_same_v<T, AlgorithmTask::MatchMethod>)
+    if constexpr (std::is_same_v<T, MatchMethod>)
     {
         return getTask().matchBit;
     }
-    else if constexpr (std::is_same_v<T, AlgorithmTask::NotationMethod>)
+    else if constexpr (std::is_same_v<T, NotationMethod>)
     {
         return getTask().notationBit;
     }
-    else if constexpr (std::is_same_v<T, AlgorithmTask::OptimalMethod>)
+    else if constexpr (std::is_same_v<T, OptimalMethod>)
     {
         return getTask().optimalBit;
     }
-    else if constexpr (std::is_same_v<T, AlgorithmTask::SearchMethod>)
+    else if constexpr (std::is_same_v<T, SearchMethod>)
     {
         return getTask().searchBit;
     }
-    else if constexpr (std::is_same_v<T, AlgorithmTask::SortMethod>)
+    else if constexpr (std::is_same_v<T, SortMethod>)
     {
         return getTask().sortBit;
     }
@@ -254,25 +254,25 @@ auto& getBit()
 template <typename T>
 void setBit(const int index)
 {
-    if constexpr (std::is_same_v<T, AlgorithmTask::MatchMethod>)
+    if constexpr (std::is_same_v<T, MatchMethod>)
     {
-        getTask().matchBit.set(AlgorithmTask::MatchMethod(index));
+        getTask().matchBit.set(MatchMethod(index));
     }
-    else if constexpr (std::is_same_v<T, AlgorithmTask::NotationMethod>)
+    else if constexpr (std::is_same_v<T, NotationMethod>)
     {
-        getTask().notationBit.set(AlgorithmTask::NotationMethod(index));
+        getTask().notationBit.set(NotationMethod(index));
     }
-    else if constexpr (std::is_same_v<T, AlgorithmTask::OptimalMethod>)
+    else if constexpr (std::is_same_v<T, OptimalMethod>)
     {
-        getTask().optimalBit.set(AlgorithmTask::OptimalMethod(index));
+        getTask().optimalBit.set(OptimalMethod(index));
     }
-    else if constexpr (std::is_same_v<T, AlgorithmTask::SearchMethod>)
+    else if constexpr (std::is_same_v<T, SearchMethod>)
     {
-        getTask().searchBit.set(AlgorithmTask::SearchMethod(index));
+        getTask().searchBit.set(SearchMethod(index));
     }
-    else if constexpr (std::is_same_v<T, AlgorithmTask::SortMethod>)
+    else if constexpr (std::is_same_v<T, SortMethod>)
     {
-        getTask().sortBit.set(AlgorithmTask::SortMethod(index));
+        getTask().sortBit.set(SortMethod(index));
     }
 }
 

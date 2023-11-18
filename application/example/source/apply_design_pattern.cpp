@@ -34,16 +34,6 @@ namespace application::app_dp
 {
 //! @brief Alias for Category.
 using Category = DesignPatternTask::Category;
-//! @brief Alias for Bottom.
-//! @tparam T - type of specific enum
-template <class T>
-using Bottom = DesignPatternTask::Bottom<T>;
-//! @brief Alias for BehavioralInstance.
-using BehavioralInstance = DesignPatternTask::BehavioralInstance;
-//! @brief Alias for CreationalInstance.
-using CreationalInstance = DesignPatternTask::CreationalInstance;
-//! @brief Alias for StructuralInstance.
-using StructuralInstance = DesignPatternTask::StructuralInstance;
 
 //! @brief Get the design pattern task.
 //! @return reference of the DesignPatternTask object

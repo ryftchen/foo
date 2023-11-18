@@ -39,20 +39,6 @@ namespace application::app_algo
 {
 //! @brief Alias for Category.
 using Category = AlgorithmTask::Category;
-//! @brief Alias for Bottom.
-//! @tparam T - type of specific enum
-template <class T>
-using Bottom = AlgorithmTask::Bottom<T>;
-//! @brief Alias for MatchMethod.
-using MatchMethod = AlgorithmTask::MatchMethod;
-//! @brief Alias for NotationMethod.
-using NotationMethod = AlgorithmTask::NotationMethod;
-//! @brief Alias for OptimalMethod.
-using OptimalMethod = AlgorithmTask::OptimalMethod;
-//! @brief Alias for SearchMethod.
-using SearchMethod = AlgorithmTask::SearchMethod;
-//! @brief Alias for SortMethod.
-using SortMethod = AlgorithmTask::SortMethod;
 
 //! @brief Get the algorithm task.
 //! @return reference of the AlgorithmTask object

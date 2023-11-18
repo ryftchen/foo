@@ -55,7 +55,7 @@ target_include_directories(
 )
 target_link_libraries(
     ${BIN_NAME}
-    PUBLIC dl pthread crypto readline mpfr
+    PUBLIC dl pthread crypto mpfr
     PRIVATE foo::foo_util foo::foo_algo foo::foo_dp foo::foo_ds foo::foo_num
 )
 

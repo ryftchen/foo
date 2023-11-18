@@ -18,6 +18,31 @@
 //! @brief Command-line-related functions in the application module.
 namespace application::command
 {
+//! @brief Represent the maximum value of an enum.
+//! @tparam T - type of specific enum
+template <class T>
+struct Bottom;
+
+//! @brief Enumerate specific basic tasks.
+enum Category : std::uint8_t
+{
+    //! @brief Console.
+    console,
+    //! @brief Dump.
+    dump,
+    //! @brief Help.
+    help,
+    //! @brief Version.
+    version
+};
+//! @brief Store the maximum value of the Category enum.
+template <>
+struct Bottom<Category>
+{
+    //! @brief Maximum value of the Category enum.
+    static constexpr std::uint8_t value{4};
+};
+
 //! @brief Execute the command line.
 class Command final
 {
@@ -160,31 +185,6 @@ private:
     class BasicTask
     {
     public:
-        //! @brief Represent the maximum value of an enum.
-        //! @tparam T - type of specific enum
-        template <class T>
-        struct Bottom;
-
-        //! @brief Enumerate specific basic tasks.
-        enum Category : std::uint8_t
-        {
-            //! @brief Console.
-            console,
-            //! @brief Dump.
-            dump,
-            //! @brief Help.
-            help,
-            //! @brief Version.
-            version
-        };
-        //! @brief Store the maximum value of the Category enum.
-        template <>
-        struct Bottom<Category>
-        {
-            //! @brief Maximum value of the Category enum.
-            static constexpr std::uint8_t value{4};
-        };
-
         //! @brief Bit flags for managing basic tasks.
         std::bitset<Bottom<Category>::value> primaryBit;
 

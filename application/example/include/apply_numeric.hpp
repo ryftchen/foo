@@ -19,15 +19,89 @@
 //! @brief Numeric-applying-related functions in the application module.
 namespace application::app_num
 {
+//! @brief Represent the maximum value of an enum.
+//! @tparam T - type of specific enum
+template <class T>
+struct Bottom;
+
+//! @brief Enumerate specific arithmetic methods.
+enum ArithmeticMethod : std::uint8_t
+{
+    //! @brief Addition.
+    addition,
+    //! @brief Subtraction.
+    subtraction,
+    //! @brief Multiplication.
+    multiplication,
+    //! @brief Division.
+    division
+};
+//! @brief Store the maximum value of the ArithmeticMethod enum.
+template <>
+struct Bottom<ArithmeticMethod>
+{
+    //! @brief Maximum value of the ArithmeticMethod enum.
+    static constexpr std::uint8_t value{4};
+};
+
+//! @brief Enumerate specific divisor methods.
+enum DivisorMethod : std::uint8_t
+{
+    //! @brief Euclidean.
+    euclidean,
+    //! @brief Stein.
+    stein
+};
+//! @brief Store the maximum value of the DivisorMethod enum.
+template <>
+struct Bottom<DivisorMethod>
+{
+    //! @brief Maximum value of the DivisorMethod enum.
+    static constexpr std::uint8_t value{2};
+};
+
+//! @brief Enumerate specific integral methods.
+enum IntegralMethod : std::uint8_t
+{
+    //! @brief Trapezoidal.
+    trapezoidal,
+    //! @brief Simpson.
+    simpson,
+    //! @brief Romberg.
+    romberg,
+    //! @brief Gauss.
+    gauss,
+    //! @brief Monte-Carlo.
+    monteCarlo
+};
+//! @brief Store the maximum value of the IntegralMethod enum.
+template <>
+struct Bottom<IntegralMethod>
+{
+    //! @brief Maximum value of the IntegralMethod enum.
+    static constexpr std::uint8_t value{5};
+};
+
+//! @brief Enumerate specific prime methods.
+enum PrimeMethod : std::uint8_t
+{
+    //! @brief Eratosthenes.
+    eratosthenes,
+    //! @brief Euler.
+    euler
+};
+//! @brief Store the maximum value of the PrimeMethod enum.
+template <>
+struct Bottom<PrimeMethod>
+{
+    //! @brief Maximum value of the PrimeMethod enum.
+    static constexpr std::uint8_t value{2};
+};
+
 //! @brief Manage numeric tasks.
 class NumericTask
 {
 public:
-    //! @brief Represent the maximum value of an enum.
-    //! @tparam T - type of specific enum
-    template <class T>
-    struct Bottom;
-
     //! @brief Enumerate specific numeric tasks.
     enum Category : std::uint8_t
     {
@@ -39,80 +113,6 @@ public:
         integral,
         //! @brief Prime.
         prime
-    };
-
-    //! @brief Enumerate specific arithmetic methods.
-    enum ArithmeticMethod : std::uint8_t
-    {
-        //! @brief Addition.
-        addition,
-        //! @brief Subtraction.
-        subtraction,
-        //! @brief Multiplication.
-        multiplication,
-        //! @brief Division.
-        division
-    };
-    //! @brief Store the maximum value of the ArithmeticMethod enum.
-    template <>
-    struct Bottom<ArithmeticMethod>
-    {
-        //! @brief Maximum value of the ArithmeticMethod enum.
-        static constexpr std::uint8_t value{4};
-    };
-
-    //! @brief Enumerate specific divisor methods.
-    enum DivisorMethod : std::uint8_t
-    {
-        //! @brief Euclidean.
-        euclidean,
-        //! @brief Stein.
-        stein
-    };
-    //! @brief Store the maximum value of the DivisorMethod enum.
-    template <>
-    struct Bottom<DivisorMethod>
-    {
-        //! @brief Maximum value of the DivisorMethod enum.
-        static constexpr std::uint8_t value{2};
-    };
-
-    //! @brief Enumerate specific integral methods.
-    enum IntegralMethod : std::uint8_t
-    {
-        //! @brief Trapezoidal.
-        trapezoidal,
-        //! @brief Simpson.
-        simpson,
-        //! @brief Romberg.
-        romberg,
-        //! @brief Gauss.
-        gauss,
-        //! @brief Monte-Carlo.
-        monteCarlo
-    };
-    //! @brief Store the maximum value of the IntegralMethod enum.
-    template <>
-    struct Bottom<IntegralMethod>
-    {
-        //! @brief Maximum value of the IntegralMethod enum.
-        static constexpr std::uint8_t value{5};
-    };
-
-    //! @brief Enumerate specific prime methods.
-    enum PrimeMethod : std::uint8_t
-    {
-        //! @brief Eratosthenes.
-        eratosthenes,
-        //! @brief Euler.
-        euler
-    };
-    //! @brief Store the maximum value of the PrimeMethod enum.
-    template <>
-    struct Bottom<PrimeMethod>
-    {
-        //! @brief Maximum value of the PrimeMethod enum.
-        static constexpr std::uint8_t value{2};
     };
 
     //! @brief Bit flags for managing arithmetic methods.
@@ -174,19 +174,19 @@ extern NumericTask& getTask();
 template <typename T>
 auto& getBit()
 {
-    if constexpr (std::is_same_v<T, NumericTask::ArithmeticMethod>)
+    if constexpr (std::is_same_v<T, ArithmeticMethod>)
     {
         return getTask().arithmeticBit;
     }
-    else if constexpr (std::is_same_v<T, NumericTask::DivisorMethod>)
+    else if constexpr (std::is_same_v<T, DivisorMethod>)
     {
         return getTask().divisorBit;
     }
-    else if constexpr (std::is_same_v<T, NumericTask::IntegralMethod>)
+    else if constexpr (std::is_same_v<T, IntegralMethod>)
     {
         return getTask().integralBit;
     }
-    else if constexpr (std::is_same_v<T, NumericTask::PrimeMethod>)
+    else if constexpr (std::is_same_v<T, PrimeMethod>)
     {
         return getTask().primeBit;
     }
@@ -198,21 +198,21 @@ auto& getBit()
 template <typename T>
 void setBit(const int index)
 {
-    if constexpr (std::is_same_v<T, NumericTask::ArithmeticMethod>)
+    if constexpr (std::is_same_v<T, ArithmeticMethod>)
     {
-        getTask().arithmeticBit.set(NumericTask::ArithmeticMethod(index));
+        getTask().arithmeticBit.set(ArithmeticMethod(index));
     }
-    else if constexpr (std::is_same_v<T, NumericTask::DivisorMethod>)
+    else if constexpr (std::is_same_v<T, DivisorMethod>)
     {
-        getTask().divisorBit.set(NumericTask::DivisorMethod(index));
+        getTask().divisorBit.set(DivisorMethod(index));
     }
-    else if constexpr (std::is_same_v<T, NumericTask::IntegralMethod>)
+    else if constexpr (std::is_same_v<T, IntegralMethod>)
     {
-        getTask().integralBit.set(NumericTask::IntegralMethod(index));
+        getTask().integralBit.set(IntegralMethod(index));
     }
-    else if constexpr (std::is_same_v<T, NumericTask::PrimeMethod>)
+    else if constexpr (std::is_same_v<T, PrimeMethod>)
     {
-        getTask().primeBit.set(NumericTask::PrimeMethod(index));
+        getTask().primeBit.set(PrimeMethod(index));
     }
 }
 
