@@ -400,8 +400,7 @@ void Command::dispatchTask()
                 return mainCLI.isSubCommandUsed(subCLIPair.first);
             };
 
-            for ([[maybe_unused]] const auto& [subCLIName, subCLIMap] :
-                 regularTaskDispatcher | std::views::filter(isSubCLIUsed))
+            for (const auto& subCLIName : std::views::keys(regularTaskDispatcher | std::views::filter(isSubCLIUsed)))
             {
                 const auto& subCLI = mainCLI.at<utility::argument::Argument>(subCLIName);
                 std::cout << subCLI.help().str() << std::flush;
@@ -412,8 +411,8 @@ void Command::dispatchTask()
         using SubTask = RegularTask::SubTask;
         const auto performTask = [this](const SubTask subTask)
         {
-            for ([[maybe_unused]] const auto& [taskCategory, taskCategoryTuple] :
-                 std::next(regularTaskDispatcher.cbegin(), subTask)->second)
+            for (const auto& taskCategoryTuple :
+                 std::views::values(std::next(regularTaskDispatcher.cbegin(), subTask)->second))
             {
                 (*get<PerformTaskFunctor>(get<TaskFunctorTuple>(taskCategoryTuple)))(
                     get<TargetTaskContainer>(taskCategoryTuple));
