@@ -19,15 +19,51 @@
 //! @brief Data-structure-applying-related functions in the application module.
 namespace application::app_ds
 {
+//! @brief Represent the maximum value of an enum.
+//! @tparam T - type of specific enum
+template <class T>
+struct Bottom;
+
+//! @brief Enumerate specific linear instances.
+enum LinearInstance : std::uint8_t
+{
+    //! @brief Linked list.
+    linkedList,
+    //! @brief Stack.
+    stack,
+    //! @brief Queue.
+    queue
+};
+//! @brief Store the maximum value of the LinearInstance enum.
+template <>
+struct Bottom<LinearInstance>
+{
+    //! @brief Maximum value of the LinearInstance enum.
+    static constexpr std::uint8_t value{3};
+};
+
+//! @brief Enumerate specific tree instances.
+enum TreeInstance : std::uint8_t
+{
+    //! @brief Binary search.
+    binarySearch,
+    //! @brief Adelson-Velsky-Landis.
+    adelsonVelskyLandis,
+    //! @brief Splay.
+    splay
+};
+//! @brief Store the maximum value of the TreeInstance enum.
+template <>
+struct Bottom<TreeInstance>
+{
+    //! @brief Maximum value of the TreeInstance enum.
+    static constexpr std::uint8_t value{3};
+};
+
 //! @brief Manage data structure tasks.
 class DataStructureTask
 {
 public:
-    //! @brief Represent the maximum value of an enum.
-    //! @tparam T - type of specific enum
-    template <class T>
-    struct Bottom;
-
     //! @brief Enumerate specific data structure tasks.
     enum Category : std::uint8_t
     {
@@ -35,42 +71,6 @@ public:
         linear,
         //! @brief Tree.
         tree
-    };
-
-    //! @brief Enumerate specific linear instances.
-    enum LinearInstance : std::uint8_t
-    {
-        //! @brief Linked list.
-        linkedList,
-        //! @brief Stack.
-        stack,
-        //! @brief Queue.
-        queue
-    };
-    //! @brief Store the maximum value of the LinearInstance enum.
-    template <>
-    struct Bottom<LinearInstance>
-    {
-        //! @brief Maximum value of the LinearInstance enum.
-        static constexpr std::uint8_t value{3};
-    };
-
-    //! @brief Enumerate specific tree instances.
-    enum TreeInstance : std::uint8_t
-    {
-        //! @brief Binary search.
-        binarySearch,
-        //! @brief Adelson-Velsky-Landis.
-        adelsonVelskyLandis,
-        //! @brief Splay.
-        splay
-    };
-    //! @brief Store the maximum value of the TreeInstance enum.
-    template <>
-    struct Bottom<TreeInstance>
-    {
-        //! @brief Maximum value of the TreeInstance enum.
-        static constexpr std::uint8_t value{3};
     };
 
     //! @brief Bit flags for managing linear instances.
@@ -117,11 +117,11 @@ extern DataStructureTask& getTask();
 template <typename T>
 auto& getBit()
 {
-    if constexpr (std::is_same_v<T, DataStructureTask::LinearInstance>)
+    if constexpr (std::is_same_v<T, LinearInstance>)
     {
         return getTask().linearBit;
     }
-    else if constexpr (std::is_same_v<T, DataStructureTask::TreeInstance>)
+    else if constexpr (std::is_same_v<T, TreeInstance>)
     {
         return getTask().treeBit;
     }
@@ -133,13 +133,13 @@ auto& getBit()
 template <typename T>
 void setBit(const int index)
 {
-    if constexpr (std::is_same_v<T, DataStructureTask::LinearInstance>)
+    if constexpr (std::is_same_v<T, LinearInstance>)
     {
-        getTask().linearBit.set(DataStructureTask::LinearInstance(index));
+        getTask().linearBit.set(LinearInstance(index));
     }
-    else if constexpr (std::is_same_v<T, DataStructureTask::TreeInstance>)
+    else if constexpr (std::is_same_v<T, TreeInstance>)
     {
-        getTask().treeBit.set(DataStructureTask::TreeInstance(index));
+        getTask().treeBit.set(TreeInstance(index));
     }
 }
 

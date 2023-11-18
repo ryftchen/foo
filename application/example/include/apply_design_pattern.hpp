@@ -18,15 +18,97 @@
 //! @brief Design-pattern-applying-related functions in the application module.
 namespace application::app_dp
 {
+//! @brief Represent the maximum value of an enum.
+//! @tparam T - type of specific enum
+template <class T>
+struct Bottom;
+
+//! @brief Enumerate specific behavioral instances.
+enum BehavioralInstance : std::uint8_t
+{
+    //! @brief Chain of responsibility.
+    chainOfResponsibility,
+    //! @brief Command.
+    command,
+    //! @brief Interpreter.
+    interpreter,
+    //! @brief Iterator.
+    iterator,
+    //! @brief Mediator.
+    mediator,
+    //! @brief Memento.
+    memento,
+    //! @brief Observer.
+    observer,
+    //! @brief State.
+    state,
+    //! @brief Strategy.
+    strategy,
+    //! @brief Template method.
+    templateMethod,
+    //! @brief Visitor.
+    visitor
+};
+//! @brief Store the maximum value of the BehavioralInstance enum.
+template <>
+struct Bottom<BehavioralInstance>
+{
+    //! @brief Maximum value of the BehavioralInstance enum.
+    static constexpr std::uint8_t value{11};
+};
+
+//! @brief Enumerate specific creational instances.
+enum CreationalInstance : std::uint8_t
+{
+    //! @brief Abstract factory.
+    abstractFactory,
+    //! @brief Builder.
+    builder,
+    //! @brief Factory method.
+    factoryMethod,
+    //! @brief Prototype.
+    prototype,
+    //! @brief Singleton.
+    singleton
+};
+//! @brief Store the maximum value of the CreationalInstance enum.
+template <>
+struct Bottom<CreationalInstance>
+{
+    //! @brief Maximum value of the CreationalInstance enum.
+    static constexpr std::uint8_t value{5};
+};
+
+//! @brief Enumerate specific structural instances.
+enum StructuralInstance : std::uint8_t
+{
+    //! @brief Adapter.
+    adapter,
+    //! @brief Bridge.
+    bridge,
+    //! @brief Composite.
+    composite,
+    //! @brief Decorator.
+    decorator,
+    //! @brief Facade.
+    facade,
+    //! @brief Flyweight.
+    flyweight,
+    //! @brief Proxy.
+    proxy
+};
+//! @brief Store the maximum value of the StructuralInstance enum.
+template <>
+struct Bottom<StructuralInstance>
+{
+    //! @brief Maximum value of the StructuralInstance enum.
+    static constexpr std::uint8_t value{7};
+};
+
 //! @brief Manage design pattern tasks.
 class DesignPatternTask
 {
 public:
-    //! @brief Represent the maximum value of an enum.
-    //! @tparam T - type of specific enum
-    template <class T>
-    struct Bottom;
-
     //! @brief Enumerate specific design pattern tasks.
     enum Category : std::uint8_t
     {
@@ -36,88 +118,6 @@ public:
         creational,
         //! @brief Structural.
         structural
-    };
-
-    //! @brief Enumerate specific behavioral instances.
-    enum BehavioralInstance : std::uint8_t
-    {
-        //! @brief Chain of responsibility.
-        chainOfResponsibility,
-        //! @brief Command.
-        command,
-        //! @brief Interpreter.
-        interpreter,
-        //! @brief Iterator.
-        iterator,
-        //! @brief Mediator.
-        mediator,
-        //! @brief Memento.
-        memento,
-        //! @brief Observer.
-        observer,
-        //! @brief State.
-        state,
-        //! @brief Strategy.
-        strategy,
-        //! @brief Template method.
-        templateMethod,
-        //! @brief Visitor.
-        visitor
-    };
-    //! @brief Store the maximum value of the BehavioralInstance enum.
-    template <>
-    struct Bottom<BehavioralInstance>
-    {
-        //! @brief Maximum value of the BehavioralInstance enum.
-        static constexpr std::uint8_t value{11};
-    };
-
-    //! @brief Enumerate specific creational instances.
-    enum CreationalInstance : std::uint8_t
-    {
-        //! @brief Abstract factory.
-        abstractFactory,
-        //! @brief Builder.
-        builder,
-        //! @brief Factory method.
-        factoryMethod,
-        //! @brief Prototype.
-        prototype,
-        //! @brief Singleton.
-        singleton
-    };
-    //! @brief Store the maximum value of the CreationalInstance enum.
-    template <>
-    struct Bottom<CreationalInstance>
-    {
-        //! @brief Maximum value of the CreationalInstance enum.
-        static constexpr std::uint8_t value{5};
-    };
-
-    //! @brief Enumerate specific structural instances.
-    enum StructuralInstance : std::uint8_t
-    {
-        //! @brief Adapter.
-        adapter,
-        //! @brief Bridge.
-        bridge,
-        //! @brief Composite.
-        composite,
-        //! @brief Decorator.
-        decorator,
-        //! @brief Facade.
-        facade,
-        //! @brief Flyweight.
-        flyweight,
-        //! @brief Proxy.
-        proxy
-    };
-    //! @brief Store the maximum value of the StructuralInstance enum.
-    template <>
-    struct Bottom<StructuralInstance>
-    {
-        //! @brief Maximum value of the StructuralInstance enum.
-        static constexpr std::uint8_t value{7};
     };
 
     //! @brief Bit flags for managing behavioral instances.
@@ -173,15 +173,15 @@ extern DesignPatternTask& getTask();
 template <typename T>
 auto& getBit()
 {
-    if constexpr (std::is_same_v<T, DesignPatternTask::BehavioralInstance>)
+    if constexpr (std::is_same_v<T, BehavioralInstance>)
     {
         return getTask().behavioralBit;
     }
-    else if constexpr (std::is_same_v<T, DesignPatternTask::CreationalInstance>)
+    else if constexpr (std::is_same_v<T, CreationalInstance>)
     {
         return getTask().creationalBit;
     }
-    else if constexpr (std::is_same_v<T, DesignPatternTask::StructuralInstance>)
+    else if constexpr (std::is_same_v<T, StructuralInstance>)
     {
         return getTask().structuralBit;
     }
@@ -193,17 +193,17 @@ auto& getBit()
 template <typename T>
 void setBit(const int index)
 {
-    if constexpr (std::is_same_v<T, DesignPatternTask::BehavioralInstance>)
+    if constexpr (std::is_same_v<T, BehavioralInstance>)
     {
-        getTask().behavioralBit.set(DesignPatternTask::BehavioralInstance(index));
+        getTask().behavioralBit.set(BehavioralInstance(index));
     }
-    else if constexpr (std::is_same_v<T, DesignPatternTask::CreationalInstance>)
+    else if constexpr (std::is_same_v<T, CreationalInstance>)
     {
-        getTask().creationalBit.set(DesignPatternTask::CreationalInstance(index));
+        getTask().creationalBit.set(CreationalInstance(index));
     }
-    else if constexpr (std::is_same_v<T, DesignPatternTask::StructuralInstance>)
+    else if constexpr (std::is_same_v<T, StructuralInstance>)
     {
-        getTask().structuralBit.set(DesignPatternTask::StructuralInstance(index));
+        getTask().structuralBit.set(StructuralInstance(index));
     }
 }
 

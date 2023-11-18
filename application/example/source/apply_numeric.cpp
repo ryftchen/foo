@@ -38,18 +38,6 @@ namespace application::app_num
 {
 //! @brief Alias for Category.
 using Category = NumericTask::Category;
-//! @brief Alias for Bottom.
-//! @tparam T - type of specific enum
-template <class T>
-using Bottom = NumericTask::Bottom<T>;
-//! @brief Alias for ArithmeticMethod.
-using ArithmeticMethod = NumericTask::ArithmeticMethod;
-//! @brief Alias for DivisorMethod.
-using DivisorMethod = NumericTask::DivisorMethod;
-//! @brief Alias for IntegralMethod.
-using IntegralMethod = NumericTask::IntegralMethod;
-//! @brief Alias for PrimeMethod.
-using PrimeMethod = NumericTask::PrimeMethod;
 
 //! @brief Get the numeric task.
 //! @return reference of the NumericTask object

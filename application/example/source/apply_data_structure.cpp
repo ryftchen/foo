@@ -34,14 +34,6 @@ namespace application::app_ds
 {
 //! @brief Alias for Category.
 using Category = DataStructureTask::Category;
-//! @brief Alias for Bottom.
-//! @tparam T - type of specific enum
-template <class T>
-using Bottom = DataStructureTask::Bottom<T>;
-//! @brief Alias for LinearInstance.
-using LinearInstance = DataStructureTask::LinearInstance;
-//! @brief Alias for TreeInstance.
-using TreeInstance = DataStructureTask::TreeInstance;
 
 //! @brief Get the data structure task.
 //! @return reference of the DataStructureTask object

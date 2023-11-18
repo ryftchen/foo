@@ -314,15 +314,15 @@ void Command::backgroundHandler()
 
 void Command::validateBasicTask()
 {
-    for (std::uint8_t i = 0; i < BasicTask::Bottom<BasicTask::Category>::value; ++i)
+    for (std::uint8_t i = 0; i < Bottom<Category>::value; ++i)
     {
-        if (!mainCLI.isUsed(std::next(basicTaskDispatcher.cbegin(), BasicTask::Category(i))->first))
+        if (!mainCLI.isUsed(std::next(basicTaskDispatcher.cbegin(), Category(i))->first))
         {
             continue;
         }
         checkForExcessiveArguments();
 
-        dispatchedTask.basicTask.primaryBit.set(BasicTask::Category(i));
+        dispatchedTask.basicTask.primaryBit.set(Category(i));
     }
 }
 
@@ -383,11 +383,11 @@ void Command::dispatchTask()
 {
     if (!dispatchedTask.basicTask.empty())
     {
-        for (std::uint8_t i = 0; i < BasicTask::Bottom<BasicTask::Category>::value; ++i)
+        for (std::uint8_t i = 0; i < Bottom<Category>::value; ++i)
         {
-            if (dispatchedTask.basicTask.primaryBit.test(BasicTask::Category(i)))
+            if (dispatchedTask.basicTask.primaryBit.test(Category(i)))
             {
-                (this->*std::next(basicTaskDispatcher.cbegin(), BasicTask::Category(i))->second)();
+                (this->*std::next(basicTaskDispatcher.cbegin(), Category(i))->second)();
             }
         }
     }
@@ -445,8 +445,8 @@ void Command::executeConsoleCommand() const
         return;
     }
 
-    const auto cmdContainer = mainCLI.get<std::vector<std::string>>(
-        std::next(basicTaskDispatcher.cbegin(), BasicTask::Category::console)->first);
+    const auto cmdContainer =
+        mainCLI.get<std::vector<std::string>>(std::next(basicTaskDispatcher.cbegin(), Category::console)->first);
     if (cmdContainer.empty())
     {
         return;
@@ -503,12 +503,13 @@ void Command::showVersionIcon() const
     constexpr auto getCXXCompiler = []()
     {
         std::ostringstream os;
+        os <<
 #ifdef __clang__
-        os << "clang " << __clang_major__ << '.' << __clang_minor__ << '.' << __clang_patchlevel__;
+            "clang " << __clang_major__ << '.' << __clang_minor__ << '.' << __clang_patchlevel__;
 #elif __GNUC__
-        os << "gcc " << __GNUC__ << '.' << __GNUC_MINOR__ << '.' __GNUC_PATCHLEVEL__;
+            "gcc " << __GNUC__ << '.' << __GNUC_MINOR__ << '.' << __GNUC_PATCHLEVEL__;
 #else
-        os << "other compiler";
+            "other compiler";
 #endif // __clang__
         return os.str();
     };
