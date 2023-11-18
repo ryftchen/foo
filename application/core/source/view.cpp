@@ -57,14 +57,14 @@ int tlvEncode(char* buf, int& len, const TLVValue& val)
         enc.write<int>(val.bashShmId);
         sum += (offset + sizeof(int));
     }
-    else if (invalidShmId != val.logShmId)
+    if (invalidShmId != val.logShmId)
     {
         enc.write<int>(TLVType::log);
         enc.write<int>(sizeof(int));
         enc.write<int>(val.logShmId);
         sum += (offset + sizeof(int));
     }
-    else if (invalidShmId != val.statShmId)
+    if (invalidShmId != val.statShmId)
     {
         enc.write<int>(TLVType::stat);
         enc.write<int>(sizeof(int));

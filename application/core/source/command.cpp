@@ -546,6 +546,7 @@ void Command::enterConsoleMode() const
             catch (const std::exception& error)
             {
                 LOG_WRN << error.what();
+                utility::time::millisecondLevelSleep(maxLatency);
             }
         }
         while (Console::RetCode::quit != retVal);
@@ -662,8 +663,8 @@ void Command::launchClient(std::shared_ptr<T>& client)
         {
             try
             {
-                const auto tcpRep = View::parseTLVPacket(buffer, length);
-                if (tcpRep.stopTag)
+                const auto tcpResp = View::parseTLVPacket(buffer, length);
+                if (tcpResp.stopTag)
                 {
                     client->setNonBlocking();
                 }
@@ -682,8 +683,8 @@ void Command::launchClient(std::shared_ptr<T>& client)
         {
             try
             {
-                const auto udpRep = View::parseTLVPacket(buffer, length);
-                if (udpRep.stopTag)
+                const auto udpResp = View::parseTLVPacket(buffer, length);
+                if (udpResp.stopTag)
                 {
                     client->setNonBlocking();
                 }
