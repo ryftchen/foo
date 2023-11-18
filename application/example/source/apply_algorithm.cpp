@@ -526,7 +526,7 @@ void runOptimalTasks(const std::vector<std::string>& targets)
 
     using optimal::input::Rastrigin;
     typedef std::variant<Rastrigin> OptimalFuncTarget;
-    const auto printFunctor = [](const OptimalFuncTarget& function)
+    constexpr auto printFunctor = [](const OptimalFuncTarget& function)
     {
         constexpr std::string_view prefix{"\r\nOptimal function:\n"};
         std::visit(
