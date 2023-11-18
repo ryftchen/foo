@@ -493,12 +493,39 @@ void Command::dumpConfiguration() const
 
 void Command::showVersionIcon() const
 {
-    std::string versionIcon = "tput rev ; echo " + getIconBanner();
-    versionIcon.pop_back();
-    versionIcon +=
-        "                    VERSION " + mainCLI.version + " ' ; tput sgr0 ; echo '" + std::string{copyrightInfo} + "'";
+    constexpr std::string_view processor =
+#ifdef __TARGET_PROCESSOR
+                                   __TARGET_PROCESSOR,
+#else
+                                   "other processor",
+#endif // __TARGET_PROCESSOR
+                               buildDate = "" __DATE__ " " __TIME__ "";
+    const auto getCXXCompiler = []()
+    {
+        std::ostringstream os;
+#ifdef __clang__
+        os << "clang " << __clang_major__ << '.' << __clang_minor__ << '.' << __clang_patchlevel__;
+#elif __GNUC__
+        os << "gcc " << __GNUC__ << '.' << __GNUC_MINOR__ << '.' __GNUC_PATCHLEVEL__;
+#else
+        os << "other compiler";
+#endif // __clang__
+        return os.str();
+    };
+    const std::string additionalInfo = "echo '" + std::string{copyright} + "' ; echo 'Built with " + getCXXCompiler()
+        + " for " + std::string{processor} + " on " + std::string{buildDate} + ".'";
 
-    std::cout << utility::common::executeCommand(versionIcon) << std::flush;
+    std::string fullIcon = "tput rev ; echo " + getIconBanner();
+    fullIcon.pop_back();
+    fullIcon +=
+#ifndef NDEBUG
+        "              DEBUG VERSION "
+#else
+        "            RELEASE VERSION "
+#endif // NDEBUG
+        + mainCLI.version + " ' ; tput sgr0 ; echo ; " + additionalInfo;
+
+    std::cout << utility::common::executeCommand(fullIcon) << std::flush;
 }
 
 void Command::enterConsoleMode() const
