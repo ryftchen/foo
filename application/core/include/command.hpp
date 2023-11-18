@@ -59,7 +59,7 @@ private:
     //! @brief Parse arguments helper to apply numeric.
     utility::argument::Argument subAppNumCLI{"app-num"};
     //! @brief Copyright information.
-    static constexpr std::string_view copyrightInfo{"Copyright (c) 2022-2023 ryftchen"};
+    static constexpr std::string_view copyright{"Copyright (c) 2022-2023 ryftchen. All rights reserved."};
 
     //! @brief Foreground handler for parsing command line arguments.
     //! @param argc - argument count

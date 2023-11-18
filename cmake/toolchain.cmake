@@ -1,5 +1,16 @@
 include_guard()
 
+execute_process(
+    COMMAND ${CMAKE_CXX_COMPILER} -dumpmachine
+    OUTPUT_VARIABLE COMPILER_DUMPMACHINE_OUTPUT
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+if(NOT COMPILER_DUMPMACHINE_OUTPUT STREQUAL "")
+    set(TARGET_PROCESSOR ${COMPILER_DUMPMACHINE_OUTPUT})
+else()
+    set(TARGET_PROCESSOR "")
+endif()
+
 option(TOOLCHAIN_PCH "toolchain precompiled header" OFF)
 option(TOOLCHAIN_UNITY "toolchain unity build" OFF)
 option(TOOLCHAIN_CCACHE "toolchain ccache" OFF)
@@ -31,7 +42,6 @@ if(TOOLCHAIN_DISTCC)
             COMMAND service --status-all
             COMMAND grep "\\[ + \\]  distcc"
             OUTPUT_VARIABLE DISTCC_STATUS_OUTPUT
-            ERROR_VARIABLE DISTCC_STATUS_ERROR
         )
         if(NOT DISTCC_STATUS_OUTPUT STREQUAL "")
             message(STATUS "Using distcc")
