@@ -229,6 +229,22 @@ function perform_initialize_option()
         shell_command "echo '${export_cmd}' >>~/.bashrc"
     fi
 
+    local validate_proj="[[ \\\"\\\$(basename \\\"\\\$(pwd)\\\")\\\" == \\\"${FOLDER[proj]}\\\" ]] && \
+git rev-parse --git-dir >/dev/null 2>&1 &&"
+    local alias_cmd
+    if ! grep -Fwq "alias ${FOLDER[proj]}-build" ~/.bashrc 2>/dev/null; then
+        alias_cmd="alias ${FOLDER[proj]}-build='${validate_proj} ./${FOLDER[scr]}/build.sh'"
+        shell_command "echo \"${alias_cmd}\" >>~/.bashrc"
+    fi
+    if ! grep -Fwq "alias ${FOLDER[proj]}-run" ~/.bashrc 2>/dev/null; then
+        alias_cmd="alias ${FOLDER[proj]}-run='${validate_proj} ./${FOLDER[scr]}/run.py'"
+        shell_command "echo \"${alias_cmd}\" >>~/.bashrc"
+    fi
+    if ! grep -Fwq "alias ${FOLDER[proj]}-exec" ~/.bashrc 2>/dev/null; then
+        alias_cmd="alias ${FOLDER[proj]}-exec='${validate_proj} ./${FOLDER[bld]}/bin/foo'"
+        shell_command "echo \"${alias_cmd}\" >>~/.bashrc"
+    fi
+
     shell_command "cat <<EOF >./${FOLDER[scr]}/.env
 #!/bin/false
 
@@ -244,6 +260,9 @@ return 0
 EOF"
     shell_command "echo 'core.%s.%e.%p' | ${SUDO}tee /proc/sys/kernel/core_pattern"
     shell_command "git config --local commit.template ./.gitcommit.template"
+
+    echo
+    echo "To initialize for effect, type 'exec bash' manually."
     exit 0
 }
 
@@ -254,6 +273,7 @@ function perform_cleanup_option()
     fi
 
     shell_command "sed -i '/export FOO_ENV=foo_dev/d' ~/.bashrc 2>/dev/null"
+    shell_command "sed -i '/alias ${FOLDER[proj]}-/d' ~/.bashrc 2>/dev/null"
     shell_command "find ./ -maxdepth 3 -type d | sed 1d \
 | grep -E '(${FOLDER[bld]}|${FOLDER[cache]}|target|doxygen|browser|archive|__pycache__)$' | xargs -i rm -rf {}"
     shell_command "rm -rf ./${FOLDER[scr]}/.env ./${FOLDER[doc]}/server/Cargo.lock ./core.* ./vgcore.* ./*.profraw"
@@ -262,6 +282,9 @@ function perform_cleanup_option()
     if [[ -f .git/hooks/pre-commit ]]; then
         shell_command "pre-commit uninstall"
     fi
+
+    echo
+    echo "To clean up for effect, type 'exec bash' manually."
     exit 0
 }
 
