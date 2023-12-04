@@ -76,7 +76,7 @@ void LinearStructure::linkedListInstance()
     }
     catch (const std::exception& error)
     {
-        LOG_ERR << error.what();
+        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
     }
 }
 
@@ -89,7 +89,7 @@ void LinearStructure::stackInstance()
     }
     catch (const std::exception& error)
     {
-        LOG_ERR << error.what();
+        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
     }
 }
 
@@ -102,7 +102,7 @@ void LinearStructure::queueInstance()
     }
     catch (const std::exception& error)
     {
-        LOG_ERR << error.what();
+        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
     }
 }
 
@@ -217,7 +217,7 @@ void TreeStructure::bsInstance()
     }
     catch (const std::exception& error)
     {
-        LOG_ERR << error.what();
+        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
     }
 }
 
@@ -230,7 +230,7 @@ void TreeStructure::avlInstance()
     }
     catch (const std::exception& error)
     {
-        LOG_ERR << error.what();
+        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
     }
 }
 
@@ -243,7 +243,7 @@ void TreeStructure::splayInstance()
     }
     catch (const std::exception& error)
     {
-        LOG_ERR << error.what();
+        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
     }
 }
 

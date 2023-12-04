@@ -84,7 +84,7 @@ void BehavioralPattern::chainOfResponsibilityInstance()
     }
     catch (const std::exception& error)
     {
-        LOG_ERR << error.what();
+        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
     }
 }
 
@@ -97,7 +97,7 @@ void BehavioralPattern::commandInstance()
     }
     catch (const std::exception& error)
     {
-        LOG_ERR << error.what();
+        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
     }
 }
 
@@ -110,7 +110,7 @@ void BehavioralPattern::interpreterInstance()
     }
     catch (const std::exception& error)
     {
-        LOG_ERR << error.what();
+        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
     }
 }
 
@@ -123,7 +123,7 @@ void BehavioralPattern::iteratorInstance()
     }
     catch (const std::exception& error)
     {
-        LOG_ERR << error.what();
+        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
     }
 }
 
@@ -136,7 +136,7 @@ void BehavioralPattern::mediatorInstance()
     }
     catch (const std::exception& error)
     {
-        LOG_ERR << error.what();
+        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
     }
 }
 
@@ -149,7 +149,7 @@ void BehavioralPattern::mementoInstance()
     }
     catch (const std::exception& error)
     {
-        LOG_ERR << error.what();
+        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
     }
 }
 
@@ -162,7 +162,7 @@ void BehavioralPattern::observerInstance()
     }
     catch (const std::exception& error)
     {
-        LOG_ERR << error.what();
+        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
     }
 }
 
@@ -175,7 +175,7 @@ void BehavioralPattern::stateInstance()
     }
     catch (const std::exception& error)
     {
-        LOG_ERR << error.what();
+        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
     }
 }
 
@@ -188,7 +188,7 @@ void BehavioralPattern::strategyInstance()
     }
     catch (const std::exception& error)
     {
-        LOG_ERR << error.what();
+        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
     }
 }
 
@@ -201,7 +201,7 @@ void BehavioralPattern::templateMethodInstance()
     }
     catch (const std::exception& error)
     {
-        LOG_ERR << error.what();
+        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
     }
 }
 
@@ -214,7 +214,7 @@ void BehavioralPattern::visitorInstance()
     }
     catch (const std::exception& error)
     {
-        LOG_ERR << error.what();
+        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
     }
 }
 
@@ -380,7 +380,7 @@ void CreationalPattern::abstractFactoryInstance()
     }
     catch (const std::exception& error)
     {
-        LOG_ERR << error.what();
+        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
     }
 }
 
@@ -393,7 +393,7 @@ void CreationalPattern::builderInstance()
     }
     catch (const std::exception& error)
     {
-        LOG_ERR << error.what();
+        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
     }
 }
 
@@ -406,7 +406,7 @@ void CreationalPattern::factoryMethodInstance()
     }
     catch (const std::exception& error)
     {
-        LOG_ERR << error.what();
+        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
     }
 }
 
@@ -419,7 +419,7 @@ void CreationalPattern::prototypeInstance()
     }
     catch (const std::exception& error)
     {
-        LOG_ERR << error.what();
+        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
     }
 }
 
@@ -432,7 +432,7 @@ void CreationalPattern::singletonInstance()
     }
     catch (const std::exception& error)
     {
-        LOG_ERR << error.what();
+        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
     }
 }
 
@@ -564,7 +564,7 @@ void StructuralPattern::adapterInstance()
     }
     catch (const std::exception& error)
     {
-        LOG_ERR << error.what();
+        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
     }
 }
 
@@ -577,7 +577,7 @@ void StructuralPattern::bridgeInstance()
     }
     catch (const std::exception& error)
     {
-        LOG_ERR << error.what();
+        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
     }
 }
 
@@ -590,7 +590,7 @@ void StructuralPattern::compositeInstance()
     }
     catch (const std::exception& error)
     {
-        LOG_ERR << error.what();
+        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
     }
 }
 
@@ -603,7 +603,7 @@ void StructuralPattern::decoratorInstance()
     }
     catch (const std::exception& error)
     {
-        LOG_ERR << error.what();
+        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
     }
 }
 
@@ -616,7 +616,7 @@ void StructuralPattern::facadeInstance()
     }
     catch (const std::exception& error)
     {
-        LOG_ERR << error.what();
+        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
     }
 }
 
@@ -629,7 +629,7 @@ void StructuralPattern::flyweightInstance()
     }
     catch (const std::exception& error)
     {
-        LOG_ERR << error.what();
+        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
     }
 }
 
@@ -642,7 +642,7 @@ void StructuralPattern::proxyInstance()
     }
     catch (const std::exception& error)
     {
-        LOG_ERR << error.what();
+        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
     }
 }
 
