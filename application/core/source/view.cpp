@@ -59,16 +59,16 @@ int tlvEncode(char* buf, int& len, const TLVValue& val)
     }
     if (invalidShmId != val.logShmId)
     {
-        enc.write<int>(TLVType::log);
+        enc.write<int>(TLVType::journal);
         enc.write<int>(sizeof(int));
         enc.write<int>(val.logShmId);
         sum += (offset + sizeof(int));
     }
-    if (invalidShmId != val.statShmId)
+    if (invalidShmId != val.statusShmId)
     {
-        enc.write<int>(TLVType::stat);
+        enc.write<int>(TLVType::monitor);
         enc.write<int>(sizeof(int));
-        enc.write<int>(val.statShmId);
+        enc.write<int>(val.statusShmId);
         sum += (offset + sizeof(int));
     }
 
@@ -115,12 +115,12 @@ int tlvDecode(char* buf, const int len, TLVValue& val)
                 dec.read<int>(&val.bashShmId);
                 sum -= (offset + sizeof(int));
                 break;
-            case TLVType::log:
+            case TLVType::journal:
                 dec.read<int>(&val.logShmId);
                 sum -= (offset + sizeof(int));
                 break;
-            case TLVType::stat:
-                dec.read<int>(&val.statShmId);
+            case TLVType::monitor:
+                dec.read<int>(&val.statusShmId);
                 sum -= (offset + sizeof(int));
                 break;
             default:
@@ -382,9 +382,9 @@ tlv::TLVValue View::parseTLVPacket(char* buffer, const int length)
     {
         printSharedMemory(value.logShmId);
     }
-    else if (invalidShmId != value.statShmId)
+    else if (invalidShmId != value.statusShmId)
     {
-        printSharedMemory(value.statShmId);
+        printSharedMemory(value.statusShmId);
     }
 
     return value;
@@ -422,25 +422,25 @@ int View::buildTLVPacket2Bash(const std::vector<std::string>& args, char* buffer
     return length;
 }
 
-int View::buildTLVPacket2Log(const std::vector<std::string>& /*args*/, char* buffer)
+int View::buildTLVPacket2Journal(const std::vector<std::string>& /*args*/, char* buffer)
 {
     const int shmId = fillSharedMemory(getLogContents());
     int length = 0;
     if (tlv::tlvEncode(buffer, length, tlv::TLVValue{.logShmId = shmId}) < 0)
     {
-        throw std::runtime_error("Failed to build packet for the log option.");
+        throw std::runtime_error("Failed to build packet for the journal option.");
     }
     encryptMessage(buffer, length);
     return length;
 }
 
-int View::buildTLVPacket2Stat(const std::vector<std::string>& /*args*/, char* buffer)
+int View::buildTLVPacket2Monitor(const std::vector<std::string>& /*args*/, char* buffer)
 {
-    const int shmId = fillSharedMemory(getStatInformation());
+    const int shmId = fillSharedMemory(getStatusInformation());
     int length = 0;
-    if (tlv::tlvEncode(buffer, length, tlv::TLVValue{.statShmId = shmId}) < 0)
+    if (tlv::tlvEncode(buffer, length, tlv::TLVValue{.statusShmId = shmId}) < 0)
     {
-        throw std::runtime_error("Failed to build packet for the stat option.");
+        throw std::runtime_error("Failed to build packet for the monitor option.");
     }
     encryptMessage(buffer, length);
     return length;
@@ -574,7 +574,7 @@ std::string View::getLogContents()
     return os.str();
 }
 
-std::string View::getStatInformation()
+std::string View::getStatusInformation()
 {
     const int pid = ::getpid();
     constexpr std::uint16_t cmdLen = 512;
