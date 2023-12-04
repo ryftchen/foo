@@ -23,7 +23,7 @@ valgrind cloc pre-commit graphviz docker docker-compose npm \
 && sudo make -C ./doxygen-1.9.7 install \
 && rm -rf ./doxygen-* \
 && sudo mkdir /usr/local/share/doxygen-tag \
-&& sudo curl -L https://gcc.gnu.org/onlinedocs/gcc-12.3.0/libstdc++/api/libstdc++.tag >/usr/local/share/doxygen-tag/libstdc++.tag \
+&& curl -L https://gcc.gnu.org/onlinedocs/gcc-12.3.0/libstdc++/api/libstdc++.tag | sudo tee /usr/local/share/doxygen-tag/libstdc++.tag >/dev/null \
 && git clone https://github.com/KDAB/codebrowser.git \
 && git -C ./codebrowser reset --hard 1808e96d4c62417952389d536576d53bb6da4053 \
 && cmake -S ./codebrowser -B ./codebrowser/build -DCMAKE_CXX_COMPILER=clang++-17 -DCMAKE_BUILD_TYPE=Release \
