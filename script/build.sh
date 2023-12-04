@@ -679,7 +679,8 @@ function package_for_browser()
 
     shell_command "find \"./${FOLDER[doc]}/${browser_folder}/index.html\" \
 \"./${FOLDER[doc]}/${browser_folder}/${FOLDER[proj]}\" \"./${FOLDER[doc]}/${browser_folder}/include\" -name \"*.html\" \
--exec sed -i '/^<\/head>$/i <link rel=\\\"shortcut icon\\\" href=\\\"https://woboq.com/favicon.ico\\\" type=\\\"image/x-icon\\\" />' {} +"
+-exec sed -i '/^<\/head>$/i <link rel=\\\"shortcut icon\\\" href=\\\"https://woboq.com/favicon.ico\\\" \
+type=\\\"image/x-icon\\\" />' {} +"
     shell_command "tar -jcvf ./${FOLDER[doc]}/archive/${tar_file} -C ./${FOLDER[doc]} ${browser_folder} >/dev/null"
 }
 
