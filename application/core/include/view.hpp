@@ -57,10 +57,10 @@ enum TLVType : int
     stop = 0,
     //! @brief Bash.
     bash,
-    //! @brief Log.
-    log,
-    //! @brief Stat.
-    stat
+    //! @brief Journal.
+    journal,
+    //! @brief Monitor.
+    monitor
 };
 
 //! @brief Value in TLV.
@@ -72,8 +72,8 @@ struct TLVValue
     int bashShmId{invalidShmId};
     //! @brief Shm id of the log contents.
     int logShmId{invalidShmId};
-    //! @brief Shm id of the stat information.
-    int statShmId{invalidShmId};
+    //! @brief Shm id of the status information.
+    int statusShmId{invalidShmId};
 };
 
 //! @brief TLV packet.
@@ -226,12 +226,12 @@ private:
     // clang-format off
     //! @brief Mapping table of all viewer options.
     const OptionMap optionDispatcher{
-        // - Option -+--------------- Help ---------------+----- Build Packet -----
-        // ----------+------------------------------------+------------------------
-        { "bash"     , { "execute bash commands in quotes" , &buildTLVPacket2Bash }},
-        { "log"      , { "view the log with highlights"    , &buildTLVPacket2Log  }},
-        { "stat"     , { "show the stat of the process"    , &buildTLVPacket2Stat }}
-        // ----------+------------------------------------+------------------------
+        // - Option -+--------------- Help ---------------+------- Build Packet -------
+        // ----------+------------------------------------+----------------------------
+        { "bash"     , { "execute bash commands in quotes" , &buildTLVPacket2Bash    }},
+        { "journal"  , { "view the log with highlights"    , &buildTLVPacket2Journal }},
+        { "monitor"  , { "show the status of the process"  , &buildTLVPacket2Monitor }}
+        // ----------+------------------------------------+----------------------------
     };
     // clang-format on
 
@@ -256,12 +256,12 @@ private:
     //! @param args - container of arguments
     //! @param buffer - TLV packet buffer
     //! @return buffer length
-    static int buildTLVPacket2Log(const std::vector<std::string>& args, char* buffer);
-    //! @brief Build the TLV packet to show stat information.
+    static int buildTLVPacket2Journal(const std::vector<std::string>& args, char* buffer);
+    //! @brief Build the TLV packet to show status information.
     //! @param args - container of arguments
     //! @param buffer - TLV packet buffer
     //! @return buffer length
-    static int buildTLVPacket2Stat(const std::vector<std::string>& args, char* buffer);
+    static int buildTLVPacket2Monitor(const std::vector<std::string>& args, char* buffer);
     //! @brief Encrypt the message with AES-128-CFB-128.
     //! @param buf - message buffer
     //! @param len - buffer length
@@ -277,12 +277,12 @@ private:
     //! @brief Print the shared memory.
     //! @param shmId - shm id
     static void printSharedMemory(const int shmId);
-    //! @brief Get the log Contents.
+    //! @brief Get the log contents.
     //! @return log contents
     static std::string getLogContents();
-    //! @brief Get the stat information.
-    //! @return stat information
-    static std::string getStatInformation();
+    //! @brief Get the status information.
+    //! @return status information
+    static std::string getStatusInformation();
     //! @brief Maximum number of lines to view log contents.
     static constexpr std::uint32_t maxViewNumOfLines{20};
 

@@ -36,8 +36,8 @@ class Task:
             r"'refresh'",
             r"'reconnect'",
             r"""'bash "ls -ahl"'""",
-            r"'log'",
-            r"'stat'",
+            r"'journal'",
+            r"'monitor'",
         ],
     }
     regular_task_dict = {
