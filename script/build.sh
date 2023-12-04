@@ -410,7 +410,7 @@ function perform_website_option()
             if echo "${input}" | grep -iq '^y'; then
                 echo "Yes"
                 shell_command "./${FOLDER[doc]}/server/target/release/foo_doc --root-dir . &"
-                sleep 0.1s
+                sleep 0.2s
             else
                 echo "No"
             fi
