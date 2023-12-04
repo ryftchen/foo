@@ -16,11 +16,11 @@ declare BUILD_TYPE="Debug"
 function shell_command()
 {
     echo
-    printf "%s%-40s%s\n" "$(tput bold)[ $(date "+%b %d %T") | CMD: " "$*" " | START  ]$(tput sgr0)"
+    printf "\033[0;37;40m\033[1m\033[49m%s%-40s%s\033[0m\n" "[ $(date "+%b %d %T") | CMD: " "$*" " | START  ]"
     if [[ ${ARGS[dry]} = false ]]; then
         /bin/bash -c "$@"
     fi
-    printf "%s%-40s%s\n" "$(tput bold)[ $(date "+%b %d %T") | CMD: " "$*" " | FINISH ]$(tput sgr0)"
+    printf "\033[0;37;40m\033[1m\033[49m%s%-40s%s\033[0m\n" "[ $(date "+%b %d %T") | CMD: " "$*" " | FINISH ]"
 }
 
 function die()
@@ -286,7 +286,7 @@ function perform_clean_option()
     shell_command "rm -rf ./${FOLDER[scr]}/.env ./${FOLDER[doc]}/server/Cargo.lock ./core.* ./vgcore.* ./*.profraw"
     shell_command "git config --local --unset commit.template"
 
-    if [[ -f .git/hooks/pre-commit ]]; then
+    if [[ -f ./.git/hooks/pre-commit ]]; then
         shell_command "pre-commit uninstall"
     fi
 
@@ -548,32 +548,32 @@ function perform_lint_option()
     if [[ ! -f ./${app_comp_cmd} ]]; then
         die "There is no ${COMP_CMD} file in the ${FOLDER[bld]} folder. Please generate it."
     fi
-    compdb -p "./${FOLDER[bld]}" list >"./${COMP_CMD}" && mv "./${app_comp_cmd}" "./${app_comp_cmd}.bak" \
-        && mv "./${COMP_CMD}" "./${FOLDER[bld]}"
+    shell_command "compdb -p ./${FOLDER[bld]} list >./${COMP_CMD} && mv ./${app_comp_cmd} ./${app_comp_cmd}.bak \
+&& mv ./${COMP_CMD} ./${FOLDER[bld]}"
     while true; do
         local line
         line=$(grep -n '.tpp' "./${app_comp_cmd}" | head -n 1 | cut -d : -f 1)
         if ! [[ ${line} =~ ^[0-9]+$ ]]; then
             break
         fi
-        sed -i $(("${line}" - 2)),$(("${line}" + 3))d "./${app_comp_cmd}"
+        shell_command "sed -i \$((${line} - 2)),\$((${line} + 3))d ./${app_comp_cmd}"
     done
     shell_command "find ./${FOLDER[app]} ./${FOLDER[util]} ./${FOLDER[algo]} ./${FOLDER[ds]} ./${FOLDER[dp]} \
 ./${FOLDER[num]} -name '*.cpp' -o -name '*.hpp' | xargs run-clang-tidy-17 -config-file=./.clang-tidy \
 -p ./${FOLDER[bld]} -quiet"
     shell_command "find ./${FOLDER[app]} ./${FOLDER[util]} ./${FOLDER[algo]} ./${FOLDER[ds]} ./${FOLDER[dp]} \
 ./${FOLDER[num]} -name '*.tpp' | xargs clang-tidy-17 --config-file=./.clang-tidy -p ./${FOLDER[bld]} --quiet"
-    rm -rf "./${app_comp_cmd}" && mv "./${app_comp_cmd}.bak" "./${app_comp_cmd}"
+    shell_command "rm -rf ./${app_comp_cmd} && mv ./${app_comp_cmd}.bak ./${app_comp_cmd}"
 
     local tst_comp_cmd=${FOLDER[tst]}/${FOLDER[bld]}/${COMP_CMD}
     if [[ ! -f ./${tst_comp_cmd} ]]; then
         die "There is no ${COMP_CMD} file in the ${FOLDER[tst]}/${FOLDER[bld]} folder. Please generate it."
     fi
-    compdb -p "./${FOLDER[tst]}/${FOLDER[bld]}" list >"./${COMP_CMD}" \
-        && mv "./${tst_comp_cmd}" "./${tst_comp_cmd}.bak" && mv "./${COMP_CMD}" "./${FOLDER[tst]}/${FOLDER[bld]}"
+    shell_command "compdb -p ./${FOLDER[tst]}/${FOLDER[bld]} list >./${COMP_CMD} \
+&& mv ./${tst_comp_cmd} ./${tst_comp_cmd}.bak && mv ./${COMP_CMD} ./${FOLDER[tst]}/${FOLDER[bld]}"
     shell_command "find ./${FOLDER[tst]} -name '*.cpp' | xargs run-clang-tidy-17 -config-file=./.clang-tidy \
 -p ./${FOLDER[tst]}/${FOLDER[bld]} -quiet"
-    rm -rf "./${tst_comp_cmd}" && mv "./${tst_comp_cmd}.bak" "./${tst_comp_cmd}"
+    shell_command "rm -rf ./${tst_comp_cmd} && mv ./${tst_comp_cmd}.bak ./${tst_comp_cmd}"
 
     shell_command "shellcheck -a ./${FOLDER[scr]}/*.sh"
     shell_command "pylint --rcfile=./.pylintrc ./${FOLDER[scr]}/*.py"
@@ -613,7 +613,7 @@ function perform_doxygen_option()
         fi
         package_for_doxygen "${commit_id}"
     else
-        mkdir "./${FOLDER[doc]}/archive"
+        shell_command "mkdir ./${FOLDER[doc]}/archive"
         package_for_doxygen "${commit_id}"
     fi
 }
@@ -624,9 +624,10 @@ function package_for_doxygen()
 
     local doxygen_folder="doxygen"
     local tar_file="${FOLDER[proj]}_${doxygen_folder}_${commit_id}.tar.bz2"
-    rm -rf "./${FOLDER[doc]}/archive/${FOLDER[proj]}_${doxygen_folder}"_*.tar.bz2 "./${FOLDER[doc]}/${doxygen_folder}"
+    shell_command "rm -rf ./${FOLDER[doc]}/archive/${FOLDER[proj]}_${doxygen_folder}_*.tar.bz2 \
+./${FOLDER[doc]}/${doxygen_folder}"
 
-    mkdir -p "./${FOLDER[doc]}/${doxygen_folder}"
+    shell_command "mkdir -p ./${FOLDER[doc]}/${doxygen_folder}"
     shell_command "(cat ./${FOLDER[doc]}/Doxyfile ; echo 'PROJECT_NUMBER=\"@ $(git rev-parse --short @)\"') \
 | doxygen -"
     shell_command "tar -jcvf ./${FOLDER[doc]}/archive/${tar_file} -C ./${FOLDER[doc]} ${doxygen_folder} >/dev/null"
@@ -653,7 +654,7 @@ function perform_browser_option()
         fi
         package_for_browser "${commit_id}"
     else
-        mkdir "./${FOLDER[doc]}/archive"
+        shell_command "mkdir ./${FOLDER[doc]}/archive"
         package_for_browser "${commit_id}"
     fi
 }
@@ -667,10 +668,11 @@ function package_for_browser()
     fi
     local browser_folder="browser"
     local tar_file="${FOLDER[proj]}_${browser_folder}_${commit_id}.tar.bz2"
-    rm -rf "./${FOLDER[doc]}/archive/${FOLDER[proj]}_${browser_folder}"_*.tar.bz2 "./${FOLDER[doc]}/${browser_folder}"
+    shell_command "rm -rf ./${FOLDER[doc]}/archive/${FOLDER[proj]}_${browser_folder}_*.tar.bz2 \
+./${FOLDER[doc]}/${browser_folder}"
 
-    mkdir -p "./${FOLDER[doc]}/${browser_folder}"
-    cp -rf /usr/local/share/woboq/data "./${FOLDER[doc]}/${browser_folder}/"
+    shell_command "mkdir -p ./${FOLDER[doc]}/${browser_folder}"
+    shell_command "cp -rf /usr/local/share/woboq/data ./${FOLDER[doc]}/${browser_folder}/"
     shell_command "codebrowser_generator -color -a -b ./${FOLDER[bld]}/${COMP_CMD} \
 -o ./${FOLDER[doc]}/${browser_folder} -p ${FOLDER[proj]}:.:${commit_id} -d ./data"
     shell_command "codebrowser_generator -color -a -b ./${FOLDER[tst]}/${FOLDER[bld]}/${COMP_CMD} \
@@ -780,7 +782,7 @@ function set_compile_condition()
     fi
     if [[ ${DEV_OPT[tmpfs]} = true ]]; then
         if [[ ! -d ./${tmpfs_subfolder} ]]; then
-            mkdir "./${tmpfs_subfolder}"
+            shell_command "mkdir ./${tmpfs_subfolder}"
         fi
         if ! df -h -t tmpfs | grep -q "${FOLDER[proj]}/${tmpfs_subfolder}" 2>/dev/null; then
             shell_command "${SUDO}mount -t tmpfs -o size=${tmpfs_size} tmpfs ./${tmpfs_subfolder}"
@@ -794,11 +796,11 @@ function remove_temporary_files()
 {
     local app_comp_cmd=${FOLDER[bld]}/${COMP_CMD}
     if [[ -f ./${app_comp_cmd}.bak ]]; then
-        rm -rf "./${app_comp_cmd}" && mv "./${app_comp_cmd}.bak" "./${app_comp_cmd}"
+        shell_command "rm -rf ./${app_comp_cmd} && mv ./${app_comp_cmd}.bak ./${app_comp_cmd}"
     fi
     local tst_comp_cmd=${FOLDER[tst]}/${FOLDER[bld]}/${COMP_CMD}
     if [[ -f ./${tst_comp_cmd}.bak ]]; then
-        rm -rf "./${tst_comp_cmd}" && mv "./${tst_comp_cmd}.bak" "./${tst_comp_cmd}"
+        shell_command "rm -rf ./${tst_comp_cmd} && mv ./${tst_comp_cmd}.bak ./${tst_comp_cmd}"
     fi
 }
 
