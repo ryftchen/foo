@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
 
 declare -rA FOLDER=([proj]="foo" [app]="application" [util]="utility" [algo]="algorithm" [ds]="data_structure"
-    [dp]="design_pattern" [num]="numeric" [tst]="test" [scr]="script" [doc]="document" [bld]="build" [cache]=".cache")
+    [dp]="design_pattern" [num]="numeric" [tst]="test" [scr]="script" [doc]="document" [dock]="docker" [bld]="build"
+    [cac]=".cache")
 declare -r COMP_CMD="compile_commands.json"
-declare -A ARGS=([help]=false [initialize]=false [cleanup]=false [install]=false [uninstall]=false [docker]=false
+declare -A ARGS=([help]=false [initialize]=false [clean]=false [install]=false [uninstall]=false [container]=false
     [website]=false [test]=false [release]=false [hook]=false [spell]=false [format]=false [lint]=false
-    [statistics]=false [doxygen]=false [browser]=false)
+    [statistics]=false [doxygen]=false [browser]=false [dry]=false)
 declare -A DEV_OPT=([parallel]=0 [pch]=false [unity]=false [ccache]=false [distcc]=false [tmpfs]=false)
 declare SUDO=""
 declare CMAKE_CACHE_ENTRY=""
@@ -16,7 +17,9 @@ function shell_command()
 {
     echo
     printf "%s%-40s%s\n" "$(tput bold)[ $(date "+%b %d %T") | CMD: " "$*" " | START  ]$(tput sgr0)"
-    /bin/bash -c "$@"
+    if [[ ${ARGS[dry]} = false ]]; then
+        /bin/bash -c "$@"
+    fi
     printf "%s%-40s%s\n" "$(tput bold)[ $(date "+%b %d %T") | CMD: " "$*" " | FINISH ]$(tput sgr0)"
 }
 
@@ -52,9 +55,9 @@ function parse_parameters()
             check_single_choice_parameters_validity "$1"
             ARGS[initialize]=true
             ;;
-        -C | --cleanup)
+        -C | --clean)
             check_single_choice_parameters_validity "$1"
-            ARGS[cleanup]=true
+            ARGS[clean]=true
             ;;
         -i | --install)
             check_single_choice_parameters_validity "$1"
@@ -64,9 +67,9 @@ function parse_parameters()
             check_single_choice_parameters_validity "$1"
             ARGS[uninstall]=true
             ;;
-        -D | --docker)
+        -c | --container)
             check_single_choice_parameters_validity "$1"
-            ARGS[docker]=true
+            ARGS[container]=true
             ;;
         -w | --website)
             check_single_choice_parameters_validity "$1"
@@ -120,6 +123,9 @@ function parse_parameters()
             check_multiple_choice_parameters_validity "$1"
             ARGS[browser]=true
             ;;
+        -D | --dry)
+            ARGS[dry]=true
+            ;;
         *)
             die "Unknown command line option: $1. Try using the --help option for information."
             ;;
@@ -147,8 +153,8 @@ function exist_single_choice_parameters()
     local number=0
     for key in "${!ARGS[@]}"; do
         if [[ ${ARGS[${key}]} = true ]]; then
-            if [[ ${key} == "help" ]] || [[ ${key} == "initialize" ]] || [[ ${key} == "cleanup" ]] \
-                || [[ ${key} == "install" ]] || [[ ${key} == "uninstall" ]] || [[ ${key} == "docker" ]] \
+            if [[ ${key} == "help" ]] || [[ ${key} == "initialize" ]] || [[ ${key} == "clean" ]] \
+                || [[ ${key} == "install" ]] || [[ ${key} == "uninstall" ]] || [[ ${key} == "container" ]] \
                 || [[ ${key} == "website" ]] || [[ ${key} == "test" ]]; then
                 number+=1
             fi
@@ -178,10 +184,10 @@ function try_to_perform_single_choice_options()
 {
     perform_help_option
     perform_initialize_option
-    perform_cleanup_option
+    perform_clean_option
     perform_install_option
     perform_uninstall_option
-    perform_docker_option
+    perform_container_option
     perform_website_option
 }
 
@@ -191,18 +197,18 @@ function perform_help_option()
         return
     fi
 
-    echo "usage: $(basename "${0}") [-h] [-I] [-C] [-i] [-u] [-D] [-w] [-t {-r}] \
-[[{-H, -c, -f, -l, -S, -b, -d} ...] {-r}]"
+    echo "usage: $(basename "${0}") [-h] [-I] [-C] [-i] [-u] [-c] [-w] [-t {-r}] \
+[[{-H, -c, -f, -l, -S, -b, -d} ...] {-r}] {-D}"
     echo
     echo "build script"
     echo
     echo "options:"
     echo "  -h, --help            show help and exit"
     echo "  -I, --initialize      initialize environment and exit"
-    echo "  -C, --cleanup         cleanup project folder and exit"
+    echo "  -C, --clean           clean up project folder and exit"
     echo "  -i, --install         install binary with libraries and exit"
     echo "  -u, --uninstall       uninstall binary with libraries and exit"
-    echo "  -D, --docker          construct docker container and exit"
+    echo "  -c, --container       construct docker container and exit"
     echo "  -w, --website         launch/terminate web server and exit"
     echo "  -t, --test            build unit test and exit"
     echo "  -r, --release         set as release version"
@@ -210,9 +216,10 @@ function perform_help_option()
     echo "  -s, --spell           spell check against dictionaries"
     echo "  -f, --format          format all code files"
     echo "  -l, --lint            lint all code files"
-    echo "  -S, --statistics      code statistics"
+    echo "  -S, --statistics      code line statistics"
     echo "  -d, --doxygen         documentation with doxygen"
     echo "  -b, --browser         generate code browser like IDE"
+    echo "  -D, --dry             dry run for script"
     exit 0
 }
 
@@ -266,16 +273,16 @@ EOF"
     exit 0
 }
 
-function perform_cleanup_option()
+function perform_clean_option()
 {
-    if [[ ${ARGS[cleanup]} = false ]]; then
+    if [[ ${ARGS[clean]} = false ]]; then
         return
     fi
 
     shell_command "sed -i '/export FOO_ENV=foo_dev/d' ~/.bashrc 2>/dev/null"
     shell_command "sed -i '/alias ${FOLDER[proj]}-/d' ~/.bashrc 2>/dev/null"
     shell_command "find ./ -maxdepth 3 -type d | sed 1d \
-| grep -E '(${FOLDER[bld]}|${FOLDER[cache]}|target|doxygen|browser|archive|__pycache__)$' | xargs -i rm -rf {}"
+| grep -E '(${FOLDER[bld]}|${FOLDER[cac]}|target|doxygen|browser|archive|__pycache__)$' | xargs -i rm -rf {}"
     shell_command "rm -rf ./${FOLDER[scr]}/.env ./${FOLDER[doc]}/server/Cargo.lock ./core.* ./vgcore.* ./*.profraw"
     shell_command "git config --local --unset commit.template"
 
@@ -358,9 +365,9 @@ ${SUDO}rm -rf /opt/${FOLDER[proj]}/${completion_file} /opt/${FOLDER[proj]}/man"
     exit 0
 }
 
-function perform_docker_option()
+function perform_container_option()
 {
-    if [[ ${ARGS[docker]} = false ]]; then
+    if [[ ${ARGS[container]} = false ]]; then
         return
     fi
 
@@ -380,7 +387,7 @@ function perform_docker_option()
 
     if ! docker ps -a --format "{{lower .Image}} {{lower .Names}}" \
         | grep -q "ryftchen/${FOLDER[proj]}:latest ${FOLDER[proj]}_dev" 2>/dev/null; then
-        shell_command "docker-compose -f ./docker/docker-compose.yml up -d"
+        shell_command "docker-compose -f ./${FOLDER[dock]}/docker-compose.yml up -d"
     else
         die "The container exists."
     fi
@@ -754,9 +761,9 @@ function set_compile_condition()
     if [[ ${DEV_OPT[ccache]} = true ]]; then
         CMAKE_CACHE_ENTRY="${CMAKE_CACHE_ENTRY} -D TOOLCHAIN_CCACHE=ON"
         if [[ ${ARGS[test]} = false ]]; then
-            export CCACHE_DIR=${PWD}/${FOLDER[cache]}/ccache
+            export CCACHE_DIR=${PWD}/${FOLDER[cac]}/ccache
         else
-            export CCACHE_DIR=${PWD}/${FOLDER[tst]}/${FOLDER[cache]}/ccache
+            export CCACHE_DIR=${PWD}/${FOLDER[tst]}/${FOLDER[cac]}/ccache
         fi
         if [[ ${DEV_OPT[distcc]} = true ]]; then
             if command -v ccache >/dev/null 2>&1 && command -v distcc >/dev/null 2>&1; then
