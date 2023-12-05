@@ -169,8 +169,8 @@ class Task:
             if self.options["tst"]:
                 Output.exit_with_error("No support for the --check option during testing.")
             if "cov" in args.check:
-                stdout, _, _ = common.execute_command("command -v llvm-profdata-17 llvm-cov-17 2>&1")
-                if stdout.find("llvm-profdata-17") != -1 and stdout.find("llvm-cov-17") != -1:
+                stdout, _, _ = common.execute_command("command -v llvm-profdata-16 llvm-cov-16 2>&1")
+                if stdout.find("llvm-profdata-16") != -1 and stdout.find("llvm-cov-16") != -1:
                     os.environ["FOO_CHK_COV"] = "on"
                     self.options["chk_cov"] = True
                     common.execute_command(f"rm -rf {self.cache_dir}/coverage")
@@ -333,17 +333,17 @@ class Task:
 
     def check_coverage(self):
         common.execute_command(
-            f"llvm-profdata-17 merge -sparse {self.cache_dir}/coverage/foo_chk_cov_*.profraw \
+            f"llvm-profdata-16 merge -sparse {self.cache_dir}/coverage/foo_chk_cov_*.profraw \
 -o {self.cache_dir}/coverage/foo_chk_cov.profdata"
         )
         common.execute_command(
-            f"llvm-cov-17 show -instr-profile={self.cache_dir}/coverage/foo_chk_cov.profdata -show-branches=percent \
+            f"llvm-cov-16 show -instr-profile={self.cache_dir}/coverage/foo_chk_cov.profdata -show-branches=percent \
 -show-expansions -show-regions -show-line-counts-or-regions -format=html -output-dir={self.cache_dir}/coverage \
 -Xdemangler=c++filt -object={self.app_bin_dir}/{self.app_bin_cmd} \
 {' '.join([f'-object={self.lib_dir}/{lib}' for lib in self.lib_list])} 2>&1"
         )
         stdout, _, _ = common.execute_command(
-            f"llvm-cov-17 report -instr-profile={self.cache_dir}/coverage/foo_chk_cov.profdata \
+            f"llvm-cov-16 report -instr-profile={self.cache_dir}/coverage/foo_chk_cov.profdata \
 -object={self.app_bin_dir}/{self.app_bin_cmd} {' '.join([f'-object={self.lib_dir}/{lib}' for lib in self.lib_list])} \
 2>&1"
         )
