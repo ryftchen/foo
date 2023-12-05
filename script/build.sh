@@ -462,17 +462,17 @@ function check_extra_dependencies()
     fi
 
     if [[ ${ARGS[format]} = true ]]; then
-        if ! command -v clang-format-17 >/dev/null 2>&1 || ! command -v shfmt >/dev/null 2>&1 \
+        if ! command -v clang-format-16 >/dev/null 2>&1 || ! command -v shfmt >/dev/null 2>&1 \
             || ! command -v black >/dev/null 2>&1 || ! command -v rustfmt >/dev/null 2>&1; then
             die "No clang-format, shfmt, black or rustfmt program. Please install it."
         fi
     fi
 
     if [[ ${ARGS[lint]} = true ]]; then
-        if ! command -v clang-tidy-17 >/dev/null 2>&1 || ! command -v run-clang-tidy-17 >/dev/null 2>&1 \
+        if ! command -v clang-tidy-16 >/dev/null 2>&1 || ! command -v run-clang-tidy-16 >/dev/null 2>&1 \
             || ! command -v compdb >/dev/null 2>&1 || ! command -v shellcheck >/dev/null 2>&1 \
             || ! command -v pylint >/dev/null 2>&1 || ! command -v clippy-driver >/dev/null 2>&1; then
-            die "No clang-tidy (including run-clang-tidy-17, compdb), shellcheck, pylint or clippy program. \
+            die "No clang-tidy (including run-clang-tidy-16, compdb), shellcheck, pylint or clippy program. \
 Please install it."
         fi
         if [[ ${DEV_OPT[pch]} = true ]] || [[ ${DEV_OPT[unity]} = true ]]; then
@@ -532,7 +532,7 @@ function perform_format_option()
 
     shell_command "find ./${FOLDER[app]} ./${FOLDER[util]} ./${FOLDER[algo]} ./${FOLDER[ds]} ./${FOLDER[dp]} \
 ./${FOLDER[num]} ./${FOLDER[tst]} -name '*.cpp' -o -name '*.hpp' -o -name '*.tpp' | grep -v '/${FOLDER[bld]}/' \
-| xargs clang-format-17 --Werror -i --style=file:./.clang-format --verbose"
+| xargs clang-format-16 --Werror -i --style=file:./.clang-format --verbose"
     shell_command "shfmt -l -w ./${FOLDER[scr]}/*.sh"
     shell_command "black --config ./.toml ./${FOLDER[scr]}/*.py"
     shell_command "cargo fmt --all --verbose --manifest-path ./${FOLDER[doc]}/server/Cargo.toml"
@@ -559,10 +559,10 @@ function perform_lint_option()
         shell_command "sed -i \$((${line} - 2)),\$((${line} + 3))d ./${app_comp_cmd}"
     done
     shell_command "find ./${FOLDER[app]} ./${FOLDER[util]} ./${FOLDER[algo]} ./${FOLDER[ds]} ./${FOLDER[dp]} \
-./${FOLDER[num]} -name '*.cpp' -o -name '*.hpp' | xargs run-clang-tidy-17 -config-file=./.clang-tidy \
+./${FOLDER[num]} -name '*.cpp' -o -name '*.hpp' | xargs run-clang-tidy-16 -config-file=./.clang-tidy \
 -p ./${FOLDER[bld]} -quiet"
     shell_command "find ./${FOLDER[app]} ./${FOLDER[util]} ./${FOLDER[algo]} ./${FOLDER[ds]} ./${FOLDER[dp]} \
-./${FOLDER[num]} -name '*.tpp' | xargs clang-tidy-17 --config-file=./.clang-tidy -p ./${FOLDER[bld]} --quiet"
+./${FOLDER[num]} -name '*.tpp' | xargs clang-tidy-16 --config-file=./.clang-tidy -p ./${FOLDER[bld]} --quiet"
     shell_command "rm -rf ./${app_comp_cmd} && mv ./${app_comp_cmd}.bak ./${app_comp_cmd}"
 
     local tst_comp_cmd=${FOLDER[tst]}/${FOLDER[bld]}/${COMP_CMD}
@@ -571,7 +571,7 @@ function perform_lint_option()
     fi
     shell_command "compdb -p ./${FOLDER[tst]}/${FOLDER[bld]} list >./${COMP_CMD} \
 && mv ./${tst_comp_cmd} ./${tst_comp_cmd}.bak && mv ./${COMP_CMD} ./${FOLDER[tst]}/${FOLDER[bld]}"
-    shell_command "find ./${FOLDER[tst]} -name '*.cpp' | xargs run-clang-tidy-17 -config-file=./.clang-tidy \
+    shell_command "find ./${FOLDER[tst]} -name '*.cpp' | xargs run-clang-tidy-16 -config-file=./.clang-tidy \
 -p ./${FOLDER[tst]}/${FOLDER[bld]} -quiet"
     shell_command "rm -rf ./${tst_comp_cmd} && mv ./${tst_comp_cmd}.bak ./${tst_comp_cmd}"
 
@@ -691,8 +691,8 @@ function build_target()
     if ! command -v cmake >/dev/null 2>&1 || ! command -v ninja >/dev/null 2>&1; then
         die "No cmake or ninja program. Please install it."
     fi
-    if ! command -v clang-17 >/dev/null 2>&1 || ! command -v clang++-17 >/dev/null 2>&1; then
-        die "No clang-17 or clang++-17 program. Please install it."
+    if ! command -v clang-16 >/dev/null 2>&1 || ! command -v clang++-16 >/dev/null 2>&1; then
+        die "No clang-16 or clang++-16 program. Please install it."
     fi
     if [[ ${ARGS[release]} = true ]]; then
         BUILD_TYPE="Release"
@@ -724,7 +724,7 @@ function set_compile_condition()
 {
     local tmpfs_subfolder=$1 tmpfs_size=$2
 
-    export CC=/usr/bin/clang-17 CXX=/usr/bin/clang++-17
+    export CC=/usr/bin/clang-16 CXX=/usr/bin/clang++-16
     if [[ -f ./${FOLDER[scr]}/.env ]]; then
         # shellcheck source=/dev/null
         source "./${FOLDER[scr]}/.env"

@@ -6,12 +6,12 @@ RUN apt-get update \
 && DEBIAN_FRONTEND=noninteractive apt-get install -y sudo tzdata ca-certificates gpg psmisc bash-completion curl rsync zip \
 && curl -fsSL https://apt.llvm.org/llvm-snapshot.gpg.key | sudo gpg --dearmor -o /etc/apt/keyrings/llvm-snapshot.gpg \
 && sudo chmod a+r /etc/apt/keyrings/llvm-snapshot.gpg \
-&& echo 'deb [signed-by=/etc/apt/keyrings/llvm-snapshot.gpg] http://apt.llvm.org/focal/ llvm-toolchain-focal-17 main' | sudo tee /etc/apt/sources.list.d/llvm-snapshot.list \
-&& echo 'deb-src [signed-by=/etc/apt/keyrings/llvm-snapshot.gpg] http://apt.llvm.org/focal/ llvm-toolchain-focal-17 main' | sudo tee -a /etc/apt/sources.list.d/llvm-snapshot.list \
+&& echo 'deb [signed-by=/etc/apt/keyrings/llvm-snapshot.gpg] http://apt.llvm.org/focal/ llvm-toolchain-focal-16 main' | sudo tee /etc/apt/sources.list.d/llvm-snapshot.list \
+&& echo 'deb-src [signed-by=/etc/apt/keyrings/llvm-snapshot.gpg] http://apt.llvm.org/focal/ llvm-toolchain-focal-16 main' | sudo tee -a /etc/apt/sources.list.d/llvm-snapshot.list \
 && sudo apt-get update \
 && sudo apt-get install -y git python3 python3-pip build-essential cmake ninja-build ccache distcc gdb strace \
-clang-17 lld-17 libstdc++-12-dev libgtest-dev libssl-dev libreadline-dev libmpfrc++-dev llvm-17-dev libclang-17-dev \
-clang-format-17 clang-tidy-17 shfmt shellcheck black pylint rustc cargo rustfmt rust-clippy \
+clang-16 lld-16 libstdc++-12-dev libgtest-dev libssl-dev libreadline-dev libmpfrc++-dev llvm-16-dev libclang-16-dev \
+clang-format-16 clang-tidy-16 shfmt shellcheck black pylint rustc cargo rustfmt rust-clippy \
 valgrind cloc pre-commit graphviz docker docker-compose npm \
 && sudo apt-get clean \
 && sudo pip3 install --no-cache-dir compdb ValgrindCI \
@@ -26,6 +26,6 @@ valgrind cloc pre-commit graphviz docker docker-compose npm \
 && curl -L https://gcc.gnu.org/onlinedocs/gcc-12.3.0/libstdc++/api/libstdc++.tag | sudo tee /usr/local/share/doxygen-tag/libstdc++.tag >/dev/null \
 && git clone https://github.com/KDAB/codebrowser.git \
 && git -C ./codebrowser reset --hard 1808e96d4c62417952389d536576d53bb6da4053 \
-&& cmake -S ./codebrowser -B ./codebrowser/build -DCMAKE_CXX_COMPILER=clang++-17 -DCMAKE_BUILD_TYPE=Release \
+&& cmake -S ./codebrowser -B ./codebrowser/build -DCMAKE_CXX_COMPILER=clang++-16 -DCMAKE_BUILD_TYPE=Release \
 && sudo make -C ./codebrowser/build install \
 && rm -rf ./codebrowser
