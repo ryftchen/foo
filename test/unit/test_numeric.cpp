@@ -6,6 +6,7 @@
 
 #include <gtest/gtest.h>
 #include <syncstream>
+
 #include "application/example/include/apply_numeric.hpp"
 #include "numeric/include/arithmetic.hpp"
 #include "numeric/include/divisor.hpp"

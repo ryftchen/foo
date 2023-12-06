@@ -6,6 +6,7 @@
 
 #include <gtest/gtest.h>
 #include <syncstream>
+
 #include "application/example/include/apply_data_structure.hpp"
 
 //! @brief Title of printing for data structure task tests.

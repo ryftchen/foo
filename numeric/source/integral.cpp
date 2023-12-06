@@ -5,6 +5,7 @@
 //! @copyright Copyright (c) 2022-2023 ryftchen. All rights reserved.
 
 #include "integral.hpp"
+
 #include <functional>
 #include <random>
 

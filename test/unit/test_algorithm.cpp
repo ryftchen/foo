@@ -6,6 +6,7 @@
 
 #include <gtest/gtest.h>
 #include <syncstream>
+
 #include "algorithm/include/match.hpp"
 #include "algorithm/include/notation.hpp"
 #include "algorithm/include/optimal.hpp"
