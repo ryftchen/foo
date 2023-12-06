@@ -290,7 +290,7 @@ class Task:
             len(str(self.total_steps)) * 2 + len(" / ") + Output.stat_cont_len_excl_cmd,
         )
         Output.refresh_status(
-            Output.color["blue"], f"CASE: {f'{command}':<{align_len - Output.stat_cont_len_excl_cmd}} | START "
+            Output.color["blue"], f"CASE: {f'{command}':<{align_len - Output.stat_cont_len_excl_cmd}} # START "
         )
 
         stdout, stderr, return_code = common.execute_command(full_cmd, enter)
@@ -313,7 +313,7 @@ class Task:
 
         self.complete_steps += 1
         Output.refresh_status(
-            Output.color["blue"], f"CASE: {f'{command}':<{align_len - Output.stat_cont_len_excl_cmd}} | FINISH"
+            Output.color["blue"], f"CASE: {f'{command}':<{align_len - Output.stat_cont_len_excl_cmd}} # FINISH"
         )
 
         if self.pass_steps != self.total_steps:
@@ -422,12 +422,12 @@ valgrind-ci {xml_filename}_inst_2.xml --summary"
             cov_per = {}
             mem_err = {}
             for start_index, finish_index in zip(start_indices, finish_indices):
-                if "| STAT: FAILURE" in readlines[finish_index - 1]:
+                if "# STAT: FAILURE" in readlines[finish_index - 1]:
                     fail_line = readlines[finish_index - 1]
                     number = fail_line[fail_line.find("NO.") : fail_line.find("]")].strip()
                     cmd_line = readlines[start_index]
                     case_task = (
-                        number + ": " + cmd_line[cmd_line.find(self.app_bin_cmd) : cmd_line.find("| START")].strip()
+                        number + ": " + cmd_line[cmd_line.find(self.app_bin_cmd) : cmd_line.find("# START")].strip()
                     )
 
                     if tags["tst"] and "FAILED TEST" in "".join(readlines[start_index + 1 : finish_index]):
@@ -501,9 +501,9 @@ valgrind-ci {xml_filename}_inst_2.xml --summary"
         start_indices = []
         finish_indices = []
         for index, line in enumerate(readlines):
-            if "| START" in line:
+            if "# START" in line:
                 start_indices.append(index)
-            elif "| FINISH" in line:
+            elif "# FINISH" in line:
                 finish_indices.append(index)
         if len(start_indices) != len(finish_indices) or len(start_indices) != self.total_steps:
             Output.exit_with_error(f"The run log {self.log_file} file is incomplete. Please retry.")
@@ -564,7 +564,7 @@ class Output:
     def refresh_status(cls, color_fg, content):
         print(
             f"""{color_fg}{cls.color_bold}{cls.color_bg}[ {datetime.strftime(datetime.now(), "%b %d %H:%M:%S")} \
-| {content} ]{cls.color_off}"""
+# {content} ]{cls.color_off}"""
         )
 
     @classmethod
