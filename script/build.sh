@@ -16,11 +16,11 @@ declare BUILD_TYPE="Debug"
 function shell_command()
 {
     echo
-    printf "\033[0;37;40m\033[1m\033[49m%s%-40s%s\033[0m\n" "[ $(date "+%b %d %T") | CMD: " "$*" " | START  ]"
+    printf "\033[0;37;40m\033[1m\033[49m%s%-40s%s\033[0m\n" "[ $(date "+%b %d %T") # CMD: " "$*" " # START  ]"
     if [[ ${ARGS[dry]} = false ]]; then
         /bin/bash -c "$@"
     fi
-    printf "\033[0;37;40m\033[1m\033[49m%s%-40s%s\033[0m\n" "[ $(date "+%b %d %T") | CMD: " "$*" " | FINISH ]"
+    printf "\033[0;37;40m\033[1m\033[49m%s%-40s%s\033[0m\n" "[ $(date "+%b %d %T") # CMD: " "$*" " # FINISH ]"
 }
 
 function die()
