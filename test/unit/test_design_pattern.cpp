@@ -6,6 +6,7 @@
 
 #include <gtest/gtest.h>
 #include <syncstream>
+
 #include "application/example/include/apply_design_pattern.hpp"
 
 //! @brief Title of printing for design pattern task tests.

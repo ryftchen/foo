@@ -5,6 +5,7 @@
 //! @copyright Copyright (c) 2022-2023 ryftchen. All rights reserved.
 
 #include "console.hpp"
+
 #include <readline/readline.h>
 #include <fstream>
 #include <iomanip>

@@ -6,9 +6,10 @@
 
 #pragma once
 
+#include "search.hpp"
+
 #include <cstring>
 #include <memory>
-#include "search.hpp"
 
 namespace algorithm::search
 {

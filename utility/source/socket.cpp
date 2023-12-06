@@ -5,6 +5,7 @@
 //! @copyright Copyright (c) 2022-2023 ryftchen. All rights reserved.
 
 #include "socket.hpp"
+
 #include <netdb.h>
 #include <cstring>
 
