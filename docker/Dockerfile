@@ -3,17 +3,18 @@ FROM ubuntu:22.04
 SHELL ["/bin/bash", "-c"]
 
 RUN apt-get update \
-&& DEBIAN_FRONTEND=noninteractive apt-get install -y sudo tzdata ca-certificates gpg psmisc bash-completion curl rsync zip \
+&& DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends sudo tzdata ca-certificates gpg curl bash-completion \
 && curl -fsSL https://apt.llvm.org/llvm-snapshot.gpg.key | sudo gpg --dearmor -o /etc/apt/keyrings/llvm-snapshot.gpg \
 && sudo chmod a+r /etc/apt/keyrings/llvm-snapshot.gpg \
 && echo 'deb [signed-by=/etc/apt/keyrings/llvm-snapshot.gpg] http://apt.llvm.org/focal/ llvm-toolchain-focal-16 main' | sudo tee /etc/apt/sources.list.d/llvm-snapshot.list \
 && echo 'deb-src [signed-by=/etc/apt/keyrings/llvm-snapshot.gpg] http://apt.llvm.org/focal/ llvm-toolchain-focal-16 main' | sudo tee -a /etc/apt/sources.list.d/llvm-snapshot.list \
 && sudo apt-get update \
-&& sudo apt-get install -y git python3 python3-pip build-essential cmake ninja-build ccache distcc gdb strace \
+&& sudo apt-get install -y --no-install-recommends git python3 python3-pip build-essential cmake ninja-build ccache distcc gdb strace \
 clang-16 lld-16 libstdc++-12-dev libgtest-dev libssl-dev libreadline-dev libmpfrc++-dev llvm-16-dev libclang-16-dev \
 clang-format-16 clang-tidy-16 shfmt shellcheck black pylint rustc cargo rustfmt rust-clippy \
-valgrind cloc pre-commit graphviz docker docker-compose npm \
+valgrind cloc pre-commit graphviz docker docker-compose npm psmisc rsync zip \
 && sudo apt-get clean \
+&& sudo rm -rf /var/lib/apt/lists/* \
 && sudo pip3 install --no-cache-dir compdb ValgrindCI \
 && sudo npm install --no-save --global --no-package-lock cspell@5 https://github.com/jothepro/doxygen-awesome-css#v2.2.1 \
 && sudo npm cache clean --force \
