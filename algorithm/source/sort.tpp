@@ -18,7 +18,7 @@
 namespace algorithm::sort
 {
 template <class T>
-std::vector<T> Sort<T>::bubble(T* const array, const std::uint32_t length)
+std::vector<T> Sort<T>::bubble(const T* const array, const std::uint32_t length)
 {
     T sortArray[length];
     sortArray[0] = '\0';
@@ -39,7 +39,7 @@ std::vector<T> Sort<T>::bubble(T* const array, const std::uint32_t length)
 }
 
 template <class T>
-std::vector<T> Sort<T>::selection(T* const array, const std::uint32_t length)
+std::vector<T> Sort<T>::selection(const T* const array, const std::uint32_t length)
 {
     T sortArray[length];
     sortArray[0] = '\0';
@@ -62,7 +62,7 @@ std::vector<T> Sort<T>::selection(T* const array, const std::uint32_t length)
 }
 
 template <class T>
-std::vector<T> Sort<T>::insertion(T* const array, const std::uint32_t length)
+std::vector<T> Sort<T>::insertion(const T* const array, const std::uint32_t length)
 {
     T sortArray[length];
     sortArray[0] = '\0';
@@ -84,7 +84,7 @@ std::vector<T> Sort<T>::insertion(T* const array, const std::uint32_t length)
 }
 
 template <class T>
-std::vector<T> Sort<T>::shell(T* const array, const std::uint32_t length)
+std::vector<T> Sort<T>::shell(const T* const array, const std::uint32_t length)
 {
     T sortArray[length];
     sortArray[0] = '\0';
@@ -107,7 +107,7 @@ std::vector<T> Sort<T>::shell(T* const array, const std::uint32_t length)
 }
 
 template <class T>
-std::vector<T> Sort<T>::merge(T* const array, const std::uint32_t length)
+std::vector<T> Sort<T>::merge(const T* const array, const std::uint32_t length)
 {
     T sortArray[length];
     sortArray[0] = '\0';
@@ -150,7 +150,7 @@ void Sort<T>::mergeSortRecursive(T* const sortArray, const std::uint32_t begin, 
 }
 
 template <class T>
-std::vector<T> Sort<T>::quick(T* const array, const std::uint32_t length)
+std::vector<T> Sort<T>::quick(const T* const array, const std::uint32_t length)
 {
     T sortArray[length];
     sortArray[0] = '\0';
@@ -200,7 +200,7 @@ void Sort<T>::quickSortRecursive(T* const sortArray, const std::uint32_t begin, 
 }
 
 template <class T>
-std::vector<T> Sort<T>::heap(T* const array, const std::uint32_t length)
+std::vector<T> Sort<T>::heap(const T* const array, const std::uint32_t length)
 {
     T sortArray[length];
     sortArray[0] = '\0';
@@ -241,7 +241,7 @@ void Sort<T>::buildMaxHeap(T* const sortArray, const std::uint32_t begin, const 
 }
 
 template <class T>
-std::vector<T> Sort<T>::counting(T* const array, const std::uint32_t length)
+std::vector<T> Sort<T>::counting(const T* const array, const std::uint32_t length)
 {
     if (!std::is_integral_v<T>)
     {
@@ -281,7 +281,7 @@ std::vector<T> Sort<T>::counting(T* const array, const std::uint32_t length)
 }
 
 template <class T>
-std::vector<T> Sort<T>::bucket(T* const array, const std::uint32_t length)
+std::vector<T> Sort<T>::bucket(const T* const array, const std::uint32_t length)
 {
     T sortArray[length];
     sortArray[0] = '\0';
@@ -318,7 +318,7 @@ std::vector<T> Sort<T>::bucket(T* const array, const std::uint32_t length)
 }
 
 template <class T>
-std::vector<T> Sort<T>::radix(T* const array, const std::uint32_t length)
+std::vector<T> Sort<T>::radix(const T* const array, const std::uint32_t length)
 {
     if (!std::is_integral_v<T>)
     {
