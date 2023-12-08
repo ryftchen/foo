@@ -4,6 +4,7 @@ declare -rA FOLDER=([proj]="foo" [app]="application" [util]="utility" [algo]="al
     [dp]="design_pattern" [num]="numeric" [tst]="test" [scr]="script" [doc]="document" [dock]="docker" [bld]="build"
     [cac]=".cache")
 declare -r COMP_CMD="compile_commands.json"
+declare -r BASH_RC=".bashrc"
 declare -A ARGS=([help]=false [initialize]=false [clean]=false [install]=false [uninstall]=false [container]=false
     [website]=false [test]=false [release]=false [hook]=false [spell]=false [format]=false [lint]=false
     [statistics]=false [doxygen]=false [browser]=false [dry]=false)
@@ -231,27 +232,27 @@ function perform_initialize_option()
         return
     fi
 
-    local export_cmd="export FOO_ENV=foo_dev"
-    if ! grep -Fxq "${export_cmd}" ~/.bashrc 2>/dev/null && {
-        [[ -z ${FOO_ENV} ]] || [[ ${FOO_ENV} != "foo_dev" ]]
+    local export_cmd="export FOO_ENV=${FOLDER[proj]}_dev"
+    if ! grep -Fxq "${export_cmd}" ~/"${BASH_RC}" 2>/dev/null && {
+        [[ -z ${FOO_ENV} ]] || [[ ${FOO_ENV} != "${FOLDER[proj]}_dev" ]]
     }; then
-        shell_command "echo '${export_cmd}' >>~/.bashrc"
+        shell_command "echo '${export_cmd}' >>~/${BASH_RC}"
     fi
 
     local validate_proj="[[ \\\"\\\$(basename \\\"\\\$(pwd)\\\")\\\" == \\\"${FOLDER[proj]}\\\" ]] && \
 git rev-parse --git-dir >/dev/null 2>&1 &&"
     local alias_cmd
-    if ! grep -Fwq "alias ${FOLDER[proj]}-build" ~/.bashrc 2>/dev/null; then
+    if ! grep -Fwq "alias ${FOLDER[proj]}-build" ~/"${BASH_RC}" 2>/dev/null; then
         alias_cmd="alias ${FOLDER[proj]}-build='${validate_proj} ./${FOLDER[scr]}/build.sh'"
-        shell_command "echo \"${alias_cmd}\" >>~/.bashrc"
+        shell_command "echo \"${alias_cmd}\" >>~/${BASH_RC}"
     fi
-    if ! grep -Fwq "alias ${FOLDER[proj]}-run" ~/.bashrc 2>/dev/null; then
+    if ! grep -Fwq "alias ${FOLDER[proj]}-run" ~/"${BASH_RC}" 2>/dev/null; then
         alias_cmd="alias ${FOLDER[proj]}-run='${validate_proj} ./${FOLDER[scr]}/run.py'"
-        shell_command "echo \"${alias_cmd}\" >>~/.bashrc"
+        shell_command "echo \"${alias_cmd}\" >>~/${BASH_RC}"
     fi
-    if ! grep -Fwq "alias ${FOLDER[proj]}-exec" ~/.bashrc 2>/dev/null; then
+    if ! grep -Fwq "alias ${FOLDER[proj]}-exec" ~/"${BASH_RC}" 2>/dev/null; then
         alias_cmd="alias ${FOLDER[proj]}-exec='${validate_proj} ./${FOLDER[bld]}/bin/foo'"
-        shell_command "echo \"${alias_cmd}\" >>~/.bashrc"
+        shell_command "echo \"${alias_cmd}\" >>~/${BASH_RC}"
     fi
 
     shell_command "cat <<EOF >./${FOLDER[scr]}/.env
@@ -281,8 +282,8 @@ function perform_clean_option()
         return
     fi
 
-    shell_command "sed -i '/export FOO_ENV=foo_dev/d' ~/.bashrc 2>/dev/null"
-    shell_command "sed -i '/alias ${FOLDER[proj]}-/d' ~/.bashrc 2>/dev/null"
+    shell_command "sed -i '/export FOO_ENV=${FOLDER[proj]}_dev/d' ~/${BASH_RC} 2>/dev/null"
+    shell_command "sed -i '/alias ${FOLDER[proj]}-/d' ~/${BASH_RC} 2>/dev/null"
     shell_command "find ./ -maxdepth 3 -type d | sed 1d \
 | grep -E '(${FOLDER[bld]}|${FOLDER[cac]}|target|doxygen|browser|archive|__pycache__)$' | xargs -i rm -rf {}"
     shell_command "rm -rf ./${FOLDER[scr]}/.env ./${FOLDER[doc]}/server/Cargo.lock ./core.* ./vgcore.* ./*.profraw"
@@ -312,16 +313,16 @@ function perform_install_option()
     if [[ -d ${install_path} ]]; then
         local bin_path=${install_path}/bin
         local export_cmd="export PATH=${bin_path}:\$PATH"
-        if [[ :${PATH}: != *:${bin_path}:* ]] && ! grep -Fxq "${export_cmd}" ~/.bashrc 2>/dev/null; then
-            shell_command "echo '${export_cmd}' >>~/.bashrc"
+        if [[ :${PATH}: != *:${bin_path}:* ]] && ! grep -Fxq "${export_cmd}" ~/"${BASH_RC}" 2>/dev/null; then
+            shell_command "echo '${export_cmd}' >>~/${BASH_RC}"
         fi
 
         local completion_file="bash_completion"
         export_cmd="[ \"\${BASH_COMPLETION_VERSINFO}\" != \"\" ] && [ -s ${install_path}/${completion_file} ] && \
 \. ${install_path}/${completion_file}"
         shell_command "${SUDO}cp ./${FOLDER[scr]}/${completion_file}.sh ${install_path}/${completion_file}"
-        if ! grep -Fxq "${export_cmd}" ~/.bashrc 2>/dev/null; then
-            shell_command "echo '${export_cmd}' >>~/.bashrc"
+        if ! grep -Fxq "${export_cmd}" ~/"${BASH_RC}" 2>/dev/null; then
+            shell_command "echo '${export_cmd}' >>~/${BASH_RC}"
         fi
 
         local man_path=${install_path}/man
@@ -354,9 +355,9 @@ function perform_uninstall_option()
     shell_command "cat ./${FOLDER[bld]}/${manifest_file} | xargs ${SUDO}rm -rf && \
 ${SUDO}rm -rf /opt/${FOLDER[proj]}/${completion_file} /opt/${FOLDER[proj]}/man"
     shell_command "cat ./${FOLDER[bld]}/${manifest_file} | xargs -L1 dirname | xargs ${SUDO}rmdir -p 2>/dev/null"
-    if [[ -f ~/.bashrc ]]; then
-        shell_command "sed -i '/export PATH=\/opt\/${FOLDER[proj]}\/bin:\$PATH/d' ~/.bashrc"
-        shell_command "sed -i '/\\\. \/opt\/${FOLDER[proj]}\/${completion_file}/d' ~/.bashrc"
+    if [[ -f ~/${BASH_RC} ]]; then
+        shell_command "sed -i '/export PATH=\/opt\/${FOLDER[proj]}\/bin:\$PATH/d' ~/${BASH_RC}"
+        shell_command "sed -i '/\\\. \/opt\/${FOLDER[proj]}\/${completion_file}/d' ~/${BASH_RC}"
     fi
     if [[ -f ~/.manpath ]]; then
         shell_command "sed -i '/MANDATORY_MANPATH \/opt\/${FOLDER[proj]}\/man/d' ~/.manpath"
@@ -405,13 +406,13 @@ function perform_website_option()
     if command -v rustc >/dev/null 2>&1 && command -v cargo >/dev/null 2>&1; then
         shell_command "cargo build --release --manifest-path ./${FOLDER[doc]}/server/Cargo.toml"
         echo ""
-        if ! pgrep -f foo_doc >/dev/null 2>&1; then
+        if ! pgrep -f "${FOLDER[proj]}_doc" >/dev/null 2>&1; then
             echo "Please confirm whether continue launching the document server. (y or n)"
             local input
             input=$(wait_until_get_input)
             if echo "${input}" | grep -iq '^y'; then
                 echo "Yes"
-                shell_command "./${FOLDER[doc]}/server/target/release/foo_doc --root-dir . &"
+                shell_command "./${FOLDER[doc]}/server/target/release/${FOLDER[proj]}_doc --root-dir . &"
                 sleep 0.2s
             else
                 echo "No"
