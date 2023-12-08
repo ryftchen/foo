@@ -5,6 +5,7 @@
 //! @copyright Copyright (c) 2022-2023 ryftchen. All rights reserved.
 
 #include "config.hpp"
+
 #ifndef __PRECOMPILED_HEADER
 #include <cassert>
 #include <filesystem>
@@ -13,6 +14,7 @@
 #else
 #include "application/pch/precompiled_header.hpp"
 #endif // __PRECOMPILED_HEADER
+
 #include "utility/include/common.hpp"
 #include "utility/include/file.hpp"
 

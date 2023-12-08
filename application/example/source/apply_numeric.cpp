@@ -5,12 +5,14 @@
 //! @copyright Copyright (c) 2022-2023 ryftchen. All rights reserved.
 
 #include "apply_numeric.hpp"
+
 #ifndef __PRECOMPILED_HEADER
 #include <iomanip>
 #include <syncstream>
 #else
 #include "application/pch/precompiled_header.hpp"
 #endif // __PRECOMPILED_HEADER
+
 #include "application/core/include/command.hpp"
 #include "application/core/include/log.hpp"
 #include "numeric/include/arithmetic.hpp"

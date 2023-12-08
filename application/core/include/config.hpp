@@ -11,6 +11,7 @@
 #else
 #include "application/pch/precompiled_header.hpp"
 #endif // __PRECOMPILED_HEADER
+
 #include "utility/include/json.hpp"
 
 //! @brief Get the config instance.

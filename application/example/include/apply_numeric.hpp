@@ -14,6 +14,7 @@
 #else
 #include "application/pch/precompiled_header.hpp"
 #endif // __PRECOMPILED_HEADER
+
 #include "numeric/include/integral.hpp"
 
 //! @brief Numeric-applying-related functions in the application module.

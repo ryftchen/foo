@@ -21,7 +21,7 @@ function shell_command()
         /bin/bash -c "$@"
         printf "\033[0;37;40m\033[1m\033[49m%s%-40s%s\033[0m\n" "[ $(date "+%b %d %T") # CMD: " "$*" " # FINISH ]"
     else
-        printf "\033[0;37;40m\033[1m\033[49m%s%-40s%s\033[0m\n" "[ $(date "+%b %d %T") # CMD: " "$*" " #        ]"
+        printf "\033[0;37;40m\033[1m\033[49m%s%-40s%s\033[0m\n" "[ $(date "+%b %d %T") # CMD: " "$*" " # PRACTICE ]"
     fi
 }
 

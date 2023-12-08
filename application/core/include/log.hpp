@@ -7,6 +7,7 @@
 #pragma once
 
 #include "config.hpp"
+
 #ifndef __PRECOMPILED_HEADER
 #include <algorithm>
 #include <fstream>
@@ -16,6 +17,7 @@
 #else
 #include "application/pch/precompiled_header.hpp"
 #endif // __PRECOMPILED_HEADER
+
 #include "utility/include/common.hpp"
 #include "utility/include/file.hpp"
 #include "utility/include/fsm.hpp"

@@ -9,6 +9,7 @@
 #include "config.hpp"
 #include "log.hpp"
 #include "view.hpp"
+
 #ifndef __PRECOMPILED_HEADER
 #include <sys/prctl.h>
 #include <sys/wait.h>
