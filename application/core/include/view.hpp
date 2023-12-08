@@ -7,12 +7,14 @@
 #pragma once
 
 #include "config.hpp"
+
 #ifndef __PRECOMPILED_HEADER
 #include <map>
 #include <vector>
 #else
 #include "application/pch/precompiled_header.hpp"
 #endif // __PRECOMPILED_HEADER
+
 #include "utility/include/fsm.hpp"
 #include "utility/include/socket.hpp"
 

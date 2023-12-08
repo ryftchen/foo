@@ -5,12 +5,14 @@
 //! @copyright Copyright (c) 2022-2023 ryftchen. All rights reserved.
 
 #include "apply_algorithm.hpp"
+
 #ifndef __PRECOMPILED_HEADER
 #include <iomanip>
 #include <syncstream>
 #else
 #include "application/pch/precompiled_header.hpp"
 #endif // __PRECOMPILED_HEADER
+
 #include "algorithm/include/match.hpp"
 #include "algorithm/include/notation.hpp"
 #include "algorithm/include/optimal.hpp"

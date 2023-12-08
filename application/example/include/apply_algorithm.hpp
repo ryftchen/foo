@@ -17,6 +17,7 @@
 #else
 #include "application/pch/precompiled_header.hpp"
 #endif // __PRECOMPILED_HEADER
+
 #include "algorithm/include/optimal.hpp"
 
 #if defined(__clang__) || defined(__GNUC__)

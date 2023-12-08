@@ -5,6 +5,7 @@
 //! @copyright Copyright (c) 2022-2023 ryftchen. All rights reserved.
 
 #include "log.hpp"
+
 #ifndef __PRECOMPILED_HEADER
 #include <filesystem>
 #include <regex>

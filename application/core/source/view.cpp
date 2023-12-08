@@ -6,6 +6,7 @@
 
 #include "view.hpp"
 #include "log.hpp"
+
 #ifndef __PRECOMPILED_HEADER
 #include <openssl/evp.h>
 #include <sys/ipc.h>
@@ -19,6 +20,7 @@
 #else
 #include "application/pch/precompiled_header.hpp"
 #endif // __PRECOMPILED_HEADER
+
 #include "utility/include/file.hpp"
 #include "utility/include/time.hpp"
 
