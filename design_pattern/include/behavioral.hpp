@@ -363,7 +363,7 @@ public:
 
     //! @brief Get the id of the colleague.
     //! @return id of the colleague
-    [[nodiscard]] std::uint32_t getID() const;
+    [[nodiscard]] std::uint32_t getId() const;
     //! @brief Send message.
     //! @param msg - sending message
     virtual void send(const std::string& msg) = 0;
@@ -374,7 +374,7 @@ public:
 protected:
     //! @brief Mediator of the colleague.
     std::weak_ptr<Mediator> mediator;
-    //! @brief ID of the colleague.
+    //! @brief Id of the colleague.
     std::uint32_t id;
 };
 

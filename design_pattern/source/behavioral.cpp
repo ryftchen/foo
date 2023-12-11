@@ -249,7 +249,7 @@ void ConcreteMediator::distribute(const std::shared_ptr<Colleague>& sender, cons
         {
             if (const auto c = colleague.lock())
             {
-                if (c->getID() != sender->getID())
+                if (c->getId() != sender->getId())
                 {
                     c->receive(msg);
                 }
@@ -257,7 +257,7 @@ void ConcreteMediator::distribute(const std::shared_ptr<Colleague>& sender, cons
         });
 }
 
-std::uint32_t Colleague::getID() const
+std::uint32_t Colleague::getId() const
 {
     return id;
 }
