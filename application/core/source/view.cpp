@@ -52,27 +52,19 @@ int tlvEncode(char* buf, int& len, const TLVValue& val)
     enc.write<bool>(val.stopTag);
     sum += (offset + sizeof(bool));
 
-    if (invalidShmId != val.bashShmId)
+    const auto tryToFillShmId = [&](const TLVType type, int TLVValue::*shmId)
     {
-        enc.write<int>(TLVType::bash);
-        enc.write<int>(sizeof(int));
-        enc.write<int>(val.bashShmId);
-        sum += (offset + sizeof(int));
-    }
-    if (invalidShmId != val.logShmId)
-    {
-        enc.write<int>(TLVType::journal);
-        enc.write<int>(sizeof(int));
-        enc.write<int>(val.logShmId);
-        sum += (offset + sizeof(int));
-    }
-    if (invalidShmId != val.statusShmId)
-    {
-        enc.write<int>(TLVType::monitor);
-        enc.write<int>(sizeof(int));
-        enc.write<int>(val.statusShmId);
-        sum += (offset + sizeof(int));
-    }
+        if (invalidShmId != val.*shmId)
+        {
+            enc.write<int>(type);
+            enc.write<int>(sizeof(int));
+            enc.write<int>(val.*shmId);
+            sum += (offset + sizeof(int));
+        }
+    };
+    tryToFillShmId(TLVType::bash, &TLVValue::bashShmId);
+    tryToFillShmId(TLVType::journal, &TLVValue::logShmId);
+    tryToFillShmId(TLVType::monitor, &TLVValue::statusShmId);
 
     *reinterpret_cast<int*>(buf + sizeof(int)) = ::htonl(sum);
     len = offset + sum;
