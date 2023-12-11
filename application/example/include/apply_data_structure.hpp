@@ -150,7 +150,7 @@ namespace linear
 //! @brief Metadata, which is used in the instance.
 struct Meta
 {
-    //! @brief ID of the metadata.
+    //! @brief Id of the metadata.
     int id;
     //! @brief Name of the metadata.
     char name[4];
