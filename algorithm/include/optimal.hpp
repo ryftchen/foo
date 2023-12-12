@@ -9,8 +9,11 @@
 #include <optional>
 #include <random>
 
+//! @brief The algorithm module.
+namespace algorithm // NOLINT(modernize-concat-nested-namespaces)
+{
 //! @brief Optimal-related functions in the algorithm module.
-namespace algorithm::optimal
+namespace optimal
 {
 //! @brief Target functions.
 class Function
@@ -298,4 +301,5 @@ private:
     //! @return random number
     std::uint32_t getRandomLessThanLimit(const std::uint32_t limit);
 };
-} // namespace algorithm::optimal
+} // namespace optimal
+} // namespace algorithm

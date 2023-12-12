@@ -52,7 +52,7 @@ namespace behavioral
 //! @brief Print behavioral result content.
 #define BEHAVIORAL_PRINT_RESULT_CONTENT(instance) \
     COMMON_PRINT(BEHAVIORAL_RESULT, toString(instance).data(), output.str().c_str());
-//! @brief Mapping table for enum and string about behavioral instances.
+//! @brief Mapping table for enum and string about behavioral instances. X macro.
 #define BEHAVIORAL_INSTANCE_TABLE                        \
     ELEM(chainOfResponsibility, "ChainOfResponsibility") \
     ELEM(command, "Command")                             \
@@ -354,7 +354,7 @@ namespace creational
 //! @brief Print creational result content.
 #define CREATIONAL_PRINT_RESULT_CONTENT(instance) \
     COMMON_PRINT(CREATIONAL_RESULT, toString(instance).data(), output.str().c_str());
-//! @brief Mapping table for enum and string about creational instances.
+//! @brief Mapping table for enum and string about creational instances. X macro.
 #define CREATIONAL_INSTANCE_TABLE            \
     ELEM(abstractFactory, "AbstractFactory") \
     ELEM(builder, "Builder")                 \
@@ -536,7 +536,7 @@ namespace structural
 //! @brief Print structural result content.
 #define STRUCTURAL_PRINT_RESULT_CONTENT(instance) \
     COMMON_PRINT(STRUCTURAL_RESULT, toString(instance).data(), output.str().c_str());
-//! @brief Mapping table for enum and string about structural instances.
+//! @brief Mapping table for enum and string about structural instances. X macro.
 #define STRUCTURAL_INSTANCE_TABLE \
     ELEM(adapter, "Adapter")      \
     ELEM(bridge, "Bridge")        \

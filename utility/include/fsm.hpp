@@ -8,8 +8,11 @@
 
 #include <atomic>
 
+//! @brief The utility module.
+namespace utility // NOLINT(modernize-concat-nested-namespaces)
+{
 //! @brief Finite-state-machine-related functions in the utility module.
-namespace utility::fsm
+namespace fsm
 {
 //! @brief Alias for invoke result.
 //! @tparam Func - type of callable function
@@ -495,6 +498,7 @@ protected:
         }
     };
 };
-} // namespace utility::fsm
+} // namespace fsm
+} // namespace utility
 
 #include "utility/source/fsm.tpp"

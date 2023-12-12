@@ -6,8 +6,11 @@
 
 #pragma once
 
+//! @brief The numeric module.
+namespace numeric // NOLINT(modernize-concat-nested-namespaces)
+{
 //! @brief Arithmetic-related functions in the numeric module.
-namespace numeric::arithmetic
+namespace arithmetic
 {
 //! @brief Arithmetic methods.
 class Arithmetic
@@ -53,4 +56,5 @@ private:
     //! @return absolute value
     static int bitAbs(const int a);
 };
-} // namespace numeric::arithmetic
+} // namespace arithmetic
+} // namespace numeric

@@ -19,8 +19,11 @@
                                 << std::setw(50) << category << state << std::resetiosflags(std::ios_base::left)  \
                                 << std::setfill(' ') << std::endl;
 
+//! @brief The test module.
+namespace test // NOLINT(modernize-concat-nested-namespaces)
+{
 //! @brief Numeric-testing-related functions in the test module.
-namespace test::tst_num
+namespace tst_num
 {
 //! @brief Alias for the enumeration of numeric tasks.
 using Category = application::app_num::NumericTask::Category;
@@ -291,4 +294,5 @@ TEST_F(PrimeTestBase, eulerMethod)
 {
     ASSERT_EQ(primeContainer, numeric::prime::Prime::euler(builder->getMaxPositiveInteger()));
 }
-} // namespace test::tst_num
+} // namespace tst_num
+} // namespace test

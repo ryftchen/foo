@@ -10,8 +10,11 @@
 #include <future>
 #include <queue>
 
+//! @brief The utility module.
+namespace utility // NOLINT(modernize-concat-nested-namespaces)
+{
 //! @brief Thread-pool-related functions in the utility module.
-namespace utility::thread
+namespace thread
 {
 //! @brief Thread pool.
 class Thread
@@ -66,4 +69,5 @@ decltype(auto) Thread::enqueue(const std::string& name, Func&& func, Args&&... a
     cv.notify_one();
     return future;
 }
-} // namespace utility::thread
+} // namespace thread
+} // namespace utility

@@ -52,7 +52,7 @@ namespace linear
 //! @brief Print linear result content.
 #define LINEAR_PRINT_RESULT_CONTENT(instance) \
     COMMON_PRINT(LINEAR_RESULT, toString(instance).data(), output.str().c_str())
-//! @brief Mapping table for enum and string about linear instances.
+//! @brief Mapping table for enum and string about linear instances. X macro.
 #define LINEAR_INSTANCE_TABLE      \
     ELEM(linkedList, "LinkedList") \
     ELEM(stack, "Stack")           \
@@ -193,7 +193,7 @@ namespace tree
 #define TREE_RESULT "\r\n==> %-19s Instance <==\n%s"
 //! @brief Print tree result content.
 #define TREE_PRINT_RESULT_CONTENT(instance) COMMON_PRINT(TREE_RESULT, toString(instance).data(), output.str().c_str());
-//! @brief Mapping table for enum and string about tree instances.
+//! @brief Mapping table for enum and string about tree instances. X macro.
 #define TREE_INSTANCE_TABLE                          \
     ELEM(binarySearch, "BinarySearch")               \
     ELEM(adelsonVelskyLandis, "AdelsonVelskyLandis") \

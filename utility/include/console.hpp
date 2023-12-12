@@ -11,8 +11,11 @@
 #include <list>
 #include <memory>
 
+//! @brief The utility module.
+namespace utility // NOLINT(modernize-concat-nested-namespaces)
+{
 //! @brief Console-mode-related functions in the utility module.
-namespace utility::console
+namespace console
 {
 //! @brief Console mode.
 class Console
@@ -134,4 +137,5 @@ private:
     //! @brief Get the command iterator.
     static CmdIteratorFunctor getCmdIterator;
 };
-} // namespace utility::console
+} // namespace console
+} // namespace utility

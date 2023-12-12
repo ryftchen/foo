@@ -20,15 +20,18 @@
 
 #include "algorithm/include/optimal.hpp"
 
-#if defined(__clang__) || defined(__GNUC__)
 //! @brief The restrict type qualifier.
+#if defined(__clang__) || defined(__GNUC__)
 #define restrict __restrict // NOLINT(readability-identifier-naming)
 #else
 #define restrict // NOLINT(readability-identifier-naming)
 #endif // defined(__clang__) || defined(__GNUC__)
 
+//! @brief The application module.
+namespace application // NOLINT(modernize-concat-nested-namespaces)
+{
 //! @brief Algorithm-applying-related functions in the application module.
-namespace application::app_algo
+namespace app_algo
 {
 //! @brief Represent the maximum value of an enum.
 //! @tparam T - type of specific enum
@@ -1092,6 +1095,7 @@ private:
 } // namespace sort
 extern void runSortTasks(const std::vector<std::string>& targets);
 extern void updateSortTask(const std::string& target);
-} // namespace application::app_algo
+} // namespace app_algo
+} // namespace application
 
 #undef restrict

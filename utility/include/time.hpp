@@ -17,8 +17,11 @@
 //! @brief Calculate time interval.
 #define TIME_INTERVAL(timing) timing.getTimeInterval()
 
+//! @brief The utility module.
+namespace utility // NOLINT(modernize-concat-nested-namespaces)
+{
 //! @brief Timing-related functions in the utility module.
-namespace utility::time
+namespace time
 {
 //! @brief Timing.
 class Time
@@ -78,4 +81,5 @@ void BlockingTimer::set(auto func, const std::uint32_t interval)
 }
 
 extern std::string getCurrentSystemTime();
-} // namespace utility::time
+} // namespace time
+} // namespace utility

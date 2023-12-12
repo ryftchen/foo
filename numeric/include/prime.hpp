@@ -9,8 +9,11 @@
 #include <cstdint>
 #include <vector>
 
+//! @brief The numeric module.
+namespace numeric // NOLINT(modernize-concat-nested-namespaces)
+{
 //! @brief Prime-related functions in the numeric module.
-namespace numeric::prime
+namespace prime
 {
 //! @brief Prime methods.
 class Prime
@@ -28,4 +31,5 @@ public:
     //! @return all prime numbers that are not greater than the maximum positive integer
     static std::vector<std::uint32_t> euler(const std::uint32_t max);
 };
-} // namespace numeric::prime
+} // namespace prime
+} // namespace numeric

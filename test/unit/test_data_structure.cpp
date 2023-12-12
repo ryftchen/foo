@@ -15,8 +15,11 @@
                                 << std::setfill('.') << std::setw(50) << category << state          \
                                 << std::resetiosflags(std::ios_base::left) << std::setfill(' ') << std::endl;
 
+//! @brief The test module.
+namespace test // NOLINT(modernize-concat-nested-namespaces)
+{
 //! @brief Data-structure-testing-related functions in the test module.
-namespace test::tst_ds
+namespace tst_ds
 {
 //! @brief Alias for the enumeration of data structure tasks.
 using Category = application::app_ds::DataStructureTask::Category;
@@ -100,4 +103,5 @@ TEST_F(TreeTestBase, splayInstance)
 {
     ASSERT_NO_THROW(tree::Tree::splay());
 }
-} // namespace test::tst_ds
+} // namespace tst_ds
+} // namespace test

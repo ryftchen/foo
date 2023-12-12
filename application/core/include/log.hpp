@@ -52,8 +52,11 @@
 //! @brief Log file lock.
 #define LOG_FILE_LOCK LOG_GET_INSTANCE.getFileLock()
 
+//! @brief The application module.
+namespace application // NOLINT(modernize-concat-nested-namespaces)
+{
 //! @brief Log-related functions in the application module.
-namespace application::log
+namespace log
 {
 //! @brief Default log filename.
 constexpr std::string_view defaultLogFile = "log/foo.log";
@@ -415,4 +418,5 @@ void Log::flush(
         }
     }
 }
-} // namespace application::log
+} // namespace log
+} // namespace application

@@ -12,8 +12,11 @@
 #include <list>
 #include <shared_mutex>
 
+//! @brief The utility module.
+namespace utility // NOLINT(modernize-concat-nested-namespaces)
+{
 //! @brief File-operation-related functions in the utility module.
-namespace utility::file
+namespace file
 {
 //! @brief Enumerate specific file lock modes.
 enum class LockMode : std::uint8_t
@@ -109,4 +112,5 @@ extern std::list<std::string> getFileContents(
     const std::string& filename,
     const bool reverse = false,
     const std::uint32_t totalRows = 1000);
-} // namespace utility::file
+} // namespace file
+} // namespace utility

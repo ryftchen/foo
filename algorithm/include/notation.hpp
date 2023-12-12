@@ -8,8 +8,11 @@
 
 #include <string>
 
+//! @brief The algorithm module.
+namespace algorithm // NOLINT(modernize-concat-nested-namespaces)
+{
 //! @brief Notation-related functions in the algorithm module.
-namespace algorithm::notation
+namespace notation
 {
 //! @brief Notation methods.
 class Notation
@@ -54,4 +57,5 @@ private:
     //! @return be operator or not
     static bool isOperator(const char c);
 };
-} // namespace algorithm::notation
+} // namespace notation
+} // namespace algorithm

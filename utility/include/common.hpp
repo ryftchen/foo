@@ -12,8 +12,11 @@
 //! @brief Format as a string and printing.
 #define COMMON_PRINT(format, args...) std::cout << utility::common::formatString(format, ##args) << std::flush
 
+//! @brief The utility module.
+namespace utility // NOLINT(modernize-concat-nested-namespaces)
+{
 //! @brief Common-interface-related functions in the utility module.
-namespace utility::common
+namespace common
 {
 //! @brief ANSI escape codes for red foreground color.
 inline constexpr std::string_view colorRed = "\033[0;31;40m";
@@ -92,4 +95,5 @@ extern std::string base64Encode(const std::string& data);
 extern std::string base64Decode(const std::string& data);
 extern std::string formatString(const char* const format, ...);
 extern std::string executeCommand(const std::string& command, const std::uint32_t timeout = 0);
-} // namespace utility::common
+} // namespace common
+} // namespace utility

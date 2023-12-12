@@ -8,8 +8,11 @@
 
 #include <cstdint>
 
+//! @brief The algorithm module.
+namespace algorithm // NOLINT(modernize-concat-nested-namespaces)
+{
 //! @brief Match-related functions in the algorithm module.
-namespace algorithm::match
+namespace match
 {
 //! @brief Match methods.
 class Match
@@ -110,4 +113,5 @@ private:
         const char* pattern,
         const std::uint32_t patternLen);
 };
-} // namespace algorithm::match
+} // namespace match
+} // namespace algorithm

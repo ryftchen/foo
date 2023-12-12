@@ -9,8 +9,11 @@
 #include <cstdint>
 #include <vector>
 
+//! @brief The numeric module.
+namespace numeric // NOLINT(modernize-concat-nested-namespaces)
+{
 //! @brief Integral-related functions in the numeric module.
-namespace numeric::integral
+namespace integral
 {
 //! @brief Target expressions.
 class Expression
@@ -187,4 +190,5 @@ private:
     //! @param max - maximum value
     static void refreshRandomCache(std::vector<double>& cache, const double min, const double max);
 };
-} // namespace numeric::integral
+} // namespace integral
+} // namespace numeric

@@ -15,8 +15,11 @@
 #include "utility/include/memory.hpp"
 #include "utility/include/thread.hpp"
 
+//! @brief The application module.
+namespace application // NOLINT(modernize-concat-nested-namespaces)
+{
 //! @brief Command-line-related functions in the application module.
-namespace application::command
+namespace command
 {
 //! @brief Represent the maximum value of an enum.
 //! @tparam T - type of specific enum
@@ -304,4 +307,5 @@ auto Command::get(const TaskFunctorTuple& tuple) const
 //! @brief Alias for memory pool when making multi-threading.
 using PublicThreadPool = utility::memory::Memory<utility::thread::Thread>;
 extern PublicThreadPool& getPublicThreadPool();
-} // namespace application::command
+} // namespace command
+} // namespace application

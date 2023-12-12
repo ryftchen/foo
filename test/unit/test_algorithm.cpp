@@ -20,8 +20,11 @@
                                 << std::setw(50) << category << state << std::resetiosflags(std::ios_base::left)    \
                                 << std::setfill(' ') << std::endl;
 
+//! @brief The test module.
+namespace test // NOLINT(modernize-concat-nested-namespaces)
+{
 //! @brief Algorithm-testing-related functions in the test module.
-namespace test::tst_algo
+namespace tst_algo
 {
 //! @brief Alias for the enumeration of algorithm tasks.
 using Category = application::app_algo::AlgorithmTask::Category;
@@ -438,4 +441,5 @@ TEST_F(SortTestBase, radixMethod)
     std::sort(sortContainer.begin(), sortContainer.end());
     ASSERT_EQ(sortContainer, algorithm::sort::Sort<int>::radix(builder->getRandomArray().get(), builder->getLength()));
 }
-} // namespace test::tst_algo
+} // namespace tst_algo
+} // namespace test
