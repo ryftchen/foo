@@ -17,8 +17,11 @@
 #include "data_structure/include/linear.hpp"
 #include "data_structure/include/tree.hpp"
 
+//! @brief The application module.
+namespace application // NOLINT(modernize-concat-nested-namespaces)
+{
 //! @brief Data-structure-applying-related functions in the application module.
-namespace application::app_ds
+namespace app_ds
 {
 //! @brief Represent the maximum value of an enum.
 //! @tparam T - type of specific enum
@@ -508,4 +511,5 @@ public:
 } // namespace tree
 extern void runTreeTasks(const std::vector<std::string>& targets);
 extern void updateTreeTask(const std::string& target);
-} // namespace application::app_ds
+} // namespace app_ds
+} // namespace application

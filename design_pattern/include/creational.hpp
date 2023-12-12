@@ -9,8 +9,11 @@
 #include <memory>
 #include <sstream>
 
+//! @brief The design pattern module.
+namespace design_pattern // NOLINT(modernize-concat-nested-namespaces)
+{
 //! @brief Creational-related functions in the design pattern module.
-namespace design_pattern::creational
+namespace creational
 {
 //! @brief The abstract factory pattern.
 namespace abstract_factory
@@ -417,4 +420,5 @@ private:
 
 extern std::ostringstream& output();
 } // namespace singleton
-} // namespace design_pattern::creational
+} // namespace creational
+} // namespace design_pattern

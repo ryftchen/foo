@@ -56,7 +56,7 @@ namespace arithmetic
 //! @brief Print arithmetic result content.
 #define ARITHMETIC_PRINT_RESULT_CONTENT(method, a, operator, b, result) \
     COMMON_PRINT(ARITHMETIC_RESULT, toString(method).data(), a, operator, b, result)
-//! @brief Mapping table for enum and string about arithmetic methods.
+//! @brief Mapping table for enum and string about arithmetic methods. X macro.
 #define ARITHMETIC_METHOD_TABLE            \
     ELEM(addition, "Addition")             \
     ELEM(subtraction, "Subtraction")       \
@@ -234,7 +234,7 @@ namespace divisor
             TIME_INTERVAL(timing));                                                                             \
     }                                                                                                           \
     while (0)
-//! @brief Mapping table for enum and string about divisor methods.
+//! @brief Mapping table for enum and string about divisor methods. X macro.
 #define DIVISOR_METHOD_TABLE     \
     ELEM(euclidean, "Euclidean") \
     ELEM(stein, "Stein")
@@ -364,7 +364,7 @@ namespace integral
 //! @brief Print integral result content.
 #define INTEGRAL_PRINT_RESULT_CONTENT(method, sum) \
     COMMON_PRINT(INTEGRAL_RESULT(def), toString(method).data(), sum, TIME_INTERVAL(timing))
-//! @brief Mapping table for enum and string about integral methods.
+//! @brief Mapping table for enum and string about integral methods. X macro.
 #define INTEGRAL_METHOD_TABLE        \
     ELEM(trapezoidal, "Trapezoidal") \
     ELEM(simpson, "Simpson")         \
@@ -603,7 +603,7 @@ namespace prime
             TIME_INTERVAL(timing));                                                    \
     }                                                                                  \
     while (0)
-//! @brief Mapping table for enum and string about prime methods.
+//! @brief Mapping table for enum and string about prime methods. X macro.
 #define PRIME_METHOD_TABLE             \
     ELEM(eratosthenes, "Eratosthenes") \
     ELEM(euler, "Euler")

@@ -41,8 +41,11 @@
 //! @brief Config file path.
 #define CONFIG_FILE_PATH CONFIG_GET_INSTANCE.getFilePath()
 
+//! @brief The application module.
+namespace application // NOLINT(modernize-concat-nested-namespaces)
+{
 //! @brief Configuration-related functions in the application module.
-namespace application::config
+namespace config
 {
 //! @brief Default config filename.
 constexpr std::string_view defaultConfigFile = "config/foo.json";
@@ -89,4 +92,5 @@ private:
 
 extern utility::json::JSON getDefaultConfiguration();
 extern void initializeConfiguration(const std::string& filename = getFullDefaultConfigPath());
-} // namespace application::config
+} // namespace config
+} // namespace application

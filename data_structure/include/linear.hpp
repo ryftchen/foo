@@ -8,8 +8,11 @@
 
 #include <sstream>
 
+//! @brief The date structure module.
+namespace date_structure // NOLINT(modernize-concat-nested-namespaces)
+{
 //! @brief Linear-related functions in the data structure module.
-namespace date_structure::linear
+namespace linear
 {
 //! @brief The doubly linked list structure.
 namespace doubly_linked_list
@@ -94,4 +97,5 @@ private:
     //! @brief Output stream of the data structure.
     std::ostringstream stream;
 };
-} // namespace date_structure::linear
+} // namespace linear
+} // namespace date_structure

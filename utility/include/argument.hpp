@@ -15,8 +15,11 @@
 #include <sstream>
 #include <variant>
 
+//! @brief The utility module.
+namespace utility // NOLINT(modernize-concat-nested-namespaces)
+{
 //! @brief Argument-parsing-related functions in the utility module.
-namespace utility::argument
+namespace argument
 {
 //! @brief Confirm container traits. Value is false.
 //! @tparam T - type to be confirmed
@@ -882,4 +885,5 @@ inline auto Argument::isSubCommandUsed(const Argument& subParser) const
 {
     return isSubCommandUsed(subParser.title);
 }
-} // namespace utility::argument
+} // namespace argument
+} // namespace utility

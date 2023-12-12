@@ -15,8 +15,11 @@
                                 << std::setfill('.') << std::setw(50) << category << state          \
                                 << std::resetiosflags(std::ios_base::left) << std::setfill(' ') << std::endl;
 
+//! @brief The test module.
+namespace test // NOLINT(modernize-concat-nested-namespaces)
+{
 //! @brief Design-pattern-testing-related functions in the test module.
-namespace test::tst_dp
+namespace tst_dp
 {
 //! @brief Alias for the enumeration of design pattern tasks.
 using Category = application::app_dp::DesignPatternTask::Category;
@@ -224,4 +227,5 @@ TEST_F(StructuralTestBase, proxyInstance)
 {
     ASSERT_NO_THROW(structural::Structural::proxy());
 }
-} // namespace test::tst_dp
+} // namespace tst_dp
+} // namespace test

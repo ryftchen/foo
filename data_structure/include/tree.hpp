@@ -8,8 +8,11 @@
 
 #include <sstream>
 
+//! @brief The date structure module.
+namespace date_structure // NOLINT(modernize-concat-nested-namespaces)
+{
 //! @brief Tree-related functions in the data structure module.
-namespace date_structure::tree
+namespace tree
 {
 //! @brief The binary search tree structure.
 namespace bs
@@ -221,4 +224,5 @@ private:
     std::ostringstream stream;
 };
 } // namespace splay
-} // namespace date_structure::tree
+} // namespace tree
+} // namespace date_structure

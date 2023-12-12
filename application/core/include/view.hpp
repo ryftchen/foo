@@ -41,8 +41,11 @@
 //! @brief Get all viewer options.
 #define VIEW_OPTIONS VIEW_GET_INSTANCE.getViewerOptions()
 
+//! @brief The application module.
+namespace application // NOLINT(modernize-concat-nested-namespaces)
+{
 //! @brief View-server-related functions in the application module.
-namespace application::view
+namespace view
 {
 //! @brief Invalid Shm id.
 constexpr int invalidShmId = -1;
@@ -381,4 +384,5 @@ auto View::get(const OptionTuple& tuple)
         return std::get<1>(tuple);
     }
 }
-} // namespace application::view
+} // namespace view
+} // namespace application

@@ -9,8 +9,11 @@
 #include <arpa/inet.h>
 #include <future>
 
+//! @brief The utility module.
+namespace utility // NOLINT(modernize-concat-nested-namespaces)
+{
 //! @brief Network-socket-related functions in the utility module.
-namespace utility::socket
+namespace socket
 {
 //! @brief Network socket.
 class Socket
@@ -220,4 +223,5 @@ public:
     //! @brief Set the broadcast mode.
     void setBroadcast();
 };
-} // namespace utility::socket
+} // namespace socket
+} // namespace utility

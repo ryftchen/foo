@@ -9,8 +9,11 @@
 #include <cstdint>
 #include <vector>
 
+//! @brief The algorithm module.
+namespace algorithm // NOLINT(modernize-concat-nested-namespaces)
+{
 //! @brief Sort-related functions in the algorithm module.
-namespace algorithm::sort
+namespace sort
 {
 //! @brief Sort methods.
 //! @tparam T - type of sort methods
@@ -89,6 +92,7 @@ private:
     //! @param end - index of ending
     static void buildMaxHeap(T* const sortArray, const std::uint32_t begin, const std::uint32_t end);
 };
-} // namespace algorithm::sort
+} // namespace sort
+} // namespace algorithm
 
 #include "algorithm/source/sort.tpp"

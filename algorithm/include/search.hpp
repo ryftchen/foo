@@ -9,8 +9,11 @@
 #include <cstdint>
 #include <vector>
 
+//! @brief The algorithm module.
+namespace algorithm // NOLINT(modernize-concat-nested-namespaces)
+{
 //! @brief Search-related functions in the algorithm module.
-namespace algorithm::search
+namespace search
 {
 //! @brief Search methods.
 //! @tparam T - type of search methods
@@ -46,6 +49,7 @@ private:
     //! @return Fibonacci sequence
     static std::vector<std::uint32_t> generateFibonacciNumber(const std::uint32_t max);
 };
-} // namespace algorithm::search
+} // namespace search
+} // namespace algorithm
 
 #include "algorithm/source/search.tpp"

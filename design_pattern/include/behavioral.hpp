@@ -11,8 +11,11 @@
 #include <sstream>
 #include <vector>
 
+//! @brief The design pattern module.
+namespace design_pattern // NOLINT(modernize-concat-nested-namespaces)
+{
 //! @brief Behavioral-related functions in the design pattern module.
-namespace design_pattern::behavioral
+namespace behavioral
 {
 //! @brief The chain of responsibility pattern.
 namespace chain_of_responsibility
@@ -802,4 +805,5 @@ public:
 
 extern std::ostringstream& output();
 } // namespace visitor
-} // namespace design_pattern::behavioral
+} // namespace behavioral
+} // namespace design_pattern

@@ -10,8 +10,11 @@
 #include <map>
 #include <string>
 
+//! @brief The utility module.
+namespace utility // NOLINT(modernize-concat-nested-namespaces)
+{
 //! @brief JSON-related functions in the utility module.
-namespace utility::json
+namespace json
 {
 //! @brief Javascript object notation.
 class JSON
@@ -394,4 +397,5 @@ void JSON::append(const T arg, const U... args)
 
 extern JSON array();
 extern JSON object();
-} // namespace utility::json
+} // namespace json
+} // namespace utility

@@ -8,8 +8,11 @@
 
 #include <vector>
 
+//! @brief The numeric module.
+namespace numeric // NOLINT(modernize-concat-nested-namespaces)
+{
 //! @brief Divisor-related functions in the numeric module.
-namespace numeric::divisor
+namespace divisor
 {
 //! @brief Divisor methods.
 class Divisor
@@ -40,4 +43,5 @@ private:
     //! @return all common divisors
     static std::vector<int> getAllDivisors(const int greatestCommonDivisor);
 };
-} // namespace numeric::divisor
+} // namespace divisor
+} // namespace numeric

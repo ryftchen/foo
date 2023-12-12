@@ -17,8 +17,11 @@
 
 #include "numeric/include/integral.hpp"
 
+//! @brief The application module.
+namespace application // NOLINT(modernize-concat-nested-namespaces)
+{
 //! @brief Numeric-applying-related functions in the application module.
-namespace application::app_num
+namespace app_num
 {
 //! @brief Represent the maximum value of an enum.
 //! @tparam T - type of specific enum
@@ -629,4 +632,5 @@ private:
 } // namespace prime
 extern void runPrimeTasks(const std::vector<std::string>& targets);
 extern void updatePrimeTask(const std::string& target);
-} // namespace application::app_num
+} // namespace app_num
+} // namespace application

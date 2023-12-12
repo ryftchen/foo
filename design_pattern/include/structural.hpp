@@ -11,8 +11,11 @@
 #include <sstream>
 #include <vector>
 
+//! @brief The design pattern module.
+namespace design_pattern // NOLINT(modernize-concat-nested-namespaces)
+{
 //! @brief Structural-related functions in the design pattern module.
-namespace design_pattern::structural
+namespace structural
 {
 //! @brief The adapter pattern.
 namespace adapter
@@ -428,4 +431,5 @@ protected:
 
 extern std::ostringstream& output();
 } // namespace proxy
-} // namespace design_pattern::structural
+} // namespace structural
+} // namespace design_pattern

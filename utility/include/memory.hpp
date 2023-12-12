@@ -8,8 +8,11 @@
 
 #include <cstddef>
 
+//! @brief The utility module.
+namespace utility // NOLINT(modernize-concat-nested-namespaces)
+{
 //! @brief Memory-pool-related functions in the utility module.
-namespace utility::memory
+namespace memory
 {
 //! @brief Memory pool.
 //! @tparam T - type of object to allocate
@@ -110,6 +113,7 @@ private:
 
     static_assert(BlockSize >= (2 * sizeof(Slot)), "Block size is too small.");
 };
-} // namespace utility::memory
+} // namespace memory
+} // namespace utility
 
 #include "utility/source/memory.tpp"

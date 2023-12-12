@@ -71,7 +71,7 @@ namespace match
         }                                                                                                    \
     }                                                                                                        \
     while (0)
-//! @brief Mapping table for enum and string about match methods.
+//! @brief Mapping table for enum and string about match methods. X macro.
 #define MATCH_METHOD_TABLE                     \
     ELEM(rabinKarp, "RabinKarp")               \
     ELEM(knuthMorrisPratt, "KnuthMorrisPratt") \
@@ -295,7 +295,7 @@ namespace notation
 //! @brief Print notation result content.
 #define NOTATION_PRINT_RESULT_CONTENT(method, describe) \
     COMMON_PRINT(NOTATION_RESULT, toString(method).data(), describe, notationStr.data())
-//! @brief Mapping table for enum and string about notation methods.
+//! @brief Mapping table for enum and string about notation methods. X macro.
 #define NOTATION_METHOD_TABLE \
     ELEM(prefix, "Prefix")    \
     ELEM(postfix, "Postfix")
@@ -420,7 +420,7 @@ namespace optimal
 //! @brief Print optimal result content.
 #define OPTIMAL_PRINT_RESULT_CONTENT(method) \
     COMMON_PRINT(OPTIMAL_RESULT(min), toString(method).data(), fx, x, TIME_INTERVAL(timing))
-//! @brief Mapping table for enum and string about optimal methods.
+//! @brief Mapping table for enum and string about optimal methods. X macro.
 #define OPTIMAL_METHOD_TABLE     \
     ELEM(gradient, "Gradient")   \
     ELEM(annealing, "Annealing") \
@@ -640,7 +640,7 @@ namespace search
         }                                                                                            \
     }                                                                                                \
     while (0)
-//! @brief Mapping table for enum and string about search methods.
+//! @brief Mapping table for enum and string about search methods. X macro.
 #define SEARCH_METHOD_TABLE              \
     ELEM(binary, "Binary")               \
     ELEM(interpolation, "Interpolation") \
@@ -808,7 +808,7 @@ namespace sort
             TIME_INTERVAL(timing));                                                                               \
     }                                                                                                             \
     while (0)
-//! @brief Mapping table for enum and string about sort methods.
+//! @brief Mapping table for enum and string about sort methods. X macro.
 #define SORT_METHOD_TABLE        \
     ELEM(bubble, "Bubble")       \
     ELEM(selection, "Selection") \
