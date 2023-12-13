@@ -56,10 +56,7 @@ class Documentation:
             self.proxy_port = args.port
 
         sys.stdout = self.logger
-        print(
-            f"\r\n[ {datetime.strftime(datetime.now(), '%b %d %H:%M:%S')} ] \
-####################### PULL ARCHIVE #######################"
-        )
+        print(f"\r\n[ {datetime.now()} ] ################# PULL ARCHIVE #################")
         self.download_artifact()
         self.update_document()
         sys.stdout = STDOUT
@@ -124,12 +121,12 @@ class Documentation:
 
 
 def execute(cmd):
-    print(f"[ {datetime.strftime(datetime.now(), '%b %d %H:%M:%S')} ] EXECUTE: {cmd}")
+    print(f"[ {datetime.now()} ] EXECUTE: {cmd}")
     return common.execute_command(cmd)
 
 
 def interrupt(msg):
-    print(f"[ {datetime.strftime(datetime.now(), '%b %d %H:%M:%S')} ] INTERRUPT: {msg}")
+    print(f"[ {datetime.now()} ] INTERRUPT: {msg}")
     sys.exit(1)
 
 
