@@ -75,6 +75,7 @@ class Task:
         self.complete_steps = 0
         self.total_steps = 0
         self.repeat_count = 1
+        self.duration = 0
 
         if not os.path.exists(self.cache_dir):
             os.mkdir(self.cache_dir)
@@ -90,6 +91,7 @@ class Task:
 
         self.parse_arguments()
         self.prepare()
+        start_time = datetime.now()
 
         if not self.options["tst"]:
             thread_list = []
@@ -107,6 +109,7 @@ class Task:
                 self.run_task(self.tst_bin_cmd)
                 self.repeat_count -= 1
 
+        self.duration = (datetime.now() - start_time).total_seconds()
         self.complete()
         self.format_run_log()
         self.summarize_run_log()
@@ -511,11 +514,19 @@ valgrind-ci {xml_filename}_inst_2.xml --summary"
         fail_res, cov_per, mem_err = analyze_for_report(readlines, start_indices, finish_indices, tags)
         with open(self.report_file, "w", encoding="utf-8") as run_report:
             fcntl.flock(run_report.fileno(), fcntl.LOCK_EX)
-            run_stat = {"Passed": str(self.total_steps - len(fail_res)), "Failed": str(len(fail_res))}
-            run_stat_rep = "REPORT FOR RUN STATISTICS"
+            run_stat = {
+                "Passed": str(self.total_steps - len(fail_res)),
+                "Failed": str(len(fail_res)),
+                "Duration": f"{self.duration}s",
+            }
+            prompt = ""
             if tags["tst"]:
-                run_stat_rep += " (UNIT TEST)"
-            run_stat_rep += ":\n" + Output().format_as_table(run_stat, "STATUS", "RUN STATISTICS") + "\n\n"
+                prompt = " (UNIT TEST)"
+            run_stat_rep = (
+                "REPORT FOR RUN STATISTICS:\n"
+                + Output().format_as_table(run_stat, "STATUS", f"RUN STATISTICS{prompt}")
+                + "\n\n"
+            )
             fail_res_rep = ""
             if fail_res:
                 fail_res_rep = (
