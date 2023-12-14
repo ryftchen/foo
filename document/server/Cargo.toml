@@ -19,3 +19,7 @@ strip = true
 opt-level = "z"
 lto = true
 codegen-units = 1
+
+[[bin]]
+name = "foo_doc"
+path = "source/main.rs"
