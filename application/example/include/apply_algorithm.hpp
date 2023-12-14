@@ -397,10 +397,10 @@ private:
     static void setMatchingText(char* text, const std::uint32_t textLen)
     {
         assert((nullptr != text) && (textLen > 0));
-        ::mpfr_t x;
+        ::mpfr_t x{};
         ::mpfr_init2(x, calculatePrecision(textLen));
         ::mpfr_const_pi(x, ::MPFR_RNDN);
-        ::mpfr_exp_t mpfrDecimalLocation;
+        ::mpfr_exp_t mpfrDecimalLocation = 0;
         ::mpfr_get_str(text, &mpfrDecimalLocation, mpfrBase, 0, x, ::MPFR_RNDN);
         ::mpfr_clear(x);
 
