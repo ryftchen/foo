@@ -45,7 +45,7 @@ public:
     //! @param command - command to be registered
     //! @param func - callable function
     //! @param help - help message
-    void registerCmd(const std::string& command, CmdFunctor func, const std::string& help);
+    void registerCmd(const std::string& command, const CmdFunctor& func, const std::string& help);
     //! @brief Set greeting information.
     //! @param greeting - greeting information
     void setGreeting(const std::string& greeting);
