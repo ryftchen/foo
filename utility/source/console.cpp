@@ -74,7 +74,7 @@ Console::~Console()
     ::rl_restore_prompt();
 }
 
-void Console::registerCmd(const std::string& command, CmdFunctor func, const std::string& help)
+void Console::registerCmd(const std::string& command, const CmdFunctor& func, const std::string& help)
 {
     impl->regCmds[command] = std::make_pair(func, help);
     impl->regOrder.emplace_back(command);
@@ -101,13 +101,13 @@ int Console::cmdExecutor(const std::string& command)
         return RetCode::success;
     }
 
-    Impl::RegisteredCmds::iterator iterator = impl->regCmds.find(inputs.at(0));
-    if (std::cend(impl->regCmds) != iterator)
+    const auto iterator = impl->regCmds.find(inputs.at(0));
+    if (std::cend(impl->regCmds) == iterator)
     {
-        return RetCode(static_cast<int>(std::get<0>(iterator->second)(inputs)));
+        throw std::logic_error("The console command '" + inputs.at(0) + "' could not be found.");
     }
 
-    throw std::logic_error("The console command '" + inputs.at(0) + "' could not be found.");
+    return RetCode(static_cast<int>(std::get<0>(iterator->second)(inputs)));
 }
 
 int Console::fileExecutor(const std::string& filename)
