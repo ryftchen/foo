@@ -14,16 +14,9 @@ declare CMAKE_CACHE_ENTRY=""
 declare CMAKE_BUILD_OPTION=""
 declare BUILD_TYPE="Debug"
 
-function shell_command()
+function shell()
 {
-    echo
-    if [[ ${ARGS[dry]} = false ]]; then
-        printf "\033[0;37;40m\033[1m\033[49m%s%-40s%s\033[0m\n" "[ $(date "+%b %d %T") # CMD: " "$*" " # START  ]"
-        /bin/bash -c "$@"
-        printf "\033[0;37;40m\033[1m\033[49m%s%-40s%s\033[0m\n" "[ $(date "+%b %d %T") # CMD: " "$*" " # FINISH ]"
-    else
-        printf "\033[0;37;40m\033[1m\033[49m%s%-40s%s\033[0m\n" "[ $(date "+%b %d %T") # CMD: " "$*" " # PRACTICE ]"
-    fi
+    /bin/bash -c "$@"
 }
 
 function die()
@@ -31,6 +24,19 @@ function die()
     echo
     echo "$(basename "${0}"): $*"
     exit 1
+}
+
+function shell_command()
+{
+    echo
+    if [[ ${ARGS[dry]} = true ]]; then
+        printf "\033[0;37;40m\033[1m\033[49m%s%-40s%s\033[0m\n" "[ $(date "+%b %d %T") # CMD: " "$*" " # DRY RUN ]"
+        return
+    fi
+
+    printf "\033[0;37;40m\033[1m\033[49m%s%-40s%s\033[0m\n" "[ $(date "+%b %d %T") # CMD: " "$*" " # START  ]"
+    shell "$*"
+    printf "\033[0;37;40m\033[1m\033[49m%s%-40s%s\033[0m\n" "[ $(date "+%b %d %T") # CMD: " "$*" " # FINISH ]"
 }
 
 function wait_until_get_input()
@@ -559,7 +565,9 @@ function perform_lint_option()
         if ! [[ ${line} =~ ^[0-9]+$ ]]; then
             break
         fi
-        shell_command "sed -i \$((${line} - 2)),\$((${line} + 3))d ./${app_comp_cmd}"
+        if ! sed -i $((line - 2)),$((line + 3))d ./"${app_comp_cmd}" >/dev/null 2>&1; then
+            die "Failed to remove redundant implementation file objects from the ${app_comp_cmd} file."
+        fi
     done
     shell_command "find ./${FOLDER[app]} ./${FOLDER[util]} ./${FOLDER[algo]} ./${FOLDER[ds]} ./${FOLDER[dp]} \
 ./${FOLDER[num]} -name '*.cpp' -o -name '*.hpp' | xargs run-clang-tidy-16 -config-file=./.clang-tidy \
