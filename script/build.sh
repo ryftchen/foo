@@ -35,7 +35,7 @@ function shell_command()
     fi
 
     printf "\033[0;37;40m\033[1m\033[49m%s%-40s%s\033[0m\n" "[ $(date "+%b %d %T") # CMD: " "$*" " # START  ]"
-    shell "$*"
+    shell "$@"
     printf "\033[0;37;40m\033[1m\033[49m%s%-40s%s\033[0m\n" "[ $(date "+%b %d %T") # CMD: " "$*" " # FINISH ]"
 }
 
@@ -248,16 +248,12 @@ function perform_initialize_option()
     local validate_proj="[[ \\\"\\\$(basename \\\"\\\$(pwd)\\\")\\\" == \\\"${FOLDER[proj]}\\\" ]] && \
 git rev-parse --git-dir >/dev/null 2>&1 &&"
     local alias_cmd
-    if ! grep -Fwq "alias ${FOLDER[proj]}-build" ~/"${BASH_RC}" 2>/dev/null; then
-        alias_cmd="alias ${FOLDER[proj]}-build='${validate_proj} ./${FOLDER[scr]}/build.sh'"
+    if ! grep -Fwq "alias ${FOLDER[proj]:0:1}build" ~/"${BASH_RC}" 2>/dev/null; then
+        alias_cmd="alias ${FOLDER[proj]:0:1}build='${validate_proj} ./${FOLDER[scr]}/build.sh'"
         shell_command "echo \"${alias_cmd}\" >>~/${BASH_RC}"
     fi
-    if ! grep -Fwq "alias ${FOLDER[proj]}-run" ~/"${BASH_RC}" 2>/dev/null; then
-        alias_cmd="alias ${FOLDER[proj]}-run='${validate_proj} ./${FOLDER[scr]}/run.py'"
-        shell_command "echo \"${alias_cmd}\" >>~/${BASH_RC}"
-    fi
-    if ! grep -Fwq "alias ${FOLDER[proj]}-exec" ~/"${BASH_RC}" 2>/dev/null; then
-        alias_cmd="alias ${FOLDER[proj]}-exec='${validate_proj} ./${FOLDER[bld]}/bin/foo'"
+    if ! grep -Fwq "alias ${FOLDER[proj]:0:1}run" ~/"${BASH_RC}" 2>/dev/null; then
+        alias_cmd="alias ${FOLDER[proj]:0:1}run='${validate_proj} ./${FOLDER[scr]}/run.py'"
         shell_command "echo \"${alias_cmd}\" >>~/${BASH_RC}"
     fi
 
@@ -289,9 +285,9 @@ function perform_clean_option()
     fi
 
     shell_command "sed -i '/export FOO_ENV=${FOLDER[proj]}_dev/d' ~/${BASH_RC} 2>/dev/null"
-    shell_command "sed -i '/alias ${FOLDER[proj]}-/d' ~/${BASH_RC} 2>/dev/null"
+    shell_command "sed -i '/alias ${FOLDER[proj]:0:1}\(build\|run\)/d' ~/${BASH_RC} 2>/dev/null"
     shell_command "find ./ -maxdepth 3 -type d | sed 1d \
-| grep -E '(${FOLDER[bld]}|${FOLDER[cac]}|target|doxygen|browser|archive|__pycache__)$' | xargs -i rm -rf {}"
+| grep -E '(${FOLDER[cac]}|${FOLDER[bld]}|archive|browser|doxygen|target|__pycache__)$' | xargs -i rm -rf {}"
     shell_command "rm -rf ./${FOLDER[scr]}/.env ./${FOLDER[doc]}/server/Cargo.lock ./core.* ./vgcore.* ./*.profraw"
     shell_command "git config --local --unset commit.template"
 
@@ -693,7 +689,7 @@ function package_for_browser()
     shell_command "find \"./${FOLDER[doc]}/${browser_folder}/index.html\" \
 \"./${FOLDER[doc]}/${browser_folder}/${FOLDER[proj]}\" \"./${FOLDER[doc]}/${browser_folder}/include\" -name \"*.html\" \
 -exec sed -i '/^<\/head>$/i <link rel=\\\"shortcut icon\\\" href=\\\"https://woboq.com/favicon.ico\\\" \
-type=\\\"image/x-icon\\\" />' {} +"
+type=\\\"image/x-icon\\\"/>' {} +"
     shell_command "tar -jcvf ./${FOLDER[doc]}/archive/${tar_file} -C ./${FOLDER[doc]} ${browser_folder} >/dev/null"
 }
 
