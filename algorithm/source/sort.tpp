@@ -358,7 +358,7 @@ std::vector<T> Sort<T>::radix(const T* const array, const std::uint32_t length)
     {
         const int sign = (sortArray[i] > 0) ? 1 : -1;
         const std::uint32_t bucketIndex = std::abs(sortArray[i]) / 1 % base * sign + offset;
-        container[bucketIndex].push(sortArray[i]);
+        container.at(bucketIndex).push(sortArray[i]);
         ++countingNew[bucketIndex];
     }
 
@@ -376,10 +376,10 @@ std::vector<T> Sort<T>::radix(const T* const array, const std::uint32_t length)
             const std::uint32_t countingIndex = bucketIter - container.begin();
             while (countingOld[countingIndex])
             {
-                auto bucketElement = bucketIter->front();
+                const T bucketElement = bucketIter->front();
                 const int sign = (bucketElement > 0) ? 1 : -1;
                 const std::uint32_t bucketIndex = std::abs(bucketElement) / pow % base * sign + offset;
-                container[bucketIndex].push(bucketElement);
+                container.at(bucketIndex).push(bucketElement);
                 ++countingNew[bucketIndex];
                 bucketIter->pop();
                 --countingOld[countingIndex];

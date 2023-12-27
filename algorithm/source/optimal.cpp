@@ -131,9 +131,9 @@ std::optional<std::tuple<double, double>> Particle::operator()(const double left
         for (auto& ind : swarm)
         {
             const double rand1 =
-                static_cast<std::uint32_t>(coeff(engine) * static_cast<std::uint32_t>(1.0 / eps)) * eps;
-            const double rand2 =
-                static_cast<std::uint32_t>(coeff(engine) * static_cast<std::uint32_t>(1.0 / eps)) * eps;
+                             static_cast<std::uint32_t>(coeff(engine) * static_cast<std::uint32_t>(1.0 / eps)) * eps,
+                         rand2 =
+                             static_cast<std::uint32_t>(coeff(engine) * static_cast<std::uint32_t>(1.0 / eps)) * eps;
 
             ind.velocity = w * ind.velocity + c1 * rand1 * (ind.positionBest - ind.x) + c2 * rand2 * (xBest - ind.x);
             if (ind.velocity > vMax)

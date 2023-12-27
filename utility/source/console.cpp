@@ -144,7 +144,7 @@ int Console::readCmdLine()
 {
     reserveConsole();
 
-    char* buffer = ::readline(getGreeting().c_str());
+    char* const buffer = ::readline(getGreeting().c_str());
     if (nullptr == buffer)
     {
         std::cout << std::endl;

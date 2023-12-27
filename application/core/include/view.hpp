@@ -98,23 +98,23 @@ public:
     //! @param data - original data
     //! @return whether it is continuously writable
     template <typename T>
-    bool write(T data);
+    bool write(const T data);
     //! @brief Write data to the packet buffer.
     //! @param dst - data after conversion
     //! @param offset - data offset
     //! @return whether it is continuously writable
-    bool write(const void* dst, const std::uint32_t offset);
+    bool write(const void* const dst, const std::uint32_t offset);
     //! @brief Read data to the packet buffer.
     //! @tparam T - type of data to be read
     //! @param data - original data
     //! @return whether it is continuously readable
     template <typename T>
-    bool read(T* data);
+    bool read(T* const data);
     //! @brief Read data to the packet buffer.
     //! @param dst - data after conversion
     //! @param offset - data offset
     //! @return whether it is continuously readable
-    bool read(void* dst, const std::uint32_t offset);
+    bool read(void* const dst, const std::uint32_t offset);
 
 private:
     //! @brief TLV packet buffer pointer.
@@ -122,11 +122,11 @@ private:
     //! @brief Buffer length.
     const std::uint32_t length{0};
     //! @brief Pointer to the end of the buffer.
-    char* tail{nullptr};
+    const char* const tail{nullptr};
     //! @brief Pointer to the current writing location.
     char* writer{nullptr};
     //! @brief Pointer to the current reading location.
-    char* reader{nullptr};
+    const char* reader{nullptr};
 };
 } // namespace tlv
 
@@ -302,9 +302,9 @@ private:
     //! @brief UDP server.
     std::shared_ptr<utility::socket::UDPServer> udpServer;
     //! @brief Mutex for controlling server.
-    mutable std::mutex mtx;
+    mutable std::mutex mtx{};
     //! @brief The synchronization condition for server. Use with mtx.
-    std::condition_variable cv;
+    std::condition_variable cv{};
     //! @brief Flag to indicate whether it is viewing.
     std::atomic<bool> isViewing{false};
     //! @brief Flag for rollback request.

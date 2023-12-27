@@ -126,7 +126,7 @@ void runLinearTasks(const std::vector<std::string>& targets)
     using utility::common::operator""_bkdrHash;
 
     APP_DS_PRINT_TASK_BEGIN_TITLE(Category::linear);
-    auto* threads = command::getPublicThreadPool().newElement(std::min(
+    auto* const threads = command::getPublicThreadPool().newElement(std::min(
         static_cast<std::uint32_t>(getBit<LinearInstance>().count()),
         static_cast<std::uint32_t>(Bottom<LinearInstance>::value)));
 
@@ -267,7 +267,7 @@ void runTreeTasks(const std::vector<std::string>& targets)
     using utility::common::operator""_bkdrHash;
 
     APP_DS_PRINT_TASK_BEGIN_TITLE(Category::tree);
-    auto* threads = command::getPublicThreadPool().newElement(std::min(
+    auto* const threads = command::getPublicThreadPool().newElement(std::min(
         static_cast<std::uint32_t>(getBit<TreeInstance>().count()),
         static_cast<std::uint32_t>(Bottom<TreeInstance>::value)));
 

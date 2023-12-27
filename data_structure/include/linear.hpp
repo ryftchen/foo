@@ -37,8 +37,8 @@ extern "C"
 }
 #endif // __cplusplus
 
-extern int createDll(DLL* dll);
-extern int destroyDll(DLL* dll);
+extern int createDll(DLL* const dll);
+extern int destroyDll(DLL* const dll);
 extern int dllSize(DLL head);
 extern bool dllIsEmpty(DLL head);
 extern void* dllGet(DLL head, const int index);
@@ -58,8 +58,8 @@ namespace stack
 //! @brief Alias for the doubly linked list. Used for the stack.
 using Stack = doubly_linked_list::DLL;
 
-extern int createStack(Stack* stack);
-extern int destroyStack(Stack* stack);
+extern int createStack(Stack* const stack);
+extern int destroyStack(Stack* const stack);
 extern int stackPush(Stack head, void* const val);
 extern void* stackTop(Stack head);
 extern void* stackPop(Stack head);
@@ -73,8 +73,8 @@ namespace queue
 //! @brief Alias for the doubly linked list. Used for the queue.
 using Queue = doubly_linked_list::DLL;
 
-extern int createQueue(Queue* queue);
-extern int destroyQueue(Queue* queue);
+extern int createQueue(Queue* const queue);
+extern int destroyQueue(Queue* const queue);
 extern int queuePush(Queue head, void* const val);
 extern void* queueFront(Queue head);
 extern void* queuePop(Queue head);

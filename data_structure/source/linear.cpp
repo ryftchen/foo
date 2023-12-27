@@ -15,7 +15,7 @@ namespace doubly_linked_list
 //! @return node
 static Node* createNode(void* const val)
 {
-    Node* node = new (std::nothrow) Node;
+    Node* const node = new (std::nothrow) Node;
     if (nullptr == node)
     {
         return nullptr;
@@ -49,7 +49,7 @@ static Node* getNode(DLL head, const int index)
     if (index <= (count / 2))
     {
         int i = 0;
-        Node* node = head->next;
+        node = head->next;
         while ((i++) < index)
         {
             node = node->next;
@@ -72,7 +72,7 @@ static Node* getNode(DLL head, const int index)
 //! @brief Create a doubly linked list.
 //! @param dll - doubly linked list
 //! @return the value is 0 if successful, otherwise -1
-int createDll(DLL* dll)
+int createDll(DLL* const dll)
 {
     *dll = createNode(nullptr);
     if (nullptr == *dll)
@@ -86,15 +86,14 @@ int createDll(DLL* dll)
 //! @brief Destroy a doubly linked list.
 //! @param dll - doubly linked list
 //! @return the value is 0 if successful, otherwise -1
-int destroyDll(DLL* dll)
+int destroyDll(DLL* const dll)
 {
     if (nullptr == *dll)
     {
         return -1;
     }
 
-    Node* node = (*dll)->next;
-    Node* temp = nullptr;
+    const Node *node = (*dll)->next, *temp = nullptr;
     while (node != *dll)
     {
         temp = node;
@@ -114,7 +113,7 @@ int destroyDll(DLL* dll)
 int dllSize(DLL head)
 {
     int count = 0;
-    Node* node = head->next;
+    const Node* node = head->next;
     while (node != head)
     {
         ++count;
@@ -138,7 +137,7 @@ bool dllIsEmpty(DLL head)
 //! @return node of the doubly linked list
 void* dllGet(DLL head, const int index)
 {
-    Node* node = getNode(head, index);
+    const Node* const node = getNode(head, index);
     if (nullptr == node)
     {
         return nullptr;
@@ -175,13 +174,13 @@ int dllInsert(DLL head, const int index, void* const val)
         return dllInsertFirst(head, val);
     }
 
-    Node* node = getNode(head, index);
+    Node* const node = getNode(head, index);
     if (nullptr == node)
     {
         return -1;
     }
 
-    Node* newNode = createNode(val);
+    Node* const newNode = createNode(val);
     if (nullptr == newNode)
     {
         return -1;
@@ -201,7 +200,7 @@ int dllInsert(DLL head, const int index, void* const val)
 //! @return the value is 0 if successful, otherwise -1
 int dllInsertFirst(DLL head, void* const val)
 {
-    Node* node = createNode(val);
+    Node* const node = createNode(val);
     if (nullptr == node)
     {
         return -1;
@@ -221,7 +220,7 @@ int dllInsertFirst(DLL head, void* const val)
 //! @return the value is 0 if successful, otherwise -1
 int dllInsertLast(DLL head, void* const val)
 {
-    Node* node = createNode(val);
+    Node* const node = createNode(val);
     if (nullptr == node)
     {
         return -1;
@@ -241,7 +240,7 @@ int dllInsertLast(DLL head, void* const val)
 //! @return the value is 0 if successful, otherwise -1
 int dllDelete(DLL head, const int index)
 {
-    Node* node = getNode(head, index);
+    const Node* const node = getNode(head, index);
     if (nullptr == node)
     {
         return -1;
@@ -276,7 +275,7 @@ namespace stack
 //! @brief Create a stack.
 //! @param stack - stack
 //! @return the value is 0 if successful, otherwise -1
-int createStack(Stack* stack)
+int createStack(Stack* const stack)
 {
     return createDll(stack);
 }
@@ -284,7 +283,7 @@ int createStack(Stack* stack)
 //! @brief Destroy a stack.
 //! @param stack - stack
 //! @return the value is 0 if successful, otherwise -1
-int destroyStack(Stack* stack)
+int destroyStack(Stack* const stack)
 {
     return destroyDll(stack);
 }
@@ -311,7 +310,7 @@ void* stackTop(Stack head)
 //! @return target node
 void* stackPop(Stack head)
 {
-    void* p = stackTop(head);
+    void* const p = stackTop(head);
     dllDeleteFirst(head);
     return p;
 }
@@ -338,7 +337,7 @@ namespace queue
 //! @brief Create a queue.
 //! @param queue - queue
 //! @return the value is 0 if successful, otherwise -1
-int createQueue(Queue* queue)
+int createQueue(Queue* const queue)
 {
     return createDll(queue);
 }
@@ -346,7 +345,7 @@ int createQueue(Queue* queue)
 //! @brief Destroy a queue.
 //! @param queue - queue
 //! @return the value is 0 if successful, otherwise -1
-int destroyQueue(Queue* queue)
+int destroyQueue(Queue* const queue)
 {
     return destroyDll(queue);
 }
@@ -373,7 +372,7 @@ void* queueFront(Queue head)
 //! @return target node
 void* queuePop(Queue head)
 {
-    void* p = dllGetFirst(head);
+    void* const p = dllGetFirst(head);
     dllDeleteFirst(head);
     return p;
 }

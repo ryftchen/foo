@@ -91,7 +91,7 @@ public:
     //! @param bytes - bytes buffer
     //! @param length - length of buffer
     //! @return sent size
-    int toSend(const char* bytes, const std::size_t length);
+    int toSend(const char* const bytes, const std::size_t length);
     //! @brief Send the message string to socket FD.
     //! @param message - message string
     //! @return sent size
@@ -122,7 +122,7 @@ public:
 private:
     //! @brief Receive bytes from socket FD.
     //! @param socket - target socket
-    static void toRecv(TCPSocket* socket);
+    static void toRecv(const TCPSocket* const socket);
 };
 
 //! @brief TCP server.
@@ -145,12 +145,12 @@ public:
     //! @param detach - whether to detach
     void toAccept(const bool detach = false);
     //! @brief Handling on new connection.
-    std::function<void(TCPSocket*)> onNewConnection{};
+    std::function<void(TCPSocket* const)> onNewConnection{};
 
 private:
     //! @brief Accept the connection on socket FD.
     //! @param server - target server
-    static void toAccept(TCPServer* server);
+    static void toAccept(const TCPServer* const server);
     //! @brief Retry times for listening.
     static constexpr int retryTimes{10};
 };
@@ -169,7 +169,7 @@ public:
     //! @param ip - peer ip address
     //! @param port - peer port number
     //! @return sent size
-    int toSendTo(const char* bytes, const std::size_t length, const std::string& ip, const std::uint16_t port);
+    int toSendTo(const char* const bytes, const std::size_t length, const std::string& ip, const std::uint16_t port);
     //! @brief Send the message string on socket FD to peer.
     //! @param message - message string
     //! @param ip - peer ip address
@@ -180,7 +180,7 @@ public:
     //! @param bytes - bytes buffer
     //! @param length - length of buffer
     //! @return sent size
-    int toSend(const char* bytes, const std::size_t length);
+    int toSend(const char* const bytes, const std::size_t length);
     //! @brief Send the message string to socket FD.
     //! @param message - message string
     //! @return sent size
@@ -203,10 +203,10 @@ public:
 private:
     //! @brief Receive bytes from socket FD.
     //! @param socket - target socket
-    static void toRecv(UDPSocket* socket);
+    static void toRecv(const UDPSocket* const socket);
     //! @brief Receive bytes through socket FD.
     //! @param socket - target socket
-    static void toRecvFrom(UDPSocket* socket);
+    static void toRecvFrom(const UDPSocket* const socket);
 };
 
 //! @brief UDP server.

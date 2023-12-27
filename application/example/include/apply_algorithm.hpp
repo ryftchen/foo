@@ -303,8 +303,8 @@ public:
     //! @param textLen - length of matching text
     //! @param patternLen - length of single pattern
     static void rkMethod(
-        const char* text,
-        const char* pattern,
+        const char* const text,
+        const char* const pattern,
         const std::uint32_t textLen,
         const std::uint32_t patternLen);
     //! @brief The Knuth-Morris-Pratt method.
@@ -313,8 +313,8 @@ public:
     //! @param textLen - length of matching text
     //! @param patternLen - length of single pattern
     static void kmpMethod(
-        const char* text,
-        const char* pattern,
+        const char* const text,
+        const char* const pattern,
         const std::uint32_t textLen,
         const std::uint32_t patternLen);
     //! @brief The Boyer-Moore method.
@@ -323,8 +323,8 @@ public:
     //! @param textLen - length of matching text
     //! @param patternLen - length of single pattern
     static void bmMethod(
-        const char* text,
-        const char* pattern,
+        const char* const text,
+        const char* const pattern,
         const std::uint32_t textLen,
         const std::uint32_t patternLen);
     //! @brief The Horspool method.
@@ -333,8 +333,8 @@ public:
     //! @param textLen - length of matching text
     //! @param patternLen - length of single pattern
     static void horspoolMethod(
-        const char* text,
-        const char* pattern,
+        const char* const text,
+        const char* const pattern,
         const std::uint32_t textLen,
         const std::uint32_t patternLen);
     //! @brief The Sunday method.
@@ -343,8 +343,8 @@ public:
     //! @param textLen - length of matching text
     //! @param patternLen - length of single pattern
     static void sundayMethod(
-        const char* text,
-        const char* pattern,
+        const char* const text,
+        const char* const pattern,
         const std::uint32_t textLen,
         const std::uint32_t patternLen);
 };
@@ -394,7 +394,7 @@ private:
     //! @brief Set the matching text.
     //! @param text - target matching text
     //! @param textLen - length of matching text
-    static void setMatchingText(char* text, const std::uint32_t textLen)
+    static void setMatchingText(char* const text, const std::uint32_t textLen)
     {
         assert((nullptr != text) && (textLen > 0));
         ::mpfr_t x{};
@@ -880,43 +880,43 @@ public:
     //! @brief The bubble method.
     //! @param array - array to be sorted
     //! @param length - length of array
-    static void bubbleMethod(int* const array, const std::uint32_t length);
+    static void bubbleMethod(const int* const array, const std::uint32_t length);
     //! @brief The selection method.
     //! @param array - array to be sorted
     //! @param length - length of array
-    static void selectionMethod(int* const array, const std::uint32_t length);
+    static void selectionMethod(const int* const array, const std::uint32_t length);
     //! @brief The insertion method.
     //! @param array - array to be sorted
     //! @param length - length of array
-    static void insertionMethod(int* const array, const std::uint32_t length);
+    static void insertionMethod(const int* const array, const std::uint32_t length);
     //! @brief The shell method.
     //! @param array - array to be sorted
     //! @param length - length of array
-    static void shellMethod(int* const array, const std::uint32_t length);
+    static void shellMethod(const int* const array, const std::uint32_t length);
     //! @brief The merge method.
     //! @param array - array to be sorted
     //! @param length - length of array
-    static void mergeMethod(int* const array, const std::uint32_t length);
+    static void mergeMethod(const int* const array, const std::uint32_t length);
     //! @brief The quick method.
     //! @param array - array to be sorted
     //! @param length - length of array
-    static void quickMethod(int* const array, const std::uint32_t length);
+    static void quickMethod(const int* const array, const std::uint32_t length);
     //! @brief The heap method.
     //! @param array - array to be sorted
     //! @param length - length of array
-    static void heapMethod(int* const array, const std::uint32_t length);
+    static void heapMethod(const int* const array, const std::uint32_t length);
     //! @brief The counting method.
     //! @param array - array to be sorted
     //! @param length - length of array
-    static void countingMethod(int* const array, const std::uint32_t length);
+    static void countingMethod(const int* const array, const std::uint32_t length);
     //! @brief The bucket method.
     //! @param array - array to be sorted
     //! @param length - length of array
-    static void bucketMethod(int* const array, const std::uint32_t length);
+    static void bucketMethod(const int* const array, const std::uint32_t length);
     //! @brief The radix method.
     //! @param array - array to be sorted
     //! @param length - length of array
-    static void radixMethod(int* const array, const std::uint32_t length);
+    static void radixMethod(const int* const array, const std::uint32_t length);
 };
 
 //! @brief Maximum alignment length per element of printing.

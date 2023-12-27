@@ -126,7 +126,7 @@ int tlvDecode(char* buf, const int len, TLVValue& val)
 }
 
 template <typename T>
-bool Packet::write(T data)
+bool Packet::write(const T data)
 {
     T temp = 0;
     if constexpr (sizeof(T) == sizeof(std::uint32_t))
@@ -144,7 +144,7 @@ bool Packet::write(T data)
     return write(&temp, sizeof(T));
 }
 
-bool Packet::write(const void* dst, const std::uint32_t offset)
+bool Packet::write(const void* const dst, const std::uint32_t offset)
 {
     std::memcpy(writer, dst, offset);
     writer += offset;
@@ -152,7 +152,7 @@ bool Packet::write(const void* dst, const std::uint32_t offset)
 }
 
 template <typename T>
-bool Packet::read(T* data)
+bool Packet::read(T* const data)
 {
     const bool isEnd = read(data, sizeof(T));
     if constexpr (sizeof(T) == sizeof(std::uint32_t))
@@ -166,7 +166,7 @@ bool Packet::read(T* data)
     return isEnd;
 }
 
-bool Packet::read(void* dst, const std::uint32_t offset)
+bool Packet::read(void* const dst, const std::uint32_t offset)
 {
     std::memcpy(dst, reader, offset);
     reader += offset;
@@ -445,7 +445,7 @@ void View::encryptMessage(char* buf, const int len)
     constexpr unsigned char
         key[16] = {0x37, 0x47, 0x10, 0x33, 0x6F, 0x18, 0xC8, 0x9A, 0x4B, 0xC1, 0x2B, 0x97, 0x92, 0x19, 0x25, 0x6D},
         iv[16] = {0x9F, 0x7B, 0x0E, 0x68, 0x2D, 0x2F, 0x4E, 0x7F, 0x1A, 0xFA, 0x61, 0xD3, 0xC6, 0x18, 0xF4, 0xC1};
-    ::EVP_CIPHER_CTX* ctx = ::EVP_CIPHER_CTX_new();
+    ::EVP_CIPHER_CTX* const ctx = ::EVP_CIPHER_CTX_new();
     do
     {
         int outLen = 0, tempLen = 0;
@@ -472,7 +472,7 @@ void View::decryptMessage(char* buf, const int len)
     constexpr unsigned char
         key[16] = {0x37, 0x47, 0x10, 0x33, 0x6F, 0x18, 0xC8, 0x9A, 0x4B, 0xC1, 0x2B, 0x97, 0x92, 0x19, 0x25, 0x6D},
         iv[16] = {0x9F, 0x7B, 0x0E, 0x68, 0x2D, 0x2F, 0x4E, 0x7F, 0x1A, 0xFA, 0x61, 0xD3, 0xC6, 0x18, 0xF4, 0xC1};
-    ::EVP_CIPHER_CTX* ctx = ::EVP_CIPHER_CTX_new();
+    ::EVP_CIPHER_CTX* const ctx = ::EVP_CIPHER_CTX_new();
     do
     {
         int outLen = 0, tempLen = 0;
@@ -496,7 +496,7 @@ void View::decryptMessage(char* buf, const int len)
 
 int View::fillSharedMemory(const std::string& contents)
 {
-    int shmId = ::shmget(
+    const int shmId = ::shmget(
         static_cast<::key_t>(0),
         sizeof(SharedMemory),
         IPC_CREAT | IPC_EXCL | S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
@@ -504,13 +504,13 @@ int View::fillSharedMemory(const std::string& contents)
     {
         throw std::runtime_error("Failed to create shared memory.");
     }
-    void* shm = ::shmat(shmId, nullptr, 0);
+    void* const shm = ::shmat(shmId, nullptr, 0);
     if (nullptr == shm)
     {
         throw std::runtime_error("Failed to attach shared memory.");
     }
 
-    auto* shrMem = reinterpret_cast<SharedMemory*>(shm);
+    auto* const shrMem = reinterpret_cast<SharedMemory*>(shm);
     shrMem->signal.store(false);
     for (;;)
     {
@@ -530,13 +530,13 @@ int View::fillSharedMemory(const std::string& contents)
 
 void View::printSharedMemory(const int shmId)
 {
-    void* shm = ::shmat(shmId, nullptr, 0);
+    void* const shm = ::shmat(shmId, nullptr, 0);
     if (nullptr == shm)
     {
         throw std::runtime_error("Failed to attach shared memory.");
     }
 
-    auto* shrMem = reinterpret_cast<SharedMemory*>(shm);
+    auto* const shrMem = reinterpret_cast<SharedMemory*>(shm);
     shrMem->signal.store(true);
     for (;;)
     {
@@ -632,7 +632,7 @@ std::string View::getStatusInformation()
 void View::createViewServer()
 {
     tcpServer = std::make_shared<utility::socket::TCPServer>();
-    tcpServer->onNewConnection = [this](utility::socket::TCPSocket* newSocket)
+    tcpServer->onNewConnection = [this](utility::socket::TCPSocket* const newSocket)
     {
         newSocket->onMessageReceived = [this, newSocket](const std::string& message)
         {

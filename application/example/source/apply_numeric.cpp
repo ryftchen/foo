@@ -147,7 +147,7 @@ void runArithmeticTasks(const std::vector<std::string>& targets)
     using utility::common::operator""_bkdrHash;
 
     APP_NUM_PRINT_TASK_BEGIN_TITLE(Category::arithmetic);
-    auto* threads = command::getPublicThreadPool().newElement(std::min(
+    auto* const threads = command::getPublicThreadPool().newElement(std::min(
         static_cast<std::uint32_t>(getBit<ArithmeticMethod>().count()),
         static_cast<std::uint32_t>(Bottom<ArithmeticMethod>::value)));
 
@@ -301,7 +301,7 @@ void runDivisorTasks(const std::vector<std::string>& targets)
     using utility::common::operator""_bkdrHash;
 
     APP_NUM_PRINT_TASK_BEGIN_TITLE(Category::divisor);
-    auto* threads = command::getPublicThreadPool().newElement(std::min(
+    auto* const threads = command::getPublicThreadPool().newElement(std::min(
         static_cast<std::uint32_t>(getBit<DivisorMethod>().count()),
         static_cast<std::uint32_t>(Bottom<DivisorMethod>::value)));
 
@@ -489,7 +489,7 @@ void runIntegralTasks(const std::vector<std::string>& targets)
     const auto resultFunctor =
         [targets](const integral::Expression& expression, const integral::ExprRange<double, double>& range)
     {
-        auto* threads = command::getPublicThreadPool().newElement(std::min(
+        auto* const threads = command::getPublicThreadPool().newElement(std::min(
             static_cast<std::uint32_t>(getBit<IntegralMethod>().count()),
             static_cast<std::uint32_t>(Bottom<IntegralMethod>::value)));
         const auto integralFunctor = [threads, &expression, range](
@@ -669,7 +669,7 @@ void runPrimeTasks(const std::vector<std::string>& targets)
     using utility::common::operator""_bkdrHash;
 
     APP_NUM_PRINT_TASK_BEGIN_TITLE(Category::prime);
-    auto* threads = command::getPublicThreadPool().newElement(std::min(
+    auto* const threads = command::getPublicThreadPool().newElement(std::min(
         static_cast<std::uint32_t>(getBit<PrimeMethod>().count()),
         static_cast<std::uint32_t>(Bottom<PrimeMethod>::value)));
 
