@@ -134,7 +134,7 @@ public:
         explicit JSONWrapper(std::nullptr_t /*n*/) : object(nullptr){};
 
         //! @brief Pointer to the JSON object.
-        Container* object;
+        Container* object{nullptr};
         //! @brief Get the first iterator.
         //! @return first iterator
         inline typename Container::iterator begin()
@@ -168,10 +168,10 @@ public:
         //! @param container - JSON object to be wrapped
         explicit JSONConstWrapper(const Container* container) : object(container){};
         //! @brief Construct a new JSONWrapper object.
-        explicit JSONConstWrapper(std::nullptr_t /*n*/) : object(nullptr){};
+        explicit JSONConstWrapper(const std::nullptr_t /*n*/) : object(nullptr){};
 
         //! @brief Const pointer to the JSON object.
-        const Container* object;
+        const Container* object{nullptr};
         //! @brief Get the first const iterator.
         //! @return first const iterator
         [[nodiscard]] inline typename Container::const_iterator begin() const

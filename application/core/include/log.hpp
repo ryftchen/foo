@@ -254,9 +254,9 @@ private:
     //! @brief The queue of logs.
     std::queue<std::string> logQueue;
     //! @brief Mutex for controlling queue.
-    mutable std::mutex mtx;
+    mutable std::mutex mtx{};
     //! @brief The synchronization condition for queue. Use with mtx.
-    std::condition_variable cv;
+    std::condition_variable cv{};
     //! @brief Flag to indicate whether it is logging.
     std::atomic<bool> isLogging{false};
     //! @brief Flag for rollback request.

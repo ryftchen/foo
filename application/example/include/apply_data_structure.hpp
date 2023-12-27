@@ -190,7 +190,7 @@ public:
         Meta meta[] = {{'A', "foo"}, {'B', "bar"}, {'C', "baz"}, {'D', "qux"}};
         const int metaSize = sizeof(meta) / sizeof(meta[0]);
 
-        Meta* val = nullptr;
+        const Meta* val = nullptr;
         DLL dll = nullptr;
         createDll(&dll);
         dllInsert(dll, 0, &meta[0]);
@@ -244,7 +244,7 @@ public:
         Meta meta[] = {{'A', "foo"}, {'B', "bar"}, {'C', "baz"}, {'D', "qux"}};
         const int metaSize = sizeof(meta) / sizeof(meta[0]);
 
-        Meta* val = nullptr;
+        const Meta* val = nullptr;
         Stack stacks = nullptr;
         createStack(&stacks);
         for (int i = 0; i < (metaSize - 1); ++i)
@@ -289,7 +289,7 @@ public:
         Meta meta[] = {{'A', "foo"}, {'B', "bar"}, {'C', "baz"}, {'D', "qux"}};
         const int metaSize = sizeof(meta) / sizeof(meta[0]);
 
-        Meta* val = nullptr;
+        const Meta* val = nullptr;
         Queue queues = nullptr;
         createQueue(&queues);
         for (int i = 0; i < (metaSize - 1); ++i)

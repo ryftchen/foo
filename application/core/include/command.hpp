@@ -71,9 +71,9 @@ private:
     Command();
 
     //! @brief Mutex for controlling multi-threading.
-    mutable std::mutex mtx;
+    mutable std::mutex mtx{};
     //! @brief The synchronization condition for foreground and background. Use with mtx.
-    std::condition_variable cv;
+    std::condition_variable cv{};
     //! @brief Flag to indicate whether parsing of arguments is completed.
     std::atomic<bool> isParsed{false};
     //! @brief Parse arguments helper for commander.

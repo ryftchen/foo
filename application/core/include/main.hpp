@@ -36,7 +36,7 @@ static void signalHandler(int sig)
     signalStatus = sig;
     void* callStack[128];
     const int maxFrame = sizeof(callStack) / sizeof(callStack[0]), numOfFrame = ::backtrace(callStack, maxFrame);
-    char** symbols = ::backtrace_symbols(callStack, numOfFrame);
+    char** const symbols = ::backtrace_symbols(callStack, numOfFrame);
 
     constexpr std::uint16_t bufferSize = 1024;
     char buffer[bufferSize] = {'\0'};
@@ -44,7 +44,7 @@ static void signalHandler(int sig)
     for (int i = 1; i < numOfFrame; ++i)
     {
         originalTrace << symbols[i] << '\n';
-        ::Dl_info info;
+        ::Dl_info info{};
         if (::dladdr(callStack[i], &info) && info.dli_sname)
         {
             char* demangle = nullptr;

@@ -238,7 +238,7 @@ void runBehavioralTasks(const std::vector<std::string>& targets)
     using utility::common::operator""_bkdrHash;
 
     APP_DP_PRINT_TASK_BEGIN_TITLE(Category::behavioral);
-    auto* threads = command::getPublicThreadPool().newElement(std::min(
+    auto* const threads = command::getPublicThreadPool().newElement(std::min(
         static_cast<std::uint32_t>(getBit<BehavioralInstance>().count()),
         static_cast<std::uint32_t>(Bottom<BehavioralInstance>::value)));
 
@@ -456,7 +456,7 @@ void runCreationalTasks(const std::vector<std::string>& targets)
     using utility::common::operator""_bkdrHash;
 
     APP_DP_PRINT_TASK_BEGIN_TITLE(Category::creational);
-    auto* threads = command::getPublicThreadPool().newElement(std::min(
+    auto* const threads = command::getPublicThreadPool().newElement(std::min(
         static_cast<std::uint32_t>(getBit<CreationalInstance>().count()),
         static_cast<std::uint32_t>(Bottom<CreationalInstance>::value)));
 
@@ -666,7 +666,7 @@ void runStructuralTasks(const std::vector<std::string>& targets)
     using utility::common::operator""_bkdrHash;
 
     APP_DP_PRINT_TASK_BEGIN_TITLE(Category::structural);
-    auto* threads = command::getPublicThreadPool().newElement(std::min(
+    auto* const threads = command::getPublicThreadPool().newElement(std::min(
         static_cast<std::uint32_t>(getBit<StructuralInstance>().count()),
         static_cast<std::uint32_t>(Bottom<StructuralInstance>::value)));
 

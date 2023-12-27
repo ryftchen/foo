@@ -11,7 +11,11 @@
 
 namespace algorithm::match
 {
-int Match::rk(const char* text, const char* pattern, const std::uint32_t textLen, const std::uint32_t patternLen)
+int Match::rk(
+    const char* const text,
+    const char* const pattern,
+    const std::uint32_t textLen,
+    const std::uint32_t patternLen)
 {
     int shift = -1;
     constexpr std::uint64_t rollingHashBase = 10, rollingHashMod = 19260817;
@@ -48,7 +52,7 @@ int Match::rk(const char* text, const char* pattern, const std::uint32_t textLen
 }
 
 std::uint64_t Match::rollingHash(
-    const char* str,
+    const char* const str,
     const std::uint64_t length,
     const std::uint64_t hashBase,
     const std::uint64_t hashMod)
@@ -61,7 +65,11 @@ std::uint64_t Match::rollingHash(
     return hash;
 }
 
-int Match::kmp(const char* text, const char* pattern, const std::uint32_t textLen, const std::uint32_t patternLen)
+int Match::kmp(
+    const char* const text,
+    const char* const pattern,
+    const std::uint32_t textLen,
+    const std::uint32_t patternLen)
 {
     int shift = -1;
     std::uint32_t next[patternLen + 1];
@@ -101,7 +109,11 @@ int Match::kmp(const char* text, const char* pattern, const std::uint32_t textLe
     return shift;
 }
 
-int Match::bm(const char* text, const char* pattern, const std::uint32_t textLen, const std::uint32_t patternLen)
+int Match::bm(
+    const char* const text,
+    const char* const pattern,
+    const std::uint32_t textLen,
+    const std::uint32_t patternLen)
 {
     int shift = -1;
     std::uint32_t badCharRuleTable[maxASCII], goodSuffixIndexTable[maxASCII];
@@ -130,7 +142,10 @@ int Match::bm(const char* text, const char* pattern, const std::uint32_t textLen
     return shift;
 }
 
-void Match::fillBadCharRuleTable(std::uint32_t badCharRuleTable[], const char* pattern, const std::uint32_t patternLen)
+void Match::fillBadCharRuleTable(
+    std::uint32_t badCharRuleTable[],
+    const char* const pattern,
+    const std::uint32_t patternLen)
 {
     for (std::uint16_t i = 0; i < maxASCII; ++i)
     {
@@ -145,14 +160,14 @@ void Match::fillBadCharRuleTable(std::uint32_t badCharRuleTable[], const char* p
 
 void Match::fillGoodSuffixRuleTable(
     std::uint32_t goodSuffixRuleTable[],
-    const char* pattern,
+    const char* const pattern,
     const std::uint32_t patternLen)
 {
     std::uint32_t lastPrefixIndex = 1;
     for (int pos = (patternLen - 1); pos >= 0; --pos)
     {
+        const std::uint32_t suffixLen = patternLen - (pos + 1);
         bool isPrefix = true;
-        std::uint32_t suffixLen = patternLen - (pos + 1);
         for (std::uint32_t i = 0; i < suffixLen; ++i)
         {
             if (pattern[i] != pattern[pos + 1 + i])
@@ -183,7 +198,11 @@ void Match::fillGoodSuffixRuleTable(
     }
 }
 
-int Match::horspool(const char* text, const char* pattern, const std::uint32_t textLen, const std::uint32_t patternLen)
+int Match::horspool(
+    const char* const text,
+    const char* const pattern,
+    const std::uint32_t textLen,
+    const std::uint32_t patternLen)
 {
     int shift = -1;
     std::uint32_t badCharShiftTable[maxASCII];
@@ -213,7 +232,7 @@ int Match::horspool(const char* text, const char* pattern, const std::uint32_t t
 
 void Match::fillBadCharShiftTableForHorspool(
     std::uint32_t badCharShiftTable[],
-    const char* pattern,
+    const char* const pattern,
     const std::uint32_t patternLen)
 {
     for (std::uint16_t i = 0; i < maxASCII; ++i)
@@ -227,7 +246,11 @@ void Match::fillBadCharShiftTableForHorspool(
     }
 }
 
-int Match::sunday(const char* text, const char* pattern, const std::uint32_t textLen, const std::uint32_t patternLen)
+int Match::sunday(
+    const char* const text,
+    const char* const pattern,
+    const std::uint32_t textLen,
+    const std::uint32_t patternLen)
 {
     int shift = -1;
     std::uint32_t badCharShiftTable[maxASCII];
@@ -257,7 +280,7 @@ returnValue:
 
 void Match::fillBadCharShiftTableForSunday(
     std::uint32_t badCharShiftTable[],
-    const char* pattern,
+    const char* const pattern,
     const std::uint32_t patternLen)
 {
     for (std::uint16_t i = 0; i < maxASCII; ++i)

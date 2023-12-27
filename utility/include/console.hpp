@@ -89,7 +89,7 @@ private:
     //! @brief Alias for the history state.
     using HistoryState = ::HISTORY_STATE;
     //! @brief Saved empty history state.
-    HistoryState* emptyHistory = ::history_get_history_state();
+    HistoryState* const emptyHistory = ::history_get_history_state();
     //! @brief Implementation of running console.
     struct Impl
     {

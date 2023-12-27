@@ -42,11 +42,11 @@ private:
     //! @brief The queue of tasks.
     std::queue<std::pair<std::string, std::packaged_task<void()>>> taskQueue;
     //! @brief Mutex for controlling queue.
-    mutable std::mutex mtx;
+    mutable std::mutex mtx{};
     //! @brief The synchronization condition for queue. Use with mtx.
-    std::condition_variable cv;
+    std::condition_variable cv{};
     //! @brief The synchronization condition for availability of resources.
-    std::condition_variable producer;
+    std::condition_variable producer{};
     //! @brief Flag for ready release.
     std::atomic<bool> readyRelease{false};
 };

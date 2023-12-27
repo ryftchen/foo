@@ -47,15 +47,15 @@ public:
 
 private:
     //! @brief Handling of shared and exclusive locks.
-    std::shared_mutex rwLock;
+    std::shared_mutex rwLock{};
     //! @brief Counter of readers that have acquired the shared lock.
     std::atomic_uint_fast16_t reader{0};
     //! @brief Counter of writers that have acquired the exclusive lock.
     std::atomic_uint_fast16_t writer{0};
     //! @brief Mutex for counters.
-    mutable std::mutex mtx;
+    mutable std::mutex mtx{};
     //! @brief The synchronization condition for counters. Use with mtx.
-    std::condition_variable cv;
+    std::condition_variable cv{};
 };
 
 //! @brief Manage the lifetime of a lock on a file.

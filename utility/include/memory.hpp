@@ -54,11 +54,11 @@ public:
     //! @param size - resource size
     //! @param hint - const pointer of the allocated object
     //! @return pointer of the allocated object
-    inline T* allocate(const std::size_t size = 1, const T* hint = 0);
+    inline T* allocate(const std::size_t size = 1, const T* const hint = 0);
     //! @brief Deallocate resource.
     //! @param obj - pointer of the allocated object
     //! @param size - resource size
-    inline void deallocate(T* obj, const std::size_t size = 1);
+    inline void deallocate(T* const obj, const std::size_t size = 1);
     [[nodiscard]] inline std::size_t maxSize() const noexcept;
 
     //! @brief Construct object.
@@ -67,12 +67,12 @@ public:
     //! @param obj - pointer of the allocated object
     //! @param args - arguments for constructing the object
     template <class U, class... Args>
-    inline void construct(U* obj, Args&&... args);
+    inline void construct(U* const obj, Args&&... args);
     //! @brief Destroy object.
     //! @tparam U - type of allocated object
     //! @param obj - pointer of the allocated object
     template <class U>
-    inline void destroy(U* obj);
+    inline void destroy(const U* const obj);
 
     //! @brief New an element.
     //! @tparam Args - type of arguments for constructing the object
@@ -82,7 +82,7 @@ public:
     inline T* newElement(Args&&... args);
     //! @brief Delete an element.
     //! @param obj - pointer of the allocated object
-    inline void deleteElement(T* obj);
+    inline void deleteElement(T* const obj);
 
 private:
     //! @brief Union for the slot that stores element information.
@@ -95,19 +95,19 @@ private:
     };
 
     //! @brief Pointer to the current block.
-    Slot* currentBlock;
+    Slot* currentBlock{nullptr};
     //! @brief Pointer to the current slot.
-    Slot* currentSlot;
+    Slot* currentSlot{nullptr};
     //! @brief Pointer to the last slot.
-    Slot* lastSlot;
+    const Slot* lastSlot{nullptr};
     //! @brief Pointer to the free slots.
-    Slot* freeSlots;
+    Slot* freeSlots{nullptr};
 
     //! @brief Pad the pointer of data in the element.
     //! @param data - pointer of data in the element
     //! @param align - align size
     //! @return size after padding
-    inline std::size_t padPointer(char* data, const std::size_t align) const noexcept;
+    inline std::size_t padPointer(const char* const data, const std::size_t align) const noexcept;
     //! @brief Allocate block.
     void allocateBlock();
 

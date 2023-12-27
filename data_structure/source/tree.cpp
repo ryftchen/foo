@@ -50,7 +50,7 @@ Node* getMaximum(BSTree tree)
 //!        The precursor of a node is the node that has the maximum key in that node's left subtree.
 //! @param x - current node
 //! @return predecessor node
-Node* getPredecessor(Node* x)
+Node* getPredecessor(const Node* x)
 {
     if (nullptr != x->left)
     {
@@ -71,7 +71,7 @@ Node* getPredecessor(Node* x)
 //!        The precursor of a node is the node that has the minimum key in that node's right subtree.
 //! @param x - current node
 //! @return successor node
-Node* getSuccessor(Node* x)
+Node* getSuccessor(const Node* x)
 {
     if (nullptr != x->right)
     {
@@ -94,9 +94,9 @@ Node* getSuccessor(Node* x)
 //! @param left - the left child node of the node to be created
 //! @param right - the right child node of the node to be created
 //! @return new node after creating
-Node* createNode(const Type key, Node* parent, Node* left, Node* right)
+Node* createNode(const Type key, Node* const parent, Node* const left, Node* const right)
 {
-    Node* node = new (std::nothrow) Node;
+    Node* const node = new (std::nothrow) Node;
     if (nullptr == node)
     {
         return nullptr;
@@ -114,22 +114,14 @@ Node* createNode(const Type key, Node* parent, Node* left, Node* right)
 //! @param tree - tree root, the target binary search tree has this node as the root node
 //! @param z - target node
 //! @return root node after inserting
-Node* insertNode(BSTree tree, Node* z)
+Node* insertNode(BSTree tree, Node* const z)
 {
-    Node* y = nullptr;
-    Node* x = tree;
+    Node *x = tree, *y = nullptr;
 
     while (nullptr != x)
     {
         y = x;
-        if (z->key < x->key)
-        {
-            x = x->left;
-        }
-        else
-        {
-            x = x->right;
-        }
+        x = (z->key < x->key) ? x->left : x->right;
     }
 
     z->parent = y;
@@ -153,28 +145,10 @@ Node* insertNode(BSTree tree, Node* z)
 //! @param tree - tree root, the target binary search tree has this node as the root node
 //! @param z - target node
 //! @return root node after deleting
-Node* deleteNode(BSTree tree, Node* z)
+Node* deleteNode(BSTree tree, Node* const z)
 {
-    Node* x = nullptr;
-    Node* y = nullptr;
-
-    if ((nullptr == z->left) || (nullptr == z->right))
-    {
-        y = z;
-    }
-    else
-    {
-        y = getSuccessor(z);
-    }
-
-    if (nullptr != y->left)
-    {
-        x = y->left;
-    }
-    else
-    {
-        x = y->right;
-    }
+    Node *y = ((nullptr == z->left) || (nullptr == z->right)) ? z : getSuccessor(z),
+         *x = (nullptr != y->left) ? y->left : y->right;
 
     if (nullptr != x)
     {
@@ -219,14 +193,7 @@ Node* bsTreeSearch(BSTree tree, const Type key)
         return tree;
     }
 
-    if (key < tree->key)
-    {
-        return bsTreeSearch(tree->left, key);
-    }
-    else
-    {
-        return bsTreeSearch(tree->right, key);
-    }
+    return (key < tree->key) ? bsTreeSearch(tree->left, key) : bsTreeSearch(tree->right, key);
 }
 
 //! @brief Insert target node into the binary search tree. Allow inserting node with the same key.
@@ -235,7 +202,7 @@ Node* bsTreeSearch(BSTree tree, const Type key)
 //! @return root node after inserting
 Node* bsTreeInsert(BSTree tree, const Type key)
 {
-    Node* z = createNode(key, nullptr, nullptr, nullptr);
+    Node* const z = createNode(key, nullptr, nullptr, nullptr);
     if (nullptr == z)
     {
         return tree;
@@ -250,7 +217,7 @@ Node* bsTreeInsert(BSTree tree, const Type key)
 //! @return root node after deleting
 Node* bsTreeDelete(BSTree tree, const Type key)
 {
-    Node* z = bsTreeSearch(tree, key);
+    Node* const z = bsTreeSearch(tree, key);
     if (nullptr != z)
     {
         tree = deleteNode(tree, z);
@@ -315,7 +282,7 @@ void Output::postorderBSTree(BSTree tree)
     }
 }
 
-void Output::printBSTree(BSTree tree, const Type key, int direction)
+void Output::printBSTree(BSTree tree, const Type key, const int direction)
 {
     if (nullptr != tree)
     {
@@ -341,7 +308,7 @@ namespace avl
 //! @return height of the AVL tree
 int getHeight(AVLTree tree)
 {
-    return ((nullptr == tree) ? 0 : ((Node*)tree)->height);
+    return ((nullptr == tree) ? 0 : static_cast<Node*>(tree)->height);
 }
 
 //! @brief Get the node where the Minimum key is located in the AVL tree.
@@ -434,9 +401,9 @@ Node* rightLeftRotation(AVLTree k1)
 //! @param left - the left child node of the node to be created
 //! @param right - the right child node of the node to be created
 //! @return new node after creating
-Node* createNode(const Type key, Node* left, Node* right)
+Node* createNode(const Type key, Node* const left, Node* const right)
 {
-    Node* node = new (std::nothrow) Node;
+    Node* const node = new (std::nothrow) Node;
     if (nullptr == node)
     {
         return nullptr;
@@ -454,7 +421,7 @@ Node* createNode(const Type key, Node* left, Node* right)
 //! @param tree - tree root, the target AVL tree has this node as the root node
 //! @param z - target node
 //! @return root node after deleting
-Node* deleteNode(AVLTree tree, Node* z)
+Node* deleteNode(AVLTree tree, const Node* const z)
 {
     if ((nullptr == tree) || (nullptr == z))
     {
@@ -466,15 +433,8 @@ Node* deleteNode(AVLTree tree, Node* z)
         tree->left = deleteNode(tree->left, z);
         if (2 == (getHeight(tree->right) - getHeight(tree->left)))
         {
-            Node* r = tree->right;
-            if (getHeight(r->left) > getHeight(r->right))
-            {
-                tree = rightLeftRotation(tree);
-            }
-            else
-            {
-                tree = rightRightRotation(tree);
-            }
+            const Node* const r = tree->right;
+            tree = (getHeight(r->left) > getHeight(r->right)) ? rightLeftRotation(tree) : rightRightRotation(tree);
         }
     }
     else if (z->key > tree->key)
@@ -482,15 +442,8 @@ Node* deleteNode(AVLTree tree, Node* z)
         tree->right = deleteNode(tree->right, z);
         if (2 == (getHeight(tree->left) - getHeight(tree->right)))
         {
-            Node* l = tree->left;
-            if (getHeight(l->right) > getHeight(l->left))
-            {
-                tree = leftRightRotation(tree);
-            }
-            else
-            {
-                tree = leftLeftRotation(tree);
-            }
+            const Node* const l = tree->left;
+            tree = (getHeight(l->right) > getHeight(l->left)) ? leftRightRotation(tree) : leftLeftRotation(tree);
         }
     }
     else
@@ -499,20 +452,20 @@ Node* deleteNode(AVLTree tree, Node* z)
         {
             if (getHeight(tree->left) > getHeight(tree->right))
             {
-                Node* max = getMaximum(tree->left);
+                const Node* const max = getMaximum(tree->left);
                 tree->key = max->key;
                 tree->left = deleteNode(tree->left, max);
             }
             else
             {
-                Node* min = getMaximum(tree->right);
+                const Node* const min = getMaximum(tree->right);
                 tree->key = min->key;
                 tree->right = deleteNode(tree->right, min);
             }
         }
         else
         {
-            Node* temp = tree;
+            const Node* const temp = tree;
             tree = tree->left ? tree->left : tree->right;
             delete temp;
         }
@@ -532,14 +485,7 @@ Node* avlTreeSearch(AVLTree tree, const Type key)
         return tree;
     }
 
-    if (key < tree->key)
-    {
-        return avlTreeSearch(tree->left, key);
-    }
-    else
-    {
-        return avlTreeSearch(tree->right, key);
-    }
+    return (key < tree->key) ? avlTreeSearch(tree->left, key) : avlTreeSearch(tree->right, key);
 }
 
 //! @brief Insert target node into the AVL tree. Not allow inserting node with the same key.
@@ -561,14 +507,7 @@ Node* avlTreeInsert(AVLTree tree, const Type key)
         tree->left = avlTreeInsert(tree->left, key);
         if (2 == (getHeight(tree->left) - getHeight(tree->right)))
         {
-            if (key < tree->left->key)
-            {
-                tree = leftLeftRotation(tree);
-            }
-            else
-            {
-                tree = leftRightRotation(tree);
-            }
+            tree = (key < tree->left->key) ? leftLeftRotation(tree) : leftRightRotation(tree);
         }
     }
     else if (key > tree->key)
@@ -576,14 +515,7 @@ Node* avlTreeInsert(AVLTree tree, const Type key)
         tree->right = avlTreeInsert(tree->right, key);
         if (2 == (getHeight(tree->right) - getHeight(tree->left)))
         {
-            if (key > tree->right->key)
-            {
-                tree = rightRightRotation(tree);
-            }
-            else
-            {
-                tree = rightLeftRotation(tree);
-            }
+            tree = (key > tree->right->key) ? rightRightRotation(tree) : rightLeftRotation(tree);
         }
     }
 
@@ -598,7 +530,7 @@ Node* avlTreeInsert(AVLTree tree, const Type key)
 //! @return root node after deleting
 Node* avlTreeDelete(AVLTree tree, const Type key)
 {
-    Node* z = avlTreeSearch(tree, key);
+    const Node* const z = avlTreeSearch(tree, key);
     if (nullptr != z)
     {
         tree = deleteNode(tree, z);
@@ -725,9 +657,9 @@ Node* getMaximum(SplayTree tree)
 //! @param left - the left child node of the node to be created
 //! @param right - the right child node of the node to be created
 //! @return new node after creating
-Node* createNode(const Type key, Node* left, Node* right)
+Node* createNode(const Type key, Node* const left, Node* const right)
 {
-    Node* node = new (std::nothrow) Node;
+    Node* const node = new (std::nothrow) Node;
     if (nullptr == node)
     {
         return nullptr;
@@ -744,10 +676,9 @@ Node* createNode(const Type key, Node* left, Node* right)
 //! @param tree - tree root, the target splay tree has this node as the root node
 //! @param z - target node
 //! @return root node after inserting
-Node* insertNode(SplayTree tree, Node* z)
+Node* insertNode(SplayTree tree, Node* const z)
 {
-    Node* y = nullptr;
-    Node* x = tree;
+    Node *x = tree, *y = nullptr;
 
     while (nullptr != x)
     {
@@ -794,14 +725,7 @@ Node* splayTreeSearch(SplayTree tree, const Type key)
         return tree;
     }
 
-    if (key < tree->key)
-    {
-        return splayTreeSearch(tree->left, key);
-    }
-    else
-    {
-        return splayTreeSearch(tree->right, key);
-    }
+    return (key < tree->key) ? splayTreeSearch(tree->left, key) : splayTreeSearch(tree->right, key);
 }
 
 //! @brief Splay target node in the splay tree. Make to be the root node.
@@ -810,7 +734,7 @@ Node* splayTreeSearch(SplayTree tree, const Type key)
 //! @return root node after splaying
 Node* splayTreeSplay(SplayTree tree, const Type key)
 {
-    Node n, *l, *r, *c;
+    Node n{}, *l = nullptr, *r = nullptr, *c = nullptr;
     if (nullptr == tree)
     {
         return tree;
@@ -882,7 +806,7 @@ Node* splayTreeSplay(SplayTree tree, const Type key)
 //! @return root node after inserting
 Node* splayTreeInsert(SplayTree tree, const Type key)
 {
-    Node* z = createNode(key, nullptr, nullptr);
+    Node* const z = createNode(key, nullptr, nullptr);
     if (nullptr == z)
     {
         return tree;
@@ -910,7 +834,7 @@ Node* splayTreeDelete(SplayTree tree, const Type key)
         return tree;
     }
 
-    Node* x;
+    Node* x = nullptr;
     tree = splayTreeSplay(tree, key);
     if (nullptr != tree->left)
     {

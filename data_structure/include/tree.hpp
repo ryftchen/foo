@@ -43,11 +43,11 @@ extern "C"
 
 extern Node* getMinimum(BSTree tree);
 extern Node* getMaximum(BSTree tree);
-extern Node* getPredecessor(Node* x);
-extern Node* getSuccessor(Node* x);
-extern Node* createNode(const Type key, Node* parent, Node* left, Node* right);
-extern Node* insertNode(BSTree tree, Node* z);
-extern Node* deleteNode(BSTree tree, Node* z);
+extern Node* getPredecessor(const Node* x);
+extern Node* getSuccessor(const Node* x);
+extern Node* createNode(const Type key, Node* const parent, Node* const left, Node* const right);
+extern Node* insertNode(BSTree tree, Node* const z);
+extern Node* deleteNode(BSTree tree, Node* const z);
 
 extern Node* bsTreeSearch(BSTree tree, const Type key);
 extern Node* bsTreeInsert(BSTree tree, const Type key);
@@ -77,7 +77,7 @@ public:
     //! @param tree - tree root, the target binary search tree has this node as the root node
     //! @param key - key of the node
     //! @param direction - node type, the left is -1, the root is 0, and the right is 1
-    void printBSTree(BSTree tree, const Type key, int direction);
+    void printBSTree(BSTree tree, const Type key, const int direction);
 
 private:
     //! @brief Output stream of the binary search tree structure.
@@ -119,8 +119,8 @@ extern Node* leftLeftRotation(AVLTree k2);
 extern Node* rightRightRotation(AVLTree k1);
 extern Node* leftRightRotation(AVLTree k3);
 extern Node* rightLeftRotation(AVLTree k1);
-extern Node* createNode(const Type key, Node* left, Node* right);
-extern Node* deleteNode(AVLTree tree, Node* z);
+extern Node* createNode(const Type key, Node* const left, Node* const right);
+extern Node* deleteNode(AVLTree tree, const Node* const z);
 
 extern Node* avlTreeSearch(AVLTree tree, const Type key);
 extern Node* avlTreeInsert(AVLTree tree, const Type key);
@@ -185,8 +185,8 @@ extern "C"
 
 extern Node* getMinimum(SplayTree tree);
 extern Node* getMaximum(SplayTree tree);
-extern Node* createNode(const Type key, Node* left, Node* right);
-extern Node* insertNode(SplayTree tree, Node* z);
+extern Node* createNode(const Type key, Node* const left, Node* const right);
+extern Node* insertNode(SplayTree tree, Node* const z);
 
 extern Node* splayTreeSearch(SplayTree tree, const Type key);
 extern Node* splayTreeSplay(SplayTree tree, const Type key);

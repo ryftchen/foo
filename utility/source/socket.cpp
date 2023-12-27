@@ -103,7 +103,7 @@ void TCPSocket::setAddress(const ::sockaddr_in& addr)
     return sockAddr;
 }
 
-int TCPSocket::toSend(const char* bytes, const std::size_t length)
+int TCPSocket::toSend(const char* const bytes, const std::size_t length)
 {
     return ::send(sock, bytes, length, 0);
 }
@@ -115,7 +115,7 @@ int TCPSocket::toSend(const std::string& message)
 
 void TCPSocket::toConnect(const std::string& ip, const std::uint16_t port, const std::function<void()> onConnected)
 {
-    ::addrinfo hints{}, *res, *it;
+    ::addrinfo hints{}, *res = nullptr, *it = nullptr;
     std::memset(&hints, 0, sizeof(hints));
     hints.ai_family = AF_INET;
     hints.ai_socktype = ::SOCK_STREAM;
@@ -165,7 +165,7 @@ void TCPSocket::toReceive(const bool detach)
     }
 }
 
-void TCPSocket::toRecv(TCPSocket* socket)
+void TCPSocket::toRecv(const TCPSocket* const socket)
 {
     char tempBuffer[socket->bufferSize];
     tempBuffer[0] = '\0';
@@ -255,7 +255,7 @@ void TCPServer::toAccept(const bool detach)
     }
 }
 
-void TCPServer::toAccept(TCPServer* server)
+void TCPServer::toAccept(const TCPServer* const server)
 {
     ::sockaddr_in newSocketInfo{};
     ::socklen_t newSocketInfoLength = sizeof(newSocketInfo);
@@ -274,7 +274,7 @@ void TCPServer::toAccept(TCPServer* server)
             throw std::runtime_error("Error while accepting a new connection, errno: " + std::to_string(errno) + '.');
         }
 
-        TCPSocket* newSocket = new TCPSocket(newSock);
+        TCPSocket* const newSocket = new TCPSocket(newSock);
         newSocket->autoRelease.store(true);
         newSocket->setAddress(newSocketInfo);
 
@@ -283,10 +283,14 @@ void TCPServer::toAccept(TCPServer* server)
     }
 }
 
-int UDPSocket::toSendTo(const char* bytes, const std::size_t length, const std::string& ip, const std::uint16_t port)
+int UDPSocket::toSendTo(
+    const char* const bytes,
+    const std::size_t length,
+    const std::string& ip,
+    const std::uint16_t port)
 {
     ::sockaddr_in addr{};
-    ::addrinfo hints{}, *res, *it;
+    ::addrinfo hints{}, *res = nullptr, *it = nullptr;
     std::memset(&hints, 0, sizeof(hints));
     hints.ai_family = AF_INET;
     hints.ai_socktype = ::SOCK_DGRAM;
@@ -326,7 +330,7 @@ int UDPSocket::toSendTo(const std::string& message, const std::string& ip, const
     return toSendTo(message.c_str(), message.length(), ip, port);
 }
 
-int UDPSocket::toSend(const char* bytes, const std::size_t length)
+int UDPSocket::toSend(const char* const bytes, const std::size_t length)
 {
     return ::send(sock, bytes, length, 0);
 }
@@ -338,7 +342,7 @@ int UDPSocket::toSend(const std::string& message)
 
 void UDPSocket::toConnect(const std::string& ip, const std::uint16_t port)
 {
-    ::addrinfo hints{}, *res, *it;
+    ::addrinfo hints{}, *res = nullptr, *it = nullptr;
     std::memset(&hints, 0, sizeof(hints));
     hints.ai_family = AF_INET;
     hints.ai_socktype = ::SOCK_DGRAM;
@@ -398,7 +402,7 @@ void UDPSocket::toReceiveFrom(const bool detach)
     }
 }
 
-void UDPSocket::toRecv(UDPSocket* socket)
+void UDPSocket::toRecv(const UDPSocket* const socket)
 {
     char tempBuffer[socket->bufferSize];
     tempBuffer[0] = '\0';
@@ -420,7 +424,7 @@ void UDPSocket::toRecv(UDPSocket* socket)
     }
 }
 
-void UDPSocket::toRecvFrom(UDPSocket* socket)
+void UDPSocket::toRecvFrom(const UDPSocket* const socket)
 {
     ::sockaddr_in addr{};
     ::socklen_t hostAddrSize = sizeof(addr);
