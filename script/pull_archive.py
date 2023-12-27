@@ -91,7 +91,7 @@ class Documentation:
             response.raise_for_status()
             location_url = response.headers["location"]
             proxy = {}
-            if self.proxy_port:
+            if len(str(self.proxy_port)) != 0:
                 proxy = {
                     "http": f"http://localhost:{self.proxy_port}",
                     "https": f"https://localhost:{self.proxy_port}",
