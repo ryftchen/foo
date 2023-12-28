@@ -632,9 +632,8 @@ function package_for_doxygen()
     local doxygen_folder="doxygen"
     local tar_file="${FOLDER[proj]}_${doxygen_folder}_${commit_id}.tar.bz2"
     shell_command "rm -rf ./${FOLDER[doc]}/archive/${FOLDER[proj]}_${doxygen_folder}_*.tar.bz2 \
-./${FOLDER[doc]}/${doxygen_folder}"
+./${FOLDER[doc]}/${doxygen_folder} && mkdir -p ./${FOLDER[doc]}/${doxygen_folder}"
 
-    shell_command "mkdir -p ./${FOLDER[doc]}/${doxygen_folder}"
     shell_command "(cat ./${FOLDER[doc]}/Doxyfile ; echo 'PROJECT_NUMBER=\"@ $(git rev-parse --short @)\"') \
 | doxygen -"
     shell_command "tar -jcvf ./${FOLDER[doc]}/archive/${tar_file} -C ./${FOLDER[doc]} ${doxygen_folder} >/dev/null"
@@ -676,9 +675,8 @@ function package_for_browser()
     local browser_folder="browser"
     local tar_file="${FOLDER[proj]}_${browser_folder}_${commit_id}.tar.bz2"
     shell_command "rm -rf ./${FOLDER[doc]}/archive/${FOLDER[proj]}_${browser_folder}_*.tar.bz2 \
-./${FOLDER[doc]}/${browser_folder}"
+./${FOLDER[doc]}/${browser_folder} && mkdir -p ./${FOLDER[doc]}/${browser_folder}"
 
-    shell_command "mkdir -p ./${FOLDER[doc]}/${browser_folder}"
     shell_command "cp -rf /usr/local/share/woboq/data ./${FOLDER[doc]}/${browser_folder}/"
     shell_command "codebrowser_generator -color -a -b ./${FOLDER[bld]}/${COMP_CMD} \
 -o ./${FOLDER[doc]}/${browser_folder} -p ${FOLDER[proj]}:.:${commit_id} -d ./data"

@@ -143,7 +143,7 @@ void runLinearTasks(const std::vector<std::string>& targets)
             continue;
         }
 
-        const std::string targetInstance = targets.at(i), threadName = "l_" + targetInstance;
+        const std::string targetInstance = targets.at(i), threadName = "task-ds_l_" + targetInstance;
         switch (utility::common::bkdrHash(targetInstance.data()))
         {
             case "lin"_bkdrHash:
@@ -284,7 +284,7 @@ void runTreeTasks(const std::vector<std::string>& targets)
             continue;
         }
 
-        const std::string targetInstance = targets.at(i), threadName = "t_" + targetInstance;
+        const std::string targetInstance = targets.at(i), threadName = "task-ds_t_" + targetInstance;
         switch (utility::common::bkdrHash(targetInstance.data()))
         {
             case "bin"_bkdrHash:
