@@ -254,8 +254,8 @@ void Command::runCommander(const int argc, const char* const argv[])
         {
             constexpr std::uint32_t childThdNum = 2;
             auto threads = std::make_shared<utility::thread::Thread>(childThdNum);
-            threads->enqueue("commander_fg", &Command::foregroundHandler, this, argc, argv);
-            threads->enqueue("commander_bg", &Command::backgroundHandler, this);
+            threads->enqueue("commander-fg", &Command::foregroundHandler, this, argc, argv);
+            threads->enqueue("commander-bg", &Command::backgroundHandler, this);
         }
 
         VIEW_WAIT_TO_STOP;
@@ -512,7 +512,7 @@ void Command::showVersionIcon() const
 #else
             "other compiler";
 #endif // __clang__
-        return os.str();
+        return std::move(os).str();
     };
     const std::string additionalInfo = "echo '" + std::string{copyright} + "' ; echo 'Built with " + getCXXCompiler()
         + " for " + std::string{processor} + " on " + std::string{buildDate} + ".'";

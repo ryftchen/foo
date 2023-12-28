@@ -176,7 +176,7 @@ bool Packet::read(void* const dst, const std::uint32_t offset)
 
 View& View::getInstance()
 {
-    if (!CONFIG_ACTIVE_HELPER)
+    if (!CONFIG_ACTIVE_HELPER) [[unlikely]]
     {
         throw std::runtime_error("The viewer is disabled.");
     }
@@ -565,7 +565,7 @@ std::string View::getLogContents()
         });
     std::ostringstream os;
     std::copy(contents.cbegin(), contents.cend(), std::ostream_iterator<std::string>(os, "\n"));
-    return os.str();
+    return std::move(os).str();
 }
 
 std::string View::getStatusInformation()

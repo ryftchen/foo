@@ -224,7 +224,7 @@ public:
         }
         destroyDll(&dll);
 
-        return std::ostringstream(output.flush().str());
+        return std::ostringstream{output.flush().str()};
     }
     //! @brief Stack.
     //! @return procedure output
@@ -269,7 +269,7 @@ public:
         }
         destroyStack(&stacks);
 
-        return std::ostringstream(output.flush().str());
+        return std::ostringstream{output.flush().str()};
     }
     //! @brief Queue.
     //! @return procedure output
@@ -314,7 +314,7 @@ public:
         }
         destroyQueue(&queues);
 
-        return std::ostringstream(output.flush().str());
+        return std::ostringstream{output.flush().str()};
     }
 };
 
@@ -391,7 +391,7 @@ public:
 
         destroyBSTree(root);
 
-        return std::ostringstream(output.flush().str());
+        return std::ostringstream{output.flush().str()};
     }
     //! @brief Adelson-Velsky-Landis.
     //! @return procedure output
@@ -444,7 +444,7 @@ public:
 
         destroyAVLTree(root);
 
-        return std::ostringstream(output.flush().str());
+        return std::ostringstream{output.flush().str()};
     }
     //! @brief Splay.
     //! @return procedure output
@@ -490,7 +490,7 @@ public:
 
         destroySplayTree(root);
 
-        return std::ostringstream(output.flush().str());
+        return std::ostringstream{output.flush().str()};
     }
 };
 
