@@ -255,7 +255,7 @@ void runBehavioralTasks(const std::vector<std::string>& targets)
             continue;
         }
 
-        const std::string targetInstance = targets.at(i), threadName = "b_" + targetInstance;
+        const std::string targetInstance = targets.at(i), threadName = "task-dp_b_" + targetInstance;
         switch (utility::common::bkdrHash(targetInstance.data()))
         {
             case "cha"_bkdrHash:
@@ -473,7 +473,7 @@ void runCreationalTasks(const std::vector<std::string>& targets)
             continue;
         }
 
-        const std::string targetInstance = targets.at(i), threadName = "c_" + targetInstance;
+        const std::string targetInstance = targets.at(i), threadName = "task-dp_c_" + targetInstance;
         switch (utility::common::bkdrHash(targetInstance.data()))
         {
             case "abs"_bkdrHash:
@@ -683,7 +683,7 @@ void runStructuralTasks(const std::vector<std::string>& targets)
             continue;
         }
 
-        const std::string targetInstance = targets.at(i), threadName = "s_" + targetInstance;
+        const std::string targetInstance = targets.at(i), threadName = "task-dp_s_" + targetInstance;
         switch (utility::common::bkdrHash(targetInstance.data()))
         {
             case "ada"_bkdrHash:

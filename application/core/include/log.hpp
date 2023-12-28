@@ -368,13 +368,13 @@ void Log::flush(
         std::string validFormat = format;
         validFormat.erase(
             std::remove_if(
-                begin(validFormat),
-                end(validFormat),
+                std::begin(validFormat),
+                std::end(validFormat),
                 [l = std::locale{}](const auto c)
                 {
                     return ((' ' != c) && std::isspace(c, l));
                 }),
-            end(validFormat));
+            std::end(validFormat));
         std::string output = std::string{prefix} + ":[" + utility::time::getCurrentSystemTime() + "]:["
             + codeFile.substr(codeFile.find("foo/") + 4, codeFile.length()) + '#' + std::to_string(codeLine)
             + "]: " + utility::common::formatString(validFormat.c_str(), std::forward<Args>(args)...);

@@ -233,7 +233,7 @@ void runMatchTasks(const std::vector<std::string>& targets)
             continue;
         }
 
-        const std::string targetMethod = targets.at(i), threadName = "m_" + targetMethod;
+        const std::string targetMethod = targets.at(i), threadName = "task-algo_m_" + targetMethod;
         switch (utility::common::bkdrHash(targetMethod.data()))
         {
             case "rab"_bkdrHash:
@@ -376,7 +376,7 @@ void runNotationTasks(const std::vector<std::string>& targets)
             continue;
         }
 
-        const std::string targetMethod = targets.at(i), threadName = "n_" + targetMethod;
+        const std::string targetMethod = targets.at(i), threadName = "task-algo_n_" + targetMethod;
         switch (utility::common::bkdrHash(targetMethod.data()))
         {
             case "pre"_bkdrHash:
@@ -550,7 +550,7 @@ void runOptimalTasks(const std::vector<std::string>& targets)
                 continue;
             }
 
-            const std::string targetMethod = targets.at(i), threadName = "o_" + targetMethod;
+            const std::string targetMethod = targets.at(i), threadName = "task-algo_o_" + targetMethod;
             switch (utility::common::bkdrHash(targetMethod.data()))
             {
                 case "gra"_bkdrHash:
@@ -587,7 +587,7 @@ void runOptimalTasks(const std::vector<std::string>& targets)
             case 0:
                 resultFunctor(std::get<0>(function), range);
                 break;
-            [[unlikely]] default:
+            default:
                 break;
         }
     }
@@ -747,7 +747,7 @@ void runSearchTasks(const std::vector<std::string>& targets)
             continue;
         }
 
-        const std::string targetMethod = targets.at(i), threadName = "s_" + targetMethod;
+        const std::string targetMethod = targets.at(i), threadName = "task-algo_s_" + targetMethod;
         switch (utility::common::bkdrHash(targetMethod.data()))
         {
             case "bin"_bkdrHash:
@@ -1024,7 +1024,7 @@ void runSortTasks(const std::vector<std::string>& targets)
             continue;
         }
 
-        const std::string targetMethod = targets.at(i), threadName = "s_" + targetMethod;
+        const std::string targetMethod = targets.at(i), threadName = "task-algo_S_" + targetMethod;
         switch (utility::common::bkdrHash(targetMethod.data()))
         {
             case "bub"_bkdrHash:

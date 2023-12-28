@@ -81,7 +81,7 @@ struct Join
         return array;
     }
     //! @brief A sequence of characters.
-    static constexpr auto array = impl();
+    static constexpr auto array{impl()};
     //! @brief The splicing result. Converted from a sequence of characters.
     static constexpr std::string_view value{array.data(), array.size() - 1};
 };

@@ -166,7 +166,7 @@ void runArithmeticTasks(const std::vector<std::string>& targets)
             continue;
         }
 
-        const std::string targetMethod = targets.at(i), threadName = "a_" + targetMethod;
+        const std::string targetMethod = targets.at(i), threadName = "task-num_a_" + targetMethod;
         switch (utility::common::bkdrHash(targetMethod.data()))
         {
             case "add"_bkdrHash:
@@ -319,7 +319,7 @@ void runDivisorTasks(const std::vector<std::string>& targets)
             continue;
         }
 
-        const std::string targetMethod = targets.at(i), threadName = "d_" + targetMethod;
+        const std::string targetMethod = targets.at(i), threadName = "task-num_d_" + targetMethod;
         switch (utility::common::bkdrHash(targetMethod.data()))
         {
             case "euc"_bkdrHash:
@@ -508,7 +508,7 @@ void runIntegralTasks(const std::vector<std::string>& targets)
                 continue;
             }
 
-            const std::string targetMethod = targets.at(i), threadName = "i_" + targetMethod;
+            const std::string targetMethod = targets.at(i), threadName = "task-num_i_" + targetMethod;
             switch (utility::common::bkdrHash(targetMethod.data()))
             {
                 case "tra"_bkdrHash:
@@ -548,7 +548,7 @@ void runIntegralTasks(const std::vector<std::string>& targets)
             case 0:
                 resultFunctor(std::get<0>(expression), range);
                 break;
-            [[unlikely]] default:
+            default:
                 break;
         }
     }
@@ -686,7 +686,7 @@ void runPrimeTasks(const std::vector<std::string>& targets)
             continue;
         }
 
-        const std::string targetMethod = targets.at(i), threadName = "p_" + targetMethod;
+        const std::string targetMethod = targets.at(i), threadName = "task-num_p_" + targetMethod;
         switch (utility::common::bkdrHash(targetMethod.data()))
         {
             case "era"_bkdrHash:
