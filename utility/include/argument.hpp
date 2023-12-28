@@ -122,13 +122,13 @@ std::string represent(const T& val)
             out << represent(*std::prev(val.end()));
         }
         out << '}';
-        return out.str();
+        return std::move(out).str();
     }
     else if constexpr (isStreamable<T>)
     {
         std::ostringstream out;
         out << val;
-        return out.str();
+        return std::move(out).str();
     }
     else
     {
@@ -191,7 +191,7 @@ std::string join(StrIter first, StrIter last, const std::string& separator)
         value << separator << *first;
         ++first;
     }
-    return value.str();
+    return std::move(value).str();
 }
 
 //! @brief Enumerate specific argument patterns.

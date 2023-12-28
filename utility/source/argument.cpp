@@ -136,7 +136,7 @@ std::string Register::getInlineUsage() const
     {
         usage << ']';
     }
-    return usage.str();
+    return std::move(usage).str();
 }
 
 std::size_t Register::getArgumentsLength() const
@@ -480,8 +480,7 @@ std::string Argument::usage() const
         }
         stream << '}';
     }
-
-    return stream.str();
+    return std::move(stream).str();
 }
 
 void Argument::addSubParser(Argument& parser)
@@ -687,8 +686,8 @@ std::ostream& operator<<(std::ostream& os, const Argument& arg)
            << "sub-command:\n";
         for (const auto& [command, subParser] : arg.subParserMap)
         {
-            os << std::setw(static_cast<int>(longestArgLength)) << command;
-            os << "    " << subParser->get().descrText << '\n';
+            os << std::setw(static_cast<int>(longestArgLength)) << command << "    " << subParser->get().descrText
+               << '\n';
         }
     }
 

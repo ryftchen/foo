@@ -235,7 +235,7 @@ public:
         handler1->setHandler(handler2);
         handler1->handleRequest();
 
-        std::ostringstream os = std::ostringstream(chain_of_responsibility::output().str());
+        std::ostringstream os(chain_of_responsibility::output().str());
         chain_of_responsibility::output().str("");
         chain_of_responsibility::output().clear();
         return os;
@@ -256,7 +256,7 @@ public:
         invoker.set(commands);
         invoker.confirm();
 
-        std::ostringstream os = std::ostringstream(command::output().str());
+        std::ostringstream os(command::output().str());
         command::output().str("");
         command::output().clear();
         return os;
@@ -282,7 +282,7 @@ public:
         interpreter::output() << context->get("A") << " AND " << context->get("B");
         interpreter::output() << " = " << exp->interpret(context) << '\n';
 
-        std::ostringstream os = std::ostringstream(interpreter::output().str());
+        std::ostringstream os(interpreter::output().str());
         interpreter::output().str("");
         interpreter::output().clear();
         return os;
@@ -304,7 +304,7 @@ public:
             iterator::output() << "item value: " << iter->currentItem() << '\n';
         }
 
-        std::ostringstream os = std::ostringstream(iterator::output().str());
+        std::ostringstream os(iterator::output().str());
         iterator::output().str("");
         iterator::output().clear();
         return os;
@@ -331,7 +331,7 @@ public:
         c1->send("hi!");
         c3->send("hello!");
 
-        std::ostringstream os = std::ostringstream(mediator::output().str());
+        std::ostringstream os(mediator::output().str());
         mediator::output().str("");
         mediator::output().clear();
         return os;
@@ -357,7 +357,7 @@ public:
 
         memento::output() << "actual state is " << originator->getState() << '\n';
 
-        std::ostringstream os = std::ostringstream(memento::output().str());
+        std::ostringstream os(memento::output().str());
         memento::output().str("");
         memento::output().clear();
         return os;
@@ -387,7 +387,7 @@ public:
         observer::output() << "observer1 state: " << observer1->getState() << '\n';
         observer::output() << "observer2 state: " << observer2->getState() << '\n';
 
-        std::ostringstream os = std::ostringstream(observer::output().str());
+        std::ostringstream os(observer::output().str());
         observer::output().str("");
         observer::output().clear();
         return os;
@@ -409,7 +409,7 @@ public:
         context->setState(std::make_unique<ConcreteStateB>());
         context->request();
 
-        std::ostringstream os = std::ostringstream(state::output().str());
+        std::ostringstream os(state::output().str());
         state::output().str("");
         state::output().clear();
         return os;
@@ -429,7 +429,7 @@ public:
         Context contextB(std::make_unique<ConcreteStrategyB>());
         contextB.contextInterface();
 
-        std::ostringstream os = std::ostringstream(strategy::output().str());
+        std::ostringstream os(strategy::output().str());
         strategy::output().str("");
         strategy::output().clear();
         return os;
@@ -445,7 +445,7 @@ public:
         std::shared_ptr<AbstractClass> tm = std::make_shared<ConcreteClass>();
         tm->templateMethod();
 
-        std::ostringstream os = std::ostringstream(template_method::output().str());
+        std::ostringstream os(template_method::output().str());
         template_method::output().str("");
         template_method::output().clear();
         return os;
@@ -470,7 +470,7 @@ public:
         elementB->accept(visitor1);
         elementB->accept(visitor2);
 
-        std::ostringstream os = std::ostringstream(visitor::output().str());
+        std::ostringstream os(visitor::output().str());
         visitor::output().str("");
         visitor::output().clear();
         return os;
@@ -546,7 +546,7 @@ public:
         std::unique_ptr<ProductB> p4 = factoryY->createProductB();
         abstract_factory::output() << "product: " << p4->getName() << '\n';
 
-        std::ostringstream os = std::ostringstream(abstract_factory::output().str());
+        std::ostringstream os(abstract_factory::output().str());
         abstract_factory::output().str("");
         abstract_factory::output().clear();
         return os;
@@ -572,7 +572,7 @@ public:
         Product product2 = director.get();
         builder::output() << "2nd product parts: " << product2.get() << '\n';
 
-        std::ostringstream os = std::ostringstream(builder::output().str());
+        std::ostringstream os(builder::output().str());
         builder::output().str("");
         builder::output().clear();
         return os;
@@ -596,7 +596,7 @@ public:
         factory_method::output() << "product: " << p2->getName() << '\n';
         creator->removeProduct(p2);
 
-        std::ostringstream os = std::ostringstream(factory_method::output().str());
+        std::ostringstream os(factory_method::output().str());
         factory_method::output().str("");
         factory_method::output().clear();
         return os;
@@ -619,7 +619,7 @@ public:
 
         Client::remove();
 
-        std::ostringstream os = std::ostringstream(prototype::output().str());
+        std::ostringstream os(prototype::output().str());
         prototype::output().str("");
         prototype::output().clear();
         return os;
@@ -634,7 +634,7 @@ public:
         Singleton::get()->tell();
         Singleton::restart();
 
-        std::ostringstream os = std::ostringstream(singleton::output().str());
+        std::ostringstream os(singleton::output().str());
         singleton::output().str("");
         singleton::output().clear();
         return os;
@@ -684,7 +684,7 @@ public:
         std::shared_ptr<Target> t = std::make_shared<Adapter>();
         t->request();
 
-        std::ostringstream os = std::ostringstream(adapter::output().str());
+        std::ostringstream os(adapter::output().str());
         adapter::output().str("");
         adapter::output().clear();
         return os;
@@ -708,7 +708,7 @@ public:
             std::make_unique<RefinedAbstraction>(std::make_unique<ConcreteImplementorB>());
         abstract2->operation();
 
-        std::ostringstream os = std::ostringstream(bridge::output().str());
+        std::ostringstream os(bridge::output().str());
         bridge::output().str("");
         bridge::output().clear();
         return os;
@@ -731,7 +731,7 @@ public:
         composites.remove(0);
         composites.operation();
 
-        std::ostringstream os = std::ostringstream(composite::output().str());
+        std::ostringstream os(composite::output().str());
         composite::output().str("");
         composite::output().clear();
         return os;
@@ -753,7 +753,7 @@ public:
         std::shared_ptr<Component> component = db;
         component->operation();
 
-        std::ostringstream os = std::ostringstream(decorator::output().str());
+        std::ostringstream os(decorator::output().str());
         decorator::output().str("");
         decorator::output().clear();
         return os;
@@ -769,7 +769,7 @@ public:
         facades->operation1();
         facades->operation2();
 
-        std::ostringstream os = std::ostringstream(facade::output().str());
+        std::ostringstream os(facade::output().str());
         facade::output().str("");
         facade::output().clear();
         return os;
@@ -785,7 +785,7 @@ public:
         factory->getFlyweight(1)->operation();
         factory->getFlyweight(2)->operation();
 
-        std::ostringstream os = std::ostringstream(flyweight::output().str());
+        std::ostringstream os(flyweight::output().str());
         flyweight::output().str("");
         flyweight::output().clear();
         return os;
@@ -800,7 +800,7 @@ public:
         std::shared_ptr<Proxy> proxies = std::make_shared<Proxy>();
         proxies->request();
 
-        std::ostringstream os = std::ostringstream(proxy::output().str());
+        std::ostringstream os(proxy::output().str());
         proxy::output().str("");
         proxy::output().clear();
         return os;
