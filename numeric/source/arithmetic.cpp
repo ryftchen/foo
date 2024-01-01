@@ -2,7 +2,7 @@
 //! @author ryftchen
 //! @brief The definitions (arithmetic) in the numeric module.
 //! @version 1.0
-//! @copyright Copyright (c) 2022-2023 ryftchen. All rights reserved.
+//! @copyright Copyright (c) 2022-2024 ryftchen. All rights reserved.
 
 #include "arithmetic.hpp"
 
