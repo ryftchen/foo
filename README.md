@@ -85,4 +85,4 @@ The project documentation can be found on the [Github Pages](https://ryftchen.gi
 
 ## License
 
-Copyright (c) 2022-2023 [ryftchen](https://github.com/ryftchen). Released under the [MIT License](https://github.com/ryftchen/foo/blob/master/LICENSE).
+Copyright (c) 2022-2024 [ryftchen](https://github.com/ryftchen). Released under the [MIT License](https://github.com/ryftchen/foo/blob/master/LICENSE).

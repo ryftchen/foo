@@ -2,7 +2,7 @@
 //! @author ryftchen
 //! @brief The declarations (command) in the application module.
 //! @version 1.0
-//! @copyright Copyright (c) 2022-2023 ryftchen. All rights reserved.
+//! @copyright Copyright (c) 2022-2024 ryftchen. All rights reserved.
 
 #pragma once
 
@@ -87,7 +87,7 @@ private:
     //! @brief Parse arguments helper to apply numeric.
     utility::argument::Argument subAppNumCLI{"app-num"};
     //! @brief Copyright information.
-    static constexpr std::string_view copyright{"Copyright (c) 2022-2023 ryftchen. All rights reserved."};
+    static constexpr std::string_view copyright{"Copyright (c) 2022-2024 ryftchen. All rights reserved."};
 
     //! @brief Foreground handler for parsing command line arguments.
     //! @param argc - argument count
