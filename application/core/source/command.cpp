@@ -549,7 +549,7 @@ void Command::enterConsoleMode() const
                   << std::flush;
         auto tcpClient = std::make_shared<TCPSocket>();
         launchClient<TCPSocket>(tcpClient);
-        std::string user;
+        std::string user = "USER";
         if (nullptr != std::getenv("USER"))
         {
             user = std::getenv("USER");
@@ -557,7 +557,7 @@ void Command::enterConsoleMode() const
         char hostName[HOST_NAME_MAX] = {'\0'};
         if (::gethostname(hostName, HOST_NAME_MAX))
         {
-            std::memset(hostName, 0, HOST_NAME_MAX);
+            std::strncpy(hostName, "HOSTNAME", HOST_NAME_MAX);
         }
         const std::string greeting = user + '@' + std::string{hostName} + " foo > ";
         Console console(greeting);
