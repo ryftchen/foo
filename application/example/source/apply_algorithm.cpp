@@ -95,18 +95,16 @@ void MatchSolution::rkMethod(
     const char* const pattern,
     const std::uint32_t textLen,
     const std::uint32_t patternLen)
+try
 {
-    try
-    {
-        TIME_BEGIN(timing);
-        const auto shift = algorithm::match::Match().rk(text, pattern, textLen, patternLen);
-        TIME_END(timing);
-        MATCH_PRINT_RESULT_CONTENT(MatchMethod::rabinKarp);
-    }
-    catch (const std::exception& error)
-    {
-        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
-    }
+    TIME_BEGIN(timing);
+    const auto shift = algorithm::match::Match().rk(text, pattern, textLen, patternLen);
+    TIME_END(timing);
+    MATCH_PRINT_RESULT_CONTENT(MatchMethod::rabinKarp);
+}
+catch (const std::exception& error)
+{
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
 }
 
 void MatchSolution::kmpMethod(
@@ -114,18 +112,16 @@ void MatchSolution::kmpMethod(
     const char* const pattern,
     const std::uint32_t textLen,
     const std::uint32_t patternLen)
+try
 {
-    try
-    {
-        TIME_BEGIN(timing);
-        const auto shift = algorithm::match::Match().kmp(text, pattern, textLen, patternLen);
-        TIME_END(timing);
-        MATCH_PRINT_RESULT_CONTENT(MatchMethod::knuthMorrisPratt);
-    }
-    catch (const std::exception& error)
-    {
-        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
-    }
+    TIME_BEGIN(timing);
+    const auto shift = algorithm::match::Match().kmp(text, pattern, textLen, patternLen);
+    TIME_END(timing);
+    MATCH_PRINT_RESULT_CONTENT(MatchMethod::knuthMorrisPratt);
+}
+catch (const std::exception& error)
+{
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
 }
 
 void MatchSolution::bmMethod(
@@ -133,18 +129,16 @@ void MatchSolution::bmMethod(
     const char* const pattern,
     const std::uint32_t textLen,
     const std::uint32_t patternLen)
+try
 {
-    try
-    {
-        TIME_BEGIN(timing);
-        const auto shift = algorithm::match::Match().bm(text, pattern, textLen, patternLen);
-        TIME_END(timing);
-        MATCH_PRINT_RESULT_CONTENT(MatchMethod::boyerMoore);
-    }
-    catch (const std::exception& error)
-    {
-        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
-    }
+    TIME_BEGIN(timing);
+    const auto shift = algorithm::match::Match().bm(text, pattern, textLen, patternLen);
+    TIME_END(timing);
+    MATCH_PRINT_RESULT_CONTENT(MatchMethod::boyerMoore);
+}
+catch (const std::exception& error)
+{
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
 }
 
 void MatchSolution::horspoolMethod(
@@ -152,18 +146,16 @@ void MatchSolution::horspoolMethod(
     const char* const pattern,
     const std::uint32_t textLen,
     const std::uint32_t patternLen)
+try
 {
-    try
-    {
-        TIME_BEGIN(timing);
-        const auto shift = algorithm::match::Match().horspool(text, pattern, textLen, patternLen);
-        TIME_END(timing);
-        MATCH_PRINT_RESULT_CONTENT(MatchMethod::horspool);
-    }
-    catch (const std::exception& error)
-    {
-        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
-    }
+    TIME_BEGIN(timing);
+    const auto shift = algorithm::match::Match().horspool(text, pattern, textLen, patternLen);
+    TIME_END(timing);
+    MATCH_PRINT_RESULT_CONTENT(MatchMethod::horspool);
+}
+catch (const std::exception& error)
+{
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
 }
 
 void MatchSolution::sundayMethod(
@@ -171,18 +163,16 @@ void MatchSolution::sundayMethod(
     const char* const pattern,
     const std::uint32_t textLen,
     const std::uint32_t patternLen)
+try
 {
-    try
-    {
-        TIME_BEGIN(timing);
-        const auto shift = algorithm::match::Match().sunday(text, pattern, textLen, patternLen);
-        TIME_END(timing);
-        MATCH_PRINT_RESULT_CONTENT(MatchMethod::sunday);
-    }
-    catch (const std::exception& error)
-    {
-        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
-    }
+    TIME_BEGIN(timing);
+    const auto shift = algorithm::match::Match().sunday(text, pattern, textLen, patternLen);
+    TIME_END(timing);
+    MATCH_PRINT_RESULT_CONTENT(MatchMethod::sunday);
+}
+catch (const std::exception& error)
+{
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
 }
 
 #undef MATCH_RESULT
@@ -313,29 +303,25 @@ constexpr std::string_view toString(const NotationMethod method)
 }
 
 void NotationSolution::prefixMethod(const std::string& infixNotation)
+try
 {
-    try
-    {
-        const auto notationStr = algorithm::notation::Notation().prefix(infixNotation);
-        NOTATION_PRINT_RESULT_CONTENT(NotationMethod::prefix, "polish notation");
-    }
-    catch (const std::exception& error)
-    {
-        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
-    }
+    const auto notationStr = algorithm::notation::Notation().prefix(infixNotation);
+    NOTATION_PRINT_RESULT_CONTENT(NotationMethod::prefix, "polish notation");
+}
+catch (const std::exception& error)
+{
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
 }
 
 void NotationSolution::postfixMethod(const std::string& infixNotation)
+try
 {
-    try
-    {
-        const auto notationStr = algorithm::notation::Notation().postfix(infixNotation);
-        NOTATION_PRINT_RESULT_CONTENT(NotationMethod::postfix, "reverse polish notation");
-    }
-    catch (const std::exception& error)
-    {
-        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
-    }
+    const auto notationStr = algorithm::notation::Notation().postfix(infixNotation);
+    NOTATION_PRINT_RESULT_CONTENT(NotationMethod::postfix, "reverse polish notation");
+}
+catch (const std::exception& error)
+{
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
 }
 
 #undef NOTATION_RESULT
@@ -440,63 +426,55 @@ constexpr std::string_view toString(const OptimalMethod method)
 }
 
 void OptimalSolution::gradientDescentMethod(const Function& func, const double left, const double right)
+try
 {
-    try
-    {
-        TIME_BEGIN(timing);
-        const auto [fx, x] = algorithm::optimal::Gradient(func)(left, right, algorithm::optimal::epsilon).value();
-        TIME_END(timing);
-        OPTIMAL_PRINT_RESULT_CONTENT(OptimalMethod::gradient);
-    }
-    catch (const std::exception& error)
-    {
-        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
-    }
+    TIME_BEGIN(timing);
+    const auto [fx, x] = algorithm::optimal::Gradient(func)(left, right, algorithm::optimal::epsilon).value();
+    TIME_END(timing);
+    OPTIMAL_PRINT_RESULT_CONTENT(OptimalMethod::gradient);
+}
+catch (const std::exception& error)
+{
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
 }
 
 void OptimalSolution::simulatedAnnealingMethod(const Function& func, const double left, const double right)
+try
 {
-    try
-    {
-        TIME_BEGIN(timing);
-        const auto [fx, x] = algorithm::optimal::Annealing(func)(left, right, algorithm::optimal::epsilon).value();
-        TIME_END(timing);
-        OPTIMAL_PRINT_RESULT_CONTENT(OptimalMethod::annealing);
-    }
-    catch (const std::exception& error)
-    {
-        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
-    }
+    TIME_BEGIN(timing);
+    const auto [fx, x] = algorithm::optimal::Annealing(func)(left, right, algorithm::optimal::epsilon).value();
+    TIME_END(timing);
+    OPTIMAL_PRINT_RESULT_CONTENT(OptimalMethod::annealing);
+}
+catch (const std::exception& error)
+{
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
 }
 
 void OptimalSolution::particleSwarmMethod(const Function& func, const double left, const double right)
+try
 {
-    try
-    {
-        TIME_BEGIN(timing);
-        const auto [fx, x] = algorithm::optimal::Particle(func)(left, right, algorithm::optimal::epsilon).value();
-        TIME_END(timing);
-        OPTIMAL_PRINT_RESULT_CONTENT(OptimalMethod::particle);
-    }
-    catch (const std::exception& error)
-    {
-        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
-    }
+    TIME_BEGIN(timing);
+    const auto [fx, x] = algorithm::optimal::Particle(func)(left, right, algorithm::optimal::epsilon).value();
+    TIME_END(timing);
+    OPTIMAL_PRINT_RESULT_CONTENT(OptimalMethod::particle);
+}
+catch (const std::exception& error)
+{
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
 }
 
 void OptimalSolution::geneticMethod(const Function& func, const double left, const double right)
+try
 {
-    try
-    {
-        TIME_BEGIN(timing);
-        const auto [fx, x] = algorithm::optimal::Genetic(func)(left, right, algorithm::optimal::epsilon).value();
-        TIME_END(timing);
-        OPTIMAL_PRINT_RESULT_CONTENT(OptimalMethod::genetic);
-    }
-    catch (const std::exception& error)
-    {
-        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
-    }
+    TIME_BEGIN(timing);
+    const auto [fx, x] = algorithm::optimal::Genetic(func)(left, right, algorithm::optimal::epsilon).value();
+    TIME_END(timing);
+    OPTIMAL_PRINT_RESULT_CONTENT(OptimalMethod::genetic);
+}
+catch (const std::exception& error)
+{
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
 }
 
 #undef OPTIMAL_RESULT
@@ -659,48 +637,42 @@ constexpr std::string_view toString(const SearchMethod method)
 }
 
 void SearchSolution::binaryMethod(const double* const array, const std::uint32_t length, const double key)
+try
 {
-    try
-    {
-        TIME_BEGIN(timing);
-        const auto index = algorithm::search::Search<double>().binary(array, length, key);
-        TIME_END(timing);
-        SEARCH_PRINT_RESULT_CONTENT(SearchMethod::binary);
-    }
-    catch (const std::exception& error)
-    {
-        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
-    }
+    TIME_BEGIN(timing);
+    const auto index = algorithm::search::Search<double>().binary(array, length, key);
+    TIME_END(timing);
+    SEARCH_PRINT_RESULT_CONTENT(SearchMethod::binary);
+}
+catch (const std::exception& error)
+{
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
 }
 
 void SearchSolution::interpolationMethod(const double* const array, const std::uint32_t length, const double key)
+try
 {
-    try
-    {
-        TIME_BEGIN(timing);
-        const auto index = algorithm::search::Search<double>().interpolation(array, length, key);
-        TIME_END(timing);
-        SEARCH_PRINT_RESULT_CONTENT(SearchMethod::interpolation);
-    }
-    catch (const std::exception& error)
-    {
-        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
-    }
+    TIME_BEGIN(timing);
+    const auto index = algorithm::search::Search<double>().interpolation(array, length, key);
+    TIME_END(timing);
+    SEARCH_PRINT_RESULT_CONTENT(SearchMethod::interpolation);
+}
+catch (const std::exception& error)
+{
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
 }
 
 void SearchSolution::fibonacciMethod(const double* const array, const std::uint32_t length, const double key)
+try
 {
-    try
-    {
-        TIME_BEGIN(timing);
-        const auto index = algorithm::search::Search<double>().fibonacci(array, length, key);
-        TIME_END(timing);
-        SEARCH_PRINT_RESULT_CONTENT(SearchMethod::fibonacci);
-    }
-    catch (const std::exception& error)
-    {
-        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
-    }
+    TIME_BEGIN(timing);
+    const auto index = algorithm::search::Search<double>().fibonacci(array, length, key);
+    TIME_END(timing);
+    SEARCH_PRINT_RESULT_CONTENT(SearchMethod::fibonacci);
+}
+catch (const std::exception& error)
+{
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
 }
 
 #undef SEARCH_RESULT
@@ -834,153 +806,133 @@ constexpr std::string_view toString(const SortMethod method)
 }
 
 void SortSolution::bubbleMethod(const int* const array, const std::uint32_t length)
+try
 {
-    try
-    {
-        TIME_BEGIN(timing);
-        const auto sortArray = algorithm::sort::Sort<int>().bubble(array, length);
-        TIME_END(timing);
-        SORT_PRINT_RESULT_CONTENT(SortMethod::bubble);
-    }
-    catch (const std::exception& error)
-    {
-        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
-    }
+    TIME_BEGIN(timing);
+    const auto sortArray = algorithm::sort::Sort<int>().bubble(array, length);
+    TIME_END(timing);
+    SORT_PRINT_RESULT_CONTENT(SortMethod::bubble);
+}
+catch (const std::exception& error)
+{
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
 }
 
 void SortSolution::selectionMethod(const int* const array, const std::uint32_t length)
+try
 {
-    try
-    {
-        TIME_BEGIN(timing);
-        const auto sortArray = algorithm::sort::Sort<int>().selection(array, length);
-        TIME_END(timing);
-        SORT_PRINT_RESULT_CONTENT(SortMethod::selection);
-    }
-    catch (const std::exception& error)
-    {
-        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
-    }
+    TIME_BEGIN(timing);
+    const auto sortArray = algorithm::sort::Sort<int>().selection(array, length);
+    TIME_END(timing);
+    SORT_PRINT_RESULT_CONTENT(SortMethod::selection);
+}
+catch (const std::exception& error)
+{
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
 }
 
 void SortSolution::insertionMethod(const int* const array, const std::uint32_t length)
+try
 {
-    try
-    {
-        TIME_BEGIN(timing);
-        const auto sortArray = algorithm::sort::Sort<int>().insertion(array, length);
-        TIME_END(timing);
-        SORT_PRINT_RESULT_CONTENT(SortMethod::insertion);
-    }
-    catch (const std::exception& error)
-    {
-        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
-    }
+    TIME_BEGIN(timing);
+    const auto sortArray = algorithm::sort::Sort<int>().insertion(array, length);
+    TIME_END(timing);
+    SORT_PRINT_RESULT_CONTENT(SortMethod::insertion);
+}
+catch (const std::exception& error)
+{
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
 }
 
 void SortSolution::shellMethod(const int* const array, const std::uint32_t length)
+try
 {
-    try
-    {
-        TIME_BEGIN(timing);
-        const auto sortArray = algorithm::sort::Sort<int>().shell(array, length);
-        TIME_END(timing);
-        SORT_PRINT_RESULT_CONTENT(SortMethod::shell);
-    }
-    catch (const std::exception& error)
-    {
-        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
-    }
+    TIME_BEGIN(timing);
+    const auto sortArray = algorithm::sort::Sort<int>().shell(array, length);
+    TIME_END(timing);
+    SORT_PRINT_RESULT_CONTENT(SortMethod::shell);
+}
+catch (const std::exception& error)
+{
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
 }
 
 void SortSolution::mergeMethod(const int* const array, const std::uint32_t length)
+try
 {
-    try
-    {
-        TIME_BEGIN(timing);
-        const auto sortArray = algorithm::sort::Sort<int>().merge(array, length);
-        TIME_END(timing);
-        SORT_PRINT_RESULT_CONTENT(SortMethod::merge);
-    }
-    catch (const std::exception& error)
-    {
-        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
-    }
+    TIME_BEGIN(timing);
+    const auto sortArray = algorithm::sort::Sort<int>().merge(array, length);
+    TIME_END(timing);
+    SORT_PRINT_RESULT_CONTENT(SortMethod::merge);
+}
+catch (const std::exception& error)
+{
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
 }
 
 void SortSolution::quickMethod(const int* const array, const std::uint32_t length)
+try
 {
-    try
-    {
-        TIME_BEGIN(timing);
-        const auto sortArray = algorithm::sort::Sort<int>().quick(array, length);
-        TIME_END(timing);
-        SORT_PRINT_RESULT_CONTENT(SortMethod::quick);
-    }
-    catch (const std::exception& error)
-    {
-        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
-    }
+    TIME_BEGIN(timing);
+    const auto sortArray = algorithm::sort::Sort<int>().quick(array, length);
+    TIME_END(timing);
+    SORT_PRINT_RESULT_CONTENT(SortMethod::quick);
+}
+catch (const std::exception& error)
+{
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
 }
 
 void SortSolution::heapMethod(const int* const array, const std::uint32_t length)
+try
 {
-    try
-    {
-        TIME_BEGIN(timing);
-        const auto sortArray = algorithm::sort::Sort<int>().heap(array, length);
-        TIME_END(timing);
-        SORT_PRINT_RESULT_CONTENT(SortMethod::heap);
-    }
-    catch (const std::exception& error)
-    {
-        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
-    }
+    TIME_BEGIN(timing);
+    const auto sortArray = algorithm::sort::Sort<int>().heap(array, length);
+    TIME_END(timing);
+    SORT_PRINT_RESULT_CONTENT(SortMethod::heap);
+}
+catch (const std::exception& error)
+{
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
 }
 
 void SortSolution::countingMethod(const int* const array, const std::uint32_t length)
+try
 {
-    try
-    {
-        TIME_BEGIN(timing);
-        const auto sortArray = algorithm::sort::Sort<int>().counting(array, length);
-        TIME_END(timing);
-        SORT_PRINT_RESULT_CONTENT(SortMethod::counting);
-    }
-    catch (const std::exception& error)
-    {
-        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
-    }
+    TIME_BEGIN(timing);
+    const auto sortArray = algorithm::sort::Sort<int>().counting(array, length);
+    TIME_END(timing);
+    SORT_PRINT_RESULT_CONTENT(SortMethod::counting);
+}
+catch (const std::exception& error)
+{
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
 }
 
 void SortSolution::bucketMethod(const int* const array, const std::uint32_t length)
+try
 {
-    try
-    {
-        TIME_BEGIN(timing);
-        const auto sortArray = algorithm::sort::Sort<int>().bucket(array, length);
-        TIME_END(timing);
-        SORT_PRINT_RESULT_CONTENT(SortMethod::bucket);
-    }
-    catch (const std::exception& error)
-    {
-        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
-    }
+    TIME_BEGIN(timing);
+    const auto sortArray = algorithm::sort::Sort<int>().bucket(array, length);
+    TIME_END(timing);
+    SORT_PRINT_RESULT_CONTENT(SortMethod::bucket);
+}
+catch (const std::exception& error)
+{
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
 }
 
 void SortSolution::radixMethod(const int* const array, const std::uint32_t length)
+try
 {
-    try
-    {
-        TIME_BEGIN(timing);
-        const auto sortArray = algorithm::sort::Sort<int>().radix(array, length);
-        TIME_END(timing);
-        SORT_PRINT_RESULT_CONTENT(SortMethod::radix);
-    }
-    catch (const std::exception& error)
-    {
-        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
-    }
+    TIME_BEGIN(timing);
+    const auto sortArray = algorithm::sort::Sort<int>().radix(array, length);
+    TIME_END(timing);
+    SORT_PRINT_RESULT_CONTENT(SortMethod::radix);
+}
+catch (const std::exception& error)
+{
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
 }
 
 #undef SORT_RESULT

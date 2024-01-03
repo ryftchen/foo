@@ -75,55 +75,47 @@ constexpr std::string_view toString(const ArithmeticMethod method)
 }
 
 void ArithmeticSolution::additionMethod(const int augend, const int addend)
+try
 {
-    try
-    {
-        const auto sum = numeric::arithmetic::Arithmetic().addition(augend, addend);
-        ARITHMETIC_PRINT_RESULT_CONTENT(ArithmeticMethod::addition, augend, '+', addend, sum);
-    }
-    catch (const std::exception& error)
-    {
-        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
-    }
+    const auto sum = numeric::arithmetic::Arithmetic().addition(augend, addend);
+    ARITHMETIC_PRINT_RESULT_CONTENT(ArithmeticMethod::addition, augend, '+', addend, sum);
+}
+catch (const std::exception& error)
+{
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
 }
 
 void ArithmeticSolution::subtractionMethod(const int minuend, const int subtrahend)
+try
 {
-    try
-    {
-        const auto difference = numeric::arithmetic::Arithmetic().subtraction(minuend, subtrahend);
-        ARITHMETIC_PRINT_RESULT_CONTENT(ArithmeticMethod::subtraction, minuend, '-', subtrahend, difference);
-    }
-    catch (const std::exception& error)
-    {
-        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
-    }
+    const auto difference = numeric::arithmetic::Arithmetic().subtraction(minuend, subtrahend);
+    ARITHMETIC_PRINT_RESULT_CONTENT(ArithmeticMethod::subtraction, minuend, '-', subtrahend, difference);
+}
+catch (const std::exception& error)
+{
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
 }
 
 void ArithmeticSolution::multiplicationMethod(const int multiplier, const int multiplicand)
+try
 {
-    try
-    {
-        const auto product = numeric::arithmetic::Arithmetic().multiplication(multiplier, multiplicand);
-        ARITHMETIC_PRINT_RESULT_CONTENT(ArithmeticMethod::multiplication, multiplier, '*', multiplicand, product);
-    }
-    catch (const std::exception& error)
-    {
-        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
-    }
+    const auto product = numeric::arithmetic::Arithmetic().multiplication(multiplier, multiplicand);
+    ARITHMETIC_PRINT_RESULT_CONTENT(ArithmeticMethod::multiplication, multiplier, '*', multiplicand, product);
+}
+catch (const std::exception& error)
+{
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
 }
 
 void ArithmeticSolution::divisionMethod(const int dividend, const int divisor)
+try
 {
-    try
-    {
-        const auto quotient = numeric::arithmetic::Arithmetic().division(dividend, divisor);
-        ARITHMETIC_PRINT_RESULT_CONTENT(ArithmeticMethod::division, dividend, '/', divisor, quotient);
-    }
-    catch (const std::exception& error)
-    {
-        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
-    }
+    const auto quotient = numeric::arithmetic::Arithmetic().division(dividend, divisor);
+    ARITHMETIC_PRINT_RESULT_CONTENT(ArithmeticMethod::division, dividend, '/', divisor, quotient);
+}
+catch (const std::exception& error)
+{
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
 }
 
 #undef ARITHMETIC_RESULT
@@ -251,33 +243,29 @@ constexpr std::string_view toString(const DivisorMethod method)
 }
 
 void DivisorSolution::euclideanMethod(int a, int b)
+try
 {
-    try
-    {
-        TIME_BEGIN(timing);
-        const auto divisorContainer = numeric::divisor::Divisor().euclidean(a, b);
-        TIME_END(timing);
-        DIVISOR_PRINT_RESULT_CONTENT(DivisorMethod::euclidean);
-    }
-    catch (const std::exception& error)
-    {
-        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
-    }
+    TIME_BEGIN(timing);
+    const auto divisorContainer = numeric::divisor::Divisor().euclidean(a, b);
+    TIME_END(timing);
+    DIVISOR_PRINT_RESULT_CONTENT(DivisorMethod::euclidean);
+}
+catch (const std::exception& error)
+{
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
 }
 
 void DivisorSolution::steinMethod(int a, int b)
+try
 {
-    try
-    {
-        TIME_BEGIN(timing);
-        const auto divisorContainer = numeric::divisor::Divisor().stein(a, b);
-        TIME_END(timing);
-        DIVISOR_PRINT_RESULT_CONTENT(DivisorMethod::stein);
-    }
-    catch (const std::exception& error)
-    {
-        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
-    }
+    TIME_BEGIN(timing);
+    const auto divisorContainer = numeric::divisor::Divisor().stein(a, b);
+    TIME_END(timing);
+    DIVISOR_PRINT_RESULT_CONTENT(DivisorMethod::stein);
+}
+catch (const std::exception& error)
+{
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
 }
 
 #undef DIVISOR_RESULT
@@ -384,78 +372,68 @@ constexpr std::string_view toString(const IntegralMethod method)
 }
 
 void IntegralSolution::trapezoidalMethod(const Expression& expr, double lower, double upper)
+try
 {
-    try
-    {
-        TIME_BEGIN(timing);
-        const auto sum = numeric::integral::Trapezoidal(expr)(lower, upper, numeric::integral::epsilon);
-        TIME_END(timing);
-        INTEGRAL_PRINT_RESULT_CONTENT(IntegralMethod::trapezoidal, sum);
-    }
-    catch (const std::exception& error)
-    {
-        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
-    }
+    TIME_BEGIN(timing);
+    const auto sum = numeric::integral::Trapezoidal(expr)(lower, upper, numeric::integral::epsilon);
+    TIME_END(timing);
+    INTEGRAL_PRINT_RESULT_CONTENT(IntegralMethod::trapezoidal, sum);
+}
+catch (const std::exception& error)
+{
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
 }
 
 void IntegralSolution::adaptiveSimpsonMethod(const Expression& expr, const double lower, const double upper)
+try
 {
-    try
-    {
-        TIME_BEGIN(timing);
-        const auto sum = numeric::integral::Trapezoidal(expr)(lower, upper, numeric::integral::epsilon);
-        TIME_END(timing);
-        INTEGRAL_PRINT_RESULT_CONTENT(IntegralMethod::simpson, sum);
-    }
-    catch (const std::exception& error)
-    {
-        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
-    }
+    TIME_BEGIN(timing);
+    const auto sum = numeric::integral::Trapezoidal(expr)(lower, upper, numeric::integral::epsilon);
+    TIME_END(timing);
+    INTEGRAL_PRINT_RESULT_CONTENT(IntegralMethod::simpson, sum);
+}
+catch (const std::exception& error)
+{
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
 }
 
 void IntegralSolution::rombergMethod(const Expression& expr, const double lower, const double upper)
+try
 {
-    try
-    {
-        TIME_BEGIN(timing);
-        const auto sum = numeric::integral::Romberg(expr)(lower, upper, numeric::integral::epsilon);
-        TIME_END(timing);
-        INTEGRAL_PRINT_RESULT_CONTENT(IntegralMethod::romberg, sum);
-    }
-    catch (const std::exception& error)
-    {
-        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
-    }
+    TIME_BEGIN(timing);
+    const auto sum = numeric::integral::Romberg(expr)(lower, upper, numeric::integral::epsilon);
+    TIME_END(timing);
+    INTEGRAL_PRINT_RESULT_CONTENT(IntegralMethod::romberg, sum);
+}
+catch (const std::exception& error)
+{
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
 }
 
 void IntegralSolution::gaussLegendreMethod(const Expression& expr, const double lower, const double upper)
+try
 {
-    try
-    {
-        TIME_BEGIN(timing);
-        const auto sum = numeric::integral::Gauss(expr)(lower, upper, numeric::integral::epsilon);
-        TIME_END(timing);
-        INTEGRAL_PRINT_RESULT_CONTENT(IntegralMethod::gauss, sum);
-    }
-    catch (const std::exception& error)
-    {
-        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
-    }
+    TIME_BEGIN(timing);
+    const auto sum = numeric::integral::Gauss(expr)(lower, upper, numeric::integral::epsilon);
+    TIME_END(timing);
+    INTEGRAL_PRINT_RESULT_CONTENT(IntegralMethod::gauss, sum);
+}
+catch (const std::exception& error)
+{
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
 }
 
 void IntegralSolution::monteCarloMethod(const Expression& expr, const double lower, const double upper)
+try
 {
-    try
-    {
-        TIME_BEGIN(timing);
-        const auto sum = numeric::integral::MonteCarlo(expr)(lower, upper, numeric::integral::epsilon);
-        TIME_END(timing);
-        INTEGRAL_PRINT_RESULT_CONTENT(IntegralMethod::monteCarlo, sum);
-    }
-    catch (const std::exception& error)
-    {
-        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
-    }
+    TIME_BEGIN(timing);
+    const auto sum = numeric::integral::MonteCarlo(expr)(lower, upper, numeric::integral::epsilon);
+    TIME_END(timing);
+    INTEGRAL_PRINT_RESULT_CONTENT(IntegralMethod::monteCarlo, sum);
+}
+catch (const std::exception& error)
+{
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
 }
 
 #undef INTEGRAL_RESULT
@@ -620,33 +598,29 @@ constexpr std::string_view toString(const PrimeMethod method)
 }
 
 void PrimeSolution::eratosthenesMethod(const std::uint32_t max)
+try
 {
-    try
-    {
-        TIME_BEGIN(timing);
-        const auto primeContainer = numeric::prime::Prime().eratosthenes(max);
-        TIME_END(timing);
-        PRIME_PRINT_RESULT_CONTENT(PrimeMethod::eratosthenes);
-    }
-    catch (const std::exception& error)
-    {
-        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
-    }
+    TIME_BEGIN(timing);
+    const auto primeContainer = numeric::prime::Prime().eratosthenes(max);
+    TIME_END(timing);
+    PRIME_PRINT_RESULT_CONTENT(PrimeMethod::eratosthenes);
+}
+catch (const std::exception& error)
+{
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
 }
 
 void PrimeSolution::eulerMethod(const std::uint32_t max)
+try
 {
-    try
-    {
-        TIME_BEGIN(timing);
-        const auto primeContainer = numeric::prime::Prime().euler(max);
-        TIME_END(timing);
-        PRIME_PRINT_RESULT_CONTENT(PrimeMethod::euler);
-    }
-    catch (const std::exception& error)
-    {
-        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
-    }
+    TIME_BEGIN(timing);
+    const auto primeContainer = numeric::prime::Prime().euler(max);
+    TIME_END(timing);
+    PRIME_PRINT_RESULT_CONTENT(PrimeMethod::euler);
+}
+catch (const std::exception& error)
+{
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
 }
 
 #undef PRIME_RESULT

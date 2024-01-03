@@ -240,77 +240,71 @@ Command& Command::getInstance()
 }
 
 void Command::runCommander(const int argc, const char* const argv[])
+try
 {
-    try
-    {
-        LOG_WAIT_TO_START;
-        VIEW_WAIT_TO_START;
+    LOG_WAIT_TO_START;
+    VIEW_WAIT_TO_START;
 
-        if (1 == argc)
-        {
-            enterConsoleMode();
-        }
-        else
-        {
-            constexpr std::uint32_t childThdNum = 2;
-            auto threads = std::make_shared<utility::thread::Thread>(childThdNum);
-            threads->enqueue("commander-fg", &Command::foregroundHandler, this, argc, argv);
-            threads->enqueue("commander-bg", &Command::backgroundHandler, this);
-        }
-
-        VIEW_WAIT_TO_STOP;
-        LOG_WAIT_TO_STOP;
-    }
-    catch (const std::exception& error)
+    if (1 == argc)
     {
-        LOG_ERR << error.what();
+        enterConsoleMode();
     }
+    else
+    {
+        constexpr std::uint32_t childThdNum = 2;
+        auto threads = std::make_shared<utility::thread::Thread>(childThdNum);
+        threads->enqueue("commander-fg", &Command::foregroundHandler, this, argc, argv);
+        threads->enqueue("commander-bg", &Command::backgroundHandler, this);
+    }
+
+    VIEW_WAIT_TO_STOP;
+    LOG_WAIT_TO_STOP;
+}
+catch (const std::exception& error)
+{
+    LOG_ERR << error.what();
 }
 
 void Command::foregroundHandler(const int argc, const char* const argv[])
+try
 {
-    try
-    {
-        std::unique_lock<std::mutex> lock(mtx);
-        mainCLI.parseArgs(argc, argv);
-        validateBasicTask();
-        validateRegularTask();
+    std::unique_lock<std::mutex> lock(mtx);
+    mainCLI.parseArgs(argc, argv);
+    validateBasicTask();
+    validateRegularTask();
 
-        isParsed.store(true);
-        lock.unlock();
-        cv.notify_one();
-    }
-    catch (const std::exception& error)
-    {
-        isParsed.store(true);
-        cv.notify_one();
-        LOG_WRN << error.what();
-    }
+    isParsed.store(true);
+    lock.unlock();
+    cv.notify_one();
+}
+catch (const std::exception& error)
+{
+    isParsed.store(true);
+    cv.notify_one();
+    LOG_WRN << error.what();
 }
 
 void Command::backgroundHandler()
+try
 {
-    try
+    if (std::unique_lock<std::mutex> lock(mtx); true)
     {
-        if (std::unique_lock<std::mutex> lock(mtx); true)
-        {
-            cv.wait(
-                lock,
-                [this]()
-                {
-                    return isParsed.load();
-                });
-        }
+        cv.wait(
+            lock,
+            [this]()
+            {
+                return isParsed.load();
+            });
+    }
 
-        if (hasAnyTask())
-        {
-            dispatchTask();
-        }
-    }
-    catch (const std::exception& error)
+    if (hasAnyTask())
     {
-        LOG_WRN << error.what();
+        dispatchTask();
     }
+}
+catch (const std::exception& error)
+{
+    LOG_WRN << error.what();
 }
 
 void Command::validateBasicTask()
