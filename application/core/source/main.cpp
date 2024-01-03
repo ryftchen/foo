@@ -24,30 +24,27 @@ namespace application
 //! @param argv - argument vector
 //! @return the argument to the implicit call to exit()
 static int run(int argc, char* argv[])
+try
 {
-    try
-    {
-        using command::Command;
-        using log::Log;
-        using view::View;
+    using command::Command;
+    using log::Log;
+    using view::View;
 
-        config::initializeConfiguration();
-        constexpr std::uint32_t childThdNum = 3;
-        auto threads = std::make_shared<utility::thread::Thread>(childThdNum);
-        threads->enqueue("commander", &Command::runCommander, &Command::getInstance(), argc, argv);
-        if (CONFIG_ACTIVE_HELPER)
-        {
-            threads->enqueue("logger", &Log::runLogger, &Log::getInstance());
-            threads->enqueue("viewer", &View::runViewer, &View::getInstance());
-        }
-    }
-    catch (const std::exception& error)
+    config::initializeConfiguration();
+    constexpr std::uint32_t childThdNum = 3;
+    auto threads = std::make_shared<utility::thread::Thread>(childThdNum);
+    threads->enqueue("commander", &Command::runCommander, &Command::getInstance(), argc, argv);
+    if (CONFIG_ACTIVE_HELPER)
     {
-        std::cerr << getExecutableName() << ": " << error.what() << std::endl;
-        return EXIT_FAILURE;
+        threads->enqueue("logger", &Log::runLogger, &Log::getInstance());
+        threads->enqueue("viewer", &View::runViewer, &View::getInstance());
     }
-
     return EXIT_SUCCESS;
+}
+catch (const std::exception& error)
+{
+    std::cerr << getExecutableName() << ": " << error.what() << std::endl;
+    return EXIT_FAILURE;
 }
 
 //! @brief Interrupt flag for the SIGALRM signal.

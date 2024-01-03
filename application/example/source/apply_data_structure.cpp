@@ -70,42 +70,36 @@ constexpr std::string_view toString(const LinearInstance instance)
 }
 
 void LinearStructure::linkedListInstance()
+try
 {
-    try
-    {
-        const auto output = Linear().linkedList();
-        LINEAR_PRINT_RESULT_CONTENT(LinearInstance::linkedList);
-    }
-    catch (const std::exception& error)
-    {
-        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
-    }
+    const auto output = Linear().linkedList();
+    LINEAR_PRINT_RESULT_CONTENT(LinearInstance::linkedList);
+}
+catch (const std::exception& error)
+{
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
 }
 
 void LinearStructure::stackInstance()
+try
 {
-    try
-    {
-        const auto output = Linear().stack();
-        LINEAR_PRINT_RESULT_CONTENT(LinearInstance::stack);
-    }
-    catch (const std::exception& error)
-    {
-        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
-    }
+    const auto output = Linear().stack();
+    LINEAR_PRINT_RESULT_CONTENT(LinearInstance::stack);
+}
+catch (const std::exception& error)
+{
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
 }
 
 void LinearStructure::queueInstance()
+try
 {
-    try
-    {
-        const auto output = Linear().queue();
-        LINEAR_PRINT_RESULT_CONTENT(LinearInstance::queue);
-    }
-    catch (const std::exception& error)
-    {
-        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
-    }
+    const auto output = Linear().queue();
+    LINEAR_PRINT_RESULT_CONTENT(LinearInstance::queue);
+}
+catch (const std::exception& error)
+{
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
 }
 
 #undef LINEAR_RESULT
@@ -211,42 +205,36 @@ constexpr std::string_view toString(const TreeInstance instance)
 }
 
 void TreeStructure::bsInstance()
+try
 {
-    try
-    {
-        const auto output = Tree().bs();
-        TREE_PRINT_RESULT_CONTENT(TreeInstance::binarySearch);
-    }
-    catch (const std::exception& error)
-    {
-        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
-    }
+    const auto output = Tree().bs();
+    TREE_PRINT_RESULT_CONTENT(TreeInstance::binarySearch);
+}
+catch (const std::exception& error)
+{
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
 }
 
 void TreeStructure::avlInstance()
+try
 {
-    try
-    {
-        const auto output = Tree().avl();
-        TREE_PRINT_RESULT_CONTENT(TreeInstance::adelsonVelskyLandis);
-    }
-    catch (const std::exception& error)
-    {
-        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
-    }
+    const auto output = Tree().avl();
+    TREE_PRINT_RESULT_CONTENT(TreeInstance::adelsonVelskyLandis);
+}
+catch (const std::exception& error)
+{
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
 }
 
 void TreeStructure::splayInstance()
+try
 {
-    try
-    {
-        const auto output = Tree().splay();
-        TREE_PRINT_RESULT_CONTENT(TreeInstance::splay);
-    }
-    catch (const std::exception& error)
-    {
-        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
-    }
+    const auto output = Tree().splay();
+    TREE_PRINT_RESULT_CONTENT(TreeInstance::splay);
+}
+catch (const std::exception& error)
+{
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
 }
 
 #undef TREE_RESULT

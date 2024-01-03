@@ -78,146 +78,124 @@ constexpr std::string_view toString(const BehavioralInstance instance)
 }
 
 void BehavioralPattern::chainOfResponsibilityInstance()
+try
 {
-    try
-    {
-        const auto output = Behavioral().chainOfResponsibility();
-        BEHAVIORAL_PRINT_RESULT_CONTENT(BehavioralInstance::chainOfResponsibility);
-    }
-    catch (const std::exception& error)
-    {
-        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
-    }
+    const auto output = Behavioral().chainOfResponsibility();
+    BEHAVIORAL_PRINT_RESULT_CONTENT(BehavioralInstance::chainOfResponsibility);
+}
+catch (const std::exception& error)
+{
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
 }
 
 void BehavioralPattern::commandInstance()
+try
 {
-    try
-    {
-        const auto output = Behavioral().command();
-        BEHAVIORAL_PRINT_RESULT_CONTENT(BehavioralInstance::command);
-    }
-    catch (const std::exception& error)
-    {
-        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
-    }
+    const auto output = Behavioral().command();
+    BEHAVIORAL_PRINT_RESULT_CONTENT(BehavioralInstance::command);
+}
+catch (const std::exception& error)
+{
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
 }
 
 void BehavioralPattern::interpreterInstance()
+try
 {
-    try
-    {
-        const auto output = Behavioral().interpreter();
-        BEHAVIORAL_PRINT_RESULT_CONTENT(BehavioralInstance::interpreter);
-    }
-    catch (const std::exception& error)
-    {
-        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
-    }
+    const auto output = Behavioral().interpreter();
+    BEHAVIORAL_PRINT_RESULT_CONTENT(BehavioralInstance::interpreter);
+}
+catch (const std::exception& error)
+{
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
 }
 
 void BehavioralPattern::iteratorInstance()
+try
 {
-    try
-    {
-        const auto output = Behavioral().iterator();
-        BEHAVIORAL_PRINT_RESULT_CONTENT(BehavioralInstance::iterator);
-    }
-    catch (const std::exception& error)
-    {
-        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
-    }
+    const auto output = Behavioral().iterator();
+    BEHAVIORAL_PRINT_RESULT_CONTENT(BehavioralInstance::iterator);
+}
+catch (const std::exception& error)
+{
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
 }
 
 void BehavioralPattern::mediatorInstance()
+try
 {
-    try
-    {
-        const auto output = Behavioral().mediator();
-        BEHAVIORAL_PRINT_RESULT_CONTENT(BehavioralInstance::mediator);
-    }
-    catch (const std::exception& error)
-    {
-        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
-    }
+    const auto output = Behavioral().mediator();
+    BEHAVIORAL_PRINT_RESULT_CONTENT(BehavioralInstance::mediator);
+}
+catch (const std::exception& error)
+{
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
 }
 
 void BehavioralPattern::mementoInstance()
+try
 {
-    try
-    {
-        const auto output = Behavioral().memento();
-        BEHAVIORAL_PRINT_RESULT_CONTENT(BehavioralInstance::memento);
-    }
-    catch (const std::exception& error)
-    {
-        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
-    }
+    const auto output = Behavioral().memento();
+    BEHAVIORAL_PRINT_RESULT_CONTENT(BehavioralInstance::memento);
+}
+catch (const std::exception& error)
+{
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
 }
 
 void BehavioralPattern::observerInstance()
+try
 {
-    try
-    {
-        const auto output = Behavioral().observer();
-        BEHAVIORAL_PRINT_RESULT_CONTENT(BehavioralInstance::observer);
-    }
-    catch (const std::exception& error)
-    {
-        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
-    }
+    const auto output = Behavioral().observer();
+    BEHAVIORAL_PRINT_RESULT_CONTENT(BehavioralInstance::observer);
+}
+catch (const std::exception& error)
+{
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
 }
 
 void BehavioralPattern::stateInstance()
+try
 {
-    try
-    {
-        const auto output = Behavioral().state();
-        BEHAVIORAL_PRINT_RESULT_CONTENT(BehavioralInstance::state);
-    }
-    catch (const std::exception& error)
-    {
-        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
-    }
+    const auto output = Behavioral().state();
+    BEHAVIORAL_PRINT_RESULT_CONTENT(BehavioralInstance::state);
+}
+catch (const std::exception& error)
+{
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
 }
 
 void BehavioralPattern::strategyInstance()
+try
 {
-    try
-    {
-        const auto output = Behavioral().strategy();
-        BEHAVIORAL_PRINT_RESULT_CONTENT(BehavioralInstance::strategy);
-    }
-    catch (const std::exception& error)
-    {
-        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
-    }
+    const auto output = Behavioral().strategy();
+    BEHAVIORAL_PRINT_RESULT_CONTENT(BehavioralInstance::strategy);
+}
+catch (const std::exception& error)
+{
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
 }
 
 void BehavioralPattern::templateMethodInstance()
+try
 {
-    try
-    {
-        const auto output = Behavioral().templateMethod();
-        BEHAVIORAL_PRINT_RESULT_CONTENT(BehavioralInstance::templateMethod);
-    }
-    catch (const std::exception& error)
-    {
-        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
-    }
+    const auto output = Behavioral().templateMethod();
+    BEHAVIORAL_PRINT_RESULT_CONTENT(BehavioralInstance::templateMethod);
+}
+catch (const std::exception& error)
+{
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
 }
 
 void BehavioralPattern::visitorInstance()
+try
 {
-    try
-    {
-        const auto output = Behavioral().visitor();
-        BEHAVIORAL_PRINT_RESULT_CONTENT(BehavioralInstance::visitor);
-    }
-    catch (const std::exception& error)
-    {
-        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
-    }
+    const auto output = Behavioral().visitor();
+    BEHAVIORAL_PRINT_RESULT_CONTENT(BehavioralInstance::visitor);
+}
+catch (const std::exception& error)
+{
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
 }
 
 #undef BEHAVIORAL_RESULT
@@ -374,68 +352,58 @@ constexpr std::string_view toString(const CreationalInstance instance)
 }
 
 void CreationalPattern::abstractFactoryInstance()
+try
 {
-    try
-    {
-        const auto output = Creational().abstractFactory();
-        CREATIONAL_PRINT_RESULT_CONTENT(CreationalInstance::abstractFactory);
-    }
-    catch (const std::exception& error)
-    {
-        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
-    }
+    const auto output = Creational().abstractFactory();
+    CREATIONAL_PRINT_RESULT_CONTENT(CreationalInstance::abstractFactory);
+}
+catch (const std::exception& error)
+{
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
 }
 
 void CreationalPattern::builderInstance()
+try
 {
-    try
-    {
-        const auto output = Creational().builder();
-        CREATIONAL_PRINT_RESULT_CONTENT(CreationalInstance::builder);
-    }
-    catch (const std::exception& error)
-    {
-        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
-    }
+    const auto output = Creational().builder();
+    CREATIONAL_PRINT_RESULT_CONTENT(CreationalInstance::builder);
+}
+catch (const std::exception& error)
+{
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
 }
 
 void CreationalPattern::factoryMethodInstance()
+try
 {
-    try
-    {
-        const auto output = Creational().factoryMethod();
-        CREATIONAL_PRINT_RESULT_CONTENT(CreationalInstance::factoryMethod);
-    }
-    catch (const std::exception& error)
-    {
-        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
-    }
+    const auto output = Creational().factoryMethod();
+    CREATIONAL_PRINT_RESULT_CONTENT(CreationalInstance::factoryMethod);
+}
+catch (const std::exception& error)
+{
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
 }
 
 void CreationalPattern::prototypeInstance()
+try
 {
-    try
-    {
-        const auto output = Creational().prototype();
-        CREATIONAL_PRINT_RESULT_CONTENT(CreationalInstance::prototype);
-    }
-    catch (const std::exception& error)
-    {
-        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
-    }
+    const auto output = Creational().prototype();
+    CREATIONAL_PRINT_RESULT_CONTENT(CreationalInstance::prototype);
+}
+catch (const std::exception& error)
+{
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
 }
 
 void CreationalPattern::singletonInstance()
+try
 {
-    try
-    {
-        const auto output = Creational().singleton();
-        CREATIONAL_PRINT_RESULT_CONTENT(CreationalInstance::singleton);
-    }
-    catch (const std::exception& error)
-    {
-        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
-    }
+    const auto output = Creational().singleton();
+    CREATIONAL_PRINT_RESULT_CONTENT(CreationalInstance::singleton);
+}
+catch (const std::exception& error)
+{
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
 }
 
 #undef CREATIONAL_RESULT
@@ -558,94 +526,80 @@ constexpr std::string_view toString(const StructuralInstance instance)
 }
 
 void StructuralPattern::adapterInstance()
+try
 {
-    try
-    {
-        const auto output = Structural().adapter();
-        STRUCTURAL_PRINT_RESULT_CONTENT(StructuralInstance::adapter);
-    }
-    catch (const std::exception& error)
-    {
-        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
-    }
+    const auto output = Structural().adapter();
+    STRUCTURAL_PRINT_RESULT_CONTENT(StructuralInstance::adapter);
+}
+catch (const std::exception& error)
+{
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
 }
 
 void StructuralPattern::bridgeInstance()
+try
 {
-    try
-    {
-        const auto output = Structural().bridge();
-        STRUCTURAL_PRINT_RESULT_CONTENT(StructuralInstance::bridge);
-    }
-    catch (const std::exception& error)
-    {
-        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
-    }
+    const auto output = Structural().bridge();
+    STRUCTURAL_PRINT_RESULT_CONTENT(StructuralInstance::bridge);
+}
+catch (const std::exception& error)
+{
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
 }
 
 void StructuralPattern::compositeInstance()
+try
 {
-    try
-    {
-        const auto output = Structural().composite();
-        STRUCTURAL_PRINT_RESULT_CONTENT(StructuralInstance::composite);
-    }
-    catch (const std::exception& error)
-    {
-        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
-    }
+    const auto output = Structural().composite();
+    STRUCTURAL_PRINT_RESULT_CONTENT(StructuralInstance::composite);
+}
+catch (const std::exception& error)
+{
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
 }
 
 void StructuralPattern::decoratorInstance()
+try
 {
-    try
-    {
-        const auto output = Structural().decorator();
-        STRUCTURAL_PRINT_RESULT_CONTENT(StructuralInstance::decorator);
-    }
-    catch (const std::exception& error)
-    {
-        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
-    }
+    const auto output = Structural().decorator();
+    STRUCTURAL_PRINT_RESULT_CONTENT(StructuralInstance::decorator);
+}
+catch (const std::exception& error)
+{
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
 }
 
 void StructuralPattern::facadeInstance()
+try
 {
-    try
-    {
-        const auto output = Structural().facade();
-        STRUCTURAL_PRINT_RESULT_CONTENT(StructuralInstance::facade);
-    }
-    catch (const std::exception& error)
-    {
-        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
-    }
+    const auto output = Structural().facade();
+    STRUCTURAL_PRINT_RESULT_CONTENT(StructuralInstance::facade);
+}
+catch (const std::exception& error)
+{
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
 }
 
 void StructuralPattern::flyweightInstance()
+try
 {
-    try
-    {
-        const auto output = Structural().flyweight();
-        STRUCTURAL_PRINT_RESULT_CONTENT(StructuralInstance::flyweight);
-    }
-    catch (const std::exception& error)
-    {
-        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
-    }
+    const auto output = Structural().flyweight();
+    STRUCTURAL_PRINT_RESULT_CONTENT(StructuralInstance::flyweight);
+}
+catch (const std::exception& error)
+{
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
 }
 
 void StructuralPattern::proxyInstance()
+try
 {
-    try
-    {
-        const auto output = Structural().proxy();
-        STRUCTURAL_PRINT_RESULT_CONTENT(StructuralInstance::proxy);
-    }
-    catch (const std::exception& error)
-    {
-        LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
-    }
+    const auto output = Structural().proxy();
+    STRUCTURAL_PRINT_RESULT_CONTENT(StructuralInstance::proxy);
+}
+catch (const std::exception& error)
+{
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
 }
 
 #undef STRUCTURAL_RESULT
