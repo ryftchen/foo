@@ -194,7 +194,7 @@ std::optional<std::tuple<double, double>> Genetic::operator()(const double left,
         throw std::runtime_error("A precision of " + std::to_string(eps) + " is not sufficient.");
     }
 
-    Population pop = populationInit();
+    Population pop{populationInit()};
     for (std::uint32_t i = 0; i < numOfIteration; ++i)
     {
         select(pop);
@@ -221,18 +221,6 @@ void Genetic::updateSpecies(const double left, const double right, const double 
     chromosomeNum = num + 1;
 }
 
-void Genetic::geneticCode(Chromosome& chr)
-{
-    std::uniform_int_distribution<int> bit(0, 1);
-    std::generate(
-        chr.begin(),
-        chr.end(),
-        [this, &bit]()
-        {
-            return static_cast<std::uint8_t>(bit(engine));
-        });
-}
-
 double Genetic::geneticDecode(const Chromosome& chr) const
 {
     const double max = std::pow(2, chromosomeNum) - 1.0;
@@ -251,14 +239,20 @@ double Genetic::geneticDecode(const Chromosome& chr) const
 
 Genetic::Population Genetic::populationInit()
 {
-    const Chromosome chrInit(chromosomeNum, 0);
-    Population pop(size, chrInit);
+    Population pop(size, Chromosome(chromosomeNum, 0));
     std::for_each(
         pop.begin(),
         pop.end(),
         [this](auto& chr)
         {
-            geneticCode(chr);
+            std::uniform_int_distribution<int> bit(0, 1);
+            std::generate(
+                chr.begin(),
+                chr.end(),
+                [this, &bit]()
+                {
+                    return static_cast<std::uint8_t>(bit(engine));
+                });
         });
     return pop;
 }
