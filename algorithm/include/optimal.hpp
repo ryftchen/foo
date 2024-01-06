@@ -246,9 +246,6 @@ private:
     //! @param right - right endpoint
     //! @param eps - precision of calculation
     void updateSpecies(const double left, const double right, const double eps);
-    //! @brief The genetic code.
-    //! @param chr - individual's chromosome
-    void geneticCode(Chromosome& chr);
     //! @brief The genetic decode.
     //! @param chr - individual's chromosome
     //! @return decoded value
