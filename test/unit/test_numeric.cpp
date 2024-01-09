@@ -28,6 +28,9 @@ namespace tst_num
 //! @brief Alias for the enumeration of numeric tasks.
 using Category = application::app_num::NumericTask::Category;
 
+//! @brief Anonymous namespace.
+namespace
+{
 //! @brief Alias for the namespace of applying arithmetic.
 namespace arithmetic = application::app_num::arithmetic;
 
@@ -62,6 +65,7 @@ public:
 };
 
 std::shared_ptr<arithmetic::TargetBuilder> ArithmeticTestBase::builder = nullptr;
+} // namespace
 
 //! @brief Test for the addition method in the solution of arithmetic.
 TEST_F(ArithmeticTestBase, additionMethod)
@@ -99,6 +103,8 @@ TEST_F(ArithmeticTestBase, divisionMethod)
             std::get<0>(builder->getIntegers()), std::get<1>(builder->getIntegers())));
 }
 
+namespace
+{
 //! @brief Alias for the namespace of applying divisor.
 namespace divisor = application::app_num::divisor;
 
@@ -135,6 +141,7 @@ public:
 };
 
 std::shared_ptr<divisor::TargetBuilder> DivisorTestBase::builder = nullptr;
+} // namespace
 
 //! @brief Test for the Euclidean method in the solution of divisor.
 TEST_F(DivisorTestBase, euclideanMethod)
@@ -152,6 +159,8 @@ TEST_F(DivisorTestBase, steinMethod)
         numeric::divisor::Divisor::stein(std::get<0>(builder->getIntegers()), std::get<1>(builder->getIntegers())));
 }
 
+namespace
+{
 //! @brief Alias for the namespace of applying integral.
 namespace integral = application::app_num::integral;
 
@@ -178,6 +187,7 @@ public:
     //! @brief Allowable error.
     static constexpr double error{1e-1};
 };
+} // namespace
 
 //! @brief Test for the trapezoidal method in the solution of integral.
 TEST_F(IntegralTestBase, trapezoidalMethod)
@@ -238,6 +248,8 @@ TEST_F(IntegralTestBase, monteCarloMethod)
     EXPECT_LT(result, -4.08951 + error);
 }
 
+namespace
+{
 //! @brief Alias for the namespace of applying prime.
 namespace prime = application::app_num::prime;
 
@@ -282,6 +294,7 @@ public:
 };
 
 std::shared_ptr<prime::TargetBuilder> PrimeTestBase::builder = nullptr;
+} // namespace
 
 //! @brief Test for the Eratosthenes method in the solution of prime.
 TEST_F(PrimeTestBase, eratosthenesMethod)
