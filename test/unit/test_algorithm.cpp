@@ -29,6 +29,9 @@ namespace tst_algo
 //! @brief Alias for the enumeration of algorithm tasks.
 using Category = application::app_algo::AlgorithmTask::Category;
 
+//! @brief Anonymous namespace.
+namespace
+{
 //! @brief Alias for the namespace of applying match.
 namespace match = application::app_algo::match;
 
@@ -63,6 +66,7 @@ public:
 };
 
 std::shared_ptr<match::TargetBuilder> MatchTestBase::builder = nullptr;
+} // namespace
 
 //! @brief Test for the Rabin-Karp method in the solution of match.
 TEST_F(MatchTestBase, rkMethod)
@@ -124,6 +128,8 @@ TEST_F(MatchTestBase, sundayMethod)
             builder->getSinglePattern().length()));
 }
 
+namespace
+{
 //! @brief Alias for the namespace of applying notation.
 namespace notation = application::app_algo::notation;
 
@@ -158,6 +164,7 @@ public:
 };
 
 std::shared_ptr<notation::TargetBuilder> NotationTestBase::builder = nullptr;
+} // namespace
 
 //! @brief Test for the prefix method in the solution of notation.
 TEST_F(NotationTestBase, prefixMethod)
@@ -171,6 +178,8 @@ TEST_F(NotationTestBase, postfixMethod)
     ASSERT_EQ("abcd^e-fgh*+^*+i-", algorithm::notation::Notation::postfix(std::string{builder->getInfixNotation()}));
 }
 
+namespace
+{
 //! @brief Alias for the namespace of applying optimal.
 namespace optimal = application::app_algo::optimal;
 
@@ -197,6 +206,7 @@ public:
     //! @brief Allowable error.
     static constexpr double error{1e-3};
 };
+} // namespace
 
 //! @brief Test for the gradient descent method in the solution of optimal.
 TEST_F(OptimalTestBase, gradientDescentMethod)
@@ -207,8 +217,8 @@ TEST_F(OptimalTestBase, gradientDescentMethod)
 
     ASSERT_NO_THROW(result = (*gradient)(rastrigin.range1, rastrigin.range2, algorithm::optimal::epsilon));
     ASSERT_TRUE(result.has_value());
-    EXPECT_GT(get<0>(result.value()), 0.0 - error);
-    EXPECT_LT(get<0>(result.value()), 0.0 + error);
+    EXPECT_GT(std::get<0>(result.value()), 0.0 - error);
+    EXPECT_LT(std::get<0>(result.value()), 0.0 + error);
 }
 
 //! @brief Test for the simulated annealing method in the solution of optimal.
@@ -220,8 +230,8 @@ TEST_F(OptimalTestBase, simulatedAnnealingMethod)
 
     ASSERT_NO_THROW(result = (*annealing)(rastrigin.range1, rastrigin.range2, algorithm::optimal::epsilon));
     ASSERT_TRUE(result.has_value());
-    EXPECT_GT(get<0>(result.value()), 0.0 - error);
-    EXPECT_LT(get<0>(result.value()), 0.0 + error);
+    EXPECT_GT(std::get<0>(result.value()), 0.0 - error);
+    EXPECT_LT(std::get<0>(result.value()), 0.0 + error);
 }
 
 //! @brief Test for the particle swarm method in the solution of optimal.
@@ -233,8 +243,8 @@ TEST_F(OptimalTestBase, particleSwarmMethod)
 
     ASSERT_NO_THROW(result = (*particle)(rastrigin.range1, rastrigin.range2, algorithm::optimal::epsilon));
     ASSERT_TRUE(result.has_value());
-    EXPECT_GT(get<0>(result.value()), 0.0 - error);
-    EXPECT_LT(get<0>(result.value()), 0.0 + error);
+    EXPECT_GT(std::get<0>(result.value()), 0.0 - error);
+    EXPECT_LT(std::get<0>(result.value()), 0.0 + error);
 }
 
 //! @brief Test for the genetic method in the solution of optimal.
@@ -246,10 +256,12 @@ TEST_F(OptimalTestBase, geneticMethod)
 
     ASSERT_NO_THROW(result = (*genetic)(rastrigin.range1, rastrigin.range2, algorithm::optimal::epsilon));
     ASSERT_TRUE(result.has_value());
-    EXPECT_GT(get<0>(result.value()), 0.0 - error);
-    EXPECT_LT(get<0>(result.value()), 0.0 + error);
+    EXPECT_GT(std::get<0>(result.value()), 0.0 - error);
+    EXPECT_LT(std::get<0>(result.value()), 0.0 + error);
 }
 
+namespace
+{
 //! @brief Alias for the namespace of applying search.
 namespace search = application::app_algo::search;
 
@@ -285,6 +297,7 @@ public:
 };
 
 std::shared_ptr<search::TargetBuilder<double>> SearchTestBase::builder = nullptr;
+} // namespace
 
 //! @brief Test for the binary method in the solution of search.
 TEST_F(SearchTestBase, binaryMethod)
@@ -313,6 +326,8 @@ TEST_F(SearchTestBase, fibonacciMethod)
             builder->getOrderedArray().get(), builder->getLength(), builder->getSearchKey()));
 }
 
+namespace
+{
 //! @brief Alias for the namespace of applying sort.
 namespace sort = application::app_algo::sort;
 
@@ -348,6 +363,7 @@ public:
 };
 
 std::shared_ptr<sort::TargetBuilder<int>> SortTestBase::builder = nullptr;
+} // namespace
 
 //! @brief Test for the bubble method in the solution of sort.
 TEST_F(SortTestBase, bubbleMethod)

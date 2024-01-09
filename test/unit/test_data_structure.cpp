@@ -24,6 +24,9 @@ namespace tst_ds
 //! @brief Alias for the enumeration of data structure tasks.
 using Category = application::app_ds::DataStructureTask::Category;
 
+//! @brief Anonymous namespace.
+namespace
+{
 //! @brief Alias for the namespace of applying linear.
 namespace linear = application::app_ds::linear;
 
@@ -45,6 +48,7 @@ public:
     //! @brief Tear down.
     void TearDown() override{};
 };
+} // namespace
 
 //! @brief Test for the linked list instance in the structure of linear.
 TEST_F(LinearTestBase, linkedListInstance)
@@ -64,6 +68,8 @@ TEST_F(LinearTestBase, queueInstance)
     ASSERT_NO_THROW(linear::Linear::queue());
 }
 
+namespace
+{
 //! @brief Alias for the namespace of applying tree.
 namespace tree = application::app_ds::tree;
 
@@ -85,6 +91,7 @@ public:
     //! @brief Tear down.
     void TearDown() override{};
 };
+} // namespace
 
 //! @brief Test for the binary search instance in the structure of tree.
 TEST_F(TreeTestBase, bsInstance)
