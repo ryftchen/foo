@@ -38,7 +38,7 @@ public:
     void setNonBlocking() const;
 
     //! @brief Bytes buffer size.
-    static constexpr std::uint16_t bufferSize{0xFFFF};
+    static constexpr std::uint16_t bufferSize{0xFFFFU};
     //! @brief Transport information.
     ::sockaddr_in sockAddr{};
 

@@ -21,14 +21,9 @@ namespace test // NOLINT(modernize-concat-nested-namespaces)
 //! @brief Design-pattern-testing-related functions in the test module.
 namespace tst_dp
 {
+using namespace application::app_dp; // NOLINT(google-build-using-namespace)
 //! @brief Alias for the enumeration of design pattern tasks.
-using Category = application::app_dp::DesignPatternTask::Category;
-
-//! @brief Anonymous namespace.
-namespace
-{
-//! @brief Alias for the namespace of applying behavioral.
-namespace behavioral = application::app_dp::behavioral;
+using Category = DesignPatternTask::Category;
 
 //! @brief Test base of behavioral.
 class BehavioralTestBase : public ::testing::Test
@@ -48,7 +43,6 @@ public:
     //! @brief Tear down.
     void TearDown() override{};
 };
-} // namespace
 
 //! @brief Test for the chain of responsibility instance in the pattern of behavioral.
 TEST_F(BehavioralTestBase, chainOfResponsibilityInstance)
@@ -116,11 +110,6 @@ TEST_F(BehavioralTestBase, visitorInstance)
     ASSERT_NO_THROW(behavioral::Behavioral::visitor());
 }
 
-namespace
-{
-//! @brief Alias for the namespace of applying creational.
-namespace creational = application::app_dp::creational;
-
 //! @brief Test base of creational.
 class CreationalTestBase : public ::testing::Test
 {
@@ -139,7 +128,6 @@ public:
     //! @brief Tear down.
     void TearDown() override{};
 };
-} // namespace
 
 //! @brief Test for the abstract factory instance in the pattern of creational.
 TEST_F(CreationalTestBase, abstractFactoryInstance)
@@ -171,11 +159,6 @@ TEST_F(CreationalTestBase, singletonInstance)
     ASSERT_NO_THROW(creational::Creational::singleton());
 }
 
-namespace
-{
-//! @brief Alias for the namespace of applying structural.
-namespace structural = application::app_dp::structural;
-
 //! @brief Test base of structural.
 class StructuralTestBase : public ::testing::Test
 {
@@ -194,7 +177,6 @@ public:
     //! @brief Tear down.
     void TearDown() override{};
 };
-} // namespace
 
 //! @brief Test for the adapter instance in the pattern of structural.
 TEST_F(StructuralTestBase, adapterInstance)

@@ -215,21 +215,28 @@ utility::json::JSON getDefaultConfiguration()
 
 //! @brief Initialize the configuration.
 //! @param filename - config file
-void initializeConfiguration(const std::string& filename)
+static void initializeConfiguration(const std::string& filename)
+{
+    const std::filesystem::path configFolderPath = std::filesystem::absolute(filename).parent_path();
+    std::filesystem::create_directories(configFolderPath);
+    std::filesystem::permissions(
+        configFolderPath, std::filesystem::perms::owner_all, std::filesystem::perm_options::add);
+
+    namespace file = utility::file;
+    std::ofstream ofs = file::openFile(filename, false);
+    file::fdLock(ofs, file::LockMode::write);
+    ofs << getDefaultConfiguration();
+    file::fdUnlock(ofs);
+    file::closeFile(ofs);
+}
+
+//! @brief Load the configuration.
+//! @param filename - config file
+void loadConfiguration(const std::string& filename)
 {
     if (!std::filesystem::exists(filename))
     {
-        const std::filesystem::path configFolderPath = std::filesystem::absolute(filename).parent_path();
-        std::filesystem::create_directories(configFolderPath);
-        std::filesystem::permissions(
-            configFolderPath, std::filesystem::perms::owner_all, std::filesystem::perm_options::add);
-
-        namespace file = utility::file;
-        std::ofstream ofs = file::openFile(filename, false);
-        file::fdLock(ofs, file::LockMode::write);
-        ofs << getDefaultConfiguration();
-        file::fdUnlock(ofs);
-        file::closeFile(ofs);
+        initializeConfiguration(filename);
     }
 
     Config::getInstance();

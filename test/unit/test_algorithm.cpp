@@ -26,14 +26,9 @@ namespace test // NOLINT(modernize-concat-nested-namespaces)
 //! @brief Algorithm-testing-related functions in the test module.
 namespace tst_algo
 {
+using namespace application::app_algo; // NOLINT(google-build-using-namespace)
 //! @brief Alias for the enumeration of algorithm tasks.
-using Category = application::app_algo::AlgorithmTask::Category;
-
-//! @brief Anonymous namespace.
-namespace
-{
-//! @brief Alias for the namespace of applying match.
-namespace match = application::app_algo::match;
+using Category = AlgorithmTask::Category;
 
 //! @brief Test base of match.
 class MatchTestBase : public ::testing::Test
@@ -64,9 +59,7 @@ public:
     //! @brief Target builder.
     static std::shared_ptr<match::TargetBuilder> builder;
 };
-
 std::shared_ptr<match::TargetBuilder> MatchTestBase::builder = nullptr;
-} // namespace
 
 //! @brief Test for the Rabin-Karp method in the solution of match.
 TEST_F(MatchTestBase, rkMethod)
@@ -128,11 +121,6 @@ TEST_F(MatchTestBase, sundayMethod)
             builder->getSinglePattern().length()));
 }
 
-namespace
-{
-//! @brief Alias for the namespace of applying notation.
-namespace notation = application::app_algo::notation;
-
 //! @brief Test base of notation.
 class NotationTestBase : public ::testing::Test
 {
@@ -162,9 +150,7 @@ public:
     //! @brief Target builder.
     static std::shared_ptr<notation::TargetBuilder> builder;
 };
-
 std::shared_ptr<notation::TargetBuilder> NotationTestBase::builder = nullptr;
-} // namespace
 
 //! @brief Test for the prefix method in the solution of notation.
 TEST_F(NotationTestBase, prefixMethod)
@@ -177,11 +163,6 @@ TEST_F(NotationTestBase, postfixMethod)
 {
     ASSERT_EQ("abcd^e-fgh*+^*+i-", algorithm::notation::Notation::postfix(std::string{builder->getInfixNotation()}));
 }
-
-namespace
-{
-//! @brief Alias for the namespace of applying optimal.
-namespace optimal = application::app_algo::optimal;
 
 //! @brief Test base of optimal.
 class OptimalTestBase : public ::testing::Test
@@ -206,7 +187,6 @@ public:
     //! @brief Allowable error.
     static constexpr double error{1e-3};
 };
-} // namespace
 
 //! @brief Test for the gradient descent method in the solution of optimal.
 TEST_F(OptimalTestBase, gradientDescentMethod)
@@ -260,11 +240,6 @@ TEST_F(OptimalTestBase, geneticMethod)
     EXPECT_LT(std::get<0>(result.value()), 0.0 + error);
 }
 
-namespace
-{
-//! @brief Alias for the namespace of applying search.
-namespace search = application::app_algo::search;
-
 //! @brief Test base of search.
 class SearchTestBase : public ::testing::Test
 {
@@ -295,9 +270,7 @@ public:
     //! @brief Target builder.
     static std::shared_ptr<search::TargetBuilder<double>> builder;
 };
-
 std::shared_ptr<search::TargetBuilder<double>> SearchTestBase::builder = nullptr;
-} // namespace
 
 //! @brief Test for the binary method in the solution of search.
 TEST_F(SearchTestBase, binaryMethod)
@@ -325,11 +298,6 @@ TEST_F(SearchTestBase, fibonacciMethod)
         algorithm::search::Search<double>::fibonacci(
             builder->getOrderedArray().get(), builder->getLength(), builder->getSearchKey()));
 }
-
-namespace
-{
-//! @brief Alias for the namespace of applying sort.
-namespace sort = application::app_algo::sort;
 
 //! @brief Test base of sort.
 class SortTestBase : public ::testing::Test
@@ -361,9 +329,7 @@ public:
     //! @brief Target builder.
     static std::shared_ptr<sort::TargetBuilder<int>> builder;
 };
-
 std::shared_ptr<sort::TargetBuilder<int>> SortTestBase::builder = nullptr;
-} // namespace
 
 //! @brief Test for the bubble method in the solution of sort.
 TEST_F(SortTestBase, bubbleMethod)

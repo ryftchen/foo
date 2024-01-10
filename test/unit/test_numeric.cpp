@@ -25,14 +25,9 @@ namespace test // NOLINT(modernize-concat-nested-namespaces)
 //! @brief Numeric-testing-related functions in the test module.
 namespace tst_num
 {
+using namespace application::app_num; // NOLINT(google-build-using-namespace)
 //! @brief Alias for the enumeration of numeric tasks.
-using Category = application::app_num::NumericTask::Category;
-
-//! @brief Anonymous namespace.
-namespace
-{
-//! @brief Alias for the namespace of applying arithmetic.
-namespace arithmetic = application::app_num::arithmetic;
+using Category = NumericTask::Category;
 
 //! @brief Test base of arithmetic.
 class ArithmeticTestBase : public ::testing::Test
@@ -63,9 +58,7 @@ public:
     //! @brief Target builder.
     static std::shared_ptr<arithmetic::TargetBuilder> builder;
 };
-
 std::shared_ptr<arithmetic::TargetBuilder> ArithmeticTestBase::builder = nullptr;
-} // namespace
 
 //! @brief Test for the addition method in the solution of arithmetic.
 TEST_F(ArithmeticTestBase, additionMethod)
@@ -103,11 +96,6 @@ TEST_F(ArithmeticTestBase, divisionMethod)
             std::get<0>(builder->getIntegers()), std::get<1>(builder->getIntegers())));
 }
 
-namespace
-{
-//! @brief Alias for the namespace of applying divisor.
-namespace divisor = application::app_num::divisor;
-
 //! @brief Test base of divisor.
 class DivisorTestBase : public ::testing::Test
 {
@@ -139,9 +127,7 @@ public:
     //! @brief Expected result.
     const std::vector<int> divisorContainer{1, 2, 3, 5, 6, 7, 10, 14, 15, 21, 30, 35, 42, 70, 105, 210};
 };
-
 std::shared_ptr<divisor::TargetBuilder> DivisorTestBase::builder = nullptr;
-} // namespace
 
 //! @brief Test for the Euclidean method in the solution of divisor.
 TEST_F(DivisorTestBase, euclideanMethod)
@@ -158,11 +144,6 @@ TEST_F(DivisorTestBase, steinMethod)
         divisorContainer,
         numeric::divisor::Divisor::stein(std::get<0>(builder->getIntegers()), std::get<1>(builder->getIntegers())));
 }
-
-namespace
-{
-//! @brief Alias for the namespace of applying integral.
-namespace integral = application::app_num::integral;
 
 //! @brief Test base of integral.
 class IntegralTestBase : public ::testing::Test
@@ -187,7 +168,6 @@ public:
     //! @brief Allowable error.
     static constexpr double error{1e-1};
 };
-} // namespace
 
 //! @brief Test for the trapezoidal method in the solution of integral.
 TEST_F(IntegralTestBase, trapezoidalMethod)
@@ -248,11 +228,6 @@ TEST_F(IntegralTestBase, monteCarloMethod)
     EXPECT_LT(result, -4.08951 + error);
 }
 
-namespace
-{
-//! @brief Alias for the namespace of applying prime.
-namespace prime = application::app_num::prime;
-
 //! @brief Test base of prime.
 class PrimeTestBase : public ::testing::Test
 {
@@ -292,9 +267,7 @@ public:
         709, 719, 727, 733, 739, 743, 751, 757, 761, 769, 773, 787, 797, 809, 811, 821, 823, 827, 829, 839, 853,
         857, 859, 863, 877, 881, 883, 887, 907, 911, 919, 929, 937, 941, 947, 953, 967, 971, 977, 983, 991, 997};
 };
-
 std::shared_ptr<prime::TargetBuilder> PrimeTestBase::builder = nullptr;
-} // namespace
 
 //! @brief Test for the Eratosthenes method in the solution of prime.
 TEST_F(PrimeTestBase, eratosthenesMethod)
