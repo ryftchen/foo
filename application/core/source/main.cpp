@@ -19,6 +19,9 @@
 
 namespace application
 {
+//! @brief Anonymous namespace.
+inline namespace
+{
 //! @brief The run function.
 //! @param argc - argument count
 //! @param argv - argument vector
@@ -30,7 +33,7 @@ try
     using log::Log;
     using view::View;
 
-    config::initializeConfiguration();
+    config::loadConfiguration();
     constexpr std::uint32_t childThdNum = 3;
     auto threads = std::make_shared<utility::thread::Thread>(childThdNum);
     threads->enqueue("commander", &Command::runCommander, &Command::getInstance(), argc, argv);
@@ -46,6 +49,7 @@ catch (const std::exception& error)
     std::cerr << getExecutableName() << ": " << error.what() << std::endl;
     return EXIT_FAILURE;
 }
+} // namespace
 
 //! @brief Interrupt flag for the SIGALRM signal.
 volatile std::sig_atomic_t alarmInterrupted = 0;

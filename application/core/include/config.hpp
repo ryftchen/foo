@@ -91,6 +91,6 @@ private:
 };
 
 extern utility::json::JSON getDefaultConfiguration();
-extern void initializeConfiguration(const std::string& filename = getFullDefaultConfigPath());
+extern void loadConfiguration(const std::string& filename = getFullDefaultConfigPath());
 } // namespace config
 } // namespace application

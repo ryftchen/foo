@@ -21,14 +21,9 @@ namespace test // NOLINT(modernize-concat-nested-namespaces)
 //! @brief Data-structure-testing-related functions in the test module.
 namespace tst_ds
 {
+using namespace application::app_ds; // NOLINT(google-build-using-namespace)
 //! @brief Alias for the enumeration of data structure tasks.
-using Category = application::app_ds::DataStructureTask::Category;
-
-//! @brief Anonymous namespace.
-namespace
-{
-//! @brief Alias for the namespace of applying linear.
-namespace linear = application::app_ds::linear;
+using Category = DataStructureTask::Category;
 
 //! @brief Test base of linear.
 class LinearTestBase : public ::testing::Test
@@ -48,7 +43,6 @@ public:
     //! @brief Tear down.
     void TearDown() override{};
 };
-} // namespace
 
 //! @brief Test for the linked list instance in the structure of linear.
 TEST_F(LinearTestBase, linkedListInstance)
@@ -68,11 +62,6 @@ TEST_F(LinearTestBase, queueInstance)
     ASSERT_NO_THROW(linear::Linear::queue());
 }
 
-namespace
-{
-//! @brief Alias for the namespace of applying tree.
-namespace tree = application::app_ds::tree;
-
 //! @brief Test base of tree.
 class TreeTestBase : public ::testing::Test
 {
@@ -91,7 +80,6 @@ public:
     //! @brief Tear down.
     void TearDown() override{};
 };
-} // namespace
 
 //! @brief Test for the binary search instance in the structure of tree.
 TEST_F(TreeTestBase, bsInstance)
