@@ -493,7 +493,7 @@ void runOptimalTasks(const std::vector<std::string>& targets)
 
     using optimal::input::Rastrigin;
     typedef std::variant<Rastrigin> OptimalFuncTarget;
-    constexpr auto printFunctor = [](const OptimalFuncTarget& function)
+    constexpr auto printFunc = [](const OptimalFuncTarget& function)
     {
         constexpr std::string_view prefix{"\r\nOptimal function:\n"};
         std::visit(
@@ -505,18 +505,22 @@ void runOptimalTasks(const std::vector<std::string>& targets)
             },
             function);
     };
-    const auto resultFunctor =
-        [targets](const optimal::Function& function, const optimal::FuncRange<double, double>& range)
+    const auto calcFunc = [&targets](const auto inputs)
     {
-        assert(range.range1 < range.range2);
+        assert(std::get<1>(inputs) < std::get<2>(inputs));
         auto* const threads = command::getPublicThreadPool().newElement(std::min(
             static_cast<std::uint32_t>(getBit<OptimalMethod>().count()),
             static_cast<std::uint32_t>(Bottom<OptimalMethod>::value)));
         const auto optimalFunctor =
-            [threads, &function, range](
+            [threads, &inputs](
                 const std::string& threadName, void (*methodPtr)(const optimal::Function&, const double, const double))
         {
-            threads->enqueue(threadName, methodPtr, std::ref(function), range.range1, range.range2);
+            threads->enqueue(
+                threadName,
+                [methodPtr, &inputs]()
+                {
+                    std::apply(methodPtr, inputs);
+                });
         };
 
         using optimal::OptimalSolution;
@@ -559,11 +563,11 @@ void runOptimalTasks(const std::vector<std::string>& targets)
         };
     for ([[maybe_unused]] const auto& [range, function] : optimalFuncMap)
     {
-        printFunctor(function);
+        printFunc(function);
         switch (function.index())
         {
             case 0:
-                resultFunctor(std::get<0>(function), range);
+                calcFunc(std::make_tuple(std::get<0>(function), range.range1, range.range2));
                 break;
             default:
                 break;

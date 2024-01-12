@@ -30,16 +30,18 @@
 #define VIEW_WAIT_TO_STOP VIEW_GET_INSTANCE_IF_ENABLED.waitToStop()
 //! @brief Try to rollback the viewer.
 #define VIEW_REQUEST_TO_ROLLBACK VIEW_GET_INSTANCE_IF_ENABLED.requestToRollback()
+//! @brief Get the viewer instance with validate.
+#define VIEW_GET_INSTANCE_WITH_VALIDATE application::view::View::getInstanceWithValidate()
 //! @brief Get the TCP host address of the viewer.
-#define VIEW_TCP_HOST VIEW_GET_INSTANCE.getViewerTCPHost()
+#define VIEW_TCP_HOST VIEW_GET_INSTANCE_WITH_VALIDATE.getViewerTCPHost()
 //! @brief Get the TCP port number of the viewer.
-#define VIEW_TCP_PORT VIEW_GET_INSTANCE.getViewerTCPPort()
+#define VIEW_TCP_PORT VIEW_GET_INSTANCE_WITH_VALIDATE.getViewerTCPPort()
 //! @brief Get the UDP host address of the viewer.
-#define VIEW_UDP_HOST VIEW_GET_INSTANCE.getViewerUDPHost()
+#define VIEW_UDP_HOST VIEW_GET_INSTANCE_WITH_VALIDATE.getViewerUDPHost()
 //! @brief Get the UDP port number of the viewer.
-#define VIEW_UDP_PORT VIEW_GET_INSTANCE.getViewerUDPPort()
+#define VIEW_UDP_PORT VIEW_GET_INSTANCE_WITH_VALIDATE.getViewerUDPPort()
 //! @brief Get all viewer options.
-#define VIEW_OPTIONS VIEW_GET_INSTANCE.getViewerOptions()
+#define VIEW_OPTIONS VIEW_GET_INSTANCE_WITH_VALIDATE.getViewerOptions()
 
 //! @brief The application module.
 namespace application // NOLINT(modernize-concat-nested-namespaces)
@@ -161,6 +163,9 @@ public:
     //! @brief Get the View instance.
     //! @return reference of the View object
     static View& getInstance();
+    //! @brief Get the View instance with validate.
+    //! @return reference of the View object
+    static View& getInstanceWithValidate();
     //! @brief Interface for running viewer.
     void runViewer();
     //! @brief Wait for the viewer to start. External use.

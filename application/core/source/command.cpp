@@ -437,6 +437,7 @@ void Command::executeConsoleCommand() const
 {
     if (!CONFIG_ACTIVE_HELPER)
     {
+        std::cout << "exit" << std::endl;
         return;
     }
 
@@ -528,6 +529,7 @@ void Command::enterConsoleMode() const
 {
     if (!CONFIG_ACTIVE_HELPER)
     {
+        std::cout << "exit" << std::endl;
         return;
     }
 
