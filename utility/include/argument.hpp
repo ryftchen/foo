@@ -114,7 +114,7 @@ std::string represent(const T& val)
             }
             else
             {
-                out << "...";
+                out << " ... ";
             }
         }
         if (size > 0)

@@ -47,10 +47,12 @@
 #define LOG_WAIT_TO_STOP LOG_GET_INSTANCE_IF_ENABLED.waitToStop()
 //! @brief Try to rollback the logger.
 #define LOG_REQUEST_TO_ROLLBACK LOG_GET_INSTANCE_IF_ENABLED.requestToRollback()
+//! @brief Get the logger instance with validate.
+#define LOG_GET_INSTANCE_WITH_VALIDATE application::log::Log::getInstanceWithValidate()
 //! @brief Log file path.
-#define LOG_FILE_PATH LOG_GET_INSTANCE.getFilePath()
+#define LOG_FILE_PATH LOG_GET_INSTANCE_WITH_VALIDATE.getFilePath()
 //! @brief Log file lock.
-#define LOG_FILE_LOCK LOG_GET_INSTANCE.getFileLock()
+#define LOG_FILE_LOCK LOG_GET_INSTANCE_WITH_VALIDATE.getFileLock()
 
 //! @brief The application module.
 namespace application // NOLINT(modernize-concat-nested-namespaces)
@@ -180,6 +182,9 @@ public:
     //! @brief Get the Log instance.
     //! @return reference of the Log object
     static Log& getInstance();
+    //! @brief Get the Log instance with validate.
+    //! @return reference of the Log object
+    static Log& getInstanceWithValidate();
     //! @brief Interface for running logger.
     void runLogger();
     //! @brief Wait for the logger to start. External use.

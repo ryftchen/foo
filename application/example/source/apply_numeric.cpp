@@ -452,7 +452,7 @@ void runIntegralTasks(const std::vector<std::string>& targets)
 
     using integral::input::Expression1;
     typedef std::variant<Expression1> IntegralExprTarget;
-    constexpr auto printFunctor = [](const IntegralExprTarget& expression)
+    constexpr auto printExpr = [](const IntegralExprTarget& expression)
     {
         constexpr std::string_view prefix{"\r\nIntegral expression:\n"};
         std::visit(
@@ -464,17 +464,21 @@ void runIntegralTasks(const std::vector<std::string>& targets)
             },
             expression);
     };
-    const auto resultFunctor =
-        [targets](const integral::Expression& expression, const integral::ExprRange<double, double>& range)
+    const auto calcExpr = [&targets](const auto inputs)
     {
         auto* const threads = command::getPublicThreadPool().newElement(std::min(
             static_cast<std::uint32_t>(getBit<IntegralMethod>().count()),
             static_cast<std::uint32_t>(Bottom<IntegralMethod>::value)));
-        const auto integralFunctor = [threads, &expression, range](
+        const auto integralFunctor = [threads, &inputs](
                                          const std::string& threadName,
                                          void (*methodPtr)(const integral::Expression&, const double, const double))
         {
-            threads->enqueue(threadName, methodPtr, std::ref(expression), range.range1, range.range2);
+            threads->enqueue(
+                threadName,
+                [methodPtr, &inputs]()
+                {
+                    std::apply(methodPtr, inputs);
+                });
         };
 
         using integral::IntegralSolution;
@@ -520,11 +524,11 @@ void runIntegralTasks(const std::vector<std::string>& targets)
         };
     for ([[maybe_unused]] const auto& [range, expression] : integralExprMap)
     {
-        printFunctor(expression);
+        printExpr(expression);
         switch (expression.index())
         {
             case 0:
-                resultFunctor(std::get<0>(expression), range);
+                calcExpr(std::make_tuple(std::get<0>(expression), range.range1, range.range2));
                 break;
             default:
                 break;

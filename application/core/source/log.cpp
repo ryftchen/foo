@@ -17,13 +17,18 @@ namespace application::log
 {
 Log& Log::getInstance()
 {
-    if (!CONFIG_ACTIVE_HELPER) [[unlikely]]
-    {
-        throw std::runtime_error("The logger is disabled.");
-    }
-
     static Log logger{};
     return logger;
+}
+
+Log& Log::getInstanceWithValidate()
+{
+    if (!CONFIG_ACTIVE_HELPER) [[unlikely]]
+    {
+        throw std::logic_error("The logger is disabled.");
+    }
+
+    return getInstance();
 }
 
 void Log::runLogger()

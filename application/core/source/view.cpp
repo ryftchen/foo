@@ -176,13 +176,18 @@ bool Packet::read(void* const dst, const std::uint32_t offset)
 
 View& View::getInstance()
 {
-    if (!CONFIG_ACTIVE_HELPER) [[unlikely]]
-    {
-        throw std::runtime_error("The viewer is disabled.");
-    }
-
     static View viewer{};
     return viewer;
+}
+
+View& View::getInstanceWithValidate()
+{
+    if (!CONFIG_ACTIVE_HELPER) [[unlikely]]
+    {
+        throw std::logic_error("The viewer is disabled.");
+    }
+
+    return getInstance();
 }
 
 void View::runViewer()
