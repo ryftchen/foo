@@ -20,6 +20,7 @@
 #include "algorithm/include/sort.hpp"
 #include "application/core/include/command.hpp"
 #include "application/core/include/log.hpp"
+#include "utility/include/currying.hpp"
 
 //! @brief Title of printing when algorithm tasks are beginning.
 #define APP_ALGO_PRINT_TASK_BEGIN_TITLE(category)                                                                   \
@@ -48,6 +49,14 @@ AlgorithmTask& getTask()
 {
     static AlgorithmTask task{};
     return task;
+}
+
+//! @brief Get the task name curried.
+//! @return task name curried
+static const auto& getTaskNameCurried()
+{
+    static const auto curried = utility::currying::curry(command::presetTaskName, "algo");
+    return curried;
 }
 
 namespace match
@@ -190,17 +199,16 @@ void runMatchTasks(const std::vector<std::string>& targets)
         return;
     }
 
+    APP_ALGO_PRINT_TASK_BEGIN_TITLE(Category::match);
     using match::MatchSolution;
     using match::TargetBuilder;
     using match::input::patternString;
     using utility::common::operator""_bkdrHash;
-
     static_assert(TargetBuilder::maxDigit > patternString.length());
-    APP_ALGO_PRINT_TASK_BEGIN_TITLE(Category::match);
+
     auto* const threads = command::getPublicThreadPool().newElement(std::min(
         static_cast<std::uint32_t>(getBit<MatchMethod>().count()),
         static_cast<std::uint32_t>(Bottom<MatchMethod>::value)));
-
     const auto builder = std::make_shared<TargetBuilder>(patternString);
     const auto matchFunctor =
         [threads, builder](
@@ -215,6 +223,7 @@ void runMatchTasks(const std::vector<std::string>& targets)
             std::string_view(builder->getMatchingText().get()).length(),
             builder->getSinglePattern().length());
     };
+    const auto name = utility::currying::curry(getTaskNameCurried(), "m");
 
     for (std::uint8_t i = 0; i < Bottom<MatchMethod>::value; ++i)
     {
@@ -223,23 +232,23 @@ void runMatchTasks(const std::vector<std::string>& targets)
             continue;
         }
 
-        const std::string targetMethod = targets.at(i), threadName = "task-algo_m_" + targetMethod;
+        const std::string targetMethod = targets.at(i);
         switch (utility::common::bkdrHash(targetMethod.data()))
         {
             case "rab"_bkdrHash:
-                matchFunctor(threadName, &MatchSolution::rkMethod);
+                matchFunctor(name(targetMethod), &MatchSolution::rkMethod);
                 break;
             case "knu"_bkdrHash:
-                matchFunctor(threadName, &MatchSolution::kmpMethod);
+                matchFunctor(name(targetMethod), &MatchSolution::kmpMethod);
                 break;
             case "boy"_bkdrHash:
-                matchFunctor(threadName, &MatchSolution::bmMethod);
+                matchFunctor(name(targetMethod), &MatchSolution::bmMethod);
                 break;
             case "hor"_bkdrHash:
-                matchFunctor(threadName, &MatchSolution::horspoolMethod);
+                matchFunctor(name(targetMethod), &MatchSolution::horspoolMethod);
                 break;
             case "sun"_bkdrHash:
-                matchFunctor(threadName, &MatchSolution::sundayMethod);
+                matchFunctor(name(targetMethod), &MatchSolution::sundayMethod);
                 break;
             default:
                 LOG_INF << "Execute to apply an unknown match method.";
@@ -338,22 +347,22 @@ void runNotationTasks(const std::vector<std::string>& targets)
         return;
     }
 
+    APP_ALGO_PRINT_TASK_BEGIN_TITLE(Category::notation);
     using notation::NotationSolution;
     using notation::TargetBuilder;
     using notation::input::infixString;
     using utility::common::operator""_bkdrHash;
 
-    APP_ALGO_PRINT_TASK_BEGIN_TITLE(Category::notation);
     auto* const threads = command::getPublicThreadPool().newElement(std::min(
         static_cast<std::uint32_t>(getBit<NotationMethod>().count()),
         static_cast<std::uint32_t>(Bottom<NotationMethod>::value)));
-
     const auto builder = std::make_shared<TargetBuilder>(infixString);
     const auto notationFunctor =
         [threads, builder](const std::string& threadName, void (*methodPtr)(const std::string&))
     {
         threads->enqueue(threadName, methodPtr, std::string{builder->getInfixNotation()});
     };
+    const auto name = utility::currying::curry(getTaskNameCurried(), "n");
 
     for (std::uint8_t i = 0; i < Bottom<NotationMethod>::value; ++i)
     {
@@ -362,14 +371,14 @@ void runNotationTasks(const std::vector<std::string>& targets)
             continue;
         }
 
-        const std::string targetMethod = targets.at(i), threadName = "task-algo_n_" + targetMethod;
+        const std::string targetMethod = targets.at(i);
         switch (utility::common::bkdrHash(targetMethod.data()))
         {
             case "pre"_bkdrHash:
-                notationFunctor(threadName, &NotationSolution::prefixMethod);
+                notationFunctor(name(targetMethod), &NotationSolution::prefixMethod);
                 break;
             case "pos"_bkdrHash:
-                notationFunctor(threadName, &NotationSolution::postfixMethod);
+                notationFunctor(name(targetMethod), &NotationSolution::postfixMethod);
                 break;
             default:
                 LOG_INF << "Execute to apply an unknown notation method.";
@@ -505,23 +514,19 @@ void runOptimalTasks(const std::vector<std::string>& targets)
             },
             function);
     };
-    const auto calcFunc = [&targets](const auto inputs)
+    const auto calcFunc = [&targets](const optimal::Function& function, const optimal::FuncRange<double, double>& range)
     {
-        assert(std::get<1>(inputs) < std::get<2>(inputs));
+        assert(range.range1 < range.range2);
         auto* const threads = command::getPublicThreadPool().newElement(std::min(
             static_cast<std::uint32_t>(getBit<OptimalMethod>().count()),
             static_cast<std::uint32_t>(Bottom<OptimalMethod>::value)));
         const auto optimalFunctor =
-            [threads, &inputs](
+            [threads, &function, &range](
                 const std::string& threadName, void (*methodPtr)(const optimal::Function&, const double, const double))
         {
-            threads->enqueue(
-                threadName,
-                [methodPtr, &inputs]()
-                {
-                    std::apply(methodPtr, inputs);
-                });
+            threads->enqueue(threadName, methodPtr, std::ref(function), range.range1, range.range2);
         };
+        const auto name = utility::currying::curry(getTaskNameCurried(), "o");
 
         using optimal::OptimalSolution;
         using utility::common::operator""_bkdrHash;
@@ -532,20 +537,20 @@ void runOptimalTasks(const std::vector<std::string>& targets)
                 continue;
             }
 
-            const std::string targetMethod = targets.at(i), threadName = "task-algo_o_" + targetMethod;
+            const std::string targetMethod = targets.at(i);
             switch (utility::common::bkdrHash(targetMethod.data()))
             {
                 case "gra"_bkdrHash:
-                    optimalFunctor(threadName, &OptimalSolution::gradientDescentMethod);
+                    optimalFunctor(name(targetMethod), &OptimalSolution::gradientDescentMethod);
                     break;
                 case "ann"_bkdrHash:
-                    optimalFunctor(threadName, &OptimalSolution::simulatedAnnealingMethod);
+                    optimalFunctor(name(targetMethod), &OptimalSolution::simulatedAnnealingMethod);
                     break;
                 case "par"_bkdrHash:
-                    optimalFunctor(threadName, &OptimalSolution::particleSwarmMethod);
+                    optimalFunctor(name(targetMethod), &OptimalSolution::particleSwarmMethod);
                     break;
                 case "gen"_bkdrHash:
-                    optimalFunctor(threadName, &OptimalSolution::geneticMethod);
+                    optimalFunctor(name(targetMethod), &OptimalSolution::geneticMethod);
                     break;
                 default:
                     LOG_INF << "Execute to apply an unknown optimal method.";
@@ -554,20 +559,20 @@ void runOptimalTasks(const std::vector<std::string>& targets)
         }
         command::getPublicThreadPool().deleteElement(threads);
     };
-
-    APP_ALGO_PRINT_TASK_BEGIN_TITLE(Category::optimal);
-
     const std::unordered_multimap<optimal::FuncRange<double, double>, OptimalFuncTarget, optimal::FuncMapHash>
         optimalFuncMap{
             {{Rastrigin::range1, Rastrigin::range2, Rastrigin::funcDescr}, Rastrigin{}},
         };
+
+    APP_ALGO_PRINT_TASK_BEGIN_TITLE(Category::optimal);
+
     for ([[maybe_unused]] const auto& [range, function] : optimalFuncMap)
     {
         printFunc(function);
         switch (function.index())
         {
             case 0:
-                calcFunc(std::make_tuple(std::get<0>(function), range.range1, range.range2));
+                calcFunc(std::get<0>(function), range);
                 break;
             default:
                 break;
@@ -694,19 +699,18 @@ void runSearchTasks(const std::vector<std::string>& targets)
         return;
     }
 
+    APP_ALGO_PRINT_TASK_BEGIN_TITLE(Category::search);
     using search::SearchSolution;
     using search::TargetBuilder;
     using search::input::arrayLength;
     using search::input::arrayRange1;
     using search::input::arrayRange2;
     using utility::common::operator""_bkdrHash;
-
     static_assert((arrayRange1 < arrayRange2) && (arrayLength > 0));
-    APP_ALGO_PRINT_TASK_BEGIN_TITLE(Category::search);
+
     auto* const threads = command::getPublicThreadPool().newElement(std::min(
         static_cast<std::uint32_t>(getBit<SearchMethod>().count()),
         static_cast<std::uint32_t>(Bottom<SearchMethod>::value)));
-
     const auto builder = std::make_shared<TargetBuilder<double>>(arrayLength, arrayRange1, arrayRange2);
     const auto searchFunctor =
         [threads, builder](
@@ -715,6 +719,7 @@ void runSearchTasks(const std::vector<std::string>& targets)
         threads->enqueue(
             threadName, methodPtr, builder->getOrderedArray().get(), builder->getLength(), builder->getSearchKey());
     };
+    const auto name = utility::currying::curry(getTaskNameCurried(), "s");
 
     for (std::uint8_t i = 0; i < Bottom<SearchMethod>::value; ++i)
     {
@@ -723,17 +728,17 @@ void runSearchTasks(const std::vector<std::string>& targets)
             continue;
         }
 
-        const std::string targetMethod = targets.at(i), threadName = "task-algo_s_" + targetMethod;
+        const std::string targetMethod = targets.at(i);
         switch (utility::common::bkdrHash(targetMethod.data()))
         {
             case "bin"_bkdrHash:
-                searchFunctor(threadName, &SearchSolution::binaryMethod);
+                searchFunctor(name(targetMethod), &SearchSolution::binaryMethod);
                 break;
             case "int"_bkdrHash:
-                searchFunctor(threadName, &SearchSolution::interpolationMethod);
+                searchFunctor(name(targetMethod), &SearchSolution::interpolationMethod);
                 break;
             case "fib"_bkdrHash:
-                searchFunctor(threadName, &SearchSolution::fibonacciMethod);
+                searchFunctor(name(targetMethod), &SearchSolution::fibonacciMethod);
                 break;
             default:
                 LOG_INF << "Execute to apply an unknown search method.";
@@ -953,25 +958,25 @@ void runSortTasks(const std::vector<std::string>& targets)
         return;
     }
 
+    APP_ALGO_PRINT_TASK_BEGIN_TITLE(Category::sort);
     using sort::SortSolution;
     using sort::TargetBuilder;
     using sort::input::arrayLength;
     using sort::input::arrayRange1;
     using sort::input::arrayRange2;
     using utility::common::operator""_bkdrHash;
-
     static_assert((arrayRange1 < arrayRange2) && (arrayLength > 0));
-    APP_ALGO_PRINT_TASK_BEGIN_TITLE(Category::sort);
+
     auto* const threads = command::getPublicThreadPool().newElement(std::min(
         static_cast<std::uint32_t>(getBit<SortMethod>().count()),
         static_cast<std::uint32_t>(Bottom<SortMethod>::value)));
-
     const auto builder = std::make_shared<TargetBuilder<int>>(arrayLength, arrayRange1, arrayRange2);
     const auto sortFunctor =
         [threads, builder](const std::string& threadName, void (*methodPtr)(const int* const, const std::uint32_t))
     {
         threads->enqueue(threadName, methodPtr, builder->getRandomArray().get(), builder->getLength());
     };
+    const auto name = utility::currying::curry(getTaskNameCurried(), "S");
 
     for (std::uint8_t i = 0; i < Bottom<SortMethod>::value; ++i)
     {
@@ -980,38 +985,38 @@ void runSortTasks(const std::vector<std::string>& targets)
             continue;
         }
 
-        const std::string targetMethod = targets.at(i), threadName = "task-algo_S_" + targetMethod;
+        const std::string targetMethod = targets.at(i);
         switch (utility::common::bkdrHash(targetMethod.data()))
         {
             case "bub"_bkdrHash:
-                sortFunctor(threadName, &SortSolution::bubbleMethod);
+                sortFunctor(name(targetMethod), &SortSolution::bubbleMethod);
                 break;
             case "sel"_bkdrHash:
-                sortFunctor(threadName, &SortSolution::selectionMethod);
+                sortFunctor(name(targetMethod), &SortSolution::selectionMethod);
                 break;
             case "ins"_bkdrHash:
-                sortFunctor(threadName, &SortSolution::insertionMethod);
+                sortFunctor(name(targetMethod), &SortSolution::insertionMethod);
                 break;
             case "she"_bkdrHash:
-                sortFunctor(threadName, &SortSolution::shellMethod);
+                sortFunctor(name(targetMethod), &SortSolution::shellMethod);
                 break;
             case "mer"_bkdrHash:
-                sortFunctor(threadName, &SortSolution::mergeMethod);
+                sortFunctor(name(targetMethod), &SortSolution::mergeMethod);
                 break;
             case "qui"_bkdrHash:
-                sortFunctor(threadName, &SortSolution::quickMethod);
+                sortFunctor(name(targetMethod), &SortSolution::quickMethod);
                 break;
             case "hea"_bkdrHash:
-                sortFunctor(threadName, &SortSolution::heapMethod);
+                sortFunctor(name(targetMethod), &SortSolution::heapMethod);
                 break;
             case "cou"_bkdrHash:
-                sortFunctor(threadName, &SortSolution::countingMethod);
+                sortFunctor(name(targetMethod), &SortSolution::countingMethod);
                 break;
             case "buc"_bkdrHash:
-                sortFunctor(threadName, &SortSolution::bucketMethod);
+                sortFunctor(name(targetMethod), &SortSolution::bucketMethod);
                 break;
             case "rad"_bkdrHash:
-                sortFunctor(threadName, &SortSolution::radixMethod);
+                sortFunctor(name(targetMethod), &SortSolution::radixMethod);
                 break;
             default:
                 LOG_INF << "Execute to apply an unknown sort method.";

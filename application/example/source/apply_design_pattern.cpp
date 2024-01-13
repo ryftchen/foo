@@ -15,6 +15,7 @@
 
 #include "application/core/include/command.hpp"
 #include "application/core/include/log.hpp"
+#include "utility/include/currying.hpp"
 
 //! @brief Title of printing when design pattern tasks are beginning.
 #define APP_DP_PRINT_TASK_BEGIN_TITLE(category)                                                               \
@@ -43,6 +44,14 @@ DesignPatternTask& getTask()
 {
     static DesignPatternTask task{};
     return task;
+}
+
+//! @brief Get the task name curried.
+//! @return task name curried
+static const auto& getTaskNameCurried()
+{
+    static const auto curried = utility::currying::curry(command::presetTaskName, "dp");
+    return curried;
 }
 
 namespace behavioral
@@ -212,18 +221,18 @@ void runBehavioralTasks(const std::vector<std::string>& targets)
         return;
     }
 
+    APP_DP_PRINT_TASK_BEGIN_TITLE(Category::behavioral);
     using behavioral::BehavioralPattern;
     using utility::common::operator""_bkdrHash;
 
-    APP_DP_PRINT_TASK_BEGIN_TITLE(Category::behavioral);
     auto* const threads = command::getPublicThreadPool().newElement(std::min(
         static_cast<std::uint32_t>(getBit<BehavioralInstance>().count()),
         static_cast<std::uint32_t>(Bottom<BehavioralInstance>::value)));
-
     const auto behavioralFunctor = [threads](const std::string& threadName, void (*instancePtr)())
     {
         threads->enqueue(threadName, instancePtr);
     };
+    const auto name = utility::currying::curry(getTaskNameCurried(), "b");
 
     std::cout << "\r\nInstances of the behavioral pattern:" << std::endl;
     for (std::uint8_t i = 0; i < Bottom<BehavioralInstance>::value; ++i)
@@ -233,41 +242,41 @@ void runBehavioralTasks(const std::vector<std::string>& targets)
             continue;
         }
 
-        const std::string targetInstance = targets.at(i), threadName = "task-dp_b_" + targetInstance;
+        const std::string targetInstance = targets.at(i);
         switch (utility::common::bkdrHash(targetInstance.data()))
         {
             case "cha"_bkdrHash:
-                behavioralFunctor(threadName, &BehavioralPattern::chainOfResponsibilityInstance);
+                behavioralFunctor(name(targetInstance), &BehavioralPattern::chainOfResponsibilityInstance);
                 break;
             case "com"_bkdrHash:
-                behavioralFunctor(threadName, &BehavioralPattern::commandInstance);
+                behavioralFunctor(name(targetInstance), &BehavioralPattern::commandInstance);
                 break;
             case "int"_bkdrHash:
-                behavioralFunctor(threadName, &BehavioralPattern::interpreterInstance);
+                behavioralFunctor(name(targetInstance), &BehavioralPattern::interpreterInstance);
                 break;
             case "ite"_bkdrHash:
-                behavioralFunctor(threadName, &BehavioralPattern::iteratorInstance);
+                behavioralFunctor(name(targetInstance), &BehavioralPattern::iteratorInstance);
                 break;
             case "med"_bkdrHash:
-                behavioralFunctor(threadName, &BehavioralPattern::mediatorInstance);
+                behavioralFunctor(name(targetInstance), &BehavioralPattern::mediatorInstance);
                 break;
             case "mem"_bkdrHash:
-                behavioralFunctor(threadName, &BehavioralPattern::mementoInstance);
+                behavioralFunctor(name(targetInstance), &BehavioralPattern::mementoInstance);
                 break;
             case "obs"_bkdrHash:
-                behavioralFunctor(threadName, &BehavioralPattern::observerInstance);
+                behavioralFunctor(name(targetInstance), &BehavioralPattern::observerInstance);
                 break;
             case "sta"_bkdrHash:
-                behavioralFunctor(threadName, &BehavioralPattern::stateInstance);
+                behavioralFunctor(name(targetInstance), &BehavioralPattern::stateInstance);
                 break;
             case "str"_bkdrHash:
-                behavioralFunctor(threadName, &BehavioralPattern::strategyInstance);
+                behavioralFunctor(name(targetInstance), &BehavioralPattern::strategyInstance);
                 break;
             case "tem"_bkdrHash:
-                behavioralFunctor(threadName, &BehavioralPattern::templateMethodInstance);
+                behavioralFunctor(name(targetInstance), &BehavioralPattern::templateMethodInstance);
                 break;
             case "vis"_bkdrHash:
-                behavioralFunctor(threadName, &BehavioralPattern::visitorInstance);
+                behavioralFunctor(name(targetInstance), &BehavioralPattern::visitorInstance);
                 break;
             default:
                 LOG_INF << "Execute to apply an unknown behavioral instance.";
@@ -420,18 +429,18 @@ void runCreationalTasks(const std::vector<std::string>& targets)
         return;
     }
 
+    APP_DP_PRINT_TASK_BEGIN_TITLE(Category::creational);
     using creational::CreationalPattern;
     using utility::common::operator""_bkdrHash;
 
-    APP_DP_PRINT_TASK_BEGIN_TITLE(Category::creational);
     auto* const threads = command::getPublicThreadPool().newElement(std::min(
         static_cast<std::uint32_t>(getBit<CreationalInstance>().count()),
         static_cast<std::uint32_t>(Bottom<CreationalInstance>::value)));
-
     const auto creationalFunctor = [threads](const std::string& threadName, void (*instancePtr)())
     {
         threads->enqueue(threadName, instancePtr);
     };
+    const auto name = utility::currying::curry(getTaskNameCurried(), "c");
 
     std::cout << "\r\nInstances of the creational pattern:" << std::endl;
     for (std::uint8_t i = 0; i < Bottom<CreationalInstance>::value; ++i)
@@ -441,23 +450,23 @@ void runCreationalTasks(const std::vector<std::string>& targets)
             continue;
         }
 
-        const std::string targetInstance = targets.at(i), threadName = "task-dp_c_" + targetInstance;
+        const std::string targetInstance = targets.at(i);
         switch (utility::common::bkdrHash(targetInstance.data()))
         {
             case "abs"_bkdrHash:
-                creationalFunctor(threadName, &CreationalPattern::abstractFactoryInstance);
+                creationalFunctor(name(targetInstance), &CreationalPattern::abstractFactoryInstance);
                 break;
             case "bui"_bkdrHash:
-                creationalFunctor(threadName, &CreationalPattern::builderInstance);
+                creationalFunctor(name(targetInstance), &CreationalPattern::builderInstance);
                 break;
             case "fac"_bkdrHash:
-                creationalFunctor(threadName, &CreationalPattern::factoryMethodInstance);
+                creationalFunctor(name(targetInstance), &CreationalPattern::factoryMethodInstance);
                 break;
             case "pro"_bkdrHash:
-                creationalFunctor(threadName, &CreationalPattern::prototypeInstance);
+                creationalFunctor(name(targetInstance), &CreationalPattern::prototypeInstance);
                 break;
             case "sin"_bkdrHash:
-                creationalFunctor(threadName, &CreationalPattern::singletonInstance);
+                creationalFunctor(name(targetInstance), &CreationalPattern::singletonInstance);
                 break;
             default:
                 LOG_INF << "Execute to apply an unknown creational instance.";
@@ -616,18 +625,18 @@ void runStructuralTasks(const std::vector<std::string>& targets)
         return;
     }
 
+    APP_DP_PRINT_TASK_BEGIN_TITLE(Category::structural);
     using structural::StructuralPattern;
     using utility::common::operator""_bkdrHash;
 
-    APP_DP_PRINT_TASK_BEGIN_TITLE(Category::structural);
     auto* const threads = command::getPublicThreadPool().newElement(std::min(
         static_cast<std::uint32_t>(getBit<StructuralInstance>().count()),
         static_cast<std::uint32_t>(Bottom<StructuralInstance>::value)));
-
     const auto structuralFunctor = [threads](const std::string& threadName, void (*instancePtr)())
     {
         threads->enqueue(threadName, instancePtr);
     };
+    const auto name = utility::currying::curry(getTaskNameCurried(), "s");
 
     std::cout << "\r\nInstances of the structural pattern:" << std::endl;
     for (std::uint8_t i = 0; i < Bottom<StructuralInstance>::value; ++i)
@@ -637,29 +646,29 @@ void runStructuralTasks(const std::vector<std::string>& targets)
             continue;
         }
 
-        const std::string targetInstance = targets.at(i), threadName = "task-dp_s_" + targetInstance;
+        const std::string targetInstance = targets.at(i);
         switch (utility::common::bkdrHash(targetInstance.data()))
         {
             case "ada"_bkdrHash:
-                structuralFunctor(threadName, &StructuralPattern::adapterInstance);
+                structuralFunctor(name(targetInstance), &StructuralPattern::adapterInstance);
                 break;
             case "bri"_bkdrHash:
-                structuralFunctor(threadName, &StructuralPattern::bridgeInstance);
+                structuralFunctor(name(targetInstance), &StructuralPattern::bridgeInstance);
                 break;
             case "com"_bkdrHash:
-                structuralFunctor(threadName, &StructuralPattern::compositeInstance);
+                structuralFunctor(name(targetInstance), &StructuralPattern::compositeInstance);
                 break;
             case "dec"_bkdrHash:
-                structuralFunctor(threadName, &StructuralPattern::decoratorInstance);
+                structuralFunctor(name(targetInstance), &StructuralPattern::decoratorInstance);
                 break;
             case "fac"_bkdrHash:
-                structuralFunctor(threadName, &StructuralPattern::facadeInstance);
+                structuralFunctor(name(targetInstance), &StructuralPattern::facadeInstance);
                 break;
             case "fly"_bkdrHash:
-                structuralFunctor(threadName, &StructuralPattern::flyweightInstance);
+                structuralFunctor(name(targetInstance), &StructuralPattern::flyweightInstance);
                 break;
             case "pro"_bkdrHash:
-                structuralFunctor(threadName, &StructuralPattern::proxyInstance);
+                structuralFunctor(name(targetInstance), &StructuralPattern::proxyInstance);
                 break;
             default:
                 LOG_INF << "Execute to apply an unknown structural instance.";

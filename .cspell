@@ -57,6 +57,7 @@ words:
   - suboperation
   - tmpfs
   - tparam
+  - uncurried
   - valgrind
   - valgrindoutput
   - Velsky
