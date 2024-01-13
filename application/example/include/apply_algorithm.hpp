@@ -425,7 +425,7 @@ private:
     //! @brief Calculate precision by digit.
     //! @param digit - digit for the target text
     //! @return precision converted from digit
-    static inline int calculatePrecision(const std::uint32_t digit)
+    inline static int calculatePrecision(const std::uint32_t digit)
     {
         return static_cast<int>(std::ceil(static_cast<double>(digit) * std::log2(mpfrBase)));
     }
