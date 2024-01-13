@@ -19,6 +19,7 @@
 #include "numeric/include/divisor.hpp"
 #include "numeric/include/integral.hpp"
 #include "numeric/include/prime.hpp"
+#include "utility/include/currying.hpp"
 
 //! @brief Title of printing when numeric tasks are beginning.
 #define APP_NUM_PRINT_TASK_BEGIN_TITLE(category)                                                                   \
@@ -47,6 +48,14 @@ NumericTask& getTask()
 {
     static NumericTask task{};
     return task;
+}
+
+//! @brief Get the task name curried.
+//! @return task name curried
+static const auto& getTaskNameCurried()
+{
+    static const auto curried = utility::currying::curry(command::presetTaskName, "num");
+    return curried;
 }
 
 namespace arithmetic
@@ -132,17 +141,16 @@ void runArithmeticTasks(const std::vector<std::string>& targets)
         return;
     }
 
+    APP_NUM_PRINT_TASK_BEGIN_TITLE(Category::arithmetic);
     using arithmetic::ArithmeticSolution;
     using arithmetic::TargetBuilder;
     using arithmetic::input::integerA;
     using arithmetic::input::integerB;
     using utility::common::operator""_bkdrHash;
 
-    APP_NUM_PRINT_TASK_BEGIN_TITLE(Category::arithmetic);
     auto* const threads = command::getPublicThreadPool().newElement(std::min(
         static_cast<std::uint32_t>(getBit<ArithmeticMethod>().count()),
         static_cast<std::uint32_t>(Bottom<ArithmeticMethod>::value)));
-
     const auto builder = std::make_shared<TargetBuilder>(integerA, integerB);
     const auto arithmeticFunctor =
         [threads, builder](const std::string& threadName, void (*methodPtr)(const int, const int))
@@ -150,6 +158,7 @@ void runArithmeticTasks(const std::vector<std::string>& targets)
         threads->enqueue(
             threadName, methodPtr, std::get<0>(builder->getIntegers()), std::get<1>(builder->getIntegers()));
     };
+    const auto name = utility::currying::curry(getTaskNameCurried(), "a");
 
     for (std::uint8_t i = 0; i < Bottom<ArithmeticMethod>::value; ++i)
     {
@@ -158,20 +167,20 @@ void runArithmeticTasks(const std::vector<std::string>& targets)
             continue;
         }
 
-        const std::string targetMethod = targets.at(i), threadName = "task-num_a_" + targetMethod;
+        const std::string targetMethod = targets.at(i);
         switch (utility::common::bkdrHash(targetMethod.data()))
         {
             case "add"_bkdrHash:
-                arithmeticFunctor(threadName, &ArithmeticSolution::additionMethod);
+                arithmeticFunctor(name(targetMethod), &ArithmeticSolution::additionMethod);
                 break;
             case "sub"_bkdrHash:
-                arithmeticFunctor(threadName, &ArithmeticSolution::subtractionMethod);
+                arithmeticFunctor(name(targetMethod), &ArithmeticSolution::subtractionMethod);
                 break;
             case "mul"_bkdrHash:
-                arithmeticFunctor(threadName, &ArithmeticSolution::multiplicationMethod);
+                arithmeticFunctor(name(targetMethod), &ArithmeticSolution::multiplicationMethod);
                 break;
             case "div"_bkdrHash:
-                arithmeticFunctor(threadName, &ArithmeticSolution::divisionMethod);
+                arithmeticFunctor(name(targetMethod), &ArithmeticSolution::divisionMethod);
                 break;
             default:
                 LOG_INF << "Execute to apply an unknown arithmetic method.";
@@ -282,23 +291,23 @@ void runDivisorTasks(const std::vector<std::string>& targets)
         return;
     }
 
+    APP_NUM_PRINT_TASK_BEGIN_TITLE(Category::divisor);
     using divisor::DivisorSolution;
     using divisor::TargetBuilder;
     using divisor::input::integerA;
     using divisor::input::integerB;
     using utility::common::operator""_bkdrHash;
 
-    APP_NUM_PRINT_TASK_BEGIN_TITLE(Category::divisor);
     auto* const threads = command::getPublicThreadPool().newElement(std::min(
         static_cast<std::uint32_t>(getBit<DivisorMethod>().count()),
         static_cast<std::uint32_t>(Bottom<DivisorMethod>::value)));
-
     const auto builder = std::make_shared<TargetBuilder>(integerA, integerB);
     const auto divisorFunctor = [threads, builder](const std::string& threadName, void (*methodPtr)(int, int))
     {
         threads->enqueue(
             threadName, methodPtr, std::get<0>(builder->getIntegers()), std::get<1>(builder->getIntegers()));
     };
+    const auto name = utility::currying::curry(getTaskNameCurried(), "d");
 
     for (std::uint8_t i = 0; i < Bottom<DivisorMethod>::value; ++i)
     {
@@ -307,14 +316,14 @@ void runDivisorTasks(const std::vector<std::string>& targets)
             continue;
         }
 
-        const std::string targetMethod = targets.at(i), threadName = "task-num_d_" + targetMethod;
+        const std::string targetMethod = targets.at(i);
         switch (utility::common::bkdrHash(targetMethod.data()))
         {
             case "euc"_bkdrHash:
-                divisorFunctor(threadName, &DivisorSolution::euclideanMethod);
+                divisorFunctor(name(targetMethod), &DivisorSolution::euclideanMethod);
                 break;
             case "ste"_bkdrHash:
-                divisorFunctor(threadName, &DivisorSolution::steinMethod);
+                divisorFunctor(name(targetMethod), &DivisorSolution::steinMethod);
                 break;
             default:
                 LOG_INF << "Execute to apply an unknown divisor method.";
@@ -464,22 +473,19 @@ void runIntegralTasks(const std::vector<std::string>& targets)
             },
             expression);
     };
-    const auto calcExpr = [&targets](const auto inputs)
+    const auto calcExpr =
+        [&targets](const integral::Expression& expression, const integral::ExprRange<double, double>& range)
     {
         auto* const threads = command::getPublicThreadPool().newElement(std::min(
             static_cast<std::uint32_t>(getBit<IntegralMethod>().count()),
             static_cast<std::uint32_t>(Bottom<IntegralMethod>::value)));
-        const auto integralFunctor = [threads, &inputs](
+        const auto integralFunctor = [threads, &expression, &range](
                                          const std::string& threadName,
                                          void (*methodPtr)(const integral::Expression&, const double, const double))
         {
-            threads->enqueue(
-                threadName,
-                [methodPtr, &inputs]()
-                {
-                    std::apply(methodPtr, inputs);
-                });
+            threads->enqueue(threadName, methodPtr, std::ref(expression), range.range1, range.range2);
         };
+        const auto name = utility::currying::curry(getTaskNameCurried(), "i");
 
         using integral::IntegralSolution;
         using utility::common::operator""_bkdrHash;
@@ -490,23 +496,23 @@ void runIntegralTasks(const std::vector<std::string>& targets)
                 continue;
             }
 
-            const std::string targetMethod = targets.at(i), threadName = "task-num_i_" + targetMethod;
+            const std::string targetMethod = targets.at(i);
             switch (utility::common::bkdrHash(targetMethod.data()))
             {
                 case "tra"_bkdrHash:
-                    integralFunctor(threadName, &IntegralSolution::trapezoidalMethod);
+                    integralFunctor(name(targetMethod), &IntegralSolution::trapezoidalMethod);
                     break;
                 case "sim"_bkdrHash:
-                    integralFunctor(threadName, &IntegralSolution::adaptiveSimpsonMethod);
+                    integralFunctor(name(targetMethod), &IntegralSolution::adaptiveSimpsonMethod);
                     break;
                 case "rom"_bkdrHash:
-                    integralFunctor(threadName, &IntegralSolution::rombergMethod);
+                    integralFunctor(name(targetMethod), &IntegralSolution::rombergMethod);
                     break;
                 case "gau"_bkdrHash:
-                    integralFunctor(threadName, &IntegralSolution::gaussLegendreMethod);
+                    integralFunctor(name(targetMethod), &IntegralSolution::gaussLegendreMethod);
                     break;
                 case "mon"_bkdrHash:
-                    integralFunctor(threadName, &IntegralSolution::monteCarloMethod);
+                    integralFunctor(name(targetMethod), &IntegralSolution::monteCarloMethod);
                     break;
                 default:
                     LOG_INF << "Execute to apply an unknown integral method.";
@@ -515,20 +521,20 @@ void runIntegralTasks(const std::vector<std::string>& targets)
         }
         command::getPublicThreadPool().deleteElement(threads);
     };
-
-    APP_NUM_PRINT_TASK_BEGIN_TITLE(Category::integral);
-
     const std::unordered_multimap<integral::ExprRange<double, double>, IntegralExprTarget, integral::ExprMapHash>
         integralExprMap{
             {{Expression1::range1, Expression1::range2, Expression1::exprDescr}, Expression1{}},
         };
+
+    APP_NUM_PRINT_TASK_BEGIN_TITLE(Category::integral);
+
     for ([[maybe_unused]] const auto& [range, expression] : integralExprMap)
     {
         printExpr(expression);
         switch (expression.index())
         {
             case 0:
-                calcExpr(std::make_tuple(std::get<0>(expression), range.range1, range.range2));
+                calcExpr(std::get<0>(expression), range);
                 break;
             default:
                 break;
@@ -641,21 +647,21 @@ void runPrimeTasks(const std::vector<std::string>& targets)
         return;
     }
 
+    APP_NUM_PRINT_TASK_BEGIN_TITLE(Category::prime);
     using prime::PrimeSolution;
     using prime::TargetBuilder;
     using prime::input::maxPositiveInteger;
     using utility::common::operator""_bkdrHash;
 
-    APP_NUM_PRINT_TASK_BEGIN_TITLE(Category::prime);
     auto* const threads = command::getPublicThreadPool().newElement(std::min(
         static_cast<std::uint32_t>(getBit<PrimeMethod>().count()),
         static_cast<std::uint32_t>(Bottom<PrimeMethod>::value)));
-
     const auto builder = std::make_shared<TargetBuilder>(maxPositiveInteger);
     const auto primeFunctor = [threads, builder](const std::string& threadName, void (*methodPtr)(const std::uint32_t))
     {
         threads->enqueue(threadName, methodPtr, builder->getMaxPositiveInteger());
     };
+    const auto name = utility::currying::curry(getTaskNameCurried(), "p");
 
     for (std::uint8_t i = 0; i < Bottom<PrimeMethod>::value; ++i)
     {
@@ -664,14 +670,14 @@ void runPrimeTasks(const std::vector<std::string>& targets)
             continue;
         }
 
-        const std::string targetMethod = targets.at(i), threadName = "task-num_p_" + targetMethod;
+        const std::string targetMethod = targets.at(i);
         switch (utility::common::bkdrHash(targetMethod.data()))
         {
             case "era"_bkdrHash:
-                primeFunctor(threadName, &PrimeSolution::eratosthenesMethod);
+                primeFunctor(name(targetMethod), &PrimeSolution::eratosthenesMethod);
                 break;
             case "eul"_bkdrHash:
-                primeFunctor(threadName, &PrimeSolution::eulerMethod);
+                primeFunctor(name(targetMethod), &PrimeSolution::eulerMethod);
                 break;
             default:
                 LOG_INF << "Execute to apply an unknown prime method.";

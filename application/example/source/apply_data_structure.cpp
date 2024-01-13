@@ -15,6 +15,7 @@
 
 #include "application/core/include/command.hpp"
 #include "application/core/include/log.hpp"
+#include "utility/include/currying.hpp"
 
 //! @brief Title of printing when data structure tasks are beginning.
 #define APP_DS_PRINT_TASK_BEGIN_TITLE(category)                                                               \
@@ -43,6 +44,14 @@ DataStructureTask& getTask()
 {
     static DataStructureTask task{};
     return task;
+}
+
+//! @brief Get the task name curried.
+//! @return task name curried
+static const auto& getTaskNameCurried()
+{
+    static const auto curried = utility::currying::curry(command::presetTaskName, "ds");
+    return curried;
 }
 
 namespace linear
@@ -116,18 +125,18 @@ void runLinearTasks(const std::vector<std::string>& targets)
         return;
     }
 
+    APP_DS_PRINT_TASK_BEGIN_TITLE(Category::linear);
     using linear::LinearStructure;
     using utility::common::operator""_bkdrHash;
 
-    APP_DS_PRINT_TASK_BEGIN_TITLE(Category::linear);
     auto* const threads = command::getPublicThreadPool().newElement(std::min(
         static_cast<std::uint32_t>(getBit<LinearInstance>().count()),
         static_cast<std::uint32_t>(Bottom<LinearInstance>::value)));
-
     const auto linearFunctor = [threads](const std::string& threadName, void (*instancePtr)())
     {
         threads->enqueue(threadName, instancePtr);
     };
+    const auto name = utility::currying::curry(getTaskNameCurried(), "l");
 
     std::cout << "\r\nInstances of the linear structure:" << std::endl;
     for (std::uint8_t i = 0; i < Bottom<LinearInstance>::value; ++i)
@@ -137,17 +146,17 @@ void runLinearTasks(const std::vector<std::string>& targets)
             continue;
         }
 
-        const std::string targetInstance = targets.at(i), threadName = "task-ds_l_" + targetInstance;
+        const std::string targetInstance = targets.at(i);
         switch (utility::common::bkdrHash(targetInstance.data()))
         {
             case "lin"_bkdrHash:
-                linearFunctor(threadName, &LinearStructure::linkedListInstance);
+                linearFunctor(name(targetInstance), &LinearStructure::linkedListInstance);
                 break;
             case "sta"_bkdrHash:
-                linearFunctor(threadName, &LinearStructure::stackInstance);
+                linearFunctor(name(targetInstance), &LinearStructure::stackInstance);
                 break;
             case "que"_bkdrHash:
-                linearFunctor(threadName, &LinearStructure::queueInstance);
+                linearFunctor(name(targetInstance), &LinearStructure::queueInstance);
                 break;
             default:
                 LOG_INF << "Execute to apply an unknown linear instance.";
@@ -251,18 +260,18 @@ void runTreeTasks(const std::vector<std::string>& targets)
         return;
     }
 
+    APP_DS_PRINT_TASK_BEGIN_TITLE(Category::tree);
     using tree::TreeStructure;
     using utility::common::operator""_bkdrHash;
 
-    APP_DS_PRINT_TASK_BEGIN_TITLE(Category::tree);
     auto* const threads = command::getPublicThreadPool().newElement(std::min(
         static_cast<std::uint32_t>(getBit<TreeInstance>().count()),
         static_cast<std::uint32_t>(Bottom<TreeInstance>::value)));
-
     const auto treeFunctor = [threads](const std::string& threadName, void (*instancePtr)())
     {
         threads->enqueue(threadName, instancePtr);
     };
+    const auto name = utility::currying::curry(getTaskNameCurried(), "t");
 
     std::cout << "\r\nInstances of the tree structure:" << std::endl;
     for (std::uint8_t i = 0; i < Bottom<TreeInstance>::value; ++i)
@@ -272,17 +281,17 @@ void runTreeTasks(const std::vector<std::string>& targets)
             continue;
         }
 
-        const std::string targetInstance = targets.at(i), threadName = "task-ds_t_" + targetInstance;
+        const std::string targetInstance = targets.at(i);
         switch (utility::common::bkdrHash(targetInstance.data()))
         {
             case "bin"_bkdrHash:
-                treeFunctor(threadName, &TreeStructure::bsInstance);
+                treeFunctor(name(targetInstance), &TreeStructure::bsInstance);
                 break;
             case "ade"_bkdrHash:
-                treeFunctor(threadName, &TreeStructure::avlInstance);
+                treeFunctor(name(targetInstance), &TreeStructure::avlInstance);
                 break;
             case "spl"_bkdrHash:
-                treeFunctor(threadName, &TreeStructure::splayInstance);
+                treeFunctor(name(targetInstance), &TreeStructure::splayInstance);
                 break;
             default:
                 LOG_INF << "Execute to apply an unknown tree instance.";

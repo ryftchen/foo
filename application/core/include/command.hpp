@@ -304,6 +304,16 @@ auto Command::get(const TaskFunctorTuple& tuple) const
     }
 }
 
+//! @brief Preset thread name.
+//! @param cli - sub-cli
+//! @param cat - category
+//! @param tgt - target task
+//! @return thread name
+inline std::string presetTaskName(const std::string_view cli, const std::string_view cat, const std::string_view tgt)
+{
+    return "task-" + std::string{cli} + '_' + std::string{cat} + '_' + std::string{tgt};
+}
+
 //! @brief Alias for memory pool when making multi-threading.
 using PublicThreadPool = utility::memory::Memory<utility::thread::Thread>;
 extern PublicThreadPool& getPublicThreadPool();
