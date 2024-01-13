@@ -361,8 +361,9 @@ class Task:
         with open(f"{xml_filename}.xml", "rt", encoding="utf-8") as mem_xml:
             inst_num = mem_xml.read().count("</valgrindoutput>")
         stdout = ""
+        stderr = ""
         if inst_num == 1:
-            stdout, _, _ = common.execute_command(f"valgrind-ci {xml_filename}.xml --summary")
+            stdout, stderr, _ = common.execute_command(f"valgrind-ci {xml_filename}.xml --summary")
         elif inst_num == 2:
             common.execute_command(
                 f"cp {xml_filename}.xml {xml_filename}_inst_1.xml && \
@@ -374,7 +375,7 @@ b=$(sed -n '/<\\/valgrindoutput>/!d;=;Q' {xml_filename}_inst_1.xml) ; \
 sed -i $(($a + 1)),$(($b))d {xml_filename}_inst_1.xml"
             )
             common.execute_command(f"sed -i '/<\\/valgrindoutput>/q' {xml_filename}_inst_2.xml")
-            stdout, _, _ = common.execute_command(
+            stdout, stderr, _ = common.execute_command(
                 f"valgrind-ci {xml_filename}_inst_1.xml --summary && \
 valgrind-ci {xml_filename}_inst_2.xml --summary"
             )
@@ -400,7 +401,7 @@ valgrind-ci {xml_filename}_inst_2.xml --summary"
             Output.refresh_status(
                 Output.color["red"], f"{f'STAT: FAILURE NO.{str(self.complete_steps + 1)}':<{align_len}}"
             )
-        elif inst_num == 0 or inst_num > 2:
+        elif inst_num == 0 or inst_num > 2 or len(stderr) != 0:
             self.pass_steps -= 1
             print("\r\n[CHECK MEMORY]\nUnsupported valgrind output xml file content.")
             Output.refresh_status(
