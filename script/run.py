@@ -77,18 +77,19 @@ class Task:
         self.repeat_count = 1
         self.duration = 0
 
+        script_path = os.path.split(os.path.realpath(__file__))[0]
+        if not fnmatch.fnmatch(script_path, "*foo/script"):
+            Output.exit_with_error("Illegal path to current script.")
+        os.chdir(os.path.dirname(script_path))
+        sys.path.append(".")
         if not os.path.exists(self.cache_dir):
             os.mkdir(self.cache_dir)
+
         self.logger = common.Log(self.log_file)
         self.progress_bar = common.ProgressBar()
         self.task_queue = queue.Queue()
 
     def run(self):
-        script_path = os.path.split(os.path.realpath(__file__))[0]
-        if not fnmatch.fnmatch(script_path, "*foo/script"):
-            Output.exit_with_error("Illegal path to current script.")
-        os.chdir(os.path.dirname(script_path))
-
         self.parse_arguments()
         self.prepare()
         start_time = datetime.now()

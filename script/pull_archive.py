@@ -24,9 +24,7 @@ class Documentation:
     log_file = "/tmp/foo_doc.log"
 
     def __init__(self):
-        self.project_path = ""
         self.proxy_port = ""
-        self.logger = common.Log(self.log_file, "a")
 
         env = os.getenv("FOO_ENV")
         if env is not None:
@@ -34,13 +32,14 @@ class Documentation:
                 interrupt("The environment variable FOO_ENV must be foo_doc.")
         else:
             interrupt("Please export the environment variable FOO_ENV.")
-
-    def pull_archive(self):
         script_path = os.path.split(os.path.realpath(__file__))[0]
         if not fnmatch.fnmatch(script_path, "*foo/script"):
             interrupt("Illegal path to current script.")
-        self.project_path = os.path.dirname(script_path)
 
+        self.project_path = os.path.dirname(script_path)
+        self.logger = common.Log(self.log_file, "a")
+
+    def pull_archive(self):
         parser = argparse.ArgumentParser(description="pull archive script")
         parser.add_argument(
             "-p",
