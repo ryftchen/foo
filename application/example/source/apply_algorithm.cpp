@@ -504,7 +504,7 @@ void runOptimalTasks(const std::vector<std::string>& targets)
     typedef std::variant<Rastrigin> OptimalFuncTarget;
     constexpr auto printFunc = [](const OptimalFuncTarget& function)
     {
-        constexpr std::string_view prefix{"\r\nOptimal function:\n"};
+        constexpr std::string_view prefix = "\r\nOptimal function:\n";
         std::visit(
             optimal::FuncOverloaded{
                 [&prefix](const Rastrigin& /*func*/)
