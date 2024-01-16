@@ -15,7 +15,7 @@ namespace algorithm::optimal
 {
 std::optional<std::tuple<double, double>> Gradient::operator()(const double left, const double right, const double eps)
 {
-    std::mt19937 engine{std::random_device{}()};
+    std::mt19937 engine(std::random_device{}());
     double x = 0.0, y = 0.0;
     std::uniform_real_distribution<double> candidate(left, right);
     std::set<double> climbing;
@@ -67,7 +67,7 @@ std::optional<std::tuple<double, double>> Annealing::operator()(const double lef
     std::uniform_real_distribution<double> perturbation(left, right);
     std::uniform_real_distribution<double> pr(0.0, 1.0);
 
-    std::mt19937 engine{std::random_device{}()};
+    std::mt19937 engine(std::random_device{}());
     double temperature = initialT, x = perturbation(engine), y = func(x);
     while (temperature > minimalT)
     {

@@ -79,13 +79,13 @@ private:
     //! @brief Parse arguments helper for commander.
     utility::argument::Argument mainCLI{"foo", "1.0"};
     //! @brief Parse arguments helper to apply algorithm.
-    utility::argument::Argument subAppAlgoCLI{"app-algo"};
+    utility::argument::Argument subCLIAppAlgo{"app-algo"};
     //! @brief Parse arguments helper to apply design pattern.
-    utility::argument::Argument subAppDpCLI{"app-dp"};
+    utility::argument::Argument subCLIAppDp{"app-dp"};
     //! @brief Parse arguments helper to apply data structure.
-    utility::argument::Argument subAppDsCLI{"app-ds"};
+    utility::argument::Argument subCLIAppDs{"app-ds"};
     //! @brief Parse arguments helper to apply numeric.
-    utility::argument::Argument subAppNumCLI{"app-num"};
+    utility::argument::Argument subCLIAppNum{"app-num"};
     //! @brief Copyright information.
     static constexpr std::string_view copyright{"Copyright (c) 2022-2024 ryftchen. All rights reserved."};
 

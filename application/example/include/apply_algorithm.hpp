@@ -728,14 +728,14 @@ public:
     //! @return T search key
     inline T getSearchKey() const { return searchKey; }
     //! @brief Splice from array for printing.
-    //! @tparam V - type of array
+    //! @tparam N - type of array
     //! @param array - target array
     //! @param length - length of array
     //! @param buffer - buffer for printing
     //! @param bufferSize - size of buffer
     //! @return buffer after splicing
-    template <typename V>
-    requires(isNumber<V>())
+    template <typename N>
+    requires(isNumber<N>())
     static char* spliceAll(
         const T* const restrict array,
         const std::uint32_t length,
@@ -799,16 +799,16 @@ private:
         std::memcpy(orderedArray.get(), rhs.orderedArray.get(), length * sizeof(T));
     }
     //! @brief Set the ordered array.
-    //! @tparam V - the specific type of integral
+    //! @tparam N - the specific type of integral
     //! @param array - ordered array
     //! @param length - length of the ordered array
     //! @param left - the left boundary of the ordered array
     //! @param right - the left right of the ordered array
-    template <typename V>
-    requires std::is_integral<V>::value
+    template <typename N>
+    requires std::is_integral<N>::value
     static void setOrderedArray(T array[], const std::uint32_t length, const T left, const T right)
     {
-        std::mt19937 engine{std::random_device{}()};
+        std::mt19937 engine(std::random_device{}());
         std::uniform_int_distribution<int> dist(left, right);
         for (std::uint32_t i = 0; i < length; ++i)
         {
@@ -825,16 +825,16 @@ private:
 #endif // __RUNTIME_PRINTING
     }
     //! @brief Set the ordered array.
-    //! @tparam V - the specific type of floating point
+    //! @tparam N - the specific type of floating point
     //! @param array - ordered array
     //! @param length - length of the ordered array
     //! @param left - the left boundary of the ordered array
     //! @param right - the left right of the ordered array
-    template <typename V>
-    requires std::is_floating_point<V>::value
+    template <typename N>
+    requires std::is_floating_point<N>::value
     static void setOrderedArray(T array[], const std::uint32_t length, const T left, const T right)
     {
-        std::mt19937 engine{std::random_device{}()};
+        std::mt19937 engine(std::random_device{}());
         std::uniform_real_distribution<double> dist(left, right);
         for (std::uint32_t i = 0; i < length; ++i)
         {
@@ -972,14 +972,14 @@ public:
     //! @return length
     [[nodiscard]] inline std::uint32_t getLength() const { return length; }
     //! @brief Splice from array for printing.
-    //! @tparam V - type of array
+    //! @tparam N - type of array
     //! @param array - target array
     //! @param length - length of array
     //! @param buffer - buffer for printing
     //! @param bufferSize - size of buffer
     //! @return buffer after splicing
-    template <typename V>
-    requires(isNumber<V>())
+    template <typename N>
+    requires(isNumber<N>())
     static char* spliceAll(
         const T* const restrict array,
         const std::uint32_t length,
@@ -1041,16 +1041,16 @@ private:
         std::memcpy(randomArray.get(), rhs.randomArray.get(), length * sizeof(T));
     }
     //! @brief Set the random array.
-    //! @tparam V - the specific type of integral
+    //! @tparam N - the specific type of integral
     //! @param array - random array
     //! @param length - length of the random array
     //! @param left - the left boundary of the random array
     //! @param right - the left right of the random array
-    template <typename V>
-    requires std::is_integral<V>::value
+    template <typename N>
+    requires std::is_integral<N>::value
     static void setRandomArray(T array[], const std::uint32_t length, const T left, const T right)
     {
-        std::mt19937 engine{std::random_device{}()};
+        std::mt19937 engine(std::random_device{}());
         std::uniform_int_distribution<int> dist(left, right);
         for (std::uint32_t i = 0; i < length; ++i)
         {
@@ -1066,16 +1066,16 @@ private:
 #endif // __RUNTIME_PRINTING
     }
     //! @brief Set the random array.
-    //! @tparam V - the specific type of floating point
+    //! @tparam N - the specific type of floating point
     //! @param array - random array
     //! @param length - length of the random array
     //! @param left - the left boundary of the random array
     //! @param right - the left right of the random array
-    template <typename V>
-    requires std::is_floating_point<V>::value
+    template <typename N>
+    requires std::is_floating_point<N>::value
     static void setRandomArray(T array[], const std::uint32_t length, const T left, const T right)
     {
-        std::mt19937 engine{std::random_device{}()};
+        std::mt19937 engine(std::random_device{}());
         std::uniform_real_distribution<double> dist(left, right);
         for (std::uint32_t i = 0; i < length; ++i)
         {

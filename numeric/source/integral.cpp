@@ -192,7 +192,7 @@ double MonteCarlo::sampleFromNormalDistribution(const double lower, const double
 {
     const std::uint32_t n = std::max<std::uint32_t>((upper - lower) / eps, 1.0 / eps);
     const double mu = (lower + upper) / 2.0, sigma = (upper - lower) / 6.0;
-    std::mt19937 engine{std::random_device{}()};
+    std::mt19937 engine(std::random_device{}());
     std::uniform_real_distribution<double> dist(0.0, 1.0);
     double sum = 0.0, x = 0.0;
     for (std::uint32_t i = 0; i < n; ++i)
