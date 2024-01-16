@@ -19,12 +19,12 @@ static Console* currentConsole = nullptr;
 
 Console::Console(const std::string& greeting) : impl(std::make_unique<Impl>(greeting))
 {
-    ::rl_attempted_completion_function = &Console::getCmdCompleter;
+    ::rl_attempted_completion_function = &Console::getCommandCompleter;
 
-    impl->regCmds["help"] = std::make_pair(
+    impl->regMap["help"] = std::make_pair(
         [this](const Args& /*input*/)
         {
-            const auto commandsHelp = getHelpOfRegisteredCmds();
+            const auto commandsHelp = getHelpOfRegisteredCommand();
             std::size_t maxLength = 0;
             for ([[maybe_unused]] const auto& [command, help] : commandsHelp)
             {
@@ -44,7 +44,7 @@ Console::Console(const std::string& greeting) : impl(std::make_unique<Impl>(gree
         "show help");
     impl->regOrder.emplace_back("help");
 
-    impl->regCmds["quit"] = std::make_pair(
+    impl->regMap["quit"] = std::make_pair(
         [this](const Args& /*input*/)
         {
             std::cout << "exit" << std::endl;
@@ -53,7 +53,7 @@ Console::Console(const std::string& greeting) : impl(std::make_unique<Impl>(gree
         "exit console mode");
     impl->regOrder.emplace_back("quit");
 
-    impl->regCmds["batch"] = std::make_pair(
+    impl->regMap["batch"] = std::make_pair(
         [this](const Args& input)
         {
             if (input.size() < 2)
@@ -74,10 +74,10 @@ Console::~Console()
     ::rl_restore_prompt();
 }
 
-void Console::registerCmd(const std::string& command, const CmdFunctor& func, const std::string& help)
+void Console::registerCommand(const std::string& name, const CommandFunctor& func, const std::string& help)
 {
-    impl->regCmds[command] = std::make_pair(func, help);
-    impl->regOrder.emplace_back(command);
+    impl->regMap[name] = std::make_pair(func, help);
+    impl->regOrder.emplace_back(name);
 }
 
 void Console::setGreeting(const std::string& greeting)
@@ -90,7 +90,7 @@ std::string Console::getGreeting() const
     return impl->greeting;
 }
 
-int Console::cmdExecutor(const std::string& command)
+int Console::commandExecutor(const std::string& command)
 {
     std::vector<std::string> inputs;
     std::istringstream is(command);
@@ -101,8 +101,8 @@ int Console::cmdExecutor(const std::string& command)
         return RetCode::success;
     }
 
-    const auto iterator = impl->regCmds.find(inputs.at(0));
-    if (std::cend(impl->regCmds) == iterator)
+    const auto iterator = impl->regMap.find(inputs.at(0));
+    if (std::cend(impl->regMap) == iterator)
     {
         throw std::logic_error("The console command '" + inputs.at(0) + "' could not be found.");
     }
@@ -128,7 +128,7 @@ int Console::fileExecutor(const std::string& filename)
         }
         std::cout << '[' << counter << "] " << command << std::endl;
 
-        result = cmdExecutor(command);
+        result = commandExecutor(command);
         if (result)
         {
             return RetCode(result);
@@ -140,7 +140,7 @@ int Console::fileExecutor(const std::string& filename)
     return RetCode::success;
 }
 
-int Console::readCmdLine()
+int Console::readCommandLine()
 {
     reserveConsole();
 
@@ -158,15 +158,15 @@ int Console::readCmdLine()
 
     std::string line(buffer);
     ::rl_free(buffer);
-    return RetCode(cmdExecutor(line));
+    return RetCode(commandExecutor(line));
 }
 
-Console::CmdsHelp Console::getHelpOfRegisteredCmds() const
+std::vector<Console::CommandHelpPair> Console::getHelpOfRegisteredCommand() const
 {
-    CmdsHelp allCommandsHelp;
-    for (const auto& cmd : impl->regOrder)
+    std::vector<Console::CommandHelpPair> allCommandsHelp;
+    for (const auto& command : impl->regOrder)
     {
-        allCommandsHelp.emplace_back(cmd, impl->regCmds.at(cmd).second);
+        allCommandsHelp.emplace_back(command, impl->regMap.at(command).second);
     }
 
     return allCommandsHelp;
@@ -202,26 +202,26 @@ void Console::reserveConsole()
     currentConsole = this;
 }
 
-char** Console::getCmdCompleter(const char* text, int start, int /*end*/)
+char** Console::getCommandCompleter(const char* text, int start, int /*end*/)
 {
     char** completionList = nullptr;
     if (0 == start)
     {
-        completionList = ::rl_completion_matches(text, &Console::getCmdIterator);
+        completionList = ::rl_completion_matches(text, &Console::getCommandIterator);
     }
 
     return completionList;
 }
 
-char* Console::getCmdIterator(const char* text, int state)
+char* Console::getCommandIterator(const char* text, int state)
 {
-    static Impl::RegisteredCmds::iterator iterator;
+    static Impl::RegisteredCommand::iterator iterator;
     if (nullptr == currentConsole)
     {
         return nullptr;
     }
 
-    auto& commands = currentConsole->impl->regCmds;
+    auto& commands = currentConsole->impl->regMap;
     if (0 == state)
     {
         iterator = std::begin(commands);
