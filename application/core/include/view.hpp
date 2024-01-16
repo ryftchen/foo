@@ -193,7 +193,7 @@ public:
     //! @param tuple - a tuple containing the member types to be got
     //! @return member corresponding to the specific type
     template <typename T>
-    static auto get(const OptionTuple& tuple);
+    static const T& get(const OptionTuple& tuple);
     //! @brief Get the TCP server host address.
     //! @return TCP server host address
     std::string getViewerTCPHost() const;
@@ -378,7 +378,7 @@ protected:
 };
 
 template <typename T>
-auto View::get(const OptionTuple& tuple)
+const T& View::get(const OptionTuple& tuple)
 {
     if constexpr (std::is_same_v<T, HelpMessage>)
     {
