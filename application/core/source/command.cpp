@@ -48,7 +48,7 @@ Command::Command()
     subCLIAppAlgo.addArgument("-h", "--help").argsNum(0).implicitVal(true).help("show help and exit");
     subCLIAppAlgo.addArgument("-m", "--match")
         .argsNum(0, get<TargetTaskContainer>(algoTbl.at("match")).size())
-        .defaultVal<std::vector<std::string>>(get<TargetTaskContainer>(algoTbl.at("match")))
+        .defaultVal<std::vector<std::string>>(TargetTaskContainer{get<TargetTaskContainer>(algoTbl.at("match"))})
         .remaining()
         .metavar("OPT")
         .help("run match tasks\n"
@@ -60,7 +60,7 @@ Command::Command()
               "add the tasks listed above");
     subCLIAppAlgo.addArgument("-n", "--notation")
         .argsNum(0, get<TargetTaskContainer>(algoTbl.at("notation")).size())
-        .defaultVal<std::vector<std::string>>(get<TargetTaskContainer>(algoTbl.at("notation")))
+        .defaultVal<std::vector<std::string>>(TargetTaskContainer{get<TargetTaskContainer>(algoTbl.at("notation"))})
         .remaining()
         .metavar("OPT")
         .help("run notation tasks\n"
@@ -69,7 +69,7 @@ Command::Command()
               "add the tasks listed above");
     subCLIAppAlgo.addArgument("-o", "--optimal")
         .argsNum(0, get<TargetTaskContainer>(algoTbl.at("optimal")).size())
-        .defaultVal<std::vector<std::string>>(get<TargetTaskContainer>(algoTbl.at("optimal")))
+        .defaultVal<std::vector<std::string>>(TargetTaskContainer{get<TargetTaskContainer>(algoTbl.at("optimal"))})
         .remaining()
         .metavar("OPT")
         .help("run optimal tasks\n"
@@ -80,7 +80,7 @@ Command::Command()
               "add the tasks listed above");
     subCLIAppAlgo.addArgument("-s", "--search")
         .argsNum(0, get<TargetTaskContainer>(algoTbl.at("search")).size())
-        .defaultVal<std::vector<std::string>>(get<TargetTaskContainer>(algoTbl.at("search")))
+        .defaultVal<std::vector<std::string>>(TargetTaskContainer{get<TargetTaskContainer>(algoTbl.at("search"))})
         .remaining()
         .metavar("OPT")
         .help("run search tasks\n"
@@ -90,7 +90,7 @@ Command::Command()
               "add the tasks listed above");
     subCLIAppAlgo.addArgument("-S", "--sort")
         .argsNum(0, get<TargetTaskContainer>(algoTbl.at("sort")).size())
-        .defaultVal<std::vector<std::string>>(get<TargetTaskContainer>(algoTbl.at("sort")))
+        .defaultVal<std::vector<std::string>>(TargetTaskContainer{get<TargetTaskContainer>(algoTbl.at("sort"))})
         .remaining()
         .metavar("OPT")
         .help("run sort tasks\n"
@@ -112,7 +112,7 @@ Command::Command()
     subCLIAppDp.addArgument("-h", "--help").argsNum(0).implicitVal(true).help("show help and exit");
     subCLIAppDp.addArgument("-b", "--behavioral")
         .argsNum(0, get<TargetTaskContainer>(dpTbl.at("behavioral")).size())
-        .defaultVal<std::vector<std::string>>(get<TargetTaskContainer>(dpTbl.at("behavioral")))
+        .defaultVal<std::vector<std::string>>(TargetTaskContainer{get<TargetTaskContainer>(dpTbl.at("behavioral"))})
         .remaining()
         .metavar("OPT")
         .help("run behavioral tasks\n"
@@ -130,7 +130,7 @@ Command::Command()
               "add the tasks listed above");
     subCLIAppDp.addArgument("-c", "--creational")
         .argsNum(0, get<TargetTaskContainer>(dpTbl.at("creational")).size())
-        .defaultVal<std::vector<std::string>>(get<TargetTaskContainer>(dpTbl.at("creational")))
+        .defaultVal<std::vector<std::string>>(TargetTaskContainer{get<TargetTaskContainer>(dpTbl.at("creational"))})
         .remaining()
         .metavar("OPT")
         .help("run creational tasks\n"
@@ -142,7 +142,7 @@ Command::Command()
               "add the tasks listed above");
     subCLIAppDp.addArgument("-s", "--structural")
         .argsNum(0, get<TargetTaskContainer>(dpTbl.at("structural")).size())
-        .defaultVal<std::vector<std::string>>(get<TargetTaskContainer>(dpTbl.at("structural")))
+        .defaultVal<std::vector<std::string>>(TargetTaskContainer{get<TargetTaskContainer>(dpTbl.at("structural"))})
         .remaining()
         .metavar("OPT")
         .help("run creational tasks\n"
@@ -161,7 +161,7 @@ Command::Command()
     subCLIAppDs.addArgument("-h", "--help").argsNum(0).implicitVal(true).help("show help and exit");
     subCLIAppDs.addArgument("-l", "--linear")
         .argsNum(0, get<TargetTaskContainer>(dsTbl.at("linear")).size())
-        .defaultVal<std::vector<std::string>>(get<TargetTaskContainer>(dsTbl.at("linear")))
+        .defaultVal<std::vector<std::string>>(TargetTaskContainer{get<TargetTaskContainer>(dsTbl.at("linear"))})
         .remaining()
         .metavar("OPT")
         .help("run linear tasks\n"
@@ -171,7 +171,7 @@ Command::Command()
               "add the tasks listed above");
     subCLIAppDs.addArgument("-t", "--tree")
         .argsNum(0, get<TargetTaskContainer>(dsTbl.at("tree")).size())
-        .defaultVal<std::vector<std::string>>(get<TargetTaskContainer>(dsTbl.at("tree")))
+        .defaultVal<std::vector<std::string>>(TargetTaskContainer{get<TargetTaskContainer>(dsTbl.at("tree"))})
         .remaining()
         .metavar("OPT")
         .help("run tree tasks\n"
@@ -186,7 +186,7 @@ Command::Command()
     subCLIAppNum.addArgument("-h", "--help").argsNum(0).implicitVal(true).help("show help and exit");
     subCLIAppNum.addArgument("-a", "--arithmetic")
         .argsNum(0, get<TargetTaskContainer>(numTbl.at("arithmetic")).size())
-        .defaultVal<std::vector<std::string>>(get<TargetTaskContainer>(numTbl.at("arithmetic")))
+        .defaultVal<std::vector<std::string>>(TargetTaskContainer{get<TargetTaskContainer>(numTbl.at("arithmetic"))})
         .remaining()
         .metavar("OPT")
         .help("run arithmetic tasks\n"
@@ -197,7 +197,7 @@ Command::Command()
               "add the tasks listed above");
     subCLIAppNum.addArgument("-d", "--divisor")
         .argsNum(0, get<TargetTaskContainer>(numTbl.at("divisor")).size())
-        .defaultVal<std::vector<std::string>>(get<TargetTaskContainer>(numTbl.at("divisor")))
+        .defaultVal<std::vector<std::string>>(TargetTaskContainer{get<TargetTaskContainer>(numTbl.at("divisor"))})
         .remaining()
         .metavar("OPT")
         .help("run divisor tasks\n"
@@ -206,7 +206,7 @@ Command::Command()
               "add the tasks listed above");
     subCLIAppNum.addArgument("-i", "--integral")
         .argsNum(0, get<TargetTaskContainer>(numTbl.at("integral")).size())
-        .defaultVal<std::vector<std::string>>(get<TargetTaskContainer>(numTbl.at("integral")))
+        .defaultVal<std::vector<std::string>>(TargetTaskContainer{get<TargetTaskContainer>(numTbl.at("integral"))})
         .remaining()
         .metavar("OPT")
         .help("run integral tasks\n"
@@ -218,7 +218,7 @@ Command::Command()
               "add the tasks listed above");
     subCLIAppNum.addArgument("-p", "--prime")
         .argsNum(0, get<TargetTaskContainer>(numTbl.at("prime")).size())
-        .defaultVal<std::vector<std::string>>(get<TargetTaskContainer>(numTbl.at("prime")))
+        .defaultVal<std::vector<std::string>>(TargetTaskContainer{get<TargetTaskContainer>(numTbl.at("prime"))})
         .remaining()
         .metavar("OPT")
         .help("run prime tasks\n"
@@ -360,8 +360,8 @@ void Command::validateRegularTask()
         for ([[maybe_unused]] const auto& [taskCategory, taskCategoryTuple] :
              subCLIMap | std::views::filter(isCategoryUsed))
         {
-            const auto tasks = subCLI.get<std::vector<std::string>>(taskCategory);
-            for (const auto& task : tasks)
+            const auto taskContainer = subCLI.get<std::vector<std::string>>(taskCategory);
+            for (const auto& task : taskContainer)
             {
                 (*get<UpdateTaskFunctor>(get<TaskFunctorTuple>(taskCategoryTuple)))(task);
             }
@@ -523,6 +523,32 @@ void Command::showVersionIcon() const
         + mainCLI.version + " ' ; tput sgr0 ; echo ; " + additionalInfo;
 
     std::cout << utility::common::executeCommand(fullIcon) << std::flush;
+}
+
+template <typename T>
+const T& Command::get(const TaskCategoryTuple& tuple)
+{
+    if constexpr (std::is_same_v<T, TargetTaskContainer>)
+    {
+        return std::get<0>(tuple);
+    }
+    else if constexpr (std::is_same_v<T, TaskFunctorTuple>)
+    {
+        return std::get<1>(tuple);
+    }
+}
+
+template <typename T>
+const T& Command::get(const TaskFunctorTuple& tuple)
+{
+    if constexpr (std::is_same_v<T, PerformTaskFunctor>)
+    {
+        return std::get<0>(tuple);
+    }
+    else if constexpr (std::is_same_v<T, UpdateTaskFunctor>)
+    {
+        return std::get<1>(tuple);
+    }
 }
 
 void Command::enterConsoleMode() const

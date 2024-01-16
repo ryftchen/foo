@@ -139,13 +139,13 @@ private:
     //! @param tuple - a tuple containing the member types to be got
     //! @return member corresponding to the specific type
     template <typename T>
-    auto get(const TaskCategoryTuple& tuple) const;
+    static const T& get(const TaskCategoryTuple& tuple);
     //! @brief Get a member of TaskFunctorTuple.
     //! @tparam T - type of member to be got
     //! @param tuple - a tuple containing the member types to be got
     //! @return member corresponding to the specific type
     template <typename T>
-    auto get(const TaskFunctorTuple& tuple) const;
+    static const T& get(const TaskFunctorTuple& tuple);
 
     // clang-format off
     //! @brief Mapping table of all basic tasks.
@@ -277,32 +277,6 @@ private:
     //! @brief Maximum latency for console.
     static constexpr std::uint16_t maxLatency{200};
 };
-
-template <typename T>
-auto Command::get(const TaskCategoryTuple& tuple) const
-{
-    if constexpr (std::is_same_v<T, TargetTaskContainer>)
-    {
-        return std::get<0>(tuple);
-    }
-    else if constexpr (std::is_same_v<T, TaskFunctorTuple>)
-    {
-        return std::get<1>(tuple);
-    }
-}
-
-template <typename T>
-auto Command::get(const TaskFunctorTuple& tuple) const
-{
-    if constexpr (std::is_same_v<T, PerformTaskFunctor>)
-    {
-        return std::get<0>(tuple);
-    }
-    else if constexpr (std::is_same_v<T, UpdateTaskFunctor>)
-    {
-        return std::get<1>(tuple);
-    }
-}
 
 //! @brief Preset thread name.
 //! @param cli - sub-cli
