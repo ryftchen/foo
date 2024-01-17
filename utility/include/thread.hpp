@@ -38,7 +38,7 @@ public:
 
 private:
     //! @brief The container of target threads to join.
-    std::vector<std::thread> threadContainer;
+    std::vector<std::thread> thdCntr;
     //! @brief The queue of tasks.
     std::queue<std::pair<std::string, std::packaged_task<void()>>> taskQueue;
     //! @brief Mutex for controlling queue.

@@ -278,10 +278,9 @@ void Genetic::crossover(Population& pop)
     Population popCross;
     popCross.reserve(pop.size());
 
-    std::vector<std::reference_wrapper<Chromosome>> crossContainer(pop.begin(), pop.end());
-    std::shuffle(crossContainer.begin(), crossContainer.end(), engine);
-    for (auto chrIter = crossContainer.begin();
-         (crossContainer.end() != chrIter) && (std::next(chrIter, 1) != crossContainer.end());
+    std::vector<std::reference_wrapper<Chromosome>> container(pop.begin(), pop.end());
+    std::shuffle(container.begin(), container.end(), engine);
+    for (auto chrIter = container.begin(); (container.end() != chrIter) && (std::next(chrIter, 1) != container.end());
          std::advance(chrIter, 2))
     {
         Chromosome parent1 = chrIter->get(), parent2 = std::next(chrIter, 1)->get();
@@ -292,7 +291,7 @@ void Genetic::crossover(Population& pop)
         popCross.emplace_back(std::move(parent1));
         popCross.emplace_back(std::move(parent2));
 
-        if ((pop.size() % 2) && (std::next(chrIter, 2) == crossContainer.end() - 1))
+        if ((pop.size() % 2) && (std::next(chrIter, 2) == container.end() - 1))
         {
             Chromosome single = std::next(chrIter, 2)->get();
             popCross.emplace_back(std::move(single));

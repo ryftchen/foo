@@ -222,18 +222,18 @@ namespace divisor
 //! @brief Display divisor result.
 #define DIVISOR_RESULT "\r\n==> %-9s Method <==\n%s\nrun time: %8.5f ms\n"
 //! @brief Print divisor result content.
-#define DIVISOR_PRINT_RESULT_CONTENT(method)                                                                    \
-    do                                                                                                          \
-    {                                                                                                           \
-        const std::uint32_t arrayBufferSize = divisorContainer.size() * maxAlignOfPrint;                        \
-        char arrayBuffer[arrayBufferSize + 1];                                                                  \
-        arrayBuffer[0] = '\0';                                                                                  \
-        COMMON_PRINT(                                                                                           \
-            DIVISOR_RESULT,                                                                                     \
-            toString(method).data(),                                                                            \
-            TargetBuilder::template spliceAllIntegers<int>(divisorContainer, arrayBuffer, arrayBufferSize + 1), \
-            TIME_INTERVAL(timing));                                                                             \
-    }                                                                                                           \
+#define DIVISOR_PRINT_RESULT_CONTENT(method)                                                           \
+    do                                                                                                 \
+    {                                                                                                  \
+        const std::uint32_t arrayBufferSize = resCntr.size() * maxAlignOfPrint;                        \
+        char arrayBuffer[arrayBufferSize + 1];                                                         \
+        arrayBuffer[0] = '\0';                                                                         \
+        COMMON_PRINT(                                                                                  \
+            DIVISOR_RESULT,                                                                            \
+            toString(method).data(),                                                                   \
+            TargetBuilder::template spliceAllIntegers<int>(resCntr, arrayBuffer, arrayBufferSize + 1), \
+            TIME_INTERVAL(timing));                                                                    \
+    }                                                                                                  \
     while (0)
 //! @brief Mapping table for enum and string about divisor methods. X macro.
 #define DIVISOR_METHOD_TABLE     \
@@ -255,7 +255,7 @@ void DivisorSolution::euclideanMethod(int a, int b)
 try
 {
     TIME_BEGIN(timing);
-    const auto divisorContainer = numeric::divisor::Divisor().euclidean(a, b);
+    const auto resCntr = numeric::divisor::Divisor().euclidean(a, b);
     TIME_END(timing);
     DIVISOR_PRINT_RESULT_CONTENT(DivisorMethod::euclidean);
 }
@@ -268,7 +268,7 @@ void DivisorSolution::steinMethod(int a, int b)
 try
 {
     TIME_BEGIN(timing);
-    const auto divisorContainer = numeric::divisor::Divisor().stein(a, b);
+    const auto resCntr = numeric::divisor::Divisor().stein(a, b);
     TIME_END(timing);
     DIVISOR_PRINT_RESULT_CONTENT(DivisorMethod::stein);
 }
@@ -577,19 +577,18 @@ namespace prime
 //! @brief Display prime result.
 #define PRIME_RESULT "\r\n==> %-9s Method <==\n%s\nrun time: %8.5f ms\n"
 //! @brief Print prime result content.
-#define PRIME_PRINT_RESULT_CONTENT(method)                                             \
-    do                                                                                 \
-    {                                                                                  \
-        const std::uint32_t arrayBufferSize = primeContainer.size() * maxAlignOfPrint; \
-        char arrayBuffer[arrayBufferSize + 1];                                         \
-        arrayBuffer[0] = '\0';                                                         \
-        COMMON_PRINT(                                                                  \
-            PRIME_RESULT,                                                              \
-            toString(method).data(),                                                   \
-            TargetBuilder::template spliceAllIntegers<std::uint32_t>(                  \
-                primeContainer, arrayBuffer, arrayBufferSize + 1),                     \
-            TIME_INTERVAL(timing));                                                    \
-    }                                                                                  \
+#define PRIME_PRINT_RESULT_CONTENT(method)                                                                       \
+    do                                                                                                           \
+    {                                                                                                            \
+        const std::uint32_t arrayBufferSize = resCntr.size() * maxAlignOfPrint;                                  \
+        char arrayBuffer[arrayBufferSize + 1];                                                                   \
+        arrayBuffer[0] = '\0';                                                                                   \
+        COMMON_PRINT(                                                                                            \
+            PRIME_RESULT,                                                                                        \
+            toString(method).data(),                                                                             \
+            TargetBuilder::template spliceAllIntegers<std::uint32_t>(resCntr, arrayBuffer, arrayBufferSize + 1), \
+            TIME_INTERVAL(timing));                                                                              \
+    }                                                                                                            \
     while (0)
 //! @brief Mapping table for enum and string about prime methods. X macro.
 #define PRIME_METHOD_TABLE             \
@@ -611,7 +610,7 @@ void PrimeSolution::eratosthenesMethod(const std::uint32_t max)
 try
 {
     TIME_BEGIN(timing);
-    const auto primeContainer = numeric::prime::Prime().eratosthenes(max);
+    const auto resCntr = numeric::prime::Prime().eratosthenes(max);
     TIME_END(timing);
     PRIME_PRINT_RESULT_CONTENT(PrimeMethod::eratosthenes);
 }
@@ -624,7 +623,7 @@ void PrimeSolution::eulerMethod(const std::uint32_t max)
 try
 {
     TIME_BEGIN(timing);
-    const auto primeContainer = numeric::prime::Prime().euler(max);
+    const auto resCntr = numeric::prime::Prime().euler(max);
     TIME_END(timing);
     PRIME_PRINT_RESULT_CONTENT(PrimeMethod::euler);
 }
