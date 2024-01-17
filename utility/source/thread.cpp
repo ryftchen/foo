@@ -12,7 +12,7 @@ Thread::Thread(const std::size_t size)
 {
     for (std::size_t i = 0; i < size; ++i)
     {
-        threadContainer.emplace_back(
+        thdCntr.emplace_back(
             [this]()
             {
                 for (;;)
@@ -65,11 +65,11 @@ Thread::~Thread()
     }
 
     cv.notify_all();
-    for (auto& thread : threadContainer)
+    for (auto& thd : thdCntr)
     {
-        if (thread.joinable())
+        if (thd.joinable())
         {
-            thread.join();
+            thd.join();
         }
     }
 }

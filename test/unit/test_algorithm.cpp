@@ -314,6 +314,9 @@ public:
         TST_ALGO_PRINT_TASK_TITLE(Category::sort, "BEGIN");
         builder = std::make_shared<sort::TargetBuilder<int>>(
             sort::input::arrayLength, sort::input::arrayRange1, sort::input::arrayRange2);
+        expCntr =
+            std::vector<int>(builder->getRandomArray().get(), builder->getRandomArray().get() + builder->getLength());
+        std::sort(expCntr.begin(), expCntr.end());
     }
     //! @brief Tear down the test case.
     static void TearDownTestCase()
@@ -328,100 +331,70 @@ public:
 
     //! @brief Target builder.
     static std::shared_ptr<sort::TargetBuilder<int>> builder;
+    //! @brief Expected result.
+    static std::vector<int> expCntr;
 };
 std::shared_ptr<sort::TargetBuilder<int>> SortTestBase::builder = nullptr;
+std::vector<int> SortTestBase::expCntr = {};
 
 //! @brief Test for the bubble method in the solution of sort.
 TEST_F(SortTestBase, bubbleMethod)
 {
-    std::vector<int> sortContainer(
-        builder->getRandomArray().get(), builder->getRandomArray().get() + builder->getLength());
-    std::sort(sortContainer.begin(), sortContainer.end());
-    ASSERT_EQ(sortContainer, algorithm::sort::Sort<int>::bubble(builder->getRandomArray().get(), builder->getLength()));
+    ASSERT_EQ(expCntr, algorithm::sort::Sort<int>::bubble(builder->getRandomArray().get(), builder->getLength()));
 }
 
 //! @brief Test for the selection method in the solution of sort.
 TEST_F(SortTestBase, selectionMethod)
 {
-    std::vector<int> sortContainer(
-        builder->getRandomArray().get(), builder->getRandomArray().get() + builder->getLength());
-    std::sort(sortContainer.begin(), sortContainer.end());
-    ASSERT_EQ(
-        sortContainer, algorithm::sort::Sort<int>::selection(builder->getRandomArray().get(), builder->getLength()));
+    ASSERT_EQ(expCntr, algorithm::sort::Sort<int>::selection(builder->getRandomArray().get(), builder->getLength()));
 }
 
 //! @brief Test for the insertion method in the solution of sort.
 TEST_F(SortTestBase, insertionMethod)
 {
-    std::vector<int> sortContainer(
-        builder->getRandomArray().get(), builder->getRandomArray().get() + builder->getLength());
-    std::sort(sortContainer.begin(), sortContainer.end());
-    ASSERT_EQ(
-        sortContainer, algorithm::sort::Sort<int>::insertion(builder->getRandomArray().get(), builder->getLength()));
+    ASSERT_EQ(expCntr, algorithm::sort::Sort<int>::insertion(builder->getRandomArray().get(), builder->getLength()));
 }
 
 //! @brief Test for the shell method in the solution of sort.
 TEST_F(SortTestBase, shellMethod)
 {
-    std::vector<int> sortContainer(
-        builder->getRandomArray().get(), builder->getRandomArray().get() + builder->getLength());
-    std::sort(sortContainer.begin(), sortContainer.end());
-    ASSERT_EQ(sortContainer, algorithm::sort::Sort<int>::shell(builder->getRandomArray().get(), builder->getLength()));
+    ASSERT_EQ(expCntr, algorithm::sort::Sort<int>::shell(builder->getRandomArray().get(), builder->getLength()));
 }
 
 //! @brief Test for the merge method in the solution of sort.
 TEST_F(SortTestBase, mergeMethod)
 {
-    std::vector<int> sortContainer(
-        builder->getRandomArray().get(), builder->getRandomArray().get() + builder->getLength());
-    std::sort(sortContainer.begin(), sortContainer.end());
-    ASSERT_EQ(sortContainer, algorithm::sort::Sort<int>::merge(builder->getRandomArray().get(), builder->getLength()));
+    ASSERT_EQ(expCntr, algorithm::sort::Sort<int>::merge(builder->getRandomArray().get(), builder->getLength()));
 }
 
 //! @brief Test for the quick method in the solution of sort.
 TEST_F(SortTestBase, quickMethod)
 {
-    std::vector<int> sortContainer(
-        builder->getRandomArray().get(), builder->getRandomArray().get() + builder->getLength());
-    std::sort(sortContainer.begin(), sortContainer.end());
-    ASSERT_EQ(sortContainer, algorithm::sort::Sort<int>::quick(builder->getRandomArray().get(), builder->getLength()));
+    ASSERT_EQ(expCntr, algorithm::sort::Sort<int>::quick(builder->getRandomArray().get(), builder->getLength()));
 }
 
 //! @brief Test for the heap method in the solution of sort.
 TEST_F(SortTestBase, heapMethod)
 {
-    std::vector<int> sortContainer(
-        builder->getRandomArray().get(), builder->getRandomArray().get() + builder->getLength());
-    std::sort(sortContainer.begin(), sortContainer.end());
-    ASSERT_EQ(sortContainer, algorithm::sort::Sort<int>::heap(builder->getRandomArray().get(), builder->getLength()));
+    ASSERT_EQ(expCntr, algorithm::sort::Sort<int>::heap(builder->getRandomArray().get(), builder->getLength()));
 }
 
 //! @brief Test for the counting method in the solution of sort.
 TEST_F(SortTestBase, countingMethod)
 {
-    std::vector<int> sortContainer(
-        builder->getRandomArray().get(), builder->getRandomArray().get() + builder->getLength());
-    std::sort(sortContainer.begin(), sortContainer.end());
-    ASSERT_EQ(
-        sortContainer, algorithm::sort::Sort<int>::counting(builder->getRandomArray().get(), builder->getLength()));
+    ASSERT_EQ(expCntr, algorithm::sort::Sort<int>::counting(builder->getRandomArray().get(), builder->getLength()));
 }
 
 //! @brief Test for the bucket method in the solution of sort.
 TEST_F(SortTestBase, bucketMethod)
 {
-    std::vector<int> sortContainer(
-        builder->getRandomArray().get(), builder->getRandomArray().get() + builder->getLength());
-    std::sort(sortContainer.begin(), sortContainer.end());
-    ASSERT_EQ(sortContainer, algorithm::sort::Sort<int>::bucket(builder->getRandomArray().get(), builder->getLength()));
+    ASSERT_EQ(expCntr, algorithm::sort::Sort<int>::bucket(builder->getRandomArray().get(), builder->getLength()));
 }
 
 //! @brief Test for the radix method in the solution of sort.
 TEST_F(SortTestBase, radixMethod)
 {
-    std::vector<int> sortContainer(
-        builder->getRandomArray().get(), builder->getRandomArray().get() + builder->getLength());
-    std::sort(sortContainer.begin(), sortContainer.end());
-    ASSERT_EQ(sortContainer, algorithm::sort::Sort<int>::radix(builder->getRandomArray().get(), builder->getLength()));
+    ASSERT_EQ(expCntr, algorithm::sort::Sort<int>::radix(builder->getRandomArray().get(), builder->getLength()));
 }
 } // namespace tst_algo
 } // namespace test

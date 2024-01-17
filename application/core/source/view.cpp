@@ -581,7 +581,7 @@ std::string View::getStatusInformation()
     std::snprintf(cmd, cmdLen, "ps -T -p %d | awk 'NR>1 {split($0, a, \" \"); print a[2]}'", pid);
     const std::string queryResult = utility::common::executeCommand(cmd);
 
-    std::vector<std::string> cmdContainer;
+    std::vector<std::string> cmdCntr;
     std::size_t pos = 0, prev = 0;
     const int currTid = ::gettid();
     const bool foundStrace = ::system("which strace >/dev/null 2>&1") == EXIT_SUCCESS;
@@ -618,14 +618,14 @@ std::string View::getStatusInformation()
         {
             std::strncpy(cmd + usedLen, "; fi", cmdLen - usedLen);
         }
-        cmdContainer.emplace_back(cmd);
+        cmdCntr.emplace_back(cmd);
         prev = pos + 1;
     }
 
     std::string statInfo;
     std::for_each(
-        cmdContainer.cbegin(),
-        cmdContainer.cend(),
+        cmdCntr.cbegin(),
+        cmdCntr.cend(),
         [&statInfo](const auto& cmd)
         {
             statInfo += utility::common::executeCommand(cmd) + '\n';

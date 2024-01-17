@@ -777,18 +777,18 @@ namespace sort
 //! @brief Display sort result.
 #define SORT_RESULT(opt) "\r\n==> %-9s Method <==\n%s\n(" #opt ") run time: %8.5f ms\n"
 //! @brief Print sort result content.
-#define SORT_PRINT_RESULT_CONTENT(method)                                                                         \
-    do                                                                                                            \
-    {                                                                                                             \
-        const std::uint32_t arrayBufferSize = length * maxAlignOfPrint;                                           \
-        char arrayBuffer[arrayBufferSize + 1];                                                                    \
-        arrayBuffer[0] = '\0';                                                                                    \
-        COMMON_PRINT(                                                                                             \
-            SORT_RESULT(asc),                                                                                     \
-            toString(method).data(),                                                                              \
-            TargetBuilder<int>::template spliceAll<int>(&sortArray[0], length, arrayBuffer, arrayBufferSize + 1), \
-            TIME_INTERVAL(timing));                                                                               \
-    }                                                                                                             \
+#define SORT_PRINT_RESULT_CONTENT(method)                                                                       \
+    do                                                                                                          \
+    {                                                                                                           \
+        const std::uint32_t arrayBufferSize = length * maxAlignOfPrint;                                         \
+        char arrayBuffer[arrayBufferSize + 1];                                                                  \
+        arrayBuffer[0] = '\0';                                                                                  \
+        COMMON_PRINT(                                                                                           \
+            SORT_RESULT(asc),                                                                                   \
+            toString(method).data(),                                                                            \
+            TargetBuilder<int>::template spliceAll<int>(&resCntr[0], length, arrayBuffer, arrayBufferSize + 1), \
+            TIME_INTERVAL(timing));                                                                             \
+    }                                                                                                           \
     while (0)
 //! @brief Mapping table for enum and string about sort methods. X macro.
 #define SORT_METHOD_TABLE        \
@@ -818,7 +818,7 @@ void SortSolution::bubbleMethod(const int* const array, const std::uint32_t leng
 try
 {
     TIME_BEGIN(timing);
-    const auto sortArray = algorithm::sort::Sort<int>().bubble(array, length);
+    const auto resCntr = algorithm::sort::Sort<int>().bubble(array, length);
     TIME_END(timing);
     SORT_PRINT_RESULT_CONTENT(SortMethod::bubble);
 }
@@ -831,7 +831,7 @@ void SortSolution::selectionMethod(const int* const array, const std::uint32_t l
 try
 {
     TIME_BEGIN(timing);
-    const auto sortArray = algorithm::sort::Sort<int>().selection(array, length);
+    const auto resCntr = algorithm::sort::Sort<int>().selection(array, length);
     TIME_END(timing);
     SORT_PRINT_RESULT_CONTENT(SortMethod::selection);
 }
@@ -844,7 +844,7 @@ void SortSolution::insertionMethod(const int* const array, const std::uint32_t l
 try
 {
     TIME_BEGIN(timing);
-    const auto sortArray = algorithm::sort::Sort<int>().insertion(array, length);
+    const auto resCntr = algorithm::sort::Sort<int>().insertion(array, length);
     TIME_END(timing);
     SORT_PRINT_RESULT_CONTENT(SortMethod::insertion);
 }
@@ -857,7 +857,7 @@ void SortSolution::shellMethod(const int* const array, const std::uint32_t lengt
 try
 {
     TIME_BEGIN(timing);
-    const auto sortArray = algorithm::sort::Sort<int>().shell(array, length);
+    const auto resCntr = algorithm::sort::Sort<int>().shell(array, length);
     TIME_END(timing);
     SORT_PRINT_RESULT_CONTENT(SortMethod::shell);
 }
@@ -870,7 +870,7 @@ void SortSolution::mergeMethod(const int* const array, const std::uint32_t lengt
 try
 {
     TIME_BEGIN(timing);
-    const auto sortArray = algorithm::sort::Sort<int>().merge(array, length);
+    const auto resCntr = algorithm::sort::Sort<int>().merge(array, length);
     TIME_END(timing);
     SORT_PRINT_RESULT_CONTENT(SortMethod::merge);
 }
@@ -883,7 +883,7 @@ void SortSolution::quickMethod(const int* const array, const std::uint32_t lengt
 try
 {
     TIME_BEGIN(timing);
-    const auto sortArray = algorithm::sort::Sort<int>().quick(array, length);
+    const auto resCntr = algorithm::sort::Sort<int>().quick(array, length);
     TIME_END(timing);
     SORT_PRINT_RESULT_CONTENT(SortMethod::quick);
 }
@@ -896,7 +896,7 @@ void SortSolution::heapMethod(const int* const array, const std::uint32_t length
 try
 {
     TIME_BEGIN(timing);
-    const auto sortArray = algorithm::sort::Sort<int>().heap(array, length);
+    const auto resCntr = algorithm::sort::Sort<int>().heap(array, length);
     TIME_END(timing);
     SORT_PRINT_RESULT_CONTENT(SortMethod::heap);
 }
@@ -909,7 +909,7 @@ void SortSolution::countingMethod(const int* const array, const std::uint32_t le
 try
 {
     TIME_BEGIN(timing);
-    const auto sortArray = algorithm::sort::Sort<int>().counting(array, length);
+    const auto resCntr = algorithm::sort::Sort<int>().counting(array, length);
     TIME_END(timing);
     SORT_PRINT_RESULT_CONTENT(SortMethod::counting);
 }
@@ -922,7 +922,7 @@ void SortSolution::bucketMethod(const int* const array, const std::uint32_t leng
 try
 {
     TIME_BEGIN(timing);
-    const auto sortArray = algorithm::sort::Sort<int>().bucket(array, length);
+    const auto resCntr = algorithm::sort::Sort<int>().bucket(array, length);
     TIME_END(timing);
     SORT_PRINT_RESULT_CONTENT(SortMethod::bucket);
 }
@@ -935,7 +935,7 @@ void SortSolution::radixMethod(const int* const array, const std::uint32_t lengt
 try
 {
     TIME_BEGIN(timing);
-    const auto sortArray = algorithm::sort::Sort<int>().radix(array, length);
+    const auto resCntr = algorithm::sort::Sort<int>().radix(array, length);
     TIME_END(timing);
     SORT_PRINT_RESULT_CONTENT(SortMethod::radix);
 }

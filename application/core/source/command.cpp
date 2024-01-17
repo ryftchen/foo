@@ -360,8 +360,8 @@ void Command::validateRegularTask()
         for ([[maybe_unused]] const auto& [taskCategory, taskCategoryTuple] :
              subCLIMap | std::views::filter(isCategoryUsed))
         {
-            const auto taskContainer = subCLI.get<std::vector<std::string>>(taskCategory);
-            for (const auto& task : taskContainer)
+            const auto taskCntr = subCLI.get<std::vector<std::string>>(taskCategory);
+            for (const auto& task : taskCntr)
             {
                 (*get<UpdateTaskFunctor>(get<TaskFunctorTuple>(taskCategoryTuple)))(task);
             }
@@ -441,9 +441,9 @@ void Command::executeConsoleCommand() const
         return;
     }
 
-    const auto cmdContainer =
+    const auto cmdCntr =
         mainCLI.get<std::vector<std::string>>(std::next(basicTaskDispatcher.cbegin(), Category::console)->first);
-    if (cmdContainer.empty())
+    if (cmdCntr.empty())
     {
         return;
     }
@@ -456,7 +456,7 @@ void Command::executeConsoleCommand() const
     Console console(" > ");
     registerOnConsole<UDPSocket>(console, udpClient);
 
-    for (const auto& cmd : cmdContainer)
+    for (const auto& cmd : cmdCntr)
     {
         console.commandExecutor(cmd);
     }
