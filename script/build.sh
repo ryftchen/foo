@@ -30,13 +30,16 @@ function shell_command()
 {
     echo
     if [[ ${ARGS[dry]} = true ]]; then
-        printf "\033[0;37;40m\033[1m\033[49m%s%-40s%s\033[0m\n" "[ $(date "+%b %d %T") # CMD: " "$*" " # DRY RUN ]"
+        printf "\033[0;33;40m\033[1m\033[49m%s \033[0;37;40m\033[1m\033[49m%s\033[0m %s\n" \
+            "[ ...... ]" "$(date "+%b %d %T")" "$ $*"
         return
     fi
 
-    printf "\033[0;37;40m\033[1m\033[49m%s%-40s%s\033[0m\n" "[ $(date "+%b %d %T") # CMD: " "$*" " # START  ]"
+    printf "\033[0;33;40m\033[1m\033[49m%s \033[0;37;40m\033[1m\033[49m%s\033[0m %s\n" \
+        "[ ...... ]" "$(date "+%b %d %T")" "$ $*"
     shell "$@"
-    printf "\033[0;37;40m\033[1m\033[49m%s%-40s%s\033[0m\n" "[ $(date "+%b %d %T") # CMD: " "$*" " # FINISH ]"
+    printf "\033[0;32;40m\033[1m\033[49m%s \033[0;37;40m\033[1m\033[49m%s\033[0m %s\n" \
+        "[  done  ]" "$(date "+%b %d %T")" "$ $*"
 }
 
 function wait_until_get_input()
