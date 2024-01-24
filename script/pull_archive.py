@@ -35,11 +35,6 @@ class Documentation:
         script_path = os.path.split(os.path.realpath(__file__))[0]
         if not fnmatch.fnmatch(script_path, "*foo/script"):
             interrupt("Illegal path to current script.")
-
-        self.project_path = os.path.dirname(script_path)
-        self.logger = common.Log(self.log_file, "a")
-
-    def pull_archive(self):
         parser = argparse.ArgumentParser(description="pull archive script")
         parser.add_argument(
             "-p",
@@ -54,16 +49,21 @@ class Documentation:
         if args.port is not None:
             self.proxy_port = args.port
 
+        self.project_path = os.path.dirname(script_path)
+        self.logger = common.Log(self.log_file, "a")
         sys.stdout = self.logger
+
+    def pull_archive(self):
         print(f"\r\n[ {datetime.now()} ] ################# PULL ARCHIVE #################")
+        if not os.path.exists(self.website_dir):
+            interrupt("Please manually create a foo_doc folder in the /var/www directory.")
         self.download_artifact()
         self.update_document()
         sys.stdout = STDOUT
         del self.logger
 
     def download_artifact(self):
-        if not os.path.exists(self.website_dir):
-            interrupt("Please manually create a foo_doc folder in the /var/www directory.")
+        print(f"[ {datetime.now()} ] ++++++++++++++ DOWNLOAD ARTIFACT ++++++++++++++")
         local_commit_id, _, _ = execute(f"git -C {self.project_path} rev-parse HEAD")
         remote_commit_id, _, _ = execute(
             f"git -C {self.project_path} ls-remote {self.github_url} refs/heads/master | cut -f 1"
@@ -112,6 +112,7 @@ class Documentation:
             interrupt(f"The {self.artifact_file}.zip file in the {self.website_dir} folder is corrupted.")
 
     def update_document(self):
+        print(f"[ {datetime.now()} ] +++++++++++++++ UPDATE DOCUMENT +++++++++++++++")
         execute(f"rm -rf {self.website_dir}/browser {self.website_dir}/doxygen")
         execute(f"unzip {self.website_dir}/{self.artifact_file}.zip -d {self.website_dir}")
         execute(f"tar -jxvf {self.website_dir}/foo_browser_*.tar.bz2 -C {self.website_dir} >/dev/null")
