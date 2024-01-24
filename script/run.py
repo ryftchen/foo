@@ -71,7 +71,7 @@ class Task:
     report_file = f"{cache_dir}/foo_run.report"
 
     def __init__(self):
-        self.pass_steps = 0
+        self.passed_steps = 0
         self.complete_steps = 0
         self.total_steps = 0
         self.repeat_count = 1
@@ -90,7 +90,6 @@ class Task:
         self.task_queue = queue.Queue()
 
     def run(self):
-        self.parse_arguments()
         self.prepare()
         start_time = datetime.now()
 
@@ -306,9 +305,9 @@ class Task:
         else:
             stdout = stdout.replace("\t", "    ")
             print(stdout)
-            self.pass_steps += 1
+            self.passed_steps += 1
             if "[ERR]" in stdout or "[WRN]" in stdout:
-                self.pass_steps -= 1
+                self.passed_steps -= 1
                 Output.refresh_status(
                     Output.color["red"], f"{f'STAT: FAILURE NO.{str(self.complete_steps + 1)}':<{align_len}}"
                 )
@@ -320,15 +319,18 @@ class Task:
             Output.color["blue"], f"CASE: {f'{command}':<{align_len - Output.stat_cont_len_excl_cmd}} # FINISH"
         )
 
-        if self.pass_steps != self.total_steps:
-            status_color = Output.color["yellow"]
-        else:
-            status_color = Output.color["green"]
-        Output.refresh_status(
-            status_color,
-            f"""\
-{f"STAT: SUCCESS {f'{str(self.pass_steps)}':>{len(str(self.total_steps))}} / {str(self.total_steps)}":<{align_len}}""",
+        stat = "SUCCESS" if self.passed_steps == self.complete_steps else "PARTIAL"
+        stat_color = (
+            Output.color["yellow"]
+            if stat != "SUCCESS" or self.complete_steps != self.total_steps
+            else Output.color["green"]
         )
+        Output.refresh_status(
+            stat_color,
+            f"""\
+{f"STAT: {stat} {f'{str(self.passed_steps)}':>{len(str(self.total_steps))}} / {str(self.total_steps)}":<{align_len}}""",
+        )
+
         print("\n")
 
         sys.stdout = STDOUT
@@ -398,12 +400,12 @@ valgrind-ci {xml_filename}_inst_2.xml --summary"
                     f"valgrind-ci {xml_filename}_inst_2.xml --source-dir=./ \
 --output-dir={self.cache_dir}/memory/case_{str(self.complete_steps + 1)}_inst_2"
                 )
-            self.pass_steps -= 1
+            self.passed_steps -= 1
             Output.refresh_status(
                 Output.color["red"], f"{f'STAT: FAILURE NO.{str(self.complete_steps + 1)}':<{align_len}}"
             )
         elif inst_num == 0 or inst_num > 2 or len(stderr) != 0:
-            self.pass_steps -= 1
+            self.passed_steps -= 1
             print("\r\n[CHECK MEMORY]\nUnsupported valgrind output xml file content.")
             Output.refresh_status(
                 Output.color["red"], f"{f'STAT: FAILURE NO.{str(self.complete_steps + 1)}':<{align_len}}"
@@ -622,6 +624,7 @@ if __name__ == "__main__":
         os.environ["TERM"] = "linux"
         os.environ["TERMINFO"] = "/etc/terminfo"
         task = Task()
+        task.parse_arguments()
         task.run()
     except Exception:  # pylint: disable=broad-except
         task.stop(traceback.format_exc())
