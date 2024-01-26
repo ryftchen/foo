@@ -28,8 +28,8 @@ public:
     //! @param patternLen - length of single pattern
     //! @return index in matching text
     static int rk(
-        const char* const text,
-        const char* const pattern,
+        const unsigned char* const text,
+        const unsigned char* const pattern,
         const std::uint32_t textLen,
         const std::uint32_t patternLen);
     //! @brief Knuth-Morris-Pratt.
@@ -39,8 +39,8 @@ public:
     //! @param patternLen - length of single pattern
     //! @return index in matching text
     static int kmp(
-        const char* const text,
-        const char* const pattern,
+        const unsigned char* const text,
+        const unsigned char* const pattern,
         const std::uint32_t textLen,
         const std::uint32_t patternLen);
     //! @brief Boyer-Moore.
@@ -50,8 +50,8 @@ public:
     //! @param patternLen - length of single pattern
     //! @return index in matching text
     static int bm(
-        const char* const text,
-        const char* const pattern,
+        const unsigned char* const text,
+        const unsigned char* const pattern,
         const std::uint32_t textLen,
         const std::uint32_t patternLen);
     //! @brief Horspool.
@@ -61,8 +61,8 @@ public:
     //! @param patternLen - length of single pattern
     //! @return index in matching text
     static int horspool(
-        const char* const text,
-        const char* const pattern,
+        const unsigned char* const text,
+        const unsigned char* const pattern,
         const std::uint32_t textLen,
         const std::uint32_t patternLen);
     //! @brief Sunday.
@@ -72,8 +72,8 @@ public:
     //! @param patternLen - length of single pattern
     //! @return index in matching text
     static int sunday(
-        const char* const text,
-        const char* const pattern,
+        const unsigned char* const text,
+        const unsigned char* const pattern,
         const std::uint32_t textLen,
         const std::uint32_t patternLen);
 
@@ -88,7 +88,7 @@ private:
     //! @param hashMod - hash mod
     //! @return hash value
     static std::uint64_t rollingHash(
-        const char* const str,
+        const unsigned char* const str,
         const std::uint64_t length,
         const std::uint64_t hashBase,
         const std::uint64_t hashMod);
@@ -98,7 +98,7 @@ private:
     //! @param patternLen - length of single pattern
     static void fillBadCharRuleTable(
         std::uint32_t badCharRuleTable[],
-        const char* const pattern,
+        const unsigned char* const pattern,
         const std::uint32_t patternLen);
     //! @brief Fill good suffix rule table.
     //! @param goodSuffixRuleTable - good suffix rule table
@@ -106,7 +106,7 @@ private:
     //! @param patternLen - length of single pattern
     static void fillGoodSuffixRuleTable(
         std::uint32_t goodSuffixRuleTable[],
-        const char* const pattern,
+        const unsigned char* const pattern,
         const std::uint32_t patternLen);
     //! @brief Fill the bad character shift table of the Horspool method.
     //! @param badCharShiftTable - bad character shift table
@@ -114,7 +114,7 @@ private:
     //! @param patternLen - length of single pattern
     static void fillBadCharShiftTableForHorspool(
         std::uint32_t badCharShiftTable[],
-        const char* const pattern,
+        const unsigned char* const pattern,
         const std::uint32_t patternLen);
     //! @brief Fill the bad character shift table of the Sunday method.
     //! @param badCharShiftTable - bad character shift table
@@ -122,7 +122,7 @@ private:
     //! @param patternLen - length of single pattern
     static void fillBadCharShiftTableForSunday(
         std::uint32_t badCharShiftTable[],
-        const char* const pattern,
+        const unsigned char* const pattern,
         const std::uint32_t patternLen);
 };
 } // namespace match

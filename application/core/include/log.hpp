@@ -246,11 +246,11 @@ private:
     //! @brief Construct a new Log object.
     //! @param initState - initialization value of state
     explicit Log(const StateType initState = State::init) noexcept :
+        FSM(initState),
         filePath(getFullDefaultLogPath(CONFIG_HELPER_LOGGER_FILE_PATH)),
         writeType(OutputType(CONFIG_HELPER_LOGGER_WRITE_TYPE)),
         minimumLevel(OutputLevel(CONFIG_HELPER_LOGGER_MINIMUM_LEVEL)),
-        usedMedium(OutputMedium(CONFIG_HELPER_LOGGER_USED_MEDIUM)),
-        FSM(initState){};
+        usedMedium(OutputMedium(CONFIG_HELPER_LOGGER_USED_MEDIUM)){};
 
     //! @brief Maximum number of times to wait for the logger to change to the target state.
     static constexpr std::uint16_t maxTimesOfWaitLogger{20};
