@@ -100,8 +100,8 @@ constexpr std::string_view toString(const MatchMethod method)
 }
 
 void MatchSolution::rkMethod(
-    const char* const text,
-    const char* const pattern,
+    const unsigned char* const text,
+    const unsigned char* const pattern,
     const std::uint32_t textLen,
     const std::uint32_t patternLen)
 try
@@ -117,8 +117,8 @@ catch (const std::exception& error)
 }
 
 void MatchSolution::kmpMethod(
-    const char* const text,
-    const char* const pattern,
+    const unsigned char* const text,
+    const unsigned char* const pattern,
     const std::uint32_t textLen,
     const std::uint32_t patternLen)
 try
@@ -134,8 +134,8 @@ catch (const std::exception& error)
 }
 
 void MatchSolution::bmMethod(
-    const char* const text,
-    const char* const pattern,
+    const unsigned char* const text,
+    const unsigned char* const pattern,
     const std::uint32_t textLen,
     const std::uint32_t patternLen)
 try
@@ -151,8 +151,8 @@ catch (const std::exception& error)
 }
 
 void MatchSolution::horspoolMethod(
-    const char* const text,
-    const char* const pattern,
+    const unsigned char* const text,
+    const unsigned char* const pattern,
     const std::uint32_t textLen,
     const std::uint32_t patternLen)
 try
@@ -168,8 +168,8 @@ catch (const std::exception& error)
 }
 
 void MatchSolution::sundayMethod(
-    const char* const text,
-    const char* const pattern,
+    const unsigned char* const text,
+    const unsigned char* const pattern,
     const std::uint32_t textLen,
     const std::uint32_t patternLen)
 try
@@ -209,19 +209,20 @@ void runMatchTasks(const std::vector<std::string>& targets)
     auto* const threads = command::getPublicThreadPool().newElement(std::min(
         static_cast<std::uint32_t>(getBit<MatchMethod>().count()),
         static_cast<std::uint32_t>(Bottom<MatchMethod>::value)));
-    const auto builder = std::make_shared<TargetBuilder>(patternString);
+    const auto builder = std::make_shared<TargetBuilder>(std::string{patternString});
     const auto matchFunctor =
         [threads, builder](
             const std::string& threadName,
-            void (*methodPtr)(const char* const, const char* const, const std::uint32_t, const std::uint32_t))
+            void (*methodPtr)(
+                const unsigned char* const, const unsigned char* const, const std::uint32_t, const std::uint32_t))
     {
         threads->enqueue(
             threadName,
             methodPtr,
             builder->getMatchingText().get(),
-            builder->getSinglePattern().data(),
-            std::string_view(builder->getMatchingText().get()).length(),
-            builder->getSinglePattern().length());
+            builder->getSinglePattern().get(),
+            builder->getTextLength(),
+            builder->getPatternLength());
     };
     const auto name = utility::currying::curry(getTaskNameCurried(), "m");
 

@@ -45,7 +45,7 @@ Console::Console(const std::string& greeting) : impl(std::make_unique<Impl>(gree
     impl->regOrder.emplace_back("help");
 
     impl->regMap["quit"] = std::make_pair(
-        [this](const Args& /*input*/)
+        [](const Args& /*input*/)
         {
             std::cout << "exit" << std::endl;
             return RetCode::quit;

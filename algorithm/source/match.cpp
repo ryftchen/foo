@@ -6,21 +6,24 @@
 
 #include "match.hpp"
 
+#include <algorithm>
 #include <cstring>
-#include <string>
 
 namespace algorithm::match
 {
 int Match::rk(
-    const char* const text,
-    const char* const pattern,
+    const unsigned char* const text,
+    const unsigned char* const pattern,
     const std::uint32_t textLen,
     const std::uint32_t patternLen)
 {
     int shift = -1;
     constexpr std::uint64_t rollingHashBase = 10, rollingHashMod = 19260817;
-    std::uint64_t textHash =
-        rollingHash(std::string{text}.substr(0, patternLen).c_str(), patternLen, rollingHashBase, rollingHashMod);
+    unsigned char subText[patternLen];
+    subText[0] = '\0';
+    std::memcpy(subText, text, patternLen * sizeof(unsigned char));
+
+    std::uint64_t textHash = rollingHash(subText, patternLen, rollingHashBase, rollingHashMod);
     const std::uint64_t patternHash = rollingHash(pattern, patternLen, rollingHashBase, rollingHashMod);
     if (textHash != patternHash)
     {
@@ -52,7 +55,7 @@ int Match::rk(
 }
 
 std::uint64_t Match::rollingHash(
-    const char* const str,
+    const unsigned char* const str,
     const std::uint64_t length,
     const std::uint64_t hashBase,
     const std::uint64_t hashMod)
@@ -66,8 +69,8 @@ std::uint64_t Match::rollingHash(
 }
 
 int Match::kmp(
-    const char* const text,
-    const char* const pattern,
+    const unsigned char* const text,
+    const unsigned char* const pattern,
     const std::uint32_t textLen,
     const std::uint32_t patternLen)
 {
@@ -110,8 +113,8 @@ int Match::kmp(
 }
 
 int Match::bm(
-    const char* const text,
-    const char* const pattern,
+    const unsigned char* const text,
+    const unsigned char* const pattern,
     const std::uint32_t textLen,
     const std::uint32_t patternLen)
 {
@@ -144,7 +147,7 @@ int Match::bm(
 
 void Match::fillBadCharRuleTable(
     std::uint32_t badCharRuleTable[],
-    const char* const pattern,
+    const unsigned char* const pattern,
     const std::uint32_t patternLen)
 {
     for (std::uint16_t i = 0; i < maxASCII; ++i)
@@ -160,7 +163,7 @@ void Match::fillBadCharRuleTable(
 
 void Match::fillGoodSuffixRuleTable(
     std::uint32_t goodSuffixRuleTable[],
-    const char* const pattern,
+    const unsigned char* const pattern,
     const std::uint32_t patternLen)
 {
     std::uint32_t lastPrefixIndex = 1;
@@ -199,8 +202,8 @@ void Match::fillGoodSuffixRuleTable(
 }
 
 int Match::horspool(
-    const char* const text,
-    const char* const pattern,
+    const unsigned char* const text,
+    const unsigned char* const pattern,
     const std::uint32_t textLen,
     const std::uint32_t patternLen)
 {
@@ -232,7 +235,7 @@ int Match::horspool(
 
 void Match::fillBadCharShiftTableForHorspool(
     std::uint32_t badCharShiftTable[],
-    const char* const pattern,
+    const unsigned char* const pattern,
     const std::uint32_t patternLen)
 {
     for (std::uint16_t i = 0; i < maxASCII; ++i)
@@ -247,8 +250,8 @@ void Match::fillBadCharShiftTableForHorspool(
 }
 
 int Match::sunday(
-    const char* const text,
-    const char* const pattern,
+    const unsigned char* const text,
+    const unsigned char* const pattern,
     const std::uint32_t textLen,
     const std::uint32_t patternLen)
 {
@@ -280,7 +283,7 @@ returnValue:
 
 void Match::fillBadCharShiftTableForSunday(
     std::uint32_t badCharShiftTable[],
-    const char* const pattern,
+    const unsigned char* const pattern,
     const std::uint32_t patternLen)
 {
     for (std::uint16_t i = 0; i < maxASCII; ++i)

@@ -43,7 +43,7 @@ public:
     static void SetUpTestCase()
     {
         TST_ALGO_PRINT_TASK_TITLE(Category::match, "BEGIN");
-        builder = std::make_shared<match::TargetBuilder>(match::input::patternString);
+        builder = std::make_shared<match::TargetBuilder>(std::string{match::input::patternString});
     }
     //! @brief Tear down the test case.
     static void TearDownTestCase()
@@ -68,9 +68,9 @@ TEST_F(MatchTestBase, rkMethod)
         49702,
         algorithm::match::Match::rk(
             builder->getMatchingText().get(),
-            builder->getSinglePattern().data(),
-            std::string_view(builder->getMatchingText().get()).length(),
-            builder->getSinglePattern().length()));
+            builder->getSinglePattern().get(),
+            builder->getTextLength(),
+            builder->getPatternLength()));
 }
 
 //! @brief Test for the Knuth-Morris-Pratt method in the solution of match.
@@ -80,9 +80,9 @@ TEST_F(MatchTestBase, kmpMethod)
         49702,
         algorithm::match::Match::kmp(
             builder->getMatchingText().get(),
-            builder->getSinglePattern().data(),
-            std::string_view(builder->getMatchingText().get()).length(),
-            builder->getSinglePattern().length()));
+            builder->getSinglePattern().get(),
+            builder->getTextLength(),
+            builder->getPatternLength()));
 }
 
 //! @brief Test for the Boyer-Moore method in the solution of match.
@@ -92,9 +92,9 @@ TEST_F(MatchTestBase, bmMethod)
         49702,
         algorithm::match::Match::bm(
             builder->getMatchingText().get(),
-            builder->getSinglePattern().data(),
-            std::string_view(builder->getMatchingText().get()).length(),
-            builder->getSinglePattern().length()));
+            builder->getSinglePattern().get(),
+            builder->getTextLength(),
+            builder->getPatternLength()));
 }
 
 //! @brief Test for the Horspool method in the solution of match.
@@ -104,9 +104,9 @@ TEST_F(MatchTestBase, horspoolMethod)
         49702,
         algorithm::match::Match::horspool(
             builder->getMatchingText().get(),
-            builder->getSinglePattern().data(),
-            std::string_view(builder->getMatchingText().get()).length(),
-            builder->getSinglePattern().length()));
+            builder->getSinglePattern().get(),
+            builder->getTextLength(),
+            builder->getPatternLength()));
 }
 
 //! @brief Test for the Sunday method in the solution of match.
@@ -116,9 +116,9 @@ TEST_F(MatchTestBase, sundayMethod)
         49702,
         algorithm::match::Match::sunday(
             builder->getMatchingText().get(),
-            builder->getSinglePattern().data(),
-            std::string_view(builder->getMatchingText().get()).length(),
-            builder->getSinglePattern().length()));
+            builder->getSinglePattern().get(),
+            builder->getTextLength(),
+            builder->getPatternLength()));
 }
 
 //! @brief Test base of notation.

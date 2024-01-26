@@ -90,8 +90,7 @@ public:
     //! @brief Construct a new Packet object.
     //! @param buf - TVL packet buffer
     //! @param len - buffer length
-    Packet(char* buf, const std::uint32_t len) :
-        buffer(buf), length(len), tail(buffer + len), writer(buffer), reader(buffer){};
+    Packet(char* buf, const std::uint32_t len) : buffer(buf), tail(buffer + len), writer(buffer), reader(buffer){};
     //! @brief Destroy the Packet object.
     virtual ~Packet() = default;
 
@@ -121,8 +120,6 @@ public:
 private:
     //! @brief TLV packet buffer pointer.
     char* buffer{nullptr};
-    //! @brief Buffer length.
-    const std::uint32_t length{0};
     //! @brief Pointer to the end of the buffer.
     const char* const tail{nullptr};
     //! @brief Pointer to the current writing location.
@@ -227,11 +224,11 @@ private:
     //! @brief Construct a new View object.
     //! @param initState - initialization value of state
     explicit View(const StateType initState = State::init) noexcept :
+        FSM(initState),
         tcpHost(CONFIG_HELPER_VIEWER_TCP_HOST),
         tcpPort(CONFIG_HELPER_VIEWER_TCP_PORT),
         udpHost(CONFIG_HELPER_VIEWER_UDP_HOST),
-        udpPort(CONFIG_HELPER_VIEWER_UDP_PORT),
-        FSM(initState){};
+        udpPort(CONFIG_HELPER_VIEWER_UDP_PORT){};
 
     // clang-format off
     //! @brief Mapping table of all viewer options.

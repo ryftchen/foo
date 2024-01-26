@@ -303,8 +303,8 @@ public:
     //! @param textLen - length of matching text
     //! @param patternLen - length of single pattern
     static void rkMethod(
-        const char* const text,
-        const char* const pattern,
+        const unsigned char* const text,
+        const unsigned char* const pattern,
         const std::uint32_t textLen,
         const std::uint32_t patternLen);
     //! @brief The Knuth-Morris-Pratt method.
@@ -313,8 +313,8 @@ public:
     //! @param textLen - length of matching text
     //! @param patternLen - length of single pattern
     static void kmpMethod(
-        const char* const text,
-        const char* const pattern,
+        const unsigned char* const text,
+        const unsigned char* const pattern,
         const std::uint32_t textLen,
         const std::uint32_t patternLen);
     //! @brief The Boyer-Moore method.
@@ -323,8 +323,8 @@ public:
     //! @param textLen - length of matching text
     //! @param patternLen - length of single pattern
     static void bmMethod(
-        const char* const text,
-        const char* const pattern,
+        const unsigned char* const text,
+        const unsigned char* const pattern,
         const std::uint32_t textLen,
         const std::uint32_t patternLen);
     //! @brief The Horspool method.
@@ -333,8 +333,8 @@ public:
     //! @param textLen - length of matching text
     //! @param patternLen - length of single pattern
     static void horspoolMethod(
-        const char* const text,
-        const char* const pattern,
+        const unsigned char* const text,
+        const unsigned char* const pattern,
         const std::uint32_t textLen,
         const std::uint32_t patternLen);
     //! @brief The Sunday method.
@@ -343,8 +343,8 @@ public:
     //! @param textLen - length of matching text
     //! @param patternLen - length of single pattern
     static void sundayMethod(
-        const char* const text,
-        const char* const pattern,
+        const unsigned char* const text,
+        const unsigned char* const pattern,
         const std::uint32_t textLen,
         const std::uint32_t patternLen);
 };
@@ -357,11 +357,15 @@ class TargetBuilder
 {
 public:
     //! @brief Construct a new TargetBuilder object.
-    //! @param singlePattern - single pattern
-    explicit TargetBuilder(const std::string_view singlePattern) :
-        marchingText(std::make_unique<char[]>(calculatePrecision(maxDigit))), singlePattern(singlePattern)
+    //! @param pattern - single pattern
+    explicit TargetBuilder(const std::string& pattern) :
+        marchingText(std::make_unique<unsigned char[]>(maxDigit + 1)),
+        textLength(maxDigit),
+        singlePattern(std::make_unique<unsigned char[]>(pattern.length() + 1)),
+        patternLength(pattern.length())
     {
-        setMatchingText(marchingText.get(), maxDigit);
+        createMatchingText(marchingText.get(), maxDigit);
+        std::memcpy(singlePattern.get(), pattern.data(), pattern.length() * sizeof(unsigned char));
     }
     //! @brief Destroy the TargetBuilder object.
     virtual ~TargetBuilder() { ::mpfr_free_cache(); }
@@ -377,38 +381,52 @@ public:
 
     //! @brief Get the matching text.
     //! @return matching text
-    [[nodiscard]] inline const std::unique_ptr<char[]>& getMatchingText() const { return marchingText; }
+    [[nodiscard]] inline const std::unique_ptr<unsigned char[]>& getMatchingText() const { return marchingText; }
+    //! @brief Get the length of the matching text.
+    //! @return length of the matching text
+    [[nodiscard]] inline std::uint32_t getTextLength() const { return textLength; }
     //! @brief Get the single pattern.
     //! @return single pattern
-    [[nodiscard]] inline std::string_view getSinglePattern() const { return singlePattern; }
+    [[nodiscard]] inline const std::unique_ptr<unsigned char[]>& getSinglePattern() const { return singlePattern; }
+    //! @brief Get the length of the single pattern.
+    //! @return length of the single pattern
+    [[nodiscard]] inline std::uint32_t getPatternLength() const { return patternLength; }
 
 private:
     //! @brief Matching text.
-    const std::unique_ptr<char[]> marchingText;
+    const std::unique_ptr<unsigned char[]> marchingText;
+    //! @brief Length of the matching text.
+    const std::uint32_t textLength;
     //! @brief Single pattern.
-    const std::string_view singlePattern;
+    const std::unique_ptr<unsigned char[]> singlePattern;
+    //! @brief Length of the single pattern.
+    const std::uint32_t patternLength;
 
     //! @brief Base number for converting the digit to precision.
     static constexpr int mpfrBase{10};
 
-    //! @brief Set the matching text.
+    //! @brief Create the matching text.
     //! @param text - target matching text
     //! @param textLen - length of matching text
-    static void setMatchingText(char* const text, const std::uint32_t textLen)
+    static void createMatchingText(unsigned char* const text, const std::uint32_t textLen)
     {
         assert((nullptr != text) && (textLen > 0));
+        char piText[textLen];
+        piText[0] = '\0';
+
         ::mpfr_t x{};
         ::mpfr_init2(x, calculatePrecision(textLen));
         ::mpfr_const_pi(x, ::MPFR_RNDN);
         ::mpfr_exp_t mpfrDecimalLocation = 0;
-        ::mpfr_get_str(text, &mpfrDecimalLocation, mpfrBase, 0, x, ::MPFR_RNDN);
+        ::mpfr_get_str(piText, &mpfrDecimalLocation, mpfrBase, 0, x, ::MPFR_RNDN);
         ::mpfr_clear(x);
 
-        assert('\0' != *text);
-        text[textLen] = '\0';
+        assert(0 != std::strlen(piText));
+        piText[textLen] = '\0';
+        std::memcpy(text, piText, textLen * sizeof(unsigned char));
 
 #ifdef __RUNTIME_PRINTING
-        std::string out(text);
+        std::string out(piText);
         out.insert(1, ".");
         std::cout << "\r\nπ " << textLen << " digits:\n"
                   << out.substr(0, std::min(textLen, maxNumPerLineOfPrint)) << std::endl;
@@ -695,7 +713,7 @@ public:
     //! @param left - the left boundary of the array
     //! @param right - the right boundary of the array
     TargetBuilder(const std::uint32_t length, const T left, const T right) :
-        length(length), orderedArray(std::make_unique<T[]>(length))
+        orderedArray(std::make_unique<T[]>(length)), length(length)
     {
         setOrderedArray<T>(orderedArray.get(), length, left, right);
         searchKey = orderedArray[length / 2];
@@ -944,7 +962,7 @@ public:
     //! @param left - the left boundary of the array
     //! @param right - the right boundary of the array
     TargetBuilder(const std::uint32_t length, const T left, const T right) :
-        length(length), randomArray(std::make_unique<T[]>(length))
+        randomArray(std::make_unique<T[]>(length)), length(length)
     {
         setRandomArray<T>(randomArray.get(), length, left, right);
     }

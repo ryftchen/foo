@@ -394,10 +394,9 @@ JSON::~JSON()
 JSON::JSON(const std::initializer_list<JSON>& list) : JSON()
 {
     setType(Type::object);
-    for (const auto* iter = list.begin(); list.end() != iter; ++iter)
+    for (const auto* iter = list.begin(); list.end() != iter; std::advance(iter, 2))
     {
         operator[](iter->toString()) = *std::next(iter);
-        ++iter;
     }
 }
 
