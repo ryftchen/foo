@@ -81,17 +81,6 @@ private:
     //! @brief Maximum ASCII value.
     static constexpr std::uint16_t maxASCII = 256;
 
-    //! @brief The rolling hash function.
-    //! @param str - input data
-    //! @param length - length of input data
-    //! @param hashBase - hash base
-    //! @param hashMod - hash mod
-    //! @return hash value
-    static std::uint64_t rollingHash(
-        const unsigned char* const str,
-        const std::uint64_t length,
-        const std::uint64_t hashBase,
-        const std::uint64_t hashMod);
     //! @brief Fill bad character rule table.
     //! @param badCharRuleTable - bad character rule table
     //! @param pattern - single pattern

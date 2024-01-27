@@ -18,54 +18,51 @@ int Match::rk(
     const std::uint32_t patternLen)
 {
     int shift = -1;
-    constexpr std::uint64_t rollingHashBase = 10, rollingHashMod = 19260817;
-    unsigned char subText[patternLen];
-    subText[0] = '\0';
-    std::memcpy(subText, text, patternLen * sizeof(unsigned char));
+    constexpr std::uint64_t rollingHashBase = 10, rollingHashMod = 1e9 + 7;
+    std::uint64_t textHash = 0, patternHash = 0, pow = 1;
 
-    std::uint64_t textHash = rollingHash(subText, patternLen, rollingHashBase, rollingHashMod);
-    const std::uint64_t patternHash = rollingHash(pattern, patternLen, rollingHashBase, rollingHashMod);
-    if (textHash != patternHash)
+    for (std::uint64_t i = 0; i < (patternLen - 1); ++i)
     {
-        std::uint64_t pow = 1;
-        for (std::uint32_t j = 0; j < patternLen - 1; ++j)
-        {
-            pow = (pow * rollingHashBase) % rollingHashMod;
-        }
+        pow = (pow * rollingHashBase) % rollingHashMod;
+    }
 
-        for (std::uint32_t i = 1; i <= textLen - patternLen; ++i)
+    for (std::uint64_t i = 0; i < patternLen; ++i)
+    {
+        patternHash = (rollingHashBase * patternHash + pattern[i]) % rollingHashMod;
+        textHash = (rollingHashBase * textHash + text[i]) % rollingHashMod;
+    }
+
+    for (std::uint64_t i = 0; i <= (textLen - patternLen); ++i)
+    {
+        if (patternHash == textHash)
         {
-            textHash = (textHash - static_cast<std::uint64_t>(text[i - 1]) * pow);
-            textHash = (textHash % rollingHashMod + rollingHashMod) % rollingHashMod;
-            textHash =
-                (textHash * rollingHashBase + static_cast<std::uint64_t>(text[i + patternLen - 1])) % rollingHashMod;
-            if (textHash == patternHash)
+            std::uint64_t j = 0;
+            for (j = 0; j < patternLen; ++j)
+            {
+                if (text[i + j] != pattern[j])
+                {
+                    break;
+                }
+            }
+
+            if (j == patternLen)
             {
                 shift = i;
                 break;
             }
         }
-    }
-    else
-    {
-        shift = 0;
+
+        if (i < textLen - patternLen)
+        {
+            textHash = (rollingHashBase * (textHash - text[i] * pow) + text[i + patternLen]) % rollingHashMod;
+            if (textHash < 0)
+            {
+                textHash += rollingHashMod;
+            }
+        }
     }
 
     return shift;
-}
-
-std::uint64_t Match::rollingHash(
-    const unsigned char* const str,
-    const std::uint64_t length,
-    const std::uint64_t hashBase,
-    const std::uint64_t hashMod)
-{
-    std::uint64_t hash = 0;
-    for (std::uint64_t i = 0; i < length; ++i)
-    {
-        hash = ((hash * hashBase) % hashMod + static_cast<std::uint64_t>(str[i])) % hashMod;
-    }
-    return hash;
 }
 
 int Match::kmp(
@@ -190,11 +187,13 @@ void Match::fillGoodSuffixRuleTable(
     for (std::uint32_t pos = 0; pos < (patternLen - 1); ++pos)
     {
         std::uint32_t suffixLen = 0;
-        for (suffixLen = 0; (pattern[pos - suffixLen] == pattern[patternLen - 1 - suffixLen]) && (suffixLen <= pos);
-             ++suffixLen)
+        while ((suffixLen <= pos) && (suffixLen <= (patternLen - 1))
+               && (pattern[pos - suffixLen] == pattern[patternLen - 1 - suffixLen]))
         {
+            ++suffixLen;
         }
-        if (pattern[pos - suffixLen] != pattern[patternLen - 1 - suffixLen])
+        if ((suffixLen <= pos) && (suffixLen <= (patternLen - 1))
+            && (pattern[pos - suffixLen] != pattern[patternLen - 1 - suffixLen]))
         {
             goodSuffixRuleTable[patternLen - 1 - suffixLen] = patternLen - 1 - pos + suffixLen;
         }
