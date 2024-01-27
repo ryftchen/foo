@@ -59,7 +59,7 @@ namespace tlv
 enum TLVType : int
 {
     //! @brief Header.
-    header = 0x0125e591,
+    header = 0x3b9aca07,
     //! @brief Stop.
     stop = 0,
     //! @brief Bash.
