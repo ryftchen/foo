@@ -43,7 +43,6 @@ words:
   - optflag
   - PDEATHSIG
   - pgrep
-  - pidof
   - profdata
   - profraw
   - pylintrc
