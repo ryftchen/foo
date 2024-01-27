@@ -496,16 +496,16 @@ struct ExprRange
     //! @param range1 - lower endpoint
     //! @param range2 - upper endpoint
     //! @param exprDescr - expression description
-    ExprRange(const T1& range1, const T2& range2, const std::string_view exprDescr) :
+    ExprRange(const T1 range1, const T2 range2, const std::string_view exprDescr) :
         range1(range1), range2(range2), exprDescr(exprDescr){};
     //! @brief Construct a new ExprRange object.
     ExprRange() = delete;
     //! @brief Lower endpoint.
-    T1 range1;
+    const T1 range1;
     //! @brief Upper endpoint.
-    T2 range2;
+    const T2 range2;
     //! @brief Expression description.
-    std::string_view exprDescr;
+    const std::string_view exprDescr;
     //! @brief The operator (==) overloading of ExprRange class.
     //! @param rhs - right-hand side
     //! @return be equal or not equal
@@ -525,9 +525,8 @@ struct ExprMapHash
     template <typename T1, typename T2>
     std::size_t operator()(const ExprRange<T1, T2>& range) const
     {
-        std::size_t hash1 = std::hash<T1>()(range.range1);
-        std::size_t hash2 = std::hash<T2>()(range.range2);
-        std::size_t hash3 = std::hash<std::string_view>()(range.exprDescr);
+        const std::size_t hash1 = std::hash<T1>()(range.range1), hash2 = std::hash<T2>()(range.range2),
+                          hash3 = std::hash<std::string_view>()(range.exprDescr);
         return (hash1 ^ hash2 ^ hash3);
     }
 };

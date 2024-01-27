@@ -610,16 +610,16 @@ struct FuncRange
     //! @param range1 - left endpoint
     //! @param range2 - light endpoint
     //! @param funcDescr - function description
-    FuncRange(const T1& range1, const T2& range2, const std::string_view funcDescr) :
+    FuncRange(const T1 range1, const T2 range2, const std::string_view funcDescr) :
         range1(range1), range2(range2), funcDescr(funcDescr){};
     //! @brief Construct a new FuncRange object.
     FuncRange() = delete;
     //! @brief Left endpoint.
-    T1 range1;
+    const T1 range1;
     //! @brief Right endpoint.
-    T2 range2;
+    const T2 range2;
     //! @brief Function description.
-    std::string_view funcDescr;
+    const std::string_view funcDescr;
 
     //! @brief The operator (==) overloading of FuncRange class.
     //! @param rhs - right-hand side
@@ -640,9 +640,8 @@ struct FuncMapHash
     template <typename T1, typename T2>
     std::size_t operator()(const FuncRange<T1, T2>& range) const
     {
-        std::size_t hash1 = std::hash<T1>()(range.range1);
-        std::size_t hash2 = std::hash<T2>()(range.range2);
-        std::size_t hash3 = std::hash<std::string_view>()(range.funcDescr);
+        const std::size_t hash1 = std::hash<T1>()(range.range1), hash2 = std::hash<T2>()(range.range2),
+                          hash3 = std::hash<std::string_view>()(range.funcDescr);
         return (hash1 ^ hash2 ^ hash3);
     }
 };

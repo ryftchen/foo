@@ -35,7 +35,7 @@ class Task:
             r"'batch ./script/console_batch.txt'",
             r"'refresh'",
             r"'reconnect'",
-            r"""'bash "ls -ahl"'""",
+            r"""'bash "pmap \$(pidof 'foo') -x -p"'""",
             r"'journal'",
             r"'monitor'",
         ],
