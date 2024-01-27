@@ -79,7 +79,7 @@ public:
 
 private:
     //! @brief Maximum ASCII value.
-    static constexpr std::uint16_t maxASCII = 256;
+    static constexpr std::uint16_t maxASCII{256};
 
     //! @brief Fill bad character rule table.
     //! @param badCharRuleTable - bad character rule table

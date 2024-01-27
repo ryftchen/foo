@@ -18,8 +18,8 @@ int Match::rk(
     const std::uint32_t patternLen)
 {
     int shift = -1;
-    constexpr std::uint64_t rollingHashBase = 10, rollingHashMod = 1e9 + 7;
-    std::uint64_t textHash = 0, patternHash = 0, pow = 1;
+    constexpr std::int64_t rollingHashBase = maxASCII, rollingHashMod = 1e9 + 7;
+    std::int64_t textHash = 0, patternHash = 0, pow = 1;
 
     for (std::uint64_t i = 0; i < (patternLen - 1); ++i)
     {
