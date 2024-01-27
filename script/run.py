@@ -30,14 +30,14 @@ class Task:
         "--version": [],
         "--dump": [],
         "--console": [
-            r"'help'",
-            r"'quit'",
-            r"'batch ./script/console_batch.txt'",
-            r"'refresh'",
-            r"'reconnect'",
-            r"""'bash "pmap \$(ps -o pid -C foo | sed '1d') -x -p"'""",
-            r"'journal'",
-            r"'monitor'",
+            r"help",
+            r"quit",
+            r"batch ./script/console_batch.txt",
+            r"refresh",
+            r"reconnect",
+            r'''bash "ps -ewwo size,pid,user,command --sort -size | awk '{ hr=\$1/1024 ; printf(\"%6.2fMB \", hr) } { for (x=4 ; x<=NF ; x++) { printf(\"%s \", \$x) } print \"\" }' | cut -d '' -f 2 | sed '1d'"''',  # pylint: disable=line-too-long
+            r"journal",
+            r"monitor",
         ],
     }
     regular_task_dict = {
@@ -251,13 +251,14 @@ class Task:
         while self.repeat_count:
             if "--console" in self.basic_task_dict:
                 for target_task in self.basic_task_dict["--console"]:
-                    target_task = target_task.replace("'", "")
                     self.task_queue.put((self.app_bin_cmd, f"{target_task}\nquit"))
 
             for task_category, task_category_list in self.basic_task_dict.items():
                 self.task_queue.put((f"{self.app_bin_cmd} {task_category}", ""))
                 for target_task in task_category_list:
-                    self.task_queue.put((f"{self.app_bin_cmd} {task_category} {target_task}", ""))
+                    target_task = target_task.replace("\\", "\\\\\\").replace('"', '\\"', 1)
+                    target_task = '\\"'.join(target_task.rsplit('"', 1))
+                    self.task_queue.put((f"{self.app_bin_cmd} {task_category} \"{target_task}\"", ""))
 
             for sub_cli, sub_cli_map in self.regular_task_dict.items():
                 self.task_queue.put((f"{self.app_bin_cmd} {sub_cli}", ""))
