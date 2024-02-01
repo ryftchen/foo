@@ -411,7 +411,7 @@ private:
     static void createMatchingText(unsigned char* const text, const std::uint32_t textLen)
     {
         assert((nullptr != text) && (textLen > 0));
-        char piText[textLen];
+        char piText[textLen + 1];
         piText[0] = '\0';
 
         ::mpfr_t x{};
@@ -427,7 +427,10 @@ private:
 
 #ifdef __RUNTIME_PRINTING
         std::string out(piText);
-        out.insert(1, ".");
+        if (textLen > 1)
+        {
+            out = std::string{out.at(0)} + "." + out.substr(1, out.length());
+        }
         std::cout << "\r\nπ " << textLen << " digits:\n"
                   << out.substr(0, std::min(textLen, maxNumPerLineOfPrint)) << std::endl;
         if (textLen > maxNumPerLineOfPrint)

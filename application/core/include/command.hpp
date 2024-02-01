@@ -255,14 +255,16 @@ private:
         }
     } /** @brief Dispatch all types of tasks. */ dispatchedTask{};
 
+    //! @brief Check for excessive arguments.
+    void checkForExcessiveArguments();
     //! @brief Enter console mode.
-    void enterConsoleMode() const;
+    static void enterConsoleMode();
     //! @brief Register the command line to console mode.
     //! @tparam T - type of client
     //! @param console - console to be registered
     //! @param client - client used to send
     template <typename T>
-    void registerOnConsole(utility::console::Console& console, std::shared_ptr<T>& client) const;
+    static void registerOnConsole(utility::console::Console& console, std::shared_ptr<T>& client);
     //! @brief Launch the client for console mode.
     //! @tparam T - type of client
     //! @param client - client to be launched
@@ -271,8 +273,6 @@ private:
     //! @brief Get ASCII banner text.
     //! @return ASCII banner text content
     static std::string getIconBanner();
-    //! @brief Check for excessive arguments.
-    void checkForExcessiveArguments();
 
     //! @brief Maximum latency for console.
     static constexpr std::uint16_t maxLatency{200};
