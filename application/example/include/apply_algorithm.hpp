@@ -410,7 +410,6 @@ private:
     //! @param textLen - length of matching text
     static void createMatchingText(unsigned char* const text, const std::uint32_t textLen)
     {
-        assert((nullptr != text) && (textLen > 0));
         char piText[textLen + 1];
         piText[0] = '\0';
 

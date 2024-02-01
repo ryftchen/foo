@@ -6,7 +6,6 @@
 
 #include "optimal.hpp"
 
-#include <cassert>
 #include <functional>
 #include <set>
 #include <stdexcept>
@@ -352,7 +351,10 @@ std::optional<std::pair<double, double>> Genetic::fitnessLinearTransformation(co
     }
     const double alpha = reFitnessAvg / (reFitnessAvg - reFitnessMin),
                  beta = -(reFitnessMin * reFitnessAvg) / (reFitnessAvg - reFitnessMin);
-    assert(!std::isnan(alpha) && !std::isinf(alpha) && !std::isnan(beta) && !std::isinf(beta));
+    if (std::isnan(alpha) || std::isinf(alpha) || std::isnan(beta) || std::isinf(beta))
+    {
+        return std::make_optional(std::pair<double, double>(1.0, 0.0));
+    }
     return std::make_optional(std::pair<double, double>(alpha, beta));
 }
 
@@ -366,7 +368,6 @@ auto Genetic::rouletteWheelSelection(const Population& pop, const std::vector<do
         {
             return cumulation > pr;
         });
-    assert(cumIter != cumFitness.cend());
 
     return std::next(pop.cbegin(), std::distance(cumFitness.cbegin(), cumIter));
 }
@@ -406,7 +407,6 @@ void Genetic::select(Population& pop)
             sum += fitVal;
             return fitVal;
         });
-    assert(0 != sum);
 
     std::vector<double> fitnessAvg;
     fitnessAvg.reserve(fitnessVal.size());

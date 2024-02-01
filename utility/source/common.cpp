@@ -6,7 +6,6 @@
 
 #include "common.hpp"
 
-#include <cassert>
 #include <chrono>
 #include <cstdarg>
 #include <vector>
@@ -140,7 +139,6 @@ std::string formatString(const char* const format, ...)
     ::va_start(list, format);
     int bufferSize = std::vsnprintf(nullptr, 0, format, list);
     ::va_end(list);
-    assert(bufferSize >= 0);
 
     ::va_start(list, format);
     char buffer[bufferSize + 1];

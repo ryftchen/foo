@@ -9,7 +9,6 @@
 #include "sort.hpp"
 
 #include <algorithm>
-#include <cassert>
 #include <cmath>
 #include <cstring>
 #include <memory>
@@ -261,7 +260,6 @@ std::vector<T> Sort<T>::counting(const T* const array, const std::uint32_t lengt
     }
 
     const T countingLen = max - min + 1;
-    assert(countingLen > 0);
     std::unique_ptr<T[]> counting = std::make_unique<T[]>(countingLen);
     for (std::uint32_t i = 0; i < length; ++i)
     {
@@ -349,7 +347,6 @@ std::vector<T> Sort<T>::radix(const T* const array, const std::uint32_t length)
     constexpr std::uint32_t naturalNumberBucket = 10, negativeIntegerBucket = 9;
     const std::uint32_t bucketNum =
         (positive ^ negative) ? naturalNumberBucket : (naturalNumberBucket + negativeIntegerBucket);
-    assert(bucketNum > 0);
     std::unique_ptr<T[]> countingOld = std::make_unique<T[]>(bucketNum), countingNew = std::make_unique<T[]>(bucketNum);
     std::queue<T> bucket;
     std::vector<std::queue<T>> container(bucketNum, bucket);
