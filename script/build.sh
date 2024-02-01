@@ -277,7 +277,7 @@ EOF"
     shell_command "git config --local commit.template ./.gitcommit.template"
 
     echo
-    echo "To initialize for effect, type 'exec bash' manually."
+    echo "To initialize for effect, type \"exec bash\" manually."
     exit 0
 }
 
@@ -299,7 +299,7 @@ function perform_clean_option()
     fi
 
     echo
-    echo "To clean up for effect, type 'exec bash' manually."
+    echo "To clean up for effect, type \"exec bash\" manually."
     exit 0
 }
 
@@ -340,7 +340,7 @@ ${SUDO}cp ./${FOLDER[doc]}/man.1 ${man_path}/man1/${FOLDER[proj]}.1"
     fi
 
     echo
-    echo "Manually type 'exec bash' to install for effect."
+    echo "Manually type \"exec bash\" to install for effect."
     exit 0
 }
 
@@ -369,7 +369,7 @@ ${SUDO}rm -rf /opt/${FOLDER[proj]}/${completion_file} /opt/${FOLDER[proj]}/man"
     fi
 
     echo
-    echo "Manually type 'exec bash' to uninstall for effect."
+    echo "Manually type \"exec bash\" to uninstall for effect."
     exit 0
 }
 
