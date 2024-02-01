@@ -433,6 +433,54 @@ void Command::dispatchTask()
     }
 }
 
+//! @brief Launch the TCP client for console mode.
+//! @param client - TCP client to be launched
+template <>
+void Command::launchClient<utility::socket::TCPSocket>(std::shared_ptr<utility::socket::TCPSocket>& client)
+{
+    client->onRawMessageReceived = [&client](char* buffer, const int length)
+    {
+        try
+        {
+            const auto tcpResp = view::View::parseTLVPacket(buffer, length);
+            if (tcpResp.stopTag)
+            {
+                client->setNonBlocking();
+            }
+        }
+        catch (std::exception& error)
+        {
+            LOG_WRN << error.what();
+        }
+    };
+    client->toConnect(VIEW_TCP_HOST, VIEW_TCP_PORT);
+}
+
+//! @brief Launch the UDP client for console mode.
+//! @param client - UDP client to be launched
+template <>
+void Command::launchClient<utility::socket::UDPSocket>(std::shared_ptr<utility::socket::UDPSocket>& client)
+{
+    client->onRawMessageReceived =
+        [&client](char* buffer, const int length, const std::string& /*ip*/, const std::uint16_t /*port*/)
+    {
+        try
+        {
+            const auto udpResp = view::View::parseTLVPacket(buffer, length);
+            if (udpResp.stopTag)
+            {
+                client->setNonBlocking();
+            }
+        }
+        catch (std::exception& error)
+        {
+            LOG_WRN << error.what();
+        }
+    };
+    client->toReceive();
+    client->toConnect(VIEW_UDP_HOST, VIEW_UDP_PORT);
+}
+
 void Command::executeConsoleCommand() const
 {
     if (!CONFIG_ACTIVE_HELPER)
@@ -551,7 +599,16 @@ const T& Command::get(const TaskFunctorTuple& tuple)
     }
 }
 
-void Command::enterConsoleMode() const
+void Command::checkForExcessiveArguments()
+{
+    if (hasAnyTask())
+    {
+        dispatchedTask.reset();
+        throw std::logic_error("Excessive arguments.");
+    }
+}
+
+void Command::enterConsoleMode()
 {
     if (!CONFIG_ACTIVE_HELPER)
     {
@@ -614,7 +671,7 @@ void Command::enterConsoleMode() const
 }
 
 template <typename T>
-void Command::registerOnConsole(utility::console::Console& console, std::shared_ptr<T>& client) const
+void Command::registerOnConsole(utility::console::Console& console, std::shared_ptr<T>& client)
 {
     using utility::console::Console;
 
@@ -700,55 +757,6 @@ void Command::registerOnConsole(utility::console::Console& console, std::shared_
     }
 }
 
-template <typename T>
-void Command::launchClient(std::shared_ptr<T>& client)
-{
-    using utility::socket::TCPSocket;
-    using utility::socket::UDPSocket;
-    using view::View;
-
-    if constexpr (std::is_same_v<T, TCPSocket>)
-    {
-        client->onRawMessageReceived = [&client](char* buffer, const int length)
-        {
-            try
-            {
-                const auto tcpResp = View::parseTLVPacket(buffer, length);
-                if (tcpResp.stopTag)
-                {
-                    client->setNonBlocking();
-                }
-            }
-            catch (std::exception& error)
-            {
-                LOG_WRN << error.what();
-            }
-        };
-        client->toConnect(VIEW_TCP_HOST, VIEW_TCP_PORT);
-    }
-    else if constexpr (std::is_same_v<T, UDPSocket>)
-    {
-        client->onRawMessageReceived =
-            [&client](char* buffer, const int length, const std::string& /*ip*/, const std::uint16_t /*port*/)
-        {
-            try
-            {
-                const auto udpResp = View::parseTLVPacket(buffer, length);
-                if (udpResp.stopTag)
-                {
-                    client->setNonBlocking();
-                }
-            }
-            catch (std::exception& error)
-            {
-                LOG_WRN << error.what();
-            }
-        };
-        client->toReceive();
-        client->toConnect(VIEW_UDP_HOST, VIEW_UDP_PORT);
-    }
-}
-
 std::string Command::getIconBanner()
 {
     std::string banner;
@@ -761,15 +769,6 @@ std::string Command::getIconBanner()
     banner += R"(')";
 
     return banner;
-}
-
-void Command::checkForExcessiveArguments()
-{
-    if (hasAnyTask())
-    {
-        dispatchedTask.reset();
-        throw std::logic_error("Excessive arguments.");
-    }
 }
 
 //! @brief Get memory pool when making multi-threading.
