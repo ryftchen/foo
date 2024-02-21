@@ -1,6 +1,8 @@
 ---
 name: "CodeQL config"
 queries:
+  - qlpack: codeql/cpp-queries
+    version: 0.9.3
   - uses: security-and-quality
 query-filters:
   - exclude:
@@ -8,4 +10,6 @@ query-filters:
   - exclude:
       id:
         - cpp/poorly-documented-function
+paths-ignore:
+  - build
 ...
