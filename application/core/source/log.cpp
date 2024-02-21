@@ -43,58 +43,55 @@ void Log::runLogger()
         }
     };
 
-    for (;;)
+launchPoint:
+    try
     {
-        try
+        checkIfExceptedFSMState(State::init);
+        processEvent(OpenFile());
+
+        checkIfExceptedFSMState(State::idle);
+        processEvent(GoLogging());
+
+        checkIfExceptedFSMState(State::work);
+        while (isLogging.load())
         {
-            checkIfExceptedFSMState(State::init);
-            processEvent(OpenFile());
-
-            checkIfExceptedFSMState(State::idle);
-            processEvent(GoLogging());
-
-            checkIfExceptedFSMState(State::work);
-            while (isLogging.load())
-            {
-                std::unique_lock<std::mutex> lock(mtx);
-                cv.wait(
-                    lock,
-                    [this]()
-                    {
-                        return (!isLogging.load() || !logQueue.empty() || rollbackRequest.load());
-                    });
-
-                if (rollbackRequest.load())
+            std::unique_lock<std::mutex> lock(mtx);
+            cv.wait(
+                lock,
+                [this]()
                 {
-                    break;
-                }
-                handleLogQueue();
-            }
+                    return (!isLogging.load() || !logQueue.empty() || rollbackRequest.load());
+                });
 
             if (rollbackRequest.load())
             {
-                processEvent(Relaunch());
-                continue;
+                break;
             }
-            processEvent(CloseFile());
-
-            checkIfExceptedFSMState(State::idle);
-            processEvent(NoLogging());
-
-            checkIfExceptedFSMState(State::done);
-            return;
+            handleLogQueue();
         }
-        catch (const std::exception& error)
-        {
-            LOG_ERR << error.what() << " Expected logger state: " << expectedState
-                    << ", current logger state: " << State(currentState()) << '.';
-            processEvent(Standby());
 
-            checkIfExceptedFSMState(State::hold);
-            if (!awaitNotificationAndCheckForRollback())
-            {
-                return;
-            }
+        if (rollbackRequest.load())
+        {
+            processEvent(Relaunch());
+            goto launchPoint; // NOLINT (hicpp-avoid-goto)
+        }
+        processEvent(CloseFile());
+
+        checkIfExceptedFSMState(State::idle);
+        processEvent(NoLogging());
+
+        checkIfExceptedFSMState(State::done);
+    }
+    catch (const std::exception& error)
+    {
+        LOG_ERR << error.what() << " Expected logger state: " << expectedState
+                << ", current logger state: " << State(currentState()) << '.';
+        processEvent(Standby());
+
+        checkIfExceptedFSMState(State::hold);
+        if (awaitNotificationAndCheckForRollback())
+        {
+            goto launchPoint; // NOLINT (hicpp-avoid-goto)
         }
     }
 }
