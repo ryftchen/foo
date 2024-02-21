@@ -461,6 +461,10 @@ void runIntegralTasks(const std::vector<std::string>& targets)
 
     using integral::input::Expression1;
     typedef std::variant<Expression1> IntegralExprTarget;
+    const std::unordered_multimap<integral::ExprRange<double, double>, IntegralExprTarget, integral::ExprMapHash>
+        integralExprMap{
+            {{Expression1::range1, Expression1::range2, Expression1::exprDescr}, Expression1{}},
+        };
     constexpr auto printExpr = [](const IntegralExprTarget& expression)
     {
         constexpr std::string_view prefix = "\r\nIntegral expression:\n";
@@ -521,10 +525,6 @@ void runIntegralTasks(const std::vector<std::string>& targets)
         }
         command::getPublicThreadPool().deleteElement(threads);
     };
-    const std::unordered_multimap<integral::ExprRange<double, double>, IntegralExprTarget, integral::ExprMapHash>
-        integralExprMap{
-            {{Expression1::range1, Expression1::range2, Expression1::exprDescr}, Expression1{}},
-        };
 
     APP_NUM_PRINT_TASK_BEGIN_TITLE(Category::integral);
 

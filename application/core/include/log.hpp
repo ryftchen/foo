@@ -335,8 +335,8 @@ private:
     // clang-format off
     //! @brief Alias for the transition map of the logger.
     using TransitionMap = Map<
-        // --- Source ---+--- Event ---+--- Target ---+------ Action ------+--- Guard(Optional) ---
-        // --------------+-------------+--------------+--------------------+-----------------------
+        // --- Source ---+--- Event ---+--- Target ---+------ Action ------+--- Guard (Optional) ---
+        // --------------+-------------+--------------+--------------------+------------------------
         Row< State::init ,  OpenFile   , State::idle  , &Log::openLogFile                         >,
         Row< State::idle ,  GoLogging  , State::work  , &Log::startLogging , &Log::isLogFileOpen  >,
         Row< State::work ,  CloseFile  , State::idle  , &Log::closeLogFile                        >,
@@ -347,7 +347,7 @@ private:
         Row< State::done ,  Standby    , State::hold  , &Log::doToggle                            >,
         Row< State::work ,  Relaunch   , State::init  , &Log::doRollback                          >,
         Row< State::hold ,  Relaunch   , State::init  , &Log::doRollback                          >
-        // --------------+-------------+--------------+--------------------+-----------------------
+        // --------------+-------------+--------------+--------------------+------------------------
         >;
     // clang-format on
     //! @brief Await notification and check for rollback.

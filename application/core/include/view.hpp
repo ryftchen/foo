@@ -351,8 +351,8 @@ private:
     // clang-format off
     //! @brief Alias for the transition map of the viewer.
     using TransitionMap = Map<
-        // --- Source ---+---- Event ----+--- Target ---+--------- Action ---------+--- Guard(Optional) ---
-        // --------------+---------------+--------------+--------------------------+-----------------------
+        // --- Source ---+---- Event ----+--- Target ---+--------- Action ---------+--- Guard (Optional) ---
+        // --------------+---------------+--------------+--------------------------+------------------------
         Row< State::init , CreateServer  , State::idle  , &View::createViewServer                         >,
         Row< State::idle , GoViewing     , State::work  , &View::startViewing                             >,
         Row< State::work , DestroyServer , State::idle  , &View::destroyViewServer                        >,
@@ -363,7 +363,7 @@ private:
         Row< State::done , Standby       , State::hold  , &View::doToggle                                 >,
         Row< State::work , Relaunch      , State::init  , &View::doRollback                               >,
         Row< State::hold , Relaunch      , State::init  , &View::doRollback                               >
-        // --------------+---------------+--------------+--------------------------+-----------------------
+        // --------------+---------------+--------------+--------------------------+------------------------
         >;
     // clang-format on
     //! @brief Await notification and check for rollback.

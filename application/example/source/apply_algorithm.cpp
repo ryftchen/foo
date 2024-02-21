@@ -503,6 +503,10 @@ void runOptimalTasks(const std::vector<std::string>& targets)
 
     using optimal::input::Rastrigin;
     typedef std::variant<Rastrigin> OptimalFuncTarget;
+    const std::unordered_multimap<optimal::FuncRange<double, double>, OptimalFuncTarget, optimal::FuncMapHash>
+        optimalFuncMap{
+            {{Rastrigin::range1, Rastrigin::range2, Rastrigin::funcDescr}, Rastrigin{}},
+        };
     constexpr auto printFunc = [](const OptimalFuncTarget& function)
     {
         constexpr std::string_view prefix = "\r\nOptimal function:\n";
@@ -560,10 +564,6 @@ void runOptimalTasks(const std::vector<std::string>& targets)
         }
         command::getPublicThreadPool().deleteElement(threads);
     };
-    const std::unordered_multimap<optimal::FuncRange<double, double>, OptimalFuncTarget, optimal::FuncMapHash>
-        optimalFuncMap{
-            {{Rastrigin::range1, Rastrigin::range2, Rastrigin::funcDescr}, Rastrigin{}},
-        };
 
     APP_ALGO_PRINT_TASK_BEGIN_TITLE(Category::optimal);
 
