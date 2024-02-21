@@ -202,57 +202,54 @@ void View::runViewer()
         }
     };
 
-    for (;;)
+launchPoint:
+    try
     {
-        try
+        checkIfExceptedFSMState(State::init);
+        processEvent(CreateServer());
+
+        checkIfExceptedFSMState(State::idle);
+        processEvent(GoViewing());
+
+        checkIfExceptedFSMState(State::work);
+        while (isViewing.load())
         {
-            checkIfExceptedFSMState(State::init);
-            processEvent(CreateServer());
-
-            checkIfExceptedFSMState(State::idle);
-            processEvent(GoViewing());
-
-            checkIfExceptedFSMState(State::work);
-            while (isViewing.load())
-            {
-                std::unique_lock<std::mutex> lock(mtx);
-                cv.wait(
-                    lock,
-                    [this]()
-                    {
-                        return (!isViewing.load() || rollbackRequest.load());
-                    });
-
-                if (rollbackRequest.load())
+            std::unique_lock<std::mutex> lock(mtx);
+            cv.wait(
+                lock,
+                [this]()
                 {
-                    break;
-                }
-            }
+                    return (!isViewing.load() || rollbackRequest.load());
+                });
 
             if (rollbackRequest.load())
             {
-                processEvent(Relaunch());
-                continue;
+                break;
             }
-            processEvent(DestroyServer());
-
-            checkIfExceptedFSMState(State::idle);
-            processEvent(NoViewing());
-
-            checkIfExceptedFSMState(State::done);
-            return;
         }
-        catch (const std::exception& error)
-        {
-            LOG_ERR << error.what() << " Expected viewer state: " << expectedState
-                    << ", current viewer state: " << State(currentState()) << '.';
-            processEvent(Standby());
 
-            checkIfExceptedFSMState(State::hold);
-            if (!awaitNotificationAndCheckForRollback())
-            {
-                return;
-            }
+        if (rollbackRequest.load())
+        {
+            processEvent(Relaunch());
+            goto launchPoint; // NOLINT (hicpp-avoid-goto)
+        }
+        processEvent(DestroyServer());
+
+        checkIfExceptedFSMState(State::idle);
+        processEvent(NoViewing());
+
+        checkIfExceptedFSMState(State::done);
+    }
+    catch (const std::exception& error)
+    {
+        LOG_ERR << error.what() << " Expected viewer state: " << expectedState
+                << ", current viewer state: " << State(currentState()) << '.';
+        processEvent(Standby());
+
+        checkIfExceptedFSMState(State::hold);
+        if (awaitNotificationAndCheckForRollback())
+        {
+            goto launchPoint; // NOLINT (hicpp-avoid-goto)
         }
     }
 }
