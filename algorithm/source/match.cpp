@@ -269,14 +269,13 @@ int Match::sunday(
             if (matchLen == patternLen)
             {
                 shift = textIndex;
-                goto returnValue;
+                return shift;
             }
         }
 
         textIndex += badCharShiftTable[text[textIndex + patternLen]];
     }
 
-returnValue:
     return shift;
 }
 
