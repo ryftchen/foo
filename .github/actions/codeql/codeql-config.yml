@@ -1,15 +1,13 @@
 ---
 name: "CodeQL config"
+packs:
+  - codeql/cpp-queries@0.9.3
 queries:
   - uses: security-and-quality
-    qlpack: codeql/cpp-queries
-    version: 0.9.3
 query-filters:
   - exclude:
       problem.severity: recommendation
   - exclude:
       id:
         - cpp/poorly-documented-function
-paths-ignore:
-  - build
 ...
