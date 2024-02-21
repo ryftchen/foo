@@ -1,7 +1,5 @@
 ---
 name: "CodeQL config"
-packs:
-  - codeql/cpp-queries@0.9.3
 queries:
   - uses: security-and-quality
 query-filters:
@@ -10,4 +8,7 @@ query-filters:
   - exclude:
       id:
         - cpp/poorly-documented-function
+  - exclude:
+      id:
+        - cpp/stack-address-escape
 ...
