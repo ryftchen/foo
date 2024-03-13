@@ -27,7 +27,7 @@ public:
     ~Memory() noexcept;
     //! @brief Construct a new Memory object.
     Memory(const Memory& /*memory*/) noexcept : Memory(){};
-    //! @brief Construct a new Memory object
+    //! @brief Construct a new Memory object.
     //! @tparam U - type of object to allocate
     template <class U>
     explicit Memory(const Memory<U>& /*memory*/) noexcept : Memory(){};

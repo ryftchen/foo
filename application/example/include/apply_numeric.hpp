@@ -196,7 +196,7 @@ auto& getBit()
     }
 }
 
-//! @brief Set the bit flags of the method in numeric tasks
+//! @brief Set the bit flags of the method in numeric tasks.
 //! @tparam T - type of method
 //! @param index - method index
 template <typename T>

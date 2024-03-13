@@ -248,7 +248,7 @@ public:
     //! @param value - default value
     //! @return reference of the Register object
     Register& defaultVal(const char* value);
-    //! @brief Set implicit value
+    //! @brief Set implicit value.
     //! @param value - implicit value
     //! @return reference of the Register object
     Register& implicitVal(std::any value);
@@ -365,7 +365,7 @@ private:
         std::size_t max;
 
     public:
-        //! @brief Construct a new ArgsNumRange object
+        //! @brief Construct a new ArgsNumRange object.
         //! @param minimum - minimum of range
         //! @param maximum - maximum of range
         ArgsNumRange(const std::size_t minimum, const std::size_t maximum) : min(minimum), max(maximum)
