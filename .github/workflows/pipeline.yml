@@ -35,6 +35,19 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      - name: Check
+        run: |
+          ./script/build.sh --hook --spell --format --lint --statistics
+          git status
+          ./script/build.sh --release --browser --doxygen
+
+      - name: Upload
+        uses: actions/upload-artifact@v3
+        with:
+          name: foo_artifact
+          path: ./document/archive/foo_*.tar.bz2
+          retention-days: 7
+
       - name: Initialize
         if: github.event_name == 'push'
         run: |
@@ -45,21 +58,9 @@ jobs:
           git push --force origin gh-pages
           git checkout master
 
-      - name: Check
-        run: |
-          ./script/build.sh --hook --spell --format --lint --statistics
-          ./script/build.sh --release --browser --doxygen
-
-      - name: Upload
-        uses: actions/upload-artifact@v3
-        with:
-          name: foo_artifact
-          path: ./document/archive/foo_*.tar.bz2
-          retention-days: 7
-
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@v4.4.1
-        if: github.event_name == 'workflow_dispatch'
+        if: github.event_name == 'push'
         with:
           branch: gh-pages
           folder: ./document/doxygen
