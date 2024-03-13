@@ -35,6 +35,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      - name: Initialize
+        if: github.event_name == 'push'
+        run: |
+          git remote update
+          git fetch
+          git checkout --track origin/gh-pages
+          git reset --hard 088da5a87090f9886c01af5f2a57519f5ebf2428
+          git push --force origin gh-pages
+          git checkout master
+
       - name: Check
         run: |
           ./script/build.sh --hook --spell --format --lint --statistics
@@ -46,14 +56,6 @@ jobs:
           name: foo_artifact
           path: ./document/archive/foo_*.tar.bz2
           retention-days: 7
-
-      - name: Initialize
-        if: github.event_name == 'push'
-        run: |
-          git checkout gh-pages
-          git reset --hard 088da5a87090f9886c01af5f2a57519f5ebf2428
-          git push --force origin gh-pages
-          git checkout master
 
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@v4.4.1
