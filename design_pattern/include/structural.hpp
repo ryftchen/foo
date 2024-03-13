@@ -110,7 +110,7 @@ public:
 class RefinedAbstraction : public Abstraction
 {
 public:
-    //! @brief Construct a new RefinedAbstraction object
+    //! @brief Construct a new RefinedAbstraction object.
     //! @param implementor - target implementor
     explicit RefinedAbstraction(std::unique_ptr<Implementor> implementor) : implementor(std::move(implementor)){};
     //! @brief Destroy the RefinedAbstraction object.

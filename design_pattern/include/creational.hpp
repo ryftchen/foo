@@ -373,7 +373,7 @@ public:
     static void init();
     //! @brief Remove all prototypes.
     static void remove();
-    //! @brief Make by prototype index
+    //! @brief Make by prototype index.
     //! @param index - prototype index
     //! @return cloning result
     static std::unique_ptr<Prototype> make(const int index);

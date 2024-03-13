@@ -34,7 +34,7 @@ using Category = AlgorithmTask::Category;
 class MatchTestBase : public ::testing::Test
 {
 public:
-    //! @brief Construct a new MatchTestBase object
+    //! @brief Construct a new MatchTestBase object.
     MatchTestBase() = default;
     //! @brief Destroy the MatchTestBase object.
     ~MatchTestBase() override = default;
