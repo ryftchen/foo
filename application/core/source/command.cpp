@@ -242,8 +242,8 @@ Command& Command::getInstance()
 void Command::runCommander(const int argc, const char* const argv[])
 try
 {
-    LOG_WAIT_TO_START;
-    VIEW_WAIT_TO_START;
+    triggerHelper<log::Log>(HelperOperation::start);
+    triggerHelper<view::View>(HelperOperation::start);
 
     if (1 == argc)
     {
@@ -257,8 +257,8 @@ try
         threads->enqueue("commander-bg", &Command::backgroundHandler, this);
     }
 
-    VIEW_WAIT_TO_STOP;
-    LOG_WAIT_TO_STOP;
+    triggerHelper<view::View>(HelperOperation::stop);
+    triggerHelper<log::Log>(HelperOperation::stop);
 }
 catch (const std::exception& error)
 {
@@ -496,13 +496,10 @@ void Command::executeConsoleCommand() const
         return;
     }
 
-    using utility::console::Console;
-    using utility::socket::UDPSocket;
-
-    auto udpClient = std::make_shared<UDPSocket>();
-    launchClient<UDPSocket>(udpClient);
-    Console console(" > ");
-    registerOnConsole<UDPSocket>(console, udpClient);
+    auto udpClient = std::make_shared<utility::socket::UDPSocket>();
+    launchClient(udpClient);
+    utility::console::Console console(" > ");
+    registerOnConsole(console, udpClient);
 
     for (const auto& cmd : cmdCntr)
     {
@@ -573,6 +570,15 @@ void Command::showVersionIcon() const
     std::cout << utility::common::executeCommand(fullIcon) << std::flush;
 }
 
+void Command::checkForExcessiveArguments()
+{
+    if (hasAnyTask())
+    {
+        dispatchedTask.reset();
+        throw std::logic_error("Excessive arguments.");
+    }
+}
+
 template <typename T>
 const T& Command::get(const TaskCategoryTuple& tuple)
 {
@@ -599,12 +605,40 @@ const T& Command::get(const TaskFunctorTuple& tuple)
     }
 }
 
-void Command::checkForExcessiveArguments()
+template <typename T>
+void Command::triggerHelper(const HelperOperation operation)
 {
-    if (hasAnyTask())
+    if (!CONFIG_ACTIVE_HELPER)
     {
-        dispatchedTask.reset();
-        throw std::logic_error("Excessive arguments.");
+        return;
+    }
+
+    constexpr auto getInstance = []() -> T&
+    {
+        if constexpr (std::is_same_v<T, log::Log>)
+        {
+            return log::Log::getInstance();
+        }
+        else if constexpr (std::is_same_v<T, view::View>)
+        {
+            return view::View::getInstance();
+        }
+    };
+
+    auto& helper = getInstance();
+    switch (operation)
+    {
+        case HelperOperation::start:
+            helper.waitToStart();
+            break;
+        case HelperOperation::stop:
+            helper.waitToStop();
+            break;
+        case HelperOperation::rollback:
+            helper.requestToRollback();
+            break;
+        default:
+            break;
     }
 }
 
@@ -622,12 +656,11 @@ void Command::enterConsoleMode()
         LOG_DBG << "Enter console mode.";
 #endif // NDEBUG
         using utility::console::Console;
-        using utility::socket::TCPSocket;
 
         std::cout << utility::common::executeCommand("tput bel ; echo " + getIconBanner() + " ; sleep 0.1s")
                   << std::flush;
-        auto tcpClient = std::make_shared<TCPSocket>();
-        launchClient<TCPSocket>(tcpClient);
+        auto tcpClient = std::make_shared<utility::socket::TCPSocket>();
+        launchClient(tcpClient);
         std::string user = "USER";
         if (nullptr != std::getenv("USER"))
         {
@@ -640,7 +673,7 @@ void Command::enterConsoleMode()
         }
         const std::string greeting = user + '@' + std::string{hostName} + " foo > ";
         Console console(greeting);
-        registerOnConsole<TCPSocket>(console, tcpClient);
+        registerOnConsole(console, tcpClient);
 
         int retVal = Console::RetCode::success;
         do
@@ -682,8 +715,8 @@ void Command::registerOnConsole(utility::console::Console& console, std::shared_
             int retVal = Console::RetCode::success;
             try
             {
-                LOG_REQUEST_TO_ROLLBACK;
-                LOG_WAIT_TO_START;
+                triggerHelper<log::Log>(HelperOperation::rollback);
+                triggerHelper<log::Log>(HelperOperation::start);
 
                 LOG_INF << "Refreshed the outputs.";
                 utility::time::millisecondLevelSleep(maxLatency);
@@ -707,11 +740,11 @@ void Command::registerOnConsole(utility::console::Console& console, std::shared_
                 client->toSend(utility::common::base64Encode("stop"));
                 client->waitIfAlive();
                 client.reset();
-                VIEW_REQUEST_TO_ROLLBACK;
-                VIEW_WAIT_TO_START;
+                triggerHelper<view::View>(HelperOperation::rollback);
+                triggerHelper<view::View>(HelperOperation::start);
 
                 client = std::make_shared<T>();
-                launchClient<T>(client);
+                launchClient(client);
                 LOG_INF << "Reconnected to the servers.";
                 utility::time::millisecondLevelSleep(maxLatency);
             }

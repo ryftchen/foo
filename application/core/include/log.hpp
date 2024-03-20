@@ -35,18 +35,6 @@
 #define LOG_WRN LOG_FLUSH_IF_ENABLED(warning)
 //! @brief Log with error level.
 #define LOG_ERR LOG_FLUSH_IF_ENABLED(error)
-//! @brief Get the logger instance.
-#define LOG_GET_INSTANCE application::log::Log::getInstance()
-//! @brief Get the logger instance if enabled.
-#define LOG_GET_INSTANCE_IF_ENABLED \
-    if (CONFIG_ACTIVE_HELPER)       \
-    LOG_GET_INSTANCE
-//! @brief Try to start logging.
-#define LOG_WAIT_TO_START LOG_GET_INSTANCE_IF_ENABLED.waitToStart()
-//! @brief Try to stop logging.
-#define LOG_WAIT_TO_STOP LOG_GET_INSTANCE_IF_ENABLED.waitToStop()
-//! @brief Try to rollback the logger.
-#define LOG_REQUEST_TO_ROLLBACK LOG_GET_INSTANCE_IF_ENABLED.requestToRollback()
 //! @brief Get the logger instance with validate.
 #define LOG_GET_INSTANCE_WITH_VALIDATE application::log::Log::getInstanceWithValidate()
 //! @brief Log file path.
@@ -230,8 +218,6 @@ public:
         //! @brief Get the output stream for flushing.
         //! @return reference of the output stream object, which is on string based
         inline std::ostringstream& getStream() { return stream; }
-        //! @brief Flush the output stream.
-        inline void flush() { getInstance().flush(Lv, file, line, stream.str()); }
 
     private:
         //! @brief Output stream for flushing.
@@ -240,6 +226,9 @@ public:
         const std::string& file;
         //! @brief Code line.
         const std::uint32_t line;
+
+        //! @brief Flush the output stream.
+        inline void flush() { getInstance().flush(Lv, file, line, stream.str()); }
     };
 
 private:
