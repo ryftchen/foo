@@ -18,18 +18,6 @@
 #include "utility/include/fsm.hpp"
 #include "utility/include/socket.hpp"
 
-//! @brief Get the viewer instance.
-#define VIEW_GET_INSTANCE application::view::View::getInstance()
-//! @brief Get the viewer instance if enabled.
-#define VIEW_GET_INSTANCE_IF_ENABLED \
-    if (CONFIG_ACTIVE_HELPER)        \
-    VIEW_GET_INSTANCE
-//! @brief Try to start viewing.
-#define VIEW_WAIT_TO_START VIEW_GET_INSTANCE_IF_ENABLED.waitToStart()
-//! @brief Try to stop viewing.
-#define VIEW_WAIT_TO_STOP VIEW_GET_INSTANCE_IF_ENABLED.waitToStop()
-//! @brief Try to rollback the viewer.
-#define VIEW_REQUEST_TO_ROLLBACK VIEW_GET_INSTANCE_IF_ENABLED.requestToRollback()
 //! @brief Get the viewer instance with validate.
 #define VIEW_GET_INSTANCE_WITH_VALIDATE application::view::View::getInstanceWithValidate()
 //! @brief Get the TCP host address of the viewer.

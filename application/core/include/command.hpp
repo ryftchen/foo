@@ -112,6 +112,8 @@ private:
     void dumpConfiguration() const;
     //! @brief Print version icon.
     void showVersionIcon() const;
+    //! @brief Check for excessive arguments.
+    void checkForExcessiveArguments();
 
     //! @brief Alias for the functor to perform the task.
     typedef void (*PerformTaskFunctor)(const std::vector<std::string>&);
@@ -255,8 +257,21 @@ private:
         }
     } /** @brief Dispatch all types of tasks. */ dispatchedTask{};
 
-    //! @brief Check for excessive arguments.
-    void checkForExcessiveArguments();
+    //! @brief Enumerate specific operations for helper.
+    enum HelperOperation : std::uint8_t
+    {
+        //! @brief Start.
+        start,
+        //! @brief Stop.
+        stop,
+        //! @brief Rollback.
+        rollback
+    };
+    //! @brief Trigger helper with operation.
+    //! @tparam T - type of helper
+    //! @param operation - target operation
+    template <typename T>
+    static void triggerHelper(const HelperOperation operation);
     //! @brief Enter console mode.
     static void enterConsoleMode();
     //! @brief Register the command line to console mode.
