@@ -111,7 +111,7 @@ private:
     //! @brief Allocate block.
     void allocateBlock();
 
-    static_assert(BlockSize >= (2 * sizeof(Slot)), "Block size is too small.");
+    static_assert(BlockSize >= (2 * sizeof(Slot)));
 };
 } // namespace memory
 } // namespace utility

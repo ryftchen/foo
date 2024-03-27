@@ -754,7 +754,7 @@ public:
     //! @param bufferSize - size of buffer
     //! @return buffer after splicing
     template <typename N>
-    requires(isNumber<N>())
+    requires (isNumber<N>())
     static char* spliceAll(
         const T* const restrict array,
         const std::uint32_t length,
@@ -998,7 +998,7 @@ public:
     //! @param bufferSize - size of buffer
     //! @return buffer after splicing
     template <typename N>
-    requires(isNumber<N>())
+    requires (isNumber<N>())
     static char* spliceAll(
         const T* const restrict array,
         const std::uint32_t length,

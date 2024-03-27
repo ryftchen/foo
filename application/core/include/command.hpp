@@ -248,7 +248,7 @@ private:
 
         //! @brief Check whether any tasks do not exist.
         //! @return any tasks do not exist or exist
-        [[nodiscard]] bool inline empty() const { return (basicTask.empty() && regularTask.empty()); }
+        [[nodiscard]] inline bool empty() const { return (basicTask.empty() && regularTask.empty()); }
         //! @brief Reset bit flags that manage all tasks.
         inline void reset()
         {
@@ -257,21 +257,6 @@ private:
         }
     } /** @brief Dispatch all types of tasks. */ dispatchedTask{};
 
-    //! @brief Enumerate specific operations for helper.
-    enum HelperOperation : std::uint8_t
-    {
-        //! @brief Start.
-        start,
-        //! @brief Stop.
-        stop,
-        //! @brief Rollback.
-        rollback
-    };
-    //! @brief Trigger helper with operation.
-    //! @tparam T - type of helper
-    //! @param operation - target operation
-    template <typename T>
-    static void triggerHelper(const HelperOperation operation);
     //! @brief Enter console mode.
     static void enterConsoleMode();
     //! @brief Register the command line to console mode.
@@ -289,7 +274,7 @@ private:
     //! @return ASCII banner text content
     static std::string getIconBanner();
 
-    //! @brief Maximum latency for console.
+    //! @brief Maximum latency (ms) for console.
     static constexpr std::uint16_t maxLatency{200};
 };
 

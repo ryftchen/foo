@@ -18,6 +18,65 @@
 
 namespace application::command
 {
+//! @brief Constraint for helper.
+//! @tparam T - type of helper
+template <typename T>
+concept HelperType = requires (T helper) {
+    {
+        helper.getInstance()
+    } -> std::same_as<T&>;
+} && std::derived_from<T, utility::fsm::FSM<T>>;
+
+//! @brief Enumerate specific operations for helper.
+enum HelperOperation : std::uint8_t
+{
+    //! @brief Start.
+    start,
+    //! @brief Stop.
+    stop,
+    //! @brief Rollback.
+    rollback
+};
+
+//! @brief Trigger helper with operation.
+//! @tparam Helper - type of helper
+//! @param operation - target operation
+template <HelperType Helper>
+static void triggerHelper(const HelperOperation operation)
+{
+    if (!CONFIG_ACTIVE_HELPER)
+    {
+        return;
+    }
+
+    constexpr auto getHelper = []() -> Helper&
+    {
+        if constexpr (std::is_same_v<Helper, log::Log>)
+        {
+            return log::Log::getInstance();
+        }
+        else if constexpr (std::is_same_v<Helper, view::View>)
+        {
+            return view::View::getInstance();
+        }
+    };
+
+    switch (operation)
+    {
+        case HelperOperation::start:
+            getHelper().waitToStart();
+            break;
+        case HelperOperation::stop:
+            getHelper().waitToStop();
+            break;
+        case HelperOperation::rollback:
+            getHelper().requestToRollback();
+            break;
+        default:
+            break;
+    }
+}
+
 Command::Command()
 {
     mainCLI.addArgument("-h", "--help").argsNum(0).implicitVal(true).help("show help and exit");
@@ -602,43 +661,6 @@ const T& Command::get(const TaskFunctorTuple& tuple)
     else if constexpr (std::is_same_v<T, UpdateTaskFunctor>)
     {
         return std::get<1>(tuple);
-    }
-}
-
-template <typename T>
-void Command::triggerHelper(const HelperOperation operation)
-{
-    if (!CONFIG_ACTIVE_HELPER)
-    {
-        return;
-    }
-
-    constexpr auto getInstance = []() -> T&
-    {
-        if constexpr (std::is_same_v<T, log::Log>)
-        {
-            return log::Log::getInstance();
-        }
-        else if constexpr (std::is_same_v<T, view::View>)
-        {
-            return view::View::getInstance();
-        }
-    };
-
-    auto& helper = getInstance();
-    switch (operation)
-    {
-        case HelperOperation::start:
-            helper.waitToStart();
-            break;
-        case HelperOperation::stop:
-            helper.waitToStop();
-            break;
-        case HelperOperation::rollback:
-            helper.requestToRollback();
-            break;
-        default:
-            break;
     }
 }
 

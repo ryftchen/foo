@@ -35,12 +35,12 @@
 #define LOG_WRN LOG_FLUSH_IF_ENABLED(warning)
 //! @brief Log with error level.
 #define LOG_ERR LOG_FLUSH_IF_ENABLED(error)
-//! @brief Get the logger instance with validate.
-#define LOG_GET_INSTANCE_WITH_VALIDATE application::log::Log::getInstanceWithValidate()
+//! @brief Get the existing logger instance.
+#define LOG_GET_EXISTING_INSTANCE application::log::Log::getExistingInstance()
 //! @brief Log file path.
-#define LOG_FILE_PATH LOG_GET_INSTANCE_WITH_VALIDATE.getFilePath()
+#define LOG_FILE_PATH LOG_GET_EXISTING_INSTANCE.getFilePath()
 //! @brief Log file lock.
-#define LOG_FILE_LOCK LOG_GET_INSTANCE_WITH_VALIDATE.getFileLock()
+#define LOG_FILE_LOCK LOG_GET_EXISTING_INSTANCE.getFileLock()
 
 //! @brief The application module.
 namespace application // NOLINT(modernize-concat-nested-namespaces)
@@ -170,9 +170,9 @@ public:
     //! @brief Get the Log instance.
     //! @return reference of the Log object
     static Log& getInstance();
-    //! @brief Get the Log instance with validate.
+    //! @brief Get the existing Log instance.
     //! @return reference of the Log object
-    static Log& getInstanceWithValidate();
+    static Log& getExistingInstance();
     //! @brief Interface for running logger.
     void runLogger();
     //! @brief Wait for the logger to start. External use.
@@ -339,9 +339,9 @@ private:
         // --------------+-------------+--------------+--------------------+------------------------
         >;
     // clang-format on
-    //! @brief Await notification and check for rollback.
+    //! @brief Await notification for rollback.
     //! @return whether rollback is required or not
-    bool awaitNotificationAndCheckForRollback();
+    bool awaitNotification4Rollback();
 
 protected:
     friend std::ostream& operator<<(std::ostream& os, const State state);

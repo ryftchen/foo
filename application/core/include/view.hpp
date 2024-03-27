@@ -18,18 +18,18 @@
 #include "utility/include/fsm.hpp"
 #include "utility/include/socket.hpp"
 
-//! @brief Get the viewer instance with validate.
-#define VIEW_GET_INSTANCE_WITH_VALIDATE application::view::View::getInstanceWithValidate()
+//! @brief Get the existing viewer instance.
+#define VIEW_GET_EXISTING_INSTANCE application::view::View::getExistingInstance()
 //! @brief Get the TCP host address of the viewer.
-#define VIEW_TCP_HOST VIEW_GET_INSTANCE_WITH_VALIDATE.getViewerTCPHost()
+#define VIEW_TCP_HOST VIEW_GET_EXISTING_INSTANCE.getViewerTCPHost()
 //! @brief Get the TCP port number of the viewer.
-#define VIEW_TCP_PORT VIEW_GET_INSTANCE_WITH_VALIDATE.getViewerTCPPort()
+#define VIEW_TCP_PORT VIEW_GET_EXISTING_INSTANCE.getViewerTCPPort()
 //! @brief Get the UDP host address of the viewer.
-#define VIEW_UDP_HOST VIEW_GET_INSTANCE_WITH_VALIDATE.getViewerUDPHost()
+#define VIEW_UDP_HOST VIEW_GET_EXISTING_INSTANCE.getViewerUDPHost()
 //! @brief Get the UDP port number of the viewer.
-#define VIEW_UDP_PORT VIEW_GET_INSTANCE_WITH_VALIDATE.getViewerUDPPort()
+#define VIEW_UDP_PORT VIEW_GET_EXISTING_INSTANCE.getViewerUDPPort()
 //! @brief Get all viewer options.
-#define VIEW_OPTIONS VIEW_GET_INSTANCE_WITH_VALIDATE.getViewerOptions()
+#define VIEW_OPTIONS VIEW_GET_EXISTING_INSTANCE.getViewerOptions()
 
 //! @brief The application module.
 namespace application // NOLINT(modernize-concat-nested-namespaces)
@@ -148,9 +148,9 @@ public:
     //! @brief Get the View instance.
     //! @return reference of the View object
     static View& getInstance();
-    //! @brief Get the View instance with validate.
+    //! @brief Get the existing View instance.
     //! @return reference of the View object
-    static View& getInstanceWithValidate();
+    static View& getExistingInstance();
     //! @brief Interface for running viewer.
     void runViewer();
     //! @brief Wait for the viewer to start. External use.
@@ -354,9 +354,9 @@ private:
         // --------------+---------------+--------------+--------------------------+------------------------
         >;
     // clang-format on
-    //! @brief Await notification and check for rollback.
+    //! @brief Await notification for rollback.
     //! @return whether rollback is required or not
-    bool awaitNotificationAndCheckForRollback();
+    bool awaitNotification4Rollback();
 
 protected:
     friend std::ostream& operator<<(std::ostream& os, const State state);
