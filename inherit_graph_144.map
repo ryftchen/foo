@@ -1,0 +1,7 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="Node000000" href="/usr/local/share/doxygen-tag/libstdc++.tag$a07595.html" title=" " alt="" coords="5,5,175,45"/>
+<area shape="rect" id="Node000001" href="$dc/dc1/classdesign__pattern_1_1behavioral_1_1observer_1_1Subject.html" title="Attach, detach and notify observers." alt="" coords="223,5,419,45"/>
+<area shape="poly" id="edge66_Node000000_Node000001" title=" " alt="" coords="189,23,223,23,223,28,189,28"/>
+<area shape="rect" id="Node000002" href="$d2/d99/classdesign__pattern_1_1behavioral_1_1observer_1_1ConcreteSubject.html" title="The concrete subject." alt="" coords="467,5,668,45"/>
+<area shape="poly" id="edge67_Node000001_Node000002" title=" " alt="" coords="432,23,467,23,467,28,432,28"/>
+</map>

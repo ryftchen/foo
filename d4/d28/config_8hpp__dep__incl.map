@@ -1,0 +1,29 @@
+<map id="application/core/include/config.hpp" name="application/core/include/config.hpp">
+<area shape="rect" id="Node000001" title="The declarations (config) in the application module." alt="" coords="351,5,529,45"/>
+<area shape="rect" id="Node000002" href="$d4/d3d/log_8hpp.html" title="The declarations (log) in the application module." alt="" coords="555,93,733,133"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="498,48,600,91,598,96,496,53"/>
+<area shape="rect" id="Node000005" href="$df/d92/application_2core_2source_2main_8cpp.html" title="The definitions (main) in the application module." alt="" coords="5,189,179,229"/>
+<area shape="poly" id="edge15_Node000001_Node000005" title=" " alt="" coords="352,52,296,71,241,96,204,118,169,144,114,190,110,186,166,139,201,114,239,91,294,66,351,47"/>
+<area shape="rect" id="Node000011" href="$d8/d11/view_8hpp.html" title="The declarations (view) in the application module." alt="" coords="251,93,429,133"/>
+<area shape="poly" id="edge10_Node000001_Node000011" title=" " alt="" coords="409,56,364,95,360,91,406,52"/>
+<area shape="rect" id="Node000012" href="$df/d59/config_8cpp.html" title="The definitions (config) in the application module." alt="" coords="757,93,931,133"/>
+<area shape="poly" id="edge14_Node000001_Node000012" title=" " alt="" coords="543,46,758,91,757,96,542,51"/>
+<area shape="rect" id="Node000003" href="$d1/d81/command_8cpp.html" title="The definitions (command) in the application module." alt="" coords="203,189,376,229"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="559,139,389,184,361,191,360,186,387,179,558,134"/>
+<area shape="rect" id="Node000004" href="$d9/db8/log_8cpp.html" title="The definitions (log) in the application module." alt="" coords="819,189,992,229"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="710,135,853,186,852,191,709,140"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="542,129,377,152,191,184,160,191,159,186,190,179,376,146,542,124"/>
+<area shape="rect" id="Node000006" href="$dd/dc2/view_8cpp.html" title="The definitions (view) in the application module." alt="" coords="400,189,573,229"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="602,143,520,191,517,186,599,138"/>
+<area shape="rect" id="Node000007" href="$d8/d64/apply__algorithm_8cpp.html" title="The definitions (apply_algorithm) in the application module." alt="" coords="1017,189,1223,229"/>
+<area shape="poly" id="edge6_Node000002_Node000007" title=" " alt="" coords="747,131,1005,179,1039,186,1038,191,1003,184,746,136"/>
+<area shape="rect" id="Node000008" href="$d1/d3d/apply__data__structure_8cpp.html" title="The definitions (apply_data_structure) in the application module." alt="" coords="1248,189,1485,229"/>
+<area shape="poly" id="edge7_Node000002_Node000008" title=" " alt="" coords="746,131,885,146,993,154,1101,162,1236,179,1279,186,1279,191,1236,184,1100,167,993,159,885,152,746,136"/>
+<area shape="rect" id="Node000009" href="$de/d6b/apply__design__pattern_8cpp.html" title="The definitions (apply_design_pattern) in the application module." alt="" coords="1510,181,1669,236"/>
+<area shape="poly" id="edge8_Node000002_Node000009" title=" " alt="" coords="747,131,861,142,959,147,1125,149,1290,153,1386,162,1498,179,1510,181,1509,186,1497,184,1385,168,1289,159,1125,154,959,152,861,147,746,136"/>
+<area shape="rect" id="Node000010" href="$d1/dee/apply__numeric_8cpp.html" title="The definitions (apply_numeric) in the application module." alt="" coords="598,189,794,229"/>
+<area shape="poly" id="edge9_Node000002_Node000010" title=" " alt="" coords="663,144,688,187,683,190,659,147"/>
+<area shape="poly" id="edge11_Node000011_Node000003" title=" " alt="" coords="326,147,302,190,297,187,321,144"/>
+<area shape="poly" id="edge12_Node000011_Node000005" title=" " alt="" coords="278,141,143,191,141,186,276,136"/>
+<area shape="poly" id="edge13_Node000011_Node000006" title=" " alt="" coords="382,138,458,186,456,191,380,143"/>
+</map>

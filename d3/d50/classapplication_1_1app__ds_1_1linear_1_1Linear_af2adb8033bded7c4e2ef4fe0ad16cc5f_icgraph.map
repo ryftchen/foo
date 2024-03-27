@@ -1,0 +1,8 @@
+<map id="application::app_ds::linear::Linear::stack" name="application::app_ds::linear::Linear::stack">
+<area shape="rect" id="Node000001" title="Stack." alt="" coords="228,45,387,85"/>
+<area shape="poly" id="edge1_Node000001_Node000001" title=" " alt="" coords="343,33,331,26,307,23,287,25,275,30,270,36,272,44,267,45,265,35,271,26,286,20,307,18,332,21,346,28"/>
+<area shape="rect" id="Node000002" href="$d5/da6/classapplication_1_1app__ds_1_1linear_1_1LinearStructure.html#abb098beccaabb33a09f248251ccad078" title="The stack instance." alt="" coords="5,5,180,60"/>
+<area shape="poly" id="edge2_Node000001_Node000002" title=" " alt="" coords="214,53,180,48,181,43,215,48"/>
+<area shape="rect" id="Node000003" href="$d4/db9/namespacetest_1_1tst__ds.html#af3f1ddd282ebd89eec79cdc339de0a19" title="Test for the stack instance in the structure of linear." alt="" coords="18,84,167,109"/>
+<area shape="poly" id="edge3_Node000001_Node000003" title=" " alt="" coords="214,81,168,88,167,83,214,76"/>
+</map>

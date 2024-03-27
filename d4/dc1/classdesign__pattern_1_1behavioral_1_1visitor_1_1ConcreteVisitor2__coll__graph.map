@@ -1,0 +1,5 @@
+<map id="design_pattern::behavioral::visitor::ConcreteVisitor2" name="design_pattern::behavioral::visitor::ConcreteVisitor2">
+<area shape="rect" id="Node000001" title="The concrete visitor." alt="" coords="5,93,201,133"/>
+<area shape="rect" id="Node000002" href="$da/de3/classdesign__pattern_1_1behavioral_1_1visitor_1_1Visitor.html" title="Implement the algorithm&#39;s fragment defined for the structure&#39;s corresponding element." alt="" coords="5,5,201,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="106,59,106,93,101,93,101,59"/>
+</map>

@@ -1,0 +1,11 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="Node000000" href="$dd/dcb/classutility_1_1socket_1_1Socket.html" title="Network socket." alt="" coords="5,55,165,80"/>
+<area shape="rect" id="Node000001" href="$de/de4/classutility_1_1socket_1_1TCPServer.html" title="TCP server." alt="" coords="216,5,399,31"/>
+<area shape="poly" id="edge93_Node000000_Node000001" title=" " alt="" coords="156,49,249,28,250,33,157,54"/>
+<area shape="rect" id="Node000002" href="$d1/daf/classutility_1_1socket_1_1TCPSocket.html" title="TCP socket." alt="" coords="215,55,399,80"/>
+<area shape="poly" id="edge94_Node000000_Node000002" title=" " alt="" coords="179,65,215,65,215,70,179,70"/>
+<area shape="rect" id="Node000003" href="$db/d57/classutility_1_1socket_1_1UDPSocket.html" title="UDP socket." alt="" coords="213,104,401,129"/>
+<area shape="poly" id="edge95_Node000000_Node000003" title=" " alt="" coords="157,80,250,101,249,107,156,86"/>
+<area shape="rect" id="Node000004" href="$de/dc3/classutility_1_1socket_1_1UDPServer.html" title="UDP server." alt="" coords="449,104,636,129"/>
+<area shape="poly" id="edge96_Node000003_Node000004" title=" " alt="" coords="415,114,449,114,449,119,415,119"/>
+</map>

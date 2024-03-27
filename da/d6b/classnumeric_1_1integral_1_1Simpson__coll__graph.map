@@ -1,0 +1,7 @@
+<map id="numeric::integral::Simpson" name="numeric::integral::Simpson">
+<area shape="rect" id="Node000001" title="The adaptive Simpson&#39;s 1/3 method." alt="" coords="88,108,229,148"/>
+<area shape="rect" id="Node000002" href="$d9/d17/classnumeric_1_1integral_1_1Integral.html" title="Integral methods." alt="" coords="5,5,147,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="102,54,145,106,141,110,98,58"/>
+<area shape="rect" id="Node000003" href="$dc/d59/classnumeric_1_1integral_1_1Expression.html" title="Target expressions." alt="" coords="171,5,312,45"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="219,58,176,110,172,106,215,54"/>
+</map>

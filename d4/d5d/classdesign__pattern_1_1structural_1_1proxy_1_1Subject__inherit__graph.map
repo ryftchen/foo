@@ -1,0 +1,7 @@
+<map id="design_pattern::structural::proxy::Subject" name="design_pattern::structural::proxy::Subject">
+<area shape="rect" id="Node000001" title="Make the proxy can be used anywhere a real subject is expected." alt="" coords="5,37,195,77"/>
+<area shape="rect" id="Node000002" href="$d1/da3/classdesign__pattern_1_1structural_1_1proxy_1_1Proxy.html" title="Let the proxy access the real subject." alt="" coords="243,5,432,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="208,40,242,35,243,41,208,45"/>
+<area shape="rect" id="Node000003" href="$de/d19/classdesign__pattern_1_1structural_1_1proxy_1_1RealSubject.html" title="The real object that the proxy represents." alt="" coords="243,69,432,109"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="208,69,243,74,242,79,208,75"/>
+</map>

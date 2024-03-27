@@ -1,0 +1,13 @@
+<map id="application::command::Command::launchClient" name="application::command::Command::launchClient">
+<area shape="rect" id="Node000001" title="Launch the client for console mode." alt="" coords="856,49,1043,89"/>
+<area shape="rect" id="Node000002" href="$de/dd7/classapplication_1_1command_1_1Command.html#aede5e9ad130ae416e1041df66d6a4039" title="Enter console mode." alt="" coords="284,5,511,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="859,49,808,40,653,28,511,25,511,20,653,22,808,35,860,44"/>
+<area shape="rect" id="Node000004" href="$de/dd7/classapplication_1_1command_1_1Command.html#aee416554141b9470166d1852526f93ea" title="Execute the command line of console mode." alt="" coords="260,81,535,121"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="862,95,808,104,668,113,535,112,535,106,667,107,808,99,861,90"/>
+<area shape="rect" id="Node000005" href="$de/dd7/classapplication_1_1command_1_1Command.html#a1b392abf635613d2f81e131fdd9b9d82" title="Register the command line to console mode." alt="" coords="583,49,808,89"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="842,72,808,72,808,67,842,67"/>
+<area shape="rect" id="Node000003" href="$de/dd7/classapplication_1_1command_1_1Command.html#a5d2584a4ee3f7e91ec82649f91b3b810" title="Interface for running commander." alt="" coords="5,5,212,45"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="270,28,212,28,212,23,270,23"/>
+<area shape="poly" id="edge5_Node000005_Node000002" title=" " alt="" coords="569,53,511,45,511,39,569,48"/>
+<area shape="poly" id="edge6_Node000005_Node000004" title=" " alt="" coords="569,86,535,89,535,84,568,80"/>
+</map>

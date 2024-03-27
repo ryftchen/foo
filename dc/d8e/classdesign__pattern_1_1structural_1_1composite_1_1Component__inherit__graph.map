@@ -1,0 +1,7 @@
+<map id="design_pattern::structural::composite::Component" name="design_pattern::structural::composite::Component">
+<area shape="rect" id="Node000001" title="Both the composite and the leaf nodes are in the composition." alt="" coords="5,37,195,77"/>
+<area shape="rect" id="Node000002" href="$dd/dbc/classdesign__pattern_1_1structural_1_1composite_1_1Composite.html" title="The behavior of the components having children." alt="" coords="243,5,432,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="208,40,242,35,243,41,208,45"/>
+<area shape="rect" id="Node000003" href="$d8/d39/classdesign__pattern_1_1structural_1_1composite_1_1Leaf.html" title="The behavior of the element that has no child in the composition." alt="" coords="243,69,432,109"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="208,69,243,74,242,79,208,75"/>
+</map>

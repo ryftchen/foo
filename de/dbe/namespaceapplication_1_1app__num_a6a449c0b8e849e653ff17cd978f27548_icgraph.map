@@ -1,0 +1,11 @@
+<map id="application::app_num::getTaskNameCurried" name="application::app_num::getTaskNameCurried">
+<area shape="rect" id="Node000001" title="Get the task name curried." alt="" coords="216,101,383,141"/>
+<area shape="rect" id="Node000002" href="$de/dbe/namespaceapplication_1_1app__num.html#a76b424f8e3b3a6445fc56f41c37afa1d" title="Run arithmetic tasks." alt="" coords="5,5,168,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="246,98,167,60,139,48,141,43,169,55,248,93"/>
+<area shape="rect" id="Node000003" href="$de/dbe/namespaceapplication_1_1app__num.html#a45c0729aaa51fd36c4ddd79758b88a6a" title="Run divisor tasks." alt="" coords="5,69,168,109"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="202,109,168,104,168,99,203,104"/>
+<area shape="rect" id="Node000004" href="$de/dbe/namespaceapplication_1_1app__num.html#a8f6bdfbd61df7461f8dec4cc6e1db146" title="Run integral tasks." alt="" coords="5,133,168,173"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="203,139,168,144,168,138,202,133"/>
+<area shape="rect" id="Node000005" href="$de/dbe/namespaceapplication_1_1app__num.html#a7fcb02610a31797f6736b02a36617a1b" title="Run prime tasks." alt="" coords="5,197,168,237"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="248,150,169,188,141,200,139,195,167,183,246,145"/>
+</map>

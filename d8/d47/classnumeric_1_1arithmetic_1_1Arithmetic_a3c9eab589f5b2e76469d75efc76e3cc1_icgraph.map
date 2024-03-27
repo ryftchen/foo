@@ -1,0 +1,30 @@
+<map id="numeric::arithmetic::Arithmetic::bitAdd" name="numeric::arithmetic::Arithmetic::bitAdd">
+<area shape="rect" id="Node000001" title="Bitwise operation for add." alt="" coords="799,174,949,214"/>
+<area shape="poly" id="edge4_Node000001_Node000001" title=" " alt="" coords="912,162,898,155,874,153,853,155,840,159,835,165,838,173,833,174,830,164,837,155,852,149,874,147,900,150,914,158"/>
+<area shape="rect" id="Node000002" href="$d8/d47/classnumeric_1_1arithmetic_1_1Arithmetic.html#a55c58ea6f2ae3e6bf16fee6d3580b460" title="Addition." alt="" coords="573,77,732,117"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="826,169,750,131,719,119,721,114,752,126,828,165"/>
+<area shape="rect" id="Node000005" href="$d8/d47/classnumeric_1_1arithmetic_1_1Arithmetic.html#ad599b61d2bfa8e9c2adb6da7c48a746f" title="Bitwise operation for subtract." alt="" coords="577,141,728,181"/>
+<area shape="poly" id="edge5_Node000001_Node000005" title=" " alt="" coords="785,183,728,175,729,169,786,178"/>
+<area shape="rect" id="Node000009" href="$d8/d47/classnumeric_1_1arithmetic_1_1Arithmetic.html#a869d4dbbc1c3191e1d55cf8f18ac91dd" title="Multiplication." alt="" coords="555,206,751,246"/>
+<area shape="poly" id="edge9_Node000001_Node000009" title=" " alt="" coords="785,209,751,214,750,209,785,204"/>
+<area shape="rect" id="Node000012" href="$d8/d47/classnumeric_1_1arithmetic_1_1Arithmetic.html#a27655ff1b8e4deeda75c987338352c98" title="Subtraction." alt="" coords="563,334,742,374"/>
+<area shape="poly" id="edge12_Node000001_Node000012" title=" " alt="" coords="835,225,683,336,680,332,832,220"/>
+<area shape="rect" id="Node000003" href="$db/d0f/classapplication_1_1app__num_1_1arithmetic_1_1ArithmeticSolution.html#aeba5ee527dc0a0b46e772eea7b29234d" title="The addition method." alt="" coords="280,5,507,60"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="560,77,504,63,505,57,561,71"/>
+<area shape="rect" id="Node000004" href="$da/df6/namespacetest_1_1tst__num.html#ace534d30fe3c2a4e59d280d6f6ae0460" title="Test for the addition method in the solution of arithmetic." alt="" coords="312,84,475,109"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="560,99,475,99,475,94,560,94"/>
+<area shape="rect" id="Node000006" href="$d8/d47/classnumeric_1_1arithmetic_1_1Arithmetic.html#a35f7affc32ebfbb30f6d5f98b5f0f5e2" title="Division." alt="" coords="315,134,472,174"/>
+<area shape="poly" id="edge6_Node000005_Node000006" title=" " alt="" coords="564,161,472,159,472,153,564,156"/>
+<area shape="rect" id="Node000007" href="$db/d0f/classapplication_1_1app__num_1_1arithmetic_1_1ArithmeticSolution.html#a82888741832d6fc23881f508373378d3" title="The division method." alt="" coords="5,95,232,149"/>
+<area shape="poly" id="edge7_Node000006_Node000007" title=" " alt="" coords="301,146,232,138,232,133,301,141"/>
+<area shape="rect" id="Node000008" href="$da/df6/namespacetest_1_1tst__num.html#a26d8fe33b5871e04098cc3160f735601" title="Test for the division method in the solution of arithmetic." alt="" coords="37,173,200,199"/>
+<area shape="poly" id="edge8_Node000006_Node000008" title=" " alt="" coords="301,167,200,179,200,174,301,162"/>
+<area shape="rect" id="Node000010" href="$db/d0f/classapplication_1_1app__num_1_1arithmetic_1_1ArithmeticSolution.html#ae5e8086548ea01c34ae11168a51c1735" title="The multiplication method." alt="" coords="280,199,507,253"/>
+<area shape="poly" id="edge10_Node000009_Node000010" title=" " alt="" coords="541,229,507,229,507,223,541,223"/>
+<area shape="rect" id="Node000011" href="$da/df6/namespacetest_1_1tst__num.html#a9e43394fd616e8639fdb14125b44d02f" title="Test for the multiplication method in the solution of arithmetic." alt="" coords="312,277,475,303"/>
+<area shape="poly" id="edge11_Node000009_Node000011" title=" " alt="" coords="566,252,507,267,454,280,452,275,506,262,565,247"/>
+<area shape="rect" id="Node000013" href="$db/d0f/classapplication_1_1app__num_1_1arithmetic_1_1ArithmeticSolution.html#a04f0031c4d3c54c8b6ebaa1c4233b15a" title="The subtraction method." alt="" coords="280,327,507,381"/>
+<area shape="poly" id="edge13_Node000012_Node000013" title=" " alt="" coords="550,357,507,357,507,351,550,351"/>
+<area shape="rect" id="Node000014" href="$da/df6/namespacetest_1_1tst__num.html#a122086ce51f3643293f6402b2c97ad96" title="Test for the subtraction method in the solution of arithmetic." alt="" coords="312,405,475,431"/>
+<area shape="poly" id="edge14_Node000012_Node000014" title=" " alt="" coords="570,380,507,397,458,408,456,403,506,391,568,375"/>
+</map>

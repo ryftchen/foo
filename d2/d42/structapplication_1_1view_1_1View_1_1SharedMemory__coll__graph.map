@@ -1,0 +1,5 @@
+<map id="application::view::View::SharedMemory" name="application::view::View::SharedMemory">
+<area shape="rect" id="Node000001" title="Memory that can be accessed by multiple programs simultaneously." alt="" coords="5,93,165,133"/>
+<area shape="rect" id="Node000002" href="/usr/local/share/doxygen-tag/libstdc++.tag$a01975.html" title=" " alt="" coords="9,5,162,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="88,44,88,93,83,93,83,44"/>
+</map>

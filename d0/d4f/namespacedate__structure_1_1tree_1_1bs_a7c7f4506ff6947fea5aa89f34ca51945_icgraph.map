@@ -1,0 +1,5 @@
+<map id="date_structure::tree::bs::getMaximum" name="date_structure::tree::bs::getMaximum">
+<area shape="rect" id="Node000001" title="Get the node where the maximum key is located in the binary search tree." alt="" coords="207,5,357,45"/>
+<area shape="rect" id="Node000002" href="$d0/d4f/namespacedate__structure_1_1tree_1_1bs.html#aae606e7b303180a898f914065eb0fc6a" title="Get the predecessor node of the current node. The precursor of a node is the node that has the maximu..." alt="" coords="5,5,159,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="193,28,159,28,159,23,193,23"/>
+</map>

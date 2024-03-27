@@ -1,0 +1,7 @@
+<map id="numeric::integral::MonteCarlo::refreshRandomCache" name="numeric::integral::MonteCarlo::refreshRandomCache">
+<area shape="rect" id="Node000001" title="Refresh the random cache." alt="" coords="511,13,756,53"/>
+<area shape="rect" id="Node000002" href="$d0/d64/classnumeric_1_1integral_1_1MonteCarlo.html#ab9b3eef61d428bfafa8c31efc2820d37" title="Sample from the uniform distribution." alt="" coords="224,5,463,60"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="497,35,463,35,463,30,497,30"/>
+<area shape="rect" id="Node000003" href="$d0/d64/classnumeric_1_1integral_1_1MonteCarlo.html#a1fb2d9599a6bf334578b2a9d8c93b3aa" title="The operator (()) overloading of MonteCarlo class." alt="" coords="5,13,176,53"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="210,35,176,35,176,30,210,30"/>
+</map>

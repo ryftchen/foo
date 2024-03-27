@@ -1,0 +1,52 @@
+<map id="application::command::Command" name="application::command::Command">
+<area shape="rect" id="Node000001" title="Execute the command line." alt="" coords="2313,325,2480,365"/>
+<area shape="rect" id="Node000002" href="/usr/local/share/doxygen-tag/libstdc++.tag$a07923.html" title=" " alt="" coords="2011,129,2103,155"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="2116,135,2157,135,2203,141,2248,153,2291,173,2329,207,2358,248,2378,290,2392,323,2387,325,2374,292,2353,251,2325,211,2288,178,2247,158,2202,146,2157,141,2116,140"/>
+<area shape="rect" id="Node000003" href="/usr/local/share/doxygen-tag/libstdc++.tag$a02343.html" title=" " alt="" coords="1971,179,2142,204"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="2156,189,2224,199,2258,209,2291,224,2322,245,2348,272,2386,323,2381,326,2344,275,2318,249,2288,228,2257,214,2223,204,2155,194"/>
+<area shape="rect" id="Node000004" href="/usr/local/share/doxygen-tag/libstdc++.tag$a01975.html" title=" " alt="" coords="1980,228,2133,253"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="2147,239,2218,248,2290,268,2337,293,2375,322,2372,327,2335,298,2288,272,2217,253,2147,245"/>
+<area shape="rect" id="Node000005" href="$d8/dae/classutility_1_1argument_1_1Argument.html" title="Parse arguments." alt="" coords="1987,278,2126,318"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="2116,321,2185,341,2250,348,2313,348,2313,353,2249,353,2183,346,2114,326"/>
+<area shape="rect" id="Node000006" href="/usr/local/share/doxygen-tag/libstdc++.tag$a08619.html" title=" " alt="" coords="1543,26,1713,66"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="1727,40,1780,46,1835,59,1887,81,1910,97,1931,116,1944,135,1949,154,1945,191,1940,227,1944,245,1955,263,1970,276,1988,285,1986,289,1967,280,1951,266,1939,247,1935,228,1939,190,1943,154,1939,137,1927,120,1907,101,1884,86,1833,64,1779,51,1727,46"/>
+<area shape="rect" id="Node000007" href="/usr/local/share/doxygen-tag/libstdc++.tag$a08611.html" title=" " alt="" coords="599,43,797,83"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="811,42,950,24,1122,9,1312,3,1408,6,1502,14,1554,23,1553,29,1501,19,1407,11,1312,9,1123,14,950,29,811,47"/>
+<area shape="rect" id="Node000008" href="/usr/local/share/doxygen-tag/libstdc++.tag$a08619.html" title=" " alt="" coords="1041,43,1222,83"/>
+<area shape="poly" id="edge8_Node000008_Node000007" title=" " alt="" coords="811,61,1041,61,1041,66,811,66"/>
+<area shape="rect" id="Node000011" href="/usr/local/share/doxygen-tag/libstdc++.tag$a08619.html" title=" " alt="" coords="1525,179,1731,233"/>
+<area shape="poly" id="edge12_Node000011_Node000007" title=" " alt="" coords="749,87,866,142,938,169,1011,189,1079,201,1149,209,1288,217,1418,217,1525,212,1525,217,1418,222,1288,223,1149,215,1078,206,1010,194,936,174,864,147,747,92"/>
+<area shape="poly" id="edge7_Node000006_Node000008" title=" " alt="" coords="1236,57,1542,46,1542,52,1236,62"/>
+<area shape="poly" id="edge13_Node000011_Node000008" title=" " alt="" coords="1236,83,1276,91,1341,99,1394,100,1444,107,1472,117,1503,133,1511,141,1516,149,1527,164,1547,176,1544,181,1524,168,1511,152,1507,144,1500,138,1470,122,1443,112,1393,105,1341,104,1276,97,1235,88"/>
+<area shape="rect" id="Node000009" href="/usr/local/share/doxygen-tag/libstdc++.tag$a08855.html" title=" " alt="" coords="1552,100,1704,155"/>
+<area shape="poly" id="edge9_Node000005_Node000009" title=" " alt="" coords="1718,129,1771,137,1827,152,1882,175,1931,208,1941,222,1944,237,1947,250,1955,263,1988,282,1985,287,1952,267,1942,252,1939,238,1936,224,1927,212,1879,180,1825,157,1770,143,1717,134"/>
+<area shape="rect" id="Node000010" href="/usr/local/share/doxygen-tag/libstdc++.tag$a08855.html" title=" " alt="" coords="1011,110,1252,179"/>
+<area shape="poly" id="edge10_Node000009_Node000010" title=" " alt="" coords="1266,162,1381,169,1442,168,1501,162,1551,151,1552,156,1502,167,1442,173,1381,174,1266,167"/>
+<area shape="poly" id="edge11_Node000005_Node000011" title=" " alt="" coords="1744,224,1930,262,1988,276,1986,282,1929,267,1743,229"/>
+<area shape="rect" id="Node000012" href="/usr/local/share/doxygen-tag/libstdc++.tag$a08631.html" title=" " alt="" coords="1543,258,1713,298"/>
+<area shape="poly" id="edge14_Node000005_Node000012" title=" " alt="" coords="1727,280,1987,292,1987,297,1726,285"/>
+<area shape="rect" id="Node000013" href="/usr/local/share/doxygen-tag/libstdc++.tag$a08631.html" title=" " alt="" coords="1013,338,1249,407"/>
+<area shape="poly" id="edge20_Node000001_Node000013" title=" " alt="" coords="1263,371,1525,371,1908,372,2075,367,2289,354,2313,352,2313,357,2290,359,2075,372,1908,377,1525,377,1263,376"/>
+<area shape="poly" id="edge15_Node000012_Node000013" title=" " alt="" coords="1223,330,1275,314,1345,300,1416,289,1543,278,1543,284,1417,295,1346,305,1277,319,1224,336"/>
+<area shape="rect" id="Node000014" href="/usr/local/share/doxygen-tag/libstdc++.tag$a08631.html" title=" " alt="" coords="1549,322,1707,362"/>
+<area shape="poly" id="edge17_Node000014_Node000013" title=" " alt="" coords="1263,362,1548,344,1549,350,1264,367"/>
+<area shape="rect" id="Node000015" href="/usr/local/share/doxygen-tag/libstdc++.tag$a08631.html" title=" " alt="" coords="1755,433,1929,488"/>
+<area shape="poly" id="edge19_Node000015_Node000013" title=" " alt="" coords="1188,413,1230,439,1277,458,1316,466,1369,470,1497,473,1635,470,1754,464,1755,469,1635,475,1497,478,1368,476,1316,471,1275,463,1228,444,1185,418"/>
+<area shape="poly" id="edge16_Node000005_Node000014" title=" " alt="" coords="1721,331,1929,310,1986,304,1987,309,1930,315,1721,336"/>
+<area shape="poly" id="edge18_Node000001_Node000015" title=" " alt="" coords="1944,463,2021,462,2109,456,2200,441,2288,416,2334,391,2372,363,2375,367,2337,396,2290,420,2201,446,2109,461,2021,467,1944,468"/>
+<area shape="rect" id="Node000016" href="$de/d8f/structapplication_1_1command_1_1Command_1_1DispatchedTask.html" title="Manage all types of tasks." alt="" coords="1953,499,2160,539"/>
+<area shape="poly" id="edge21_Node000001_Node000016" title=" " alt="" coords="2174,517,2233,505,2261,496,2288,482,2321,456,2348,424,2384,364,2389,366,2352,427,2325,460,2291,487,2263,501,2234,511,2175,522"/>
+<area shape="rect" id="Node000017" href="$d9/dca/classapplication_1_1command_1_1Command_1_1BasicTask.html" title="Manage basic tasks." alt="" coords="1543,563,1713,603"/>
+<area shape="poly" id="edge22_Node000016_Node000017" title=" " alt="" coords="1726,567,1929,537,1953,533,1954,538,1930,542,1727,572"/>
+<area shape="rect" id="Node000018" href="/usr/local/share/doxygen-tag/libstdc++.tag$a02103.html" title=" " alt="" coords="1019,556,1244,611"/>
+<area shape="poly" id="edge23_Node000017_Node000018" title=" " alt="" coords="1258,581,1543,581,1543,586,1258,586"/>
+<area shape="rect" id="Node000019" href="/usr/local/share/doxygen-tag/libstdc++.tag$a02075.html" title=" " alt="" coords="359,546,549,645"/>
+<area shape="poly" id="edge24_Node000018_Node000019" title=" " alt="" coords="563,591,1019,583,1019,588,563,596"/>
+<area shape="rect" id="Node000021" href="/usr/local/share/doxygen-tag/libstdc++.tag$a02103.html" title=" " alt="" coords="628,534,768,574"/>
+<area shape="poly" id="edge27_Node000021_Node000019" title=" " alt="" coords="563,574,627,563,628,568,564,579"/>
+<area shape="rect" id="Node000020" href="/usr/local/share/doxygen-tag/libstdc++.tag$a02075.html" title=" " alt="" coords="5,575,149,615"/>
+<area shape="poly" id="edge25_Node000019_Node000020" title=" " alt="" coords="163,593,358,593,358,598,163,598"/>
+<area shape="poly" id="edge26_Node000018_Node000021" title=" " alt="" coords="782,557,1018,573,1018,578,781,562"/>
+<area shape="rect" id="Node000022" href="$d3/d66/classapplication_1_1command_1_1Command_1_1RegularTask.html" title="Manage regular tasks by sub&#45;cli." alt="" coords="1536,499,1720,539"/>
+<area shape="poly" id="edge28_Node000016_Node000022" title=" " alt="" coords="1734,517,1953,517,1953,522,1734,522"/>
+</map>

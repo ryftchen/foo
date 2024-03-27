@@ -1,0 +1,7 @@
+<map id="algorithm::match::Match::kmp" name="algorithm::match::Match::kmp">
+<area shape="rect" id="Node000001" title="Knuth&#45;Morris&#45;Pratt." alt="" coords="225,52,444,77"/>
+<area shape="rect" id="Node000002" href="$dc/d05/classapplication_1_1app__algo_1_1match_1_1MatchSolution.html#a9e3ec4dd6472b3bd5dcae0f331575706" title="The Knuth&#45;Morris&#45;Pratt method." alt="" coords="5,5,177,60"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="224,53,177,47,178,41,225,48"/>
+<area shape="rect" id="Node000003" href="$dc/d35/namespacetest_1_1tst__algo.html#ae925552355a2437fd0fac1661e2ac846" title="Test for the Knuth&#45;Morris&#45;Pratt method in the solution of match." alt="" coords="10,84,173,109"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="225,82,173,89,173,83,224,76"/>
+</map>

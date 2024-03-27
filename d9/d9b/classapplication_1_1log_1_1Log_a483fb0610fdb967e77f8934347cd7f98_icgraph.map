@@ -1,0 +1,7 @@
+<map id="application::log::Log::tryToCreateLogFolder" name="application::log::Log::tryToCreateLogFolder">
+<area shape="rect" id="Node000001" title="Try to create the log folder." alt="" coords="207,37,375,77"/>
+<area shape="rect" id="Node000002" href="$d9/d9b/classapplication_1_1log_1_1Log.html#aa9e96aed392516d532c5b9298dd11977" title="Do rollback." alt="" coords="5,5,159,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="192,45,158,40,159,34,193,40"/>
+<area shape="rect" id="Node000003" href="$d9/d9b/classapplication_1_1log_1_1Log.html#acb2ab76237df0fec84088af305a0766c" title="Open the log file." alt="" coords="5,69,159,109"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="193,75,159,80,158,75,192,70"/>
+</map>

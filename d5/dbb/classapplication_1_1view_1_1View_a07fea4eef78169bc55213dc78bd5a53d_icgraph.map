@@ -1,0 +1,5 @@
+<map id="application::view::View::awaitNotification4Rollback" name="application::view::View::awaitNotification4Rollback">
+<area shape="rect" id="Node000001" title="Await notification for rollback." alt="" coords="193,5,429,45"/>
+<area shape="rect" id="Node000002" href="$d5/dbb/classapplication_1_1view_1_1View.html#a53259d83d56902626124a81a1b112f25" title="Interface for running viewer." alt="" coords="5,5,145,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="180,28,145,28,145,23,180,23"/>
+</map>

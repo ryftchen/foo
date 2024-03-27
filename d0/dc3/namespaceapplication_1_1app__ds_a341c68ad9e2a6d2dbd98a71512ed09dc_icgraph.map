@@ -1,0 +1,7 @@
+<map id="application::app_ds::getTaskNameCurried" name="application::app_ds::getTaskNameCurried">
+<area shape="rect" id="Node000001" title="Get the task name curried." alt="" coords="201,37,368,77"/>
+<area shape="rect" id="Node000002" href="$d0/dc3/namespaceapplication_1_1app__ds.html#a73a7a1dd5adb60174e10d8a779fd1c70" title="Run linear tasks." alt="" coords="5,5,153,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="187,45,153,40,154,34,188,40"/>
+<area shape="rect" id="Node000003" href="$d0/dc3/namespaceapplication_1_1app__ds.html#ab2ea91a2405f21fbb7e07b5e5ac25f43" title="Run tree tasks." alt="" coords="5,69,153,109"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="188,75,154,80,153,75,187,70"/>
+</map>

@@ -1,0 +1,19 @@
+<map id="utility::socket::Socket::setTimeout" name="utility::socket::Socket::setTimeout">
+<area shape="rect" id="Node000001" title="Set the timeout period." alt="" coords="684,133,844,173"/>
+<area shape="rect" id="Node000002" href="$dd/dcb/classutility_1_1socket_1_1Socket.html#a1e1c6471a1bac4a007ecfede546c0a21" title="Set the blocking mode." alt="" coords="476,101,636,141"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="670,142,636,136,637,131,671,136"/>
+<area shape="rect" id="Node000009" href="$dd/dcb/classutility_1_1socket_1_1Socket.html#a0aae07f426c776c5e1bd9ee203adc46e" title="Set the non&#45;blocking mode." alt="" coords="476,165,636,205"/>
+<area shape="poly" id="edge8_Node000001_Node000009" title=" " alt="" coords="671,170,637,176,636,170,670,165"/>
+<area shape="rect" id="Node000003" href="$de/de4/classutility_1_1socket_1_1TCPServer.html#a07c682ed7298f58acb3f689c05a5b889" title="Bind to transport ip address and port number." alt="" coords="243,5,425,45"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="505,97,427,60,396,48,398,43,429,55,507,92"/>
+<area shape="rect" id="Node000005" href="$de/dc3/classutility_1_1socket_1_1UDPServer.html#a9c4343058d1a886a4f79d82bf5429369" title="Bind to transport ip address and port number." alt="" coords="241,69,427,109"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="462,110,427,105,428,100,463,105"/>
+<area shape="rect" id="Node000007" href="$db/d57/classutility_1_1socket_1_1UDPSocket.html#a618b08ffdf967352440c5bf690c4c8ea" title="Open a connection on socket FD to peer." alt="" coords="240,133,428,173"/>
+<area shape="poly" id="edge6_Node000002_Node000007" title=" " alt="" coords="462,137,429,142,428,137,462,132"/>
+<area shape="rect" id="Node000008" href="$d1/daf/classutility_1_1socket_1_1TCPSocket.html#aa9ca7e929f74adeeb0a920984b9adf2f" title="Open a connection on socket FD to peer." alt="" coords="242,197,426,237"/>
+<area shape="poly" id="edge7_Node000002_Node000008" title=" " alt="" coords="490,149,477,156,454,172,429,188,402,200,399,195,427,183,451,167,475,151,488,145"/>
+<area shape="rect" id="Node000004" href="$de/de4/classutility_1_1socket_1_1TCPServer.html#ac71c939c492901a4654ae7d267b9a987" title="Bind to transport port number with default ip address." alt="" coords="7,5,190,45"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="228,28,190,28,190,23,228,23"/>
+<area shape="rect" id="Node000006" href="$de/dc3/classutility_1_1socket_1_1UDPServer.html#a08e7843db9132c75d2b672e37c7c20b3" title="Bind to transport port number with default ip address." alt="" coords="5,69,192,109"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="227,92,192,92,192,87,227,87"/>
+</map>

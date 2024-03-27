@@ -1,0 +1,9 @@
+<map id="application::command::Command::registerOnConsole" name="application::command::Command::registerOnConsole">
+<area shape="rect" id="Node000001" title="Register the command line to console mode." alt="" coords="583,37,808,77"/>
+<area shape="rect" id="Node000002" href="$de/dd7/classapplication_1_1command_1_1Command.html#aede5e9ad130ae416e1041df66d6a4039" title="Enter console mode." alt="" coords="284,5,511,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="569,46,511,40,511,35,569,41"/>
+<area shape="rect" id="Node000004" href="$de/dd7/classapplication_1_1command_1_1Command.html#aee416554141b9470166d1852526f93ea" title="Execute the command line of console mode." alt="" coords="260,69,535,109"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="569,74,535,77,535,72,568,68"/>
+<area shape="rect" id="Node000003" href="$de/dd7/classapplication_1_1command_1_1Command.html#a5d2584a4ee3f7e91ec82649f91b3b810" title="Interface for running commander." alt="" coords="5,5,212,45"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="270,28,212,28,212,23,270,23"/>
+</map>

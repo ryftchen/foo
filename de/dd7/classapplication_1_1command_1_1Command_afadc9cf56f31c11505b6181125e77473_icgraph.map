@@ -1,0 +1,12 @@
+<map id="application::command::Command::checkForExcessiveArguments" name="application::command::Command::checkForExcessiveArguments">
+<area shape="rect" id="Node000001" title="Check for excessive arguments." alt="" coords="820,30,1048,85"/>
+<area shape="rect" id="Node000002" href="$de/dd7/classapplication_1_1command_1_1Command.html#adf1bdc4c49d654653afe9f46aa46d84e" title="Pre&#45;check the basic task." alt="" coords="542,5,765,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="806,45,764,41,765,35,807,40"/>
+<area shape="rect" id="Node000005" href="$de/dd7/classapplication_1_1command_1_1Command.html#a9196a46a45944a27fd1cb2ab75544f9f" title="Pre&#45;check the regular task." alt="" coords="535,69,772,109"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="807,74,772,78,772,73,806,69"/>
+<area shape="rect" id="Node000003" href="$de/dd7/classapplication_1_1command_1_1Command.html#ad693981498a2ff88208efd2f97d46e25" title="Foreground handler for parsing command line arguments." alt="" coords="260,37,487,77"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="529,42,487,47,487,42,528,37"/>
+<area shape="rect" id="Node000004" href="$de/dd7/classapplication_1_1command_1_1Command.html#a5d2584a4ee3f7e91ec82649f91b3b810" title="Interface for running commander." alt="" coords="5,37,212,77"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="246,60,212,60,212,55,246,55"/>
+<area shape="poly" id="edge5_Node000005_Node000003" title=" " alt="" coords="521,77,486,73,487,68,521,72"/>
+</map>

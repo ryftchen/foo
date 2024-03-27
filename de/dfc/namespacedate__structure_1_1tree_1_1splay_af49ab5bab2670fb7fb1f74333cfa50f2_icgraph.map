@@ -1,0 +1,5 @@
+<map id="date_structure::tree::splay::insertNode" name="date_structure::tree::splay::insertNode">
+<area shape="rect" id="Node000001" title="Insert target node into the splay tree. Not splay. Not allow inserting node with the same key." alt="" coords="224,5,375,45"/>
+<area shape="rect" id="Node000002" href="$de/dfc/namespacedate__structure_1_1tree_1_1splay.html#a7dc0c9e6b2bfddeb01d98c72109b3ef0" title="Insert target node into the splay tree. Not allow inserting node with the same key." alt="" coords="5,5,176,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="210,28,176,28,176,23,210,23"/>
+</map>

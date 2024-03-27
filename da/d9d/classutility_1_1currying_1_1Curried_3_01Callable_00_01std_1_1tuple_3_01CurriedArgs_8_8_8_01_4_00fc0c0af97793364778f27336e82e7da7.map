@@ -1,0 +1,12 @@
+<map id="utility::currying::Curried&lt; Callable, std::tuple&lt; CurriedArgs... &gt;, std::tuple&lt; UncurriedArgs... &gt; &gt;" name="utility::currying::Curried&lt; Callable, std::tuple&lt; CurriedArgs... &gt;, std::tuple&lt; UncurriedArgs... &gt; &gt;">
+<area shape="rect" id="Node000001" title="Completion of curry." alt="" coords="5,403,260,472"/>
+<area shape="rect" id="Node000002" href="/usr/local/share/doxygen-tag/libstdc++.tag$a03499.html" title=" " alt="" coords="32,315,233,340"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="135,354,135,402,130,402,130,354"/>
+<area shape="rect" id="Node000003" href="/usr/local/share/doxygen-tag/libstdc++.tag$a03523.html" title=" " alt="" coords="50,123,205,163"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="131,177,135,314,130,315,126,177"/>
+<area shape="rect" id="Node000005" href="/usr/local/share/doxygen-tag/libstdc++.tag$a03499.html" title=" " alt="" coords="149,212,325,252"/>
+<area shape="poly" id="edge5_Node000005_Node000003" title=" " alt="" coords="163,169,215,210,211,214,160,173"/>
+<area shape="rect" id="Node000004" href="/usr/local/share/doxygen-tag/libstdc++.tag$a03523.html" title=" " alt="" coords="43,5,211,60"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="130,74,130,122,125,122,125,74"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="207,263,148,316,144,312,203,259"/>
+</map>

@@ -1,0 +1,20 @@
+<map id="utility::thread::Thread" name="utility::thread::Thread">
+<area shape="rect" id="Node000001" title="Thread pool." alt="" coords="993,183,1156,208"/>
+<area shape="rect" id="Node000002" href="/usr/local/share/doxygen-tag/libstdc++.tag$a08791.html" title=" " alt="" coords="659,43,850,68"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="822,69,853,79,912,104,968,132,1054,180,1051,185,966,137,910,109,851,85,820,74"/>
+<area shape="rect" id="Node000003" href="/usr/local/share/doxygen-tag/libstdc++.tag$a08779.html" title=" " alt="" coords="5,5,199,60"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="212,25,409,24,522,27,634,35,672,40,672,45,633,41,521,33,409,29,212,31"/>
+<area shape="rect" id="Node000004" href="/usr/local/share/doxygen-tag/libstdc++.tag$a08791.html" title=" " alt="" coords="263,41,445,81"/>
+<area shape="poly" id="edge4_Node000004_Node000003" title=" " alt="" coords="213,42,263,48,263,53,212,48"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="458,57,659,54,659,59,459,62"/>
+<area shape="rect" id="Node000005" href="/usr/local/share/doxygen-tag/libstdc++.tag$a08683.html" title=" " alt="" coords="657,94,852,163"/>
+<area shape="poly" id="edge5_Node000001_Node000005" title=" " alt="" coords="866,149,1014,180,1012,185,865,154"/>
+<area shape="rect" id="Node000006" href="/usr/local/share/doxygen-tag/libstdc++.tag$a08683.html" title=" " alt="" coords="248,110,460,150"/>
+<area shape="poly" id="edge6_Node000005_Node000006" title=" " alt="" coords="474,127,657,126,657,132,474,132"/>
+<area shape="rect" id="Node000007" href="/usr/local/share/doxygen-tag/libstdc++.tag$a07923.html" title=" " alt="" coords="709,188,801,213"/>
+<area shape="poly" id="edge7_Node000001_Node000007" title=" " alt="" coords="814,197,993,194,993,199,814,202"/>
+<area shape="rect" id="Node000008" href="/usr/local/share/doxygen-tag/libstdc++.tag$a02343.html" title=" " alt="" coords="669,243,840,268"/>
+<area shape="poly" id="edge8_Node000001_Node000008" title=" " alt="" coords="854,248,911,242,969,231,1009,219,1044,206,1046,211,1010,225,970,237,912,247,854,253"/>
+<area shape="rect" id="Node000009" href="/usr/local/share/doxygen-tag/libstdc++.tag$a01975.html" title=" " alt="" coords="678,292,831,317"/>
+<area shape="poly" id="edge9_Node000001_Node000009" title=" " alt="" coords="845,297,907,286,968,268,1020,238,1058,206,1061,210,1023,242,970,272,908,292,845,302"/>
+</map>

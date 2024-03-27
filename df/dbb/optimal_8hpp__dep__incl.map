@@ -1,0 +1,26 @@
+<map id="algorithm/include/optimal.hpp" name="algorithm/include/optimal.hpp">
+<area shape="rect" id="Node000001" title="The declarations (optimal) in the algorithm module." alt="" coords="235,5,453,31"/>
+<area shape="rect" id="Node000002" href="$d2/dc4/optimal_8cpp.html" title="The definitions (optimal) in the algorithm module." alt="" coords="5,86,219,111"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="298,38,147,89,145,83,296,33"/>
+<area shape="rect" id="Node000003" href="$d9/daf/apply__algorithm_8hpp.html" title="The declarations (apply_algorithm) in the application module." alt="" coords="311,79,521,119"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="366,39,401,77,397,80,362,43"/>
+<area shape="rect" id="Node000007" href="$d8/d64/apply__algorithm_8cpp.html" title="The definitions (apply_algorithm) in the application module." alt="" coords="17,262,223,302"/>
+<area shape="poly" id="edge12_Node000001_Node000007" title=" " alt="" coords="327,43,138,264,134,260,323,40"/>
+<area shape="rect" id="Node000011" href="$df/de8/test__algorithm_8cpp.html" title="The definitions (test_algorithm) in the test module." alt="" coords="547,174,749,199"/>
+<area shape="poly" id="edge13_Node000001_Node000011" title=" " alt="" coords="417,31,476,49,535,76,568,99,598,126,641,172,637,175,594,130,565,104,532,81,474,54,415,36"/>
+<area shape="rect" id="Node000004" href="$d7/dc7/command_8hpp.html" title="The declarations (command) in the application module." alt="" coords="345,167,522,207"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="425,132,432,166,427,167,420,133"/>
+<area shape="poly" id="edge10_Node000003_Node000007" title=" " alt="" coords="383,129,276,209,220,240,166,264,164,259,217,235,273,204,380,125"/>
+<area shape="poly" id="edge11_Node000003_Node000011" title=" " alt="" coords="481,121,618,171,616,176,479,126"/>
+<area shape="rect" id="Node000005" href="$d1/d81/command_8cpp.html" title="The definitions (command) in the application module." alt="" coords="248,262,421,302"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="405,218,356,264,353,260,402,214"/>
+<area shape="rect" id="Node000006" href="$df/d92/application_2core_2source_2main_8cpp.html" title="The definitions (main) in the application module." alt="" coords="445,262,619,302"/>
+<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="465,214,514,260,510,264,461,218"/>
+<area shape="poly" id="edge6_Node000004_Node000007" title=" " alt="" coords="358,213,184,264,183,259,356,208"/>
+<area shape="rect" id="Node000008" href="$d1/d3d/apply__data__structure_8cpp.html" title="The definitions (apply_data_structure) in the application module." alt="" coords="643,262,880,302"/>
+<area shape="poly" id="edge7_Node000004_Node000008" title=" " alt="" coords="513,208,696,259,694,265,512,213"/>
+<area shape="rect" id="Node000009" href="$de/d6b/apply__design__pattern_8cpp.html" title="The definitions (apply_design_pattern) in the application module." alt="" coords="905,255,1063,309"/>
+<area shape="poly" id="edge8_Node000004_Node000009" title=" " alt="" coords="536,204,637,218,717,225,795,235,893,252,905,255,904,260,891,257,794,240,716,231,637,223,535,209"/>
+<area shape="rect" id="Node000010" href="$d1/dee/apply__numeric_8cpp.html" title="The definitions (apply_numeric) in the application module." alt="" coords="1087,262,1283,302"/>
+<area shape="poly" id="edge9_Node000004_Node000010" title=" " alt="" coords="536,204,689,220,808,226,927,233,1076,252,1114,259,1113,265,1076,257,926,238,808,231,689,225,535,209"/>
+</map>

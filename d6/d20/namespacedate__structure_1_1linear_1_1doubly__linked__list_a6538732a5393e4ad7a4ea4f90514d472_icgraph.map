@@ -1,0 +1,7 @@
+<map id="date_structure::linear::doubly_linked_list::dllGet" name="date_structure::linear::doubly_linked_list::dllGet">
+<area shape="rect" id="Node000001" title="Get the node of the doubly linked list by index." alt="" coords="215,45,376,100"/>
+<area shape="rect" id="Node000002" href="$d6/d20/namespacedate__structure_1_1linear_1_1doubly__linked__list.html#a56ee3d2adb2e0e31f5f8a44108a2f3ba" title="Get the first node of the doubly linked list." alt="" coords="5,5,167,60"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="200,57,166,51,167,45,201,52"/>
+<area shape="rect" id="Node000003" href="$d6/d20/namespacedate__structure_1_1linear_1_1doubly__linked__list.html#a002df9d7ae5dab9082c5b3adba6dbb62" title="Get the last node of the doubly linked list." alt="" coords="5,84,167,139"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="201,93,167,99,166,94,200,87"/>
+</map>

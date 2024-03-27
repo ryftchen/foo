@@ -1,0 +1,28 @@
+var searchData=
+[
+  ['observer_0',['Observer',['../dc/dfc/classdesign__pattern_1_1behavioral_1_1observer_1_1Observer.html',1,'design_pattern::behavioral::observer']]],
+  ['omp_5floop_5fstatic_5ftag_1',['omp_loop_static_tag',['https://gcc.gnu.org/onlinedocs/gcc-12.3.0/libstdc++/api/a10367.html',1,'__gnu_parallel']]],
+  ['omp_5floop_5ftag_2',['omp_loop_tag',['https://gcc.gnu.org/onlinedocs/gcc-12.3.0/libstdc++/api/a10363.html',1,'__gnu_parallel']]],
+  ['once_5fflag_3',['once_flag',['https://gcc.gnu.org/onlinedocs/gcc-12.3.0/libstdc++/api/a02839.html',1,'std']]],
+  ['openfile_4',['OpenFile',['../db/d61/structapplication_1_1log_1_1Log_1_1OpenFile.html',1,'application::log::Log']]],
+  ['optimal_5',['Optimal',['../d4/d1c/classalgorithm_1_1optimal_1_1Optimal.html',1,'algorithm::optimal']]],
+  ['optimalsolution_6',['OptimalSolution',['../de/d49/classapplication_1_1app__algo_1_1optimal_1_1OptimalSolution.html',1,'application::app_algo::optimal']]],
+  ['optimaltestbase_7',['OptimalTestBase',['../df/d4c/classtest_1_1tst__algo_1_1OptimalTestBase.html',1,'test::tst_algo']]],
+  ['optional_8',['optional',['https://gcc.gnu.org/onlinedocs/gcc-12.3.0/libstdc++/api/a11755.html',1,'std::experimental::fundamentals_v1::optional&lt; typename _Tp &gt;'],['https://gcc.gnu.org/onlinedocs/gcc-12.3.0/libstdc++/api/a02843.html',1,'std::optional&lt; typename _Tp &gt;']]],
+  ['originator_9',['Originator',['../d7/d7b/classdesign__pattern_1_1behavioral_1_1memento_1_1Originator.html',1,'design_pattern::behavioral::memento']]],
+  ['ostream_5fiterator_10',['ostream_iterator',['https://gcc.gnu.org/onlinedocs/gcc-12.3.0/libstdc++/api/a08811.html',1,'std']]],
+  ['ostream_5fjoiner_11',['ostream_joiner',['https://gcc.gnu.org/onlinedocs/gcc-12.3.0/libstdc++/api/a11727.html',1,'std::experimental::fundamentals_v2']]],
+  ['ostreambuf_5fiterator_12',['ostreambuf_iterator',['https://gcc.gnu.org/onlinedocs/gcc-12.3.0/libstdc++/api/a02667.html',1,'std']]],
+  ['out_5fof_5frange_13',['out_of_range',['https://gcc.gnu.org/onlinedocs/gcc-12.3.0/libstdc++/api/a03367.html',1,'std']]],
+  ['output_14',['Output',['../df/d4d/classdate__structure_1_1linear_1_1Output.html',1,'date_structure::linear::Output'],['../db/dec/classdate__structure_1_1tree_1_1avl_1_1Output.html',1,'date_structure::tree::avl::Output'],['../dc/d95/classdate__structure_1_1tree_1_1bs_1_1Output.html',1,'date_structure::tree::bs::Output'],['../df/d7f/classdate__structure_1_1tree_1_1splay_1_1Output.html',1,'date_structure::tree::splay::Output']]],
+  ['output_5fiterator_5ftag_15',['output_iterator_tag',['https://gcc.gnu.org/onlinedocs/gcc-12.3.0/libstdc++/api/a08555.html',1,'std']]],
+  ['ov_5ftree_5fmap_16',['ov_tree_map',['https://gcc.gnu.org/onlinedocs/gcc-12.3.0/libstdc++/api/a13467.html',1,'__gnu_pbds::detail']]],
+  ['ov_5ftree_5fnode_5fconst_5fit_5f_17',['ov_tree_node_const_it_',['https://gcc.gnu.org/onlinedocs/gcc-12.3.0/libstdc++/api/a13459.html',1,'__gnu_pbds::detail']]],
+  ['ov_5ftree_5fnode_5fit_5f_18',['ov_tree_node_it_',['https://gcc.gnu.org/onlinedocs/gcc-12.3.0/libstdc++/api/a13463.html',1,'__gnu_pbds::detail']]],
+  ['ov_5ftree_5ftag_19',['ov_tree_tag',['https://gcc.gnu.org/onlinedocs/gcc-12.3.0/libstdc++/api/a12899.html',1,'__gnu_pbds']]],
+  ['overflow_5ferror_20',['overflow_error',['https://gcc.gnu.org/onlinedocs/gcc-12.3.0/libstdc++/api/a03379.html',1,'std']]],
+  ['owner_5fless_21',['owner_less',['https://gcc.gnu.org/onlinedocs/gcc-12.3.0/libstdc++/api/a07579.html',1,'std']]],
+  ['owner_5fless_3c_20shared_5fptr_3c_20_5ftp_20_3e_20_3e_22',['owner_less&lt; shared_ptr&lt; _Tp &gt; &gt;',['https://gcc.gnu.org/onlinedocs/gcc-12.3.0/libstdc++/api/a10859.html',1,'std::experimental::fundamentals_v2::owner_less&lt; shared_ptr&lt; _Tp &gt; &gt;'],['https://gcc.gnu.org/onlinedocs/gcc-12.3.0/libstdc++/api/a07587.html',1,'std::owner_less&lt; shared_ptr&lt; _Tp &gt; &gt;']]],
+  ['owner_5fless_3c_20void_20_3e_23',['owner_less&lt; void &gt;',['https://gcc.gnu.org/onlinedocs/gcc-12.3.0/libstdc++/api/a07583.html',1,'std']]],
+  ['owner_5fless_3c_20weak_5fptr_3c_20_5ftp_20_3e_20_3e_24',['owner_less&lt; weak_ptr&lt; _Tp &gt; &gt;',['https://gcc.gnu.org/onlinedocs/gcc-12.3.0/libstdc++/api/a10863.html',1,'std::experimental::fundamentals_v2::owner_less&lt; weak_ptr&lt; _Tp &gt; &gt;'],['https://gcc.gnu.org/onlinedocs/gcc-12.3.0/libstdc++/api/a07591.html',1,'std::owner_less&lt; weak_ptr&lt; _Tp &gt; &gt;']]]
+];

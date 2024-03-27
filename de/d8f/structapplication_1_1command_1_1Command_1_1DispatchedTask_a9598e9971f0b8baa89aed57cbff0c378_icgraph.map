@@ -1,0 +1,19 @@
+<map id="application::command::Command::DispatchedTask::empty" name="application::command::Command::DispatchedTask::empty">
+<area shape="rect" id="Node000001" title="Check whether any tasks do not exist." alt="" coords="1332,31,1539,86"/>
+<area shape="rect" id="Node000002" href="$de/dd7/classapplication_1_1command_1_1Command.html#ae945c92e348f25a987f8b8d590a7e3e9" title="Check whether any tasks exist." alt="" coords="1101,39,1284,79"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="1318,61,1284,61,1284,56,1318,56"/>
+<area shape="rect" id="Node000003" href="$de/dd7/classapplication_1_1command_1_1Command.html#a19fb2a7d1e940b120bcfc134880d1468" title="Background handler for performing the specific task." alt="" coords="260,5,492,45"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="1087,55,1053,53,492,32,492,26,1053,48,1088,50"/>
+<area shape="rect" id="Node000005" href="$de/dd7/classapplication_1_1command_1_1Command.html#afadc9cf56f31c11505b6181125e77473" title="Check for excessive arguments." alt="" coords="825,63,1053,118"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="1088,75,1054,79,1053,74,1087,69"/>
+<area shape="rect" id="Node000004" href="$de/dd7/classapplication_1_1command_1_1Command.html#a5d2584a4ee3f7e91ec82649f91b3b810" title="Interface for running commander." alt="" coords="5,37,212,77"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="247,43,213,48,212,42,246,38"/>
+<area shape="rect" id="Node000006" href="$de/dd7/classapplication_1_1command_1_1Command.html#adf1bdc4c49d654653afe9f46aa46d84e" title="Pre&#45;check the basic task." alt="" coords="547,65,770,105"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="812,91,770,90,770,85,812,86"/>
+<area shape="rect" id="Node000008" href="$de/dd7/classapplication_1_1command_1_1Command.html#a9196a46a45944a27fd1cb2ab75544f9f" title="Pre&#45;check the regular task." alt="" coords="540,129,777,169"/>
+<area shape="poly" id="edge8_Node000005_Node000008" title=" " alt="" coords="813,120,756,132,754,127,812,115"/>
+<area shape="rect" id="Node000007" href="$de/dd7/classapplication_1_1command_1_1Command.html#ad693981498a2ff88208efd2f97d46e25" title="Foreground handler for parsing command line arguments." alt="" coords="263,69,489,109"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="534,90,490,90,490,85,534,84"/>
+<area shape="poly" id="edge7_Node000007_Node000004" title=" " alt="" coords="249,77,212,72,213,67,249,72"/>
+<area shape="poly" id="edge9_Node000008_Node000007" title=" " alt="" coords="550,129,470,112,471,107,551,124"/>
+</map>

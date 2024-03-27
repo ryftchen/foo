@@ -1,0 +1,9 @@
+<map id="application::view::View::fillSharedMemory" name="application::view::View::fillSharedMemory">
+<area shape="rect" id="Node000001" title="Fill the shared memory." alt="" coords="269,69,445,109"/>
+<area shape="rect" id="Node000002" href="$d5/dbb/classapplication_1_1view_1_1View.html#ad9cddd788ab4701fb35dfab0ee722daf" title="Build the TLV packet to get bash outputs." alt="" coords="14,5,213,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="267,68,189,48,191,43,268,63"/>
+<area shape="rect" id="Node000003" href="$d5/dbb/classapplication_1_1view_1_1View.html#a381fe394fde0c8c2d113c9f2419fe42f" title="Build the TLV packet to view log contents." alt="" coords="8,69,219,109"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="256,92,219,92,219,87,256,87"/>
+<area shape="rect" id="Node000004" href="$d5/dbb/classapplication_1_1view_1_1View.html#a6b0cb8bf6198cc407906d81bdc6f0ffb" title="Build the TLV packet to show status information." alt="" coords="5,133,221,173"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="268,115,191,136,189,131,267,110"/>
+</map>

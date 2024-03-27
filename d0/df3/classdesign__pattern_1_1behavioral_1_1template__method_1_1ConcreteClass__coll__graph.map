@@ -1,0 +1,5 @@
+<map id="design_pattern::behavioral::template_method::ConcreteClass" name="design_pattern::behavioral::template_method::ConcreteClass">
+<area shape="rect" id="Node000001" title="Implement the primitive operations to carry out specific steps of the algorithm." alt="" coords="5,93,252,133"/>
+<area shape="rect" id="Node000002" href="$d3/dcb/classdesign__pattern_1_1behavioral_1_1template__method_1_1AbstractClass.html" title="Implement the template method defining the skeleton of the algorithm." alt="" coords="7,5,250,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="131,59,131,93,126,93,126,59"/>
+</map>

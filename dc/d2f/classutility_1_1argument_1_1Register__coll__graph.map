@@ -1,0 +1,18 @@
+<map id="utility::argument::Register" name="utility::argument::Register">
+<area shape="rect" id="Node000001" title="Argument register." alt="" coords="957,91,1096,131"/>
+<area shape="rect" id="Node000002" href="/usr/local/share/doxygen-tag/libstdc++.tag$a08791.html" title=" " alt="" coords="627,5,795,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="810,41,934,72,979,88,977,93,933,77,809,46"/>
+<area shape="rect" id="Node000003" href="/usr/local/share/doxygen-tag/libstdc++.tag$a08779.html" title=" " alt="" coords="5,33,199,87"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="212,31,248,25,345,14,421,10,595,15,627,16,627,22,595,20,421,16,345,20,248,31,213,36"/>
+<area shape="rect" id="Node000004" href="/usr/local/share/doxygen-tag/libstdc++.tag$a08791.html" title=" " alt="" coords="248,40,429,80"/>
+<area shape="poly" id="edge4_Node000004_Node000003" title=" " alt="" coords="212,57,248,57,248,63,212,63"/>
+<area shape="rect" id="Node000006" href="/usr/local/share/doxygen-tag/libstdc++.tag$a08791.html" title=" " alt="" coords="625,70,798,95"/>
+<area shape="poly" id="edge7_Node000006_Node000003" title=" " alt="" coords="213,84,248,89,349,96,450,97,624,88,625,94,451,102,349,102,248,95,212,89"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="443,48,627,30,627,36,443,53"/>
+<area shape="poly" id="edge8_Node000006_Node000004" title=" " alt="" coords="443,72,454,73,624,80,624,86,453,79,443,78"/>
+<area shape="rect" id="Node000005" href="/usr/local/share/doxygen-tag/libstdc++.tag$a01915.html" title=" " alt="" coords="674,127,749,153"/>
+<area shape="poly" id="edge5_Node000001_Node000005" title=" " alt="" coords="763,141,843,142,933,135,964,128,965,133,934,140,843,147,763,146"/>
+<area shape="poly" id="edge6_Node000001_Node000006" title=" " alt="" coords="812,89,958,102,957,107,812,94"/>
+<area shape="rect" id="Node000007" href="$dd/dcd/classutility_1_1argument_1_1Register_1_1ArgsNumRange.html" title="Indicate the range for the number of arguments." alt="" coords="619,177,804,217"/>
+<area shape="poly" id="edge9_Node000001_Node000007" title=" " alt="" coords="817,188,875,178,932,163,967,147,997,128,1000,133,969,152,934,168,876,184,818,193"/>
+</map>

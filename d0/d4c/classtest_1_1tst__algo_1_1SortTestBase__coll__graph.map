@@ -1,0 +1,16 @@
+<map id="test::tst_algo::SortTestBase" name="test::tst_algo::SortTestBase">
+<area shape="rect" id="Node000001" title="Test base of sort." alt="" coords="979,69,1177,95"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="716,5,817,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="831,28,1016,67,1015,72,830,34"/>
+<area shape="rect" id="Node000003" href="/usr/local/share/doxygen-tag/libstdc++.tag$a07571.html" title=" " alt="" coords="659,55,875,109"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="889,79,979,79,979,85,889,85"/>
+<area shape="rect" id="Node000004" href="/usr/local/share/doxygen-tag/libstdc++.tag$a07571.html" title=" " alt="" coords="248,62,448,102"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="462,79,659,79,659,85,462,85"/>
+<area shape="rect" id="Node000005" href="/usr/local/share/doxygen-tag/libstdc++.tag$a08791.html" title=" " alt="" coords="697,133,836,159"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="842,128,1015,92,1016,97,843,133"/>
+<area shape="rect" id="Node000006" href="/usr/local/share/doxygen-tag/libstdc++.tag$a08779.html" title=" " alt="" coords="5,144,199,199"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="212,164,697,146,697,151,212,170"/>
+<area shape="rect" id="Node000007" href="/usr/local/share/doxygen-tag/libstdc++.tag$a08791.html" title=" " alt="" coords="257,179,439,219"/>
+<area shape="poly" id="edge7_Node000007_Node000006" title=" " alt="" coords="213,181,257,186,257,192,212,187"/>
+<area shape="poly" id="edge6_Node000005_Node000007" title=" " alt="" coords="452,191,541,184,634,173,715,156,717,161,635,178,542,189,453,197"/>
+</map>

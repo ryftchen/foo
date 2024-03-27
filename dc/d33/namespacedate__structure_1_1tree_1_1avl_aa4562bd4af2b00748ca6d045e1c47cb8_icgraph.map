@@ -1,0 +1,11 @@
+<map id="date_structure::tree::avl::leftRightRotation" name="date_structure::tree::avl::leftRightRotation">
+<area shape="rect" id="Node000001" title="LR rotation. A double left rotation." alt="" coords="403,73,571,113"/>
+<area shape="rect" id="Node000002" href="$dc/d33/namespacedate__structure_1_1tree_1_1avl.html#a65dd031fc2c1fb4e86b9e33b3689c2ad" title="Insert target node into the AVL tree. Not allow inserting node with the same key." alt="" coords="204,29,355,69"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="388,75,355,68,356,63,389,70"/>
+<area shape="rect" id="Node000003" href="$dc/d33/namespacedate__structure_1_1tree_1_1avl.html#aa8331f793062b72e455bb2ca000367a0" title="Delete target node from the AVL tree." alt="" coords="204,117,355,157"/>
+<area shape="poly" id="edge3_Node000001_Node000003" title=" " alt="" coords="389,117,356,124,355,119,388,111"/>
+<area shape="poly" id="edge2_Node000002_Node000002" title=" " alt="" coords="313,18,301,11,279,8,260,10,249,15,245,21,247,28,242,30,240,20,246,11,259,5,279,3,303,6,315,13"/>
+<area shape="poly" id="edge5_Node000003_Node000003" title=" " alt="" coords="313,106,301,99,279,96,260,98,249,103,245,109,247,116,242,118,240,108,246,99,259,93,279,91,303,94,315,101"/>
+<area shape="rect" id="Node000004" href="$dc/d33/namespacedate__structure_1_1tree_1_1avl.html#a2cb151a6e4051ba0abc00cc1977b539e" title="Delete target node into the AVL tree." alt="" coords="5,117,156,157"/>
+<area shape="poly" id="edge4_Node000003_Node000004" title=" " alt="" coords="191,140,156,140,156,135,191,135"/>
+</map>

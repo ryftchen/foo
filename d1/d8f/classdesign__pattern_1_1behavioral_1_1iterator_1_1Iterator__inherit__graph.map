@@ -1,0 +1,5 @@
+<map id="design_pattern::behavioral::iterator::Iterator" name="design_pattern::behavioral::iterator::Iterator">
+<area shape="rect" id="Node000001" title="Manage the current index of the iterator. A set of methods for traversing over items." alt="" coords="5,5,201,45"/>
+<area shape="rect" id="Node000002" href="$d0/d1e/classdesign__pattern_1_1behavioral_1_1iterator_1_1ConcreteIterator.html" title="The concrete iterator." alt="" coords="5,93,201,133"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="106,59,106,93,101,93,101,59"/>
+</map>

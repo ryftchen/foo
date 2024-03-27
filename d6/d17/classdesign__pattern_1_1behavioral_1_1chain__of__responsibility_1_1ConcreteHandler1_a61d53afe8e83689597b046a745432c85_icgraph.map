@@ -1,0 +1,5 @@
+<map id="design_pattern::behavioral::chain_of_responsibility::ConcreteHandler1::canHandle" name="design_pattern::behavioral::chain_of_responsibility::ConcreteHandler1::canHandle">
+<area shape="rect" id="Node000001" title="Check whether it can handle the request." alt="" coords="305,5,529,60"/>
+<area shape="rect" id="Node000002" href="$d6/d17/classdesign__pattern_1_1behavioral_1_1chain__of__responsibility_1_1ConcreteHandler1.html#a0b17fb6884be3a5cade2eefffb46fbfb" title="Handle the request." alt="" coords="5,5,257,60"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="292,35,257,35,257,30,292,30"/>
+</map>

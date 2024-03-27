@@ -1,0 +1,7 @@
+<map id="design_pattern::behavioral::mediator::Colleague" name="design_pattern::behavioral::mediator::Colleague">
+<area shape="rect" id="Node000001" title="The colleague communicates with its mediator. Whenever it would have otherwise communicated with anot..." alt="" coords="5,240,201,280"/>
+<area shape="rect" id="Node000002" href="/usr/local/share/doxygen-tag/libstdc++.tag$a07575.html" title=" " alt="" coords="18,123,189,177"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="106,192,106,240,101,240,101,192"/>
+<area shape="rect" id="Node000003" href="/usr/local/share/doxygen-tag/libstdc++.tag$a07575.html" title=" " alt="" coords="8,5,199,45"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="106,59,106,122,101,122,101,59"/>
+</map>

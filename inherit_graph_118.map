@@ -1,0 +1,7 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="Node000000" href="$d0/d6a/classdesign__pattern_1_1creational_1_1builder_1_1Builder.html" title="The builder for creating products." alt="" coords="5,37,197,77"/>
+<area shape="rect" id="Node000001" href="$da/da9/classdesign__pattern_1_1creational_1_1builder_1_1ConcreteBuilderX.html" title="The concrete builder." alt="" coords="245,5,441,45"/>
+<area shape="poly" id="edge38_Node000000_Node000001" title=" " alt="" coords="211,40,245,36,246,41,211,46"/>
+<area shape="rect" id="Node000002" href="$de/d37/classdesign__pattern_1_1creational_1_1builder_1_1ConcreteBuilderY.html" title="The concrete builder." alt="" coords="246,69,441,109"/>
+<area shape="poly" id="edge39_Node000000_Node000002" title=" " alt="" coords="211,69,246,74,245,79,211,74"/>
+</map>

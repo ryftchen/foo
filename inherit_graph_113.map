@@ -1,0 +1,11 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="Node000000" href="$d4/d81/classdesign__pattern_1_1behavioral_1_1visitor_1_1Element.html" title="Implement the accept operation that takes a visitor as an argument." alt="" coords="29,69,225,109"/>
+<area shape="rect" id="Node000001" href="$df/d82/classdesign__pattern_1_1behavioral_1_1visitor_1_1ConcreteElementA.html" title="The concrete element." alt="" coords="296,37,496,77"/>
+<area shape="poly" id="edge26_Node000000_Node000001" title=" " alt="" coords="238,73,296,67,296,72,239,79"/>
+<area shape="rect" id="Node000003" href="$da/d45/classdesign__pattern_1_1behavioral_1_1visitor_1_1ConcreteElementB.html" title="The concrete element." alt="" coords="296,117,496,157"/>
+<area shape="poly" id="edge27_Node000000_Node000003" title=" " alt="" coords="239,107,296,117,295,122,238,112"/>
+<area shape="rect" id="Node000002" href="/usr/local/share/doxygen-tag/libstdc++.tag$a07595.html" title=" " alt="" coords="5,5,248,45"/>
+<area shape="poly" id="edge28_Node000002_Node000001" title=" " alt="" coords="262,39,296,43,295,48,261,44"/>
+<area shape="rect" id="Node000004" href="/usr/local/share/doxygen-tag/libstdc++.tag$a07595.html" title=" " alt="" coords="5,133,248,173"/>
+<area shape="poly" id="edge29_Node000004_Node000003" title=" " alt="" coords="261,143,295,141,296,146,262,148"/>
+</map>

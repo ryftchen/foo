@@ -1,0 +1,5 @@
+<map id="design_pattern::structural::composite::Component::add" name="design_pattern::structural::composite::Component::add">
+<area shape="rect" id="Node000001" title="Add the child component." alt="" coords="243,13,456,53"/>
+<area shape="rect" id="Node000002" href="$d4/da1/classdesign__pattern_1_1structural_1_1composite_1_1Component.html#a02001c70d15dc4979ae1f214a6526164" title="Destroy the Component object." alt="" coords="5,5,195,60"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="229,35,195,35,195,30,229,30"/>
+</map>

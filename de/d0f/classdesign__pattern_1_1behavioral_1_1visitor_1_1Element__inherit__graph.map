@@ -1,0 +1,7 @@
+<map id="design_pattern::behavioral::visitor::Element" name="design_pattern::behavioral::visitor::Element">
+<area shape="rect" id="Node000001" title="Implement the accept operation that takes a visitor as an argument." alt="" coords="5,37,201,77"/>
+<area shape="rect" id="Node000002" href="$df/d82/classdesign__pattern_1_1behavioral_1_1visitor_1_1ConcreteElementA.html" title="The concrete element." alt="" coords="249,5,449,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="214,40,249,36,249,41,215,45"/>
+<area shape="rect" id="Node000003" href="$da/d45/classdesign__pattern_1_1behavioral_1_1visitor_1_1ConcreteElementB.html" title="The concrete element." alt="" coords="249,69,449,109"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="215,69,249,74,249,79,214,74"/>
+</map>

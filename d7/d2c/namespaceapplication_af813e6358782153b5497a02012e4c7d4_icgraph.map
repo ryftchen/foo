@@ -1,0 +1,5 @@
+<map id="application::signalHandler" name="application::signalHandler">
+<area shape="rect" id="Node000001" title="Signal handler for SIGSEGV signal, etc." alt="" coords="176,5,368,31"/>
+<area shape="rect" id="Node000002" href="$d7/d2c/namespaceapplication.html#acd710b6d6e0c67041a21f6a7ac95dcd9" title="The constructor function before starting the main function. Switch to the target path." alt="" coords="5,5,128,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="162,21,128,21,128,15,162,15"/>
+</map>

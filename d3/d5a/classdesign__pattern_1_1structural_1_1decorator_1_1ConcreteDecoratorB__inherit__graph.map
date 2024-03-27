@@ -1,0 +1,7 @@
+<map id="design_pattern::structural::decorator::ConcreteDecoratorB" name="design_pattern::structural::decorator::ConcreteDecoratorB">
+<area shape="rect" id="Node000001" title="The concrete decorator." alt="" coords="5,181,236,221"/>
+<area shape="rect" id="Node000002" href="$d1/d0c/classdesign__pattern_1_1structural_1_1decorator_1_1Decorator.html" title="Reference to the component. Add responsibilities to the component." alt="" coords="26,93,215,133"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="123,147,123,181,118,181,118,147"/>
+<area shape="rect" id="Node000003" href="$d1/d9b/classdesign__pattern_1_1structural_1_1decorator_1_1Component.html" title="The component to which additional responsibilities can be attached." alt="" coords="26,5,215,45"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="123,59,123,93,118,93,118,59"/>
+</map>

@@ -1,0 +1,9 @@
+<map id="numeric/include/prime.hpp" name="numeric/include/prime.hpp">
+<area shape="rect" id="Node000001" title="The declarations (prime) in the numeric module." alt="" coords="223,5,419,31"/>
+<area shape="rect" id="Node000002" href="$d1/dee/apply__numeric_8cpp.html" title="The definitions (apply_numeric) in the application module." alt="" coords="5,79,201,119"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="277,38,156,81,155,76,275,33"/>
+<area shape="rect" id="Node000003" href="$d3/d71/prime_8cpp.html" title="The definitions (prime) in the numeric module." alt="" coords="225,86,416,111"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="323,44,323,86,318,86,318,44"/>
+<area shape="rect" id="Node000004" href="$d8/d25/test__numeric_8cpp.html" title="The definitions (test_numeric) in the test module." alt="" coords="441,86,633,111"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="366,33,506,83,504,88,364,38"/>
+</map>

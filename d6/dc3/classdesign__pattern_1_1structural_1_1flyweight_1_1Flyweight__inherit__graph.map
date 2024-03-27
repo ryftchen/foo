@@ -1,0 +1,7 @@
+<map id="design_pattern::structural::flyweight::Flyweight" name="design_pattern::structural::flyweight::Flyweight">
+<area shape="rect" id="Node000001" title="Receive and act on the extrinsic state through which flyweights." alt="" coords="5,37,195,77"/>
+<area shape="rect" id="Node000002" href="$d1/db3/classdesign__pattern_1_1structural_1_1flyweight_1_1ConcreteFlyweight.html" title="The concrete flyweight." alt="" coords="274,5,494,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="209,42,274,35,274,40,209,48"/>
+<area shape="rect" id="Node000003" href="$d7/da3/classdesign__pattern_1_1structural_1_1flyweight_1_1UnsharedConcreteFlyweight.html" title="The unshared concrete flyweight." alt="" coords="243,69,525,109"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="209,67,243,71,242,76,208,72"/>
+</map>

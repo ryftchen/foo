@@ -1,0 +1,13 @@
+<map id="numeric::integral::Integral::getSign" name="numeric::integral::Integral::getSign">
+<area shape="rect" id="Node000001" title="Get the sign." alt="" coords="224,133,365,173"/>
+<area shape="rect" id="Node000002" href="$d0/d64/classnumeric_1_1integral_1_1Trapezoidal.html#a7b54826a8aacef0aa8128bb74dbd62d6" title="The operator (()) overloading of Trapezoidal class." alt="" coords="6,5,175,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="261,126,221,92,175,60,151,48,153,43,177,55,224,87,264,121"/>
+<area shape="rect" id="Node000003" href="$d2/d45/classnumeric_1_1integral_1_1Simpson.html#a86fbe76ee6556785e6cd455929aaee32" title="The operator (()) overloading of Simpson class." alt="" coords="15,69,166,109"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="216,132,154,112,156,107,218,127"/>
+<area shape="rect" id="Node000004" href="$d5/d9e/classnumeric_1_1integral_1_1Romberg.html#a2e8e957332bf7d24112750337f9bc51e" title="The operator (()) overloading of Romberg class." alt="" coords="13,133,168,173"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="210,156,168,156,168,151,210,151"/>
+<area shape="rect" id="Node000005" href="$d2/dcf/classnumeric_1_1integral_1_1Gauss.html#a10ebaa00df28143a16e571eac7f295c9" title="The operator (()) overloading of Gauss class." alt="" coords="20,197,161,237"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="218,180,156,200,154,195,216,175"/>
+<area shape="rect" id="Node000006" href="$d0/d64/classnumeric_1_1integral_1_1MonteCarlo.html#a1fb2d9599a6bf334578b2a9d8c93b3aa" title="The operator (()) overloading of MonteCarlo class." alt="" coords="5,261,176,301"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="264,185,224,219,177,252,153,264,151,259,175,247,221,215,261,181"/>
+</map>

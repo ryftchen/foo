@@ -1,0 +1,7 @@
+<map id="design_pattern::behavioral::chain_of_responsibility::output" name="design_pattern::behavioral::chain_of_responsibility::output">
+<area shape="rect" id="Node000001" title="Output stream for the chain of responsibility pattern. Need to be cleared manually." alt="" coords="305,45,501,100"/>
+<area shape="rect" id="Node000002" href="$d6/d17/classdesign__pattern_1_1behavioral_1_1chain__of__responsibility_1_1ConcreteHandler1.html#a0b17fb6884be3a5cade2eefffb46fbfb" title="Handle the request." alt="" coords="5,5,257,60"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="291,59,257,54,258,49,292,54"/>
+<area shape="rect" id="Node000003" href="$d3/da3/classdesign__pattern_1_1behavioral_1_1chain__of__responsibility_1_1ConcreteHandler2.html#aca427b7447f6e4d374533e6e6bc36131" title="Handle the request." alt="" coords="5,84,257,139"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="292,91,258,96,257,91,291,86"/>
+</map>

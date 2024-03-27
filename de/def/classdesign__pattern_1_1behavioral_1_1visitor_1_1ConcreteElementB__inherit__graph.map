@@ -1,0 +1,9 @@
+<map id="design_pattern::behavioral::visitor::ConcreteElementB" name="design_pattern::behavioral::visitor::ConcreteElementB">
+<area shape="rect" id="Node000001" title="The concrete element." alt="" coords="716,37,916,77"/>
+<area shape="rect" id="Node000002" href="$d4/d81/classdesign__pattern_1_1behavioral_1_1visitor_1_1Element.html" title="Implement the accept operation that takes a visitor as an argument." alt="" coords="447,5,643,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="657,36,716,43,715,48,656,41"/>
+<area shape="rect" id="Node000003" href="/usr/local/share/doxygen-tag/libstdc++.tag$a07595.html" title=" " alt="" coords="424,69,667,109"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="680,71,715,67,716,72,681,76"/>
+<area shape="rect" id="Node000004" href="/usr/local/share/doxygen-tag/libstdc++.tag$a07595.html" title=" " alt="" coords="5,69,220,109"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="234,87,424,87,424,92,234,92"/>
+</map>

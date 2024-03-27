@@ -1,0 +1,9 @@
+<map id="algorithm::match::Match::fillGoodSuffixRuleTable" name="algorithm::match::Match::fillGoodSuffixRuleTable">
+<area shape="rect" id="Node000001" title="Fill good suffix rule table." alt="" coords="484,45,667,85"/>
+<area shape="rect" id="Node000002" href="$d2/dcf/classalgorithm_1_1match_1_1Match.html#a88b5a3bfdea7b86511459476255380d9" title="Boyer&#45;Moore." alt="" coords="225,52,436,77"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="470,67,436,67,436,62,470,62"/>
+<area shape="rect" id="Node000003" href="$dc/d05/classapplication_1_1app__algo_1_1match_1_1MatchSolution.html#a76dc6abc775eab32d9c659dfc80d0510" title="The Boyer&#45;Moore method." alt="" coords="5,5,177,60"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="222,53,177,47,178,42,222,47"/>
+<area shape="rect" id="Node000004" href="$dc/d35/namespacetest_1_1tst__algo.html#a1b40e779d8137af1c45f5c3e603d8c4d" title="Test for the Boyer&#45;Moore method in the solution of match." alt="" coords="10,84,173,109"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="223,82,173,88,172,83,222,77"/>
+</map>

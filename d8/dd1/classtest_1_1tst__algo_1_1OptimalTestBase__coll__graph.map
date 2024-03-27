@@ -1,0 +1,9 @@
+<map id="test::tst_algo::OptimalTestBase" name="test::tst_algo::OptimalTestBase">
+<area shape="rect" id="Node000001" title="Test base of optimal." alt="" coords="5,197,231,223"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="15,102,117,127"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="81,138,114,196,109,199,77,141"/>
+<area shape="rect" id="Node000003" href="$d3/d97/classapplication_1_1app__algo_1_1optimal_1_1input_1_1Rastrigin.html" title="Rastrigin function." alt="" coords="141,95,327,135"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="202,145,134,199,131,195,198,141"/>
+<area shape="rect" id="Node000004" href="$d2/dfb/classalgorithm_1_1optimal_1_1Function.html" title="Target functions." alt="" coords="163,5,305,45"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="237,59,237,95,231,95,231,59"/>
+</map>

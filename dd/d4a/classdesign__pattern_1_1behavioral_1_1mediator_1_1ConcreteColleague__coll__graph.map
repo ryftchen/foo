@@ -1,0 +1,13 @@
+<map id="design_pattern::behavioral::mediator::ConcreteColleague" name="design_pattern::behavioral::mediator::ConcreteColleague">
+<area shape="rect" id="Node000001" title="The concrete colleague." alt="" coords="1151,52,1371,92"/>
+<area shape="rect" id="Node000002" href="$d5/d5b/classdesign__pattern_1_1behavioral_1_1mediator_1_1Colleague.html" title="The colleague communicates with its mediator. Whenever it would have otherwise communicated with anot..." alt="" coords="881,17,1077,57"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="1091,48,1151,56,1150,61,1090,54"/>
+<area shape="rect" id="Node000003" href="/usr/local/share/doxygen-tag/libstdc++.tag$a07575.html" title=" " alt="" coords="459,7,630,62"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="644,33,881,34,881,39,644,38"/>
+<area shape="rect" id="Node000004" href="/usr/local/share/doxygen-tag/libstdc++.tag$a07575.html" title=" " alt="" coords="5,15,196,55"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="210,32,459,32,459,37,210,37"/>
+<area shape="rect" id="Node000005" href="/usr/local/share/doxygen-tag/libstdc++.tag$a07595.html" title=" " alt="" coords="857,83,1101,123"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="1115,85,1150,81,1151,87,1115,91"/>
+<area shape="rect" id="Node000006" href="/usr/local/share/doxygen-tag/libstdc++.tag$a07595.html" title=" " alt="" coords="437,87,652,127"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="666,103,857,101,857,106,666,108"/>
+</map>

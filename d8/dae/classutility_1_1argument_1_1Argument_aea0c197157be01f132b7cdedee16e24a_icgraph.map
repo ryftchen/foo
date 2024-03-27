@@ -1,0 +1,15 @@
+<map id="utility::argument::Argument::isValidPrefixChar" name="utility::argument::Argument::isValidPrefixChar">
+<area shape="rect" id="Node000001" title="Check if the prefix character is valid." alt="" coords="999,37,1203,77"/>
+<area shape="rect" id="Node000002" href="$d8/dae/classutility_1_1argument_1_1Argument.html#a6c1584c8226bff2ad0f1d82fca8c281d" title="The operator ([]) overloading of Register class." alt="" coords="767,5,925,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="985,46,925,38,926,33,986,40"/>
+<area shape="rect" id="Node000003" href="$d8/dae/classutility_1_1argument_1_1Argument.html#acfcd684de0509fe226b9f1351b62a50a" title="Parse all input arguments for internal." alt="" coords="741,69,951,109"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="986,74,951,79,950,74,985,69"/>
+<area shape="rect" id="Node000004" href="$d8/dae/classutility_1_1argument_1_1Argument.html#ad4729b527974c517799cf4f948d3d107" title="Parse all input arguments." alt="" coords="535,69,693,109"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="728,92,693,92,693,87,728,87"/>
+<area shape="rect" id="Node000005" href="$de/dd7/classapplication_1_1command_1_1Command.html#ad693981498a2ff88208efd2f97d46e25" title="Foreground handler for parsing command line arguments." alt="" coords="260,37,487,77"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="520,80,486,75,487,70,521,74"/>
+<area shape="rect" id="Node000007" href="$d8/dae/classutility_1_1argument_1_1Argument.html#a18874871cb47e688d783343e26c1a3ff" title="Parse all input arguments." alt="" coords="294,101,453,141"/>
+<area shape="poly" id="edge6_Node000004_Node000007" title=" " alt="" coords="521,104,453,113,452,108,520,99"/>
+<area shape="rect" id="Node000006" href="$de/dd7/classapplication_1_1command_1_1Command.html#a5d2584a4ee3f7e91ec82649f91b3b810" title="Interface for running commander." alt="" coords="5,37,212,77"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="246,60,212,60,212,55,246,55"/>
+</map>

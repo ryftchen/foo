@@ -1,0 +1,8 @@
+<map id="application::app_dp::creational::Creational::prototype" name="application::app_dp::creational::Creational::prototype">
+<area shape="rect" id="Node000001" title="Prototype." alt="" coords="269,37,440,92"/>
+<area shape="poly" id="edge1_Node000001_Node000001" title=" " alt="" coords="395,26,380,19,355,16,333,18,319,23,313,29,313,37,308,37,308,27,317,18,332,13,355,11,382,14,397,22"/>
+<area shape="rect" id="Node000002" href="$da/daf/classapplication_1_1app__dp_1_1creational_1_1CreationalPattern.html#a330466d775b9fd58ee6f8d49ceb5bc9a" title="The prototype instance." alt="" coords="5,5,221,60"/>
+<area shape="poly" id="edge2_Node000001_Node000002" title=" " alt="" coords="255,54,221,50,222,44,256,49"/>
+<area shape="rect" id="Node000003" href="$d5/ddd/namespacetest_1_1tst__dp.html#a3e221c1e7b1e1281a19d3fde2d8530bf" title="Test for the prototype instance in the pattern of creational." alt="" coords="38,84,189,109"/>
+<area shape="poly" id="edge3_Node000001_Node000003" title=" " alt="" coords="256,80,189,89,189,84,255,75"/>
+</map>

@@ -1,0 +1,15 @@
+<map id="numeric::divisor::Divisor::getAllDivisors" name="numeric::divisor::Divisor::getAllDivisors">
+<area shape="rect" id="Node000001" title="Get all common divisors by the greatest common divisor." alt="" coords="464,109,645,149"/>
+<area shape="rect" id="Node000002" href="$dc/df7/classnumeric_1_1divisor_1_1Divisor.html#a5402a9771c2ca3b0a0b875d35867000c" title="Euclidean." alt="" coords="235,77,416,117"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="450,117,416,112,417,107,451,112"/>
+<area shape="rect" id="Node000005" href="$dc/df7/classnumeric_1_1divisor_1_1Divisor.html#a7ad04bfc5581379af7a203c785d97b37" title="Stein." alt="" coords="235,141,416,181"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="451,146,417,151,416,145,450,141"/>
+<area shape="rect" id="Node000003" href="$da/d79/classapplication_1_1app__num_1_1divisor_1_1DivisorSolution.html#ab122b9adbbd914a249a14349bad4ff25" title="The Euclidean method." alt="" coords="5,5,187,60"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="239,75,186,61,188,55,241,70"/>
+<area shape="rect" id="Node000004" href="$da/df6/namespacetest_1_1tst__num.html#a4a37419be7ce007738df31cae4fc08f0" title="Test for the Euclidean method in the solution of divisor." alt="" coords="15,84,177,109"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="221,99,177,99,177,94,221,94"/>
+<area shape="rect" id="Node000006" href="$da/d79/classapplication_1_1app__num_1_1divisor_1_1DivisorSolution.html#ae765bc53c1cbe003a0587ec101ae879a" title="The Stein method." alt="" coords="5,133,187,188"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="221,163,187,163,187,158,221,158"/>
+<area shape="rect" id="Node000007" href="$da/df6/namespacetest_1_1tst__num.html#ae40e6e4d4ca0adde789e9790f6864eab" title="Test for the Stein method in the solution of divisor." alt="" coords="15,212,177,237"/>
+<area shape="poly" id="edge6_Node000005_Node000007" title=" " alt="" coords="241,187,143,214,142,209,239,182"/>
+</map>

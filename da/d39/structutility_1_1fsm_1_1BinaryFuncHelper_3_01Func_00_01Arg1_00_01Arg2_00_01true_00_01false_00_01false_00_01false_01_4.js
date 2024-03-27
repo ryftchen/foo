@@ -1,0 +1,5 @@
+var structutility_1_1fsm_1_1BinaryFuncHelper_3_01Func_00_01Arg1_00_01Arg2_00_01true_00_01false_00_01false_00_01false_01_4 =
+[
+    [ "ResultType", "da/d39/structutility_1_1fsm_1_1BinaryFuncHelper_3_01Func_00_01Arg1_00_01Arg2_00_01true_00_01false_00_01false_00_01false_01_4.html#a96a779f0b78956b87ef4d2dd73dd7440", null ],
+    [ "invoke", "da/d39/structutility_1_1fsm_1_1BinaryFuncHelper_3_01Func_00_01Arg1_00_01Arg2_00_01true_00_01false_00_01false_00_01false_01_4.html#a82aa90db58071ed4b0fa1a4f8400c17a", null ]
+];

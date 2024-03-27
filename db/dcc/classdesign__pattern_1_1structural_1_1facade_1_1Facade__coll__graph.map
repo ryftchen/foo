@@ -1,0 +1,13 @@
+<map id="design_pattern::structural::facade::Facade" name="design_pattern::structural::facade::Facade">
+<area shape="rect" id="Node000001" title="Delegate client requests to appropriate subsystem and unified interface." alt="" coords="751,91,940,131"/>
+<area shape="rect" id="Node000002" href="/usr/local/share/doxygen-tag/libstdc++.tag$a07571.html" title=" " alt="" coords="440,5,617,60"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="631,55,765,89,763,94,630,60"/>
+<area shape="rect" id="Node000003" href="/usr/local/share/doxygen-tag/libstdc++.tag$a07571.html" title=" " alt="" coords="5,91,205,131"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="184,85,229,74,338,54,439,40,440,45,339,59,230,79,186,90"/>
+<area shape="rect" id="Node000004" href="/usr/local/share/doxygen-tag/libstdc++.tag$a07571.html" title=" " alt="" coords="440,84,617,139"/>
+<area shape="poly" id="edge4_Node000004_Node000003" title=" " alt="" coords="219,109,440,109,440,114,219,114"/>
+<area shape="rect" id="Node000005" href="/usr/local/share/doxygen-tag/libstdc++.tag$a07571.html" title=" " alt="" coords="440,163,617,217"/>
+<area shape="poly" id="edge6_Node000005_Node000003" title=" " alt="" coords="186,133,230,143,339,163,440,177,439,183,338,168,229,149,184,138"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="631,109,750,109,750,114,631,114"/>
+<area shape="poly" id="edge5_Node000001_Node000005" title=" " alt="" coords="630,162,763,129,765,134,631,167"/>
+</map>

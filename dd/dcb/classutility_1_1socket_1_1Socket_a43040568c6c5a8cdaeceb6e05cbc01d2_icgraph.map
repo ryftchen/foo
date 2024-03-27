@@ -1,0 +1,13 @@
+<map id="utility::socket::Socket::ipString" name="utility::socket::Socket::ipString">
+<area shape="rect" id="Node000001" title="Get the ip address from transport information." alt="" coords="477,69,637,109"/>
+<area shape="rect" id="Node000002" href="$dd/dcb/classutility_1_1socket_1_1Socket.html#a53e0061fb91364c6b638a0b1011311d4" title="Get the transport ip address." alt="" coords="254,5,417,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="473,68,404,48,406,43,475,63"/>
+<area shape="rect" id="Node000003" href="$db/d57/classutility_1_1socket_1_1UDPSocket.html#a741eac0c64ffc6c5ee7c8dd98962c452" title="Receive bytes from socket FD." alt="" coords="241,69,429,109"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="463,92,430,92,430,87,463,87"/>
+<area shape="rect" id="Node000005" href="$db/d57/classutility_1_1socket_1_1UDPSocket.html#a5c02cc8a9702f79e1bf25b2852389642" title="Receive bytes through socket FD." alt="" coords="241,133,429,173"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="475,116,406,136,404,131,473,111"/>
+<area shape="rect" id="Node000004" href="$db/d57/classutility_1_1socket_1_1UDPSocket.html#aecb9fcf211c007defd2ae34825322766" title="Create a thread to receive." alt="" coords="5,69,193,109"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="227,92,194,92,194,87,227,87"/>
+<area shape="rect" id="Node000006" href="$db/d57/classutility_1_1socket_1_1UDPSocket.html#aaeecb4f0c3f19b171c9cd761b305159d" title="Create a thread to receive from peer." alt="" coords="5,133,193,173"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="227,156,194,156,194,151,227,151"/>
+</map>

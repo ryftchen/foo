@@ -1,0 +1,5 @@
+<map id="date_structure::tree::bs::insertNode" name="date_structure::tree::bs::insertNode">
+<area shape="rect" id="Node000001" title="Insert target node into the binary search tree. Allow inserting node with the same key." alt="" coords="204,5,355,45"/>
+<area shape="rect" id="Node000002" href="$d0/d4f/namespacedate__structure_1_1tree_1_1bs.html#af808411a1a974fb3efbb104fa9af0e55" title="Insert target node into the binary search tree. Allow inserting node with the same key." alt="" coords="5,5,156,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="191,28,156,28,156,23,191,23"/>
+</map>

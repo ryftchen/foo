@@ -1,0 +1,26 @@
+var classutility_1_1memory_1_1Memory =
+[
+    [ "Slot", "d7/ddb/unionutility_1_1memory_1_1Memory_1_1Slot.html", "d7/ddb/unionutility_1_1memory_1_1Memory_1_1Slot" ],
+    [ "Memory", "df/d77/classutility_1_1memory_1_1Memory.html#a6ec32b7c72078a1b705469e40d3aae83", null ],
+    [ "~Memory", "df/d77/classutility_1_1memory_1_1Memory.html#af1bae3bc76f7573d4c2f87361f2bf3d7", null ],
+    [ "Memory", "df/d77/classutility_1_1memory_1_1Memory.html#a0f93e574f7e43f96b04b3e24325178cc", null ],
+    [ "Memory", "df/d77/classutility_1_1memory_1_1Memory.html#a1b32480be47c99bd1f1326e7d7d5baf1", null ],
+    [ "Memory", "df/d77/classutility_1_1memory_1_1Memory.html#acf46d80e7eaa914325da4759ca81eff2", null ],
+    [ "operator=", "df/d77/classutility_1_1memory_1_1Memory.html#acaa4286548c2ecb69b4a107e40951d1d", null ],
+    [ "operator=", "df/d77/classutility_1_1memory_1_1Memory.html#a3dffd7406fddfc2bec1abe5f9483f79f", null ],
+    [ "address", "df/d77/classutility_1_1memory_1_1Memory.html#a608b7a8b88fcb47dd12826cf3ae01b69", null ],
+    [ "address", "df/d77/classutility_1_1memory_1_1Memory.html#a0da35c74ad5337997ecf382d20838c3d", null ],
+    [ "allocate", "df/d77/classutility_1_1memory_1_1Memory.html#a8a8793ea902a6fb5e3b3c3b58c567551", null ],
+    [ "deallocate", "df/d77/classutility_1_1memory_1_1Memory.html#a6537248160d08df588ef630359bd11fd", null ],
+    [ "maxSize", "df/d77/classutility_1_1memory_1_1Memory.html#a22690fd757ecf9ff75311a99298d4d4c", null ],
+    [ "construct", "df/d77/classutility_1_1memory_1_1Memory.html#a885cd0a485287d873fb1f591cb61b0cd", null ],
+    [ "destroy", "df/d77/classutility_1_1memory_1_1Memory.html#a10a35415f931f931c2267eb8dcbaaac1", null ],
+    [ "newElement", "df/d77/classutility_1_1memory_1_1Memory.html#a5154cdf89d38c90ab10755fec2b30502", null ],
+    [ "deleteElement", "df/d77/classutility_1_1memory_1_1Memory.html#a0f7d96a622d0e815a05ea22991a0d8de", null ],
+    [ "padPointer", "df/d77/classutility_1_1memory_1_1Memory.html#a7125f554f4a5ce38371980dd123798e5", null ],
+    [ "allocateBlock", "df/d77/classutility_1_1memory_1_1Memory.html#a65e569fc3b6bef5e6e4a7e4e4950233d", null ],
+    [ "currentBlock", "df/d77/classutility_1_1memory_1_1Memory.html#a0cebad4b4c093bef42bb8e38a0911a78", null ],
+    [ "currentSlot", "df/d77/classutility_1_1memory_1_1Memory.html#aac474265bb1428dc53378eaac5bc24f4", null ],
+    [ "lastSlot", "df/d77/classutility_1_1memory_1_1Memory.html#a862a1b7d8f7e2e38406b3e14fc3a6b68", null ],
+    [ "freeSlots", "df/d77/classutility_1_1memory_1_1Memory.html#a575da1719bf543b1e8e1e63be5d7aadc", null ]
+];

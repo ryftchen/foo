@@ -1,0 +1,5 @@
+<map id="utility::socket::TCPSocket::setAddress" name="utility::socket::TCPSocket::setAddress">
+<area shape="rect" id="Node000001" title="Set the transport information." alt="" coords="236,5,420,45"/>
+<area shape="rect" id="Node000002" href="$de/de4/classutility_1_1socket_1_1TCPServer.html#a20bc6bdc19f7d6a5167047ef8c673b40" title="Accept the connection on socket FD." alt="" coords="5,5,188,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="222,28,188,28,188,23,222,23"/>
+</map>

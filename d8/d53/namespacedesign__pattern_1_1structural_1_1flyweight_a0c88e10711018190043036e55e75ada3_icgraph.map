@@ -1,0 +1,7 @@
+<map id="design_pattern::structural::flyweight::output" name="design_pattern::structural::flyweight::output">
+<area shape="rect" id="Node000001" title="Output stream for the flyweight pattern. Need to be cleared manually." alt="" coords="336,53,525,93"/>
+<area shape="rect" id="Node000002" href="$d7/da3/classdesign__pattern_1_1structural_1_1flyweight_1_1UnsharedConcreteFlyweight.html#a06efd283a54687fd24f0718ae2e51845" title="The related operation." alt="" coords="5,5,288,60"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="322,60,288,55,289,50,323,55"/>
+<area shape="rect" id="Node000003" href="$d1/db3/classdesign__pattern_1_1structural_1_1flyweight_1_1ConcreteFlyweight.html#a1489e561b7d3d811ab9b4360e014fc87" title="The related operation." alt="" coords="37,84,257,139"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="322,90,257,99,256,94,321,85"/>
+</map>

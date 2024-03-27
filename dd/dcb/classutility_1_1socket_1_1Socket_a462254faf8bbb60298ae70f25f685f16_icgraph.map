@@ -1,0 +1,5 @@
+<map id="utility::socket::Socket::toClose" name="utility::socket::Socket::toClose">
+<area shape="rect" id="Node000001" title="Close the socket." alt="" coords="213,5,373,45"/>
+<area shape="rect" id="Node000002" href="$dd/dcb/classutility_1_1socket_1_1Socket.html#acfeb00245d91b641b5848a97a6b59d16" title="Destroy the Socket object." alt="" coords="5,5,165,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="200,28,166,28,166,23,200,23"/>
+</map>

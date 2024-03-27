@@ -1,0 +1,5 @@
+<map id="application::command::Command::backgroundHandler" name="application::command::Command::backgroundHandler">
+<area shape="rect" id="Node000001" title="Background handler for performing the specific task." alt="" coords="260,5,492,45"/>
+<area shape="rect" id="Node000002" href="$de/dd7/classapplication_1_1command_1_1Command.html#a5d2584a4ee3f7e91ec82649f91b3b810" title="Interface for running commander." alt="" coords="5,5,212,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="246,28,212,28,212,23,246,23"/>
+</map>

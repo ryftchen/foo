@@ -1,0 +1,11 @@
+<map id="utility::socket::TCPServer" name="utility::socket::TCPServer">
+<area shape="rect" id="Node000001" title="TCP server." alt="" coords="5,360,188,385"/>
+<area shape="rect" id="Node000002" href="$dd/dcb/classutility_1_1socket_1_1Socket.html" title="Network socket." alt="" coords="17,285,177,311"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="99,325,99,360,94,360,94,325"/>
+<area shape="rect" id="Node000003" href="/usr/local/share/doxygen-tag/libstdc++.tag$a02559.html" title=" " alt="" coords="23,197,170,223"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="99,237,99,285,94,285,94,237"/>
+<area shape="rect" id="Node000004" href="/usr/local/share/doxygen-tag/libstdc++.tag$a02547.html" title=" " alt="" coords="25,108,169,148"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="99,162,99,197,94,197,94,162"/>
+<area shape="rect" id="Node000005" href="/usr/local/share/doxygen-tag/libstdc++.tag$a02547.html" title=" " alt="" coords="20,5,173,45"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="99,59,99,108,94,108,94,59"/>
+</map>

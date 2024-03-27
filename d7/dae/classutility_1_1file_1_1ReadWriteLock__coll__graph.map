@@ -1,0 +1,9 @@
+<map id="utility::file::ReadWriteLock" name="utility::file::ReadWriteLock">
+<area shape="rect" id="Node000001" title="Lock for reading and writing files." alt="" coords="121,93,315,119"/>
+<area shape="rect" id="Node000002" href="/usr/local/share/doxygen-tag/libstdc++.tag$a03315.html" title=" " alt="" coords="5,5,148,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="109,35,200,91,197,95,106,40"/>
+<area shape="rect" id="Node000003" href="/usr/local/share/doxygen-tag/libstdc++.tag$a07923.html" title=" " alt="" coords="172,5,264,31"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="221,45,221,93,215,93,215,45"/>
+<area shape="rect" id="Node000004" href="/usr/local/share/doxygen-tag/libstdc++.tag$a02343.html" title=" " alt="" coords="289,5,459,31"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="342,40,240,95,238,91,340,35"/>
+</map>

@@ -1,0 +1,9 @@
+<map id="utility::argument::Register::ArgsNumRange::getMax" name="utility::argument::Register::ArgsNumRange::getMax">
+<area shape="rect" id="Node000001" title="Get the maximum of the range." alt="" coords="463,34,648,89"/>
+<area shape="rect" id="Node000002" href="$de/daf/classutility_1_1argument_1_1Register.html#a8ed635054bb839ba4cb0be7b3596a320" title="Get the inline usage." alt="" coords="212,5,395,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="449,49,394,41,395,36,449,44"/>
+<area shape="rect" id="Node000003" href="$de/daf/classutility_1_1argument_1_1Register.html#a6f34a9286ca67347c1fc33152600716e" title="Throw an exception when ArgsNumRange is invalid." alt="" coords="192,70,415,125"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="450,79,415,84,414,79,449,74"/>
+<area shape="rect" id="Node000004" href="$de/daf/classutility_1_1argument_1_1Register.html#a29c0c3c36a1eeb64847b14f9b55395cc" title="Validate all arguments." alt="" coords="5,77,144,117"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="178,100,144,100,144,95,178,95"/>
+</map>

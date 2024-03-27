@@ -1,0 +1,7 @@
+<map id="design_pattern::creational::prototype::Prototype" name="design_pattern::creational::prototype::Prototype">
+<area shape="rect" id="Node000001" title="The interface for cloning itself." alt="" coords="5,37,197,77"/>
+<area shape="rect" id="Node000002" href="$d5/dde/classdesign__pattern_1_1creational_1_1prototype_1_1ConcretePrototypeA.html" title="The concrete prototype." alt="" coords="245,5,476,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="210,41,245,37,246,42,211,46"/>
+<area shape="rect" id="Node000003" href="$dd/d0b/classdesign__pattern_1_1creational_1_1prototype_1_1ConcretePrototypeB.html" title="The concrete prototype." alt="" coords="245,69,476,109"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="211,68,246,72,245,78,210,73"/>
+</map>

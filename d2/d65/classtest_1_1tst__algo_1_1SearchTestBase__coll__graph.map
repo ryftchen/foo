@@ -1,0 +1,9 @@
+<map id="test::tst_algo::SearchTestBase" name="test::tst_algo::SearchTestBase">
+<area shape="rect" id="Node000001" title="Test base of search." alt="" coords="767,37,984,63"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="501,5,603,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="616,22,767,37,766,42,616,27"/>
+<area shape="rect" id="Node000003" href="/usr/local/share/doxygen-tag/libstdc++.tag$a07571.html" title=" " alt="" coords="435,55,669,109"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="683,66,766,58,766,63,683,72"/>
+<area shape="rect" id="Node000004" href="/usr/local/share/doxygen-tag/libstdc++.tag$a07571.html" title=" " alt="" coords="5,62,205,102"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="219,79,435,79,435,85,219,85"/>
+</map>

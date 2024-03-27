@@ -1,0 +1,14 @@
+<map id="numeric::integral::MonteCarlo" name="numeric::integral::MonteCarlo">
+<area shape="rect" id="Node000001" title="The Monte&#45;Carlo method." alt="" coords="812,69,953,109"/>
+<area shape="rect" id="Node000002" href="$d9/d17/classnumeric_1_1integral_1_1Integral.html" title="Integral methods." alt="" coords="568,5,709,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="724,45,812,68,811,73,722,50"/>
+<area shape="rect" id="Node000003" href="$dc/d59/classnumeric_1_1integral_1_1Expression.html" title="Target expressions." alt="" coords="568,69,709,109"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="723,87,812,87,812,92,723,92"/>
+<area shape="rect" id="Node000004" href="/usr/local/share/doxygen-tag/libstdc++.tag$a08791.html" title=" " alt="" coords="556,134,721,159"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="706,128,811,103,812,108,707,133"/>
+<area shape="rect" id="Node000005" href="/usr/local/share/doxygen-tag/libstdc++.tag$a08779.html" title=" " alt="" coords="5,126,199,181"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="212,145,364,141,532,140,556,141,556,146,532,145,364,146,212,151"/>
+<area shape="rect" id="Node000006" href="/usr/local/share/doxygen-tag/libstdc++.tag$a08791.html" title=" " alt="" coords="248,161,429,201"/>
+<area shape="poly" id="edge6_Node000006_Node000005" title=" " alt="" coords="213,164,248,168,247,173,212,169"/>
+<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="443,167,555,154,556,159,443,172"/>
+</map>

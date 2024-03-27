@@ -1,0 +1,7 @@
+<map id="design_pattern::creational::abstract_factory::ProductA" name="design_pattern::creational::abstract_factory::ProductA">
+<area shape="rect" id="Node000001" title="Implement the same interface. The others can refer to the interface not the concrete product." alt="" coords="5,37,207,77"/>
+<area shape="rect" id="Node000002" href="$d2/dc0/classdesign__pattern_1_1creational_1_1abstract__factory_1_1ConcreteProductAX.html" title="The concrete product." alt="" coords="255,5,523,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="220,42,254,38,255,43,221,47"/>
+<area shape="rect" id="Node000003" href="$d6/d55/classdesign__pattern_1_1creational_1_1abstract__factory_1_1ConcreteProductAY.html" title="The concrete product." alt="" coords="255,69,522,109"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="220,68,255,72,255,77,220,73"/>
+</map>

@@ -1,0 +1,5 @@
+<map id="utility::socket::UDPSocket::toRecv" name="utility::socket::UDPSocket::toRecv">
+<area shape="rect" id="Node000001" title="Receive bytes from socket FD." alt="" coords="241,5,429,45"/>
+<area shape="rect" id="Node000002" href="$db/d57/classutility_1_1socket_1_1UDPSocket.html#aecb9fcf211c007defd2ae34825322766" title="Create a thread to receive." alt="" coords="5,5,193,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="227,28,194,28,194,23,227,23"/>
+</map>

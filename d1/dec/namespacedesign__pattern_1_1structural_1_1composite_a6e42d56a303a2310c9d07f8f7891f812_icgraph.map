@@ -1,0 +1,5 @@
+<map id="design_pattern::structural::composite::output" name="design_pattern::structural::composite::output">
+<area shape="rect" id="Node000001" title="Output stream for the composite pattern. Need to be cleared manually." alt="" coords="256,5,445,45"/>
+<area shape="rect" id="Node000002" href="$d8/d39/classdesign__pattern_1_1structural_1_1composite_1_1Leaf.html#abdbd37a6ae1912d01fd699437f5b0164" title="Execute operation." alt="" coords="5,5,208,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="242,28,208,28,208,23,242,23"/>
+</map>

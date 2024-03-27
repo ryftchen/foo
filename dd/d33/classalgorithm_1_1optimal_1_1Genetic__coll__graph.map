@@ -1,0 +1,9 @@
+<map id="algorithm::optimal::Genetic" name="algorithm::optimal::Genetic">
+<area shape="rect" id="Node000001" title="Genetic." alt="" coords="324,69,467,109"/>
+<area shape="rect" id="Node000002" href="$d4/d1c/classalgorithm_1_1optimal_1_1Optimal.html" title="Optimal methods." alt="" coords="31,5,174,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="188,41,325,71,323,76,187,46"/>
+<area shape="rect" id="Node000003" href="$d2/dfb/classalgorithm_1_1optimal_1_1Function.html" title="Target functions." alt="" coords="31,69,174,109"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="188,87,324,87,324,92,188,92"/>
+<area shape="rect" id="Node000004" href="$d6/d4e/structalgorithm_1_1optimal_1_1Genetic_1_1DecodeAttribute.html" title="Decode attributes of species." alt="" coords="5,133,200,173"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="208,128,323,102,324,107,209,133"/>
+</map>

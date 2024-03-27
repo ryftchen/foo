@@ -1,0 +1,5 @@
+<map id="design_pattern::structural::composite::Composite" name="design_pattern::structural::composite::Composite">
+<area shape="rect" id="Node000001" title="The behavior of the components having children." alt="" coords="5,93,195,133"/>
+<area shape="rect" id="Node000002" href="$d4/da1/classdesign__pattern_1_1structural_1_1composite_1_1Component.html" title="Both the composite and the leaf nodes are in the composition." alt="" coords="5,5,195,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="103,59,103,93,97,93,97,59"/>
+</map>

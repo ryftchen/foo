@@ -1,0 +1,5 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="Node000000" href="$db/d14/classdesign__pattern_1_1structural_1_1adapter_1_1Target.html" title="The specific interface that the client uses." alt="" coords="5,5,195,45"/>
+<area shape="rect" id="Node000001" href="$d4/d26/classdesign__pattern_1_1structural_1_1adapter_1_1Adapter.html" title="Delegate the call to an adaptee when getting a method call." alt="" coords="243,5,432,45"/>
+<area shape="poly" id="edge45_Node000000_Node000001" title=" " alt="" coords="208,23,243,23,243,28,208,28"/>
+</map>

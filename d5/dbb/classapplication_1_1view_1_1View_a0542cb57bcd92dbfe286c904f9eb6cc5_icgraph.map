@@ -1,0 +1,5 @@
+<map id="application::view::View::buildTLVPacket2Stop" name="application::view::View::buildTLVPacket2Stop">
+<area shape="rect" id="Node000001" title="Build the TLV packet to stop connection." alt="" coords="229,5,424,45"/>
+<area shape="rect" id="Node000002" href="$d5/dbb/classapplication_1_1view_1_1View.html#a839db1f5d74d7a6375ebf7ef5b6e23e4" title="Create the view server." alt="" coords="5,5,181,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="216,28,181,28,181,23,216,23"/>
+</map>

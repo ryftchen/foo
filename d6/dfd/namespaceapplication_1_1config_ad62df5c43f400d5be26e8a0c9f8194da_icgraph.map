@@ -1,0 +1,9 @@
+<map id="application::config::getDefaultConfiguration" name="application::config::getDefaultConfiguration">
+<area shape="rect" id="Node000001" title="Get the default configuration." alt="" coords="476,37,663,77"/>
+<area shape="rect" id="Node000002" href="$de/dd7/classapplication_1_1command_1_1Command.html#a0fa61277c2d7568d268039dcbded51e2" title="Dump configuration." alt="" coords="199,5,428,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="462,47,428,42,429,37,463,41"/>
+<area shape="rect" id="Node000003" href="$d6/dfd/namespaceapplication_1_1config.html#a1a69875dde8b257436361c63b3ba3ea7" title="Initialize the configuration." alt="" coords="227,69,400,109"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="463,73,400,81,400,76,462,68"/>
+<area shape="rect" id="Node000004" href="$d6/dfd/namespaceapplication_1_1config.html#adae679c793bc4461b56356a6d35fead4" title="Load the configuration." alt="" coords="5,69,151,109"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="213,92,151,92,151,87,213,87"/>
+</map>

@@ -1,0 +1,12 @@
+<map id="application::getExecutableName" name="application::getExecutableName">
+<area shape="rect" id="Node000001" title="Get the executable name." alt="" coords="416,81,649,107"/>
+<area shape="rect" id="Node000002" href="$d7/d2c/namespaceapplication.html#a1dcfa0ce1b9eb76b9c593a44aa172c6f" title="The destructor function before finishing the main function. Check the signal status." alt="" coords="211,5,333,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="475,80,316,33,317,28,476,75"/>
+<area shape="rect" id="Node000003" href="$d7/d2c/namespaceapplication.html#acd710b6d6e0c67041a21f6a7ac95dcd9" title="The constructor function before starting the main function. Switch to the target path." alt="" coords="5,107,128,132"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="402,90,292,89,176,97,112,109,111,104,176,91,292,84,402,84"/>
+<area shape="rect" id="Node000004" href="$df/d92/application_2core_2source_2main_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="The main function." alt="" coords="245,107,299,132"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="402,109,300,119,300,114,402,104"/>
+<area shape="rect" id="Node000005" href="$d7/d2c/namespaceapplication.html#af813e6358782153b5497a02012e4c7d4" title="Signal handler for SIGSEGV signal, etc." alt="" coords="176,156,368,181"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="478,113,369,146,323,159,321,153,367,141,477,108"/>
+<area shape="poly" id="edge5_Node000005_Node000003" title=" " alt="" coords="205,155,120,135,121,129,206,150"/>
+</map>

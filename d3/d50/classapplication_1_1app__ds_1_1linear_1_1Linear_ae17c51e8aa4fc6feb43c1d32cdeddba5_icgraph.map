@@ -1,0 +1,8 @@
+<map id="application::app_ds::linear::Linear::queue" name="application::app_ds::linear::Linear::queue">
+<area shape="rect" id="Node000001" title="Queue." alt="" coords="228,45,391,85"/>
+<area shape="poly" id="edge1_Node000001_Node000001" title=" " alt="" coords="346,33,333,26,309,23,289,25,276,30,272,36,274,44,269,45,266,35,273,26,287,20,309,18,335,21,348,28"/>
+<area shape="rect" id="Node000002" href="$d5/da6/classapplication_1_1app__ds_1_1linear_1_1LinearStructure.html#a328a3361e2f6d32e84a73eac6c0805eb" title="The queue instance." alt="" coords="5,5,180,60"/>
+<area shape="poly" id="edge2_Node000001_Node000002" title=" " alt="" coords="214,53,180,48,181,43,215,48"/>
+<area shape="rect" id="Node000003" href="$d4/db9/namespacetest_1_1tst__ds.html#a892ccca3259360d096dc4a6eb0b3a926" title="Test for the queue instance in the structure of linear." alt="" coords="18,84,167,109"/>
+<area shape="poly" id="edge3_Node000001_Node000003" title=" " alt="" coords="215,81,168,88,167,83,214,76"/>
+</map>

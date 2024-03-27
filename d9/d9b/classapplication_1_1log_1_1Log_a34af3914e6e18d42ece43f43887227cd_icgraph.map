@@ -1,0 +1,5 @@
+<map id="application::log::Log::handleLogQueue" name="application::log::Log::handleLogQueue">
+<area shape="rect" id="Node000001" title="Handle the log queue." alt="" coords="207,5,360,45"/>
+<area shape="rect" id="Node000002" href="$d9/d9b/classapplication_1_1log_1_1Log.html#a891da4e06362f8e2616dedbc02484dd8" title="Interface for running logger." alt="" coords="5,5,159,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="193,28,159,28,159,23,193,23"/>
+</map>

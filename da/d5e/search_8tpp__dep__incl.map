@@ -1,0 +1,10 @@
+<map id="algorithm/source/search.tpp" name="algorithm/source/search.tpp">
+<area shape="rect" id="Node000001" title="The definitions (search) in the algorithm module." alt="" coords="121,5,325,31"/>
+<area shape="rect" id="Node000002" href="$d7/d6f/search_8hpp.html" title="The declarations (search) in the algorithm module." alt="" coords="118,79,329,104"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="217,44,219,78,214,79,212,45"/>
+<area shape="poly" id="edge2_Node000002_Node000001" title=" " alt="" coords="229,65,228,31,233,31,235,65"/>
+<area shape="rect" id="Node000003" href="$d8/d64/apply__algorithm_8cpp.html" title="The definitions (apply_algorithm) in the application module." alt="" coords="5,152,212,192"/>
+<area shape="poly" id="edge3_Node000002_Node000003" title=" " alt="" coords="196,114,138,154,135,150,193,110"/>
+<area shape="rect" id="Node000004" href="$df/de8/test__algorithm_8cpp.html" title="The definitions (test_algorithm) in the test module." alt="" coords="237,159,439,185"/>
+<area shape="poly" id="edge4_Node000002_Node000004" title=" " alt="" coords="253,110,323,157,320,161,250,114"/>
+</map>

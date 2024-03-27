@@ -1,0 +1,13 @@
+<map id="design_pattern::behavioral::iterator::ConcreteAggregate" name="design_pattern::behavioral::iterator::ConcreteAggregate">
+<area shape="rect" id="Node000001" title="The concrete aggregate." alt="" coords="748,69,959,109"/>
+<area shape="rect" id="Node000002" href="$d9/def/classdesign__pattern_1_1behavioral_1_1iterator_1_1Aggregate.html" title="The aggregate decouples the client from the implementation of the collection of items." alt="" coords="453,5,649,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="660,46,759,67,758,72,659,51"/>
+<area shape="rect" id="Node000003" href="/usr/local/share/doxygen-tag/libstdc++.tag$a07595.html" title=" " alt="" coords="428,69,675,109"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="689,87,748,87,748,92,689,92"/>
+<area shape="rect" id="Node000004" href="/usr/local/share/doxygen-tag/libstdc++.tag$a07595.html" title=" " alt="" coords="5,68,220,108"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="234,86,428,86,428,92,234,91"/>
+<area shape="rect" id="Node000005" href="/usr/local/share/doxygen-tag/libstdc++.tag$a08835.html" title=" " alt="" coords="465,137,637,162"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="629,131,752,107,753,112,630,137"/>
+<area shape="rect" id="Node000006" href="/usr/local/share/doxygen-tag/libstdc++.tag$a08835.html" title=" " alt="" coords="13,132,213,172"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="227,149,465,147,465,153,227,154"/>
+</map>

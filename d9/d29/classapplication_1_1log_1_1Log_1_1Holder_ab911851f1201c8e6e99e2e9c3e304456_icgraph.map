@@ -1,0 +1,5 @@
+<map id="application::log::Log::Holder::flush" name="application::log::Log::Holder::flush">
+<area shape="rect" id="Node000001" title="Flush the output stream." alt="" coords="207,5,360,45"/>
+<area shape="rect" id="Node000002" href="$d9/d29/classapplication_1_1log_1_1Log_1_1Holder.html#a79e3171b1992117c6e3c538b70ea9209" title="Destroy the Holder object." alt="" coords="5,5,159,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="193,28,159,28,159,23,193,23"/>
+</map>

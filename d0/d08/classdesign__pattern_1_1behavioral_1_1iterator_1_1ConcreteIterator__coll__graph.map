@@ -1,0 +1,9 @@
+<map id="design_pattern::behavioral::iterator::ConcreteIterator" name="design_pattern::behavioral::iterator::ConcreteIterator">
+<area shape="rect" id="Node000001" title="The concrete iterator." alt="" coords="751,41,947,81"/>
+<area shape="rect" id="Node000002" href="$d7/d7d/classdesign__pattern_1_1behavioral_1_1iterator_1_1Iterator.html" title="Manage the current index of the iterator. A set of methods for traversing over items." alt="" coords="470,5,666,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="680,37,751,46,750,51,679,42"/>
+<area shape="rect" id="Node000003" href="/usr/local/share/doxygen-tag/libstdc++.tag$a07571.html" title=" " alt="" coords="459,70,677,125"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="691,79,750,71,751,77,692,84"/>
+<area shape="rect" id="Node000004" href="/usr/local/share/doxygen-tag/libstdc++.tag$a07571.html" title=" " alt="" coords="5,77,205,117"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="219,95,459,95,459,100,219,100"/>
+</map>

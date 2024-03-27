@@ -1,0 +1,12 @@
+<map id="date_structure::linear::doubly_linked_list::createNode" name="date_structure::linear::doubly_linked_list::createNode">
+<area shape="rect" id="Node000001" title="Create a node of the doubly linked list." alt="" coords="424,104,585,159"/>
+<area shape="rect" id="Node000002" href="$d6/d20/namespacedate__structure_1_1linear_1_1doubly__linked__list.html#a918bbc93cab0a4f9d010ef659406d6d9" title="Create a doubly linked list." alt="" coords="215,5,376,60"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="433,100,353,62,355,58,435,96"/>
+<area shape="rect" id="Node000003" href="$d6/d20/namespacedate__structure_1_1linear_1_1doubly__linked__list.html#a243bc505b24f7185ec0d587315a96bd3" title="Insert the target node into the doubly linked list by index." alt="" coords="5,104,167,159"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="410,127,376,126,215,126,167,128,167,123,215,121,376,121,411,122"/>
+<area shape="rect" id="Node000004" href="$d6/d20/namespacedate__structure_1_1linear_1_1doubly__linked__list.html#a273966dc96a9d31e787401f913d33baf" title="Insert the target node into the doubly linked list as the first node." alt="" coords="215,136,376,191"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="411,148,376,154,376,148,410,143"/>
+<area shape="rect" id="Node000005" href="$d6/d20/namespacedate__structure_1_1linear_1_1doubly__linked__list.html#af123c1bf87405537b38c59bfa2c15a69" title="Insert the target node into the doubly linked list as the last node." alt="" coords="215,215,376,269"/>
+<area shape="poly" id="edge5_Node000001_Node000005" title=" " alt="" coords="444,168,377,204,353,217,351,212,375,200,441,163"/>
+<area shape="poly" id="edge4_Node000004_Node000003" title=" " alt="" coords="200,152,166,146,167,141,201,146"/>
+</map>

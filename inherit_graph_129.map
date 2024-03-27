@@ -1,0 +1,7 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="Node000000" href="$d9/dd9/classdesign__pattern_1_1structural_1_1bridge_1_1Implementor.html" title="The interface for implementation." alt="" coords="5,37,195,77"/>
+<area shape="rect" id="Node000001" href="$d5/d81/classdesign__pattern_1_1structural_1_1bridge_1_1ConcreteImplementorA.html" title="The concrete implementor." alt="" coords="243,5,473,45"/>
+<area shape="poly" id="edge47_Node000000_Node000001" title=" " alt="" coords="208,41,242,37,243,42,209,47"/>
+<area shape="rect" id="Node000002" href="$d7/dbd/classdesign__pattern_1_1structural_1_1bridge_1_1ConcreteImplementorB.html" title="The concrete implementor." alt="" coords="243,69,473,109"/>
+<area shape="poly" id="edge48_Node000000_Node000002" title=" " alt="" coords="209,68,243,72,242,78,208,73"/>
+</map>

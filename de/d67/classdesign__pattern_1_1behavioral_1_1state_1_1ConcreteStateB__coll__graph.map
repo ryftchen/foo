@@ -1,0 +1,5 @@
+<map id="design_pattern::behavioral::state::ConcreteStateB" name="design_pattern::behavioral::state::ConcreteStateB">
+<area shape="rect" id="Node000001" title="The concrete state." alt="" coords="5,93,201,133"/>
+<area shape="rect" id="Node000002" href="$d7/dcb/classdesign__pattern_1_1behavioral_1_1state_1_1State.html" title="Behaviors associated with a particular state of the context." alt="" coords="5,5,201,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="106,59,106,93,101,93,101,59"/>
+</map>

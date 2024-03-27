@@ -1,0 +1,7 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="Node000000" href="$d7/de5/classdesign__pattern_1_1behavioral_1_1strategy_1_1Strategy.html" title="Implement the algorithm using the strategy interface. Common to all supported algorithms." alt="" coords="5,37,201,77"/>
+<area shape="rect" id="Node000001" href="$dd/dd7/classdesign__pattern_1_1behavioral_1_1strategy_1_1ConcreteStrategyA.html" title="The concrete strategy." alt="" coords="249,5,463,45"/>
+<area shape="poly" id="edge23_Node000000_Node000001" title=" " alt="" coords="215,41,249,36,249,42,216,46"/>
+<area shape="rect" id="Node000002" href="$d2/dd7/classdesign__pattern_1_1behavioral_1_1strategy_1_1ConcreteStrategyB.html" title="The concrete strategy." alt="" coords="249,69,463,109"/>
+<area shape="poly" id="edge24_Node000000_Node000002" title=" " alt="" coords="216,69,249,73,249,78,215,74"/>
+</map>

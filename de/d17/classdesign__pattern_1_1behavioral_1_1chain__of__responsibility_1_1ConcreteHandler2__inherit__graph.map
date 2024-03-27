@@ -1,0 +1,5 @@
+<map id="design_pattern::behavioral::chain_of_responsibility::ConcreteHandler2" name="design_pattern::behavioral::chain_of_responsibility::ConcreteHandler2">
+<area shape="rect" id="Node000001" title="The concrete handler." alt="" coords="5,108,201,163"/>
+<area shape="rect" id="Node000002" href="$df/d70/classdesign__pattern_1_1behavioral_1_1chain__of__responsibility_1_1Handler.html" title="Handle requests that they are responsible for. Optionally implement the successor link." alt="" coords="5,5,201,60"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="106,74,106,108,101,108,101,74"/>
+</map>

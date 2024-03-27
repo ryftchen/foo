@@ -1,0 +1,20 @@
+<map id="application/example/include/apply_algorithm.hpp" name="application/example/include/apply_algorithm.hpp">
+<area shape="rect" id="Node000001" title="The declarations (apply_algorithm) in the application module." alt="" coords="415,5,626,45"/>
+<area shape="rect" id="Node000002" href="$d7/dc7/command_8hpp.html" title="The declarations (command) in the application module." alt="" coords="432,93,609,133"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="523,59,523,93,518,93,518,59"/>
+<area shape="rect" id="Node000005" href="$d8/d64/apply__algorithm_8cpp.html" title="The definitions (apply_algorithm) in the application module." alt="" coords="5,189,212,229"/>
+<area shape="poly" id="edge8_Node000001_Node000005" title=" " alt="" coords="466,54,153,191,150,186,464,49"/>
+<area shape="rect" id="Node000009" href="$df/de8/test__algorithm_8cpp.html" title="The definitions (test_algorithm) in the test module." alt="" coords="634,101,837,126"/>
+<area shape="poly" id="edge9_Node000001_Node000009" title=" " alt="" coords="581,48,708,98,706,103,579,53"/>
+<area shape="rect" id="Node000003" href="$d1/d81/command_8cpp.html" title="The definitions (command) in the application module." alt="" coords="237,189,410,229"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="470,142,364,191,362,186,467,137"/>
+<area shape="rect" id="Node000004" href="$df/d92/application_2core_2source_2main_8cpp.html" title="The definitions (main) in the application module." alt="" coords="434,189,607,229"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="523,147,523,189,518,189,518,147"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="425,139,193,191,191,186,423,134"/>
+<area shape="rect" id="Node000006" href="$d1/d3d/apply__data__structure_8cpp.html" title="The definitions (apply_data_structure) in the application module." alt="" coords="631,189,869,229"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="581,136,705,186,703,191,579,141"/>
+<area shape="rect" id="Node000007" href="$de/d6b/apply__design__pattern_8cpp.html" title="The definitions (apply_design_pattern) in the application module." alt="" coords="893,181,1052,236"/>
+<area shape="poly" id="edge6_Node000002_Node000007" title=" " alt="" coords="623,131,881,179,894,182,892,187,880,184,622,136"/>
+<area shape="rect" id="Node000008" href="$d1/dee/apply__numeric_8cpp.html" title="The definitions (apply_numeric) in the application module." alt="" coords="1076,189,1272,229"/>
+<area shape="poly" id="edge7_Node000002_Node000008" title=" " alt="" coords="623,131,748,145,846,153,943,161,1065,179,1101,186,1100,191,1064,184,943,167,846,158,748,151,622,136"/>
+</map>

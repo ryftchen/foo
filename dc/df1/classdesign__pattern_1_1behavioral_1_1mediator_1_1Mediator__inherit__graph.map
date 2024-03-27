@@ -1,0 +1,5 @@
+<map id="design_pattern::behavioral::mediator::Mediator" name="design_pattern::behavioral::mediator::Mediator">
+<area shape="rect" id="Node000001" title="Implement cooperative behavior by coordinating colleagues." alt="" coords="14,5,210,45"/>
+<area shape="rect" id="Node000002" href="$d8/d22/classdesign__pattern_1_1behavioral_1_1mediator_1_1ConcreteMediator.html" title="The concrete mediator." alt="" coords="5,93,219,133"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="115,59,115,93,109,93,109,59"/>
+</map>

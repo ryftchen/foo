@@ -1,0 +1,11 @@
+<map id="utility::socket::Socket" name="utility::socket::Socket">
+<area shape="rect" id="Node000001" title="Network socket." alt="" coords="225,5,385,31"/>
+<area shape="rect" id="Node000002" href="$de/de4/classutility_1_1socket_1_1TCPServer.html" title="TCP server." alt="" coords="5,79,188,104"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="259,38,131,81,129,76,257,33"/>
+<area shape="rect" id="Node000003" href="$d1/daf/classutility_1_1socket_1_1TCPSocket.html" title="TCP socket." alt="" coords="213,79,397,104"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="307,44,307,79,302,79,302,44"/>
+<area shape="rect" id="Node000004" href="$db/d57/classutility_1_1socket_1_1UDPSocket.html" title="UDP socket." alt="" coords="421,79,609,104"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="352,32,482,76,480,81,350,37"/>
+<area shape="rect" id="Node000005" href="$de/dc3/classutility_1_1socket_1_1UDPServer.html" title="UDP server." alt="" coords="422,152,609,177"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="518,118,518,152,513,152,513,118"/>
+</map>

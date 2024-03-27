@@ -1,0 +1,16 @@
+<map id="test::tst_num::PrimeTestBase" name="test::tst_num::PrimeTestBase">
+<area shape="rect" id="Node000001" title="Test base of prime." alt="" coords="1037,63,1249,88"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="760,5,861,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="875,26,1069,60,1069,65,874,31"/>
+<area shape="rect" id="Node000003" href="/usr/local/share/doxygen-tag/libstdc++.tag$a07571.html" title=" " alt="" coords="688,55,933,95"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="947,73,1037,73,1037,78,947,78"/>
+<area shape="rect" id="Node000004" href="/usr/local/share/doxygen-tag/libstdc++.tag$a07571.html" title=" " alt="" coords="248,55,448,95"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="461,73,688,73,688,78,461,78"/>
+<area shape="rect" id="Node000005" href="/usr/local/share/doxygen-tag/libstdc++.tag$a08791.html" title=" " alt="" coords="709,120,912,145"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="898,115,1069,85,1069,91,899,120"/>
+<area shape="rect" id="Node000006" href="/usr/local/share/doxygen-tag/libstdc++.tag$a08779.html" title=" " alt="" coords="5,135,199,189"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="212,154,223,154,709,134,709,139,223,159,213,160"/>
+<area shape="rect" id="Node000007" href="/usr/local/share/doxygen-tag/libstdc++.tag$a08791.html" title=" " alt="" coords="257,170,439,210"/>
+<area shape="poly" id="edge7_Node000007_Node000006" title=" " alt="" coords="213,172,257,177,257,182,212,177"/>
+<area shape="poly" id="edge6_Node000005_Node000007" title=" " alt="" coords="452,183,555,176,664,163,761,143,762,148,664,169,555,181,453,189"/>
+</map>

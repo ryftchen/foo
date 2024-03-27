@@ -1,0 +1,5 @@
+<map id="utility::file::ReadWriteLock::readLock" name="utility::file::ReadWriteLock::readLock">
+<area shape="rect" id="Node000001" title="Acquire a read lock." alt="" coords="229,5,392,45"/>
+<area shape="rect" id="Node000002" href="$da/d05/classutility_1_1file_1_1ReadWriteGuard.html#a6ea193d06003e19d61069e4e69c01da9" title="Construct a new ReadWriteGuard object." alt="" coords="5,5,181,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="215,28,181,28,181,23,215,23"/>
+</map>

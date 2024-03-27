@@ -1,0 +1,8 @@
+<map id="application::app_dp::structural::Structural::facade" name="application::app_dp::structural::Structural::facade">
+<area shape="rect" id="Node000001" title="Facade." alt="" coords="263,37,425,92"/>
+<area shape="poly" id="edge1_Node000001_Node000001" title=" " alt="" coords="383,26,369,19,344,16,323,18,310,23,304,29,304,37,299,37,299,27,307,18,322,13,344,11,370,14,385,22"/>
+<area shape="rect" id="Node000002" href="$d5/d1d/classapplication_1_1app__dp_1_1structural_1_1StructuralPattern.html#a165df5e51977f2a30b36ee6b149f1a7e" title="The facade instance." alt="" coords="5,5,215,60"/>
+<area shape="poly" id="edge2_Node000001_Node000002" title=" " alt="" coords="248,54,214,50,215,44,249,49"/>
+<area shape="rect" id="Node000003" href="$d5/ddd/namespacetest_1_1tst__dp.html#afa88f6e1cd5cd1ee9d8bb8f22b290ea4" title="Test for the facade instance in the pattern of structural." alt="" coords="35,84,185,109"/>
+<area shape="poly" id="edge3_Node000001_Node000003" title=" " alt="" coords="249,80,186,89,185,84,248,75"/>
+</map>

@@ -1,0 +1,5 @@
+<map id="design_pattern::behavioral::strategy::ConcreteStrategyA" name="design_pattern::behavioral::strategy::ConcreteStrategyA">
+<area shape="rect" id="Node000001" title="The concrete strategy." alt="" coords="5,93,219,133"/>
+<area shape="rect" id="Node000002" href="$d7/de5/classdesign__pattern_1_1behavioral_1_1strategy_1_1Strategy.html" title="Implement the algorithm using the strategy interface. Common to all supported algorithms." alt="" coords="14,5,210,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="115,59,115,93,109,93,109,59"/>
+</map>

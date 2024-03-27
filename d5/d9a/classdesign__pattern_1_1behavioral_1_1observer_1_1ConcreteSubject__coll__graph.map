@@ -1,0 +1,16 @@
+<map id="design_pattern::behavioral::observer::ConcreteSubject" name="design_pattern::behavioral::observer::ConcreteSubject">
+<area shape="rect" id="Node000001" title="The concrete subject." alt="" coords="1288,41,1489,81"/>
+<area shape="rect" id="Node000002" href="$dc/dc1/classdesign__pattern_1_1behavioral_1_1observer_1_1Subject.html" title="Attach, detach and notify observers." alt="" coords="1043,41,1239,81"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="1253,59,1288,59,1288,64,1253,64"/>
+<area shape="rect" id="Node000003" href="/usr/local/share/doxygen-tag/libstdc++.tag$a07595.html" title=" " alt="" coords="723,5,892,45"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="906,33,1043,48,1042,53,906,39"/>
+<area shape="rect" id="Node000004" href="/usr/local/share/doxygen-tag/libstdc++.tag$a07595.html" title=" " alt="" coords="248,5,463,45"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="477,23,722,23,722,28,477,28"/>
+<area shape="rect" id="Node000005" href="/usr/local/share/doxygen-tag/libstdc++.tag$a08791.html" title=" " alt="" coords="689,70,925,125"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="939,80,1042,69,1043,75,940,86"/>
+<area shape="rect" id="Node000006" href="/usr/local/share/doxygen-tag/libstdc++.tag$a08779.html" title=" " alt="" coords="5,91,199,146"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="212,111,223,111,689,97,689,103,223,116,213,116"/>
+<area shape="rect" id="Node000007" href="/usr/local/share/doxygen-tag/libstdc++.tag$a08791.html" title=" " alt="" coords="265,129,446,169"/>
+<area shape="poly" id="edge7_Node000007_Node000006" title=" " alt="" coords="212,129,265,136,264,141,212,135"/>
+<area shape="poly" id="edge6_Node000005_Node000007" title=" " alt="" coords="460,157,560,160,613,157,665,149,708,138,749,122,751,127,710,143,666,155,613,162,560,165,460,163"/>
+</map>

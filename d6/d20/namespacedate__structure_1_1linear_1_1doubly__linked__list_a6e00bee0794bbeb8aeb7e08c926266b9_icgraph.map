@@ -1,0 +1,9 @@
+<map id="date_structure::linear::doubly_linked_list::dllSize" name="date_structure::linear::doubly_linked_list::dllSize">
+<area shape="rect" id="Node000001" title="Get the size of the doubly linked list." alt="" coords="215,84,376,139"/>
+<area shape="rect" id="Node000002" href="$d6/d20/namespacedate__structure_1_1linear_1_1doubly__linked__list.html#a3a7db32277d37626de6fcbfa45be3dc7" title="Delete the last node from the doubly linked list." alt="" coords="5,5,167,60"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="208,82,158,63,160,58,210,77"/>
+<area shape="rect" id="Node000003" href="$d6/d20/namespacedate__structure_1_1linear_1_1doubly__linked__list.html#a002df9d7ae5dab9082c5b3adba6dbb62" title="Get the last node of the doubly linked list." alt="" coords="5,84,167,139"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="200,114,167,114,167,109,200,109"/>
+<area shape="rect" id="Node000004" href="$d6/d20/namespacedate__structure_1_1linear_1_1doubly__linked__list.html#a7682a59f8a6fe5c24a28bdba5ad08144" title="Check whether any nodes do not exist in the doubly linked list." alt="" coords="5,163,167,217"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="210,146,160,165,158,160,208,141"/>
+</map>

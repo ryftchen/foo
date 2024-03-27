@@ -1,0 +1,9 @@
+<map id="utility::socket::Socket" name="utility::socket::Socket">
+<area shape="rect" id="Node000001" title="Network socket." alt="" coords="5,285,165,311"/>
+<area shape="rect" id="Node000002" href="/usr/local/share/doxygen-tag/libstdc++.tag$a02559.html" title=" " alt="" coords="12,197,159,223"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="88,237,88,285,83,285,83,237"/>
+<area shape="rect" id="Node000003" href="/usr/local/share/doxygen-tag/libstdc++.tag$a02547.html" title=" " alt="" coords="13,108,157,148"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="88,162,88,197,83,197,83,162"/>
+<area shape="rect" id="Node000004" href="/usr/local/share/doxygen-tag/libstdc++.tag$a02547.html" title=" " alt="" coords="9,5,162,45"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="88,59,88,108,83,108,83,59"/>
+</map>

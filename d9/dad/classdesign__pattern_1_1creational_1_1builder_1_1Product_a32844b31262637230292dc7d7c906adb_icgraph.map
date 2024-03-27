@@ -1,0 +1,7 @@
+<map id="design_pattern::creational::builder::Product::makeB" name="design_pattern::creational::builder::Product::makeB">
+<area shape="rect" id="Node000001" title="Make part B." alt="" coords="249,53,441,93"/>
+<area shape="rect" id="Node000002" href="$da/da9/classdesign__pattern_1_1creational_1_1builder_1_1ConcreteBuilderX.html#a2c2172d6fb3078f5d37dfd1752d6407b" title="Build part B." alt="" coords="5,5,201,60"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="235,57,201,51,202,46,236,52"/>
+<area shape="rect" id="Node000003" href="$de/d37/classdesign__pattern_1_1creational_1_1builder_1_1ConcreteBuilderY.html#ac2dc1cfcdb08fd5b3784d4823d33d62c" title="Build part B." alt="" coords="6,84,201,139"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="236,93,201,98,201,93,235,88"/>
+</map>

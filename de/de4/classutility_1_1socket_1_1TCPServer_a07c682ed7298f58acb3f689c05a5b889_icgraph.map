@@ -1,0 +1,5 @@
+<map id="utility::socket::TCPServer::toBind" name="utility::socket::TCPServer::toBind">
+<area shape="rect" id="Node000001" title="Bind to transport ip address and port number." alt="" coords="236,5,419,45"/>
+<area shape="rect" id="Node000002" href="$de/de4/classutility_1_1socket_1_1TCPServer.html#ac71c939c492901a4654ae7d267b9a987" title="Bind to transport port number with default ip address." alt="" coords="5,5,188,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="223,28,188,28,188,23,223,23"/>
+</map>

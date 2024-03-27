@@ -1,0 +1,9 @@
+<map id="test::tst_num::ArithmeticTestBase" name="test::tst_num::ArithmeticTestBase">
+<area shape="rect" id="Node000001" title="Test base of arithmetic." alt="" coords="28,225,212,265"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,130,107,155"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="73,166,110,224,106,227,68,168"/>
+<area shape="rect" id="Node000003" href="/usr/local/share/doxygen-tag/libstdc++.tag$a07571.html" title=" " alt="" coords="131,123,405,163"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="230,173,149,227,146,223,227,168"/>
+<area shape="rect" id="Node000004" href="/usr/local/share/doxygen-tag/libstdc++.tag$a07571.html" title=" " alt="" coords="168,5,368,45"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="271,59,271,122,265,122,265,59"/>
+</map>

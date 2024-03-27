@@ -1,0 +1,7 @@
+<map id="date_structure::linear::doubly_linked_list::dllDelete" name="date_structure::linear::doubly_linked_list::dllDelete">
+<area shape="rect" id="Node000001" title="Delete the target node from the doubly linked list by index." alt="" coords="215,45,376,100"/>
+<area shape="rect" id="Node000002" href="$d6/d20/namespacedate__structure_1_1linear_1_1doubly__linked__list.html#a7b81c797a9bd53a220f8407bb03229f7" title="Delete the first node from the doubly linked list." alt="" coords="5,5,167,60"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="200,57,166,51,167,45,201,52"/>
+<area shape="rect" id="Node000003" href="$d6/d20/namespacedate__structure_1_1linear_1_1doubly__linked__list.html#a3a7db32277d37626de6fcbfa45be3dc7" title="Delete the last node from the doubly linked list." alt="" coords="5,84,167,139"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="201,93,167,99,166,94,200,87"/>
+</map>

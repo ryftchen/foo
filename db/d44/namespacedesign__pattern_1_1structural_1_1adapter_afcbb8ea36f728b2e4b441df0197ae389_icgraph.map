@@ -1,0 +1,5 @@
+<map id="design_pattern::structural::adapter::output" name="design_pattern::structural::adapter::output">
+<area shape="rect" id="Node000001" title="Output stream for the adapter pattern. Need to be cleared manually." alt="" coords="305,5,495,45"/>
+<area shape="rect" id="Node000002" href="$dc/dce/classdesign__pattern_1_1structural_1_1adapter_1_1Adaptee.html#a8c7f66fb19b91b082916d1157b4af56c" title="The specific request." alt="" coords="5,5,257,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="292,28,258,28,258,23,292,23"/>
+</map>

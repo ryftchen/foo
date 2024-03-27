@@ -1,0 +1,7 @@
+<map id="utility::socket::UDPServer" name="utility::socket::UDPServer">
+<area shape="rect" id="Node000001" title="UDP server." alt="" coords="6,152,193,177"/>
+<area shape="rect" id="Node000002" href="$db/d57/classutility_1_1socket_1_1UDPSocket.html" title="UDP socket." alt="" coords="5,79,193,104"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="102,118,102,152,97,152,97,118"/>
+<area shape="rect" id="Node000003" href="$dd/dcb/classutility_1_1socket_1_1Socket.html" title="Network socket." alt="" coords="19,5,179,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="102,44,102,79,97,79,97,44"/>
+</map>

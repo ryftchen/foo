@@ -1,0 +1,7 @@
+<map id="utility::console::Console::saveState" name="utility::console::Console::saveState">
+<area shape="rect" id="Node000001" title="Save current state." alt="" coords="456,5,633,45"/>
+<area shape="rect" id="Node000002" href="$d9/dd3/classutility_1_1console_1_1Console.html#ab850c0e927579b40ea69f763cc3975d9" title="Reserve usage to the calling console instance." alt="" coords="231,5,408,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="443,28,408,28,408,23,443,23"/>
+<area shape="rect" id="Node000003" href="$d9/dd3/classutility_1_1console_1_1Console.html#a349840e1dd8843db1aae0ae7c16d4dfd" title="Read console command line." alt="" coords="5,5,183,45"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="217,28,183,28,183,23,217,23"/>
+</map>

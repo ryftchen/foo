@@ -1,0 +1,28 @@
+<map id="application::app_algo::AlgorithmTask" name="application::app_algo::AlgorithmTask">
+<area shape="rect" id="Node000001" title="Manage algorithm tasks." alt="" coords="1389,234,1551,274"/>
+<area shape="rect" id="Node000002" href="/usr/local/share/doxygen-tag/libstdc++.tag$a02103.html" title=" " alt="" coords="1007,148,1256,203"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="1263,204,1390,233,1388,238,1262,209"/>
+<area shape="rect" id="Node000003" href="/usr/local/share/doxygen-tag/libstdc++.tag$a02075.html" title=" " alt="" coords="359,289,549,388"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="496,276,544,219,606,156,679,97,719,73,762,53,821,31,873,19,898,19,923,25,949,36,976,54,985,63,990,73,991,94,991,115,994,124,1001,134,1016,146,1013,150,997,138,989,127,985,116,985,94,985,74,981,66,973,58,946,41,921,30,897,25,874,24,823,36,764,58,722,78,682,102,609,160,548,222,500,280"/>
+<area shape="rect" id="Node000005" href="/usr/local/share/doxygen-tag/libstdc++.tag$a02103.html" title=" " alt="" coords="599,261,739,301"/>
+<area shape="poly" id="edge5_Node000005_Node000003" title=" " alt="" coords="562,307,598,297,599,302,563,312"/>
+<area shape="rect" id="Node000006" href="/usr/local/share/doxygen-tag/libstdc++.tag$a02103.html" title=" " alt="" coords="999,70,1264,124"/>
+<area shape="poly" id="edge7_Node000006_Node000003" title=" " alt="" coords="477,275,498,232,525,185,558,138,597,96,637,64,672,44,712,30,762,18,821,7,869,3,916,7,975,18,1036,40,1088,67,1086,72,1034,45,974,24,915,12,869,8,822,12,763,24,713,36,675,48,640,68,600,100,562,141,530,188,503,235,482,278"/>
+<area shape="rect" id="Node000007" href="/usr/local/share/doxygen-tag/libstdc++.tag$a02103.html" title=" " alt="" coords="1001,306,1262,360"/>
+<area shape="poly" id="edge10_Node000007_Node000003" title=" " alt="" coords="546,392,641,437,695,457,752,472,810,480,867,480,922,468,973,444,983,434,985,421,988,407,997,393,1020,373,1047,358,1050,363,1023,378,1001,396,993,409,991,423,987,436,976,449,923,474,867,485,809,486,751,477,693,462,639,442,544,397"/>
+<area shape="rect" id="Node000008" href="/usr/local/share/doxygen-tag/libstdc++.tag$a02103.html" title=" " alt="" coords="1005,406,1258,460"/>
+<area shape="poly" id="edge13_Node000008_Node000003" title=" " alt="" coords="502,397,546,440,572,459,600,475,653,496,699,509,742,516,782,517,867,506,974,486,1023,474,1068,458,1070,463,1024,479,975,492,868,512,782,522,741,521,698,514,651,501,598,479,569,464,543,444,498,400"/>
+<area shape="rect" id="Node000009" href="/usr/local/share/doxygen-tag/libstdc++.tag$a02103.html" title=" " alt="" coords="1014,227,1249,282"/>
+<area shape="poly" id="edge16_Node000009_Node000003" title=" " alt="" coords="563,352,674,364,794,372,851,372,901,368,943,360,973,347,983,335,985,322,987,306,997,291,1012,280,1015,284,1001,295,992,308,990,323,988,338,976,351,944,365,902,373,851,377,794,377,674,370,563,357"/>
+<area shape="rect" id="Node000004" href="/usr/local/share/doxygen-tag/libstdc++.tag$a02075.html" title=" " alt="" coords="5,318,149,358"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="163,336,358,336,358,341,163,341"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="701,250,729,230,762,213,823,195,886,182,1006,171,1007,177,887,187,824,200,764,218,732,234,704,255"/>
+<area shape="poly" id="edge8_Node000006_Node000005" title=" " alt="" coords="678,247,690,217,708,184,732,153,761,128,818,102,878,86,940,79,999,79,999,84,940,85,879,91,819,107,764,133,735,157,713,187,695,219,683,249"/>
+<area shape="poly" id="edge11_Node000007_Node000005" title=" " alt="" coords="717,305,763,322,823,333,884,339,1000,341,1000,346,884,345,822,339,762,328,715,310"/>
+<area shape="poly" id="edge14_Node000008_Node000005" title=" " alt="" coords="689,311,720,354,741,375,764,391,822,415,884,430,946,438,1005,440,1004,445,945,443,883,435,820,420,761,395,737,379,716,358,685,315"/>
+<area shape="poly" id="edge17_Node000009_Node000005" title=" " alt="" coords="752,274,1014,258,1014,264,753,279"/>
+<area shape="poly" id="edge6_Node000001_Node000006" title=" " alt="" coords="1248,127,1265,133,1317,160,1367,191,1437,232,1434,237,1364,195,1314,165,1263,138,1246,131"/>
+<area shape="poly" id="edge9_Node000001_Node000007" title=" " alt="" coords="1262,300,1388,270,1390,276,1263,305"/>
+<area shape="poly" id="edge12_Node000001_Node000008" title=" " alt="" coords="1207,398,1263,371,1364,315,1435,272,1438,277,1367,319,1265,375,1209,402"/>
+<area shape="poly" id="edge15_Node000001_Node000009" title=" " alt="" coords="1262,252,1389,252,1389,257,1262,257"/>
+</map>

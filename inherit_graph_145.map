@@ -1,0 +1,15 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="Node000000" href="/usr/local/share/doxygen-tag/libstdc++.tag$a03667.html" title=" " alt="" coords="5,285,208,325"/>
+<area shape="rect" id="Node000001" href="$dc/d43/structutility_1_1argument_1_1HasContainerTraits.html" title="Confirm container traits. Value is false." alt="" coords="299,5,455,60"/>
+<area shape="poly" id="edge68_Node000000_Node000001" title=" " alt="" coords="118,271,138,226,168,172,207,118,254,71,297,48,299,52,258,75,211,121,172,175,143,228,123,273"/>
+<area shape="rect" id="Node000002" href="$d6/dcd/structutility_1_1argument_1_1HasContainerTraits_3_01T_00_01std_1_1void__t_3_01typename_01T_1_1va43307f845ad1eb60ba691c2838cb618d.html" title="Confirm container traits. Value is true." alt="" coords="275,85,478,213"/>
+<area shape="poly" id="edge69_Node000000_Node000002" title=" " alt="" coords="153,276,274,205,276,210,155,280"/>
+<area shape="rect" id="Node000003" href="$d4/d8d/structutility_1_1argument_1_1HasContainerTraits_3_01std_1_1string_01_4.html" title="Confirm container traits (std::string). Value is false." alt="" coords="299,237,455,292"/>
+<area shape="poly" id="edge70_Node000000_Node000003" title=" " alt="" coords="221,285,298,274,299,279,222,290"/>
+<area shape="rect" id="Node000004" href="$de/d51/structutility_1_1argument_1_1HasContainerTraits_3_01std_1_1string__view_01_4.html" title="Confirm container traits (std::string_view). Value is false." alt="" coords="299,316,455,371"/>
+<area shape="poly" id="edge71_Node000000_Node000004" title=" " alt="" coords="222,318,299,330,298,335,221,324"/>
+<area shape="rect" id="Node000005" href="$d5/d5c/structutility_1_1argument_1_1HasStreamableTraits.html" title="Confirm streamable traits. Value is false." alt="" coords="298,395,455,449"/>
+<area shape="poly" id="edge72_Node000000_Node000005" title=" " alt="" coords="155,329,257,380,299,395,297,400,255,384,153,334"/>
+<area shape="rect" id="Node000006" href="$dc/d95/structutility_1_1argument_1_1HasStreamableTraits_3_01T_00_01std_1_1void__t_3_01decltype_07std_1_ec1a26e692565d70096271814c5a2357.html" title="Confirm streamable traits. Value is true." alt="" coords="256,473,497,557"/>
+<area shape="poly" id="edge73_Node000000_Node000006" title=" " alt="" coords="133,334,187,396,221,429,258,459,277,471,274,475,254,463,217,433,183,399,129,337"/>
+</map>

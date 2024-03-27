@@ -1,0 +1,6 @@
+<map id="utility::memory::Memory&lt; T, BlockSize &gt;::Slot" name="utility::memory::Memory&lt; T, BlockSize &gt;::Slot">
+<area shape="rect" id="Node000001" title="Union for the slot that stores element information." alt="" coords="5,108,188,148"/>
+<area shape="rect" id="Node000002" href="$d7/ddb/unionutility_1_1memory_1_1Memory_1_1Slot.html" title="Union for the slot that stores element information." alt="" coords="5,5,188,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="99,59,99,108,94,108,94,59"/>
+<area shape="poly" id="edge2_Node000002_Node000002" title=" " alt="" coords="203,16,215,25,206,33,189,37,188,31,204,28,209,26,200,21"/>
+</map>

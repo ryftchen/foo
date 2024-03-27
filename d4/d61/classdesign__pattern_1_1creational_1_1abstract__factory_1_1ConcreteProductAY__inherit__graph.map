@@ -1,0 +1,5 @@
+<map id="design_pattern::creational::abstract_factory::ConcreteProductAY" name="design_pattern::creational::abstract_factory::ConcreteProductAY">
+<area shape="rect" id="Node000001" title="The concrete product." alt="" coords="5,93,272,133"/>
+<area shape="rect" id="Node000002" href="$d9/ded/classdesign__pattern_1_1creational_1_1abstract__factory_1_1ProductA.html" title="Implement the same interface. The others can refer to the interface not the concrete product." alt="" coords="38,5,239,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="141,59,141,93,136,93,136,59"/>
+</map>

@@ -1,0 +1,5 @@
+<map id="design_pattern::behavioral::interpreter::TerminalExpression" name="design_pattern::behavioral::interpreter::TerminalExpression">
+<area shape="rect" id="Node000001" title="The terminal interpret operation. An instance is required for every terminal symbol in a sentence." alt="" coords="5,93,240,133"/>
+<area shape="rect" id="Node000002" href="$dd/d49/classdesign__pattern_1_1behavioral_1_1interpreter_1_1AbstractExpression.html" title="The abstract interpret operation." alt="" coords="7,5,239,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="125,59,125,93,120,93,120,59"/>
+</map>

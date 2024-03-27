@@ -1,0 +1,12 @@
+<map id="design_pattern::structural::composite::Composite" name="design_pattern::structural::composite::Composite">
+<area shape="rect" id="Node000001" title="The behavior of the components having children." alt="" coords="1001,41,1191,81"/>
+<area shape="rect" id="Node000002" href="$d4/da1/classdesign__pattern_1_1structural_1_1composite_1_1Component.html" title="Both the composite and the leaf nodes are in the composition." alt="" coords="687,5,876,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="890,35,1001,48,1001,53,890,40"/>
+<area shape="rect" id="Node000003" href="/usr/local/share/doxygen-tag/libstdc++.tag$a08791.html" title=" " alt="" coords="667,70,896,125"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="909,80,1001,69,1002,75,910,85"/>
+<area shape="rect" id="Node000004" href="/usr/local/share/doxygen-tag/libstdc++.tag$a08779.html" title=" " alt="" coords="5,67,199,122"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="212,85,413,79,528,78,643,81,667,83,666,88,643,87,528,84,413,84,213,91"/>
+<area shape="rect" id="Node000005" href="/usr/local/share/doxygen-tag/libstdc++.tag$a08791.html" title=" " alt="" coords="248,105,429,145"/>
+<area shape="poly" id="edge5_Node000005_Node000004" title=" " alt="" coords="213,106,248,111,247,116,212,112"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="443,125,453,125,548,129,590,129,642,125,666,122,667,127,643,131,590,135,548,134,453,131,443,131"/>
+</map>

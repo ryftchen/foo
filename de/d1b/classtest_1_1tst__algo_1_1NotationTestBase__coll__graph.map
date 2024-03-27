@@ -1,0 +1,9 @@
+<map id="test::tst_algo::NotationTestBase" name="test::tst_algo::NotationTestBase">
+<area shape="rect" id="Node000001" title="Test base of notation." alt="" coords="5,225,176,265"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="19,130,120,155"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="77,168,89,225,84,226,72,169"/>
+<area shape="rect" id="Node000003" href="/usr/local/share/doxygen-tag/libstdc++.tag$a07571.html" title=" " alt="" coords="145,123,405,163"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="230,172,126,228,124,223,227,167"/>
+<area shape="rect" id="Node000004" href="/usr/local/share/doxygen-tag/libstdc++.tag$a07571.html" title=" " alt="" coords="175,5,375,45"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="277,59,277,122,272,122,272,59"/>
+</map>

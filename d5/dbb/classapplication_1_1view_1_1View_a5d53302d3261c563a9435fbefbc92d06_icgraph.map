@@ -1,0 +1,5 @@
+<map id="application::view::View::getStatusInformation" name="application::view::View::getStatusInformation">
+<area shape="rect" id="Node000001" title="Get the status information." alt="" coords="269,5,468,45"/>
+<area shape="rect" id="Node000002" href="$d5/dbb/classapplication_1_1view_1_1View.html#a6b0cb8bf6198cc407906d81bdc6f0ffb" title="Build the TLV packet to show status information." alt="" coords="5,5,221,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="256,28,221,28,221,23,256,23"/>
+</map>

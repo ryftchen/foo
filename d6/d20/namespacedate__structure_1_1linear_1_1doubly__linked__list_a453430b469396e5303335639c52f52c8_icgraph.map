@@ -1,0 +1,17 @@
+<map id="date_structure::linear::doubly_linked_list::getNode" name="date_structure::linear::doubly_linked_list::getNode">
+<area shape="rect" id="Node000001" title="Get the node of the doubly linked list by index." alt="" coords="424,163,585,217"/>
+<area shape="rect" id="Node000002" href="$d6/d20/namespacedate__structure_1_1linear_1_1doubly__linked__list.html#a8147622a2c7c2dc42a46304db7ca7784" title="Delete the target node from the doubly linked list by index." alt="" coords="215,84,376,139"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="418,160,368,141,370,136,419,155"/>
+<area shape="rect" id="Node000005" href="$d6/d20/namespacedate__structure_1_1linear_1_1doubly__linked__list.html#a6538732a5393e4ad7a4ea4f90514d472" title="Get the node of the doubly linked list by index." alt="" coords="215,163,376,217"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="410,193,376,193,376,187,410,187"/>
+<area shape="rect" id="Node000008" href="$d6/d20/namespacedate__structure_1_1linear_1_1doubly__linked__list.html#a243bc505b24f7185ec0d587315a96bd3" title="Insert the target node into the doubly linked list by index." alt="" coords="215,241,376,296"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="419,225,370,244,368,239,418,220"/>
+<area shape="rect" id="Node000003" href="$d6/d20/namespacedate__structure_1_1linear_1_1doubly__linked__list.html#a7b81c797a9bd53a220f8407bb03229f7" title="Delete the first node from the doubly linked list." alt="" coords="5,5,167,60"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="208,82,158,63,160,58,210,77"/>
+<area shape="rect" id="Node000004" href="$d6/d20/namespacedate__structure_1_1linear_1_1doubly__linked__list.html#a3a7db32277d37626de6fcbfa45be3dc7" title="Delete the last node from the doubly linked list." alt="" coords="5,84,167,139"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="200,114,167,114,167,109,200,109"/>
+<area shape="rect" id="Node000006" href="$d6/d20/namespacedate__structure_1_1linear_1_1doubly__linked__list.html#a56ee3d2adb2e0e31f5f8a44108a2f3ba" title="Get the first node of the doubly linked list." alt="" coords="5,163,167,217"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="200,193,167,193,167,187,200,187"/>
+<area shape="rect" id="Node000007" href="$d6/d20/namespacedate__structure_1_1linear_1_1doubly__linked__list.html#a002df9d7ae5dab9082c5b3adba6dbb62" title="Get the last node of the doubly linked list." alt="" coords="5,241,167,296"/>
+<area shape="poly" id="edge6_Node000005_Node000007" title=" " alt="" coords="210,225,160,244,158,239,208,220"/>
+</map>

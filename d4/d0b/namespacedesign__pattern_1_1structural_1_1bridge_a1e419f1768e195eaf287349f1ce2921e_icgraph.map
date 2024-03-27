@@ -1,0 +1,7 @@
+<map id="design_pattern::structural::bridge::output" name="design_pattern::structural::bridge::output">
+<area shape="rect" id="Node000001" title="Output stream for the bridge pattern. Need to be cleared manually." alt="" coords="284,53,473,93"/>
+<area shape="rect" id="Node000002" href="$d5/d81/classdesign__pattern_1_1structural_1_1bridge_1_1ConcreteImplementorA.html#a881105b4608e6681bb11c9e245a2da69" title="Implemented action." alt="" coords="5,5,236,60"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="270,59,236,53,236,48,271,53"/>
+<area shape="rect" id="Node000003" href="$d7/dbd/classdesign__pattern_1_1structural_1_1bridge_1_1ConcreteImplementorB.html#acc373b71f29792c08d3dbf4562d3da3e" title="Implemented action." alt="" coords="5,84,236,139"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="271,91,236,97,236,91,270,86"/>
+</map>

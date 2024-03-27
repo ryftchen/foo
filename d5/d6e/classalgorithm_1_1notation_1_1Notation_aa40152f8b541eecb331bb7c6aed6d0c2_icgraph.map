@@ -1,0 +1,18 @@
+<map id="algorithm::notation::Notation::getPriority" name="algorithm::notation::Notation::getPriority">
+<area shape="rect" id="Node000001" title="Get the operator priority." alt="" coords="677,77,840,117"/>
+<area shape="rect" id="Node000002" href="$d5/d6e/classalgorithm_1_1notation_1_1Notation.html#a0ccb47669ec0fc861c1fecdaa2f457b1" title="Convert infix notation to postfix notation." alt="" coords="449,77,629,117"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="664,99,630,99,630,94,664,94"/>
+<area shape="rect" id="Node000003" href="$d5/d6e/classalgorithm_1_1notation_1_1Notation.html#acbf1cf2ae6ec54674cb81e917ddf3f00" title="Postfix." alt="" coords="255,77,401,117"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="436,108,402,108,402,103,436,103"/>
+<area shape="rect" id="Node000006" href="$d5/d6e/classalgorithm_1_1notation_1_1Notation.html#a107d143b7182716d07ceb77bb93c7c35" title="Prefix." alt="" coords="255,141,401,181"/>
+<area shape="poly" id="edge6_Node000002_Node000006" title=" " alt="" coords="460,123,395,143,394,138,459,118"/>
+<area shape="poly" id="edge3_Node000003_Node000002" title=" " alt="" coords="415,85,449,85,449,90,415,90"/>
+<area shape="rect" id="Node000004" href="$df/da4/classapplication_1_1app__algo_1_1notation_1_1NotationSolution.html#af27882d4fcf37cc2e9f478b26c45acc0" title="The postfix method." alt="" coords="5,5,207,60"/>
+<area shape="poly" id="edge4_Node000003_Node000004" title=" " alt="" coords="244,75,200,63,202,57,246,70"/>
+<area shape="rect" id="Node000005" href="$dc/d35/namespacetest_1_1tst__algo.html#a9ca5661befb94cfbaaef06c318933ed1" title="Test for the postfix method in the solution of notation." alt="" coords="25,84,187,109"/>
+<area shape="poly" id="edge5_Node000003_Node000005" title=" " alt="" coords="240,99,188,99,188,94,240,94"/>
+<area shape="rect" id="Node000007" href="$df/da4/classapplication_1_1app__algo_1_1notation_1_1NotationSolution.html#a20075bde134345609cd3f2cf7e666330" title="The prefix method." alt="" coords="5,133,207,188"/>
+<area shape="poly" id="edge7_Node000006_Node000007" title=" " alt="" coords="241,163,207,163,207,158,241,158"/>
+<area shape="rect" id="Node000008" href="$dc/d35/namespacetest_1_1tst__algo.html#a11219e6420f83fab52c65a44a2171f0c" title="Test for the prefix method in the solution of notation." alt="" coords="25,212,187,237"/>
+<area shape="poly" id="edge8_Node000006_Node000008" title=" " alt="" coords="255,187,207,202,160,215,159,209,206,197,253,182"/>
+</map>

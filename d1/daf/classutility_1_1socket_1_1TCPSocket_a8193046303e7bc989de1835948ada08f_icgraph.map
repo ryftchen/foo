@@ -1,0 +1,5 @@
+<map id="utility::socket::TCPSocket::toSend" name="utility::socket::TCPSocket::toSend">
+<area shape="rect" id="Node000001" title="Send bytes from the buffer to socket FD." alt="" coords="237,5,421,45"/>
+<area shape="rect" id="Node000002" href="$d1/daf/classutility_1_1socket_1_1TCPSocket.html#a46724d442b5c9a9e107a2202dcffa82f" title="Send the message string to socket FD." alt="" coords="5,5,189,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="223,28,190,28,190,23,223,23"/>
+</map>

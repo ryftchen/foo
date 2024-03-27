@@ -1,0 +1,31 @@
+<map id="utility::memory::Memory::deleteElement" name="utility::memory::Memory::deleteElement">
+<area shape="rect" id="Node000001" title="Delete an element." alt="" coords="216,421,399,461"/>
+<area shape="rect" id="Node000002" href="$de/dbe/namespaceapplication_1_1app__num.html#a76b424f8e3b3a6445fc56f41c37afa1d" title="Run arithmetic tasks." alt="" coords="5,5,168,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="300,408,290,337,267,244,249,194,227,146,199,100,166,59,151,48,155,43,170,55,204,97,232,143,254,192,272,242,295,336,306,407"/>
+<area shape="rect" id="Node000003" href="$d2/dc1/namespaceapplication_1_1app__dp.html#ade97c7790ecb64cb85d2567effedcc19" title="Run behavioral tasks." alt="" coords="8,69,165,109"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="298,409,284,348,258,272,220,193,195,156,166,123,150,112,154,107,170,119,199,153,225,190,263,270,289,347,303,407"/>
+<area shape="rect" id="Node000004" href="$d2/dc1/namespaceapplication_1_1app__dp.html#a58cd5292c4ecae6e2b4d529530105b44" title="Run creational tasks." alt="" coords="9,133,164,173"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="294,409,276,361,250,301,213,240,191,212,166,187,149,176,152,171,170,183,195,209,217,237,254,299,281,359,299,407"/>
+<area shape="rect" id="Node000005" href="$de/dbe/namespaceapplication_1_1app__num.html#a45c0729aaa51fd36c4ddd79758b88a6a" title="Run divisor tasks." alt="" coords="5,197,168,237"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="288,410,240,332,206,289,166,251,148,240,150,235,170,247,210,285,244,328,293,408"/>
+<area shape="rect" id="Node000006" href="$de/dbe/namespaceapplication_1_1app__num.html#a8f6bdfbd61df7461f8dec4cc6e1db146" title="Run integral tasks." alt="" coords="5,261,168,301"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="278,413,228,364,167,316,144,304,147,299,169,311,232,360,281,409"/>
+<area shape="rect" id="Node000007" href="$d0/dc3/namespaceapplication_1_1app__ds.html#a73a7a1dd5adb60174e10d8a779fd1c70" title="Run linear tasks." alt="" coords="13,325,161,365"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="251,418,167,380,138,368,140,363,169,375,253,413"/>
+<area shape="rect" id="Node000008" href="$d7/dd4/namespaceapplication_1_1app__algo.html#a317a232febf9ceb60c8e49be2ba06c36" title="Run match tasks." alt="" coords="6,389,167,429"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="202,429,167,424,168,418,202,423"/>
+<area shape="rect" id="Node000009" href="$d7/dd4/namespaceapplication_1_1app__algo.html#a99fbd5b654baa6c2f19c08245d348030" title="Run notation tasks." alt="" coords="6,453,167,493"/>
+<area shape="poly" id="edge8_Node000001_Node000009" title=" " alt="" coords="202,459,168,464,167,459,202,454"/>
+<area shape="rect" id="Node000010" href="$d7/dd4/namespaceapplication_1_1app__algo.html#a73b5411d7029e486a45ed588c4bb60e2" title="Run optimal tasks." alt="" coords="6,517,167,557"/>
+<area shape="poly" id="edge9_Node000001_Node000010" title=" " alt="" coords="253,470,169,508,140,520,138,515,167,503,251,465"/>
+<area shape="rect" id="Node000011" href="$de/dbe/namespaceapplication_1_1app__num.html#a7fcb02610a31797f6736b02a36617a1b" title="Run prime tasks." alt="" coords="5,581,168,621"/>
+<area shape="poly" id="edge10_Node000001_Node000011" title=" " alt="" coords="281,474,232,523,169,572,147,584,144,579,167,567,228,519,278,470"/>
+<area shape="rect" id="Node000012" href="$d7/dd4/namespaceapplication_1_1app__algo.html#a4e99e8963e76e52eb6b30f9cb1714b11" title="Run search tasks." alt="" coords="6,645,167,685"/>
+<area shape="poly" id="edge11_Node000001_Node000012" title=" " alt="" coords="293,475,244,554,210,597,170,635,150,648,148,643,166,631,206,594,240,551,288,472"/>
+<area shape="rect" id="Node000013" href="$d7/dd4/namespaceapplication_1_1app__algo.html#a416a09be4668a0e27464d7ca94048aef" title="Run sort tasks." alt="" coords="6,709,167,749"/>
+<area shape="poly" id="edge12_Node000001_Node000013" title=" " alt="" coords="299,475,281,524,254,584,217,645,195,674,170,699,152,711,149,707,166,695,191,670,213,642,250,581,276,522,294,474"/>
+<area shape="rect" id="Node000014" href="$d2/dc1/namespaceapplication_1_1app__dp.html#af2fe424904e6361cfd8a1ce1e85453cd" title="Run structural tasks." alt="" coords="11,773,162,813"/>
+<area shape="poly" id="edge13_Node000001_Node000014" title=" " alt="" coords="303,475,289,536,263,612,225,692,199,730,170,763,154,775,150,771,166,759,195,727,220,690,258,610,284,534,298,474"/>
+<area shape="rect" id="Node000015" href="$d0/dc3/namespaceapplication_1_1app__ds.html#ab2ea91a2405f21fbb7e07b5e5ac25f43" title="Run tree tasks." alt="" coords="13,837,161,877"/>
+<area shape="poly" id="edge14_Node000001_Node000015" title=" " alt="" coords="306,475,295,547,272,640,254,690,232,739,204,786,170,827,155,839,151,835,166,823,199,783,227,737,249,688,267,639,290,546,300,475"/>
+</map>

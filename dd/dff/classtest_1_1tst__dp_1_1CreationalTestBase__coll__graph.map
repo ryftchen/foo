@@ -1,0 +1,5 @@
+<map id="test::tst_dp::CreationalTestBase" name="test::tst_dp::CreationalTestBase">
+<area shape="rect" id="Node000001" title="Test base of creational." alt="" coords="5,79,176,119"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="40,5,141,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="93,44,93,79,88,79,88,44"/>
+</map>

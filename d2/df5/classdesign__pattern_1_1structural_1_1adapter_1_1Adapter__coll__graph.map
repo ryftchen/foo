@@ -1,0 +1,9 @@
+<map id="design_pattern::structural::adapter::Adapter" name="design_pattern::structural::adapter::Adapter">
+<area shape="rect" id="Node000001" title="Delegate the call to an adaptee when getting a method call." alt="" coords="735,41,924,81"/>
+<area shape="rect" id="Node000002" href="$db/d14/classdesign__pattern_1_1structural_1_1adapter_1_1Target.html" title="The specific interface that the client uses." alt="" coords="440,5,629,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="643,36,735,47,734,52,643,41"/>
+<area shape="rect" id="Node000003" href="/usr/local/share/doxygen-tag/libstdc++.tag$a08835.html" title=" " alt="" coords="446,70,623,125"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="637,82,734,70,735,76,637,88"/>
+<area shape="rect" id="Node000004" href="/usr/local/share/doxygen-tag/libstdc++.tag$a08835.html" title=" " alt="" coords="5,77,205,117"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="219,95,446,95,446,100,219,100"/>
+</map>

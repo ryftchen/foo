@@ -1,0 +1,5 @@
+<map id="design_pattern::creational::factory_method::Creator" name="design_pattern::creational::factory_method::Creator">
+<area shape="rect" id="Node000001" title="Contain the implementation for all methods to manipulate products except for the factory method...." alt="" coords="33,5,225,45"/>
+<area shape="rect" id="Node000002" href="$dd/d75/classdesign__pattern_1_1creational_1_1factory__method_1_1ConcreteCreator.html" title="The concrete creator." alt="" coords="5,93,252,133"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="131,59,131,93,126,93,126,59"/>
+</map>

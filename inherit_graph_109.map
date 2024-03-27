@@ -1,0 +1,7 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="Node000000" href="$d7/dcb/classdesign__pattern_1_1behavioral_1_1state_1_1State.html" title="Behaviors associated with a particular state of the context." alt="" coords="5,37,201,77"/>
+<area shape="rect" id="Node000001" href="$d8/d2d/classdesign__pattern_1_1behavioral_1_1state_1_1ConcreteStateA.html" title="The concrete state." alt="" coords="249,5,445,45"/>
+<area shape="poly" id="edge21_Node000000_Node000001" title=" " alt="" coords="214,40,249,36,250,41,215,45"/>
+<area shape="rect" id="Node000002" href="$d3/d28/classdesign__pattern_1_1behavioral_1_1state_1_1ConcreteStateB.html" title="The concrete state." alt="" coords="249,69,445,109"/>
+<area shape="poly" id="edge22_Node000000_Node000002" title=" " alt="" coords="215,69,250,74,249,79,214,75"/>
+</map>

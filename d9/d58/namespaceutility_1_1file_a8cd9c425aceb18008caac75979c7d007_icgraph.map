@@ -1,0 +1,11 @@
+<map id="utility::file::getFileContents" name="utility::file::getFileContents">
+<area shape="rect" id="Node000001" title="Get the file contents." alt="" coords="475,45,672,70"/>
+<area shape="rect" id="Node000002" href="$d5/dbb/classapplication_1_1view_1_1View.html#abe85dd8c7a74b4efaf684743ef4ad4e8" title="Get the log contents." alt="" coords="264,5,427,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="469,45,427,39,427,34,469,40"/>
+<area shape="rect" id="Node000004" href="$d0/d11/classapplication_1_1config_1_1Config.html#a8b8adf0f9a6ebcd90271dafafdcd2f62" title="Parse the configuration file." alt="" coords="275,69,416,109"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="469,75,417,82,416,77,468,69"/>
+<area shape="rect" id="Node000003" href="$d5/dbb/classapplication_1_1view_1_1View.html#a381fe394fde0c8c2d113c9f2419fe42f" title="Build the TLV packet to view log contents." alt="" coords="5,5,216,45"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="250,28,216,28,216,23,250,23"/>
+<area shape="rect" id="Node000005" href="$d0/d11/classapplication_1_1config_1_1Config.html#ab3c2ccfa11cb8fd4df7a5442b5e20227" title="Construct a new Config object." alt="" coords="40,69,181,109"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="261,92,182,92,182,87,261,87"/>
+</map>
