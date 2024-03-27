@@ -21,7 +21,7 @@ Log& Log::getInstance()
     return logger;
 }
 
-Log& Log::getInstanceWithValidate()
+Log& Log::getExistingInstance()
 {
     if (!CONFIG_ACTIVE_HELPER) [[unlikely]]
     {
@@ -89,7 +89,7 @@ launchPoint:
         processEvent(Standby());
 
         checkIfExceptedFSMState(State::hold);
-        if (awaitNotificationAndCheckForRollback())
+        if (awaitNotification4Rollback())
         {
             goto launchPoint; // NOLINT (hicpp-avoid-goto)
         }
@@ -334,7 +334,7 @@ bool Log::isLogFileClose(const NoLogging& /*event*/) const
     return !ofs.is_open();
 }
 
-bool Log::awaitNotificationAndCheckForRollback()
+bool Log::awaitNotification4Rollback()
 {
     if (std::unique_lock<std::mutex> lock(mtx); true)
     {
