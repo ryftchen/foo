@@ -32,6 +32,20 @@
                                 << std::setfill('.') << std::setw(50) << category << "END"              \
                                 << std::resetiosflags(std::ios_base::left) << std::setfill(' ') << '\n' \
                                 << std::endl;
+//! @brief Get the bit flags of the instance (category) in data structure tasks.
+#define APP_DS_GET_BIT(category)                                                                                 \
+    std::invoke(                                                                                                 \
+        utility::reflection::TypeInfo<DataStructureTask>::fields.find(REFLECTION_STR(toString(category))).value, \
+        getTask())
+//! @brief Get the alias of the instance (category) in data structure tasks.
+#define APP_DS_GET_ALIAS(category)                                                                            \
+    ({                                                                                                        \
+        constexpr auto attr =                                                                                 \
+            utility::reflection::TypeInfo<DataStructureTask>::fields.find(REFLECTION_STR(toString(category))) \
+                .attrs.find(REFLECTION_STR("alias"));                                                         \
+        static_assert(attr.hasValue);                                                                         \
+        attr.value;                                                                                           \
+    })
 
 namespace application::app_ds
 {
@@ -50,8 +64,25 @@ DataStructureTask& getTask()
 //! @return task name curried
 static const auto& getTaskNameCurried()
 {
-    static const auto curried = utility::currying::curry(command::presetTaskName, "ds");
+    static const auto curried =
+        utility::currying::curry(command::presetTaskName, utility::reflection::TypeInfo<DataStructureTask>::name);
     return curried;
+}
+
+//! @brief Mapping table for enum and string about data structure tasks. X macro.
+#define CATEGORY_TABLE     \
+    ELEM(linear, "linear") \
+    ELEM(tree, "tree")
+
+//! @brief Convert category enumeration to string.
+//! @param cat - the specific value of Category enum
+//! @return category name
+constexpr std::string_view toString(const Category cat)
+{
+#define ELEM(val, str) str,
+    constexpr std::string_view table[] = {CATEGORY_TABLE};
+#undef ELEM
+    return table[cat];
 }
 
 namespace linear
@@ -120,28 +151,30 @@ catch (const std::exception& error)
 //! @param targets - container of target instances
 void runLinearTasks(const std::vector<std::string>& targets)
 {
-    if (getBit<LinearInstance>().none())
+    constexpr auto category = Category::linear;
+    const auto& bit = APP_DS_GET_BIT(category);
+    if (bit.none())
     {
         return;
     }
 
-    APP_DS_PRINT_TASK_BEGIN_TITLE(Category::linear);
+    APP_DS_PRINT_TASK_BEGIN_TITLE(category);
     using linear::LinearStructure;
     using utility::common::operator""_bkdrHash;
 
-    auto* const threads = command::getPublicThreadPool().newElement(std::min(
-        static_cast<std::uint32_t>(getBit<LinearInstance>().count()),
-        static_cast<std::uint32_t>(Bottom<LinearInstance>::value)));
+    auto& pooling = command::getPublicThreadPool();
+    auto* const threads = pooling.newElement(
+        std::min(static_cast<std::uint32_t>(bit.count()), static_cast<std::uint32_t>(Bottom<LinearInstance>::value)));
     const auto linearFunctor = [threads](const std::string& threadName, void (*instancePtr)())
     {
         threads->enqueue(threadName, instancePtr);
     };
-    const auto name = utility::currying::curry(getTaskNameCurried(), "l");
+    const auto name = utility::currying::curry(getTaskNameCurried(), APP_DS_GET_ALIAS(category));
 
-    std::cout << "\r\nInstances of the linear structure:" << std::endl;
+    std::cout << "\r\nInstances of the " << toString(category) << " structure:" << std::endl;
     for (std::uint8_t i = 0; i < Bottom<LinearInstance>::value; ++i)
     {
-        if (!getBit<LinearInstance>().test(LinearInstance(i)))
+        if (!bit.test(LinearInstance(i)))
         {
             continue;
         }
@@ -159,34 +192,37 @@ void runLinearTasks(const std::vector<std::string>& targets)
                 linearFunctor(name(targetInstance), &LinearStructure::queueInstance);
                 break;
             default:
-                LOG_INF << "Execute to apply an unknown linear instance.";
+                LOG_INF << "Execute to apply an unknown " << toString(category) << " instance.";
                 break;
         }
     }
 
-    command::getPublicThreadPool().deleteElement(threads);
-    APP_DS_PRINT_TASK_END_TITLE(Category::linear);
+    pooling.deleteElement(threads);
+    APP_DS_PRINT_TASK_END_TITLE(category);
 }
 
 //! @brief Update linear instances in tasks.
 //! @param target - target instance
 void updateLinearTask(const std::string& target)
 {
+    constexpr auto category = Category::linear;
+    auto& bit = APP_DS_GET_BIT(category);
+
     using utility::common::operator""_bkdrHash;
     switch (utility::common::bkdrHash(target.c_str()))
     {
         case "lin"_bkdrHash:
-            setBit<LinearInstance>(LinearInstance::linkedList);
+            bit.set(LinearInstance::linkedList);
             break;
         case "sta"_bkdrHash:
-            setBit<LinearInstance>(LinearInstance::stack);
+            bit.set(LinearInstance::stack);
             break;
         case "que"_bkdrHash:
-            setBit<LinearInstance>(LinearInstance::queue);
+            bit.set(LinearInstance::queue);
             break;
         default:
-            getBit<LinearInstance>().reset();
-            throw std::runtime_error("Unexpected linear instance: " + target + '.');
+            bit.reset();
+            throw std::runtime_error("Unexpected " + std::string{toString(category)} + " instance: " + target + '.');
     }
 }
 
@@ -255,28 +291,30 @@ catch (const std::exception& error)
 //! @param targets - container of target instances
 void runTreeTasks(const std::vector<std::string>& targets)
 {
-    if (getBit<TreeInstance>().none())
+    constexpr auto category = Category::tree;
+    const auto& bit = APP_DS_GET_BIT(category);
+    if (bit.none())
     {
         return;
     }
 
-    APP_DS_PRINT_TASK_BEGIN_TITLE(Category::tree);
+    APP_DS_PRINT_TASK_BEGIN_TITLE(category);
     using tree::TreeStructure;
     using utility::common::operator""_bkdrHash;
 
-    auto* const threads = command::getPublicThreadPool().newElement(std::min(
-        static_cast<std::uint32_t>(getBit<TreeInstance>().count()),
-        static_cast<std::uint32_t>(Bottom<TreeInstance>::value)));
+    auto& pooling = command::getPublicThreadPool();
+    auto* const threads = pooling.newElement(
+        std::min(static_cast<std::uint32_t>(bit.count()), static_cast<std::uint32_t>(Bottom<TreeInstance>::value)));
     const auto treeFunctor = [threads](const std::string& threadName, void (*instancePtr)())
     {
         threads->enqueue(threadName, instancePtr);
     };
-    const auto name = utility::currying::curry(getTaskNameCurried(), "t");
+    const auto name = utility::currying::curry(getTaskNameCurried(), APP_DS_GET_ALIAS(category));
 
-    std::cout << "\r\nInstances of the tree structure:" << std::endl;
+    std::cout << "\r\nInstances of the " << toString(category) << " structure:" << std::endl;
     for (std::uint8_t i = 0; i < Bottom<TreeInstance>::value; ++i)
     {
-        if (!getBit<TreeInstance>().test(TreeInstance(i)))
+        if (!bit.test(TreeInstance(i)))
         {
             continue;
         }
@@ -294,34 +332,39 @@ void runTreeTasks(const std::vector<std::string>& targets)
                 treeFunctor(name(targetInstance), &TreeStructure::splayInstance);
                 break;
             default:
-                LOG_INF << "Execute to apply an unknown tree instance.";
+                LOG_INF << "Execute to apply an unknown " << toString(category) << " instance.";
                 break;
         }
     }
 
-    command::getPublicThreadPool().deleteElement(threads);
-    APP_DS_PRINT_TASK_END_TITLE(Category::tree);
+    pooling.deleteElement(threads);
+    APP_DS_PRINT_TASK_END_TITLE(category);
 }
 
 //! @brief Update tree instances in tasks.
 //! @param target - target instance
 void updateTreeTask(const std::string& target)
 {
+    constexpr auto category = Category::tree;
+    auto& bit = APP_DS_GET_BIT(category);
+
     using utility::common::operator""_bkdrHash;
     switch (utility::common::bkdrHash(target.c_str()))
     {
         case "bin"_bkdrHash:
-            setBit<TreeInstance>(TreeInstance::binarySearch);
+            bit.set(TreeInstance::binarySearch);
             break;
         case "ade"_bkdrHash:
-            setBit<TreeInstance>(TreeInstance::adelsonVelskyLandis);
+            bit.set(TreeInstance::adelsonVelskyLandis);
             break;
         case "spl"_bkdrHash:
-            setBit<TreeInstance>(TreeInstance::splay);
+            bit.set(TreeInstance::splay);
             break;
         default:
-            getBit<TreeInstance>().reset();
-            throw std::runtime_error("Unexpected tree instance: " + target + '.');
+            bit.reset();
+            throw std::runtime_error("Unexpected " + std::string{toString(category)} + " instance: " + target + '.');
     }
 }
+
+#undef CATEGORY_TABLE
 } // namespace application::app_ds

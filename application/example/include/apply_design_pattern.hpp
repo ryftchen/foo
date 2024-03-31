@@ -171,46 +171,6 @@ protected:
 };
 extern DesignPatternTask& getTask();
 
-//! @brief Get the bit flags of the instance in design pattern tasks.
-//! @tparam T - type of instance
-//! @return reference of the instance bit flags
-template <typename T>
-auto& getBit()
-{
-    if constexpr (std::is_same_v<T, BehavioralInstance>)
-    {
-        return getTask().behavioralBit;
-    }
-    else if constexpr (std::is_same_v<T, CreationalInstance>)
-    {
-        return getTask().creationalBit;
-    }
-    else if constexpr (std::is_same_v<T, StructuralInstance>)
-    {
-        return getTask().structuralBit;
-    }
-}
-
-//! @brief Set the bit flags of the instance in design pattern tasks.
-//! @tparam T - type of instance
-//! @param index - instance index
-template <typename T>
-void setBit(const int index)
-{
-    if constexpr (std::is_same_v<T, BehavioralInstance>)
-    {
-        getTask().behavioralBit.set(BehavioralInstance(index));
-    }
-    else if constexpr (std::is_same_v<T, CreationalInstance>)
-    {
-        getTask().creationalBit.set(CreationalInstance(index));
-    }
-    else if constexpr (std::is_same_v<T, StructuralInstance>)
-    {
-        getTask().structuralBit.set(StructuralInstance(index));
-    }
-}
-
 //! @brief Apply behavioral.
 namespace behavioral
 {

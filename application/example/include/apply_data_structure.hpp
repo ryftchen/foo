@@ -115,38 +115,6 @@ protected:
 };
 extern DataStructureTask& getTask();
 
-//! @brief Get the bit flags of the instance in data structure tasks.
-//! @tparam T - type of instance
-//! @return reference of the instance bit flags
-template <typename T>
-auto& getBit()
-{
-    if constexpr (std::is_same_v<T, LinearInstance>)
-    {
-        return getTask().linearBit;
-    }
-    else if constexpr (std::is_same_v<T, TreeInstance>)
-    {
-        return getTask().treeBit;
-    }
-}
-
-//! @brief Set the bit flags of the instance in data structure tasks.
-//! @tparam T - type of instance
-//! @param index - instance index
-template <typename T>
-void setBit(const int index)
-{
-    if constexpr (std::is_same_v<T, LinearInstance>)
-    {
-        getTask().linearBit.set(LinearInstance(index));
-    }
-    else if constexpr (std::is_same_v<T, TreeInstance>)
-    {
-        getTask().treeBit.set(TreeInstance(index));
-    }
-}
-
 //! @brief Apply linear.
 namespace linear
 {
