@@ -170,7 +170,7 @@ public:
     //! @brief Get the Log instance.
     //! @return reference of the Log object
     static Log& getInstance();
-    //! @brief Get the existing Log instance.
+    //! @brief Get the existing Log instance. Include configuration validation.
     //! @return reference of the Log object
     static Log& getExistingInstance();
     //! @brief Interface for running logger.

@@ -102,10 +102,10 @@ private:
         Impl(const Impl&) = delete;
         //! @brief Construct a new Impl object.
         Impl(Impl&&) = delete;
-        //! @brief The operator (=) overloading of Impl class.
+        //! @brief The operator (=) overloading of Impl struct.
         //! @return reference of the Impl object
         Impl& operator=(const Impl&) = delete;
-        //! @brief The operator (=) overloading of Impl class.
+        //! @brief The operator (=) overloading of Impl struct.
         //! @return reference of the Impl object
         Impl& operator=(Impl&&) = delete;
 

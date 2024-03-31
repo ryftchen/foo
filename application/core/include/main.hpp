@@ -24,7 +24,7 @@ volatile std::sig_atomic_t signalStatus = 0; // NOLINT(misc-definitions-in-heade
 
 //! @brief Get the executable name.
 //! @return executable name
-inline static std::string getExecutableName()
+static inline std::string getExecutableName()
 {
     return std::filesystem::canonical(std::filesystem::path{"/proc/self/exe"}).filename();
 }
