@@ -148,7 +148,7 @@ public:
     //! @brief Get the View instance.
     //! @return reference of the View object
     static View& getInstance();
-    //! @brief Get the existing View instance.
+    //! @brief Get the existing View instance. Include configuration validation.
     //! @return reference of the View object
     static View& getExistingInstance();
     //! @brief Interface for running viewer.

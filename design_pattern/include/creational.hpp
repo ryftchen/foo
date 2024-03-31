@@ -224,7 +224,7 @@ public:
     ~Director();
 
     //! @brief Set the builder.
-    //! @param b - target builder.
+    //! @param b - target builder
     void set(std::unique_ptr<Builder> b);
     //! @brief Get the product from the builder.
     //! @return product

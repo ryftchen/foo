@@ -418,8 +418,13 @@ private:
             }
             return os;
         }
-
+        //! @brief The operator (==) overloading of Register class.
+        //! @param rhs - right-hand side
+        //! @return be equal or not equal
         bool operator==(const ArgsNumRange& rhs) const { return (rhs.min == min) && (rhs.max == max); }
+        //! @brief The operator (!=) overloading of Register class.
+        //! @param rhs - right-hand side
+        //! @return be not equal or equal
         bool operator!=(const ArgsNumRange& rhs) const { return !(*this == rhs); }
     };
     //! @brief The range for the number of arguments.
