@@ -36,6 +36,19 @@
                                 << std::setw(50) << category << "END" << std::resetiosflags(std::ios_base::left)  \
                                 << std::setfill(' ') << '\n'                                                      \
                                 << std::endl;
+//! @brief Get the bit flags of the method (category) in numeric tasks.
+#define APP_NUM_GET_BIT(category) \
+    std::invoke(                  \
+        utility::reflection::TypeInfo<NumericTask>::fields.find(REFLECTION_STR(toString(category))).value, getTask())
+//! @brief Get the alias of the method (category) in numeric tasks.
+#define APP_NUM_GET_ALIAS(category)                                                                     \
+    ({                                                                                                  \
+        constexpr auto attr =                                                                           \
+            utility::reflection::TypeInfo<NumericTask>::fields.find(REFLECTION_STR(toString(category))) \
+                .attrs.find(REFLECTION_STR("alias"));                                                   \
+        static_assert(attr.hasValue);                                                                   \
+        attr.value;                                                                                     \
+    })
 
 namespace application::app_num
 {
@@ -54,8 +67,27 @@ NumericTask& getTask()
 //! @return task name curried
 static const auto& getTaskNameCurried()
 {
-    static const auto curried = utility::currying::curry(command::presetTaskName, "num");
+    static const auto curried =
+        utility::currying::curry(command::presetTaskName, utility::reflection::TypeInfo<NumericTask>::name);
     return curried;
+}
+
+//! @brief Mapping table for enum and string about numeric tasks. X macro.
+#define CATEGORY_TABLE             \
+    ELEM(arithmetic, "arithmetic") \
+    ELEM(divisor, "divisor")       \
+    ELEM(integral, "integral")     \
+    ELEM(prime, "prime")
+
+//! @brief Convert category enumeration to string.
+//! @param cat - the specific value of Category enum
+//! @return category name
+constexpr std::string_view toString(const Category cat)
+{
+#define ELEM(val, str) str,
+    constexpr std::string_view table[] = {CATEGORY_TABLE};
+#undef ELEM
+    return table[cat];
 }
 
 namespace arithmetic
@@ -136,21 +168,23 @@ catch (const std::exception& error)
 //! @param targets - container of target methods
 void runArithmeticTasks(const std::vector<std::string>& targets)
 {
-    if (getBit<ArithmeticMethod>().none())
+    constexpr auto category = Category::arithmetic;
+    const auto& bit = APP_NUM_GET_BIT(category);
+    if (bit.none())
     {
         return;
     }
 
-    APP_NUM_PRINT_TASK_BEGIN_TITLE(Category::arithmetic);
+    APP_NUM_PRINT_TASK_BEGIN_TITLE(category);
     using arithmetic::ArithmeticSolution;
     using arithmetic::TargetBuilder;
     using arithmetic::input::integerA;
     using arithmetic::input::integerB;
     using utility::common::operator""_bkdrHash;
 
-    auto* const threads = command::getPublicThreadPool().newElement(std::min(
-        static_cast<std::uint32_t>(getBit<ArithmeticMethod>().count()),
-        static_cast<std::uint32_t>(Bottom<ArithmeticMethod>::value)));
+    auto& pooling = command::getPublicThreadPool();
+    auto* const threads = pooling.newElement(
+        std::min(static_cast<std::uint32_t>(bit.count()), static_cast<std::uint32_t>(Bottom<ArithmeticMethod>::value)));
     const auto builder = std::make_shared<TargetBuilder>(integerA, integerB);
     const auto arithmeticFunctor =
         [threads, builder](const std::string& threadName, void (*methodPtr)(const int, const int))
@@ -158,11 +192,11 @@ void runArithmeticTasks(const std::vector<std::string>& targets)
         threads->enqueue(
             threadName, methodPtr, std::get<0>(builder->getIntegers()), std::get<1>(builder->getIntegers()));
     };
-    const auto name = utility::currying::curry(getTaskNameCurried(), "a");
+    const auto name = utility::currying::curry(getTaskNameCurried(), APP_NUM_GET_ALIAS(category));
 
     for (std::uint8_t i = 0; i < Bottom<ArithmeticMethod>::value; ++i)
     {
-        if (!getBit<ArithmeticMethod>().test(ArithmeticMethod(i)))
+        if (!bit.test(ArithmeticMethod(i)))
         {
             continue;
         }
@@ -183,37 +217,40 @@ void runArithmeticTasks(const std::vector<std::string>& targets)
                 arithmeticFunctor(name(targetMethod), &ArithmeticSolution::divisionMethod);
                 break;
             default:
-                LOG_INF << "Execute to apply an unknown arithmetic method.";
+                LOG_INF << "Execute to apply an unknown " << toString(category) << " method.";
                 break;
         }
     }
 
-    command::getPublicThreadPool().deleteElement(threads);
-    APP_NUM_PRINT_TASK_END_TITLE(Category::arithmetic);
+    pooling.deleteElement(threads);
+    APP_NUM_PRINT_TASK_END_TITLE(category);
 }
 
 //! @brief Update arithmetic methods in tasks.
 //! @param target - target method
 void updateArithmeticTask(const std::string& target)
 {
+    constexpr auto category = Category::arithmetic;
+    auto& bit = APP_NUM_GET_BIT(category);
+
     using utility::common::operator""_bkdrHash;
     switch (utility::common::bkdrHash(target.c_str()))
     {
         case "add"_bkdrHash:
-            setBit<ArithmeticMethod>(ArithmeticMethod::addition);
+            bit.set(ArithmeticMethod::addition);
             break;
         case "sub"_bkdrHash:
-            setBit<ArithmeticMethod>(ArithmeticMethod::subtraction);
+            bit.set(ArithmeticMethod::subtraction);
             break;
         case "mul"_bkdrHash:
-            setBit<ArithmeticMethod>(ArithmeticMethod::multiplication);
+            bit.set(ArithmeticMethod::multiplication);
             break;
         case "div"_bkdrHash:
-            setBit<ArithmeticMethod>(ArithmeticMethod::division);
+            bit.set(ArithmeticMethod::division);
             break;
         default:
-            getBit<ArithmeticMethod>().reset();
-            throw std::runtime_error("Unexpected arithmetic method: " + target + '.');
+            bit.reset();
+            throw std::runtime_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
     }
 }
 
@@ -286,32 +323,34 @@ catch (const std::exception& error)
 //! @param targets - container of target methods
 void runDivisorTasks(const std::vector<std::string>& targets)
 {
-    if (getBit<DivisorMethod>().none())
+    constexpr auto category = Category::divisor;
+    const auto& bit = APP_NUM_GET_BIT(category);
+    if (bit.none())
     {
         return;
     }
 
-    APP_NUM_PRINT_TASK_BEGIN_TITLE(Category::divisor);
+    APP_NUM_PRINT_TASK_BEGIN_TITLE(category);
     using divisor::DivisorSolution;
     using divisor::TargetBuilder;
     using divisor::input::integerA;
     using divisor::input::integerB;
     using utility::common::operator""_bkdrHash;
 
-    auto* const threads = command::getPublicThreadPool().newElement(std::min(
-        static_cast<std::uint32_t>(getBit<DivisorMethod>().count()),
-        static_cast<std::uint32_t>(Bottom<DivisorMethod>::value)));
+    auto& pooling = command::getPublicThreadPool();
+    auto* const threads = pooling.newElement(
+        std::min(static_cast<std::uint32_t>(bit.count()), static_cast<std::uint32_t>(Bottom<DivisorMethod>::value)));
     const auto builder = std::make_shared<TargetBuilder>(integerA, integerB);
     const auto divisorFunctor = [threads, builder](const std::string& threadName, void (*methodPtr)(int, int))
     {
         threads->enqueue(
             threadName, methodPtr, std::get<0>(builder->getIntegers()), std::get<1>(builder->getIntegers()));
     };
-    const auto name = utility::currying::curry(getTaskNameCurried(), "d");
+    const auto name = utility::currying::curry(getTaskNameCurried(), APP_NUM_GET_ALIAS(category));
 
     for (std::uint8_t i = 0; i < Bottom<DivisorMethod>::value; ++i)
     {
-        if (!getBit<DivisorMethod>().test(DivisorMethod(i)))
+        if (!bit.test(DivisorMethod(i)))
         {
             continue;
         }
@@ -326,31 +365,34 @@ void runDivisorTasks(const std::vector<std::string>& targets)
                 divisorFunctor(name(targetMethod), &DivisorSolution::steinMethod);
                 break;
             default:
-                LOG_INF << "Execute to apply an unknown divisor method.";
+                LOG_INF << "Execute to apply an unknown " << toString(category) << " method.";
                 break;
         }
     }
 
-    command::getPublicThreadPool().deleteElement(threads);
-    APP_NUM_PRINT_TASK_END_TITLE(Category::divisor);
+    pooling.deleteElement(threads);
+    APP_NUM_PRINT_TASK_END_TITLE(category);
 }
 
 //! @brief Update divisor methods in tasks.
 //! @param target - target method
 void updateDivisorTask(const std::string& target)
 {
+    constexpr auto category = Category::divisor;
+    auto& bit = APP_NUM_GET_BIT(category);
+
     using utility::common::operator""_bkdrHash;
     switch (utility::common::bkdrHash(target.c_str()))
     {
         case "euc"_bkdrHash:
-            setBit<DivisorMethod>(DivisorMethod::euclidean);
+            bit.set(DivisorMethod::euclidean);
             break;
         case "ste"_bkdrHash:
-            setBit<DivisorMethod>(DivisorMethod::stein);
+            bit.set(DivisorMethod::stein);
             break;
         default:
-            getBit<DivisorMethod>().reset();
-            throw std::runtime_error("Unexpected divisor method: " + target + '.');
+            bit.reset();
+            throw std::runtime_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
     }
 }
 
@@ -454,7 +496,9 @@ catch (const std::exception& error)
 //! @param targets - container of target methods
 void runIntegralTasks(const std::vector<std::string>& targets)
 {
-    if (getBit<IntegralMethod>().none())
+    constexpr auto category = Category::integral;
+    const auto& bit = APP_NUM_GET_BIT(category);
+    if (bit.none())
     {
         return;
     }
@@ -478,24 +522,24 @@ void runIntegralTasks(const std::vector<std::string>& targets)
             expression);
     };
     const auto calcExpr =
-        [&targets](const integral::Expression& expression, const integral::ExprRange<double, double>& range)
+        [&targets, bit](const integral::Expression& expression, const integral::ExprRange<double, double>& range)
     {
-        auto* const threads = command::getPublicThreadPool().newElement(std::min(
-            static_cast<std::uint32_t>(getBit<IntegralMethod>().count()),
-            static_cast<std::uint32_t>(Bottom<IntegralMethod>::value)));
+        auto& pooling = command::getPublicThreadPool();
+        auto* const threads = pooling.newElement(std::min(
+            static_cast<std::uint32_t>(bit.count()), static_cast<std::uint32_t>(Bottom<IntegralMethod>::value)));
         const auto integralFunctor = [threads, &expression, &range](
                                          const std::string& threadName,
                                          void (*methodPtr)(const integral::Expression&, const double, const double))
         {
             threads->enqueue(threadName, methodPtr, std::ref(expression), range.range1, range.range2);
         };
-        const auto name = utility::currying::curry(getTaskNameCurried(), "i");
+        const auto name = utility::currying::curry(getTaskNameCurried(), APP_NUM_GET_ALIAS(category));
 
         using integral::IntegralSolution;
         using utility::common::operator""_bkdrHash;
         for (std::uint8_t i = 0; i < Bottom<IntegralMethod>::value; ++i)
         {
-            if (!getBit<IntegralMethod>().test(IntegralMethod(i)))
+            if (!bit.test(IntegralMethod(i)))
             {
                 continue;
             }
@@ -519,14 +563,14 @@ void runIntegralTasks(const std::vector<std::string>& targets)
                     integralFunctor(name(targetMethod), &IntegralSolution::monteCarloMethod);
                     break;
                 default:
-                    LOG_INF << "Execute to apply an unknown integral method.";
+                    LOG_INF << "Execute to apply an unknown " << toString(category) << " method.";
                     break;
             }
         }
-        command::getPublicThreadPool().deleteElement(threads);
+        pooling.deleteElement(threads);
     };
 
-    APP_NUM_PRINT_TASK_BEGIN_TITLE(Category::integral);
+    APP_NUM_PRINT_TASK_BEGIN_TITLE(category);
 
     for ([[maybe_unused]] const auto& [range, expression] : integralExprMap)
     {
@@ -541,34 +585,37 @@ void runIntegralTasks(const std::vector<std::string>& targets)
         }
     }
 
-    APP_NUM_PRINT_TASK_END_TITLE(Category::integral);
+    APP_NUM_PRINT_TASK_END_TITLE(category);
 }
 
 //! @brief Update integral methods in tasks.
 //! @param target - target method
 void updateIntegralTask(const std::string& target)
 {
+    constexpr auto category = Category::integral;
+    auto& bit = APP_NUM_GET_BIT(category);
+
     using utility::common::operator""_bkdrHash;
     switch (utility::common::bkdrHash(target.c_str()))
     {
         case "tra"_bkdrHash:
-            setBit<IntegralMethod>(IntegralMethod::trapezoidal);
+            bit.set(IntegralMethod::trapezoidal);
             break;
         case "sim"_bkdrHash:
-            setBit<IntegralMethod>(IntegralMethod::simpson);
+            bit.set(IntegralMethod::simpson);
             break;
         case "rom"_bkdrHash:
-            setBit<IntegralMethod>(IntegralMethod::romberg);
+            bit.set(IntegralMethod::romberg);
             break;
         case "gau"_bkdrHash:
-            setBit<IntegralMethod>(IntegralMethod::gauss);
+            bit.set(IntegralMethod::gauss);
             break;
         case "mon"_bkdrHash:
-            setBit<IntegralMethod>(IntegralMethod::monteCarlo);
+            bit.set(IntegralMethod::monteCarlo);
             break;
         default:
-            getBit<IntegralMethod>().reset();
-            throw std::runtime_error("Unexpected integral method: " + target + '.');
+            bit.reset();
+            throw std::runtime_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
     }
 }
 
@@ -641,30 +688,32 @@ catch (const std::exception& error)
 //! @param targets - container of target methods
 void runPrimeTasks(const std::vector<std::string>& targets)
 {
-    if (getBit<PrimeMethod>().none())
+    constexpr auto category = Category::prime;
+    const auto& bit = APP_NUM_GET_BIT(category);
+    if (bit.none())
     {
         return;
     }
 
-    APP_NUM_PRINT_TASK_BEGIN_TITLE(Category::prime);
+    APP_NUM_PRINT_TASK_BEGIN_TITLE(category);
     using prime::PrimeSolution;
     using prime::TargetBuilder;
     using prime::input::maxPositiveInteger;
     using utility::common::operator""_bkdrHash;
 
-    auto* const threads = command::getPublicThreadPool().newElement(std::min(
-        static_cast<std::uint32_t>(getBit<PrimeMethod>().count()),
-        static_cast<std::uint32_t>(Bottom<PrimeMethod>::value)));
+    auto& pooling = command::getPublicThreadPool();
+    auto* const threads = pooling.newElement(
+        std::min(static_cast<std::uint32_t>(bit.count()), static_cast<std::uint32_t>(Bottom<PrimeMethod>::value)));
     const auto builder = std::make_shared<TargetBuilder>(maxPositiveInteger);
     const auto primeFunctor = [threads, builder](const std::string& threadName, void (*methodPtr)(const std::uint32_t))
     {
         threads->enqueue(threadName, methodPtr, builder->getMaxPositiveInteger());
     };
-    const auto name = utility::currying::curry(getTaskNameCurried(), "p");
+    const auto name = utility::currying::curry(getTaskNameCurried(), APP_NUM_GET_ALIAS(category));
 
     for (std::uint8_t i = 0; i < Bottom<PrimeMethod>::value; ++i)
     {
-        if (!getBit<PrimeMethod>().test(PrimeMethod(i)))
+        if (!bit.test(PrimeMethod(i)))
         {
             continue;
         }
@@ -679,31 +728,36 @@ void runPrimeTasks(const std::vector<std::string>& targets)
                 primeFunctor(name(targetMethod), &PrimeSolution::eulerMethod);
                 break;
             default:
-                LOG_INF << "Execute to apply an unknown prime method.";
+                LOG_INF << "Execute to apply an unknown " << toString(category) << " method.";
                 break;
         }
     }
 
-    command::getPublicThreadPool().deleteElement(threads);
-    APP_NUM_PRINT_TASK_END_TITLE(Category::prime);
+    pooling.deleteElement(threads);
+    APP_NUM_PRINT_TASK_END_TITLE(category);
 }
 
 //! @brief Update prime methods in tasks.
 //! @param target - target method
 void updatePrimeTask(const std::string& target)
 {
+    constexpr auto category = Category::prime;
+    auto& bit = APP_NUM_GET_BIT(category);
+
     using utility::common::operator""_bkdrHash;
     switch (utility::common::bkdrHash(target.c_str()))
     {
         case "era"_bkdrHash:
-            setBit<PrimeMethod>(PrimeMethod::eratosthenes);
+            bit.set(PrimeMethod::eratosthenes);
             break;
         case "eul"_bkdrHash:
-            setBit<PrimeMethod>(PrimeMethod::euler);
+            bit.set(PrimeMethod::euler);
             break;
         default:
-            getBit<PrimeMethod>().reset();
-            throw std::runtime_error("Unexpected prime method: " + target + '.');
+            bit.reset();
+            throw std::runtime_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
     }
 }
+
+#undef CATEGORY_TABLE
 } // namespace application::app_num

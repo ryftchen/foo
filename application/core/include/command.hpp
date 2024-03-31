@@ -13,6 +13,7 @@
 #include "utility/include/argument.hpp"
 #include "utility/include/console.hpp"
 #include "utility/include/memory.hpp"
+#include "utility/include/reflection.hpp"
 #include "utility/include/thread.hpp"
 
 //! @brief The application module.
@@ -148,6 +149,11 @@ private:
     //! @return member corresponding to the specific type
     template <typename T>
     static const T& get(const TaskFunctorTuple& tuple);
+    //! @brief Extract the alias under the sub-cli.
+    //! @tparam T - type of regular task corresponding to sub-cli
+    //! @param name - mapping for aliases
+    template <typename T>
+    std::map<TaskCategory, std::string> extractAliasUnderSubCLI(const std::string& name) const;
 
     // clang-format off
     //! @brief Mapping table of all basic tasks.
@@ -285,7 +291,7 @@ private:
 //! @return thread name
 inline std::string presetTaskName(const std::string_view cli, const std::string_view cat, const std::string_view tgt)
 {
-    return "task-" + std::string{cli} + '_' + std::string{cat} + '_' + std::string{tgt};
+    return "app-" + std::string{cli} + '_' + std::string{cat} + '_' + std::string{tgt};
 }
 
 //! @brief Alias for memory pool when making multi-threading.
@@ -293,3 +299,83 @@ using PublicThreadPool = utility::memory::Memory<utility::thread::Thread>;
 extern PublicThreadPool& getPublicThreadPool();
 } // namespace command
 } // namespace application
+
+//! @brief Reflect the sub-cli name to the field.
+#define COMMAND_REFLECT_SUB_CLI_FIELD(category, alias)            \
+    Field                                                         \
+    {                                                             \
+        REFLECTION_STR(#category), &Type::category##Bit, AttrList \
+        {                                                         \
+            Attr                                                  \
+            {                                                     \
+                REFLECTION_STR("alias"), #alias                   \
+            }                                                     \
+        }                                                         \
+    }
+//! @brief Static reflection for AlgorithmTask.
+template <>
+struct utility::reflection::TypeInfo<application::app_algo::AlgorithmTask>
+    : TypeInfoBase<application::app_algo::AlgorithmTask>
+{
+    //! @brief Name.
+    static constexpr std::string_view name{"algo"};
+    //! @brief Field list.
+    static constexpr FieldList fields{
+        COMMAND_REFLECT_SUB_CLI_FIELD(match, m),
+        COMMAND_REFLECT_SUB_CLI_FIELD(notation, n),
+        COMMAND_REFLECT_SUB_CLI_FIELD(optimal, o),
+        COMMAND_REFLECT_SUB_CLI_FIELD(search, s),
+        COMMAND_REFLECT_SUB_CLI_FIELD(sort, S),
+    };
+    //! @brief Attribute list.
+    static constexpr AttrList attrs{};
+};
+//! @brief Static reflection for DesignPatternTask.
+template <>
+struct utility::reflection::TypeInfo<application::app_dp::DesignPatternTask>
+    : TypeInfoBase<application::app_dp::DesignPatternTask>
+{
+    //! @brief Name.
+    static constexpr std::string_view name{"dp"};
+    //! @brief Field list.
+    static constexpr FieldList fields{
+        COMMAND_REFLECT_SUB_CLI_FIELD(behavioral, b),
+        COMMAND_REFLECT_SUB_CLI_FIELD(creational, c),
+        COMMAND_REFLECT_SUB_CLI_FIELD(structural, s),
+    };
+    //! @brief Attribute list.
+    static constexpr AttrList attrs{};
+};
+//! @brief Static reflection for DataStructureTask.
+template <>
+struct utility::reflection::TypeInfo<application::app_ds::DataStructureTask>
+    : TypeInfoBase<application::app_ds::DataStructureTask>
+{
+    //! @brief Name.
+    static constexpr std::string_view name{"ds"};
+    //! @brief Field list.
+    static constexpr FieldList fields{
+        COMMAND_REFLECT_SUB_CLI_FIELD(linear, l),
+        COMMAND_REFLECT_SUB_CLI_FIELD(tree, t),
+    };
+    //! @brief Attribute list.
+    static constexpr AttrList attrs{};
+};
+//! @brief Static reflection for NumericTask.
+template <>
+struct utility::reflection::TypeInfo<application::app_num::NumericTask>
+    : TypeInfoBase<application::app_num::NumericTask>
+{
+    //! @brief Name.
+    static constexpr std::string_view name{"num"};
+    //! @brief Field list.
+    static constexpr FieldList fields{
+        COMMAND_REFLECT_SUB_CLI_FIELD(arithmetic, a),
+        COMMAND_REFLECT_SUB_CLI_FIELD(divisor, d),
+        COMMAND_REFLECT_SUB_CLI_FIELD(integral, i),
+        COMMAND_REFLECT_SUB_CLI_FIELD(prime, p),
+    };
+    //! @brief Attribute list.
+    static constexpr AttrList attrs{};
+};
+#undef COMMAND_REFLECT_SUB_CLI_FIELD

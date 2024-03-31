@@ -224,62 +224,6 @@ protected:
 };
 extern AlgorithmTask& getTask();
 
-//! @brief Get the bit flags of the method in algorithm tasks.
-//! @tparam T - type of method
-//! @return reference of the method bit flags
-template <typename T>
-auto& getBit()
-{
-    if constexpr (std::is_same_v<T, MatchMethod>)
-    {
-        return getTask().matchBit;
-    }
-    else if constexpr (std::is_same_v<T, NotationMethod>)
-    {
-        return getTask().notationBit;
-    }
-    else if constexpr (std::is_same_v<T, OptimalMethod>)
-    {
-        return getTask().optimalBit;
-    }
-    else if constexpr (std::is_same_v<T, SearchMethod>)
-    {
-        return getTask().searchBit;
-    }
-    else if constexpr (std::is_same_v<T, SortMethod>)
-    {
-        return getTask().sortBit;
-    }
-}
-
-//! @brief Set the bit flags of the method in algorithm tasks.
-//! @tparam T - type of method
-//! @param index - method index
-template <typename T>
-void setBit(const int index)
-{
-    if constexpr (std::is_same_v<T, MatchMethod>)
-    {
-        getTask().matchBit.set(MatchMethod(index));
-    }
-    else if constexpr (std::is_same_v<T, NotationMethod>)
-    {
-        getTask().notationBit.set(NotationMethod(index));
-    }
-    else if constexpr (std::is_same_v<T, OptimalMethod>)
-    {
-        getTask().optimalBit.set(OptimalMethod(index));
-    }
-    else if constexpr (std::is_same_v<T, SearchMethod>)
-    {
-        getTask().searchBit.set(SearchMethod(index));
-    }
-    else if constexpr (std::is_same_v<T, SortMethod>)
-    {
-        getTask().sortBit.set(SortMethod(index));
-    }
-}
-
 //! @brief Apply match.
 namespace match
 {
@@ -445,7 +389,7 @@ private:
     //! @brief Calculate precision by digit.
     //! @param digit - digit for the target text
     //! @return precision converted from digit
-    inline static int calculatePrecision(const std::uint32_t digit)
+    static inline int calculatePrecision(const std::uint32_t digit)
     {
         return static_cast<int>(std::ceil(static_cast<double>(digit) * std::log2(mpfrBase)));
     }
@@ -623,7 +567,7 @@ struct FuncRange
     //! @brief Function description.
     const std::string_view funcDescr;
 
-    //! @brief The operator (==) overloading of FuncRange class.
+    //! @brief The operator (==) overloading of FuncRange struct.
     //! @param rhs - right-hand side
     //! @return be equal or not equal
     bool operator==(const FuncRange& rhs) const

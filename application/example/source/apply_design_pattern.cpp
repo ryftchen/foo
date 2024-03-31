@@ -32,6 +32,20 @@
                                 << std::setfill('.') << std::setw(50) << category << "END"              \
                                 << std::resetiosflags(std::ios_base::left) << std::setfill(' ') << '\n' \
                                 << std::endl;
+//! @brief Get the bit flags of the instance (category) in design pattern tasks.
+#define APP_DP_GET_BIT(category)                                                                                 \
+    std::invoke(                                                                                                 \
+        utility::reflection::TypeInfo<DesignPatternTask>::fields.find(REFLECTION_STR(toString(category))).value, \
+        getTask())
+//! @brief Get the alias of the instance (category) in design pattern tasks.
+#define APP_DP_GET_ALIAS(category)                                                                            \
+    ({                                                                                                        \
+        constexpr auto attr =                                                                                 \
+            utility::reflection::TypeInfo<DesignPatternTask>::fields.find(REFLECTION_STR(toString(category))) \
+                .attrs.find(REFLECTION_STR("alias"));                                                         \
+        static_assert(attr.hasValue);                                                                         \
+        attr.value;                                                                                           \
+    })
 
 namespace application::app_dp
 {
@@ -50,8 +64,26 @@ DesignPatternTask& getTask()
 //! @return task name curried
 static const auto& getTaskNameCurried()
 {
-    static const auto curried = utility::currying::curry(command::presetTaskName, "dp");
+    static const auto curried =
+        utility::currying::curry(command::presetTaskName, utility::reflection::TypeInfo<DesignPatternTask>::name);
     return curried;
+}
+
+//! @brief Mapping table for enum and string about design pattern tasks. X macro.
+#define CATEGORY_TABLE             \
+    ELEM(behavioral, "behavioral") \
+    ELEM(creational, "creational") \
+    ELEM(structural, "structural")
+
+//! @brief Convert category enumeration to string.
+//! @param cat - the specific value of Category enum
+//! @return category name
+constexpr std::string_view toString(const Category cat)
+{
+#define ELEM(val, str) str,
+    constexpr std::string_view table[] = {CATEGORY_TABLE};
+#undef ELEM
+    return table[cat];
 }
 
 namespace behavioral
@@ -216,28 +248,30 @@ catch (const std::exception& error)
 //! @param targets - container of target instances
 void runBehavioralTasks(const std::vector<std::string>& targets)
 {
-    if (getBit<BehavioralInstance>().none())
+    constexpr auto category = Category::behavioral;
+    const auto& bit = APP_DP_GET_BIT(category);
+    if (bit.none())
     {
         return;
     }
 
-    APP_DP_PRINT_TASK_BEGIN_TITLE(Category::behavioral);
+    APP_DP_PRINT_TASK_BEGIN_TITLE(category);
     using behavioral::BehavioralPattern;
     using utility::common::operator""_bkdrHash;
 
-    auto* const threads = command::getPublicThreadPool().newElement(std::min(
-        static_cast<std::uint32_t>(getBit<BehavioralInstance>().count()),
-        static_cast<std::uint32_t>(Bottom<BehavioralInstance>::value)));
+    auto& pooling = command::getPublicThreadPool();
+    auto* const threads = pooling.newElement(std::min(
+        static_cast<std::uint32_t>(bit.count()), static_cast<std::uint32_t>(Bottom<BehavioralInstance>::value)));
     const auto behavioralFunctor = [threads](const std::string& threadName, void (*instancePtr)())
     {
         threads->enqueue(threadName, instancePtr);
     };
-    const auto name = utility::currying::curry(getTaskNameCurried(), "b");
+    const auto name = utility::currying::curry(getTaskNameCurried(), APP_DP_GET_ALIAS(category));
 
-    std::cout << "\r\nInstances of the behavioral pattern:" << std::endl;
+    std::cout << "\r\nInstances of the " << toString(category) << " pattern:" << std::endl;
     for (std::uint8_t i = 0; i < Bottom<BehavioralInstance>::value; ++i)
     {
-        if (!getBit<BehavioralInstance>().test(BehavioralInstance(i)))
+        if (!bit.test(BehavioralInstance(i)))
         {
             continue;
         }
@@ -279,58 +313,61 @@ void runBehavioralTasks(const std::vector<std::string>& targets)
                 behavioralFunctor(name(targetInstance), &BehavioralPattern::visitorInstance);
                 break;
             default:
-                LOG_INF << "Execute to apply an unknown behavioral instance.";
+                LOG_INF << "Execute to apply an unknown " << toString(category) << " instance.";
                 break;
         }
     }
 
-    command::getPublicThreadPool().deleteElement(threads);
-    APP_DP_PRINT_TASK_END_TITLE(Category::behavioral);
+    pooling.deleteElement(threads);
+    APP_DP_PRINT_TASK_END_TITLE(category);
 }
 
 //! @brief Update behavioral instances in tasks.
 //! @param target - target instance
 void updateBehavioralTask(const std::string& target)
 {
+    constexpr auto category = Category::behavioral;
+    auto& bit = APP_DP_GET_BIT(category);
+
     using utility::common::operator""_bkdrHash;
     switch (utility::common::bkdrHash(target.c_str()))
     {
         case "cha"_bkdrHash:
-            setBit<BehavioralInstance>(BehavioralInstance::chainOfResponsibility);
+            bit.set(BehavioralInstance::chainOfResponsibility);
             break;
         case "com"_bkdrHash:
-            setBit<BehavioralInstance>(BehavioralInstance::command);
+            bit.set(BehavioralInstance::command);
             break;
         case "int"_bkdrHash:
-            setBit<BehavioralInstance>(BehavioralInstance::interpreter);
+            bit.set(BehavioralInstance::interpreter);
             break;
         case "ite"_bkdrHash:
-            setBit<BehavioralInstance>(BehavioralInstance::iterator);
+            bit.set(BehavioralInstance::iterator);
             break;
         case "med"_bkdrHash:
-            setBit<BehavioralInstance>(BehavioralInstance::mediator);
+            bit.set(BehavioralInstance::mediator);
             break;
         case "mem"_bkdrHash:
-            setBit<BehavioralInstance>(BehavioralInstance::memento);
+            bit.set(BehavioralInstance::memento);
             break;
         case "obs"_bkdrHash:
-            setBit<BehavioralInstance>(BehavioralInstance::observer);
+            bit.set(BehavioralInstance::observer);
             break;
         case "sta"_bkdrHash:
-            setBit<BehavioralInstance>(BehavioralInstance::state);
+            bit.set(BehavioralInstance::state);
             break;
         case "str"_bkdrHash:
-            setBit<BehavioralInstance>(BehavioralInstance::strategy);
+            bit.set(BehavioralInstance::strategy);
             break;
         case "tem"_bkdrHash:
-            setBit<BehavioralInstance>(BehavioralInstance::templateMethod);
+            bit.set(BehavioralInstance::templateMethod);
             break;
         case "vis"_bkdrHash:
-            setBit<BehavioralInstance>(BehavioralInstance::visitor);
+            bit.set(BehavioralInstance::visitor);
             break;
         default:
-            getBit<BehavioralInstance>().reset();
-            throw std::runtime_error("Unexpected behavioral instance: " + target + '.');
+            bit.reset();
+            throw std::runtime_error("Unexpected " + std::string{toString(category)} + " instance: " + target + '.');
     }
 }
 
@@ -424,28 +461,30 @@ catch (const std::exception& error)
 //! @param targets - container of target instances
 void runCreationalTasks(const std::vector<std::string>& targets)
 {
-    if (getBit<CreationalInstance>().none())
+    constexpr auto category = Category::creational;
+    const auto& bit = APP_DP_GET_BIT(category);
+    if (bit.none())
     {
         return;
     }
 
-    APP_DP_PRINT_TASK_BEGIN_TITLE(Category::creational);
+    APP_DP_PRINT_TASK_BEGIN_TITLE(category);
     using creational::CreationalPattern;
     using utility::common::operator""_bkdrHash;
 
-    auto* const threads = command::getPublicThreadPool().newElement(std::min(
-        static_cast<std::uint32_t>(getBit<CreationalInstance>().count()),
-        static_cast<std::uint32_t>(Bottom<CreationalInstance>::value)));
+    auto& pooling = command::getPublicThreadPool();
+    auto* const threads = pooling.newElement(std::min(
+        static_cast<std::uint32_t>(bit.count()), static_cast<std::uint32_t>(Bottom<CreationalInstance>::value)));
     const auto creationalFunctor = [threads](const std::string& threadName, void (*instancePtr)())
     {
         threads->enqueue(threadName, instancePtr);
     };
-    const auto name = utility::currying::curry(getTaskNameCurried(), "c");
+    const auto name = utility::currying::curry(getTaskNameCurried(), APP_DP_GET_ALIAS(category));
 
-    std::cout << "\r\nInstances of the creational pattern:" << std::endl;
+    std::cout << "\r\nInstances of the " << toString(category) << " pattern:" << std::endl;
     for (std::uint8_t i = 0; i < Bottom<CreationalInstance>::value; ++i)
     {
-        if (!getBit<CreationalInstance>().test(CreationalInstance(i)))
+        if (!bit.test(CreationalInstance(i)))
         {
             continue;
         }
@@ -469,40 +508,43 @@ void runCreationalTasks(const std::vector<std::string>& targets)
                 creationalFunctor(name(targetInstance), &CreationalPattern::singletonInstance);
                 break;
             default:
-                LOG_INF << "Execute to apply an unknown creational instance.";
+                LOG_INF << "Execute to apply an unknown " << toString(category) << " instance.";
                 break;
         }
     }
 
-    command::getPublicThreadPool().deleteElement(threads);
-    APP_DP_PRINT_TASK_END_TITLE(Category::creational);
+    pooling.deleteElement(threads);
+    APP_DP_PRINT_TASK_END_TITLE(category);
 }
 
 //! @brief Update creational instances in tasks.
 //! @param target - target instance
 void updateCreationalTask(const std::string& target)
 {
+    constexpr auto category = Category::creational;
+    auto& bit = APP_DP_GET_BIT(category);
+
     using utility::common::operator""_bkdrHash;
     switch (utility::common::bkdrHash(target.c_str()))
     {
         case "abs"_bkdrHash:
-            setBit<CreationalInstance>(CreationalInstance::abstractFactory);
+            bit.set(CreationalInstance::abstractFactory);
             break;
         case "bui"_bkdrHash:
-            setBit<CreationalInstance>(CreationalInstance::builder);
+            bit.set(CreationalInstance::builder);
             break;
         case "fac"_bkdrHash:
-            setBit<CreationalInstance>(CreationalInstance::factoryMethod);
+            bit.set(CreationalInstance::factoryMethod);
             break;
         case "pro"_bkdrHash:
-            setBit<CreationalInstance>(CreationalInstance::prototype);
+            bit.set(CreationalInstance::prototype);
             break;
         case "sin"_bkdrHash:
-            setBit<CreationalInstance>(CreationalInstance::singleton);
+            bit.set(CreationalInstance::singleton);
             break;
         default:
-            getBit<CreationalInstance>().reset();
-            throw std::runtime_error("Unexpected creational instance: " + target + '.');
+            bit.reset();
+            throw std::runtime_error("Unexpected " + std::string{toString(category)} + " instance: " + target + '.');
     }
 }
 
@@ -620,28 +662,30 @@ catch (const std::exception& error)
 //! @param targets - container of target instances
 void runStructuralTasks(const std::vector<std::string>& targets)
 {
-    if (getBit<StructuralInstance>().none())
+    constexpr auto category = Category::structural;
+    const auto& bit = APP_DP_GET_BIT(category);
+    if (bit.none())
     {
         return;
     }
 
-    APP_DP_PRINT_TASK_BEGIN_TITLE(Category::structural);
+    APP_DP_PRINT_TASK_BEGIN_TITLE(category);
     using structural::StructuralPattern;
     using utility::common::operator""_bkdrHash;
 
-    auto* const threads = command::getPublicThreadPool().newElement(std::min(
-        static_cast<std::uint32_t>(getBit<StructuralInstance>().count()),
-        static_cast<std::uint32_t>(Bottom<StructuralInstance>::value)));
+    auto& pooling = command::getPublicThreadPool();
+    auto* const threads = pooling.newElement(std::min(
+        static_cast<std::uint32_t>(bit.count()), static_cast<std::uint32_t>(Bottom<StructuralInstance>::value)));
     const auto structuralFunctor = [threads](const std::string& threadName, void (*instancePtr)())
     {
         threads->enqueue(threadName, instancePtr);
     };
-    const auto name = utility::currying::curry(getTaskNameCurried(), "s");
+    const auto name = utility::currying::curry(getTaskNameCurried(), APP_DP_GET_ALIAS(category));
 
-    std::cout << "\r\nInstances of the structural pattern:" << std::endl;
+    std::cout << "\r\nInstances of the " << toString(category) << " pattern:" << std::endl;
     for (std::uint8_t i = 0; i < Bottom<StructuralInstance>::value; ++i)
     {
-        if (!getBit<StructuralInstance>().test(StructuralInstance(i)))
+        if (!bit.test(StructuralInstance(i)))
         {
             continue;
         }
@@ -671,46 +715,51 @@ void runStructuralTasks(const std::vector<std::string>& targets)
                 structuralFunctor(name(targetInstance), &StructuralPattern::proxyInstance);
                 break;
             default:
-                LOG_INF << "Execute to apply an unknown structural instance.";
+                LOG_INF << "Execute to apply an unknown " << toString(category) << " instance.";
                 break;
         }
     }
 
-    command::getPublicThreadPool().deleteElement(threads);
-    APP_DP_PRINT_TASK_END_TITLE(Category::structural);
+    pooling.deleteElement(threads);
+    APP_DP_PRINT_TASK_END_TITLE(category);
 }
 
 //! @brief Update structural instances in tasks.
 //! @param target - target instance
 void updateStructuralTask(const std::string& target)
 {
+    constexpr auto category = Category::structural;
+    auto& bit = APP_DP_GET_BIT(category);
+
     using utility::common::operator""_bkdrHash;
     switch (utility::common::bkdrHash(target.c_str()))
     {
         case "ada"_bkdrHash:
-            setBit<StructuralInstance>(StructuralInstance::adapter);
+            bit.set(StructuralInstance::adapter);
             break;
         case "bri"_bkdrHash:
-            setBit<StructuralInstance>(StructuralInstance::bridge);
+            bit.set(StructuralInstance::bridge);
             break;
         case "com"_bkdrHash:
-            setBit<StructuralInstance>(StructuralInstance::composite);
+            bit.set(StructuralInstance::composite);
             break;
         case "dec"_bkdrHash:
-            setBit<StructuralInstance>(StructuralInstance::decorator);
+            bit.set(StructuralInstance::decorator);
             break;
         case "fac"_bkdrHash:
-            setBit<StructuralInstance>(StructuralInstance::facade);
+            bit.set(StructuralInstance::facade);
             break;
         case "fly"_bkdrHash:
-            setBit<StructuralInstance>(StructuralInstance::flyweight);
+            bit.set(StructuralInstance::flyweight);
             break;
         case "pro"_bkdrHash:
-            setBit<StructuralInstance>(StructuralInstance::proxy);
+            bit.set(StructuralInstance::proxy);
             break;
         default:
-            getBit<StructuralInstance>().reset();
-            throw std::runtime_error("Unexpected structural instance: " + target + '.');
+            bit.reset();
+            throw std::runtime_error("Unexpected " + std::string{toString(category)} + " instance: " + target + '.');
     }
 }
+
+#undef CATEGORY_TABLE
 } // namespace application::app_dp

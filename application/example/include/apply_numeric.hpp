@@ -172,54 +172,6 @@ protected:
 };
 extern NumericTask& getTask();
 
-//! @brief Get the bit flags of the method in numeric tasks.
-//! @tparam T - type of method
-//! @return reference of the method bit flags
-template <typename T>
-auto& getBit()
-{
-    if constexpr (std::is_same_v<T, ArithmeticMethod>)
-    {
-        return getTask().arithmeticBit;
-    }
-    else if constexpr (std::is_same_v<T, DivisorMethod>)
-    {
-        return getTask().divisorBit;
-    }
-    else if constexpr (std::is_same_v<T, IntegralMethod>)
-    {
-        return getTask().integralBit;
-    }
-    else if constexpr (std::is_same_v<T, PrimeMethod>)
-    {
-        return getTask().primeBit;
-    }
-}
-
-//! @brief Set the bit flags of the method in numeric tasks.
-//! @tparam T - type of method
-//! @param index - method index
-template <typename T>
-void setBit(const int index)
-{
-    if constexpr (std::is_same_v<T, ArithmeticMethod>)
-    {
-        getTask().arithmeticBit.set(ArithmeticMethod(index));
-    }
-    else if constexpr (std::is_same_v<T, DivisorMethod>)
-    {
-        getTask().divisorBit.set(DivisorMethod(index));
-    }
-    else if constexpr (std::is_same_v<T, IntegralMethod>)
-    {
-        getTask().integralBit.set(IntegralMethod(index));
-    }
-    else if constexpr (std::is_same_v<T, PrimeMethod>)
-    {
-        getTask().primeBit.set(PrimeMethod(index));
-    }
-}
-
 //! @brief Apply arithmetic.
 namespace arithmetic
 {
@@ -506,7 +458,7 @@ struct ExprRange
     const T2 range2;
     //! @brief Expression description.
     const std::string_view exprDescr;
-    //! @brief The operator (==) overloading of ExprRange class.
+    //! @brief The operator (==) overloading of ExprRange struct.
     //! @param rhs - right-hand side
     //! @return be equal or not equal
     bool operator==(const ExprRange& rhs) const

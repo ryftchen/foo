@@ -37,6 +37,20 @@
                                 << std::setw(50) << category << "END" << std::resetiosflags(std::ios_base::left)    \
                                 << std::setfill(' ') << '\n'                                                        \
                                 << std::endl;
+//! @brief Get the bit flags of the method (category) in algorithm tasks.
+#define APP_ALGO_GET_BIT(category)                                                                           \
+    std::invoke(                                                                                             \
+        utility::reflection::TypeInfo<AlgorithmTask>::fields.find(REFLECTION_STR(toString(category))).value, \
+        getTask())
+//! @brief Get the alias of the method (category) in algorithm tasks.
+#define APP_ALGO_GET_ALIAS(category)                                                                      \
+    ({                                                                                                    \
+        constexpr auto attr =                                                                             \
+            utility::reflection::TypeInfo<AlgorithmTask>::fields.find(REFLECTION_STR(toString(category))) \
+                .attrs.find(REFLECTION_STR("alias"));                                                     \
+        static_assert(attr.hasValue);                                                                     \
+        attr.value;                                                                                       \
+    })
 
 namespace application::app_algo
 {
@@ -55,8 +69,28 @@ AlgorithmTask& getTask()
 //! @return task name curried
 static const auto& getTaskNameCurried()
 {
-    static const auto curried = utility::currying::curry(command::presetTaskName, "algo");
+    static const auto curried =
+        utility::currying::curry(command::presetTaskName, utility::reflection::TypeInfo<AlgorithmTask>::name);
     return curried;
+}
+
+//! @brief Mapping table for enum and string about algorithm tasks. X macro.
+#define CATEGORY_TABLE         \
+    ELEM(match, "match")       \
+    ELEM(notation, "notation") \
+    ELEM(optimal, "optimal")   \
+    ELEM(search, "search")     \
+    ELEM(sort, "sort")
+
+//! @brief Convert category enumeration to string.
+//! @param cat - the specific value of Category enum
+//! @return category name
+constexpr std::string_view toString(const Category cat)
+{
+#define ELEM(val, str) str,
+    constexpr std::string_view table[] = {CATEGORY_TABLE};
+#undef ELEM
+    return table[cat];
 }
 
 namespace match
@@ -194,21 +228,23 @@ catch (const std::exception& error)
 //! @param targets - container of target methods
 void runMatchTasks(const std::vector<std::string>& targets)
 {
-    if (getBit<MatchMethod>().none())
+    constexpr auto category = Category::match;
+    const auto& bit = APP_ALGO_GET_BIT(category);
+    if (bit.none())
     {
         return;
     }
 
-    APP_ALGO_PRINT_TASK_BEGIN_TITLE(Category::match);
+    APP_ALGO_PRINT_TASK_BEGIN_TITLE(category);
     using match::MatchSolution;
     using match::TargetBuilder;
     using match::input::patternString;
     using utility::common::operator""_bkdrHash;
     static_assert(TargetBuilder::maxDigit > patternString.length());
 
-    auto* const threads = command::getPublicThreadPool().newElement(std::min(
-        static_cast<std::uint32_t>(getBit<MatchMethod>().count()),
-        static_cast<std::uint32_t>(Bottom<MatchMethod>::value)));
+    auto& pooling = command::getPublicThreadPool();
+    auto* const threads = pooling.newElement(
+        std::min(static_cast<std::uint32_t>(bit.count()), static_cast<std::uint32_t>(Bottom<MatchMethod>::value)));
     const auto builder = std::make_shared<TargetBuilder>(std::string{patternString});
     const auto matchFunctor =
         [threads, builder](
@@ -224,11 +260,11 @@ void runMatchTasks(const std::vector<std::string>& targets)
             builder->getTextLength(),
             builder->getPatternLength());
     };
-    const auto name = utility::currying::curry(getTaskNameCurried(), "m");
+    const auto name = utility::currying::curry(getTaskNameCurried(), APP_ALGO_GET_ALIAS(category));
 
     for (std::uint8_t i = 0; i < Bottom<MatchMethod>::value; ++i)
     {
-        if (!getBit<MatchMethod>().test(MatchMethod(i)))
+        if (!bit.test(MatchMethod(i)))
         {
             continue;
         }
@@ -252,40 +288,43 @@ void runMatchTasks(const std::vector<std::string>& targets)
                 matchFunctor(name(targetMethod), &MatchSolution::sundayMethod);
                 break;
             default:
-                LOG_INF << "Execute to apply an unknown match method.";
+                LOG_INF << "Execute to apply an unknown " << toString(category) << " method.";
                 break;
         }
     }
 
-    command::getPublicThreadPool().deleteElement(threads);
-    APP_ALGO_PRINT_TASK_END_TITLE(Category::match);
+    pooling.deleteElement(threads);
+    APP_ALGO_PRINT_TASK_END_TITLE(category);
 }
 
 //! @brief Update match methods in tasks.
 //! @param target - target method
 void updateMatchTask(const std::string& target)
 {
+    constexpr auto category = Category::match;
+    auto& bit = APP_ALGO_GET_BIT(category);
+
     using utility::common::operator""_bkdrHash;
     switch (utility::common::bkdrHash(target.c_str()))
     {
         case "rab"_bkdrHash:
-            setBit<MatchMethod>(MatchMethod::rabinKarp);
+            bit.set(MatchMethod::rabinKarp);
             break;
         case "knu"_bkdrHash:
-            setBit<MatchMethod>(MatchMethod::knuthMorrisPratt);
+            bit.set(MatchMethod::knuthMorrisPratt);
             break;
         case "boy"_bkdrHash:
-            setBit<MatchMethod>(MatchMethod::boyerMoore);
+            bit.set(MatchMethod::boyerMoore);
             break;
         case "hor"_bkdrHash:
-            setBit<MatchMethod>(MatchMethod::horspool);
+            bit.set(MatchMethod::horspool);
             break;
         case "sun"_bkdrHash:
-            setBit<MatchMethod>(MatchMethod::sunday);
+            bit.set(MatchMethod::sunday);
             break;
         default:
-            getBit<MatchMethod>().reset();
-            throw std::runtime_error("Unexpected match method: " + target + '.');
+            bit.reset();
+            throw std::runtime_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
     }
 }
 
@@ -343,31 +382,33 @@ catch (const std::exception& error)
 //! @param targets - container of target methods
 void runNotationTasks(const std::vector<std::string>& targets)
 {
-    if (getBit<NotationMethod>().none())
+    constexpr auto category = Category::notation;
+    const auto& bit = APP_ALGO_GET_BIT(category);
+    if (bit.none())
     {
         return;
     }
 
-    APP_ALGO_PRINT_TASK_BEGIN_TITLE(Category::notation);
+    APP_ALGO_PRINT_TASK_BEGIN_TITLE(category);
     using notation::NotationSolution;
     using notation::TargetBuilder;
     using notation::input::infixString;
     using utility::common::operator""_bkdrHash;
 
-    auto* const threads = command::getPublicThreadPool().newElement(std::min(
-        static_cast<std::uint32_t>(getBit<NotationMethod>().count()),
-        static_cast<std::uint32_t>(Bottom<NotationMethod>::value)));
+    auto& pooling = command::getPublicThreadPool();
+    auto* const threads = pooling.newElement(
+        std::min(static_cast<std::uint32_t>(bit.count()), static_cast<std::uint32_t>(Bottom<NotationMethod>::value)));
     const auto builder = std::make_shared<TargetBuilder>(infixString);
     const auto notationFunctor =
         [threads, builder](const std::string& threadName, void (*methodPtr)(const std::string&))
     {
         threads->enqueue(threadName, methodPtr, std::string{builder->getInfixNotation()});
     };
-    const auto name = utility::currying::curry(getTaskNameCurried(), "n");
+    const auto name = utility::currying::curry(getTaskNameCurried(), APP_ALGO_GET_ALIAS(category));
 
     for (std::uint8_t i = 0; i < Bottom<NotationMethod>::value; ++i)
     {
-        if (!getBit<NotationMethod>().test(NotationMethod(i)))
+        if (!bit.test(NotationMethod(i)))
         {
             continue;
         }
@@ -382,31 +423,34 @@ void runNotationTasks(const std::vector<std::string>& targets)
                 notationFunctor(name(targetMethod), &NotationSolution::postfixMethod);
                 break;
             default:
-                LOG_INF << "Execute to apply an unknown notation method.";
+                LOG_INF << "Execute to apply an unknown " << toString(category) << " method.";
                 break;
         }
     }
 
-    command::getPublicThreadPool().deleteElement(threads);
-    APP_ALGO_PRINT_TASK_END_TITLE(Category::notation);
+    pooling.deleteElement(threads);
+    APP_ALGO_PRINT_TASK_END_TITLE(category);
 }
 
 //! @brief Update notation methods in tasks.
 //! @param target - target method
 void updateNotationTask(const std::string& target)
 {
+    constexpr auto category = Category::notation;
+    auto& bit = APP_ALGO_GET_BIT(category);
+
     using utility::common::operator""_bkdrHash;
     switch (utility::common::bkdrHash(target.c_str()))
     {
         case "pre"_bkdrHash:
-            setBit<NotationMethod>(NotationMethod::prefix);
+            bit.set(NotationMethod::prefix);
             break;
         case "pos"_bkdrHash:
-            setBit<NotationMethod>(NotationMethod::postfix);
+            bit.set(NotationMethod::postfix);
             break;
         default:
-            getBit<NotationMethod>().reset();
-            throw std::runtime_error("Unexpected notation method: " + target + '.');
+            bit.reset();
+            throw std::runtime_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
     }
 }
 
@@ -496,7 +540,9 @@ catch (const std::exception& error)
 //! @param targets - container of target methods
 void runOptimalTasks(const std::vector<std::string>& targets)
 {
-    if (getBit<OptimalMethod>().none())
+    constexpr auto category = Category::optimal;
+    const auto& bit = APP_ALGO_GET_BIT(category);
+    if (bit.none())
     {
         return;
     }
@@ -519,25 +565,26 @@ void runOptimalTasks(const std::vector<std::string>& targets)
             },
             function);
     };
-    const auto calcFunc = [&targets](const optimal::Function& function, const optimal::FuncRange<double, double>& range)
+    const auto calcFunc =
+        [&targets, bit](const optimal::Function& function, const optimal::FuncRange<double, double>& range)
     {
         assert(range.range1 < range.range2);
-        auto* const threads = command::getPublicThreadPool().newElement(std::min(
-            static_cast<std::uint32_t>(getBit<OptimalMethod>().count()),
-            static_cast<std::uint32_t>(Bottom<OptimalMethod>::value)));
+        auto& pooling = command::getPublicThreadPool();
+        auto* const threads = pooling.newElement(std::min(
+            static_cast<std::uint32_t>(bit.count()), static_cast<std::uint32_t>(Bottom<OptimalMethod>::value)));
         const auto optimalFunctor =
             [threads, &function, &range](
                 const std::string& threadName, void (*methodPtr)(const optimal::Function&, const double, const double))
         {
             threads->enqueue(threadName, methodPtr, std::ref(function), range.range1, range.range2);
         };
-        const auto name = utility::currying::curry(getTaskNameCurried(), "o");
+        const auto name = utility::currying::curry(getTaskNameCurried(), APP_ALGO_GET_ALIAS(category));
 
         using optimal::OptimalSolution;
         using utility::common::operator""_bkdrHash;
         for (std::uint8_t i = 0; i < Bottom<OptimalMethod>::value; ++i)
         {
-            if (!getBit<OptimalMethod>().test(OptimalMethod(i)))
+            if (!bit.test(OptimalMethod(i)))
             {
                 continue;
             }
@@ -558,14 +605,14 @@ void runOptimalTasks(const std::vector<std::string>& targets)
                     optimalFunctor(name(targetMethod), &OptimalSolution::geneticMethod);
                     break;
                 default:
-                    LOG_INF << "Execute to apply an unknown optimal method.";
+                    LOG_INF << "Execute to apply an unknown " << toString(category) << " method.";
                     break;
             }
         }
-        command::getPublicThreadPool().deleteElement(threads);
+        pooling.deleteElement(threads);
     };
 
-    APP_ALGO_PRINT_TASK_BEGIN_TITLE(Category::optimal);
+    APP_ALGO_PRINT_TASK_BEGIN_TITLE(category);
 
     for ([[maybe_unused]] const auto& [range, function] : optimalFuncMap)
     {
@@ -580,31 +627,34 @@ void runOptimalTasks(const std::vector<std::string>& targets)
         }
     }
 
-    APP_ALGO_PRINT_TASK_END_TITLE(Category::optimal);
+    APP_ALGO_PRINT_TASK_END_TITLE(category);
 }
 
 //! @brief Update optimal methods in tasks.
 //! @param target - target method
 void updateOptimalTask(const std::string& target)
 {
+    constexpr auto category = Category::optimal;
+    auto& bit = APP_ALGO_GET_BIT(category);
+
     using utility::common::operator""_bkdrHash;
     switch (utility::common::bkdrHash(target.c_str()))
     {
         case "gra"_bkdrHash:
-            setBit<OptimalMethod>(OptimalMethod::gradient);
+            bit.set(OptimalMethod::gradient);
             break;
         case "ann"_bkdrHash:
-            setBit<OptimalMethod>(OptimalMethod::annealing);
+            bit.set(OptimalMethod::annealing);
             break;
         case "par"_bkdrHash:
-            setBit<OptimalMethod>(OptimalMethod::particle);
+            bit.set(OptimalMethod::particle);
             break;
         case "gen"_bkdrHash:
-            setBit<OptimalMethod>(OptimalMethod::genetic);
+            bit.set(OptimalMethod::genetic);
             break;
         default:
-            getBit<OptimalMethod>().reset();
-            throw std::runtime_error("Unexpected optimal method: " + target + '.');
+            bit.reset();
+            throw std::runtime_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
     }
 }
 
@@ -695,12 +745,14 @@ catch (const std::exception& error)
 //! @param targets - container of target methods
 void runSearchTasks(const std::vector<std::string>& targets)
 {
-    if (getBit<SearchMethod>().none())
+    constexpr auto category = Category::search;
+    const auto& bit = APP_ALGO_GET_BIT(category);
+    if (bit.none())
     {
         return;
     }
 
-    APP_ALGO_PRINT_TASK_BEGIN_TITLE(Category::search);
+    APP_ALGO_PRINT_TASK_BEGIN_TITLE(category);
     using search::SearchSolution;
     using search::TargetBuilder;
     using search::input::arrayLength;
@@ -709,9 +761,9 @@ void runSearchTasks(const std::vector<std::string>& targets)
     using utility::common::operator""_bkdrHash;
     static_assert((arrayRange1 < arrayRange2) && (arrayLength > 0));
 
-    auto* const threads = command::getPublicThreadPool().newElement(std::min(
-        static_cast<std::uint32_t>(getBit<SearchMethod>().count()),
-        static_cast<std::uint32_t>(Bottom<SearchMethod>::value)));
+    auto& pooling = command::getPublicThreadPool();
+    auto* const threads = pooling.newElement(
+        std::min(static_cast<std::uint32_t>(bit.count()), static_cast<std::uint32_t>(Bottom<SearchMethod>::value)));
     const auto builder = std::make_shared<TargetBuilder<double>>(arrayLength, arrayRange1, arrayRange2);
     const auto searchFunctor =
         [threads, builder](
@@ -720,11 +772,11 @@ void runSearchTasks(const std::vector<std::string>& targets)
         threads->enqueue(
             threadName, methodPtr, builder->getOrderedArray().get(), builder->getLength(), builder->getSearchKey());
     };
-    const auto name = utility::currying::curry(getTaskNameCurried(), "s");
+    const auto name = utility::currying::curry(getTaskNameCurried(), APP_ALGO_GET_ALIAS(category));
 
     for (std::uint8_t i = 0; i < Bottom<SearchMethod>::value; ++i)
     {
-        if (!getBit<SearchMethod>().test(SearchMethod(i)))
+        if (!bit.test(SearchMethod(i)))
         {
             continue;
         }
@@ -742,34 +794,37 @@ void runSearchTasks(const std::vector<std::string>& targets)
                 searchFunctor(name(targetMethod), &SearchSolution::fibonacciMethod);
                 break;
             default:
-                LOG_INF << "Execute to apply an unknown search method.";
+                LOG_INF << "Execute to apply an unknown " << toString(category) << " method.";
                 break;
         }
     }
 
-    command::getPublicThreadPool().deleteElement(threads);
-    APP_ALGO_PRINT_TASK_END_TITLE(Category::search);
+    pooling.deleteElement(threads);
+    APP_ALGO_PRINT_TASK_END_TITLE(category);
 }
 
 //! @brief Update search methods in tasks.
 //! @param target - target method
 void updateSearchTask(const std::string& target)
 {
+    constexpr auto category = Category::search;
+    auto& bit = APP_ALGO_GET_BIT(category);
+
     using utility::common::operator""_bkdrHash;
     switch (utility::common::bkdrHash(target.c_str()))
     {
         case "bin"_bkdrHash:
-            setBit<SearchMethod>(SearchMethod::binary);
+            bit.set(SearchMethod::binary);
             break;
         case "int"_bkdrHash:
-            setBit<SearchMethod>(SearchMethod::interpolation);
+            bit.set(SearchMethod::interpolation);
             break;
         case "fib"_bkdrHash:
-            setBit<SearchMethod>(SearchMethod::fibonacci);
+            bit.set(SearchMethod::fibonacci);
             break;
         default:
-            getBit<SearchMethod>().reset();
-            throw std::runtime_error("Unexpected search method: " + target + '.');
+            bit.reset();
+            throw std::runtime_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
     }
 }
 
@@ -954,12 +1009,14 @@ catch (const std::exception& error)
 //! @param targets - container of target methods
 void runSortTasks(const std::vector<std::string>& targets)
 {
-    if (getBit<SortMethod>().none())
+    constexpr auto category = Category::sort;
+    const auto& bit = APP_ALGO_GET_BIT(category);
+    if (bit.none())
     {
         return;
     }
 
-    APP_ALGO_PRINT_TASK_BEGIN_TITLE(Category::sort);
+    APP_ALGO_PRINT_TASK_BEGIN_TITLE(category);
     using sort::SortSolution;
     using sort::TargetBuilder;
     using sort::input::arrayLength;
@@ -968,20 +1025,20 @@ void runSortTasks(const std::vector<std::string>& targets)
     using utility::common::operator""_bkdrHash;
     static_assert((arrayRange1 < arrayRange2) && (arrayLength > 0));
 
-    auto* const threads = command::getPublicThreadPool().newElement(std::min(
-        static_cast<std::uint32_t>(getBit<SortMethod>().count()),
-        static_cast<std::uint32_t>(Bottom<SortMethod>::value)));
+    auto& pooling = command::getPublicThreadPool();
+    auto* const threads = pooling.newElement(
+        std::min(static_cast<std::uint32_t>(bit.count()), static_cast<std::uint32_t>(Bottom<SortMethod>::value)));
     const auto builder = std::make_shared<TargetBuilder<int>>(arrayLength, arrayRange1, arrayRange2);
     const auto sortFunctor =
         [threads, builder](const std::string& threadName, void (*methodPtr)(const int* const, const std::uint32_t))
     {
         threads->enqueue(threadName, methodPtr, builder->getRandomArray().get(), builder->getLength());
     };
-    const auto name = utility::currying::curry(getTaskNameCurried(), "S");
+    const auto name = utility::currying::curry(getTaskNameCurried(), APP_ALGO_GET_ALIAS(category));
 
     for (std::uint8_t i = 0; i < Bottom<SortMethod>::value; ++i)
     {
-        if (!getBit<SortMethod>().test(SortMethod(i)))
+        if (!bit.test(SortMethod(i)))
         {
             continue;
         }
@@ -1020,55 +1077,60 @@ void runSortTasks(const std::vector<std::string>& targets)
                 sortFunctor(name(targetMethod), &SortSolution::radixMethod);
                 break;
             default:
-                LOG_INF << "Execute to apply an unknown sort method.";
+                LOG_INF << "Execute to apply an unknown " << toString(category) << " method.";
                 break;
         }
     }
 
-    command::getPublicThreadPool().deleteElement(threads);
-    APP_ALGO_PRINT_TASK_END_TITLE(Category::sort);
+    pooling.deleteElement(threads);
+    APP_ALGO_PRINT_TASK_END_TITLE(category);
 }
 
 //! @brief Update sort methods in tasks.
 //! @param target - target method
 void updateSortTask(const std::string& target)
 {
+    constexpr auto category = Category::sort;
+    auto& bit = APP_ALGO_GET_BIT(category);
+
     using utility::common::operator""_bkdrHash;
     switch (utility::common::bkdrHash(target.c_str()))
     {
         case "bub"_bkdrHash:
-            setBit<SortMethod>(SortMethod::bubble);
+            bit.set(SortMethod::bubble);
             break;
         case "sel"_bkdrHash:
-            setBit<SortMethod>(SortMethod::selection);
+            bit.set(SortMethod::selection);
             break;
         case "ins"_bkdrHash:
-            setBit<SortMethod>(SortMethod::insertion);
+            bit.set(SortMethod::insertion);
             break;
         case "she"_bkdrHash:
-            setBit<SortMethod>(SortMethod::shell);
+            bit.set(SortMethod::shell);
             break;
         case "mer"_bkdrHash:
-            setBit<SortMethod>(SortMethod::merge);
+            bit.set(SortMethod::merge);
             break;
         case "qui"_bkdrHash:
-            setBit<SortMethod>(SortMethod::quick);
+            bit.set(SortMethod::quick);
             break;
         case "hea"_bkdrHash:
-            setBit<SortMethod>(SortMethod::heap);
+            bit.set(SortMethod::heap);
             break;
         case "cou"_bkdrHash:
-            setBit<SortMethod>(SortMethod::counting);
+            bit.set(SortMethod::counting);
             break;
         case "buc"_bkdrHash:
-            setBit<SortMethod>(SortMethod::bucket);
+            bit.set(SortMethod::bucket);
             break;
         case "rad"_bkdrHash:
-            setBit<SortMethod>(SortMethod::radix);
+            bit.set(SortMethod::radix);
             break;
         default:
-            getBit<SortMethod>().reset();
-            throw std::runtime_error("Unexpected sort method: " + target + '.');
+            bit.reset();
+            throw std::runtime_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
     }
 }
+
+#undef CATEGORY_TABLE
 } // namespace application::app_algo
