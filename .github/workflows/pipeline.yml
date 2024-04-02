@@ -49,11 +49,22 @@ jobs:
           retention-days: 7
 
       - name: Clean
-        uses: strumwolf/delete-deployment-environment@v3.0.0
+        if: github.event_name == 'push'
+        run: |
+          git remote update
+          git fetch
+          git checkout --track origin/gh-pages
+          git reset --hard HEAD~1
+          git push --force origin gh-pages
+          git checkout master
+
+      - name: Deploy
+        uses: JamesIves/github-pages-deploy-action@v4.4.1
         if: github.event_name == 'push'
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          environment: gh-pages
+          branch: gh-pages
+          folder: ./document/doxygen
+          commit-message: 'chore: deploy to gh-pages from @ ${{ github.repository }}@${{ github.sha }}'
 
   dynamic_analysis:
     name: Dynamic analysis
