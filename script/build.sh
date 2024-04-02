@@ -637,6 +637,9 @@ function package_for_doxygen()
     shell_command "rm -rf ./${FOLDER[doc]}/archive/${FOLDER[proj]}_${doxygen_folder}_*.tar.bz2 \
 ./${FOLDER[doc]}/${doxygen_folder} && mkdir -p ./${FOLDER[doc]}/${doxygen_folder}"
 
+    shell_command "grep -nE '\/\/! @((brief (([a-z].+)|(.+[^.])))|((param|tparam) (.+[.]))|(return (.+[.])))$' \
+-R './${FOLDER[app]}' './${FOLDER[util]}' './${FOLDER[algo]}' './${FOLDER[ds]}' './${FOLDER[dp]}' './${FOLDER[num]}' \
+'./${FOLDER[tst]}' --include '*.cpp' --include '*.hpp' --include '*.tpp'"
     shell_command "(cat ./${FOLDER[doc]}/Doxyfile ; echo 'PROJECT_NUMBER=\"@ $(git rev-parse --short @)\"') \
 | doxygen -"
     shell_command "tar -jcvf ./${FOLDER[doc]}/archive/${tar_file} -C ./${FOLDER[doc]} ${doxygen_folder} >/dev/null"
