@@ -64,7 +64,6 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           environment: gh-pages
-          onlyRemoveDeployments: true
 
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@v4.4.1
