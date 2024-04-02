@@ -59,7 +59,7 @@ jobs:
           git checkout master
 
       - name: Clean
-      - uses: strumwolf/delete-deployment-environment@v3.0.0
+      - uses: strumwolf/delete-deployment-environment@v2
         if: github.event_name == 'push'
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
