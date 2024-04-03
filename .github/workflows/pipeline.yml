@@ -24,8 +24,7 @@ jobs:
       options: --privileged
     timeout-minutes: 20
 
-    permissions:
-      contents: write
+    permissions: write-all
 
     steps:
       - name: Prepare
