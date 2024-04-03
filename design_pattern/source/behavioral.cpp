@@ -10,7 +10,6 @@
 
 namespace design_pattern::behavioral
 {
-//! @brief The chain of responsibility pattern.
 namespace chain_of_responsibility
 {
 void Handler::setHandler(std::shared_ptr<Handler> handler)
@@ -71,7 +70,6 @@ std::ostringstream& output()
 }
 } // namespace chain_of_responsibility
 
-//! @brief The command pattern.
 namespace command
 {
 void Receiver::action()
@@ -114,7 +112,6 @@ std::ostringstream& output()
 }
 } // namespace command
 
-//! @brief The interpreter pattern.
 namespace interpreter
 {
 void Context::set(const std::string& expr, const bool val)
@@ -157,7 +154,6 @@ std::ostringstream& output()
 }
 } // namespace interpreter
 
-//! @brief The iterator pattern.
 namespace iterator
 {
 ConcreteAggregate::ConcreteAggregate(const std::uint32_t size)
@@ -220,7 +216,6 @@ std::ostringstream& output()
 }
 } // namespace iterator
 
-//! @brief The mediator pattern.
 namespace mediator
 {
 ConcreteMediator::~ConcreteMediator()
@@ -282,7 +277,6 @@ std::ostringstream& output()
 }
 } // namespace mediator
 
-//! @brief The memento pattern.
 namespace memento
 {
 void Memento::setState(const int s)
@@ -359,7 +353,6 @@ std::ostringstream& output()
 }
 } // namespace memento
 
-//! @brief The observer pattern.
 namespace observer
 {
 void Subject::attach(const std::shared_ptr<Observer>& observer)
@@ -413,7 +406,6 @@ std::ostringstream& output()
 }
 } // namespace observer
 
-//! @brief The state pattern.
 namespace state
 {
 void ConcreteStateA::handle()
@@ -454,7 +446,6 @@ std::ostringstream& output()
 }
 } // namespace state
 
-//! @brief The strategy pattern.
 namespace strategy
 {
 void ConcreteStrategyA::algorithmInterface()
@@ -486,7 +477,6 @@ std::ostringstream& output()
 }
 } // namespace strategy
 
-//! @brief The template method pattern.
 namespace template_method
 {
 void AbstractClass::templateMethod()
@@ -514,7 +504,6 @@ std::ostringstream& output()
 }
 } // namespace template_method
 
-//! @brief The visitor pattern.
 namespace visitor
 {
 void ConcreteVisitor1::visitElementA(const std::shared_ptr<ConcreteElementA>& /*element*/)

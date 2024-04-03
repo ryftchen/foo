@@ -8,7 +8,6 @@
 
 namespace design_pattern::creational
 {
-//! @brief The abstract factory pattern.
 namespace abstract_factory
 {
 std::string ConcreteProductAX::getName()
@@ -60,7 +59,6 @@ std::ostringstream& output()
 }
 } // namespace abstract_factory
 
-//! @brief The builder pattern.
 namespace builder
 {
 void Product::makeA(const std::string& part)
@@ -156,7 +154,6 @@ std::ostringstream& output()
 }
 } // namespace builder
 
-//! @brief The factory method pattern.
 namespace factory_method
 {
 std::string ConcreteProductA::getName()
@@ -193,7 +190,6 @@ std::ostringstream& output()
 }
 } // namespace factory_method
 
-//! @brief The prototype pattern.
 namespace prototype
 {
 std::unique_ptr<Prototype> Client::types[2];
@@ -249,7 +245,6 @@ std::ostringstream& output()
 }
 } // namespace prototype
 
-//! @brief The singleton factory pattern.
 namespace singleton
 {
 std::shared_ptr<Singleton> Singleton::instance = nullptr;
