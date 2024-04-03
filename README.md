@@ -1,5 +1,13 @@
 # foo
 
+```text
+  ______   ______     ______
+ /\  ___\ /\  __ \   /\  __ \
+ \ \  __\ \ \ \/\ \  \ \ \/\ \
+  \ \_\    \ \_____\  \ \_____\
+   \/_/     \/_____/   \/_____/
+```
+
 [![pipeline](https://img.shields.io/github/actions/workflow/status/ryftchen/foo/pipeline.yml?branch=master&label=pipeline&logo=github&logoColor=white)](https://github.com/ryftchen/foo/actions/workflows/pipeline.yml) [![license](https://img.shields.io/github/license/ryftchen/foo?label=license&logo=github&logoColor=white)](https://github.com/ryftchen/foo/blob/master/LICENSE)
 
 The **foo** is a personal roadmap for learning programming, like a demo. Its main purpose is to use the C++ language to implement or improve some common basic functions. It also contains detailed comments for easy summary and archive. The goal is to improve programming skills while developing good programming habits.
@@ -81,7 +89,7 @@ The **foo** is a personal roadmap for learning programming, like a demo. Its mai
 
 ## Documentation
 
-The project documentation can be found on the [Github Pages](https://ryftchen.github.io/foo/). When using local documentation via script, `./document` is used as the generation directory.
+The project documentation can be found on the [GitHub Pages](https://ryftchen.github.io/foo/). When using local documentation via script, `./document` is used as the generation directory.
 
 ## License
 
