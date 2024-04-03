@@ -1,11 +1,11 @@
 # foo
 
 ```text
-  ______   ______     ______
- /\  ___\ /\  __ \   /\  __ \
- \ \  __\ \ \ \/\ \  \ \ \/\ \
-  \ \_\    \ \_____\  \ \_____\
-   \/_/     \/_____/   \/_____/
+ ______   ______     ______
+/\  ___\ /\  __ \   /\  __ \
+\ \  __\ \ \ \/\ \  \ \ \/\ \
+ \ \_\    \ \_____\  \ \_____\
+  \/_/     \/_____/   \/_____/
 ```
 
 [![pipeline](https://img.shields.io/github/actions/workflow/status/ryftchen/foo/pipeline.yml?branch=master&label=pipeline&logo=github&logoColor=white)](https://github.com/ryftchen/foo/actions/workflows/pipeline.yml) [![license](https://img.shields.io/github/license/ryftchen/foo?label=license&logo=github&logoColor=white)](https://github.com/ryftchen/foo/blob/master/LICENSE)

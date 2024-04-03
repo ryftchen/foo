@@ -18,7 +18,7 @@
 
 namespace application::command
 {
-//! @brief Constraint for helper.
+//! @brief Constraint for external helpers.
 //! @tparam T - type of helper
 template <typename T>
 concept HelperType = requires (T helper) {
@@ -27,8 +27,8 @@ concept HelperType = requires (T helper) {
     } -> std::same_as<T&>;
 } && std::derived_from<T, utility::fsm::FSM<T>>;
 
-//! @brief Enumerate specific operations for helper.
-enum HelperOperation : std::uint8_t
+//! @brief Enumerate specific operations to control external helpers.
+enum HelperControl : std::uint8_t
 {
     //! @brief Start.
     start,
@@ -38,11 +38,11 @@ enum HelperOperation : std::uint8_t
     rollback
 };
 
-//! @brief Trigger helper with operation.
+//! @brief Trigger the external helper with operation.
 //! @tparam Helper - type of helper
 //! @param operation - target operation
 template <HelperType Helper>
-constexpr void triggerHelper(const HelperOperation operation)
+constexpr void triggerHelper(const HelperControl operation)
 {
     if (!CONFIG_ACTIVE_HELPER)
     {
@@ -63,13 +63,13 @@ constexpr void triggerHelper(const HelperOperation operation)
 
     switch (operation)
     {
-        case HelperOperation::start:
+        case HelperControl::start:
             getHelper().waitToStart();
             break;
-        case HelperOperation::stop:
+        case HelperControl::stop:
             getHelper().waitToStop();
             break;
-        case HelperOperation::rollback:
+        case HelperControl::rollback:
             getHelper().requestToRollback();
             break;
         default:
@@ -305,8 +305,8 @@ Command& Command::getInstance()
 void Command::runCommander(const int argc, const char* const argv[])
 try
 {
-    triggerHelper<log::Log>(HelperOperation::start);
-    triggerHelper<view::View>(HelperOperation::start);
+    triggerHelper<log::Log>(HelperControl::start);
+    triggerHelper<view::View>(HelperControl::start);
 
     if (1 == argc)
     {
@@ -320,8 +320,8 @@ try
         threads->enqueue("commander-bg", &Command::backgroundHandler, this);
     }
 
-    triggerHelper<view::View>(HelperOperation::stop);
-    triggerHelper<log::Log>(HelperOperation::stop);
+    triggerHelper<view::View>(HelperControl::stop);
+    triggerHelper<log::Log>(HelperControl::stop);
 }
 catch (const std::exception& error)
 {
@@ -770,8 +770,8 @@ void Command::registerOnConsole(utility::console::Console& console, std::shared_
             int retVal = Console::RetCode::success;
             try
             {
-                triggerHelper<log::Log>(HelperOperation::rollback);
-                triggerHelper<log::Log>(HelperOperation::start);
+                triggerHelper<log::Log>(HelperControl::rollback);
+                triggerHelper<log::Log>(HelperControl::start);
 
                 LOG_INF << "Refreshed the outputs.";
                 utility::time::millisecondLevelSleep(maxLatency);
@@ -795,8 +795,8 @@ void Command::registerOnConsole(utility::console::Console& console, std::shared_
                 client->toSend(utility::common::base64Encode("stop"));
                 client->waitIfAlive();
                 client.reset();
-                triggerHelper<view::View>(HelperOperation::rollback);
-                triggerHelper<view::View>(HelperOperation::start);
+                triggerHelper<view::View>(HelperControl::rollback);
+                triggerHelper<view::View>(HelperControl::start);
 
                 client = std::make_shared<T>();
                 launchClient(client);

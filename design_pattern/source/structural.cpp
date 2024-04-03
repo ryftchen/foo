@@ -10,7 +10,6 @@
 
 namespace design_pattern::structural
 {
-//! @brief The adapter pattern.
 namespace adapter
 {
 void Adaptee::specificRequest()
@@ -37,7 +36,6 @@ std::ostringstream& output()
 }
 } // namespace adapter
 
-//! @brief The bridge pattern.
 namespace bridge
 {
 void ConcreteImplementorA::action()
@@ -64,7 +62,6 @@ std::ostringstream& output()
 }
 } // namespace bridge
 
-//! @brief The composite pattern.
 namespace composite
 {
 std::shared_ptr<Component> Component::getChild(const std::uint32_t /*index*/)
@@ -133,7 +130,6 @@ std::ostringstream& output()
 }
 } // namespace composite
 
-//! @brief The decorator pattern.
 namespace decorator
 {
 void ConcreteComponent::operation()
@@ -168,7 +164,6 @@ std::ostringstream& output()
 }
 } // namespace decorator
 
-//! @brief The facade pattern.
 namespace facade
 {
 void SubsystemA::suboperation()
@@ -206,7 +201,6 @@ std::ostringstream& output()
 }
 } // namespace facade
 
-//! @brief The flyweight pattern.
 namespace flyweight
 {
 void UnsharedConcreteFlyweight::operation()
@@ -252,7 +246,6 @@ std::ostringstream& output()
 }
 } // namespace flyweight
 
-//! @brief The proxy pattern.
 namespace proxy
 {
 void RealSubject::request()
