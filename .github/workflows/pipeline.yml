@@ -53,7 +53,7 @@ jobs:
           git remote update
           git fetch
           git checkout --track origin/gh-pages
-          git reset --hard HEAD~1
+          git reset --hard 088da5a87090f9886c01af5f2a57519f5ebf2428
           git push --force origin gh-pages
           git checkout master
 
