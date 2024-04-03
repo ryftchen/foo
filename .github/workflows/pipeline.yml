@@ -23,7 +23,6 @@ jobs:
       image: ryftchen/foo:latest
       options: --privileged
     timeout-minutes: 20
-
     permissions: write-all
 
     steps:
@@ -34,30 +33,30 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Check
+      - name: Static check
         run: |
           ./script/build.sh --hook --spell --format --lint --statistics
           git status
           ./script/build.sh --release --browser --doxygen
 
-      - name: Upload
+      - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: foo_artifact
           path: ./document/archive/foo_*.tar.bz2
           retention-days: 7
 
-      - name: Reset
+      - name: Initialize gh-pages branch
         if: github.event_name == 'push'
         run: |
           git remote update
           git fetch
           git checkout --track origin/gh-pages
-          git reset --hard 088da5a87090f9886c01af5f2a57519f5ebf2428
+          git reset --hard HEAD~1
           git push --force origin gh-pages
           git checkout master
 
-      - name: Clean
+      - name: Clean deployment
         uses: strumwolf/delete-deployment-environment@v3.0.0
         if: github.event_name == 'push'
         with:
@@ -65,7 +64,7 @@ jobs:
           environment: github-pages
           onlyRemoveDeployments: true
 
-      - name: Deploy
+      - name: Deploy to gh-pages
         uses: JamesIves/github-pages-deploy-action@v4.5.0
         if: github.event_name == 'push'
         with:
@@ -89,17 +88,27 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Check
+      - name: Dynamic check
         run: |
           ./script/run.py --check cov mem --build dbg --repeat 1
           cat ./.cache/foo_run.report
 
-      - name: Test
+      - name: Test debug version
+        run: |
+          ./script/run.py --test --build dbg --repeat 1
+          cat ./.cache/foo_run.report
+
+      - name: Test release version
         run: |
           ./script/run.py --test --build rls --repeat 1
           cat ./.cache/foo_run.report
 
-      - name: Run
+      - name: Run debug version
+        run: |
+          ./script/run.py --build dbg --repeat 1
+          cat ./.cache/foo_run.report
+
+      - name: Run release version
         run: |
           ./script/run.py --build rls --repeat 1
           cat ./.cache/foo_run.report
