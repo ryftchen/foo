@@ -46,6 +46,13 @@
         static_assert(attr.hasValue);                                                                         \
         attr.value;                                                                                           \
     })
+//! @brief Get the title of a particular instance in design pattern tasks.
+#define APP_DP_GET_TITLE(instance)                           \
+    ({                                                       \
+        std::string title = std::string{toString(instance)}; \
+        title.at(0) = std::toupper(title.at(0));             \
+        title;                                               \
+    })
 
 namespace application::app_dp
 {
@@ -69,22 +76,111 @@ static const auto& getTaskNameCurried()
     return curried;
 }
 
-//! @brief Mapping table for enum and string about design pattern tasks. X macro.
-#define CATEGORY_TABLE             \
-    ELEM(behavioral, "behavioral") \
-    ELEM(creational, "creational") \
-    ELEM(structural, "structural")
+//! @brief Case value for the target instance.
+//! @tparam T - type of target instance
+//! @param instance - target instance
+//! @return case value
+template <class T>
+constexpr std::size_t caseValue(const T instance)
+{
+    using TypeInfo = utility::reflection::TypeInfo<T>;
+    static_assert(TypeInfo::fields.size == Bottom<T>::value);
+
+    std::size_t value = 0;
+    TypeInfo::fields.forEach(
+        [instance, &value](auto field)
+        {
+            if (field.name == toString(instance))
+            {
+                static_assert(1 == field.attrs.size);
+                auto attr = field.attrs.find(REFLECTION_STR("task"));
+                static_assert(attr.hasValue);
+                value = utility::common::operator""_bkdrHash(attr.value, 0);
+            }
+        });
+    return value;
+}
 
 //! @brief Convert category enumeration to string.
 //! @param cat - the specific value of Category enum
 //! @return category name
 constexpr std::string_view toString(const Category cat)
 {
-#define ELEM(val, str) str,
-    constexpr std::string_view table[] = {CATEGORY_TABLE};
-#undef ELEM
-    return table[cat];
+    switch (cat)
+    {
+        case Category::behavioral:
+            return utility::reflection::TypeInfo<BehavioralInstance>::name;
+        case Category::creational:
+            return utility::reflection::TypeInfo<CreationalInstance>::name;
+        case Category::structural:
+            return utility::reflection::TypeInfo<StructuralInstance>::name;
+    }
 }
+
+//! @brief Mapping table for enum and string about behavioral instances. X macro.
+#define APP_DP_BEHAVIORAL_INSTANCE_TABLE                 \
+    ELEM(chainOfResponsibility, "chainOfResponsibility") \
+    ELEM(command, "command")                             \
+    ELEM(interpreter, "interpreter")                     \
+    ELEM(iterator, "iterator")                           \
+    ELEM(mediator, "mediator")                           \
+    ELEM(memento, "memento")                             \
+    ELEM(observer, "observer")                           \
+    ELEM(state, "state")                                 \
+    ELEM(strategy, "strategy")                           \
+    ELEM(templateMethod, "templateMethod")               \
+    ELEM(visitor, "visitor")
+//! @brief Convert instance enumeration to string.
+//! @param instance - the specific value of BehavioralInstance enum
+//! @return instance name
+constexpr std::string_view toString(const BehavioralInstance instance)
+{
+#define ELEM(val, str) str,
+    constexpr std::string_view table[] = {APP_DP_BEHAVIORAL_INSTANCE_TABLE};
+#undef ELEM
+    return table[instance];
+}
+#undef APP_DP_BEHAVIORAL_INSTANCE_TABLE
+
+//! @brief Mapping table for enum and string about creational instances. X macro.
+#define APP_DP_CREATIONAL_INSTANCE_TABLE     \
+    ELEM(abstractFactory, "abstractFactory") \
+    ELEM(builder, "builder")                 \
+    ELEM(factoryMethod, "factoryMethod")     \
+    ELEM(prototype, "prototype")             \
+    ELEM(singleton, "singleton")
+//! @brief Convert instance enumeration to string.
+//! @param instance - the specific value of CreationalInstance enum
+//! @return instance name
+constexpr std::string_view toString(const CreationalInstance instance)
+{
+#define ELEM(val, str) str,
+    constexpr std::string_view table[] = {APP_DP_CREATIONAL_INSTANCE_TABLE};
+#undef ELEM
+    return table[instance];
+}
+#undef APP_DP_CREATIONAL_INSTANCE_TABLE
+
+//! @brief Mapping table for enum and string about structural instances. X macro.
+#define APP_DP_STRUCTURAL_INSTANCE_TABLE \
+    ELEM(adapter, "adapter")             \
+    ELEM(bridge, "bridge")               \
+    ELEM(composite, "composite")         \
+    ELEM(decorator, "decorator")         \
+    ELEM(facade, "facade")               \
+    ELEM(flyweight, "flyweight")         \
+    ELEM(proxy, "proxy")
+//! @brief Convert instance enumeration to string.
+//! @param instance - the specific value of StructuralInstance enum
+//! @return instance name
+constexpr std::string_view toString(const StructuralInstance instance)
+{
+#define ELEM(val, str) str,
+    constexpr std::string_view table[] = {APP_DP_STRUCTURAL_INSTANCE_TABLE};
+#undef ELEM
+    return table[instance];
+}
+#undef APP_DP_STRUCTURAL_INSTANCE_TABLE
 
 namespace behavioral
 {
@@ -92,31 +188,7 @@ namespace behavioral
 #define BEHAVIORAL_RESULT "\r\n==> %-21s Instance <==\n%s"
 //! @brief Print behavioral result content.
 #define BEHAVIORAL_PRINT_RESULT_CONTENT(instance) \
-    COMMON_PRINT(BEHAVIORAL_RESULT, toString(instance).data(), output.str().c_str());
-//! @brief Mapping table for enum and string about behavioral instances. X macro.
-#define BEHAVIORAL_INSTANCE_TABLE                        \
-    ELEM(chainOfResponsibility, "ChainOfResponsibility") \
-    ELEM(command, "Command")                             \
-    ELEM(interpreter, "Interpreter")                     \
-    ELEM(iterator, "Iterator")                           \
-    ELEM(mediator, "Mediator")                           \
-    ELEM(memento, "Memento")                             \
-    ELEM(observer, "Observer")                           \
-    ELEM(state, "State")                                 \
-    ELEM(strategy, "Strategy")                           \
-    ELEM(templateMethod, "TemplateMethod")               \
-    ELEM(visitor, "Visitor")
-
-//! @brief Convert instance enumeration to string.
-//! @param instance - the specific value of BehavioralInstance enum
-//! @return instance name
-constexpr std::string_view toString(const BehavioralInstance instance)
-{
-#define ELEM(val, str) str,
-    constexpr std::string_view table[] = {BEHAVIORAL_INSTANCE_TABLE};
-#undef ELEM
-    return table[instance];
-}
+    COMMON_PRINT(BEHAVIORAL_RESULT, APP_DP_GET_TITLE(instance).data(), output.str().c_str())
 
 void BehavioralPattern::chainOfResponsibilityInstance()
 try
@@ -241,7 +313,6 @@ catch (const std::exception& error)
 
 #undef BEHAVIORAL_RESULT
 #undef BEHAVIORAL_PRINT_RESULT_CONTENT
-#undef BEHAVIORAL_INSTANCE_TABLE
 } // namespace behavioral
 
 //! @brief Run behavioral tasks.
@@ -257,7 +328,6 @@ void runBehavioralTasks(const std::vector<std::string>& targets)
 
     APP_DP_PRINT_TASK_BEGIN_TITLE(category);
     using behavioral::BehavioralPattern;
-    using utility::common::operator""_bkdrHash;
 
     auto& pooling = command::getPublicThreadPool();
     auto* const threads = pooling.newElement(std::min(
@@ -279,37 +349,37 @@ void runBehavioralTasks(const std::vector<std::string>& targets)
         const std::string targetInstance = targets.at(i);
         switch (utility::common::bkdrHash(targetInstance.data()))
         {
-            case "cha"_bkdrHash:
+            case caseValue(BehavioralInstance::chainOfResponsibility):
                 behavioralFunctor(name(targetInstance), &BehavioralPattern::chainOfResponsibilityInstance);
                 break;
-            case "com"_bkdrHash:
+            case caseValue(BehavioralInstance::command):
                 behavioralFunctor(name(targetInstance), &BehavioralPattern::commandInstance);
                 break;
-            case "int"_bkdrHash:
+            case caseValue(BehavioralInstance::interpreter):
                 behavioralFunctor(name(targetInstance), &BehavioralPattern::interpreterInstance);
                 break;
-            case "ite"_bkdrHash:
+            case caseValue(BehavioralInstance::iterator):
                 behavioralFunctor(name(targetInstance), &BehavioralPattern::iteratorInstance);
                 break;
-            case "med"_bkdrHash:
+            case caseValue(BehavioralInstance::mediator):
                 behavioralFunctor(name(targetInstance), &BehavioralPattern::mediatorInstance);
                 break;
-            case "mem"_bkdrHash:
+            case caseValue(BehavioralInstance::memento):
                 behavioralFunctor(name(targetInstance), &BehavioralPattern::mementoInstance);
                 break;
-            case "obs"_bkdrHash:
+            case caseValue(BehavioralInstance::observer):
                 behavioralFunctor(name(targetInstance), &BehavioralPattern::observerInstance);
                 break;
-            case "sta"_bkdrHash:
+            case caseValue(BehavioralInstance::state):
                 behavioralFunctor(name(targetInstance), &BehavioralPattern::stateInstance);
                 break;
-            case "str"_bkdrHash:
+            case caseValue(BehavioralInstance::strategy):
                 behavioralFunctor(name(targetInstance), &BehavioralPattern::strategyInstance);
                 break;
-            case "tem"_bkdrHash:
+            case caseValue(BehavioralInstance::templateMethod):
                 behavioralFunctor(name(targetInstance), &BehavioralPattern::templateMethodInstance);
                 break;
-            case "vis"_bkdrHash:
+            case caseValue(BehavioralInstance::visitor):
                 behavioralFunctor(name(targetInstance), &BehavioralPattern::visitorInstance);
                 break;
             default:
@@ -329,40 +399,39 @@ void updateBehavioralTask(const std::string& target)
     constexpr auto category = Category::behavioral;
     auto& bit = APP_DP_GET_BIT(category);
 
-    using utility::common::operator""_bkdrHash;
     switch (utility::common::bkdrHash(target.c_str()))
     {
-        case "cha"_bkdrHash:
+        case caseValue(BehavioralInstance::chainOfResponsibility):
             bit.set(BehavioralInstance::chainOfResponsibility);
             break;
-        case "com"_bkdrHash:
+        case caseValue(BehavioralInstance::command):
             bit.set(BehavioralInstance::command);
             break;
-        case "int"_bkdrHash:
+        case caseValue(BehavioralInstance::interpreter):
             bit.set(BehavioralInstance::interpreter);
             break;
-        case "ite"_bkdrHash:
+        case caseValue(BehavioralInstance::iterator):
             bit.set(BehavioralInstance::iterator);
             break;
-        case "med"_bkdrHash:
+        case caseValue(BehavioralInstance::mediator):
             bit.set(BehavioralInstance::mediator);
             break;
-        case "mem"_bkdrHash:
+        case caseValue(BehavioralInstance::memento):
             bit.set(BehavioralInstance::memento);
             break;
-        case "obs"_bkdrHash:
+        case caseValue(BehavioralInstance::observer):
             bit.set(BehavioralInstance::observer);
             break;
-        case "sta"_bkdrHash:
+        case caseValue(BehavioralInstance::state):
             bit.set(BehavioralInstance::state);
             break;
-        case "str"_bkdrHash:
+        case caseValue(BehavioralInstance::strategy):
             bit.set(BehavioralInstance::strategy);
             break;
-        case "tem"_bkdrHash:
+        case caseValue(BehavioralInstance::templateMethod):
             bit.set(BehavioralInstance::templateMethod);
             break;
-        case "vis"_bkdrHash:
+        case caseValue(BehavioralInstance::visitor):
             bit.set(BehavioralInstance::visitor);
             break;
         default:
@@ -377,25 +446,7 @@ namespace creational
 #define CREATIONAL_RESULT "\r\n==> %-15s Instance <==\n%s"
 //! @brief Print creational result content.
 #define CREATIONAL_PRINT_RESULT_CONTENT(instance) \
-    COMMON_PRINT(CREATIONAL_RESULT, toString(instance).data(), output.str().c_str());
-//! @brief Mapping table for enum and string about creational instances. X macro.
-#define CREATIONAL_INSTANCE_TABLE            \
-    ELEM(abstractFactory, "AbstractFactory") \
-    ELEM(builder, "Builder")                 \
-    ELEM(factoryMethod, "FactoryMethod")     \
-    ELEM(prototype, "Prototype")             \
-    ELEM(singleton, "Singleton")
-
-//! @brief Convert instance enumeration to string.
-//! @param instance - the specific value of CreationalInstance enum
-//! @return instance name
-constexpr std::string_view toString(const CreationalInstance instance)
-{
-#define ELEM(val, str) str,
-    constexpr std::string_view table[] = {CREATIONAL_INSTANCE_TABLE};
-#undef ELEM
-    return table[instance];
-}
+    COMMON_PRINT(CREATIONAL_RESULT, APP_DP_GET_TITLE(instance).data(), output.str().c_str())
 
 void CreationalPattern::abstractFactoryInstance()
 try
@@ -454,7 +505,6 @@ catch (const std::exception& error)
 
 #undef CREATIONAL_RESULT
 #undef CREATIONAL_PRINT_RESULT_CONTENT
-#undef CREATIONAL_INSTANCE_TABLE
 } // namespace creational
 
 //! @brief Run creational tasks.
@@ -470,7 +520,6 @@ void runCreationalTasks(const std::vector<std::string>& targets)
 
     APP_DP_PRINT_TASK_BEGIN_TITLE(category);
     using creational::CreationalPattern;
-    using utility::common::operator""_bkdrHash;
 
     auto& pooling = command::getPublicThreadPool();
     auto* const threads = pooling.newElement(std::min(
@@ -492,19 +541,19 @@ void runCreationalTasks(const std::vector<std::string>& targets)
         const std::string targetInstance = targets.at(i);
         switch (utility::common::bkdrHash(targetInstance.data()))
         {
-            case "abs"_bkdrHash:
+            case caseValue(CreationalInstance::abstractFactory):
                 creationalFunctor(name(targetInstance), &CreationalPattern::abstractFactoryInstance);
                 break;
-            case "bui"_bkdrHash:
+            case caseValue(CreationalInstance::builder):
                 creationalFunctor(name(targetInstance), &CreationalPattern::builderInstance);
                 break;
-            case "fac"_bkdrHash:
+            case caseValue(CreationalInstance::factoryMethod):
                 creationalFunctor(name(targetInstance), &CreationalPattern::factoryMethodInstance);
                 break;
-            case "pro"_bkdrHash:
+            case caseValue(CreationalInstance::prototype):
                 creationalFunctor(name(targetInstance), &CreationalPattern::prototypeInstance);
                 break;
-            case "sin"_bkdrHash:
+            case caseValue(CreationalInstance::singleton):
                 creationalFunctor(name(targetInstance), &CreationalPattern::singletonInstance);
                 break;
             default:
@@ -524,22 +573,21 @@ void updateCreationalTask(const std::string& target)
     constexpr auto category = Category::creational;
     auto& bit = APP_DP_GET_BIT(category);
 
-    using utility::common::operator""_bkdrHash;
     switch (utility::common::bkdrHash(target.c_str()))
     {
-        case "abs"_bkdrHash:
+        case caseValue(CreationalInstance::abstractFactory):
             bit.set(CreationalInstance::abstractFactory);
             break;
-        case "bui"_bkdrHash:
+        case caseValue(CreationalInstance::builder):
             bit.set(CreationalInstance::builder);
             break;
-        case "fac"_bkdrHash:
+        case caseValue(CreationalInstance::factoryMethod):
             bit.set(CreationalInstance::factoryMethod);
             break;
-        case "pro"_bkdrHash:
+        case caseValue(CreationalInstance::prototype):
             bit.set(CreationalInstance::prototype);
             break;
-        case "sin"_bkdrHash:
+        case caseValue(CreationalInstance::singleton):
             bit.set(CreationalInstance::singleton);
             break;
         default:
@@ -554,27 +602,7 @@ namespace structural
 #define STRUCTURAL_RESULT "\r\n==> %-9s Instance <==\n%s"
 //! @brief Print structural result content.
 #define STRUCTURAL_PRINT_RESULT_CONTENT(instance) \
-    COMMON_PRINT(STRUCTURAL_RESULT, toString(instance).data(), output.str().c_str());
-//! @brief Mapping table for enum and string about structural instances. X macro.
-#define STRUCTURAL_INSTANCE_TABLE \
-    ELEM(adapter, "Adapter")      \
-    ELEM(bridge, "Bridge")        \
-    ELEM(composite, "Composite")  \
-    ELEM(decorator, "Decorator")  \
-    ELEM(facade, "Facade")        \
-    ELEM(flyweight, "Flyweight")  \
-    ELEM(proxy, "Proxy")
-
-//! @brief Convert instance enumeration to string.
-//! @param instance - the specific value of StructuralInstance enum
-//! @return instance name
-constexpr std::string_view toString(const StructuralInstance instance)
-{
-#define ELEM(val, str) str,
-    constexpr std::string_view table[] = {STRUCTURAL_INSTANCE_TABLE};
-#undef ELEM
-    return table[instance];
-}
+    COMMON_PRINT(STRUCTURAL_RESULT, APP_DP_GET_TITLE(instance).data(), output.str().c_str())
 
 void StructuralPattern::adapterInstance()
 try
@@ -655,7 +683,6 @@ catch (const std::exception& error)
 
 #undef STRUCTURAL_RESULT
 #undef STRUCTURAL_PRINT_RESULT_CONTENT
-#undef STRUCTURAL_INSTANCE_TABLE
 } // namespace structural
 
 //! @brief Run structural tasks.
@@ -671,7 +698,6 @@ void runStructuralTasks(const std::vector<std::string>& targets)
 
     APP_DP_PRINT_TASK_BEGIN_TITLE(category);
     using structural::StructuralPattern;
-    using utility::common::operator""_bkdrHash;
 
     auto& pooling = command::getPublicThreadPool();
     auto* const threads = pooling.newElement(std::min(
@@ -693,25 +719,25 @@ void runStructuralTasks(const std::vector<std::string>& targets)
         const std::string targetInstance = targets.at(i);
         switch (utility::common::bkdrHash(targetInstance.data()))
         {
-            case "ada"_bkdrHash:
+            case caseValue(StructuralInstance::adapter):
                 structuralFunctor(name(targetInstance), &StructuralPattern::adapterInstance);
                 break;
-            case "bri"_bkdrHash:
+            case caseValue(StructuralInstance::bridge):
                 structuralFunctor(name(targetInstance), &StructuralPattern::bridgeInstance);
                 break;
-            case "com"_bkdrHash:
+            case caseValue(StructuralInstance::composite):
                 structuralFunctor(name(targetInstance), &StructuralPattern::compositeInstance);
                 break;
-            case "dec"_bkdrHash:
+            case caseValue(StructuralInstance::decorator):
                 structuralFunctor(name(targetInstance), &StructuralPattern::decoratorInstance);
                 break;
-            case "fac"_bkdrHash:
+            case caseValue(StructuralInstance::facade):
                 structuralFunctor(name(targetInstance), &StructuralPattern::facadeInstance);
                 break;
-            case "fly"_bkdrHash:
+            case caseValue(StructuralInstance::flyweight):
                 structuralFunctor(name(targetInstance), &StructuralPattern::flyweightInstance);
                 break;
-            case "pro"_bkdrHash:
+            case caseValue(StructuralInstance::proxy):
                 structuralFunctor(name(targetInstance), &StructuralPattern::proxyInstance);
                 break;
             default:
@@ -731,28 +757,27 @@ void updateStructuralTask(const std::string& target)
     constexpr auto category = Category::structural;
     auto& bit = APP_DP_GET_BIT(category);
 
-    using utility::common::operator""_bkdrHash;
     switch (utility::common::bkdrHash(target.c_str()))
     {
-        case "ada"_bkdrHash:
+        case caseValue(StructuralInstance::adapter):
             bit.set(StructuralInstance::adapter);
             break;
-        case "bri"_bkdrHash:
+        case caseValue(StructuralInstance::bridge):
             bit.set(StructuralInstance::bridge);
             break;
-        case "com"_bkdrHash:
+        case caseValue(StructuralInstance::composite):
             bit.set(StructuralInstance::composite);
             break;
-        case "dec"_bkdrHash:
+        case caseValue(StructuralInstance::decorator):
             bit.set(StructuralInstance::decorator);
             break;
-        case "fac"_bkdrHash:
+        case caseValue(StructuralInstance::facade):
             bit.set(StructuralInstance::facade);
             break;
-        case "fly"_bkdrHash:
+        case caseValue(StructuralInstance::flyweight):
             bit.set(StructuralInstance::flyweight);
             break;
-        case "pro"_bkdrHash:
+        case caseValue(StructuralInstance::proxy):
             bit.set(StructuralInstance::proxy);
             break;
         default:

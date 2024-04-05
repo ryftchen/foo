@@ -51,6 +51,13 @@
         static_assert(attr.hasValue);                                                                     \
         attr.value;                                                                                       \
     })
+//! @brief Get the title of a particular method in algorithm tasks.
+#define APP_ALGO_GET_TITLE(method)                         \
+    ({                                                     \
+        std::string title = std::string{toString(method)}; \
+        title.at(0) = std::toupper(title.at(0));           \
+        title;                                             \
+    })
 
 namespace application::app_algo
 {
@@ -74,24 +81,144 @@ static const auto& getTaskNameCurried()
     return curried;
 }
 
-//! @brief Mapping table for enum and string about algorithm tasks. X macro.
-#define CATEGORY_TABLE         \
-    ELEM(match, "match")       \
-    ELEM(notation, "notation") \
-    ELEM(optimal, "optimal")   \
-    ELEM(search, "search")     \
-    ELEM(sort, "sort")
+//! @brief Case value for the target method.
+//! @tparam T - type of target method
+//! @param method - target method
+//! @return case value
+template <class T>
+constexpr std::size_t caseValue(const T method)
+{
+    using TypeInfo = utility::reflection::TypeInfo<T>;
+    static_assert(TypeInfo::fields.size == Bottom<T>::value);
+
+    std::size_t value = 0;
+    TypeInfo::fields.forEach(
+        [method, &value](auto field)
+        {
+            if (field.name == toString(method))
+            {
+                static_assert(1 == field.attrs.size);
+                auto attr = field.attrs.find(REFLECTION_STR("task"));
+                static_assert(attr.hasValue);
+                value = utility::common::operator""_bkdrHash(attr.value, 0);
+            }
+        });
+    return value;
+}
 
 //! @brief Convert category enumeration to string.
 //! @param cat - the specific value of Category enum
 //! @return category name
 constexpr std::string_view toString(const Category cat)
 {
-#define ELEM(val, str) str,
-    constexpr std::string_view table[] = {CATEGORY_TABLE};
-#undef ELEM
-    return table[cat];
+    switch (cat)
+    {
+        case Category::match:
+            return utility::reflection::TypeInfo<MatchMethod>::name;
+        case Category::notation:
+            return utility::reflection::TypeInfo<NotationMethod>::name;
+        case Category::optimal:
+            return utility::reflection::TypeInfo<OptimalMethod>::name;
+        case Category::search:
+            return utility::reflection::TypeInfo<SearchMethod>::name;
+        case Category::sort:
+            return utility::reflection::TypeInfo<SortMethod>::name;
+    }
 }
+
+//! @brief Mapping table for enum and string about match methods. X macro.
+#define APP_ALGO_MATCH_METHOD_TABLE            \
+    ELEM(rabinKarp, "rabinKarp")               \
+    ELEM(knuthMorrisPratt, "knuthMorrisPratt") \
+    ELEM(boyerMoore, "boyerMoore")             \
+    ELEM(horspool, "horspool")                 \
+    ELEM(sunday, "sunday")
+//! @brief Convert method enumeration to string.
+//! @param method - the specific value of MatchMethod enum
+//! @return method name
+constexpr std::string_view toString(const MatchMethod method)
+{
+#define ELEM(val, str) str,
+    constexpr std::string_view table[] = {APP_ALGO_MATCH_METHOD_TABLE};
+#undef ELEM
+    return table[method];
+}
+#undef APP_ALGO_MATCH_METHOD_TABLE
+
+//! @brief Mapping table for enum and string about notation methods. X macro.
+#define APP_ALGO_NOTATION_METHOD_TABLE \
+    ELEM(prefix, "prefix")             \
+    ELEM(postfix, "postfix")
+//! @brief Convert method enumeration to string.
+//! @param method - the specific value of NotationMethod enum
+//! @return method name
+constexpr std::string_view toString(const NotationMethod method)
+{
+#define ELEM(val, str) str,
+    constexpr std::string_view table[] = {APP_ALGO_NOTATION_METHOD_TABLE};
+#undef ELEM
+    return table[method];
+}
+#undef APP_ALGO_NOTATION_METHOD_TABLE
+
+//! @brief Mapping table for enum and string about optimal methods. X macro.
+#define APP_ALGO_OPTIMAL_METHOD_TABLE \
+    ELEM(gradient, "gradient")        \
+    ELEM(annealing, "annealing")      \
+    ELEM(particle, "particle")        \
+    ELEM(genetic, "genetic")
+//! @brief Convert method enumeration to string.
+//! @param method - the specific value of OptimalMethod enum
+//! @return method name
+constexpr std::string_view toString(const OptimalMethod method)
+{
+#define ELEM(val, str) str,
+    constexpr std::string_view table[] = {APP_ALGO_OPTIMAL_METHOD_TABLE};
+#undef ELEM
+    return table[method];
+}
+#undef APP_ALGO_OPTIMAL_METHOD_TABLE
+
+//! @brief Mapping table for enum and string about search methods. X macro.
+#define APP_ALGO_SEARCH_METHOD_TABLE     \
+    ELEM(binary, "binary")               \
+    ELEM(interpolation, "interpolation") \
+    ELEM(fibonacci, "fibonacci")
+//! @brief Convert method enumeration to string.
+//! @param method - the specific value of SearchMethod enum
+//! @return method name
+constexpr std::string_view toString(const SearchMethod method)
+{
+#define ELEM(val, str) str,
+    constexpr std::string_view table[] = {APP_ALGO_SEARCH_METHOD_TABLE};
+#undef ELEM
+    return table[method];
+}
+#undef APP_ALGO_SEARCH_METHOD_TABLE
+
+//! @brief Mapping table for enum and string about sort methods. X macro.
+#define APP_ALGO_SORT_METHOD_TABLE \
+    ELEM(bubble, "bubble")         \
+    ELEM(selection, "selection")   \
+    ELEM(insertion, "insertion")   \
+    ELEM(shell, "shell")           \
+    ELEM(merge, "merge")           \
+    ELEM(quick, "quick")           \
+    ELEM(heap, "heap")             \
+    ELEM(counting, "counting")     \
+    ELEM(bucket, "bucket")         \
+    ELEM(radix, "radix")
+//! @brief Convert method enumeration to string.
+//! @param method - the specific value of SortMethod enum
+//! @return method name
+constexpr std::string_view toString(const SortMethod method)
+{
+#define ELEM(val, str) str,
+    constexpr std::string_view table[] = {APP_ALGO_SORT_METHOD_TABLE};
+#undef ELEM
+    return table[method];
+}
+#undef APP_ALGO_SORT_METHOD_TABLE
 
 namespace match
 {
@@ -101,37 +228,19 @@ namespace match
 //! @brief Display none match result.
 #define MATCH_NONE_RESULT "\r\n==> %-16s Method <==\npattern \"%s\" could not be found, run time: %8.5f ms\n"
 //! @brief Print match result content.
-#define MATCH_PRINT_RESULT_CONTENT(method)                                                                   \
-    do                                                                                                       \
-    {                                                                                                        \
-        if (-1 != shift)                                                                                     \
-        {                                                                                                    \
-            COMMON_PRINT(MATCH_RESULT(1st), toString(method).data(), pattern, shift, TIME_INTERVAL(timing)); \
-        }                                                                                                    \
-        else                                                                                                 \
-        {                                                                                                    \
-            COMMON_PRINT(MATCH_NONE_RESULT, toString(method).data(), pattern, TIME_INTERVAL(timing));        \
-        }                                                                                                    \
-    }                                                                                                        \
+#define MATCH_PRINT_RESULT_CONTENT(method)                                                                             \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        if (-1 != shift)                                                                                               \
+        {                                                                                                              \
+            COMMON_PRINT(MATCH_RESULT(1st), APP_ALGO_GET_TITLE(method).data(), pattern, shift, TIME_INTERVAL(timing)); \
+        }                                                                                                              \
+        else                                                                                                           \
+        {                                                                                                              \
+            COMMON_PRINT(MATCH_NONE_RESULT, APP_ALGO_GET_TITLE(method).data(), pattern, TIME_INTERVAL(timing));        \
+        }                                                                                                              \
+    }                                                                                                                  \
     while (0)
-//! @brief Mapping table for enum and string about match methods. X macro.
-#define MATCH_METHOD_TABLE                     \
-    ELEM(rabinKarp, "RabinKarp")               \
-    ELEM(knuthMorrisPratt, "KnuthMorrisPratt") \
-    ELEM(boyerMoore, "BoyerMoore")             \
-    ELEM(horspool, "Horspool")                 \
-    ELEM(sunday, "Sunday")
-
-//! @brief Convert method enumeration to string.
-//! @param method - the specific value of MatchMethod enum
-//! @return method name
-constexpr std::string_view toString(const MatchMethod method)
-{
-#define ELEM(val, str) str,
-    constexpr std::string_view table[] = {MATCH_METHOD_TABLE};
-#undef ELEM
-    return table[method];
-}
 
 void MatchSolution::rkMethod(
     const unsigned char* const text,
@@ -221,7 +330,6 @@ catch (const std::exception& error)
 #undef MATCH_RESULT
 #undef MATCH_NONE_RESULT
 #undef MATCH_PRINT_RESULT_CONTENT
-#undef MATCH_METHOD_TABLE
 } // namespace match
 
 //! @brief Run match tasks.
@@ -239,7 +347,6 @@ void runMatchTasks(const std::vector<std::string>& targets)
     using match::MatchSolution;
     using match::TargetBuilder;
     using match::input::patternString;
-    using utility::common::operator""_bkdrHash;
     static_assert(TargetBuilder::maxDigit > patternString.length());
 
     auto& pooling = command::getPublicThreadPool();
@@ -272,19 +379,19 @@ void runMatchTasks(const std::vector<std::string>& targets)
         const std::string targetMethod = targets.at(i);
         switch (utility::common::bkdrHash(targetMethod.data()))
         {
-            case "rab"_bkdrHash:
+            case caseValue(MatchMethod::rabinKarp):
                 matchFunctor(name(targetMethod), &MatchSolution::rkMethod);
                 break;
-            case "knu"_bkdrHash:
+            case caseValue(MatchMethod::knuthMorrisPratt):
                 matchFunctor(name(targetMethod), &MatchSolution::kmpMethod);
                 break;
-            case "boy"_bkdrHash:
+            case caseValue(MatchMethod::boyerMoore):
                 matchFunctor(name(targetMethod), &MatchSolution::bmMethod);
                 break;
-            case "hor"_bkdrHash:
+            case caseValue(MatchMethod::horspool):
                 matchFunctor(name(targetMethod), &MatchSolution::horspoolMethod);
                 break;
-            case "sun"_bkdrHash:
+            case caseValue(MatchMethod::sunday):
                 matchFunctor(name(targetMethod), &MatchSolution::sundayMethod);
                 break;
             default:
@@ -304,22 +411,21 @@ void updateMatchTask(const std::string& target)
     constexpr auto category = Category::match;
     auto& bit = APP_ALGO_GET_BIT(category);
 
-    using utility::common::operator""_bkdrHash;
     switch (utility::common::bkdrHash(target.c_str()))
     {
-        case "rab"_bkdrHash:
+        case caseValue(MatchMethod::rabinKarp):
             bit.set(MatchMethod::rabinKarp);
             break;
-        case "knu"_bkdrHash:
+        case caseValue(MatchMethod::knuthMorrisPratt):
             bit.set(MatchMethod::knuthMorrisPratt);
             break;
-        case "boy"_bkdrHash:
+        case caseValue(MatchMethod::boyerMoore):
             bit.set(MatchMethod::boyerMoore);
             break;
-        case "hor"_bkdrHash:
+        case caseValue(MatchMethod::horspool):
             bit.set(MatchMethod::horspool);
             break;
-        case "sun"_bkdrHash:
+        case caseValue(MatchMethod::sunday):
             bit.set(MatchMethod::sunday);
             break;
         default:
@@ -334,22 +440,7 @@ namespace notation
 #define NOTATION_RESULT "\r\n==> %-7s Method <==\n%s: %s\n"
 //! @brief Print notation result content.
 #define NOTATION_PRINT_RESULT_CONTENT(method, describe) \
-    COMMON_PRINT(NOTATION_RESULT, toString(method).data(), describe, notationStr.data())
-//! @brief Mapping table for enum and string about notation methods. X macro.
-#define NOTATION_METHOD_TABLE \
-    ELEM(prefix, "Prefix")    \
-    ELEM(postfix, "Postfix")
-
-//! @brief Convert method enumeration to string.
-//! @param method - the specific value of NotationMethod enum
-//! @return method name
-constexpr std::string_view toString(const NotationMethod method)
-{
-#define ELEM(val, str) str,
-    constexpr std::string_view table[] = {NOTATION_METHOD_TABLE};
-#undef ELEM
-    return table[method];
-}
+    COMMON_PRINT(NOTATION_RESULT, APP_ALGO_GET_TITLE(method).data(), describe, notationStr.data())
 
 void NotationSolution::prefixMethod(const std::string& infixNotation)
 try
@@ -375,7 +466,6 @@ catch (const std::exception& error)
 
 #undef NOTATION_RESULT
 #undef NOTATION_PRINT_RESULT_CONTENT
-#undef NOTATION_METHOD_TABLE
 } // namespace notation
 
 //! @brief Run notation tasks.
@@ -393,7 +483,6 @@ void runNotationTasks(const std::vector<std::string>& targets)
     using notation::NotationSolution;
     using notation::TargetBuilder;
     using notation::input::infixString;
-    using utility::common::operator""_bkdrHash;
 
     auto& pooling = command::getPublicThreadPool();
     auto* const threads = pooling.newElement(
@@ -416,10 +505,10 @@ void runNotationTasks(const std::vector<std::string>& targets)
         const std::string targetMethod = targets.at(i);
         switch (utility::common::bkdrHash(targetMethod.data()))
         {
-            case "pre"_bkdrHash:
+            case caseValue(NotationMethod::prefix):
                 notationFunctor(name(targetMethod), &NotationSolution::prefixMethod);
                 break;
-            case "pos"_bkdrHash:
+            case caseValue(NotationMethod::postfix):
                 notationFunctor(name(targetMethod), &NotationSolution::postfixMethod);
                 break;
             default:
@@ -439,13 +528,12 @@ void updateNotationTask(const std::string& target)
     constexpr auto category = Category::notation;
     auto& bit = APP_ALGO_GET_BIT(category);
 
-    using utility::common::operator""_bkdrHash;
     switch (utility::common::bkdrHash(target.c_str()))
     {
-        case "pre"_bkdrHash:
+        case caseValue(NotationMethod::prefix):
             bit.set(NotationMethod::prefix);
             break;
-        case "pos"_bkdrHash:
+        case caseValue(NotationMethod::postfix):
             bit.set(NotationMethod::postfix);
             break;
         default:
@@ -460,24 +548,7 @@ namespace optimal
 #define OPTIMAL_RESULT(opt) "\r\n==> %-9s Method <==\nF(" #opt ")=%+.5f X=%+.5f, run time: %8.5f ms\n"
 //! @brief Print optimal result content.
 #define OPTIMAL_PRINT_RESULT_CONTENT(method) \
-    COMMON_PRINT(OPTIMAL_RESULT(min), toString(method).data(), fx, x, TIME_INTERVAL(timing))
-//! @brief Mapping table for enum and string about optimal methods. X macro.
-#define OPTIMAL_METHOD_TABLE     \
-    ELEM(gradient, "Gradient")   \
-    ELEM(annealing, "Annealing") \
-    ELEM(particle, "Particle")   \
-    ELEM(genetic, "Genetic")
-
-//! @brief Convert method enumeration to string.
-//! @param method - the specific value of OptimalMethod enum
-//! @return method name
-constexpr std::string_view toString(const OptimalMethod method)
-{
-#define ELEM(val, str) str,
-    constexpr std::string_view table[] = {OPTIMAL_METHOD_TABLE};
-#undef ELEM
-    return table[method];
-}
+    COMMON_PRINT(OPTIMAL_RESULT(min), APP_ALGO_GET_TITLE(method).data(), fx, x, TIME_INTERVAL(timing))
 
 void OptimalSolution::gradientDescentMethod(const Function& func, const double left, const double right)
 try
@@ -533,7 +604,6 @@ catch (const std::exception& error)
 
 #undef OPTIMAL_RESULT
 #undef OPTIMAL_PRINT_RESULT_CONTENT
-#undef OPTIMAL_METHOD_TABLE
 } // namespace optimal
 
 //! @brief Run optimal tasks.
@@ -581,7 +651,6 @@ void runOptimalTasks(const std::vector<std::string>& targets)
         const auto name = utility::currying::curry(getTaskNameCurried(), APP_ALGO_GET_ALIAS(category));
 
         using optimal::OptimalSolution;
-        using utility::common::operator""_bkdrHash;
         for (std::uint8_t i = 0; i < Bottom<OptimalMethod>::value; ++i)
         {
             if (!bit.test(OptimalMethod(i)))
@@ -592,16 +661,16 @@ void runOptimalTasks(const std::vector<std::string>& targets)
             const std::string targetMethod = targets.at(i);
             switch (utility::common::bkdrHash(targetMethod.data()))
             {
-                case "gra"_bkdrHash:
+                case caseValue(OptimalMethod::gradient):
                     optimalFunctor(name(targetMethod), &OptimalSolution::gradientDescentMethod);
                     break;
-                case "ann"_bkdrHash:
+                case caseValue(OptimalMethod::annealing):
                     optimalFunctor(name(targetMethod), &OptimalSolution::simulatedAnnealingMethod);
                     break;
-                case "par"_bkdrHash:
+                case caseValue(OptimalMethod::particle):
                     optimalFunctor(name(targetMethod), &OptimalSolution::particleSwarmMethod);
                     break;
-                case "gen"_bkdrHash:
+                case caseValue(OptimalMethod::genetic):
                     optimalFunctor(name(targetMethod), &OptimalSolution::geneticMethod);
                     break;
                 default:
@@ -637,19 +706,18 @@ void updateOptimalTask(const std::string& target)
     constexpr auto category = Category::optimal;
     auto& bit = APP_ALGO_GET_BIT(category);
 
-    using utility::common::operator""_bkdrHash;
     switch (utility::common::bkdrHash(target.c_str()))
     {
-        case "gra"_bkdrHash:
+        case caseValue(OptimalMethod::gradient):
             bit.set(OptimalMethod::gradient);
             break;
-        case "ann"_bkdrHash:
+        case caseValue(OptimalMethod::annealing):
             bit.set(OptimalMethod::annealing);
             break;
-        case "par"_bkdrHash:
+        case caseValue(OptimalMethod::particle):
             bit.set(OptimalMethod::particle);
             break;
-        case "gen"_bkdrHash:
+        case caseValue(OptimalMethod::genetic):
             bit.set(OptimalMethod::genetic);
             break;
         default:
@@ -666,35 +734,19 @@ namespace search
 //! @brief Display none search result.
 #define SEARCH_NONE_RESULT "\r\n==> %-13s Method <==\ncould not find the key \"%.5f\", run time: %8.5f ms\n"
 //! @brief Print search result content.
-#define SEARCH_PRINT_RESULT_CONTENT(method)                                                          \
-    do                                                                                               \
-    {                                                                                                \
-        if (-1 != index)                                                                             \
-        {                                                                                            \
-            COMMON_PRINT(SEARCH_RESULT, toString(method).data(), key, index, TIME_INTERVAL(timing)); \
-        }                                                                                            \
-        else                                                                                         \
-        {                                                                                            \
-            COMMON_PRINT(SEARCH_NONE_RESULT, toString(method).data(), key, TIME_INTERVAL(timing));   \
-        }                                                                                            \
-    }                                                                                                \
+#define SEARCH_PRINT_RESULT_CONTENT(method)                                                                    \
+    do                                                                                                         \
+    {                                                                                                          \
+        if (-1 != index)                                                                                       \
+        {                                                                                                      \
+            COMMON_PRINT(SEARCH_RESULT, APP_ALGO_GET_TITLE(method).data(), key, index, TIME_INTERVAL(timing)); \
+        }                                                                                                      \
+        else                                                                                                   \
+        {                                                                                                      \
+            COMMON_PRINT(SEARCH_NONE_RESULT, APP_ALGO_GET_TITLE(method).data(), key, TIME_INTERVAL(timing));   \
+        }                                                                                                      \
+    }                                                                                                          \
     while (0)
-//! @brief Mapping table for enum and string about search methods. X macro.
-#define SEARCH_METHOD_TABLE              \
-    ELEM(binary, "Binary")               \
-    ELEM(interpolation, "Interpolation") \
-    ELEM(fibonacci, "Fibonacci")
-
-//! @brief Convert method enumeration to string.
-//! @param method - the specific value of SearchMethod enum
-//! @return method name
-constexpr std::string_view toString(const SearchMethod method)
-{
-#define ELEM(val, str) str,
-    constexpr std::string_view table[] = {SEARCH_METHOD_TABLE};
-#undef ELEM
-    return table[method];
-}
 
 void SearchSolution::binaryMethod(const double* const array, const std::uint32_t length, const double key)
 try
@@ -738,7 +790,6 @@ catch (const std::exception& error)
 #undef SEARCH_RESULT
 #undef SEARCH_NONE_RESULT
 #undef SEARCH_PRINT_RESULT_CONTENT
-#undef SEARCH_METHOD_TABLE
 } // namespace search
 
 //! @brief Run search tasks.
@@ -758,7 +809,6 @@ void runSearchTasks(const std::vector<std::string>& targets)
     using search::input::arrayLength;
     using search::input::arrayRange1;
     using search::input::arrayRange2;
-    using utility::common::operator""_bkdrHash;
     static_assert((arrayRange1 < arrayRange2) && (arrayLength > 0));
 
     auto& pooling = command::getPublicThreadPool();
@@ -784,13 +834,13 @@ void runSearchTasks(const std::vector<std::string>& targets)
         const std::string targetMethod = targets.at(i);
         switch (utility::common::bkdrHash(targetMethod.data()))
         {
-            case "bin"_bkdrHash:
+            case caseValue(SearchMethod::binary):
                 searchFunctor(name(targetMethod), &SearchSolution::binaryMethod);
                 break;
-            case "int"_bkdrHash:
+            case caseValue(SearchMethod::interpolation):
                 searchFunctor(name(targetMethod), &SearchSolution::interpolationMethod);
                 break;
-            case "fib"_bkdrHash:
+            case caseValue(SearchMethod::fibonacci):
                 searchFunctor(name(targetMethod), &SearchSolution::fibonacciMethod);
                 break;
             default:
@@ -810,16 +860,15 @@ void updateSearchTask(const std::string& target)
     constexpr auto category = Category::search;
     auto& bit = APP_ALGO_GET_BIT(category);
 
-    using utility::common::operator""_bkdrHash;
     switch (utility::common::bkdrHash(target.c_str()))
     {
-        case "bin"_bkdrHash:
+        case caseValue(SearchMethod::binary):
             bit.set(SearchMethod::binary);
             break;
-        case "int"_bkdrHash:
+        case caseValue(SearchMethod::interpolation):
             bit.set(SearchMethod::interpolation);
             break;
-        case "fib"_bkdrHash:
+        case caseValue(SearchMethod::fibonacci):
             bit.set(SearchMethod::fibonacci);
             break;
         default:
@@ -841,34 +890,11 @@ namespace sort
         arrayBuffer[0] = '\0';                                                                                  \
         COMMON_PRINT(                                                                                           \
             SORT_RESULT(asc),                                                                                   \
-            toString(method).data(),                                                                            \
+            APP_ALGO_GET_TITLE(method).data(),                                                                  \
             TargetBuilder<int>::template spliceAll<int>(&resCntr[0], length, arrayBuffer, arrayBufferSize + 1), \
             TIME_INTERVAL(timing));                                                                             \
     }                                                                                                           \
     while (0)
-//! @brief Mapping table for enum and string about sort methods. X macro.
-#define SORT_METHOD_TABLE        \
-    ELEM(bubble, "Bubble")       \
-    ELEM(selection, "Selection") \
-    ELEM(insertion, "Insertion") \
-    ELEM(shell, "Shell")         \
-    ELEM(merge, "Merge")         \
-    ELEM(quick, "Quick")         \
-    ELEM(heap, "Heap")           \
-    ELEM(counting, "Counting")   \
-    ELEM(bucket, "Bucket")       \
-    ELEM(radix, "Radix")
-
-//! @brief Convert method enumeration to string.
-//! @param method - the specific value of SortMethod enum
-//! @return method name
-constexpr std::string_view toString(const SortMethod method)
-{
-#define ELEM(val, str) str,
-    constexpr std::string_view table[] = {SORT_METHOD_TABLE};
-#undef ELEM
-    return table[method];
-}
 
 void SortSolution::bubbleMethod(const int* const array, const std::uint32_t length)
 try
@@ -1002,7 +1028,6 @@ catch (const std::exception& error)
 
 #undef SORT_RESULT
 #undef SORT_PRINT_RESULT_CONTENT
-#undef SORT_METHOD_TABLE
 } // namespace sort
 
 //! @brief Run sort tasks.
@@ -1022,7 +1047,6 @@ void runSortTasks(const std::vector<std::string>& targets)
     using sort::input::arrayLength;
     using sort::input::arrayRange1;
     using sort::input::arrayRange2;
-    using utility::common::operator""_bkdrHash;
     static_assert((arrayRange1 < arrayRange2) && (arrayLength > 0));
 
     auto& pooling = command::getPublicThreadPool();
@@ -1046,34 +1070,34 @@ void runSortTasks(const std::vector<std::string>& targets)
         const std::string targetMethod = targets.at(i);
         switch (utility::common::bkdrHash(targetMethod.data()))
         {
-            case "bub"_bkdrHash:
+            case caseValue(SortMethod::bubble):
                 sortFunctor(name(targetMethod), &SortSolution::bubbleMethod);
                 break;
-            case "sel"_bkdrHash:
+            case caseValue(SortMethod::selection):
                 sortFunctor(name(targetMethod), &SortSolution::selectionMethod);
                 break;
-            case "ins"_bkdrHash:
+            case caseValue(SortMethod::insertion):
                 sortFunctor(name(targetMethod), &SortSolution::insertionMethod);
                 break;
-            case "she"_bkdrHash:
+            case caseValue(SortMethod::shell):
                 sortFunctor(name(targetMethod), &SortSolution::shellMethod);
                 break;
-            case "mer"_bkdrHash:
+            case caseValue(SortMethod::merge):
                 sortFunctor(name(targetMethod), &SortSolution::mergeMethod);
                 break;
-            case "qui"_bkdrHash:
+            case caseValue(SortMethod::quick):
                 sortFunctor(name(targetMethod), &SortSolution::quickMethod);
                 break;
-            case "hea"_bkdrHash:
+            case caseValue(SortMethod::heap):
                 sortFunctor(name(targetMethod), &SortSolution::heapMethod);
                 break;
-            case "cou"_bkdrHash:
+            case caseValue(SortMethod::counting):
                 sortFunctor(name(targetMethod), &SortSolution::countingMethod);
                 break;
-            case "buc"_bkdrHash:
+            case caseValue(SortMethod::bucket):
                 sortFunctor(name(targetMethod), &SortSolution::bucketMethod);
                 break;
-            case "rad"_bkdrHash:
+            case caseValue(SortMethod::radix):
                 sortFunctor(name(targetMethod), &SortSolution::radixMethod);
                 break;
             default:
@@ -1093,37 +1117,36 @@ void updateSortTask(const std::string& target)
     constexpr auto category = Category::sort;
     auto& bit = APP_ALGO_GET_BIT(category);
 
-    using utility::common::operator""_bkdrHash;
     switch (utility::common::bkdrHash(target.c_str()))
     {
-        case "bub"_bkdrHash:
+        case caseValue(SortMethod::bubble):
             bit.set(SortMethod::bubble);
             break;
-        case "sel"_bkdrHash:
+        case caseValue(SortMethod::selection):
             bit.set(SortMethod::selection);
             break;
-        case "ins"_bkdrHash:
+        case caseValue(SortMethod::insertion):
             bit.set(SortMethod::insertion);
             break;
-        case "she"_bkdrHash:
+        case caseValue(SortMethod::shell):
             bit.set(SortMethod::shell);
             break;
-        case "mer"_bkdrHash:
+        case caseValue(SortMethod::merge):
             bit.set(SortMethod::merge);
             break;
-        case "qui"_bkdrHash:
+        case caseValue(SortMethod::quick):
             bit.set(SortMethod::quick);
             break;
-        case "hea"_bkdrHash:
+        case caseValue(SortMethod::heap):
             bit.set(SortMethod::heap);
             break;
-        case "cou"_bkdrHash:
+        case caseValue(SortMethod::counting):
             bit.set(SortMethod::counting);
             break;
-        case "buc"_bkdrHash:
+        case caseValue(SortMethod::bucket):
             bit.set(SortMethod::bucket);
             break;
-        case "rad"_bkdrHash:
+        case caseValue(SortMethod::radix):
             bit.set(SortMethod::radix);
             break;
         default:
@@ -1131,6 +1154,4 @@ void updateSortTask(const std::string& target)
             throw std::runtime_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
     }
 }
-
-#undef CATEGORY_TABLE
 } // namespace application::app_algo

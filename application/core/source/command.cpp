@@ -423,10 +423,11 @@ void Command::validateRegularTask()
         for ([[maybe_unused]] const auto& [taskCategory, taskCategoryTuple] :
              subCLIMap | std::views::filter(isCategoryUsed))
         {
-            const auto taskCntr = subCLI.get<std::vector<std::string>>(taskCategory);
-            for (const auto& task : taskCntr)
+            const auto targetCntr = subCLI.get<std::vector<std::string>>(taskCategory);
+            for (const auto& target : targetCntr)
             {
-                (*get<UpdateTaskFunctor>(get<TaskFunctorTuple>(taskCategoryTuple)))(task);
+                const auto& updateTask = get<UpdateTaskFunctor>(get<TaskFunctorTuple>(taskCategoryTuple));
+                updateTask(target);
             }
         }
     }
@@ -464,34 +465,15 @@ void Command::dispatchTask()
                 std::cout << subCLI.help().str() << std::flush;
                 return;
             }
+            return;
         }
 
-        using SubTask = RegularTask::SubTask;
-        const auto performTask = [this](const SubTask subTask)
+        for (const auto& taskCategoryTuple : std::views::values(
+                 std::next(regularTaskDispatcher.cbegin(), dispatchedTask.regularTask.getExistingSubTask())->second))
         {
-            for (const auto& taskCategoryTuple :
-                 std::views::values(std::next(regularTaskDispatcher.cbegin(), subTask)->second))
-            {
-                (*get<PerformTaskFunctor>(get<TaskFunctorTuple>(taskCategoryTuple)))(
-                    get<TargetTaskContainer>(taskCategoryTuple));
-            }
-        };
-
-        if (!app_algo::getTask().empty())
-        {
-            performTask(SubTask::algorithm);
-        }
-        else if (!app_dp::getTask().empty())
-        {
-            performTask(SubTask::designPattern);
-        }
-        else if (!app_ds::getTask().empty())
-        {
-            performTask(SubTask::dataStructure);
-        }
-        else if (!app_num::getTask().empty())
-        {
-            performTask(SubTask::numeric);
+            const auto& targets = get<TargetTaskContainer>(taskCategoryTuple);
+            const auto& runTasks = get<PerformTaskFunctor>(get<TaskFunctorTuple>(taskCategoryTuple));
+            runTasks(targets);
         }
     }
 }
@@ -501,7 +483,7 @@ std::map<Command::TaskCategory, std::string> Command::extractAliasUnderSubCLI(co
 {
     using TypeInfo = utility::reflection::TypeInfo<T>;
     const auto& table = regularTaskDispatcher.at(name);
-    if ((name != ("app-" + std::string{TypeInfo::name})) || (table.size() != TypeInfo::fields.size))
+    if ((name != TypeInfo::name) || (table.size() != TypeInfo::fields.size))
     {
         throw std::logic_error("The " + name + " sub-command is invalid.");
     }

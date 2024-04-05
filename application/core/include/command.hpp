@@ -16,86 +16,6 @@
 #include "utility/include/reflection.hpp"
 #include "utility/include/thread.hpp"
 
-//! @brief Reflect the sub-cli name to the field.
-#define COMMAND_REFLECT_SUB_CLI_FIELD(category, alias)            \
-    Field                                                         \
-    {                                                             \
-        REFLECTION_STR(#category), &Type::category##Bit, AttrList \
-        {                                                         \
-            Attr                                                  \
-            {                                                     \
-                REFLECTION_STR("alias"), #alias                   \
-            }                                                     \
-        }                                                         \
-    }
-//! @brief Static reflection for AlgorithmTask.
-template <>
-struct utility::reflection::TypeInfo<application::app_algo::AlgorithmTask>
-    : TypeInfoBase<application::app_algo::AlgorithmTask>
-{
-    //! @brief Name.
-    static constexpr std::string_view name{"algo"};
-    //! @brief Field list.
-    static constexpr FieldList fields{
-        COMMAND_REFLECT_SUB_CLI_FIELD(match, m),
-        COMMAND_REFLECT_SUB_CLI_FIELD(notation, n),
-        COMMAND_REFLECT_SUB_CLI_FIELD(optimal, o),
-        COMMAND_REFLECT_SUB_CLI_FIELD(search, s),
-        COMMAND_REFLECT_SUB_CLI_FIELD(sort, S),
-    };
-    //! @brief Attribute list.
-    static constexpr AttrList attrs{};
-};
-//! @brief Static reflection for DesignPatternTask.
-template <>
-struct utility::reflection::TypeInfo<application::app_dp::DesignPatternTask>
-    : TypeInfoBase<application::app_dp::DesignPatternTask>
-{
-    //! @brief Name.
-    static constexpr std::string_view name{"dp"};
-    //! @brief Field list.
-    static constexpr FieldList fields{
-        COMMAND_REFLECT_SUB_CLI_FIELD(behavioral, b),
-        COMMAND_REFLECT_SUB_CLI_FIELD(creational, c),
-        COMMAND_REFLECT_SUB_CLI_FIELD(structural, s),
-    };
-    //! @brief Attribute list.
-    static constexpr AttrList attrs{};
-};
-//! @brief Static reflection for DataStructureTask.
-template <>
-struct utility::reflection::TypeInfo<application::app_ds::DataStructureTask>
-    : TypeInfoBase<application::app_ds::DataStructureTask>
-{
-    //! @brief Name.
-    static constexpr std::string_view name{"ds"};
-    //! @brief Field list.
-    static constexpr FieldList fields{
-        COMMAND_REFLECT_SUB_CLI_FIELD(linear, l),
-        COMMAND_REFLECT_SUB_CLI_FIELD(tree, t),
-    };
-    //! @brief Attribute list.
-    static constexpr AttrList attrs{};
-};
-//! @brief Static reflection for NumericTask.
-template <>
-struct utility::reflection::TypeInfo<application::app_num::NumericTask>
-    : TypeInfoBase<application::app_num::NumericTask>
-{
-    //! @brief Name.
-    static constexpr std::string_view name{"num"};
-    //! @brief Field list.
-    static constexpr FieldList fields{
-        COMMAND_REFLECT_SUB_CLI_FIELD(arithmetic, a),
-        COMMAND_REFLECT_SUB_CLI_FIELD(divisor, d),
-        COMMAND_REFLECT_SUB_CLI_FIELD(integral, i),
-        COMMAND_REFLECT_SUB_CLI_FIELD(prime, p),
-    };
-    //! @brief Attribute list.
-    static constexpr AttrList attrs{};
-};
-#undef COMMAND_REFLECT_SUB_CLI_FIELD
-
 //! @brief The application module.
 namespace application // NOLINT(modernize-concat-nested-namespaces)
 {
@@ -322,6 +242,36 @@ private:
             app_num::getTask().reset();
             helpOnly = false;
         }
+        //! @brief Get the existing sub-task.
+        //! @return existing sub-task
+        SubTask getExistingSubTask()
+        {
+            const int validation = !app_algo::getTask().empty() + !app_dp::getTask().empty()
+                + !app_ds::getTask().empty() + !app_num::getTask().empty();
+            if (1 == validation)
+            {
+                if (!app_algo::getTask().empty())
+                {
+                    return SubTask::algorithm;
+                }
+                else if (!app_dp::getTask().empty())
+                {
+                    return SubTask::designPattern;
+                }
+                else if (!app_ds::getTask().empty())
+                {
+                    return SubTask::dataStructure;
+                }
+                else if (!app_num::getTask().empty())
+                {
+                    return SubTask::numeric;
+                }
+            }
+
+            reset();
+            throw std::logic_error(
+                "The current regular task does not meet the requirement of having only one sub-task.");
+        }
     };
 
     //! @brief Manage all types of tasks.
@@ -371,7 +321,7 @@ private:
 //! @return thread name
 inline std::string presetTaskName(const std::string_view cli, const std::string_view cat, const std::string_view tgt)
 {
-    return "app-" + std::string{cli} + '_' + std::string{cat} + '_' + std::string{tgt};
+    return "@" + std::string{cli} + '_' + std::string{cat} + '_' + std::string{tgt};
 }
 
 //! @brief Alias for memory pool when making multi-threading.
@@ -379,3 +329,383 @@ using PublicThreadPool = utility::memory::Memory<utility::thread::Thread>;
 extern PublicThreadPool& getPublicThreadPool();
 } // namespace command
 } // namespace application
+
+//! @brief Reflect the sub-cli name and alias to the field.
+#define COMMAND_REFLECT_SUB_CLI_FIELD(category, alias)            \
+    Field                                                         \
+    {                                                             \
+        REFLECTION_STR(#category), &Type::category##Bit, AttrList \
+        {                                                         \
+            Attr                                                  \
+            {                                                     \
+                REFLECTION_STR("alias"), #alias                   \
+            }                                                     \
+        }                                                         \
+    }
+//! @brief Reflect the sub-cli's option and task name to the field.
+#define COMMAND_REFLECT_TASK_FIELD(method, task)        \
+    Field                                               \
+    {                                                   \
+        REFLECTION_STR(#method), Type::method, AttrList \
+        {                                               \
+            Attr                                        \
+            {                                           \
+                REFLECTION_STR("task"), #task           \
+            }                                           \
+        }                                               \
+    }
+//! @brief Static reflection for AlgorithmTask.
+template <>
+struct utility::reflection::TypeInfo<application::app_algo::AlgorithmTask>
+    : TypeInfoBase<application::app_algo::AlgorithmTask>
+{
+    //! @brief Name.
+    static constexpr std::string_view name{"app-algo"};
+    //! @brief Field list.
+    static constexpr FieldList fields{
+        // clang-format off
+        COMMAND_REFLECT_SUB_CLI_FIELD(match   , m),
+        COMMAND_REFLECT_SUB_CLI_FIELD(notation, n),
+        COMMAND_REFLECT_SUB_CLI_FIELD(optimal , o),
+        COMMAND_REFLECT_SUB_CLI_FIELD(search  , s),
+        COMMAND_REFLECT_SUB_CLI_FIELD(sort    , S),
+        // clang-format on
+    };
+    //! @brief Attribute list.
+    static constexpr AttrList attrs{};
+};
+//! @brief Static reflection for MatchMethod.
+template <>
+struct utility::reflection::TypeInfo<application::app_algo::MatchMethod>
+    : TypeInfoBase<application::app_algo::MatchMethod>
+{
+    //! @brief Name.
+    static constexpr std::string_view name{"match"};
+    //! @brief Field list.
+    static constexpr FieldList fields{
+        // clang-format off
+        COMMAND_REFLECT_TASK_FIELD(rabinKarp       , rab),
+        COMMAND_REFLECT_TASK_FIELD(knuthMorrisPratt, knu),
+        COMMAND_REFLECT_TASK_FIELD(boyerMoore      , boy),
+        COMMAND_REFLECT_TASK_FIELD(horspool        , hor),
+        COMMAND_REFLECT_TASK_FIELD(sunday          , sun),
+        // clang-format on
+    };
+    //! @brief Attribute list.
+    static constexpr AttrList attrs{};
+};
+//! @brief Static reflection for NotationMethod.
+template <>
+struct utility::reflection::TypeInfo<application::app_algo::NotationMethod>
+    : TypeInfoBase<application::app_algo::NotationMethod>
+{
+    //! @brief Name.
+    static constexpr std::string_view name{"notation"};
+    //! @brief Field list.
+    static constexpr FieldList fields{
+        // clang-format off
+        COMMAND_REFLECT_TASK_FIELD(prefix , pre),
+        COMMAND_REFLECT_TASK_FIELD(postfix, pos),
+        // clang-format on
+    };
+    //! @brief Attribute list.
+    static constexpr AttrList attrs{};
+};
+//! @brief Static reflection for OptimalMethod.
+template <>
+struct utility::reflection::TypeInfo<application::app_algo::OptimalMethod>
+    : TypeInfoBase<application::app_algo::OptimalMethod>
+{
+    //! @brief Name.
+    static constexpr std::string_view name{"optimal"};
+    //! @brief Field list.
+    static constexpr FieldList fields{
+        // clang-format off
+        COMMAND_REFLECT_TASK_FIELD(gradient , gra),
+        COMMAND_REFLECT_TASK_FIELD(annealing, ann),
+        COMMAND_REFLECT_TASK_FIELD(particle , par),
+        COMMAND_REFLECT_TASK_FIELD(genetic  , gen),
+        // clang-format on
+    };
+    //! @brief Attribute list.
+    static constexpr AttrList attrs{};
+};
+//! @brief Static reflection for SearchMethod.
+template <>
+struct utility::reflection::TypeInfo<application::app_algo::SearchMethod>
+    : TypeInfoBase<application::app_algo::SearchMethod>
+{
+    //! @brief Name.
+    static constexpr std::string_view name{"search"};
+    //! @brief Field list.
+    static constexpr FieldList fields{
+        // clang-format off
+        COMMAND_REFLECT_TASK_FIELD(binary       , bin),
+        COMMAND_REFLECT_TASK_FIELD(interpolation, int),
+        COMMAND_REFLECT_TASK_FIELD(fibonacci    , fib),
+        // clang-format on
+    };
+    //! @brief Attribute list.
+    static constexpr AttrList attrs{};
+};
+//! @brief Static reflection for SortMethod.
+template <>
+struct utility::reflection::TypeInfo<application::app_algo::SortMethod>
+    : TypeInfoBase<application::app_algo::SortMethod>
+{
+    //! @brief Name.
+    static constexpr std::string_view name{"sort"};
+    //! @brief Field list.
+    static constexpr FieldList fields{
+        // clang-format off
+        COMMAND_REFLECT_TASK_FIELD(bubble   , bub),
+        COMMAND_REFLECT_TASK_FIELD(selection, sel),
+        COMMAND_REFLECT_TASK_FIELD(insertion, ins),
+        COMMAND_REFLECT_TASK_FIELD(shell    , she),
+        COMMAND_REFLECT_TASK_FIELD(merge    , mer),
+        COMMAND_REFLECT_TASK_FIELD(quick    , qui),
+        COMMAND_REFLECT_TASK_FIELD(heap     , hea),
+        COMMAND_REFLECT_TASK_FIELD(counting , cou),
+        COMMAND_REFLECT_TASK_FIELD(bucket   , buc),
+        COMMAND_REFLECT_TASK_FIELD(radix    , rad),
+        // clang-format on
+    };
+    //! @brief Attribute list.
+    static constexpr AttrList attrs{};
+};
+
+//! @brief Static reflection for DesignPatternTask.
+template <>
+struct utility::reflection::TypeInfo<application::app_dp::DesignPatternTask>
+    : TypeInfoBase<application::app_dp::DesignPatternTask>
+{
+    //! @brief Name.
+    static constexpr std::string_view name{"app-dp"};
+    //! @brief Field list.
+    static constexpr FieldList fields{
+        // clang-format off
+        COMMAND_REFLECT_SUB_CLI_FIELD(behavioral, b),
+        COMMAND_REFLECT_SUB_CLI_FIELD(creational, c),
+        COMMAND_REFLECT_SUB_CLI_FIELD(structural, s),
+        // clang-format on
+    };
+    //! @brief Attribute list.
+    static constexpr AttrList attrs{};
+};
+//! @brief Static reflection for BehavioralInstance.
+template <>
+struct utility::reflection::TypeInfo<application::app_dp::BehavioralInstance>
+    : TypeInfoBase<application::app_dp::BehavioralInstance>
+{
+    //! @brief Name.
+    static constexpr std::string_view name{"behavioral"};
+    //! @brief Field list.
+    static constexpr FieldList fields{
+        // clang-format off
+        COMMAND_REFLECT_TASK_FIELD(chainOfResponsibility, cha),
+        COMMAND_REFLECT_TASK_FIELD(command              , com),
+        COMMAND_REFLECT_TASK_FIELD(interpreter          , int),
+        COMMAND_REFLECT_TASK_FIELD(iterator             , ite),
+        COMMAND_REFLECT_TASK_FIELD(mediator             , med),
+        COMMAND_REFLECT_TASK_FIELD(memento              , mem),
+        COMMAND_REFLECT_TASK_FIELD(observer             , obs),
+        COMMAND_REFLECT_TASK_FIELD(state                , sta),
+        COMMAND_REFLECT_TASK_FIELD(strategy             , str),
+        COMMAND_REFLECT_TASK_FIELD(templateMethod       , tem),
+        COMMAND_REFLECT_TASK_FIELD(visitor              , vis),
+        // clang-format on
+    };
+    //! @brief Attribute list.
+    static constexpr AttrList attrs{};
+};
+//! @brief Static reflection for CreationalInstance.
+template <>
+struct utility::reflection::TypeInfo<application::app_dp::CreationalInstance>
+    : TypeInfoBase<application::app_dp::CreationalInstance>
+{
+    //! @brief Name.
+    static constexpr std::string_view name{"creational"};
+    //! @brief Field list.
+    static constexpr FieldList fields{
+        // clang-format off
+        COMMAND_REFLECT_TASK_FIELD(abstractFactory, abs),
+        COMMAND_REFLECT_TASK_FIELD(builder        , bui),
+        COMMAND_REFLECT_TASK_FIELD(factoryMethod  , fac),
+        COMMAND_REFLECT_TASK_FIELD(prototype      , pro),
+        COMMAND_REFLECT_TASK_FIELD(singleton      , sin),
+        // clang-format on
+    };
+    //! @brief Attribute list.
+    static constexpr AttrList attrs{};
+};
+//! @brief Static reflection for StructuralInstance.
+template <>
+struct utility::reflection::TypeInfo<application::app_dp::StructuralInstance>
+    : TypeInfoBase<application::app_dp::StructuralInstance>
+{
+    //! @brief Name.
+    static constexpr std::string_view name{"structural"};
+    //! @brief Field list.
+    static constexpr FieldList fields{
+        // clang-format off
+        COMMAND_REFLECT_TASK_FIELD(adapter  , ada),
+        COMMAND_REFLECT_TASK_FIELD(bridge   , bri),
+        COMMAND_REFLECT_TASK_FIELD(composite, com),
+        COMMAND_REFLECT_TASK_FIELD(decorator, dec),
+        COMMAND_REFLECT_TASK_FIELD(facade   , fac),
+        COMMAND_REFLECT_TASK_FIELD(flyweight, fly),
+        COMMAND_REFLECT_TASK_FIELD(proxy    , pro),
+        // clang-format on
+    };
+    //! @brief Attribute list.
+    static constexpr AttrList attrs{};
+};
+
+//! @brief Static reflection for DataStructureTask.
+template <>
+struct utility::reflection::TypeInfo<application::app_ds::DataStructureTask>
+    : TypeInfoBase<application::app_ds::DataStructureTask>
+{
+    //! @brief Name.
+    static constexpr std::string_view name{"app-ds"};
+    //! @brief Field list.
+    static constexpr FieldList fields{
+        // clang-format off
+        COMMAND_REFLECT_SUB_CLI_FIELD(linear, l),
+        COMMAND_REFLECT_SUB_CLI_FIELD(tree  , t),
+        // clang-format on
+    };
+    //! @brief Attribute list.
+    static constexpr AttrList attrs{};
+};
+//! @brief Static reflection for LinearInstance.
+template <>
+struct utility::reflection::TypeInfo<application::app_ds::LinearInstance>
+    : TypeInfoBase<application::app_ds::LinearInstance>
+{
+    //! @brief Name.
+    static constexpr std::string_view name{"linear"};
+    //! @brief Field list.
+    static constexpr FieldList fields{
+        // clang-format off
+        COMMAND_REFLECT_TASK_FIELD(linkedList, lin),
+        COMMAND_REFLECT_TASK_FIELD(stack     , sta),
+        COMMAND_REFLECT_TASK_FIELD(queue     , que),
+        // clang-format on
+    };
+    //! @brief Attribute list.
+    static constexpr AttrList attrs{};
+};
+//! @brief Static reflection for TreeInstance.
+template <>
+struct utility::reflection::TypeInfo<application::app_ds::TreeInstance>
+    : TypeInfoBase<application::app_ds::TreeInstance>
+{
+    //! @brief Name.
+    static constexpr std::string_view name{"tree"};
+    //! @brief Field list.
+    static constexpr FieldList fields{
+        // clang-format off
+        COMMAND_REFLECT_TASK_FIELD(binarySearch       , bin),
+        COMMAND_REFLECT_TASK_FIELD(adelsonVelskyLandis, ade),
+        COMMAND_REFLECT_TASK_FIELD(splay              , spl),
+        // clang-format on
+    };
+    //! @brief Attribute list.
+    static constexpr AttrList attrs{};
+};
+
+//! @brief Static reflection for NumericTask.
+template <>
+struct utility::reflection::TypeInfo<application::app_num::NumericTask>
+    : TypeInfoBase<application::app_num::NumericTask>
+{
+    //! @brief Name.
+    static constexpr std::string_view name{"app-num"};
+    //! @brief Field list.
+    static constexpr FieldList fields{
+        // clang-format off
+        COMMAND_REFLECT_SUB_CLI_FIELD(arithmetic, a),
+        COMMAND_REFLECT_SUB_CLI_FIELD(divisor   , d),
+        COMMAND_REFLECT_SUB_CLI_FIELD(integral  , i),
+        COMMAND_REFLECT_SUB_CLI_FIELD(prime     , p),
+        // clang-format on
+    };
+    //! @brief Attribute list.
+    static constexpr AttrList attrs{};
+};
+//! @brief Static reflection for ArithmeticMethod.
+template <>
+struct utility::reflection::TypeInfo<application::app_num::ArithmeticMethod>
+    : TypeInfoBase<application::app_num::ArithmeticMethod>
+{
+    //! @brief Name.
+    static constexpr std::string_view name{"arithmetic"};
+    //! @brief Field list.
+    static constexpr FieldList fields{
+        // clang-format off
+        COMMAND_REFLECT_TASK_FIELD(addition      , add),
+        COMMAND_REFLECT_TASK_FIELD(subtraction   , sub),
+        COMMAND_REFLECT_TASK_FIELD(multiplication, mul),
+        COMMAND_REFLECT_TASK_FIELD(division      , div),
+        // clang-format on
+    };
+    //! @brief Attribute list.
+    static constexpr AttrList attrs{};
+};
+//! @brief Static reflection for DivisorMethod.
+template <>
+struct utility::reflection::TypeInfo<application::app_num::DivisorMethod>
+    : TypeInfoBase<application::app_num::DivisorMethod>
+{
+    //! @brief Name.
+    static constexpr std::string_view name{"divisor"};
+    //! @brief Field list.
+    static constexpr FieldList fields{
+        // clang-format off
+        COMMAND_REFLECT_TASK_FIELD(euclidean, euc),
+        COMMAND_REFLECT_TASK_FIELD(stein    , ste),
+        // clang-format on
+    };
+    //! @brief Attribute list.
+    static constexpr AttrList attrs{};
+};
+//! @brief Static reflection for IntegralMethod.
+template <>
+struct utility::reflection::TypeInfo<application::app_num::IntegralMethod>
+    : TypeInfoBase<application::app_num::IntegralMethod>
+{
+    //! @brief Name.
+    static constexpr std::string_view name{"integral"};
+    //! @brief Field list.
+    static constexpr FieldList fields{
+        // clang-format off
+        COMMAND_REFLECT_TASK_FIELD(trapezoidal, tra),
+        COMMAND_REFLECT_TASK_FIELD(simpson    , sim),
+        COMMAND_REFLECT_TASK_FIELD(romberg    , rom),
+        COMMAND_REFLECT_TASK_FIELD(gauss      , gau),
+        COMMAND_REFLECT_TASK_FIELD(monteCarlo , mon),
+        // clang-format on
+    };
+    //! @brief Attribute list.
+    static constexpr AttrList attrs{};
+};
+//! @brief Static reflection for PrimeMethod.
+template <>
+struct utility::reflection::TypeInfo<application::app_num::PrimeMethod>
+    : TypeInfoBase<application::app_num::PrimeMethod>
+{
+    //! @brief Name.
+    static constexpr std::string_view name{"prime"};
+    //! @brief Field list.
+    static constexpr FieldList fields{
+        // clang-format off
+        COMMAND_REFLECT_TASK_FIELD(eratosthenes, era),
+        COMMAND_REFLECT_TASK_FIELD(euler       , eul),
+        // clang-format on
+    };
+    //! @brief Attribute list.
+    static constexpr AttrList attrs{};
+};
+#undef COMMAND_REFLECT_SUB_CLI_FIELD
+#undef COMMAND_REFLECT_TASK_FIELD
