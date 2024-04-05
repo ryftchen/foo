@@ -46,6 +46,13 @@
         static_assert(attr.hasValue);                                                                         \
         attr.value;                                                                                           \
     })
+//! @brief Get the title of a particular instance in data structure tasks.
+#define APP_DS_GET_TITLE(instance)                           \
+    ({                                                       \
+        std::string title = std::string{toString(instance)}; \
+        title.at(0) = std::toupper(title.at(0));             \
+        title;                                               \
+    })
 
 namespace application::app_ds
 {
@@ -69,21 +76,78 @@ static const auto& getTaskNameCurried()
     return curried;
 }
 
-//! @brief Mapping table for enum and string about data structure tasks. X macro.
-#define CATEGORY_TABLE     \
-    ELEM(linear, "linear") \
-    ELEM(tree, "tree")
+//! @brief Case value for the target instance.
+//! @tparam T - type of target instance
+//! @param instance - target instance
+//! @return case value
+template <class T>
+constexpr std::size_t caseValue(const T instance)
+{
+    using TypeInfo = utility::reflection::TypeInfo<T>;
+    static_assert(TypeInfo::fields.size == Bottom<T>::value);
+
+    std::size_t value = 0;
+    TypeInfo::fields.forEach(
+        [instance, &value](auto field)
+        {
+            if (field.name == toString(instance))
+            {
+                static_assert(1 == field.attrs.size);
+                auto attr = field.attrs.find(REFLECTION_STR("task"));
+                static_assert(attr.hasValue);
+                value = utility::common::operator""_bkdrHash(attr.value, 0);
+            }
+        });
+    return value;
+}
 
 //! @brief Convert category enumeration to string.
 //! @param cat - the specific value of Category enum
 //! @return category name
 constexpr std::string_view toString(const Category cat)
 {
-#define ELEM(val, str) str,
-    constexpr std::string_view table[] = {CATEGORY_TABLE};
-#undef ELEM
-    return table[cat];
+    switch (cat)
+    {
+        case Category::linear:
+            return utility::reflection::TypeInfo<LinearInstance>::name;
+        case Category::tree:
+            return utility::reflection::TypeInfo<TreeInstance>::name;
+    }
 }
+
+//! @brief Mapping table for enum and string about linear instances. X macro.
+#define APP_DS_LINEAR_INSTANCE_TABLE \
+    ELEM(linkedList, "linkedList")   \
+    ELEM(stack, "stack")             \
+    ELEM(queue, "queue")
+//! @brief Convert instance enumeration to string.
+//! @param instance - the specific value of LinearInstance enum
+//! @return instance name
+constexpr std::string_view toString(const LinearInstance instance)
+{
+#define ELEM(val, str) str,
+    constexpr std::string_view table[] = {APP_DS_LINEAR_INSTANCE_TABLE};
+#undef ELEM
+    return table[instance];
+}
+#undef APP_DS_LINEAR_INSTANCE_TABLE
+
+//! @brief Mapping table for enum and string about tree instances. X macro.
+#define APP_DS_TREE_INSTANCE_TABLE                   \
+    ELEM(binarySearch, "binarySearch")               \
+    ELEM(adelsonVelskyLandis, "adelsonVelskyLandis") \
+    ELEM(splay, "splay")
+//! @brief Convert instance enumeration to string.
+//! @param instance - the specific value of TreeInstance enum
+//! @return instance name
+constexpr std::string_view toString(const TreeInstance instance)
+{
+#define ELEM(val, str) str,
+    constexpr std::string_view table[] = {APP_DS_TREE_INSTANCE_TABLE};
+#undef ELEM
+    return table[instance];
+}
+#undef APP_DS_TREE_INSTANCE_TABLE
 
 namespace linear
 {
@@ -91,23 +155,7 @@ namespace linear
 #define LINEAR_RESULT "\r\n==> %-10s Instance <==\n%s"
 //! @brief Print linear result content.
 #define LINEAR_PRINT_RESULT_CONTENT(instance) \
-    COMMON_PRINT(LINEAR_RESULT, toString(instance).data(), output.str().c_str())
-//! @brief Mapping table for enum and string about linear instances. X macro.
-#define LINEAR_INSTANCE_TABLE      \
-    ELEM(linkedList, "LinkedList") \
-    ELEM(stack, "Stack")           \
-    ELEM(queue, "Queue")
-
-//! @brief Convert instance enumeration to string.
-//! @param instance - the specific value of LinearInstance enum
-//! @return instance name
-constexpr std::string_view toString(const LinearInstance instance)
-{
-#define ELEM(val, str) str,
-    constexpr std::string_view table[] = {LINEAR_INSTANCE_TABLE};
-#undef ELEM
-    return table[instance];
-}
+    COMMON_PRINT(LINEAR_RESULT, APP_DS_GET_TITLE(instance).data(), output.str().c_str())
 
 void LinearStructure::linkedListInstance()
 try
@@ -144,7 +192,6 @@ catch (const std::exception& error)
 
 #undef LINEAR_RESULT
 #undef LINEAR_PRINT_RESULT_CONTENT
-#undef LINEAR_INSTANCE_TABLE
 } // namespace linear
 
 //! @brief Run linear tasks.
@@ -160,7 +207,6 @@ void runLinearTasks(const std::vector<std::string>& targets)
 
     APP_DS_PRINT_TASK_BEGIN_TITLE(category);
     using linear::LinearStructure;
-    using utility::common::operator""_bkdrHash;
 
     auto& pooling = command::getPublicThreadPool();
     auto* const threads = pooling.newElement(
@@ -182,13 +228,13 @@ void runLinearTasks(const std::vector<std::string>& targets)
         const std::string targetInstance = targets.at(i);
         switch (utility::common::bkdrHash(targetInstance.data()))
         {
-            case "lin"_bkdrHash:
+            case caseValue(LinearInstance::linkedList):
                 linearFunctor(name(targetInstance), &LinearStructure::linkedListInstance);
                 break;
-            case "sta"_bkdrHash:
+            case caseValue(LinearInstance::stack):
                 linearFunctor(name(targetInstance), &LinearStructure::stackInstance);
                 break;
-            case "que"_bkdrHash:
+            case caseValue(LinearInstance::queue):
                 linearFunctor(name(targetInstance), &LinearStructure::queueInstance);
                 break;
             default:
@@ -208,16 +254,15 @@ void updateLinearTask(const std::string& target)
     constexpr auto category = Category::linear;
     auto& bit = APP_DS_GET_BIT(category);
 
-    using utility::common::operator""_bkdrHash;
     switch (utility::common::bkdrHash(target.c_str()))
     {
-        case "lin"_bkdrHash:
+        case caseValue(LinearInstance::linkedList):
             bit.set(LinearInstance::linkedList);
             break;
-        case "sta"_bkdrHash:
+        case caseValue(LinearInstance::stack):
             bit.set(LinearInstance::stack);
             break;
-        case "que"_bkdrHash:
+        case caseValue(LinearInstance::queue):
             bit.set(LinearInstance::queue);
             break;
         default:
@@ -231,23 +276,8 @@ namespace tree
 //! @brief Display tree result.
 #define TREE_RESULT "\r\n==> %-19s Instance <==\n%s"
 //! @brief Print tree result content.
-#define TREE_PRINT_RESULT_CONTENT(instance) COMMON_PRINT(TREE_RESULT, toString(instance).data(), output.str().c_str());
-//! @brief Mapping table for enum and string about tree instances. X macro.
-#define TREE_INSTANCE_TABLE                          \
-    ELEM(binarySearch, "BinarySearch")               \
-    ELEM(adelsonVelskyLandis, "AdelsonVelskyLandis") \
-    ELEM(splay, "Splay")
-
-//! @brief Convert instance enumeration to string.
-//! @param instance - the specific value of TreeInstance enum
-//! @return instance name
-constexpr std::string_view toString(const TreeInstance instance)
-{
-#define ELEM(val, str) str,
-    constexpr std::string_view table[] = {TREE_INSTANCE_TABLE};
-#undef ELEM
-    return table[instance];
-}
+#define TREE_PRINT_RESULT_CONTENT(instance) \
+    COMMON_PRINT(TREE_RESULT, APP_DS_GET_TITLE(instance).data(), output.str().c_str())
 
 void TreeStructure::bsInstance()
 try
@@ -284,7 +314,6 @@ catch (const std::exception& error)
 
 #undef TREE_RESULT
 #undef TREE_PRINT_RESULT_CONTENT
-#undef TREE_INSTANCE_TABLE
 } // namespace tree
 
 //! @brief Run tree tasks.
@@ -300,7 +329,6 @@ void runTreeTasks(const std::vector<std::string>& targets)
 
     APP_DS_PRINT_TASK_BEGIN_TITLE(category);
     using tree::TreeStructure;
-    using utility::common::operator""_bkdrHash;
 
     auto& pooling = command::getPublicThreadPool();
     auto* const threads = pooling.newElement(
@@ -322,13 +350,13 @@ void runTreeTasks(const std::vector<std::string>& targets)
         const std::string targetInstance = targets.at(i);
         switch (utility::common::bkdrHash(targetInstance.data()))
         {
-            case "bin"_bkdrHash:
+            case caseValue(TreeInstance::binarySearch):
                 treeFunctor(name(targetInstance), &TreeStructure::bsInstance);
                 break;
-            case "ade"_bkdrHash:
+            case caseValue(TreeInstance::adelsonVelskyLandis):
                 treeFunctor(name(targetInstance), &TreeStructure::avlInstance);
                 break;
-            case "spl"_bkdrHash:
+            case caseValue(TreeInstance::splay):
                 treeFunctor(name(targetInstance), &TreeStructure::splayInstance);
                 break;
             default:
@@ -348,16 +376,15 @@ void updateTreeTask(const std::string& target)
     constexpr auto category = Category::tree;
     auto& bit = APP_DS_GET_BIT(category);
 
-    using utility::common::operator""_bkdrHash;
     switch (utility::common::bkdrHash(target.c_str()))
     {
-        case "bin"_bkdrHash:
+        case caseValue(TreeInstance::binarySearch):
             bit.set(TreeInstance::binarySearch);
             break;
-        case "ade"_bkdrHash:
+        case caseValue(TreeInstance::adelsonVelskyLandis):
             bit.set(TreeInstance::adelsonVelskyLandis);
             break;
-        case "spl"_bkdrHash:
+        case caseValue(TreeInstance::splay):
             bit.set(TreeInstance::splay);
             break;
         default:
@@ -365,6 +392,4 @@ void updateTreeTask(const std::string& target)
             throw std::runtime_error("Unexpected " + std::string{toString(category)} + " instance: " + target + '.');
     }
 }
-
-#undef CATEGORY_TABLE
 } // namespace application::app_ds

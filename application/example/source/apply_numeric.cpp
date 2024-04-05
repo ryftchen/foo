@@ -49,6 +49,13 @@
         static_assert(attr.hasValue);                                                                   \
         attr.value;                                                                                     \
     })
+//! @brief Get the title of a particular method in numeric tasks.
+#define APP_NUM_GET_TITLE(method)                          \
+    ({                                                     \
+        std::string title = std::string{toString(method)}; \
+        title.at(0) = std::toupper(title.at(0));           \
+        title;                                             \
+    })
 
 namespace application::app_num
 {
@@ -72,23 +79,117 @@ static const auto& getTaskNameCurried()
     return curried;
 }
 
-//! @brief Mapping table for enum and string about numeric tasks. X macro.
-#define CATEGORY_TABLE             \
-    ELEM(arithmetic, "arithmetic") \
-    ELEM(divisor, "divisor")       \
-    ELEM(integral, "integral")     \
-    ELEM(prime, "prime")
+//! @brief Case value for the target method.
+//! @tparam T - type of target method
+//! @param method - target method
+//! @return case value
+template <class T>
+constexpr std::size_t caseValue(const T method)
+{
+    using TypeInfo = utility::reflection::TypeInfo<T>;
+    static_assert(TypeInfo::fields.size == Bottom<T>::value);
+
+    std::size_t value = 0;
+    TypeInfo::fields.forEach(
+        [method, &value](auto field)
+        {
+            if (field.name == toString(method))
+            {
+                static_assert(1 == field.attrs.size);
+                auto attr = field.attrs.find(REFLECTION_STR("task"));
+                static_assert(attr.hasValue);
+                value = utility::common::operator""_bkdrHash(attr.value, 0);
+            }
+        });
+    return value;
+}
 
 //! @brief Convert category enumeration to string.
 //! @param cat - the specific value of Category enum
 //! @return category name
 constexpr std::string_view toString(const Category cat)
 {
-#define ELEM(val, str) str,
-    constexpr std::string_view table[] = {CATEGORY_TABLE};
-#undef ELEM
-    return table[cat];
+    switch (cat)
+    {
+        case Category::arithmetic:
+            return utility::reflection::TypeInfo<ArithmeticMethod>::name;
+        case Category::divisor:
+            return utility::reflection::TypeInfo<DivisorMethod>::name;
+        case Category::integral:
+            return utility::reflection::TypeInfo<IntegralMethod>::name;
+        case Category::prime:
+            return utility::reflection::TypeInfo<PrimeMethod>::name;
+    }
 }
+
+//! @brief Mapping table for enum and string about arithmetic methods. X macro.
+#define APP_NUM_ARITHMETIC_METHOD_TABLE    \
+    ELEM(addition, "addition")             \
+    ELEM(subtraction, "subtraction")       \
+    ELEM(multiplication, "multiplication") \
+    ELEM(division, "division")
+//! @brief Convert method enumeration to string.
+//! @param method - the specific value of ArithmeticMethod enum
+//! @return method name
+constexpr std::string_view toString(const ArithmeticMethod method)
+{
+#define ELEM(val, str) str,
+    constexpr std::string_view table[] = {APP_NUM_ARITHMETIC_METHOD_TABLE};
+#undef ELEM
+    return table[method];
+}
+#undef APP_NUM_ARITHMETIC_METHOD_TABLE
+
+//! @brief Mapping table for enum and string about divisor methods. X macro.
+#define APP_NUM_DIVISOR_METHOD_TABLE \
+    ELEM(euclidean, "euclidean")     \
+    ELEM(stein, "stein")
+//! @brief Convert method enumeration to string.
+//! @param method - the specific value of DivisorMethod enum
+//! @return method name
+constexpr std::string_view toString(const DivisorMethod method)
+{
+#define ELEM(val, str) str,
+    constexpr std::string_view table[] = {APP_NUM_DIVISOR_METHOD_TABLE};
+#undef ELEM
+    return table[method];
+}
+#undef APP_NUM_DIVISOR_METHOD_TABLE
+
+//! @brief Mapping table for enum and string about integral methods. X macro.
+#define APP_NUM_INTEGRAL_METHOD_TABLE \
+    ELEM(trapezoidal, "trapezoidal")  \
+    ELEM(simpson, "simpson")          \
+    ELEM(romberg, "romberg")          \
+    ELEM(gauss, "gauss")              \
+    ELEM(monteCarlo, "monteCarlo")
+//! @brief Convert method enumeration to string.
+//! @param method - the specific value of IntegralMethod enum
+//! @return method name
+constexpr std::string_view toString(const IntegralMethod method)
+{
+#define ELEM(val, str) str,
+    constexpr std::string_view table[] = {APP_NUM_INTEGRAL_METHOD_TABLE};
+#undef ELEM
+    return table[method];
+}
+#undef APP_NUM_INTEGRAL_METHOD_TABLE
+
+//! @brief Mapping table for enum and string about prime methods. X macro.
+#define APP_NUM_PRIME_METHOD_TABLE     \
+    ELEM(eratosthenes, "eratosthenes") \
+    ELEM(euler, "euler")
+//! @brief Convert method enumeration to string.
+//! @param method - the specific value of PrimeMethod enum
+//! @return method name
+constexpr std::string_view toString(const PrimeMethod method)
+{
+#define ELEM(val, str) str,
+    constexpr std::string_view table[] = {APP_NUM_PRIME_METHOD_TABLE};
+#undef ELEM
+    return table[method];
+}
+#undef APP_NUM_PRIME_METHOD_TABLE
 
 namespace arithmetic
 {
@@ -96,24 +197,7 @@ namespace arithmetic
 #define ARITHMETIC_RESULT "\r\n==> %-14s Method <==\n(%d) %c (%d) = %d\n"
 //! @brief Print arithmetic result content.
 #define ARITHMETIC_PRINT_RESULT_CONTENT(method, a, operator, b, result) \
-    COMMON_PRINT(ARITHMETIC_RESULT, toString(method).data(), a, operator, b, result)
-//! @brief Mapping table for enum and string about arithmetic methods. X macro.
-#define ARITHMETIC_METHOD_TABLE            \
-    ELEM(addition, "Addition")             \
-    ELEM(subtraction, "Subtraction")       \
-    ELEM(multiplication, "Multiplication") \
-    ELEM(division, "Division")
-
-//! @brief Convert method enumeration to string.
-//! @param method - the specific value of ArithmeticMethod enum
-//! @return method name
-constexpr std::string_view toString(const ArithmeticMethod method)
-{
-#define ELEM(val, str) str,
-    constexpr std::string_view table[] = {ARITHMETIC_METHOD_TABLE};
-#undef ELEM
-    return table[method];
-}
+    COMMON_PRINT(ARITHMETIC_RESULT, APP_NUM_GET_TITLE(method).data(), a, operator, b, result)
 
 void ArithmeticSolution::additionMethod(const int augend, const int addend)
 try
@@ -161,7 +245,6 @@ catch (const std::exception& error)
 
 #undef ARITHMETIC_RESULT
 #undef ARITHMETIC_PRINT_RESULT_CONTENT
-#undef ARITHMETIC_METHOD_TABLE
 } // namespace arithmetic
 
 //! @brief Run arithmetic tasks.
@@ -180,7 +263,6 @@ void runArithmeticTasks(const std::vector<std::string>& targets)
     using arithmetic::TargetBuilder;
     using arithmetic::input::integerA;
     using arithmetic::input::integerB;
-    using utility::common::operator""_bkdrHash;
 
     auto& pooling = command::getPublicThreadPool();
     auto* const threads = pooling.newElement(
@@ -204,16 +286,16 @@ void runArithmeticTasks(const std::vector<std::string>& targets)
         const std::string targetMethod = targets.at(i);
         switch (utility::common::bkdrHash(targetMethod.data()))
         {
-            case "add"_bkdrHash:
+            case caseValue(ArithmeticMethod::addition):
                 arithmeticFunctor(name(targetMethod), &ArithmeticSolution::additionMethod);
                 break;
-            case "sub"_bkdrHash:
+            case caseValue(ArithmeticMethod::subtraction):
                 arithmeticFunctor(name(targetMethod), &ArithmeticSolution::subtractionMethod);
                 break;
-            case "mul"_bkdrHash:
+            case caseValue(ArithmeticMethod::multiplication):
                 arithmeticFunctor(name(targetMethod), &ArithmeticSolution::multiplicationMethod);
                 break;
-            case "div"_bkdrHash:
+            case caseValue(ArithmeticMethod::division):
                 arithmeticFunctor(name(targetMethod), &ArithmeticSolution::divisionMethod);
                 break;
             default:
@@ -233,19 +315,18 @@ void updateArithmeticTask(const std::string& target)
     constexpr auto category = Category::arithmetic;
     auto& bit = APP_NUM_GET_BIT(category);
 
-    using utility::common::operator""_bkdrHash;
     switch (utility::common::bkdrHash(target.c_str()))
     {
-        case "add"_bkdrHash:
+        case caseValue(ArithmeticMethod::addition):
             bit.set(ArithmeticMethod::addition);
             break;
-        case "sub"_bkdrHash:
+        case caseValue(ArithmeticMethod::subtraction):
             bit.set(ArithmeticMethod::subtraction);
             break;
-        case "mul"_bkdrHash:
+        case caseValue(ArithmeticMethod::multiplication):
             bit.set(ArithmeticMethod::multiplication);
             break;
-        case "div"_bkdrHash:
+        case caseValue(ArithmeticMethod::division):
             bit.set(ArithmeticMethod::division);
             break;
         default:
@@ -267,26 +348,11 @@ namespace divisor
         arrayBuffer[0] = '\0';                                                                         \
         COMMON_PRINT(                                                                                  \
             DIVISOR_RESULT,                                                                            \
-            toString(method).data(),                                                                   \
+            APP_NUM_GET_TITLE(method).data(),                                                          \
             TargetBuilder::template spliceAllIntegers<int>(resCntr, arrayBuffer, arrayBufferSize + 1), \
             TIME_INTERVAL(timing));                                                                    \
     }                                                                                                  \
     while (0)
-//! @brief Mapping table for enum and string about divisor methods. X macro.
-#define DIVISOR_METHOD_TABLE     \
-    ELEM(euclidean, "Euclidean") \
-    ELEM(stein, "Stein")
-
-//! @brief Convert method enumeration to string.
-//! @param method - the specific value of DivisorMethod enum
-//! @return method name
-constexpr std::string_view toString(const DivisorMethod method)
-{
-#define ELEM(val, str) str,
-    constexpr std::string_view table[] = {DIVISOR_METHOD_TABLE};
-#undef ELEM
-    return table[method];
-}
 
 void DivisorSolution::euclideanMethod(int a, int b)
 try
@@ -316,7 +382,6 @@ catch (const std::exception& error)
 
 #undef DIVISOR_RESULT
 #undef DIVISOR_PRINT_RESULT_CONTENT
-#undef DIVISOR_METHOD_TABLE
 } // namespace divisor
 
 //! @brief Run divisor tasks.
@@ -335,7 +400,6 @@ void runDivisorTasks(const std::vector<std::string>& targets)
     using divisor::TargetBuilder;
     using divisor::input::integerA;
     using divisor::input::integerB;
-    using utility::common::operator""_bkdrHash;
 
     auto& pooling = command::getPublicThreadPool();
     auto* const threads = pooling.newElement(
@@ -358,10 +422,10 @@ void runDivisorTasks(const std::vector<std::string>& targets)
         const std::string targetMethod = targets.at(i);
         switch (utility::common::bkdrHash(targetMethod.data()))
         {
-            case "euc"_bkdrHash:
+            case caseValue(DivisorMethod::euclidean):
                 divisorFunctor(name(targetMethod), &DivisorSolution::euclideanMethod);
                 break;
-            case "ste"_bkdrHash:
+            case caseValue(DivisorMethod::stein):
                 divisorFunctor(name(targetMethod), &DivisorSolution::steinMethod);
                 break;
             default:
@@ -381,13 +445,12 @@ void updateDivisorTask(const std::string& target)
     constexpr auto category = Category::divisor;
     auto& bit = APP_NUM_GET_BIT(category);
 
-    using utility::common::operator""_bkdrHash;
     switch (utility::common::bkdrHash(target.c_str()))
     {
-        case "euc"_bkdrHash:
+        case caseValue(DivisorMethod::euclidean):
             bit.set(DivisorMethod::euclidean);
             break;
-        case "ste"_bkdrHash:
+        case caseValue(DivisorMethod::stein):
             bit.set(DivisorMethod::stein);
             break;
         default:
@@ -402,25 +465,7 @@ namespace integral
 #define INTEGRAL_RESULT(opt) "\r\n==> %-11s Method <==\nI(" #opt ")=%+.5f, run time: %8.5f ms\n"
 //! @brief Print integral result content.
 #define INTEGRAL_PRINT_RESULT_CONTENT(method, sum) \
-    COMMON_PRINT(INTEGRAL_RESULT(def), toString(method).data(), sum, TIME_INTERVAL(timing))
-//! @brief Mapping table for enum and string about integral methods. X macro.
-#define INTEGRAL_METHOD_TABLE        \
-    ELEM(trapezoidal, "Trapezoidal") \
-    ELEM(simpson, "Simpson")         \
-    ELEM(romberg, "Romberg")         \
-    ELEM(gauss, "Gauss")             \
-    ELEM(monteCarlo, "MonteCarlo")
-
-//! @brief Convert method enumeration to string.
-//! @param method - the specific value of IntegralMethod enum
-//! @return method name
-constexpr std::string_view toString(const IntegralMethod method)
-{
-#define ELEM(val, str) str,
-    constexpr std::string_view table[] = {INTEGRAL_METHOD_TABLE};
-#undef ELEM
-    return table[method];
-}
+    COMMON_PRINT(INTEGRAL_RESULT(def), APP_NUM_GET_TITLE(method).data(), sum, TIME_INTERVAL(timing))
 
 void IntegralSolution::trapezoidalMethod(const Expression& expr, double lower, double upper)
 try
@@ -489,7 +534,6 @@ catch (const std::exception& error)
 
 #undef INTEGRAL_RESULT
 #undef INTEGRAL_PRINT_RESULT_CONTENT
-#undef INTEGRAL_METHOD_TABLE
 } // namespace integral
 
 //! @brief Run integral tasks.
@@ -536,7 +580,6 @@ void runIntegralTasks(const std::vector<std::string>& targets)
         const auto name = utility::currying::curry(getTaskNameCurried(), APP_NUM_GET_ALIAS(category));
 
         using integral::IntegralSolution;
-        using utility::common::operator""_bkdrHash;
         for (std::uint8_t i = 0; i < Bottom<IntegralMethod>::value; ++i)
         {
             if (!bit.test(IntegralMethod(i)))
@@ -547,19 +590,19 @@ void runIntegralTasks(const std::vector<std::string>& targets)
             const std::string targetMethod = targets.at(i);
             switch (utility::common::bkdrHash(targetMethod.data()))
             {
-                case "tra"_bkdrHash:
+                case caseValue(IntegralMethod::trapezoidal):
                     integralFunctor(name(targetMethod), &IntegralSolution::trapezoidalMethod);
                     break;
-                case "sim"_bkdrHash:
+                case caseValue(IntegralMethod::simpson):
                     integralFunctor(name(targetMethod), &IntegralSolution::adaptiveSimpsonMethod);
                     break;
-                case "rom"_bkdrHash:
+                case caseValue(IntegralMethod::romberg):
                     integralFunctor(name(targetMethod), &IntegralSolution::rombergMethod);
                     break;
-                case "gau"_bkdrHash:
+                case caseValue(IntegralMethod::gauss):
                     integralFunctor(name(targetMethod), &IntegralSolution::gaussLegendreMethod);
                     break;
-                case "mon"_bkdrHash:
+                case caseValue(IntegralMethod::monteCarlo):
                     integralFunctor(name(targetMethod), &IntegralSolution::monteCarloMethod);
                     break;
                 default:
@@ -595,22 +638,21 @@ void updateIntegralTask(const std::string& target)
     constexpr auto category = Category::integral;
     auto& bit = APP_NUM_GET_BIT(category);
 
-    using utility::common::operator""_bkdrHash;
     switch (utility::common::bkdrHash(target.c_str()))
     {
-        case "tra"_bkdrHash:
+        case caseValue(IntegralMethod::trapezoidal):
             bit.set(IntegralMethod::trapezoidal);
             break;
-        case "sim"_bkdrHash:
+        case caseValue(IntegralMethod::simpson):
             bit.set(IntegralMethod::simpson);
             break;
-        case "rom"_bkdrHash:
+        case caseValue(IntegralMethod::romberg):
             bit.set(IntegralMethod::romberg);
             break;
-        case "gau"_bkdrHash:
+        case caseValue(IntegralMethod::gauss):
             bit.set(IntegralMethod::gauss);
             break;
-        case "mon"_bkdrHash:
+        case caseValue(IntegralMethod::monteCarlo):
             bit.set(IntegralMethod::monteCarlo);
             break;
         default:
@@ -632,26 +674,11 @@ namespace prime
         arrayBuffer[0] = '\0';                                                                                   \
         COMMON_PRINT(                                                                                            \
             PRIME_RESULT,                                                                                        \
-            toString(method).data(),                                                                             \
+            APP_NUM_GET_TITLE(method).data(),                                                                    \
             TargetBuilder::template spliceAllIntegers<std::uint32_t>(resCntr, arrayBuffer, arrayBufferSize + 1), \
             TIME_INTERVAL(timing));                                                                              \
     }                                                                                                            \
     while (0)
-//! @brief Mapping table for enum and string about prime methods. X macro.
-#define PRIME_METHOD_TABLE             \
-    ELEM(eratosthenes, "Eratosthenes") \
-    ELEM(euler, "Euler")
-
-//! @brief Convert method enumeration to string.
-//! @param method - the specific value of PrimeMethod enum
-//! @return method name
-constexpr std::string_view toString(const PrimeMethod method)
-{
-#define ELEM(val, str) str,
-    constexpr std::string_view table[] = {PRIME_METHOD_TABLE};
-#undef ELEM
-    return table[method];
-}
 
 void PrimeSolution::eratosthenesMethod(const std::uint32_t max)
 try
@@ -681,7 +708,6 @@ catch (const std::exception& error)
 
 #undef PRIME_RESULT
 #undef PRIME_PRINT_RESULT_CONTENT
-#undef PRIME_METHOD_TABLE
 } // namespace prime
 
 //! @brief Run prime tasks.
@@ -699,7 +725,6 @@ void runPrimeTasks(const std::vector<std::string>& targets)
     using prime::PrimeSolution;
     using prime::TargetBuilder;
     using prime::input::maxPositiveInteger;
-    using utility::common::operator""_bkdrHash;
 
     auto& pooling = command::getPublicThreadPool();
     auto* const threads = pooling.newElement(
@@ -721,10 +746,10 @@ void runPrimeTasks(const std::vector<std::string>& targets)
         const std::string targetMethod = targets.at(i);
         switch (utility::common::bkdrHash(targetMethod.data()))
         {
-            case "era"_bkdrHash:
+            case caseValue(PrimeMethod::eratosthenes):
                 primeFunctor(name(targetMethod), &PrimeSolution::eratosthenesMethod);
                 break;
-            case "eul"_bkdrHash:
+            case caseValue(PrimeMethod::euler):
                 primeFunctor(name(targetMethod), &PrimeSolution::eulerMethod);
                 break;
             default:
@@ -744,13 +769,12 @@ void updatePrimeTask(const std::string& target)
     constexpr auto category = Category::prime;
     auto& bit = APP_NUM_GET_BIT(category);
 
-    using utility::common::operator""_bkdrHash;
     switch (utility::common::bkdrHash(target.c_str()))
     {
-        case "era"_bkdrHash:
+        case caseValue(PrimeMethod::eratosthenes):
             bit.set(PrimeMethod::eratosthenes);
             break;
-        case "eul"_bkdrHash:
+        case caseValue(PrimeMethod::euler):
             bit.set(PrimeMethod::euler);
             break;
         default:
@@ -758,6 +782,4 @@ void updatePrimeTask(const std::string& target)
             throw std::runtime_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
     }
 }
-
-#undef CATEGORY_TABLE
 } // namespace application::app_num
