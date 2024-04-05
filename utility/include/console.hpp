@@ -95,7 +95,7 @@ private:
     {
         //! @brief Construct a new Impl object.
         //! @param greeting - default greeting information
-        explicit Impl(const std::string& greeting) : greeting(greeting), regMap(){};
+        explicit Impl(const std::string& greeting) : greeting(greeting), regMap() {}
         //! @brief Destroy the Impl object.
         ~Impl() { delete history; }
         //! @brief Construct a new Impl object.

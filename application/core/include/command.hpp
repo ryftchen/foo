@@ -321,7 +321,7 @@ private:
 //! @return thread name
 inline std::string presetTaskName(const std::string_view cli, const std::string_view cat, const std::string_view tgt)
 {
-    return "@" + std::string{cli} + '_' + std::string{cat} + '_' + std::string{tgt};
+    return '@' + std::string{cli} + '_' + std::string{cat} + '_' + std::string{tgt};
 }
 
 //! @brief Alias for memory pool when making multi-threading.
@@ -354,7 +354,7 @@ extern PublicThreadPool& getPublicThreadPool();
             }                                           \
         }                                               \
     }
-//! @brief Static reflection for AlgorithmTask.
+//! @brief Static reflection for AlgorithmTask. Mapping to regular tasks.
 template <>
 struct utility::reflection::TypeInfo<application::app_algo::AlgorithmTask>
     : TypeInfoBase<application::app_algo::AlgorithmTask>
@@ -374,7 +374,7 @@ struct utility::reflection::TypeInfo<application::app_algo::AlgorithmTask>
     //! @brief Attribute list.
     static constexpr AttrList attrs{};
 };
-//! @brief Static reflection for MatchMethod.
+//! @brief Static reflection for MatchMethod. Mapping to regular tasks.
 template <>
 struct utility::reflection::TypeInfo<application::app_algo::MatchMethod>
     : TypeInfoBase<application::app_algo::MatchMethod>
@@ -394,7 +394,7 @@ struct utility::reflection::TypeInfo<application::app_algo::MatchMethod>
     //! @brief Attribute list.
     static constexpr AttrList attrs{};
 };
-//! @brief Static reflection for NotationMethod.
+//! @brief Static reflection for NotationMethod. Mapping to regular tasks.
 template <>
 struct utility::reflection::TypeInfo<application::app_algo::NotationMethod>
     : TypeInfoBase<application::app_algo::NotationMethod>
@@ -411,7 +411,7 @@ struct utility::reflection::TypeInfo<application::app_algo::NotationMethod>
     //! @brief Attribute list.
     static constexpr AttrList attrs{};
 };
-//! @brief Static reflection for OptimalMethod.
+//! @brief Static reflection for OptimalMethod. Mapping to regular tasks.
 template <>
 struct utility::reflection::TypeInfo<application::app_algo::OptimalMethod>
     : TypeInfoBase<application::app_algo::OptimalMethod>
@@ -430,7 +430,7 @@ struct utility::reflection::TypeInfo<application::app_algo::OptimalMethod>
     //! @brief Attribute list.
     static constexpr AttrList attrs{};
 };
-//! @brief Static reflection for SearchMethod.
+//! @brief Static reflection for SearchMethod. Mapping to regular tasks.
 template <>
 struct utility::reflection::TypeInfo<application::app_algo::SearchMethod>
     : TypeInfoBase<application::app_algo::SearchMethod>
@@ -448,7 +448,7 @@ struct utility::reflection::TypeInfo<application::app_algo::SearchMethod>
     //! @brief Attribute list.
     static constexpr AttrList attrs{};
 };
-//! @brief Static reflection for SortMethod.
+//! @brief Static reflection for SortMethod. Mapping to regular tasks.
 template <>
 struct utility::reflection::TypeInfo<application::app_algo::SortMethod>
     : TypeInfoBase<application::app_algo::SortMethod>
@@ -474,7 +474,7 @@ struct utility::reflection::TypeInfo<application::app_algo::SortMethod>
     static constexpr AttrList attrs{};
 };
 
-//! @brief Static reflection for DesignPatternTask.
+//! @brief Static reflection for DesignPatternTask. Mapping to regular tasks.
 template <>
 struct utility::reflection::TypeInfo<application::app_dp::DesignPatternTask>
     : TypeInfoBase<application::app_dp::DesignPatternTask>
@@ -492,7 +492,7 @@ struct utility::reflection::TypeInfo<application::app_dp::DesignPatternTask>
     //! @brief Attribute list.
     static constexpr AttrList attrs{};
 };
-//! @brief Static reflection for BehavioralInstance.
+//! @brief Static reflection for BehavioralInstance. Mapping to regular tasks.
 template <>
 struct utility::reflection::TypeInfo<application::app_dp::BehavioralInstance>
     : TypeInfoBase<application::app_dp::BehavioralInstance>
@@ -518,7 +518,7 @@ struct utility::reflection::TypeInfo<application::app_dp::BehavioralInstance>
     //! @brief Attribute list.
     static constexpr AttrList attrs{};
 };
-//! @brief Static reflection for CreationalInstance.
+//! @brief Static reflection for CreationalInstance. Mapping to regular tasks.
 template <>
 struct utility::reflection::TypeInfo<application::app_dp::CreationalInstance>
     : TypeInfoBase<application::app_dp::CreationalInstance>
@@ -538,7 +538,7 @@ struct utility::reflection::TypeInfo<application::app_dp::CreationalInstance>
     //! @brief Attribute list.
     static constexpr AttrList attrs{};
 };
-//! @brief Static reflection for StructuralInstance.
+//! @brief Static reflection for StructuralInstance. Mapping to regular tasks.
 template <>
 struct utility::reflection::TypeInfo<application::app_dp::StructuralInstance>
     : TypeInfoBase<application::app_dp::StructuralInstance>
@@ -561,7 +561,7 @@ struct utility::reflection::TypeInfo<application::app_dp::StructuralInstance>
     static constexpr AttrList attrs{};
 };
 
-//! @brief Static reflection for DataStructureTask.
+//! @brief Static reflection for DataStructureTask. Mapping to regular tasks.
 template <>
 struct utility::reflection::TypeInfo<application::app_ds::DataStructureTask>
     : TypeInfoBase<application::app_ds::DataStructureTask>
@@ -578,7 +578,7 @@ struct utility::reflection::TypeInfo<application::app_ds::DataStructureTask>
     //! @brief Attribute list.
     static constexpr AttrList attrs{};
 };
-//! @brief Static reflection for LinearInstance.
+//! @brief Static reflection for LinearInstance. Mapping to regular tasks.
 template <>
 struct utility::reflection::TypeInfo<application::app_ds::LinearInstance>
     : TypeInfoBase<application::app_ds::LinearInstance>
@@ -596,7 +596,7 @@ struct utility::reflection::TypeInfo<application::app_ds::LinearInstance>
     //! @brief Attribute list.
     static constexpr AttrList attrs{};
 };
-//! @brief Static reflection for TreeInstance.
+//! @brief Static reflection for TreeInstance. Mapping to regular tasks.
 template <>
 struct utility::reflection::TypeInfo<application::app_ds::TreeInstance>
     : TypeInfoBase<application::app_ds::TreeInstance>
@@ -615,7 +615,7 @@ struct utility::reflection::TypeInfo<application::app_ds::TreeInstance>
     static constexpr AttrList attrs{};
 };
 
-//! @brief Static reflection for NumericTask.
+//! @brief Static reflection for NumericTask. Mapping to regular tasks.
 template <>
 struct utility::reflection::TypeInfo<application::app_num::NumericTask>
     : TypeInfoBase<application::app_num::NumericTask>
@@ -634,7 +634,7 @@ struct utility::reflection::TypeInfo<application::app_num::NumericTask>
     //! @brief Attribute list.
     static constexpr AttrList attrs{};
 };
-//! @brief Static reflection for ArithmeticMethod.
+//! @brief Static reflection for ArithmeticMethod. Mapping to regular tasks.
 template <>
 struct utility::reflection::TypeInfo<application::app_num::ArithmeticMethod>
     : TypeInfoBase<application::app_num::ArithmeticMethod>
@@ -653,7 +653,7 @@ struct utility::reflection::TypeInfo<application::app_num::ArithmeticMethod>
     //! @brief Attribute list.
     static constexpr AttrList attrs{};
 };
-//! @brief Static reflection for DivisorMethod.
+//! @brief Static reflection for DivisorMethod. Mapping to regular tasks.
 template <>
 struct utility::reflection::TypeInfo<application::app_num::DivisorMethod>
     : TypeInfoBase<application::app_num::DivisorMethod>
@@ -670,7 +670,7 @@ struct utility::reflection::TypeInfo<application::app_num::DivisorMethod>
     //! @brief Attribute list.
     static constexpr AttrList attrs{};
 };
-//! @brief Static reflection for IntegralMethod.
+//! @brief Static reflection for IntegralMethod. Mapping to regular tasks.
 template <>
 struct utility::reflection::TypeInfo<application::app_num::IntegralMethod>
     : TypeInfoBase<application::app_num::IntegralMethod>
@@ -690,7 +690,7 @@ struct utility::reflection::TypeInfo<application::app_num::IntegralMethod>
     //! @brief Attribute list.
     static constexpr AttrList attrs{};
 };
-//! @brief Static reflection for PrimeMethod.
+//! @brief Static reflection for PrimeMethod. Mapping to regular tasks.
 template <>
 struct utility::reflection::TypeInfo<application::app_num::PrimeMethod>
     : TypeInfoBase<application::app_num::PrimeMethod>

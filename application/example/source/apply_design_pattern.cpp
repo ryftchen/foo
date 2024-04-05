@@ -114,6 +114,8 @@ constexpr std::string_view toString(const Category cat)
             return utility::reflection::TypeInfo<CreationalInstance>::name;
         case Category::structural:
             return utility::reflection::TypeInfo<StructuralInstance>::name;
+        default:
+            return "";
     }
 }
 

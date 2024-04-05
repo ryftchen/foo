@@ -449,7 +449,9 @@ struct ExprRange
     //! @param range2 - upper endpoint
     //! @param exprDescr - expression description
     ExprRange(const T1 range1, const T2 range2, const std::string_view exprDescr) :
-        range1(range1), range2(range2), exprDescr(exprDescr){};
+        range1(range1), range2(range2), exprDescr(exprDescr)
+    {
+    }
     //! @brief Construct a new ExprRange object.
     ExprRange() = delete;
     //! @brief Lower endpoint.

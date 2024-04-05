@@ -123,6 +123,8 @@ constexpr std::string_view toString(const Category cat)
             return utility::reflection::TypeInfo<SearchMethod>::name;
         case Category::sort:
             return utility::reflection::TypeInfo<SortMethod>::name;
+        default:
+            return "";
     }
 }
 

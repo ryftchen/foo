@@ -557,7 +557,9 @@ struct FuncRange
     //! @param range2 - light endpoint
     //! @param funcDescr - function description
     FuncRange(const T1 range1, const T2 range2, const std::string_view funcDescr) :
-        range1(range1), range2(range2), funcDescr(funcDescr){};
+        range1(range1), range2(range2), funcDescr(funcDescr)
+    {
+    }
     //! @brief Construct a new FuncRange object.
     FuncRange() = delete;
     //! @brief Left endpoint.

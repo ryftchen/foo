@@ -167,7 +167,7 @@ struct NamedValue : NamedValueBase<Name>
 {
     //! @brief Construct a new NamedValue object.
     //! @param val - target value
-    constexpr explicit NamedValue(T val) : value{val} {};
+    constexpr explicit NamedValue(T val) : value(val) {}
 
     //! @brief The operator (==) overloading of NamedValue struct.
     //! @tparam U - type of value
@@ -217,7 +217,7 @@ struct ElemList
 {
     //! @brief Construct a new ElemList object.
     //! @param es - list of elements
-    constexpr explicit ElemList(Es... es) : elems{es...} {};
+    constexpr explicit ElemList(Es... es) : elems(es...) {}
 
     //! @brief Element list.
     std::tuple<Es...> elems;
@@ -394,7 +394,7 @@ struct Attr : NamedValue<Name, T>
 {
     //! @brief Construct a new Attr object.
     //! @param val - target value
-    constexpr Attr(Name /*unused*/, T val) : NamedValue<Name, T>{val} {};
+    constexpr Attr(Name /*unused*/, T val) : NamedValue<Name, T>(val) {}
 };
 
 //! @brief Attribute in class.
@@ -403,7 +403,7 @@ template <class Name>
 struct Attr<Name, void> : NamedValue<Name, void>
 {
     //! @brief Construct a new Attr object.
-    constexpr explicit Attr(Name /*unused*/){};
+    constexpr explicit Attr(Name /*unused*/) {}
 };
 
 //! @brief The list of attributes.
@@ -413,7 +413,7 @@ struct AttrList : ElemList<As...>
 {
     //! @brief Construct a new AttrList object.
     //! @param as - list of attributes
-    constexpr explicit AttrList(As... as) : ElemList<As...>{as...} {};
+    constexpr explicit AttrList(As... as) : ElemList<As...>(as...) {}
 };
 
 //! @brief Base class of trait.
@@ -460,7 +460,7 @@ struct Field : Trait<T>, NamedValue<Name, T>
     //! @brief Construct a new Field object.
     //! @param val - target value
     //! @param as - list of attributes
-    constexpr Field(Name /*unused*/, T val, Attrs as = {}) : NamedValue<Name, T>{val}, attrs{as} {};
+    constexpr Field(Name /*unused*/, T val, Attrs as = {}) : NamedValue<Name, T>(val), attrs(as) {}
 
     //! @brief Attribute list.
     Attrs attrs{};
@@ -473,7 +473,7 @@ struct FieldList : ElemList<Fs...>
 {
     //! @brief Construct a new FieldList object.
     //! @param fs - list of fields
-    constexpr explicit FieldList(Fs... fs) : ElemList<Fs...>{fs...} {};
+    constexpr explicit FieldList(Fs... fs) : ElemList<Fs...>(fs...) {}
 };
 
 //! @brief Type information.
@@ -500,7 +500,7 @@ struct BaseList : ElemList<Bs...>
 {
     //! @brief Construct a new BaseList object.
     //! @param bs - list of public base classes
-    constexpr explicit BaseList(Bs... bs) : ElemList<Bs...>{bs...} {};
+    constexpr explicit BaseList(Bs... bs) : ElemList<Bs...>(bs...) {}
 };
 
 //! @brief The list of type informations.
@@ -510,7 +510,7 @@ struct TypeInfoList : ElemList<Ts...>
 {
     //! @brief Construct a new TypeInfoList object.
     //! @param ts - list of type informations
-    constexpr explicit TypeInfoList(Ts... ts) : ElemList<Ts...>{ts...} {};
+    constexpr explicit TypeInfoList(Ts... ts) : ElemList<Ts...>(ts...) {}
 };
 
 //! @brief Base class of type information.
