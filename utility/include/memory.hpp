@@ -22,15 +22,17 @@ class Memory
 {
 public:
     //! @brief Construct a new Memory object.
-    Memory() noexcept : currentBlock(nullptr), currentSlot(nullptr), lastSlot(nullptr), freeSlots(nullptr){};
+    Memory() noexcept : currentBlock(nullptr), currentSlot(nullptr), lastSlot(nullptr), freeSlots(nullptr) {}
     //! @brief Destroy the Memory object.
     ~Memory() noexcept;
     //! @brief Construct a new Memory object.
-    Memory(const Memory& /*memory*/) noexcept : Memory(){};
+    Memory(const Memory& /*memory*/) noexcept : Memory() {}
     //! @brief Construct a new Memory object.
     //! @tparam U - type of object to allocate
     template <class U>
-    explicit Memory(const Memory<U>& /*memory*/) noexcept : Memory(){};
+    explicit Memory(const Memory<U>& /*memory*/) noexcept : Memory()
+    {
+    }
     //! @brief Construct a new Memory object.
     //! @param memory - the old object for move constructor
     Memory(Memory&& memory) noexcept;

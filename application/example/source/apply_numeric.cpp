@@ -119,6 +119,8 @@ constexpr std::string_view toString(const Category cat)
             return utility::reflection::TypeInfo<IntegralMethod>::name;
         case Category::prime:
             return utility::reflection::TypeInfo<PrimeMethod>::name;
+        default:
+            return "";
     }
 }
 

@@ -211,7 +211,7 @@ public:
         //! @brief Construct a new Holder object.
         //! @param codeFile - current code file
         //! @param codeLine - current code line
-        Holder(const std::string& codeFile, const std::uint32_t codeLine) : file(codeFile), line(codeLine){};
+        Holder(const std::string& codeFile, const std::uint32_t codeLine) : file(codeFile), line(codeLine) {}
         //! @brief Destroy the Holder object.
         virtual ~Holder() { flush(); }
 
@@ -239,7 +239,9 @@ private:
         filePath(getFullDefaultLogPath(CONFIG_HELPER_LOGGER_FILE_PATH)),
         writeType(OutputType(CONFIG_HELPER_LOGGER_WRITE_TYPE)),
         minimumLevel(OutputLevel(CONFIG_HELPER_LOGGER_MINIMUM_LEVEL)),
-        usedMedium(OutputMedium(CONFIG_HELPER_LOGGER_USED_MEDIUM)){};
+        usedMedium(OutputMedium(CONFIG_HELPER_LOGGER_USED_MEDIUM))
+    {
+    }
 
     //! @brief Maximum number of times to wait for the logger to change to the target state.
     static constexpr std::uint16_t maxTimesOfWaitLogger{20};

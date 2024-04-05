@@ -44,7 +44,7 @@ class Adapter : public Target
 {
 public:
     //! @brief Construct a new Adapter object.
-    Adapter() : adaptee(std::make_unique<Adaptee>()){};
+    Adapter() : adaptee(std::make_unique<Adaptee>()) {}
     //! @brief Destroy the Adapter object.
     ~Adapter() override;
 
@@ -112,7 +112,7 @@ class RefinedAbstraction : public Abstraction
 public:
     //! @brief Construct a new RefinedAbstraction object.
     //! @param implementor - target implementor
-    explicit RefinedAbstraction(std::unique_ptr<Implementor> implementor) : implementor(std::move(implementor)){};
+    explicit RefinedAbstraction(std::unique_ptr<Implementor> implementor) : implementor(std::move(implementor)) {}
     //! @brief Destroy the RefinedAbstraction object.
     ~RefinedAbstraction() override = default;
 
@@ -181,7 +181,7 @@ class Leaf : public Component
 public:
     //! @brief Construct a new Leaf object.
     //! @param id - target leaf node id
-    explicit Leaf(const int id) : id(id){};
+    explicit Leaf(const int id) : id(id) {}
     //! @brief Destroy the Leaf object.
     ~Leaf() override = default;
 
@@ -227,7 +227,7 @@ class Decorator : public Component
 public:
     //! @brief Construct a new Decorator object.
     //! @param component - target component
-    explicit Decorator(std::shared_ptr<Component> component) : component(std::move(component)){};
+    explicit Decorator(std::shared_ptr<Component> component) : component(std::move(component)) {}
     //! @brief Destroy the Decorator object.
     ~Decorator() override = default;
 
@@ -245,7 +245,7 @@ class ConcreteDecoratorA : public Decorator
 public:
     //! @brief Construct a new ConcreteDecoratorA object.
     //! @param decorator - target decorator
-    explicit ConcreteDecoratorA(std::shared_ptr<Component> decorator) : Decorator(std::move(decorator)){};
+    explicit ConcreteDecoratorA(std::shared_ptr<Component> decorator) : Decorator(std::move(decorator)) {}
 
     //! @brief The related operation.
     void operation() override;
@@ -257,7 +257,7 @@ class ConcreteDecoratorB : public Decorator
 public:
     //! @brief Construct a new ConcreteDecoratorB object.
     //! @param decorator - target decorator
-    explicit ConcreteDecoratorB(std::shared_ptr<Component> decorator) : Decorator(std::move(decorator)){};
+    explicit ConcreteDecoratorB(std::shared_ptr<Component> decorator) : Decorator(std::move(decorator)) {}
 
     //! @brief The related operation.
     void operation() override;
@@ -298,7 +298,7 @@ class Facade
 {
 public:
     //! @brief Construct a new Facade object.
-    Facade() : subsystemA(), subsystemB(), subsystemC(){};
+    Facade() : subsystemA(), subsystemB(), subsystemC() {}
 
     //! @brief The operation 1.
     void operation1();
@@ -337,7 +337,7 @@ class UnsharedConcreteFlyweight : public Flyweight
 public:
     //! @brief Construct a new UnsharedConcreteFlyweight object.
     //! @param intrinsicState - target intrinsic state
-    explicit UnsharedConcreteFlyweight(const int intrinsicState) : state(intrinsicState){};
+    explicit UnsharedConcreteFlyweight(const int intrinsicState) : state(intrinsicState) {}
     //! @brief Destroy the UnsharedConcreteFlyweight object.
     ~UnsharedConcreteFlyweight() override = default;
 
@@ -355,7 +355,7 @@ class ConcreteFlyweight : public Flyweight
 public:
     //! @brief Construct a new ConcreteFlyweight object.
     //! @param intrinsicState - target intrinsic state
-    explicit ConcreteFlyweight(const int intrinsicState) : state(intrinsicState){};
+    explicit ConcreteFlyweight(const int intrinsicState) : state(intrinsicState) {}
     //! @brief Destroy the ConcreteFlyweight object.
     ~ConcreteFlyweight() override = default;
 

@@ -60,7 +60,7 @@ class Trapezoidal : public Integral
 public:
     //! @brief Construct a new Trapezoidal object.
     //! @param expr - target expression
-    explicit Trapezoidal(const Expression& expr) : expr(expr){};
+    explicit Trapezoidal(const Expression& expr) : expr(expr) {}
 
     //! @brief The operator (()) overloading of Trapezoidal class.
     //! @param lower - lower endpoint
@@ -80,7 +80,7 @@ class Simpson : public Integral
 public:
     //! @brief Construct a new Simpson object.
     //! @param expr - target expression
-    explicit Simpson(const Expression& expr) : expr(expr){};
+    explicit Simpson(const Expression& expr) : expr(expr) {}
 
     //! @brief The operator (()) overloading of Simpson class.
     //! @param lower - lower endpoint
@@ -118,7 +118,7 @@ class Romberg : public Integral
 public:
     //! @brief Construct a new Romberg object.
     //! @param expr - target expression
-    explicit Romberg(const Expression& expr) : expr(expr){};
+    explicit Romberg(const Expression& expr) : expr(expr) {}
 
     //! @brief The operator (()) overloading of Romberg class.
     //! @param lower - lower endpoint
@@ -138,7 +138,7 @@ class Gauss : public Integral
 public:
     //! @brief Construct a new Gauss object.
     //! @param expr - target expression
-    explicit Gauss(const Expression& expr) : expr(expr){};
+    explicit Gauss(const Expression& expr) : expr(expr) {}
 
     //! @brief The operator (()) overloading of Gauss class.
     //! @param lower - lower endpoint
@@ -158,7 +158,7 @@ class MonteCarlo : public Integral
 public:
     //! @brief Construct a new MonteCarlo object.
     //! @param expr - target expression
-    explicit MonteCarlo(const Expression& expr) : expr(expr){};
+    explicit MonteCarlo(const Expression& expr) : expr(expr) {}
 
     //! @brief The operator (()) overloading of MonteCarlo class.
     //! @param lower - lower endpoint

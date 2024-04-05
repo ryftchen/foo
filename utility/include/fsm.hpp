@@ -227,7 +227,7 @@ public:
     using StateType = State;
     //! @brief Construct a new FSM object.
     //! @param initState - initialization value of state
-    explicit FSM(State initState = State()) : state(initState){};
+    explicit FSM(State initState = State()) : state(initState) {}
 
     //! @brief Process the specific event.
     //! @tparam Event - type of triggered event
@@ -270,7 +270,7 @@ private:
             invokeAsBinaryFunc(action, self, event);
         }
         //! @brief Process the specific event by default.
-        static constexpr void processEvent(std::nullptr_t /*null*/, Derived& /*self*/, const Event& /*event*/){};
+        static constexpr void processEvent(std::nullptr_t /*null*/, Derived& /*self*/, const Event& /*event*/) {}
 
         //! @brief Check guard condition.
         //! @tparam Guard - type of guard condition

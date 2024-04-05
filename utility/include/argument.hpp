@@ -228,7 +228,9 @@ public:
     //! @param array - array of arguments to be registered
     template <std::size_t N>
     explicit Register(std::string_view prefix, std::array<std::string_view, N>&& array) :
-        Register(prefix, std::move(array), std::make_index_sequence<N>{}){};
+        Register(prefix, std::move(array), std::make_index_sequence<N>{})
+    {
+    }
 
     //! @brief Set help message.
     //! @param content - help message content
@@ -695,7 +697,9 @@ public:
     //! @param title - title name
     //! @param version - version information
     explicit Argument(const std::string& title = {}, const std::string& version = "1.0") :
-        title(title), version(version), parserPath(title){};
+        title(title), version(version), parserPath(title)
+    {
+    }
     //! @brief Destroy the Argument object.
     ~Argument() = default;
     //! @brief Construct a new Argument object.

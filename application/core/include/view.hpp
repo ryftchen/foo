@@ -78,7 +78,7 @@ public:
     //! @brief Construct a new Packet object.
     //! @param buf - TVL packet buffer
     //! @param len - buffer length
-    Packet(char* buf, const std::uint32_t len) : buffer(buf), tail(buffer + len), writer(buffer), reader(buffer){};
+    Packet(char* buf, const std::uint32_t len) : buffer(buf), tail(buffer + len), writer(buffer), reader(buffer) {}
     //! @brief Destroy the Packet object.
     virtual ~Packet() = default;
 
@@ -216,7 +216,9 @@ private:
         tcpHost(CONFIG_HELPER_VIEWER_TCP_HOST),
         tcpPort(CONFIG_HELPER_VIEWER_TCP_PORT),
         udpHost(CONFIG_HELPER_VIEWER_UDP_HOST),
-        udpPort(CONFIG_HELPER_VIEWER_UDP_PORT){};
+        udpPort(CONFIG_HELPER_VIEWER_UDP_PORT)
+    {
+    }
 
     // clang-format off
     //! @brief Mapping table of all viewer options.

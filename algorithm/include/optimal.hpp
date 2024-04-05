@@ -55,7 +55,7 @@ class Gradient : public Optimal
 public:
     //! @brief Construct a new Gradient object.
     //! @param func - target function
-    explicit Gradient(const Function& func) : func(func){};
+    explicit Gradient(const Function& func) : func(func) {}
 
     //! @brief The operator (()) overloading of Gradient class.
     //! @param left - left endpoint
@@ -90,7 +90,7 @@ class Annealing : public Optimal
 public:
     //! @brief Construct a new Annealing object.
     //! @param func - target function
-    explicit Annealing(const Function& func) : func(func){};
+    explicit Annealing(const Function& func) : func(func) {}
 
     //! @brief The operator (()) overloading of Annealing class.
     //! @param left - left endpoint
@@ -121,7 +121,7 @@ class Particle : public Optimal
 public:
     //! @brief Construct a new Particle object.
     //! @param func - target function
-    explicit Particle(const Function& func) : func(func){};
+    explicit Particle(const Function& func) : func(func) {}
 
     //! @brief The operator (()) overloading of Particle class.
     //! @param left - left endpoint
@@ -176,7 +176,9 @@ private:
             velocity(velocity),
             positionBest(positionBest),
             xFitness(xFitness),
-            fitnessPositionBest(fitnessPositionBest){};
+            fitnessPositionBest(fitnessPositionBest)
+        {
+        }
 
         //! @brief Independent variable.
         double x{0.0};
@@ -199,7 +201,7 @@ class Genetic : public Optimal
 public:
     //! @brief Construct a new Genetic object.
     //! @param func - target function
-    explicit Genetic(const Function& func) : func(func){};
+    explicit Genetic(const Function& func) : func(func) {}
 
     //! @brief The operator (()) overloading of Genetic class.
     //! @param left - left endpoint

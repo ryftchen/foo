@@ -112,6 +112,8 @@ constexpr std::string_view toString(const Category cat)
             return utility::reflection::TypeInfo<LinearInstance>::name;
         case Category::tree:
             return utility::reflection::TypeInfo<TreeInstance>::name;
+        default:
+            return "";
     }
 }
 
