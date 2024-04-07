@@ -32,22 +32,8 @@
                                 << std::setfill('.') << std::setw(50) << category << "END"              \
                                 << std::resetiosflags(std::ios_base::left) << std::setfill(' ') << '\n' \
                                 << std::endl;
-//! @brief Get the bit flags of the instance (category) in design pattern tasks.
-#define APP_DP_GET_BIT(category)                                                                                 \
-    std::invoke(                                                                                                 \
-        utility::reflection::TypeInfo<DesignPatternTask>::fields.find(REFLECTION_STR(toString(category))).value, \
-        getTask())
-//! @brief Get the alias of the instance (category) in design pattern tasks.
-#define APP_DP_GET_ALIAS(category)                                                                            \
-    ({                                                                                                        \
-        constexpr auto attr =                                                                                 \
-            utility::reflection::TypeInfo<DesignPatternTask>::fields.find(REFLECTION_STR(toString(category))) \
-                .attrs.find(REFLECTION_STR("alias"));                                                         \
-        static_assert(attr.hasValue);                                                                         \
-        attr.value;                                                                                           \
-    })
 //! @brief Get the title of a particular instance in design pattern tasks.
-#define APP_DP_GET_TITLE(instance)                           \
+#define APP_DP_GET_INSTANCE_TITLE(instance)                  \
     ({                                                       \
         std::string title = std::string{toString(instance)}; \
         title.at(0) = std::toupper(title.at(0));             \
@@ -76,6 +62,46 @@ static const auto& getTaskNameCurried()
     return curried;
 }
 
+//! @brief Convert category enumeration to string.
+//! @param cat - the specific value of Category enum
+//! @return category name
+constexpr std::string_view toString(const Category cat)
+{
+    switch (cat)
+    {
+        case Category::behavioral:
+            return utility::reflection::TypeInfo<BehavioralInstance>::name;
+        case Category::creational:
+            return utility::reflection::TypeInfo<CreationalInstance>::name;
+        case Category::structural:
+            return utility::reflection::TypeInfo<StructuralInstance>::name;
+        default:
+            return "";
+    }
+}
+
+//! @brief Get the bit flags of the category in design pattern tasks.
+//! @tparam Cat - the specific value of Category enum
+//! @return reference of the category bit flags
+template <Category Cat>
+constexpr auto& getCategoryBit()
+{
+    return std::invoke(
+        utility::reflection::TypeInfo<DesignPatternTask>::fields.find(REFLECTION_STR(toString(Cat))).value, getTask());
+}
+
+//! @brief Get the alias of the category in design pattern tasks.
+//! @tparam Cat - the specific value of Category enum
+//! @return alias of the category name
+template <Category Cat>
+constexpr std::string_view getCategoryAlias()
+{
+    constexpr auto attr = utility::reflection::TypeInfo<DesignPatternTask>::fields.find(REFLECTION_STR(toString(Cat)))
+                              .attrs.find(REFLECTION_STR("alias"));
+    static_assert(attr.hasValue);
+    return attr.value;
+}
+
 //! @brief Case value for the target instance.
 //! @tparam T - type of target instance
 //! @param instance - target instance
@@ -99,24 +125,6 @@ constexpr std::size_t caseValue(const T instance)
             }
         });
     return value;
-}
-
-//! @brief Convert category enumeration to string.
-//! @param cat - the specific value of Category enum
-//! @return category name
-constexpr std::string_view toString(const Category cat)
-{
-    switch (cat)
-    {
-        case Category::behavioral:
-            return utility::reflection::TypeInfo<BehavioralInstance>::name;
-        case Category::creational:
-            return utility::reflection::TypeInfo<CreationalInstance>::name;
-        case Category::structural:
-            return utility::reflection::TypeInfo<StructuralInstance>::name;
-        default:
-            return "";
-    }
 }
 
 //! @brief Mapping table for enum and string about behavioral instances. X macro.
@@ -190,7 +198,7 @@ namespace behavioral
 #define BEHAVIORAL_RESULT "\r\n==> %-21s Instance <==\n%s"
 //! @brief Print behavioral result content.
 #define BEHAVIORAL_PRINT_RESULT_CONTENT(instance) \
-    COMMON_PRINT(BEHAVIORAL_RESULT, APP_DP_GET_TITLE(instance).data(), output.str().c_str())
+    COMMON_PRINT(BEHAVIORAL_RESULT, APP_DP_GET_INSTANCE_TITLE(instance).data(), output.str().c_str())
 
 void BehavioralPattern::chainOfResponsibilityInstance()
 try
@@ -322,7 +330,7 @@ catch (const std::exception& error)
 void runBehavioralTasks(const std::vector<std::string>& targets)
 {
     constexpr auto category = Category::behavioral;
-    const auto& bit = APP_DP_GET_BIT(category);
+    const auto& bit = getCategoryBit<category>();
     if (bit.none())
     {
         return;
@@ -338,7 +346,7 @@ void runBehavioralTasks(const std::vector<std::string>& targets)
     {
         threads->enqueue(threadName, instancePtr);
     };
-    const auto name = utility::currying::curry(getTaskNameCurried(), APP_DP_GET_ALIAS(category));
+    const auto name = utility::currying::curry(getTaskNameCurried(), getCategoryAlias<category>());
 
     std::cout << "\r\nInstances of the " << toString(category) << " pattern:" << std::endl;
     for (std::uint8_t i = 0; i < Bottom<BehavioralInstance>::value; ++i)
@@ -399,7 +407,7 @@ void runBehavioralTasks(const std::vector<std::string>& targets)
 void updateBehavioralTask(const std::string& target)
 {
     constexpr auto category = Category::behavioral;
-    auto& bit = APP_DP_GET_BIT(category);
+    auto& bit = getCategoryBit<category>();
 
     switch (utility::common::bkdrHash(target.c_str()))
     {
@@ -448,7 +456,7 @@ namespace creational
 #define CREATIONAL_RESULT "\r\n==> %-15s Instance <==\n%s"
 //! @brief Print creational result content.
 #define CREATIONAL_PRINT_RESULT_CONTENT(instance) \
-    COMMON_PRINT(CREATIONAL_RESULT, APP_DP_GET_TITLE(instance).data(), output.str().c_str())
+    COMMON_PRINT(CREATIONAL_RESULT, APP_DP_GET_INSTANCE_TITLE(instance).data(), output.str().c_str())
 
 void CreationalPattern::abstractFactoryInstance()
 try
@@ -514,7 +522,7 @@ catch (const std::exception& error)
 void runCreationalTasks(const std::vector<std::string>& targets)
 {
     constexpr auto category = Category::creational;
-    const auto& bit = APP_DP_GET_BIT(category);
+    const auto& bit = getCategoryBit<category>();
     if (bit.none())
     {
         return;
@@ -530,7 +538,7 @@ void runCreationalTasks(const std::vector<std::string>& targets)
     {
         threads->enqueue(threadName, instancePtr);
     };
-    const auto name = utility::currying::curry(getTaskNameCurried(), APP_DP_GET_ALIAS(category));
+    const auto name = utility::currying::curry(getTaskNameCurried(), getCategoryAlias<category>());
 
     std::cout << "\r\nInstances of the " << toString(category) << " pattern:" << std::endl;
     for (std::uint8_t i = 0; i < Bottom<CreationalInstance>::value; ++i)
@@ -573,7 +581,7 @@ void runCreationalTasks(const std::vector<std::string>& targets)
 void updateCreationalTask(const std::string& target)
 {
     constexpr auto category = Category::creational;
-    auto& bit = APP_DP_GET_BIT(category);
+    auto& bit = getCategoryBit<category>();
 
     switch (utility::common::bkdrHash(target.c_str()))
     {
@@ -604,7 +612,7 @@ namespace structural
 #define STRUCTURAL_RESULT "\r\n==> %-9s Instance <==\n%s"
 //! @brief Print structural result content.
 #define STRUCTURAL_PRINT_RESULT_CONTENT(instance) \
-    COMMON_PRINT(STRUCTURAL_RESULT, APP_DP_GET_TITLE(instance).data(), output.str().c_str())
+    COMMON_PRINT(STRUCTURAL_RESULT, APP_DP_GET_INSTANCE_TITLE(instance).data(), output.str().c_str())
 
 void StructuralPattern::adapterInstance()
 try
@@ -692,7 +700,7 @@ catch (const std::exception& error)
 void runStructuralTasks(const std::vector<std::string>& targets)
 {
     constexpr auto category = Category::structural;
-    const auto& bit = APP_DP_GET_BIT(category);
+    const auto& bit = getCategoryBit<category>();
     if (bit.none())
     {
         return;
@@ -708,7 +716,7 @@ void runStructuralTasks(const std::vector<std::string>& targets)
     {
         threads->enqueue(threadName, instancePtr);
     };
-    const auto name = utility::currying::curry(getTaskNameCurried(), APP_DP_GET_ALIAS(category));
+    const auto name = utility::currying::curry(getTaskNameCurried(), getCategoryAlias<category>());
 
     std::cout << "\r\nInstances of the " << toString(category) << " pattern:" << std::endl;
     for (std::uint8_t i = 0; i < Bottom<StructuralInstance>::value; ++i)
@@ -757,7 +765,7 @@ void runStructuralTasks(const std::vector<std::string>& targets)
 void updateStructuralTask(const std::string& target)
 {
     constexpr auto category = Category::structural;
-    auto& bit = APP_DP_GET_BIT(category);
+    auto& bit = getCategoryBit<category>();
 
     switch (utility::common::bkdrHash(target.c_str()))
     {

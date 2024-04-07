@@ -36,21 +36,8 @@
                                 << std::setw(50) << category << "END" << std::resetiosflags(std::ios_base::left)  \
                                 << std::setfill(' ') << '\n'                                                      \
                                 << std::endl;
-//! @brief Get the bit flags of the method (category) in numeric tasks.
-#define APP_NUM_GET_BIT(category) \
-    std::invoke(                  \
-        utility::reflection::TypeInfo<NumericTask>::fields.find(REFLECTION_STR(toString(category))).value, getTask())
-//! @brief Get the alias of the method (category) in numeric tasks.
-#define APP_NUM_GET_ALIAS(category)                                                                     \
-    ({                                                                                                  \
-        constexpr auto attr =                                                                           \
-            utility::reflection::TypeInfo<NumericTask>::fields.find(REFLECTION_STR(toString(category))) \
-                .attrs.find(REFLECTION_STR("alias"));                                                   \
-        static_assert(attr.hasValue);                                                                   \
-        attr.value;                                                                                     \
-    })
 //! @brief Get the title of a particular method in numeric tasks.
-#define APP_NUM_GET_TITLE(method)                          \
+#define APP_NUM_GET_METHOD_TITLE(method)                   \
     ({                                                     \
         std::string title = std::string{toString(method)}; \
         title.at(0) = std::toupper(title.at(0));           \
@@ -79,6 +66,48 @@ static const auto& getTaskNameCurried()
     return curried;
 }
 
+//! @brief Convert category enumeration to string.
+//! @param cat - the specific value of Category enum
+//! @return category name
+constexpr std::string_view toString(const Category cat)
+{
+    switch (cat)
+    {
+        case Category::arithmetic:
+            return utility::reflection::TypeInfo<ArithmeticMethod>::name;
+        case Category::divisor:
+            return utility::reflection::TypeInfo<DivisorMethod>::name;
+        case Category::integral:
+            return utility::reflection::TypeInfo<IntegralMethod>::name;
+        case Category::prime:
+            return utility::reflection::TypeInfo<PrimeMethod>::name;
+        default:
+            return "";
+    }
+}
+
+//! @brief Get the bit flags of the category in numeric tasks.
+//! @tparam Cat - the specific value of Category enum
+//! @return reference of the category bit flags
+template <Category Cat>
+constexpr auto& getCategoryBit()
+{
+    return std::invoke(
+        utility::reflection::TypeInfo<NumericTask>::fields.find(REFLECTION_STR(toString(Cat))).value, getTask());
+}
+
+//! @brief Get the alias of the category in numeric tasks.
+//! @tparam Cat - the specific value of Category enum
+//! @return alias of the category name
+template <Category Cat>
+constexpr std::string_view getCategoryAlias()
+{
+    constexpr auto attr = utility::reflection::TypeInfo<NumericTask>::fields.find(REFLECTION_STR(toString(Cat)))
+                              .attrs.find(REFLECTION_STR("alias"));
+    static_assert(attr.hasValue);
+    return attr.value;
+}
+
 //! @brief Case value for the target method.
 //! @tparam T - type of target method
 //! @param method - target method
@@ -102,26 +131,6 @@ constexpr std::size_t caseValue(const T method)
             }
         });
     return value;
-}
-
-//! @brief Convert category enumeration to string.
-//! @param cat - the specific value of Category enum
-//! @return category name
-constexpr std::string_view toString(const Category cat)
-{
-    switch (cat)
-    {
-        case Category::arithmetic:
-            return utility::reflection::TypeInfo<ArithmeticMethod>::name;
-        case Category::divisor:
-            return utility::reflection::TypeInfo<DivisorMethod>::name;
-        case Category::integral:
-            return utility::reflection::TypeInfo<IntegralMethod>::name;
-        case Category::prime:
-            return utility::reflection::TypeInfo<PrimeMethod>::name;
-        default:
-            return "";
-    }
 }
 
 //! @brief Mapping table for enum and string about arithmetic methods. X macro.
@@ -199,7 +208,7 @@ namespace arithmetic
 #define ARITHMETIC_RESULT "\r\n==> %-14s Method <==\n(%d) %c (%d) = %d\n"
 //! @brief Print arithmetic result content.
 #define ARITHMETIC_PRINT_RESULT_CONTENT(method, a, operator, b, result) \
-    COMMON_PRINT(ARITHMETIC_RESULT, APP_NUM_GET_TITLE(method).data(), a, operator, b, result)
+    COMMON_PRINT(ARITHMETIC_RESULT, APP_NUM_GET_METHOD_TITLE(method).data(), a, operator, b, result)
 
 void ArithmeticSolution::additionMethod(const int augend, const int addend)
 try
@@ -254,7 +263,7 @@ catch (const std::exception& error)
 void runArithmeticTasks(const std::vector<std::string>& targets)
 {
     constexpr auto category = Category::arithmetic;
-    const auto& bit = APP_NUM_GET_BIT(category);
+    const auto& bit = getCategoryBit<category>();
     if (bit.none())
     {
         return;
@@ -276,7 +285,7 @@ void runArithmeticTasks(const std::vector<std::string>& targets)
         threads->enqueue(
             threadName, methodPtr, std::get<0>(builder->getIntegers()), std::get<1>(builder->getIntegers()));
     };
-    const auto name = utility::currying::curry(getTaskNameCurried(), APP_NUM_GET_ALIAS(category));
+    const auto name = utility::currying::curry(getTaskNameCurried(), getCategoryAlias<category>());
 
     for (std::uint8_t i = 0; i < Bottom<ArithmeticMethod>::value; ++i)
     {
@@ -315,7 +324,7 @@ void runArithmeticTasks(const std::vector<std::string>& targets)
 void updateArithmeticTask(const std::string& target)
 {
     constexpr auto category = Category::arithmetic;
-    auto& bit = APP_NUM_GET_BIT(category);
+    auto& bit = getCategoryBit<category>();
 
     switch (utility::common::bkdrHash(target.c_str()))
     {
@@ -350,7 +359,7 @@ namespace divisor
         arrayBuffer[0] = '\0';                                                                         \
         COMMON_PRINT(                                                                                  \
             DIVISOR_RESULT,                                                                            \
-            APP_NUM_GET_TITLE(method).data(),                                                          \
+            APP_NUM_GET_METHOD_TITLE(method).data(),                                                   \
             TargetBuilder::template spliceAllIntegers<int>(resCntr, arrayBuffer, arrayBufferSize + 1), \
             TIME_INTERVAL(timing));                                                                    \
     }                                                                                                  \
@@ -391,7 +400,7 @@ catch (const std::exception& error)
 void runDivisorTasks(const std::vector<std::string>& targets)
 {
     constexpr auto category = Category::divisor;
-    const auto& bit = APP_NUM_GET_BIT(category);
+    const auto& bit = getCategoryBit<category>();
     if (bit.none())
     {
         return;
@@ -412,7 +421,7 @@ void runDivisorTasks(const std::vector<std::string>& targets)
         threads->enqueue(
             threadName, methodPtr, std::get<0>(builder->getIntegers()), std::get<1>(builder->getIntegers()));
     };
-    const auto name = utility::currying::curry(getTaskNameCurried(), APP_NUM_GET_ALIAS(category));
+    const auto name = utility::currying::curry(getTaskNameCurried(), getCategoryAlias<category>());
 
     for (std::uint8_t i = 0; i < Bottom<DivisorMethod>::value; ++i)
     {
@@ -445,7 +454,7 @@ void runDivisorTasks(const std::vector<std::string>& targets)
 void updateDivisorTask(const std::string& target)
 {
     constexpr auto category = Category::divisor;
-    auto& bit = APP_NUM_GET_BIT(category);
+    auto& bit = getCategoryBit<category>();
 
     switch (utility::common::bkdrHash(target.c_str()))
     {
@@ -467,7 +476,7 @@ namespace integral
 #define INTEGRAL_RESULT(opt) "\r\n==> %-11s Method <==\nI(" #opt ")=%+.5f, run time: %8.5f ms\n"
 //! @brief Print integral result content.
 #define INTEGRAL_PRINT_RESULT_CONTENT(method, sum) \
-    COMMON_PRINT(INTEGRAL_RESULT(def), APP_NUM_GET_TITLE(method).data(), sum, TIME_INTERVAL(timing))
+    COMMON_PRINT(INTEGRAL_RESULT(def), APP_NUM_GET_METHOD_TITLE(method).data(), sum, TIME_INTERVAL(timing))
 
 void IntegralSolution::trapezoidalMethod(const Expression& expr, double lower, double upper)
 try
@@ -543,7 +552,7 @@ catch (const std::exception& error)
 void runIntegralTasks(const std::vector<std::string>& targets)
 {
     constexpr auto category = Category::integral;
-    const auto& bit = APP_NUM_GET_BIT(category);
+    const auto& bit = getCategoryBit<category>();
     if (bit.none())
     {
         return;
@@ -579,7 +588,7 @@ void runIntegralTasks(const std::vector<std::string>& targets)
         {
             threads->enqueue(threadName, methodPtr, std::ref(expression), range.range1, range.range2);
         };
-        const auto name = utility::currying::curry(getTaskNameCurried(), APP_NUM_GET_ALIAS(category));
+        const auto name = utility::currying::curry(getTaskNameCurried(), getCategoryAlias<category>());
 
         using integral::IntegralSolution;
         for (std::uint8_t i = 0; i < Bottom<IntegralMethod>::value; ++i)
@@ -638,7 +647,7 @@ void runIntegralTasks(const std::vector<std::string>& targets)
 void updateIntegralTask(const std::string& target)
 {
     constexpr auto category = Category::integral;
-    auto& bit = APP_NUM_GET_BIT(category);
+    auto& bit = getCategoryBit<category>();
 
     switch (utility::common::bkdrHash(target.c_str()))
     {
@@ -676,7 +685,7 @@ namespace prime
         arrayBuffer[0] = '\0';                                                                                   \
         COMMON_PRINT(                                                                                            \
             PRIME_RESULT,                                                                                        \
-            APP_NUM_GET_TITLE(method).data(),                                                                    \
+            APP_NUM_GET_METHOD_TITLE(method).data(),                                                             \
             TargetBuilder::template spliceAllIntegers<std::uint32_t>(resCntr, arrayBuffer, arrayBufferSize + 1), \
             TIME_INTERVAL(timing));                                                                              \
     }                                                                                                            \
@@ -717,7 +726,7 @@ catch (const std::exception& error)
 void runPrimeTasks(const std::vector<std::string>& targets)
 {
     constexpr auto category = Category::prime;
-    const auto& bit = APP_NUM_GET_BIT(category);
+    const auto& bit = getCategoryBit<category>();
     if (bit.none())
     {
         return;
@@ -736,7 +745,7 @@ void runPrimeTasks(const std::vector<std::string>& targets)
     {
         threads->enqueue(threadName, methodPtr, builder->getMaxPositiveInteger());
     };
-    const auto name = utility::currying::curry(getTaskNameCurried(), APP_NUM_GET_ALIAS(category));
+    const auto name = utility::currying::curry(getTaskNameCurried(), getCategoryAlias<category>());
 
     for (std::uint8_t i = 0; i < Bottom<PrimeMethod>::value; ++i)
     {
@@ -769,7 +778,7 @@ void runPrimeTasks(const std::vector<std::string>& targets)
 void updatePrimeTask(const std::string& target)
 {
     constexpr auto category = Category::prime;
-    auto& bit = APP_NUM_GET_BIT(category);
+    auto& bit = getCategoryBit<category>();
 
     switch (utility::common::bkdrHash(target.c_str()))
     {

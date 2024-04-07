@@ -32,22 +32,8 @@
                                 << std::setfill('.') << std::setw(50) << category << "END"              \
                                 << std::resetiosflags(std::ios_base::left) << std::setfill(' ') << '\n' \
                                 << std::endl;
-//! @brief Get the bit flags of the instance (category) in data structure tasks.
-#define APP_DS_GET_BIT(category)                                                                                 \
-    std::invoke(                                                                                                 \
-        utility::reflection::TypeInfo<DataStructureTask>::fields.find(REFLECTION_STR(toString(category))).value, \
-        getTask())
-//! @brief Get the alias of the instance (category) in data structure tasks.
-#define APP_DS_GET_ALIAS(category)                                                                            \
-    ({                                                                                                        \
-        constexpr auto attr =                                                                                 \
-            utility::reflection::TypeInfo<DataStructureTask>::fields.find(REFLECTION_STR(toString(category))) \
-                .attrs.find(REFLECTION_STR("alias"));                                                         \
-        static_assert(attr.hasValue);                                                                         \
-        attr.value;                                                                                           \
-    })
 //! @brief Get the title of a particular instance in data structure tasks.
-#define APP_DS_GET_TITLE(instance)                           \
+#define APP_DS_GET_INSTANCE_TITLE(instance)                  \
     ({                                                       \
         std::string title = std::string{toString(instance)}; \
         title.at(0) = std::toupper(title.at(0));             \
@@ -76,6 +62,44 @@ static const auto& getTaskNameCurried()
     return curried;
 }
 
+//! @brief Convert category enumeration to string.
+//! @param cat - the specific value of Category enum
+//! @return category name
+constexpr std::string_view toString(const Category cat)
+{
+    switch (cat)
+    {
+        case Category::linear:
+            return utility::reflection::TypeInfo<LinearInstance>::name;
+        case Category::tree:
+            return utility::reflection::TypeInfo<TreeInstance>::name;
+        default:
+            return "";
+    }
+}
+
+//! @brief Get the bit flags of the category in data structure tasks.
+//! @tparam Cat - the specific value of Category enum
+//! @return reference of the category bit flags
+template <Category Cat>
+constexpr auto& getCategoryBit()
+{
+    return std::invoke(
+        utility::reflection::TypeInfo<DataStructureTask>::fields.find(REFLECTION_STR(toString(Cat))).value, getTask());
+}
+
+//! @brief Get the alias of the category in data structure tasks.
+//! @tparam Cat - the specific value of Category enum
+//! @return alias of the category name
+template <Category Cat>
+constexpr std::string_view getCategoryAlias()
+{
+    constexpr auto attr = utility::reflection::TypeInfo<DataStructureTask>::fields.find(REFLECTION_STR(toString(Cat)))
+                              .attrs.find(REFLECTION_STR("alias"));
+    static_assert(attr.hasValue);
+    return attr.value;
+}
+
 //! @brief Case value for the target instance.
 //! @tparam T - type of target instance
 //! @param instance - target instance
@@ -99,22 +123,6 @@ constexpr std::size_t caseValue(const T instance)
             }
         });
     return value;
-}
-
-//! @brief Convert category enumeration to string.
-//! @param cat - the specific value of Category enum
-//! @return category name
-constexpr std::string_view toString(const Category cat)
-{
-    switch (cat)
-    {
-        case Category::linear:
-            return utility::reflection::TypeInfo<LinearInstance>::name;
-        case Category::tree:
-            return utility::reflection::TypeInfo<TreeInstance>::name;
-        default:
-            return "";
-    }
 }
 
 //! @brief Mapping table for enum and string about linear instances. X macro.
@@ -157,7 +165,7 @@ namespace linear
 #define LINEAR_RESULT "\r\n==> %-10s Instance <==\n%s"
 //! @brief Print linear result content.
 #define LINEAR_PRINT_RESULT_CONTENT(instance) \
-    COMMON_PRINT(LINEAR_RESULT, APP_DS_GET_TITLE(instance).data(), output.str().c_str())
+    COMMON_PRINT(LINEAR_RESULT, APP_DS_GET_INSTANCE_TITLE(instance).data(), output.str().c_str())
 
 void LinearStructure::linkedListInstance()
 try
@@ -201,7 +209,7 @@ catch (const std::exception& error)
 void runLinearTasks(const std::vector<std::string>& targets)
 {
     constexpr auto category = Category::linear;
-    const auto& bit = APP_DS_GET_BIT(category);
+    const auto& bit = getCategoryBit<category>();
     if (bit.none())
     {
         return;
@@ -217,7 +225,7 @@ void runLinearTasks(const std::vector<std::string>& targets)
     {
         threads->enqueue(threadName, instancePtr);
     };
-    const auto name = utility::currying::curry(getTaskNameCurried(), APP_DS_GET_ALIAS(category));
+    const auto name = utility::currying::curry(getTaskNameCurried(), getCategoryAlias<category>());
 
     std::cout << "\r\nInstances of the " << toString(category) << " structure:" << std::endl;
     for (std::uint8_t i = 0; i < Bottom<LinearInstance>::value; ++i)
@@ -254,7 +262,7 @@ void runLinearTasks(const std::vector<std::string>& targets)
 void updateLinearTask(const std::string& target)
 {
     constexpr auto category = Category::linear;
-    auto& bit = APP_DS_GET_BIT(category);
+    auto& bit = getCategoryBit<category>();
 
     switch (utility::common::bkdrHash(target.c_str()))
     {
@@ -279,7 +287,7 @@ namespace tree
 #define TREE_RESULT "\r\n==> %-19s Instance <==\n%s"
 //! @brief Print tree result content.
 #define TREE_PRINT_RESULT_CONTENT(instance) \
-    COMMON_PRINT(TREE_RESULT, APP_DS_GET_TITLE(instance).data(), output.str().c_str())
+    COMMON_PRINT(TREE_RESULT, APP_DS_GET_INSTANCE_TITLE(instance).data(), output.str().c_str())
 
 void TreeStructure::bsInstance()
 try
@@ -323,7 +331,7 @@ catch (const std::exception& error)
 void runTreeTasks(const std::vector<std::string>& targets)
 {
     constexpr auto category = Category::tree;
-    const auto& bit = APP_DS_GET_BIT(category);
+    const auto& bit = getCategoryBit<category>();
     if (bit.none())
     {
         return;
@@ -339,7 +347,7 @@ void runTreeTasks(const std::vector<std::string>& targets)
     {
         threads->enqueue(threadName, instancePtr);
     };
-    const auto name = utility::currying::curry(getTaskNameCurried(), APP_DS_GET_ALIAS(category));
+    const auto name = utility::currying::curry(getTaskNameCurried(), getCategoryAlias<category>());
 
     std::cout << "\r\nInstances of the " << toString(category) << " structure:" << std::endl;
     for (std::uint8_t i = 0; i < Bottom<TreeInstance>::value; ++i)
@@ -376,7 +384,7 @@ void runTreeTasks(const std::vector<std::string>& targets)
 void updateTreeTask(const std::string& target)
 {
     constexpr auto category = Category::tree;
-    auto& bit = APP_DS_GET_BIT(category);
+    auto& bit = getCategoryBit<category>();
 
     switch (utility::common::bkdrHash(target.c_str()))
     {

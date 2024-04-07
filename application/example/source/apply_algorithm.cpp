@@ -37,22 +37,8 @@
                                 << std::setw(50) << category << "END" << std::resetiosflags(std::ios_base::left)    \
                                 << std::setfill(' ') << '\n'                                                        \
                                 << std::endl;
-//! @brief Get the bit flags of the method (category) in algorithm tasks.
-#define APP_ALGO_GET_BIT(category)                                                                           \
-    std::invoke(                                                                                             \
-        utility::reflection::TypeInfo<AlgorithmTask>::fields.find(REFLECTION_STR(toString(category))).value, \
-        getTask())
-//! @brief Get the alias of the method (category) in algorithm tasks.
-#define APP_ALGO_GET_ALIAS(category)                                                                      \
-    ({                                                                                                    \
-        constexpr auto attr =                                                                             \
-            utility::reflection::TypeInfo<AlgorithmTask>::fields.find(REFLECTION_STR(toString(category))) \
-                .attrs.find(REFLECTION_STR("alias"));                                                     \
-        static_assert(attr.hasValue);                                                                     \
-        attr.value;                                                                                       \
-    })
 //! @brief Get the title of a particular method in algorithm tasks.
-#define APP_ALGO_GET_TITLE(method)                         \
+#define APP_ALGO_GET_METHOD_TITLE(method)                  \
     ({                                                     \
         std::string title = std::string{toString(method)}; \
         title.at(0) = std::toupper(title.at(0));           \
@@ -81,6 +67,50 @@ static const auto& getTaskNameCurried()
     return curried;
 }
 
+//! @brief Convert category enumeration to string.
+//! @param cat - the specific value of Category enum
+//! @return category name
+constexpr std::string_view toString(const Category cat)
+{
+    switch (cat)
+    {
+        case Category::match:
+            return utility::reflection::TypeInfo<MatchMethod>::name;
+        case Category::notation:
+            return utility::reflection::TypeInfo<NotationMethod>::name;
+        case Category::optimal:
+            return utility::reflection::TypeInfo<OptimalMethod>::name;
+        case Category::search:
+            return utility::reflection::TypeInfo<SearchMethod>::name;
+        case Category::sort:
+            return utility::reflection::TypeInfo<SortMethod>::name;
+        default:
+            return "";
+    }
+}
+
+//! @brief Get the bit flags of the category in algorithm tasks.
+//! @tparam Cat - the specific value of Category enum
+//! @return reference of the category bit flags
+template <Category Cat>
+constexpr auto& getCategoryBit()
+{
+    return std::invoke(
+        utility::reflection::TypeInfo<AlgorithmTask>::fields.find(REFLECTION_STR(toString(Cat))).value, getTask());
+}
+
+//! @brief Get the alias of the category in algorithm tasks.
+//! @tparam Cat - the specific value of Category enum
+//! @return alias of the category name
+template <Category Cat>
+constexpr std::string_view getCategoryAlias()
+{
+    constexpr auto attr = utility::reflection::TypeInfo<AlgorithmTask>::fields.find(REFLECTION_STR(toString(Cat)))
+                              .attrs.find(REFLECTION_STR("alias"));
+    static_assert(attr.hasValue);
+    return attr.value;
+}
+
 //! @brief Case value for the target method.
 //! @tparam T - type of target method
 //! @param method - target method
@@ -104,28 +134,6 @@ constexpr std::size_t caseValue(const T method)
             }
         });
     return value;
-}
-
-//! @brief Convert category enumeration to string.
-//! @param cat - the specific value of Category enum
-//! @return category name
-constexpr std::string_view toString(const Category cat)
-{
-    switch (cat)
-    {
-        case Category::match:
-            return utility::reflection::TypeInfo<MatchMethod>::name;
-        case Category::notation:
-            return utility::reflection::TypeInfo<NotationMethod>::name;
-        case Category::optimal:
-            return utility::reflection::TypeInfo<OptimalMethod>::name;
-        case Category::search:
-            return utility::reflection::TypeInfo<SearchMethod>::name;
-        case Category::sort:
-            return utility::reflection::TypeInfo<SortMethod>::name;
-        default:
-            return "";
-    }
 }
 
 //! @brief Mapping table for enum and string about match methods. X macro.
@@ -235,11 +243,12 @@ namespace match
     {                                                                                                                  \
         if (-1 != shift)                                                                                               \
         {                                                                                                              \
-            COMMON_PRINT(MATCH_RESULT(1st), APP_ALGO_GET_TITLE(method).data(), pattern, shift, TIME_INTERVAL(timing)); \
+            COMMON_PRINT(                                                                                              \
+                MATCH_RESULT(1st), APP_ALGO_GET_METHOD_TITLE(method).data(), pattern, shift, TIME_INTERVAL(timing));   \
         }                                                                                                              \
         else                                                                                                           \
         {                                                                                                              \
-            COMMON_PRINT(MATCH_NONE_RESULT, APP_ALGO_GET_TITLE(method).data(), pattern, TIME_INTERVAL(timing));        \
+            COMMON_PRINT(MATCH_NONE_RESULT, APP_ALGO_GET_METHOD_TITLE(method).data(), pattern, TIME_INTERVAL(timing)); \
         }                                                                                                              \
     }                                                                                                                  \
     while (0)
@@ -339,7 +348,7 @@ catch (const std::exception& error)
 void runMatchTasks(const std::vector<std::string>& targets)
 {
     constexpr auto category = Category::match;
-    const auto& bit = APP_ALGO_GET_BIT(category);
+    const auto& bit = getCategoryBit<category>();
     if (bit.none())
     {
         return;
@@ -369,7 +378,7 @@ void runMatchTasks(const std::vector<std::string>& targets)
             builder->getTextLength(),
             builder->getPatternLength());
     };
-    const auto name = utility::currying::curry(getTaskNameCurried(), APP_ALGO_GET_ALIAS(category));
+    const auto name = utility::currying::curry(getTaskNameCurried(), getCategoryAlias<category>());
 
     for (std::uint8_t i = 0; i < Bottom<MatchMethod>::value; ++i)
     {
@@ -411,7 +420,7 @@ void runMatchTasks(const std::vector<std::string>& targets)
 void updateMatchTask(const std::string& target)
 {
     constexpr auto category = Category::match;
-    auto& bit = APP_ALGO_GET_BIT(category);
+    auto& bit = getCategoryBit<category>();
 
     switch (utility::common::bkdrHash(target.c_str()))
     {
@@ -442,7 +451,7 @@ namespace notation
 #define NOTATION_RESULT "\r\n==> %-7s Method <==\n%s: %s\n"
 //! @brief Print notation result content.
 #define NOTATION_PRINT_RESULT_CONTENT(method, describe) \
-    COMMON_PRINT(NOTATION_RESULT, APP_ALGO_GET_TITLE(method).data(), describe, notationStr.data())
+    COMMON_PRINT(NOTATION_RESULT, APP_ALGO_GET_METHOD_TITLE(method).data(), describe, notationStr.data())
 
 void NotationSolution::prefixMethod(const std::string& infixNotation)
 try
@@ -475,7 +484,7 @@ catch (const std::exception& error)
 void runNotationTasks(const std::vector<std::string>& targets)
 {
     constexpr auto category = Category::notation;
-    const auto& bit = APP_ALGO_GET_BIT(category);
+    const auto& bit = getCategoryBit<category>();
     if (bit.none())
     {
         return;
@@ -495,7 +504,7 @@ void runNotationTasks(const std::vector<std::string>& targets)
     {
         threads->enqueue(threadName, methodPtr, std::string{builder->getInfixNotation()});
     };
-    const auto name = utility::currying::curry(getTaskNameCurried(), APP_ALGO_GET_ALIAS(category));
+    const auto name = utility::currying::curry(getTaskNameCurried(), getCategoryAlias<category>());
 
     for (std::uint8_t i = 0; i < Bottom<NotationMethod>::value; ++i)
     {
@@ -528,7 +537,7 @@ void runNotationTasks(const std::vector<std::string>& targets)
 void updateNotationTask(const std::string& target)
 {
     constexpr auto category = Category::notation;
-    auto& bit = APP_ALGO_GET_BIT(category);
+    auto& bit = getCategoryBit<category>();
 
     switch (utility::common::bkdrHash(target.c_str()))
     {
@@ -550,7 +559,7 @@ namespace optimal
 #define OPTIMAL_RESULT(opt) "\r\n==> %-9s Method <==\nF(" #opt ")=%+.5f X=%+.5f, run time: %8.5f ms\n"
 //! @brief Print optimal result content.
 #define OPTIMAL_PRINT_RESULT_CONTENT(method) \
-    COMMON_PRINT(OPTIMAL_RESULT(min), APP_ALGO_GET_TITLE(method).data(), fx, x, TIME_INTERVAL(timing))
+    COMMON_PRINT(OPTIMAL_RESULT(min), APP_ALGO_GET_METHOD_TITLE(method).data(), fx, x, TIME_INTERVAL(timing))
 
 void OptimalSolution::gradientDescentMethod(const Function& func, const double left, const double right)
 try
@@ -613,7 +622,7 @@ catch (const std::exception& error)
 void runOptimalTasks(const std::vector<std::string>& targets)
 {
     constexpr auto category = Category::optimal;
-    const auto& bit = APP_ALGO_GET_BIT(category);
+    const auto& bit = getCategoryBit<category>();
     if (bit.none())
     {
         return;
@@ -650,7 +659,7 @@ void runOptimalTasks(const std::vector<std::string>& targets)
         {
             threads->enqueue(threadName, methodPtr, std::ref(function), range.range1, range.range2);
         };
-        const auto name = utility::currying::curry(getTaskNameCurried(), APP_ALGO_GET_ALIAS(category));
+        const auto name = utility::currying::curry(getTaskNameCurried(), getCategoryAlias<category>());
 
         using optimal::OptimalSolution;
         for (std::uint8_t i = 0; i < Bottom<OptimalMethod>::value; ++i)
@@ -706,7 +715,7 @@ void runOptimalTasks(const std::vector<std::string>& targets)
 void updateOptimalTask(const std::string& target)
 {
     constexpr auto category = Category::optimal;
-    auto& bit = APP_ALGO_GET_BIT(category);
+    auto& bit = getCategoryBit<category>();
 
     switch (utility::common::bkdrHash(target.c_str()))
     {
@@ -736,18 +745,18 @@ namespace search
 //! @brief Display none search result.
 #define SEARCH_NONE_RESULT "\r\n==> %-13s Method <==\ncould not find the key \"%.5f\", run time: %8.5f ms\n"
 //! @brief Print search result content.
-#define SEARCH_PRINT_RESULT_CONTENT(method)                                                                    \
-    do                                                                                                         \
-    {                                                                                                          \
-        if (-1 != index)                                                                                       \
-        {                                                                                                      \
-            COMMON_PRINT(SEARCH_RESULT, APP_ALGO_GET_TITLE(method).data(), key, index, TIME_INTERVAL(timing)); \
-        }                                                                                                      \
-        else                                                                                                   \
-        {                                                                                                      \
-            COMMON_PRINT(SEARCH_NONE_RESULT, APP_ALGO_GET_TITLE(method).data(), key, TIME_INTERVAL(timing));   \
-        }                                                                                                      \
-    }                                                                                                          \
+#define SEARCH_PRINT_RESULT_CONTENT(method)                                                                           \
+    do                                                                                                                \
+    {                                                                                                                 \
+        if (-1 != index)                                                                                              \
+        {                                                                                                             \
+            COMMON_PRINT(SEARCH_RESULT, APP_ALGO_GET_METHOD_TITLE(method).data(), key, index, TIME_INTERVAL(timing)); \
+        }                                                                                                             \
+        else                                                                                                          \
+        {                                                                                                             \
+            COMMON_PRINT(SEARCH_NONE_RESULT, APP_ALGO_GET_METHOD_TITLE(method).data(), key, TIME_INTERVAL(timing));   \
+        }                                                                                                             \
+    }                                                                                                                 \
     while (0)
 
 void SearchSolution::binaryMethod(const double* const array, const std::uint32_t length, const double key)
@@ -799,7 +808,7 @@ catch (const std::exception& error)
 void runSearchTasks(const std::vector<std::string>& targets)
 {
     constexpr auto category = Category::search;
-    const auto& bit = APP_ALGO_GET_BIT(category);
+    const auto& bit = getCategoryBit<category>();
     if (bit.none())
     {
         return;
@@ -824,7 +833,7 @@ void runSearchTasks(const std::vector<std::string>& targets)
         threads->enqueue(
             threadName, methodPtr, builder->getOrderedArray().get(), builder->getLength(), builder->getSearchKey());
     };
-    const auto name = utility::currying::curry(getTaskNameCurried(), APP_ALGO_GET_ALIAS(category));
+    const auto name = utility::currying::curry(getTaskNameCurried(), getCategoryAlias<category>());
 
     for (std::uint8_t i = 0; i < Bottom<SearchMethod>::value; ++i)
     {
@@ -860,7 +869,7 @@ void runSearchTasks(const std::vector<std::string>& targets)
 void updateSearchTask(const std::string& target)
 {
     constexpr auto category = Category::search;
-    auto& bit = APP_ALGO_GET_BIT(category);
+    auto& bit = getCategoryBit<category>();
 
     switch (utility::common::bkdrHash(target.c_str()))
     {
@@ -892,7 +901,7 @@ namespace sort
         arrayBuffer[0] = '\0';                                                                                  \
         COMMON_PRINT(                                                                                           \
             SORT_RESULT(asc),                                                                                   \
-            APP_ALGO_GET_TITLE(method).data(),                                                                  \
+            APP_ALGO_GET_METHOD_TITLE(method).data(),                                                           \
             TargetBuilder<int>::template spliceAll<int>(&resCntr[0], length, arrayBuffer, arrayBufferSize + 1), \
             TIME_INTERVAL(timing));                                                                             \
     }                                                                                                           \
@@ -1037,7 +1046,7 @@ catch (const std::exception& error)
 void runSortTasks(const std::vector<std::string>& targets)
 {
     constexpr auto category = Category::sort;
-    const auto& bit = APP_ALGO_GET_BIT(category);
+    const auto& bit = getCategoryBit<category>();
     if (bit.none())
     {
         return;
@@ -1060,7 +1069,7 @@ void runSortTasks(const std::vector<std::string>& targets)
     {
         threads->enqueue(threadName, methodPtr, builder->getRandomArray().get(), builder->getLength());
     };
-    const auto name = utility::currying::curry(getTaskNameCurried(), APP_ALGO_GET_ALIAS(category));
+    const auto name = utility::currying::curry(getTaskNameCurried(), getCategoryAlias<category>());
 
     for (std::uint8_t i = 0; i < Bottom<SortMethod>::value; ++i)
     {
@@ -1117,7 +1126,7 @@ void runSortTasks(const std::vector<std::string>& targets)
 void updateSortTask(const std::string& target)
 {
     constexpr auto category = Category::sort;
-    auto& bit = APP_ALGO_GET_BIT(category);
+    auto& bit = getCategoryBit<category>();
 
     switch (utility::common::bkdrHash(target.c_str()))
     {
