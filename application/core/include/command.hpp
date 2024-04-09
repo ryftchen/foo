@@ -77,19 +77,21 @@ private:
     std::condition_variable cv{};
     //! @brief Flag to indicate whether parsing of arguments is completed.
     std::atomic<bool> isParsed{false};
-    //! @brief Parse arguments helper for commander.
+    //! @brief Parse argument helper for commander.
     utility::argument::Argument mainCLI{"foo", "1.0"};
-    //! @brief Parse arguments helper to apply algorithm.
+    //! @brief Parse argument helper to apply algorithm.
     utility::argument::Argument subCLIAppAlgo{"app-algo"};
-    //! @brief Parse arguments helper to apply design pattern.
+    //! @brief Parse argument helper to apply design pattern.
     utility::argument::Argument subCLIAppDp{"app-dp"};
-    //! @brief Parse arguments helper to apply data structure.
+    //! @brief Parse argument helper to apply data structure.
     utility::argument::Argument subCLIAppDs{"app-ds"};
-    //! @brief Parse arguments helper to apply numeric.
+    //! @brief Parse argument helper to apply numeric.
     utility::argument::Argument subCLIAppNum{"app-num"};
     //! @brief Copyright information.
     static constexpr std::string_view copyright{"Copyright (c) 2022-2024 ryftchen. All rights reserved."};
 
+    //! @brief Initialize the parse argument helpers.
+    void initializeCLI();
     //! @brief Foreground handler for parsing command line arguments.
     //! @param argc - argument count
     //! @param argv - argument vector

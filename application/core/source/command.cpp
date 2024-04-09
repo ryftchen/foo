@@ -79,6 +79,48 @@ constexpr void triggerHelper(const HelperControl operation)
 
 Command::Command()
 {
+    initializeCLI();
+}
+
+Command::~Command()
+{
+    dispatchedTask.reset();
+}
+
+Command& Command::getInstance()
+{
+    static Command commander{};
+    return commander;
+}
+
+void Command::runCommander(const int argc, const char* const argv[])
+try
+{
+    triggerHelper<log::Log>(HelperControl::start);
+    triggerHelper<view::View>(HelperControl::start);
+
+    if (1 == argc)
+    {
+        enterConsoleMode();
+    }
+    else
+    {
+        constexpr std::uint32_t childThdNum = 2;
+        auto threads = std::make_shared<utility::thread::Thread>(childThdNum);
+        threads->enqueue("commander-fg", &Command::foregroundHandler, this, argc, argv);
+        threads->enqueue("commander-bg", &Command::backgroundHandler, this);
+    }
+
+    triggerHelper<view::View>(HelperControl::stop);
+    triggerHelper<log::Log>(HelperControl::stop);
+}
+catch (const std::exception& error)
+{
+    LOG_ERR << error.what();
+}
+
+void Command::initializeCLI()
+{
     mainCLI.addArgument("-h", "--help").argsNum(0).implicitVal(true).help("show help and exit");
 
     mainCLI.addArgument("-v", "--version").argsNum(0).implicitVal(true).help("show version and exit");
@@ -289,43 +331,6 @@ Command::Command()
               "- eul    Euler\n"
               "add the tasks listed above");
     mainCLI.addSubParser(subCLIAppNum);
-}
-
-Command::~Command()
-{
-    dispatchedTask.reset();
-}
-
-Command& Command::getInstance()
-{
-    static Command commander{};
-    return commander;
-}
-
-void Command::runCommander(const int argc, const char* const argv[])
-try
-{
-    triggerHelper<log::Log>(HelperControl::start);
-    triggerHelper<view::View>(HelperControl::start);
-
-    if (1 == argc)
-    {
-        enterConsoleMode();
-    }
-    else
-    {
-        constexpr std::uint32_t childThdNum = 2;
-        auto threads = std::make_shared<utility::thread::Thread>(childThdNum);
-        threads->enqueue("commander-fg", &Command::foregroundHandler, this, argc, argv);
-        threads->enqueue("commander-bg", &Command::backgroundHandler, this);
-    }
-
-    triggerHelper<view::View>(HelperControl::stop);
-    triggerHelper<log::Log>(HelperControl::stop);
-}
-catch (const std::exception& error)
-{
-    LOG_ERR << error.what();
 }
 
 void Command::foregroundHandler(const int argc, const char* const argv[])
