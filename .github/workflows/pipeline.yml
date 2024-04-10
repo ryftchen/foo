@@ -31,7 +31,7 @@ jobs:
           git config --global --add safe.directory '*'
 
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.1.0
 
       - name: Static check
         run: |
@@ -40,7 +40,7 @@ jobs:
           ./script/build.sh --release --browser --doxygen
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.3.0
         with:
           name: foo_artifact
           path: ./document/archive/foo_*.tar.bz2
@@ -86,7 +86,7 @@ jobs:
           git config --global --add safe.directory '*'
 
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.1.0
 
       - name: Dynamic check
         run: |
@@ -133,7 +133,7 @@ jobs:
           git config --global --add safe.directory '*'
 
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.1.0
 
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3.24.0
