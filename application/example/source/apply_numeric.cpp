@@ -259,12 +259,12 @@ catch (const std::exception& error)
 } // namespace arithmetic
 
 //! @brief Run arithmetic tasks.
-//! @param targets - container of target methods
-void runArithmeticTasks(const std::vector<std::string>& targets)
+//! @param candidates - container for the candidate target methods
+void runArithmeticTasks(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::arithmetic;
-    const auto& bit = getCategoryBit<category>();
-    if (bit.none())
+    const auto& bitFlag = getCategoryBit<category>();
+    if (bitFlag.none())
     {
         return;
     }
@@ -276,8 +276,8 @@ void runArithmeticTasks(const std::vector<std::string>& targets)
     using arithmetic::input::integerB;
 
     auto& pooling = command::getPublicThreadPool();
-    auto* const threads = pooling.newElement(
-        std::min(static_cast<std::uint32_t>(bit.count()), static_cast<std::uint32_t>(Bottom<ArithmeticMethod>::value)));
+    auto* const threads = pooling.newElement(std::min(
+        static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<ArithmeticMethod>::value)));
     const auto builder = std::make_shared<TargetBuilder>(integerA, integerB);
     const auto arithmeticFunctor =
         [threads, builder](const std::string& threadName, void (*methodPtr)(const int, const int))
@@ -289,12 +289,12 @@ void runArithmeticTasks(const std::vector<std::string>& targets)
 
     for (std::uint8_t i = 0; i < Bottom<ArithmeticMethod>::value; ++i)
     {
-        if (!bit.test(ArithmeticMethod(i)))
+        if (!bitFlag.test(ArithmeticMethod(i)))
         {
             continue;
         }
 
-        const std::string targetMethod = targets.at(i);
+        const std::string targetMethod = candidates.at(i);
         switch (utility::common::bkdrHash(targetMethod.data()))
         {
             case caseValue(ArithmeticMethod::addition):
@@ -324,24 +324,24 @@ void runArithmeticTasks(const std::vector<std::string>& targets)
 void updateArithmeticTask(const std::string& target)
 {
     constexpr auto category = Category::arithmetic;
-    auto& bit = getCategoryBit<category>();
+    auto& bitFlag = getCategoryBit<category>();
 
     switch (utility::common::bkdrHash(target.c_str()))
     {
         case caseValue(ArithmeticMethod::addition):
-            bit.set(ArithmeticMethod::addition);
+            bitFlag.set(ArithmeticMethod::addition);
             break;
         case caseValue(ArithmeticMethod::subtraction):
-            bit.set(ArithmeticMethod::subtraction);
+            bitFlag.set(ArithmeticMethod::subtraction);
             break;
         case caseValue(ArithmeticMethod::multiplication):
-            bit.set(ArithmeticMethod::multiplication);
+            bitFlag.set(ArithmeticMethod::multiplication);
             break;
         case caseValue(ArithmeticMethod::division):
-            bit.set(ArithmeticMethod::division);
+            bitFlag.set(ArithmeticMethod::division);
             break;
         default:
-            bit.reset();
+            bitFlag.reset();
             throw std::runtime_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
     }
 }
@@ -396,12 +396,12 @@ catch (const std::exception& error)
 } // namespace divisor
 
 //! @brief Run divisor tasks.
-//! @param targets - container of target methods
-void runDivisorTasks(const std::vector<std::string>& targets)
+//! @param candidates - container for the candidate target methods
+void runDivisorTasks(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::divisor;
-    const auto& bit = getCategoryBit<category>();
-    if (bit.none())
+    const auto& bitFlag = getCategoryBit<category>();
+    if (bitFlag.none())
     {
         return;
     }
@@ -413,8 +413,8 @@ void runDivisorTasks(const std::vector<std::string>& targets)
     using divisor::input::integerB;
 
     auto& pooling = command::getPublicThreadPool();
-    auto* const threads = pooling.newElement(
-        std::min(static_cast<std::uint32_t>(bit.count()), static_cast<std::uint32_t>(Bottom<DivisorMethod>::value)));
+    auto* const threads = pooling.newElement(std::min(
+        static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<DivisorMethod>::value)));
     const auto builder = std::make_shared<TargetBuilder>(integerA, integerB);
     const auto divisorFunctor = [threads, builder](const std::string& threadName, void (*methodPtr)(int, int))
     {
@@ -425,12 +425,12 @@ void runDivisorTasks(const std::vector<std::string>& targets)
 
     for (std::uint8_t i = 0; i < Bottom<DivisorMethod>::value; ++i)
     {
-        if (!bit.test(DivisorMethod(i)))
+        if (!bitFlag.test(DivisorMethod(i)))
         {
             continue;
         }
 
-        const std::string targetMethod = targets.at(i);
+        const std::string targetMethod = candidates.at(i);
         switch (utility::common::bkdrHash(targetMethod.data()))
         {
             case caseValue(DivisorMethod::euclidean):
@@ -454,18 +454,18 @@ void runDivisorTasks(const std::vector<std::string>& targets)
 void updateDivisorTask(const std::string& target)
 {
     constexpr auto category = Category::divisor;
-    auto& bit = getCategoryBit<category>();
+    auto& bitFlag = getCategoryBit<category>();
 
     switch (utility::common::bkdrHash(target.c_str()))
     {
         case caseValue(DivisorMethod::euclidean):
-            bit.set(DivisorMethod::euclidean);
+            bitFlag.set(DivisorMethod::euclidean);
             break;
         case caseValue(DivisorMethod::stein):
-            bit.set(DivisorMethod::stein);
+            bitFlag.set(DivisorMethod::stein);
             break;
         default:
-            bit.reset();
+            bitFlag.reset();
             throw std::runtime_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
     }
 }
@@ -548,12 +548,12 @@ catch (const std::exception& error)
 } // namespace integral
 
 //! @brief Run integral tasks.
-//! @param targets - container of target methods
-void runIntegralTasks(const std::vector<std::string>& targets)
+//! @param candidates - container for the candidate target methods
+void runIntegralTasks(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::integral;
-    const auto& bit = getCategoryBit<category>();
-    if (bit.none())
+    const auto& bitFlag = getCategoryBit<category>();
+    if (bitFlag.none())
     {
         return;
     }
@@ -577,11 +577,11 @@ void runIntegralTasks(const std::vector<std::string>& targets)
             expression);
     };
     const auto calcExpr =
-        [&targets, bit](const integral::Expression& expression, const integral::ExprRange<double, double>& range)
+        [&candidates, bitFlag](const integral::Expression& expression, const integral::ExprRange<double, double>& range)
     {
         auto& pooling = command::getPublicThreadPool();
         auto* const threads = pooling.newElement(std::min(
-            static_cast<std::uint32_t>(bit.count()), static_cast<std::uint32_t>(Bottom<IntegralMethod>::value)));
+            static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<IntegralMethod>::value)));
         const auto integralFunctor = [threads, &expression, &range](
                                          const std::string& threadName,
                                          void (*methodPtr)(const integral::Expression&, const double, const double))
@@ -593,12 +593,12 @@ void runIntegralTasks(const std::vector<std::string>& targets)
         using integral::IntegralSolution;
         for (std::uint8_t i = 0; i < Bottom<IntegralMethod>::value; ++i)
         {
-            if (!bit.test(IntegralMethod(i)))
+            if (!bitFlag.test(IntegralMethod(i)))
             {
                 continue;
             }
 
-            const std::string targetMethod = targets.at(i);
+            const std::string targetMethod = candidates.at(i);
             switch (utility::common::bkdrHash(targetMethod.data()))
             {
                 case caseValue(IntegralMethod::trapezoidal):
@@ -647,27 +647,27 @@ void runIntegralTasks(const std::vector<std::string>& targets)
 void updateIntegralTask(const std::string& target)
 {
     constexpr auto category = Category::integral;
-    auto& bit = getCategoryBit<category>();
+    auto& bitFlag = getCategoryBit<category>();
 
     switch (utility::common::bkdrHash(target.c_str()))
     {
         case caseValue(IntegralMethod::trapezoidal):
-            bit.set(IntegralMethod::trapezoidal);
+            bitFlag.set(IntegralMethod::trapezoidal);
             break;
         case caseValue(IntegralMethod::simpson):
-            bit.set(IntegralMethod::simpson);
+            bitFlag.set(IntegralMethod::simpson);
             break;
         case caseValue(IntegralMethod::romberg):
-            bit.set(IntegralMethod::romberg);
+            bitFlag.set(IntegralMethod::romberg);
             break;
         case caseValue(IntegralMethod::gauss):
-            bit.set(IntegralMethod::gauss);
+            bitFlag.set(IntegralMethod::gauss);
             break;
         case caseValue(IntegralMethod::monteCarlo):
-            bit.set(IntegralMethod::monteCarlo);
+            bitFlag.set(IntegralMethod::monteCarlo);
             break;
         default:
-            bit.reset();
+            bitFlag.reset();
             throw std::runtime_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
     }
 }
@@ -722,12 +722,12 @@ catch (const std::exception& error)
 } // namespace prime
 
 //! @brief Run prime tasks.
-//! @param targets - container of target methods
-void runPrimeTasks(const std::vector<std::string>& targets)
+//! @param candidates - container for the candidate target methods
+void runPrimeTasks(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::prime;
-    const auto& bit = getCategoryBit<category>();
-    if (bit.none())
+    const auto& bitFlag = getCategoryBit<category>();
+    if (bitFlag.none())
     {
         return;
     }
@@ -739,7 +739,7 @@ void runPrimeTasks(const std::vector<std::string>& targets)
 
     auto& pooling = command::getPublicThreadPool();
     auto* const threads = pooling.newElement(
-        std::min(static_cast<std::uint32_t>(bit.count()), static_cast<std::uint32_t>(Bottom<PrimeMethod>::value)));
+        std::min(static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<PrimeMethod>::value)));
     const auto builder = std::make_shared<TargetBuilder>(maxPositiveInteger);
     const auto primeFunctor = [threads, builder](const std::string& threadName, void (*methodPtr)(const std::uint32_t))
     {
@@ -749,12 +749,12 @@ void runPrimeTasks(const std::vector<std::string>& targets)
 
     for (std::uint8_t i = 0; i < Bottom<PrimeMethod>::value; ++i)
     {
-        if (!bit.test(PrimeMethod(i)))
+        if (!bitFlag.test(PrimeMethod(i)))
         {
             continue;
         }
 
-        const std::string targetMethod = targets.at(i);
+        const std::string targetMethod = candidates.at(i);
         switch (utility::common::bkdrHash(targetMethod.data()))
         {
             case caseValue(PrimeMethod::eratosthenes):
@@ -778,18 +778,18 @@ void runPrimeTasks(const std::vector<std::string>& targets)
 void updatePrimeTask(const std::string& target)
 {
     constexpr auto category = Category::prime;
-    auto& bit = getCategoryBit<category>();
+    auto& bitFlag = getCategoryBit<category>();
 
     switch (utility::common::bkdrHash(target.c_str()))
     {
         case caseValue(PrimeMethod::eratosthenes):
-            bit.set(PrimeMethod::eratosthenes);
+            bitFlag.set(PrimeMethod::eratosthenes);
             break;
         case caseValue(PrimeMethod::euler):
-            bit.set(PrimeMethod::euler);
+            bitFlag.set(PrimeMethod::euler);
             break;
         default:
-            bit.reset();
+            bitFlag.reset();
             throw std::runtime_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
     }
 }

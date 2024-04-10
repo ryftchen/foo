@@ -118,8 +118,8 @@ private:
     //! @brief Check for excessive arguments.
     void checkForExcessiveArguments();
 
-    //! @brief Alias for the functor to perform the task.
-    typedef void (*PerformTaskFunctor)(const std::vector<std::string>&);
+    //! @brief Alias for the functor to run the tasks.
+    typedef void (*RunTasksFunctor)(const std::vector<std::string>&);
     //! @brief Alias for the functor to update the task.
     typedef void (*UpdateTaskFunctor)(const std::string&);
     //! @brief Alias for the sub-cli.
@@ -130,8 +130,8 @@ private:
     using TargetTask = std::string;
     //! @brief Alias for the container of TargetTask.
     using TargetTaskContainer = std::vector<TargetTask>;
-    //! @brief Alias for the tuple of PerformTaskFunctor and UpdateTaskFunctor.
-    using TaskFunctorTuple = std::tuple<PerformTaskFunctor, UpdateTaskFunctor>;
+    //! @brief Alias for the tuple of RunTasksFunctor and UpdateTaskFunctor.
+    using TaskFunctorTuple = std::tuple<RunTasksFunctor, UpdateTaskFunctor>;
     //! @brief Alias for the tuple of TargetTaskContainer and TaskFunctorTuple.
     using TaskCategoryTuple = std::tuple<TargetTaskContainer, TaskFunctorTuple>;
     //! @brief Alias for the map of TaskCategory and TaskCategoryTuple.

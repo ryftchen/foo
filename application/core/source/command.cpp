@@ -477,7 +477,7 @@ void Command::dispatchTask()
                  std::next(regularTaskDispatcher.cbegin(), dispatchedTask.regularTask.getExistingSubTask())->second))
         {
             const auto& targets = get<TargetTaskContainer>(taskCategoryTuple);
-            const auto& runTasks = get<PerformTaskFunctor>(get<TaskFunctorTuple>(taskCategoryTuple));
+            const auto& runTasks = get<RunTasksFunctor>(get<TaskFunctorTuple>(taskCategoryTuple));
             runTasks(targets);
         }
     }
@@ -674,7 +674,7 @@ const T& Command::get(const TaskCategoryTuple& tuple)
 template <typename T>
 const T& Command::get(const TaskFunctorTuple& tuple)
 {
-    if constexpr (std::is_same_v<T, PerformTaskFunctor>)
+    if constexpr (std::is_same_v<T, RunTasksFunctor>)
     {
         return std::get<0>(tuple);
     }

@@ -326,12 +326,12 @@ catch (const std::exception& error)
 } // namespace behavioral
 
 //! @brief Run behavioral tasks.
-//! @param targets - container of target instances
-void runBehavioralTasks(const std::vector<std::string>& targets)
+//! @param candidates - container for the candidate target instances
+void runBehavioralTasks(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::behavioral;
-    const auto& bit = getCategoryBit<category>();
-    if (bit.none())
+    const auto& bitFlag = getCategoryBit<category>();
+    if (bitFlag.none())
     {
         return;
     }
@@ -341,7 +341,7 @@ void runBehavioralTasks(const std::vector<std::string>& targets)
 
     auto& pooling = command::getPublicThreadPool();
     auto* const threads = pooling.newElement(std::min(
-        static_cast<std::uint32_t>(bit.count()), static_cast<std::uint32_t>(Bottom<BehavioralInstance>::value)));
+        static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<BehavioralInstance>::value)));
     const auto behavioralFunctor = [threads](const std::string& threadName, void (*instancePtr)())
     {
         threads->enqueue(threadName, instancePtr);
@@ -351,12 +351,12 @@ void runBehavioralTasks(const std::vector<std::string>& targets)
     std::cout << "\r\nInstances of the " << toString(category) << " pattern:" << std::endl;
     for (std::uint8_t i = 0; i < Bottom<BehavioralInstance>::value; ++i)
     {
-        if (!bit.test(BehavioralInstance(i)))
+        if (!bitFlag.test(BehavioralInstance(i)))
         {
             continue;
         }
 
-        const std::string targetInstance = targets.at(i);
+        const std::string targetInstance = candidates.at(i);
         switch (utility::common::bkdrHash(targetInstance.data()))
         {
             case caseValue(BehavioralInstance::chainOfResponsibility):
@@ -407,45 +407,45 @@ void runBehavioralTasks(const std::vector<std::string>& targets)
 void updateBehavioralTask(const std::string& target)
 {
     constexpr auto category = Category::behavioral;
-    auto& bit = getCategoryBit<category>();
+    auto& bitFlag = getCategoryBit<category>();
 
     switch (utility::common::bkdrHash(target.c_str()))
     {
         case caseValue(BehavioralInstance::chainOfResponsibility):
-            bit.set(BehavioralInstance::chainOfResponsibility);
+            bitFlag.set(BehavioralInstance::chainOfResponsibility);
             break;
         case caseValue(BehavioralInstance::command):
-            bit.set(BehavioralInstance::command);
+            bitFlag.set(BehavioralInstance::command);
             break;
         case caseValue(BehavioralInstance::interpreter):
-            bit.set(BehavioralInstance::interpreter);
+            bitFlag.set(BehavioralInstance::interpreter);
             break;
         case caseValue(BehavioralInstance::iterator):
-            bit.set(BehavioralInstance::iterator);
+            bitFlag.set(BehavioralInstance::iterator);
             break;
         case caseValue(BehavioralInstance::mediator):
-            bit.set(BehavioralInstance::mediator);
+            bitFlag.set(BehavioralInstance::mediator);
             break;
         case caseValue(BehavioralInstance::memento):
-            bit.set(BehavioralInstance::memento);
+            bitFlag.set(BehavioralInstance::memento);
             break;
         case caseValue(BehavioralInstance::observer):
-            bit.set(BehavioralInstance::observer);
+            bitFlag.set(BehavioralInstance::observer);
             break;
         case caseValue(BehavioralInstance::state):
-            bit.set(BehavioralInstance::state);
+            bitFlag.set(BehavioralInstance::state);
             break;
         case caseValue(BehavioralInstance::strategy):
-            bit.set(BehavioralInstance::strategy);
+            bitFlag.set(BehavioralInstance::strategy);
             break;
         case caseValue(BehavioralInstance::templateMethod):
-            bit.set(BehavioralInstance::templateMethod);
+            bitFlag.set(BehavioralInstance::templateMethod);
             break;
         case caseValue(BehavioralInstance::visitor):
-            bit.set(BehavioralInstance::visitor);
+            bitFlag.set(BehavioralInstance::visitor);
             break;
         default:
-            bit.reset();
+            bitFlag.reset();
             throw std::runtime_error("Unexpected " + std::string{toString(category)} + " instance: " + target + '.');
     }
 }
@@ -518,12 +518,12 @@ catch (const std::exception& error)
 } // namespace creational
 
 //! @brief Run creational tasks.
-//! @param targets - container of target instances
-void runCreationalTasks(const std::vector<std::string>& targets)
+//! @param candidates - container for the candidate target instances
+void runCreationalTasks(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::creational;
-    const auto& bit = getCategoryBit<category>();
-    if (bit.none())
+    const auto& bitFlag = getCategoryBit<category>();
+    if (bitFlag.none())
     {
         return;
     }
@@ -533,7 +533,7 @@ void runCreationalTasks(const std::vector<std::string>& targets)
 
     auto& pooling = command::getPublicThreadPool();
     auto* const threads = pooling.newElement(std::min(
-        static_cast<std::uint32_t>(bit.count()), static_cast<std::uint32_t>(Bottom<CreationalInstance>::value)));
+        static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<CreationalInstance>::value)));
     const auto creationalFunctor = [threads](const std::string& threadName, void (*instancePtr)())
     {
         threads->enqueue(threadName, instancePtr);
@@ -543,12 +543,12 @@ void runCreationalTasks(const std::vector<std::string>& targets)
     std::cout << "\r\nInstances of the " << toString(category) << " pattern:" << std::endl;
     for (std::uint8_t i = 0; i < Bottom<CreationalInstance>::value; ++i)
     {
-        if (!bit.test(CreationalInstance(i)))
+        if (!bitFlag.test(CreationalInstance(i)))
         {
             continue;
         }
 
-        const std::string targetInstance = targets.at(i);
+        const std::string targetInstance = candidates.at(i);
         switch (utility::common::bkdrHash(targetInstance.data()))
         {
             case caseValue(CreationalInstance::abstractFactory):
@@ -581,27 +581,27 @@ void runCreationalTasks(const std::vector<std::string>& targets)
 void updateCreationalTask(const std::string& target)
 {
     constexpr auto category = Category::creational;
-    auto& bit = getCategoryBit<category>();
+    auto& bitFlag = getCategoryBit<category>();
 
     switch (utility::common::bkdrHash(target.c_str()))
     {
         case caseValue(CreationalInstance::abstractFactory):
-            bit.set(CreationalInstance::abstractFactory);
+            bitFlag.set(CreationalInstance::abstractFactory);
             break;
         case caseValue(CreationalInstance::builder):
-            bit.set(CreationalInstance::builder);
+            bitFlag.set(CreationalInstance::builder);
             break;
         case caseValue(CreationalInstance::factoryMethod):
-            bit.set(CreationalInstance::factoryMethod);
+            bitFlag.set(CreationalInstance::factoryMethod);
             break;
         case caseValue(CreationalInstance::prototype):
-            bit.set(CreationalInstance::prototype);
+            bitFlag.set(CreationalInstance::prototype);
             break;
         case caseValue(CreationalInstance::singleton):
-            bit.set(CreationalInstance::singleton);
+            bitFlag.set(CreationalInstance::singleton);
             break;
         default:
-            bit.reset();
+            bitFlag.reset();
             throw std::runtime_error("Unexpected " + std::string{toString(category)} + " instance: " + target + '.');
     }
 }
@@ -696,12 +696,12 @@ catch (const std::exception& error)
 } // namespace structural
 
 //! @brief Run structural tasks.
-//! @param targets - container of target instances
-void runStructuralTasks(const std::vector<std::string>& targets)
+//! @param candidates - container for the candidate target instances
+void runStructuralTasks(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::structural;
-    const auto& bit = getCategoryBit<category>();
-    if (bit.none())
+    const auto& bitFlag = getCategoryBit<category>();
+    if (bitFlag.none())
     {
         return;
     }
@@ -711,7 +711,7 @@ void runStructuralTasks(const std::vector<std::string>& targets)
 
     auto& pooling = command::getPublicThreadPool();
     auto* const threads = pooling.newElement(std::min(
-        static_cast<std::uint32_t>(bit.count()), static_cast<std::uint32_t>(Bottom<StructuralInstance>::value)));
+        static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<StructuralInstance>::value)));
     const auto structuralFunctor = [threads](const std::string& threadName, void (*instancePtr)())
     {
         threads->enqueue(threadName, instancePtr);
@@ -721,12 +721,12 @@ void runStructuralTasks(const std::vector<std::string>& targets)
     std::cout << "\r\nInstances of the " << toString(category) << " pattern:" << std::endl;
     for (std::uint8_t i = 0; i < Bottom<StructuralInstance>::value; ++i)
     {
-        if (!bit.test(StructuralInstance(i)))
+        if (!bitFlag.test(StructuralInstance(i)))
         {
             continue;
         }
 
-        const std::string targetInstance = targets.at(i);
+        const std::string targetInstance = candidates.at(i);
         switch (utility::common::bkdrHash(targetInstance.data()))
         {
             case caseValue(StructuralInstance::adapter):
@@ -765,33 +765,33 @@ void runStructuralTasks(const std::vector<std::string>& targets)
 void updateStructuralTask(const std::string& target)
 {
     constexpr auto category = Category::structural;
-    auto& bit = getCategoryBit<category>();
+    auto& bitFlag = getCategoryBit<category>();
 
     switch (utility::common::bkdrHash(target.c_str()))
     {
         case caseValue(StructuralInstance::adapter):
-            bit.set(StructuralInstance::adapter);
+            bitFlag.set(StructuralInstance::adapter);
             break;
         case caseValue(StructuralInstance::bridge):
-            bit.set(StructuralInstance::bridge);
+            bitFlag.set(StructuralInstance::bridge);
             break;
         case caseValue(StructuralInstance::composite):
-            bit.set(StructuralInstance::composite);
+            bitFlag.set(StructuralInstance::composite);
             break;
         case caseValue(StructuralInstance::decorator):
-            bit.set(StructuralInstance::decorator);
+            bitFlag.set(StructuralInstance::decorator);
             break;
         case caseValue(StructuralInstance::facade):
-            bit.set(StructuralInstance::facade);
+            bitFlag.set(StructuralInstance::facade);
             break;
         case caseValue(StructuralInstance::flyweight):
-            bit.set(StructuralInstance::flyweight);
+            bitFlag.set(StructuralInstance::flyweight);
             break;
         case caseValue(StructuralInstance::proxy):
-            bit.set(StructuralInstance::proxy);
+            bitFlag.set(StructuralInstance::proxy);
             break;
         default:
-            bit.reset();
+            bitFlag.reset();
             throw std::runtime_error("Unexpected " + std::string{toString(category)} + " instance: " + target + '.');
     }
 }

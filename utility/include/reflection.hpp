@@ -10,14 +10,13 @@
 #include <tuple>
 
 //! @brief Convert target string for reflection.
-#define REFLECTION_STR(str)                                                                                  \
-    (                                                                                                        \
-        []                                                                                                   \
-        {                                                                                                    \
-            constexpr std::basic_string_view string = str;                                                   \
-            return utility::reflection::Reflect::String<                                                     \
-                utility::reflection::Reflect::StrType<typename decltype(string)::value_type, string.size()>{ \
-                    string}>{};                                                                              \
+#define REFLECTION_STR(str)                                                                                       \
+    (                                                                                                             \
+        []                                                                                                        \
+        {                                                                                                         \
+            constexpr std::basic_string_view refl = str;                                                          \
+            return utility::reflection::Reflect::String<                                                          \
+                utility::reflection::Reflect::StrType<typename decltype(refl)::value_type, refl.size()>{refl}>{}; \
         }())
 
 //! @brief The utility module.

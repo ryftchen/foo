@@ -205,12 +205,12 @@ catch (const std::exception& error)
 } // namespace linear
 
 //! @brief Run linear tasks.
-//! @param targets - container of target instances
-void runLinearTasks(const std::vector<std::string>& targets)
+//! @param candidates - container for the candidate target instances
+void runLinearTasks(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::linear;
-    const auto& bit = getCategoryBit<category>();
-    if (bit.none())
+    const auto& bitFlag = getCategoryBit<category>();
+    if (bitFlag.none())
     {
         return;
     }
@@ -219,8 +219,8 @@ void runLinearTasks(const std::vector<std::string>& targets)
     using linear::LinearStructure;
 
     auto& pooling = command::getPublicThreadPool();
-    auto* const threads = pooling.newElement(
-        std::min(static_cast<std::uint32_t>(bit.count()), static_cast<std::uint32_t>(Bottom<LinearInstance>::value)));
+    auto* const threads = pooling.newElement(std::min(
+        static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<LinearInstance>::value)));
     const auto linearFunctor = [threads](const std::string& threadName, void (*instancePtr)())
     {
         threads->enqueue(threadName, instancePtr);
@@ -230,12 +230,12 @@ void runLinearTasks(const std::vector<std::string>& targets)
     std::cout << "\r\nInstances of the " << toString(category) << " structure:" << std::endl;
     for (std::uint8_t i = 0; i < Bottom<LinearInstance>::value; ++i)
     {
-        if (!bit.test(LinearInstance(i)))
+        if (!bitFlag.test(LinearInstance(i)))
         {
             continue;
         }
 
-        const std::string targetInstance = targets.at(i);
+        const std::string targetInstance = candidates.at(i);
         switch (utility::common::bkdrHash(targetInstance.data()))
         {
             case caseValue(LinearInstance::linkedList):
@@ -262,21 +262,21 @@ void runLinearTasks(const std::vector<std::string>& targets)
 void updateLinearTask(const std::string& target)
 {
     constexpr auto category = Category::linear;
-    auto& bit = getCategoryBit<category>();
+    auto& bitFlag = getCategoryBit<category>();
 
     switch (utility::common::bkdrHash(target.c_str()))
     {
         case caseValue(LinearInstance::linkedList):
-            bit.set(LinearInstance::linkedList);
+            bitFlag.set(LinearInstance::linkedList);
             break;
         case caseValue(LinearInstance::stack):
-            bit.set(LinearInstance::stack);
+            bitFlag.set(LinearInstance::stack);
             break;
         case caseValue(LinearInstance::queue):
-            bit.set(LinearInstance::queue);
+            bitFlag.set(LinearInstance::queue);
             break;
         default:
-            bit.reset();
+            bitFlag.reset();
             throw std::runtime_error("Unexpected " + std::string{toString(category)} + " instance: " + target + '.');
     }
 }
@@ -327,12 +327,12 @@ catch (const std::exception& error)
 } // namespace tree
 
 //! @brief Run tree tasks.
-//! @param targets - container of target instances
-void runTreeTasks(const std::vector<std::string>& targets)
+//! @param candidates - container for the candidate target instances
+void runTreeTasks(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::tree;
-    const auto& bit = getCategoryBit<category>();
-    if (bit.none())
+    const auto& bitFlag = getCategoryBit<category>();
+    if (bitFlag.none())
     {
         return;
     }
@@ -342,7 +342,7 @@ void runTreeTasks(const std::vector<std::string>& targets)
 
     auto& pooling = command::getPublicThreadPool();
     auto* const threads = pooling.newElement(
-        std::min(static_cast<std::uint32_t>(bit.count()), static_cast<std::uint32_t>(Bottom<TreeInstance>::value)));
+        std::min(static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<TreeInstance>::value)));
     const auto treeFunctor = [threads](const std::string& threadName, void (*instancePtr)())
     {
         threads->enqueue(threadName, instancePtr);
@@ -352,12 +352,12 @@ void runTreeTasks(const std::vector<std::string>& targets)
     std::cout << "\r\nInstances of the " << toString(category) << " structure:" << std::endl;
     for (std::uint8_t i = 0; i < Bottom<TreeInstance>::value; ++i)
     {
-        if (!bit.test(TreeInstance(i)))
+        if (!bitFlag.test(TreeInstance(i)))
         {
             continue;
         }
 
-        const std::string targetInstance = targets.at(i);
+        const std::string targetInstance = candidates.at(i);
         switch (utility::common::bkdrHash(targetInstance.data()))
         {
             case caseValue(TreeInstance::binarySearch):
@@ -384,21 +384,21 @@ void runTreeTasks(const std::vector<std::string>& targets)
 void updateTreeTask(const std::string& target)
 {
     constexpr auto category = Category::tree;
-    auto& bit = getCategoryBit<category>();
+    auto& bitFlag = getCategoryBit<category>();
 
     switch (utility::common::bkdrHash(target.c_str()))
     {
         case caseValue(TreeInstance::binarySearch):
-            bit.set(TreeInstance::binarySearch);
+            bitFlag.set(TreeInstance::binarySearch);
             break;
         case caseValue(TreeInstance::adelsonVelskyLandis):
-            bit.set(TreeInstance::adelsonVelskyLandis);
+            bitFlag.set(TreeInstance::adelsonVelskyLandis);
             break;
         case caseValue(TreeInstance::splay):
-            bit.set(TreeInstance::splay);
+            bitFlag.set(TreeInstance::splay);
             break;
         default:
-            bit.reset();
+            bitFlag.reset();
             throw std::runtime_error("Unexpected " + std::string{toString(category)} + " instance: " + target + '.');
     }
 }
