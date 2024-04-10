@@ -395,7 +395,7 @@ private:
     }
 };
 } // namespace match
-extern void runMatchTasks(const std::vector<std::string>& targets);
+extern void runMatchTasks(const std::vector<std::string>& candidates);
 extern void updateMatchTask(const std::string& target);
 
 //! @brief Apply notation.
@@ -447,7 +447,7 @@ private:
     const std::string_view infixNotation;
 };
 } // namespace notation
-extern void runNotationTasks(const std::vector<std::string>& targets);
+extern void runNotationTasks(const std::vector<std::string>& candidates);
 extern void updateNotationTask(const std::string& target);
 
 //! @brief Apply optimal.
@@ -594,7 +594,7 @@ struct FuncMapHash
     }
 };
 } // namespace optimal
-extern void runOptimalTasks(const std::vector<std::string>& targets);
+extern void runOptimalTasks(const std::vector<std::string>& candidates);
 extern void updateOptimalTask(const std::string& target);
 
 //! @brief Apply search.
@@ -818,7 +818,7 @@ private:
     }
 };
 } // namespace search
-extern void runSearchTasks(const std::vector<std::string>& targets);
+extern void runSearchTasks(const std::vector<std::string>& candidates);
 extern void updateSearchTask(const std::string& target);
 
 //! @brief Apply sort.
@@ -1058,7 +1058,7 @@ private:
     }
 };
 } // namespace sort
-extern void runSortTasks(const std::vector<std::string>& targets);
+extern void runSortTasks(const std::vector<std::string>& candidates);
 extern void updateSortTask(const std::string& target);
 } // namespace app_algo
 } // namespace application

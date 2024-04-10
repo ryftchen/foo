@@ -344,12 +344,12 @@ catch (const std::exception& error)
 } // namespace match
 
 //! @brief Run match tasks.
-//! @param targets - container of target methods
-void runMatchTasks(const std::vector<std::string>& targets)
+//! @param candidates - container for the candidate target methods
+void runMatchTasks(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::match;
-    const auto& bit = getCategoryBit<category>();
-    if (bit.none())
+    const auto& bitFlag = getCategoryBit<category>();
+    if (bitFlag.none())
     {
         return;
     }
@@ -362,7 +362,7 @@ void runMatchTasks(const std::vector<std::string>& targets)
 
     auto& pooling = command::getPublicThreadPool();
     auto* const threads = pooling.newElement(
-        std::min(static_cast<std::uint32_t>(bit.count()), static_cast<std::uint32_t>(Bottom<MatchMethod>::value)));
+        std::min(static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<MatchMethod>::value)));
     const auto builder = std::make_shared<TargetBuilder>(std::string{patternString});
     const auto matchFunctor =
         [threads, builder](
@@ -382,12 +382,12 @@ void runMatchTasks(const std::vector<std::string>& targets)
 
     for (std::uint8_t i = 0; i < Bottom<MatchMethod>::value; ++i)
     {
-        if (!bit.test(MatchMethod(i)))
+        if (!bitFlag.test(MatchMethod(i)))
         {
             continue;
         }
 
-        const std::string targetMethod = targets.at(i);
+        const std::string targetMethod = candidates.at(i);
         switch (utility::common::bkdrHash(targetMethod.data()))
         {
             case caseValue(MatchMethod::rabinKarp):
@@ -420,27 +420,27 @@ void runMatchTasks(const std::vector<std::string>& targets)
 void updateMatchTask(const std::string& target)
 {
     constexpr auto category = Category::match;
-    auto& bit = getCategoryBit<category>();
+    auto& bitFlag = getCategoryBit<category>();
 
     switch (utility::common::bkdrHash(target.c_str()))
     {
         case caseValue(MatchMethod::rabinKarp):
-            bit.set(MatchMethod::rabinKarp);
+            bitFlag.set(MatchMethod::rabinKarp);
             break;
         case caseValue(MatchMethod::knuthMorrisPratt):
-            bit.set(MatchMethod::knuthMorrisPratt);
+            bitFlag.set(MatchMethod::knuthMorrisPratt);
             break;
         case caseValue(MatchMethod::boyerMoore):
-            bit.set(MatchMethod::boyerMoore);
+            bitFlag.set(MatchMethod::boyerMoore);
             break;
         case caseValue(MatchMethod::horspool):
-            bit.set(MatchMethod::horspool);
+            bitFlag.set(MatchMethod::horspool);
             break;
         case caseValue(MatchMethod::sunday):
-            bit.set(MatchMethod::sunday);
+            bitFlag.set(MatchMethod::sunday);
             break;
         default:
-            bit.reset();
+            bitFlag.reset();
             throw std::runtime_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
     }
 }
@@ -480,12 +480,12 @@ catch (const std::exception& error)
 } // namespace notation
 
 //! @brief Run notation tasks.
-//! @param targets - container of target methods
-void runNotationTasks(const std::vector<std::string>& targets)
+//! @param candidates - container for the candidate target methods
+void runNotationTasks(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::notation;
-    const auto& bit = getCategoryBit<category>();
-    if (bit.none())
+    const auto& bitFlag = getCategoryBit<category>();
+    if (bitFlag.none())
     {
         return;
     }
@@ -496,8 +496,8 @@ void runNotationTasks(const std::vector<std::string>& targets)
     using notation::input::infixString;
 
     auto& pooling = command::getPublicThreadPool();
-    auto* const threads = pooling.newElement(
-        std::min(static_cast<std::uint32_t>(bit.count()), static_cast<std::uint32_t>(Bottom<NotationMethod>::value)));
+    auto* const threads = pooling.newElement(std::min(
+        static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<NotationMethod>::value)));
     const auto builder = std::make_shared<TargetBuilder>(infixString);
     const auto notationFunctor =
         [threads, builder](const std::string& threadName, void (*methodPtr)(const std::string&))
@@ -508,12 +508,12 @@ void runNotationTasks(const std::vector<std::string>& targets)
 
     for (std::uint8_t i = 0; i < Bottom<NotationMethod>::value; ++i)
     {
-        if (!bit.test(NotationMethod(i)))
+        if (!bitFlag.test(NotationMethod(i)))
         {
             continue;
         }
 
-        const std::string targetMethod = targets.at(i);
+        const std::string targetMethod = candidates.at(i);
         switch (utility::common::bkdrHash(targetMethod.data()))
         {
             case caseValue(NotationMethod::prefix):
@@ -537,18 +537,18 @@ void runNotationTasks(const std::vector<std::string>& targets)
 void updateNotationTask(const std::string& target)
 {
     constexpr auto category = Category::notation;
-    auto& bit = getCategoryBit<category>();
+    auto& bitFlag = getCategoryBit<category>();
 
     switch (utility::common::bkdrHash(target.c_str()))
     {
         case caseValue(NotationMethod::prefix):
-            bit.set(NotationMethod::prefix);
+            bitFlag.set(NotationMethod::prefix);
             break;
         case caseValue(NotationMethod::postfix):
-            bit.set(NotationMethod::postfix);
+            bitFlag.set(NotationMethod::postfix);
             break;
         default:
-            bit.reset();
+            bitFlag.reset();
             throw std::runtime_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
     }
 }
@@ -618,12 +618,12 @@ catch (const std::exception& error)
 } // namespace optimal
 
 //! @brief Run optimal tasks.
-//! @param targets - container of target methods
-void runOptimalTasks(const std::vector<std::string>& targets)
+//! @param candidates - container for the candidate target methods
+void runOptimalTasks(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::optimal;
-    const auto& bit = getCategoryBit<category>();
-    if (bit.none())
+    const auto& bitFlag = getCategoryBit<category>();
+    if (bitFlag.none())
     {
         return;
     }
@@ -647,12 +647,12 @@ void runOptimalTasks(const std::vector<std::string>& targets)
             function);
     };
     const auto calcFunc =
-        [&targets, bit](const optimal::Function& function, const optimal::FuncRange<double, double>& range)
+        [&candidates, bitFlag](const optimal::Function& function, const optimal::FuncRange<double, double>& range)
     {
         assert(range.range1 < range.range2);
         auto& pooling = command::getPublicThreadPool();
         auto* const threads = pooling.newElement(std::min(
-            static_cast<std::uint32_t>(bit.count()), static_cast<std::uint32_t>(Bottom<OptimalMethod>::value)));
+            static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<OptimalMethod>::value)));
         const auto optimalFunctor =
             [threads, &function, &range](
                 const std::string& threadName, void (*methodPtr)(const optimal::Function&, const double, const double))
@@ -664,12 +664,12 @@ void runOptimalTasks(const std::vector<std::string>& targets)
         using optimal::OptimalSolution;
         for (std::uint8_t i = 0; i < Bottom<OptimalMethod>::value; ++i)
         {
-            if (!bit.test(OptimalMethod(i)))
+            if (!bitFlag.test(OptimalMethod(i)))
             {
                 continue;
             }
 
-            const std::string targetMethod = targets.at(i);
+            const std::string targetMethod = candidates.at(i);
             switch (utility::common::bkdrHash(targetMethod.data()))
             {
                 case caseValue(OptimalMethod::gradient):
@@ -715,24 +715,24 @@ void runOptimalTasks(const std::vector<std::string>& targets)
 void updateOptimalTask(const std::string& target)
 {
     constexpr auto category = Category::optimal;
-    auto& bit = getCategoryBit<category>();
+    auto& bitFlag = getCategoryBit<category>();
 
     switch (utility::common::bkdrHash(target.c_str()))
     {
         case caseValue(OptimalMethod::gradient):
-            bit.set(OptimalMethod::gradient);
+            bitFlag.set(OptimalMethod::gradient);
             break;
         case caseValue(OptimalMethod::annealing):
-            bit.set(OptimalMethod::annealing);
+            bitFlag.set(OptimalMethod::annealing);
             break;
         case caseValue(OptimalMethod::particle):
-            bit.set(OptimalMethod::particle);
+            bitFlag.set(OptimalMethod::particle);
             break;
         case caseValue(OptimalMethod::genetic):
-            bit.set(OptimalMethod::genetic);
+            bitFlag.set(OptimalMethod::genetic);
             break;
         default:
-            bit.reset();
+            bitFlag.reset();
             throw std::runtime_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
     }
 }
@@ -804,12 +804,12 @@ catch (const std::exception& error)
 } // namespace search
 
 //! @brief Run search tasks.
-//! @param targets - container of target methods
-void runSearchTasks(const std::vector<std::string>& targets)
+//! @param candidates - container for the candidate target methods
+void runSearchTasks(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::search;
-    const auto& bit = getCategoryBit<category>();
-    if (bit.none())
+    const auto& bitFlag = getCategoryBit<category>();
+    if (bitFlag.none())
     {
         return;
     }
@@ -824,7 +824,7 @@ void runSearchTasks(const std::vector<std::string>& targets)
 
     auto& pooling = command::getPublicThreadPool();
     auto* const threads = pooling.newElement(
-        std::min(static_cast<std::uint32_t>(bit.count()), static_cast<std::uint32_t>(Bottom<SearchMethod>::value)));
+        std::min(static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<SearchMethod>::value)));
     const auto builder = std::make_shared<TargetBuilder<double>>(arrayLength, arrayRange1, arrayRange2);
     const auto searchFunctor =
         [threads, builder](
@@ -837,12 +837,12 @@ void runSearchTasks(const std::vector<std::string>& targets)
 
     for (std::uint8_t i = 0; i < Bottom<SearchMethod>::value; ++i)
     {
-        if (!bit.test(SearchMethod(i)))
+        if (!bitFlag.test(SearchMethod(i)))
         {
             continue;
         }
 
-        const std::string targetMethod = targets.at(i);
+        const std::string targetMethod = candidates.at(i);
         switch (utility::common::bkdrHash(targetMethod.data()))
         {
             case caseValue(SearchMethod::binary):
@@ -869,21 +869,21 @@ void runSearchTasks(const std::vector<std::string>& targets)
 void updateSearchTask(const std::string& target)
 {
     constexpr auto category = Category::search;
-    auto& bit = getCategoryBit<category>();
+    auto& bitFlag = getCategoryBit<category>();
 
     switch (utility::common::bkdrHash(target.c_str()))
     {
         case caseValue(SearchMethod::binary):
-            bit.set(SearchMethod::binary);
+            bitFlag.set(SearchMethod::binary);
             break;
         case caseValue(SearchMethod::interpolation):
-            bit.set(SearchMethod::interpolation);
+            bitFlag.set(SearchMethod::interpolation);
             break;
         case caseValue(SearchMethod::fibonacci):
-            bit.set(SearchMethod::fibonacci);
+            bitFlag.set(SearchMethod::fibonacci);
             break;
         default:
-            bit.reset();
+            bitFlag.reset();
             throw std::runtime_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
     }
 }
@@ -1042,12 +1042,12 @@ catch (const std::exception& error)
 } // namespace sort
 
 //! @brief Run sort tasks.
-//! @param targets - container of target methods
-void runSortTasks(const std::vector<std::string>& targets)
+//! @param candidates - container for the candidate target methods
+void runSortTasks(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::sort;
-    const auto& bit = getCategoryBit<category>();
-    if (bit.none())
+    const auto& bitFlag = getCategoryBit<category>();
+    if (bitFlag.none())
     {
         return;
     }
@@ -1062,7 +1062,7 @@ void runSortTasks(const std::vector<std::string>& targets)
 
     auto& pooling = command::getPublicThreadPool();
     auto* const threads = pooling.newElement(
-        std::min(static_cast<std::uint32_t>(bit.count()), static_cast<std::uint32_t>(Bottom<SortMethod>::value)));
+        std::min(static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<SortMethod>::value)));
     const auto builder = std::make_shared<TargetBuilder<int>>(arrayLength, arrayRange1, arrayRange2);
     const auto sortFunctor =
         [threads, builder](const std::string& threadName, void (*methodPtr)(const int* const, const std::uint32_t))
@@ -1073,12 +1073,12 @@ void runSortTasks(const std::vector<std::string>& targets)
 
     for (std::uint8_t i = 0; i < Bottom<SortMethod>::value; ++i)
     {
-        if (!bit.test(SortMethod(i)))
+        if (!bitFlag.test(SortMethod(i)))
         {
             continue;
         }
 
-        const std::string targetMethod = targets.at(i);
+        const std::string targetMethod = candidates.at(i);
         switch (utility::common::bkdrHash(targetMethod.data()))
         {
             case caseValue(SortMethod::bubble):
@@ -1126,42 +1126,42 @@ void runSortTasks(const std::vector<std::string>& targets)
 void updateSortTask(const std::string& target)
 {
     constexpr auto category = Category::sort;
-    auto& bit = getCategoryBit<category>();
+    auto& bitFlag = getCategoryBit<category>();
 
     switch (utility::common::bkdrHash(target.c_str()))
     {
         case caseValue(SortMethod::bubble):
-            bit.set(SortMethod::bubble);
+            bitFlag.set(SortMethod::bubble);
             break;
         case caseValue(SortMethod::selection):
-            bit.set(SortMethod::selection);
+            bitFlag.set(SortMethod::selection);
             break;
         case caseValue(SortMethod::insertion):
-            bit.set(SortMethod::insertion);
+            bitFlag.set(SortMethod::insertion);
             break;
         case caseValue(SortMethod::shell):
-            bit.set(SortMethod::shell);
+            bitFlag.set(SortMethod::shell);
             break;
         case caseValue(SortMethod::merge):
-            bit.set(SortMethod::merge);
+            bitFlag.set(SortMethod::merge);
             break;
         case caseValue(SortMethod::quick):
-            bit.set(SortMethod::quick);
+            bitFlag.set(SortMethod::quick);
             break;
         case caseValue(SortMethod::heap):
-            bit.set(SortMethod::heap);
+            bitFlag.set(SortMethod::heap);
             break;
         case caseValue(SortMethod::counting):
-            bit.set(SortMethod::counting);
+            bitFlag.set(SortMethod::counting);
             break;
         case caseValue(SortMethod::bucket):
-            bit.set(SortMethod::bucket);
+            bitFlag.set(SortMethod::bucket);
             break;
         case caseValue(SortMethod::radix):
-            bit.set(SortMethod::radix);
+            bitFlag.set(SortMethod::radix);
             break;
         default:
-            bit.reset();
+            bitFlag.reset();
             throw std::runtime_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
     }
 }

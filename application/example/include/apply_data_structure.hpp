@@ -301,7 +301,7 @@ public:
     static void queueInstance();
 };
 } // namespace linear
-extern void runLinearTasks(const std::vector<std::string>& targets);
+extern void runLinearTasks(const std::vector<std::string>& candidates);
 extern void updateLinearTask(const std::string& target);
 
 //! @brief Apply tree.
@@ -477,7 +477,7 @@ public:
     static void splayInstance();
 };
 } // namespace tree
-extern void runTreeTasks(const std::vector<std::string>& targets);
+extern void runTreeTasks(const std::vector<std::string>& candidates);
 extern void updateTreeTask(const std::string& target);
 } // namespace app_ds
 } // namespace application
