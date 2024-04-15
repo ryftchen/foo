@@ -107,7 +107,7 @@ constexpr std::string_view getCategoryAlias()
 //! @param instance - target instance
 //! @return case value
 template <class T>
-constexpr std::size_t caseValue(const T instance)
+consteval std::size_t caseValue(const T instance)
 {
     using TypeInfo = utility::reflection::TypeInfo<T>;
     static_assert(TypeInfo::fields.size == Bottom<T>::value);

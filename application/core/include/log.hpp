@@ -75,35 +75,35 @@ constexpr std::string_view dateRegex = R"(\[(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{
 //! @brief Regular expression of code file in log.
 constexpr std::string_view codeFileRegex = R"(\[[^:]+\.(c|h|cc|hh|cpp|hpp|tpp|cxx|hxx|C|H)+#\d+\])";
 //! @brief Prefix of debug level. Include ANSI escape codes.
-constexpr auto debugLevelPrefixColorForLog = utility::common::joinStr<
+constinit const auto debugLevelPrefixColorForLog = utility::common::joinString<
     utility::common::colorBlue,
     utility::common::colorBold,
     utility::common::colorForBackground,
     debugLevelPrefix,
     utility::common::colorOff>;
 //! @brief Prefix of info level. Include ANSI escape codes.
-constexpr auto infoLevelPrefixColorForLog = utility::common::joinStr<
+constinit const auto infoLevelPrefixColorForLog = utility::common::joinString<
     utility::common::colorGreen,
     utility::common::colorBold,
     utility::common::colorForBackground,
     infoLevelPrefix,
     utility::common::colorOff>;
 //! @brief Prefix of warning level. Include ANSI escape codes.
-constexpr auto warnLevelPrefixColorForLog = utility::common::joinStr<
+constinit const auto warnLevelPrefixColorForLog = utility::common::joinString<
     utility::common::colorYellow,
     utility::common::colorBold,
     utility::common::colorForBackground,
     warnLevelPrefix,
     utility::common::colorOff>;
 //! @brief Prefix of error level. Include ANSI escape codes.
-constexpr auto errorLevelPrefixColorForLog = utility::common::joinStr<
+constinit const auto errorLevelPrefixColorForLog = utility::common::joinString<
     utility::common::colorRed,
     utility::common::colorBold,
     utility::common::colorForBackground,
     errorLevelPrefix,
     utility::common::colorOff>;
 //! @brief Prefix of unknown level. Include ANSI escape codes.
-constexpr auto unknownLevelPrefixColorForLog = utility::common::joinStr<
+constinit const auto unknownLevelPrefixColorForLog = utility::common::joinString<
     utility::common::colorBold,
     utility::common::colorForBackground,
     unknownLevelPrefix,
