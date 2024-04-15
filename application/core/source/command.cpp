@@ -42,7 +42,7 @@ enum HelperControl : std::uint8_t
 //! @tparam Helper - type of helper
 //! @param operation - target operation
 template <HelperType Helper>
-constexpr void triggerHelper(const HelperControl operation)
+static void triggerHelper(const HelperControl operation)
 {
     if (!CONFIG_ACTIVE_HELPER)
     {

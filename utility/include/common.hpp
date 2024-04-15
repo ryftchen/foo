@@ -88,7 +88,7 @@ struct Join
 //! @brief Get the result of splicing strings.
 //! @tparam Strings - target strings to be spliced
 template <const std::string_view&... Strings>
-static constexpr auto joinStr = Join<Strings...>::value;
+static constexpr auto joinString = Join<Strings...>::value;
 
 extern std::size_t bkdrHash(const char* str);
 extern std::string base64Encode(const std::string& data);
