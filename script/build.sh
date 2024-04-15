@@ -562,12 +562,14 @@ function perform_lint_option()
     fi
     shell_command "compdb -p ./${FOLDER[bld]} list >./${COMP_CMD} && mv ./${app_comp_cmd} ./${app_comp_cmd}.bak \
 && mv ./${COMP_CMD} ./${FOLDER[bld]}"
+    local exist_tpp_file=false
     while true; do
         local line
         line=$(grep -n '.tpp' "./${app_comp_cmd}" | head -n 1 | cut -d : -f 1)
         if ! [[ ${line} =~ ^[0-9]+$ ]]; then
             break
         fi
+        exist_tpp_file=true
         if ! sed -i $((line - 2)),$((line + 3))d ./"${app_comp_cmd}" >/dev/null 2>&1; then
             die "Failed to remove redundant implementation file objects from the ${app_comp_cmd} file."
         fi
@@ -575,8 +577,10 @@ function perform_lint_option()
     shell_command "find ./${FOLDER[app]} ./${FOLDER[util]} ./${FOLDER[algo]} ./${FOLDER[ds]} ./${FOLDER[dp]} \
 ./${FOLDER[num]} -name '*.cpp' -o -name '*.hpp' | xargs run-clang-tidy-16 -config-file=./.clang-tidy \
 -p ./${FOLDER[bld]} -quiet"
-    shell_command "find ./${FOLDER[app]} ./${FOLDER[util]} ./${FOLDER[algo]} ./${FOLDER[ds]} ./${FOLDER[dp]} \
+    if [[ ${exist_tpp_file} = true ]]; then
+        shell_command "find ./${FOLDER[app]} ./${FOLDER[util]} ./${FOLDER[algo]} ./${FOLDER[ds]} ./${FOLDER[dp]} \
 ./${FOLDER[num]} -name '*.tpp' | xargs clang-tidy-16 --config-file=./.clang-tidy -p ./${FOLDER[bld]} --quiet"
+    fi
     shell_command "rm -rf ./${app_comp_cmd} && mv ./${app_comp_cmd}.bak ./${app_comp_cmd}"
 
     local tst_comp_cmd=${FOLDER[tst]}/${FOLDER[bld]}/${COMP_CMD}
