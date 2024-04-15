@@ -249,14 +249,18 @@ function perform_initialize_option()
     fi
 
     local validate_proj="[[ \\\"\\\$(basename \\\"\\\$(pwd)\\\")\\\" == \\\"${FOLDER[proj]}\\\" ]] && \
-git rev-parse --git-dir >/dev/null 2>&1 &&"
+git rev-parse --git-dir >/dev/null 2>&1"
     local alias_cmd
     if ! grep -Fwq "alias ${FOLDER[proj]:0:1}build" ~/"${BASH_RC}" 2>/dev/null; then
-        alias_cmd="alias ${FOLDER[proj]:0:1}build='${validate_proj} ./${FOLDER[scr]}/build.sh'"
+        alias_cmd="alias ${FOLDER[proj]:0:1}build='${validate_proj} && ./${FOLDER[scr]}/build.sh'"
         shell_command "echo \"${alias_cmd}\" >>~/${BASH_RC}"
     fi
     if ! grep -Fwq "alias ${FOLDER[proj]:0:1}run" ~/"${BASH_RC}" 2>/dev/null; then
-        alias_cmd="alias ${FOLDER[proj]:0:1}run='${validate_proj} ./${FOLDER[scr]}/run.py'"
+        alias_cmd="alias ${FOLDER[proj]:0:1}run='${validate_proj} && ./${FOLDER[scr]}/run.py'"
+        shell_command "echo \"${alias_cmd}\" >>~/${BASH_RC}"
+    fi
+    if ! grep -Fwq "alias ${FOLDER[proj]:0:1}pull" ~/"${BASH_RC}" 2>/dev/null; then
+        alias_cmd="alias ${FOLDER[proj]:0:1}pull='${validate_proj} && git pull && git gc --aggressive --prune'"
         shell_command "echo \"${alias_cmd}\" >>~/${BASH_RC}"
     fi
 
@@ -288,7 +292,7 @@ function perform_clean_option()
     fi
 
     shell_command "sed -i '/export FOO_ENV=${FOLDER[proj]}_dev/d' ~/${BASH_RC} 2>/dev/null"
-    shell_command "sed -i '/alias ${FOLDER[proj]:0:1}\(build\|run\)/d' ~/${BASH_RC} 2>/dev/null"
+    shell_command "sed -i '/alias ${FOLDER[proj]:0:1}\(build\|run\|pull\)/d' ~/${BASH_RC} 2>/dev/null"
     shell_command "find ./ -maxdepth 3 -type d | sed 1d \
 | grep -E '(${FOLDER[cac]}|${FOLDER[bld]}|archive|browser|doxygen|target|__pycache__)$' | xargs -i rm -rf {}"
     shell_command "rm -rf ./${FOLDER[scr]}/.env ./${FOLDER[doc]}/server/Cargo.lock ./core.* ./vgcore.* ./*.profraw"
