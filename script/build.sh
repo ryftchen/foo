@@ -591,7 +591,11 @@ function perform_lint_option()
 
     shell_command "shellcheck -a ./${FOLDER[scr]}/*.sh"
     shell_command "pylint --rcfile=./.pylintrc ./${FOLDER[scr]}/*.py"
-    shell_command "cargo clippy --release --manifest-path ./${FOLDER[doc]}/server/Cargo.toml"
+    local build_type
+    if [[ ${BUILD_TYPE} = "Release" ]]; then
+        build_type=" --release"
+    fi
+    shell_command "cargo clippy --manifest-path ./${FOLDER[doc]}/server/Cargo.toml""${build_type}"
 }
 
 function perform_statistics_option()
