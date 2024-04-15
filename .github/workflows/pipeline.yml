@@ -37,7 +37,7 @@ jobs:
         run: |
           ./script/build.sh --hook --spell --format --lint --statistics
           git status
-          ./script/build.sh --release --browser --doxygen
+          ./script/build.sh --browser --doxygen
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4.3.0
