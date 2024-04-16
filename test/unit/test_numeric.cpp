@@ -1,17 +1,13 @@
 //! @file test_numeric.cpp
 //! @author ryftchen
 //! @brief The definitions (test_numeric) in the test module.
-//! @version 1.0
+//! @version 0.1.0
 //! @copyright Copyright (c) 2022-2024 ryftchen. All rights reserved.
 
 #include <gtest/gtest.h>
 #include <syncstream>
 
 #include "application/example/include/apply_numeric.hpp"
-#include "numeric/include/arithmetic.hpp"
-#include "numeric/include/divisor.hpp"
-#include "numeric/include/integral.hpp"
-#include "numeric/include/prime.hpp"
 
 //! @brief Title of printing for numeric task tests.
 #define TST_NUM_PRINT_TASK_TITLE(category, state)                                                                 \

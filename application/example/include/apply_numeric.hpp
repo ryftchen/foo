@@ -1,7 +1,7 @@
 //! @file apply_numeric.hpp
 //! @author ryftchen
 //! @brief The declarations (apply_numeric) in the application module.
-//! @version 1.0
+//! @version 0.1.0
 //! @copyright Copyright (c) 2022-2024 ryftchen. All rights reserved.
 
 #pragma once
@@ -15,7 +15,10 @@
 #include "application/pch/precompiled_header.hpp"
 #endif // __PRECOMPILED_HEADER
 
+#include "numeric/include/arithmetic.hpp"
+#include "numeric/include/divisor.hpp"
 #include "numeric/include/integral.hpp"
+#include "numeric/include/prime.hpp"
 
 //! @brief The application module.
 namespace application // NOLINT(modernize-concat-nested-namespaces)

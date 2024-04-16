@@ -1,7 +1,7 @@
 //! @file apply_numeric.cpp
 //! @author ryftchen
 //! @brief The definitions (apply_numeric) in the application module.
-//! @version 1.0
+//! @version 0.1.0
 //! @copyright Copyright (c) 2022-2024 ryftchen. All rights reserved.
 
 #include "apply_numeric.hpp"
@@ -15,10 +15,6 @@
 
 #include "application/core/include/command.hpp"
 #include "application/core/include/log.hpp"
-#include "numeric/include/arithmetic.hpp"
-#include "numeric/include/divisor.hpp"
-#include "numeric/include/integral.hpp"
-#include "numeric/include/prime.hpp"
 #include "utility/include/currying.hpp"
 
 //! @brief Title of printing when numeric tasks are beginning.

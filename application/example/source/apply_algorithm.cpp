@@ -1,7 +1,7 @@
 //! @file apply_algorithm.cpp
 //! @author ryftchen
 //! @brief The definitions (apply_algorithm) in the application module.
-//! @version 1.0
+//! @version 0.1.0
 //! @copyright Copyright (c) 2022-2024 ryftchen. All rights reserved.
 
 #include "apply_algorithm.hpp"
@@ -13,11 +13,6 @@
 #include "application/pch/precompiled_header.hpp"
 #endif // __PRECOMPILED_HEADER
 
-#include "algorithm/include/match.hpp"
-#include "algorithm/include/notation.hpp"
-#include "algorithm/include/optimal.hpp"
-#include "algorithm/include/search.hpp"
-#include "algorithm/include/sort.hpp"
 #include "application/core/include/command.hpp"
 #include "application/core/include/log.hpp"
 #include "utility/include/currying.hpp"

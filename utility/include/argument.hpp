@@ -1,7 +1,7 @@
 //! @file argument.hpp
 //! @author ryftchen
 //! @brief The declarations (argument) in the utility module.
-//! @version 1.0
+//! @version 0.1.0
 //! @copyright Copyright (c) 2022-2024 ryftchen. All rights reserved.
 
 #pragma once
@@ -696,7 +696,7 @@ public:
     //! @brief Construct a new Argument object.
     //! @param title - title name
     //! @param version - version information
-    explicit Argument(const std::string& title = {}, const std::string& version = "1.0") :
+    explicit Argument(const std::string& title = {}, const std::string& version = "1.0.0") :
         title(title), version(version), parserPath(title)
     {
     }

@@ -1,7 +1,7 @@
 //! @file apply_algorithm.hpp
 //! @author ryftchen
 //! @brief The declarations (apply_algorithm) in the application module.
-//! @version 1.0
+//! @version 0.1.0
 //! @copyright Copyright (c) 2022-2024 ryftchen. All rights reserved.
 
 #pragma once
@@ -18,7 +18,11 @@
 #include "application/pch/precompiled_header.hpp"
 #endif // __PRECOMPILED_HEADER
 
+#include "algorithm/include/match.hpp"
+#include "algorithm/include/notation.hpp"
 #include "algorithm/include/optimal.hpp"
+#include "algorithm/include/search.hpp"
+#include "algorithm/include/sort.hpp"
 
 //! @brief The restrict type qualifier.
 #if defined(__clang__) || defined(__GNUC__)

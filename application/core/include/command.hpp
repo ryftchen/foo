@@ -1,7 +1,7 @@
 //! @file command.hpp
 //! @author ryftchen
 //! @brief The declarations (command) in the application module.
-//! @version 1.0
+//! @version 0.1.0
 //! @copyright Copyright (c) 2022-2024 ryftchen. All rights reserved.
 
 #pragma once
@@ -78,15 +78,15 @@ private:
     //! @brief Flag to indicate whether parsing of arguments is completed.
     std::atomic<bool> isParsed{false};
     //! @brief Parse argument helper for commander.
-    utility::argument::Argument mainCLI{"foo", "1.0"};
+    utility::argument::Argument mainCLI{"foo", "0.1.0"};
     //! @brief Parse argument helper to apply algorithm.
-    utility::argument::Argument subCLIAppAlgo{"app-algo"};
+    utility::argument::Argument subCLIAppAlgo{"app-algo", "0.1.0"};
     //! @brief Parse argument helper to apply design pattern.
-    utility::argument::Argument subCLIAppDp{"app-dp"};
+    utility::argument::Argument subCLIAppDp{"app-dp", "0.1.0"};
     //! @brief Parse argument helper to apply data structure.
-    utility::argument::Argument subCLIAppDs{"app-ds"};
+    utility::argument::Argument subCLIAppDs{"app-ds", "0.1.0"};
     //! @brief Parse argument helper to apply numeric.
-    utility::argument::Argument subCLIAppNum{"app-num"};
+    utility::argument::Argument subCLIAppNum{"app-num", "0.1.0"};
     //! @brief Copyright information.
     static constexpr std::string_view copyright{"Copyright (c) 2022-2024 ryftchen. All rights reserved."};
 

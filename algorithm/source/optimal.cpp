@@ -1,7 +1,7 @@
 //! @file optimal.cpp
 //! @author ryftchen
 //! @brief The definitions (optimal) in the algorithm module.
-//! @version 1.0
+//! @version 0.1.0
 //! @copyright Copyright (c) 2022-2024 ryftchen. All rights reserved.
 
 #include "optimal.hpp"
