@@ -1,7 +1,7 @@
 //! @file config.cpp
 //! @author ryftchen
 //! @brief The definitions (config) in the application module.
-//! @version 1.0
+//! @version 0.1.0
 //! @copyright Copyright (c) 2022-2024 ryftchen. All rights reserved.
 
 #include "config.hpp"
@@ -45,7 +45,7 @@ void Config::parseFile(const std::string& filename)
 {
     if (!std::filesystem::exists(filename))
     {
-        throw std::runtime_error("Config file " + filename + " is missing.");
+        throw std::runtime_error("Configuration file " + filename + " is missing.");
     }
 
     const auto configs = utility::file::getFileContents(filename);

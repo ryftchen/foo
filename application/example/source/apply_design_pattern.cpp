@@ -1,7 +1,7 @@
 //! @file apply_design_pattern.cpp
 //! @author ryftchen
 //! @brief The definitions (apply_design_pattern) in the application module.
-//! @version 1.0
+//! @version 0.1.0
 //! @copyright Copyright (c) 2022-2024 ryftchen. All rights reserved.
 
 #include "apply_design_pattern.hpp"

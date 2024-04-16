@@ -1,7 +1,7 @@
 //! @file linear.hpp
 //! @author ryftchen
 //! @brief The declarations (linear) in the data structure module.
-//! @version 1.0
+//! @version 0.1.0
 //! @copyright Copyright (c) 2022-2024 ryftchen. All rights reserved.
 
 #pragma once

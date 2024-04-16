@@ -1,7 +1,7 @@
 //! @file thread.cpp
 //! @author ryftchen
 //! @brief The definitions (thread) in the utility module.
-//! @version 1.0
+//! @version 0.1.0
 //! @copyright Copyright (c) 2022-2024 ryftchen. All rights reserved.
 
 #include "thread.hpp"

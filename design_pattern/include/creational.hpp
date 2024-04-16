@@ -1,7 +1,7 @@
 //! @file creational.hpp
 //! @author ryftchen
 //! @brief The declarations (creational) in the design pattern module.
-//! @version 1.0
+//! @version 0.1.0
 //! @copyright Copyright (c) 2022-2024 ryftchen. All rights reserved.
 
 #pragma once

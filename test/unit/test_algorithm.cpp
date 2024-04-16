@@ -1,17 +1,12 @@
 //! @file test_algorithm.cpp
 //! @author ryftchen
 //! @brief The definitions (test_algorithm) in the test module.
-//! @version 1.0
+//! @version 0.1.0
 //! @copyright Copyright (c) 2022-2024 ryftchen. All rights reserved.
 
 #include <gtest/gtest.h>
 #include <syncstream>
 
-#include "algorithm/include/match.hpp"
-#include "algorithm/include/notation.hpp"
-#include "algorithm/include/optimal.hpp"
-#include "algorithm/include/search.hpp"
-#include "algorithm/include/sort.hpp"
 #include "application/example/include/apply_algorithm.hpp"
 
 //! @brief Title of printing for algorithm task tests.
