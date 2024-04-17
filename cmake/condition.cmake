@@ -1,9 +1,5 @@
 include_guard()
 
-if(CMAKE_BUILD_TYPE STREQUAL "Release")
-    add_compile_options(-DNDEBUG)
-endif()
-
 if(NOT TARGET_PROCESSOR STREQUAL "")
     add_compile_options(-D__TARGET_PROCESSOR="${TARGET_PROCESSOR}")
 endif()
