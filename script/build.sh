@@ -260,7 +260,8 @@ git rev-parse --git-dir >/dev/null 2>&1"
         shell_command "echo \"${alias_cmd}\" >>~/${BASH_RC}"
     fi
     if ! grep -Fwq "alias ${FOLDER[proj]:0:1}pull" ~/"${BASH_RC}" 2>/dev/null; then
-        alias_cmd="alias ${FOLDER[proj]:0:1}pull='${validate_proj} && git pull && git gc --aggressive --prune'"
+        alias_cmd="alias ${FOLDER[proj]:0:1}pull='${validate_proj} && git pull && git gc --aggressive --prune && \
+git reflog expire --expire=now --all && git repack -ad && git prune'"
         shell_command "echo \"${alias_cmd}\" >>~/${BASH_RC}"
     fi
 
