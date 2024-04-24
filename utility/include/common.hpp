@@ -73,11 +73,11 @@ struct Join
         {
             for (const auto ch : str)
             {
-                array[i++] = ch;
+                array.at(i++) = ch;
             }
         };
         (append(Strings), ...);
-        array[length] = 0;
+        array.at(length) = 0;
         return array;
     }
     //! @brief A sequence of characters.

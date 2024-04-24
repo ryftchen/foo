@@ -102,12 +102,12 @@ constexpr std::string_view getCategoryAlias()
     return attr.value;
 }
 
-//! @brief Case value for the target instance.
+//! @brief Abbreviation value for the target instance.
 //! @tparam T - type of target instance
 //! @param instance - target instance
-//! @return case value
+//! @return abbreviation value
 template <class T>
-consteval std::size_t caseValue(const T instance)
+consteval std::size_t abbrVal(const T instance)
 {
     using TypeInfo = utility::reflection::TypeInfo<T>;
     static_assert(TypeInfo::fields.size == Bottom<T>::value);
@@ -359,37 +359,37 @@ void runBehavioralTasks(const std::vector<std::string>& candidates)
         const std::string targetInstance = candidates.at(i);
         switch (utility::common::bkdrHash(targetInstance.data()))
         {
-            case caseValue(BehavioralInstance::chainOfResponsibility):
+            case abbrVal(BehavioralInstance::chainOfResponsibility):
                 behavioralFunctor(name(targetInstance), &BehavioralPattern::chainOfResponsibilityInstance);
                 break;
-            case caseValue(BehavioralInstance::command):
+            case abbrVal(BehavioralInstance::command):
                 behavioralFunctor(name(targetInstance), &BehavioralPattern::commandInstance);
                 break;
-            case caseValue(BehavioralInstance::interpreter):
+            case abbrVal(BehavioralInstance::interpreter):
                 behavioralFunctor(name(targetInstance), &BehavioralPattern::interpreterInstance);
                 break;
-            case caseValue(BehavioralInstance::iterator):
+            case abbrVal(BehavioralInstance::iterator):
                 behavioralFunctor(name(targetInstance), &BehavioralPattern::iteratorInstance);
                 break;
-            case caseValue(BehavioralInstance::mediator):
+            case abbrVal(BehavioralInstance::mediator):
                 behavioralFunctor(name(targetInstance), &BehavioralPattern::mediatorInstance);
                 break;
-            case caseValue(BehavioralInstance::memento):
+            case abbrVal(BehavioralInstance::memento):
                 behavioralFunctor(name(targetInstance), &BehavioralPattern::mementoInstance);
                 break;
-            case caseValue(BehavioralInstance::observer):
+            case abbrVal(BehavioralInstance::observer):
                 behavioralFunctor(name(targetInstance), &BehavioralPattern::observerInstance);
                 break;
-            case caseValue(BehavioralInstance::state):
+            case abbrVal(BehavioralInstance::state):
                 behavioralFunctor(name(targetInstance), &BehavioralPattern::stateInstance);
                 break;
-            case caseValue(BehavioralInstance::strategy):
+            case abbrVal(BehavioralInstance::strategy):
                 behavioralFunctor(name(targetInstance), &BehavioralPattern::strategyInstance);
                 break;
-            case caseValue(BehavioralInstance::templateMethod):
+            case abbrVal(BehavioralInstance::templateMethod):
                 behavioralFunctor(name(targetInstance), &BehavioralPattern::templateMethodInstance);
                 break;
-            case caseValue(BehavioralInstance::visitor):
+            case abbrVal(BehavioralInstance::visitor):
                 behavioralFunctor(name(targetInstance), &BehavioralPattern::visitorInstance);
                 break;
             default:
@@ -411,37 +411,37 @@ void updateBehavioralTask(const std::string& target)
 
     switch (utility::common::bkdrHash(target.c_str()))
     {
-        case caseValue(BehavioralInstance::chainOfResponsibility):
+        case abbrVal(BehavioralInstance::chainOfResponsibility):
             bitFlag.set(BehavioralInstance::chainOfResponsibility);
             break;
-        case caseValue(BehavioralInstance::command):
+        case abbrVal(BehavioralInstance::command):
             bitFlag.set(BehavioralInstance::command);
             break;
-        case caseValue(BehavioralInstance::interpreter):
+        case abbrVal(BehavioralInstance::interpreter):
             bitFlag.set(BehavioralInstance::interpreter);
             break;
-        case caseValue(BehavioralInstance::iterator):
+        case abbrVal(BehavioralInstance::iterator):
             bitFlag.set(BehavioralInstance::iterator);
             break;
-        case caseValue(BehavioralInstance::mediator):
+        case abbrVal(BehavioralInstance::mediator):
             bitFlag.set(BehavioralInstance::mediator);
             break;
-        case caseValue(BehavioralInstance::memento):
+        case abbrVal(BehavioralInstance::memento):
             bitFlag.set(BehavioralInstance::memento);
             break;
-        case caseValue(BehavioralInstance::observer):
+        case abbrVal(BehavioralInstance::observer):
             bitFlag.set(BehavioralInstance::observer);
             break;
-        case caseValue(BehavioralInstance::state):
+        case abbrVal(BehavioralInstance::state):
             bitFlag.set(BehavioralInstance::state);
             break;
-        case caseValue(BehavioralInstance::strategy):
+        case abbrVal(BehavioralInstance::strategy):
             bitFlag.set(BehavioralInstance::strategy);
             break;
-        case caseValue(BehavioralInstance::templateMethod):
+        case abbrVal(BehavioralInstance::templateMethod):
             bitFlag.set(BehavioralInstance::templateMethod);
             break;
-        case caseValue(BehavioralInstance::visitor):
+        case abbrVal(BehavioralInstance::visitor):
             bitFlag.set(BehavioralInstance::visitor);
             break;
         default:
@@ -551,19 +551,19 @@ void runCreationalTasks(const std::vector<std::string>& candidates)
         const std::string targetInstance = candidates.at(i);
         switch (utility::common::bkdrHash(targetInstance.data()))
         {
-            case caseValue(CreationalInstance::abstractFactory):
+            case abbrVal(CreationalInstance::abstractFactory):
                 creationalFunctor(name(targetInstance), &CreationalPattern::abstractFactoryInstance);
                 break;
-            case caseValue(CreationalInstance::builder):
+            case abbrVal(CreationalInstance::builder):
                 creationalFunctor(name(targetInstance), &CreationalPattern::builderInstance);
                 break;
-            case caseValue(CreationalInstance::factoryMethod):
+            case abbrVal(CreationalInstance::factoryMethod):
                 creationalFunctor(name(targetInstance), &CreationalPattern::factoryMethodInstance);
                 break;
-            case caseValue(CreationalInstance::prototype):
+            case abbrVal(CreationalInstance::prototype):
                 creationalFunctor(name(targetInstance), &CreationalPattern::prototypeInstance);
                 break;
-            case caseValue(CreationalInstance::singleton):
+            case abbrVal(CreationalInstance::singleton):
                 creationalFunctor(name(targetInstance), &CreationalPattern::singletonInstance);
                 break;
             default:
@@ -585,19 +585,19 @@ void updateCreationalTask(const std::string& target)
 
     switch (utility::common::bkdrHash(target.c_str()))
     {
-        case caseValue(CreationalInstance::abstractFactory):
+        case abbrVal(CreationalInstance::abstractFactory):
             bitFlag.set(CreationalInstance::abstractFactory);
             break;
-        case caseValue(CreationalInstance::builder):
+        case abbrVal(CreationalInstance::builder):
             bitFlag.set(CreationalInstance::builder);
             break;
-        case caseValue(CreationalInstance::factoryMethod):
+        case abbrVal(CreationalInstance::factoryMethod):
             bitFlag.set(CreationalInstance::factoryMethod);
             break;
-        case caseValue(CreationalInstance::prototype):
+        case abbrVal(CreationalInstance::prototype):
             bitFlag.set(CreationalInstance::prototype);
             break;
-        case caseValue(CreationalInstance::singleton):
+        case abbrVal(CreationalInstance::singleton):
             bitFlag.set(CreationalInstance::singleton);
             break;
         default:
@@ -729,25 +729,25 @@ void runStructuralTasks(const std::vector<std::string>& candidates)
         const std::string targetInstance = candidates.at(i);
         switch (utility::common::bkdrHash(targetInstance.data()))
         {
-            case caseValue(StructuralInstance::adapter):
+            case abbrVal(StructuralInstance::adapter):
                 structuralFunctor(name(targetInstance), &StructuralPattern::adapterInstance);
                 break;
-            case caseValue(StructuralInstance::bridge):
+            case abbrVal(StructuralInstance::bridge):
                 structuralFunctor(name(targetInstance), &StructuralPattern::bridgeInstance);
                 break;
-            case caseValue(StructuralInstance::composite):
+            case abbrVal(StructuralInstance::composite):
                 structuralFunctor(name(targetInstance), &StructuralPattern::compositeInstance);
                 break;
-            case caseValue(StructuralInstance::decorator):
+            case abbrVal(StructuralInstance::decorator):
                 structuralFunctor(name(targetInstance), &StructuralPattern::decoratorInstance);
                 break;
-            case caseValue(StructuralInstance::facade):
+            case abbrVal(StructuralInstance::facade):
                 structuralFunctor(name(targetInstance), &StructuralPattern::facadeInstance);
                 break;
-            case caseValue(StructuralInstance::flyweight):
+            case abbrVal(StructuralInstance::flyweight):
                 structuralFunctor(name(targetInstance), &StructuralPattern::flyweightInstance);
                 break;
-            case caseValue(StructuralInstance::proxy):
+            case abbrVal(StructuralInstance::proxy):
                 structuralFunctor(name(targetInstance), &StructuralPattern::proxyInstance);
                 break;
             default:
@@ -769,25 +769,25 @@ void updateStructuralTask(const std::string& target)
 
     switch (utility::common::bkdrHash(target.c_str()))
     {
-        case caseValue(StructuralInstance::adapter):
+        case abbrVal(StructuralInstance::adapter):
             bitFlag.set(StructuralInstance::adapter);
             break;
-        case caseValue(StructuralInstance::bridge):
+        case abbrVal(StructuralInstance::bridge):
             bitFlag.set(StructuralInstance::bridge);
             break;
-        case caseValue(StructuralInstance::composite):
+        case abbrVal(StructuralInstance::composite):
             bitFlag.set(StructuralInstance::composite);
             break;
-        case caseValue(StructuralInstance::decorator):
+        case abbrVal(StructuralInstance::decorator):
             bitFlag.set(StructuralInstance::decorator);
             break;
-        case caseValue(StructuralInstance::facade):
+        case abbrVal(StructuralInstance::facade):
             bitFlag.set(StructuralInstance::facade);
             break;
-        case caseValue(StructuralInstance::flyweight):
+        case abbrVal(StructuralInstance::flyweight):
             bitFlag.set(StructuralInstance::flyweight);
             break;
-        case caseValue(StructuralInstance::proxy):
+        case abbrVal(StructuralInstance::proxy):
             bitFlag.set(StructuralInstance::proxy);
             break;
         default:

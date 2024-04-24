@@ -18,14 +18,19 @@
 
 namespace application::command
 {
+//! @brief Alias for the type information.
+//! @tparam T - type of target object
+template <class T>
+using TypeInfo = utility::reflection::TypeInfo<T>;
+
 //! @brief Constraint for external helpers.
 //! @tparam T - type of helper
 template <typename T>
-concept HelperType = requires (T helper) {
+concept HelperType = requires (T /*helper*/) {
     {
-        helper.getInstance()
+        T::getInstance()
     } -> std::same_as<T&>;
-} && std::derived_from<T, utility::fsm::FSM<T>>;
+} && !std::is_copy_constructible_v<T> && !std::is_copy_assignable_v<T> && std::derived_from<T, utility::fsm::FSM<T>>;
 
 //! @brief Enumerate specific operations to control external helpers.
 enum HelperControl : std::uint8_t
@@ -49,28 +54,16 @@ static void triggerHelper(const HelperControl operation)
         return;
     }
 
-    constexpr auto getHelper = []() -> Helper&
-    {
-        if constexpr (std::is_same_v<Helper, log::Log>)
-        {
-            return log::Log::getInstance();
-        }
-        else if constexpr (std::is_same_v<Helper, view::View>)
-        {
-            return view::View::getInstance();
-        }
-    };
-
     switch (operation)
     {
         case HelperControl::start:
-            getHelper().waitToStart();
+            Helper::getInstance().waitToStart();
             break;
         case HelperControl::stop:
-            getHelper().waitToStop();
+            Helper::getInstance().waitToStop();
             break;
         case HelperControl::rollback:
-            getHelper().requestToRollback();
+            Helper::getInstance().requestToRollback();
             break;
         default:
             break;
@@ -144,13 +137,14 @@ void Command::initializeCLI()
         .help("run commands in console mode and exit\n"
               "separate with quotes");
 
-    const auto algoAlias = extractAliasUnderSubCLI<app_algo::AlgorithmTask>(subCLIAppAlgo.title);
     const auto& algoTable = regularTaskDispatcher.at(subCLIAppAlgo.title);
+    const auto& algoAlias = extractAliasUnderSubCLI<app_algo::AlgorithmTask>(subCLIAppAlgo.title);
     subCLIAppAlgo.addDescription("apply algorithm");
     subCLIAppAlgo.addArgument("-h", "--help").argsNum(0).implicitVal(true).help("show help and exit");
-    subCLIAppAlgo.addArgument("-" + algoAlias.at("match"), "--match")
-        .argsNum(0, get<TargetTaskContainer>(algoTable.at("match")).size())
-        .defaultVal<std::vector<std::string>>(TargetTaskContainer{get<TargetTaskContainer>(algoTable.at("match"))})
+    auto algoCategory = std::string{TypeInfo<app_algo::MatchMethod>::name};
+    subCLIAppAlgo.addArgument("-" + algoAlias.at(algoCategory), "--" + algoCategory)
+        .argsNum(0, algoTable.at(algoCategory).candidates.size())
+        .defaultVal<std::vector<std::string>>(TargetTaskCntr{algoTable.at(algoCategory).candidates})
         .remaining()
         .metavar("OPT")
         .help("run match tasks\n"
@@ -160,18 +154,20 @@ void Command::initializeCLI()
               "- hor    Horspool\n"
               "- sun    Sunday\n"
               "add the tasks listed above");
-    subCLIAppAlgo.addArgument("-" + algoAlias.at("notation"), "--notation")
-        .argsNum(0, get<TargetTaskContainer>(algoTable.at("notation")).size())
-        .defaultVal<std::vector<std::string>>(TargetTaskContainer{get<TargetTaskContainer>(algoTable.at("notation"))})
+    algoCategory = std::string{TypeInfo<app_algo::NotationMethod>::name};
+    subCLIAppAlgo.addArgument("-" + algoAlias.at(algoCategory), "--" + algoCategory)
+        .argsNum(0, algoTable.at(algoCategory).candidates.size())
+        .defaultVal<std::vector<std::string>>(TargetTaskCntr{algoTable.at(algoCategory).candidates})
         .remaining()
         .metavar("OPT")
         .help("run notation tasks\n"
               "- pre    Prefix\n"
               "- pos    Postfix\n"
               "add the tasks listed above");
-    subCLIAppAlgo.addArgument("-" + algoAlias.at("optimal"), "--optimal")
-        .argsNum(0, get<TargetTaskContainer>(algoTable.at("optimal")).size())
-        .defaultVal<std::vector<std::string>>(TargetTaskContainer{get<TargetTaskContainer>(algoTable.at("optimal"))})
+    algoCategory = std::string{TypeInfo<app_algo::OptimalMethod>::name};
+    subCLIAppAlgo.addArgument("-" + algoAlias.at(algoCategory), "--" + algoCategory)
+        .argsNum(0, algoTable.at(algoCategory).candidates.size())
+        .defaultVal<std::vector<std::string>>(TargetTaskCntr{algoTable.at(algoCategory).candidates})
         .remaining()
         .metavar("OPT")
         .help("run optimal tasks\n"
@@ -180,9 +176,10 @@ void Command::initializeCLI()
               "- par    Particle Swarm\n"
               "- gen    Genetic\n"
               "add the tasks listed above");
-    subCLIAppAlgo.addArgument("-" + algoAlias.at("search"), "--search")
-        .argsNum(0, get<TargetTaskContainer>(algoTable.at("search")).size())
-        .defaultVal<std::vector<std::string>>(TargetTaskContainer{get<TargetTaskContainer>(algoTable.at("search"))})
+    algoCategory = std::string{TypeInfo<app_algo::SearchMethod>::name};
+    subCLIAppAlgo.addArgument("-" + algoAlias.at(algoCategory), "--" + algoCategory)
+        .argsNum(0, algoTable.at(algoCategory).candidates.size())
+        .defaultVal<std::vector<std::string>>(TargetTaskCntr{algoTable.at(algoCategory).candidates})
         .remaining()
         .metavar("OPT")
         .help("run search tasks\n"
@@ -190,9 +187,10 @@ void Command::initializeCLI()
               "- int    Interpolation\n"
               "- fib    Fibonacci\n"
               "add the tasks listed above");
-    subCLIAppAlgo.addArgument("-" + algoAlias.at("sort"), "--sort")
-        .argsNum(0, get<TargetTaskContainer>(algoTable.at("sort")).size())
-        .defaultVal<std::vector<std::string>>(TargetTaskContainer{get<TargetTaskContainer>(algoTable.at("sort"))})
+    algoCategory = std::string{TypeInfo<app_algo::SortMethod>::name};
+    subCLIAppAlgo.addArgument("-" + algoAlias.at(algoCategory), "--" + algoCategory)
+        .argsNum(0, algoTable.at(algoCategory).candidates.size())
+        .defaultVal<std::vector<std::string>>(TargetTaskCntr{algoTable.at(algoCategory).candidates})
         .remaining()
         .metavar("OPT")
         .help("run sort tasks\n"
@@ -209,13 +207,14 @@ void Command::initializeCLI()
               "add the tasks listed above");
     mainCLI.addSubParser(subCLIAppAlgo);
 
-    const auto dpAlias = extractAliasUnderSubCLI<app_dp::DesignPatternTask>(subCLIAppDp.title);
     const auto& dpTable = regularTaskDispatcher.at(subCLIAppDp.title);
+    const auto& dpAlias = extractAliasUnderSubCLI<app_dp::DesignPatternTask>(subCLIAppDp.title);
     subCLIAppDp.addDescription("apply design pattern");
     subCLIAppDp.addArgument("-h", "--help").argsNum(0).implicitVal(true).help("show help and exit");
-    subCLIAppDp.addArgument("-" + dpAlias.at("behavioral"), "--behavioral")
-        .argsNum(0, get<TargetTaskContainer>(dpTable.at("behavioral")).size())
-        .defaultVal<std::vector<std::string>>(TargetTaskContainer{get<TargetTaskContainer>(dpTable.at("behavioral"))})
+    auto dpCategory = std::string{TypeInfo<app_dp::BehavioralInstance>::name};
+    subCLIAppDp.addArgument("-" + dpAlias.at(dpCategory), "--" + dpCategory)
+        .argsNum(0, dpTable.at(dpCategory).candidates.size())
+        .defaultVal<std::vector<std::string>>(TargetTaskCntr{dpTable.at(dpCategory).candidates})
         .remaining()
         .metavar("OPT")
         .help("run behavioral tasks\n"
@@ -231,9 +230,10 @@ void Command::initializeCLI()
               "- tem    Template Method\n"
               "- vis    Visitor\n"
               "add the tasks listed above");
-    subCLIAppDp.addArgument("-" + dpAlias.at("creational"), "--creational")
-        .argsNum(0, get<TargetTaskContainer>(dpTable.at("creational")).size())
-        .defaultVal<std::vector<std::string>>(TargetTaskContainer{get<TargetTaskContainer>(dpTable.at("creational"))})
+    dpCategory = std::string{TypeInfo<app_dp::CreationalInstance>::name};
+    subCLIAppDp.addArgument("-" + dpAlias.at(dpCategory), "--" + dpCategory)
+        .argsNum(0, dpTable.at(dpCategory).candidates.size())
+        .defaultVal<std::vector<std::string>>(TargetTaskCntr{dpTable.at(dpCategory).candidates})
         .remaining()
         .metavar("OPT")
         .help("run creational tasks\n"
@@ -243,12 +243,13 @@ void Command::initializeCLI()
               "- pro    Prototype\n"
               "- sin    Singleton\n"
               "add the tasks listed above");
-    subCLIAppDp.addArgument("-" + dpAlias.at("structural"), "--structural")
-        .argsNum(0, get<TargetTaskContainer>(dpTable.at("structural")).size())
-        .defaultVal<std::vector<std::string>>(TargetTaskContainer{get<TargetTaskContainer>(dpTable.at("structural"))})
+    dpCategory = std::string{TypeInfo<app_dp::StructuralInstance>::name};
+    subCLIAppDp.addArgument("-" + dpAlias.at(dpCategory), "--" + dpCategory)
+        .argsNum(0, dpTable.at(dpCategory).candidates.size())
+        .defaultVal<std::vector<std::string>>(TargetTaskCntr{dpTable.at(dpCategory).candidates})
         .remaining()
         .metavar("OPT")
-        .help("run creational tasks\n"
+        .help("run structural tasks\n"
               "- ada    Adapter\n"
               "- bri    Bridge\n"
               "- com    Composite\n"
@@ -259,13 +260,14 @@ void Command::initializeCLI()
               "add the tasks listed above");
     mainCLI.addSubParser(subCLIAppDp);
 
-    const auto dsAlias = extractAliasUnderSubCLI<app_ds::DataStructureTask>(subCLIAppDs.title);
     const auto& dsTable = regularTaskDispatcher.at(subCLIAppDs.title);
+    const auto& dsAlias = extractAliasUnderSubCLI<app_ds::DataStructureTask>(subCLIAppDs.title);
     subCLIAppDs.addDescription("apply data structure");
     subCLIAppDs.addArgument("-h", "--help").argsNum(0).implicitVal(true).help("show help and exit");
-    subCLIAppDs.addArgument("-" + dsAlias.at("linear"), "--linear")
-        .argsNum(0, get<TargetTaskContainer>(dsTable.at("linear")).size())
-        .defaultVal<std::vector<std::string>>(TargetTaskContainer{get<TargetTaskContainer>(dsTable.at("linear"))})
+    auto dsCategory = std::string{TypeInfo<app_ds::LinearInstance>::name};
+    subCLIAppDs.addArgument("-" + dsAlias.at(dsCategory), "--" + dsCategory)
+        .argsNum(0, dsTable.at(dsCategory).candidates.size())
+        .defaultVal<std::vector<std::string>>(TargetTaskCntr{dsTable.at(dsCategory).candidates})
         .remaining()
         .metavar("OPT")
         .help("run linear tasks\n"
@@ -273,9 +275,10 @@ void Command::initializeCLI()
               "- sta    Stack\n"
               "- que    Queue\n"
               "add the tasks listed above");
-    subCLIAppDs.addArgument("-" + dsAlias.at("tree"), "--tree")
-        .argsNum(0, get<TargetTaskContainer>(dsTable.at("tree")).size())
-        .defaultVal<std::vector<std::string>>(TargetTaskContainer{get<TargetTaskContainer>(dsTable.at("tree"))})
+    dsCategory = std::string{TypeInfo<app_ds::TreeInstance>::name};
+    subCLIAppDs.addArgument("-" + dsAlias.at(dsCategory), "--" + dsCategory)
+        .argsNum(0, dsTable.at(dsCategory).candidates.size())
+        .defaultVal<std::vector<std::string>>(TargetTaskCntr{dsTable.at(dsCategory).candidates})
         .remaining()
         .metavar("OPT")
         .help("run tree tasks\n"
@@ -285,13 +288,14 @@ void Command::initializeCLI()
               "add the tasks listed above");
     mainCLI.addSubParser(subCLIAppDs);
 
-    const auto numAlias = extractAliasUnderSubCLI<app_num::NumericTask>(subCLIAppNum.title);
     const auto& numTable = regularTaskDispatcher.at(subCLIAppNum.title);
+    const auto& numAlias = extractAliasUnderSubCLI<app_num::NumericTask>(subCLIAppNum.title);
     subCLIAppNum.addDescription("apply numeric");
     subCLIAppNum.addArgument("-h", "--help").argsNum(0).implicitVal(true).help("show help and exit");
-    subCLIAppNum.addArgument("-" + numAlias.at("arithmetic"), "--arithmetic")
-        .argsNum(0, get<TargetTaskContainer>(numTable.at("arithmetic")).size())
-        .defaultVal<std::vector<std::string>>(TargetTaskContainer{get<TargetTaskContainer>(numTable.at("arithmetic"))})
+    auto numCategory = std::string{TypeInfo<app_num::ArithmeticMethod>::name};
+    subCLIAppNum.addArgument("-" + numAlias.at(numCategory), "--" + numCategory)
+        .argsNum(0, numTable.at(numCategory).candidates.size())
+        .defaultVal<std::vector<std::string>>(TargetTaskCntr{numTable.at(numCategory).candidates})
         .remaining()
         .metavar("OPT")
         .help("run arithmetic tasks\n"
@@ -300,18 +304,20 @@ void Command::initializeCLI()
               "- mul    Multiplication\n"
               "- div    Division\n"
               "add the tasks listed above");
-    subCLIAppNum.addArgument("-" + numAlias.at("divisor"), "--divisor")
-        .argsNum(0, get<TargetTaskContainer>(numTable.at("divisor")).size())
-        .defaultVal<std::vector<std::string>>(TargetTaskContainer{get<TargetTaskContainer>(numTable.at("divisor"))})
+    numCategory = std::string{TypeInfo<app_num::DivisorMethod>::name};
+    subCLIAppNum.addArgument("-" + numAlias.at(numCategory), "--" + numCategory)
+        .argsNum(0, numTable.at(numCategory).candidates.size())
+        .defaultVal<std::vector<std::string>>(TargetTaskCntr{numTable.at(numCategory).candidates})
         .remaining()
         .metavar("OPT")
         .help("run divisor tasks\n"
               "- euc    Euclidean\n"
               "- ste    Stein\n"
               "add the tasks listed above");
-    subCLIAppNum.addArgument("-" + numAlias.at("integral"), "--integral")
-        .argsNum(0, get<TargetTaskContainer>(numTable.at("integral")).size())
-        .defaultVal<std::vector<std::string>>(TargetTaskContainer{get<TargetTaskContainer>(numTable.at("integral"))})
+    numCategory = std::string{TypeInfo<app_num::IntegralMethod>::name};
+    subCLIAppNum.addArgument("-" + numAlias.at(numCategory), "--" + numCategory)
+        .argsNum(0, numTable.at(numCategory).candidates.size())
+        .defaultVal<std::vector<std::string>>(TargetTaskCntr{numTable.at(numCategory).candidates})
         .remaining()
         .metavar("OPT")
         .help("run integral tasks\n"
@@ -321,9 +327,10 @@ void Command::initializeCLI()
               "- gau    Gauss-Legendre's 5-Points\n"
               "- mon    Monte-Carlo\n"
               "add the tasks listed above");
-    subCLIAppNum.addArgument("-" + numAlias.at("prime"), "--prime")
-        .argsNum(0, get<TargetTaskContainer>(numTable.at("prime")).size())
-        .defaultVal<std::vector<std::string>>(TargetTaskContainer{get<TargetTaskContainer>(numTable.at("prime"))})
+    numCategory = std::string{TypeInfo<app_num::PrimeMethod>::name};
+    subCLIAppNum.addArgument("-" + numAlias.at(numCategory), "--" + numCategory)
+        .argsNum(0, numTable.at(numCategory).candidates.size())
+        .defaultVal<std::vector<std::string>>(TargetTaskCntr{numTable.at(numCategory).candidates})
         .remaining()
         .metavar("OPT")
         .help("run prime tasks\n"
@@ -373,6 +380,24 @@ try
 catch (const std::exception& error)
 {
     LOG_WRN << error.what();
+}
+
+//! @brief Get the callback for running tasks.
+//! @param tuple - a tuple containing the callback to be got
+//! @return callback for running tasks
+template <>
+auto Command::get<Command::RunTasksFunctor>(const TaskFunctorTuple& tuple) -> const RunTasksFunctor&
+{
+    return std::get<0>(tuple);
+}
+
+//! @brief Get the callback for updating task.
+//! @param tuple - a tuple containing the callback to be got
+//! @return callback for updating task
+template <>
+auto Command::get<Command::UpdateTaskFunctor>(const TaskFunctorTuple& tuple) -> const UpdateTaskFunctor&
+{
+    return std::get<1>(tuple);
 }
 
 void Command::validateBasicTask()
@@ -425,13 +450,13 @@ void Command::validateRegularTask()
             return false;
         };
 
-        for ([[maybe_unused]] const auto& [taskCategory, taskCategoryTuple] :
+        for ([[maybe_unused]] const auto& [taskCategory, taskCategoryAttr] :
              subCLIMap | std::views::filter(isCategoryUsed))
         {
-            const auto targetCntr = subCLI.get<std::vector<std::string>>(taskCategory);
+            const auto& targetCntr = subCLI.get<std::vector<std::string>>(taskCategory);
             for (const auto& target : targetCntr)
             {
-                const auto& updateTask = get<UpdateTaskFunctor>(get<TaskFunctorTuple>(taskCategoryTuple));
+                const auto& updateTask = get<UpdateTaskFunctor>(taskCategoryAttr.callbacks);
                 updateTask(target);
             }
         }
@@ -473,12 +498,11 @@ void Command::dispatchTask()
             return;
         }
 
-        for (const auto& taskCategoryTuple : std::views::values(
+        for (const auto& taskCategoryAttr : std::views::values(
                  std::next(regularTaskDispatcher.cbegin(), dispatchedTask.regularTask.getExistingSubTask())->second))
         {
-            const auto& targets = get<TargetTaskContainer>(taskCategoryTuple);
-            const auto& runTasks = get<RunTasksFunctor>(get<TaskFunctorTuple>(taskCategoryTuple));
-            runTasks(targets);
+            const auto& runTasks = get<RunTasksFunctor>(taskCategoryAttr.callbacks);
+            runTasks(taskCategoryAttr.candidates);
         }
     }
 }
@@ -488,7 +512,7 @@ std::map<Command::TaskCategory, std::string> Command::extractAliasUnderSubCLI(co
 {
     using TypeInfo = utility::reflection::TypeInfo<T>;
     const auto& table = regularTaskDispatcher.at(name);
-    if ((name != TypeInfo::name) || (table.size() != TypeInfo::fields.size))
+    if (table.size() != TypeInfo::fields.size)
     {
         throw std::logic_error("The " + name + " sub-command is invalid.");
     }
@@ -521,7 +545,7 @@ void Command::launchClient<utility::socket::TCPSocket>(std::shared_ptr<utility::
     {
         try
         {
-            const auto tcpResp = view::View::parseTLVPacket(buffer, length);
+            const auto& tcpResp = view::View::parseTLVPacket(buffer, length);
             if (tcpResp.stopTag)
             {
                 client->setNonBlocking();
@@ -545,7 +569,7 @@ void Command::launchClient<utility::socket::UDPSocket>(std::shared_ptr<utility::
     {
         try
         {
-            const auto udpResp = view::View::parseTLVPacket(buffer, length);
+            const auto& udpResp = view::View::parseTLVPacket(buffer, length);
             if (udpResp.stopTag)
             {
                 client->setNonBlocking();
@@ -568,7 +592,7 @@ void Command::executeConsoleCommand() const
         return;
     }
 
-    const auto cmdCntr =
+    const auto& cmdCntr =
         mainCLI.get<std::vector<std::string>>(std::next(basicTaskDispatcher.cbegin(), Category::console)->first);
     if (cmdCntr.empty())
     {
@@ -605,7 +629,7 @@ void Command::dumpConfiguration() const
     file::fdUnlock(ofs);
     file::closeFile(ofs);
 
-    const auto configs = file::getFileContents(CONFIG_FILE_PATH);
+    const auto& configs = file::getFileContents(CONFIG_FILE_PATH);
     std::ostringstream os;
     std::copy(configs.cbegin(), configs.cend(), std::ostream_iterator<std::string>(os, "\n"));
     std::cout << os.str() << std::flush;
@@ -655,32 +679,6 @@ void Command::checkForExcessiveArguments()
     {
         dispatchedTask.reset();
         throw std::logic_error("Excessive arguments.");
-    }
-}
-
-template <typename T>
-const T& Command::get(const TaskCategoryTuple& tuple)
-{
-    if constexpr (std::is_same_v<T, TargetTaskContainer>)
-    {
-        return std::get<0>(tuple);
-    }
-    else if constexpr (std::is_same_v<T, TaskFunctorTuple>)
-    {
-        return std::get<1>(tuple);
-    }
-}
-
-template <typename T>
-const T& Command::get(const TaskFunctorTuple& tuple)
-{
-    if constexpr (std::is_same_v<T, RunTasksFunctor>)
-    {
-        return std::get<0>(tuple);
-    }
-    else if constexpr (std::is_same_v<T, UpdateTaskFunctor>)
-    {
-        return std::get<1>(tuple);
     }
 }
 
@@ -799,7 +797,7 @@ void Command::registerOnConsole(utility::console::Console& console, std::shared_
         },
         "reconnect to the servers");
 
-    for (const auto& [option, optionTuple] : VIEW_OPTIONS)
+    for (const auto& [option, optionAttr] : VIEW_OPTIONS)
     {
         console.registerCommand(
             option,
@@ -828,7 +826,7 @@ void Command::registerOnConsole(utility::console::Console& console, std::shared_
                 }
                 return retVal;
             },
-            view::View::get<view::View::HelpMessage>(optionTuple));
+            optionAttr.message);
     }
 }
 

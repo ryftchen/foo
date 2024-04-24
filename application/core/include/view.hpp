@@ -160,25 +160,25 @@ public:
     //! @brief Request to rollback the viewer. External use.
     void requestToRollback();
 
-    //! @brief Alias for the functor to build the TLV packet.
-    typedef int (*BuildFunctor)(const std::vector<std::string>&, char*);
     //! @brief Alias for the option name.
     using Option = std::string;
     //! @brief Alias for the option help message.
     using HelpMessage = std::string;
-    //! @brief Alias for the tuple of HelpMessage and BuildFunctor.
-    using OptionTuple = std::tuple<HelpMessage, BuildFunctor>;
+    //! @brief Alias for the functor to build the TLV packet.
+    typedef int (*BuildFunctor)(const std::vector<std::string>&, char*);
+    //! @brief Alias for the attribute of Option.
+    struct OptionAttr
+    {
+        //! @brief Help message.
+        HelpMessage message;
+        //! @brief Build functor.
+        BuildFunctor functor;
+    };
     //! @brief Alias for the map of Option and OptionTuple.
-    using OptionMap = std::map<Option, OptionTuple>;
+    using OptionMap = std::map<Option, OptionAttr>;
     //! @brief Get the viewer options.
     //! @return viewer options
     OptionMap getViewerOptions() const;
-    //! @brief Get a member of OptionTuple.
-    //! @tparam T - type of member to be got
-    //! @param tuple - a tuple containing the member types to be got
-    //! @return member corresponding to the specific type
-    template <typename T>
-    static const T& get(const OptionTuple& tuple);
     //! @brief Get the TCP server host address.
     //! @return TCP server host address
     std::string getViewerTCPHost() const;
@@ -363,18 +363,5 @@ private:
 protected:
     friend std::ostream& operator<<(std::ostream& os, const State state);
 };
-
-template <typename T>
-const T& View::get(const OptionTuple& tuple)
-{
-    if constexpr (std::is_same_v<T, HelpMessage>)
-    {
-        return std::get<0>(tuple);
-    }
-    else if constexpr (std::is_same_v<T, BuildFunctor>)
-    {
-        return std::get<1>(tuple);
-    }
-}
 } // namespace view
 } // namespace application

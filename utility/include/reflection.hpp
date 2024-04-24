@@ -337,7 +337,7 @@ struct ElemList
     template <class Str>
     constexpr const auto& find(Str /*unused*/ = {}) const
     {
-        constexpr std::size_t idx = []()
+        constexpr std::size_t idx = []() constexpr
         {
             constexpr decltype(Str::view()) names[]{Es::name...};
             for (std::size_t i = 0; i < size; i++)
