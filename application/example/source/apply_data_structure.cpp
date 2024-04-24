@@ -100,12 +100,12 @@ constexpr std::string_view getCategoryAlias()
     return attr.value;
 }
 
-//! @brief Case value for the target instance.
+//! @brief Abbreviation value for the target instance.
 //! @tparam T - type of target instance
 //! @param instance - target instance
-//! @return case value
+//! @return abbreviation value
 template <class T>
-consteval std::size_t caseValue(const T instance)
+consteval std::size_t abbrVal(const T instance)
 {
     using TypeInfo = utility::reflection::TypeInfo<T>;
     static_assert(TypeInfo::fields.size == Bottom<T>::value);
@@ -238,13 +238,13 @@ void runLinearTasks(const std::vector<std::string>& candidates)
         const std::string targetInstance = candidates.at(i);
         switch (utility::common::bkdrHash(targetInstance.data()))
         {
-            case caseValue(LinearInstance::linkedList):
+            case abbrVal(LinearInstance::linkedList):
                 linearFunctor(name(targetInstance), &LinearStructure::linkedListInstance);
                 break;
-            case caseValue(LinearInstance::stack):
+            case abbrVal(LinearInstance::stack):
                 linearFunctor(name(targetInstance), &LinearStructure::stackInstance);
                 break;
-            case caseValue(LinearInstance::queue):
+            case abbrVal(LinearInstance::queue):
                 linearFunctor(name(targetInstance), &LinearStructure::queueInstance);
                 break;
             default:
@@ -266,13 +266,13 @@ void updateLinearTask(const std::string& target)
 
     switch (utility::common::bkdrHash(target.c_str()))
     {
-        case caseValue(LinearInstance::linkedList):
+        case abbrVal(LinearInstance::linkedList):
             bitFlag.set(LinearInstance::linkedList);
             break;
-        case caseValue(LinearInstance::stack):
+        case abbrVal(LinearInstance::stack):
             bitFlag.set(LinearInstance::stack);
             break;
-        case caseValue(LinearInstance::queue):
+        case abbrVal(LinearInstance::queue):
             bitFlag.set(LinearInstance::queue);
             break;
         default:
@@ -360,13 +360,13 @@ void runTreeTasks(const std::vector<std::string>& candidates)
         const std::string targetInstance = candidates.at(i);
         switch (utility::common::bkdrHash(targetInstance.data()))
         {
-            case caseValue(TreeInstance::binarySearch):
+            case abbrVal(TreeInstance::binarySearch):
                 treeFunctor(name(targetInstance), &TreeStructure::bsInstance);
                 break;
-            case caseValue(TreeInstance::adelsonVelskyLandis):
+            case abbrVal(TreeInstance::adelsonVelskyLandis):
                 treeFunctor(name(targetInstance), &TreeStructure::avlInstance);
                 break;
-            case caseValue(TreeInstance::splay):
+            case abbrVal(TreeInstance::splay):
                 treeFunctor(name(targetInstance), &TreeStructure::splayInstance);
                 break;
             default:
@@ -388,13 +388,13 @@ void updateTreeTask(const std::string& target)
 
     switch (utility::common::bkdrHash(target.c_str()))
     {
-        case caseValue(TreeInstance::binarySearch):
+        case abbrVal(TreeInstance::binarySearch):
             bitFlag.set(TreeInstance::binarySearch);
             break;
-        case caseValue(TreeInstance::adelsonVelskyLandis):
+        case abbrVal(TreeInstance::adelsonVelskyLandis):
             bitFlag.set(TreeInstance::adelsonVelskyLandis);
             break;
-        case caseValue(TreeInstance::splay):
+        case abbrVal(TreeInstance::splay):
             bitFlag.set(TreeInstance::splay);
             break;
         default:

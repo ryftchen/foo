@@ -104,12 +104,12 @@ constexpr std::string_view getCategoryAlias()
     return attr.value;
 }
 
-//! @brief Case value for the target method.
+//! @brief Abbreviation value for the target method.
 //! @tparam T - type of target method
 //! @param method - target method
-//! @return case value
+//! @return abbreviation value
 template <class T>
-consteval std::size_t caseValue(const T method)
+consteval std::size_t abbrVal(const T method)
 {
     using TypeInfo = utility::reflection::TypeInfo<T>;
     static_assert(TypeInfo::fields.size == Bottom<T>::value);
@@ -293,16 +293,16 @@ void runArithmeticTasks(const std::vector<std::string>& candidates)
         const std::string targetMethod = candidates.at(i);
         switch (utility::common::bkdrHash(targetMethod.data()))
         {
-            case caseValue(ArithmeticMethod::addition):
+            case abbrVal(ArithmeticMethod::addition):
                 arithmeticFunctor(name(targetMethod), &ArithmeticSolution::additionMethod);
                 break;
-            case caseValue(ArithmeticMethod::subtraction):
+            case abbrVal(ArithmeticMethod::subtraction):
                 arithmeticFunctor(name(targetMethod), &ArithmeticSolution::subtractionMethod);
                 break;
-            case caseValue(ArithmeticMethod::multiplication):
+            case abbrVal(ArithmeticMethod::multiplication):
                 arithmeticFunctor(name(targetMethod), &ArithmeticSolution::multiplicationMethod);
                 break;
-            case caseValue(ArithmeticMethod::division):
+            case abbrVal(ArithmeticMethod::division):
                 arithmeticFunctor(name(targetMethod), &ArithmeticSolution::divisionMethod);
                 break;
             default:
@@ -324,16 +324,16 @@ void updateArithmeticTask(const std::string& target)
 
     switch (utility::common::bkdrHash(target.c_str()))
     {
-        case caseValue(ArithmeticMethod::addition):
+        case abbrVal(ArithmeticMethod::addition):
             bitFlag.set(ArithmeticMethod::addition);
             break;
-        case caseValue(ArithmeticMethod::subtraction):
+        case abbrVal(ArithmeticMethod::subtraction):
             bitFlag.set(ArithmeticMethod::subtraction);
             break;
-        case caseValue(ArithmeticMethod::multiplication):
+        case abbrVal(ArithmeticMethod::multiplication):
             bitFlag.set(ArithmeticMethod::multiplication);
             break;
-        case caseValue(ArithmeticMethod::division):
+        case abbrVal(ArithmeticMethod::division):
             bitFlag.set(ArithmeticMethod::division);
             break;
         default:
@@ -429,10 +429,10 @@ void runDivisorTasks(const std::vector<std::string>& candidates)
         const std::string targetMethod = candidates.at(i);
         switch (utility::common::bkdrHash(targetMethod.data()))
         {
-            case caseValue(DivisorMethod::euclidean):
+            case abbrVal(DivisorMethod::euclidean):
                 divisorFunctor(name(targetMethod), &DivisorSolution::euclideanMethod);
                 break;
-            case caseValue(DivisorMethod::stein):
+            case abbrVal(DivisorMethod::stein):
                 divisorFunctor(name(targetMethod), &DivisorSolution::steinMethod);
                 break;
             default:
@@ -454,10 +454,10 @@ void updateDivisorTask(const std::string& target)
 
     switch (utility::common::bkdrHash(target.c_str()))
     {
-        case caseValue(DivisorMethod::euclidean):
+        case abbrVal(DivisorMethod::euclidean):
             bitFlag.set(DivisorMethod::euclidean);
             break;
-        case caseValue(DivisorMethod::stein):
+        case abbrVal(DivisorMethod::stein):
             bitFlag.set(DivisorMethod::stein);
             break;
         default:
@@ -597,19 +597,19 @@ void runIntegralTasks(const std::vector<std::string>& candidates)
             const std::string targetMethod = candidates.at(i);
             switch (utility::common::bkdrHash(targetMethod.data()))
             {
-                case caseValue(IntegralMethod::trapezoidal):
+                case abbrVal(IntegralMethod::trapezoidal):
                     integralFunctor(name(targetMethod), &IntegralSolution::trapezoidalMethod);
                     break;
-                case caseValue(IntegralMethod::simpson):
+                case abbrVal(IntegralMethod::simpson):
                     integralFunctor(name(targetMethod), &IntegralSolution::adaptiveSimpsonMethod);
                     break;
-                case caseValue(IntegralMethod::romberg):
+                case abbrVal(IntegralMethod::romberg):
                     integralFunctor(name(targetMethod), &IntegralSolution::rombergMethod);
                     break;
-                case caseValue(IntegralMethod::gauss):
+                case abbrVal(IntegralMethod::gauss):
                     integralFunctor(name(targetMethod), &IntegralSolution::gaussLegendreMethod);
                     break;
-                case caseValue(IntegralMethod::monteCarlo):
+                case abbrVal(IntegralMethod::monteCarlo):
                     integralFunctor(name(targetMethod), &IntegralSolution::monteCarloMethod);
                     break;
                 default:
@@ -647,19 +647,19 @@ void updateIntegralTask(const std::string& target)
 
     switch (utility::common::bkdrHash(target.c_str()))
     {
-        case caseValue(IntegralMethod::trapezoidal):
+        case abbrVal(IntegralMethod::trapezoidal):
             bitFlag.set(IntegralMethod::trapezoidal);
             break;
-        case caseValue(IntegralMethod::simpson):
+        case abbrVal(IntegralMethod::simpson):
             bitFlag.set(IntegralMethod::simpson);
             break;
-        case caseValue(IntegralMethod::romberg):
+        case abbrVal(IntegralMethod::romberg):
             bitFlag.set(IntegralMethod::romberg);
             break;
-        case caseValue(IntegralMethod::gauss):
+        case abbrVal(IntegralMethod::gauss):
             bitFlag.set(IntegralMethod::gauss);
             break;
-        case caseValue(IntegralMethod::monteCarlo):
+        case abbrVal(IntegralMethod::monteCarlo):
             bitFlag.set(IntegralMethod::monteCarlo);
             break;
         default:
@@ -753,10 +753,10 @@ void runPrimeTasks(const std::vector<std::string>& candidates)
         const std::string targetMethod = candidates.at(i);
         switch (utility::common::bkdrHash(targetMethod.data()))
         {
-            case caseValue(PrimeMethod::eratosthenes):
+            case abbrVal(PrimeMethod::eratosthenes):
                 primeFunctor(name(targetMethod), &PrimeSolution::eratosthenesMethod);
                 break;
-            case caseValue(PrimeMethod::euler):
+            case abbrVal(PrimeMethod::euler):
                 primeFunctor(name(targetMethod), &PrimeSolution::eulerMethod);
                 break;
             default:
@@ -778,10 +778,10 @@ void updatePrimeTask(const std::string& target)
 
     switch (utility::common::bkdrHash(target.c_str()))
     {
-        case caseValue(PrimeMethod::eratosthenes):
+        case abbrVal(PrimeMethod::eratosthenes):
             bitFlag.set(PrimeMethod::eratosthenes);
             break;
-        case caseValue(PrimeMethod::euler):
+        case abbrVal(PrimeMethod::euler):
             bitFlag.set(PrimeMethod::euler);
             break;
         default:

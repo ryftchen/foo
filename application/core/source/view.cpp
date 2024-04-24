@@ -669,7 +669,7 @@ void View::createViewServer()
                     throw std::logic_error("Unknown TCP message.");
                 }
                 args.erase(args.begin());
-                (*get<BuildFunctor>(optionIter->second))(args, buffer);
+                (optionIter->second.functor)(args, buffer);
                 newSocket->toSend(buffer, sizeof(buffer));
             }
             catch (std::exception& error)
@@ -712,7 +712,7 @@ void View::createViewServer()
                 throw std::logic_error("Unknown UDP message.");
             }
             args.erase(args.begin());
-            (*get<BuildFunctor>(optionIter->second))(args, buffer);
+            (optionIter->second.functor)(args, buffer);
             udpServer->toSendTo(buffer, sizeof(buffer), ip, port);
         }
         catch (std::exception& error)

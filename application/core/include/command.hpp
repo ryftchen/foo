@@ -118,10 +118,6 @@ private:
     //! @brief Check for excessive arguments.
     void checkForExcessiveArguments();
 
-    //! @brief Alias for the functor to run the tasks.
-    typedef void (*RunTasksFunctor)(const std::vector<std::string>&);
-    //! @brief Alias for the functor to update the task.
-    typedef void (*UpdateTaskFunctor)(const std::string&);
     //! @brief Alias for the sub-cli.
     using SubCLI = std::string;
     //! @brief Alias for the task category.
@@ -129,28 +125,32 @@ private:
     //! @brief Alias for the target task.
     using TargetTask = std::string;
     //! @brief Alias for the container of TargetTask.
-    using TargetTaskContainer = std::vector<TargetTask>;
+    using TargetTaskCntr = std::vector<TargetTask>;
+    //! @brief Alias for the functor to run the tasks.
+    typedef void (*RunTasksFunctor)(const TargetTaskCntr&);
+    //! @brief Alias for the functor to update the task.
+    typedef void (*UpdateTaskFunctor)(const TargetTask&);
     //! @brief Alias for the tuple of RunTasksFunctor and UpdateTaskFunctor.
     using TaskFunctorTuple = std::tuple<RunTasksFunctor, UpdateTaskFunctor>;
-    //! @brief Alias for the tuple of TargetTaskContainer and TaskFunctorTuple.
-    using TaskCategoryTuple = std::tuple<TargetTaskContainer, TaskFunctorTuple>;
+    //! @brief Alias for the attribute of TaskCategory.
+    struct TaskCategoryAttr
+    {
+        //! @brief The container for the candidate task.
+        TargetTaskCntr candidates;
+        //! @brief The tuple containing the callback to be got.
+        TaskFunctorTuple callbacks;
+    };
     //! @brief Alias for the map of TaskCategory and TaskCategoryTuple.
-    using SubCLIMap = std::map<TaskCategory, TaskCategoryTuple>;
+    using SubCLIMap = std::map<TaskCategory, TaskCategoryAttr>;
     //! @brief Alias for the map of SubCLI and SubCLIMap.
     using RegularTaskMap = std::map<SubCLI, SubCLIMap>;
 
-    //! @brief Get a member of TaskCategoryTuple.
-    //! @tparam T - type of member to be got
-    //! @param tuple - a tuple containing the member types to be got
-    //! @return member corresponding to the specific type
-    template <typename T>
-    static const T& get(const TaskCategoryTuple& tuple);
     //! @brief Get a member of TaskFunctorTuple.
     //! @tparam T - type of member to be got
     //! @param tuple - a tuple containing the member types to be got
     //! @return member corresponding to the specific type
     template <typename T>
-    static const T& get(const TaskFunctorTuple& tuple);
+    static auto get(const TaskFunctorTuple& tuple) -> const T&;
     //! @brief Extract the alias under the sub-cli.
     //! @tparam T - type of regular task corresponding to sub-cli
     //! @param name - mapping for aliases
@@ -280,9 +280,9 @@ private:
     struct DispatchedTask
     {
         //! @brief Dispatch basic type tasks.
-        BasicTask basicTask;
+        BasicTask basicTask{};
         //! @brief Dispatch regular type tasks.
-        RegularTask regularTask;
+        RegularTask regularTask{};
 
         //! @brief Check whether any tasks do not exist.
         //! @return any tasks do not exist or exist

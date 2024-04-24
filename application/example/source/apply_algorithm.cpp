@@ -106,12 +106,12 @@ constexpr std::string_view getCategoryAlias()
     return attr.value;
 }
 
-//! @brief Case value for the target method.
+//! @brief Abbreviation value for the target method.
 //! @tparam T - type of target method
 //! @param method - target method
-//! @return case value
+//! @return abbreviation value
 template <class T>
-consteval std::size_t caseValue(const T method)
+consteval std::size_t abbrVal(const T method)
 {
     using TypeInfo = utility::reflection::TypeInfo<T>;
     static_assert(TypeInfo::fields.size == Bottom<T>::value);
@@ -385,19 +385,19 @@ void runMatchTasks(const std::vector<std::string>& candidates)
         const std::string targetMethod = candidates.at(i);
         switch (utility::common::bkdrHash(targetMethod.data()))
         {
-            case caseValue(MatchMethod::rabinKarp):
+            case abbrVal(MatchMethod::rabinKarp):
                 matchFunctor(name(targetMethod), &MatchSolution::rkMethod);
                 break;
-            case caseValue(MatchMethod::knuthMorrisPratt):
+            case abbrVal(MatchMethod::knuthMorrisPratt):
                 matchFunctor(name(targetMethod), &MatchSolution::kmpMethod);
                 break;
-            case caseValue(MatchMethod::boyerMoore):
+            case abbrVal(MatchMethod::boyerMoore):
                 matchFunctor(name(targetMethod), &MatchSolution::bmMethod);
                 break;
-            case caseValue(MatchMethod::horspool):
+            case abbrVal(MatchMethod::horspool):
                 matchFunctor(name(targetMethod), &MatchSolution::horspoolMethod);
                 break;
-            case caseValue(MatchMethod::sunday):
+            case abbrVal(MatchMethod::sunday):
                 matchFunctor(name(targetMethod), &MatchSolution::sundayMethod);
                 break;
             default:
@@ -419,19 +419,19 @@ void updateMatchTask(const std::string& target)
 
     switch (utility::common::bkdrHash(target.c_str()))
     {
-        case caseValue(MatchMethod::rabinKarp):
+        case abbrVal(MatchMethod::rabinKarp):
             bitFlag.set(MatchMethod::rabinKarp);
             break;
-        case caseValue(MatchMethod::knuthMorrisPratt):
+        case abbrVal(MatchMethod::knuthMorrisPratt):
             bitFlag.set(MatchMethod::knuthMorrisPratt);
             break;
-        case caseValue(MatchMethod::boyerMoore):
+        case abbrVal(MatchMethod::boyerMoore):
             bitFlag.set(MatchMethod::boyerMoore);
             break;
-        case caseValue(MatchMethod::horspool):
+        case abbrVal(MatchMethod::horspool):
             bitFlag.set(MatchMethod::horspool);
             break;
-        case caseValue(MatchMethod::sunday):
+        case abbrVal(MatchMethod::sunday):
             bitFlag.set(MatchMethod::sunday);
             break;
         default:
@@ -511,10 +511,10 @@ void runNotationTasks(const std::vector<std::string>& candidates)
         const std::string targetMethod = candidates.at(i);
         switch (utility::common::bkdrHash(targetMethod.data()))
         {
-            case caseValue(NotationMethod::prefix):
+            case abbrVal(NotationMethod::prefix):
                 notationFunctor(name(targetMethod), &NotationSolution::prefixMethod);
                 break;
-            case caseValue(NotationMethod::postfix):
+            case abbrVal(NotationMethod::postfix):
                 notationFunctor(name(targetMethod), &NotationSolution::postfixMethod);
                 break;
             default:
@@ -536,10 +536,10 @@ void updateNotationTask(const std::string& target)
 
     switch (utility::common::bkdrHash(target.c_str()))
     {
-        case caseValue(NotationMethod::prefix):
+        case abbrVal(NotationMethod::prefix):
             bitFlag.set(NotationMethod::prefix);
             break;
-        case caseValue(NotationMethod::postfix):
+        case abbrVal(NotationMethod::postfix):
             bitFlag.set(NotationMethod::postfix);
             break;
         default:
@@ -667,16 +667,16 @@ void runOptimalTasks(const std::vector<std::string>& candidates)
             const std::string targetMethod = candidates.at(i);
             switch (utility::common::bkdrHash(targetMethod.data()))
             {
-                case caseValue(OptimalMethod::gradient):
+                case abbrVal(OptimalMethod::gradient):
                     optimalFunctor(name(targetMethod), &OptimalSolution::gradientDescentMethod);
                     break;
-                case caseValue(OptimalMethod::annealing):
+                case abbrVal(OptimalMethod::annealing):
                     optimalFunctor(name(targetMethod), &OptimalSolution::simulatedAnnealingMethod);
                     break;
-                case caseValue(OptimalMethod::particle):
+                case abbrVal(OptimalMethod::particle):
                     optimalFunctor(name(targetMethod), &OptimalSolution::particleSwarmMethod);
                     break;
-                case caseValue(OptimalMethod::genetic):
+                case abbrVal(OptimalMethod::genetic):
                     optimalFunctor(name(targetMethod), &OptimalSolution::geneticMethod);
                     break;
                 default:
@@ -714,16 +714,16 @@ void updateOptimalTask(const std::string& target)
 
     switch (utility::common::bkdrHash(target.c_str()))
     {
-        case caseValue(OptimalMethod::gradient):
+        case abbrVal(OptimalMethod::gradient):
             bitFlag.set(OptimalMethod::gradient);
             break;
-        case caseValue(OptimalMethod::annealing):
+        case abbrVal(OptimalMethod::annealing):
             bitFlag.set(OptimalMethod::annealing);
             break;
-        case caseValue(OptimalMethod::particle):
+        case abbrVal(OptimalMethod::particle):
             bitFlag.set(OptimalMethod::particle);
             break;
-        case caseValue(OptimalMethod::genetic):
+        case abbrVal(OptimalMethod::genetic):
             bitFlag.set(OptimalMethod::genetic);
             break;
         default:
@@ -840,13 +840,13 @@ void runSearchTasks(const std::vector<std::string>& candidates)
         const std::string targetMethod = candidates.at(i);
         switch (utility::common::bkdrHash(targetMethod.data()))
         {
-            case caseValue(SearchMethod::binary):
+            case abbrVal(SearchMethod::binary):
                 searchFunctor(name(targetMethod), &SearchSolution::binaryMethod);
                 break;
-            case caseValue(SearchMethod::interpolation):
+            case abbrVal(SearchMethod::interpolation):
                 searchFunctor(name(targetMethod), &SearchSolution::interpolationMethod);
                 break;
-            case caseValue(SearchMethod::fibonacci):
+            case abbrVal(SearchMethod::fibonacci):
                 searchFunctor(name(targetMethod), &SearchSolution::fibonacciMethod);
                 break;
             default:
@@ -868,13 +868,13 @@ void updateSearchTask(const std::string& target)
 
     switch (utility::common::bkdrHash(target.c_str()))
     {
-        case caseValue(SearchMethod::binary):
+        case abbrVal(SearchMethod::binary):
             bitFlag.set(SearchMethod::binary);
             break;
-        case caseValue(SearchMethod::interpolation):
+        case abbrVal(SearchMethod::interpolation):
             bitFlag.set(SearchMethod::interpolation);
             break;
-        case caseValue(SearchMethod::fibonacci):
+        case abbrVal(SearchMethod::fibonacci):
             bitFlag.set(SearchMethod::fibonacci);
             break;
         default:
@@ -1076,34 +1076,34 @@ void runSortTasks(const std::vector<std::string>& candidates)
         const std::string targetMethod = candidates.at(i);
         switch (utility::common::bkdrHash(targetMethod.data()))
         {
-            case caseValue(SortMethod::bubble):
+            case abbrVal(SortMethod::bubble):
                 sortFunctor(name(targetMethod), &SortSolution::bubbleMethod);
                 break;
-            case caseValue(SortMethod::selection):
+            case abbrVal(SortMethod::selection):
                 sortFunctor(name(targetMethod), &SortSolution::selectionMethod);
                 break;
-            case caseValue(SortMethod::insertion):
+            case abbrVal(SortMethod::insertion):
                 sortFunctor(name(targetMethod), &SortSolution::insertionMethod);
                 break;
-            case caseValue(SortMethod::shell):
+            case abbrVal(SortMethod::shell):
                 sortFunctor(name(targetMethod), &SortSolution::shellMethod);
                 break;
-            case caseValue(SortMethod::merge):
+            case abbrVal(SortMethod::merge):
                 sortFunctor(name(targetMethod), &SortSolution::mergeMethod);
                 break;
-            case caseValue(SortMethod::quick):
+            case abbrVal(SortMethod::quick):
                 sortFunctor(name(targetMethod), &SortSolution::quickMethod);
                 break;
-            case caseValue(SortMethod::heap):
+            case abbrVal(SortMethod::heap):
                 sortFunctor(name(targetMethod), &SortSolution::heapMethod);
                 break;
-            case caseValue(SortMethod::counting):
+            case abbrVal(SortMethod::counting):
                 sortFunctor(name(targetMethod), &SortSolution::countingMethod);
                 break;
-            case caseValue(SortMethod::bucket):
+            case abbrVal(SortMethod::bucket):
                 sortFunctor(name(targetMethod), &SortSolution::bucketMethod);
                 break;
-            case caseValue(SortMethod::radix):
+            case abbrVal(SortMethod::radix):
                 sortFunctor(name(targetMethod), &SortSolution::radixMethod);
                 break;
             default:
@@ -1125,34 +1125,34 @@ void updateSortTask(const std::string& target)
 
     switch (utility::common::bkdrHash(target.c_str()))
     {
-        case caseValue(SortMethod::bubble):
+        case abbrVal(SortMethod::bubble):
             bitFlag.set(SortMethod::bubble);
             break;
-        case caseValue(SortMethod::selection):
+        case abbrVal(SortMethod::selection):
             bitFlag.set(SortMethod::selection);
             break;
-        case caseValue(SortMethod::insertion):
+        case abbrVal(SortMethod::insertion):
             bitFlag.set(SortMethod::insertion);
             break;
-        case caseValue(SortMethod::shell):
+        case abbrVal(SortMethod::shell):
             bitFlag.set(SortMethod::shell);
             break;
-        case caseValue(SortMethod::merge):
+        case abbrVal(SortMethod::merge):
             bitFlag.set(SortMethod::merge);
             break;
-        case caseValue(SortMethod::quick):
+        case abbrVal(SortMethod::quick):
             bitFlag.set(SortMethod::quick);
             break;
-        case caseValue(SortMethod::heap):
+        case abbrVal(SortMethod::heap):
             bitFlag.set(SortMethod::heap);
             break;
-        case caseValue(SortMethod::counting):
+        case abbrVal(SortMethod::counting):
             bitFlag.set(SortMethod::counting);
             break;
-        case caseValue(SortMethod::bucket):
+        case abbrVal(SortMethod::bucket):
             bitFlag.set(SortMethod::bucket);
             break;
-        case caseValue(SortMethod::radix):
+        case abbrVal(SortMethod::radix):
             bitFlag.set(SortMethod::radix);
             break;
         default:
