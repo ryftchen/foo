@@ -155,11 +155,11 @@ private:
     //! @tparam T - type of regular task corresponding to sub-cli
     //! @param name - mapping for aliases
     template <typename T>
-    std::map<TaskCategory, std::string> extractAliasUnderSubCLI(const std::string& name) const;
+    std::map<TaskCategory, std::string> extractAliasUnderSubCLI(const SubCLI& name) const;
 
     // clang-format off
     //! @brief Mapping table of all basic tasks.
-    const std::map<std::string, void (Command::*)() const> basicTaskDispatcher{
+    const std::map<TaskCategory, void (Command::*)() const> basicTaskDispatcher{
         // - Category -+------------ Run Task ------------
         // ------------+----------------------------------
         { "console"    , &Command::executeConsoleCommand },
