@@ -508,11 +508,11 @@ void Command::dispatchTask()
 }
 
 template <typename T>
-std::map<Command::TaskCategory, std::string> Command::extractAliasUnderSubCLI(const std::string& name) const
+std::map<Command::TaskCategory, std::string> Command::extractAliasUnderSubCLI(const SubCLI& name) const
 {
     using TypeInfo = utility::reflection::TypeInfo<T>;
     const auto& table = regularTaskDispatcher.at(name);
-    if (table.size() != TypeInfo::fields.size)
+    if ((name != TypeInfo::name) || (table.size() != TypeInfo::fields.size))
     {
         throw std::logic_error("The " + name + " sub-command is invalid.");
     }
