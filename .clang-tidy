@@ -1,4 +1,5 @@
 ---
+AnalyzeTemporaryDtors: false
 Checks: >
   bugprone-argument-comment,
   bugprone-assert-side-effect,
@@ -232,6 +233,6 @@ CheckOptions:
     value: '1'
   - key: readability-implicit-bool-conversion.AllowPointerConditions
     value: '1'
-AnalyzeTemporaryDtors: false
 UseColor: true
+WarningsAsErrors: '*'
 ...
