@@ -59,6 +59,52 @@ function wait_until_get_input()
     return 0
 }
 
+function check_single_choice_parameters_validity()
+{
+    if [[ $(exist_single_choice_parameters) -gt 0 ]] || [[ $(exist_multiple_choice_parameters) -gt 0 ]]; then
+        die "Mutually exclusive option: $1 is not allowed."
+    fi
+}
+
+function check_multiple_choice_parameters_validity()
+{
+    if [[ $(exist_single_choice_parameters) -gt 0 ]]; then
+        die "Mutually exclusive option: $1 is not allowed."
+    fi
+}
+
+function exist_single_choice_parameters()
+{
+    local number=0
+    for key in "${!ARGS[@]}"; do
+        if [[ ${ARGS[${key}]} = true ]]; then
+            if [[ ${key} == "help" ]] || [[ ${key} == "initialize" ]] || [[ ${key} == "clean" ]] \
+                || [[ ${key} == "install" ]] || [[ ${key} == "uninstall" ]] || [[ ${key} == "container" ]] \
+                || [[ ${key} == "website" ]] || [[ ${key} == "test" ]]; then
+                number+=1
+            fi
+        fi
+    done
+    echo "${number}"
+    return 0
+}
+
+function exist_multiple_choice_parameters()
+{
+    local number=0
+    for key in "${!ARGS[@]}"; do
+        if [[ ${ARGS[${key}]} = true ]]; then
+            if [[ ${key} == "release" ]] || [[ ${key} == "hook" ]] || [[ ${key} == "spell" ]] \
+                || [[ ${key} == "format" ]] || [[ ${key} == "lint" ]] || [[ ${key} == "statistics" ]] \
+                || [[ ${key} == "doxygen" ]] || [[ ${key} == "browser" ]]; then
+                number+=1
+            fi
+        fi
+    done
+    echo "${number}"
+    return 0
+}
+
 function parse_parameters()
 {
     while [[ $# -gt 0 ]]; do
@@ -148,63 +194,6 @@ function parse_parameters()
         esac
         shift
     done
-}
-
-function check_single_choice_parameters_validity()
-{
-    if [[ $(exist_single_choice_parameters) -gt 0 ]] || [[ $(exist_multiple_choice_parameters) -gt 0 ]]; then
-        die "Mutually exclusive option: $1 is not allowed."
-    fi
-}
-
-function check_multiple_choice_parameters_validity()
-{
-    if [[ $(exist_single_choice_parameters) -gt 0 ]]; then
-        die "Mutually exclusive option: $1 is not allowed."
-    fi
-}
-
-function exist_single_choice_parameters()
-{
-    local number=0
-    for key in "${!ARGS[@]}"; do
-        if [[ ${ARGS[${key}]} = true ]]; then
-            if [[ ${key} == "help" ]] || [[ ${key} == "initialize" ]] || [[ ${key} == "clean" ]] \
-                || [[ ${key} == "install" ]] || [[ ${key} == "uninstall" ]] || [[ ${key} == "container" ]] \
-                || [[ ${key} == "website" ]] || [[ ${key} == "test" ]]; then
-                number+=1
-            fi
-        fi
-    done
-    echo "${number}"
-    return 0
-}
-
-function exist_multiple_choice_parameters()
-{
-    local number=0
-    for key in "${!ARGS[@]}"; do
-        if [[ ${ARGS[${key}]} = true ]]; then
-            if [[ ${key} == "release" ]] || [[ ${key} == "hook" ]] || [[ ${key} == "spell" ]] \
-                || [[ ${key} == "format" ]] || [[ ${key} == "lint" ]] || [[ ${key} == "statistics" ]] \
-                || [[ ${key} == "doxygen" ]] || [[ ${key} == "browser" ]]; then
-                number+=1
-            fi
-        fi
-    done
-    echo "${number}"
-    return 0
-}
-
-function try_to_perform_single_choice_options()
-{
-    perform_help_option
-    perform_initialize_option
-    perform_clean_option
-    perform_install_option
-    perform_uninstall_option
-    perform_container_option
-    perform_website_option
 }
 
 function perform_help_option()
@@ -457,17 +446,15 @@ function perform_website_option()
     exit 0
 }
 
-function try_to_perform_multiple_choice_options()
+function try_to_perform_single_choice_options()
 {
-    check_extra_dependencies
-
-    perform_hook_option
-    perform_spell_option
-    perform_format_option
-    perform_lint_option
-    perform_statistics_option
-    perform_doxygen_option
-    perform_browser_option
+    perform_help_option
+    perform_initialize_option
+    perform_clean_option
+    perform_install_option
+    perform_uninstall_option
+    perform_container_option
+    perform_website_option
 }
 
 function check_extra_dependencies()
@@ -625,6 +612,26 @@ function perform_statistics_option()
     shell_command "cloc --config ./.cloc --include-lang='Rust'"
 }
 
+function package_for_doxygen()
+{
+    local commit_id=$1
+
+    local doxygen_folder="doxygen"
+    local tar_file="${FOLDER[proj]}_${doxygen_folder}_${commit_id}.tar.bz2"
+    shell_command "rm -rf ./${FOLDER[doc]}/archive/${FOLDER[proj]}_${doxygen_folder}_*.tar.bz2 \
+./${FOLDER[doc]}/${doxygen_folder} && mkdir -p ./${FOLDER[doc]}/${doxygen_folder}"
+
+    local check_format="grep -nE '\/\/! @((brief (([a-z].+)|(.+[^.])))|((param|tparam) (.+[.]))|(return (.+[.])))$' \
+-R './${FOLDER[app]}' './${FOLDER[util]}' './${FOLDER[algo]}' './${FOLDER[ds]}' './${FOLDER[dp]}' './${FOLDER[num]}' \
+'./${FOLDER[tst]}' --include '*.cpp' --include '*.hpp' --include '*.tpp'"
+    if eval "${check_format}" >/dev/null; then
+        shell_command "! ${check_format}"
+    fi
+    shell_command "(cat ./${FOLDER[doc]}/Doxyfile ; echo 'PROJECT_NUMBER=\"@ $(git rev-parse --short @)\"') \
+| doxygen -"
+    shell_command "tar -jcvf ./${FOLDER[doc]}/archive/${tar_file} -C ./${FOLDER[doc]} ${doxygen_folder} >/dev/null"
+}
+
 function perform_doxygen_option()
 {
     if [[ ${ARGS[doxygen]} = false ]]; then
@@ -648,52 +655,6 @@ function perform_doxygen_option()
     else
         shell_command "mkdir ./${FOLDER[doc]}/archive"
         package_for_doxygen "${commit_id}"
-    fi
-}
-
-function package_for_doxygen()
-{
-    local commit_id=$1
-
-    local doxygen_folder="doxygen"
-    local tar_file="${FOLDER[proj]}_${doxygen_folder}_${commit_id}.tar.bz2"
-    shell_command "rm -rf ./${FOLDER[doc]}/archive/${FOLDER[proj]}_${doxygen_folder}_*.tar.bz2 \
-./${FOLDER[doc]}/${doxygen_folder} && mkdir -p ./${FOLDER[doc]}/${doxygen_folder}"
-
-    local check_format="grep -nE '\/\/! @((brief (([a-z].+)|(.+[^.])))|((param|tparam) (.+[.]))|(return (.+[.])))$' \
--R './${FOLDER[app]}' './${FOLDER[util]}' './${FOLDER[algo]}' './${FOLDER[ds]}' './${FOLDER[dp]}' './${FOLDER[num]}' \
-'./${FOLDER[tst]}' --include '*.cpp' --include '*.hpp' --include '*.tpp'"
-    if eval "${check_format}" >/dev/null; then
-        shell_command "! ${check_format}"
-    fi
-    shell_command "(cat ./${FOLDER[doc]}/Doxyfile ; echo 'PROJECT_NUMBER=\"@ $(git rev-parse --short @)\"') \
-| doxygen -"
-    shell_command "tar -jcvf ./${FOLDER[doc]}/archive/${tar_file} -C ./${FOLDER[doc]} ${doxygen_folder} >/dev/null"
-}
-
-function perform_browser_option()
-{
-    if [[ ${ARGS[browser]} = false ]]; then
-        return
-    fi
-
-    local commit_id
-    commit_id=$(git rev-parse --short @)
-    if [[ -z ${commit_id} ]]; then
-        commit_id="local"
-    fi
-    if [[ -d ./${FOLDER[doc]}/archive ]]; then
-        local last_tar="${FOLDER[proj]}_browser_${commit_id}.tar.bz2"
-        if [[ -f ./${FOLDER[doc]}/archive/${last_tar} ]]; then
-            local time_interval=$(($(date +%s) - $(stat -L --format %Y "./${FOLDER[doc]}/archive/${last_tar}")))
-            if [[ ${time_interval} -lt 60 ]]; then
-                die "The latest browser archive ${last_tar} has been generated since ${time_interval}s ago."
-            fi
-        fi
-        package_for_browser "${commit_id}"
-    else
-        shell_command "mkdir ./${FOLDER[doc]}/archive"
-        package_for_browser "${commit_id}"
     fi
 }
 
@@ -723,38 +684,43 @@ type=\\\"image/x-icon\\\"/>' {} +"
     shell_command "tar -jcvf ./${FOLDER[doc]}/archive/${tar_file} -C ./${FOLDER[doc]} ${browser_folder} >/dev/null"
 }
 
-function build_target()
+function perform_browser_option()
 {
-    if ! command -v cmake >/dev/null 2>&1 || ! command -v ninja >/dev/null 2>&1; then
-        die "No cmake or ninja program. Please install it."
-    fi
-    if ! command -v clang-16 >/dev/null 2>&1 || ! command -v clang++-16 >/dev/null 2>&1; then
-        die "No clang-16 or clang++-16 program. Please install it."
-    fi
-    if [[ ${ARGS[release]} = true ]]; then
-        BUILD_TYPE="Release"
+    if [[ ${ARGS[browser]} = false ]]; then
+        return
     fi
 
-    if [[ ${ARGS[test]} = true ]]; then
-        set_compile_condition "${FOLDER[tst]}/${FOLDER[bld]}" "128m"
-        shell_command "cmake -S ./${FOLDER[tst]} -B ./${FOLDER[tst]}/${FOLDER[bld]} -G Ninja""${CMAKE_CACHE_ENTRY}"
-        NINJA_STATUS=$(echo -e "\e[92m[\e[92m%f/\e[92m%t\e[92m]\e[39m\e[49m ")
-        export NINJA_STATUS
-        shell_command "cmake --build ./${FOLDER[tst]}/${FOLDER[bld]}""${CMAKE_BUILD_OPTION}"
-        exit 0
+    local commit_id
+    commit_id=$(git rev-parse --short @)
+    if [[ -z ${commit_id} ]]; then
+        commit_id="local"
     fi
+    if [[ -d ./${FOLDER[doc]}/archive ]]; then
+        local last_tar="${FOLDER[proj]}_browser_${commit_id}.tar.bz2"
+        if [[ -f ./${FOLDER[doc]}/archive/${last_tar} ]]; then
+            local time_interval=$(($(date +%s) - $(stat -L --format %Y "./${FOLDER[doc]}/archive/${last_tar}")))
+            if [[ ${time_interval} -lt 60 ]]; then
+                die "The latest browser archive ${last_tar} has been generated since ${time_interval}s ago."
+            fi
+        fi
+        package_for_browser "${commit_id}"
+    else
+        shell_command "mkdir ./${FOLDER[doc]}/archive"
+        package_for_browser "${commit_id}"
+    fi
+}
 
-    set_compile_condition "${FOLDER[bld]}" "256m"
-    shell_command "cmake -S . -B ./${FOLDER[bld]} -G Ninja""${CMAKE_CACHE_ENTRY}"
-    if [[ $# -eq 0 ]] || {
-        [[ $# -eq 1 ]] && [[ ${ARGS[release]} = true ]]
-    }; then
-        NINJA_STATUS=$(echo -e "\e[92m[\e[92m%f/\e[92m%t\e[92m]\e[39m\e[49m ")
-        export NINJA_STATUS
-        shell_command "cmake --build ./${FOLDER[bld]}""${CMAKE_BUILD_OPTION}"
-        exit 0
-    fi
-    shell_command "cmake -S ./${FOLDER[tst]} -B ./${FOLDER[tst]}/${FOLDER[bld]} -G Ninja""${CMAKE_CACHE_ENTRY}"
+function try_to_perform_multiple_choice_options()
+{
+    check_extra_dependencies
+
+    perform_hook_option
+    perform_spell_option
+    perform_format_option
+    perform_lint_option
+    perform_statistics_option
+    perform_doxygen_option
+    perform_browser_option
 }
 
 function set_compile_condition()
@@ -827,6 +793,40 @@ function set_compile_condition()
     elif df -h -t tmpfs | grep -q "${FOLDER[proj]}/${tmpfs_subfolder}" 2>/dev/null; then
         shell_command "${SUDO}umount ./${tmpfs_subfolder}"
     fi
+}
+
+function build_target()
+{
+    if ! command -v cmake >/dev/null 2>&1 || ! command -v ninja >/dev/null 2>&1; then
+        die "No cmake or ninja program. Please install it."
+    fi
+    if ! command -v clang-16 >/dev/null 2>&1 || ! command -v clang++-16 >/dev/null 2>&1; then
+        die "No clang-16 or clang++-16 program. Please install it."
+    fi
+    if [[ ${ARGS[release]} = true ]]; then
+        BUILD_TYPE="Release"
+    fi
+
+    if [[ ${ARGS[test]} = true ]]; then
+        set_compile_condition "${FOLDER[tst]}/${FOLDER[bld]}" "128m"
+        shell_command "cmake -S ./${FOLDER[tst]} -B ./${FOLDER[tst]}/${FOLDER[bld]} -G Ninja""${CMAKE_CACHE_ENTRY}"
+        NINJA_STATUS=$(echo -e "\e[92m[\e[92m%f/\e[92m%t\e[92m]\e[39m\e[49m ")
+        export NINJA_STATUS
+        shell_command "cmake --build ./${FOLDER[tst]}/${FOLDER[bld]}""${CMAKE_BUILD_OPTION}"
+        exit 0
+    fi
+
+    set_compile_condition "${FOLDER[bld]}" "256m"
+    shell_command "cmake -S . -B ./${FOLDER[bld]} -G Ninja""${CMAKE_CACHE_ENTRY}"
+    if [[ $# -eq 0 ]] || {
+        [[ $# -eq 1 ]] && [[ ${ARGS[release]} = true ]]
+    }; then
+        NINJA_STATUS=$(echo -e "\e[92m[\e[92m%f/\e[92m%t\e[92m]\e[39m\e[49m ")
+        export NINJA_STATUS
+        shell_command "cmake --build ./${FOLDER[bld]}""${CMAKE_BUILD_OPTION}"
+        exit 0
+    fi
+    shell_command "cmake -S ./${FOLDER[tst]} -B ./${FOLDER[tst]}/${FOLDER[bld]} -G Ninja""${CMAKE_CACHE_ENTRY}"
 }
 
 function remove_temporary_files()
