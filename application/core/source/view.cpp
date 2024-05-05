@@ -519,7 +519,8 @@ int View::fillSharedMemory(const std::string& contents)
         if (!shrMem->signal.load())
         {
             std::memset(shrMem->buffer, 0, sizeof(shrMem->buffer));
-            std::memcpy(shrMem->buffer, contents.c_str(), std::min(sizeof(shrMem->buffer), contents.length()));
+            std::strncpy(shrMem->buffer, contents.c_str(), sizeof(shrMem->buffer) - 1);
+            shrMem->buffer[sizeof(shrMem->buffer) - 1] = '\0';
             shrMem->signal.store(true);
             break;
         }
@@ -618,6 +619,7 @@ std::string View::getStatusInformation()
         cmdCntr.emplace_back(cmd);
         prev = pos + 1;
     }
+    cmd[cmdLen - 1] = '\0';
 
     std::string statInfo;
     std::for_each(

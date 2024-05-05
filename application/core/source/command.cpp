@@ -709,7 +709,8 @@ void Command::enterConsoleMode()
         char hostName[HOST_NAME_MAX] = {'\0'};
         if (::gethostname(hostName, HOST_NAME_MAX))
         {
-            std::strncpy(hostName, "HOSTNAME", HOST_NAME_MAX);
+            std::strncpy(hostName, "HOSTNAME", HOST_NAME_MAX - 1);
+            hostName[HOST_NAME_MAX - 1] = '\0';
         }
         const std::string greeting = user + '@' + std::string{hostName} + " foo > ";
         Console console(greeting);
