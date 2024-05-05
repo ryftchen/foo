@@ -573,7 +573,7 @@ class Output:
 
     @classmethod
     def exit_with_error(cls, message):
-        print(f"\r\n{os.path.basename(__file__)}: {message}")
+        print(f"\r\n{os.path.basename(__file__)}: {message}", file=sys.stderr)
         sys.exit(1)
 
     @classmethod

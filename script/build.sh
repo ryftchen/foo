@@ -24,7 +24,7 @@ function die()
     echo
     echo "$(basename "${0}"): $*"
     exit 1
-}
+} >&2
 
 function shell_command()
 {
@@ -37,9 +37,13 @@ function shell_command()
 
     printf "\033[0;33;40m\033[1m\033[49m%s \033[0;37;40m\033[1m\033[49m%s\033[0m %s\n" \
         "[ ...... ]" "$(date "+%b %d %T")" "$ $*"
-    shell "$@"
-    printf "\033[0;32;40m\033[1m\033[49m%s \033[0;37;40m\033[1m\033[49m%s\033[0m %s\n" \
-        "[  done  ]" "$(date "+%b %d %T")" "$ $*"
+    if shell "$@"; then
+        printf "\033[0;32;40m\033[1m\033[49m%s \033[0;37;40m\033[1m\033[49m%s\033[0m %s\n" \
+            "[  succ  ]" "$(date "+%b %d %T")" "$ $*"
+    else
+        printf "\033[0;31;40m\033[1m\033[49m%s \033[0;37;40m\033[1m\033[49m%s\033[0m %s\n" \
+            "[  fail  ]" "$(date "+%b %d %T")" "$ $*"
+    fi
 }
 
 function wait_until_get_input()
@@ -297,7 +301,7 @@ function perform_clean_option()
     shell_command "find ./ -maxdepth 3 -type d | sed 1d \
 | grep -E '(${FOLDER[cac]}|${FOLDER[bld]}|archive|browser|doxygen|target|__pycache__)$' | xargs -i rm -rf {}"
     shell_command "rm -rf ./${FOLDER[scr]}/.env ./${FOLDER[doc]}/server/Cargo.lock ./core.* ./vgcore.* ./*.profraw"
-    shell_command "git config --local --unset commit.template"
+    shell_command "git config --local --unset commit.template || true"
 
     if [[ -f ./.git/hooks/pre-commit ]]; then
         shell_command "pre-commit uninstall"
@@ -364,7 +368,8 @@ function perform_uninstall_option()
     shell_command "rm -rf ~/.${FOLDER[proj]}"
     shell_command "cat ./${FOLDER[bld]}/${manifest_file} | xargs ${SUDO}rm -rf && \
 ${SUDO}rm -rf /opt/${FOLDER[proj]}/${completion_file} /opt/${FOLDER[proj]}/man"
-    shell_command "cat ./${FOLDER[bld]}/${manifest_file} | xargs -L1 dirname | xargs ${SUDO}rmdir -p 2>/dev/null"
+    shell_command "cat ./${FOLDER[bld]}/${manifest_file} | xargs -L1 dirname | \
+xargs ${SUDO}rmdir -p 2>/dev/null || true"
     if [[ -f ~/${BASH_RC} ]]; then
         shell_command "sed -i '/export PATH=\/opt\/${FOLDER[proj]}\/bin:\$PATH/d' ~/${BASH_RC}"
         shell_command "sed -i '/\\\. \/opt\/${FOLDER[proj]}\/${completion_file}/d' ~/${BASH_RC}"
@@ -436,7 +441,12 @@ function perform_website_option()
             input=$(wait_until_get_input)
             if echo "${input}" | grep -iq '^y'; then
                 echo "Yes"
-                shell_command "fuser -k 61503/tcp && fuser -k 61504/tcp"
+                if netstat -tuln | grep ':61503 ' >/dev/null 2>&1; then
+                    shell_command "fuser -k 61503/tcp"
+                fi
+                if netstat -tuln | grep ':61504 ' >/dev/null 2>&1; then
+                    shell_command "fuser -k 61504/tcp"
+                fi
             else
                 echo "No"
             fi
@@ -650,9 +660,12 @@ function package_for_doxygen()
     shell_command "rm -rf ./${FOLDER[doc]}/archive/${FOLDER[proj]}_${doxygen_folder}_*.tar.bz2 \
 ./${FOLDER[doc]}/${doxygen_folder} && mkdir -p ./${FOLDER[doc]}/${doxygen_folder}"
 
-    shell_command "grep -nE '\/\/! @((brief (([a-z].+)|(.+[^.])))|((param|tparam) (.+[.]))|(return (.+[.])))$' \
+    local check_format="grep -nE '\/\/! @((brief (([a-z].+)|(.+[^.])))|((param|tparam) (.+[.]))|(return (.+[.])))$' \
 -R './${FOLDER[app]}' './${FOLDER[util]}' './${FOLDER[algo]}' './${FOLDER[ds]}' './${FOLDER[dp]}' './${FOLDER[num]}' \
 './${FOLDER[tst]}' --include '*.cpp' --include '*.hpp' --include '*.tpp'"
+    if eval "${check_format}" >/dev/null; then
+        shell_command "! ${check_format}"
+    fi
     shell_command "(cat ./${FOLDER[doc]}/Doxyfile ; echo 'PROJECT_NUMBER=\"@ $(git rev-parse --short @)\"') \
 | doxygen -"
     shell_command "tar -jcvf ./${FOLDER[doc]}/archive/${tar_file} -C ./${FOLDER[doc]} ${doxygen_folder} >/dev/null"
