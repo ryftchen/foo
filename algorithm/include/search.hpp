@@ -117,22 +117,23 @@ int Search<T>::fibonacci(const T* const array, const std::uint32_t length, const
     }
 
     std::uint32_t lower = 0, upper = length - 1;
-    std::unique_ptr<T[]> complementArray = std::make_unique<T[]>(fib[n] - 1);
-    std::memcpy(complementArray.get(), array, length * sizeof(T));
+    T complement[fib[n] - 1];
+    complement[0] = '\0';
+    std::memcpy(complement, array, length * sizeof(T));
     for (std::uint32_t i = upper; i < (fib[n] - 1); ++i)
     {
-        complementArray[i] = array[upper];
+        complement[i] = array[upper];
     }
 
     while (lower <= upper)
     {
         std::uint32_t mid = lower + fib[n - 1] - 1;
-        if (complementArray[mid] > key)
+        if (complement[mid] > key)
         {
             upper = mid - 1;
             --n;
         }
-        else if (complementArray[mid] < key)
+        else if (complement[mid] < key)
         {
             lower = mid + 1;
             n -= 2;

@@ -208,22 +208,22 @@ void Sort<T>::mergeSortRecursive(T* const sortArray, const std::uint32_t begin, 
     mergeSortRecursive(sortArray, begin, mid);
     mergeSortRecursive(sortArray, mid + 1, end);
 
-    std::uint32_t leftIndex = 0, rightIndex = 0;
-    std::vector<T> leftSubArray(sortArray + begin, sortArray + mid + 1);
-    std::vector<T> rightSubArray(sortArray + mid + 1, sortArray + end + 1);
-    leftSubArray.insert(leftSubArray.cend(), std::numeric_limits<T>::max());
-    rightSubArray.insert(rightSubArray.cend(), std::numeric_limits<T>::max());
+    std::uint32_t leftIdx = 0, rightIdx = 0;
+    std::vector<T> leftSub(sortArray + begin, sortArray + mid + 1);
+    std::vector<T> rightSub(sortArray + mid + 1, sortArray + end + 1);
+    leftSub.insert(leftSub.cend(), std::numeric_limits<T>::max());
+    rightSub.insert(rightSub.cend(), std::numeric_limits<T>::max());
     for (std::uint32_t i = begin; i <= end; ++i)
     {
-        if (leftSubArray.at(leftIndex) < rightSubArray.at(rightIndex))
+        if (leftSub.at(leftIdx) < rightSub.at(rightIdx))
         {
-            sortArray[i] = leftSubArray.at(leftIndex);
-            ++leftIndex;
+            sortArray[i] = leftSub.at(leftIdx);
+            ++leftIdx;
         }
         else
         {
-            sortArray[i] = rightSubArray.at(rightIndex);
-            ++rightIndex;
+            sortArray[i] = rightSub.at(rightIdx);
+            ++rightIdx;
         }
     }
 }
@@ -248,34 +248,34 @@ void Sort<T>::quickSortRecursive(T* const sortArray, const std::uint32_t begin, 
         return;
     }
     T pivot = sortArray[end];
-    std::uint32_t leftIndex = begin, rightIndex = end - 1;
+    std::uint32_t leftIdx = begin, rightIdx = end - 1;
 
-    while (leftIndex < rightIndex)
+    while (leftIdx < rightIdx)
     {
-        while ((leftIndex < rightIndex) && (sortArray[leftIndex] < pivot))
+        while ((leftIdx < rightIdx) && (sortArray[leftIdx] < pivot))
         {
-            ++leftIndex;
+            ++leftIdx;
         }
-        while ((leftIndex < rightIndex) && (sortArray[rightIndex] >= pivot))
+        while ((leftIdx < rightIdx) && (sortArray[rightIdx] >= pivot))
         {
-            --rightIndex;
+            --rightIdx;
         }
-        std::swap(sortArray[leftIndex], sortArray[rightIndex]);
+        std::swap(sortArray[leftIdx], sortArray[rightIdx]);
     }
-    if (sortArray[leftIndex] >= sortArray[end])
+    if (sortArray[leftIdx] >= sortArray[end])
     {
-        std::swap(sortArray[leftIndex], sortArray[end]);
+        std::swap(sortArray[leftIdx], sortArray[end]);
     }
     else
     {
-        ++leftIndex;
+        ++leftIdx;
     }
 
-    if (leftIndex)
+    if (leftIdx)
     {
-        quickSortRecursive(sortArray, begin, leftIndex - 1);
+        quickSortRecursive(sortArray, begin, leftIdx - 1);
     }
-    quickSortRecursive(sortArray, leftIndex + 1, end);
+    quickSortRecursive(sortArray, leftIdx + 1, end);
 }
 
 template <class T>
@@ -377,18 +377,18 @@ std::vector<T> Sort<T>::bucket(const T* const array, const std::uint32_t length)
     std::vector<std::vector<T>> container(bucketNum, std::vector<T>{});
     for (std::uint32_t i = 0; i < length; ++i)
     {
-        // min+(max-min)/(bucketNum-1)*(bucketIndex-1)<=array[i]
-        const std::uint32_t bucketIndex = std::floor(static_cast<double>(sortArray[i] - min) / intervalSpan + 1) - 1;
-        container.at(bucketIndex).emplace_back(sortArray[i]);
+        // min+(max-min)/(num-1)*(idx-1)<=array[i]
+        const std::uint32_t bucketIdx = std::floor(static_cast<double>(sortArray[i] - min) / intervalSpan + 1) - 1;
+        container.at(bucketIdx).emplace_back(sortArray[i]);
     }
 
     std::uint32_t index = 0;
-    for (auto& bucketUpdate : container)
+    for (auto& bucketUpd : container)
     {
-        std::sort(bucketUpdate.begin(), bucketUpdate.end());
-        for (const auto bucketElement : bucketUpdate)
+        std::sort(bucketUpd.begin(), bucketUpd.end());
+        for (const auto bucketElem : bucketUpd)
         {
-            sortArray[index++] = bucketElement;
+            sortArray[index++] = bucketElem;
         }
     }
 
@@ -427,39 +427,42 @@ std::vector<T> Sort<T>::radix(const T* const array, const std::uint32_t length)
     constexpr std::uint32_t naturalNumberBucket = 10, negativeIntegerBucket = 9;
     const std::uint32_t bucketNum =
         (positive ^ negative) ? naturalNumberBucket : (naturalNumberBucket + negativeIntegerBucket);
-    std::unique_ptr<T[]> countingOld = std::make_unique<T[]>(bucketNum), countingNew = std::make_unique<T[]>(bucketNum);
-    std::queue<T> bucket;
-    std::vector<std::queue<T>> container(bucketNum, bucket);
+    T countingOld[bucketNum], countingNew[bucketNum];
+    std::memset(countingOld, 0, bucketNum * sizeof(T));
+    std::memset(countingNew, 0, bucketNum * sizeof(T));
+
+    std::vector<std::queue<T>> container(bucketNum, std::queue<T>{});
     const std::uint32_t offset = (!negative) ? 0 : negativeIntegerBucket;
     for (std::uint32_t i = 0; i < length; ++i)
     {
         const int sign = (sortArray[i] > 0) ? 1 : -1;
-        const std::uint32_t bucketIndex = std::abs(sortArray[i]) / 1 % base * sign + offset;
-        container.at(bucketIndex).push(sortArray[i]);
-        ++countingNew[bucketIndex];
+        const std::uint32_t bucketIdx = std::abs(sortArray[i]) / 1 % base * sign + offset;
+        container.at(bucketIdx).push(sortArray[i]);
+        ++countingNew[bucketIdx];
     }
 
     constexpr std::uint32_t decimal = 10;
     for (std::uint32_t i = 1, pow = decimal; i < digitMax; ++i, pow *= base)
     {
-        std::memcpy(countingOld.get(), countingNew.get(), bucketNum * sizeof(T));
-        std::memset(countingNew.get(), 0, bucketNum * sizeof(T));
+        std::memcpy(countingOld, countingNew, bucketNum * sizeof(T));
+        std::memset(countingNew, 0, bucketNum * sizeof(T));
         for (auto bucketIter = container.begin(); container.end() != bucketIter; ++bucketIter)
         {
-            if (!bucketIter->size())
+            if (bucketIter->size() == 0)
             {
                 continue;
             }
-            const std::uint32_t countingIndex = bucketIter - container.begin();
-            while (countingOld[countingIndex])
+
+            const std::uint32_t countingIdx = bucketIter - container.begin();
+            while (countingOld[countingIdx])
             {
-                const T bucketElement = bucketIter->front();
-                const int sign = (bucketElement > 0) ? 1 : -1;
-                const std::uint32_t bucketIndex = std::abs(bucketElement) / pow % base * sign + offset;
-                container.at(bucketIndex).push(bucketElement);
-                ++countingNew[bucketIndex];
+                const T bucketElem = bucketIter->front();
+                const int sign = (bucketElem > 0) ? 1 : -1;
+                const std::uint32_t bucketIdx = std::abs(bucketElem) / pow % base * sign + offset;
+                container.at(bucketIdx).push(bucketElem);
+                ++countingNew[bucketIdx];
                 bucketIter->pop();
-                --countingOld[countingIndex];
+                --countingOld[countingIdx];
             }
         }
     }
