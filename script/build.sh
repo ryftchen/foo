@@ -9,6 +9,7 @@ declare -A ARGS=([help]=false [initialize]=false [clean]=false [install]=false [
     [website]=false [test]=false [release]=false [hook]=false [spell]=false [format]=false [lint]=false
     [statistics]=false [doxygen]=false [browser]=false [dry]=false)
 declare -A DEV_OPT=([parallel]=0 [pch]=false [unity]=false [ccache]=false [distcc]=false [tmpfs]=false)
+declare STATUS=0
 declare SUDO=""
 declare CMAKE_CACHE_ENTRY=""
 declare CMAKE_BUILD_OPTION=""
@@ -23,6 +24,7 @@ function die()
 {
     echo
     echo "$(basename "${0}"): $*"
+
     exit 1
 } >&2
 
@@ -43,6 +45,7 @@ function shell_command()
     else
         printf "\033[0;31;40m\033[1m\033[49m%s \033[0;37;40m\033[1m\033[49m%s\033[0m %s\n" \
             "[  fail  ]" "$(date "+%b %d %T")" "$ $*"
+        STATUS=1
     fi
 }
 
@@ -225,7 +228,8 @@ function perform_help_option()
     echo "  -d, --doxygen         documentation with doxygen"
     echo "  -b, --browser         generate code browser like IDE"
     echo "  -D, --dry             dry run for script"
-    exit 0
+
+    exit "${STATUS}"
 }
 
 function perform_initialize_option()
@@ -276,7 +280,8 @@ EOF"
 
     echo
     echo "To initialize for effect, type \"exec bash\" manually."
-    exit 0
+
+    exit "${STATUS}"
 }
 
 function perform_clean_option()
@@ -298,7 +303,8 @@ function perform_clean_option()
 
     echo
     echo "To clean up for effect, type \"exec bash\" manually."
-    exit 0
+
+    exit "${STATUS}"
 }
 
 function perform_install_option()
@@ -339,7 +345,8 @@ ${SUDO}cp ./${FOLDER[doc]}/man.1 ${man_path}/man1/${FOLDER[proj]}.1"
 
     echo
     echo "Manually type \"exec bash\" to install for effect."
-    exit 0
+
+    exit "${STATUS}"
 }
 
 function perform_uninstall_option()
@@ -369,7 +376,8 @@ xargs ${SUDO}rmdir -p 2>/dev/null || true"
 
     echo
     echo "Manually type \"exec bash\" to uninstall for effect."
-    exit 0
+
+    exit "${STATUS}"
 }
 
 function perform_container_option()
@@ -386,7 +394,8 @@ function perform_container_option()
             echo "Yes"
         else
             echo "No"
-            exit 0
+
+            exit "${STATUS}"
         fi
     else
         die "No docker or docker-compose program. Please install it."
@@ -398,7 +407,8 @@ function perform_container_option()
     else
         die "The container exists."
     fi
-    exit 0
+
+    exit "${STATUS}"
 }
 
 function perform_website_option()
@@ -443,7 +453,8 @@ function perform_website_option()
     else
         die "No rustc or cargo program. Please install it."
     fi
-    exit 0
+
+    exit "${STATUS}"
 }
 
 function try_to_perform_single_choice_options()
@@ -813,7 +824,8 @@ function build_target()
         NINJA_STATUS=$(echo -e "\e[92m[\e[92m%f/\e[92m%t\e[92m]\e[39m\e[49m ")
         export NINJA_STATUS
         shell_command "cmake --build ./${FOLDER[tst]}/${FOLDER[bld]}""${CMAKE_BUILD_OPTION}"
-        exit 0
+
+        exit "${STATUS}"
     fi
 
     set_compile_condition "${FOLDER[bld]}" "256m"
@@ -824,12 +836,13 @@ function build_target()
         NINJA_STATUS=$(echo -e "\e[92m[\e[92m%f/\e[92m%t\e[92m]\e[39m\e[49m ")
         export NINJA_STATUS
         shell_command "cmake --build ./${FOLDER[bld]}""${CMAKE_BUILD_OPTION}"
-        exit 0
+
+        exit "${STATUS}"
     fi
     shell_command "cmake -S ./${FOLDER[tst]} -B ./${FOLDER[tst]}/${FOLDER[bld]} -G Ninja""${CMAKE_CACHE_ENTRY}"
 }
 
-function remove_temporary_files()
+function clean_up_temporary_files()
 {
     local app_comp_cmd=${FOLDER[bld]}/${COMP_CMD}
     if [[ -f ./${app_comp_cmd}.bak ]]; then
@@ -843,7 +856,8 @@ function remove_temporary_files()
 
 function signal_handler()
 {
-    remove_temporary_files
+    clean_up_temporary_files
+
     exit 1
 }
 
@@ -861,12 +875,14 @@ function main()
         SUDO="sudo "
     fi
     trap signal_handler SIGINT SIGTERM
-    remove_temporary_files
+    clean_up_temporary_files
 
     parse_parameters "$@"
     try_to_perform_single_choice_options
     build_target "$@"
     try_to_perform_multiple_choice_options
+
+    exit "${STATUS}"
 }
 
 main "$@"
