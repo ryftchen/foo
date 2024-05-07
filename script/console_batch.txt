@@ -1,3 +1,0 @@
-# console command
-help
-quit

@@ -294,7 +294,8 @@ function perform_clean_option()
     shell_command "sed -i '/alias ${FOLDER[proj]:0:1}\(build\|run\|pull\)/d' ~/${BASH_RC} 2>/dev/null"
     shell_command "find ./ -maxdepth 3 -type d | sed 1d \
 | grep -E '(${FOLDER[cac]}|${FOLDER[bld]}|archive|browser|doxygen|target|__pycache__)$' | xargs -i rm -rf {}"
-    shell_command "rm -rf ./${FOLDER[scr]}/.env ./${FOLDER[doc]}/server/Cargo.lock ./core.* ./vgcore.* ./*.profraw"
+    shell_command "rm -rf ./${FOLDER[scr]}/.env ./${FOLDER[scr]}/console_batch.txt ./${FOLDER[doc]}/server/Cargo.lock \
+./core.* ./vgcore.* ./*.profraw"
     shell_command "git config --local --unset commit.template || true"
 
     if [[ -f ./.git/hooks/pre-commit ]]; then

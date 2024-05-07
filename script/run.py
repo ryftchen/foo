@@ -25,6 +25,7 @@ class Task:
     tst_bin_dir = "./test/build/bin"
     lib_list = ["libfoo_util.so", "libfoo_algo.so", "libfoo_ds.so", "libfoo_dp.so", "libfoo_num.so"]
     lib_dir = "./build/lib"
+    console_file = "./script/console_batch.txt"
     basic_task_dict = {
         "--help": [],
         "--version": [],
@@ -32,7 +33,7 @@ class Task:
         "--console": [
             r"help",
             r"quit",
-            r"batch ./script/console_batch.txt",
+            f"batch {console_file}",
             r"refresh",
             r"reconnect",
             r'''bash "ps -eww -o size,pid,user,command --sort -size | awk '{ hr=\$1/1024 ; printf(\"%6.2fMB \", hr) } { for (x=4 ; x<=NF ; x++) { printf(\"%s \", \$x) } print \"\" }' | cut -d '' -f 2 | sed '1d'"''',  # pylint: disable=line-too-long
@@ -210,8 +211,6 @@ class Task:
             Output.exit_with_error(f"Failed to run shell script {self.build_script} file.")
         else:
             print(stdout)
-            if "FAILED:" in stdout:
-                Output.exit_with_error(f"Failed to build the executable by shell script {self.build_script} file.")
 
     def prepare(self):
         if not self.options["tst"] and not os.path.isfile(f"{self.app_bin_dir}/{self.app_bin_cmd}"):
@@ -221,6 +220,12 @@ class Task:
 
         if not os.path.exists(self.cache_dir):
             os.makedirs(self.cache_dir)
+        if not os.path.isfile(self.console_file):
+            with open(self.console_file, "w", encoding="utf-8") as console_batch:
+                fcntl.flock(console_batch.fileno(), fcntl.LOCK_EX)
+                console_batch.write("# console command\nhelp\nquit\n")
+                fcntl.flock(console_batch.fileno(), fcntl.LOCK_UN)
+
         self.progress_bar.setup_progress_bar()
         sys.stdout = self.logger
 
