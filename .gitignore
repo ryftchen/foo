@@ -8,6 +8,7 @@ document/browser/
 document/doxygen/
 document/server/target/
 .env
+console_batch.txt
 core.*
 Cargo.lock
 vgcore.*
