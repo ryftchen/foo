@@ -202,7 +202,7 @@ void View::runViewer()
         }
     };
 
-launchPoint:
+retry:
     try
     {
         checkIfExceptedFSMState(State::init);
@@ -231,7 +231,7 @@ launchPoint:
         if (rollbackRequest.load())
         {
             processEvent(Relaunch());
-            goto launchPoint; // NOLINT (hicpp-avoid-goto)
+            goto retry; // NOLINT (hicpp-avoid-goto)
         }
         processEvent(DestroyServer());
 
@@ -249,7 +249,7 @@ launchPoint:
         checkIfExceptedFSMState(State::hold);
         if (awaitNotification4Rollback())
         {
-            goto launchPoint; // NOLINT (hicpp-avoid-goto)
+            goto retry; // NOLINT (hicpp-avoid-goto)
         }
     }
 }
