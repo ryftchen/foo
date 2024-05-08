@@ -32,13 +32,6 @@
                                 << std::setw(50) << category << "END" << std::resetiosflags(std::ios_base::left)    \
                                 << std::setfill(' ') << '\n'                                                        \
                                 << std::endl;
-//! @brief Get the title of a particular method in algorithm tasks.
-#define APP_ALGO_GET_METHOD_TITLE(method)                  \
-    ({                                                     \
-        std::string title = std::string{toString(method)}; \
-        title.at(0) = std::toupper(title.at(0));           \
-        title;                                             \
-    })
 
 namespace application::app_algo
 {
@@ -129,6 +122,18 @@ consteval std::size_t abbrVal(const T method)
             }
         });
     return value;
+}
+
+//! @brief Get the title of a particular method in algorithm tasks.
+//! @tparam T - type of target method
+//! @param method - target method
+//! @return initial capitalized title
+template <class T>
+std::string getTitle(const T method)
+{
+    std::string title = std::string{toString(method)};
+    title.at(0) = std::toupper(title.at(0));
+    return title;
 }
 
 //! @brief Mapping table for enum and string about match methods. X macro.
@@ -233,19 +238,18 @@ namespace match
 //! @brief Display none match result.
 #define MATCH_NONE_RESULT "\r\n==> %-16s Method <==\npattern \"%s\" could not be found, run time: %8.5f ms\n"
 //! @brief Print match result content.
-#define MATCH_PRINT_RESULT_CONTENT(method)                                                                             \
-    do                                                                                                                 \
-    {                                                                                                                  \
-        if (-1 != shift)                                                                                               \
-        {                                                                                                              \
-            COMMON_PRINT(                                                                                              \
-                MATCH_RESULT(1st), APP_ALGO_GET_METHOD_TITLE(method).data(), pattern, shift, TIME_INTERVAL(timing));   \
-        }                                                                                                              \
-        else                                                                                                           \
-        {                                                                                                              \
-            COMMON_PRINT(MATCH_NONE_RESULT, APP_ALGO_GET_METHOD_TITLE(method).data(), pattern, TIME_INTERVAL(timing)); \
-        }                                                                                                              \
-    }                                                                                                                  \
+#define MATCH_PRINT_RESULT_CONTENT(method)                                                                   \
+    do                                                                                                       \
+    {                                                                                                        \
+        if (-1 != shift)                                                                                     \
+        {                                                                                                    \
+            COMMON_PRINT(MATCH_RESULT(1st), getTitle(method).data(), pattern, shift, TIME_INTERVAL(timing)); \
+        }                                                                                                    \
+        else                                                                                                 \
+        {                                                                                                    \
+            COMMON_PRINT(MATCH_NONE_RESULT, getTitle(method).data(), pattern, TIME_INTERVAL(timing));        \
+        }                                                                                                    \
+    }                                                                                                        \
     while (0)
 
 void MatchSolution::rkMethod(
@@ -446,7 +450,7 @@ namespace notation
 #define NOTATION_RESULT "\r\n==> %-7s Method <==\n%s: %s\n"
 //! @brief Print notation result content.
 #define NOTATION_PRINT_RESULT_CONTENT(method, describe) \
-    COMMON_PRINT(NOTATION_RESULT, APP_ALGO_GET_METHOD_TITLE(method).data(), describe, notationStr.data())
+    COMMON_PRINT(NOTATION_RESULT, getTitle(method).data(), describe, notationStr.data())
 
 void NotationSolution::prefixMethod(const std::string& infixNotation)
 try
@@ -554,7 +558,7 @@ namespace optimal
 #define OPTIMAL_RESULT(opt) "\r\n==> %-9s Method <==\nF(" #opt ")=%+.5f X=%+.5f, run time: %8.5f ms\n"
 //! @brief Print optimal result content.
 #define OPTIMAL_PRINT_RESULT_CONTENT(method) \
-    COMMON_PRINT(OPTIMAL_RESULT(min), APP_ALGO_GET_METHOD_TITLE(method).data(), fx, x, TIME_INTERVAL(timing))
+    COMMON_PRINT(OPTIMAL_RESULT(min), getTitle(method).data(), fx, x, TIME_INTERVAL(timing))
 
 void OptimalSolution::gradientDescentMethod(const Function& func, const double left, const double right)
 try
@@ -740,18 +744,18 @@ namespace search
 //! @brief Display none search result.
 #define SEARCH_NONE_RESULT "\r\n==> %-13s Method <==\ncould not find the key \"%.5f\", run time: %8.5f ms\n"
 //! @brief Print search result content.
-#define SEARCH_PRINT_RESULT_CONTENT(method)                                                                           \
-    do                                                                                                                \
-    {                                                                                                                 \
-        if (-1 != index)                                                                                              \
-        {                                                                                                             \
-            COMMON_PRINT(SEARCH_RESULT, APP_ALGO_GET_METHOD_TITLE(method).data(), key, index, TIME_INTERVAL(timing)); \
-        }                                                                                                             \
-        else                                                                                                          \
-        {                                                                                                             \
-            COMMON_PRINT(SEARCH_NONE_RESULT, APP_ALGO_GET_METHOD_TITLE(method).data(), key, TIME_INTERVAL(timing));   \
-        }                                                                                                             \
-    }                                                                                                                 \
+#define SEARCH_PRINT_RESULT_CONTENT(method)                                                          \
+    do                                                                                               \
+    {                                                                                                \
+        if (-1 != index)                                                                             \
+        {                                                                                            \
+            COMMON_PRINT(SEARCH_RESULT, getTitle(method).data(), key, index, TIME_INTERVAL(timing)); \
+        }                                                                                            \
+        else                                                                                         \
+        {                                                                                            \
+            COMMON_PRINT(SEARCH_NONE_RESULT, getTitle(method).data(), key, TIME_INTERVAL(timing));   \
+        }                                                                                            \
+    }                                                                                                \
     while (0)
 
 void SearchSolution::binaryMethod(const double* const array, const std::uint32_t length, const double key)
@@ -888,18 +892,18 @@ namespace sort
 //! @brief Display sort result.
 #define SORT_RESULT(opt) "\r\n==> %-9s Method <==\n%s\n(" #opt ") run time: %8.5f ms\n"
 //! @brief Print sort result content.
-#define SORT_PRINT_RESULT_CONTENT(method)                                                                       \
-    do                                                                                                          \
-    {                                                                                                           \
-        const std::uint32_t arrayBufferSize = length * maxAlignOfPrint;                                         \
-        char arrayBuffer[arrayBufferSize + 1];                                                                  \
-        arrayBuffer[0] = '\0';                                                                                  \
-        COMMON_PRINT(                                                                                           \
-            SORT_RESULT(asc),                                                                                   \
-            APP_ALGO_GET_METHOD_TITLE(method).data(),                                                           \
-            TargetBuilder<int>::template spliceAll<int>(&resCntr[0], length, arrayBuffer, arrayBufferSize + 1), \
-            TIME_INTERVAL(timing));                                                                             \
-    }                                                                                                           \
+#define SORT_PRINT_RESULT_CONTENT(method)                                         \
+    do                                                                            \
+    {                                                                             \
+        const std::uint32_t arrayBufferSize = length * maxAlignOfPrint;           \
+        std::vector<char> arrayBuffer(arrayBufferSize + 1);                       \
+        COMMON_PRINT(                                                             \
+            SORT_RESULT(asc),                                                     \
+            getTitle(method).data(),                                              \
+            TargetBuilder<int>::template spliceAll<int>(                          \
+                resCntr.data(), length, arrayBuffer.data(), arrayBufferSize + 1), \
+            TIME_INTERVAL(timing));                                               \
+    }                                                                             \
     while (0)
 
 void SortSolution::bubbleMethod(const int* const array, const std::uint32_t length)

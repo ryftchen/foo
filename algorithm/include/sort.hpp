@@ -80,149 +80,139 @@ public:
 
 private:
     //! @brief Recursive for the merge method.
-    //! @param sortArray - array to be sorted
+    //! @param sorting - array to be sorted
     //! @param begin - index of beginning
     //! @param end - index of ending
-    static void mergeSortRecursive(T* const sortArray, const std::uint32_t begin, const std::uint32_t end);
+    static void mergeSortRecursive(T* const sorting, const std::uint32_t begin, const std::uint32_t end);
     //! @brief Recursive for the quick method.
-    //! @param sortArray - array to be sorted
+    //! @param sorting - array to be sorted
     //! @param begin - index of beginning
     //! @param end - index of ending
-    static void quickSortRecursive(T* const sortArray, const std::uint32_t begin, const std::uint32_t end);
+    static void quickSortRecursive(T* const sorting, const std::uint32_t begin, const std::uint32_t end);
     //! @brief Build maximum heap for the heap method.
-    //! @param sortArray - array to be sorted
+    //! @param sorting - array to be sorted
     //! @param begin - index of beginning
     //! @param end - index of ending
-    static void buildMaxHeap(T* const sortArray, const std::uint32_t begin, const std::uint32_t end);
+    static void buildMaxHeap(T* const sorting, const std::uint32_t begin, const std::uint32_t end);
 };
 
 template <class T>
 std::vector<T> Sort<T>::bubble(const T* const array, const std::uint32_t length)
 {
-    T sortArray[length];
-    sortArray[0] = '\0';
-    std::memcpy(sortArray, array, length * sizeof(T));
+    std::vector<T> sorting(array, array + length);
 
     for (std::uint32_t i = 0; i < length - 1; ++i)
     {
         for (std::uint32_t j = 0; j < length - 1 - i; ++j)
         {
-            if (sortArray[j] > sortArray[j + 1])
+            if (sorting[j] > sorting[j + 1])
             {
-                std::swap(sortArray[j], sortArray[j + 1]);
+                std::swap(sorting[j], sorting[j + 1]);
             }
         }
     }
 
-    return std::vector<T>(sortArray, sortArray + length);
+    return sorting;
 }
 
 template <class T>
 std::vector<T> Sort<T>::selection(const T* const array, const std::uint32_t length)
 {
-    T sortArray[length];
-    sortArray[0] = '\0';
-    std::memcpy(sortArray, array, length * sizeof(T));
+    std::vector<T> sorting(array, array + length);
 
     for (std::uint32_t i = 0; i < length - 1; ++i)
     {
         std::uint32_t min = i;
         for (std::uint32_t j = i + 1; j < length; ++j)
         {
-            if (sortArray[j] < sortArray[min])
+            if (sorting[j] < sorting[min])
             {
                 min = j;
             }
         }
-        std::swap(sortArray[i], sortArray[min]);
+        std::swap(sorting[i], sorting[min]);
     }
 
-    return std::vector<T>(sortArray, sortArray + length);
+    return sorting;
 }
 
 template <class T>
 std::vector<T> Sort<T>::insertion(const T* const array, const std::uint32_t length)
 {
-    T sortArray[length];
-    sortArray[0] = '\0';
-    std::memcpy(sortArray, array, length * sizeof(T));
+    std::vector<T> sorting(array, array + length);
 
     for (std::uint32_t i = 1; i < length; ++i)
     {
         int n = i - 1;
-        T temp = sortArray[i];
-        while ((n >= 0) && (sortArray[n] > temp))
+        T temp = sorting[i];
+        while ((n >= 0) && (sorting[n] > temp))
         {
-            sortArray[n + 1] = sortArray[n];
+            sorting[n + 1] = sorting[n];
             --n;
         }
-        sortArray[n + 1] = temp;
+        sorting[n + 1] = temp;
     }
 
-    return std::vector<T>(sortArray, sortArray + length);
+    return sorting;
 }
 
 template <class T>
 std::vector<T> Sort<T>::shell(const T* const array, const std::uint32_t length)
 {
-    T sortArray[length];
-    sortArray[0] = '\0';
-    std::memcpy(sortArray, array, length * sizeof(T));
+    std::vector<T> sorting(array, array + length);
 
     std::uint32_t gap = length / 2;
     while (gap >= 1)
     {
         for (std::uint32_t i = gap; i < length; ++i)
         {
-            for (std::uint32_t j = i; (j >= gap) && (sortArray[j] < sortArray[j - gap]); j -= gap)
+            for (std::uint32_t j = i; (j >= gap) && (sorting[j] < sorting[j - gap]); j -= gap)
             {
-                std::swap(sortArray[j], sortArray[j - gap]);
+                std::swap(sorting[j], sorting[j - gap]);
             }
         }
         gap /= 2;
     }
 
-    return std::vector<T>(sortArray, sortArray + length);
+    return sorting;
 }
 
 template <class T>
 std::vector<T> Sort<T>::merge(const T* const array, const std::uint32_t length)
 {
-    T sortArray[length];
-    sortArray[0] = '\0';
-    std::memcpy(sortArray, array, length * sizeof(T));
+    std::vector<T> sorting(array, array + length);
 
-    mergeSortRecursive(sortArray, 0, length - 1);
+    mergeSortRecursive(sorting.data(), 0, length - 1);
 
-    return std::vector<T>(sortArray, sortArray + length);
+    return sorting;
 }
 
 template <class T>
-void Sort<T>::mergeSortRecursive(T* const sortArray, const std::uint32_t begin, const std::uint32_t end)
+void Sort<T>::mergeSortRecursive(T* const sorting, const std::uint32_t begin, const std::uint32_t end)
 {
     if (begin >= end)
     {
         return;
     }
+
     const std::uint32_t mid = (begin + end) / 2;
-    mergeSortRecursive(sortArray, begin, mid);
-    mergeSortRecursive(sortArray, mid + 1, end);
+    mergeSortRecursive(sorting, begin, mid);
+    mergeSortRecursive(sorting, mid + 1, end);
 
     std::uint32_t leftIdx = 0, rightIdx = 0;
-    std::vector<T> leftSub(sortArray + begin, sortArray + mid + 1);
-    std::vector<T> rightSub(sortArray + mid + 1, sortArray + end + 1);
+    std::vector<T> leftSub(sorting + begin, sorting + mid + 1), rightSub(sorting + mid + 1, sorting + end + 1);
     leftSub.insert(leftSub.cend(), std::numeric_limits<T>::max());
     rightSub.insert(rightSub.cend(), std::numeric_limits<T>::max());
     for (std::uint32_t i = begin; i <= end; ++i)
     {
-        if (leftSub.at(leftIdx) < rightSub.at(rightIdx))
+        if (leftSub[leftIdx] < rightSub[rightIdx])
         {
-            sortArray[i] = leftSub.at(leftIdx);
+            sorting[i] = leftSub[leftIdx];
             ++leftIdx;
         }
         else
         {
-            sortArray[i] = rightSub.at(rightIdx);
+            sorting[i] = rightSub[rightIdx];
             ++rightIdx;
         }
     }
@@ -231,40 +221,38 @@ void Sort<T>::mergeSortRecursive(T* const sortArray, const std::uint32_t begin, 
 template <class T>
 std::vector<T> Sort<T>::quick(const T* const array, const std::uint32_t length)
 {
-    T sortArray[length];
-    sortArray[0] = '\0';
-    std::memcpy(sortArray, array, length * sizeof(T));
+    std::vector<T> sorting(array, array + length);
 
-    quickSortRecursive(sortArray, 0, length - 1);
+    quickSortRecursive(sorting.data(), 0, length - 1);
 
-    return std::vector<T>(sortArray, sortArray + length);
+    return sorting;
 }
 
 template <class T>
-void Sort<T>::quickSortRecursive(T* const sortArray, const std::uint32_t begin, const std::uint32_t end)
+void Sort<T>::quickSortRecursive(T* const sorting, const std::uint32_t begin, const std::uint32_t end)
 {
     if (begin >= end)
     {
         return;
     }
-    T pivot = sortArray[end];
-    std::uint32_t leftIdx = begin, rightIdx = end - 1;
 
+    T pivot = sorting[end];
+    std::uint32_t leftIdx = begin, rightIdx = end - 1;
     while (leftIdx < rightIdx)
     {
-        while ((leftIdx < rightIdx) && (sortArray[leftIdx] < pivot))
+        while ((leftIdx < rightIdx) && (sorting[leftIdx] < pivot))
         {
             ++leftIdx;
         }
-        while ((leftIdx < rightIdx) && (sortArray[rightIdx] >= pivot))
+        while ((leftIdx < rightIdx) && (sorting[rightIdx] >= pivot))
         {
             --rightIdx;
         }
-        std::swap(sortArray[leftIdx], sortArray[rightIdx]);
+        std::swap(sorting[leftIdx], sorting[rightIdx]);
     }
-    if (sortArray[leftIdx] >= sortArray[end])
+    if (sorting[leftIdx] >= sorting[end])
     {
-        std::swap(sortArray[leftIdx], sortArray[end]);
+        std::swap(sorting[leftIdx], sorting[end]);
     }
     else
     {
@@ -273,47 +261,45 @@ void Sort<T>::quickSortRecursive(T* const sortArray, const std::uint32_t begin, 
 
     if (leftIdx)
     {
-        quickSortRecursive(sortArray, begin, leftIdx - 1);
+        quickSortRecursive(sorting, begin, leftIdx - 1);
     }
-    quickSortRecursive(sortArray, leftIdx + 1, end);
+    quickSortRecursive(sorting, leftIdx + 1, end);
 }
 
 template <class T>
 std::vector<T> Sort<T>::heap(const T* const array, const std::uint32_t length)
 {
-    T sortArray[length];
-    sortArray[0] = '\0';
-    std::memcpy(sortArray, array, length * sizeof(T));
+    std::vector<T> sorting(array, array + length);
 
     for (int i = length / 2 + 1; i >= 0; --i)
     {
-        buildMaxHeap(sortArray, i, length - 1);
+        buildMaxHeap(sorting.data(), i, length - 1);
     }
     for (int i = length - 1; i > 0; --i)
     {
-        std::swap(sortArray[0], sortArray[i]);
-        buildMaxHeap(sortArray, 0, i - 1);
+        std::swap(sorting[0], sorting[i]);
+        buildMaxHeap(sorting.data(), 0, i - 1);
     }
 
-    return std::vector<T>(sortArray, sortArray + length);
+    return sorting;
 }
 
 template <class T>
-void Sort<T>::buildMaxHeap(T* const sortArray, const std::uint32_t begin, const std::uint32_t end)
+void Sort<T>::buildMaxHeap(T* const sorting, const std::uint32_t begin, const std::uint32_t end)
 {
     std::uint32_t parent = begin, child = parent * 2 + 1;
     while (child <= end)
     {
-        if (((child + 1) <= end) && (sortArray[child] < sortArray[child + 1]))
+        if (((child + 1) <= end) && (sorting[child] < sorting[child + 1]))
         {
             ++child;
         }
-        if (sortArray[parent] > sortArray[child])
+        if (sorting[parent] > sorting[child])
         {
             return;
         }
 
-        std::swap(sortArray[parent], sortArray[child]);
+        std::swap(sorting[parent], sorting[child]);
         parent = child;
         child = parent * 2 + 1;
     }
@@ -327,49 +313,44 @@ std::vector<T> Sort<T>::counting(const T* const array, const std::uint32_t lengt
         throw std::runtime_error("The array type is not integral.");
     }
 
-    T sortArray[length];
-    sortArray[0] = '\0';
-    std::memcpy(sortArray, array, length * sizeof(T));
+    std::vector<T> sorting(array, array + length);
 
-    T max = std::numeric_limits<T>::min();
-    T min = std::numeric_limits<T>::max();
+    T max = std::numeric_limits<T>::min(), min = std::numeric_limits<T>::max();
     for (std::uint32_t i = 0; i < length; ++i)
     {
-        max = std::max(sortArray[i], max);
-        min = std::min(sortArray[i], min);
+        max = std::max(sorting[i], max);
+        min = std::min(sorting[i], min);
     }
 
     const T countingLen = max - min + 1;
-    std::unique_ptr<T[]> counting = std::make_unique<T[]>(countingLen);
+    std::vector<T> counting(countingLen);
     for (std::uint32_t i = 0; i < length; ++i)
     {
-        ++counting[sortArray[i] - min];
+        ++counting[sorting[i] - min];
     }
     std::uint32_t index = 0;
     for (T j = 0; j < countingLen; ++j)
     {
         while (counting[j])
         {
-            sortArray[index++] = j + min;
+            sorting[index++] = j + min;
             --counting[j];
         }
     }
 
-    return std::vector<T>(sortArray, sortArray + length);
+    return sorting;
 }
 
 template <class T>
 std::vector<T> Sort<T>::bucket(const T* const array, const std::uint32_t length)
 {
-    T sortArray[length];
-    sortArray[0] = '\0';
-    std::memcpy(sortArray, array, length * sizeof(T));
+    std::vector<T> sorting(array, array + length);
 
     T max = std::numeric_limits<T>::min(), min = std::numeric_limits<T>::max();
     for (std::uint32_t i = 0; i < length; ++i)
     {
-        max = std::max(sortArray[i], max);
-        min = std::min(sortArray[i], min);
+        max = std::max(sorting[i], max);
+        min = std::min(sorting[i], min);
     }
 
     const std::uint32_t bucketNum = length;
@@ -378,8 +359,8 @@ std::vector<T> Sort<T>::bucket(const T* const array, const std::uint32_t length)
     for (std::uint32_t i = 0; i < length; ++i)
     {
         // min+(max-min)/(num-1)*(idx-1)<=array[i]
-        const std::uint32_t bucketIdx = std::floor(static_cast<double>(sortArray[i] - min) / intervalSpan + 1) - 1;
-        container.at(bucketIdx).emplace_back(sortArray[i]);
+        const std::uint32_t bucketIdx = std::floor(static_cast<double>(sorting[i] - min) / intervalSpan + 1) - 1;
+        container[bucketIdx].emplace_back(sorting[i]);
     }
 
     std::uint32_t index = 0;
@@ -388,11 +369,11 @@ std::vector<T> Sort<T>::bucket(const T* const array, const std::uint32_t length)
         std::sort(bucketUpd.begin(), bucketUpd.end());
         for (const auto bucketElem : bucketUpd)
         {
-            sortArray[index++] = bucketElem;
+            sorting[index++] = bucketElem;
         }
     }
 
-    return std::vector<T>(sortArray, sortArray + length);
+    return sorting;
 }
 
 template <class T>
@@ -403,17 +384,15 @@ std::vector<T> Sort<T>::radix(const T* const array, const std::uint32_t length)
         throw std::runtime_error("The array type is not integral.");
     }
 
-    T sortArray[length];
-    sortArray[0] = '\0';
-    std::memcpy(sortArray, array, length * sizeof(T));
+    std::vector<T> sorting(array, array + length);
 
     T max = std::numeric_limits<T>::min(), min = std::numeric_limits<T>::max();
     bool positive = false, negative = false;
     for (std::uint32_t i = 0; i < length; ++i)
     {
-        max = std::max(sortArray[i], max);
-        min = std::min(sortArray[i], min);
-        (sortArray[i] > 0) ? positive = true : ((sortArray[i] < 0) ? negative = true : sortArray[i]);
+        max = std::max(sorting[i], max);
+        min = std::min(sorting[i], min);
+        (sorting[i] > 0) ? positive = true : ((sorting[i] < 0) ? negative = true : sorting[i]);
     }
     T absMax = std::max(max, -min);
     std::uint32_t digitMax = 0;
@@ -427,25 +406,22 @@ std::vector<T> Sort<T>::radix(const T* const array, const std::uint32_t length)
     constexpr std::uint32_t naturalNumberBucket = 10, negativeIntegerBucket = 9;
     const std::uint32_t bucketNum =
         (positive ^ negative) ? naturalNumberBucket : (naturalNumberBucket + negativeIntegerBucket);
-    T countingOld[bucketNum], countingNew[bucketNum];
-    std::memset(countingOld, 0, bucketNum * sizeof(T));
-    std::memset(countingNew, 0, bucketNum * sizeof(T));
-
+    std::vector<T> countingOld(bucketNum, 0), countingNew(bucketNum, 0);
     std::vector<std::queue<T>> container(bucketNum, std::queue<T>{});
     const std::uint32_t offset = (!negative) ? 0 : negativeIntegerBucket;
     for (std::uint32_t i = 0; i < length; ++i)
     {
-        const int sign = (sortArray[i] > 0) ? 1 : -1;
-        const std::uint32_t bucketIdx = std::abs(sortArray[i]) / 1 % base * sign + offset;
-        container.at(bucketIdx).push(sortArray[i]);
+        const int sign = (sorting[i] > 0) ? 1 : -1;
+        const std::uint32_t bucketIdx = std::abs(sorting[i]) / 1 % base * sign + offset;
+        container[bucketIdx].push(sorting[i]);
         ++countingNew[bucketIdx];
     }
 
     constexpr std::uint32_t decimal = 10;
     for (std::uint32_t i = 1, pow = decimal; i < digitMax; ++i, pow *= base)
     {
-        std::memcpy(countingOld, countingNew, bucketNum * sizeof(T));
-        std::memset(countingNew, 0, bucketNum * sizeof(T));
+        countingOld = countingNew;
+        std::fill(countingNew.begin(), countingNew.end(), 0);
         for (auto bucketIter = container.begin(); container.end() != bucketIter; ++bucketIter)
         {
             if (bucketIter->size() == 0)
@@ -459,7 +435,7 @@ std::vector<T> Sort<T>::radix(const T* const array, const std::uint32_t length)
                 const T bucketElem = bucketIter->front();
                 const int sign = (bucketElem > 0) ? 1 : -1;
                 const std::uint32_t bucketIdx = std::abs(bucketElem) / pow % base * sign + offset;
-                container.at(bucketIdx).push(bucketElem);
+                container[bucketIdx].push(bucketElem);
                 ++countingNew[bucketIdx];
                 bucketIter->pop();
                 --countingOld[countingIdx];
@@ -472,12 +448,12 @@ std::vector<T> Sort<T>::radix(const T* const array, const std::uint32_t length)
     {
         while (!bucketInfo.empty())
         {
-            sortArray[index++] = bucketInfo.front();
+            sorting[index++] = bucketInfo.front();
             bucketInfo.pop();
         }
     }
 
-    return std::vector<T>(sortArray, sortArray + length);
+    return sorting;
 }
 } // namespace sort
 } // namespace algorithm

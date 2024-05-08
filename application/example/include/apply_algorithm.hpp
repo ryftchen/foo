@@ -358,25 +358,21 @@ private:
     //! @param textLen - length of matching text
     static void createMatchingText(unsigned char* const text, const std::uint32_t textLen)
     {
-        char piText[textLen + 1];
-        piText[0] = '\0';
-
-        ::mpfr_t x{};
-        ::mpfr_init2(x, calculatePrecision(textLen));
-        ::mpfr_const_pi(x, ::MPFR_RNDN);
-        ::mpfr_exp_t mpfrDecimalLocation = 0;
-        ::mpfr_get_str(piText, &mpfrDecimalLocation, mpfrBase, 0, x, ::MPFR_RNDN);
-        ::mpfr_clear(x);
+        ::mpfr_t operand{};
+        ::mpfr_init2(operand, calculatePrecision(textLen));
+        ::mpfr_const_pi(operand, ::MPFR_RNDN);
+        ::mpfr_exp_t decimalLocation = 0;
+        char* const piText = ::mpfr_get_str(nullptr, &decimalLocation, mpfrBase, 0, operand, ::MPFR_RNDN);
 
         assert(0 != std::strlen(piText));
         piText[textLen] = '\0';
         std::memcpy(text, piText, textLen * sizeof(unsigned char));
 
 #ifdef __RUNTIME_PRINTING
-        std::string out(piText);
+        std::string out(text, text + textLen);
         if (textLen > 1)
         {
-            out = std::string{out.at(0)} + "." + out.substr(1, out.length());
+            out = std::string{out.at(0)} + '.' + out.substr(1, out.length());
         }
         std::cout << "\r\nπ " << textLen << " digits:\n"
                   << out.substr(0, std::min(textLen, maxNumPerLineOfPrint)) << std::endl;
@@ -389,13 +385,16 @@ private:
                       << std::endl;
         }
 #endif // __RUNTIME_PRINTING
+
+        ::mpfr_clear(operand);
+        ::mpfr_free_str(piText);
     }
     //! @brief Calculate precision by digit.
     //! @param digit - digit for the target text
     //! @return precision converted from digit
     static inline int calculatePrecision(const std::uint32_t digit)
     {
-        return static_cast<int>(std::ceil(static_cast<double>(digit) * std::log2(mpfrBase)));
+        return 1 + static_cast<int>(std::ceil(static_cast<double>(digit) * std::log2(mpfrBase)));
     }
 };
 } // namespace match
@@ -664,7 +663,7 @@ public:
     //! @param left - the left boundary of the array
     //! @param right - the right boundary of the array
     TargetBuilder(const std::uint32_t length, const T left, const T right) :
-        orderedArray(std::make_unique<T[]>(length)), length(length)
+        orderedArray(std::make_unique<T[]>(length + 1)), length(length)
     {
         setOrderedArray<T>(orderedArray.get(), length, left, right);
         searchKey = orderedArray[length / 2];
@@ -673,7 +672,7 @@ public:
     virtual ~TargetBuilder() = default;
     //! @brief Construct a new TargetBuilder object.
     //! @param rhs - right-hand side
-    TargetBuilder(const TargetBuilder& rhs) : length(rhs.length), orderedArray(std::make_unique<T[]>(rhs.length))
+    TargetBuilder(const TargetBuilder& rhs) : length(rhs.length), orderedArray(std::make_unique<T[]>(rhs.length + 1))
     {
         deepCopy(rhs);
         searchKey = orderedArray[length / 2];
@@ -787,10 +786,9 @@ private:
 
 #ifdef __RUNTIME_PRINTING
         const std::uint32_t arrayBufferSize = length * maxAlignOfPrint;
-        char arrayBuffer[arrayBufferSize + 1];
-        arrayBuffer[0] = '\0';
+        std::vector<char> arrayBuffer(arrayBufferSize + 1);
         std::cout << "\r\nGenerate " << length << " ordered integral numbers from " << left << " to " << right << ":\n"
-                  << spliceAll<T>(array, length, arrayBuffer, arrayBufferSize + 1) << std::endl;
+                  << spliceAll<T>(array, length, arrayBuffer.data(), arrayBufferSize + 1) << std::endl;
 #endif // __RUNTIME_PRINTING
     }
     //! @brief Set the ordered array.
@@ -813,11 +811,10 @@ private:
 
 #ifdef __RUNTIME_PRINTING
         const std::uint32_t arrayBufferSize = length * maxAlignOfPrint;
-        char arrayBuffer[arrayBufferSize + 1];
-        arrayBuffer[0] = '\0';
+        std::vector<char> arrayBuffer(arrayBufferSize + 1);
         std::cout << "\r\nGenerate " << length << " ordered floating point numbers from " << left << " to " << right
                   << ":\n"
-                  << spliceAll<T>(array, length, arrayBuffer, arrayBufferSize + 1) << std::endl;
+                  << spliceAll<T>(array, length, arrayBuffer.data(), arrayBufferSize + 1) << std::endl;
 #endif // __RUNTIME_PRINTING
     }
 };
@@ -913,7 +910,7 @@ public:
     //! @param left - the left boundary of the array
     //! @param right - the right boundary of the array
     TargetBuilder(const std::uint32_t length, const T left, const T right) :
-        randomArray(std::make_unique<T[]>(length)), length(length)
+        randomArray(std::make_unique<T[]>(length + 1)), length(length)
     {
         setRandomArray<T>(randomArray.get(), length, left, right);
     }
@@ -921,7 +918,7 @@ public:
     virtual ~TargetBuilder() = default;
     //! @brief Construct a new TargetBuilder object.
     //! @param rhs - right-hand side
-    TargetBuilder(const TargetBuilder& rhs) : length(rhs.length), randomArray(std::make_unique<T[]>(rhs.length))
+    TargetBuilder(const TargetBuilder& rhs) : length(rhs.length), randomArray(std::make_unique<T[]>(rhs.length + 1))
     {
         deepCopy(rhs);
     }
@@ -1028,10 +1025,9 @@ private:
 
 #ifdef __RUNTIME_PRINTING
         const std::uint32_t arrayBufferSize = length * maxAlignOfPrint;
-        char arrayBuffer[arrayBufferSize + 1];
-        arrayBuffer[0] = '\0';
+        std::vector<char> arrayBuffer(arrayBufferSize + 1);
         std::cout << "\r\nGenerate " << length << " random integral numbers from " << left << " to " << right << ":\n"
-                  << spliceAll<T>(array, length, arrayBuffer, arrayBufferSize + 1) << std::endl;
+                  << spliceAll<T>(array, length, arrayBuffer.data(), arrayBufferSize + 1) << std::endl;
 #endif // __RUNTIME_PRINTING
     }
     //! @brief Set the random array.
@@ -1053,11 +1049,10 @@ private:
 
 #ifdef __RUNTIME_PRINTING
         const std::uint32_t arrayBufferSize = length * maxAlignOfPrint;
-        char arrayBuffer[arrayBufferSize + 1];
-        arrayBuffer[0] = '\0';
+        std::vector<char> arrayBuffer(arrayBufferSize + 1);
         std::cout << "\r\nGenerate " << length << " random floating point numbers from " << left << " to " << right
                   << ":\n"
-                  << spliceAll<T>(array, length, arrayBuffer, arrayBufferSize + 1) << std::endl;
+                  << spliceAll<T>(array, length, arrayBuffer.data(), arrayBufferSize + 1) << std::endl;
 #endif // __RUNTIME_PRINTING
     }
 };

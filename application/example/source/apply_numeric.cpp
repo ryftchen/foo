@@ -32,13 +32,6 @@
                                 << std::setw(50) << category << "END" << std::resetiosflags(std::ios_base::left)  \
                                 << std::setfill(' ') << '\n'                                                      \
                                 << std::endl;
-//! @brief Get the title of a particular method in numeric tasks.
-#define APP_NUM_GET_METHOD_TITLE(method)                   \
-    ({                                                     \
-        std::string title = std::string{toString(method)}; \
-        title.at(0) = std::toupper(title.at(0));           \
-        title;                                             \
-    })
 
 namespace application::app_num
 {
@@ -129,6 +122,18 @@ consteval std::size_t abbrVal(const T method)
     return value;
 }
 
+//! @brief Get the title of a particular method in numeric tasks.
+//! @tparam T - type of target method
+//! @param method - target method
+//! @return initial capitalized title
+template <class T>
+std::string getTitle(const T method)
+{
+    std::string title = std::string{toString(method)};
+    title.at(0) = std::toupper(title.at(0));
+    return title;
+}
+
 //! @brief Mapping table for enum and string about arithmetic methods. X macro.
 #define APP_NUM_ARITHMETIC_METHOD_TABLE    \
     ELEM(addition, "addition")             \
@@ -204,7 +209,7 @@ namespace arithmetic
 #define ARITHMETIC_RESULT "\r\n==> %-14s Method <==\n(%d) %c (%d) = %d\n"
 //! @brief Print arithmetic result content.
 #define ARITHMETIC_PRINT_RESULT_CONTENT(method, a, operator, b, result) \
-    COMMON_PRINT(ARITHMETIC_RESULT, APP_NUM_GET_METHOD_TITLE(method).data(), a, operator, b, result)
+    COMMON_PRINT(ARITHMETIC_RESULT, getTitle(method).data(), a, operator, b, result)
 
 void ArithmeticSolution::additionMethod(const int augend, const int addend)
 try
@@ -347,18 +352,17 @@ namespace divisor
 //! @brief Display divisor result.
 #define DIVISOR_RESULT "\r\n==> %-9s Method <==\n%s\nrun time: %8.5f ms\n"
 //! @brief Print divisor result content.
-#define DIVISOR_PRINT_RESULT_CONTENT(method)                                                           \
-    do                                                                                                 \
-    {                                                                                                  \
-        const std::uint32_t arrayBufferSize = resCntr.size() * maxAlignOfPrint;                        \
-        char arrayBuffer[arrayBufferSize + 1];                                                         \
-        arrayBuffer[0] = '\0';                                                                         \
-        COMMON_PRINT(                                                                                  \
-            DIVISOR_RESULT,                                                                            \
-            APP_NUM_GET_METHOD_TITLE(method).data(),                                                   \
-            TargetBuilder::template spliceAllIntegers<int>(resCntr, arrayBuffer, arrayBufferSize + 1), \
-            TIME_INTERVAL(timing));                                                                    \
-    }                                                                                                  \
+#define DIVISOR_PRINT_RESULT_CONTENT(method)                                                                  \
+    do                                                                                                        \
+    {                                                                                                         \
+        const std::uint32_t arrayBufferSize = resCntr.size() * maxAlignOfPrint;                               \
+        std::vector<char> arrayBuffer(arrayBufferSize + 1);                                                   \
+        COMMON_PRINT(                                                                                         \
+            DIVISOR_RESULT,                                                                                   \
+            getTitle(method).data(),                                                                          \
+            TargetBuilder::template spliceAllIntegers<int>(resCntr, arrayBuffer.data(), arrayBufferSize + 1), \
+            TIME_INTERVAL(timing));                                                                           \
+    }                                                                                                         \
     while (0)
 
 void DivisorSolution::euclideanMethod(int a, int b)
@@ -472,7 +476,7 @@ namespace integral
 #define INTEGRAL_RESULT(opt) "\r\n==> %-11s Method <==\nI(" #opt ")=%+.5f, run time: %8.5f ms\n"
 //! @brief Print integral result content.
 #define INTEGRAL_PRINT_RESULT_CONTENT(method, sum) \
-    COMMON_PRINT(INTEGRAL_RESULT(def), APP_NUM_GET_METHOD_TITLE(method).data(), sum, TIME_INTERVAL(timing))
+    COMMON_PRINT(INTEGRAL_RESULT(def), getTitle(method).data(), sum, TIME_INTERVAL(timing))
 
 void IntegralSolution::trapezoidalMethod(const Expression& expr, double lower, double upper)
 try
@@ -673,18 +677,18 @@ namespace prime
 //! @brief Display prime result.
 #define PRIME_RESULT "\r\n==> %-9s Method <==\n%s\nrun time: %8.5f ms\n"
 //! @brief Print prime result content.
-#define PRIME_PRINT_RESULT_CONTENT(method)                                                                       \
-    do                                                                                                           \
-    {                                                                                                            \
-        const std::uint32_t arrayBufferSize = resCntr.size() * maxAlignOfPrint;                                  \
-        char arrayBuffer[arrayBufferSize + 1];                                                                   \
-        arrayBuffer[0] = '\0';                                                                                   \
-        COMMON_PRINT(                                                                                            \
-            PRIME_RESULT,                                                                                        \
-            APP_NUM_GET_METHOD_TITLE(method).data(),                                                             \
-            TargetBuilder::template spliceAllIntegers<std::uint32_t>(resCntr, arrayBuffer, arrayBufferSize + 1), \
-            TIME_INTERVAL(timing));                                                                              \
-    }                                                                                                            \
+#define PRIME_PRINT_RESULT_CONTENT(method)                                      \
+    do                                                                          \
+    {                                                                           \
+        const std::uint32_t arrayBufferSize = resCntr.size() * maxAlignOfPrint; \
+        std::vector<char> arrayBuffer(arrayBufferSize + 1);                     \
+        COMMON_PRINT(                                                           \
+            PRIME_RESULT,                                                       \
+            getTitle(method).data(),                                            \
+            TargetBuilder::template spliceAllIntegers<std::uint32_t>(           \
+                resCntr, arrayBuffer.data(), arrayBufferSize + 1),              \
+            TIME_INTERVAL(timing));                                             \
+    }                                                                           \
     while (0)
 
 void PrimeSolution::eratosthenesMethod(const std::uint32_t max)

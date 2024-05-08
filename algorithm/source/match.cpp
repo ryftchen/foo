@@ -6,8 +6,7 @@
 
 #include "match.hpp"
 
-#include <algorithm>
-#include <cstring>
+#include <vector>
 
 namespace algorithm::match
 {
@@ -72,9 +71,8 @@ int Match::kmp(
     const std::uint32_t patternLen)
 {
     int shift = -1;
-    std::uint32_t next[patternLen + 1];
+    std::vector<std::uint32_t> next(patternLen + 1, 0);
 
-    std::memset(next, 0, (patternLen + 1) * sizeof(std::uint32_t));
     for (std::uint32_t i = 1; i < patternLen; ++i)
     {
         std::uint32_t j = next[i + 1];

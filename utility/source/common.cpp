@@ -139,14 +139,17 @@ std::string formatString(const char* const format, ...)
     ::va_start(list, format);
     int bufferSize = std::vsnprintf(nullptr, 0, format, list);
     ::va_end(list);
+    if (bufferSize < 0)
+    {
+        throw std::runtime_error("Could not format string.");
+    }
 
     ::va_start(list, format);
-    char buffer[bufferSize + 1];
-    buffer[0] = '\0';
-    std::vsnprintf(buffer, bufferSize + 1, format, list);
+    std::vector<char> buffer(bufferSize + 1);
+    std::vsnprintf(buffer.data(), bufferSize + 1, format, list);
     ::va_end(list);
 
-    return std::string{buffer};
+    return std::string{buffer.cbegin(), buffer.cbegin() + bufferSize};
 }
 
 //! @brief Execute the command line.
