@@ -8,6 +8,14 @@
 
 namespace numeric::arithmetic
 {
+//! @brief Function version number.
+//! @return version number (major.minor.patch)
+const char* version()
+{
+    static const char* const ver = "0.1.0";
+    return ver;
+}
+
 int Arithmetic::addition(const int augend, const int addend)
 {
     const int sum = bitAdd(augend, addend);

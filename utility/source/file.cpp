@@ -11,6 +11,14 @@
 
 namespace utility::file
 {
+//! @brief Function version number.
+//! @return version number (major.minor.patch)
+const char* version()
+{
+    static const char* const ver = "0.1.0";
+    return ver;
+}
+
 void ReadWriteLock::readLock()
 {
     std::shared_lock<std::shared_mutex> rdLock(rwLock);

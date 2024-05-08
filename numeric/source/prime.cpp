@@ -8,6 +8,14 @@
 
 namespace numeric::prime
 {
+//! @brief Function version number.
+//! @return version number (major.minor.patch)
+const char* version()
+{
+    static const char* const ver = "0.1.0";
+    return ver;
+}
+
 std::vector<std::uint32_t> Prime::eratosthenes(const std::uint32_t max)
 {
     std::vector<std::uint32_t> container(0);

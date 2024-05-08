@@ -11,6 +11,14 @@
 
 namespace algorithm::notation
 {
+//! @brief Function version number.
+//! @return version number (major.minor.patch)
+const char* version()
+{
+    static const char* const ver = "0.1.0";
+    return ver;
+}
+
 std::string Notation::prefix(const std::string& infixNotation)
 {
     std::string infix = infixNotation;

@@ -10,6 +10,14 @@
 
 namespace design_pattern::behavioral
 {
+//! @brief Function version number.
+//! @return version number (major.minor.patch)
+const char* version()
+{
+    static const char* const ver = "0.1.0";
+    return ver;
+}
+
 namespace chain_of_responsibility
 {
 void Handler::setHandler(std::shared_ptr<Handler> handler)

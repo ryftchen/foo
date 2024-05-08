@@ -15,6 +15,8 @@ namespace numeric // NOLINT(modernize-concat-nested-namespaces)
 //! @brief Prime-related functions in the numeric module.
 namespace prime
 {
+extern const char* version();
+
 //! @brief Prime methods.
 class Prime
 {

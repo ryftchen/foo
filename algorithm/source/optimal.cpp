@@ -12,6 +12,14 @@
 
 namespace algorithm::optimal
 {
+//! @brief Function version number.
+//! @return version number (major.minor.patch)
+const char* version()
+{
+    static const char* const ver = "0.1.0";
+    return ver;
+}
+
 std::optional<std::tuple<double, double>> Gradient::operator()(const double left, const double right, const double eps)
 {
     std::mt19937 engine(std::random_device{}());

@@ -18,6 +18,8 @@ namespace utility // NOLINT(modernize-concat-nested-namespaces)
 //! @brief File-operation-related functions in the utility module.
 namespace file
 {
+extern const char* version();
+
 //! @brief Enumerate specific file lock modes.
 enum class LockMode : std::uint8_t
 {

@@ -16,6 +16,8 @@ namespace algorithm // NOLINT(modernize-concat-nested-namespaces)
 //! @brief Search-related functions in the algorithm module.
 namespace search
 {
+extern const char* version();
+
 //! @brief Search methods.
 //! @tparam T - type of search methods
 template <class T>

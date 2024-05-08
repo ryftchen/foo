@@ -8,6 +8,14 @@
 
 namespace date_structure::linear
 {
+//! @brief Function version number.
+//! @return version number (major.minor.patch)
+const char* version()
+{
+    static const char* const ver = "0.1.0";
+    return ver;
+}
+
 namespace doubly_linked_list
 {
 //! @brief Create a node of the doubly linked list.

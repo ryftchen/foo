@@ -19,6 +19,8 @@ namespace utility // NOLINT(modernize-concat-nested-namespaces)
 //! @brief Common-interface-related functions in the utility module.
 namespace common
 {
+extern const char* version();
+
 //! @brief ANSI escape codes for red foreground color.
 inline constexpr std::string_view colorRed = "\033[0;31;40m";
 //! @brief ANSI escape codes for green foreground color.
