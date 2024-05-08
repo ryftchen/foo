@@ -11,6 +11,14 @@
 
 namespace numeric::integral
 {
+//! @brief Function version number.
+//! @return version number (major.minor.patch)
+const char* version()
+{
+    static const char* const ver = "0.1.0";
+    return ver;
+}
+
 int Integral::getSign(double& lower, double& upper)
 {
     return (lower < upper) ? 1 : ((lower > upper) ? (std::swap(lower, upper), -1) : 0);

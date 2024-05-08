@@ -14,6 +14,8 @@ namespace numeric // NOLINT(modernize-concat-nested-namespaces)
 //! @brief Divisor-related functions in the numeric module.
 namespace divisor
 {
+extern const char* version();
+
 //! @brief Divisor methods.
 class Divisor
 {

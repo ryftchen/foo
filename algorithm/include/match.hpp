@@ -14,6 +14,8 @@ namespace algorithm // NOLINT(modernize-concat-nested-namespaces)
 //! @brief Match-related functions in the algorithm module.
 namespace match
 {
+extern const char* version();
+
 //! @brief Match methods.
 class Match
 {

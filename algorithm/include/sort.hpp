@@ -18,6 +18,8 @@ namespace algorithm // NOLINT(modernize-concat-nested-namespaces)
 //! @brief Sort-related functions in the algorithm module.
 namespace sort
 {
+extern const char* version();
+
 //! @brief Sort methods.
 //! @tparam T - type of sort methods
 template <class T>

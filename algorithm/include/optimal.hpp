@@ -15,6 +15,8 @@ namespace algorithm // NOLINT(modernize-concat-nested-namespaces)
 //! @brief Optimal-related functions in the algorithm module.
 namespace optimal
 {
+extern const char* version();
+
 //! @brief Target functions.
 class Function
 {

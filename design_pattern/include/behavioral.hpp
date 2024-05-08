@@ -17,6 +17,8 @@ namespace design_pattern // NOLINT(modernize-concat-nested-namespaces)
 //! @brief Behavioral-related functions in the design pattern module.
 namespace behavioral
 {
+extern const char* version();
+
 //! @brief The chain of responsibility pattern.
 namespace chain_of_responsibility
 {

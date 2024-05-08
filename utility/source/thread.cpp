@@ -8,6 +8,14 @@
 
 namespace utility::thread
 {
+//! @brief Function version number.
+//! @return version number (major.minor.patch)
+const char* version()
+{
+    static const char* const ver = "0.1.0";
+    return ver;
+}
+
 Thread::Thread(const std::size_t size)
 {
     for (std::size_t i = 0; i < size; ++i)

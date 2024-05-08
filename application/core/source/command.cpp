@@ -16,6 +16,8 @@
 #include "application/pch/precompiled_header.hpp"
 #endif // __PRECOMPILED_HEADER
 
+#include "utility/include/currying.hpp"
+
 namespace application::command
 {
 //! @brief Alias for the type information.
@@ -68,6 +70,27 @@ static void triggerHelper(const HelperControl operation)
         default:
             break;
     }
+}
+
+//! @brief Compare whether two strings are equal.
+//! @param src - source string
+//! @param tgt - target string
+//! @return be equal or not equal
+static bool allStrEqual(const char* const src, const char* const tgt)
+{
+    return std::strncmp(src, tgt, std::strlen(src)) == 0;
+}
+
+//! @brief Compare whether multiple strings are equal.
+//! @tparam Others - type of arguments of string
+//! @param src - source string
+//! @param tgt - target string
+//! @param others - arguments of string
+//! @return be equal or not equal
+template <typename... Others>
+static bool allStrEqual(const char* const src, const char* const tgt, Others const&... others)
+{
+    return (std::strncmp(src, tgt, std::strlen(src)) == 0) && allStrEqual(tgt, others...);
 }
 
 Command::Command()
@@ -637,6 +660,47 @@ void Command::dumpConfiguration() const
 
 void Command::showVersionIcon() const
 {
+    if (!allStrEqual(
+            mainCLI.version.data(),
+            utility::argument::version(),
+            utility::common::version(),
+            utility::console::version(),
+            utility::currying::version(),
+            utility::file::version(),
+            utility::fsm::version(),
+            utility::json::version(),
+            utility::memory::version(),
+            utility::reflection::version(),
+            utility::socket::version(),
+            utility::thread::version(),
+            utility::time::version())
+        || !allStrEqual(
+            subCLIAppAlgo.version.data(),
+            algorithm::match::version(),
+            algorithm::notation::version(),
+            algorithm::optimal::version(),
+            algorithm::search::version(),
+            algorithm::sort::version())
+        || !allStrEqual(
+            subCLIAppDp.version.data(),
+            design_pattern::behavioral::version(),
+            design_pattern::creational::version(),
+            design_pattern::structural::version())
+        || !allStrEqual(subCLIAppDs.version.data(), date_structure::linear::version(), date_structure::tree::version())
+        || !allStrEqual(
+            subCLIAppNum.version.data(),
+            numeric::arithmetic::version(),
+            numeric::divisor::version(),
+            numeric::integral::version(),
+            numeric::prime::version()))
+    {
+        throw std::runtime_error(
+            "Dependencies version number mismatch. Expected main version: " + mainCLI.title + " (" + mainCLI.version
+            + "), sub-version: " + subCLIAppAlgo.title + " (" + subCLIAppAlgo.version + "), " + subCLIAppDp.title + " ("
+            + subCLIAppDp.version + "), " + subCLIAppDs.title + " (" + subCLIAppDs.version + "), " + subCLIAppNum.title
+            + " (" + subCLIAppNum.version + ").");
+    }
+
     constexpr std::string_view processor =
 #ifdef __TARGET_PROCESSOR
                                    __TARGET_PROCESSOR,

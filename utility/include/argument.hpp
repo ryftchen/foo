@@ -21,6 +21,8 @@ namespace utility // NOLINT(modernize-concat-nested-namespaces)
 //! @brief Argument-parsing-related functions in the utility module.
 namespace argument
 {
+extern const char* version();
+
 //! @brief Confirm container traits. Value is false.
 //! @tparam T - type to be confirmed
 template <typename T, typename = void>

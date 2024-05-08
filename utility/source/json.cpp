@@ -12,6 +12,17 @@
 
 namespace utility::json
 {
+//! @brief Function version number.
+//! @return version number (major.minor.patch)
+const char* version()
+{
+    static const char* const ver = "0.1.0";
+    return ver;
+}
+
+//! @brief Parse the next data in JSON.
+//! @param fmt - formatted string
+//! @param offset - data offset
 static JSON parseNext(const std::string& fmt, std::size_t& offset);
 
 //! @brief Escape for JSON.
@@ -338,9 +349,6 @@ static JSON parseNull(const std::string& fmt, std::size_t& offset)
     return {};
 }
 
-//! @brief Parse the next data in JSON.
-//! @param fmt - formatted string
-//! @param offset - data offset
 static JSON parseNext(const std::string& fmt, std::size_t& offset)
 {
     consumeWhitespace(fmt, offset);
