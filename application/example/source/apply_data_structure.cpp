@@ -32,13 +32,6 @@
                                 << std::setfill('.') << std::setw(50) << category << "END"              \
                                 << std::resetiosflags(std::ios_base::left) << std::setfill(' ') << '\n' \
                                 << std::endl;
-//! @brief Get the title of a particular instance in data structure tasks.
-#define APP_DS_GET_INSTANCE_TITLE(instance)                  \
-    ({                                                       \
-        std::string title = std::string{toString(instance)}; \
-        title.at(0) = std::toupper(title.at(0));             \
-        title;                                               \
-    })
 
 namespace application::app_ds
 {
@@ -125,6 +118,18 @@ consteval std::size_t abbrVal(const T instance)
     return value;
 }
 
+//! @brief Get the title of a particular instance in data structure tasks.
+//! @tparam T - type of target instance
+//! @param instance - target instance
+//! @return initial capitalized title
+template <class T>
+std::string getTitle(const T instance)
+{
+    std::string title = std::string{toString(instance)};
+    title.at(0) = std::toupper(title.at(0));
+    return title;
+}
+
 //! @brief Mapping table for enum and string about linear instances. X macro.
 #define APP_DS_LINEAR_INSTANCE_TABLE \
     ELEM(linkedList, "linkedList")   \
@@ -165,7 +170,7 @@ namespace linear
 #define LINEAR_RESULT "\r\n==> %-10s Instance <==\n%s"
 //! @brief Print linear result content.
 #define LINEAR_PRINT_RESULT_CONTENT(instance) \
-    COMMON_PRINT(LINEAR_RESULT, APP_DS_GET_INSTANCE_TITLE(instance).data(), output.str().c_str())
+    COMMON_PRINT(LINEAR_RESULT, getTitle(instance).data(), output.str().c_str())
 
 void LinearStructure::linkedListInstance()
 try
@@ -286,8 +291,7 @@ namespace tree
 //! @brief Display tree result.
 #define TREE_RESULT "\r\n==> %-19s Instance <==\n%s"
 //! @brief Print tree result content.
-#define TREE_PRINT_RESULT_CONTENT(instance) \
-    COMMON_PRINT(TREE_RESULT, APP_DS_GET_INSTANCE_TITLE(instance).data(), output.str().c_str())
+#define TREE_PRINT_RESULT_CONTENT(instance) COMMON_PRINT(TREE_RESULT, getTitle(instance).data(), output.str().c_str())
 
 void TreeStructure::bsInstance()
 try

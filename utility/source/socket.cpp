@@ -167,7 +167,7 @@ void TCPSocket::toReceive(const bool detach)
 
 void TCPSocket::toRecv(const TCPSocket* const socket)
 {
-    char tempBuffer[socket->bufferSize];
+    char tempBuffer[TCPSocket::bufferSize];
     tempBuffer[0] = '\0';
     int messageLength = 0;
     while ((messageLength = ::recv(socket->sock, tempBuffer, socket->bufferSize, 0)) > 0)
@@ -404,7 +404,7 @@ void UDPSocket::toReceiveFrom(const bool detach)
 
 void UDPSocket::toRecv(const UDPSocket* const socket)
 {
-    char tempBuffer[socket->bufferSize];
+    char tempBuffer[UDPSocket::bufferSize];
     tempBuffer[0] = '\0';
     int messageLength = 0;
     while ((messageLength = ::recv(socket->sock, tempBuffer, socket->bufferSize, 0)) != -1)
@@ -429,7 +429,7 @@ void UDPSocket::toRecvFrom(const UDPSocket* const socket)
     ::sockaddr_in addr{};
     ::socklen_t hostAddrSize = sizeof(addr);
 
-    char tempBuffer[socket->bufferSize];
+    char tempBuffer[UDPSocket::bufferSize];
     tempBuffer[0] = '\0';
     int messageLength = 0;
     while ((messageLength = ::recvfrom(

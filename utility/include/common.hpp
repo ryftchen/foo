@@ -10,7 +10,8 @@
 #include <string>
 
 //! @brief Format as a string and printing.
-#define COMMON_PRINT(format, args...) std::cout << utility::common::formatString(format, ##args) << std::flush
+#define COMMON_PRINT(format, ...) \
+    std::cout << utility::common::formatString(format __VA_OPT__(, ) __VA_ARGS__) << std::flush
 
 //! @brief The utility module.
 namespace utility // NOLINT(modernize-concat-nested-namespaces)

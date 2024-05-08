@@ -117,9 +117,7 @@ int Search<T>::fibonacci(const T* const array, const std::uint32_t length, const
     }
 
     std::uint32_t lower = 0, upper = length - 1;
-    T complement[fib[n] - 1];
-    complement[0] = '\0';
-    std::memcpy(complement, array, length * sizeof(T));
+    std::vector<T> complement(array, array + (fib[n] - 1));
     for (std::uint32_t i = upper; i < (fib[n] - 1); ++i)
     {
         complement[i] = array[upper];

@@ -32,13 +32,6 @@
                                 << std::setfill('.') << std::setw(50) << category << "END"              \
                                 << std::resetiosflags(std::ios_base::left) << std::setfill(' ') << '\n' \
                                 << std::endl;
-//! @brief Get the title of a particular instance in design pattern tasks.
-#define APP_DP_GET_INSTANCE_TITLE(instance)                  \
-    ({                                                       \
-        std::string title = std::string{toString(instance)}; \
-        title.at(0) = std::toupper(title.at(0));             \
-        title;                                               \
-    })
 
 namespace application::app_dp
 {
@@ -127,6 +120,18 @@ consteval std::size_t abbrVal(const T instance)
     return value;
 }
 
+//! @brief Get the title of a particular instance in design pattern tasks.
+//! @tparam T - type of target instance
+//! @param instance - target instance
+//! @return initial capitalized title
+template <class T>
+std::string getTitle(const T instance)
+{
+    std::string title = std::string{toString(instance)};
+    title.at(0) = std::toupper(title.at(0));
+    return title;
+}
+
 //! @brief Mapping table for enum and string about behavioral instances. X macro.
 #define APP_DP_BEHAVIORAL_INSTANCE_TABLE                 \
     ELEM(chainOfResponsibility, "chainOfResponsibility") \
@@ -198,7 +203,7 @@ namespace behavioral
 #define BEHAVIORAL_RESULT "\r\n==> %-21s Instance <==\n%s"
 //! @brief Print behavioral result content.
 #define BEHAVIORAL_PRINT_RESULT_CONTENT(instance) \
-    COMMON_PRINT(BEHAVIORAL_RESULT, APP_DP_GET_INSTANCE_TITLE(instance).data(), output.str().c_str())
+    COMMON_PRINT(BEHAVIORAL_RESULT, getTitle(instance).data(), output.str().c_str())
 
 void BehavioralPattern::chainOfResponsibilityInstance()
 try
@@ -456,7 +461,7 @@ namespace creational
 #define CREATIONAL_RESULT "\r\n==> %-15s Instance <==\n%s"
 //! @brief Print creational result content.
 #define CREATIONAL_PRINT_RESULT_CONTENT(instance) \
-    COMMON_PRINT(CREATIONAL_RESULT, APP_DP_GET_INSTANCE_TITLE(instance).data(), output.str().c_str())
+    COMMON_PRINT(CREATIONAL_RESULT, getTitle(instance).data(), output.str().c_str())
 
 void CreationalPattern::abstractFactoryInstance()
 try
@@ -612,7 +617,7 @@ namespace structural
 #define STRUCTURAL_RESULT "\r\n==> %-9s Instance <==\n%s"
 //! @brief Print structural result content.
 #define STRUCTURAL_PRINT_RESULT_CONTENT(instance) \
-    COMMON_PRINT(STRUCTURAL_RESULT, APP_DP_GET_INSTANCE_TITLE(instance).data(), output.str().c_str())
+    COMMON_PRINT(STRUCTURAL_RESULT, getTitle(instance).data(), output.str().c_str())
 
 void StructuralPattern::adapterInstance()
 try
