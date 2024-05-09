@@ -5,7 +5,10 @@ queries:
 query-filters:
   - exclude:
       problem.severity: recommendation
+  - exclude:
       id:
         - cpp/poorly-documented-function
+  - exclude:
+      id:
         - cpp/stack-address-escape
 ...
