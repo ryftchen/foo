@@ -154,8 +154,8 @@ double Gauss::operator()(double lower, double upper, const double eps) const
             for (std::uint32_t j = 0; j < gaussNodes; ++j)
             {
                 // x=1/2[(a+b)+(b-a)t]
-                const double x = ((right - left) * gaussLegendreTable.at(j).at(0) + (left + right)) / 2.0,
-                             polynomial = expr(x) * gaussLegendreTable.at(j).at(1) * (right - left) / 2.0;
+                const double x = ((right - left) * gaussLegendreTable[j][0] + (left + right)) / 2.0,
+                             polynomial = expr(x) * gaussLegendreTable[j][1] * (right - left) / 2.0;
                 sum += polynomial;
             }
         }
@@ -188,7 +188,7 @@ double MonteCarlo::sampleFromUniformDistribution(const double lower, const doubl
     double sum = 0.0;
     for (std::uint32_t i = 0; i < n; ++i)
     {
-        sum += expr(cache.at(i));
+        sum += expr(cache[i]);
     }
 
     sum *= (upper - lower) / n; // I≈(b-a)/N*[F(X1)+F(X2)+...+F(Xn)]
