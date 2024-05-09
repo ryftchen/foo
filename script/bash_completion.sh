@@ -14,7 +14,7 @@ function _foo()
         return
         ;;
     app-algo)
-        mapfile -t COMPREPLY < <(compgen -W "-h --help -m  --match -n --notation -o --optimal -s --search \
+        mapfile -t COMPREPLY < <(compgen -W "-h --help -m --match -n --notation -o --optimal -s --search \
 -S --sort" -- "${curr}")
         return
         ;;
@@ -28,7 +28,7 @@ function _foo()
         ;;
     app-num)
         mapfile -t COMPREPLY < <(compgen -W "-h --help -a --arithmetic -d --divisor -i --integral \
--p- -prime" -- "${curr}")
+-p --prime" -- "${curr}")
         return
         ;;
     -*)
