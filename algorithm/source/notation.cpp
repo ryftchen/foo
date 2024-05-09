@@ -26,13 +26,13 @@ std::string Notation::prefix(const std::string& infixNotation)
     std::reverse(infix.begin(), infix.end());
     for (std::uint32_t i = 0; i < infix.size(); ++i)
     {
-        if ('(' == infix.at(i))
+        if ('(' == infix[i])
         {
-            infix.at(i) = ')';
+            infix[i] = ')';
         }
-        else if (')' == infix.at(i))
+        else if (')' == infix[i])
         {
-            infix.at(i) = '(';
+            infix[i] = '(';
         }
     }
     std::string prefixNotation = infixToPostfix(infix);
@@ -55,15 +55,15 @@ std::string Notation::infixToPostfix(const std::string& infix)
 
     for (std::uint32_t i = 0; i < infix.size(); ++i)
     {
-        if (!isOperator(infix.at(i)))
+        if (!isOperator(infix[i]))
         {
-            postfix += infix.at(i);
+            postfix += infix[i];
         }
-        else if ('(' == infix.at(i))
+        else if ('(' == infix[i])
         {
             charStack.push('(');
         }
-        else if (')' == infix.at(i))
+        else if (')' == infix[i])
         {
             while ('(' != charStack.top())
             {
@@ -74,12 +74,12 @@ std::string Notation::infixToPostfix(const std::string& infix)
         }
         else
         {
-            while (!charStack.empty() && getPriority(infix.at(i)) <= getPriority(charStack.top()))
+            while (!charStack.empty() && getPriority(infix[i]) <= getPriority(charStack.top()))
             {
                 postfix += charStack.top();
                 charStack.pop();
             }
-            charStack.push(infix.at(i));
+            charStack.push(infix[i]);
         }
     }
 
