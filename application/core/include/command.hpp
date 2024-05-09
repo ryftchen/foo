@@ -308,6 +308,8 @@ private:
     //! @param client - client to be launched
     template <typename T>
     static void launchClient(std::shared_ptr<T>& client);
+    //! @brief Validate dependencies version.
+    void validateDependenciesVersion() const;
     //! @brief Get ASCII banner text.
     //! @return ASCII banner text content
     static std::string getIconBanner();
