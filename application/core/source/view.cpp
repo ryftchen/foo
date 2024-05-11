@@ -21,9 +21,6 @@
 #include "application/pch/precompiled_header.hpp"
 #endif // __PRECOMPILED_HEADER
 
-#include "utility/include/file.hpp"
-#include "utility/include/time.hpp"
-
 namespace application::view
 {
 namespace tlv

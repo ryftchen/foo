@@ -9,8 +9,6 @@
 #include "view.hpp"
 
 #ifndef __PRECOMPILED_HEADER
-#include <fstream>
-#include <iterator>
 #include <ranges>
 #else
 #include "application/pch/precompiled_header.hpp"
@@ -46,7 +44,7 @@ enum HelperControl : std::uint8_t
 };
 
 //! @brief Trigger the external helper with operation.
-//! @tparam Helper - type of helper
+//! @tparam Helper - target helper
 //! @param operation - target operation
 template <HelperType Helper>
 static void triggerHelper(const HelperControl operation)
@@ -70,27 +68,6 @@ static void triggerHelper(const HelperControl operation)
         default:
             break;
     }
-}
-
-//! @brief Compare whether two strings are equal.
-//! @param src - source string
-//! @param tgt - target string
-//! @return be equal or not equal
-static bool allStrEqual(const char* const src, const char* const tgt)
-{
-    return std::strncmp(src, tgt, std::strlen(src)) == 0;
-}
-
-//! @brief Compare whether multiple strings are equal.
-//! @tparam Others - type of arguments of string
-//! @param src - source string
-//! @param tgt - target string
-//! @param others - arguments of string
-//! @return be equal or not equal
-template <typename... Others>
-static bool allStrEqual(const char* const src, const char* const tgt, Others const&... others)
-{
-    return allStrEqual(src, tgt) && allStrEqual(tgt, others...);
 }
 
 Command::Command()
@@ -859,7 +836,7 @@ void Command::registerOnConsole(utility::console::Console& console, std::shared_
 
 void Command::validateDependenciesVersion() const
 {
-    if (!allStrEqual(
+    if (!utility::common::allStrEqual(
             mainCLI.version.data(),
             utility::argument::version(),
             utility::common::version(),
@@ -873,20 +850,21 @@ void Command::validateDependenciesVersion() const
             utility::socket::version(),
             utility::thread::version(),
             utility::time::version())
-        || !allStrEqual(
+        || !utility::common::allStrEqual(
             subCLIAppAlgo.version.data(),
             algorithm::match::version(),
             algorithm::notation::version(),
             algorithm::optimal::version(),
             algorithm::search::version(),
             algorithm::sort::version())
-        || !allStrEqual(
+        || !utility::common::allStrEqual(
             subCLIAppDp.version.data(),
             design_pattern::behavioral::version(),
             design_pattern::creational::version(),
             design_pattern::structural::version())
-        || !allStrEqual(subCLIAppDs.version.data(), date_structure::linear::version(), date_structure::tree::version())
-        || !allStrEqual(
+        || !utility::common::allStrEqual(
+            subCLIAppDs.version.data(), date_structure::linear::version(), date_structure::tree::version())
+        || !utility::common::allStrEqual(
             subCLIAppNum.version.data(),
             numeric::arithmetic::version(),
             numeric::divisor::version(),

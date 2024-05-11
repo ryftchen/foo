@@ -7,6 +7,7 @@
 #pragma once
 
 #include <array>
+#include <cstring>
 #include <string>
 
 //! @brief Format as a string and printing.
@@ -92,6 +93,66 @@ struct Join
 //! @tparam Strings - target strings to be spliced
 template <const std::string_view&... Strings>
 static constexpr auto joinString = Join<Strings...>::value;
+
+//! @brief Compare whether two strings are equal.
+//! @param str1 - string 1
+//! @param str2 - string 2
+//! @return be equal or not equal
+inline bool allStrEqual(const char* const str1, const char* const str2)
+{
+    return (std::strcmp(str1, str2) == 0);
+}
+
+//! @brief Compare whether multiple strings are equal.
+//! @tparam Others - type of arguments of string
+//! @param str1 - string 1
+//! @param str2 - string 2
+//! @param others - arguments of string
+//! @return be equal or not equal
+template <typename... Others>
+inline bool allStrEqual(const char* const str1, const char* const str2, Others const&... others)
+{
+    return (allStrEqual(str1, str2) && allStrEqual(str2, others...));
+}
+
+//! @brief Check that the target value is part of the enumeration.
+//! @tparam EnumType - type of enumeration
+//! @tparam Values - arguments of enumeration
+template <typename EnumType, EnumType... Values>
+class EnumCheck;
+//! @brief Check that the target value is part of the enumeration.
+//! @tparam EnumType - type of enumeration
+template <typename EnumType>
+class EnumCheck<EnumType>
+{
+public:
+    //! @brief Check whether it is an enumeration value.
+    //! @tparam IntType - type of integral
+    //! @return be an enumeration value or not
+    template <typename IntType>
+    static inline constexpr bool isValue(const IntType /*unused*/)
+    {
+        return false;
+    }
+};
+//! @brief Check that the target value is part of the enumeration.
+//! @tparam EnumType - type of enumeration
+//! @tparam Value - current value
+//! @tparam Next - next enumeration value
+template <typename EnumType, EnumType Value, EnumType... Next>
+class EnumCheck<EnumType, Value, Next...> : private EnumCheck<EnumType, Next...>
+{
+public:
+    //! @brief Check whether it is an enumeration value.
+    //! @tparam IntType - type of integral
+    //! @param val - target value
+    //! @return be an enumeration value or not
+    template <typename IntType>
+    static inline constexpr bool isValue(const IntType val)
+    {
+        return (static_cast<IntType>(Value) == val) || EnumCheck<EnumType, Next...>::isValue(val);
+    }
+};
 
 extern std::size_t bkdrHash(const char* str);
 extern std::string base64Encode(const std::string& data);

@@ -5,6 +5,7 @@
 //! @copyright Copyright (c) 2022-2024 ryftchen. All rights reserved.
 
 #include "config.hpp"
+#include "log.hpp"
 
 #ifndef __PRECOMPILED_HEADER
 #include <cassert>
@@ -14,9 +15,6 @@
 #else
 #include "application/pch/precompiled_header.hpp"
 #endif // __PRECOMPILED_HEADER
-
-#include "utility/include/common.hpp"
-#include "utility/include/file.hpp"
 
 namespace application::config
 {
@@ -85,7 +83,7 @@ bool Config::checkLoggerConfigInHelperList()
         isVerified &= item.isStringType();
         isVerified &= loggerProperties.hasKey(item.toString());
     }
-    // NOLINTBEGIN(readability-magic-numbers)
+
     for (const auto& [key, item] : loggerProperties.objectRange())
     {
         switch (bkdrHash(key.data()))
@@ -94,23 +92,34 @@ bool Config::checkLoggerConfigInHelperList()
                 isVerified &= item.isStringType();
                 break;
             case "minimumLevel"_bkdrHash:
+                using OutputLevel = log::Log::OutputLevel;
                 isVerified &= item.isIntegralType();
-                isVerified &= ((item.toIntegral() >= 0) && (item.toIntegral() <= 3));
+                isVerified &= utility::common::EnumCheck<
+                    OutputLevel,
+                    OutputLevel::debug,
+                    OutputLevel::info,
+                    OutputLevel::warning,
+                    OutputLevel::error>::isValue(item.toIntegral());
                 break;
             case "usedMedium"_bkdrHash:
+                using OutputMedium = log::Log::OutputMedium;
                 isVerified &= item.isIntegralType();
-                isVerified &= ((item.toIntegral() >= 0) && (item.toIntegral() <= 2));
+                isVerified &= utility::common::
+                    EnumCheck<OutputMedium, OutputMedium::file, OutputMedium::terminal, OutputMedium::both>::isValue(
+                        item.toIntegral());
                 break;
             case "writeType"_bkdrHash:
+                using OutputType = log::Log::OutputType;
                 isVerified &= item.isIntegralType();
-                isVerified &= ((item.toIntegral() >= 0) && (item.toIntegral() <= 1));
+                isVerified &= utility::common::EnumCheck<OutputType, OutputType::add, OutputType::over>::isValue(
+                    item.toIntegral());
                 break;
             default:
                 isVerified &= false;
                 break;
         }
     }
-    // NOLINTEND(readability-magic-numbers)
+
     if (!isVerified)
     {
         throw std::runtime_error(
@@ -136,7 +145,8 @@ bool Config::checkViewerConfigInHelperList()
         isVerified &= item.isStringType();
         isVerified &= viewerProperties.hasKey(item.toString());
     }
-    // NOLINTBEGIN(readability-magic-numbers)
+
+    constexpr std::uint16_t minPortNum = 0, maxPortNum = 65535;
     for (const auto& [key, item] : viewerProperties.objectRange())
     {
         switch (bkdrHash(key.data()))
@@ -146,21 +156,21 @@ bool Config::checkViewerConfigInHelperList()
                 break;
             case "tcpPort"_bkdrHash:
                 isVerified &= item.isIntegralType();
-                isVerified &= ((item.toIntegral() >= 0) && (item.toIntegral() <= 65535));
+                isVerified &= ((item.toIntegral() >= minPortNum) && (item.toIntegral() <= maxPortNum));
                 break;
             case "udpHost"_bkdrHash:
                 isVerified &= item.isStringType();
                 break;
             case "udpPort"_bkdrHash:
                 isVerified &= item.isIntegralType();
-                isVerified &= ((item.toIntegral() >= 0) && (item.toIntegral() <= 65535));
+                isVerified &= ((item.toIntegral() >= minPortNum) && (item.toIntegral() <= maxPortNum));
                 break;
             default:
                 isVerified &= false;
                 break;
         }
     }
-    // NOLINTEND(readability-magic-numbers)
+
     if (!isVerified)
     {
         throw std::runtime_error(
