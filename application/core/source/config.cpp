@@ -57,8 +57,8 @@ void Config::parseFile(const std::string& filename)
 
 void Config::verifyData()
 {
-    bool isVerified = data.at("activeHelper").isBooleanType();
-    isVerified &= data.at("helperTable").isObjectType();
+    bool isVerified = data.at("activateHelper").isBooleanType();
+    isVerified &= data.at("helperList").isObjectType();
     if (!isVerified)
     {
         throw std::runtime_error("Illegal configuration: " + data.toUnescapedString());
@@ -74,7 +74,7 @@ bool Config::checkLoggerConfigInHelperList()
     using utility::common::bkdrHash;
 
     bool isVerified = true;
-    const auto loggerObject = data.at("helperTable").at("logger");
+    const auto loggerObject = data.at("helperList").at("logger");
     isVerified &= loggerObject.isObjectType();
     const auto loggerProperties = loggerObject.at("properties"), loggerRequired = loggerObject.at("required");
     isVerified &= loggerProperties.isObjectType();
@@ -114,7 +114,7 @@ bool Config::checkLoggerConfigInHelperList()
     if (!isVerified)
     {
         throw std::runtime_error(
-            R"(Illegal configuration, "logger" object in "helperTable" object: )" + loggerObject.toUnescapedString());
+            R"(Illegal configuration, "logger" object in "helperList" object: )" + loggerObject.toUnescapedString());
     }
     return isVerified;
 }
@@ -125,7 +125,7 @@ bool Config::checkViewerConfigInHelperList()
     using utility::common::bkdrHash;
 
     bool isVerified = true;
-    const auto viewerObject = data.at("helperTable").at("viewer");
+    const auto viewerObject = data.at("helperList").at("viewer");
     isVerified &= viewerObject.isObjectType();
     const auto viewerProperties = viewerObject.at("properties"), viewerRequired = viewerObject.at("required");
     isVerified &= viewerProperties.isObjectType();
@@ -164,7 +164,7 @@ bool Config::checkViewerConfigInHelperList()
     if (!isVerified)
     {
         throw std::runtime_error(
-            R"(Illegal configuration, "viewer" object in "helperTable" object: )" + viewerObject.toUnescapedString());
+            R"(Illegal configuration, "viewer" object in "helperList" object: )" + viewerObject.toUnescapedString());
     }
     return isVerified;
 }
@@ -214,8 +214,8 @@ utility::json::JSON getDefaultConfiguration()
     // clang-format off
     return utility::json::JSON(
     {
-        "activeHelper", true,
-        "helperTable", {
+        "activateHelper", true,
+        "helperList", {
             "logger", {
                 "properties", loggerProperties,
                 "required", loggerRequired

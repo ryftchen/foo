@@ -24,8 +24,8 @@
 #include "utility/include/time.hpp"
 
 //! @brief Flush log if enabled.
-#define LOG_FLUSH_IF_ENABLED(level)      \
-    if (CONFIG_ACTIVE_HELPER) [[likely]] \
+#define LOG_FLUSH_IF_ENABLED(level)        \
+    if (CONFIG_ACTIVATE_HELPER) [[likely]] \
     application::log::Log::Holder<application::log::Log::OutputLevel::level>(__FILE__, __LINE__).getStream()
 //! @brief Log with debug level.
 #define LOG_DBG LOG_FLUSH_IF_ENABLED(debug)

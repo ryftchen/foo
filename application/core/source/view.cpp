@@ -182,7 +182,7 @@ View& View::getInstance()
 
 View& View::getExistingInstance()
 {
-    if (!CONFIG_ACTIVE_HELPER) [[unlikely]]
+    if (!CONFIG_ACTIVATE_HELPER) [[unlikely]]
     {
         throw std::logic_error("The viewer is disabled.");
     }
