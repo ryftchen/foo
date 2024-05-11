@@ -57,7 +57,7 @@ public:
     };
 
     //! @brief Custom string.
-    //! @tparam Str - type of custom string
+    //! @tparam Str - custom string with wrapper
     template <StrType Str>
     struct String
     {
