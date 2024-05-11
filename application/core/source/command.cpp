@@ -51,7 +51,7 @@ enum HelperControl : std::uint8_t
 template <HelperType Helper>
 static void triggerHelper(const HelperControl operation)
 {
-    if (!CONFIG_ACTIVE_HELPER)
+    if (!CONFIG_ACTIVATE_HELPER)
     {
         return;
     }
@@ -610,7 +610,7 @@ void Command::launchClient<utility::socket::UDPSocket>(std::shared_ptr<utility::
 
 void Command::executeConsoleCommand() const
 {
-    if (!CONFIG_ACTIVE_HELPER)
+    if (!CONFIG_ACTIVATE_HELPER)
     {
         std::cout << "exit" << std::endl;
         return;
@@ -710,7 +710,7 @@ void Command::checkForExcessiveArguments()
 
 void Command::enterConsoleMode()
 {
-    if (!CONFIG_ACTIVE_HELPER)
+    if (!CONFIG_ACTIVATE_HELPER)
     {
         std::cout << "exit" << std::endl;
         return;

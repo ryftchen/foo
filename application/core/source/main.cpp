@@ -37,7 +37,7 @@ try
     constexpr std::uint32_t childThdNum = 3;
     auto threads = std::make_shared<utility::thread::Thread>(childThdNum);
     threads->enqueue("commander", &Command::runCommander, &Command::getInstance(), argc, argv);
-    if (CONFIG_ACTIVE_HELPER)
+    if (CONFIG_ACTIVATE_HELPER)
     {
         threads->enqueue("logger", &Log::runLogger, &Log::getInstance());
         threads->enqueue("viewer", &View::runViewer, &View::getInstance());

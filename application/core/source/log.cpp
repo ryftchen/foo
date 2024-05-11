@@ -23,7 +23,7 @@ Log& Log::getInstance()
 
 Log& Log::getExistingInstance()
 {
-    if (!CONFIG_ACTIVE_HELPER) [[unlikely]]
+    if (!CONFIG_ACTIVATE_HELPER) [[unlikely]]
     {
         throw std::logic_error("The logger is disabled.");
     }

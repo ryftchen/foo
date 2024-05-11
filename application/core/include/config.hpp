@@ -16,12 +16,12 @@
 
 //! @brief Get the config instance.
 #define CONFIG_GET_INSTANCE application::config::Config::getInstance()
-//! @brief "activeHelper" configuration.
-#define CONFIG_ACTIVE_HELPER CONFIG_GET_INSTANCE.getData()["activeHelper"].toBoolean()
-//! @brief Logger properties in "helperTable" configuration.
-#define CONFIG_HELPER_LOGGER_PROPERTIES CONFIG_GET_INSTANCE.getData()["helperTable"]["logger"]["properties"]
-//! @brief Viewer properties in "helperTable" configuration.
-#define CONFIG_HELPER_VIEWER_PROPERTIES CONFIG_GET_INSTANCE.getData()["helperTable"]["viewer"]["properties"]
+//! @brief "activateHelper" configuration.
+#define CONFIG_ACTIVATE_HELPER CONFIG_GET_INSTANCE.getData()["activateHelper"].toBoolean()
+//! @brief Logger properties in "helperList" configuration.
+#define CONFIG_HELPER_LOGGER_PROPERTIES CONFIG_GET_INSTANCE.getData()["helperList"]["logger"]["properties"]
+//! @brief Viewer properties in "helperList" configuration.
+#define CONFIG_HELPER_VIEWER_PROPERTIES CONFIG_GET_INSTANCE.getData()["helperList"]["viewer"]["properties"]
 //! @brief "filePath" configuration in the logger properties.
 #define CONFIG_HELPER_LOGGER_FILE_PATH CONFIG_HELPER_LOGGER_PROPERTIES["filePath"].toString()
 //! @brief "minimumLevel" configuration in the logger properties.
