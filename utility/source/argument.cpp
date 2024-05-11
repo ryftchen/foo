@@ -524,19 +524,13 @@ std::vector<std::string> Argument::preprocessArguments(const std::vector<std::st
                 };
 
                 const auto windowsStyle = legalPrefix('/');
-                if (windowsStyle)
+                if (windowsStyle && legalPrefix(str.at(0)))
                 {
-                    if (legalPrefix(str.at(0)))
-                    {
-                        return true;
-                    }
+                    return true;
                 }
-                else
+                else if (!windowsStyle && (str.size() > 1))
                 {
-                    if (str.size() > 1)
-                    {
-                        return (legalPrefix(str.at(0)) && legalPrefix(str.at(1)));
-                    }
+                    return (legalPrefix(str.at(0)) && legalPrefix(str.at(1)));
                 }
             }
             return false;

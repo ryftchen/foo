@@ -96,6 +96,18 @@ private:
     //! @param begin - index of beginning
     //! @param end - index of ending
     static void buildMaxHeap(T* const sorting, const std::uint32_t begin, const std::uint32_t end);
+    //! @brief Least significant digit (LSD) for the radix method.
+    //! @param sorting - array to be sorted
+    //! @param length - length of array
+    //! @param maxDigit - maximum digit
+    //! @param bucketSize - bucket size
+    //! @param indexOffset - bucket index offset
+    static void leastSignificantDigit(
+        T* const sorting,
+        const std::uint32_t length,
+        const std::uint32_t maxDigit,
+        const std::uint32_t bucketSize,
+        const std::uint32_t indexOffset);
 };
 
 template <class T>
@@ -355,9 +367,9 @@ std::vector<T> Sort<T>::bucket(const T* const array, const std::uint32_t length)
         min = std::min(sorting[i], min);
     }
 
-    const std::uint32_t bucketNum = length;
-    const double intervalSpan = static_cast<double>(max - min) / static_cast<double>(bucketNum - 1);
-    std::vector<std::vector<T>> container(bucketNum, std::vector<T>{});
+    const std::uint32_t bucketSize = length;
+    const double intervalSpan = static_cast<double>(max - min) / static_cast<double>(bucketSize - 1);
+    std::vector<std::vector<T>> container(bucketSize, std::vector<T>{});
     for (std::uint32_t i = 0; i < length; ++i)
     {
         // min+(max-min)/(num-1)*(idx-1)<=array[i]
@@ -397,30 +409,44 @@ std::vector<T> Sort<T>::radix(const T* const array, const std::uint32_t length)
         (sorting[i] > 0) ? positive = true : ((sorting[i] < 0) ? negative = true : sorting[i]);
     }
     T absMax = std::max(max, -min);
-    std::uint32_t digitMax = 0;
     constexpr std::uint32_t base = 10;
+    std::uint32_t maxDigit = 0;
     while (absMax)
     {
         absMax /= base;
-        ++digitMax;
+        ++maxDigit;
     }
 
     constexpr std::uint32_t naturalNumberBucket = 10, negativeIntegerBucket = 9;
-    const std::uint32_t bucketNum =
-        (positive ^ negative) ? naturalNumberBucket : (naturalNumberBucket + negativeIntegerBucket);
-    std::vector<T> countingOld(bucketNum, 0), countingNew(bucketNum, 0);
-    std::vector<std::queue<T>> container(bucketNum, std::queue<T>{});
-    const std::uint32_t offset = (!negative) ? 0 : negativeIntegerBucket;
+    const std::uint32_t bucketSize =
+                            (positive ^ negative) ? naturalNumberBucket : (naturalNumberBucket + negativeIntegerBucket),
+                        indexOffset = (!negative) ? 0 : negativeIntegerBucket;
+    leastSignificantDigit(sorting.data(), length, maxDigit, bucketSize, indexOffset);
+
+    return sorting;
+}
+
+template <class T>
+void Sort<T>::leastSignificantDigit(
+    T* const sorting,
+    const std::uint32_t length,
+    const std::uint32_t maxDigit,
+    const std::uint32_t bucketSize,
+    const std::uint32_t indexOffset)
+{
+    constexpr std::uint32_t base = 10;
+    std::vector<T> countingOld(bucketSize, 0), countingNew(bucketSize, 0);
+    std::vector<std::queue<T>> container(bucketSize, std::queue<T>{});
     for (std::uint32_t i = 0; i < length; ++i)
     {
         const int sign = (sorting[i] > 0) ? 1 : -1;
-        const std::uint32_t bucketIdx = std::abs(sorting[i]) / 1 % base * sign + offset;
+        const std::uint32_t bucketIdx = std::abs(sorting[i]) / 1 % base * sign + indexOffset;
         container[bucketIdx].push(sorting[i]);
         ++countingNew[bucketIdx];
     }
 
     constexpr std::uint32_t decimal = 10;
-    for (std::uint32_t i = 1, pow = decimal; i < digitMax; ++i, pow *= base)
+    for (std::uint32_t i = 1, pow = decimal; i < maxDigit; ++i, pow *= base)
     {
         countingOld = countingNew;
         std::fill(countingNew.begin(), countingNew.end(), 0);
@@ -436,7 +462,7 @@ std::vector<T> Sort<T>::radix(const T* const array, const std::uint32_t length)
             {
                 const T bucketElem = bucketIter->front();
                 const int sign = (bucketElem > 0) ? 1 : -1;
-                const std::uint32_t bucketIdx = std::abs(bucketElem) / pow % base * sign + offset;
+                const std::uint32_t bucketIdx = std::abs(bucketElem) / pow % base * sign + indexOffset;
                 container[bucketIdx].push(bucketElem);
                 ++countingNew[bucketIdx];
                 bucketIter->pop();
@@ -454,8 +480,6 @@ std::vector<T> Sort<T>::radix(const T* const array, const std::uint32_t length)
             bucketInfo.pop();
         }
     }
-
-    return sorting;
 }
 } // namespace sort
 } // namespace algorithm

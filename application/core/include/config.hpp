@@ -88,6 +88,12 @@ private:
     void parseFile(const std::string& filename);
     //! @brief Verify the data.
     void verifyData();
+    //! @brief Check the logger configuration in the helper list.
+    //! @return be legal or illegal
+    bool checkLoggerConfigInHelperList();
+    //! @brief Check the viewer configuration in the helper list.
+    //! @return be legal or illegal
+    bool checkViewerConfigInHelperList();
 };
 
 extern utility::json::JSON getDefaultConfiguration();

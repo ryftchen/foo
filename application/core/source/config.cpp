@@ -64,9 +64,16 @@ void Config::verifyData()
         throw std::runtime_error("Illegal configuration: " + data.toUnescapedString());
     }
 
+    checkLoggerConfigInHelperList();
+    checkViewerConfigInHelperList();
+}
+
+bool Config::checkLoggerConfigInHelperList()
+{
     using utility::common::operator""_bkdrHash;
     using utility::common::bkdrHash;
 
+    bool isVerified = true;
     const auto loggerObject = data.at("helperTable").at("logger");
     isVerified &= loggerObject.isObjectType();
     const auto loggerProperties = loggerObject.at("properties"), loggerRequired = loggerObject.at("required");
@@ -109,7 +116,15 @@ void Config::verifyData()
         throw std::runtime_error(
             R"(Illegal configuration, "logger" object in "helperTable" object: )" + loggerObject.toUnescapedString());
     }
+    return isVerified;
+}
 
+bool Config::checkViewerConfigInHelperList()
+{
+    using utility::common::operator""_bkdrHash;
+    using utility::common::bkdrHash;
+
+    bool isVerified = true;
     const auto viewerObject = data.at("helperTable").at("viewer");
     isVerified &= viewerObject.isObjectType();
     const auto viewerProperties = viewerObject.at("properties"), viewerRequired = viewerObject.at("required");
@@ -151,6 +166,7 @@ void Config::verifyData()
         throw std::runtime_error(
             R"(Illegal configuration, "viewer" object in "helperTable" object: )" + viewerObject.toUnescapedString());
     }
+    return isVerified;
 }
 
 //! @brief Get the full path to the default config file.
