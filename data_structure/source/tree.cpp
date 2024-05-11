@@ -454,29 +454,26 @@ Node* deleteNode(AVLTree tree, const Node* const z)
             tree = (getHeight(l->right) > getHeight(l->left)) ? leftRightRotation(tree) : leftLeftRotation(tree);
         }
     }
-    else
+    else if (tree->left && tree->right)
     {
-        if (tree->left && tree->right)
+        if (getHeight(tree->left) > getHeight(tree->right))
         {
-            if (getHeight(tree->left) > getHeight(tree->right))
-            {
-                const Node* const max = getMaximum(tree->left);
-                tree->key = max->key;
-                tree->left = deleteNode(tree->left, max);
-            }
-            else
-            {
-                const Node* const min = getMaximum(tree->right);
-                tree->key = min->key;
-                tree->right = deleteNode(tree->right, min);
-            }
+            const Node* const max = getMaximum(tree->left);
+            tree->key = max->key;
+            tree->left = deleteNode(tree->left, max);
         }
         else
         {
-            const Node* const temp = tree;
-            tree = tree->left ? tree->left : tree->right;
-            delete temp;
+            const Node* const min = getMaximum(tree->right);
+            tree->key = min->key;
+            tree->right = deleteNode(tree->right, min);
         }
+    }
+    else
+    {
+        const Node* const temp = tree;
+        tree = tree->left ? tree->left : tree->right;
+        delete temp;
     }
 
     return tree;
@@ -742,11 +739,11 @@ Node* splayTreeSearch(SplayTree tree, const Type key)
 //! @return root node after splaying
 Node* splayTreeSplay(SplayTree tree, const Type key)
 {
-    Node n{}, *l = nullptr, *r = nullptr, *c = nullptr;
     if (nullptr == tree)
     {
-        return tree;
+        return nullptr;
     }
+    Node n{}, *l = nullptr, *r = nullptr, *c = nullptr;
 
     n.left = n.right = nullptr;
     l = r = &n;
@@ -758,7 +755,7 @@ Node* splayTreeSplay(SplayTree tree, const Type key)
             {
                 break;
             }
-            if (key < tree->left->key)
+            else if (key < tree->left->key)
             {
                 c = tree->left;
                 tree->left = c->right;
@@ -779,7 +776,7 @@ Node* splayTreeSplay(SplayTree tree, const Type key)
             {
                 break;
             }
-            if (key > tree->right->key)
+            else if (key > tree->right->key)
             {
                 c = tree->right;
                 tree->right = c->left;

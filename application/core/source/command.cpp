@@ -135,6 +135,7 @@ catch (const std::exception& error)
     LOG_ERR << error.what();
 }
 
+// NOLINTNEXTLINE(readability-function-size)
 void Command::initializeCLI()
 {
     mainCLI.addArgument("-h", "--help").argsNum(0).implicitVal(true).help("show help and exit");

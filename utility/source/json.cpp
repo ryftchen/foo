@@ -229,12 +229,48 @@ static JSON parseString(const std::string& fmt, std::size_t& offset)
     return val;
 }
 
+//! @brief Extract the exponent.
+//! @param fmt - formatted string
+//! @param offset - data offset
+//! @return exponent string
+static std::string extractExponent(const std::string& fmt, std::size_t& offset)
+{
+    char c = fmt.at(offset);
+    std::string expStr;
+    if ('-' == c)
+    {
+        ++offset;
+        expStr += '-';
+    }
+    else if ('+' == c)
+    {
+        ++offset;
+    }
+
+    for (;;)
+    {
+        c = fmt.at(offset++);
+        if ((c >= '0') && (c <= '9'))
+        {
+            expStr += c;
+        }
+        else if (!std::isspace(c) && (',' != c) && (']' != c) && ('}' != c))
+        {
+            throw std::runtime_error("JSON number: Expected a number for exponent, found '" + std::string{c} + "'.");
+        }
+        else
+        {
+            break;
+        }
+    }
+    return expStr;
+}
+
 //! @brief Parse number in JSON.
 //! @param fmt - formatted string
 //! @param offset - data offset
 static JSON parseNumber(const std::string& fmt, std::size_t& offset)
 {
-    JSON number;
     std::string val;
     char c;
     bool isFloating = false;
@@ -260,33 +296,7 @@ static JSON parseNumber(const std::string& fmt, std::size_t& offset)
     std::string expStr;
     if (('E' == c) || ('e' == c))
     {
-        c = fmt.at(offset);
-        if ('-' == c)
-        {
-            ++offset;
-            expStr += '-';
-        }
-        if ('+' == c)
-        {
-            ++offset;
-        }
-        for (;;)
-        {
-            c = fmt.at(offset++);
-            if ((c >= '0') && (c <= '9'))
-            {
-                expStr += c;
-            }
-            else if (!std::isspace(c) && (',' != c) && (']' != c) && ('}' != c))
-            {
-                throw std::runtime_error(
-                    "JSON number: Expected a number for exponent, found '" + std::string{c} + "'.");
-            }
-            else
-            {
-                break;
-            }
-        }
+        expStr = extractExponent(fmt, offset);
         exp = std::stol(expStr);
     }
     else if (!std::isspace(c) && (',' != c) && (']' != c) && ('}' != c))
@@ -296,6 +306,7 @@ static JSON parseNumber(const std::string& fmt, std::size_t& offset)
     --offset;
 
     constexpr std::uint8_t base = 10;
+    JSON number;
     if (isFloating)
     {
         number = std::stod(val) * std::pow(base, exp);

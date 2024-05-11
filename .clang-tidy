@@ -141,6 +141,7 @@ Checks: >
   readability-const-return-type,
   readability-convert-member-functions-to-static,
   readability-delete-null-pointer,
+  readability-function-cognitive-complexity,
   readability-function-size,
   readability-identifier-naming,
   readability-magic-numbers,
@@ -179,10 +180,18 @@ CheckOptions:
     value: '1'
   - key: performance-inefficient-string-concatenation.StrictMode
     value: '1'
+  - key: readability-function-cognitive-complexity.Threshold
+    value: '25'
+  - key: readability-function-cognitive-complexity.IgnoreMacros
+    value: 'true'
+  - key: readability-function-size.BranchThreshold
+    value: '10'
+  - key: readability-function-size.LineThreshold
+    value: '200'
   - key: readability-function-size.ParameterThreshold
-    value: '5'
+    value: '7'
   - key: readability-function-size.StatementThreshold
-    value: '80'
+    value: '60'
   - key: readability-identifier-naming.ClassCase
     value: CamelCase
   - key: readability-identifier-naming.ConstantCase
