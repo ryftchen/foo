@@ -10,7 +10,6 @@
 #include <mpfr.h>
 #include <algorithm>
 #include <bitset>
-#include <cassert>
 #include <cstring>
 #include <iostream>
 #include <memory>
@@ -364,27 +363,29 @@ private:
         ::mpfr_exp_t decimalLocation = 0;
         char* const piText = ::mpfr_get_str(nullptr, &decimalLocation, mpfrBase, 0, operand, ::MPFR_RNDN);
 
-        assert(0 != std::strlen(piText));
-        piText[textLen] = '\0';
-        std::memcpy(text, piText, textLen * sizeof(unsigned char));
+        if (0 != std::strlen(piText))
+        {
+            piText[textLen] = '\0';
+            std::memcpy(text, piText, textLen * sizeof(unsigned char));
 
 #ifdef __RUNTIME_PRINTING
-        std::string out(text, text + textLen);
-        if (textLen > 1)
-        {
-            out = std::string{out.at(0)} + '.' + out.substr(1, out.length());
-        }
-        std::cout << "\r\nπ " << textLen << " digits:\n"
-                  << out.substr(0, std::min(textLen, maxNumPerLineOfPrint)) << std::endl;
-        if (textLen > maxNumPerLineOfPrint)
-        {
-            std::cout << "...\n...\n...\n"
-                      << ((textLen > (maxNumPerLineOfPrint * 2))
-                              ? out.substr(out.length() - maxNumPerLineOfPrint, out.length())
-                              : out.substr(maxNumPerLineOfPrint + 1, out.length()))
-                      << std::endl;
-        }
+            std::string out(text, text + textLen);
+            if (textLen > 1)
+            {
+                out = std::string{out.at(0)} + '.' + out.substr(1, out.length());
+            }
+            std::cout << "\r\nπ " << textLen << " digits:\n"
+                      << out.substr(0, std::min(textLen, maxNumPerLineOfPrint)) << std::endl;
+            if (textLen > maxNumPerLineOfPrint)
+            {
+                std::cout << "...\n...\n...\n"
+                          << ((textLen > (maxNumPerLineOfPrint * 2))
+                                  ? out.substr(out.length() - maxNumPerLineOfPrint, out.length())
+                                  : out.substr(maxNumPerLineOfPrint + 1, out.length()))
+                          << std::endl;
+            }
 #endif // __RUNTIME_PRINTING
+        }
 
         ::mpfr_clear(operand);
         ::mpfr_free_str(piText);

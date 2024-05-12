@@ -629,6 +629,7 @@ void runOptimalTasks(const std::vector<std::string>& candidates)
 
     using optimal::input::Rastrigin;
     typedef std::variant<Rastrigin> OptimalFuncTarget;
+    static_assert(Rastrigin::range1 < Rastrigin::range2);
     const std::unordered_multimap<optimal::FuncRange<double, double>, OptimalFuncTarget, optimal::FuncMapHash>
         optimalFuncMap{
             {{Rastrigin::range1, Rastrigin::range2, Rastrigin::funcDescr}, Rastrigin{}},
@@ -648,7 +649,6 @@ void runOptimalTasks(const std::vector<std::string>& candidates)
     const auto calcFunc =
         [&candidates, bitFlag](const optimal::Function& function, const optimal::FuncRange<double, double>& range)
     {
-        assert(range.range1 < range.range2);
         auto& pooling = command::getPublicThreadPool();
         auto* const threads = pooling.newElement(std::min(
             static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<OptimalMethod>::value)));
