@@ -21,7 +21,7 @@
 #include "numeric/include/prime.hpp"
 
 //! @brief The application module.
-namespace application // NOLINT(modernize-concat-nested-namespaces)
+namespace application // NOLINT (modernize-concat-nested-namespaces)
 {
 //! @brief Numeric-applying-related functions in the application module.
 namespace app_num

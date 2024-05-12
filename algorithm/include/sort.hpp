@@ -13,7 +13,7 @@
 #include <queue>
 
 //! @brief The algorithm module.
-namespace algorithm // NOLINT(modernize-concat-nested-namespaces)
+namespace algorithm // NOLINT (modernize-concat-nested-namespaces)
 {
 //! @brief Sort-related functions in the algorithm module.
 namespace sort

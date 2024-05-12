@@ -16,7 +16,7 @@
 #include <variant>
 
 //! @brief The utility module.
-namespace utility // NOLINT(modernize-concat-nested-namespaces)
+namespace utility // NOLINT (modernize-concat-nested-namespaces)
 {
 //! @brief Argument-parsing-related functions in the utility module.
 namespace argument

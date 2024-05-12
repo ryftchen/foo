@@ -112,7 +112,7 @@ catch (const std::exception& error)
     LOG_ERR << error.what();
 }
 
-// NOLINTNEXTLINE(readability-function-size)
+// NOLINTNEXTLINE (readability-function-size)
 void Command::initializeCLI()
 {
     mainCLI.addArgument("-h", "--help").argsNum(0).implicitVal(true).help("show help and exit");
@@ -619,7 +619,7 @@ void Command::showHelpMessage() const
     std::cout << mainCLI.help().str() << std::flush;
 }
 
-// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
+// NOLINTNEXTLINE (readability-convert-member-functions-to-static)
 void Command::dumpConfiguration() const
 {
     namespace file = utility::file;

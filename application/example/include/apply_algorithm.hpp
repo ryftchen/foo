@@ -25,13 +25,13 @@
 
 //! @brief The restrict type qualifier.
 #if defined(__clang__) || defined(__GNUC__)
-#define restrict __restrict // NOLINT(readability-identifier-naming)
+#define restrict __restrict // NOLINT (readability-identifier-naming)
 #else
-#define restrict // NOLINT(readability-identifier-naming)
+#define restrict // NOLINT (readability-identifier-naming)
 #endif // defined(__clang__) || defined(__GNUC__)
 
 //! @brief The application module.
-namespace application // NOLINT(modernize-concat-nested-namespaces)
+namespace application // NOLINT (modernize-concat-nested-namespaces)
 {
 //! @brief Algorithm-applying-related functions in the application module.
 namespace app_algo

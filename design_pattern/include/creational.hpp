@@ -10,7 +10,7 @@
 #include <sstream>
 
 //! @brief The design pattern module.
-namespace design_pattern // NOLINT(modernize-concat-nested-namespaces)
+namespace design_pattern // NOLINT (modernize-concat-nested-namespaces)
 {
 //! @brief Creational-related functions in the design pattern module.
 namespace creational

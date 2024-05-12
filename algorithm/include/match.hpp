@@ -9,7 +9,7 @@
 #include <cstdint>
 
 //! @brief The algorithm module.
-namespace algorithm // NOLINT(modernize-concat-nested-namespaces)
+namespace algorithm // NOLINT (modernize-concat-nested-namespaces)
 {
 //! @brief Match-related functions in the algorithm module.
 namespace match

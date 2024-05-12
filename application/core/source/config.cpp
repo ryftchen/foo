@@ -201,25 +201,23 @@ utility::json::JSON getDefaultConfiguration()
 {
     namespace json = utility::json;
 
-    // NOLINTBEGIN(readability-magic-numbers)
     auto loggerProperties = json::object();
     loggerProperties.at("filePath") = "log/foo.log";
-    loggerProperties.at("minimumLevel") = 0;
-    loggerProperties.at("usedMedium") = 2;
-    loggerProperties.at("writeType") = 0;
+    loggerProperties.at("minimumLevel") = static_cast<int>(log::Log::OutputLevel::debug);
+    loggerProperties.at("usedMedium") = static_cast<int>(log::Log::OutputMedium::both);
+    loggerProperties.at("writeType") = static_cast<int>(log::Log::OutputType::add);
     auto loggerRequired = json::array();
     loggerRequired.append("filePath", "minimumLevel", "usedMedium", "writeType");
     assert(loggerProperties.size() == loggerRequired.length());
 
     auto viewerProperties = json::object();
     viewerProperties.at("tcpHost") = "localhost";
-    viewerProperties.at("tcpPort") = 61501;
+    viewerProperties.at("tcpPort") = 61501; // NOLINT (readability-magic-numbers)
     viewerProperties.at("udpHost") = "localhost";
-    viewerProperties.at("udpPort") = 61502;
+    viewerProperties.at("udpPort") = 61502; // NOLINT (readability-magic-numbers)
     auto viewerRequired = json::array();
     viewerRequired.append("tcpHost", "tcpPort", "udpHost", "udpPort");
     assert(viewerProperties.size() == viewerRequired.length());
-    // NOLINTEND(readability-magic-numbers)
 
     // clang-format off
     return utility::json::JSON(

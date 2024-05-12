@@ -15,7 +15,7 @@
     std::cout << utility::common::formatString(format __VA_OPT__(, ) __VA_ARGS__) << std::flush
 
 //! @brief The utility module.
-namespace utility // NOLINT(modernize-concat-nested-namespaces)
+namespace utility // NOLINT (modernize-concat-nested-namespaces)
 {
 //! @brief Common-interface-related functions in the utility module.
 namespace common
