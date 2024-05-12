@@ -56,8 +56,8 @@ void Config::parseFile(const std::string& filename)
 void Config::verifyData()
 {
     bool isVerified = data.at("activateHelper").isBooleanType();
-    isVerified &= (data.at("helperTimeout").isIntegralType() && (data.at("helperTimeout").toIntegral() >= 0));
     isVerified &= data.at("helperList").isObjectType();
+    isVerified &= (data.at("helperTimeout").isIntegralType() && (data.at("helperTimeout").toIntegral() >= 0));
     if (!isVerified)
     {
         throw std::runtime_error("Illegal configuration: " + data.toUnescapedString());
@@ -225,7 +225,6 @@ utility::json::JSON getDefaultConfiguration()
     return utility::json::JSON(
     {
         "activateHelper", true,
-        "helperTimeout", 200,
         "helperList", {
             "logger", {
                 "properties", loggerProperties,
@@ -235,10 +234,24 @@ utility::json::JSON getDefaultConfiguration()
                 "properties", viewerProperties,
                 "required", viewerRequired
             }
-        }
+        },
+        "helperTimeout", 200
     });
     // clang-format on
     // NOLINTEND (readability-magic-numbers)
+}
+
+//! @brief Forced configuration update by default.
+//! @param filename - config file
+void forcedConfigurationUpdateByDefault(const std::string& filename)
+{
+    namespace file = utility::file;
+
+    std::ofstream ofs = file::openFile(filename, true);
+    file::fdLock(ofs, file::LockMode::write);
+    ofs << config::getDefaultConfiguration();
+    file::fdUnlock(ofs);
+    file::closeFile(ofs);
 }
 
 //! @brief Initialize the configuration.
@@ -250,23 +263,43 @@ static void initializeConfiguration(const std::string& filename)
     std::filesystem::permissions(
         configFolderPath, std::filesystem::perms::owner_all, std::filesystem::perm_options::add);
 
-    namespace file = utility::file;
-    std::ofstream ofs = file::openFile(filename, false);
-    file::fdLock(ofs, file::LockMode::write);
-    ofs << getDefaultConfiguration();
-    file::fdUnlock(ofs);
-    file::closeFile(ofs);
+    forcedConfigurationUpdateByDefault(filename);
 }
 
 //! @brief Load the configuration.
 //! @param filename - config file
-void loadConfiguration(const std::string& filename)
+//! @return successful or failed to load
+bool loadConfiguration(const std::string& filename)
+try
 {
     if (!std::filesystem::exists(filename))
     {
         initializeConfiguration(filename);
     }
-
     Config::getInstance();
+
+    return true;
+}
+catch (const std::exception& error)
+{
+    std::cerr << "Loading configuration exception. Please confirm whether to force an update to the default "
+                 "configuration before exiting. (y or n)"
+              << std::endl;
+
+    std::string input;
+    while (std::cin >> input)
+    {
+        if ("y" == input)
+        {
+            forcedConfigurationUpdateByDefault(filename);
+            return false;
+        }
+        else if ("n" == input)
+        {
+            throw std::runtime_error(error.what());
+        }
+    }
+
+    return false;
 }
 } // namespace application::config

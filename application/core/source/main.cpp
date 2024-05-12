@@ -29,11 +29,15 @@ inline namespace
 static int run(int argc, char* argv[])
 try
 {
+    if (!config::loadConfiguration())
+    {
+        return EXIT_FAILURE;
+    }
+
     using command::Command;
     using log::Log;
     using view::View;
 
-    config::loadConfiguration();
     constexpr std::uint32_t childThdNum = 3;
     auto threads = std::make_shared<utility::thread::Thread>(childThdNum);
     threads->enqueue("commander", &Command::runCommander, &Command::getInstance(), argc, argv);

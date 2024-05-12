@@ -98,7 +98,7 @@ private:
     bool checkViewerConfigInHelperList();
 };
 
-extern utility::json::JSON getDefaultConfiguration();
-extern void loadConfiguration(const std::string& filename = getFullDefaultConfigPath());
+extern void forcedConfigurationUpdateByDefault(const std::string& filename);
+extern bool loadConfiguration(const std::string& filename = getFullDefaultConfigPath());
 } // namespace config
 } // namespace application
