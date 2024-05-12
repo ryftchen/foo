@@ -652,7 +652,7 @@ void View::createViewServer()
                 }
 
                 const auto optionIter = optionDispatcher.find(args.at(0));
-                if (optionDispatcher.end() == optionIter)
+                if (optionDispatcher.cend() == optionIter)
                 {
                     throw std::logic_error("Unknown TCP message.");
                 }
@@ -695,7 +695,7 @@ void View::createViewServer()
             }
 
             const auto optionIter = optionDispatcher.find(args.at(0));
-            if (optionDispatcher.end() == optionIter)
+            if (optionDispatcher.cend() == optionIter)
             {
                 throw std::logic_error("Unknown UDP message.");
             }

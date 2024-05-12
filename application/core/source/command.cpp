@@ -622,15 +622,9 @@ void Command::showHelpMessage() const
 // NOLINTNEXTLINE (readability-convert-member-functions-to-static)
 void Command::dumpConfiguration() const
 {
-    namespace file = utility::file;
+    config::forcedConfigurationUpdateByDefault(CONFIG_FILE_PATH);
 
-    std::ofstream ofs = file::openFile(CONFIG_FILE_PATH, true);
-    file::fdLock(ofs, file::LockMode::write);
-    ofs << config::getDefaultConfiguration();
-    file::fdUnlock(ofs);
-    file::closeFile(ofs);
-
-    const auto& configs = file::getFileContents(CONFIG_FILE_PATH);
+    const auto& configs = utility::file::getFileContents(CONFIG_FILE_PATH);
     std::ostringstream os;
     std::copy(configs.cbegin(), configs.cend(), std::ostream_iterator<std::string>(os, "\n"));
     std::cout << os.str() << std::flush;
