@@ -176,11 +176,11 @@ public:
     //! @brief Interface for running logger.
     void runLogger();
     //! @brief Wait for the logger to start. External use.
-    void waitToStart();
+    void waitForStart();
     //! @brief Wait for the logger to stop. External use.
-    void waitToStop();
-    //! @brief Request to rollback the logger. External use.
-    void requestToRollback();
+    void waitForStop();
+    //! @brief Request to reset the logger. External use.
+    void requestToReset();
     //! @brief Get log file path.
     //! @return log file path
     std::string getFilePath() const;
@@ -252,9 +252,9 @@ private:
     //! @brief The synchronization condition for queue. Use with mtx.
     std::condition_variable cv{};
     //! @brief Flag to indicate whether it is logging.
-    std::atomic<bool> isLogging{false};
+    std::atomic<bool> ongoing{false};
     //! @brief Flag for rollback request.
-    std::atomic<bool> rollbackRequest{false};
+    std::atomic<bool> toReset{false};
     //! @brief Output file stream.
     std::ofstream ofs;
     //! @brief Log file absolute path.
@@ -375,7 +375,7 @@ void Log::flush(
         return output;
     };
 
-    if (!((State::work == currentState()) && !rollbackRequest.load()))
+    if (!((State::work == currentState()) && !toReset.load()))
     {
         std::string output = outputFormatter(unknownLevelPrefix);
         std::cerr << changeToLogStyle(output) << std::endl;

@@ -39,8 +39,8 @@ enum HelperControl : std::uint8_t
     start,
     //! @brief Stop.
     stop,
-    //! @brief Rollback.
-    rollback
+    //! @brief Reset.
+    reset
 };
 
 //! @brief Trigger the external helper with operation.
@@ -57,13 +57,13 @@ static void triggerHelper(const HelperControl operation)
     switch (operation)
     {
         case HelperControl::start:
-            Helper::getInstance().waitToStart();
+            Helper::getInstance().waitForStart();
             break;
         case HelperControl::stop:
-            Helper::getInstance().waitToStop();
+            Helper::getInstance().waitForStop();
             break;
-        case HelperControl::rollback:
-            Helper::getInstance().requestToRollback();
+        case HelperControl::reset:
+            Helper::getInstance().requestToReset();
             break;
         default:
             break;
@@ -753,7 +753,7 @@ void Command::registerOnConsole(utility::console::Console& console, std::shared_
             int retVal = Console::RetCode::success;
             try
             {
-                triggerHelper<log::Log>(HelperControl::rollback);
+                triggerHelper<log::Log>(HelperControl::reset);
                 triggerHelper<log::Log>(HelperControl::start);
 
                 LOG_INF << "Refreshed the outputs.";
@@ -778,7 +778,7 @@ void Command::registerOnConsole(utility::console::Console& console, std::shared_
                 client->toSend(utility::common::base64Encode("stop"));
                 client->waitIfAlive();
                 client.reset();
-                triggerHelper<view::View>(HelperControl::rollback);
+                triggerHelper<view::View>(HelperControl::reset);
                 triggerHelper<view::View>(HelperControl::start);
 
                 client = std::make_shared<T>();

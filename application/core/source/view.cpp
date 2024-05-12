@@ -200,23 +200,23 @@ retry:
         processEvent(GoViewing());
 
         assert(currentState() == State::work);
-        while (isViewing.load())
+        while (ongoing.load())
         {
             std::unique_lock<std::mutex> lock(mtx);
             cv.wait(
                 lock,
                 [this]()
                 {
-                    return (!isViewing.load() || rollbackRequest.load());
+                    return (!ongoing.load() || toReset.load());
                 });
 
-            if (rollbackRequest.load())
+            if (toReset.load())
             {
                 break;
             }
         }
 
-        if (rollbackRequest.load())
+        if (toReset.load())
         {
             processEvent(Relaunch());
             goto retry; // NOLINT (hicpp-avoid-goto)
@@ -240,11 +240,11 @@ retry:
     }
 }
 
-void View::waitToStart()
+void View::waitForStart()
 {
-    while (!((currentState() == State::idle) && !rollbackRequest.load()))
+    while (!((currentState() == State::idle) && !toReset.load()))
     {
-        if ((currentState() == State::hold) && !rollbackRequest.load())
+        if ((currentState() == State::hold) && !toReset.load())
         {
             LOG_ERR << "The viewer did not initialize successfully...";
             return;
@@ -254,7 +254,7 @@ void View::waitToStart()
 
     if (std::unique_lock<std::mutex> lock(mtx); true)
     {
-        isViewing.store(true);
+        ongoing.store(true);
 
         lock.unlock();
         cv.notify_one();
@@ -265,7 +265,7 @@ void View::waitToStart()
     expiryTimer.set(
         [this, &expiryTimer, &waitCount]()
         {
-            if ((currentState() == State::work) && !rollbackRequest.load())
+            if ((currentState() == State::work) && !toReset.load())
             {
                 expiryTimer.reset();
             }
@@ -283,11 +283,11 @@ void View::waitToStart()
         1);
 }
 
-void View::waitToStop()
+void View::waitForStop()
 {
     if (std::unique_lock<std::mutex> lock(mtx); true)
     {
-        isViewing.store(false);
+        ongoing.store(false);
 
         lock.unlock();
         cv.notify_one();
@@ -298,7 +298,7 @@ void View::waitToStop()
     expiryTimer.set(
         [this, &expiryTimer, &waitCount]()
         {
-            if ((currentState() == State::done) && !rollbackRequest.load())
+            if ((currentState() == State::done) && !toReset.load())
             {
                 expiryTimer.reset();
             }
@@ -316,10 +316,10 @@ void View::waitToStop()
         1);
 }
 
-void View::requestToRollback()
+void View::requestToReset()
 {
     std::unique_lock<std::mutex> lock(mtx);
-    rollbackRequest.store(true);
+    toReset.store(true);
     lock.unlock();
     cv.notify_one();
 }
@@ -723,7 +723,7 @@ void View::startViewing()
         lock,
         [this]()
         {
-            return isViewing.load();
+            return ongoing.load();
         });
 
     tcpServer->toBind(tcpPort);
@@ -736,8 +736,8 @@ void View::startViewing()
 void View::stopViewing()
 {
     std::unique_lock<std::mutex> lock(mtx);
-    isViewing.store(false);
-    rollbackRequest.store(false);
+    ongoing.store(false);
+    toReset.store(false);
 }
 
 void View::doToggle()
@@ -747,8 +747,8 @@ void View::doToggle()
 void View::doRollback()
 {
     std::unique_lock<std::mutex> lock(mtx);
-    isViewing.store(false);
-    rollbackRequest.store(false);
+    ongoing.store(false);
+    toReset.store(false);
 
     if (tcpServer)
     {
@@ -767,7 +767,7 @@ bool View::awaitNotification4Rollback()
         cv.wait(lock);
     }
 
-    if (rollbackRequest.load())
+    if (toReset.load())
     {
         processEvent(Relaunch());
         if (currentState() == State::init)
