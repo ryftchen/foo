@@ -13,7 +13,7 @@
 #include <shared_mutex>
 
 //! @brief The utility module.
-namespace utility // NOLINT(modernize-concat-nested-namespaces)
+namespace utility // NOLINT (modernize-concat-nested-namespaces)
 {
 //! @brief File-operation-related functions in the utility module.
 namespace file

@@ -32,7 +32,7 @@
 #define VIEW_OPTIONS VIEW_GET_EXISTING_INSTANCE.getViewerOptions()
 
 //! @brief The application module.
-namespace application // NOLINT(modernize-concat-nested-namespaces)
+namespace application // NOLINT (modernize-concat-nested-namespaces)
 {
 //! @brief View-server-related functions in the application module.
 namespace view

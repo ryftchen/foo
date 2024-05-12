@@ -16,12 +16,12 @@
                                 << std::setfill(' ') << std::endl;
 
 //! @brief The test module.
-namespace test // NOLINT(modernize-concat-nested-namespaces)
+namespace test // NOLINT (modernize-concat-nested-namespaces)
 {
 //! @brief Algorithm-testing-related functions in the test module.
 namespace tst_algo
 {
-using namespace application::app_algo; // NOLINT(google-build-using-namespace)
+using namespace application::app_algo; // NOLINT (google-build-using-namespace)
 //! @brief Alias for the enumeration of algorithm tasks.
 using Category = AlgorithmTask::Category;
 

@@ -18,7 +18,7 @@
 #define TIME_INTERVAL(timing) timing.getTimeInterval()
 
 //! @brief The utility module.
-namespace utility // NOLINT(modernize-concat-nested-namespaces)
+namespace utility // NOLINT (modernize-concat-nested-namespaces)
 {
 //! @brief Timing-related functions in the utility module.
 namespace time

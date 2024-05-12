@@ -7,7 +7,7 @@
 #pragma once
 
 //! @brief The numeric module.
-namespace numeric // NOLINT(modernize-concat-nested-namespaces)
+namespace numeric // NOLINT (modernize-concat-nested-namespaces)
 {
 //! @brief Arithmetic-related functions in the numeric module.
 namespace arithmetic

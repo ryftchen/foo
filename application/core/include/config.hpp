@@ -42,7 +42,7 @@
 #define CONFIG_FILE_PATH CONFIG_GET_INSTANCE.getFilePath()
 
 //! @brief The application module.
-namespace application // NOLINT(modernize-concat-nested-namespaces)
+namespace application // NOLINT (modernize-concat-nested-namespaces)
 {
 //! @brief Configuration-related functions in the application module.
 namespace config

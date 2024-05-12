@@ -43,7 +43,7 @@
 #define LOG_FILE_LOCK LOG_GET_EXISTING_INSTANCE.getFileLock()
 
 //! @brief The application module.
-namespace application // NOLINT(modernize-concat-nested-namespaces)
+namespace application // NOLINT (modernize-concat-nested-namespaces)
 {
 //! @brief Log-related functions in the application module.
 namespace log
