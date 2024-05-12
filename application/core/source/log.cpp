@@ -94,7 +94,7 @@ void Log::waitToStart()
             LOG_ERR << "The logger did not initialize successfully...";
             return;
         }
-        utility::time::millisecondLevelSleep(intervalOfWaitLogger);
+        utility::time::millisecondLevelSleep(1);
     }
 
     if (std::unique_lock<std::mutex> lock(mtx); true)
@@ -106,7 +106,7 @@ void Log::waitToStart()
     }
 
     utility::time::BlockingTimer expiryTimer;
-    std::uint16_t waitCount = 0;
+    std::uint64_t waitCount = 0;
     expiryTimer.set(
         [this, &expiryTimer, &waitCount]()
         {
@@ -119,13 +119,13 @@ void Log::waitToStart()
                 ++waitCount;
             }
 
-            if (maxTimesOfWaitLogger == waitCount)
+            if (timeoutPeriod == waitCount)
             {
                 LOG_ERR << "The logger did not start properly...";
                 expiryTimer.reset();
             }
         },
-        intervalOfWaitLogger);
+        1);
 }
 
 void Log::waitToStop()
@@ -139,7 +139,7 @@ void Log::waitToStop()
     }
 
     utility::time::BlockingTimer expiryTimer;
-    std::uint16_t waitCount = 0;
+    std::uint64_t waitCount = 0;
     expiryTimer.set(
         [this, &expiryTimer, &waitCount]()
         {
@@ -152,13 +152,13 @@ void Log::waitToStop()
                 ++waitCount;
             }
 
-            if (maxTimesOfWaitLogger == waitCount)
+            if (timeoutPeriod == waitCount)
             {
                 LOG_ERR << "The logger did not stop properly...";
                 expiryTimer.reset();
             }
         },
-        intervalOfWaitLogger);
+        1);
 }
 
 void Log::requestToRollback()

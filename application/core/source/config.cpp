@@ -56,6 +56,7 @@ void Config::parseFile(const std::string& filename)
 void Config::verifyData()
 {
     bool isVerified = data.at("activateHelper").isBooleanType();
+    isVerified &= (data.at("helperTimeout").isIntegralType() && (data.at("helperTimeout").toIntegral() >= 0));
     isVerified &= data.at("helperList").isObjectType();
     if (!isVerified)
     {
@@ -219,10 +220,12 @@ utility::json::JSON getDefaultConfiguration()
     viewerRequired.append("tcpHost", "tcpPort", "udpHost", "udpPort");
     assert(viewerProperties.size() == viewerRequired.length());
 
+    // NOLINTBEGIN (readability-magic-numbers)
     // clang-format off
     return utility::json::JSON(
     {
         "activateHelper", true,
+        "helperTimeout", 200,
         "helperList", {
             "logger", {
                 "properties", loggerProperties,
@@ -235,6 +238,7 @@ utility::json::JSON getDefaultConfiguration()
         }
     });
     // clang-format on
+    // NOLINTEND (readability-magic-numbers)
 }
 
 //! @brief Initialize the configuration.

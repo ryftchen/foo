@@ -220,6 +220,8 @@ private:
     {
     }
 
+    //! @brief Timeout period (ms) to waiting for the viewer to change to the target state.
+    const std::uint64_t timeoutPeriod{static_cast<std::uint64_t>(CONFIG_HELPER_TIMEOUT)};
     // clang-format off
     //! @brief Mapping table of all viewer options.
     const OptionMap optionDispatcher{
@@ -283,10 +285,6 @@ private:
     //! @brief Maximum number of lines to view log contents.
     static constexpr std::uint32_t maxViewNumOfLines{20};
 
-    //! @brief Maximum number of times to wait for the viewer to change to the target state.
-    static constexpr std::uint16_t maxTimesOfWaitViewer{20};
-    //! @brief Time interval (ms) to wait for the viewer to change to the target state.
-    static constexpr std::uint16_t intervalOfWaitViewer{10};
     //! @brief Maximum length of the message.
     static constexpr std::uint32_t maxMsgLength{1024};
     //! @brief TCP server.

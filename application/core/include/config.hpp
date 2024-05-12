@@ -18,6 +18,8 @@
 #define CONFIG_GET_INSTANCE application::config::Config::getInstance()
 //! @brief "activateHelper" configuration.
 #define CONFIG_ACTIVATE_HELPER CONFIG_GET_INSTANCE.getData()["activateHelper"].toBoolean()
+//! @brief "helperTimeout" configuration.
+#define CONFIG_HELPER_TIMEOUT CONFIG_GET_INSTANCE.getData()["helperTimeout"].toIntegral()
 //! @brief Logger properties in "helperList" configuration.
 #define CONFIG_HELPER_LOGGER_PROPERTIES CONFIG_GET_INSTANCE.getData()["helperList"]["logger"]["properties"]
 //! @brief Viewer properties in "helperList" configuration.
