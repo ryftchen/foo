@@ -7,6 +7,7 @@
 #include "log.hpp"
 
 #ifndef __PRECOMPILED_HEADER
+#include <cassert>
 #include <filesystem>
 #include <regex>
 #else
@@ -33,26 +34,16 @@ Log& Log::getExistingInstance()
 
 void Log::runLogger()
 {
-    State expectedState = State::init;
-    const auto checkIfExceptedFSMState = [this, &expectedState](const State state)
-    {
-        expectedState = state;
-        if (currentState() != expectedState)
-        {
-            throw std::logic_error("Abnormal logger state.");
-        }
-    };
-
 retry:
     try
     {
-        checkIfExceptedFSMState(State::init);
+        assert(currentState() == State::init);
         processEvent(OpenFile());
 
-        checkIfExceptedFSMState(State::idle);
+        assert(currentState() == State::idle);
         processEvent(GoLogging());
 
-        checkIfExceptedFSMState(State::work);
+        assert(currentState() == State::work);
         while (isLogging.load())
         {
             std::unique_lock<std::mutex> lock(mtx);
@@ -77,18 +68,16 @@ retry:
         }
         processEvent(CloseFile());
 
-        checkIfExceptedFSMState(State::idle);
+        assert(currentState() == State::idle);
         processEvent(NoLogging());
 
-        checkIfExceptedFSMState(State::done);
+        assert(currentState() == State::done);
     }
     catch (const std::exception& error)
     {
-        LOG_ERR << error.what() << " Expected logger state: " << expectedState
-                << ", current logger state: " << State(currentState()) << '.';
+        LOG_ERR << error.what() << " Current logger state: " << State(currentState()) << '.';
         processEvent(Standby());
 
-        checkIfExceptedFSMState(State::hold);
         if (awaitNotification4Rollback())
         {
             goto retry; // NOLINT (hicpp-avoid-goto)

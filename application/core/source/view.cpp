@@ -13,6 +13,7 @@
 #include <sys/shm.h>
 #include <sys/stat.h>
 #include <algorithm>
+#include <cassert>
 #include <cstring>
 #include <iostream>
 #include <iterator>
@@ -189,26 +190,16 @@ View& View::getExistingInstance()
 
 void View::runViewer()
 {
-    State expectedState = State::init;
-    const auto checkIfExceptedFSMState = [this, &expectedState](const State state)
-    {
-        expectedState = state;
-        if (currentState() != expectedState)
-        {
-            throw std::logic_error("Abnormal viewer state.");
-        }
-    };
-
 retry:
     try
     {
-        checkIfExceptedFSMState(State::init);
+        assert(currentState() == State::init);
         processEvent(CreateServer());
 
-        checkIfExceptedFSMState(State::idle);
+        assert(currentState() == State::idle);
         processEvent(GoViewing());
 
-        checkIfExceptedFSMState(State::work);
+        assert(currentState() == State::work);
         while (isViewing.load())
         {
             std::unique_lock<std::mutex> lock(mtx);
@@ -232,18 +223,16 @@ retry:
         }
         processEvent(DestroyServer());
 
-        checkIfExceptedFSMState(State::idle);
+        assert(currentState() == State::idle);
         processEvent(NoViewing());
 
-        checkIfExceptedFSMState(State::done);
+        assert(currentState() == State::done);
     }
     catch (const std::exception& error)
     {
-        LOG_ERR << error.what() << " Expected viewer state: " << expectedState
-                << ", current viewer state: " << State(currentState()) << '.';
+        LOG_ERR << error.what() << " Current viewer state: " << State(currentState()) << '.';
         processEvent(Standby());
 
-        checkIfExceptedFSMState(State::hold);
         if (awaitNotification4Rollback())
         {
             goto retry; // NOLINT (hicpp-avoid-goto)
