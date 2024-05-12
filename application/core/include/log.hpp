@@ -243,10 +243,8 @@ private:
     {
     }
 
-    //! @brief Maximum number of times to wait for the logger to change to the target state.
-    static constexpr std::uint16_t maxTimesOfWaitLogger{20};
-    //! @brief Time interval (ms) to wait for the logger to change to the target state.
-    static constexpr std::uint16_t intervalOfWaitLogger{10};
+    //! @brief Timeout period (ms) to waiting for the logger to change to the target state.
+    const std::uint64_t timeoutPeriod{static_cast<std::uint64_t>(CONFIG_HELPER_TIMEOUT)};
     //! @brief The queue of logs.
     std::queue<std::string> logQueue;
     //! @brief Mutex for controlling queue.

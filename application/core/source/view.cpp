@@ -249,7 +249,7 @@ void View::waitToStart()
             LOG_ERR << "The viewer did not initialize successfully...";
             return;
         }
-        utility::time::millisecondLevelSleep(intervalOfWaitViewer);
+        utility::time::millisecondLevelSleep(1);
     }
 
     if (std::unique_lock<std::mutex> lock(mtx); true)
@@ -261,7 +261,7 @@ void View::waitToStart()
     }
 
     utility::time::BlockingTimer expiryTimer;
-    std::uint16_t waitCount = 0;
+    std::uint64_t waitCount = 0;
     expiryTimer.set(
         [this, &expiryTimer, &waitCount]()
         {
@@ -274,13 +274,13 @@ void View::waitToStart()
                 ++waitCount;
             }
 
-            if (maxTimesOfWaitViewer == waitCount)
+            if (timeoutPeriod == waitCount)
             {
                 LOG_ERR << "The viewer did not start properly...";
                 expiryTimer.reset();
             }
         },
-        intervalOfWaitViewer);
+        1);
 }
 
 void View::waitToStop()
@@ -294,7 +294,7 @@ void View::waitToStop()
     }
 
     utility::time::BlockingTimer expiryTimer;
-    std::uint16_t waitCount = 0;
+    std::uint64_t waitCount = 0;
     expiryTimer.set(
         [this, &expiryTimer, &waitCount]()
         {
@@ -307,13 +307,13 @@ void View::waitToStop()
                 ++waitCount;
             }
 
-            if (maxTimesOfWaitViewer == waitCount)
+            if (timeoutPeriod == waitCount)
             {
                 LOG_ERR << "The viewer did not stop properly...";
                 expiryTimer.reset();
             }
         },
-        intervalOfWaitViewer);
+        1);
 }
 
 void View::requestToRollback()
