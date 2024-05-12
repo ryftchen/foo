@@ -154,11 +154,11 @@ public:
     //! @brief Interface for running viewer.
     void runViewer();
     //! @brief Wait for the viewer to start. External use.
-    void waitToStart();
+    void waitForStart();
     //! @brief Wait for the viewer to stop. External use.
-    void waitToStop();
-    //! @brief Request to rollback the viewer. External use.
-    void requestToRollback();
+    void waitForStop();
+    //! @brief Request to reset the viewer. External use.
+    void requestToReset();
 
     //! @brief Alias for the option name.
     using Option = std::string;
@@ -296,9 +296,9 @@ private:
     //! @brief The synchronization condition for server. Use with mtx.
     std::condition_variable cv{};
     //! @brief Flag to indicate whether it is viewing.
-    std::atomic<bool> isViewing{false};
+    std::atomic<bool> ongoing{false};
     //! @brief Flag for rollback request.
-    std::atomic<bool> rollbackRequest{false};
+    std::atomic<bool> toReset{false};
 
     //! @brief FSM event. Create server.
     struct CreateServer

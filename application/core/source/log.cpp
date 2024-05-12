@@ -44,24 +44,24 @@ retry:
         processEvent(GoLogging());
 
         assert(currentState() == State::work);
-        while (isLogging.load())
+        while (ongoing.load())
         {
             std::unique_lock<std::mutex> lock(mtx);
             cv.wait(
                 lock,
                 [this]()
                 {
-                    return (!isLogging.load() || !logQueue.empty() || rollbackRequest.load());
+                    return (!ongoing.load() || !logQueue.empty() || toReset.load());
                 });
 
-            if (rollbackRequest.load())
+            if (toReset.load())
             {
                 break;
             }
             handleLogQueue();
         }
 
-        if (rollbackRequest.load())
+        if (toReset.load())
         {
             processEvent(Relaunch());
             goto retry; // NOLINT (hicpp-avoid-goto)
@@ -85,11 +85,11 @@ retry:
     }
 }
 
-void Log::waitToStart()
+void Log::waitForStart()
 {
-    while (!((currentState() == State::idle) && !rollbackRequest.load()))
+    while (!((currentState() == State::idle) && !toReset.load()))
     {
-        if ((currentState() == State::hold) && !rollbackRequest.load())
+        if ((currentState() == State::hold) && !toReset.load())
         {
             LOG_ERR << "The logger did not initialize successfully...";
             return;
@@ -99,7 +99,7 @@ void Log::waitToStart()
 
     if (std::unique_lock<std::mutex> lock(mtx); true)
     {
-        isLogging.store(true);
+        ongoing.store(true);
 
         lock.unlock();
         cv.notify_one();
@@ -110,7 +110,7 @@ void Log::waitToStart()
     expiryTimer.set(
         [this, &expiryTimer, &waitCount]()
         {
-            if ((currentState() == State::work) && !rollbackRequest.load())
+            if ((currentState() == State::work) && !toReset.load())
             {
                 expiryTimer.reset();
             }
@@ -128,11 +128,11 @@ void Log::waitToStart()
         1);
 }
 
-void Log::waitToStop()
+void Log::waitForStop()
 {
     if (std::unique_lock<std::mutex> lock(mtx); true)
     {
-        isLogging.store(false);
+        ongoing.store(false);
 
         lock.unlock();
         cv.notify_one();
@@ -143,7 +143,7 @@ void Log::waitToStop()
     expiryTimer.set(
         [this, &expiryTimer, &waitCount]()
         {
-            if ((currentState() == State::done) && !rollbackRequest.load())
+            if ((currentState() == State::done) && !toReset.load())
             {
                 expiryTimer.reset();
             }
@@ -161,10 +161,10 @@ void Log::waitToStop()
         1);
 }
 
-void Log::requestToRollback()
+void Log::requestToReset()
 {
     std::unique_lock<std::mutex> lock(mtx);
-    rollbackRequest.store(true);
+    toReset.store(true);
     lock.unlock();
     cv.notify_one();
 }
@@ -265,15 +265,15 @@ void Log::startLogging()
         lock,
         [this]()
         {
-            return isLogging.load();
+            return ongoing.load();
         });
 }
 
 void Log::stopLogging()
 {
     std::unique_lock<std::mutex> lock(mtx);
-    isLogging.store(false);
-    rollbackRequest.store(false);
+    ongoing.store(false);
+    toReset.store(false);
     while (!logQueue.empty())
     {
         logQueue.pop();
@@ -287,8 +287,8 @@ void Log::doToggle()
 void Log::doRollback()
 {
     std::unique_lock<std::mutex> lock(mtx);
-    isLogging.store(false);
-    rollbackRequest.store(false);
+    ongoing.store(false);
+    toReset.store(false);
     while (!logQueue.empty())
     {
         logQueue.pop();
@@ -330,7 +330,7 @@ bool Log::awaitNotification4Rollback()
         cv.wait(lock);
     }
 
-    if (rollbackRequest.load())
+    if (toReset.load())
     {
         processEvent(Relaunch());
         if (currentState() == State::init)

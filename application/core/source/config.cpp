@@ -198,7 +198,7 @@ std::string getFullDefaultConfigPath()
 
 //! @brief Get the default configuration.
 //! @return default configuration
-utility::json::JSON getDefaultConfiguration()
+static utility::json::JSON getDefaultConfiguration()
 {
     namespace json = utility::json;
 
