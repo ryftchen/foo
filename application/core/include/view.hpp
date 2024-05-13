@@ -30,6 +30,14 @@
 #define VIEW_UDP_PORT VIEW_GET_EXISTING_INSTANCE.getViewerUDPPort()
 //! @brief Get all viewer options.
 #define VIEW_OPTIONS VIEW_GET_EXISTING_INSTANCE.getViewerOptions()
+//! @brief Get the viewer instance if enabled.
+#define VIEW_GET_INSTANCE_IF_ENABLED       \
+    if (CONFIG_ACTIVATE_HELPER) [[likely]] \
+    application::view::View::getInstance()
+//! @brief Wait for the viewer output to complete.
+#define VIEW_OUTPUT_AWAIT VIEW_GET_INSTANCE_IF_ENABLED.outputAwait()
+//! @brief Wake due to the viewer output completed.
+#define VIEW_OUTPUT_AWAKEN VIEW_GET_INSTANCE_IF_ENABLED.outputAwaken()
 
 //! @brief The application module.
 namespace application // NOLINT (modernize-concat-nested-namespaces)
@@ -196,6 +204,10 @@ public:
     //! @param length - buffer length
     //! @return value of TLV after parsing
     static tlv::TLVValue parseTLVPacket(char* buffer, const int length);
+    //! @brief Await depending on the output state.
+    void outputAwait();
+    //! @brief Awaken depending on the output state.
+    void outputAwaken();
 
     //! @brief Maximum size of the shared memory.
     static constexpr std::uint32_t maxShmSize{8192 * 10};
@@ -299,6 +311,10 @@ private:
     std::atomic<bool> ongoing{false};
     //! @brief Flag for rollback request.
     std::atomic<bool> toReset{false};
+    //! @brief Mutex for controlling output.
+    mutable std::mutex outputMtx{};
+    //! @brief The synchronization condition for output. Use with outputMtx.
+    std::condition_variable outputCv{};
 
     //! @brief FSM event. Create server.
     struct CreateServer
