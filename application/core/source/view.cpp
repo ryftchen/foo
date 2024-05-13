@@ -372,6 +372,30 @@ tlv::TLVValue View::parseTLVPacket(char* buffer, const int length)
     return value;
 }
 
+void View::outputAwait()
+{
+    if (currentState() == State::work)
+    {
+        std::unique_lock<std::mutex> lock(outputMtx);
+        outputCv.wait(lock);
+    }
+    else
+    {
+        constexpr std::uint16_t maxLatency = 200;
+        utility::time::millisecondLevelSleep(maxLatency);
+    }
+}
+
+void View::outputAwaken()
+{
+    if (currentState() == State::work)
+    {
+        std::unique_lock<std::mutex> lock(outputMtx);
+        lock.unlock();
+        outputCv.notify_one();
+    }
+}
+
 int View::buildTLVPacket2Stop(char* buffer)
 {
     int length = 0;

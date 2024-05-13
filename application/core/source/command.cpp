@@ -556,6 +556,7 @@ void Command::launchClient<utility::socket::TCPSocket>(std::shared_ptr<utility::
         {
             LOG_WRN << error.what();
         }
+        VIEW_OUTPUT_AWAKEN;
     };
     client->toConnect(VIEW_TCP_HOST, VIEW_TCP_PORT);
 }
@@ -580,6 +581,7 @@ void Command::launchClient<utility::socket::UDPSocket>(std::shared_ptr<utility::
         {
             LOG_WRN << error.what();
         }
+        VIEW_OUTPUT_AWAKEN;
     };
     client->toReceive();
     client->toConnect(VIEW_UDP_HOST, VIEW_UDP_PORT);
@@ -724,7 +726,7 @@ void Command::enterConsoleMode()
             catch (const std::exception& error)
             {
                 LOG_WRN << error.what();
-                utility::time::millisecondLevelSleep(maxLatency);
+                utility::time::millisecondLevelSleep(latency);
             }
         }
         while (Console::RetCode::quit != retVal);
@@ -757,13 +759,13 @@ void Command::registerOnConsole(utility::console::Console& console, std::shared_
                 triggerHelper<log::Log>(HelperControl::start);
 
                 LOG_INF << "Refreshed the outputs.";
-                utility::time::millisecondLevelSleep(maxLatency);
             }
             catch (const std::exception& error)
             {
                 retVal = Console::RetCode::error;
                 LOG_WRN << error.what();
             }
+            utility::time::millisecondLevelSleep(latency);
             return retVal;
         },
         "refresh the outputs");
@@ -784,13 +786,13 @@ void Command::registerOnConsole(utility::console::Console& console, std::shared_
                 client = std::make_shared<T>();
                 launchClient(client);
                 LOG_INF << "Reconnected to the servers.";
-                utility::time::millisecondLevelSleep(maxLatency);
             }
             catch (const std::exception& error)
             {
                 retVal = Console::RetCode::error;
                 LOG_WRN << error.what();
             }
+            utility::time::millisecondLevelSleep(latency);
             return retVal;
         },
         "reconnect to the servers");
@@ -815,12 +817,13 @@ void Command::registerOnConsole(utility::console::Console& console, std::shared_
                     }
 
                     client->toSend(utility::common::base64Encode(cmds));
-                    utility::time::millisecondLevelSleep(maxLatency);
+                    VIEW_OUTPUT_AWAIT;
                 }
                 catch (const std::exception& error)
                 {
                     retVal = Console::RetCode::error;
                     LOG_WRN << error.what();
+                    utility::time::millisecondLevelSleep(latency);
                 }
                 return retVal;
             },

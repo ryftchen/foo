@@ -314,8 +314,8 @@ private:
     //! @return ASCII banner text content
     static std::string getIconBanner();
 
-    //! @brief Maximum latency (ms) for console.
-    static constexpr std::uint16_t maxLatency{200};
+    //! @brief Latency (ms) for console.
+    static constexpr std::uint16_t latency{100};
 };
 
 //! @brief Preset thread name.
