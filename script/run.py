@@ -258,9 +258,9 @@ class Task:
                 for target_task in self.basic_task_dict["--console"]:
                     self.task_queue.put((self.app_bin_cmd, f"{target_task}\nquit"))
 
-            for task_category, task_category_list in self.basic_task_dict.items():
+            for task_category, target_task_list in self.basic_task_dict.items():
                 self.task_queue.put((f"{self.app_bin_cmd} {task_category}", ""))
-                for target_task in task_category_list:
+                for target_task in target_task_list:
                     target_task = target_task.replace("\\", "\\\\\\").replace('"', '\\"', 1)
                     target_task = '\\"'.join(target_task.rsplit('"', 1))
                     self.task_queue.put((f"{self.app_bin_cmd} {task_category} \"{target_task}\"", ""))

@@ -151,11 +151,11 @@ private:
     //! @return member corresponding to the specific type
     template <typename T>
     static auto get(const TaskFunctorTuple& tuple) -> const T&;
-    //! @brief Extract the alias under the sub-cli.
+    //! @brief Filter the alias under the sub-cli.
     //! @tparam T - type of regular task corresponding to sub-cli
     //! @param name - mapping for aliases
     template <typename T>
-    std::map<TaskCategory, std::string> extractAliasUnderSubCLI(const SubCLI& name) const;
+    std::map<TaskCategory, std::string> filterAliasUnderSubCLI(const SubCLI& name) const;
 
     // clang-format off
     //! @brief Mapping table of all basic tasks.

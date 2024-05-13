@@ -139,7 +139,7 @@ void Command::initializeCLI()
               "separate with quotes");
 
     const auto& algoTable = regularTaskDispatcher.at(subCLIAppAlgo.title);
-    const auto& algoAlias = extractAliasUnderSubCLI<app_algo::AlgorithmTask>(subCLIAppAlgo.title);
+    const auto& algoAlias = filterAliasUnderSubCLI<app_algo::AlgorithmTask>(subCLIAppAlgo.title);
     subCLIAppAlgo.addDescription("apply algorithm");
     subCLIAppAlgo.addArgument("-h", "--help").argsNum(0).implicitVal(true).help("show help and exit");
     auto algoCategory = std::string{TypeInfo<app_algo::MatchMethod>::name};
@@ -209,7 +209,7 @@ void Command::initializeCLI()
     mainCLI.addSubParser(subCLIAppAlgo);
 
     const auto& dpTable = regularTaskDispatcher.at(subCLIAppDp.title);
-    const auto& dpAlias = extractAliasUnderSubCLI<app_dp::DesignPatternTask>(subCLIAppDp.title);
+    const auto& dpAlias = filterAliasUnderSubCLI<app_dp::DesignPatternTask>(subCLIAppDp.title);
     subCLIAppDp.addDescription("apply design pattern");
     subCLIAppDp.addArgument("-h", "--help").argsNum(0).implicitVal(true).help("show help and exit");
     auto dpCategory = std::string{TypeInfo<app_dp::BehavioralInstance>::name};
@@ -262,7 +262,7 @@ void Command::initializeCLI()
     mainCLI.addSubParser(subCLIAppDp);
 
     const auto& dsTable = regularTaskDispatcher.at(subCLIAppDs.title);
-    const auto& dsAlias = extractAliasUnderSubCLI<app_ds::DataStructureTask>(subCLIAppDs.title);
+    const auto& dsAlias = filterAliasUnderSubCLI<app_ds::DataStructureTask>(subCLIAppDs.title);
     subCLIAppDs.addDescription("apply data structure");
     subCLIAppDs.addArgument("-h", "--help").argsNum(0).implicitVal(true).help("show help and exit");
     auto dsCategory = std::string{TypeInfo<app_ds::LinearInstance>::name};
@@ -290,7 +290,7 @@ void Command::initializeCLI()
     mainCLI.addSubParser(subCLIAppDs);
 
     const auto& numTable = regularTaskDispatcher.at(subCLIAppNum.title);
-    const auto& numAlias = extractAliasUnderSubCLI<app_num::NumericTask>(subCLIAppNum.title);
+    const auto& numAlias = filterAliasUnderSubCLI<app_num::NumericTask>(subCLIAppNum.title);
     subCLIAppNum.addDescription("apply numeric");
     subCLIAppNum.addArgument("-h", "--help").argsNum(0).implicitVal(true).help("show help and exit");
     auto numCategory = std::string{TypeInfo<app_num::ArithmeticMethod>::name};
@@ -509,7 +509,7 @@ void Command::dispatchTask()
 }
 
 template <typename T>
-std::map<Command::TaskCategory, std::string> Command::extractAliasUnderSubCLI(const SubCLI& name) const
+std::map<Command::TaskCategory, std::string> Command::filterAliasUnderSubCLI(const SubCLI& name) const
 {
     using TypeInfo = utility::reflection::TypeInfo<T>;
     const auto& table = regularTaskDispatcher.at(name);
