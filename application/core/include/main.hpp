@@ -38,8 +38,7 @@ static void signalHandler(int sig)
     const int maxFrame = sizeof(callStack) / sizeof(callStack[0]), numOfFrame = ::backtrace(callStack, maxFrame);
     char** const symbols = ::backtrace_symbols(callStack, numOfFrame);
 
-    constexpr std::uint16_t bufferSize = 1024;
-    char buffer[bufferSize] = {'\0'};
+    char buffer[1024] = {'\0'};
     std::ostringstream originalTrace, detailedTrace;
     for (int i = 1; i < numOfFrame; ++i)
     {
@@ -55,7 +54,7 @@ static void signalHandler(int sig)
             }
             std::snprintf(
                 buffer,
-                bufferSize,
+                sizeof(buffer),
                 "%-3d %*p %.960s + %zd\n",
                 i,
                 static_cast<int>(2 + sizeof(void*) * 2),
@@ -68,7 +67,7 @@ static void signalHandler(int sig)
         {
             std::snprintf(
                 buffer,
-                bufferSize,
+                sizeof(buffer),
                 "%-3d %*p %.960s\n",
                 i,
                 static_cast<int>(2 + sizeof(void*) * 2),
