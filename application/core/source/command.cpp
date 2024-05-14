@@ -682,6 +682,7 @@ void Command::checkForExcessiveArguments()
 }
 
 void Command::enterConsoleMode()
+try
 {
     if (!CONFIG_ACTIVATE_HELPER)
     {
@@ -689,58 +690,54 @@ void Command::enterConsoleMode()
         return;
     }
 
-    try
-    {
 #ifndef NDEBUG
-        LOG_DBG << "Enter console mode.";
+    LOG_DBG << "Enter console mode.";
 #endif // NDEBUG
-        using utility::console::Console;
+    using utility::console::Console;
 
-        std::cout << utility::common::executeCommand("tput bel ; echo " + getIconBanner() + " ; sleep 0.1s")
-                  << std::flush;
-        auto tcpClient = std::make_shared<utility::socket::TCPSocket>();
-        launchClient(tcpClient);
-        std::string user = "USER";
-        if (nullptr != std::getenv("USER"))
-        {
-            user = std::getenv("USER");
-        }
-        char hostName[HOST_NAME_MAX] = {'\0'};
-        if (::gethostname(hostName, HOST_NAME_MAX))
-        {
-            std::strncpy(hostName, "HOSTNAME", HOST_NAME_MAX - 1);
-            hostName[HOST_NAME_MAX - 1] = '\0';
-        }
-        const std::string greeting = user + '@' + std::string{hostName} + " foo > ";
-        Console console(greeting);
-        registerOnConsole(console, tcpClient);
-
-        int retVal = Console::RetCode::success;
-        do
-        {
-            try
-            {
-                retVal = console.readCommandLine();
-                console.setGreeting(greeting);
-            }
-            catch (const std::exception& error)
-            {
-                LOG_WRN << error.what();
-                utility::time::millisecondLevelSleep(latency);
-            }
-        }
-        while (Console::RetCode::quit != retVal);
-
-        tcpClient->toSend(utility::common::base64Encode("stop"));
-        tcpClient->waitIfAlive();
-#ifndef NDEBUG
-        LOG_DBG << "Exit console mode.";
-#endif // NDEBUG
-    }
-    catch (const std::exception& error)
+    std::cout << utility::common::executeCommand("tput bel ; echo " + getIconBanner() + " ; sleep 0.1s") << std::flush;
+    auto tcpClient = std::make_shared<utility::socket::TCPSocket>();
+    launchClient(tcpClient);
+    std::string user = "USER";
+    if (nullptr != std::getenv("USER"))
     {
-        LOG_ERR << error.what();
+        user = std::getenv("USER");
     }
+    char hostName[HOST_NAME_MAX] = {'\0'};
+    if (::gethostname(hostName, HOST_NAME_MAX))
+    {
+        std::strncpy(hostName, "HOSTNAME", HOST_NAME_MAX - 1);
+        hostName[HOST_NAME_MAX - 1] = '\0';
+    }
+    const std::string greeting = user + '@' + std::string{hostName} + " foo > ";
+    Console console(greeting);
+    registerOnConsole(console, tcpClient);
+
+    int retVal = Console::RetCode::success;
+    do
+    {
+        try
+        {
+            retVal = console.readCommandLine();
+            console.setGreeting(greeting);
+        }
+        catch (const std::exception& error)
+        {
+            LOG_WRN << error.what();
+            utility::time::millisecondLevelSleep(latency);
+        }
+    }
+    while (Console::RetCode::quit != retVal);
+
+    tcpClient->toSend(utility::common::base64Encode("stop"));
+    tcpClient->waitIfAlive();
+#ifndef NDEBUG
+    LOG_DBG << "Exit console mode.";
+#endif // NDEBUG
+}
+catch (const std::exception& error)
+{
+    LOG_ERR << error.what();
 }
 
 template <typename T>
