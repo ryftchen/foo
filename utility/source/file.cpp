@@ -154,7 +154,7 @@ void closeFile(std::ofstream& ofs)
 //! @param reverse - reverse or not
 //! @param totalRows - number of rows
 //! @return file contents
-std::list<std::string> getFileContents(const std::string& filename, const bool reverse, const std::uint32_t totalRows)
+std::list<std::string> getFileContents(const std::string& filename, const bool reverse, const std::uint64_t totalRows)
 {
     std::ifstream ifs = openFile(filename);
     ifs.seekg(std::ios::beg);
