@@ -30,6 +30,8 @@
 #define VIEW_UDP_PORT VIEW_GET_EXISTING_INSTANCE.getViewerUDPPort()
 //! @brief Get all viewer options.
 #define VIEW_OPTIONS VIEW_GET_EXISTING_INSTANCE.getViewerOptions()
+//! @brief Parse the TLV packet by viewer.
+#define VIEW_TLV_PACKET(buf, len) VIEW_GET_EXISTING_INSTANCE.parseTLVPacket(buf, len)
 //! @brief Get the viewer instance if enabled.
 #define VIEW_GET_INSTANCE_IF_ENABLED       \
     if (CONFIG_ACTIVATE_HELPER) [[likely]] \
@@ -203,14 +205,14 @@ public:
     //! @param buffer - TLV packet buffer
     //! @param length - buffer length
     //! @return value of TLV after parsing
-    static tlv::TLVValue parseTLVPacket(char* buffer, const int length);
+    tlv::TLVValue parseTLVPacket(char* buffer, const int length) const;
     //! @brief Await depending on the output state.
     void outputAwait();
     //! @brief Awaken depending on the output state.
     void outputAwaken();
 
     //! @brief Maximum size of the shared memory.
-    static constexpr std::uint32_t maxShmSize{8192 * 10};
+    static constexpr std::uint64_t maxShmSize{65536 * 10};
     //! @brief Memory that can be accessed by multiple programs simultaneously.
     struct alignas(64) SharedMemory
     {
@@ -287,18 +289,18 @@ private:
     static int fillSharedMemory(const std::string& contents);
     //! @brief Print the shared memory.
     //! @param shmId - shm id
-    static void printSharedMemory(const int shmId);
+    //! @param noBreak - whether output with no break
+    static void printSharedMemory(const int shmId, const bool noBreak = true);
+    //! @brief Segmented output.
+    //! @param buffer - output buffer
+    static void segmentedOutput(const char* const buffer);
     //! @brief Get the log contents.
     //! @return log contents
     static std::string getLogContents();
     //! @brief Get the status information.
     //! @return status information
     static std::string getStatusInformation();
-    //! @brief Maximum number of lines to view log contents.
-    static constexpr std::uint32_t maxViewNumOfLines{20};
 
-    //! @brief Maximum length of the message.
-    static constexpr std::uint32_t maxMsgLength{1024};
     //! @brief TCP server.
     std::shared_ptr<utility::socket::TCPServer> tcpServer;
     //! @brief UDP server.
@@ -311,6 +313,8 @@ private:
     std::atomic<bool> ongoing{false};
     //! @brief Flag for rollback request.
     std::atomic<bool> toReset{false};
+    //! @brief Maximum length of the message.
+    static constexpr std::uint32_t maxMsgLength{1024};
     //! @brief Mutex for controlling output.
     mutable std::mutex outputMtx{};
     //! @brief The synchronization condition for output. Use with outputMtx.

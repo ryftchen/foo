@@ -130,7 +130,7 @@ public:
     //! @tparam IntType - type of integral
     //! @return be an enumeration value or not
     template <typename IntType>
-    static inline constexpr bool isValue(const IntType /*unused*/)
+    static inline constexpr bool isValue(const IntType /*val*/)
     {
         return false;
     }

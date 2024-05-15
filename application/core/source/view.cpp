@@ -349,7 +349,7 @@ std::uint16_t View::getViewerUDPPort() const
     return udpPort;
 }
 
-tlv::TLVValue View::parseTLVPacket(char* buffer, const int length)
+tlv::TLVValue View::parseTLVPacket(char* buffer, const int length) const
 {
     decryptMessage(buffer, length);
 
@@ -358,15 +358,15 @@ tlv::TLVValue View::parseTLVPacket(char* buffer, const int length)
 
     if (invalidShmId != value.bashShmId)
     {
-        printSharedMemory(value.bashShmId);
+        printSharedMemory(value.bashShmId, true);
     }
-    else if (invalidShmId != value.logShmId)
+    if (invalidShmId != value.logShmId)
     {
-        printSharedMemory(value.logShmId);
+        printSharedMemory(value.logShmId, (currentState() != State::work));
     }
-    else if (invalidShmId != value.statusShmId)
+    if (invalidShmId != value.statusShmId)
     {
-        printSharedMemory(value.statusShmId);
+        printSharedMemory(value.statusShmId, true);
     }
 
     return value;
@@ -541,7 +541,7 @@ int View::fillSharedMemory(const std::string& contents)
     return shmId;
 }
 
-void View::printSharedMemory(const int shmId)
+void View::printSharedMemory(const int shmId, const bool noBreak)
 {
     void* const shm = ::shmat(shmId, nullptr, 0);
     if (nullptr == shm)
@@ -555,7 +555,16 @@ void View::printSharedMemory(const int shmId)
     {
         if (shrMem->signal.load())
         {
-            std::cout << "\r\n" << shrMem->buffer << std::endl;
+            if (noBreak)
+            {
+                std::cout << "\r\n" << shrMem->buffer << std::endl;
+            }
+            else
+            {
+                std::cout << "\r\n";
+                segmentedOutput(shrMem->buffer);
+                std::cout << std::endl;
+            }
             shrMem->signal.store(false);
             break;
         }
@@ -565,10 +574,52 @@ void View::printSharedMemory(const int shmId)
     ::shmctl(shmId, IPC_RMID, nullptr);
 }
 
+void View::segmentedOutput(const char* const buffer)
+{
+    constexpr std::uint8_t terminalRows = 24;
+    constexpr std::string_view prompt = "--- MORE ---: ", clearEscape = "\x1b[1A\x1b[2K\r";
+    std::uint64_t count = 0;
+    std::string line;
+    std::istringstream is(std::string{buffer});
+    while (std::getline(is, line))
+    {
+        std::cout << line << '\n';
+        ++count;
+        if (0 == count % terminalRows)
+        {
+            std::cout << prompt;
+            std::string input;
+            for (;;)
+            {
+                std::getline(std::cin, input);
+                std::cout << clearEscape;
+                if (input.empty())
+                {
+                    --count;
+                    break;
+                }
+                else if ("c" == input)
+                {
+                    count = 0;
+                    break;
+                }
+                else if ("q" == input)
+                {
+                    return;
+                }
+                else
+                {
+                    std::cout << prompt;
+                }
+            }
+        }
+    }
+}
+
 std::string View::getLogContents()
 {
     utility::file::ReadWriteGuard guard(utility::file::LockMode::read, LOG_FILE_LOCK);
-    auto contents = utility::file::getFileContents(LOG_FILE_PATH, true, maxViewNumOfLines);
+    auto contents = utility::file::getFileContents(LOG_FILE_PATH, true);
     std::for_each(
         contents.begin(),
         contents.end(),
@@ -613,7 +664,7 @@ std::string View::getStatusInformation()
                     cmd + usedLen,
                     cmdLen - usedLen,
                     "&& echo 'Strace:' "
-                    "&& (timeout --preserve-status --signal=2 0.02 strace -qq -ttT -vyy -s 96 -p %d 2>&1 || exit 0) "
+                    "&& (timeout --preserve-status --signal=2 0.1 strace -qq -ttT -vyy -s 96 -p %d 2>&1 || exit 0) "
                     "; fi",
                     tid);
             }

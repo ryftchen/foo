@@ -546,17 +546,16 @@ void Command::launchClient<utility::socket::TCPSocket>(std::shared_ptr<utility::
     {
         try
         {
-            const auto& tcpResp = view::View::parseTLVPacket(buffer, length);
-            if (tcpResp.stopTag)
+            if (VIEW_TLV_PACKET(buffer, length).stopTag)
             {
                 client->setNonBlocking();
             }
+            VIEW_OUTPUT_AWAKEN;
         }
         catch (std::exception& error)
         {
             LOG_WRN << error.what();
         }
-        VIEW_OUTPUT_AWAKEN;
     };
     client->toConnect(VIEW_TCP_HOST, VIEW_TCP_PORT);
 }
@@ -571,17 +570,16 @@ void Command::launchClient<utility::socket::UDPSocket>(std::shared_ptr<utility::
     {
         try
         {
-            const auto& udpResp = view::View::parseTLVPacket(buffer, length);
-            if (udpResp.stopTag)
+            if (VIEW_TLV_PACKET(buffer, length).stopTag)
             {
                 client->setNonBlocking();
             }
+            VIEW_OUTPUT_AWAKEN;
         }
         catch (std::exception& error)
         {
             LOG_WRN << error.what();
         }
-        VIEW_OUTPUT_AWAKEN;
     };
     client->toReceive();
     client->toConnect(VIEW_UDP_HOST, VIEW_UDP_PORT);
