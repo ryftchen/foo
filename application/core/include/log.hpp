@@ -35,12 +35,12 @@
 #define LOG_WRN LOG_FLUSH_IF_ENABLED(warning)
 //! @brief Log with error level.
 #define LOG_ERR LOG_FLUSH_IF_ENABLED(error)
-//! @brief Get the existing logger instance.
-#define LOG_GET_EXISTING_INSTANCE application::log::Log::getExistingInstance()
+//! @brief Get the log instance.
+#define LOG_GET_INSTANCE application::log::Log::getInstance()
 //! @brief Log file path.
-#define LOG_FILE_PATH LOG_GET_EXISTING_INSTANCE.getFilePath()
+#define LOG_FILE_PATH LOG_GET_INSTANCE.loggerFilePath()
 //! @brief Log file lock.
-#define LOG_FILE_LOCK LOG_GET_EXISTING_INSTANCE.getFileLock()
+#define LOG_FILE_LOCK LOG_GET_INSTANCE.loggerFileLock()
 
 //! @brief The application module.
 namespace application // NOLINT (modernize-concat-nested-namespaces)
@@ -170,23 +170,20 @@ public:
     //! @brief Get the Log instance.
     //! @return reference of the Log object
     static Log& getInstance();
-    //! @brief Get the existing Log instance. Include configuration validation.
-    //! @return reference of the Log object
-    static Log& getExistingInstance();
-    //! @brief Interface for running logger.
+    //! @brief State controller for running logger.
     void runLogger();
-    //! @brief Wait for the logger to start. External use.
+    //! @brief Wait for the logger to start. Interface controller for external use.
     void waitForStart();
-    //! @brief Wait for the logger to stop. External use.
+    //! @brief Wait for the logger to stop. Interface controller for external use.
     void waitForStop();
-    //! @brief Request to reset the logger. External use.
+    //! @brief Request to reset the logger. Interface controller for external use.
     void requestToReset();
-    //! @brief Get log file path.
+    //! @brief Get the log file path.
     //! @return log file path
-    std::string getFilePath() const;
-    //! @brief Get log file lock.
+    std::string loggerFilePath() const;
+    //! @brief Get the log file lock.
     //! @return log file lock
-    utility::file::ReadWriteLock& getFileLock();
+    utility::file::ReadWriteLock& loggerFileLock();
 
     //! @brief Flush log to queue.
     //! @tparam Args - type of arguments of format

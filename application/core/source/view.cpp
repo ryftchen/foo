@@ -178,16 +178,6 @@ View& View::getInstance()
     return viewer;
 }
 
-View& View::getExistingInstance()
-{
-    if (!CONFIG_ACTIVATE_HELPER) [[unlikely]]
-    {
-        throw std::logic_error("The viewer is disabled.");
-    }
-
-    return getInstance();
-}
-
 void View::runViewer()
 {
 retry:
@@ -324,27 +314,27 @@ void View::requestToReset()
     cv.notify_one();
 }
 
-View::OptionMap View::getViewerOptions() const
+const View::OptionMap& View::viewerOptions() const
 {
     return optionDispatcher;
 }
 
-std::string View::getViewerTCPHost() const
+std::string View::viewerTCPHost() const
 {
     return tcpHost;
 }
 
-std::uint16_t View::getViewerTCPPort() const
+std::uint16_t View::viewerTCPPort() const
 {
     return tcpPort;
 }
 
-std::string View::getViewerUDPHost() const
+std::string View::viewerUDPHost() const
 {
     return udpHost;
 }
 
-std::uint16_t View::getViewerUDPPort() const
+std::uint16_t View::viewerUDPPort() const
 {
     return udpPort;
 }
