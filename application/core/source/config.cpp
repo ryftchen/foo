@@ -18,62 +18,60 @@
 
 namespace application::config
 {
-Config::Config()
-{
-    parseFile(filePath);
-}
-
 Config& Config::getInstance()
 {
-    static Config configuration{};
-    return configuration;
+    static Config cfg{};
+    return cfg;
 }
 
-utility::json::JSON& Config::getData()
+const utility::json::JSON& Config::cfgData() const
 {
     return data;
 }
 
-std::string Config::getFilePath() const
+std::string Config::cfgFilePath() const
 {
     return filePath;
 }
 
-void Config::parseFile(const std::string& filename)
+utility::json::JSON Config::parseConfigFile(const std::string& configFile)
 {
-    if (!std::filesystem::exists(filename))
+    if (!std::filesystem::exists(configFile))
     {
-        throw std::runtime_error("Configuration file " + filename + " is missing.");
+        throw std::runtime_error("Configuration file " + configFile + " is missing.");
     }
 
-    const auto configs = utility::file::getFileContents(filename);
+    const auto configs = utility::file::getFileContents(configFile);
     std::ostringstream os;
     std::copy(configs.cbegin(), configs.cend(), std::ostream_iterator<std::string>(os, ""));
-    data = utility::json::JSON::load(os.str());
-    verifyData();
+    const auto& preprocessedData = utility::json::JSON::load(os.str());
+    verifyConfigData(preprocessedData);
+
+    return preprocessedData;
 }
 
-void Config::verifyData()
+void Config::verifyConfigData(const utility::json::JSON& configData)
 {
-    bool isVerified = data.at("activateHelper").isBooleanType();
-    isVerified &= data.at("helperList").isObjectType();
-    isVerified &= (data.at("helperTimeout").isIntegralType() && (data.at("helperTimeout").toIntegral() >= 0));
+    bool isVerified = configData.at("activateHelper").isBooleanType();
+    isVerified &= configData.at("helperList").isObjectType();
+    isVerified &=
+        (configData.at("helperTimeout").isIntegralType() && (configData.at("helperTimeout").toIntegral() >= 0));
     if (!isVerified)
     {
-        throw std::runtime_error("Illegal configuration: " + data.toUnescapedString());
+        throw std::runtime_error("Illegal configuration: " + configData.toUnescapedString());
     }
 
-    checkLoggerConfigInHelperList();
-    checkViewerConfigInHelperList();
+    checkLoggerConfigInHelperList(configData);
+    checkViewerConfigInHelperList(configData);
 }
 
-bool Config::checkLoggerConfigInHelperList()
+void Config::checkLoggerConfigInHelperList(const utility::json::JSON& configData)
 {
     using utility::common::operator""_bkdrHash;
     using utility::common::bkdrHash;
 
     bool isVerified = true;
-    const auto loggerObject = data.at("helperList").at("logger");
+    const auto loggerObject = configData.at("helperList").at("logger");
     isVerified &= loggerObject.isObjectType();
     const auto loggerProperties = loggerObject.at("properties"), loggerRequired = loggerObject.at("required");
     isVerified &= loggerProperties.isObjectType();
@@ -126,16 +124,15 @@ bool Config::checkLoggerConfigInHelperList()
         throw std::runtime_error(
             R"(Illegal configuration, "logger" object in "helperList" object: )" + loggerObject.toUnescapedString());
     }
-    return isVerified;
 }
 
-bool Config::checkViewerConfigInHelperList()
+void Config::checkViewerConfigInHelperList(const utility::json::JSON& configData)
 {
     using utility::common::operator""_bkdrHash;
     using utility::common::bkdrHash;
 
     bool isVerified = true;
-    const auto viewerObject = data.at("helperList").at("viewer");
+    const auto viewerObject = configData.at("helperList").at("viewer");
     isVerified &= viewerObject.isObjectType();
     const auto viewerProperties = viewerObject.at("properties"), viewerRequired = viewerObject.at("required");
     isVerified &= viewerProperties.isObjectType();
@@ -177,12 +174,11 @@ bool Config::checkViewerConfigInHelperList()
         throw std::runtime_error(
             R"(Illegal configuration, "viewer" object in "helperList" object: )" + viewerObject.toUnescapedString());
     }
-    return isVerified;
 }
 
-//! @brief Get the full path to the default config file.
-//! @return full path to the default config file
-std::string getFullDefaultConfigPath()
+//! @brief Get the full path to the default configuration file.
+//! @return full path to the default configuration file
+std::string getFullDefaultConfigurationPath()
 {
     std::string processHome;
     if (nullptr != std::getenv("FOO_HOME"))
@@ -193,7 +189,7 @@ std::string getFullDefaultConfigPath()
     {
         throw std::runtime_error("The environment variable FOO_HOME is not set.");
     }
-    return processHome + '/' + std::string{defaultConfigFile};
+    return processHome + '/' + std::string{defaultConfigurationFile};
 }
 
 //! @brief Get the default configuration.

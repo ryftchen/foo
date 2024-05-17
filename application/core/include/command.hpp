@@ -62,7 +62,7 @@ public:
     //! @brief Get the Command instance.
     //! @return reference of the Command object
     static Command& getInstance();
-    //! @brief Interface for running commander.
+    //! @brief Argument controller for running commander.
     //! @param argc - argument count
     //! @param argv - argument vector
     void runCommander(const int argc, const char* const argv[]);

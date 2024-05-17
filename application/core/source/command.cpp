@@ -550,7 +550,7 @@ void Command::launchClient<utility::socket::TCPSocket>(std::shared_ptr<utility::
             {
                 client->setNonBlocking();
             }
-            VIEW_OUTPUT_AWAKEN;
+            VIEW_AWAKEN;
         }
         catch (std::exception& error)
         {
@@ -574,7 +574,7 @@ void Command::launchClient<utility::socket::UDPSocket>(std::shared_ptr<utility::
             {
                 client->setNonBlocking();
             }
-            VIEW_OUTPUT_AWAKEN;
+            VIEW_AWAKEN;
         }
         catch (std::exception& error)
         {
@@ -812,7 +812,7 @@ void Command::registerOnConsole(utility::console::Console& console, std::shared_
                     }
 
                     client->toSend(utility::common::base64Encode(cmds));
-                    VIEW_OUTPUT_AWAIT;
+                    VIEW_AWAIT;
                 }
                 catch (const std::exception& error)
                 {

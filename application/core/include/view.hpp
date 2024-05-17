@@ -18,28 +18,28 @@
 #include "utility/include/fsm.hpp"
 #include "utility/include/socket.hpp"
 
-//! @brief Get the existing viewer instance.
-#define VIEW_GET_EXISTING_INSTANCE application::view::View::getExistingInstance()
-//! @brief Get the TCP host address of the viewer.
-#define VIEW_TCP_HOST VIEW_GET_EXISTING_INSTANCE.getViewerTCPHost()
-//! @brief Get the TCP port number of the viewer.
-#define VIEW_TCP_PORT VIEW_GET_EXISTING_INSTANCE.getViewerTCPPort()
-//! @brief Get the UDP host address of the viewer.
-#define VIEW_UDP_HOST VIEW_GET_EXISTING_INSTANCE.getViewerUDPHost()
-//! @brief Get the UDP port number of the viewer.
-#define VIEW_UDP_PORT VIEW_GET_EXISTING_INSTANCE.getViewerUDPPort()
-//! @brief Get all viewer options.
-#define VIEW_OPTIONS VIEW_GET_EXISTING_INSTANCE.getViewerOptions()
-//! @brief Parse the TLV packet by viewer.
-#define VIEW_TLV_PACKET(buf, len) VIEW_GET_EXISTING_INSTANCE.parseTLVPacket(buf, len)
-//! @brief Get the viewer instance if enabled.
+//! @brief Get the view instance.
+#define VIEW_GET_INSTANCE application::view::View::getInstance()
+//! @brief All viewer options.
+#define VIEW_OPTIONS VIEW_GET_INSTANCE.viewerOptions()
+//! @brief TCP host address of the viewer.
+#define VIEW_TCP_HOST VIEW_GET_INSTANCE.viewerTCPHost()
+//! @brief TCP port number of the viewer.
+#define VIEW_TCP_PORT VIEW_GET_INSTANCE.viewerTCPPort()
+//! @brief UDP host address of the viewer.
+#define VIEW_UDP_HOST VIEW_GET_INSTANCE.viewerUDPHost()
+//! @brief UDP port number of the viewer.
+#define VIEW_UDP_PORT VIEW_GET_INSTANCE.viewerUDPPort()
+//! @brief TLV packet through viewer parsing.
+#define VIEW_TLV_PACKET(buf, len) VIEW_GET_INSTANCE.parseTLVPacket(buf, len)
+//! @brief Get the view instance if enabled.
 #define VIEW_GET_INSTANCE_IF_ENABLED       \
     if (CONFIG_ACTIVATE_HELPER) [[likely]] \
     application::view::View::getInstance()
 //! @brief Wait for the viewer output to complete.
-#define VIEW_OUTPUT_AWAIT VIEW_GET_INSTANCE_IF_ENABLED.outputAwait()
+#define VIEW_AWAIT VIEW_GET_INSTANCE_IF_ENABLED.outputAwait()
 //! @brief Wake due to the viewer output completed.
-#define VIEW_OUTPUT_AWAKEN VIEW_GET_INSTANCE_IF_ENABLED.outputAwaken()
+#define VIEW_AWAKEN VIEW_GET_INSTANCE_IF_ENABLED.outputAwaken()
 
 //! @brief The application module.
 namespace application // NOLINT (modernize-concat-nested-namespaces)
@@ -158,16 +158,13 @@ public:
     //! @brief Get the View instance.
     //! @return reference of the View object
     static View& getInstance();
-    //! @brief Get the existing View instance. Include configuration validation.
-    //! @return reference of the View object
-    static View& getExistingInstance();
-    //! @brief Interface for running viewer.
+    //! @brief State controller for running viewer.
     void runViewer();
-    //! @brief Wait for the viewer to start. External use.
+    //! @brief Wait for the viewer to start. Interface controller for external use.
     void waitForStart();
-    //! @brief Wait for the viewer to stop. External use.
+    //! @brief Wait for the viewer to stop. Interface controller for external use.
     void waitForStop();
-    //! @brief Request to reset the viewer. External use.
+    //! @brief Request to reset the viewer. Interface controller for external use.
     void requestToReset();
 
     //! @brief Alias for the option name.
@@ -188,19 +185,19 @@ public:
     using OptionMap = std::map<Option, OptionAttr>;
     //! @brief Get the viewer options.
     //! @return viewer options
-    OptionMap getViewerOptions() const;
+    const OptionMap& viewerOptions() const;
     //! @brief Get the TCP server host address.
     //! @return TCP server host address
-    std::string getViewerTCPHost() const;
+    std::string viewerTCPHost() const;
     //! @brief Get the TCP server port number.
     //! @return TCP server port number
-    std::uint16_t getViewerTCPPort() const;
+    std::uint16_t viewerTCPPort() const;
     //! @brief Get the UDP server host address.
     //! @return UDP server host address
-    std::string getViewerUDPHost() const;
+    std::string viewerUDPHost() const;
     //! @brief Get the UDP server port number.
     //! @return UDP server port number
-    std::uint16_t getViewerUDPPort() const;
+    std::uint16_t viewerUDPPort() const;
     //! @brief Parse the TLV packet.
     //! @param buffer - TLV packet buffer
     //! @param length - buffer length

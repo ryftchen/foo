@@ -22,16 +22,6 @@ Log& Log::getInstance()
     return logger;
 }
 
-Log& Log::getExistingInstance()
-{
-    if (!CONFIG_ACTIVATE_HELPER) [[unlikely]]
-    {
-        throw std::logic_error("The logger is disabled.");
-    }
-
-    return getInstance();
-}
-
 void Log::runLogger()
 {
 retry:
@@ -169,12 +159,12 @@ void Log::requestToReset()
     cv.notify_one();
 }
 
-std::string Log::getFilePath() const
+std::string Log::loggerFilePath() const
 {
     return filePath;
 }
 
-utility::file::ReadWriteLock& Log::getFileLock()
+utility::file::ReadWriteLock& Log::loggerFileLock()
 {
     return fileLock;
 }
