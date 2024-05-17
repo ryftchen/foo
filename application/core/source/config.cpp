@@ -272,7 +272,7 @@ try
     {
         initializeConfiguration(filename);
     }
-    Config::getInstance();
+    static_cast<void>(Config::getInstance());
 
     return true;
 }
