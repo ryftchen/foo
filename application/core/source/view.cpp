@@ -531,7 +531,7 @@ int View::fillSharedMemory(const std::string& contents)
     return shmId;
 }
 
-void View::printSharedMemory(const int shmId, const bool noBreak)
+void View::printSharedMemory(const int shmId, const bool withoutPaging)
 {
     void* const shm = ::shmat(shmId, nullptr, 0);
     if (nullptr == shm)
@@ -545,7 +545,7 @@ void View::printSharedMemory(const int shmId, const bool noBreak)
     {
         if (shrMem->signal.load())
         {
-            if (noBreak)
+            if (withoutPaging)
             {
                 std::cout << "\r\n" << shrMem->buffer << std::endl;
             }
@@ -567,15 +567,17 @@ void View::printSharedMemory(const int shmId, const bool noBreak)
 void View::segmentedOutput(const char* const buffer)
 {
     constexpr std::uint8_t terminalRows = 24;
-    constexpr std::string_view prompt = "--- MORE ---: ", clearEscape = "\x1b[1A\x1b[2K\r";
+    constexpr std::string_view prompt = "--- Type <ENTER> for more, c to continue without paging, q to quit ---: ",
+                               clearEscape = "\x1b[1A\x1b[2K\r";
     std::uint64_t count = 0;
     std::string line;
+    bool withoutPaging = false;
     std::istringstream is(std::string{buffer});
     while (std::getline(is, line))
     {
         std::cout << line << '\n';
         ++count;
-        if (0 == count % terminalRows)
+        if ((0 == count % terminalRows) && !withoutPaging)
         {
             std::cout << prompt;
             std::string input;
@@ -590,7 +592,7 @@ void View::segmentedOutput(const char* const buffer)
                 }
                 else if ("c" == input)
                 {
-                    count = 0;
+                    withoutPaging = true;
                     break;
                 }
                 else if ("q" == input)

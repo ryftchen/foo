@@ -286,8 +286,8 @@ private:
     static int fillSharedMemory(const std::string& contents);
     //! @brief Print the shared memory.
     //! @param shmId - shm id
-    //! @param noBreak - whether output with no break
-    static void printSharedMemory(const int shmId, const bool noBreak = true);
+    //! @param withoutPaging - whether output without paging
+    static void printSharedMemory(const int shmId, const bool withoutPaging = true);
     //! @brief Segmented output.
     //! @param buffer - output buffer
     static void segmentedOutput(const char* const buffer);
