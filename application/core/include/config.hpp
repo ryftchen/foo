@@ -78,12 +78,12 @@ public:
 
 private:
     //! @brief Construct a new Config object.
-    explicit Config() : filePath(getFullDefaultConfigurationPath()), data(parseConfigFile(filePath)) {}
+    Config() = default;
 
     //! @brief Config file absolute path.
-    const std::string filePath;
+    const std::string filePath{getFullDefaultConfigurationPath()};
     //! @brief Config data table.
-    const utility::json::JSON data;
+    const utility::json::JSON data{parseConfigFile(filePath)};
 
     //! @brief Parse the configuration file.
     //! @param configFile - configuration file
