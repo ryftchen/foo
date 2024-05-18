@@ -567,7 +567,7 @@ void View::printSharedMemory(const int shmId, const bool withoutPaging)
 void View::segmentedOutput(const char* const buffer)
 {
     constexpr std::uint8_t terminalRows = 24;
-    constexpr std::string_view prompt = "--- Type <ENTER> for more, c to continue without paging, q to quit ---: ",
+    constexpr std::string_view prompt = "----- Type \u23CE for more, c to continue without paging, q to quit -----: ",
                                clearEscape = "\x1b[1A\x1b[2K\r";
     std::uint64_t count = 0;
     std::string line;

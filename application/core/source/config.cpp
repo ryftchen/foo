@@ -278,9 +278,8 @@ try
 }
 catch (const std::exception& error)
 {
-    std::cerr << "Loading configuration exception. Please confirm whether to force an update to the default "
-                 "configuration before exiting. (y or n)"
-              << std::endl;
+    std::cerr << "Configuration load exception..." << std::endl;
+    std::cout << "Type y to force an update to the default configuration, n to exit: ";
 
     std::string input;
     while (std::cin >> input)
@@ -288,10 +287,12 @@ catch (const std::exception& error)
         if ("y" == input)
         {
             forcedConfigurationUpdateByDefault(filename);
+            std::cout << std::endl;
             return false;
         }
         else if ("n" == input)
         {
+            std::cout << std::endl;
             throw std::runtime_error(error.what());
         }
     }
