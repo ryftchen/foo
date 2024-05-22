@@ -344,7 +344,10 @@ tlv::TLVValue View::parseTLVPacket(char* buffer, const int length) const
     decryptMessage(buffer, length);
 
     tlv::TLVValue value{};
-    tlv::tlvDecode(buffer, length, value);
+    if (tlv::tlvDecode(buffer, length, value) < 0)
+    {
+        throw std::runtime_error("Invalid message content.");
+    }
 
     if (invalidShmId != value.bashShmId)
     {
@@ -364,10 +367,16 @@ tlv::TLVValue View::parseTLVPacket(char* buffer, const int length) const
 
 void View::outputAwait()
 {
-    if (currentState() == State::work)
+    if ((currentState() == State::work) && !toReset.load())
     {
-        std::unique_lock<std::mutex> lock(outputMtx);
-        outputCv.wait(lock);
+        std::unique_lock<std::mutex> outputLock(outputMtx);
+        outputCv.wait(
+            outputLock,
+            [this]()
+            {
+                return outputCompleted.load();
+            });
+        outputCompleted.store(false);
     }
     else
     {
@@ -378,12 +387,10 @@ void View::outputAwait()
 
 void View::outputAwaken()
 {
-    if (currentState() == State::work)
-    {
-        std::unique_lock<std::mutex> lock(outputMtx);
-        lock.unlock();
-        outputCv.notify_one();
-    }
+    std::unique_lock<std::mutex> outputLock(outputMtx);
+    outputCompleted.store(true);
+    outputLock.unlock();
+    outputCv.notify_one();
 }
 
 int View::buildTLVPacket2Stop(char* buffer)
@@ -805,6 +812,9 @@ void View::stopViewing()
     std::unique_lock<std::mutex> lock(mtx);
     ongoing.store(false);
     toReset.store(false);
+
+    std::unique_lock<std::mutex> outputLock(outputMtx);
+    outputCompleted.store(false);
 }
 
 void View::doToggle()
@@ -816,7 +826,6 @@ void View::doRollback()
     std::unique_lock<std::mutex> lock(mtx);
     ongoing.store(false);
     toReset.store(false);
-
     if (tcpServer)
     {
         tcpServer.reset();
@@ -825,6 +834,9 @@ void View::doRollback()
     {
         udpServer.reset();
     }
+
+    std::unique_lock<std::mutex> outputLock(outputMtx);
+    outputCompleted.store(false);
 }
 
 bool View::awaitNotification4Rollback()
