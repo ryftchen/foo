@@ -316,6 +316,8 @@ private:
     mutable std::mutex outputMtx{};
     //! @brief The synchronization condition for output. Use with outputMtx.
     std::condition_variable outputCv{};
+    //! @brief Flag to indicate whether the output is complete.
+    std::atomic<bool> outputCompleted{false};
 
     //! @brief FSM event. Create server.
     struct CreateServer

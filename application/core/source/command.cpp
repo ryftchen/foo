@@ -550,7 +550,6 @@ void Command::launchClient<utility::socket::TCPSocket>(std::shared_ptr<utility::
             {
                 client->setNonBlocking();
             }
-            utility::time::millisecondLevelSleep(1);
             VIEW_AWAKEN;
         }
         catch (std::exception& error)
@@ -575,7 +574,6 @@ void Command::launchClient<utility::socket::UDPSocket>(std::shared_ptr<utility::
             {
                 client->setNonBlocking();
             }
-            utility::time::millisecondLevelSleep(1);
             VIEW_AWAKEN;
         }
         catch (std::exception& error)
