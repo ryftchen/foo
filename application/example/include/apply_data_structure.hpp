@@ -156,7 +156,7 @@ public:
 
         date_structure::linear::Output output;
         Meta meta[] = {{'A', "foo"}, {'B', "bar"}, {'C', "baz"}, {'D', "qux"}};
-        const int metaSize = sizeof(meta) / sizeof(meta[0]);
+        const std::uint16_t metaSize = sizeof(meta) / sizeof(meta[0]);
 
         const Meta* val = nullptr;
         DLL dll = nullptr;
@@ -210,12 +210,12 @@ public:
 
         date_structure::linear::Output output;
         Meta meta[] = {{'A', "foo"}, {'B', "bar"}, {'C', "baz"}, {'D', "qux"}};
-        const int metaSize = sizeof(meta) / sizeof(meta[0]);
+        const std::uint16_t metaSize = sizeof(meta) / sizeof(meta[0]);
 
         const Meta* val = nullptr;
         Stack stacks = nullptr;
         createStack(&stacks);
-        for (int i = 0; i < (metaSize - 1); ++i)
+        for (std::uint16_t i = 0; i < (metaSize - 1); ++i)
         {
             stackPush(stacks, &meta[i]);
             output.flush() << "push: {" << meta[i].id << ", " << meta[i].name << "}\n";
@@ -255,12 +255,12 @@ public:
 
         date_structure::linear::Output output;
         Meta meta[] = {{'A', "foo"}, {'B', "bar"}, {'C', "baz"}, {'D', "qux"}};
-        const int metaSize = sizeof(meta) / sizeof(meta[0]);
+        const std::uint16_t metaSize = sizeof(meta) / sizeof(meta[0]);
 
         const Meta* val = nullptr;
         Queue queues = nullptr;
         createQueue(&queues);
-        for (int i = 0; i < (metaSize - 1); ++i)
+        for (std::uint16_t i = 0; i < (metaSize - 1); ++i)
         {
             queuePush(queues, &meta[i]);
             output.flush() << "push: {" << meta[i].id << ", " << meta[i].name << "}\n";
@@ -328,11 +328,11 @@ public:
 
         date_structure::tree::bs::Output output;
         BSTree root = nullptr;
-        constexpr int arraySize = 6;
-        constexpr std::array<int, arraySize> array = {1, 5, 4, 3, 2, 6};
+        constexpr std::uint8_t arraySize = 6;
+        constexpr std::array<std::int16_t, arraySize> array = {1, 5, 4, 3, 2, 6};
 
         output.flush() << "insert: ";
-        for (int i = 0; i < arraySize; ++i)
+        for (std::uint8_t i = 0; i < arraySize; ++i)
         {
             output.flush() << array.at(i) << ' ';
             root = bsTreeInsert(root, array.at(i));
@@ -350,7 +350,7 @@ public:
         output.flush() << "\ntree verbose:\n";
         output.printBSTree(root, root->key, 0);
 
-        constexpr int deleteNode = 3;
+        constexpr std::int16_t deleteNode = 3;
         output.flush() << "delete root node: " << deleteNode;
         root = bsTreeDelete(root, deleteNode);
         output.flush() << "\nin-order traversal: ";
@@ -376,12 +376,12 @@ public:
 
         date_structure::tree::avl::Output output;
         AVLTree root = nullptr;
-        constexpr int arraySize = 16;
-        constexpr std::array<int, arraySize> array = {3, 2, 1, 4, 5, 6, 7, 16, 15, 14, 13, 12, 11, 10, 8, 9};
+        constexpr std::uint8_t arraySize = 16;
+        constexpr std::array<std::int16_t, arraySize> array = {3, 2, 1, 4, 5, 6, 7, 16, 15, 14, 13, 12, 11, 10, 8, 9};
 
         output.flush() << "height: " << getHeight(root);
         output.flush() << "\ninsert: ";
-        for (int i = 0; i < arraySize; ++i)
+        for (std::uint8_t i = 0; i < arraySize; ++i)
         {
             output.flush() << array.at(i) << ' ';
             root = avlTreeInsert(root, array.at(i));
@@ -400,7 +400,7 @@ public:
         output.flush() << "\ntree verbose:\n";
         output.printAVLTree(root, root->key, 0);
 
-        constexpr int deleteNode = 8;
+        constexpr std::int16_t deleteNode = 8;
         output.flush() << "delete root node: " << deleteNode;
         root = avlTreeDelete(root, deleteNode);
 
@@ -428,11 +428,11 @@ public:
 
         date_structure::tree::splay::Output output;
         SplayTree root = nullptr;
-        constexpr int arraySize = 6;
-        constexpr std::array<int, arraySize> array = {10, 50, 40, 30, 20, 60};
+        constexpr std::uint8_t arraySize = 6;
+        constexpr std::array<std::int16_t, arraySize> array = {10, 50, 40, 30, 20, 60};
 
         output.flush() << "insert: ";
-        for (int i = 0; i < arraySize; ++i)
+        for (std::uint8_t i = 0; i < arraySize; ++i)
         {
             output.flush() << array.at(i) << ' ';
             root = splayTreeInsert(root, array.at(i));
@@ -450,7 +450,7 @@ public:
         output.flush() << "\ntree verbose:\n";
         output.printSplayTree(root, root->key, 0);
 
-        constexpr int splayNode = 30;
+        constexpr std::int16_t splayNode = 30;
         output.flush() << "splay node as root node: " << splayNode;
         output.flush() << "\ntree verbose:\n";
         root = splayTreeSplay(root, splayNode);

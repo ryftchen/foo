@@ -778,7 +778,7 @@ private:
     static void setOrderedArray(T array[], const std::uint32_t length, const T left, const T right)
     {
         std::mt19937 engine(std::random_device{}());
-        std::uniform_int_distribution<int> dist(left, right);
+        std::uniform_int_distribution<std::int64_t> dist(left, right);
         for (std::uint32_t i = 0; i < length; ++i)
         {
             array[i] = dist(engine);
@@ -830,9 +830,9 @@ namespace sort
 namespace input
 {
 //! @brief Minimum of the array for sort methods.
-constexpr int arrayRange1 = -50;
+constexpr std::int32_t arrayRange1 = -50;
 //! @brief Maximum of the array for sort methods.
-constexpr int arrayRange2 = 150;
+constexpr std::int32_t arrayRange2 = 150;
 //! @brief Length of the array for sort methods.
 constexpr std::uint32_t arrayLength = 53;
 } // namespace input
@@ -847,43 +847,43 @@ public:
     //! @brief The bubble method.
     //! @param array - array to be sorted
     //! @param length - length of array
-    static void bubbleMethod(const int* const array, const std::uint32_t length);
+    static void bubbleMethod(const std::int32_t* const array, const std::uint32_t length);
     //! @brief The selection method.
     //! @param array - array to be sorted
     //! @param length - length of array
-    static void selectionMethod(const int* const array, const std::uint32_t length);
+    static void selectionMethod(const std::int32_t* const array, const std::uint32_t length);
     //! @brief The insertion method.
     //! @param array - array to be sorted
     //! @param length - length of array
-    static void insertionMethod(const int* const array, const std::uint32_t length);
+    static void insertionMethod(const std::int32_t* const array, const std::uint32_t length);
     //! @brief The shell method.
     //! @param array - array to be sorted
     //! @param length - length of array
-    static void shellMethod(const int* const array, const std::uint32_t length);
+    static void shellMethod(const std::int32_t* const array, const std::uint32_t length);
     //! @brief The merge method.
     //! @param array - array to be sorted
     //! @param length - length of array
-    static void mergeMethod(const int* const array, const std::uint32_t length);
+    static void mergeMethod(const std::int32_t* const array, const std::uint32_t length);
     //! @brief The quick method.
     //! @param array - array to be sorted
     //! @param length - length of array
-    static void quickMethod(const int* const array, const std::uint32_t length);
+    static void quickMethod(const std::int32_t* const array, const std::uint32_t length);
     //! @brief The heap method.
     //! @param array - array to be sorted
     //! @param length - length of array
-    static void heapMethod(const int* const array, const std::uint32_t length);
+    static void heapMethod(const std::int32_t* const array, const std::uint32_t length);
     //! @brief The counting method.
     //! @param array - array to be sorted
     //! @param length - length of array
-    static void countingMethod(const int* const array, const std::uint32_t length);
+    static void countingMethod(const std::int32_t* const array, const std::uint32_t length);
     //! @brief The bucket method.
     //! @param array - array to be sorted
     //! @param length - length of array
-    static void bucketMethod(const int* const array, const std::uint32_t length);
+    static void bucketMethod(const std::int32_t* const array, const std::uint32_t length);
     //! @brief The radix method.
     //! @param array - array to be sorted
     //! @param length - length of array
-    static void radixMethod(const int* const array, const std::uint32_t length);
+    static void radixMethod(const std::int32_t* const array, const std::uint32_t length);
 };
 
 //! @brief Maximum alignment length per element of printing.
@@ -1018,7 +1018,7 @@ private:
     static void setRandomArray(T array[], const std::uint32_t length, const T left, const T right)
     {
         std::mt19937 engine(std::random_device{}());
-        std::uniform_int_distribution<int> dist(left, right);
+        std::uniform_int_distribution<std::int64_t> dist(left, right);
         for (std::uint32_t i = 0; i < length; ++i)
         {
             array[i] = dist(engine);

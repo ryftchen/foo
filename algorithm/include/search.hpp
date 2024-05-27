@@ -32,19 +32,19 @@ public:
     //! @param length - length of array
     //! @param key - search key
     //! @return index of the first occurrence of key
-    static int binary(const T* const array, const std::uint32_t length, const T key);
+    static std::int64_t binary(const T* const array, const std::uint32_t length, const T key);
     //! @brief Interpolation.
     //! @param array - array to be searched
     //! @param length - length of array
     //! @param key - search key
     //! @return index of the first occurrence of key
-    static int interpolation(const T* const array, const std::uint32_t length, const T key);
+    static std::int64_t interpolation(const T* const array, const std::uint32_t length, const T key);
     //! @brief Fibonacci.
     //! @param array - array to be searched
     //! @param length - length of array
     //! @param key - search key
     //! @return index of the first occurrence of key
-    static int fibonacci(const T* const array, const std::uint32_t length, const T key);
+    static std::int64_t fibonacci(const T* const array, const std::uint32_t length, const T key);
 
 private:
     //! @brief Generate Fibonacci number.
@@ -54,9 +54,9 @@ private:
 };
 
 template <class T>
-int Search<T>::binary(const T* const array, const std::uint32_t length, const T key)
+std::int64_t Search<T>::binary(const T* const array, const std::uint32_t length, const T key)
 {
-    int index = -1;
+    std::int64_t index = -1;
     std::uint32_t lower = 0, upper = length - 1;
 
     while (lower <= upper)
@@ -81,9 +81,9 @@ int Search<T>::binary(const T* const array, const std::uint32_t length, const T 
 }
 
 template <class T>
-int Search<T>::interpolation(const T* const array, const std::uint32_t length, const T key)
+std::int64_t Search<T>::interpolation(const T* const array, const std::uint32_t length, const T key)
 {
-    int index = -1;
+    std::int64_t index = -1;
     std::uint32_t lower = 0, upper = length - 1;
 
     while (lower <= upper)
@@ -108,9 +108,9 @@ int Search<T>::interpolation(const T* const array, const std::uint32_t length, c
 }
 
 template <class T>
-int Search<T>::fibonacci(const T* const array, const std::uint32_t length, const T key)
+std::int64_t Search<T>::fibonacci(const T* const array, const std::uint32_t length, const T key)
 {
-    int index = -1;
+    std::int64_t index = -1;
     std::vector<std::uint32_t> fib = generateFibonacciNumber(length);
     std::uint32_t n = fib.size() - 1;
     if (constexpr std::uint32_t minSize = 3; n < minSize)

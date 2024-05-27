@@ -52,7 +52,7 @@ protected:
     //! @param lower - lower endpoint
     //! @param upper - upper endpoint
     //! @return sign
-    static int getSign(double& lower, double& upper);
+    static std::int8_t getSign(double& lower, double& upper);
     friend double trapezoid(const Expression& expr, const double left, const double height, const std::uint32_t step);
 };
 

@@ -182,9 +182,9 @@ namespace arithmetic
 namespace input
 {
 //! @brief One of integers for arithmetic methods.
-constexpr int integerA = 1073741823;
+constexpr std::int32_t integerA = 1073741823;
 //! @brief One of integers for arithmetic methods.
-constexpr int integerB = -2;
+constexpr std::int32_t integerB = -2;
 } // namespace input
 
 //! @brief Solution of arithmetic.
@@ -197,19 +197,19 @@ public:
     //! @brief The addition method.
     //! @param augend - augend of addition
     //! @param addend - augend of addition
-    static void additionMethod(const int augend, const int addend);
+    static void additionMethod(const std::int32_t augend, const std::int32_t addend);
     //! @brief The subtraction method.
     //! @param minuend - minuend of subtraction
     //! @param subtrahend - subtrahend of subtraction
-    static void subtractionMethod(const int minuend, const int subtrahend);
+    static void subtractionMethod(const std::int32_t minuend, const std::int32_t subtrahend);
     //! @brief The multiplication method.
     //! @param multiplier - multiplier of multiplication
     //! @param multiplicand - multiplicand of multiplication
-    static void multiplicationMethod(const int multiplier, const int multiplicand);
+    static void multiplicationMethod(const std::int32_t multiplier, const std::int32_t multiplicand);
     //! @brief The division method.
     //! @param dividend - dividend of division
     //! @param divisor - divisor of division
-    static void divisionMethod(const int dividend, const int divisor);
+    static void divisionMethod(const std::int32_t dividend, const std::int32_t divisor);
 };
 
 //! @brief Builder for the target.
@@ -219,7 +219,7 @@ public:
     //! @brief Construct a new TargetBuilder object.
     //! @param integer1 - first integer for elementary arithmetic
     //! @param integer2 - second integer for elementary arithmetic
-    TargetBuilder(const int integer1, const int integer2) : integer1(integer1), integer2(integer2)
+    TargetBuilder(const std::int32_t integer1, const std::int32_t integer2) : integer1(integer1), integer2(integer2)
     {
 #ifdef __RUNTIME_PRINTING
         std::cout << "\r\nElementary arithmetic of " << integer1 << " and " << integer2 << ':' << std::endl;
@@ -230,13 +230,16 @@ public:
 
     //! @brief Get the pair of integers.
     //! @return pair of integers
-    [[nodiscard]] inline std::pair<int, int> getIntegers() const { return std::make_pair(integer1, integer2); }
+    [[nodiscard]] inline std::pair<std::int32_t, std::int32_t> getIntegers() const
+    {
+        return std::make_pair(integer1, integer2);
+    }
 
 private:
     //! @brief First integer for elementary arithmetic.
-    const int integer1;
+    const std::int32_t integer1;
     //! @brief Second integer for elementary arithmetic.
-    const int integer2;
+    const std::int32_t integer2;
 };
 } // namespace arithmetic
 extern void runArithmeticTasks(const std::vector<std::string>& candidates);
@@ -249,9 +252,9 @@ namespace divisor
 namespace input
 {
 //! @brief One of integers for divisor methods.
-constexpr int integerA = 2 * 2 * 3 * 3 * 5 * 5 * 7 * 7;
+constexpr std::int32_t integerA = 2 * 2 * 3 * 3 * 5 * 5 * 7 * 7;
 //! @brief One of integers for divisor methods.
-constexpr int integerB = 2 * 3 * 5 * 7 * 11 * 13 * 17;
+constexpr std::int32_t integerB = 2 * 3 * 5 * 7 * 11 * 13 * 17;
 } // namespace input
 
 //! @brief Solution of divisor.
@@ -264,11 +267,11 @@ public:
     //! @brief The Euclidean method.
     //! @param a - first integer
     //! @param b - second integer
-    static void euclideanMethod(int a, int b);
+    static void euclideanMethod(std::int32_t a, std::int32_t b);
     //! @brief The Stein method.
     //! @param a - first integer
     //! @param b - second integer
-    static void steinMethod(int a, int b);
+    static void steinMethod(std::int32_t a, std::int32_t b);
 };
 
 //! @brief Maximum alignment length per element of printing.
@@ -283,7 +286,7 @@ public:
     //! @brief Construct a new TargetBuilder object.
     //! @param integer1 - first integer
     //! @param integer2 - second integer
-    TargetBuilder(const int integer1, const int integer2) : integer1(integer1), integer2(integer2)
+    TargetBuilder(const std::int32_t integer1, const std::int32_t integer2) : integer1(integer1), integer2(integer2)
     {
 #ifdef __RUNTIME_PRINTING
         std::cout << "\r\nAll common divisors of " << integer1 << " and " << integer2 << ':' << std::endl;
@@ -294,7 +297,10 @@ public:
 
     //! @brief Get the pair of integers.
     //! @return pair of integers
-    [[nodiscard]] inline std::pair<int, int> getIntegers() const { return std::make_pair(integer1, integer2); }
+    [[nodiscard]] inline std::pair<std::int32_t, std::int32_t> getIntegers() const
+    {
+        return std::make_pair(integer1, integer2);
+    }
     //! @brief Splice all integers for printing.
     //! @tparam T - type of container
     //! @param container - integer container
@@ -339,9 +345,9 @@ public:
 
 private:
     //! @brief First integer.
-    const int integer1;
+    const std::int32_t integer1;
     //! @brief Second integer.
-    const int integer2;
+    const std::int32_t integer2;
 };
 } // namespace divisor
 extern void runDivisorTasks(const std::vector<std::string>& candidates);

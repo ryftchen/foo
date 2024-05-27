@@ -19,7 +19,7 @@ const char* version()
     return ver;
 }
 
-int Integral::getSign(double& lower, double& upper)
+std::int8_t Integral::getSign(double& lower, double& upper)
 {
     return (lower < upper) ? 1 : ((lower > upper) ? (std::swap(lower, upper), -1) : 0);
 }
@@ -45,7 +45,7 @@ double trapezoid(const Expression& expr, const double left, const double height,
 
 double Trapezoidal::operator()(double lower, double upper, const double eps) const
 {
-    const int sign = getSign(lower, upper);
+    const std::int8_t sign = getSign(lower, upper);
     const std::uint32_t minStep = std::pow(2, 3);
     const double height = upper - lower;
     double sum = 0.0, s1 = 0.0, s2 = 0.0;
@@ -66,7 +66,7 @@ double Trapezoidal::operator()(double lower, double upper, const double eps) con
 
 double Simpson::operator()(double lower, double upper, const double eps) const
 {
-    const int sign = getSign(lower, upper);
+    const std::int8_t sign = getSign(lower, upper);
 
     double sum = simpsonIntegral(lower, upper, eps);
     sum *= sign;
@@ -103,7 +103,7 @@ double Simpson::simpsonOneThird(const double left, const double right) const
 
 double Romberg::operator()(double lower, double upper, const double eps) const
 {
-    const int sign = getSign(lower, upper);
+    const std::int8_t sign = getSign(lower, upper);
     std::uint32_t k = 0;
     double sum = 0.0;
     const double height = upper - lower;
@@ -133,7 +133,7 @@ double Romberg::operator()(double lower, double upper, const double eps) const
 
 double Gauss::operator()(double lower, double upper, const double eps) const
 {
-    const int sign = getSign(lower, upper);
+    const std::int8_t sign = getSign(lower, upper);
     constexpr std::uint32_t gaussNodes = 5, gaussCoefficient = 2;
     constexpr std::array<std::array<double, gaussCoefficient>, gaussNodes> gaussLegendreTable = {
         {{-0.9061798459, +0.2369268851},
@@ -171,7 +171,7 @@ double Gauss::operator()(double lower, double upper, const double eps) const
 
 double MonteCarlo::operator()(double lower, double upper, const double eps) const
 {
-    const int sign = getSign(lower, upper);
+    const std::int8_t sign = getSign(lower, upper);
 
     double sum = sampleFromUniformDistribution(lower, upper, eps);
     sum *= sign;

@@ -747,7 +747,7 @@ void Command::registerOnConsole(utility::console::Console& console, std::shared_
         "refresh",
         [](const Console::Args& /*input*/)
         {
-            int retVal = Console::RetCode::success;
+            auto retVal = Console::RetCode::success;
             try
             {
                 triggerHelper<log::Log>(HelperControl::reset);
@@ -769,7 +769,7 @@ void Command::registerOnConsole(utility::console::Console& console, std::shared_
         "reconnect",
         [&client](const Console::Args& /*input*/)
         {
-            int retVal = Console::RetCode::success;
+            auto retVal = Console::RetCode::success;
             try
             {
                 client->toSend(utility::common::base64Encode("stop"));
@@ -798,7 +798,7 @@ void Command::registerOnConsole(utility::console::Console& console, std::shared_
             option,
             [&client](const Console::Args& input)
             {
-                int retVal = Console::RetCode::success;
+                auto retVal = Console::RetCode::success;
                 try
                 {
                     std::string cmds;

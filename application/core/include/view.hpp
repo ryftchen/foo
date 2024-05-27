@@ -102,7 +102,7 @@ public:
     //! @param dst - data after conversion
     //! @param offset - data offset
     //! @return whether it is continuously writable
-    bool write(const void* const dst, const std::uint32_t offset);
+    bool write(const void* const dst, const int offset);
     //! @brief Read data to the packet buffer.
     //! @tparam T - type of data to be read
     //! @param data - original data
@@ -113,7 +113,7 @@ public:
     //! @param dst - data after conversion
     //! @param offset - data offset
     //! @return whether it is continuously readable
-    bool read(void* const dst, const std::uint32_t offset);
+    bool read(void* const dst, const int offset);
 
 private:
     //! @brief TLV packet buffer pointer.

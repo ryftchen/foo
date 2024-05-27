@@ -82,7 +82,7 @@ std::optional<std::tuple<double, double>> Annealing::operator()(const double lef
         bool found = false;
         for (std::uint32_t i = 0; i < markovChain; ++i)
         {
-            double xNew = static_cast<int>(perturbation(engine) * static_cast<std::uint32_t>(1.0 / eps)) * eps,
+            double xNew = static_cast<std::int64_t>(perturbation(engine) * static_cast<std::uint32_t>(1.0 / eps)) * eps,
                    yNew = func(xNew);
             if ((yNew <= y) || (std::exp(-(yNew - y) / temperature) > pr(engine)))
             {
@@ -252,13 +252,13 @@ Genetic::Population Genetic::populationInit()
         pop.end(),
         [this](auto& chr)
         {
-            std::uniform_int_distribution<int> bit(0, 1);
+            std::uniform_int_distribution<std::uint8_t> bit(0, 1);
             std::generate(
                 chr.begin(),
                 chr.end(),
                 [this, &bit]()
                 {
-                    return static_cast<std::uint8_t>(bit(engine));
+                    return bit(engine);
                 });
         });
     return pop;
@@ -466,7 +466,7 @@ double Genetic::probability()
 
 std::uint32_t Genetic::getRandomLessThanLimit(const std::uint32_t limit)
 {
-    std::uniform_int_distribution<int> num(0, limit);
+    std::uniform_int_distribution<std::uint32_t> num(0, limit);
     return num(engine);
 }
 } // namespace algorithm::optimal

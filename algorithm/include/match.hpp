@@ -29,7 +29,7 @@ public:
     //! @param textLen - length of matching text
     //! @param patternLen - length of single pattern
     //! @return index in matching text
-    static int rk(
+    static std::int64_t rk(
         const unsigned char* const text,
         const unsigned char* const pattern,
         const std::uint32_t textLen,
@@ -40,7 +40,7 @@ public:
     //! @param textLen - length of matching text
     //! @param patternLen - length of single pattern
     //! @return index in matching text
-    static int kmp(
+    static std::int64_t kmp(
         const unsigned char* const text,
         const unsigned char* const pattern,
         const std::uint32_t textLen,
@@ -51,7 +51,7 @@ public:
     //! @param textLen - length of matching text
     //! @param patternLen - length of single pattern
     //! @return index in matching text
-    static int bm(
+    static std::int64_t bm(
         const unsigned char* const text,
         const unsigned char* const pattern,
         const std::uint32_t textLen,
@@ -62,7 +62,7 @@ public:
     //! @param textLen - length of matching text
     //! @param patternLen - length of single pattern
     //! @return index in matching text
-    static int horspool(
+    static std::int64_t horspool(
         const unsigned char* const text,
         const unsigned char* const pattern,
         const std::uint32_t textLen,
@@ -73,7 +73,7 @@ public:
     //! @param textLen - length of matching text
     //! @param patternLen - length of single pattern
     //! @return index in matching text
-    static int sunday(
+    static std::int64_t sunday(
         const unsigned char* const text,
         const unsigned char* const pattern,
         const std::uint32_t textLen,

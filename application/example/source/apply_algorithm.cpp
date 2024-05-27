@@ -900,17 +900,17 @@ namespace sort
         COMMON_PRINT(                                                             \
             SORT_RESULT(asc),                                                     \
             getTitle(method).data(),                                              \
-            TargetBuilder<int>::template spliceAll<int>(                          \
+            TargetBuilder<std::int32_t>::template spliceAll<std::int32_t>(        \
                 resCntr.data(), length, arrayBuffer.data(), arrayBufferSize + 1), \
             TIME_INTERVAL(timing));                                               \
     }                                                                             \
     while (0)
 
-void SortSolution::bubbleMethod(const int* const array, const std::uint32_t length)
+void SortSolution::bubbleMethod(const std::int32_t* const array, const std::uint32_t length)
 try
 {
     TIME_BEGIN(timing);
-    const auto resCntr = algorithm::sort::Sort<int>().bubble(array, length);
+    const auto resCntr = algorithm::sort::Sort<std::int32_t>().bubble(array, length);
     TIME_END(timing);
     SORT_PRINT_RESULT_CONTENT(SortMethod::bubble);
 }
@@ -919,11 +919,11 @@ catch (const std::exception& error)
     LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
 }
 
-void SortSolution::selectionMethod(const int* const array, const std::uint32_t length)
+void SortSolution::selectionMethod(const std::int32_t* const array, const std::uint32_t length)
 try
 {
     TIME_BEGIN(timing);
-    const auto resCntr = algorithm::sort::Sort<int>().selection(array, length);
+    const auto resCntr = algorithm::sort::Sort<std::int32_t>().selection(array, length);
     TIME_END(timing);
     SORT_PRINT_RESULT_CONTENT(SortMethod::selection);
 }
@@ -932,11 +932,11 @@ catch (const std::exception& error)
     LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
 }
 
-void SortSolution::insertionMethod(const int* const array, const std::uint32_t length)
+void SortSolution::insertionMethod(const std::int32_t* const array, const std::uint32_t length)
 try
 {
     TIME_BEGIN(timing);
-    const auto resCntr = algorithm::sort::Sort<int>().insertion(array, length);
+    const auto resCntr = algorithm::sort::Sort<std::int32_t>().insertion(array, length);
     TIME_END(timing);
     SORT_PRINT_RESULT_CONTENT(SortMethod::insertion);
 }
@@ -945,11 +945,11 @@ catch (const std::exception& error)
     LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
 }
 
-void SortSolution::shellMethod(const int* const array, const std::uint32_t length)
+void SortSolution::shellMethod(const std::int32_t* const array, const std::uint32_t length)
 try
 {
     TIME_BEGIN(timing);
-    const auto resCntr = algorithm::sort::Sort<int>().shell(array, length);
+    const auto resCntr = algorithm::sort::Sort<std::int32_t>().shell(array, length);
     TIME_END(timing);
     SORT_PRINT_RESULT_CONTENT(SortMethod::shell);
 }
@@ -958,11 +958,11 @@ catch (const std::exception& error)
     LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
 }
 
-void SortSolution::mergeMethod(const int* const array, const std::uint32_t length)
+void SortSolution::mergeMethod(const std::int32_t* const array, const std::uint32_t length)
 try
 {
     TIME_BEGIN(timing);
-    const auto resCntr = algorithm::sort::Sort<int>().merge(array, length);
+    const auto resCntr = algorithm::sort::Sort<std::int32_t>().merge(array, length);
     TIME_END(timing);
     SORT_PRINT_RESULT_CONTENT(SortMethod::merge);
 }
@@ -971,11 +971,11 @@ catch (const std::exception& error)
     LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
 }
 
-void SortSolution::quickMethod(const int* const array, const std::uint32_t length)
+void SortSolution::quickMethod(const std::int32_t* const array, const std::uint32_t length)
 try
 {
     TIME_BEGIN(timing);
-    const auto resCntr = algorithm::sort::Sort<int>().quick(array, length);
+    const auto resCntr = algorithm::sort::Sort<std::int32_t>().quick(array, length);
     TIME_END(timing);
     SORT_PRINT_RESULT_CONTENT(SortMethod::quick);
 }
@@ -984,11 +984,11 @@ catch (const std::exception& error)
     LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
 }
 
-void SortSolution::heapMethod(const int* const array, const std::uint32_t length)
+void SortSolution::heapMethod(const std::int32_t* const array, const std::uint32_t length)
 try
 {
     TIME_BEGIN(timing);
-    const auto resCntr = algorithm::sort::Sort<int>().heap(array, length);
+    const auto resCntr = algorithm::sort::Sort<std::int32_t>().heap(array, length);
     TIME_END(timing);
     SORT_PRINT_RESULT_CONTENT(SortMethod::heap);
 }
@@ -997,11 +997,11 @@ catch (const std::exception& error)
     LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
 }
 
-void SortSolution::countingMethod(const int* const array, const std::uint32_t length)
+void SortSolution::countingMethod(const std::int32_t* const array, const std::uint32_t length)
 try
 {
     TIME_BEGIN(timing);
-    const auto resCntr = algorithm::sort::Sort<int>().counting(array, length);
+    const auto resCntr = algorithm::sort::Sort<std::int32_t>().counting(array, length);
     TIME_END(timing);
     SORT_PRINT_RESULT_CONTENT(SortMethod::counting);
 }
@@ -1010,11 +1010,11 @@ catch (const std::exception& error)
     LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
 }
 
-void SortSolution::bucketMethod(const int* const array, const std::uint32_t length)
+void SortSolution::bucketMethod(const std::int32_t* const array, const std::uint32_t length)
 try
 {
     TIME_BEGIN(timing);
-    const auto resCntr = algorithm::sort::Sort<int>().bucket(array, length);
+    const auto resCntr = algorithm::sort::Sort<std::int32_t>().bucket(array, length);
     TIME_END(timing);
     SORT_PRINT_RESULT_CONTENT(SortMethod::bucket);
 }
@@ -1023,11 +1023,11 @@ catch (const std::exception& error)
     LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
 }
 
-void SortSolution::radixMethod(const int* const array, const std::uint32_t length)
+void SortSolution::radixMethod(const std::int32_t* const array, const std::uint32_t length)
 try
 {
     TIME_BEGIN(timing);
-    const auto resCntr = algorithm::sort::Sort<int>().radix(array, length);
+    const auto resCntr = algorithm::sort::Sort<std::int32_t>().radix(array, length);
     TIME_END(timing);
     SORT_PRINT_RESULT_CONTENT(SortMethod::radix);
 }
@@ -1062,9 +1062,10 @@ void runSortTasks(const std::vector<std::string>& candidates)
     auto& pooling = command::getPublicThreadPool();
     auto* const threads = pooling.newElement(
         std::min(static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<SortMethod>::value)));
-    const auto builder = std::make_shared<TargetBuilder<int>>(arrayLength, arrayRange1, arrayRange2);
+    const auto builder = std::make_shared<TargetBuilder<std::int32_t>>(arrayLength, arrayRange1, arrayRange2);
     const auto sortFunctor =
-        [threads, builder](const std::string& threadName, void (*methodPtr)(const int* const, const std::uint32_t))
+        [threads,
+         builder](const std::string& threadName, void (*methodPtr)(const std::int32_t* const, const std::uint32_t))
     {
         threads->enqueue(threadName, methodPtr, builder->getRandomArray().get(), builder->getLength());
     };

@@ -16,25 +16,25 @@ const char* version()
     return ver;
 }
 
-int Arithmetic::addition(const int augend, const int addend)
+std::int32_t Arithmetic::addition(const std::int32_t augend, const std::int32_t addend)
 {
-    const int sum = bitAdd(augend, addend);
+    const std::int32_t sum = bitAdd(augend, addend);
 
     return sum;
 }
 
-int Arithmetic::subtraction(const int minuend, const int subtrahend)
+std::int32_t Arithmetic::subtraction(const std::int32_t minuend, const std::int32_t subtrahend)
 {
-    const int difference = bitAdd(minuend, bitAdd(~subtrahend, 1));
+    const std::int32_t difference = bitAdd(minuend, bitAdd(~subtrahend, 1));
 
     return difference;
 }
 
-int Arithmetic::multiplication(const int multiplier, const int multiplicand)
+std::int32_t Arithmetic::multiplication(const std::int32_t multiplier, const std::int32_t multiplicand)
 {
-    int product = 0;
+    std::int32_t product = 0;
 
-    for (int i = (32 - 1); i >= 0; --i)
+    for (std::int32_t i = (32 - 1); i >= 0; --i)
     {
         product <<= 1;
         if ((multiplicand & (1 << i)) >> i)
@@ -46,15 +46,15 @@ int Arithmetic::multiplication(const int multiplier, const int multiplicand)
     return product;
 }
 
-int Arithmetic::division(const int dividend, const int divisor)
+std::int32_t Arithmetic::division(const std::int32_t dividend, const std::int32_t divisor)
 {
     if (0 == divisor)
     {
         return 0;
     }
 
-    int quotient = 0, remainder = 0, absDividend = bitAbs(dividend), absDivisor = bitAbs(divisor);
-    for (int i = (32 - 1); i >= 0; --i)
+    std::int32_t quotient = 0, remainder = 0, absDividend = bitAbs(dividend), absDivisor = bitAbs(divisor);
+    for (std::int32_t i = (32 - 1); i >= 0; --i)
     {
         quotient <<= 1;
         remainder <<= 1;
@@ -73,20 +73,20 @@ int Arithmetic::division(const int dividend, const int divisor)
     return quotient;
 }
 
-int Arithmetic::bitAdd(const int a, const int b)
+std::int32_t Arithmetic::bitAdd(const std::int32_t a, const std::int32_t b)
 {
-    const int sum = a ^ b, carry = (a & b) << 1;
+    const std::int32_t sum = a ^ b, carry = (a & b) << 1;
     return ((sum & carry) ? bitAdd(sum, carry) : (sum ^ carry));
 }
 
-int Arithmetic::bitSub(const int a, const int b)
+std::int32_t Arithmetic::bitSub(const std::int32_t a, const std::int32_t b)
 {
     return bitAdd(a, bitAdd(~b, 1));
 }
 
-int Arithmetic::bitAbs(const int a)
+std::int32_t Arithmetic::bitAbs(const std::int32_t a)
 {
-    const int mask = a >> (sizeof(int) * 8 - 1);
+    const std::int32_t mask = a >> (sizeof(std::int32_t) * 8 - 1);
     return ((a ^ mask) - mask);
 }
 } // namespace numeric::arithmetic
