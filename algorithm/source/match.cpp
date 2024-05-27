@@ -18,13 +18,13 @@ const char* version()
     return ver;
 }
 
-int Match::rk(
+std::int64_t Match::rk(
     const unsigned char* const text,
     const unsigned char* const pattern,
     const std::uint32_t textLen,
     const std::uint32_t patternLen)
 {
-    int shift = -1;
+    std::int64_t shift = -1;
     constexpr std::int64_t rollingHashBase = maxASCII, rollingHashMod = 1e9 + 7;
     std::int64_t textHash = 0, patternHash = 0, pow = 1;
 
@@ -72,13 +72,13 @@ int Match::rk(
     return shift;
 }
 
-int Match::kmp(
+std::int64_t Match::kmp(
     const unsigned char* const text,
     const unsigned char* const pattern,
     const std::uint32_t textLen,
     const std::uint32_t patternLen)
 {
-    int shift = -1;
+    std::int64_t shift = -1;
     std::vector<std::uint32_t> next(patternLen + 1, 0);
 
     for (std::uint32_t i = 1; i < patternLen; ++i)
@@ -115,13 +115,13 @@ int Match::kmp(
     return shift;
 }
 
-int Match::bm(
+std::int64_t Match::bm(
     const unsigned char* const text,
     const unsigned char* const pattern,
     const std::uint32_t textLen,
     const std::uint32_t patternLen)
 {
-    int shift = -1;
+    std::int64_t shift = -1;
     std::uint32_t badCharRuleTable[maxASCII], goodSuffixIndexTable[maxASCII];
 
     fillBadCharRuleTable(badCharRuleTable, pattern, patternLen);
@@ -170,7 +170,7 @@ void Match::fillGoodSuffixRuleTable(
     const std::uint32_t patternLen)
 {
     std::uint32_t lastPrefixIndex = 1;
-    for (int pos = (patternLen - 1); pos >= 0; --pos)
+    for (std::int64_t pos = (patternLen - 1); pos >= 0; --pos)
     {
         const std::uint32_t suffixLen = patternLen - (pos + 1);
         bool isPrefix = true;
@@ -206,13 +206,13 @@ void Match::fillGoodSuffixRuleTable(
     }
 }
 
-int Match::horspool(
+std::int64_t Match::horspool(
     const unsigned char* const text,
     const unsigned char* const pattern,
     const std::uint32_t textLen,
     const std::uint32_t patternLen)
 {
-    int shift = -1;
+    std::int64_t shift = -1;
     std::uint32_t badCharShiftTable[maxASCII];
 
     fillBadCharShiftTableForHorspool(badCharShiftTable, pattern, patternLen);
@@ -254,13 +254,13 @@ void Match::fillBadCharShiftTableForHorspool(
     }
 }
 
-int Match::sunday(
+std::int64_t Match::sunday(
     const unsigned char* const text,
     const unsigned char* const pattern,
     const std::uint32_t textLen,
     const std::uint32_t patternLen)
 {
-    int shift = -1;
+    std::int64_t shift = -1;
     std::uint32_t badCharShiftTable[maxASCII];
 
     fillBadCharShiftTableForSunday(badCharShiftTable, pattern, patternLen);

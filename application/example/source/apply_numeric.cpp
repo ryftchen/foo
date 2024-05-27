@@ -211,7 +211,7 @@ namespace arithmetic
 #define ARITHMETIC_PRINT_RESULT_CONTENT(method, a, operator, b, result) \
     COMMON_PRINT(ARITHMETIC_RESULT, getTitle(method).data(), a, operator, b, result)
 
-void ArithmeticSolution::additionMethod(const int augend, const int addend)
+void ArithmeticSolution::additionMethod(const std::int32_t augend, const std::int32_t addend)
 try
 {
     const auto sum = numeric::arithmetic::Arithmetic().addition(augend, addend);
@@ -222,7 +222,7 @@ catch (const std::exception& error)
     LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
 }
 
-void ArithmeticSolution::subtractionMethod(const int minuend, const int subtrahend)
+void ArithmeticSolution::subtractionMethod(const std::int32_t minuend, const std::int32_t subtrahend)
 try
 {
     const auto difference = numeric::arithmetic::Arithmetic().subtraction(minuend, subtrahend);
@@ -233,7 +233,7 @@ catch (const std::exception& error)
     LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
 }
 
-void ArithmeticSolution::multiplicationMethod(const int multiplier, const int multiplicand)
+void ArithmeticSolution::multiplicationMethod(const std::int32_t multiplier, const std::int32_t multiplicand)
 try
 {
     const auto product = numeric::arithmetic::Arithmetic().multiplication(multiplier, multiplicand);
@@ -244,7 +244,7 @@ catch (const std::exception& error)
     LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
 }
 
-void ArithmeticSolution::divisionMethod(const int dividend, const int divisor)
+void ArithmeticSolution::divisionMethod(const std::int32_t dividend, const std::int32_t divisor)
 try
 {
     const auto quotient = numeric::arithmetic::Arithmetic().division(dividend, divisor);
@@ -281,7 +281,7 @@ void runArithmeticTasks(const std::vector<std::string>& candidates)
         static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<ArithmeticMethod>::value)));
     const auto builder = std::make_shared<TargetBuilder>(integerA, integerB);
     const auto arithmeticFunctor =
-        [threads, builder](const std::string& threadName, void (*methodPtr)(const int, const int))
+        [threads, builder](const std::string& threadName, void (*methodPtr)(const std::int32_t, const std::int32_t))
     {
         threads->enqueue(
             threadName, methodPtr, std::get<0>(builder->getIntegers()), std::get<1>(builder->getIntegers()));
@@ -352,20 +352,20 @@ namespace divisor
 //! @brief Display divisor result.
 #define DIVISOR_RESULT "\r\n==> %-9s Method <==\n%s\nrun time: %8.5f ms\n"
 //! @brief Print divisor result content.
-#define DIVISOR_PRINT_RESULT_CONTENT(method)                                                                  \
-    do                                                                                                        \
-    {                                                                                                         \
-        const std::uint32_t arrayBufferSize = resCntr.size() * maxAlignOfPrint;                               \
-        std::vector<char> arrayBuffer(arrayBufferSize + 1);                                                   \
-        COMMON_PRINT(                                                                                         \
-            DIVISOR_RESULT,                                                                                   \
-            getTitle(method).data(),                                                                          \
-            TargetBuilder::template spliceAllIntegers<int>(resCntr, arrayBuffer.data(), arrayBufferSize + 1), \
-            TIME_INTERVAL(timing));                                                                           \
-    }                                                                                                         \
+#define DIVISOR_PRINT_RESULT_CONTENT(method)                                                                           \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        const std::uint32_t arrayBufferSize = resCntr.size() * maxAlignOfPrint;                                        \
+        std::vector<char> arrayBuffer(arrayBufferSize + 1);                                                            \
+        COMMON_PRINT(                                                                                                  \
+            DIVISOR_RESULT,                                                                                            \
+            getTitle(method).data(),                                                                                   \
+            TargetBuilder::template spliceAllIntegers<std::int32_t>(resCntr, arrayBuffer.data(), arrayBufferSize + 1), \
+            TIME_INTERVAL(timing));                                                                                    \
+    }                                                                                                                  \
     while (0)
 
-void DivisorSolution::euclideanMethod(int a, int b)
+void DivisorSolution::euclideanMethod(std::int32_t a, std::int32_t b)
 try
 {
     TIME_BEGIN(timing);
@@ -378,7 +378,7 @@ catch (const std::exception& error)
     LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
 }
 
-void DivisorSolution::steinMethod(int a, int b)
+void DivisorSolution::steinMethod(std::int32_t a, std::int32_t b)
 try
 {
     TIME_BEGIN(timing);
@@ -416,7 +416,8 @@ void runDivisorTasks(const std::vector<std::string>& candidates)
     auto* const threads = pooling.newElement(std::min(
         static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<DivisorMethod>::value)));
     const auto builder = std::make_shared<TargetBuilder>(integerA, integerB);
-    const auto divisorFunctor = [threads, builder](const std::string& threadName, void (*methodPtr)(int, int))
+    const auto divisorFunctor =
+        [threads, builder](const std::string& threadName, void (*methodPtr)(std::int32_t, std::int32_t))
     {
         threads->enqueue(
             threadName, methodPtr, std::get<0>(builder->getIntegers()), std::get<1>(builder->getIntegers()));

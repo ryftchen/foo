@@ -121,7 +121,7 @@ public:
     //! @brief Target builder.
     static std::shared_ptr<divisor::TargetBuilder> builder;
     //! @brief Expected result.
-    const std::vector<int> expCntr{1, 2, 3, 5, 6, 7, 10, 14, 15, 21, 30, 35, 42, 70, 105, 210};
+    const std::vector<std::int32_t> expCntr{1, 2, 3, 5, 6, 7, 10, 14, 15, 21, 30, 35, 42, 70, 105, 210};
 };
 std::shared_ptr<divisor::TargetBuilder> DivisorTestBase::builder = nullptr;
 

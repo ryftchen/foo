@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include <cstdint>
+
 //! @brief The numeric module.
 namespace numeric // NOLINT (modernize-concat-nested-namespaces)
 {
@@ -25,38 +27,38 @@ public:
     //! @param augend - augend of addition
     //! @param addend - augend of addition
     //! @return sum
-    static int addition(const int augend, const int addend);
+    static std::int32_t addition(const std::int32_t augend, const std::int32_t addend);
     //! @brief Subtraction.
     //! @param minuend - minuend of subtraction
     //! @param subtrahend - subtrahend of subtraction
     //! @return difference
-    static int subtraction(const int minuend, const int subtrahend);
+    static std::int32_t subtraction(const std::int32_t minuend, const std::int32_t subtrahend);
     //! @brief Multiplication.
     //! @param multiplier - multiplier of multiplication
     //! @param multiplicand - multiplicand of multiplication
     //! @return product
-    static int multiplication(const int multiplier, const int multiplicand);
+    static std::int32_t multiplication(const std::int32_t multiplier, const std::int32_t multiplicand);
     //! @brief Division.
     //! @param dividend - dividend of division
     //! @param divisor - divisor of division
     //! @return quotient
-    static int division(const int dividend, const int divisor);
+    static std::int32_t division(const std::int32_t dividend, const std::int32_t divisor);
 
 private:
     //! @brief Bitwise operation for add.
     //! @param a - augend
     //! @param b - augend
     //! @return sum
-    static int bitAdd(const int a, const int b);
+    static std::int32_t bitAdd(const std::int32_t a, const std::int32_t b);
     //! @brief Bitwise operation for subtract.
     //! @param a - minuend
     //! @param b - subtrahend
     //! @return difference
-    static int bitSub(const int a, const int b);
+    static std::int32_t bitSub(const std::int32_t a, const std::int32_t b);
     //! @brief Bitwise operation for absolute value.
     //! @param a - value
     //! @return absolute value
-    static int bitAbs(const int a);
+    static std::int32_t bitAbs(const std::int32_t a);
 };
 } // namespace arithmetic
 } // namespace numeric

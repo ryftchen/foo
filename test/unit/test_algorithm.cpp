@@ -307,10 +307,10 @@ public:
     static void SetUpTestCase()
     {
         TST_ALGO_PRINT_TASK_TITLE(Category::sort, "BEGIN");
-        builder = std::make_shared<sort::TargetBuilder<int>>(
+        builder = std::make_shared<sort::TargetBuilder<std::int32_t>>(
             sort::input::arrayLength, sort::input::arrayRange1, sort::input::arrayRange2);
-        expCntr =
-            std::vector<int>(builder->getRandomArray().get(), builder->getRandomArray().get() + builder->getLength());
+        expCntr = std::vector<std::int32_t>(
+            builder->getRandomArray().get(), builder->getRandomArray().get() + builder->getLength());
         std::sort(expCntr.begin(), expCntr.end());
     }
     //! @brief Tear down the test case.
@@ -325,71 +325,81 @@ public:
     void TearDown() override{};
 
     //! @brief Target builder.
-    static std::shared_ptr<sort::TargetBuilder<int>> builder;
+    static std::shared_ptr<sort::TargetBuilder<std::int32_t>> builder;
     //! @brief Expected result.
-    static std::vector<int> expCntr;
+    static std::vector<std::int32_t> expCntr;
 };
-std::shared_ptr<sort::TargetBuilder<int>> SortTestBase::builder = nullptr;
-std::vector<int> SortTestBase::expCntr = {};
+std::shared_ptr<sort::TargetBuilder<std::int32_t>> SortTestBase::builder = nullptr;
+std::vector<std::int32_t> SortTestBase::expCntr = {};
 
 //! @brief Test for the bubble method in the solution of sort.
 TEST_F(SortTestBase, bubbleMethod)
 {
-    ASSERT_EQ(expCntr, algorithm::sort::Sort<int>::bubble(builder->getRandomArray().get(), builder->getLength()));
+    ASSERT_EQ(
+        expCntr, algorithm::sort::Sort<std::int32_t>::bubble(builder->getRandomArray().get(), builder->getLength()));
 }
 
 //! @brief Test for the selection method in the solution of sort.
 TEST_F(SortTestBase, selectionMethod)
 {
-    ASSERT_EQ(expCntr, algorithm::sort::Sort<int>::selection(builder->getRandomArray().get(), builder->getLength()));
+    ASSERT_EQ(
+        expCntr, algorithm::sort::Sort<std::int32_t>::selection(builder->getRandomArray().get(), builder->getLength()));
 }
 
 //! @brief Test for the insertion method in the solution of sort.
 TEST_F(SortTestBase, insertionMethod)
 {
-    ASSERT_EQ(expCntr, algorithm::sort::Sort<int>::insertion(builder->getRandomArray().get(), builder->getLength()));
+    ASSERT_EQ(
+        expCntr, algorithm::sort::Sort<std::int32_t>::insertion(builder->getRandomArray().get(), builder->getLength()));
 }
 
 //! @brief Test for the shell method in the solution of sort.
 TEST_F(SortTestBase, shellMethod)
 {
-    ASSERT_EQ(expCntr, algorithm::sort::Sort<int>::shell(builder->getRandomArray().get(), builder->getLength()));
+    ASSERT_EQ(
+        expCntr, algorithm::sort::Sort<std::int32_t>::shell(builder->getRandomArray().get(), builder->getLength()));
 }
 
 //! @brief Test for the merge method in the solution of sort.
 TEST_F(SortTestBase, mergeMethod)
 {
-    ASSERT_EQ(expCntr, algorithm::sort::Sort<int>::merge(builder->getRandomArray().get(), builder->getLength()));
+    ASSERT_EQ(
+        expCntr, algorithm::sort::Sort<std::int32_t>::merge(builder->getRandomArray().get(), builder->getLength()));
 }
 
 //! @brief Test for the quick method in the solution of sort.
 TEST_F(SortTestBase, quickMethod)
 {
-    ASSERT_EQ(expCntr, algorithm::sort::Sort<int>::quick(builder->getRandomArray().get(), builder->getLength()));
+    ASSERT_EQ(
+        expCntr, algorithm::sort::Sort<std::int32_t>::quick(builder->getRandomArray().get(), builder->getLength()));
 }
 
 //! @brief Test for the heap method in the solution of sort.
 TEST_F(SortTestBase, heapMethod)
 {
-    ASSERT_EQ(expCntr, algorithm::sort::Sort<int>::heap(builder->getRandomArray().get(), builder->getLength()));
+    ASSERT_EQ(
+        expCntr, algorithm::sort::Sort<std::int32_t>::heap(builder->getRandomArray().get(), builder->getLength()));
 }
 
 //! @brief Test for the counting method in the solution of sort.
 TEST_F(SortTestBase, countingMethod)
 {
-    ASSERT_EQ(expCntr, algorithm::sort::Sort<int>::counting(builder->getRandomArray().get(), builder->getLength()));
+    ASSERT_EQ(
+        expCntr, algorithm::sort::Sort<std::int32_t>::counting(builder->getRandomArray().get(), builder->getLength()));
 }
 
 //! @brief Test for the bucket method in the solution of sort.
 TEST_F(SortTestBase, bucketMethod)
 {
-    ASSERT_EQ(expCntr, algorithm::sort::Sort<int>::bucket(builder->getRandomArray().get(), builder->getLength()));
+    ASSERT_EQ(
+        expCntr, algorithm::sort::Sort<std::int32_t>::bucket(builder->getRandomArray().get(), builder->getLength()));
 }
 
 //! @brief Test for the radix method in the solution of sort.
 TEST_F(SortTestBase, radixMethod)
 {
-    ASSERT_EQ(expCntr, algorithm::sort::Sort<int>::radix(builder->getRandomArray().get(), builder->getLength()));
+    ASSERT_EQ(
+        expCntr, algorithm::sort::Sort<std::int32_t>::radix(builder->getRandomArray().get(), builder->getLength()));
 }
 } // namespace tst_algo
 } // namespace test

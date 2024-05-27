@@ -157,7 +157,7 @@ std::vector<T> Sort<T>::insertion(const T* const array, const std::uint32_t leng
 
     for (std::uint32_t i = 1; i < length; ++i)
     {
-        int n = i - 1;
+        std::int64_t n = i - 1;
         T temp = sorting[i];
         while ((n >= 0) && (sorting[n] > temp))
         {
@@ -285,11 +285,11 @@ std::vector<T> Sort<T>::heap(const T* const array, const std::uint32_t length)
 {
     std::vector<T> sorting(array, array + length);
 
-    for (int i = length / 2 + 1; i >= 0; --i)
+    for (std::int64_t i = length / 2 + 1; i >= 0; --i)
     {
         buildMaxHeap(sorting.data(), i, length - 1);
     }
-    for (int i = length - 1; i > 0; --i)
+    for (std::int64_t i = length - 1; i > 0; --i)
     {
         std::swap(sorting[0], sorting[i]);
         buildMaxHeap(sorting.data(), 0, i - 1);
@@ -439,7 +439,7 @@ void Sort<T>::leastSignificantDigit(
     std::vector<std::queue<T>> container(bucketSize, std::queue<T>{});
     for (std::uint32_t i = 0; i < length; ++i)
     {
-        const int sign = (sorting[i] > 0) ? 1 : -1;
+        const std::int8_t sign = (sorting[i] > 0) ? 1 : -1;
         const std::uint32_t bucketIdx = std::abs(sorting[i]) / 1 % base * sign + indexOffset;
         container[bucketIdx].push(sorting[i]);
         ++countingNew[bucketIdx];
@@ -461,7 +461,7 @@ void Sort<T>::leastSignificantDigit(
             while (countingOld[countingIdx])
             {
                 const T bucketElem = bucketIter->front();
-                const int sign = (bucketElem > 0) ? 1 : -1;
+                const std::int8_t sign = (bucketElem > 0) ? 1 : -1;
                 const std::uint32_t bucketIdx = std::abs(bucketElem) / pow % base * sign + indexOffset;
                 container[bucketIdx].push(bucketElem);
                 ++countingNew[bucketIdx];

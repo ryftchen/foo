@@ -248,7 +248,7 @@ private:
         //! @return existing sub-task
         SubTask getExistingSubTask()
         {
-            const int validation = !app_algo::getTask().empty() + !app_dp::getTask().empty()
+            const std::uint8_t validation = !app_algo::getTask().empty() + !app_dp::getTask().empty()
                 + !app_ds::getTask().empty() + !app_num::getTask().empty();
             if (1 == validation)
             {

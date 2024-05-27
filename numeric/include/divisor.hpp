@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include <cstdint>
 #include <vector>
 
 //! @brief The numeric module.
@@ -27,23 +28,23 @@ public:
     //! @param a - first integer
     //! @param b - second integer
     //! @return all common divisors of two integers
-    static std::vector<int> euclidean(int a, int b);
+    static std::vector<std::int32_t> euclidean(std::int32_t a, std::int32_t b);
     //! @brief Stein.
     //! @param a - first integer
     //! @param b - second integer
     //! @return all common divisors of two integers
-    static std::vector<int> stein(int a, int b);
+    static std::vector<std::int32_t> stein(std::int32_t a, std::int32_t b);
 
 private:
     //! @brief Recursive for the Stein method.
     //! @param a - first integer
     //! @param b - second integer
     //! @return greatest common divisor
-    static int steinRecursive(int a, int b);
+    static std::int32_t steinRecursive(std::int32_t a, std::int32_t b);
     //! @brief Get all common divisors by the greatest common divisor.
-    //! @param greatestCommonDivisor - greatest common divisor
+    //! @param gcd - greatest common divisor
     //! @return all common divisors
-    static std::vector<int> getAllDivisors(const int greatestCommonDivisor);
+    static std::vector<std::int32_t> getAllDivisors(const std::int32_t gcd);
 };
 } // namespace divisor
 } // namespace numeric

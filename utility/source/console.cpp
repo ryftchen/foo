@@ -127,7 +127,8 @@ int Console::fileExecutor(const std::string& filename)
     }
 
     std::string command;
-    int counter = 0, result = 0;
+    std::uint32_t counter = 0;
+    int result = 0;
     while (std::getline(input, command))
     {
         if ('#' == command.at(0))

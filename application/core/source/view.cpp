@@ -126,12 +126,12 @@ int tlvDecode(char* buf, const int len, TLVValue& val)
 template <typename T>
 bool Packet::write(const T data)
 {
-    T temp = 0;
-    if constexpr (sizeof(T) == sizeof(std::uint32_t))
+    T temp;
+    if constexpr (sizeof(T) == sizeof(int))
     {
         temp = ::htonl(data);
     }
-    else if constexpr (sizeof(T) == sizeof(std::uint16_t))
+    else if constexpr (sizeof(T) == sizeof(short))
     {
         temp = ::htons(data);
     }
@@ -142,7 +142,7 @@ bool Packet::write(const T data)
     return write(&temp, sizeof(T));
 }
 
-bool Packet::write(const void* const dst, const std::uint32_t offset)
+bool Packet::write(const void* const dst, const int offset)
 {
     std::memcpy(writer, dst, offset);
     writer += offset;
@@ -153,18 +153,18 @@ template <typename T>
 bool Packet::read(T* const data)
 {
     const bool isEnd = read(data, sizeof(T));
-    if constexpr (sizeof(T) == sizeof(std::uint32_t))
+    if constexpr (sizeof(T) == sizeof(int))
     {
         *data = ::ntohl(*data);
     }
-    else if constexpr (sizeof(T) == sizeof(std::uint16_t))
+    else if constexpr (sizeof(T) == sizeof(short))
     {
         *data = ::ntohs(*data);
     }
     return isEnd;
 }
 
-bool Packet::read(void* const dst, const std::uint32_t offset)
+bool Packet::read(void* const dst, const int offset)
 {
     std::memcpy(dst, reader, offset);
     reader += offset;
