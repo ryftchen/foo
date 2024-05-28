@@ -7,7 +7,6 @@
 #pragma once
 
 #include <cmath>
-#include <cstring>
 #include <memory>
 #include <vector>
 
@@ -164,11 +163,10 @@ std::vector<std::uint32_t> Search<T>::generateFibonacciNumber(const std::uint32_
         return std::vector<std::uint32_t>{};
     }
 
-    const double phi = (1.0 + std::sqrt(5.0)) / 2.0; // Golden ratio
-    const std::uint32_t estimate =
-        static_cast<std::uint32_t>(std::log(limit * std::sqrt(5.0)) / std::log(phi)) + 1; // Fn≈(ϕ^n)/(5^(1/2))
+    const double phi = (1.0 + std::sqrt(5.0)) / 2.0, // Golden ratio
+        estimate = std::log(limit * std::sqrt(5.0)) / std::log(phi); // Fn≈(ϕ^n)/(5^(1/2))
     std::vector<std::uint32_t> fibonacci;
-    fibonacci.reserve(estimate);
+    fibonacci.reserve(static_cast<std::uint32_t>(estimate) + 1);
     std::uint32_t f1 = 0, f2 = 1;
     for (;;)
     {
