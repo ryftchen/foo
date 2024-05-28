@@ -28,22 +28,22 @@ std::int64_t Match::rk(
     constexpr std::int64_t rollingHashBase = maxASCII, rollingHashMod = 1e9 + 7;
     std::int64_t textHash = 0, patternHash = 0, pow = 1;
 
-    for (std::uint64_t i = 0; i < (patternLen - 1); ++i)
+    for (std::uint32_t i = 0; i < (patternLen - 1); ++i)
     {
         pow = (pow * rollingHashBase) % rollingHashMod;
     }
 
-    for (std::uint64_t i = 0; i < patternLen; ++i)
+    for (std::uint32_t i = 0; i < patternLen; ++i)
     {
         patternHash = (rollingHashBase * patternHash + pattern[i]) % rollingHashMod;
         textHash = (rollingHashBase * textHash + text[i]) % rollingHashMod;
     }
 
-    for (std::uint64_t i = 0; i <= (textLen - patternLen); ++i)
+    for (std::uint32_t i = 0; i <= (textLen - patternLen); ++i)
     {
         if (patternHash == textHash)
         {
-            std::uint64_t j = 0;
+            std::uint32_t j = 0;
             for (j = 0; j < patternLen; ++j)
             {
                 if (text[i + j] != pattern[j])

@@ -89,7 +89,7 @@ std::int32_t Divisor::steinRecursive(std::int32_t a, std::int32_t b)
 
 std::vector<std::int32_t> Divisor::getAllDivisors(const std::int32_t gcd)
 {
-    std::vector<std::int32_t> divisors(0);
+    std::vector<std::int32_t> divisors;
     for (std::int32_t i = 1; i <= std::sqrt(gcd); ++i)
     {
         if (0 == (gcd % i))

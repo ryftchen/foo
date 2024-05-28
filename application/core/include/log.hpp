@@ -241,7 +241,7 @@ private:
     }
 
     //! @brief Timeout period (ms) to waiting for the logger to change to the target state.
-    const std::uint64_t timeoutPeriod{static_cast<std::uint64_t>(CONFIG_HELPER_TIMEOUT)};
+    const std::uint32_t timeoutPeriod{static_cast<std::uint32_t>(CONFIG_HELPER_TIMEOUT)};
     //! @brief The queue of logs.
     std::queue<std::string> logQueue;
     //! @brief Mutex for controlling queue.
@@ -265,6 +265,10 @@ private:
     //! @brief Log file lock.
     utility::file::ReadWriteLock fileLock;
 
+    //! @brief Check whether it is in the uninterrupted target state.
+    //! @param state - target state
+    //! @return in the uninterrupted target state or not
+    bool isInUninterruptedState(const State state) const;
     //! @brief Handle the log queue.
     void handleLogQueue();
     //! @brief Get the full path to the default log file.
@@ -372,7 +376,7 @@ void Log::flush(
         return output;
     };
 
-    if (!((State::work == currentState()) && !toReset.load()))
+    if (!isInUninterruptedState(State::work))
     {
         std::string output = outputFormatter(unknownLevelPrefix);
         std::cerr << changeToLogStyle(output) << std::endl;

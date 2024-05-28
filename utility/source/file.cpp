@@ -160,7 +160,7 @@ std::list<std::string> getFileContents(const std::string& filename, const bool r
     ifs.seekg(std::ios::beg);
 
     std::string line;
-    std::list<std::string> contents(0);
+    std::list<std::string> contents;
     if (!reverse)
     {
         while ((contents.size() < totalRows) && std::getline(ifs, line))
@@ -170,11 +170,11 @@ std::list<std::string> getFileContents(const std::string& filename, const bool r
     }
     else
     {
-        std::ifstream ifsTemp(filename);
-        const std::size_t lineNum = std::count(
-                              std::istreambuf_iterator<char>(ifsTemp), std::istreambuf_iterator<char>(), '\n'),
-                          startLine = (lineNum > totalRows) ? (lineNum - totalRows + 1) : 1;
-        for (std::size_t i = 0; i < (startLine - 1); ++i)
+        const std::uint64_t lineNum =
+                                std::count(std::istreambuf_iterator<char>(ifs), std::istreambuf_iterator<char>(), '\n'),
+                            startLine = (lineNum > totalRows) ? (lineNum - totalRows + 1) : 1;
+        ifs.seekg(std::ios::beg);
+        for (std::uint64_t i = 0; i < (startLine - 1); ++i)
         {
             ifs.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         }

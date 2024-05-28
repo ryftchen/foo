@@ -41,20 +41,20 @@ static Node* createNode(void* const val)
 //! @return node
 static Node* getNode(DLL head, const int index)
 {
-    int count = 0;
+    int counter = 0;
     Node* node = head->next;
     while (node != head)
     {
-        ++count;
+        ++counter;
         node = node->next;
     }
 
-    if ((index < 0) || (index >= count))
+    if ((index < 0) || (index >= counter))
     {
         return nullptr;
     }
 
-    if (index <= (count / 2))
+    if (index <= (counter / 2))
     {
         int i = 0;
         node = head->next;
@@ -67,7 +67,7 @@ static Node* getNode(DLL head, const int index)
     }
 
     int j = 0;
-    const int rIndex = count - index - 1;
+    const int rIndex = counter - index - 1;
     Node* rNode = head->prev;
     while ((j++) < rIndex)
     {
@@ -120,15 +120,15 @@ int destroyDll(DLL* const dll)
 //! @return size of the doubly linked list
 int dllSize(DLL head)
 {
-    int count = 0;
+    int counter = 0;
     const Node* node = head->next;
     while (node != head)
     {
-        ++count;
+        ++counter;
         node = node->next;
     }
 
-    return count;
+    return counter;
 }
 
 //! @brief Check whether any nodes do not exist in the doubly linked list.

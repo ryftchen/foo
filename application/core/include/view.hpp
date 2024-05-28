@@ -169,15 +169,15 @@ public:
 
     //! @brief Alias for the option name.
     using Option = std::string;
-    //! @brief Alias for the option help message.
-    using HelpMessage = std::string;
+    //! @brief Alias for the help prompt of the option.
+    using HelpPrompt = std::string;
     //! @brief Alias for the functor to build the TLV packet.
     typedef int (*BuildFunctor)(const std::vector<std::string>&, char*);
     //! @brief Alias for the attribute of Option.
     struct OptionAttr
     {
-        //! @brief Help message.
-        HelpMessage message;
+        //! @brief Help prompt.
+        HelpPrompt prompt;
         //! @brief Build functor.
         BuildFunctor functor;
     };
@@ -232,7 +232,7 @@ private:
     }
 
     //! @brief Timeout period (ms) to waiting for the viewer to change to the target state.
-    const std::uint64_t timeoutPeriod{static_cast<std::uint64_t>(CONFIG_HELPER_TIMEOUT)};
+    const std::uint32_t timeoutPeriod{static_cast<std::uint32_t>(CONFIG_HELPER_TIMEOUT)};
     // clang-format off
     //! @brief Mapping table of all viewer options.
     const OptionMap optionDispatcher{
@@ -297,6 +297,10 @@ private:
     //! @brief Get the status information.
     //! @return status information
     static std::string getStatusInformation();
+    //! @brief Check whether it is in the uninterrupted target state.
+    //! @param state - target state
+    //! @return in the uninterrupted target state or not
+    bool isInUninterruptedState(const State state) const;
 
     //! @brief TCP server.
     std::shared_ptr<utility::socket::TCPServer> tcpServer;
