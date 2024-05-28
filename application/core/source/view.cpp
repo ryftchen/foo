@@ -232,9 +232,9 @@ retry:
 
 void View::waitForStart()
 {
-    while (!((currentState() == State::idle) && !toReset.load()))
+    while (!isInUninterruptedState(State::idle))
     {
-        if ((currentState() == State::hold) && !toReset.load())
+        if (isInUninterruptedState(State::hold))
         {
             LOG_ERR << "The viewer did not initialize successfully...";
             return;
@@ -251,20 +251,20 @@ void View::waitForStart()
     }
 
     utility::time::BlockingTimer expiryTimer;
-    std::uint64_t waitCount = 0;
+    std::uint32_t waitCounter = 0;
     expiryTimer.set(
-        [this, &expiryTimer, &waitCount]()
+        [this, &expiryTimer, &waitCounter]()
         {
-            if ((currentState() == State::work) && !toReset.load())
+            if (isInUninterruptedState(State::work))
             {
                 expiryTimer.reset();
             }
             else
             {
-                ++waitCount;
+                ++waitCounter;
             }
 
-            if (timeoutPeriod == waitCount)
+            if (timeoutPeriod == waitCounter)
             {
                 LOG_ERR << "The viewer did not start properly...";
                 expiryTimer.reset();
@@ -284,20 +284,20 @@ void View::waitForStop()
     }
 
     utility::time::BlockingTimer expiryTimer;
-    std::uint64_t waitCount = 0;
+    std::uint32_t waitCounter = 0;
     expiryTimer.set(
-        [this, &expiryTimer, &waitCount]()
+        [this, &expiryTimer, &waitCounter]()
         {
-            if ((currentState() == State::done) && !toReset.load())
+            if (isInUninterruptedState(State::done))
             {
                 expiryTimer.reset();
             }
             else
             {
-                ++waitCount;
+                ++waitCounter;
             }
 
-            if (timeoutPeriod == waitCount)
+            if (timeoutPeriod == waitCounter)
             {
                 LOG_ERR << "The viewer did not stop properly...";
                 expiryTimer.reset();
@@ -355,7 +355,7 @@ tlv::TLVValue View::parseTLVPacket(char* buffer, const int length) const
     }
     if (invalidShmId != value.logShmId)
     {
-        printSharedMemory(value.logShmId, (currentState() != State::work));
+        printSharedMemory(value.logShmId, !isInUninterruptedState(State::work));
     }
     if (invalidShmId != value.statusShmId)
     {
@@ -367,7 +367,7 @@ tlv::TLVValue View::parseTLVPacket(char* buffer, const int length) const
 
 void View::outputAwait()
 {
-    if ((currentState() == State::work) && !toReset.load())
+    if (isInUninterruptedState(State::work))
     {
         std::unique_lock<std::mutex> outputLock(outputMtx);
         outputCv.wait(
@@ -574,19 +574,19 @@ void View::printSharedMemory(const int shmId, const bool withoutPaging)
 void View::segmentedOutput(const char* const buffer)
 {
     constexpr std::uint8_t terminalRows = 24;
-    constexpr std::string_view prompt = "----- Type \u23CE for more, c to continue without paging, q to quit -----: ",
+    constexpr std::string_view hint = "----- Type \u23CE for more, c to continue without paging, q to quit -----: ",
                                clearEscape = "\x1b[1A\x1b[2K\r";
-    std::uint64_t count = 0;
+    std::uint64_t counter = 0;
     std::string line;
     bool withoutPaging = false;
     std::istringstream is(std::string{buffer});
     while (std::getline(is, line))
     {
         std::cout << line << '\n';
-        ++count;
-        if ((0 == count % terminalRows) && !withoutPaging)
+        ++counter;
+        if ((0 == counter % terminalRows) && !withoutPaging)
         {
-            std::cout << prompt;
+            std::cout << hint;
             std::string input;
             for (;;)
             {
@@ -594,7 +594,7 @@ void View::segmentedOutput(const char* const buffer)
                 std::cout << clearEscape;
                 if (input.empty())
                 {
-                    --count;
+                    --counter;
                     break;
                 }
                 else if ("c" == input)
@@ -608,7 +608,7 @@ void View::segmentedOutput(const char* const buffer)
                 }
                 else
                 {
-                    std::cout << prompt;
+                    std::cout << hint;
                 }
             }
         }
@@ -691,6 +691,11 @@ std::string View::getStatusInformation()
         });
 
     return statInfo;
+}
+
+bool View::isInUninterruptedState(const State state) const
+{
+    return (currentState() == state) && !toReset.load();
 }
 
 void View::createViewServer()

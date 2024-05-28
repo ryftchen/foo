@@ -153,7 +153,7 @@ double Gauss::operator()(double lower, double upper, const double eps) const
             const double left = lower + i * stepLength, right = left + stepLength;
             for (std::uint32_t j = 0; j < gaussNodes; ++j)
             {
-                // x=1/2[(a+b)+(b-a)t]
+                // x=1/2*[(a+b)+(b-a)*t]
                 const double x = ((right - left) * gaussLegendreTable[j][0] + (left + right)) / 2.0,
                              polynomial = expr(x) * gaussLegendreTable[j][1] * (right - left) / 2.0;
                 sum += polynomial;
@@ -208,7 +208,7 @@ double MonteCarlo::sampleFromNormalDistribution(const double lower, const double
         do
         {
             const double u1 = dist(engine), u2 = dist(engine), mag = sigma * std::sqrt(-2.0 * std::log(u1));
-            x = mag * std::sin(2.0 * std::numbers::pi * u2) + mu; // Box-Muller Transform
+            x = mag * std::sin(2.0 * std::numbers::pi * u2) + mu; // Box-Muller transform
         }
         while ((x < lower) || (x > upper));
         const double probabilityDensityFunction = (1.0 / std::sqrt(2.0 * std::numbers::pi * sigma * sigma))

@@ -822,7 +822,7 @@ void Command::registerOnConsole(utility::console::Console& console, std::shared_
                 }
                 return retVal;
             },
-            optionAttr.message);
+            optionAttr.prompt);
     }
 }
 

@@ -77,9 +77,9 @@ retry:
 
 void Log::waitForStart()
 {
-    while (!((currentState() == State::idle) && !toReset.load()))
+    while (!isInUninterruptedState(State::idle))
     {
-        if ((currentState() == State::hold) && !toReset.load())
+        if (isInUninterruptedState(State::hold))
         {
             LOG_ERR << "The logger did not initialize successfully...";
             return;
@@ -96,20 +96,20 @@ void Log::waitForStart()
     }
 
     utility::time::BlockingTimer expiryTimer;
-    std::uint64_t waitCount = 0;
+    std::uint32_t waitCounter = 0;
     expiryTimer.set(
-        [this, &expiryTimer, &waitCount]()
+        [this, &expiryTimer, &waitCounter]()
         {
-            if ((currentState() == State::work) && !toReset.load())
+            if (isInUninterruptedState(State::work))
             {
                 expiryTimer.reset();
             }
             else
             {
-                ++waitCount;
+                ++waitCounter;
             }
 
-            if (timeoutPeriod == waitCount)
+            if (timeoutPeriod == waitCounter)
             {
                 LOG_ERR << "The logger did not start properly...";
                 expiryTimer.reset();
@@ -129,20 +129,20 @@ void Log::waitForStop()
     }
 
     utility::time::BlockingTimer expiryTimer;
-    std::uint64_t waitCount = 0;
+    std::uint32_t waitCounter = 0;
     expiryTimer.set(
-        [this, &expiryTimer, &waitCount]()
+        [this, &expiryTimer, &waitCounter]()
         {
-            if ((currentState() == State::done) && !toReset.load())
+            if (isInUninterruptedState(State::done))
             {
                 expiryTimer.reset();
             }
             else
             {
-                ++waitCount;
+                ++waitCounter;
             }
 
-            if (timeoutPeriod == waitCount)
+            if (timeoutPeriod == waitCounter)
             {
                 LOG_ERR << "The logger did not stop properly...";
                 expiryTimer.reset();
@@ -167,6 +167,11 @@ std::string Log::loggerFilePath() const
 utility::file::ReadWriteLock& Log::loggerFileLock()
 {
     return fileLock;
+}
+
+bool Log::isInUninterruptedState(const State state) const
+{
+    return (currentState() == state) && !toReset.load();
 }
 
 void Log::handleLogQueue()
