@@ -248,7 +248,7 @@ public:
     static void SetUpTestCase()
     {
         TST_ALGO_PRINT_TASK_TITLE(Category::search, "BEGIN");
-        builder = std::make_shared<search::TargetBuilder<double>>(
+        builder = std::make_shared<search::TargetBuilder<float>>(
             search::input::arrayLength, search::input::arrayRange1, search::input::arrayRange2);
     }
     //! @brief Tear down the test case.
@@ -263,16 +263,16 @@ public:
     void TearDown() override{};
 
     //! @brief Target builder.
-    static std::shared_ptr<search::TargetBuilder<double>> builder;
+    static std::shared_ptr<search::TargetBuilder<float>> builder;
 };
-std::shared_ptr<search::TargetBuilder<double>> SearchTestBase::builder = nullptr;
+std::shared_ptr<search::TargetBuilder<float>> SearchTestBase::builder = nullptr;
 
 //! @brief Test for the binary method in the solution of search.
 TEST_F(SearchTestBase, binaryMethod)
 {
     ASSERT_EQ(
         builder->getLength() / 2,
-        algorithm::search::Search<double>::binary(
+        algorithm::search::Search<float>::binary(
             builder->getOrderedArray().get(), builder->getLength(), builder->getSearchKey()));
 }
 
@@ -281,7 +281,7 @@ TEST_F(SearchTestBase, interpolationMethod)
 {
     ASSERT_EQ(
         builder->getLength() / 2,
-        algorithm::search::Search<double>::interpolation(
+        algorithm::search::Search<float>::interpolation(
             builder->getOrderedArray().get(), builder->getLength(), builder->getSearchKey()));
 }
 
@@ -290,7 +290,7 @@ TEST_F(SearchTestBase, fibonacciMethod)
 {
     ASSERT_EQ(
         builder->getLength() / 2,
-        algorithm::search::Search<double>::fibonacci(
+        algorithm::search::Search<float>::fibonacci(
             builder->getOrderedArray().get(), builder->getLength(), builder->getSearchKey()));
 }
 

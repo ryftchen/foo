@@ -34,8 +34,8 @@ static inline std::string getExecutableName()
 static void signalHandler(int sig)
 {
     signalStatus = sig;
-    void* callStack[128];
-    constexpr std::uint16_t maxFrame = sizeof(callStack) / sizeof(callStack[0]);
+    constexpr std::uint16_t maxFrame = 128;
+    void* callStack[maxFrame];
     const int numOfFrame = ::backtrace(callStack, maxFrame);
     char** const symbols = ::backtrace_symbols(callStack, numOfFrame);
 

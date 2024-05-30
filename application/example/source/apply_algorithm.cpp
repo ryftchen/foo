@@ -354,9 +354,7 @@ void runMatchTasks(const std::vector<std::string>& candidates)
     }
 
     APP_ALGO_PRINT_TASK_BEGIN_TITLE(category);
-    using match::MatchSolution;
-    using match::TargetBuilder;
-    using match::input::patternString;
+    using match::MatchSolution, match::TargetBuilder, match::input::patternString;
     static_assert(TargetBuilder::maxDigit > patternString.length());
 
     auto& pooling = command::getPublicThreadPool();
@@ -490,9 +488,7 @@ void runNotationTasks(const std::vector<std::string>& candidates)
     }
 
     APP_ALGO_PRINT_TASK_BEGIN_TITLE(category);
-    using notation::NotationSolution;
-    using notation::TargetBuilder;
-    using notation::input::infixString;
+    using notation::NotationSolution, notation::TargetBuilder, notation::input::infixString;
 
     auto& pooling = command::getPublicThreadPool();
     auto* const threads = pooling.newElement(std::min(
@@ -758,11 +754,11 @@ namespace search
     }                                                                                                \
     while (0)
 
-void SearchSolution::binaryMethod(const double* const array, const std::uint32_t length, const double key)
+void SearchSolution::binaryMethod(const float* const array, const std::uint32_t length, const float key)
 try
 {
     TIME_BEGIN(timing);
-    const auto index = algorithm::search::Search<double>().binary(array, length, key);
+    const auto index = algorithm::search::Search<float>().binary(array, length, key);
     TIME_END(timing);
     SEARCH_PRINT_RESULT_CONTENT(SearchMethod::binary);
 }
@@ -771,11 +767,11 @@ catch (const std::exception& error)
     LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
 }
 
-void SearchSolution::interpolationMethod(const double* const array, const std::uint32_t length, const double key)
+void SearchSolution::interpolationMethod(const float* const array, const std::uint32_t length, const float key)
 try
 {
     TIME_BEGIN(timing);
-    const auto index = algorithm::search::Search<double>().interpolation(array, length, key);
+    const auto index = algorithm::search::Search<float>().interpolation(array, length, key);
     TIME_END(timing);
     SEARCH_PRINT_RESULT_CONTENT(SearchMethod::interpolation);
 }
@@ -784,11 +780,11 @@ catch (const std::exception& error)
     LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
 }
 
-void SearchSolution::fibonacciMethod(const double* const array, const std::uint32_t length, const double key)
+void SearchSolution::fibonacciMethod(const float* const array, const std::uint32_t length, const float key)
 try
 {
     TIME_BEGIN(timing);
-    const auto index = algorithm::search::Search<double>().fibonacci(array, length, key);
+    const auto index = algorithm::search::Search<float>().fibonacci(array, length, key);
     TIME_END(timing);
     SEARCH_PRINT_RESULT_CONTENT(SearchMethod::fibonacci);
 }
@@ -814,20 +810,17 @@ void runSearchTasks(const std::vector<std::string>& candidates)
     }
 
     APP_ALGO_PRINT_TASK_BEGIN_TITLE(category);
-    using search::SearchSolution;
-    using search::TargetBuilder;
-    using search::input::arrayLength;
-    using search::input::arrayRange1;
-    using search::input::arrayRange2;
+    using search::SearchSolution, search::TargetBuilder, search::input::arrayLength, search::input::arrayRange1,
+        search::input::arrayRange2;
     static_assert((arrayRange1 < arrayRange2) && (arrayLength > 0));
 
     auto& pooling = command::getPublicThreadPool();
     auto* const threads = pooling.newElement(
         std::min(static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<SearchMethod>::value)));
-    const auto builder = std::make_shared<TargetBuilder<double>>(arrayLength, arrayRange1, arrayRange2);
+    const auto builder = std::make_shared<TargetBuilder<float>>(arrayLength, arrayRange1, arrayRange2);
     const auto searchFunctor =
         [threads, builder](
-            const std::string& threadName, void (*methodPtr)(const double* const, const std::uint32_t, const double))
+            const std::string& threadName, void (*methodPtr)(const float* const, const std::uint32_t, const float))
     {
         threads->enqueue(
             threadName, methodPtr, builder->getOrderedArray().get(), builder->getLength(), builder->getSearchKey());
@@ -1052,11 +1045,8 @@ void runSortTasks(const std::vector<std::string>& candidates)
     }
 
     APP_ALGO_PRINT_TASK_BEGIN_TITLE(category);
-    using sort::SortSolution;
-    using sort::TargetBuilder;
-    using sort::input::arrayLength;
-    using sort::input::arrayRange1;
-    using sort::input::arrayRange2;
+    using sort::SortSolution, sort::TargetBuilder, sort::input::arrayLength, sort::input::arrayRange1,
+        sort::input::arrayRange2;
     static_assert((arrayRange1 < arrayRange2) && (arrayLength > 0));
 
     auto& pooling = command::getPublicThreadPool();
