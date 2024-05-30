@@ -271,10 +271,8 @@ void runArithmeticTasks(const std::vector<std::string>& candidates)
     }
 
     APP_NUM_PRINT_TASK_BEGIN_TITLE(category);
-    using arithmetic::ArithmeticSolution;
-    using arithmetic::TargetBuilder;
-    using arithmetic::input::integerA;
-    using arithmetic::input::integerB;
+    using arithmetic::ArithmeticSolution, arithmetic::TargetBuilder, arithmetic::input::integerA,
+        arithmetic::input::integerB;
 
     auto& pooling = command::getPublicThreadPool();
     auto* const threads = pooling.newElement(std::min(
@@ -407,10 +405,7 @@ void runDivisorTasks(const std::vector<std::string>& candidates)
     }
 
     APP_NUM_PRINT_TASK_BEGIN_TITLE(category);
-    using divisor::DivisorSolution;
-    using divisor::TargetBuilder;
-    using divisor::input::integerA;
-    using divisor::input::integerB;
+    using divisor::DivisorSolution, divisor::TargetBuilder, divisor::input::integerA, divisor::input::integerB;
 
     auto& pooling = command::getPublicThreadPool();
     auto* const threads = pooling.newElement(std::min(
@@ -734,9 +729,7 @@ void runPrimeTasks(const std::vector<std::string>& candidates)
     }
 
     APP_NUM_PRINT_TASK_BEGIN_TITLE(category);
-    using prime::PrimeSolution;
-    using prime::TargetBuilder;
-    using prime::input::maxPositiveInteger;
+    using prime::PrimeSolution, prime::TargetBuilder, prime::input::maxPositiveInteger;
 
     auto& pooling = command::getPublicThreadPool();
     auto* const threads = pooling.newElement(

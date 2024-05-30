@@ -67,8 +67,7 @@ void Config::verifyConfigData(const utility::json::JSON& configData)
 
 void Config::checkLoggerConfigInHelperList(const utility::json::JSON& configData)
 {
-    using utility::common::operator""_bkdrHash;
-    using utility::common::bkdrHash;
+    using utility::common::EnumCheck, utility::common::operator""_bkdrHash;
 
     bool isVerified = true;
     const auto loggerObject = configData.at("helperList").at("logger");
@@ -85,7 +84,7 @@ void Config::checkLoggerConfigInHelperList(const utility::json::JSON& configData
 
     for (const auto& [key, item] : loggerProperties.objectRange())
     {
-        switch (bkdrHash(key.data()))
+        switch (utility::common::bkdrHash(key.data()))
         {
             case "filePath"_bkdrHash:
                 isVerified &= item.isStringType();
@@ -93,7 +92,7 @@ void Config::checkLoggerConfigInHelperList(const utility::json::JSON& configData
             case "minimumLevel"_bkdrHash:
                 using OutputLevel = log::Log::OutputLevel;
                 isVerified &= item.isIntegralType();
-                isVerified &= utility::common::EnumCheck<
+                isVerified &= EnumCheck<
                     OutputLevel,
                     OutputLevel::debug,
                     OutputLevel::info,
@@ -103,15 +102,14 @@ void Config::checkLoggerConfigInHelperList(const utility::json::JSON& configData
             case "usedMedium"_bkdrHash:
                 using OutputMedium = log::Log::OutputMedium;
                 isVerified &= item.isIntegralType();
-                isVerified &= utility::common::
+                isVerified &=
                     EnumCheck<OutputMedium, OutputMedium::file, OutputMedium::terminal, OutputMedium::both>::isValue(
                         item.toIntegral());
                 break;
             case "writeType"_bkdrHash:
                 using OutputType = log::Log::OutputType;
                 isVerified &= item.isIntegralType();
-                isVerified &= utility::common::EnumCheck<OutputType, OutputType::add, OutputType::over>::isValue(
-                    item.toIntegral());
+                isVerified &= EnumCheck<OutputType, OutputType::add, OutputType::over>::isValue(item.toIntegral());
                 break;
             default:
                 isVerified &= false;
@@ -129,7 +127,6 @@ void Config::checkLoggerConfigInHelperList(const utility::json::JSON& configData
 void Config::checkViewerConfigInHelperList(const utility::json::JSON& configData)
 {
     using utility::common::operator""_bkdrHash;
-    using utility::common::bkdrHash;
 
     bool isVerified = true;
     const auto viewerObject = configData.at("helperList").at("viewer");
@@ -147,7 +144,7 @@ void Config::checkViewerConfigInHelperList(const utility::json::JSON& configData
     constexpr std::uint16_t minPortNum = 0, maxPortNum = 65535;
     for (const auto& [key, item] : viewerProperties.objectRange())
     {
-        switch (bkdrHash(key.data()))
+        switch (utility::common::bkdrHash(key.data()))
         {
             case "tcpHost"_bkdrHash:
                 isVerified &= item.isStringType();

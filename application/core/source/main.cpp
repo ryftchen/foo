@@ -34,9 +34,7 @@ try
         return EXIT_FAILURE;
     }
 
-    using command::Command;
-    using log::Log;
-    using view::View;
+    using command::Command, log::Log, view::View;
 
     constexpr std::uint32_t childThdNum = 3;
     auto threads = std::make_shared<utility::thread::Thread>(childThdNum);

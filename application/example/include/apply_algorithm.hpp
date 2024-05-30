@@ -608,9 +608,9 @@ namespace search
 namespace input
 {
 //! @brief Minimum of the array for search methods.
-constexpr double arrayRange1 = -50.0;
+constexpr float arrayRange1 = -50.0;
 //! @brief Maximum of the array for search methods.
-constexpr double arrayRange2 = 150.0;
+constexpr float arrayRange2 = 150.0;
 //! @brief Length of the array for search methods.
 constexpr std::uint32_t arrayLength = 53;
 } // namespace input
@@ -626,17 +626,17 @@ public:
     //! @param array - array to be searched
     //! @param length - length of array
     //! @param key - search key
-    static void binaryMethod(const double* const array, const std::uint32_t length, const double key);
+    static void binaryMethod(const float* const array, const std::uint32_t length, const float key);
     //! @brief Interpolation.
     //! @param array - array to be searched
     //! @param length - length of array
     //! @param key - search key
-    static void interpolationMethod(const double* const array, const std::uint32_t length, const double key);
+    static void interpolationMethod(const float* const array, const std::uint32_t length, const float key);
     //! @brief Fibonacci.
     //! @param array - array to be searched
     //! @param length - length of array
     //! @param key - search key
-    static void fibonacciMethod(const double* const array, const std::uint32_t length, const double key);
+    static void fibonacciMethod(const float* const array, const std::uint32_t length, const float key);
 };
 
 //! @brief Maximum alignment length per element of printing.
@@ -778,7 +778,7 @@ private:
     static void setOrderedArray(T array[], const std::uint32_t length, const T left, const T right)
     {
         std::mt19937 engine(std::random_device{}());
-        std::uniform_int_distribution<std::int64_t> dist(left, right);
+        std::uniform_int_distribution<T> dist(left, right);
         for (std::uint32_t i = 0; i < length; ++i)
         {
             array[i] = dist(engine);
@@ -803,7 +803,7 @@ private:
     static void setOrderedArray(T array[], const std::uint32_t length, const T left, const T right)
     {
         std::mt19937 engine(std::random_device{}());
-        std::uniform_real_distribution<double> dist(left, right);
+        std::uniform_real_distribution<T> dist(left, right);
         for (std::uint32_t i = 0; i < length; ++i)
         {
             array[i] = dist(engine);
@@ -1018,7 +1018,7 @@ private:
     static void setRandomArray(T array[], const std::uint32_t length, const T left, const T right)
     {
         std::mt19937 engine(std::random_device{}());
-        std::uniform_int_distribution<std::int64_t> dist(left, right);
+        std::uniform_int_distribution<T> dist(left, right);
         for (std::uint32_t i = 0; i < length; ++i)
         {
             array[i] = dist(engine);
@@ -1042,7 +1042,7 @@ private:
     static void setRandomArray(T array[], const std::uint32_t length, const T left, const T right)
     {
         std::mt19937 engine(std::random_device{}());
-        std::uniform_real_distribution<double> dist(left, right);
+        std::uniform_real_distribution<T> dist(left, right);
         for (std::uint32_t i = 0; i < length; ++i)
         {
             array[i] = dist(engine);

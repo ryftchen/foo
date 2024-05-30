@@ -139,22 +139,14 @@ public:
     static std::ostringstream linkedList()
     {
         namespace doubly_linked_list = date_structure::linear::doubly_linked_list;
-        using doubly_linked_list::createDll;
-        using doubly_linked_list::destroyDll;
-        using doubly_linked_list::DLL;
-        using doubly_linked_list::dllDelete;
-        using doubly_linked_list::dllDeleteFirst;
-        using doubly_linked_list::dllDeleteLast;
-        using doubly_linked_list::dllGet;
-        using doubly_linked_list::dllGetFirst;
-        using doubly_linked_list::dllGetLast;
-        using doubly_linked_list::dllInsert;
-        using doubly_linked_list::dllInsertFirst;
-        using doubly_linked_list::dllInsertLast;
-        using doubly_linked_list::dllIsEmpty;
-        using doubly_linked_list::dllSize;
+        using doubly_linked_list::createDll, doubly_linked_list::destroyDll, doubly_linked_list::DLL,
+            doubly_linked_list::dllDelete, doubly_linked_list::dllDeleteFirst, doubly_linked_list::dllDeleteLast,
+            doubly_linked_list::dllGet, doubly_linked_list::dllGetFirst, doubly_linked_list::dllGetLast,
+            doubly_linked_list::dllInsert, doubly_linked_list::dllInsertFirst, doubly_linked_list::dllInsertLast,
+            doubly_linked_list::dllIsEmpty, doubly_linked_list::dllSize;
 
         date_structure::linear::Output output;
+        output.flush() << std::boolalpha;
         Meta meta[] = {{'A', "foo"}, {'B', "bar"}, {'C', "baz"}, {'D', "qux"}};
         const std::uint16_t metaSize = sizeof(meta) / sizeof(meta[0]);
 
@@ -199,16 +191,11 @@ public:
     static std::ostringstream stack()
     {
         namespace stack = date_structure::linear::stack;
-        using stack::createStack;
-        using stack::destroyStack;
-        using stack::Stack;
-        using stack::stackIsEmpty;
-        using stack::stackPop;
-        using stack::stackPush;
-        using stack::stackSize;
-        using stack::stackTop;
+        using stack::createStack, stack::destroyStack, stack::Stack, stack::stackIsEmpty, stack::stackPop,
+            stack::stackPush, stack::stackSize, stack::stackTop;
 
         date_structure::linear::Output output;
+        output.flush() << std::boolalpha;
         Meta meta[] = {{'A', "foo"}, {'B', "bar"}, {'C', "baz"}, {'D', "qux"}};
         const std::uint16_t metaSize = sizeof(meta) / sizeof(meta[0]);
 
@@ -244,16 +231,11 @@ public:
     static std::ostringstream queue()
     {
         namespace queue = date_structure::linear::queue;
-        using queue::createQueue;
-        using queue::destroyQueue;
-        using queue::Queue;
-        using queue::queueFront;
-        using queue::queueIsEmpty;
-        using queue::queuePop;
-        using queue::queuePush;
-        using queue::queueSize;
+        using queue::createQueue, queue::destroyQueue, queue::Queue, queue::queueFront, queue::queueIsEmpty,
+            queue::queuePop, queue::queuePush, queue::queueSize;
 
         date_structure::linear::Output output;
+        output.flush() << std::boolalpha;
         Meta meta[] = {{'A', "foo"}, {'B', "bar"}, {'C', "baz"}, {'D', "qux"}};
         const std::uint16_t metaSize = sizeof(meta) / sizeof(meta[0]);
 
@@ -319,14 +301,9 @@ public:
     static std::ostringstream bs()
     {
         namespace bs = date_structure::tree::bs;
-        using bs::BSTree;
-        using bs::bsTreeDelete;
-        using bs::bsTreeInsert;
-        using bs::destroyBSTree;
-        using bs::getMaximum;
-        using bs::getMinimum;
+        using bs::BSTree, bs::bsTreeDelete, bs::bsTreeInsert, bs::destroyBSTree, bs::getMaximum, bs::getMinimum;
 
-        date_structure::tree::bs::Output output;
+        bs::Output output;
         BSTree root = nullptr;
         constexpr std::uint8_t arraySize = 6;
         constexpr std::array<std::int16_t, arraySize> array = {1, 5, 4, 3, 2, 6};
@@ -366,15 +343,10 @@ public:
     static std::ostringstream avl()
     {
         namespace avl = date_structure::tree::avl;
-        using avl::AVLTree;
-        using avl::avlTreeDelete;
-        using avl::avlTreeInsert;
-        using avl::destroyAVLTree;
-        using avl::getHeight;
-        using avl::getMaximum;
-        using avl::getMinimum;
+        using avl::AVLTree, avl::avlTreeDelete, avl::avlTreeInsert, avl::destroyAVLTree, avl::getHeight,
+            avl::getMaximum, avl::getMinimum;
 
-        date_structure::tree::avl::Output output;
+        avl::Output output;
         AVLTree root = nullptr;
         constexpr std::uint8_t arraySize = 16;
         constexpr std::array<std::int16_t, arraySize> array = {3, 2, 1, 4, 5, 6, 7, 16, 15, 14, 13, 12, 11, 10, 8, 9};
@@ -419,14 +391,10 @@ public:
     static std::ostringstream splay()
     {
         namespace splay = date_structure::tree::splay;
-        using splay::destroySplayTree;
-        using splay::getMaximum;
-        using splay::getMinimum;
-        using splay::SplayTree;
-        using splay::splayTreeInsert;
-        using splay::splayTreeSplay;
+        using splay::destroySplayTree, splay::getMaximum, splay::getMinimum, splay::SplayTree, splay::splayTreeInsert,
+            splay::splayTreeSplay;
 
-        date_structure::tree::splay::Output output;
+        splay::Output output;
         SplayTree root = nullptr;
         constexpr std::uint8_t arraySize = 6;
         constexpr std::array<std::int16_t, arraySize> array = {10, 50, 40, 30, 20, 60};

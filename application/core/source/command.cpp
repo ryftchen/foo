@@ -742,12 +742,13 @@ template <typename T>
 void Command::registerOnConsole(utility::console::Console& console, std::shared_ptr<T>& client)
 {
     using utility::console::Console;
+    using enum Console::RetCode;
 
     console.registerCommand(
         "refresh",
         [](const Console::Args& /*input*/)
         {
-            auto retVal = Console::RetCode::success;
+            auto retVal = success;
             try
             {
                 triggerHelper<log::Log>(HelperControl::reset);
@@ -755,10 +756,10 @@ void Command::registerOnConsole(utility::console::Console& console, std::shared_
 
                 LOG_INF << "Refreshed the outputs.";
             }
-            catch (const std::exception& error)
+            catch (const std::exception& err)
             {
-                retVal = Console::RetCode::error;
-                LOG_WRN << error.what();
+                retVal = error;
+                LOG_WRN << err.what();
             }
             utility::time::millisecondLevelSleep(latency);
             return retVal;
@@ -769,7 +770,7 @@ void Command::registerOnConsole(utility::console::Console& console, std::shared_
         "reconnect",
         [&client](const Console::Args& /*input*/)
         {
-            auto retVal = Console::RetCode::success;
+            auto retVal = success;
             try
             {
                 client->toSend(utility::common::base64Encode("stop"));
@@ -782,10 +783,10 @@ void Command::registerOnConsole(utility::console::Console& console, std::shared_
                 launchClient(client);
                 LOG_INF << "Reconnected to the servers.";
             }
-            catch (const std::exception& error)
+            catch (const std::exception& err)
             {
-                retVal = Console::RetCode::error;
-                LOG_WRN << error.what();
+                retVal = error;
+                LOG_WRN << err.what();
             }
             utility::time::millisecondLevelSleep(latency);
             return retVal;
@@ -798,7 +799,7 @@ void Command::registerOnConsole(utility::console::Console& console, std::shared_
             option,
             [&client](const Console::Args& input)
             {
-                auto retVal = Console::RetCode::success;
+                auto retVal = success;
                 try
                 {
                     std::string cmds;
@@ -814,10 +815,10 @@ void Command::registerOnConsole(utility::console::Console& console, std::shared_
                     client->toSend(utility::common::base64Encode(cmds));
                     VIEW_AWAIT;
                 }
-                catch (const std::exception& error)
+                catch (const std::exception& err)
                 {
-                    retVal = Console::RetCode::error;
-                    LOG_WRN << error.what();
+                    retVal = error;
+                    LOG_WRN << err.what();
                     utility::time::millisecondLevelSleep(latency);
                 }
                 return retVal;
@@ -828,7 +829,9 @@ void Command::registerOnConsole(utility::console::Console& console, std::shared_
 
 void Command::validateDependenciesVersion() const
 {
-    if (!utility::common::allStrEqual(
+    using utility::common::allStrEqual;
+
+    if (!allStrEqual(
             mainCLI.version.data(),
             utility::argument::version(),
             utility::common::version(),
@@ -842,21 +845,20 @@ void Command::validateDependenciesVersion() const
             utility::socket::version(),
             utility::thread::version(),
             utility::time::version())
-        || !utility::common::allStrEqual(
+        || !allStrEqual(
             subCLIAppAlgo.version.data(),
             algorithm::match::version(),
             algorithm::notation::version(),
             algorithm::optimal::version(),
             algorithm::search::version(),
             algorithm::sort::version())
-        || !utility::common::allStrEqual(
+        || !allStrEqual(
             subCLIAppDp.version.data(),
             design_pattern::behavioral::version(),
             design_pattern::creational::version(),
             design_pattern::structural::version())
-        || !utility::common::allStrEqual(
-            subCLIAppDs.version.data(), date_structure::linear::version(), date_structure::tree::version())
-        || !utility::common::allStrEqual(
+        || !allStrEqual(subCLIAppDs.version.data(), date_structure::linear::version(), date_structure::tree::version())
+        || !allStrEqual(
             subCLIAppNum.version.data(),
             numeric::arithmetic::version(),
             numeric::divisor::version(),
