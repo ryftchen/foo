@@ -26,6 +26,7 @@ words:
   - cword
   - distcc
   - Doxyfile
+  - dumpmachine
   - EXTSUM
   - filedir
   - fuser
