@@ -21,6 +21,7 @@ words:
   - cntr
   - codebrowser
   - compdb
+  - CPLUS
   - creational
   - cword
   - distcc
