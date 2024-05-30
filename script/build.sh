@@ -740,7 +740,11 @@ function set_compile_condition()
     local tmpfs_subfolder=$1 tmpfs_size=$2
 
     export CC=/usr/bin/clang-16 CXX=/usr/bin/clang++-16
-    export C_INCLUDE_PATH=/usr/include CPLUS_INCLUDE_PATH=/usr/include/c++/12
+    local gcc_processor gxx_processor
+    gcc_processor=$(gcc -dumpmachine)
+    gxx_processor=$(g++ -dumpmachine)
+    export C_INCLUDE_PATH=/usr/include:/usr/lib/gcc/${gcc_processor}/12/include \
+        CPLUS_INCLUDE_PATH=/usr/include/c++/12:/usr/include/${gxx_processor}/c++/12
     if [[ -f ./${FOLDER[scr]}/.env ]]; then
         # shellcheck source=/dev/null
         source "./${FOLDER[scr]}/.env"
