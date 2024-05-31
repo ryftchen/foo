@@ -72,7 +72,7 @@ class Documentation:
             interrupt("Failed to get the latest commit id.")
         if local_commit_id != remote_commit_id:
             execute(f"git -C {self.project_path} pull origin master")
-        elif os.path.exists(f"{self.website_dir}/browser") and os.path.exists(f"{self.website_dir}/doxygen"):
+        elif os.path.exists(f"{self.website_dir}/doxygen") and os.path.exists(f"{self.website_dir}/browser"):
             interrupt("No commit change.")
 
         try:
@@ -113,10 +113,10 @@ class Documentation:
 
     def update_document(self):
         print(f"[ {datetime.now()} ] +++++++++++++++ UPDATE DOCUMENT +++++++++++++++")
-        execute(f"rm -rf {self.website_dir}/browser {self.website_dir}/doxygen")
+        execute(f"rm -rf {self.website_dir}/doxygen {self.website_dir}/browser")
         execute(f"unzip {self.website_dir}/{self.artifact_file}.zip -d {self.website_dir}")
-        execute(f"tar -jxvf {self.website_dir}/foo_browser_*.tar.bz2 -C {self.website_dir} >/dev/null")
         execute(f"tar -jxvf {self.website_dir}/foo_doxygen_*.tar.bz2 -C {self.website_dir} >/dev/null")
+        execute(f"tar -jxvf {self.website_dir}/foo_browser_*.tar.bz2 -C {self.website_dir} >/dev/null")
         execute(f"rm -rf {self.website_dir}/*.zip {self.website_dir}/*.tar.bz2")
 
 
