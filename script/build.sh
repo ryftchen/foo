@@ -226,7 +226,7 @@ function perform_help_option()
     echo "  -l, --lint            lint all code files"
     echo "  -S, --statistics      code line statistics"
     echo "  -d, --doxygen         documentation with doxygen"
-    echo "  -b, --browser         generate code browser like IDE"
+    echo "  -b, --browser         generate web-based code browser like IDE"
     echo "  -D, --dry             dry run for script"
 
     exit "${STATUS}"
@@ -433,19 +433,20 @@ function perform_website_option()
                 echo "No"
             fi
         else
+            local port1=61503 port2=61504
             echo "The document server starts listening under the ${PWD} directory..."
-            echo "=> ${FOLDER[doc]}/doxygen online: http://127.0.0.1:61503/"
-            echo "=> ${FOLDER[doc]}/browser online: http://127.0.0.1:61504/"
+            echo "=> ${FOLDER[doc]}/doxygen online: http://127.0.0.1:${port1}/"
+            echo "=> ${FOLDER[doc]}/browser online: http://127.0.0.1:${port2}/"
             echo "Please confirm whether continue terminating the document server. (y or n)"
             local input
             input=$(wait_until_get_input)
             if echo "${input}" | grep -iq '^y'; then
                 echo "Yes"
-                if netstat -tuln | grep ':61503 ' >/dev/null 2>&1; then
-                    shell_command "fuser -k 61503/tcp"
+                if netstat -tuln | grep ":${port1} " >/dev/null 2>&1; then
+                    shell_command "fuser -k ${port1}/tcp"
                 fi
-                if netstat -tuln | grep ':61504 ' >/dev/null 2>&1; then
-                    shell_command "fuser -k 61504/tcp"
+                if netstat -tuln | grep ":${port2} " >/dev/null 2>&1; then
+                    shell_command "fuser -k ${port2}/tcp"
                 fi
             else
                 echo "No"
