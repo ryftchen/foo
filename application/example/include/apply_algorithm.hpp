@@ -183,7 +183,7 @@ public:
     //! @return any algorithm tasks do not exist or exist
     [[nodiscard]] inline bool empty() const
     {
-        return (matchBit.none() && notationBit.none() && optimalBit.none() && searchBit.none() && sortBit.none());
+        return matchBit.none() && notationBit.none() && optimalBit.none() && searchBit.none() && sortBit.none();
     }
     //! @brief Reset bit flags that manage algorithm tasks.
     inline void reset()
@@ -470,7 +470,7 @@ public:
     double operator()(const double x) const override
     {
         // f(x)=An+Σ(1→n)[(Xi)^2-Acos(2π*Xi)],A=10,x∈[-5.12,5.12],f(min)=0
-        return (x * x - 10.0 * std::cos(2.0 * std::numbers::pi * x) + 10.0);
+        return x * x - 10.0 * std::cos(2.0 * std::numbers::pi * x) + 10.0;
     }
 
     //! @brief Left endpoint.
@@ -492,7 +492,7 @@ public:
     double operator()(const double x) const override
     {
         // f(x)=1+1/4000*Σ(1→n)[(Xi)^2]-Π(1→n)[cos(Xi/(i)^(1/2))],x∈[-600,600],f(min)=0
-        return (1.0 + 1.0 / 4000.0 * x * x - std::cos(x));
+        return 1.0 + 1.0 / 4000.0 * x * x - std::cos(x);
     }
 
     //! @brief Left endpoint.
@@ -578,7 +578,7 @@ struct FuncRange
     //! @return be equal or not equal
     bool operator==(const FuncRange& rhs) const
     {
-        return (std::tie(rhs.range1, rhs.range2, rhs.funcDescr) == std::tie(range1, range2, funcDescr));
+        return std::tie(rhs.range1, rhs.range2, rhs.funcDescr) == std::tie(range1, range2, funcDescr);
     }
 };
 //! @brief Mapping hash value for the function.
@@ -594,7 +594,7 @@ struct FuncMapHash
     {
         const std::size_t hash1 = std::hash<T1>()(range.range1), hash2 = std::hash<T2>()(range.range2),
                           hash3 = std::hash<std::string_view>()(range.funcDescr);
-        return (hash1 ^ hash2 ^ hash3);
+        return hash1 ^ hash2 ^ hash3;
     }
 };
 } // namespace optimal
@@ -644,13 +644,13 @@ constexpr std::uint8_t maxAlignOfPrint = 16;
 //! @brief Maximum columns per row of printing.
 constexpr std::uint8_t maxColumnOfPrint = 10;
 
-//! @brief Check whether it is the number type.
+//! @brief Check whether it is the real number type.
 //! @tparam T - type of inspection to be performed
 //! @return be number or not
 template <typename T>
-constexpr bool isNumber()
+constexpr bool isRealNumber()
 {
-    return (std::is_integral<T>::value || std::is_floating_point<T>::value);
+    return std::is_integral<T>::value || std::is_floating_point<T>::value;
 }
 
 //! @brief Builder for the target.
@@ -704,7 +704,7 @@ public:
     //! @param bufferSize - size of buffer
     //! @return buffer after splicing
     template <typename N>
-    requires (isNumber<N>())
+    requires (isRealNumber<N>())
     static char* spliceAll(
         const T* const restrict array,
         const std::uint32_t length,
@@ -891,13 +891,13 @@ constexpr std::uint8_t maxAlignOfPrint = 16;
 //! @brief Maximum columns per row of printing.
 constexpr std::uint8_t maxColumnOfPrint = 10;
 
-//! @brief Check whether it is the number type.
+//! @brief Check whether it is the real number type.
 //! @tparam T - type of inspection to be performed
 //! @return be number or not
 template <typename T>
-constexpr bool isNumber()
+constexpr bool isRealNumber()
 {
-    return (std::is_integral<T>::value || std::is_floating_point<T>::value);
+    return std::is_integral<T>::value || std::is_floating_point<T>::value;
 }
 
 //! @brief Builder for the target.
@@ -946,7 +946,7 @@ public:
     //! @param bufferSize - size of buffer
     //! @return buffer after splicing
     template <typename N>
-    requires (isNumber<N>())
+    requires (isRealNumber<N>())
     static char* spliceAll(
         const T* const restrict array,
         const std::uint32_t length,

@@ -316,7 +316,7 @@ namespace avl
 //! @return height of the AVL tree
 int getHeight(AVLTree tree)
 {
-    return ((nullptr == tree) ? 0 : static_cast<Node*>(tree)->height);
+    return (nullptr == tree) ? 0 : static_cast<Node*>(tree)->height;
 }
 
 //! @brief Get the node where the Minimum key is located in the AVL tree.

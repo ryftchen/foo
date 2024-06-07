@@ -473,8 +473,7 @@ std::string Argument::usage() const
     if (!subParserMap.empty())
     {
         stream << " {";
-        std::size_t i = 0;
-        for (const auto& [command, unused] : subParserMap)
+        for (std::size_t i = 0; const auto& [command, unused] : subParserMap)
         {
             if (0 == i)
             {
@@ -501,7 +500,7 @@ void Argument::addSubParser(Argument& parser)
 
 bool Argument::isValidPrefixChar(const char c) const
 {
-    return (prefixChars.find(c) != std::string::npos);
+    return prefixChars.find(c) != std::string::npos;
 }
 
 char Argument::getAnyValidPrefixChar() const
@@ -520,7 +519,7 @@ std::vector<std::string> Argument::preprocessArguments(const std::vector<std::st
             {
                 const auto legalPrefix = [this](const char c)
                 {
-                    return (prefixChars.find(c) != std::string::npos);
+                    return prefixChars.find(c) != std::string::npos;
                 };
 
                 const auto windowsStyle = legalPrefix('/');
@@ -530,7 +529,7 @@ std::vector<std::string> Argument::preprocessArguments(const std::vector<std::st
                 }
                 else if (!windowsStyle && (str.size() > 1))
                 {
-                    return (legalPrefix(str.at(0)) && legalPrefix(str.at(1)));
+                    return legalPrefix(str.at(0)) && legalPrefix(str.at(1));
                 }
             }
             return false;

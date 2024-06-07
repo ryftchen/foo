@@ -118,32 +118,34 @@ private:
     //! @brief Check for excessive arguments.
     void checkForExcessiveArguments();
 
-    //! @brief Alias for the sub-cli.
-    using SubCLI = std::string;
-    //! @brief Alias for the task category.
-    using TaskCategory = std::string;
+    //! @brief Alias for the sub-cli name.
+    using SubCLIName = std::string;
+    //! @brief Alias for the category name.
+    using CategoryName = std::string;
+    //! @brief Alias for the category alias.
+    using CategoryAlias = std::string;
     //! @brief Alias for the target task.
     using TargetTask = std::string;
-    //! @brief Alias for the container of TargetTask.
-    using TargetTaskCntr = std::vector<TargetTask>;
+    //! @brief Alias for the aggregation of TargetTask.
+    using AggregationTasks = std::vector<TargetTask>;
     //! @brief Alias for the functor to run the tasks.
-    typedef void (*RunTasksFunctor)(const TargetTaskCntr&);
+    typedef void (*RunTasksFunctor)(const AggregationTasks&);
     //! @brief Alias for the functor to update the task.
     typedef void (*UpdateTaskFunctor)(const TargetTask&);
     //! @brief Alias for the tuple of RunTasksFunctor and UpdateTaskFunctor.
     using TaskFunctorTuple = std::tuple<RunTasksFunctor, UpdateTaskFunctor>;
-    //! @brief Alias for the attribute of TaskCategory.
-    struct TaskCategoryAttr
+    //! @brief Alias for the extend attribute of the target category.
+    struct CategoryExtAttr
     {
-        //! @brief The container for the candidate task.
-        TargetTaskCntr candidates;
+        //! @brief The aggregation for the candidate task.
+        AggregationTasks candidates;
         //! @brief The tuple containing the callback to be got.
         TaskFunctorTuple callbacks;
     };
-    //! @brief Alias for the map of TaskCategory and TaskCategoryTuple.
-    using SubCLIMap = std::map<TaskCategory, TaskCategoryAttr>;
-    //! @brief Alias for the map of SubCLI and SubCLIMap.
-    using RegularTaskMap = std::map<SubCLI, SubCLIMap>;
+    //! @brief Alias for the map of CategoryName and CategoryExtAttr.
+    using SubCLIMap = std::map<CategoryName, CategoryExtAttr>;
+    //! @brief Alias for the map of SubCLIName and SubCLIMap.
+    using RegularTaskMap = std::map<SubCLIName, SubCLIMap>;
 
     //! @brief Get a member of TaskFunctorTuple.
     //! @tparam T - type of member to be got
@@ -155,11 +157,11 @@ private:
     //! @tparam T - type of regular task corresponding to sub-cli
     //! @param name - mapping for aliases
     template <typename T>
-    std::map<TaskCategory, std::string> filterAliasUnderSubCLI(const SubCLI& name) const;
+    std::map<CategoryName, CategoryAlias> filterAliasUnderSubCLI(const SubCLIName& name) const;
 
     // clang-format off
     //! @brief Mapping table of all basic tasks.
-    const std::map<TaskCategory, void (Command::*)() const> basicTaskDispatcher{
+    const std::map<CategoryName, void (Command::*)() const> basicTaskDispatcher{
         // - Category -+------------ Run Task ------------
         // ------------+----------------------------------
         { "console"    , &Command::executeConsoleCommand },
@@ -231,9 +233,8 @@ private:
         //! @return any regular tasks do not exist or exist
         [[nodiscard]] inline bool empty() const
         {
-            return (
-                app_algo::getTask().empty() && app_ds::getTask().empty() && app_dp::getTask().empty()
-                && app_num::getTask().empty() && !helpOnly);
+            return app_algo::getTask().empty() && app_ds::getTask().empty() && app_dp::getTask().empty()
+                && app_num::getTask().empty() && !helpOnly;
         }
         //! @brief Reset bit flags that manage regular tasks.
         inline void reset()
@@ -286,7 +287,7 @@ private:
 
         //! @brief Check whether any tasks do not exist.
         //! @return any tasks do not exist or exist
-        [[nodiscard]] inline bool empty() const { return (basicTask.empty() && regularTask.empty()); }
+        [[nodiscard]] inline bool empty() const { return basicTask.empty() && regularTask.empty(); }
         //! @brief Reset bit flags that manage all tasks.
         inline void reset()
         {

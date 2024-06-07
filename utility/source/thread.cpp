@@ -33,7 +33,7 @@ Thread::Thread(const std::size_t size)
                             lock,
                             [this]()
                             {
-                                return (readyRelease.load() || !taskQueue.empty());
+                                return readyRelease.load() || !taskQueue.empty();
                             });
 
                         if (readyRelease.load() && taskQueue.empty())

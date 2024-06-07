@@ -145,7 +145,7 @@ void Command::initializeCLI()
     auto algoCategory = std::string{TypeInfo<app_algo::MatchMethod>::name};
     subCLIAppAlgo.addArgument("-" + algoAlias.at(algoCategory), "--" + algoCategory)
         .argsNum(0, algoTable.at(algoCategory).candidates.size())
-        .defaultVal<std::vector<std::string>>(TargetTaskCntr{algoTable.at(algoCategory).candidates})
+        .defaultVal<std::vector<std::string>>(AggregationTasks{algoTable.at(algoCategory).candidates})
         .remaining()
         .metavar("OPT")
         .help("run match tasks\n"
@@ -158,7 +158,7 @@ void Command::initializeCLI()
     algoCategory = std::string{TypeInfo<app_algo::NotationMethod>::name};
     subCLIAppAlgo.addArgument("-" + algoAlias.at(algoCategory), "--" + algoCategory)
         .argsNum(0, algoTable.at(algoCategory).candidates.size())
-        .defaultVal<std::vector<std::string>>(TargetTaskCntr{algoTable.at(algoCategory).candidates})
+        .defaultVal<std::vector<std::string>>(AggregationTasks{algoTable.at(algoCategory).candidates})
         .remaining()
         .metavar("OPT")
         .help("run notation tasks\n"
@@ -168,7 +168,7 @@ void Command::initializeCLI()
     algoCategory = std::string{TypeInfo<app_algo::OptimalMethod>::name};
     subCLIAppAlgo.addArgument("-" + algoAlias.at(algoCategory), "--" + algoCategory)
         .argsNum(0, algoTable.at(algoCategory).candidates.size())
-        .defaultVal<std::vector<std::string>>(TargetTaskCntr{algoTable.at(algoCategory).candidates})
+        .defaultVal<std::vector<std::string>>(AggregationTasks{algoTable.at(algoCategory).candidates})
         .remaining()
         .metavar("OPT")
         .help("run optimal tasks\n"
@@ -180,7 +180,7 @@ void Command::initializeCLI()
     algoCategory = std::string{TypeInfo<app_algo::SearchMethod>::name};
     subCLIAppAlgo.addArgument("-" + algoAlias.at(algoCategory), "--" + algoCategory)
         .argsNum(0, algoTable.at(algoCategory).candidates.size())
-        .defaultVal<std::vector<std::string>>(TargetTaskCntr{algoTable.at(algoCategory).candidates})
+        .defaultVal<std::vector<std::string>>(AggregationTasks{algoTable.at(algoCategory).candidates})
         .remaining()
         .metavar("OPT")
         .help("run search tasks\n"
@@ -191,7 +191,7 @@ void Command::initializeCLI()
     algoCategory = std::string{TypeInfo<app_algo::SortMethod>::name};
     subCLIAppAlgo.addArgument("-" + algoAlias.at(algoCategory), "--" + algoCategory)
         .argsNum(0, algoTable.at(algoCategory).candidates.size())
-        .defaultVal<std::vector<std::string>>(TargetTaskCntr{algoTable.at(algoCategory).candidates})
+        .defaultVal<std::vector<std::string>>(AggregationTasks{algoTable.at(algoCategory).candidates})
         .remaining()
         .metavar("OPT")
         .help("run sort tasks\n"
@@ -215,7 +215,7 @@ void Command::initializeCLI()
     auto dpCategory = std::string{TypeInfo<app_dp::BehavioralInstance>::name};
     subCLIAppDp.addArgument("-" + dpAlias.at(dpCategory), "--" + dpCategory)
         .argsNum(0, dpTable.at(dpCategory).candidates.size())
-        .defaultVal<std::vector<std::string>>(TargetTaskCntr{dpTable.at(dpCategory).candidates})
+        .defaultVal<std::vector<std::string>>(AggregationTasks{dpTable.at(dpCategory).candidates})
         .remaining()
         .metavar("OPT")
         .help("run behavioral tasks\n"
@@ -234,7 +234,7 @@ void Command::initializeCLI()
     dpCategory = std::string{TypeInfo<app_dp::CreationalInstance>::name};
     subCLIAppDp.addArgument("-" + dpAlias.at(dpCategory), "--" + dpCategory)
         .argsNum(0, dpTable.at(dpCategory).candidates.size())
-        .defaultVal<std::vector<std::string>>(TargetTaskCntr{dpTable.at(dpCategory).candidates})
+        .defaultVal<std::vector<std::string>>(AggregationTasks{dpTable.at(dpCategory).candidates})
         .remaining()
         .metavar("OPT")
         .help("run creational tasks\n"
@@ -247,7 +247,7 @@ void Command::initializeCLI()
     dpCategory = std::string{TypeInfo<app_dp::StructuralInstance>::name};
     subCLIAppDp.addArgument("-" + dpAlias.at(dpCategory), "--" + dpCategory)
         .argsNum(0, dpTable.at(dpCategory).candidates.size())
-        .defaultVal<std::vector<std::string>>(TargetTaskCntr{dpTable.at(dpCategory).candidates})
+        .defaultVal<std::vector<std::string>>(AggregationTasks{dpTable.at(dpCategory).candidates})
         .remaining()
         .metavar("OPT")
         .help("run structural tasks\n"
@@ -268,7 +268,7 @@ void Command::initializeCLI()
     auto dsCategory = std::string{TypeInfo<app_ds::LinearInstance>::name};
     subCLIAppDs.addArgument("-" + dsAlias.at(dsCategory), "--" + dsCategory)
         .argsNum(0, dsTable.at(dsCategory).candidates.size())
-        .defaultVal<std::vector<std::string>>(TargetTaskCntr{dsTable.at(dsCategory).candidates})
+        .defaultVal<std::vector<std::string>>(AggregationTasks{dsTable.at(dsCategory).candidates})
         .remaining()
         .metavar("OPT")
         .help("run linear tasks\n"
@@ -279,7 +279,7 @@ void Command::initializeCLI()
     dsCategory = std::string{TypeInfo<app_ds::TreeInstance>::name};
     subCLIAppDs.addArgument("-" + dsAlias.at(dsCategory), "--" + dsCategory)
         .argsNum(0, dsTable.at(dsCategory).candidates.size())
-        .defaultVal<std::vector<std::string>>(TargetTaskCntr{dsTable.at(dsCategory).candidates})
+        .defaultVal<std::vector<std::string>>(AggregationTasks{dsTable.at(dsCategory).candidates})
         .remaining()
         .metavar("OPT")
         .help("run tree tasks\n"
@@ -296,7 +296,7 @@ void Command::initializeCLI()
     auto numCategory = std::string{TypeInfo<app_num::ArithmeticMethod>::name};
     subCLIAppNum.addArgument("-" + numAlias.at(numCategory), "--" + numCategory)
         .argsNum(0, numTable.at(numCategory).candidates.size())
-        .defaultVal<std::vector<std::string>>(TargetTaskCntr{numTable.at(numCategory).candidates})
+        .defaultVal<std::vector<std::string>>(AggregationTasks{numTable.at(numCategory).candidates})
         .remaining()
         .metavar("OPT")
         .help("run arithmetic tasks\n"
@@ -308,7 +308,7 @@ void Command::initializeCLI()
     numCategory = std::string{TypeInfo<app_num::DivisorMethod>::name};
     subCLIAppNum.addArgument("-" + numAlias.at(numCategory), "--" + numCategory)
         .argsNum(0, numTable.at(numCategory).candidates.size())
-        .defaultVal<std::vector<std::string>>(TargetTaskCntr{numTable.at(numCategory).candidates})
+        .defaultVal<std::vector<std::string>>(AggregationTasks{numTable.at(numCategory).candidates})
         .remaining()
         .metavar("OPT")
         .help("run divisor tasks\n"
@@ -318,7 +318,7 @@ void Command::initializeCLI()
     numCategory = std::string{TypeInfo<app_num::IntegralMethod>::name};
     subCLIAppNum.addArgument("-" + numAlias.at(numCategory), "--" + numCategory)
         .argsNum(0, numTable.at(numCategory).candidates.size())
-        .defaultVal<std::vector<std::string>>(TargetTaskCntr{numTable.at(numCategory).candidates})
+        .defaultVal<std::vector<std::string>>(AggregationTasks{numTable.at(numCategory).candidates})
         .remaining()
         .metavar("OPT")
         .help("run integral tasks\n"
@@ -331,7 +331,7 @@ void Command::initializeCLI()
     numCategory = std::string{TypeInfo<app_num::PrimeMethod>::name};
     subCLIAppNum.addArgument("-" + numAlias.at(numCategory), "--" + numCategory)
         .argsNum(0, numTable.at(numCategory).candidates.size())
-        .defaultVal<std::vector<std::string>>(TargetTaskCntr{numTable.at(numCategory).candidates})
+        .defaultVal<std::vector<std::string>>(AggregationTasks{numTable.at(numCategory).candidates})
         .remaining()
         .metavar("OPT")
         .help("run prime tasks\n"
@@ -451,13 +451,12 @@ void Command::validateRegularTask()
             return false;
         };
 
-        for ([[maybe_unused]] const auto& [taskCategory, taskCategoryAttr] :
-             subCLIMap | std::views::filter(isCategoryUsed))
+        for ([[maybe_unused]] const auto& [categoryName, categoryAttr] : subCLIMap | std::views::filter(isCategoryUsed))
         {
-            const auto& targetCntr = subCLI.get<std::vector<std::string>>(taskCategory);
-            for (const auto& target : targetCntr)
+            const auto& pendingTasks = subCLI.get<std::vector<std::string>>(categoryName);
+            for (const auto& target : pendingTasks)
             {
-                const auto& updateTask = get<UpdateTaskFunctor>(taskCategoryAttr.callbacks);
+                const auto& updateTask = get<UpdateTaskFunctor>(categoryAttr.callbacks);
                 updateTask(target);
             }
         }
@@ -499,26 +498,27 @@ void Command::dispatchTask()
             return;
         }
 
-        for (const auto& taskCategoryAttr : std::views::values(
+        for (const auto& categoryAttr : std::views::values(
                  std::next(regularTaskDispatcher.cbegin(), dispatchedTask.regularTask.getExistingSubTask())->second))
         {
-            const auto& runTasks = get<RunTasksFunctor>(taskCategoryAttr.callbacks);
-            runTasks(taskCategoryAttr.candidates);
+            const auto& runTasks = get<RunTasksFunctor>(categoryAttr.callbacks);
+            runTasks(categoryAttr.candidates);
         }
     }
 }
 
 template <typename T>
-std::map<Command::TaskCategory, std::string> Command::filterAliasUnderSubCLI(const SubCLI& name) const
+std::map<Command::CategoryName, Command::CategoryAlias> Command::filterAliasUnderSubCLI(const SubCLIName& name) const
 {
     using TypeInfo = utility::reflection::TypeInfo<T>;
+
     const auto& table = regularTaskDispatcher.at(name);
     if ((name != TypeInfo::name) || (table.size() != TypeInfo::fields.size))
     {
         throw std::logic_error("The " + name + " sub-command is invalid.");
     }
 
-    std::map<TaskCategory, std::string> aliases;
+    std::map<CategoryName, CategoryAlias> aliases;
     TypeInfo::fields.forEach(
         [name, table, &aliases](auto field)
         {
@@ -593,9 +593,9 @@ void Command::executeConsoleCommand() const
         return;
     }
 
-    const auto& cmdCntr =
+    const auto& pendingInputs =
         mainCLI.get<std::vector<std::string>>(std::next(basicTaskDispatcher.cbegin(), Category::console)->first);
-    if (cmdCntr.empty())
+    if (pendingInputs.empty())
     {
         return;
     }
@@ -605,7 +605,7 @@ void Command::executeConsoleCommand() const
     utility::console::Console console(" > ");
     registerOnConsole(console, udpClient);
 
-    for (const auto& cmd : cmdCntr)
+    for (const auto& cmd : pendingInputs)
     {
         console.commandExecutor(cmd);
     }
@@ -634,14 +634,15 @@ void Command::showVersionIcon() const
 {
     validateDependenciesVersion();
 
-    constexpr std::string_view processor =
+    constexpr std::string_view buildDate = "" __DATE__ " " __TIME__ "",
+                               processor =
 #ifdef __TARGET_PROCESSOR
-                                   __TARGET_PROCESSOR,
+                                   __TARGET_PROCESSOR
 #else
-                                   "other processor",
+                                   "other processor"
 #endif // __TARGET_PROCESSOR
-                               buildDate = "" __DATE__ " " __TIME__ "";
-    constexpr auto getCXXCompiler = []()
+        ;
+    const auto cxxCompiler = []()
     {
         std::ostringstream os;
         os <<
@@ -653,8 +654,8 @@ void Command::showVersionIcon() const
             "other compiler";
 #endif // __clang__
         return std::move(os).str();
-    };
-    const std::string additionalInfo = "echo '" + std::string{copyright} + "' ; echo 'Built with " + getCXXCompiler()
+    }();
+    const std::string additionalInfo = "echo '" + std::string{copyright} + "' ; echo 'Built with " + cxxCompiler
         + " for " + std::string{processor} + " on " + std::string{buildDate} + ".'";
 
     std::string fullIcon = "tput rev ; echo " + getIconBanner();
@@ -692,6 +693,7 @@ try
     LOG_DBG << "Enter console mode.";
 #endif // NDEBUG
     using utility::console::Console;
+    using enum Console::RetCode;
 
     std::cout << utility::common::executeCommand("tput bel ; echo " + getIconBanner() + " ; sleep 0.1s") << std::flush;
     auto tcpClient = std::make_shared<utility::socket::TCPSocket>();
@@ -711,7 +713,7 @@ try
     Console console(greeting);
     registerOnConsole(console, tcpClient);
 
-    int retVal = Console::RetCode::success;
+    int retVal = success;
     do
     {
         try
@@ -725,7 +727,7 @@ try
             utility::time::millisecondLevelSleep(latency);
         }
     }
-    while (Console::RetCode::quit != retVal);
+    while (quit != retVal);
 
     tcpClient->toSend(utility::common::base64Encode("stop"));
     tcpClient->waitIfAlive();
@@ -793,10 +795,10 @@ void Command::registerOnConsole(utility::console::Console& console, std::shared_
         },
         "reconnect to the servers");
 
-    for (const auto& [option, optionAttr] : VIEW_OPTIONS)
+    for (const auto& [optionName, optionAttr] : VIEW_OPTIONS)
     {
         console.registerCommand(
-            option,
+            optionName,
             [&client](const Console::Args& input)
             {
                 auto retVal = success;

@@ -168,12 +168,12 @@ public:
     void requestToReset();
 
     //! @brief Alias for the option name.
-    using Option = std::string;
+    using OptionName = std::string;
     //! @brief Alias for the help prompt of the option.
     using HelpPrompt = std::string;
     //! @brief Alias for the functor to build the TLV packet.
     typedef int (*BuildFunctor)(const std::vector<std::string>&, char*);
-    //! @brief Alias for the attribute of Option.
+    //! @brief Alias for the attribute of the target option.
     struct OptionAttr
     {
         //! @brief Help prompt.
@@ -181,8 +181,8 @@ public:
         //! @brief Build functor.
         BuildFunctor functor;
     };
-    //! @brief Alias for the map of Option and OptionTuple.
-    using OptionMap = std::map<Option, OptionAttr>;
+    //! @brief Alias for the map of OptionName and OptionAttr.
+    using OptionMap = std::map<OptionName, OptionAttr>;
     //! @brief Get the viewer options.
     //! @return viewer options
     const OptionMap& viewerOptions() const;
@@ -315,7 +315,7 @@ private:
     //! @brief Flag for rollback request.
     std::atomic<bool> toReset{false};
     //! @brief Maximum length of the message.
-    static constexpr std::uint32_t maxMsgLength{1024};
+    static constexpr std::uint32_t maxMsgLen{1024};
     //! @brief Mutex for controlling output.
     mutable std::mutex outputMtx{};
     //! @brief The synchronization condition for output. Use with outputMtx.

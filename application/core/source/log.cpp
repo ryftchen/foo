@@ -41,7 +41,7 @@ retry:
                 lock,
                 [this]()
                 {
-                    return (!ongoing.load() || !logQueue.empty() || toReset.load());
+                    return !ongoing.load() || !logQueue.empty() || toReset.load();
                 });
 
             if (toReset.load())

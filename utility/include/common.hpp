@@ -51,7 +51,7 @@ constexpr std::size_t bkdrHashSize = 0x7FFFFFFF;
 //! @return hash value
 constexpr std::size_t bkdrHashInCompile(const char* const str, const std::size_t hash = 0) noexcept
 {
-    return (*str ? bkdrHashInCompile(str + 1, (hash * bkdrHashSeed + *str) & bkdrHashSize) : hash);
+    return *str ? bkdrHashInCompile(str + 1, (hash * bkdrHashSeed + *str) & bkdrHashSize) : hash;
 }
 
 //! @brief The operator ("") overloading with BKDR hash function.
@@ -75,9 +75,9 @@ struct Join
         std::array<char, length + 1> array{};
         auto append = [i = 0, &array](const auto& str) mutable
         {
-            for (const auto ch : str)
+            for (const auto c : str)
             {
-                array.at(i++) = ch;
+                array.at(i++) = c;
             }
         };
         (append(Strings), ...);
@@ -100,7 +100,7 @@ static constexpr auto joinString = Join<Strings...>::value;
 //! @return be equal or not equal
 inline bool allStrEqual(const char* const str1, const char* const str2)
 {
-    return (std::strcmp(str1, str2) == 0);
+    return std::strcmp(str1, str2) == 0;
 }
 
 //! @brief Compare whether multiple strings are equal.
@@ -112,7 +112,7 @@ inline bool allStrEqual(const char* const str1, const char* const str2)
 template <typename... Others>
 inline bool allStrEqual(const char* const str1, const char* const str2, Others const&... others)
 {
-    return (allStrEqual(str1, str2) && allStrEqual(str2, others...));
+    return allStrEqual(str1, str2) && allStrEqual(str2, others...);
 }
 
 //! @brief Check that the target value is part of the enumeration.

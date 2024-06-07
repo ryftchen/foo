@@ -150,7 +150,7 @@ NonTerminalExpression::~NonTerminalExpression()
 
 bool NonTerminalExpression::interpret(const std::shared_ptr<Context> context)
 {
-    return (leftOp->interpret(context) && rightOp->interpret(context));
+    return leftOp->interpret(context) && rightOp->interpret(context);
 }
 
 //! @brief Output stream for the interpreter pattern. Need to be cleared manually.
@@ -203,7 +203,7 @@ void ConcreteIterator::next()
 
 bool ConcreteIterator::isDone() const
 {
-    return (index >= list->size());
+    return index >= list->size();
 }
 
 int ConcreteIterator::currentItem() const

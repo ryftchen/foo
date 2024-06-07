@@ -28,7 +28,7 @@ void ReadWriteLock::readLock()
             lock,
             [this]()
             {
-                return (writer.load() == 0);
+                return writer.load() == 0;
             });
         reader.fetch_add(1);
     }
@@ -52,7 +52,7 @@ void ReadWriteLock::writeLock()
             lock,
             [this]()
             {
-                return ((reader.load() == 0) && (writer.load() == 0));
+                return (reader.load() == 0) && (writer.load() == 0);
             });
         writer.fetch_add(1);
     }

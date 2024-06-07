@@ -239,7 +239,7 @@ template <typename T, std::size_t BlockSize>
 inline std::size_t Memory<T, BlockSize>::padPointer(const char* const data, const std::size_t align) const noexcept
 {
     const std::uintptr_t result = reinterpret_cast<std::uintptr_t>(data);
-    return ((align - result) % align);
+    return (align - result) % align;
 }
 
 template <typename T, std::size_t BlockSize>

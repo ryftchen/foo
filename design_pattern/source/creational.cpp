@@ -86,7 +86,7 @@ void Product::makeC(const std::string& part)
 
 std::string Product::get()
 {
-    return (partA + ' ' + partB + ' ' + partC);
+    return partA + ' ' + partB + ' ' + partC;
 }
 
 Product Builder::get()

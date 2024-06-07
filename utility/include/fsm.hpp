@@ -342,10 +342,9 @@ private:
         //! @return state after execute
         static State execute(Derived& self, const Event& event, State state)
         {
-            return (
-                ((T::sourceValue() == state) && T::checkGuard(self, event))
-                    ? (T::processEvent(self, event), T::targetValue())
-                    : handleEvent<Event, List<Types...>>::execute(self, event, state));
+            return ((T::sourceValue() == state) && T::checkGuard(self, event))
+                ? (T::processEvent(self, event), T::targetValue())
+                : handleEvent<Event, List<Types...>>::execute(self, event, state);
         }
     };
 
