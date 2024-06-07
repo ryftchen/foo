@@ -381,10 +381,10 @@ private:
         [[nodiscard]] bool isContain(const std::size_t value) const { return (value >= min) && (value <= max); }
         //! @brief Check if the number of arguments is exact.
         //! @return be exact or not exact
-        [[nodiscard]] bool isExact() const { return (min == max); }
+        [[nodiscard]] bool isExact() const { return min == max; }
         //! @brief Check that the range's maximum is not greater than the type's maximum.
         //! @return be not greater or greater
-        [[nodiscard]] bool isRightBounded() const { return (max < std::numeric_limits<std::size_t>::max()); }
+        [[nodiscard]] bool isRightBounded() const { return max < std::numeric_limits<std::size_t>::max(); }
         //! @brief Get the minimum of the range.
         //! @return minimum of range
         [[nodiscard]] std::size_t getMin() const { return min; }
@@ -610,7 +610,7 @@ bool Register::operator==(const T& rhs) const
 {
     if constexpr (!isContainer<T>)
     {
-        return (rhs == get<T>());
+        return rhs == get<T>();
     }
     else
     {
@@ -623,7 +623,7 @@ bool Register::operator==(const T& rhs) const
             std::end(rhs),
             [](const auto& lhs, const auto& rhs)
             {
-                return (rhs == std::any_cast<const ValueType&>(lhs));
+                return rhs == std::any_cast<const ValueType&>(lhs);
             });
     }
 }

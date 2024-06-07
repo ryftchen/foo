@@ -197,7 +197,7 @@ retry:
                 lock,
                 [this]()
                 {
-                    return (!ongoing.load() || toReset.load());
+                    return !ongoing.load() || toReset.load();
                 });
 
             if (toReset.load())
@@ -634,9 +634,9 @@ std::string View::getLogContents()
 std::string View::getStatusInformation()
 {
     const int pid = ::getpid();
-    constexpr std::uint16_t cmdLen = 512;
-    char cmd[cmdLen] = {'\0'};
-    std::snprintf(cmd, cmdLen, "ps -T -p %d | awk 'NR>1 {split($0, a, \" \"); print a[2]}'", pid);
+    constexpr std::uint16_t totalLen = 512;
+    char cmd[totalLen] = {'\0'};
+    std::snprintf(cmd, totalLen, "ps -T -p %d | awk 'NR>1 {split($0, a, \" \"); print a[2]}'", pid);
     const std::string queryResult = utility::common::executeCommand(cmd);
 
     std::vector<std::string> cmdCntr;
@@ -646,10 +646,10 @@ std::string View::getStatusInformation()
     while ((pos = queryResult.find('\n', prev)) != std::string::npos)
     {
         const int tid = std::stoi(queryResult.substr(prev, pos - prev));
-        char cmd[cmdLen] = {'\0'};
+        char cmd[totalLen] = {'\0'};
         const int usedLen = std::snprintf(
             cmd,
-            cmdLen,
+            totalLen,
             "if [ -f /proc/%d/task/%d/status ] ; then head -n 10 /proc/%d/task/%d/status ",
             pid,
             tid,
@@ -661,7 +661,7 @@ std::string View::getStatusInformation()
             {
                 std::snprintf(
                     cmd + usedLen,
-                    cmdLen - usedLen,
+                    totalLen - usedLen,
                     "&& echo 'Strace:' "
                     "&& (timeout --preserve-status --signal=2 0.1 strace -qq -ttT -vyy -s 96 -p %d 2>&1 || exit 0) "
                     "; fi",
@@ -669,17 +669,17 @@ std::string View::getStatusInformation()
             }
             else
             {
-                std::strncpy(cmd + usedLen, "&& echo 'Strace:' && echo 'N/A' ; fi", cmdLen - usedLen);
+                std::strncpy(cmd + usedLen, "&& echo 'Strace:' && echo 'N/A' ; fi", totalLen - usedLen);
             }
         }
         else
         {
-            std::strncpy(cmd + usedLen, "; fi", cmdLen - usedLen);
+            std::strncpy(cmd + usedLen, "; fi", totalLen - usedLen);
         }
         cmdCntr.emplace_back(cmd);
         prev = pos + 1;
     }
-    cmd[cmdLen - 1] = '\0';
+    cmd[totalLen - 1] = '\0';
 
     std::string statInfo;
     std::for_each(
@@ -712,7 +712,7 @@ void View::createViewServer()
                     return;
                 }
 
-                char buffer[maxMsgLength] = {'\0'};
+                char buffer[maxMsgLen] = {'\0'};
                 const auto msg = utility::common::base64Decode(message);
                 if ("stop" == msg)
                 {
@@ -756,7 +756,7 @@ void View::createViewServer()
                 return;
             }
 
-            char buffer[maxMsgLength] = {'\0'};
+            char buffer[maxMsgLen] = {'\0'};
             const auto msg = utility::common::base64Decode(message);
             if ("stop" == msg)
             {

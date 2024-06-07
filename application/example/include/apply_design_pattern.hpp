@@ -135,7 +135,7 @@ public:
     //! @return any design pattern tasks do not exist or exist
     [[nodiscard]] inline bool empty() const
     {
-        return (behavioralBit.none() && creationalBit.none() && structuralBit.none());
+        return behavioralBit.none() && creationalBit.none() && structuralBit.none();
     }
     //! @brief Reset bit flags that manage design pattern tasks.
     inline void reset()

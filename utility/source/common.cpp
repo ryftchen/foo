@@ -30,7 +30,7 @@ std::size_t bkdrHash(const char* str)
     {
         hash = hash * bkdrHashSeed + (*str++);
     }
-    return (hash & bkdrHashSize);
+    return hash & bkdrHashSize;
 }
 
 //! @brief Base64 encoding.

@@ -135,7 +135,7 @@ public:
     //! @return any numeric tasks do not exist or exist
     [[nodiscard]] inline bool empty() const
     {
-        return (arithmeticBit.none() && divisorBit.none() && integralBit.none() && primeBit.none());
+        return arithmeticBit.none() && divisorBit.none() && integralBit.none() && primeBit.none();
     }
     //! @brief Reset bit flags that manage numeric tasks.
     inline void reset()
@@ -366,7 +366,7 @@ public:
     //! @brief The operator (()) overloading of Expression1 class.
     //! @param x - independent variable
     //! @return dependent variable
-    double operator()(const double x) const override { return ((x * std::sin(x)) / (1.0 + std::cos(x) * std::cos(x))); }
+    double operator()(const double x) const override { return (x * std::sin(x)) / (1.0 + std::cos(x) * std::cos(x)); }
 
     //! @brief Left endpoint.
     static constexpr double range1{-std::numbers::pi / 2.0};
@@ -383,10 +383,7 @@ public:
     //! @brief The operator (()) overloading of Expression2 class.
     //! @param x - independent variable
     //! @return dependent variable
-    double operator()(const double x) const override
-    {
-        return (x + 10.0 * std::sin(5.0 * x) + 7.0 * std::cos(4.0 * x));
-    }
+    double operator()(const double x) const override { return x + 10.0 * std::sin(5.0 * x) + 7.0 * std::cos(4.0 * x); }
 
     //! @brief Left endpoint.
     static constexpr double range1{0.0};
@@ -474,7 +471,7 @@ struct ExprRange
     //! @return be equal or not equal
     bool operator==(const ExprRange& rhs) const
     {
-        return (std::tie(rhs.range1, rhs.range2, rhs.exprDescr) == std::tie(range1, range2, exprDescr));
+        return std::tie(rhs.range1, rhs.range2, rhs.exprDescr) == std::tie(range1, range2, exprDescr);
     }
 };
 //! @brief Mapping hash value for the expression.
@@ -490,7 +487,7 @@ struct ExprMapHash
     {
         const std::size_t hash1 = std::hash<T1>()(range.range1), hash2 = std::hash<T2>()(range.range2),
                           hash3 = std::hash<std::string_view>()(range.exprDescr);
-        return (hash1 ^ hash2 ^ hash3);
+        return hash1 ^ hash2 ^ hash3;
     }
 };
 } // namespace integral

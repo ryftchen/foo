@@ -76,7 +76,7 @@ std::int32_t Arithmetic::division(const std::int32_t dividend, const std::int32_
 std::int32_t Arithmetic::bitAdd(const std::int32_t a, const std::int32_t b)
 {
     const std::int32_t sum = a ^ b, carry = (a & b) << 1;
-    return ((sum & carry) ? bitAdd(sum, carry) : (sum ^ carry));
+    return (sum & carry) ? bitAdd(sum, carry) : (sum ^ carry);
 }
 
 std::int32_t Arithmetic::bitSub(const std::int32_t a, const std::int32_t b)
@@ -87,6 +87,6 @@ std::int32_t Arithmetic::bitSub(const std::int32_t a, const std::int32_t b)
 std::int32_t Arithmetic::bitAbs(const std::int32_t a)
 {
     const std::int32_t mask = a >> (sizeof(std::int32_t) * 8 - 1);
-    return ((a ^ mask) - mask);
+    return (a ^ mask) - mask;
 }
 } // namespace numeric::arithmetic

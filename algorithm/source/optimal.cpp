@@ -66,7 +66,7 @@ std::optional<std::tuple<double, double>> Gradient::operator()(const double left
 double Gradient::calculateFirstDerivative(const double x, const double eps) const
 {
     const double differential = eps / 2.0;
-    return ((func(x + differential) - func(x - differential)) / eps);
+    return (func(x + differential) - func(x - differential)) / eps;
 }
 
 std::optional<std::tuple<double, double>> Annealing::operator()(const double left, const double right, const double eps)
@@ -241,7 +241,7 @@ double Genetic::geneticDecode(const Chromosome& chr) const
             convert += bit * std::pow(2, index);
             ++index;
         });
-    return (decodeAttr.lower + (decodeAttr.upper - decodeAttr.lower) * convert / max);
+    return decodeAttr.lower + (decodeAttr.upper - decodeAttr.lower) * convert / max;
 }
 
 Genetic::Population Genetic::populationInit()
@@ -424,7 +424,7 @@ void Genetic::select(Population& pop)
         std::back_inserter(fitnessAvg),
         [&sum](const auto fitVal)
         {
-            return (fitVal / sum);
+            return fitVal / sum;
         });
 
     double previous = 0.0;

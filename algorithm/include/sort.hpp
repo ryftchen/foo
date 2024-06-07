@@ -377,8 +377,7 @@ std::vector<T> Sort<T>::bucket(const T* const array, const std::uint32_t length)
         container[bucketIdx].emplace_back(sorting[i]);
     }
 
-    std::uint32_t index = 0;
-    for (auto& bucketUpd : container)
+    for (std::uint32_t index = 0; auto& bucketUpd : container)
     {
         std::sort(bucketUpd.begin(), bucketUpd.end());
         for (const auto bucketElem : bucketUpd)
@@ -471,8 +470,7 @@ void Sort<T>::leastSignificantDigit(
         }
     }
 
-    std::uint32_t index = 0;
-    for (auto& bucketInfo : container)
+    for (std::uint32_t index = 0; auto& bucketInfo : container)
     {
         while (!bucketInfo.empty())
         {

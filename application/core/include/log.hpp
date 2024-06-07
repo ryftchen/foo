@@ -367,7 +367,7 @@ void Log::flush(
                 std::end(validFormat),
                 [l = std::locale{}](const auto c)
                 {
-                    return ((' ' != c) && std::isspace(c, l));
+                    return (' ' != c) && std::isspace(c, l);
                 }),
             std::end(validFormat));
         std::string output = std::string{prefix} + ":[" + utility::time::getCurrentSystemTime() + "]:["

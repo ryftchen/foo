@@ -84,7 +84,7 @@ public:
 
     //! @brief Check whether any data structure tasks do not exist.
     //! @return any data structure tasks do not exist or exist
-    [[nodiscard]] inline bool empty() const { return (linearBit.none() && treeBit.none()); }
+    [[nodiscard]] inline bool empty() const { return linearBit.none() && treeBit.none(); }
     //! @brief Reset bit flags that manage data structure tasks.
     inline void reset()
     {

@@ -794,8 +794,7 @@ std::string JSON::dump(const std::uint32_t depth, const std::string& tab) const
                 pad += tab;
             }
             std::string s = "{\n";
-            bool skip = true;
-            for (const auto& p : *data.map)
+            for (bool skip = true; const auto& p : *data.map)
             {
                 if (!skip)
                 {
@@ -810,8 +809,7 @@ std::string JSON::dump(const std::uint32_t depth, const std::string& tab) const
         case Type::array:
         {
             std::string s = "[";
-            bool skip = true;
-            for (const auto& p : *data.list)
+            for (bool skip = true; const auto& p : *data.list)
             {
                 if (!skip)
                 {
@@ -846,8 +844,7 @@ std::string JSON::dumpMinified() const
         case Type::object:
         {
             std::string s = "{";
-            bool skip = true;
-            for (const auto& p : *data.map)
+            for (bool skip = true; const auto& p : *data.map)
             {
                 if (!skip)
                 {
@@ -862,8 +859,7 @@ std::string JSON::dumpMinified() const
         case Type::array:
         {
             std::string s = "[";
-            bool skip = true;
-            for (const auto& p : *data.list)
+            for (bool skip = true; const auto& p : *data.list)
             {
                 if (!skip)
                 {
