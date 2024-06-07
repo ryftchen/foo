@@ -8,7 +8,8 @@ declare -r BASH_RC=".bashrc"
 declare -A ARGS=([help]=false [initialize]=false [clean]=false [install]=false [uninstall]=false [container]=false
     [website]=false [test]=false [release]=false [hook]=false [spell]=false [format]=false [lint]=false
     [statistics]=false [doxygen]=false [browser]=false [dry]=false)
-declare -A DEV_OPT=([parallel]=0 [pch]=false [unity]=false [ccache]=false [distcc]=false [tmpfs]=false)
+declare -A DEV_OPT=([compiler]="clang" [parallel]=0 [pch]=false [unity]=false [ccache]=false [distcc]=false
+    [tmpfs]=false)
 declare STATUS=0
 declare SUDO=""
 declare CMAKE_CACHE_ENTRY=""
@@ -265,6 +266,7 @@ git reflog expire --expire=now --all && git repack -ad && git prune'"
     shell_command "cat <<EOF >./${FOLDER[scr]}/.env
 #!/bin/false
 
+FOO_BLD_COMPILER=clang
 FOO_BLD_PARALLEL=0
 FOO_BLD_PCH=off
 FOO_BLD_UNITY=off
@@ -272,7 +274,7 @@ FOO_BLD_CCACHE=on
 FOO_BLD_DISTCC=off
 FOO_BLD_TMPFS=off
 
-export FOO_BLD_PARALLEL FOO_BLD_PCH FOO_BLD_UNITY FOO_BLD_CCACHE FOO_BLD_DISTCC FOO_BLD_TMPFS
+export FOO_BLD_COMPILER FOO_BLD_PARALLEL FOO_BLD_PCH FOO_BLD_UNITY FOO_BLD_CCACHE FOO_BLD_DISTCC FOO_BLD_TMPFS
 return 0
 EOF"
     shell_command "echo 'core.%s.%e.%p' | ${SUDO}tee /proc/sys/kernel/core_pattern"
@@ -740,18 +742,12 @@ function set_compile_condition()
 {
     local tmpfs_subfolder=$1 tmpfs_size=$2
 
-    export CC=/usr/bin/clang-16 CXX=/usr/bin/clang++-16
-    if command -v gcc >/dev/null 2>&1 && command -v g++ >/dev/null 2>&1; then
-        local gcc_processor gxx_processor
-        gcc_processor=$(gcc -dumpmachine)
-        gxx_processor=$(g++ -dumpmachine)
-        export C_INCLUDE_PATH=/usr/include:/usr/lib/gcc/${gcc_processor}/12/include \
-            CPLUS_INCLUDE_PATH=/usr/include/c++/12:/usr/include/${gxx_processor}/c++/12
-    fi
-
     if [[ -f ./${FOLDER[scr]}/.env ]]; then
         # shellcheck source=/dev/null
         source "./${FOLDER[scr]}/.env"
+        if [[ -n ${FOO_BLD_COMPILER} ]] && [[ ${FOO_BLD_COMPILER} =~ ^(clang|gcc)$ ]]; then
+            DEV_OPT[compiler]=${FOO_BLD_COMPILER}
+        fi
         if [[ -n ${FOO_BLD_PARALLEL} ]] && [[ ${FOO_BLD_PARALLEL} =~ ^[0-9]+$ ]]; then
             DEV_OPT[parallel]=${FOO_BLD_PARALLEL}
         fi
@@ -772,10 +768,36 @@ function set_compile_condition()
         fi
     fi
 
+    CMAKE_CACHE_ENTRY=" -D CMAKE_BUILD_TYPE=${BUILD_TYPE}"
+    if [[ ${DEV_OPT[compiler]} = "clang" ]] || {
+        [[ -n ${FOO_CHK_COV} ]] && [[ ${FOO_CHK_COV} = "on" ]]
+    }; then
+        local version=16
+        if ! command -v "clang-${version}" >/dev/null 2>&1 || ! command -v "clang++-${version}" >/dev/null 2>&1; then
+            die "No clang-${version} or clang++-${version} program. Please install it."
+        fi
+        export CC=clang-${version} CXX=clang++-${version}
+        CMAKE_CACHE_ENTRY="${CMAKE_CACHE_ENTRY} -D CMAKE_C_COMPILER=clang-${version} \
+-D CMAKE_CXX_COMPILER=clang++-${version}"
+    elif [[ ${DEV_OPT[compiler]} = "gcc" ]]; then
+        local version=12
+        if ! command -v "gcc-${version}" >/dev/null 2>&1 || ! command -v "g++-${version}" >/dev/null 2>&1; then
+            die "No gcc-${version} or g++-${version} program. Please install it."
+        fi
+        export CC=gcc-${version} CXX=g++-${version}
+        CMAKE_CACHE_ENTRY="${CMAKE_CACHE_ENTRY} -D CMAKE_C_COMPILER=gcc-${version} -D CMAKE_CXX_COMPILER=g++-${version}"
+    fi
+    if command -v gcc >/dev/null 2>&1 && command -v g++ >/dev/null 2>&1; then
+        local gcc_processor gxx_processor
+        gcc_processor=$(gcc -dumpmachine)
+        gxx_processor=$(g++ -dumpmachine)
+        export C_INCLUDE_PATH=/usr/include:/usr/lib/gcc/${gcc_processor}/12/include \
+            CPLUS_INCLUDE_PATH=/usr/include/c++/12:/usr/include/${gxx_processor}/c++/12
+    fi
+
     if [[ ! ${DEV_OPT[parallel]} -eq 0 ]]; then
         CMAKE_BUILD_OPTION=" -j ${DEV_OPT[parallel]}"
     fi
-    CMAKE_CACHE_ENTRY=" -D CMAKE_BUILD_TYPE=${BUILD_TYPE}"
     if [[ ${DEV_OPT[pch]} = true ]]; then
         CMAKE_CACHE_ENTRY="${CMAKE_CACHE_ENTRY} -D TOOLCHAIN_PCH=ON"
         if [[ ${DEV_OPT[ccache]} = true ]]; then
@@ -820,9 +842,6 @@ function build_target()
 {
     if ! command -v cmake >/dev/null 2>&1 || ! command -v ninja >/dev/null 2>&1; then
         die "No cmake or ninja program. Please install it."
-    fi
-    if ! command -v clang-16 >/dev/null 2>&1 || ! command -v clang++-16 >/dev/null 2>&1; then
-        die "No clang-16 or clang++-16 program. Please install it."
     fi
     if [[ ${ARGS[release]} = true ]]; then
         BUILD_TYPE="Release"
