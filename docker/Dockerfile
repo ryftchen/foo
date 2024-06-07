@@ -9,9 +9,9 @@ RUN apt-get update \
 && echo 'deb [signed-by=/etc/apt/keyrings/llvm-snapshot.gpg] http://apt.llvm.org/focal/ llvm-toolchain-focal-16 main' | sudo tee /etc/apt/sources.list.d/llvm-snapshot.list \
 && echo 'deb-src [signed-by=/etc/apt/keyrings/llvm-snapshot.gpg] http://apt.llvm.org/focal/ llvm-toolchain-focal-16 main' | sudo tee -a /etc/apt/sources.list.d/llvm-snapshot.list \
 && sudo apt-get update \
-&& sudo apt-get install -y --no-install-recommends git python3 python3-pip build-essential cmake ninja-build gcc-12 g++-12 gdb \
-clang-16 lld-16 libstdc++-12-dev libgtest-dev libssl-dev libreadline-dev libmpfrc++-dev llvm-16-dev libclang-16-dev libclang-rt-16-dev \
-clang-format-16 clang-tidy-16 shfmt shellcheck black pylint rustc cargo rustfmt rust-clippy ccache distcc \
+&& sudo apt-get install -y --no-install-recommends git python3 python3-pip build-essential cmake ninja-build gcc-12 g++-12 binutils-common \
+clang-16 clang++-16 lld-16 libstdc++-12-dev libgtest-dev libssl-dev libreadline-dev libmpfrc++-dev llvm-16-dev libclang-16-dev libclang-rt-16-dev \
+clang-format-16 clang-tidy-16 shfmt shellcheck black pylint rustc cargo rustfmt rust-clippy gdb ccache distcc \
 valgrind cloc pre-commit graphviz docker docker-compose npm strace psmisc net-tools rsync zip bash-completion \
 && sudo apt-get clean \
 && sudo rm -rf /var/lib/apt/lists/* \
