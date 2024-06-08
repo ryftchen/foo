@@ -154,33 +154,33 @@ public:
         DLL dll = nullptr;
         createDll(&dll);
         dllInsert(dll, 0, &meta[0]);
-        output.flush() << "| insert (0): {" << meta[0].id << ", " << meta[0].name << "}\n";
+        output.flush() << "insert (0): {" << meta[0].id << ", " << meta[0].name << "}\n";
         dllInsert(dll, 0, &meta[1]);
-        output.flush() << "| insert (0): {" << meta[1].id << ", " << meta[1].name << "}\n";
+        output.flush() << "insert (0): {" << meta[1].id << ", " << meta[1].name << "}\n";
         dllInsert(dll, 1, &meta[2]);
-        output.flush() << "| insert (1): {" << meta[2].id << ", " << meta[2].name << "}\n";
+        output.flush() << "insert (1): {" << meta[2].id << ", " << meta[2].name << "}\n";
         dllDelete(dll, 2);
-        output.flush() << "| delete (2)\n";
+        output.flush() << "delete (2)\n";
 
         dllInsertFirst(dll, &meta[0]);
-        output.flush() << "| insert first: {" << meta[0].id << ", " << meta[0].name << "}\n";
+        output.flush() << "insert first: {" << meta[0].id << ", " << meta[0].name << "}\n";
         dllInsertLast(dll, &meta[metaSize - 1]);
-        output.flush() << "| insert last: {" << meta[metaSize - 1].id << ", " << meta[metaSize - 1].name << "}\n";
+        output.flush() << "insert last: {" << meta[metaSize - 1].id << ", " << meta[metaSize - 1].name << "}\n";
         val = static_cast<Meta*>(dllGetFirst(dll));
-        output.flush() << "| get first: {" << val->id << ", " << val->name << "}\n";
+        output.flush() << "get first: {" << val->id << ", " << val->name << "}\n";
         val = static_cast<Meta*>(dllGetLast(dll));
-        output.flush() << "| get last: {" << val->id << ", " << val->name << "}\n";
+        output.flush() << "get last: {" << val->id << ", " << val->name << "}\n";
         dllDeleteFirst(dll);
-        output.flush() << "| delete first\n";
+        output.flush() << "delete first\n";
         dllDeleteLast(dll);
-        output.flush() << "| delete last\n";
+        output.flush() << "delete last\n";
 
-        output.flush() << "| whether it is empty: " << dllIsEmpty(dll) << '\n';
-        output.flush() << "| size: " << dllSize(dll) << '\n';
+        output.flush() << "whether it is empty: " << dllIsEmpty(dll) << '\n';
+        output.flush() << "size: " << dllSize(dll) << '\n';
         for (int i = 0; i < dllSize(dll); ++i)
         {
             val = static_cast<Meta*>(dllGet(dll, i));
-            output.flush() << "| get (" << i << "): {" << val->id << ", " << val->name << "}\n";
+            output.flush() << "get (" << i << "): {" << val->id << ", " << val->name << "}\n";
         }
         destroyDll(&dll);
 
@@ -205,22 +205,22 @@ public:
         for (std::uint16_t i = 0; i < (metaSize - 1); ++i)
         {
             stackPush(stacks, &meta[i]);
-            output.flush() << "| push: {" << meta[i].id << ", " << meta[i].name << "}\n";
+            output.flush() << "push: {" << meta[i].id << ", " << meta[i].name << "}\n";
         }
 
         val = static_cast<Meta*>(stackPop(stacks));
-        output.flush() << "| pop: {" << val->id << ", " << val->name << "}\n";
+        output.flush() << "pop: {" << val->id << ", " << val->name << "}\n";
         val = static_cast<Meta*>(stackTop(stacks));
-        output.flush() << "| top: {" << val->id << ", " << val->name << "}\n";
+        output.flush() << "top: {" << val->id << ", " << val->name << "}\n";
         stackPush(stacks, &meta[metaSize - 1]);
-        output.flush() << "| push: {" << meta[metaSize - 1].id << ", " << meta[metaSize - 1].name << "}\n";
+        output.flush() << "push: {" << meta[metaSize - 1].id << ", " << meta[metaSize - 1].name << "}\n";
 
-        output.flush() << "| whether it is empty: " << stackIsEmpty(stacks) << '\n';
-        output.flush() << "| size: " << stackSize(stacks) << '\n';
+        output.flush() << "whether it is empty: " << stackIsEmpty(stacks) << '\n';
+        output.flush() << "size: " << stackSize(stacks) << '\n';
         while (!stackIsEmpty(stacks))
         {
             val = static_cast<Meta*>(stackPop(stacks));
-            output.flush() << "| pop: {" << val->id << ", " << val->name << "}\n";
+            output.flush() << "pop: {" << val->id << ", " << val->name << "}\n";
         }
         destroyStack(&stacks);
 
@@ -245,22 +245,22 @@ public:
         for (std::uint16_t i = 0; i < (metaSize - 1); ++i)
         {
             queuePush(queues, &meta[i]);
-            output.flush() << "| push: {" << meta[i].id << ", " << meta[i].name << "}\n";
+            output.flush() << "push: {" << meta[i].id << ", " << meta[i].name << "}\n";
         }
 
         val = static_cast<Meta*>(queuePop(queues));
-        output.flush() << "| pop: {" << val->id << ", " << val->name << "}\n";
+        output.flush() << "pop: {" << val->id << ", " << val->name << "}\n";
         val = static_cast<Meta*>(queueFront(queues));
-        output.flush() << "| front: {" << val->id << ", " << val->name << "}\n";
+        output.flush() << "front: {" << val->id << ", " << val->name << "}\n";
         queuePush(queues, &meta[metaSize - 1]);
-        output.flush() << "| push: {" << meta[metaSize - 1].id << ", " << meta[metaSize - 1].name << "}\n";
+        output.flush() << "push: {" << meta[metaSize - 1].id << ", " << meta[metaSize - 1].name << "}\n";
 
-        output.flush() << "| whether it is empty: " << queueIsEmpty(queues) << '\n';
-        output.flush() << "| size: " << queueSize(queues) << '\n';
+        output.flush() << "whether it is empty: " << queueIsEmpty(queues) << '\n';
+        output.flush() << "size: " << queueSize(queues) << '\n';
         while (!queueIsEmpty(queues))
         {
             val = static_cast<Meta*>(queuePop(queues));
-            output.flush() << "| pop: {" << val->id << ", " << val->name << "}\n";
+            output.flush() << "pop: {" << val->id << ", " << val->name << "}\n";
         }
         destroyQueue(&queues);
 
@@ -308,32 +308,33 @@ public:
         constexpr std::uint8_t arraySize = 6;
         constexpr std::array<std::int16_t, arraySize> array = {1, 5, 4, 3, 2, 6};
 
-        output.flush() << "| insert: ";
+        output.flush() << "insert: ";
         for (std::uint8_t i = 0; i < arraySize; ++i)
         {
             output.flush() << array.at(i) << ' ';
             root = bsTreeInsert(root, array.at(i));
         }
 
-        output.flush() << "\n| pre-order traversal: ";
+        output.flush() << "\npre-order traversal: ";
         output.preorderBSTree(root);
-        output.flush() << "\n| in-order traversal: ";
+        output.flush() << "\nin-order traversal: ";
         output.inorderBSTree(root);
-        output.flush() << "\n| post-order traversal: ";
+        output.flush() << "\npost-order traversal: ";
         output.postorderBSTree(root);
 
-        output.flush() << "\n| minimum: " << getMinimum(root)->key;
-        output.flush() << "\n| maximum: " << getMaximum(root)->key;
-        output.flush() << "\n| tree verbose:\n...\n";
+        output.flush() << "\nminimum: " << getMinimum(root)->key;
+        output.flush() << "\nmaximum: " << getMaximum(root)->key;
+        output.flush() << "\ntree verbose:\n";
         output.printBSTree(root, root->key, 0);
-        output.flush() << "...";
 
         constexpr std::int16_t deleteNode = 3;
-        output.flush() << "\n| delete root node: " << deleteNode;
+        output.flush() << "delete root node: " << deleteNode;
         root = bsTreeDelete(root, deleteNode);
-        output.flush() << "\n| in-order traversal: ";
+
+        output.flush() << "\nin-order traversal: ";
         output.inorderBSTree(root);
-        output.flush() << '\n';
+        output.flush() << "\ntree verbose:\n";
+        output.printBSTree(root, root->key, 0);
 
         destroyBSTree(root);
 
@@ -352,38 +353,36 @@ public:
         constexpr std::uint8_t arraySize = 16;
         constexpr std::array<std::int16_t, arraySize> array = {3, 2, 1, 4, 5, 6, 7, 16, 15, 14, 13, 12, 11, 10, 8, 9};
 
-        output.flush() << "| height: " << getHeight(root);
-        output.flush() << "\n| insert: ";
+        output.flush() << "height: " << getHeight(root);
+        output.flush() << "\ninsert: ";
         for (std::uint8_t i = 0; i < arraySize; ++i)
         {
             output.flush() << array.at(i) << ' ';
             root = avlTreeInsert(root, array.at(i));
         }
 
-        output.flush() << "\n| pre-order traversal: ";
+        output.flush() << "\npre-order traversal: ";
         output.preorderAVLTree(root);
-        output.flush() << "\n| in-order traversal: ";
+        output.flush() << "\nin-order traversal: ";
         output.inorderAVLTree(root);
-        output.flush() << "\n| post-order traversal: ";
+        output.flush() << "\npost-order traversal: ";
         output.postorderAVLTree(root);
 
-        output.flush() << "\n| height: " << getHeight(root);
-        output.flush() << "\n| minimum: " << getMinimum(root)->key;
-        output.flush() << "\n| maximum: " << getMaximum(root)->key;
-        output.flush() << "\n| tree verbose:\n...\n";
+        output.flush() << "\nheight: " << getHeight(root);
+        output.flush() << "\nminimum: " << getMinimum(root)->key;
+        output.flush() << "\nmaximum: " << getMaximum(root)->key;
+        output.flush() << "\ntree verbose:\n";
         output.printAVLTree(root, root->key, 0);
-        output.flush() << "...";
 
         constexpr std::int16_t deleteNode = 8;
-        output.flush() << "\n| delete root node: " << deleteNode;
+        output.flush() << "delete root node: " << deleteNode;
         root = avlTreeDelete(root, deleteNode);
 
-        output.flush() << "\n| height: " << getHeight(root);
-        output.flush() << "\n| in-order traversal: ";
+        output.flush() << "\nheight: " << getHeight(root);
+        output.flush() << "\nin-order traversal: ";
         output.inorderAVLTree(root);
-        output.flush() << "\n| tree verbose:\n...\n";
+        output.flush() << "\ntree verbose:\n";
         output.printAVLTree(root, root->key, 0);
-        output.flush() << "...\n";
 
         destroyAVLTree(root);
 
@@ -402,33 +401,31 @@ public:
         constexpr std::uint8_t arraySize = 6;
         constexpr std::array<std::int16_t, arraySize> array = {10, 50, 40, 30, 20, 60};
 
-        output.flush() << "| insert: ";
+        output.flush() << "insert: ";
         for (std::uint8_t i = 0; i < arraySize; ++i)
         {
             output.flush() << array.at(i) << ' ';
             root = splayTreeInsert(root, array.at(i));
         }
 
-        output.flush() << "\n| pre-order traversal: ";
+        output.flush() << "\npre-order traversal: ";
         output.preorderSplayTree(root);
-        output.flush() << "\n| in-order traversal: ";
+        output.flush() << "\nin-order traversal: ";
         output.inorderSplayTree(root);
-        output.flush() << "\n| post-order traversal: ";
+        output.flush() << "\npost-order traversal: ";
         output.postorderSplayTree(root);
 
-        output.flush() << "\n| minimum: " << getMinimum(root)->key;
-        output.flush() << "\n| maximum: " << getMaximum(root)->key;
-        output.flush() << "\n| tree verbose:\n...\n";
+        output.flush() << "\nminimum: " << getMinimum(root)->key;
+        output.flush() << "\nmaximum: " << getMaximum(root)->key;
+        output.flush() << "\ntree verbose:\n";
         output.printSplayTree(root, root->key, 0);
-        output.flush() << "...";
 
         constexpr std::int16_t splayNode = 30;
-        output.flush() << "\n| splay node as root node: " << splayNode;
+        output.flush() << "splay node as root node: " << splayNode;
         root = splayTreeSplay(root, splayNode);
 
-        output.flush() << "\n| tree verbose:\n...\n";
+        output.flush() << "\ntree verbose:\n";
         output.printSplayTree(root, root->key, 0);
-        output.flush() << "...\n";
 
         destroySplayTree(root);
 

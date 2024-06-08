@@ -296,11 +296,12 @@ void Output::printBSTree(BSTree tree, const Type key, const int direction)
     {
         if (0 == direction)
         {
-            flush() << tree->key << " is root\n";
+            flush() << "| " << tree->key << " is root\n";
         }
         else
         {
-            flush() << tree->key << " is " << key << "'s " << ((1 == direction) ? "right" : "left") << " child\n";
+            flush() << "| " << tree->key << " is " << key << "'s " << ((1 == direction) ? "right" : "left")
+                    << " child\n";
         }
 
         printBSTree(tree->left, tree->key, -1);
@@ -606,11 +607,12 @@ void Output::printAVLTree(AVLTree tree, const Type key, const int direction)
     {
         if (0 == direction)
         {
-            flush() << tree->key << " is root\n";
+            flush() << "| " << tree->key << " is root\n";
         }
         else
         {
-            flush() << tree->key << " is " << key << "'s " << ((1 == direction) ? "right" : "left") << " child\n";
+            flush() << "| " << tree->key << " is " << key << "'s " << ((1 == direction) ? "right" : "left")
+                    << " child\n";
         }
 
         printAVLTree(tree->left, tree->key, -1);
@@ -917,11 +919,12 @@ void Output::printSplayTree(SplayTree tree, const Type key, const int direction)
     {
         if (0 == direction)
         {
-            flush() << tree->key << " is root\n";
+            flush() << "| " << tree->key << " is root\n";
         }
         else
         {
-            flush() << tree->key << " is " << key << "'s " << ((1 == direction) ? "right" : "left") << " child\n";
+            flush() << "| " << tree->key << " is " << key << "'s " << ((1 == direction) ? "right" : "left")
+                    << " child\n";
         }
 
         printSplayTree(tree->left, tree->key, -1);
