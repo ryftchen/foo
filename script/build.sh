@@ -772,27 +772,27 @@ function set_compile_condition()
     if [[ ${DEV_OPT[compiler]} = "clang" ]] || {
         [[ -n ${FOO_CHK_COV} ]] && [[ ${FOO_CHK_COV} = "on" ]]
     }; then
-        local version=16
-        if ! command -v "clang-${version}" >/dev/null 2>&1 || ! command -v "clang++-${version}" >/dev/null 2>&1; then
-            die "No clang-${version} or clang++-${version} program. Please install it."
+        local ver=16
+        if ! command -v "clang-${ver}" >/dev/null 2>&1 || ! command -v "clang++-${ver}" >/dev/null 2>&1; then
+            die "No clang-${ver} or clang++-${ver} program. Please install it."
         fi
-        export CC=clang-${version} CXX=clang++-${version}
-        CMAKE_CACHE_ENTRY="${CMAKE_CACHE_ENTRY} -D CMAKE_C_COMPILER=clang-${version} \
--D CMAKE_CXX_COMPILER=clang++-${version}"
+        export CC=clang-${ver} CXX=clang++-${ver}
+        CMAKE_CACHE_ENTRY="${CMAKE_CACHE_ENTRY} -D CMAKE_C_COMPILER=clang-${ver} -D CMAKE_CXX_COMPILER=clang++-${ver}"
     elif [[ ${DEV_OPT[compiler]} = "gcc" ]]; then
-        local version=12
-        if ! command -v "gcc-${version}" >/dev/null 2>&1 || ! command -v "g++-${version}" >/dev/null 2>&1; then
-            die "No gcc-${version} or g++-${version} program. Please install it."
+        local ver=12
+        if ! command -v "gcc-${ver}" >/dev/null 2>&1 || ! command -v "g++-${ver}" >/dev/null 2>&1; then
+            die "No gcc-${ver} or g++-${ver} program. Please install it."
         fi
-        export CC=gcc-${version} CXX=g++-${version}
-        CMAKE_CACHE_ENTRY="${CMAKE_CACHE_ENTRY} -D CMAKE_C_COMPILER=gcc-${version} -D CMAKE_CXX_COMPILER=g++-${version}"
+        export CC=gcc-${ver} CXX=g++-${ver}
+        CMAKE_CACHE_ENTRY="${CMAKE_CACHE_ENTRY} -D CMAKE_C_COMPILER=gcc-${ver} -D CMAKE_CXX_COMPILER=g++-${ver}"
     fi
     if command -v gcc >/dev/null 2>&1 && command -v g++ >/dev/null 2>&1; then
+        local include_ver=12
         local gcc_processor gxx_processor
         gcc_processor=$(gcc -dumpmachine)
         gxx_processor=$(g++ -dumpmachine)
-        export C_INCLUDE_PATH=/usr/include:/usr/lib/gcc/${gcc_processor}/12/include \
-            CPLUS_INCLUDE_PATH=/usr/include/c++/12:/usr/include/${gxx_processor}/c++/12
+        export C_INCLUDE_PATH=/usr/include:/usr/lib/gcc/${gcc_processor}/${include_ver}/include \
+            CPLUS_INCLUDE_PATH=/usr/include/c++/${include_ver}:/usr/include/${gxx_processor}/c++/${include_ver}
     fi
 
     if [[ ! ${DEV_OPT[parallel]} -eq 0 ]]; then
