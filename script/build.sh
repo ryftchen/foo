@@ -240,14 +240,14 @@ function perform_initialize_option()
     fi
 
     local export_cmd="export FOO_ENV=${FOLDER[proj]}_dev"
-    if ! grep -Fxq "${export_cmd}" ~/"${BASH_RC}" 2>/dev/null && {
+    if {
         [[ -z ${FOO_ENV} ]] || [[ ${FOO_ENV} != "${FOLDER[proj]}_dev" ]]
-    }; then
+    } && ! grep -Fxq "${export_cmd}" ~/"${BASH_RC}" 2>/dev/null; then
         shell_command "echo '${export_cmd}' >>~/${BASH_RC}"
     fi
 
     local validate_proj="[[ \\\"\\\$(basename \\\"\\\$(pwd)\\\")\\\" == \\\"${FOLDER[proj]}\\\" ]] && \
-git rev-parse --git-dir >/dev/null 2>&1"
+git rev-parse --git-dir >/dev/null 2>&1 && source ~/${BASH_RC}"
     local alias_cmd
     if ! grep -Fwq "alias ${FOLDER[proj]:0:1}build" ~/"${BASH_RC}" 2>/dev/null; then
         alias_cmd="alias ${FOLDER[proj]:0:1}build='${validate_proj} && ./${FOLDER[scr]}/build.sh'"
@@ -697,7 +697,7 @@ function package_for_browser()
 \"./${FOLDER[doc]}/${browser_folder}/${FOLDER[proj]}\" \"./${FOLDER[doc]}/${browser_folder}/include\" -name \"*.html\" \
 -exec sed -i '/^<\/head>$/i <link rel=\\\"shortcut icon\\\" href=\\\"${ico_url}\\\" type=\\\"image/x-icon\\\"/>' {} +"
     local escaped_old_png_url escaped_new_png_url
-    escaped_old_png_url=$(printf "%s\n" "https://code.woboq.org/woboq-16.png" | sed -e 's/[]\/$*.^[]/\\&/g') \
+    escaped_old_png_url=$(printf "%s\n" "https://code.woboq.org/woboq-16.png" | sed -e 's/[]\/$*.^[]/\\&/g')
     escaped_new_png_url=$(printf "%s\n" \
         "https://web.archive.org/web/20220122053323if_/https://code.woboq.org/woboq-16.png" \
         | sed -e 's/[]\/$*.^[]/\\&/g')
