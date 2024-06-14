@@ -635,7 +635,7 @@ void Command::showVersionIcon() const
     validateDependenciesVersion();
 
     const std::string description = "echo '" + std::string{note::copyright()} + "' ; echo 'Built with "
-        + note::compiler() + " for " + std::string{note::processor()} + " on " + std::string{note::buildDate()} + ".'";
+        + note::compiler() + " for " + note::processor() + " on " + note::buildDate() + ".'";
     std::string fullIcon = "tput rev ; echo " + getIconBanner();
     fullIcon.pop_back();
     fullIcon +=
