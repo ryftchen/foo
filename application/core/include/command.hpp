@@ -87,8 +87,6 @@ private:
     utility::argument::Argument subCLIAppDs{"app-ds", "0.1.0"};
     //! @brief Parse argument helper to apply numeric.
     utility::argument::Argument subCLIAppNum{"app-num", "0.1.0"};
-    //! @brief Copyright information.
-    static constexpr std::string_view copyright{"Copyright (c) 2022-2024 ryftchen. All rights reserved."};
 
     //! @brief Initialize the parse argument helpers.
     void initializeCLI();
