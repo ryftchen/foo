@@ -6,6 +6,7 @@
 
 #include "command.hpp"
 #include "log.hpp"
+#include "note.hpp"
 #include "view.hpp"
 
 #ifndef __PRECOMPILED_HEADER
@@ -634,30 +635,8 @@ void Command::showVersionIcon() const
 {
     validateDependenciesVersion();
 
-    constexpr std::string_view buildDate = "" __DATE__ " " __TIME__ "",
-                               processor =
-#ifdef __TARGET_PROCESSOR
-                                   __TARGET_PROCESSOR
-#else
-                                   "other processor"
-#endif // __TARGET_PROCESSOR
-        ;
-    const auto cxxCompiler = []()
-    {
-        std::ostringstream os;
-        os <<
-#ifdef __clang__
-            "clang " << __clang_major__ << '.' << __clang_minor__ << '.' << __clang_patchlevel__;
-#elif __GNUC__
-            "gcc " << __GNUC__ << '.' << __GNUC_MINOR__ << '.' << __GNUC_PATCHLEVEL__;
-#else
-            "other compiler";
-#endif // __clang__
-        return std::move(os).str();
-    }();
-    const std::string additionalInfo = "echo '" + std::string{copyright} + "' ; echo 'Built with " + cxxCompiler
-        + " for " + std::string{processor} + " on " + std::string{buildDate} + ".'";
-
+    const std::string additionalInfo = "echo '" + std::string{note::copyright()} + "' ; echo 'Built with "
+        + note::compiler() + " for " + std::string{note::processor()} + " on " + std::string{note::buildDate()} + ".'";
     std::string fullIcon = "tput rev ; echo " + getIconBanner();
     fullIcon.pop_back();
     fullIcon +=
