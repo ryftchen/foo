@@ -23,7 +23,16 @@ jobs:
       image: ryftchen/foo:latest
       options: --privileged
     timeout-minutes: 20
-    permissions: write-all
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    concurrency:
+      group: "pages"
+      cancel-in-progress: false
 
     steps:
       - name: Prepare
@@ -46,17 +55,7 @@ jobs:
           path: ./document/archive/foo_*.tar.bz2
           retention-days: 7
 
-      - name: Initialize gh-pages branch
-        if: github.event_name == 'push'
-        run: |
-          git remote update
-          git fetch
-          git checkout --track origin/gh-pages
-          git reset --hard HEAD~1
-          git push --force origin gh-pages
-          git checkout master
-
-      - name: Clean deployment
+      - name: Delete deployment environment
         uses: strumwolf/delete-deployment-environment@v3.0.0
         if: github.event_name == 'push'
         with:
@@ -64,13 +63,20 @@ jobs:
           environment: github-pages
           onlyRemoveDeployments: true
 
-      - name: Deploy to gh-pages
-        uses: JamesIves/github-pages-deploy-action@v4.5.0
+      - name: Configure pages
+        uses: actions/configure-pages@v5.0.0
+        if: github.event_name == 'push'
+
+      - name: Upload pages artifact
+        uses: actions/upload-pages-artifact@v3.0.0
         if: github.event_name == 'push'
         with:
-          branch: gh-pages
-          folder: ./document/doxygen
-          commit-message: 'chore: deploy to gh-pages from @ ${{ github.repository }}@${{ github.sha }}'
+          path: ./document/doxygen
+
+      - name: Deploy pages
+        id: deployment
+        uses: actions/deploy-pages@v4.0.0
+        if: github.event_name == 'push'
 
   dynamic_analysis:
     name: Dynamic analysis
@@ -135,7 +141,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4.1.0
 
-      - name: Initialize CodeQL
+      - name: CodeQL init
         uses: github/codeql-action/init@v3.24.0
         with:
           languages: cpp
@@ -146,6 +152,6 @@ jobs:
           ./script/build.sh
           ./script/build.sh --test
 
-      - name: Perform CodeQL analysis
+      - name: CodeQL analyze
         uses: github/codeql-action/analyze@v3.24.0
 ...
