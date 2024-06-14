@@ -257,11 +257,6 @@ git rev-parse --git-dir >/dev/null 2>&1 && source ~/${BASH_RC}"
         alias_cmd="alias ${FOLDER[proj]:0:1}run='${validate_proj} && ./${FOLDER[scr]}/run.py'"
         shell_command "echo \"${alias_cmd}\" >>~/${BASH_RC}"
     fi
-    if ! grep -Fwq "alias ${FOLDER[proj]:0:1}pull" ~/"${BASH_RC}" 2>/dev/null; then
-        alias_cmd="alias ${FOLDER[proj]:0:1}pull='${validate_proj} && git pull && git gc --aggressive --prune && \
-git reflog expire --expire=now --all && git repack -ad && git prune'"
-        shell_command "echo \"${alias_cmd}\" >>~/${BASH_RC}"
-    fi
 
     shell_command "cat <<EOF >./${FOLDER[scr]}/.env
 #!/bin/false
@@ -293,7 +288,7 @@ function perform_clean_option()
     fi
 
     shell_command "sed -i '/export FOO_ENV=${FOLDER[proj]}_dev/d' ~/${BASH_RC} 2>/dev/null"
-    shell_command "sed -i '/alias ${FOLDER[proj]:0:1}\(build\|run\|pull\)/d' ~/${BASH_RC} 2>/dev/null"
+    shell_command "sed -i '/alias ${FOLDER[proj]:0:1}\(build\|run\)/d' ~/${BASH_RC} 2>/dev/null"
     shell_command "find ./ -maxdepth 3 -type d | sed 1d \
 | grep -E '(${FOLDER[cac]}|${FOLDER[bld]}|archive|browser|doxygen|target|__pycache__)$' | xargs -i rm -rf {}"
     shell_command "rm -rf ./${FOLDER[scr]}/.env ./${FOLDER[scr]}/console_batch.txt ./${FOLDER[doc]}/server/Cargo.lock \
