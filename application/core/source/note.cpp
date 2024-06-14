@@ -14,6 +14,13 @@
 
 namespace application::note
 {
+//! @brief Version number.
+//! @return version
+std::string version()
+{
+    return "0.1.0";
+}
+
 //! @brief Copyright information.
 //! @return copyright
 std::string copyright()

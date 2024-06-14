@@ -6,7 +6,6 @@
 
 #include "command.hpp"
 #include "log.hpp"
-#include "note.hpp"
 #include "view.hpp"
 
 #ifndef __PRECOMPILED_HEADER
