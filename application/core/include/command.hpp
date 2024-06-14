@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include "note.hpp"
+
 #include "application/example/include/apply_algorithm.hpp"
 #include "application/example/include/apply_data_structure.hpp"
 #include "application/example/include/apply_design_pattern.hpp"
@@ -78,15 +80,15 @@ private:
     //! @brief Flag to indicate whether parsing of arguments is completed.
     std::atomic<bool> isParsed{false};
     //! @brief Parse argument helper for commander.
-    utility::argument::Argument mainCLI{"foo", "0.1.0"};
+    utility::argument::Argument mainCLI{"foo", note::version()};
     //! @brief Parse argument helper to apply algorithm.
-    utility::argument::Argument subCLIAppAlgo{"app-algo", "0.1.0"};
+    utility::argument::Argument subCLIAppAlgo{"app-algo", note::version()};
     //! @brief Parse argument helper to apply design pattern.
-    utility::argument::Argument subCLIAppDp{"app-dp", "0.1.0"};
+    utility::argument::Argument subCLIAppDp{"app-dp", note::version()};
     //! @brief Parse argument helper to apply data structure.
-    utility::argument::Argument subCLIAppDs{"app-ds", "0.1.0"};
+    utility::argument::Argument subCLIAppDs{"app-ds", note::version()};
     //! @brief Parse argument helper to apply numeric.
-    utility::argument::Argument subCLIAppNum{"app-num", "0.1.0"};
+    utility::argument::Argument subCLIAppNum{"app-num", note::version()};
 
     //! @brief Initialize the parse argument helpers.
     void initializeCLI();
