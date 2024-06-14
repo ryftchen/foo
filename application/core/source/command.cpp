@@ -635,7 +635,7 @@ void Command::showVersionIcon() const
 {
     validateDependenciesVersion();
 
-    const std::string additionalInfo = "echo '" + std::string{note::copyright()} + "' ; echo 'Built with "
+    const std::string description = "echo '" + std::string{note::copyright()} + "' ; echo 'Built with "
         + note::compiler() + " for " + std::string{note::processor()} + " on " + std::string{note::buildDate()} + ".'";
     std::string fullIcon = "tput rev ; echo " + getIconBanner();
     fullIcon.pop_back();
@@ -645,7 +645,7 @@ void Command::showVersionIcon() const
 #else
         "          RELEASE VERSION "
 #endif // NDEBUG
-        + mainCLI.version + " ' ; tput sgr0 ; echo ; " + additionalInfo;
+        + mainCLI.version + " ' ; tput sgr0 ; echo ; " + description;
 
     std::cout << utility::common::executeCommand(fullIcon) << std::flush;
 }
