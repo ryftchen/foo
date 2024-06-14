@@ -23,13 +23,6 @@ jobs:
       image: ryftchen/foo:latest
       options: --privileged
     timeout-minutes: 20
-    permissions: write-all
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    concurrency:
-      group: 'pages'
-      cancel-in-progress: false
 
     steps:
       - name: Prepare
@@ -39,10 +32,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4.1.0
 
+      - name: Pre-check
+        run: |
+          ./script/build.sh --hook --spell --statistics
+          git status
+
       - name: Static check
         run: |
-          ./script/build.sh --hook --spell --format --lint --statistics
+          ./script/build.sh --format --lint
           git status
+
+      - name: Create archive
+        run: |
           ./script/build.sh --browser --doxygen
 
       - name: Upload artifact
@@ -51,29 +52,6 @@ jobs:
           name: foo_artifact
           path: ./document/archive/foo_*.tar.bz2
           retention-days: 7
-
-      - name: Delete deployment environment
-        uses: strumwolf/delete-deployment-environment@v3.0.0
-        if: github.event_name == 'push'
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          environment: github-pages
-          onlyRemoveDeployments: true
-
-      - name: Configure pages
-        uses: actions/configure-pages@v5.0.0
-        if: github.event_name == 'push'
-
-      - name: Upload pages artifact
-        uses: actions/upload-pages-artifact@v3.0.0
-        if: github.event_name == 'push'
-        with:
-          path: ./document/doxygen
-
-      - name: Deploy pages
-        id: deployment
-        uses: actions/deploy-pages@v4.0.0
-        if: github.event_name == 'push'
 
   dynamic_analysis:
     name: Dynamic analysis
@@ -151,4 +129,50 @@ jobs:
 
       - name: CodeQL analyze
         uses: github/codeql-action/analyze@v3.24.0
+
+  deploy_pages:
+    name: Deploy pages
+    runs-on: ubuntu-latest
+    container:
+      image: ryftchen/foo:latest
+      options: --privileged
+    timeout-minutes: 20
+    permissions: write-all
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    concurrency:
+      group: 'pages'
+      cancel-in-progress: false
+
+    steps:
+      - name: Prepare
+        run: |
+          git config --global --add safe.directory '*'
+
+      - name: Checkout
+        uses: actions/checkout@v4.1.0
+
+      - name: Documentation
+        run: |
+          ./script/build.sh --doxygen
+
+      - name: Delete deployment environment
+        uses: strumwolf/delete-deployment-environment@v3.0.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          environment: github-pages
+          onlyRemoveDeployments: true
+
+      - name: Configure pages
+        uses: actions/configure-pages@v5.0.0
+
+      - name: Upload pages artifact
+        uses: actions/upload-pages-artifact@v3.0.0
+        with:
+          path: ./document/doxygen
+
+      - name: Deploy pages
+        id: deployment
+        uses: actions/deploy-pages@v4.0.0
 ...
