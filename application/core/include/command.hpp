@@ -80,15 +80,15 @@ private:
     //! @brief Flag to indicate whether parsing of arguments is completed.
     std::atomic<bool> isParsed{false};
     //! @brief Parse argument helper for commander.
-    utility::argument::Argument mainCLI{"foo", note::version()};
+    utility::argument::Argument mainCLI{"foo", std::string{note::version()}};
     //! @brief Parse argument helper to apply algorithm.
-    utility::argument::Argument subCLIAppAlgo{"app-algo", note::version()};
+    utility::argument::Argument subCLIAppAlgo{"app-algo", std::string{note::version()}};
     //! @brief Parse argument helper to apply design pattern.
-    utility::argument::Argument subCLIAppDp{"app-dp", note::version()};
+    utility::argument::Argument subCLIAppDp{"app-dp", std::string{note::version()}};
     //! @brief Parse argument helper to apply data structure.
-    utility::argument::Argument subCLIAppDs{"app-ds", note::version()};
+    utility::argument::Argument subCLIAppDs{"app-ds", std::string{note::version()}};
     //! @brief Parse argument helper to apply numeric.
-    utility::argument::Argument subCLIAppNum{"app-num", note::version()};
+    utility::argument::Argument subCLIAppNum{"app-num", std::string{note::version()}};
 
     //! @brief Initialize the parse argument helpers.
     void initializeCLI();

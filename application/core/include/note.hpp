@@ -18,8 +18,20 @@ namespace application // NOLINT (modernize-concat-nested-namespaces)
 //! @brief Notes-related functions in the application module.
 namespace note
 {
-extern std::string version();
-extern std::string copyright();
+//! @brief Version number.
+//! @return version
+inline constexpr std::string_view version()
+{
+    return "0.1.0";
+}
+
+//! @brief Copyright information.
+//! @return copyright
+inline constexpr std::string_view copyright()
+{
+    return "Copyright (c) 2022-2024 ryftchen. All rights reserved.";
+}
+
 extern std::string compiler();
 extern std::string processor();
 extern std::string buildDate();

@@ -14,34 +14,21 @@
 
 namespace application::note
 {
-//! @brief Version number.
-//! @return version
-std::string version()
-{
-    return "0.1.0";
-}
-
-//! @brief Copyright information.
-//! @return copyright
-std::string copyright()
-{
-    return "Copyright (c) 2022-2024 ryftchen. All rights reserved.";
-}
-
 //! @brief Compiler name.
 //! @return compiler
 std::string compiler()
 {
-    std::ostringstream os;
-    os <<
+#define STRINGIFY(x) #x
+#define TO_STRING(x) STRINGIFY(x)
 #ifdef __clang__
-        "clang " << __clang_major__ << '.' << __clang_minor__ << '.' << __clang_patchlevel__;
+    return "clang " TO_STRING(__clang_major__) "." TO_STRING(__clang_minor__) "." TO_STRING(__clang_patchlevel__) "";
 #elif __GNUC__
-        "gcc " << __GNUC__ << '.' << __GNUC_MINOR__ << '.' << __GNUC_PATCHLEVEL__;
+    return "gcc " TO_STRING(__GNUC__) "." TO_STRING(__GNUC_MINOR__) "." TO_STRING(__GNUC_PATCHLEVEL__) "";
 #else
-        "other compiler";
+    return "other compiler";
 #endif // __clang__
-    return std::move(os).str();
+#undef STRINGIFY
+#undef TO_STRING
 }
 
 //! @brief Target processor.
@@ -59,6 +46,10 @@ std::string processor()
 //! @return build date
 std::string buildDate()
 {
+#if defined(__DATE__) && defined(__TIME__)
     return "" __DATE__ " " __TIME__ "";
+#else
+    return "other build date";
+#endif // defined(__DATE__) && defined(__TIME__)
 }
 } // namespace application::note
