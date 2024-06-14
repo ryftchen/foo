@@ -96,7 +96,7 @@ jobs:
 
   extended_analysis:
     name: Extended analysis
-    if: github.event_name == 'push'
+    if: (github.event_name == 'push') || (github.event_name == 'workflow_dispatch')
     runs-on: ubuntu-latest
     container:
       image: ryftchen/foo:latest
@@ -132,6 +132,7 @@ jobs:
 
   deploy_pages:
     name: Deploy pages
+    if: (github.event_name == 'push') || (github.event_name == 'workflow_dispatch')
     runs-on: ubuntu-latest
     container:
       image: ryftchen/foo:latest
