@@ -23,10 +23,7 @@ jobs:
       image: ryftchen/foo:latest
       options: --privileged
     timeout-minutes: 20
-    permissions:
-      contents: read
-      pages: write
-      id-token: write
+    permissions: write-all
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
