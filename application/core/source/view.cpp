@@ -528,6 +528,8 @@ int View::fillSharedMemory(const std::string& contents)
             std::memset(shrMem->buffer, 0, sizeof(shrMem->buffer));
             std::strncpy(shrMem->buffer, contents.c_str(), sizeof(shrMem->buffer) - 1);
             shrMem->buffer[sizeof(shrMem->buffer) - 1] = '\0';
+            encryptMessage(shrMem->buffer, sizeof(shrMem->buffer));
+
             shrMem->signal.store(true);
             break;
         }
@@ -552,6 +554,7 @@ void View::printSharedMemory(const int shmId, const bool withoutPaging)
     {
         if (shrMem->signal.load())
         {
+            decryptMessage(shrMem->buffer, sizeof(shrMem->buffer));
             if (withoutPaging)
             {
                 std::cout << "\r\n" << shrMem->buffer << std::endl;
@@ -562,6 +565,7 @@ void View::printSharedMemory(const int shmId, const bool withoutPaging)
                 segmentedOutput(shrMem->buffer);
                 std::cout << std::endl;
             }
+
             shrMem->signal.store(false);
             break;
         }
