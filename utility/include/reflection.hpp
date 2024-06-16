@@ -68,7 +68,7 @@ public:
         //! @tparam T - type of target string
         //! @return be custom string type or not
         template <typename T>
-        static inline constexpr bool is(T /*unused*/ = {})
+        static inline constexpr bool is(T /*str*/ = {})
         {
             return std::is_same_v<T, String>;
         }
@@ -268,7 +268,7 @@ struct NamedValue<Name, void> : NamedValueBase<Name>
     //! @tparam U - type of value
     //! @return be equal or not equal
     template <class U>
-    constexpr bool operator==(U /*unused*/) const
+    constexpr bool operator==(U /*val*/) const
     {
         return false;
     }
@@ -320,7 +320,7 @@ struct ElemList
     //! @tparam Str - type of custom string
     //! @return contain or not contain
     template <class Str>
-    static constexpr bool contain(Str /*unused*/ = {})
+    static constexpr bool contain(Str /*str*/ = {})
     {
         return (Es::NameType::template is<Str>() || ...);
     }
@@ -337,7 +337,7 @@ struct ElemList
     //! @tparam Str - type of custom string
     //! @return value index
     template <class Str>
-    constexpr const auto& find(Str /*unused*/ = {}) const
+    constexpr const auto& find(Str /*str*/ = {}) const
     {
         constexpr std::size_t idx = []() constexpr
         {
@@ -461,7 +461,7 @@ struct Attr : NamedValue<Name, T>
 {
     //! @brief Construct a new Attr object.
     //! @param val - target value
-    constexpr Attr(Name /*unused*/, T val) : NamedValue<Name, T>(val) {}
+    constexpr Attr(Name /*name*/, T val) : NamedValue<Name, T>(val) {}
 };
 
 //! @brief Attribute in class.
@@ -470,7 +470,7 @@ template <class Name>
 struct Attr<Name, void> : NamedValue<Name, void>
 {
     //! @brief Construct a new Attr object.
-    constexpr explicit Attr(Name /*unused*/) {}
+    constexpr explicit Attr(Name /*name*/) {}
 };
 
 //! @brief The list of attributes.
@@ -527,7 +527,7 @@ struct Field : Trait<T>, NamedValue<Name, T>
     //! @brief Construct a new Field object.
     //! @param val - target value
     //! @param as - list of attributes
-    constexpr Field(Name /*unused*/, T val, Attrs as = {}) : NamedValue<Name, T>(val), attrs(as) {}
+    constexpr Field(Name /*name*/, T val, Attrs as = {}) : NamedValue<Name, T>(val), attrs(as) {}
 
     //! @brief Attribute list.
     Attrs attrs{};

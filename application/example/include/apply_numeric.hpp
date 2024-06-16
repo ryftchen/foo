@@ -329,7 +329,7 @@ public:
             }
             completeSize += formatSize;
 
-            if ((0 == (i + 1) % maxColumnOfPrint) && ((i + 1) != container.size()))
+            if ((0 == ((i + 1) % maxColumnOfPrint)) && ((i + 1) != container.size()))
             {
                 formatSize = std::snprintf(buffer + completeSize, bufferSize - completeSize, "\n");
                 if ((formatSize < 0) || (formatSize >= static_cast<int>(bufferSize - completeSize)))
@@ -570,7 +570,7 @@ public:
             }
             completeSize += formatSize;
 
-            if ((0 == (i + 1) % maxColumnOfPrint) && ((i + 1) != container.size()))
+            if ((0 == ((i + 1) % maxColumnOfPrint)) && ((i + 1) != container.size()))
             {
                 formatSize = std::snprintf(buffer + completeSize, bufferSize - completeSize, "\n");
                 if ((formatSize < 0) || (formatSize >= static_cast<int>(bufferSize - completeSize)))

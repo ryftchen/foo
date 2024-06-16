@@ -103,8 +103,7 @@ std::string base64Decode(const std::string& data)
     // NOLINTBEGIN (readability-magic-numbers)
     for (const unsigned char c : data)
     {
-        const auto numVal = base64Chars.find(c);
-        if (std::string::npos != numVal)
+        if (const auto numVal = base64Chars.find(c); std::string::npos != numVal)
         {
             offset = 18 - counter % 4 * 6;
             bitStream += numVal << offset;
@@ -203,8 +202,7 @@ std::string executeCommand(const std::string& command, const std::uint32_t timeo
     }
     if (WIFEXITED(exitStatus))
     {
-        const int exitCode = WEXITSTATUS(exitStatus);
-        if (EXIT_SUCCESS != exitCode)
+        if (const int exitCode = WEXITSTATUS(exitStatus); EXIT_SUCCESS != exitCode)
         {
             throw std::runtime_error(
                 "Returns exit code " + std::to_string(exitCode) + " when the command is executed.");

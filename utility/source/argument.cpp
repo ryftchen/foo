@@ -8,6 +8,7 @@
 
 #include <iomanip>
 #include <numeric>
+#include <ranges>
 #include <utility>
 
 namespace utility::argument
@@ -168,7 +169,7 @@ std::size_t Register::getArgumentsLength() const
         return namesSize + (names.size() - 1);
     }
     std::size_t size = namesSize + 2 * (names.size() - 1);
-    if (!metavarContent.empty() && argsNumRange == ArgsNumRange{1, 1})
+    if (!metavarContent.empty() && (ArgsNumRange{1, 1} == argsNumRange))
     {
         size += metavarContent.size() + 1;
     }
@@ -280,12 +281,11 @@ std::ostream& operator<<(std::ostream& os, const Register& reg)
     const std::string namePadding = std::string(nameStream.str().size(), ' ');
     os << nameStream.str();
 
-    std::size_t pos = 0;
-    std::size_t prev = 0;
+    std::size_t pos = 0, prev = 0;
     bool firstLine = true;
     const std::string_view helpView = reg.helpContent;
     const char* tabSpace = "    ";
-    while ((pos = reg.helpContent.find('\n', prev)) != std::string::npos)
+    while (std::string::npos != (pos = reg.helpContent.find('\n', prev)))
     {
         const auto line = helpView.substr(prev, pos - prev + 1);
         if (firstLine)
@@ -320,7 +320,7 @@ std::ostream& operator<<(std::ostream& os, const Register& reg)
     }
     os << reg.argsNumRange;
 
-    if (reg.defaultValue.has_value() && reg.argsNumRange != Register::ArgsNumRange{0, 0})
+    if (reg.defaultValue.has_value() && (Register::ArgsNumRange{0, 0} != reg.argsNumRange))
     {
         os << "[default: " << reg.defaultValueRepresent << ']';
     }
@@ -345,15 +345,15 @@ Argument::Argument(const Argument& arg) :
     parserPath(arg.parserPath),
     subParsers(arg.subParsers)
 {
-    for (auto iterator = std::begin(optionalArguments); iterator != std::end(optionalArguments); ++iterator)
+    for (auto iterator = std::begin(optionalArguments); std::end(optionalArguments) != iterator; ++iterator)
     {
         indexArgument(iterator);
     }
-    for (auto iterator = std::begin(positionalArguments); iterator != std::end(positionalArguments); ++iterator)
+    for (auto iterator = std::begin(positionalArguments); std::end(positionalArguments) != iterator; ++iterator)
     {
         indexArgument(iterator);
     }
-    for (auto iterator = std::begin(subParsers); iterator != std::end(subParsers); ++iterator)
+    for (auto iterator = std::begin(subParsers); std::end(subParsers) != iterator; ++iterator)
     {
         subParserMap.insert_or_assign(iterator->get().title, iterator);
         subParserUsed.insert_or_assign(iterator->get().title, false);
@@ -396,7 +396,7 @@ Argument& Argument::addDescription(const std::string& text)
 void Argument::parseArgs(const std::vector<std::string>& arguments)
 {
     parseArgsInternal(arguments);
-    for ([[maybe_unused]] const auto& [unused, argument] : argumentMap)
+    for (const auto& argument : std::views::values(argumentMap))
     {
         argument->validate();
     }
@@ -415,7 +415,7 @@ bool Argument::isUsed(const std::string_view argName) const
 Register& Argument::operator[](const std::string_view argName) const
 {
     auto iterator = argumentMap.find(argName);
-    if (iterator != argumentMap.cend())
+    if (argumentMap.cend() != iterator)
     {
         return *(iterator->second);
     }
@@ -427,14 +427,14 @@ Register& Argument::operator[](const std::string_view argName) const
 
         name = prefix + name;
         iterator = argumentMap.find(name);
-        if (iterator != argumentMap.cend())
+        if (argumentMap.cend() != iterator)
         {
             return *(iterator->second);
         }
 
         name = prefix + name;
         iterator = argumentMap.find(name);
-        if (iterator != argumentMap.cend())
+        if (argumentMap.cend() != iterator)
         {
             return *(iterator->second);
         }
@@ -473,7 +473,7 @@ std::string Argument::usage() const
     if (!subParserMap.empty())
     {
         stream << " {";
-        for (std::size_t i = 0; const auto& [command, unused] : subParserMap)
+        for (std::size_t i = 0; const auto& command : std::views::keys(subParserMap))
         {
             if (0 == i)
             {
@@ -536,11 +536,11 @@ std::vector<std::string> Argument::preprocessArguments(const std::vector<std::st
         };
 
         const auto assignCharPos = arg.find_first_of(assignChars);
-        if ((argumentMap.find(arg) == argumentMap.cend()) && argumentStartsWithPrefixChars(arg)
+        if ((argumentMap.cend() == argumentMap.find(arg)) && argumentStartsWithPrefixChars(arg)
             && (std::string::npos != assignCharPos))
         {
             const std::string optName = arg.substr(0, assignCharPos);
-            if (argumentMap.find(optName) != argumentMap.cend())
+            if (argumentMap.cend() != argumentMap.find(optName))
             {
                 arguments.emplace_back(optName);
                 arguments.emplace_back(arg.substr(assignCharPos + 1));
@@ -625,12 +625,13 @@ std::size_t Argument::getLengthOfLongestArgument() const
     {
         return 0;
     }
+
     std::size_t maxSize = 0;
-    for ([[maybe_unused]] const auto& [unused, argument] : argumentMap)
+    for (const auto& argument : std::views::values(argumentMap))
     {
         maxSize = std::max<std::size_t>(maxSize, argument->getArgumentsLength());
     }
-    for ([[maybe_unused]] const auto& [command, unused] : subParserMap)
+    for (const auto& command : std::views::keys(subParserMap))
     {
         maxSize = std::max<std::size_t>(maxSize, command.size());
     }

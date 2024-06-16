@@ -101,7 +101,7 @@ template <class T>
 consteval std::size_t abbrVal(const T instance)
 {
     using TypeInfo = utility::reflection::TypeInfo<T>;
-    static_assert(TypeInfo::fields.size == Bottom<T>::value);
+    static_assert(Bottom<T>::value == TypeInfo::fields.size);
 
     std::size_t value = 0;
     TypeInfo::fields.forEach(

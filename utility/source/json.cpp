@@ -559,7 +559,7 @@ bool JSON::hasKey(const std::string& key) const
 {
     if (Type::object == type)
     {
-        return data.map->find(key) != data.map->end();
+        return data.map->cend() != data.map->find(key);
     }
     return false;
 }
@@ -887,7 +887,7 @@ std::string JSON::dumpMinified() const
 
 void JSON::setType(const JSON::Type t)
 {
-    if (type == t)
+    if (t == type)
     {
         return;
     }

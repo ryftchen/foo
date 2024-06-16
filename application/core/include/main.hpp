@@ -79,7 +79,7 @@ static void signalHandler(int sig)
     }
     std::free(symbols); // NOLINT (cppcoreguidelines-no-malloc)
 
-    if (numOfFrame == maxFrame)
+    if (maxFrame == numOfFrame)
     {
         detailedTrace << "\r\n<TRUNCATED...>\n";
     }
@@ -107,7 +107,7 @@ static void signalHandler(int sig)
     ::setenv("TERMINFO", "/etc/terminfo", true);
 
     std::string home = "/root";
-    if (nullptr != std::getenv("HOME"))
+    if (std::getenv("HOME") != nullptr)
     {
         home = std::getenv("HOME");
     }

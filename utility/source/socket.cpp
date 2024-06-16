@@ -23,7 +23,7 @@ Socket::Socket(const Type socketType, const int socketId)
 {
     if (-1 == socketId)
     {
-        if ((sock = ::socket(AF_INET, socketType, 0)) == -1)
+        if (-1 == (sock = ::socket(AF_INET, socketType, 0)))
         {
             throw std::runtime_error("Socket creation error, errno: " + std::to_string(errno) + '.');
         }
@@ -128,8 +128,7 @@ void TCPSocket::toConnect(const std::string& ip, const std::uint16_t port, const
     hints.ai_family = AF_INET;
     hints.ai_socktype = ::SOCK_STREAM;
 
-    int status = 0;
-    if ((status = ::getaddrinfo(ip.c_str(), nullptr, &hints, &res)) != 0)
+    if (const int status = ::getaddrinfo(ip.c_str(), nullptr, &hints, &res); 0 != status)
     {
         throw std::runtime_error(
             "Invalid address, status: " + std::string(::gai_strerror(status)) + ", errno: " + std::to_string(errno)
@@ -271,8 +270,8 @@ void TCPServer::toAccept(const TCPServer* const server)
     int newSock = 0;
     for (;;)
     {
-        if ((newSock = ::accept(server->sock, reinterpret_cast<::sockaddr*>(&newSocketInfo), &newSocketInfoLength))
-            == -1)
+        newSock = ::accept(server->sock, reinterpret_cast<::sockaddr*>(&newSocketInfo), &newSocketInfoLength);
+        if (-1 == newSock)
         {
             if ((EBADF == errno) || (EINVAL == errno))
             {
@@ -303,8 +302,7 @@ int UDPSocket::toSendTo(
     hints.ai_family = AF_INET;
     hints.ai_socktype = ::SOCK_DGRAM;
 
-    int status = 0;
-    if ((status = ::getaddrinfo(ip.c_str(), nullptr, &hints, &res)) != 0)
+    if (const int status = ::getaddrinfo(ip.c_str(), nullptr, &hints, &res); 0 != status)
     {
         throw std::runtime_error(
             "Invalid address, status: " + std::string(::gai_strerror(status)) + ", errno: " + std::to_string(errno)
@@ -324,8 +322,8 @@ int UDPSocket::toSendTo(
     addr.sin_port = ::htons(port);
     addr.sin_family = AF_INET;
 
-    int sent = 0;
-    if ((sent = ::sendto(sock, bytes, length, 0, reinterpret_cast<::sockaddr*>(&addr), sizeof(addr))) == -1)
+    const int sent = ::sendto(sock, bytes, length, 0, reinterpret_cast<::sockaddr*>(&addr), sizeof(addr));
+    if (-1 == sent)
     {
         throw std::runtime_error("Unable to send message to address, errno: " + std::to_string(errno) + '.');
     }
@@ -355,8 +353,7 @@ void UDPSocket::toConnect(const std::string& ip, const std::uint16_t port)
     hints.ai_family = AF_INET;
     hints.ai_socktype = ::SOCK_DGRAM;
 
-    int status = 0;
-    if ((status = ::getaddrinfo(ip.c_str(), nullptr, &hints, &res)) != 0)
+    if (const int status = ::getaddrinfo(ip.c_str(), nullptr, &hints, &res); 0 != status)
     {
         throw std::runtime_error(
             "Invalid address, status: " + std::string(::gai_strerror(status)) + ", errno: " + std::to_string(errno)
@@ -415,7 +412,7 @@ void UDPSocket::toRecv(const UDPSocket* const socket)
     char tempBuffer[UDPSocket::bufferSize];
     tempBuffer[0] = '\0';
     int messageLength = 0;
-    while ((messageLength = ::recv(socket->sock, tempBuffer, socket->bufferSize, 0)) != -1)
+    while (-1 != (messageLength = ::recv(socket->sock, tempBuffer, socket->bufferSize, 0)))
     {
         tempBuffer[messageLength] = '\0';
         if (socket->onMessageReceived)
@@ -440,9 +437,10 @@ void UDPSocket::toRecvFrom(const UDPSocket* const socket)
     char tempBuffer[UDPSocket::bufferSize];
     tempBuffer[0] = '\0';
     int messageLength = 0;
-    while ((messageLength = ::recvfrom(
-                socket->sock, tempBuffer, socket->bufferSize, 0, reinterpret_cast<::sockaddr*>(&addr), &hostAddrSize))
-           != -1)
+    while (
+        -1
+        != (messageLength = ::recvfrom(
+                socket->sock, tempBuffer, socket->bufferSize, 0, reinterpret_cast<::sockaddr*>(&addr), &hostAddrSize)))
     {
         tempBuffer[messageLength] = '\0';
         if (socket->onMessageReceived)

@@ -363,7 +363,7 @@ private:
         ::mpfr_exp_t decimalLocation = 0;
         char* const piText = ::mpfr_get_str(nullptr, &decimalLocation, mpfrBase, 0, operand, ::MPFR_RNDN);
 
-        if (0 != std::strlen(piText))
+        if (std::strlen(piText) != 0)
         {
             piText[textLen] = '\0';
             std::memcpy(text, piText, textLen * sizeof(unsigned char));
@@ -739,7 +739,7 @@ public:
             }
             completeSize += formatSize;
 
-            if ((0 == (i + 1) % maxColumnOfPrint) && ((i + 1) != length))
+            if ((0 == ((i + 1) % maxColumnOfPrint)) && ((i + 1) != length))
             {
                 formatSize = std::snprintf(buffer + completeSize, bufferSize - completeSize, "\n");
                 if ((formatSize < 0) || (formatSize >= static_cast<int>(bufferSize - completeSize)))
@@ -981,7 +981,7 @@ public:
             }
             completeSize += formatSize;
 
-            if ((0 == (i + 1) % maxColumnOfPrint) && ((i + 1) != length))
+            if ((0 == ((i + 1) % maxColumnOfPrint)) && ((i + 1) != length))
             {
                 formatSize = std::snprintf(buffer + completeSize, bufferSize - completeSize, "\n");
                 if ((formatSize < 0) || (formatSize >= static_cast<int>(bufferSize - completeSize)))

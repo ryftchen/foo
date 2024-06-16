@@ -90,7 +90,7 @@ int main(int argc, char* argv[])
         std::cerr << application::getExecutableName() << ": Failed to create a child process." << std::endl;
         return EXIT_FAILURE;
     }
-    else if (pid == 0)
+    else if (0 == pid)
     {
         ::prctl(PR_SET_PDEATHSIG, SIGTERM);
         if (::getppid() != ppidBeforeFork)
