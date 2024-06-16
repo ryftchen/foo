@@ -24,6 +24,7 @@ class Documentation:
     log_file = "/tmp/foo_pull_archive.log"
 
     def __init__(self):
+        self.forced_pull = False
         self.proxy_port = ""
 
         env = os.getenv("FOO_ENV")
@@ -36,6 +37,7 @@ class Documentation:
         if not fnmatch.fnmatch(script_path, "*foo/script"):
             interrupt("Illegal path to current script.")
         parser = argparse.ArgumentParser(description="pull archive script")
+        parser.add_argument("-f", "--force", action="store_true", default=False, help="forced pull")
         parser.add_argument(
             "-p",
             "--port",
@@ -46,11 +48,13 @@ class Documentation:
             metavar="[0-65535]",
         )
         args = parser.parse_args()
+        if args.force:
+            self.forced_pull = True
         if args.port is not None:
             self.proxy_port = args.port
 
         self.project_path = os.path.dirname(script_path)
-        self.logger = common.Log(self.log_file, "a")
+        self.logger = common.Log(self.log_file, "at")
         sys.stdout = self.logger
 
     def pull_archive(self):
@@ -72,7 +76,11 @@ class Documentation:
             interrupt("Failed to get the latest commit id.")
         if local_commit_id != remote_commit_id:
             execute(f"git -C {self.project_path} pull origin master")
-        elif os.path.exists(f"{self.website_dir}/doxygen") and os.path.exists(f"{self.website_dir}/browser"):
+        elif (
+            not self.forced_pull
+            and os.path.exists(f"{self.website_dir}/doxygen")
+            and os.path.exists(f"{self.website_dir}/browser")
+        ):
             interrupt("No commit change.")
 
         try:
