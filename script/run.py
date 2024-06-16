@@ -221,7 +221,7 @@ class Task:
         if not os.path.exists(self.cache_dir):
             os.makedirs(self.cache_dir)
         if not os.path.isfile(self.console_file):
-            with open(self.console_file, "w", encoding="utf-8") as console_batch:
+            with open(self.console_file, "wt", encoding="utf-8") as console_batch:
                 fcntl.flock(console_batch.fileno(), fcntl.LOCK_EX)
                 console_batch.write("# console command\nhelp\nquit\n")
                 fcntl.flock(console_batch.fileno(), fcntl.LOCK_UN)
@@ -424,7 +424,7 @@ valgrind-ci {xml_filename}_inst_2.xml --summary"
             old_content = run_log.read()
             fcntl.flock(run_log.fileno(), fcntl.LOCK_UN)
         new_content = re.sub(Output.color_esc_regex, "", old_content)
-        with open(self.log_file, "w", encoding="utf-8") as run_log:
+        with open(self.log_file, "wt", encoding="utf-8") as run_log:
             fcntl.flock(run_log.fileno(), fcntl.LOCK_EX)
             run_log.write(new_content)
             fcntl.flock(run_log.fileno(), fcntl.LOCK_UN)
@@ -522,7 +522,7 @@ valgrind-ci {xml_filename}_inst_2.xml --summary"
             Output.exit_with_error(f"The run log {self.log_file} file is incomplete. Please retry.")
 
         fail_res, cov_per, mem_err = analyze_for_report(readlines, start_indices, finish_indices, tags)
-        with open(self.report_file, "w", encoding="utf-8") as run_report:
+        with open(self.report_file, "wt", encoding="utf-8") as run_report:
             fcntl.flock(run_report.fileno(), fcntl.LOCK_EX)
             run_stat = {
                 "Passed": str(self.total_steps - len(fail_res)),
@@ -540,23 +540,21 @@ valgrind-ci {xml_filename}_inst_2.xml --summary"
             fail_res_rep = ""
             if fail_res:
                 fail_res_rep = (
-                    "\r\nREPORT FOR FAILURE RESULT:\n"
+                    "\nREPORT FOR FAILURE RESULT:\n"
                     + Output().format_as_table(fail_res, "CASE", "FAILURE RESULT")
                     + "\n\n"
                 )
             cov_per_rep = ""
             if cov_per:
                 cov_per_rep = (
-                    "\r\nREPORT FOR COVERAGE PERCENT:\n"
+                    "\nREPORT FOR COVERAGE PERCENT:\n"
                     + Output().format_as_table(cov_per, "CATEGORY", "COVERAGE PERCENT")
                     + "\n\n"
                 )
             mem_err_rep = ""
             if mem_err:
                 mem_err_rep = (
-                    "\r\nREPORT FOR MEMORY ERROR:\n"
-                    + Output().format_as_table(mem_err, "CASE", "MEMORY ERROR")
-                    + "\n\n"
+                    "\nREPORT FOR MEMORY ERROR:\n" + Output().format_as_table(mem_err, "CASE", "MEMORY ERROR") + "\n\n"
                 )
             run_report.write(run_stat_rep + fail_res_rep + cov_per_rep + mem_err_rep)
             fcntl.flock(run_report.fileno(), fcntl.LOCK_UN)
@@ -578,7 +576,7 @@ class Output:
 
     @classmethod
     def exit_with_error(cls, message):
-        print(f"\r\n{os.path.basename(__file__)}: {message}", file=sys.stderr)
+        print(f"\n{os.path.basename(__file__)}: {message}", file=sys.stderr)
         sys.exit(1)
 
     @classmethod

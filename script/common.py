@@ -33,7 +33,7 @@ def execute_command(command, set_input="", set_timeout=300):
 
 
 class Log:
-    def __init__(self, filename, mode="w", stream=sys.stdout):
+    def __init__(self, filename, mode="wt", stream=sys.stdout):
         self.terminal = stream
         self.log = open(filename, mode, encoding="utf-8")  # pylint: disable=consider-using-with
         fcntl.flock(self.log.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
