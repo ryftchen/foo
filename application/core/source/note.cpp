@@ -6,12 +6,6 @@
 
 #include "note.hpp"
 
-#ifndef __PRECOMPILED_HEADER
-#include <sstream>
-#else
-#include "application/pch/precompiled_header.hpp"
-#endif // __PRECOMPILED_HEADER
-
 namespace application::note
 {
 //! @brief Compiler name.
@@ -25,7 +19,7 @@ std::string compiler()
 #elif __GNUC__
     return "gcc " TO_STRING(__GNUC__) "." TO_STRING(__GNUC_MINOR__) "." TO_STRING(__GNUC_PATCHLEVEL__) "";
 #else
-    return "other compiler";
+    return "unknown compiler";
 #endif // __clang__
 #undef STRINGIFY
 #undef TO_STRING
@@ -38,7 +32,7 @@ std::string processor()
 #ifdef __TARGET_PROCESSOR
     return __TARGET_PROCESSOR;
 #else
-    return "other processor";
+    return "unknown processor";
 #endif // __TARGET_PROCESSOR
 }
 
@@ -49,7 +43,7 @@ std::string buildDate()
 #if defined(__DATE__) && defined(__TIME__)
     return "" __DATE__ " " __TIME__ "";
 #else
-    return "other build date";
+    return "unknown build date";
 #endif // defined(__DATE__) && defined(__TIME__)
 }
 } // namespace application::note
