@@ -58,7 +58,7 @@ class Documentation:
         sys.stdout = self.logger
 
     def pull_archive(self):
-        print(f"\r\n[ {datetime.now()} ] ################# PULL ARCHIVE #################")
+        print(f"\n[ {datetime.now()} ] ################# PULL ARCHIVE #################")
         if not os.path.exists(self.website_dir):
             interrupt("Please manually create a foo_doc folder in the /var/www directory.")
         self.download_artifact()
