@@ -588,7 +588,7 @@ void View::segmentedOutput(const char* const buffer)
     {
         std::cout << line << '\n';
         ++counter;
-        if ((0 == counter % terminalRows) && !withoutPaging)
+        if ((0 == (counter % terminalRows)) && !withoutPaging)
         {
             std::cout << hint;
             std::string input;
@@ -646,8 +646,8 @@ std::string View::getStatusInformation()
     std::vector<std::string> cmdCntr;
     std::size_t pos = 0, prev = 0;
     const int currTid = ::gettid();
-    const bool foundStrace = ::system("which strace >/dev/null 2>&1") == EXIT_SUCCESS;
-    while ((pos = queryResult.find('\n', prev)) != std::string::npos)
+    const bool foundStrace = (::system("which strace >/dev/null 2>&1") == EXIT_SUCCESS);
+    while (std::string::npos != (pos = queryResult.find('\n', prev)))
     {
         const int tid = std::stoi(queryResult.substr(prev, pos - prev));
         char cmd[totalLen] = {'\0'};
@@ -711,7 +711,7 @@ void View::createViewServer()
         {
             try
             {
-                if (0 == message.length())
+                if (message.length() == 0)
                 {
                     return;
                 }
@@ -755,7 +755,7 @@ void View::createViewServer()
     {
         try
         {
-            if (0 == message.length())
+            if (message.length() == 0)
             {
                 return;
             }

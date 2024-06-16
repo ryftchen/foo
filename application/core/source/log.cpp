@@ -201,7 +201,7 @@ void Log::handleLogQueue()
 std::string Log::getFullDefaultLogPath(const std::string& filename)
 {
     std::string processHome;
-    if (nullptr != std::getenv("FOO_HOME"))
+    if (std::getenv("FOO_HOME") != nullptr)
     {
         processHome = std::getenv("FOO_HOME");
     }

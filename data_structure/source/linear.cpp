@@ -136,7 +136,7 @@ int dllSize(DLL head)
 //! @return any nodes do not exist or exist
 bool dllIsEmpty(DLL head)
 {
-    return 0 == dllSize(head);
+    return dllSize(head) == 0;
 }
 
 //! @brief Get the node of the doubly linked list by index.

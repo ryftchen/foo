@@ -677,7 +677,7 @@ try
     auto tcpClient = std::make_shared<utility::socket::TCPSocket>();
     launchClient(tcpClient);
     std::string user = "USER";
-    if (nullptr != std::getenv("USER"))
+    if (std::getenv("USER") != nullptr)
     {
         user = std::getenv("USER");
     }

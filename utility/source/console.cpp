@@ -240,7 +240,7 @@ char* Console::getCommandIterator(const char* text, int state)
     {
         const auto& command = iterator->first;
         ++iterator;
-        if (std::string::npos != command.find(text))
+        if (command.find(text) != std::string::npos)
         {
             return ::strdup(command.c_str());
         }

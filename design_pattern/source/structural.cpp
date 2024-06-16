@@ -235,7 +235,7 @@ FlyweightFactory::~FlyweightFactory()
 
 std::unique_ptr<Flyweight>& FlyweightFactory::getFlyweight(const int key)
 {
-    if (flies.find(key) != flies.cend())
+    if (flies.cend() != flies.find(key))
     {
         return flies[key];
     }

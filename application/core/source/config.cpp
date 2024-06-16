@@ -178,7 +178,7 @@ void Config::checkViewerConfigInHelperList(const utility::json::JSON& configData
 std::string getFullDefaultConfigurationPath()
 {
     std::string processHome;
-    if (nullptr != std::getenv("FOO_HOME"))
+    if (std::getenv("FOO_HOME") != nullptr)
     {
         processHome = std::getenv("FOO_HOME");
     }

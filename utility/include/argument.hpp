@@ -863,7 +863,7 @@ T& Argument::at(const std::string_view name)
     else
     {
         const auto subParserIter = subParserMap.find(name);
-        if (subParserIter != subParserMap.end())
+        if (subParserMap.cend() != subParserIter)
         {
             return subParserIter->second->get();
         }

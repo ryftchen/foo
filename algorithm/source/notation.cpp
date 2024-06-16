@@ -74,7 +74,7 @@ std::string Notation::infixToPostfix(const std::string& infix)
         }
         else
         {
-            while (!charStack.empty() && getPriority(infix[i]) <= getPriority(charStack.top()))
+            while (!charStack.empty() && (getPriority(infix[i]) <= getPriority(charStack.top())))
             {
                 postfix += charStack.top();
                 charStack.pop();

@@ -298,7 +298,7 @@ void Genetic::crossover(Population& pop)
         popCross.emplace_back(std::move(parent1));
         popCross.emplace_back(std::move(parent2));
 
-        if ((pop.size() % 2) && (std::next(chrIter, 2) == container.end() - 1))
+        if ((pop.size() % 2) && (std::next(chrIter, 2) == (container.end() - 1)))
         {
             Chromosome single = std::next(chrIter, 2)->get();
             popCross.emplace_back(std::move(single));
