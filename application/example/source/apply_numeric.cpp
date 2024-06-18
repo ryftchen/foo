@@ -145,6 +145,7 @@ std::string getTitle(const T method)
 //! @return method name
 constexpr std::string_view toString(const ArithmeticMethod method)
 {
+//! @brief Temporary macro definition to extract string.
 #define ELEM(val, str) str,
     constexpr std::string_view table[] = {APP_NUM_ARITHMETIC_METHOD_TABLE};
 #undef ELEM
@@ -161,6 +162,7 @@ constexpr std::string_view toString(const ArithmeticMethod method)
 //! @return method name
 constexpr std::string_view toString(const DivisorMethod method)
 {
+//! @brief Temporary macro definition to extract string.
 #define ELEM(val, str) str,
     constexpr std::string_view table[] = {APP_NUM_DIVISOR_METHOD_TABLE};
 #undef ELEM
@@ -180,6 +182,7 @@ constexpr std::string_view toString(const DivisorMethod method)
 //! @return method name
 constexpr std::string_view toString(const IntegralMethod method)
 {
+//! @brief Temporary macro definition to extract string.
 #define ELEM(val, str) str,
     constexpr std::string_view table[] = {APP_NUM_INTEGRAL_METHOD_TABLE};
 #undef ELEM
@@ -196,6 +199,7 @@ constexpr std::string_view toString(const IntegralMethod method)
 //! @return method name
 constexpr std::string_view toString(const PrimeMethod method)
 {
+//! @brief Temporary macro definition to extract string.
 #define ELEM(val, str) str,
     constexpr std::string_view table[] = {APP_NUM_PRIME_METHOD_TABLE};
 #undef ELEM

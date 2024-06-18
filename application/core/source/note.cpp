@@ -12,7 +12,9 @@ namespace application::note
 //! @return compiler
 std::string compiler()
 {
+//! @brief Temporary macro definition for stringify.
 #define STRINGIFY(x) #x
+//! @brief Temporary macro definition to get string.
 #define TO_STRING(x) STRINGIFY(x)
 #ifdef __clang__
     return "clang " TO_STRING(__clang_major__) "." TO_STRING(__clang_minor__) "." TO_STRING(__clang_patchlevel__) "";

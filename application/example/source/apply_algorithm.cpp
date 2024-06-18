@@ -148,6 +148,7 @@ std::string getTitle(const T method)
 //! @return method name
 constexpr std::string_view toString(const MatchMethod method)
 {
+//! @brief Temporary macro definition to extract string.
 #define ELEM(val, str) str,
     constexpr std::string_view table[] = {APP_ALGO_MATCH_METHOD_TABLE};
 #undef ELEM
@@ -164,6 +165,7 @@ constexpr std::string_view toString(const MatchMethod method)
 //! @return method name
 constexpr std::string_view toString(const NotationMethod method)
 {
+//! @brief Temporary macro definition to extract string.
 #define ELEM(val, str) str,
     constexpr std::string_view table[] = {APP_ALGO_NOTATION_METHOD_TABLE};
 #undef ELEM
@@ -182,6 +184,7 @@ constexpr std::string_view toString(const NotationMethod method)
 //! @return method name
 constexpr std::string_view toString(const OptimalMethod method)
 {
+//! @brief Temporary macro definition to extract string.
 #define ELEM(val, str) str,
     constexpr std::string_view table[] = {APP_ALGO_OPTIMAL_METHOD_TABLE};
 #undef ELEM
@@ -199,6 +202,7 @@ constexpr std::string_view toString(const OptimalMethod method)
 //! @return method name
 constexpr std::string_view toString(const SearchMethod method)
 {
+//! @brief Temporary macro definition to extract string.
 #define ELEM(val, str) str,
     constexpr std::string_view table[] = {APP_ALGO_SEARCH_METHOD_TABLE};
 #undef ELEM
@@ -223,6 +227,7 @@ constexpr std::string_view toString(const SearchMethod method)
 //! @return method name
 constexpr std::string_view toString(const SortMethod method)
 {
+//! @brief Temporary macro definition to extract string.
 #define ELEM(val, str) str,
     constexpr std::string_view table[] = {APP_ALGO_SORT_METHOD_TABLE};
 #undef ELEM

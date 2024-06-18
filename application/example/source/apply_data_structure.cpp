@@ -140,6 +140,7 @@ std::string getTitle(const T instance)
 //! @return instance name
 constexpr std::string_view toString(const LinearInstance instance)
 {
+//! @brief Temporary macro definition to extract string.
 #define ELEM(val, str) str,
     constexpr std::string_view table[] = {APP_DS_LINEAR_INSTANCE_TABLE};
 #undef ELEM
@@ -157,6 +158,7 @@ constexpr std::string_view toString(const LinearInstance instance)
 //! @return instance name
 constexpr std::string_view toString(const TreeInstance instance)
 {
+//! @brief Temporary macro definition to extract string.
 #define ELEM(val, str) str,
     constexpr std::string_view table[] = {APP_DS_TREE_INSTANCE_TABLE};
 #undef ELEM

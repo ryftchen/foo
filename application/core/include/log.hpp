@@ -48,8 +48,6 @@ namespace application // NOLINT (modernize-concat-nested-namespaces)
 //! @brief Log-related functions in the application module.
 namespace log
 {
-//! @brief Default log filename.
-constexpr std::string_view defaultLogFile = "log/foo.log";
 //! @brief Prefix of debug level in log.
 constexpr std::string_view debugLevelPrefix = "[DBG]";
 //! @brief Prefix of info level in log.
@@ -274,7 +272,7 @@ private:
     //! @brief Get the full path to the default log file.
     //! @param filename - default filename
     //! @return full path to the default log file
-    static std::string getFullDefaultLogPath(const std::string& filename = std::string{defaultLogFile});
+    static std::string getFullDefaultLogPath(const std::string& filename = "log/foo.log");
     //! @brief Try to create the log folder.
     void tryToCreateLogFolder() const;
 
