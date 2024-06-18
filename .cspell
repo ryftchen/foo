@@ -27,6 +27,7 @@ words:
   - distcc
   - Doxyfile
   - dumpmachine
+  - endcond
   - EXTSUM
   - filedir
   - fuser
