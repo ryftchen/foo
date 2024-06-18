@@ -65,7 +65,9 @@ enum TLVType : int
     //! @brief Journal.
     journal,
     //! @brief Monitor.
-    monitor
+    monitor,
+    //! @brief Profile.
+    profile
 };
 
 //! @brief Value in TLV.
@@ -79,6 +81,8 @@ struct TLVValue
     int logShmId{invalidShmId};
     //! @brief Shm id of the status information.
     int statusShmId{invalidShmId};
+    //! @brief Details of the current configuration.
+    char configDetail[1024]{'\0'};
 };
 
 //! @brief TLV packet.
@@ -236,12 +240,13 @@ private:
     // clang-format off
     //! @brief Mapping table of all viewer options.
     const OptionMap optionDispatcher{
-        // - Option -+--------------- Help ---------------+------- Build Packet -------
-        // ----------+------------------------------------+----------------------------
-        { "bash"     , { "execute bash commands in quotes" , &buildTLVPacket2Bash    }},
-        { "journal"  , { "view the log with highlights"    , &buildTLVPacket2Journal }},
-        { "monitor"  , { "show the status of the process"  , &buildTLVPacket2Monitor }}
-        // ----------+------------------------------------+----------------------------
+        // - Option -+---------------- Help ----------------+------- Build Packet -------
+        // ----------+--------------------------------------+----------------------------
+        { "bash"     , { "execute bash commands in quotes"   , &buildTLVPacket2Bash    }},
+        { "journal"  , { "view the log with highlights"      , &buildTLVPacket2Journal }},
+        { "monitor"  , { "show the status of the process"    , &buildTLVPacket2Monitor }},
+        { "profile"  , { "display the current configuration" , &buildTLVPacket2Profile }}
+        // ----------+--------------------------------------+----------------------------
     };
     // clang-format on
 
@@ -272,6 +277,11 @@ private:
     //! @param buffer - TLV packet buffer
     //! @return buffer length
     static int buildTLVPacket2Monitor(const std::vector<std::string>& args, char* buffer);
+    //! @brief Build the TLV packet to get current configuration.
+    //! @param args - container of arguments
+    //! @param buffer - TLV packet buffer
+    //! @return buffer length
+    static int buildTLVPacket2Profile(const std::vector<std::string>& args, char* buffer);
     //! @brief Encrypt the message with AES-128-CFB-128.
     //! @param buf - message buffer
     //! @param len - buffer length
@@ -290,7 +300,7 @@ private:
     static void printSharedMemory(const int shmId, const bool withoutPaging = true);
     //! @brief Segmented output.
     //! @param buffer - output buffer
-    static void segmentedOutput(const char* const buffer);
+    static void segmentedOutput(const std::string& buffer);
     //! @brief Get the log contents.
     //! @return log contents
     static std::string getLogContents();

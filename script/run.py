@@ -39,6 +39,7 @@ class Task:
             r'''bash "ps -eww -o size,pid,user,command --sort -size | awk '{ hr=\$1/1024 ; printf(\"%6.2fMB \", hr) } { for (x=4 ; x<=NF ; x++) { printf(\"%s \", \$x) } print \"\" }' | cut -d '' -f 2 | sed '1d'"''',  # pylint: disable=line-too-long
             r"journal",
             r"monitor",
+            r"profile",
         ],
     }
     regular_task_dict = {

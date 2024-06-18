@@ -64,6 +64,12 @@ int tlvEncode(char* buf, int& len, const TLVValue& val)
     tryToFillShmId(TLVType::journal, &TLVValue::logShmId);
     tryToFillShmId(TLVType::monitor, &TLVValue::statusShmId);
 
+    const int valLen = std::strlen(val.configDetail);
+    enc.write<int>(TLVType::profile);
+    enc.write<int>(valLen);
+    enc.write(val.configDetail, valLen);
+    sum += (offset + valLen);
+
     *reinterpret_cast<int*>(buf + sizeof(int)) = ::htonl(sum);
     len = offset + sum;
 
@@ -114,6 +120,10 @@ int tlvDecode(char* buf, const int len, TLVValue& val)
             case TLVType::monitor:
                 dec.read<int>(&val.statusShmId);
                 sum -= (offset + sizeof(int));
+                break;
+            case TLVType::profile:
+                dec.read(&val.configDetail, length);
+                sum -= (offset + length);
                 break;
             default:
                 break;
@@ -361,6 +371,10 @@ tlv::TLVValue View::parseTLVPacket(char* buffer, const int length) const
     {
         printSharedMemory(value.statusShmId, true);
     }
+    if (std::strlen(value.configDetail) != 0)
+    {
+        std::cout << "\r\n" << utility::json::JSON::load(value.configDetail) << '\n' << std::endl;
+    }
 
     return value;
 }
@@ -415,8 +429,9 @@ int View::buildTLVPacket2Bash(const std::vector<std::string>& args, char* buffer
     {
         cmds.pop_back();
     }
-    const int shmId = fillSharedMemory(utility::common::executeCommand("/bin/bash -c " + cmds, 5000));
+
     int length = 0;
+    const int shmId = fillSharedMemory(utility::common::executeCommand("/bin/bash -c " + cmds, 5000));
     if (tlv::tlvEncode(buffer, length, tlv::TLVValue{.bashShmId = shmId}) < 0)
     {
         throw std::runtime_error("Failed to build packet for the bash option.");
@@ -427,8 +442,8 @@ int View::buildTLVPacket2Bash(const std::vector<std::string>& args, char* buffer
 
 int View::buildTLVPacket2Journal(const std::vector<std::string>& /*args*/, char* buffer)
 {
-    const int shmId = fillSharedMemory(getLogContents());
     int length = 0;
+    const int shmId = fillSharedMemory(getLogContents());
     if (tlv::tlvEncode(buffer, length, tlv::TLVValue{.logShmId = shmId}) < 0)
     {
         throw std::runtime_error("Failed to build packet for the journal option.");
@@ -439,11 +454,26 @@ int View::buildTLVPacket2Journal(const std::vector<std::string>& /*args*/, char*
 
 int View::buildTLVPacket2Monitor(const std::vector<std::string>& /*args*/, char* buffer)
 {
-    const int shmId = fillSharedMemory(getStatusInformation());
     int length = 0;
+    const int shmId = fillSharedMemory(getStatusInformation());
     if (tlv::tlvEncode(buffer, length, tlv::TLVValue{.statusShmId = shmId}) < 0)
     {
         throw std::runtime_error("Failed to build packet for the monitor option.");
+    }
+    encryptMessage(buffer, length);
+    return length;
+}
+
+int View::buildTLVPacket2Profile(const std::vector<std::string>& /*args*/, char* buffer)
+{
+    int length = 0;
+    tlv::TLVValue value{};
+    const std::string configStr = config::Config::getInstance().cfgData().toUnescapedString();
+    std::strncpy(value.configDetail, configStr.c_str(), sizeof(value.configDetail) - 1);
+    value.configDetail[sizeof(value.configDetail) - 1] = '\0';
+    if (tlv::tlvEncode(buffer, length, value) < 0)
+    {
+        throw std::runtime_error("Failed to build packet for the profile option.");
     }
     encryptMessage(buffer, length);
     return length;
@@ -548,6 +578,7 @@ void View::printSharedMemory(const int shmId, const bool withoutPaging)
         throw std::runtime_error("Failed to attach shared memory.");
     }
 
+    std::string output;
     auto* const shrMem = reinterpret_cast<SharedMemory*>(shm);
     shrMem->signal.store(true);
     for (;;)
@@ -555,17 +586,7 @@ void View::printSharedMemory(const int shmId, const bool withoutPaging)
         if (shrMem->signal.load())
         {
             decryptMessage(shrMem->buffer, sizeof(shrMem->buffer));
-            if (withoutPaging)
-            {
-                std::cout << "\r\n" << shrMem->buffer << std::endl;
-            }
-            else
-            {
-                std::cout << "\r\n";
-                segmentedOutput(shrMem->buffer);
-                std::cout << std::endl;
-            }
-
+            output = shrMem->buffer;
             shrMem->signal.store(false);
             break;
         }
@@ -573,17 +594,28 @@ void View::printSharedMemory(const int shmId, const bool withoutPaging)
     }
     ::shmdt(shm);
     ::shmctl(shmId, IPC_RMID, nullptr);
+
+    if (withoutPaging)
+    {
+        std::cout << "\r\n" << output << std::endl;
+    }
+    else
+    {
+        std::cout << "\r\n";
+        segmentedOutput(output);
+        std::cout << std::endl;
+    }
 }
 
-void View::segmentedOutput(const char* const buffer)
+void View::segmentedOutput(const std::string& buffer)
 {
     constexpr std::uint8_t terminalRows = 24;
     constexpr std::string_view hint = "----- Type <CR> for more, c to continue without paging, q to quit -----: ",
                                clearEscape = "\x1b[1A\x1b[2K\r";
     std::uint64_t counter = 0;
-    std::string line;
     bool withoutPaging = false;
-    std::istringstream is(std::string{buffer});
+    std::istringstream is(buffer);
+    std::string line;
     while (std::getline(is, line))
     {
         std::cout << line << '\n';
