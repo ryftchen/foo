@@ -244,7 +244,7 @@ private:
         // ----------+--------------------------------------+----------------------------
         { "bash"     , { "execute bash commands in quotes"   , &buildTLVPacket2Bash    }},
         { "journal"  , { "view the log with highlights"      , &buildTLVPacket2Journal }},
-        { "monitor"  , { "show the status of the process"    , &buildTLVPacket2Monitor }},
+        { "monitor"  , { "query the status of the process"   , &buildTLVPacket2Monitor }},
         { "profile"  , { "display the current configuration" , &buildTLVPacket2Profile }}
         // ----------+--------------------------------------+----------------------------
     };
