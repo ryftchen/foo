@@ -170,8 +170,7 @@ HTML_EXTRA_STYLESHEET  = /usr/local/lib/node_modules/@jothepro/doxygen-awesome-c
 HTML_EXTRA_FILES       = /usr/local/lib/node_modules/@jothepro/doxygen-awesome-css/doxygen-awesome-darkmode-toggle.js \
                          /usr/local/lib/node_modules/@jothepro/doxygen-awesome-css/doxygen-awesome-fragment-copy-button.js \
                          /usr/local/lib/node_modules/@jothepro/doxygen-awesome-css/doxygen-awesome-paragraph-link.js \
-                         /usr/local/lib/node_modules/@jothepro/doxygen-awesome-css/doxygen-awesome-interactive-toc.js \
-                         ./document/template/favicon.png
+                         /usr/local/lib/node_modules/@jothepro/doxygen-awesome-css/doxygen-awesome-interactive-toc.js
 HTML_COLORSTYLE        = AUTO_LIGHT
 HTML_COLORSTYLE_HUE    = 220
 HTML_COLORSTYLE_SAT    = 100
