@@ -687,14 +687,14 @@ function package_for_browser()
 -o ./${FOLDER[doc]}/${browser_folder} -p ${FOLDER[proj]}:.:${commit_id} -d ./data"
     shell_command "codebrowser_indexgenerator ./${FOLDER[doc]}/${browser_folder} -d ./data"
 
-    local ico_url="https://web.archive.org/web/20220122053326if_/https://code.woboq.org/favicon.ico"
+    local ico_url="https://web.archive.org/web/20220309195008if_/https://code.woboq.org/favicon.ico"
     shell_command "find \"./${FOLDER[doc]}/${browser_folder}/index.html\" \
 \"./${FOLDER[doc]}/${browser_folder}/${FOLDER[proj]}\" \"./${FOLDER[doc]}/${browser_folder}/include\" -name \"*.html\" \
 -exec sed -i '/^<\/head>$/i <link rel=\\\"shortcut icon\\\" href=\\\"${ico_url}\\\" type=\\\"image/x-icon\\\"/>' {} +"
     local escaped_old_png_url escaped_new_png_url
     escaped_old_png_url=$(printf "%s\n" "https://code.woboq.org/woboq-16.png" | sed -e 's/[]\/$*.^[]/\\&/g')
     escaped_new_png_url=$(printf "%s\n" \
-        "https://web.archive.org/web/20220122053323if_/https://code.woboq.org/woboq-16.png" \
+        "https://web.archive.org/web/20220224111804if_/https://code.woboq.org/woboq-16.png" \
         | sed -e 's/[]\/$*.^[]/\\&/g')
     shell_command "find \"./${FOLDER[doc]}/${browser_folder}/index.html\" \
 \"./${FOLDER[doc]}/${browser_folder}/${FOLDER[proj]}\" \"./${FOLDER[doc]}/${browser_folder}/include\" -name \"*.html\" \
