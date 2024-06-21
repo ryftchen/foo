@@ -139,9 +139,14 @@ public:
     virtual ~View() = default;
     //! @brief Construct a new View object.
     View(const View&) = delete;
+    //! @brief Construct a new View object.
+    View(View&&) = delete;
     //! @brief The operator (=) overloading of View class.
     //! @return reference of the View object
     View& operator=(const View&) = delete;
+    //! @brief The operator (=) overloading of View struct.
+    //! @return reference of the View object
+    View& operator=(View&&) = delete;
 
     friend class FSM<View>;
     //! @brief Enumerate specific states for FSM.
