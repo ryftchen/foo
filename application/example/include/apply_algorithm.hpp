@@ -13,6 +13,8 @@
 #include <cstring>
 #include <iostream>
 #include <memory>
+#include <unordered_map>
+#include <variant>
 #else
 #include "application/pch/precompiled_header.hpp"
 #endif // __PRECOMPILED_HEADER
@@ -299,13 +301,13 @@ public:
 //! @brief Maximum number per line of printing.
 constexpr std::uint32_t maxNumPerLineOfPrint = 50;
 
-//! @brief Builder for the target.
-class TargetBuilder
+//! @brief Builder for the input.
+class InputBuilder
 {
 public:
-    //! @brief Construct a new TargetBuilder object.
+    //! @brief Construct a new InputBuilder object.
     //! @param pattern - single pattern
-    explicit TargetBuilder(const std::string& pattern) :
+    explicit InputBuilder(const std::string& pattern) :
         marchingText(std::make_unique<unsigned char[]>(maxDigit + 1)),
         textLength(maxDigit),
         singlePattern(std::make_unique<unsigned char[]>(pattern.length() + 1)),
@@ -314,14 +316,14 @@ public:
         createMatchingText(marchingText.get(), maxDigit);
         std::memcpy(singlePattern.get(), pattern.data(), pattern.length() * sizeof(unsigned char));
     }
-    //! @brief Destroy the TargetBuilder object.
-    virtual ~TargetBuilder() { ::mpfr_free_cache(); }
+    //! @brief Destroy the InputBuilder object.
+    virtual ~InputBuilder() { ::mpfr_free_cache(); }
 
-    //! @brief Construct a new TargetBuilder object.
-    TargetBuilder(const TargetBuilder&) = delete;
-    //! @brief The operator (=) overloading of TargetBuilder class.
-    //! @return reference of the TargetBuilder object
-    TargetBuilder& operator=(const TargetBuilder&) = delete;
+    //! @brief Construct a new InputBuilder object.
+    InputBuilder(const InputBuilder&) = delete;
+    //! @brief The operator (=) overloading of InputBuilder class.
+    //! @return reference of the InputBuilder object
+    InputBuilder& operator=(const InputBuilder&) = delete;
 
     //! @brief Maximum digit for the target text.
     static constexpr std::uint32_t maxDigit{100000};
@@ -427,20 +429,20 @@ public:
     static void postfixMethod(const std::string& infixNotation);
 };
 
-//! @brief Builder for the target.
-class TargetBuilder
+//! @brief Builder for the input.
+class InputBuilder
 {
 public:
-    //! @brief Construct a new TargetBuilder object.
+    //! @brief Construct a new InputBuilder object.
     //! @param infixNotation - infix notation
-    explicit TargetBuilder(const std::string_view infixNotation) : infixNotation(infixNotation)
+    explicit InputBuilder(const std::string_view infixNotation) : infixNotation(infixNotation)
     {
 #ifdef __RUNTIME_PRINTING
         std::cout << "\r\nInfix notation: " << infixNotation << std::endl;
 #endif // __RUNTIME_PRINTING
     }
-    //! @brief Destroy the TargetBuilder object.
-    virtual ~TargetBuilder() = default;
+    //! @brief Destroy the InputBuilder object.
+    virtual ~InputBuilder() = default;
 
     //! @brief Get the infix notation.
     //! @return infix notation
@@ -597,6 +599,54 @@ struct FuncMapHash
         return hash1 ^ hash2 ^ hash3;
     }
 };
+
+//! @brief Alias for the optimal function.
+//! @tparam Ts - type of function
+template <class... Ts>
+using OptimalFunc = std::variant<Ts...>;
+//! @brief Alias for the optimal function map.
+//! @tparam Ts - type of function
+template <class... Ts>
+using OptimalFuncMap = std::unordered_multimap<FuncRange<double, double>, OptimalFunc<Ts...>, FuncMapHash>;
+
+//! @brief Builder for the input.
+//! @tparam Ts - type of function
+template <class... Ts>
+class InputBuilder
+{
+public:
+    //! @brief Construct a new InputBuilder object.
+    //! @param functionMap - collection of optimal functions
+    explicit InputBuilder(const OptimalFuncMap<Ts...>& functionMap) : functionMap(std::move(functionMap)) {}
+    //! @brief Destroy the InputBuilder object.
+    virtual ~InputBuilder() = default;
+
+    //! @brief Get the collection of optimal functions.
+    //! @return collection of optimal functions
+    inline const OptimalFuncMap<Ts...>& getFunctionMap() const { return functionMap; };
+    //! @brief Print function.
+    //! @param function - target function
+    static void printFunction(const OptimalFunc<Ts...>& function)
+    {
+        constexpr std::string_view prefix = "\r\nOptimal function:\n";
+        std::visit(
+            FuncOverloaded{
+                [&prefix](const input::Rastrigin& /*func*/)
+                {
+                    std::cout << prefix << input::Rastrigin::funcDescr << std::endl;
+                },
+                [&prefix](const input::Griewank& /*func*/)
+                {
+                    std::cout << prefix << input::Griewank::funcDescr << std::endl;
+                },
+            },
+            function);
+    };
+
+private:
+    //! @brief Collection of optimal functions.
+    const OptimalFuncMap<Ts...> functionMap;
+};
 } // namespace optimal
 extern void runOptimalTasks(const std::vector<std::string>& candidates);
 extern void updateOptimalTask(const std::string& target);
@@ -653,35 +703,35 @@ constexpr bool isRealNumber()
     return std::is_integral<T>::value || std::is_floating_point<T>::value;
 }
 
-//! @brief Builder for the target.
+//! @brief Builder for the input.
 //! @tparam T - type of builder for the target
 template <class T>
-class TargetBuilder
+class InputBuilder
 {
 public:
-    //! @brief Construct a new TargetBuilder object.
+    //! @brief Construct a new InputBuilder object.
     //! @param length - length of array
     //! @param left - the left boundary of the array
     //! @param right - the right boundary of the array
-    TargetBuilder(const std::uint32_t length, const T left, const T right) :
+    InputBuilder(const std::uint32_t length, const T left, const T right) :
         orderedArray(std::make_unique<T[]>(length + 1)), length(length)
     {
         setOrderedArray<T>(orderedArray.get(), length, left, right);
         searchKey = orderedArray[length / 2];
     }
-    //! @brief Destroy the TargetBuilder object.
-    virtual ~TargetBuilder() = default;
-    //! @brief Construct a new TargetBuilder object.
+    //! @brief Destroy the InputBuilder object.
+    virtual ~InputBuilder() = default;
+    //! @brief Construct a new InputBuilder object.
     //! @param rhs - right-hand side
-    TargetBuilder(const TargetBuilder& rhs) : length(rhs.length), orderedArray(std::make_unique<T[]>(rhs.length + 1))
+    InputBuilder(const InputBuilder& rhs) : length(rhs.length), orderedArray(std::make_unique<T[]>(rhs.length + 1))
     {
         deepCopy(rhs);
         searchKey = orderedArray[length / 2];
     }
-    //! @brief The operator (!=) overloading of TargetBuilder class.
+    //! @brief The operator (!=) overloading of InputBuilder class.
     //! @param rhs - right-hand side
-    //! @return reference of the TargetBuilder object
-    TargetBuilder<T>& operator=(const TargetBuilder& rhs)
+    //! @return reference of the InputBuilder object
+    InputBuilder<T>& operator=(const InputBuilder& rhs)
     {
         deepCopy(rhs);
         return *this;
@@ -763,7 +813,7 @@ private:
 
     //! @brief Deep copy for copy constructor.
     //! @param rhs - right-hand side
-    void deepCopy(const TargetBuilder& rhs) const
+    void deepCopy(const InputBuilder& rhs) const
     {
         std::memcpy(orderedArray.get(), rhs.orderedArray.get(), length * sizeof(T));
     }
@@ -900,33 +950,33 @@ constexpr bool isRealNumber()
     return std::is_integral<T>::value || std::is_floating_point<T>::value;
 }
 
-//! @brief Builder for the target.
+//! @brief Builder for the input.
 //! @tparam T - type of builder for the target
 template <class T>
-class TargetBuilder
+class InputBuilder
 {
 public:
-    //! @brief Construct a new TargetBuilder object.
+    //! @brief Construct a new InputBuilder object.
     //! @param length - length of array
     //! @param left - the left boundary of the array
     //! @param right - the right boundary of the array
-    TargetBuilder(const std::uint32_t length, const T left, const T right) :
+    InputBuilder(const std::uint32_t length, const T left, const T right) :
         randomArray(std::make_unique<T[]>(length + 1)), length(length)
     {
         setRandomArray<T>(randomArray.get(), length, left, right);
     }
-    //! @brief Destroy the TargetBuilder object.
-    virtual ~TargetBuilder() = default;
-    //! @brief Construct a new TargetBuilder object.
+    //! @brief Destroy the InputBuilder object.
+    virtual ~InputBuilder() = default;
+    //! @brief Construct a new InputBuilder object.
     //! @param rhs - right-hand side
-    TargetBuilder(const TargetBuilder& rhs) : length(rhs.length), randomArray(std::make_unique<T[]>(rhs.length + 1))
+    InputBuilder(const InputBuilder& rhs) : length(rhs.length), randomArray(std::make_unique<T[]>(rhs.length + 1))
     {
         deepCopy(rhs);
     }
-    //! @brief The operator (!=) overloading of TargetBuilder class.
+    //! @brief The operator (!=) overloading of InputBuilder class.
     //! @param rhs - right-hand side
-    //! @return reference of the TargetBuilder object
-    TargetBuilder<T>& operator=(const TargetBuilder& rhs)
+    //! @return reference of the InputBuilder object
+    InputBuilder<T>& operator=(const InputBuilder& rhs)
     {
         deepCopy(rhs);
         return *this;
@@ -1003,7 +1053,7 @@ private:
 
     //! @brief Deep copy for copy constructor.
     //! @param rhs - right-hand side
-    void deepCopy(const TargetBuilder& rhs) const
+    void deepCopy(const InputBuilder& rhs) const
     {
         std::memcpy(randomArray.get(), rhs.randomArray.get(), length * sizeof(T));
     }

@@ -10,7 +10,8 @@
 #include <bitset>
 #include <cmath>
 #include <iostream>
-#include <tuple>
+#include <unordered_map>
+#include <variant>
 #else
 #include "application/pch/precompiled_header.hpp"
 #endif // __PRECOMPILED_HEADER
@@ -212,21 +213,21 @@ public:
     static void divisionMethod(const std::int32_t dividend, const std::int32_t divisor);
 };
 
-//! @brief Builder for the target.
-class TargetBuilder
+//! @brief Builder for the input.
+class InputBuilder
 {
 public:
-    //! @brief Construct a new TargetBuilder object.
+    //! @brief Construct a new InputBuilder object.
     //! @param integer1 - first integer for elementary arithmetic
     //! @param integer2 - second integer for elementary arithmetic
-    TargetBuilder(const std::int32_t integer1, const std::int32_t integer2) : integer1(integer1), integer2(integer2)
+    InputBuilder(const std::int32_t integer1, const std::int32_t integer2) : integer1(integer1), integer2(integer2)
     {
 #ifdef __RUNTIME_PRINTING
         std::cout << "\r\nElementary arithmetic of " << integer1 << " and " << integer2 << ':' << std::endl;
 #endif
     }
-    //! @brief Destroy the TargetBuilder object.
-    virtual ~TargetBuilder() = default;
+    //! @brief Destroy the InputBuilder object.
+    virtual ~InputBuilder() = default;
 
     //! @brief Get the pair of integers.
     //! @return pair of integers
@@ -279,21 +280,21 @@ constexpr std::uint8_t maxAlignOfPrint = 16;
 //! @brief Maximum columns per row of printing.
 constexpr std::uint8_t maxColumnOfPrint = 10;
 
-//! @brief Builder for the target.
-class TargetBuilder
+//! @brief Builder for the input.
+class InputBuilder
 {
 public:
-    //! @brief Construct a new TargetBuilder object.
+    //! @brief Construct a new InputBuilder object.
     //! @param integer1 - first integer
     //! @param integer2 - second integer
-    TargetBuilder(const std::int32_t integer1, const std::int32_t integer2) : integer1(integer1), integer2(integer2)
+    InputBuilder(const std::int32_t integer1, const std::int32_t integer2) : integer1(integer1), integer2(integer2)
     {
 #ifdef __RUNTIME_PRINTING
         std::cout << "\r\nAll common divisors of " << integer1 << " and " << integer2 << ':' << std::endl;
 #endif
     }
-    //! @brief Destroy the TargetBuilder object.
-    virtual ~TargetBuilder() = default;
+    //! @brief Destroy the InputBuilder object.
+    virtual ~InputBuilder() = default;
 
     //! @brief Get the pair of integers.
     //! @return pair of integers
@@ -490,6 +491,54 @@ struct ExprMapHash
         return hash1 ^ hash2 ^ hash3;
     }
 };
+
+//! @brief Alias for the integral expression.
+//! @tparam Ts - type of expression
+template <class... Ts>
+using IntegralExpr = std::variant<Ts...>;
+//! @brief Alias for the integral expression map.
+//! @tparam Ts - type of expression
+template <class... Ts>
+using IntegralExprMap = std::unordered_multimap<ExprRange<double, double>, IntegralExpr<Ts...>, ExprMapHash>;
+
+//! @brief Builder for the input.
+//! @tparam Ts - type of expression
+template <class... Ts>
+class InputBuilder
+{
+public:
+    //! @brief Construct a new InputBuilder object.
+    //! @param expressionMap - collection of integral expressions
+    explicit InputBuilder(const IntegralExprMap<Ts...>& expressionMap) : expressionMap(std::move(expressionMap)) {}
+    //! @brief Destroy the InputBuilder object.
+    virtual ~InputBuilder() = default;
+
+    //! @brief Get the collection of integral expressions.
+    //! @return collection of integral expressions
+    inline const IntegralExprMap<Ts...>& getExpressionMap() const { return expressionMap; };
+    //! @brief Print expression.
+    //! @param expression - target expression
+    static void printExpression(const IntegralExpr<Ts...>& expression)
+    {
+        constexpr std::string_view prefix = "\r\nIntegral expression:\n";
+        std::visit(
+            ExprOverloaded{
+                [&prefix](const input::Expression1& /*expr*/)
+                {
+                    std::cout << prefix << input::Expression1::exprDescr << std::endl;
+                },
+                [&prefix](const input::Expression2& /*expr*/)
+                {
+                    std::cout << prefix << input::Expression2::exprDescr << std::endl;
+                },
+            },
+            expression);
+    };
+
+private:
+    //! @brief Collection of integral expressions.
+    const IntegralExprMap<Ts...> expressionMap;
+};
 } // namespace integral
 extern void runIntegralTasks(const std::vector<std::string>& candidates);
 extern void updateIntegralTask(const std::string& target);
@@ -524,20 +573,20 @@ constexpr std::uint8_t maxAlignOfPrint = 16;
 //! @brief Maximum columns per row of printing.
 constexpr std::uint8_t maxColumnOfPrint = 10;
 
-//! @brief Builder for the target.
-class TargetBuilder
+//! @brief Builder for the input.
+class InputBuilder
 {
 public:
-    //! @brief Construct a new TargetBuilder object.
+    //! @brief Construct a new InputBuilder object.
     //! @param maxPositiveInteger - maximum positive integer
-    explicit TargetBuilder(const std::uint32_t maxPositiveInteger) : maxPositiveInteger(maxPositiveInteger)
+    explicit InputBuilder(const std::uint32_t maxPositiveInteger) : maxPositiveInteger(maxPositiveInteger)
     {
 #ifdef __RUNTIME_PRINTING
         std::cout << "\r\nAll prime numbers smaller than " << maxPositiveInteger << ':' << std::endl;
 #endif
     }
-    //! @brief Destroy the TargetBuilder object.
-    virtual ~TargetBuilder() = default;
+    //! @brief Destroy the InputBuilder object.
+    virtual ~InputBuilder() = default;
 
     //! @brief Get the Maximum positive integer.
     //! @return maximum positive integer

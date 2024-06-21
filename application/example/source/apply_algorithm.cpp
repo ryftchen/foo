@@ -364,15 +364,15 @@ void runMatchTasks(const std::vector<std::string>& candidates)
     }
 
     APP_ALGO_PRINT_TASK_BEGIN_TITLE(category);
-    using match::MatchSolution, match::TargetBuilder, match::input::patternString;
-    static_assert(TargetBuilder::maxDigit > patternString.length());
+    using match::MatchSolution, match::InputBuilder, match::input::patternString;
+    static_assert(InputBuilder::maxDigit > patternString.length());
 
     auto& pooling = command::getPublicThreadPool();
     auto* const threads = pooling.newElement(
         std::min(static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<MatchMethod>::value)));
-    const auto builder = std::make_shared<TargetBuilder>(std::string{patternString});
+    const auto inputs = std::make_shared<InputBuilder>(std::string{patternString});
     const auto matchFunctor =
-        [threads, builder](
+        [threads, inputs](
             const std::string& threadName,
             void (*methodPtr)(
                 const unsigned char* const, const unsigned char* const, const std::uint32_t, const std::uint32_t))
@@ -380,10 +380,10 @@ void runMatchTasks(const std::vector<std::string>& candidates)
         threads->enqueue(
             threadName,
             methodPtr,
-            builder->getMatchingText().get(),
-            builder->getSinglePattern().get(),
-            builder->getTextLength(),
-            builder->getPatternLength());
+            inputs->getMatchingText().get(),
+            inputs->getSinglePattern().get(),
+            inputs->getTextLength(),
+            inputs->getPatternLength());
     };
     const auto name = utility::currying::curry(getTaskNameCurried(), getCategoryAlias<category>());
 
@@ -498,16 +498,15 @@ void runNotationTasks(const std::vector<std::string>& candidates)
     }
 
     APP_ALGO_PRINT_TASK_BEGIN_TITLE(category);
-    using notation::NotationSolution, notation::TargetBuilder, notation::input::infixString;
+    using notation::NotationSolution, notation::InputBuilder, notation::input::infixString;
 
     auto& pooling = command::getPublicThreadPool();
     auto* const threads = pooling.newElement(std::min(
         static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<NotationMethod>::value)));
-    const auto builder = std::make_shared<TargetBuilder>(infixString);
-    const auto notationFunctor =
-        [threads, builder](const std::string& threadName, void (*methodPtr)(const std::string&))
+    const auto inputs = std::make_shared<InputBuilder>(infixString);
+    const auto notationFunctor = [threads, inputs](const std::string& threadName, void (*methodPtr)(const std::string&))
     {
-        threads->enqueue(threadName, methodPtr, std::string{builder->getInfixNotation()});
+        threads->enqueue(threadName, methodPtr, std::string{inputs->getInfixNotation()});
     };
     const auto name = utility::currying::curry(getTaskNameCurried(), getCategoryAlias<category>());
 
@@ -633,25 +632,7 @@ void runOptimalTasks(const std::vector<std::string>& candidates)
         return;
     }
 
-    using optimal::input::Rastrigin;
-    typedef std::variant<Rastrigin> OptimalFuncTarget;
-    static_assert(Rastrigin::range1 < Rastrigin::range2);
-    const std::unordered_multimap<optimal::FuncRange<double, double>, OptimalFuncTarget, optimal::FuncMapHash>
-        optimalFuncMap{
-            {{Rastrigin::range1, Rastrigin::range2, Rastrigin::funcDescr}, Rastrigin{}},
-        };
-    constexpr auto printFunc = [](const OptimalFuncTarget& function)
-    {
-        constexpr std::string_view prefix = "\r\nOptimal function:\n";
-        std::visit(
-            optimal::FuncOverloaded{
-                [&prefix](const Rastrigin& /*func*/)
-                {
-                    std::cout << prefix << Rastrigin::funcDescr << std::endl;
-                },
-            },
-            function);
-    };
+    using optimal::InputBuilder, optimal::input::Rastrigin;
     const auto calcFunc =
         [&candidates, bitFlag](const optimal::Function& function, const optimal::FuncRange<double, double>& range)
     {
@@ -699,15 +680,18 @@ void runOptimalTasks(const std::vector<std::string>& candidates)
 
     APP_ALGO_PRINT_TASK_BEGIN_TITLE(category);
 
-    for ([[maybe_unused]] const auto& [range, function] : optimalFuncMap)
+    static_assert(Rastrigin::range1 < Rastrigin::range2);
+    const auto inputs = std::make_shared<InputBuilder<Rastrigin>>(optimal::OptimalFuncMap<Rastrigin>{
+        {{Rastrigin::range1, Rastrigin::range2, Rastrigin::funcDescr}, Rastrigin{}}});
+    for ([[maybe_unused]] const auto& [range, function] : inputs->getFunctionMap())
     {
-        printFunc(function);
+        inputs->printFunction(function);
         switch (function.index())
         {
             case 0:
                 calcFunc(std::get<0>(function), range);
                 break;
-            default:
+            [[unlikely]] default:
                 break;
         }
     }
@@ -820,20 +804,20 @@ void runSearchTasks(const std::vector<std::string>& candidates)
     }
 
     APP_ALGO_PRINT_TASK_BEGIN_TITLE(category);
-    using search::SearchSolution, search::TargetBuilder, search::input::arrayLength, search::input::arrayRange1,
+    using search::SearchSolution, search::InputBuilder, search::input::arrayLength, search::input::arrayRange1,
         search::input::arrayRange2;
     static_assert((arrayRange1 < arrayRange2) && (arrayLength > 0));
 
     auto& pooling = command::getPublicThreadPool();
     auto* const threads = pooling.newElement(
         std::min(static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<SearchMethod>::value)));
-    const auto builder = std::make_shared<TargetBuilder<float>>(arrayLength, arrayRange1, arrayRange2);
+    const auto inputs = std::make_shared<InputBuilder<float>>(arrayLength, arrayRange1, arrayRange2);
     const auto searchFunctor =
-        [threads, builder](
-            const std::string& threadName, void (*methodPtr)(const float* const, const std::uint32_t, const float))
+        [threads,
+         inputs](const std::string& threadName, void (*methodPtr)(const float* const, const std::uint32_t, const float))
     {
         threads->enqueue(
-            threadName, methodPtr, builder->getOrderedArray().get(), builder->getLength(), builder->getSearchKey());
+            threadName, methodPtr, inputs->getOrderedArray().get(), inputs->getLength(), inputs->getSearchKey());
     };
     const auto name = utility::currying::curry(getTaskNameCurried(), getCategoryAlias<category>());
 
@@ -903,7 +887,7 @@ namespace sort
         COMMON_PRINT(                                                             \
             SORT_RESULT(asc),                                                     \
             getTitle(method).data(),                                              \
-            TargetBuilder<std::int32_t>::template spliceAll<std::int32_t>(        \
+            InputBuilder<std::int32_t>::template spliceAll<std::int32_t>(         \
                 resCntr.data(), length, arrayBuffer.data(), arrayBufferSize + 1), \
             TIME_INTERVAL(timing));                                               \
     }                                                                             \
@@ -1055,19 +1039,19 @@ void runSortTasks(const std::vector<std::string>& candidates)
     }
 
     APP_ALGO_PRINT_TASK_BEGIN_TITLE(category);
-    using sort::SortSolution, sort::TargetBuilder, sort::input::arrayLength, sort::input::arrayRange1,
+    using sort::SortSolution, sort::InputBuilder, sort::input::arrayLength, sort::input::arrayRange1,
         sort::input::arrayRange2;
     static_assert((arrayRange1 < arrayRange2) && (arrayLength > 0));
 
     auto& pooling = command::getPublicThreadPool();
     auto* const threads = pooling.newElement(
         std::min(static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<SortMethod>::value)));
-    const auto builder = std::make_shared<TargetBuilder<std::int32_t>>(arrayLength, arrayRange1, arrayRange2);
+    const auto inputs = std::make_shared<InputBuilder<std::int32_t>>(arrayLength, arrayRange1, arrayRange2);
     const auto sortFunctor =
         [threads,
-         builder](const std::string& threadName, void (*methodPtr)(const std::int32_t* const, const std::uint32_t))
+         inputs](const std::string& threadName, void (*methodPtr)(const std::int32_t* const, const std::uint32_t))
     {
-        threads->enqueue(threadName, methodPtr, builder->getRandomArray().get(), builder->getLength());
+        threads->enqueue(threadName, methodPtr, inputs->getRandomArray().get(), inputs->getLength());
     };
     const auto name = utility::currying::curry(getTaskNameCurried(), getCategoryAlias<category>());
 
