@@ -38,23 +38,23 @@ public:
     static void SetUpTestCase()
     {
         TST_NUM_PRINT_TASK_TITLE(Category::arithmetic, "BEGIN");
-        builder = std::make_shared<arithmetic::TargetBuilder>(arithmetic::input::integerA, arithmetic::input::integerB);
+        inputs = std::make_shared<arithmetic::InputBuilder>(arithmetic::input::integerA, arithmetic::input::integerB);
     }
     //! @brief Tear down the test case.
     static void TearDownTestCase()
     {
         TST_NUM_PRINT_TASK_TITLE(Category::arithmetic, "END");
-        builder.reset();
+        inputs.reset();
     }
     //! @brief Set up.
     void SetUp() override{};
     //! @brief Tear down.
     void TearDown() override{};
 
-    //! @brief Target builder.
-    static std::shared_ptr<arithmetic::TargetBuilder> builder;
+    //! @brief Input builder.
+    static std::shared_ptr<arithmetic::InputBuilder> inputs;
 };
-std::shared_ptr<arithmetic::TargetBuilder> ArithmeticTestBase::builder = nullptr;
+std::shared_ptr<arithmetic::InputBuilder> ArithmeticTestBase::inputs = nullptr;
 
 //! @brief Test for the addition method in the solution of arithmetic.
 TEST_F(ArithmeticTestBase, additionMethod)
@@ -62,7 +62,7 @@ TEST_F(ArithmeticTestBase, additionMethod)
     ASSERT_EQ(
         1073741821,
         numeric::arithmetic::Arithmetic::addition(
-            std::get<0>(builder->getIntegers()), std::get<1>(builder->getIntegers())));
+            std::get<0>(inputs->getIntegers()), std::get<1>(inputs->getIntegers())));
 }
 
 //! @brief Test for the subtraction method in the solution of arithmetic.
@@ -71,7 +71,7 @@ TEST_F(ArithmeticTestBase, subtractionMethod)
     ASSERT_EQ(
         1073741825,
         numeric::arithmetic::Arithmetic::subtraction(
-            std::get<0>(builder->getIntegers()), std::get<1>(builder->getIntegers())));
+            std::get<0>(inputs->getIntegers()), std::get<1>(inputs->getIntegers())));
 }
 
 //! @brief Test for the multiplication method in the solution of arithmetic.
@@ -80,7 +80,7 @@ TEST_F(ArithmeticTestBase, multiplicationMethod)
     ASSERT_EQ(
         -2147483646,
         numeric::arithmetic::Arithmetic::multiplication(
-            std::get<0>(builder->getIntegers()), std::get<1>(builder->getIntegers())));
+            std::get<0>(inputs->getIntegers()), std::get<1>(inputs->getIntegers())));
 }
 
 //! @brief Test for the division method in the solution of arithmetic.
@@ -89,7 +89,7 @@ TEST_F(ArithmeticTestBase, divisionMethod)
     ASSERT_EQ(
         -536870911,
         numeric::arithmetic::Arithmetic::division(
-            std::get<0>(builder->getIntegers()), std::get<1>(builder->getIntegers())));
+            std::get<0>(inputs->getIntegers()), std::get<1>(inputs->getIntegers())));
 }
 
 //! @brief Test base of divisor.
@@ -105,32 +105,32 @@ public:
     static void SetUpTestCase()
     {
         TST_NUM_PRINT_TASK_TITLE(Category::divisor, "BEGIN");
-        builder = std::make_shared<divisor::TargetBuilder>(divisor::input::integerA, divisor::input::integerB);
+        inputs = std::make_shared<divisor::InputBuilder>(divisor::input::integerA, divisor::input::integerB);
     }
     //! @brief Tear down the test case.
     static void TearDownTestCase()
     {
         TST_NUM_PRINT_TASK_TITLE(Category::divisor, "END");
-        builder.reset();
+        inputs.reset();
     }
     //! @brief Set up.
     void SetUp() override{};
     //! @brief Tear down.
     void TearDown() override{};
 
-    //! @brief Target builder.
-    static std::shared_ptr<divisor::TargetBuilder> builder;
+    //! @brief Input builder.
+    static std::shared_ptr<divisor::InputBuilder> inputs;
     //! @brief Expected result.
     const std::vector<std::int32_t> expCntr{1, 2, 3, 5, 6, 7, 10, 14, 15, 21, 30, 35, 42, 70, 105, 210};
 };
-std::shared_ptr<divisor::TargetBuilder> DivisorTestBase::builder = nullptr;
+std::shared_ptr<divisor::InputBuilder> DivisorTestBase::inputs = nullptr;
 
 //! @brief Test for the Euclidean method in the solution of divisor.
 TEST_F(DivisorTestBase, euclideanMethod)
 {
     ASSERT_EQ(
         expCntr,
-        numeric::divisor::Divisor::euclidean(std::get<0>(builder->getIntegers()), std::get<1>(builder->getIntegers())));
+        numeric::divisor::Divisor::euclidean(std::get<0>(inputs->getIntegers()), std::get<1>(inputs->getIntegers())));
 }
 
 //! @brief Test for the Stein method in the solution of divisor.
@@ -138,7 +138,7 @@ TEST_F(DivisorTestBase, steinMethod)
 {
     ASSERT_EQ(
         expCntr,
-        numeric::divisor::Divisor::stein(std::get<0>(builder->getIntegers()), std::get<1>(builder->getIntegers())));
+        numeric::divisor::Divisor::stein(std::get<0>(inputs->getIntegers()), std::get<1>(inputs->getIntegers())));
 }
 
 //! @brief Test base of integral.
@@ -150,29 +150,43 @@ public:
     //! @brief Destroy the IntegralTestBase object.
     ~IntegralTestBase() override = default;
 
+    //! @brief Alias for the target expression.
+    using Expression1 = integral::input::Expression1;
     //! @brief Set up the test case.
-    static void SetUpTestCase() { TST_NUM_PRINT_TASK_TITLE(Category::integral, "BEGIN"); }
+    static void SetUpTestCase()
+    {
+        TST_NUM_PRINT_TASK_TITLE(Category::integral, "BEGIN");
+        inputs = std::make_shared<integral::InputBuilder<Expression1>>(integral::IntegralExprMap<Expression1>{
+            {{Expression1::range1, Expression1::range2, Expression1::exprDescr}, Expression1{}}});
+    }
     //! @brief Tear down the test case.
-    static void TearDownTestCase() { TST_NUM_PRINT_TASK_TITLE(Category::integral, "END"); }
+    static void TearDownTestCase()
+    {
+        TST_NUM_PRINT_TASK_TITLE(Category::integral, "END");
+        inputs.reset();
+    }
     //! @brief Set up.
     void SetUp() override{};
     //! @brief Tear down.
     void TearDown() override{};
 
-    //! @brief Expression example 1 object.
-    const integral::input::Expression1 expression1{};
+    //! @brief Input builder.
+    static std::shared_ptr<integral::InputBuilder<Expression1>> inputs;
     //! @brief Allowable error.
     static constexpr double error{1e-1};
 };
+std::shared_ptr<integral::InputBuilder<integral::input::Expression1>> IntegralTestBase::inputs = nullptr;
 
 //! @brief Test for the trapezoidal method in the solution of integral.
 TEST_F(IntegralTestBase, trapezoidalMethod)
 {
+    const auto range = inputs->getExpressionMap().cbegin()->first;
+    const auto expression = std::get<Expression1>(inputs->getExpressionMap().cbegin()->second);
     const std::shared_ptr<numeric::integral::Integral> trapezoidal =
-        std::make_shared<numeric::integral::Trapezoidal>(expression1);
+        std::make_shared<numeric::integral::Trapezoidal>(expression);
     double result = 0.0;
 
-    ASSERT_NO_THROW(result = (*trapezoidal)(expression1.range1, expression1.range2, numeric::integral::epsilon));
+    ASSERT_NO_THROW(result = (*trapezoidal)(range.range1, range.range2, numeric::integral::epsilon));
     EXPECT_GT(result, -4.08951 - error);
     EXPECT_LT(result, -4.08951 + error);
 }
@@ -180,11 +194,13 @@ TEST_F(IntegralTestBase, trapezoidalMethod)
 //! @brief Test for the adaptive Simpson's 1/3 method in the solution of integral.
 TEST_F(IntegralTestBase, adaptiveSimpsonMethod)
 {
+    const auto range = inputs->getExpressionMap().cbegin()->first;
+    const auto expression = std::get<Expression1>(inputs->getExpressionMap().cbegin()->second);
     const std::shared_ptr<numeric::integral::Integral> simpson =
-        std::make_shared<numeric::integral::Simpson>(expression1);
+        std::make_shared<numeric::integral::Simpson>(expression);
     double result = 0.0;
 
-    ASSERT_NO_THROW(result = (*simpson)(expression1.range1, expression1.range2, numeric::integral::epsilon));
+    ASSERT_NO_THROW(result = (*simpson)(range.range1, range.range2, numeric::integral::epsilon));
     EXPECT_GT(result, -4.08951 - error);
     EXPECT_LT(result, -4.08951 + error);
 }
@@ -192,11 +208,13 @@ TEST_F(IntegralTestBase, adaptiveSimpsonMethod)
 //! @brief Test for the Romberg method in the solution of integral.
 TEST_F(IntegralTestBase, rombergMethod)
 {
+    const auto range = inputs->getExpressionMap().cbegin()->first;
+    const auto expression = std::get<Expression1>(inputs->getExpressionMap().cbegin()->second);
     const std::shared_ptr<numeric::integral::Integral> romberg =
-        std::make_shared<numeric::integral::Romberg>(expression1);
+        std::make_shared<numeric::integral::Romberg>(expression);
     double result = 0.0;
 
-    ASSERT_NO_THROW(result = (*romberg)(expression1.range1, expression1.range2, numeric::integral::epsilon));
+    ASSERT_NO_THROW(result = (*romberg)(range.range1, range.range2, numeric::integral::epsilon));
     EXPECT_GT(result, -4.08951 - error);
     EXPECT_LT(result, -4.08951 + error);
 }
@@ -204,10 +222,12 @@ TEST_F(IntegralTestBase, rombergMethod)
 //! @brief Test for the Gauss-Legendre's 5-points method in the solution of integral.
 TEST_F(IntegralTestBase, gaussLegendreMethod)
 {
-    const std::shared_ptr<numeric::integral::Integral> gauss = std::make_shared<numeric::integral::Gauss>(expression1);
+    const auto range = inputs->getExpressionMap().cbegin()->first;
+    const auto expression = std::get<Expression1>(inputs->getExpressionMap().cbegin()->second);
+    const std::shared_ptr<numeric::integral::Integral> gauss = std::make_shared<numeric::integral::Gauss>(expression);
     double result = 0.0;
 
-    ASSERT_NO_THROW(result = (*gauss)(expression1.range1, expression1.range2, numeric::integral::epsilon));
+    ASSERT_NO_THROW(result = (*gauss)(range.range1, range.range2, numeric::integral::epsilon));
     EXPECT_GT(result, -4.08951 - error);
     EXPECT_LT(result, -4.08951 + error);
 }
@@ -215,11 +235,13 @@ TEST_F(IntegralTestBase, gaussLegendreMethod)
 //! @brief Test for the Monte-Carlo method in the solution of integral.
 TEST_F(IntegralTestBase, monteCarloMethod)
 {
+    const auto range = inputs->getExpressionMap().cbegin()->first;
+    const auto expression = std::get<Expression1>(inputs->getExpressionMap().cbegin()->second);
     const std::shared_ptr<numeric::integral::Integral> monteCarlo =
-        std::make_shared<numeric::integral::MonteCarlo>(expression1);
+        std::make_shared<numeric::integral::MonteCarlo>(expression);
     double result = 0.0;
 
-    ASSERT_NO_THROW(result = (*monteCarlo)(expression1.range1, expression1.range2, numeric::integral::epsilon));
+    ASSERT_NO_THROW(result = (*monteCarlo)(range.range1, range.range2, numeric::integral::epsilon));
     EXPECT_GT(result, -4.08951 - error);
     EXPECT_LT(result, -4.08951 + error);
 }
@@ -237,21 +259,21 @@ public:
     static void SetUpTestCase()
     {
         TST_NUM_PRINT_TASK_TITLE(Category::prime, "BEGIN");
-        builder = std::make_shared<prime::TargetBuilder>(prime::input::maxPositiveInteger);
+        inputs = std::make_shared<prime::InputBuilder>(prime::input::maxPositiveInteger);
     }
     //! @brief Tear down the test case.
     static void TearDownTestCase()
     {
         TST_NUM_PRINT_TASK_TITLE(Category::prime, "END");
-        builder.reset();
+        inputs.reset();
     }
     //! @brief Set up.
     void SetUp() override{};
     //! @brief Tear down.
     void TearDown() override{};
 
-    //! @brief Target builder.
-    static std::shared_ptr<prime::TargetBuilder> builder;
+    //! @brief Input builder.
+    static std::shared_ptr<prime::InputBuilder> inputs;
     //! @brief Expected result.
     const std::vector<std::uint32_t> expCntr{
         2,   3,   5,   7,   11,  13,  17,  19,  23,  29,  31,  37,  41,  43,  47,  53,  59,  61,  67,  71,  73,
@@ -263,18 +285,18 @@ public:
         709, 719, 727, 733, 739, 743, 751, 757, 761, 769, 773, 787, 797, 809, 811, 821, 823, 827, 829, 839, 853,
         857, 859, 863, 877, 881, 883, 887, 907, 911, 919, 929, 937, 941, 947, 953, 967, 971, 977, 983, 991, 997};
 };
-std::shared_ptr<prime::TargetBuilder> PrimeTestBase::builder = nullptr;
+std::shared_ptr<prime::InputBuilder> PrimeTestBase::inputs = nullptr;
 
 //! @brief Test for the Eratosthenes method in the solution of prime.
 TEST_F(PrimeTestBase, eratosthenesMethod)
 {
-    ASSERT_EQ(expCntr, numeric::prime::Prime::eratosthenes(builder->getMaxPositiveInteger()));
+    ASSERT_EQ(expCntr, numeric::prime::Prime::eratosthenes(inputs->getMaxPositiveInteger()));
 }
 
 //! @brief Test for the Euler method in the solution of prime.
 TEST_F(PrimeTestBase, eulerMethod)
 {
-    ASSERT_EQ(expCntr, numeric::prime::Prime::euler(builder->getMaxPositiveInteger()));
+    ASSERT_EQ(expCntr, numeric::prime::Prime::euler(inputs->getMaxPositiveInteger()));
 }
 } // namespace tst_num
 } // namespace test

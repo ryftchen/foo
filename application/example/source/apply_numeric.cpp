@@ -279,18 +279,17 @@ void runArithmeticTasks(const std::vector<std::string>& candidates)
     }
 
     APP_NUM_PRINT_TASK_BEGIN_TITLE(category);
-    using arithmetic::ArithmeticSolution, arithmetic::TargetBuilder, arithmetic::input::integerA,
+    using arithmetic::ArithmeticSolution, arithmetic::InputBuilder, arithmetic::input::integerA,
         arithmetic::input::integerB;
 
     auto& pooling = command::getPublicThreadPool();
     auto* const threads = pooling.newElement(std::min(
         static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<ArithmeticMethod>::value)));
-    const auto builder = std::make_shared<TargetBuilder>(integerA, integerB);
+    const auto inputs = std::make_shared<InputBuilder>(integerA, integerB);
     const auto arithmeticFunctor =
-        [threads, builder](const std::string& threadName, void (*methodPtr)(const std::int32_t, const std::int32_t))
+        [threads, inputs](const std::string& threadName, void (*methodPtr)(const std::int32_t, const std::int32_t))
     {
-        threads->enqueue(
-            threadName, methodPtr, std::get<0>(builder->getIntegers()), std::get<1>(builder->getIntegers()));
+        threads->enqueue(threadName, methodPtr, std::get<0>(inputs->getIntegers()), std::get<1>(inputs->getIntegers()));
     };
     const auto name = utility::currying::curry(getTaskNameCurried(), getCategoryAlias<category>());
 
@@ -358,17 +357,17 @@ namespace divisor
 //! @brief Display divisor result.
 #define DIVISOR_RESULT "\r\n==> %-9s Method <==\n%s\nrun time: %8.5f ms\n"
 //! @brief Print divisor result content.
-#define DIVISOR_PRINT_RESULT_CONTENT(method)                                                                           \
-    do                                                                                                                 \
-    {                                                                                                                  \
-        const std::uint32_t arrayBufferSize = resCntr.size() * maxAlignOfPrint;                                        \
-        std::vector<char> arrayBuffer(arrayBufferSize + 1);                                                            \
-        COMMON_PRINT(                                                                                                  \
-            DIVISOR_RESULT,                                                                                            \
-            getTitle(method).data(),                                                                                   \
-            TargetBuilder::template spliceAllIntegers<std::int32_t>(resCntr, arrayBuffer.data(), arrayBufferSize + 1), \
-            TIME_INTERVAL(timing));                                                                                    \
-    }                                                                                                                  \
+#define DIVISOR_PRINT_RESULT_CONTENT(method)                                                                          \
+    do                                                                                                                \
+    {                                                                                                                 \
+        const std::uint32_t arrayBufferSize = resCntr.size() * maxAlignOfPrint;                                       \
+        std::vector<char> arrayBuffer(arrayBufferSize + 1);                                                           \
+        COMMON_PRINT(                                                                                                 \
+            DIVISOR_RESULT,                                                                                           \
+            getTitle(method).data(),                                                                                  \
+            InputBuilder::template spliceAllIntegers<std::int32_t>(resCntr, arrayBuffer.data(), arrayBufferSize + 1), \
+            TIME_INTERVAL(timing));                                                                                   \
+    }                                                                                                                 \
     while (0)
 
 void DivisorSolution::euclideanMethod(std::int32_t a, std::int32_t b)
@@ -413,17 +412,16 @@ void runDivisorTasks(const std::vector<std::string>& candidates)
     }
 
     APP_NUM_PRINT_TASK_BEGIN_TITLE(category);
-    using divisor::DivisorSolution, divisor::TargetBuilder, divisor::input::integerA, divisor::input::integerB;
+    using divisor::DivisorSolution, divisor::InputBuilder, divisor::input::integerA, divisor::input::integerB;
 
     auto& pooling = command::getPublicThreadPool();
     auto* const threads = pooling.newElement(std::min(
         static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<DivisorMethod>::value)));
-    const auto builder = std::make_shared<TargetBuilder>(integerA, integerB);
+    const auto inputs = std::make_shared<InputBuilder>(integerA, integerB);
     const auto divisorFunctor =
-        [threads, builder](const std::string& threadName, void (*methodPtr)(std::int32_t, std::int32_t))
+        [threads, inputs](const std::string& threadName, void (*methodPtr)(std::int32_t, std::int32_t))
     {
-        threads->enqueue(
-            threadName, methodPtr, std::get<0>(builder->getIntegers()), std::get<1>(builder->getIntegers()));
+        threads->enqueue(threadName, methodPtr, std::get<0>(inputs->getIntegers()), std::get<1>(inputs->getIntegers()));
     };
     const auto name = utility::currying::curry(getTaskNameCurried(), getCategoryAlias<category>());
 
@@ -562,24 +560,7 @@ void runIntegralTasks(const std::vector<std::string>& candidates)
         return;
     }
 
-    using integral::input::Expression1;
-    typedef std::variant<Expression1> IntegralExprTarget;
-    const std::unordered_multimap<integral::ExprRange<double, double>, IntegralExprTarget, integral::ExprMapHash>
-        integralExprMap{
-            {{Expression1::range1, Expression1::range2, Expression1::exprDescr}, Expression1{}},
-        };
-    constexpr auto printExpr = [](const IntegralExprTarget& expression)
-    {
-        constexpr std::string_view prefix = "\r\nIntegral expression:\n";
-        std::visit(
-            integral::ExprOverloaded{
-                [&prefix](const Expression1& /*expr*/)
-                {
-                    std::cout << prefix << Expression1::exprDescr << std::endl;
-                },
-            },
-            expression);
-    };
+    using integral::InputBuilder, integral::input::Expression1;
     const auto calcExpr =
         [&candidates, bitFlag](const integral::Expression& expression, const integral::ExprRange<double, double>& range)
     {
@@ -630,15 +611,17 @@ void runIntegralTasks(const std::vector<std::string>& candidates)
 
     APP_NUM_PRINT_TASK_BEGIN_TITLE(category);
 
-    for ([[maybe_unused]] const auto& [range, expression] : integralExprMap)
+    const auto inputs = std::make_shared<InputBuilder<Expression1>>(integral::IntegralExprMap<Expression1>{
+        {{Expression1::range1, Expression1::range2, Expression1::exprDescr}, Expression1{}}});
+    for ([[maybe_unused]] const auto& [range, expression] : inputs->getExpressionMap())
     {
-        printExpr(expression);
+        inputs->printExpression(expression);
         switch (expression.index())
         {
             case 0:
                 calcExpr(std::get<0>(expression), range);
                 break;
-            default:
+            [[unlikely]] default:
                 break;
         }
     }
@@ -681,18 +664,17 @@ namespace prime
 //! @brief Display prime result.
 #define PRIME_RESULT "\r\n==> %-9s Method <==\n%s\nrun time: %8.5f ms\n"
 //! @brief Print prime result content.
-#define PRIME_PRINT_RESULT_CONTENT(method)                                      \
-    do                                                                          \
-    {                                                                           \
-        const std::uint32_t arrayBufferSize = resCntr.size() * maxAlignOfPrint; \
-        std::vector<char> arrayBuffer(arrayBufferSize + 1);                     \
-        COMMON_PRINT(                                                           \
-            PRIME_RESULT,                                                       \
-            getTitle(method).data(),                                            \
-            TargetBuilder::template spliceAllIntegers<std::uint32_t>(           \
-                resCntr, arrayBuffer.data(), arrayBufferSize + 1),              \
-            TIME_INTERVAL(timing));                                             \
-    }                                                                           \
+#define PRIME_PRINT_RESULT_CONTENT(method)                                                                             \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        const std::uint32_t arrayBufferSize = resCntr.size() * maxAlignOfPrint;                                        \
+        std::vector<char> arrayBuffer(arrayBufferSize + 1);                                                            \
+        COMMON_PRINT(                                                                                                  \
+            PRIME_RESULT,                                                                                              \
+            getTitle(method).data(),                                                                                   \
+            InputBuilder::template spliceAllIntegers<std::uint32_t>(resCntr, arrayBuffer.data(), arrayBufferSize + 1), \
+            TIME_INTERVAL(timing));                                                                                    \
+    }                                                                                                                  \
     while (0)
 
 void PrimeSolution::eratosthenesMethod(const std::uint32_t max)
@@ -737,15 +719,15 @@ void runPrimeTasks(const std::vector<std::string>& candidates)
     }
 
     APP_NUM_PRINT_TASK_BEGIN_TITLE(category);
-    using prime::PrimeSolution, prime::TargetBuilder, prime::input::maxPositiveInteger;
+    using prime::PrimeSolution, prime::InputBuilder, prime::input::maxPositiveInteger;
 
     auto& pooling = command::getPublicThreadPool();
     auto* const threads = pooling.newElement(
         std::min(static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<PrimeMethod>::value)));
-    const auto builder = std::make_shared<TargetBuilder>(maxPositiveInteger);
-    const auto primeFunctor = [threads, builder](const std::string& threadName, void (*methodPtr)(const std::uint32_t))
+    const auto inputs = std::make_shared<InputBuilder>(maxPositiveInteger);
+    const auto primeFunctor = [threads, inputs](const std::string& threadName, void (*methodPtr)(const std::uint32_t))
     {
-        threads->enqueue(threadName, methodPtr, builder->getMaxPositiveInteger());
+        threads->enqueue(threadName, methodPtr, inputs->getMaxPositiveInteger());
     };
     const auto name = utility::currying::curry(getTaskNameCurried(), getCategoryAlias<category>());
 

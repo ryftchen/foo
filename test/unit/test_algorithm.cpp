@@ -38,23 +38,23 @@ public:
     static void SetUpTestCase()
     {
         TST_ALGO_PRINT_TASK_TITLE(Category::match, "BEGIN");
-        builder = std::make_shared<match::TargetBuilder>(std::string{match::input::patternString});
+        inputs = std::make_shared<match::InputBuilder>(std::string{match::input::patternString});
     }
     //! @brief Tear down the test case.
     static void TearDownTestCase()
     {
         TST_ALGO_PRINT_TASK_TITLE(Category::match, "END");
-        builder.reset();
+        inputs.reset();
     }
     //! @brief Set up.
     void SetUp() override{};
     //! @brief Tear down.
     void TearDown() override{};
 
-    //! @brief Target builder.
-    static std::shared_ptr<match::TargetBuilder> builder;
+    //! @brief Input builder.
+    static std::shared_ptr<match::InputBuilder> inputs;
 };
-std::shared_ptr<match::TargetBuilder> MatchTestBase::builder = nullptr;
+std::shared_ptr<match::InputBuilder> MatchTestBase::inputs = nullptr;
 
 //! @brief Test for the Rabin-Karp method in the solution of match.
 TEST_F(MatchTestBase, rkMethod)
@@ -62,10 +62,10 @@ TEST_F(MatchTestBase, rkMethod)
     ASSERT_EQ(
         49702,
         algorithm::match::Match::rk(
-            builder->getMatchingText().get(),
-            builder->getSinglePattern().get(),
-            builder->getTextLength(),
-            builder->getPatternLength()));
+            inputs->getMatchingText().get(),
+            inputs->getSinglePattern().get(),
+            inputs->getTextLength(),
+            inputs->getPatternLength()));
 }
 
 //! @brief Test for the Knuth-Morris-Pratt method in the solution of match.
@@ -74,10 +74,10 @@ TEST_F(MatchTestBase, kmpMethod)
     ASSERT_EQ(
         49702,
         algorithm::match::Match::kmp(
-            builder->getMatchingText().get(),
-            builder->getSinglePattern().get(),
-            builder->getTextLength(),
-            builder->getPatternLength()));
+            inputs->getMatchingText().get(),
+            inputs->getSinglePattern().get(),
+            inputs->getTextLength(),
+            inputs->getPatternLength()));
 }
 
 //! @brief Test for the Boyer-Moore method in the solution of match.
@@ -86,10 +86,10 @@ TEST_F(MatchTestBase, bmMethod)
     ASSERT_EQ(
         49702,
         algorithm::match::Match::bm(
-            builder->getMatchingText().get(),
-            builder->getSinglePattern().get(),
-            builder->getTextLength(),
-            builder->getPatternLength()));
+            inputs->getMatchingText().get(),
+            inputs->getSinglePattern().get(),
+            inputs->getTextLength(),
+            inputs->getPatternLength()));
 }
 
 //! @brief Test for the Horspool method in the solution of match.
@@ -98,10 +98,10 @@ TEST_F(MatchTestBase, horspoolMethod)
     ASSERT_EQ(
         49702,
         algorithm::match::Match::horspool(
-            builder->getMatchingText().get(),
-            builder->getSinglePattern().get(),
-            builder->getTextLength(),
-            builder->getPatternLength()));
+            inputs->getMatchingText().get(),
+            inputs->getSinglePattern().get(),
+            inputs->getTextLength(),
+            inputs->getPatternLength()));
 }
 
 //! @brief Test for the Sunday method in the solution of match.
@@ -110,10 +110,10 @@ TEST_F(MatchTestBase, sundayMethod)
     ASSERT_EQ(
         49702,
         algorithm::match::Match::sunday(
-            builder->getMatchingText().get(),
-            builder->getSinglePattern().get(),
-            builder->getTextLength(),
-            builder->getPatternLength()));
+            inputs->getMatchingText().get(),
+            inputs->getSinglePattern().get(),
+            inputs->getTextLength(),
+            inputs->getPatternLength()));
 }
 
 //! @brief Test base of notation.
@@ -129,34 +129,34 @@ public:
     static void SetUpTestCase()
     {
         TST_ALGO_PRINT_TASK_TITLE(Category::notation, "BEGIN");
-        builder = std::make_shared<notation::TargetBuilder>(notation::input::infixString);
+        inputs = std::make_shared<notation::InputBuilder>(notation::input::infixString);
     }
     //! @brief Tear down the test case.
     static void TearDownTestCase()
     {
         TST_ALGO_PRINT_TASK_TITLE(Category::notation, "END");
-        builder.reset();
+        inputs.reset();
     }
     //! @brief Set up.
     void SetUp() override{};
     //! @brief Tear down.
     void TearDown() override{};
 
-    //! @brief Target builder.
-    static std::shared_ptr<notation::TargetBuilder> builder;
+    //! @brief Input builder.
+    static std::shared_ptr<notation::InputBuilder> inputs;
 };
-std::shared_ptr<notation::TargetBuilder> NotationTestBase::builder = nullptr;
+std::shared_ptr<notation::InputBuilder> NotationTestBase::inputs = nullptr;
 
 //! @brief Test for the prefix method in the solution of notation.
 TEST_F(NotationTestBase, prefixMethod)
 {
-    ASSERT_EQ("+a-*b^-^cde+f*ghi", algorithm::notation::Notation::prefix(std::string{builder->getInfixNotation()}));
+    ASSERT_EQ("+a-*b^-^cde+f*ghi", algorithm::notation::Notation::prefix(std::string{inputs->getInfixNotation()}));
 }
 
 //! @brief Test for the postfix method in the solution of notation.
 TEST_F(NotationTestBase, postfixMethod)
 {
-    ASSERT_EQ("abcd^e-fgh*+^*+i-", algorithm::notation::Notation::postfix(std::string{builder->getInfixNotation()}));
+    ASSERT_EQ("abcd^e-fgh*+^*+i-", algorithm::notation::Notation::postfix(std::string{inputs->getInfixNotation()}));
 }
 
 //! @brief Test base of optimal.
@@ -168,29 +168,43 @@ public:
     //! @brief Destroy the OptimalTestBase object.
     ~OptimalTestBase() override = default;
 
+    //! @brief Alias for the target function.
+    using Rastrigin = optimal::input::Rastrigin;
     //! @brief Set up the test case.
-    static void SetUpTestCase() { TST_ALGO_PRINT_TASK_TITLE(Category::optimal, "BEGIN"); }
+    static void SetUpTestCase()
+    {
+        TST_ALGO_PRINT_TASK_TITLE(Category::optimal, "BEGIN");
+        inputs = std::make_shared<optimal::InputBuilder<Rastrigin>>(optimal::OptimalFuncMap<Rastrigin>{
+            {{Rastrigin::range1, Rastrigin::range2, Rastrigin::funcDescr}, Rastrigin{}}});
+    }
     //! @brief Tear down the test case.
-    static void TearDownTestCase() { TST_ALGO_PRINT_TASK_TITLE(Category::optimal, "END"); }
+    static void TearDownTestCase()
+    {
+        TST_ALGO_PRINT_TASK_TITLE(Category::optimal, "END");
+        inputs.reset();
+    }
     //! @brief Set up.
     void SetUp() override{};
     //! @brief Tear down.
     void TearDown() override{};
 
-    //! @brief Rastrigin function object.
-    const optimal::input::Rastrigin rastrigin{};
+    //! @brief Input builder.
+    static std::shared_ptr<optimal::InputBuilder<Rastrigin>> inputs;
     //! @brief Allowable error.
     static constexpr double error{1e-3};
 };
+std::shared_ptr<optimal::InputBuilder<optimal::input::Rastrigin>> OptimalTestBase::inputs = nullptr;
 
 //! @brief Test for the gradient descent method in the solution of optimal.
 TEST_F(OptimalTestBase, gradientDescentMethod)
 {
+    const auto range = inputs->getFunctionMap().cbegin()->first;
+    const auto function = std::get<Rastrigin>(inputs->getFunctionMap().cbegin()->second);
     const std::shared_ptr<algorithm::optimal::Optimal> gradient =
-        std::make_shared<algorithm::optimal::Gradient>(rastrigin);
+        std::make_shared<algorithm::optimal::Gradient>(function);
     std::optional<std::tuple<double, double>> result = std::nullopt;
 
-    ASSERT_NO_THROW(result = (*gradient)(rastrigin.range1, rastrigin.range2, algorithm::optimal::epsilon));
+    ASSERT_NO_THROW(result = (*gradient)(range.range1, range.range2, algorithm::optimal::epsilon));
     ASSERT_TRUE(result.has_value());
     EXPECT_GT(std::get<0>(result.value()), 0.0 - error);
     EXPECT_LT(std::get<0>(result.value()), 0.0 + error);
@@ -199,11 +213,13 @@ TEST_F(OptimalTestBase, gradientDescentMethod)
 //! @brief Test for the simulated annealing method in the solution of optimal.
 TEST_F(OptimalTestBase, simulatedAnnealingMethod)
 {
+    const auto range = inputs->getFunctionMap().cbegin()->first;
+    const auto function = std::get<Rastrigin>(inputs->getFunctionMap().cbegin()->second);
     const std::shared_ptr<algorithm::optimal::Optimal> annealing =
-        std::make_shared<algorithm::optimal::Annealing>(rastrigin);
+        std::make_shared<algorithm::optimal::Annealing>(function);
     std::optional<std::tuple<double, double>> result = std::nullopt;
 
-    ASSERT_NO_THROW(result = (*annealing)(rastrigin.range1, rastrigin.range2, algorithm::optimal::epsilon));
+    ASSERT_NO_THROW(result = (*annealing)(range.range1, range.range2, algorithm::optimal::epsilon));
     ASSERT_TRUE(result.has_value());
     EXPECT_GT(std::get<0>(result.value()), 0.0 - error);
     EXPECT_LT(std::get<0>(result.value()), 0.0 + error);
@@ -212,11 +228,13 @@ TEST_F(OptimalTestBase, simulatedAnnealingMethod)
 //! @brief Test for the particle swarm method in the solution of optimal.
 TEST_F(OptimalTestBase, particleSwarmMethod)
 {
+    const auto range = inputs->getFunctionMap().cbegin()->first;
+    const auto function = std::get<Rastrigin>(inputs->getFunctionMap().cbegin()->second);
     const std::shared_ptr<algorithm::optimal::Optimal> particle =
-        std::make_shared<algorithm::optimal::Particle>(rastrigin);
+        std::make_shared<algorithm::optimal::Particle>(function);
     std::optional<std::tuple<double, double>> result = std::nullopt;
 
-    ASSERT_NO_THROW(result = (*particle)(rastrigin.range1, rastrigin.range2, algorithm::optimal::epsilon));
+    ASSERT_NO_THROW(result = (*particle)(range.range1, range.range2, algorithm::optimal::epsilon));
     ASSERT_TRUE(result.has_value());
     EXPECT_GT(std::get<0>(result.value()), 0.0 - error);
     EXPECT_LT(std::get<0>(result.value()), 0.0 + error);
@@ -225,11 +243,13 @@ TEST_F(OptimalTestBase, particleSwarmMethod)
 //! @brief Test for the genetic method in the solution of optimal.
 TEST_F(OptimalTestBase, geneticMethod)
 {
+    const auto range = inputs->getFunctionMap().cbegin()->first;
+    const auto function = std::get<Rastrigin>(inputs->getFunctionMap().cbegin()->second);
     const std::shared_ptr<algorithm::optimal::Optimal> genetic =
-        std::make_shared<algorithm::optimal::Genetic>(rastrigin);
+        std::make_shared<algorithm::optimal::Genetic>(function);
     std::optional<std::tuple<double, double>> result = std::nullopt;
 
-    ASSERT_NO_THROW(result = (*genetic)(rastrigin.range1, rastrigin.range2, algorithm::optimal::epsilon));
+    ASSERT_NO_THROW(result = (*genetic)(range.range1, range.range2, algorithm::optimal::epsilon));
     ASSERT_TRUE(result.has_value());
     EXPECT_GT(std::get<0>(result.value()), 0.0 - error);
     EXPECT_LT(std::get<0>(result.value()), 0.0 + error);
@@ -248,50 +268,50 @@ public:
     static void SetUpTestCase()
     {
         TST_ALGO_PRINT_TASK_TITLE(Category::search, "BEGIN");
-        builder = std::make_shared<search::TargetBuilder<float>>(
+        inputs = std::make_shared<search::InputBuilder<float>>(
             search::input::arrayLength, search::input::arrayRange1, search::input::arrayRange2);
     }
     //! @brief Tear down the test case.
     static void TearDownTestCase()
     {
         TST_ALGO_PRINT_TASK_TITLE(Category::search, "END");
-        builder.reset();
+        inputs.reset();
     }
     //! @brief Set up.
     void SetUp() override{};
     //! @brief Tear down.
     void TearDown() override{};
 
-    //! @brief Target builder.
-    static std::shared_ptr<search::TargetBuilder<float>> builder;
+    //! @brief Input builder.
+    static std::shared_ptr<search::InputBuilder<float>> inputs;
 };
-std::shared_ptr<search::TargetBuilder<float>> SearchTestBase::builder = nullptr;
+std::shared_ptr<search::InputBuilder<float>> SearchTestBase::inputs = nullptr;
 
 //! @brief Test for the binary method in the solution of search.
 TEST_F(SearchTestBase, binaryMethod)
 {
     ASSERT_EQ(
-        builder->getLength() / 2,
+        inputs->getLength() / 2,
         algorithm::search::Search<float>::binary(
-            builder->getOrderedArray().get(), builder->getLength(), builder->getSearchKey()));
+            inputs->getOrderedArray().get(), inputs->getLength(), inputs->getSearchKey()));
 }
 
 //! @brief Test for the interpolation method in the solution of search.
 TEST_F(SearchTestBase, interpolationMethod)
 {
     ASSERT_EQ(
-        builder->getLength() / 2,
+        inputs->getLength() / 2,
         algorithm::search::Search<float>::interpolation(
-            builder->getOrderedArray().get(), builder->getLength(), builder->getSearchKey()));
+            inputs->getOrderedArray().get(), inputs->getLength(), inputs->getSearchKey()));
 }
 
 //! @brief Test for the Fibonacci method in the solution of search.
 TEST_F(SearchTestBase, fibonacciMethod)
 {
     ASSERT_EQ(
-        builder->getLength() / 2,
+        inputs->getLength() / 2,
         algorithm::search::Search<float>::fibonacci(
-            builder->getOrderedArray().get(), builder->getLength(), builder->getSearchKey()));
+            inputs->getOrderedArray().get(), inputs->getLength(), inputs->getSearchKey()));
 }
 
 //! @brief Test base of sort.
@@ -307,99 +327,94 @@ public:
     static void SetUpTestCase()
     {
         TST_ALGO_PRINT_TASK_TITLE(Category::sort, "BEGIN");
-        builder = std::make_shared<sort::TargetBuilder<std::int32_t>>(
+        inputs = std::make_shared<sort::InputBuilder<std::int32_t>>(
             sort::input::arrayLength, sort::input::arrayRange1, sort::input::arrayRange2);
         expCntr = std::vector<std::int32_t>(
-            builder->getRandomArray().get(), builder->getRandomArray().get() + builder->getLength());
+            inputs->getRandomArray().get(), inputs->getRandomArray().get() + inputs->getLength());
         std::sort(expCntr.begin(), expCntr.end());
     }
     //! @brief Tear down the test case.
     static void TearDownTestCase()
     {
         TST_ALGO_PRINT_TASK_TITLE(Category::sort, "END");
-        builder.reset();
+        inputs.reset();
     }
     //! @brief Set up.
     void SetUp() override{};
     //! @brief Tear down.
     void TearDown() override{};
 
-    //! @brief Target builder.
-    static std::shared_ptr<sort::TargetBuilder<std::int32_t>> builder;
+    //! @brief Input builder.
+    static std::shared_ptr<sort::InputBuilder<std::int32_t>> inputs;
     //! @brief Expected result.
     static std::vector<std::int32_t> expCntr;
 };
-std::shared_ptr<sort::TargetBuilder<std::int32_t>> SortTestBase::builder = nullptr;
+std::shared_ptr<sort::InputBuilder<std::int32_t>> SortTestBase::inputs = nullptr;
 std::vector<std::int32_t> SortTestBase::expCntr = {};
 
 //! @brief Test for the bubble method in the solution of sort.
 TEST_F(SortTestBase, bubbleMethod)
 {
     ASSERT_EQ(
-        expCntr, algorithm::sort::Sort<std::int32_t>::bubble(builder->getRandomArray().get(), builder->getLength()));
+        expCntr, algorithm::sort::Sort<std::int32_t>::bubble(inputs->getRandomArray().get(), inputs->getLength()));
 }
 
 //! @brief Test for the selection method in the solution of sort.
 TEST_F(SortTestBase, selectionMethod)
 {
     ASSERT_EQ(
-        expCntr, algorithm::sort::Sort<std::int32_t>::selection(builder->getRandomArray().get(), builder->getLength()));
+        expCntr, algorithm::sort::Sort<std::int32_t>::selection(inputs->getRandomArray().get(), inputs->getLength()));
 }
 
 //! @brief Test for the insertion method in the solution of sort.
 TEST_F(SortTestBase, insertionMethod)
 {
     ASSERT_EQ(
-        expCntr, algorithm::sort::Sort<std::int32_t>::insertion(builder->getRandomArray().get(), builder->getLength()));
+        expCntr, algorithm::sort::Sort<std::int32_t>::insertion(inputs->getRandomArray().get(), inputs->getLength()));
 }
 
 //! @brief Test for the shell method in the solution of sort.
 TEST_F(SortTestBase, shellMethod)
 {
-    ASSERT_EQ(
-        expCntr, algorithm::sort::Sort<std::int32_t>::shell(builder->getRandomArray().get(), builder->getLength()));
+    ASSERT_EQ(expCntr, algorithm::sort::Sort<std::int32_t>::shell(inputs->getRandomArray().get(), inputs->getLength()));
 }
 
 //! @brief Test for the merge method in the solution of sort.
 TEST_F(SortTestBase, mergeMethod)
 {
-    ASSERT_EQ(
-        expCntr, algorithm::sort::Sort<std::int32_t>::merge(builder->getRandomArray().get(), builder->getLength()));
+    ASSERT_EQ(expCntr, algorithm::sort::Sort<std::int32_t>::merge(inputs->getRandomArray().get(), inputs->getLength()));
 }
 
 //! @brief Test for the quick method in the solution of sort.
 TEST_F(SortTestBase, quickMethod)
 {
-    ASSERT_EQ(
-        expCntr, algorithm::sort::Sort<std::int32_t>::quick(builder->getRandomArray().get(), builder->getLength()));
+    ASSERT_EQ(expCntr, algorithm::sort::Sort<std::int32_t>::quick(inputs->getRandomArray().get(), inputs->getLength()));
 }
 
 //! @brief Test for the heap method in the solution of sort.
 TEST_F(SortTestBase, heapMethod)
 {
-    ASSERT_EQ(
-        expCntr, algorithm::sort::Sort<std::int32_t>::heap(builder->getRandomArray().get(), builder->getLength()));
+    ASSERT_EQ(expCntr, algorithm::sort::Sort<std::int32_t>::heap(inputs->getRandomArray().get(), inputs->getLength()));
 }
 
 //! @brief Test for the counting method in the solution of sort.
 TEST_F(SortTestBase, countingMethod)
 {
     ASSERT_EQ(
-        expCntr, algorithm::sort::Sort<std::int32_t>::counting(builder->getRandomArray().get(), builder->getLength()));
+        expCntr, algorithm::sort::Sort<std::int32_t>::counting(inputs->getRandomArray().get(), inputs->getLength()));
 }
 
 //! @brief Test for the bucket method in the solution of sort.
 TEST_F(SortTestBase, bucketMethod)
 {
     ASSERT_EQ(
-        expCntr, algorithm::sort::Sort<std::int32_t>::bucket(builder->getRandomArray().get(), builder->getLength()));
+        expCntr, algorithm::sort::Sort<std::int32_t>::bucket(inputs->getRandomArray().get(), inputs->getLength()));
 }
 
 //! @brief Test for the radix method in the solution of sort.
 TEST_F(SortTestBase, radixMethod)
 {
-    ASSERT_EQ(
-        expCntr, algorithm::sort::Sort<std::int32_t>::radix(builder->getRandomArray().get(), builder->getLength()));
+    ASSERT_EQ(expCntr, algorithm::sort::Sort<std::int32_t>::radix(inputs->getRandomArray().get(), inputs->getLength()));
 }
 } // namespace tst_algo
 } // namespace test

@@ -36,6 +36,7 @@
 #include <sstream>
 #include <string>
 #include <syncstream>
-#include <tuple>
+#include <unordered_map>
+#include <variant>
 #include <vector>
 #endif // __PRECOMPILED_HEADER
