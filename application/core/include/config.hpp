@@ -62,9 +62,14 @@ public:
     virtual ~Config() = default;
     //! @brief Construct a new Config object.
     Config(const Config&) = delete;
+    //! @brief Construct a new Config object.
+    Config(Config&&) = delete;
     //! @brief The operator (=) overloading of Config class.
     //! @return reference of the Config object
     Config& operator=(const Config&) = delete;
+    //! @brief The operator (=) overloading of Config struct.
+    //! @return reference of the Config object
+    Config& operator=(Config&&) = delete;
 
     //! @brief Get the Config instance.
     //! @return reference of the Config object

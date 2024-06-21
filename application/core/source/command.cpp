@@ -26,11 +26,15 @@ using TypeInfo = utility::reflection::TypeInfo<T>;
 //! @brief Constraint for external helpers.
 //! @tparam T - type of helper
 template <typename T>
-concept HelperType = requires (T /*helper*/) {
+concept HelperType = std::derived_from<T, utility::fsm::FSM<T>> &&
+    requires (T /*helper*/)
+{
     {
         T::getInstance()
     } -> std::same_as<T&>;
-} && !std::is_copy_constructible_v<T> && !std::is_copy_assignable_v<T> && std::derived_from<T, utility::fsm::FSM<T>>;
+}
+&&!std::is_copy_constructible_v<T> && !std::is_copy_assignable_v<T> && !std::is_move_constructible_v<T>
+    && !std::is_move_assignable_v<T>;
 
 //! @brief Enumerate specific operations to control external helpers.
 enum HelperControl : std::uint8_t

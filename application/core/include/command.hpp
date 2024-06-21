@@ -57,9 +57,14 @@ public:
     virtual ~Command();
     //! @brief Construct a new Command object.
     Command(const Command&) = delete;
+    //! @brief Construct a new Command object.
+    Command(Command&&) = delete;
     //! @brief The operator (=) overloading of Command class.
     //! @return reference of the Command object
     Command& operator=(const Command&) = delete;
+    //! @brief The operator (=) overloading of Command struct.
+    //! @return reference of the Command object
+    Command& operator=(Command&&) = delete;
 
     //! @brief Get the Command instance.
     //! @return reference of the Command object

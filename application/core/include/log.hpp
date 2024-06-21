@@ -115,9 +115,14 @@ public:
     virtual ~Log() = default;
     //! @brief Construct a new Log object.
     Log(const Log&) = delete;
+    //! @brief Construct a new Log object.
+    Log(Log&&) = delete;
     //! @brief The operator (=) overloading of Log class.
     //! @return reference of the Log object
     Log& operator=(const Log&) = delete;
+    //! @brief The operator (=) overloading of Log struct.
+    //! @return reference of the Log object
+    Log& operator=(Log&&) = delete;
 
     friend class FSM<Log>;
     //! @brief Enumerate specific output types.
