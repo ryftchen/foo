@@ -8,6 +8,7 @@
 
 #ifdef __PRECOMPILED_HEADER
 #include <openssl/evp.h>
+#include <readline/readline.h>
 #include <sys/ipc.h>
 #include <sys/prctl.h>
 #include <sys/shm.h>
