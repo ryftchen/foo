@@ -60,8 +60,10 @@ enum TLVType : int
     header = 0x3b9aca07,
     //! @brief Stop.
     stop = 0,
-    //! @brief Bash.
-    bash,
+    //! @brief Depend.
+    depend,
+    //! @brief Execute.
+    execute,
     //! @brief Journal.
     journal,
     //! @brief Monitor.
@@ -75,11 +77,13 @@ struct TLVValue
 {
     //! @brief Flag for stopping the connection.
     bool stopTag{false};
+    //! @brief Information about the library.
+    char libInfo[256]{'\0'};
     //! @brief Shm id of the bash outputs.
     int bashShmId{invalidShmId};
     //! @brief Shm id of the log contents.
     int logShmId{invalidShmId};
-    //! @brief Shm id of the status information.
+    //! @brief Shm id of the status reports.
     int statusShmId{invalidShmId};
     //! @brief Details of the current configuration.
     char configDetail[1024]{'\0'};
@@ -247,7 +251,8 @@ private:
     const OptionMap optionDispatcher{
         // - Option -+---------------- Help ----------------+------- Build Packet -------
         // ----------+--------------------------------------+----------------------------
-        { "bash"     , { "execute bash commands in quotes"   , &buildTLVPacket2Bash    }},
+        { "depend"   , { "show associated library list"      , &buildTLVPacket2Depend  }},
+        { "execute"  , { "enter bash commands in quotes"     , &buildTLVPacket2Execute }},
         { "journal"  , { "view the log with highlights"      , &buildTLVPacket2Journal }},
         { "monitor"  , { "query the status of the process"   , &buildTLVPacket2Monitor }},
         { "profile"  , { "display the current configuration" , &buildTLVPacket2Profile }}
@@ -267,17 +272,22 @@ private:
     //! @param buffer - TLV packet buffer
     //! @return buffer length
     static int buildTLVPacket2Stop(char* buffer);
+    //! @brief Build the TLV packet to get library information.
+    //! @param args - container of arguments
+    //! @param buffer - TLV packet buffer
+    //! @return buffer length
+    static int buildTLVPacket2Depend(const std::vector<std::string>& args, char* buffer);
     //! @brief Build the TLV packet to get bash outputs.
     //! @param args - container of arguments
     //! @param buffer - TLV packet buffer
     //! @return buffer length
-    static int buildTLVPacket2Bash(const std::vector<std::string>& args, char* buffer);
-    //! @brief Build the TLV packet to view log contents.
+    static int buildTLVPacket2Execute(const std::vector<std::string>& args, char* buffer);
+    //! @brief Build the TLV packet to get log contents.
     //! @param args - container of arguments
     //! @param buffer - TLV packet buffer
     //! @return buffer length
     static int buildTLVPacket2Journal(const std::vector<std::string>& args, char* buffer);
-    //! @brief Build the TLV packet to show status information.
+    //! @brief Build the TLV packet to get status reports.
     //! @param args - container of arguments
     //! @param buffer - TLV packet buffer
     //! @return buffer length

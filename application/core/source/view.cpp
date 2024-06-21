@@ -9,9 +9,11 @@
 
 #ifndef __PRECOMPILED_HEADER
 #include <openssl/evp.h>
+#include <readline/readline.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
 #include <sys/stat.h>
+#include <mpfr.h>
 #include <algorithm>
 #include <cassert>
 #include <cstring>
@@ -50,6 +52,12 @@ int tlvEncode(char* buf, int& len, const TLVValue& val)
     enc.write<bool>(val.stopTag);
     sum += (offset + sizeof(bool));
 
+    int valLen = std::strlen(val.libInfo);
+    enc.write<int>(TLVType::depend);
+    enc.write<int>(valLen);
+    enc.write(val.libInfo, valLen);
+    sum += (offset + valLen);
+
     const auto tryToFillShmId = [&](const TLVType type, int TLVValue::*shmId)
     {
         if (invalidShmId != val.*shmId)
@@ -60,11 +68,11 @@ int tlvEncode(char* buf, int& len, const TLVValue& val)
             sum += (offset + sizeof(int));
         }
     };
-    tryToFillShmId(TLVType::bash, &TLVValue::bashShmId);
+    tryToFillShmId(TLVType::execute, &TLVValue::bashShmId);
     tryToFillShmId(TLVType::journal, &TLVValue::logShmId);
     tryToFillShmId(TLVType::monitor, &TLVValue::statusShmId);
 
-    const int valLen = std::strlen(val.configDetail);
+    valLen = std::strlen(val.configDetail);
     enc.write<int>(TLVType::profile);
     enc.write<int>(valLen);
     enc.write(val.configDetail, valLen);
@@ -109,7 +117,11 @@ int tlvDecode(char* buf, const int len, TLVValue& val)
                 dec.read<bool>(&val.stopTag);
                 sum -= (offset + sizeof(bool));
                 break;
-            case TLVType::bash:
+            case TLVType::depend:
+                dec.read(&val.libInfo, length);
+                sum -= (offset + length);
+                break;
+            case TLVType::execute:
                 dec.read<int>(&val.bashShmId);
                 sum -= (offset + sizeof(int));
                 break;
@@ -359,6 +371,10 @@ tlv::TLVValue View::parseTLVPacket(char* buffer, const int length) const
         throw std::runtime_error("Invalid message content.");
     }
 
+    if (std::strlen(value.libInfo) != 0)
+    {
+        std::cout << value.libInfo << std::endl;
+    }
     if (invalidShmId != value.bashShmId)
     {
         printSharedMemory(value.bashShmId, true);
@@ -373,7 +389,7 @@ tlv::TLVValue View::parseTLVPacket(char* buffer, const int length) const
     }
     if (std::strlen(value.configDetail) != 0)
     {
-        std::cout << "\r\n" << utility::json::JSON::load(value.configDetail) << '\n' << std::endl;
+        std::cout << utility::json::JSON::load(value.configDetail) << std::endl;
     }
 
     return value;
@@ -418,7 +434,23 @@ int View::buildTLVPacket2Stop(char* buffer)
     return length;
 }
 
-int View::buildTLVPacket2Bash(const std::vector<std::string>& args, char* buffer)
+int View::buildTLVPacket2Depend(const std::vector<std::string>& /*args*/, char* buffer)
+{
+    int length = 0;
+    tlv::TLVValue value{};
+    const std::string libList = "OpenSSL " + std::string{OPENSSL_VERSION_STR} + "\nGNU MPFR "
+        + std::string{MPFR_VERSION_STRING} + "\nGNU Readline " + std::string{::rl_library_version};
+    std::strncpy(value.libInfo, libList.c_str(), sizeof(value.libInfo) - 1);
+    value.libInfo[sizeof(value.libInfo) - 1] = '\0';
+    if (tlv::tlvEncode(buffer, length, value) < 0)
+    {
+        throw std::runtime_error("Failed to build packet for the depend option.");
+    }
+    encryptMessage(buffer, length);
+    return length;
+}
+
+int View::buildTLVPacket2Execute(const std::vector<std::string>& args, char* buffer)
 {
     std::string cmds;
     for (const auto& arg : args)
@@ -434,7 +466,7 @@ int View::buildTLVPacket2Bash(const std::vector<std::string>& args, char* buffer
     const int shmId = fillSharedMemory(utility::common::executeCommand("/bin/bash -c " + cmds, 5000));
     if (tlv::tlvEncode(buffer, length, tlv::TLVValue{.bashShmId = shmId}) < 0)
     {
-        throw std::runtime_error("Failed to build packet for the bash option.");
+        throw std::runtime_error("Failed to build packet for the execute option.");
     }
     encryptMessage(buffer, length);
     return length;
@@ -468,8 +500,8 @@ int View::buildTLVPacket2Profile(const std::vector<std::string>& /*args*/, char*
 {
     int length = 0;
     tlv::TLVValue value{};
-    const std::string configStr = config::Config::getInstance().cfgData().toUnescapedString();
-    std::strncpy(value.configDetail, configStr.c_str(), sizeof(value.configDetail) - 1);
+    const std::string currConfig = config::Config::getInstance().cfgData().toUnescapedString();
+    std::strncpy(value.configDetail, currConfig.c_str(), sizeof(value.configDetail) - 1);
     value.configDetail[sizeof(value.configDetail) - 1] = '\0';
     if (tlv::tlvEncode(buffer, length, value) < 0)
     {
