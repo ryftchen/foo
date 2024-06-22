@@ -17,7 +17,9 @@
 #include <cxxabi.h>
 #include <dlfcn.h>
 #include <execinfo.h>
+#include <gmp.h>
 #include <mpfr.h>
+#include <ncurses.h>
 #include <algorithm>
 #include <array>
 #include <bitset>
