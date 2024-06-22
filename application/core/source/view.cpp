@@ -13,7 +13,9 @@
 #include <sys/ipc.h>
 #include <sys/shm.h>
 #include <sys/stat.h>
+#include <gmp.h>
 #include <mpfr.h>
+#include <ncurses.h>
 #include <algorithm>
 #include <cassert>
 #include <cstring>
@@ -436,11 +438,21 @@ int View::buildTLVPacket2Stop(char* buffer)
 
 int View::buildTLVPacket2Depend(const std::vector<std::string>& /*args*/, char* buffer)
 {
+//! @cond
+#define STRINGIFY(x) #x
+#define TO_STRING(x) STRINGIFY(x)
     int length = 0;
     tlv::TLVValue value{};
-    const std::string libList = "OpenSSL " + std::string{OPENSSL_VERSION_STR} + "\nGNU MPFR "
-        + std::string{MPFR_VERSION_STRING} + "\nGNU Readline " + std::string{::rl_library_version};
-    std::strncpy(value.libInfo, libList.c_str(), sizeof(value.libInfo) - 1);
+    std::string libNames;
+    libNames += "GNU C Library " TO_STRING(__GLIBC__) "." TO_STRING(__GLIBC_MINOR__) "\n";
+    libNames += "GNU C++ Standard Library " TO_STRING(_GLIBCXX_RELEASE) " (" TO_STRING(__GLIBCXX__) ")\n";
+    libNames += "OpenSSL Library " OPENSSL_VERSION_STR "\n";
+    libNames += "GNU MPFR Library " MPFR_VERSION_STRING "\n";
+    libNames += "GNU MP Library " TO_STRING(__GNU_MP_VERSION) "." TO_STRING(__GNU_MP_VERSION_MINOR) "." TO_STRING(
+        __GNU_MP_VERSION_PATCHLEVEL) "\n";
+    libNames += "GNU Readline Library " TO_STRING(RL_VERSION_MAJOR) "." TO_STRING(RL_VERSION_MINOR) "\n";
+    libNames += "Ncurses Library " NCURSES_VERSION "";
+    std::strncpy(value.libInfo, libNames.data(), sizeof(value.libInfo) - 1);
     value.libInfo[sizeof(value.libInfo) - 1] = '\0';
     if (tlv::tlvEncode(buffer, length, value) < 0)
     {
@@ -448,6 +460,9 @@ int View::buildTLVPacket2Depend(const std::vector<std::string>& /*args*/, char* 
     }
     encryptMessage(buffer, length);
     return length;
+//! @endcond
+#undef STRINGIFY
+#undef TO_STRING
 }
 
 int View::buildTLVPacket2Execute(const std::vector<std::string>& args, char* buffer)
