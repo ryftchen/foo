@@ -112,18 +112,18 @@ private:
         Impl& operator=(Impl&&) = delete;
 
         //! @brief Greeting information.
-        std::string greeting;
+        std::string greeting{};
         //! @brief Alias for the map of command and function in console.
         using RegisteredCommand = std::unordered_map<Command, std::pair<CommandFunctor, Help>>;
         //! @brief Mapping table of all registered commands.
-        RegisteredCommand regMap;
+        RegisteredCommand regMap{};
         //! @brief Register order.
-        std::list<Command> regOrder;
+        std::list<Command> regOrder{};
         //! @brief Saved history state.
         HistoryState* history{nullptr};
     };
     //! @brief Implementation instance.
-    std::unique_ptr<Impl> impl;
+    std::unique_ptr<Impl> impl{};
 
     //! @brief Save current state.
     void saveState();

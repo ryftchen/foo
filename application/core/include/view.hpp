@@ -146,7 +146,7 @@ public:
     //! @brief The operator (=) overloading of View class.
     //! @return reference of the View object
     View& operator=(const View&) = delete;
-    //! @brief The operator (=) overloading of View struct.
+    //! @brief The operator (=) overloading of View class.
     //! @return reference of the View object
     View& operator=(View&&) = delete;
 
@@ -188,9 +188,9 @@ public:
     struct OptionAttr
     {
         //! @brief Help prompt.
-        HelpPrompt prompt;
+        HelpPrompt prompt{};
         //! @brief Build functor.
-        BuildFunctor functor;
+        BuildFunctor functor{};
     };
     //! @brief Alias for the map of OptionName and OptionAttr.
     using OptionMap = std::map<OptionName, OptionAttr>;
@@ -326,9 +326,9 @@ private:
     bool isInUninterruptedState(const State state) const;
 
     //! @brief TCP server.
-    std::shared_ptr<utility::socket::TCPServer> tcpServer;
+    std::shared_ptr<utility::socket::TCPServer> tcpServer{};
     //! @brief UDP server.
-    std::shared_ptr<utility::socket::UDPServer> udpServer;
+    std::shared_ptr<utility::socket::UDPServer> udpServer{};
     //! @brief Mutex for controlling server.
     mutable std::mutex mtx{};
     //! @brief The synchronization condition for server. Use with mtx.

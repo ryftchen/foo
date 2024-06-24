@@ -139,9 +139,9 @@ public:
 
 private:
     //! @brief Wrapped function.
-    Callable callable;
+    Callable callable{};
     //! @brief Curried function arguments tuple.
-    mutable std::tuple<CurriedArgs...> curriedArgs;
+    mutable std::tuple<CurriedArgs...> curriedArgs{};
 };
 
 template <typename Callable, typename... CurriedArgs, typename... UncurriedArgs>

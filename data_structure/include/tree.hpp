@@ -83,7 +83,7 @@ public:
 
 private:
     //! @brief Output stream of the binary search tree structure.
-    std::ostringstream stream;
+    std::ostringstream stream{};
 };
 } // namespace bs
 
@@ -156,7 +156,7 @@ public:
 
 private:
     //! @brief Output stream of the AVL tree structure.
-    std::ostringstream stream;
+    std::ostringstream stream{};
 };
 } // namespace avl
 
@@ -223,7 +223,7 @@ public:
 
 private:
     //! @brief Output stream of the splay tree structure.
-    std::ostringstream stream;
+    std::ostringstream stream{};
 };
 } // namespace splay
 } // namespace tree

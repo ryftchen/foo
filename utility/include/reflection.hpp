@@ -254,7 +254,7 @@ struct NamedValue : NamedValueBase<Name>
     }
 
     //! @brief Named value.
-    T value;
+    T value{};
     //! @brief Flag to indicate whether it has a value.
     static constexpr bool hasValue{true};
 };
@@ -287,7 +287,7 @@ struct ElemList
     constexpr explicit ElemList(Es... es) : elems(es...) {}
 
     //! @brief Element list.
-    std::tuple<Es...> elems;
+    std::tuple<Es...> elems{};
     //! @brief Size of list of the elements.
     static constexpr std::size_t size{sizeof...(Es)};
 

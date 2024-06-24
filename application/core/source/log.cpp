@@ -176,7 +176,7 @@ bool Log::isInUninterruptedState(const State state) const
 
 void Log::handleLogQueue()
 {
-    utility::file::ReadWriteGuard guard(utility::file::LockMode::write, fileLock);
+    utility::file::ReadWriteGuard guard(fileLock, utility::file::LockMode::write);
     while (!logQueue.empty())
     {
         switch (usedMedium)
@@ -224,7 +224,7 @@ void Log::openLogFile()
 {
     namespace file = utility::file;
 
-    file::ReadWriteGuard guard(file::LockMode::write, fileLock);
+    file::ReadWriteGuard guard(fileLock, file::LockMode::write);
     tryToCreateLogFolder();
     switch (writeType)
     {
@@ -244,7 +244,7 @@ void Log::closeLogFile()
 {
     namespace file = utility::file;
 
-    file::ReadWriteGuard guard(file::LockMode::write, fileLock);
+    file::ReadWriteGuard guard(fileLock, file::LockMode::write);
     file::fdUnlock(ofs);
     file::closeFile(ofs);
     if (std::filesystem::exists(filePath) && (std::filesystem::file_size(filePath) == 0))

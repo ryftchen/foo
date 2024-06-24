@@ -163,11 +163,11 @@ public:
 
 private:
     //! @brief Part A.
-    std::string partA;
+    std::string partA{};
     //! @brief Part B.
-    std::string partB;
+    std::string partB{};
     //! @brief Part C.
-    std::string partC;
+    std::string partC{};
 };
 
 //! @brief The builder for creating products.
@@ -189,7 +189,7 @@ public:
 
 protected:
     //! @brief The product.
-    Product product;
+    Product product{};
 };
 
 //! @brief The concrete builder.
@@ -236,7 +236,7 @@ public:
 
 private:
     //! @brief The builder.
-    std::unique_ptr<Builder> builder;
+    std::unique_ptr<Builder> builder{};
 };
 
 extern std::ostringstream& output();

@@ -340,7 +340,7 @@ public:
         long long integral;
         //! @brief Boolean value.
         bool boolean;
-    } /** @brief JSON valid data. */ data;
+    } /** @brief JSON valid data. */ data{};
 
 private:
     //! @brief Set the data type.

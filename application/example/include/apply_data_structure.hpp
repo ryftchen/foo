@@ -78,9 +78,9 @@ public:
     };
 
     //! @brief Bit flags for managing linear instances.
-    std::bitset<Bottom<LinearInstance>::value> linearBit;
+    std::bitset<Bottom<LinearInstance>::value> linearBit{};
     //! @brief Bit flags for managing tree instances.
-    std::bitset<Bottom<TreeInstance>::value> treeBit;
+    std::bitset<Bottom<TreeInstance>::value> treeBit{};
 
     //! @brief Check whether any data structure tasks do not exist.
     //! @return any data structure tasks do not exist or exist
@@ -122,9 +122,9 @@ namespace linear
 struct Meta
 {
     //! @brief Id of the metadata.
-    int id;
+    int id{};
     //! @brief Name of the metadata.
-    char name[4];
+    char name[4]{};
 };
 
 //! @brief Linear instances.

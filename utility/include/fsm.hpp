@@ -383,7 +383,7 @@ private:
     };
 
     //! @brief FSM state.
-    State state;
+    State state{};
     //! @brief Flag to indicate whether the FSM is processing.
     std::atomic<bool> isProcessing{false};
 
