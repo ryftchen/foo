@@ -86,7 +86,7 @@ std::int64_t Search<T>::interpolation(const T* const array, const std::uint32_t 
     std::int64_t index = -1;
     std::uint32_t lower = 0, upper = length - 1;
 
-    while (lower <= upper)
+    while ((lower <= upper) && (key >= array[lower]) && (key <= array[upper]))
     {
         std::uint32_t mid = lower + (upper - lower) * ((key - array[lower]) / (array[upper] - array[lower]));
         if (key == array[mid])
