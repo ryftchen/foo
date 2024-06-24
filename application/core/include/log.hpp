@@ -68,8 +68,8 @@ constexpr std::string_view warnLevelPrefixRegex = R"(^\[WRN\])";
 constexpr std::string_view errorLevelPrefixRegex = R"(^\[ERR\])";
 //! @brief Regular expression of unknown level in log.
 constexpr std::string_view unknownLevelPrefixRegex = R"(^\[UNK\])";
-//! @brief Regular expression of date in log.
-constexpr std::string_view dateRegex = R"(\[(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})\.(\d{6}) (\w{3})\])";
+//! @brief Regular expression of date time in log.
+constexpr std::string_view dateTimeRegex = R"(\[(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})\.(\d{6}) (\w{3})\])";
 //! @brief Regular expression of code file in log.
 constexpr std::string_view codeFileRegex = R"(\[[^:]+\.(c|h|cc|hh|cpp|hpp|tpp|cxx|hxx|C|H)+#\d+\])";
 //! @brief Prefix of debug level. Include ANSI escape codes.
@@ -236,7 +236,7 @@ private:
     //! @param initState - initialization value of state
     explicit Log(const StateType initState = State::init) noexcept :
         FSM(initState),
-        filePath(getFullDefaultLogPath(CONFIG_HELPER_LOGGER_FILE_PATH)),
+        filePath(getFullLogPath(CONFIG_HELPER_LOGGER_FILE_PATH)),
         writeType(OutputType(CONFIG_HELPER_LOGGER_WRITE_TYPE)),
         minimumLevel(OutputLevel(CONFIG_HELPER_LOGGER_MINIMUM_LEVEL)),
         usedMedium(OutputMedium(CONFIG_HELPER_LOGGER_USED_MEDIUM))
@@ -258,7 +258,7 @@ private:
     //! @brief Output file stream.
     std::ofstream ofs;
     //! @brief Log file absolute path.
-    const std::string filePath{getFullDefaultLogPath()};
+    const std::string filePath{getFullLogPath()};
     //! @brief Write type.
     const OutputType writeType{OutputType::add};
     //! @brief Minimum level.
@@ -274,10 +274,10 @@ private:
     bool isInUninterruptedState(const State state) const;
     //! @brief Handle the log queue.
     void handleLogQueue();
-    //! @brief Get the full path to the default log file.
-    //! @param filename - default filename
-    //! @return full path to the default log file
-    static std::string getFullDefaultLogPath(const std::string& filename = "log/foo.log");
+    //! @brief Get the full path to the log file.
+    //! @param filename - log filename
+    //! @return full path to the log file
+    static std::string getFullLogPath(const std::string& filename = "log/foo.log");
     //! @brief Try to create the log folder.
     void tryToCreateLogFolder() const;
 

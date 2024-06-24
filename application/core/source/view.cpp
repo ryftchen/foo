@@ -412,7 +412,7 @@ void View::outputAwait()
     }
     else
     {
-        constexpr std::uint16_t maxLatency = 200;
+        constexpr std::uint16_t maxLatency = 100;
         utility::time::millisecondLevelSleep(maxLatency);
     }
 }

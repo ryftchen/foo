@@ -198,7 +198,7 @@ void Log::handleLogQueue()
     }
 }
 
-std::string Log::getFullDefaultLogPath(const std::string& filename)
+std::string Log::getFullLogPath(const std::string& filename)
 {
     std::string processHome;
     if (std::getenv("FOO_HOME") != nullptr)
@@ -368,51 +368,70 @@ std::ostream& operator<<(std::ostream& os, const Log::State state)
     return os;
 }
 
+//! @brief Regular expressions for log highlighting.
+struct HighlightRegex
+{
+    //! @brief Construct a new HighlightRegex object.
+    HighlightRegex() noexcept = default;
+
+    //! @brief Debug level prefix highlighting.
+    const std::regex debugLevel{std::string{debugLevelPrefixRegex}};
+    //! @brief Info level prefix highlighting.
+    const std::regex infoLevel{std::string{infoLevelPrefixRegex}};
+    //! @brief Warning level prefix highlighting.
+    const std::regex warnLevel{std::string{warnLevelPrefixRegex}};
+    //! @brief Error level prefix highlighting.
+    const std::regex errorLevel{std::string{errorLevelPrefixRegex}};
+    //! @brief Unknown level prefix highlighting.
+    const std::regex unknownLevel{std::string{unknownLevelPrefixRegex}};
+    //! @brief Date time highlighting.
+    const std::regex dateTime{std::string{dateTimeRegex}};
+    //! @brief Code file highlighting.
+    const std::regex codeFile{std::string{codeFileRegex}};
+};
+//! @brief Log style.
+static const HighlightRegex logStyle{};
+
 //! @brief Change line string to log style.
 //! @param line - target line to be changed
 //! @return changed line
 const std::string& changeToLogStyle(std::string& line)
 {
-    if (std::regex_search(line, std::regex(std::string{debugLevelPrefixRegex})))
+    if (std::regex_search(line, logStyle.debugLevel))
     {
-        line = std::regex_replace(
-            line, std::regex(std::string{debugLevelPrefixRegex}), std::string{debugLevelPrefixColorForLog});
+        line = std::regex_replace(line, logStyle.debugLevel, std::string{debugLevelPrefixColorForLog});
     }
-    else if (std::regex_search(line, std::regex(std::string{infoLevelPrefixRegex})))
+    else if (std::regex_search(line, logStyle.infoLevel))
     {
-        line = std::regex_replace(
-            line, std::regex(std::string{infoLevelPrefixRegex}), std::string{infoLevelPrefixColorForLog});
+        line = std::regex_replace(line, logStyle.infoLevel, std::string{infoLevelPrefixColorForLog});
     }
-    else if (std::regex_search(line, std::regex(std::string{warnLevelPrefixRegex})))
+    else if (std::regex_search(line, logStyle.warnLevel))
     {
-        line = std::regex_replace(
-            line, std::regex(std::string{warnLevelPrefixRegex}), std::string{warnLevelPrefixColorForLog});
+        line = std::regex_replace(line, logStyle.warnLevel, std::string{warnLevelPrefixColorForLog});
     }
-    else if (std::regex_search(line, std::regex(std::string{errorLevelPrefixRegex})))
+    else if (std::regex_search(line, logStyle.errorLevel))
     {
-        line = std::regex_replace(
-            line, std::regex(std::string{errorLevelPrefixRegex}), std::string{errorLevelPrefixColorForLog});
+        line = std::regex_replace(line, logStyle.errorLevel, std::string{errorLevelPrefixColorForLog});
     }
-    else if (std::regex_search(line, std::regex(std::string{unknownLevelPrefixRegex})))
+    else if (std::regex_search(line, logStyle.unknownLevel))
     {
-        line = std::regex_replace(
-            line, std::regex(std::string{unknownLevelPrefixRegex}), std::string{unknownLevelPrefixColorForLog});
+        line = std::regex_replace(line, logStyle.unknownLevel, std::string{unknownLevelPrefixColorForLog});
     }
 
     namespace common = utility::common;
-    if (const std::regex date(std::string{dateRegex}); std::regex_search(line, date))
+    if (std::regex_search(line, logStyle.dateTime))
     {
-        const auto searchIter = std::sregex_iterator(line.begin(), line.end(), date);
+        const auto searchIter = std::sregex_iterator(line.begin(), line.end(), logStyle.dateTime);
         const std::string timeColorForLog = std::string{common::colorGray} + std::string{common::colorBold}
             + std::string{common::colorForBackground} + (*searchIter).str() + std::string{common::colorOff};
-        line = std::regex_replace(line, std::regex(std::string{dateRegex}), timeColorForLog);
+        line = std::regex_replace(line, logStyle.dateTime, timeColorForLog);
     }
-    if (const std::regex codeFile(std::string{codeFileRegex}); std::regex_search(line, codeFile))
+    if (std::regex_search(line, logStyle.codeFile))
     {
-        const auto searchIter = std::sregex_iterator(line.begin(), line.end(), codeFile);
+        const auto searchIter = std::sregex_iterator(line.begin(), line.end(), logStyle.codeFile);
         const std::string codeFileColorForLog = std::string{common::colorUnderLine}
             + std::string{common::colorForBackground} + (*searchIter).str() + std::string{common::colorOff};
-        line = std::regex_replace(line, std::regex(std::string{codeFileRegex}), codeFileColorForLog);
+        line = std::regex_replace(line, logStyle.codeFile, codeFileColorForLog);
     }
 
     return line;

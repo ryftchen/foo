@@ -321,7 +321,7 @@ private:
     static std::string getIconBanner();
 
     //! @brief Latency (ms) for console.
-    static constexpr std::uint16_t latency{100};
+    static constexpr std::uint16_t latency{10};
 };
 
 //! @brief Preset thread name.
