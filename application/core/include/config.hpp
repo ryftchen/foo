@@ -14,34 +14,36 @@
 
 #include "utility/include/json.hpp"
 
-//! @brief Get the config instance.
-#define CONFIG_GET_INSTANCE application::config::Config::getInstance()
 //! @brief "activateHelper" configuration.
-#define CONFIG_ACTIVATE_HELPER CONFIG_GET_INSTANCE.cfgData().at("activateHelper").toBoolean()
+#define CONFIG_ACTIVATE_HELPER application::config::configuration().at("activateHelper").toBoolean()
 //! @brief "helperTimeout" configuration.
-#define CONFIG_HELPER_TIMEOUT CONFIG_GET_INSTANCE.cfgData().at("helperTimeout").toIntegral()
-//! @brief Logger properties in "helperList" configuration.
-#define CONFIG_HELPER_LOGGER_PROPERTIES CONFIG_GET_INSTANCE.cfgData().at("helperList").at("logger").at("properties")
-//! @brief Viewer properties in "helperList" configuration.
-#define CONFIG_HELPER_VIEWER_PROPERTIES CONFIG_GET_INSTANCE.cfgData().at("helperList").at("viewer").at("properties")
+#define CONFIG_HELPER_TIMEOUT application::config::configuration().at("helperTimeout").toIntegral()
 //! @brief "filePath" configuration in the logger properties.
-#define CONFIG_HELPER_LOGGER_FILE_PATH CONFIG_HELPER_LOGGER_PROPERTIES.at("filePath").toString()
+#define CONFIG_HELPER_LOGGER_FILE_PATH \
+    application::config::configuration().at("helperList").at("logger").at("properties").at("filePath").toString()
 //! @brief "minimumLevel" configuration in the logger properties.
-#define CONFIG_HELPER_LOGGER_MINIMUM_LEVEL CONFIG_HELPER_LOGGER_PROPERTIES.at("minimumLevel").toIntegral()
+#define CONFIG_HELPER_LOGGER_MINIMUM_LEVEL \
+    application::config::configuration().at("helperList").at("logger").at("properties").at("minimumLevel").toIntegral()
 //! @brief "usedMedium" configuration in the logger properties.
-#define CONFIG_HELPER_LOGGER_USED_MEDIUM CONFIG_HELPER_LOGGER_PROPERTIES.at("usedMedium").toIntegral()
+#define CONFIG_HELPER_LOGGER_USED_MEDIUM \
+    application::config::configuration().at("helperList").at("logger").at("properties").at("usedMedium").toIntegral()
 //! @brief "writeType" configuration in the logger properties.
-#define CONFIG_HELPER_LOGGER_WRITE_TYPE CONFIG_HELPER_LOGGER_PROPERTIES.at("writeType").toIntegral()
+#define CONFIG_HELPER_LOGGER_WRITE_TYPE \
+    application::config::configuration().at("helperList").at("logger").at("properties").at("writeType").toIntegral()
 //! @brief "tcpHost" configuration in the viewer properties.
-#define CONFIG_HELPER_VIEWER_TCP_HOST CONFIG_HELPER_VIEWER_PROPERTIES.at("tcpHost").toString()
+#define CONFIG_HELPER_VIEWER_TCP_HOST \
+    application::config::configuration().at("helperList").at("viewer").at("properties").at("tcpHost").toString()
 //! @brief "tcpPort" configuration in the viewer properties.
-#define CONFIG_HELPER_VIEWER_TCP_PORT CONFIG_HELPER_VIEWER_PROPERTIES.at("tcpPort").toIntegral()
+#define CONFIG_HELPER_VIEWER_TCP_PORT \
+    application::config::configuration().at("helperList").at("viewer").at("properties").at("tcpPort").toIntegral()
 //! @brief "udpHost" configuration in the viewer properties.
-#define CONFIG_HELPER_VIEWER_UDP_HOST CONFIG_HELPER_VIEWER_PROPERTIES.at("udpHost").toString()
+#define CONFIG_HELPER_VIEWER_UDP_HOST \
+    application::config::configuration().at("helperList").at("viewer").at("properties").at("udpHost").toString()
 //! @brief "udpPort" configuration in the viewer properties.
-#define CONFIG_HELPER_VIEWER_UDP_PORT CONFIG_HELPER_VIEWER_PROPERTIES.at("udpPort").toIntegral()
+#define CONFIG_HELPER_VIEWER_UDP_PORT \
+    application::config::configuration().at("helperList").at("viewer").at("properties").at("udpPort").toIntegral()
 //! @brief Config file path.
-#define CONFIG_FILE_PATH CONFIG_GET_INSTANCE.cfgFilePath()
+#define CONFIG_FILE_PATH application::config::Config::getInstance().cfgFilePath()
 
 //! @brief The application module.
 namespace application // NOLINT (modernize-concat-nested-namespaces)
@@ -51,6 +53,8 @@ namespace config
 {
 //! @brief Default configuration filename.
 constexpr std::string_view defaultConfigurationFile = "config/foo.json";
+//! @brief Maximum access limit.
+constexpr std::uint8_t maxAccessLimit = 5;
 
 extern std::string getFullDefaultConfigurationPath();
 
@@ -107,5 +111,6 @@ private:
 
 extern void forcedConfigurationUpdateByDefault(const std::string& filename);
 extern bool loadConfiguration(const std::string& filename = getFullDefaultConfigurationPath());
+extern const utility::json::JSON& configuration();
 } // namespace config
 } // namespace application

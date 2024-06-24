@@ -23,24 +23,26 @@
 #include "utility/include/fsm.hpp"
 #include "utility/include/time.hpp"
 
-//! @brief Flush log if enabled.
-#define LOG_FLUSH_IF_ENABLED(level)        \
-    if (CONFIG_ACTIVATE_HELPER) [[likely]] \
-    application::log::Log::Holder<application::log::Log::OutputLevel::level>(__FILE__, __LINE__).getStream()
 //! @brief Log with debug level.
-#define LOG_DBG LOG_FLUSH_IF_ENABLED(debug)
+#define LOG_DBG                            \
+    if (CONFIG_ACTIVATE_HELPER) [[likely]] \
+    application::log::Log::Holder<application::log::Log::OutputLevel::debug>(__FILE__, __LINE__).getStream()
 //! @brief Log with info level.
-#define LOG_INF LOG_FLUSH_IF_ENABLED(info)
+#define LOG_INF                            \
+    if (CONFIG_ACTIVATE_HELPER) [[likely]] \
+    application::log::Log::Holder<application::log::Log::OutputLevel::info>(__FILE__, __LINE__).getStream()
 //! @brief Log with warning level.
-#define LOG_WRN LOG_FLUSH_IF_ENABLED(warning)
+#define LOG_WRN                            \
+    if (CONFIG_ACTIVATE_HELPER) [[likely]] \
+    application::log::Log::Holder<application::log::Log::OutputLevel::warning>(__FILE__, __LINE__).getStream()
 //! @brief Log with error level.
-#define LOG_ERR LOG_FLUSH_IF_ENABLED(error)
-//! @brief Get the log instance.
-#define LOG_GET_INSTANCE application::log::Log::getInstance()
+#define LOG_ERR                            \
+    if (CONFIG_ACTIVATE_HELPER) [[likely]] \
+    application::log::Log::Holder<application::log::Log::OutputLevel::error>(__FILE__, __LINE__).getStream()
 //! @brief Log file path.
-#define LOG_FILE_PATH LOG_GET_INSTANCE.loggerFilePath()
+#define LOG_FILE_PATH application::log::Log::getInstance().loggerFilePath()
 //! @brief Log file lock.
-#define LOG_FILE_LOCK LOG_GET_INSTANCE.loggerFileLock()
+#define LOG_FILE_LOCK application::log::Log::getInstance().loggerFileLock()
 
 //! @brief The application module.
 namespace application // NOLINT (modernize-concat-nested-namespaces)

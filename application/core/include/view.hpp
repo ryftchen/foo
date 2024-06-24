@@ -18,28 +18,26 @@
 #include "utility/include/fsm.hpp"
 #include "utility/include/socket.hpp"
 
-//! @brief Get the view instance.
-#define VIEW_GET_INSTANCE application::view::View::getInstance()
 //! @brief All viewer options.
-#define VIEW_OPTIONS VIEW_GET_INSTANCE.viewerOptions()
+#define VIEW_OPTIONS application::view::View::getInstance().viewerOptions()
 //! @brief TCP host address of the viewer.
-#define VIEW_TCP_HOST VIEW_GET_INSTANCE.viewerTCPHost()
+#define VIEW_TCP_HOST application::view::View::getInstance().viewerTCPHost()
 //! @brief TCP port number of the viewer.
-#define VIEW_TCP_PORT VIEW_GET_INSTANCE.viewerTCPPort()
+#define VIEW_TCP_PORT application::view::View::getInstance().viewerTCPPort()
 //! @brief UDP host address of the viewer.
-#define VIEW_UDP_HOST VIEW_GET_INSTANCE.viewerUDPHost()
+#define VIEW_UDP_HOST application::view::View::getInstance().viewerUDPHost()
 //! @brief UDP port number of the viewer.
-#define VIEW_UDP_PORT VIEW_GET_INSTANCE.viewerUDPPort()
+#define VIEW_UDP_PORT application::view::View::getInstance().viewerUDPPort()
 //! @brief TLV packet through viewer parsing.
-#define VIEW_TLV_PACKET(buf, len) VIEW_GET_INSTANCE.parseTLVPacket(buf, len)
-//! @brief Get the view instance if enabled.
-#define VIEW_GET_INSTANCE_IF_ENABLED       \
-    if (CONFIG_ACTIVATE_HELPER) [[likely]] \
-    application::view::View::getInstance()
+#define VIEW_TLV_PACKET(buf, len) application::view::View::getInstance().parseTLVPacket(buf, len)
 //! @brief Wait for the viewer output to complete.
-#define VIEW_AWAIT VIEW_GET_INSTANCE_IF_ENABLED.outputAwait()
+#define VIEW_AWAIT                         \
+    if (CONFIG_ACTIVATE_HELPER) [[likely]] \
+    application::view::View::getInstance().outputAwait()
 //! @brief Wake due to the viewer output completed.
-#define VIEW_AWAKEN VIEW_GET_INSTANCE_IF_ENABLED.outputAwaken()
+#define VIEW_AWAKEN                        \
+    if (CONFIG_ACTIVATE_HELPER) [[likely]] \
+    application::view::View::getInstance().outputAwaken()
 
 //! @brief The application module.
 namespace application // NOLINT (modernize-concat-nested-namespaces)
