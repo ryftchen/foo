@@ -124,13 +124,13 @@ public:
     };
 
     //! @brief Bit flags for managing arithmetic methods.
-    std::bitset<Bottom<ArithmeticMethod>::value> arithmeticBit;
+    std::bitset<Bottom<ArithmeticMethod>::value> arithmeticBit{};
     //! @brief Bit flags for managing divisor methods.
-    std::bitset<Bottom<DivisorMethod>::value> divisorBit;
+    std::bitset<Bottom<DivisorMethod>::value> divisorBit{};
     //! @brief Bit flags for managing integral methods.
-    std::bitset<Bottom<IntegralMethod>::value> integralBit;
+    std::bitset<Bottom<IntegralMethod>::value> integralBit{};
     //! @brief Bit flags for managing prime methods.
-    std::bitset<Bottom<PrimeMethod>::value> primeBit;
+    std::bitset<Bottom<PrimeMethod>::value> primeBit{};
 
     //! @brief Check whether any numeric tasks do not exist.
     //! @return any numeric tasks do not exist or exist
@@ -238,9 +238,9 @@ public:
 
 private:
     //! @brief First integer for elementary arithmetic.
-    const std::int32_t integer1;
+    const std::int32_t integer1{};
     //! @brief Second integer for elementary arithmetic.
-    const std::int32_t integer2;
+    const std::int32_t integer2{};
 };
 } // namespace arithmetic
 extern void runArithmeticTasks(const std::vector<std::string>& candidates);
@@ -346,9 +346,9 @@ public:
 
 private:
     //! @brief First integer.
-    const std::int32_t integer1;
+    const std::int32_t integer1{};
     //! @brief Second integer.
-    const std::int32_t integer2;
+    const std::int32_t integer2{};
 };
 } // namespace divisor
 extern void runDivisorTasks(const std::vector<std::string>& candidates);
@@ -462,11 +462,11 @@ struct ExprRange
     //! @brief Construct a new ExprRange object.
     ExprRange() = delete;
     //! @brief Lower endpoint.
-    const T1 range1;
+    const T1 range1{};
     //! @brief Upper endpoint.
-    const T2 range2;
+    const T2 range2{};
     //! @brief Expression description.
-    const std::string_view exprDescr;
+    const std::string_view exprDescr{};
     //! @brief The operator (==) overloading of ExprRange struct.
     //! @param rhs - right-hand side
     //! @return be equal or not equal
@@ -537,7 +537,7 @@ public:
 
 private:
     //! @brief Collection of integral expressions.
-    const IntegralExprMap<Ts...> expressionMap;
+    const IntegralExprMap<Ts...> expressionMap{};
 };
 } // namespace integral
 extern void runIntegralTasks(const std::vector<std::string>& candidates);
@@ -635,7 +635,7 @@ public:
 
 private:
     //! @brief Maximum positive integer.
-    const std::uint32_t maxPositiveInteger;
+    const std::uint32_t maxPositiveInteger{};
 };
 } // namespace prime
 extern void runPrimeTasks(const std::vector<std::string>& candidates);

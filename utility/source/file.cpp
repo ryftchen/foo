@@ -67,7 +67,7 @@ void ReadWriteLock::writeUnlock()
     lock.lock();
 }
 
-ReadWriteGuard::ReadWriteGuard(const LockMode mode, ReadWriteLock& lock) : lock(lock), mode(mode)
+ReadWriteGuard::ReadWriteGuard(ReadWriteLock& lock, const LockMode mode) : lock(lock), mode(mode)
 {
     switch (mode)
     {

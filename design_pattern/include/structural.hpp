@@ -55,7 +55,7 @@ public:
 
 private:
     //! @brief The adaptee.
-    std::unique_ptr<Adaptee> adaptee;
+    std::unique_ptr<Adaptee> adaptee{};
 };
 
 extern std::ostringstream& output();
@@ -123,7 +123,7 @@ public:
 
 private:
     //! @brief The implementor.
-    std::unique_ptr<Implementor> implementor;
+    std::unique_ptr<Implementor> implementor{};
 };
 
 extern std::ostringstream& output();
@@ -174,7 +174,7 @@ public:
 
 private:
     //! @brief Child components.
-    std::vector<std::shared_ptr<Component>> children;
+    std::vector<std::shared_ptr<Component>> children{};
 };
 
 //! @brief The behavior of the element that has no child in the composition.
@@ -192,7 +192,7 @@ public:
 
 private:
     //! @brief Leaf node id.
-    int id;
+    int id{};
 };
 
 extern std::ostringstream& output();
@@ -238,7 +238,7 @@ public:
 
 private:
     //! @brief The component.
-    std::shared_ptr<Component> component;
+    std::shared_ptr<Component> component{};
 };
 
 //! @brief The concrete decorator.
@@ -309,11 +309,11 @@ public:
 
 private:
     //! @brief Subsystem A.
-    std::shared_ptr<SubsystemA> subsystemA;
+    std::shared_ptr<SubsystemA> subsystemA{};
     //! @brief Subsystem B.
-    std::shared_ptr<SubsystemB> subsystemB;
+    std::shared_ptr<SubsystemB> subsystemB{};
     //! @brief Subsystem C.
-    std::shared_ptr<SubsystemC> subsystemC;
+    std::shared_ptr<SubsystemC> subsystemC{};
 };
 
 extern std::ostringstream& output();
@@ -348,7 +348,7 @@ public:
 
 private:
     //! @brief Intrinsic state.
-    int state;
+    int state{};
 };
 
 //! @brief The concrete flyweight.
@@ -366,7 +366,7 @@ public:
 
 private:
     //! @brief Intrinsic state.
-    int state;
+    int state{};
 };
 
 //! @brief Manage flyweights and ensure that flyweights are appropriately shared.
@@ -383,7 +383,7 @@ public:
 
 private:
     //! @brief The flies.
-    std::map<int, std::unique_ptr<Flyweight>> flies;
+    std::map<int, std::unique_ptr<Flyweight>> flies{};
 };
 
 extern std::ostringstream& output();
@@ -423,7 +423,7 @@ public:
 
 private:
     //! @brief Real subject.
-    std::unique_ptr<RealSubject> subject;
+    std::unique_ptr<RealSubject> subject{};
 
 protected:
     //! @brief Get the real subject.

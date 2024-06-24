@@ -37,7 +37,7 @@ public:
 
 private:
     //! @brief The successor.
-    std::shared_ptr<Handler> successor;
+    std::shared_ptr<Handler> successor{};
 };
 
 //! @brief The concrete handler.
@@ -112,7 +112,7 @@ public:
 
 private:
     //! @brief The receiver.
-    std::weak_ptr<Receiver> receiver;
+    std::weak_ptr<Receiver> receiver{};
 };
 
 //! @brief Invoke the corresponding operation.
@@ -127,7 +127,7 @@ public:
 
 private:
     //! @brief The command.
-    std::weak_ptr<Command> command;
+    std::weak_ptr<Command> command{};
 };
 
 extern std::ostringstream& output();
@@ -151,7 +151,7 @@ public:
 
 private:
     //! @brief The variables.
-    std::map<std::string, bool> vars;
+    std::map<std::string, bool> vars{};
 };
 
 //! @brief The abstract interpret operation.
@@ -184,7 +184,7 @@ public:
 
 private:
     //! @brief The value of the terminal expression.
-    std::string value;
+    std::string value{};
 };
 
 //! @brief The non-terminal interpret operation. One such class is required for every rule in grammar.
@@ -208,9 +208,9 @@ public:
 
 private:
     //! @brief The left operation of the non-terminal expression.
-    std::shared_ptr<AbstractExpression> leftOp;
+    std::shared_ptr<AbstractExpression> leftOp{};
     //! @brief The right operation of the non-terminal expression.
-    std::shared_ptr<AbstractExpression> rightOp;
+    std::shared_ptr<AbstractExpression> rightOp{};
 };
 
 extern std::ostringstream& output();
@@ -273,9 +273,9 @@ public:
 
 private:
     //! @brief Collection of items.
-    std::unique_ptr<int[]> list;
+    std::unique_ptr<int[]> list{};
     //! @brief Size of the concrete aggregate.
-    std::uint32_t count;
+    std::uint32_t count{};
 };
 
 //! @brief The concrete iterator.
@@ -301,9 +301,9 @@ public:
 
 private:
     //! @brief Collection of items.
-    std::shared_ptr<ConcreteAggregate> list;
+    std::shared_ptr<ConcreteAggregate> list{};
     //! @brief Current Index.
-    std::uint32_t index;
+    std::uint32_t index{};
 };
 
 extern std::ostringstream& output();
@@ -351,7 +351,7 @@ public:
 
 private:
     //! @brief Collection of colleagues.
-    std::vector<std::weak_ptr<Colleague>> colleagues;
+    std::vector<std::weak_ptr<Colleague>> colleagues{};
 };
 
 //! @brief The colleague communicates with its mediator.
@@ -378,9 +378,9 @@ public:
 
 protected:
     //! @brief Mediator of the colleague.
-    std::weak_ptr<Mediator> mediator;
+    std::weak_ptr<Mediator> mediator{};
     //! @brief Id of the colleague.
-    std::uint32_t id;
+    std::uint32_t id{};
 };
 
 //! @brief The concrete colleague.
@@ -418,7 +418,7 @@ private:
     explicit Memento(const int state) : state(state) {}
 
     //! @brief State of memento.
-    int state;
+    int state{};
     //! @brief Set the state of memento.
     //! @param s - target state
     void setState(const int s);
@@ -447,7 +447,7 @@ public:
 
 private:
     //! @brief State of originator.
-    int state;
+    int state{};
 };
 
 //! @brief Safeguard memento.
@@ -467,9 +467,9 @@ public:
 
 private:
     //! @brief Specific originator.
-    std::shared_ptr<Originator> originator;
+    std::shared_ptr<Originator> originator{};
     //! @brief State history.
-    std::vector<std::shared_ptr<Memento>> history;
+    std::vector<std::shared_ptr<Memento>> history{};
 };
 
 extern std::ostringstream& output();
@@ -519,7 +519,7 @@ public:
 
 private:
     //! @brief Collection of observers.
-    std::vector<std::shared_ptr<Observer>> observers;
+    std::vector<std::shared_ptr<Observer>> observers{};
 };
 
 //! @brief The concrete observer.
@@ -541,7 +541,7 @@ public:
 
 private:
     //! @brief State of observer.
-    int observerState;
+    int observerState{};
 };
 
 //! @brief The concrete subject.
@@ -562,7 +562,7 @@ public:
 
 private:
     //! @brief State of subject.
-    int subjectState;
+    int subjectState{};
 };
 
 extern std::ostringstream& output();
@@ -621,7 +621,7 @@ public:
 
 private:
     //! @brief State of context.
-    std::unique_ptr<State> state;
+    std::unique_ptr<State> state{};
 };
 
 extern std::ostringstream& output();
@@ -678,7 +678,7 @@ public:
 
 private:
     //! @brief Strategy of context.
-    std::unique_ptr<Strategy> strategy;
+    std::unique_ptr<Strategy> strategy{};
 };
 
 extern std::ostringstream& output();

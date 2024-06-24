@@ -125,11 +125,11 @@ public:
     };
 
     //! @brief Bit flags for managing behavioral instances.
-    std::bitset<Bottom<BehavioralInstance>::value> behavioralBit;
+    std::bitset<Bottom<BehavioralInstance>::value> behavioralBit{};
     //! @brief Bit flags for managing creational instances.
-    std::bitset<Bottom<CreationalInstance>::value> creationalBit;
+    std::bitset<Bottom<CreationalInstance>::value> creationalBit{};
     //! @brief Bit flags for managing structural instances.
-    std::bitset<Bottom<StructuralInstance>::value> structuralBit;
+    std::bitset<Bottom<StructuralInstance>::value> structuralBit{};
 
     //! @brief Check whether any design pattern tasks do not exist.
     //! @return any design pattern tasks do not exist or exist

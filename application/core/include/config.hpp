@@ -15,33 +15,48 @@
 #include "utility/include/json.hpp"
 
 //! @brief "activateHelper" configuration.
-#define CONFIG_ACTIVATE_HELPER application::config::configuration().at("activateHelper").toBoolean()
+#define CONFIG_ACTIVATE_HELPER application::config::queryConfiguration().at("activateHelper").toBoolean()
 //! @brief "helperTimeout" configuration.
-#define CONFIG_HELPER_TIMEOUT application::config::configuration().at("helperTimeout").toIntegral()
+#define CONFIG_HELPER_TIMEOUT application::config::queryConfiguration().at("helperTimeout").toIntegral()
 //! @brief "filePath" configuration in the logger properties.
 #define CONFIG_HELPER_LOGGER_FILE_PATH \
-    application::config::configuration().at("helperList").at("logger").at("properties").at("filePath").toString()
+    application::config::queryConfiguration().at("helperList").at("logger").at("properties").at("filePath").toString()
 //! @brief "minimumLevel" configuration in the logger properties.
-#define CONFIG_HELPER_LOGGER_MINIMUM_LEVEL \
-    application::config::configuration().at("helperList").at("logger").at("properties").at("minimumLevel").toIntegral()
+#define CONFIG_HELPER_LOGGER_MINIMUM_LEVEL    \
+    application::config::queryConfiguration() \
+        .at("helperList")                     \
+        .at("logger")                         \
+        .at("properties")                     \
+        .at("minimumLevel")                   \
+        .toIntegral()
 //! @brief "usedMedium" configuration in the logger properties.
-#define CONFIG_HELPER_LOGGER_USED_MEDIUM \
-    application::config::configuration().at("helperList").at("logger").at("properties").at("usedMedium").toIntegral()
+#define CONFIG_HELPER_LOGGER_USED_MEDIUM      \
+    application::config::queryConfiguration() \
+        .at("helperList")                     \
+        .at("logger")                         \
+        .at("properties")                     \
+        .at("usedMedium")                     \
+        .toIntegral()
 //! @brief "writeType" configuration in the logger properties.
-#define CONFIG_HELPER_LOGGER_WRITE_TYPE \
-    application::config::configuration().at("helperList").at("logger").at("properties").at("writeType").toIntegral()
+#define CONFIG_HELPER_LOGGER_WRITE_TYPE       \
+    application::config::queryConfiguration() \
+        .at("helperList")                     \
+        .at("logger")                         \
+        .at("properties")                     \
+        .at("writeType")                      \
+        .toIntegral()
 //! @brief "tcpHost" configuration in the viewer properties.
 #define CONFIG_HELPER_VIEWER_TCP_HOST \
-    application::config::configuration().at("helperList").at("viewer").at("properties").at("tcpHost").toString()
+    application::config::queryConfiguration().at("helperList").at("viewer").at("properties").at("tcpHost").toString()
 //! @brief "tcpPort" configuration in the viewer properties.
 #define CONFIG_HELPER_VIEWER_TCP_PORT \
-    application::config::configuration().at("helperList").at("viewer").at("properties").at("tcpPort").toIntegral()
+    application::config::queryConfiguration().at("helperList").at("viewer").at("properties").at("tcpPort").toIntegral()
 //! @brief "udpHost" configuration in the viewer properties.
 #define CONFIG_HELPER_VIEWER_UDP_HOST \
-    application::config::configuration().at("helperList").at("viewer").at("properties").at("udpHost").toString()
+    application::config::queryConfiguration().at("helperList").at("viewer").at("properties").at("udpHost").toString()
 //! @brief "udpPort" configuration in the viewer properties.
 #define CONFIG_HELPER_VIEWER_UDP_PORT \
-    application::config::configuration().at("helperList").at("viewer").at("properties").at("udpPort").toIntegral()
+    application::config::queryConfiguration().at("helperList").at("viewer").at("properties").at("udpPort").toIntegral()
 //! @brief Config file path.
 #define CONFIG_FILE_PATH application::config::Config::getInstance().cfgFilePath()
 
@@ -54,7 +69,7 @@ namespace config
 //! @brief Default configuration filename.
 constexpr std::string_view defaultConfigurationFile = "config/foo.json";
 //! @brief Maximum access limit.
-constexpr std::uint8_t maxAccessLimit = 5;
+constexpr std::uint8_t maxAccessLimit = 10;
 
 extern std::string getFullDefaultConfigurationPath();
 
@@ -71,7 +86,7 @@ public:
     //! @brief The operator (=) overloading of Config class.
     //! @return reference of the Config object
     Config& operator=(const Config&) = delete;
-    //! @brief The operator (=) overloading of Config struct.
+    //! @brief The operator (=) overloading of Config class.
     //! @return reference of the Config object
     Config& operator=(Config&&) = delete;
 
@@ -92,7 +107,7 @@ private:
     //! @brief Config file absolute path.
     const std::string filePath{getFullDefaultConfigurationPath()};
     //! @brief Config data table.
-    const utility::json::JSON data;
+    const utility::json::JSON data{};
 
     //! @brief Parse the configuration file.
     //! @param configFile - configuration file
@@ -111,6 +126,6 @@ private:
 
 extern void forcedConfigurationUpdateByDefault(const std::string& filename);
 extern bool loadConfiguration(const std::string& filename = getFullDefaultConfigurationPath());
-extern const utility::json::JSON& configuration();
+extern const utility::json::JSON& queryConfiguration();
 } // namespace config
 } // namespace application

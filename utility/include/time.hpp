@@ -41,9 +41,9 @@ public:
 
 private:
     //! @brief Beginning time.
-    std::chrono::steady_clock::time_point beginTime;
+    std::chrono::steady_clock::time_point beginTime{};
     //! @brief Ending time.
-    std::chrono::steady_clock::time_point endTime;
+    std::chrono::steady_clock::time_point endTime{};
 };
 
 //! @brief Blocking Timer.

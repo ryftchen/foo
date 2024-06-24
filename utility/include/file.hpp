@@ -65,9 +65,9 @@ class ReadWriteGuard
 {
 public:
     //! @brief Construct a new ReadWriteGuard object.
-    //! @param mode - lock mode
     //! @param lock - object managed by the guard
-    ReadWriteGuard(const LockMode mode, ReadWriteLock& lock);
+    //! @param mode - lock mode
+    ReadWriteGuard(ReadWriteLock& lock, const LockMode mode);
     //! @brief Destroy the ReadWriteGuard object.
     virtual ~ReadWriteGuard();
 
@@ -75,7 +75,7 @@ private:
     //! @brief Object managed by the guard.
     ReadWriteLock& lock;
     //! @brief Lock mode.
-    const LockMode mode;
+    const LockMode mode{};
 };
 
 //! @brief FD lock operation.

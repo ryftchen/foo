@@ -122,7 +122,7 @@ public:
     //! @brief The operator (=) overloading of Log class.
     //! @return reference of the Log object
     Log& operator=(const Log&) = delete;
-    //! @brief The operator (=) overloading of Log struct.
+    //! @brief The operator (=) overloading of Log class.
     //! @return reference of the Log object
     Log& operator=(Log&&) = delete;
 
@@ -223,11 +223,11 @@ public:
 
     private:
         //! @brief Output stream for flushing.
-        std::ostringstream stream;
+        std::ostringstream stream{};
         //! @brief Code file.
-        const std::string& file;
+        const std::string& file{};
         //! @brief Code line.
-        const std::uint32_t line;
+        const std::uint32_t line{};
 
         //! @brief Flush the output stream.
         inline void flush() { getInstance().flush(Lv, file, line, stream.str()); }
@@ -248,7 +248,7 @@ private:
     //! @brief Timeout period (ms) to waiting for the logger to change to the target state.
     const std::uint32_t timeoutPeriod{static_cast<std::uint32_t>(CONFIG_HELPER_TIMEOUT)};
     //! @brief The queue of logs.
-    std::queue<std::string> logQueue;
+    std::queue<std::string> logQueue{};
     //! @brief Mutex for controlling queue.
     mutable std::mutex mtx{};
     //! @brief The synchronization condition for queue. Use with mtx.
@@ -258,7 +258,7 @@ private:
     //! @brief Flag for rollback request.
     std::atomic<bool> toReset{false};
     //! @brief Output file stream.
-    std::ofstream ofs;
+    std::ofstream ofs{};
     //! @brief Log file absolute path.
     const std::string filePath{getFullLogPath()};
     //! @brief Write type.
@@ -268,7 +268,7 @@ private:
     //! @brief Used medium.
     const OutputMedium usedMedium{OutputMedium::both};
     //! @brief Log file lock.
-    utility::file::ReadWriteLock fileLock;
+    utility::file::ReadWriteLock fileLock{};
 
     //! @brief Check whether it is in the uninterrupted target state.
     //! @param state - target state

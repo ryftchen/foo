@@ -171,15 +171,15 @@ public:
     };
 
     //! @brief Bit flags for managing match methods.
-    std::bitset<Bottom<MatchMethod>::value> matchBit;
+    std::bitset<Bottom<MatchMethod>::value> matchBit{};
     //! @brief Bit flags for managing notation methods.
-    std::bitset<Bottom<NotationMethod>::value> notationBit;
+    std::bitset<Bottom<NotationMethod>::value> notationBit{};
     //! @brief Bit flags for managing optimal methods.
-    std::bitset<Bottom<OptimalMethod>::value> optimalBit;
+    std::bitset<Bottom<OptimalMethod>::value> optimalBit{};
     //! @brief Bit flags for managing search methods.
-    std::bitset<Bottom<SearchMethod>::value> searchBit;
+    std::bitset<Bottom<SearchMethod>::value> searchBit{};
     //! @brief Bit flags for managing sort methods.
-    std::bitset<Bottom<SortMethod>::value> sortBit;
+    std::bitset<Bottom<SortMethod>::value> sortBit{};
 
     //! @brief Check whether any algorithm tasks do not exist.
     //! @return any algorithm tasks do not exist or exist
@@ -321,9 +321,14 @@ public:
 
     //! @brief Construct a new InputBuilder object.
     InputBuilder(const InputBuilder&) = delete;
+    //! @brief Construct a new InputBuilder object.
+    InputBuilder(InputBuilder&&) = delete;
     //! @brief The operator (=) overloading of InputBuilder class.
     //! @return reference of the InputBuilder object
     InputBuilder& operator=(const InputBuilder&) = delete;
+    //! @brief The operator (=) overloading of InputBuilder class.
+    //! @return reference of the InputBuilder object
+    InputBuilder& operator=(InputBuilder&&) = delete;
 
     //! @brief Maximum digit for the target text.
     static constexpr std::uint32_t maxDigit{100000};
@@ -343,13 +348,13 @@ public:
 
 private:
     //! @brief Matching text.
-    const std::unique_ptr<unsigned char[]> marchingText;
+    const std::unique_ptr<unsigned char[]> marchingText{};
     //! @brief Length of the matching text.
-    const std::uint32_t textLength;
+    const std::uint32_t textLength{};
     //! @brief Single pattern.
-    const std::unique_ptr<unsigned char[]> singlePattern;
+    const std::unique_ptr<unsigned char[]> singlePattern{};
     //! @brief Length of the single pattern.
-    const std::uint32_t patternLength;
+    const std::uint32_t patternLength{};
 
     //! @brief Base number for converting the digit to precision.
     static constexpr int mpfrBase{10};
@@ -450,7 +455,7 @@ public:
 
 private:
     //! @brief Infix notation.
-    const std::string_view infixNotation;
+    const std::string_view infixNotation{};
 };
 } // namespace notation
 extern void runNotationTasks(const std::vector<std::string>& candidates);
@@ -569,11 +574,11 @@ struct FuncRange
     //! @brief Construct a new FuncRange object.
     FuncRange() = delete;
     //! @brief Left endpoint.
-    const T1 range1;
+    const T1 range1{};
     //! @brief Right endpoint.
-    const T2 range2;
+    const T2 range2{};
     //! @brief Function description.
-    const std::string_view funcDescr;
+    const std::string_view funcDescr{};
 
     //! @brief The operator (==) overloading of FuncRange struct.
     //! @param rhs - right-hand side
@@ -645,7 +650,7 @@ public:
 
 private:
     //! @brief Collection of optimal functions.
-    const OptimalFuncMap<Ts...> functionMap;
+    const OptimalFuncMap<Ts...> functionMap{};
 };
 } // namespace optimal
 extern void runOptimalTasks(const std::vector<std::string>& candidates);
@@ -717,16 +722,14 @@ public:
         orderedArray(std::make_unique<T[]>(length + 1)), length(length)
     {
         setOrderedArray<T>(orderedArray.get(), length, left, right);
-        searchKey = orderedArray[length / 2];
     }
     //! @brief Destroy the InputBuilder object.
     virtual ~InputBuilder() = default;
     //! @brief Construct a new InputBuilder object.
     //! @param rhs - right-hand side
-    InputBuilder(const InputBuilder& rhs) : length(rhs.length), orderedArray(std::make_unique<T[]>(rhs.length + 1))
+    InputBuilder(const InputBuilder& rhs) : orderedArray(std::make_unique<T[]>(rhs.length + 1)), length(rhs.length)
     {
         deepCopy(rhs);
-        searchKey = orderedArray[length / 2];
     }
     //! @brief The operator (!=) overloading of InputBuilder class.
     //! @param rhs - right-hand side
@@ -745,7 +748,7 @@ public:
     [[nodiscard]] inline std::uint32_t getLength() const { return length; }
     //! @brief Get the search key.
     //! @return T search key
-    inline T getSearchKey() const { return searchKey; }
+    inline T getSearchKey() const { return orderedArray[length / 2]; }
     //! @brief Splice from array for printing.
     //! @tparam N - type of array
     //! @param array - target array
@@ -805,11 +808,9 @@ public:
 
 private:
     //! @brief Ordered array.
-    const std::unique_ptr<T[]> orderedArray;
+    const std::unique_ptr<T[]> orderedArray{};
     //! @brief Length of the ordered array.
-    const std::uint32_t length;
-    //! @brief Search key.
-    T searchKey{0};
+    const std::uint32_t length{};
 
     //! @brief Deep copy for copy constructor.
     //! @param rhs - right-hand side
@@ -969,7 +970,7 @@ public:
     virtual ~InputBuilder() = default;
     //! @brief Construct a new InputBuilder object.
     //! @param rhs - right-hand side
-    InputBuilder(const InputBuilder& rhs) : length(rhs.length), randomArray(std::make_unique<T[]>(rhs.length + 1))
+    InputBuilder(const InputBuilder& rhs) : randomArray(std::make_unique<T[]>(rhs.length + 1)), length(rhs.length)
     {
         deepCopy(rhs);
     }
@@ -1047,9 +1048,9 @@ public:
 
 private:
     //! @brief Random array.
-    const std::unique_ptr<T[]> randomArray;
+    const std::unique_ptr<T[]> randomArray{};
     //! @brief Length of the random array.
-    const std::uint32_t length;
+    const std::uint32_t length{};
 
     //! @brief Deep copy for copy constructor.
     //! @param rhs - right-hand side

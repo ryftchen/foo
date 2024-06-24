@@ -62,7 +62,7 @@ public:
     //! @brief The operator (=) overloading of Command class.
     //! @return reference of the Command object
     Command& operator=(const Command&) = delete;
-    //! @brief The operator (=) overloading of Command struct.
+    //! @brief The operator (=) overloading of Command class.
     //! @return reference of the Command object
     Command& operator=(Command&&) = delete;
 
@@ -143,9 +143,9 @@ private:
     struct CategoryExtAttr
     {
         //! @brief The aggregation for the candidate task.
-        AggregationTasks candidates;
+        AggregationTasks candidates{};
         //! @brief The tuple containing the callback to be got.
-        TaskFunctorTuple callbacks;
+        TaskFunctorTuple callbacks{};
     };
     //! @brief Alias for the map of CategoryName and CategoryExtAttr.
     using SubCLIMap = std::map<CategoryName, CategoryExtAttr>;
@@ -206,7 +206,7 @@ private:
     {
     public:
         //! @brief Bit flags for managing basic tasks.
-        std::bitset<Bottom<Category>::value> primaryBit;
+        std::bitset<Bottom<Category>::value> primaryBit{};
 
         //! @brief Check whether any basic tasks do not exist.
         //! @return any basic tasks do not exist or exist

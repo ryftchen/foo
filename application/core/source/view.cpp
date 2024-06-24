@@ -515,7 +515,7 @@ int View::buildTLVPacket2Profile(const std::vector<std::string>& /*args*/, char*
 {
     int length = 0;
     tlv::TLVValue value{};
-    const std::string currConfig = config::configuration().toUnescapedString();
+    const std::string currConfig = config::queryConfiguration().toUnescapedString();
     std::strncpy(value.configDetail, currConfig.c_str(), sizeof(value.configDetail) - 1);
     value.configDetail[sizeof(value.configDetail) - 1] = '\0';
     if (tlv::tlvEncode(buffer, length, value) < 0)
@@ -700,7 +700,7 @@ void View::segmentedOutput(const std::string& buffer)
 
 std::string View::getLogContents()
 {
-    utility::file::ReadWriteGuard guard(utility::file::LockMode::read, LOG_FILE_LOCK);
+    utility::file::ReadWriteGuard guard(LOG_FILE_LOCK, utility::file::LockMode::read);
     auto contents = utility::file::getFileContents(LOG_FILE_PATH, true);
     std::for_each(
         contents.begin(),

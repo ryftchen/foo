@@ -97,7 +97,7 @@ public:
 
 private:
     //! @brief Output stream of the data structure.
-    std::ostringstream stream;
+    std::ostringstream stream{};
 };
 } // namespace linear
 } // namespace date_structure

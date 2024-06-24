@@ -323,19 +323,19 @@ private:
     //! @brief Alias for function which has void return.
     using VoidAction = std::function<void(const std::string&)>;
     //! @brief All argument names.
-    std::vector<std::string> names;
+    std::vector<std::string> names{};
     //! @brief Used argument name.
-    std::string_view usedName;
+    std::string_view usedName{};
     //! @brief Help message content.
-    std::string helpContent;
+    std::string helpContent{};
     //! @brief Metavar message content.
-    std::string metavarContent;
+    std::string metavarContent{};
     //! @brief Default value.
-    std::any defaultValue;
+    std::any defaultValue{};
     //! @brief Default value content to be represented.
-    std::string defaultValueRepresent;
+    std::string defaultValueRepresent{};
     //! @brief Implicit value.
-    std::any implicitValue;
+    std::any implicitValue{};
     //! @brief All actions of arguments.
     std::variant<ValuedAction, VoidAction> actions{
         std::in_place_type<ValuedAction>,
@@ -344,7 +344,7 @@ private:
             return value;
         }};
     //! @brief Values from all arguments.
-    std::vector<std::any> values;
+    std::vector<std::any> values{};
     //! @brief Flag to indicate whether to accept optional like value.
     bool isAcceptOptionalLikeValue{false};
     //! @brief Flag to indicate whether to be optional.
@@ -358,7 +358,7 @@ private:
     //! @brief End of file in arguments.
     static constexpr int eof{std::char_traits<char>::eof()};
     //! @brief Prefix characters.
-    std::string_view prefixChars;
+    std::string_view prefixChars{};
 
     //! @brief Indicate the range for the number of arguments.
     class ArgsNumRange
@@ -781,9 +781,9 @@ public:
     void addSubParser(Argument& parser);
 
     //! @brief Title name.
-    std::string title;
+    std::string title{};
     //! @brief Version information.
-    std::string version;
+    std::string version{};
 
 private:
     //! @brief Alias for iterator in all Register instance.
@@ -791,7 +791,7 @@ private:
     //! @brief Alias for iterator in all Argument instance.
     using ArgumentIter = std::list<std::reference_wrapper<Argument>>::iterator;
     //! @brief Description text.
-    std::string descrText;
+    std::string descrText{};
     //! @brief Prefix characters.
     std::string prefixChars{"-"};
     //! @brief Assign characters.
@@ -799,19 +799,19 @@ private:
     //! @brief Flag to indicate whether to be parsed.
     bool isParsed{false};
     //! @brief List of optional arguments.
-    std::list<Register> optionalArguments;
+    std::list<Register> optionalArguments{};
     //! @brief List of positional arguments.
-    std::list<Register> positionalArguments;
+    std::list<Register> positionalArguments{};
     //! @brief Mapping table of argument.
-    std::unordered_map<std::string_view, RegisterIter> argumentMap;
+    std::unordered_map<std::string_view, RegisterIter> argumentMap{};
     //! @brief Current parser path.
-    std::string parserPath;
+    std::string parserPath{};
     //! @brief List of sub-parsers.
-    std::list<std::reference_wrapper<Argument>> subParsers;
+    std::list<std::reference_wrapper<Argument>> subParsers{};
     //! @brief Mapping table of sub-parser.
-    std::map<std::string_view, ArgumentIter> subParserMap;
+    std::map<std::string_view, ArgumentIter> subParserMap{};
     //! @brief Mapping table of sub-parser usage.
-    std::map<std::string_view, bool> subParserUsed;
+    std::map<std::string_view, bool> subParserUsed{};
 
     //! @brief Check if the prefix character is valid.
     //! @param c - prefix character

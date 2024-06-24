@@ -298,11 +298,11 @@ catch (const std::exception& error)
 }
 
 //! @brief The semaphore that controls the maximum access limit.
-static std::counting_semaphore<maxAccessLimit> configSem(maxAccessLimit);
+static std::counting_semaphore<maxAccessLimit> configSem{maxAccessLimit};
 
-//! @brief Current configuration data.
-//! @return configuration data
-const utility::json::JSON& configuration()
+//! @brief Query configuration.
+//! @return current configuration
+const utility::json::JSON& queryConfiguration()
 try
 {
     configSem.acquire();
