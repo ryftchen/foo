@@ -296,4 +296,23 @@ catch (const std::exception& error)
 
     return false;
 }
+
+//! @brief The semaphore that controls the maximum access limit.
+static std::counting_semaphore<maxAccessLimit> configSem(maxAccessLimit);
+
+//! @brief Current configuration data.
+//! @return configuration data
+const utility::json::JSON& configuration()
+try
+{
+    configSem.acquire();
+    const auto& data = Config::getInstance().cfgData();
+    configSem.release();
+    return data;
+}
+catch (...)
+{
+    configSem.release();
+    throw;
+}
 } // namespace application::config
