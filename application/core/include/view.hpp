@@ -266,6 +266,14 @@ private:
     const std::string udpHost{"localhost"};
     //! @brief UDP server port number.
     const std::uint16_t udpPort{61502};
+    //! @brief Split string by space.
+    //! @param str - target string
+    //! @return strings after split
+    static std::vector<std::string> splitString(const std::string& str);
+    //! @brief Build the null TLV packet.
+    //! @param buffer - TLV packet buffer
+    //! @return buffer length
+    static int buildNullTLVPacket(char* buffer);
     //! @brief Build the TLV packet to stop connection.
     //! @param buffer - TLV packet buffer
     //! @return buffer length

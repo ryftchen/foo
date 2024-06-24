@@ -554,12 +554,12 @@ void Command::launchClient<utility::socket::TCPSocket>(std::shared_ptr<utility::
             {
                 client->setNonBlocking();
             }
-            VIEW_AWAKEN;
         }
         catch (std::exception& error)
         {
             LOG_WRN << error.what();
         }
+        VIEW_AWAKEN;
     };
     client->toConnect(VIEW_TCP_HOST, VIEW_TCP_PORT);
 }
@@ -578,12 +578,12 @@ void Command::launchClient<utility::socket::UDPSocket>(std::shared_ptr<utility::
             {
                 client->setNonBlocking();
             }
-            VIEW_AWAKEN;
         }
         catch (std::exception& error)
         {
             LOG_WRN << error.what();
         }
+        VIEW_AWAKEN;
     };
     client->toReceive();
     client->toConnect(VIEW_UDP_HOST, VIEW_UDP_PORT);

@@ -425,6 +425,30 @@ void View::outputAwaken()
     outputCv.notify_one();
 }
 
+std::vector<std::string> View::splitString(const std::string& str)
+{
+    std::vector<std::string> split;
+    std::istringstream is(str);
+    std::string token;
+    while (is >> token)
+    {
+        split.emplace_back(token);
+    }
+
+    return split;
+}
+
+int View::buildNullTLVPacket(char* buffer)
+{
+    int length = 0;
+    if (tlv::tlvEncode(buffer, length, tlv::TLVValue{}) < 0)
+    {
+        throw std::runtime_error("Failed to build null packet.");
+    }
+    encryptMessage(buffer, length);
+    return length;
+}
+
 int View::buildTLVPacket2Stop(char* buffer)
 {
     int length = 0;
@@ -788,14 +812,14 @@ void View::createViewServer()
     {
         newSocket->onMessageReceived = [this, newSocket](const std::string& message)
         {
+            if (message.length() == 0)
+            {
+                return;
+            }
+
+            char buffer[maxMsgLen] = {'\0'};
             try
             {
-                if (message.length() == 0)
-                {
-                    return;
-                }
-
-                char buffer[maxMsgLen] = {'\0'};
                 const auto msg = utility::common::base64Decode(message);
                 if ("stop" == msg)
                 {
@@ -805,14 +829,7 @@ void View::createViewServer()
                     return;
                 }
 
-                std::vector<std::string> args;
-                std::istringstream is(msg);
-                std::string token;
-                while (is >> token)
-                {
-                    args.emplace_back(token);
-                }
-
+                auto args = splitString(msg);
                 const auto optionIter = optionDispatcher.find(args.at(0));
                 if (optionDispatcher.cend() == optionIter)
                 {
@@ -825,6 +842,8 @@ void View::createViewServer()
             catch (std::exception& error)
             {
                 LOG_WRN << error.what();
+                buildNullTLVPacket(buffer);
+                newSocket->toSend(buffer, sizeof(buffer));
             }
         };
     };
@@ -832,14 +851,14 @@ void View::createViewServer()
     udpServer = std::make_shared<utility::socket::UDPServer>();
     udpServer->onMessageReceived = [this](const std::string& message, const std::string& ip, const std::uint16_t port)
     {
+        if (message.length() == 0)
+        {
+            return;
+        }
+
+        char buffer[maxMsgLen] = {'\0'};
         try
         {
-            if (message.length() == 0)
-            {
-                return;
-            }
-
-            char buffer[maxMsgLen] = {'\0'};
             const auto msg = utility::common::base64Decode(message);
             if ("stop" == msg)
             {
@@ -848,14 +867,7 @@ void View::createViewServer()
                 return;
             }
 
-            std::vector<std::string> args;
-            std::istringstream is(msg);
-            std::string token;
-            while (is >> token)
-            {
-                args.emplace_back(token);
-            }
-
+            auto args = splitString(msg);
             const auto optionIter = optionDispatcher.find(args.at(0));
             if (optionDispatcher.cend() == optionIter)
             {
@@ -868,6 +880,8 @@ void View::createViewServer()
         catch (std::exception& error)
         {
             LOG_WRN << error.what();
+            buildNullTLVPacket(buffer);
+            udpServer->toSendTo(buffer, sizeof(buffer), ip, port);
         }
     };
 }
