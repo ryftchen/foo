@@ -170,47 +170,46 @@ constexpr std::string_view toString(const TreeInstance instance)
 
 namespace linear
 {
-//! @brief Display linear result.
-#define LINEAR_RESULT "\r\n==> %-10s Instance <==\n%s"
-//! @brief Print linear result content.
-#define LINEAR_PRINT_RESULT_CONTENT(instance) \
-    COMMON_PRINT(LINEAR_RESULT, getTitle(instance).data(), output.str().c_str())
+//! @brief Display the contents of the linear result.
+//! @param instance - the specific value of LinearInstance enum
+//! @param result - linear result
+static void displayResult(const LinearInstance instance, const std::string& result)
+{
+    COMMON_PRINT("\n==> %-10s Instance <==\n%s", getTitle(instance).data(), result.data());
+}
 
 void LinearStructure::linkedListInstance()
 try
 {
-    const auto output = Linear().linkedList();
-    LINEAR_PRINT_RESULT_CONTENT(LinearInstance::linkedList);
+    const auto output = Linear().linkedList().str();
+    displayResult(LinearInstance::linkedList, output);
 }
 catch (const std::exception& error)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << error.what();
 }
 
 void LinearStructure::stackInstance()
 try
 {
-    const auto output = Linear().stack();
-    LINEAR_PRINT_RESULT_CONTENT(LinearInstance::stack);
+    const auto output = Linear().stack().str();
+    displayResult(LinearInstance::stack, output);
 }
 catch (const std::exception& error)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << error.what();
 }
 
 void LinearStructure::queueInstance()
 try
 {
-    const auto output = Linear().queue();
-    LINEAR_PRINT_RESULT_CONTENT(LinearInstance::queue);
+    const auto output = Linear().queue().str();
+    displayResult(LinearInstance::queue, output);
 }
 catch (const std::exception& error)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << error.what();
 }
-
-#undef LINEAR_RESULT
-#undef LINEAR_PRINT_RESULT_CONTENT
 } // namespace linear
 
 //! @brief Run linear tasks.
@@ -292,46 +291,46 @@ void updateLinearTask(const std::string& target)
 
 namespace tree
 {
-//! @brief Display tree result.
-#define TREE_RESULT "\r\n==> %-19s Instance <==\n%s"
-//! @brief Print tree result content.
-#define TREE_PRINT_RESULT_CONTENT(instance) COMMON_PRINT(TREE_RESULT, getTitle(instance).data(), output.str().c_str())
+//! @brief Display the contents of the tree result.
+//! @param instance - the specific value of TreeInstance enum
+//! @param result - tree result
+static void displayResult(const TreeInstance instance, const std::string& result)
+{
+    COMMON_PRINT("\n==> %-19s Instance <==\n%s", getTitle(instance).data(), result.data());
+}
 
 void TreeStructure::bsInstance()
 try
 {
-    const auto output = Tree().bs();
-    TREE_PRINT_RESULT_CONTENT(TreeInstance::binarySearch);
+    const auto output = Tree().bs().str();
+    displayResult(TreeInstance::binarySearch, output);
 }
 catch (const std::exception& error)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << error.what();
 }
 
 void TreeStructure::avlInstance()
 try
 {
-    const auto output = Tree().avl();
-    TREE_PRINT_RESULT_CONTENT(TreeInstance::adelsonVelskyLandis);
+    const auto output = Tree().avl().str();
+    displayResult(TreeInstance::adelsonVelskyLandis, output);
 }
 catch (const std::exception& error)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << error.what();
 }
 
 void TreeStructure::splayInstance()
 try
 {
-    const auto output = Tree().splay();
-    TREE_PRINT_RESULT_CONTENT(TreeInstance::splay);
+    const auto output = Tree().splay().str();
+    displayResult(TreeInstance::splay, output);
 }
 catch (const std::exception& error)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << error.what();
 }
-
-#undef TREE_RESULT
-#undef TREE_PRINT_RESULT_CONTENT
 } // namespace tree
 
 //! @brief Run tree tasks.

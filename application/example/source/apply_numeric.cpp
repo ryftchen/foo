@@ -213,58 +213,65 @@ constexpr std::string_view toString(const PrimeMethod method)
 
 namespace arithmetic
 {
-//! @brief Display arithmetic result.
-#define ARITHMETIC_RESULT "\r\n==> %-14s Method <==\n(%d) %c (%d) = %d\n"
-//! @brief Print arithmetic result content.
-#define ARITHMETIC_PRINT_RESULT_CONTENT(method, a, operator, b, result) \
-    COMMON_PRINT(ARITHMETIC_RESULT, getTitle(method).data(), a, operator, b, result)
+//! @brief Display the contents of the arithmetic result.
+//! @param method - the specific value of ArithmeticMethod enum
+//! @param result - arithmetic result
+//! @param a - first integer for elementary arithmetic
+//! @param b - second integer for elementary arithmetic
+//! @param op - operator of arithmetic
+static void displayResult(
+    const ArithmeticMethod method,
+    const std::int32_t result,
+    const std::int32_t a,
+    const std::int32_t b,
+    const char op)
+{
+    COMMON_PRINT("\n==> %-14s Method <==\n(%d) %c (%d) = %d\n", getTitle(method).data(), a, op, b, result);
+}
 
 void ArithmeticSolution::additionMethod(const std::int32_t augend, const std::int32_t addend)
 try
 {
     const auto sum = numeric::arithmetic::Arithmetic().addition(augend, addend);
-    ARITHMETIC_PRINT_RESULT_CONTENT(ArithmeticMethod::addition, augend, '+', addend, sum);
+    displayResult(ArithmeticMethod::addition, sum, augend, addend, '+');
 }
 catch (const std::exception& error)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << error.what();
 }
 
 void ArithmeticSolution::subtractionMethod(const std::int32_t minuend, const std::int32_t subtrahend)
 try
 {
     const auto difference = numeric::arithmetic::Arithmetic().subtraction(minuend, subtrahend);
-    ARITHMETIC_PRINT_RESULT_CONTENT(ArithmeticMethod::subtraction, minuend, '-', subtrahend, difference);
+    displayResult(ArithmeticMethod::subtraction, difference, minuend, subtrahend, '-');
 }
 catch (const std::exception& error)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << error.what();
 }
 
 void ArithmeticSolution::multiplicationMethod(const std::int32_t multiplier, const std::int32_t multiplicand)
 try
 {
     const auto product = numeric::arithmetic::Arithmetic().multiplication(multiplier, multiplicand);
-    ARITHMETIC_PRINT_RESULT_CONTENT(ArithmeticMethod::multiplication, multiplier, '*', multiplicand, product);
+    displayResult(ArithmeticMethod::multiplication, product, multiplier, multiplicand, '*');
 }
 catch (const std::exception& error)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << error.what();
 }
 
 void ArithmeticSolution::divisionMethod(const std::int32_t dividend, const std::int32_t divisor)
 try
 {
     const auto quotient = numeric::arithmetic::Arithmetic().division(dividend, divisor);
-    ARITHMETIC_PRINT_RESULT_CONTENT(ArithmeticMethod::division, dividend, '/', divisor, quotient);
+    displayResult(ArithmeticMethod::division, quotient, dividend, divisor, '/');
 }
 catch (const std::exception& error)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << error.what();
 }
-
-#undef ARITHMETIC_RESULT
-#undef ARITHMETIC_PRINT_RESULT_CONTENT
 } // namespace arithmetic
 
 //! @brief Run arithmetic tasks.
@@ -354,21 +361,20 @@ void updateArithmeticTask(const std::string& target)
 
 namespace divisor
 {
-//! @brief Display divisor result.
-#define DIVISOR_RESULT "\r\n==> %-9s Method <==\n%s\nrun time: %8.5f ms\n"
-//! @brief Print divisor result content.
-#define DIVISOR_PRINT_RESULT_CONTENT(method)                                                                          \
-    do                                                                                                                \
-    {                                                                                                                 \
-        const std::uint32_t arrayBufferSize = resCntr.size() * maxAlignOfPrint;                                       \
-        std::vector<char> arrayBuffer(arrayBufferSize + 1);                                                           \
-        COMMON_PRINT(                                                                                                 \
-            DIVISOR_RESULT,                                                                                           \
-            getTitle(method).data(),                                                                                  \
-            InputBuilder::template spliceAllIntegers<std::int32_t>(resCntr, arrayBuffer.data(), arrayBufferSize + 1), \
-            TIME_INTERVAL(timing));                                                                                   \
-    }                                                                                                                 \
-    while (0)
+//! @brief Display the contents of the divisor result.
+//! @param method - the specific value of DivisorMethod enum
+//! @param result - divisor result
+//! @param interval - time interval
+static void displayResult(const DivisorMethod method, const std::vector<std::int32_t>& result, const double interval)
+{
+    const std::uint32_t arrayBufferSize = result.size() * maxAlignOfPrint;
+    std::vector<char> arrayBuffer(arrayBufferSize + 1);
+    COMMON_PRINT(
+        "\n==> %-9s Method <==\n%s\nrun time: %8.5f ms\n",
+        getTitle(method).data(),
+        InputBuilder::template spliceAllIntegers<std::int32_t>(result, arrayBuffer.data(), arrayBufferSize + 1),
+        interval);
+}
 
 void DivisorSolution::euclideanMethod(std::int32_t a, std::int32_t b)
 try
@@ -376,11 +382,11 @@ try
     TIME_BEGIN(timing);
     const auto resCntr = numeric::divisor::Divisor().euclidean(a, b);
     TIME_END(timing);
-    DIVISOR_PRINT_RESULT_CONTENT(DivisorMethod::euclidean);
+    displayResult(DivisorMethod::euclidean, resCntr, TIME_INTERVAL(timing));
 }
 catch (const std::exception& error)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << error.what();
 }
 
 void DivisorSolution::steinMethod(std::int32_t a, std::int32_t b)
@@ -389,15 +395,12 @@ try
     TIME_BEGIN(timing);
     const auto resCntr = numeric::divisor::Divisor().stein(a, b);
     TIME_END(timing);
-    DIVISOR_PRINT_RESULT_CONTENT(DivisorMethod::stein);
+    displayResult(DivisorMethod::stein, resCntr, TIME_INTERVAL(timing));
 }
 catch (const std::exception& error)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << error.what();
 }
-
-#undef DIVISOR_RESULT
-#undef DIVISOR_PRINT_RESULT_CONTENT
 } // namespace divisor
 
 //! @brief Run divisor tasks.
@@ -474,11 +477,15 @@ void updateDivisorTask(const std::string& target)
 
 namespace integral
 {
-//! @brief Display integral result.
-#define INTEGRAL_RESULT(opt) "\r\n==> %-11s Method <==\nI(" #opt ")=%+.5f, run time: %8.5f ms\n"
-//! @brief Print integral result content.
-#define INTEGRAL_PRINT_RESULT_CONTENT(method, sum) \
-    COMMON_PRINT(INTEGRAL_RESULT(def), getTitle(method).data(), sum, TIME_INTERVAL(timing))
+//! @brief Display the contents of the integral result.
+//! @param method - the specific value of IntegralMethod enum
+//! @param result - integral result
+//! @param interval - time interval
+static void displayResult(const IntegralMethod method, const double result, const double interval)
+{
+    COMMON_PRINT(
+        "\n==> %-11s Method <==\nI(def)=%+.5f, run time: %8.5f ms\n", getTitle(method).data(), result, interval);
+}
 
 void IntegralSolution::trapezoidalMethod(const Expression& expr, double lower, double upper)
 try
@@ -486,11 +493,11 @@ try
     TIME_BEGIN(timing);
     const auto sum = numeric::integral::Trapezoidal(expr)(lower, upper, numeric::integral::epsilon);
     TIME_END(timing);
-    INTEGRAL_PRINT_RESULT_CONTENT(IntegralMethod::trapezoidal, sum);
+    displayResult(IntegralMethod::trapezoidal, sum, TIME_INTERVAL(timing));
 }
 catch (const std::exception& error)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << error.what();
 }
 
 void IntegralSolution::adaptiveSimpsonMethod(const Expression& expr, const double lower, const double upper)
@@ -499,11 +506,11 @@ try
     TIME_BEGIN(timing);
     const auto sum = numeric::integral::Trapezoidal(expr)(lower, upper, numeric::integral::epsilon);
     TIME_END(timing);
-    INTEGRAL_PRINT_RESULT_CONTENT(IntegralMethod::simpson, sum);
+    displayResult(IntegralMethod::simpson, sum, TIME_INTERVAL(timing));
 }
 catch (const std::exception& error)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << error.what();
 }
 
 void IntegralSolution::rombergMethod(const Expression& expr, const double lower, const double upper)
@@ -512,11 +519,11 @@ try
     TIME_BEGIN(timing);
     const auto sum = numeric::integral::Romberg(expr)(lower, upper, numeric::integral::epsilon);
     TIME_END(timing);
-    INTEGRAL_PRINT_RESULT_CONTENT(IntegralMethod::romberg, sum);
+    displayResult(IntegralMethod::romberg, sum, TIME_INTERVAL(timing));
 }
 catch (const std::exception& error)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << error.what();
 }
 
 void IntegralSolution::gaussLegendreMethod(const Expression& expr, const double lower, const double upper)
@@ -525,11 +532,11 @@ try
     TIME_BEGIN(timing);
     const auto sum = numeric::integral::Gauss(expr)(lower, upper, numeric::integral::epsilon);
     TIME_END(timing);
-    INTEGRAL_PRINT_RESULT_CONTENT(IntegralMethod::gauss, sum);
+    displayResult(IntegralMethod::gauss, sum, TIME_INTERVAL(timing));
 }
 catch (const std::exception& error)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << error.what();
 }
 
 void IntegralSolution::monteCarloMethod(const Expression& expr, const double lower, const double upper)
@@ -538,15 +545,12 @@ try
     TIME_BEGIN(timing);
     const auto sum = numeric::integral::MonteCarlo(expr)(lower, upper, numeric::integral::epsilon);
     TIME_END(timing);
-    INTEGRAL_PRINT_RESULT_CONTENT(IntegralMethod::monteCarlo, sum);
+    displayResult(IntegralMethod::monteCarlo, sum, TIME_INTERVAL(timing));
 }
 catch (const std::exception& error)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << error.what();
 }
-
-#undef INTEGRAL_RESULT
-#undef INTEGRAL_PRINT_RESULT_CONTENT
 } // namespace integral
 
 //! @brief Run integral tasks.
@@ -661,21 +665,20 @@ void updateIntegralTask(const std::string& target)
 
 namespace prime
 {
-//! @brief Display prime result.
-#define PRIME_RESULT "\r\n==> %-9s Method <==\n%s\nrun time: %8.5f ms\n"
-//! @brief Print prime result content.
-#define PRIME_PRINT_RESULT_CONTENT(method)                                                                             \
-    do                                                                                                                 \
-    {                                                                                                                  \
-        const std::uint32_t arrayBufferSize = resCntr.size() * maxAlignOfPrint;                                        \
-        std::vector<char> arrayBuffer(arrayBufferSize + 1);                                                            \
-        COMMON_PRINT(                                                                                                  \
-            PRIME_RESULT,                                                                                              \
-            getTitle(method).data(),                                                                                   \
-            InputBuilder::template spliceAllIntegers<std::uint32_t>(resCntr, arrayBuffer.data(), arrayBufferSize + 1), \
-            TIME_INTERVAL(timing));                                                                                    \
-    }                                                                                                                  \
-    while (0)
+//! @brief Display the contents of the prime result.
+//! @param method - the specific value of PrimeMethod enum
+//! @param result - prime result
+//! @param interval - time interval
+static void displayResult(const PrimeMethod method, const std::vector<std::uint32_t>& result, const double interval)
+{
+    const std::uint32_t arrayBufferSize = result.size() * maxAlignOfPrint;
+    std::vector<char> arrayBuffer(arrayBufferSize + 1);
+    COMMON_PRINT(
+        "\n==> %-9s Method <==\n%s\nrun time: %8.5f ms\n",
+        getTitle(method).data(),
+        InputBuilder::template spliceAllIntegers<std::uint32_t>(result, arrayBuffer.data(), arrayBufferSize + 1),
+        interval);
+}
 
 void PrimeSolution::eratosthenesMethod(const std::uint32_t max)
 try
@@ -683,11 +686,11 @@ try
     TIME_BEGIN(timing);
     const auto resCntr = numeric::prime::Prime().eratosthenes(max);
     TIME_END(timing);
-    PRIME_PRINT_RESULT_CONTENT(PrimeMethod::eratosthenes);
+    displayResult(PrimeMethod::eratosthenes, resCntr, TIME_INTERVAL(timing));
 }
 catch (const std::exception& error)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << error.what();
 }
 
 void PrimeSolution::eulerMethod(const std::uint32_t max)
@@ -696,15 +699,12 @@ try
     TIME_BEGIN(timing);
     const auto resCntr = numeric::prime::Prime().euler(max);
     TIME_END(timing);
-    PRIME_PRINT_RESULT_CONTENT(PrimeMethod::euler);
+    displayResult(PrimeMethod::euler, resCntr, TIME_INTERVAL(timing));
 }
 catch (const std::exception& error)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ". " << error.what();
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << error.what();
 }
-
-#undef PRIME_RESULT
-#undef PRIME_PRINT_RESULT_CONTENT
 } // namespace prime
 
 //! @brief Run prime tasks.
