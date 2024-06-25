@@ -84,19 +84,25 @@ public:
 //! @brief Test for the binary search instance in the structure of tree.
 TEST_F(TreeTestBase, bsInstance)
 {
-    ASSERT_NO_THROW(tree::Tree::bs());
+    std::ostringstream result;
+    ASSERT_NO_THROW(result = tree::Tree::bs());
+    ASSERT_TRUE(!result.str().empty());
 }
 
 //! @brief Test for the Adelson-Velsky-Landis instance in the structure of tree.
 TEST_F(TreeTestBase, avlInstance)
 {
-    ASSERT_NO_THROW(tree::Tree::avl());
+    std::ostringstream result;
+    ASSERT_NO_THROW(result = tree::Tree::avl());
+    ASSERT_TRUE(!result.str().empty());
 }
 
 //! @brief Test for the splay instance in the structure of tree.
 TEST_F(TreeTestBase, splayInstance)
 {
-    ASSERT_NO_THROW(tree::Tree::splay());
+    std::ostringstream result;
+    ASSERT_NO_THROW(result = tree::Tree::splay());
+    ASSERT_TRUE(!result.str().empty());
 }
 } // namespace tst_ds
 } // namespace test
