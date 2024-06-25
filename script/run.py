@@ -432,64 +432,6 @@ valgrind-ci {xml_filename}_inst_2.xml --summary"
             fcntl.flock(run_log.fileno(), fcntl.LOCK_UN)
 
     def summarize_run_log(self):
-        def analyze_for_report(readlines, start_indices, finish_indices, tags):
-            fail_res = {}
-            cov_per = {}
-            mem_err = {}
-            for start_index, finish_index in zip(start_indices, finish_indices):
-                if "# STAT: FAILURE" in readlines[finish_index - 1]:
-                    fail_line = readlines[finish_index - 1]
-                    number = fail_line[fail_line.find("NO.") : fail_line.find("]")].strip()
-                    cmd_line = readlines[start_index]
-                    case_task = (
-                        number + ": " + cmd_line[cmd_line.find(self.app_bin_cmd) : cmd_line.find("# START")].strip()
-                    )
-
-                    if tags["tst"] and "FAILED TEST" in "".join(readlines[start_index + 1 : finish_index]):
-                        ut_case = ""
-                        ut_run_index = -1
-                        ut_run_indices = []
-                        ut_fail_indices = []
-                        for index, line in enumerate(readlines[start_index + 1 : finish_index]):
-                            index += start_index + 1
-                            if "[ RUN      ]" in line:
-                                ut_case = line[line.find("]") + 2 : line.find("\n")]
-                                ut_run_index = index
-                            elif len(ut_case) != 0 and f"[  FAILED  ] {ut_case}" in line:
-                                ut_run_indices.append(ut_run_index)
-                                ut_fail_indices.append(index)
-                                ut_case = ""
-                        ut_fail_res = ""
-                        for ut_run_index, ut_fail_index in zip(ut_run_indices, ut_fail_indices):
-                            ut_fail_res += "".join(readlines[ut_run_index : ut_fail_index + 1])
-                        fail_res[case_task] = ut_fail_res
-                        continue
-
-                    last_index = finish_index
-                    if tags["chk_mem"]:
-                        for index, line in enumerate(readlines[start_index + 1 : finish_index]):
-                            if "[CHECK MEMORY]" in line:
-                                index += start_index + 1
-                                mem_err[case_task] = "".join(readlines[index + 1 : finish_index - 1])
-                                last_index = index
-                    fail_res[case_task] = "".join(readlines[start_index + 1 : last_index - 1])
-
-            if tags["chk_cov"]:
-                category = ["Regions", "Functions", "Lines", "Branches"]
-                for line in readlines:
-                    if re.search(r"(^TOTAL(\s+\d+\s+\d+\s+\d+\.\d+%){4}$)", line):
-                        matches = re.findall(r"(\d+\.\d+%)", line)
-                        percentages = [str(float(s.strip("%"))) for s in matches]
-                        if len(percentages) == 4:
-                            for index, per in enumerate(percentages):
-                                cov_per[category[index]] = str(per) + "%"
-                        break
-                if len(cov_per) == 0:
-                    for cat in category:
-                        cov_per[cat] = "-"
-
-            return fail_res, cov_per, mem_err
-
         tags = {"tst": False, "chk_cov": False, "chk_mem": False}
         readlines = []
         with open(self.log_file, "rt", encoding="utf-8") as run_log:
@@ -523,7 +465,7 @@ valgrind-ci {xml_filename}_inst_2.xml --summary"
         if len(start_indices) != len(finish_indices) or len(start_indices) != self.total_steps:
             Output.exit_with_error(f"The run log {self.log_file} file is incomplete. Please retry.")
 
-        fail_res, cov_per, mem_err = analyze_for_report(readlines, start_indices, finish_indices, tags)
+        fail_res, cov_per, mem_err = self.analyze_for_report(readlines, start_indices, finish_indices, tags)
         with open(self.report_file, "wt", encoding="utf-8") as run_report:
             fcntl.flock(run_report.fileno(), fcntl.LOCK_EX)
             run_stat = {
@@ -563,6 +505,62 @@ valgrind-ci {xml_filename}_inst_2.xml --summary"
 
         if fail_res:
             sys.exit(1)
+
+    def analyze_for_report(self, readlines, start_indices, finish_indices, tags):
+        fail_res = {}
+        cov_per = {}
+        mem_err = {}
+        for start_index, finish_index in zip(start_indices, finish_indices):
+            if "# STAT: FAILURE" in readlines[finish_index - 1]:
+                fail_line = readlines[finish_index - 1]
+                number = fail_line[fail_line.find("NO.") : fail_line.find("]")].strip()
+                cmd_line = readlines[start_index]
+                case_task = number + ": " + cmd_line[cmd_line.find(self.app_bin_cmd) : cmd_line.find("# START")].strip()
+
+                if tags["tst"] and "FAILED TEST" in "".join(readlines[start_index + 1 : finish_index]):
+                    ut_case = ""
+                    ut_run_index = -1
+                    ut_run_indices = []
+                    ut_fail_indices = []
+                    for index, line in enumerate(readlines[start_index + 1 : finish_index]):
+                        index += start_index + 1
+                        if "[ RUN      ]" in line:
+                            ut_case = line[line.find("]") + 2 : line.find("\n")]
+                            ut_run_index = index
+                        elif len(ut_case) != 0 and f"[  FAILED  ] {ut_case}" in line:
+                            ut_run_indices.append(ut_run_index)
+                            ut_fail_indices.append(index)
+                            ut_case = ""
+                    ut_fail_res = ""
+                    for ut_run_index, ut_fail_index in zip(ut_run_indices, ut_fail_indices):
+                        ut_fail_res += "".join(readlines[ut_run_index : ut_fail_index + 1])
+                    fail_res[case_task] = ut_fail_res
+                    continue
+
+                last_index = finish_index
+                if tags["chk_mem"]:
+                    for index, line in enumerate(readlines[start_index + 1 : finish_index]):
+                        if "[CHECK MEMORY]" in line:
+                            index += start_index + 1
+                            mem_err[case_task] = "".join(readlines[index + 1 : finish_index - 1])
+                            last_index = index
+                fail_res[case_task] = "".join(readlines[start_index + 1 : last_index - 1])
+
+        if tags["chk_cov"]:
+            category = ["Regions", "Functions", "Lines", "Branches"]
+            for line in readlines:
+                if re.search(r"(^TOTAL(\s+\d+\s+\d+\s+\d+\.\d+%){4}$)", line):
+                    matches = re.findall(r"(\d+\.\d+%)", line)
+                    percentages = [str(float(s.strip("%"))) for s in matches]
+                    if len(percentages) == 4:
+                        for index, per in enumerate(percentages):
+                            cov_per[category[index]] = str(per) + "%"
+                    break
+            if len(cov_per) == 0:
+                for cat in category:
+                    cov_per[cat] = "-"
+
+        return fail_res, cov_per, mem_err
 
 
 class Output:
