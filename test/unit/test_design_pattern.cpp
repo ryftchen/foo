@@ -47,67 +47,89 @@ public:
 //! @brief Test for the chain of responsibility instance in the pattern of behavioral.
 TEST_F(BehavioralTestBase, chainOfResponsibilityInstance)
 {
-    ASSERT_NO_THROW(behavioral::Behavioral::chainOfResponsibility());
+    std::ostringstream result;
+    ASSERT_NO_THROW(result = behavioral::Behavioral::chainOfResponsibility());
+    ASSERT_TRUE(!result.str().empty());
 }
 
 //! @brief Test for the command instance in the pattern of behavioral.
 TEST_F(BehavioralTestBase, commandInstance)
 {
-    ASSERT_NO_THROW(behavioral::Behavioral::command());
+    std::ostringstream result;
+    ASSERT_NO_THROW(result = behavioral::Behavioral::command());
+    ASSERT_TRUE(!result.str().empty());
 }
 
 //! @brief Test for the interpreter instance in the pattern of behavioral.
 TEST_F(BehavioralTestBase, interpreterInstance)
 {
-    ASSERT_NO_THROW(behavioral::Behavioral::interpreter());
+    std::ostringstream result;
+    ASSERT_NO_THROW(result = behavioral::Behavioral::interpreter());
+    ASSERT_TRUE(!result.str().empty());
 }
 
 //! @brief Test for the iterator instance in the pattern of behavioral.
 TEST_F(BehavioralTestBase, iteratorInstance)
 {
-    ASSERT_NO_THROW(behavioral::Behavioral::iterator());
+    std::ostringstream result;
+    ASSERT_NO_THROW(result = behavioral::Behavioral::iterator());
+    ASSERT_TRUE(!result.str().empty());
 }
 
 //! @brief Test for the mediator instance in the pattern of behavioral.
 TEST_F(BehavioralTestBase, mediatorInstance)
 {
-    ASSERT_NO_THROW(behavioral::Behavioral::mediator());
+    std::ostringstream result;
+    ASSERT_NO_THROW(result = behavioral::Behavioral::mediator());
+    ASSERT_TRUE(!result.str().empty());
 }
 
 //! @brief Test for the memento instance in the pattern of behavioral.
 TEST_F(BehavioralTestBase, mementoInstance)
 {
-    ASSERT_NO_THROW(behavioral::Behavioral::memento());
+    std::ostringstream result;
+    ASSERT_NO_THROW(result = behavioral::Behavioral::memento());
+    ASSERT_TRUE(!result.str().empty());
 }
 
 //! @brief Test for the observer instance in the pattern of behavioral.
 TEST_F(BehavioralTestBase, observerInstance)
 {
-    ASSERT_NO_THROW(behavioral::Behavioral::observer());
+    std::ostringstream result;
+    ASSERT_NO_THROW(result = behavioral::Behavioral::observer());
+    ASSERT_TRUE(!result.str().empty());
 }
 
 //! @brief Test for the state instance in the pattern of behavioral.
 TEST_F(BehavioralTestBase, stateInstance)
 {
-    ASSERT_NO_THROW(behavioral::Behavioral::state());
+    std::ostringstream result;
+    ASSERT_NO_THROW(result = behavioral::Behavioral::state());
+    ASSERT_TRUE(!result.str().empty());
 }
 
 //! @brief Test for the strategy instance in the pattern of behavioral.
 TEST_F(BehavioralTestBase, strategyInstance)
 {
-    ASSERT_NO_THROW(behavioral::Behavioral::strategy());
+    std::ostringstream result;
+    ASSERT_NO_THROW(result = behavioral::Behavioral::strategy());
+    ASSERT_TRUE(!result.str().empty());
 }
 
 //! @brief Test for the template method instance in the pattern of behavioral.
 TEST_F(BehavioralTestBase, templateMethodInstance)
 {
-    ASSERT_NO_THROW(behavioral::Behavioral::templateMethod());
+    std::ostringstream result;
+    ASSERT_NO_THROW(result = behavioral::Behavioral::templateMethod());
+    ASSERT_TRUE(!result.str().empty());
 }
 
 //! @brief Test for the visitor instance in the pattern of behavioral.
 TEST_F(BehavioralTestBase, visitorInstance)
 {
-    ASSERT_NO_THROW(behavioral::Behavioral::visitor());
+    std::ostringstream result;
+    ASSERT_NO_THROW(result = behavioral::Behavioral::visitor());
+    ASSERT_TRUE(!result.str().empty());
 }
 
 //! @brief Test base of creational.
@@ -132,31 +154,41 @@ public:
 //! @brief Test for the abstract factory instance in the pattern of creational.
 TEST_F(CreationalTestBase, abstractFactoryInstance)
 {
-    ASSERT_NO_THROW(creational::Creational::abstractFactory());
+    std::ostringstream result;
+    ASSERT_NO_THROW(result = creational::Creational::abstractFactory());
+    ASSERT_TRUE(!result.str().empty());
 }
 
 //! @brief Test for the builder instance in the pattern of creational.
 TEST_F(CreationalTestBase, builderInstance)
 {
-    ASSERT_NO_THROW(creational::Creational::builder());
+    std::ostringstream result;
+    ASSERT_NO_THROW(result = creational::Creational::builder());
+    ASSERT_TRUE(!result.str().empty());
 }
 
 //! @brief Test for the factory method instance in the pattern of creational.
 TEST_F(CreationalTestBase, factoryMethodInstance)
 {
-    ASSERT_NO_THROW(creational::Creational::factoryMethod());
+    std::ostringstream result;
+    ASSERT_NO_THROW(result = creational::Creational::factoryMethod());
+    ASSERT_TRUE(!result.str().empty());
 }
 
 //! @brief Test for the prototype instance in the pattern of creational.
 TEST_F(CreationalTestBase, prototypeInstance)
 {
-    ASSERT_NO_THROW(creational::Creational::prototype());
+    std::ostringstream result;
+    ASSERT_NO_THROW(result = creational::Creational::prototype());
+    ASSERT_TRUE(!result.str().empty());
 }
 
 //! @brief Test for the singleton instance in the pattern of creational.
 TEST_F(CreationalTestBase, singletonInstance)
 {
-    ASSERT_NO_THROW(creational::Creational::singleton());
+    std::ostringstream result;
+    ASSERT_NO_THROW(result = creational::Creational::singleton());
+    ASSERT_TRUE(!result.str().empty());
 }
 
 //! @brief Test base of structural.
@@ -181,43 +213,57 @@ public:
 //! @brief Test for the adapter instance in the pattern of structural.
 TEST_F(StructuralTestBase, adapterInstance)
 {
-    ASSERT_NO_THROW(structural::Structural::adapter());
+    std::ostringstream result;
+    ASSERT_NO_THROW(result = structural::Structural::adapter());
+    ASSERT_TRUE(!result.str().empty());
 }
 
 //! @brief Test for the bridge instance in the pattern of structural.
 TEST_F(StructuralTestBase, bridgeInstance)
 {
-    ASSERT_NO_THROW(structural::Structural::bridge());
+    std::ostringstream result;
+    ASSERT_NO_THROW(result = structural::Structural::bridge());
+    ASSERT_TRUE(!result.str().empty());
 }
 
 //! @brief Test for the composite instance in the pattern of structural.
 TEST_F(StructuralTestBase, compositeInstance)
 {
-    ASSERT_NO_THROW(structural::Structural::composite());
+    std::ostringstream result;
+    ASSERT_NO_THROW(result = structural::Structural::composite());
+    ASSERT_TRUE(!result.str().empty());
 }
 
 //! @brief Test for the decorator instance in the pattern of structural.
 TEST_F(StructuralTestBase, decoratorInstance)
 {
-    ASSERT_NO_THROW(structural::Structural::decorator());
+    std::ostringstream result;
+    ASSERT_NO_THROW(result = structural::Structural::decorator());
+    ASSERT_TRUE(!result.str().empty());
 }
 
 //! @brief Test for the facade instance in the pattern of structural.
 TEST_F(StructuralTestBase, facadeInstance)
 {
-    ASSERT_NO_THROW(structural::Structural::facade());
+    std::ostringstream result;
+    ASSERT_NO_THROW(result = structural::Structural::facade());
+    ASSERT_TRUE(!result.str().empty());
 }
 
 //! @brief Test for the flyweight instance in the pattern of structural.
 TEST_F(StructuralTestBase, flyweightInstance)
 {
-    ASSERT_NO_THROW(structural::Structural::flyweight());
+    std::ostringstream result;
+    ASSERT_NO_THROW(result = structural::Structural::flyweight());
+    ASSERT_TRUE(!result.str().empty());
 }
 
 //! @brief Test for the proxy instance in the pattern of structural.
 TEST_F(StructuralTestBase, proxyInstance)
 {
-    ASSERT_NO_THROW(structural::Structural::proxy());
+    std::ostringstream result;
+    ASSERT_NO_THROW(result = structural::Structural::proxy());
+    ASSERT_TRUE(!result.str().empty());
 }
 } // namespace tst_dp
 } // namespace test
