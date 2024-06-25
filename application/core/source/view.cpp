@@ -749,7 +749,7 @@ std::string View::getStatusInformation()
     std::vector<std::string> cmdCntr;
     std::size_t pos = 0, prev = 0;
     const int currTid = ::gettid();
-    const bool foundStrace = (::system("which strace >/dev/null 2>&1") == EXIT_SUCCESS);
+    const bool showStack = (::system("which eu-stack >/dev/null 2>&1") == EXIT_SUCCESS);
     while (std::string::npos != (pos = queryResult.find('\n', prev)))
     {
         const int tid = std::stoi(queryResult.substr(prev, pos - prev));
@@ -762,21 +762,19 @@ std::string View::getStatusInformation()
             tid,
             pid,
             tid);
-        if (foundStrace)
+        if (showStack)
         {
             if (currTid != tid)
             {
                 std::snprintf(
                     cmd + usedLen,
                     totalLen - usedLen,
-                    "&& echo 'Strace:' "
-                    "&& (timeout --preserve-status --signal=2 0.1 strace -qq -ttT -vyy -s 96 -p %d 2>&1 || exit 0) "
-                    "; fi",
+                    "&& echo 'Stack:' && (eu-stack -1v -n 3 -p %d 2>&1 | grep '#' || exit 0) ; fi",
                     tid);
             }
             else
             {
-                std::strncpy(cmd + usedLen, "&& echo 'Strace:' && echo 'N/A' ; fi", totalLen - usedLen);
+                std::strncpy(cmd + usedLen, "&& echo 'Stack:' && echo 'N/A' ; fi", totalLen - usedLen);
             }
         }
         else
@@ -796,6 +794,10 @@ std::string View::getStatusInformation()
         {
             statInfo += utility::common::executeCommand(cmd) + '\n';
         });
+    if (!statInfo.empty())
+    {
+        statInfo.pop_back();
+    }
 
     return statInfo;
 }
