@@ -12,7 +12,7 @@ RUN apt-get update \
 && sudo apt-get install -y --no-install-recommends git python3 python3-pip build-essential cmake ninja-build gcc-12 g++-12 binutils-common \
 clang-16 clang++-16 lld-16 libstdc++-12-dev libgtest-dev libssl-dev libreadline-dev libmpfrc++-dev llvm-16-dev libclang-16-dev libclang-rt-16-dev \
 clang-format-16 clang-tidy-16 shfmt shellcheck black pylint rustc cargo rustfmt rust-clippy gdb ccache distcc \
-valgrind cloc pre-commit graphviz docker docker-compose npm strace psmisc net-tools rsync zip bash-completion \
+valgrind cloc pre-commit graphviz docker docker-compose npm elfutils psmisc net-tools rsync zip bash-completion \
 && sudo apt-get clean \
 && sudo rm -rf /var/lib/apt/lists/* \
 && sudo pip3 install --no-cache-dir compdb ValgrindCI \
