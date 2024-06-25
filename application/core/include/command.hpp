@@ -69,10 +69,10 @@ public:
     //! @brief Get the Command instance.
     //! @return reference of the Command object
     static Command& getInstance();
-    //! @brief Argument controller for running commander.
+    //! @brief Execution manager for running commander.
     //! @param argc - argument count
     //! @param argv - argument vector
-    void runCommander(const int argc, const char* const argv[]);
+    void execManager(const int argc, const char* const argv[]);
 
 private:
     //! @brief Construct a new Command object.

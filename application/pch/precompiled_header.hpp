@@ -17,9 +17,13 @@
 #include <cxxabi.h>
 #include <dlfcn.h>
 #include <execinfo.h>
+#if defined(__has_include) && __has_include(<gmp.h>)
 #include <gmp.h>
+#endif // defined(__has_include) && __has_include(<gmp.h>)
 #include <mpfr.h>
+#if defined(__has_include) && __has_include(<ncurses.h>)
 #include <ncurses.h>
+#endif // defined(__has_include) && __has_include(<ncurses.h>)
 #include <algorithm>
 #include <array>
 #include <bitset>

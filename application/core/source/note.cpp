@@ -6,25 +6,23 @@
 
 #include "note.hpp"
 
+#include "utility/include/common.hpp"
+
 namespace application::note
 {
 //! @brief Compiler name.
 //! @return compiler
 std::string compiler()
 {
-//! @cond
-#define STRINGIFY(x) #x
-#define TO_STRING(x) STRINGIFY(x)
 #ifdef __clang__
-    return "clang " TO_STRING(__clang_major__) "." TO_STRING(__clang_minor__) "." TO_STRING(__clang_patchlevel__) "";
+    return "clang " COMMON_TO_STRING(__clang_major__) "." COMMON_TO_STRING(__clang_minor__) "." COMMON_TO_STRING(
+        __clang_patchlevel__) "";
 #elif __GNUC__
-    return "gcc " TO_STRING(__GNUC__) "." TO_STRING(__GNUC_MINOR__) "." TO_STRING(__GNUC_PATCHLEVEL__) "";
+    return "gcc " COMMON_TO_STRING(__GNUC__) "." COMMON_TO_STRING(__GNUC_MINOR__) "." COMMON_TO_STRING(
+        __GNUC_PATCHLEVEL__) "";
 #else
     return "unknown compiler";
 #endif // __clang__
-//! @endcond
-#undef STRINGIFY
-#undef TO_STRING
 }
 
 //! @brief Target processor.

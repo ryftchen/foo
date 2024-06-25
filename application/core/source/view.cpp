@@ -13,9 +13,13 @@
 #include <sys/ipc.h>
 #include <sys/shm.h>
 #include <sys/stat.h>
+#if defined(__has_include) && __has_include(<gmp.h>)
 #include <gmp.h>
+#endif // defined(__has_include) && __has_include(<gmp.h>)
 #include <mpfr.h>
+#if defined(__has_include) && __has_include(<ncurses.h>)
 #include <ncurses.h>
+#endif // defined(__has_include) && __has_include(<ncurses.h>)
 #include <algorithm>
 #include <cassert>
 #include <cstring>
@@ -202,7 +206,7 @@ View& View::getInstance()
     return viewer;
 }
 
-void View::runViewer()
+void View::stateController()
 {
 retry:
     try
@@ -462,20 +466,21 @@ int View::buildTLVPacket2Stop(char* buffer)
 
 int View::buildTLVPacket2Depend(const std::vector<std::string>& /*args*/, char* buffer)
 {
-//! @cond
-#define STRINGIFY(x) #x
-#define TO_STRING(x) STRINGIFY(x)
     int length = 0;
     tlv::TLVValue value{};
     std::string libNames;
-    libNames += "GNU C Library " TO_STRING(__GLIBC__) "." TO_STRING(__GLIBC_MINOR__) "\n";
-    libNames += "GNU C++ Standard Library " TO_STRING(_GLIBCXX_RELEASE) " (" TO_STRING(__GLIBCXX__) ")\n";
+    libNames += "GNU C Library " COMMON_TO_STRING(__GLIBC__) "." COMMON_TO_STRING(__GLIBC_MINOR__) "\n";
+    libNames += "GNU C++ Standard Library " COMMON_TO_STRING(_GLIBCXX_RELEASE) " (" COMMON_TO_STRING(__GLIBCXX__) ")\n";
     libNames += "OpenSSL Library " OPENSSL_VERSION_STR "\n";
     libNames += "GNU MPFR Library " MPFR_VERSION_STRING "\n";
-    libNames += "GNU MP Library " TO_STRING(__GNU_MP_VERSION) "." TO_STRING(__GNU_MP_VERSION_MINOR) "." TO_STRING(
-        __GNU_MP_VERSION_PATCHLEVEL) "\n";
-    libNames += "GNU Readline Library " TO_STRING(RL_VERSION_MAJOR) "." TO_STRING(RL_VERSION_MINOR) "\n";
+#if defined(__has_include) && __has_include(<gmp.h>)
+    libNames += "GNU MP Library " COMMON_TO_STRING(__GNU_MP_VERSION) "." COMMON_TO_STRING(
+        __GNU_MP_VERSION_MINOR) "." COMMON_TO_STRING(__GNU_MP_VERSION_PATCHLEVEL) "\n";
+#endif // defined(__has_include) && __has_include(<gmp.h>)
+    libNames += "GNU Readline Library " COMMON_TO_STRING(RL_VERSION_MAJOR) "." COMMON_TO_STRING(RL_VERSION_MINOR) "\n";
+#if defined(__has_include) && __has_include(<ncurses.h>)
     libNames += "Ncurses Library " NCURSES_VERSION "";
+#endif // defined(__has_include) && __has_include(<ncurses.h>)
     std::strncpy(value.libInfo, libNames.data(), sizeof(value.libInfo) - 1);
     value.libInfo[sizeof(value.libInfo) - 1] = '\0';
     if (tlv::tlvEncode(buffer, length, value) < 0)
@@ -484,9 +489,6 @@ int View::buildTLVPacket2Depend(const std::vector<std::string>& /*args*/, char* 
     }
     encryptMessage(buffer, length);
     return length;
-//! @endcond
-#undef STRINGIFY
-#undef TO_STRING
 }
 
 int View::buildTLVPacket2Execute(const std::vector<std::string>& args, char* buffer)

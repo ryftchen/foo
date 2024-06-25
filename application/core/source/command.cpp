@@ -90,7 +90,7 @@ Command& Command::getInstance()
     return commander;
 }
 
-void Command::runCommander(const int argc, const char* const argv[])
+void Command::execManager(const int argc, const char* const argv[])
 try
 {
     triggerHelper<log::Log>(HelperControl::start);
