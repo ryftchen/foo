@@ -38,11 +38,11 @@ try
 
     constexpr std::uint32_t childThdNum = 3;
     auto threads = std::make_shared<utility::thread::Thread>(childThdNum);
-    threads->enqueue("commander", &Command::runCommander, &Command::getInstance(), argc, argv);
+    threads->enqueue("commander", &Command::execManager, &Command::getInstance(), argc, argv);
     if (CONFIG_ACTIVATE_HELPER)
     {
-        threads->enqueue("logger", &Log::runLogger, &Log::getInstance());
-        threads->enqueue("viewer", &View::runViewer, &View::getInstance());
+        threads->enqueue("logger", &Log::stateController, &Log::getInstance());
+        threads->enqueue("viewer", &View::stateController, &View::getInstance());
     }
     return EXIT_SUCCESS;
 }

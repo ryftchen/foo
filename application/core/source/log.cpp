@@ -22,7 +22,7 @@ Log& Log::getInstance()
     return logger;
 }
 
-void Log::runLogger()
+void Log::stateController()
 {
 retry:
     try

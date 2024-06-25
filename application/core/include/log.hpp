@@ -176,7 +176,7 @@ public:
     //! @return reference of the Log object
     static Log& getInstance();
     //! @brief State controller for running logger.
-    void runLogger();
+    void stateController();
     //! @brief Wait for the logger to start. Interface controller for external use.
     void waitForStart();
     //! @brief Wait for the logger to stop. Interface controller for external use.

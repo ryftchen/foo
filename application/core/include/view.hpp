@@ -170,7 +170,7 @@ public:
     //! @return reference of the View object
     static View& getInstance();
     //! @brief State controller for running viewer.
-    void runViewer();
+    void stateController();
     //! @brief Wait for the viewer to start. Interface controller for external use.
     void waitForStart();
     //! @brief Wait for the viewer to stop. Interface controller for external use.
