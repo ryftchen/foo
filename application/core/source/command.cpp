@@ -111,9 +111,9 @@ try
     triggerHelper<view::View>(HelperControl::stop);
     triggerHelper<log::Log>(HelperControl::stop);
 }
-catch (const std::exception& error)
+catch (const std::exception& err)
 {
-    LOG_ERR << error.what();
+    LOG_ERR << err.what();
 }
 
 // NOLINTNEXTLINE (readability-function-size)
@@ -357,11 +357,11 @@ try
     lock.unlock();
     cv.notify_one();
 }
-catch (const std::exception& error)
+catch (const std::exception& err)
 {
     isParsed.store(true);
     cv.notify_one();
-    LOG_WRN << error.what();
+    LOG_WRN << err.what();
 }
 
 void Command::backgroundHandler()
@@ -382,9 +382,9 @@ try
         dispatchTask();
     }
 }
-catch (const std::exception& error)
+catch (const std::exception& err)
 {
-    LOG_WRN << error.what();
+    LOG_WRN << err.what();
 }
 
 //! @brief Get the callback for running tasks.
@@ -555,9 +555,9 @@ void Command::launchClient<utility::socket::TCPSocket>(std::shared_ptr<utility::
                 client->setNonBlocking();
             }
         }
-        catch (std::exception& error)
+        catch (const std::exception& err)
         {
-            LOG_WRN << error.what();
+            LOG_WRN << err.what();
         }
         VIEW_AWAKEN;
     };
@@ -579,9 +579,9 @@ void Command::launchClient<utility::socket::UDPSocket>(std::shared_ptr<utility::
                 client->setNonBlocking();
             }
         }
-        catch (std::exception& error)
+        catch (const std::exception& err)
         {
-            LOG_WRN << error.what();
+            LOG_WRN << err.what();
         }
         VIEW_AWAKEN;
     };
@@ -703,9 +703,9 @@ try
             retVal = console.readCommandLine();
             console.setGreeting(greeting);
         }
-        catch (const std::exception& error)
+        catch (const std::exception& err)
         {
-            LOG_WRN << error.what();
+            LOG_WRN << err.what();
             utility::time::millisecondLevelSleep(latency);
         }
     }
@@ -717,9 +717,9 @@ try
     LOG_DBG << "Exit console mode.";
 #endif // NDEBUG
 }
-catch (const std::exception& error)
+catch (const std::exception& err)
 {
-    LOG_ERR << error.what();
+    LOG_ERR << err.what();
 }
 
 template <typename T>

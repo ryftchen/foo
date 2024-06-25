@@ -46,9 +46,9 @@ try
     }
     return EXIT_SUCCESS;
 }
-catch (const std::exception& error)
+catch (const std::exception& err)
 {
-    std::cerr << getExecutableName() << ": " << error.what() << std::endl;
+    std::cerr << getExecutableName() << ": " << err.what() << std::endl;
     return EXIT_FAILURE;
 }
 } // namespace

@@ -246,9 +246,9 @@ retry:
 
         assert(currentState() == State::done);
     }
-    catch (const std::exception& error)
+    catch (const std::exception& err)
     {
-        LOG_ERR << error.what() << " Current viewer state: " << State(currentState()) << '.';
+        LOG_ERR << err.what() << " Current viewer state: " << State(currentState()) << '.';
         processEvent(Standby());
 
         if (awaitNotification4Rollback())
@@ -843,9 +843,9 @@ void View::createViewServer()
                 (optionIter->second.functor)(args, buffer);
                 newSocket->toSend(buffer, sizeof(buffer));
             }
-            catch (std::exception& error)
+            catch (const std::exception& err)
             {
-                LOG_WRN << error.what();
+                LOG_WRN << err.what();
                 buildNullTLVPacket(buffer);
                 newSocket->toSend(buffer, sizeof(buffer));
             }
@@ -881,9 +881,9 @@ void View::createViewServer()
             (optionIter->second.functor)(args, buffer);
             udpServer->toSendTo(buffer, sizeof(buffer), ip, port);
         }
-        catch (std::exception& error)
+        catch (const std::exception& err)
         {
-            LOG_WRN << error.what();
+            LOG_WRN << err.what();
             buildNullTLVPacket(buffer);
             udpServer->toSendTo(buffer, sizeof(buffer), ip, port);
         }

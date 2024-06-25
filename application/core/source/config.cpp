@@ -273,7 +273,7 @@ try
 
     return true;
 }
-catch (const std::exception& error)
+catch (const std::exception& err)
 {
     std::cerr << "Configuration load exception..." << std::endl;
     std::cout << "Type y to force an update to the default configuration, n to exit: ";
@@ -290,7 +290,7 @@ catch (const std::exception& error)
         else if ("n" == input)
         {
             std::cout << std::endl;
-            throw std::runtime_error(error.what());
+            throw std::runtime_error(err.what());
         }
     }
 
