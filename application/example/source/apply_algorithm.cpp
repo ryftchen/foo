@@ -569,21 +569,34 @@ namespace optimal
 //! @param method - the specific value of OptimalMethod enum
 //! @param result - optimal result
 //! @param interval - time interval
-static void displayResult(const OptimalMethod method, const std::tuple<double, double>& result, const double interval)
+static void displayResult(
+    const OptimalMethod method,
+    const std::optional<std::tuple<double, double>>& result,
+    const double interval)
 {
-    COMMON_PRINT(
-        "\n==> %-9s Method <==\nF(min)=%+.5f X=%+.5f, run time: %8.5f ms\n",
-        getTitle(method).data(),
-        std::get<0>(result),
-        std::get<1>(result),
-        interval);
+    if (result.has_value())
+    {
+        COMMON_PRINT(
+            "\n==> %-9s Method <==\nF(min)=%+.5f X=%+.5f, run time: %8.5f ms\n",
+            getTitle(method).data(),
+            std::get<0>(result.value()),
+            std::get<1>(result.value()),
+            interval);
+    }
+    else
+    {
+        COMMON_PRINT(
+            "\n==> %-9s Method <==\nF(min) could not be found, run time: %8.5f ms\n",
+            getTitle(method).data(),
+            interval);
+    }
 }
 
 void OptimalSolution::gradientDescentMethod(const Function& func, const double left, const double right)
 try
 {
     TIME_BEGIN(timing);
-    const auto tuple = algorithm::optimal::Gradient(func)(left, right, algorithm::optimal::epsilon).value();
+    const auto tuple = algorithm::optimal::Gradient(func)(left, right, algorithm::optimal::epsilon);
     TIME_END(timing);
     displayResult(OptimalMethod::gradient, tuple, TIME_INTERVAL(timing));
 }
@@ -596,7 +609,7 @@ void OptimalSolution::simulatedAnnealingMethod(const Function& func, const doubl
 try
 {
     TIME_BEGIN(timing);
-    const auto tuple = algorithm::optimal::Annealing(func)(left, right, algorithm::optimal::epsilon).value();
+    const auto tuple = algorithm::optimal::Annealing(func)(left, right, algorithm::optimal::epsilon);
     TIME_END(timing);
     displayResult(OptimalMethod::annealing, tuple, TIME_INTERVAL(timing));
 }
@@ -609,7 +622,7 @@ void OptimalSolution::particleSwarmMethod(const Function& func, const double lef
 try
 {
     TIME_BEGIN(timing);
-    const auto tuple = algorithm::optimal::Particle(func)(left, right, algorithm::optimal::epsilon).value();
+    const auto tuple = algorithm::optimal::Particle(func)(left, right, algorithm::optimal::epsilon);
     TIME_END(timing);
     displayResult(OptimalMethod::particle, tuple, TIME_INTERVAL(timing));
 }
@@ -622,7 +635,7 @@ void OptimalSolution::geneticMethod(const Function& func, const double left, con
 try
 {
     TIME_BEGIN(timing);
-    const auto tuple = algorithm::optimal::Genetic(func)(left, right, algorithm::optimal::epsilon).value();
+    const auto tuple = algorithm::optimal::Genetic(func)(left, right, algorithm::optimal::epsilon);
     TIME_END(timing);
     displayResult(OptimalMethod::genetic, tuple, TIME_INTERVAL(timing));
 }
