@@ -219,9 +219,9 @@ try
     const auto output = Behavioral().chainOfResponsibility().str();
     displayResult(BehavioralInstance::chainOfResponsibility, output);
 }
-catch (const std::exception& error)
+catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << error.what();
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
 }
 
 void BehavioralPattern::commandInstance()
@@ -230,9 +230,9 @@ try
     const auto output = Behavioral().command().str();
     displayResult(BehavioralInstance::command, output);
 }
-catch (const std::exception& error)
+catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << error.what();
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
 }
 
 void BehavioralPattern::interpreterInstance()
@@ -241,9 +241,9 @@ try
     const auto output = Behavioral().interpreter().str();
     displayResult(BehavioralInstance::interpreter, output);
 }
-catch (const std::exception& error)
+catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << error.what();
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
 }
 
 void BehavioralPattern::iteratorInstance()
@@ -252,9 +252,9 @@ try
     const auto output = Behavioral().iterator().str();
     displayResult(BehavioralInstance::iterator, output);
 }
-catch (const std::exception& error)
+catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << error.what();
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
 }
 
 void BehavioralPattern::mediatorInstance()
@@ -263,9 +263,9 @@ try
     const auto output = Behavioral().mediator().str();
     displayResult(BehavioralInstance::mediator, output);
 }
-catch (const std::exception& error)
+catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << error.what();
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
 }
 
 void BehavioralPattern::mementoInstance()
@@ -274,9 +274,9 @@ try
     const auto output = Behavioral().memento().str();
     displayResult(BehavioralInstance::memento, output);
 }
-catch (const std::exception& error)
+catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << error.what();
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
 }
 
 void BehavioralPattern::observerInstance()
@@ -285,9 +285,9 @@ try
     const auto output = Behavioral().observer().str();
     displayResult(BehavioralInstance::observer, output);
 }
-catch (const std::exception& error)
+catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << error.what();
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
 }
 
 void BehavioralPattern::stateInstance()
@@ -296,9 +296,9 @@ try
     const auto output = Behavioral().state().str();
     displayResult(BehavioralInstance::state, output);
 }
-catch (const std::exception& error)
+catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << error.what();
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
 }
 
 void BehavioralPattern::strategyInstance()
@@ -307,9 +307,9 @@ try
     const auto output = Behavioral().strategy().str();
     displayResult(BehavioralInstance::strategy, output);
 }
-catch (const std::exception& error)
+catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << error.what();
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
 }
 
 void BehavioralPattern::templateMethodInstance()
@@ -318,9 +318,9 @@ try
     const auto output = Behavioral().templateMethod().str();
     displayResult(BehavioralInstance::templateMethod, output);
 }
-catch (const std::exception& error)
+catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << error.what();
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
 }
 
 void BehavioralPattern::visitorInstance()
@@ -329,9 +329,9 @@ try
     const auto output = Behavioral().visitor().str();
     displayResult(BehavioralInstance::visitor, output);
 }
-catch (const std::exception& error)
+catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << error.what();
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
 }
 } // namespace behavioral
 
@@ -476,9 +476,9 @@ try
     const auto output = Creational().abstractFactory().str();
     displayResult(CreationalInstance::abstractFactory, output);
 }
-catch (const std::exception& error)
+catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << error.what();
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
 }
 
 void CreationalPattern::builderInstance()
@@ -487,9 +487,9 @@ try
     const auto output = Creational().builder().str();
     displayResult(CreationalInstance::builder, output);
 }
-catch (const std::exception& error)
+catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << error.what();
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
 }
 
 void CreationalPattern::factoryMethodInstance()
@@ -498,9 +498,9 @@ try
     const auto output = Creational().factoryMethod().str();
     displayResult(CreationalInstance::factoryMethod, output);
 }
-catch (const std::exception& error)
+catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << error.what();
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
 }
 
 void CreationalPattern::prototypeInstance()
@@ -509,9 +509,9 @@ try
     const auto output = Creational().prototype().str();
     displayResult(CreationalInstance::prototype, output);
 }
-catch (const std::exception& error)
+catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << error.what();
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
 }
 
 void CreationalPattern::singletonInstance()
@@ -520,9 +520,9 @@ try
     const auto output = Creational().singleton().str();
     displayResult(CreationalInstance::singleton, output);
 }
-catch (const std::exception& error)
+catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << error.what();
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
 }
 } // namespace creational
 
@@ -631,9 +631,9 @@ try
     const auto output = Structural().adapter().str();
     displayResult(StructuralInstance::adapter, output);
 }
-catch (const std::exception& error)
+catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << error.what();
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
 }
 
 void StructuralPattern::bridgeInstance()
@@ -642,9 +642,9 @@ try
     const auto output = Structural().bridge().str();
     displayResult(StructuralInstance::bridge, output);
 }
-catch (const std::exception& error)
+catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << error.what();
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
 }
 
 void StructuralPattern::compositeInstance()
@@ -653,9 +653,9 @@ try
     const auto output = Structural().composite().str();
     displayResult(StructuralInstance::composite, output);
 }
-catch (const std::exception& error)
+catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << error.what();
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
 }
 
 void StructuralPattern::decoratorInstance()
@@ -664,9 +664,9 @@ try
     const auto output = Structural().decorator().str();
     displayResult(StructuralInstance::decorator, output);
 }
-catch (const std::exception& error)
+catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << error.what();
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
 }
 
 void StructuralPattern::facadeInstance()
@@ -675,9 +675,9 @@ try
     const auto output = Structural().facade().str();
     displayResult(StructuralInstance::facade, output);
 }
-catch (const std::exception& error)
+catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << error.what();
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
 }
 
 void StructuralPattern::flyweightInstance()
@@ -686,9 +686,9 @@ try
     const auto output = Structural().flyweight().str();
     displayResult(StructuralInstance::flyweight, output);
 }
-catch (const std::exception& error)
+catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << error.what();
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
 }
 
 void StructuralPattern::proxyInstance()
@@ -697,9 +697,9 @@ try
     const auto output = Structural().proxy().str();
     displayResult(StructuralInstance::proxy, output);
 }
-catch (const std::exception& error)
+catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << error.what();
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
 }
 } // namespace structural
 

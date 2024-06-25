@@ -669,10 +669,10 @@ double JSON::toFloating() const
             {
                 parsed = std::stod(*data.string);
             }
-            catch (const std::exception& error)
+            catch (const std::exception& err)
             {
                 throw std::logic_error(
-                    "Failed to convert the string value to floating in JSON, " + std::string{error.what()} + '.');
+                    "Failed to convert the string value to floating in JSON, " + std::string{err.what()} + '.');
             }
             return parsed;
         }

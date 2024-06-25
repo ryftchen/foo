@@ -63,9 +63,9 @@ retry:
 
         assert(currentState() == State::done);
     }
-    catch (const std::exception& error)
+    catch (const std::exception& err)
     {
-        LOG_ERR << error.what() << " Current logger state: " << State(currentState()) << '.';
+        LOG_ERR << err.what() << " Current logger state: " << State(currentState()) << '.';
         processEvent(Standby());
 
         if (awaitNotification4Rollback())

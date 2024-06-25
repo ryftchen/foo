@@ -235,9 +235,9 @@ try
     const auto sum = numeric::arithmetic::Arithmetic().addition(augend, addend);
     displayResult(ArithmeticMethod::addition, sum, augend, addend, '+');
 }
-catch (const std::exception& error)
+catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << error.what();
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
 }
 
 void ArithmeticSolution::subtractionMethod(const std::int32_t minuend, const std::int32_t subtrahend)
@@ -246,9 +246,9 @@ try
     const auto difference = numeric::arithmetic::Arithmetic().subtraction(minuend, subtrahend);
     displayResult(ArithmeticMethod::subtraction, difference, minuend, subtrahend, '-');
 }
-catch (const std::exception& error)
+catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << error.what();
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
 }
 
 void ArithmeticSolution::multiplicationMethod(const std::int32_t multiplier, const std::int32_t multiplicand)
@@ -257,9 +257,9 @@ try
     const auto product = numeric::arithmetic::Arithmetic().multiplication(multiplier, multiplicand);
     displayResult(ArithmeticMethod::multiplication, product, multiplier, multiplicand, '*');
 }
-catch (const std::exception& error)
+catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << error.what();
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
 }
 
 void ArithmeticSolution::divisionMethod(const std::int32_t dividend, const std::int32_t divisor)
@@ -268,9 +268,9 @@ try
     const auto quotient = numeric::arithmetic::Arithmetic().division(dividend, divisor);
     displayResult(ArithmeticMethod::division, quotient, dividend, divisor, '/');
 }
-catch (const std::exception& error)
+catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << error.what();
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
 }
 } // namespace arithmetic
 
@@ -380,26 +380,26 @@ void DivisorSolution::euclideanMethod(std::int32_t a, std::int32_t b)
 try
 {
     TIME_BEGIN(timing);
-    const auto resCntr = numeric::divisor::Divisor().euclidean(a, b);
+    const auto cntr = numeric::divisor::Divisor().euclidean(a, b);
     TIME_END(timing);
-    displayResult(DivisorMethod::euclidean, resCntr, TIME_INTERVAL(timing));
+    displayResult(DivisorMethod::euclidean, cntr, TIME_INTERVAL(timing));
 }
-catch (const std::exception& error)
+catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << error.what();
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
 }
 
 void DivisorSolution::steinMethod(std::int32_t a, std::int32_t b)
 try
 {
     TIME_BEGIN(timing);
-    const auto resCntr = numeric::divisor::Divisor().stein(a, b);
+    const auto cntr = numeric::divisor::Divisor().stein(a, b);
     TIME_END(timing);
-    displayResult(DivisorMethod::stein, resCntr, TIME_INTERVAL(timing));
+    displayResult(DivisorMethod::stein, cntr, TIME_INTERVAL(timing));
 }
-catch (const std::exception& error)
+catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << error.what();
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
 }
 } // namespace divisor
 
@@ -495,9 +495,9 @@ try
     TIME_END(timing);
     displayResult(IntegralMethod::trapezoidal, sum, TIME_INTERVAL(timing));
 }
-catch (const std::exception& error)
+catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << error.what();
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
 }
 
 void IntegralSolution::adaptiveSimpsonMethod(const Expression& expr, const double lower, const double upper)
@@ -508,9 +508,9 @@ try
     TIME_END(timing);
     displayResult(IntegralMethod::simpson, sum, TIME_INTERVAL(timing));
 }
-catch (const std::exception& error)
+catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << error.what();
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
 }
 
 void IntegralSolution::rombergMethod(const Expression& expr, const double lower, const double upper)
@@ -521,9 +521,9 @@ try
     TIME_END(timing);
     displayResult(IntegralMethod::romberg, sum, TIME_INTERVAL(timing));
 }
-catch (const std::exception& error)
+catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << error.what();
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
 }
 
 void IntegralSolution::gaussLegendreMethod(const Expression& expr, const double lower, const double upper)
@@ -534,9 +534,9 @@ try
     TIME_END(timing);
     displayResult(IntegralMethod::gauss, sum, TIME_INTERVAL(timing));
 }
-catch (const std::exception& error)
+catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << error.what();
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
 }
 
 void IntegralSolution::monteCarloMethod(const Expression& expr, const double lower, const double upper)
@@ -547,9 +547,9 @@ try
     TIME_END(timing);
     displayResult(IntegralMethod::monteCarlo, sum, TIME_INTERVAL(timing));
 }
-catch (const std::exception& error)
+catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << error.what();
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
 }
 } // namespace integral
 
@@ -684,26 +684,26 @@ void PrimeSolution::eratosthenesMethod(const std::uint32_t max)
 try
 {
     TIME_BEGIN(timing);
-    const auto resCntr = numeric::prime::Prime().eratosthenes(max);
+    const auto cntr = numeric::prime::Prime().eratosthenes(max);
     TIME_END(timing);
-    displayResult(PrimeMethod::eratosthenes, resCntr, TIME_INTERVAL(timing));
+    displayResult(PrimeMethod::eratosthenes, cntr, TIME_INTERVAL(timing));
 }
-catch (const std::exception& error)
+catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << error.what();
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
 }
 
 void PrimeSolution::eulerMethod(const std::uint32_t max)
 try
 {
     TIME_BEGIN(timing);
-    const auto resCntr = numeric::prime::Prime().euler(max);
+    const auto cntr = numeric::prime::Prime().euler(max);
     TIME_END(timing);
-    displayResult(PrimeMethod::euler, resCntr, TIME_INTERVAL(timing));
+    displayResult(PrimeMethod::euler, cntr, TIME_INTERVAL(timing));
 }
-catch (const std::exception& error)
+catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << error.what();
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
 }
 } // namespace prime
 

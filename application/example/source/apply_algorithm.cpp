@@ -284,9 +284,9 @@ try
     TIME_END(timing);
     displayResult(MatchMethod::rabinKarp, shift, pattern, TIME_INTERVAL(timing));
 }
-catch (const std::exception& error)
+catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << error.what();
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
 }
 
 void MatchSolution::kmpMethod(
@@ -301,9 +301,9 @@ try
     TIME_END(timing);
     displayResult(MatchMethod::knuthMorrisPratt, shift, pattern, TIME_INTERVAL(timing));
 }
-catch (const std::exception& error)
+catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << error.what();
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
 }
 
 void MatchSolution::bmMethod(
@@ -318,9 +318,9 @@ try
     TIME_END(timing);
     displayResult(MatchMethod::boyerMoore, shift, pattern, TIME_INTERVAL(timing));
 }
-catch (const std::exception& error)
+catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << error.what();
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
 }
 
 void MatchSolution::horspoolMethod(
@@ -335,9 +335,9 @@ try
     TIME_END(timing);
     displayResult(MatchMethod::horspool, shift, pattern, TIME_INTERVAL(timing));
 }
-catch (const std::exception& error)
+catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << error.what();
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
 }
 
 void MatchSolution::sundayMethod(
@@ -352,9 +352,9 @@ try
     TIME_END(timing);
     displayResult(MatchMethod::sunday, shift, pattern, TIME_INTERVAL(timing));
 }
-catch (const std::exception& error)
+catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << error.what();
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
 }
 } // namespace match
 
@@ -463,32 +463,32 @@ namespace notation
 //! @brief Display the contents of the notation result.
 //! @param method - the specific value of NotationMethod enum
 //! @param result - notation result
-//! @param describe - description of the notation
-static void displayResult(const NotationMethod method, const std::string& result, const char* const describe)
+//! @param descr - notation description
+static void displayResult(const NotationMethod method, const std::string& result, const char* const descr)
 {
-    COMMON_PRINT("\n==> %-7s Method <==\n%s: %s\n", getTitle(method).data(), describe, result.data());
+    COMMON_PRINT("\n==> %-7s Method <==\n%s: %s\n", getTitle(method).data(), descr, result.data());
 }
 
 void NotationSolution::prefixMethod(const std::string& infixNotation)
 try
 {
-    const auto notationStr = algorithm::notation::Notation().prefix(infixNotation);
-    displayResult(NotationMethod::prefix, notationStr, "polish notation");
+    const auto expr = algorithm::notation::Notation().prefix(infixNotation);
+    displayResult(NotationMethod::prefix, expr, "polish notation");
 }
-catch (const std::exception& error)
+catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << error.what();
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
 }
 
 void NotationSolution::postfixMethod(const std::string& infixNotation)
 try
 {
-    const auto notationStr = algorithm::notation::Notation().postfix(infixNotation);
-    displayResult(NotationMethod::postfix, notationStr, "reverse polish notation");
+    const auto expr = algorithm::notation::Notation().postfix(infixNotation);
+    displayResult(NotationMethod::postfix, expr, "reverse polish notation");
 }
-catch (const std::exception& error)
+catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << error.what();
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
 }
 } // namespace notation
 
@@ -583,52 +583,52 @@ void OptimalSolution::gradientDescentMethod(const Function& func, const double l
 try
 {
     TIME_BEGIN(timing);
-    const auto resTup = algorithm::optimal::Gradient(func)(left, right, algorithm::optimal::epsilon).value();
+    const auto tuple = algorithm::optimal::Gradient(func)(left, right, algorithm::optimal::epsilon).value();
     TIME_END(timing);
-    displayResult(OptimalMethod::gradient, resTup, TIME_INTERVAL(timing));
+    displayResult(OptimalMethod::gradient, tuple, TIME_INTERVAL(timing));
 }
-catch (const std::exception& error)
+catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << error.what();
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
 }
 
 void OptimalSolution::simulatedAnnealingMethod(const Function& func, const double left, const double right)
 try
 {
     TIME_BEGIN(timing);
-    const auto resTup = algorithm::optimal::Annealing(func)(left, right, algorithm::optimal::epsilon).value();
+    const auto tuple = algorithm::optimal::Annealing(func)(left, right, algorithm::optimal::epsilon).value();
     TIME_END(timing);
-    displayResult(OptimalMethod::annealing, resTup, TIME_INTERVAL(timing));
+    displayResult(OptimalMethod::annealing, tuple, TIME_INTERVAL(timing));
 }
-catch (const std::exception& error)
+catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << error.what();
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
 }
 
 void OptimalSolution::particleSwarmMethod(const Function& func, const double left, const double right)
 try
 {
     TIME_BEGIN(timing);
-    const auto resTup = algorithm::optimal::Particle(func)(left, right, algorithm::optimal::epsilon).value();
+    const auto tuple = algorithm::optimal::Particle(func)(left, right, algorithm::optimal::epsilon).value();
     TIME_END(timing);
-    displayResult(OptimalMethod::particle, resTup, TIME_INTERVAL(timing));
+    displayResult(OptimalMethod::particle, tuple, TIME_INTERVAL(timing));
 }
-catch (const std::exception& error)
+catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << error.what();
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
 }
 
 void OptimalSolution::geneticMethod(const Function& func, const double left, const double right)
 try
 {
     TIME_BEGIN(timing);
-    const auto resTup = algorithm::optimal::Genetic(func)(left, right, algorithm::optimal::epsilon).value();
+    const auto tuple = algorithm::optimal::Genetic(func)(left, right, algorithm::optimal::epsilon).value();
     TIME_END(timing);
-    displayResult(OptimalMethod::genetic, resTup, TIME_INTERVAL(timing));
+    displayResult(OptimalMethod::genetic, tuple, TIME_INTERVAL(timing));
 }
-catch (const std::exception& error)
+catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << error.what();
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
 }
 } // namespace optimal
 
@@ -773,9 +773,9 @@ try
     TIME_END(timing);
     displayResult(SearchMethod::binary, index, key, TIME_INTERVAL(timing));
 }
-catch (const std::exception& error)
+catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << error.what();
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
 }
 
 void SearchSolution::interpolationMethod(const float* const array, const std::uint32_t length, const float key)
@@ -786,9 +786,9 @@ try
     TIME_END(timing);
     displayResult(SearchMethod::interpolation, index, key, TIME_INTERVAL(timing));
 }
-catch (const std::exception& error)
+catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << error.what();
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
 }
 
 void SearchSolution::fibonacciMethod(const float* const array, const std::uint32_t length, const float key)
@@ -799,9 +799,9 @@ try
     TIME_END(timing);
     displayResult(SearchMethod::fibonacci, index, key, TIME_INTERVAL(timing));
 }
-catch (const std::exception& error)
+catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << error.what();
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
 }
 } // namespace search
 
@@ -909,130 +909,130 @@ void SortSolution::bubbleMethod(const std::int32_t* const array, const std::uint
 try
 {
     TIME_BEGIN(timing);
-    const auto resCntr = algorithm::sort::Sort<std::int32_t>().bubble(array, length);
+    const auto cntr = algorithm::sort::Sort<std::int32_t>().bubble(array, length);
     TIME_END(timing);
-    displayResult(SortMethod::bubble, resCntr, TIME_INTERVAL(timing));
+    displayResult(SortMethod::bubble, cntr, TIME_INTERVAL(timing));
 }
-catch (const std::exception& error)
+catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << error.what();
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
 }
 
 void SortSolution::selectionMethod(const std::int32_t* const array, const std::uint32_t length)
 try
 {
     TIME_BEGIN(timing);
-    const auto resCntr = algorithm::sort::Sort<std::int32_t>().selection(array, length);
+    const auto cntr = algorithm::sort::Sort<std::int32_t>().selection(array, length);
     TIME_END(timing);
-    displayResult(SortMethod::selection, resCntr, TIME_INTERVAL(timing));
+    displayResult(SortMethod::selection, cntr, TIME_INTERVAL(timing));
 }
-catch (const std::exception& error)
+catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << error.what();
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
 }
 
 void SortSolution::insertionMethod(const std::int32_t* const array, const std::uint32_t length)
 try
 {
     TIME_BEGIN(timing);
-    const auto resCntr = algorithm::sort::Sort<std::int32_t>().insertion(array, length);
+    const auto cntr = algorithm::sort::Sort<std::int32_t>().insertion(array, length);
     TIME_END(timing);
-    displayResult(SortMethod::insertion, resCntr, TIME_INTERVAL(timing));
+    displayResult(SortMethod::insertion, cntr, TIME_INTERVAL(timing));
 }
-catch (const std::exception& error)
+catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << error.what();
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
 }
 
 void SortSolution::shellMethod(const std::int32_t* const array, const std::uint32_t length)
 try
 {
     TIME_BEGIN(timing);
-    const auto resCntr = algorithm::sort::Sort<std::int32_t>().shell(array, length);
+    const auto cntr = algorithm::sort::Sort<std::int32_t>().shell(array, length);
     TIME_END(timing);
-    displayResult(SortMethod::shell, resCntr, TIME_INTERVAL(timing));
+    displayResult(SortMethod::shell, cntr, TIME_INTERVAL(timing));
 }
-catch (const std::exception& error)
+catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << error.what();
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
 }
 
 void SortSolution::mergeMethod(const std::int32_t* const array, const std::uint32_t length)
 try
 {
     TIME_BEGIN(timing);
-    const auto resCntr = algorithm::sort::Sort<std::int32_t>().merge(array, length);
+    const auto cntr = algorithm::sort::Sort<std::int32_t>().merge(array, length);
     TIME_END(timing);
-    displayResult(SortMethod::merge, resCntr, TIME_INTERVAL(timing));
+    displayResult(SortMethod::merge, cntr, TIME_INTERVAL(timing));
 }
-catch (const std::exception& error)
+catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << error.what();
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
 }
 
 void SortSolution::quickMethod(const std::int32_t* const array, const std::uint32_t length)
 try
 {
     TIME_BEGIN(timing);
-    const auto resCntr = algorithm::sort::Sort<std::int32_t>().quick(array, length);
+    const auto cntr = algorithm::sort::Sort<std::int32_t>().quick(array, length);
     TIME_END(timing);
-    displayResult(SortMethod::quick, resCntr, TIME_INTERVAL(timing));
+    displayResult(SortMethod::quick, cntr, TIME_INTERVAL(timing));
 }
-catch (const std::exception& error)
+catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << error.what();
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
 }
 
 void SortSolution::heapMethod(const std::int32_t* const array, const std::uint32_t length)
 try
 {
     TIME_BEGIN(timing);
-    const auto resCntr = algorithm::sort::Sort<std::int32_t>().heap(array, length);
+    const auto cntr = algorithm::sort::Sort<std::int32_t>().heap(array, length);
     TIME_END(timing);
-    displayResult(SortMethod::heap, resCntr, TIME_INTERVAL(timing));
+    displayResult(SortMethod::heap, cntr, TIME_INTERVAL(timing));
 }
-catch (const std::exception& error)
+catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << error.what();
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
 }
 
 void SortSolution::countingMethod(const std::int32_t* const array, const std::uint32_t length)
 try
 {
     TIME_BEGIN(timing);
-    const auto resCntr = algorithm::sort::Sort<std::int32_t>().counting(array, length);
+    const auto cntr = algorithm::sort::Sort<std::int32_t>().counting(array, length);
     TIME_END(timing);
-    displayResult(SortMethod::counting, resCntr, TIME_INTERVAL(timing));
+    displayResult(SortMethod::counting, cntr, TIME_INTERVAL(timing));
 }
-catch (const std::exception& error)
+catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << error.what();
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
 }
 
 void SortSolution::bucketMethod(const std::int32_t* const array, const std::uint32_t length)
 try
 {
     TIME_BEGIN(timing);
-    const auto resCntr = algorithm::sort::Sort<std::int32_t>().bucket(array, length);
+    const auto cntr = algorithm::sort::Sort<std::int32_t>().bucket(array, length);
     TIME_END(timing);
-    displayResult(SortMethod::bucket, resCntr, TIME_INTERVAL(timing));
+    displayResult(SortMethod::bucket, cntr, TIME_INTERVAL(timing));
 }
-catch (const std::exception& error)
+catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << error.what();
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
 }
 
 void SortSolution::radixMethod(const std::int32_t* const array, const std::uint32_t length)
 try
 {
     TIME_BEGIN(timing);
-    const auto resCntr = algorithm::sort::Sort<std::int32_t>().radix(array, length);
+    const auto cntr = algorithm::sort::Sort<std::int32_t>().radix(array, length);
     TIME_END(timing);
-    displayResult(SortMethod::radix, resCntr, TIME_INTERVAL(timing));
+    displayResult(SortMethod::radix, cntr, TIME_INTERVAL(timing));
 }
-catch (const std::exception& error)
+catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << error.what();
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
 }
 } // namespace sort
 

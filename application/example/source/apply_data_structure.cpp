@@ -184,9 +184,9 @@ try
     const auto output = Linear().linkedList().str();
     displayResult(LinearInstance::linkedList, output);
 }
-catch (const std::exception& error)
+catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << error.what();
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
 }
 
 void LinearStructure::stackInstance()
@@ -195,9 +195,9 @@ try
     const auto output = Linear().stack().str();
     displayResult(LinearInstance::stack, output);
 }
-catch (const std::exception& error)
+catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << error.what();
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
 }
 
 void LinearStructure::queueInstance()
@@ -206,9 +206,9 @@ try
     const auto output = Linear().queue().str();
     displayResult(LinearInstance::queue, output);
 }
-catch (const std::exception& error)
+catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << error.what();
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
 }
 } // namespace linear
 
@@ -305,9 +305,9 @@ try
     const auto output = Tree().bs().str();
     displayResult(TreeInstance::binarySearch, output);
 }
-catch (const std::exception& error)
+catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << error.what();
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
 }
 
 void TreeStructure::avlInstance()
@@ -316,9 +316,9 @@ try
     const auto output = Tree().avl().str();
     displayResult(TreeInstance::adelsonVelskyLandis, output);
 }
-catch (const std::exception& error)
+catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << error.what();
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
 }
 
 void TreeStructure::splayInstance()
@@ -327,9 +327,9 @@ try
     const auto output = Tree().splay().str();
     displayResult(TreeInstance::splay, output);
 }
-catch (const std::exception& error)
+catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << error.what();
+    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
 }
 } // namespace tree
 
