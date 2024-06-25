@@ -197,7 +197,7 @@ public:
 
     //! @brief The addition method.
     //! @param augend - augend of addition
-    //! @param addend - augend of addition
+    //! @param addend - addend of addition
     static void additionMethod(const std::int32_t augend, const std::int32_t addend);
     //! @brief The subtraction method.
     //! @param minuend - minuend of subtraction

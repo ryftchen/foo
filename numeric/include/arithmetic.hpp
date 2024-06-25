@@ -25,7 +25,7 @@ public:
 
     //! @brief Addition.
     //! @param augend - augend of addition
-    //! @param addend - augend of addition
+    //! @param addend - addend of addition
     //! @return sum
     static std::int32_t addition(const std::int32_t augend, const std::int32_t addend);
     //! @brief Subtraction.
