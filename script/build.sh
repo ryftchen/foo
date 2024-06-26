@@ -261,13 +261,13 @@ git rev-parse --git-dir >/dev/null 2>&1 && source ~/${BASH_RC}"
     shell_command "cat <<EOF >./${FOLDER[scr]}/.env
 #!/bin/false
 
-FOO_BLD_COMPILER=clang
-FOO_BLD_PARALLEL=0
-FOO_BLD_PCH=off
-FOO_BLD_UNITY=off
-FOO_BLD_CCACHE=on
-FOO_BLD_DISTCC=off
-FOO_BLD_TMPFS=off
+FOO_BLD_COMPILER=clang # clang / gcc
+FOO_BLD_PARALLEL=0 # 0 ... N
+FOO_BLD_PCH=off # on / off
+FOO_BLD_UNITY=off # on / off
+FOO_BLD_CCACHE=on # on / off
+FOO_BLD_DISTCC=off # on / off
+FOO_BLD_TMPFS=off # on / off
 
 export FOO_BLD_COMPILER FOO_BLD_PARALLEL FOO_BLD_PCH FOO_BLD_UNITY FOO_BLD_CCACHE FOO_BLD_DISTCC FOO_BLD_TMPFS
 return 0
@@ -776,26 +776,28 @@ function set_compile_condition()
         [[ -n ${FOO_CHK_COV} ]] && [[ ${FOO_CHK_COV} = "on" ]]
     }; then
         local ver=16
-        if ! command -v "clang-${ver}" >/dev/null 2>&1 || ! command -v "clang++-${ver}" >/dev/null 2>&1; then
-            die "No clang-${ver} or clang++-${ver} program. Please install it."
+        CC=clang-${ver} CXX=clang++-${ver}
+        if ! command -v "${CC}" >/dev/null 2>&1 || ! command -v "${CXX}" >/dev/null 2>&1; then
+            die "No ${CC} or ${CXX} program. Please install it."
         fi
-        export CC=clang-${ver} CXX=clang++-${ver}
-        CMAKE_CACHE_ENTRY="${CMAKE_CACHE_ENTRY} -D CMAKE_C_COMPILER=clang-${ver} -D CMAKE_CXX_COMPILER=clang++-${ver}"
+        export CC CXX
+        CMAKE_CACHE_ENTRY="${CMAKE_CACHE_ENTRY} -D CMAKE_C_COMPILER=${CC} -D CMAKE_CXX_COMPILER=${CXX}"
     elif [[ ${DEV_OPT[compiler]} = "gcc" ]]; then
         local ver=12
-        if ! command -v "gcc-${ver}" >/dev/null 2>&1 || ! command -v "g++-${ver}" >/dev/null 2>&1; then
-            die "No gcc-${ver} or g++-${ver} program. Please install it."
+        CC=gcc-${ver} CXX=g++-${ver}
+        if ! command -v "${CC}" >/dev/null 2>&1 || ! command -v "${CXX}" >/dev/null 2>&1; then
+            die "No ${CC} or ${CXX} program. Please install it."
         fi
-        export CC=gcc-${ver} CXX=g++-${ver}
-        CMAKE_CACHE_ENTRY="${CMAKE_CACHE_ENTRY} -D CMAKE_C_COMPILER=gcc-${ver} -D CMAKE_CXX_COMPILER=g++-${ver}"
+        export CC CXX
+        CMAKE_CACHE_ENTRY="${CMAKE_CACHE_ENTRY} -D CMAKE_C_COMPILER=${CC} -D CMAKE_CXX_COMPILER=${CXX}"
     fi
     if command -v gcc >/dev/null 2>&1 && command -v g++ >/dev/null 2>&1; then
-        local include_ver=12
         local gcc_processor gxx_processor
         gcc_processor=$(gcc -dumpmachine)
         gxx_processor=$(g++ -dumpmachine)
-        export C_INCLUDE_PATH=/usr/include:/usr/lib/gcc/${gcc_processor}/${include_ver}/include \
-            CPLUS_INCLUDE_PATH=/usr/include/c++/${include_ver}:/usr/include/${gxx_processor}/c++/${include_ver}
+        local gnu_lib_ver=12
+        export C_INCLUDE_PATH=/usr/include:/usr/lib/gcc/${gcc_processor}/${gnu_lib_ver}/include \
+            CPLUS_INCLUDE_PATH=/usr/include/c++/${gnu_lib_ver}:/usr/include/${gxx_processor}/c++/${gnu_lib_ver}
     fi
 
     if [[ ! ${DEV_OPT[parallel]} -eq 0 ]]; then
@@ -850,8 +852,13 @@ function build_target()
         BUILD_TYPE="Release"
     fi
 
+    local cmake_cache="CMakeCache.txt"
     if [[ ${ARGS[test]} = true ]]; then
         set_compile_condition "${FOLDER[tst]}/${FOLDER[bld]}" "128m"
+        if [[ -f ./${FOLDER[tst]}/${FOLDER[bld]}/${cmake_cache} ]] \
+            && ! grep -Fwq "${DEV_OPT[compiler]}" "./${FOLDER[tst]}/${FOLDER[bld]}/${cmake_cache}" 2>/dev/null; then
+            shell_command "rm -rf ./${FOLDER[tst]}/${FOLDER[bld]}/${cmake_cache}"
+        fi
         shell_command "cmake -S ./${FOLDER[tst]} -B ./${FOLDER[tst]}/${FOLDER[bld]} -G Ninja""${CMAKE_CACHE_ENTRY}"
         NINJA_STATUS=$(echo -e "\e[92m[\e[92m%f/\e[92m%t\e[92m]\e[39m\e[49m ")
         export NINJA_STATUS
@@ -861,6 +868,10 @@ function build_target()
     fi
 
     set_compile_condition "${FOLDER[bld]}" "256m"
+    if [[ -f ./${FOLDER[bld]}/${cmake_cache} ]] \
+        && ! grep -Fwq "${DEV_OPT[compiler]}" "./${FOLDER[bld]}/${cmake_cache}" 2>/dev/null; then
+        shell_command "rm -rf ./${FOLDER[bld]}/${cmake_cache}"
+    fi
     shell_command "cmake -S . -B ./${FOLDER[bld]} -G Ninja""${CMAKE_CACHE_ENTRY}"
     if [[ $# -eq 0 ]] || {
         [[ $# -eq 1 ]] && [[ ${ARGS[release]} = true ]]
