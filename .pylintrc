@@ -16,11 +16,9 @@ max-line-length=120
 
 [MESSAGES CONTROL]
 disable=duplicate-code,
-        global-statement,
         missing-class-docstring,
         missing-function-docstring,
         missing-module-docstring,
         too-many-branches,
         too-many-instance-attributes,
-        too-many-locals,
-        too-many-statements
+        too-many-locals
