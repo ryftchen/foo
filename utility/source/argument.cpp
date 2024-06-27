@@ -35,7 +35,7 @@ Register& Register::metavar(const std::string& content)
 
 Register& Register::defaultVal(const char* value)
 {
-    return defaultVal(std::string(value));
+    return defaultVal(std::string{value});
 }
 
 Register& Register::implicitVal(std::any value)
@@ -118,7 +118,6 @@ void Register::validate() const
 
 std::string Register::getInlineUsage() const
 {
-    std::ostringstream usage;
     std::string longestName = names.front();
     for (const auto& str : names)
     {
@@ -127,6 +126,7 @@ std::string Register::getInlineUsage() const
             longestName = str;
         }
     }
+    std::ostringstream usage;
     if (!isRequired)
     {
         usage << '[';
@@ -278,7 +278,7 @@ std::ostream& operator<<(std::ostream& os, const Register& reg)
     }
 
     const auto streamWidth = os.width();
-    const std::string namePadding = std::string(nameStream.str().size(), ' ');
+    const auto namePadding = std::string(nameStream.str().size(), ' ');
     os << nameStream.str();
 
     std::size_t pos = 0, prev = 0;
@@ -439,7 +439,7 @@ Register& Argument::operator[](const std::string_view argName) const
             return *(iterator->second);
         }
     }
-    throw std::logic_error("No such argument: " + std::string(argName) + '.');
+    throw std::logic_error("No such argument: " + std::string{argName} + '.');
 }
 
 std::ostringstream Argument::help() const

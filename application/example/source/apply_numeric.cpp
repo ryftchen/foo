@@ -18,19 +18,17 @@
 #include "utility/include/currying.hpp"
 
 //! @brief Title of printing when numeric tasks are beginning.
-#define APP_NUM_PRINT_TASK_BEGIN_TITLE(category)                                                                   \
-    std::osyncstream(std::cout) << "\r\n"                                                                          \
-                                << "NUMERIC TASK: " << std::setiosflags(std::ios_base::left) << std::setfill('.')  \
-                                << std::setw(50) << category << "BEGIN" << std::resetiosflags(std::ios_base::left) \
-                                << std::setfill(' ') << std::endl;                                                 \
+#define APP_NUM_PRINT_TASK_BEGIN_TITLE(category)                                                                    \
+    std::osyncstream(std::cout) << "\nNUMERIC TASK: " << std::setiosflags(std::ios_base::left) << std::setfill('.') \
+                                << std::setw(50) << category << "BEGIN" << std::resetiosflags(std::ios_base::left)  \
+                                << std::setfill(' ') << std::endl;                                                  \
     {
 //! @brief Title of printing when numeric tasks are ending.
-#define APP_NUM_PRINT_TASK_END_TITLE(category)                                                                    \
-    }                                                                                                             \
-    std::osyncstream(std::cout) << "\r\n"                                                                         \
-                                << "NUMERIC TASK: " << std::setiosflags(std::ios_base::left) << std::setfill('.') \
-                                << std::setw(50) << category << "END" << std::resetiosflags(std::ios_base::left)  \
-                                << std::setfill(' ') << '\n'                                                      \
+#define APP_NUM_PRINT_TASK_END_TITLE(category)                                                                      \
+    }                                                                                                               \
+    std::osyncstream(std::cout) << "\nNUMERIC TASK: " << std::setiosflags(std::ios_base::left) << std::setfill('.') \
+                                << std::setw(50) << category << "END" << std::resetiosflags(std::ios_base::left)    \
+                                << std::setfill(' ') << '\n'                                                        \
                                 << std::endl;
 
 namespace application::app_num
@@ -232,8 +230,8 @@ static void displayResult(
 void ArithmeticSolution::additionMethod(const std::int32_t augend, const std::int32_t addend)
 try
 {
-    const auto sum = numeric::arithmetic::Arithmetic().addition(augend, addend);
-    displayResult(ArithmeticMethod::addition, sum, augend, addend, '+');
+    const auto calc = numeric::arithmetic::Arithmetic().addition(augend, addend);
+    displayResult(ArithmeticMethod::addition, calc, augend, addend, '+');
 }
 catch (const std::exception& err)
 {
@@ -243,8 +241,8 @@ catch (const std::exception& err)
 void ArithmeticSolution::subtractionMethod(const std::int32_t minuend, const std::int32_t subtrahend)
 try
 {
-    const auto difference = numeric::arithmetic::Arithmetic().subtraction(minuend, subtrahend);
-    displayResult(ArithmeticMethod::subtraction, difference, minuend, subtrahend, '-');
+    const auto calc = numeric::arithmetic::Arithmetic().subtraction(minuend, subtrahend);
+    displayResult(ArithmeticMethod::subtraction, calc, minuend, subtrahend, '-');
 }
 catch (const std::exception& err)
 {
@@ -254,8 +252,8 @@ catch (const std::exception& err)
 void ArithmeticSolution::multiplicationMethod(const std::int32_t multiplier, const std::int32_t multiplicand)
 try
 {
-    const auto product = numeric::arithmetic::Arithmetic().multiplication(multiplier, multiplicand);
-    displayResult(ArithmeticMethod::multiplication, product, multiplier, multiplicand, '*');
+    const auto calc = numeric::arithmetic::Arithmetic().multiplication(multiplier, multiplicand);
+    displayResult(ArithmeticMethod::multiplication, calc, multiplier, multiplicand, '*');
 }
 catch (const std::exception& err)
 {
@@ -265,8 +263,8 @@ catch (const std::exception& err)
 void ArithmeticSolution::divisionMethod(const std::int32_t dividend, const std::int32_t divisor)
 try
 {
-    const auto quotient = numeric::arithmetic::Arithmetic().division(dividend, divisor);
-    displayResult(ArithmeticMethod::division, quotient, dividend, divisor, '/');
+    const auto calc = numeric::arithmetic::Arithmetic().division(dividend, divisor);
+    displayResult(ArithmeticMethod::division, calc, dividend, divisor, '/');
 }
 catch (const std::exception& err)
 {
@@ -380,7 +378,7 @@ void DivisorSolution::euclideanMethod(std::int32_t a, std::int32_t b)
 try
 {
     TIME_BEGIN(timing);
-    const auto cntr = numeric::divisor::Divisor().euclidean(a, b);
+    const auto& cntr = numeric::divisor::Divisor().euclidean(a, b);
     TIME_END(timing);
     displayResult(DivisorMethod::euclidean, cntr, TIME_INTERVAL(timing));
 }
@@ -393,7 +391,7 @@ void DivisorSolution::steinMethod(std::int32_t a, std::int32_t b)
 try
 {
     TIME_BEGIN(timing);
-    const auto cntr = numeric::divisor::Divisor().stein(a, b);
+    const auto& cntr = numeric::divisor::Divisor().stein(a, b);
     TIME_END(timing);
     displayResult(DivisorMethod::stein, cntr, TIME_INTERVAL(timing));
 }
@@ -684,7 +682,7 @@ void PrimeSolution::eratosthenesMethod(const std::uint32_t max)
 try
 {
     TIME_BEGIN(timing);
-    const auto cntr = numeric::prime::Prime().eratosthenes(max);
+    const auto& cntr = numeric::prime::Prime().eratosthenes(max);
     TIME_END(timing);
     displayResult(PrimeMethod::eratosthenes, cntr, TIME_INTERVAL(timing));
 }
@@ -697,7 +695,7 @@ void PrimeSolution::eulerMethod(const std::uint32_t max)
 try
 {
     TIME_BEGIN(timing);
-    const auto cntr = numeric::prime::Prime().euler(max);
+    const auto& cntr = numeric::prime::Prime().euler(max);
     TIME_END(timing);
     displayResult(PrimeMethod::euler, cntr, TIME_INTERVAL(timing));
 }

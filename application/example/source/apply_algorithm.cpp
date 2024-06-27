@@ -18,19 +18,17 @@
 #include "utility/include/currying.hpp"
 
 //! @brief Title of printing when algorithm tasks are beginning.
-#define APP_ALGO_PRINT_TASK_BEGIN_TITLE(category)                                                                   \
-    std::osyncstream(std::cout) << "\r\n"                                                                           \
-                                << "ALGORITHM TASK: " << std::setiosflags(std::ios_base::left) << std::setfill('.') \
-                                << std::setw(50) << category << "BEGIN" << std::resetiosflags(std::ios_base::left)  \
-                                << std::setfill(' ') << std::endl;                                                  \
+#define APP_ALGO_PRINT_TASK_BEGIN_TITLE(category)                                                                     \
+    std::osyncstream(std::cout) << "\nALGORITHM TASK: " << std::setiosflags(std::ios_base::left) << std::setfill('.') \
+                                << std::setw(50) << category << "BEGIN" << std::resetiosflags(std::ios_base::left)    \
+                                << std::setfill(' ') << std::endl;                                                    \
     {
 //! @brief Title of printing when algorithm tasks are ending.
-#define APP_ALGO_PRINT_TASK_END_TITLE(category)                                                                     \
-    }                                                                                                               \
-    std::osyncstream(std::cout) << "\r\n"                                                                           \
-                                << "ALGORITHM TASK: " << std::setiosflags(std::ios_base::left) << std::setfill('.') \
-                                << std::setw(50) << category << "END" << std::resetiosflags(std::ios_base::left)    \
-                                << std::setfill(' ') << '\n'                                                        \
+#define APP_ALGO_PRINT_TASK_END_TITLE(category)                                                                       \
+    }                                                                                                                 \
+    std::osyncstream(std::cout) << "\nALGORITHM TASK: " << std::setiosflags(std::ios_base::left) << std::setfill('.') \
+                                << std::setw(50) << category << "END" << std::resetiosflags(std::ios_base::left)      \
+                                << std::setfill(' ') << '\n'                                                          \
                                 << std::endl;
 
 namespace application::app_algo
@@ -472,7 +470,7 @@ static void displayResult(const NotationMethod method, const std::string& result
 void NotationSolution::prefixMethod(const std::string& infixNotation)
 try
 {
-    const auto expr = algorithm::notation::Notation().prefix(infixNotation);
+    const auto& expr = algorithm::notation::Notation().prefix(infixNotation);
     displayResult(NotationMethod::prefix, expr, "polish notation");
 }
 catch (const std::exception& err)
@@ -483,7 +481,7 @@ catch (const std::exception& err)
 void NotationSolution::postfixMethod(const std::string& infixNotation)
 try
 {
-    const auto expr = algorithm::notation::Notation().postfix(infixNotation);
+    const auto& expr = algorithm::notation::Notation().postfix(infixNotation);
     displayResult(NotationMethod::postfix, expr, "reverse polish notation");
 }
 catch (const std::exception& err)
@@ -596,7 +594,7 @@ void OptimalSolution::gradientDescentMethod(const Function& func, const double l
 try
 {
     TIME_BEGIN(timing);
-    const auto tuple = algorithm::optimal::Gradient(func)(left, right, algorithm::optimal::epsilon);
+    const auto& tuple = algorithm::optimal::Gradient(func)(left, right, algorithm::optimal::epsilon);
     TIME_END(timing);
     displayResult(OptimalMethod::gradient, tuple, TIME_INTERVAL(timing));
 }
@@ -609,7 +607,7 @@ void OptimalSolution::simulatedAnnealingMethod(const Function& func, const doubl
 try
 {
     TIME_BEGIN(timing);
-    const auto tuple = algorithm::optimal::Annealing(func)(left, right, algorithm::optimal::epsilon);
+    const auto& tuple = algorithm::optimal::Annealing(func)(left, right, algorithm::optimal::epsilon);
     TIME_END(timing);
     displayResult(OptimalMethod::annealing, tuple, TIME_INTERVAL(timing));
 }
@@ -622,7 +620,7 @@ void OptimalSolution::particleSwarmMethod(const Function& func, const double lef
 try
 {
     TIME_BEGIN(timing);
-    const auto tuple = algorithm::optimal::Particle(func)(left, right, algorithm::optimal::epsilon);
+    const auto& tuple = algorithm::optimal::Particle(func)(left, right, algorithm::optimal::epsilon);
     TIME_END(timing);
     displayResult(OptimalMethod::particle, tuple, TIME_INTERVAL(timing));
 }
@@ -635,7 +633,7 @@ void OptimalSolution::geneticMethod(const Function& func, const double left, con
 try
 {
     TIME_BEGIN(timing);
-    const auto tuple = algorithm::optimal::Genetic(func)(left, right, algorithm::optimal::epsilon);
+    const auto& tuple = algorithm::optimal::Genetic(func)(left, right, algorithm::optimal::epsilon);
     TIME_END(timing);
     displayResult(OptimalMethod::genetic, tuple, TIME_INTERVAL(timing));
 }
@@ -922,7 +920,7 @@ void SortSolution::bubbleMethod(const std::int32_t* const array, const std::uint
 try
 {
     TIME_BEGIN(timing);
-    const auto cntr = algorithm::sort::Sort<std::int32_t>().bubble(array, length);
+    const auto& cntr = algorithm::sort::Sort<std::int32_t>().bubble(array, length);
     TIME_END(timing);
     displayResult(SortMethod::bubble, cntr, TIME_INTERVAL(timing));
 }
@@ -935,7 +933,7 @@ void SortSolution::selectionMethod(const std::int32_t* const array, const std::u
 try
 {
     TIME_BEGIN(timing);
-    const auto cntr = algorithm::sort::Sort<std::int32_t>().selection(array, length);
+    const auto& cntr = algorithm::sort::Sort<std::int32_t>().selection(array, length);
     TIME_END(timing);
     displayResult(SortMethod::selection, cntr, TIME_INTERVAL(timing));
 }
@@ -948,7 +946,7 @@ void SortSolution::insertionMethod(const std::int32_t* const array, const std::u
 try
 {
     TIME_BEGIN(timing);
-    const auto cntr = algorithm::sort::Sort<std::int32_t>().insertion(array, length);
+    const auto& cntr = algorithm::sort::Sort<std::int32_t>().insertion(array, length);
     TIME_END(timing);
     displayResult(SortMethod::insertion, cntr, TIME_INTERVAL(timing));
 }
@@ -961,7 +959,7 @@ void SortSolution::shellMethod(const std::int32_t* const array, const std::uint3
 try
 {
     TIME_BEGIN(timing);
-    const auto cntr = algorithm::sort::Sort<std::int32_t>().shell(array, length);
+    const auto& cntr = algorithm::sort::Sort<std::int32_t>().shell(array, length);
     TIME_END(timing);
     displayResult(SortMethod::shell, cntr, TIME_INTERVAL(timing));
 }
@@ -974,7 +972,7 @@ void SortSolution::mergeMethod(const std::int32_t* const array, const std::uint3
 try
 {
     TIME_BEGIN(timing);
-    const auto cntr = algorithm::sort::Sort<std::int32_t>().merge(array, length);
+    const auto& cntr = algorithm::sort::Sort<std::int32_t>().merge(array, length);
     TIME_END(timing);
     displayResult(SortMethod::merge, cntr, TIME_INTERVAL(timing));
 }
@@ -987,7 +985,7 @@ void SortSolution::quickMethod(const std::int32_t* const array, const std::uint3
 try
 {
     TIME_BEGIN(timing);
-    const auto cntr = algorithm::sort::Sort<std::int32_t>().quick(array, length);
+    const auto& cntr = algorithm::sort::Sort<std::int32_t>().quick(array, length);
     TIME_END(timing);
     displayResult(SortMethod::quick, cntr, TIME_INTERVAL(timing));
 }
@@ -1000,7 +998,7 @@ void SortSolution::heapMethod(const std::int32_t* const array, const std::uint32
 try
 {
     TIME_BEGIN(timing);
-    const auto cntr = algorithm::sort::Sort<std::int32_t>().heap(array, length);
+    const auto& cntr = algorithm::sort::Sort<std::int32_t>().heap(array, length);
     TIME_END(timing);
     displayResult(SortMethod::heap, cntr, TIME_INTERVAL(timing));
 }
@@ -1013,7 +1011,7 @@ void SortSolution::countingMethod(const std::int32_t* const array, const std::ui
 try
 {
     TIME_BEGIN(timing);
-    const auto cntr = algorithm::sort::Sort<std::int32_t>().counting(array, length);
+    const auto& cntr = algorithm::sort::Sort<std::int32_t>().counting(array, length);
     TIME_END(timing);
     displayResult(SortMethod::counting, cntr, TIME_INTERVAL(timing));
 }
@@ -1026,7 +1024,7 @@ void SortSolution::bucketMethod(const std::int32_t* const array, const std::uint
 try
 {
     TIME_BEGIN(timing);
-    const auto cntr = algorithm::sort::Sort<std::int32_t>().bucket(array, length);
+    const auto& cntr = algorithm::sort::Sort<std::int32_t>().bucket(array, length);
     TIME_END(timing);
     displayResult(SortMethod::bucket, cntr, TIME_INTERVAL(timing));
 }
@@ -1039,7 +1037,7 @@ void SortSolution::radixMethod(const std::int32_t* const array, const std::uint3
 try
 {
     TIME_BEGIN(timing);
-    const auto cntr = algorithm::sort::Sort<std::int32_t>().radix(array, length);
+    const auto& cntr = algorithm::sort::Sort<std::int32_t>().radix(array, length);
     TIME_END(timing);
     displayResult(SortMethod::radix, cntr, TIME_INTERVAL(timing));
 }

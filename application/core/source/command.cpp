@@ -36,8 +36,8 @@ concept HelperType = std::derived_from<T, utility::fsm::FSM<T>> &&
 &&!std::is_copy_constructible_v<T> && !std::is_copy_assignable_v<T> && !std::is_move_constructible_v<T>
     && !std::is_move_assignable_v<T>;
 
-//! @brief Enumerate specific operations to control external helpers.
-enum HelperControl : std::uint8_t
+//! @brief Enumerate specific events to control external helpers.
+enum ExtEvent : std::uint8_t
 {
     //! @brief Start.
     start,
@@ -47,26 +47,26 @@ enum HelperControl : std::uint8_t
     reset
 };
 
-//! @brief Trigger the external helper with operation.
+//! @brief Trigger the external helper with event.
 //! @tparam Helper - target helper
-//! @param operation - target operation
+//! @param event - target event
 template <HelperType Helper>
-static void triggerHelper(const HelperControl operation)
+static void triggerHelper(const ExtEvent event)
 {
     if (!CONFIG_ACTIVATE_HELPER)
     {
         return;
     }
 
-    switch (operation)
+    switch (event)
     {
-        case HelperControl::start:
+        case ExtEvent::start:
             Helper::getInstance().waitForStart();
             break;
-        case HelperControl::stop:
+        case ExtEvent::stop:
             Helper::getInstance().waitForStop();
             break;
-        case HelperControl::reset:
+        case ExtEvent::reset:
             Helper::getInstance().requestToReset();
             break;
         default:
@@ -93,8 +93,8 @@ Command& Command::getInstance()
 void Command::execManager(const int argc, const char* const argv[])
 try
 {
-    triggerHelper<log::Log>(HelperControl::start);
-    triggerHelper<view::View>(HelperControl::start);
+    triggerHelper<log::Log>(ExtEvent::start);
+    triggerHelper<view::View>(ExtEvent::start);
 
     if (1 == argc)
     {
@@ -108,8 +108,8 @@ try
         threads->enqueue("commander-bg", &Command::backgroundHandler, this);
     }
 
-    triggerHelper<view::View>(HelperControl::stop);
-    triggerHelper<log::Log>(HelperControl::stop);
+    triggerHelper<view::View>(ExtEvent::stop);
+    triggerHelper<log::Log>(ExtEvent::stop);
 }
 catch (const std::exception& err)
 {
@@ -628,9 +628,9 @@ void Command::dumpConfiguration() const
 {
     config::forcedConfigurationUpdateByDefault(CONFIG_FILE_PATH);
 
-    const auto& configs = utility::file::getFileContents(CONFIG_FILE_PATH);
+    const auto& configRow = utility::file::getFileContents(CONFIG_FILE_PATH);
     std::ostringstream os;
-    std::copy(configs.cbegin(), configs.cend(), std::ostream_iterator<std::string>(os, "\n"));
+    std::copy(configRow.cbegin(), configRow.cend(), std::ostream_iterator<std::string>(os, "\n"));
     std::cout << os.str() << std::flush;
 }
 
@@ -735,8 +735,8 @@ void Command::registerOnConsole(utility::console::Console& console, std::shared_
             auto retVal = success;
             try
             {
-                triggerHelper<log::Log>(HelperControl::reset);
-                triggerHelper<log::Log>(HelperControl::start);
+                triggerHelper<log::Log>(ExtEvent::reset);
+                triggerHelper<log::Log>(ExtEvent::start);
 
                 LOG_INF << "Refreshed the outputs.";
             }
@@ -760,8 +760,8 @@ void Command::registerOnConsole(utility::console::Console& console, std::shared_
                 client->toSend(utility::common::base64Encode("stop"));
                 client->waitIfAlive();
                 client.reset();
-                triggerHelper<view::View>(HelperControl::reset);
-                triggerHelper<view::View>(HelperControl::start);
+                triggerHelper<view::View>(ExtEvent::reset);
+                triggerHelper<view::View>(ExtEvent::start);
 
                 client = std::make_shared<T>();
                 launchClient(client);

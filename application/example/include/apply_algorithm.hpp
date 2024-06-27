@@ -381,7 +381,7 @@ private:
             {
                 out = std::string{out.at(0)} + '.' + out.substr(1, out.length());
             }
-            std::cout << "\r\nπ " << textLen << " digits:\n"
+            std::cout << "\nπ " << textLen << " digits:\n"
                       << out.substr(0, std::min(textLen, maxNumPerLineOfPrint)) << std::endl;
             if (textLen > maxNumPerLineOfPrint)
             {
@@ -443,7 +443,7 @@ public:
     explicit InputBuilder(const std::string_view infixNotation) : infixNotation(infixNotation)
     {
 #ifdef __RUNTIME_PRINTING
-        std::cout << "\r\nInfix notation: " << infixNotation << std::endl;
+        std::cout << "\nInfix notation: " << infixNotation << std::endl;
 #endif // __RUNTIME_PRINTING
     }
     //! @brief Destroy the InputBuilder object.
@@ -633,7 +633,7 @@ public:
     //! @param function - target function
     static void printFunction(const OptimalFunc<Ts...>& function)
     {
-        constexpr std::string_view prefix = "\r\nOptimal function:\n";
+        constexpr std::string_view prefix = "\nOptimal function:\n";
         std::visit(
             FuncOverloaded{
                 [&prefix](const input::Rastrigin& /*func*/)
@@ -678,17 +678,17 @@ public:
     virtual ~SearchSolution() = default;
 
     //! @brief The binary method.
-    //! @param array - array to be searched
+    //! @param array - ordered array to be searched
     //! @param length - length of array
     //! @param key - search key
     static void binaryMethod(const float* const array, const std::uint32_t length, const float key);
-    //! @brief Interpolation.
-    //! @param array - array to be searched
+    //! @brief The interpolation method.
+    //! @param array - ordered array to be searched
     //! @param length - length of array
     //! @param key - search key
     static void interpolationMethod(const float* const array, const std::uint32_t length, const float key);
-    //! @brief Fibonacci.
-    //! @param array - array to be searched
+    //! @brief The Fibonacci method.
+    //! @param array - ordered array to be searched
     //! @param length - length of array
     //! @param key - search key
     static void fibonacciMethod(const float* const array, const std::uint32_t length, const float key);
@@ -839,7 +839,7 @@ private:
 #ifdef __RUNTIME_PRINTING
         const std::uint32_t arrayBufferSize = length * maxAlignOfPrint;
         std::vector<char> arrayBuffer(arrayBufferSize + 1);
-        std::cout << "\r\nGenerate " << length << " ordered integral numbers from " << left << " to " << right << ":\n"
+        std::cout << "\nGenerate " << length << " ordered integral numbers from " << left << " to " << right << ":\n"
                   << spliceAll<T>(array, length, arrayBuffer.data(), arrayBufferSize + 1) << std::endl;
 #endif // __RUNTIME_PRINTING
     }
@@ -864,7 +864,7 @@ private:
 #ifdef __RUNTIME_PRINTING
         const std::uint32_t arrayBufferSize = length * maxAlignOfPrint;
         std::vector<char> arrayBuffer(arrayBufferSize + 1);
-        std::cout << "\r\nGenerate " << length << " ordered floating point numbers from " << left << " to " << right
+        std::cout << "\nGenerate " << length << " ordered floating point numbers from " << left << " to " << right
                   << ":\n"
                   << spliceAll<T>(array, length, arrayBuffer.data(), arrayBufferSize + 1) << std::endl;
 #endif // __RUNTIME_PRINTING
@@ -1078,7 +1078,7 @@ private:
 #ifdef __RUNTIME_PRINTING
         const std::uint32_t arrayBufferSize = length * maxAlignOfPrint;
         std::vector<char> arrayBuffer(arrayBufferSize + 1);
-        std::cout << "\r\nGenerate " << length << " random integral numbers from " << left << " to " << right << ":\n"
+        std::cout << "\nGenerate " << length << " random integral numbers from " << left << " to " << right << ":\n"
                   << spliceAll<T>(array, length, arrayBuffer.data(), arrayBufferSize + 1) << std::endl;
 #endif // __RUNTIME_PRINTING
     }
@@ -1102,7 +1102,7 @@ private:
 #ifdef __RUNTIME_PRINTING
         const std::uint32_t arrayBufferSize = length * maxAlignOfPrint;
         std::vector<char> arrayBuffer(arrayBufferSize + 1);
-        std::cout << "\r\nGenerate " << length << " random floating point numbers from " << left << " to " << right
+        std::cout << "\nGenerate " << length << " random floating point numbers from " << left << " to " << right
                   << ":\n"
                   << spliceAll<T>(array, length, arrayBuffer.data(), arrayBufferSize + 1) << std::endl;
 #endif // __RUNTIME_PRINTING

@@ -442,32 +442,32 @@ std::vector<std::string> View::splitString(const std::string& str)
     return split;
 }
 
-int View::buildNullTLVPacket(char* buffer)
+int View::buildNullTLVPacket(char* buf)
 {
-    int length = 0;
-    if (tlv::tlvEncode(buffer, length, tlv::TLVValue{}) < 0)
+    int len = 0;
+    if (tlv::tlvEncode(buf, len, tlv::TLVValue{}) < 0)
     {
         throw std::runtime_error("Failed to build null packet.");
     }
-    encryptMessage(buffer, length);
-    return length;
+    encryptMessage(buf, len);
+    return len;
 }
 
-int View::buildTLVPacket2Stop(char* buffer)
+int View::buildTLVPacket2Stop(char* buf)
 {
-    int length = 0;
-    if (tlv::tlvEncode(buffer, length, tlv::TLVValue{.stopTag = true}) < 0)
+    int len = 0;
+    if (tlv::tlvEncode(buf, len, tlv::TLVValue{.stopTag = true}) < 0)
     {
         throw std::runtime_error("Failed to build packet to stop");
     }
-    encryptMessage(buffer, length);
-    return length;
+    encryptMessage(buf, len);
+    return len;
 }
 
-int View::buildTLVPacket2Depend(const std::vector<std::string>& /*args*/, char* buffer)
+int View::buildTLVPacket2Depend(const std::vector<std::string>& /*args*/, char* buf)
 {
-    int length = 0;
-    tlv::TLVValue value{};
+    int len = 0;
+    tlv::TLVValue val{};
     std::string libNames;
     libNames += "GNU C Library " COMMON_TO_STRING(__GLIBC__) "." COMMON_TO_STRING(__GLIBC_MINOR__) "\n";
     libNames += "GNU C++ Standard Library " COMMON_TO_STRING(_GLIBCXX_RELEASE) " (" COMMON_TO_STRING(__GLIBCXX__) ")\n";
@@ -481,17 +481,17 @@ int View::buildTLVPacket2Depend(const std::vector<std::string>& /*args*/, char* 
 #if defined(__has_include) && __has_include(<ncurses.h>)
     libNames += "Ncurses Library " NCURSES_VERSION "";
 #endif // defined(__has_include) && __has_include(<ncurses.h>)
-    std::strncpy(value.libInfo, libNames.data(), sizeof(value.libInfo) - 1);
-    value.libInfo[sizeof(value.libInfo) - 1] = '\0';
-    if (tlv::tlvEncode(buffer, length, value) < 0)
+    std::strncpy(val.libInfo, libNames.data(), sizeof(val.libInfo) - 1);
+    val.libInfo[sizeof(val.libInfo) - 1] = '\0';
+    if (tlv::tlvEncode(buf, len, val) < 0)
     {
         throw std::runtime_error("Failed to build packet for the depend option.");
     }
-    encryptMessage(buffer, length);
-    return length;
+    encryptMessage(buf, len);
+    return len;
 }
 
-int View::buildTLVPacket2Execute(const std::vector<std::string>& args, char* buffer)
+int View::buildTLVPacket2Execute(const std::vector<std::string>& args, char* buf)
 {
     std::string cmds;
     for (const auto& arg : args)
@@ -503,56 +503,56 @@ int View::buildTLVPacket2Execute(const std::vector<std::string>& args, char* buf
         cmds.pop_back();
     }
 
-    int length = 0;
+    int len = 0;
     const int shmId = fillSharedMemory(utility::common::executeCommand("/bin/bash -c " + cmds, 5000));
-    if (tlv::tlvEncode(buffer, length, tlv::TLVValue{.bashShmId = shmId}) < 0)
+    if (tlv::tlvEncode(buf, len, tlv::TLVValue{.bashShmId = shmId}) < 0)
     {
         throw std::runtime_error("Failed to build packet for the execute option.");
     }
-    encryptMessage(buffer, length);
-    return length;
+    encryptMessage(buf, len);
+    return len;
 }
 
-int View::buildTLVPacket2Journal(const std::vector<std::string>& /*args*/, char* buffer)
+int View::buildTLVPacket2Journal(const std::vector<std::string>& /*args*/, char* buf)
 {
-    int length = 0;
+    int len = 0;
     const int shmId = fillSharedMemory(getLogContents());
-    if (tlv::tlvEncode(buffer, length, tlv::TLVValue{.logShmId = shmId}) < 0)
+    if (tlv::tlvEncode(buf, len, tlv::TLVValue{.logShmId = shmId}) < 0)
     {
         throw std::runtime_error("Failed to build packet for the journal option.");
     }
-    encryptMessage(buffer, length);
-    return length;
+    encryptMessage(buf, len);
+    return len;
 }
 
-int View::buildTLVPacket2Monitor(const std::vector<std::string>& /*args*/, char* buffer)
+int View::buildTLVPacket2Monitor(const std::vector<std::string>& /*args*/, char* buf)
 {
-    int length = 0;
+    int len = 0;
     const int shmId = fillSharedMemory(getStatusInformation());
-    if (tlv::tlvEncode(buffer, length, tlv::TLVValue{.statusShmId = shmId}) < 0)
+    if (tlv::tlvEncode(buf, len, tlv::TLVValue{.statusShmId = shmId}) < 0)
     {
         throw std::runtime_error("Failed to build packet for the monitor option.");
     }
-    encryptMessage(buffer, length);
-    return length;
+    encryptMessage(buf, len);
+    return len;
 }
 
-int View::buildTLVPacket2Profile(const std::vector<std::string>& /*args*/, char* buffer)
+int View::buildTLVPacket2Profile(const std::vector<std::string>& /*args*/, char* buf)
 {
-    int length = 0;
-    tlv::TLVValue value{};
+    int len = 0;
+    tlv::TLVValue val{};
     const std::string currConfig = config::queryConfiguration().toUnescapedString();
-    std::strncpy(value.configDetail, currConfig.c_str(), sizeof(value.configDetail) - 1);
-    value.configDetail[sizeof(value.configDetail) - 1] = '\0';
-    if (tlv::tlvEncode(buffer, length, value) < 0)
+    std::strncpy(val.configDetail, currConfig.c_str(), sizeof(val.configDetail) - 1);
+    val.configDetail[sizeof(val.configDetail) - 1] = '\0';
+    if (tlv::tlvEncode(buf, len, val) < 0)
     {
         throw std::runtime_error("Failed to build packet for the profile option.");
     }
-    encryptMessage(buffer, length);
-    return length;
+    encryptMessage(buf, len);
+    return len;
 }
 
-void View::encryptMessage(char* buf, const int len)
+void View::encryptMessage(char* buffer, const int length)
 {
     constexpr unsigned char
         key[16] = {0x37, 0x47, 0x10, 0x33, 0x6F, 0x18, 0xC8, 0x9A, 0x4B, 0xC1, 0x2B, 0x97, 0x92, 0x19, 0x25, 0x6D},
@@ -566,11 +566,15 @@ void View::encryptMessage(char* buf, const int len)
             break;
         }
         if (!::EVP_EncryptUpdate(
-                ctx, reinterpret_cast<unsigned char*>(buf), &outLen, reinterpret_cast<unsigned char*>(buf), len))
+                ctx,
+                reinterpret_cast<unsigned char*>(buffer),
+                &outLen,
+                reinterpret_cast<unsigned char*>(buffer),
+                length))
         {
             break;
         }
-        if (!::EVP_EncryptFinal_ex(ctx, reinterpret_cast<unsigned char*>(buf) + outLen, &tempLen))
+        if (!::EVP_EncryptFinal_ex(ctx, reinterpret_cast<unsigned char*>(buffer) + outLen, &tempLen))
         {
             break;
         }
@@ -579,7 +583,7 @@ void View::encryptMessage(char* buf, const int len)
     ::EVP_CIPHER_CTX_free(ctx);
 }
 
-void View::decryptMessage(char* buf, const int len)
+void View::decryptMessage(char* buffer, const int length)
 {
     constexpr unsigned char
         key[16] = {0x37, 0x47, 0x10, 0x33, 0x6F, 0x18, 0xC8, 0x9A, 0x4B, 0xC1, 0x2B, 0x97, 0x92, 0x19, 0x25, 0x6D},
@@ -593,11 +597,15 @@ void View::decryptMessage(char* buf, const int len)
             break;
         }
         if (!::EVP_DecryptUpdate(
-                ctx, reinterpret_cast<unsigned char*>(buf), &outLen, reinterpret_cast<unsigned char*>(buf), len))
+                ctx,
+                reinterpret_cast<unsigned char*>(buffer),
+                &outLen,
+                reinterpret_cast<unsigned char*>(buffer),
+                length))
         {
             break;
         }
-        if (!::EVP_DecryptFinal_ex(ctx, reinterpret_cast<unsigned char*>(buf) + outLen, &tempLen))
+        if (!::EVP_DecryptFinal_ex(ctx, reinterpret_cast<unsigned char*>(buffer) + outLen, &tempLen))
         {
             break;
         }
@@ -670,11 +678,11 @@ void View::printSharedMemory(const int shmId, const bool withoutPaging)
 
     if (withoutPaging)
     {
-        std::cout << "\r\n" << output << std::endl;
+        std::cout << '\n' << output << std::endl;
     }
     else
     {
-        std::cout << "\r\n";
+        std::cout << '\n';
         segmentedOutput(output);
         std::cout << std::endl;
     }

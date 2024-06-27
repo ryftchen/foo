@@ -19,16 +19,14 @@
 
 //! @brief Title of printing when design pattern tasks are beginning.
 #define APP_DP_PRINT_TASK_BEGIN_TITLE(category)                                                               \
-    std::osyncstream(std::cout) << "\r\n"                                                                     \
-                                << "DESIGN PATTERN TASK: " << std::setiosflags(std::ios_base::left)           \
+    std::osyncstream(std::cout) << "\nDESIGN PATTERN TASK: " << std::setiosflags(std::ios_base::left)         \
                                 << std::setfill('.') << std::setw(50) << category << "BEGIN"                  \
                                 << std::resetiosflags(std::ios_base::left) << std::setfill(' ') << std::endl; \
     {
 //! @brief Title of printing when design pattern tasks are ending.
 #define APP_DP_PRINT_TASK_END_TITLE(category)                                                           \
     }                                                                                                   \
-    std::osyncstream(std::cout) << "\r\n"                                                               \
-                                << "DESIGN PATTERN TASK: " << std::setiosflags(std::ios_base::left)     \
+    std::osyncstream(std::cout) << "\nDESIGN PATTERN TASK: " << std::setiosflags(std::ios_base::left)   \
                                 << std::setfill('.') << std::setw(50) << category << "END"              \
                                 << std::resetiosflags(std::ios_base::left) << std::setfill(' ') << '\n' \
                                 << std::endl;
@@ -216,7 +214,7 @@ static void displayResult(const BehavioralInstance instance, const std::string& 
 void BehavioralPattern::chainOfResponsibilityInstance()
 try
 {
-    const auto output = Behavioral().chainOfResponsibility().str();
+    const auto& output = Behavioral().chainOfResponsibility().str();
     displayResult(BehavioralInstance::chainOfResponsibility, output);
 }
 catch (const std::exception& err)
@@ -227,7 +225,7 @@ catch (const std::exception& err)
 void BehavioralPattern::commandInstance()
 try
 {
-    const auto output = Behavioral().command().str();
+    const auto& output = Behavioral().command().str();
     displayResult(BehavioralInstance::command, output);
 }
 catch (const std::exception& err)
@@ -238,7 +236,7 @@ catch (const std::exception& err)
 void BehavioralPattern::interpreterInstance()
 try
 {
-    const auto output = Behavioral().interpreter().str();
+    const auto& output = Behavioral().interpreter().str();
     displayResult(BehavioralInstance::interpreter, output);
 }
 catch (const std::exception& err)
@@ -249,7 +247,7 @@ catch (const std::exception& err)
 void BehavioralPattern::iteratorInstance()
 try
 {
-    const auto output = Behavioral().iterator().str();
+    const auto& output = Behavioral().iterator().str();
     displayResult(BehavioralInstance::iterator, output);
 }
 catch (const std::exception& err)
@@ -260,7 +258,7 @@ catch (const std::exception& err)
 void BehavioralPattern::mediatorInstance()
 try
 {
-    const auto output = Behavioral().mediator().str();
+    const auto& output = Behavioral().mediator().str();
     displayResult(BehavioralInstance::mediator, output);
 }
 catch (const std::exception& err)
@@ -271,7 +269,7 @@ catch (const std::exception& err)
 void BehavioralPattern::mementoInstance()
 try
 {
-    const auto output = Behavioral().memento().str();
+    const auto& output = Behavioral().memento().str();
     displayResult(BehavioralInstance::memento, output);
 }
 catch (const std::exception& err)
@@ -282,7 +280,7 @@ catch (const std::exception& err)
 void BehavioralPattern::observerInstance()
 try
 {
-    const auto output = Behavioral().observer().str();
+    const auto& output = Behavioral().observer().str();
     displayResult(BehavioralInstance::observer, output);
 }
 catch (const std::exception& err)
@@ -293,7 +291,7 @@ catch (const std::exception& err)
 void BehavioralPattern::stateInstance()
 try
 {
-    const auto output = Behavioral().state().str();
+    const auto& output = Behavioral().state().str();
     displayResult(BehavioralInstance::state, output);
 }
 catch (const std::exception& err)
@@ -304,7 +302,7 @@ catch (const std::exception& err)
 void BehavioralPattern::strategyInstance()
 try
 {
-    const auto output = Behavioral().strategy().str();
+    const auto& output = Behavioral().strategy().str();
     displayResult(BehavioralInstance::strategy, output);
 }
 catch (const std::exception& err)
@@ -315,7 +313,7 @@ catch (const std::exception& err)
 void BehavioralPattern::templateMethodInstance()
 try
 {
-    const auto output = Behavioral().templateMethod().str();
+    const auto& output = Behavioral().templateMethod().str();
     displayResult(BehavioralInstance::templateMethod, output);
 }
 catch (const std::exception& err)
@@ -326,7 +324,7 @@ catch (const std::exception& err)
 void BehavioralPattern::visitorInstance()
 try
 {
-    const auto output = Behavioral().visitor().str();
+    const auto& output = Behavioral().visitor().str();
     displayResult(BehavioralInstance::visitor, output);
 }
 catch (const std::exception& err)
@@ -358,7 +356,7 @@ void runBehavioralTasks(const std::vector<std::string>& candidates)
     };
     const auto name = utility::currying::curry(getTaskNameCurried(), getCategoryAlias<category>());
 
-    std::cout << "\r\nInstances of the " << toString(category) << " pattern:" << std::endl;
+    std::cout << "\nInstances of the " << toString(category) << " pattern:" << std::endl;
     for (std::uint8_t i = 0; i < Bottom<BehavioralInstance>::value; ++i)
     {
         if (!bitFlag.test(BehavioralInstance(i)))
@@ -473,7 +471,7 @@ static void displayResult(const CreationalInstance instance, const std::string& 
 void CreationalPattern::abstractFactoryInstance()
 try
 {
-    const auto output = Creational().abstractFactory().str();
+    const auto& output = Creational().abstractFactory().str();
     displayResult(CreationalInstance::abstractFactory, output);
 }
 catch (const std::exception& err)
@@ -484,7 +482,7 @@ catch (const std::exception& err)
 void CreationalPattern::builderInstance()
 try
 {
-    const auto output = Creational().builder().str();
+    const auto& output = Creational().builder().str();
     displayResult(CreationalInstance::builder, output);
 }
 catch (const std::exception& err)
@@ -495,7 +493,7 @@ catch (const std::exception& err)
 void CreationalPattern::factoryMethodInstance()
 try
 {
-    const auto output = Creational().factoryMethod().str();
+    const auto& output = Creational().factoryMethod().str();
     displayResult(CreationalInstance::factoryMethod, output);
 }
 catch (const std::exception& err)
@@ -506,7 +504,7 @@ catch (const std::exception& err)
 void CreationalPattern::prototypeInstance()
 try
 {
-    const auto output = Creational().prototype().str();
+    const auto& output = Creational().prototype().str();
     displayResult(CreationalInstance::prototype, output);
 }
 catch (const std::exception& err)
@@ -517,7 +515,7 @@ catch (const std::exception& err)
 void CreationalPattern::singletonInstance()
 try
 {
-    const auto output = Creational().singleton().str();
+    const auto& output = Creational().singleton().str();
     displayResult(CreationalInstance::singleton, output);
 }
 catch (const std::exception& err)
@@ -549,7 +547,7 @@ void runCreationalTasks(const std::vector<std::string>& candidates)
     };
     const auto name = utility::currying::curry(getTaskNameCurried(), getCategoryAlias<category>());
 
-    std::cout << "\r\nInstances of the " << toString(category) << " pattern:" << std::endl;
+    std::cout << "\nInstances of the " << toString(category) << " pattern:" << std::endl;
     for (std::uint8_t i = 0; i < Bottom<CreationalInstance>::value; ++i)
     {
         if (!bitFlag.test(CreationalInstance(i)))
@@ -628,7 +626,7 @@ static void displayResult(const StructuralInstance instance, const std::string& 
 void StructuralPattern::adapterInstance()
 try
 {
-    const auto output = Structural().adapter().str();
+    const auto& output = Structural().adapter().str();
     displayResult(StructuralInstance::adapter, output);
 }
 catch (const std::exception& err)
@@ -639,7 +637,7 @@ catch (const std::exception& err)
 void StructuralPattern::bridgeInstance()
 try
 {
-    const auto output = Structural().bridge().str();
+    const auto& output = Structural().bridge().str();
     displayResult(StructuralInstance::bridge, output);
 }
 catch (const std::exception& err)
@@ -650,7 +648,7 @@ catch (const std::exception& err)
 void StructuralPattern::compositeInstance()
 try
 {
-    const auto output = Structural().composite().str();
+    const auto& output = Structural().composite().str();
     displayResult(StructuralInstance::composite, output);
 }
 catch (const std::exception& err)
@@ -661,7 +659,7 @@ catch (const std::exception& err)
 void StructuralPattern::decoratorInstance()
 try
 {
-    const auto output = Structural().decorator().str();
+    const auto& output = Structural().decorator().str();
     displayResult(StructuralInstance::decorator, output);
 }
 catch (const std::exception& err)
@@ -672,7 +670,7 @@ catch (const std::exception& err)
 void StructuralPattern::facadeInstance()
 try
 {
-    const auto output = Structural().facade().str();
+    const auto& output = Structural().facade().str();
     displayResult(StructuralInstance::facade, output);
 }
 catch (const std::exception& err)
@@ -683,7 +681,7 @@ catch (const std::exception& err)
 void StructuralPattern::flyweightInstance()
 try
 {
-    const auto output = Structural().flyweight().str();
+    const auto& output = Structural().flyweight().str();
     displayResult(StructuralInstance::flyweight, output);
 }
 catch (const std::exception& err)
@@ -694,7 +692,7 @@ catch (const std::exception& err)
 void StructuralPattern::proxyInstance()
 try
 {
-    const auto output = Structural().proxy().str();
+    const auto& output = Structural().proxy().str();
     displayResult(StructuralInstance::proxy, output);
 }
 catch (const std::exception& err)
@@ -726,7 +724,7 @@ void runStructuralTasks(const std::vector<std::string>& candidates)
     };
     const auto name = utility::currying::curry(getTaskNameCurried(), getCategoryAlias<category>());
 
-    std::cout << "\r\nInstances of the " << toString(category) << " pattern:" << std::endl;
+    std::cout << "\nInstances of the " << toString(category) << " pattern:" << std::endl;
     for (std::uint8_t i = 0; i < Bottom<StructuralInstance>::value; ++i)
     {
         if (!bitFlag.test(StructuralInstance(i)))

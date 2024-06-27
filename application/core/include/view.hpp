@@ -271,46 +271,46 @@ private:
     //! @return strings after split
     static std::vector<std::string> splitString(const std::string& str);
     //! @brief Build the null TLV packet.
-    //! @param buffer - TLV packet buffer
+    //! @param buf - TLV packet buffer
     //! @return buffer length
-    static int buildNullTLVPacket(char* buffer);
+    static int buildNullTLVPacket(char* buf);
     //! @brief Build the TLV packet to stop connection.
-    //! @param buffer - TLV packet buffer
+    //! @param buf - TLV packet buffer
     //! @return buffer length
-    static int buildTLVPacket2Stop(char* buffer);
+    static int buildTLVPacket2Stop(char* buf);
     //! @brief Build the TLV packet to get library information.
     //! @param args - container of arguments
-    //! @param buffer - TLV packet buffer
+    //! @param buf - TLV packet buffer
     //! @return buffer length
-    static int buildTLVPacket2Depend(const std::vector<std::string>& args, char* buffer);
+    static int buildTLVPacket2Depend(const std::vector<std::string>& args, char* buf);
     //! @brief Build the TLV packet to get bash outputs.
     //! @param args - container of arguments
-    //! @param buffer - TLV packet buffer
+    //! @param buf - TLV packet buffer
     //! @return buffer length
-    static int buildTLVPacket2Execute(const std::vector<std::string>& args, char* buffer);
+    static int buildTLVPacket2Execute(const std::vector<std::string>& args, char* buf);
     //! @brief Build the TLV packet to get log contents.
     //! @param args - container of arguments
-    //! @param buffer - TLV packet buffer
+    //! @param buf - TLV packet buffer
     //! @return buffer length
-    static int buildTLVPacket2Journal(const std::vector<std::string>& args, char* buffer);
+    static int buildTLVPacket2Journal(const std::vector<std::string>& args, char* buf);
     //! @brief Build the TLV packet to get status reports.
     //! @param args - container of arguments
-    //! @param buffer - TLV packet buffer
+    //! @param buf - TLV packet buffer
     //! @return buffer length
-    static int buildTLVPacket2Monitor(const std::vector<std::string>& args, char* buffer);
+    static int buildTLVPacket2Monitor(const std::vector<std::string>& args, char* buf);
     //! @brief Build the TLV packet to get current configuration.
     //! @param args - container of arguments
-    //! @param buffer - TLV packet buffer
+    //! @param buf - TLV packet buffer
     //! @return buffer length
-    static int buildTLVPacket2Profile(const std::vector<std::string>& args, char* buffer);
+    static int buildTLVPacket2Profile(const std::vector<std::string>& args, char* buf);
     //! @brief Encrypt the message with AES-128-CFB-128.
-    //! @param buf - message buffer
-    //! @param len - buffer length
-    static void encryptMessage(char* buf, const int len);
+    //! @param buffer - message buffer
+    //! @param length - buffer length
+    static void encryptMessage(char* buffer, const int length);
     //! @brief Decrypt the message with AES-128-CFB-128.
-    //! @param buf - message buffer
-    //! @param len - buffer length
-    static void decryptMessage(char* buf, const int len);
+    //! @param buffer - message buffer
+    //! @param length - buffer length
+    static void decryptMessage(char* buffer, const int length);
     //! @brief Fill the shared memory.
     //! @param contents - contents to be filled
     //! @return shm id

@@ -19,16 +19,14 @@
 
 //! @brief Title of printing when data structure tasks are beginning.
 #define APP_DS_PRINT_TASK_BEGIN_TITLE(category)                                                               \
-    std::osyncstream(std::cout) << "\r\n"                                                                     \
-                                << "DATA STRUCTURE TASK: " << std::setiosflags(std::ios_base::left)           \
+    std::osyncstream(std::cout) << "\nDATA STRUCTURE TASK: " << std::setiosflags(std::ios_base::left)         \
                                 << std::setfill('.') << std::setw(50) << category << "BEGIN"                  \
                                 << std::resetiosflags(std::ios_base::left) << std::setfill(' ') << std::endl; \
     {
 //! @brief Title of printing when data structure tasks are ending.
 #define APP_DS_PRINT_TASK_END_TITLE(category)                                                           \
     }                                                                                                   \
-    std::osyncstream(std::cout) << "\r\n"                                                               \
-                                << "DATA STRUCTURE TASK: " << std::setiosflags(std::ios_base::left)     \
+    std::osyncstream(std::cout) << "\nDATA STRUCTURE TASK: " << std::setiosflags(std::ios_base::left)   \
                                 << std::setfill('.') << std::setw(50) << category << "END"              \
                                 << std::resetiosflags(std::ios_base::left) << std::setfill(' ') << '\n' \
                                 << std::endl;
@@ -181,7 +179,7 @@ static void displayResult(const LinearInstance instance, const std::string& resu
 void LinearStructure::linkedListInstance()
 try
 {
-    const auto output = Linear().linkedList().str();
+    const auto& output = Linear().linkedList().str();
     displayResult(LinearInstance::linkedList, output);
 }
 catch (const std::exception& err)
@@ -192,7 +190,7 @@ catch (const std::exception& err)
 void LinearStructure::stackInstance()
 try
 {
-    const auto output = Linear().stack().str();
+    const auto& output = Linear().stack().str();
     displayResult(LinearInstance::stack, output);
 }
 catch (const std::exception& err)
@@ -203,7 +201,7 @@ catch (const std::exception& err)
 void LinearStructure::queueInstance()
 try
 {
-    const auto output = Linear().queue().str();
+    const auto& output = Linear().queue().str();
     displayResult(LinearInstance::queue, output);
 }
 catch (const std::exception& err)
@@ -235,7 +233,7 @@ void runLinearTasks(const std::vector<std::string>& candidates)
     };
     const auto name = utility::currying::curry(getTaskNameCurried(), getCategoryAlias<category>());
 
-    std::cout << "\r\nInstances of the " << toString(category) << " structure:" << std::endl;
+    std::cout << "\nInstances of the " << toString(category) << " structure:" << std::endl;
     for (std::uint8_t i = 0; i < Bottom<LinearInstance>::value; ++i)
     {
         if (!bitFlag.test(LinearInstance(i)))
@@ -302,7 +300,7 @@ static void displayResult(const TreeInstance instance, const std::string& result
 void TreeStructure::bsInstance()
 try
 {
-    const auto output = Tree().bs().str();
+    const auto& output = Tree().bs().str();
     displayResult(TreeInstance::binarySearch, output);
 }
 catch (const std::exception& err)
@@ -313,7 +311,7 @@ catch (const std::exception& err)
 void TreeStructure::avlInstance()
 try
 {
-    const auto output = Tree().avl().str();
+    const auto& output = Tree().avl().str();
     displayResult(TreeInstance::adelsonVelskyLandis, output);
 }
 catch (const std::exception& err)
@@ -324,7 +322,7 @@ catch (const std::exception& err)
 void TreeStructure::splayInstance()
 try
 {
-    const auto output = Tree().splay().str();
+    const auto& output = Tree().splay().str();
     displayResult(TreeInstance::splay, output);
 }
 catch (const std::exception& err)
@@ -356,7 +354,7 @@ void runTreeTasks(const std::vector<std::string>& candidates)
     };
     const auto name = utility::currying::curry(getTaskNameCurried(), getCategoryAlias<category>());
 
-    std::cout << "\r\nInstances of the " << toString(category) << " structure:" << std::endl;
+    std::cout << "\nInstances of the " << toString(category) << " structure:" << std::endl;
     for (std::uint8_t i = 0; i < Bottom<TreeInstance>::value; ++i)
     {
         if (!bitFlag.test(TreeInstance(i)))

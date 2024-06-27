@@ -424,8 +424,7 @@ function perform_website_option()
             input=$(wait_until_get_input)
             if echo "${input}" | grep -iq '^y'; then
                 echo "Yes"
-                shell_command "./${FOLDER[doc]}/server/target/release/${FOLDER[proj]}_doc --root-dir . &"
-                sleep 0.2s
+                shell_command "./${FOLDER[doc]}/server/target/release/${FOLDER[proj]}_doc --root-dir . & sleep 0.5s"
             else
                 echo "No"
             fi
