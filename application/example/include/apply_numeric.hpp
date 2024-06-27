@@ -223,7 +223,7 @@ public:
     InputBuilder(const std::int32_t integer1, const std::int32_t integer2) : integer1(integer1), integer2(integer2)
     {
 #ifdef __RUNTIME_PRINTING
-        std::cout << "\r\nElementary arithmetic of " << integer1 << " and " << integer2 << ':' << std::endl;
+        std::cout << "\nElementary arithmetic of " << integer1 << " and " << integer2 << ':' << std::endl;
 #endif
     }
     //! @brief Destroy the InputBuilder object.
@@ -290,7 +290,7 @@ public:
     InputBuilder(const std::int32_t integer1, const std::int32_t integer2) : integer1(integer1), integer2(integer2)
     {
 #ifdef __RUNTIME_PRINTING
-        std::cout << "\r\nAll common divisors of " << integer1 << " and " << integer2 << ':' << std::endl;
+        std::cout << "\nAll common divisors of " << integer1 << " and " << integer2 << ':' << std::endl;
 #endif
     }
     //! @brief Destroy the InputBuilder object.
@@ -520,7 +520,7 @@ public:
     //! @param expression - target expression
     static void printExpression(const IntegralExpr<Ts...>& expression)
     {
-        constexpr std::string_view prefix = "\r\nIntegral expression:\n";
+        constexpr std::string_view prefix = "\nIntegral expression:\n";
         std::visit(
             ExprOverloaded{
                 [&prefix](const input::Expression1& /*expr*/)
@@ -582,7 +582,7 @@ public:
     explicit InputBuilder(const std::uint32_t maxPositiveInteger) : maxPositiveInteger(maxPositiveInteger)
     {
 #ifdef __RUNTIME_PRINTING
-        std::cout << "\r\nAll prime numbers smaller than " << maxPositiveInteger << ':' << std::endl;
+        std::cout << "\nAll prime numbers smaller than " << maxPositiveInteger << ':' << std::endl;
 #endif
     }
     //! @brief Destroy the InputBuilder object.

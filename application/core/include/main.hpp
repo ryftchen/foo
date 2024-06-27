@@ -81,11 +81,11 @@ static void signalHandler(int sig)
 
     if (maxFrame == numOfFrame)
     {
-        detailedTrace << "\r\n<TRUNCATED...>\n";
+        detailedTrace << "\n<TRUNCATED...>\n";
     }
     std::fprintf(
         ::stderr,
-        "\r\n%s:\n<SIGNAL>\n%d\n\n<BACKTRACE>\n%s\n<VERBOSE>\n%s\n",
+        "\n%s:\n<SIGNAL>\n%d\n\n<BACKTRACE>\n%s\n<VERBOSE>\n%s\n",
         getExecutableName().c_str(),
         sig,
         originalTrace.str().c_str(),

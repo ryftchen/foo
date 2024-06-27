@@ -424,13 +424,13 @@ JSON::JSON(const JSON& json)
     switch (json.type)
     {
         case Type::object:
-            data.map = new std::map<std::string, JSON>(json.data.map->cbegin(), json.data.map->cend());
+            data.map = new std::map<std::string, JSON>{json.data.map->cbegin(), json.data.map->cend()};
             break;
         case Type::array:
-            data.list = new std::deque<JSON>(json.data.list->cbegin(), json.data.list->cend());
+            data.list = new std::deque<JSON>{json.data.list->cbegin(), json.data.list->cend()};
             break;
         case Type::string:
-            data.string = new std::string(*json.data.string);
+            data.string = new std::string{*json.data.string};
             break;
         default:
             data = json.data;
@@ -453,19 +453,19 @@ JSON& JSON::operator=(const JSON& json)
         case Type::object:
             if (nullptr != json.data.map)
             {
-                data.map = new std::map<std::string, JSON>(json.data.map->cbegin(), json.data.map->cend());
+                data.map = new std::map<std::string, JSON>{json.data.map->cbegin(), json.data.map->cend()};
             }
             break;
         case Type::array:
             if (nullptr != json.data.list)
             {
-                data.list = new std::deque<JSON>(json.data.list->cbegin(), json.data.list->cend());
+                data.list = new std::deque<JSON>{json.data.list->cbegin(), json.data.list->cend()};
             }
             break;
         case Type::string:
             if (nullptr != json.data.string)
             {
-                data.string = new std::string(*json.data.string);
+                data.string = new std::string{*json.data.string};
             }
             break;
         default:
@@ -748,36 +748,36 @@ JSON::JSONWrapper<std::map<std::string, JSON>> JSON::objectRange()
 {
     if (Type::object == type)
     {
-        return JSONWrapper<std::map<std::string, JSON>>(data.map);
+        return JSONWrapper<std::map<std::string, JSON>>{data.map};
     }
-    return JSONWrapper<std::map<std::string, JSON>>(nullptr);
+    return JSONWrapper<std::map<std::string, JSON>>{nullptr};
 }
 
 JSON::JSONWrapper<std::deque<JSON>> JSON::arrayRange()
 {
     if (Type::array == type)
     {
-        return JSONWrapper<std::deque<JSON>>(data.list);
+        return JSONWrapper<std::deque<JSON>>{data.list};
     }
-    return JSONWrapper<std::deque<JSON>>(nullptr);
+    return JSONWrapper<std::deque<JSON>>{nullptr};
 }
 
 JSON::JSONConstWrapper<std::map<std::string, JSON>> JSON::objectRange() const
 {
     if (Type::object == type)
     {
-        return JSONConstWrapper<std::map<std::string, JSON>>(data.map);
+        return JSONConstWrapper<std::map<std::string, JSON>>{data.map};
     }
-    return JSONConstWrapper<std::map<std::string, JSON>>(nullptr);
+    return JSONConstWrapper<std::map<std::string, JSON>>{nullptr};
 }
 
 JSON::JSONConstWrapper<std::deque<JSON>> JSON::arrayRange() const
 {
     if (Type::array == type)
     {
-        return JSONConstWrapper<std::deque<JSON>>(data.list);
+        return JSONConstWrapper<std::deque<JSON>>{data.list};
     }
-    return JSONConstWrapper<std::deque<JSON>>(nullptr);
+    return JSONConstWrapper<std::deque<JSON>>{nullptr};
 }
 
 std::string JSON::dump(const std::uint32_t depth, const std::string& tab) const
@@ -899,13 +899,13 @@ void JSON::setType(const JSON::Type t)
             data.map = nullptr;
             break;
         case Type::object:
-            data.map = new std::map<std::string, JSON>();
+            data.map = new std::map<std::string, JSON>{};
             break;
         case Type::array:
-            data.list = new std::deque<JSON>();
+            data.list = new std::deque<JSON>{};
             break;
         case Type::string:
-            data.string = new std::string();
+            data.string = new std::string{};
             break;
         case Type::floating:
             data.floating = 0.0;

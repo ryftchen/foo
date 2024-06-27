@@ -209,7 +209,7 @@ class Task:
     def build_executable(self, build_cmd):
         stdout, stderr, return_code = common.execute_command(build_cmd)
         if stderr or return_code != 0:
-            print(f"\r\n[STDOUT]\n{stdout}\n[STDERR]\n{stderr}\n[RETURN CODE]\n{return_code}")
+            print(f"\n[STDOUT]\n{stdout}\n[STDERR]\n{stderr}\n[RETURN CODE]\n{return_code}")
             Output.exit_with_error(f"Failed to run shell script {self.build_script} file.")
         else:
             print(stdout)
@@ -306,7 +306,7 @@ class Task:
 
         stdout, stderr, return_code = common.execute_command(full_cmd, enter)
         if len(stdout.strip()) == 0 or stderr or return_code != 0:
-            print(f"\r\n[STDOUT]\n{stdout}\n[STDERR]\n{stderr}\n[RETURN CODE]\n{return_code}")
+            print(f"\n[STDOUT]\n{stdout}\n[STDERR]\n{stderr}\n[RETURN CODE]\n{return_code}")
             Output.refresh_status(
                 Output.color["red"], f"{f'STAT: FAILURE NO.{str(self.complete_steps + 1)}':<{align_len}}"
             )
@@ -362,7 +362,7 @@ class Task:
 2>&1"
         )
         common.execute_command(f"rm -rf {self.cache_dir}/coverage/*.profraw {self.cache_dir}/coverage/*.profdata")
-        print(f"\r\n[CHECK COVERAGE]\n{stdout}")
+        print(f"\n[CHECK COVERAGE]\n{stdout}")
         if "error" in stdout:
             print("Please rebuild the executable file with the --check option.")
 
@@ -393,7 +393,7 @@ valgrind-ci {xml_filename}_inst_2.xml --summary"
 
         if "errors" in stdout:
             stdout = stdout.replace("\t", "    ")
-            print(f"\r\n[CHECK MEMORY]\n{stdout}")
+            print(f"\n[CHECK MEMORY]\n{stdout}")
             if inst_num == 1:
                 common.execute_command(
                     f"valgrind-ci {xml_filename}.xml --source-dir=./ \
@@ -414,7 +414,7 @@ valgrind-ci {xml_filename}_inst_2.xml --summary"
             )
         elif inst_num == 0 or inst_num > 2 or len(stderr) != 0:
             self.passed_steps -= 1
-            print("\r\n[CHECK MEMORY]\nUnsupported valgrind output xml file content.")
+            print("\n[CHECK MEMORY]\nUnsupported valgrind output xml file content.")
             Output.refresh_status(
                 Output.color["red"], f"{f'STAT: FAILURE NO.{str(self.complete_steps + 1)}':<{align_len}}"
             )

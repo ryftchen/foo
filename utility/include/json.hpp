@@ -73,7 +73,7 @@ public:
     //! @param s - string value
     template <typename T>
     JSON(const T s, typename std::enable_if<std::is_convertible<T, std::string>::value>::type* /*type*/ = nullptr) :
-        data(std::string(s)), type(Type::string)
+        data(std::string{s}), type(Type::string)
     {
     }
     //! @brief Construct a new JSON object.
@@ -326,7 +326,7 @@ public:
         explicit Data(const bool b) : boolean(b) {}
         //! @brief Construct a new Data object.
         //! @param s - string value
-        explicit Data(const std::string& s) : string(new std::string(s)) {}
+        explicit Data(const std::string& s) : string(new std::string{s}) {}
 
         //! @brief Pointer to the object or null value.
         std::map<std::string, JSON>* map;
@@ -361,7 +361,7 @@ template <typename T>
 typename std::enable_if<std::is_convertible<T, std::string>::value, JSON&>::type JSON::operator=(const T s)
 {
     setType(Type::string);
-    *data.string = std::string(s);
+    *data.string = std::string{s};
     return *this;
 }
 

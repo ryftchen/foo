@@ -596,7 +596,7 @@ Iterator Register::consume(Iterator start, Iterator end, const std::string_view 
     {
         return start;
     }
-    throw std::runtime_error("Too few arguments for '" + std::string(usedName) + "'.");
+    throw std::runtime_error("Too few arguments for '" + std::string{usedName} + "'.");
 }
 
 template <typename T>
@@ -867,7 +867,7 @@ T& Argument::at(const std::string_view name)
         {
             return subParserIter->second->get();
         }
-        throw std::logic_error("No such sub-parser: " + std::string(name) + '.');
+        throw std::logic_error("No such sub-parser: " + std::string{name} + '.');
     }
 }
 

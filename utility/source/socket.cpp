@@ -131,7 +131,7 @@ void TCPSocket::toConnect(const std::string& ip, const std::uint16_t port, const
     if (const int status = ::getaddrinfo(ip.c_str(), nullptr, &hints, &res); 0 != status)
     {
         throw std::runtime_error(
-            "Invalid address, status: " + std::string(::gai_strerror(status)) + ", errno: " + std::to_string(errno)
+            "Invalid address, status: " + std::string{::gai_strerror(status)} + ", errno: " + std::to_string(errno)
             + '.');
     }
 
@@ -305,7 +305,7 @@ int UDPSocket::toSendTo(
     if (const int status = ::getaddrinfo(ip.c_str(), nullptr, &hints, &res); 0 != status)
     {
         throw std::runtime_error(
-            "Invalid address, status: " + std::string(::gai_strerror(status)) + ", errno: " + std::to_string(errno)
+            "Invalid address, status: " + std::string{::gai_strerror(status)} + ", errno: " + std::to_string(errno)
             + '.');
     }
 
@@ -356,7 +356,7 @@ void UDPSocket::toConnect(const std::string& ip, const std::uint16_t port)
     if (const int status = ::getaddrinfo(ip.c_str(), nullptr, &hints, &res); 0 != status)
     {
         throw std::runtime_error(
-            "Invalid address, status: " + std::string(::gai_strerror(status)) + ", errno: " + std::to_string(errno)
+            "Invalid address, status: " + std::string{::gai_strerror(status)} + ", errno: " + std::to_string(errno)
             + '.');
     }
 

@@ -28,19 +28,19 @@ public:
     virtual ~Search() = default;
 
     //! @brief Binary.
-    //! @param array - array to be searched
+    //! @param array - ordered array to be searched
     //! @param length - length of array
     //! @param key - search key
     //! @return index of the first occurrence of key
     static std::int64_t binary(const T* const array, const std::uint32_t length, const T key);
     //! @brief Interpolation.
-    //! @param array - array to be searched
+    //! @param array - ordered array to be searched
     //! @param length - length of array
     //! @param key - search key
     //! @return index of the first occurrence of key
     static std::int64_t interpolation(const T* const array, const std::uint32_t length, const T key);
     //! @brief Fibonacci.
-    //! @param array - array to be searched
+    //! @param array - ordered array to be searched
     //! @param length - length of array
     //! @param key - search key
     //! @return index of the first occurrence of key
@@ -58,6 +58,10 @@ std::int64_t Search<T>::binary(const T* const array, const std::uint32_t length,
 {
     std::int64_t index = -1;
     std::uint32_t lower = 0, upper = length - 1;
+    if ((key < array[lower]) || (key > array[upper]))
+    {
+        return index;
+    }
 
     while (lower <= upper)
     {
@@ -85,8 +89,12 @@ std::int64_t Search<T>::interpolation(const T* const array, const std::uint32_t 
 {
     std::int64_t index = -1;
     std::uint32_t lower = 0, upper = length - 1;
+    if ((key < array[lower]) || (key > array[upper]))
+    {
+        return index;
+    }
 
-    while ((lower <= upper) && (key >= array[lower]) && (key <= array[upper]))
+    while (lower <= upper)
     {
         std::uint32_t mid = lower + (upper - lower) * ((key - array[lower]) / (array[upper] - array[lower]));
         if (key == array[mid])
@@ -111,13 +119,18 @@ template <class T>
 std::int64_t Search<T>::fibonacci(const T* const array, const std::uint32_t length, const T key)
 {
     std::int64_t index = -1;
+    std::uint32_t lower = 0, upper = length - 1;
+    if ((key < array[lower]) || (key > array[upper]))
+    {
+        return index;
+    }
     const auto& fib = generateFibonacciNumber(length);
     if (constexpr std::uint8_t minSize = 3; minSize > static_cast<std::int32_t>(fib.size() - 1))
     {
         throw std::runtime_error("An array size of " + std::to_string(length) + " is not sufficient.");
     }
 
-    std::uint32_t n = fib.size() - 1, lower = 0, upper = length - 1;
+    std::uint32_t n = fib.size() - 1;
     std::vector<T> complement(array, array + (fib[n] - 1));
     for (std::uint32_t i = upper; i < (fib[n] - 1); ++i)
     {
