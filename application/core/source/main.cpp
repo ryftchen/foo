@@ -36,7 +36,7 @@ try
 
     using command::Command, log::Log, view::View;
 
-    constexpr std::uint32_t childThdNum = 3;
+    constexpr std::uint8_t childThdNum = 3;
     auto threads = std::make_shared<utility::thread::Thread>(childThdNum);
     threads->enqueue("commander", &Command::execManager, &Command::getInstance(), argc, argv);
     if (CONFIG_ACTIVATE_HELPER)
