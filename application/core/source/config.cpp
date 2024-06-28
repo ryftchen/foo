@@ -228,7 +228,7 @@ static utility::json::JSON getDefaultConfiguration()
                 "required", viewerRequired
             }
         },
-        "helperTimeout", 100
+        "helperTimeout", 500
     });
     // clang-format on
     // NOLINTEND (readability-magic-numbers)

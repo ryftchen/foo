@@ -294,7 +294,7 @@ void View::waitForStart()
 
             if (timeoutPeriod == waitCounter)
             {
-                LOG_ERR << "The viewer did not start properly...";
+                LOG_ERR << "The viewer did not start properly in " << timeoutPeriod << "ms...";
                 expiryTimer.reset();
             }
         },
@@ -327,7 +327,7 @@ void View::waitForStop()
 
             if (timeoutPeriod == waitCounter)
             {
-                LOG_ERR << "The viewer did not stop properly...";
+                LOG_ERR << "The viewer did not stop properly in " << timeoutPeriod << "ms...";
                 expiryTimer.reset();
             }
         },
@@ -416,7 +416,7 @@ void View::outputAwait()
     }
     else
     {
-        constexpr std::uint16_t maxLatency = 100;
+        constexpr std::uint16_t maxLatency = 500;
         utility::time::millisecondLevelSleep(maxLatency);
     }
 }

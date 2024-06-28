@@ -51,13 +51,8 @@ enum ExtEvent : std::uint8_t
 //! @tparam Helper - target helper
 //! @param event - target event
 template <HelperType Helper>
-static void triggerHelper(const ExtEvent event)
+constexpr void triggerHelper(const ExtEvent event)
 {
-    if (!CONFIG_ACTIVATE_HELPER)
-    {
-        return;
-    }
-
     switch (event)
     {
         case ExtEvent::start:
@@ -72,6 +67,21 @@ static void triggerHelper(const ExtEvent event)
         default:
             break;
     }
+}
+
+//! @brief Trigger all external helpers with event.
+//! @param event - target event
+static void triggerAllHelpers(const ExtEvent event)
+{
+    if (!CONFIG_ACTIVATE_HELPER)
+    {
+        return;
+    }
+
+    constexpr std::uint8_t helperNum = 2;
+    auto threads = std::make_shared<utility::thread::Thread>(helperNum);
+    threads->enqueue("commander", &triggerHelper<log::Log>, event);
+    threads->enqueue("commander", &triggerHelper<view::View>, event);
 }
 
 Command::Command()
@@ -93,8 +103,7 @@ Command& Command::getInstance()
 void Command::execManager(const int argc, const char* const argv[])
 try
 {
-    triggerHelper<log::Log>(ExtEvent::start);
-    triggerHelper<view::View>(ExtEvent::start);
+    triggerAllHelpers(ExtEvent::start);
 
     if (1 == argc)
     {
@@ -102,14 +111,13 @@ try
     }
     else
     {
-        constexpr std::uint32_t childThdNum = 2;
-        auto threads = std::make_shared<utility::thread::Thread>(childThdNum);
+        constexpr std::uint8_t groundNum = 2;
+        auto threads = std::make_shared<utility::thread::Thread>(groundNum);
         threads->enqueue("commander-fg", &Command::foregroundHandler, this, argc, argv);
         threads->enqueue("commander-bg", &Command::backgroundHandler, this);
     }
 
-    triggerHelper<view::View>(ExtEvent::stop);
-    triggerHelper<log::Log>(ExtEvent::stop);
+    triggerAllHelpers(ExtEvent::stop);
 }
 catch (const std::exception& err)
 {

@@ -111,7 +111,7 @@ void Log::waitForStart()
 
             if (timeoutPeriod == waitCounter)
             {
-                LOG_ERR << "The logger did not start properly...";
+                LOG_ERR << "The logger did not start properly in " << timeoutPeriod << "ms...";
                 expiryTimer.reset();
             }
         },
@@ -144,7 +144,7 @@ void Log::waitForStop()
 
             if (timeoutPeriod == waitCounter)
             {
-                LOG_ERR << "The logger did not stop properly...";
+                LOG_ERR << "The logger did not stop properly in " << timeoutPeriod << "ms...";
                 expiryTimer.reset();
             }
         },
