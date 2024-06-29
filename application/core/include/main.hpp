@@ -134,7 +134,7 @@ static void signalHandler(int sig)
     if (signalStatus)
     {
         std::fprintf(
-            ::stdout, "%s: Last signal ever received: signal %d.\n", getExecutableName().c_str(), signalStatus);
+            ::stdout, "%s: Signal %d was the last signal received.\n", getExecutableName().c_str(), signalStatus);
     }
 }
 } // namespace application
