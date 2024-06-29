@@ -51,8 +51,13 @@ enum ExtEvent : std::uint8_t
 //! @tparam Helper - target helper
 //! @param event - target event
 template <HelperType Helper>
-constexpr void triggerHelper(const ExtEvent event)
+static void triggerHelper(const ExtEvent event)
 {
+    if (!CONFIG_ACTIVATE_HELPER)
+    {
+        return;
+    }
+
     switch (event)
     {
         case ExtEvent::start:
@@ -67,21 +72,6 @@ constexpr void triggerHelper(const ExtEvent event)
         default:
             break;
     }
-}
-
-//! @brief Trigger all external helpers with event.
-//! @param event - target event
-static void triggerAllHelpers(const ExtEvent event)
-{
-    if (!CONFIG_ACTIVATE_HELPER)
-    {
-        return;
-    }
-
-    constexpr std::uint8_t helperNum = 2;
-    auto threads = std::make_shared<utility::thread::Thread>(helperNum);
-    threads->enqueue("commander", &triggerHelper<log::Log>, event);
-    threads->enqueue("commander", &triggerHelper<view::View>, event);
 }
 
 Command::Command()
@@ -103,7 +93,8 @@ Command& Command::getInstance()
 void Command::execManager(const int argc, const char* const argv[])
 try
 {
-    triggerAllHelpers(ExtEvent::start);
+    triggerHelper<log::Log>(ExtEvent::start);
+    triggerHelper<view::View>(ExtEvent::start);
 
     if (1 == argc)
     {
@@ -117,7 +108,8 @@ try
         threads->enqueue("commander-bg", &Command::backgroundHandler, this);
     }
 
-    triggerAllHelpers(ExtEvent::stop);
+    triggerHelper<view::View>(ExtEvent::stop);
+    triggerHelper<log::Log>(ExtEvent::stop);
 }
 catch (const std::exception& err)
 {
