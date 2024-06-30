@@ -324,7 +324,7 @@ public:
 
         output.flush() << "\nminimum: " << getMinimum(root)->key;
         output.flush() << "\nmaximum: " << getMaximum(root)->key;
-        output.flush() << "\ntree verbose:\n";
+        output.flush() << "\ntree details:\n";
         output.printBSTree(root, root->key, 0);
 
         constexpr std::int16_t deleteNode = 3;
@@ -333,7 +333,7 @@ public:
 
         output.flush() << "\nin-order traversal: ";
         output.inorderBSTree(root);
-        output.flush() << "\ntree verbose:\n";
+        output.flush() << "\ntree details:\n";
         output.printBSTree(root, root->key, 0);
 
         destroyBSTree(root);
@@ -371,7 +371,7 @@ public:
         output.flush() << "\nheight: " << getHeight(root);
         output.flush() << "\nminimum: " << getMinimum(root)->key;
         output.flush() << "\nmaximum: " << getMaximum(root)->key;
-        output.flush() << "\ntree verbose:\n";
+        output.flush() << "\ntree details:\n";
         output.printAVLTree(root, root->key, 0);
 
         constexpr std::int16_t deleteNode = 8;
@@ -381,7 +381,7 @@ public:
         output.flush() << "\nheight: " << getHeight(root);
         output.flush() << "\nin-order traversal: ";
         output.inorderAVLTree(root);
-        output.flush() << "\ntree verbose:\n";
+        output.flush() << "\ntree details:\n";
         output.printAVLTree(root, root->key, 0);
 
         destroyAVLTree(root);
@@ -417,14 +417,14 @@ public:
 
         output.flush() << "\nminimum: " << getMinimum(root)->key;
         output.flush() << "\nmaximum: " << getMaximum(root)->key;
-        output.flush() << "\ntree verbose:\n";
+        output.flush() << "\ntree details:\n";
         output.printSplayTree(root, root->key, 0);
 
         constexpr std::int16_t splayNode = 30;
         output.flush() << "splay node as root node: " << splayNode;
         root = splayTreeSplay(root, splayNode);
 
-        output.flush() << "\ntree verbose:\n";
+        output.flush() << "\ntree details:\n";
         output.printSplayTree(root, root->key, 0);
 
         destroySplayTree(root);
