@@ -292,9 +292,10 @@ void runArithmeticTasks(const std::vector<std::string>& candidates)
         static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<ArithmeticMethod>::value)));
     const auto inputs = std::make_shared<InputBuilder>(integerA, integerB);
     const auto arithmeticFunctor =
-        [threads, inputs](const std::string& threadName, void (*methodPtr)(const std::int32_t, const std::int32_t))
+        [threads, inputs](const std::string& threadName, void (*targetMethod)(const std::int32_t, const std::int32_t))
     {
-        threads->enqueue(threadName, methodPtr, std::get<0>(inputs->getIntegers()), std::get<1>(inputs->getIntegers()));
+        threads->enqueue(
+            threadName, targetMethod, std::get<0>(inputs->getIntegers()), std::get<1>(inputs->getIntegers()));
     };
     const auto name = utility::currying::curry(getTaskNameCurried(), getCategoryAlias<category>());
 
@@ -420,9 +421,10 @@ void runDivisorTasks(const std::vector<std::string>& candidates)
         static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<DivisorMethod>::value)));
     const auto inputs = std::make_shared<InputBuilder>(integerA, integerB);
     const auto divisorFunctor =
-        [threads, inputs](const std::string& threadName, void (*methodPtr)(std::int32_t, std::int32_t))
+        [threads, inputs](const std::string& threadName, void (*targetMethod)(std::int32_t, std::int32_t))
     {
-        threads->enqueue(threadName, methodPtr, std::get<0>(inputs->getIntegers()), std::get<1>(inputs->getIntegers()));
+        threads->enqueue(
+            threadName, targetMethod, std::get<0>(inputs->getIntegers()), std::get<1>(inputs->getIntegers()));
     };
     const auto name = utility::currying::curry(getTaskNameCurried(), getCategoryAlias<category>());
 
@@ -571,9 +573,9 @@ void runIntegralTasks(const std::vector<std::string>& candidates)
             static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<IntegralMethod>::value)));
         const auto integralFunctor = [threads, &expression, &range](
                                          const std::string& threadName,
-                                         void (*methodPtr)(const integral::Expression&, const double, const double))
+                                         void (*targetMethod)(const integral::Expression&, const double, const double))
         {
-            threads->enqueue(threadName, methodPtr, std::ref(expression), range.range1, range.range2);
+            threads->enqueue(threadName, targetMethod, std::ref(expression), range.range1, range.range2);
         };
         const auto name = utility::currying::curry(getTaskNameCurried(), getCategoryAlias<category>());
 
@@ -723,9 +725,10 @@ void runPrimeTasks(const std::vector<std::string>& candidates)
     auto* const threads = pooling.newElement(
         std::min(static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<PrimeMethod>::value)));
     const auto inputs = std::make_shared<InputBuilder>(maxPositiveInteger);
-    const auto primeFunctor = [threads, inputs](const std::string& threadName, void (*methodPtr)(const std::uint32_t))
+    const auto primeFunctor =
+        [threads, inputs](const std::string& threadName, void (*targetMethod)(const std::uint32_t))
     {
-        threads->enqueue(threadName, methodPtr, inputs->getMaxPositiveInteger());
+        threads->enqueue(threadName, targetMethod, inputs->getMaxPositiveInteger());
     };
     const auto name = utility::currying::curry(getTaskNameCurried(), getCategoryAlias<category>());
 

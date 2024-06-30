@@ -227,9 +227,9 @@ void runLinearTasks(const std::vector<std::string>& candidates)
     auto& pooling = command::getPublicThreadPool();
     auto* const threads = pooling.newElement(std::min(
         static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<LinearInstance>::value)));
-    const auto linearFunctor = [threads](const std::string& threadName, void (*instancePtr)())
+    const auto linearFunctor = [threads](const std::string& threadName, void (*targetInstance)())
     {
-        threads->enqueue(threadName, instancePtr);
+        threads->enqueue(threadName, targetInstance);
     };
     const auto name = utility::currying::curry(getTaskNameCurried(), getCategoryAlias<category>());
 
@@ -348,9 +348,9 @@ void runTreeTasks(const std::vector<std::string>& candidates)
     auto& pooling = command::getPublicThreadPool();
     auto* const threads = pooling.newElement(
         std::min(static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<TreeInstance>::value)));
-    const auto treeFunctor = [threads](const std::string& threadName, void (*instancePtr)())
+    const auto treeFunctor = [threads](const std::string& threadName, void (*targetInstance)())
     {
-        threads->enqueue(threadName, instancePtr);
+        threads->enqueue(threadName, targetInstance);
     };
     const auto name = utility::currying::curry(getTaskNameCurried(), getCategoryAlias<category>());
 

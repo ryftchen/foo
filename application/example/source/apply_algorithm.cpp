@@ -378,12 +378,12 @@ void runMatchTasks(const std::vector<std::string>& candidates)
     const auto matchFunctor =
         [threads, inputs](
             const std::string& threadName,
-            void (*methodPtr)(
+            void (*targetMethod)(
                 const unsigned char* const, const unsigned char* const, const std::uint32_t, const std::uint32_t))
     {
         threads->enqueue(
             threadName,
-            methodPtr,
+            targetMethod,
             inputs->getMatchingText().get(),
             inputs->getSinglePattern().get(),
             inputs->getTextLength(),
@@ -508,9 +508,10 @@ void runNotationTasks(const std::vector<std::string>& candidates)
     auto* const threads = pooling.newElement(std::min(
         static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<NotationMethod>::value)));
     const auto inputs = std::make_shared<InputBuilder>(infixString);
-    const auto notationFunctor = [threads, inputs](const std::string& threadName, void (*methodPtr)(const std::string&))
+    const auto notationFunctor =
+        [threads, inputs](const std::string& threadName, void (*targetMethod)(const std::string&))
     {
-        threads->enqueue(threadName, methodPtr, std::string{inputs->getInfixNotation()});
+        threads->enqueue(threadName, targetMethod, std::string{inputs->getInfixNotation()});
     };
     const auto name = utility::currying::curry(getTaskNameCurried(), getCategoryAlias<category>());
 
@@ -661,11 +662,11 @@ void runOptimalTasks(const std::vector<std::string>& candidates)
         auto& pooling = command::getPublicThreadPool();
         auto* const threads = pooling.newElement(std::min(
             static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<OptimalMethod>::value)));
-        const auto optimalFunctor =
-            [threads, &function, &range](
-                const std::string& threadName, void (*methodPtr)(const optimal::Function&, const double, const double))
+        const auto optimalFunctor = [threads, &function, &range](
+                                        const std::string& threadName,
+                                        void (*targetMethod)(const optimal::Function&, const double, const double))
         {
-            threads->enqueue(threadName, methodPtr, std::ref(function), range.range1, range.range2);
+            threads->enqueue(threadName, targetMethod, std::ref(function), range.range1, range.range2);
         };
         const auto name = utility::currying::curry(getTaskNameCurried(), getCategoryAlias<category>());
 
@@ -837,11 +838,11 @@ void runSearchTasks(const std::vector<std::string>& candidates)
         std::min(static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<SearchMethod>::value)));
     const auto inputs = std::make_shared<InputBuilder<float>>(arrayLength, arrayRange1, arrayRange2);
     const auto searchFunctor =
-        [threads,
-         inputs](const std::string& threadName, void (*methodPtr)(const float* const, const std::uint32_t, const float))
+        [threads, inputs](
+            const std::string& threadName, void (*targetMethod)(const float* const, const std::uint32_t, const float))
     {
         threads->enqueue(
-            threadName, methodPtr, inputs->getOrderedArray().get(), inputs->getLength(), inputs->getSearchKey());
+            threadName, targetMethod, inputs->getOrderedArray().get(), inputs->getLength(), inputs->getSearchKey());
     };
     const auto name = utility::currying::curry(getTaskNameCurried(), getCategoryAlias<category>());
 
@@ -1069,9 +1070,9 @@ void runSortTasks(const std::vector<std::string>& candidates)
     const auto inputs = std::make_shared<InputBuilder<std::int32_t>>(arrayLength, arrayRange1, arrayRange2);
     const auto sortFunctor =
         [threads,
-         inputs](const std::string& threadName, void (*methodPtr)(const std::int32_t* const, const std::uint32_t))
+         inputs](const std::string& threadName, void (*targetMethod)(const std::int32_t* const, const std::uint32_t))
     {
-        threads->enqueue(threadName, methodPtr, inputs->getRandomArray().get(), inputs->getLength());
+        threads->enqueue(threadName, targetMethod, inputs->getRandomArray().get(), inputs->getLength());
     };
     const auto name = utility::currying::curry(getTaskNameCurried(), getCategoryAlias<category>());
 

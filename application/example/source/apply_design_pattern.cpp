@@ -350,9 +350,9 @@ void runBehavioralTasks(const std::vector<std::string>& candidates)
     auto& pooling = command::getPublicThreadPool();
     auto* const threads = pooling.newElement(std::min(
         static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<BehavioralInstance>::value)));
-    const auto behavioralFunctor = [threads](const std::string& threadName, void (*instancePtr)())
+    const auto behavioralFunctor = [threads](const std::string& threadName, void (*targetInstance)())
     {
-        threads->enqueue(threadName, instancePtr);
+        threads->enqueue(threadName, targetInstance);
     };
     const auto name = utility::currying::curry(getTaskNameCurried(), getCategoryAlias<category>());
 
@@ -541,9 +541,9 @@ void runCreationalTasks(const std::vector<std::string>& candidates)
     auto& pooling = command::getPublicThreadPool();
     auto* const threads = pooling.newElement(std::min(
         static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<CreationalInstance>::value)));
-    const auto creationalFunctor = [threads](const std::string& threadName, void (*instancePtr)())
+    const auto creationalFunctor = [threads](const std::string& threadName, void (*targetInstance)())
     {
-        threads->enqueue(threadName, instancePtr);
+        threads->enqueue(threadName, targetInstance);
     };
     const auto name = utility::currying::curry(getTaskNameCurried(), getCategoryAlias<category>());
 
@@ -718,9 +718,9 @@ void runStructuralTasks(const std::vector<std::string>& candidates)
     auto& pooling = command::getPublicThreadPool();
     auto* const threads = pooling.newElement(std::min(
         static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<StructuralInstance>::value)));
-    const auto structuralFunctor = [threads](const std::string& threadName, void (*instancePtr)())
+    const auto structuralFunctor = [threads](const std::string& threadName, void (*targetInstance)())
     {
-        threads->enqueue(threadName, instancePtr);
+        threads->enqueue(threadName, targetInstance);
     };
     const auto name = utility::currying::curry(getTaskNameCurried(), getCategoryAlias<category>());
 
