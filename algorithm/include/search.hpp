@@ -137,7 +137,7 @@ std::int64_t Search<T>::fibonacci(const T* const array, const std::uint32_t leng
         complement[i] = array[upper];
     }
 
-    while (lower <= upper)
+    while ((lower <= upper) && (n >= 1))
     {
         std::uint32_t mid = lower + fib[n - 1] - 1;
         if (complement[mid] > key)
