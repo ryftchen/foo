@@ -270,6 +270,7 @@ public:
         TST_ALGO_PRINT_TASK_TITLE(Category::search, "BEGIN");
         inputs = std::make_shared<search::InputBuilder<float>>(
             search::input::arrayLength, search::input::arrayRange1, search::input::arrayRange2);
+        updateExpCntr();
     }
     //! @brief Tear down the test case.
     static void TearDownTestCase()
@@ -284,34 +285,48 @@ public:
 
     //! @brief Input builder.
     static std::shared_ptr<search::InputBuilder<float>> inputs;
+    //! @brief Expected result.
+    static std::set<std::int64_t> expCntr;
+    //! @brief Update expected result.
+    static void updateExpCntr()
+    {
+        if (nullptr != inputs)
+        {
+            const auto* const orderedArray = inputs->getOrderedArray().get();
+            const auto length = inputs->getLength();
+            const auto searchKey = inputs->getSearchKey();
+            for (std::uint32_t i = 0; i < length; ++i)
+            {
+                if (searchKey == orderedArray[i])
+                {
+                    expCntr.emplace(i);
+                }
+            }
+        }
+    }
 };
 std::shared_ptr<search::InputBuilder<float>> SearchTestBase::inputs = nullptr;
+std::set<std::int64_t> SearchTestBase::expCntr = {};
 
 //! @brief Test for the binary method in the solution of search.
 TEST_F(SearchTestBase, binaryMethod)
 {
-    ASSERT_EQ(
-        inputs->getLength() / 2,
-        algorithm::search::Search<float>::binary(
-            inputs->getOrderedArray().get(), inputs->getLength(), inputs->getSearchKey()));
+    ASSERT_TRUE(expCntr.contains(algorithm::search::Search<float>::binary(
+        inputs->getOrderedArray().get(), inputs->getLength(), inputs->getSearchKey())));
 }
 
 //! @brief Test for the interpolation method in the solution of search.
 TEST_F(SearchTestBase, interpolationMethod)
 {
-    ASSERT_EQ(
-        inputs->getLength() / 2,
-        algorithm::search::Search<float>::interpolation(
-            inputs->getOrderedArray().get(), inputs->getLength(), inputs->getSearchKey()));
+    ASSERT_TRUE(expCntr.contains(algorithm::search::Search<float>::interpolation(
+        inputs->getOrderedArray().get(), inputs->getLength(), inputs->getSearchKey())));
 }
 
 //! @brief Test for the Fibonacci method in the solution of search.
 TEST_F(SearchTestBase, fibonacciMethod)
 {
-    ASSERT_EQ(
-        inputs->getLength() / 2,
-        algorithm::search::Search<float>::fibonacci(
-            inputs->getOrderedArray().get(), inputs->getLength(), inputs->getSearchKey()));
+    ASSERT_TRUE(expCntr.contains(algorithm::search::Search<float>::fibonacci(
+        inputs->getOrderedArray().get(), inputs->getLength(), inputs->getSearchKey())));
 }
 
 //! @brief Test base of sort.
@@ -329,9 +344,7 @@ public:
         TST_ALGO_PRINT_TASK_TITLE(Category::sort, "BEGIN");
         inputs = std::make_shared<sort::InputBuilder<std::int32_t>>(
             sort::input::arrayLength, sort::input::arrayRange1, sort::input::arrayRange2);
-        expCntr = std::vector<std::int32_t>(
-            inputs->getRandomArray().get(), inputs->getRandomArray().get() + inputs->getLength());
-        std::sort(expCntr.begin(), expCntr.end());
+        updateExpCntr();
     }
     //! @brief Tear down the test case.
     static void TearDownTestCase()
@@ -348,6 +361,16 @@ public:
     static std::shared_ptr<sort::InputBuilder<std::int32_t>> inputs;
     //! @brief Expected result.
     static std::vector<std::int32_t> expCntr;
+    //! @brief Update expected result.
+    static void updateExpCntr()
+    {
+        if (nullptr != inputs)
+        {
+            expCntr = std::vector<std::int32_t>(
+                inputs->getRandomArray().get(), inputs->getRandomArray().get() + inputs->getLength());
+            std::sort(expCntr.begin(), expCntr.end());
+        }
+    }
 };
 std::shared_ptr<sort::InputBuilder<std::int32_t>> SortTestBase::inputs = nullptr;
 std::vector<std::int32_t> SortTestBase::expCntr = {};
