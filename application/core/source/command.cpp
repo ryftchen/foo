@@ -701,13 +701,13 @@ try
         try
         {
             retVal = console.readCommandLine();
-            console.setGreeting(greeting);
         }
         catch (const std::exception& err)
         {
             LOG_WRN << err.what();
-            utility::time::millisecondLevelSleep(latency);
         }
+        console.setGreeting(greeting);
+        utility::time::millisecondLevelSleep(latency);
     }
     while (quit != retVal);
 

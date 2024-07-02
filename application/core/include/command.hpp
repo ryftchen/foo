@@ -364,6 +364,7 @@ extern PublicThreadPool& getPublicThreadPool();
             }                                           \
         }                                               \
     }
+
 //! @brief Static reflection for AlgorithmTask. Mapping to regular tasks.
 template <>
 struct utility::reflection::TypeInfo<application::app_algo::AlgorithmTask>
@@ -717,5 +718,6 @@ struct utility::reflection::TypeInfo<application::app_num::PrimeMethod>
     //! @brief Attribute list.
     static constexpr AttrList attrs{};
 };
+
 #undef COMMAND_REFLECT_SUB_CLI_FIELD
 #undef COMMAND_REFLECT_TASK_FIELD
