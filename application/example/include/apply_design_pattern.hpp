@@ -174,6 +174,8 @@ extern DesignPatternTask& getTask();
 //! @brief Apply behavioral.
 namespace behavioral
 {
+//! @brief The version used to apply.
+const char* const version = design_pattern::behavioral::version();
 //! @brief Behavioral instances.
 class Behavioral
 {
@@ -433,6 +435,8 @@ extern void updateBehavioralTask(const std::string& target);
 //! @brief Apply creational.
 namespace creational
 {
+//! @brief The version used to apply.
+const char* const version = design_pattern::creational::version();
 //! @brief Creational instances.
 class Creational
 {
@@ -574,6 +578,8 @@ extern void updateCreationalTask(const std::string& target);
 //! @brief Apply structural.
 namespace structural
 {
+//! @brief The version used to apply.
+const char* const version = design_pattern::structural::version();
 //! @brief Structural instances.
 class Structural
 {

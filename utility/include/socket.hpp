@@ -15,7 +15,7 @@ namespace utility // NOLINT (modernize-concat-nested-namespaces)
 //! @brief Network-socket-related functions in the utility module.
 namespace socket
 {
-extern const char* version();
+extern const char* version() noexcept;
 
 //! @brief Network socket.
 class Socket

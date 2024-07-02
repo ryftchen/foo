@@ -15,7 +15,7 @@ namespace utility::argument
 {
 //! @brief Function version number.
 //! @return version number (major.minor.patch)
-const char* version()
+const char* version() noexcept
 {
     static const char* const ver = "0.1.0";
     return ver;
@@ -334,8 +334,8 @@ std::ostream& operator<<(std::ostream& os, const Register& reg)
 }
 
 Argument::Argument(const Argument& arg) :
-    title(arg.title),
-    version(arg.version),
+    titleName(arg.titleName),
+    versionNumber(arg.versionNumber),
     descrText(arg.descrText),
     prefixChars(arg.prefixChars),
     assignChars(arg.assignChars),
@@ -355,8 +355,8 @@ Argument::Argument(const Argument& arg) :
     }
     for (auto iterator = std::begin(subParsers); std::end(subParsers) != iterator; ++iterator)
     {
-        subParserMap.insert_or_assign(iterator->get().title, iterator);
-        subParserUsed.insert_or_assign(iterator->get().title, false);
+        subParserMap.insert_or_assign(iterator->get().titleName, iterator);
+        subParserUsed.insert_or_assign(iterator->get().titleName, false);
     }
 }
 
@@ -442,6 +442,16 @@ Register& Argument::operator[](const std::string_view argName) const
     throw std::logic_error("No such argument: " + std::string{argName} + '.');
 }
 
+std::string Argument::title() const
+{
+    return titleName;
+}
+
+std::string Argument::version() const
+{
+    return versionNumber;
+}
+
 std::ostringstream Argument::help() const
 {
     std::ostringstream out;
@@ -452,7 +462,7 @@ std::ostringstream Argument::help() const
 std::string Argument::usage() const
 {
     std::ostringstream stream;
-    stream << "usage: " << ((parserPath.find(' ' + title) == std::string::npos) ? title : parserPath);
+    stream << "usage: " << ((parserPath.find(' ' + titleName) == std::string::npos) ? titleName : parserPath);
 
     for (const auto& argument : optionalArguments)
     {
@@ -492,10 +502,10 @@ std::string Argument::usage() const
 
 void Argument::addSubParser(Argument& parser)
 {
-    parser.parserPath = title + ' ' + parser.title;
+    parser.parserPath = titleName + ' ' + parser.titleName;
     auto iterator = subParsers.emplace(std::cend(subParsers), parser);
-    subParserMap.insert_or_assign(parser.title, iterator);
-    subParserUsed.insert_or_assign(parser.title, false);
+    subParserMap.insert_or_assign(parser.titleName, iterator);
+    subParserUsed.insert_or_assign(parser.titleName, false);
 }
 
 bool Argument::isValidPrefixChar(const char c) const
@@ -555,9 +565,9 @@ std::vector<std::string> Argument::preprocessArguments(const std::vector<std::st
 void Argument::parseArgsInternal(const std::vector<std::string>& rawArguments)
 {
     const auto arguments = preprocessArguments(rawArguments);
-    if (title.empty() && !arguments.empty())
+    if (titleName.empty() && !arguments.empty())
     {
-        title = arguments.front();
+        titleName = arguments.front();
     }
 
     const auto end = std::cend(arguments);

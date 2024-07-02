@@ -16,7 +16,7 @@ namespace utility // NOLINT (modernize-concat-nested-namespaces)
 //! @brief JSON-related functions in the utility module.
 namespace json
 {
-extern const char* version();
+extern const char* version() noexcept;
 
 //! @brief Javascript object notation.
 class JSON

@@ -17,7 +17,7 @@ namespace utility // NOLINT (modernize-concat-nested-namespaces)
 //! @brief Console-mode-related functions in the utility module.
 namespace console
 {
-extern const char* version();
+extern const char* version() noexcept;
 
 //! @brief Console mode.
 class Console

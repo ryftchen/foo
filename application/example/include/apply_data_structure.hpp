@@ -118,6 +118,8 @@ extern DataStructureTask& getTask();
 //! @brief Apply linear.
 namespace linear
 {
+//! @brief The version used to apply.
+const char* const version = date_structure::linear::version();
 //! @brief Metadata, which is used in the instance.
 struct Meta
 {
@@ -126,7 +128,6 @@ struct Meta
     //! @brief Name of the metadata.
     char name[4]{};
 };
-
 //! @brief Linear instances.
 class Linear
 {
@@ -289,6 +290,8 @@ extern void updateLinearTask(const std::string& target);
 //! @brief Apply tree.
 namespace tree
 {
+//! @brief The version used to apply.
+const char* const version = date_structure::tree::version();
 //! @brief Tree instances.
 class Tree
 {

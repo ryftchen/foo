@@ -14,7 +14,7 @@ namespace date_structure // NOLINT (modernize-concat-nested-namespaces)
 //! @brief Tree-related functions in the data structure module.
 namespace tree
 {
-extern const char* version();
+extern const char* version() noexcept;
 
 //! @brief The binary search tree structure.
 namespace bs

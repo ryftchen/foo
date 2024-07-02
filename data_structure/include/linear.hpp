@@ -14,7 +14,7 @@ namespace date_structure // NOLINT (modernize-concat-nested-namespaces)
 //! @brief Linear-related functions in the data structure module.
 namespace linear
 {
-extern const char* version();
+extern const char* version() noexcept;
 
 //! @brief The doubly linked list structure.
 namespace doubly_linked_list

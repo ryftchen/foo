@@ -12,7 +12,7 @@ namespace algorithm::match
 {
 //! @brief Function version number.
 //! @return version number (major.minor.patch)
-const char* version()
+const char* version() noexcept
 {
     static const char* const ver = "0.1.0";
     return ver;

@@ -15,7 +15,7 @@ namespace utility // NOLINT (modernize-concat-nested-namespaces)
 //! @brief Memory-pool-related functions in the utility module.
 namespace memory
 {
-extern const char* version();
+extern const char* version() noexcept;
 
 //! @brief Memory pool.
 //! @tparam T - type of object to allocate

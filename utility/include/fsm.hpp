@@ -14,7 +14,7 @@ namespace utility // NOLINT (modernize-concat-nested-namespaces)
 //! @brief Finite-state-machine-related functions in the utility module.
 namespace fsm
 {
-extern const char* version();
+extern const char* version() noexcept;
 
 //! @brief Alias for invoke result.
 //! @tparam Func - type of callable function

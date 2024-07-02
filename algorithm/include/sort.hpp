@@ -8,9 +8,9 @@
 
 #include <algorithm>
 #include <cmath>
-#include <cstring>
-#include <memory>
+#include <cstdint>
 #include <queue>
+#include <stdexcept>
 
 //! @brief The algorithm module.
 namespace algorithm // NOLINT (modernize-concat-nested-namespaces)
@@ -18,7 +18,7 @@ namespace algorithm // NOLINT (modernize-concat-nested-namespaces)
 //! @brief Sort-related functions in the algorithm module.
 namespace sort
 {
-extern const char* version();
+extern const char* version() noexcept;
 
 //! @brief Sort methods.
 //! @tparam T - type of sort methods

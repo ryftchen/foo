@@ -7,7 +7,8 @@
 #pragma once
 
 #include <cmath>
-#include <memory>
+#include <cstdint>
+#include <stdexcept>
 #include <vector>
 
 //! @brief The algorithm module.
@@ -16,7 +17,7 @@ namespace algorithm // NOLINT (modernize-concat-nested-namespaces)
 //! @brief Search-related functions in the algorithm module.
 namespace search
 {
-extern const char* version();
+extern const char* version() noexcept;
 
 //! @brief Search methods.
 //! @tparam T - type of search methods

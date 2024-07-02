@@ -16,7 +16,7 @@ namespace utility // NOLINT (modernize-concat-nested-namespaces)
 //! @brief Thread-pool-related functions in the utility module.
 namespace thread
 {
-extern const char* version();
+extern const char* version() noexcept;
 
 //! @brief Thread pool.
 class Thread

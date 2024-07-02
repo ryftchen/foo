@@ -232,6 +232,8 @@ extern AlgorithmTask& getTask();
 //! @brief Apply match.
 namespace match
 {
+//! @brief The version used to apply.
+const char* const version = algorithm::match::version();
 //! @brief Set input parameters.
 namespace input
 {
@@ -412,6 +414,8 @@ extern void updateMatchTask(const std::string& target);
 //! @brief Apply notation.
 namespace notation
 {
+//! @brief The version used to apply.
+const char* const version = algorithm::notation::version();
 //! @brief Set input parameters.
 namespace input
 {
@@ -464,6 +468,8 @@ extern void updateNotationTask(const std::string& target);
 //! @brief Apply optimal.
 namespace optimal
 {
+//! @brief The version used to apply.
+const char* const version = algorithm::optimal::version();
 //! @brief Set input parameters.
 namespace input
 {
@@ -659,6 +665,8 @@ extern void updateOptimalTask(const std::string& target);
 //! @brief Apply search.
 namespace search
 {
+//! @brief The version used to apply.
+const char* const version = algorithm::search::version();
 //! @brief Set input parameters.
 namespace input
 {
@@ -877,6 +885,8 @@ extern void updateSearchTask(const std::string& target);
 //! @brief Apply sort.
 namespace sort
 {
+//! @brief The version used to apply.
+const char* const version = algorithm::sort::version();
 //! @brief Set input parameters.
 namespace input
 {
