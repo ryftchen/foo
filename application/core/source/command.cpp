@@ -142,8 +142,8 @@ void Command::initializeCLI()
         .help("run commands in console mode and exit\n"
               "separate with quotes");
 
-    const auto& algoTable = regularTaskDispatcher.at(subCLIAppAlgo.title);
-    const auto& algoAlias = filterAliasUnderSubCLI<app_algo::AlgorithmTask>(subCLIAppAlgo.title);
+    const auto& algoTable = regularTaskDispatcher.at(subCLIAppAlgo.title());
+    const auto& algoAlias = filterAliasUnderSubCLI<app_algo::AlgorithmTask>(subCLIAppAlgo.title());
     subCLIAppAlgo.addDescription("apply algorithm");
     subCLIAppAlgo.addArgument("-h", "--help").argsNum(0).implicitVal(true).help("show help and exit");
     auto algoCategory = std::string{TypeInfo<app_algo::MatchMethod>::name};
@@ -212,8 +212,8 @@ void Command::initializeCLI()
               "add the tasks listed above");
     mainCLI.addSubParser(subCLIAppAlgo);
 
-    const auto& dpTable = regularTaskDispatcher.at(subCLIAppDp.title);
-    const auto& dpAlias = filterAliasUnderSubCLI<app_dp::DesignPatternTask>(subCLIAppDp.title);
+    const auto& dpTable = regularTaskDispatcher.at(subCLIAppDp.title());
+    const auto& dpAlias = filterAliasUnderSubCLI<app_dp::DesignPatternTask>(subCLIAppDp.title());
     subCLIAppDp.addDescription("apply design pattern");
     subCLIAppDp.addArgument("-h", "--help").argsNum(0).implicitVal(true).help("show help and exit");
     auto dpCategory = std::string{TypeInfo<app_dp::BehavioralInstance>::name};
@@ -265,8 +265,8 @@ void Command::initializeCLI()
               "add the tasks listed above");
     mainCLI.addSubParser(subCLIAppDp);
 
-    const auto& dsTable = regularTaskDispatcher.at(subCLIAppDs.title);
-    const auto& dsAlias = filterAliasUnderSubCLI<app_ds::DataStructureTask>(subCLIAppDs.title);
+    const auto& dsTable = regularTaskDispatcher.at(subCLIAppDs.title());
+    const auto& dsAlias = filterAliasUnderSubCLI<app_ds::DataStructureTask>(subCLIAppDs.title());
     subCLIAppDs.addDescription("apply data structure");
     subCLIAppDs.addArgument("-h", "--help").argsNum(0).implicitVal(true).help("show help and exit");
     auto dsCategory = std::string{TypeInfo<app_ds::LinearInstance>::name};
@@ -293,8 +293,8 @@ void Command::initializeCLI()
               "add the tasks listed above");
     mainCLI.addSubParser(subCLIAppDs);
 
-    const auto& numTable = regularTaskDispatcher.at(subCLIAppNum.title);
-    const auto& numAlias = filterAliasUnderSubCLI<app_num::NumericTask>(subCLIAppNum.title);
+    const auto& numTable = regularTaskDispatcher.at(subCLIAppNum.title());
+    const auto& numAlias = filterAliasUnderSubCLI<app_num::NumericTask>(subCLIAppNum.title());
     subCLIAppNum.addDescription("apply numeric");
     subCLIAppNum.addArgument("-h", "--help").argsNum(0).implicitVal(true).help("show help and exit");
     auto numCategory = std::string{TypeInfo<app_num::ArithmeticMethod>::name};
@@ -648,7 +648,7 @@ void Command::showVersionIcon() const
 #else
         "          RELEASE VERSION "
 #endif // NDEBUG
-        + mainCLI.version + " ' ; tput sgr0 ; echo ; " + description;
+        + mainCLI.version() + " ' ; tput sgr0 ; echo ; " + description;
 
     std::cout << utility::common::executeCommand(fullIcon) << std::flush;
 }
@@ -816,7 +816,7 @@ void Command::validateDependenciesVersion() const
     using utility::common::allStrEqual;
 
     if (!allStrEqual(
-            mainCLI.version.data(),
+            mainCLI.version().data(),
             utility::argument::version(),
             utility::common::version(),
             utility::console::version(),
@@ -830,30 +830,30 @@ void Command::validateDependenciesVersion() const
             utility::thread::version(),
             utility::time::version())
         || !allStrEqual(
-            subCLIAppAlgo.version.data(),
-            algorithm::match::version(),
-            algorithm::notation::version(),
-            algorithm::optimal::version(),
-            algorithm::search::version(),
-            algorithm::sort::version())
+            subCLIAppAlgo.version().data(),
+            app_algo::match::version,
+            app_algo::notation::version,
+            app_algo::optimal::version,
+            app_algo::search::version,
+            app_algo::sort::version)
         || !allStrEqual(
-            subCLIAppDp.version.data(),
-            design_pattern::behavioral::version(),
-            design_pattern::creational::version(),
-            design_pattern::structural::version())
-        || !allStrEqual(subCLIAppDs.version.data(), date_structure::linear::version(), date_structure::tree::version())
+            subCLIAppDp.version().data(),
+            app_dp::behavioral::version,
+            app_dp::creational::version,
+            app_dp::structural::version)
+        || !allStrEqual(subCLIAppDs.version().data(), app_ds::linear::version, app_ds::tree::version)
         || !allStrEqual(
-            subCLIAppNum.version.data(),
-            numeric::arithmetic::version(),
-            numeric::divisor::version(),
-            numeric::integral::version(),
-            numeric::prime::version()))
+            subCLIAppNum.version().data(),
+            app_num::arithmetic::version,
+            app_num::divisor::version,
+            app_num::integral::version,
+            app_num::prime::version))
     {
         throw std::runtime_error(
-            "Dependencies version number mismatch. Expected main version: " + mainCLI.title + " (" + mainCLI.version
-            + "), sub-version: " + subCLIAppAlgo.title + " (" + subCLIAppAlgo.version + "), " + subCLIAppDp.title + " ("
-            + subCLIAppDp.version + "), " + subCLIAppDs.title + " (" + subCLIAppDs.version + "), " + subCLIAppNum.title
-            + " (" + subCLIAppNum.version + ").");
+            "Dependencies version number mismatch. Expected main version: " + mainCLI.title() + " (" + mainCLI.version()
+            + "), sub-version: " + subCLIAppAlgo.title() + " (" + subCLIAppAlgo.version() + "), " + subCLIAppDp.title()
+            + " (" + subCLIAppDp.version() + "), " + subCLIAppDs.title() + " (" + subCLIAppDs.version() + "), "
+            + subCLIAppNum.title() + " (" + subCLIAppNum.version() + ").");
     }
 }
 

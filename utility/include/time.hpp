@@ -23,7 +23,7 @@ namespace utility // NOLINT (modernize-concat-nested-namespaces)
 //! @brief Timing-related functions in the utility module.
 namespace time
 {
-extern const char* version();
+extern const char* version() noexcept;
 
 //! @brief Timing.
 class Time

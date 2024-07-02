@@ -15,7 +15,7 @@ namespace utility // NOLINT (modernize-concat-nested-namespaces)
 //! @brief Currying-related functions in the utility module.
 namespace currying
 {
-extern const char* version();
+extern const char* version() noexcept;
 
 //! @brief Alias for tuple concat result.
 //! @tparam Tuples - type of tuples

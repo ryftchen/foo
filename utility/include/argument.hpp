@@ -21,7 +21,7 @@ namespace utility // NOLINT (modernize-concat-nested-namespaces)
 //! @brief Argument-parsing-related functions in the utility module.
 namespace argument
 {
-extern const char* version();
+extern const char* version() noexcept;
 
 //! @brief Confirm container traits. Value is false.
 //! @tparam T - type to be confirmed
@@ -697,9 +697,9 @@ class Argument
 public:
     //! @brief Construct a new Argument object.
     //! @param title - title name
-    //! @param version - version information
+    //! @param version - version number
     explicit Argument(const std::string& title = {}, const std::string& version = "1.0.0") :
-        title(title), version(version), parserPath(title)
+        titleName(title), versionNumber(version), parserPath(title)
     {
     }
     //! @brief Destroy the Argument object.
@@ -770,6 +770,12 @@ public:
     //! @param argName - target argument name
     //! @return reference of the Register object
     Register& operator[](const std::string_view argName) const;
+    //! @brief Get the title name.
+    //! @return title name
+    std::string title() const;
+    //! @brief Get the version number.
+    //! @return version number
+    std::string version() const;
     //! @brief Get the help message content.
     //! @return help message content
     [[nodiscard]] std::ostringstream help() const;
@@ -780,12 +786,12 @@ public:
     //! @param parser - sub-parser
     void addSubParser(Argument& parser);
 
-    //! @brief Title name.
-    std::string title{};
-    //! @brief Version information.
-    std::string version{};
-
 private:
+    //! @brief Title name.
+    std::string titleName{};
+    //! @brief Version number.
+    std::string versionNumber{};
+
     //! @brief Alias for iterator in all Register instance.
     using RegisterIter = std::list<Register>::iterator;
     //! @brief Alias for iterator in all Argument instance.
@@ -894,7 +900,7 @@ inline auto Argument::isSubCommandUsed(const std::string_view subCommandName) co
 
 inline auto Argument::isSubCommandUsed(const Argument& subParser) const
 {
-    return isSubCommandUsed(subParser.title);
+    return isSubCommandUsed(subParser.titleName);
 }
 } // namespace argument
 } // namespace utility

@@ -179,6 +179,8 @@ extern NumericTask& getTask();
 //! @brief Apply arithmetic.
 namespace arithmetic
 {
+//! @brief The version used to apply.
+const char* const version = numeric::arithmetic::version();
 //! @brief Set input parameters.
 namespace input
 {
@@ -249,6 +251,8 @@ extern void updateArithmeticTask(const std::string& target);
 //! @brief Apply divisor.
 namespace divisor
 {
+//! @brief The version used to apply.
+const char* const version = numeric::divisor::version();
 //! @brief Set input parameters.
 namespace input
 {
@@ -357,6 +361,8 @@ extern void updateDivisorTask(const std::string& target);
 //! @brief Apply integral.
 namespace integral
 {
+//! @brief The version used to apply.
+const char* const version = numeric::integral::version();
 //! @brief Set input parameters.
 namespace input
 {
@@ -546,6 +552,8 @@ extern void updateIntegralTask(const std::string& target);
 //! @brief Apply prime.
 namespace prime
 {
+//! @brief The version used to apply.
+const char* const version = numeric::prime::version();
 //! @brief Set input parameters.
 namespace input
 {

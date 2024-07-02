@@ -15,7 +15,7 @@ namespace numeric // NOLINT (modernize-concat-nested-namespaces)
 //! @brief Integral-related functions in the numeric module.
 namespace integral
 {
-extern const char* version();
+extern const char* version() noexcept;
 
 //! @brief Target expressions.
 class Expression

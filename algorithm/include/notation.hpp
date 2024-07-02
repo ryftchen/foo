@@ -14,7 +14,7 @@ namespace algorithm // NOLINT (modernize-concat-nested-namespaces)
 //! @brief Notation-related functions in the algorithm module.
 namespace notation
 {
-extern const char* version();
+extern const char* version() noexcept;
 
 //! @brief Notation methods.
 class Notation
