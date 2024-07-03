@@ -21,6 +21,7 @@ std::string compiler()
     return "gcc " COMMON_TO_STRING(__GNUC__) "." COMMON_TO_STRING(__GNUC_MINOR__) "." COMMON_TO_STRING(
         __GNUC_PATCHLEVEL__) "";
 #else
+#pragma message("Unknown compiler at compile time.")
     return "unknown compiler";
 #endif // __clang__
 }
@@ -32,6 +33,7 @@ std::string processor()
 #ifdef __TARGET_PROCESSOR
     return __TARGET_PROCESSOR;
 #else
+#pragma message("Unknown processor at compile time.")
     return "unknown processor";
 #endif // __TARGET_PROCESSOR
 }
@@ -43,6 +45,7 @@ std::string buildDate()
 #if defined(__DATE__) && defined(__TIME__)
     return "" __DATE__ " " __TIME__ "";
 #else
+#pragma message("Unknown build date at compile time.")
     return "unknown build date";
 #endif // defined(__DATE__) && defined(__TIME__)
 }
