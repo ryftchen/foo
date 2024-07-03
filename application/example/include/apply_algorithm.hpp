@@ -30,6 +30,7 @@
 #define restrict __restrict // NOLINT (readability-identifier-naming)
 #else
 #define restrict // NOLINT (readability-identifier-naming)
+#error "No alias definition for the restrict keyword."
 #endif // defined(__clang__) || defined(__GNUC__)
 
 //! @brief The application module.
