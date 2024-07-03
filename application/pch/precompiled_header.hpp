@@ -4,9 +4,9 @@
 //! @version 0.1.0
 //! @copyright Copyright (c) 2022-2024 ryftchen. All rights reserved.
 
-#pragma once
+#ifndef APPLICATION_PCH_H
+#define APPLICATION_PCH_H
 
-#ifdef __PRECOMPILED_HEADER
 #include <openssl/evp.h>
 #include <readline/readline.h>
 #include <sys/ipc.h>
@@ -46,4 +46,5 @@
 #include <unordered_map>
 #include <variant>
 #include <vector>
-#endif // __PRECOMPILED_HEADER
+
+#endif // APPLICATION_PCH_H
