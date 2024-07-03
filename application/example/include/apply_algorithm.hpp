@@ -25,14 +25,6 @@
 #include "algorithm/include/search.hpp"
 #include "algorithm/include/sort.hpp"
 
-//! @brief The restrict type qualifier.
-#if defined(__clang__) || defined(__GNUC__)
-#define restrict __restrict // NOLINT (readability-identifier-naming)
-#else
-#define restrict // NOLINT (readability-identifier-naming)
-#error "No alias definition for the restrict keyword."
-#endif // defined(__clang__) || defined(__GNUC__)
-
 //! @brief The application module.
 namespace application // NOLINT (modernize-concat-nested-namespaces)
 {
@@ -768,9 +760,9 @@ public:
     template <typename N>
     requires (isRealNumber<N>())
     static char* spliceAll(
-        const T* const restrict array,
+        const T* const array,
         const std::uint32_t length,
-        char* const restrict buffer,
+        char* const buffer,
         const std::uint32_t bufferSize)
     {
         std::uint32_t align = 0;
@@ -1010,9 +1002,9 @@ public:
     template <typename N>
     requires (isRealNumber<N>())
     static char* spliceAll(
-        const T* const restrict array,
+        const T* const array,
         const std::uint32_t length,
-        char* const restrict buffer,
+        char* const buffer,
         const std::uint32_t bufferSize)
     {
         std::uint32_t align = 0;
@@ -1124,5 +1116,3 @@ extern void runSortTasks(const std::vector<std::string>& candidates);
 extern void updateSortTask(const std::string& target);
 } // namespace app_algo
 } // namespace application
-
-#undef restrict
