@@ -235,7 +235,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
+    LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
 }
 
 void ArithmeticSolution::subtractionMethod(const std::int32_t minuend, const std::int32_t subtrahend)
@@ -246,7 +246,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
+    LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
 }
 
 void ArithmeticSolution::multiplicationMethod(const std::int32_t multiplier, const std::int32_t multiplicand)
@@ -257,7 +257,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
+    LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
 }
 
 void ArithmeticSolution::divisionMethod(const std::int32_t dividend, const std::int32_t divisor)
@@ -268,7 +268,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
+    LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
 }
 } // namespace arithmetic
 
@@ -385,7 +385,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
+    LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
 }
 
 void DivisorSolution::steinMethod(std::int32_t a, std::int32_t b)
@@ -398,7 +398,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
+    LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
 }
 } // namespace divisor
 
@@ -497,7 +497,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
+    LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
 }
 
 void IntegralSolution::adaptiveSimpsonMethod(const Expression& expr, const double lower, const double upper)
@@ -510,7 +510,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
+    LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
 }
 
 void IntegralSolution::rombergMethod(const Expression& expr, const double lower, const double upper)
@@ -523,7 +523,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
+    LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
 }
 
 void IntegralSolution::gaussLegendreMethod(const Expression& expr, const double lower, const double upper)
@@ -536,7 +536,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
+    LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
 }
 
 void IntegralSolution::monteCarloMethod(const Expression& expr, const double lower, const double upper)
@@ -549,7 +549,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
+    LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
 }
 } // namespace integral
 
@@ -690,7 +690,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
+    LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
 }
 
 void PrimeSolution::eulerMethod(const std::uint32_t max)
@@ -703,7 +703,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
+    LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
 }
 } // namespace prime
 
