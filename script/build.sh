@@ -569,14 +569,14 @@ function perform_lint_option()
     fi
     shell_command "compdb -p ./${FOLDER[bld]} list >./${COMP_CMD} && mv ./${app_comp_cmd} ./${app_comp_cmd}.bak \
 && mv ./${COMP_CMD} ./${FOLDER[bld]}"
-    local exist_tpp_file=false
+    local exist_file_extention=false
     while true; do
         local line
         line=$(grep -n '.tpp' "./${app_comp_cmd}" | head -n 1 | cut -d : -f 1)
         if ! [[ ${line} =~ ^[0-9]+$ ]]; then
             break
         fi
-        exist_tpp_file=true
+        exist_file_extention=true
         if ! sed -i $((line - 2)),$((line + 3))d ./"${app_comp_cmd}" >/dev/null 2>&1; then
             die "Failed to remove redundant implementation file objects from the ${app_comp_cmd} file."
         fi
@@ -584,7 +584,7 @@ function perform_lint_option()
     shell_command "find ./${FOLDER[app]} ./${FOLDER[util]} ./${FOLDER[algo]} ./${FOLDER[ds]} ./${FOLDER[dp]} \
 ./${FOLDER[num]} -name '*.cpp' -o -name '*.hpp' | xargs run-clang-tidy-16 -config-file=./.clang-tidy \
 -p ./${FOLDER[bld]} -quiet"
-    if [[ ${exist_tpp_file} = true ]]; then
+    if [[ ${exist_file_extention} = true ]]; then
         shell_command "find ./${FOLDER[app]} ./${FOLDER[util]} ./${FOLDER[algo]} ./${FOLDER[ds]} ./${FOLDER[dp]} \
 ./${FOLDER[num]} -name '*.tpp' | xargs clang-tidy-16 --config-file=./.clang-tidy -p ./${FOLDER[bld]} --quiet"
     fi
@@ -804,31 +804,35 @@ function set_compile_condition()
     fi
     if [[ ${DEV_OPT[pch]} = true ]]; then
         CMAKE_CACHE_ENTRY="${CMAKE_CACHE_ENTRY} -D TOOLCHAIN_PCH=ON"
-        if [[ ${DEV_OPT[ccache]} = true ]]; then
-            export CCACHE_PCH_EXTSUM=true
-        fi
     fi
     if [[ ${DEV_OPT[unity]} = true ]]; then
         CMAKE_CACHE_ENTRY="${CMAKE_CACHE_ENTRY} -D TOOLCHAIN_UNITY=ON"
     fi
     if [[ ${DEV_OPT[ccache]} = true ]]; then
+        if ! command -v ccache >/dev/null; then
+            die "No ccache program. Please install it."
+        fi
         CMAKE_CACHE_ENTRY="${CMAKE_CACHE_ENTRY} -D TOOLCHAIN_CCACHE=ON"
         if [[ ${ARGS[test]} = false ]]; then
             export CCACHE_DIR=${PWD}/${FOLDER[cac]}/ccache
         else
             export CCACHE_DIR=${PWD}/${FOLDER[tst]}/${FOLDER[cac]}/ccache
         fi
-        if [[ ${DEV_OPT[distcc]} = true ]]; then
-            if command -v ccache >/dev/null 2>&1 && command -v distcc >/dev/null 2>&1; then
-                export CCACHE_PREFIX=distcc
-            fi
-        fi
     fi
     if [[ ${DEV_OPT[distcc]} = true ]]; then
+        if ! command -v distcc >/dev/null; then
+            die "No distcc program. Please install it."
+        fi
         CMAKE_CACHE_ENTRY="${CMAKE_CACHE_ENTRY} -D TOOLCHAIN_DISTCC=ON"
         if [[ -z ${DISTCC_HOSTS} ]]; then
             export DISTCC_HOSTS=localhost
         fi
+    fi
+    if [[ ${DEV_OPT[ccache]} = true ]] && [[ ${DEV_OPT[pch]} = true ]]; then
+        export CCACHE_PCH_EXTSUM=true CCACHE_SLOPPINESS=pch_defines,time_macros
+    fi
+    if [[ ${DEV_OPT[ccache]} = true ]] && [[ ${DEV_OPT[distcc]} = true ]]; then
+        export CCACHE_PREFIX=distcc
     fi
     if [[ ${DEV_OPT[tmpfs]} = true ]]; then
         if [[ ! -d ./${tmpfs_subfolder} ]]; then
