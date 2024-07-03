@@ -49,7 +49,7 @@ constexpr std::size_t bkdrHashSeed = 131;
 //! @brief Hash size for BKDR hash function.
 constexpr std::size_t bkdrHashSize = 0x7FFFFFFF;
 
-//! @brief The Brian-Kernighan Dennis-Ritchie hash function in compile time.
+//! @brief The Brian-Kernighan Dennis-Ritchie hash function at compile time.
 //! @param str - input data
 //! @param hash - previous hash value
 //! @return hash value
