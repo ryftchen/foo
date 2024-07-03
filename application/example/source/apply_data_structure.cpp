@@ -184,7 +184,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
+    LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
 }
 
 void LinearStructure::stackInstance()
@@ -195,7 +195,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
+    LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
 }
 
 void LinearStructure::queueInstance()
@@ -206,7 +206,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
+    LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
 }
 } // namespace linear
 
@@ -305,7 +305,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
+    LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
 }
 
 void TreeStructure::avlInstance()
@@ -316,7 +316,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
+    LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
 }
 
 void TreeStructure::splayInstance()
@@ -327,7 +327,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
+    LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
 }
 } // namespace tree
 

@@ -284,7 +284,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
+    LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
 }
 
 void MatchSolution::kmpMethod(
@@ -301,7 +301,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
+    LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
 }
 
 void MatchSolution::bmMethod(
@@ -318,7 +318,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
+    LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
 }
 
 void MatchSolution::horspoolMethod(
@@ -335,7 +335,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
+    LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
 }
 
 void MatchSolution::sundayMethod(
@@ -352,7 +352,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
+    LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
 }
 } // namespace match
 
@@ -475,7 +475,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
+    LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
 }
 
 void NotationSolution::postfixMethod(const std::string& infixNotation)
@@ -486,7 +486,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
+    LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
 }
 } // namespace notation
 
@@ -601,7 +601,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
+    LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
 }
 
 void OptimalSolution::simulatedAnnealingMethod(const Function& func, const double left, const double right)
@@ -614,7 +614,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
+    LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
 }
 
 void OptimalSolution::particleSwarmMethod(const Function& func, const double left, const double right)
@@ -627,7 +627,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
+    LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
 }
 
 void OptimalSolution::geneticMethod(const Function& func, const double left, const double right)
@@ -640,7 +640,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
+    LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
 }
 } // namespace optimal
 
@@ -787,7 +787,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
+    LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
 }
 
 void SearchSolution::interpolationMethod(const float* const array, const std::uint32_t length, const float key)
@@ -800,7 +800,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
+    LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
 }
 
 void SearchSolution::fibonacciMethod(const float* const array, const std::uint32_t length, const float key)
@@ -813,7 +813,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
+    LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
 }
 } // namespace search
 
@@ -927,7 +927,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
+    LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
 }
 
 void SortSolution::selectionMethod(const std::int32_t* const array, const std::uint32_t length)
@@ -940,7 +940,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
+    LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
 }
 
 void SortSolution::insertionMethod(const std::int32_t* const array, const std::uint32_t length)
@@ -953,7 +953,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
+    LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
 }
 
 void SortSolution::shellMethod(const std::int32_t* const array, const std::uint32_t length)
@@ -966,7 +966,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
+    LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
 }
 
 void SortSolution::mergeMethod(const std::int32_t* const array, const std::uint32_t length)
@@ -979,7 +979,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
+    LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
 }
 
 void SortSolution::quickMethod(const std::int32_t* const array, const std::uint32_t length)
@@ -992,7 +992,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
+    LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
 }
 
 void SortSolution::heapMethod(const std::int32_t* const array, const std::uint32_t length)
@@ -1005,7 +1005,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
+    LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
 }
 
 void SortSolution::countingMethod(const std::int32_t* const array, const std::uint32_t length)
@@ -1018,7 +1018,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
+    LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
 }
 
 void SortSolution::bucketMethod(const std::int32_t* const array, const std::uint32_t length)
@@ -1031,7 +1031,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
+    LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
 }
 
 void SortSolution::radixMethod(const std::int32_t* const array, const std::uint32_t length)
@@ -1044,7 +1044,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __FUNCTION__ << ": " << err.what();
+    LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
 }
 } // namespace sort
 
