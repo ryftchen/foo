@@ -53,9 +53,9 @@ constexpr std::size_t bkdrHashSize = 0x7FFFFFFF;
 //! @param str - input data
 //! @param hash - previous hash value
 //! @return hash value
-constexpr std::size_t bkdrHashInCompile(const char* const str, const std::size_t hash = 0) noexcept
+constexpr std::size_t bkdrHashInCompiling(const char* const str, const std::size_t hash = 0) noexcept
 {
-    return *str ? bkdrHashInCompile(str + 1, (hash * bkdrHashSeed + *str) & bkdrHashSize) : hash;
+    return *str ? bkdrHashInCompiling(str + 1, (hash * bkdrHashSeed + *str) & bkdrHashSize) : hash;
 }
 
 //! @brief The operator ("") overloading with BKDR hash function.
@@ -63,7 +63,7 @@ constexpr std::size_t bkdrHashInCompile(const char* const str, const std::size_t
 //! @return hash value
 constexpr std::size_t operator""_bkdrHash(const char* const str, const std::size_t /*len*/) noexcept
 {
-    return bkdrHashInCompile(str);
+    return bkdrHashInCompiling(str);
 }
 
 //! @brief Splice strings into constexpr type.
