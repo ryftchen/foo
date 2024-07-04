@@ -16,14 +16,14 @@ def execute_command(command, set_input="", set_timeout=300):
     try:
         process = subprocess.run(
             command,
-            shell=True,
             executable="/bin/bash",
+            shell=True,
             universal_newlines=True,
-            capture_output=True,
-            check=True,
             encoding="utf-8",
             input=set_input,
+            capture_output=True,
             timeout=set_timeout,
+            check=True,
         )
         return process.stdout.strip(), process.stderr.strip(), process.returncode
     except subprocess.CalledProcessError as error:

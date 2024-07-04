@@ -7,6 +7,7 @@ try:
     import os
     import queue
     import re
+    import subprocess
     import sys
     import threading
     import traceback
@@ -207,12 +208,23 @@ class Task:
                 Output.exit_with_error(f"No shell script {self.build_script} file.")
 
     def build_executable(self, build_cmd):
-        stdout, stderr, return_code = common.execute_command(build_cmd)
-        if stderr or return_code != 0:
-            print(f"\n[STDOUT]\n{stdout}\n[STDERR]\n{stderr}\n[RETURN CODE]\n{return_code}")
-            Output.exit_with_error(f"Failed to run shell script {self.build_script} file.")
-        else:
-            print(stdout)
+        with subprocess.Popen(
+            build_cmd,
+            executable="/bin/bash",
+            stdout=subprocess.PIPE,
+            shell=True,
+            universal_newlines=True,
+            encoding="utf-8",
+        ) as process:
+            while True:
+                output = process.stdout.readline()
+                if len(output) == 0 and process.poll() is not None:
+                    break
+                if output:
+                    print(output.strip())
+            return_code = process.poll()
+            if return_code != 0:
+                Output.exit_with_error(f"Failed to run shell script {self.build_script} file.")
 
     def prepare(self):
         if not self.options["tst"] and not os.path.isfile(f"{self.app_bin_dir}/{self.app_bin_cmd}"):
