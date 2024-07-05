@@ -475,8 +475,7 @@ public:
     //! @return dependent variable
     double operator()(const double x) const override
     {
-        // f(x)=An+Σ(1→n)[(Xi)^2-Acos(2π*Xi)],A=10,x∈[-5.12,5.12],f(min)=0
-        return x * x - 10.0 * std::cos(2.0 * std::numbers::pi * x) + 10.0;
+        return x * x - 10.0 * std::cos(2.0 * std::numbers::pi * x) + 10.0; // one-dimensional Rastrigin
     }
 
     //! @brief Left endpoint.
@@ -497,8 +496,7 @@ public:
     //! @return dependent variable
     double operator()(const double x) const override
     {
-        // f(x)=1+1/4000*Σ(1→n)[(Xi)^2]-Π(1→n)[cos(Xi/(i)^(1/2))],x∈[-600,600],f(min)=0
-        return 1.0 + 1.0 / 4000.0 * x * x - std::cos(x);
+        return 1.0 + 1.0 / 4000.0 * x * x - std::cos(x); // one-dimensional Griewank
     }
 
     //! @brief Left endpoint.

@@ -90,8 +90,8 @@ double Simpson::compositeSimpsonOneThird(const double left, const double right, 
     double sum = 0.0;
     for (std::uint32_t i = 0; i < step; ++i)
     {
-        // I≈(b-a)/6[Y0+Y2n+4(Y1+...+Y2n-1)+6(Y2+...+Y2n-2)]
-        sum += simpsonOneThird(left + i * stepLength, left + (i + 1) * stepLength);
+        sum += simpsonOneThird(
+            left + i * stepLength, left + (i + 1) * stepLength); // I≈(b-a)/6[Y0+Y2n+4(Y1+...+Y2n-1)+6(Y2+...+Y2n-2)]
     }
     return sum;
 }
@@ -153,9 +153,9 @@ double Gauss::operator()(double lower, double upper, const double eps) const
             const double left = lower + i * stepLength, right = left + stepLength;
             for (std::uint32_t j = 0; j < gaussNodes; ++j)
             {
-                // x=1/2*[(a+b)+(b-a)*t]
-                const double x = ((right - left) * gaussLegendreTable[j][0] + (left + right)) / 2.0,
-                             polynomial = expr(x) * gaussLegendreTable[j][1] * (right - left) / 2.0;
+                const double x = ((right - left) * gaussLegendreTable[j][0] + (left + right))
+                    / 2.0, // x=1/2*[(a+b)+(b-a)*t]
+                    polynomial = expr(x) * gaussLegendreTable[j][1] * (right - left) / 2.0;
                 sum += polynomial;
             }
         }
