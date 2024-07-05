@@ -372,7 +372,6 @@ std::vector<T> Sort<T>::bucket(const T* const array, const std::uint32_t length)
     std::vector<std::vector<T>> container(bucketSize, std::vector<T>{});
     for (std::uint32_t i = 0; i < length; ++i)
     {
-        // min+(max-min)/(num-1)*(idx-1)<=array[i]
         const std::uint32_t bucketIdx = std::floor(static_cast<double>(sorting[i] - min) / intervalSpan + 1) - 1;
         container[bucketIdx].emplace_back(sorting[i]);
     }

@@ -177,7 +177,7 @@ std::vector<std::uint32_t> Search<T>::generateFibonacciNumber(const std::uint32_
         return std::vector<std::uint32_t>{};
     }
 
-    const double phi = (1.0 + std::sqrt(5.0)) / 2.0, // Golden ratio
+    const double phi = (1.0 + std::sqrt(5.0)) / 2.0, // golden ratio
         estimate = std::log(limit * std::sqrt(5.0)) / std::log(phi); // Fn≈(ϕ^n)/(5^(1/2))
     std::vector<std::uint32_t> fibonacci;
     fibonacci.reserve(static_cast<std::uint32_t>(estimate) + 1);
