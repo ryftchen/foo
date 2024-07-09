@@ -422,14 +422,14 @@ const std::string& changeToLogStyle(std::string& line)
     if (std::regex_search(line, logStyle.dateTime))
     {
         const auto searchIter = std::sregex_iterator(line.begin(), line.end(), logStyle.dateTime);
-        const std::string timeColorForLog = std::string{common::colorGray} + std::string{common::colorBold}
+        const std::string dateTimeColorForLog = std::string{common::colorDarkGray}
             + std::string{common::colorForBackground} + (*searchIter).str() + std::string{common::colorOff};
-        line = std::regex_replace(line, logStyle.dateTime, timeColorForLog);
+        line = std::regex_replace(line, logStyle.dateTime, dateTimeColorForLog);
     }
     if (std::regex_search(line, logStyle.codeFile))
     {
         const auto searchIter = std::sregex_iterator(line.begin(), line.end(), logStyle.codeFile);
-        const std::string codeFileColorForLog = std::string{common::colorUnderLine}
+        const std::string codeFileColorForLog = std::string{common::colorUnderline}
             + std::string{common::colorForBackground} + (*searchIter).str() + std::string{common::colorOff};
         line = std::regex_replace(line, logStyle.codeFile, codeFileColorForLog);
     }

@@ -34,12 +34,14 @@ inline constexpr std::string_view colorGreen = "\033[0;32;40m";
 inline constexpr std::string_view colorYellow = "\033[0;33;40m";
 //! @brief ANSI escape codes for blue foreground color.
 inline constexpr std::string_view colorBlue = "\033[0;34;40m";
-//! @brief ANSI escape codes for gray foreground color.
-inline constexpr std::string_view colorGray = "\033[0;37;40m";
+//! @brief ANSI escape codes for dark gray foreground color.
+inline constexpr std::string_view colorDarkGray = "\033[1;30;40m";
 //! @brief ANSI escape codes for the bold font.
 inline constexpr std::string_view colorBold = "\033[1m";
 //! @brief ANSI escape codes for the underline font.
-inline constexpr std::string_view colorUnderLine = "\033[4m";
+inline constexpr std::string_view colorUnderline = "\033[4m";
+//! @brief ANSI escape codes for the inverse font.
+inline constexpr std::string_view colorInverse = "\033[7m";
 //! @brief ANSI escape codes for default background color.
 inline constexpr std::string_view colorForBackground = "\033[49m";
 //! @brief ANSI escape codes for ending.
