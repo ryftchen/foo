@@ -104,6 +104,7 @@ constinit const auto errorLevelPrefixColorForLog = utility::common::joinString<
     utility::common::colorOff>;
 //! @brief Prefix of unknown level. Include ANSI escape codes.
 constinit const auto unknownLevelPrefixColorForLog = utility::common::joinString<
+    utility::common::colorInverse,
     utility::common::colorBold,
     utility::common::colorForBackground,
     unknownLevelPrefix,
