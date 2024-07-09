@@ -8,7 +8,7 @@ declare -r BASH_RC=".bashrc"
 declare SUDO=""
 declare STATUS=0
 declare -rA STATUS_COLOR=([exec]="\033[0;33;40m\033[1m\033[49m" [succ]="\033[0;32;40m\033[1m\033[49m"
-    [fail]="\033[0;31;40m\033[1m\033[49m" [time]="\033[1;30;40m\033[1m\033[49m")
+    [fail]="\033[0;31;40m\033[1m\033[49m" [time]="\033[0;39;40m\033[1m\033[2m\033[49m")
 declare -r STATUS_COLOR_OFF="\033[0m"
 declare -A ARGS=([help]=false [initialize]=false [clean]=false [install]=false [uninstall]=false [container]=false
     [website]=false [test]=false [release]=false [hook]=false [spell]=false [format]=false [lint]=false

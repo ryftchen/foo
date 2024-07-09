@@ -74,41 +74,53 @@ constexpr std::string_view unknownLevelPrefixRegex = R"(^\[UNK\])";
 constexpr std::string_view dateTimeRegex = R"(\[(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})\.(\d{6}) (\w{3})\])";
 //! @brief Regular expression of code file in log.
 constexpr std::string_view codeFileRegex = R"(\[[^:]+\.(c|h|cc|hh|cpp|hpp|tpp|cxx|hxx|C|H)#\d+\])";
-//! @brief Prefix of debug level. Include ANSI escape codes.
-constinit const auto debugLevelPrefixColorForLog = utility::common::joinString<
+//! @brief Debug level prefix with color. Include ANSI escape codes.
+constinit const auto debugLevelPrefixWithColor = utility::common::joinString<
     utility::common::colorBlue,
     utility::common::colorBold,
     utility::common::colorForBackground,
     debugLevelPrefix,
     utility::common::colorOff>;
-//! @brief Prefix of info level. Include ANSI escape codes.
-constinit const auto infoLevelPrefixColorForLog = utility::common::joinString<
+//! @brief Info level prefix with color. Include ANSI escape codes.
+constinit const auto infoLevelPrefixWithColor = utility::common::joinString<
     utility::common::colorGreen,
     utility::common::colorBold,
     utility::common::colorForBackground,
     infoLevelPrefix,
     utility::common::colorOff>;
-//! @brief Prefix of warning level. Include ANSI escape codes.
-constinit const auto warnLevelPrefixColorForLog = utility::common::joinString<
+//! @brief Warning level prefix with color. Include ANSI escape codes.
+constinit const auto warnLevelPrefixWithColor = utility::common::joinString<
     utility::common::colorYellow,
     utility::common::colorBold,
     utility::common::colorForBackground,
     warnLevelPrefix,
     utility::common::colorOff>;
-//! @brief Prefix of error level. Include ANSI escape codes.
-constinit const auto errorLevelPrefixColorForLog = utility::common::joinString<
+//! @brief Error level prefix with color. Include ANSI escape codes.
+constinit const auto errorLevelPrefixWithColor = utility::common::joinString<
     utility::common::colorRed,
     utility::common::colorBold,
     utility::common::colorForBackground,
     errorLevelPrefix,
     utility::common::colorOff>;
-//! @brief Prefix of unknown level. Include ANSI escape codes.
-constinit const auto unknownLevelPrefixColorForLog = utility::common::joinString<
+//! @brief Unknown level prefix with color. Include ANSI escape codes.
+constinit const auto unknownLevelPrefixWithColor = utility::common::joinString<
     utility::common::colorInverse,
     utility::common::colorBold,
     utility::common::colorForBackground,
     unknownLevelPrefix,
     utility::common::colorOff>;
+//! @brief Base color of the date time. Include ANSI escape codes.
+constinit const auto dateTimeBaseColor = utility::common::joinString<
+    utility::common::colorForForeground,
+    utility::common::colorBold,
+    utility::common::colorDim,
+    utility::common::colorForBackground>;
+//! @brief Base color of the code file. Include ANSI escape codes.
+constinit const auto codeFileBaseColor = utility::common::joinString<
+    utility::common::colorForForeground,
+    utility::common::colorBold,
+    utility::common::colorUnderline,
+    utility::common::colorForBackground>;
 
 //! @brief Logger.
 class Log final : public utility::fsm::FSM<Log>
