@@ -264,7 +264,7 @@ void View::waitForStart()
     {
         if (isInUninterruptedState(State::hold))
         {
-            LOG_ERR << "The viewer did not initialize successfully...";
+            LOG_ERR << "The viewer did not initialize successfully ...";
             return;
         }
         utility::time::millisecondLevelSleep(1);
@@ -294,7 +294,7 @@ void View::waitForStart()
 
             if (timeoutPeriod == waitCounter)
             {
-                LOG_ERR << "The viewer did not start properly in " << timeoutPeriod << "ms...";
+                LOG_ERR << "The viewer did not start properly in " << timeoutPeriod << "ms ...";
                 expiryTimer.reset();
             }
         },
@@ -327,7 +327,7 @@ void View::waitForStop()
 
             if (timeoutPeriod == waitCounter)
             {
-                LOG_ERR << "The viewer did not stop properly in " << timeoutPeriod << "ms...";
+                LOG_ERR << "The viewer did not stop properly in " << timeoutPeriod << "ms ...";
                 expiryTimer.reset();
             }
         },
