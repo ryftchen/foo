@@ -81,7 +81,7 @@ void Log::waitForStart()
     {
         if (isInUninterruptedState(State::hold))
         {
-            LOG_ERR << "The logger did not initialize successfully...";
+            LOG_ERR << "The logger did not initialize successfully ...";
             return;
         }
         utility::time::millisecondLevelSleep(1);
@@ -111,7 +111,7 @@ void Log::waitForStart()
 
             if (timeoutPeriod == waitCounter)
             {
-                LOG_ERR << "The logger did not start properly in " << timeoutPeriod << "ms...";
+                LOG_ERR << "The logger did not start properly in " << timeoutPeriod << "ms ...";
                 expiryTimer.reset();
             }
         },
@@ -144,7 +144,7 @@ void Log::waitForStop()
 
             if (timeoutPeriod == waitCounter)
             {
-                LOG_ERR << "The logger did not stop properly in " << timeoutPeriod << "ms...";
+                LOG_ERR << "The logger did not stop properly in " << timeoutPeriod << "ms ...";
                 expiryTimer.reset();
             }
         },

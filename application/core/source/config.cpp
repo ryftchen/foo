@@ -275,7 +275,7 @@ try
 }
 catch (const std::exception& err)
 {
-    std::cerr << "Configuration load exception..." << std::endl;
+    std::cerr << "Configuration load exception ..." << std::endl;
     std::cout << "Type y to force an update to the default configuration, n to exit: ";
 
     std::string input;

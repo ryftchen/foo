@@ -5,13 +5,16 @@ declare -rA FOLDER=([proj]="foo" [app]="application" [util]="utility" [algo]="al
     [cac]=".cache")
 declare -r COMP_CMD="compile_commands.json"
 declare -r BASH_RC=".bashrc"
+declare SUDO=""
+declare STATUS=0
+declare -rA STATUS_COLOR=([exec]="\033[0;33;40m\033[1m\033[49m" [succ]="\033[0;32;40m\033[1m\033[49m"
+    [fail]="\033[0;31;40m\033[1m\033[49m" [time]="\033[1;30;40m\033[1m\033[49m")
+declare -r STATUS_COLOR_OFF="\033[0m"
 declare -A ARGS=([help]=false [initialize]=false [clean]=false [install]=false [uninstall]=false [container]=false
     [website]=false [test]=false [release]=false [hook]=false [spell]=false [format]=false [lint]=false
     [statistics]=false [doxygen]=false [browser]=false [dry]=false)
 declare -A DEV_OPT=([compiler]="clang" [parallel]=0 [pch]=false [unity]=false [ccache]=false [distcc]=false
     [tmpfs]=false)
-declare STATUS=0
-declare SUDO=""
 declare CMAKE_CACHE_ENTRY=""
 declare CMAKE_BUILD_OPTION=""
 declare BUILD_TYPE="Debug"
@@ -33,19 +36,15 @@ function shell_command()
 {
     echo
     if [[ ${ARGS[dry]} = true ]]; then
-        printf "\033[0;33;40m\033[1m\033[49m%s \033[0;37;40m\033[1m\033[49m%s\033[0m %s\n" \
-            "[ ...... ]" "$(date "+%b %d %T")" "$ $*"
+        printf "${STATUS_COLOR[exec]}[ exec ] ${STATUS_COLOR[time]}$(date "+%b %d %T")${STATUS_COLOR_OFF} $ %s\n" "$*"
         return
     fi
 
-    printf "\033[0;33;40m\033[1m\033[49m%s \033[0;37;40m\033[1m\033[49m%s\033[0m %s\n" \
-        "[ ...... ]" "$(date "+%b %d %T")" "$ $*"
+    printf "${STATUS_COLOR[exec]}[ exec ] ${STATUS_COLOR[time]}$(date "+%b %d %T")${STATUS_COLOR_OFF} $ %s\n" "$*"
     if shell "$@"; then
-        printf "\033[0;32;40m\033[1m\033[49m%s \033[0;37;40m\033[1m\033[49m%s\033[0m %s\n" \
-            "[  succ  ]" "$(date "+%b %d %T")" "$ $*"
+        printf "${STATUS_COLOR[succ]}[ succ ] ${STATUS_COLOR[time]}$(date "+%b %d %T")${STATUS_COLOR_OFF} $ %s\n" "$*"
     else
-        printf "\033[0;31;40m\033[1m\033[49m%s \033[0;37;40m\033[1m\033[49m%s\033[0m %s\n" \
-            "[  fail  ]" "$(date "+%b %d %T")" "$ $*"
+        printf "${STATUS_COLOR[fail]}[ fail ] ${STATUS_COLOR[time]}$(date "+%b %d %T")${STATUS_COLOR_OFF} $ %s\n" "$*"
         STATUS=1
     fi
 }
@@ -430,7 +429,7 @@ function perform_website_option()
             fi
         else
             local port1=61503 port2=61504
-            echo "The document server starts listening under the ${PWD} directory..."
+            echo "The document server starts listening under the ${PWD} directory ..."
             echo "=> ${FOLDER[doc]}/doxygen online: http://127.0.0.1:${port1}/"
             echo "=> ${FOLDER[doc]}/browser online: http://127.0.0.1:${port2}/"
             echo "Please confirm whether continue terminating the document server. (y or n)"

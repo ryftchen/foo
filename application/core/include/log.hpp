@@ -73,7 +73,7 @@ constexpr std::string_view unknownLevelPrefixRegex = R"(^\[UNK\])";
 //! @brief Regular expression of date time in log.
 constexpr std::string_view dateTimeRegex = R"(\[(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})\.(\d{6}) (\w{3})\])";
 //! @brief Regular expression of code file in log.
-constexpr std::string_view codeFileRegex = R"(\[[^:]+\.(c|h|cc|hh|cpp|hpp|tpp|cxx|hxx|C|H)+#\d+\])";
+constexpr std::string_view codeFileRegex = R"(\[[^:]+\.(c|h|cc|hh|cpp|hpp|tpp|cxx|hxx|C|H)#\d+\])";
 //! @brief Prefix of debug level. Include ANSI escape codes.
 constinit const auto debugLevelPrefixColorForLog = utility::common::joinString<
     utility::common::colorBlue,
