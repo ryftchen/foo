@@ -9,9 +9,6 @@
 //! @brief The test module.
 namespace test
 {
-//! @brief Anonymous namespace.
-inline namespace
-{
 //! @brief The run function.
 //! @param argc - argument count
 //! @param argv - argument vector
@@ -22,7 +19,6 @@ static int run(int argc, char* argv[])
 
     return ::RUN_ALL_TESTS();
 }
-} // namespace
 } // namespace test
 
 //! @brief The main function of the unit test.

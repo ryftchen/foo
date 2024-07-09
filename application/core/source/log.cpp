@@ -368,11 +368,14 @@ std::ostream& operator<<(std::ostream& os, const Log::State state)
     return os;
 }
 
-//! @brief Regular expressions for log highlighting.
-struct HighlightRegex
+//! @brief Anonymous namespace.
+inline namespace
 {
-    //! @brief Construct a new HighlightRegex object.
-    HighlightRegex() noexcept = default;
+//! @brief Regular expressions for log highlighting.
+struct HlRegex
+{
+    //! @brief Construct a new HlRegex object.
+    HlRegex() noexcept = default;
 
     //! @brief Debug level prefix highlighting.
     const std::regex debugLevel{std::string{debugLevelPrefixRegex}};
@@ -390,7 +393,8 @@ struct HighlightRegex
     const std::regex codeFile{std::string{codeFileRegex}};
 };
 //! @brief Log style.
-static const HighlightRegex logStyle{};
+static const HlRegex logStyle{};
+} // namespace
 
 //! @brief Change line string to log style.
 //! @param line - target line to be changed

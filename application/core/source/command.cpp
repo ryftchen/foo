@@ -18,6 +18,9 @@
 
 namespace application::command
 {
+//! @brief Anonymous namespace.
+inline namespace
+{
 //! @brief Alias for the type information.
 //! @tparam T - type of target object
 template <class T>
@@ -46,6 +49,7 @@ enum ExtEvent : std::uint8_t
     //! @brief Reset.
     reset
 };
+} // namespace
 
 //! @brief Trigger the external helper with event.
 //! @tparam Helper - target helper
