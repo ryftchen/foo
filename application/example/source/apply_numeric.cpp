@@ -77,7 +77,7 @@ constexpr std::string_view toString(const Category cat)
 //! @tparam Cat - the specific value of Category enum
 //! @return reference of the category bit flags
 template <Category Cat>
-constexpr auto& getCategoryBit()
+constexpr auto& getCategoryOpts()
 {
     return std::invoke(
         utility::reflection::TypeInfo<NumericTask>::fields.find(REFLECTION_STR(toString(Cat))).value, getTask());
@@ -277,7 +277,7 @@ catch (const std::exception& err)
 void runArithmeticTasks(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::arithmetic;
-    const auto& bitFlag = getCategoryBit<category>();
+    const auto& bitFlag = getCategoryOpts<category>();
     if (bitFlag.none())
     {
         return;
@@ -336,7 +336,7 @@ void runArithmeticTasks(const std::vector<std::string>& candidates)
 void updateArithmeticTask(const std::string& target)
 {
     constexpr auto category = Category::arithmetic;
-    auto& bitFlag = getCategoryBit<category>();
+    auto& bitFlag = getCategoryOpts<category>();
 
     switch (utility::common::bkdrHash(target.c_str()))
     {
@@ -407,7 +407,7 @@ catch (const std::exception& err)
 void runDivisorTasks(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::divisor;
-    const auto& bitFlag = getCategoryBit<category>();
+    const auto& bitFlag = getCategoryOpts<category>();
     if (bitFlag.none())
     {
         return;
@@ -459,7 +459,7 @@ void runDivisorTasks(const std::vector<std::string>& candidates)
 void updateDivisorTask(const std::string& target)
 {
     constexpr auto category = Category::divisor;
-    auto& bitFlag = getCategoryBit<category>();
+    auto& bitFlag = getCategoryOpts<category>();
 
     switch (utility::common::bkdrHash(target.c_str()))
     {
@@ -558,7 +558,7 @@ catch (const std::exception& err)
 void runIntegralTasks(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::integral;
-    const auto& bitFlag = getCategoryBit<category>();
+    const auto& bitFlag = getCategoryOpts<category>();
     if (bitFlag.none())
     {
         return;
@@ -638,7 +638,7 @@ void runIntegralTasks(const std::vector<std::string>& candidates)
 void updateIntegralTask(const std::string& target)
 {
     constexpr auto category = Category::integral;
-    auto& bitFlag = getCategoryBit<category>();
+    auto& bitFlag = getCategoryOpts<category>();
 
     switch (utility::common::bkdrHash(target.c_str()))
     {
@@ -712,7 +712,7 @@ catch (const std::exception& err)
 void runPrimeTasks(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::prime;
-    const auto& bitFlag = getCategoryBit<category>();
+    const auto& bitFlag = getCategoryOpts<category>();
     if (bitFlag.none())
     {
         return;
@@ -763,7 +763,7 @@ void runPrimeTasks(const std::vector<std::string>& candidates)
 void updatePrimeTask(const std::string& target)
 {
     constexpr auto category = Category::prime;
-    auto& bitFlag = getCategoryBit<category>();
+    auto& bitFlag = getCategoryOpts<category>();
 
     switch (utility::common::bkdrHash(target.c_str()))
     {

@@ -124,27 +124,27 @@ public:
     };
 
     //! @brief Bit flags for managing arithmetic methods.
-    std::bitset<Bottom<ArithmeticMethod>::value> arithmeticBit{};
+    std::bitset<Bottom<ArithmeticMethod>::value> arithmeticOpts{};
     //! @brief Bit flags for managing divisor methods.
-    std::bitset<Bottom<DivisorMethod>::value> divisorBit{};
+    std::bitset<Bottom<DivisorMethod>::value> divisorOpts{};
     //! @brief Bit flags for managing integral methods.
-    std::bitset<Bottom<IntegralMethod>::value> integralBit{};
+    std::bitset<Bottom<IntegralMethod>::value> integralOpts{};
     //! @brief Bit flags for managing prime methods.
-    std::bitset<Bottom<PrimeMethod>::value> primeBit{};
+    std::bitset<Bottom<PrimeMethod>::value> primeOpts{};
 
     //! @brief Check whether any numeric tasks do not exist.
     //! @return any numeric tasks do not exist or exist
     [[nodiscard]] inline bool empty() const
     {
-        return arithmeticBit.none() && divisorBit.none() && integralBit.none() && primeBit.none();
+        return arithmeticOpts.none() && divisorOpts.none() && integralOpts.none() && primeOpts.none();
     }
     //! @brief Reset bit flags that manage numeric tasks.
     inline void reset()
     {
-        arithmeticBit.reset();
-        divisorBit.reset();
-        integralBit.reset();
-        primeBit.reset();
+        arithmeticOpts.reset();
+        divisorOpts.reset();
+        integralOpts.reset();
+        primeOpts.reset();
     }
 
 protected:

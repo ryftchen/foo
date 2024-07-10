@@ -164,30 +164,30 @@ public:
     };
 
     //! @brief Bit flags for managing match methods.
-    std::bitset<Bottom<MatchMethod>::value> matchBit{};
+    std::bitset<Bottom<MatchMethod>::value> matchOpts{};
     //! @brief Bit flags for managing notation methods.
-    std::bitset<Bottom<NotationMethod>::value> notationBit{};
+    std::bitset<Bottom<NotationMethod>::value> notationOpts{};
     //! @brief Bit flags for managing optimal methods.
-    std::bitset<Bottom<OptimalMethod>::value> optimalBit{};
+    std::bitset<Bottom<OptimalMethod>::value> optimalOpts{};
     //! @brief Bit flags for managing search methods.
-    std::bitset<Bottom<SearchMethod>::value> searchBit{};
+    std::bitset<Bottom<SearchMethod>::value> searchOpts{};
     //! @brief Bit flags for managing sort methods.
-    std::bitset<Bottom<SortMethod>::value> sortBit{};
+    std::bitset<Bottom<SortMethod>::value> sortOpts{};
 
     //! @brief Check whether any algorithm tasks do not exist.
     //! @return any algorithm tasks do not exist or exist
     [[nodiscard]] inline bool empty() const
     {
-        return matchBit.none() && notationBit.none() && optimalBit.none() && searchBit.none() && sortBit.none();
+        return matchOpts.none() && notationOpts.none() && optimalOpts.none() && searchOpts.none() && sortOpts.none();
     }
     //! @brief Reset bit flags that manage algorithm tasks.
     inline void reset()
     {
-        matchBit.reset();
-        notationBit.reset();
-        optimalBit.reset();
-        searchBit.reset();
-        sortBit.reset();
+        matchOpts.reset();
+        notationOpts.reset();
+        optimalOpts.reset();
+        searchOpts.reset();
+        sortOpts.reset();
     }
 
 protected:
@@ -769,7 +769,7 @@ public:
             align = std::max(static_cast<std::uint32_t>(std::to_string(*(array + i)).length()), align);
         }
 
-        const char* format = " ";
+        const char* format = nullptr;
         if constexpr (std::is_integral<T>::value)
         {
             format = "%*d ";
@@ -1011,7 +1011,7 @@ public:
             align = std::max(static_cast<std::uint32_t>(std::to_string(*(array + i)).length()), align);
         }
 
-        const char* format = " ";
+        const char* format = nullptr;
         if constexpr (std::is_integral<T>::value)
         {
             format = "%*d ";

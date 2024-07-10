@@ -125,24 +125,24 @@ public:
     };
 
     //! @brief Bit flags for managing behavioral instances.
-    std::bitset<Bottom<BehavioralInstance>::value> behavioralBit{};
+    std::bitset<Bottom<BehavioralInstance>::value> behavioralOpts{};
     //! @brief Bit flags for managing creational instances.
-    std::bitset<Bottom<CreationalInstance>::value> creationalBit{};
+    std::bitset<Bottom<CreationalInstance>::value> creationalOpts{};
     //! @brief Bit flags for managing structural instances.
-    std::bitset<Bottom<StructuralInstance>::value> structuralBit{};
+    std::bitset<Bottom<StructuralInstance>::value> structuralOpts{};
 
     //! @brief Check whether any design pattern tasks do not exist.
     //! @return any design pattern tasks do not exist or exist
     [[nodiscard]] inline bool empty() const
     {
-        return behavioralBit.none() && creationalBit.none() && structuralBit.none();
+        return behavioralOpts.none() && creationalOpts.none() && structuralOpts.none();
     }
     //! @brief Reset bit flags that manage design pattern tasks.
     inline void reset()
     {
-        behavioralBit.reset();
-        creationalBit.reset();
-        structuralBit.reset();
+        behavioralOpts.reset();
+        creationalOpts.reset();
+        structuralOpts.reset();
     }
 
 protected:

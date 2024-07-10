@@ -200,17 +200,12 @@ void Log::handleLogQueue()
 
 std::string Log::getFullLogPath(const std::string& filename)
 {
-    std::string processHome;
-    if (std::getenv("FOO_HOME") != nullptr)
-    {
-        processHome = std::getenv("FOO_HOME");
-    }
-    else
+    const char* const processHome = std::getenv("FOO_HOME");
+    if (nullptr == processHome)
     {
         throw std::runtime_error("The environment variable FOO_HOME is not set.");
     }
-
-    return processHome + '/' + filename;
+    return std::string{processHome} + '/' + filename;
 }
 
 void Log::tryToCreateLogFolder() const

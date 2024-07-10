@@ -75,7 +75,7 @@ constexpr std::string_view toString(const Category cat)
 //! @tparam Cat - the specific value of Category enum
 //! @return reference of the category bit flags
 template <Category Cat>
-constexpr auto& getCategoryBit()
+constexpr auto& getCategoryOpts()
 {
     return std::invoke(
         utility::reflection::TypeInfo<DesignPatternTask>::fields.find(REFLECTION_STR(toString(Cat))).value, getTask());
@@ -338,7 +338,7 @@ catch (const std::exception& err)
 void runBehavioralTasks(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::behavioral;
-    const auto& bitFlag = getCategoryBit<category>();
+    const auto& bitFlag = getCategoryOpts<category>();
     if (bitFlag.none())
     {
         return;
@@ -415,7 +415,7 @@ void runBehavioralTasks(const std::vector<std::string>& candidates)
 void updateBehavioralTask(const std::string& target)
 {
     constexpr auto category = Category::behavioral;
-    auto& bitFlag = getCategoryBit<category>();
+    auto& bitFlag = getCategoryOpts<category>();
 
     switch (utility::common::bkdrHash(target.c_str()))
     {
@@ -529,7 +529,7 @@ catch (const std::exception& err)
 void runCreationalTasks(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::creational;
-    const auto& bitFlag = getCategoryBit<category>();
+    const auto& bitFlag = getCategoryOpts<category>();
     if (bitFlag.none())
     {
         return;
@@ -588,7 +588,7 @@ void runCreationalTasks(const std::vector<std::string>& candidates)
 void updateCreationalTask(const std::string& target)
 {
     constexpr auto category = Category::creational;
-    auto& bitFlag = getCategoryBit<category>();
+    auto& bitFlag = getCategoryOpts<category>();
 
     switch (utility::common::bkdrHash(target.c_str()))
     {
@@ -706,7 +706,7 @@ catch (const std::exception& err)
 void runStructuralTasks(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::structural;
-    const auto& bitFlag = getCategoryBit<category>();
+    const auto& bitFlag = getCategoryOpts<category>();
     if (bitFlag.none())
     {
         return;
@@ -771,7 +771,7 @@ void runStructuralTasks(const std::vector<std::string>& candidates)
 void updateStructuralTask(const std::string& target)
 {
     constexpr auto category = Category::structural;
-    auto& bitFlag = getCategoryBit<category>();
+    auto& bitFlag = getCategoryOpts<category>();
 
     switch (utility::common::bkdrHash(target.c_str()))
     {

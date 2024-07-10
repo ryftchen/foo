@@ -419,7 +419,7 @@ void Command::validateBasicTask()
         }
         checkForExcessiveArguments();
 
-        dispatchedTask.basicTask.primaryBit.set(Category(i));
+        dispatchedTask.basicTask.primaryOpts.set(Category(i));
     }
 }
 
@@ -482,7 +482,7 @@ void Command::dispatchTask()
     {
         for (std::uint8_t i = 0; i < Bottom<Category>::value; ++i)
         {
-            if (dispatchedTask.basicTask.primaryBit.test(Category(i)))
+            if (dispatchedTask.basicTask.primaryOpts.test(Category(i)))
             {
                 (this->*std::next(basicTaskDispatcher.cbegin(), Category(i))->second)();
             }
@@ -632,9 +632,9 @@ void Command::dumpConfiguration() const
 {
     config::forcedConfigurationUpdateByDefault(CONFIG_FILE_PATH);
 
-    const auto& configRow = utility::file::getFileContents(CONFIG_FILE_PATH);
+    const auto& configRows = utility::file::getFileContents(CONFIG_FILE_PATH);
     std::ostringstream os;
-    std::copy(configRow.cbegin(), configRow.cend(), std::ostream_iterator<std::string>(os, "\n"));
+    std::copy(configRows.cbegin(), configRows.cend(), std::ostream_iterator<std::string>(os, "\n"));
     std::cout << os.str() << std::flush;
 }
 
@@ -684,11 +684,8 @@ try
     std::cout << utility::common::executeCommand("tput bel ; echo " + getIconBanner() + " ; sleep 0.1s") << std::flush;
     auto tcpClient = std::make_shared<utility::socket::TCPSocket>();
     launchClient(tcpClient);
-    std::string user = "USER";
-    if (std::getenv("USER") != nullptr)
-    {
-        user = std::getenv("USER");
-    }
+    const char* const userEnv = std::getenv("USER");
+    const std::string user = (nullptr != userEnv) ? userEnv : "USER";
     char hostName[HOST_NAME_MAX] = {'\0'};
     if (::gethostname(hostName, HOST_NAME_MAX))
     {

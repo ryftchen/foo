@@ -106,11 +106,8 @@ static void signalHandler(int sig)
     ::setenv("TERM", "linux", true);
     ::setenv("TERMINFO", "/etc/terminfo", true);
 
-    std::string home = "/root";
-    if (std::getenv("HOME") != nullptr)
-    {
-        home = std::getenv("HOME");
-    }
+    const char* const homeEnv = std::getenv("HOME");
+    const std::string home = (nullptr != homeEnv) ? homeEnv : "/root";
     const std::filesystem::path targetPath{home};
     if (!std::filesystem::exists(targetPath))
     {
