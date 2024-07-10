@@ -206,13 +206,13 @@ private:
     {
     public:
         //! @brief Bit flags for managing basic tasks.
-        std::bitset<Bottom<Category>::value> primaryBit{};
+        std::bitset<Bottom<Category>::value> primaryOpts{};
 
         //! @brief Check whether any basic tasks do not exist.
         //! @return any basic tasks do not exist or exist
-        [[nodiscard]] inline bool empty() const { return primaryBit.none(); }
+        [[nodiscard]] inline bool empty() const { return primaryOpts.none(); }
         //! @brief Reset bit flags that manage basic tasks.
-        inline void reset() { primaryBit.reset(); }
+        inline void reset() { primaryOpts.reset(); }
     };
 
     //! @brief Manage regular tasks by sub-cli.
@@ -341,16 +341,16 @@ extern PublicThreadPool& getPublicThreadPool();
 } // namespace application
 
 //! @brief Reflect the sub-cli name and alias to the field.
-#define COMMAND_REFLECT_SUB_CLI_FIELD(category, alias)            \
-    Field                                                         \
-    {                                                             \
-        REFLECTION_STR(#category), &Type::category##Bit, AttrList \
-        {                                                         \
-            Attr                                                  \
-            {                                                     \
-                REFLECTION_STR("alias"), #alias                   \
-            }                                                     \
-        }                                                         \
+#define COMMAND_REFLECT_SUB_CLI_FIELD(category, alias)             \
+    Field                                                          \
+    {                                                              \
+        REFLECTION_STR(#category), &Type::category##Opts, AttrList \
+        {                                                          \
+            Attr                                                   \
+            {                                                      \
+                REFLECTION_STR("alias"), #alias                    \
+            }                                                      \
+        }                                                          \
     }
 //! @brief Reflect the sub-cli's option and task name to the field.
 #define COMMAND_REFLECT_TASK_FIELD(method, task)        \

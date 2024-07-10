@@ -73,7 +73,7 @@ constexpr std::string_view toString(const Category cat)
 //! @tparam Cat - the specific value of Category enum
 //! @return reference of the category bit flags
 template <Category Cat>
-constexpr auto& getCategoryBit()
+constexpr auto& getCategoryOpts()
 {
     return std::invoke(
         utility::reflection::TypeInfo<DataStructureTask>::fields.find(REFLECTION_STR(toString(Cat))).value, getTask());
@@ -215,7 +215,7 @@ catch (const std::exception& err)
 void runLinearTasks(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::linear;
-    const auto& bitFlag = getCategoryBit<category>();
+    const auto& bitFlag = getCategoryOpts<category>();
     if (bitFlag.none())
     {
         return;
@@ -268,7 +268,7 @@ void runLinearTasks(const std::vector<std::string>& candidates)
 void updateLinearTask(const std::string& target)
 {
     constexpr auto category = Category::linear;
-    auto& bitFlag = getCategoryBit<category>();
+    auto& bitFlag = getCategoryOpts<category>();
 
     switch (utility::common::bkdrHash(target.c_str()))
     {
@@ -336,7 +336,7 @@ catch (const std::exception& err)
 void runTreeTasks(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::tree;
-    const auto& bitFlag = getCategoryBit<category>();
+    const auto& bitFlag = getCategoryOpts<category>();
     if (bitFlag.none())
     {
         return;
@@ -389,7 +389,7 @@ void runTreeTasks(const std::vector<std::string>& candidates)
 void updateTreeTask(const std::string& target)
 {
     constexpr auto category = Category::tree;
-    auto& bitFlag = getCategoryBit<category>();
+    auto& bitFlag = getCategoryOpts<category>();
 
     switch (utility::common::bkdrHash(target.c_str()))
     {

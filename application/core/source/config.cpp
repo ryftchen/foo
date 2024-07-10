@@ -177,16 +177,12 @@ void Config::checkViewerConfigInHelperList(const utility::json::JSON& configData
 //! @return full path to the default configuration file
 std::string getFullDefaultConfigurationPath()
 {
-    std::string processHome;
-    if (std::getenv("FOO_HOME") != nullptr)
-    {
-        processHome = std::getenv("FOO_HOME");
-    }
-    else
+    const char* const processHome = std::getenv("FOO_HOME");
+    if (nullptr == processHome)
     {
         throw std::runtime_error("The environment variable FOO_HOME is not set.");
     }
-    return processHome + '/' + std::string{defaultConfigurationFile};
+    return std::string{processHome} + '/' + std::string{defaultConfigurationFile};
 }
 
 //! @brief Get the default configuration.

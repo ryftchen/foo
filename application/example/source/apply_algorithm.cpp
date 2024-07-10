@@ -79,7 +79,7 @@ constexpr std::string_view toString(const Category cat)
 //! @tparam Cat - the specific value of Category enum
 //! @return reference of the category bit flags
 template <Category Cat>
-constexpr auto& getCategoryBit()
+constexpr auto& getCategoryOpts()
 {
     return std::invoke(
         utility::reflection::TypeInfo<AlgorithmTask>::fields.find(REFLECTION_STR(toString(Cat))).value, getTask());
@@ -361,7 +361,7 @@ catch (const std::exception& err)
 void runMatchTasks(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::match;
-    const auto& bitFlag = getCategoryBit<category>();
+    const auto& bitFlag = getCategoryOpts<category>();
     if (bitFlag.none())
     {
         return;
@@ -431,7 +431,7 @@ void runMatchTasks(const std::vector<std::string>& candidates)
 void updateMatchTask(const std::string& target)
 {
     constexpr auto category = Category::match;
-    auto& bitFlag = getCategoryBit<category>();
+    auto& bitFlag = getCategoryOpts<category>();
 
     switch (utility::common::bkdrHash(target.c_str()))
     {
@@ -495,7 +495,7 @@ catch (const std::exception& err)
 void runNotationTasks(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::notation;
-    const auto& bitFlag = getCategoryBit<category>();
+    const auto& bitFlag = getCategoryOpts<category>();
     if (bitFlag.none())
     {
         return;
@@ -546,7 +546,7 @@ void runNotationTasks(const std::vector<std::string>& candidates)
 void updateNotationTask(const std::string& target)
 {
     constexpr auto category = Category::notation;
-    auto& bitFlag = getCategoryBit<category>();
+    auto& bitFlag = getCategoryOpts<category>();
 
     switch (utility::common::bkdrHash(target.c_str()))
     {
@@ -649,7 +649,7 @@ catch (const std::exception& err)
 void runOptimalTasks(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::optimal;
-    const auto& bitFlag = getCategoryBit<category>();
+    const auto& bitFlag = getCategoryOpts<category>();
     if (bitFlag.none())
     {
         return;
@@ -727,7 +727,7 @@ void runOptimalTasks(const std::vector<std::string>& candidates)
 void updateOptimalTask(const std::string& target)
 {
     constexpr auto category = Category::optimal;
-    auto& bitFlag = getCategoryBit<category>();
+    auto& bitFlag = getCategoryOpts<category>();
 
     switch (utility::common::bkdrHash(target.c_str()))
     {
@@ -822,7 +822,7 @@ catch (const std::exception& err)
 void runSearchTasks(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::search;
-    const auto& bitFlag = getCategoryBit<category>();
+    const auto& bitFlag = getCategoryOpts<category>();
     if (bitFlag.none())
     {
         return;
@@ -880,7 +880,7 @@ void runSearchTasks(const std::vector<std::string>& candidates)
 void updateSearchTask(const std::string& target)
 {
     constexpr auto category = Category::search;
-    auto& bitFlag = getCategoryBit<category>();
+    auto& bitFlag = getCategoryOpts<category>();
 
     switch (utility::common::bkdrHash(target.c_str()))
     {
@@ -1053,7 +1053,7 @@ catch (const std::exception& err)
 void runSortTasks(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::sort;
-    const auto& bitFlag = getCategoryBit<category>();
+    const auto& bitFlag = getCategoryOpts<category>();
     if (bitFlag.none())
     {
         return;
@@ -1131,7 +1131,7 @@ void runSortTasks(const std::vector<std::string>& candidates)
 void updateSortTask(const std::string& target)
 {
     constexpr auto category = Category::sort;
-    auto& bitFlag = getCategoryBit<category>();
+    auto& bitFlag = getCategoryOpts<category>();
 
     switch (utility::common::bkdrHash(target.c_str()))
     {

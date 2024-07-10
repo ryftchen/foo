@@ -78,18 +78,18 @@ public:
     };
 
     //! @brief Bit flags for managing linear instances.
-    std::bitset<Bottom<LinearInstance>::value> linearBit{};
+    std::bitset<Bottom<LinearInstance>::value> linearOpts{};
     //! @brief Bit flags for managing tree instances.
-    std::bitset<Bottom<TreeInstance>::value> treeBit{};
+    std::bitset<Bottom<TreeInstance>::value> treeOpts{};
 
     //! @brief Check whether any data structure tasks do not exist.
     //! @return any data structure tasks do not exist or exist
-    [[nodiscard]] inline bool empty() const { return linearBit.none() && treeBit.none(); }
+    [[nodiscard]] inline bool empty() const { return linearOpts.none() && treeOpts.none(); }
     //! @brief Reset bit flags that manage data structure tasks.
     inline void reset()
     {
-        linearBit.reset();
-        treeBit.reset();
+        linearOpts.reset();
+        treeOpts.reset();
     }
 
 protected:
