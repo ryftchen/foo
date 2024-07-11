@@ -26,7 +26,6 @@ function shell()
 
 function die()
 {
-    echo
     echo "$(basename "${0}"): $*"
 
     exit 1
@@ -34,9 +33,9 @@ function die()
 
 function shell_command()
 {
-    echo
     if [[ ${ARGS[dry]} = true ]]; then
         printf "${STATUS_COLOR[exec]}[ exec ] ${STATUS_COLOR[time]}$(date "+%b %d %T")${STATUS_COLOR_OFF} $ %s\n" "$*"
+        echo
         return
     fi
 
@@ -47,6 +46,7 @@ function shell_command()
         printf "${STATUS_COLOR[fail]}[ fail ] ${STATUS_COLOR[time]}$(date "+%b %d %T")${STATUS_COLOR_OFF} $ %s\n" "$*"
         STATUS=1
     fi
+    echo
 }
 
 function wait_until_get_input()

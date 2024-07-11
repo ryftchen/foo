@@ -7,8 +7,9 @@
 #pragma once
 
 #ifndef __PRECOMPILED_HEADER
-#include <array>
+#include <algorithm>
 #include <bitset>
+#include <span>
 #include <vector>
 #else
 #include "application/pch/precompiled_header.hpp"
@@ -149,24 +150,24 @@ public:
         date_structure::linear::Output output;
         output.flush() << std::boolalpha;
         Meta meta[] = {{'A', "foo"}, {'B', "bar"}, {'C', "baz"}, {'D', "qux"}};
-        const std::uint16_t metaSize = sizeof(meta) / sizeof(meta[0]);
+        const std::span<Meta> nodes(meta);
 
         const Meta* val = nullptr;
         DLL dll = nullptr;
         createDll(&dll);
-        dllInsert(dll, 0, &meta[0]);
-        output.flush() << "insert (0): {" << meta[0].id << ", " << meta[0].name << "}\n";
-        dllInsert(dll, 0, &meta[1]);
-        output.flush() << "insert (0): {" << meta[1].id << ", " << meta[1].name << "}\n";
-        dllInsert(dll, 1, &meta[2]);
-        output.flush() << "insert (1): {" << meta[2].id << ", " << meta[2].name << "}\n";
+        dllInsert(dll, 0, &nodes[0]);
+        output.flush() << "insert (0): {" << nodes[0].id << ", " << nodes[0].name << "}\n";
+        dllInsert(dll, 0, &nodes[1]);
+        output.flush() << "insert (0): {" << nodes[1].id << ", " << nodes[1].name << "}\n";
+        dllInsert(dll, 1, &nodes[2]);
+        output.flush() << "insert (1): {" << nodes[2].id << ", " << nodes[2].name << "}\n";
         dllDelete(dll, 2);
         output.flush() << "delete (2)\n";
 
-        dllInsertFirst(dll, &meta[0]);
-        output.flush() << "insert first: {" << meta[0].id << ", " << meta[0].name << "}\n";
-        dllInsertLast(dll, &meta[metaSize - 1]);
-        output.flush() << "insert last: {" << meta[metaSize - 1].id << ", " << meta[metaSize - 1].name << "}\n";
+        dllInsertFirst(dll, &nodes.front());
+        output.flush() << "insert first: {" << nodes.front().id << ", " << nodes.front().name << "}\n";
+        dllInsertLast(dll, &nodes.back());
+        output.flush() << "insert last: {" << nodes.back().id << ", " << nodes.back().name << "}\n";
         val = static_cast<Meta*>(dllGetFirst(dll));
         output.flush() << "get first: {" << val->id << ", " << val->name << "}\n";
         val = static_cast<Meta*>(dllGetLast(dll));
@@ -198,23 +199,26 @@ public:
         date_structure::linear::Output output;
         output.flush() << std::boolalpha;
         Meta meta[] = {{'A', "foo"}, {'B', "bar"}, {'C', "baz"}, {'D', "qux"}};
-        const std::uint16_t metaSize = sizeof(meta) / sizeof(meta[0]);
+        const std::span<Meta> nodes(meta);
 
         const Meta* val = nullptr;
         Stack stacks = nullptr;
         createStack(&stacks);
-        for (std::uint16_t i = 0; i < (metaSize - 1); ++i)
-        {
-            stackPush(stacks, &meta[i]);
-            output.flush() << "push: {" << meta[i].id << ", " << meta[i].name << "}\n";
-        }
+        std::for_each(
+            nodes.begin(),
+            nodes.end(),
+            [&](auto& node)
+            {
+                stackPush(stacks, &node);
+                output.flush() << "push: {" << node.id << ", " << node.name << "}\n";
+            });
 
         val = static_cast<Meta*>(stackPop(stacks));
         output.flush() << "pop: {" << val->id << ", " << val->name << "}\n";
         val = static_cast<Meta*>(stackTop(stacks));
         output.flush() << "top: {" << val->id << ", " << val->name << "}\n";
-        stackPush(stacks, &meta[metaSize - 1]);
-        output.flush() << "push: {" << meta[metaSize - 1].id << ", " << meta[metaSize - 1].name << "}\n";
+        stackPush(stacks, &nodes.back());
+        output.flush() << "push: {" << nodes.back().id << ", " << nodes.back().name << "}\n";
 
         output.flush() << "whether it is empty: " << stackIsEmpty(stacks) << '\n';
         output.flush() << "size: " << stackSize(stacks) << '\n';
@@ -238,23 +242,26 @@ public:
         date_structure::linear::Output output;
         output.flush() << std::boolalpha;
         Meta meta[] = {{'A', "foo"}, {'B', "bar"}, {'C', "baz"}, {'D', "qux"}};
-        const std::uint16_t metaSize = sizeof(meta) / sizeof(meta[0]);
+        const std::span<Meta> nodes(meta);
 
         const Meta* val = nullptr;
         Queue queues = nullptr;
         createQueue(&queues);
-        for (std::uint16_t i = 0; i < (metaSize - 1); ++i)
-        {
-            queuePush(queues, &meta[i]);
-            output.flush() << "push: {" << meta[i].id << ", " << meta[i].name << "}\n";
-        }
+        std::for_each(
+            nodes.begin(),
+            nodes.end(),
+            [&](auto& node)
+            {
+                queuePush(queues, &node);
+                output.flush() << "push: {" << node.id << ", " << node.name << "}\n";
+            });
 
         val = static_cast<Meta*>(queuePop(queues));
         output.flush() << "pop: {" << val->id << ", " << val->name << "}\n";
         val = static_cast<Meta*>(queueFront(queues));
         output.flush() << "front: {" << val->id << ", " << val->name << "}\n";
-        queuePush(queues, &meta[metaSize - 1]);
-        output.flush() << "push: {" << meta[metaSize - 1].id << ", " << meta[metaSize - 1].name << "}\n";
+        queuePush(queues, &nodes.front());
+        output.flush() << "push: {" << nodes.front().id << ", " << nodes.front().name << "}\n";
 
         output.flush() << "whether it is empty: " << queueIsEmpty(queues) << '\n';
         output.flush() << "size: " << queueSize(queues) << '\n';
@@ -308,15 +315,17 @@ public:
 
         bs::Output output;
         BSTree root = nullptr;
-        constexpr std::uint8_t arraySize = 6;
-        constexpr std::array<std::int16_t, arraySize> array = {1, 5, 4, 3, 2, 6};
+        constexpr std::array<std::int16_t, 6> nodes = {1, 5, 4, 3, 2, 6};
 
         output.flush() << "insert: ";
-        for (std::uint8_t i = 0; i < arraySize; ++i)
-        {
-            output.flush() << array.at(i) << ' ';
-            root = bsTreeInsert(root, array.at(i));
-        }
+        std::for_each(
+            nodes.cbegin(),
+            nodes.cend(),
+            [&](const auto node)
+            {
+                output.flush() << node << ' ';
+                root = bsTreeInsert(root, node);
+            });
 
         output.flush() << "\npre-order traversal: ";
         output.preorderBSTree(root);
@@ -353,16 +362,18 @@ public:
 
         avl::Output output;
         AVLTree root = nullptr;
-        constexpr std::uint8_t arraySize = 16;
-        constexpr std::array<std::int16_t, arraySize> array = {3, 2, 1, 4, 5, 6, 7, 16, 15, 14, 13, 12, 11, 10, 8, 9};
+        constexpr std::array<std::int16_t, 16> nodes = {3, 2, 1, 4, 5, 6, 7, 16, 15, 14, 13, 12, 11, 10, 8, 9};
 
         output.flush() << "height: " << getHeight(root);
         output.flush() << "\ninsert: ";
-        for (std::uint8_t i = 0; i < arraySize; ++i)
-        {
-            output.flush() << array.at(i) << ' ';
-            root = avlTreeInsert(root, array.at(i));
-        }
+        std::for_each(
+            nodes.cbegin(),
+            nodes.cend(),
+            [&](const auto node)
+            {
+                output.flush() << node << ' ';
+                root = avlTreeInsert(root, node);
+            });
 
         output.flush() << "\npre-order traversal: ";
         output.preorderAVLTree(root);
@@ -401,15 +412,17 @@ public:
 
         splay::Output output;
         SplayTree root = nullptr;
-        constexpr std::uint8_t arraySize = 6;
-        constexpr std::array<std::int16_t, arraySize> array = {10, 50, 40, 30, 20, 60};
+        constexpr std::array<std::int16_t, 6> nodes = {10, 50, 40, 30, 20, 60};
 
         output.flush() << "insert: ";
-        for (std::uint8_t i = 0; i < arraySize; ++i)
-        {
-            output.flush() << array.at(i) << ' ';
-            root = splayTreeInsert(root, array.at(i));
-        }
+        std::for_each(
+            nodes.cbegin(),
+            nodes.cend(),
+            [&](const auto node)
+            {
+                output.flush() << node << ' ';
+                root = splayTreeInsert(root, node);
+            });
 
         output.flush() << "\npre-order traversal: ";
         output.preorderSplayTree(root);

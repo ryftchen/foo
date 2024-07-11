@@ -32,7 +32,7 @@ class Task:
         "--version": [],
         "--dump": [],
         "--console": [
-            r"help",
+            r"usage",
             r"quit",
             f"batch {console_file}",
             r"refresh",
@@ -237,7 +237,7 @@ class Task:
         if not os.path.isfile(self.console_file):
             with open(self.console_file, "wt", encoding="utf-8") as console_batch:
                 fcntl.flock(console_batch.fileno(), fcntl.LOCK_EX)
-                console_batch.write("# console command\nhelp\nquit\n")
+                console_batch.write("# console command\nusage\nquit\n")
                 fcntl.flock(console_batch.fileno(), fcntl.LOCK_UN)
 
         self.progress_bar.setup_progress_bar()
@@ -588,7 +588,7 @@ class Output:
 
     @classmethod
     def exit_with_error(cls, message):
-        print(f"\n{os.path.basename(__file__)}: {message}", file=sys.stderr)
+        print(f"{os.path.basename(__file__)}: {message}", file=sys.stderr)
         sys.exit(1)
 
     @classmethod

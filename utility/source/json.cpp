@@ -340,7 +340,7 @@ static JSON parseBoolean(const std::string& fmt, std::size_t& offset)
     else
     {
         throw std::runtime_error(
-            "JSON boolean: Expected 'true' or 'false', found '" + fmt.substr(offset, falseStr.length()) + "'.");
+            R"(JSON boolean: Expected "true" or "false", found ")" + fmt.substr(offset, falseStr.length()) + "\".");
     }
     offset += (boolean.toBoolean() ? trueStr.length() : falseStr.length());
     return boolean;
@@ -354,7 +354,8 @@ static JSON parseNull(const std::string& fmt, std::size_t& offset)
     const std::string nullStr = "null";
     if (fmt.substr(offset, nullStr.length()) != nullStr)
     {
-        throw std::runtime_error("JSON null: Expected 'null', found '" + fmt.substr(offset, nullStr.length()) + "'.");
+        throw std::runtime_error(
+            R"(JSON null: Expected "null", found ")" + fmt.substr(offset, nullStr.length()) + "\".");
     }
     offset += nullStr.length();
     return {};
