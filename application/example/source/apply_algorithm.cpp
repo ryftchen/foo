@@ -149,6 +149,7 @@ constexpr std::string_view toString(const MatchMethod method)
 //! @cond
 #define ELEM(val, str) str,
     constexpr std::string_view table[] = {APP_ALGO_MATCH_METHOD_TABLE};
+    static_assert((sizeof(table) / sizeof(table[0])) == Bottom<MatchMethod>::value);
     return table[method];
 //! @endcond
 #undef ELEM
@@ -167,6 +168,7 @@ constexpr std::string_view toString(const NotationMethod method)
 //! @cond
 #define ELEM(val, str) str,
     constexpr std::string_view table[] = {APP_ALGO_NOTATION_METHOD_TABLE};
+    static_assert((sizeof(table) / sizeof(table[0])) == Bottom<NotationMethod>::value);
     return table[method];
 //! @endcond
 #undef ELEM
@@ -187,6 +189,7 @@ constexpr std::string_view toString(const OptimalMethod method)
 //! @cond
 #define ELEM(val, str) str,
     constexpr std::string_view table[] = {APP_ALGO_OPTIMAL_METHOD_TABLE};
+    static_assert((sizeof(table) / sizeof(table[0])) == Bottom<OptimalMethod>::value);
     return table[method];
 //! @endcond
 #undef ELEM
@@ -206,6 +209,7 @@ constexpr std::string_view toString(const SearchMethod method)
 //! @cond
 #define ELEM(val, str) str,
     constexpr std::string_view table[] = {APP_ALGO_SEARCH_METHOD_TABLE};
+    static_assert((sizeof(table) / sizeof(table[0])) == Bottom<SearchMethod>::value);
     return table[method];
 //! @endcond
 #undef ELEM
@@ -232,6 +236,7 @@ constexpr std::string_view toString(const SortMethod method)
 //! @cond
 #define ELEM(val, str) str,
     constexpr std::string_view table[] = {APP_ALGO_SORT_METHOD_TABLE};
+    static_assert((sizeof(table) / sizeof(table[0])) == Bottom<SortMethod>::value);
     return table[method];
 //! @endcond
 #undef ELEM

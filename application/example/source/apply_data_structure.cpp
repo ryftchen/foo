@@ -141,6 +141,7 @@ constexpr std::string_view toString(const LinearInstance instance)
 //! @cond
 #define ELEM(val, str) str,
     constexpr std::string_view table[] = {APP_DS_LINEAR_INSTANCE_TABLE};
+    static_assert((sizeof(table) / sizeof(table[0])) == Bottom<LinearInstance>::value);
     return table[instance];
 //! @endcond
 #undef ELEM
@@ -160,6 +161,7 @@ constexpr std::string_view toString(const TreeInstance instance)
 //! @cond
 #define ELEM(val, str) str,
     constexpr std::string_view table[] = {APP_DS_TREE_INSTANCE_TABLE};
+    static_assert((sizeof(table) / sizeof(table[0])) == Bottom<TreeInstance>::value);
     return table[instance];
 //! @endcond
 #undef ELEM

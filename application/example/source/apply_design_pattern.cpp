@@ -151,6 +151,7 @@ constexpr std::string_view toString(const BehavioralInstance instance)
 //! @cond
 #define ELEM(val, str) str,
     constexpr std::string_view table[] = {APP_DP_BEHAVIORAL_INSTANCE_TABLE};
+    static_assert((sizeof(table) / sizeof(table[0])) == Bottom<BehavioralInstance>::value);
     return table[instance];
 //! @endcond
 #undef ELEM
@@ -172,6 +173,7 @@ constexpr std::string_view toString(const CreationalInstance instance)
 //! @cond
 #define ELEM(val, str) str,
     constexpr std::string_view table[] = {APP_DP_CREATIONAL_INSTANCE_TABLE};
+    static_assert((sizeof(table) / sizeof(table[0])) == Bottom<CreationalInstance>::value);
     return table[instance];
 //! @endcond
 #undef ELEM
@@ -195,6 +197,7 @@ constexpr std::string_view toString(const StructuralInstance instance)
 //! @cond
 #define ELEM(val, str) str,
     constexpr std::string_view table[] = {APP_DP_STRUCTURAL_INSTANCE_TABLE};
+    static_assert((sizeof(table) / sizeof(table[0])) == Bottom<StructuralInstance>::value);
     return table[instance];
 //! @endcond
 #undef ELEM
