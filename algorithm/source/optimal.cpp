@@ -386,8 +386,8 @@ void Genetic::stochasticTournamentSelection(Population& pop, const std::vector<d
     popNew.reserve(pop.size());
     while (popNew.size() < pop.size())
     {
-        auto competitor1 = rouletteWheelSelection(pop, cumFitness);
-        auto competitor2 = rouletteWheelSelection(pop, cumFitness);
+        auto competitor1 = rouletteWheelSelection(pop, cumFitness),
+             competitor2 = rouletteWheelSelection(pop, cumFitness);
         (calculateFitness(*competitor1) >= calculateFitness(*competitor2)) ? popNew.emplace_back(*competitor1)
                                                                            : popNew.emplace_back(*competitor2);
     }

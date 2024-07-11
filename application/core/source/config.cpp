@@ -293,8 +293,12 @@ catch (const std::exception& err)
     return false;
 }
 
+//! @brief Anonymous namespace.
+inline namespace
+{
 //! @brief The semaphore that controls the maximum access limit.
 static std::counting_semaphore<maxAccessLimit> configSem{maxAccessLimit};
+} // namespace
 
 //! @brief Query configuration.
 //! @return current configuration
