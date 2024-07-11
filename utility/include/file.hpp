@@ -111,8 +111,6 @@ extern std::ofstream openFile(const std::string& filename, const bool isOverwrit
 extern void closeFile(std::ifstream& ifs);
 extern void closeFile(std::ofstream& ofs);
 extern std::list<std::string> getFileContents(
-    const std::string& filename,
-    const bool reverse = false,
-    const std::uint64_t totalRows = 24 * 100);
+    const std::string& filename, const bool reverse = false, const std::uint64_t totalRows = 24 * 100);
 } // namespace file
 } // namespace utility

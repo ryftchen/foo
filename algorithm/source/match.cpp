@@ -149,9 +149,7 @@ std::int64_t Match::bm(
 }
 
 void Match::fillBadCharRuleTable(
-    std::uint32_t badCharRuleTable[],
-    const unsigned char* const pattern,
-    const std::uint32_t patternLen)
+    std::uint32_t badCharRuleTable[], const unsigned char* const pattern, const std::uint32_t patternLen)
 {
     for (std::uint16_t i = 0; i < maxASCII; ++i)
     {
@@ -165,9 +163,7 @@ void Match::fillBadCharRuleTable(
 }
 
 void Match::fillGoodSuffixRuleTable(
-    std::uint32_t goodSuffixRuleTable[],
-    const unsigned char* const pattern,
-    const std::uint32_t patternLen)
+    std::uint32_t goodSuffixRuleTable[], const unsigned char* const pattern, const std::uint32_t patternLen)
 {
     std::uint32_t lastPrefixIndex = 1;
     for (std::int64_t pos = (patternLen - 1); pos >= 0; --pos)
@@ -239,9 +235,7 @@ std::int64_t Match::horspool(
 }
 
 void Match::fillBadCharShiftTableForHorspool(
-    std::uint32_t badCharShiftTable[],
-    const unsigned char* const pattern,
-    const std::uint32_t patternLen)
+    std::uint32_t badCharShiftTable[], const unsigned char* const pattern, const std::uint32_t patternLen)
 {
     for (std::uint16_t i = 0; i < maxASCII; ++i)
     {
@@ -286,9 +280,7 @@ std::int64_t Match::sunday(
 }
 
 void Match::fillBadCharShiftTableForSunday(
-    std::uint32_t badCharShiftTable[],
-    const unsigned char* const pattern,
-    const std::uint32_t patternLen)
+    std::uint32_t badCharShiftTable[], const unsigned char* const pattern, const std::uint32_t patternLen)
 {
     for (std::uint16_t i = 0; i < maxASCII; ++i)
     {

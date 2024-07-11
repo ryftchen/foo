@@ -46,9 +46,7 @@ public:
     //! @param eps - precision of calculation
     //! @return result of optimal
     virtual std::optional<std::tuple<double, double>> operator()(
-        const double left,
-        const double right,
-        const double eps) = 0;
+        const double left, const double right, const double eps) = 0;
 };
 
 //! @brief Gradient descent.
@@ -65,9 +63,7 @@ public:
     //! @param eps - precision of calculation
     //! @return result of optimal
     [[nodiscard]] std::optional<std::tuple<double, double>> operator()(
-        const double left,
-        const double right,
-        const double eps) override;
+        const double left, const double right, const double eps) override;
 
 private:
     //! @brief Target function.
@@ -100,9 +96,7 @@ public:
     //! @param eps - precision of calculation
     //! @return result of optimal
     [[nodiscard]] std::optional<std::tuple<double, double>> operator()(
-        const double left,
-        const double right,
-        const double eps) override;
+        const double left, const double right, const double eps) override;
 
 private:
     //! @brief Target function.
@@ -131,9 +125,7 @@ public:
     //! @param eps - precision of calculation
     //! @return result of optimal
     [[nodiscard]] std::optional<std::tuple<double, double>> operator()(
-        const double left,
-        const double right,
-        const double eps) override;
+        const double left, const double right, const double eps) override;
 
 private:
     //! @brief Target function.
@@ -211,9 +203,7 @@ public:
     //! @param eps - precision of calculation
     //! @return result of optimal
     [[nodiscard]] std::optional<std::tuple<double, double>> operator()(
-        const double left,
-        const double right,
-        const double eps) override;
+        const double left, const double right, const double eps) override;
 
 private:
     //! @brief Target function.

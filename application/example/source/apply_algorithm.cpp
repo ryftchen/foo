@@ -251,10 +251,7 @@ namespace match
 //! @param pattern - single pattern
 //! @param interval - time interval
 static void displayResult(
-    const MatchMethod method,
-    const std::int64_t result,
-    const unsigned char* const pattern,
-    const double interval)
+    const MatchMethod method, const std::int64_t result, const unsigned char* const pattern, const double interval)
 {
     if (-1 != result)
     {
@@ -574,9 +571,7 @@ namespace optimal
 //! @param result - optimal result
 //! @param interval - time interval
 static void displayResult(
-    const OptimalMethod method,
-    const std::optional<std::tuple<double, double>>& result,
-    const double interval)
+    const OptimalMethod method, const std::optional<std::tuple<double, double>>& result, const double interval)
 {
     if (result.has_value())
     {

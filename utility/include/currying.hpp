@@ -200,8 +200,7 @@ struct Curry<std::tuple<CurriedArgs...>, std::tuple<UncurriedArgs...>>
     //! @return curried result
     template <typename Ret, typename... Args>
     static inline auto curryForInternal(
-        const std::function<Ret(CurriedArgs..., UncurriedArgs...)>& call,
-        Args&&... args)
+        const std::function<Ret(CurriedArgs..., UncurriedArgs...)>& call, Args&&... args)
     {
         using Callable = std::function<Ret(CurriedArgs..., UncurriedArgs...)>;
         using CurriedType = Curried<Callable, std::tuple<CurriedArgs...>, std::tuple<UncurriedArgs...>>;

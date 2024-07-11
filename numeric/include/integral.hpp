@@ -105,8 +105,8 @@ private:
     //! @param right - right endpoint
     //! @param step - number of steps
     //! @return result of definite integral
-    [[nodiscard]] double compositeSimpsonOneThird(const double left, const double right, const std::uint32_t step)
-        const;
+    [[nodiscard]] double compositeSimpsonOneThird(
+        const double left, const double right, const std::uint32_t step) const;
     //! @brief Simpson's 1/3 formula.
     //! @param left - left endpoint
     //! @param right - right endpoint
