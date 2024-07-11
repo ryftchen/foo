@@ -146,6 +146,7 @@ constexpr std::string_view toString(const ArithmeticMethod method)
 //! @cond
 #define ELEM(val, str) str,
     constexpr std::string_view table[] = {APP_NUM_ARITHMETIC_METHOD_TABLE};
+    static_assert((sizeof(table) / sizeof(table[0])) == Bottom<ArithmeticMethod>::value);
     return table[method];
 //! @endcond
 #undef ELEM
@@ -164,6 +165,7 @@ constexpr std::string_view toString(const DivisorMethod method)
 //! @cond
 #define ELEM(val, str) str,
     constexpr std::string_view table[] = {APP_NUM_DIVISOR_METHOD_TABLE};
+    static_assert((sizeof(table) / sizeof(table[0])) == Bottom<DivisorMethod>::value);
     return table[method];
 //! @endcond
 #undef ELEM
@@ -185,6 +187,7 @@ constexpr std::string_view toString(const IntegralMethod method)
 //! @cond
 #define ELEM(val, str) str,
     constexpr std::string_view table[] = {APP_NUM_INTEGRAL_METHOD_TABLE};
+    static_assert((sizeof(table) / sizeof(table[0])) == Bottom<IntegralMethod>::value);
     return table[method];
 //! @endcond
 #undef ELEM
@@ -203,6 +206,7 @@ constexpr std::string_view toString(const PrimeMethod method)
 //! @cond
 #define ELEM(val, str) str,
     constexpr std::string_view table[] = {APP_NUM_PRIME_METHOD_TABLE};
+    static_assert((sizeof(table) / sizeof(table[0])) == Bottom<PrimeMethod>::value);
     return table[method];
 //! @endcond
 #undef ELEM
