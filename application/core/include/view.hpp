@@ -45,8 +45,10 @@ namespace application // NOLINT (modernize-concat-nested-namespaces)
 //! @brief View-server-related functions in the application module.
 namespace view
 {
-//! @brief Invalid Shm id.
+//! @brief Invalid shared memory id in TLV value.
 constexpr int invalidShmId = -1;
+//! @brief Default information size in TLV value.
+constexpr std::uint16_t defaultInfoSize = 256;
 
 //! @brief Type-length-value scheme.
 namespace tlv
@@ -75,16 +77,16 @@ struct TLVValue
 {
     //! @brief Flag for stopping the connection.
     bool stopTag{false};
-    //! @brief Information about the library.
-    char libInfo[256]{'\0'};
-    //! @brief Shm id of the bash outputs.
+    //! @brief Information about the runtime library.
+    char libInfo[defaultInfoSize]{'\0'};
+    //! @brief Shared memory id of the bash outputs.
     int bashShmId{invalidShmId};
-    //! @brief Shm id of the log contents.
+    //! @brief Shared memory id of the log contents.
     int logShmId{invalidShmId};
-    //! @brief Shm id of the status reports.
+    //! @brief Shared memory id of the status reports.
     int statusShmId{invalidShmId};
-    //! @brief Details of the current configuration.
-    char configDetail[1024]{'\0'};
+    //! @brief Information about the current configuration.
+    char configInfo[defaultInfoSize * 2]{'\0'};
 };
 
 //! @brief TLV packet.
@@ -247,14 +249,14 @@ private:
     // clang-format off
     //! @brief Mapping table of all viewer options.
     const OptionMap optionDispatcher{
-        // - Option -+---------------- Help ----------------+------- Build Packet -------
-        // ----------+--------------------------------------+----------------------------
-        { "depend"   , { "show associated library list"      , &buildTLVPacket2Depend  }},
-        { "execute"  , { "enter bash commands in quotes"     , &buildTLVPacket2Execute }},
-        { "journal"  , { "view the log with highlights"      , &buildTLVPacket2Journal }},
-        { "monitor"  , { "query the status of the process"   , &buildTLVPacket2Monitor }},
-        { "profile"  , { "display the current configuration" , &buildTLVPacket2Profile }}
-        // ----------+--------------------------------------+----------------------------
+        // - Option -+---------------------- Help ----------------------+------- Build Packet -------
+        // ----------+--------------------------------------------------+----------------------------
+        { "depend"   , { "show associated library list"                  , &buildTLVPacket2Depend  }},
+        { "execute"  , { "enter bash commands in quotes [inputs: 'CMD']" , &buildTLVPacket2Execute }},
+        { "journal"  , { "view the log with highlights"                  , &buildTLVPacket2Journal }},
+        { "monitor"  , { "query process status and stacks [inputs: NUM]" , &buildTLVPacket2Monitor }},
+        { "profile"  , { "display current configuration"                 , &buildTLVPacket2Profile }}
+        // ----------+--------------------------------------------------+----------------------------
     };
     // clang-format on
 
@@ -325,9 +327,10 @@ private:
     //! @brief Get the log contents.
     //! @return log contents
     static std::string getLogContents();
-    //! @brief Get the status information.
-    //! @return status information
-    static std::string getStatusInformation();
+    //! @brief Get the status reports.
+    //! @param frame - maximum frame
+    //! @return status reports
+    static std::string getStatusReports(const std::uint16_t frame);
     //! @brief Check whether it is in the uninterrupted target state.
     //! @param state - target state
     //! @return in the uninterrupted target state or not

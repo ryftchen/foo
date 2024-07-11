@@ -29,7 +29,7 @@ Console::Console(const std::string& greeting) : impl(std::make_unique<Impl>(gree
 {
     ::rl_attempted_completion_function = &Console::getCommandCompleter;
 
-    impl->regMap["help"] = std::make_pair(
+    impl->regMap["usage"] = std::make_pair(
         [this](const Args& /*input*/)
         {
             const auto commandsHelp = getHelpOfRegisteredCommand();
@@ -49,8 +49,8 @@ Console::Console(const std::string& greeting) : impl(std::make_unique<Impl>(gree
             std::cout << std::flush;
             return RetCode::success;
         },
-        "show help");
-    impl->regOrder.emplace_back("help");
+        "show usage");
+    impl->regOrder.emplace_back("usage");
 
     impl->regMap["quit"] = std::make_pair(
         [](const Args& /*input*/)
@@ -66,11 +66,11 @@ Console::Console(const std::string& greeting) : impl(std::make_unique<Impl>(gree
         {
             if (input.size() < 2)
             {
-                throw std::logic_error("Please input '" + input.at(0) + " FILENAME' to run.");
+                throw std::logic_error("Please enter the \"" + input.at(0) + "\" and append with FILE.");
             }
             return RetCode(fileExecutor(input.at(1)));
         },
-        "run batch commands from the file");
+        "run batch commands in file [inputs: FILE]");
     impl->regOrder.emplace_back("batch");
 }
 
@@ -112,7 +112,8 @@ int Console::commandExecutor(const std::string& command)
     const auto iterator = impl->regMap.find(inputs.at(0));
     if (std::cend(impl->regMap) == iterator)
     {
-        throw std::logic_error("The console command '" + inputs.at(0) + "' could not be found.");
+        throw std::logic_error(
+            "The console command \"" + inputs.at(0) + R"(" could not be found. Enter the "usage" for help.)");
     }
 
     return RetCode(static_cast<int>(std::get<0>(iterator->second)(inputs)));

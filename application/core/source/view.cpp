@@ -58,31 +58,27 @@ int tlvEncode(char* buf, int& len, const TLVValue& val)
     enc.write<bool>(val.stopTag);
     sum += (offset + sizeof(bool));
 
-    int valLen = std::strlen(val.libInfo);
-    enc.write<int>(TLVType::depend);
-    enc.write<int>(valLen);
-    enc.write(val.libInfo, valLen);
-    sum += (offset + valLen);
-
-    const auto tryToFillShmId = [&](const TLVType type, int TLVValue::*shmId)
+    const auto fillStrPayload = [&](const TLVType type, char(TLVValue::*payload)[])
     {
-        if (invalidShmId != val.*shmId)
-        {
-            enc.write<int>(type);
-            enc.write<int>(sizeof(int));
-            enc.write<int>(val.*shmId);
-            sum += (offset + sizeof(int));
-        }
+        const int valLen = std::strlen(val.*payload);
+        enc.write<int>(type);
+        enc.write<int>(valLen);
+        enc.write(val.*payload, valLen);
+        sum += (offset + valLen);
     };
-    tryToFillShmId(TLVType::execute, &TLVValue::bashShmId);
-    tryToFillShmId(TLVType::journal, &TLVValue::logShmId);
-    tryToFillShmId(TLVType::monitor, &TLVValue::statusShmId);
+    const auto fillIntPayload = [&](const TLVType type, int TLVValue::*payload)
+    {
+        enc.write<int>(type);
+        enc.write<int>(sizeof(int));
+        enc.write<int>(val.*payload);
+        sum += (offset + sizeof(int));
+    };
 
-    valLen = std::strlen(val.configDetail);
-    enc.write<int>(TLVType::profile);
-    enc.write<int>(valLen);
-    enc.write(val.configDetail, valLen);
-    sum += (offset + valLen);
+    fillStrPayload(TLVType::depend, &TLVValue::libInfo);
+    fillIntPayload(TLVType::execute, &TLVValue::bashShmId);
+    fillIntPayload(TLVType::journal, &TLVValue::logShmId);
+    fillIntPayload(TLVType::monitor, &TLVValue::statusShmId);
+    fillStrPayload(TLVType::profile, &TLVValue::configInfo);
 
     *reinterpret_cast<int*>(buf + sizeof(int)) = ::htonl(sum);
     len = offset + sum;
@@ -140,7 +136,7 @@ int tlvDecode(char* buf, const int len, TLVValue& val)
                 sum -= (offset + sizeof(int));
                 break;
             case TLVType::profile:
-                dec.read(&val.configDetail, length);
+                dec.read(&val.configInfo, length);
                 sum -= (offset + length);
                 break;
             default:
@@ -393,9 +389,9 @@ tlv::TLVValue View::parseTLVPacket(char* buffer, const int length) const
     {
         printSharedMemory(value.statusShmId, true);
     }
-    if (std::strlen(value.configDetail) != 0)
+    if (std::strlen(value.configInfo) != 0)
     {
-        std::cout << utility::json::JSON::load(value.configDetail) << std::endl;
+        std::cout << utility::json::JSON::load(value.configInfo) << std::endl;
     }
 
     return value;
@@ -498,9 +494,34 @@ int View::buildTLVPacket2Execute(const std::vector<std::string>& args, char* buf
     {
         cmds += arg + ' ';
     }
-    if (!args.empty())
+    if (!cmds.empty())
     {
         cmds.pop_back();
+    }
+    if (cmds.empty()
+        || ((cmds.length() == 2)
+            && (std::all_of(
+                    cmds.cbegin(),
+                    cmds.cend(),
+                    [](const auto c)
+                    {
+                        return '\'' == c;
+                    })
+                || std::all_of(
+                    cmds.cbegin(),
+                    cmds.cend(),
+                    [](const auto c)
+                    {
+                        return '"' == c;
+                    }))))
+    {
+        throw std::logic_error("Please enter the \"execute\" and append with 'CMD' (include quotes).");
+    }
+    if ((cmds.length() <= 1)
+        || (((cmds.find_first_not_of('\'') == 0) || (cmds.find_last_not_of('\'') == (cmds.length() - 1)))
+            && ((cmds.find_first_not_of('"') == 0) || (cmds.find_last_not_of('"') == (cmds.length() - 1)))))
+    {
+        throw std::runtime_error("Missing full quotes around the pending command.");
     }
 
     int len = 0;
@@ -525,10 +546,24 @@ int View::buildTLVPacket2Journal(const std::vector<std::string>& /*args*/, char*
     return len;
 }
 
-int View::buildTLVPacket2Monitor(const std::vector<std::string>& /*args*/, char* buf)
+int View::buildTLVPacket2Monitor(const std::vector<std::string>& args, char* buf)
 {
+    if (args.size() > 1)
+    {
+        throw std::logic_error("Please enter the \"monitor\" and append with or without NUM.");
+    }
+    else if (args.size() == 1)
+    {
+        const std::string input = args.front();
+        if ((input.length() != 1) || !std::isdigit(input.front()))
+        {
+            throw std::runtime_error("Only decimal bases are supported for the specified number of stack frames.");
+        }
+    }
+    const std::uint16_t frameNum = !args.empty() ? std::stoul(args.front()) : 1;
+
     int len = 0;
-    const int shmId = fillSharedMemory(getStatusInformation());
+    const int shmId = fillSharedMemory(getStatusReports(frameNum));
     if (tlv::tlvEncode(buf, len, tlv::TLVValue{.statusShmId = shmId}) < 0)
     {
         throw std::runtime_error("Failed to build packet for the monitor option.");
@@ -542,8 +577,8 @@ int View::buildTLVPacket2Profile(const std::vector<std::string>& /*args*/, char*
     int len = 0;
     tlv::TLVValue val{};
     const std::string currConfig = config::queryConfiguration().toUnescapedString();
-    std::strncpy(val.configDetail, currConfig.c_str(), sizeof(val.configDetail) - 1);
-    val.configDetail[sizeof(val.configDetail) - 1] = '\0';
+    std::strncpy(val.configInfo, currConfig.c_str(), sizeof(val.configInfo) - 1);
+    val.configInfo[sizeof(val.configInfo) - 1] = '\0';
     if (tlv::tlvEncode(buf, len, val) < 0)
     {
         throw std::runtime_error("Failed to build packet for the profile option.");
@@ -748,7 +783,7 @@ std::string View::getLogContents()
     return std::move(os).str();
 }
 
-std::string View::getStatusInformation()
+std::string View::getStatusReports(const std::uint16_t frame)
 {
     const int pid = ::getpid();
     constexpr std::uint16_t totalLen = 512;
@@ -779,7 +814,8 @@ std::string View::getStatusInformation()
                 std::snprintf(
                     cmd + usedLen,
                     totalLen - usedLen,
-                    "&& echo 'Stack:' && (eu-stack -1v -n 3 -p %d 2>&1 | grep '#' || exit 0) ; fi",
+                    "&& echo 'Stack:' && (eu-stack -1v -n %d -p %d 2>&1 | grep '#' || exit 0) ; fi",
+                    frame,
                     tid);
             }
             else
@@ -796,20 +832,20 @@ std::string View::getStatusInformation()
     }
     cmd[totalLen - 1] = '\0';
 
-    std::string statInfo;
+    std::string statRep;
     std::for_each(
         cmdCntr.cbegin(),
         cmdCntr.cend(),
-        [&statInfo](const auto& cmd)
+        [&statRep](const auto& cmd)
         {
-            statInfo += utility::common::executeCommand(cmd) + '\n';
+            statRep += utility::common::executeCommand(cmd) + '\n';
         });
-    if (!statInfo.empty())
+    if (!statRep.empty())
     {
-        statInfo.pop_back();
+        statRep.pop_back();
     }
 
-    return statInfo;
+    return statRep;
 }
 
 bool View::isInUninterruptedState(const State state) const
@@ -824,7 +860,7 @@ void View::createViewServer()
     {
         newSocket->onMessageReceived = [this, newSocket](const std::string& message)
         {
-            if (message.length() == 0)
+            if (message.empty())
             {
                 return;
             }
@@ -863,7 +899,7 @@ void View::createViewServer()
     udpServer = std::make_shared<utility::socket::UDPServer>();
     udpServer->onMessageReceived = [this](const std::string& message, const std::string& ip, const std::uint16_t port)
     {
-        if (message.length() == 0)
+        if (message.empty())
         {
             return;
         }

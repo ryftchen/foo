@@ -131,16 +131,22 @@ void Command::initializeCLI()
 
     mainCLI.addArgument("-c", "--console")
         .argsNum(utility::argument::ArgsNumPattern::any)
-        .defaultVal<std::vector<std::string>>({"help"})
+        .defaultVal<std::vector<std::string>>({"usage"})
         .appending()
         .action(
             [](const std::string& value)
             {
-                if (value.find_first_not_of(' ') != std::string::npos)
+                if (std::none_of(
+                        value.cbegin(),
+                        value.cend(),
+                        [](const auto c)
+                        {
+                            return ' ' != c;
+                        }))
                 {
-                    return value;
+                    throw std::logic_error("Invalid console command.");
                 }
-                throw std::logic_error("Invalid console command.");
+                return value;
             })
         .metavar("CMD")
         .help("run commands in console mode and exit\n"
@@ -554,7 +560,7 @@ void Command::launchClient<utility::socket::TCPSocket>(std::shared_ptr<utility::
     {
         try
         {
-            if (VIEW_TLV_PACKET(buffer, length).stopTag)
+            if ((0 != length) && VIEW_TLV_PACKET(buffer, length).stopTag)
             {
                 client->setNonBlocking();
             }
@@ -578,7 +584,7 @@ void Command::launchClient<utility::socket::UDPSocket>(std::shared_ptr<utility::
     {
         try
         {
-            if (VIEW_TLV_PACKET(buffer, length).stopTag)
+            if ((0 != length) && VIEW_TLV_PACKET(buffer, length).stopTag)
             {
                 client->setNonBlocking();
             }
