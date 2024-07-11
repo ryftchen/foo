@@ -22,8 +22,12 @@ const char* version() noexcept
     return ver;
 }
 
+//! @brief Anonymous namespace.
+inline namespace
+{
 //! @brief Current console instance.
 static Console* currentConsole = nullptr;
+} // namespace
 
 Console::Console(const std::string& greeting) : impl(std::make_unique<Impl>(greeting))
 {
