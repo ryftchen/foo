@@ -146,10 +146,7 @@ std::string represent(const T& val)
 //! @return wrapping of calls
 template <class Func, class Tuple, class Extra, std::size_t... I>
 constexpr decltype(auto) applyScopedOneImpl(
-    Func&& func,
-    Tuple&& tup,
-    Extra&& ext,
-    std::index_sequence<I...> /*sequence*/)
+    Func&& func, Tuple&& tup, Extra&& ext, std::index_sequence<I...> /*sequence*/)
 {
     return std::invoke(std::forward<Func>(func), std::get<I>(std::forward<Tuple>(tup))..., std::forward<Extra>(ext));
 }
@@ -221,9 +218,7 @@ public:
     //! @param sequence - sequences related to arguments
     template <std::size_t N, std::size_t... I>
     explicit Register(
-        std::string_view prefix,
-        std::array<std::string_view, N>&& array,
-        std::index_sequence<I...> sequence);
+        std::string_view prefix, std::array<std::string_view, N>&& array, std::index_sequence<I...> sequence);
     //! @brief Construct a new Register object.
     //! @tparam N - number of arguments
     //! @param prefix - prefix characters
@@ -478,9 +473,7 @@ protected:
 
 template <std::size_t N, std::size_t... I>
 Register::Register(
-    std::string_view prefix,
-    std::array<std::string_view, N>&& array,
-    std::index_sequence<I...> /*sequence*/) :
+    std::string_view prefix, std::array<std::string_view, N>&& array, std::index_sequence<I...> /*sequence*/) :
     isAcceptOptionalLikeValue(false),
     isOptional((checkIfOptional(array[I], prefix) || ...)),
     isRequired(false),
@@ -488,7 +481,7 @@ Register::Register(
     isUsed(false),
     prefixChars(prefix)
 {
-    ((void)names.emplace_back(array[I]), ...);
+    (static_cast<void>(names.emplace_back(array[I])), ...);
     std::sort(
         names.begin(),
         names.end(),

@@ -291,10 +291,7 @@ void TCPServer::toAccept(const TCPServer* const server)
 }
 
 int UDPSocket::toSendTo(
-    const char* const bytes,
-    const std::size_t length,
-    const std::string& ip,
-    const std::uint16_t port)
+    const char* const bytes, const std::size_t length, const std::string& ip, const std::uint16_t port)
 {
     ::sockaddr_in addr{};
     ::addrinfo hints{}, *res = nullptr, *it = nullptr;

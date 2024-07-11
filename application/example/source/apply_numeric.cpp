@@ -222,11 +222,7 @@ namespace arithmetic
 //! @param b - second integer for elementary arithmetic
 //! @param op - operator of arithmetic
 static void displayResult(
-    const ArithmeticMethod method,
-    const std::int32_t result,
-    const std::int32_t a,
-    const std::int32_t b,
-    const char op)
+    const ArithmeticMethod method, const std::int32_t result, const std::int32_t a, const std::int32_t b, const char op)
 {
     COMMON_PRINT("\n==> %-14s Method <==\n(%d) %c (%d) = %d\n", getTitle(method).data(), a, op, b, result);
 }

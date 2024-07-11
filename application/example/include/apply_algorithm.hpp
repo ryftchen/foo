@@ -758,10 +758,7 @@ public:
     template <typename N>
     requires (isRealNumber<N>())
     static char* spliceAll(
-        const T* const array,
-        const std::uint32_t length,
-        char* const buffer,
-        const std::uint32_t bufferSize)
+        const T* const array, const std::uint32_t length, char* const buffer, const std::uint32_t bufferSize)
     {
         std::uint32_t align = 0;
         for (std::uint32_t i = 0; i < length; ++i)
@@ -1000,10 +997,7 @@ public:
     template <typename N>
     requires (isRealNumber<N>())
     static char* spliceAll(
-        const T* const array,
-        const std::uint32_t length,
-        char* const buffer,
-        const std::uint32_t bufferSize)
+        const T* const array, const std::uint32_t length, char* const buffer, const std::uint32_t bufferSize)
     {
         std::uint32_t align = 0;
         for (std::uint32_t i = 0; i < length; ++i)
