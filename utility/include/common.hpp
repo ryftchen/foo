@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include <array>
 #include <cstring>
+#include <functional>
 #include <string>
 
 //! @brief Format as a string and printing.
@@ -167,5 +167,6 @@ extern std::string base64Encode(const std::string& data);
 extern std::string base64Decode(const std::string& data);
 extern std::string formatString(const char* const format, ...);
 extern std::string executeCommand(const std::string& command, const std::uint32_t timeout = 0);
+extern void waitForUserInput(const std::function<bool(const std::string&)>& action, const int timeout = -1);
 } // namespace common
 } // namespace utility

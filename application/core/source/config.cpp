@@ -271,25 +271,33 @@ try
 }
 catch (const std::exception& err)
 {
-    std::cerr << "Configuration load exception ..." << std::endl;
-    std::cout << "Type y to force an update to the default configuration, n to exit: ";
+    std::cerr << "Configuration load exception. " << err.what() << std::endl;
+    constexpr std::string_view hint = "Type y to force an update to the default configuration, n to exit: ",
+                               clearEscape = "\x1b[1A\x1b[2K\r";
+    std::cout << hint << "\n\x1b[1A\x1b[" << hint.length() << 'C' << std::flush;
 
-    std::string input;
-    while (std::cin >> input)
-    {
-        if ("y" == input)
+    constexpr std::uint16_t timeoutPeriod = 5000;
+    utility::common::waitForUserInput(
+        [&filename, &hint, &clearEscape](const std::string& input)
         {
-            forcedConfigurationUpdateByDefault(filename);
-            std::cout << std::endl;
-            return false;
-        }
-        else if ("n" == input)
-        {
-            std::cout << std::endl;
-            throw std::runtime_error(err.what());
-        }
-    }
+            if ("y" == input)
+            {
+                forcedConfigurationUpdateByDefault(filename);
+                return true;
+            }
+            else if ("n" == input)
+            {
+                return true;
+            }
+            else
+            {
+                std::cout << clearEscape << hint << std::flush;
+                return false;
+            }
+        },
+        timeoutPeriod);
 
+    std::cout << std::endl;
     return false;
 }
 

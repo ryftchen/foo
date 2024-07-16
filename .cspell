@@ -28,6 +28,7 @@ words:
   - Doxyfile
   - dumpmachine
   - endcond
+  - EPOLLIN
   - EXTSUM
   - filedir
   - fuser
