@@ -762,22 +762,26 @@ void View::segmentedOutput(const std::string& buffer)
     constexpr std::uint8_t terminalRows = 24;
     constexpr std::string_view hint = "----- Type <CR> for more, c to continue without paging, q to quit -----: ",
                                clearEscape = "\x1b[1A\x1b[2K\r";
-    std::uint64_t counter = 0;
-    bool withoutPaging = false;
     std::istringstream is(buffer);
+    const std::uint64_t lineNum =
+        std::count(std::istreambuf_iterator<char>(is), std::istreambuf_iterator<char>(), '\n');
+    is.seekg(std::ios::beg);
+
+    bool withoutPaging = (lineNum <= terminalRows);
     std::string line;
+    std::uint64_t counter = 0;
     while (std::getline(is, line))
     {
         std::cout << line << '\n';
         ++counter;
-        if ((0 == (counter % terminalRows)) && !withoutPaging)
+        if (!withoutPaging && (0 == (counter % terminalRows)))
         {
-            std::cout << hint;
+            std::cout << hint << "\n\x1b[1A\x1b[" << hint.length() << 'C' << std::flush;
             std::string input;
             for (;;)
             {
                 std::getline(std::cin, input);
-                std::cout << clearEscape;
+                std::cout << clearEscape << std::flush;
                 if (input.empty())
                 {
                     --counter;
@@ -790,14 +794,20 @@ void View::segmentedOutput(const std::string& buffer)
                 }
                 else if ("q" == input)
                 {
+                    std::cout << std::endl;
                     return;
                 }
                 else
                 {
-                    std::cout << hint;
+                    std::cout << hint << std::flush;
                 }
             }
         }
+    }
+
+    if (lineNum > terminalRows)
+    {
+        std::cout << std::endl;
     }
 }
 
