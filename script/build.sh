@@ -416,7 +416,6 @@ function perform_website_option()
 
     if command -v rustc >/dev/null 2>&1 && command -v cargo >/dev/null 2>&1; then
         shell_command "cargo build --release --manifest-path ./${FOLDER[doc]}/server/Cargo.toml"
-        echo ""
         if ! pgrep -f "${FOLDER[proj]}_doc" >/dev/null 2>&1; then
             echo "Please confirm whether continue launching the document server. (y or n)"
             local input
