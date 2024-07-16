@@ -6,8 +6,11 @@
 
 #include "common.hpp"
 
+#include <sys/epoll.h>
+#include <unistd.h>
 #include <chrono>
 #include <cstdarg>
+#include <iostream>
 #include <vector>
 
 namespace utility::common
@@ -220,4 +223,49 @@ std::string executeCommand(const std::string& command, const std::uint32_t timeo
 
     return output;
 };
+
+//! @brief Wait for input from the user.
+//! @param action - handling for the input
+//! @param timeout - timeout period (ms)
+void waitForUserInput(const std::function<bool(const std::string&)>& action, const int timeout)
+{
+    const int epollFd = ::epoll_create1(0);
+    if (-1 == epollFd)
+    {
+        throw std::runtime_error("Could not create epoll file descriptor.");
+    }
+
+    struct ::epoll_event event
+    {
+    };
+    event.events = ::EPOLLIN;
+    event.data.fd = STDIN_FILENO;
+    if (::epoll_ctl(epollFd, EPOLL_CTL_ADD, STDIN_FILENO, &event))
+    {
+        ::close(epollFd);
+        throw std::runtime_error("Could not add file descriptor to epoll.");
+    }
+
+    for (;;)
+    {
+        const int status = ::epoll_wait(epollFd, &event, 1, timeout);
+        if (-1 == status)
+        {
+            ::close(epollFd);
+            throw std::runtime_error("Failed to wait for epoll.");
+        }
+        else if ((0 != status) && (event.events & ::EPOLLIN))
+        {
+            std::string input;
+            std::getline(std::cin, input);
+            if (action(input))
+            {
+                break;
+            }
+            continue;
+        }
+        break;
+    }
+    ::close(epollFd);
+}
 } // namespace utility::common
