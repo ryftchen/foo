@@ -34,54 +34,97 @@ namespace application::view
 {
 namespace tlv
 {
+//! @brief TLV value serialization.
+//! @tparam T - type of target payload
+//! @param pkt - encoding packet that was filled type
+//! @param val - value of TLV to encode
+//! @param pl - target payload that has been included in the value of TLV
+//! @return summary offset of length-value
+template <typename T>
+requires std::is_arithmetic<T>::value
+static int serialize(Packet& pkt, const TLVValue& val, T TLVValue::*pl)
+{
+    constexpr int length = sizeof(T);
+    pkt.write<int>(length);
+    pkt.write<T>(val.*pl);
+    return sizeof(int) + length;
+}
+
+//! @brief TLV value serialization.
+//! @param pkt - encoding packet that was filled type
+//! @param val - value of TLV to encode
+//! @param pl - target payload that has been included in the value of TLV
+//! @return summary offset of length-value
+static int serialize(Packet& pkt, const TLVValue& val, char (TLVValue::*pl)[])
+{
+    const int length = std::strlen(val.*pl);
+    pkt.write<int>(length);
+    pkt.write(val.*pl, length);
+    return sizeof(int) + length;
+}
+
+//! @brief TLV value deserialization.
+//! @tparam T - type of target payload
+//! @param pkt - decoding packet that was filled type
+//! @param val - value of TLV to decode
+//! @param pl - target payload that has been included in the value of TLV
+//! @return summary offset of length-value
+template <typename T>
+requires std::is_arithmetic<T>::value
+static int deserialize(Packet& pkt, TLVValue& val, T TLVValue::*pl)
+{
+    int length = 0;
+    pkt.read<int>(&length);
+    pkt.read<T>(&(val.*pl));
+    return sizeof(int) + length;
+}
+
+//! @brief TLV value deserialization.
+//! @param pkt - decoding packet that was filled type
+//! @param val - value of TLV to decode
+//! @param pl - target payload that has been included in the value of TLV
+//! @return summary offset of length-value
+static int deserialize(Packet& pkt, TLVValue& val, char (TLVValue::*pl)[])
+{
+    int length = 0;
+    pkt.read<int>(&length);
+    pkt.read(&(val.*pl), length);
+    return sizeof(int) + length;
+}
+
 //! @brief Encode the TLV packet.
 //! @param buf - TLV packet buffer
 //! @param len -  buffer length
-//! @param val - value of TLV after encoding
+//! @param val - value of TLV to encode
 //! @return the value is 0 if successful, otherwise -1
-int tlvEncode(char* buf, int& len, const TLVValue& val)
+static int tlvEncoding(char* buf, int& len, const TLVValue& val)
 {
     if (nullptr == buf)
     {
         return -1;
     }
 
-    constexpr int offset = sizeof(int) + sizeof(int);
     int sum = 0;
-
     Packet enc(buf, len);
     enc.write<int>(TLVType::header);
     enc.write<int>(sum);
 
     enc.write<int>(TLVType::stop);
-    enc.write<int>(sizeof(bool));
-    enc.write<bool>(val.stopTag);
-    sum += (offset + sizeof(bool));
+    sum += sizeof(int) + serialize(enc, val, &TLVValue::stopTag);
 
-    const auto fillStrPayload = [&](const TLVType type, char(TLVValue::*payload)[])
-    {
-        const int valLen = std::strlen(val.*payload);
-        enc.write<int>(type);
-        enc.write<int>(valLen);
-        enc.write(val.*payload, valLen);
-        sum += (offset + valLen);
-    };
-    const auto fillIntPayload = [&](const TLVType type, int TLVValue::*payload)
-    {
-        enc.write<int>(type);
-        enc.write<int>(sizeof(int));
-        enc.write<int>(val.*payload);
-        sum += (offset + sizeof(int));
-    };
-
-    fillStrPayload(TLVType::depend, &TLVValue::libInfo);
-    fillIntPayload(TLVType::execute, &TLVValue::bashShmId);
-    fillIntPayload(TLVType::journal, &TLVValue::logShmId);
-    fillIntPayload(TLVType::monitor, &TLVValue::statusShmId);
-    fillStrPayload(TLVType::profile, &TLVValue::configInfo);
+    enc.write<int>(TLVType::depend);
+    sum += sizeof(int) + serialize(enc, val, &TLVValue::libInfo);
+    enc.write<int>(TLVType::execute);
+    sum += sizeof(int) + serialize(enc, val, &TLVValue::bashShmId);
+    enc.write<int>(TLVType::journal);
+    sum += sizeof(int) + serialize(enc, val, &TLVValue::logShmId);
+    enc.write<int>(TLVType::monitor);
+    sum += sizeof(int) + serialize(enc, val, &TLVValue::statusShmId);
+    enc.write<int>(TLVType::profile);
+    sum += sizeof(int) + serialize(enc, val, &TLVValue::configInfo);
 
     *reinterpret_cast<int*>(buf + sizeof(int)) = ::htonl(sum);
-    len = offset + sum;
+    len = sizeof(int) + sizeof(int) + sum;
 
     return 0;
 }
@@ -89,9 +132,9 @@ int tlvEncode(char* buf, int& len, const TLVValue& val)
 //! @brief Decode the TLV packet.
 //! @param buf - TLV packet buffer
 //! @param len -  buffer length
-//! @param val - value of TLV after decoding
+//! @param val - value of TLV to decode
 //! @return the value is 0 if successful, otherwise -1
-int tlvDecode(char* buf, const int len, TLVValue& val)
+static int tlvDecoding(char* buf, const int len, TLVValue& val)
 {
     if (nullptr == buf)
     {
@@ -99,7 +142,7 @@ int tlvDecode(char* buf, const int len, TLVValue& val)
     }
 
     Packet dec(buf, len);
-    int type = 0, length = 0, sum = 0;
+    int type = 0, sum = 0;
 
     dec.read<int>(&type);
     if (TLVType::header != type)
@@ -108,38 +151,31 @@ int tlvDecode(char* buf, const int len, TLVValue& val)
     }
     dec.read<int>(&sum);
 
-    constexpr int offset = sizeof(int) + sizeof(int);
     while (sum > 0)
     {
         dec.read<int>(&type);
-        dec.read<int>(&length);
         switch (type)
         {
             case TLVType::stop:
-                dec.read<bool>(&val.stopTag);
-                sum -= (offset + sizeof(bool));
+                sum -= sizeof(int) + deserialize(dec, val, &TLVValue::stopTag);
                 break;
             case TLVType::depend:
-                dec.read(&val.libInfo, length);
-                sum -= (offset + length);
+                sum -= sizeof(int) + deserialize(dec, val, &TLVValue::libInfo);
                 break;
             case TLVType::execute:
-                dec.read<int>(&val.bashShmId);
-                sum -= (offset + sizeof(int));
+                sum -= sizeof(int) + deserialize(dec, val, &TLVValue::bashShmId);
                 break;
             case TLVType::journal:
-                dec.read<int>(&val.logShmId);
-                sum -= (offset + sizeof(int));
+                sum -= sizeof(int) + deserialize(dec, val, &TLVValue::logShmId);
                 break;
             case TLVType::monitor:
-                dec.read<int>(&val.statusShmId);
-                sum -= (offset + sizeof(int));
+                sum -= sizeof(int) + deserialize(dec, val, &TLVValue::statusShmId);
                 break;
             case TLVType::profile:
-                dec.read(&val.configInfo, length);
-                sum -= (offset + length);
+                sum -= sizeof(int) + deserialize(dec, val, &TLVValue::configInfo);
                 break;
             default:
+                sum -= sizeof(int);
                 break;
         }
     }
@@ -368,7 +404,7 @@ tlv::TLVValue View::parseTLVPacket(char* buffer, const int length) const
     decryptMessage(buffer, length);
 
     tlv::TLVValue value{};
-    if (tlv::tlvDecode(buffer, length, value) < 0)
+    if (tlv::tlvDecoding(buffer, length, value) < 0)
     {
         throw std::runtime_error("Invalid message content.");
     }
@@ -441,7 +477,7 @@ std::vector<std::string> View::splitString(const std::string& str)
 int View::buildNullTLVPacket(char* buf)
 {
     int len = 0;
-    if (tlv::tlvEncode(buf, len, tlv::TLVValue{}) < 0)
+    if (tlv::tlvEncoding(buf, len, tlv::TLVValue{}) < 0)
     {
         throw std::runtime_error("Failed to build null packet.");
     }
@@ -452,7 +488,7 @@ int View::buildNullTLVPacket(char* buf)
 int View::buildTLVPacket2Stop(char* buf)
 {
     int len = 0;
-    if (tlv::tlvEncode(buf, len, tlv::TLVValue{.stopTag = true}) < 0)
+    if (tlv::tlvEncoding(buf, len, tlv::TLVValue{.stopTag = true}) < 0)
     {
         throw std::runtime_error("Failed to build packet to stop");
     }
@@ -479,7 +515,7 @@ int View::buildTLVPacket2Depend(const std::vector<std::string>& /*args*/, char* 
 #endif // defined(__has_include) && __has_include(<ncurses.h>)
     std::strncpy(val.libInfo, libNames.data(), sizeof(val.libInfo) - 1);
     val.libInfo[sizeof(val.libInfo) - 1] = '\0';
-    if (tlv::tlvEncode(buf, len, val) < 0)
+    if (tlv::tlvEncoding(buf, len, val) < 0)
     {
         throw std::runtime_error("Failed to build packet for the depend option.");
     }
@@ -526,7 +562,7 @@ int View::buildTLVPacket2Execute(const std::vector<std::string>& args, char* buf
 
     int len = 0;
     const int shmId = fillSharedMemory(utility::common::executeCommand("/bin/bash -c " + cmds, 5000));
-    if (tlv::tlvEncode(buf, len, tlv::TLVValue{.bashShmId = shmId}) < 0)
+    if (tlv::tlvEncoding(buf, len, tlv::TLVValue{.bashShmId = shmId}) < 0)
     {
         throw std::runtime_error("Failed to build packet for the execute option.");
     }
@@ -538,7 +574,7 @@ int View::buildTLVPacket2Journal(const std::vector<std::string>& /*args*/, char*
 {
     int len = 0;
     const int shmId = fillSharedMemory(getLogContents());
-    if (tlv::tlvEncode(buf, len, tlv::TLVValue{.logShmId = shmId}) < 0)
+    if (tlv::tlvEncoding(buf, len, tlv::TLVValue{.logShmId = shmId}) < 0)
     {
         throw std::runtime_error("Failed to build packet for the journal option.");
     }
@@ -564,7 +600,7 @@ int View::buildTLVPacket2Monitor(const std::vector<std::string>& args, char* buf
 
     int len = 0;
     const int shmId = fillSharedMemory(getStatusReports(frameNum));
-    if (tlv::tlvEncode(buf, len, tlv::TLVValue{.statusShmId = shmId}) < 0)
+    if (tlv::tlvEncoding(buf, len, tlv::TLVValue{.statusShmId = shmId}) < 0)
     {
         throw std::runtime_error("Failed to build packet for the monitor option.");
     }
@@ -579,7 +615,7 @@ int View::buildTLVPacket2Profile(const std::vector<std::string>& /*args*/, char*
     const std::string currConfig = config::queryConfiguration().toUnescapedString();
     std::strncpy(val.configInfo, currConfig.c_str(), sizeof(val.configInfo) - 1);
     val.configInfo[sizeof(val.configInfo) - 1] = '\0';
-    if (tlv::tlvEncode(buf, len, val) < 0)
+    if (tlv::tlvEncoding(buf, len, val) < 0)
     {
         throw std::runtime_error("Failed to build packet for the profile option.");
     }
@@ -713,13 +749,11 @@ void View::printSharedMemory(const int shmId, const bool withoutPaging)
 
     if (withoutPaging)
     {
-        std::cout << '\n' << output << std::endl;
+        std::cout << output;
     }
     else
     {
-        std::cout << '\n';
         segmentedOutput(output);
-        std::cout << std::endl;
     }
 }
 
