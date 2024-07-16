@@ -17,8 +17,7 @@ async fn run(args: arg::Args) {
     }
 
     print!(
-        "\nThe document server starts listening under the {} directory ...\n\
-        {}\n",
+        "The document server starts listening under the {} directory ...\n{}",
         abs_path!(root_dir),
         prompt
     );

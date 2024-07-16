@@ -804,6 +804,4 @@ void updateStructuralTask(const std::string& target)
             throw std::runtime_error("Unexpected " + std::string{toString(category)} + " instance: " + target + '.');
     }
 }
-
-#undef CATEGORY_TABLE
 } // namespace application::app_dp

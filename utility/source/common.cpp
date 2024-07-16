@@ -161,7 +161,7 @@ std::string formatString(const char* const format, ...)
 
 //! @brief Execute the command line.
 //! @param command - target command line to be executed
-//! @param timeout - timeout period
+//! @param timeout - timeout period (ms)
 //! @return command line output
 std::string executeCommand(const std::string& command, const std::uint32_t timeout)
 {
