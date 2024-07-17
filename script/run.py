@@ -173,9 +173,9 @@ class Task:
             self.repeat_count = args.repeat
 
         if args.check is not None:
-            if self.options["tst"]:
-                Output.exit_with_error("No support for the --check option during testing.")
             if "cov" in args.check:
+                if self.options["tst"]:
+                    Output.exit_with_error("No support for checking coverage during testing.")
                 stdout, _, _ = common.execute_command("command -v llvm-profdata-16 llvm-cov-16 2>&1")
                 if stdout.find("llvm-profdata-16") != -1 and stdout.find("llvm-cov-16") != -1:
                     os.environ["FOO_CHK_COV"] = "on"
