@@ -767,41 +767,40 @@ void View::segmentedOutput(const std::string& buffer)
         std::count(std::istreambuf_iterator<char>(is), std::istreambuf_iterator<char>(), '\n');
     is.seekg(std::ios::beg);
 
-    bool withoutPaging = (lineNum <= terminalRows);
+    bool forcedCancel = false, withoutPaging = (lineNum <= terminalRows);
     std::string line;
     std::uint64_t counter = 0;
-    while (std::getline(is, line))
+    while (std::getline(is, line) && !forcedCancel)
     {
         std::cout << line << '\n';
         ++counter;
         if (!withoutPaging && (0 == (counter % terminalRows)))
         {
             std::cout << hint << "\n\x1b[1A\x1b[" << hint.length() << 'C' << std::flush;
-            std::string input;
-            for (;;)
-            {
-                std::getline(std::cin, input);
-                std::cout << clearEscape << std::flush;
-                if (input.empty())
+            utility::common::waitForUserInput(
+                [&](const std::string& input)
                 {
-                    --counter;
-                    break;
-                }
-                else if ("c" == input)
-                {
-                    withoutPaging = true;
-                    break;
-                }
-                else if ("q" == input)
-                {
-                    std::cout << std::endl;
-                    return;
-                }
-                else
-                {
-                    std::cout << hint << std::flush;
-                }
-            }
+                    std::cout << clearEscape << std::flush;
+                    if (input.empty())
+                    {
+                        --counter;
+                    }
+                    else if ("c" == input)
+                    {
+                        withoutPaging = true;
+                    }
+                    else if ("q" == input)
+                    {
+                        forcedCancel = true;
+                    }
+                    else
+                    {
+                        std::cout << hint << std::flush;
+                        return false;
+                    }
+                    return true;
+                },
+                -1);
         }
     }
 

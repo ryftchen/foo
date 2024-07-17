@@ -266,6 +266,7 @@ void waitForUserInput(const std::function<bool(const std::string&)>& action, con
         }
         break;
     }
+
     ::close(epollFd);
 }
 } // namespace utility::common
