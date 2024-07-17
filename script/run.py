@@ -464,7 +464,7 @@ valgrind-ci {xml_filename}_inst_2.xml --summary"
             or (tags["chk_mem"] and not self.options["chk_mem"])
         ):
             Output.exit_with_error(f"Run options do not match the actual contents of the run log {self.log_file} file.")
-        if tags["tst"] and (tags["chk_cov"] or tags["chk_mem"]):
+        if tags["tst"] and tags["chk_cov"]:
             Output.exit_with_error(f"The run log {self.log_file} file is complex. Please retry.")
 
         start_indices = []
