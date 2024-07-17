@@ -164,7 +164,7 @@ std::string Log::loggerFilePath() const
     return filePath;
 }
 
-utility::file::ReadWriteLock& Log::loggerFileLock()
+utility::common::ReadWriteLock& Log::loggerFileLock()
 {
     return fileLock;
 }
@@ -176,7 +176,9 @@ bool Log::isInUninterruptedState(const State state) const
 
 void Log::handleLogQueue()
 {
-    utility::file::ReadWriteGuard guard(fileLock, utility::file::LockMode::write);
+    namespace common = utility::common;
+
+    common::ReadWriteGuard guard(fileLock, common::LockMode::write);
     while (!logQueue.empty())
     {
         switch (usedMedium)
@@ -217,31 +219,33 @@ void Log::tryToCreateLogFolder() const
 
 void Log::openLogFile()
 {
-    namespace file = utility::file;
+    namespace common = utility::common;
+    namespace io = utility::io;
 
-    file::ReadWriteGuard guard(fileLock, file::LockMode::write);
+    common::ReadWriteGuard guard(fileLock, common::LockMode::write);
     tryToCreateLogFolder();
     switch (writeType)
     {
         case OutputType::add:
-            ofs = file::openFile(filePath, false);
+            ofs = io::openFile(filePath, false);
             break;
         case OutputType::over:
-            ofs = file::openFile(filePath, true);
+            ofs = io::openFile(filePath, true);
             break;
         default:
             break;
     }
-    file::fdLock(ofs, file::LockMode::write);
+    io::fdWriteLock(ofs);
 };
 
 void Log::closeLogFile()
 {
-    namespace file = utility::file;
+    namespace common = utility::common;
+    namespace io = utility::io;
 
-    file::ReadWriteGuard guard(fileLock, file::LockMode::write);
-    file::fdUnlock(ofs);
-    file::closeFile(ofs);
+    common::ReadWriteGuard guard(fileLock, common::LockMode::write);
+    io::fdUnlock(ofs);
+    io::closeFile(ofs);
     if (std::filesystem::exists(filePath) && (std::filesystem::file_size(filePath) == 0))
     {
         std::filesystem::remove_all(std::filesystem::absolute(filePath).parent_path());
@@ -286,10 +290,10 @@ void Log::doRollback()
 
     if (ofs.is_open())
     {
-        namespace file = utility::file;
+        namespace io = utility::io;
         try
         {
-            file::fdLock(ofs, file::LockMode::write);
+            io::fdWriteLock(ofs);
         }
         catch (...)
         {
@@ -298,8 +302,8 @@ void Log::doRollback()
 
         closeLogFile();
         tryToCreateLogFolder();
-        auto tempOfs = file::openFile(filePath, true);
-        file::closeFile(tempOfs);
+        auto tempOfs = io::openFile(filePath, true);
+        io::closeFile(tempOfs);
     }
 }
 

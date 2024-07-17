@@ -6,12 +6,6 @@
 
 #pragma once
 
-#ifndef __PRECOMPILED_HEADER
-#include <string>
-#else
-#include "application/pch/precompiled_header.hpp"
-#endif // __PRECOMPILED_HEADER
-
 #include "utility/include/json.hpp"
 
 //! @brief "activateHelper" configuration.

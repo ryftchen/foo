@@ -6,11 +6,7 @@
 
 #include "common.hpp"
 
-#include <sys/epoll.h>
-#include <unistd.h>
-#include <chrono>
 #include <cstdarg>
-#include <iostream>
 #include <vector>
 
 namespace utility::common
@@ -34,6 +30,29 @@ std::size_t bkdrHash(const char* str)
         hash = hash * bkdrHashSeed + (*str++);
     }
     return hash & bkdrHashSize;
+}
+
+//! @brief Format as a string.
+//! @param format - null-terminated multibyte string specifying how to interpret the data
+//! @param ... - arguments
+//! @return string after formatting
+std::string formatString(const char* const format, ...)
+{
+    std::va_list list;
+    ::va_start(list, format);
+    int bufferSize = std::vsnprintf(nullptr, 0, format, list);
+    ::va_end(list);
+    if (bufferSize < 0)
+    {
+        throw std::runtime_error("Could not format string.");
+    }
+
+    ::va_start(list, format);
+    std::vector<char> buffer(bufferSize + 1);
+    std::vsnprintf(buffer.data(), bufferSize + 1, format, list);
+    ::va_end(list);
+
+    return std::string{buffer.cbegin(), buffer.cbegin() + bufferSize};
 }
 
 //! @brief Base64 encoding.
@@ -139,134 +158,81 @@ std::string base64Decode(const std::string& data)
     return decoded;
 }
 
-//! @brief Format as a string.
-//! @param format - null-terminated multibyte string specifying how to interpret the data
-//! @param ... - arguments
-//! @return string after formatting
-std::string formatString(const char* const format, ...)
+void ReadWriteLock::readLock()
 {
-    std::va_list list;
-    ::va_start(list, format);
-    int bufferSize = std::vsnprintf(nullptr, 0, format, list);
-    ::va_end(list);
-    if (bufferSize < 0)
+    std::shared_lock<std::shared_mutex> rdLock(rwLock);
+    if (std::unique_lock<std::mutex> lock(mtx); true)
     {
-        throw std::runtime_error("Could not format string.");
+        cv.wait(
+            lock,
+            [this]()
+            {
+                return writer.load() == 0;
+            });
+        reader.fetch_add(1);
     }
-
-    ::va_start(list, format);
-    std::vector<char> buffer(bufferSize + 1);
-    std::vsnprintf(buffer.data(), bufferSize + 1, format, list);
-    ::va_end(list);
-
-    return std::string{buffer.cbegin(), buffer.cbegin() + bufferSize};
 }
 
-//! @brief Execute the command line.
-//! @param command - target command line to be executed
-//! @param timeout - timeout period (ms)
-//! @return command line output
-std::string executeCommand(const std::string& command, const std::uint32_t timeout)
+void ReadWriteLock::readUnlock()
 {
-    std::FILE* const pipe = ::popen(command.c_str(), "r");
-    if (nullptr == pipe)
-    {
-        throw std::runtime_error("Could not open pipe when trying to execute command.");
-    }
+    std::unique_lock<std::mutex> lock(mtx);
+    reader.fetch_sub(1);
+    lock.unlock();
+    cv.notify_all();
+    lock.lock();
+}
 
-    std::string output;
-    std::vector<char> buffer(4096);
-    const auto startTime = std::chrono::steady_clock::now();
-    for (;;)
+void ReadWriteLock::writeLock()
+{
+    std::unique_lock<std::shared_mutex> wrLock(rwLock);
+    if (std::unique_lock<std::mutex> lock(mtx); true)
     {
-        if (timeout > 0)
-        {
-            const auto elapsedTime =
-                std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - startTime);
-            if (elapsedTime.count() > timeout)
+        cv.wait(
+            lock,
+            [this]()
             {
-                ::pclose(pipe);
-                throw std::runtime_error("Execute command timeout.");
-            }
-        }
+                return (reader.load() == 0) && (writer.load() == 0);
+            });
+        writer.fetch_add(1);
+    }
+}
 
-        const std::size_t readLen = std::fread(buffer.data(), sizeof(char), buffer.size(), pipe);
-        if (0 == readLen)
-        {
+void ReadWriteLock::writeUnlock()
+{
+    std::unique_lock<std::mutex> lock(mtx);
+    writer.fetch_sub(1);
+    lock.unlock();
+    cv.notify_all();
+    lock.lock();
+}
+
+ReadWriteGuard::ReadWriteGuard(ReadWriteLock& lock, const LockMode mode) : lock(lock), mode(mode)
+{
+    switch (mode)
+    {
+        case LockMode::read:
+            lock.readLock();
             break;
-        }
-        output.append(buffer.data(), readLen);
+        case LockMode::write:
+            lock.writeLock();
+            break;
+        default:
+            break;
     }
+}
 
-    const int exitStatus = ::pclose(pipe);
-    if (-1 == exitStatus)
-    {
-        throw std::runtime_error("Could not close pipe when trying to execute command.");
-    }
-    if (WIFEXITED(exitStatus))
-    {
-        if (const int exitCode = WEXITSTATUS(exitStatus); EXIT_SUCCESS != exitCode)
-        {
-            throw std::runtime_error(
-                "Returns exit code " + std::to_string(exitCode) + " when the command is executed.");
-        }
-    }
-    else if (WIFSIGNALED(exitStatus))
-    {
-        const int signal = WTERMSIG(exitStatus);
-        throw std::runtime_error("Terminated by signal " + std::to_string(signal) + " when the command is executed.");
-    }
-    else
-    {
-        throw std::runtime_error("The termination status is unknown when the command is executed.");
-    }
-
-    return output;
-};
-
-//! @brief Wait for input from the user.
-//! @param action - handling for the input
-//! @param timeout - timeout period (ms)
-void waitForUserInput(const std::function<bool(const std::string&)>& action, const int timeout)
+ReadWriteGuard::~ReadWriteGuard()
 {
-    const int epollFd = ::epoll_create1(0);
-    if (-1 == epollFd)
+    switch (mode)
     {
-        throw std::runtime_error("Could not create epoll file descriptor.");
+        case LockMode::read:
+            lock.readUnlock();
+            break;
+        case LockMode::write:
+            lock.writeUnlock();
+            break;
+        default:
+            break;
     }
-
-    struct ::epoll_event event
-    {
-    };
-    event.events = ::EPOLLIN;
-    event.data.fd = STDIN_FILENO;
-    if (::epoll_ctl(epollFd, EPOLL_CTL_ADD, STDIN_FILENO, &event))
-    {
-        ::close(epollFd);
-        throw std::runtime_error("Could not add file descriptor to epoll.");
-    }
-
-    for (;;)
-    {
-        const int status = ::epoll_wait(epollFd, &event, 1, timeout);
-        if (-1 == status)
-        {
-            ::close(epollFd);
-            throw std::runtime_error("Failed to wait for epoll.");
-        }
-        else if ((0 != status) && (event.events & ::EPOLLIN))
-        {
-            std::string input;
-            std::getline(std::cin, input);
-            if (action(input))
-            {
-                break;
-            }
-            continue;
-        }
-        break;
-    }
-
-    ::close(epollFd);
 }
 } // namespace utility::common
