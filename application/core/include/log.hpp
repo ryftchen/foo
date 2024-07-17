@@ -9,8 +9,6 @@
 #include "config.hpp"
 
 #ifndef __PRECOMPILED_HEADER
-#include <algorithm>
-#include <fstream>
 #include <iostream>
 #include <queue>
 #include <sstream>
@@ -19,8 +17,8 @@
 #endif // __PRECOMPILED_HEADER
 
 #include "utility/include/common.hpp"
-#include "utility/include/file.hpp"
 #include "utility/include/fsm.hpp"
+#include "utility/include/io.hpp"
 #include "utility/include/time.hpp"
 
 //! @brief Log with debug level.
@@ -201,7 +199,7 @@ public:
     std::string loggerFilePath() const;
     //! @brief Get the log file lock.
     //! @return log file lock
-    utility::file::ReadWriteLock& loggerFileLock();
+    utility::common::ReadWriteLock& loggerFileLock();
 
     //! @brief Flush log to queue.
     //! @tparam Args - type of arguments of format
@@ -281,7 +279,7 @@ private:
     //! @brief Used medium.
     const OutputMedium usedMedium{OutputMedium::both};
     //! @brief Log file lock.
-    utility::file::ReadWriteLock fileLock{};
+    utility::common::ReadWriteLock fileLock{};
 
     //! @brief Check whether it is in the uninterrupted target state.
     //! @param state - target state
@@ -290,7 +288,7 @@ private:
     //! @brief Handle the log queue.
     void handleLogQueue();
     //! @brief Get the full path to the log file.
-    //! @param filename - log filename
+    //! @param filename - log file
     //! @return full path to the log file
     static std::string getFullLogPath(const std::string& filename = "log/foo.log");
     //! @brief Try to create the log folder.

@@ -12,7 +12,6 @@
 #include <readline/readline.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
-#include <sys/stat.h>
 #if defined(__has_include) && __has_include(<gmp.h>)
 #include <gmp.h>
 #endif // defined(__has_include) && __has_include(<gmp.h>)
@@ -20,12 +19,8 @@
 #if defined(__has_include) && __has_include(<ncurses.h>)
 #include <ncurses.h>
 #endif // defined(__has_include) && __has_include(<ncurses.h>)
-#include <algorithm>
 #include <cassert>
-#include <cstring>
-#include <iostream>
 #include <iterator>
-#include <sstream>
 #else
 #include "application/pch/precompiled_header.hpp"
 #endif // __PRECOMPILED_HEADER
@@ -561,7 +556,7 @@ int View::buildTLVPacket2Execute(const std::vector<std::string>& args, char* buf
     }
 
     int len = 0;
-    const int shmId = fillSharedMemory(utility::common::executeCommand("/bin/bash -c " + cmds, 5000));
+    const int shmId = fillSharedMemory(utility::io::executeCommand("/bin/bash -c " + cmds, 5000));
     if (tlv::tlvEncoding(buf, len, tlv::TLVValue{.bashShmId = shmId}) < 0)
     {
         throw std::runtime_error("Failed to build packet for the execute option.");
@@ -777,7 +772,7 @@ void View::segmentedOutput(const std::string& buffer)
         if (!withoutPaging && (0 == (counter % terminalRows)))
         {
             std::cout << hint << "\n\x1b[1A\x1b[" << hint.length() << 'C' << std::flush;
-            utility::common::waitForUserInput(
+            utility::io::waitForUserInput(
                 [&](const std::string& input)
                 {
                     std::cout << clearEscape << std::flush;
@@ -812,8 +807,10 @@ void View::segmentedOutput(const std::string& buffer)
 
 std::string View::getLogContents()
 {
-    utility::file::ReadWriteGuard guard(LOG_FILE_LOCK, utility::file::LockMode::read);
-    auto contents = utility::file::getFileContents(LOG_FILE_PATH, true);
+    namespace common = utility::common;
+
+    common::ReadWriteGuard guard(LOG_FILE_LOCK, common::LockMode::read);
+    auto contents = utility::io::getFileContents(LOG_FILE_PATH, false, true);
     std::for_each(
         contents.begin(),
         contents.end(),
@@ -832,7 +829,7 @@ std::string View::getStatusReports(const std::uint16_t frame)
     constexpr std::uint16_t totalLen = 512;
     char cmd[totalLen] = {'\0'};
     std::snprintf(cmd, totalLen, "ps -T -p %d | awk 'NR>1 {split($0, a, \" \"); print a[2]}'", pid);
-    const std::string queryResult = utility::common::executeCommand(cmd);
+    const std::string queryResult = utility::io::executeCommand(cmd);
 
     std::vector<std::string> cmdCntr;
     std::size_t pos = 0, prev = 0;
@@ -881,7 +878,7 @@ std::string View::getStatusReports(const std::uint16_t frame)
         cmdCntr.cend(),
         [&statRep](const auto& cmd)
         {
-            statRep += utility::common::executeCommand(cmd) + '\n';
+            statRep += utility::io::executeCommand(cmd) + '\n';
         });
     if (!statRep.empty())
     {

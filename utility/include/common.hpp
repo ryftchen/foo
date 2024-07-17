@@ -6,9 +6,9 @@
 
 #pragma once
 
+#include <condition_variable>
 #include <cstring>
-#include <functional>
-#include <string>
+#include <shared_mutex>
 
 //! @brief Format as a string and printing.
 #define COMMON_PRINT(format, ...) \
@@ -70,6 +70,8 @@ constexpr std::size_t operator""_bkdrHash(const char* const str, const std::size
     return bkdrHashInCompiling(str);
 }
 
+extern std::size_t bkdrHash(const char* str);
+
 //! @brief Splice strings into constexpr type.
 //! @tparam Strings - target strings to be spliced
 template <const std::string_view&... Strings>
@@ -123,6 +125,8 @@ inline bool allStrEqual(const char* const str1, const char* const str2, Others c
     return allStrEqual(str1, str2) && allStrEqual(str2, others...);
 }
 
+extern std::string formatString(const char* const format, ...);
+
 //! @brief Check that the target value is part of the enumeration.
 //! @tparam EnumType - type of enumeration
 //! @tparam Values - arguments of enumeration
@@ -162,11 +166,65 @@ public:
     }
 };
 
-extern std::size_t bkdrHash(const char* str);
 extern std::string base64Encode(const std::string& data);
 extern std::string base64Decode(const std::string& data);
-extern std::string formatString(const char* const format, ...);
-extern std::string executeCommand(const std::string& command, const std::uint32_t timeout = 0);
-extern void waitForUserInput(const std::function<bool(const std::string&)>& action, const int timeout = -1);
+
+//! @brief Enumerate specific lock modes.
+enum class LockMode : std::uint8_t
+{
+    //! @brief Read.
+    read,
+    //! @brief Write.
+    write
+};
+
+//! @brief Lock to control reading and writing.
+class ReadWriteLock
+{
+public:
+    //! @brief Construct a new ReadWriteLock object.
+    ReadWriteLock() = default;
+    //! @brief Destroy the ReadWriteLock object.
+    virtual ~ReadWriteLock() = default;
+
+    //! @brief Acquire a read lock.
+    void readLock();
+    //! @brief Release a read lock.
+    void readUnlock();
+    //! @brief Acquire a write lock.
+    void writeLock();
+    //! @brief Release a write lock.
+    void writeUnlock();
+
+private:
+    //! @brief Handling of shared and exclusive locks.
+    std::shared_mutex rwLock{};
+    //! @brief Counter of readers that have acquired the shared lock.
+    std::atomic_uint_fast16_t reader{0};
+    //! @brief Counter of writers that have acquired the exclusive lock.
+    std::atomic_uint_fast16_t writer{0};
+    //! @brief Mutex for counters.
+    mutable std::mutex mtx{};
+    //! @brief The synchronization condition for counters. Use with mtx.
+    std::condition_variable cv{};
+};
+
+//! @brief Manage the lifetime of a lock under control.
+class ReadWriteGuard
+{
+public:
+    //! @brief Construct a new ReadWriteGuard object.
+    //! @param lock - object managed by the guard
+    //! @param mode - lock mode
+    ReadWriteGuard(ReadWriteLock& lock, const LockMode mode);
+    //! @brief Destroy the ReadWriteGuard object.
+    virtual ~ReadWriteGuard();
+
+private:
+    //! @brief Object managed by the guard.
+    ReadWriteLock& lock;
+    //! @brief Lock mode.
+    const LockMode mode{};
+};
 } // namespace common
 } // namespace utility

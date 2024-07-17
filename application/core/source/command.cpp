@@ -638,7 +638,7 @@ void Command::dumpConfiguration() const
 {
     config::forcedConfigurationUpdateByDefault(CONFIG_FILE_PATH);
 
-    const auto& configRows = utility::file::getFileContents(CONFIG_FILE_PATH);
+    const auto& configRows = utility::io::getFileContents(CONFIG_FILE_PATH, true);
     std::ostringstream os;
     std::copy(configRows.cbegin(), configRows.cend(), std::ostream_iterator<std::string>(os, "\n"));
     std::cout << os.str() << std::flush;
@@ -660,7 +660,7 @@ void Command::showVersionIcon() const
 #endif // NDEBUG
         + mainCLI.version() + " ' ; tput sgr0 ; echo ; " + description;
 
-    std::cout << utility::common::executeCommand(fullIcon) << std::flush;
+    std::cout << utility::io::executeCommand(fullIcon) << std::flush;
 }
 
 void Command::checkForExcessiveArguments()
@@ -687,7 +687,7 @@ try
     using utility::console::Console;
     using enum Console::RetCode;
 
-    std::cout << utility::common::executeCommand("tput bel ; echo " + getIconBanner() + " ; sleep 0.1s") << std::flush;
+    std::cout << utility::io::executeCommand("tput bel ; echo " + getIconBanner() + " ; sleep 0.1s") << std::flush;
     auto tcpClient = std::make_shared<utility::socket::TCPSocket>();
     launchClient(tcpClient);
     const char* const userEnv = std::getenv("USER");
@@ -828,8 +828,8 @@ void Command::validateDependenciesVersion() const
             utility::common::version(),
             utility::console::version(),
             utility::currying::version(),
-            utility::file::version(),
             utility::fsm::version(),
+            utility::io::version(),
             utility::json::version(),
             utility::memory::version(),
             utility::reflection::version(),

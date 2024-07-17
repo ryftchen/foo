@@ -8,7 +8,6 @@
 
 #ifndef __PRECOMPILED_HEADER
 #include <mpfr.h>
-#include <algorithm>
 #include <bitset>
 #include <cstring>
 #include <iostream>

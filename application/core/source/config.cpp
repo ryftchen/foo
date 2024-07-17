@@ -10,7 +10,6 @@
 #ifndef __PRECOMPILED_HEADER
 #include <cassert>
 #include <filesystem>
-#include <fstream>
 #include <iterator>
 #else
 #include "application/pch/precompiled_header.hpp"
@@ -41,9 +40,9 @@ utility::json::JSON Config::parseConfigFile(const std::string& configFile)
         throw std::runtime_error("Configuration file " + configFile + " is missing.");
     }
 
-    const auto configs = utility::file::getFileContents(configFile);
+    const auto& configRows = utility::io::getFileContents(configFile, true);
     std::ostringstream os;
-    std::copy(configs.cbegin(), configs.cend(), std::ostream_iterator<std::string>(os, ""));
+    std::copy(configRows.cbegin(), configRows.cend(), std::ostream_iterator<std::string>(os, ""));
     const auto& preprocessedData = utility::json::JSON::load(os.str());
     verifyConfigData(preprocessedData);
 
@@ -234,13 +233,13 @@ static utility::json::JSON getDefaultConfiguration()
 //! @param filename - config file
 void forcedConfigurationUpdateByDefault(const std::string& filename)
 {
-    namespace file = utility::file;
+    namespace io = utility::io;
 
-    std::ofstream ofs = file::openFile(filename, true);
-    file::fdLock(ofs, file::LockMode::write);
+    std::ofstream ofs = io::openFile(filename, true);
+    io::fdWriteLock(ofs);
     ofs << config::getDefaultConfiguration();
-    file::fdUnlock(ofs);
-    file::closeFile(ofs);
+    io::fdUnlock(ofs);
+    io::closeFile(ofs);
 }
 
 //! @brief Initialize the configuration.
@@ -278,7 +277,7 @@ catch (...)
 
     bool keepThrowing = true;
     constexpr std::uint16_t timeoutPeriod = 5000;
-    utility::common::waitForUserInput(
+    utility::io::waitForUserInput(
         [&](const std::string& input)
         {
             if (("y" != input) && ("n" != input))
