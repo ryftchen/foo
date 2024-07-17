@@ -5,6 +5,7 @@
 //! @copyright Copyright (c) 2022-2024 ryftchen. All rights reserved.
 
 #include "command.hpp"
+#include "config.hpp"
 #include "log.hpp"
 #include "view.hpp"
 
