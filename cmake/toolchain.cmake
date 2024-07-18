@@ -38,22 +38,13 @@ endif()
 if(TOOLCHAIN_DISTCC)
     find_program(DISTCC distcc)
     if(DISTCC)
-        execute_process(
-            COMMAND service --status-all
-            COMMAND grep "\\[ + \\]  distcc"
-            OUTPUT_VARIABLE DISTCC_STATUS_OUTPUT
+        message(STATUS "Using distcc")
+        if(
+            NOT (TOOLCHAIN_CCACHE AND CCACHE AND (DEFINED ENV{CCACHE_PREFIX})
+                AND ("$ENV{CCACHE_PREFIX}" STREQUAL "distcc"))
         )
-        if(NOT DISTCC_STATUS_OUTPUT STREQUAL "")
-            message(STATUS "Using distcc")
-            if(
-                NOT (TOOLCHAIN_CCACHE AND CCACHE AND (DEFINED ENV{CCACHE_PREFIX})
-                    AND ("$ENV{CCACHE_PREFIX}" STREQUAL "distcc"))
-            )
-                set(CMAKE_C_COMPILER_LAUNCHER ${DISTCC})
-                set(CMAKE_CXX_COMPILER_LAUNCHER ${DISTCC})
-            endif()
-        else()
-            message(STATUS "The distcc service is not running")
+            set(CMAKE_C_COMPILER_LAUNCHER ${DISTCC})
+            set(CMAKE_CXX_COMPILER_LAUNCHER ${DISTCC})
         endif()
     elseif()
         message(STATUS "No distcc program")

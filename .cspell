@@ -25,6 +25,7 @@ words:
   - creational
   - cword
   - distcc
+  - distccd
   - Doxyfile
   - dumpmachine
   - endcond
