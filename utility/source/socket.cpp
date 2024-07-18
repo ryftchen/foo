@@ -152,7 +152,7 @@ void TCPSocket::toConnect(const std::string& ip, const std::uint16_t port, const
     setBlocking();
     if (::connect(sock, reinterpret_cast<const ::sockaddr*>(&sockAddr), sizeof(::sockaddr_in)) == -1)
     {
-        throw std::runtime_error("Could not connect to the socket, errno: " + std::to_string(errno) + '.');
+        throw std::runtime_error("Failed to connect to the socket, errno: " + std::to_string(errno) + '.');
     }
 
     onConnected();
@@ -223,7 +223,7 @@ void TCPServer::toBind(const std::string& ip, const std::uint16_t port)
     setBlocking();
     if (::bind(sock, reinterpret_cast<const ::sockaddr*>(&sockAddr), sizeof(sockAddr)) == -1)
     {
-        throw std::runtime_error("Could not bind the socket, errno: " + std::to_string(errno) + '.');
+        throw std::runtime_error("Failed to bind the socket, errno: " + std::to_string(errno) + '.');
     }
 }
 
@@ -374,7 +374,7 @@ void UDPSocket::toConnect(const std::string& ip, const std::uint16_t port)
     setBlocking();
     if (::connect(sock, reinterpret_cast<const ::sockaddr*>(&sockAddr), sizeof(::sockaddr_in)) == -1)
     {
-        throw std::runtime_error("Could not connect to the socket, errno: " + std::to_string(errno) + '.');
+        throw std::runtime_error("Failed to connect to the socket, errno: " + std::to_string(errno) + '.');
     }
 }
 
@@ -466,7 +466,7 @@ void UDPServer::toBind(const std::string& ip, const std::uint16_t port)
     setBlocking();
     if (::bind(sock, reinterpret_cast<const ::sockaddr*>(&sockAddr), sizeof(sockAddr)) == -1)
     {
-        throw std::runtime_error("Could not bind the socket, errno: " + std::to_string(errno) + '.');
+        throw std::runtime_error("Failed to bind the socket, errno: " + std::to_string(errno) + '.');
     }
 }
 

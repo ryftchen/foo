@@ -31,7 +31,7 @@ std::ifstream openFile(const std::string& filename)
     if (!ifs)
     {
         throw std::runtime_error(
-            "Could not open " + std::filesystem::path(filename).filename().string() + " file for reading.");
+            "Failed to open " + std::filesystem::path(filename).filename().string() + " file for reading.");
     }
     return ifs;
 }
@@ -48,7 +48,7 @@ std::ofstream openFile(const std::string& filename, const bool overwrite)
     if (!ofs)
     {
         throw std::runtime_error(
-            "Could not open " + std::filesystem::path(filename).filename().string() + " file for writing.");
+            "Failed to open " + std::filesystem::path(filename).filename().string() + " file for writing.");
     }
     return ofs;
 }
@@ -60,7 +60,7 @@ void fdReadLock(std::ifstream& ifs)
     const int fd = static_cast<::__gnu_cxx::stdio_filebuf<char>*>(ifs.rdbuf())->fd();
     if (::flock(fd, LOCK_SH | LOCK_NB))
     {
-        throw std::runtime_error("Could not lock file descriptor for reading.");
+        throw std::runtime_error("Failed to lock file descriptor for reading.");
     }
 }
 
@@ -71,7 +71,7 @@ void fdWriteLock(std::ofstream& ofs)
     const int fd = static_cast<::__gnu_cxx::stdio_filebuf<char>*>(ofs.rdbuf())->fd();
     if (::flock(fd, LOCK_EX | LOCK_NB))
     {
-        throw std::runtime_error("Could not lock file descriptor for writing.");
+        throw std::runtime_error("Failed to lock file descriptor for writing.");
     }
 }
 
@@ -194,7 +194,7 @@ void waitForUserInput(const std::function<bool(const std::string&)>& action, con
     const int epollFD = ::epoll_create1(0);
     if (-1 == epollFD)
     {
-        throw std::runtime_error("Could not create epoll file descriptor.");
+        throw std::runtime_error("Could not create epoll when trying to wait for user input.");
     }
 
     struct ::epoll_event event
@@ -205,7 +205,7 @@ void waitForUserInput(const std::function<bool(const std::string&)>& action, con
     if (::epoll_ctl(epollFD, EPOLL_CTL_ADD, STDIN_FILENO, &event))
     {
         ::close(epollFD);
-        throw std::runtime_error("Could not add file descriptor to epoll.");
+        throw std::runtime_error("Could not control epoll when trying to wait for user input.");
     }
 
     for (;;)
@@ -214,7 +214,7 @@ void waitForUserInput(const std::function<bool(const std::string&)>& action, con
         if (-1 == status)
         {
             ::close(epollFD);
-            throw std::runtime_error("Failed to wait for epoll.");
+            throw std::runtime_error("Not the expected wait result for epoll.");
         }
         else if ((0 != status) && (event.events & ::EPOLLIN))
         {

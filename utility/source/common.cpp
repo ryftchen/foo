@@ -44,7 +44,7 @@ std::string formatString(const char* const format, ...)
     ::va_end(list);
     if (bufferSize < 0)
     {
-        throw std::runtime_error("Could not format string.");
+        throw std::runtime_error("Unable to format string.");
     }
 
     ::va_start(list, format);
