@@ -32,7 +32,7 @@ void fdUnlock(T& fs)
     const int fd = static_cast<::__gnu_cxx::stdio_filebuf<char>*>(fs.rdbuf())->fd();
     if (::flock(fd, LOCK_UN))
     {
-        throw std::runtime_error("Could not unlock file descriptor.");
+        throw std::runtime_error("Failed to unlock file descriptor.");
     }
 }
 
