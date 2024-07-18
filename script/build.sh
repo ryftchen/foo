@@ -834,10 +834,6 @@ e.g. with \"${distcc_daemon}\"."
             fi
         fi
         CMAKE_CACHE_ENTRY="${CMAKE_CACHE_ENTRY} -D TOOLCHAIN_DISTCC=ON"
-        if [[ ${DEV_OPT[compiler]} = "clang" ]]; then
-            CMAKE_CACHE_ENTRY="${CMAKE_CACHE_ENTRY} -D CMAKE_C_FLAGS=-Wno-gnu-line-marker \
--D CMAKE_CXX_FLAGS=-Wno-gnu-line-marker"
-        fi
         export DISTCC_HOSTS="localhost ${DEV_OPT[distcc]}" DISTCC_LOG=~/.distcc/distcc.log
     fi
     if [[ ${DEV_OPT[ccache]} = true ]] && [[ ${DEV_OPT[pch]} = true ]]; then
