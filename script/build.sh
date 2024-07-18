@@ -13,7 +13,7 @@ declare -r STATUS_COLOR_OFF="\033[0m"
 declare -A ARGS=([help]=false [initialize]=false [clean]=false [install]=false [uninstall]=false [container]=false
     [website]=false [test]=false [release]=false [hook]=false [spell]=false [format]=false [lint]=false
     [statistics]=false [doxygen]=false [browser]=false [dry]=false)
-declare -A DEV_OPT=([compiler]="clang" [parallel]=0 [pch]=false [unity]=false [ccache]=false [distcc]=false
+declare -A DEV_OPT=([compiler]="clang" [parallel]=0 [pch]=false [unity]=false [ccache]=false [distcc]="localhost"
     [tmpfs]=false)
 declare CMAKE_CACHE_ENTRY=""
 declare CMAKE_BUILD_OPTION=""
@@ -217,7 +217,7 @@ function perform_help_option()
     echo "  -i, --install         install binary with libraries and exit"
     echo "  -u, --uninstall       uninstall binary with libraries and exit"
     echo "  -c, --container       construct docker container and exit"
-    echo "  -w, --website         launch/terminate web server and exit"
+    echo "  -w, --website         launch / terminate web server and exit"
     echo "  -t, --test            build unit test and exit"
     echo "  -r, --release         set as release version"
     echo "  -H, --hook            run hook before commit"
@@ -261,11 +261,11 @@ git rev-parse --git-dir >/dev/null 2>&1 && source ~/${BASH_RC}"
 #!/bin/false
 
 FOO_BLD_COMPILER=clang # clang / gcc
-FOO_BLD_PARALLEL=0 # 0 ... N
+FOO_BLD_PARALLEL=0 # NUMBER
 FOO_BLD_PCH=off # on / off
 FOO_BLD_UNITY=off # on / off
 FOO_BLD_CCACHE=on # on / off
-FOO_BLD_DISTCC=off # on / off
+FOO_BLD_DISTCC=localhost # HOST
 FOO_BLD_TMPFS=off # on / off
 
 export FOO_BLD_COMPILER FOO_BLD_PARALLEL FOO_BLD_PCH FOO_BLD_UNITY FOO_BLD_CCACHE FOO_BLD_DISTCC FOO_BLD_TMPFS
@@ -416,13 +416,14 @@ function perform_website_option()
 
     if command -v rustc >/dev/null 2>&1 && command -v cargo >/dev/null 2>&1; then
         shell_command "cargo build --release --manifest-path ./${FOLDER[doc]}/server/Cargo.toml"
-        if ! pgrep -f "${FOLDER[proj]}_doc" >/dev/null 2>&1; then
+        local server_daemon="./${FOLDER[doc]}/server/target/release/${FOLDER[proj]}_doc --root-dir ."
+        if ! pgrep -f "${server_daemon}" >/dev/null 2>&1; then
             echo "Please confirm whether continue launching the document server. (y or n)"
             local input
             input=$(wait_until_get_input)
             if echo "${input}" | grep -iq '^y'; then
                 echo "Yes"
-                shell_command "./${FOLDER[doc]}/server/target/release/${FOLDER[proj]}_doc --root-dir . & sleep 0.5s"
+                shell_command "${server_daemon} & sleep 0.5s"
             else
                 echo "No"
             fi
@@ -746,6 +747,9 @@ function set_compile_condition()
         # shellcheck source=/dev/null
         source "./${FOLDER[scr]}/.env"
         if [[ -n ${FOO_BLD_COMPILER} ]] && [[ ${FOO_BLD_COMPILER} =~ ^(clang|gcc)$ ]]; then
+            if [[ -n ${FOO_CHK_COV} ]] && [[ ${FOO_CHK_COV} = "on" ]]; then
+                FOO_BLD_COMPILER="clang"
+            fi
             DEV_OPT[compiler]=${FOO_BLD_COMPILER}
         fi
         if [[ -n ${FOO_BLD_PARALLEL} ]] && [[ ${FOO_BLD_PARALLEL} =~ ^[0-9]+$ ]]; then
@@ -760,8 +764,8 @@ function set_compile_condition()
         if [[ -n ${FOO_BLD_CCACHE} ]] && [[ ${FOO_BLD_CCACHE} = "on" ]]; then
             DEV_OPT[ccache]=true
         fi
-        if [[ -n ${FOO_BLD_DISTCC} ]] && [[ ${FOO_BLD_DISTCC} = "on" ]]; then
-            DEV_OPT[distcc]=true
+        if [[ -n "${FOO_BLD_DISTCC// /}" ]]; then
+            DEV_OPT[distcc]=${FOO_BLD_DISTCC}
         fi
         if [[ -n ${FOO_BLD_TMPFS} ]] && [[ ${FOO_BLD_TMPFS} = "on" ]]; then
             DEV_OPT[tmpfs]=true
@@ -769,9 +773,7 @@ function set_compile_condition()
     fi
 
     CMAKE_CACHE_ENTRY=" -D CMAKE_BUILD_TYPE=${BUILD_TYPE}"
-    if [[ ${DEV_OPT[compiler]} = "clang" ]] || {
-        [[ -n ${FOO_CHK_COV} ]] && [[ ${FOO_CHK_COV} = "on" ]]
-    }; then
+    if [[ ${DEV_OPT[compiler]} = "clang" ]]; then
         local ver=16
         CC=clang-${ver} CXX=clang++-${ver}
         if ! command -v "${CC}" >/dev/null 2>&1 || ! command -v "${CXX}" >/dev/null 2>&1; then
@@ -817,19 +819,31 @@ function set_compile_condition()
             export CCACHE_DIR=${PWD}/${FOLDER[tst]}/${FOLDER[cac]}/ccache
         fi
     fi
-    if [[ ${DEV_OPT[distcc]} = true ]]; then
+    if [[ ${DEV_OPT[distcc]} != "localhost" ]]; then
         if ! command -v distcc >/dev/null; then
             die "No distcc program. Please install it."
         fi
-        CMAKE_CACHE_ENTRY="${CMAKE_CACHE_ENTRY} -D TOOLCHAIN_DISTCC=ON"
-        if [[ -z ${DISTCC_HOSTS} ]]; then
-            export DISTCC_HOSTS=localhost
+        if [[ -n ${FOO_CHK_COV} ]] && [[ ${FOO_CHK_COV} = "on" ]]; then
+            die "Code coverage may be affected if the FOO_BLD_DISTCC is not localhost."
         fi
+        if [[ ${DEV_OPT[distcc]} = "127.0.0.1" ]]; then
+            local distcc_daemon="distccd --daemon --allow 127.0.0.1/32"
+            if ! pgrep -f "${distcc_daemon}" >/dev/null 2>&1; then
+                die "No local distcc server has been detected, please start it manually, \
+e.g. with \"${distcc_daemon}\"."
+            fi
+        fi
+        CMAKE_CACHE_ENTRY="${CMAKE_CACHE_ENTRY} -D TOOLCHAIN_DISTCC=ON"
+        if [[ ${DEV_OPT[compiler]} = "clang" ]]; then
+            CMAKE_CACHE_ENTRY="${CMAKE_CACHE_ENTRY} -D CMAKE_C_FLAGS=-Wno-gnu-line-marker \
+-D CMAKE_CXX_FLAGS=-Wno-gnu-line-marker"
+        fi
+        export DISTCC_HOSTS="localhost ${DEV_OPT[distcc]}" DISTCC_LOG=~/.distcc/distcc.log
     fi
     if [[ ${DEV_OPT[ccache]} = true ]] && [[ ${DEV_OPT[pch]} = true ]]; then
         export CCACHE_PCH_EXTSUM=true CCACHE_SLOPPINESS=pch_defines,time_macros
     fi
-    if [[ ${DEV_OPT[ccache]} = true ]] && [[ ${DEV_OPT[distcc]} = true ]]; then
+    if [[ ${DEV_OPT[ccache]} = true ]] && [[ ${DEV_OPT[distcc]} != "localhost" ]]; then
         export CCACHE_PREFIX=distcc
     fi
     if [[ ${DEV_OPT[tmpfs]} = true ]]; then
