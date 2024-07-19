@@ -826,7 +826,7 @@ function set_compile_condition()
         if [[ -n ${FOO_CHK_COV} ]] && [[ ${FOO_CHK_COV} = "on" ]]; then
             die "Code coverage may be affected if the FOO_BLD_DISTCC is not localhost."
         fi
-        if [[ ${DEV_OPT[distcc]} = "127.0.0.1" ]]; then
+        if [[ ${DEV_OPT[distcc]} = *"127.0.0.1"* ]]; then
             local distcc_daemon="distccd --daemon --allow 127.0.0.1/32"
             if ! pgrep -f "${distcc_daemon}" >/dev/null 2>&1; then
                 die "No local distcc server has been detected, please start it manually, \
