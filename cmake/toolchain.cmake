@@ -3,8 +3,7 @@ include_guard()
 execute_process(
     COMMAND ${CMAKE_CXX_COMPILER} -dumpmachine
     OUTPUT_VARIABLE COMPILER_DUMPMACHINE_OUTPUT
-    OUTPUT_STRIP_TRAILING_WHITESPACE
-)
+    OUTPUT_STRIP_TRAILING_WHITESPACE)
 if(NOT COMPILER_DUMPMACHINE_OUTPUT STREQUAL "")
     set(TARGET_PROCESSOR ${COMPILER_DUMPMACHINE_OUTPUT})
 else()
@@ -42,10 +41,11 @@ if(TOOLCHAIN_DISTCC)
         if((CMAKE_C_COMPILER_ID MATCHES "Clang") AND (CMAKE_CXX_COMPILER_ID MATCHES "Clang"))
             add_compile_options(-Wno-gnu-line-marker)
         endif()
-        if(
-            NOT (TOOLCHAIN_CCACHE AND CCACHE AND (DEFINED ENV{CCACHE_PREFIX})
-                AND ("$ENV{CCACHE_PREFIX}" STREQUAL "distcc"))
-        )
+        if(NOT
+           (TOOLCHAIN_CCACHE
+            AND CCACHE
+            AND (DEFINED ENV{CCACHE_PREFIX})
+            AND ("$ENV{CCACHE_PREFIX}" STREQUAL "distcc")))
             set(CMAKE_C_COMPILER_LAUNCHER ${DISTCC})
             set(CMAKE_CXX_COMPILER_LAUNCHER ${DISTCC})
         endif()

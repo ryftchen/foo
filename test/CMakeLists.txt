@@ -29,19 +29,14 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/../algorithm/include
     ${CMAKE_SOURCE_DIR}/../design_pattern/include
     ${CMAKE_SOURCE_DIR}/../data_structure/include
-    ${CMAKE_SOURCE_DIR}/../numeric/include
-)
+    ${CMAKE_SOURCE_DIR}/../numeric/include)
 
 add_executable(${BIN_NAME} ${TEST_LIST})
 target_link_libraries(
     ${BIN_NAME}
     PUBLIC gtest mpfr
-    PRIVATE foo_test::foo_test_algo foo_test::foo_test_dp foo_test::foo_test_ds foo_test::foo_test_num
-)
+    PRIVATE foo_test::foo_test_algo foo_test::foo_test_dp foo_test::foo_test_ds foo_test::foo_test_num)
 
 if(PRECOMPILED_HEADER)
-    target_precompile_headers(
-        ${BIN_NAME}
-        PRIVATE ${CMAKE_SOURCE_DIR}/../application/pch/precompiled_header.hpp
-    )
+    target_precompile_headers(${BIN_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/../application/pch/precompiled_header.hpp)
 endif()
