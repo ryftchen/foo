@@ -637,12 +637,7 @@ void Command::showHelpMessage() const
 // NOLINTNEXTLINE (readability-convert-member-functions-to-static)
 void Command::dumpConfiguration() const
 {
-    config::forcedConfigurationUpdateByDefault(CONFIG_FILE_PATH);
-
-    const auto& configRows = utility::io::getFileContents(CONFIG_FILE_PATH, true);
-    std::ostringstream os;
-    std::copy(configRows.cbegin(), configRows.cend(), std::ostream_iterator<std::string>(os, "\n"));
-    std::cout << os.str() << std::flush;
+    std::cout << config::getDefaultConfiguration() << std::endl;
 }
 
 void Command::showVersionIcon() const

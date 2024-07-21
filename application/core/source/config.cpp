@@ -186,7 +186,7 @@ std::string getFullDefaultConfigurationPath()
 
 //! @brief Get the default configuration.
 //! @return default configuration
-static utility::json::JSON getDefaultConfiguration()
+utility::json::JSON getDefaultConfiguration()
 {
     namespace json = utility::json;
 
@@ -231,7 +231,7 @@ static utility::json::JSON getDefaultConfiguration()
 
 //! @brief Forced configuration update by default.
 //! @param filename - config file
-void forcedConfigurationUpdateByDefault(const std::string& filename)
+static void forcedConfigurationUpdateByDefault(const std::string& filename)
 {
     namespace io = utility::io;
 
