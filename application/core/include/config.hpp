@@ -118,7 +118,7 @@ private:
     static void checkViewerConfigInHelperList(const utility::json::JSON& configData);
 };
 
-extern void forcedConfigurationUpdateByDefault(const std::string& filename);
+extern utility::json::JSON getDefaultConfiguration();
 extern bool loadConfiguration(const std::string& filename = getFullDefaultConfigurationPath());
 extern const utility::json::JSON& queryConfiguration();
 } // namespace config
