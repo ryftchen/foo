@@ -33,8 +33,7 @@ aux_source_directory(${CMAKE_SOURCE_DIR}/application/example/source APPLICATION_
 include_directories(
     ${CMAKE_SOURCE_DIR}
     ${CMAKE_SOURCE_DIR}/application/core/include
-    ${CMAKE_SOURCE_DIR}/application/example/include
-)
+    ${CMAKE_SOURCE_DIR}/application/example/include)
 
 add_subdirectory(${CMAKE_SOURCE_DIR}/utility)
 add_subdirectory(${CMAKE_SOURCE_DIR}/algorithm)
@@ -45,31 +44,21 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/numeric)
 add_executable(${BIN_NAME} ${APPLICATION_LIST})
 target_include_directories(
     ${BIN_NAME}
-    PUBLIC
-        ${CMAKE_SOURCE_DIR}/application/core/include
-        ${CMAKE_SOURCE_DIR}/application/example/include
-    PRIVATE
-        ${CMAKE_SOURCE_DIR}/application/core/source
-        ${CMAKE_SOURCE_DIR}/application/example/source
-)
+    PUBLIC ${CMAKE_SOURCE_DIR}/application/core/include ${CMAKE_SOURCE_DIR}/application/example/include
+    PRIVATE ${CMAKE_SOURCE_DIR}/application/core/source ${CMAKE_SOURCE_DIR}/application/example/source)
 target_link_libraries(
     ${BIN_NAME}
     PUBLIC crypto mpfr
-    PRIVATE foo::foo_util foo::foo_algo foo::foo_dp foo::foo_ds foo::foo_num
-)
+    PRIVATE foo::foo_util foo::foo_algo foo::foo_dp foo::foo_ds foo::foo_num)
 
 if(PRECOMPILED_HEADER)
-    target_precompile_headers(
-        ${BIN_NAME}
-        PRIVATE ${CMAKE_SOURCE_DIR}/application/pch/precompiled_header.hpp
-    )
+    target_precompile_headers(${BIN_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/application/pch/precompiled_header.hpp)
 endif()
 
 set(CMAKE_INSTALL_PREFIX "/opt/${PROJECT_NAME}")
 install(
     TARGETS ${BIN_NAME} foo_util foo_algo foo_dp foo_ds foo_num
     RUNTIME DESTINATION "${CMAKE_INSTALL_PREFIX}/bin"
-    LIBRARY DESTINATION "${CMAKE_INSTALL_PREFIX}/lib"
-)
+    LIBRARY DESTINATION "${CMAKE_INSTALL_PREFIX}/lib")
 install(DIRECTORY DESTINATION ${CMAKE_INSTALL_PREFIX})
 set_target_properties(${BIN_NAME} PROPERTIES INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
