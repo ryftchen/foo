@@ -9,6 +9,7 @@
 #ifndef __PRECOMPILED_HEADER
 #include <algorithm>
 #include <bitset>
+#include <cstdint>
 #include <span>
 #include <vector>
 #else

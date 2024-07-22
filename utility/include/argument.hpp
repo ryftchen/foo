@@ -7,6 +7,7 @@
 #pragma once
 
 #include <any>
+#include <cstdint>
 #include <functional>
 #include <limits>
 #include <list>

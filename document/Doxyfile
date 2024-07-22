@@ -274,7 +274,7 @@ INCLUDE_FILE_PATTERNS  =
 PREDEFINED             = __cplusplus
 EXPAND_AS_DEFINED      =
 SKIP_FUNCTION_MACROS   = NO
-TAGFILES               = /usr/local/share/doxygen-tag/libstdc++.tag=https://gcc.gnu.org/onlinedocs/gcc-12.3.0/libstdc++/api
+TAGFILES               = /usr/local/share/doxygen-tag/libstdc++.tag=https://gcc.gnu.org/onlinedocs/gcc-13.2.0/libstdc++/api
 GENERATE_TAGFILE       =
 ALLEXTERNALS           = NO
 EXTERNAL_GROUPS        = NO
