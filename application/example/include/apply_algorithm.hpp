@@ -640,7 +640,10 @@ public:
                 {
                     std::cout << prefix << input::Griewank::funcDescr << std::endl;
                 },
-            },
+                [](const auto& func)
+                {
+                    throw std::runtime_error("Unknown function type: " + std::string{typeid(func).name()} + '.');
+                }},
             function);
     };
 
