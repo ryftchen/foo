@@ -28,6 +28,7 @@
 #include <cassert>
 #include <cmath>
 #include <csignal>
+#include <cstdint>
 #include <cstring>
 #include <filesystem>
 #include <iostream>

@@ -8,6 +8,7 @@
 
 #include <ext/stdio_filebuf.h>
 #include <sys/file.h>
+#include <cstdint>
 #include <functional>
 #include <limits>
 #include <list>

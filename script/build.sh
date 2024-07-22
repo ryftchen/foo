@@ -383,7 +383,7 @@ function perform_container_option()
         return
     fi
 
-    if command -v docker >/dev/null 2>&1 && command -v docker-compose >/dev/null 2>&1; then
+    if command -v docker >/dev/null 2>&1; then
         echo "Please confirm whether continue constructing the docker container. (y or n)"
         local input
         input=$(wait_until_get_input)
@@ -395,12 +395,12 @@ function perform_container_option()
             exit "${STATUS}"
         fi
     else
-        die "No docker or docker-compose program. Please install it."
+        die "No docker program. Please install it."
     fi
 
     if ! docker ps -a --format "{{lower .Image}} {{lower .Names}}" \
-        | grep -q "ryftchen/${FOLDER[proj]}:latest ${FOLDER[proj]}_dev" 2>/dev/null; then
-        shell_command "docker-compose -f ./${FOLDER[dock]}/docker-compose.yml up -d --force-recreate"
+        | grep -q "ryftchen/${FOLDER[proj]}:latest ${FOLDER[proj]}_dev3" 2>/dev/null; then
+        shell_command "docker compose -f ./${FOLDER[dock]}/docker-compose.yml up -d --force-recreate"
     else
         die "The container exists."
     fi
@@ -782,7 +782,7 @@ function set_compile_condition()
         export CC CXX
         CMAKE_CACHE_ENTRY="${CMAKE_CACHE_ENTRY} -D CMAKE_C_COMPILER=${CC} -D CMAKE_CXX_COMPILER=${CXX}"
     elif [[ ${DEV_OPT[compiler]} = "gcc" ]]; then
-        local ver=12
+        local ver=13
         CC=gcc-${ver} CXX=g++-${ver}
         if ! command -v "${CC}" >/dev/null 2>&1 || ! command -v "${CXX}" >/dev/null 2>&1; then
             die "No ${CC} or ${CXX} program. Please install it."
@@ -794,7 +794,7 @@ function set_compile_condition()
         local gcc_processor gxx_processor
         gcc_processor=$(gcc -dumpmachine)
         gxx_processor=$(g++ -dumpmachine)
-        local gnu_lib_ver=12
+        local gnu_lib_ver=13
         export C_INCLUDE_PATH=/usr/include:/usr/lib/gcc/${gcc_processor}/${gnu_lib_ver}/include \
             CPLUS_INCLUDE_PATH=/usr/include/c++/${gnu_lib_ver}:/usr/include/${gxx_processor}/c++/${gnu_lib_ver}
     fi
@@ -908,6 +908,7 @@ function clean_up_temporary_files()
     fi
 }
 
+# shellcheck disable=SC2317
 function signal_handler()
 {
     clean_up_temporary_files

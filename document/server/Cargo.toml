@@ -2,7 +2,7 @@
 name = "foo_doc"
 version = "0.1.0"
 edition = "2021"
-rust-version = "1.70"
+rust-version = "1.75"
 
 [dependencies]
 futures-util = "0.3.0"

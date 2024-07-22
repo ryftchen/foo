@@ -7,6 +7,7 @@
 #pragma once
 
 #include <atomic>
+#include <stdexcept>
 
 //! @brief The utility module.
 namespace utility // NOLINT (modernize-concat-nested-namespaces)
