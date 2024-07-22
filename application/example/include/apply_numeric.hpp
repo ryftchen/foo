@@ -537,7 +537,10 @@ public:
                 {
                     std::cout << prefix << input::Expression2::exprDescr << std::endl;
                 },
-            },
+                [](const auto& expr)
+                {
+                    throw std::runtime_error("Unknown expression type: " + std::string{typeid(expr).name()} + '.');
+                }},
             expression);
     };
 
