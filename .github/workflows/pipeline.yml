@@ -124,6 +124,7 @@ jobs:
 
       - name: Manual build
         run: |
+          ./script/build.sh -C
           ./script/build.sh -I
           sed -i 's/FOO_BLD_COMPILER=clang/FOO_BLD_COMPILER=gcc/' ./script/.env
           sed -i 's/FOO_BLD_CCACHE=on/FOO_BLD_CCACHE=off/' ./script/.env
