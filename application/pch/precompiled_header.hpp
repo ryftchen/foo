@@ -31,6 +31,7 @@
 #include <cstdint>
 #include <cstring>
 #include <filesystem>
+#include <format>
 #include <iostream>
 #include <iterator>
 #include <memory>

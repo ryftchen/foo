@@ -6,7 +6,6 @@
 
 #include "main.hpp"
 #include "command.hpp"
-#include "config.hpp"
 #include "log.hpp"
 #include "view.hpp"
 

@@ -5,7 +5,6 @@
 //! @copyright Copyright (c) 2022-2024 ryftchen. All rights reserved.
 
 #include "command.hpp"
-#include "config.hpp"
 #include "log.hpp"
 #include "view.hpp"
 
@@ -644,17 +643,19 @@ void Command::showVersionIcon() const
 {
     validateDependenciesVersion();
 
-    const std::string description = "echo '" + std::string{note::copyright()} + "' ; echo 'Built with "
-        + note::compiler() + " for " + note::processor() + " on " + note::buildDate() + ".'";
-    std::string fullIcon = "tput rev ; echo " + getIconBanner();
-    fullIcon.pop_back();
-    fullIcon +=
+    const std::string fullIcon = std::format(
+        "tput rev ; echo '{}{}{}' ; tput sgr0 ; echo ; echo '{}' ; echo 'Built with {} for {} on {}.'",
+        getIconBanner(),
 #ifndef NDEBUG
-        "            DEBUG VERSION "
+        "            DEBUG VERSION ",
 #else
-        "          RELEASE VERSION "
+        "          RELEASE VERSION ",
 #endif // NDEBUG
-        + mainCLI.version() + " ' ; tput sgr0 ; echo ; " + description;
+        mainCLI.version() + ' ',
+        note::copyright(),
+        note::compiler(),
+        note::processor(),
+        note::buildDate());
 
     std::cout << utility::io::executeCommand(fullIcon) << std::flush;
 }
@@ -683,7 +684,7 @@ try
     using utility::console::Console;
     using enum Console::RetCode;
 
-    std::cout << utility::io::executeCommand("tput bel ; echo " + getIconBanner() + " ; sleep 0.1s") << std::flush;
+    std::cout << utility::io::executeCommand("tput bel ; echo '" + getIconBanner() + "' ; sleep 0.1s") << std::flush;
     auto tcpClient = std::make_shared<utility::socket::TCPSocket>();
     launchClient(tcpClient);
     const char* const userEnv = std::getenv("USER");
@@ -852,24 +853,30 @@ void Command::validateDependenciesVersion() const
             app_num::integral::version,
             app_num::prime::version))
     {
-        throw std::runtime_error(
-            "Dependencies version number mismatch. Expected main version: " + mainCLI.title() + " (" + mainCLI.version()
-            + "), sub-version: " + subCLIAppAlgo.title() + " (" + subCLIAppAlgo.version() + "), " + subCLIAppDp.title()
-            + " (" + subCLIAppDp.version() + "), " + subCLIAppDs.title() + " (" + subCLIAppDs.version() + "), "
-            + subCLIAppNum.title() + " (" + subCLIAppNum.version() + ").");
+        throw std::runtime_error(std::format(
+            "Dependencies version number mismatch. Expected main version: {} ({})"
+            ", sub-version: {} ({}), {} ({}), {} ({}), {} ({}).",
+            mainCLI.title(),
+            mainCLI.version(),
+            subCLIAppAlgo.title(),
+            subCLIAppAlgo.version(),
+            subCLIAppDp.title(),
+            subCLIAppDp.version(),
+            subCLIAppDs.title(),
+            subCLIAppDs.version(),
+            subCLIAppNum.title(),
+            subCLIAppNum.version()));
     }
 }
 
 std::string Command::getIconBanner()
 {
     std::string banner;
-    banner += R"(')";
     banner += R"(  ______   ______     ______    \n)";
     banner += R"( /\  ___\ /\  __ \   /\  __ \   \n)";
     banner += R"( \ \  __\ \ \ \/\ \  \ \ \/\ \  \n)";
     banner += R"(  \ \_\    \ \_____\  \ \_____\ \n)";
     banner += R"(   \/_/     \/_____/   \/_____/ \n)";
-    banner += R"(')";
 
     return banner;
 }

@@ -9,6 +9,7 @@
 #include "config.hpp"
 
 #ifndef __PRECOMPILED_HEADER
+#include <format>
 #include <iostream>
 #include <queue>
 #include <sstream>
@@ -25,18 +26,38 @@
 #define LOG_DBG                            \
     if (CONFIG_ACTIVATE_HELPER) [[likely]] \
     application::log::Log::Holder<application::log::Log::OutputLevel::debug>(__FILE__, __LINE__).getStream()
+//! @brief Log with debug level (formatted).
+#define LOG_DBG_F(fmt, ...)                     \
+    if (CONFIG_ACTIVATE_HELPER) [[likely]]      \
+    application::log::Log::getInstance().flush( \
+        application::log::Log::OutputLevel::debug, __FILE__, __LINE__, fmt __VA_OPT__(, ) __VA_ARGS__)
 //! @brief Log with info level.
 #define LOG_INF                            \
     if (CONFIG_ACTIVATE_HELPER) [[likely]] \
     application::log::Log::Holder<application::log::Log::OutputLevel::info>(__FILE__, __LINE__).getStream()
+//! @brief Log with info level (formatted).
+#define LOG_INF_F(fmt, ...)                     \
+    if (CONFIG_ACTIVATE_HELPER) [[likely]]      \
+    application::log::Log::getInstance().flush( \
+        application::log::Log::OutputLevel::info, __FILE__, __LINE__, fmt __VA_OPT__(, ) __VA_ARGS__)
 //! @brief Log with warning level.
 #define LOG_WRN                            \
     if (CONFIG_ACTIVATE_HELPER) [[likely]] \
     application::log::Log::Holder<application::log::Log::OutputLevel::warning>(__FILE__, __LINE__).getStream()
+//! @brief Log with warning level (formatted).
+#define LOG_WRN_F(fmt, ...)                     \
+    if (CONFIG_ACTIVATE_HELPER) [[likely]]      \
+    application::log::Log::getInstance().flush( \
+        application::log::Log::OutputLevel::warning, __FILE__, __LINE__, fmt __VA_OPT__(, ) __VA_ARGS__)
 //! @brief Log with error level.
 #define LOG_ERR                            \
     if (CONFIG_ACTIVATE_HELPER) [[likely]] \
     application::log::Log::Holder<application::log::Log::OutputLevel::error>(__FILE__, __LINE__).getStream()
+//! @brief Log with error level (formatted).
+#define LOG_ERR_F(fmt, ...)                     \
+    if (CONFIG_ACTIVATE_HELPER) [[likely]]      \
+    application::log::Log::getInstance().flush( \
+        application::log::Log::OutputLevel::error, __FILE__, __LINE__, fmt __VA_OPT__(, ) __VA_ARGS__)
 //! @brief Log file path.
 #define LOG_FILE_PATH application::log::Log::getInstance().loggerFilePath()
 //! @brief Log file lock.
@@ -374,36 +395,16 @@ void Log::flush(
     const std::string& format,
     Args&&... args)
 {
-    const auto outputFormatter = [&](const std::string_view& prefix)
-    {
-        std::string validFormat = format;
-        validFormat.erase(
-            std::remove_if(
-                std::begin(validFormat),
-                std::end(validFormat),
-                [l = std::locale{}](const auto c)
-                {
-                    return (' ' != c) && std::isspace(c, l);
-                }),
-            std::end(validFormat));
-        std::string output = std::string{prefix} + ":[" + utility::time::getCurrentSystemTime() + "]:["
-            + codeFile.substr(codeFile.find("foo/") + 4, codeFile.length()) + '#' + std::to_string(codeLine)
-            + "]: " + utility::common::formatString(validFormat.c_str(), std::forward<Args>(args)...);
-        return output;
-    };
-
-    if (!isInUninterruptedState(State::work))
-    {
-        std::string output = outputFormatter(unknownLevelPrefix);
-        std::cerr << changeToLogStyle(output) << std::endl;
-        return;
-    }
-
     if (std::unique_lock<std::mutex> lock(mtx); true)
     {
-        if (level >= minimumLevel)
+        if (level < minimumLevel)
         {
-            std::string_view prefix;
+            return;
+        }
+
+        std::string_view prefix;
+        if (isInUninterruptedState(State::work))
+        {
             switch (level)
             {
                 case OutputLevel::debug:
@@ -419,13 +420,42 @@ void Log::flush(
                     prefix = errorLevelPrefix;
                     break;
                 default:
+                    prefix = unknownLevelPrefix;
                     break;
             }
+        }
+        else
+        {
+            prefix = unknownLevelPrefix;
+        }
 
-            std::string output = outputFormatter(prefix);
+        std::string validFormat = format;
+        validFormat.erase(
+            std::remove_if(
+                std::begin(validFormat),
+                std::end(validFormat),
+                [l = std::locale{}](const auto c)
+                {
+                    return (' ' != c) && std::isspace(c, l);
+                }),
+            std::end(validFormat));
+        std::string output = std::format(
+            "{}:[{}]:[{}#{}]: {}",
+            prefix,
+            utility::time::getCurrentSystemTime(),
+            codeFile.substr(codeFile.find("foo/") + 4, codeFile.length()),
+            codeLine,
+            utility::common::formatString(validFormat.c_str(), std::forward<Args>(args)...));
+
+        if (unknownLevelPrefix != prefix)
+        {
             logQueue.push(std::move(output));
             lock.unlock();
             cv.notify_one();
+        }
+        else
+        {
+            std::cerr << changeToLogStyle(output) << std::endl;
         }
     }
 }
