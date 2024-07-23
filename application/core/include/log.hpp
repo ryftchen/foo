@@ -395,36 +395,16 @@ void Log::flush(
     const std::string& format,
     Args&&... args)
 {
-    const auto outputFormatter = [&](const std::string_view& prefix)
-    {
-        std::string validFormat = format;
-        validFormat.erase(
-            std::remove_if(
-                std::begin(validFormat),
-                std::end(validFormat),
-                [l = std::locale{}](const auto c)
-                {
-                    return (' ' != c) && std::isspace(c, l);
-                }),
-            std::end(validFormat));
-        std::string output = std::string{prefix} + ":[" + utility::time::getCurrentSystemTime() + "]:["
-            + codeFile.substr(codeFile.find("foo/") + 4, codeFile.length()) + '#' + std::to_string(codeLine)
-            + "]: " + utility::common::formatString(validFormat.c_str(), std::forward<Args>(args)...);
-        return output;
-    };
-
-    if (!isInUninterruptedState(State::work))
-    {
-        std::string output = outputFormatter(unknownLevelPrefix);
-        std::cerr << changeToLogStyle(output) << std::endl;
-        return;
-    }
-
     if (std::unique_lock<std::mutex> lock(mtx); true)
     {
-        if (level >= minimumLevel)
+        if (level < minimumLevel)
         {
-            std::string_view prefix;
+            return;
+        }
+
+        std::string_view prefix;
+        if (isInUninterruptedState(State::work))
+        {
             switch (level)
             {
                 case OutputLevel::debug:
@@ -440,13 +420,42 @@ void Log::flush(
                     prefix = errorLevelPrefix;
                     break;
                 default:
+                    prefix = unknownLevelPrefix;
                     break;
             }
+        }
+        else
+        {
+            prefix = unknownLevelPrefix;
+        }
 
-            std::string output = outputFormatter(prefix);
+        std::string validFormat = format;
+        validFormat.erase(
+            std::remove_if(
+                std::begin(validFormat),
+                std::end(validFormat),
+                [l = std::locale{}](const auto c)
+                {
+                    return (' ' != c) && std::isspace(c, l);
+                }),
+            std::end(validFormat));
+        std::string output = std::format(
+            "{}:[{}]:[{}#{}]: {}",
+            prefix,
+            utility::time::getCurrentSystemTime(),
+            codeFile.substr(codeFile.find("foo/") + 4, codeFile.length()),
+            codeLine,
+            utility::common::formatString(validFormat.c_str(), std::forward<Args>(args)...));
+
+        if (unknownLevelPrefix != prefix)
+        {
             logQueue.push(std::move(output));
             lock.unlock();
             cv.notify_one();
+        }
+        else
+        {
+            std::cerr << changeToLogStyle(output) << std::endl;
         }
     }
 }
