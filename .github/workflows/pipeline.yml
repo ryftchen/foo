@@ -117,7 +117,7 @@ jobs:
         uses: actions/checkout@v4.1.0
 
       - name: CodeQL init
-        uses: github/codeql-action/init@v3.24.0
+        uses: github/codeql-action/init@v3.25.0
         with:
           languages: cpp
           config-file: ./.github/actions/codeql/codeql-config.yml
@@ -128,7 +128,7 @@ jobs:
           ./script/build.sh --test
 
       - name: CodeQL analyze
-        uses: github/codeql-action/analyze@v3.24.0
+        uses: github/codeql-action/analyze@v3.25.0
 
   deploy_pages:
     name: Deploy pages
