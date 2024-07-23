@@ -243,20 +243,19 @@ void runLinearTasks(const std::vector<std::string>& candidates)
             continue;
         }
 
-        const std::string targetInstance = candidates.at(i);
-        switch (utility::common::bkdrHash(targetInstance.data()))
+        const std::string target = candidates.at(i);
+        switch (utility::common::bkdrHash(target.data()))
         {
             case abbrVal(LinearInstance::linkedList):
-                linearFunctor(name(targetInstance), &LinearStructure::linkedListInstance);
+                linearFunctor(name(target), &LinearStructure::linkedListInstance);
                 break;
             case abbrVal(LinearInstance::stack):
-                linearFunctor(name(targetInstance), &LinearStructure::stackInstance);
+                linearFunctor(name(target), &LinearStructure::stackInstance);
                 break;
             case abbrVal(LinearInstance::queue):
-                linearFunctor(name(targetInstance), &LinearStructure::queueInstance);
+                linearFunctor(name(target), &LinearStructure::queueInstance);
                 break;
             default:
-                LOG_INF << "Execute to apply an unknown " << toString(category) << " instance.";
                 break;
         }
     }
@@ -285,7 +284,7 @@ void updateLinearTask(const std::string& target)
             break;
         default:
             bitFlag.reset();
-            throw std::runtime_error("Unexpected " + std::string{toString(category)} + " instance: " + target + '.');
+            throw std::logic_error("Unexpected " + std::string{toString(category)} + " instance: " + target + '.');
     }
 }
 
@@ -364,20 +363,19 @@ void runTreeTasks(const std::vector<std::string>& candidates)
             continue;
         }
 
-        const std::string targetInstance = candidates.at(i);
-        switch (utility::common::bkdrHash(targetInstance.data()))
+        const std::string target = candidates.at(i);
+        switch (utility::common::bkdrHash(target.data()))
         {
             case abbrVal(TreeInstance::binarySearch):
-                treeFunctor(name(targetInstance), &TreeStructure::bsInstance);
+                treeFunctor(name(target), &TreeStructure::bsInstance);
                 break;
             case abbrVal(TreeInstance::adelsonVelskyLandis):
-                treeFunctor(name(targetInstance), &TreeStructure::avlInstance);
+                treeFunctor(name(target), &TreeStructure::avlInstance);
                 break;
             case abbrVal(TreeInstance::splay):
-                treeFunctor(name(targetInstance), &TreeStructure::splayInstance);
+                treeFunctor(name(target), &TreeStructure::splayInstance);
                 break;
             default:
-                LOG_INF << "Execute to apply an unknown " << toString(category) << " instance.";
                 break;
         }
     }
@@ -406,7 +404,7 @@ void updateTreeTask(const std::string& target)
             break;
         default:
             bitFlag.reset();
-            throw std::runtime_error("Unexpected " + std::string{toString(category)} + " instance: " + target + '.');
+            throw std::logic_error("Unexpected " + std::string{toString(category)} + " instance: " + target + '.');
     }
 }
 } // namespace application::app_ds

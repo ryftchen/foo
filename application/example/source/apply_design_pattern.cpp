@@ -367,44 +367,43 @@ void runBehavioralTasks(const std::vector<std::string>& candidates)
             continue;
         }
 
-        const std::string targetInstance = candidates.at(i);
-        switch (utility::common::bkdrHash(targetInstance.data()))
+        const std::string target = candidates.at(i);
+        switch (utility::common::bkdrHash(target.data()))
         {
             case abbrVal(BehavioralInstance::chainOfResponsibility):
-                behavioralFunctor(name(targetInstance), &BehavioralPattern::chainOfResponsibilityInstance);
+                behavioralFunctor(name(target), &BehavioralPattern::chainOfResponsibilityInstance);
                 break;
             case abbrVal(BehavioralInstance::command):
-                behavioralFunctor(name(targetInstance), &BehavioralPattern::commandInstance);
+                behavioralFunctor(name(target), &BehavioralPattern::commandInstance);
                 break;
             case abbrVal(BehavioralInstance::interpreter):
-                behavioralFunctor(name(targetInstance), &BehavioralPattern::interpreterInstance);
+                behavioralFunctor(name(target), &BehavioralPattern::interpreterInstance);
                 break;
             case abbrVal(BehavioralInstance::iterator):
-                behavioralFunctor(name(targetInstance), &BehavioralPattern::iteratorInstance);
+                behavioralFunctor(name(target), &BehavioralPattern::iteratorInstance);
                 break;
             case abbrVal(BehavioralInstance::mediator):
-                behavioralFunctor(name(targetInstance), &BehavioralPattern::mediatorInstance);
+                behavioralFunctor(name(target), &BehavioralPattern::mediatorInstance);
                 break;
             case abbrVal(BehavioralInstance::memento):
-                behavioralFunctor(name(targetInstance), &BehavioralPattern::mementoInstance);
+                behavioralFunctor(name(target), &BehavioralPattern::mementoInstance);
                 break;
             case abbrVal(BehavioralInstance::observer):
-                behavioralFunctor(name(targetInstance), &BehavioralPattern::observerInstance);
+                behavioralFunctor(name(target), &BehavioralPattern::observerInstance);
                 break;
             case abbrVal(BehavioralInstance::state):
-                behavioralFunctor(name(targetInstance), &BehavioralPattern::stateInstance);
+                behavioralFunctor(name(target), &BehavioralPattern::stateInstance);
                 break;
             case abbrVal(BehavioralInstance::strategy):
-                behavioralFunctor(name(targetInstance), &BehavioralPattern::strategyInstance);
+                behavioralFunctor(name(target), &BehavioralPattern::strategyInstance);
                 break;
             case abbrVal(BehavioralInstance::templateMethod):
-                behavioralFunctor(name(targetInstance), &BehavioralPattern::templateMethodInstance);
+                behavioralFunctor(name(target), &BehavioralPattern::templateMethodInstance);
                 break;
             case abbrVal(BehavioralInstance::visitor):
-                behavioralFunctor(name(targetInstance), &BehavioralPattern::visitorInstance);
+                behavioralFunctor(name(target), &BehavioralPattern::visitorInstance);
                 break;
             default:
-                LOG_INF << "Execute to apply an unknown " << toString(category) << " instance.";
                 break;
         }
     }
@@ -457,7 +456,7 @@ void updateBehavioralTask(const std::string& target)
             break;
         default:
             bitFlag.reset();
-            throw std::runtime_error("Unexpected " + std::string{toString(category)} + " instance: " + target + '.');
+            throw std::logic_error("Unexpected " + std::string{toString(category)} + " instance: " + target + '.');
     }
 }
 
@@ -558,26 +557,25 @@ void runCreationalTasks(const std::vector<std::string>& candidates)
             continue;
         }
 
-        const std::string targetInstance = candidates.at(i);
-        switch (utility::common::bkdrHash(targetInstance.data()))
+        const std::string target = candidates.at(i);
+        switch (utility::common::bkdrHash(target.data()))
         {
             case abbrVal(CreationalInstance::abstractFactory):
-                creationalFunctor(name(targetInstance), &CreationalPattern::abstractFactoryInstance);
+                creationalFunctor(name(target), &CreationalPattern::abstractFactoryInstance);
                 break;
             case abbrVal(CreationalInstance::builder):
-                creationalFunctor(name(targetInstance), &CreationalPattern::builderInstance);
+                creationalFunctor(name(target), &CreationalPattern::builderInstance);
                 break;
             case abbrVal(CreationalInstance::factoryMethod):
-                creationalFunctor(name(targetInstance), &CreationalPattern::factoryMethodInstance);
+                creationalFunctor(name(target), &CreationalPattern::factoryMethodInstance);
                 break;
             case abbrVal(CreationalInstance::prototype):
-                creationalFunctor(name(targetInstance), &CreationalPattern::prototypeInstance);
+                creationalFunctor(name(target), &CreationalPattern::prototypeInstance);
                 break;
             case abbrVal(CreationalInstance::singleton):
-                creationalFunctor(name(targetInstance), &CreationalPattern::singletonInstance);
+                creationalFunctor(name(target), &CreationalPattern::singletonInstance);
                 break;
             default:
-                LOG_INF << "Execute to apply an unknown " << toString(category) << " instance.";
                 break;
         }
     }
@@ -612,7 +610,7 @@ void updateCreationalTask(const std::string& target)
             break;
         default:
             bitFlag.reset();
-            throw std::runtime_error("Unexpected " + std::string{toString(category)} + " instance: " + target + '.');
+            throw std::logic_error("Unexpected " + std::string{toString(category)} + " instance: " + target + '.');
     }
 }
 
@@ -735,32 +733,31 @@ void runStructuralTasks(const std::vector<std::string>& candidates)
             continue;
         }
 
-        const std::string targetInstance = candidates.at(i);
-        switch (utility::common::bkdrHash(targetInstance.data()))
+        const std::string target = candidates.at(i);
+        switch (utility::common::bkdrHash(target.data()))
         {
             case abbrVal(StructuralInstance::adapter):
-                structuralFunctor(name(targetInstance), &StructuralPattern::adapterInstance);
+                structuralFunctor(name(target), &StructuralPattern::adapterInstance);
                 break;
             case abbrVal(StructuralInstance::bridge):
-                structuralFunctor(name(targetInstance), &StructuralPattern::bridgeInstance);
+                structuralFunctor(name(target), &StructuralPattern::bridgeInstance);
                 break;
             case abbrVal(StructuralInstance::composite):
-                structuralFunctor(name(targetInstance), &StructuralPattern::compositeInstance);
+                structuralFunctor(name(target), &StructuralPattern::compositeInstance);
                 break;
             case abbrVal(StructuralInstance::decorator):
-                structuralFunctor(name(targetInstance), &StructuralPattern::decoratorInstance);
+                structuralFunctor(name(target), &StructuralPattern::decoratorInstance);
                 break;
             case abbrVal(StructuralInstance::facade):
-                structuralFunctor(name(targetInstance), &StructuralPattern::facadeInstance);
+                structuralFunctor(name(target), &StructuralPattern::facadeInstance);
                 break;
             case abbrVal(StructuralInstance::flyweight):
-                structuralFunctor(name(targetInstance), &StructuralPattern::flyweightInstance);
+                structuralFunctor(name(target), &StructuralPattern::flyweightInstance);
                 break;
             case abbrVal(StructuralInstance::proxy):
-                structuralFunctor(name(targetInstance), &StructuralPattern::proxyInstance);
+                structuralFunctor(name(target), &StructuralPattern::proxyInstance);
                 break;
             default:
-                LOG_INF << "Execute to apply an unknown " << toString(category) << " instance.";
                 break;
         }
     }
@@ -801,7 +798,7 @@ void updateStructuralTask(const std::string& target)
             break;
         default:
             bitFlag.reset();
-            throw std::runtime_error("Unexpected " + std::string{toString(category)} + " instance: " + target + '.');
+            throw std::logic_error("Unexpected " + std::string{toString(category)} + " instance: " + target + '.');
     }
 }
 } // namespace application::app_dp
