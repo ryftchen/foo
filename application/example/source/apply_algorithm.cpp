@@ -453,7 +453,7 @@ void updateMatchTask(const std::string& target)
             break;
         default:
             bitFlag.reset();
-            throw std::logic_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
+            throw std::runtime_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
     }
 }
 
@@ -558,7 +558,7 @@ void updateNotationTask(const std::string& target)
             break;
         default:
             bitFlag.reset();
-            throw std::logic_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
+            throw std::runtime_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
     }
 }
 
@@ -742,7 +742,7 @@ void updateOptimalTask(const std::string& target)
             break;
         default:
             bitFlag.reset();
-            throw std::logic_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
+            throw std::runtime_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
     }
 }
 
@@ -891,7 +891,7 @@ void updateSearchTask(const std::string& target)
             break;
         default:
             bitFlag.reset();
-            throw std::logic_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
+            throw std::runtime_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
     }
 }
 
@@ -1162,7 +1162,7 @@ void updateSortTask(const std::string& target)
             break;
         default:
             bitFlag.reset();
-            throw std::logic_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
+            throw std::runtime_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
     }
 }
 } // namespace application::app_algo

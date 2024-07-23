@@ -456,7 +456,7 @@ void updateBehavioralTask(const std::string& target)
             break;
         default:
             bitFlag.reset();
-            throw std::logic_error("Unexpected " + std::string{toString(category)} + " instance: " + target + '.');
+            throw std::runtime_error("Unexpected " + std::string{toString(category)} + " instance: " + target + '.');
     }
 }
 
@@ -610,7 +610,7 @@ void updateCreationalTask(const std::string& target)
             break;
         default:
             bitFlag.reset();
-            throw std::logic_error("Unexpected " + std::string{toString(category)} + " instance: " + target + '.');
+            throw std::runtime_error("Unexpected " + std::string{toString(category)} + " instance: " + target + '.');
     }
 }
 
@@ -798,7 +798,7 @@ void updateStructuralTask(const std::string& target)
             break;
         default:
             bitFlag.reset();
-            throw std::logic_error("Unexpected " + std::string{toString(category)} + " instance: " + target + '.');
+            throw std::runtime_error("Unexpected " + std::string{toString(category)} + " instance: " + target + '.');
     }
 }
 } // namespace application::app_dp

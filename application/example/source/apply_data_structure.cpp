@@ -284,7 +284,7 @@ void updateLinearTask(const std::string& target)
             break;
         default:
             bitFlag.reset();
-            throw std::logic_error("Unexpected " + std::string{toString(category)} + " instance: " + target + '.');
+            throw std::runtime_error("Unexpected " + std::string{toString(category)} + " instance: " + target + '.');
     }
 }
 
@@ -404,7 +404,7 @@ void updateTreeTask(const std::string& target)
             break;
         default:
             bitFlag.reset();
-            throw std::logic_error("Unexpected " + std::string{toString(category)} + " instance: " + target + '.');
+            throw std::runtime_error("Unexpected " + std::string{toString(category)} + " instance: " + target + '.');
     }
 }
 } // namespace application::app_ds
