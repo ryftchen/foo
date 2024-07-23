@@ -322,6 +322,7 @@ void runArithmeticTasks(const std::vector<std::string>& candidates)
                 arithmeticFunctor(name(target), &ArithmeticSolution::divisionMethod);
                 break;
             default:
+                LOG_WRN << "Execute to apply an unknown " << toString(category) << " method.";
                 break;
         }
     }
@@ -444,6 +445,7 @@ void runDivisorTasks(const std::vector<std::string>& candidates)
                 divisorFunctor(name(target), &DivisorSolution::steinMethod);
                 break;
             default:
+                LOG_WRN << "Execute to apply an unknown " << toString(category) << " method.";
                 break;
         }
     }
@@ -604,6 +606,7 @@ void runIntegralTasks(const std::vector<std::string>& candidates)
                     integralFunctor(name(target), &IntegralSolution::monteCarloMethod);
                     break;
                 default:
+                    LOG_WRN << "Execute to apply an unknown " << toString(category) << " method.";
                     break;
             }
         }
@@ -746,6 +749,7 @@ void runPrimeTasks(const std::vector<std::string>& candidates)
                 primeFunctor(name(target), &PrimeSolution::eulerMethod);
                 break;
             default:
+                LOG_WRN << "Execute to apply an unknown " << toString(category) << " method.";
                 break;
         }
     }

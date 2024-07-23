@@ -404,6 +404,7 @@ void runBehavioralTasks(const std::vector<std::string>& candidates)
                 behavioralFunctor(name(target), &BehavioralPattern::visitorInstance);
                 break;
             default:
+                LOG_WRN << "Execute to apply an unknown " << toString(category) << " instance.";
                 break;
         }
     }
@@ -576,6 +577,7 @@ void runCreationalTasks(const std::vector<std::string>& candidates)
                 creationalFunctor(name(target), &CreationalPattern::singletonInstance);
                 break;
             default:
+                LOG_WRN << "Execute to apply an unknown " << toString(category) << " instance.";
                 break;
         }
     }
@@ -758,6 +760,7 @@ void runStructuralTasks(const std::vector<std::string>& candidates)
                 structuralFunctor(name(target), &StructuralPattern::proxyInstance);
                 break;
             default:
+                LOG_WRN << "Execute to apply an unknown " << toString(category) << " instance.";
                 break;
         }
     }
