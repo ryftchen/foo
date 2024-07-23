@@ -11,8 +11,7 @@
 #include <shared_mutex>
 
 //! @brief Format as a string and printing.
-#define COMMON_PRINT(format, ...) \
-    std::cout << utility::common::formatString(format __VA_OPT__(, ) __VA_ARGS__) << std::flush
+#define COMMON_PRINT(fmt, ...) std::cout << utility::common::formatString(fmt __VA_OPT__(, ) __VA_ARGS__) << std::flush
 //! @brief Do stringify.
 #define COMMON_STRINGIFY(x) #x
 //! @brief Convert to string.
