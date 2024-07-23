@@ -256,6 +256,7 @@ void runLinearTasks(const std::vector<std::string>& candidates)
                 linearFunctor(name(target), &LinearStructure::queueInstance);
                 break;
             default:
+                LOG_WRN << "Execute to apply an unknown " << toString(category) << " instance.";
                 break;
         }
     }
@@ -376,6 +377,7 @@ void runTreeTasks(const std::vector<std::string>& candidates)
                 treeFunctor(name(target), &TreeStructure::splayInstance);
                 break;
             default:
+                LOG_WRN << "Execute to apply an unknown " << toString(category) << " instance.";
                 break;
         }
     }
