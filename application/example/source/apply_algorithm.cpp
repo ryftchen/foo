@@ -419,7 +419,7 @@ void runMatchTasks(const std::vector<std::string>& candidates)
                 matchFunctor(name(target), &MatchSolution::sundayMethod);
                 break;
             default:
-                LOG_WRN << "Execute to apply an unknown " << toString(category) << " method.";
+                LOG_WRN << "Skip applying an unknown " << toString(category) << " method: " << target << ".";
                 break;
         }
     }
@@ -534,7 +534,7 @@ void runNotationTasks(const std::vector<std::string>& candidates)
                 notationFunctor(name(target), &NotationSolution::postfixMethod);
                 break;
             default:
-                LOG_WRN << "Execute to apply an unknown " << toString(category) << " method.";
+                LOG_WRN << "Skip applying an unknown " << toString(category) << " method: " << target << ".";
                 break;
         }
     }
@@ -694,7 +694,7 @@ void runOptimalTasks(const std::vector<std::string>& candidates)
                     optimalFunctor(name(target), &OptimalSolution::geneticMethod);
                     break;
                 default:
-                    LOG_WRN << "Execute to apply an unknown " << toString(category) << " method.";
+                    LOG_WRN << "Skip applying an unknown " << toString(category) << " method: " << target << ".";
                     break;
             }
         }
@@ -866,7 +866,7 @@ void runSearchTasks(const std::vector<std::string>& candidates)
                 searchFunctor(name(target), &SearchSolution::fibonacciMethod);
                 break;
             default:
-                LOG_WRN << "Execute to apply an unknown " << toString(category) << " method.";
+                LOG_WRN << "Skip applying an unknown " << toString(category) << " method: " << target << ".";
                 break;
         }
     }
@@ -1117,7 +1117,7 @@ void runSortTasks(const std::vector<std::string>& candidates)
                 sortFunctor(name(target), &SortSolution::radixMethod);
                 break;
             default:
-                LOG_WRN << "Execute to apply an unknown " << toString(category) << " method.";
+                LOG_WRN << "Skip applying an unknown " << toString(category) << " method: " << target << ".";
                 break;
         }
     }
