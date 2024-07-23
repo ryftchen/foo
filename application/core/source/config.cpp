@@ -57,7 +57,7 @@ void Config::verifyConfigData(const utility::json::JSON& configData)
         (configData.at("helperTimeout").isIntegralType() && (configData.at("helperTimeout").toIntegral() >= 0));
     if (!isVerified)
     {
-        throw std::runtime_error("Illegal configuration: " + configData.toUnescapedString());
+        throw std::runtime_error("Illegal configuration: " + configData.toUnescapedString() + '.');
     }
 
     checkLoggerConfigInHelperList(configData);
@@ -119,7 +119,8 @@ void Config::checkLoggerConfigInHelperList(const utility::json::JSON& configData
     if (!isVerified)
     {
         throw std::runtime_error(
-            R"(Illegal configuration, "logger" object in "helperList" object: )" + loggerObject.toUnescapedString());
+            R"(Illegal configuration, "logger" object in "helperList" object: )" + loggerObject.toUnescapedString()
+            + '.');
     }
 }
 
@@ -168,7 +169,8 @@ void Config::checkViewerConfigInHelperList(const utility::json::JSON& configData
     if (!isVerified)
     {
         throw std::runtime_error(
-            R"(Illegal configuration, "viewer" object in "helperList" object: )" + viewerObject.toUnescapedString());
+            R"(Illegal configuration, "viewer" object in "helperList" object: )" + viewerObject.toUnescapedString()
+            + '.');
     }
 }
 
