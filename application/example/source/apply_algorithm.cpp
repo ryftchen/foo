@@ -400,26 +400,25 @@ void runMatchTasks(const std::vector<std::string>& candidates)
             continue;
         }
 
-        const std::string targetMethod = candidates.at(i);
-        switch (utility::common::bkdrHash(targetMethod.data()))
+        const std::string target = candidates.at(i);
+        switch (utility::common::bkdrHash(target.data()))
         {
             case abbrVal(MatchMethod::rabinKarp):
-                matchFunctor(name(targetMethod), &MatchSolution::rkMethod);
+                matchFunctor(name(target), &MatchSolution::rkMethod);
                 break;
             case abbrVal(MatchMethod::knuthMorrisPratt):
-                matchFunctor(name(targetMethod), &MatchSolution::kmpMethod);
+                matchFunctor(name(target), &MatchSolution::kmpMethod);
                 break;
             case abbrVal(MatchMethod::boyerMoore):
-                matchFunctor(name(targetMethod), &MatchSolution::bmMethod);
+                matchFunctor(name(target), &MatchSolution::bmMethod);
                 break;
             case abbrVal(MatchMethod::horspool):
-                matchFunctor(name(targetMethod), &MatchSolution::horspoolMethod);
+                matchFunctor(name(target), &MatchSolution::horspoolMethod);
                 break;
             case abbrVal(MatchMethod::sunday):
-                matchFunctor(name(targetMethod), &MatchSolution::sundayMethod);
+                matchFunctor(name(target), &MatchSolution::sundayMethod);
                 break;
             default:
-                LOG_INF << "Execute to apply an unknown " << toString(category) << " method.";
                 break;
         }
     }
@@ -454,7 +453,7 @@ void updateMatchTask(const std::string& target)
             break;
         default:
             bitFlag.reset();
-            throw std::runtime_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
+            throw std::logic_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
     }
 }
 
@@ -524,17 +523,16 @@ void runNotationTasks(const std::vector<std::string>& candidates)
             continue;
         }
 
-        const std::string targetMethod = candidates.at(i);
-        switch (utility::common::bkdrHash(targetMethod.data()))
+        const std::string target = candidates.at(i);
+        switch (utility::common::bkdrHash(target.data()))
         {
             case abbrVal(NotationMethod::prefix):
-                notationFunctor(name(targetMethod), &NotationSolution::prefixMethod);
+                notationFunctor(name(target), &NotationSolution::prefixMethod);
                 break;
             case abbrVal(NotationMethod::postfix):
-                notationFunctor(name(targetMethod), &NotationSolution::postfixMethod);
+                notationFunctor(name(target), &NotationSolution::postfixMethod);
                 break;
             default:
-                LOG_INF << "Execute to apply an unknown " << toString(category) << " method.";
                 break;
         }
     }
@@ -560,7 +558,7 @@ void updateNotationTask(const std::string& target)
             break;
         default:
             bitFlag.reset();
-            throw std::runtime_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
+            throw std::logic_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
     }
 }
 
@@ -678,23 +676,22 @@ void runOptimalTasks(const std::vector<std::string>& candidates)
                 continue;
             }
 
-            const std::string targetMethod = candidates.at(i);
-            switch (utility::common::bkdrHash(targetMethod.data()))
+            const std::string target = candidates.at(i);
+            switch (utility::common::bkdrHash(target.data()))
             {
                 case abbrVal(OptimalMethod::gradient):
-                    optimalFunctor(name(targetMethod), &OptimalSolution::gradientDescentMethod);
+                    optimalFunctor(name(target), &OptimalSolution::gradientDescentMethod);
                     break;
                 case abbrVal(OptimalMethod::annealing):
-                    optimalFunctor(name(targetMethod), &OptimalSolution::simulatedAnnealingMethod);
+                    optimalFunctor(name(target), &OptimalSolution::simulatedAnnealingMethod);
                     break;
                 case abbrVal(OptimalMethod::particle):
-                    optimalFunctor(name(targetMethod), &OptimalSolution::particleSwarmMethod);
+                    optimalFunctor(name(target), &OptimalSolution::particleSwarmMethod);
                     break;
                 case abbrVal(OptimalMethod::genetic):
-                    optimalFunctor(name(targetMethod), &OptimalSolution::geneticMethod);
+                    optimalFunctor(name(target), &OptimalSolution::geneticMethod);
                     break;
                 default:
-                    LOG_INF << "Execute to apply an unknown " << toString(category) << " method.";
                     break;
             }
         }
@@ -745,7 +742,7 @@ void updateOptimalTask(const std::string& target)
             break;
         default:
             bitFlag.reset();
-            throw std::runtime_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
+            throw std::logic_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
     }
 }
 
@@ -853,20 +850,19 @@ void runSearchTasks(const std::vector<std::string>& candidates)
             continue;
         }
 
-        const std::string targetMethod = candidates.at(i);
-        switch (utility::common::bkdrHash(targetMethod.data()))
+        const std::string target = candidates.at(i);
+        switch (utility::common::bkdrHash(target.data()))
         {
             case abbrVal(SearchMethod::binary):
-                searchFunctor(name(targetMethod), &SearchSolution::binaryMethod);
+                searchFunctor(name(target), &SearchSolution::binaryMethod);
                 break;
             case abbrVal(SearchMethod::interpolation):
-                searchFunctor(name(targetMethod), &SearchSolution::interpolationMethod);
+                searchFunctor(name(target), &SearchSolution::interpolationMethod);
                 break;
             case abbrVal(SearchMethod::fibonacci):
-                searchFunctor(name(targetMethod), &SearchSolution::fibonacciMethod);
+                searchFunctor(name(target), &SearchSolution::fibonacciMethod);
                 break;
             default:
-                LOG_INF << "Execute to apply an unknown " << toString(category) << " method.";
                 break;
         }
     }
@@ -895,7 +891,7 @@ void updateSearchTask(const std::string& target)
             break;
         default:
             bitFlag.reset();
-            throw std::runtime_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
+            throw std::logic_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
     }
 }
 
@@ -1083,41 +1079,40 @@ void runSortTasks(const std::vector<std::string>& candidates)
             continue;
         }
 
-        const std::string targetMethod = candidates.at(i);
-        switch (utility::common::bkdrHash(targetMethod.data()))
+        const std::string target = candidates.at(i);
+        switch (utility::common::bkdrHash(target.data()))
         {
             case abbrVal(SortMethod::bubble):
-                sortFunctor(name(targetMethod), &SortSolution::bubbleMethod);
+                sortFunctor(name(target), &SortSolution::bubbleMethod);
                 break;
             case abbrVal(SortMethod::selection):
-                sortFunctor(name(targetMethod), &SortSolution::selectionMethod);
+                sortFunctor(name(target), &SortSolution::selectionMethod);
                 break;
             case abbrVal(SortMethod::insertion):
-                sortFunctor(name(targetMethod), &SortSolution::insertionMethod);
+                sortFunctor(name(target), &SortSolution::insertionMethod);
                 break;
             case abbrVal(SortMethod::shell):
-                sortFunctor(name(targetMethod), &SortSolution::shellMethod);
+                sortFunctor(name(target), &SortSolution::shellMethod);
                 break;
             case abbrVal(SortMethod::merge):
-                sortFunctor(name(targetMethod), &SortSolution::mergeMethod);
+                sortFunctor(name(target), &SortSolution::mergeMethod);
                 break;
             case abbrVal(SortMethod::quick):
-                sortFunctor(name(targetMethod), &SortSolution::quickMethod);
+                sortFunctor(name(target), &SortSolution::quickMethod);
                 break;
             case abbrVal(SortMethod::heap):
-                sortFunctor(name(targetMethod), &SortSolution::heapMethod);
+                sortFunctor(name(target), &SortSolution::heapMethod);
                 break;
             case abbrVal(SortMethod::counting):
-                sortFunctor(name(targetMethod), &SortSolution::countingMethod);
+                sortFunctor(name(target), &SortSolution::countingMethod);
                 break;
             case abbrVal(SortMethod::bucket):
-                sortFunctor(name(targetMethod), &SortSolution::bucketMethod);
+                sortFunctor(name(target), &SortSolution::bucketMethod);
                 break;
             case abbrVal(SortMethod::radix):
-                sortFunctor(name(targetMethod), &SortSolution::radixMethod);
+                sortFunctor(name(target), &SortSolution::radixMethod);
                 break;
             default:
-                LOG_INF << "Execute to apply an unknown " << toString(category) << " method.";
                 break;
         }
     }
@@ -1167,7 +1162,7 @@ void updateSortTask(const std::string& target)
             break;
         default:
             bitFlag.reset();
-            throw std::runtime_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
+            throw std::logic_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
     }
 }
 } // namespace application::app_algo

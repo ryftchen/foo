@@ -306,23 +306,22 @@ void runArithmeticTasks(const std::vector<std::string>& candidates)
             continue;
         }
 
-        const std::string targetMethod = candidates.at(i);
-        switch (utility::common::bkdrHash(targetMethod.data()))
+        const std::string target = candidates.at(i);
+        switch (utility::common::bkdrHash(target.data()))
         {
             case abbrVal(ArithmeticMethod::addition):
-                arithmeticFunctor(name(targetMethod), &ArithmeticSolution::additionMethod);
+                arithmeticFunctor(name(target), &ArithmeticSolution::additionMethod);
                 break;
             case abbrVal(ArithmeticMethod::subtraction):
-                arithmeticFunctor(name(targetMethod), &ArithmeticSolution::subtractionMethod);
+                arithmeticFunctor(name(target), &ArithmeticSolution::subtractionMethod);
                 break;
             case abbrVal(ArithmeticMethod::multiplication):
-                arithmeticFunctor(name(targetMethod), &ArithmeticSolution::multiplicationMethod);
+                arithmeticFunctor(name(target), &ArithmeticSolution::multiplicationMethod);
                 break;
             case abbrVal(ArithmeticMethod::division):
-                arithmeticFunctor(name(targetMethod), &ArithmeticSolution::divisionMethod);
+                arithmeticFunctor(name(target), &ArithmeticSolution::divisionMethod);
                 break;
             default:
-                LOG_INF << "Execute to apply an unknown " << toString(category) << " method.";
                 break;
         }
     }
@@ -354,7 +353,7 @@ void updateArithmeticTask(const std::string& target)
             break;
         default:
             bitFlag.reset();
-            throw std::runtime_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
+            throw std::logic_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
     }
 }
 
@@ -435,17 +434,16 @@ void runDivisorTasks(const std::vector<std::string>& candidates)
             continue;
         }
 
-        const std::string targetMethod = candidates.at(i);
-        switch (utility::common::bkdrHash(targetMethod.data()))
+        const std::string target = candidates.at(i);
+        switch (utility::common::bkdrHash(target.data()))
         {
             case abbrVal(DivisorMethod::euclidean):
-                divisorFunctor(name(targetMethod), &DivisorSolution::euclideanMethod);
+                divisorFunctor(name(target), &DivisorSolution::euclideanMethod);
                 break;
             case abbrVal(DivisorMethod::stein):
-                divisorFunctor(name(targetMethod), &DivisorSolution::steinMethod);
+                divisorFunctor(name(target), &DivisorSolution::steinMethod);
                 break;
             default:
-                LOG_INF << "Execute to apply an unknown " << toString(category) << " method.";
                 break;
         }
     }
@@ -471,7 +469,7 @@ void updateDivisorTask(const std::string& target)
             break;
         default:
             bitFlag.reset();
-            throw std::runtime_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
+            throw std::logic_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
     }
 }
 
@@ -587,26 +585,25 @@ void runIntegralTasks(const std::vector<std::string>& candidates)
                 continue;
             }
 
-            const std::string targetMethod = candidates.at(i);
-            switch (utility::common::bkdrHash(targetMethod.data()))
+            const std::string target = candidates.at(i);
+            switch (utility::common::bkdrHash(target.data()))
             {
                 case abbrVal(IntegralMethod::trapezoidal):
-                    integralFunctor(name(targetMethod), &IntegralSolution::trapezoidalMethod);
+                    integralFunctor(name(target), &IntegralSolution::trapezoidalMethod);
                     break;
                 case abbrVal(IntegralMethod::simpson):
-                    integralFunctor(name(targetMethod), &IntegralSolution::adaptiveSimpsonMethod);
+                    integralFunctor(name(target), &IntegralSolution::adaptiveSimpsonMethod);
                     break;
                 case abbrVal(IntegralMethod::romberg):
-                    integralFunctor(name(targetMethod), &IntegralSolution::rombergMethod);
+                    integralFunctor(name(target), &IntegralSolution::rombergMethod);
                     break;
                 case abbrVal(IntegralMethod::gauss):
-                    integralFunctor(name(targetMethod), &IntegralSolution::gaussLegendreMethod);
+                    integralFunctor(name(target), &IntegralSolution::gaussLegendreMethod);
                     break;
                 case abbrVal(IntegralMethod::monteCarlo):
-                    integralFunctor(name(targetMethod), &IntegralSolution::monteCarloMethod);
+                    integralFunctor(name(target), &IntegralSolution::monteCarloMethod);
                     break;
                 default:
-                    LOG_INF << "Execute to apply an unknown " << toString(category) << " method.";
                     break;
             }
         }
@@ -659,7 +656,7 @@ void updateIntegralTask(const std::string& target)
             break;
         default:
             bitFlag.reset();
-            throw std::runtime_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
+            throw std::logic_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
     }
 }
 
@@ -739,17 +736,16 @@ void runPrimeTasks(const std::vector<std::string>& candidates)
             continue;
         }
 
-        const std::string targetMethod = candidates.at(i);
-        switch (utility::common::bkdrHash(targetMethod.data()))
+        const std::string target = candidates.at(i);
+        switch (utility::common::bkdrHash(target.data()))
         {
             case abbrVal(PrimeMethod::eratosthenes):
-                primeFunctor(name(targetMethod), &PrimeSolution::eratosthenesMethod);
+                primeFunctor(name(target), &PrimeSolution::eratosthenesMethod);
                 break;
             case abbrVal(PrimeMethod::euler):
-                primeFunctor(name(targetMethod), &PrimeSolution::eulerMethod);
+                primeFunctor(name(target), &PrimeSolution::eulerMethod);
                 break;
             default:
-                LOG_INF << "Execute to apply an unknown " << toString(category) << " method.";
                 break;
         }
     }
@@ -775,7 +771,7 @@ void updatePrimeTask(const std::string& target)
             break;
         default:
             bitFlag.reset();
-            throw std::runtime_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
+            throw std::logic_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
     }
 }
 } // namespace application::app_num
