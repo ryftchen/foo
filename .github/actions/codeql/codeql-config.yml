@@ -1,14 +1,5 @@
 ---
 name: "CodeQL config"
 queries:
-  - uses: security-and-quality
-query-filters:
-  - exclude:
-      problem.severity: recommendation
-  - exclude:
-      id:
-        - cpp/poorly-documented-function
-  - exclude:
-      id:
-        - cpp/stack-address-escape
+  - uses: security-extended
 ...
