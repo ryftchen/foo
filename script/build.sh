@@ -416,7 +416,7 @@ function perform_website_option()
 
     if command -v rustc >/dev/null 2>&1 && command -v cargo >/dev/null 2>&1; then
         shell_command "cargo build --release --manifest-path ./${FOLDER[doc]}/server/Cargo.toml"
-        local server_daemon="./${FOLDER[doc]}/server/target/release/${FOLDER[proj]}_doc --root-dir ."
+        local server_daemon="${PWD}/${FOLDER[doc]}/server/target/release/${FOLDER[proj]}_doc --root-dir ."
         if ! pgrep -f "${server_daemon}" >/dev/null 2>&1; then
             echo "Please confirm whether continue launching the document server. (y or n)"
             local input
@@ -827,10 +827,12 @@ function set_compile_condition()
             die "Code coverage may be affected if the FOO_BLD_DISTCC is not localhost."
         fi
         if [[ ${DEV_OPT[distcc]} = *"127.0.0.1"* ]]; then
-            local distcc_daemon="distccd --daemon --allow 127.0.0.1/32"
-            if ! pgrep -f "${distcc_daemon}" >/dev/null 2>&1; then
+            local local_client="127.0.0.1/32" escaped_local_client
+            escaped_local_client=$(printf "%s\n" "${local_client}" | sed -e 's/[]\/$*.^[]/\\&/g')
+            if ! pgrep -a distccd \
+                | grep -e "-a ${escaped_local_client}\|--allow ${escaped_local_client}" >/dev/null 2>&1; then
                 die "No local distcc server has been detected, please start it manually, \
-e.g. with \"${distcc_daemon}\"."
+e.g. with \"distccd --daemon --allow ${local_client}\"."
             fi
         fi
         CMAKE_CACHE_ENTRY="${CMAKE_CACHE_ENTRY} -D TOOLCHAIN_DISTCC=ON"
