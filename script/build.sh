@@ -10,9 +10,9 @@ declare STATUS=0
 declare -rA STATUS_COLOR=([exec]="\033[0;33;40m\033[1m\033[49m" [succ]="\033[0;32;40m\033[1m\033[49m"
     [fail]="\033[0;31;40m\033[1m\033[49m" [time]="\033[0;39;40m\033[1m\033[2m\033[49m")
 declare -r STATUS_COLOR_OFF="\033[0m"
-declare -A ARGS=([help]=false [initialize]=false [clean]=false [install]=false [uninstall]=false [container]=false
-    [website]=false [test]=false [release]=false [hook]=false [spell]=false [format]=false [lint]=false
-    [statistics]=false [doxygen]=false [browser]=false [yes]=false [dry]=false)
+declare -A ARGS=([help]=false [initialize]=false [clean]=false [install]=false [uninstall]=false [query]=false
+    [container]=false [website]=false [test]=false [release]=false [hook]=false [spell]=false [format]=false
+    [lint]=false [statistics]=false [doxygen]=false [browser]=false [yes]=false [dry]=false)
 declare -A DEV_OPT=([compiler]="clang" [parallel]=0 [pch]=false [unity]=false [ccache]=false [distcc]="localhost"
     [tmpfs]=false)
 declare CMAKE_CACHE_ENTRY=""
@@ -87,8 +87,8 @@ function exist_single_choice_parameters()
     for key in "${!ARGS[@]}"; do
         if [[ ${ARGS[${key}]} = true ]]; then
             if [[ ${key} == "help" ]] || [[ ${key} == "initialize" ]] || [[ ${key} == "clean" ]] \
-                || [[ ${key} == "install" ]] || [[ ${key} == "uninstall" ]] || [[ ${key} == "container" ]] \
-                || [[ ${key} == "website" ]] || [[ ${key} == "test" ]]; then
+                || [[ ${key} == "install" ]] || [[ ${key} == "uninstall" ]] || [[ ${key} == "query" ]] \
+                || [[ ${key} == "container" ]] || [[ ${key} == "website" ]] || [[ ${key} == "test" ]]; then
                 number+=1
             fi
         fi
@@ -136,6 +136,10 @@ function parse_parameters()
         -u | --uninstall)
             check_single_choice_parameters_validity "$1"
             ARGS[uninstall]=true
+            ;;
+        -q | --query)
+            check_single_choice_parameters_validity "$1"
+            ARGS[query]=true
             ;;
         -c | --container)
             check_single_choice_parameters_validity "$1"
@@ -213,7 +217,7 @@ function perform_help_option()
         return
     fi
 
-    echo "usage: $(basename "${0}") [-h] [-I] [-C] [-i] [-u] [-c] [-w] [-t {-r}] \
+    echo "usage: $(basename "${0}") [-h] [-I] [-C] [-i] [-u] [-q] [-c] [-w] [-t {-r}] \
 [[{-H, -c, -f, -l, -S, -b, -d} ...] {-r}] {-y} {-D}"
     echo
     echo "build script"
@@ -224,6 +228,7 @@ function perform_help_option()
     echo "  -C, --clean           clean up project folder and exit"
     echo "  -i, --install         install binary with libraries and exit"
     echo "  -u, --uninstall       uninstall binary with libraries and exit"
+    echo "  -q, --query           query code with CodeQL and exit"
     echo "  -c, --container       construct docker container and exit"
     echo "  -w, --website         launch / terminate web server and exit"
     echo "  -t, --test            build unit test and exit"
@@ -388,6 +393,53 @@ xargs ${SUDO}rmdir -p 2>/dev/null || true"
     exit "${STATUS}"
 }
 
+function perform_query_option()
+{
+    if [[ ${ARGS[query]} = false ]]; then
+        return
+    fi
+
+    if command -v codeql >/dev/null 2>&1 && command -v sarif >/dev/null 2>&1; then
+        echo "Please confirm whether continue recompiling to query code. (y or n)"
+        local input
+        input=$(wait_until_get_input)
+        if echo "${input}" | grep -iq '^y'; then
+            echo "Yes"
+        else
+            echo "No"
+
+            exit "${STATUS}"
+        fi
+    else
+        die "No codeql or sarif program. Please install it."
+    fi
+
+    if [[ -f ./${FOLDER[scr]}/.env ]]; then
+        shell_command "mv ./${FOLDER[scr]}/.env ./${FOLDER[scr]}/.env.bak"
+    fi
+    shell_command "rm -rf ./${FOLDER[bld]} ./${FOLDER[tst]}/${FOLDER[bld]}"
+    local codeql_db=./${FOLDER[cac]}/codeql build_script
+    build_script=./${FOLDER[scr]}/$(basename "${0}")
+    shell_command "codeql database create ${codeql_db} --language cpp --command '${build_script}' \
+--command '${build_script} -t' --source-root ./ --overwrite"
+    if [[ -f ./${FOLDER[scr]}/.env.bak ]]; then
+        shell_command "mv ./${FOLDER[scr]}/.env.bak ./${FOLDER[scr]}/.env"
+    fi
+
+    local suite_path
+    suite_path=$(find /usr/local/share/codeql/qlpacks/codeql/cpp-queries -name 'cpp-code-scanning.qls')
+    shell_command "codeql database analyze ${codeql_db} ${suite_path} --format=sarif-latest \
+--output=${codeql_db}/codeql.sarif --rerun"
+    if [[ -f ${codeql_db}/codeql.sarif ]]; then
+        shell_command "sarif summary ${codeql_db}/codeql.sarif"
+        shell_command "sarif html ${codeql_db}/codeql.sarif --output ${codeql_db}/index.html"
+    else
+        die "Could not find sarif file in codeql database."
+    fi
+
+    exit "${STATUS}"
+}
+
 function perform_container_option()
 {
     if [[ ${ARGS[container]} = false ]]; then
@@ -472,6 +524,7 @@ function try_to_perform_single_choice_options()
     perform_clean_option
     perform_install_option
     perform_uninstall_option
+    perform_query_option
     perform_container_option
     perform_website_option
 }
@@ -918,6 +971,10 @@ function clean_up_temporary_files()
     local tst_comp_cmd=${FOLDER[tst]}/${FOLDER[bld]}/${COMP_CMD}
     if [[ -f ./${tst_comp_cmd}.bak ]]; then
         shell_command "rm -rf ./${tst_comp_cmd} && mv ./${tst_comp_cmd}.bak ./${tst_comp_cmd}"
+    fi
+
+    if [[ -f ./${FOLDER[scr]}/.env.bak ]]; then
+        shell_command "mv ./${FOLDER[scr]}/.env.bak ./${FOLDER[scr]}/.env"
     fi
 }
 
