@@ -400,7 +400,7 @@ function perform_query_option()
     fi
 
     if command -v codeql >/dev/null 2>&1 && command -v sarif >/dev/null 2>&1; then
-        echo "Please confirm whether continue forced revert to the default and recompile to query code. (y or n)"
+        echo "Please confirm whether continue forced a revert to the default and then recompile to query code. (y or n)"
         local input
         input=$(wait_until_get_input)
         if echo "${input}" | grep -iq '^y'; then
@@ -421,14 +421,11 @@ function perform_query_option()
         shell_command "rm -rf ./${FOLDER[scr]}/.env"
     fi
     shell_command "rm -rf ./${FOLDER[bld]} ./${FOLDER[tst]}/${FOLDER[bld]}"
+
     local codeql_db=./${FOLDER[cac]}/codeql build_script
     build_script=./${FOLDER[scr]}/$(basename "${0}")
     shell_command "codeql database create ${codeql_db} --language cpp --command '${build_script}' \
 --command '${build_script} -t' --source-root ./ --overwrite"
-    if [[ -f ./${FOLDER[scr]}/.env.bak ]]; then
-        shell_command "mv ./${FOLDER[scr]}/.env.bak ./${FOLDER[scr]}/.env"
-    fi
-
     local suite_path
     suite_path=$(find /usr/local/share/codeql/qlpacks/codeql/cpp-queries -name 'cpp-code-scanning.qls')
     shell_command "codeql database analyze ${codeql_db} ${suite_path} --format=sarif-latest \
