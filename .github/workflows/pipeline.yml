@@ -120,14 +120,9 @@ jobs:
         uses: github/codeql-action/init@v3.25.0
         with:
           languages: cpp
-          config-file: ./.github/actions/codeql/codeql-config.yml
 
       - name: Manual build
         run: |
-          ./script/build.sh -C
-          ./script/build.sh -I
-          sed -i 's/FOO_BLD_COMPILER=clang/FOO_BLD_COMPILER=gcc/' ./script/.env
-          sed -i 's/FOO_BLD_CCACHE=on/FOO_BLD_CCACHE=off/' ./script/.env
           ./script/build.sh
           ./script/build.sh --test
 
