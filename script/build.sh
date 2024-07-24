@@ -12,7 +12,7 @@ declare -rA STATUS_COLOR=([exec]="\033[0;33;40m\033[1m\033[49m" [succ]="\033[0;3
 declare -r STATUS_COLOR_OFF="\033[0m"
 declare -A ARGS=([help]=false [initialize]=false [clean]=false [install]=false [uninstall]=false [container]=false
     [website]=false [test]=false [release]=false [hook]=false [spell]=false [format]=false [lint]=false
-    [statistics]=false [doxygen]=false [browser]=false [dry]=false)
+    [statistics]=false [doxygen]=false [browser]=false [yes]=false [dry]=false)
 declare -A DEV_OPT=([compiler]="clang" [parallel]=0 [pch]=false [unity]=false [ccache]=false [distcc]="localhost"
     [tmpfs]=false)
 declare CMAKE_CACHE_ENTRY=""
@@ -51,6 +51,11 @@ function shell_command()
 
 function wait_until_get_input()
 {
+    if [[ ${ARGS[yes]} = true ]]; then
+        echo "y"
+        return 0
+    fi
+
     local old_stty
     old_stty=$(stty -g)
     stty raw -echo
@@ -188,6 +193,9 @@ function parse_parameters()
             check_multiple_choice_parameters_validity "$1"
             ARGS[browser]=true
             ;;
+        -y | --yes)
+            ARGS[yes]=true
+            ;;
         -D | --dry)
             ARGS[dry]=true
             ;;
@@ -206,7 +214,7 @@ function perform_help_option()
     fi
 
     echo "usage: $(basename "${0}") [-h] [-I] [-C] [-i] [-u] [-c] [-w] [-t {-r}] \
-[[{-H, -c, -f, -l, -S, -b, -d} ...] {-r}] {-D}"
+[[{-H, -c, -f, -l, -S, -b, -d} ...] {-r}] {-y} {-D}"
     echo
     echo "build script"
     echo
@@ -227,6 +235,7 @@ function perform_help_option()
     echo "  -S, --statistics      code line statistics"
     echo "  -d, --doxygen         documentation with doxygen"
     echo "  -b, --browser         generate web-based code browser like IDE"
+    echo "  -y, --yes             skip confirmation and default to Yes"
     echo "  -D, --dry             dry run for script"
 
     exit "${STATUS}"
