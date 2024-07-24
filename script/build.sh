@@ -401,7 +401,7 @@ function perform_container_option()
     fi
 
     if ! docker ps -a --format "{{lower .Image}} {{lower .Names}}" \
-        | grep -q "ryftchen/${FOLDER[proj]}:latest ${FOLDER[proj]}_dev3" 2>/dev/null; then
+        | grep -q "ryftchen/${FOLDER[proj]}:latest ${FOLDER[proj]}_dev" 2>/dev/null; then
         shell_command "docker compose -f ./${FOLDER[dock]}/docker-compose.yml up -d --force-recreate"
     else
         die "The container exists."
