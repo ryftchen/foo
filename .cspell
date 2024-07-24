@@ -51,12 +51,14 @@ words:
   - profdata
   - profraw
   - pylintrc
+  - qlpacks
   - Rastrigin
   - rcfile
   - rustc
   - Ritchie
   - RNDN
   - ryftchen
+  - sarif
   - shellexpand
   - staticfile
   - suboperation

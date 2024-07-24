@@ -32,11 +32,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4.1.0
 
-      - name: Pre-check
-        run: |
-          ./script/build.sh --hook --spell --statistics
-          git status
-
       - name: Static check
         run: |
           ./script/build.sh --format --lint
@@ -96,17 +91,11 @@ jobs:
 
   extended_analysis:
     name: Extended analysis
-    if: (github.event_name == 'push') || (github.event_name == 'workflow_dispatch')
     runs-on: ubuntu-latest
     container:
       image: ryftchen/foo:latest
       options: --privileged
     timeout-minutes: 20
-
-    permissions:
-      actions: read
-      contents: read
-      security-events: write
 
     steps:
       - name: Prepare
@@ -116,18 +105,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4.1.0
 
-      - name: CodeQL init
-        uses: github/codeql-action/init@v3.25.0
-        with:
-          languages: cpp
-
-      - name: Manual build
+      - name: Pre-check
         run: |
-          ./script/build.sh
-          ./script/build.sh --test
+          ./script/build.sh --hook --spell --statistics
+          git status
 
-      - name: CodeQL analyze
-        uses: github/codeql-action/analyze@v3.25.0
+      - name: Extended check
+        run: |
+          ./script/build.sh --query --yes
 
   deploy_pages:
     name: Deploy pages
