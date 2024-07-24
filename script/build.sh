@@ -400,7 +400,7 @@ function perform_query_option()
     fi
 
     if command -v codeql >/dev/null 2>&1 && command -v sarif >/dev/null 2>&1; then
-        echo "Please confirm whether continue recompiling to query code. (y or n)"
+        echo "Please confirm whether continue forced revert to the default and recompile to query code. (y or n)"
         local input
         input=$(wait_until_get_input)
         if echo "${input}" | grep -iq '^y'; then
@@ -414,8 +414,11 @@ function perform_query_option()
         die "No codeql or sarif program. Please install it."
     fi
 
+    if [[ ! -d ./${FOLDER[cac]} ]]; then
+        shell_command "mkdir ./${FOLDER[cac]}"
+    fi
     if [[ -f ./${FOLDER[scr]}/.env ]]; then
-        shell_command "mv ./${FOLDER[scr]}/.env ./${FOLDER[scr]}/.env.bak"
+        shell_command "rm -rf ./${FOLDER[scr]}/.env"
     fi
     shell_command "rm -rf ./${FOLDER[bld]} ./${FOLDER[tst]}/${FOLDER[bld]}"
     local codeql_db=./${FOLDER[cac]}/codeql build_script
@@ -971,10 +974,6 @@ function clean_up_temporary_files()
     local tst_comp_cmd=${FOLDER[tst]}/${FOLDER[bld]}/${COMP_CMD}
     if [[ -f ./${tst_comp_cmd}.bak ]]; then
         shell_command "rm -rf ./${tst_comp_cmd} && mv ./${tst_comp_cmd}.bak ./${tst_comp_cmd}"
-    fi
-
-    if [[ -f ./${FOLDER[scr]}/.env.bak ]]; then
-        shell_command "mv ./${FOLDER[scr]}/.env.bak ./${FOLDER[scr]}/.env"
     fi
 }
 
