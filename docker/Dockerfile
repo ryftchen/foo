@@ -11,13 +11,14 @@ clang-format-16 clang-tidy-16 shfmt shellcheck black pylint rustc cargo rustfmt 
 valgrind cloc pre-commit doxygen graphviz docker.io docker-compose-v2 npm elfutils psmisc net-tools curl rsync zip bash-completion \
 && sudo apt-get clean \
 && sudo rm -rf /var/lib/apt/lists/* \
-&& sudo pip3 install --no-cache-dir --break-system-packages compdb ValgrindCI sarif-tools \
+&& sudo pip3 install --no-cache-dir --break-system-packages compdb ValgrindCI sarif-tools clang-html \
 && sudo npm install --no-save --global --no-package-lock cspell@7 https://github.com/jothepro/doxygen-awesome-css#v2.3.1 \
 && sudo npm cache clean --force \
 && cd /root \
 && curl -L https://github.com/github/codeql-action/releases/download/codeql-bundle-v2.18.0/codeql-bundle-linux64.tar.gz | tee codeql-bundle-linux64.tar.gz >/dev/null \
-&& sudo tar -zxvf codeql-bundle-linux64.tar.gz -C /usr/local/share \
-&& sudo rm -rf /usr/local/share/codeql/{csharp,java,swift} \
+&& sudo tar -zxvf codeql-bundle-linux64.tar.gz -C /usr/local/share >/dev/null \
+&& sudo rm -rf /usr/local/share/codeql/{csharp,csv,go,html,java,javascript,properties,ruby,swift,xml,yaml} \
+&& sudo rm -rf /usr/local/share/codeql/qlpacks/codeql/{csharp-*,go-*,java-*,javascript-*,ruby-*,swift-*} \
 && sudo chmod +x /usr/local/share/codeql/codeql \
 && sudo ln -s /usr/local/share/codeql/codeql /usr/local/bin/codeql \
 && rm -rf codeql-bundle-linux64.tar.gz \
