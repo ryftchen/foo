@@ -67,27 +67,27 @@ jobs:
       - name: Dynamic check
         run: |
           ./script/run.py --check cov mem --build dbg --repeat 1
-          cat ./.cache/foo_run.report
+          cat ./report/foo_run.report
 
       - name: Test debug version
         run: |
           ./script/run.py --test --build dbg --repeat 1
-          cat ./.cache/foo_run.report
+          cat ./report/foo_run.report
 
       - name: Test release version
         run: |
           ./script/run.py --test --build rls --repeat 1
-          cat ./.cache/foo_run.report
+          cat ./report/foo_run.report
 
       - name: Run debug version
         run: |
           ./script/run.py --build dbg --repeat 1
-          cat ./.cache/foo_run.report
+          cat ./report/foo_run.report
 
       - name: Run release version
         run: |
           ./script/run.py --build rls --repeat 1
-          cat ./.cache/foo_run.report
+          cat ./report/foo_run.report
 
   extended_analysis:
     name: Extended analysis
@@ -116,9 +116,9 @@ jobs:
           sed -i 's/FOO_BLD_COMPILER=clang/FOO_BLD_COMPILER=gcc/' ./script/.env
           sed -i 's/FOO_BLD_CCACHE=on/FOO_BLD_CCACHE=off/' ./script/.env
           ./script/run.py --build
-          cat ./.cache/foo_run.report
+          cat ./report/foo_run.report
           ./script/run.py --test --build
-          cat ./.cache/foo_run.report
+          cat ./report/foo_run.report
 
       - name: Extended check
         run: |

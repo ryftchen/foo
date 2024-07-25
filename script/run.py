@@ -21,11 +21,11 @@ STDOUT = sys.stdout
 
 class Task:
     app_bin_cmd = "foo"
-    app_bin_dir = "./build/bin"
+    app_bin_path = "./build/bin"
     tst_bin_cmd = "foo_test"
-    tst_bin_dir = "./test/build/bin"
+    tst_bin_path = "./test/build/bin"
     lib_list = ["libfoo_util.so", "libfoo_algo.so", "libfoo_ds.so", "libfoo_dp.so", "libfoo_num.so"]
-    lib_dir = "./build/lib"
+    lib_path = "./build/lib"
     console_file = "./script/console_batch.txt"
     basic_task_dict = {
         "--help": [],
@@ -70,9 +70,9 @@ class Task:
     }
     options = {"tst": False, "chk_cov": False, "chk_mem": False}
     build_script = "./script/build.sh"
-    cache_dir = "./.cache"
-    log_file = f"{cache_dir}/foo_run.log"
-    report_file = f"{cache_dir}/foo_run.report"
+    report_path = "./report"
+    log_file = f"{report_path}/foo_run.log"
+    report_file = f"{report_path}/foo_run.report"
 
     def __init__(self):
         self.passed_steps = 0
@@ -86,8 +86,8 @@ class Task:
             Output.exit_with_error("Illegal path to current script.")
         os.chdir(os.path.dirname(script_path))
         sys.path.append(".")
-        if not os.path.exists(self.cache_dir):
-            os.mkdir(self.cache_dir)
+        if not os.path.exists(self.report_path):
+            os.mkdir(self.report_path)
 
         self.logger = common.Log(self.log_file)
         self.progress_bar = common.ProgressBar()
@@ -122,10 +122,10 @@ class Task:
         try:
             if self.options["chk_cov"]:
                 common.execute_command(
-                    f"rm -rf {self.cache_dir}/coverage/*.profraw {self.cache_dir}/coverage/*.profdata"
+                    f"rm -rf {self.report_path}/check_coverage/*.profraw {self.report_path}/check_coverage/*.profdata"
                 )
             if self.options["chk_mem"]:
-                common.execute_command(f"rm -rf {self.cache_dir}/memory/*.xml")
+                common.execute_command(f"rm -rf {self.report_path}/check_memory/*.xml")
             sys.stdout = STDOUT
             self.progress_bar.destroy_progress_bar()
             del self.logger
@@ -180,8 +180,8 @@ class Task:
                 if stdout.find("llvm-profdata-16") != -1 and stdout.find("llvm-cov-16") != -1:
                     os.environ["FOO_CHK_COV"] = "on"
                     self.options["chk_cov"] = True
-                    common.execute_command(f"rm -rf {self.cache_dir}/coverage")
-                    common.execute_command(f"mkdir -p {self.cache_dir}/coverage")
+                    common.execute_command(f"rm -rf {self.report_path}/check_coverage")
+                    common.execute_command(f"mkdir -p {self.report_path}/check_coverage")
                 else:
                     Output.exit_with_error("No llvm-profdata or llvm-cov program. Please check it.")
 
@@ -190,10 +190,10 @@ class Task:
                 if stdout.find("valgrind") != -1 and stdout.find("valgrind-ci") != -1:
                     os.environ["FOO_CHK_MEM"] = "on"
                     self.options["chk_mem"] = True
-                    common.execute_command(f"rm -rf {self.cache_dir}/memory")
-                    common.execute_command(f"mkdir -p {self.cache_dir}/memory")
+                    common.execute_command(f"rm -rf {self.report_path}/check_memory")
+                    common.execute_command(f"mkdir -p {self.report_path}/check_memory")
                 else:
-                    Output.exit_with_error("No valgrind or valgrind-ci program. Please check it.")
+                    Output.exit_with_error("No valgrind (including valgrind-ci) program. Please check it.")
 
         if args.build is not None:
             if os.path.isfile(self.build_script):
@@ -227,13 +227,13 @@ class Task:
                 Output.exit_with_error(f"Failed to run shell script {self.build_script} file.")
 
     def prepare(self):
-        if not self.options["tst"] and not os.path.isfile(f"{self.app_bin_dir}/{self.app_bin_cmd}"):
+        if not self.options["tst"] and not os.path.isfile(f"{self.app_bin_path}/{self.app_bin_cmd}"):
             Output.exit_with_error("No executable file. Please use the --build option to build it.")
-        if self.options["tst"] and not os.path.isfile(f"{self.tst_bin_dir}/{self.tst_bin_cmd}"):
+        if self.options["tst"] and not os.path.isfile(f"{self.tst_bin_path}/{self.tst_bin_cmd}"):
             Output.exit_with_error("No executable file for testing. Please use the --build option to build it.")
 
-        if not os.path.exists(self.cache_dir):
-            os.makedirs(self.cache_dir)
+        if not os.path.exists(self.report_path):
+            os.makedirs(self.report_path)
         if not os.path.isfile(self.console_file):
             with open(self.console_file, "wt", encoding="utf-8") as console_batch:
                 fcntl.flock(console_batch.fileno(), fcntl.LOCK_EX)
@@ -257,7 +257,7 @@ class Task:
 
     def complete(self):
         if self.options["chk_mem"]:
-            common.execute_command(f"rm -rf {self.cache_dir}/memory/*.xml")
+            common.execute_command(f"rm -rf {self.report_path}/check_memory/*.xml")
 
         if self.options["chk_cov"]:
             self.check_coverage()
@@ -298,15 +298,15 @@ class Task:
 
     def run_task(self, command, enter=""):
         if not self.options["tst"]:
-            full_cmd = f"{self.app_bin_dir}/{command}"
+            full_cmd = f"{self.app_bin_path}/{command}"
         else:
-            full_cmd = f"{self.tst_bin_dir}/{command}"
+            full_cmd = f"{self.tst_bin_path}/{command}"
         if self.options["chk_mem"]:
             full_cmd = f"valgrind --tool=memcheck --xml=yes \
---xml-file={self.cache_dir}/memory/foo_chk_mem_{str(self.complete_steps + 1)}.xml {full_cmd}"
+--xml-file={self.report_path}/check_memory/foo_chk_mem_{str(self.complete_steps + 1)}.xml {full_cmd}"
         if self.options["chk_cov"]:
             full_cmd = f"LLVM_PROFILE_FILE=\
-\"{self.cache_dir}/coverage/foo_chk_cov_{str(self.complete_steps + 1)}.profraw\" {full_cmd}"
+\"{self.report_path}/check_coverage/foo_chk_cov_{str(self.complete_steps + 1)}.profraw\" {full_cmd}"
         align_len = max(
             len(command) + Output.stat_cont_len_excl_cmd,
             Output.stat_min_cont_len,
@@ -359,28 +359,30 @@ class Task:
 
     def check_coverage(self):
         common.execute_command(
-            f"llvm-profdata-16 merge -sparse {self.cache_dir}/coverage/foo_chk_cov_*.profraw \
--o {self.cache_dir}/coverage/foo_chk_cov.profdata"
+            f"llvm-profdata-16 merge -sparse {self.report_path}/check_coverage/foo_chk_cov_*.profraw \
+-o {self.report_path}/check_coverage/foo_chk_cov.profdata"
         )
         common.execute_command(
-            f"llvm-cov-16 show -instr-profile={self.cache_dir}/coverage/foo_chk_cov.profdata -show-branches=percent \
--show-expansions -show-regions -show-line-counts-or-regions -format=html -output-dir={self.cache_dir}/coverage \
--Xdemangler=c++filt -object={self.app_bin_dir}/{self.app_bin_cmd} \
-{' '.join([f'-object={self.lib_dir}/{lib}' for lib in self.lib_list])} 2>&1"
+            f"llvm-cov-16 show -instr-profile={self.report_path}/check_coverage/foo_chk_cov.profdata \
+-show-branches=percent -show-expansions -show-regions -show-line-counts-or-regions -format=html \
+-output-dir={self.report_path}/check_coverage -Xdemangler=c++filt -object={self.app_bin_path}/{self.app_bin_cmd} \
+{' '.join([f'-object={self.lib_path}/{lib}' for lib in self.lib_list])} 2>&1"
         )
         stdout, _, _ = common.execute_command(
-            f"llvm-cov-16 report -instr-profile={self.cache_dir}/coverage/foo_chk_cov.profdata \
--object={self.app_bin_dir}/{self.app_bin_cmd} {' '.join([f'-object={self.lib_dir}/{lib}' for lib in self.lib_list])} \
+            f"llvm-cov-16 report -instr-profile={self.report_path}/check_coverage/foo_chk_cov.profdata \
+-object={self.app_bin_path}/{self.app_bin_cmd} {' '.join([f'-object={self.lib_path}/{lib}' for lib in self.lib_list])} \
 2>&1"
         )
-        common.execute_command(f"rm -rf {self.cache_dir}/coverage/*.profraw {self.cache_dir}/coverage/*.profdata")
+        common.execute_command(
+            f"rm -rf {self.report_path}/check_coverage/*.profraw {self.report_path}/check_coverage/*.profdata"
+        )
         print(f"\n[CHECK COVERAGE]\n{stdout}")
         if "error" in stdout:
             print("Please rebuild the executable file with the --check option.")
 
     def check_memory(self, align_len):
         inst_num = 0
-        xml_filename = f"{self.cache_dir}/memory/foo_chk_mem_{str(self.complete_steps + 1)}"
+        xml_filename = f"{self.report_path}/check_memory/foo_chk_mem_{str(self.complete_steps + 1)}"
         with open(f"{xml_filename}.xml", "rt", encoding="utf-8") as mem_xml:
             inst_num = mem_xml.read().count("</valgrindoutput>")
         stdout = ""
@@ -409,16 +411,16 @@ valgrind-ci {xml_filename}_inst_2.xml --summary"
             if inst_num == 1:
                 common.execute_command(
                     f"valgrind-ci {xml_filename}.xml --source-dir=./ \
---output-dir={self.cache_dir}/memory/case_{str(self.complete_steps + 1)}"
+--output-dir={self.report_path}/check_memory/case_{str(self.complete_steps + 1)}"
                 )
             elif inst_num == 2:
                 common.execute_command(
                     f"valgrind-ci {xml_filename}_inst_1.xml --source-dir=./ \
---output-dir={self.cache_dir}/memory/case_{str(self.complete_steps + 1)}_inst_1"
+--output-dir={self.report_path}/check_memory/case_{str(self.complete_steps + 1)}_inst_1"
                 )
                 common.execute_command(
                     f"valgrind-ci {xml_filename}_inst_2.xml --source-dir=./ \
---output-dir={self.cache_dir}/memory/case_{str(self.complete_steps + 1)}_inst_2"
+--output-dir={self.report_path}/check_memory/case_{str(self.complete_steps + 1)}_inst_2"
                 )
             self.passed_steps -= 1
             Output.refresh_status(
