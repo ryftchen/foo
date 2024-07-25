@@ -113,7 +113,7 @@ jobs:
       - name: Compatibility of compilation
         run: |
           ./script/build.sh --initialize
-          exec bash
+          source ~/.bashrc
           sed -i 's/FOO_BLD_COMPILER=clang/FOO_BLD_COMPILER=gcc/' ./script/.env
           sed -i 's/FOO_BLD_CCACHE=on/FOO_BLD_CCACHE=off/' ./script/.env
           ./script/run.py --build
@@ -121,18 +121,18 @@ jobs:
           ./script/run.py --test --build
           cat ./.cache/foo_run.report
 
-      - name: Application environment
-        run: |
-          ./script/build.sh --install
-          exec bash
-          ./script/build.sh --uninstall
-          exec bash
-          ./script/build.sh --clean
-          exec bash
-
       - name: Extended check
         run: |
           ./script/build.sh --query --yes
+
+      - name: Application environment
+        run: |
+          ./script/build.sh --install
+          source ~/.bashrc
+          ./script/build.sh --uninstall
+          source ~/.bashrc
+          ./script/build.sh --clean
+          source ~/.bashrc
 
       - name: Production environment
         run: |
