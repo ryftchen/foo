@@ -110,9 +110,34 @@ jobs:
           ./script/build.sh --hook --spell --statistics
           git status
 
+      - name: Compatibility of compilation
+        run: |
+          ./script/build.sh --initialize
+          exec bash
+          sed -i 's/FOO_BLD_COMPILER=clang/FOO_BLD_COMPILER=gcc/' ./script/.env
+          sed -i 's/FOO_BLD_CCACHE=on/FOO_BLD_CCACHE=off/' ./script/.env
+          ./script/run.py --build
+          cat ./.cache/foo_run.report
+          ./script/run.py --test --build
+          cat ./.cache/foo_run.report
+
+      - name: Application environment
+        run: |
+          ./script/build.sh --install
+          exec bash
+          ./script/build.sh --uninstall
+          exec bash
+          ./script/build.sh --clean
+          exec bash
+
       - name: Extended check
         run: |
           ./script/build.sh --query --yes
+
+      - name: Production environment
+        run: |
+          ./script/build.sh --container --yes
+          ./script/build.sh --website --yes
 
   deploy_pages:
     name: Deploy pages
@@ -163,4 +188,7 @@ jobs:
 
       - name: Clean workflow runs
         uses: dmvict/clean-workflow-runs@v1.2.2
+        with:
+          save_period: 7
+          save_min_runs_number: 5
 ...
