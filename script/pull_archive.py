@@ -21,6 +21,7 @@ class Documentation:
     artifact_url = "https://api.github.com/repos/ryftchen/foo/actions/artifacts?per_page=5"
     artifact_file = "foo_artifact"
     website_dir = "/var/www/foo_doc"
+    netrc_file = os.path.expanduser("~/.netrc")
     log_file = "/tmp/foo_pull_archive.log"
 
     def __init__(self):
@@ -60,7 +61,9 @@ class Documentation:
     def pull_archive(self):
         print(f"\n[ {datetime.now()} ] ################# PULL ARCHIVE #################")
         if not os.path.exists(self.website_dir):
-            interrupt("Please manually create a foo_doc folder in the /var/www directory.")
+            interrupt(f"Please create a {self.website_dir} folder for storing pages.")
+        if not os.path.exists(self.netrc_file):
+            interrupt(f"Please create a {self.netrc_file} file for authentication.")
         self.download_artifact()
         self.update_document()
         sys.stdout = STDOUT
@@ -73,7 +76,7 @@ class Documentation:
             f"git -C {self.project_path} ls-remote {self.github_url} refs/heads/master | cut -f 1"
         )
         if not remote_commit_id:
-            interrupt("Failed to get the latest commit id.")
+            interrupt("Could not get the latest commit id.")
         if local_commit_id != remote_commit_id:
             execute(f"git -C {self.project_path} pull origin master")
         elif (

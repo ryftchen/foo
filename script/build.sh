@@ -301,8 +301,8 @@ function perform_clean_option()
     fi
 
     if [[ -f ~/${BASH_RC} ]]; then
-        shell_command "sed -i '/export FOO_ENV=${FOLDER[proj]}_dev/d' ~/${BASH_RC} 2>/dev/null"
-        shell_command "sed -i '/alias ${FOLDER[proj]:0:1}\(build\|run\)/d' ~/${BASH_RC} 2>/dev/null"
+        shell_command "sed -i '/export FOO_ENV=${FOLDER[proj]}_dev/d' ~/${BASH_RC}"
+        shell_command "sed -i '/alias ${FOLDER[proj]:0:1}\(build\|run\)/d' ~/${BASH_RC}"
     fi
     shell_command "find ./ -maxdepth 3 -type d | sed 1d \
 | grep -E '(${FOLDER[cac]}|${FOLDER[bld]}|archive|browser|doxygen|target|__pycache__)$' | xargs -i rm -rf {}"
