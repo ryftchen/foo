@@ -160,4 +160,7 @@ jobs:
       - name: Deploy pages
         id: deployment
         uses: actions/deploy-pages@v4.0.0
+
+      - name: Clean workflow runs
+        uses: dmvict/clean-workflow-runs@v1.2.2
 ...
