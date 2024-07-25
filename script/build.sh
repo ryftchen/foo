@@ -2,7 +2,7 @@
 
 declare -rA FOLDER=([proj]="foo" [app]="application" [util]="utility" [algo]="algorithm" [ds]="data_structure"
     [dp]="design_pattern" [num]="numeric" [tst]="test" [scr]="script" [doc]="document" [dock]="docker" [bld]="build"
-    [cac]=".cache")
+    [rep]="report" [cac]=".cache")
 declare -r COMP_CMD="compile_commands.json"
 declare -r BASH_RC=".bashrc"
 declare SUDO=""
@@ -305,7 +305,8 @@ function perform_clean_option()
         shell_command "sed -i '/alias ${FOLDER[proj]:0:1}\(build\|run\)/d' ~/${BASH_RC}"
     fi
     shell_command "find ./ -maxdepth 3 -type d | sed 1d \
-| grep -E '(${FOLDER[cac]}|${FOLDER[bld]}|archive|browser|doxygen|target|__pycache__)$' | xargs -i rm -rf {}"
+| grep -E '(${FOLDER[bld]}|${FOLDER[rep]}|${FOLDER[cac]}|__pycache__|archive|browser|doxygen|target)$' \
+| xargs -i rm -rf {}"
     shell_command "rm -rf ./${FOLDER[scr]}/.env ./${FOLDER[scr]}/console_batch.txt ./${FOLDER[doc]}/server/Cargo.lock \
 ./core.* ./vgcore.* ./*.profraw"
     shell_command "git config --local --unset commit.template || true"
@@ -400,7 +401,8 @@ function perform_query_option()
     fi
 
     if command -v codeql >/dev/null 2>&1 && command -v sarif >/dev/null 2>&1; then
-        echo "Please confirm whether continue forced a revert to the default and then recompile to query code. (y or n)"
+        echo "Please confirm whether continue forced a revert to the default (clear .env file, etc.) \
+and then recompile to query code. (y or n)"
         local input
         input=$(wait_until_get_input)
         if echo "${input}" | grep -iq '^y'; then
@@ -411,27 +413,38 @@ function perform_query_option()
             exit "${STATUS}"
         fi
     else
-        die "No codeql or sarif program. Please install it."
+        die "No codeql (including sarif) program. Please install it."
     fi
 
-    if [[ ! -d ./${FOLDER[cac]} ]]; then
-        shell_command "mkdir ./${FOLDER[cac]}"
+    if [[ ! -d ./${FOLDER[rep]} ]]; then
+        shell_command "mkdir ./${FOLDER[rep]}"
     fi
     if [[ -f ./${FOLDER[scr]}/.env ]]; then
         shell_command "rm -rf ./${FOLDER[scr]}/.env"
     fi
     shell_command "rm -rf ./${FOLDER[bld]} ./${FOLDER[tst]}/${FOLDER[bld]}"
 
-    local codeql_db=./${FOLDER[cac]}/codeql build_script
+    local codeql_db=./${FOLDER[rep]}/codeql build_script
     build_script=./${FOLDER[scr]}/$(basename "${0}")
-    shell_command "codeql database create ${codeql_db} --language cpp --command '${build_script}' \
---command '${build_script} -t' --source-root ./ --overwrite"
-    local suite_path
-    suite_path=$(find /usr/local/share/codeql/qlpacks/codeql/cpp-queries -name 'cpp-code-scanning.qls')
-    shell_command "codeql database analyze ${codeql_db} ${suite_path} --format=sarif-latest \
---output=${codeql_db}/codeql.sarif --rerun"
+    shell_command "codeql database create ${codeql_db} --language=cpp --ram=2048 --command='${build_script}' \
+--command='${build_script} -t' --source-root=./ --overwrite"
+    local target_suite="cpp-code-scanning.qls"
+    shell_command "codeql database analyze ${codeql_db} ${target_suite} --format=sarif-latest \
+--output=${codeql_db}/codeql.sarif --rerun --ram=2048"
     if [[ -f ${codeql_db}/codeql.sarif ]]; then
-        shell_command "sarif summary ${codeql_db}/codeql.sarif"
+        local sarif_sum="sarif summary ${codeql_db}/codeql.sarif" sarif_sum_output
+        sarif_sum_output=$(eval "${sarif_sum}")
+        if {
+            echo "${sarif_sum_output}" | grep -q 'error: 0'
+        } && {
+            echo "${sarif_sum_output}" | grep -q 'warning: 0'
+        } && {
+            echo "${sarif_sum_output}" | grep -q 'note: 0'
+        }; then
+            shell_command "${sarif_sum}"
+        else
+            shell_command "! ${sarif_sum}"
+        fi
         shell_command "sarif html ${codeql_db}/codeql.sarif --output ${codeql_db}/index.html"
     else
         die "Could not find sarif file in codeql database."
@@ -552,10 +565,11 @@ function check_extra_dependencies()
 
     if [[ ${ARGS[lint]} = true ]]; then
         if ! command -v clang-tidy-16 >/dev/null 2>&1 || ! command -v run-clang-tidy-16 >/dev/null 2>&1 \
-            || ! command -v compdb >/dev/null 2>&1 || ! command -v shellcheck >/dev/null 2>&1 \
-            || ! command -v pylint >/dev/null 2>&1 || ! command -v clippy-driver >/dev/null 2>&1; then
-            die "No clang-tidy (including run-clang-tidy-16, compdb), shellcheck, pylint or clippy program. \
-Please install it."
+            || ! command -v compdb >/dev/null 2>&1 || ! command -v clang-tidy-html >/dev/null 2>&1 \
+            || ! command -v shellcheck >/dev/null 2>&1 || ! command -v pylint >/dev/null 2>&1 \
+            || ! command -v clippy-driver >/dev/null 2>&1; then
+            die "No clang-tidy (including run-clang-tidy-16, compdb, clang-tidy-html), shellcheck, pylint \
+or clippy program. Please install it."
         fi
         if [[ ${DEV_OPT[pch]} = true ]] || [[ ${DEV_OPT[unity]} = true ]]; then
             die "Due to the unconventional ${COMP_CMD} file, the --lint option cannot run if the FOO_BLD_PCH or \
@@ -644,12 +658,21 @@ function perform_lint_option()
             die "Failed to remove redundant implementation file objects from the ${app_comp_cmd} file."
         fi
     done
-    shell_command "find ./${FOLDER[app]} ./${FOLDER[util]} ./${FOLDER[algo]} ./${FOLDER[ds]} ./${FOLDER[dp]} \
-./${FOLDER[num]} -name '*.cpp' -o -name '*.hpp' | xargs run-clang-tidy-16 -config-file=./.clang-tidy \
--p ./${FOLDER[bld]} -quiet"
+
+    local clang_tidy_output_path=./${FOLDER[rep]}/clang-tidy
+    local clang_tidy_log=${clang_tidy_output_path}/clang-tidy.log
+    if [[ ! -d ${clang_tidy_output_path} ]]; then
+        shell_command "mkdir -p ${clang_tidy_output_path}"
+    elif [[ -f ${clang_tidy_log} ]]; then
+        shell_command "rm -rf ${clang_tidy_log}"
+    fi
+    shell_command "set -o pipefail && find ./${FOLDER[app]} ./${FOLDER[util]} ./${FOLDER[algo]} ./${FOLDER[ds]} \
+./${FOLDER[dp]} ./${FOLDER[num]} -name '*.cpp' -o -name '*.hpp' | xargs run-clang-tidy-16 -config-file=./.clang-tidy \
+-p ./${FOLDER[bld]} -quiet | tee -a ${clang_tidy_log}"
     if [[ ${exist_file_extention} = true ]]; then
-        shell_command "find ./${FOLDER[app]} ./${FOLDER[util]} ./${FOLDER[algo]} ./${FOLDER[ds]} ./${FOLDER[dp]} \
-./${FOLDER[num]} -name '*.tpp' | xargs clang-tidy-16 --config-file=./.clang-tidy -p ./${FOLDER[bld]} --quiet"
+        shell_command "set -o pipefail && find ./${FOLDER[app]} ./${FOLDER[util]} ./${FOLDER[algo]} ./${FOLDER[ds]} \
+./${FOLDER[dp]} ./${FOLDER[num]} -name '*.tpp' | xargs clang-tidy-16 --config-file=./.clang-tidy -p ./${FOLDER[bld]} \
+--quiet | tee -a ${clang_tidy_log}"
     fi
     shell_command "rm -rf ./${app_comp_cmd} && mv ./${app_comp_cmd}.bak ./${app_comp_cmd}"
 
@@ -659,9 +682,12 @@ function perform_lint_option()
     fi
     shell_command "compdb -p ./${FOLDER[tst]}/${FOLDER[bld]} list >./${COMP_CMD} \
 && mv ./${tst_comp_cmd} ./${tst_comp_cmd}.bak && mv ./${COMP_CMD} ./${FOLDER[tst]}/${FOLDER[bld]}"
-    shell_command "find ./${FOLDER[tst]} -name '*.cpp' | xargs run-clang-tidy-16 -config-file=./.clang-tidy \
--p ./${FOLDER[tst]}/${FOLDER[bld]} -quiet"
+    shell_command "set -o pipefail && find ./${FOLDER[tst]} -name '*.cpp' | xargs run-clang-tidy-16 \
+-config-file=./.clang-tidy -p ./${FOLDER[tst]}/${FOLDER[bld]} -quiet | tee -a ${clang_tidy_log}"
     shell_command "rm -rf ./${tst_comp_cmd} && mv ./${tst_comp_cmd}.bak ./${tst_comp_cmd}"
+    shell_command "sed -i '/clang-tidy-16 -p=/d' ${clang_tidy_log}"
+    shell_command "clang-tidy-html ${clang_tidy_log} -o ${clang_tidy_output_path}/index.html \
+-d https://releases.llvm.org/16.0.0/tools/clang/tools/extra/docs/clang-tidy/checks/list.html"
 
     shell_command "shellcheck -a ./${FOLDER[scr]}/*.sh"
     shell_command "pylint --rcfile=./.pylintrc ./${FOLDER[scr]}/*.py"

@@ -83,7 +83,7 @@ The **foo** is a personal roadmap for learning programming, like a demo. Its mai
   ./script/run.py
   ```
 
-  Also, add the *-\-build* option to support building before running. The result of running will also be written to `./.cache/foo_run.log` and the analysis will be generated in `./.cache/foo_run.report`.
+  Also, add the *-\-build* option to support building before running. The result of running will also be written to `./report/foo_run.log` and the analysis will be generated in `./report/foo_run.report`.
 
 - The parameters are provided for running or dynamic analysis. Run with options such as *-\-check cov*, *-\-check mem*, etc.
 

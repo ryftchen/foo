@@ -7,6 +7,7 @@ document/archive/
 document/browser/
 document/doxygen/
 document/server/target/
+report/
 .env
 console_batch.txt
 core.*
