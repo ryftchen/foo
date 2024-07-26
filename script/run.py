@@ -12,6 +12,7 @@ try:
     import threading
     import traceback
     from datetime import datetime
+    from pathlib import Path
     import common
 except ImportError as err:
     raise ImportError(err) from err
@@ -324,7 +325,7 @@ class Task:
             full_cmd = f"LLVM_PROFILE_FILE=\
 \"{self.report_path}/check_coverage/foo_chk_cov_{str(self.complete_steps + 1)}.profraw\" {full_cmd}"
         if len(enter) != 0:
-            command += ":" + enter.replace("\nquit", "")
+            command += "<" + enter.replace("\nquit", "")
         align_len = max(
             len(command) + Output.stat_cont_len_excl_cmd,
             Output.stat_min_cont_len,
@@ -424,23 +425,21 @@ valgrind-ci {xml_filename}_inst_2.xml --summary"
             )
 
         if "errors" in stdout:
-            name = command.replace(" ", ".")
             stdout = stdout.replace("\t", "    ")
             print(f"\n[CHECK MEMORY]\n{stdout}")
+            case_path = f"{self.report_path}/check_memory/memory/case_{str(self.complete_steps + 1)}"
             if inst_num == 1:
-                common.execute_command(
-                    f"valgrind-ci {xml_filename}.xml --source-dir=./ \
---output-dir={self.report_path}/check_memory/memory/case_{str(self.complete_steps + 1)}_{name}"
-                )
+                common.execute_command(f"valgrind-ci {xml_filename}.xml --source-dir=./ --output-dir={case_path}")
+                Path(f"{case_path}/case_name").write_text(command, encoding="utf-8")
             elif inst_num == 2:
                 common.execute_command(
-                    f"valgrind-ci {xml_filename}_inst_1.xml --source-dir=./ \
---output-dir={self.report_path}/check_memory/memory/case_{str(self.complete_steps + 1)}_inst_1_{name}"
+                    f"valgrind-ci {xml_filename}_inst_1.xml --source-dir=./ --output-dir={case_path}_inst_1"
                 )
+                Path(f"{case_path}_inst_1/case_name").write_text(command, encoding="utf-8")
                 common.execute_command(
-                    f"valgrind-ci {xml_filename}_inst_2.xml --source-dir=./ \
---output-dir={self.report_path}/check_memory/memory/case_{str(self.complete_steps + 1)}_inst_2_{name}"
+                    f"valgrind-ci {xml_filename}_inst_2.xml --source-dir=./ --output-dir={case_path}_inst_2"
                 )
+                Path(f"{case_path}_inst_2/case_name").write_text(command, encoding="utf-8")
             self.passed_steps -= 1
             Output.refresh_status(
                 Output.color["red"], f"{f'STAT: FAILURE NO.{str(self.complete_steps + 1)}':<{align_len}}"

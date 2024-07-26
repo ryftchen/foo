@@ -15,8 +15,7 @@ indent-string='    '
 max-line-length=120
 
 [MESSAGES CONTROL]
-disable=duplicate-code,
-        missing-class-docstring,
+disable=missing-class-docstring,
         missing-function-docstring,
         missing-module-docstring,
         too-many-branches,
