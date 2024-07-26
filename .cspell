@@ -34,6 +34,7 @@ words:
   - filedir
   - fuser
   - Griewank
+  - gtest
   - indexgenerator
   - inorder
   - jcvf

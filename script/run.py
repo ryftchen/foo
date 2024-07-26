@@ -40,7 +40,7 @@ class Task:
             r"depend",
             r'''execute "ps -eww -o size,pid,user,command --sort -size | awk '{ hr=\$1/1024 ; printf(\"%6.2fMB \", hr) } { for (x=4 ; x<=NF ; x++) { printf(\"%s \", \$x) } print \"\" }' | cut -d '' -f 2 | sed '1d'"''',  # pylint: disable=line-too-long
             r"journal",
-            r"monitor",
+            r"monitor 2",
             r"profile",
         ],
     }
@@ -68,7 +68,8 @@ class Task:
             "--prime": ["era", "eul"],
         },
     }
-    options = {"tst": False, "chk_cov": False, "chk_mem": False}
+    stored_options = {"tst": False, "chk": {"cov": False, "mem": False}}
+    analyze_only = False
     build_script = "./script/build.sh"
     report_path = "./report"
     log_file = f"{report_path}/foo_run.log"
@@ -89,15 +90,19 @@ class Task:
         if not os.path.exists(self.report_path):
             os.mkdir(self.report_path)
 
-        self.logger = common.Log(self.log_file)
+        self.logger = sys.stdout
         self.progress_bar = common.ProgressBar()
         self.task_queue = queue.Queue()
 
     def run(self):
+        if self.analyze_only:
+            self.summarize_run_log()
+            return
+
         self.prepare()
         start_time = datetime.now()
 
-        if not self.options["tst"]:
+        if not self.stored_options["tst"]:
             thread_list = []
             producer = threading.Thread(target=self.generate_tasks(), args=())
             producer.start()
@@ -120,11 +125,11 @@ class Task:
 
     def stop(self, message=""):
         try:
-            if self.options["chk_cov"]:
+            if self.stored_options["chk"]["cov"]:
                 common.execute_command(
                     f"rm -rf {self.report_path}/check_coverage/*.profraw {self.report_path}/check_coverage/*.profdata"
                 )
-            if self.options["chk_mem"]:
+            if self.stored_options["chk"]["mem"]:
                 common.execute_command(f"rm -rf {self.report_path}/check_memory/*.xml")
             sys.stdout = STDOUT
             self.progress_bar.destroy_progress_bar()
@@ -164,22 +169,31 @@ class Task:
             choices=["dbg", "rls"],
             help="run after build\n- dbg    debug\n- rls    release",
         )
+        parser.add_argument("-a", "--analyze", action="store_true", default=False, help="analyze run log only")
 
         args = parser.parse_args()
+        self.apply_arguments(args)
+
+    def apply_arguments(self, args):
+        if args.analyze:
+            if len(sys.argv) > 2:
+                Output.exit_with_error("No other arguments are supported during analyzing.")
+            self.analyze_only = True
+
         if args.test:
-            self.options["tst"] = True
+            self.stored_options["tst"] = True
 
         if args.repeat is not None:
             self.repeat_count = args.repeat
 
         if args.check is not None:
             if "cov" in args.check:
-                if self.options["tst"]:
+                if self.stored_options["tst"]:
                     Output.exit_with_error("No support for checking coverage during testing.")
                 stdout, _, _ = common.execute_command("command -v llvm-profdata-16 llvm-cov-16 2>&1")
                 if stdout.find("llvm-profdata-16") != -1 and stdout.find("llvm-cov-16") != -1:
                     os.environ["FOO_CHK_COV"] = "on"
-                    self.options["chk_cov"] = True
+                    self.stored_options["chk"]["cov"] = True
                     common.execute_command(f"rm -rf {self.report_path}/check_coverage")
                     common.execute_command(f"mkdir -p {self.report_path}/check_coverage")
                 else:
@@ -189,7 +203,7 @@ class Task:
                 stdout, _, _ = common.execute_command("command -v valgrind valgrind-ci 2>&1")
                 if stdout.find("valgrind") != -1 and stdout.find("valgrind-ci") != -1:
                     os.environ["FOO_CHK_MEM"] = "on"
-                    self.options["chk_mem"] = True
+                    self.stored_options["chk"]["mem"] = True
                     common.execute_command(f"rm -rf {self.report_path}/check_memory")
                     common.execute_command(f"mkdir -p {self.report_path}/check_memory")
                 else:
@@ -198,7 +212,7 @@ class Task:
         if args.build is not None:
             if os.path.isfile(self.build_script):
                 build_cmd = self.build_script
-                if self.options["tst"]:
+                if self.stored_options["tst"]:
                     build_cmd += " --test"
                 if args.build == "dbg":
                     self.build_executable(f"{build_cmd} 2>&1")
@@ -227,9 +241,9 @@ class Task:
                 Output.exit_with_error(f"Failed to run shell script {self.build_script} file.")
 
     def prepare(self):
-        if not self.options["tst"] and not os.path.isfile(f"{self.app_bin_path}/{self.app_bin_cmd}"):
+        if not self.stored_options["tst"] and not os.path.isfile(f"{self.app_bin_path}/{self.app_bin_cmd}"):
             Output.exit_with_error("No executable file. Please use the --build option to build it.")
-        if self.options["tst"] and not os.path.isfile(f"{self.tst_bin_path}/{self.tst_bin_cmd}"):
+        if self.stored_options["tst"] and not os.path.isfile(f"{self.tst_bin_path}/{self.tst_bin_cmd}"):
             Output.exit_with_error("No executable file for testing. Please use the --build option to build it.")
 
         if not os.path.exists(self.report_path):
@@ -240,6 +254,7 @@ class Task:
                 console_batch.write("# console command\nusage\nquit\n")
                 fcntl.flock(console_batch.fileno(), fcntl.LOCK_UN)
 
+        self.logger = common.Log(self.log_file)
         self.progress_bar.setup_progress_bar()
         sys.stdout = self.logger
 
@@ -256,10 +271,10 @@ class Task:
         self.total_steps *= self.repeat_count
 
     def complete(self):
-        if self.options["chk_mem"]:
+        if self.stored_options["chk"]["mem"]:
             common.execute_command(f"rm -rf {self.report_path}/check_memory/*.xml")
 
-        if self.options["chk_cov"]:
+        if self.stored_options["chk"]["cov"]:
             self.check_coverage()
 
         sys.stdout = STDOUT
@@ -297,16 +312,19 @@ class Task:
             self.run_task(command, enter)
 
     def run_task(self, command, enter=""):
-        if not self.options["tst"]:
-            full_cmd = f"{self.app_bin_path}/{command}"
-        else:
-            full_cmd = f"{self.tst_bin_path}/{command}"
-        if self.options["chk_mem"]:
+        full_cmd = (
+            f"{self.app_bin_path}/{command}"
+            if not self.stored_options["tst"]
+            else f"{self.tst_bin_path}/{command} --gtest_color=yes"
+        )
+        if self.stored_options["chk"]["mem"]:
             full_cmd = f"valgrind --tool=memcheck --xml=yes \
 --xml-file={self.report_path}/check_memory/foo_chk_mem_{str(self.complete_steps + 1)}.xml {full_cmd}"
-        if self.options["chk_cov"]:
+        if self.stored_options["chk"]["cov"]:
             full_cmd = f"LLVM_PROFILE_FILE=\
 \"{self.report_path}/check_coverage/foo_chk_cov_{str(self.complete_steps + 1)}.profraw\" {full_cmd}"
+        if len(enter) != 0:
+            command += f":{enter.replace("\nquit", '')}"
         align_len = max(
             len(command) + Output.stat_cont_len_excl_cmd,
             Output.stat_min_cont_len,
@@ -331,8 +349,8 @@ class Task:
                 Output.refresh_status(
                     Output.color["red"], f"{f'STAT: FAILURE NO.{str(self.complete_steps + 1)}':<{align_len}}"
                 )
-            elif self.options["chk_mem"]:
-                self.check_memory(align_len)
+            elif self.stored_options["chk"]["mem"]:
+                self.check_memory(command, align_len)
 
         self.complete_steps += 1
         Output.refresh_status(
@@ -380,7 +398,7 @@ class Task:
         if "error" in stdout:
             print("Please rebuild the executable file with the --check option.")
 
-    def check_memory(self, align_len):
+    def check_memory(self, command, align_len):
         inst_num = 0
         xml_filename = f"{self.report_path}/check_memory/foo_chk_mem_{str(self.complete_steps + 1)}"
         with open(f"{xml_filename}.xml", "rt", encoding="utf-8") as mem_xml:
@@ -406,21 +424,22 @@ valgrind-ci {xml_filename}_inst_2.xml --summary"
             )
 
         if "errors" in stdout:
+            name = command.replace(" ", ".")
             stdout = stdout.replace("\t", "    ")
             print(f"\n[CHECK MEMORY]\n{stdout}")
             if inst_num == 1:
                 common.execute_command(
                     f"valgrind-ci {xml_filename}.xml --source-dir=./ \
---output-dir={self.report_path}/check_memory/case_{str(self.complete_steps + 1)}"
+--output-dir={self.report_path}/check_memory/memory/case_{str(self.complete_steps + 1)}_{name}"
                 )
             elif inst_num == 2:
                 common.execute_command(
                     f"valgrind-ci {xml_filename}_inst_1.xml --source-dir=./ \
---output-dir={self.report_path}/check_memory/case_{str(self.complete_steps + 1)}_inst_1"
+--output-dir={self.report_path}/check_memory/memory/case_{str(self.complete_steps + 1)}_inst_1_{name}"
                 )
                 common.execute_command(
                     f"valgrind-ci {xml_filename}_inst_2.xml --source-dir=./ \
---output-dir={self.report_path}/check_memory/case_{str(self.complete_steps + 1)}_inst_2"
+--output-dir={self.report_path}/check_memory/memory/case_{str(self.complete_steps + 1)}_inst_2_{name}"
                 )
             self.passed_steps -= 1
             Output.refresh_status(
@@ -446,7 +465,7 @@ valgrind-ci {xml_filename}_inst_2.xml --summary"
             fcntl.flock(run_log.fileno(), fcntl.LOCK_UN)
 
     def summarize_run_log(self):
-        tags = {"tst": False, "chk_cov": False, "chk_mem": False}
+        tags = {"tst": False, "chk": {"cov": False, "mem": False}}
         readlines = []
         with open(self.log_file, "rt", encoding="utf-8") as run_log:
             fcntl.flock(run_log.fileno(), fcntl.LOCK_EX)
@@ -456,17 +475,17 @@ valgrind-ci {xml_filename}_inst_2.xml --summary"
             if self.tst_bin_cmd in content:
                 tags["tst"] = True
             if "[CHECK COVERAGE]" in content:
-                tags["chk_cov"] = True
+                tags["chk"]["cov"] = True
             if "[CHECK MEMORY]" in content:
-                tags["chk_mem"] = True
+                tags["chk"]["mem"] = True
             fcntl.flock(run_log.fileno(), fcntl.LOCK_UN)
-        if (
-            (tags["tst"] != self.options["tst"])
-            or (tags["chk_cov"] != self.options["chk_cov"])
-            or (tags["chk_mem"] and not self.options["chk_mem"])
+        if not self.analyze_only and (
+            tags["tst"] != self.stored_options["tst"]
+            or tags["chk"]["cov"] != self.stored_options["chk"]["cov"]
+            or (tags["chk"]["mem"] and not self.stored_options["chk"]["mem"])
         ):
             Output.exit_with_error(f"Run options do not match the actual contents of the run log {self.log_file} file.")
-        if tags["tst"] and tags["chk_cov"]:
+        if tags["tst"] and tags["chk"]["cov"]:
             Output.exit_with_error(f"The run log {self.log_file} file is complex. Please retry.")
 
         start_indices = []
@@ -476,51 +495,68 @@ valgrind-ci {xml_filename}_inst_2.xml --summary"
                 start_indices.append(index)
             elif "# FINISH" in line:
                 finish_indices.append(index)
-        if len(start_indices) != len(finish_indices) or len(start_indices) != self.total_steps:
+        if (
+            not start_indices
+            or not finish_indices
+            or len(start_indices) != len(finish_indices)
+            or (not self.analyze_only and len(finish_indices) != self.total_steps)
+        ):
             Output.exit_with_error(f"The run log {self.log_file} file is incomplete. Please retry.")
 
-        fail_res, cov_per, mem_err = self.analyze_for_report(readlines, start_indices, finish_indices, tags)
+        dur_time, fail_res, cov_per, mem_err = self.analyze_for_report(readlines, start_indices, finish_indices, tags)
         with open(self.report_file, "wt", encoding="utf-8") as run_report:
             fcntl.flock(run_report.fileno(), fcntl.LOCK_EX)
             run_stat = {
-                "Passed": str(self.total_steps - len(fail_res)),
+                "Passed": str(len(finish_indices) - len(fail_res)),
                 "Failed": str(len(fail_res)),
-                "Duration": f"{self.duration}s",
+                "Duration": f"{self.duration}s" if not self.analyze_only else f"{dur_time}s",
             }
-            prompt = ""
-            if tags["tst"]:
-                prompt = " (UNIT TEST)"
+            prompt = " (UNIT TEST)" if tags["tst"] else ""
             run_stat_rep = (
                 "REPORT FOR RUN STATISTICS:\n"
                 + Output().format_as_table(run_stat, "STATUS", f"RUN STATISTICS{prompt}")
-                + "\n\n"
+                + "\n"
             )
-            fail_res_rep = ""
-            if fail_res:
-                fail_res_rep = (
-                    "\nREPORT FOR FAILURE RESULT:\n"
-                    + Output().format_as_table(fail_res, "CASE", "FAILURE RESULT")
-                    + "\n\n"
-                )
-            cov_per_rep = ""
-            if cov_per:
-                cov_per_rep = (
+            fail_res_rep = (
+                ("\nREPORT FOR FAILURE RESULT:\n" + Output().format_as_table(fail_res, "CASE", "FAILURE RESULT") + "\n")
+                if fail_res
+                else ""
+            )
+            cov_per_rep = (
+                (
                     "\nREPORT FOR COVERAGE PERCENT:\n"
                     + Output().format_as_table(cov_per, "CATEGORY", "COVERAGE PERCENT")
-                    + "\n\n"
+                    + "\n"
                 )
-            mem_err_rep = ""
-            if mem_err:
-                mem_err_rep = (
-                    "\nREPORT FOR MEMORY ERROR:\n" + Output().format_as_table(mem_err, "CASE", "MEMORY ERROR") + "\n\n"
-                )
-            run_report.write(run_stat_rep + fail_res_rep + cov_per_rep + mem_err_rep)
+                if cov_per
+                else ""
+            )
+            mem_err_rep = (
+                ("\nREPORT FOR MEMORY ERROR:\n" + Output().format_as_table(mem_err, "CASE", "MEMORY ERROR") + "\n")
+                if mem_err
+                else ""
+            )
+            summary = run_stat_rep + fail_res_rep + cov_per_rep + mem_err_rep
+            run_report.write(summary)
+            if self.analyze_only:
+                print(summary)
             fcntl.flock(run_report.fileno(), fcntl.LOCK_UN)
 
         if fail_res:
             sys.exit(1)
 
     def analyze_for_report(self, readlines, start_indices, finish_indices, tags):
+        begin_date_match = re.search(r"(\b[a-zA-Z]{3} \d{2} \d{2}:\d{2}:\d{2}\b)", readlines[start_indices[0]])
+        end_date_match = re.search(r"(\b[a-zA-Z]{3} \d{2} \d{2}:\d{2}:\d{2}\b)", readlines[finish_indices[-1]])
+        dur_time = (
+            (
+                datetime.strptime(end_date_match.group(), "%b %d %H:%M:%S")
+                - datetime.strptime(begin_date_match.group(), "%b %d %H:%M:%S")
+            ).total_seconds()
+            if begin_date_match and end_date_match
+            else 0.0
+        )
+
         fail_res = {}
         cov_per = {}
         mem_err = {}
@@ -552,7 +588,7 @@ valgrind-ci {xml_filename}_inst_2.xml --summary"
                     continue
 
                 last_index = finish_index
-                if tags["chk_mem"]:
+                if tags["chk"]["mem"]:
                     for index, line in enumerate(readlines[start_index + 1 : finish_index]):
                         if "[CHECK MEMORY]" in line:
                             index += start_index + 1
@@ -560,7 +596,7 @@ valgrind-ci {xml_filename}_inst_2.xml --summary"
                             last_index = index
                 fail_res[case_task] = "".join(readlines[start_index + 1 : last_index - 1])
 
-        if tags["chk_cov"]:
+        if tags["chk"]["cov"]:
             category = ["Regions", "Functions", "Lines", "Branches"]
             for line in readlines:
                 if re.search(r"(^TOTAL(\s+\d+\s+\d+\s+\d+\.\d+%){4}$)", line):
@@ -574,7 +610,7 @@ valgrind-ci {xml_filename}_inst_2.xml --summary"
                 for cat in category:
                     cov_per[cat] = "-"
 
-        return fail_res, cov_per, mem_err
+        return dur_time, fail_res, cov_per, mem_err
 
 
 class Output:
