@@ -324,7 +324,7 @@ class Task:
             full_cmd = f"LLVM_PROFILE_FILE=\
 \"{self.report_path}/check_coverage/foo_chk_cov_{str(self.complete_steps + 1)}.profraw\" {full_cmd}"
         if len(enter) != 0:
-            command += f":{enter.replace("\nquit", '')}"
+            command += ":" + enter.replace("\nquit", "")
         align_len = max(
             len(command) + Output.stat_cont_len_excl_cmd,
             Output.stat_min_cont_len,
