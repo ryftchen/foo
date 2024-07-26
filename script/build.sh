@@ -424,15 +424,15 @@ and then recompile to query code. (y or n)"
     fi
     shell_command "rm -rf ./${FOLDER[bld]} ./${FOLDER[tst]}/${FOLDER[bld]}"
 
-    local codeql_db=./${FOLDER[rep]}/codeql build_script
+    local codeql_db=./${FOLDER[rep]}/query build_script
     build_script=./${FOLDER[scr]}/$(basename "${0}")
     shell_command "codeql database create ${codeql_db} --language=cpp --ram=2048 --command='${build_script}' \
 --command='${build_script} -t' --source-root=./ --overwrite"
-    local target_suite="cpp-code-scanning.qls"
+    local target_suite="cpp-code-scanning.qls" codeql_sarif=${codeql_db}/codeql.sarif
     shell_command "codeql database analyze ${codeql_db} ${target_suite} --format=sarif-latest \
---output=${codeql_db}/codeql.sarif --rerun --ram=2048"
-    if [[ -f ${codeql_db}/codeql.sarif ]]; then
-        local sarif_sum="sarif summary ${codeql_db}/codeql.sarif" sarif_sum_output
+--output=${codeql_sarif} --rerun --ram=2048"
+    if [[ -f ${codeql_sarif} ]]; then
+        local sarif_sum="sarif summary ${codeql_sarif}" sarif_sum_output
         sarif_sum_output=$(eval "${sarif_sum}")
         if {
             echo "${sarif_sum_output}" | grep -q 'error: 0'
@@ -445,7 +445,7 @@ and then recompile to query code. (y or n)"
         else
             shell_command "! ${sarif_sum}"
         fi
-        shell_command "sarif html ${codeql_db}/codeql.sarif --output ${codeql_db}/index.html"
+        shell_command "sarif html ${codeql_sarif} --output ${codeql_db}/index.html"
     else
         die "Could not find sarif file in codeql database."
     fi
@@ -565,10 +565,10 @@ function check_extra_dependencies()
 
     if [[ ${ARGS[lint]} = true ]]; then
         if ! command -v clang-tidy-16 >/dev/null 2>&1 || ! command -v run-clang-tidy-16 >/dev/null 2>&1 \
-            || ! command -v compdb >/dev/null 2>&1 || ! command -v clang-tidy-html >/dev/null 2>&1 \
+            || ! command -v compdb >/dev/null 2>&1 || ! pip3 show clang-tidy-converter >/dev/null 2>&1 \
             || ! command -v shellcheck >/dev/null 2>&1 || ! command -v pylint >/dev/null 2>&1 \
             || ! command -v clippy-driver >/dev/null 2>&1; then
-            die "No clang-tidy (including run-clang-tidy-16, compdb, clang-tidy-html), shellcheck, pylint \
+            die "No clang-tidy (including run-clang-tidy-16, compdb, clang-tidy-converter), shellcheck, pylint \
 or clippy program. Please install it."
         fi
         if [[ ${DEV_OPT[pch]} = true ]] || [[ ${DEV_OPT[unity]} = true ]]; then
@@ -659,7 +659,7 @@ function perform_lint_option()
         fi
     done
 
-    local clang_tidy_output_path=./${FOLDER[rep]}/clang-tidy
+    local clang_tidy_output_path=./${FOLDER[rep]}/lint
     local clang_tidy_log=${clang_tidy_output_path}/clang-tidy.log
     if [[ ! -d ${clang_tidy_output_path} ]]; then
         shell_command "mkdir -p ${clang_tidy_output_path}"
@@ -685,9 +685,13 @@ function perform_lint_option()
     shell_command "set -o pipefail && find ./${FOLDER[tst]} -name '*.cpp' | xargs run-clang-tidy-16 \
 -config-file=./.clang-tidy -p ./${FOLDER[tst]}/${FOLDER[bld]} -quiet | tee -a ${clang_tidy_log}"
     shell_command "rm -rf ./${tst_comp_cmd} && mv ./${tst_comp_cmd}.bak ./${tst_comp_cmd}"
-    shell_command "sed -i '/clang-tidy-16 -p=/d' ${clang_tidy_log}"
-    shell_command "clang-tidy-html ${clang_tidy_log} -o ${clang_tidy_output_path}/index.html \
--d https://releases.llvm.org/16.0.0/tools/clang/tools/extra/docs/clang-tidy/checks/list.html"
+    if [[ -f ${clang_tidy_log} ]]; then
+        shell_command "sed -i '/clang-tidy-16 -p=/d' ${clang_tidy_log}"
+        shell_command "cat ${clang_tidy_log} | sed 's/\x1b\[[0-9;]*m//g' | python3 -m clang_tidy_converter \
+--project_root ./ html >${clang_tidy_output_path}/index.html"
+    else
+        die "Could not find log file in clang-tidy output."
+    fi
 
     shell_command "shellcheck -a ./${FOLDER[scr]}/*.sh"
     shell_command "pylint --rcfile=./.pylintrc ./${FOLDER[scr]}/*.py"

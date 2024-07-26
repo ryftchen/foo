@@ -11,8 +11,8 @@ clang-format-16 clang-tidy-16 shfmt shellcheck black pylint rustc cargo rustfmt 
 valgrind cloc pre-commit doxygen graphviz docker.io docker-compose-v2 npm elfutils psmisc net-tools curl rsync zip bash-completion \
 && sudo apt-get clean \
 && sudo rm -rf /var/lib/apt/lists/* \
-&& sudo pip3 install --no-cache-dir --break-system-packages compdb ValgrindCI sarif-tools clang-html \
-&& sudo npm install --no-save --global --no-package-lock cspell@7 https://github.com/jothepro/doxygen-awesome-css#v2.3.1 \
+&& sudo pip3 install --no-cache-dir --break-system-packages compdb==0.2.0 ValgrindCI==0.3.0 sarif-tools==2.0.0 \
+&& sudo npm install --no-save --global --no-package-lock cspell@7.3.9 https://github.com/jothepro/doxygen-awesome-css#v2.3.1 \
 && sudo npm cache clean --force \
 && cd /root \
 && curl -L https://github.com/github/codeql-action/releases/download/codeql-bundle-v2.18.0/codeql-bundle-linux64.tar.gz | tee codeql-bundle-linux64.tar.gz >/dev/null \
@@ -22,6 +22,10 @@ valgrind cloc pre-commit doxygen graphviz docker.io docker-compose-v2 npm elfuti
 && sudo chmod +x /usr/local/share/codeql/codeql \
 && sudo ln -s /usr/local/share/codeql/codeql /usr/local/bin/codeql \
 && rm -rf codeql-bundle-linux64.tar.gz \
+&& git clone https://github.com/yuriisk/clang-tidy-converter.git \
+&& git -C ./clang-tidy-converter reset --hard 7bb2b20a24540d777cc91fd27b58c26105c0e698 \
+&& sudo pip3 install --no-cache-dir --break-system-packages ./clang-tidy-converter \
+&& rm -rf ./clang-tidy-converter \
 && sudo mkdir /usr/local/share/doxygen-tag \
 && curl -L https://gcc.gnu.org/onlinedocs/gcc-13.2.0/libstdc++/api/libstdc++.tag | sudo tee /usr/local/share/doxygen-tag/libstdc++.tag >/dev/null \
 && git clone https://github.com/KDAB/codebrowser.git \
