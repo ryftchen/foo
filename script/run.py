@@ -187,7 +187,11 @@ class Task:
 
         if args.check is not None:
             if "cov" in args.check:
-                if self.stored_options["tst"]:
+                if "mem" in args.check:
+                    Output.exit_with_error(
+                        "Checking coverage and memory at the same time can lead to inaccurate results."
+                    )
+                if args.test:
                     Output.exit_with_error("No support for checking coverage during testing.")
                 stdout, _, _ = common.execute_command("command -v llvm-profdata-16 llvm-cov-16 2>&1")
                 if stdout.find("llvm-profdata-16") != -1 and stdout.find("llvm-cov-16") != -1:
