@@ -30,9 +30,9 @@ class Task:
     lib_list = ["libfoo_util.so", "libfoo_algo.so", "libfoo_ds.so", "libfoo_dp.so", "libfoo_num.so"]
     lib_path = "./build/lib"
     script_path = "./script"
-    build_script = f"./{script_path}/build.sh"
-    run_dict_file = f"./{script_path}/.run_dict"
-    console_file = f"./{script_path}/console_batch.txt"
+    build_script = f"{script_path}/build.sh"
+    run_dict_file = f"{script_path}/.run_dict"
+    console_file = f"{script_path}/.console_batch"
     app_basic_task_dict = {
         "--help": [],
         "--version": [],
