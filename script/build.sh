@@ -429,11 +429,11 @@ EOF"
     if [[ ! -d ${codeql_db} ]]; then
         shell_command "mkdir -p ${codeql_db}"
     fi
-    shell_command "codeql database create ${codeql_db} --language=cpp --ram=2048 --command='${build_script}' \
---command='${build_script} -t' --source-root=./ --overwrite"
-    local target_suite="cpp-code-scanning.qls" codeql_sarif=${codeql_db}/codeql.sarif
-    shell_command "codeql database analyze ${codeql_db} ${target_suite} --format=sarif-latest \
---output=${codeql_sarif} --rerun --ram=2048"
+    shell_command "codeql database create ${codeql_db} --codescanning-config=./.codeql --language=cpp --ram=2048 \
+--command='${build_script}' --command='${build_script} -t' --source-root=./ --overwrite"
+    local codeql_sarif=${codeql_db}/codeql.sarif
+    shell_command "codeql database analyze ${codeql_db} --format=sarif-latest --output=${codeql_sarif} --rerun \
+--ram=2048"
     if [[ -f ${codeql_sarif} ]]; then
         local sarif_sum="sarif summary ${codeql_sarif}" sarif_sum_output
         sarif_sum_output=$(eval "${sarif_sum}")

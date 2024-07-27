@@ -14,6 +14,7 @@
 .clang-format text eol=lf
 .clang-tidy text eol=lf
 .cloc text eol=lf
+.codeql text eol=lf
 .cspell text eol=lf
 .dockerignore text eol=lf
 .editorconfig text eol=lf
