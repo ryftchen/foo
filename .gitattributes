@@ -16,6 +16,7 @@
 .cloc text eol=lf
 .codeql text eol=lf
 .cspell text eol=lf
+.css text eol=lf
 .dockerignore text eol=lf
 .editorconfig text eol=lf
 .gitattributes text eol=lf

@@ -318,8 +318,8 @@ function perform_clean_option()
     shell_command "find ./ -maxdepth 3 -type d | sed 1d \
 | grep -E '(${FOLDER[bld]}|${FOLDER[rep]}|${FOLDER[cac]}|__pycache__|archive|browser|doxygen|target)$' \
 | xargs -i rm -rf {}"
-    shell_command "rm -rf ./${FOLDER[scr]}/.* ./${FOLDER[scr]}/console_batch.txt ./${FOLDER[doc]}/server/Cargo.lock \
-./core.* ./vgcore.* ./*.profraw"
+    shell_command "rm -rf ./${FOLDER[scr]}/.* ./${FOLDER[scr]}/console_batch.txt ./${FOLDER[doc]}/*.{css,html} \
+./${FOLDER[doc]}/server/Cargo.lock ./core.* ./vgcore.* ./*.profraw"
     shell_command "git config --local --unset commit.template || true"
 
     if [[ -f ./.git/hooks/pre-commit ]]; then
@@ -506,7 +506,19 @@ function perform_website_option()
 
     if command -v rustc >/dev/null 2>&1 && command -v cargo >/dev/null 2>&1; then
         shell_command "cargo build --release --manifest-path ./${FOLDER[doc]}/server/Cargo.toml"
-        local server_daemon="${PWD}/${FOLDER[doc]}/server/target/release/${FOLDER[proj]}_doc --root-dir ."
+        local html_file="index.html" css_file="main.css"
+        if [[ ! -f ./${FOLDER[doc]}/${html_file} ]] || [[ ! -f ./${FOLDER[doc]}/${css_file} ]]; then
+            shell_command "cp ./${FOLDER[doc]}/template/website_${FOLDER[doc]}_${html_file} \
+./${FOLDER[doc]}/${html_file} && cp ./${FOLDER[doc]}/template/website_${css_file} ./${FOLDER[doc]}/${css_file}"
+        fi
+        if [[ ! -f ./${FOLDER[rep]}/${html_file} ]] || [[ ! -f ./${FOLDER[rep]}/${css_file} ]]; then
+            if [[ ! -d ./${FOLDER[rep]} ]]; then
+                shell_command "mkdir ./${FOLDER[rep]}"
+            fi
+            shell_command "cp ./${FOLDER[doc]}/template/website_${FOLDER[rep]}_${html_file} \
+./${FOLDER[rep]}/${html_file} && cp ./${FOLDER[doc]}/template/website_${css_file} ./${FOLDER[rep]}/${css_file}"
+        fi
+        local server_daemon="${PWD}/${FOLDER[doc]}/server/target/release/${FOLDER[proj]}_arc --root-dir ."
         if ! pgrep -f "${server_daemon}" >/dev/null 2>&1; then
             echo "Please confirm whether continue launching the document server. (y or n)"
             local input
@@ -520,18 +532,18 @@ function perform_website_option()
         else
             local port1=61503 port2=61504
             echo "The document server starts listening under the ${PWD} directory ..."
-            echo "=> ${FOLDER[doc]}/doxygen online: http://127.0.0.1:${port1}/"
-            echo "=> ${FOLDER[doc]}/browser online: http://127.0.0.1:${port2}/"
+            echo "=> ${FOLDER[doc]} online: http://127.0.0.1:${port1}/"
+            echo "=> ${FOLDER[rep]} online: http://127.0.0.1:${port2}/"
             echo "Please confirm whether continue terminating the document server. (y or n)"
             local input
             input=$(wait_until_get_input)
             if echo "${input}" | grep -iq '^y'; then
                 echo "Yes"
                 if netstat -tuln | grep ":${port1} " >/dev/null 2>&1; then
-                    shell_command "fuser -k ${port1}/tcp"
+                    shell_command "fuser -k ${port1}/tcp || true"
                 fi
                 if netstat -tuln | grep ":${port2} " >/dev/null 2>&1; then
-                    shell_command "fuser -k ${port2}/tcp"
+                    shell_command "fuser -k ${port2}/tcp || true"
                 fi
             else
                 echo "No"

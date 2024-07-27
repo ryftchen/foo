@@ -10,12 +10,12 @@ pub async fn do_service(addr: std::net::SocketAddr, root_dir: &str, sub_dir: &'s
     let serving = Static::new(Path::new(root_dir));
     let listener = TcpListener::bind(addr)
         .await
-        .unwrap_or_else(|_| die!("Failed to create TCP listener for {} online.", sub_dir));
+        .unwrap_or_else(|_| die!("Could not create TCP listener for {} online.", sub_dir));
     loop {
         let (stream, _) = listener
             .accept()
             .await
-            .unwrap_or_else(|_| die!("Failed to accept TCP connection for {} online.", sub_dir));
+            .unwrap_or_else(|_| die!("Could not accept TCP connection for {} online.", sub_dir));
 
         let serving = serving.clone();
         tokio::spawn(async move {
