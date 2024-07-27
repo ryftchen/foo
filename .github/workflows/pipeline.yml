@@ -32,21 +32,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4.1.0
 
-      - name: Static check
+      - name: Static check phase 1
         run: |
           ./script/build.sh --format --lint
           git status
 
-      - name: Create archive
+      - name: Static check phase 2
         run: |
-          ./script/build.sh --browser --doxygen
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4.3.0
-        with:
-          name: foo_artifact
-          path: ./document/archive/foo_*.tar.bz2
-          retention-days: 7
+          ./script/build.sh --query --yes
+          git status
 
   dynamic_analysis:
     name: Dynamic analysis
@@ -64,29 +58,42 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4.1.0
 
-      - name: Dynamic check
-        run: |
-          ./script/run.py --check cov mem --build dbg --repeat 1
-          cat ./report/foo_run.report
-
-      - name: Test debug version
+      - name: Basic debug version
         run: |
           ./script/run.py --test --build dbg --repeat 1
           cat ./report/foo_run.report
-
-      - name: Test release version
-        run: |
-          ./script/run.py --test --build rls --repeat 1
-          cat ./report/foo_run.report
-
-      - name: Run debug version
-        run: |
           ./script/run.py --build dbg --repeat 1
           cat ./report/foo_run.report
 
-      - name: Run release version
+      - name: Basic release version
         run: |
+          ./script/run.py --test --build rls --repeat 1
+          cat ./report/foo_run.report
           ./script/run.py --build rls --repeat 1
+          cat ./report/foo_run.report
+
+      - name: Dynamic check phase 1 (part 1)
+        run: |
+          ./script/run.py --check cov --build dbg --repeat 1
+          cat ./report/foo_run.report
+
+      - name: Dynamic check phase 1 (part 2)
+        run: |
+          ./script/run.py --check cov --build rls --repeat 1
+          cat ./report/foo_run.report
+
+      - name: Dynamic check phase 2 (part 1)
+        run: |
+          ./script/run.py --test --check mem --build dbg --repeat 1
+          cat ./report/foo_run.report
+          ./script/run.py --check mem --build dbg --repeat 1
+          cat ./report/foo_run.report
+
+      - name: Dynamic check phase 2 (part 2)
+        run: |
+          ./script/run.py --test --check mem --build rls --repeat 1
+          cat ./report/foo_run.report
+          ./script/run.py --check mem --build rls --repeat 1
           cat ./report/foo_run.report
 
   extended_analysis:
@@ -107,31 +114,51 @@ jobs:
 
       - name: Pre-check
         run: |
+          ./script/build.sh --initialize
           ./script/build.sh --hook --spell --statistics
           git status
 
-      - name: Compatibility of compilation
+      - name: Create archive
         run: |
-          ./script/build.sh --initialize
-          sed -i 's/FOO_BLD_COMPILER=clang/FOO_BLD_COMPILER=gcc/' ./script/.env
-          sed -i 's/FOO_BLD_CCACHE=on/FOO_BLD_CCACHE=off/' ./script/.env
-          ./script/run.py --build
+          ./script/build.sh --browser --doxygen
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4.3.0
+        with:
+          name: foo_artifact
+          path: ./document/archive/foo_*.tar.bz2
+          retention-days: 7
+
+      - name: Extended check phase 1
+        run: |
+          distccd --daemon --allow 127.0.0.1/32
+          sed -i 's/FOO_BLD_COMPILER=.*/FOO_BLD_COMPILER=gcc/' ./script/.env
+          sed -i 's/FOO_BLD_PARALLEL=.*/FOO_BLD_PARALLEL=4/' ./script/.env
+          sed -i 's/FOO_BLD_PCH=.*/FOO_BLD_PCH=on/' ./script/.env
+          sed -i 's/FOO_BLD_UNITY=.*/FOO_BLD_UNITY=on/' ./script/.env
+          sed -i 's/FOO_BLD_CCACHE=.*/FOO_BLD_CCACHE=on/' ./script/.env
+          sed -i 's/FOO_BLD_DISTCC=.*/FOO_BLD_DISTCC="127.0.0.1,lzo"/' ./script/.env
+          sed -i 's/FOO_BLD_TMPFS=.*/FOO_BLD_TMPFS=on/' ./script/.env
+          ./script/run.py --test --check mem --build dbg --repeat 1
           cat ./report/foo_run.report
-          ./script/run.py --test --build
+          ./script/run.py --check mem --build dbg --repeat 1
           cat ./report/foo_run.report
 
-      - name: Extended check
+      - name: Extended check phase 2
         run: |
-          ./script/build.sh --query --yes
+          ./script/run.py --test --check mem --build rls --repeat 1
+          cat ./report/foo_run.report
+          ./script/run.py --check mem --build rls --repeat 1
+          cat ./report/foo_run.report
 
-      - name: Application environment
+      - name: Application environment maintenance
         run: |
           ./script/build.sh --install
           ./script/build.sh --uninstall
-          ./script/build.sh --clean
 
-      - name: Production environment
+      - name: Production environment maintenance
         run: |
+          ./script/build.sh --clean
           ./script/build.sh --container --yes
           ./script/build.sh --website --yes
 
