@@ -7,6 +7,8 @@ document/archive/
 document/browser/
 document/doxygen/
 document/server/target/
+document/*.css
+document/*.html
 report/
 .build_wrapper
 .env

@@ -4,7 +4,7 @@ mod util;
 
 async fn run(args: arg::Args) {
     let root_dir = &args.root_dir;
-    let folder_vec: Vec<&str> = vec!["document/doxygen", "document/browser"];
+    let folder_vec: Vec<&str> = vec!["document", "report"];
     let addr_vec: Vec<std::net::SocketAddr> = vec![([127, 0, 0, 1], 61503).into(), ([127, 0, 0, 1], 61504).into()];
     let mut srv_vec = vec![];
     let mut prompt: String = "".to_string();
@@ -17,7 +17,7 @@ async fn run(args: arg::Args) {
     }
 
     print!(
-        "The document server starts listening under the {} directory ...\n{}",
+        "The archive server starts listening under the {} directory ...\n{}",
         abs_path!(root_dir),
         prompt
     );

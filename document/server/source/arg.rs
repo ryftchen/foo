@@ -44,7 +44,7 @@ pub fn parse_args() -> Args {
 fn show_help() {
     println!("usage: {} [-h] [-r [DIR]]", exec_name!());
     println!();
-    println!("document server");
+    println!("archive server");
     println!();
     println!("options:");
     println!("  -h, --help            show help and exit");
