@@ -2,8 +2,10 @@
 
 try:
     import argparse
+    import ast
     import fcntl
     import fnmatch
+    import importlib
     import os
     import queue
     import re
@@ -27,8 +29,11 @@ class Task:
     tst_bin_path = "./test/build/bin"
     lib_list = ["libfoo_util.so", "libfoo_algo.so", "libfoo_ds.so", "libfoo_dp.so", "libfoo_num.so"]
     lib_path = "./build/lib"
-    console_file = "./script/console_batch.txt"
-    basic_task_dict = {
+    script_path = "./script"
+    build_script = f"./{script_path}/build.sh"
+    run_dict_file = f"./{script_path}/.run_dict"
+    console_file = f"./{script_path}/console_batch.txt"
+    app_basic_task_dict = {
         "--help": [],
         "--version": [],
         "--dump": [],
@@ -45,7 +50,7 @@ class Task:
             r"profile",
         ],
     }
-    regular_task_dict = {
+    app_regular_task_dict = {
         "app-algo": {
             "--help": [],
             "--match": ["rab", "knu", "boy", "hor", "sun"],
@@ -69,9 +74,9 @@ class Task:
             "--prime": ["era", "eul"],
         },
     }
+    tst_task_filt = ""
     stored_options = {"tst": False, "chk": {"cov": False, "mem": False}}
     analyze_only = False
-    build_script = "./script/build.sh"
     report_path = "./report"
     log_file = f"{report_path}/foo_run.log"
     report_file = f"{report_path}/foo_run.report"
@@ -94,52 +99,6 @@ class Task:
         self.logger = sys.stdout
         self.progress_bar = common.ProgressBar()
         self.task_queue = queue.Queue()
-
-    def run(self):
-        if self.analyze_only:
-            self.summarize_run_log()
-            return
-
-        self.prepare()
-        start_time = datetime.now()
-
-        if not self.stored_options["tst"]:
-            thread_list = []
-            producer = threading.Thread(target=self.generate_tasks(), args=())
-            producer.start()
-            thread_list.append(producer)
-            consumer = threading.Thread(target=self.perform_tasks(), args=())
-            consumer.start()
-            thread_list.append(consumer)
-            for thread in thread_list:
-                thread.join()
-        else:
-            self.total_steps = self.repeat_count
-            while self.repeat_count:
-                self.run_task(self.tst_bin_cmd)
-                self.repeat_count -= 1
-
-        self.duration = (datetime.now() - start_time).total_seconds()
-        self.complete()
-        self.format_run_log()
-        self.summarize_run_log()
-
-    def stop(self, message=""):
-        try:
-            if self.stored_options["chk"]["cov"]:
-                common.execute_command(f"rm -rf {self.report_path}/dca/check_coverage/{{*.profraw,*.profdata}}")
-            if self.stored_options["chk"]["mem"]:
-                common.execute_command(f"rm -rf {self.report_path}/dca/check_memory/*.xml")
-            sys.stdout = STDOUT
-            self.progress_bar.destroy_progress_bar()
-            del self.logger
-            self.format_run_log()
-        except Exception:  # pylint: disable=broad-except
-            pass
-        finally:
-            if message:
-                Output.exit_with_error(message)
-            sys.exit(1)
 
     def parse_arguments(self):
         def check_positive(value):
@@ -169,6 +128,7 @@ class Task:
             help="run after build\n- dbg    debug\n- rls    release",
         )
         parser.add_argument("-a", "--analyze", action="store_true", default=False, help="analyze run log only")
+        parser.add_argument("-d", "--dump", action="store_true", default=False, help="dump run tasks dictionary only")
 
         args = parser.parse_args()
         self.apply_arguments(args)
@@ -178,6 +138,12 @@ class Task:
             if len(sys.argv) > 2:
                 Output.exit_with_error("No other arguments are supported during analyzing.")
             self.analyze_only = True
+            self.summarize_run_log()
+            sys.exit(0)
+
+        if args.dump:
+            self.dump_run_dict()
+            sys.exit(0)
 
         if args.test:
             self.stored_options["tst"] = True
@@ -223,6 +189,77 @@ class Task:
             else:
                 Output.exit_with_error(f"No shell script {self.build_script} file.")
 
+    def run(self):
+        self.prepare()
+        start_time = datetime.now()
+
+        if not self.stored_options["tst"]:
+            thread_list = []
+            producer = threading.Thread(target=self.generate_tasks(), args=())
+            producer.start()
+            thread_list.append(producer)
+            consumer = threading.Thread(target=self.perform_tasks(), args=())
+            consumer.start()
+            thread_list.append(consumer)
+            for thread in thread_list:
+                thread.join()
+        else:
+            self.total_steps = self.repeat_count
+            command = self.tst_bin_cmd
+            if len(self.tst_task_filt) != 0:
+                command = f"{self.tst_bin_cmd} {self.tst_task_filt}"
+            while self.repeat_count:
+                self.run_task(command)
+                self.repeat_count -= 1
+
+        self.duration = (datetime.now() - start_time).total_seconds()
+        self.complete()
+        self.format_run_log()
+        self.summarize_run_log()
+
+    def stop(self, message=""):
+        try:
+            if self.stored_options["chk"]["cov"]:
+                common.execute_command(f"rm -rf {self.report_path}/dca/check_coverage/{{*.profraw,*.profdata}}")
+            if self.stored_options["chk"]["mem"]:
+                common.execute_command(f"rm -rf {self.report_path}/dca/check_memory/*.xml")
+            sys.stdout = STDOUT
+            self.progress_bar.destroy_progress_bar()
+            del self.logger
+            self.format_run_log()
+        except Exception:  # pylint: disable=broad-except
+            pass
+        finally:
+            if message:
+                Output.exit_with_error(message)
+            sys.exit(1)
+
+    def load_run_dict(self):
+        if os.path.isfile(self.run_dict_file):
+            loader = importlib.machinery.SourceFileLoader("run_dict", self.run_dict_file)
+            spec = importlib.util.spec_from_loader(loader.name, loader)
+            module = importlib.util.module_from_spec(spec)
+            loader.exec_module(module)
+            self.app_basic_task_dict = module.app_basic_task_dict
+            self.app_regular_task_dict = module.app_regular_task_dict
+            self.tst_task_filt = module.tst_task_filt
+
+    def dump_run_dict(self):
+        orig_content = "#!/usr/bin/env python3\n\n"
+        orig_content += f"app_basic_task_dict = {ast.literal_eval(str(self.app_basic_task_dict))}\n"
+        orig_content += f"app_regular_task_dict = {ast.literal_eval(str(self.app_regular_task_dict))}\n"
+        orig_content += f"tst_task_filt = \"{self.tst_task_filt}\"\n"
+
+        with open(self.run_dict_file, "wt", encoding="utf-8") as run_dict_content:
+            fcntl.flock(run_dict_content.fileno(), fcntl.LOCK_EX)
+            try:
+                black = importlib.import_module("black")
+                formatted_content = black.format_str(orig_content, mode=black.FileMode(line_length=120))
+                run_dict_content.write(formatted_content)
+            except ImportError:
+                run_dict_content.write(orig_content)
+            fcntl.flock(run_dict_content.fileno(), fcntl.LOCK_UN)
+
     def build_executable(self, build_cmd):
         with subprocess.Popen(
             build_cmd,
@@ -251,21 +288,19 @@ class Task:
         if not os.path.exists(self.report_path):
             os.makedirs(self.report_path)
         if not os.path.isfile(self.console_file):
-            with open(self.console_file, "wt", encoding="utf-8") as console_batch:
-                fcntl.flock(console_batch.fileno(), fcntl.LOCK_EX)
-                console_batch.write("# console command\nusage\nquit\n")
-                fcntl.flock(console_batch.fileno(), fcntl.LOCK_UN)
+            Path(self.console_file).write_text("# console command\nusage\nquit\n", encoding="utf-8")
 
         self.logger = common.Log(self.log_file)
         self.progress_bar.setup_progress_bar()
         sys.stdout = self.logger
 
-        if "--console" in self.basic_task_dict:
-            self.total_steps += len(self.basic_task_dict["--console"])
-        self.total_steps += len(self.basic_task_dict.keys())
-        for task_category_list in self.basic_task_dict.values():
+        self.load_run_dict()
+        if "--console" in self.app_basic_task_dict:
+            self.total_steps += len(self.app_basic_task_dict["--console"])
+        self.total_steps += len(self.app_basic_task_dict.keys())
+        for task_category_list in self.app_basic_task_dict.values():
             self.total_steps += len(task_category_list)
-        for sub_cli_map in self.regular_task_dict.values():
+        for sub_cli_map in self.app_regular_task_dict.values():
             self.total_steps += 1 + len(sub_cli_map.keys())
             for task_category_list in sub_cli_map.values():
                 if task_category_list:
@@ -284,18 +319,18 @@ class Task:
 
     def generate_tasks(self):
         while self.repeat_count:
-            if "--console" in self.basic_task_dict:
-                for target_task in self.basic_task_dict["--console"]:
+            if "--console" in self.app_basic_task_dict:
+                for target_task in self.app_basic_task_dict["--console"]:
                     self.task_queue.put((self.app_bin_cmd, f"{target_task}\nquit"))
 
-            for task_category, target_task_list in self.basic_task_dict.items():
+            for task_category, target_task_list in self.app_basic_task_dict.items():
                 self.task_queue.put((f"{self.app_bin_cmd} {task_category}", ""))
                 for target_task in target_task_list:
                     target_task = target_task.replace("\\", "\\\\\\").replace('"', '\\"', 1)
                     target_task = '\\"'.join(target_task.rsplit('"', 1))
                     self.task_queue.put((f"{self.app_bin_cmd} {task_category} \"{target_task}\"", ""))
 
-            for sub_cli, sub_cli_map in self.regular_task_dict.items():
+            for sub_cli, sub_cli_map in self.app_regular_task_dict.items():
                 self.task_queue.put((f"{self.app_bin_cmd} {sub_cli}", ""))
                 for task_category, target_task_list in sub_cli_map.items():
                     self.task_queue.put((f"{self.app_bin_cmd} {sub_cli} {task_category}", ""))
@@ -427,11 +462,11 @@ class Task:
             f"cp -rf {pkg_loc}/{{index.html,valgrind.css,valgrind.js}} {self.report_path}/dca/check_memory/"
         )
 
-        index_file = ""
-        with open(f"{self.report_path}/dca/check_memory/index.html", "rt", encoding="utf-8") as index_file:
-            fcntl.flock(index_file.fileno(), fcntl.LOCK_EX)
-            old_content = index_file.read()
-            fcntl.flock(index_file.fileno(), fcntl.LOCK_UN)
+        index_content = ""
+        with open(f"{self.report_path}/dca/check_memory/index.html", "rt", encoding="utf-8") as index_content:
+            fcntl.flock(index_content.fileno(), fcntl.LOCK_EX)
+            old_content = index_content.read()
+            fcntl.flock(index_content.fileno(), fcntl.LOCK_UN)
         multi_inst_count = sum(1 for sub in sorted_case_folders if "_inst_" in sub)
         fail_case_num = len(sorted_case_folders) - multi_inst_count + int(multi_inst_count / 2)
         old_content = (
@@ -451,10 +486,10 @@ class Task:
         new_content = re.sub(
             r"(                {% for item in source_list %}.*?{% endfor %}\n)", new_body, old_content, flags=re.DOTALL
         )
-        with open(f"{self.report_path}/dca/check_memory/index.html", "wt", encoding="utf-8") as index_file:
-            fcntl.flock(index_file.fileno(), fcntl.LOCK_EX)
-            index_file.write(new_content)
-            fcntl.flock(index_file.fileno(), fcntl.LOCK_UN)
+        with open(f"{self.report_path}/dca/check_memory/index.html", "wt", encoding="utf-8") as index_content:
+            fcntl.flock(index_content.fileno(), fcntl.LOCK_EX)
+            index_content.write(new_content)
+            fcntl.flock(index_content.fileno(), fcntl.LOCK_UN)
 
     def convert_valgrind_output(self, command, align_len):
         inst_num = 0

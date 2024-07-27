@@ -150,17 +150,18 @@ jobs:
           sed -i 's/FOO_BLD_CCACHE=.*/FOO_BLD_CCACHE=on/' ./script/.env
           sed -i 's/FOO_BLD_DISTCC=.*/FOO_BLD_DISTCC="0.0.0.0,lzo"/' ./script/.env
           sed -i 's/FOO_BLD_TMPFS=.*/FOO_BLD_TMPFS=on/' ./script/.env
+          ./script/run.py --dump
           ./script/run.py --test --check mem --build dbg --repeat 1
-          cat ./report/foo_run.report
+          ./script/run.py --analyze
           ./script/run.py --check mem --build dbg --repeat 1
-          cat ./report/foo_run.report
+          ./script/run.py --analyze
 
       - name: Extended check phase 2
         run: |
           ./script/run.py --test --check mem --build rls --repeat 1
-          cat ./report/foo_run.report
+          ./script/run.py --analyze
           ./script/run.py --check mem --build rls --repeat 1
-          cat ./report/foo_run.report
+          ./script/run.py --analyze
 
   deploy_pages:
     name: Deploy pages

@@ -318,8 +318,8 @@ function perform_clean_option()
     shell_command "find ./ -maxdepth 3 -type d | sed 1d \
 | grep -E '(${FOLDER[bld]}|${FOLDER[rep]}|${FOLDER[cac]}|__pycache__|archive|browser|doxygen|target)$' \
 | xargs -i rm -rf {}"
-    shell_command "rm -rf ./${FOLDER[scr]}/.build_wrapper ./${FOLDER[scr]}/.env ./${FOLDER[scr]}/console_batch.txt \
-./${FOLDER[doc]}/server/Cargo.lock ./core.* ./vgcore.* ./*.profraw"
+    shell_command "rm -rf ./${FOLDER[scr]}/.* ./${FOLDER[scr]}/console_batch.txt ./${FOLDER[doc]}/server/Cargo.lock \
+./core.* ./vgcore.* ./*.profraw"
     shell_command "git config --local --unset commit.template || true"
 
     if [[ -f ./.git/hooks/pre-commit ]]; then
