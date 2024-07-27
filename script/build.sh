@@ -307,8 +307,8 @@ function perform_clean_option()
     shell_command "find ./ -maxdepth 3 -type d | sed 1d \
 | grep -E '(${FOLDER[bld]}|${FOLDER[rep]}|${FOLDER[cac]}|__pycache__|archive|browser|doxygen|target)$' \
 | xargs -i rm -rf {}"
-    shell_command "rm -rf ./${FOLDER[scr]}/.env ./${FOLDER[scr]}/console_batch.txt ./${FOLDER[doc]}/server/Cargo.lock \
-./core.* ./vgcore.* ./*.profraw"
+    shell_command "rm -rf ./${FOLDER[scr]}/.build_wrapper ./${FOLDER[scr]}/.env ./${FOLDER[scr]}/console_batch.txt \
+./${FOLDER[doc]}/server/Cargo.lock ./core.* ./vgcore.* ./*.profraw"
     shell_command "git config --local --unset commit.template || true"
 
     if [[ -f ./.git/hooks/pre-commit ]]; then
@@ -400,17 +400,26 @@ function perform_query_option()
         return
     fi
 
+    local build_script
+    build_script=./${FOLDER[scr]}/$(basename "$0")
     if command -v codeql >/dev/null 2>&1 && command -v sarif >/dev/null 2>&1; then
-        echo "Please confirm whether continue forced a revert to the default (clear .env file, etc.) \
-and then recompile to query code. (y or n)"
+        echo "Please confirm whether need to temporarily force a full recompile (using the default .env) \
+to improve accuracy. (y or n)"
         local input
         input=$(wait_until_get_input)
         if echo "${input}" | grep -iq '^y'; then
             echo "Yes"
+            build_script=./${FOLDER[scr]}/.build_wrapper
+            shell_command "cat <<EOF >./${build_script}
+#!/usr/bin/env bash
+
+export FOO_BLD_SCA=on
+$(realpath "$0") \"\\\$@\"
+EOF"
+            shell_command "chmod +x ${build_script}"
+            shell_command "rm -rf ./${FOLDER[bld]} ./${FOLDER[tst]}/${FOLDER[bld]}"
         else
             echo "No"
-
-            exit "${STATUS}"
         fi
     else
         die "No codeql (including sarif) program. Please install it."
@@ -420,13 +429,6 @@ and then recompile to query code. (y or n)"
     if [[ ! -d ${codeql_db} ]]; then
         shell_command "mkdir -p ${codeql_db}"
     fi
-    if [[ -f ./${FOLDER[scr]}/.env ]]; then
-        shell_command "rm -rf ./${FOLDER[scr]}/.env"
-    fi
-    shell_command "rm -rf ./${FOLDER[bld]} ./${FOLDER[tst]}/${FOLDER[bld]}"
-
-    local build_script
-    build_script=./${FOLDER[scr]}/$(basename "${0}")
     shell_command "codeql database create ${codeql_db} --language=cpp --ram=2048 --command='${build_script}' \
 --command='${build_script} -t' --source-root=./ --overwrite"
     local target_suite="cpp-code-scanning.qls" codeql_sarif=${codeql_db}/codeql.sarif
@@ -838,11 +840,13 @@ function set_compile_condition()
 {
     local tmpfs_subfolder=$1 tmpfs_size=$2
 
-    if [[ -f ./${FOLDER[scr]}/.env ]]; then
+    if [[ -f ./${FOLDER[scr]}/.env ]] && ! {
+        [[ -n ${FOO_BLD_SCA} ]] && [[ ${FOO_BLD_SCA} = "on" ]]
+    }; then
         # shellcheck source=/dev/null
         source "./${FOLDER[scr]}/.env"
         if [[ -n ${FOO_BLD_COMPILER} ]] && [[ ${FOO_BLD_COMPILER} =~ ^(clang|gcc)$ ]]; then
-            if [[ -n ${FOO_BLD_SCA_COV} ]] && [[ ${FOO_BLD_SCA_COV} = "on" ]]; then
+            if [[ -n ${FOO_BLD_DCA} ]] && [[ ${FOO_BLD_DCA} = "on" ]]; then
                 FOO_BLD_COMPILER="clang"
             fi
             DEV_OPT[compiler]=${FOO_BLD_COMPILER}
@@ -918,7 +922,7 @@ function set_compile_condition()
         if ! command -v distcc >/dev/null; then
             die "No distcc program. Please install it."
         fi
-        if [[ -n ${FOO_BLD_SCA_COV} ]] && [[ ${FOO_BLD_SCA_COV} = "on" ]]; then
+        if [[ -n ${FOO_BLD_DCA} ]] && [[ ${FOO_BLD_DCA} = "on" ]]; then
             die "Code coverage may be affected if the FOO_BLD_DISTCC is not localhost."
         fi
         if [[ ${DEV_OPT[distcc]} = *"127.0.0.1"* ]]; then
@@ -932,10 +936,10 @@ e.g. with \"distccd --daemon --allow ${local_client}\"."
         fi
         CMAKE_CACHE_ENTRY="${CMAKE_CACHE_ENTRY} -D TOOLCHAIN_DISTCC=ON"
         local distcc_folder=".distcc"
-        export DISTCC_HOSTS="localhost ${DEV_OPT[distcc]}" DISTCC_LOG=~/${distcc_folder}/distcc.log
         if [[ ! -d ~/${distcc_folder} ]]; then
-            shell_command "mkdir -p ${distcc_folder}"
+            shell_command "mkdir -p ~/${distcc_folder}"
         fi
+        export DISTCC_HOSTS="localhost ${DEV_OPT[distcc]}" DISTCC_LOG=~/${distcc_folder}/distcc.log
     fi
     if [[ ${DEV_OPT[ccache]} = true ]] && [[ ${DEV_OPT[pch]} = true ]]; then
         export CCACHE_PCH_EXTSUM=true CCACHE_SLOPPINESS=pch_defines,time_macros
