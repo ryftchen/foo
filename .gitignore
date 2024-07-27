@@ -11,9 +11,9 @@ document/*.css
 document/*.html
 report/
 .build_wrapper
+.console_batch
 .env
 .run_dict
-console_batch.txt
 core.*
 Cargo.lock
 vgcore.*
