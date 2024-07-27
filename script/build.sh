@@ -962,7 +962,7 @@ function build_target()
 
     local cmake_cache="CMakeCache.txt"
     if [[ ${ARGS[test]} = true ]]; then
-        set_compile_condition "${FOLDER[tst]}/${FOLDER[bld]}" "128m"
+        set_compile_condition "${FOLDER[tst]}/${FOLDER[bld]}" "256m"
         if [[ -f ./${FOLDER[tst]}/${FOLDER[bld]}/${cmake_cache} ]] \
             && ! grep -Fwq "${DEV_OPT[compiler]}" "./${FOLDER[tst]}/${FOLDER[bld]}/${cmake_cache}" 2>/dev/null; then
             shell_command "rm -rf ./${FOLDER[tst]}/${FOLDER[bld]}/${cmake_cache}"
