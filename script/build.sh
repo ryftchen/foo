@@ -842,7 +842,7 @@ function set_compile_condition()
         # shellcheck source=/dev/null
         source "./${FOLDER[scr]}/.env"
         if [[ -n ${FOO_BLD_COMPILER} ]] && [[ ${FOO_BLD_COMPILER} =~ ^(clang|gcc)$ ]]; then
-            if [[ -n ${FOO_CHK_COV} ]] && [[ ${FOO_CHK_COV} = "on" ]]; then
+            if [[ -n ${FOO_BLD_SCA_COV} ]] && [[ ${FOO_BLD_SCA_COV} = "on" ]]; then
                 FOO_BLD_COMPILER="clang"
             fi
             DEV_OPT[compiler]=${FOO_BLD_COMPILER}
@@ -918,7 +918,7 @@ function set_compile_condition()
         if ! command -v distcc >/dev/null; then
             die "No distcc program. Please install it."
         fi
-        if [[ -n ${FOO_CHK_COV} ]] && [[ ${FOO_CHK_COV} = "on" ]]; then
+        if [[ -n ${FOO_BLD_SCA_COV} ]] && [[ ${FOO_BLD_SCA_COV} = "on" ]]; then
             die "Code coverage may be affected if the FOO_BLD_DISTCC is not localhost."
         fi
         if [[ ${DEV_OPT[distcc]} = *"127.0.0.1"* ]]; then
@@ -931,7 +931,11 @@ e.g. with \"distccd --daemon --allow ${local_client}\"."
             fi
         fi
         CMAKE_CACHE_ENTRY="${CMAKE_CACHE_ENTRY} -D TOOLCHAIN_DISTCC=ON"
-        export DISTCC_HOSTS="localhost ${DEV_OPT[distcc]}" DISTCC_LOG=~/.distcc/distcc.log
+        local distcc_folder=".distcc"
+        export DISTCC_HOSTS="localhost ${DEV_OPT[distcc]}" DISTCC_LOG=~/${distcc_folder}/distcc.log
+        if [[ ! -d ~/${distcc_folder} ]]; then
+            shell_command "mkdir -p ${distcc_folder}"
+        fi
     fi
     if [[ ${DEV_OPT[ccache]} = true ]] && [[ ${DEV_OPT[pch]} = true ]]; then
         export CCACHE_PCH_EXTSUM=true CCACHE_SLOPPINESS=pch_defines,time_macros

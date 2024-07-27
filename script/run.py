@@ -191,7 +191,7 @@ class Task:
                     Output.exit_with_error("No support for checking coverage during testing.")
                 stdout, _, _ = common.execute_command("command -v llvm-profdata-16 llvm-cov-16 2>&1")
                 if stdout.find("llvm-profdata-16") != -1 and stdout.find("llvm-cov-16") != -1:
-                    os.environ["FOO_CHK_COV"] = "on"
+                    os.environ["FOO_BLD_SCA_COV"] = "on"
                     self.stored_options["chk"]["cov"] = True
                     common.execute_command(f"rm -rf {self.report_path}/dca/check_coverage")
                     common.execute_command(f"mkdir -p {self.report_path}/dca/check_coverage")
@@ -201,7 +201,7 @@ class Task:
             if "mem" in args.check:
                 stdout, _, _ = common.execute_command("command -v valgrind valgrind-ci 2>&1")
                 if stdout.find("valgrind") != -1 and stdout.find("valgrind-ci") != -1:
-                    os.environ["FOO_CHK_MEM"] = "on"
+                    os.environ["FOO_BLD_SCA_MEM"] = "on"
                     self.stored_options["chk"]["mem"] = True
                     common.execute_command(f"rm -rf {self.report_path}/dca/check_memory")
                     common.execute_command(f"mkdir -p {self.report_path}/dca/check_memory")
