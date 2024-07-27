@@ -39,7 +39,7 @@ jobs:
 
       - name: Static check phase 2
         run: |
-          ./script/build.sh --query --yes
+          ./script/build.sh --query --assume y
           git status
 
   dynamic_analysis:
@@ -131,8 +131,8 @@ jobs:
 
       - name: Use production and application environments
         run: |
-          ./script/build.sh --container --yes
-          ./script/build.sh --website --yes
+          ./script/build.sh --container --assume y
+          ./script/build.sh --website --assume y
           ./script/build.sh --initialize
           ./script/build.sh
           ./script/build.sh --test

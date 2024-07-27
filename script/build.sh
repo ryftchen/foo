@@ -12,7 +12,7 @@ declare -rA STATUS_COLOR=([exec]="\033[0;33;40m\033[1m\033[49m" [succ]="\033[0;3
 declare -r STATUS_COLOR_OFF="\033[0m"
 declare -A ARGS=([help]=false [initialize]=false [clean]=false [install]=false [uninstall]=false [query]=false
     [container]=false [website]=false [test]=false [release]=false [hook]=false [spell]=false [format]=false
-    [lint]=false [statistics]=false [doxygen]=false [browser]=false [yes]=false [dry]=false)
+    [lint]=false [statistics]=false [doxygen]=false [browser]=false [assume]="" [dry]=false)
 declare -A DEV_OPT=([compiler]="clang" [parallel]=0 [pch]=false [unity]=false [ccache]=false [distcc]="localhost"
     [tmpfs]=false)
 declare CMAKE_CACHE_ENTRY=""
@@ -51,8 +51,8 @@ function shell_command()
 
 function wait_until_get_input()
 {
-    if [[ ${ARGS[yes]} = true ]]; then
-        echo "y"
+    if [[ -n ${ARGS[assume]} ]]; then
+        echo "${ARGS[assume]}"
         return 0
     fi
 
@@ -60,7 +60,7 @@ function wait_until_get_input()
     old_stty=$(stty -g)
     stty raw -echo
     local answer
-    answer=$(while ! head -c 1 | grep -i '[ny]'; do true; done)
+    answer=$(while ! head -c 1 | grep -i '[yn]'; do true; done)
     stty "${old_stty}"
 
     echo "${answer}"
@@ -85,10 +85,10 @@ function exist_single_choice_parameters()
 {
     local number=0
     for key in "${!ARGS[@]}"; do
-        if [[ ${ARGS[${key}]} = true ]]; then
-            if [[ ${key} == "help" ]] || [[ ${key} == "initialize" ]] || [[ ${key} == "clean" ]] \
-                || [[ ${key} == "install" ]] || [[ ${key} == "uninstall" ]] || [[ ${key} == "query" ]] \
-                || [[ ${key} == "container" ]] || [[ ${key} == "website" ]] || [[ ${key} == "test" ]]; then
+        if [[ ${key} == "help" ]] || [[ ${key} == "initialize" ]] || [[ ${key} == "clean" ]] \
+            || [[ ${key} == "install" ]] || [[ ${key} == "uninstall" ]] || [[ ${key} == "query" ]] \
+            || [[ ${key} == "container" ]] || [[ ${key} == "website" ]] || [[ ${key} == "test" ]]; then
+            if [[ ${ARGS[${key}]} = true ]]; then
                 number+=1
             fi
         fi
@@ -101,10 +101,10 @@ function exist_multiple_choice_parameters()
 {
     local number=0
     for key in "${!ARGS[@]}"; do
-        if [[ ${ARGS[${key}]} = true ]]; then
-            if [[ ${key} == "release" ]] || [[ ${key} == "hook" ]] || [[ ${key} == "spell" ]] \
-                || [[ ${key} == "format" ]] || [[ ${key} == "lint" ]] || [[ ${key} == "statistics" ]] \
-                || [[ ${key} == "doxygen" ]] || [[ ${key} == "browser" ]]; then
+        if [[ ${key} == "release" ]] || [[ ${key} == "hook" ]] || [[ ${key} == "spell" ]] || [[ ${key} == "format" ]] \
+            || [[ ${key} == "lint" ]] || [[ ${key} == "statistics" ]] || [[ ${key} == "doxygen" ]] \
+            || [[ ${key} == "browser" ]]; then
+            if [[ ${ARGS[${key}]} = true ]]; then
                 number+=1
             fi
         fi
@@ -197,8 +197,19 @@ function parse_parameters()
             check_multiple_choice_parameters_validity "$1"
             ARGS[browser]=true
             ;;
-        -y | --yes)
-            ARGS[yes]=true
+        -a | --assume)
+            if [[ $# -lt 2 ]]; then
+                die "The $1 command line option requires an argument."
+            fi
+            case $2 in
+            y | n)
+                ARGS[assume]=$2
+                shift
+                ;;
+            *)
+                die "Invalid argument for the $1 option: $2. Only 'y' or 'n' are allowed."
+                ;;
+            esac
             ;;
         -D | --dry)
             ARGS[dry]=true
@@ -218,7 +229,7 @@ function perform_help_option()
     fi
 
     echo "usage: $(basename "${0}") [-h] [-I] [-C] [-i] [-u] [-q] [-c] [-w] [-t {-r}] \
-[[{-H, -c, -f, -l, -S, -b, -d} ...] {-r}] {-y} {-D}"
+[[{-H, -c, -f, -l, -S, -b, -d} ...] {-r}] {-a [y] [n]} {-D}"
     echo
     echo "build script"
     echo
@@ -240,7 +251,7 @@ function perform_help_option()
     echo "  -S, --statistics      code line statistics"
     echo "  -d, --doxygen         documentation with doxygen"
     echo "  -b, --browser         generate web-based code browser like IDE"
-    echo "  -y, --yes             skip confirmation and default to Yes"
+    echo "  -a, --assume [y] [n]  assume the confirmation is a yes or no."
     echo "  -D, --dry             dry run for script"
 
     exit "${STATUS}"
@@ -989,8 +1000,11 @@ function build_target()
         shell_command "rm -rf ./${FOLDER[bld]}/${cmake_cache}"
     fi
     shell_command "cmake -S . -B ./${FOLDER[bld]} -G Ninja""${CMAKE_CACHE_ENTRY}"
-    if [[ $# -eq 0 ]] || {
-        [[ $# -eq 1 ]] && [[ ${ARGS[release]} = true ]]
+
+    local valid_param_num
+    valid_param_num=$(($(exist_single_choice_parameters) + $(exist_multiple_choice_parameters)))
+    if [[ valid_param_num -eq 0 ]] || {
+        [[ valid_param_num -eq 1 ]] && [[ ${ARGS[release]} = true ]]
     }; then
         NINJA_STATUS=$(echo -e "\e[92m[\e[92m%f/\e[92m%t\e[92m]\e[39m\e[49m ")
         export NINJA_STATUS
