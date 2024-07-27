@@ -10,6 +10,7 @@ document/server/target/
 report/
 .build_wrapper
 .env
+.run_dict
 console_batch.txt
 core.*
 Cargo.lock
