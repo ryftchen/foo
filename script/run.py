@@ -127,11 +127,9 @@ class Task:
     def stop(self, message=""):
         try:
             if self.stored_options["chk"]["cov"]:
-                common.execute_command(
-                    f"rm -rf {self.report_path}/check_coverage/*.profraw {self.report_path}/check_coverage/*.profdata"
-                )
+                common.execute_command(f"rm -rf {self.report_path}/dca/check_coverage/{{*.profraw,*.profdata}}")
             if self.stored_options["chk"]["mem"]:
-                common.execute_command(f"rm -rf {self.report_path}/check_memory/*.xml")
+                common.execute_command(f"rm -rf {self.report_path}/dca/check_memory/*.xml")
             sys.stdout = STDOUT
             self.progress_bar.destroy_progress_bar()
             del self.logger
@@ -195,8 +193,8 @@ class Task:
                 if stdout.find("llvm-profdata-16") != -1 and stdout.find("llvm-cov-16") != -1:
                     os.environ["FOO_CHK_COV"] = "on"
                     self.stored_options["chk"]["cov"] = True
-                    common.execute_command(f"rm -rf {self.report_path}/check_coverage")
-                    common.execute_command(f"mkdir -p {self.report_path}/check_coverage")
+                    common.execute_command(f"rm -rf {self.report_path}/dca/check_coverage")
+                    common.execute_command(f"mkdir -p {self.report_path}/dca/check_coverage")
                 else:
                     Output.exit_with_error("No llvm-profdata or llvm-cov program. Please check it.")
 
@@ -205,8 +203,8 @@ class Task:
                 if stdout.find("valgrind") != -1 and stdout.find("valgrind-ci") != -1:
                     os.environ["FOO_CHK_MEM"] = "on"
                     self.stored_options["chk"]["mem"] = True
-                    common.execute_command(f"rm -rf {self.report_path}/check_memory")
-                    common.execute_command(f"mkdir -p {self.report_path}/check_memory")
+                    common.execute_command(f"rm -rf {self.report_path}/dca/check_memory")
+                    common.execute_command(f"mkdir -p {self.report_path}/dca/check_memory")
                 else:
                     Output.exit_with_error("No valgrind (including valgrind-ci) program. Please check it.")
 
@@ -272,11 +270,10 @@ class Task:
         self.total_steps *= self.repeat_count
 
     def complete(self):
-        if self.stored_options["chk"]["mem"]:
-            common.execute_command(f"rm -rf {self.report_path}/check_memory/*.xml")
-
         if self.stored_options["chk"]["cov"]:
             self.check_coverage()
+        if self.stored_options["chk"]["mem"]:
+            self.check_memory()
 
         sys.stdout = STDOUT
         self.progress_bar.destroy_progress_bar()
@@ -320,10 +317,10 @@ class Task:
         )
         if self.stored_options["chk"]["mem"]:
             full_cmd = f"valgrind --tool=memcheck --xml=yes \
---xml-file={self.report_path}/check_memory/foo_chk_mem_{str(self.complete_steps + 1)}.xml {full_cmd}"
+--xml-file={self.report_path}/dca/check_memory/foo_chk_mem_{str(self.complete_steps + 1)}.xml {full_cmd}"
         if self.stored_options["chk"]["cov"]:
             full_cmd = f"LLVM_PROFILE_FILE=\
-\"{self.report_path}/check_coverage/foo_chk_cov_{str(self.complete_steps + 1)}.profraw\" {full_cmd}"
+\"{self.report_path}/dca/check_coverage/foo_chk_cov_{str(self.complete_steps + 1)}.profraw\" {full_cmd}"
         if len(enter) != 0:
             command += "<" + enter.replace("\nquit", "")
         align_len = max(
@@ -351,7 +348,7 @@ class Task:
                     Output.color["red"], f"{f'STAT: FAILURE NO.{str(self.complete_steps + 1)}':<{align_len}}"
                 )
             elif self.stored_options["chk"]["mem"]:
-                self.check_memory(command, align_len)
+                self.convert_valgrind_output(command, align_len)
 
         self.complete_steps += 1
         Output.refresh_status(
@@ -377,31 +374,88 @@ class Task:
         sys.stdout = self.logger
 
     def check_coverage(self):
+        folder_path = f"{self.report_path}/dca/check_coverage"
         common.execute_command(
-            f"llvm-profdata-16 merge -sparse {self.report_path}/check_coverage/foo_chk_cov_*.profraw \
--o {self.report_path}/check_coverage/foo_chk_cov.profdata"
+            f"llvm-profdata-16 merge -sparse {folder_path}/foo_chk_cov_*.profraw -o {folder_path}/foo_chk_cov.profdata"
         )
         common.execute_command(
-            f"llvm-cov-16 show -instr-profile={self.report_path}/check_coverage/foo_chk_cov.profdata \
--show-branches=percent -show-expansions -show-regions -show-line-counts-or-regions -format=html \
--output-dir={self.report_path}/check_coverage -Xdemangler=c++filt -object={self.app_bin_path}/{self.app_bin_cmd} \
-{' '.join([f'-object={self.lib_path}/{lib}' for lib in self.lib_list])} 2>&1"
-        )
-        stdout, _, _ = common.execute_command(
-            f"llvm-cov-16 report -instr-profile={self.report_path}/check_coverage/foo_chk_cov.profdata \
+            f"llvm-cov-16 show -instr-profile={folder_path}/foo_chk_cov.profdata -show-branches=percent \
+-show-expansions -show-regions -show-line-counts-or-regions -format=html -output-dir={folder_path} -Xdemangler=c++filt \
 -object={self.app_bin_path}/{self.app_bin_cmd} {' '.join([f'-object={self.lib_path}/{lib}' for lib in self.lib_list])} \
 2>&1"
         )
-        common.execute_command(
-            f"rm -rf {self.report_path}/check_coverage/*.profraw {self.report_path}/check_coverage/*.profdata"
+        stdout, _, _ = common.execute_command(
+            f"llvm-cov-16 report -instr-profile={folder_path}/foo_chk_cov.profdata \
+-object={self.app_bin_path}/{self.app_bin_cmd} {' '.join([f'-object={self.lib_path}/{lib}' for lib in self.lib_list])} \
+2>&1"
         )
+        common.execute_command(f"rm -rf {folder_path}/{{*.profraw,*.profdata}}")
         print(f"\n[CHECK COVERAGE]\n{stdout}")
         if "error" in stdout:
             print("Please rebuild the executable file with the --check option.")
 
-    def check_memory(self, command, align_len):
+    def check_memory(self):
+        common.execute_command(f"rm -rf {self.report_path}/dca/check_memory/*.xml")
+        folder_path = f"{self.report_path}/dca/check_memory/memory"
+        if not os.path.exists(folder_path):
+            os.mkdir(folder_path)
+        case_folders = [folder.path for folder in os.scandir(folder_path) if folder.is_dir()]
+        case_folders_with_ctime = [(folder, os.path.getctime(folder)) for folder in case_folders]
+        case_folders_with_ctime.sort(key=lambda x: x[1])
+        sorted_case_folders = [os.path.basename(folder[0]) for folder in case_folders_with_ctime]
+        case_names = [
+            Path(f"{folder[0]}/case_name").read_text(encoding="utf-8").replace("<", "&lt;")
+            for folder in case_folders_with_ctime
+        ]
+        stdout, _, _ = common.execute_command("pip3 show ValgrindCI")
+        pkg_loc = ""
+        for line in stdout.splitlines():
+            if line.startswith("Location:"):
+                pkg_loc = line.split(":", 1)[1].strip()
+                break
+        pkg_loc += "/ValgrindCI/data"
+        if (
+            not os.path.isfile(f"{pkg_loc}/index.html")
+            or not os.path.isfile(f"{pkg_loc}/valgrind.css")
+            or not os.path.isfile(f"{pkg_loc}/valgrind.js")
+        ):
+            print("\n[CHECK MEMORY]\nMissing source files prevent indexing.")
+        common.execute_command(
+            f"cp -rf {pkg_loc}/{{index.html,valgrind.css,valgrind.js}} {self.report_path}/dca/check_memory/"
+        )
+
+        index_file = ""
+        with open(f"{self.report_path}/dca/check_memory/index.html", "rt", encoding="utf-8") as index_file:
+            fcntl.flock(index_file.fileno(), fcntl.LOCK_EX)
+            old_content = index_file.read()
+            fcntl.flock(index_file.fileno(), fcntl.LOCK_UN)
+        multi_inst_count = sum(1 for sub in sorted_case_folders if "_inst_" in sub)
+        fail_case_num = len(sorted_case_folders) - multi_inst_count + int(multi_inst_count / 2)
+        old_content = (
+            old_content.replace(
+                r"<p><b>{{ num_errors }}</b> errors</p>", f"<p><b>{fail_case_num}</b> failure cases</p>"
+            )
+            .replace(r"<th>Source file name</th>", "<th>Case index</th>")
+            .replace(r"<th>Valgrind errors</th>", "<th>Case name</th>")
+        )
+
+        new_body = ""
+        for subfolder, case_name in zip(sorted_case_folders, case_names):
+            new_body += "                <tr>\n"
+            new_body += f"                    <td> <a href=\"memory/{subfolder}/index.html\">{subfolder}</a></td>\n"
+            new_body += f"                    <td style=\"text-align: left;\"> {case_name} </td>\n"
+            new_body += "                </tr>\n"
+        new_content = re.sub(
+            r"(                {% for item in source_list %}.*?{% endfor %}\n)", new_body, old_content, flags=re.DOTALL
+        )
+        with open(f"{self.report_path}/dca/check_memory/index.html", "wt", encoding="utf-8") as index_file:
+            fcntl.flock(index_file.fileno(), fcntl.LOCK_EX)
+            index_file.write(new_content)
+            fcntl.flock(index_file.fileno(), fcntl.LOCK_UN)
+
+    def convert_valgrind_output(self, command, align_len):
         inst_num = 0
-        xml_filename = f"{self.report_path}/check_memory/foo_chk_mem_{str(self.complete_steps + 1)}"
+        xml_filename = f"{self.report_path}/dca/check_memory/foo_chk_mem_{str(self.complete_steps + 1)}"
         with open(f"{xml_filename}.xml", "rt", encoding="utf-8") as mem_xml:
             inst_num = mem_xml.read().count("</valgrindoutput>")
         stdout = ""
@@ -427,7 +481,7 @@ valgrind-ci {xml_filename}_inst_2.xml --summary"
         if "errors" in stdout:
             stdout = stdout.replace("\t", "    ")
             print(f"\n[CHECK MEMORY]\n{stdout}")
-            case_path = f"{self.report_path}/check_memory/memory/case_{str(self.complete_steps + 1)}"
+            case_path = f"{self.report_path}/dca/check_memory/memory/case_{str(self.complete_steps + 1)}"
             if inst_num == 1:
                 common.execute_command(f"valgrind-ci {xml_filename}.xml --source-dir=./ --output-dir={case_path}")
                 Path(f"{case_path}/case_name").write_text(command, encoding="utf-8")
