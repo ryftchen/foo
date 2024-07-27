@@ -416,15 +416,16 @@ and then recompile to query code. (y or n)"
         die "No codeql (including sarif) program. Please install it."
     fi
 
-    if [[ ! -d ./${FOLDER[rep]} ]]; then
-        shell_command "mkdir ./${FOLDER[rep]}"
+    local codeql_db=./${FOLDER[rep]}/sca/query
+    if [[ ! -d ${codeql_db} ]]; then
+        shell_command "mkdir -p ${codeql_db}"
     fi
     if [[ -f ./${FOLDER[scr]}/.env ]]; then
         shell_command "rm -rf ./${FOLDER[scr]}/.env"
     fi
     shell_command "rm -rf ./${FOLDER[bld]} ./${FOLDER[tst]}/${FOLDER[bld]}"
 
-    local codeql_db=./${FOLDER[rep]}/query build_script
+    local build_script
     build_script=./${FOLDER[scr]}/$(basename "${0}")
     shell_command "codeql database create ${codeql_db} --language=cpp --ram=2048 --command='${build_script}' \
 --command='${build_script} -t' --source-root=./ --overwrite"
@@ -659,7 +660,7 @@ function perform_lint_option()
         fi
     done
 
-    local clang_tidy_output_path=./${FOLDER[rep]}/lint
+    local clang_tidy_output_path=./${FOLDER[rep]}/sca/lint
     local clang_tidy_log=${clang_tidy_output_path}/clang-tidy.log
     if [[ ! -d ${clang_tidy_output_path} ]]; then
         shell_command "mkdir -p ${clang_tidy_output_path}"
