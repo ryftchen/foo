@@ -281,7 +281,7 @@ git rev-parse --git-dir >/dev/null 2>&1 && source ~/${BASH_RC}"
         shell_command "echo \"${alias_cmd}\" >>~/${BASH_RC}"
     fi
 
-    shell_command "cat <<EOF >./${FOLDER[scr]}/.env
+    shell_command "cat <<EOF >./${FOLDER[scr]}/.build_env
 #!/bin/false
 
 FOO_BLD_COMPILER=clang # clang / gcc
@@ -413,7 +413,7 @@ function perform_query_option()
     local build_script
     build_script=./${FOLDER[scr]}/$(basename "$0")
     if command -v codeql >/dev/null 2>&1 && command -v sarif >/dev/null 2>&1; then
-        local rebuild_script=./${FOLDER[scr]}/.build_wrapper
+        local rebuild_script=./${FOLDER[scr]}/.build_wrap
         if [[ ! -f ${rebuild_script} ]]; then
             shell_command "cat <<EOF >./${rebuild_script}
 #!/usr/bin/env bash
@@ -424,7 +424,7 @@ EOF"
             shell_command "chmod +x ${rebuild_script}"
         fi
 
-        echo "Please confirm whether need to temporarily force a full recompile (using the default .env) \
+        echo "Please confirm whether need to temporarily force a full recompile (using the default .build_env) \
 to improve accuracy. (y or n)"
         local input
         input=$(wait_until_get_input)
@@ -870,11 +870,11 @@ function set_compile_condition()
 {
     local tmpfs_subfolder=$1 tmpfs_size=$2
 
-    if [[ -f ./${FOLDER[scr]}/.env ]] && ! {
+    if [[ -f ./${FOLDER[scr]}/.build_env ]] && ! {
         [[ -n ${FOO_BLD_SCA} ]] && [[ ${FOO_BLD_SCA} = "on" ]]
     }; then
         # shellcheck source=/dev/null
-        source "./${FOLDER[scr]}/.env"
+        source "./${FOLDER[scr]}/.build_env"
         if [[ -n ${FOO_BLD_COMPILER} ]] && [[ ${FOO_BLD_COMPILER} =~ ^(clang|gcc)$ ]]; then
             if [[ -n ${FOO_BLD_DCA} ]] && [[ ${FOO_BLD_DCA} = "on" ]]; then
                 FOO_BLD_COMPILER="clang"
