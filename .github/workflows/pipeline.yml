@@ -114,7 +114,6 @@ jobs:
 
       - name: Pre-check
         run: |
-          ./script/build.sh --initialize
           ./script/build.sh --hook --spell --statistics
           git status
 
@@ -129,7 +128,7 @@ jobs:
           path: ./document/archive/foo_*.tar.bz2
           retention-days: 7
 
-      - name: Use production and application environments
+      - name: Development environment
         run: |
           ./script/build.sh --container --assume y
           ./script/build.sh --website --assume y

@@ -318,8 +318,8 @@ function perform_clean_option()
     shell_command "find ./ -maxdepth 3 -type d | sed 1d \
 | grep -E '(${FOLDER[bld]}|${FOLDER[rep]}|${FOLDER[cac]}|__pycache__|archive|browser|doxygen|target)$' \
 | xargs -i rm -rf {}"
-    shell_command "rm -rf ./${FOLDER[scr]}/.* ./${FOLDER[scr]}/console_batch.txt ./${FOLDER[doc]}/*.{css,html} \
-./${FOLDER[doc]}/server/Cargo.lock ./core.* ./vgcore.* ./*.profraw"
+    shell_command "rm -rf ./${FOLDER[scr]}/.* ./${FOLDER[doc]}/*.{css,html} ./${FOLDER[doc]}/server/Cargo.lock \
+./core.* ./vgcore.* ./*.profraw"
     shell_command "git config --local --unset commit.template || true"
 
     if [[ -f ./.git/hooks/pre-commit ]]; then
@@ -414,20 +414,24 @@ function perform_query_option()
     local build_script
     build_script=./${FOLDER[scr]}/$(basename "$0")
     if command -v codeql >/dev/null 2>&1 && command -v sarif >/dev/null 2>&1; then
+        local rebuild_script=./${FOLDER[scr]}/.build_wrapper
+        if [[ ! -f ${rebuild_script} ]]; then
+            shell_command "cat <<EOF >./${rebuild_script}
+#!/usr/bin/env bash
+
+export FOO_BLD_SCA=on
+$(realpath "$0") \"\\\$@\"
+EOF"
+            shell_command "chmod +x ${rebuild_script}"
+        fi
+
         echo "Please confirm whether need to temporarily force a full recompile (using the default .env) \
 to improve accuracy. (y or n)"
         local input
         input=$(wait_until_get_input)
         if echo "${input}" | grep -iq '^y'; then
             echo "Yes"
-            build_script=./${FOLDER[scr]}/.build_wrapper
-            shell_command "cat <<EOF >./${build_script}
-#!/usr/bin/env bash
-
-export FOO_BLD_SCA=on
-$(realpath "$0") \"\\\$@\"
-EOF"
-            shell_command "chmod +x ${build_script}"
+            build_script=${rebuild_script}
             shell_command "rm -rf ./${FOLDER[bld]} ./${FOLDER[tst]}/${FOLDER[bld]}"
         else
             echo "No"
@@ -509,14 +513,14 @@ function perform_website_option()
         local html_file="index.html" css_file="main.css"
         if [[ ! -f ./${FOLDER[doc]}/${html_file} ]] || [[ ! -f ./${FOLDER[doc]}/${css_file} ]]; then
             shell_command "cp ./${FOLDER[doc]}/template/website_${FOLDER[doc]}_${html_file} \
-./${FOLDER[doc]}/${html_file} && cp ./${FOLDER[doc]}/template/website_${css_file} ./${FOLDER[doc]}/${css_file}"
+./${FOLDER[doc]}/${html_file} && cp ./${FOLDER[doc]}/template/website_common_${css_file} ./${FOLDER[doc]}/${css_file}"
         fi
         if [[ ! -f ./${FOLDER[rep]}/${html_file} ]] || [[ ! -f ./${FOLDER[rep]}/${css_file} ]]; then
             if [[ ! -d ./${FOLDER[rep]} ]]; then
                 shell_command "mkdir ./${FOLDER[rep]}"
             fi
             shell_command "cp ./${FOLDER[doc]}/template/website_${FOLDER[rep]}_${html_file} \
-./${FOLDER[rep]}/${html_file} && cp ./${FOLDER[doc]}/template/website_${css_file} ./${FOLDER[rep]}/${css_file}"
+./${FOLDER[rep]}/${html_file} && cp ./${FOLDER[doc]}/template/website_common_${css_file} ./${FOLDER[rep]}/${css_file}"
         fi
         local server_daemon="${PWD}/${FOLDER[doc]}/server/target/release/${FOLDER[proj]}_arc --root-dir ."
         if ! pgrep -f "${server_daemon}" >/dev/null 2>&1; then
