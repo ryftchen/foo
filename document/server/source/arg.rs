@@ -63,15 +63,18 @@ pub fn parse_args() -> Args {
 }
 
 fn show_help() {
-    println!("usage: {} [-h] [-r [DIR]] {{-H [IP]}} {{-p [NUM]}}", exec_name!());
+    println!(
+        "usage: {} [-h] {{-r {{DIR}}}} [{{-r {{DIR}}}} ...] [-H {{IP}}] [-p {{NUM}}]",
+        exec_name!()
+    );
     println!();
     println!("archive server");
     println!();
     println!("options:");
     println!("  -h, --help            show help and exit");
-    println!("  -r [DIR], --root-dir [DIR]");
+    println!("  -r {{DIR}}, --root-dir {{DIR}}");
     println!("                        set root directory");
-    println!("  -H [IP], --host [IP]  set host address");
-    println!("  -p [NUM], --port [NUM]");
+    println!("  -H {{IP}}, --host {{IP}}  set host address");
+    println!("  -p {{NUM}}, --port {{NUM}}");
     println!("                        set starting port");
 }
