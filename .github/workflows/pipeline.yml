@@ -142,13 +142,13 @@ jobs:
       - name: Extended check phase 1
         run: |
           ./script/build.sh --initialize
-          sed -i 's/FOO_BLD_COMPILER=.*/FOO_BLD_COMPILER=gcc/' ./script/.env
-          sed -i 's/FOO_BLD_PARALLEL=.*/FOO_BLD_PARALLEL=4/' ./script/.env
-          sed -i 's/FOO_BLD_PCH=.*/FOO_BLD_PCH=on/' ./script/.env
-          sed -i 's/FOO_BLD_UNITY=.*/FOO_BLD_UNITY=on/' ./script/.env
-          sed -i 's/FOO_BLD_CCACHE=.*/FOO_BLD_CCACHE=on/' ./script/.env
-          sed -i 's/FOO_BLD_DISTCC=.*/FOO_BLD_DISTCC="0.0.0.0,lzo"/' ./script/.env
-          sed -i 's/FOO_BLD_TMPFS=.*/FOO_BLD_TMPFS=on/' ./script/.env
+          sed -i 's/FOO_BLD_COMPILER=.*/FOO_BLD_COMPILER=gcc/' ./script/.build_env
+          sed -i 's/FOO_BLD_PARALLEL=.*/FOO_BLD_PARALLEL=4/' ./script/.build_env
+          sed -i 's/FOO_BLD_PCH=.*/FOO_BLD_PCH=on/' ./script/.build_env
+          sed -i 's/FOO_BLD_UNITY=.*/FOO_BLD_UNITY=on/' ./script/.build_env
+          sed -i 's/FOO_BLD_CCACHE=.*/FOO_BLD_CCACHE=on/' ./script/.build_env
+          sed -i 's/FOO_BLD_DISTCC=.*/FOO_BLD_DISTCC="0.0.0.0,lzo"/' ./script/.build_env
+          sed -i 's/FOO_BLD_TMPFS=.*/FOO_BLD_TMPFS=on/' ./script/.build_env
           ./script/run.py --dump
           ./script/run.py --test --check mem --build dbg --repeat 1
           ./script/run.py --analyze
