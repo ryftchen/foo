@@ -10,9 +10,9 @@ declare STATUS=0
 declare -rA STATUS_COLOR=([exec]="\033[0;33;40m\033[1m\033[49m" [succ]="\033[0;32;40m\033[1m\033[49m"
     [fail]="\033[0;31;40m\033[1m\033[49m" [time]="\033[0;39;40m\033[1m\033[2m\033[49m")
 declare -r STATUS_COLOR_OFF="\033[0m"
-declare -A ARGS=([help]=false [initialize]=false [clean]=false [install]=false [uninstall]=false [query]=false
-    [container]=false [website]=false [test]=false [release]=false [hook]=false [spell]=false [format]=false
-    [lint]=false [statistics]=false [doxygen]=false [browser]=false [assume]="" [dry]=false)
+declare -A ARGS=([help]=false [assume]="" [dry]=false [initialize]=false [clean]=false [install]=false
+    [uninstall]=false [query]=false [container]=false [website]=false [test]=false [release]=false [hook]=false
+    [spell]=false [format]=false [lint]=false [statistics]=false [doxygen]=false [browser]=false)
 declare -A DEV_OPT=([compiler]="clang" [parallel]=0 [pch]=false [unity]=false [ccache]=false [distcc]="localhost"
     [tmpfs]=false)
 declare CMAKE_CACHE_ENTRY=""
@@ -85,9 +85,9 @@ function exist_single_choice_parameters()
 {
     local number=0
     for key in "${!ARGS[@]}"; do
-        if [[ ${key} == "help" ]] || [[ ${key} == "initialize" ]] || [[ ${key} == "clean" ]] \
-            || [[ ${key} == "install" ]] || [[ ${key} == "uninstall" ]] || [[ ${key} == "query" ]] \
-            || [[ ${key} == "container" ]] || [[ ${key} == "website" ]] || [[ ${key} == "test" ]]; then
+        if [[ ${key} == "initialize" ]] || [[ ${key} == "clean" ]] || [[ ${key} == "install" ]] \
+            || [[ ${key} == "uninstall" ]] || [[ ${key} == "query" ]] || [[ ${key} == "container" ]] \
+            || [[ ${key} == "website" ]] || [[ ${key} == "test" ]]; then
             if [[ ${ARGS[${key}]} = true ]]; then
                 number+=1
             fi
@@ -118,7 +118,6 @@ function parse_parameters()
     while [[ $# -gt 0 ]]; do
         case $1 in
         -h | --help)
-            check_single_choice_parameters_validity "$1"
             ARGS[help]=true
             ;;
         -I | --initialize)
@@ -228,13 +227,15 @@ function perform_help_option()
         return
     fi
 
-    echo "usage: $(basename "${0}") [-h] [-I] [-C] [-i] [-u] [-q] [-c] [-w] [-t {-r}] \
-[[{-H, -c, -f, -l, -S, -b, -d} ...] {-r}] {-a [y] [n]} {-D}"
+    echo "usage: $(basename "${0}") [-h] {-a [y] [n]} {-D} [-I] [-C] [-i] [-u] [-q] [-c] [-w] [-t {-r}] \
+[[{-H, -c, -f, -l, -S, -b, -d} ...] {-r}]"
     echo
     echo "build script"
     echo
     echo "options:"
     echo "  -h, --help            show help and exit"
+    echo "  -a, --assume [y] [n]  assume the confirmation is a yes or no."
+    echo "  -D, --dry             dry run for script"
     echo "  -I, --initialize      initialize environment and exit"
     echo "  -C, --clean           clean up project folder and exit"
     echo "  -i, --install         install binary with libraries and exit"
@@ -251,8 +252,6 @@ function perform_help_option()
     echo "  -S, --statistics      code line statistics"
     echo "  -d, --doxygen         documentation with doxygen"
     echo "  -b, --browser         generate web-based code browser like IDE"
-    echo "  -a, --assume [y] [n]  assume the confirmation is a yes or no."
-    echo "  -D, --dry             dry run for script"
 
     exit "${STATUS}"
 }
@@ -522,7 +521,10 @@ function perform_website_option()
             shell_command "cp ./${FOLDER[doc]}/template/website_${FOLDER[rep]}_${html_file} \
 ./${FOLDER[rep]}/${html_file} && cp ./${FOLDER[doc]}/template/website_common_${css_file} ./${FOLDER[rep]}/${css_file}"
         fi
-        local server_daemon="${PWD}/${FOLDER[doc]}/server/target/release/${FOLDER[proj]}_arc --root-dir ."
+
+        local host_addr="127.0.0.1" start_port=61503 server_daemon
+        server_daemon="$(find "./${FOLDER[doc]}/server" -name "${FOLDER[proj]}_arc") --root-dir ./${FOLDER[doc]} \
+--root-dir ./${FOLDER[rep]} --host ${host_addr} --port ${start_port}"
         if ! pgrep -f "${server_daemon}" >/dev/null 2>&1; then
             echo "Please confirm whether continue launching the document server. (y or n)"
             local input
@@ -534,10 +536,11 @@ function perform_website_option()
                 echo "No"
             fi
         else
-            local port1=61503 port2=61504
-            echo "The document server starts listening under the ${PWD} directory ..."
-            echo "=> ${FOLDER[doc]} online: http://127.0.0.1:${port1}/"
-            echo "=> ${FOLDER[rep]} online: http://127.0.0.1:${port2}/"
+            local port1=${start_port}
+            local port2=$((port1 + 1))
+            echo "The archive server starts listening ..."
+            echo "=> http://${host_addr}:${port1}/ for directory $(realpath "./${FOLDER[doc]}")"
+            echo "=> http://${host_addr}:${port2}/ for directory $(realpath "./${FOLDER[rep]}")"
             echo "Please confirm whether continue terminating the document server. (y or n)"
             local input
             input=$(wait_until_get_input)

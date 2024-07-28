@@ -6,16 +6,16 @@ use hyper_util::rt::TokioIo;
 use std::path::Path;
 use tokio::net::TcpListener;
 
-pub async fn do_service(addr: std::net::SocketAddr, root_dir: &str, sub_dir: &'static str) {
+pub async fn do_service(addr: std::net::SocketAddr, root_dir: &str, sub_dir: Option<&'static str>) {
     let serving = Static::new(Path::new(root_dir));
     let listener = TcpListener::bind(addr)
         .await
-        .unwrap_or_else(|_| die!("Could not create TCP listener for {} online.", sub_dir));
+        .unwrap_or_else(|_| die!("Could not create TCP listener for {} directory.", root_dir));
     loop {
         let (stream, _) = listener
             .accept()
             .await
-            .unwrap_or_else(|_| die!("Could not accept TCP connection for {} online.", sub_dir));
+            .unwrap_or_else(|_| die!("Could not accept TCP connection for {} directory.", root_dir));
 
         let serving = serving.clone();
         tokio::spawn(async move {
@@ -26,7 +26,11 @@ pub async fn do_service(addr: std::net::SocketAddr, root_dir: &str, sub_dir: &'s
                 )
                 .await
             {
-                die!("Error serving connection for {} online: {:?}.", sub_dir, err);
+                die!(
+                    "Connection serving error for {} redirection: {:?}.",
+                    sub_dir.unwrap_or(""),
+                    err
+                );
             }
         });
     }
@@ -35,14 +39,16 @@ pub async fn do_service(addr: std::net::SocketAddr, root_dir: &str, sub_dir: &'s
 async fn handle_request<B>(
     req: hyper::Request<B>,
     serving: Static,
-    sub_dir: &'static str,
+    redirect: Option<&'static str>,
 ) -> Result<hyper::Response<Body>, std::io::Error> {
-    if req.uri().path() == "/" {
+    if redirect.is_none() {
+        serving.clone().serve(req).await
+    } else if req.uri().path() == "/" {
         let res = ResponseBuilder::new()
             .status(http::StatusCode::MOVED_PERMANENTLY)
-            .header(http::header::LOCATION, format!("/{}/", sub_dir))
+            .header(http::header::LOCATION, format!("/{}/", redirect.unwrap_or("")))
             .body(Body::Empty)
-            .unwrap_or_else(|_| die!("Unable to build response for {} online.", sub_dir));
+            .unwrap_or_else(|_| die!("Unable to build response for {} redirection.", redirect.unwrap_or("")));
         Ok(res)
     } else {
         serving.clone().serve(req).await

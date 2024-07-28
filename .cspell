@@ -48,6 +48,7 @@ words:
   - memcheck
   - mpfr
   - optflag
+  - optmulti
   - PDEATHSIG
   - pgrep
   - profdata
@@ -63,6 +64,7 @@ words:
   - sarif
   - shellexpand
   - staticfile
+  - strs
   - suboperation
   - tmpfs
   - tparam

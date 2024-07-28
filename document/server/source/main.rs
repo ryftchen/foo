@@ -3,24 +3,19 @@ mod srv;
 mod util;
 
 async fn run(args: arg::Args) {
-    let root_dir = &args.root_dir;
-    let folder_vec: Vec<&str> = vec!["document", "report"];
-    let addr_vec: Vec<std::net::SocketAddr> = vec![([127, 0, 0, 1], 61503).into(), ([127, 0, 0, 1], 61504).into()];
+    let root_dirs = &args.root_dirs;
     let mut srv_vec = vec![];
-    let mut prompt: String = "".to_string();
+    let mut prompt = String::new();
 
-    for (folder, addr) in std::iter::zip(&folder_vec, &addr_vec) {
+    for (i, root_dir) in root_dirs.iter().enumerate() {
+        let addr = std::net::SocketAddr::new(args.host, args.port + i as u16);
         srv_vec.push(async move {
-            srv::do_service(*addr, root_dir, folder).await;
+            srv::do_service(addr, root_dir, None).await;
         });
-        prompt += format!("=> {} online: http://{}/\n", folder, addr).as_str();
+        prompt += format!("=> http://{}/ for directory {}\n", addr, abs_path!(root_dir)).as_str();
     }
+    print!("The archive server starts listening ...\n{}", prompt);
 
-    print!(
-        "The archive server starts listening under the {} directory ...\n{}",
-        abs_path!(root_dir),
-        prompt
-    );
     let _ret = futures_util::future::join_all(srv_vec).await;
 }
 
