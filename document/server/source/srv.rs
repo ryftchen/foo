@@ -28,7 +28,7 @@ pub async fn do_service(addr: std::net::SocketAddr, root_dir: &str, sub_dir: Opt
             {
                 die!(
                     "Connection serving error for {} redirection: {:?}.",
-                    sub_dir.unwrap_or(""),
+                    sub_dir.unwrap_or("default"),
                     err
                 );
             }
@@ -46,9 +46,9 @@ async fn handle_request<B>(
     } else if req.uri().path() == "/" {
         let res = ResponseBuilder::new()
             .status(http::StatusCode::MOVED_PERMANENTLY)
-            .header(http::header::LOCATION, format!("/{}/", redirect.unwrap_or("")))
+            .header(http::header::LOCATION, format!("/{}/", redirect.unwrap()))
             .body(Body::Empty)
-            .unwrap_or_else(|_| die!("Unable to build response for {} redirection.", redirect.unwrap_or("")));
+            .unwrap_or_else(|_| die!("Unable to build response for {} redirection.", redirect.unwrap()));
         Ok(res)
     } else {
         serving.clone().serve(req).await
