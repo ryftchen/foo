@@ -127,6 +127,10 @@ function handle_type_related_parameter()
             ARGS[${option}]=$2
             return 1
             ;;
+        -*)
+            ARGS[${option}]=true
+            return 0
+            ;;
         *)
             die "Invalid argument for the $1 option: $2. Only 'cpp', 'sh', 'py' or 'rs' are allowed."
             ;;
