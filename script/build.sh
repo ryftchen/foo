@@ -10,7 +10,7 @@ declare STATUS=0
 declare -rA STATUS_COLOR=([exec]="\033[0;33;40m\033[1m\033[49m" [succ]="\033[0;32;40m\033[1m\033[49m"
     [fail]="\033[0;31;40m\033[1m\033[49m" [time]="\033[0;39;40m\033[1m\033[2m\033[49m")
 declare -r STATUS_COLOR_OFF="\033[0m"
-declare -A ARGS=([help]=false [assume]="" [dry]=false [initialize]=false [clean]=false [install]=false
+declare -A ARGS=([help]=false [assume]=false [dry]=false [initialize]=false [clean]=false [install]=false
     [uninstall]=false [query]=false [container]=false [website]=false [test]=false [release]=false [hook]=false
     [spell]=false [format]=false [lint]=false [statistics]=false [doxygen]=false [browser]=false)
 declare -A DEV_OPT=([compiler]="clang" [parallel]=0 [pch]=false [unity]=false [ccache]=false [distcc]="localhost"
@@ -33,7 +33,7 @@ function die()
 
 function shell_command()
 {
-    if [[ ${ARGS[dry]} = true ]]; then
+    if [[ ${ARGS[dry]} != false ]]; then
         printf "${STATUS_COLOR[exec]}[ exec ] ${STATUS_COLOR[time]}$(date "+%b %d %T")${STATUS_COLOR_OFF} $ %s\n" "$*"
         echo
         return
@@ -51,7 +51,7 @@ function shell_command()
 
 function wait_until_get_input()
 {
-    if [[ -n ${ARGS[assume]} ]]; then
+    if [[ ${ARGS[assume]} != false ]]; then
         echo "${ARGS[assume]}"
         return 0
     fi
@@ -88,7 +88,7 @@ function exist_single_choice_parameters()
         if [[ ${key} == "initialize" ]] || [[ ${key} == "clean" ]] || [[ ${key} == "install" ]] \
             || [[ ${key} == "uninstall" ]] || [[ ${key} == "query" ]] || [[ ${key} == "container" ]] \
             || [[ ${key} == "website" ]] || [[ ${key} == "test" ]]; then
-            if [[ ${ARGS[${key}]} = true ]]; then
+            if [[ ${ARGS[${key}]} != false ]]; then
                 number+=1
             fi
         fi
@@ -104,7 +104,7 @@ function exist_multiple_choice_parameters()
         if [[ ${key} == "release" ]] || [[ ${key} == "hook" ]] || [[ ${key} == "spell" ]] || [[ ${key} == "format" ]] \
             || [[ ${key} == "lint" ]] || [[ ${key} == "statistics" ]] || [[ ${key} == "doxygen" ]] \
             || [[ ${key} == "browser" ]]; then
-            if [[ ${ARGS[${key}]} = true ]]; then
+            if [[ ${ARGS[${key}]} != false ]]; then
                 number+=1
             fi
         fi
@@ -113,12 +113,56 @@ function exist_multiple_choice_parameters()
     return 0
 }
 
+function handle_type_related_parameter()
+{
+    local option=$1
+    shift
+
+    if [[ ${ARGS[${option}]} != false ]]; then
+        die "Set the required parameter repeatedly for the ${option} option: $1."
+    fi
+    if [[ $# -gt 1 ]]; then
+        case $2 in
+        cpp | sh | py | rs)
+            ARGS[${option}]=$2
+            return 1
+            ;;
+        *)
+            die "Invalid argument for the $1 option: $2. Only 'cpp', 'sh', 'py' or 'rs' are allowed."
+            ;;
+        esac
+    else
+        ARGS[${option}]=true
+        return 0
+    fi
+}
+
 function parse_parameters()
 {
     while [[ $# -gt 0 ]]; do
         case $1 in
         -h | --help)
             ARGS[help]=true
+            ;;
+        -a | --assume)
+            if [[ ${ARGS[assume]} != false ]]; then
+                die "Set the required parameter repeatedly for the $1 option: $2."
+            fi
+            if [[ $# -lt 2 ]]; then
+                die "The $1 command line option requires an argument."
+            fi
+            case $2 in
+            y | n)
+                ARGS[assume]=$2
+                shift
+                ;;
+            *)
+                die "Invalid argument for the $1 option: $2. Only 'y' or 'n' are allowed."
+                ;;
+            esac
+            ;;
+        -D | --dry)
+            ARGS[dry]=true
             ;;
         -I | --initialize)
             check_single_choice_parameters_validity "$1"
@@ -150,7 +194,7 @@ function parse_parameters()
             ;;
         -t | --test)
             if {
-                [[ ${ARGS[release]} = true ]] && [[ $(exist_multiple_choice_parameters) -gt 1 ]]
+                [[ ${ARGS[release]} != false ]] && [[ $(exist_multiple_choice_parameters) -gt 1 ]]
             } || {
                 [[ ${ARGS[release]} = false ]] && [[ $(exist_multiple_choice_parameters) -gt 0 ]]
             } || [[ $(exist_single_choice_parameters) -gt 0 ]]; then
@@ -160,7 +204,7 @@ function parse_parameters()
             ;;
         -r | --release)
             if {
-                [[ ${ARGS[test]} = true ]] && [[ $(exist_single_choice_parameters) -gt 1 ]]
+                [[ ${ARGS[test]} != false ]] && [[ $(exist_single_choice_parameters) -gt 1 ]]
             } || {
                 [[ ${ARGS[test]} = false ]] && [[ $(exist_single_choice_parameters) -gt 0 ]]
             }; then
@@ -178,11 +222,13 @@ function parse_parameters()
             ;;
         -f | --format)
             check_multiple_choice_parameters_validity "$1"
-            ARGS[format]=true
+            handle_type_related_parameter "format" "$@"
+            shift $?
             ;;
         -l | --lint)
             check_multiple_choice_parameters_validity "$1"
-            ARGS[lint]=true
+            handle_type_related_parameter "lint" "$@"
+            shift $?
             ;;
         -S | --statistics)
             check_multiple_choice_parameters_validity "$1"
@@ -195,23 +241,6 @@ function parse_parameters()
         -b | --browser)
             check_multiple_choice_parameters_validity "$1"
             ARGS[browser]=true
-            ;;
-        -a | --assume)
-            if [[ $# -lt 2 ]]; then
-                die "The $1 command line option requires an argument."
-            fi
-            case $2 in
-            y | n)
-                ARGS[assume]=$2
-                shift
-                ;;
-            *)
-                die "Invalid argument for the $1 option: $2. Only 'y' or 'n' are allowed."
-                ;;
-            esac
-            ;;
-        -D | --dry)
-            ARGS[dry]=true
             ;;
         *)
             die "Unknown command line option: $1. Try using the --help option for information."
@@ -227,14 +256,15 @@ function perform_help_option()
         return
     fi
 
-    echo "usage: $(basename "${0}") [-h] {-a [y] [n]} {-D} [-I] [-C] [-i] [-u] [-q] [-c] [-w] [-t {-r}] \
-[[{-H, -c, -f, -l, -S, -b, -d} ...] {-r}]"
+    echo "usage: $(basename "${0}") [-h] [-a {y,n}] [-D] [-I] [-C] [-i] [-u] [-q] [-c] [-w] [-t [-r]] \
+[[{-H,-c,-f [cpp,sh,py,rs],-l [cpp,sh,py,rs],-S,-b,-d} ...] [-r]]"
     echo
     echo "build script"
     echo
     echo "options:"
     echo "  -h, --help            show help and exit"
-    echo "  -a, --assume [y] [n]  assume the confirmation is a yes or no."
+    echo "  -a {y,n}, --assume {y,n}"
+    echo "                        assume the confirmation is a yes or no"
     echo "  -D, --dry             dry run for script"
     echo "  -I, --initialize      initialize environment and exit"
     echo "  -C, --clean           clean up project folder and exit"
@@ -247,8 +277,10 @@ function perform_help_option()
     echo "  -r, --release         set as release version"
     echo "  -H, --hook            run hook before commit"
     echo "  -s, --spell           spell check against dictionaries"
-    echo "  -f, --format          format all code files"
-    echo "  -l, --lint            lint all code files"
+    echo "  -f [cpp,sh,py,rs], --format [cpp,sh,py,rs]"
+    echo "                        format all code files or by type"
+    echo "  -l [cpp,sh,py,rs], --lint [cpp,sh,py,rs]"
+    echo "                        lint all code files or by type"
     echo "  -S, --statistics      code line statistics"
     echo "  -d, --doxygen         documentation with doxygen"
     echo "  -b, --browser         generate web-based code browser like IDE"
@@ -522,11 +554,11 @@ function perform_website_option()
 ./${FOLDER[rep]}/${html_file} && cp ./${FOLDER[doc]}/template/website_common_${css_file} ./${FOLDER[rep]}/${css_file}"
         fi
 
-        local host_addr="127.0.0.1" start_port=61503 server_daemon
-        server_daemon="$(find "./${FOLDER[doc]}/server" -name "${FOLDER[proj]}_arc") --root-dir ./${FOLDER[doc]} \
+        local host_addr="127.0.0.1" start_port=61503
+        local server_daemon="./${FOLDER[doc]}/server/target/release/${FOLDER[proj]}_arc --root-dir ./${FOLDER[doc]} \
 --root-dir ./${FOLDER[rep]} --host ${host_addr} --port ${start_port}"
         if ! pgrep -f "${server_daemon}" >/dev/null 2>&1; then
-            echo "Please confirm whether continue launching the document server. (y or n)"
+            echo "Please confirm whether continue launching the archive server. (y or n)"
             local input
             input=$(wait_until_get_input)
             if echo "${input}" | grep -iq '^y'; then
@@ -541,7 +573,7 @@ function perform_website_option()
             echo "The archive server starts listening ..."
             echo "=> http://${host_addr}:${port1}/ for directory $(realpath "./${FOLDER[doc]}")"
             echo "=> http://${host_addr}:${port2}/ for directory $(realpath "./${FOLDER[rep]}")"
-            echo "Please confirm whether continue terminating the document server. (y or n)"
+            echo "Please confirm whether continue terminating the archive server. (y or n)"
             local input
             input=$(wait_until_get_input)
             if echo "${input}" | grep -iq '^y'; then
@@ -577,26 +609,26 @@ function try_to_perform_single_choice_options()
 
 function check_extra_dependencies()
 {
-    if [[ ${ARGS[hook]} = true ]]; then
+    if [[ ${ARGS[hook]} != false ]]; then
         if ! command -v pre-commit >/dev/null 2>&1; then
             die "No pre-commit program. Please install it."
         fi
     fi
 
-    if [[ ${ARGS[spell]} = true ]]; then
+    if [[ ${ARGS[spell]} != false ]]; then
         if ! command -v cspell >/dev/null 2>&1; then
             die "No cspell program. Please install it."
         fi
     fi
 
-    if [[ ${ARGS[format]} = true ]]; then
+    if [[ ${ARGS[format]} != false ]]; then
         if ! command -v clang-format-16 >/dev/null 2>&1 || ! command -v shfmt >/dev/null 2>&1 \
             || ! command -v black >/dev/null 2>&1 || ! command -v rustfmt >/dev/null 2>&1; then
             die "No clang-format, shfmt, black or rustfmt program. Please install it."
         fi
     fi
 
-    if [[ ${ARGS[lint]} = true ]]; then
+    if [[ ${ARGS[lint]} != false ]]; then
         if ! command -v clang-tidy-16 >/dev/null 2>&1 || ! command -v run-clang-tidy-16 >/dev/null 2>&1 \
             || ! command -v compdb >/dev/null 2>&1 || ! pip3 show clang-tidy-converter >/dev/null 2>&1 \
             || ! command -v shellcheck >/dev/null 2>&1 || ! command -v pylint >/dev/null 2>&1 \
@@ -610,19 +642,19 @@ FOO_BLD_UNITY is turned on."
         fi
     fi
 
-    if [[ ${ARGS[statistics]} = true ]]; then
+    if [[ ${ARGS[statistics]} != false ]]; then
         if ! command -v cloc >/dev/null 2>&1; then
             die "No cloc program. Please install it."
         fi
     fi
 
-    if [[ ${ARGS[doxygen]} = true ]]; then
+    if [[ ${ARGS[doxygen]} != false ]]; then
         if ! command -v doxygen >/dev/null 2>&1 || ! command -v dot >/dev/null 2>&1; then
             die "No doxygen or dot program. Please install it."
         fi
     fi
 
-    if [[ ${ARGS[browser]} = true ]]; then
+    if [[ ${ARGS[browser]} != false ]]; then
         if ! command -v codebrowser_generator >/dev/null 2>&1 \
             || ! command -v codebrowser_indexgenerator >/dev/null 2>&1; then
             die "No codebrowser_generator or codebrowser_indexgenerator program. Please install it."
@@ -659,12 +691,20 @@ function perform_format_option()
         return
     fi
 
-    shell_command "find ./${FOLDER[app]} ./${FOLDER[util]} ./${FOLDER[algo]} ./${FOLDER[ds]} ./${FOLDER[dp]} \
+    if [[ ${ARGS[format]} = true ]] || [[ ${ARGS[format]} = "cpp" ]]; then
+        shell_command "find ./${FOLDER[app]} ./${FOLDER[util]} ./${FOLDER[algo]} ./${FOLDER[ds]} ./${FOLDER[dp]} \
 ./${FOLDER[num]} ./${FOLDER[tst]} -name '*.cpp' -o -name '*.hpp' -o -name '*.tpp' | grep -v '/${FOLDER[bld]}/' \
 | xargs clang-format-16 --Werror -i --style=file:./.clang-format --verbose"
-    shell_command "shfmt -l -w ./${FOLDER[scr]}/*.sh"
-    shell_command "black --config ./.toml ./${FOLDER[scr]}/*.py"
-    shell_command "cargo fmt --all --verbose --manifest-path ./${FOLDER[doc]}/server/Cargo.toml"
+    fi
+    if [[ ${ARGS[format]} = true ]] || [[ ${ARGS[format]} = "sh" ]]; then
+        shell_command "shfmt -l -w ./${FOLDER[scr]}/*.sh"
+    fi
+    if [[ ${ARGS[format]} = true ]] || [[ ${ARGS[format]} = "py" ]]; then
+        shell_command "black --config ./.toml ./${FOLDER[scr]}/*.py"
+    fi
+    if [[ ${ARGS[format]} = true ]] || [[ ${ARGS[format]} = "rs" ]]; then
+        shell_command "cargo fmt --all --verbose --manifest-path ./${FOLDER[doc]}/server/Cargo.toml"
+    fi
 }
 
 function perform_lint_option()
@@ -673,66 +713,73 @@ function perform_lint_option()
         return
     fi
 
-    local app_comp_cmd=${FOLDER[bld]}/${COMP_CMD}
-    if [[ ! -f ./${app_comp_cmd} ]]; then
-        die "There is no ${COMP_CMD} file in the ${FOLDER[bld]} folder. Please generate it."
-    fi
-    shell_command "compdb -p ./${FOLDER[bld]} list >./${COMP_CMD} && mv ./${app_comp_cmd} ./${app_comp_cmd}.bak \
+    if [[ ${ARGS[lint]} = true ]] || [[ ${ARGS[lint]} = "cpp" ]]; then
+        local app_comp_cmd=${FOLDER[bld]}/${COMP_CMD}
+        if [[ ! -f ./${app_comp_cmd} ]]; then
+            die "There is no ${COMP_CMD} file in the ${FOLDER[bld]} folder. Please generate it."
+        fi
+        shell_command "compdb -p ./${FOLDER[bld]} list >./${COMP_CMD} && mv ./${app_comp_cmd} ./${app_comp_cmd}.bak \
 && mv ./${COMP_CMD} ./${FOLDER[bld]}"
-    local exist_file_extention=false
-    while true; do
-        local line
-        line=$(grep -n '.tpp' "./${app_comp_cmd}" | head -n 1 | cut -d : -f 1)
-        if ! [[ ${line} =~ ^[0-9]+$ ]]; then
-            break
-        fi
-        exist_file_extention=true
-        if ! sed -i $((line - 2)),$((line + 3))d ./"${app_comp_cmd}" >/dev/null 2>&1; then
-            die "Failed to remove redundant implementation file objects from the ${app_comp_cmd} file."
-        fi
-    done
+        local exist_file_extention=false
+        while true; do
+            local line
+            line=$(grep -n '.tpp' "./${app_comp_cmd}" | head -n 1 | cut -d : -f 1)
+            if ! [[ ${line} =~ ^[0-9]+$ ]]; then
+                break
+            fi
+            exist_file_extention=true
+            if ! sed -i $((line - 2)),$((line + 3))d ./"${app_comp_cmd}" >/dev/null 2>&1; then
+                die "Failed to remove redundant implementation file objects from the ${app_comp_cmd} file."
+            fi
+        done
 
-    local clang_tidy_output_path=./${FOLDER[rep]}/sca/lint
-    local clang_tidy_log=${clang_tidy_output_path}/clang-tidy.log
-    if [[ ! -d ${clang_tidy_output_path} ]]; then
-        shell_command "mkdir -p ${clang_tidy_output_path}"
-    elif [[ -f ${clang_tidy_log} ]]; then
-        shell_command "rm -rf ${clang_tidy_log}"
-    fi
-    shell_command "set -o pipefail && find ./${FOLDER[app]} ./${FOLDER[util]} ./${FOLDER[algo]} ./${FOLDER[ds]} \
+        local clang_tidy_output_path=./${FOLDER[rep]}/sca/lint
+        local clang_tidy_log=${clang_tidy_output_path}/clang-tidy.log
+        if [[ ! -d ${clang_tidy_output_path} ]]; then
+            shell_command "mkdir -p ${clang_tidy_output_path}"
+        elif [[ -f ${clang_tidy_log} ]]; then
+            shell_command "rm -rf ${clang_tidy_log}"
+        fi
+        shell_command "set -o pipefail && find ./${FOLDER[app]} ./${FOLDER[util]} ./${FOLDER[algo]} ./${FOLDER[ds]} \
 ./${FOLDER[dp]} ./${FOLDER[num]} -name '*.cpp' -o -name '*.hpp' | xargs run-clang-tidy-16 -config-file=./.clang-tidy \
 -p ./${FOLDER[bld]} -quiet | tee -a ${clang_tidy_log}"
-    if [[ ${exist_file_extention} = true ]]; then
-        shell_command "set -o pipefail && find ./${FOLDER[app]} ./${FOLDER[util]} ./${FOLDER[algo]} ./${FOLDER[ds]} \
-./${FOLDER[dp]} ./${FOLDER[num]} -name '*.tpp' | xargs clang-tidy-16 --config-file=./.clang-tidy -p ./${FOLDER[bld]} \
---quiet | tee -a ${clang_tidy_log}"
-    fi
-    shell_command "rm -rf ./${app_comp_cmd} && mv ./${app_comp_cmd}.bak ./${app_comp_cmd}"
+        if [[ ${exist_file_extention} = true ]]; then
+            shell_command "set -o pipefail && find ./${FOLDER[app]} ./${FOLDER[util]} ./${FOLDER[algo]} \
+./${FOLDER[ds]} ./${FOLDER[dp]} ./${FOLDER[num]} -name '*.tpp' | xargs clang-tidy-16 --config-file=./.clang-tidy \
+-p ./${FOLDER[bld]} --quiet | tee -a ${clang_tidy_log}"
+        fi
+        shell_command "rm -rf ./${app_comp_cmd} && mv ./${app_comp_cmd}.bak ./${app_comp_cmd}"
 
-    local tst_comp_cmd=${FOLDER[tst]}/${FOLDER[bld]}/${COMP_CMD}
-    if [[ ! -f ./${tst_comp_cmd} ]]; then
-        die "There is no ${COMP_CMD} file in the ${FOLDER[tst]}/${FOLDER[bld]} folder. Please generate it."
-    fi
-    shell_command "compdb -p ./${FOLDER[tst]}/${FOLDER[bld]} list >./${COMP_CMD} \
+        local tst_comp_cmd=${FOLDER[tst]}/${FOLDER[bld]}/${COMP_CMD}
+        if [[ ! -f ./${tst_comp_cmd} ]]; then
+            die "There is no ${COMP_CMD} file in the ${FOLDER[tst]}/${FOLDER[bld]} folder. Please generate it."
+        fi
+        shell_command "compdb -p ./${FOLDER[tst]}/${FOLDER[bld]} list >./${COMP_CMD} \
 && mv ./${tst_comp_cmd} ./${tst_comp_cmd}.bak && mv ./${COMP_CMD} ./${FOLDER[tst]}/${FOLDER[bld]}"
-    shell_command "set -o pipefail && find ./${FOLDER[tst]} -name '*.cpp' | xargs run-clang-tidy-16 \
+        shell_command "set -o pipefail && find ./${FOLDER[tst]} -name '*.cpp' | xargs run-clang-tidy-16 \
 -config-file=./.clang-tidy -p ./${FOLDER[tst]}/${FOLDER[bld]} -quiet | tee -a ${clang_tidy_log}"
-    shell_command "rm -rf ./${tst_comp_cmd} && mv ./${tst_comp_cmd}.bak ./${tst_comp_cmd}"
-    if [[ -f ${clang_tidy_log} ]]; then
-        shell_command "sed -i '/clang-tidy-16 -p=/d' ${clang_tidy_log}"
-        shell_command "cat ${clang_tidy_log} | sed 's/\x1b\[[0-9;]*m//g' | python3 -m clang_tidy_converter \
+        shell_command "rm -rf ./${tst_comp_cmd} && mv ./${tst_comp_cmd}.bak ./${tst_comp_cmd}"
+        if [[ -f ${clang_tidy_log} ]]; then
+            shell_command "sed -i '/clang-tidy-16 -p=/d' ${clang_tidy_log}"
+            shell_command "cat ${clang_tidy_log} | sed 's/\x1b\[[0-9;]*m//g' | python3 -m clang_tidy_converter \
 --project_root ./ html >${clang_tidy_output_path}/index.html"
-    else
-        die "Could not find log file in clang-tidy output."
+        else
+            die "Could not find log file in clang-tidy output."
+        fi
     fi
-
-    shell_command "shellcheck -a ./${FOLDER[scr]}/*.sh"
-    shell_command "pylint --rcfile=./.pylintrc ./${FOLDER[scr]}/*.py"
-    local build_type
-    if [[ ${BUILD_TYPE} = "Release" ]]; then
-        build_type=" --release"
+    if [[ ${ARGS[lint]} = true ]] || [[ ${ARGS[lint]} = "sh" ]]; then
+        shell_command "shellcheck -a ./${FOLDER[scr]}/*.sh"
     fi
-    shell_command "cargo clippy --manifest-path ./${FOLDER[doc]}/server/Cargo.toml""${build_type}"
+    if [[ ${ARGS[lint]} = true ]] || [[ ${ARGS[lint]} = "py" ]]; then
+        shell_command "pylint --rcfile=./.pylintrc ./${FOLDER[scr]}/*.py"
+    fi
+    if [[ ${ARGS[lint]} = true ]] || [[ ${ARGS[lint]} = "rs" ]]; then
+        local build_type
+        if [[ ${BUILD_TYPE} = "Release" ]]; then
+            build_type=" --release"
+        fi
+        shell_command "cargo clippy --manifest-path ./${FOLDER[doc]}/server/Cargo.toml""${build_type}"
+    fi
 }
 
 function perform_statistics_option()
@@ -741,10 +788,8 @@ function perform_statistics_option()
         return
     fi
 
-    shell_command "cloc --config ./.cloc --include-lang='C,C++,C/C++ Header'"
-    shell_command "cloc --config ./.cloc --include-lang='Bourne Shell'"
-    shell_command "cloc --config ./.cloc --include-lang='Python'"
-    shell_command "cloc --config ./.cloc --include-lang='Rust'"
+    shell_command "printf \"C,C++,C/C++ Header\nBourne Shell\nPython\nRust\n\" | xargs -I {} -n 1 -P 1 \
+cloc --config ./.cloc --include-lang='{}'"
 }
 
 function package_for_doxygen()
@@ -994,12 +1039,12 @@ function build_target()
     if ! command -v cmake >/dev/null 2>&1 || ! command -v ninja >/dev/null 2>&1; then
         die "No cmake or ninja program. Please install it."
     fi
-    if [[ ${ARGS[release]} = true ]]; then
+    if [[ ${ARGS[release]} != false ]]; then
         BUILD_TYPE="Release"
     fi
 
     local cmake_cache="CMakeCache.txt"
-    if [[ ${ARGS[test]} = true ]]; then
+    if [[ ${ARGS[test]} != false ]]; then
         set_compile_condition "${FOLDER[tst]}/${FOLDER[bld]}" "256m"
         if [[ -f ./${FOLDER[tst]}/${FOLDER[bld]}/${cmake_cache} ]] \
             && ! grep -Fwq "${DEV_OPT[compiler]}" "./${FOLDER[tst]}/${FOLDER[bld]}/${cmake_cache}" 2>/dev/null; then
@@ -1023,7 +1068,7 @@ function build_target()
     local valid_param_num
     valid_param_num=$(($(exist_single_choice_parameters) + $(exist_multiple_choice_parameters)))
     if [[ valid_param_num -eq 0 ]] || {
-        [[ valid_param_num -eq 1 ]] && [[ ${ARGS[release]} = true ]]
+        [[ valid_param_num -eq 1 ]] && [[ ${ARGS[release]} != false ]]
     }; then
         NINJA_STATUS=$(echo -e "\e[92m[\e[92m%f/\e[92m%t\e[92m]\e[39m\e[49m ")
         export NINJA_STATUS
