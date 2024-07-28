@@ -47,6 +47,7 @@ words:
   - manpath
   - memcheck
   - mpfr
+  - noopener
   - optflag
   - optmulti
   - PDEATHSIG

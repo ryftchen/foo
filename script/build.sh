@@ -305,8 +305,8 @@ function perform_initialize_option()
         shell_command "echo '${export_cmd}' >>~/${BASH_RC}"
     fi
 
-    local validate_proj="[[ \\\"\\\$(basename \\\"\\\$(pwd)\\\")\\\" == \\\"${FOLDER[proj]}\\\" ]] && \
-git rev-parse --git-dir >/dev/null 2>&1 && source ~/${BASH_RC}"
+    local validate_proj="[[ \\\"\\\$(basename \\\"\\\$(pwd)\\\")\\\" == \\\"${FOLDER[proj]}\\\" ]] \
+&& git rev-parse --git-dir >/dev/null 2>&1 && source ~/${BASH_RC}"
     local alias_cmd
     if ! grep -Fwq "alias ${FOLDER[proj]:0:1}build" ~/"${BASH_RC}" 2>/dev/null; then
         alias_cmd="alias ${FOLDER[proj]:0:1}build='${validate_proj} && ./${FOLDER[scr]}/build.sh'"
@@ -387,8 +387,8 @@ function perform_install_option()
         fi
 
         local completion_file="bash_completion"
-        export_cmd="[ \"\${BASH_COMPLETION_VERSINFO}\" != \"\" ] && [ -s ${install_path}/${completion_file} ] && \
-\. ${install_path}/${completion_file}"
+        export_cmd="[ \"\${BASH_COMPLETION_VERSINFO}\" != \"\" ] && [ -s ${install_path}/${completion_file} ] \
+&& \. ${install_path}/${completion_file}"
         shell_command "${SUDO}cp ./${FOLDER[scr]}/${completion_file}.sh ${install_path}/${completion_file}"
         if ! grep -Fxq "${export_cmd}" ~/"${BASH_RC}" 2>/dev/null; then
             shell_command "echo '${export_cmd}' >>~/${BASH_RC}"
@@ -396,8 +396,8 @@ function perform_install_option()
 
         local man_path=${install_path}/man
         export_cmd="MANDATORY_MANPATH ${man_path}"
-        shell_command "${SUDO}mkdir -p ${man_path}/man1 && \
-${SUDO}cp ./${FOLDER[doc]}/man.1 ${man_path}/man1/${FOLDER[proj]}.1"
+        shell_command "${SUDO}mkdir -p ${man_path}/man1 \
+&& ${SUDO}cp ./${FOLDER[doc]}/man.1 ${man_path}/man1/${FOLDER[proj]}.1"
         if ! grep -Fxq "${export_cmd}" ~/.manpath 2>/dev/null; then
             shell_command "echo '${export_cmd}' >>~/.manpath"
         fi
@@ -422,8 +422,8 @@ function perform_uninstall_option()
 
     local completion_file="bash_completion"
     shell_command "rm -rf ~/.${FOLDER[proj]}"
-    shell_command "cat ./${FOLDER[bld]}/${manifest_file} | xargs ${SUDO}rm -rf && \
-${SUDO}rm -rf /opt/${FOLDER[proj]}/${completion_file} /opt/${FOLDER[proj]}/man"
+    shell_command "cat ./${FOLDER[bld]}/${manifest_file} | xargs ${SUDO}rm -rf \
+&& ${SUDO}rm -rf /opt/${FOLDER[proj]}/${completion_file} /opt/${FOLDER[proj]}/man"
     shell_command "cat ./${FOLDER[bld]}/${manifest_file} | xargs -L1 dirname | \
 xargs ${SUDO}rmdir -p 2>/dev/null || true"
     if [[ -f ~/${BASH_RC} ]]; then
@@ -547,15 +547,45 @@ function perform_website_option()
         shell_command "cargo build --release --manifest-path ./${FOLDER[doc]}/server/Cargo.toml"
         local html_file="index.html" css_file="main.css"
         if [[ ! -f ./${FOLDER[doc]}/${html_file} ]] || [[ ! -f ./${FOLDER[doc]}/${css_file} ]]; then
-            shell_command "cp ./${FOLDER[doc]}/template/website_${FOLDER[doc]}_${html_file} \
-./${FOLDER[doc]}/${html_file} && cp ./${FOLDER[doc]}/template/website_common_${css_file} ./${FOLDER[doc]}/${css_file}"
+            shell_command "cp ./${FOLDER[doc]}/template/website_${html_file} ./${FOLDER[doc]}/${html_file} \
+&& cp ./${FOLDER[doc]}/template/website_${css_file} ./${FOLDER[doc]}/${css_file}"
+            shell_command "sed -i 's/unamed list/document list/g' ./${FOLDER[doc]}/index.html"
+            local item_rows
+            item_rows=$(
+                cat <<EOF
+<li><a href="./doxygen/index.html" target="_blank" rel="noopener">doxygen document</a></li>
+<li><a href="./browser/index.html" target="_blank" rel="noopener">codebrowser document</a></li>
+EOF
+            )
+            local item_row_single_line
+            item_row_single_line=$(echo "${item_rows}" | tr -d '\n')
+            shell_command "sed -i 's|<li>unamed item</li>|${item_row_single_line}|g' ./${FOLDER[doc]}/index.html"
         fi
         if [[ ! -f ./${FOLDER[rep]}/${html_file} ]] || [[ ! -f ./${FOLDER[rep]}/${css_file} ]]; then
             if [[ ! -d ./${FOLDER[rep]} ]]; then
                 shell_command "mkdir ./${FOLDER[rep]}"
             fi
-            shell_command "cp ./${FOLDER[doc]}/template/website_${FOLDER[rep]}_${html_file} \
-./${FOLDER[rep]}/${html_file} && cp ./${FOLDER[doc]}/template/website_common_${css_file} ./${FOLDER[rep]}/${css_file}"
+            shell_command "cp ./${FOLDER[doc]}/template/website_${html_file} ./${FOLDER[rep]}/${html_file} \
+&& cp ./${FOLDER[doc]}/template/website_${css_file} ./${FOLDER[rep]}/${css_file}"
+            shell_command "sed -i 's/unamed list/report list/g' ./${FOLDER[rep]}/index.html"
+            local item_rows
+            item_rows=$(
+                cat <<EOF
+<li>dca</li>
+<ul>
+<li><a href="./dca/check_coverage/index.html" target="_blank" rel="noopener">llvm-cov report</a></li>
+<li><a href="./dca/check_memory/index.html" target="_blank" rel="noopener">valgrind report</a></li>
+</ul>
+<li>sca</li>
+<ul>
+<li><a href="./sca/lint/index.html" target="_blank" rel="noopener">clang-tidy report</a></li>
+<li><a href="./sca/query/index.html" target="_blank" rel="noopener">codeql report</a></li>
+</ul>
+EOF
+            )
+            local item_row_single_line
+            item_row_single_line=$(echo "${item_rows}" | tr -d '\n')
+            shell_command "sed -i 's|<li>unamed item</li>|${item_row_single_line}|g' ./${FOLDER[rep]}/index.html"
         fi
 
         local host_addr="127.0.0.1" start_port=61503
@@ -861,18 +891,14 @@ function package_for_browser()
 -o ./${FOLDER[doc]}/${browser_folder} -p ${FOLDER[proj]}:.:${commit_id} -d ./data"
     shell_command "codebrowser_indexgenerator ./${FOLDER[doc]}/${browser_folder} -d ./data"
 
-    local ico_url="https://web.archive.org/web/20220309195008if_/https://code.woboq.org/favicon.ico"
     shell_command "find \"./${FOLDER[doc]}/${browser_folder}/index.html\" \
 \"./${FOLDER[doc]}/${browser_folder}/${FOLDER[proj]}\" \"./${FOLDER[doc]}/${browser_folder}/include\" -name \"*.html\" \
--exec sed -i '/^<\/head>$/i <link rel=\\\"shortcut icon\\\" href=\\\"${ico_url}\\\" type=\\\"image/x-icon\\\"/>' {} +"
-    local escaped_old_png_url escaped_new_png_url
-    escaped_old_png_url=$(printf "%s\n" "https://code.woboq.org/woboq-16.png" | sed -e 's/[]\/$*.^[]/\\&/g')
-    escaped_new_png_url=$(printf "%s\n" \
-        "https://web.archive.org/web/20220224111804if_/https://code.woboq.org/woboq-16.png" \
-        | sed -e 's/[]\/$*.^[]/\\&/g')
+-exec sed -i '/^<\/head>$/i <link rel=\"shortcut icon\" \
+href=\"https://web.archive.org/web/20220309195008if_/https://code.woboq.org/favicon.ico\" type=\"image/x-icon\"/>' {} +"
     shell_command "find \"./${FOLDER[doc]}/${browser_folder}/index.html\" \
 \"./${FOLDER[doc]}/${browser_folder}/${FOLDER[proj]}\" \"./${FOLDER[doc]}/${browser_folder}/include\" -name \"*.html\" \
--exec sed -i 's/${escaped_old_png_url}/${escaped_new_png_url}/g' {} +"
+-exec sed -i 's|https://code.woboq.org/woboq-16.png\
+|https://web.archive.org/web/20220224111804if_/https://code.woboq.org/woboq-16.png|g' {} +"
     shell_command "tar -jcvf ./${FOLDER[doc]}/archive/${tar_file} -C ./${FOLDER[doc]} ${browser_folder} >/dev/null"
 }
 
