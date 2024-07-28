@@ -65,6 +65,7 @@ words:
   - sarif
   - shellexpand
   - staticfile
+  - stdbuf
   - strs
   - suboperation
   - tmpfs
