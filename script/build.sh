@@ -738,7 +738,6 @@ function perform_lint_option()
 -config-file=./.clang-tidy -p ./${FOLDER[tst]}/${FOLDER[bld]} -quiet | tee -a ${clang_tidy_log}"
         shell_command "rm -rf ./${tst_comp_cmd} && mv ./${tst_comp_cmd}.bak ./${tst_comp_cmd}"
         if [[ -f ${clang_tidy_log} ]]; then
-            shell_command "sed -i '/clang-tidy-16 -p=/d' ${clang_tidy_log}"
             shell_command "cat ${clang_tidy_log} | sed 's/\x1b\[[0-9;]*m//g' | python3 -m clang_tidy_converter \
 --project_root ./ html >${clang_tidy_output_path}/index.html"
         else
