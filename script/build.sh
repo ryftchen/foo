@@ -69,19 +69,19 @@ function wait_until_get_input()
 
 function check_single_choice_parameters_validity()
 {
-    if [[ $(exist_single_choice_parameters) -gt 0 ]] || [[ $(exist_multiple_choice_parameters) -gt 0 ]]; then
+    if [[ $(existing_single_choice_parameters) -gt 0 ]] || [[ $(existing_multiple_choice_parameters) -gt 0 ]]; then
         die "Mutually exclusive option: $1 is not allowed."
     fi
 }
 
 function check_multiple_choice_parameters_validity()
 {
-    if [[ $(exist_single_choice_parameters) -gt 0 ]]; then
+    if [[ $(existing_single_choice_parameters) -gt 0 ]]; then
         die "Mutually exclusive option: $1 is not allowed."
     fi
 }
 
-function exist_single_choice_parameters()
+function existing_single_choice_parameters()
 {
     local number=0
     for key in "${!ARGS[@]}"; do
@@ -97,7 +97,7 @@ function exist_single_choice_parameters()
     return 0
 }
 
-function exist_multiple_choice_parameters()
+function existing_multiple_choice_parameters()
 {
     local number=0
     for key in "${!ARGS[@]}"; do
@@ -194,19 +194,19 @@ function parse_parameters()
             ;;
         -t | --test)
             if {
-                [[ ${ARGS[release]} != false ]] && [[ $(exist_multiple_choice_parameters) -gt 1 ]]
+                [[ ${ARGS[release]} != false ]] && [[ $(existing_multiple_choice_parameters) -gt 1 ]]
             } || {
-                [[ ${ARGS[release]} = false ]] && [[ $(exist_multiple_choice_parameters) -gt 0 ]]
-            } || [[ $(exist_single_choice_parameters) -gt 0 ]]; then
+                [[ ${ARGS[release]} = false ]] && [[ $(existing_multiple_choice_parameters) -gt 0 ]]
+            } || [[ $(existing_single_choice_parameters) -gt 0 ]]; then
                 die "Mutually exclusive option: $1 is not allowed."
             fi
             ARGS[test]=true
             ;;
         -r | --release)
             if {
-                [[ ${ARGS[test]} != false ]] && [[ $(exist_single_choice_parameters) -gt 1 ]]
+                [[ ${ARGS[test]} != false ]] && [[ $(existing_single_choice_parameters) -gt 1 ]]
             } || {
-                [[ ${ARGS[test]} = false ]] && [[ $(exist_single_choice_parameters) -gt 0 ]]
+                [[ ${ARGS[test]} = false ]] && [[ $(existing_single_choice_parameters) -gt 0 ]]
             }; then
                 die "Mutually exclusive option: $1 is not allowed."
             fi
@@ -1099,7 +1099,7 @@ function build_target()
     shell_command "cmake -S . -B ./${FOLDER[bld]} -G Ninja""${CMAKE_CACHE_ENTRY}"
 
     local valid_param_num
-    valid_param_num=$(($(exist_single_choice_parameters) + $(exist_multiple_choice_parameters)))
+    valid_param_num=$(($(existing_single_choice_parameters) + $(existing_multiple_choice_parameters)))
     if [[ valid_param_num -eq 0 ]] || {
         [[ valid_param_num -eq 1 ]] && [[ ${ARGS[release]} != false ]]
     }; then
