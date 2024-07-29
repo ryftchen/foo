@@ -11,8 +11,8 @@ declare -rA STATUS_COLOR=([exec]="\033[0;33;40m\033[1m\033[49m" [succ]="\033[0;3
     [fail]="\033[0;31;40m\033[1m\033[49m" [time]="\033[0;39;40m\033[1m\033[2m\033[49m")
 declare -r STATUS_COLOR_OFF="\033[0m"
 declare -A ARGS=([help]=false [assume]=false [dry]=false [initialize]=false [clean]=false [install]=false
-    [uninstall]=false [query]=false [container]=false [website]=false [test]=false [release]=false [hook]=false
-    [spell]=false [format]=false [lint]=false [statistics]=false [doxygen]=false [browser]=false)
+    [uninstall]=false [container]=false [website]=false [test]=false [release]=false [hook]=false [spell]=false
+    [statistics]=false [format]=false [lint]=false [query]=false [doxygen]=false [browser]=false)
 declare -A DEV_OPT=([compiler]="clang" [parallel]=0 [pch]=false [unity]=false [ccache]=false [distcc]="localhost"
     [tmpfs]=false)
 declare CMAKE_CACHE_ENTRY=""
@@ -86,8 +86,8 @@ function exist_single_choice_parameters()
     local number=0
     for key in "${!ARGS[@]}"; do
         if [[ ${key} == "initialize" ]] || [[ ${key} == "clean" ]] || [[ ${key} == "install" ]] \
-            || [[ ${key} == "uninstall" ]] || [[ ${key} == "query" ]] || [[ ${key} == "container" ]] \
-            || [[ ${key} == "website" ]] || [[ ${key} == "test" ]]; then
+            || [[ ${key} == "uninstall" ]] || [[ ${key} == "container" ]] || [[ ${key} == "website" ]] \
+            || [[ ${key} == "test" ]]; then
             if [[ ${ARGS[${key}]} != false ]]; then
                 number+=1
             fi
@@ -101,9 +101,9 @@ function exist_multiple_choice_parameters()
 {
     local number=0
     for key in "${!ARGS[@]}"; do
-        if [[ ${key} == "release" ]] || [[ ${key} == "hook" ]] || [[ ${key} == "spell" ]] || [[ ${key} == "format" ]] \
-            || [[ ${key} == "lint" ]] || [[ ${key} == "statistics" ]] || [[ ${key} == "doxygen" ]] \
-            || [[ ${key} == "browser" ]]; then
+        if [[ ${key} == "release" ]] || [[ ${key} == "hook" ]] || [[ ${key} == "spell" ]] \
+            || [[ ${key} == "statistics" ]] || [[ ${key} == "format" ]] || [[ ${key} == "lint" ]] \
+            || [[ ${key} == "query" ]] || [[ ${key} == "doxygen" ]] || [[ ${key} == "browser" ]]; then
             if [[ ${ARGS[${key}]} != false ]]; then
                 number+=1
             fi
@@ -184,10 +184,6 @@ function parse_parameters()
             check_single_choice_parameters_validity "$1"
             ARGS[uninstall]=true
             ;;
-        -q | --query)
-            check_single_choice_parameters_validity "$1"
-            ARGS[query]=true
-            ;;
         -c | --container)
             check_single_choice_parameters_validity "$1"
             ARGS[container]=true
@@ -224,6 +220,10 @@ function parse_parameters()
             check_multiple_choice_parameters_validity "$1"
             ARGS[spell]=true
             ;;
+        -S | --statistics)
+            check_multiple_choice_parameters_validity "$1"
+            ARGS[statistics]=true
+            ;;
         -f | --format)
             check_multiple_choice_parameters_validity "$1"
             handle_type_related_parameter "format" "$@"
@@ -234,9 +234,9 @@ function parse_parameters()
             handle_type_related_parameter "lint" "$@"
             shift $?
             ;;
-        -S | --statistics)
+        -q | --query)
             check_multiple_choice_parameters_validity "$1"
-            ARGS[statistics]=true
+            ARGS[query]=true
             ;;
         -d | --doxygen)
             check_multiple_choice_parameters_validity "$1"
@@ -274,18 +274,18 @@ function perform_help_option()
     echo "  -C, --clean           clean up project folder and exit"
     echo "  -i, --install         install binary with libraries and exit"
     echo "  -u, --uninstall       uninstall binary with libraries and exit"
-    echo "  -q, --query           query code with CodeQL and exit"
     echo "  -c, --container       construct docker container and exit"
     echo "  -w, --website         launch / terminate web server and exit"
     echo "  -t, --test            build unit test and exit"
     echo "  -r, --release         set as release version"
     echo "  -H, --hook            run hook before commit"
     echo "  -s, --spell           spell check against dictionaries"
+    echo "  -S, --statistics      code line statistics"
     echo "  -f [cpp,sh,py,rs], --format [cpp,sh,py,rs]"
     echo "                        format all code files or by type"
     echo "  -l [cpp,sh,py,rs], --lint [cpp,sh,py,rs]"
     echo "                        lint all code files or by type"
-    echo "  -S, --statistics      code line statistics"
+    echo "  -q, --query           scan and query source code"
     echo "  -d, --doxygen         documentation with doxygen"
     echo "  -b, --browser         generate web-based code browser like IDE"
 
@@ -334,7 +334,6 @@ EOF"
     shell_command "echo 'core.%s.%e.%p' | ${SUDO}tee /proc/sys/kernel/core_pattern"
     shell_command "git config --local commit.template ./.gitcommit.template"
 
-    echo
     echo "To initialize for effect, type \"exec bash\" manually."
 
     exit "${STATUS}"
@@ -361,7 +360,6 @@ function perform_clean_option()
         shell_command "pre-commit uninstall"
     fi
 
-    echo
     echo "To clean up for effect, type \"exec bash\" manually."
 
     exit "${STATUS}"
@@ -403,7 +401,6 @@ function perform_install_option()
         fi
     fi
 
-    echo
     echo "Manually type \"exec bash\" to install for effect."
 
     exit "${STATUS}"
@@ -434,74 +431,7 @@ xargs ${SUDO}rmdir -p 2>/dev/null || true"
         shell_command "sed -i '/MANDATORY_MANPATH \/opt\/${FOLDER[proj]}\/man/d' ~/.manpath"
     fi
 
-    echo
     echo "Manually type \"exec bash\" to uninstall for effect."
-
-    exit "${STATUS}"
-}
-
-function perform_query_option()
-{
-    if [[ ${ARGS[query]} = false ]]; then
-        return
-    fi
-
-    local build_script
-    build_script=./${FOLDER[scr]}/$(basename "$0")
-    if command -v codeql >/dev/null 2>&1 && command -v sarif >/dev/null 2>&1; then
-        local rebuild_script=./${FOLDER[scr]}/.build_wrap
-        if [[ ! -f ${rebuild_script} ]]; then
-            shell_command "cat <<EOF >./${rebuild_script}
-#!/usr/bin/env bash
-
-export FOO_BLD_SCA=on
-$(realpath "$0") \"\\\$@\"
-EOF"
-            shell_command "chmod +x ${rebuild_script}"
-        fi
-
-        echo "Please confirm whether need to temporarily force a full recompile (using the default .build_env) \
-to improve accuracy. (y or n)"
-        local input
-        input=$(wait_until_get_input)
-        if echo "${input}" | grep -iq '^y'; then
-            echo "Yes"
-            build_script=${rebuild_script}
-            shell_command "rm -rf ./${FOLDER[bld]} ./${FOLDER[tst]}/${FOLDER[bld]}"
-        else
-            echo "No"
-        fi
-    else
-        die "No codeql (including sarif) program. Please install it."
-    fi
-
-    local codeql_db=./${FOLDER[rep]}/sca/query
-    if [[ ! -d ${codeql_db} ]]; then
-        shell_command "mkdir -p ${codeql_db}"
-    fi
-    shell_command "codeql database create ${codeql_db} --codescanning-config=./.codeql --language=cpp --ram=2048 \
---command='${build_script}' --command='${build_script} -t' --source-root=./ --overwrite"
-    local codeql_sarif=${codeql_db}/codeql.sarif
-    shell_command "codeql database analyze ${codeql_db} --format=sarif-latest --output=${codeql_sarif} --rerun \
---ram=2048"
-    if [[ -f ${codeql_sarif} ]]; then
-        local sarif_sum="sarif summary ${codeql_sarif}" sarif_sum_output
-        sarif_sum_output=$(eval "${sarif_sum}")
-        if {
-            echo "${sarif_sum_output}" | grep -q 'error: 0'
-        } && {
-            echo "${sarif_sum_output}" | grep -q 'warning: 0'
-        } && {
-            echo "${sarif_sum_output}" | grep -q 'note: 0'
-        }; then
-            shell_command "${sarif_sum}"
-        else
-            shell_command "! ${sarif_sum}"
-        fi
-        shell_command "sarif html ${codeql_sarif} --output ${codeql_db}/index.html"
-    else
-        die "Could not find sarif file in codeql database."
-    fi
 
     exit "${STATUS}"
 }
@@ -636,7 +566,6 @@ function try_to_perform_single_choice_options()
     perform_clean_option
     perform_install_option
     perform_uninstall_option
-    perform_query_option
     perform_container_option
     perform_website_option
 }
@@ -652,6 +581,12 @@ function check_extra_dependencies()
     if [[ ${ARGS[spell]} != false ]]; then
         if ! command -v cspell >/dev/null 2>&1; then
             die "No cspell program. Please install it."
+        fi
+    fi
+
+    if [[ ${ARGS[statistics]} != false ]]; then
+        if ! command -v cloc >/dev/null 2>&1; then
+            die "No cloc program. Please install it."
         fi
     fi
 
@@ -676,15 +611,15 @@ FOO_BLD_UNITY is turned on."
         fi
     fi
 
-    if [[ ${ARGS[statistics]} != false ]]; then
-        if ! command -v cloc >/dev/null 2>&1; then
-            die "No cloc program. Please install it."
+    if [[ ${ARGS[query]} = false ]]; then
+        if ! command -v codeql >/dev/null 2>&1 || ! command -v sarif >/dev/null 2>&1; then
+            die "No codeql (including sarif) program. Please install it."
         fi
     fi
 
     if [[ ${ARGS[doxygen]} != false ]]; then
         if ! command -v doxygen >/dev/null 2>&1 || ! command -v dot >/dev/null 2>&1; then
-            die "No doxygen or dot program. Please install it."
+            die "No doxygen (including dot) program. Please install it."
         fi
     fi
 
@@ -719,6 +654,15 @@ function perform_spell_option()
     shell_command "cspell lint --config ./.cspell --show-context --no-cache"
 }
 
+function perform_statistics_option()
+{
+    if [[ ${ARGS[statistics]} = false ]]; then
+        return
+    fi
+
+    shell_command "printf \"C,C++,C/C++ Header\nBourne Shell\nPython\nRust\n\" | xargs -I {} -n 1 -P 1 \
+cloc --config ./.cloc --include-lang='{}'"
+}
 function perform_format_option()
 {
     if [[ ${ARGS[format]} = false ]]; then
@@ -816,14 +760,72 @@ function perform_lint_option()
     fi
 }
 
-function perform_statistics_option()
+function perform_query_option()
 {
-    if [[ ${ARGS[statistics]} = false ]]; then
+    if [[ ${ARGS[query]} = false ]]; then
         return
     fi
 
-    shell_command "printf \"C,C++,C/C++ Header\nBourne Shell\nPython\nRust\n\" | xargs -I {} -n 1 -P 1 \
-cloc --config ./.cloc --include-lang='{}'"
+    local build_script other_option
+    build_script=./${FOLDER[scr]}/$(basename "$0")
+    if [[ ${ARGS[release]} != false ]]; then
+        other_option=" --release"
+    fi
+    local rebuild_script=./${FOLDER[scr]}/.build_wrap
+    if [[ ! -f ${rebuild_script} ]]; then
+        shell_command "cat <<EOF >./${rebuild_script}
+#!/usr/bin/env bash
+
+export FOO_BLD_SCA=on
+$(realpath "$0") \"\\\$@\"
+EOF"
+        shell_command "chmod +x ${rebuild_script}"
+    fi
+
+    echo "Please confirm whether need to temporarily force a full recompile (using the default .build_env) \
+to improve accuracy. (y or n)"
+    local input
+    input=$(wait_until_get_input)
+    if echo "${input}" | grep -iq '^y'; then
+        echo "Yes"
+        build_script=${rebuild_script}
+        shell_command "rm -rf ./${FOLDER[bld]} ./${FOLDER[tst]}/${FOLDER[bld]}"
+    else
+        echo "No"
+    fi
+
+    local codeql_db=./${FOLDER[rep]}/sca/query
+    if [[ ! -d ${codeql_db} ]]; then
+        shell_command "mkdir -p ${codeql_db}"
+    fi
+    shell_command "codeql database create ${codeql_db} --codescanning-config=./.codeql --language=cpp --ram=2048 \
+--command='${build_script}${other_option}' --command='${build_script} --test${other_option}' --source-root=./ --overwrite"
+    local codeql_sarif=${codeql_db}/codeql.sarif
+    shell_command "codeql database analyze ${codeql_db} --format=sarif-latest --output=${codeql_sarif} --rerun \
+--ram=2048"
+    if echo "${input}" | grep -iq '^y'; then
+        build_script=./${FOLDER[scr]}/$(basename "$0")
+        shell_command "${build_script}${other_option} && ${build_script} --test${other_option}"
+    fi
+
+    if [[ -f ${codeql_sarif} ]]; then
+        local sarif_sum="sarif summary ${codeql_sarif}" sarif_sum_output
+        sarif_sum_output=$(eval "${sarif_sum}")
+        if {
+            echo "${sarif_sum_output}" | grep -q 'error: 0'
+        } && {
+            echo "${sarif_sum_output}" | grep -q 'warning: 0'
+        } && {
+            echo "${sarif_sum_output}" | grep -q 'note: 0'
+        }; then
+            shell_command "${sarif_sum}"
+        else
+            shell_command "! ${sarif_sum}"
+        fi
+        shell_command "sarif html ${codeql_sarif} --output ${codeql_db}/index.html"
+    else
+        die "Could not find sarif file in codeql database."
+    fi
 }
 
 function package_for_doxygen()
@@ -934,9 +936,10 @@ function try_to_perform_multiple_choice_options()
 
     perform_hook_option
     perform_spell_option
+    perform_statistics_option
     perform_format_option
     perform_lint_option
-    perform_statistics_option
+    perform_query_option
     perform_doxygen_option
     perform_browser_option
 }
@@ -1147,7 +1150,7 @@ function main()
 
     parse_parameters "$@"
     try_to_perform_single_choice_options
-    build_target "$@"
+    build_target
     try_to_perform_multiple_choice_options
 
     exit "${STATUS}"
