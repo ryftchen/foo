@@ -128,7 +128,7 @@ class Task:
             help="run after build\n- dbg    debug\n- rls    release",
         )
         parser.add_argument("-a", "--analyze", action="store_true", default=False, help="analyze run log only")
-        parser.add_argument("-d", "--dump", action="store_true", default=False, help="dump run tasks dictionary only")
+        parser.add_argument("-d", "--dump", action="store_true", default=False, help="dump run task dictionary only")
 
         args = parser.parse_args()
         self.apply_arguments(args)
@@ -256,8 +256,10 @@ class Task:
                 black = importlib.import_module("black")
                 formatted_content = black.format_str(orig_content, mode=black.FileMode(line_length=120))
                 run_dict_content.write(formatted_content)
+                print(formatted_content)
             except ImportError:
                 run_dict_content.write(orig_content)
+                print(orig_content)
             fcntl.flock(run_dict_content.fileno(), fcntl.LOCK_UN)
 
     def build_executable(self, build_cmd):
