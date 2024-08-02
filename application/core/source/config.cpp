@@ -212,7 +212,8 @@ utility::json::JSON getDefaultConfiguration()
 
     // NOLINTBEGIN (readability-magic-numbers)
     // clang-format off
-    return utility::json::JSON(
+    return utility::json::JSON
+    (
     {
         "activateHelper", true,
         "helperList", {
@@ -226,7 +227,8 @@ utility::json::JSON getDefaultConfiguration()
             }
         },
         "helperTimeout", 500
-    });
+    }
+    );
     // clang-format on
     // NOLINTEND (readability-magic-numbers)
 }

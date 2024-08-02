@@ -50,16 +50,17 @@ struct utility::reflection::TypeInfo<application::app_algo::AlgorithmChoice>
 {
     //! @brief Name.
     static constexpr std::string_view name{"app-algo"};
+    // clang-format off
     //! @brief Field list.
-    static constexpr FieldList fields{
-        // clang-format off
+    static constexpr FieldList fields
+    {
         COMMAND_REFLECT_SUB_CLI_FIELD(match   , m),
         COMMAND_REFLECT_SUB_CLI_FIELD(notation, n),
         COMMAND_REFLECT_SUB_CLI_FIELD(optimal , o),
         COMMAND_REFLECT_SUB_CLI_FIELD(search  , s),
         COMMAND_REFLECT_SUB_CLI_FIELD(sort    , S),
-        // clang-format on
     };
+    // clang-format on
     //! @brief Attribute list.
     static constexpr AttrList attrs{Attr{REFLECTION_STR("descr"), "apply algorithm"}};
 };
@@ -70,16 +71,17 @@ struct utility::reflection::TypeInfo<application::app_algo::MatchMethod>
 {
     //! @brief Name.
     static constexpr std::string_view name{"match"};
+    // clang-format off
     //! @brief Field list.
-    static constexpr FieldList fields{
-        // clang-format off
+    static constexpr FieldList fields
+    {
         COMMAND_REFLECT_CATEGORY_FIELD(rabinKarp       , rab),
         COMMAND_REFLECT_CATEGORY_FIELD(knuthMorrisPratt, knu),
         COMMAND_REFLECT_CATEGORY_FIELD(boyerMoore      , boy),
         COMMAND_REFLECT_CATEGORY_FIELD(horspool        , hor),
         COMMAND_REFLECT_CATEGORY_FIELD(sunday          , sun),
-        // clang-format on
     };
+    // clang-format on
     //! @brief Attribute list.
     static constexpr AttrList attrs{Attr{
         REFLECTION_STR("descr"),
@@ -98,13 +100,14 @@ struct utility::reflection::TypeInfo<application::app_algo::NotationMethod>
 {
     //! @brief Name.
     static constexpr std::string_view name{"notation"};
+    // clang-format off
     //! @brief Field list.
-    static constexpr FieldList fields{
-        // clang-format off
+    static constexpr FieldList fields
+    {
         COMMAND_REFLECT_CATEGORY_FIELD(prefix , pre),
         COMMAND_REFLECT_CATEGORY_FIELD(postfix, pos),
-        // clang-format on
     };
+    // clang-format on
     //! @brief Attribute list.
     static constexpr AttrList attrs{Attr{
         REFLECTION_STR("descr"),
@@ -120,15 +123,16 @@ struct utility::reflection::TypeInfo<application::app_algo::OptimalMethod>
 {
     //! @brief Name.
     static constexpr std::string_view name{"optimal"};
+    // clang-format off
     //! @brief Field list.
-    static constexpr FieldList fields{
-        // clang-format off
+    static constexpr FieldList fields
+    {
         COMMAND_REFLECT_CATEGORY_FIELD(gradient , gra),
         COMMAND_REFLECT_CATEGORY_FIELD(annealing, ann),
         COMMAND_REFLECT_CATEGORY_FIELD(particle , par),
         COMMAND_REFLECT_CATEGORY_FIELD(genetic  , gen),
-        // clang-format on
     };
+    // clang-format on
     //! @brief Attribute list.
     static constexpr AttrList attrs{Attr{
         REFLECTION_STR("descr"),
@@ -146,14 +150,15 @@ struct utility::reflection::TypeInfo<application::app_algo::SearchMethod>
 {
     //! @brief Name.
     static constexpr std::string_view name{"search"};
+    // clang-format off
     //! @brief Field list.
-    static constexpr FieldList fields{
-        // clang-format off
+    static constexpr FieldList fields
+    {
         COMMAND_REFLECT_CATEGORY_FIELD(binary       , bin),
         COMMAND_REFLECT_CATEGORY_FIELD(interpolation, int),
         COMMAND_REFLECT_CATEGORY_FIELD(fibonacci    , fib),
-        // clang-format on
     };
+    // clang-format on
     //! @brief Attribute list.
     static constexpr AttrList attrs{Attr{
         REFLECTION_STR("descr"),
@@ -170,9 +175,10 @@ struct utility::reflection::TypeInfo<application::app_algo::SortMethod>
 {
     //! @brief Name.
     static constexpr std::string_view name{"sort"};
+    // clang-format off
     //! @brief Field list.
-    static constexpr FieldList fields{
-        // clang-format off
+    static constexpr FieldList fields
+    {
         COMMAND_REFLECT_CATEGORY_FIELD(bubble   , bub),
         COMMAND_REFLECT_CATEGORY_FIELD(selection, sel),
         COMMAND_REFLECT_CATEGORY_FIELD(insertion, ins),
@@ -183,8 +189,8 @@ struct utility::reflection::TypeInfo<application::app_algo::SortMethod>
         COMMAND_REFLECT_CATEGORY_FIELD(counting , cou),
         COMMAND_REFLECT_CATEGORY_FIELD(bucket   , buc),
         COMMAND_REFLECT_CATEGORY_FIELD(radix    , rad),
-        // clang-format on
     };
+    // clang-format on
     //! @brief Attribute list.
     static constexpr AttrList attrs{Attr{
         REFLECTION_STR("descr"),
@@ -209,14 +215,15 @@ struct utility::reflection::TypeInfo<application::app_dp::DesignPatternChoice>
 {
     //! @brief Name.
     static constexpr std::string_view name{"app-dp"};
+    // clang-format off
     //! @brief Field list.
-    static constexpr FieldList fields{
-        // clang-format off
+    static constexpr FieldList fields
+    {
         COMMAND_REFLECT_SUB_CLI_FIELD(behavioral, b),
         COMMAND_REFLECT_SUB_CLI_FIELD(creational, c),
         COMMAND_REFLECT_SUB_CLI_FIELD(structural, s),
-        // clang-format on
     };
+    // clang-format on
     //! @brief Attribute list.
     static constexpr AttrList attrs{Attr{REFLECTION_STR("descr"), "apply design pattern"}};
 };
@@ -227,9 +234,10 @@ struct utility::reflection::TypeInfo<application::app_dp::BehavioralInstance>
 {
     //! @brief Name.
     static constexpr std::string_view name{"behavioral"};
+    // clang-format off
     //! @brief Field list.
-    static constexpr FieldList fields{
-        // clang-format off
+    static constexpr FieldList fields
+    {
         COMMAND_REFLECT_CATEGORY_FIELD(chainOfResponsibility, cha),
         COMMAND_REFLECT_CATEGORY_FIELD(command              , com),
         COMMAND_REFLECT_CATEGORY_FIELD(interpreter          , int),
@@ -241,8 +249,8 @@ struct utility::reflection::TypeInfo<application::app_dp::BehavioralInstance>
         COMMAND_REFLECT_CATEGORY_FIELD(strategy             , str),
         COMMAND_REFLECT_CATEGORY_FIELD(templateMethod       , tem),
         COMMAND_REFLECT_CATEGORY_FIELD(visitor              , vis),
-        // clang-format on
     };
+    // clang-format on
     //! @brief Attribute list.
     static constexpr AttrList attrs{Attr{
         REFLECTION_STR("descr"),
@@ -267,16 +275,17 @@ struct utility::reflection::TypeInfo<application::app_dp::CreationalInstance>
 {
     //! @brief Name.
     static constexpr std::string_view name{"creational"};
+    // clang-format off
     //! @brief Field list.
-    static constexpr FieldList fields{
-        // clang-format off
+    static constexpr FieldList fields
+    {
         COMMAND_REFLECT_CATEGORY_FIELD(abstractFactory, abs),
         COMMAND_REFLECT_CATEGORY_FIELD(builder        , bui),
         COMMAND_REFLECT_CATEGORY_FIELD(factoryMethod  , fac),
         COMMAND_REFLECT_CATEGORY_FIELD(prototype      , pro),
         COMMAND_REFLECT_CATEGORY_FIELD(singleton      , sin),
-        // clang-format on
     };
+    // clang-format on
     //! @brief Attribute list.
     static constexpr AttrList attrs{Attr{
         REFLECTION_STR("descr"),
@@ -295,9 +304,10 @@ struct utility::reflection::TypeInfo<application::app_dp::StructuralInstance>
 {
     //! @brief Name.
     static constexpr std::string_view name{"structural"};
+    // clang-format off
     //! @brief Field list.
-    static constexpr FieldList fields{
-        // clang-format off
+    static constexpr FieldList fields
+    {
         COMMAND_REFLECT_CATEGORY_FIELD(adapter  , ada),
         COMMAND_REFLECT_CATEGORY_FIELD(bridge   , bri),
         COMMAND_REFLECT_CATEGORY_FIELD(composite, com),
@@ -305,8 +315,8 @@ struct utility::reflection::TypeInfo<application::app_dp::StructuralInstance>
         COMMAND_REFLECT_CATEGORY_FIELD(facade   , fac),
         COMMAND_REFLECT_CATEGORY_FIELD(flyweight, fly),
         COMMAND_REFLECT_CATEGORY_FIELD(proxy    , pro),
-        // clang-format on
     };
+    // clang-format on
     //! @brief Attribute list.
     static constexpr AttrList attrs{Attr{
         REFLECTION_STR("descr"),
@@ -328,13 +338,14 @@ struct utility::reflection::TypeInfo<application::app_ds::DataStructureChoice>
 {
     //! @brief Name.
     static constexpr std::string_view name{"app-ds"};
+    // clang-format off
     //! @brief Field list.
-    static constexpr FieldList fields{
-        // clang-format off
+    static constexpr FieldList fields
+    {
         COMMAND_REFLECT_SUB_CLI_FIELD(linear, l),
         COMMAND_REFLECT_SUB_CLI_FIELD(tree  , t),
-        // clang-format on
     };
+    // clang-format on
     //! @brief Attribute list.
     static constexpr AttrList attrs{Attr{REFLECTION_STR("descr"), "apply data structure"}};
 };
@@ -345,14 +356,15 @@ struct utility::reflection::TypeInfo<application::app_ds::LinearInstance>
 {
     //! @brief Name.
     static constexpr std::string_view name{"linear"};
+    // clang-format off
     //! @brief Field list.
-    static constexpr FieldList fields{
-        // clang-format off
+    static constexpr FieldList fields
+    {
         COMMAND_REFLECT_CATEGORY_FIELD(linkedList, lin),
         COMMAND_REFLECT_CATEGORY_FIELD(stack     , sta),
         COMMAND_REFLECT_CATEGORY_FIELD(queue     , que),
-        // clang-format on
     };
+    // clang-format on
     //! @brief Attribute list.
     static constexpr AttrList attrs{Attr{
         REFLECTION_STR("descr"),
@@ -369,14 +381,15 @@ struct utility::reflection::TypeInfo<application::app_ds::TreeInstance>
 {
     //! @brief Name.
     static constexpr std::string_view name{"tree"};
+    // clang-format off
     //! @brief Field list.
-    static constexpr FieldList fields{
-        // clang-format off
+    static constexpr FieldList fields
+    {
         COMMAND_REFLECT_CATEGORY_FIELD(binarySearch       , bin),
         COMMAND_REFLECT_CATEGORY_FIELD(adelsonVelskyLandis, ade),
         COMMAND_REFLECT_CATEGORY_FIELD(splay              , spl),
-        // clang-format on
     };
+    // clang-format on
     //! @brief Attribute list.
     static constexpr AttrList attrs{Attr{
         REFLECTION_STR("descr"),
@@ -394,15 +407,16 @@ struct utility::reflection::TypeInfo<application::app_num::NumericChoice>
 {
     //! @brief Name.
     static constexpr std::string_view name{"app-num"};
+    // clang-format off
     //! @brief Field list.
-    static constexpr FieldList fields{
-        // clang-format off
+    static constexpr FieldList fields
+    {
         COMMAND_REFLECT_SUB_CLI_FIELD(arithmetic, a),
         COMMAND_REFLECT_SUB_CLI_FIELD(divisor   , d),
         COMMAND_REFLECT_SUB_CLI_FIELD(integral  , i),
         COMMAND_REFLECT_SUB_CLI_FIELD(prime     , p),
-        // clang-format on
     };
+    // clang-format on
     //! @brief Attribute list.
     static constexpr AttrList attrs{Attr{REFLECTION_STR("descr"), "apply numeric"}};
 };
@@ -413,15 +427,16 @@ struct utility::reflection::TypeInfo<application::app_num::ArithmeticMethod>
 {
     //! @brief Name.
     static constexpr std::string_view name{"arithmetic"};
+    // clang-format off
     //! @brief Field list.
-    static constexpr FieldList fields{
-        // clang-format off
+    static constexpr FieldList fields
+    {
         COMMAND_REFLECT_CATEGORY_FIELD(addition      , add),
         COMMAND_REFLECT_CATEGORY_FIELD(subtraction   , sub),
         COMMAND_REFLECT_CATEGORY_FIELD(multiplication, mul),
         COMMAND_REFLECT_CATEGORY_FIELD(division      , div),
-        // clang-format on
     };
+    // clang-format on
     //! @brief Attribute list.
     static constexpr AttrList attrs{Attr{
         REFLECTION_STR("descr"),
@@ -439,13 +454,14 @@ struct utility::reflection::TypeInfo<application::app_num::DivisorMethod>
 {
     //! @brief Name.
     static constexpr std::string_view name{"divisor"};
+    // clang-format off
     //! @brief Field list.
-    static constexpr FieldList fields{
-        // clang-format off
+    static constexpr FieldList fields
+    {
         COMMAND_REFLECT_CATEGORY_FIELD(euclidean, euc),
         COMMAND_REFLECT_CATEGORY_FIELD(stein    , ste),
-        // clang-format on
     };
+    // clang-format on
     //! @brief Attribute list.
     static constexpr AttrList attrs{Attr{
         REFLECTION_STR("descr"),
@@ -461,16 +477,17 @@ struct utility::reflection::TypeInfo<application::app_num::IntegralMethod>
 {
     //! @brief Name.
     static constexpr std::string_view name{"integral"};
+    // clang-format off
     //! @brief Field list.
-    static constexpr FieldList fields{
-        // clang-format off
+    static constexpr FieldList fields
+    {
         COMMAND_REFLECT_CATEGORY_FIELD(trapezoidal, tra),
         COMMAND_REFLECT_CATEGORY_FIELD(simpson    , sim),
         COMMAND_REFLECT_CATEGORY_FIELD(romberg    , rom),
         COMMAND_REFLECT_CATEGORY_FIELD(gauss      , gau),
         COMMAND_REFLECT_CATEGORY_FIELD(monteCarlo , mon),
-        // clang-format on
     };
+    // clang-format on
     //! @brief Attribute list.
     static constexpr AttrList attrs{Attr{
         REFLECTION_STR("descr"),
@@ -489,13 +506,14 @@ struct utility::reflection::TypeInfo<application::app_num::PrimeMethod>
 {
     //! @brief Name.
     static constexpr std::string_view name{"prime"};
+    // clang-format off
     //! @brief Field list.
-    static constexpr FieldList fields{
-        // clang-format off
+    static constexpr FieldList fields
+    {
         COMMAND_REFLECT_CATEGORY_FIELD(eratosthenes, era),
         COMMAND_REFLECT_CATEGORY_FIELD(euler       , eul),
-        // clang-format on
     };
+    // clang-format on
     //! @brief Attribute list.
     static constexpr AttrList attrs{Attr{
         REFLECTION_STR("descr"),
@@ -925,7 +943,8 @@ private:
 
     // clang-format off
     //! @brief Mapping table of all basic categories.
-    const std::map<CategoryName, void (Command::*)() const> basicCategories{
+    const std::map<CategoryName, void (Command::*)() const> basicCategories
+    {
         // - Category -+----------- Functor -----------
         // ------------+-------------------------------
         { "console"    , &Command::executeInConsole  },
@@ -934,31 +953,9 @@ private:
         { "version"    , &Command::showVersionIcon   }
         // ------------+--------------------------------
     };
-    //! @brief Mapping table of all regular choices.
-    RegularChoiceMap regularChoices{
-        // // - Sub-CLI -+--- Category ---+---------------- Choice ----------------+-------------- Event --------------
-        // // -----------+----------------+----------------------------------------+-----------------------------------
-        // { "app-algo"  , {{ "match"      , {{ "rab", "knu", "boy", "hor", "sun" } , app_algo::MatchMethod{}      }},
-        //                  { "notation"   , {{ "pre", "pos"                      } , app_algo::NotationMethod{}   }},
-        //                  { "optimal"    , {{ "gra", "ann", "par", "gen"        } , app_algo::OptimalMethod{}    }},
-        //                  { "search"     , {{ "bin", "int", "fib"               } , app_algo::SearchMethod{}     }},
-        //                  { "sort"       , {{ "bub", "sel", "ins", "she", "mer",
-        //                                      "qui", "hea", "cou", "buc", "rad" } , app_algo::SortMethod{}       }}}},
-        // { "app-dp"    , {{ "behavioral" , {{ "cha", "com", "int", "ite", "med",
-        //                                      "mem", "obs", "sta", "str", "tem",
-        //                                      "vis"                             } , app_dp::BehavioralInstance{} }},
-        //                  { "creational" , {{ "abs", "bui", "fac", "pro", "sin" } , app_dp::CreationalInstance{} }},
-        //                  { "structural" , {{ "ada", "bri", "com", "dec", "fac",
-        //                                      "fly", "pro"                      } , app_dp::StructuralInstance{} }}}},
-        // { "app-ds"    , {{ "linear"     , {{ "lin", "sta", "que"               } , app_ds::LinearInstance{}     }},
-        //                  { "tree"       , {{ "bin", "ade", "spl"               } , app_ds::TreeInstance{}       }}}},
-        // { "app-num"   , {{ "arithmetic" , {{ "add", "sub", "mul", "div"        } , app_num::ArithmeticMethod{}  }},
-        //                  { "divisor"    , {{ "euc", "ste"                      } , app_num::DivisorMethod{}     }},
-        //                  { "integral"   , {{ "tra", "sim", "rom", "gau", "mon" } , app_num::IntegralMethod{}    }},
-        //                  { "prime"      , {{ "era", "eul"                      } , app_num::PrimeMethod{}       }}}}
-        // // -----------+----------------+----------------------------------------+-----------------------------------
-    };
     // clang-format on
+    //! @brief Mapping table of all regular choices. Fill as needed.
+    RegularChoiceMap regularChoices{};
 
     //! @brief Manage basic categories.
     class BasicManager

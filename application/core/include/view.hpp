@@ -247,7 +247,8 @@ private:
     const std::uint32_t timeoutPeriod{static_cast<std::uint32_t>(CONFIG_HELPER_TIMEOUT)};
     // clang-format off
     //! @brief Mapping table of all viewer options.
-    const OptionMap optionDispatcher{
+    const OptionMap optionDispatcher
+    {
         // - Option -+---------------------- Help ----------------------+------- Build Packet -------
         // ----------+--------------------------------------------------+----------------------------
         { "depend"   , { "show associated library list"                  , &buildTLVPacket2Depend  }},
@@ -394,7 +395,8 @@ private:
     void doRollback();
     // clang-format off
     //! @brief Alias for the transition map of the viewer.
-    using TransitionMap = Map<
+    using TransitionMap = Map
+    <
         // --- Source ---+---- Event ----+--- Target ---+--------- Action ---------+--- Guard (Optional) ---
         // --------------+---------------+--------------+--------------------------+------------------------
         Row< State::init , CreateServer  , State::idle  , &View::createViewServer                         >,
@@ -408,7 +410,7 @@ private:
         Row< State::work , Relaunch      , State::init  , &View::doRollback                               >,
         Row< State::hold , Relaunch      , State::init  , &View::doRollback                               >
         // --------------+---------------+--------------+--------------------------+------------------------
-        >;
+    >;
     // clang-format on
     //! @brief Await notification for rollback.
     //! @return whether rollback is required or not
