@@ -1044,7 +1044,7 @@ e.g. with \"distccd --daemon --allow ${local_client}\"."
         CMAKE_CACHE_ENTRY="${CMAKE_CACHE_ENTRY} -D TOOLCHAIN_DISTCC=ON"
         local distcc_folder=".distcc"
         if [[ ! -d ~/${distcc_folder} ]]; then
-            shell_command "mkdir ~/${distcc_folder}"
+            shell_command "mkdir -p ~/${distcc_folder}"
         fi
         export DISTCC_HOSTS="localhost ${DEV_OPT[distcc]}" DISTCC_LOG=~/${distcc_folder}/distcc.log
     fi
@@ -1056,7 +1056,7 @@ e.g. with \"distccd --daemon --allow ${local_client}\"."
     fi
     if [[ ${DEV_OPT[tmpfs]} = true ]]; then
         if [[ ! -d ./${tmpfs_subfolder} ]]; then
-            shell_command "mkdir ./${tmpfs_subfolder}"
+            shell_command "mkdir -p ./${tmpfs_subfolder}"
         fi
         if ! df -h -t tmpfs | grep -q "${FOLDER[proj]}/${tmpfs_subfolder}" 2>/dev/null; then
             shell_command "${SUDO}mount -t tmpfs -o size=${tmpfs_size} tmpfs ./${tmpfs_subfolder}"
