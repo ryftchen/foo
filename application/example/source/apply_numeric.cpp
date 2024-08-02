@@ -34,14 +34,14 @@
 namespace application::app_num
 {
 //! @brief Alias for Category.
-using Category = NumericTask::Category;
+using Category = NumericChoice::Category;
 
-//! @brief Get the numeric task.
-//! @return reference of the NumericTask object
-NumericTask& getTask()
+//! @brief Get the numeric choice manager.
+//! @return reference of the NumericChoice object
+NumericChoice& manager()
 {
-    static NumericTask task{};
-    return task;
+    static NumericChoice manager{};
+    return manager;
 }
 
 //! @brief Get the task name curried.
@@ -49,7 +49,7 @@ NumericTask& getTask()
 static const auto& getTaskNameCurried()
 {
     static const auto curried =
-        utility::currying::curry(command::presetTaskName, utility::reflection::TypeInfo<NumericTask>::name);
+        utility::currying::curry(command::presetTaskName, utility::reflection::TypeInfo<NumericChoice>::name);
     return curried;
 }
 
@@ -73,23 +73,23 @@ constexpr std::string_view toString(const Category cat)
     }
 }
 
-//! @brief Get the bit flags of the category in numeric tasks.
+//! @brief Get the bit flags of the category in numeric choices.
 //! @tparam Cat - the specific value of Category enum
 //! @return reference of the category bit flags
 template <Category Cat>
 constexpr auto& getCategoryOpts()
 {
     return std::invoke(
-        utility::reflection::TypeInfo<NumericTask>::fields.find(REFLECTION_STR(toString(Cat))).value, getTask());
+        utility::reflection::TypeInfo<NumericChoice>::fields.find(REFLECTION_STR(toString(Cat))).value, manager());
 }
 
-//! @brief Get the alias of the category in numeric tasks.
+//! @brief Get the alias of the category in numeric choices.
 //! @tparam Cat - the specific value of Category enum
 //! @return alias of the category name
 template <Category Cat>
 constexpr std::string_view getCategoryAlias()
 {
-    constexpr auto attr = utility::reflection::TypeInfo<NumericTask>::fields.find(REFLECTION_STR(toString(Cat)))
+    constexpr auto attr = utility::reflection::TypeInfo<NumericChoice>::fields.find(REFLECTION_STR(toString(Cat)))
                               .attrs.find(REFLECTION_STR("alias"));
     static_assert(attr.hasValue);
     return attr.value;
@@ -112,7 +112,7 @@ consteval std::size_t abbrVal(const T method)
             if (field.name == toString(method))
             {
                 static_assert(1 == field.attrs.size);
-                auto attr = field.attrs.find(REFLECTION_STR("task"));
+                auto attr = field.attrs.find(REFLECTION_STR("choice"));
                 static_assert(attr.hasValue);
                 value = utility::common::operator""_bkdrHash(attr.value, 0);
             }
@@ -120,7 +120,7 @@ consteval std::size_t abbrVal(const T method)
     return value;
 }
 
-//! @brief Get the title of a particular method in numeric tasks.
+//! @brief Get the title of a particular method in numeric choices.
 //! @tparam T - type of target method
 //! @param method - target method
 //! @return initial capitalized title
@@ -272,9 +272,38 @@ catch (const std::exception& err)
 }
 } // namespace arithmetic
 
-//! @brief Run arithmetic tasks.
+//! @brief Update arithmetic-related choice.
+//! @param target - target method
+template <>
+void updateChoice<ArithmeticMethod>(const std::string& target)
+{
+    constexpr auto category = Category::arithmetic;
+    auto& bitFlag = getCategoryOpts<category>();
+
+    switch (utility::common::bkdrHash(target.c_str()))
+    {
+        case abbrVal(ArithmeticMethod::addition):
+            bitFlag.set(ArithmeticMethod::addition);
+            break;
+        case abbrVal(ArithmeticMethod::subtraction):
+            bitFlag.set(ArithmeticMethod::subtraction);
+            break;
+        case abbrVal(ArithmeticMethod::multiplication):
+            bitFlag.set(ArithmeticMethod::multiplication);
+            break;
+        case abbrVal(ArithmeticMethod::division):
+            bitFlag.set(ArithmeticMethod::division);
+            break;
+        default:
+            bitFlag.reset();
+            throw std::runtime_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
+    }
+}
+
+//! @brief Run arithmetic-related choices.
 //! @param candidates - container for the candidate target methods
-void runArithmeticTasks(const std::vector<std::string>& candidates)
+template <>
+void runChoices<ArithmeticMethod>(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::arithmetic;
     const auto& bitFlag = getCategoryOpts<category>();
@@ -331,33 +360,6 @@ void runArithmeticTasks(const std::vector<std::string>& candidates)
     APP_NUM_PRINT_TASK_END_TITLE(category);
 }
 
-//! @brief Update arithmetic methods in tasks.
-//! @param target - target method
-void updateArithmeticTask(const std::string& target)
-{
-    constexpr auto category = Category::arithmetic;
-    auto& bitFlag = getCategoryOpts<category>();
-
-    switch (utility::common::bkdrHash(target.c_str()))
-    {
-        case abbrVal(ArithmeticMethod::addition):
-            bitFlag.set(ArithmeticMethod::addition);
-            break;
-        case abbrVal(ArithmeticMethod::subtraction):
-            bitFlag.set(ArithmeticMethod::subtraction);
-            break;
-        case abbrVal(ArithmeticMethod::multiplication):
-            bitFlag.set(ArithmeticMethod::multiplication);
-            break;
-        case abbrVal(ArithmeticMethod::division):
-            bitFlag.set(ArithmeticMethod::division);
-            break;
-        default:
-            bitFlag.reset();
-            throw std::runtime_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
-    }
-}
-
 namespace divisor
 {
 //! @brief Display the contents of the divisor result.
@@ -402,9 +404,32 @@ catch (const std::exception& err)
 }
 } // namespace divisor
 
-//! @brief Run divisor tasks.
+//! @brief Update divisor-related choice.
+//! @param target - target method
+template <>
+void updateChoice<DivisorMethod>(const std::string& target)
+{
+    constexpr auto category = Category::divisor;
+    auto& bitFlag = getCategoryOpts<category>();
+
+    switch (utility::common::bkdrHash(target.c_str()))
+    {
+        case abbrVal(DivisorMethod::euclidean):
+            bitFlag.set(DivisorMethod::euclidean);
+            break;
+        case abbrVal(DivisorMethod::stein):
+            bitFlag.set(DivisorMethod::stein);
+            break;
+        default:
+            bitFlag.reset();
+            throw std::runtime_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
+    }
+}
+
+//! @brief Run divisor-related choices.
 //! @param candidates - container for the candidate target methods
-void runDivisorTasks(const std::vector<std::string>& candidates)
+template <>
+void runChoices<DivisorMethod>(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::divisor;
     const auto& bitFlag = getCategoryOpts<category>();
@@ -452,27 +477,6 @@ void runDivisorTasks(const std::vector<std::string>& candidates)
 
     pooling.deleteElement(threads);
     APP_NUM_PRINT_TASK_END_TITLE(category);
-}
-
-//! @brief Update divisor methods in tasks.
-//! @param target - target method
-void updateDivisorTask(const std::string& target)
-{
-    constexpr auto category = Category::divisor;
-    auto& bitFlag = getCategoryOpts<category>();
-
-    switch (utility::common::bkdrHash(target.c_str()))
-    {
-        case abbrVal(DivisorMethod::euclidean):
-            bitFlag.set(DivisorMethod::euclidean);
-            break;
-        case abbrVal(DivisorMethod::stein):
-            bitFlag.set(DivisorMethod::stein);
-            break;
-        default:
-            bitFlag.reset();
-            throw std::runtime_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
-    }
 }
 
 namespace integral
@@ -553,9 +557,41 @@ catch (const std::exception& err)
 }
 } // namespace integral
 
-//! @brief Run integral tasks.
+//! @brief Update integral-related choice.
+//! @param target - target method
+template <>
+void updateChoice<IntegralMethod>(const std::string& target)
+{
+    constexpr auto category = Category::integral;
+    auto& bitFlag = getCategoryOpts<category>();
+
+    switch (utility::common::bkdrHash(target.c_str()))
+    {
+        case abbrVal(IntegralMethod::trapezoidal):
+            bitFlag.set(IntegralMethod::trapezoidal);
+            break;
+        case abbrVal(IntegralMethod::simpson):
+            bitFlag.set(IntegralMethod::simpson);
+            break;
+        case abbrVal(IntegralMethod::romberg):
+            bitFlag.set(IntegralMethod::romberg);
+            break;
+        case abbrVal(IntegralMethod::gauss):
+            bitFlag.set(IntegralMethod::gauss);
+            break;
+        case abbrVal(IntegralMethod::monteCarlo):
+            bitFlag.set(IntegralMethod::monteCarlo);
+            break;
+        default:
+            bitFlag.reset();
+            throw std::runtime_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
+    }
+}
+
+//! @brief Run integral-related choices.
 //! @param candidates - container for the candidate target methods
-void runIntegralTasks(const std::vector<std::string>& candidates)
+template <>
+void runChoices<IntegralMethod>(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::integral;
     const auto& bitFlag = getCategoryOpts<category>();
@@ -633,36 +669,6 @@ void runIntegralTasks(const std::vector<std::string>& candidates)
     APP_NUM_PRINT_TASK_END_TITLE(category);
 }
 
-//! @brief Update integral methods in tasks.
-//! @param target - target method
-void updateIntegralTask(const std::string& target)
-{
-    constexpr auto category = Category::integral;
-    auto& bitFlag = getCategoryOpts<category>();
-
-    switch (utility::common::bkdrHash(target.c_str()))
-    {
-        case abbrVal(IntegralMethod::trapezoidal):
-            bitFlag.set(IntegralMethod::trapezoidal);
-            break;
-        case abbrVal(IntegralMethod::simpson):
-            bitFlag.set(IntegralMethod::simpson);
-            break;
-        case abbrVal(IntegralMethod::romberg):
-            bitFlag.set(IntegralMethod::romberg);
-            break;
-        case abbrVal(IntegralMethod::gauss):
-            bitFlag.set(IntegralMethod::gauss);
-            break;
-        case abbrVal(IntegralMethod::monteCarlo):
-            bitFlag.set(IntegralMethod::monteCarlo);
-            break;
-        default:
-            bitFlag.reset();
-            throw std::runtime_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
-    }
-}
-
 namespace prime
 {
 //! @brief Display the contents of the prime result.
@@ -707,9 +713,32 @@ catch (const std::exception& err)
 }
 } // namespace prime
 
-//! @brief Run prime tasks.
+//! @brief Update prime-related choice.
+//! @param target - target method
+template <>
+void updateChoice<PrimeMethod>(const std::string& target)
+{
+    constexpr auto category = Category::prime;
+    auto& bitFlag = getCategoryOpts<category>();
+
+    switch (utility::common::bkdrHash(target.c_str()))
+    {
+        case abbrVal(PrimeMethod::eratosthenes):
+            bitFlag.set(PrimeMethod::eratosthenes);
+            break;
+        case abbrVal(PrimeMethod::euler):
+            bitFlag.set(PrimeMethod::euler);
+            break;
+        default:
+            bitFlag.reset();
+            throw std::runtime_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
+    }
+}
+
+//! @brief Run prime-related choices.
 //! @param candidates - container for the candidate target methods
-void runPrimeTasks(const std::vector<std::string>& candidates)
+template <>
+void runChoices<PrimeMethod>(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::prime;
     const auto& bitFlag = getCategoryOpts<category>();
@@ -756,26 +785,5 @@ void runPrimeTasks(const std::vector<std::string>& candidates)
 
     pooling.deleteElement(threads);
     APP_NUM_PRINT_TASK_END_TITLE(category);
-}
-
-//! @brief Update prime methods in tasks.
-//! @param target - target method
-void updatePrimeTask(const std::string& target)
-{
-    constexpr auto category = Category::prime;
-    auto& bitFlag = getCategoryOpts<category>();
-
-    switch (utility::common::bkdrHash(target.c_str()))
-    {
-        case abbrVal(PrimeMethod::eratosthenes):
-            bitFlag.set(PrimeMethod::eratosthenes);
-            break;
-        case abbrVal(PrimeMethod::euler):
-            bitFlag.set(PrimeMethod::euler);
-            break;
-        default:
-            bitFlag.reset();
-            throw std::runtime_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
-    }
 }
 } // namespace application::app_num

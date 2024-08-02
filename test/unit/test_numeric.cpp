@@ -22,8 +22,8 @@ namespace test // NOLINT (modernize-concat-nested-namespaces)
 namespace tst_num
 {
 using namespace application::app_num; // NOLINT (google-build-using-namespace)
-//! @brief Alias for the enumeration of numeric tasks.
-using Category = NumericTask::Category;
+//! @brief Alias for the enumeration of numeric choices.
+using Category = NumericChoice::Category;
 
 //! @brief Test base of arithmetic.
 class ArithmeticTestBase : public ::testing::Test

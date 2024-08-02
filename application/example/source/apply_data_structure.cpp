@@ -34,14 +34,14 @@
 namespace application::app_ds
 {
 //! @brief Alias for Category.
-using Category = DataStructureTask::Category;
+using Category = DataStructureChoice::Category;
 
-//! @brief Get the data structure task.
-//! @return reference of the DataStructureTask object
-DataStructureTask& getTask()
+//! @brief Get the data structure choice manager.
+//! @return reference of the DataStructureChoice object
+DataStructureChoice& manager()
 {
-    static DataStructureTask task{};
-    return task;
+    static DataStructureChoice manager{};
+    return manager;
 }
 
 //! @brief Get the task name curried.
@@ -49,7 +49,7 @@ DataStructureTask& getTask()
 static const auto& getTaskNameCurried()
 {
     static const auto curried =
-        utility::currying::curry(command::presetTaskName, utility::reflection::TypeInfo<DataStructureTask>::name);
+        utility::currying::curry(command::presetTaskName, utility::reflection::TypeInfo<DataStructureChoice>::name);
     return curried;
 }
 
@@ -69,23 +69,24 @@ constexpr std::string_view toString(const Category cat)
     }
 }
 
-//! @brief Get the bit flags of the category in data structure tasks.
+//! @brief Get the bit flags of the category in data structure choices.
 //! @tparam Cat - the specific value of Category enum
 //! @return reference of the category bit flags
 template <Category Cat>
 constexpr auto& getCategoryOpts()
 {
     return std::invoke(
-        utility::reflection::TypeInfo<DataStructureTask>::fields.find(REFLECTION_STR(toString(Cat))).value, getTask());
+        utility::reflection::TypeInfo<DataStructureChoice>::fields.find(REFLECTION_STR(toString(Cat))).value,
+        manager());
 }
 
-//! @brief Get the alias of the category in data structure tasks.
+//! @brief Get the alias of the category in data structure choices.
 //! @tparam Cat - the specific value of Category enum
 //! @return alias of the category name
 template <Category Cat>
 constexpr std::string_view getCategoryAlias()
 {
-    constexpr auto attr = utility::reflection::TypeInfo<DataStructureTask>::fields.find(REFLECTION_STR(toString(Cat)))
+    constexpr auto attr = utility::reflection::TypeInfo<DataStructureChoice>::fields.find(REFLECTION_STR(toString(Cat)))
                               .attrs.find(REFLECTION_STR("alias"));
     static_assert(attr.hasValue);
     return attr.value;
@@ -108,7 +109,7 @@ consteval std::size_t abbrVal(const T instance)
             if (field.name == toString(instance))
             {
                 static_assert(1 == field.attrs.size);
-                auto attr = field.attrs.find(REFLECTION_STR("task"));
+                auto attr = field.attrs.find(REFLECTION_STR("choice"));
                 static_assert(attr.hasValue);
                 value = utility::common::operator""_bkdrHash(attr.value, 0);
             }
@@ -116,7 +117,7 @@ consteval std::size_t abbrVal(const T instance)
     return value;
 }
 
-//! @brief Get the title of a particular instance in data structure tasks.
+//! @brief Get the title of a particular instance in data structure choices.
 //! @tparam T - type of target instance
 //! @param instance - target instance
 //! @return initial capitalized title
@@ -212,9 +213,35 @@ catch (const std::exception& err)
 }
 } // namespace linear
 
-//! @brief Run linear tasks.
+//! @brief Update linear-related choice.
+//! @param target - target instance
+template <>
+void updateChoice<LinearInstance>(const std::string& target)
+{
+    constexpr auto category = Category::linear;
+    auto& bitFlag = getCategoryOpts<category>();
+
+    switch (utility::common::bkdrHash(target.c_str()))
+    {
+        case abbrVal(LinearInstance::linkedList):
+            bitFlag.set(LinearInstance::linkedList);
+            break;
+        case abbrVal(LinearInstance::stack):
+            bitFlag.set(LinearInstance::stack);
+            break;
+        case abbrVal(LinearInstance::queue):
+            bitFlag.set(LinearInstance::queue);
+            break;
+        default:
+            bitFlag.reset();
+            throw std::runtime_error("Unexpected " + std::string{toString(category)} + " instance: " + target + '.');
+    }
+}
+
+//! @brief Run linear-related choices.
 //! @param candidates - container for the candidate target instances
-void runLinearTasks(const std::vector<std::string>& candidates)
+template <>
+void runChoices<LinearInstance>(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::linear;
     const auto& bitFlag = getCategoryOpts<category>();
@@ -265,30 +292,6 @@ void runLinearTasks(const std::vector<std::string>& candidates)
     APP_DS_PRINT_TASK_END_TITLE(category);
 }
 
-//! @brief Update linear instances in tasks.
-//! @param target - target instance
-void updateLinearTask(const std::string& target)
-{
-    constexpr auto category = Category::linear;
-    auto& bitFlag = getCategoryOpts<category>();
-
-    switch (utility::common::bkdrHash(target.c_str()))
-    {
-        case abbrVal(LinearInstance::linkedList):
-            bitFlag.set(LinearInstance::linkedList);
-            break;
-        case abbrVal(LinearInstance::stack):
-            bitFlag.set(LinearInstance::stack);
-            break;
-        case abbrVal(LinearInstance::queue):
-            bitFlag.set(LinearInstance::queue);
-            break;
-        default:
-            bitFlag.reset();
-            throw std::runtime_error("Unexpected " + std::string{toString(category)} + " instance: " + target + '.');
-    }
-}
-
 namespace tree
 {
 //! @brief Display the contents of the tree result.
@@ -333,9 +336,35 @@ catch (const std::exception& err)
 }
 } // namespace tree
 
-//! @brief Run tree tasks.
+//! @brief Update tree-related choice.
+//! @param target - target instance
+template <>
+void updateChoice<TreeInstance>(const std::string& target)
+{
+    constexpr auto category = Category::tree;
+    auto& bitFlag = getCategoryOpts<category>();
+
+    switch (utility::common::bkdrHash(target.c_str()))
+    {
+        case abbrVal(TreeInstance::binarySearch):
+            bitFlag.set(TreeInstance::binarySearch);
+            break;
+        case abbrVal(TreeInstance::adelsonVelskyLandis):
+            bitFlag.set(TreeInstance::adelsonVelskyLandis);
+            break;
+        case abbrVal(TreeInstance::splay):
+            bitFlag.set(TreeInstance::splay);
+            break;
+        default:
+            bitFlag.reset();
+            throw std::runtime_error("Unexpected " + std::string{toString(category)} + " instance: " + target + '.');
+    }
+}
+
+//! @brief Run tree-related choices.
 //! @param candidates - container for the candidate target instances
-void runTreeTasks(const std::vector<std::string>& candidates)
+template <>
+void runChoices<TreeInstance>(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::tree;
     const auto& bitFlag = getCategoryOpts<category>();
@@ -384,29 +413,5 @@ void runTreeTasks(const std::vector<std::string>& candidates)
 
     pooling.deleteElement(threads);
     APP_DS_PRINT_TASK_END_TITLE(category);
-}
-
-//! @brief Update tree instances in tasks.
-//! @param target - target instance
-void updateTreeTask(const std::string& target)
-{
-    constexpr auto category = Category::tree;
-    auto& bitFlag = getCategoryOpts<category>();
-
-    switch (utility::common::bkdrHash(target.c_str()))
-    {
-        case abbrVal(TreeInstance::binarySearch):
-            bitFlag.set(TreeInstance::binarySearch);
-            break;
-        case abbrVal(TreeInstance::adelsonVelskyLandis):
-            bitFlag.set(TreeInstance::adelsonVelskyLandis);
-            break;
-        case abbrVal(TreeInstance::splay):
-            bitFlag.set(TreeInstance::splay);
-            break;
-        default:
-            bitFlag.reset();
-            throw std::runtime_error("Unexpected " + std::string{toString(category)} + " instance: " + target + '.');
-    }
 }
 } // namespace application::app_ds

@@ -143,11 +143,11 @@ struct Bottom<SortMethod>
     static constexpr std::uint8_t value{10};
 };
 
-//! @brief Manage algorithm tasks.
-class AlgorithmTask
+//! @brief Manage algorithm choices.
+class AlgorithmChoice
 {
 public:
-    //! @brief Enumerate specific algorithm tasks.
+    //! @brief Enumerate specific algorithm choices.
     enum Category : std::uint8_t
     {
         //! @brief Match.
@@ -173,13 +173,13 @@ public:
     //! @brief Bit flags for managing sort methods.
     std::bitset<Bottom<SortMethod>::value> sortOpts{};
 
-    //! @brief Check whether any algorithm tasks do not exist.
-    //! @return any algorithm tasks do not exist or exist
+    //! @brief Check whether any algorithm choices do not exist.
+    //! @return any algorithm choices do not exist or exist
     [[nodiscard]] inline bool empty() const
     {
         return matchOpts.none() && notationOpts.none() && optimalOpts.none() && searchOpts.none() && sortOpts.none();
     }
-    //! @brief Reset bit flags that manage algorithm tasks.
+    //! @brief Reset bit flags that manage algorithm choices.
     inline void reset()
     {
         matchOpts.reset();
@@ -219,7 +219,18 @@ protected:
         return os;
     }
 };
-extern AlgorithmTask& getTask();
+extern AlgorithmChoice& manager();
+
+//! @brief Update choice.
+//! @tparam T - type of target method
+//! @param target - target method
+template <class T>
+void updateChoice(const std::string& target);
+//! @brief Run choices.
+//! @tparam T - type of target method
+//! @param candidates - container for the candidate target methods
+template <class T>
+void runChoices(const std::vector<std::string>& candidates);
 
 //! @brief Apply match.
 namespace match
@@ -400,8 +411,10 @@ private:
     }
 };
 } // namespace match
-extern void runMatchTasks(const std::vector<std::string>& candidates);
-extern void updateMatchTask(const std::string& target);
+template <>
+void updateChoice<MatchMethod>(const std::string& target);
+template <>
+void runChoices<MatchMethod>(const std::vector<std::string>& candidates);
 
 //! @brief Apply notation.
 namespace notation
@@ -454,8 +467,10 @@ private:
     const std::string_view infixNotation{};
 };
 } // namespace notation
-extern void runNotationTasks(const std::vector<std::string>& candidates);
-extern void updateNotationTask(const std::string& target);
+template <>
+void updateChoice<NotationMethod>(const std::string& target);
+template <>
+void runChoices<NotationMethod>(const std::vector<std::string>& candidates);
 
 //! @brief Apply optimal.
 namespace optimal
@@ -541,7 +556,7 @@ public:
 };
 
 //! @brief Function object's helper type for the visitor.
-//! @tparam Ts - type of visitor
+//! @tparam Ts - type of visitors
 template <class... Ts>
 struct FuncOverloaded : Ts...
 {
@@ -549,7 +564,7 @@ struct FuncOverloaded : Ts...
 };
 
 //! @brief Explicit deduction guide for FuncOverloaded.
-//! @tparam Ts - type of visitor
+//! @tparam Ts - type of visitors
 template <class... Ts>
 FuncOverloaded(Ts...) -> FuncOverloaded<Ts...>;
 
@@ -602,16 +617,16 @@ struct FuncMapHash
 };
 
 //! @brief Alias for the optimal function.
-//! @tparam Ts - type of function
+//! @tparam Ts - type of functions
 template <class... Ts>
 using OptimalFunc = std::variant<Ts...>;
 //! @brief Alias for the optimal function map.
-//! @tparam Ts - type of function
+//! @tparam Ts - type of functions
 template <class... Ts>
 using OptimalFuncMap = std::unordered_multimap<FuncRange<double, double>, OptimalFunc<Ts...>, FuncMapHash>;
 
 //! @brief Builder for the input.
-//! @tparam Ts - type of function
+//! @tparam Ts - type of functions
 template <class... Ts>
 class InputBuilder
 {
@@ -652,8 +667,10 @@ private:
     const OptimalFuncMap<Ts...> functionMap{};
 };
 } // namespace optimal
-extern void runOptimalTasks(const std::vector<std::string>& candidates);
-extern void updateOptimalTask(const std::string& target);
+template <>
+void updateChoice<OptimalMethod>(const std::string& target);
+template <>
+void runChoices<OptimalMethod>(const std::vector<std::string>& candidates);
 
 //! @brief Apply search.
 namespace search
@@ -869,8 +886,10 @@ private:
     }
 };
 } // namespace search
-extern void runSearchTasks(const std::vector<std::string>& candidates);
-extern void updateSearchTask(const std::string& target);
+template <>
+void updateChoice<SearchMethod>(const std::string& target);
+template <>
+void runChoices<SearchMethod>(const std::vector<std::string>& candidates);
 
 //! @brief Apply sort.
 namespace sort
@@ -1106,7 +1125,9 @@ private:
     }
 };
 } // namespace sort
-extern void runSortTasks(const std::vector<std::string>& candidates);
-extern void updateSortTask(const std::string& target);
+template <>
+void updateChoice<SortMethod>(const std::string& target);
+template <>
+void runChoices<SortMethod>(const std::vector<std::string>& candidates);
 } // namespace app_algo
 } // namespace application

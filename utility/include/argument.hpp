@@ -233,11 +233,11 @@ public:
     //! @brief Set help message.
     //! @param content - help message content
     //! @return reference of the Register object
-    Register& help(const std::string& content);
+    Register& help(const std::string_view content);
     //! @brief Set metavar message.
     //! @param content - metavar message content
     //! @return reference of the Register object
-    Register& metavar(const std::string& content);
+    Register& metavar(const std::string_view content);
     //! @brief Set default value.
     //! @tparam T - type of default value
     //! @param value - default value
@@ -367,7 +367,7 @@ private:
         {
             if (minimum > maximum)
             {
-                throw std::logic_error("The range of number of arguments is invalid.");
+                throw std::invalid_argument("The range of number of arguments is invalid.");
             }
         }
 
@@ -648,7 +648,7 @@ T Register::get() const
         }
     }
 
-    throw std::logic_error("No value specified for '" + names.back() + "'.");
+    throw std::invalid_argument("No value specified for '" + names.back() + "'.");
 }
 
 template <typename T>
@@ -656,7 +656,7 @@ std::optional<T> Register::present() const
 {
     if (defaultValue.has_value())
     {
-        throw std::logic_error("Default value always presents.");
+        throw std::invalid_argument("Default value always presents.");
     }
     if (values.empty())
     {
@@ -692,7 +692,7 @@ public:
     //! @brief Construct a new Argument object.
     //! @param title - title name
     //! @param version - version number
-    explicit Argument(const std::string& title = {}, const std::string& version = "1.0.0") :
+    explicit Argument(const std::string_view title = "", const std::string_view version = "1.0.0") :
         titleName(title), versionNumber(version), parserPath(title)
     {
     }
@@ -722,7 +722,7 @@ public:
     //! @brief Add a descrText.
     //! @param text - descrText text
     //! @return reference of the Register object
-    Argument& addDescription(const std::string& text);
+    Argument& addDescription(const std::string_view text);
     //! @brief Get the Register or Argument instance by name.
     //! @tparam T - type of instance
     //! @param name - instance name
@@ -867,7 +867,7 @@ T& Argument::at(const std::string_view name)
         {
             return subParserIter->second->get();
         }
-        throw std::logic_error("No such sub-parser: " + std::string{name} + '.');
+        throw std::invalid_argument("No such sub-parser: " + std::string{name} + '.');
     }
 }
 
@@ -876,7 +876,7 @@ T Argument::get(const std::string_view argName) const
 {
     if (!isParsed)
     {
-        throw std::logic_error("Nothing parsed, no arguments are available.");
+        throw std::invalid_argument("Nothing parsed, no arguments are available.");
     }
     return (*this)[argName].get<T>();
 }
