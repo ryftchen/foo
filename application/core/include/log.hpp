@@ -361,7 +361,8 @@ private:
     bool isLogFileClose(const NoLogging& event) const;
     // clang-format off
     //! @brief Alias for the transition map of the logger.
-    using TransitionMap = Map<
+    using TransitionMap = Map
+    <
         // --- Source ---+--- Event ---+--- Target ---+------ Action ------+--- Guard (Optional) ---
         // --------------+-------------+--------------+--------------------+------------------------
         Row< State::init ,  OpenFile   , State::idle  , &Log::openLogFile                         >,
@@ -375,7 +376,7 @@ private:
         Row< State::work ,  Relaunch   , State::init  , &Log::doRollback                          >,
         Row< State::hold ,  Relaunch   , State::init  , &Log::doRollback                          >
         // --------------+-------------+--------------+--------------------+------------------------
-        >;
+    >;
     // clang-format on
     //! @brief Await notification for rollback.
     //! @return whether rollback is required or not
