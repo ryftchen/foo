@@ -670,7 +670,7 @@ void Command::launchClient<utility::socket::UDPSocket>(std::shared_ptr<utility::
     client->toConnect(VIEW_UDP_HOST, VIEW_UDP_PORT);
 }
 
-void Command::executeConsoleCommand() const
+void Command::executeInConsole() const
 {
     if (!CONFIG_ACTIVATE_HELPER)
     {

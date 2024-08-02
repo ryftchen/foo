@@ -864,7 +864,7 @@ private:
     //! @brief Dispatch specific tasks.
     void dispatch();
     //! @brief Execute the command line of console mode.
-    void executeConsoleCommand() const;
+    void executeInConsole() const;
     //! @brief Print help message.
     void showHelpMessage() const;
     //! @brief Dump configuration.
@@ -926,16 +926,38 @@ private:
     // clang-format off
     //! @brief Mapping table of all basic categories.
     const std::map<CategoryName, void (Command::*)() const> basicCategories{
-        // - Category -+------------- Functor -------------
-        // ------------+-----------------------------------
-        { "console"    , &Command::executeConsoleCommand },
-        { "dump"       , &Command::dumpConfiguration     },
-        { "help"       , &Command::showHelpMessage       },
-        { "version"    , &Command::showVersionIcon       }
-        // ------------+-----------------------------------
+        // - Category -+----------- Functor -----------
+        // ------------+-------------------------------
+        { "console"    , &Command::executeInConsole  },
+        { "dump"       , &Command::dumpConfiguration },
+        { "help"       , &Command::showHelpMessage   },
+        { "version"    , &Command::showVersionIcon   }
+        // ------------+--------------------------------
     };
     //! @brief Mapping table of all regular choices.
-    RegularChoiceMap regularChoices{};
+    RegularChoiceMap regularChoices{
+        // // - Sub-CLI -+--- Category ---+---------------- Choice ----------------+-------------- Event --------------
+        // // -----------+----------------+----------------------------------------+-----------------------------------
+        // { "app-algo"  , {{ "match"      , {{ "rab", "knu", "boy", "hor", "sun" } , app_algo::MatchMethod{}      }},
+        //                  { "notation"   , {{ "pre", "pos"                      } , app_algo::NotationMethod{}   }},
+        //                  { "optimal"    , {{ "gra", "ann", "par", "gen"        } , app_algo::OptimalMethod{}    }},
+        //                  { "search"     , {{ "bin", "int", "fib"               } , app_algo::SearchMethod{}     }},
+        //                  { "sort"       , {{ "bub", "sel", "ins", "she", "mer",
+        //                                      "qui", "hea", "cou", "buc", "rad" } , app_algo::SortMethod{}       }}}},
+        // { "app-dp"    , {{ "behavioral" , {{ "cha", "com", "int", "ite", "med",
+        //                                      "mem", "obs", "sta", "str", "tem",
+        //                                      "vis"                             } , app_dp::BehavioralInstance{} }},
+        //                  { "creational" , {{ "abs", "bui", "fac", "pro", "sin" } , app_dp::CreationalInstance{} }},
+        //                  { "structural" , {{ "ada", "bri", "com", "dec", "fac",
+        //                                      "fly", "pro"                      } , app_dp::StructuralInstance{} }}}},
+        // { "app-ds"    , {{ "linear"     , {{ "lin", "sta", "que"               } , app_ds::LinearInstance{}     }},
+        //                  { "tree"       , {{ "bin", "ade", "spl"               } , app_ds::TreeInstance{}       }}}},
+        // { "app-num"   , {{ "arithmetic" , {{ "add", "sub", "mul", "div"        } , app_num::ArithmeticMethod{}  }},
+        //                  { "divisor"    , {{ "euc", "ste"                      } , app_num::DivisorMethod{}     }},
+        //                  { "integral"   , {{ "tra", "sim", "rom", "gau", "mon" } , app_num::IntegralMethod{}    }},
+        //                  { "prime"      , {{ "era", "eul"                      } , app_num::PrimeMethod{}       }}}}
+        // // -----------+----------------+----------------------------------------+-----------------------------------
+    };
     // clang-format on
 
     //! @brief Manage basic categories.
