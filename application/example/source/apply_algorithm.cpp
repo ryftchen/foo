@@ -34,14 +34,14 @@
 namespace application::app_algo
 {
 //! @brief Alias for Category.
-using Category = AlgorithmTask::Category;
+using Category = AlgorithmChoice::Category;
 
-//! @brief Get the algorithm task.
-//! @return reference of the AlgorithmTask object
-AlgorithmTask& getTask()
+//! @brief Get the algorithm choice manager.
+//! @return reference of the AlgorithmChoice object
+AlgorithmChoice& manager()
 {
-    static AlgorithmTask task{};
-    return task;
+    static AlgorithmChoice manager{};
+    return manager;
 }
 
 //! @brief Get the task name curried.
@@ -49,7 +49,7 @@ AlgorithmTask& getTask()
 static const auto& getTaskNameCurried()
 {
     static const auto curried =
-        utility::currying::curry(command::presetTaskName, utility::reflection::TypeInfo<AlgorithmTask>::name);
+        utility::currying::curry(command::presetTaskName, utility::reflection::TypeInfo<AlgorithmChoice>::name);
     return curried;
 }
 
@@ -75,23 +75,23 @@ constexpr std::string_view toString(const Category cat)
     }
 }
 
-//! @brief Get the bit flags of the category in algorithm tasks.
+//! @brief Get the bit flags of the category in algorithm choices.
 //! @tparam Cat - the specific value of Category enum
 //! @return reference of the category bit flags
 template <Category Cat>
 constexpr auto& getCategoryOpts()
 {
     return std::invoke(
-        utility::reflection::TypeInfo<AlgorithmTask>::fields.find(REFLECTION_STR(toString(Cat))).value, getTask());
+        utility::reflection::TypeInfo<AlgorithmChoice>::fields.find(REFLECTION_STR(toString(Cat))).value, manager());
 }
 
-//! @brief Get the alias of the category in algorithm tasks.
+//! @brief Get the alias of the category in algorithm choices.
 //! @tparam Cat - the specific value of Category enum
 //! @return alias of the category name
 template <Category Cat>
 constexpr std::string_view getCategoryAlias()
 {
-    constexpr auto attr = utility::reflection::TypeInfo<AlgorithmTask>::fields.find(REFLECTION_STR(toString(Cat)))
+    constexpr auto attr = utility::reflection::TypeInfo<AlgorithmChoice>::fields.find(REFLECTION_STR(toString(Cat)))
                               .attrs.find(REFLECTION_STR("alias"));
     static_assert(attr.hasValue);
     return attr.value;
@@ -114,7 +114,7 @@ consteval std::size_t abbrVal(const T method)
             if (field.name == toString(method))
             {
                 static_assert(1 == field.attrs.size);
-                auto attr = field.attrs.find(REFLECTION_STR("task"));
+                auto attr = field.attrs.find(REFLECTION_STR("choice"));
                 static_assert(attr.hasValue);
                 value = utility::common::operator""_bkdrHash(attr.value, 0);
             }
@@ -122,7 +122,7 @@ consteval std::size_t abbrVal(const T method)
     return value;
 }
 
-//! @brief Get the title of a particular method in algorithm tasks.
+//! @brief Get the title of a particular method in algorithm choices.
 //! @tparam T - type of target method
 //! @param method - target method
 //! @return initial capitalized title
@@ -358,9 +358,41 @@ catch (const std::exception& err)
 }
 } // namespace match
 
-//! @brief Run match tasks.
+//! @brief Update match-related choice.
+//! @param target - target method
+template <>
+void updateChoice<MatchMethod>(const std::string& target)
+{
+    constexpr auto category = Category::match;
+    auto& bitFlag = getCategoryOpts<category>();
+
+    switch (utility::common::bkdrHash(target.c_str()))
+    {
+        case abbrVal(MatchMethod::rabinKarp):
+            bitFlag.set(MatchMethod::rabinKarp);
+            break;
+        case abbrVal(MatchMethod::knuthMorrisPratt):
+            bitFlag.set(MatchMethod::knuthMorrisPratt);
+            break;
+        case abbrVal(MatchMethod::boyerMoore):
+            bitFlag.set(MatchMethod::boyerMoore);
+            break;
+        case abbrVal(MatchMethod::horspool):
+            bitFlag.set(MatchMethod::horspool);
+            break;
+        case abbrVal(MatchMethod::sunday):
+            bitFlag.set(MatchMethod::sunday);
+            break;
+        default:
+            bitFlag.reset();
+            throw std::runtime_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
+    }
+}
+
+//! @brief Run match-related choices.
 //! @param candidates - container for the candidate target methods
-void runMatchTasks(const std::vector<std::string>& candidates)
+template <>
+void runChoices<MatchMethod>(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::match;
     const auto& bitFlag = getCategoryOpts<category>();
@@ -428,36 +460,6 @@ void runMatchTasks(const std::vector<std::string>& candidates)
     APP_ALGO_PRINT_TASK_END_TITLE(category);
 }
 
-//! @brief Update match methods in tasks.
-//! @param target - target method
-void updateMatchTask(const std::string& target)
-{
-    constexpr auto category = Category::match;
-    auto& bitFlag = getCategoryOpts<category>();
-
-    switch (utility::common::bkdrHash(target.c_str()))
-    {
-        case abbrVal(MatchMethod::rabinKarp):
-            bitFlag.set(MatchMethod::rabinKarp);
-            break;
-        case abbrVal(MatchMethod::knuthMorrisPratt):
-            bitFlag.set(MatchMethod::knuthMorrisPratt);
-            break;
-        case abbrVal(MatchMethod::boyerMoore):
-            bitFlag.set(MatchMethod::boyerMoore);
-            break;
-        case abbrVal(MatchMethod::horspool):
-            bitFlag.set(MatchMethod::horspool);
-            break;
-        case abbrVal(MatchMethod::sunday):
-            bitFlag.set(MatchMethod::sunday);
-            break;
-        default:
-            bitFlag.reset();
-            throw std::runtime_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
-    }
-}
-
 namespace notation
 {
 //! @brief Display the contents of the notation result.
@@ -492,9 +494,32 @@ catch (const std::exception& err)
 }
 } // namespace notation
 
-//! @brief Run notation tasks.
+//! @brief Update notation-related choice.
+//! @param target - target method
+template <>
+void updateChoice<NotationMethod>(const std::string& target)
+{
+    constexpr auto category = Category::notation;
+    auto& bitFlag = getCategoryOpts<category>();
+
+    switch (utility::common::bkdrHash(target.c_str()))
+    {
+        case abbrVal(NotationMethod::prefix):
+            bitFlag.set(NotationMethod::prefix);
+            break;
+        case abbrVal(NotationMethod::postfix):
+            bitFlag.set(NotationMethod::postfix);
+            break;
+        default:
+            bitFlag.reset();
+            throw std::runtime_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
+    }
+}
+
+//! @brief Run notation-related choices.
 //! @param candidates - container for the candidate target methods
-void runNotationTasks(const std::vector<std::string>& candidates)
+template <>
+void runChoices<NotationMethod>(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::notation;
     const auto& bitFlag = getCategoryOpts<category>();
@@ -541,27 +566,6 @@ void runNotationTasks(const std::vector<std::string>& candidates)
 
     pooling.deleteElement(threads);
     APP_ALGO_PRINT_TASK_END_TITLE(category);
-}
-
-//! @brief Update notation methods in tasks.
-//! @param target - target method
-void updateNotationTask(const std::string& target)
-{
-    constexpr auto category = Category::notation;
-    auto& bitFlag = getCategoryOpts<category>();
-
-    switch (utility::common::bkdrHash(target.c_str()))
-    {
-        case abbrVal(NotationMethod::prefix):
-            bitFlag.set(NotationMethod::prefix);
-            break;
-        case abbrVal(NotationMethod::postfix):
-            bitFlag.set(NotationMethod::postfix);
-            break;
-        default:
-            bitFlag.reset();
-            throw std::runtime_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
-    }
 }
 
 namespace optimal
@@ -644,9 +648,38 @@ catch (const std::exception& err)
 }
 } // namespace optimal
 
-//! @brief Run optimal tasks.
+//! @brief Update optimal-related choice.
+//! @param target - target method
+template <>
+void updateChoice<OptimalMethod>(const std::string& target)
+{
+    constexpr auto category = Category::optimal;
+    auto& bitFlag = getCategoryOpts<category>();
+
+    switch (utility::common::bkdrHash(target.c_str()))
+    {
+        case abbrVal(OptimalMethod::gradient):
+            bitFlag.set(OptimalMethod::gradient);
+            break;
+        case abbrVal(OptimalMethod::annealing):
+            bitFlag.set(OptimalMethod::annealing);
+            break;
+        case abbrVal(OptimalMethod::particle):
+            bitFlag.set(OptimalMethod::particle);
+            break;
+        case abbrVal(OptimalMethod::genetic):
+            bitFlag.set(OptimalMethod::genetic);
+            break;
+        default:
+            bitFlag.reset();
+            throw std::runtime_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
+    }
+}
+
+//! @brief Run optimal-related choices.
 //! @param candidates - container for the candidate target methods
-void runOptimalTasks(const std::vector<std::string>& candidates)
+template <>
+void runChoices<OptimalMethod>(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::optimal;
     const auto& bitFlag = getCategoryOpts<category>();
@@ -722,33 +755,6 @@ void runOptimalTasks(const std::vector<std::string>& candidates)
     APP_ALGO_PRINT_TASK_END_TITLE(category);
 }
 
-//! @brief Update optimal methods in tasks.
-//! @param target - target method
-void updateOptimalTask(const std::string& target)
-{
-    constexpr auto category = Category::optimal;
-    auto& bitFlag = getCategoryOpts<category>();
-
-    switch (utility::common::bkdrHash(target.c_str()))
-    {
-        case abbrVal(OptimalMethod::gradient):
-            bitFlag.set(OptimalMethod::gradient);
-            break;
-        case abbrVal(OptimalMethod::annealing):
-            bitFlag.set(OptimalMethod::annealing);
-            break;
-        case abbrVal(OptimalMethod::particle):
-            bitFlag.set(OptimalMethod::particle);
-            break;
-        case abbrVal(OptimalMethod::genetic):
-            bitFlag.set(OptimalMethod::genetic);
-            break;
-        default:
-            bitFlag.reset();
-            throw std::runtime_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
-    }
-}
-
 namespace search
 {
 //! @brief Display the contents of the search result.
@@ -817,9 +823,35 @@ catch (const std::exception& err)
 }
 } // namespace search
 
-//! @brief Run search tasks.
+//! @brief Update search-related choice.
+//! @param target - target method
+template <>
+void updateChoice<SearchMethod>(const std::string& target)
+{
+    constexpr auto category = Category::search;
+    auto& bitFlag = getCategoryOpts<category>();
+
+    switch (utility::common::bkdrHash(target.c_str()))
+    {
+        case abbrVal(SearchMethod::binary):
+            bitFlag.set(SearchMethod::binary);
+            break;
+        case abbrVal(SearchMethod::interpolation):
+            bitFlag.set(SearchMethod::interpolation);
+            break;
+        case abbrVal(SearchMethod::fibonacci):
+            bitFlag.set(SearchMethod::fibonacci);
+            break;
+        default:
+            bitFlag.reset();
+            throw std::runtime_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
+    }
+}
+
+//! @brief Run search-related choices.
 //! @param candidates - container for the candidate target methods
-void runSearchTasks(const std::vector<std::string>& candidates)
+template <>
+void runChoices<SearchMethod>(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::search;
     const auto& bitFlag = getCategoryOpts<category>();
@@ -873,30 +905,6 @@ void runSearchTasks(const std::vector<std::string>& candidates)
 
     pooling.deleteElement(threads);
     APP_ALGO_PRINT_TASK_END_TITLE(category);
-}
-
-//! @brief Update search methods in tasks.
-//! @param target - target method
-void updateSearchTask(const std::string& target)
-{
-    constexpr auto category = Category::search;
-    auto& bitFlag = getCategoryOpts<category>();
-
-    switch (utility::common::bkdrHash(target.c_str()))
-    {
-        case abbrVal(SearchMethod::binary):
-            bitFlag.set(SearchMethod::binary);
-            break;
-        case abbrVal(SearchMethod::interpolation):
-            bitFlag.set(SearchMethod::interpolation);
-            break;
-        case abbrVal(SearchMethod::fibonacci):
-            bitFlag.set(SearchMethod::fibonacci);
-            break;
-        default:
-            bitFlag.reset();
-            throw std::runtime_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
-    }
 }
 
 namespace sort
@@ -1048,9 +1056,56 @@ catch (const std::exception& err)
 }
 } // namespace sort
 
-//! @brief Run sort tasks.
+//! @brief Update sort-related choice.
+//! @param target - target method
+template <>
+void updateChoice<SortMethod>(const std::string& target)
+{
+    constexpr auto category = Category::sort;
+    auto& bitFlag = getCategoryOpts<category>();
+
+    switch (utility::common::bkdrHash(target.c_str()))
+    {
+        case abbrVal(SortMethod::bubble):
+            bitFlag.set(SortMethod::bubble);
+            break;
+        case abbrVal(SortMethod::selection):
+            bitFlag.set(SortMethod::selection);
+            break;
+        case abbrVal(SortMethod::insertion):
+            bitFlag.set(SortMethod::insertion);
+            break;
+        case abbrVal(SortMethod::shell):
+            bitFlag.set(SortMethod::shell);
+            break;
+        case abbrVal(SortMethod::merge):
+            bitFlag.set(SortMethod::merge);
+            break;
+        case abbrVal(SortMethod::quick):
+            bitFlag.set(SortMethod::quick);
+            break;
+        case abbrVal(SortMethod::heap):
+            bitFlag.set(SortMethod::heap);
+            break;
+        case abbrVal(SortMethod::counting):
+            bitFlag.set(SortMethod::counting);
+            break;
+        case abbrVal(SortMethod::bucket):
+            bitFlag.set(SortMethod::bucket);
+            break;
+        case abbrVal(SortMethod::radix):
+            bitFlag.set(SortMethod::radix);
+            break;
+        default:
+            bitFlag.reset();
+            throw std::runtime_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
+    }
+}
+
+//! @brief Run sort-related choices.
 //! @param candidates - container for the candidate target methods
-void runSortTasks(const std::vector<std::string>& candidates)
+template <>
+void runChoices<SortMethod>(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::sort;
     const auto& bitFlag = getCategoryOpts<category>();
@@ -1124,50 +1179,5 @@ void runSortTasks(const std::vector<std::string>& candidates)
 
     pooling.deleteElement(threads);
     APP_ALGO_PRINT_TASK_END_TITLE(category);
-}
-
-//! @brief Update sort methods in tasks.
-//! @param target - target method
-void updateSortTask(const std::string& target)
-{
-    constexpr auto category = Category::sort;
-    auto& bitFlag = getCategoryOpts<category>();
-
-    switch (utility::common::bkdrHash(target.c_str()))
-    {
-        case abbrVal(SortMethod::bubble):
-            bitFlag.set(SortMethod::bubble);
-            break;
-        case abbrVal(SortMethod::selection):
-            bitFlag.set(SortMethod::selection);
-            break;
-        case abbrVal(SortMethod::insertion):
-            bitFlag.set(SortMethod::insertion);
-            break;
-        case abbrVal(SortMethod::shell):
-            bitFlag.set(SortMethod::shell);
-            break;
-        case abbrVal(SortMethod::merge):
-            bitFlag.set(SortMethod::merge);
-            break;
-        case abbrVal(SortMethod::quick):
-            bitFlag.set(SortMethod::quick);
-            break;
-        case abbrVal(SortMethod::heap):
-            bitFlag.set(SortMethod::heap);
-            break;
-        case abbrVal(SortMethod::counting):
-            bitFlag.set(SortMethod::counting);
-            break;
-        case abbrVal(SortMethod::bucket):
-            bitFlag.set(SortMethod::bucket);
-            break;
-        case abbrVal(SortMethod::radix):
-            bitFlag.set(SortMethod::radix);
-            break;
-        default:
-            bitFlag.reset();
-            throw std::runtime_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
-    }
 }
 } // namespace application::app_algo

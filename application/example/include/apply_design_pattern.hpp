@@ -109,11 +109,11 @@ struct Bottom<StructuralInstance>
     static constexpr std::uint8_t value{7};
 };
 
-//! @brief Manage design pattern tasks.
-class DesignPatternTask
+//! @brief Manage design pattern choices.
+class DesignPatternChoice
 {
 public:
-    //! @brief Enumerate specific design pattern tasks.
+    //! @brief Enumerate specific design pattern choices.
     enum Category : std::uint8_t
     {
         //! @brief Behavioral.
@@ -131,13 +131,13 @@ public:
     //! @brief Bit flags for managing structural instances.
     std::bitset<Bottom<StructuralInstance>::value> structuralOpts{};
 
-    //! @brief Check whether any design pattern tasks do not exist.
-    //! @return any design pattern tasks do not exist or exist
+    //! @brief Check whether any design pattern choices do not exist.
+    //! @return any design pattern choices do not exist or exist
     [[nodiscard]] inline bool empty() const
     {
         return behavioralOpts.none() && creationalOpts.none() && structuralOpts.none();
     }
-    //! @brief Reset bit flags that manage design pattern tasks.
+    //! @brief Reset bit flags that manage design pattern choices.
     inline void reset()
     {
         behavioralOpts.reset();
@@ -169,7 +169,18 @@ protected:
         return os;
     }
 };
-extern DesignPatternTask& getTask();
+extern DesignPatternChoice& manager();
+
+//! @brief Update choice.
+//! @tparam T - type of target instance
+//! @param target - target instance
+template <class T>
+void updateChoice(const std::string& target);
+//! @brief Run choices.
+//! @tparam T - type of target instance
+//! @param candidates - container for the candidate target instances
+template <class T>
+void runChoices(const std::vector<std::string>& candidates);
 
 //! @brief Apply behavioral.
 namespace behavioral
@@ -429,8 +440,10 @@ public:
     static void visitorInstance();
 };
 } // namespace behavioral
-extern void runBehavioralTasks(const std::vector<std::string>& candidates);
-extern void updateBehavioralTask(const std::string& target);
+template <>
+void updateChoice<BehavioralInstance>(const std::string& target);
+template <>
+void runChoices<BehavioralInstance>(const std::vector<std::string>& candidates);
 
 //! @brief Apply creational.
 namespace creational
@@ -572,8 +585,10 @@ public:
     static void singletonInstance();
 };
 } // namespace creational
-extern void runCreationalTasks(const std::vector<std::string>& candidates);
-extern void updateCreationalTask(const std::string& target);
+template <>
+void updateChoice<CreationalInstance>(const std::string& target);
+template <>
+void runChoices<CreationalInstance>(const std::vector<std::string>& candidates);
 
 //! @brief Apply structural.
 namespace structural
@@ -728,7 +743,9 @@ public:
     static void proxyInstance();
 };
 } // namespace structural
-extern void runStructuralTasks(const std::vector<std::string>& candidates);
-extern void updateStructuralTask(const std::string& target);
+template <>
+void updateChoice<StructuralInstance>(const std::string& target);
+template <>
+void runChoices<StructuralInstance>(const std::vector<std::string>& candidates);
 } // namespace app_dp
 } // namespace application

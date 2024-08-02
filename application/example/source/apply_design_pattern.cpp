@@ -34,14 +34,14 @@
 namespace application::app_dp
 {
 //! @brief Alias for Category.
-using Category = DesignPatternTask::Category;
+using Category = DesignPatternChoice::Category;
 
-//! @brief Get the design pattern task.
-//! @return reference of the DesignPatternTask object
-DesignPatternTask& getTask()
+//! @brief Get the design pattern choice manager.
+//! @return reference of the DesignPatternChoice object
+DesignPatternChoice& manager()
 {
-    static DesignPatternTask task{};
-    return task;
+    static DesignPatternChoice manager{};
+    return manager;
 }
 
 //! @brief Get the task name curried.
@@ -49,7 +49,7 @@ DesignPatternTask& getTask()
 static const auto& getTaskNameCurried()
 {
     static const auto curried =
-        utility::currying::curry(command::presetTaskName, utility::reflection::TypeInfo<DesignPatternTask>::name);
+        utility::currying::curry(command::presetTaskName, utility::reflection::TypeInfo<DesignPatternChoice>::name);
     return curried;
 }
 
@@ -71,23 +71,24 @@ constexpr std::string_view toString(const Category cat)
     }
 }
 
-//! @brief Get the bit flags of the category in design pattern tasks.
+//! @brief Get the bit flags of the category in design pattern choices.
 //! @tparam Cat - the specific value of Category enum
 //! @return reference of the category bit flags
 template <Category Cat>
 constexpr auto& getCategoryOpts()
 {
     return std::invoke(
-        utility::reflection::TypeInfo<DesignPatternTask>::fields.find(REFLECTION_STR(toString(Cat))).value, getTask());
+        utility::reflection::TypeInfo<DesignPatternChoice>::fields.find(REFLECTION_STR(toString(Cat))).value,
+        manager());
 }
 
-//! @brief Get the alias of the category in design pattern tasks.
+//! @brief Get the alias of the category in design pattern choices.
 //! @tparam Cat - the specific value of Category enum
 //! @return alias of the category name
 template <Category Cat>
 constexpr std::string_view getCategoryAlias()
 {
-    constexpr auto attr = utility::reflection::TypeInfo<DesignPatternTask>::fields.find(REFLECTION_STR(toString(Cat)))
+    constexpr auto attr = utility::reflection::TypeInfo<DesignPatternChoice>::fields.find(REFLECTION_STR(toString(Cat)))
                               .attrs.find(REFLECTION_STR("alias"));
     static_assert(attr.hasValue);
     return attr.value;
@@ -110,7 +111,7 @@ consteval std::size_t abbrVal(const T instance)
             if (field.name == toString(instance))
             {
                 static_assert(1 == field.attrs.size);
-                auto attr = field.attrs.find(REFLECTION_STR("task"));
+                auto attr = field.attrs.find(REFLECTION_STR("choice"));
                 static_assert(attr.hasValue);
                 value = utility::common::operator""_bkdrHash(attr.value, 0);
             }
@@ -118,7 +119,7 @@ consteval std::size_t abbrVal(const T instance)
     return value;
 }
 
-//! @brief Get the title of a particular instance in design pattern tasks.
+//! @brief Get the title of a particular instance in design pattern choices.
 //! @tparam T - type of target instance
 //! @param instance - target instance
 //! @return initial capitalized title
@@ -336,9 +337,59 @@ catch (const std::exception& err)
 }
 } // namespace behavioral
 
-//! @brief Run behavioral tasks.
+//! @brief Update behavioral-related choice.
+//! @param target - target instance
+template <>
+void updateChoice<BehavioralInstance>(const std::string& target)
+{
+    constexpr auto category = Category::behavioral;
+    auto& bitFlag = getCategoryOpts<category>();
+
+    switch (utility::common::bkdrHash(target.c_str()))
+    {
+        case abbrVal(BehavioralInstance::chainOfResponsibility):
+            bitFlag.set(BehavioralInstance::chainOfResponsibility);
+            break;
+        case abbrVal(BehavioralInstance::command):
+            bitFlag.set(BehavioralInstance::command);
+            break;
+        case abbrVal(BehavioralInstance::interpreter):
+            bitFlag.set(BehavioralInstance::interpreter);
+            break;
+        case abbrVal(BehavioralInstance::iterator):
+            bitFlag.set(BehavioralInstance::iterator);
+            break;
+        case abbrVal(BehavioralInstance::mediator):
+            bitFlag.set(BehavioralInstance::mediator);
+            break;
+        case abbrVal(BehavioralInstance::memento):
+            bitFlag.set(BehavioralInstance::memento);
+            break;
+        case abbrVal(BehavioralInstance::observer):
+            bitFlag.set(BehavioralInstance::observer);
+            break;
+        case abbrVal(BehavioralInstance::state):
+            bitFlag.set(BehavioralInstance::state);
+            break;
+        case abbrVal(BehavioralInstance::strategy):
+            bitFlag.set(BehavioralInstance::strategy);
+            break;
+        case abbrVal(BehavioralInstance::templateMethod):
+            bitFlag.set(BehavioralInstance::templateMethod);
+            break;
+        case abbrVal(BehavioralInstance::visitor):
+            bitFlag.set(BehavioralInstance::visitor);
+            break;
+        default:
+            bitFlag.reset();
+            throw std::runtime_error("Unexpected " + std::string{toString(category)} + " instance: " + target + '.');
+    }
+}
+
+//! @brief Run behavioral-related choices.
 //! @param candidates - container for the candidate target instances
-void runBehavioralTasks(const std::vector<std::string>& candidates)
+template <>
+void runChoices<BehavioralInstance>(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::behavioral;
     const auto& bitFlag = getCategoryOpts<category>();
@@ -413,54 +464,6 @@ void runBehavioralTasks(const std::vector<std::string>& candidates)
     APP_DP_PRINT_TASK_END_TITLE(category);
 }
 
-//! @brief Update behavioral instances in tasks.
-//! @param target - target instance
-void updateBehavioralTask(const std::string& target)
-{
-    constexpr auto category = Category::behavioral;
-    auto& bitFlag = getCategoryOpts<category>();
-
-    switch (utility::common::bkdrHash(target.c_str()))
-    {
-        case abbrVal(BehavioralInstance::chainOfResponsibility):
-            bitFlag.set(BehavioralInstance::chainOfResponsibility);
-            break;
-        case abbrVal(BehavioralInstance::command):
-            bitFlag.set(BehavioralInstance::command);
-            break;
-        case abbrVal(BehavioralInstance::interpreter):
-            bitFlag.set(BehavioralInstance::interpreter);
-            break;
-        case abbrVal(BehavioralInstance::iterator):
-            bitFlag.set(BehavioralInstance::iterator);
-            break;
-        case abbrVal(BehavioralInstance::mediator):
-            bitFlag.set(BehavioralInstance::mediator);
-            break;
-        case abbrVal(BehavioralInstance::memento):
-            bitFlag.set(BehavioralInstance::memento);
-            break;
-        case abbrVal(BehavioralInstance::observer):
-            bitFlag.set(BehavioralInstance::observer);
-            break;
-        case abbrVal(BehavioralInstance::state):
-            bitFlag.set(BehavioralInstance::state);
-            break;
-        case abbrVal(BehavioralInstance::strategy):
-            bitFlag.set(BehavioralInstance::strategy);
-            break;
-        case abbrVal(BehavioralInstance::templateMethod):
-            bitFlag.set(BehavioralInstance::templateMethod);
-            break;
-        case abbrVal(BehavioralInstance::visitor):
-            bitFlag.set(BehavioralInstance::visitor);
-            break;
-        default:
-            bitFlag.reset();
-            throw std::runtime_error("Unexpected " + std::string{toString(category)} + " instance: " + target + '.');
-    }
-}
-
 namespace creational
 {
 //! @brief Display the contents of the creational result.
@@ -527,9 +530,41 @@ catch (const std::exception& err)
 }
 } // namespace creational
 
-//! @brief Run creational tasks.
+//! @brief Update creational-related choice.
+//! @param target - target instance
+template <>
+void updateChoice<CreationalInstance>(const std::string& target)
+{
+    constexpr auto category = Category::creational;
+    auto& bitFlag = getCategoryOpts<category>();
+
+    switch (utility::common::bkdrHash(target.c_str()))
+    {
+        case abbrVal(CreationalInstance::abstractFactory):
+            bitFlag.set(CreationalInstance::abstractFactory);
+            break;
+        case abbrVal(CreationalInstance::builder):
+            bitFlag.set(CreationalInstance::builder);
+            break;
+        case abbrVal(CreationalInstance::factoryMethod):
+            bitFlag.set(CreationalInstance::factoryMethod);
+            break;
+        case abbrVal(CreationalInstance::prototype):
+            bitFlag.set(CreationalInstance::prototype);
+            break;
+        case abbrVal(CreationalInstance::singleton):
+            bitFlag.set(CreationalInstance::singleton);
+            break;
+        default:
+            bitFlag.reset();
+            throw std::runtime_error("Unexpected " + std::string{toString(category)} + " instance: " + target + '.');
+    }
+}
+
+//! @brief Run creational-related choices.
 //! @param candidates - container for the candidate target instances
-void runCreationalTasks(const std::vector<std::string>& candidates)
+template <>
+void runChoices<CreationalInstance>(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::creational;
     const auto& bitFlag = getCategoryOpts<category>();
@@ -584,36 +619,6 @@ void runCreationalTasks(const std::vector<std::string>& candidates)
 
     pooling.deleteElement(threads);
     APP_DP_PRINT_TASK_END_TITLE(category);
-}
-
-//! @brief Update creational instances in tasks.
-//! @param target - target instance
-void updateCreationalTask(const std::string& target)
-{
-    constexpr auto category = Category::creational;
-    auto& bitFlag = getCategoryOpts<category>();
-
-    switch (utility::common::bkdrHash(target.c_str()))
-    {
-        case abbrVal(CreationalInstance::abstractFactory):
-            bitFlag.set(CreationalInstance::abstractFactory);
-            break;
-        case abbrVal(CreationalInstance::builder):
-            bitFlag.set(CreationalInstance::builder);
-            break;
-        case abbrVal(CreationalInstance::factoryMethod):
-            bitFlag.set(CreationalInstance::factoryMethod);
-            break;
-        case abbrVal(CreationalInstance::prototype):
-            bitFlag.set(CreationalInstance::prototype);
-            break;
-        case abbrVal(CreationalInstance::singleton):
-            bitFlag.set(CreationalInstance::singleton);
-            break;
-        default:
-            bitFlag.reset();
-            throw std::runtime_error("Unexpected " + std::string{toString(category)} + " instance: " + target + '.');
-    }
 }
 
 namespace structural
@@ -704,9 +709,47 @@ catch (const std::exception& err)
 }
 } // namespace structural
 
-//! @brief Run structural tasks.
+//! @brief Update structural-related choice.
+//! @param target - target instance
+template <>
+void updateChoice<StructuralInstance>(const std::string& target)
+{
+    constexpr auto category = Category::structural;
+    auto& bitFlag = getCategoryOpts<category>();
+
+    switch (utility::common::bkdrHash(target.c_str()))
+    {
+        case abbrVal(StructuralInstance::adapter):
+            bitFlag.set(StructuralInstance::adapter);
+            break;
+        case abbrVal(StructuralInstance::bridge):
+            bitFlag.set(StructuralInstance::bridge);
+            break;
+        case abbrVal(StructuralInstance::composite):
+            bitFlag.set(StructuralInstance::composite);
+            break;
+        case abbrVal(StructuralInstance::decorator):
+            bitFlag.set(StructuralInstance::decorator);
+            break;
+        case abbrVal(StructuralInstance::facade):
+            bitFlag.set(StructuralInstance::facade);
+            break;
+        case abbrVal(StructuralInstance::flyweight):
+            bitFlag.set(StructuralInstance::flyweight);
+            break;
+        case abbrVal(StructuralInstance::proxy):
+            bitFlag.set(StructuralInstance::proxy);
+            break;
+        default:
+            bitFlag.reset();
+            throw std::runtime_error("Unexpected " + std::string{toString(category)} + " instance: " + target + '.');
+    }
+}
+
+//! @brief Run structural-related choices.
 //! @param candidates - container for the candidate target instances
-void runStructuralTasks(const std::vector<std::string>& candidates)
+template <>
+void runChoices<StructuralInstance>(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::structural;
     const auto& bitFlag = getCategoryOpts<category>();
@@ -767,41 +810,5 @@ void runStructuralTasks(const std::vector<std::string>& candidates)
 
     pooling.deleteElement(threads);
     APP_DP_PRINT_TASK_END_TITLE(category);
-}
-
-//! @brief Update structural instances in tasks.
-//! @param target - target instance
-void updateStructuralTask(const std::string& target)
-{
-    constexpr auto category = Category::structural;
-    auto& bitFlag = getCategoryOpts<category>();
-
-    switch (utility::common::bkdrHash(target.c_str()))
-    {
-        case abbrVal(StructuralInstance::adapter):
-            bitFlag.set(StructuralInstance::adapter);
-            break;
-        case abbrVal(StructuralInstance::bridge):
-            bitFlag.set(StructuralInstance::bridge);
-            break;
-        case abbrVal(StructuralInstance::composite):
-            bitFlag.set(StructuralInstance::composite);
-            break;
-        case abbrVal(StructuralInstance::decorator):
-            bitFlag.set(StructuralInstance::decorator);
-            break;
-        case abbrVal(StructuralInstance::facade):
-            bitFlag.set(StructuralInstance::facade);
-            break;
-        case abbrVal(StructuralInstance::flyweight):
-            bitFlag.set(StructuralInstance::flyweight);
-            break;
-        case abbrVal(StructuralInstance::proxy):
-            bitFlag.set(StructuralInstance::proxy);
-            break;
-        default:
-            bitFlag.reset();
-            throw std::runtime_error("Unexpected " + std::string{toString(category)} + " instance: " + target + '.');
-    }
 }
 } // namespace application::app_dp

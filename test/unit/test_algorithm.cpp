@@ -22,8 +22,8 @@ namespace test // NOLINT (modernize-concat-nested-namespaces)
 namespace tst_algo
 {
 using namespace application::app_algo; // NOLINT (google-build-using-namespace)
-//! @brief Alias for the enumeration of algorithm tasks.
-using Category = AlgorithmTask::Category;
+//! @brief Alias for the enumeration of algorithm choices.
+using Category = AlgorithmChoice::Category;
 
 //! @brief Test base of match.
 class MatchTestBase : public ::testing::Test

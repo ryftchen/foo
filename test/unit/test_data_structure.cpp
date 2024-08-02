@@ -22,8 +22,8 @@ namespace test // NOLINT (modernize-concat-nested-namespaces)
 namespace tst_ds
 {
 using namespace application::app_ds; // NOLINT (google-build-using-namespace)
-//! @brief Alias for the enumeration of data structure tasks.
-using Category = DataStructureTask::Category;
+//! @brief Alias for the enumeration of data structure choices.
+using Category = DataStructureChoice::Category;
 
 //! @brief Test base of linear.
 class LinearTestBase : public ::testing::Test

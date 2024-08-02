@@ -70,7 +70,7 @@ Console::Console(const std::string& greeting) : impl(std::make_unique<Impl>(gree
         {
             if (input.size() < 2)
             {
-                throw std::logic_error("Please enter the \"" + input.at(0) + "\" and append with FILE.");
+                throw std::invalid_argument("Please enter the \"" + input.at(0) + "\" and append with FILE.");
             }
             return RetCode(fileExecutor(input.at(1)));
         },
@@ -116,7 +116,7 @@ int Console::commandExecutor(const std::string& command)
     const auto iterator = impl->regMap.find(inputs.at(0));
     if (std::cend(impl->regMap) == iterator)
     {
-        throw std::logic_error(
+        throw std::invalid_argument(
             "The console command \"" + inputs.at(0) + R"(" could not be found. Enter the "usage" for help.)");
     }
 

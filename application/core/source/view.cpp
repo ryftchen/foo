@@ -546,13 +546,13 @@ int View::buildTLVPacket2Execute(const std::vector<std::string>& args, char* buf
                         return '"' == c;
                     }))))
     {
-        throw std::logic_error("Please enter the \"execute\" and append with 'CMD' (include quotes).");
+        throw std::invalid_argument("Please enter the \"execute\" and append with 'CMD' (include quotes).");
     }
     if ((cmds.length() <= 1)
         || (((cmds.find_first_not_of('\'') == 0) || (cmds.find_last_not_of('\'') == (cmds.length() - 1)))
             && ((cmds.find_first_not_of('"') == 0) || (cmds.find_last_not_of('"') == (cmds.length() - 1)))))
     {
-        throw std::runtime_error("Missing full quotes around the pending command.");
+        throw std::invalid_argument("Missing full quotes around the pending command.");
     }
 
     int len = 0;
@@ -581,14 +581,14 @@ int View::buildTLVPacket2Monitor(const std::vector<std::string>& args, char* buf
 {
     if (args.size() > 1)
     {
-        throw std::logic_error("Please enter the \"monitor\" and append with or without NUM.");
+        throw std::invalid_argument("Please enter the \"monitor\" and append with or without NUM.");
     }
     else if (args.size() == 1)
     {
         const std::string input = args.front();
         if ((input.length() != 1) || !std::isdigit(input.front()))
         {
-            throw std::runtime_error("Only decimal bases are supported for the specified number of stack frames.");
+            throw std::invalid_argument("Only decimal bases are supported for the specified number of stack frames.");
         }
     }
     const std::uint16_t frameNum = !args.empty() ? std::stoul(args.front()) : 1;
@@ -922,7 +922,7 @@ void View::createViewServer()
                 const auto optionIter = optionDispatcher.find(args.at(0));
                 if (optionDispatcher.cend() == optionIter)
                 {
-                    throw std::logic_error("Unknown TCP message.");
+                    throw std::runtime_error("Unknown TCP message.");
                 }
                 args.erase(args.begin());
                 (optionIter->second.functor)(args, buffer);
@@ -960,7 +960,7 @@ void View::createViewServer()
             const auto optionIter = optionDispatcher.find(args.at(0));
             if (optionDispatcher.cend() == optionIter)
             {
-                throw std::logic_error("Unknown UDP message.");
+                throw std::runtime_error("Unknown UDP message.");
             }
             args.erase(args.begin());
             (optionIter->second.functor)(args, buffer);

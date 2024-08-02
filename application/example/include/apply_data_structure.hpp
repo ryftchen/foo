@@ -66,11 +66,11 @@ struct Bottom<TreeInstance>
     static constexpr std::uint8_t value{3};
 };
 
-//! @brief Manage data structure tasks.
-class DataStructureTask
+//! @brief Manage data structure choices.
+class DataStructureChoice
 {
 public:
-    //! @brief Enumerate specific data structure tasks.
+    //! @brief Enumerate specific data structure choices.
     enum Category : std::uint8_t
     {
         //! @brief Linear.
@@ -84,10 +84,10 @@ public:
     //! @brief Bit flags for managing tree instances.
     std::bitset<Bottom<TreeInstance>::value> treeOpts{};
 
-    //! @brief Check whether any data structure tasks do not exist.
-    //! @return any data structure tasks do not exist or exist
+    //! @brief Check whether any data structure choices do not exist.
+    //! @return any data structure choices do not exist or exist
     [[nodiscard]] inline bool empty() const { return linearOpts.none() && treeOpts.none(); }
-    //! @brief Reset bit flags that manage data structure tasks.
+    //! @brief Reset bit flags that manage data structure choices.
     inline void reset()
     {
         linearOpts.reset();
@@ -115,7 +115,18 @@ protected:
         return os;
     }
 };
-extern DataStructureTask& getTask();
+extern DataStructureChoice& manager();
+
+//! @brief Update choice.
+//! @tparam T - type of target instance
+//! @param target - target instance
+template <class T>
+void updateChoice(const std::string& target);
+//! @brief Run choices.
+//! @tparam T - type of target instance
+//! @param candidates - container for the candidate target instances
+template <class T>
+void runChoices(const std::vector<std::string>& candidates);
 
 //! @brief Apply linear.
 namespace linear
@@ -292,8 +303,10 @@ public:
     static void queueInstance();
 };
 } // namespace linear
-extern void runLinearTasks(const std::vector<std::string>& candidates);
-extern void updateLinearTask(const std::string& target);
+template <>
+void updateChoice<LinearInstance>(const std::string& target);
+template <>
+void runChoices<LinearInstance>(const std::vector<std::string>& candidates);
 
 //! @brief Apply tree.
 namespace tree
@@ -465,7 +478,9 @@ public:
     static void splayInstance();
 };
 } // namespace tree
-extern void runTreeTasks(const std::vector<std::string>& candidates);
-extern void updateTreeTask(const std::string& target);
+template <>
+void updateChoice<TreeInstance>(const std::string& target);
+template <>
+void runChoices<TreeInstance>(const std::vector<std::string>& candidates);
 } // namespace app_ds
 } // namespace application

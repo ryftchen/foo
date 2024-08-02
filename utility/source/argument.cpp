@@ -21,13 +21,13 @@ const char* version() noexcept
     return ver;
 }
 
-Register& Register::help(const std::string& content)
+Register& Register::help(const std::string_view content)
 {
     helpContent = content;
     return *this;
 }
 
-Register& Register::metavar(const std::string& content)
+Register& Register::metavar(const std::string_view content)
 {
     metavarContent = content;
     return *this;
@@ -387,7 +387,7 @@ Argument::operator bool() const
     return isParsed && (isArgUsed || isSubParserUsed);
 }
 
-Argument& Argument::addDescription(const std::string& text)
+Argument& Argument::addDescription(const std::string_view text)
 {
     descrText = text;
     return *this;
@@ -439,7 +439,7 @@ Register& Argument::operator[](const std::string_view argName) const
             return *(iterator->second);
         }
     }
-    throw std::logic_error("No such argument: " + std::string{argName} + '.');
+    throw std::invalid_argument("No such argument: " + std::string{argName} + '.');
 }
 
 std::string Argument::title() const

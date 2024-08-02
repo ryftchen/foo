@@ -85,7 +85,7 @@ Command::Command()
 
 Command::~Command()
 {
-    dispatchedTask.reset();
+    dispatchManager.reset();
 }
 
 Command& Command::getInstance()
@@ -144,7 +144,7 @@ void Command::initializeCLI()
                             return ' ' != c;
                         }))
                 {
-                    throw std::logic_error("Invalid console command.");
+                    throw std::invalid_argument("Invalid console command.");
                 }
                 return value;
             })
@@ -152,206 +152,306 @@ void Command::initializeCLI()
         .help("run commands in console mode and exit\n"
               "separate with quotes");
 
-    const auto& algoTable = regularTaskDispatcher.at(subCLIAppAlgo.title());
-    const auto& algoAlias = filterAliasUnderSubCLI<app_algo::AlgorithmTask>(subCLIAppAlgo.title());
-    subCLIAppAlgo.addDescription("apply algorithm");
+    auto& algoTbl = regularChoices[subCLIAppAlgo.title()];
+    subCLIAppAlgo.addDescription(getDescr<app_algo::AlgorithmChoice>());
     subCLIAppAlgo.addArgument("-h", "--help").argsNum(0).implicitVal(true).help("show help and exit");
-    auto algoCategory = std::string{TypeInfo<app_algo::MatchMethod>::name};
-    subCLIAppAlgo.addArgument("-" + algoAlias.at(algoCategory), "--" + algoCategory)
-        .argsNum(0, algoTable.at(algoCategory).candidates.size())
-        .defaultVal<std::vector<std::string>>(AggregationTasks{algoTable.at(algoCategory).candidates})
+    auto algoCat = std::string{TypeInfo<app_algo::MatchMethod>::name};
+    auto algoCho = extractChoices<app_algo::MatchMethod>();
+    algoTbl[algoCat] = CategoryExtAttr{algoCho, app_algo::MatchMethod{}};
+    subCLIAppAlgo
+        .addArgument("-" + std::string{getAlias<app_algo::AlgorithmChoice, app_algo::MatchMethod>()}, "--" + algoCat)
+        .argsNum(0, algoCho.size())
+        .defaultVal<std::vector<std::string>>(std::move(algoCho))
         .remaining()
         .metavar("OPT")
-        .help("run match tasks\n"
-              "- rab    Rabin-Karp\n"
-              "- knu    Knuth-Morris-Pratt\n"
-              "- boy    Boyer-Moore\n"
-              "- hor    Horspool\n"
-              "- sun    Sunday\n"
-              "add the tasks listed above");
-    algoCategory = std::string{TypeInfo<app_algo::NotationMethod>::name};
-    subCLIAppAlgo.addArgument("-" + algoAlias.at(algoCategory), "--" + algoCategory)
-        .argsNum(0, algoTable.at(algoCategory).candidates.size())
-        .defaultVal<std::vector<std::string>>(AggregationTasks{algoTable.at(algoCategory).candidates})
+        .help(getDescr<app_algo::MatchMethod>());
+    appMsgForwarder.registerHandler(
+        [](const AppUpdMsg<app_algo::MatchMethod>& msg)
+        {
+            app_algo::updateChoice<app_algo::MatchMethod>(msg.cho);
+        });
+    appMsgForwarder.registerHandler(
+        [](const AppRunMsg<app_algo::MatchMethod>& msg)
+        {
+            app_algo::runChoices<app_algo::MatchMethod>(msg.cntr);
+        });
+    algoCat = std::string{TypeInfo<app_algo::NotationMethod>::name};
+    algoCho = extractChoices<app_algo::NotationMethod>();
+    algoTbl[algoCat] = CategoryExtAttr{algoCho, app_algo::NotationMethod{}};
+    subCLIAppAlgo
+        .addArgument("-" + std::string{getAlias<app_algo::AlgorithmChoice, app_algo::NotationMethod>()}, "--" + algoCat)
+        .argsNum(0, algoCho.size())
+        .defaultVal<std::vector<std::string>>(std::move(algoCho))
         .remaining()
         .metavar("OPT")
-        .help("run notation tasks\n"
-              "- pre    Prefix\n"
-              "- pos    Postfix\n"
-              "add the tasks listed above");
-    algoCategory = std::string{TypeInfo<app_algo::OptimalMethod>::name};
-    subCLIAppAlgo.addArgument("-" + algoAlias.at(algoCategory), "--" + algoCategory)
-        .argsNum(0, algoTable.at(algoCategory).candidates.size())
-        .defaultVal<std::vector<std::string>>(AggregationTasks{algoTable.at(algoCategory).candidates})
+        .help(getDescr<app_algo::NotationMethod>());
+    appMsgForwarder.registerHandler(
+        [](const AppUpdMsg<app_algo::NotationMethod>& msg)
+        {
+            app_algo::updateChoice<app_algo::NotationMethod>(msg.cho);
+        });
+    appMsgForwarder.registerHandler(
+        [](const AppRunMsg<app_algo::NotationMethod>& msg)
+        {
+            app_algo::runChoices<app_algo::NotationMethod>(msg.cntr);
+        });
+    algoCat = std::string{TypeInfo<app_algo::OptimalMethod>::name};
+    algoCho = extractChoices<app_algo::OptimalMethod>();
+    algoTbl[algoCat] = CategoryExtAttr{algoCho, app_algo::OptimalMethod{}};
+    subCLIAppAlgo
+        .addArgument("-" + std::string{getAlias<app_algo::AlgorithmChoice, app_algo::OptimalMethod>()}, "--" + algoCat)
+        .argsNum(0, algoCho.size())
+        .defaultVal<std::vector<std::string>>(std::move(algoCho))
         .remaining()
         .metavar("OPT")
-        .help("run optimal tasks\n"
-              "- gra    Gradient Descent\n"
-              "- ann    Simulated Annealing\n"
-              "- par    Particle Swarm\n"
-              "- gen    Genetic\n"
-              "add the tasks listed above");
-    algoCategory = std::string{TypeInfo<app_algo::SearchMethod>::name};
-    subCLIAppAlgo.addArgument("-" + algoAlias.at(algoCategory), "--" + algoCategory)
-        .argsNum(0, algoTable.at(algoCategory).candidates.size())
-        .defaultVal<std::vector<std::string>>(AggregationTasks{algoTable.at(algoCategory).candidates})
+        .help(getDescr<app_algo::OptimalMethod>());
+    appMsgForwarder.registerHandler(
+        [](const AppUpdMsg<app_algo::OptimalMethod>& msg)
+        {
+            app_algo::updateChoice<app_algo::OptimalMethod>(msg.cho);
+        });
+    appMsgForwarder.registerHandler(
+        [](const AppRunMsg<app_algo::OptimalMethod>& msg)
+        {
+            app_algo::runChoices<app_algo::OptimalMethod>(msg.cntr);
+        });
+    algoCat = std::string{TypeInfo<app_algo::SearchMethod>::name};
+    algoCho = extractChoices<app_algo::SearchMethod>();
+    algoTbl[algoCat] = CategoryExtAttr{algoCho, app_algo::SearchMethod{}};
+    subCLIAppAlgo
+        .addArgument("-" + std::string{getAlias<app_algo::AlgorithmChoice, app_algo::SearchMethod>()}, "--" + algoCat)
+        .argsNum(0, algoCho.size())
+        .defaultVal<std::vector<std::string>>(std::move(algoCho))
         .remaining()
         .metavar("OPT")
-        .help("run search tasks\n"
-              "- bin    Binary\n"
-              "- int    Interpolation\n"
-              "- fib    Fibonacci\n"
-              "add the tasks listed above");
-    algoCategory = std::string{TypeInfo<app_algo::SortMethod>::name};
-    subCLIAppAlgo.addArgument("-" + algoAlias.at(algoCategory), "--" + algoCategory)
-        .argsNum(0, algoTable.at(algoCategory).candidates.size())
-        .defaultVal<std::vector<std::string>>(AggregationTasks{algoTable.at(algoCategory).candidates})
+        .help(getDescr<app_algo::SearchMethod>());
+    appMsgForwarder.registerHandler(
+        [](const AppUpdMsg<app_algo::SearchMethod>& msg)
+        {
+            app_algo::updateChoice<app_algo::SearchMethod>(msg.cho);
+        });
+    appMsgForwarder.registerHandler(
+        [](const AppRunMsg<app_algo::SearchMethod>& msg)
+        {
+            app_algo::runChoices<app_algo::SearchMethod>(msg.cntr);
+        });
+    algoCat = std::string{TypeInfo<app_algo::SortMethod>::name};
+    algoCho = extractChoices<app_algo::SortMethod>();
+    algoTbl[algoCat] = CategoryExtAttr{algoCho, app_algo::SortMethod{}};
+    subCLIAppAlgo
+        .addArgument("-" + std::string{getAlias<app_algo::AlgorithmChoice, app_algo::SortMethod>()}, "--" + algoCat)
+        .argsNum(0, algoCho.size())
+        .defaultVal<std::vector<std::string>>(std::move(algoCho))
         .remaining()
         .metavar("OPT")
-        .help("run sort tasks\n"
-              "- bub    Bubble\n"
-              "- sel    Selection\n"
-              "- ins    Insertion\n"
-              "- she    Shell\n"
-              "- mer    Merge\n"
-              "- qui    Quick\n"
-              "- hea    Heap\n"
-              "- cou    Counting\n"
-              "- buc    Bucket\n"
-              "- rad    Radix\n"
-              "add the tasks listed above");
+        .help(getDescr<app_algo::SortMethod>());
+    appMsgForwarder.registerHandler(
+        [](const AppUpdMsg<app_algo::SortMethod>& msg)
+        {
+            app_algo::updateChoice<app_algo::SortMethod>(msg.cho);
+        });
+    appMsgForwarder.registerHandler(
+        [](const AppRunMsg<app_algo::SortMethod>& msg)
+        {
+            app_algo::runChoices<app_algo::SortMethod>(msg.cntr);
+        });
     mainCLI.addSubParser(subCLIAppAlgo);
 
-    const auto& dpTable = regularTaskDispatcher.at(subCLIAppDp.title());
-    const auto& dpAlias = filterAliasUnderSubCLI<app_dp::DesignPatternTask>(subCLIAppDp.title());
-    subCLIAppDp.addDescription("apply design pattern");
+    auto& dpTbl = regularChoices[subCLIAppDp.title()];
+    subCLIAppDp.addDescription(getDescr<app_dp::DesignPatternChoice>());
     subCLIAppDp.addArgument("-h", "--help").argsNum(0).implicitVal(true).help("show help and exit");
-    auto dpCategory = std::string{TypeInfo<app_dp::BehavioralInstance>::name};
-    subCLIAppDp.addArgument("-" + dpAlias.at(dpCategory), "--" + dpCategory)
-        .argsNum(0, dpTable.at(dpCategory).candidates.size())
-        .defaultVal<std::vector<std::string>>(AggregationTasks{dpTable.at(dpCategory).candidates})
+    auto dpCat = std::string{TypeInfo<app_dp::BehavioralInstance>::name};
+    auto dpCho = extractChoices<app_dp::BehavioralInstance>();
+    dpTbl[dpCat] = CategoryExtAttr{dpCho, app_dp::BehavioralInstance{}};
+    subCLIAppDp
+        .addArgument(
+            "-" + std::string{getAlias<app_dp::DesignPatternChoice, app_dp::BehavioralInstance>()}, "--" + dpCat)
+        .argsNum(0, dpCho.size())
+        .defaultVal<std::vector<std::string>>(std::move(dpCho))
         .remaining()
         .metavar("OPT")
-        .help("run behavioral tasks\n"
-              "- cha    Chain Of Responsibility\n"
-              "- com    Command\n"
-              "- int    Interpreter\n"
-              "- ite    Iterator\n"
-              "- med    Mediator\n"
-              "- mem    Memento\n"
-              "- obs    Observer\n"
-              "- sta    State\n"
-              "- str    Strategy\n"
-              "- tem    Template Method\n"
-              "- vis    Visitor\n"
-              "add the tasks listed above");
-    dpCategory = std::string{TypeInfo<app_dp::CreationalInstance>::name};
-    subCLIAppDp.addArgument("-" + dpAlias.at(dpCategory), "--" + dpCategory)
-        .argsNum(0, dpTable.at(dpCategory).candidates.size())
-        .defaultVal<std::vector<std::string>>(AggregationTasks{dpTable.at(dpCategory).candidates})
+        .help(getDescr<app_dp::BehavioralInstance>());
+    appMsgForwarder.registerHandler(
+        [](const AppUpdMsg<app_dp::BehavioralInstance>& msg)
+        {
+            app_dp::updateChoice<app_dp::BehavioralInstance>(msg.cho);
+        });
+    appMsgForwarder.registerHandler(
+        [](const AppRunMsg<app_dp::BehavioralInstance>& msg)
+        {
+            app_dp::runChoices<app_dp::BehavioralInstance>(msg.cntr);
+        });
+    dpCat = std::string{TypeInfo<app_dp::CreationalInstance>::name};
+    dpCho = extractChoices<app_dp::CreationalInstance>();
+    dpTbl[dpCat] = CategoryExtAttr{dpCho, app_dp::CreationalInstance{}};
+    subCLIAppDp
+        .addArgument(
+            "-" + std::string{getAlias<app_dp::DesignPatternChoice, app_dp::CreationalInstance>()}, "--" + dpCat)
+        .argsNum(0, dpCho.size())
+        .defaultVal<std::vector<std::string>>(std::move(dpCho))
         .remaining()
         .metavar("OPT")
-        .help("run creational tasks\n"
-              "- abs    Abstract Factory\n"
-              "- bui    Builder\n"
-              "- fac    Factory Method\n"
-              "- pro    Prototype\n"
-              "- sin    Singleton\n"
-              "add the tasks listed above");
-    dpCategory = std::string{TypeInfo<app_dp::StructuralInstance>::name};
-    subCLIAppDp.addArgument("-" + dpAlias.at(dpCategory), "--" + dpCategory)
-        .argsNum(0, dpTable.at(dpCategory).candidates.size())
-        .defaultVal<std::vector<std::string>>(AggregationTasks{dpTable.at(dpCategory).candidates})
+        .help(getDescr<app_dp::CreationalInstance>());
+    appMsgForwarder.registerHandler(
+        [](const AppUpdMsg<app_dp::CreationalInstance>& msg)
+        {
+            app_dp::updateChoice<app_dp::CreationalInstance>(msg.cho);
+        });
+    appMsgForwarder.registerHandler(
+        [](const AppRunMsg<app_dp::CreationalInstance>& msg)
+        {
+            app_dp::runChoices<app_dp::CreationalInstance>(msg.cntr);
+        });
+    dpCat = std::string{TypeInfo<app_dp::StructuralInstance>::name};
+    dpCho = extractChoices<app_dp::StructuralInstance>();
+    dpTbl[dpCat] = CategoryExtAttr{dpCho, app_dp::StructuralInstance{}};
+    subCLIAppDp
+        .addArgument(
+            "-" + std::string{getAlias<app_dp::DesignPatternChoice, app_dp::StructuralInstance>()}, "--" + dpCat)
+        .argsNum(0, dpCho.size())
+        .defaultVal<std::vector<std::string>>(std::move(dpCho))
         .remaining()
         .metavar("OPT")
-        .help("run structural tasks\n"
-              "- ada    Adapter\n"
-              "- bri    Bridge\n"
-              "- com    Composite\n"
-              "- dec    Decorator\n"
-              "- fac    Facade\n"
-              "- fly    Flyweight\n"
-              "- pro    Proxy\n"
-              "add the tasks listed above");
+        .help(getDescr<app_dp::StructuralInstance>());
+    appMsgForwarder.registerHandler(
+        [](const AppUpdMsg<app_dp::StructuralInstance>& msg)
+        {
+            app_dp::updateChoice<app_dp::StructuralInstance>(msg.cho);
+        });
+    appMsgForwarder.registerHandler(
+        [](const AppRunMsg<app_dp::StructuralInstance>& msg)
+        {
+            app_dp::runChoices<app_dp::StructuralInstance>(msg.cntr);
+        });
     mainCLI.addSubParser(subCLIAppDp);
 
-    const auto& dsTable = regularTaskDispatcher.at(subCLIAppDs.title());
-    const auto& dsAlias = filterAliasUnderSubCLI<app_ds::DataStructureTask>(subCLIAppDs.title());
-    subCLIAppDs.addDescription("apply data structure");
+    auto& dsTbl = regularChoices[subCLIAppDs.title()];
+    subCLIAppDs.addDescription(getDescr<app_ds::DataStructureChoice>());
     subCLIAppDs.addArgument("-h", "--help").argsNum(0).implicitVal(true).help("show help and exit");
-    auto dsCategory = std::string{TypeInfo<app_ds::LinearInstance>::name};
-    subCLIAppDs.addArgument("-" + dsAlias.at(dsCategory), "--" + dsCategory)
-        .argsNum(0, dsTable.at(dsCategory).candidates.size())
-        .defaultVal<std::vector<std::string>>(AggregationTasks{dsTable.at(dsCategory).candidates})
+    auto dsCat = std::string{TypeInfo<app_ds::LinearInstance>::name};
+    auto dsCho = extractChoices<app_ds::LinearInstance>();
+    dsTbl[dsCat] = CategoryExtAttr{dsCho, app_ds::LinearInstance{}};
+    subCLIAppDs
+        .addArgument("-" + std::string{getAlias<app_ds::DataStructureChoice, app_ds::LinearInstance>()}, "--" + dsCat)
+        .argsNum(0, dsCho.size())
+        .defaultVal<std::vector<std::string>>(std::move(dsCho))
         .remaining()
         .metavar("OPT")
-        .help("run linear tasks\n"
-              "- lin    Linked List\n"
-              "- sta    Stack\n"
-              "- que    Queue\n"
-              "add the tasks listed above");
-    dsCategory = std::string{TypeInfo<app_ds::TreeInstance>::name};
-    subCLIAppDs.addArgument("-" + dsAlias.at(dsCategory), "--" + dsCategory)
-        .argsNum(0, dsTable.at(dsCategory).candidates.size())
-        .defaultVal<std::vector<std::string>>(AggregationTasks{dsTable.at(dsCategory).candidates})
+        .help(getDescr<app_ds::LinearInstance>());
+    appMsgForwarder.registerHandler(
+        [](const AppUpdMsg<app_ds::LinearInstance>& msg)
+        {
+            app_ds::updateChoice<app_ds::LinearInstance>(msg.cho);
+        });
+    appMsgForwarder.registerHandler(
+        [](const AppRunMsg<app_ds::LinearInstance>& msg)
+        {
+            app_ds::runChoices<app_ds::LinearInstance>(msg.cntr);
+        });
+    dsCat = std::string{TypeInfo<app_ds::TreeInstance>::name};
+    dsCho = extractChoices<app_ds::TreeInstance>();
+    dsTbl[dsCat] = CategoryExtAttr{dsCho, app_ds::TreeInstance{}};
+    subCLIAppDs
+        .addArgument("-" + std::string{getAlias<app_ds::DataStructureChoice, app_ds::TreeInstance>()}, "--" + dsCat)
+        .argsNum(0, dsCho.size())
+        .defaultVal<std::vector<std::string>>(std::move(dsCho))
         .remaining()
         .metavar("OPT")
-        .help("run tree tasks\n"
-              "- bin    Binary Search\n"
-              "- ade    Adelson-Velsky-Landis\n"
-              "- spl    Splay\n"
-              "add the tasks listed above");
+        .help(getDescr<app_ds::TreeInstance>());
+    appMsgForwarder.registerHandler(
+        [](const AppUpdMsg<app_ds::TreeInstance>& msg)
+        {
+            app_ds::updateChoice<app_ds::TreeInstance>(msg.cho);
+        });
+    appMsgForwarder.registerHandler(
+        [](const AppRunMsg<app_ds::TreeInstance>& msg)
+        {
+            app_ds::runChoices<app_ds::TreeInstance>(msg.cntr);
+        });
     mainCLI.addSubParser(subCLIAppDs);
 
-    const auto& numTable = regularTaskDispatcher.at(subCLIAppNum.title());
-    const auto& numAlias = filterAliasUnderSubCLI<app_num::NumericTask>(subCLIAppNum.title());
-    subCLIAppNum.addDescription("apply numeric");
+    auto& numTbl = regularChoices[subCLIAppNum.title()];
+    subCLIAppNum.addDescription(getDescr<app_num::NumericChoice>());
     subCLIAppNum.addArgument("-h", "--help").argsNum(0).implicitVal(true).help("show help and exit");
-    auto numCategory = std::string{TypeInfo<app_num::ArithmeticMethod>::name};
-    subCLIAppNum.addArgument("-" + numAlias.at(numCategory), "--" + numCategory)
-        .argsNum(0, numTable.at(numCategory).candidates.size())
-        .defaultVal<std::vector<std::string>>(AggregationTasks{numTable.at(numCategory).candidates})
+    auto numCat = std::string{TypeInfo<app_num::ArithmeticMethod>::name};
+    auto numCho = extractChoices<app_num::ArithmeticMethod>();
+    numTbl[numCat] = CategoryExtAttr{numCho, app_num::ArithmeticMethod{}};
+    subCLIAppNum
+        .addArgument("-" + std::string{getAlias<app_num::NumericChoice, app_num::ArithmeticMethod>()}, "--" + numCat)
+        .argsNum(0, numCho.size())
+        .defaultVal<std::vector<std::string>>(std::move(numCho))
         .remaining()
         .metavar("OPT")
-        .help("run arithmetic tasks\n"
-              "- add    Addition\n"
-              "- sub    Subtraction\n"
-              "- mul    Multiplication\n"
-              "- div    Division\n"
-              "add the tasks listed above");
-    numCategory = std::string{TypeInfo<app_num::DivisorMethod>::name};
-    subCLIAppNum.addArgument("-" + numAlias.at(numCategory), "--" + numCategory)
-        .argsNum(0, numTable.at(numCategory).candidates.size())
-        .defaultVal<std::vector<std::string>>(AggregationTasks{numTable.at(numCategory).candidates})
+        .help(getDescr<app_num::ArithmeticMethod>());
+    appMsgForwarder.registerHandler(
+        [](const AppUpdMsg<app_num::ArithmeticMethod>& msg)
+        {
+            app_num::updateChoice<app_num::ArithmeticMethod>(msg.cho);
+        });
+    appMsgForwarder.registerHandler(
+        [](const AppRunMsg<app_num::ArithmeticMethod>& msg)
+        {
+            app_num::runChoices<app_num::ArithmeticMethod>(msg.cntr);
+        });
+    numCat = std::string{TypeInfo<app_num::DivisorMethod>::name};
+    numCho = extractChoices<app_num::DivisorMethod>();
+    numTbl[numCat] = CategoryExtAttr{numCho, app_num::DivisorMethod{}};
+    subCLIAppNum
+        .addArgument("-" + std::string{getAlias<app_num::NumericChoice, app_num::DivisorMethod>()}, "--" + numCat)
+        .argsNum(0, numCho.size())
+        .defaultVal<std::vector<std::string>>(std::move(numCho))
         .remaining()
         .metavar("OPT")
-        .help("run divisor tasks\n"
-              "- euc    Euclidean\n"
-              "- ste    Stein\n"
-              "add the tasks listed above");
-    numCategory = std::string{TypeInfo<app_num::IntegralMethod>::name};
-    subCLIAppNum.addArgument("-" + numAlias.at(numCategory), "--" + numCategory)
-        .argsNum(0, numTable.at(numCategory).candidates.size())
-        .defaultVal<std::vector<std::string>>(AggregationTasks{numTable.at(numCategory).candidates})
+        .help(getDescr<app_num::DivisorMethod>());
+    appMsgForwarder.registerHandler(
+        [](const AppUpdMsg<app_num::DivisorMethod>& msg)
+        {
+            app_num::updateChoice<app_num::DivisorMethod>(msg.cho);
+        });
+    appMsgForwarder.registerHandler(
+        [](const AppRunMsg<app_num::DivisorMethod>& msg)
+        {
+            app_num::runChoices<app_num::DivisorMethod>(msg.cntr);
+        });
+    numCat = std::string{TypeInfo<app_num::IntegralMethod>::name};
+    numCho = extractChoices<app_num::IntegralMethod>();
+    numTbl[numCat] = CategoryExtAttr{numCho, app_num::IntegralMethod{}};
+    subCLIAppNum
+        .addArgument("-" + std::string{getAlias<app_num::NumericChoice, app_num::IntegralMethod>()}, "--" + numCat)
+        .argsNum(0, numCho.size())
+        .defaultVal<std::vector<std::string>>(std::move(numCho))
         .remaining()
         .metavar("OPT")
-        .help("run integral tasks\n"
-              "- tra    Trapezoidal\n"
-              "- sim    Adaptive Simpson's 1/3\n"
-              "- rom    Romberg\n"
-              "- gau    Gauss-Legendre's 5-Points\n"
-              "- mon    Monte-Carlo\n"
-              "add the tasks listed above");
-    numCategory = std::string{TypeInfo<app_num::PrimeMethod>::name};
-    subCLIAppNum.addArgument("-" + numAlias.at(numCategory), "--" + numCategory)
-        .argsNum(0, numTable.at(numCategory).candidates.size())
-        .defaultVal<std::vector<std::string>>(AggregationTasks{numTable.at(numCategory).candidates})
+        .help(getDescr<app_num::IntegralMethod>());
+    appMsgForwarder.registerHandler(
+        [](const AppUpdMsg<app_num::IntegralMethod>& msg)
+        {
+            app_num::updateChoice<app_num::IntegralMethod>(msg.cho);
+        });
+    appMsgForwarder.registerHandler(
+        [](const AppRunMsg<app_num::IntegralMethod>& msg)
+        {
+            app_num::runChoices<app_num::IntegralMethod>(msg.cntr);
+        });
+    numCat = std::string{TypeInfo<app_num::PrimeMethod>::name};
+    numCho = extractChoices<app_num::PrimeMethod>();
+    numTbl[numCat] = CategoryExtAttr{numCho, app_num::PrimeMethod{}};
+    subCLIAppNum.addArgument("-" + std::string{getAlias<app_num::NumericChoice, app_num::PrimeMethod>()}, "--" + numCat)
+        .argsNum(0, numCho.size())
+        .defaultVal<std::vector<std::string>>(std::move(numCho))
         .remaining()
         .metavar("OPT")
-        .help("run prime tasks\n"
-              "- era    Eratosthenes\n"
-              "- eul    Euler\n"
-              "add the tasks listed above");
+        .help(getDescr<app_num::PrimeMethod>());
+    appMsgForwarder.registerHandler(
+        [](const AppUpdMsg<app_num::PrimeMethod>& msg)
+        {
+            app_num::updateChoice<app_num::PrimeMethod>(msg.cho);
+        });
+    appMsgForwarder.registerHandler(
+        [](const AppRunMsg<app_num::PrimeMethod>& msg)
+        {
+            app_num::runChoices<app_num::PrimeMethod>(msg.cntr);
+        });
     mainCLI.addSubParser(subCLIAppNum);
 }
 
@@ -360,8 +460,7 @@ try
 {
     std::unique_lock<std::mutex> lock(mtx);
     mainCLI.parseArgs(argc, argv);
-    validateBasicTask();
-    validateRegularTask();
+    validate();
 
     isParsed.store(true);
     lock.unlock();
@@ -387,9 +486,9 @@ try
             });
     }
 
-    if (hasAnyTask())
+    if (anySelected())
     {
-        dispatchTask();
+        dispatch();
     }
 }
 catch (const std::exception& err)
@@ -397,40 +496,19 @@ catch (const std::exception& err)
     LOG_WRN << err.what();
 }
 
-//! @brief Get the callback for running tasks.
-//! @param tuple - a tuple containing the callback to be got
-//! @return callback for running tasks
-template <>
-auto Command::get<Command::RunTasksFunctor>(const TaskFunctorTuple& tuple) -> const RunTasksFunctor&
-{
-    return std::get<0>(tuple);
-}
-
-//! @brief Get the callback for updating task.
-//! @param tuple - a tuple containing the callback to be got
-//! @return callback for updating task
-template <>
-auto Command::get<Command::UpdateTaskFunctor>(const TaskFunctorTuple& tuple) -> const UpdateTaskFunctor&
-{
-    return std::get<1>(tuple);
-}
-
-void Command::validateBasicTask()
+void Command::validate()
 {
     for (std::uint8_t i = 0; i < Bottom<Category>::value; ++i)
     {
-        if (!mainCLI.isUsed(std::next(basicTaskDispatcher.cbegin(), Category(i))->first))
+        if (!mainCLI.isUsed(std::next(basicCategories.cbegin(), Category(i))->first))
         {
             continue;
         }
         checkForExcessiveArguments();
 
-        dispatchedTask.basicTask.primaryOpts.set(Category(i));
+        dispatchManager.basicManager.categories.set(Category(i));
     }
-}
 
-void Command::validateRegularTask()
-{
     const auto isSubCLIUsed = [this](const auto& subCLIPair)
     {
         if (mainCLI.isSubCommandUsed(subCLIPair.first))
@@ -440,21 +518,19 @@ void Command::validateRegularTask()
         }
         return false;
     };
-
-    for ([[maybe_unused]] const auto& [subCLIName, subCLIMap] :
-         regularTaskDispatcher | std::views::filter(isSubCLIUsed))
+    for ([[maybe_unused]] const auto& [subCLIName, subCLIMap] : regularChoices | std::views::filter(isSubCLIUsed))
     {
         const auto& subCLI = mainCLI.at<utility::argument::Argument>(subCLIName);
         if (!subCLI)
         {
-            dispatchedTask.regularTask.helpOnly = true;
+            dispatchManager.regularManager.helpOnly = true;
             return;
         }
-
         if (subCLI.isUsed("help"))
         {
-            dispatchedTask.regularTask.helpOnly = true;
+            dispatchManager.regularManager.helpOnly = true;
         }
+
         const auto isCategoryUsed = [this, subCLI](const auto& categoryPair)
         {
             if (subCLI.isUsed(categoryPair.first))
@@ -464,46 +540,50 @@ void Command::validateRegularTask()
             }
             return false;
         };
-
         for ([[maybe_unused]] const auto& [categoryName, categoryAttr] : subCLIMap | std::views::filter(isCategoryUsed))
         {
             const auto& pendingTasks = subCLI.get<std::vector<std::string>>(categoryName);
             for (const auto& target : pendingTasks)
             {
-                const auto& updateTask = get<UpdateTaskFunctor>(categoryAttr.callbacks);
-                updateTask(target);
+                std::visit(
+                    AppEvtOverloaded{[this, target](auto&& event)
+                                     {
+                                         using EventType = std::decay_t<decltype(event)>;
+                                         appMsgForwarder.onMessage(AppUpdMsg<EventType>{target});
+                                     }},
+                    categoryAttr.event);
             }
         }
     }
 }
 
-bool Command::hasAnyTask() const
+bool Command::anySelected() const
 {
-    return !dispatchedTask.empty();
+    return !dispatchManager.empty();
 }
 
-void Command::dispatchTask()
+void Command::dispatch()
 {
-    if (!dispatchedTask.basicTask.empty())
+    if (!dispatchManager.basicManager.empty())
     {
         for (std::uint8_t i = 0; i < Bottom<Category>::value; ++i)
         {
-            if (dispatchedTask.basicTask.primaryOpts.test(Category(i)))
+            if (dispatchManager.basicManager.categories.test(Category(i)))
             {
-                (this->*std::next(basicTaskDispatcher.cbegin(), Category(i))->second)();
+                (this->*std::next(basicCategories.cbegin(), Category(i))->second)();
             }
         }
     }
-    else if (!dispatchedTask.regularTask.empty())
+    else if (!dispatchManager.regularManager.empty())
     {
-        if (dispatchedTask.regularTask.helpOnly)
+        if (dispatchManager.regularManager.helpOnly)
         {
             const auto isSubCLIUsed = [this](const auto& subCLIPair)
             {
                 return mainCLI.isSubCommandUsed(subCLIPair.first);
             };
 
-            for (const auto& subCLIName : std::views::keys(regularTaskDispatcher | std::views::filter(isSubCLIUsed)))
+            for (const auto& subCLIName : std::views::keys(regularChoices | std::views::filter(isSubCLIUsed)))
             {
                 const auto& subCLI = mainCLI.at<utility::argument::Argument>(subCLIName);
                 std::cout << subCLI.help().str() << std::flush;
@@ -513,42 +593,33 @@ void Command::dispatchTask()
         }
 
         for (const auto& categoryAttr : std::views::values(
-                 std::next(regularTaskDispatcher.cbegin(), dispatchedTask.regularTask.getExistingSubTask())->second))
+                 std::next(regularChoices.cbegin(), dispatchManager.regularManager.getExistingOrder())->second))
         {
-            const auto& runTasks = get<RunTasksFunctor>(categoryAttr.callbacks);
-            runTasks(categoryAttr.candidates);
+            const auto& candidates = categoryAttr.choices;
+            std::visit(
+                AppEvtOverloaded{[this, candidates](auto&& event)
+                                 {
+                                     using EventType = std::decay_t<decltype(event)>;
+                                     appMsgForwarder.onMessage(AppRunMsg<EventType>{candidates});
+                                 }},
+                categoryAttr.event);
         }
     }
 }
 
 template <typename T>
-std::map<Command::CategoryName, Command::CategoryAlias> Command::filterAliasUnderSubCLI(const SubCLIName& name) const
+Command::ChoiceContainer Command::extractChoices()
 {
     using TypeInfo = utility::reflection::TypeInfo<T>;
 
-    const auto& table = regularTaskDispatcher.at(name);
-    if ((name != TypeInfo::name) || (table.size() != TypeInfo::fields.size))
-    {
-        throw std::logic_error("The " + name + " sub-command is invalid.");
-    }
-
-    std::map<CategoryName, CategoryAlias> aliases;
+    ChoiceContainer choices;
     TypeInfo::fields.forEach(
-        [name, table, &aliases](auto field)
+        [&choices](auto field)
         {
-            if (!field.hasValue || (table.cend() == table.find(std::string{field.name})))
-            {
-                throw std::logic_error(
-                    "The --" + std::string{field.name} + " option has not been added to the " + name + " sub-command.");
-            }
-
-            static_assert(1 == field.attrs.size);
-            auto attr = field.attrs.find(REFLECTION_STR("alias"));
-            static_assert(attr.hasValue);
-            aliases.emplace(field.name, attr.value);
+            choices.emplace_back(field.attrs.find(REFLECTION_STR("choice")).value);
         });
 
-    return aliases;
+    return choices;
 }
 
 //! @brief Launch the TCP client for console mode.
@@ -608,7 +679,7 @@ void Command::executeConsoleCommand() const
     }
 
     const auto& pendingInputs =
-        mainCLI.get<std::vector<std::string>>(std::next(basicTaskDispatcher.cbegin(), Category::console)->first);
+        mainCLI.get<std::vector<std::string>>(std::next(basicCategories.cbegin(), Category::console)->first);
     if (pendingInputs.empty())
     {
         return;
@@ -662,10 +733,10 @@ void Command::showVersionIcon() const
 
 void Command::checkForExcessiveArguments()
 {
-    if (hasAnyTask())
+    if (anySelected())
     {
-        dispatchedTask.reset();
-        throw std::logic_error("Excessive arguments.");
+        dispatchManager.reset();
+        throw std::invalid_argument("Excessive arguments.");
     }
 }
 
