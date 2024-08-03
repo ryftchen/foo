@@ -831,7 +831,7 @@ std::string View::getStatusReports(const std::uint16_t frame)
     std::snprintf(cmd, totalLen, "ps -T -p %d | awk 'NR>1 {split($0, a, \" \"); print a[2]}'", pid);
     const std::string queryResult = utility::io::executeCommand(cmd);
 
-    std::vector<std::string> cmdCntr;
+    std::vector<std::string> cmdColl;
     std::size_t pos = 0, prev = 0;
     const int currTid = ::gettid();
     const bool showStack = (::system("which eu-stack >/dev/null 2>&1") == EXIT_SUCCESS);
@@ -868,15 +868,15 @@ std::string View::getStatusReports(const std::uint16_t frame)
         {
             std::strncpy(cmd + usedLen, "; fi", totalLen - usedLen);
         }
-        cmdCntr.emplace_back(cmd);
+        cmdColl.emplace_back(cmd);
         prev = pos + 1;
     }
     cmd[totalLen - 1] = '\0';
 
     std::string statRep;
     std::for_each(
-        cmdCntr.cbegin(),
-        cmdCntr.cend(),
+        cmdColl.cbegin(),
+        cmdColl.cend(),
         [&statRep](const auto& cmd)
         {
             statRep += utility::io::executeCommand(cmd) + '\n';

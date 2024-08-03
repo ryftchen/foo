@@ -13,7 +13,7 @@
 #include "application/pch/precompiled_header.hpp"
 #endif // __PRECOMPILED_HEADER
 
-#include "application/core/include/command.hpp"
+#include "application/core/include/apply.hpp"
 #include "application/core/include/log.hpp"
 #include "utility/include/currying.hpp"
 
@@ -49,7 +49,7 @@ DesignPatternChoice& manager()
 static const auto& getTaskNameCurried()
 {
     static const auto curried =
-        utility::currying::curry(command::presetTaskName, utility::reflection::TypeInfo<DesignPatternChoice>::name);
+        utility::currying::curry(apply::presetTaskName, utility::reflection::TypeInfo<DesignPatternChoice>::name);
     return curried;
 }
 
@@ -401,7 +401,7 @@ void runChoices<BehavioralInstance>(const std::vector<std::string>& candidates)
     APP_DP_PRINT_TASK_BEGIN_TITLE(category);
     using behavioral::BehavioralPattern;
 
-    auto& pooling = command::getPublicThreadPool();
+    auto& pooling = apply::resourcePool();
     auto* const threads = pooling.newElement(std::min(
         static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<BehavioralInstance>::value)));
     const auto behavioralFunctor = [threads](const std::string& threadName, void (*targetInstance)())
@@ -576,7 +576,7 @@ void runChoices<CreationalInstance>(const std::vector<std::string>& candidates)
     APP_DP_PRINT_TASK_BEGIN_TITLE(category);
     using creational::CreationalPattern;
 
-    auto& pooling = command::getPublicThreadPool();
+    auto& pooling = apply::resourcePool();
     auto* const threads = pooling.newElement(std::min(
         static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<CreationalInstance>::value)));
     const auto creationalFunctor = [threads](const std::string& threadName, void (*targetInstance)())
@@ -761,7 +761,7 @@ void runChoices<StructuralInstance>(const std::vector<std::string>& candidates)
     APP_DP_PRINT_TASK_BEGIN_TITLE(category);
     using structural::StructuralPattern;
 
-    auto& pooling = command::getPublicThreadPool();
+    auto& pooling = apply::resourcePool();
     auto* const threads = pooling.newElement(std::min(
         static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<StructuralInstance>::value)));
     const auto structuralFunctor = [threads](const std::string& threadName, void (*targetInstance)())

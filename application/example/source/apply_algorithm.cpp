@@ -13,7 +13,7 @@
 #include "application/pch/precompiled_header.hpp"
 #endif // __PRECOMPILED_HEADER
 
-#include "application/core/include/command.hpp"
+#include "application/core/include/apply.hpp"
 #include "application/core/include/log.hpp"
 #include "utility/include/currying.hpp"
 
@@ -49,7 +49,7 @@ AlgorithmChoice& manager()
 static const auto& getTaskNameCurried()
 {
     static const auto curried =
-        utility::currying::curry(command::presetTaskName, utility::reflection::TypeInfo<AlgorithmChoice>::name);
+        utility::currying::curry(apply::presetTaskName, utility::reflection::TypeInfo<AlgorithmChoice>::name);
     return curried;
 }
 
@@ -405,7 +405,7 @@ void runChoices<MatchMethod>(const std::vector<std::string>& candidates)
     using match::MatchSolution, match::InputBuilder, match::input::patternString;
     static_assert(InputBuilder::maxDigit > patternString.length());
 
-    auto& pooling = command::getPublicThreadPool();
+    auto& pooling = apply::resourcePool();
     auto* const threads = pooling.newElement(
         std::min(static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<MatchMethod>::value)));
     const auto inputs = std::make_shared<InputBuilder>(std::string{patternString});
@@ -531,7 +531,7 @@ void runChoices<NotationMethod>(const std::vector<std::string>& candidates)
     APP_ALGO_PRINT_TASK_BEGIN_TITLE(category);
     using notation::NotationSolution, notation::InputBuilder, notation::input::infixString;
 
-    auto& pooling = command::getPublicThreadPool();
+    auto& pooling = apply::resourcePool();
     auto* const threads = pooling.newElement(std::min(
         static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<NotationMethod>::value)));
     const auto inputs = std::make_shared<InputBuilder>(infixString);
@@ -692,7 +692,7 @@ void runChoices<OptimalMethod>(const std::vector<std::string>& candidates)
     const auto calcFunc =
         [&candidates, bitFlag](const optimal::Function& function, const optimal::FuncRange<double, double>& range)
     {
-        auto& pooling = command::getPublicThreadPool();
+        auto& pooling = apply::resourcePool();
         auto* const threads = pooling.newElement(std::min(
             static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<OptimalMethod>::value)));
         const auto optimalFunctor = [threads, &function, &range](
@@ -865,7 +865,7 @@ void runChoices<SearchMethod>(const std::vector<std::string>& candidates)
         search::input::arrayRange2;
     static_assert((arrayRange1 < arrayRange2) && (arrayLength > 0));
 
-    auto& pooling = command::getPublicThreadPool();
+    auto& pooling = apply::resourcePool();
     auto* const threads = pooling.newElement(
         std::min(static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<SearchMethod>::value)));
     const auto inputs = std::make_shared<InputBuilder<float>>(arrayLength, arrayRange1, arrayRange2);
@@ -929,9 +929,9 @@ void SortSolution::bubbleMethod(const std::int32_t* const array, const std::uint
 try
 {
     TIME_BEGIN(timing);
-    const auto& cntr = algorithm::sort::Sort<std::int32_t>().bubble(array, length);
+    const auto& coll = algorithm::sort::Sort<std::int32_t>().bubble(array, length);
     TIME_END(timing);
-    displayResult(SortMethod::bubble, cntr, TIME_INTERVAL(timing));
+    displayResult(SortMethod::bubble, coll, TIME_INTERVAL(timing));
 }
 catch (const std::exception& err)
 {
@@ -942,9 +942,9 @@ void SortSolution::selectionMethod(const std::int32_t* const array, const std::u
 try
 {
     TIME_BEGIN(timing);
-    const auto& cntr = algorithm::sort::Sort<std::int32_t>().selection(array, length);
+    const auto& coll = algorithm::sort::Sort<std::int32_t>().selection(array, length);
     TIME_END(timing);
-    displayResult(SortMethod::selection, cntr, TIME_INTERVAL(timing));
+    displayResult(SortMethod::selection, coll, TIME_INTERVAL(timing));
 }
 catch (const std::exception& err)
 {
@@ -955,9 +955,9 @@ void SortSolution::insertionMethod(const std::int32_t* const array, const std::u
 try
 {
     TIME_BEGIN(timing);
-    const auto& cntr = algorithm::sort::Sort<std::int32_t>().insertion(array, length);
+    const auto& coll = algorithm::sort::Sort<std::int32_t>().insertion(array, length);
     TIME_END(timing);
-    displayResult(SortMethod::insertion, cntr, TIME_INTERVAL(timing));
+    displayResult(SortMethod::insertion, coll, TIME_INTERVAL(timing));
 }
 catch (const std::exception& err)
 {
@@ -968,9 +968,9 @@ void SortSolution::shellMethod(const std::int32_t* const array, const std::uint3
 try
 {
     TIME_BEGIN(timing);
-    const auto& cntr = algorithm::sort::Sort<std::int32_t>().shell(array, length);
+    const auto& coll = algorithm::sort::Sort<std::int32_t>().shell(array, length);
     TIME_END(timing);
-    displayResult(SortMethod::shell, cntr, TIME_INTERVAL(timing));
+    displayResult(SortMethod::shell, coll, TIME_INTERVAL(timing));
 }
 catch (const std::exception& err)
 {
@@ -981,9 +981,9 @@ void SortSolution::mergeMethod(const std::int32_t* const array, const std::uint3
 try
 {
     TIME_BEGIN(timing);
-    const auto& cntr = algorithm::sort::Sort<std::int32_t>().merge(array, length);
+    const auto& coll = algorithm::sort::Sort<std::int32_t>().merge(array, length);
     TIME_END(timing);
-    displayResult(SortMethod::merge, cntr, TIME_INTERVAL(timing));
+    displayResult(SortMethod::merge, coll, TIME_INTERVAL(timing));
 }
 catch (const std::exception& err)
 {
@@ -994,9 +994,9 @@ void SortSolution::quickMethod(const std::int32_t* const array, const std::uint3
 try
 {
     TIME_BEGIN(timing);
-    const auto& cntr = algorithm::sort::Sort<std::int32_t>().quick(array, length);
+    const auto& coll = algorithm::sort::Sort<std::int32_t>().quick(array, length);
     TIME_END(timing);
-    displayResult(SortMethod::quick, cntr, TIME_INTERVAL(timing));
+    displayResult(SortMethod::quick, coll, TIME_INTERVAL(timing));
 }
 catch (const std::exception& err)
 {
@@ -1007,9 +1007,9 @@ void SortSolution::heapMethod(const std::int32_t* const array, const std::uint32
 try
 {
     TIME_BEGIN(timing);
-    const auto& cntr = algorithm::sort::Sort<std::int32_t>().heap(array, length);
+    const auto& coll = algorithm::sort::Sort<std::int32_t>().heap(array, length);
     TIME_END(timing);
-    displayResult(SortMethod::heap, cntr, TIME_INTERVAL(timing));
+    displayResult(SortMethod::heap, coll, TIME_INTERVAL(timing));
 }
 catch (const std::exception& err)
 {
@@ -1020,9 +1020,9 @@ void SortSolution::countingMethod(const std::int32_t* const array, const std::ui
 try
 {
     TIME_BEGIN(timing);
-    const auto& cntr = algorithm::sort::Sort<std::int32_t>().counting(array, length);
+    const auto& coll = algorithm::sort::Sort<std::int32_t>().counting(array, length);
     TIME_END(timing);
-    displayResult(SortMethod::counting, cntr, TIME_INTERVAL(timing));
+    displayResult(SortMethod::counting, coll, TIME_INTERVAL(timing));
 }
 catch (const std::exception& err)
 {
@@ -1033,9 +1033,9 @@ void SortSolution::bucketMethod(const std::int32_t* const array, const std::uint
 try
 {
     TIME_BEGIN(timing);
-    const auto& cntr = algorithm::sort::Sort<std::int32_t>().bucket(array, length);
+    const auto& coll = algorithm::sort::Sort<std::int32_t>().bucket(array, length);
     TIME_END(timing);
-    displayResult(SortMethod::bucket, cntr, TIME_INTERVAL(timing));
+    displayResult(SortMethod::bucket, coll, TIME_INTERVAL(timing));
 }
 catch (const std::exception& err)
 {
@@ -1046,9 +1046,9 @@ void SortSolution::radixMethod(const std::int32_t* const array, const std::uint3
 try
 {
     TIME_BEGIN(timing);
-    const auto& cntr = algorithm::sort::Sort<std::int32_t>().radix(array, length);
+    const auto& coll = algorithm::sort::Sort<std::int32_t>().radix(array, length);
     TIME_END(timing);
-    displayResult(SortMethod::radix, cntr, TIME_INTERVAL(timing));
+    displayResult(SortMethod::radix, coll, TIME_INTERVAL(timing));
 }
 catch (const std::exception& err)
 {
@@ -1119,7 +1119,7 @@ void runChoices<SortMethod>(const std::vector<std::string>& candidates)
         sort::input::arrayRange2;
     static_assert((arrayRange1 < arrayRange2) && (arrayLength > 0));
 
-    auto& pooling = command::getPublicThreadPool();
+    auto& pooling = apply::resourcePool();
     auto* const threads = pooling.newElement(
         std::min(static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<SortMethod>::value)));
     const auto inputs = std::make_shared<InputBuilder<std::int32_t>>(arrayLength, arrayRange1, arrayRange2);

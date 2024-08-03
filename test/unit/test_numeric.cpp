@@ -121,7 +121,7 @@ public:
     //! @brief Input builder.
     static std::shared_ptr<divisor::InputBuilder> inputs;
     //! @brief Expected result.
-    const std::vector<std::int32_t> expCntr{1, 2, 3, 5, 6, 7, 10, 14, 15, 21, 30, 35, 42, 70, 105, 210};
+    const std::vector<std::int32_t> expColl{1, 2, 3, 5, 6, 7, 10, 14, 15, 21, 30, 35, 42, 70, 105, 210};
 };
 std::shared_ptr<divisor::InputBuilder> DivisorTestBase::inputs = nullptr;
 
@@ -129,7 +129,7 @@ std::shared_ptr<divisor::InputBuilder> DivisorTestBase::inputs = nullptr;
 TEST_F(DivisorTestBase, euclideanMethod)
 {
     ASSERT_EQ(
-        expCntr,
+        expColl,
         numeric::divisor::Divisor::euclidean(std::get<0>(inputs->getIntegers()), std::get<1>(inputs->getIntegers())));
 }
 
@@ -137,7 +137,7 @@ TEST_F(DivisorTestBase, euclideanMethod)
 TEST_F(DivisorTestBase, steinMethod)
 {
     ASSERT_EQ(
-        expCntr,
+        expColl,
         numeric::divisor::Divisor::stein(std::get<0>(inputs->getIntegers()), std::get<1>(inputs->getIntegers())));
 }
 
@@ -275,7 +275,7 @@ public:
     //! @brief Input builder.
     static std::shared_ptr<prime::InputBuilder> inputs;
     //! @brief Expected result.
-    const std::vector<std::uint32_t> expCntr{
+    const std::vector<std::uint32_t> expColl{
         2,   3,   5,   7,   11,  13,  17,  19,  23,  29,  31,  37,  41,  43,  47,  53,  59,  61,  67,  71,  73,
         79,  83,  89,  97,  101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167, 173, 179, 181,
         191, 193, 197, 199, 211, 223, 227, 229, 233, 239, 241, 251, 257, 263, 269, 271, 277, 281, 283, 293, 307,
@@ -290,13 +290,13 @@ std::shared_ptr<prime::InputBuilder> PrimeTestBase::inputs = nullptr;
 //! @brief Test for the Eratosthenes method in the solution of prime.
 TEST_F(PrimeTestBase, eratosthenesMethod)
 {
-    ASSERT_EQ(expCntr, numeric::prime::Prime::eratosthenes(inputs->getMaxPositiveInteger()));
+    ASSERT_EQ(expColl, numeric::prime::Prime::eratosthenes(inputs->getMaxPositiveInteger()));
 }
 
 //! @brief Test for the Euler method in the solution of prime.
 TEST_F(PrimeTestBase, eulerMethod)
 {
-    ASSERT_EQ(expCntr, numeric::prime::Prime::euler(inputs->getMaxPositiveInteger()));
+    ASSERT_EQ(expColl, numeric::prime::Prime::euler(inputs->getMaxPositiveInteger()));
 }
 } // namespace tst_num
 } // namespace test
