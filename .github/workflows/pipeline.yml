@@ -32,6 +32,22 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4.1.0
 
+      - name: Pre-check
+        run: |
+          ./script/build.sh --hook --spell --statistics
+          git status
+
+      - name: Create archive
+        run: |
+          ./script/build.sh --browser --doxygen
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4.3.0
+        with:
+          name: foo_artifact
+          path: ./document/archive/foo_*.tar.bz2
+          retention-days: 7
+
       - name: Static check phase 1
         run: |
           ./script/build.sh --format --lint
@@ -60,6 +76,7 @@ jobs:
 
       - name: Basic debug version
         run: |
+          ./script/build.sh --initialize
           ./script/run.py --test --build dbg --repeat 1
           cat ./report/foo_run.report
           ./script/run.py --build dbg --repeat 1
@@ -112,34 +129,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4.1.0
 
-      - name: Pre-check
-        run: |
-          ./script/build.sh --hook --spell --statistics
-          git status
-
-      - name: Create archive
-        run: |
-          ./script/build.sh --browser --doxygen
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4.3.0
-        with:
-          name: foo_artifact
-          path: ./document/archive/foo_*.tar.bz2
-          retention-days: 7
-
       - name: Development environment
         run: |
           ./script/build.sh --container --assume y
           ./script/build.sh --website --assume y
-          ./script/build.sh --initialize
           ./script/build.sh
           ./script/build.sh --test
           ./script/build.sh --install
           ./script/build.sh --uninstall
           ./script/build.sh --clean
 
-      - name: Extended check phase 1
+      - name: Enhanced environment
         run: |
           ./script/build.sh --initialize
           sed -i 's/FOO_BLD_COMPILER=.*/FOO_BLD_COMPILER=gcc/' ./script/.build_env
@@ -149,13 +149,16 @@ jobs:
           sed -i 's/FOO_BLD_CCACHE=.*/FOO_BLD_CCACHE=on/' ./script/.build_env
           sed -i 's/FOO_BLD_DISTCC=.*/FOO_BLD_DISTCC="0.0.0.0,lzo"/' ./script/.build_env
           sed -i 's/FOO_BLD_TMPFS=.*/FOO_BLD_TMPFS=on/' ./script/.build_env
+
+      - name: Extended check (part 1)
+        run: |
           ./script/run.py --dump
           ./script/run.py --test --check mem --build dbg --repeat 1
           ./script/run.py --analyze
           ./script/run.py --check mem --build dbg --repeat 1
           ./script/run.py --analyze
 
-      - name: Extended check phase 2
+      - name: Extended check (part 2)
         run: |
           ./script/run.py --test --check mem --build rls --repeat 1
           ./script/run.py --analyze
