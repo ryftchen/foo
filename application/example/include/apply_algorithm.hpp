@@ -612,7 +612,12 @@ struct FuncMapHash
     {
         const std::size_t hash1 = std::hash<T1>()(range.range1), hash2 = std::hash<T2>()(range.range2),
                           hash3 = std::hash<std::string_view>()(range.funcDescr);
-        return hash1 ^ hash2 ^ hash3;
+        constexpr std::size_t magicNumber = 0x9e3779b9, leftShift = 6, rightShift = 2;
+        std::size_t seed = 0;
+        seed ^= hash1 + magicNumber + (seed << leftShift) + (seed >> rightShift);
+        seed ^= hash2 + magicNumber + (seed << leftShift) + (seed >> rightShift);
+        seed ^= hash3 + magicNumber + (seed << leftShift) + (seed >> rightShift);
+        return seed;
     }
 };
 
