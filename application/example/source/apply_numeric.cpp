@@ -13,7 +13,7 @@
 #include "application/pch/precompiled_header.hpp"
 #endif // __PRECOMPILED_HEADER
 
-#include "application/core/include/command.hpp"
+#include "application/core/include/apply.hpp"
 #include "application/core/include/log.hpp"
 #include "utility/include/currying.hpp"
 
@@ -49,7 +49,7 @@ NumericChoice& manager()
 static const auto& getTaskNameCurried()
 {
     static const auto curried =
-        utility::currying::curry(command::presetTaskName, utility::reflection::TypeInfo<NumericChoice>::name);
+        utility::currying::curry(apply::presetTaskName, utility::reflection::TypeInfo<NumericChoice>::name);
     return curried;
 }
 
@@ -316,7 +316,7 @@ void runChoices<ArithmeticMethod>(const std::vector<std::string>& candidates)
     using arithmetic::ArithmeticSolution, arithmetic::InputBuilder, arithmetic::input::integerA,
         arithmetic::input::integerB;
 
-    auto& pooling = command::getPublicThreadPool();
+    auto& pooling = apply::resourcePool();
     auto* const threads = pooling.newElement(std::min(
         static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<ArithmeticMethod>::value)));
     const auto inputs = std::make_shared<InputBuilder>(integerA, integerB);
@@ -381,9 +381,9 @@ void DivisorSolution::euclideanMethod(std::int32_t a, std::int32_t b)
 try
 {
     TIME_BEGIN(timing);
-    const auto& cntr = numeric::divisor::Divisor().euclidean(a, b);
+    const auto& coll = numeric::divisor::Divisor().euclidean(a, b);
     TIME_END(timing);
-    displayResult(DivisorMethod::euclidean, cntr, TIME_INTERVAL(timing));
+    displayResult(DivisorMethod::euclidean, coll, TIME_INTERVAL(timing));
 }
 catch (const std::exception& err)
 {
@@ -394,9 +394,9 @@ void DivisorSolution::steinMethod(std::int32_t a, std::int32_t b)
 try
 {
     TIME_BEGIN(timing);
-    const auto& cntr = numeric::divisor::Divisor().stein(a, b);
+    const auto& coll = numeric::divisor::Divisor().stein(a, b);
     TIME_END(timing);
-    displayResult(DivisorMethod::stein, cntr, TIME_INTERVAL(timing));
+    displayResult(DivisorMethod::stein, coll, TIME_INTERVAL(timing));
 }
 catch (const std::exception& err)
 {
@@ -441,7 +441,7 @@ void runChoices<DivisorMethod>(const std::vector<std::string>& candidates)
     APP_NUM_PRINT_TASK_BEGIN_TITLE(category);
     using divisor::DivisorSolution, divisor::InputBuilder, divisor::input::integerA, divisor::input::integerB;
 
-    auto& pooling = command::getPublicThreadPool();
+    auto& pooling = apply::resourcePool();
     auto* const threads = pooling.newElement(std::min(
         static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<DivisorMethod>::value)));
     const auto inputs = std::make_shared<InputBuilder>(integerA, integerB);
@@ -604,7 +604,7 @@ void runChoices<IntegralMethod>(const std::vector<std::string>& candidates)
     const auto calcExpr =
         [&candidates, bitFlag](const integral::Expression& expression, const integral::ExprRange<double, double>& range)
     {
-        auto& pooling = command::getPublicThreadPool();
+        auto& pooling = apply::resourcePool();
         auto* const threads = pooling.newElement(std::min(
             static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<IntegralMethod>::value)));
         const auto integralFunctor = [threads, &expression, &range](
@@ -690,9 +690,9 @@ void PrimeSolution::eratosthenesMethod(const std::uint32_t max)
 try
 {
     TIME_BEGIN(timing);
-    const auto& cntr = numeric::prime::Prime().eratosthenes(max);
+    const auto& coll = numeric::prime::Prime().eratosthenes(max);
     TIME_END(timing);
-    displayResult(PrimeMethod::eratosthenes, cntr, TIME_INTERVAL(timing));
+    displayResult(PrimeMethod::eratosthenes, coll, TIME_INTERVAL(timing));
 }
 catch (const std::exception& err)
 {
@@ -703,9 +703,9 @@ void PrimeSolution::eulerMethod(const std::uint32_t max)
 try
 {
     TIME_BEGIN(timing);
-    const auto& cntr = numeric::prime::Prime().euler(max);
+    const auto& coll = numeric::prime::Prime().euler(max);
     TIME_END(timing);
-    displayResult(PrimeMethod::euler, cntr, TIME_INTERVAL(timing));
+    displayResult(PrimeMethod::euler, coll, TIME_INTERVAL(timing));
 }
 catch (const std::exception& err)
 {
@@ -750,7 +750,7 @@ void runChoices<PrimeMethod>(const std::vector<std::string>& candidates)
     APP_NUM_PRINT_TASK_BEGIN_TITLE(category);
     using prime::PrimeSolution, prime::InputBuilder, prime::input::maxPositiveInteger;
 
-    auto& pooling = command::getPublicThreadPool();
+    auto& pooling = apply::resourcePool();
     auto* const threads = pooling.newElement(
         std::min(static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<PrimeMethod>::value)));
     const auto inputs = std::make_shared<InputBuilder>(maxPositiveInteger);

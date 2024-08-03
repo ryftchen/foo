@@ -20,7 +20,7 @@ Thread::Thread(const std::size_t size)
 {
     for (std::size_t i = 0; i < size; ++i)
     {
-        thdCntr.emplace_back(
+        thdColl.emplace_back(
             [this]()
             {
                 for (;;)
@@ -73,7 +73,7 @@ Thread::~Thread()
     }
 
     cv.notify_all();
-    for (auto& thd : thdCntr)
+    for (auto& thd : thdColl)
     {
         if (thd.joinable())
         {

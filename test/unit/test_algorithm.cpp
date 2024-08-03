@@ -270,7 +270,7 @@ public:
         TST_ALGO_PRINT_TASK_TITLE(Category::search, "BEGIN");
         inputs = std::make_shared<search::InputBuilder<float>>(
             search::input::arrayLength, search::input::arrayRange1, search::input::arrayRange2);
-        updateExpCntr();
+        updateExpColl();
     }
     //! @brief Tear down the test case.
     static void TearDownTestCase()
@@ -286,9 +286,9 @@ public:
     //! @brief Input builder.
     static std::shared_ptr<search::InputBuilder<float>> inputs;
     //! @brief Expected result.
-    static std::set<std::int64_t> expCntr;
+    static std::set<std::int64_t> expColl;
     //! @brief Update expected result.
-    static void updateExpCntr()
+    static void updateExpColl()
     {
         if (nullptr != inputs)
         {
@@ -299,33 +299,33 @@ public:
             {
                 if (searchKey == orderedArray[i])
                 {
-                    expCntr.emplace(i);
+                    expColl.emplace(i);
                 }
             }
         }
     }
 };
 std::shared_ptr<search::InputBuilder<float>> SearchTestBase::inputs = nullptr;
-std::set<std::int64_t> SearchTestBase::expCntr = {};
+std::set<std::int64_t> SearchTestBase::expColl = {};
 
 //! @brief Test for the binary method in the solution of search.
 TEST_F(SearchTestBase, binaryMethod)
 {
-    ASSERT_TRUE(expCntr.contains(algorithm::search::Search<float>::binary(
+    ASSERT_TRUE(expColl.contains(algorithm::search::Search<float>::binary(
         inputs->getOrderedArray().get(), inputs->getLength(), inputs->getSearchKey())));
 }
 
 //! @brief Test for the interpolation method in the solution of search.
 TEST_F(SearchTestBase, interpolationMethod)
 {
-    ASSERT_TRUE(expCntr.contains(algorithm::search::Search<float>::interpolation(
+    ASSERT_TRUE(expColl.contains(algorithm::search::Search<float>::interpolation(
         inputs->getOrderedArray().get(), inputs->getLength(), inputs->getSearchKey())));
 }
 
 //! @brief Test for the Fibonacci method in the solution of search.
 TEST_F(SearchTestBase, fibonacciMethod)
 {
-    ASSERT_TRUE(expCntr.contains(algorithm::search::Search<float>::fibonacci(
+    ASSERT_TRUE(expColl.contains(algorithm::search::Search<float>::fibonacci(
         inputs->getOrderedArray().get(), inputs->getLength(), inputs->getSearchKey())));
 }
 
@@ -344,7 +344,7 @@ public:
         TST_ALGO_PRINT_TASK_TITLE(Category::sort, "BEGIN");
         inputs = std::make_shared<sort::InputBuilder<std::int32_t>>(
             sort::input::arrayLength, sort::input::arrayRange1, sort::input::arrayRange2);
-        updateExpCntr();
+        updateExpColl();
     }
     //! @brief Tear down the test case.
     static void TearDownTestCase()
@@ -360,84 +360,84 @@ public:
     //! @brief Input builder.
     static std::shared_ptr<sort::InputBuilder<std::int32_t>> inputs;
     //! @brief Expected result.
-    static std::vector<std::int32_t> expCntr;
+    static std::vector<std::int32_t> expColl;
     //! @brief Update expected result.
-    static void updateExpCntr()
+    static void updateExpColl()
     {
         if (nullptr != inputs)
         {
-            expCntr = std::vector<std::int32_t>(
+            expColl = std::vector<std::int32_t>(
                 inputs->getRandomArray().get(), inputs->getRandomArray().get() + inputs->getLength());
-            std::sort(expCntr.begin(), expCntr.end());
+            std::sort(expColl.begin(), expColl.end());
         }
     }
 };
 std::shared_ptr<sort::InputBuilder<std::int32_t>> SortTestBase::inputs = nullptr;
-std::vector<std::int32_t> SortTestBase::expCntr = {};
+std::vector<std::int32_t> SortTestBase::expColl = {};
 
 //! @brief Test for the bubble method in the solution of sort.
 TEST_F(SortTestBase, bubbleMethod)
 {
     ASSERT_EQ(
-        expCntr, algorithm::sort::Sort<std::int32_t>::bubble(inputs->getRandomArray().get(), inputs->getLength()));
+        expColl, algorithm::sort::Sort<std::int32_t>::bubble(inputs->getRandomArray().get(), inputs->getLength()));
 }
 
 //! @brief Test for the selection method in the solution of sort.
 TEST_F(SortTestBase, selectionMethod)
 {
     ASSERT_EQ(
-        expCntr, algorithm::sort::Sort<std::int32_t>::selection(inputs->getRandomArray().get(), inputs->getLength()));
+        expColl, algorithm::sort::Sort<std::int32_t>::selection(inputs->getRandomArray().get(), inputs->getLength()));
 }
 
 //! @brief Test for the insertion method in the solution of sort.
 TEST_F(SortTestBase, insertionMethod)
 {
     ASSERT_EQ(
-        expCntr, algorithm::sort::Sort<std::int32_t>::insertion(inputs->getRandomArray().get(), inputs->getLength()));
+        expColl, algorithm::sort::Sort<std::int32_t>::insertion(inputs->getRandomArray().get(), inputs->getLength()));
 }
 
 //! @brief Test for the shell method in the solution of sort.
 TEST_F(SortTestBase, shellMethod)
 {
-    ASSERT_EQ(expCntr, algorithm::sort::Sort<std::int32_t>::shell(inputs->getRandomArray().get(), inputs->getLength()));
+    ASSERT_EQ(expColl, algorithm::sort::Sort<std::int32_t>::shell(inputs->getRandomArray().get(), inputs->getLength()));
 }
 
 //! @brief Test for the merge method in the solution of sort.
 TEST_F(SortTestBase, mergeMethod)
 {
-    ASSERT_EQ(expCntr, algorithm::sort::Sort<std::int32_t>::merge(inputs->getRandomArray().get(), inputs->getLength()));
+    ASSERT_EQ(expColl, algorithm::sort::Sort<std::int32_t>::merge(inputs->getRandomArray().get(), inputs->getLength()));
 }
 
 //! @brief Test for the quick method in the solution of sort.
 TEST_F(SortTestBase, quickMethod)
 {
-    ASSERT_EQ(expCntr, algorithm::sort::Sort<std::int32_t>::quick(inputs->getRandomArray().get(), inputs->getLength()));
+    ASSERT_EQ(expColl, algorithm::sort::Sort<std::int32_t>::quick(inputs->getRandomArray().get(), inputs->getLength()));
 }
 
 //! @brief Test for the heap method in the solution of sort.
 TEST_F(SortTestBase, heapMethod)
 {
-    ASSERT_EQ(expCntr, algorithm::sort::Sort<std::int32_t>::heap(inputs->getRandomArray().get(), inputs->getLength()));
+    ASSERT_EQ(expColl, algorithm::sort::Sort<std::int32_t>::heap(inputs->getRandomArray().get(), inputs->getLength()));
 }
 
 //! @brief Test for the counting method in the solution of sort.
 TEST_F(SortTestBase, countingMethod)
 {
     ASSERT_EQ(
-        expCntr, algorithm::sort::Sort<std::int32_t>::counting(inputs->getRandomArray().get(), inputs->getLength()));
+        expColl, algorithm::sort::Sort<std::int32_t>::counting(inputs->getRandomArray().get(), inputs->getLength()));
 }
 
 //! @brief Test for the bucket method in the solution of sort.
 TEST_F(SortTestBase, bucketMethod)
 {
     ASSERT_EQ(
-        expCntr, algorithm::sort::Sort<std::int32_t>::bucket(inputs->getRandomArray().get(), inputs->getLength()));
+        expColl, algorithm::sort::Sort<std::int32_t>::bucket(inputs->getRandomArray().get(), inputs->getLength()));
 }
 
 //! @brief Test for the radix method in the solution of sort.
 TEST_F(SortTestBase, radixMethod)
 {
-    ASSERT_EQ(expCntr, algorithm::sort::Sort<std::int32_t>::radix(inputs->getRandomArray().get(), inputs->getLength()));
+    ASSERT_EQ(expColl, algorithm::sort::Sort<std::int32_t>::radix(inputs->getRandomArray().get(), inputs->getLength()));
 }
 } // namespace tst_algo
 } // namespace test

@@ -165,15 +165,15 @@ void Command::initializeCLI()
         .remaining()
         .metavar("OPT")
         .help(getDescr<app_algo::MatchMethod>());
-    appMsgForwarder.registerHandler(
-        [](const AppUpdMsg<app_algo::MatchMethod>& msg)
+    applyMessage.registerHandler(
+        [](const apply::UpdateChoice<app_algo::MatchMethod>& msg)
         {
             app_algo::updateChoice<app_algo::MatchMethod>(msg.cho);
         });
-    appMsgForwarder.registerHandler(
-        [](const AppRunMsg<app_algo::MatchMethod>& msg)
+    applyMessage.registerHandler(
+        [](const apply::RunChoices<app_algo::MatchMethod>& msg)
         {
-            app_algo::runChoices<app_algo::MatchMethod>(msg.cntr);
+            app_algo::runChoices<app_algo::MatchMethod>(msg.coll);
         });
     algoCat = std::string{TypeInfo<app_algo::NotationMethod>::name};
     algoCho = extractChoices<app_algo::NotationMethod>();
@@ -185,15 +185,15 @@ void Command::initializeCLI()
         .remaining()
         .metavar("OPT")
         .help(getDescr<app_algo::NotationMethod>());
-    appMsgForwarder.registerHandler(
-        [](const AppUpdMsg<app_algo::NotationMethod>& msg)
+    applyMessage.registerHandler(
+        [](const apply::UpdateChoice<app_algo::NotationMethod>& msg)
         {
             app_algo::updateChoice<app_algo::NotationMethod>(msg.cho);
         });
-    appMsgForwarder.registerHandler(
-        [](const AppRunMsg<app_algo::NotationMethod>& msg)
+    applyMessage.registerHandler(
+        [](const apply::RunChoices<app_algo::NotationMethod>& msg)
         {
-            app_algo::runChoices<app_algo::NotationMethod>(msg.cntr);
+            app_algo::runChoices<app_algo::NotationMethod>(msg.coll);
         });
     algoCat = std::string{TypeInfo<app_algo::OptimalMethod>::name};
     algoCho = extractChoices<app_algo::OptimalMethod>();
@@ -205,15 +205,15 @@ void Command::initializeCLI()
         .remaining()
         .metavar("OPT")
         .help(getDescr<app_algo::OptimalMethod>());
-    appMsgForwarder.registerHandler(
-        [](const AppUpdMsg<app_algo::OptimalMethod>& msg)
+    applyMessage.registerHandler(
+        [](const apply::UpdateChoice<app_algo::OptimalMethod>& msg)
         {
             app_algo::updateChoice<app_algo::OptimalMethod>(msg.cho);
         });
-    appMsgForwarder.registerHandler(
-        [](const AppRunMsg<app_algo::OptimalMethod>& msg)
+    applyMessage.registerHandler(
+        [](const apply::RunChoices<app_algo::OptimalMethod>& msg)
         {
-            app_algo::runChoices<app_algo::OptimalMethod>(msg.cntr);
+            app_algo::runChoices<app_algo::OptimalMethod>(msg.coll);
         });
     algoCat = std::string{TypeInfo<app_algo::SearchMethod>::name};
     algoCho = extractChoices<app_algo::SearchMethod>();
@@ -225,15 +225,15 @@ void Command::initializeCLI()
         .remaining()
         .metavar("OPT")
         .help(getDescr<app_algo::SearchMethod>());
-    appMsgForwarder.registerHandler(
-        [](const AppUpdMsg<app_algo::SearchMethod>& msg)
+    applyMessage.registerHandler(
+        [](const apply::UpdateChoice<app_algo::SearchMethod>& msg)
         {
             app_algo::updateChoice<app_algo::SearchMethod>(msg.cho);
         });
-    appMsgForwarder.registerHandler(
-        [](const AppRunMsg<app_algo::SearchMethod>& msg)
+    applyMessage.registerHandler(
+        [](const apply::RunChoices<app_algo::SearchMethod>& msg)
         {
-            app_algo::runChoices<app_algo::SearchMethod>(msg.cntr);
+            app_algo::runChoices<app_algo::SearchMethod>(msg.coll);
         });
     algoCat = std::string{TypeInfo<app_algo::SortMethod>::name};
     algoCho = extractChoices<app_algo::SortMethod>();
@@ -245,15 +245,15 @@ void Command::initializeCLI()
         .remaining()
         .metavar("OPT")
         .help(getDescr<app_algo::SortMethod>());
-    appMsgForwarder.registerHandler(
-        [](const AppUpdMsg<app_algo::SortMethod>& msg)
+    applyMessage.registerHandler(
+        [](const apply::UpdateChoice<app_algo::SortMethod>& msg)
         {
             app_algo::updateChoice<app_algo::SortMethod>(msg.cho);
         });
-    appMsgForwarder.registerHandler(
-        [](const AppRunMsg<app_algo::SortMethod>& msg)
+    applyMessage.registerHandler(
+        [](const apply::RunChoices<app_algo::SortMethod>& msg)
         {
-            app_algo::runChoices<app_algo::SortMethod>(msg.cntr);
+            app_algo::runChoices<app_algo::SortMethod>(msg.coll);
         });
     mainCLI.addSubParser(subCLIAppAlgo);
 
@@ -271,15 +271,15 @@ void Command::initializeCLI()
         .remaining()
         .metavar("OPT")
         .help(getDescr<app_dp::BehavioralInstance>());
-    appMsgForwarder.registerHandler(
-        [](const AppUpdMsg<app_dp::BehavioralInstance>& msg)
+    applyMessage.registerHandler(
+        [](const apply::UpdateChoice<app_dp::BehavioralInstance>& msg)
         {
             app_dp::updateChoice<app_dp::BehavioralInstance>(msg.cho);
         });
-    appMsgForwarder.registerHandler(
-        [](const AppRunMsg<app_dp::BehavioralInstance>& msg)
+    applyMessage.registerHandler(
+        [](const apply::RunChoices<app_dp::BehavioralInstance>& msg)
         {
-            app_dp::runChoices<app_dp::BehavioralInstance>(msg.cntr);
+            app_dp::runChoices<app_dp::BehavioralInstance>(msg.coll);
         });
     dpCat = std::string{TypeInfo<app_dp::CreationalInstance>::name};
     dpCho = extractChoices<app_dp::CreationalInstance>();
@@ -292,15 +292,15 @@ void Command::initializeCLI()
         .remaining()
         .metavar("OPT")
         .help(getDescr<app_dp::CreationalInstance>());
-    appMsgForwarder.registerHandler(
-        [](const AppUpdMsg<app_dp::CreationalInstance>& msg)
+    applyMessage.registerHandler(
+        [](const apply::UpdateChoice<app_dp::CreationalInstance>& msg)
         {
             app_dp::updateChoice<app_dp::CreationalInstance>(msg.cho);
         });
-    appMsgForwarder.registerHandler(
-        [](const AppRunMsg<app_dp::CreationalInstance>& msg)
+    applyMessage.registerHandler(
+        [](const apply::RunChoices<app_dp::CreationalInstance>& msg)
         {
-            app_dp::runChoices<app_dp::CreationalInstance>(msg.cntr);
+            app_dp::runChoices<app_dp::CreationalInstance>(msg.coll);
         });
     dpCat = std::string{TypeInfo<app_dp::StructuralInstance>::name};
     dpCho = extractChoices<app_dp::StructuralInstance>();
@@ -313,15 +313,15 @@ void Command::initializeCLI()
         .remaining()
         .metavar("OPT")
         .help(getDescr<app_dp::StructuralInstance>());
-    appMsgForwarder.registerHandler(
-        [](const AppUpdMsg<app_dp::StructuralInstance>& msg)
+    applyMessage.registerHandler(
+        [](const apply::UpdateChoice<app_dp::StructuralInstance>& msg)
         {
             app_dp::updateChoice<app_dp::StructuralInstance>(msg.cho);
         });
-    appMsgForwarder.registerHandler(
-        [](const AppRunMsg<app_dp::StructuralInstance>& msg)
+    applyMessage.registerHandler(
+        [](const apply::RunChoices<app_dp::StructuralInstance>& msg)
         {
-            app_dp::runChoices<app_dp::StructuralInstance>(msg.cntr);
+            app_dp::runChoices<app_dp::StructuralInstance>(msg.coll);
         });
     mainCLI.addSubParser(subCLIAppDp);
 
@@ -338,15 +338,15 @@ void Command::initializeCLI()
         .remaining()
         .metavar("OPT")
         .help(getDescr<app_ds::LinearInstance>());
-    appMsgForwarder.registerHandler(
-        [](const AppUpdMsg<app_ds::LinearInstance>& msg)
+    applyMessage.registerHandler(
+        [](const apply::UpdateChoice<app_ds::LinearInstance>& msg)
         {
             app_ds::updateChoice<app_ds::LinearInstance>(msg.cho);
         });
-    appMsgForwarder.registerHandler(
-        [](const AppRunMsg<app_ds::LinearInstance>& msg)
+    applyMessage.registerHandler(
+        [](const apply::RunChoices<app_ds::LinearInstance>& msg)
         {
-            app_ds::runChoices<app_ds::LinearInstance>(msg.cntr);
+            app_ds::runChoices<app_ds::LinearInstance>(msg.coll);
         });
     dsCat = std::string{TypeInfo<app_ds::TreeInstance>::name};
     dsCho = extractChoices<app_ds::TreeInstance>();
@@ -358,15 +358,15 @@ void Command::initializeCLI()
         .remaining()
         .metavar("OPT")
         .help(getDescr<app_ds::TreeInstance>());
-    appMsgForwarder.registerHandler(
-        [](const AppUpdMsg<app_ds::TreeInstance>& msg)
+    applyMessage.registerHandler(
+        [](const apply::UpdateChoice<app_ds::TreeInstance>& msg)
         {
             app_ds::updateChoice<app_ds::TreeInstance>(msg.cho);
         });
-    appMsgForwarder.registerHandler(
-        [](const AppRunMsg<app_ds::TreeInstance>& msg)
+    applyMessage.registerHandler(
+        [](const apply::RunChoices<app_ds::TreeInstance>& msg)
         {
-            app_ds::runChoices<app_ds::TreeInstance>(msg.cntr);
+            app_ds::runChoices<app_ds::TreeInstance>(msg.coll);
         });
     mainCLI.addSubParser(subCLIAppDs);
 
@@ -383,15 +383,15 @@ void Command::initializeCLI()
         .remaining()
         .metavar("OPT")
         .help(getDescr<app_num::ArithmeticMethod>());
-    appMsgForwarder.registerHandler(
-        [](const AppUpdMsg<app_num::ArithmeticMethod>& msg)
+    applyMessage.registerHandler(
+        [](const apply::UpdateChoice<app_num::ArithmeticMethod>& msg)
         {
             app_num::updateChoice<app_num::ArithmeticMethod>(msg.cho);
         });
-    appMsgForwarder.registerHandler(
-        [](const AppRunMsg<app_num::ArithmeticMethod>& msg)
+    applyMessage.registerHandler(
+        [](const apply::RunChoices<app_num::ArithmeticMethod>& msg)
         {
-            app_num::runChoices<app_num::ArithmeticMethod>(msg.cntr);
+            app_num::runChoices<app_num::ArithmeticMethod>(msg.coll);
         });
     numCat = std::string{TypeInfo<app_num::DivisorMethod>::name};
     numCho = extractChoices<app_num::DivisorMethod>();
@@ -403,15 +403,15 @@ void Command::initializeCLI()
         .remaining()
         .metavar("OPT")
         .help(getDescr<app_num::DivisorMethod>());
-    appMsgForwarder.registerHandler(
-        [](const AppUpdMsg<app_num::DivisorMethod>& msg)
+    applyMessage.registerHandler(
+        [](const apply::UpdateChoice<app_num::DivisorMethod>& msg)
         {
             app_num::updateChoice<app_num::DivisorMethod>(msg.cho);
         });
-    appMsgForwarder.registerHandler(
-        [](const AppRunMsg<app_num::DivisorMethod>& msg)
+    applyMessage.registerHandler(
+        [](const apply::RunChoices<app_num::DivisorMethod>& msg)
         {
-            app_num::runChoices<app_num::DivisorMethod>(msg.cntr);
+            app_num::runChoices<app_num::DivisorMethod>(msg.coll);
         });
     numCat = std::string{TypeInfo<app_num::IntegralMethod>::name};
     numCho = extractChoices<app_num::IntegralMethod>();
@@ -423,15 +423,15 @@ void Command::initializeCLI()
         .remaining()
         .metavar("OPT")
         .help(getDescr<app_num::IntegralMethod>());
-    appMsgForwarder.registerHandler(
-        [](const AppUpdMsg<app_num::IntegralMethod>& msg)
+    applyMessage.registerHandler(
+        [](const apply::UpdateChoice<app_num::IntegralMethod>& msg)
         {
             app_num::updateChoice<app_num::IntegralMethod>(msg.cho);
         });
-    appMsgForwarder.registerHandler(
-        [](const AppRunMsg<app_num::IntegralMethod>& msg)
+    applyMessage.registerHandler(
+        [](const apply::RunChoices<app_num::IntegralMethod>& msg)
         {
-            app_num::runChoices<app_num::IntegralMethod>(msg.cntr);
+            app_num::runChoices<app_num::IntegralMethod>(msg.coll);
         });
     numCat = std::string{TypeInfo<app_num::PrimeMethod>::name};
     numCho = extractChoices<app_num::PrimeMethod>();
@@ -442,15 +442,15 @@ void Command::initializeCLI()
         .remaining()
         .metavar("OPT")
         .help(getDescr<app_num::PrimeMethod>());
-    appMsgForwarder.registerHandler(
-        [](const AppUpdMsg<app_num::PrimeMethod>& msg)
+    applyMessage.registerHandler(
+        [](const apply::UpdateChoice<app_num::PrimeMethod>& msg)
         {
             app_num::updateChoice<app_num::PrimeMethod>(msg.cho);
         });
-    appMsgForwarder.registerHandler(
-        [](const AppRunMsg<app_num::PrimeMethod>& msg)
+    applyMessage.registerHandler(
+        [](const apply::RunChoices<app_num::PrimeMethod>& msg)
         {
-            app_num::runChoices<app_num::PrimeMethod>(msg.cntr);
+            app_num::runChoices<app_num::PrimeMethod>(msg.coll);
         });
     mainCLI.addSubParser(subCLIAppNum);
 }
@@ -546,11 +546,11 @@ void Command::validate()
             for (const auto& target : pendingTasks)
             {
                 std::visit(
-                    AppEvtOverloaded{[this, target](auto&& event)
-                                     {
-                                         using EventType = std::decay_t<decltype(event)>;
-                                         appMsgForwarder.onMessage(AppUpdMsg<EventType>{target});
-                                     }},
+                    apply::EvtTypeOverloaded{[this, target](auto&& event)
+                                             {
+                                                 using EventType = std::decay_t<decltype(event)>;
+                                                 applyMessage.onMessage(apply::UpdateChoice<EventType>{target});
+                                             }},
                     categoryAttr.event);
             }
         }
@@ -597,11 +597,11 @@ void Command::dispatch()
         {
             const auto& candidates = categoryAttr.choices;
             std::visit(
-                AppEvtOverloaded{[this, candidates](auto&& event)
-                                 {
-                                     using EventType = std::decay_t<decltype(event)>;
-                                     appMsgForwarder.onMessage(AppRunMsg<EventType>{candidates});
-                                 }},
+                apply::EvtTypeOverloaded{[this, candidates](auto&& event)
+                                         {
+                                             using EventType = std::decay_t<decltype(event)>;
+                                             applyMessage.onMessage(apply::RunChoices<EventType>{candidates});
+                                         }},
                 categoryAttr.event);
         }
     }
@@ -950,13 +950,5 @@ std::string Command::getIconBanner()
     banner += R"(   \/_/     \/_____/   \/_____/ \n)";
 
     return banner;
-}
-
-//! @brief Get memory pool when making multi-threading.
-//! @return reference of the PublicThreadPool object
-PublicThreadPool& getPublicThreadPool()
-{
-    static PublicThreadPool pooling{};
-    return pooling;
 }
 } // namespace application::command
