@@ -322,26 +322,24 @@ class Task:
     def generate_tasks(self):
         while self.repeat_count:
             if "--console" in self.app_basic_task_dict:
-                for target_task in self.app_basic_task_dict["--console"]:
-                    self.task_queue.put((self.app_bin_cmd, f"{target_task}\nquit"))
+                for console_cmd in self.app_basic_task_dict["--console"]:
+                    self.task_queue.put((self.app_bin_cmd, f"{console_cmd}\nquit"))
 
-            for task_category, target_task_list in self.app_basic_task_dict.items():
-                self.task_queue.put((f"{self.app_bin_cmd} {task_category}", ""))
-                for target_task in target_task_list:
-                    target_task = target_task.replace("\\", "\\\\\\").replace('"', '\\"', 1)
-                    target_task = '\\"'.join(target_task.rsplit('"', 1))
-                    self.task_queue.put((f"{self.app_bin_cmd} {task_category} \"{target_task}\"", ""))
+            for category, option_list in self.app_basic_task_dict.items():
+                self.task_queue.put((f"{self.app_bin_cmd} {category}", ""))
+                for option in option_list:
+                    option = option.replace("\\", "\\\\\\").replace('"', '\\"', 1)
+                    option = '\\"'.join(option.rsplit('"', 1))
+                    self.task_queue.put((f"{self.app_bin_cmd} {category} \"{option}\"", ""))
 
-            for sub_cli, sub_cli_map in self.app_regular_task_dict.items():
+            for sub_cli, category_map in self.app_regular_task_dict.items():
                 self.task_queue.put((f"{self.app_bin_cmd} {sub_cli}", ""))
-                for task_category, target_task_list in sub_cli_map.items():
-                    self.task_queue.put((f"{self.app_bin_cmd} {sub_cli} {task_category}", ""))
-                    for target_task in target_task_list:
-                        self.task_queue.put((f"{self.app_bin_cmd} {sub_cli} {task_category} {target_task}", ""))
-                    if target_task_list:
-                        self.task_queue.put(
-                            (f"{self.app_bin_cmd} {sub_cli} {task_category} {' '.join(target_task_list)}", "")
-                        )
+                for category, choice_list in category_map.items():
+                    self.task_queue.put((f"{self.app_bin_cmd} {sub_cli} {category}", ""))
+                    for choice in choice_list:
+                        self.task_queue.put((f"{self.app_bin_cmd} {sub_cli} {category} {choice}", ""))
+                    if choice_list:
+                        self.task_queue.put((f"{self.app_bin_cmd} {sub_cli} {category} {' '.join(choice_list)}", ""))
             self.repeat_count -= 1
 
     def perform_tasks(self):

@@ -522,7 +522,7 @@ void Command::validate()
         }
         return false;
     };
-    for ([[maybe_unused]] const auto& [subCLIName, subCLIMap] : regularChoices | std::views::filter(isSubCLIUsed))
+    for ([[maybe_unused]] const auto& [subCLIName, categoryMap] : regularChoices | std::views::filter(isSubCLIUsed))
     {
         const auto& subCLI = mainCLI.at<utility::argument::Argument>(subCLIName);
         if (!subCLI)
@@ -544,7 +544,8 @@ void Command::validate()
             }
             return false;
         };
-        for ([[maybe_unused]] const auto& [categoryName, categoryAttr] : subCLIMap | std::views::filter(isCategoryUsed))
+        for ([[maybe_unused]] const auto& [categoryName, categoryAttr] :
+             categoryMap | std::views::filter(isCategoryUsed))
         {
             const auto& pendingTasks = subCLI.get<std::vector<std::string>>(categoryName);
             for (const auto& target : pendingTasks)

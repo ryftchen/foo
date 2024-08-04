@@ -136,9 +136,9 @@ private:
         action::EventType event{};
     };
     //! @brief Alias for the map of CategoryName and CategoryExtAttr.
-    using SubCLIMap = std::map<CategoryName, CategoryExtAttr>;
-    //! @brief Alias for the map of SubCLIName and SubCLIMap.
-    using RegularChoiceMap = std::map<SubCLIName, SubCLIMap>;
+    using CategoryExtMap = std::map<CategoryName, CategoryExtAttr>;
+    //! @brief Alias for the map of SubCLIName and CategoryExtMap.
+    using RegularChoiceMap = std::map<SubCLIName, CategoryExtMap>;
 
     //! @brief Get the description.
     //! @tparam T - type of sub-cli or category
@@ -260,7 +260,7 @@ private:
             }
 
             reset();
-            throw std::logic_error("The current regular choice does not meet the requirement of having only one order");
+            throw std::logic_error("There can only be one order for the regular choices.");
         }
     };
 
