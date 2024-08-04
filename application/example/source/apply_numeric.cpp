@@ -13,7 +13,7 @@
 #include "application/pch/precompiled_header.hpp"
 #endif // __PRECOMPILED_HEADER
 
-#include "application/core/include/apply.hpp"
+#include "application/core/include/action.hpp"
 #include "application/core/include/log.hpp"
 #include "utility/include/currying.hpp"
 
@@ -34,13 +34,13 @@
 namespace application::app_num
 {
 //! @brief Alias for Category.
-using Category = NumericChoice::Category;
+using Category = ApplyNumeric::Category;
 
 //! @brief Get the numeric choice manager.
-//! @return reference of the NumericChoice object
-NumericChoice& manager()
+//! @return reference of the ApplyNumeric object
+ApplyNumeric& manager()
 {
-    static NumericChoice manager{};
+    static ApplyNumeric manager{};
     return manager;
 }
 
@@ -49,7 +49,7 @@ NumericChoice& manager()
 static const auto& getTaskNameCurried()
 {
     static const auto curried =
-        utility::currying::curry(apply::presetTaskName, utility::reflection::TypeInfo<NumericChoice>::name);
+        utility::currying::curry(action::presetTaskName, utility::reflection::TypeInfo<ApplyNumeric>::name);
     return curried;
 }
 
@@ -80,7 +80,7 @@ template <Category Cat>
 constexpr auto& getCategoryOpts()
 {
     return std::invoke(
-        utility::reflection::TypeInfo<NumericChoice>::fields.find(REFLECTION_STR(toString(Cat))).value, manager());
+        utility::reflection::TypeInfo<ApplyNumeric>::fields.find(REFLECTION_STR(toString(Cat))).value, manager());
 }
 
 //! @brief Get the alias of the category in numeric choices.
@@ -89,7 +89,7 @@ constexpr auto& getCategoryOpts()
 template <Category Cat>
 constexpr std::string_view getCategoryAlias()
 {
-    constexpr auto attr = utility::reflection::TypeInfo<NumericChoice>::fields.find(REFLECTION_STR(toString(Cat)))
+    constexpr auto attr = utility::reflection::TypeInfo<ApplyNumeric>::fields.find(REFLECTION_STR(toString(Cat)))
                               .attrs.find(REFLECTION_STR("alias"));
     static_assert(attr.hasValue);
     return attr.value;
@@ -316,7 +316,7 @@ void runChoices<ArithmeticMethod>(const std::vector<std::string>& candidates)
     using arithmetic::ArithmeticSolution, arithmetic::InputBuilder, arithmetic::input::integerA,
         arithmetic::input::integerB;
 
-    auto& pooling = apply::resourcePool();
+    auto& pooling = action::resourcePool();
     auto* const threads = pooling.newElement(std::min(
         static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<ArithmeticMethod>::value)));
     const auto inputs = std::make_shared<InputBuilder>(integerA, integerB);
@@ -441,7 +441,7 @@ void runChoices<DivisorMethod>(const std::vector<std::string>& candidates)
     APP_NUM_PRINT_TASK_BEGIN_TITLE(category);
     using divisor::DivisorSolution, divisor::InputBuilder, divisor::input::integerA, divisor::input::integerB;
 
-    auto& pooling = apply::resourcePool();
+    auto& pooling = action::resourcePool();
     auto* const threads = pooling.newElement(std::min(
         static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<DivisorMethod>::value)));
     const auto inputs = std::make_shared<InputBuilder>(integerA, integerB);
@@ -604,7 +604,7 @@ void runChoices<IntegralMethod>(const std::vector<std::string>& candidates)
     const auto calcExpr =
         [&candidates, bitFlag](const integral::Expression& expression, const integral::ExprRange<double, double>& range)
     {
-        auto& pooling = apply::resourcePool();
+        auto& pooling = action::resourcePool();
         auto* const threads = pooling.newElement(std::min(
             static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<IntegralMethod>::value)));
         const auto integralFunctor = [threads, &expression, &range](
@@ -750,7 +750,7 @@ void runChoices<PrimeMethod>(const std::vector<std::string>& candidates)
     APP_NUM_PRINT_TASK_BEGIN_TITLE(category);
     using prime::PrimeSolution, prime::InputBuilder, prime::input::maxPositiveInteger;
 
-    auto& pooling = apply::resourcePool();
+    auto& pooling = action::resourcePool();
     auto* const threads = pooling.newElement(
         std::min(static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<PrimeMethod>::value)));
     const auto inputs = std::make_shared<InputBuilder>(maxPositiveInteger);

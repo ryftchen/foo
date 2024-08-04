@@ -152,303 +152,307 @@ void Command::initializeCLI()
         .help("run commands in console mode and exit\n"
               "separate with quotes");
 
-    auto& algoTbl = regularChoices[subCLIAppAlgo.title()];
-    subCLIAppAlgo.addDescription(getDescr<app_algo::AlgorithmChoice>());
+    CategoryName category;
+    ChoiceContainer choices;
+
+    auto& algoTable = regularChoices[subCLIAppAlgo.title()];
+    subCLIAppAlgo.addDescription(getDescr<app_algo::ApplyAlgorithm>());
     subCLIAppAlgo.addArgument("-h", "--help").argsNum(0).implicitVal(true).help("show help and exit");
-    auto algoCat = std::string{TypeInfo<app_algo::MatchMethod>::name};
-    auto algoCho = extractChoices<app_algo::MatchMethod>();
-    algoTbl[algoCat] = CategoryExtAttr{algoCho, app_algo::MatchMethod{}};
+    category = std::string{TypeInfo<app_algo::MatchMethod>::name};
+    choices = extractChoices<app_algo::MatchMethod>();
+    algoTable[category] = CategoryExtAttr{choices, app_algo::MatchMethod{}};
     subCLIAppAlgo
-        .addArgument("-" + std::string{getAlias<app_algo::AlgorithmChoice, app_algo::MatchMethod>()}, "--" + algoCat)
-        .argsNum(0, algoCho.size())
-        .defaultVal<std::vector<std::string>>(std::move(algoCho))
+        .addArgument("-" + std::string{getAlias<app_algo::ApplyAlgorithm, app_algo::MatchMethod>()}, "--" + category)
+        .argsNum(0, choices.size())
+        .defaultVal<std::vector<std::string>>(std::move(choices))
         .remaining()
         .metavar("OPT")
         .help(getDescr<app_algo::MatchMethod>());
-    applyMessage.registerHandler(
-        [](const apply::UpdateChoice<app_algo::MatchMethod>& msg)
+    messageForwarder.registerHandler(
+        [](const action::UpdateChoice<app_algo::MatchMethod>& msg)
         {
             app_algo::updateChoice<app_algo::MatchMethod>(msg.cho);
         });
-    applyMessage.registerHandler(
-        [](const apply::RunChoices<app_algo::MatchMethod>& msg)
+    messageForwarder.registerHandler(
+        [](const action::RunChoices<app_algo::MatchMethod>& msg)
         {
             app_algo::runChoices<app_algo::MatchMethod>(msg.coll);
         });
-    algoCat = std::string{TypeInfo<app_algo::NotationMethod>::name};
-    algoCho = extractChoices<app_algo::NotationMethod>();
-    algoTbl[algoCat] = CategoryExtAttr{algoCho, app_algo::NotationMethod{}};
+    category = std::string{TypeInfo<app_algo::NotationMethod>::name};
+    choices = extractChoices<app_algo::NotationMethod>();
+    algoTable[category] = CategoryExtAttr{choices, app_algo::NotationMethod{}};
     subCLIAppAlgo
-        .addArgument("-" + std::string{getAlias<app_algo::AlgorithmChoice, app_algo::NotationMethod>()}, "--" + algoCat)
-        .argsNum(0, algoCho.size())
-        .defaultVal<std::vector<std::string>>(std::move(algoCho))
+        .addArgument("-" + std::string{getAlias<app_algo::ApplyAlgorithm, app_algo::NotationMethod>()}, "--" + category)
+        .argsNum(0, choices.size())
+        .defaultVal<std::vector<std::string>>(std::move(choices))
         .remaining()
         .metavar("OPT")
         .help(getDescr<app_algo::NotationMethod>());
-    applyMessage.registerHandler(
-        [](const apply::UpdateChoice<app_algo::NotationMethod>& msg)
+    messageForwarder.registerHandler(
+        [](const action::UpdateChoice<app_algo::NotationMethod>& msg)
         {
             app_algo::updateChoice<app_algo::NotationMethod>(msg.cho);
         });
-    applyMessage.registerHandler(
-        [](const apply::RunChoices<app_algo::NotationMethod>& msg)
+    messageForwarder.registerHandler(
+        [](const action::RunChoices<app_algo::NotationMethod>& msg)
         {
             app_algo::runChoices<app_algo::NotationMethod>(msg.coll);
         });
-    algoCat = std::string{TypeInfo<app_algo::OptimalMethod>::name};
-    algoCho = extractChoices<app_algo::OptimalMethod>();
-    algoTbl[algoCat] = CategoryExtAttr{algoCho, app_algo::OptimalMethod{}};
+    category = std::string{TypeInfo<app_algo::OptimalMethod>::name};
+    choices = extractChoices<app_algo::OptimalMethod>();
+    algoTable[category] = CategoryExtAttr{choices, app_algo::OptimalMethod{}};
     subCLIAppAlgo
-        .addArgument("-" + std::string{getAlias<app_algo::AlgorithmChoice, app_algo::OptimalMethod>()}, "--" + algoCat)
-        .argsNum(0, algoCho.size())
-        .defaultVal<std::vector<std::string>>(std::move(algoCho))
+        .addArgument("-" + std::string{getAlias<app_algo::ApplyAlgorithm, app_algo::OptimalMethod>()}, "--" + category)
+        .argsNum(0, choices.size())
+        .defaultVal<std::vector<std::string>>(std::move(choices))
         .remaining()
         .metavar("OPT")
         .help(getDescr<app_algo::OptimalMethod>());
-    applyMessage.registerHandler(
-        [](const apply::UpdateChoice<app_algo::OptimalMethod>& msg)
+    messageForwarder.registerHandler(
+        [](const action::UpdateChoice<app_algo::OptimalMethod>& msg)
         {
             app_algo::updateChoice<app_algo::OptimalMethod>(msg.cho);
         });
-    applyMessage.registerHandler(
-        [](const apply::RunChoices<app_algo::OptimalMethod>& msg)
+    messageForwarder.registerHandler(
+        [](const action::RunChoices<app_algo::OptimalMethod>& msg)
         {
             app_algo::runChoices<app_algo::OptimalMethod>(msg.coll);
         });
-    algoCat = std::string{TypeInfo<app_algo::SearchMethod>::name};
-    algoCho = extractChoices<app_algo::SearchMethod>();
-    algoTbl[algoCat] = CategoryExtAttr{algoCho, app_algo::SearchMethod{}};
+    category = std::string{TypeInfo<app_algo::SearchMethod>::name};
+    choices = extractChoices<app_algo::SearchMethod>();
+    algoTable[category] = CategoryExtAttr{choices, app_algo::SearchMethod{}};
     subCLIAppAlgo
-        .addArgument("-" + std::string{getAlias<app_algo::AlgorithmChoice, app_algo::SearchMethod>()}, "--" + algoCat)
-        .argsNum(0, algoCho.size())
-        .defaultVal<std::vector<std::string>>(std::move(algoCho))
+        .addArgument("-" + std::string{getAlias<app_algo::ApplyAlgorithm, app_algo::SearchMethod>()}, "--" + category)
+        .argsNum(0, choices.size())
+        .defaultVal<std::vector<std::string>>(std::move(choices))
         .remaining()
         .metavar("OPT")
         .help(getDescr<app_algo::SearchMethod>());
-    applyMessage.registerHandler(
-        [](const apply::UpdateChoice<app_algo::SearchMethod>& msg)
+    messageForwarder.registerHandler(
+        [](const action::UpdateChoice<app_algo::SearchMethod>& msg)
         {
             app_algo::updateChoice<app_algo::SearchMethod>(msg.cho);
         });
-    applyMessage.registerHandler(
-        [](const apply::RunChoices<app_algo::SearchMethod>& msg)
+    messageForwarder.registerHandler(
+        [](const action::RunChoices<app_algo::SearchMethod>& msg)
         {
             app_algo::runChoices<app_algo::SearchMethod>(msg.coll);
         });
-    algoCat = std::string{TypeInfo<app_algo::SortMethod>::name};
-    algoCho = extractChoices<app_algo::SortMethod>();
-    algoTbl[algoCat] = CategoryExtAttr{algoCho, app_algo::SortMethod{}};
+    category = std::string{TypeInfo<app_algo::SortMethod>::name};
+    choices = extractChoices<app_algo::SortMethod>();
+    algoTable[category] = CategoryExtAttr{choices, app_algo::SortMethod{}};
     subCLIAppAlgo
-        .addArgument("-" + std::string{getAlias<app_algo::AlgorithmChoice, app_algo::SortMethod>()}, "--" + algoCat)
-        .argsNum(0, algoCho.size())
-        .defaultVal<std::vector<std::string>>(std::move(algoCho))
+        .addArgument("-" + std::string{getAlias<app_algo::ApplyAlgorithm, app_algo::SortMethod>()}, "--" + category)
+        .argsNum(0, choices.size())
+        .defaultVal<std::vector<std::string>>(std::move(choices))
         .remaining()
         .metavar("OPT")
         .help(getDescr<app_algo::SortMethod>());
-    applyMessage.registerHandler(
-        [](const apply::UpdateChoice<app_algo::SortMethod>& msg)
+    messageForwarder.registerHandler(
+        [](const action::UpdateChoice<app_algo::SortMethod>& msg)
         {
             app_algo::updateChoice<app_algo::SortMethod>(msg.cho);
         });
-    applyMessage.registerHandler(
-        [](const apply::RunChoices<app_algo::SortMethod>& msg)
+    messageForwarder.registerHandler(
+        [](const action::RunChoices<app_algo::SortMethod>& msg)
         {
             app_algo::runChoices<app_algo::SortMethod>(msg.coll);
         });
     mainCLI.addSubParser(subCLIAppAlgo);
 
-    auto& dpTbl = regularChoices[subCLIAppDp.title()];
-    subCLIAppDp.addDescription(getDescr<app_dp::DesignPatternChoice>());
+    auto& dpTable = regularChoices[subCLIAppDp.title()];
+    subCLIAppDp.addDescription(getDescr<app_dp::ApplyDesignPattern>());
     subCLIAppDp.addArgument("-h", "--help").argsNum(0).implicitVal(true).help("show help and exit");
-    auto dpCat = std::string{TypeInfo<app_dp::BehavioralInstance>::name};
-    auto dpCho = extractChoices<app_dp::BehavioralInstance>();
-    dpTbl[dpCat] = CategoryExtAttr{dpCho, app_dp::BehavioralInstance{}};
+    category = std::string{TypeInfo<app_dp::BehavioralInstance>::name};
+    choices = extractChoices<app_dp::BehavioralInstance>();
+    dpTable[category] = CategoryExtAttr{choices, app_dp::BehavioralInstance{}};
     subCLIAppDp
         .addArgument(
-            "-" + std::string{getAlias<app_dp::DesignPatternChoice, app_dp::BehavioralInstance>()}, "--" + dpCat)
-        .argsNum(0, dpCho.size())
-        .defaultVal<std::vector<std::string>>(std::move(dpCho))
+            "-" + std::string{getAlias<app_dp::ApplyDesignPattern, app_dp::BehavioralInstance>()}, "--" + category)
+        .argsNum(0, choices.size())
+        .defaultVal<std::vector<std::string>>(std::move(choices))
         .remaining()
         .metavar("OPT")
         .help(getDescr<app_dp::BehavioralInstance>());
-    applyMessage.registerHandler(
-        [](const apply::UpdateChoice<app_dp::BehavioralInstance>& msg)
+    messageForwarder.registerHandler(
+        [](const action::UpdateChoice<app_dp::BehavioralInstance>& msg)
         {
             app_dp::updateChoice<app_dp::BehavioralInstance>(msg.cho);
         });
-    applyMessage.registerHandler(
-        [](const apply::RunChoices<app_dp::BehavioralInstance>& msg)
+    messageForwarder.registerHandler(
+        [](const action::RunChoices<app_dp::BehavioralInstance>& msg)
         {
             app_dp::runChoices<app_dp::BehavioralInstance>(msg.coll);
         });
-    dpCat = std::string{TypeInfo<app_dp::CreationalInstance>::name};
-    dpCho = extractChoices<app_dp::CreationalInstance>();
-    dpTbl[dpCat] = CategoryExtAttr{dpCho, app_dp::CreationalInstance{}};
+    category = std::string{TypeInfo<app_dp::CreationalInstance>::name};
+    choices = extractChoices<app_dp::CreationalInstance>();
+    dpTable[category] = CategoryExtAttr{choices, app_dp::CreationalInstance{}};
     subCLIAppDp
         .addArgument(
-            "-" + std::string{getAlias<app_dp::DesignPatternChoice, app_dp::CreationalInstance>()}, "--" + dpCat)
-        .argsNum(0, dpCho.size())
-        .defaultVal<std::vector<std::string>>(std::move(dpCho))
+            "-" + std::string{getAlias<app_dp::ApplyDesignPattern, app_dp::CreationalInstance>()}, "--" + category)
+        .argsNum(0, choices.size())
+        .defaultVal<std::vector<std::string>>(std::move(choices))
         .remaining()
         .metavar("OPT")
         .help(getDescr<app_dp::CreationalInstance>());
-    applyMessage.registerHandler(
-        [](const apply::UpdateChoice<app_dp::CreationalInstance>& msg)
+    messageForwarder.registerHandler(
+        [](const action::UpdateChoice<app_dp::CreationalInstance>& msg)
         {
             app_dp::updateChoice<app_dp::CreationalInstance>(msg.cho);
         });
-    applyMessage.registerHandler(
-        [](const apply::RunChoices<app_dp::CreationalInstance>& msg)
+    messageForwarder.registerHandler(
+        [](const action::RunChoices<app_dp::CreationalInstance>& msg)
         {
             app_dp::runChoices<app_dp::CreationalInstance>(msg.coll);
         });
-    dpCat = std::string{TypeInfo<app_dp::StructuralInstance>::name};
-    dpCho = extractChoices<app_dp::StructuralInstance>();
-    dpTbl[dpCat] = CategoryExtAttr{dpCho, app_dp::StructuralInstance{}};
+    category = std::string{TypeInfo<app_dp::StructuralInstance>::name};
+    choices = extractChoices<app_dp::StructuralInstance>();
+    dpTable[category] = CategoryExtAttr{choices, app_dp::StructuralInstance{}};
     subCLIAppDp
         .addArgument(
-            "-" + std::string{getAlias<app_dp::DesignPatternChoice, app_dp::StructuralInstance>()}, "--" + dpCat)
-        .argsNum(0, dpCho.size())
-        .defaultVal<std::vector<std::string>>(std::move(dpCho))
+            "-" + std::string{getAlias<app_dp::ApplyDesignPattern, app_dp::StructuralInstance>()}, "--" + category)
+        .argsNum(0, choices.size())
+        .defaultVal<std::vector<std::string>>(std::move(choices))
         .remaining()
         .metavar("OPT")
         .help(getDescr<app_dp::StructuralInstance>());
-    applyMessage.registerHandler(
-        [](const apply::UpdateChoice<app_dp::StructuralInstance>& msg)
+    messageForwarder.registerHandler(
+        [](const action::UpdateChoice<app_dp::StructuralInstance>& msg)
         {
             app_dp::updateChoice<app_dp::StructuralInstance>(msg.cho);
         });
-    applyMessage.registerHandler(
-        [](const apply::RunChoices<app_dp::StructuralInstance>& msg)
+    messageForwarder.registerHandler(
+        [](const action::RunChoices<app_dp::StructuralInstance>& msg)
         {
             app_dp::runChoices<app_dp::StructuralInstance>(msg.coll);
         });
     mainCLI.addSubParser(subCLIAppDp);
 
-    auto& dsTbl = regularChoices[subCLIAppDs.title()];
-    subCLIAppDs.addDescription(getDescr<app_ds::DataStructureChoice>());
+    auto& dsTable = regularChoices[subCLIAppDs.title()];
+    subCLIAppDs.addDescription(getDescr<app_ds::ApplyDataStructure>());
     subCLIAppDs.addArgument("-h", "--help").argsNum(0).implicitVal(true).help("show help and exit");
-    auto dsCat = std::string{TypeInfo<app_ds::LinearInstance>::name};
-    auto dsCho = extractChoices<app_ds::LinearInstance>();
-    dsTbl[dsCat] = CategoryExtAttr{dsCho, app_ds::LinearInstance{}};
+    category = std::string{TypeInfo<app_ds::LinearInstance>::name};
+    choices = extractChoices<app_ds::LinearInstance>();
+    dsTable[category] = CategoryExtAttr{choices, app_ds::LinearInstance{}};
     subCLIAppDs
-        .addArgument("-" + std::string{getAlias<app_ds::DataStructureChoice, app_ds::LinearInstance>()}, "--" + dsCat)
-        .argsNum(0, dsCho.size())
-        .defaultVal<std::vector<std::string>>(std::move(dsCho))
+        .addArgument("-" + std::string{getAlias<app_ds::ApplyDataStructure, app_ds::LinearInstance>()}, "--" + category)
+        .argsNum(0, choices.size())
+        .defaultVal<std::vector<std::string>>(std::move(choices))
         .remaining()
         .metavar("OPT")
         .help(getDescr<app_ds::LinearInstance>());
-    applyMessage.registerHandler(
-        [](const apply::UpdateChoice<app_ds::LinearInstance>& msg)
+    messageForwarder.registerHandler(
+        [](const action::UpdateChoice<app_ds::LinearInstance>& msg)
         {
             app_ds::updateChoice<app_ds::LinearInstance>(msg.cho);
         });
-    applyMessage.registerHandler(
-        [](const apply::RunChoices<app_ds::LinearInstance>& msg)
+    messageForwarder.registerHandler(
+        [](const action::RunChoices<app_ds::LinearInstance>& msg)
         {
             app_ds::runChoices<app_ds::LinearInstance>(msg.coll);
         });
-    dsCat = std::string{TypeInfo<app_ds::TreeInstance>::name};
-    dsCho = extractChoices<app_ds::TreeInstance>();
-    dsTbl[dsCat] = CategoryExtAttr{dsCho, app_ds::TreeInstance{}};
+    category = std::string{TypeInfo<app_ds::TreeInstance>::name};
+    choices = extractChoices<app_ds::TreeInstance>();
+    dsTable[category] = CategoryExtAttr{choices, app_ds::TreeInstance{}};
     subCLIAppDs
-        .addArgument("-" + std::string{getAlias<app_ds::DataStructureChoice, app_ds::TreeInstance>()}, "--" + dsCat)
-        .argsNum(0, dsCho.size())
-        .defaultVal<std::vector<std::string>>(std::move(dsCho))
+        .addArgument("-" + std::string{getAlias<app_ds::ApplyDataStructure, app_ds::TreeInstance>()}, "--" + category)
+        .argsNum(0, choices.size())
+        .defaultVal<std::vector<std::string>>(std::move(choices))
         .remaining()
         .metavar("OPT")
         .help(getDescr<app_ds::TreeInstance>());
-    applyMessage.registerHandler(
-        [](const apply::UpdateChoice<app_ds::TreeInstance>& msg)
+    messageForwarder.registerHandler(
+        [](const action::UpdateChoice<app_ds::TreeInstance>& msg)
         {
             app_ds::updateChoice<app_ds::TreeInstance>(msg.cho);
         });
-    applyMessage.registerHandler(
-        [](const apply::RunChoices<app_ds::TreeInstance>& msg)
+    messageForwarder.registerHandler(
+        [](const action::RunChoices<app_ds::TreeInstance>& msg)
         {
             app_ds::runChoices<app_ds::TreeInstance>(msg.coll);
         });
     mainCLI.addSubParser(subCLIAppDs);
 
-    auto& numTbl = regularChoices[subCLIAppNum.title()];
-    subCLIAppNum.addDescription(getDescr<app_num::NumericChoice>());
+    auto& numTable = regularChoices[subCLIAppNum.title()];
+    subCLIAppNum.addDescription(getDescr<app_num::ApplyNumeric>());
     subCLIAppNum.addArgument("-h", "--help").argsNum(0).implicitVal(true).help("show help and exit");
-    auto numCat = std::string{TypeInfo<app_num::ArithmeticMethod>::name};
-    auto numCho = extractChoices<app_num::ArithmeticMethod>();
-    numTbl[numCat] = CategoryExtAttr{numCho, app_num::ArithmeticMethod{}};
+    category = std::string{TypeInfo<app_num::ArithmeticMethod>::name};
+    choices = extractChoices<app_num::ArithmeticMethod>();
+    numTable[category] = CategoryExtAttr{choices, app_num::ArithmeticMethod{}};
     subCLIAppNum
-        .addArgument("-" + std::string{getAlias<app_num::NumericChoice, app_num::ArithmeticMethod>()}, "--" + numCat)
-        .argsNum(0, numCho.size())
-        .defaultVal<std::vector<std::string>>(std::move(numCho))
+        .addArgument("-" + std::string{getAlias<app_num::ApplyNumeric, app_num::ArithmeticMethod>()}, "--" + category)
+        .argsNum(0, choices.size())
+        .defaultVal<std::vector<std::string>>(std::move(choices))
         .remaining()
         .metavar("OPT")
         .help(getDescr<app_num::ArithmeticMethod>());
-    applyMessage.registerHandler(
-        [](const apply::UpdateChoice<app_num::ArithmeticMethod>& msg)
+    messageForwarder.registerHandler(
+        [](const action::UpdateChoice<app_num::ArithmeticMethod>& msg)
         {
             app_num::updateChoice<app_num::ArithmeticMethod>(msg.cho);
         });
-    applyMessage.registerHandler(
-        [](const apply::RunChoices<app_num::ArithmeticMethod>& msg)
+    messageForwarder.registerHandler(
+        [](const action::RunChoices<app_num::ArithmeticMethod>& msg)
         {
             app_num::runChoices<app_num::ArithmeticMethod>(msg.coll);
         });
-    numCat = std::string{TypeInfo<app_num::DivisorMethod>::name};
-    numCho = extractChoices<app_num::DivisorMethod>();
-    numTbl[numCat] = CategoryExtAttr{numCho, app_num::DivisorMethod{}};
+    category = std::string{TypeInfo<app_num::DivisorMethod>::name};
+    choices = extractChoices<app_num::DivisorMethod>();
+    numTable[category] = CategoryExtAttr{choices, app_num::DivisorMethod{}};
     subCLIAppNum
-        .addArgument("-" + std::string{getAlias<app_num::NumericChoice, app_num::DivisorMethod>()}, "--" + numCat)
-        .argsNum(0, numCho.size())
-        .defaultVal<std::vector<std::string>>(std::move(numCho))
+        .addArgument("-" + std::string{getAlias<app_num::ApplyNumeric, app_num::DivisorMethod>()}, "--" + category)
+        .argsNum(0, choices.size())
+        .defaultVal<std::vector<std::string>>(std::move(choices))
         .remaining()
         .metavar("OPT")
         .help(getDescr<app_num::DivisorMethod>());
-    applyMessage.registerHandler(
-        [](const apply::UpdateChoice<app_num::DivisorMethod>& msg)
+    messageForwarder.registerHandler(
+        [](const action::UpdateChoice<app_num::DivisorMethod>& msg)
         {
             app_num::updateChoice<app_num::DivisorMethod>(msg.cho);
         });
-    applyMessage.registerHandler(
-        [](const apply::RunChoices<app_num::DivisorMethod>& msg)
+    messageForwarder.registerHandler(
+        [](const action::RunChoices<app_num::DivisorMethod>& msg)
         {
             app_num::runChoices<app_num::DivisorMethod>(msg.coll);
         });
-    numCat = std::string{TypeInfo<app_num::IntegralMethod>::name};
-    numCho = extractChoices<app_num::IntegralMethod>();
-    numTbl[numCat] = CategoryExtAttr{numCho, app_num::IntegralMethod{}};
+    category = std::string{TypeInfo<app_num::IntegralMethod>::name};
+    choices = extractChoices<app_num::IntegralMethod>();
+    numTable[category] = CategoryExtAttr{choices, app_num::IntegralMethod{}};
     subCLIAppNum
-        .addArgument("-" + std::string{getAlias<app_num::NumericChoice, app_num::IntegralMethod>()}, "--" + numCat)
-        .argsNum(0, numCho.size())
-        .defaultVal<std::vector<std::string>>(std::move(numCho))
+        .addArgument("-" + std::string{getAlias<app_num::ApplyNumeric, app_num::IntegralMethod>()}, "--" + category)
+        .argsNum(0, choices.size())
+        .defaultVal<std::vector<std::string>>(std::move(choices))
         .remaining()
         .metavar("OPT")
         .help(getDescr<app_num::IntegralMethod>());
-    applyMessage.registerHandler(
-        [](const apply::UpdateChoice<app_num::IntegralMethod>& msg)
+    messageForwarder.registerHandler(
+        [](const action::UpdateChoice<app_num::IntegralMethod>& msg)
         {
             app_num::updateChoice<app_num::IntegralMethod>(msg.cho);
         });
-    applyMessage.registerHandler(
-        [](const apply::RunChoices<app_num::IntegralMethod>& msg)
+    messageForwarder.registerHandler(
+        [](const action::RunChoices<app_num::IntegralMethod>& msg)
         {
             app_num::runChoices<app_num::IntegralMethod>(msg.coll);
         });
-    numCat = std::string{TypeInfo<app_num::PrimeMethod>::name};
-    numCho = extractChoices<app_num::PrimeMethod>();
-    numTbl[numCat] = CategoryExtAttr{numCho, app_num::PrimeMethod{}};
-    subCLIAppNum.addArgument("-" + std::string{getAlias<app_num::NumericChoice, app_num::PrimeMethod>()}, "--" + numCat)
-        .argsNum(0, numCho.size())
-        .defaultVal<std::vector<std::string>>(std::move(numCho))
+    category = std::string{TypeInfo<app_num::PrimeMethod>::name};
+    choices = extractChoices<app_num::PrimeMethod>();
+    numTable[category] = CategoryExtAttr{choices, app_num::PrimeMethod{}};
+    subCLIAppNum
+        .addArgument("-" + std::string{getAlias<app_num::ApplyNumeric, app_num::PrimeMethod>()}, "--" + category)
+        .argsNum(0, choices.size())
+        .defaultVal<std::vector<std::string>>(std::move(choices))
         .remaining()
         .metavar("OPT")
         .help(getDescr<app_num::PrimeMethod>());
-    applyMessage.registerHandler(
-        [](const apply::UpdateChoice<app_num::PrimeMethod>& msg)
+    messageForwarder.registerHandler(
+        [](const action::UpdateChoice<app_num::PrimeMethod>& msg)
         {
             app_num::updateChoice<app_num::PrimeMethod>(msg.cho);
         });
-    applyMessage.registerHandler(
-        [](const apply::RunChoices<app_num::PrimeMethod>& msg)
+    messageForwarder.registerHandler(
+        [](const action::RunChoices<app_num::PrimeMethod>& msg)
         {
             app_num::runChoices<app_num::PrimeMethod>(msg.coll);
         });
@@ -546,11 +550,11 @@ void Command::validate()
             for (const auto& target : pendingTasks)
             {
                 std::visit(
-                    apply::EvtTypeOverloaded{[this, target](auto&& event)
-                                             {
-                                                 using EventType = std::decay_t<decltype(event)>;
-                                                 applyMessage.onMessage(apply::UpdateChoice<EventType>{target});
-                                             }},
+                    action::EvtTypeOverloaded{[this, target](auto&& event)
+                                              {
+                                                  using EventType = std::decay_t<decltype(event)>;
+                                                  messageForwarder.onMessage(action::UpdateChoice<EventType>{target});
+                                              }},
                     categoryAttr.event);
             }
         }
@@ -597,11 +601,11 @@ void Command::dispatch()
         {
             const auto& candidates = categoryAttr.choices;
             std::visit(
-                apply::EvtTypeOverloaded{[this, candidates](auto&& event)
-                                         {
-                                             using EventType = std::decay_t<decltype(event)>;
-                                             applyMessage.onMessage(apply::RunChoices<EventType>{candidates});
-                                         }},
+                action::EvtTypeOverloaded{[this, candidates](auto&& event)
+                                          {
+                                              using EventType = std::decay_t<decltype(event)>;
+                                              messageForwarder.onMessage(action::RunChoices<EventType>{candidates});
+                                          }},
                 categoryAttr.event);
         }
     }

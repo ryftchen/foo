@@ -1,6 +1,6 @@
-//! @file apply.hpp
+//! @file action.hpp
 //! @author ryftchen
-//! @brief The declarations (apply) in the application module.
+//! @brief The declarations (action) in the application module.
 //! @version 0.1.0
 //! @copyright Copyright (c) 2022-2024 ryftchen. All rights reserved.
 
@@ -15,7 +15,7 @@
 #include "utility/include/thread.hpp"
 
 //! @brief Reflect the sub-cli category and alias name to the field in the command line argument mapping.
-#define APPLY_REFLECT_COMMAND_SUB_CLI_FIELD(category, alias)       \
+#define ACTION_REFLECT_COMMAND_SUB_CLI_FIELD(category, alias)      \
     Field                                                          \
     {                                                              \
         REFLECTION_STR(#category), &Type::category##Opts, AttrList \
@@ -27,22 +27,22 @@
         }                                                          \
     }
 //! @brief Reflect the category enumeration and choice name to the field in the command line argument mapping.
-#define APPLY_REFLECT_COMMAND_CATEGORY_FIELD(enumeration, choice) \
-    Field                                                         \
-    {                                                             \
-        REFLECTION_STR(#enumeration), Type::enumeration, AttrList \
-        {                                                         \
-            Attr                                                  \
-            {                                                     \
-                REFLECTION_STR("choice"), #choice                 \
-            }                                                     \
-        }                                                         \
+#define ACTION_REFLECT_COMMAND_CATEGORY_FIELD(enumeration, choice) \
+    Field                                                          \
+    {                                                              \
+        REFLECTION_STR(#enumeration), Type::enumeration, AttrList  \
+        {                                                          \
+            Attr                                                   \
+            {                                                      \
+                REFLECTION_STR("choice"), #choice                  \
+            }                                                      \
+        }                                                          \
     }
 
-//! @brief Static reflection for AlgorithmChoice. Used to map command line arguments.
+//! @brief Static reflection for ApplyAlgorithm. Used to map command line arguments.
 template <>
-struct utility::reflection::TypeInfo<application::app_algo::AlgorithmChoice>
-    : TypeInfoBase<application::app_algo::AlgorithmChoice>
+struct utility::reflection::TypeInfo<application::app_algo::ApplyAlgorithm>
+    : TypeInfoBase<application::app_algo::ApplyAlgorithm>
 {
     //! @brief Name.
     static constexpr std::string_view name{"app-algo"};
@@ -50,11 +50,11 @@ struct utility::reflection::TypeInfo<application::app_algo::AlgorithmChoice>
     //! @brief Field list.
     static constexpr FieldList fields
     {
-        APPLY_REFLECT_COMMAND_SUB_CLI_FIELD(match   , m),
-        APPLY_REFLECT_COMMAND_SUB_CLI_FIELD(notation, n),
-        APPLY_REFLECT_COMMAND_SUB_CLI_FIELD(optimal , o),
-        APPLY_REFLECT_COMMAND_SUB_CLI_FIELD(search  , s),
-        APPLY_REFLECT_COMMAND_SUB_CLI_FIELD(sort    , S),
+        ACTION_REFLECT_COMMAND_SUB_CLI_FIELD(match   , m),
+        ACTION_REFLECT_COMMAND_SUB_CLI_FIELD(notation, n),
+        ACTION_REFLECT_COMMAND_SUB_CLI_FIELD(optimal , o),
+        ACTION_REFLECT_COMMAND_SUB_CLI_FIELD(search  , s),
+        ACTION_REFLECT_COMMAND_SUB_CLI_FIELD(sort    , S),
     };
     // clang-format on
     //! @brief Attribute list.
@@ -71,11 +71,11 @@ struct utility::reflection::TypeInfo<application::app_algo::MatchMethod>
     //! @brief Field list.
     static constexpr FieldList fields
     {
-        APPLY_REFLECT_COMMAND_CATEGORY_FIELD(rabinKarp       , rab),
-        APPLY_REFLECT_COMMAND_CATEGORY_FIELD(knuthMorrisPratt, knu),
-        APPLY_REFLECT_COMMAND_CATEGORY_FIELD(boyerMoore      , boy),
-        APPLY_REFLECT_COMMAND_CATEGORY_FIELD(horspool        , hor),
-        APPLY_REFLECT_COMMAND_CATEGORY_FIELD(sunday          , sun),
+        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(rabinKarp       , rab),
+        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(knuthMorrisPratt, knu),
+        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(boyerMoore      , boy),
+        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(horspool        , hor),
+        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(sunday          , sun),
     };
     // clang-format on
     //! @brief Attribute list.
@@ -100,8 +100,8 @@ struct utility::reflection::TypeInfo<application::app_algo::NotationMethod>
     //! @brief Field list.
     static constexpr FieldList fields
     {
-        APPLY_REFLECT_COMMAND_CATEGORY_FIELD(prefix , pre),
-        APPLY_REFLECT_COMMAND_CATEGORY_FIELD(postfix, pos),
+        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(prefix , pre),
+        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(postfix, pos),
     };
     // clang-format on
     //! @brief Attribute list.
@@ -123,10 +123,10 @@ struct utility::reflection::TypeInfo<application::app_algo::OptimalMethod>
     //! @brief Field list.
     static constexpr FieldList fields
     {
-        APPLY_REFLECT_COMMAND_CATEGORY_FIELD(gradient , gra),
-        APPLY_REFLECT_COMMAND_CATEGORY_FIELD(annealing, ann),
-        APPLY_REFLECT_COMMAND_CATEGORY_FIELD(particle , par),
-        APPLY_REFLECT_COMMAND_CATEGORY_FIELD(genetic  , gen),
+        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(gradient , gra),
+        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(annealing, ann),
+        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(particle , par),
+        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(genetic  , gen),
     };
     // clang-format on
     //! @brief Attribute list.
@@ -150,9 +150,9 @@ struct utility::reflection::TypeInfo<application::app_algo::SearchMethod>
     //! @brief Field list.
     static constexpr FieldList fields
     {
-        APPLY_REFLECT_COMMAND_CATEGORY_FIELD(binary       , bin),
-        APPLY_REFLECT_COMMAND_CATEGORY_FIELD(interpolation, int),
-        APPLY_REFLECT_COMMAND_CATEGORY_FIELD(fibonacci    , fib),
+        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(binary       , bin),
+        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(interpolation, int),
+        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(fibonacci    , fib),
     };
     // clang-format on
     //! @brief Attribute list.
@@ -175,16 +175,16 @@ struct utility::reflection::TypeInfo<application::app_algo::SortMethod>
     //! @brief Field list.
     static constexpr FieldList fields
     {
-        APPLY_REFLECT_COMMAND_CATEGORY_FIELD(bubble   , bub),
-        APPLY_REFLECT_COMMAND_CATEGORY_FIELD(selection, sel),
-        APPLY_REFLECT_COMMAND_CATEGORY_FIELD(insertion, ins),
-        APPLY_REFLECT_COMMAND_CATEGORY_FIELD(shell    , she),
-        APPLY_REFLECT_COMMAND_CATEGORY_FIELD(merge    , mer),
-        APPLY_REFLECT_COMMAND_CATEGORY_FIELD(quick    , qui),
-        APPLY_REFLECT_COMMAND_CATEGORY_FIELD(heap     , hea),
-        APPLY_REFLECT_COMMAND_CATEGORY_FIELD(counting , cou),
-        APPLY_REFLECT_COMMAND_CATEGORY_FIELD(bucket   , buc),
-        APPLY_REFLECT_COMMAND_CATEGORY_FIELD(radix    , rad),
+        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(bubble   , bub),
+        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(selection, sel),
+        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(insertion, ins),
+        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(shell    , she),
+        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(merge    , mer),
+        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(quick    , qui),
+        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(heap     , hea),
+        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(counting , cou),
+        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(bucket   , buc),
+        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(radix    , rad),
     };
     // clang-format on
     //! @brief Attribute list.
@@ -204,10 +204,10 @@ struct utility::reflection::TypeInfo<application::app_algo::SortMethod>
         "add the choices listed above"}};
 };
 
-//! @brief Static reflection for DesignPatternChoice. Used to map command line arguments.
+//! @brief Static reflection for ApplyDesignPattern. Used to map command line arguments.
 template <>
-struct utility::reflection::TypeInfo<application::app_dp::DesignPatternChoice>
-    : TypeInfoBase<application::app_dp::DesignPatternChoice>
+struct utility::reflection::TypeInfo<application::app_dp::ApplyDesignPattern>
+    : TypeInfoBase<application::app_dp::ApplyDesignPattern>
 {
     //! @brief Name.
     static constexpr std::string_view name{"app-dp"};
@@ -215,9 +215,9 @@ struct utility::reflection::TypeInfo<application::app_dp::DesignPatternChoice>
     //! @brief Field list.
     static constexpr FieldList fields
     {
-        APPLY_REFLECT_COMMAND_SUB_CLI_FIELD(behavioral, b),
-        APPLY_REFLECT_COMMAND_SUB_CLI_FIELD(creational, c),
-        APPLY_REFLECT_COMMAND_SUB_CLI_FIELD(structural, s),
+        ACTION_REFLECT_COMMAND_SUB_CLI_FIELD(behavioral, b),
+        ACTION_REFLECT_COMMAND_SUB_CLI_FIELD(creational, c),
+        ACTION_REFLECT_COMMAND_SUB_CLI_FIELD(structural, s),
     };
     // clang-format on
     //! @brief Attribute list.
@@ -234,17 +234,17 @@ struct utility::reflection::TypeInfo<application::app_dp::BehavioralInstance>
     //! @brief Field list.
     static constexpr FieldList fields
     {
-        APPLY_REFLECT_COMMAND_CATEGORY_FIELD(chainOfResponsibility, cha),
-        APPLY_REFLECT_COMMAND_CATEGORY_FIELD(command              , com),
-        APPLY_REFLECT_COMMAND_CATEGORY_FIELD(interpreter          , int),
-        APPLY_REFLECT_COMMAND_CATEGORY_FIELD(iterator             , ite),
-        APPLY_REFLECT_COMMAND_CATEGORY_FIELD(mediator             , med),
-        APPLY_REFLECT_COMMAND_CATEGORY_FIELD(memento              , mem),
-        APPLY_REFLECT_COMMAND_CATEGORY_FIELD(observer             , obs),
-        APPLY_REFLECT_COMMAND_CATEGORY_FIELD(state                , sta),
-        APPLY_REFLECT_COMMAND_CATEGORY_FIELD(strategy             , str),
-        APPLY_REFLECT_COMMAND_CATEGORY_FIELD(templateMethod       , tem),
-        APPLY_REFLECT_COMMAND_CATEGORY_FIELD(visitor              , vis),
+        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(chainOfResponsibility, cha),
+        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(command              , com),
+        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(interpreter          , int),
+        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(iterator             , ite),
+        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(mediator             , med),
+        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(memento              , mem),
+        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(observer             , obs),
+        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(state                , sta),
+        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(strategy             , str),
+        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(templateMethod       , tem),
+        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(visitor              , vis),
     };
     // clang-format on
     //! @brief Attribute list.
@@ -275,11 +275,11 @@ struct utility::reflection::TypeInfo<application::app_dp::CreationalInstance>
     //! @brief Field list.
     static constexpr FieldList fields
     {
-        APPLY_REFLECT_COMMAND_CATEGORY_FIELD(abstractFactory, abs),
-        APPLY_REFLECT_COMMAND_CATEGORY_FIELD(builder        , bui),
-        APPLY_REFLECT_COMMAND_CATEGORY_FIELD(factoryMethod  , fac),
-        APPLY_REFLECT_COMMAND_CATEGORY_FIELD(prototype      , pro),
-        APPLY_REFLECT_COMMAND_CATEGORY_FIELD(singleton      , sin),
+        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(abstractFactory, abs),
+        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(builder        , bui),
+        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(factoryMethod  , fac),
+        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(prototype      , pro),
+        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(singleton      , sin),
     };
     // clang-format on
     //! @brief Attribute list.
@@ -304,13 +304,13 @@ struct utility::reflection::TypeInfo<application::app_dp::StructuralInstance>
     //! @brief Field list.
     static constexpr FieldList fields
     {
-        APPLY_REFLECT_COMMAND_CATEGORY_FIELD(adapter  , ada),
-        APPLY_REFLECT_COMMAND_CATEGORY_FIELD(bridge   , bri),
-        APPLY_REFLECT_COMMAND_CATEGORY_FIELD(composite, com),
-        APPLY_REFLECT_COMMAND_CATEGORY_FIELD(decorator, dec),
-        APPLY_REFLECT_COMMAND_CATEGORY_FIELD(facade   , fac),
-        APPLY_REFLECT_COMMAND_CATEGORY_FIELD(flyweight, fly),
-        APPLY_REFLECT_COMMAND_CATEGORY_FIELD(proxy    , pro),
+        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(adapter  , ada),
+        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(bridge   , bri),
+        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(composite, com),
+        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(decorator, dec),
+        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(facade   , fac),
+        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(flyweight, fly),
+        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(proxy    , pro),
     };
     // clang-format on
     //! @brief Attribute list.
@@ -327,10 +327,10 @@ struct utility::reflection::TypeInfo<application::app_dp::StructuralInstance>
         "add the choices listed above"}};
 };
 
-//! @brief Static reflection for DataStructureChoice. Used to map command line arguments.
+//! @brief Static reflection for ApplyDataStructure. Used to map command line arguments.
 template <>
-struct utility::reflection::TypeInfo<application::app_ds::DataStructureChoice>
-    : TypeInfoBase<application::app_ds::DataStructureChoice>
+struct utility::reflection::TypeInfo<application::app_ds::ApplyDataStructure>
+    : TypeInfoBase<application::app_ds::ApplyDataStructure>
 {
     //! @brief Name.
     static constexpr std::string_view name{"app-ds"};
@@ -338,8 +338,8 @@ struct utility::reflection::TypeInfo<application::app_ds::DataStructureChoice>
     //! @brief Field list.
     static constexpr FieldList fields
     {
-        APPLY_REFLECT_COMMAND_SUB_CLI_FIELD(linear, l),
-        APPLY_REFLECT_COMMAND_SUB_CLI_FIELD(tree  , t),
+        ACTION_REFLECT_COMMAND_SUB_CLI_FIELD(linear, l),
+        ACTION_REFLECT_COMMAND_SUB_CLI_FIELD(tree  , t),
     };
     // clang-format on
     //! @brief Attribute list.
@@ -356,9 +356,9 @@ struct utility::reflection::TypeInfo<application::app_ds::LinearInstance>
     //! @brief Field list.
     static constexpr FieldList fields
     {
-        APPLY_REFLECT_COMMAND_CATEGORY_FIELD(linkedList, lin),
-        APPLY_REFLECT_COMMAND_CATEGORY_FIELD(stack     , sta),
-        APPLY_REFLECT_COMMAND_CATEGORY_FIELD(queue     , que),
+        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(linkedList, lin),
+        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(stack     , sta),
+        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(queue     , que),
     };
     // clang-format on
     //! @brief Attribute list.
@@ -381,9 +381,9 @@ struct utility::reflection::TypeInfo<application::app_ds::TreeInstance>
     //! @brief Field list.
     static constexpr FieldList fields
     {
-        APPLY_REFLECT_COMMAND_CATEGORY_FIELD(binarySearch       , bin),
-        APPLY_REFLECT_COMMAND_CATEGORY_FIELD(adelsonVelskyLandis, ade),
-        APPLY_REFLECT_COMMAND_CATEGORY_FIELD(splay              , spl),
+        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(binarySearch       , bin),
+        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(adelsonVelskyLandis, ade),
+        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(splay              , spl),
     };
     // clang-format on
     //! @brief Attribute list.
@@ -396,10 +396,10 @@ struct utility::reflection::TypeInfo<application::app_ds::TreeInstance>
         "add the choices listed above"}};
 };
 
-//! @brief Static reflection for NumericChoice. Used to map command line arguments.
+//! @brief Static reflection for ApplyNumeric. Used to map command line arguments.
 template <>
-struct utility::reflection::TypeInfo<application::app_num::NumericChoice>
-    : TypeInfoBase<application::app_num::NumericChoice>
+struct utility::reflection::TypeInfo<application::app_num::ApplyNumeric>
+    : TypeInfoBase<application::app_num::ApplyNumeric>
 {
     //! @brief Name.
     static constexpr std::string_view name{"app-num"};
@@ -407,10 +407,10 @@ struct utility::reflection::TypeInfo<application::app_num::NumericChoice>
     //! @brief Field list.
     static constexpr FieldList fields
     {
-        APPLY_REFLECT_COMMAND_SUB_CLI_FIELD(arithmetic, a),
-        APPLY_REFLECT_COMMAND_SUB_CLI_FIELD(divisor   , d),
-        APPLY_REFLECT_COMMAND_SUB_CLI_FIELD(integral  , i),
-        APPLY_REFLECT_COMMAND_SUB_CLI_FIELD(prime     , p),
+        ACTION_REFLECT_COMMAND_SUB_CLI_FIELD(arithmetic, a),
+        ACTION_REFLECT_COMMAND_SUB_CLI_FIELD(divisor   , d),
+        ACTION_REFLECT_COMMAND_SUB_CLI_FIELD(integral  , i),
+        ACTION_REFLECT_COMMAND_SUB_CLI_FIELD(prime     , p),
     };
     // clang-format on
     //! @brief Attribute list.
@@ -427,10 +427,10 @@ struct utility::reflection::TypeInfo<application::app_num::ArithmeticMethod>
     //! @brief Field list.
     static constexpr FieldList fields
     {
-        APPLY_REFLECT_COMMAND_CATEGORY_FIELD(addition      , add),
-        APPLY_REFLECT_COMMAND_CATEGORY_FIELD(subtraction   , sub),
-        APPLY_REFLECT_COMMAND_CATEGORY_FIELD(multiplication, mul),
-        APPLY_REFLECT_COMMAND_CATEGORY_FIELD(division      , div),
+        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(addition      , add),
+        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(subtraction   , sub),
+        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(multiplication, mul),
+        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(division      , div),
     };
     // clang-format on
     //! @brief Attribute list.
@@ -454,8 +454,8 @@ struct utility::reflection::TypeInfo<application::app_num::DivisorMethod>
     //! @brief Field list.
     static constexpr FieldList fields
     {
-        APPLY_REFLECT_COMMAND_CATEGORY_FIELD(euclidean, euc),
-        APPLY_REFLECT_COMMAND_CATEGORY_FIELD(stein    , ste),
+        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(euclidean, euc),
+        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(stein    , ste),
     };
     // clang-format on
     //! @brief Attribute list.
@@ -477,11 +477,11 @@ struct utility::reflection::TypeInfo<application::app_num::IntegralMethod>
     //! @brief Field list.
     static constexpr FieldList fields
     {
-        APPLY_REFLECT_COMMAND_CATEGORY_FIELD(trapezoidal, tra),
-        APPLY_REFLECT_COMMAND_CATEGORY_FIELD(simpson    , sim),
-        APPLY_REFLECT_COMMAND_CATEGORY_FIELD(romberg    , rom),
-        APPLY_REFLECT_COMMAND_CATEGORY_FIELD(gauss      , gau),
-        APPLY_REFLECT_COMMAND_CATEGORY_FIELD(monteCarlo , mon),
+        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(trapezoidal, tra),
+        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(simpson    , sim),
+        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(romberg    , rom),
+        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(gauss      , gau),
+        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(monteCarlo , mon),
     };
     // clang-format on
     //! @brief Attribute list.
@@ -506,8 +506,8 @@ struct utility::reflection::TypeInfo<application::app_num::PrimeMethod>
     //! @brief Field list.
     static constexpr FieldList fields
     {
-        APPLY_REFLECT_COMMAND_CATEGORY_FIELD(eratosthenes, era),
-        APPLY_REFLECT_COMMAND_CATEGORY_FIELD(euler       , eul),
+        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(eratosthenes, era),
+        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(euler       , eul),
     };
     // clang-format on
     //! @brief Attribute list.
@@ -519,38 +519,38 @@ struct utility::reflection::TypeInfo<application::app_num::PrimeMethod>
         "add the choices listed above"}};
 };
 
-#undef APPLY_REFLECT_COMMAND_SUB_CLI_FIELD
-#undef APPLY_REFLECT_COMMAND_CATEGORY_FIELD
+#undef ACTION_REFLECT_COMMAND_SUB_CLI_FIELD
+#undef ACTION_REFLECT_COMMAND_CATEGORY_FIELD
 
 //! @brief The application module.
 namespace application // NOLINT (modernize-concat-nested-namespaces)
 {
-//! @brief Applying-related functions in the application module.
-namespace apply
+//! @brief Applied-action-related functions in the application module.
+namespace action
 {
-//! @brief Message of "update choice" in applying.
-//! @tparam Evt - type of applying event
+//! @brief The "Update Choice" message in the applied action.
+//! @tparam Evt - type of applied action event
 template <typename Evt>
 struct UpdateChoice
 {
     //! @brief Target choice.
     const std::string cho;
 };
-//! @brief Message of "run choices" in applying.
-//! @tparam Evt - type of applying event
+//! @brief The "Run Choices" message in the applied action.
+//! @tparam Evt - type of applied action event
 template <typename Evt>
 struct RunChoices
 {
     //! @brief Collection of candidates for choice.
     const std::vector<std::string> coll;
 };
-//! @brief Indication type of "update choice" in applying.
+//! @brief Indication type of updating in the applied action.
 //! @tparam Msg - type of message
 template <typename Msg>
 struct UpdatingIndication
 {
 };
-//! @brief Indication type of "run choices" in applying.
+//! @brief Indication type of running in the applied action.
 //! @tparam Msg - type of message
 template <typename Msg>
 struct RunningIndication
@@ -770,7 +770,7 @@ struct EvtTypeOverloaded : Ts...
 //! @tparam Ts - type of visitors
 template <class... Ts>
 EvtTypeOverloaded(Ts...) -> EvtTypeOverloaded<Ts...>;
-//! @brief Alias for the applying event type.
+//! @brief Alias for the applied action event type.
 using EventType = std::variant<
     app_algo::MatchMethod,
     app_algo::NotationMethod,
@@ -800,5 +800,5 @@ inline std::string presetTaskName(const std::string_view cli, const std::string_
 //! @brief Alias for memory pool when making multi-threading.
 using ResourcePool = utility::memory::Memory<utility::thread::Thread>;
 extern ResourcePool& resourcePool();
-} // namespace apply
+} // namespace action
 } // namespace application
