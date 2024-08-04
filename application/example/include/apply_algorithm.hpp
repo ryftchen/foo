@@ -144,7 +144,7 @@ struct Bottom<SortMethod>
 };
 
 //! @brief Manage algorithm choices.
-class AlgorithmChoice
+class ApplyAlgorithm
 {
 public:
     //! @brief Enumerate specific algorithm choices.
@@ -219,7 +219,7 @@ protected:
         return os;
     }
 };
-extern AlgorithmChoice& manager();
+extern ApplyAlgorithm& manager();
 
 //! @brief Update choice.
 //! @tparam T - type of target method

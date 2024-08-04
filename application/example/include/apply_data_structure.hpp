@@ -67,7 +67,7 @@ struct Bottom<TreeInstance>
 };
 
 //! @brief Manage data structure choices.
-class DataStructureChoice
+class ApplyDataStructure
 {
 public:
     //! @brief Enumerate specific data structure choices.
@@ -115,7 +115,7 @@ protected:
         return os;
     }
 };
-extern DataStructureChoice& manager();
+extern ApplyDataStructure& manager();
 
 //! @brief Update choice.
 //! @tparam T - type of target instance

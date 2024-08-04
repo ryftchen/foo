@@ -107,7 +107,7 @@ struct Bottom<PrimeMethod>
 };
 
 //! @brief Manage numeric choices.
-class NumericChoice
+class ApplyNumeric
 {
 public:
     //! @brief Enumerate specific numeric choices.
@@ -174,7 +174,7 @@ protected:
         return os;
     }
 };
-extern NumericChoice& manager();
+extern ApplyNumeric& manager();
 
 //! @brief Update choice.
 //! @tparam T - type of target method

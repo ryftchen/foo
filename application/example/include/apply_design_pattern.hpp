@@ -110,7 +110,7 @@ struct Bottom<StructuralInstance>
 };
 
 //! @brief Manage design pattern choices.
-class DesignPatternChoice
+class ApplyDesignPattern
 {
 public:
     //! @brief Enumerate specific design pattern choices.
@@ -169,7 +169,7 @@ protected:
         return os;
     }
 };
-extern DesignPatternChoice& manager();
+extern ApplyDesignPattern& manager();
 
 //! @brief Update choice.
 //! @tparam T - type of target instance

@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "apply.hpp"
+#include "action.hpp"
 #include "note.hpp"
 
 #include "utility/include/argument.hpp"
@@ -82,16 +82,16 @@ private:
     utility::argument::Argument mainCLI{"foo", note::version()};
     //! @brief Parse argument helper to apply algorithm.
     utility::argument::Argument subCLIAppAlgo{
-        utility::reflection::TypeInfo<app_algo::AlgorithmChoice>::name, note::version()};
+        utility::reflection::TypeInfo<app_algo::ApplyAlgorithm>::name, note::version()};
     //! @brief Parse argument helper to apply design pattern.
     utility::argument::Argument subCLIAppDp{
-        utility::reflection::TypeInfo<app_dp::DesignPatternChoice>::name, note::version()};
+        utility::reflection::TypeInfo<app_dp::ApplyDesignPattern>::name, note::version()};
     //! @brief Parse argument helper to apply data structure.
     utility::argument::Argument subCLIAppDs{
-        utility::reflection::TypeInfo<app_ds::DataStructureChoice>::name, note::version()};
+        utility::reflection::TypeInfo<app_ds::ApplyDataStructure>::name, note::version()};
     //! @brief Parse argument helper to apply numeric.
     utility::argument::Argument subCLIAppNum{
-        utility::reflection::TypeInfo<app_num::NumericChoice>::name, note::version()};
+        utility::reflection::TypeInfo<app_num::ApplyNumeric>::name, note::version()};
 
     //! @brief Initialize the parse argument helpers.
     void initializeCLI();
@@ -133,7 +133,7 @@ private:
         //! @brief The candidates for the choice.
         ChoiceContainer choices{};
         //! @brief The internal event for applying.
-        apply::EventType event{};
+        action::EventType event{};
     };
     //! @brief Alias for the map of CategoryName and CategoryExtAttr.
     using SubCLIMap = std::map<CategoryName, CategoryExtAttr>;
@@ -283,7 +283,7 @@ private:
         }
     } /** @brief Dispatch all types of tasks. */ dispatchManager{};
     //! @brief Forward messages for applying.
-    apply::MessageForwarder applyMessage{};
+    action::MessageForwarder messageForwarder{};
 
     //! @brief Enter console mode.
     static void enterConsoleMode();

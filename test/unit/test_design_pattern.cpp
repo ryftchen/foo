@@ -22,8 +22,8 @@ namespace test // NOLINT (modernize-concat-nested-namespaces)
 namespace tst_dp
 {
 using namespace application::app_dp; // NOLINT (google-build-using-namespace)
-//! @brief Alias for the enumeration of design pattern choices.
-using Category = DesignPatternChoice::Category;
+//! @brief Alias for Category.
+using Category = ApplyDesignPattern::Category;
 
 //! @brief Test base of behavioral.
 class BehavioralTestBase : public ::testing::Test

@@ -13,7 +13,7 @@
 #include "application/pch/precompiled_header.hpp"
 #endif // __PRECOMPILED_HEADER
 
-#include "application/core/include/apply.hpp"
+#include "application/core/include/action.hpp"
 #include "application/core/include/log.hpp"
 #include "utility/include/currying.hpp"
 
@@ -34,13 +34,13 @@
 namespace application::app_algo
 {
 //! @brief Alias for Category.
-using Category = AlgorithmChoice::Category;
+using Category = ApplyAlgorithm::Category;
 
 //! @brief Get the algorithm choice manager.
-//! @return reference of the AlgorithmChoice object
-AlgorithmChoice& manager()
+//! @return reference of the ApplyAlgorithm object
+ApplyAlgorithm& manager()
 {
-    static AlgorithmChoice manager{};
+    static ApplyAlgorithm manager{};
     return manager;
 }
 
@@ -49,7 +49,7 @@ AlgorithmChoice& manager()
 static const auto& getTaskNameCurried()
 {
     static const auto curried =
-        utility::currying::curry(apply::presetTaskName, utility::reflection::TypeInfo<AlgorithmChoice>::name);
+        utility::currying::curry(action::presetTaskName, utility::reflection::TypeInfo<ApplyAlgorithm>::name);
     return curried;
 }
 
@@ -82,7 +82,7 @@ template <Category Cat>
 constexpr auto& getCategoryOpts()
 {
     return std::invoke(
-        utility::reflection::TypeInfo<AlgorithmChoice>::fields.find(REFLECTION_STR(toString(Cat))).value, manager());
+        utility::reflection::TypeInfo<ApplyAlgorithm>::fields.find(REFLECTION_STR(toString(Cat))).value, manager());
 }
 
 //! @brief Get the alias of the category in algorithm choices.
@@ -91,7 +91,7 @@ constexpr auto& getCategoryOpts()
 template <Category Cat>
 constexpr std::string_view getCategoryAlias()
 {
-    constexpr auto attr = utility::reflection::TypeInfo<AlgorithmChoice>::fields.find(REFLECTION_STR(toString(Cat)))
+    constexpr auto attr = utility::reflection::TypeInfo<ApplyAlgorithm>::fields.find(REFLECTION_STR(toString(Cat)))
                               .attrs.find(REFLECTION_STR("alias"));
     static_assert(attr.hasValue);
     return attr.value;
@@ -405,7 +405,7 @@ void runChoices<MatchMethod>(const std::vector<std::string>& candidates)
     using match::MatchSolution, match::InputBuilder, match::input::patternString;
     static_assert(InputBuilder::maxDigit > patternString.length());
 
-    auto& pooling = apply::resourcePool();
+    auto& pooling = action::resourcePool();
     auto* const threads = pooling.newElement(
         std::min(static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<MatchMethod>::value)));
     const auto inputs = std::make_shared<InputBuilder>(std::string{patternString});
@@ -531,7 +531,7 @@ void runChoices<NotationMethod>(const std::vector<std::string>& candidates)
     APP_ALGO_PRINT_TASK_BEGIN_TITLE(category);
     using notation::NotationSolution, notation::InputBuilder, notation::input::infixString;
 
-    auto& pooling = apply::resourcePool();
+    auto& pooling = action::resourcePool();
     auto* const threads = pooling.newElement(std::min(
         static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<NotationMethod>::value)));
     const auto inputs = std::make_shared<InputBuilder>(infixString);
@@ -692,7 +692,7 @@ void runChoices<OptimalMethod>(const std::vector<std::string>& candidates)
     const auto calcFunc =
         [&candidates, bitFlag](const optimal::Function& function, const optimal::FuncRange<double, double>& range)
     {
-        auto& pooling = apply::resourcePool();
+        auto& pooling = action::resourcePool();
         auto* const threads = pooling.newElement(std::min(
             static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<OptimalMethod>::value)));
         const auto optimalFunctor = [threads, &function, &range](
@@ -865,7 +865,7 @@ void runChoices<SearchMethod>(const std::vector<std::string>& candidates)
         search::input::arrayRange2;
     static_assert((arrayRange1 < arrayRange2) && (arrayLength > 0));
 
-    auto& pooling = apply::resourcePool();
+    auto& pooling = action::resourcePool();
     auto* const threads = pooling.newElement(
         std::min(static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<SearchMethod>::value)));
     const auto inputs = std::make_shared<InputBuilder<float>>(arrayLength, arrayRange1, arrayRange2);
@@ -1119,7 +1119,7 @@ void runChoices<SortMethod>(const std::vector<std::string>& candidates)
         sort::input::arrayRange2;
     static_assert((arrayRange1 < arrayRange2) && (arrayLength > 0));
 
-    auto& pooling = apply::resourcePool();
+    auto& pooling = action::resourcePool();
     auto* const threads = pooling.newElement(
         std::min(static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<SortMethod>::value)));
     const auto inputs = std::make_shared<InputBuilder<std::int32_t>>(arrayLength, arrayRange1, arrayRange2);

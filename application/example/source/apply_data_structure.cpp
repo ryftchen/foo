@@ -13,7 +13,7 @@
 #include "application/pch/precompiled_header.hpp"
 #endif // __PRECOMPILED_HEADER
 
-#include "application/core/include/apply.hpp"
+#include "application/core/include/action.hpp"
 #include "application/core/include/log.hpp"
 #include "utility/include/currying.hpp"
 
@@ -34,13 +34,13 @@
 namespace application::app_ds
 {
 //! @brief Alias for Category.
-using Category = DataStructureChoice::Category;
+using Category = ApplyDataStructure::Category;
 
 //! @brief Get the data structure choice manager.
-//! @return reference of the DataStructureChoice object
-DataStructureChoice& manager()
+//! @return reference of the ApplyDataStructure object
+ApplyDataStructure& manager()
 {
-    static DataStructureChoice manager{};
+    static ApplyDataStructure manager{};
     return manager;
 }
 
@@ -49,7 +49,7 @@ DataStructureChoice& manager()
 static const auto& getTaskNameCurried()
 {
     static const auto curried =
-        utility::currying::curry(apply::presetTaskName, utility::reflection::TypeInfo<DataStructureChoice>::name);
+        utility::currying::curry(action::presetTaskName, utility::reflection::TypeInfo<ApplyDataStructure>::name);
     return curried;
 }
 
@@ -76,8 +76,7 @@ template <Category Cat>
 constexpr auto& getCategoryOpts()
 {
     return std::invoke(
-        utility::reflection::TypeInfo<DataStructureChoice>::fields.find(REFLECTION_STR(toString(Cat))).value,
-        manager());
+        utility::reflection::TypeInfo<ApplyDataStructure>::fields.find(REFLECTION_STR(toString(Cat))).value, manager());
 }
 
 //! @brief Get the alias of the category in data structure choices.
@@ -86,7 +85,7 @@ constexpr auto& getCategoryOpts()
 template <Category Cat>
 constexpr std::string_view getCategoryAlias()
 {
-    constexpr auto attr = utility::reflection::TypeInfo<DataStructureChoice>::fields.find(REFLECTION_STR(toString(Cat)))
+    constexpr auto attr = utility::reflection::TypeInfo<ApplyDataStructure>::fields.find(REFLECTION_STR(toString(Cat)))
                               .attrs.find(REFLECTION_STR("alias"));
     static_assert(attr.hasValue);
     return attr.value;
@@ -253,7 +252,7 @@ void runChoices<LinearInstance>(const std::vector<std::string>& candidates)
     APP_DS_PRINT_TASK_BEGIN_TITLE(category);
     using linear::LinearStructure;
 
-    auto& pooling = apply::resourcePool();
+    auto& pooling = action::resourcePool();
     auto* const threads = pooling.newElement(std::min(
         static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<LinearInstance>::value)));
     const auto linearFunctor = [threads](const std::string& threadName, void (*targetInstance)())
@@ -376,7 +375,7 @@ void runChoices<TreeInstance>(const std::vector<std::string>& candidates)
     APP_DS_PRINT_TASK_BEGIN_TITLE(category);
     using tree::TreeStructure;
 
-    auto& pooling = apply::resourcePool();
+    auto& pooling = action::resourcePool();
     auto* const threads = pooling.newElement(
         std::min(static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<TreeInstance>::value)));
     const auto treeFunctor = [threads](const std::string& threadName, void (*targetInstance)())
