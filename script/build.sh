@@ -1042,11 +1042,7 @@ e.g. with \"distccd --daemon --allow ${local_client}\"."
             fi
         fi
         CMAKE_CACHE_ENTRY="${CMAKE_CACHE_ENTRY} -D TOOLCHAIN_DISTCC=ON"
-        local distcc_folder=".distcc"
-        if [[ ! -d ~/${distcc_folder} ]]; then
-            shell_command "mkdir -p ~/${distcc_folder}"
-        fi
-        export DISTCC_HOSTS="localhost ${DEV_OPT[distcc]}" DISTCC_LOG=~/${distcc_folder}/distcc.log
+        export DISTCC_HOSTS="localhost ${DEV_OPT[distcc]}"
     fi
     if [[ ${DEV_OPT[ccache]} = true ]] && [[ ${DEV_OPT[pch]} = true ]]; then
         export CCACHE_PCH_EXTSUM=true CCACHE_SLOPPINESS=pch_defines,time_macros
