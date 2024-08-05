@@ -886,6 +886,8 @@ function package_for_browser()
 ./${FOLDER[doc]}/${browser_folder} && mkdir ./${FOLDER[doc]}/${browser_folder}"
 
     shell_command "cp -rf /usr/local/share/woboq/data ./${FOLDER[doc]}/${browser_folder}/"
+    shell_command "sed -i \"s|'><img src='|'><img src='https://web.archive.org/web/20220224111803/|g\" \
+./${FOLDER[doc]}/${browser_folder}/data/codebrowser.js"
     shell_command "codebrowser_generator -color -a -b ./${FOLDER[bld]}/${COMP_CMD} \
 -o ./${FOLDER[doc]}/${browser_folder} -p ${FOLDER[proj]}:.:${commit_id} -d ./data"
     shell_command "codebrowser_generator -color -a -b ./${FOLDER[tst]}/${FOLDER[bld]}/${COMP_CMD} \
