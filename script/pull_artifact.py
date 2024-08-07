@@ -70,7 +70,7 @@ class Documentation:
         del self.logger
 
     def download_artifact(self):
-        print(f"[ {datetime.now()} ] ++++++++++++++ DOWNLOAD ARTIFACT ++++++++++++++")
+        print(f"[ {datetime.now()} ] +++++++++++++++ DOWNLOAD ARTIFACT +++++++++++++++")
         local_commit_id, _, _ = execute(f"git -C {self.project_path} rev-parse HEAD")
         remote_commit_id, _, _ = execute(
             f"git -C {self.project_path} ls-remote {self.github_url} refs/heads/master | cut -f 1"
@@ -123,7 +123,7 @@ class Documentation:
             interrupt(f"The {self.artifact_file}.zip file in the {self.website_dir} folder is corrupted.")
 
     def update_document(self):
-        print(f"[ {datetime.now()} ] +++++++++++++++ UPDATE DOCUMENT +++++++++++++++")
+        print(f"[ {datetime.now()} ] ++++++++++++++++ UPDATE DOCUMENT ++++++++++++++++")
         execute(f"rm -rf {self.website_dir}/doxygen {self.website_dir}/browser")
         execute(f"unzip {self.website_dir}/{self.artifact_file}.zip -d {self.website_dir}")
         execute(f"tar -jxvf {self.website_dir}/foo_doxygen_*.tar.bz2 -C {self.website_dir} >/dev/null")

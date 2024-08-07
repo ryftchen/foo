@@ -148,7 +148,7 @@ function parse_parameters()
         -h | --help)
             ARGS[help]=true
             ;;
-        -a | --assume)
+        -A | --assume)
             if [[ ${ARGS[assume]} != false ]]; then
                 die "Set the required parameter repeatedly for the $1 option: $2."
             fi
@@ -188,7 +188,7 @@ function parse_parameters()
             check_single_choice_parameters_validity "$1"
             ARGS[container]=true
             ;;
-        -A | --archive)
+        -a | --archive)
             check_single_choice_parameters_validity "$1"
             ARGS[archive]=true
             ;;
@@ -260,14 +260,14 @@ function perform_help_option()
         return
     fi
 
-    echo "usage: $(basename "${0}") [-h] [-a {y,n}] [-D] [-I] [-C] [-i] [-u] [-q] [-c] [-w] [-t [-r]] \
+    echo "usage: $(basename "${0}") [-h] [-A {y,n}] [-D] [-I] [-C] [-i] [-u] [-q] [-c] [-a] [-t [-r]] \
 [[{-H,-c,-f [cpp,sh,py,rs],-l [cpp,sh,py,rs],-S,-b,-d} ...] [-r]]"
     echo
     echo "build script"
     echo
     echo "options:"
     echo "  -h, --help            show help and exit"
-    echo "  -a {y,n}, --assume {y,n}"
+    echo "  -A {y,n}, --assume {y,n}"
     echo "                        assume the confirmation is a yes or no"
     echo "  -D, --dry             dry run for script"
     echo "  -I, --initialize      initialize environment and exit"
@@ -275,7 +275,7 @@ function perform_help_option()
     echo "  -i, --install         install binary with libraries and exit"
     echo "  -u, --uninstall       uninstall binary with libraries and exit"
     echo "  -c, --container       construct docker container and exit"
-    echo "  -A, --archive         start / stop archive server and exit"
+    echo "  -a, --archive         start / stop archive server and exit"
     echo "  -t, --test            build unit test and exit"
     echo "  -r, --release         set as release version"
     echo "  -H, --hook            run hook before commit"
