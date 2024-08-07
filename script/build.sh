@@ -11,7 +11,7 @@ declare -rA STATUS_COLOR=([exec]="\033[0;33;40m\033[1m\033[49m" [succ]="\033[0;3
     [fail]="\033[0;31;40m\033[1m\033[49m" [time]="\033[0;39;40m\033[1m\033[2m\033[49m")
 declare -r STATUS_COLOR_OFF="\033[0m"
 declare -A ARGS=([help]=false [assume]=false [dry]=false [initialize]=false [clean]=false [install]=false
-    [uninstall]=false [container]=false [website]=false [test]=false [release]=false [hook]=false [spell]=false
+    [uninstall]=false [container]=false [archive]=false [test]=false [release]=false [hook]=false [spell]=false
     [statistics]=false [format]=false [lint]=false [query]=false [doxygen]=false [browser]=false)
 declare -A DEV_OPT=([compiler]="clang" [parallel]=0 [pch]=false [unity]=false [ccache]=false [distcc]="localhost"
     [tmpfs]=false)
@@ -86,7 +86,7 @@ function existing_single_choice_parameters()
     local number=0
     for key in "${!ARGS[@]}"; do
         if [[ ${key} == "initialize" ]] || [[ ${key} == "clean" ]] || [[ ${key} == "install" ]] \
-            || [[ ${key} == "uninstall" ]] || [[ ${key} == "container" ]] || [[ ${key} == "website" ]] \
+            || [[ ${key} == "uninstall" ]] || [[ ${key} == "container" ]] || [[ ${key} == "archive" ]] \
             || [[ ${key} == "test" ]]; then
             if [[ ${ARGS[${key}]} != false ]]; then
                 number+=1
@@ -188,9 +188,9 @@ function parse_parameters()
             check_single_choice_parameters_validity "$1"
             ARGS[container]=true
             ;;
-        -w | --website)
+        -A | --archive)
             check_single_choice_parameters_validity "$1"
-            ARGS[website]=true
+            ARGS[archive]=true
             ;;
         -t | --test)
             if {
@@ -275,7 +275,7 @@ function perform_help_option()
     echo "  -i, --install         install binary with libraries and exit"
     echo "  -u, --uninstall       uninstall binary with libraries and exit"
     echo "  -c, --container       construct docker container and exit"
-    echo "  -w, --website         launch / terminate web server and exit"
+    echo "  -A, --archive         start / stop archive server and exit"
     echo "  -t, --test            build unit test and exit"
     echo "  -r, --release         set as release version"
     echo "  -H, --hook            run hook before commit"
@@ -350,7 +350,7 @@ function perform_clean_option()
         shell_command "sed -i '/alias ${FOLDER[proj]:0:1}\(build\|run\)/d' ~/${BASH_RC}"
     fi
     shell_command "find ./ -maxdepth 3 -type d | sed 1d \
-| grep -E '(${FOLDER[bld]}|${FOLDER[rep]}|${FOLDER[cac]}|__pycache__|archive|browser|doxygen|target)$' \
+| grep -E '(${FOLDER[bld]}|${FOLDER[rep]}|${FOLDER[cac]}|__pycache__|artifact|browser|doxygen|target)$' \
 | xargs -i rm -rf {}"
     shell_command "rm -rf ./${FOLDER[scr]}/.* ./${FOLDER[doc]}/*.{css,html} ./${FOLDER[doc]}/server/Cargo.lock \
 ./core.* ./vgcore.* ./*.profraw"
@@ -467,9 +467,9 @@ function perform_container_option()
     exit "${STATUS}"
 }
 
-function perform_website_option()
+function perform_archive_option()
 {
-    if [[ ${ARGS[website]} = false ]]; then
+    if [[ ${ARGS[archive]} = false ]]; then
         return
     fi
 
@@ -477,8 +477,8 @@ function perform_website_option()
         shell_command "cargo build --release --manifest-path ./${FOLDER[doc]}/server/Cargo.toml"
         local html_file="index.html" css_file="main.css"
         if [[ ! -f ./${FOLDER[doc]}/${html_file} ]] || [[ ! -f ./${FOLDER[doc]}/${css_file} ]]; then
-            shell_command "cp ./${FOLDER[doc]}/template/website_${html_file} ./${FOLDER[doc]}/${html_file} \
-&& cp ./${FOLDER[doc]}/template/website_${css_file} ./${FOLDER[doc]}/${css_file}"
+            shell_command "cp ./${FOLDER[doc]}/template/archive_${html_file} ./${FOLDER[doc]}/${html_file} \
+&& cp ./${FOLDER[doc]}/template/archive_${css_file} ./${FOLDER[doc]}/${css_file}"
             shell_command "sed -i 's/unamed list/document list/g' ./${FOLDER[doc]}/index.html"
             local item_rows
             item_rows=$(
@@ -495,8 +495,8 @@ EOF
             if [[ ! -d ./${FOLDER[rep]} ]]; then
                 shell_command "mkdir ./${FOLDER[rep]}"
             fi
-            shell_command "cp ./${FOLDER[doc]}/template/website_${html_file} ./${FOLDER[rep]}/${html_file} \
-&& cp ./${FOLDER[doc]}/template/website_${css_file} ./${FOLDER[rep]}/${css_file}"
+            shell_command "cp ./${FOLDER[doc]}/template/archive_${html_file} ./${FOLDER[rep]}/${html_file} \
+&& cp ./${FOLDER[doc]}/template/archive_${css_file} ./${FOLDER[rep]}/${css_file}"
             shell_command "sed -i 's/unamed list/report list/g' ./${FOLDER[rep]}/index.html"
             local item_rows
             item_rows=$(
@@ -522,7 +522,7 @@ EOF
         local server_daemon="./${FOLDER[doc]}/server/target/release/${FOLDER[proj]}_arc --root-dir ./${FOLDER[doc]} \
 --root-dir ./${FOLDER[rep]} --host ${host_addr} --port ${start_port}"
         if ! pgrep -f "${server_daemon}" >/dev/null 2>&1; then
-            echo "Please confirm whether continue launching the archive server. (y or n)"
+            echo "Please confirm whether continue starting the archive server. (y or n)"
             local input
             input=$(wait_until_get_input)
             if echo "${input}" | grep -iq '^y'; then
@@ -537,7 +537,7 @@ EOF
             echo "The archive server starts listening ..."
             echo "=> http://${host_addr}:${port1}/ for directory $(realpath "./${FOLDER[doc]}")"
             echo "=> http://${host_addr}:${port2}/ for directory $(realpath "./${FOLDER[rep]}")"
-            echo "Please confirm whether continue terminating the archive server. (y or n)"
+            echo "Please confirm whether continue stopping the archive server. (y or n)"
             local input
             input=$(wait_until_get_input)
             if echo "${input}" | grep -iq '^y'; then
@@ -567,7 +567,7 @@ function try_to_perform_single_choice_options()
     perform_install_option
     perform_uninstall_option
     perform_container_option
-    perform_website_option
+    perform_archive_option
 }
 
 function check_extra_dependencies()
@@ -833,7 +833,7 @@ function package_for_doxygen()
 
     local doxygen_folder="doxygen"
     local tar_file="${FOLDER[proj]}_${doxygen_folder}_${commit_id}.tar.bz2"
-    shell_command "rm -rf ./${FOLDER[doc]}/archive/${FOLDER[proj]}_${doxygen_folder}_*.tar.bz2 \
+    shell_command "rm -rf ./${FOLDER[doc]}/artifact/${FOLDER[proj]}_${doxygen_folder}_*.tar.bz2 \
 ./${FOLDER[doc]}/${doxygen_folder} && mkdir ./${FOLDER[doc]}/${doxygen_folder}"
 
     local check_format="grep -nE '\/\/! @((brief (([a-z].+)|(.+[^.])))|((param|tparam) (.+[.]))|(return (.+[.])))$' \
@@ -844,7 +844,7 @@ function package_for_doxygen()
     fi
     shell_command "(cat ./${FOLDER[doc]}/Doxyfile ; echo 'PROJECT_NUMBER=\"@ $(git rev-parse --short @)\"') \
 | doxygen -"
-    shell_command "tar -jcvf ./${FOLDER[doc]}/archive/${tar_file} -C ./${FOLDER[doc]} ${doxygen_folder} >/dev/null"
+    shell_command "tar -jcvf ./${FOLDER[doc]}/artifact/${tar_file} -C ./${FOLDER[doc]} ${doxygen_folder} >/dev/null"
 }
 
 function perform_doxygen_option()
@@ -858,17 +858,17 @@ function perform_doxygen_option()
     if [[ -z ${commit_id} ]]; then
         commit_id="local"
     fi
-    if [[ -d ./${FOLDER[doc]}/archive ]]; then
+    if [[ -d ./${FOLDER[doc]}/artifact ]]; then
         local last_tar="${FOLDER[proj]}_doxygen_${commit_id}.tar.bz2"
-        if [[ -f ./${FOLDER[doc]}/archive/${last_tar} ]]; then
-            local time_interval=$(($(date +%s) - $(stat -L --format %Y "./${FOLDER[doc]}/archive/${last_tar}")))
+        if [[ -f ./${FOLDER[doc]}/artifact/${last_tar} ]]; then
+            local time_interval=$(($(date +%s) - $(stat -L --format %Y "./${FOLDER[doc]}/artifact/${last_tar}")))
             if [[ ${time_interval} -lt 60 ]]; then
-                die "The latest doxygen archive ${last_tar} has been generated since ${time_interval}s ago."
+                die "The latest doxygen artifact ${last_tar} has been generated since ${time_interval}s ago."
             fi
         fi
         package_for_doxygen "${commit_id}"
     else
-        shell_command "mkdir ./${FOLDER[doc]}/archive"
+        shell_command "mkdir ./${FOLDER[doc]}/artifact"
         package_for_doxygen "${commit_id}"
     fi
 }
@@ -882,7 +882,7 @@ function package_for_browser()
     fi
     local browser_folder="browser"
     local tar_file="${FOLDER[proj]}_${browser_folder}_${commit_id}.tar.bz2"
-    shell_command "rm -rf ./${FOLDER[doc]}/archive/${FOLDER[proj]}_${browser_folder}_*.tar.bz2 \
+    shell_command "rm -rf ./${FOLDER[doc]}/artifact/${FOLDER[proj]}_${browser_folder}_*.tar.bz2 \
 ./${FOLDER[doc]}/${browser_folder} && mkdir ./${FOLDER[doc]}/${browser_folder}"
 
     shell_command "cp -rf /usr/local/share/woboq/data ./${FOLDER[doc]}/${browser_folder}/"
@@ -902,7 +902,7 @@ href=\"https://web.archive.org/web/20220309195008if_/https://code.woboq.org/favi
 \"./${FOLDER[doc]}/${browser_folder}/${FOLDER[proj]}\" \"./${FOLDER[doc]}/${browser_folder}/include\" -name \"*.html\" \
 -exec sed -i 's|https://code.woboq.org/woboq-16.png\
 |https://web.archive.org/web/20220224111804if_/https://code.woboq.org/woboq-16.png|g' {} +"
-    shell_command "tar -jcvf ./${FOLDER[doc]}/archive/${tar_file} -C ./${FOLDER[doc]} ${browser_folder} >/dev/null"
+    shell_command "tar -jcvf ./${FOLDER[doc]}/artifact/${tar_file} -C ./${FOLDER[doc]} ${browser_folder} >/dev/null"
 }
 
 function perform_browser_option()
@@ -916,17 +916,17 @@ function perform_browser_option()
     if [[ -z ${commit_id} ]]; then
         commit_id="local"
     fi
-    if [[ -d ./${FOLDER[doc]}/archive ]]; then
+    if [[ -d ./${FOLDER[doc]}/artifact ]]; then
         local last_tar="${FOLDER[proj]}_browser_${commit_id}.tar.bz2"
-        if [[ -f ./${FOLDER[doc]}/archive/${last_tar} ]]; then
-            local time_interval=$(($(date +%s) - $(stat -L --format %Y "./${FOLDER[doc]}/archive/${last_tar}")))
+        if [[ -f ./${FOLDER[doc]}/artifact/${last_tar} ]]; then
+            local time_interval=$(($(date +%s) - $(stat -L --format %Y "./${FOLDER[doc]}/artifact/${last_tar}")))
             if [[ ${time_interval} -lt 60 ]]; then
-                die "The latest browser archive ${last_tar} has been generated since ${time_interval}s ago."
+                die "The latest browser artifact ${last_tar} has been generated since ${time_interval}s ago."
             fi
         fi
         package_for_browser "${commit_id}"
     else
-        shell_command "mkdir ./${FOLDER[doc]}/archive"
+        shell_command "mkdir ./${FOLDER[doc]}/artifact"
         package_for_browser "${commit_id}"
     fi
 }

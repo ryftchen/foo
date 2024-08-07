@@ -3,7 +3,7 @@
 .vscode/
 __pycache__/
 build/
-document/archive/
+document/artifact/
 document/browser/
 document/doxygen/
 document/server/target/

@@ -37,7 +37,7 @@ jobs:
           ./script/build.sh --hook --spell --statistics
           git status
 
-      - name: Create archive
+      - name: Create artifact
         run: |
           ./script/build.sh --browser --doxygen
 
@@ -45,7 +45,7 @@ jobs:
         uses: actions/upload-artifact@v4.3.0
         with:
           name: foo_artifact
-          path: ./document/archive/foo_*.tar.bz2
+          path: ./document/artifact/foo_*.tar.bz2
           retention-days: 7
 
       - name: Static check phase 1
@@ -132,7 +132,7 @@ jobs:
       - name: Development environment
         run: |
           ./script/build.sh --container --assume y
-          ./script/build.sh --website --assume y
+          ./script/build.sh --archive --assume y
           ./script/build.sh
           ./script/build.sh --test
           ./script/build.sh --install
