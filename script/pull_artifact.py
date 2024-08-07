@@ -22,7 +22,7 @@ class Documentation:
     artifact_file = "foo_artifact"
     website_dir = "/var/www/foo_doc"
     netrc_file = os.path.expanduser("~/.netrc")
-    log_file = "/tmp/foo_pull_archive.log"
+    log_file = "/tmp/foo_pull_artifact.log"
 
     def __init__(self):
         self.forced_pull = False
@@ -37,7 +37,7 @@ class Documentation:
         script_path = os.path.split(os.path.realpath(__file__))[0]
         if not fnmatch.fnmatch(script_path, "*foo/script"):
             interrupt("Illegal path to current script.")
-        parser = argparse.ArgumentParser(description="pull archive script")
+        parser = argparse.ArgumentParser(description="pull artifact script")
         parser.add_argument("-f", "--force", action="store_true", default=False, help="forced pull")
         parser.add_argument(
             "-p",
@@ -58,8 +58,8 @@ class Documentation:
         self.logger = common.Log(self.log_file, "at")
         sys.stdout = self.logger
 
-    def pull_archive(self):
-        print(f"\n[ {datetime.now()} ] ################# PULL ARCHIVE #################")
+    def pull_artifact(self):
+        print(f"\n[ {datetime.now()} ] ################# PULL ARTIFACT #################")
         if not os.path.exists(self.website_dir):
             interrupt(f"Please create a {self.website_dir} folder for storing pages.")
         if not os.path.exists(self.netrc_file):
@@ -143,6 +143,6 @@ def interrupt(msg):
 
 if __name__ == "__main__":
     try:
-        Documentation().pull_archive()
+        Documentation().pull_artifact()
     except Exception:  # pylint: disable=broad-except
         interrupt(traceback.format_exc())
