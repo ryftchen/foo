@@ -281,16 +281,14 @@ private:
     const std::uint32_t timeoutPeriod{static_cast<std::uint32_t>(CONFIG_HELPER_TIMEOUT)};
     //! @brief The queue of logs.
     std::queue<std::string> logQueue{};
-    //! @brief Mutex for controlling queue.
-    mutable std::mutex mtx{};
-    //! @brief The synchronization condition for queue. Use with mtx.
-    std::condition_variable cv{};
+    //! @brief Mutex for controlling daemon.
+    mutable std::mutex daemonMtx{};
+    //! @brief The synchronization condition for daemon. Use with daemonMtx.
+    std::condition_variable daemonCv{};
     //! @brief Flag to indicate whether it is logging.
     std::atomic<bool> ongoing{false};
     //! @brief Flag for rollback request.
     std::atomic<bool> toReset{false};
-    //! @brief Output file stream.
-    std::ofstream ofs{};
     //! @brief Log file absolute path.
     const std::string filePath{getFullLogPath()};
     //! @brief Write type.
@@ -299,9 +297,21 @@ private:
     const OutputLevel minimumLevel{OutputLevel::debug};
     //! @brief Used medium.
     const OutputMedium usedMedium{OutputMedium::both};
+    //! @brief Writer for the log file.
+    utility::io::FileWriter logWriter{filePath};
     //! @brief Log file lock.
     utility::common::ReadWriteLock fileLock{};
+    //! @brief Spin lock for controlling state.
+    mutable utility::common::SpinLock stateLock{};
 
+    //! @brief Safely retrieve the current state.
+    //! @return current state
+    State safeCurrentState() const;
+    //! @brief Safely process an event.
+    //! @tparam T - type of target event
+    //! @param event - target event
+    template <class T>
+    void safeProcessEvent(const T& event);
     //! @brief Check whether it is in the uninterrupted target state.
     //! @param state - target state
     //! @return in the uninterrupted target state or not
@@ -396,68 +406,66 @@ void Log::flush(
     const std::string& format,
     Args&&... args)
 {
-    if (std::unique_lock<std::mutex> lock(mtx); true)
+    if (level < minimumLevel)
     {
-        if (level < minimumLevel)
-        {
-            return;
-        }
+        return;
+    }
 
-        std::string_view prefix;
-        if (isInUninterruptedState(State::work))
+    std::string_view prefix;
+    if (isInUninterruptedState(State::work))
+    {
+        switch (level)
         {
-            switch (level)
+            case OutputLevel::debug:
+                prefix = debugLevelPrefix;
+                break;
+            case OutputLevel::info:
+                prefix = infoLevelPrefix;
+                break;
+            case OutputLevel::warning:
+                prefix = warnLevelPrefix;
+                break;
+            case OutputLevel::error:
+                prefix = errorLevelPrefix;
+                break;
+            default:
+                prefix = unknownLevelPrefix;
+                break;
+        }
+    }
+    else
+    {
+        prefix = unknownLevelPrefix;
+    }
+
+    std::string validFormat = format;
+    validFormat.erase(
+        std::remove_if(
+            std::begin(validFormat),
+            std::end(validFormat),
+            [l = std::locale{}](const auto c)
             {
-                case OutputLevel::debug:
-                    prefix = debugLevelPrefix;
-                    break;
-                case OutputLevel::info:
-                    prefix = infoLevelPrefix;
-                    break;
-                case OutputLevel::warning:
-                    prefix = warnLevelPrefix;
-                    break;
-                case OutputLevel::error:
-                    prefix = errorLevelPrefix;
-                    break;
-                default:
-                    prefix = unknownLevelPrefix;
-                    break;
-            }
-        }
-        else
-        {
-            prefix = unknownLevelPrefix;
-        }
+                return (' ' != c) && std::isspace(c, l);
+            }),
+        std::end(validFormat));
+    std::string output = std::format(
+        "{}:[{}]:[{}#{}]: {}",
+        prefix,
+        utility::time::getCurrentSystemTime(),
+        codeFile.substr(codeFile.find("foo/") + 4, codeFile.length()),
+        codeLine,
+        utility::common::formatString(validFormat.c_str(), std::forward<Args>(args)...));
 
-        std::string validFormat = format;
-        validFormat.erase(
-            std::remove_if(
-                std::begin(validFormat),
-                std::end(validFormat),
-                [l = std::locale{}](const auto c)
-                {
-                    return (' ' != c) && std::isspace(c, l);
-                }),
-            std::end(validFormat));
-        std::string output = std::format(
-            "{}:[{}]:[{}#{}]: {}",
-            prefix,
-            utility::time::getCurrentSystemTime(),
-            codeFile.substr(codeFile.find("foo/") + 4, codeFile.length()),
-            codeLine,
-            utility::common::formatString(validFormat.c_str(), std::forward<Args>(args)...));
-
-        if (unknownLevelPrefix != prefix)
-        {
-            logQueue.push(std::move(output));
-            lock.unlock();
-            cv.notify_one();
-        }
-        else
-        {
-            std::cerr << changeToLogStyle(output) << std::endl;
-        }
+    std::unique_lock<std::mutex> lock(daemonMtx);
+    if (unknownLevelPrefix != prefix)
+    {
+        logQueue.push(std::move(output));
+        lock.unlock();
+        daemonCv.notify_one();
+    }
+    else
+    {
+        std::cerr << changeToLogStyle(output) << std::endl;
     }
 }
 } // namespace log

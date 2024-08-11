@@ -51,6 +51,8 @@ public:
     //! @brief Tear down.
     void TearDown() override{};
 
+    //! @brief System under test.
+    const algorithm::match::Match sut{};
     //! @brief Input builder.
     static std::shared_ptr<match::InputBuilder> inputs;
 };
@@ -61,7 +63,7 @@ TEST_F(MatchTestBase, rkMethod)
 {
     ASSERT_EQ(
         49702,
-        algorithm::match::Match::rk(
+        sut.rk(
             inputs->getMatchingText().get(),
             inputs->getSinglePattern().get(),
             inputs->getTextLength(),
@@ -73,7 +75,7 @@ TEST_F(MatchTestBase, kmpMethod)
 {
     ASSERT_EQ(
         49702,
-        algorithm::match::Match::kmp(
+        sut.kmp(
             inputs->getMatchingText().get(),
             inputs->getSinglePattern().get(),
             inputs->getTextLength(),
@@ -85,7 +87,7 @@ TEST_F(MatchTestBase, bmMethod)
 {
     ASSERT_EQ(
         49702,
-        algorithm::match::Match::bm(
+        sut.bm(
             inputs->getMatchingText().get(),
             inputs->getSinglePattern().get(),
             inputs->getTextLength(),
@@ -97,7 +99,7 @@ TEST_F(MatchTestBase, horspoolMethod)
 {
     ASSERT_EQ(
         49702,
-        algorithm::match::Match::horspool(
+        sut.horspool(
             inputs->getMatchingText().get(),
             inputs->getSinglePattern().get(),
             inputs->getTextLength(),
@@ -109,7 +111,7 @@ TEST_F(MatchTestBase, sundayMethod)
 {
     ASSERT_EQ(
         49702,
-        algorithm::match::Match::sunday(
+        sut.sunday(
             inputs->getMatchingText().get(),
             inputs->getSinglePattern().get(),
             inputs->getTextLength(),
@@ -142,6 +144,8 @@ public:
     //! @brief Tear down.
     void TearDown() override{};
 
+    //! @brief System under test.
+    const algorithm::notation::Notation sut{};
     //! @brief Input builder.
     static std::shared_ptr<notation::InputBuilder> inputs;
 };
@@ -150,13 +154,13 @@ std::shared_ptr<notation::InputBuilder> NotationTestBase::inputs = nullptr;
 //! @brief Test for the prefix method in the solution of notation.
 TEST_F(NotationTestBase, prefixMethod)
 {
-    ASSERT_EQ("+a-*b^-^cde+f*ghi", algorithm::notation::Notation::prefix(std::string{inputs->getInfixNotation()}));
+    ASSERT_EQ("+a-*b^-^cde+f*ghi", sut.prefix(std::string{inputs->getInfixNotation()}));
 }
 
 //! @brief Test for the postfix method in the solution of notation.
 TEST_F(NotationTestBase, postfixMethod)
 {
-    ASSERT_EQ("abcd^e-fgh*+^*+i-", algorithm::notation::Notation::postfix(std::string{inputs->getInfixNotation()}));
+    ASSERT_EQ("abcd^e-fgh*+^*+i-", sut.postfix(std::string{inputs->getInfixNotation()}));
 }
 
 //! @brief Test base of optimal.
@@ -283,6 +287,8 @@ public:
     //! @brief Tear down.
     void TearDown() override{};
 
+    //! @brief System under test.
+    const algorithm::search::Search<float> sut{};
     //! @brief Input builder.
     static std::shared_ptr<search::InputBuilder<float>> inputs;
     //! @brief Expected result.
@@ -311,22 +317,22 @@ std::set<std::int64_t> SearchTestBase::expColl = {};
 //! @brief Test for the binary method in the solution of search.
 TEST_F(SearchTestBase, binaryMethod)
 {
-    ASSERT_TRUE(expColl.contains(algorithm::search::Search<float>::binary(
-        inputs->getOrderedArray().get(), inputs->getLength(), inputs->getSearchKey())));
+    ASSERT_TRUE(
+        expColl.contains(sut.binary(inputs->getOrderedArray().get(), inputs->getLength(), inputs->getSearchKey())));
 }
 
 //! @brief Test for the interpolation method in the solution of search.
 TEST_F(SearchTestBase, interpolationMethod)
 {
-    ASSERT_TRUE(expColl.contains(algorithm::search::Search<float>::interpolation(
-        inputs->getOrderedArray().get(), inputs->getLength(), inputs->getSearchKey())));
+    ASSERT_TRUE(expColl.contains(
+        sut.interpolation(inputs->getOrderedArray().get(), inputs->getLength(), inputs->getSearchKey())));
 }
 
 //! @brief Test for the Fibonacci method in the solution of search.
 TEST_F(SearchTestBase, fibonacciMethod)
 {
-    ASSERT_TRUE(expColl.contains(algorithm::search::Search<float>::fibonacci(
-        inputs->getOrderedArray().get(), inputs->getLength(), inputs->getSearchKey())));
+    ASSERT_TRUE(
+        expColl.contains(sut.fibonacci(inputs->getOrderedArray().get(), inputs->getLength(), inputs->getSearchKey())));
 }
 
 //! @brief Test base of sort.
@@ -357,6 +363,8 @@ public:
     //! @brief Tear down.
     void TearDown() override{};
 
+    //! @brief System under test.
+    algorithm::sort::Sort<std::int32_t> sut{};
     //! @brief Input builder.
     static std::shared_ptr<sort::InputBuilder<std::int32_t>> inputs;
     //! @brief Expected result.
@@ -378,66 +386,61 @@ std::vector<std::int32_t> SortTestBase::expColl = {};
 //! @brief Test for the bubble method in the solution of sort.
 TEST_F(SortTestBase, bubbleMethod)
 {
-    ASSERT_EQ(
-        expColl, algorithm::sort::Sort<std::int32_t>::bubble(inputs->getRandomArray().get(), inputs->getLength()));
+    ASSERT_EQ(expColl, sut.bubble(inputs->getRandomArray().get(), inputs->getLength()));
 }
 
 //! @brief Test for the selection method in the solution of sort.
 TEST_F(SortTestBase, selectionMethod)
 {
-    ASSERT_EQ(
-        expColl, algorithm::sort::Sort<std::int32_t>::selection(inputs->getRandomArray().get(), inputs->getLength()));
+    ASSERT_EQ(expColl, sut.selection(inputs->getRandomArray().get(), inputs->getLength()));
 }
 
 //! @brief Test for the insertion method in the solution of sort.
 TEST_F(SortTestBase, insertionMethod)
 {
-    ASSERT_EQ(
-        expColl, algorithm::sort::Sort<std::int32_t>::insertion(inputs->getRandomArray().get(), inputs->getLength()));
+    ASSERT_EQ(expColl, sut.insertion(inputs->getRandomArray().get(), inputs->getLength()));
 }
 
 //! @brief Test for the shell method in the solution of sort.
 TEST_F(SortTestBase, shellMethod)
 {
-    ASSERT_EQ(expColl, algorithm::sort::Sort<std::int32_t>::shell(inputs->getRandomArray().get(), inputs->getLength()));
+    ASSERT_EQ(expColl, sut.shell(inputs->getRandomArray().get(), inputs->getLength()));
 }
 
 //! @brief Test for the merge method in the solution of sort.
 TEST_F(SortTestBase, mergeMethod)
 {
-    ASSERT_EQ(expColl, algorithm::sort::Sort<std::int32_t>::merge(inputs->getRandomArray().get(), inputs->getLength()));
+    ASSERT_EQ(expColl, sut.merge(inputs->getRandomArray().get(), inputs->getLength()));
 }
 
 //! @brief Test for the quick method in the solution of sort.
 TEST_F(SortTestBase, quickMethod)
 {
-    ASSERT_EQ(expColl, algorithm::sort::Sort<std::int32_t>::quick(inputs->getRandomArray().get(), inputs->getLength()));
+    ASSERT_EQ(expColl, sut.quick(inputs->getRandomArray().get(), inputs->getLength()));
 }
 
 //! @brief Test for the heap method in the solution of sort.
 TEST_F(SortTestBase, heapMethod)
 {
-    ASSERT_EQ(expColl, algorithm::sort::Sort<std::int32_t>::heap(inputs->getRandomArray().get(), inputs->getLength()));
+    ASSERT_EQ(expColl, sut.heap(inputs->getRandomArray().get(), inputs->getLength()));
 }
 
 //! @brief Test for the counting method in the solution of sort.
 TEST_F(SortTestBase, countingMethod)
 {
-    ASSERT_EQ(
-        expColl, algorithm::sort::Sort<std::int32_t>::counting(inputs->getRandomArray().get(), inputs->getLength()));
+    ASSERT_EQ(expColl, sut.counting(inputs->getRandomArray().get(), inputs->getLength()));
 }
 
 //! @brief Test for the bucket method in the solution of sort.
 TEST_F(SortTestBase, bucketMethod)
 {
-    ASSERT_EQ(
-        expColl, algorithm::sort::Sort<std::int32_t>::bucket(inputs->getRandomArray().get(), inputs->getLength()));
+    ASSERT_EQ(expColl, sut.bucket(inputs->getRandomArray().get(), inputs->getLength()));
 }
 
 //! @brief Test for the radix method in the solution of sort.
 TEST_F(SortTestBase, radixMethod)
 {
-    ASSERT_EQ(expColl, algorithm::sort::Sort<std::int32_t>::radix(inputs->getRandomArray().get(), inputs->getLength()));
+    ASSERT_EQ(expColl, sut.radix(inputs->getRandomArray().get(), inputs->getLength()));
 }
 } // namespace tst_algo
 } // namespace test

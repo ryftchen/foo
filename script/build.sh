@@ -503,8 +503,8 @@ EOF
                 cat <<EOF
 <li>dca</li>
 <ul>
-<li><a href="./dca/check_coverage/index.html" target="_blank" rel="noopener">llvm-cov report</a></li>
-<li><a href="./dca/check_memory/index.html" target="_blank" rel="noopener">valgrind report</a></li>
+<li><a href="./dca/chk_cov/index.html" target="_blank" rel="noopener">llvm-cov report</a></li>
+<li><a href="./dca/chk_mem/index.html" target="_blank" rel="noopener">valgrind report</a></li>
 </ul>
 <li>sca</li>
 <ul>
@@ -775,7 +775,7 @@ function perform_query_option()
         shell_command "cat <<EOF >./${rebuild_script}
 #!/usr/bin/env bash
 
-export FOO_BLD_SCA=on
+export FOO_BLD_FORCE=on
 $(realpath "$0") \"\\\$@\"
 EOF"
         shell_command "chmod +x ${rebuild_script}"
@@ -950,12 +950,16 @@ function set_compile_condition()
     local tmpfs_subfolder=$1 tmpfs_size=$2
 
     if [[ -f ./${FOLDER[scr]}/.build_env ]] && ! {
-        [[ -n ${FOO_BLD_SCA} ]] && [[ ${FOO_BLD_SCA} = "on" ]]
+        [[ -n ${FOO_BLD_FORCE} ]] && [[ ${FOO_BLD_FORCE} = "on" ]]
     }; then
         # shellcheck source=/dev/null
         source "./${FOLDER[scr]}/.build_env"
         if [[ -n ${FOO_BLD_COMPILER} ]] && [[ ${FOO_BLD_COMPILER} =~ ^(clang|gcc)$ ]]; then
-            if [[ -n ${FOO_BLD_DCA} ]] && [[ ${FOO_BLD_DCA} = "on" ]]; then
+            if {
+                [[ -n ${FOO_BLD_COV} ]] && [[ ${FOO_BLD_COV} = "llvm-cov" ]]
+            } || {
+                [[ -n ${FOO_BLD_SAN} ]] && [[ ${FOO_BLD_SAN} =~ ^(asan|tsan|ubsan)$ ]]
+            }; then
                 FOO_BLD_COMPILER="clang"
             fi
             DEV_OPT[compiler]=${FOO_BLD_COMPILER}
@@ -1031,7 +1035,7 @@ function set_compile_condition()
         if ! command -v distcc >/dev/null; then
             die "No distcc program. Please install it."
         fi
-        if [[ -n ${FOO_BLD_DCA} ]] && [[ ${FOO_BLD_DCA} = "on" ]]; then
+        if [[ -n ${FOO_BLD_COV} ]] && [[ ${FOO_BLD_COV} = "llvm-cov" ]]; then
             die "Code coverage may be affected if the FOO_BLD_DISTCC is not localhost."
         fi
         if [[ ${DEV_OPT[distcc]} = *"127.0.0.1"* ]]; then

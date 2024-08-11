@@ -9,6 +9,7 @@
 #ifndef __PRECOMPILED_HEADER
 #include <cassert>
 #include <filesystem>
+#include <fstream>
 #include <regex>
 #else
 #include "application/pch/precompiled_header.hpp"
@@ -16,6 +17,38 @@
 
 namespace application::log
 {
+//! @brief Anonymous namespace.
+inline namespace
+{
+//! @brief Regular expressions for log highlighting.
+struct HlRegex
+{
+    //! @brief Construct a new HlRegex object.
+    HlRegex() noexcept = default;
+
+    //! @brief Debug level prefix highlighting.
+    const std::regex debugLevel{std::string{debugLevelPrefixRegex}};
+    //! @brief Info level prefix highlighting.
+    const std::regex infoLevel{std::string{infoLevelPrefixRegex}};
+    //! @brief Warning level prefix highlighting.
+    const std::regex warnLevel{std::string{warnLevelPrefixRegex}};
+    //! @brief Error level prefix highlighting.
+    const std::regex errorLevel{std::string{errorLevelPrefixRegex}};
+    //! @brief Unknown level prefix highlighting.
+    const std::regex unknownLevel{std::string{unknownLevelPrefixRegex}};
+    //! @brief Date time highlighting.
+    const std::regex dateTime{std::string{dateTimeRegex}};
+    //! @brief Code file highlighting.
+    const std::regex codeFile{std::string{codeFileRegex}};
+};
+//! @brief Log style.
+const HlRegex& logStyle()
+{
+    static const HlRegex highlight{};
+    return highlight;
+};
+} // namespace
+
 Log& Log::getInstance()
 {
     static Log logger{};
@@ -27,17 +60,27 @@ void Log::stateController()
 retry:
     try
     {
-        assert(currentState() == State::init);
-        processEvent(OpenFile());
+        static_cast<void>(logStyle());
+        assert(safeCurrentState() == State::init);
+        safeProcessEvent(OpenFile());
 
-        assert(currentState() == State::idle);
-        processEvent(GoLogging());
+        assert(safeCurrentState() == State::idle);
+        if (std::unique_lock<std::mutex> lock(daemonMtx); true)
+        {
+            daemonCv.wait(
+                lock,
+                [this]()
+                {
+                    return ongoing.load();
+                });
+        }
+        safeProcessEvent(GoLogging());
 
-        assert(currentState() == State::work);
+        assert(safeCurrentState() == State::work);
         while (ongoing.load())
         {
-            std::unique_lock<std::mutex> lock(mtx);
-            cv.wait(
+            std::unique_lock<std::mutex> lock(daemonMtx);
+            daemonCv.wait(
                 lock,
                 [this]()
                 {
@@ -53,20 +96,20 @@ retry:
 
         if (toReset.load())
         {
-            processEvent(Relaunch());
+            safeProcessEvent(Relaunch());
             goto retry; // NOLINT (hicpp-avoid-goto)
         }
-        processEvent(CloseFile());
+        safeProcessEvent(CloseFile());
 
-        assert(currentState() == State::idle);
-        processEvent(NoLogging());
+        assert(safeCurrentState() == State::idle);
+        safeProcessEvent(NoLogging());
 
-        assert(currentState() == State::done);
+        assert(safeCurrentState() == State::done);
     }
     catch (const std::exception& err)
     {
-        LOG_ERR << err.what() << " Current logger state: " << State(currentState()) << '.';
-        processEvent(Standby());
+        LOG_ERR << err.what() << " Current logger state: " << safeCurrentState() << '.';
+        safeProcessEvent(Standby());
 
         if (awaitNotification4Rollback())
         {
@@ -87,12 +130,12 @@ void Log::waitForStart()
         utility::time::millisecondLevelSleep(1);
     }
 
-    if (std::unique_lock<std::mutex> lock(mtx); true)
+    if (std::unique_lock<std::mutex> lock(daemonMtx); true)
     {
         ongoing.store(true);
 
         lock.unlock();
-        cv.notify_one();
+        daemonCv.notify_one();
     }
 
     utility::time::BlockingTimer expiryTimer;
@@ -120,12 +163,12 @@ void Log::waitForStart()
 
 void Log::waitForStop()
 {
-    if (std::unique_lock<std::mutex> lock(mtx); true)
+    if (std::unique_lock<std::mutex> lock(daemonMtx); true)
     {
         ongoing.store(false);
 
         lock.unlock();
-        cv.notify_one();
+        daemonCv.notify_one();
     }
 
     utility::time::BlockingTimer expiryTimer;
@@ -153,10 +196,20 @@ void Log::waitForStop()
 
 void Log::requestToReset()
 {
-    std::unique_lock<std::mutex> lock(mtx);
-    toReset.store(true);
-    lock.unlock();
-    cv.notify_one();
+    if (std::unique_lock<std::mutex> lock(daemonMtx); true)
+    {
+        toReset.store(true);
+        lock.unlock();
+        daemonCv.notify_one();
+    }
+
+    for (;;)
+    {
+        if (!toReset.load())
+        {
+            break;
+        }
+    }
 }
 
 std::string Log::loggerFilePath() const
@@ -169,9 +222,25 @@ utility::common::ReadWriteLock& Log::loggerFileLock()
     return fileLock;
 }
 
+Log::State Log::safeCurrentState() const
+{
+    stateLock.lock();
+    const auto state = State(currentState());
+    stateLock.unlock();
+    return state;
+}
+
+template <class T>
+void Log::safeProcessEvent(const T& event)
+{
+    stateLock.lock();
+    processEvent(event);
+    stateLock.unlock();
+}
+
 bool Log::isInUninterruptedState(const State state) const
 {
-    return (currentState() == state) && !toReset.load();
+    return (safeCurrentState() == state) && !toReset.load();
 }
 
 void Log::handleLogQueue()
@@ -184,13 +253,13 @@ void Log::handleLogQueue()
         switch (usedMedium)
         {
             case OutputMedium::file:
-                ofs << logQueue.front() << std::endl;
+                logWriter.stream() << logQueue.front() << std::endl;
                 break;
             case OutputMedium::terminal:
                 std::cout << changeToLogStyle(logQueue.front()) << std::endl;
                 break;
             case OutputMedium::both:
-                ofs << logQueue.front() << std::endl;
+                logWriter.stream() << logQueue.front() << std::endl;
                 std::cout << changeToLogStyle(logQueue.front()) << std::endl;
                 break;
             default:
@@ -220,32 +289,30 @@ void Log::tryToCreateLogFolder() const
 void Log::openLogFile()
 {
     namespace common = utility::common;
-    namespace io = utility::io;
 
     common::ReadWriteGuard guard(fileLock, common::LockMode::write);
     tryToCreateLogFolder();
     switch (writeType)
     {
         case OutputType::add:
-            ofs = io::openFile(filePath, false);
+            logWriter.open();
             break;
         case OutputType::over:
-            ofs = io::openFile(filePath, true);
+            logWriter.open(true);
             break;
         default:
             break;
     }
-    io::fdWriteLock(ofs);
+    logWriter.lock();
 };
 
 void Log::closeLogFile()
 {
     namespace common = utility::common;
-    namespace io = utility::io;
 
     common::ReadWriteGuard guard(fileLock, common::LockMode::write);
-    io::fdUnlock(ofs);
-    io::closeFile(ofs);
+    logWriter.unlock();
+    logWriter.close();
     if (std::filesystem::exists(filePath) && (std::filesystem::file_size(filePath) == 0))
     {
         std::filesystem::remove_all(std::filesystem::absolute(filePath).parent_path());
@@ -254,18 +321,11 @@ void Log::closeLogFile()
 
 void Log::startLogging()
 {
-    std::unique_lock<std::mutex> lock(mtx);
-    cv.wait(
-        lock,
-        [this]()
-        {
-            return ongoing.load();
-        });
 }
 
 void Log::stopLogging()
 {
-    std::unique_lock<std::mutex> lock(mtx);
+    std::unique_lock<std::mutex> lock(daemonMtx);
     ongoing.store(false);
     toReset.store(false);
     while (!logQueue.empty())
@@ -280,54 +340,56 @@ void Log::doToggle()
 
 void Log::doRollback()
 {
-    std::unique_lock<std::mutex> lock(mtx);
+    std::unique_lock<std::mutex> lock(daemonMtx);
     ongoing.store(false);
-    toReset.store(false);
     while (!logQueue.empty())
     {
         logQueue.pop();
     }
 
-    if (ofs.is_open())
+    if (logWriter.isOpen())
     {
-        namespace io = utility::io;
         try
         {
-            io::fdWriteLock(ofs);
+            logWriter.lock();
         }
         catch (...)
         {
+            toReset.store(false);
             return;
         }
 
         closeLogFile();
         tryToCreateLogFolder();
-        auto tempOfs = io::openFile(filePath, true);
-        io::closeFile(tempOfs);
+        std::ofstream tempOfs;
+        tempOfs.open(filePath, std::ios_base::out | std::ios_base::trunc);
+        tempOfs.close();
     }
+
+    toReset.store(false);
 }
 
 bool Log::isLogFileOpen(const GoLogging& /*event*/) const
 {
-    return ofs.is_open();
+    return logWriter.isOpen();
 }
 
 bool Log::isLogFileClose(const NoLogging& /*event*/) const
 {
-    return !ofs.is_open();
+    return !logWriter.isOpen();
 }
 
 bool Log::awaitNotification4Rollback()
 {
-    if (std::unique_lock<std::mutex> lock(mtx); true)
+    if (std::unique_lock<std::mutex> lock(daemonMtx); true)
     {
-        cv.wait(lock);
+        daemonCv.wait(lock);
     }
 
     if (toReset.load())
     {
-        processEvent(Relaunch());
-        if (currentState() == State::init)
+        safeProcessEvent(Relaunch());
+        if (safeCurrentState() == State::init)
         {
             return true;
         }
@@ -367,74 +429,47 @@ std::ostream& operator<<(std::ostream& os, const Log::State state)
     return os;
 }
 
-//! @brief Anonymous namespace.
-inline namespace
-{
-//! @brief Regular expressions for log highlighting.
-struct HlRegex
-{
-    //! @brief Construct a new HlRegex object.
-    HlRegex() noexcept = default;
-
-    //! @brief Debug level prefix highlighting.
-    const std::regex debugLevel{std::string{debugLevelPrefixRegex}};
-    //! @brief Info level prefix highlighting.
-    const std::regex infoLevel{std::string{infoLevelPrefixRegex}};
-    //! @brief Warning level prefix highlighting.
-    const std::regex warnLevel{std::string{warnLevelPrefixRegex}};
-    //! @brief Error level prefix highlighting.
-    const std::regex errorLevel{std::string{errorLevelPrefixRegex}};
-    //! @brief Unknown level prefix highlighting.
-    const std::regex unknownLevel{std::string{unknownLevelPrefixRegex}};
-    //! @brief Date time highlighting.
-    const std::regex dateTime{std::string{dateTimeRegex}};
-    //! @brief Code file highlighting.
-    const std::regex codeFile{std::string{codeFileRegex}};
-};
-//! @brief Log style.
-static const HlRegex logStyle{};
-} // namespace
-
 //! @brief Change line string to log style.
 //! @param line - target line to be changed
 //! @return changed line
 const std::string& changeToLogStyle(std::string& line)
 {
-    if (std::regex_search(line, logStyle.debugLevel))
+    const auto& style = logStyle();
+    if (std::regex_search(line, style.debugLevel))
     {
-        line = std::regex_replace(line, logStyle.debugLevel, std::string{debugLevelPrefixWithColor});
+        line = std::regex_replace(line, style.debugLevel, std::string{debugLevelPrefixWithColor});
     }
-    else if (std::regex_search(line, logStyle.infoLevel))
+    else if (std::regex_search(line, style.infoLevel))
     {
-        line = std::regex_replace(line, logStyle.infoLevel, std::string{infoLevelPrefixWithColor});
+        line = std::regex_replace(line, style.infoLevel, std::string{infoLevelPrefixWithColor});
     }
-    else if (std::regex_search(line, logStyle.warnLevel))
+    else if (std::regex_search(line, style.warnLevel))
     {
-        line = std::regex_replace(line, logStyle.warnLevel, std::string{warnLevelPrefixWithColor});
+        line = std::regex_replace(line, style.warnLevel, std::string{warnLevelPrefixWithColor});
     }
-    else if (std::regex_search(line, logStyle.errorLevel))
+    else if (std::regex_search(line, style.errorLevel))
     {
-        line = std::regex_replace(line, logStyle.errorLevel, std::string{errorLevelPrefixWithColor});
+        line = std::regex_replace(line, style.errorLevel, std::string{errorLevelPrefixWithColor});
     }
-    else if (std::regex_search(line, logStyle.unknownLevel))
+    else if (std::regex_search(line, style.unknownLevel))
     {
-        line = std::regex_replace(line, logStyle.unknownLevel, std::string{unknownLevelPrefixWithColor});
+        line = std::regex_replace(line, style.unknownLevel, std::string{unknownLevelPrefixWithColor});
     }
 
     namespace common = utility::common;
-    if (std::regex_search(line, logStyle.dateTime))
+    if (std::regex_search(line, style.dateTime))
     {
-        const auto searchIter = std::sregex_iterator(line.begin(), line.end(), logStyle.dateTime);
+        const auto searchIter = std::sregex_iterator(line.begin(), line.end(), style.dateTime);
         const std::string dateTimeWithColor =
             std::string{dateTimeBaseColor} + (*searchIter).str() + std::string{common::colorOff};
-        line = std::regex_replace(line, logStyle.dateTime, dateTimeWithColor);
+        line = std::regex_replace(line, style.dateTime, dateTimeWithColor);
     }
-    if (std::regex_search(line, logStyle.codeFile))
+    if (std::regex_search(line, style.codeFile))
     {
-        const auto searchIter = std::sregex_iterator(line.begin(), line.end(), logStyle.codeFile);
+        const auto searchIter = std::sregex_iterator(line.begin(), line.end(), style.codeFile);
         const std::string codeFileWithColor =
             std::string{codeFileBaseColor} + (*searchIter).str() + std::string{common::colorOff};
-        line = std::regex_replace(line, logStyle.codeFile, codeFileWithColor);
+        line = std::regex_replace(line, style.codeFile, codeFileWithColor);
     }
 
     return line;

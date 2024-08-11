@@ -158,6 +158,24 @@ std::string base64Decode(const std::string& data)
     return decoded;
 }
 
+void SpinLock::lock()
+{
+    while (flag.test_and_set(std::memory_order_acquire))
+    {
+        std::this_thread::yield();
+    }
+}
+
+void SpinLock::unlock()
+{
+    flag.clear(std::memory_order_release);
+}
+
+bool SpinLock::tryLock()
+{
+    return !flag.test_and_set(std::memory_order_acquire);
+}
+
 void ReadWriteLock::readLock()
 {
     std::shared_lock<std::shared_mutex> rdLock(rwLock);

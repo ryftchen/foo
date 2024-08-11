@@ -254,26 +254,26 @@ public:
     //! @brief Get the data type.
     //! @return data type
     [[nodiscard]] Type getType() const;
-    //! @brief Check if the type is null.
-    //! @return null or not
+    //! @brief Check whether the type is null.
+    //! @return be null type or not
     [[nodiscard]] bool isNullType() const;
-    //! @brief Check if the type is object.
-    //! @return object or not
+    //! @brief Check whether the type is object.
+    //! @return be object type or not
     [[nodiscard]] bool isObjectType() const;
-    //! @brief Check if the type is array.
-    //! @return array or not
+    //! @brief Check whether the type is array.
+    //! @return be array type or not
     [[nodiscard]] bool isArrayType() const;
-    //! @brief Check if the type is string.
-    //! @return string or not
+    //! @brief Check whether the type is string.
+    //! @return be string type or not
     [[nodiscard]] bool isStringType() const;
-    //! @brief Check if the type is floating.
-    //! @return floating or not
+    //! @brief Check whether the type is floating.
+    //! @return be floating type or not
     [[nodiscard]] bool isFloatingType() const;
-    //! @brief Check if the type is integral.
-    //! @return integral or not
+    //! @brief Check whether the type is integral.
+    //! @return be integral type or not
     [[nodiscard]] bool isIntegralType() const;
-    //! @brief Check if the type is boolean.
-    //! @return boolean or not
+    //! @brief Check whether the type is boolean.
+    //! @return be boolean type or not
     [[nodiscard]] bool isBooleanType() const;
     //! @brief Convert to string value.
     //! @return string value

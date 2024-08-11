@@ -51,6 +51,8 @@ public:
     //! @brief Tear down.
     void TearDown() override{};
 
+    //! @brief System under test.
+    const numeric::arithmetic::Arithmetic sut{};
     //! @brief Input builder.
     static std::shared_ptr<arithmetic::InputBuilder> inputs;
 };
@@ -59,37 +61,25 @@ std::shared_ptr<arithmetic::InputBuilder> ArithmeticTestBase::inputs = nullptr;
 //! @brief Test for the addition method in the solution of arithmetic.
 TEST_F(ArithmeticTestBase, additionMethod)
 {
-    ASSERT_EQ(
-        1073741821,
-        numeric::arithmetic::Arithmetic::addition(
-            std::get<0>(inputs->getIntegers()), std::get<1>(inputs->getIntegers())));
+    ASSERT_EQ(1073741821, sut.addition(std::get<0>(inputs->getIntegers()), std::get<1>(inputs->getIntegers())));
 }
 
 //! @brief Test for the subtraction method in the solution of arithmetic.
 TEST_F(ArithmeticTestBase, subtractionMethod)
 {
-    ASSERT_EQ(
-        1073741825,
-        numeric::arithmetic::Arithmetic::subtraction(
-            std::get<0>(inputs->getIntegers()), std::get<1>(inputs->getIntegers())));
+    ASSERT_EQ(1073741825, sut.subtraction(std::get<0>(inputs->getIntegers()), std::get<1>(inputs->getIntegers())));
 }
 
 //! @brief Test for the multiplication method in the solution of arithmetic.
 TEST_F(ArithmeticTestBase, multiplicationMethod)
 {
-    ASSERT_EQ(
-        -2147483646,
-        numeric::arithmetic::Arithmetic::multiplication(
-            std::get<0>(inputs->getIntegers()), std::get<1>(inputs->getIntegers())));
+    ASSERT_EQ(-2147483646, sut.multiplication(std::get<0>(inputs->getIntegers()), std::get<1>(inputs->getIntegers())));
 }
 
 //! @brief Test for the division method in the solution of arithmetic.
 TEST_F(ArithmeticTestBase, divisionMethod)
 {
-    ASSERT_EQ(
-        -536870911,
-        numeric::arithmetic::Arithmetic::division(
-            std::get<0>(inputs->getIntegers()), std::get<1>(inputs->getIntegers())));
+    ASSERT_EQ(-536870911, sut.division(std::get<0>(inputs->getIntegers()), std::get<1>(inputs->getIntegers())));
 }
 
 //! @brief Test base of divisor.
@@ -118,6 +108,8 @@ public:
     //! @brief Tear down.
     void TearDown() override{};
 
+    //! @brief System under test.
+    const numeric::divisor::Divisor sut{};
     //! @brief Input builder.
     static std::shared_ptr<divisor::InputBuilder> inputs;
     //! @brief Expected result.
@@ -128,17 +120,13 @@ std::shared_ptr<divisor::InputBuilder> DivisorTestBase::inputs = nullptr;
 //! @brief Test for the Euclidean method in the solution of divisor.
 TEST_F(DivisorTestBase, euclideanMethod)
 {
-    ASSERT_EQ(
-        expColl,
-        numeric::divisor::Divisor::euclidean(std::get<0>(inputs->getIntegers()), std::get<1>(inputs->getIntegers())));
+    ASSERT_EQ(expColl, sut.euclidean(std::get<0>(inputs->getIntegers()), std::get<1>(inputs->getIntegers())));
 }
 
 //! @brief Test for the Stein method in the solution of divisor.
 TEST_F(DivisorTestBase, steinMethod)
 {
-    ASSERT_EQ(
-        expColl,
-        numeric::divisor::Divisor::stein(std::get<0>(inputs->getIntegers()), std::get<1>(inputs->getIntegers())));
+    ASSERT_EQ(expColl, sut.stein(std::get<0>(inputs->getIntegers()), std::get<1>(inputs->getIntegers())));
 }
 
 //! @brief Test base of integral.
@@ -272,6 +260,8 @@ public:
     //! @brief Tear down.
     void TearDown() override{};
 
+    //! @brief System under test.
+    const numeric::prime::Prime sut{};
     //! @brief Input builder.
     static std::shared_ptr<prime::InputBuilder> inputs;
     //! @brief Expected result.
@@ -290,13 +280,13 @@ std::shared_ptr<prime::InputBuilder> PrimeTestBase::inputs = nullptr;
 //! @brief Test for the Eratosthenes method in the solution of prime.
 TEST_F(PrimeTestBase, eratosthenesMethod)
 {
-    ASSERT_EQ(expColl, numeric::prime::Prime::eratosthenes(inputs->getMaxPositiveInteger()));
+    ASSERT_EQ(expColl, sut.eratosthenes(inputs->getMaxPositiveInteger()));
 }
 
 //! @brief Test for the Euler method in the solution of prime.
 TEST_F(PrimeTestBase, eulerMethod)
 {
-    ASSERT_EQ(expColl, numeric::prime::Prime::euler(inputs->getMaxPositiveInteger()));
+    ASSERT_EQ(expColl, sut.euler(inputs->getMaxPositiveInteger()));
 }
 } // namespace tst_num
 } // namespace test

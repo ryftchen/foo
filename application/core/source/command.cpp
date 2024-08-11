@@ -638,7 +638,7 @@ void Command::launchClient<utility::socket::TCPSocket>(std::shared_ptr<utility::
         {
             if ((0 != length) && VIEW_TLV_PACKET(buffer, length).stopTag)
             {
-                client->setNonBlocking();
+                client->asyncExit();
             }
         }
         catch (const std::exception& err)
@@ -662,7 +662,7 @@ void Command::launchClient<utility::socket::UDPSocket>(std::shared_ptr<utility::
         {
             if ((0 != length) && VIEW_TLV_PACKET(buffer, length).stopTag)
             {
-                client->setNonBlocking();
+                client->asyncExit();
             }
         }
         catch (const std::exception& err)

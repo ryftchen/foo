@@ -25,6 +25,13 @@ namespace time
 {
 extern const char* version() noexcept;
 
+//! @brief Perform millisecond-level sleep.
+//! @param duration - sleep duration
+inline void millisecondLevelSleep(const std::uint32_t duration)
+{
+    std::this_thread::sleep_for(std::chrono::operator""ms(duration));
+}
+
 //! @brief Timing.
 class Time
 {
@@ -65,21 +72,14 @@ private:
     std::atomic<bool> isRunning{true};
 };
 
-extern void millisecondLevelSleep(const std::uint32_t duration);
-
 void BlockingTimer::set(const auto& func, const std::uint32_t interval)
 {
     isRunning.store(true);
-    std::thread timer(
-        [=, this]()
-        {
-            while (isRunning.load())
-            {
-                millisecondLevelSleep(interval);
-                func();
-            }
-        });
-    timer.join();
+    while (isRunning.load())
+    {
+        millisecondLevelSleep(interval);
+        func();
+    }
 }
 
 extern std::string getCurrentSystemTime();

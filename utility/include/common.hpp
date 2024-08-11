@@ -168,6 +168,28 @@ public:
 extern std::string base64Encode(const std::string& data);
 extern std::string base64Decode(const std::string& data);
 
+//! @brief Simple spin lock.
+class SpinLock
+{
+public:
+    //! @brief Construct a new SpinLock object.
+    SpinLock() = default;
+    //! @brief Destroy the SpinLock object.
+    virtual ~SpinLock() = default;
+
+    //! @brief Acquire the lock.
+    void lock();
+    //! @brief Release the lock.
+    void unlock();
+    //! @brief Try to acquire the lock without blocking.
+    //! @return acquire or not
+    bool tryLock();
+
+private:
+    //! @brief The atomic flag used to implement the spin lock.
+    std::atomic_flag flag = ATOMIC_FLAG_INIT;
+};
+
 //! @brief Enumerate specific lock modes.
 enum class LockMode : std::uint8_t
 {

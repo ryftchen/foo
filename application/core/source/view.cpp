@@ -12,6 +12,7 @@
 #include <readline/readline.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
+#include <sys/stat.h>
 #if defined(__has_include) && __has_include(<gmp.h>)
 #include <gmp.h>
 #endif // defined(__has_include) && __has_include(<gmp.h>)
@@ -238,17 +239,26 @@ void View::stateController()
 retry:
     try
     {
-        assert(currentState() == State::init);
-        processEvent(CreateServer());
+        assert(safeCurrentState() == State::init);
+        safeProcessEvent(CreateServer());
 
-        assert(currentState() == State::idle);
-        processEvent(GoViewing());
+        assert(safeCurrentState() == State::idle);
+        if (std::unique_lock<std::mutex> lock(daemonMtx); true)
+        {
+            daemonCv.wait(
+                lock,
+                [this]()
+                {
+                    return ongoing.load();
+                });
+        }
+        safeProcessEvent(GoViewing());
 
-        assert(currentState() == State::work);
+        assert(safeCurrentState() == State::work);
         while (ongoing.load())
         {
-            std::unique_lock<std::mutex> lock(mtx);
-            cv.wait(
+            std::unique_lock<std::mutex> lock(daemonMtx);
+            daemonCv.wait(
                 lock,
                 [this]()
                 {
@@ -263,20 +273,20 @@ retry:
 
         if (toReset.load())
         {
-            processEvent(Relaunch());
+            safeProcessEvent(Relaunch());
             goto retry; // NOLINT (hicpp-avoid-goto)
         }
-        processEvent(DestroyServer());
+        safeProcessEvent(DestroyServer());
 
-        assert(currentState() == State::idle);
-        processEvent(NoViewing());
+        assert(safeCurrentState() == State::idle);
+        safeProcessEvent(NoViewing());
 
-        assert(currentState() == State::done);
+        assert(safeCurrentState() == State::done);
     }
     catch (const std::exception& err)
     {
-        LOG_ERR << err.what() << " Current viewer state: " << State(currentState()) << '.';
-        processEvent(Standby());
+        LOG_ERR << err.what() << " Current viewer state: " << safeCurrentState() << '.';
+        safeProcessEvent(Standby());
 
         if (awaitNotification4Rollback())
         {
@@ -297,12 +307,12 @@ void View::waitForStart()
         utility::time::millisecondLevelSleep(1);
     }
 
-    if (std::unique_lock<std::mutex> lock(mtx); true)
+    if (std::unique_lock<std::mutex> lock(daemonMtx); true)
     {
         ongoing.store(true);
 
         lock.unlock();
-        cv.notify_one();
+        daemonCv.notify_one();
     }
 
     utility::time::BlockingTimer expiryTimer;
@@ -330,12 +340,12 @@ void View::waitForStart()
 
 void View::waitForStop()
 {
-    if (std::unique_lock<std::mutex> lock(mtx); true)
+    if (std::unique_lock<std::mutex> lock(daemonMtx); true)
     {
         ongoing.store(false);
 
         lock.unlock();
-        cv.notify_one();
+        daemonCv.notify_one();
     }
 
     utility::time::BlockingTimer expiryTimer;
@@ -363,10 +373,20 @@ void View::waitForStop()
 
 void View::requestToReset()
 {
-    std::unique_lock<std::mutex> lock(mtx);
-    toReset.store(true);
-    lock.unlock();
-    cv.notify_one();
+    if (std::unique_lock<std::mutex> lock(daemonMtx); true)
+    {
+        toReset.store(true);
+        lock.unlock();
+        daemonCv.notify_one();
+    }
+
+    for (;;)
+    {
+        if (!toReset.load())
+        {
+            break;
+        }
+    }
 }
 
 const View::OptionMap& View::viewerOptions() const
@@ -889,23 +909,45 @@ std::string View::getStatusReports(const std::uint16_t frame)
     return statRep;
 }
 
+View::State View::safeCurrentState() const
+{
+    stateLock.lock();
+    const auto state = State(currentState());
+    stateLock.unlock();
+    return state;
+}
+
+template <class T>
+void View::safeProcessEvent(const T& event)
+{
+    stateLock.lock();
+    processEvent(event);
+    stateLock.unlock();
+}
+
 bool View::isInUninterruptedState(const State state) const
 {
-    return (currentState() == state) && !toReset.load();
+    return (safeCurrentState() == state) && !toReset.load();
 }
 
 void View::createViewServer()
 {
     tcpServer = std::make_shared<utility::socket::TCPServer>();
-    tcpServer->onNewConnection = [this](utility::socket::TCPSocket* const newSocket)
+    tcpServer->onNewConnection = [this](const std::shared_ptr<utility::socket::TCPSocket> newSocket)
     {
-        newSocket->onMessageReceived = [this, newSocket](const std::string& message)
+        std::weak_ptr<utility::socket::TCPSocket> weakSocket = newSocket;
+        newSocket->onMessageReceived = [this, weakSocket](const std::string& message)
         {
-            if (message.empty())
+            auto newSocket = weakSocket.lock();
+            if (!newSocket)
             {
                 return;
             }
 
+            if (message.empty())
+            {
+                return;
+            }
             char buffer[maxMsgLen] = {'\0'};
             try
             {
@@ -914,7 +956,7 @@ void View::createViewServer()
                 {
                     buildTLVPacket2Stop(buffer);
                     newSocket->toSend(buffer, sizeof(buffer));
-                    newSocket->setNonBlocking();
+                    newSocket->asyncExit();
                     return;
                 }
 
@@ -977,20 +1019,16 @@ void View::createViewServer()
 
 void View::destroyViewServer()
 {
+    tcpServer->toClose();
+    tcpServer->waitIfAlive();
     tcpServer.reset();
+    udpServer->toClose();
+    udpServer->waitIfAlive();
     udpServer.reset();
 }
 
 void View::startViewing()
 {
-    std::unique_lock<std::mutex> lock(mtx);
-    cv.wait(
-        lock,
-        [this]()
-        {
-            return ongoing.load();
-        });
-
     tcpServer->toBind(tcpPort);
     tcpServer->toListen();
     tcpServer->toAccept();
@@ -1000,7 +1038,7 @@ void View::startViewing()
 
 void View::stopViewing()
 {
-    std::unique_lock<std::mutex> lock(mtx);
+    std::unique_lock<std::mutex> lock(daemonMtx);
     ongoing.store(false);
     toReset.store(false);
 
@@ -1014,33 +1052,50 @@ void View::doToggle()
 
 void View::doRollback()
 {
-    std::unique_lock<std::mutex> lock(mtx);
+    std::unique_lock<std::mutex> lock(daemonMtx);
     ongoing.store(false);
-    toReset.store(false);
     if (tcpServer)
     {
+        try
+        {
+            tcpServer->toClose();
+            tcpServer->waitIfAlive();
+        }
+        catch (...)
+        {
+        }
         tcpServer.reset();
     }
     if (udpServer)
     {
+        try
+        {
+            udpServer->toClose();
+            udpServer->waitIfAlive();
+        }
+        catch (...)
+        {
+        }
         udpServer.reset();
     }
 
     std::unique_lock<std::mutex> outputLock(outputMtx);
     outputCompleted.store(false);
+
+    toReset.store(false);
 }
 
 bool View::awaitNotification4Rollback()
 {
-    if (std::unique_lock<std::mutex> lock(mtx); true)
+    if (std::unique_lock<std::mutex> lock(daemonMtx); true)
     {
-        cv.wait(lock);
+        daemonCv.wait(lock);
     }
 
     if (toReset.load())
     {
-        processEvent(Relaunch());
-        if (currentState() == State::init)
+        safeProcessEvent(Relaunch());
+        if (safeCurrentState() == State::init)
         {
             return true;
         }

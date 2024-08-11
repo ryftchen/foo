@@ -21,29 +21,30 @@ extern const char* version() noexcept;
 class Socket
 {
 public:
-    //! @brief Close the socket.
-    void toClose() const;
     //! @brief Get the transport ip address.
     //! @return transport ip address
-    [[nodiscard]] std::string getTransportAddress() const;
+    [[nodiscard]] std::string transportAddress() const;
     //! @brief Get the transport port number.
     //! @return transport port number
-    [[nodiscard]] int getTransportPort() const;
-    //! @brief Get the file descriptor.
-    //! @return file descriptor
-    [[nodiscard]] int getFileDescriptor() const;
-    //! @brief When using asynchronous, wait for the receiving thread to exit.
+    [[nodiscard]] int transportPort() const;
+    //! @brief Close the socket.
+    void toClose();
+    //! @brief Set the flag to indicate that an asynchronous exit has been requested.
+    void asyncExit();
+    //! @brief Check whether an asynchronous exit has been requested.
+    //! @return has been requested or not
+    [[nodiscard]] bool shouldExit() const;
+    //! @brief When using asynchronous, wait for the non-detached thread to exit.
     void waitIfAlive();
-    //! @brief Set the blocking mode.
-    void setBlocking() const;
-    //! @brief Set the non-blocking mode.
-    void setNonBlocking() const;
+    //! @brief Acquires the spin lock to ensure mutual exclusion.
+    void spinLock();
+    //! @brief Releases the spin lock to allow other threads to acquire it.
+    void spinUnlock();
 
-    //! @brief Bytes buffer size.
-    static constexpr std::uint16_t bufferSize{0xFFFFU};
     //! @brief Transport information.
     ::sockaddr_in sockAddr{};
-
+    //! @brief Bytes buffer size.
+    static constexpr std::uint16_t bufferSize{0xFFFFU};
     //! @brief Enumerate specific socket types.
     enum Type
     {
@@ -53,11 +54,17 @@ public:
         udp = ::SOCK_DGRAM
     };
 
+private:
+    //! @brief Flag for asynchronous exit.
+    std::atomic<bool> exitReady{false};
+    //! @brief Spin lock to synchronize access to the socket.
+    ::pthread_spinlock_t sockLock{};
+
 protected:
     //! @brief Construct a new Socket object.
     //! @param socketType - socket type
     //! @param socketId -  socket id
-    explicit Socket(const Type socketType = tcp, const int socketId = -1);
+    explicit Socket(const Type socketType = Type::tcp, const int socketId = -1);
     //! @brief Destroy the Socket object.
     virtual ~Socket();
 
@@ -65,30 +72,21 @@ protected:
     //! @param addr - transport information
     //! @return ip address string
     static std::string ipString(const ::sockaddr_in& addr);
-    //! @brief Set the timeout period.
-    //! @param microseconds - timeout period
-    void setTimeout(const int microseconds) const;
 
     //! @brief File descriptor.
-    int sock{0};
-    //! @brief Result of asynchronous operations for the receiving thread.
-    std::future<void> fut{};
+    int sock{-1};
+    //! @brief Result of asynchronous operations for the non-detached thread.
+    std::future<void> task{};
 };
 
 //! @brief TCP socket.
-class TCPSocket : public Socket
+class TCPSocket : public Socket, public std::enable_shared_from_this<TCPSocket>
 {
 public:
     //! @brief Construct a new TCPSocket object.
     //! @param socketId - socket id
-    explicit TCPSocket(const int socketId = -1) : Socket(tcp, socketId) {}
+    explicit TCPSocket(const int socketId = -1) : Socket(Type::tcp, socketId) {}
 
-    //! @brief Set the transport information.
-    //! @param addr - transport information
-    void setAddress(const ::sockaddr_in& addr);
-    //! @brief Get the transport information.
-    //! @return transport information
-    [[nodiscard]] ::sockaddr_in getAddress() const;
     //! @brief Send bytes from the buffer to socket FD.
     //! @param bytes - bytes buffer
     //! @param length - length of buffer
@@ -118,17 +116,15 @@ public:
     std::function<void(char*, const int)> onRawMessageReceived{};
     //! @brief Handling on socket closed.
     std::function<void(const int)> onSocketClosed{};
-    //! @brief Flag for automatic release.
-    std::atomic<bool> autoRelease{false};
 
 private:
     //! @brief Receive bytes from socket FD.
     //! @param socket - target socket
-    static void toRecv(const TCPSocket* const socket);
+    static void toRecv(const std::shared_ptr<TCPSocket> socket);
 };
 
 //! @brief TCP server.
-class TCPServer : public Socket
+class TCPServer : public Socket, public std::enable_shared_from_this<TCPServer>
 {
 public:
     //! @brief Construct a new TCPServer object.
@@ -147,18 +143,16 @@ public:
     //! @param detach - whether to detach
     void toAccept(const bool detach = false);
     //! @brief Handling on new connection.
-    std::function<void(TCPSocket* const)> onNewConnection{};
+    std::function<void(const std::shared_ptr<TCPSocket>)> onNewConnection{};
 
 private:
     //! @brief Accept the connection on socket FD.
     //! @param server - target server
-    static void toAccept(const TCPServer* const server);
-    //! @brief Retry times for listening.
-    static constexpr int retryTimes{10};
+    static void toAccept(const std::shared_ptr<TCPServer> server);
 };
 
 //! @brief UDP socket.
-class UDPSocket : public Socket
+class UDPSocket : public Socket, public std::enable_shared_from_this<UDPSocket>
 {
 public:
     //! @brief Construct a new UDPSocket object.
@@ -205,10 +199,10 @@ public:
 private:
     //! @brief Receive bytes from socket FD.
     //! @param socket - target socket
-    static void toRecv(const UDPSocket* const socket);
+    static void toRecv(const std::shared_ptr<UDPSocket> socket);
     //! @brief Receive bytes through socket FD.
     //! @param socket - target socket
-    static void toRecvFrom(const UDPSocket* const socket);
+    static void toRecvFrom(const std::shared_ptr<UDPSocket> socket);
 };
 
 //! @brief UDP server.

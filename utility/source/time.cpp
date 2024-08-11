@@ -38,13 +38,6 @@ void BlockingTimer::reset()
     isRunning.store(false);
 }
 
-//! @brief Perform millisecond-level sleep.
-//! @param duration - sleep duration
-void millisecondLevelSleep(const std::uint32_t duration)
-{
-    std::this_thread::sleep_for(std::chrono::operator""ms(duration));
-}
-
 //! @brief Get the current system time, like "1970-01-01 00:00:00.000000 UTC".
 //! @return current system time
 std::string getCurrentSystemTime()

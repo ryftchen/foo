@@ -12,6 +12,7 @@
 #include <sys/ipc.h>
 #include <sys/prctl.h>
 #include <sys/shm.h>
+#include <sys/stat.h>
 #include <sys/wait.h>
 #include <cxxabi.h>
 #include <dlfcn.h>
@@ -32,6 +33,7 @@
 #include <cstring>
 #include <filesystem>
 #include <format>
+#include <fstream>
 #include <iostream>
 #include <iterator>
 #include <memory>

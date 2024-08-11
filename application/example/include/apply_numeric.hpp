@@ -323,7 +323,7 @@ public:
     //! @tparam T - type of container
     //! @param container - integer container
     //! @param buffer - buffer for printing
-    //! @param bufferSize - size of buffer
+    //! @param bufferSize - size of the buffer
     //! @return buffer after splicing
     template <typename T>
     requires std::is_integral<T>::value
@@ -628,7 +628,7 @@ public:
     //! @tparam T - type of container
     //! @param container - integer container
     //! @param buffer - buffer for printing
-    //! @param bufferSize - size of buffer
+    //! @param bufferSize - size of the buffer
     //! @return buffer after splicing
     template <typename T>
     requires std::is_integral<T>::value
