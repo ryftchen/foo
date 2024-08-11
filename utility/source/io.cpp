@@ -7,8 +7,9 @@
 #include "io.hpp"
 
 #include <sys/epoll.h>
+#include <sys/file.h>
+#include <fcntl.h>
 #include <unistd.h>
-#include <filesystem>
 #include <iostream>
 
 namespace utility::io
@@ -21,107 +22,294 @@ const char* version() noexcept
     return ver;
 }
 
-//! @brief Open file.
-//! @param filename - file path
-//! @return input file stream
-std::ifstream openFile(const std::string& filename)
+FDStreamBuffer::~FDStreamBuffer()
 {
-    std::ifstream ifs;
-    ifs.open(filename, std::ios_base::in);
-    if (!ifs)
-    {
-        throw std::runtime_error(
-            "Failed to open " + std::filesystem::path(filename).filename().string() + " file for reading.");
-    }
-    return ifs;
+    close();
 }
 
-//! @brief Open file.
-//! @param filename - file path
-//! @param overwrite - overwrite or not
-//! @return output file stream
-std::ofstream openFile(const std::string& filename, const bool overwrite)
+int FDStreamBuffer::fd() const
 {
-    std::ofstream ofs;
-    const std::ios_base::openmode mode = std::ios_base::out | (overwrite ? std::ios_base::trunc : std::ios_base::app);
-    ofs.open(filename, mode);
-    if (!ofs)
-    {
-        throw std::runtime_error(
-            "Failed to open " + std::filesystem::path(filename).filename().string() + " file for writing.");
-    }
-    return ofs;
+    return fileDescriptor;
 }
 
-//! @brief File descriptor read lock operation.
-//! @param ifs - input file stream
-void fdReadLock(std::ifstream& ifs)
+void FDStreamBuffer::fd(const int newFD)
 {
-    const int fd = static_cast<::__gnu_cxx::stdio_filebuf<char>*>(ifs.rdbuf())->fd();
-    if (::flock(fd, LOCK_SH | LOCK_NB))
+    if (fileDescriptor == newFD)
     {
-        throw std::runtime_error("Failed to lock file descriptor for reading.");
+        return;
     }
+    if (fileDescriptor >= 0)
+    {
+        sync();
+        ::close(fileDescriptor);
+    }
+
+    setg(nullptr, nullptr, nullptr);
+    setp(nullptr, nullptr);
+    readBuffer.reset();
+    writeBuffer.reset();
+
+    fileDescriptor = newFD;
 }
 
-//! @brief File descriptor write lock operation.
-//! @param ofs - output file stream
-void fdWriteLock(std::ofstream& ofs)
+void FDStreamBuffer::close()
 {
-    const int fd = static_cast<::__gnu_cxx::stdio_filebuf<char>*>(ofs.rdbuf())->fd();
-    if (::flock(fd, LOCK_EX | LOCK_NB))
-    {
-        throw std::runtime_error("Failed to lock file descriptor for writing.");
-    }
+    fd(-1);
 }
 
-//! @brief Get the file contents.
-//! @param filename - file path
-//! @param reverse - reverse or not
-//! @param lock - lock or not
-//! @param rows - number of rows
-//! @return file contents
-std::list<std::string> getFileContents(
-    const std::string& filename, const bool lock, const bool reverse, const std::uint64_t rows)
+FDStreamBuffer::int_type FDStreamBuffer::underflow()
 {
-    std::ifstream ifs = openFile(filename);
-    if (lock)
+    if (gptr() != egptr())
     {
-        fdReadLock(ifs);
+        throw std::runtime_error("Read pointer has not reached the end of the buffer.");
     }
-    ifs.seekg(std::ios::beg);
-
-    std::string line;
-    std::list<std::string> contents;
-    if (!reverse)
+    if (fileDescriptor < 0)
     {
-        while ((contents.size() < rows) && std::getline(ifs, line))
+        return traits_type::eof();
+    }
+
+    if (!readBuffer)
+    {
+        readBuffer = std::make_unique<char[]>(bufferSize);
+    }
+
+    const int readSize = ::read(fileDescriptor, readBuffer.get(), bufferSize);
+    if (readSize <= 0)
+    {
+        return traits_type::eof();
+    }
+
+    setg(readBuffer.get(), readBuffer.get(), readBuffer.get() + readSize);
+    return traits_type::to_int_type(*gptr());
+}
+
+FDStreamBuffer::int_type FDStreamBuffer::overflow(int_type c)
+{
+    if (pptr() != epptr())
+    {
+        throw std::runtime_error("Write pointer has not reached the end of the buffer.");
+    }
+    if (fileDescriptor < 0)
+    {
+        return traits_type::eof();
+    }
+
+    if (!writeBuffer)
+    {
+        writeBuffer = std::make_unique<char[]>(bufferSize);
+    }
+
+    if (sync() == -1)
+    {
+        return traits_type::eof();
+    }
+    if (c != traits_type::eof())
+    {
+        *pptr() = traits_type::to_char_type(c);
+        pbump(1);
+    }
+
+    return c;
+}
+
+int FDStreamBuffer::sync()
+{
+    if ((fileDescriptor < 0) || !writeBuffer)
+    {
+        return 0;
+    }
+
+    const char* ptr = pbase();
+    while (ptr < pptr())
+    {
+        const int writtenSize = ::write(fileDescriptor, ptr, pptr() - ptr);
+        if (writtenSize <= 0)
         {
-            contents.emplace_back(line);
+            return -1;
         }
+        ptr += writtenSize;
+    }
+
+    setp(writeBuffer.get(), writeBuffer.get() + bufferSize);
+    return 0;
+}
+
+std::streampos FDStreamBuffer::seekoff(std::streamoff off, std::ios_base::seekdir way, std::ios_base::openmode mode)
+{
+    if (fileDescriptor < 0)
+    {
+        return -1;
+    }
+    if (mode & std::ios_base::out)
+    {
+        if (sync() == -1)
+        {
+            return -1;
+        }
+    }
+
+    ::off_t newOffset = 0;
+    if (std::ios_base::beg == way)
+    {
+        newOffset = off;
+    }
+    else if (std::ios_base::cur == way)
+    {
+        if ((mode & std::ios_base::in) && gptr())
+        {
+            off -= (egptr() - gptr());
+        }
+        newOffset = ::lseek(fileDescriptor, 0, SEEK_CUR) + off;
+    }
+    else if (std::ios_base::end == way)
+    {
+        newOffset = ::lseek(fileDescriptor, 0, SEEK_END) + off;
     }
     else
     {
-        const std::uint64_t totalLineNum =
-                                std::count(std::istreambuf_iterator<char>(ifs), std::istreambuf_iterator<char>(), '\n'),
-                            startLine = (totalLineNum > rows) ? (totalLineNum - rows + 1) : 1;
-        ifs.seekg(std::ios::beg);
-        for (std::uint64_t i = 0; i < (startLine - 1); ++i)
-        {
-            ifs.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        }
-        while (std::getline(ifs, line))
-        {
-            contents.emplace_front(line);
-        }
+        return -1;
     }
 
-    if (lock)
+    if (::lseek(fileDescriptor, newOffset, SEEK_SET) == -1)
     {
-        fdUnlock(ifs);
+        return -1;
     }
-    closeFile(ifs);
-    return contents;
+
+    setg(nullptr, nullptr, nullptr);
+    return newOffset;
+}
+
+std::streampos FDStreamBuffer::seekpos(std::streampos sp, std::ios_base::openmode mode)
+{
+    return seekoff(sp, std::ios_base::beg, mode);
+}
+
+std::streamsize FDStreamBuffer::showmanyc()
+{
+    if ((fileDescriptor < 0) || !gptr() || !egptr())
+    {
+        return 0;
+    }
+    return egptr() - gptr();
+}
+
+FileReader::~FileReader()
+{
+    close();
+}
+
+bool FileReader::isOpen() const
+{
+    return fd >= 0;
+}
+
+void FileReader::open()
+{
+    if (isOpen())
+    {
+        return;
+    }
+
+    fd = ::open(name.c_str(), O_CREAT | O_RDONLY, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+    if (fd < 0)
+    {
+        throw std::runtime_error(
+            "Failed to open " + std::filesystem::path(name).filename().string() + " file for reading.");
+    }
+    strBuf.fd(fd);
+}
+
+void FileReader::close()
+{
+    if (!isOpen())
+    {
+        return;
+    }
+
+    strBuf.close();
+    ::close(fd);
+    fd = -1;
+}
+
+void FileReader::lock() const
+{
+    if (::flock(fd, LOCK_SH | LOCK_NB))
+    {
+        throw std::runtime_error("Failed to lock file descriptor " + std::to_string(fd) + " for reading.");
+    }
+}
+
+void FileReader::unlock() const
+{
+    if (::flock(fd, LOCK_UN))
+    {
+        throw std::runtime_error("Failed to unlock file descriptor " + std::to_string(fd) + " for reading.");
+    }
+}
+
+std::istream& FileReader::stream()
+{
+    return input;
+}
+
+FileWriter::~FileWriter()
+{
+    close();
+}
+
+bool FileWriter::isOpen() const
+{
+    return fd >= 0;
+}
+
+void FileWriter::open(const bool overwrite)
+{
+    if (isOpen())
+    {
+        return;
+    }
+
+    fd = ::open(
+        name.c_str(), O_CREAT | (overwrite ? O_TRUNC : O_APPEND) | O_WRONLY, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+    if (fd < 0)
+    {
+        throw std::runtime_error(
+            "Failed to open " + std::filesystem::path(name).filename().string() + " file for writing.");
+    }
+    strBuf.fd(fd);
+}
+
+void FileWriter::close()
+{
+    if (!isOpen())
+    {
+        return;
+    }
+
+    strBuf.close();
+    ::close(fd);
+    fd = -1;
+}
+
+void FileWriter::lock() const
+{
+    if (::flock(fd, LOCK_EX | LOCK_NB))
+    {
+        throw std::runtime_error("Failed to lock file descriptor " + std::to_string(fd) + " for writing.");
+    }
+}
+
+void FileWriter::unlock() const
+{
+    if (::flock(fd, LOCK_UN))
+    {
+        throw std::runtime_error("Failed to unlock file descriptor " + std::to_string(fd) + " for writing.");
+    }
+}
+
+std::ostream& FileWriter::stream()
+{
+    return output;
 }
 
 //! @brief Execute the command line.
@@ -230,5 +418,57 @@ void waitForUserInput(const std::function<bool(const std::string&)>& action, con
     }
 
     ::close(epollFD);
+}
+
+//! @brief Get the file contents.
+//! @param filename - file path
+//! @param reverse - reverse or not
+//! @param lock - lock or not
+//! @param rows - number of rows
+//! @return file contents
+std::list<std::string> getFileContents(
+    const std::string& filename, const bool lock, const bool reverse, const std::uint64_t rows)
+{
+    FileReader fileReader(filename);
+    fileReader.open();
+    if (lock)
+    {
+        fileReader.lock();
+    }
+
+    auto& input = fileReader.stream();
+    input.seekg(0, std::ios::beg);
+    std::string line;
+    std::list<std::string> contents;
+    if (!reverse)
+    {
+        while ((contents.size() < rows) && std::getline(input, line))
+        {
+            contents.emplace_back(line);
+        }
+    }
+    else
+    {
+        const std::uint64_t totalLineNum = std::count(
+                                std::istreambuf_iterator<char>(input), std::istreambuf_iterator<char>(), '\n'),
+                            startLine = (totalLineNum > rows) ? (totalLineNum - rows + 1) : 1;
+        input.clear();
+        input.seekg(0, std::ios::beg);
+        for (std::uint64_t i = 0; i < (startLine - 1); ++i)
+        {
+            input.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        }
+        while (std::getline(input, line))
+        {
+            contents.emplace_front(line);
+        }
+    }
+
+    if (lock)
+    {
+        fileReader.unlock();
+    }
+    fileReader.close();
+    return contents;
 }
 } // namespace utility::io

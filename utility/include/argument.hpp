@@ -371,11 +371,11 @@ private:
             }
         }
 
-        //! @brief Check if the number of arguments is within the range.
+        //! @brief Check whether the number of arguments is within the range.
         //! @param value - number of arguments
         //! @return be contain or not contain
         [[nodiscard]] bool isContain(const std::size_t value) const { return (value >= min) && (value <= max); }
-        //! @brief Check if the number of arguments is exact.
+        //! @brief Check whether the number of arguments is exact.
         //! @return be exact or not exact
         [[nodiscard]] bool isExact() const { return min == max; }
         //! @brief Check that the range's maximum is not greater than the type's maximum.
@@ -440,12 +440,12 @@ private:
     //! @param name - name of argument
     //! @return character
     static int lookAhead(const std::string_view name);
-    //! @brief Check if the argument is optional.
+    //! @brief Check whether the argument is optional.
     //! @param name - name of argument
     //! @param prefix - prefix characters
     //! @return be optional or not optional
     static bool checkIfOptional(std::string_view name, const std::string_view prefix);
-    //! @brief Check if the argument is positional.
+    //! @brief Check whether the argument is positional.
     //! @param name - name of argument
     //! @param prefix - prefix characters
     //! @return be positional or not positional
@@ -748,15 +748,15 @@ public:
     //! @return an optional that contains the value of the argument if it exists, otherwise an empty optional
     template <typename T = std::string>
     std::optional<T> present(const std::string_view argName) const;
-    //! @brief Check if the argument is used.
+    //! @brief Check whether the argument is used.
     //! @param argName - target argument name
     //! @return be used or not used
     [[nodiscard]] bool isUsed(const std::string_view argName) const;
-    //! @brief Check if the sub-command is used.
+    //! @brief Check whether the sub-command is used.
     //! @param subCommandName - target sub-command name
     //! @return be used or not used
     [[nodiscard]] inline auto isSubCommandUsed(const std::string_view subCommandName) const;
-    //! @brief Check if the sub-command is used.
+    //! @brief Check whether the sub-command is used.
     //! @param subParser - target sub-parser
     //! @return be used or not used
     [[nodiscard]] inline auto isSubCommandUsed(const Argument& subParser) const;
@@ -813,9 +813,9 @@ private:
     //! @brief Mapping table of sub-parser usage.
     std::map<std::string_view, bool> subParserUsed{};
 
-    //! @brief Check if the prefix character is valid.
+    //! @brief Check whether the prefix character is valid.
     //! @param c - prefix character
-    //! @return be valid or valid
+    //! @return be valid or invalid
     [[nodiscard]] bool isValidPrefixChar(const char c) const;
     //! @brief Get any valid prefix character.
     //! @return valid prefix character

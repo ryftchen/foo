@@ -17,6 +17,7 @@ dictionaries:
 words:
   - adaptee
   - Adelson
+  - asan
   - BKDR
   - codebrowser
   - codescanning
@@ -69,7 +70,9 @@ words:
   - suboperation
   - tmpfs
   - tparam
+  - tsan
   - tuln
+  - ubsan
   - uncurried
   - valgrind
   - valgrindoutput

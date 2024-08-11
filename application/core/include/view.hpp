@@ -14,6 +14,7 @@
 #include "application/pch/precompiled_header.hpp"
 #endif // __PRECOMPILED_HEADER
 
+#include "utility/include/common.hpp"
 #include "utility/include/fsm.hpp"
 #include "utility/include/socket.hpp"
 
@@ -331,19 +332,15 @@ private:
     //! @param frame - maximum frame
     //! @return status reports
     static std::string getStatusReports(const std::uint16_t frame);
-    //! @brief Check whether it is in the uninterrupted target state.
-    //! @param state - target state
-    //! @return in the uninterrupted target state or not
-    bool isInUninterruptedState(const State state) const;
 
     //! @brief TCP server.
     std::shared_ptr<utility::socket::TCPServer> tcpServer{};
     //! @brief UDP server.
     std::shared_ptr<utility::socket::UDPServer> udpServer{};
-    //! @brief Mutex for controlling server.
-    mutable std::mutex mtx{};
-    //! @brief The synchronization condition for server. Use with mtx.
-    std::condition_variable cv{};
+    //! @brief Mutex for controlling daemon.
+    mutable std::mutex daemonMtx{};
+    //! @brief The synchronization condition for daemon. Use with daemonMtx.
+    std::condition_variable daemonCv{};
     //! @brief Flag to indicate whether it is viewing.
     std::atomic<bool> ongoing{false};
     //! @brief Flag for rollback request.
@@ -356,7 +353,21 @@ private:
     std::condition_variable outputCv{};
     //! @brief Flag to indicate whether the output is complete.
     std::atomic<bool> outputCompleted{false};
+    //! @brief Spin lock for controlling state.
+    mutable utility::common::SpinLock stateLock{};
 
+    //! @brief Safely retrieve the current state.
+    //! @return current state
+    State safeCurrentState() const;
+    //! @brief Safely process an event.
+    //! @tparam T - type of target event
+    //! @param event - target event
+    template <class T>
+    void safeProcessEvent(const T& event);
+    //! @brief Check whether it is in the uninterrupted target state.
+    //! @param state - target state
+    //! @return in the uninterrupted target state or not
+    bool isInUninterruptedState(const State state) const;
     //! @brief FSM event. Create server.
     struct CreateServer
     {

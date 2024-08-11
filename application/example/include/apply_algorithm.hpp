@@ -777,7 +777,7 @@ public:
     //! @param array - target array
     //! @param length - length of array
     //! @param buffer - buffer for printing
-    //! @param bufferSize - size of buffer
+    //! @param bufferSize - size of the buffer
     //! @return buffer after splicing
     template <typename N>
     requires (isRealNumber<N>())
@@ -1018,7 +1018,7 @@ public:
     //! @param array - target array
     //! @param length - length of array
     //! @param buffer - buffer for printing
-    //! @param bufferSize - size of buffer
+    //! @param bufferSize - size of the buffer
     //! @return buffer after splicing
     template <typename N>
     requires (isRealNumber<N>())

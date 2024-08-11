@@ -117,7 +117,7 @@ class Task:
             "--check",
             nargs="+",
             choices=["cov", "mem"],
-            help="run with check\n- cov    coverage\n- mem    memory",
+            help="run with check\n- cov    coverage (force to use clang)\n- mem    memory",
         )
         parser.add_argument(
             "-b",
@@ -125,7 +125,15 @@ class Task:
             nargs="?",
             const="dbg",
             choices=["dbg", "rls"],
-            help="run after build\n- dbg    debug\n- rls    release",
+            help="build before run\n- dbg    debug\n- rls    release",
+        )
+        parser.add_argument(
+            "-s",
+            "--sanitizer",
+            choices=["asan", "tsan", "ubsan"],
+            required=False,
+            help="build with sanitizer (force to use clang)\n\
+- asan   address sanitizer\n- tsan   thread sanitizer\n- ubsan  undefined behavior sanitizer",
         )
         parser.add_argument("-a", "--analyze", action="store_true", default=False, help="analyze run log only")
         parser.add_argument("-d", "--dump", action="store_true", default=False, help="dump run task dictionary only")
@@ -152,30 +160,30 @@ class Task:
             self.repeat_count = args.repeat
 
         if args.check is not None:
+            if args.sanitizer is not None:
+                Output.exit_with_error(
+                    "It is not possible to use the --check option and the --sanitizer option at the same time."
+                )
             if "cov" in args.check:
+                if args.build is None:
+                    Output.exit_with_error(
+                        "Checking coverage requires recompiling with instrumentation. Please add the --build option."
+                    )
                 if "mem" in args.check:
                     Output.exit_with_error(
                         "Checking coverage and memory at the same time can lead to inaccurate results."
                     )
-                if args.test:
-                    Output.exit_with_error("No support for checking coverage during testing.")
-                stdout, _, _ = common.execute_command("command -v llvm-profdata-16 llvm-cov-16 2>&1")
-                if stdout.find("llvm-profdata-16") != -1 and stdout.find("llvm-cov-16") != -1:
-                    os.environ["FOO_BLD_DCA"] = "on"
-                    self.stored_options["chk"]["cov"] = True
-                    common.execute_command(f"rm -rf {self.report_path}/dca/check_coverage")
-                    common.execute_command(f"mkdir -p {self.report_path}/dca/check_coverage")
-                else:
-                    Output.exit_with_error("No llvm-profdata or llvm-cov program. Please check it.")
+                self.initialize_for_check_coverage()
 
             if "mem" in args.check:
-                stdout, _, _ = common.execute_command("command -v valgrind valgrind-ci 2>&1")
-                if stdout.find("valgrind") != -1 and stdout.find("valgrind-ci") != -1:
-                    self.stored_options["chk"]["mem"] = True
-                    common.execute_command(f"rm -rf {self.report_path}/dca/check_memory")
-                    common.execute_command(f"mkdir -p {self.report_path}/dca/check_memory")
-                else:
-                    Output.exit_with_error("No valgrind (including valgrind-ci) program. Please check it.")
+                self.initialize_for_check_memory()
+
+        if args.sanitizer is not None:
+            if args.build is None:
+                Output.exit_with_error(
+                    "The runtime sanitizer requires recompiling with instrumentation. Please add the --build option."
+                )
+            os.environ["FOO_BLD_SAN"] = args.sanitizer
 
         if args.build is not None:
             if os.path.isfile(self.build_script):
@@ -209,7 +217,7 @@ class Task:
             if len(self.tst_task_filt) != 0:
                 command = f"{self.tst_bin_cmd} {self.tst_task_filt}"
             while self.repeat_count:
-                self.run_task(command)
+                self.run_single_task(command)
                 self.repeat_count -= 1
 
         self.duration = (datetime.now() - start_time).total_seconds()
@@ -220,9 +228,9 @@ class Task:
     def stop(self, message=""):
         try:
             if self.stored_options["chk"]["cov"]:
-                common.execute_command(f"rm -rf {self.report_path}/dca/check_coverage/{{*.profraw,*.profdata}}")
+                common.execute_command(f"rm -rf {self.report_path}/dca/chk_cov/{{*.profraw,*.profdata}}")
             if self.stored_options["chk"]["mem"]:
-                common.execute_command(f"rm -rf {self.report_path}/dca/check_memory/*.xml")
+                common.execute_command(f"rm -rf {self.report_path}/dca/chk_mem/*.xml")
             sys.stdout = STDOUT
             self.progress_bar.destroy_progress_bar()
             del self.logger
@@ -311,9 +319,9 @@ class Task:
 
     def complete(self):
         if self.stored_options["chk"]["cov"]:
-            self.check_coverage()
+            self.check_coverage_handling()
         if self.stored_options["chk"]["mem"]:
-            self.check_memory()
+            self.check_memory_handling()
 
         sys.stdout = STDOUT
         self.progress_bar.destroy_progress_bar()
@@ -345,9 +353,9 @@ class Task:
     def perform_tasks(self):
         while not self.task_queue.empty():
             command, enter = self.task_queue.get()
-            self.run_task(command, enter)
+            self.run_single_task(command, enter)
 
-    def run_task(self, command, enter=""):
+    def run_single_task(self, command, enter=""):
         full_cmd = (
             f"{self.app_bin_path}/{command}"
             if not self.stored_options["tst"]
@@ -355,10 +363,10 @@ class Task:
         )
         if self.stored_options["chk"]["mem"]:
             full_cmd = f"valgrind --tool=memcheck --xml=yes \
---xml-file={self.report_path}/dca/check_memory/foo_chk_mem_{str(self.complete_steps + 1)}.xml {full_cmd}"
+--xml-file={self.report_path}/dca/chk_mem/foo_chk_mem_{str(self.complete_steps + 1)}.xml {full_cmd}"
         if self.stored_options["chk"]["cov"]:
             full_cmd = f"LLVM_PROFILE_FILE=\
-\"{self.report_path}/dca/check_coverage/foo_chk_cov_{str(self.complete_steps + 1)}.profraw\" {full_cmd}"
+\"{self.report_path}/dca/chk_cov/foo_chk_cov_{str(self.complete_steps + 1)}.profraw\" {full_cmd}"
         if len(enter) != 0:
             command += "<" + enter.replace("\nquit", "")
         align_len = max(
@@ -411,30 +419,63 @@ class Task:
         self.progress_bar.draw_progress_bar(int(self.complete_steps / self.total_steps * 100))
         sys.stdout = self.logger
 
-    def check_coverage(self):
-        folder_path = f"{self.report_path}/dca/check_coverage"
+    def initialize_for_check_coverage(self):
+        stdout, _, _ = common.execute_command("command -v llvm-profdata-16 llvm-cov-16 2>&1")
+        if stdout.find("llvm-profdata-16") != -1 and stdout.find("llvm-cov-16") != -1:
+            os.environ["FOO_BLD_COV"] = "llvm-cov"
+            self.stored_options["chk"]["cov"] = True
+            common.execute_command(f"rm -rf {self.report_path}/dca/chk_cov")
+            common.execute_command(f"mkdir -p {self.report_path}/dca/chk_cov")
+        else:
+            Output.exit_with_error("No llvm-profdata or llvm-cov program. Please check it.")
+
+    def check_coverage_handling(self):
+        folder_path = f"{self.report_path}/dca/chk_cov"
         common.execute_command(
             f"llvm-profdata-16 merge -sparse {folder_path}/foo_chk_cov_*.profraw -o {folder_path}/foo_chk_cov.profdata"
         )
-        common.execute_command(
-            f"llvm-cov-16 show -instr-profile={folder_path}/foo_chk_cov.profdata -show-branches=percent \
+        if not self.stored_options["tst"]:
+            common.execute_command(
+                f"llvm-cov-16 show -instr-profile={folder_path}/foo_chk_cov.profdata -show-branches=percent \
 -show-expansions -show-regions -show-line-counts-or-regions -format=html -output-dir={folder_path} -Xdemangler=c++filt \
 -object={self.app_bin_path}/{self.app_bin_cmd} {' '.join([f'-object={self.lib_path}/{lib}' for lib in self.lib_list])} \
 2>&1"
-        )
-        stdout, _, _ = common.execute_command(
-            f"llvm-cov-16 report -instr-profile={folder_path}/foo_chk_cov.profdata \
+            )
+        else:
+            common.execute_command(
+                f"llvm-cov-16 show -instr-profile={folder_path}/foo_chk_cov.profdata -show-branches=percent \
+-show-expansions -show-regions -show-line-counts-or-regions -format=html -output-dir={folder_path} -Xdemangler=c++filt \
+-object={self.tst_bin_path}/{self.tst_bin_cmd} 2>&1"
+            )
+        stdout, _, _ = (
+            common.execute_command(
+                f"llvm-cov-16 report -instr-profile={folder_path}/foo_chk_cov.profdata \
 -object={self.app_bin_path}/{self.app_bin_cmd} {' '.join([f'-object={self.lib_path}/{lib}' for lib in self.lib_list])} \
 2>&1"
+            )
+            if not self.stored_options["tst"]
+            else common.execute_command(
+                f"llvm-cov-16 report -instr-profile={folder_path}/foo_chk_cov.profdata \
+-object={self.tst_bin_path}/{self.tst_bin_cmd} 2>&1"
+            )
         )
         common.execute_command(f"rm -rf {folder_path}/{{*.profraw,*.profdata}}")
         print(f"\n[CHECK COVERAGE]\n{stdout}")
         if "error" in stdout:
-            print("Please rebuild the executable file with the --check option.")
+            print("Please further check the compilation parameters related to instrumentation.")
 
-    def check_memory(self):
-        common.execute_command(f"rm -rf {self.report_path}/dca/check_memory/*.xml")
-        folder_path = f"{self.report_path}/dca/check_memory/memory"
+    def initialize_for_check_memory(self):
+        stdout, _, _ = common.execute_command("command -v valgrind valgrind-ci 2>&1")
+        if stdout.find("valgrind") != -1 and stdout.find("valgrind-ci") != -1:
+            self.stored_options["chk"]["mem"] = True
+            common.execute_command(f"rm -rf {self.report_path}/dca/chk_mem")
+            common.execute_command(f"mkdir -p {self.report_path}/dca/chk_mem")
+        else:
+            Output.exit_with_error("No valgrind (including valgrind-ci) program. Please check it.")
+
+    def check_memory_handling(self):
+        common.execute_command(f"rm -rf {self.report_path}/dca/chk_mem/*.xml")
+        folder_path = f"{self.report_path}/dca/chk_mem/memory"
         if not os.path.exists(folder_path):
             os.mkdir(folder_path)
         case_folders = [folder.path for folder in os.scandir(folder_path) if folder.is_dir()]
@@ -442,7 +483,9 @@ class Task:
         case_folders_with_ctime.sort(key=lambda x: x[1])
         sorted_case_folders = [os.path.basename(folder[0]) for folder in case_folders_with_ctime]
         case_names = [
-            Path(f"{folder[0]}/case_name").read_text(encoding="utf-8").replace("<", "&lt;")
+            Path(f"{folder[0]}/case_name")
+            .read_text(encoding="utf-8")
+            .replace(f"{self.app_bin_cmd}<", f"{self.app_bin_cmd}&lt;")
             for folder in case_folders_with_ctime
         ]
         stdout, _, _ = common.execute_command("pip3 show ValgrindCI")
@@ -459,11 +502,11 @@ class Task:
         ):
             print("\n[CHECK MEMORY]\nMissing source files prevent indexing.")
         common.execute_command(
-            f"cp -rf {pkg_loc}/{{index.html,valgrind.css,valgrind.js}} {self.report_path}/dca/check_memory/"
+            f"cp -rf {pkg_loc}/{{index.html,valgrind.css,valgrind.js}} {self.report_path}/dca/chk_mem/"
         )
 
         index_content = ""
-        with open(f"{self.report_path}/dca/check_memory/index.html", "rt", encoding="utf-8") as index_content:
+        with open(f"{self.report_path}/dca/chk_mem/index.html", "rt", encoding="utf-8") as index_content:
             fcntl.flock(index_content.fileno(), fcntl.LOCK_EX)
             old_content = index_content.read()
             fcntl.flock(index_content.fileno(), fcntl.LOCK_UN)
@@ -486,14 +529,14 @@ class Task:
         new_content = re.sub(
             r"(                {% for item in source_list %}.*?{% endfor %}\n)", new_body, old_content, flags=re.DOTALL
         )
-        with open(f"{self.report_path}/dca/check_memory/index.html", "wt", encoding="utf-8") as index_content:
+        with open(f"{self.report_path}/dca/chk_mem/index.html", "wt", encoding="utf-8") as index_content:
             fcntl.flock(index_content.fileno(), fcntl.LOCK_EX)
             index_content.write(new_content)
             fcntl.flock(index_content.fileno(), fcntl.LOCK_UN)
 
     def convert_valgrind_output(self, command, align_len):
         inst_num = 0
-        xml_filename = f"{self.report_path}/dca/check_memory/foo_chk_mem_{str(self.complete_steps + 1)}"
+        xml_filename = f"{self.report_path}/dca/chk_mem/foo_chk_mem_{str(self.complete_steps + 1)}"
         with open(f"{xml_filename}.xml", "rt", encoding="utf-8") as mem_xml:
             inst_num = mem_xml.read().count("</valgrindoutput>")
         stdout = ""
@@ -519,7 +562,7 @@ valgrind-ci {xml_filename}_inst_2.xml --summary"
         if "errors" in stdout:
             stdout = stdout.replace("\t", "    ")
             print(f"\n[CHECK MEMORY]\n{stdout}")
-            case_path = f"{self.report_path}/dca/check_memory/memory/case_{str(self.complete_steps + 1)}"
+            case_path = f"{self.report_path}/dca/chk_mem/memory/case_{str(self.complete_steps + 1)}"
             if inst_num == 1:
                 common.execute_command(f"valgrind-ci {xml_filename}.xml --source-dir=./ --output-dir={case_path}")
                 Path(f"{case_path}/case_name").write_text(command, encoding="utf-8")
@@ -576,8 +619,6 @@ valgrind-ci {xml_filename}_inst_2.xml --summary"
             or (tags["chk"]["mem"] and not self.stored_options["chk"]["mem"])
         ):
             Output.exit_with_error(f"Run options do not match the actual contents of the run log {self.log_file} file.")
-        if tags["tst"] and tags["chk"]["cov"]:
-            Output.exit_with_error(f"The run log {self.log_file} file is complex. Please retry.")
 
         start_indices = []
         finish_indices = []

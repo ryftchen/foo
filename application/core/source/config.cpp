@@ -237,13 +237,12 @@ utility::json::JSON getDefaultConfiguration()
 //! @param filename - config file
 static void forcedConfigurationUpdateByDefault(const std::string& filename)
 {
-    namespace io = utility::io;
-
-    std::ofstream ofs = io::openFile(filename, true);
-    io::fdWriteLock(ofs);
-    ofs << config::getDefaultConfiguration();
-    io::fdUnlock(ofs);
-    io::closeFile(ofs);
+    utility::io::FileWriter fileWriter(filename);
+    fileWriter.open(true);
+    fileWriter.lock();
+    fileWriter.stream() << config::getDefaultConfiguration();
+    fileWriter.unlock();
+    fileWriter.close();
 }
 
 //! @brief Initialize the configuration.
