@@ -55,6 +55,10 @@ private:
     //! @brief Size of the buffer.
     static constexpr std::size_t bufferSize{4096};
 
+    //! @brief Flush the output buffer with the file descriptor.
+    //! @return the value is 0 if successful, otherwise -1
+    int flush();
+
 protected:
     //! @brief Read data into the input buffer.
     //! @return next character from the input buffer

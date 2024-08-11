@@ -38,23 +38,55 @@ void FDStreamBuffer::fd(const int newFD)
     {
         return;
     }
+
     if (fileDescriptor >= 0)
     {
         sync();
         ::close(fileDescriptor);
     }
-
     setg(nullptr, nullptr, nullptr);
     setp(nullptr, nullptr);
     readBuffer.reset();
     writeBuffer.reset();
-
     fileDescriptor = newFD;
 }
 
 void FDStreamBuffer::close()
 {
-    fd(-1);
+    if (fileDescriptor < 0)
+    {
+        return;
+    }
+
+    flush();
+    ::close(fileDescriptor);
+    setg(nullptr, nullptr, nullptr);
+    setp(nullptr, nullptr);
+    readBuffer.reset();
+    writeBuffer.reset();
+    fileDescriptor = -1;
+}
+
+int FDStreamBuffer::flush()
+{
+    if ((fileDescriptor < 0) || !writeBuffer)
+    {
+        return 0;
+    }
+
+    const char* ptr = pbase();
+    while (ptr < pptr())
+    {
+        const int writtenSize = ::write(fileDescriptor, ptr, pptr() - ptr);
+        if (writtenSize <= 0)
+        {
+            return -1;
+        }
+        ptr += writtenSize;
+    }
+
+    setp(writeBuffer.get(), writeBuffer.get() + bufferSize);
+    return 0;
 }
 
 FDStreamBuffer::int_type FDStreamBuffer::underflow()
@@ -114,24 +146,7 @@ FDStreamBuffer::int_type FDStreamBuffer::overflow(int_type c)
 
 int FDStreamBuffer::sync()
 {
-    if ((fileDescriptor < 0) || !writeBuffer)
-    {
-        return 0;
-    }
-
-    const char* ptr = pbase();
-    while (ptr < pptr())
-    {
-        const int writtenSize = ::write(fileDescriptor, ptr, pptr() - ptr);
-        if (writtenSize <= 0)
-        {
-            return -1;
-        }
-        ptr += writtenSize;
-    }
-
-    setp(writeBuffer.get(), writeBuffer.get() + bufferSize);
-    return 0;
+    return flush();
 }
 
 std::streampos FDStreamBuffer::seekoff(std::streamoff off, std::ios_base::seekdir way, std::ios_base::openmode mode)
