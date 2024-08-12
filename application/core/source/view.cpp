@@ -304,7 +304,7 @@ void View::waitForStart()
             LOG_ERR << "The viewer did not initialize successfully ...";
             return;
         }
-        utility::time::millisecondLevelSleep(1);
+        std::this_thread::yield();
     }
 
     if (std::unique_lock<std::mutex> lock(daemonMtx); true)
@@ -386,6 +386,7 @@ void View::requestToReset()
         {
             break;
         }
+        std::this_thread::yield();
     }
 }
 
@@ -730,7 +731,7 @@ int View::fillSharedMemory(const std::string& contents)
             shrMem->signal.store(true);
             break;
         }
-        utility::time::millisecondLevelSleep(1);
+        std::this_thread::yield();
     }
     ::shmdt(shm);
 
@@ -757,7 +758,7 @@ void View::printSharedMemory(const int shmId, const bool withoutPaging)
             shrMem->signal.store(false);
             break;
         }
-        utility::time::millisecondLevelSleep(1);
+        std::this_thread::yield();
     }
     ::shmdt(shm);
     ::shmctl(shmId, IPC_RMID, nullptr);

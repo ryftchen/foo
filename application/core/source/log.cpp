@@ -127,7 +127,7 @@ void Log::waitForStart()
             LOG_ERR << "The logger did not initialize successfully ...";
             return;
         }
-        utility::time::millisecondLevelSleep(1);
+        std::this_thread::yield();
     }
 
     if (std::unique_lock<std::mutex> lock(daemonMtx); true)
@@ -209,6 +209,7 @@ void Log::requestToReset()
         {
             break;
         }
+        std::this_thread::yield();
     }
 }
 
