@@ -36,9 +36,9 @@ public:
     [[nodiscard]] bool shouldExit() const;
     //! @brief When using asynchronous, wait for the non-detached thread to exit.
     void waitIfAlive();
-    //! @brief Acquires the spin lock to ensure mutual exclusion.
+    //! @brief Acquire the spin lock to ensure mutual exclusion.
     void spinLock();
-    //! @brief Releases the spin lock to allow other threads to acquire it.
+    //! @brief Release the spin lock to allow other threads to acquire it.
     void spinUnlock();
 
     //! @brief Transport information.
