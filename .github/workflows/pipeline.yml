@@ -244,6 +244,6 @@ jobs:
       - name: Clean workflow runs
         uses: dmvict/clean-workflow-runs@v1.2.2
         with:
-          save_period: 7
-          save_min_runs_number: 5
+          save_period: '00:10:00'
+          save_min_runs_number: 1
 ...
