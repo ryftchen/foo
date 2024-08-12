@@ -702,6 +702,7 @@ void Command::executeInConsole() const
 
     udpClient->toSend(utility::common::base64Encode("stop"));
     udpClient->waitIfAlive();
+    utility::time::millisecondLevelSleep(latency);
 }
 
 void Command::showHelpMessage() const
@@ -793,6 +794,7 @@ try
 
     tcpClient->toSend(utility::common::base64Encode("stop"));
     tcpClient->waitIfAlive();
+    utility::time::millisecondLevelSleep(latency);
 #ifndef NDEBUG
     LOG_DBG << "Exit console mode.";
 #endif // NDEBUG

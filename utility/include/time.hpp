@@ -6,7 +6,8 @@
 
 #pragma once
 
-#include <thread>
+#include <chrono>
+#include <functional>
 
 //! @brief Store beginning time.
 #define TIME_BEGIN(timing)      \
@@ -24,13 +25,6 @@ namespace utility // NOLINT (modernize-concat-nested-namespaces)
 namespace time
 {
 extern const char* version() noexcept;
-
-//! @brief Perform millisecond-level sleep.
-//! @param duration - sleep duration
-inline void millisecondLevelSleep(const std::uint32_t duration)
-{
-    std::this_thread::sleep_for(std::chrono::operator""ms(duration));
-}
 
 //! @brief Timing.
 class Time
@@ -53,35 +47,8 @@ private:
     std::chrono::steady_clock::time_point endTime{};
 };
 
-//! @brief Blocking Timer.
-class BlockingTimer
-{
-public:
-    //! @brief Destroy the BlockingTimer object.
-    virtual ~BlockingTimer() = default;
-
-    //! @brief Set the blocking timer.
-    //! @param func - callable function
-    //! @param interval - time interval
-    void set(const auto& func, const std::uint32_t interval);
-    //! @brief Reset the blocking timer.
-    void reset();
-
-private:
-    //! @brief Flag to indicate whether the blocking timer is running.
-    std::atomic<bool> isRunning{true};
-};
-
-void BlockingTimer::set(const auto& func, const std::uint32_t interval)
-{
-    isRunning.store(true);
-    while (isRunning.load())
-    {
-        millisecondLevelSleep(interval);
-        func();
-    }
-}
-
+extern void millisecondLevelSleep(const std::uint32_t duration);
+extern int blockingTimer(const std::function<bool()> termination, const std::uint32_t timeout = 0);
 extern std::string getCurrentSystemTime();
 } // namespace time
 } // namespace utility

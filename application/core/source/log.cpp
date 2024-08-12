@@ -120,15 +120,16 @@ retry:
 
 void Log::waitForStart()
 {
-    while (!isInUninterruptedState(State::idle))
+    if (isInUninterruptedState(State::hold))
     {
-        if (isInUninterruptedState(State::hold))
-        {
-            LOG_ERR << "The logger did not initialize successfully ...";
-            return;
-        }
-        std::this_thread::yield();
+        LOG_ERR << "The logger did not initialize successfully ...";
+        return;
     }
+    utility::time::blockingTimer(
+        [this]()
+        {
+            return isInUninterruptedState(State::idle);
+        });
 
     if (std::unique_lock<std::mutex> daemonLock(daemonMtx); true)
     {
@@ -137,27 +138,15 @@ void Log::waitForStart()
         daemonCv.notify_one();
     }
 
-    utility::time::BlockingTimer expiryTimer;
-    std::uint32_t waitCounter = 0;
-    expiryTimer.set(
-        [this, &expiryTimer, &waitCounter]()
-        {
-            if (isInUninterruptedState(State::work))
+    if (utility::time::blockingTimer(
+            [this]()
             {
-                expiryTimer.reset();
-            }
-            else
-            {
-                ++waitCounter;
-            }
-
-            if (timeoutPeriod == waitCounter)
-            {
-                LOG_ERR << "The logger did not start properly in " << timeoutPeriod << "ms ...";
-                expiryTimer.reset();
-            }
-        },
-        1);
+                return isInUninterruptedState(State::work);
+            },
+            timeoutPeriod))
+    {
+        LOG_ERR << "The logger did not start properly in " << timeoutPeriod << "ms ...";
+    }
 }
 
 void Log::waitForStop()
@@ -169,27 +158,15 @@ void Log::waitForStop()
         daemonCv.notify_one();
     }
 
-    utility::time::BlockingTimer expiryTimer;
-    std::uint32_t waitCounter = 0;
-    expiryTimer.set(
-        [this, &expiryTimer, &waitCounter]()
-        {
-            if (isInUninterruptedState(State::done))
+    if (utility::time::blockingTimer(
+            [this]()
             {
-                expiryTimer.reset();
-            }
-            else
-            {
-                ++waitCounter;
-            }
-
-            if (timeoutPeriod == waitCounter)
-            {
-                LOG_ERR << "The logger did not stop properly in " << timeoutPeriod << "ms ...";
-                expiryTimer.reset();
-            }
-        },
-        1);
+                return isInUninterruptedState(State::done);
+            },
+            timeoutPeriod))
+    {
+        LOG_ERR << "The logger did not stop properly in " << timeoutPeriod << "ms ...";
+    }
 }
 
 void Log::requestToReset()
@@ -201,14 +178,11 @@ void Log::requestToReset()
         daemonCv.notify_one();
     }
 
-    for (;;)
-    {
-        if (!toReset.load())
+    utility::time::blockingTimer(
+        [this]()
         {
-            break;
-        }
-        std::this_thread::yield();
-    }
+            return !toReset.load();
+        });
 }
 
 std::string Log::loggerFilePath() const

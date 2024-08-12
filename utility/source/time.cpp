@@ -6,6 +6,8 @@
 
 #include "time.hpp"
 
+#include <thread>
+
 namespace utility::time
 {
 //! @brief Function version number.
@@ -33,9 +35,38 @@ double Time::getTimeInterval() const
     return timeInterval.count();
 }
 
-void BlockingTimer::reset()
+//! @brief Perform millisecond-level sleep.
+//! @param duration - sleep duration
+void millisecondLevelSleep(const std::uint32_t duration)
 {
-    isRunning.store(false);
+    std::this_thread::sleep_for(std::chrono::operator""ms(duration));
+}
+
+//! @brief Create a one-shot timer with blocking.
+//! @param termination - termination condition
+//! @param timeout - timeout period (ms)
+//! @return the value is 0 if the termination condition is met, otherwise -1 on timeout
+int blockingTimer(const std::function<bool()> termination, const std::uint32_t timeout)
+{
+    const auto startTime = std::chrono::steady_clock::now();
+    for (;;)
+    {
+        if (timeout > 0)
+        {
+            const auto elapsedTime =
+                std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - startTime);
+            if (elapsedTime.count() > timeout)
+            {
+                return -1;
+            }
+        }
+
+        if (termination())
+        {
+            return 0;
+        }
+        std::this_thread::yield();
+    }
 }
 
 //! @brief Get the current system time, like "1970-01-01 00:00:00.000000 UTC".
