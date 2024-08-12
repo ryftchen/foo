@@ -345,6 +345,13 @@ function perform_clean_option()
         return
     fi
 
+    if df -h -t tmpfs | grep -q "${FOLDER[proj]}/${FOLDER[bld]}" 2>/dev/null; then
+        shell_command "${SUDO}umount ./${FOLDER[bld]}"
+    fi
+    if df -h -t tmpfs | grep -q "${FOLDER[proj]}/${FOLDER[tst]}/${FOLDER[bld]}" 2>/dev/null; then
+        shell_command "${SUDO}umount ./${FOLDER[tst]}/${FOLDER[bld]}"
+    fi
+
     if [[ -f ~/${BASH_RC} ]]; then
         shell_command "sed -i '/export FOO_ENV=${FOLDER[proj]}_dev/d' ~/${BASH_RC}"
         shell_command "sed -i '/alias ${FOLDER[proj]:0:1}\(build\|run\)/d' ~/${BASH_RC}"
@@ -358,13 +365,6 @@ function perform_clean_option()
 
     if [[ -f ./.git/hooks/pre-commit ]]; then
         shell_command "pre-commit uninstall"
-    fi
-
-    if df -h -t tmpfs | grep -q "${FOLDER[proj]}/${FOLDER[bld]}" 2>/dev/null; then
-        shell_command "${SUDO}umount ./${FOLDER[bld]}"
-    fi
-    if df -h -t tmpfs | grep -q "${FOLDER[proj]}/${FOLDER[tst]}/${FOLDER[bld]}" 2>/dev/null; then
-        shell_command "${SUDO}umount ./${FOLDER[tst]}/${FOLDER[bld]}"
     fi
 
     echo "To clean up for effect, type \"exec bash\" manually."
