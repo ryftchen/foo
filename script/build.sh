@@ -360,6 +360,13 @@ function perform_clean_option()
         shell_command "pre-commit uninstall"
     fi
 
+    if df -h -t tmpfs | grep -q "${FOLDER[proj]}/${FOLDER[bld]}" 2>/dev/null; then
+        shell_command "${SUDO}umount ./${FOLDER[bld]}"
+    fi
+    if df -h -t tmpfs | grep -q "${FOLDER[proj]}/${FOLDER[tst]}/${FOLDER[bld]}" 2>/dev/null; then
+        shell_command "${SUDO}umount ./${FOLDER[tst]}/${FOLDER[bld]}"
+    fi
+
     echo "To clean up for effect, type \"exec bash\" manually."
 
     exit "${STATUS}"
