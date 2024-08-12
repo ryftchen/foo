@@ -48,12 +48,12 @@ jobs:
           path: ./document/artifact/foo_*.tar.bz2
           retention-days: 7
 
-      - name: Static check phase 1
+      - name: Evaluate code quality
         run: |
           ./script/build.sh --format --lint
           git status
 
-      - name: Static check phase 2
+      - name: Evaluate security
         run: |
           ./script/build.sh --query --assume y
           git status
@@ -89,24 +89,28 @@ jobs:
           ./script/run.py --build rls --repeat 1
           cat ./report/foo_run.report
 
-      - name: Dynamic check phase 1 (part 1)
+      - name: Perform coverage checking (debug)
         run: |
+          ./script/run.py --test --check cov --build dbg --repeat 1
+          cat ./report/foo_run.report
           ./script/run.py --check cov --build dbg --repeat 1
           cat ./report/foo_run.report
 
-      - name: Dynamic check phase 1 (part 2)
+      - name: Perform coverage checking (release)
         run: |
+          ./script/run.py --test --check cov --build rls --repeat 1
+          cat ./report/foo_run.report
           ./script/run.py --check cov --build rls --repeat 1
           cat ./report/foo_run.report
 
-      - name: Dynamic check phase 2 (part 1)
+      - name: Perform memory checking (debug)
         run: |
           ./script/run.py --test --check mem --build dbg --repeat 1
           cat ./report/foo_run.report
           ./script/run.py --check mem --build dbg --repeat 1
           cat ./report/foo_run.report
 
-      - name: Dynamic check phase 2 (part 2)
+      - name: Perform memory checking (release)
         run: |
           ./script/run.py --test --check mem --build rls --repeat 1
           cat ./report/foo_run.report
@@ -149,20 +153,45 @@ jobs:
           sed -i 's/FOO_BLD_CCACHE=.*/FOO_BLD_CCACHE=on/' ./script/.build_env
           sed -i 's/FOO_BLD_DISTCC=.*/FOO_BLD_DISTCC="0.0.0.0,lzo"/' ./script/.build_env
           sed -i 's/FOO_BLD_TMPFS=.*/FOO_BLD_TMPFS=on/' ./script/.build_env
-
-      - name: Extended check (part 1)
-        run: |
           ./script/run.py --dump
-          ./script/run.py --test --check mem --build dbg --repeat 1
+          ./script/run.py --test --build dbg --repeat 1
           ./script/run.py --analyze
-          ./script/run.py --check mem --build dbg --repeat 1
+          ./script/run.py --build dbg --repeat 1
+          ./script/run.py --analyze
+          ./script/run.py --test --build rls --repeat 1
+          ./script/run.py --analyze
+          ./script/run.py --build rls --repeat 1
+          ./script/run.py --analyze
+          ./script/build.sh --clean
+
+      - name: Run sanitizer (debug)
+        run: |
+          ./script/run.py --test --sanitizer asan --build dbg --repeat 1
+          ./script/run.py --analyze
+          ./script/run.py --sanitizer asan --build dbg --repeat 1
+          ./script/run.py --analyze
+          ./script/run.py --test --sanitizer tsan --build dbg --repeat 1
+          ./script/run.py --analyze
+          ./script/run.py --sanitizer tsan --build dbg --repeat 1
+          ./script/run.py --analyze
+          ./script/run.py --test --sanitizer ubsan --build dbg --repeat 1
+          ./script/run.py --analyze
+          ./script/run.py --sanitizer ubsan --build dbg --repeat 1
           ./script/run.py --analyze
 
-      - name: Extended check (part 2)
+      - name: Run sanitizer (release)
         run: |
-          ./script/run.py --test --check mem --build rls --repeat 1
+          ./script/run.py --test --sanitizer asan --build rls --repeat 1
           ./script/run.py --analyze
-          ./script/run.py --check mem --build rls --repeat 1
+          ./script/run.py --sanitizer asan --build rls --repeat 1
+          ./script/run.py --analyze
+          ./script/run.py --test --sanitizer tsan --build rls --repeat 1
+          ./script/run.py --analyze
+          ./script/run.py --sanitizer tsan --build rls --repeat 1
+          ./script/run.py --analyze
+          ./script/run.py --test --sanitizer ubsan --build rls --repeat 1
+          ./script/run.py --analyze
+          ./script/run.py --sanitizer ubsan --build rls --repeat 1
           ./script/run.py --analyze
 
   deploy_pages:
@@ -215,6 +244,6 @@ jobs:
       - name: Clean workflow runs
         uses: dmvict/clean-workflow-runs@v1.2.2
         with:
-          save_period: '00:01:00'
-          save_min_runs_number: 1
+          save_period: 7
+          save_min_runs_number: 5
 ...

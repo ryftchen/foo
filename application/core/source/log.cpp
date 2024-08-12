@@ -130,11 +130,10 @@ void Log::waitForStart()
         std::this_thread::yield();
     }
 
-    if (std::unique_lock<std::mutex> lock(daemonMtx); true)
+    if (std::unique_lock<std::mutex> daemonLock(daemonMtx); true)
     {
         ongoing.store(true);
-
-        lock.unlock();
+        daemonLock.unlock();
         daemonCv.notify_one();
     }
 
@@ -163,11 +162,10 @@ void Log::waitForStart()
 
 void Log::waitForStop()
 {
-    if (std::unique_lock<std::mutex> lock(daemonMtx); true)
+    if (std::unique_lock<std::mutex> daemonLock(daemonMtx); true)
     {
         ongoing.store(false);
-
-        lock.unlock();
+        daemonLock.unlock();
         daemonCv.notify_one();
     }
 
@@ -196,10 +194,10 @@ void Log::waitForStop()
 
 void Log::requestToReset()
 {
-    if (std::unique_lock<std::mutex> lock(daemonMtx); true)
+    if (std::unique_lock<std::mutex> daemonLock(daemonMtx); true)
     {
         toReset.store(true);
-        lock.unlock();
+        daemonLock.unlock();
         daemonCv.notify_one();
     }
 
@@ -326,7 +324,7 @@ void Log::startLogging()
 
 void Log::stopLogging()
 {
-    std::unique_lock<std::mutex> lock(daemonMtx);
+    std::lock_guard<std::mutex> daemonLock(daemonMtx);
     ongoing.store(false);
     toReset.store(false);
     while (!logQueue.empty())
@@ -341,8 +339,9 @@ void Log::doToggle()
 
 void Log::doRollback()
 {
-    std::unique_lock<std::mutex> lock(daemonMtx);
+    std::lock_guard<std::mutex> daemonLock(daemonMtx);
     ongoing.store(false);
+
     while (!logQueue.empty())
     {
         logQueue.pop();
@@ -382,9 +381,9 @@ bool Log::isLogFileClose(const NoLogging& /*event*/) const
 
 bool Log::awaitNotification4Rollback()
 {
-    if (std::unique_lock<std::mutex> lock(daemonMtx); true)
+    if (std::unique_lock<std::mutex> daemonLock(daemonMtx); true)
     {
-        daemonCv.wait(lock);
+        daemonCv.wait(daemonLock);
     }
 
     if (toReset.load())

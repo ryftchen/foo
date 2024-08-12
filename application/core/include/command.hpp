@@ -72,10 +72,10 @@ private:
     //! @brief Construct a new Command object.
     Command();
 
-    //! @brief Mutex for controlling multi-threading.
-    mutable std::mutex mtx{};
-    //! @brief The synchronization condition for foreground and background. Use with mtx.
-    std::condition_variable cv{};
+    //! @brief Mutex for controlling parser.
+    mutable std::mutex parserMtx{};
+    //! @brief The synchronization condition for foreground and background. Use with parserMtx.
+    std::condition_variable parserCv{};
     //! @brief Flag to indicate whether parsing of arguments is completed.
     std::atomic<bool> isParsed{false};
     //! @brief Parse argument helper for commander.

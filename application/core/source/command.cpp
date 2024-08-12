@@ -462,28 +462,28 @@ void Command::initializeCLI()
 void Command::foregroundHandler(const int argc, const char* const argv[])
 try
 {
-    std::unique_lock<std::mutex> lock(mtx);
+    std::unique_lock<std::mutex> parserLock(parserMtx);
     mainCLI.parseArgs(argc, argv);
     validate();
 
     isParsed.store(true);
-    lock.unlock();
-    cv.notify_one();
+    parserLock.unlock();
+    parserCv.notify_one();
 }
 catch (const std::exception& err)
 {
     isParsed.store(true);
-    cv.notify_one();
+    parserCv.notify_one();
     LOG_WRN << err.what();
 }
 
 void Command::backgroundHandler()
 try
 {
-    if (std::unique_lock<std::mutex> lock(mtx); true)
+    if (std::unique_lock<std::mutex> parserLock(parserMtx); true)
     {
-        cv.wait(
-            lock,
+        parserCv.wait(
+            parserLock,
             [this]()
             {
                 return isParsed.load();
