@@ -243,10 +243,10 @@ retry:
         safeProcessEvent(CreateServer());
 
         assert(safeCurrentState() == State::idle);
-        if (std::unique_lock<std::mutex> lock(daemonMtx); true)
+        if (std::unique_lock<std::mutex> daemonLock(daemonMtx); true)
         {
             daemonCv.wait(
-                lock,
+                daemonLock,
                 [this]()
                 {
                     return ongoing.load();
@@ -257,9 +257,9 @@ retry:
         assert(safeCurrentState() == State::work);
         while (ongoing.load())
         {
-            std::unique_lock<std::mutex> lock(daemonMtx);
+            std::unique_lock<std::mutex> daemonLock(daemonMtx);
             daemonCv.wait(
-                lock,
+                daemonLock,
                 [this]()
                 {
                     return !ongoing.load() || toReset.load();
@@ -307,11 +307,11 @@ void View::waitForStart()
         std::this_thread::yield();
     }
 
-    if (std::unique_lock<std::mutex> lock(daemonMtx); true)
+    if (std::unique_lock<std::mutex> daemonLock(daemonMtx); true)
     {
         ongoing.store(true);
 
-        lock.unlock();
+        daemonLock.unlock();
         daemonCv.notify_one();
     }
 
@@ -340,11 +340,10 @@ void View::waitForStart()
 
 void View::waitForStop()
 {
-    if (std::unique_lock<std::mutex> lock(daemonMtx); true)
+    if (std::unique_lock<std::mutex> daemonLock(daemonMtx); true)
     {
         ongoing.store(false);
-
-        lock.unlock();
+        daemonLock.unlock();
         daemonCv.notify_one();
     }
 
@@ -373,10 +372,10 @@ void View::waitForStop()
 
 void View::requestToReset()
 {
-    if (std::unique_lock<std::mutex> lock(daemonMtx); true)
+    if (std::unique_lock<std::mutex> daemonLock(daemonMtx); true)
     {
         toReset.store(true);
-        lock.unlock();
+        daemonLock.unlock();
         daemonCv.notify_one();
     }
 
@@ -1039,11 +1038,9 @@ void View::startViewing()
 
 void View::stopViewing()
 {
-    std::unique_lock<std::mutex> lock(daemonMtx);
+    std::scoped_lock locks(daemonMtx, outputMtx);
     ongoing.store(false);
     toReset.store(false);
-
-    std::unique_lock<std::mutex> outputLock(outputMtx);
     outputCompleted.store(false);
 }
 
@@ -1053,8 +1050,9 @@ void View::doToggle()
 
 void View::doRollback()
 {
-    std::unique_lock<std::mutex> lock(daemonMtx);
+    std::scoped_lock locks(daemonMtx, outputMtx);
     ongoing.store(false);
+
     if (tcpServer)
     {
         try
@@ -1080,17 +1078,15 @@ void View::doRollback()
         udpServer.reset();
     }
 
-    std::unique_lock<std::mutex> outputLock(outputMtx);
-    outputCompleted.store(false);
-
     toReset.store(false);
+    outputCompleted.store(false);
 }
 
 bool View::awaitNotification4Rollback()
 {
-    if (std::unique_lock<std::mutex> lock(daemonMtx); true)
+    if (std::unique_lock<std::mutex> daemonLock(daemonMtx); true)
     {
-        daemonCv.wait(lock);
+        daemonCv.wait(daemonLock);
     }
 
     if (toReset.load())
