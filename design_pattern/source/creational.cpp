@@ -257,11 +257,11 @@ namespace singleton
 {
 std::shared_ptr<Singleton> Singleton::instance = nullptr;
 
-std::shared_ptr<Singleton> Singleton::get()
+std::shared_ptr<Singleton>& Singleton::get()
 {
     if (!instance)
     {
-        instance = std::shared_ptr<Singleton>(new Singleton);
+        instance = std::shared_ptr<Singleton>();
     }
     return instance;
 }

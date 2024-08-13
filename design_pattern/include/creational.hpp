@@ -406,7 +406,7 @@ public:
 
     //! @brief Get the instance of the singleton.
     //! @return the instance of the singleton
-    static std::shared_ptr<Singleton> get();
+    static std::shared_ptr<Singleton>& get();
     //! @brief Restart the instance of the singleton.
     static void restart();
     //! @brief Tell external.
