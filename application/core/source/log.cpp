@@ -65,35 +65,11 @@ retry:
         safeProcessEvent(OpenFile());
 
         assert(safeCurrentState() == State::idle);
-        if (std::unique_lock<std::mutex> lock(daemonMtx); true)
-        {
-            daemonCv.wait(
-                lock,
-                [this]()
-                {
-                    return ongoing.load();
-                });
-        }
+        awaitNotification2Ongoing();
         safeProcessEvent(GoLogging());
 
         assert(safeCurrentState() == State::work);
-        while (ongoing.load())
-        {
-            std::unique_lock<std::mutex> lock(daemonMtx);
-            daemonCv.wait(
-                lock,
-                [this]()
-                {
-                    return !ongoing.load() || !logQueue.empty() || toReset.load();
-                });
-
-            if (toReset.load())
-            {
-                break;
-            }
-            handleLogQueue();
-        }
-
+        awaitNotification2Log();
         if (toReset.load())
         {
             safeProcessEvent(Relaunch());
@@ -109,9 +85,9 @@ retry:
     catch (const std::exception& err)
     {
         LOG_ERR << err.what() << " Current logger state: " << safeCurrentState() << '.';
-        safeProcessEvent(Standby());
 
-        if (awaitNotification4Rollback())
+        safeProcessEvent(Standby());
+        if (awaitNotification2Retry())
         {
             goto retry; // NOLINT (hicpp-avoid-goto)
         }
@@ -214,32 +190,6 @@ void Log::safeProcessEvent(const T& event)
 bool Log::isInUninterruptedState(const State state) const
 {
     return (safeCurrentState() == state) && !toReset.load();
-}
-
-void Log::handleLogQueue()
-{
-    namespace common = utility::common;
-
-    common::ReadWriteGuard guard(fileLock, common::LockMode::write);
-    while (!logQueue.empty())
-    {
-        switch (usedMedium)
-        {
-            case OutputMedium::file:
-                logWriter.stream() << logQueue.front() << std::endl;
-                break;
-            case OutputMedium::terminal:
-                std::cout << changeToLogStyle(logQueue.front()) << std::endl;
-                break;
-            case OutputMedium::both:
-                logWriter.stream() << logQueue.front() << std::endl;
-                std::cout << changeToLogStyle(logQueue.front()) << std::endl;
-                break;
-            default:
-                break;
-        }
-        logQueue.pop();
-    }
 }
 
 std::string Log::getFullLogPath(const std::string& filename)
@@ -353,7 +303,62 @@ bool Log::isLogFileClose(const NoLogging& /*event*/) const
     return !logWriter.isOpen();
 }
 
-bool Log::awaitNotification4Rollback()
+void Log::awaitNotification2Ongoing()
+{
+    if (std::unique_lock<std::mutex> lock(daemonMtx); true)
+    {
+        daemonCv.wait(
+            lock,
+            [this]()
+            {
+                return ongoing.load();
+            });
+    }
+}
+
+void Log::awaitNotification2Log()
+{
+    namespace common = utility::common;
+
+    while (ongoing.load())
+    {
+        std::unique_lock<std::mutex> lock(daemonMtx);
+        daemonCv.wait(
+            lock,
+            [this]()
+            {
+                return !ongoing.load() || !logQueue.empty() || toReset.load();
+            });
+
+        if (toReset.load())
+        {
+            break;
+        }
+
+        common::ReadWriteGuard guard(fileLock, common::LockMode::write);
+        while (!logQueue.empty())
+        {
+            switch (usedMedium)
+            {
+                case OutputMedium::file:
+                    logWriter.stream() << logQueue.front() << std::endl;
+                    break;
+                case OutputMedium::terminal:
+                    std::cout << changeToLogStyle(logQueue.front()) << std::endl;
+                    break;
+                case OutputMedium::both:
+                    logWriter.stream() << logQueue.front() << std::endl;
+                    std::cout << changeToLogStyle(logQueue.front()) << std::endl;
+                    break;
+                default:
+                    break;
+            }
+            logQueue.pop();
+        }
+    }
+}
+
+bool Log::awaitNotification2Retry()
 {
     if (std::unique_lock<std::mutex> daemonLock(daemonMtx); true)
     {

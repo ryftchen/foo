@@ -36,11 +36,11 @@ std::size_t bkdrHash(const char* str)
 //! @param format - null-terminated multibyte string specifying how to interpret the data
 //! @param ... - arguments
 //! @return string after formatting
-std::string formatString(const char* const format, ...)
+std::string formatString(const std::string_view format, ...)
 {
     std::va_list list;
     ::va_start(list, format);
-    int bufferSize = std::vsnprintf(nullptr, 0, format, list);
+    int bufferSize = std::vsnprintf(nullptr, 0, format.data(), list);
     ::va_end(list);
     if (bufferSize < 0)
     {
@@ -49,7 +49,7 @@ std::string formatString(const char* const format, ...)
 
     ::va_start(list, format);
     std::vector<char> buffer(bufferSize + 1);
-    std::vsnprintf(buffer.data(), bufferSize + 1, format, list);
+    std::vsnprintf(buffer.data(), bufferSize + 1, format.data(), list);
     ::va_end(list);
 
     return std::string{buffer.cbegin(), buffer.cbegin() + bufferSize};

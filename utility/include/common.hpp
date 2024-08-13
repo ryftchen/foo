@@ -124,7 +124,7 @@ inline bool allStrEqual(const char* const str1, const char* const str2, Others c
     return allStrEqual(str1, str2) && allStrEqual(str2, others...);
 }
 
-extern std::string formatString(const char* const format, ...);
+extern std::string formatString(const std::string_view format, ...);
 
 //! @brief Check that the target value is part of the enumeration.
 //! @tparam EnumType - type of enumeration

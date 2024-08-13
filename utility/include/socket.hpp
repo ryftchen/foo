@@ -108,8 +108,8 @@ public:
         {
         });
     //! @brief Create a thread to receive.
-    //! @param detach - whether to detach
-    void toReceive(const bool detach = false);
+    //! @param toDetach - whether to detach
+    void toReceive(const bool toDetach = false);
     //! @brief Handling on message received.
     std::function<void(const std::string&)> onMessageReceived{};
     //! @brief Handling on raw message received.
@@ -140,8 +140,8 @@ public:
     //! @brief Listen on a port number. Wait for the connection to be established.
     void toListen();
     //! @brief Create a thread to accept the connection from the client.
-    //! @param detach - whether to detach
-    void toAccept(const bool detach = false);
+    //! @param toDetach - whether to detach
+    void toAccept(const bool toDetach = false);
     //! @brief Handling on new connection.
     std::function<void(const std::shared_ptr<TCPSocket>)> onNewConnection{};
 
@@ -186,11 +186,11 @@ public:
     //! @param port - peer port number
     void toConnect(const std::string& ip, const std::uint16_t port);
     //! @brief Create a thread to receive.
-    //! @param detach - whether to detach
-    void toReceive(const bool detach = false);
+    //! @param toDetach - whether to detach
+    void toReceive(const bool toDetach = false);
     //! @brief Create a thread to receive from peer.
-    //! @param detach - whether to detach
-    void toReceiveFrom(const bool detach = false);
+    //! @param toDetach - whether to detach
+    void toReceiveFrom(const bool toDetach = false);
     //! @brief Handling on message received.
     std::function<void(const std::string&, const std::string&, const std::uint16_t)> onMessageReceived{};
     //! @brief Handling on raw message received.

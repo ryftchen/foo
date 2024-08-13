@@ -25,35 +25,35 @@ Thread::Thread(const std::size_t size)
             {
                 for (;;)
                 {
-                    std::string name;
-                    std::packaged_task<void()> task;
+                    std::string_view thdName;
+                    std::packaged_task<void()> thdTask;
                     if (std::unique_lock<std::mutex> lock(mtx); true)
                     {
                         cv.wait(
                             lock,
                             [this]()
                             {
-                                return readyRelease.load() || !taskQueue.empty();
+                                return releaseReady.load() || !taskQueue.empty();
                             });
 
-                        if (readyRelease.load() && taskQueue.empty())
+                        if (releaseReady.load() && taskQueue.empty())
                         {
                             return;
                         }
 
-                        name = std::get<0>(taskQueue.front());
-                        task = std::move(std::get<1>(taskQueue.front()));
+                        thdName = std::get<0>(taskQueue.front());
+                        thdTask = std::move(std::get<1>(taskQueue.front()));
                         taskQueue.pop();
                         if (taskQueue.empty())
                         {
                             producer.notify_one();
                         }
                     }
-                    if (!name.empty())
+                    if (!thdName.empty())
                     {
-                        ::pthread_setname_np(::pthread_self(), name.c_str());
+                        ::pthread_setname_np(::pthread_self(), thdName.data());
                     }
-                    task();
+                    thdTask();
                 }
             });
     }
@@ -69,7 +69,7 @@ Thread::~Thread()
             {
                 return taskQueue.empty();
             });
-        readyRelease.store(true);
+        releaseReady.store(true);
     }
 
     cv.notify_all();

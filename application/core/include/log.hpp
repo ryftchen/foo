@@ -316,8 +316,6 @@ private:
     //! @param state - target state
     //! @return in the uninterrupted target state or not
     bool isInUninterruptedState(const State state) const;
-    //! @brief Handle the log queue.
-    void handleLogQueue();
     //! @brief Get the full path to the log file.
     //! @param filename - log file
     //! @return full path to the log file
@@ -388,9 +386,13 @@ private:
         // --------------+-------------+--------------+--------------------+------------------------
     >;
     // clang-format on
-    //! @brief Await notification for rollback.
-    //! @return whether rollback is required or not
-    bool awaitNotification4Rollback();
+    //! @brief Await notification to ongoing.
+    void awaitNotification2Ongoing();
+    //! @brief Await notification to log.
+    void awaitNotification2Log();
+    //! @brief Await notification to retry.
+    //! @return whether retry is required or not
+    bool awaitNotification2Retry();
 
 protected:
     friend std::ostream& operator<<(std::ostream& os, const State state);
@@ -438,23 +440,23 @@ void Log::flush(
         prefix = unknownLevelPrefix;
     }
 
-    std::string validFormat = format;
-    validFormat.erase(
+    std::string singleRowFormat(format);
+    singleRowFormat.erase(
         std::remove_if(
-            std::begin(validFormat),
-            std::end(validFormat),
-            [l = std::locale{}](const auto c)
+            std::begin(singleRowFormat),
+            std::end(singleRowFormat),
+            [](const auto c)
             {
-                return (' ' != c) && std::isspace(c, l);
+                return ('\n' == c) || ('\r' == c);
             }),
-        std::end(validFormat));
+        std::end(singleRowFormat));
     std::string output = std::format(
         "{}:[{}]:[{}#{}]: {}",
         prefix,
         utility::time::getCurrentSystemTime(),
         codeFile.substr(codeFile.find("foo/") + 4, codeFile.length()),
         codeLine,
-        utility::common::formatString(validFormat.c_str(), std::forward<Args>(args)...));
+        utility::common::formatString(singleRowFormat.data(), std::forward<Args>(args)...));
 
     std::unique_lock<std::mutex> lock(daemonMtx);
     if (unknownLevelPrefix != prefix)
