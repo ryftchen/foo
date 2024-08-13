@@ -22,8 +22,8 @@ extern std::string executeCommand(const std::string& command, const std::uint32_
 extern void waitForUserInput(const std::function<bool(const std::string&)>& action, const int timeout = -1);
 extern std::list<std::string> getFileContents(
     const std::string& filename,
-    const bool lock,
-    const bool reverse = false,
+    const bool toLock,
+    const bool toReverse = false,
     const std::uint64_t totalRows = std::numeric_limits<std::uint64_t>::max());
 
 //! @brief Custom stream buffer for file descriptors.
@@ -95,6 +95,17 @@ public:
     explicit FileReader(const std::string& filename) : name(filename) {}
     //! @brief Destroy the FileReader object.
     ~FileReader();
+    //! @brief Construct a new FileReader object.
+    FileReader(const FileReader&) = delete;
+    //! @brief Construct a new FileReader object.
+    FileReader(FileReader&&) = delete;
+    //! @brief The operator (=) overloading of FileReader class.
+    //! @return reference of the FileReader object
+    FileReader& operator=(const FileReader&) = delete;
+    //! @brief The operator (=) overloading of FileReader class.
+    //! @return reference of the FileReader object
+    FileReader& operator=(FileReader&&) = delete;
+
     //! @brief Checks if the file is currently open.
     //! @return be open or not open
     bool isOpen() const;
@@ -130,6 +141,17 @@ public:
     explicit FileWriter(const std::string& filename) : name(filename) {}
     //! @brief Destroy the FileWriter object.
     ~FileWriter();
+    //! @brief Construct a new FileWriter object.
+    FileWriter(const FileWriter&) = delete;
+    //! @brief Construct a new FileWriter object.
+    FileWriter(FileWriter&&) = delete;
+    //! @brief The operator (=) overloading of FileWriter class.
+    //! @return reference of the FileWriter object
+    FileWriter& operator=(const FileWriter&) = delete;
+    //! @brief The operator (=) overloading of FileWriter class.
+    //! @return reference of the FileWriter object
+    FileWriter& operator=(FileWriter&&) = delete;
+
     //! @brief Checks if the file is currently open.
     //! @return be open or not open
     bool isOpen() const;

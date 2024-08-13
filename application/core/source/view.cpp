@@ -243,34 +243,11 @@ retry:
         safeProcessEvent(CreateServer());
 
         assert(safeCurrentState() == State::idle);
-        if (std::unique_lock<std::mutex> daemonLock(daemonMtx); true)
-        {
-            daemonCv.wait(
-                daemonLock,
-                [this]()
-                {
-                    return ongoing.load();
-                });
-        }
+        awaitNotification2Ongoing();
         safeProcessEvent(GoViewing());
 
         assert(safeCurrentState() == State::work);
-        while (ongoing.load())
-        {
-            std::unique_lock<std::mutex> daemonLock(daemonMtx);
-            daemonCv.wait(
-                daemonLock,
-                [this]()
-                {
-                    return !ongoing.load() || toReset.load();
-                });
-
-            if (toReset.load())
-            {
-                break;
-            }
-        }
-
+        awaitNotification2View();
         if (toReset.load())
         {
             safeProcessEvent(Relaunch());
@@ -286,9 +263,9 @@ retry:
     catch (const std::exception& err)
     {
         LOG_ERR << err.what() << " Current viewer state: " << safeCurrentState() << '.';
-        safeProcessEvent(Standby());
 
-        if (awaitNotification4Rollback())
+        safeProcessEvent(Standby());
+        if (awaitNotification2Retry())
         {
             goto retry; // NOLINT (hicpp-avoid-goto)
         }
@@ -474,7 +451,7 @@ int View::buildNullTLVPacket(char* buf)
     return len;
 }
 
-int View::buildTLVPacket2Stop(char* buf)
+int View::buildTLVPacket4Stop(char* buf)
 {
     int len = 0;
     if (tlv::tlvEncoding(buf, len, tlv::TLVValue{.stopTag = true}) < 0)
@@ -485,7 +462,7 @@ int View::buildTLVPacket2Stop(char* buf)
     return len;
 }
 
-int View::buildTLVPacket2Depend(const std::vector<std::string>& /*args*/, char* buf)
+int View::buildTLVPacket4Depend(const std::vector<std::string>& /*args*/, char* buf)
 {
     int len = 0;
     tlv::TLVValue val{};
@@ -512,7 +489,7 @@ int View::buildTLVPacket2Depend(const std::vector<std::string>& /*args*/, char* 
     return len;
 }
 
-int View::buildTLVPacket2Execute(const std::vector<std::string>& args, char* buf)
+int View::buildTLVPacket4Execute(const std::vector<std::string>& args, char* buf)
 {
     std::string cmds;
     for (const auto& arg : args)
@@ -559,7 +536,7 @@ int View::buildTLVPacket2Execute(const std::vector<std::string>& args, char* buf
     return len;
 }
 
-int View::buildTLVPacket2Journal(const std::vector<std::string>& /*args*/, char* buf)
+int View::buildTLVPacket4Journal(const std::vector<std::string>& /*args*/, char* buf)
 {
     int len = 0;
     const int shmId = fillSharedMemory(getLogContents());
@@ -571,7 +548,7 @@ int View::buildTLVPacket2Journal(const std::vector<std::string>& /*args*/, char*
     return len;
 }
 
-int View::buildTLVPacket2Monitor(const std::vector<std::string>& args, char* buf)
+int View::buildTLVPacket4Monitor(const std::vector<std::string>& args, char* buf)
 {
     if (args.size() > 1)
     {
@@ -597,7 +574,7 @@ int View::buildTLVPacket2Monitor(const std::vector<std::string>& args, char* buf
     return len;
 }
 
-int View::buildTLVPacket2Profile(const std::vector<std::string>& /*args*/, char* buf)
+int View::buildTLVPacket4Profile(const std::vector<std::string>& /*args*/, char* buf)
 {
     int len = 0;
     tlv::TLVValue val{};
@@ -711,7 +688,7 @@ int View::fillSharedMemory(const std::string& contents)
     return shmId;
 }
 
-void View::printSharedMemory(const int shmId, const bool withoutPaging)
+void View::fetchSharedMemory(const int shmId, std::string& contents)
 {
     void* const shm = ::shmat(shmId, nullptr, 0);
     if (nullptr == shm)
@@ -719,7 +696,6 @@ void View::printSharedMemory(const int shmId, const bool withoutPaging)
         throw std::runtime_error("Failed to attach shared memory.");
     }
 
-    std::string output;
     auto* const shrMem = reinterpret_cast<SharedMemory*>(shm);
     shrMem->signal.store(true);
     for (;;)
@@ -727,7 +703,7 @@ void View::printSharedMemory(const int shmId, const bool withoutPaging)
         if (shrMem->signal.load())
         {
             decryptMessage(shrMem->buffer, sizeof(shrMem->buffer));
-            output = shrMem->buffer;
+            contents = shrMem->buffer;
             shrMem->signal.store(false);
             break;
         }
@@ -735,7 +711,12 @@ void View::printSharedMemory(const int shmId, const bool withoutPaging)
     }
     ::shmdt(shm);
     ::shmctl(shmId, IPC_RMID, nullptr);
+}
 
+void View::printSharedMemory(const int shmId, const bool withoutPaging)
+{
+    std::string output;
+    fetchSharedMemory(shmId, output);
     if (withoutPaging)
     {
         std::cout << output;
@@ -928,7 +909,7 @@ void View::createViewServer()
                 const auto msg = utility::common::base64Decode(message);
                 if ("stop" == msg)
                 {
-                    buildTLVPacket2Stop(buffer);
+                    buildTLVPacket4Stop(buffer);
                     newSocket->toSend(buffer, sizeof(buffer));
                     newSocket->asyncExit();
                     return;
@@ -967,7 +948,7 @@ void View::createViewServer()
             const auto msg = utility::common::base64Decode(message);
             if ("stop" == msg)
             {
-                buildTLVPacket2Stop(buffer);
+                buildTLVPacket4Stop(buffer);
                 udpServer->toSendTo(buffer, sizeof(buffer), ip, port);
                 return;
             }
@@ -1056,7 +1037,39 @@ void View::doRollback()
     outputCompleted.store(false);
 }
 
-bool View::awaitNotification4Rollback()
+void View::awaitNotification2Ongoing()
+{
+    if (std::unique_lock<std::mutex> daemonLock(daemonMtx); true)
+    {
+        daemonCv.wait(
+            daemonLock,
+            [this]()
+            {
+                return ongoing.load();
+            });
+    }
+}
+
+void View::awaitNotification2View()
+{
+    while (ongoing.load())
+    {
+        std::unique_lock<std::mutex> daemonLock(daemonMtx);
+        daemonCv.wait(
+            daemonLock,
+            [this]()
+            {
+                return !ongoing.load() || toReset.load();
+            });
+
+        if (toReset.load())
+        {
+            break;
+        }
+    }
+}
+
+bool View::awaitNotification2Retry()
 {
     if (std::unique_lock<std::mutex> daemonLock(daemonMtx); true)
     {

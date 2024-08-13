@@ -36,13 +36,13 @@ public:
     //! @param args - function arguments
     //! @return result of thread execution
     template <typename Func, typename... Args>
-    decltype(auto) enqueue(const std::string& name, Func&& func, Args&&... args);
+    decltype(auto) enqueue(const std::string_view name, Func&& func, Args&&... args);
 
 private:
     //! @brief The container of target threads to join.
     std::vector<std::thread> thdColl{};
     //! @brief The queue of tasks.
-    std::queue<std::pair<std::string, std::packaged_task<void()>>> taskQueue{};
+    std::queue<std::pair<std::string_view, std::packaged_task<void()>>> taskQueue{};
     //! @brief Mutex for controlling queue.
     mutable std::mutex mtx{};
     //! @brief The synchronization condition for queue. Use with mtx.
@@ -50,11 +50,11 @@ private:
     //! @brief The synchronization condition for availability of resources.
     std::condition_variable producer{};
     //! @brief Flag for ready release.
-    std::atomic<bool> readyRelease{false};
+    std::atomic<bool> releaseReady{false};
 };
 
 template <typename Func, typename... Args>
-decltype(auto) Thread::enqueue(const std::string& name, Func&& func, Args&&... args)
+decltype(auto) Thread::enqueue(const std::string_view name, Func&& func, Args&&... args)
 {
     std::packaged_task<std::invoke_result_t<Func, Args...>()> task(
         std::bind(std::forward<Func>(func), std::forward<Args>(args)...));
@@ -62,7 +62,7 @@ decltype(auto) Thread::enqueue(const std::string& name, Func&& func, Args&&... a
 
     if (std::unique_lock<std::mutex> lock(mtx); true)
     {
-        if (readyRelease.load())
+        if (releaseReady.load())
         {
             throw std::logic_error("Coming to destructure.");
         }

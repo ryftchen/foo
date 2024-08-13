@@ -437,16 +437,16 @@ void waitForUserInput(const std::function<bool(const std::string&)>& action, con
 
 //! @brief Get the file contents.
 //! @param filename - file path
-//! @param reverse - reverse or not
-//! @param lock - lock or not
-//! @param rows - number of rows
+//! @param toLock - lock or not
+//! @param toReverse - reverse or not
+//! @param totalRows - number of rows
 //! @return file contents
 std::list<std::string> getFileContents(
-    const std::string& filename, const bool lock, const bool reverse, const std::uint64_t rows)
+    const std::string& filename, const bool toLock, const bool toReverse, const std::uint64_t totalRows)
 {
     FileReader fileReader(filename);
     fileReader.open();
-    if (lock)
+    if (toLock)
     {
         fileReader.lock();
     }
@@ -455,18 +455,18 @@ std::list<std::string> getFileContents(
     input.seekg(0, std::ios::beg);
     std::string line;
     std::list<std::string> contents;
-    if (!reverse)
+    if (!toReverse)
     {
-        while ((contents.size() < rows) && std::getline(input, line))
+        while ((contents.size() < totalRows) && std::getline(input, line))
         {
             contents.emplace_back(line);
         }
     }
     else
     {
-        const std::uint64_t totalLineNum = std::count(
+        const std::uint64_t numOfLines = std::count(
                                 std::istreambuf_iterator<char>(input), std::istreambuf_iterator<char>(), '\n'),
-                            startLine = (totalLineNum > rows) ? (totalLineNum - rows + 1) : 1;
+                            startLine = (numOfLines > totalRows) ? (numOfLines - totalRows + 1) : 1;
         input.clear();
         input.seekg(0, std::ios::beg);
         for (std::uint64_t i = 0; i < (startLine - 1); ++i)
@@ -479,7 +479,7 @@ std::list<std::string> getFileContents(
         }
     }
 
-    if (lock)
+    if (toLock)
     {
         fileReader.unlock();
     }

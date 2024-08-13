@@ -252,11 +252,11 @@ private:
     {
         // - Option -+---------------------- Help ----------------------+------- Build Packet -------
         // ----------+--------------------------------------------------+----------------------------
-        { "depend"   , { "show associated library list"                  , &buildTLVPacket2Depend  }},
-        { "execute"  , { "enter bash commands in quotes [inputs: 'CMD']" , &buildTLVPacket2Execute }},
-        { "journal"  , { "view the log with highlights"                  , &buildTLVPacket2Journal }},
-        { "monitor"  , { "query process status and stacks [inputs: NUM]" , &buildTLVPacket2Monitor }},
-        { "profile"  , { "display current configuration"                 , &buildTLVPacket2Profile }}
+        { "depend"   , { "show associated library list"                  , &buildTLVPacket4Depend  }},
+        { "execute"  , { "enter bash commands in quotes [inputs: 'CMD']" , &buildTLVPacket4Execute }},
+        { "journal"  , { "view the log with highlights"                  , &buildTLVPacket4Journal }},
+        { "monitor"  , { "query process status and stacks [inputs: NUM]" , &buildTLVPacket4Monitor }},
+        { "profile"  , { "display current configuration"                 , &buildTLVPacket4Profile }}
         // ----------+--------------------------------------------------+----------------------------
     };
     // clang-format on
@@ -280,32 +280,32 @@ private:
     //! @brief Build the TLV packet to stop connection.
     //! @param buf - TLV packet buffer
     //! @return buffer length
-    static int buildTLVPacket2Stop(char* buf);
+    static int buildTLVPacket4Stop(char* buf);
     //! @brief Build the TLV packet to get library information.
     //! @param args - container of arguments
     //! @param buf - TLV packet buffer
     //! @return buffer length
-    static int buildTLVPacket2Depend(const std::vector<std::string>& args, char* buf);
+    static int buildTLVPacket4Depend(const std::vector<std::string>& args, char* buf);
     //! @brief Build the TLV packet to get bash outputs.
     //! @param args - container of arguments
     //! @param buf - TLV packet buffer
     //! @return buffer length
-    static int buildTLVPacket2Execute(const std::vector<std::string>& args, char* buf);
+    static int buildTLVPacket4Execute(const std::vector<std::string>& args, char* buf);
     //! @brief Build the TLV packet to get log contents.
     //! @param args - container of arguments
     //! @param buf - TLV packet buffer
     //! @return buffer length
-    static int buildTLVPacket2Journal(const std::vector<std::string>& args, char* buf);
+    static int buildTLVPacket4Journal(const std::vector<std::string>& args, char* buf);
     //! @brief Build the TLV packet to get status reports.
     //! @param args - container of arguments
     //! @param buf - TLV packet buffer
     //! @return buffer length
-    static int buildTLVPacket2Monitor(const std::vector<std::string>& args, char* buf);
+    static int buildTLVPacket4Monitor(const std::vector<std::string>& args, char* buf);
     //! @brief Build the TLV packet to get current configuration.
     //! @param args - container of arguments
     //! @param buf - TLV packet buffer
     //! @return buffer length
-    static int buildTLVPacket2Profile(const std::vector<std::string>& args, char* buf);
+    static int buildTLVPacket4Profile(const std::vector<std::string>& args, char* buf);
     //! @brief Encrypt the message with AES-128-CFB-128.
     //! @param buffer - message buffer
     //! @param length - buffer length
@@ -318,6 +318,10 @@ private:
     //! @param contents - contents to be filled
     //! @return shm id
     static int fillSharedMemory(const std::string& contents);
+    //! @brief Fetch the shared memory.
+    //! @param shmId - shm id
+    //! @param contents - contents to be fetched
+    static void fetchSharedMemory(const int shmId, std::string& contents);
     //! @brief Print the shared memory.
     //! @param shmId - shm id
     //! @param withoutPaging - whether output without paging
@@ -423,9 +427,13 @@ private:
         // --------------+---------------+--------------+--------------------------+------------------------
     >;
     // clang-format on
-    //! @brief Await notification for rollback.
-    //! @return whether rollback is required or not
-    bool awaitNotification4Rollback();
+    //! @brief Await notification to ongoing.
+    void awaitNotification2Ongoing();
+    //! @brief Await notification to view.
+    void awaitNotification2View();
+    //! @brief Await notification to retry.
+    //! @return whether retry is required or not
+    bool awaitNotification2Retry();
 
 protected:
     friend std::ostream& operator<<(std::ostream& os, const State state);
