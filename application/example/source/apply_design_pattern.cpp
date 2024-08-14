@@ -222,7 +222,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
+    LOG_ERR_F("Interrupt %s: %s", __func__, err.what());
 }
 
 void BehavioralPattern::commandInstance()
@@ -233,7 +233,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
+    LOG_ERR_F("Interrupt %s: %s", __func__, err.what());
 }
 
 void BehavioralPattern::interpreterInstance()
@@ -244,7 +244,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
+    LOG_ERR_F("Interrupt %s: %s", __func__, err.what());
 }
 
 void BehavioralPattern::iteratorInstance()
@@ -255,7 +255,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
+    LOG_ERR_F("Interrupt %s: %s", __func__, err.what());
 }
 
 void BehavioralPattern::mediatorInstance()
@@ -266,7 +266,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
+    LOG_ERR_F("Interrupt %s: %s", __func__, err.what());
 }
 
 void BehavioralPattern::mementoInstance()
@@ -277,7 +277,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
+    LOG_ERR_F("Interrupt %s: %s", __func__, err.what());
 }
 
 void BehavioralPattern::observerInstance()
@@ -288,7 +288,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
+    LOG_ERR_F("Interrupt %s: %s", __func__, err.what());
 }
 
 void BehavioralPattern::stateInstance()
@@ -299,7 +299,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
+    LOG_ERR_F("Interrupt %s: %s", __func__, err.what());
 }
 
 void BehavioralPattern::strategyInstance()
@@ -310,7 +310,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
+    LOG_ERR_F("Interrupt %s: %s", __func__, err.what());
 }
 
 void BehavioralPattern::templateMethodInstance()
@@ -321,7 +321,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
+    LOG_ERR_F("Interrupt %s: %s", __func__, err.what());
 }
 
 void BehavioralPattern::visitorInstance()
@@ -332,7 +332,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
+    LOG_ERR_F("Interrupt %s: %s", __func__, err.what());
 }
 } // namespace behavioral
 
@@ -454,7 +454,7 @@ void runChoices<BehavioralInstance>(const std::vector<std::string>& candidates)
                 behavioralFunctor(name(target), &BehavioralPattern::visitorInstance);
                 break;
             default:
-                LOG_WRN << "Skip applying an unknown " << toString(category) << " instance: " << target << ".";
+                LOG_WRN_F("Skip applying an unknown %s instance: %s.", toString(category).data(), target.data());
                 break;
         }
     }
@@ -481,7 +481,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
+    LOG_ERR_F("Interrupt %s: %s", __func__, err.what());
 }
 
 void CreationalPattern::builderInstance()
@@ -492,7 +492,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
+    LOG_ERR_F("Interrupt %s: %s", __func__, err.what());
 }
 
 void CreationalPattern::factoryMethodInstance()
@@ -503,7 +503,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
+    LOG_ERR_F("Interrupt %s: %s", __func__, err.what());
 }
 
 void CreationalPattern::prototypeInstance()
@@ -514,7 +514,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
+    LOG_ERR_F("Interrupt %s: %s", __func__, err.what());
 }
 
 void CreationalPattern::singletonInstance()
@@ -525,7 +525,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
+    LOG_ERR_F("Interrupt %s: %s", __func__, err.what());
 }
 } // namespace creational
 
@@ -611,7 +611,7 @@ void runChoices<CreationalInstance>(const std::vector<std::string>& candidates)
                 creationalFunctor(name(target), &CreationalPattern::singletonInstance);
                 break;
             default:
-                LOG_WRN << "Skip applying an unknown " << toString(category) << " instance: " << target << ".";
+                LOG_WRN_F("Skip applying an unknown %s instance: %s.", toString(category).data(), target.data());
                 break;
         }
     }
@@ -638,7 +638,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
+    LOG_ERR_F("Interrupt %s: %s", __func__, err.what());
 }
 
 void StructuralPattern::bridgeInstance()
@@ -649,7 +649,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
+    LOG_ERR_F("Interrupt %s: %s", __func__, err.what());
 }
 
 void StructuralPattern::compositeInstance()
@@ -660,7 +660,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
+    LOG_ERR_F("Interrupt %s: %s", __func__, err.what());
 }
 
 void StructuralPattern::decoratorInstance()
@@ -671,7 +671,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
+    LOG_ERR_F("Interrupt %s: %s", __func__, err.what());
 }
 
 void StructuralPattern::facadeInstance()
@@ -682,7 +682,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
+    LOG_ERR_F("Interrupt %s: %s", __func__, err.what());
 }
 
 void StructuralPattern::flyweightInstance()
@@ -693,7 +693,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
+    LOG_ERR_F("Interrupt %s: %s", __func__, err.what());
 }
 
 void StructuralPattern::proxyInstance()
@@ -704,7 +704,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
+    LOG_ERR_F("Interrupt %s: %s", __func__, err.what());
 }
 } // namespace structural
 
@@ -802,7 +802,7 @@ void runChoices<StructuralInstance>(const std::vector<std::string>& candidates)
                 structuralFunctor(name(target), &StructuralPattern::proxyInstance);
                 break;
             default:
-                LOG_WRN << "Skip applying an unknown " << toString(category) << " instance: " << target << ".";
+                LOG_WRN_F("Skip applying an unknown %s instance: %s.", toString(category).data(), target.data());
                 break;
         }
     }
