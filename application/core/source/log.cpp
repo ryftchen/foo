@@ -171,6 +171,21 @@ utility::common::ReadWriteLock& Log::loggerFileLock()
     return fileLock;
 }
 
+std::string Log::filterBreakLine(const std::string& line)
+{
+    std::string singleRow(line);
+    singleRow.erase(
+        std::remove_if(
+            std::begin(singleRow),
+            std::end(singleRow),
+            [l = std::locale{}](const auto c)
+            {
+                return (!std::isprint(c, l)) || ('\n' == c) || ('\r' == c);
+            }),
+        std::end(singleRow));
+    return singleRow;
+}
+
 Log::State Log::safeCurrentState() const
 {
     stateLock.lock();

@@ -29,13 +29,11 @@ public:
     //! @brief Destroy the Memory object.
     ~Memory() noexcept;
     //! @brief Construct a new Memory object.
-    Memory(const Memory& /*memory*/) noexcept : Memory() {}
+    Memory(const Memory&) = delete;
     //! @brief Construct a new Memory object.
     //! @tparam U - type of object to allocate
     template <class U>
-    explicit Memory(const Memory<U>& /*memory*/) noexcept : Memory()
-    {
-    }
+    Memory(const Memory<U>&) = delete;
     //! @brief Construct a new Memory object.
     //! @param memory - the old object for move constructor
     Memory(Memory&& memory) noexcept;

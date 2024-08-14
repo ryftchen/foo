@@ -32,6 +32,102 @@ std::size_t bkdrHash(const char* str)
     return hash & bkdrHashSize;
 }
 
+void SpinLock::lock()
+{
+    while (flag.test_and_set(std::memory_order_acquire))
+    {
+        std::this_thread::yield();
+    }
+}
+
+void SpinLock::unlock()
+{
+    flag.clear(std::memory_order_release);
+}
+
+bool SpinLock::tryLock()
+{
+    return !flag.test_and_set(std::memory_order_acquire);
+}
+
+void ReadWriteLock::readLock()
+{
+    std::shared_lock<std::shared_mutex> rdLock(rwLock);
+    if (std::unique_lock<std::mutex> lock(mtx); true)
+    {
+        cv.wait(
+            lock,
+            [this]()
+            {
+                return writer.load() == 0;
+            });
+        reader.fetch_add(1);
+    }
+}
+
+void ReadWriteLock::readUnlock()
+{
+    std::unique_lock<std::mutex> lock(mtx);
+    reader.fetch_sub(1);
+    lock.unlock();
+    cv.notify_all();
+    lock.lock();
+}
+
+void ReadWriteLock::writeLock()
+{
+    std::unique_lock<std::shared_mutex> wrLock(rwLock);
+    if (std::unique_lock<std::mutex> lock(mtx); true)
+    {
+        cv.wait(
+            lock,
+            [this]()
+            {
+                return (reader.load() == 0) && (writer.load() == 0);
+            });
+        writer.fetch_add(1);
+    }
+}
+
+void ReadWriteLock::writeUnlock()
+{
+    std::unique_lock<std::mutex> lock(mtx);
+    writer.fetch_sub(1);
+    lock.unlock();
+    cv.notify_all();
+    lock.lock();
+}
+
+ReadWriteGuard::ReadWriteGuard(ReadWriteLock& lock, const LockMode mode) : lock(lock), mode(mode)
+{
+    switch (mode)
+    {
+        case LockMode::read:
+            lock.readLock();
+            break;
+        case LockMode::write:
+            lock.writeLock();
+            break;
+        default:
+            break;
+    }
+}
+
+ReadWriteGuard::~ReadWriteGuard()
+{
+    switch (mode)
+    {
+        case LockMode::read:
+            lock.readUnlock();
+            break;
+        case LockMode::write:
+            lock.writeUnlock();
+            break;
+        default:
+            break;
+    }
+}
+
 //! @brief Format as a string.
 //! @param format - null-terminated multibyte string specifying how to interpret the data
 //! @param ... - arguments
@@ -156,101 +252,5 @@ std::string base64Decode(const std::string& data)
     }
     // NOLINTEND (readability-magic-numbers)
     return decoded;
-}
-
-void SpinLock::lock()
-{
-    while (flag.test_and_set(std::memory_order_acquire))
-    {
-        std::this_thread::yield();
-    }
-}
-
-void SpinLock::unlock()
-{
-    flag.clear(std::memory_order_release);
-}
-
-bool SpinLock::tryLock()
-{
-    return !flag.test_and_set(std::memory_order_acquire);
-}
-
-void ReadWriteLock::readLock()
-{
-    std::shared_lock<std::shared_mutex> rdLock(rwLock);
-    if (std::unique_lock<std::mutex> lock(mtx); true)
-    {
-        cv.wait(
-            lock,
-            [this]()
-            {
-                return writer.load() == 0;
-            });
-        reader.fetch_add(1);
-    }
-}
-
-void ReadWriteLock::readUnlock()
-{
-    std::unique_lock<std::mutex> lock(mtx);
-    reader.fetch_sub(1);
-    lock.unlock();
-    cv.notify_all();
-    lock.lock();
-}
-
-void ReadWriteLock::writeLock()
-{
-    std::unique_lock<std::shared_mutex> wrLock(rwLock);
-    if (std::unique_lock<std::mutex> lock(mtx); true)
-    {
-        cv.wait(
-            lock,
-            [this]()
-            {
-                return (reader.load() == 0) && (writer.load() == 0);
-            });
-        writer.fetch_add(1);
-    }
-}
-
-void ReadWriteLock::writeUnlock()
-{
-    std::unique_lock<std::mutex> lock(mtx);
-    writer.fetch_sub(1);
-    lock.unlock();
-    cv.notify_all();
-    lock.lock();
-}
-
-ReadWriteGuard::ReadWriteGuard(ReadWriteLock& lock, const LockMode mode) : lock(lock), mode(mode)
-{
-    switch (mode)
-    {
-        case LockMode::read:
-            lock.readLock();
-            break;
-        case LockMode::write:
-            lock.writeLock();
-            break;
-        default:
-            break;
-    }
-}
-
-ReadWriteGuard::~ReadWriteGuard()
-{
-    switch (mode)
-    {
-        case LockMode::read:
-            lock.readUnlock();
-            break;
-        case LockMode::write:
-            lock.writeUnlock();
-            break;
-        default:
-            break;
-    }
 }
 } // namespace utility::common
