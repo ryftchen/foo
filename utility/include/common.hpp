@@ -52,6 +52,7 @@ constexpr std::size_t bkdrHashSeed = 131;
 //! @brief Hash size for BKDR hash function.
 constexpr std::size_t bkdrHashSize = 0x7FFFFFFF;
 
+extern std::size_t bkdrHash(const char* str);
 //! @brief The Brian-Kernighan Dennis-Ritchie hash function at compile time.
 //! @param str - input data
 //! @param hash - previous hash value
@@ -60,7 +61,6 @@ constexpr std::size_t bkdrHashInCompiling(const char* const str, const std::size
 {
     return *str ? bkdrHashInCompiling(str + 1, (hash * bkdrHashSeed + *str) & bkdrHashSize) : hash;
 }
-
 //! @brief The operator ("") overloading with BKDR hash function.
 //! @param str - input data
 //! @return hash value
@@ -68,8 +68,6 @@ constexpr std::size_t operator""_bkdrHash(const char* const str, const std::size
 {
     return bkdrHashInCompiling(str);
 }
-
-extern std::size_t bkdrHash(const char* str);
 
 //! @brief Splice strings into constexpr type.
 //! @tparam Strings - target strings to be spliced
@@ -111,7 +109,6 @@ inline bool allStrEqual(const char* const str1, const char* const str2)
 {
     return std::strcmp(str1, str2) == 0;
 }
-
 //! @brief Compare whether multiple strings are equal.
 //! @tparam Others - type of arguments of string
 //! @param str1 - string 1
@@ -123,8 +120,6 @@ inline bool allStrEqual(const char* const str1, const char* const str2, Others c
 {
     return allStrEqual(str1, str2) && allStrEqual(str2, others...);
 }
-
-extern std::string formatString(const std::string_view format, ...);
 
 //! @brief Check that the target value is part of the enumeration.
 //! @tparam EnumType - type of enumeration
@@ -164,9 +159,6 @@ public:
         return (static_cast<IntType>(Value) == val) || EnumCheck<EnumType, Next...>::isValue(val);
     }
 };
-
-extern std::string base64Encode(const std::string& data);
-extern std::string base64Decode(const std::string& data);
 
 //! @brief Simple spin lock.
 class SpinLock
@@ -247,5 +239,9 @@ private:
     //! @brief Lock mode.
     const LockMode mode{};
 };
+
+extern std::string formatString(const std::string_view format, ...);
+extern std::string base64Encode(const std::string& data);
+extern std::string base64Decode(const std::string& data);
 } // namespace common
 } // namespace utility

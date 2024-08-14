@@ -304,6 +304,10 @@ private:
     //! @brief Spin lock for controlling state.
     mutable utility::common::SpinLock stateLock{};
 
+    //! @brief Filter break line.
+    //! @param line - target line
+    //! @return single row
+    static std::string filterBreakLine(const std::string& line);
     //! @brief Safely retrieve the current state.
     //! @return current state
     State safeCurrentState() const;
@@ -440,29 +444,18 @@ void Log::flush(
         prefix = unknownLevelPrefix;
     }
 
-    std::string singleRowFormat(format);
-    singleRowFormat.erase(
-        std::remove_if(
-            std::begin(singleRowFormat),
-            std::end(singleRowFormat),
-            [](const auto c)
-            {
-                return ('\n' == c) || ('\r' == c);
-            }),
-        std::end(singleRowFormat));
     std::string output = std::format(
         "{}:[{}]:[{}#{}]: {}",
         prefix,
         utility::time::getCurrentSystemTime(),
         codeFile.substr(codeFile.find("foo/") + 4, codeFile.length()),
         codeLine,
-        utility::common::formatString(singleRowFormat.data(), std::forward<Args>(args)...));
-
-    std::unique_lock<std::mutex> lock(daemonMtx);
+        utility::common::formatString(filterBreakLine(format).data(), std::forward<Args>(args)...));
+    std::unique_lock<std::mutex> daemonLock(daemonMtx);
     if (unknownLevelPrefix != prefix)
     {
         logQueue.push(std::move(output));
-        lock.unlock();
+        daemonLock.unlock();
         daemonCv.notify_one();
     }
     else
