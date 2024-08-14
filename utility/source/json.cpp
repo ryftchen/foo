@@ -393,24 +393,6 @@ JSON::JSON(const JSON::Type type) : JSON()
     setType(type);
 }
 
-JSON::~JSON()
-{
-    switch (type)
-    {
-        case Type::object:
-            delete data.map;
-            break;
-        case Type::array:
-            delete data.list;
-            break;
-        case Type::string:
-            delete data.string;
-            break;
-        default:
-            break;
-    }
-}
-
 JSON::JSON(const std::initializer_list<JSON>& list) : JSON()
 {
     setType(Type::object);
@@ -420,69 +402,19 @@ JSON::JSON(const std::initializer_list<JSON>& list) : JSON()
     }
 }
 
-JSON::JSON(const JSON& json)
+JSON::JSON(JSON&& json) noexcept
 {
-    switch (json.type)
-    {
-        case Type::object:
-            data.map = new std::map<std::string, JSON>{json.data.map->cbegin(), json.data.map->cend()};
-            break;
-        case Type::array:
-            data.list = new std::deque<JSON>{json.data.list->cbegin(), json.data.list->cend()};
-            break;
-        case Type::string:
-            data.string = new std::string{*json.data.string};
-            break;
-        default:
-            data = json.data;
-            break;
-    }
+    data = std::move(json.data);
     type = json.type;
-}
-
-JSON::JSON(JSON&& json) noexcept : data(json.data), type(json.type)
-{
+    json.data = Data{};
     json.type = Type::null;
-    json.data.map = nullptr;
-}
-
-JSON& JSON::operator=(const JSON& json)
-{
-    clearData();
-    switch (json.type)
-    {
-        case Type::object:
-            if (nullptr != json.data.map)
-            {
-                data.map = new std::map<std::string, JSON>{json.data.map->cbegin(), json.data.map->cend()};
-            }
-            break;
-        case Type::array:
-            if (nullptr != json.data.list)
-            {
-                data.list = new std::deque<JSON>{json.data.list->cbegin(), json.data.list->cend()};
-            }
-            break;
-        case Type::string:
-            if (nullptr != json.data.string)
-            {
-                data.string = new std::string{*json.data.string};
-            }
-            break;
-        default:
-            data = json.data;
-            break;
-    }
-    type = json.type;
-    return *this;
 }
 
 JSON& JSON::operator=(JSON&& json) noexcept
 {
-    clearData();
-    data = json.data;
+    data = std::move(json.data);
     type = json.type;
-    json.data.map = nullptr;
+    json.data = Data{};
     json.type = Type::null;
     return *this;
 }
@@ -501,17 +433,17 @@ JSON JSON::load(const std::string& fmt)
 JSON& JSON::operator[](const std::string& key)
 {
     setType(Type::object);
-    return data.map->operator[](key);
+    return std::get<Object>(data.value).operator[](key);
 }
 
 JSON& JSON::operator[](std::size_t index)
 {
     setType(Type::array);
-    if (index >= data.list->size())
+    if (index >= std::get<Array>(data.value).size())
     {
-        data.list->resize(index + 1);
+        std::get<Array>(data.value).resize(index + 1);
     }
-    return data.list->operator[](index);
+    return std::get<Array>(data.value).operator[](index);
 }
 
 JSON& JSON::at(const std::string& key)
@@ -521,7 +453,7 @@ JSON& JSON::at(const std::string& key)
 
 const JSON& JSON::at(const std::string& key) const
 {
-    return data.map->at(key);
+    return std::get<Object>(data.value).at(key);
 }
 
 JSON& JSON::at(std::size_t index)
@@ -531,14 +463,14 @@ JSON& JSON::at(std::size_t index)
 
 const JSON& JSON::at(std::size_t index) const
 {
-    return data.list->at(index);
+    return std::get<Array>(data.value).at(index);
 }
 
 int JSON::length() const
 {
     if (Type::array == type)
     {
-        return static_cast<int>(data.list->size());
+        return static_cast<int>(std::get<Array>(data.value).size());
     }
     return -1;
 }
@@ -547,11 +479,11 @@ int JSON::size() const
 {
     if (Type::object == type)
     {
-        return static_cast<int>(data.map->size());
+        return static_cast<int>(std::get<Object>(data.value).size());
     }
     else if (Type::array == type)
     {
-        return static_cast<int>(data.list->size());
+        return static_cast<int>(std::get<Array>(data.value).size());
     }
     return -1;
 }
@@ -560,7 +492,7 @@ bool JSON::hasKey(const std::string& key) const
 {
     if (Type::object == type)
     {
-        return data.map->cend() != data.map->find(key);
+        return std::get<Object>(data.value).cend() != std::get<Object>(data.value).find(key);
     }
     return false;
 }
@@ -605,22 +537,22 @@ bool JSON::isBooleanType() const
     return Type::boolean == type;
 }
 
-std::string JSON::toString() const
+JSON::String JSON::toString() const
 {
     switch (type)
     {
         case Type::string:
-            return jsonEscape(*data.string);
+            return jsonEscape(std::get<String>(data.value));
         case Type::object:
             return dumpMinified();
         case Type::array:
             return dumpMinified();
         case Type::floating:
-            return std::to_string(data.floating);
+            return std::to_string(std::get<Floating>(data.value));
         case Type::integral:
-            return std::to_string(data.integral);
+            return std::to_string(std::get<Integral>(data.value));
         case Type::boolean:
-            return data.boolean ? std::string{"true"} : std::string{"false"};
+            return std::get<Boolean>(data.value) ? std::string{"true"} : std::string{"false"};
         case Type::null:
             return std::string{"null"};
         default:
@@ -629,22 +561,22 @@ std::string JSON::toString() const
     return std::string{""};
 }
 
-std::string JSON::toUnescapedString() const
+JSON::String JSON::toUnescapedString() const
 {
     switch (type)
     {
         case Type::string:
-            return std::string{*data.string};
+            return std::string{std::get<String>(data.value)};
         case Type::object:
             return dumpMinified();
         case Type::array:
             return dumpMinified();
         case Type::floating:
-            return std::to_string(data.floating);
+            return std::to_string(std::get<Floating>(data.value));
         case Type::integral:
-            return std::to_string(data.integral);
+            return std::to_string(std::get<Integral>(data.value));
         case Type::boolean:
-            return data.boolean ? std::string{"true"} : std::string{"false"};
+            return std::get<Boolean>(data.value) ? std::string{"true"} : std::string{"false"};
         case Type::null:
             return std::string{"null"};
         default:
@@ -653,22 +585,22 @@ std::string JSON::toUnescapedString() const
     return std::string{""};
 }
 
-double JSON::toFloating() const
+JSON::Floating JSON::toFloating() const
 {
     switch (type)
     {
         case Type::floating:
-            return data.floating;
+            return std::get<Floating>(data.value);
         case Type::integral:
-            return data.integral;
+            return std::get<Integral>(data.value);
         case Type::boolean:
-            return data.boolean;
+            return std::get<Boolean>(data.value);
         case Type::string:
         {
             double parsed = 0.0;
             try
             {
-                parsed = std::stod(*data.string);
+                parsed = std::stod(std::get<String>(data.value));
             }
             catch (const std::exception& err)
             {
@@ -683,21 +615,23 @@ double JSON::toFloating() const
     return 0.0;
 }
 
-long long JSON::toIntegral() const
+JSON::Integral JSON::toIntegral() const
 {
     switch (type)
     {
         case Type::integral:
-            return data.integral;
+            return std::get<Integral>(data.value);
         case Type::boolean:
-            return data.boolean;
+            return std::get<Boolean>(data.value);
         case Type::floating:
-            return data.floating;
+            return std::get<Floating>(data.value);
         case Type::string:
         {
             long long parsed = 0;
-            const std::from_chars_result result =
-                std::from_chars(data.string->data(), data.string->data() + data.string->size(), parsed);
+            const std::from_chars_result result = std::from_chars(
+                std::get<String>(data.value).data(),
+                std::get<String>(data.value).data() + std::get<String>(data.value).size(),
+                parsed);
             if (!static_cast<bool>(result.ec))
             {
                 return parsed;
@@ -710,29 +644,31 @@ long long JSON::toIntegral() const
     return 0;
 }
 
-bool JSON::toBoolean() const
+JSON::Boolean JSON::toBoolean() const
 {
     switch (type)
     {
         case Type::boolean:
-            return data.boolean;
+            return std::get<Boolean>(data.value);
         case Type::floating:
-            return data.floating;
+            return std::get<Floating>(data.value);
         case Type::integral:
-            return data.integral;
+            return std::get<Integral>(data.value);
         case Type::string:
         {
-            if (data.string->find("true") != std::string::npos)
+            if (std::get<String>(data.value).find("true") != std::string::npos)
             {
                 return true;
             }
-            if (data.string->find("false") != std::string::npos)
+            if (std::get<String>(data.value).find("false") != std::string::npos)
             {
                 return false;
             }
             int parsed = 0;
-            const std::from_chars_result result =
-                std::from_chars(data.string->data(), data.string->data() + data.string->size(), parsed);
+            const std::from_chars_result result = std::from_chars(
+                std::get<String>(data.value).data(),
+                std::get<String>(data.value).data() + std::get<String>(data.value).size(),
+                parsed);
             if (!static_cast<bool>(result.ec))
             {
                 return parsed;
@@ -745,40 +681,40 @@ bool JSON::toBoolean() const
     return false;
 }
 
-JSON::JSONWrapper<std::map<std::string, JSON>> JSON::objectRange()
+JSON::JSONWrapper<JSON::Object> JSON::objectRange()
 {
     if (Type::object == type)
     {
-        return JSONWrapper<std::map<std::string, JSON>>{data.map};
+        return JSONWrapper<Object>{&std::get<Object>(data.value)};
     }
-    return JSONWrapper<std::map<std::string, JSON>>{nullptr};
+    return JSONWrapper<Object>{nullptr};
 }
 
-JSON::JSONWrapper<std::deque<JSON>> JSON::arrayRange()
+JSON::JSONWrapper<JSON::Array> JSON::arrayRange()
 {
     if (Type::array == type)
     {
-        return JSONWrapper<std::deque<JSON>>{data.list};
+        return JSONWrapper<Array>{&std::get<Array>(data.value)};
     }
-    return JSONWrapper<std::deque<JSON>>{nullptr};
+    return JSONWrapper<Array>{nullptr};
 }
 
-JSON::JSONConstWrapper<std::map<std::string, JSON>> JSON::objectRange() const
+JSON::JSONConstWrapper<JSON::Object> JSON::objectRange() const
 {
     if (Type::object == type)
     {
-        return JSONConstWrapper<std::map<std::string, JSON>>{data.map};
+        return JSONConstWrapper<Object>{&std::get<Object>(data.value)};
     }
-    return JSONConstWrapper<std::map<std::string, JSON>>{nullptr};
+    return JSONConstWrapper<Object>{nullptr};
 }
 
-JSON::JSONConstWrapper<std::deque<JSON>> JSON::arrayRange() const
+JSON::JSONConstWrapper<JSON::Array> JSON::arrayRange() const
 {
     if (Type::array == type)
     {
-        return JSONConstWrapper<std::deque<JSON>>{data.list};
+        return JSONConstWrapper<Array>{&std::get<Array>(data.value)};
     }
-    return JSONConstWrapper<std::deque<JSON>>{nullptr};
+    return JSONConstWrapper<Array>{nullptr};
 }
 
 std::string JSON::dump(const std::uint32_t depth, const std::string& tab) const
@@ -795,7 +731,7 @@ std::string JSON::dump(const std::uint32_t depth, const std::string& tab) const
                 pad += tab;
             }
             std::string s = "{\n";
-            for (bool skip = true; const auto& p : *data.map)
+            for (bool skip = true; const auto& p : std::get<Object>(data.value))
             {
                 if (!skip)
                 {
@@ -810,7 +746,7 @@ std::string JSON::dump(const std::uint32_t depth, const std::string& tab) const
         case Type::array:
         {
             std::string s = "[";
-            for (bool skip = true; const auto& p : *data.list)
+            for (bool skip = true; const auto& p : std::get<Array>(data.value))
             {
                 if (!skip)
                 {
@@ -823,13 +759,13 @@ std::string JSON::dump(const std::uint32_t depth, const std::string& tab) const
             return s;
         }
         case Type::string:
-            return '\"' + jsonEscape(*data.string) + '\"';
+            return '\"' + jsonEscape(std::get<String>(data.value)) + '\"';
         case Type::floating:
-            return std::to_string(data.floating);
+            return std::to_string(std::get<Floating>(data.value));
         case Type::integral:
-            return std::to_string(data.integral);
+            return std::to_string(std::get<Integral>(data.value));
         case Type::boolean:
-            return data.boolean ? "true" : "false";
+            return std::get<Boolean>(data.value) ? "true" : "false";
         default:
             break;
     }
@@ -845,7 +781,7 @@ std::string JSON::dumpMinified() const
         case Type::object:
         {
             std::string s = "{";
-            for (bool skip = true; const auto& p : *data.map)
+            for (bool skip = true; const auto& p : std::get<Object>(data.value))
             {
                 if (!skip)
                 {
@@ -860,7 +796,7 @@ std::string JSON::dumpMinified() const
         case Type::array:
         {
             std::string s = "[";
-            for (bool skip = true; const auto& p : *data.list)
+            for (bool skip = true; const auto& p : std::get<Array>(data.value))
             {
                 if (!skip)
                 {
@@ -873,13 +809,13 @@ std::string JSON::dumpMinified() const
             return s;
         }
         case Type::string:
-            return '\"' + jsonEscape(*data.string) + '\"';
+            return '\"' + jsonEscape(std::get<String>(data.value)) + '\"';
         case Type::floating:
-            return std::to_string(data.floating);
+            return std::to_string(std::get<Floating>(data.value));
         case Type::integral:
-            return std::to_string(data.integral);
+            return std::to_string(std::get<Integral>(data.value));
         case Type::boolean:
-            return data.boolean ? "true" : "false";
+            return std::get<Boolean>(data.value) ? "true" : "false";
         default:
             break;
     }
@@ -893,54 +829,32 @@ void JSON::setType(const JSON::Type t)
         return;
     }
 
-    clearData();
     switch (t)
     {
         case Type::null:
-            data.map = nullptr;
+            data = Data{};
             break;
         case Type::object:
-            data.map = new std::map<std::string, JSON>{};
+            data.value = Object{};
             break;
         case Type::array:
-            data.list = new std::deque<JSON>{};
+            data.value = Array{};
             break;
         case Type::string:
-            data.string = new std::string{};
+            data.value = String{};
             break;
         case Type::floating:
-            data.floating = 0.0;
+            data.value = static_cast<Floating>(0.0);
             break;
         case Type::integral:
-            data.integral = 0;
+            data.value = static_cast<Integral>(0);
             break;
         case Type::boolean:
-            data.boolean = false;
+            data.value = static_cast<Boolean>(false);
             break;
     }
 
     type = t;
-}
-
-void JSON::clearData()
-{
-    switch (type)
-    {
-        case Type::object:
-            delete data.map;
-            data.map = nullptr;
-            break;
-        case Type::array:
-            delete data.list;
-            data.list = nullptr;
-            break;
-        case Type::string:
-            delete data.string;
-            data.string = nullptr;
-            break;
-        default:
-            break;
-    }
 }
 
 //! @brief The operator (<<) overloading of the JSON class.
