@@ -286,7 +286,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
+    LOG_ERR_F("Interrupt %s: %s", __func__, err.what());
 }
 
 void MatchSolution::kmpMethod(
@@ -303,7 +303,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
+    LOG_ERR_F("Interrupt %s: %s", __func__, err.what());
 }
 
 void MatchSolution::bmMethod(
@@ -320,7 +320,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
+    LOG_ERR_F("Interrupt %s: %s", __func__, err.what());
 }
 
 void MatchSolution::horspoolMethod(
@@ -337,7 +337,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
+    LOG_ERR_F("Interrupt %s: %s", __func__, err.what());
 }
 
 void MatchSolution::sundayMethod(
@@ -354,7 +354,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
+    LOG_ERR_F("Interrupt %s: %s", __func__, err.what());
 }
 } // namespace match
 
@@ -451,7 +451,7 @@ void runChoices<MatchMethod>(const std::vector<std::string>& candidates)
                 matchFunctor(name(target), &MatchSolution::sundayMethod);
                 break;
             default:
-                LOG_WRN << "Skip applying an unknown " << toString(category) << " method: " << target << ".";
+                LOG_WRN_F("Skip applying an unknown %s method: %s.", toString(category).data(), target.data());
                 break;
         }
     }
@@ -479,7 +479,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
+    LOG_ERR_F("Interrupt %s: %s", __func__, err.what());
 }
 
 void NotationSolution::postfixMethod(const std::string& infixNotation)
@@ -490,7 +490,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
+    LOG_ERR_F("Interrupt %s: %s", __func__, err.what());
 }
 } // namespace notation
 
@@ -559,7 +559,7 @@ void runChoices<NotationMethod>(const std::vector<std::string>& candidates)
                 notationFunctor(name(target), &NotationSolution::postfixMethod);
                 break;
             default:
-                LOG_WRN << "Skip applying an unknown " << toString(category) << " method: " << target << ".";
+                LOG_WRN_F("Skip applying an unknown %s method: %s.", toString(category).data(), target.data());
                 break;
         }
     }
@@ -605,7 +605,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
+    LOG_ERR_F("Interrupt %s: %s", __func__, err.what());
 }
 
 void OptimalSolution::simulatedAnnealingMethod(const Function& func, const double left, const double right)
@@ -618,7 +618,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
+    LOG_ERR_F("Interrupt %s: %s", __func__, err.what());
 }
 
 void OptimalSolution::particleSwarmMethod(const Function& func, const double left, const double right)
@@ -631,7 +631,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
+    LOG_ERR_F("Interrupt %s: %s", __func__, err.what());
 }
 
 void OptimalSolution::geneticMethod(const Function& func, const double left, const double right)
@@ -644,7 +644,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
+    LOG_ERR_F("Interrupt %s: %s", __func__, err.what());
 }
 } // namespace optimal
 
@@ -727,7 +727,7 @@ void runChoices<OptimalMethod>(const std::vector<std::string>& candidates)
                     optimalFunctor(name(target), &OptimalSolution::geneticMethod);
                     break;
                 default:
-                    LOG_WRN << "Skip applying an unknown " << toString(category) << " method: " << target << ".";
+                    LOG_WRN_F("Skip applying an unknown %s method: %s.", toString(category).data(), target.data());
                     break;
             }
         }
@@ -793,7 +793,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
+    LOG_ERR_F("Interrupt %s: %s", __func__, err.what());
 }
 
 void SearchSolution::interpolationMethod(const float* const array, const std::uint32_t length, const float key)
@@ -806,7 +806,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
+    LOG_ERR_F("Interrupt %s: %s", __func__, err.what());
 }
 
 void SearchSolution::fibonacciMethod(const float* const array, const std::uint32_t length, const float key)
@@ -819,7 +819,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
+    LOG_ERR_F("Interrupt %s: %s", __func__, err.what());
 }
 } // namespace search
 
@@ -898,7 +898,7 @@ void runChoices<SearchMethod>(const std::vector<std::string>& candidates)
                 searchFunctor(name(target), &SearchSolution::fibonacciMethod);
                 break;
             default:
-                LOG_WRN << "Skip applying an unknown " << toString(category) << " method: " << target << ".";
+                LOG_WRN_F("Skip applying an unknown %s method: %s.", toString(category).data(), target.data());
                 break;
         }
     }
@@ -935,7 +935,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
+    LOG_ERR_F("Interrupt %s: %s", __func__, err.what());
 }
 
 void SortSolution::selectionMethod(const std::int32_t* const array, const std::uint32_t length)
@@ -948,7 +948,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
+    LOG_ERR_F("Interrupt %s: %s", __func__, err.what());
 }
 
 void SortSolution::insertionMethod(const std::int32_t* const array, const std::uint32_t length)
@@ -961,7 +961,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
+    LOG_ERR_F("Interrupt %s: %s", __func__, err.what());
 }
 
 void SortSolution::shellMethod(const std::int32_t* const array, const std::uint32_t length)
@@ -974,7 +974,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
+    LOG_ERR_F("Interrupt %s: %s", __func__, err.what());
 }
 
 void SortSolution::mergeMethod(const std::int32_t* const array, const std::uint32_t length)
@@ -987,7 +987,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
+    LOG_ERR_F("Interrupt %s: %s", __func__, err.what());
 }
 
 void SortSolution::quickMethod(const std::int32_t* const array, const std::uint32_t length)
@@ -1000,7 +1000,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
+    LOG_ERR_F("Interrupt %s: %s", __func__, err.what());
 }
 
 void SortSolution::heapMethod(const std::int32_t* const array, const std::uint32_t length)
@@ -1013,7 +1013,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
+    LOG_ERR_F("Interrupt %s: %s", __func__, err.what());
 }
 
 void SortSolution::countingMethod(const std::int32_t* const array, const std::uint32_t length)
@@ -1026,7 +1026,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
+    LOG_ERR_F("Interrupt %s: %s", __func__, err.what());
 }
 
 void SortSolution::bucketMethod(const std::int32_t* const array, const std::uint32_t length)
@@ -1039,7 +1039,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
+    LOG_ERR_F("Interrupt %s: %s", __func__, err.what());
 }
 
 void SortSolution::radixMethod(const std::int32_t* const array, const std::uint32_t length)
@@ -1052,7 +1052,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
+    LOG_ERR_F("Interrupt %s: %s", __func__, err.what());
 }
 } // namespace sort
 
@@ -1172,7 +1172,7 @@ void runChoices<SortMethod>(const std::vector<std::string>& candidates)
                 sortFunctor(name(target), &SortSolution::radixMethod);
                 break;
             default:
-                LOG_WRN << "Skip applying an unknown " << toString(category) << " method: " << target << ".";
+                LOG_WRN_F("Skip applying an unknown %s method: %s.", toString(category).data(), target.data());
                 break;
         }
     }
