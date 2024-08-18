@@ -417,50 +417,57 @@ void Log::flush(
         return;
     }
 
-    std::string_view prefix;
-    if (isInUninterruptedState(State::work))
+    std::unique_lock<std::mutex> daemonLock(daemonMtx, std::defer_lock);
+    try
     {
-        switch (level)
+        std::string_view prefix = unknownLevelPrefix;
+        if (isInUninterruptedState(State::work))
         {
-            case OutputLevel::debug:
-                prefix = debugLevelPrefix;
-                break;
-            case OutputLevel::info:
-                prefix = infoLevelPrefix;
-                break;
-            case OutputLevel::warning:
-                prefix = warnLevelPrefix;
-                break;
-            case OutputLevel::error:
-                prefix = errorLevelPrefix;
-                break;
-            default:
-                prefix = unknownLevelPrefix;
-                break;
+            daemonLock.lock();
+            switch (level)
+            {
+                case OutputLevel::debug:
+                    prefix = debugLevelPrefix;
+                    break;
+                case OutputLevel::info:
+                    prefix = infoLevelPrefix;
+                    break;
+                case OutputLevel::warning:
+                    prefix = warnLevelPrefix;
+                    break;
+                case OutputLevel::error:
+                    prefix = errorLevelPrefix;
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        std::string output = std::format(
+            "{}:[{}]:[{}#{}]: {}",
+            prefix,
+            utility::time::getCurrentSystemTime(),
+            codeFile.substr(codeFile.find("foo/") + 4, codeFile.length()),
+            codeLine,
+            utility::common::formatString(filterBreakLine(format).data(), std::forward<Args>(args)...));
+        if (daemonLock.owns_lock())
+        {
+            logQueue.push(std::move(output));
+            daemonLock.unlock();
+            daemonCv.notify_one();
+        }
+        else
+        {
+            std::cerr << changeToLogStyle(output) << std::endl;
         }
     }
-    else
+    catch (...)
     {
-        prefix = unknownLevelPrefix;
-    }
-
-    std::string output = std::format(
-        "{}:[{}]:[{}#{}]: {}",
-        prefix,
-        utility::time::getCurrentSystemTime(),
-        codeFile.substr(codeFile.find("foo/") + 4, codeFile.length()),
-        codeLine,
-        utility::common::formatString(filterBreakLine(format).data(), std::forward<Args>(args)...));
-    std::unique_lock<std::mutex> daemonLock(daemonMtx);
-    if (unknownLevelPrefix != prefix)
-    {
-        logQueue.push(std::move(output));
-        daemonLock.unlock();
-        daemonCv.notify_one();
-    }
-    else
-    {
-        std::cerr << changeToLogStyle(output) << std::endl;
+        if (daemonLock.owns_lock())
+        {
+            daemonLock.unlock();
+        }
+        throw;
     }
 }
 } // namespace log
