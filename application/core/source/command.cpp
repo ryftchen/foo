@@ -9,7 +9,11 @@
 #include "view.hpp"
 
 #ifndef __PRECOMPILED_HEADER
+#include <barrier>
+#include <coroutine>
+#include <latch>
 #include <ranges>
+#include <thread>
 #else
 #include "application/pch/precompiled_header.hpp"
 #endif // __PRECOMPILED_HEADER
@@ -49,6 +53,69 @@ enum ExtEvent : std::uint8_t
     //! @brief Reset.
     reset
 };
+
+//! @brief Awaitable coroutine.
+class Awaitable
+{
+public:
+    // NOLINTBEGIN (readability-identifier-naming)
+    //! @brief Promise type for use in coroutines.
+    struct promise_type
+    {
+        //! @brief Get the return object for the coroutine.
+        //! @return awaitable instance
+        Awaitable get_return_object() { return Awaitable{std::coroutine_handle<promise_type>::from_promise(*this)}; }
+        //! @brief Initial suspend point of the coroutine.
+        //! @return suspend_never object indicating that the coroutine should not be suspended initially
+        std::suspend_never initial_suspend() noexcept { return {}; }
+        //! @brief Final suspend point of the coroutine.
+        //! @return suspend_always object indicating that the coroutine should be suspended finally
+        std::suspend_always final_suspend() noexcept { return {}; }
+        //! @brief Complete the coroutine without returning a value.
+        void return_void() noexcept {}
+        //! @brief Handle exceptions thrown within the coroutine.
+        void unhandled_exception() { std::rethrow_exception(std::current_exception()); }
+    };
+    // NOLINTEND (readability-identifier-naming)
+
+    //! @brief Construct a new Awaitable object.
+    //! @param handle - coroutine handle
+    explicit Awaitable(std::coroutine_handle<promise_type> handle) : handle(handle) {}
+    //! @brief Destroy the Awaitable object.
+    ~Awaitable()
+    {
+        if (handle)
+        {
+            handle.destroy();
+        }
+    }
+    //! @brief Construct a new Awaitable object.
+    Awaitable(const Awaitable&) = delete;
+    //! @brief Construct a new Awaitable object.
+    Awaitable(Awaitable&&) = delete;
+    //! @brief The operator (=) overloading of Awaitable class.
+    //! @return reference of the Awaitable object
+    Awaitable& operator=(const Awaitable&) = delete;
+    //! @brief The operator (=) overloading of Awaitable class.
+    //! @return reference of the Awaitable object
+    Awaitable& operator=(Awaitable&&) = delete;
+
+    //! @brief Resume the execution of the coroutine if it is suspended.
+    void resume()
+    {
+        if (handle)
+        {
+            handle.resume();
+        }
+    }
+    //! @brief Check if the coroutine has completed.
+    //! @return be done or not
+    [[nodiscard]] bool done() const { return handle ? handle.done() : true; }
+
+private:
+    //! @brief Coroutine handle.
+    std::coroutine_handle<promise_type> handle{};
+};
 } // namespace
 
 //! @brief Trigger the external helper with event.
@@ -78,6 +145,58 @@ static void triggerHelper(const ExtEvent event)
     }
 }
 
+//! @brief Helper daemon function.
+static void helperDaemon()
+{
+    using log::Log, view::View;
+    constexpr std::uint8_t helperNum = 2;
+    auto extThd = std::make_shared<utility::thread::Thread>(helperNum);
+    extThd->enqueue("logger", &Log::stateController, &Log::getInstance());
+    extThd->enqueue("viewer", &View::stateController, &View::getInstance());
+}
+
+//! @brief Coroutine for managing the lifecycle of helper components.
+//! @return object that represents the execution of the coroutine
+static Awaitable helperLifecycle()
+{
+    if (!CONFIG_ACTIVATE_HELPER)
+    {
+        co_return;
+    }
+
+    std::latch awaitLatch(1);
+    const std::jthread daemon(
+        [&awaitLatch]()
+        {
+            helperDaemon();
+            awaitLatch.count_down();
+        });
+    constexpr std::uint8_t helperNum = 2;
+    std::barrier awaitBarrier(helperNum + 1);
+    const auto asyncLauncher = [&awaitBarrier](const ExtEvent event)
+    {
+        const std::jthread send2Logger(
+            [&awaitBarrier, event]()
+            {
+                triggerHelper<log::Log>(event);
+                awaitBarrier.arrive_and_wait();
+            }),
+            send2Viewer(
+                [&awaitBarrier, event]()
+                {
+                    triggerHelper<view::View>(event);
+                    awaitBarrier.arrive_and_wait();
+                });
+        awaitBarrier.arrive_and_wait();
+    };
+
+    co_await std::suspend_always{};
+    asyncLauncher(ExtEvent::start);
+    co_await std::suspend_always{};
+    asyncLauncher(ExtEvent::stop);
+    awaitLatch.wait();
+}
+
 Command::Command()
 {
     initializeCLI();
@@ -97,8 +216,8 @@ Command& Command::getInstance()
 void Command::execManager(const int argc, const char* const argv[])
 try
 {
-    triggerHelper<log::Log>(ExtEvent::start);
-    triggerHelper<view::View>(ExtEvent::start);
+    auto launcher = helperLifecycle();
+    launcher.resume();
 
     if (1 == argc)
     {
@@ -112,8 +231,10 @@ try
         threads->enqueue("commander-bg", &Command::backgroundHandler, this);
     }
 
-    triggerHelper<view::View>(ExtEvent::stop);
-    triggerHelper<log::Log>(ExtEvent::stop);
+    if (!launcher.done())
+    {
+        launcher.resume();
+    }
 }
 catch (const std::exception& err)
 {
@@ -134,19 +255,19 @@ void Command::initializeCLI()
         .defaultVal<std::vector<std::string>>({"usage"})
         .appending()
         .action(
-            [](const std::string& value)
+            [](const std::string& input)
             {
                 if (std::none_of(
-                        value.cbegin(),
-                        value.cend(),
-                        [](const auto c)
+                        input.cbegin(),
+                        input.cend(),
+                        [l = std::locale{}](const auto c)
                         {
-                            return ' ' != c;
+                            return !std::isspace(c, l);
                         }))
                 {
                     throw std::invalid_argument("Invalid console command.");
                 }
-                return value;
+                return input;
             })
         .metavar("CMD")
         .help("run commands in console mode and exit\n"

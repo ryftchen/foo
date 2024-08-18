@@ -6,8 +6,7 @@
 
 #include "main.hpp"
 #include "command.hpp"
-#include "log.hpp"
-#include "view.hpp"
+#include "config.hpp"
 
 #ifndef __PRECOMPILED_HEADER
 #include <sys/prctl.h>
@@ -30,16 +29,9 @@ try
         return EXIT_FAILURE;
     }
 
-    using command::Command, log::Log, view::View;
-
-    constexpr std::uint8_t childThdNum = 3;
-    auto threads = std::make_shared<utility::thread::Thread>(childThdNum);
-    threads->enqueue("commander", &Command::execManager, &Command::getInstance(), argc, argv);
-    if (CONFIG_ACTIVATE_HELPER)
-    {
-        threads->enqueue("logger", &Log::stateController, &Log::getInstance());
-        threads->enqueue("viewer", &View::stateController, &View::getInstance());
-    }
+    using command::Command;
+    auto mainThd = std::make_shared<utility::thread::Thread>(1);
+    mainThd->enqueue("commander", &Command::execManager, &Command::getInstance(), argc, argv);
     return EXIT_SUCCESS;
 }
 catch (const std::exception& err)
