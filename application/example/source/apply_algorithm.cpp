@@ -385,7 +385,7 @@ void updateChoice<MatchMethod>(const std::string& target)
             break;
         default:
             bitFlag.reset();
-            throw std::runtime_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
+            throw std::invalid_argument("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
     }
 }
 
@@ -451,8 +451,7 @@ void runChoices<MatchMethod>(const std::vector<std::string>& candidates)
                 matchFunctor(name(target), &MatchSolution::sundayMethod);
                 break;
             default:
-                LOG_WRN_F("Skip applying an unknown %s method: %s.", toString(category).data(), target.data());
-                break;
+                throw std::logic_error("Unknown " + std::string{toString(category)} + " method: " + target + '.');
         }
     }
 
@@ -512,7 +511,7 @@ void updateChoice<NotationMethod>(const std::string& target)
             break;
         default:
             bitFlag.reset();
-            throw std::runtime_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
+            throw std::invalid_argument("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
     }
 }
 
@@ -559,8 +558,7 @@ void runChoices<NotationMethod>(const std::vector<std::string>& candidates)
                 notationFunctor(name(target), &NotationSolution::postfixMethod);
                 break;
             default:
-                LOG_WRN_F("Skip applying an unknown %s method: %s.", toString(category).data(), target.data());
-                break;
+                throw std::logic_error("Unknown " + std::string{toString(category)} + " method: " + target + '.');
         }
     }
 
@@ -672,7 +670,7 @@ void updateChoice<OptimalMethod>(const std::string& target)
             break;
         default:
             bitFlag.reset();
-            throw std::runtime_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
+            throw std::invalid_argument("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
     }
 }
 
@@ -727,8 +725,7 @@ void runChoices<OptimalMethod>(const std::vector<std::string>& candidates)
                     optimalFunctor(name(target), &OptimalSolution::geneticMethod);
                     break;
                 default:
-                    LOG_WRN_F("Skip applying an unknown %s method: %s.", toString(category).data(), target.data());
-                    break;
+                    throw std::logic_error("Unknown " + std::string{toString(category)} + " method: " + target + '.');
             }
         }
         pooling.deleteElement(threads);
@@ -844,7 +841,7 @@ void updateChoice<SearchMethod>(const std::string& target)
             break;
         default:
             bitFlag.reset();
-            throw std::runtime_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
+            throw std::invalid_argument("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
     }
 }
 
@@ -898,8 +895,7 @@ void runChoices<SearchMethod>(const std::vector<std::string>& candidates)
                 searchFunctor(name(target), &SearchSolution::fibonacciMethod);
                 break;
             default:
-                LOG_WRN_F("Skip applying an unknown %s method: %s.", toString(category).data(), target.data());
-                break;
+                throw std::logic_error("Unknown " + std::string{toString(category)} + " method: " + target + '.');
         }
     }
 
@@ -1098,7 +1094,7 @@ void updateChoice<SortMethod>(const std::string& target)
             break;
         default:
             bitFlag.reset();
-            throw std::runtime_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
+            throw std::invalid_argument("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
     }
 }
 
@@ -1172,8 +1168,7 @@ void runChoices<SortMethod>(const std::vector<std::string>& candidates)
                 sortFunctor(name(target), &SortSolution::radixMethod);
                 break;
             default:
-                LOG_WRN_F("Skip applying an unknown %s method: %s.", toString(category).data(), target.data());
-                break;
+                throw std::logic_error("Unknown " + std::string{toString(category)} + " method: " + target + '.');
         }
     }
 

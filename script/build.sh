@@ -808,7 +808,7 @@ to improve accuracy. (y or n)"
 --command='${build_script}${other_option}' --command='${build_script} --test${other_option}' --source-root=./ --overwrite"
     local codeql_sarif=${codeql_db}/codeql.sarif
     shell_command "codeql database analyze ${codeql_db} --format=sarif-latest --output=${codeql_sarif} --rerun \
---ram=2048"
+--no-sarif-minify --ram=2048"
     if echo "${input}" | grep -iq '^y'; then
         build_script=./${FOLDER[scr]}/$(basename "$0")
         shell_command "${build_script}${other_option} && ${build_script} --test${other_option}"

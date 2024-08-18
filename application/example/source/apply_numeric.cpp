@@ -296,7 +296,7 @@ void updateChoice<ArithmeticMethod>(const std::string& target)
             break;
         default:
             bitFlag.reset();
-            throw std::runtime_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
+            throw std::invalid_argument("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
     }
 }
 
@@ -351,8 +351,7 @@ void runChoices<ArithmeticMethod>(const std::vector<std::string>& candidates)
                 arithmeticFunctor(name(target), &ArithmeticSolution::divisionMethod);
                 break;
             default:
-                LOG_WRN_F("Skip applying an unknown %s method: %s.", toString(category).data(), target.data());
-                break;
+                throw std::logic_error("Unknown " + std::string{toString(category)} + " method: " + target + '.');
         }
     }
 
@@ -422,7 +421,7 @@ void updateChoice<DivisorMethod>(const std::string& target)
             break;
         default:
             bitFlag.reset();
-            throw std::runtime_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
+            throw std::invalid_argument("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
     }
 }
 
@@ -470,8 +469,7 @@ void runChoices<DivisorMethod>(const std::vector<std::string>& candidates)
                 divisorFunctor(name(target), &DivisorSolution::steinMethod);
                 break;
             default:
-                LOG_WRN_F("Skip applying an unknown %s method: %s.", toString(category).data(), target.data());
-                break;
+                throw std::logic_error("Unknown " + std::string{toString(category)} + " method: " + target + '.');
         }
     }
 
@@ -584,7 +582,7 @@ void updateChoice<IntegralMethod>(const std::string& target)
             break;
         default:
             bitFlag.reset();
-            throw std::runtime_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
+            throw std::invalid_argument("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
     }
 }
 
@@ -642,8 +640,7 @@ void runChoices<IntegralMethod>(const std::vector<std::string>& candidates)
                     integralFunctor(name(target), &IntegralSolution::monteCarloMethod);
                     break;
                 default:
-                    LOG_WRN_F("Skip applying an unknown %s method: %s.", toString(category).data(), target.data());
-                    break;
+                    throw std::logic_error("Unknown " + std::string{toString(category)} + " method: " + target + '.');
             }
         }
         pooling.deleteElement(threads);
@@ -731,7 +728,7 @@ void updateChoice<PrimeMethod>(const std::string& target)
             break;
         default:
             bitFlag.reset();
-            throw std::runtime_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
+            throw std::invalid_argument("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
     }
 }
 
@@ -778,8 +775,7 @@ void runChoices<PrimeMethod>(const std::vector<std::string>& candidates)
                 primeFunctor(name(target), &PrimeSolution::eulerMethod);
                 break;
             default:
-                LOG_WRN_F("Skip applying an unknown %s method: %s.", toString(category).data(), target.data());
-                break;
+                throw std::logic_error("Unknown " + std::string{toString(category)} + " method: " + target + '.');
         }
     }
 
