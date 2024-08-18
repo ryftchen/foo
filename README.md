@@ -67,7 +67,7 @@ The **foo** is a personal roadmap for learning programming, like a demo. Its mai
   ```
 
   Configuration information is stored in `$HOME/.foo/config/foo.json`, and the executed log is also written to `$HOME/.foo/log/foo.log`.
-- The parameters are provided for building or static analysis. Build with options such as *-\-format*, *-\-lint*, etc.
+- The parameters are provided for building or static analysis. Build with options such as *-\-lint*, *-\-query*, etc.
 
 ### How to run
 
