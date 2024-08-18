@@ -262,7 +262,7 @@ retry:
     }
     catch (const std::exception& err)
     {
-        LOG_ERR << err.what() << " Current viewer state: " << safeCurrentState() << '.';
+        LOG_ERR << "Suspend the viewer during " << safeCurrentState() << " state: " << err.what();
 
         safeProcessEvent(Standby());
         if (awaitNotification2Retry())
@@ -273,15 +273,15 @@ retry:
 }
 
 void View::waitForStart()
+try
 {
-    if (isInUninterruptedState(State::hold))
-    {
-        LOG_ERR << "The viewer did not initialize successfully ...";
-        return;
-    }
     utility::time::blockingTimer(
         [this]()
         {
+            if (isInUninterruptedState(State::hold))
+            {
+                throw std::runtime_error("The viewer did not initialize successfully ...");
+            }
             return isInUninterruptedState(State::idle);
         });
 
@@ -293,18 +293,23 @@ void View::waitForStart()
         daemonCv.notify_one();
     }
 
-    if (utility::time::blockingTimer(
-            [this]()
+    utility::time::blockingTimer(
+        [this]()
+        {
+            if (isInUninterruptedState(State::hold))
             {
-                return isInUninterruptedState(State::work);
-            },
-            timeoutPeriod))
-    {
-        LOG_ERR << "The viewer did not start properly in " << timeoutPeriod << "ms ...";
-    }
+                throw std::runtime_error("The viewer did not start successfully ...");
+            }
+            return isInUninterruptedState(State::work);
+        });
+}
+catch (const std::exception& err)
+{
+    LOG_ERR << err.what();
 }
 
 void View::waitForStop()
+try
 {
     if (std::unique_lock<std::mutex> daemonLock(daemonMtx); true)
     {
@@ -313,18 +318,23 @@ void View::waitForStop()
         daemonCv.notify_one();
     }
 
-    if (utility::time::blockingTimer(
-            [this]()
+    utility::time::blockingTimer(
+        [this]()
+        {
+            if (isInUninterruptedState(State::hold))
             {
-                return isInUninterruptedState(State::done);
-            },
-            timeoutPeriod))
-    {
-        LOG_ERR << "The viewer did not stop properly in " << timeoutPeriod << "ms ...";
-    }
+                throw std::runtime_error("The viewer did not stop successfully ...");
+            }
+            return isInUninterruptedState(State::done);
+        });
+}
+catch (const std::exception& err)
+{
+    LOG_ERR << err.what();
 }
 
 void View::requestToReset()
+try
 {
     if (std::unique_lock<std::mutex> daemonLock(daemonMtx); true)
     {
@@ -333,11 +343,19 @@ void View::requestToReset()
         daemonCv.notify_one();
     }
 
-    utility::time::blockingTimer(
-        [this]()
-        {
-            return !toReset.load();
-        });
+    if (utility::time::blockingTimer(
+            [this]()
+            {
+                return !toReset.load();
+            },
+            timeoutPeriod))
+    {
+        throw std::runtime_error("The viewer did not reset properly in " + std::to_string(timeoutPeriod) + "ms ...");
+    }
+}
+catch (const std::exception& err)
+{
+    LOG_ERR << err.what();
 }
 
 const View::OptionMap& View::viewerOptions() const
@@ -876,7 +894,15 @@ template <class T>
 void View::safeProcessEvent(const T& event)
 {
     stateLock.lock();
-    processEvent(event);
+    try
+    {
+        processEvent(event);
+    }
+    catch (...)
+    {
+        stateLock.unlock();
+        throw;
+    }
     stateLock.unlock();
 }
 
