@@ -74,7 +74,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4.1.0
 
-      - name: Basic debug version
+      - name: Run base debug version
         run: |
           ./script/build.sh --initialize
           ./script/run.py --test --build dbg --repeat 1
@@ -82,35 +82,35 @@ jobs:
           ./script/run.py --build dbg --repeat 1
           cat ./report/foo_run.report
 
-      - name: Basic release version
+      - name: Run base release version
         run: |
           ./script/run.py --test --build rls --repeat 1
           cat ./report/foo_run.report
           ./script/run.py --build rls --repeat 1
           cat ./report/foo_run.report
 
-      - name: Perform coverage checking (debug)
+      - name: Perform code coverage checks (debug)
         run: |
           ./script/run.py --test --check cov --build dbg --repeat 1
           cat ./report/foo_run.report
           ./script/run.py --check cov --build dbg --repeat 1
           cat ./report/foo_run.report
 
-      - name: Perform coverage checking (release)
+      - name: Perform code coverage checks (release)
         run: |
           ./script/run.py --test --check cov --build rls --repeat 1
           cat ./report/foo_run.report
           ./script/run.py --check cov --build rls --repeat 1
           cat ./report/foo_run.report
 
-      - name: Perform memory checking (debug)
+      - name: Perform memory leak checks (debug)
         run: |
           ./script/run.py --test --check mem --build dbg --repeat 1
           cat ./report/foo_run.report
           ./script/run.py --check mem --build dbg --repeat 1
           cat ./report/foo_run.report
 
-      - name: Perform memory checking (release)
+      - name: Perform memory leak checks (release)
         run: |
           ./script/run.py --test --check mem --build rls --repeat 1
           cat ./report/foo_run.report
