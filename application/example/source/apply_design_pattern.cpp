@@ -381,7 +381,7 @@ void updateChoice<BehavioralInstance>(const std::string& target)
             break;
         default:
             bitFlag.reset();
-            throw std::runtime_error("Unexpected " + std::string{toString(category)} + " instance: " + target + '.');
+            throw std::invalid_argument("Unexpected " + std::string{toString(category)} + " instance: " + target + '.');
     }
 }
 
@@ -454,8 +454,7 @@ void runChoices<BehavioralInstance>(const std::vector<std::string>& candidates)
                 behavioralFunctor(name(target), &BehavioralPattern::visitorInstance);
                 break;
             default:
-                LOG_WRN_F("Skip applying an unknown %s instance: %s.", toString(category).data(), target.data());
-                break;
+                throw std::logic_error("Unknown " + std::string{toString(category)} + " instance: " + target + '.');
         }
     }
 
@@ -556,7 +555,7 @@ void updateChoice<CreationalInstance>(const std::string& target)
             break;
         default:
             bitFlag.reset();
-            throw std::runtime_error("Unexpected " + std::string{toString(category)} + " instance: " + target + '.');
+            throw std::invalid_argument("Unexpected " + std::string{toString(category)} + " instance: " + target + '.');
     }
 }
 
@@ -611,8 +610,7 @@ void runChoices<CreationalInstance>(const std::vector<std::string>& candidates)
                 creationalFunctor(name(target), &CreationalPattern::singletonInstance);
                 break;
             default:
-                LOG_WRN_F("Skip applying an unknown %s instance: %s.", toString(category).data(), target.data());
-                break;
+                throw std::logic_error("Unknown " + std::string{toString(category)} + " instance: " + target + '.');
         }
     }
 
@@ -741,7 +739,7 @@ void updateChoice<StructuralInstance>(const std::string& target)
             break;
         default:
             bitFlag.reset();
-            throw std::runtime_error("Unexpected " + std::string{toString(category)} + " instance: " + target + '.');
+            throw std::invalid_argument("Unexpected " + std::string{toString(category)} + " instance: " + target + '.');
     }
 }
 
@@ -802,8 +800,7 @@ void runChoices<StructuralInstance>(const std::vector<std::string>& candidates)
                 structuralFunctor(name(target), &StructuralPattern::proxyInstance);
                 break;
             default:
-                LOG_WRN_F("Skip applying an unknown %s instance: %s.", toString(category).data(), target.data());
-                break;
+                throw std::logic_error("Unknown " + std::string{toString(category)} + " instance: " + target + '.');
         }
     }
 

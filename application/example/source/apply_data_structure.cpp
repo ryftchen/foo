@@ -233,7 +233,7 @@ void updateChoice<LinearInstance>(const std::string& target)
             break;
         default:
             bitFlag.reset();
-            throw std::runtime_error("Unexpected " + std::string{toString(category)} + " instance: " + target + '.');
+            throw std::invalid_argument("Unexpected " + std::string{toString(category)} + " instance: " + target + '.');
     }
 }
 
@@ -282,8 +282,7 @@ void runChoices<LinearInstance>(const std::vector<std::string>& candidates)
                 linearFunctor(name(target), &LinearStructure::queueInstance);
                 break;
             default:
-                LOG_WRN_F("Skip applying an unknown %s instance: %s.", toString(category).data(), target.data());
-                break;
+                throw std::logic_error("Unknown " + std::string{toString(category)} + " instance: " + target + '.');
         }
     }
 
@@ -356,7 +355,7 @@ void updateChoice<TreeInstance>(const std::string& target)
             break;
         default:
             bitFlag.reset();
-            throw std::runtime_error("Unexpected " + std::string{toString(category)} + " instance: " + target + '.');
+            throw std::invalid_argument("Unexpected " + std::string{toString(category)} + " instance: " + target + '.');
     }
 }
 
@@ -405,8 +404,7 @@ void runChoices<TreeInstance>(const std::vector<std::string>& candidates)
                 treeFunctor(name(target), &TreeStructure::splayInstance);
                 break;
             default:
-                LOG_WRN_F("Skip applying an unknown %s instance: %s.", toString(category).data(), target.data());
-                break;
+                throw std::logic_error("Unknown " + std::string{toString(category)} + " instance: " + target + '.');
         }
     }
 

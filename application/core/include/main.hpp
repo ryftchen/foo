@@ -99,7 +99,7 @@ static void signalHandler(int sig)
 }
 
 //! @brief The constructor function before starting the main function. Switch to the target path.
-[[using gnu: constructor]] static void init()
+[[using gnu: constructor]] static void initial()
 {
     std::signal(SIGABRT, signalHandler);
     std::signal(SIGSEGV, signalHandler);
@@ -126,7 +126,7 @@ static void signalHandler(int sig)
 }
 
 //! @brief The destructor function before finishing the main function. Check the signal status.
-[[using gnu: destructor]] static void fini()
+[[using gnu: destructor]] static void final()
 {
     if (signalStatus)
     {
