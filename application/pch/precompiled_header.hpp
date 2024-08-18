@@ -25,9 +25,11 @@
 #include <ncurses.h>
 #endif // defined(__has_include) && __has_include(<ncurses.h>)
 #include <algorithm>
+#include <barrier>
 #include <bitset>
 #include <cassert>
 #include <cmath>
+#include <coroutine>
 #include <csignal>
 #include <cstdint>
 #include <cstring>
@@ -36,6 +38,7 @@
 #include <fstream>
 #include <iostream>
 #include <iterator>
+#include <latch>
 #include <memory>
 #include <queue>
 #include <ranges>
@@ -44,6 +47,7 @@
 #include <sstream>
 #include <string>
 #include <syncstream>
+#include <thread>
 #include <unordered_map>
 #include <variant>
 #include <vector>
