@@ -212,7 +212,7 @@ double MonteCarlo::sampleFromNormalDistribution(const double lower, const double
         }
         while ((x < lower) || (x > upper));
         const double probabilityDensityFunction = (1.0 / std::sqrt(2.0 * std::numbers::pi * sigma * sigma))
-            * std::pow(M_E, (-(x - mu) * (x - mu)) / (2.0 * sigma * sigma));
+            * std::pow(std::numbers::e, (-(x - mu) * (x - mu)) / (2.0 * sigma * sigma));
         sum += expr(x) / probabilityDensityFunction; // I≈1/N*[F(X1)/P(X1)+...+F(Xn)/P(Xn)]
     }
     sum /= n;
