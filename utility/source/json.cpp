@@ -412,10 +412,13 @@ JSON::JSON(JSON&& json) noexcept
 
 JSON& JSON::operator=(JSON&& json) noexcept
 {
-    data = std::move(json.data);
-    type = json.type;
-    json.data = Data{};
-    json.type = Type::null;
+    if (this != &json)
+    {
+        data = std::move(json.data);
+        type = json.type;
+        json.data = Data{};
+        json.type = Type::null;
+    }
     return *this;
 }
 

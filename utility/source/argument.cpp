@@ -362,8 +362,11 @@ Argument::Argument(const Argument& arg) :
 
 Argument& Argument::operator=(const Argument& arg)
 {
-    auto temp = arg;
-    std::swap(*this, temp);
+    if (this != &arg)
+    {
+        auto temp = arg;
+        std::swap(*this, temp);
+    }
     return *this;
 }
 
