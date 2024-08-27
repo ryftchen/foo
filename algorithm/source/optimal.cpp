@@ -117,13 +117,12 @@ std::optional<std::tuple<double, double>> Particle::operator()(const double left
         [this, &candidate, &v]()
         {
             const double x = candidate(engine);
-            const Individual individual(x, v(engine), x, func(x), func(x));
-            return individual;
+            return Individual{x, v(engine), x, func(x), func(x)};
         });
     const auto initialBest = std::min_element(
         std::cbegin(swarm),
         std::cend(swarm),
-        [](const auto min1, const auto min2)
+        [](const auto& min1, const auto& min2)
         {
             return min1.xFitness < min2.xFitness;
         });

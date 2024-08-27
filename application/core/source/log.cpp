@@ -23,15 +23,12 @@ inline namespace
 //! @brief Regular expressions for log highlighting.
 struct HlRegex
 {
-    //! @brief Construct a new HlRegex object.
-    HlRegex() noexcept = default;
-
     //! @brief Debug level prefix highlighting.
     const std::regex debugLevel{std::string{debugLevelPrefixRegex}};
     //! @brief Info level prefix highlighting.
     const std::regex infoLevel{std::string{infoLevelPrefixRegex}};
     //! @brief Warning level prefix highlighting.
-    const std::regex warnLevel{std::string{warnLevelPrefixRegex}};
+    const std::regex warningLevel{std::string{warnLevelPrefixRegex}};
     //! @brief Error level prefix highlighting.
     const std::regex errorLevel{std::string{errorLevelPrefixRegex}};
     //! @brief Unknown level prefix highlighting.
@@ -463,9 +460,9 @@ const std::string& changeToLogStyle(std::string& line)
     {
         line = std::regex_replace(line, style.infoLevel, std::string{infoLevelPrefixWithColor});
     }
-    else if (std::regex_search(line, style.warnLevel))
+    else if (std::regex_search(line, style.warningLevel))
     {
-        line = std::regex_replace(line, style.warnLevel, std::string{warnLevelPrefixWithColor});
+        line = std::regex_replace(line, style.warningLevel, std::string{warningLevelPrefixWithColor});
     }
     else if (std::regex_search(line, style.errorLevel))
     {

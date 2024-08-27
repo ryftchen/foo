@@ -74,7 +74,7 @@ constexpr std::string_view debugLevelPrefix = "[DBG]";
 //! @brief Prefix of info level in log.
 constexpr std::string_view infoLevelPrefix = "[INF]";
 //! @brief Prefix of warning level in log.
-constexpr std::string_view warnLevelPrefix = "[WRN]";
+constexpr std::string_view warningLevelPrefix = "[WRN]";
 //! @brief Prefix of error level in log.
 constexpr std::string_view errorLevelPrefix = "[ERR]";
 //! @brief Prefix of unknown level in log.
@@ -108,11 +108,11 @@ constinit const auto infoLevelPrefixWithColor = utility::common::joinString<
     infoLevelPrefix,
     utility::common::colorOff>;
 //! @brief Warning level prefix with color. Include ANSI escape codes.
-constinit const auto warnLevelPrefixWithColor = utility::common::joinString<
+constinit const auto warningLevelPrefixWithColor = utility::common::joinString<
     utility::common::colorYellow,
     utility::common::colorBold,
     utility::common::colorForBackground,
-    warnLevelPrefix,
+    warningLevelPrefix,
     utility::common::colorOff>;
 //! @brief Error level prefix with color. Include ANSI escape codes.
 constinit const auto errorLevelPrefixWithColor = utility::common::joinString<
@@ -433,7 +433,7 @@ void Log::flush(
                     prefix = infoLevelPrefix;
                     break;
                 case OutputLevel::warning:
-                    prefix = warnLevelPrefix;
+                    prefix = warningLevelPrefix;
                     break;
                 case OutputLevel::error:
                     prefix = errorLevelPrefix;

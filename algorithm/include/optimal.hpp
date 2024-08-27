@@ -152,28 +152,6 @@ private:
     //! @brief Individual information in the swarm.
     struct Individual
     {
-        //! @brief Construct a new Individual object.
-        Individual() = default;
-        //! @brief Construct a new Individual object.
-        //! @param x - independent variable
-        //! @param velocity - velocity value
-        //! @param positionBest - the best position
-        //! @param xFitness - fitness of independent variable
-        //! @param fitnessPositionBest - fitness of the best position
-        Individual(
-            const double x,
-            const double velocity,
-            const double positionBest,
-            const double xFitness,
-            const double fitnessPositionBest) :
-            x(x),
-            velocity(velocity),
-            positionBest(positionBest),
-            xFitness(xFitness),
-            fitnessPositionBest(fitnessPositionBest)
-        {
-        }
-
         //! @brief Independent variable.
         double x{0.0};
         //! @brief Velocity value.
