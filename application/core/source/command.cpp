@@ -44,7 +44,7 @@ concept HelperType = std::derived_from<T, utility::fsm::FSM<T>> &&
     && !std::is_move_assignable_v<T>;
 
 //! @brief Enumerate specific events to control external helpers.
-enum ExtEvent : std::uint8_t
+enum class ExtEvent : std::uint8_t
 {
     //! @brief Start.
     start,
@@ -651,11 +651,11 @@ void Command::validate()
             dispatchManager.regularManager.helpOnly = true;
             return;
         }
+
         if (subCLI.isUsed("help"))
         {
             dispatchManager.regularManager.helpOnly = true;
         }
-
         const auto isCategoryUsed = [this, subCLI](const auto& categoryPair)
         {
             if (subCLI.isUsed(categoryPair.first))
