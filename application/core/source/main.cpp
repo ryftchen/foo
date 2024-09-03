@@ -29,9 +29,18 @@ try
         return EXIT_FAILURE;
     }
 
-    using command::Command;
-    auto mainThd = std::make_shared<utility::thread::Thread>(1);
-    mainThd->enqueue("commander", &Command::execManager, &Command::getInstance(), argc, argv);
+    std::thread running(
+        [=]()
+        {
+            ::pthread_setname_np(::pthread_self(), "commander");
+            auto& commander = command::Command::getInstance();
+            commander.execManager(argc, argv);
+        });
+    if (running.joinable())
+    {
+        running.join();
+    }
+
     return EXIT_SUCCESS;
 }
 catch (const std::exception& err)

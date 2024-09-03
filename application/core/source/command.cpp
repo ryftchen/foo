@@ -149,10 +149,11 @@ static void triggerHelper(const ExtEvent event)
 static void helperDaemon()
 {
     using log::Log, view::View;
+
     constexpr std::uint8_t helperNum = 2;
-    auto extThd = std::make_shared<utility::thread::Thread>(helperNum);
-    extThd->enqueue("logger", &Log::stateController, &Log::getInstance());
-    extThd->enqueue("viewer", &View::stateController, &View::getInstance());
+    utility::thread::Thread extensionThd(helperNum);
+    extensionThd.enqueue("logger", &Log::stateController, &Log::getInstance());
+    extensionThd.enqueue("viewer", &View::stateController, &View::getInstance());
 }
 
 //! @brief Coroutine for managing the lifecycle of helper components.
@@ -226,9 +227,9 @@ try
     else
     {
         constexpr std::uint8_t groundNum = 2;
-        auto threads = std::make_shared<utility::thread::Thread>(groundNum);
-        threads->enqueue("commander-fg", &Command::foregroundHandler, this, argc, argv);
-        threads->enqueue("commander-bg", &Command::backgroundHandler, this);
+        utility::thread::Thread handleThd(groundNum);
+        handleThd.enqueue("commander@fg", &Command::foregroundHandler, this, argc, argv);
+        handleThd.enqueue("commander@bg", &Command::backgroundHandler, this);
     }
 
     if (!launcher.done())
