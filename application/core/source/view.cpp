@@ -476,8 +476,13 @@ int View::buildTLVPacket4Stop(char* buf)
     return len;
 }
 
-int View::buildTLVPacket4Depend(const std::vector<std::string>& /*args*/, char* buf)
+int View::buildTLVPacket4Depend(const std::vector<std::string>& args, char* buf)
 {
+    if (!args.empty())
+    {
+        throw std::invalid_argument("Excessive arguments.");
+    }
+
     int len = 0;
     tlv::TLVValue val{};
     std::string libNames;
@@ -574,8 +579,13 @@ int View::buildTLVPacket4Execute(const std::vector<std::string>& args, char* buf
     return len;
 }
 
-int View::buildTLVPacket4Journal(const std::vector<std::string>& /*args*/, char* buf)
+int View::buildTLVPacket4Journal(const std::vector<std::string>& args, char* buf)
 {
+    if (!args.empty())
+    {
+        throw std::invalid_argument("Excessive arguments.");
+    }
+
     int len = 0;
     const int shmId = fillSharedMemory(getLogContents());
     if (tlv::tlvEncoding(buf, len, tlv::TLVValue{.logShmId = shmId}) < 0)
@@ -612,8 +622,13 @@ int View::buildTLVPacket4Monitor(const std::vector<std::string>& args, char* buf
     return len;
 }
 
-int View::buildTLVPacket4Profile(const std::vector<std::string>& /*args*/, char* buf)
+int View::buildTLVPacket4Profile(const std::vector<std::string>& args, char* buf)
 {
+    if (!args.empty())
+    {
+        throw std::invalid_argument("Excessive arguments.");
+    }
+
     int len = 0;
     tlv::TLVValue val{};
     const std::string currConfig = config::queryConfiguration().toUnescapedString();
