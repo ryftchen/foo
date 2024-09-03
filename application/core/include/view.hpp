@@ -226,10 +226,10 @@ public:
     //! @brief Memory that can be accessed by multiple programs simultaneously.
     struct alignas(64) SharedMemory
     {
-        //! @brief Flag for operable.
-        std::atomic<bool> signal{false};
         //! @brief Shared memory buffer.
         char buffer[maxShmSize]{'\0'};
+        //! @brief Flag for operable.
+        std::atomic<bool> signal{false};
     };
 
 private:
