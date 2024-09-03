@@ -6,9 +6,11 @@
 
 #pragma once
 
-#include <filesystem>
 #include <functional>
+#include <istream>
+#include <limits>
 #include <list>
+#include <memory>
 
 //! @brief The utility module.
 namespace utility // NOLINT (modernize-concat-nested-namespaces)

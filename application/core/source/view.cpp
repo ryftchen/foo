@@ -10,12 +10,8 @@
 #ifndef __PRECOMPILED_HEADER
 #include <openssl/evp.h>
 #include <readline/readline.h>
-#include <sys/ipc.h>
 #include <sys/shm.h>
 #include <sys/stat.h>
-#if defined(__has_include) && __has_include(<gmp.h>)
-#include <gmp.h>
-#endif // defined(__has_include) && __has_include(<gmp.h>)
 #include <mpfr.h>
 #if defined(__has_include) && __has_include(<ncurses.h>)
 #include <ncurses.h>
@@ -485,18 +481,42 @@ int View::buildTLVPacket4Depend(const std::vector<std::string>& /*args*/, char* 
     int len = 0;
     tlv::TLVValue val{};
     std::string libNames;
+#if defined(__GLIBC__) && defined(__GLIBC_MINOR__)
     libNames += "GNU C Library " COMMON_TO_STRING(__GLIBC__) "." COMMON_TO_STRING(__GLIBC_MINOR__) "\n";
+#else
+#error Could not find the GNU C library version.
+#endif // defined(__GLIBC__) && defined(__GLIBC_MINOR__)
+#if defined(_GLIBCXX_RELEASE) && defined(__GLIBCXX__)
     libNames += "GNU C++ Standard Library " COMMON_TO_STRING(_GLIBCXX_RELEASE) " (" COMMON_TO_STRING(__GLIBCXX__) ")\n";
+#else
+#error Could not find the GNU C++ Standard library version.
+#endif // defined(_GLIBCXX_RELEASE) && defined(__GLIBCXX__)
+#if defined(OPENSSL_VERSION_STR)
     libNames += "OpenSSL Library " OPENSSL_VERSION_STR "\n";
+#else
+#error Could not find the OpenSSL library version.
+#endif // defined(OPENSSL_VERSION_STR)
+#if defined(MPFR_VERSION_STRING)
     libNames += "GNU MPFR Library " MPFR_VERSION_STRING "\n";
-#if defined(__has_include) && __has_include(<gmp.h>)
+#else
+#error Could not find the GNU MPFR library version.
+#endif // defined(MPFR_VERSION_STRING)
+#if defined(__GNU_MP_VERSION) && defined(__GNU_MP_VERSION_MINOR) && defined(__GNU_MP_VERSION_PATCHLEVEL)
     libNames += "GNU MP Library " COMMON_TO_STRING(__GNU_MP_VERSION) "." COMMON_TO_STRING(
         __GNU_MP_VERSION_MINOR) "." COMMON_TO_STRING(__GNU_MP_VERSION_PATCHLEVEL) "\n";
-#endif // defined(__has_include) && __has_include(<gmp.h>)
+#else
+#error Could not find the GNU MP library version.
+#endif // defined(__GNU_MP_VERSION) && defined(__GNU_MP_VERSION_MINOR) && defined(__GNU_MP_VERSION_PATCHLEVEL)
+#if defined(RL_VERSION_MAJOR) && defined(RL_VERSION_MINOR)
     libNames += "GNU Readline Library " COMMON_TO_STRING(RL_VERSION_MAJOR) "." COMMON_TO_STRING(RL_VERSION_MINOR) "\n";
-#if defined(__has_include) && __has_include(<ncurses.h>)
+#else
+#error Could not find the GNU Readline library version.
+#endif // defined(RL_VERSION_MAJOR) && defined(RL_VERSION_MINOR)
+#if defined(NCURSES_VERSION)
     libNames += "Ncurses Library " NCURSES_VERSION "";
-#endif // defined(__has_include) && __has_include(<ncurses.h>)
+#else
+#error Could not find the Ncurses library version.
+#endif // defined(NCURSES_VERSION)
     std::strncpy(val.libInfo, libNames.data(), sizeof(val.libInfo) - 1);
     val.libInfo[sizeof(val.libInfo) - 1] = '\0';
     if (tlv::tlvEncoding(buf, len, val) < 0)
