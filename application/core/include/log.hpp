@@ -21,21 +21,41 @@
 #include "utility/include/time.hpp"
 
 //! @brief Log with debug level.
-#define LOG_DBG                              \
-    if (config::activateHelper()) [[likely]] \
+#define LOG_DBG                                           \
+    if (application::config::activateHelper()) [[likely]] \
     application::log::Log::Holder<application::log::Log::OutputLevel::debug>(__FILE__, __LINE__).stream()
+//! @brief Log with debug level (formatted).
+#define LOG_DBG_F(fmt, ...)                               \
+    if (application::config::activateHelper()) [[likely]] \
+    application::log::Log::getInstance().flush(           \
+        application::log::Log::OutputLevel::debug, __FILE__, __LINE__, fmt __VA_OPT__(, ) __VA_ARGS__)
 //! @brief Log with info level.
-#define LOG_INF                              \
-    if (config::activateHelper()) [[likely]] \
+#define LOG_INF                                           \
+    if (application::config::activateHelper()) [[likely]] \
     application::log::Log::Holder<application::log::Log::OutputLevel::info>(__FILE__, __LINE__).stream()
+//! @brief Log with info level (formatted).
+#define LOG_INF_F(fmt, ...)                               \
+    if (application::config::activateHelper()) [[likely]] \
+    application::log::Log::getInstance().flush(           \
+        application::log::Log::OutputLevel::info, __FILE__, __LINE__, fmt __VA_OPT__(, ) __VA_ARGS__)
 //! @brief Log with warning level.
-#define LOG_WRN                              \
-    if (config::activateHelper()) [[likely]] \
+#define LOG_WRN                                           \
+    if (application::config::activateHelper()) [[likely]] \
     application::log::Log::Holder<application::log::Log::OutputLevel::warning>(__FILE__, __LINE__).stream()
+//! @brief Log with warning level (formatted).
+#define LOG_WRN_F(fmt, ...)                               \
+    if (application::config::activateHelper()) [[likely]] \
+    application::log::Log::getInstance().flush(           \
+        application::log::Log::OutputLevel::warning, __FILE__, __LINE__, fmt __VA_OPT__(, ) __VA_ARGS__)
 //! @brief Log with error level.
-#define LOG_ERR                              \
-    if (config::activateHelper()) [[likely]] \
+#define LOG_ERR                                           \
+    if (application::config::activateHelper()) [[likely]] \
     application::log::Log::Holder<application::log::Log::OutputLevel::error>(__FILE__, __LINE__).stream()
+//! @brief Log with error level (formatted).
+#define LOG_ERR_F(fmt, ...)                               \
+    if (application::config::activateHelper()) [[likely]] \
+    application::log::Log::getInstance().flush(           \
+        application::log::Log::OutputLevel::error, __FILE__, __LINE__, fmt __VA_OPT__(, ) __VA_ARGS__)
 
 //! @brief The application module.
 namespace application // NOLINT (modernize-concat-nested-namespaces)
