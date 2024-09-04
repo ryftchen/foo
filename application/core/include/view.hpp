@@ -18,27 +18,6 @@
 #include "utility/include/fsm.hpp"
 #include "utility/include/socket.hpp"
 
-//! @brief All viewer options.
-#define VIEW_OPTIONS application::view::View::getInstance().viewerOptions()
-//! @brief TCP host address of the viewer.
-#define VIEW_TCP_HOST application::view::View::getInstance().viewerTCPHost()
-//! @brief TCP port number of the viewer.
-#define VIEW_TCP_PORT application::view::View::getInstance().viewerTCPPort()
-//! @brief UDP host address of the viewer.
-#define VIEW_UDP_HOST application::view::View::getInstance().viewerUDPHost()
-//! @brief UDP port number of the viewer.
-#define VIEW_UDP_PORT application::view::View::getInstance().viewerUDPPort()
-//! @brief TLV packet through viewer parsing.
-#define VIEW_TLV_PACKET(buf, len) application::view::View::getInstance().parseTLVPacket(buf, len)
-//! @brief Wait for the viewer output to complete.
-#define VIEW_AWAIT                         \
-    if (CONFIG_ACTIVATE_HELPER) [[likely]] \
-    application::view::View::getInstance().outputAwait()
-//! @brief Wake due to the viewer output completed.
-#define VIEW_AWAKEN                        \
-    if (CONFIG_ACTIVATE_HELPER) [[likely]] \
-    application::view::View::getInstance().outputAwaken()
-
 //! @brief The application module.
 namespace application // NOLINT (modernize-concat-nested-namespaces)
 {
@@ -217,9 +196,9 @@ public:
     //! @return value of TLV after parsing
     tlv::TLVValue parseTLVPacket(char* buffer, const int length) const;
     //! @brief Await depending on the output state.
-    void outputAwait();
+    void awaitDueToOutput();
     //! @brief Awaken depending on the output state.
-    void outputAwaken();
+    void awakenDueToOutput();
 
     //! @brief Maximum size of the shared memory.
     static constexpr std::uint64_t maxShmSize{65536 * 10};
@@ -237,15 +216,15 @@ private:
     //! @param initState - initialization value of state
     explicit View(const StateType initState = State::init) noexcept :
         FSM(initState),
-        tcpHost(CONFIG_HELPER_VIEWER_TCP_HOST),
-        tcpPort(CONFIG_HELPER_VIEWER_TCP_PORT),
-        udpHost(CONFIG_HELPER_VIEWER_UDP_HOST),
-        udpPort(CONFIG_HELPER_VIEWER_UDP_PORT)
+        tcpHost(config::tcpHost4Viewer()),
+        tcpPort(config::tcpPort4Viewer()),
+        udpHost(config::udpHost4Viewer()),
+        udpPort(config::udpPort4Viewer())
     {
     }
 
     //! @brief Timeout period (ms) to waiting for the viewer to change to the target state.
-    const std::uint32_t timeoutPeriod{static_cast<std::uint32_t>(CONFIG_HELPER_TIMEOUT)};
+    const std::uint32_t timeoutPeriod{static_cast<std::uint32_t>(config::helperTimeout())};
     // clang-format off
     //! @brief Mapping table of all viewer options.
     const OptionMap optionDispatcher
@@ -438,5 +417,54 @@ private:
 protected:
     friend std::ostream& operator<<(std::ostream& os, const State state);
 };
+
+//! @brief Get the current supported viewer options.
+//! @return current supported viewer options
+inline const View::OptionMap& currentViewerOptions()
+{
+    return View::getInstance().viewerOptions();
+}
+//! @brief Get the current TCP host address being used for viewing.
+//! @return current TCP host address being used for viewing
+inline std::string currentViewerTCPHost()
+{
+    return View::getInstance().viewerTCPHost();
+}
+//! @brief Get the current TCP port number being used for viewing.
+//! @return current TCP port number being used for viewing
+inline std::uint16_t currentViewerTCPPort()
+{
+    return View::getInstance().viewerTCPPort();
+}
+//! @brief Get the current UDP host address being used for viewing.
+//! @return current UDP host address being used for viewing
+inline std::string currentViewerUDPHost()
+{
+    return View::getInstance().viewerUDPHost();
+}
+//! @brief Get the current UDP port number being used for viewing.
+//! @return current UDP port number being used for viewing
+inline std::uint16_t currentViewerUDPPort()
+{
+    return View::getInstance().viewerUDPPort();
+}
+//! @brief Try to parse TLV Packet by viewer.
+//! @param buffer - TLV packet buffer
+//! @param length - buffer length
+//! @return TLV packet through viewer parsing
+inline tlv::TLVValue tryParseTLVPacket(char* buffer, const int length)
+{
+    return View::getInstance().parseTLVPacket(buffer, length);
+}
+//! @brief Try to wait due to the viewer output is incomplete.
+inline void tryAwaitDueToOutput()
+{
+    View::getInstance().awaitDueToOutput();
+}
+//! @brief Try to wake due to the viewer output is complete.
+inline void tryAwakenDueToOutput()
+{
+    View::getInstance().awakenDueToOutput();
+}
 } // namespace view
 } // namespace application

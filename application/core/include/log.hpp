@@ -21,45 +21,21 @@
 #include "utility/include/time.hpp"
 
 //! @brief Log with debug level.
-#define LOG_DBG                            \
-    if (CONFIG_ACTIVATE_HELPER) [[likely]] \
-    application::log::Log::Holder<application::log::Log::OutputLevel::debug>(__FILE__, __LINE__).getStream()
-//! @brief Log with debug level (formatted).
-#define LOG_DBG_F(fmt, ...)                     \
-    if (CONFIG_ACTIVATE_HELPER) [[likely]]      \
-    application::log::Log::getInstance().flush( \
-        application::log::Log::OutputLevel::debug, __FILE__, __LINE__, fmt __VA_OPT__(, ) __VA_ARGS__)
+#define LOG_DBG                              \
+    if (config::activateHelper()) [[likely]] \
+    application::log::Log::Holder<application::log::Log::OutputLevel::debug>(__FILE__, __LINE__).stream()
 //! @brief Log with info level.
-#define LOG_INF                            \
-    if (CONFIG_ACTIVATE_HELPER) [[likely]] \
-    application::log::Log::Holder<application::log::Log::OutputLevel::info>(__FILE__, __LINE__).getStream()
-//! @brief Log with info level (formatted).
-#define LOG_INF_F(fmt, ...)                     \
-    if (CONFIG_ACTIVATE_HELPER) [[likely]]      \
-    application::log::Log::getInstance().flush( \
-        application::log::Log::OutputLevel::info, __FILE__, __LINE__, fmt __VA_OPT__(, ) __VA_ARGS__)
+#define LOG_INF                              \
+    if (config::activateHelper()) [[likely]] \
+    application::log::Log::Holder<application::log::Log::OutputLevel::info>(__FILE__, __LINE__).stream()
 //! @brief Log with warning level.
-#define LOG_WRN                            \
-    if (CONFIG_ACTIVATE_HELPER) [[likely]] \
-    application::log::Log::Holder<application::log::Log::OutputLevel::warning>(__FILE__, __LINE__).getStream()
-//! @brief Log with warning level (formatted).
-#define LOG_WRN_F(fmt, ...)                     \
-    if (CONFIG_ACTIVATE_HELPER) [[likely]]      \
-    application::log::Log::getInstance().flush( \
-        application::log::Log::OutputLevel::warning, __FILE__, __LINE__, fmt __VA_OPT__(, ) __VA_ARGS__)
+#define LOG_WRN                              \
+    if (config::activateHelper()) [[likely]] \
+    application::log::Log::Holder<application::log::Log::OutputLevel::warning>(__FILE__, __LINE__).stream()
 //! @brief Log with error level.
-#define LOG_ERR                            \
-    if (CONFIG_ACTIVATE_HELPER) [[likely]] \
-    application::log::Log::Holder<application::log::Log::OutputLevel::error>(__FILE__, __LINE__).getStream()
-//! @brief Log with error level (formatted).
-#define LOG_ERR_F(fmt, ...)                     \
-    if (CONFIG_ACTIVATE_HELPER) [[likely]]      \
-    application::log::Log::getInstance().flush( \
-        application::log::Log::OutputLevel::error, __FILE__, __LINE__, fmt __VA_OPT__(, ) __VA_ARGS__)
-//! @brief Log file path.
-#define LOG_FILE_PATH application::log::Log::getInstance().loggerFilePath()
-//! @brief Log file lock.
-#define LOG_FILE_LOCK application::log::Log::getInstance().loggerFileLock()
+#define LOG_ERR                              \
+    if (config::activateHelper()) [[likely]] \
+    application::log::Log::Holder<application::log::Log::OutputLevel::error>(__FILE__, __LINE__).stream()
 
 //! @brief The application module.
 namespace application // NOLINT (modernize-concat-nested-namespaces)
@@ -249,18 +225,18 @@ public:
 
         //! @brief Get the output stream for flushing.
         //! @return reference of the output stream object, which is on string based
-        inline std::ostringstream& getStream() { return stream; }
+        inline std::ostringstream& stream() { return output; }
 
     private:
         //! @brief Output stream for flushing.
-        std::ostringstream stream{};
+        std::ostringstream output{};
         //! @brief Code file.
         const std::string& file{};
         //! @brief Code line.
         const std::uint32_t line{};
 
         //! @brief Flush the output stream.
-        inline void flush() { getInstance().flush(Lv, file, line, stream.str()); }
+        inline void flush() { getInstance().flush(Lv, file, line, output.str()); }
     };
 
 private:
@@ -268,15 +244,15 @@ private:
     //! @param initState - initialization value of state
     explicit Log(const StateType initState = State::init) noexcept :
         FSM(initState),
-        filePath(getFullLogPath(CONFIG_HELPER_LOGGER_FILE_PATH)),
-        writeType(OutputType(CONFIG_HELPER_LOGGER_WRITE_TYPE)),
-        minimumLevel(OutputLevel(CONFIG_HELPER_LOGGER_MINIMUM_LEVEL)),
-        usedMedium(OutputMedium(CONFIG_HELPER_LOGGER_USED_MEDIUM))
+        filePath(getFullLogPath(config::filePath4Logger())),
+        writeType(OutputType(config::writeType4Logger())),
+        minimumLevel(OutputLevel(config::minimumLevel4Logger())),
+        usedMedium(OutputMedium(config::usedMedium4Logger()))
     {
     }
 
     //! @brief Timeout period (ms) to waiting for the logger to change to the target state.
-    const std::uint32_t timeoutPeriod{static_cast<std::uint32_t>(CONFIG_HELPER_TIMEOUT)};
+    const std::uint32_t timeoutPeriod{static_cast<std::uint32_t>(config::helperTimeout())};
     //! @brief The queue of logs.
     std::queue<std::string> logQueue{};
     //! @brief Mutex for controlling daemon.
@@ -323,7 +299,7 @@ private:
     //! @return full path to the log file
     static std::string getFullLogPath(const std::string& filename = "log/foo.log");
     //! @brief Try to create the log folder.
-    void tryToCreateLogFolder() const;
+    void tryCreateLogFolder() const;
 
     //! @brief FSM event. Open file.
     struct OpenFile
@@ -467,6 +443,19 @@ void Log::flush(
         }
         throw;
     }
+}
+
+//! @brief Get the current log file path.
+//! @return current log file path
+inline std::string currentLoggerFilePath()
+{
+    return Log::getInstance().loggerFilePath();
+}
+//! @brief Get the current log file lock.
+//! @return current log file lock
+inline utility::common::ReadWriteLock& currentLoggerFileLock()
+{
+    return Log::getInstance().loggerFileLock();
 }
 } // namespace log
 } // namespace application

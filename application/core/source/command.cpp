@@ -124,7 +124,7 @@ private:
 template <HelperType Helper>
 static void triggerHelper(const ExtEvent event)
 {
-    if (!CONFIG_ACTIVATE_HELPER)
+    if (!config::activateHelper())
     {
         return;
     }
@@ -160,7 +160,7 @@ static void helperDaemon()
 //! @return object that represents the execution of the coroutine
 static Awaitable helperLifecycle()
 {
-    if (!CONFIG_ACTIVATE_HELPER)
+    if (!config::activateHelper())
     {
         co_return;
     }
@@ -758,7 +758,7 @@ void Command::launchClient<utility::socket::TCPSocket>(std::shared_ptr<utility::
     {
         try
         {
-            if ((0 != length) && VIEW_TLV_PACKET(buffer, length).stopTag)
+            if ((0 != length) && view::tryParseTLVPacket(buffer, length).stopTag)
             {
                 client->asyncExit();
             }
@@ -767,9 +767,9 @@ void Command::launchClient<utility::socket::TCPSocket>(std::shared_ptr<utility::
         {
             LOG_WRN << err.what();
         }
-        VIEW_AWAKEN;
+        view::tryAwakenDueToOutput();
     };
-    client->toConnect(VIEW_TCP_HOST, VIEW_TCP_PORT);
+    client->toConnect(view::currentViewerTCPHost(), view::currentViewerTCPPort());
 }
 
 //! @brief Launch the UDP client for console mode.
@@ -782,7 +782,7 @@ void Command::launchClient<utility::socket::UDPSocket>(std::shared_ptr<utility::
     {
         try
         {
-            if ((0 != length) && VIEW_TLV_PACKET(buffer, length).stopTag)
+            if ((0 != length) && view::tryParseTLVPacket(buffer, length).stopTag)
             {
                 client->asyncExit();
             }
@@ -791,15 +791,15 @@ void Command::launchClient<utility::socket::UDPSocket>(std::shared_ptr<utility::
         {
             LOG_WRN << err.what();
         }
-        VIEW_AWAKEN;
+        view::tryAwakenDueToOutput();
     };
     client->toReceive();
-    client->toConnect(VIEW_UDP_HOST, VIEW_UDP_PORT);
+    client->toConnect(view::currentViewerUDPHost(), view::currentViewerUDPPort());
 }
 
 void Command::executeInConsole() const
 {
-    if (!CONFIG_ACTIVATE_HELPER)
+    if (!config::activateHelper())
     {
         std::cout << "exit" << std::endl;
         return;
@@ -871,7 +871,7 @@ void Command::checkForExcessiveArguments()
 void Command::enterConsoleMode()
 try
 {
-    if (!CONFIG_ACTIVATE_HELPER)
+    if (!config::activateHelper())
     {
         std::cout << "exit" << std::endl;
         return;
@@ -981,7 +981,7 @@ void Command::registerOnConsole(utility::console::Console& console, std::shared_
         },
         "reconnect to the servers");
 
-    for (const auto& [optionName, optionAttr] : VIEW_OPTIONS)
+    for (const auto& [optionName, optionAttr] : view::currentViewerOptions())
     {
         console.registerCommand(
             optionName,
@@ -1001,7 +1001,7 @@ void Command::registerOnConsole(utility::console::Console& console, std::shared_
                     }
 
                     client->toSend(utility::common::base64Encode(cmds));
-                    VIEW_AWAIT;
+                    view::tryAwaitDueToOutput();
                 }
                 catch (const std::exception& err)
                 {
