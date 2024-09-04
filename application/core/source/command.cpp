@@ -218,7 +218,10 @@ void Command::execManager(const int argc, const char* const argv[])
 try
 {
     auto launcher = helperLifecycle();
-    launcher.resume();
+    if (!launcher.done())
+    {
+        launcher.resume();
+    }
 
     if (1 == argc)
     {
