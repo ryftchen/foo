@@ -48,6 +48,11 @@ const HlRegex& logStyle()
 
 Log& Log::getInstance()
 {
+    if (!config::activateHelper()) [[unlikely]]
+    {
+        throw std::logic_error("The logger is disabled.");
+    }
+
     static Log logger{};
     return logger;
 }
@@ -240,7 +245,7 @@ std::string Log::getFullLogPath(const std::string& filename)
     return std::string{processHome} + '/' + filename;
 }
 
-void Log::tryToCreateLogFolder() const
+void Log::tryCreateLogFolder() const
 {
     const std::filesystem::path logFolderPath = std::filesystem::absolute(filePath).parent_path();
     std::filesystem::create_directories(logFolderPath);
@@ -252,7 +257,7 @@ void Log::openLogFile()
     namespace common = utility::common;
 
     common::ReadWriteGuard guard(fileLock, common::LockMode::write);
-    tryToCreateLogFolder();
+    tryCreateLogFolder();
     switch (writeType)
     {
         case OutputType::add:
@@ -322,7 +327,7 @@ void Log::doRollback()
         }
 
         closeLogFile();
-        tryToCreateLogFolder();
+        tryCreateLogFolder();
         std::ofstream tempOfs;
         tempOfs.open(filePath, std::ios_base::out | std::ios_base::trunc);
         tempOfs.close();

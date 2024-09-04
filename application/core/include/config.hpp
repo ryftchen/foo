@@ -8,52 +8,6 @@
 
 #include "utility/include/json.hpp"
 
-//! @brief "activateHelper" configuration.
-#define CONFIG_ACTIVATE_HELPER application::config::queryConfiguration().at("activateHelper").toBoolean()
-//! @brief "helperTimeout" configuration.
-#define CONFIG_HELPER_TIMEOUT application::config::queryConfiguration().at("helperTimeout").toIntegral()
-//! @brief "filePath" configuration in the logger properties.
-#define CONFIG_HELPER_LOGGER_FILE_PATH \
-    application::config::queryConfiguration().at("helperList").at("logger").at("properties").at("filePath").toString()
-//! @brief "minimumLevel" configuration in the logger properties.
-#define CONFIG_HELPER_LOGGER_MINIMUM_LEVEL    \
-    application::config::queryConfiguration() \
-        .at("helperList")                     \
-        .at("logger")                         \
-        .at("properties")                     \
-        .at("minimumLevel")                   \
-        .toIntegral()
-//! @brief "usedMedium" configuration in the logger properties.
-#define CONFIG_HELPER_LOGGER_USED_MEDIUM      \
-    application::config::queryConfiguration() \
-        .at("helperList")                     \
-        .at("logger")                         \
-        .at("properties")                     \
-        .at("usedMedium")                     \
-        .toIntegral()
-//! @brief "writeType" configuration in the logger properties.
-#define CONFIG_HELPER_LOGGER_WRITE_TYPE       \
-    application::config::queryConfiguration() \
-        .at("helperList")                     \
-        .at("logger")                         \
-        .at("properties")                     \
-        .at("writeType")                      \
-        .toIntegral()
-//! @brief "tcpHost" configuration in the viewer properties.
-#define CONFIG_HELPER_VIEWER_TCP_HOST \
-    application::config::queryConfiguration().at("helperList").at("viewer").at("properties").at("tcpHost").toString()
-//! @brief "tcpPort" configuration in the viewer properties.
-#define CONFIG_HELPER_VIEWER_TCP_PORT \
-    application::config::queryConfiguration().at("helperList").at("viewer").at("properties").at("tcpPort").toIntegral()
-//! @brief "udpHost" configuration in the viewer properties.
-#define CONFIG_HELPER_VIEWER_UDP_HOST \
-    application::config::queryConfiguration().at("helperList").at("viewer").at("properties").at("udpHost").toString()
-//! @brief "udpPort" configuration in the viewer properties.
-#define CONFIG_HELPER_VIEWER_UDP_PORT \
-    application::config::queryConfiguration().at("helperList").at("viewer").at("properties").at("udpPort").toIntegral()
-//! @brief Config file path.
-#define CONFIG_FILE_PATH application::config::Config::getInstance().cfgFilePath()
-
 //! @brief The application module.
 namespace application // NOLINT (modernize-concat-nested-namespaces)
 {
@@ -120,6 +74,67 @@ private:
 
 extern utility::json::JSON getDefaultConfiguration();
 extern bool loadConfiguration(const std::string& filename = getFullDefaultConfigurationPath());
-extern const utility::json::JSON& queryConfiguration();
+
+const utility::json::JSON& retrieveData();
+//! @brief Get the "activateHelper" configuration.
+//! @return "activateHelper" configuration
+inline bool activateHelper()
+{
+    return retrieveData().at("activateHelper").toBoolean();
+}
+//! @brief Get the "helperTimeout" configuration.
+//! @return "helperTimeout" configuration
+inline int helperTimeout()
+{
+    return retrieveData().at("helperTimeout").toIntegral();
+}
+//! @brief Get the "filePath" configuration in the "logger" properties of "helpList".
+//! @return "filePath" configuration in the "logger" properties of "helpList"
+inline std::string filePath4Logger()
+{
+    return retrieveData().at("helperList").at("logger").at("properties").at("filePath").toString();
+}
+//! @brief Get the "minimumLevel" configuration in the "logger" properties of "helpList".
+//! @return "minimumLevel" configuration in the "logger" properties of "helpList"
+inline int minimumLevel4Logger()
+{
+    return retrieveData().at("helperList").at("logger").at("properties").at("minimumLevel").toIntegral();
+}
+//! @brief Get the "usedMedium" configuration in the "logger" properties of "helpList".
+//! @return "usedMedium" configuration in the "logger" properties of "helpList"
+inline int usedMedium4Logger()
+{
+    return retrieveData().at("helperList").at("logger").at("properties").at("usedMedium").toIntegral();
+}
+//! @brief Get the "writeType" configuration in the "logger" properties of "helpList".
+//! @return "writeType" configuration in the "logger" properties of "helpList"
+inline int writeType4Logger()
+{
+    return retrieveData().at("helperList").at("logger").at("properties").at("writeType").toIntegral();
+}
+//! @brief Get the "tcpHost" configuration in the "viewer" properties of "helpList".
+//! @return "tcpHost" configuration in the "viewer" properties of "helpList"
+inline std::string tcpHost4Viewer()
+{
+    return retrieveData().at("helperList").at("viewer").at("properties").at("tcpHost").toString();
+}
+//! @brief Get the "tcpPort" configuration in the "viewer" properties of "helpList".
+//! @return "tcpPort" configuration in the "viewer" properties of "helpList"
+inline int tcpPort4Viewer()
+{
+    return retrieveData().at("helperList").at("viewer").at("properties").at("tcpPort").toIntegral();
+}
+//! @brief Get the "udpHost" configuration in the "viewer" properties of "helpList".
+//! @return "udpHost" configuration in the "viewer" properties of "helpList"
+inline std::string udpHost4Viewer()
+{
+    return retrieveData().at("helperList").at("viewer").at("properties").at("udpHost").toString();
+}
+//! @brief Get the "udpPort" configuration in the "viewer" properties of "helpList".
+//! @return "udpPort" configuration in the "viewer" properties of "helpList"
+inline int udpPort4Viewer()
+{
+    return retrieveData().at("helperList").at("viewer").at("properties").at("udpPort").toIntegral();
+}
 } // namespace config
 } // namespace application

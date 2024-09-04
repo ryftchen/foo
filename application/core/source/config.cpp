@@ -313,9 +313,9 @@ inline namespace
 static std::counting_semaphore<maxAccessLimit> configSem{maxAccessLimit};
 } // namespace
 
-//! @brief Query configuration.
-//! @return current configuration
-const utility::json::JSON& queryConfiguration()
+//! @brief Retrieve data.
+//! @return current configuration data
+const utility::json::JSON& retrieveData()
 try
 {
     configSem.acquire();
