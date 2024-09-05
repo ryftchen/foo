@@ -76,61 +76,61 @@ extern utility::json::JSON getDefaultConfiguration();
 extern bool loadConfiguration(const std::string& filename = getFullDefaultConfigurationPath());
 
 const utility::json::JSON& retrieveData();
-//! @brief Get the "activateHelper" configuration.
+//! @brief Query the "activateHelper" configuration.
 //! @return "activateHelper" configuration
 inline bool activateHelper()
 {
     return retrieveData().at("activateHelper").toBoolean();
 }
-//! @brief Get the "helperTimeout" configuration.
+//! @brief Query the "helperTimeout" configuration.
 //! @return "helperTimeout" configuration
 inline int helperTimeout()
 {
     return retrieveData().at("helperTimeout").toIntegral();
 }
-//! @brief Get the "filePath" configuration in the "logger" properties of "helpList".
+//! @brief Query the "filePath" configuration in the "logger" properties of "helpList".
 //! @return "filePath" configuration in the "logger" properties of "helpList"
 inline std::string filePath4Logger()
 {
     return retrieveData().at("helperList").at("logger").at("properties").at("filePath").toString();
 }
-//! @brief Get the "minimumLevel" configuration in the "logger" properties of "helpList".
+//! @brief Query the "minimumLevel" configuration in the "logger" properties of "helpList".
 //! @return "minimumLevel" configuration in the "logger" properties of "helpList"
 inline int minimumLevel4Logger()
 {
     return retrieveData().at("helperList").at("logger").at("properties").at("minimumLevel").toIntegral();
 }
-//! @brief Get the "usedMedium" configuration in the "logger" properties of "helpList".
+//! @brief Query the "usedMedium" configuration in the "logger" properties of "helpList".
 //! @return "usedMedium" configuration in the "logger" properties of "helpList"
 inline int usedMedium4Logger()
 {
     return retrieveData().at("helperList").at("logger").at("properties").at("usedMedium").toIntegral();
 }
-//! @brief Get the "writeType" configuration in the "logger" properties of "helpList".
+//! @brief Query the "writeType" configuration in the "logger" properties of "helpList".
 //! @return "writeType" configuration in the "logger" properties of "helpList"
 inline int writeType4Logger()
 {
     return retrieveData().at("helperList").at("logger").at("properties").at("writeType").toIntegral();
 }
-//! @brief Get the "tcpHost" configuration in the "viewer" properties of "helpList".
+//! @brief Query the "tcpHost" configuration in the "viewer" properties of "helpList".
 //! @return "tcpHost" configuration in the "viewer" properties of "helpList"
 inline std::string tcpHost4Viewer()
 {
     return retrieveData().at("helperList").at("viewer").at("properties").at("tcpHost").toString();
 }
-//! @brief Get the "tcpPort" configuration in the "viewer" properties of "helpList".
+//! @brief Query the "tcpPort" configuration in the "viewer" properties of "helpList".
 //! @return "tcpPort" configuration in the "viewer" properties of "helpList"
 inline int tcpPort4Viewer()
 {
     return retrieveData().at("helperList").at("viewer").at("properties").at("tcpPort").toIntegral();
 }
-//! @brief Get the "udpHost" configuration in the "viewer" properties of "helpList".
+//! @brief Query the "udpHost" configuration in the "viewer" properties of "helpList".
 //! @return "udpHost" configuration in the "viewer" properties of "helpList"
 inline std::string udpHost4Viewer()
 {
     return retrieveData().at("helperList").at("viewer").at("properties").at("udpHost").toString();
 }
-//! @brief Get the "udpPort" configuration in the "viewer" properties of "helpList".
+//! @brief Query the "udpPort" configuration in the "viewer" properties of "helpList".
 //! @return "udpPort" configuration in the "viewer" properties of "helpList"
 inline int udpPort4Viewer()
 {
