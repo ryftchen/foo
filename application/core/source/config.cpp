@@ -23,14 +23,9 @@ Config& Config::getInstance()
     return cfg;
 }
 
-const utility::json::JSON& Config::cfgData() const
+const utility::json::JSON& Config::getData() const
 {
     return data;
-}
-
-std::string Config::cfgFilePath() const
-{
-    return filePath;
 }
 
 utility::json::JSON Config::parseConfigFile(const std::string& configFile)
@@ -319,7 +314,7 @@ const utility::json::JSON& retrieveData()
 try
 {
     configSem.acquire();
-    const auto& data = Config::getInstance().cfgData();
+    const auto& data = Config::getInstance().getData();
     configSem.release();
     return data;
 }

@@ -226,7 +226,7 @@ bool Packet::read(void* const dst, const int offset)
 
 View& View::getInstance()
 {
-    if (!config::activateHelper()) [[unlikely]]
+    if (!config::detail::activateHelper()) [[unlikely]]
     {
         throw std::logic_error("The viewer is disabled.");
     }
@@ -359,27 +359,27 @@ catch (const std::exception& err)
     LOG_ERR << err.what();
 }
 
-const View::OptionMap& View::viewerOptions() const
+const View::OptionMap& View::getOptions() const
 {
     return optionDispatcher;
 }
 
-std::string View::viewerTCPHost() const
+std::string View::getTCPHost() const
 {
     return tcpHost;
 }
 
-std::uint16_t View::viewerTCPPort() const
+std::uint16_t View::getTCPPort() const
 {
     return tcpPort;
 }
 
-std::string View::viewerUDPHost() const
+std::string View::getUDPHost() const
 {
     return udpHost;
 }
 
-std::uint16_t View::viewerUDPPort() const
+std::uint16_t View::getUDPPort() const
 {
     return udpPort;
 }
@@ -842,8 +842,8 @@ std::string View::getLogContents()
 {
     namespace common = utility::common;
 
-    common::ReadWriteGuard guard(log::currentLoggerFileLock(), common::LockMode::read);
-    auto contents = utility::io::getFileContents(log::currentLoggerFilePath(), false, true);
+    common::ReadWriteGuard guard(log::info::loggerFileLock(), common::LockMode::read);
+    auto contents = utility::io::getFileContents(log::info::loggerFilePath(), false, true);
     std::for_each(
         contents.begin(),
         contents.end(),

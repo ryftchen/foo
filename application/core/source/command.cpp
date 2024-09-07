@@ -124,7 +124,7 @@ private:
 template <HelperType Helper>
 static void triggerHelper(const ExtEvent event)
 {
-    if (!config::activateHelper())
+    if (!config::detail::activateHelper())
     {
         return;
     }
@@ -160,7 +160,7 @@ static void helperDaemon()
 //! @return object that represents the execution of the coroutine
 static Awaitable helperLifecycle()
 {
-    if (!config::activateHelper())
+    if (!config::detail::activateHelper())
     {
         co_return;
     }
@@ -679,6 +679,7 @@ void Command::validate()
                     action::EvtTypeOverloaded{[this, target](auto&& event)
                                               {
                                                   using EventType = std::decay_t<decltype(event)>;
+
                                                   messageForwarder.onMessage(action::UpdateChoice<EventType>{target});
                                               }},
                     categoryAttr.event);
@@ -730,6 +731,7 @@ void Command::dispatch()
                 action::EvtTypeOverloaded{[this, candidates](auto&& event)
                                           {
                                               using EventType = std::decay_t<decltype(event)>;
+
                                               messageForwarder.onMessage(action::RunChoices<EventType>{candidates});
                                           }},
                 categoryAttr.event);
@@ -761,7 +763,7 @@ void Command::launchClient<utility::socket::TCPSocket>(std::shared_ptr<utility::
     {
         try
         {
-            if ((0 != length) && view::tryParseTLVPacket(buffer, length).stopTag)
+            if ((0 != length) && view::View::getInstance().parseTLVPacket(buffer, length).stopTag)
             {
                 client->asyncExit();
             }
@@ -770,9 +772,9 @@ void Command::launchClient<utility::socket::TCPSocket>(std::shared_ptr<utility::
         {
             LOG_WRN << err.what();
         }
-        view::tryAwakenDueToOutput();
+        view::View::getInstance().awakenDueToOutput();
     };
-    client->toConnect(view::currentViewerTCPHost(), view::currentViewerTCPPort());
+    client->toConnect(view::info::viewerTCPHost(), view::info::viewerTCPPort());
 }
 
 //! @brief Launch the UDP client for console mode.
@@ -785,7 +787,7 @@ void Command::launchClient<utility::socket::UDPSocket>(std::shared_ptr<utility::
     {
         try
         {
-            if ((0 != length) && view::tryParseTLVPacket(buffer, length).stopTag)
+            if ((0 != length) && view::View::getInstance().parseTLVPacket(buffer, length).stopTag)
             {
                 client->asyncExit();
             }
@@ -794,15 +796,15 @@ void Command::launchClient<utility::socket::UDPSocket>(std::shared_ptr<utility::
         {
             LOG_WRN << err.what();
         }
-        view::tryAwakenDueToOutput();
+        view::View::getInstance().awakenDueToOutput();
     };
     client->toReceive();
-    client->toConnect(view::currentViewerUDPHost(), view::currentViewerUDPPort());
+    client->toConnect(view::info::viewerUDPHost(), view::info::viewerUDPPort());
 }
 
 void Command::executeInConsole() const
 {
-    if (!config::activateHelper())
+    if (!config::detail::activateHelper())
     {
         std::cout << "exit" << std::endl;
         return;
@@ -874,7 +876,7 @@ void Command::checkForExcessiveArguments()
 void Command::enterConsoleMode()
 try
 {
-    if (!config::activateHelper())
+    if (!config::detail::activateHelper())
     {
         std::cout << "exit" << std::endl;
         return;
@@ -984,7 +986,7 @@ void Command::registerOnConsole(utility::console::Console& console, std::shared_
         },
         "reconnect to the servers");
 
-    for (const auto& [optionName, optionAttr] : view::currentViewerOptions())
+    for (const auto& [optionName, optionAttr] : view::info::getOptions())
     {
         console.registerCommand(
             optionName,
@@ -1004,7 +1006,7 @@ void Command::registerOnConsole(utility::console::Console& console, std::shared_
                     }
 
                     client->toSend(utility::common::base64Encode(cmds));
-                    view::tryAwaitDueToOutput();
+                    view::View::getInstance().awaitDueToOutput();
                 }
                 catch (const std::exception& err)
                 {

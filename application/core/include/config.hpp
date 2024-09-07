@@ -43,10 +43,7 @@ public:
     static Config& getInstance();
     //! @brief Get the config data.
     //! @return config data
-    [[nodiscard]] const utility::json::JSON& cfgData() const;
-    //! @brief Get the config file path.
-    //! @return config file path
-    [[nodiscard]] std::string cfgFilePath() const;
+    [[nodiscard]] const utility::json::JSON& getData() const;
 
 private:
     //! @brief Construct a new Config object.
@@ -76,6 +73,9 @@ extern utility::json::JSON getDefaultConfiguration();
 extern bool loadConfiguration(const std::string& filename = getFullDefaultConfigurationPath());
 
 const utility::json::JSON& retrieveData();
+//! @brief Configuration details.
+namespace detail
+{
 //! @brief Query the "activateHelper" configuration.
 //! @return "activateHelper" configuration
 inline bool activateHelper()
@@ -136,5 +136,6 @@ inline int udpPort4Viewer()
 {
     return retrieveData().at("helperList").at("viewer").at("properties").at("udpPort").toIntegral();
 }
+} // namespace detail
 } // namespace config
 } // namespace application

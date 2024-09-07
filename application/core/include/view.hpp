@@ -177,19 +177,19 @@ public:
     using OptionMap = std::map<OptionName, OptionAttr>;
     //! @brief Get the viewer options.
     //! @return viewer options
-    const OptionMap& viewerOptions() const;
+    const OptionMap& getOptions() const;
     //! @brief Get the TCP server host address.
     //! @return TCP server host address
-    std::string viewerTCPHost() const;
+    std::string getTCPHost() const;
     //! @brief Get the TCP server port number.
     //! @return TCP server port number
-    std::uint16_t viewerTCPPort() const;
+    std::uint16_t getTCPPort() const;
     //! @brief Get the UDP server host address.
     //! @return UDP server host address
-    std::string viewerUDPHost() const;
+    std::string getUDPHost() const;
     //! @brief Get the UDP server port number.
     //! @return UDP server port number
-    std::uint16_t viewerUDPPort() const;
+    std::uint16_t getUDPPort() const;
     //! @brief Parse the TLV packet.
     //! @param buffer - TLV packet buffer
     //! @param length - buffer length
@@ -216,15 +216,15 @@ private:
     //! @param initState - initialization value of state
     explicit View(const StateType initState = State::init) noexcept :
         FSM(initState),
-        tcpHost(config::tcpHost4Viewer()),
-        tcpPort(config::tcpPort4Viewer()),
-        udpHost(config::udpHost4Viewer()),
-        udpPort(config::udpPort4Viewer())
+        tcpHost(config::detail::tcpHost4Viewer()),
+        tcpPort(config::detail::tcpPort4Viewer()),
+        udpHost(config::detail::udpHost4Viewer()),
+        udpPort(config::detail::udpPort4Viewer())
     {
     }
 
     //! @brief Timeout period (ms) to waiting for the viewer to change to the target state.
-    const std::uint32_t timeoutPeriod{static_cast<std::uint32_t>(config::helperTimeout())};
+    const std::uint32_t timeoutPeriod{static_cast<std::uint32_t>(config::detail::helperTimeout())};
     // clang-format off
     //! @brief Mapping table of all viewer options.
     const OptionMap optionDispatcher
@@ -418,53 +418,39 @@ protected:
     friend std::ostream& operator<<(std::ostream& os, const State state);
 };
 
+//! @brief Instance information, if enabled.
+namespace info
+{
 //! @brief Get the current supported viewer options.
 //! @return current supported viewer options
-inline const View::OptionMap& currentViewerOptions()
+inline const View::OptionMap& getOptions()
 {
-    return View::getInstance().viewerOptions();
+    return View::getInstance().getOptions();
 }
 //! @brief Get the current TCP host address being used for viewing.
 //! @return current TCP host address being used for viewing
-inline std::string currentViewerTCPHost()
+inline std::string viewerTCPHost()
 {
-    return View::getInstance().viewerTCPHost();
+    return View::getInstance().getTCPHost();
 }
 //! @brief Get the current TCP port number being used for viewing.
 //! @return current TCP port number being used for viewing
-inline std::uint16_t currentViewerTCPPort()
+inline std::uint16_t viewerTCPPort()
 {
-    return View::getInstance().viewerTCPPort();
+    return View::getInstance().getTCPPort();
 }
 //! @brief Get the current UDP host address being used for viewing.
 //! @return current UDP host address being used for viewing
-inline std::string currentViewerUDPHost()
+inline std::string viewerUDPHost()
 {
-    return View::getInstance().viewerUDPHost();
+    return View::getInstance().getUDPHost();
 }
 //! @brief Get the current UDP port number being used for viewing.
 //! @return current UDP port number being used for viewing
-inline std::uint16_t currentViewerUDPPort()
+inline std::uint16_t viewerUDPPort()
 {
-    return View::getInstance().viewerUDPPort();
+    return View::getInstance().getUDPPort();
 }
-//! @brief Try to parse TLV Packet by viewer.
-//! @param buffer - TLV packet buffer
-//! @param length - buffer length
-//! @return TLV packet through viewer parsing
-inline tlv::TLVValue tryParseTLVPacket(char* buffer, const int length)
-{
-    return View::getInstance().parseTLVPacket(buffer, length);
-}
-//! @brief Try to wait due to the viewer output is incomplete.
-inline void tryAwaitDueToOutput()
-{
-    View::getInstance().awaitDueToOutput();
-}
-//! @brief Try to wake due to the viewer output is complete.
-inline void tryAwakenDueToOutput()
-{
-    View::getInstance().awakenDueToOutput();
-}
+} // namespace info
 } // namespace view
 } // namespace application
