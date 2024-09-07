@@ -21,40 +21,40 @@
 #include "utility/include/time.hpp"
 
 //! @brief Log with debug level.
-#define LOG_DBG                                           \
-    if (application::config::activateHelper()) [[likely]] \
+#define LOG_DBG                                                   \
+    if (application::config::detail::activateHelper()) [[likely]] \
     application::log::Log::Holder<application::log::Log::OutputLevel::debug>(__FILE__, __LINE__).stream()
 //! @brief Log with debug level (formatted).
-#define LOG_DBG_F(fmt, ...)                               \
-    if (application::config::activateHelper()) [[likely]] \
-    application::log::Log::getInstance().flush(           \
+#define LOG_DBG_F(fmt, ...)                                       \
+    if (application::config::detail::activateHelper()) [[likely]] \
+    application::log::Log::getInstance().flush(                   \
         application::log::Log::OutputLevel::debug, __FILE__, __LINE__, fmt __VA_OPT__(, ) __VA_ARGS__)
 //! @brief Log with info level.
-#define LOG_INF                                           \
-    if (application::config::activateHelper()) [[likely]] \
+#define LOG_INF                                                   \
+    if (application::config::detail::activateHelper()) [[likely]] \
     application::log::Log::Holder<application::log::Log::OutputLevel::info>(__FILE__, __LINE__).stream()
 //! @brief Log with info level (formatted).
-#define LOG_INF_F(fmt, ...)                               \
-    if (application::config::activateHelper()) [[likely]] \
-    application::log::Log::getInstance().flush(           \
+#define LOG_INF_F(fmt, ...)                                       \
+    if (application::config::detail::activateHelper()) [[likely]] \
+    application::log::Log::getInstance().flush(                   \
         application::log::Log::OutputLevel::info, __FILE__, __LINE__, fmt __VA_OPT__(, ) __VA_ARGS__)
 //! @brief Log with warning level.
-#define LOG_WRN                                           \
-    if (application::config::activateHelper()) [[likely]] \
+#define LOG_WRN                                                   \
+    if (application::config::detail::activateHelper()) [[likely]] \
     application::log::Log::Holder<application::log::Log::OutputLevel::warning>(__FILE__, __LINE__).stream()
 //! @brief Log with warning level (formatted).
-#define LOG_WRN_F(fmt, ...)                               \
-    if (application::config::activateHelper()) [[likely]] \
-    application::log::Log::getInstance().flush(           \
+#define LOG_WRN_F(fmt, ...)                                       \
+    if (application::config::detail::activateHelper()) [[likely]] \
+    application::log::Log::getInstance().flush(                   \
         application::log::Log::OutputLevel::warning, __FILE__, __LINE__, fmt __VA_OPT__(, ) __VA_ARGS__)
 //! @brief Log with error level.
-#define LOG_ERR                                           \
-    if (application::config::activateHelper()) [[likely]] \
+#define LOG_ERR                                                   \
+    if (application::config::detail::activateHelper()) [[likely]] \
     application::log::Log::Holder<application::log::Log::OutputLevel::error>(__FILE__, __LINE__).stream()
 //! @brief Log with error level (formatted).
-#define LOG_ERR_F(fmt, ...)                               \
-    if (application::config::activateHelper()) [[likely]] \
-    application::log::Log::getInstance().flush(           \
+#define LOG_ERR_F(fmt, ...)                                       \
+    if (application::config::detail::activateHelper()) [[likely]] \
+    application::log::Log::getInstance().flush(                   \
         application::log::Log::OutputLevel::error, __FILE__, __LINE__, fmt __VA_OPT__(, ) __VA_ARGS__)
 
 //! @brief The application module.
@@ -211,10 +211,10 @@ public:
     void requestToReset();
     //! @brief Get the log file path.
     //! @return log file path
-    std::string loggerFilePath() const;
+    std::string getFilePath() const;
     //! @brief Get the log file lock.
     //! @return log file lock
-    utility::common::ReadWriteLock& loggerFileLock();
+    utility::common::ReadWriteLock& getFileLock();
 
     //! @brief Flush log to queue.
     //! @tparam Args - type of arguments of format
@@ -264,15 +264,15 @@ private:
     //! @param initState - initialization value of state
     explicit Log(const StateType initState = State::init) noexcept :
         FSM(initState),
-        filePath(getFullLogPath(config::filePath4Logger())),
-        writeType(OutputType(config::writeType4Logger())),
-        minimumLevel(OutputLevel(config::minimumLevel4Logger())),
-        usedMedium(OutputMedium(config::usedMedium4Logger()))
+        filePath(getFullLogPath(config::detail::filePath4Logger())),
+        writeType(OutputType(config::detail::writeType4Logger())),
+        minimumLevel(OutputLevel(config::detail::minimumLevel4Logger())),
+        usedMedium(OutputMedium(config::detail::usedMedium4Logger()))
     {
     }
 
     //! @brief Timeout period (ms) to waiting for the logger to change to the target state.
-    const std::uint32_t timeoutPeriod{static_cast<std::uint32_t>(config::helperTimeout())};
+    const std::uint32_t timeoutPeriod{static_cast<std::uint32_t>(config::detail::helperTimeout())};
     //! @brief The queue of logs.
     std::queue<std::string> logQueue{};
     //! @brief Mutex for controlling daemon.
@@ -465,17 +465,21 @@ void Log::flush(
     }
 }
 
+//! @brief Instance information, if enabled.
+namespace info
+{
 //! @brief Get the current log file path.
 //! @return current log file path
-inline std::string currentLoggerFilePath()
+inline std::string loggerFilePath()
 {
-    return Log::getInstance().loggerFilePath();
+    return Log::getInstance().getFilePath();
 }
 //! @brief Get the current log file lock.
 //! @return current log file lock
-inline utility::common::ReadWriteLock& currentLoggerFileLock()
+inline utility::common::ReadWriteLock& loggerFileLock()
 {
-    return Log::getInstance().loggerFileLock();
+    return Log::getInstance().getFileLock();
 }
+} // namespace info
 } // namespace log
 } // namespace application

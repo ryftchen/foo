@@ -48,7 +48,7 @@ const HlRegex& logStyle()
 
 Log& Log::getInstance()
 {
-    if (!config::activateHelper()) [[unlikely]]
+    if (!config::detail::activateHelper()) [[unlikely]]
     {
         throw std::logic_error("The logger is disabled.");
     }
@@ -181,12 +181,12 @@ catch (const std::exception& err)
     LOG_ERR << err.what();
 }
 
-std::string Log::loggerFilePath() const
+std::string Log::getFilePath() const
 {
     return filePath;
 }
 
-utility::common::ReadWriteLock& Log::loggerFileLock()
+utility::common::ReadWriteLock& Log::getFileLock()
 {
     return fileLock;
 }
