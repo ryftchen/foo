@@ -151,8 +151,9 @@ jobs:
           sed -i 's/FOO_BLD_PCH=.*/FOO_BLD_PCH=on/' ./script/.build_env
           sed -i 's/FOO_BLD_UNITY=.*/FOO_BLD_UNITY=on/' ./script/.build_env
           sed -i 's/FOO_BLD_CCACHE=.*/FOO_BLD_CCACHE=on/' ./script/.build_env
-          sed -i 's/FOO_BLD_DISTCC=.*/FOO_BLD_DISTCC="0.0.0.0,lzo"/' ./script/.build_env
+          sed -i 's/FOO_BLD_DISTCC=.*/FOO_BLD_DISTCC="127.0.0.1,lzo"/' ./script/.build_env
           sed -i 's/FOO_BLD_TMPFS=.*/FOO_BLD_TMPFS=on/' ./script/.build_env
+          distccd --daemon --allow 127.0.0.1/32
           ./script/run.py --dump
           ./script/run.py --test --build dbg --repeat 1
           ./script/run.py --analyze
