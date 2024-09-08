@@ -1075,7 +1075,7 @@ e.g. with \"distccd --daemon --allow ${local_client}\"."
     fi
 }
 
-function build_target()
+function build_native()
 {
     if ! command -v cmake >/dev/null 2>&1 || ! command -v ninja >/dev/null 2>&1; then
         die "No cmake or ninja program. Please install it."
@@ -1158,7 +1158,7 @@ function main()
 
     parse_parameters "$@"
     try_to_perform_single_choice_options
-    build_target
+    build_native
     try_to_perform_multiple_choice_options
 
     exit "${STATUS}"
