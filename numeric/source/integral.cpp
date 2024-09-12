@@ -182,15 +182,13 @@ double MonteCarlo::operator()(double lower, double upper, const double eps) cons
 double MonteCarlo::sampleFromUniformDistribution(const double lower, const double upper, const double eps) const
 {
     const std::uint32_t n = std::max<std::uint32_t>((upper - lower) / eps, 1.0 / eps);
-    std::vector<double> cache(n);
-
-    refreshRandomCache(cache, lower, upper);
+    std::uniform_real_distribution<double> dist(lower, upper);
+    std::mt19937 engine(std::random_device{}());
     double sum = 0.0;
     for (std::uint32_t i = 0; i < n; ++i)
     {
-        sum += expr(cache[i]);
+        sum += expr(dist(engine));
     }
-
     sum *= (upper - lower) / n; // I≈(b-a)/N*[F(X1)+F(X2)+...+F(Xn)]
 
     return sum;
@@ -218,19 +216,5 @@ double MonteCarlo::sampleFromNormalDistribution(const double lower, const double
     sum /= n;
 
     return sum;
-}
-
-void MonteCarlo::refreshRandomCache(std::vector<double>& cache, const double min, const double max)
-{
-    std::uniform_real_distribution<double> dist(min, max);
-    std::mt19937 engine(std::random_device{}());
-
-    std::generate(
-        cache.begin(),
-        cache.end(),
-        [&dist, &engine]()
-        {
-            return dist(engine);
-        });
 }
 } // namespace numeric::integral

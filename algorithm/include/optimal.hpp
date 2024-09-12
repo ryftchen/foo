@@ -203,8 +203,8 @@ private:
     using Chromosome = std::vector<std::uint8_t>;
     //! @brief Alias for the population in species.
     using Population = std::vector<Chromosome>;
-    //! @brief Decode attributes of species.
-    struct DecodeAttribute
+    //! @brief Properties of species.
+    struct Property
     {
         //! @brief Left endpoint.
         double lower{0.0};
@@ -212,7 +212,7 @@ private:
         double upper{0.0};
         //! @brief The precision of calculation.
         double eps{0.0};
-    } /** @brief A DecodeAttribute object for storing decode attributes of species. */ decodeAttr{};
+    } /** @brief A Property object for storing properties of species. */ property{};
     //! @brief Update species.
     //! @param left - left endpoint
     //! @param right - right endpoint
