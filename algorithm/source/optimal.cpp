@@ -110,7 +110,7 @@ std::optional<std::tuple<double, double>> Annealing::operator()(const double lef
 std::optional<std::tuple<double, double>> Particle::operator()(const double left, const double right, const double eps)
 {
     std::uniform_real_distribution<double> candidate(left, right), v(vMin, vMax);
-    auto swarm = Swarm(size, Individual{});
+    Swarm swarm(size, Individual{});
     std::generate(
         swarm.begin(),
         swarm.end(),
@@ -214,12 +214,12 @@ std::optional<std::tuple<double, double>> Genetic::operator()(const double left,
 
 void Genetic::updateSpecies(const double left, const double right, const double eps)
 {
-    decodeAttr.lower = left;
-    decodeAttr.upper = right;
-    decodeAttr.eps = eps;
+    property.lower = left;
+    property.upper = right;
+    property.eps = eps;
 
     std::uint32_t num = 0;
-    const double max = (decodeAttr.upper - decodeAttr.lower) * (1.0 / decodeAttr.eps);
+    const double max = (property.upper - property.lower) * (1.0 / property.eps);
     while ((max <= std::pow(2, num)) || (max >= std::pow(2, num + 1)))
     {
         ++num;
@@ -240,7 +240,7 @@ double Genetic::geneticDecode(const Chromosome& chr) const
             convert += bit * std::pow(2, index);
             ++index;
         });
-    return decodeAttr.lower + (decodeAttr.upper - decodeAttr.lower) * convert / max;
+    return property.lower + (property.upper - property.lower) * convert / max;
 }
 
 Genetic::Population Genetic::populationInit()
@@ -352,7 +352,7 @@ std::optional<std::pair<double, double>> Genetic::fitnessLinearTransformation(co
 
     const double reFitnessMin = *(std::min_element(std::cbegin(reFitness), std::cend(reFitness))),
                  reFitnessAvg = std::accumulate(std::cbegin(reFitness), std::cend(reFitness), 0.0) / reFitness.size();
-    if (std::fabs(reFitnessMin - reFitnessAvg) < decodeAttr.eps)
+    if (std::fabs(reFitnessMin - reFitnessAvg) < property.eps)
     {
         return std::nullopt;
     }
