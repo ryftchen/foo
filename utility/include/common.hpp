@@ -182,15 +182,6 @@ private:
     std::atomic_flag flag = ATOMIC_FLAG_INIT;
 };
 
-//! @brief Enumerate specific lock modes.
-enum class LockMode : std::uint8_t
-{
-    //! @brief Read.
-    read,
-    //! @brief Write.
-    write
-};
-
 //! @brief Lock to control reading and writing.
 class ReadWriteLock
 {
@@ -208,6 +199,14 @@ public:
     void writeLock();
     //! @brief Release a write lock.
     void writeUnlock();
+    //! @brief Enumerate specific lock modes.
+    enum class LockMode : std::uint8_t
+    {
+        //! @brief Read.
+        read,
+        //! @brief Write.
+        write
+    };
 
 private:
     //! @brief Handling of shared and exclusive locks.
@@ -229,7 +228,7 @@ public:
     //! @brief Construct a new ReadWriteGuard object.
     //! @param lock - object managed by the guard
     //! @param mode - lock mode
-    ReadWriteGuard(ReadWriteLock& lock, const LockMode mode);
+    ReadWriteGuard(ReadWriteLock& lock, const ReadWriteLock::LockMode mode);
     //! @brief Destroy the ReadWriteGuard object.
     virtual ~ReadWriteGuard();
 
@@ -237,7 +236,7 @@ private:
     //! @brief Object managed by the guard.
     ReadWriteLock& lock;
     //! @brief Lock mode.
-    const LockMode mode{};
+    const ReadWriteLock::LockMode mode{};
 };
 
 extern std::string formatString(const std::string_view format, ...);

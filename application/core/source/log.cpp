@@ -254,9 +254,7 @@ void Log::tryCreateLogFolder() const
 
 void Log::openLogFile()
 {
-    namespace common = utility::common;
-
-    common::ReadWriteGuard guard(fileLock, common::LockMode::write);
+    utility::common::ReadWriteGuard guard(fileLock, LockMode::write);
     tryCreateLogFolder();
     switch (writeType)
     {
@@ -273,9 +271,7 @@ void Log::openLogFile()
 
 void Log::closeLogFile()
 {
-    namespace common = utility::common;
-
-    common::ReadWriteGuard guard(fileLock, common::LockMode::write);
+    utility::common::ReadWriteGuard guard(fileLock, LockMode::write);
     logWriter.unlock();
     logWriter.close();
     if (std::filesystem::exists(filePath) && (std::filesystem::file_size(filePath) == 0))
@@ -361,8 +357,6 @@ void Log::awaitNotification2Ongoing()
 
 void Log::awaitNotification2Log()
 {
-    namespace common = utility::common;
-
     while (ongoing.load())
     {
         std::unique_lock<std::mutex> lock(daemonMtx);
@@ -378,7 +372,7 @@ void Log::awaitNotification2Log()
             break;
         }
 
-        common::ReadWriteGuard guard(fileLock, common::LockMode::write);
+        utility::common::ReadWriteGuard guard(fileLock, LockMode::write);
         while (!logQueue.empty())
         {
             switch (usedMedium)

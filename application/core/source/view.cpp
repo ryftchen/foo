@@ -840,9 +840,7 @@ void View::segmentedOutput(const std::string& buffer)
 
 std::string View::getLogContents()
 {
-    namespace common = utility::common;
-
-    common::ReadWriteGuard guard(log::info::loggerFileLock(), common::LockMode::read);
+    utility::common::ReadWriteGuard guard(log::info::loggerFileLock(), LockMode::read);
     auto contents = utility::io::getFileContents(log::info::loggerFilePath(), false, true);
     std::for_each(
         contents.begin(),

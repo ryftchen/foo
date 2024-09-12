@@ -271,6 +271,8 @@ private:
     {
     }
 
+    //! @brief Alias for the lock mode.
+    using LockMode = utility::common::ReadWriteLock::LockMode;
     //! @brief Timeout period (ms) to waiting for the logger to change to the target state.
     const std::uint32_t timeoutPeriod{static_cast<std::uint32_t>(config::detail::helperTimeout())};
     //! @brief The queue of logs.
