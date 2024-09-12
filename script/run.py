@@ -480,7 +480,7 @@ class Task:
             os.mkdir(folder_path)
         case_folders = [folder.path for folder in os.scandir(folder_path) if folder.is_dir()]
         case_folders_with_ctime = [(folder, os.path.getctime(folder)) for folder in case_folders]
-        case_folders_with_ctime.sort(key=lambda x: x[1])
+        case_folders_with_ctime.sort(key=lambda pair: pair[1])
         sorted_case_folders = [os.path.basename(folder[0]) for folder in case_folders_with_ctime]
         case_names = [
             Path(f"{folder[0]}/case_name")
