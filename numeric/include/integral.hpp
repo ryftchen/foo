@@ -7,7 +7,6 @@
 #pragma once
 
 #include <cstdint>
-#include <vector>
 
 //! @brief The numeric module.
 namespace numeric // NOLINT (modernize-concat-nested-namespaces)
