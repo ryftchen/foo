@@ -198,6 +198,27 @@ static Awaitable helperLifecycle()
     awaitLatch.wait();
 }
 
+//! @brief Mapping table for enum and string about command categories. X macro.
+#define COMMAND_CATEGORY_TABLE \
+    ELEM(console, "console")   \
+    ELEM(dump, "dump")         \
+    ELEM(help, "help")         \
+    ELEM(version, "version")
+//! @brief Convert category enumeration to string.
+//! @param cat - the specific value of Category enum
+//! @return category name
+constexpr std::string_view toString(const Category cat)
+{
+//! @cond
+#define ELEM(val, str) str,
+    constexpr std::string_view table[] = {COMMAND_CATEGORY_TABLE};
+    static_assert((sizeof(table) / sizeof(table[0])) == Bottom<Category>::value);
+    return table[cat];
+//! @endcond
+#undef ELEM
+}
+#undef COMMAND_CATEGORY_TABLE
+
 Command::Command()
 {
     initializeCLI();
@@ -249,11 +270,29 @@ catch (const std::exception& err)
 void Command::initializeCLI()
 {
     mainCLI.addArgument("-h", "--help").argsNum(0).implicitVal(true).help("show help and exit");
-
+    defaultNotifier.attach(
+        std::string{toString(Category::help)},
+        std::make_shared<Notifier::Observer>(
+            [this]()
+            {
+                showHelpMessage();
+            }));
     mainCLI.addArgument("-v", "--version").argsNum(0).implicitVal(true).help("show version and exit");
-
+    defaultNotifier.attach(
+        std::string{toString(Category::version)},
+        std::make_shared<Notifier::Observer>(
+            [this]()
+            {
+                showVersionIcon();
+            }));
     mainCLI.addArgument("-d", "--dump").argsNum(0).implicitVal(true).help("dump default configuration and exit");
-
+    defaultNotifier.attach(
+        std::string{toString(Category::dump)},
+        std::make_shared<Notifier::Observer>(
+            []()
+            {
+                dumpConfiguration();
+            }));
     mainCLI.addArgument("-c", "--console")
         .argsNum(utility::argument::ArgsNumPattern::any)
         .defaultVal<std::vector<std::string>>({"usage"})
@@ -276,6 +315,13 @@ void Command::initializeCLI()
         .metavar("CMD")
         .help("run commands in console mode and exit\n"
               "separate with quotes");
+    defaultNotifier.attach(
+        std::string{toString(Category::console)},
+        std::make_shared<Notifier::Observer>(
+            [this]()
+            {
+                executeInConsole();
+            }));
 
     CategoryName category;
     ChoiceContainer choices;
@@ -293,12 +339,12 @@ void Command::initializeCLI()
         .remaining()
         .metavar("OPT")
         .help(getDescr<app_algo::MatchMethod>());
-    messageForwarder.registerHandler(
+    applyingForwarder.registerHandler(
         [](const action::UpdateChoice<app_algo::MatchMethod>& msg)
         {
             app_algo::updateChoice<app_algo::MatchMethod>(msg.cho);
         });
-    messageForwarder.registerHandler(
+    applyingForwarder.registerHandler(
         [](const action::RunChoices<app_algo::MatchMethod>& msg)
         {
             app_algo::runChoices<app_algo::MatchMethod>(msg.coll);
@@ -313,12 +359,12 @@ void Command::initializeCLI()
         .remaining()
         .metavar("OPT")
         .help(getDescr<app_algo::NotationMethod>());
-    messageForwarder.registerHandler(
+    applyingForwarder.registerHandler(
         [](const action::UpdateChoice<app_algo::NotationMethod>& msg)
         {
             app_algo::updateChoice<app_algo::NotationMethod>(msg.cho);
         });
-    messageForwarder.registerHandler(
+    applyingForwarder.registerHandler(
         [](const action::RunChoices<app_algo::NotationMethod>& msg)
         {
             app_algo::runChoices<app_algo::NotationMethod>(msg.coll);
@@ -333,12 +379,12 @@ void Command::initializeCLI()
         .remaining()
         .metavar("OPT")
         .help(getDescr<app_algo::OptimalMethod>());
-    messageForwarder.registerHandler(
+    applyingForwarder.registerHandler(
         [](const action::UpdateChoice<app_algo::OptimalMethod>& msg)
         {
             app_algo::updateChoice<app_algo::OptimalMethod>(msg.cho);
         });
-    messageForwarder.registerHandler(
+    applyingForwarder.registerHandler(
         [](const action::RunChoices<app_algo::OptimalMethod>& msg)
         {
             app_algo::runChoices<app_algo::OptimalMethod>(msg.coll);
@@ -353,12 +399,12 @@ void Command::initializeCLI()
         .remaining()
         .metavar("OPT")
         .help(getDescr<app_algo::SearchMethod>());
-    messageForwarder.registerHandler(
+    applyingForwarder.registerHandler(
         [](const action::UpdateChoice<app_algo::SearchMethod>& msg)
         {
             app_algo::updateChoice<app_algo::SearchMethod>(msg.cho);
         });
-    messageForwarder.registerHandler(
+    applyingForwarder.registerHandler(
         [](const action::RunChoices<app_algo::SearchMethod>& msg)
         {
             app_algo::runChoices<app_algo::SearchMethod>(msg.coll);
@@ -373,12 +419,12 @@ void Command::initializeCLI()
         .remaining()
         .metavar("OPT")
         .help(getDescr<app_algo::SortMethod>());
-    messageForwarder.registerHandler(
+    applyingForwarder.registerHandler(
         [](const action::UpdateChoice<app_algo::SortMethod>& msg)
         {
             app_algo::updateChoice<app_algo::SortMethod>(msg.cho);
         });
-    messageForwarder.registerHandler(
+    applyingForwarder.registerHandler(
         [](const action::RunChoices<app_algo::SortMethod>& msg)
         {
             app_algo::runChoices<app_algo::SortMethod>(msg.coll);
@@ -399,12 +445,12 @@ void Command::initializeCLI()
         .remaining()
         .metavar("OPT")
         .help(getDescr<app_dp::BehavioralInstance>());
-    messageForwarder.registerHandler(
+    applyingForwarder.registerHandler(
         [](const action::UpdateChoice<app_dp::BehavioralInstance>& msg)
         {
             app_dp::updateChoice<app_dp::BehavioralInstance>(msg.cho);
         });
-    messageForwarder.registerHandler(
+    applyingForwarder.registerHandler(
         [](const action::RunChoices<app_dp::BehavioralInstance>& msg)
         {
             app_dp::runChoices<app_dp::BehavioralInstance>(msg.coll);
@@ -420,12 +466,12 @@ void Command::initializeCLI()
         .remaining()
         .metavar("OPT")
         .help(getDescr<app_dp::CreationalInstance>());
-    messageForwarder.registerHandler(
+    applyingForwarder.registerHandler(
         [](const action::UpdateChoice<app_dp::CreationalInstance>& msg)
         {
             app_dp::updateChoice<app_dp::CreationalInstance>(msg.cho);
         });
-    messageForwarder.registerHandler(
+    applyingForwarder.registerHandler(
         [](const action::RunChoices<app_dp::CreationalInstance>& msg)
         {
             app_dp::runChoices<app_dp::CreationalInstance>(msg.coll);
@@ -441,12 +487,12 @@ void Command::initializeCLI()
         .remaining()
         .metavar("OPT")
         .help(getDescr<app_dp::StructuralInstance>());
-    messageForwarder.registerHandler(
+    applyingForwarder.registerHandler(
         [](const action::UpdateChoice<app_dp::StructuralInstance>& msg)
         {
             app_dp::updateChoice<app_dp::StructuralInstance>(msg.cho);
         });
-    messageForwarder.registerHandler(
+    applyingForwarder.registerHandler(
         [](const action::RunChoices<app_dp::StructuralInstance>& msg)
         {
             app_dp::runChoices<app_dp::StructuralInstance>(msg.coll);
@@ -466,12 +512,12 @@ void Command::initializeCLI()
         .remaining()
         .metavar("OPT")
         .help(getDescr<app_ds::LinearInstance>());
-    messageForwarder.registerHandler(
+    applyingForwarder.registerHandler(
         [](const action::UpdateChoice<app_ds::LinearInstance>& msg)
         {
             app_ds::updateChoice<app_ds::LinearInstance>(msg.cho);
         });
-    messageForwarder.registerHandler(
+    applyingForwarder.registerHandler(
         [](const action::RunChoices<app_ds::LinearInstance>& msg)
         {
             app_ds::runChoices<app_ds::LinearInstance>(msg.coll);
@@ -486,12 +532,12 @@ void Command::initializeCLI()
         .remaining()
         .metavar("OPT")
         .help(getDescr<app_ds::TreeInstance>());
-    messageForwarder.registerHandler(
+    applyingForwarder.registerHandler(
         [](const action::UpdateChoice<app_ds::TreeInstance>& msg)
         {
             app_ds::updateChoice<app_ds::TreeInstance>(msg.cho);
         });
-    messageForwarder.registerHandler(
+    applyingForwarder.registerHandler(
         [](const action::RunChoices<app_ds::TreeInstance>& msg)
         {
             app_ds::runChoices<app_ds::TreeInstance>(msg.coll);
@@ -511,12 +557,12 @@ void Command::initializeCLI()
         .remaining()
         .metavar("OPT")
         .help(getDescr<app_num::ArithmeticMethod>());
-    messageForwarder.registerHandler(
+    applyingForwarder.registerHandler(
         [](const action::UpdateChoice<app_num::ArithmeticMethod>& msg)
         {
             app_num::updateChoice<app_num::ArithmeticMethod>(msg.cho);
         });
-    messageForwarder.registerHandler(
+    applyingForwarder.registerHandler(
         [](const action::RunChoices<app_num::ArithmeticMethod>& msg)
         {
             app_num::runChoices<app_num::ArithmeticMethod>(msg.coll);
@@ -531,12 +577,12 @@ void Command::initializeCLI()
         .remaining()
         .metavar("OPT")
         .help(getDescr<app_num::DivisorMethod>());
-    messageForwarder.registerHandler(
+    applyingForwarder.registerHandler(
         [](const action::UpdateChoice<app_num::DivisorMethod>& msg)
         {
             app_num::updateChoice<app_num::DivisorMethod>(msg.cho);
         });
-    messageForwarder.registerHandler(
+    applyingForwarder.registerHandler(
         [](const action::RunChoices<app_num::DivisorMethod>& msg)
         {
             app_num::runChoices<app_num::DivisorMethod>(msg.coll);
@@ -551,12 +597,12 @@ void Command::initializeCLI()
         .remaining()
         .metavar("OPT")
         .help(getDescr<app_num::IntegralMethod>());
-    messageForwarder.registerHandler(
+    applyingForwarder.registerHandler(
         [](const action::UpdateChoice<app_num::IntegralMethod>& msg)
         {
             app_num::updateChoice<app_num::IntegralMethod>(msg.cho);
         });
-    messageForwarder.registerHandler(
+    applyingForwarder.registerHandler(
         [](const action::RunChoices<app_num::IntegralMethod>& msg)
         {
             app_num::runChoices<app_num::IntegralMethod>(msg.coll);
@@ -571,12 +617,12 @@ void Command::initializeCLI()
         .remaining()
         .metavar("OPT")
         .help(getDescr<app_num::PrimeMethod>());
-    messageForwarder.registerHandler(
+    applyingForwarder.registerHandler(
         [](const action::UpdateChoice<app_num::PrimeMethod>& msg)
         {
             app_num::updateChoice<app_num::PrimeMethod>(msg.cho);
         });
-    messageForwarder.registerHandler(
+    applyingForwarder.registerHandler(
         [](const action::RunChoices<app_num::PrimeMethod>& msg)
         {
             app_num::runChoices<app_num::PrimeMethod>(msg.coll);
@@ -629,7 +675,7 @@ void Command::validate()
 {
     for (std::uint8_t i = 0; i < Bottom<Category>::value; ++i)
     {
-        if (!mainCLI.isUsed(std::next(basicCategories.cbegin(), Category(i))->first))
+        if (!mainCLI.isUsed(toString(Category(i))))
         {
             continue;
         }
@@ -680,7 +726,7 @@ void Command::validate()
                                               {
                                                   using EventType = std::decay_t<decltype(event)>;
 
-                                                  messageForwarder.onMessage(action::UpdateChoice<EventType>{target});
+                                                  applyingForwarder.onMessage(action::UpdateChoice<EventType>{target});
                                               }},
                     categoryAttr.event);
             }
@@ -701,7 +747,7 @@ void Command::dispatch()
         {
             if (dispatchManager.basicManager.categories.test(Category(i)))
             {
-                (this->*std::next(basicCategories.cbegin(), Category(i))->second)();
+                defaultNotifier.notify(std::string{toString(Category(i))});
             }
         }
     }
@@ -732,7 +778,7 @@ void Command::dispatch()
                                           {
                                               using EventType = std::decay_t<decltype(event)>;
 
-                                              messageForwarder.onMessage(action::RunChoices<EventType>{candidates});
+                                              applyingForwarder.onMessage(action::RunChoices<EventType>{candidates});
                                           }},
                 categoryAttr.event);
         }
@@ -810,8 +856,7 @@ void Command::executeInConsole() const
         return;
     }
 
-    const auto& pendingInputs =
-        mainCLI.get<std::vector<std::string>>(std::next(basicCategories.cbegin(), Category::console)->first);
+    const auto& pendingInputs = mainCLI.get<std::vector<std::string>>(toString(Category::console));
     if (pendingInputs.empty())
     {
         return;
@@ -837,8 +882,7 @@ void Command::showHelpMessage() const
     std::cout << mainCLI.help().str() << std::flush;
 }
 
-// NOLINTNEXTLINE (readability-convert-member-functions-to-static)
-void Command::dumpConfiguration() const
+void Command::dumpConfiguration()
 {
     std::cout << config::getDefaultConfiguration() << std::endl;
 }

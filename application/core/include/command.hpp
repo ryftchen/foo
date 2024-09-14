@@ -113,12 +113,58 @@ private:
     //! @brief Print help message.
     void showHelpMessage() const;
     //! @brief Dump configuration.
-    void dumpConfiguration() const;
+    static void dumpConfiguration();
     //! @brief Print version icon.
     void showVersionIcon() const;
     //! @brief Check for excessive arguments.
     void checkForExcessiveArguments();
 
+    //! @brief Gather and notify observers.
+    class Notifier
+    {
+    public:
+        //! @brief Destroy the Notifier object.
+        virtual ~Notifier() = default;
+
+        //! @brief An observer that performs an action when notified.
+        class Observer
+        {
+        public:
+            //! @brief Construct a new Observer object.
+            //! @param callback - function to be called when the observer is updated
+            explicit Observer(const std::function<void()>& callback) : callback(callback) {}
+            //! @brief Destroy the Observer object.
+            virtual ~Observer() = default;
+
+            //! @brief Call the stored callback function.
+            void update() const { callback(); }
+
+        private:
+            //! @brief Callback function to invoke.
+            const std::function<void()> callback{};
+        };
+        //! @brief Attach an observer with a specific key to the notifier.
+        //! @param key - unique identifier for the observer
+        //! @param observer - observer to attach
+        void attach(const std::string& key, const std::shared_ptr<Observer>& observer) { observers[key] = observer; }
+        //! @brief Notify the observer associated with the given key.
+        //! @param key - unique identifier for the observer
+        void notify(const std::string& key) const
+        {
+            const auto iter = observers.find(key);
+            if (iter != observers.cend())
+            {
+                if (const auto observer = iter->second)
+                {
+                    observer->update();
+                }
+            }
+        }
+
+    private:
+        //! @brief Map of observers identified by a key.
+        std::map<std::string, std::shared_ptr<Observer>> observers{};
+    };
     //! @brief Alias for the sub-cli name.
     using SubCLIName = std::string;
     //! @brief Alias for the category name.
@@ -139,7 +185,6 @@ private:
     using CategoryExtMap = std::map<CategoryName, CategoryExtAttr>;
     //! @brief Alias for the map of SubCLIName and CategoryExtMap.
     using RegularChoiceMap = std::map<SubCLIName, CategoryExtMap>;
-
     //! @brief Get the description.
     //! @tparam T - type of sub-cli or category
     //! @return description
@@ -167,20 +212,6 @@ private:
     //! @return all choices
     template <class Cat>
     static ChoiceContainer extractChoices();
-
-    // clang-format off
-    //! @brief Mapping table of all basic categories.
-    const std::map<CategoryName, void (Command::*)() const> basicCategories
-    {
-        // - Category -+----------- Functor -----------
-        // ------------+-------------------------------
-        { "console"    , &Command::executeInConsole  },
-        { "dump"       , &Command::dumpConfiguration },
-        { "help"       , &Command::showHelpMessage   },
-        { "version"    , &Command::showVersionIcon   }
-        // ------------+-------------------------------
-    };
-    // clang-format on
     //! @brief Mapping table of all regular choices. Fill as needed.
     RegularChoiceMap regularChoices{};
 
@@ -197,7 +228,6 @@ private:
         //! @brief Reset bit flags that manage basic categories.
         inline void reset() { categories.reset(); }
     };
-
     //! @brief Manage regular choices of sub-cli.
     class RegularManager
     {
@@ -263,7 +293,6 @@ private:
             throw std::logic_error("There can only be one order for the regular choices.");
         }
     };
-
     //! @brief Manage all types of tasks.
     struct DispatchManager
     {
@@ -282,8 +311,10 @@ private:
             regularManager.reset();
         }
     } /** @brief Dispatch all types of tasks. */ dispatchManager{};
-    //! @brief Forward messages for applying.
-    action::MessageForwarder messageForwarder{};
+    //! @brief Notify for basic type tasks.
+    Notifier defaultNotifier{};
+    //! @brief Forward messages for regular type tasks.
+    action::MessageForwarder applyingForwarder{};
 
     //! @brief Enter console mode.
     static void enterConsoleMode();
