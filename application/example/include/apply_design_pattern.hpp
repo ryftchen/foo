@@ -216,7 +216,7 @@ public:
         namespace command = design_pattern::behavioral::command;
         using command::Command, command::ConcreteCommand, command::Invoker, command::Receiver;
 
-        std::shared_ptr<ConcreteCommand> commands = std::make_shared<ConcreteCommand>((std::make_shared<Receiver>()));
+        std::shared_ptr<ConcreteCommand> commands = std::make_shared<ConcreteCommand>(std::make_shared<Receiver>());
 
         Invoker invoker;
         invoker.set(commands);
