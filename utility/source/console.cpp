@@ -53,7 +53,7 @@ Console::Console(const std::string& greeting) : impl(std::make_unique<Impl>(gree
             std::cout << std::flush;
             return RetCode::success;
         },
-        "show usage");
+        "show how to use");
     impl->regOrder.emplace_back("usage");
 
     impl->regMap["quit"] = std::make_pair(
@@ -62,7 +62,7 @@ Console::Console(const std::string& greeting) : impl(std::make_unique<Impl>(gree
             std::cout << "exit" << std::endl;
             return RetCode::quit;
         },
-        "exit console mode");
+        "exit the console");
     impl->regOrder.emplace_back("quit");
 
     impl->regMap["batch"] = std::make_pair(
@@ -74,7 +74,7 @@ Console::Console(const std::string& greeting) : impl(std::make_unique<Impl>(gree
             }
             return RetCode(fileExecutor(input.at(1)));
         },
-        "run batch commands in file [inputs: FILE]");
+        "run lines from the file [inputs: FILE]");
     impl->regOrder.emplace_back("batch");
 }
 
