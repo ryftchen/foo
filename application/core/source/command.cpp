@@ -791,6 +791,7 @@ Command::ChoiceContainer Command::extractChoices()
     using TypeInfo = utility::reflection::TypeInfo<T>;
 
     ChoiceContainer choices;
+    choices.reserve(TypeInfo::fields.size);
     TypeInfo::fields.forEach(
         [&choices](auto field)
         {
@@ -864,12 +865,12 @@ void Command::executeInConsole() const
 
     auto udpClient = std::make_shared<utility::socket::UDPSocket>();
     launchClient(udpClient);
-    utility::console::Console console(" > ");
-    registerOnConsole(console, udpClient);
+    const auto console = std::make_shared<utility::console::Console>(" > ");
+    registerOnConsole(*console, udpClient);
 
     for (const auto& cmd : pendingInputs)
     {
-        console.commandExecutor(cmd);
+        console->commandExecutor(cmd);
     }
 
     udpClient->toSend(utility::common::base64Encode("stop"));
@@ -944,21 +945,21 @@ try
         hostName[HOST_NAME_MAX - 1] = '\0';
     }
     const std::string greeting = user + '@' + std::string{hostName} + " foo > ";
-    Console console(greeting);
-    registerOnConsole(console, tcpClient);
+    const auto console = std::make_shared<utility::console::Console>(greeting);
+    registerOnConsole(*console, tcpClient);
 
     int retVal = success;
     do
     {
         try
         {
-            retVal = console.readCommandLine();
+            retVal = console->readCommandLine();
         }
         catch (const std::exception& err)
         {
             LOG_WRN << err.what();
         }
-        console.setGreeting(greeting);
+        console->setGreeting(greeting);
         utility::time::millisecondLevelSleep(latency);
     }
     while (quit != retVal);

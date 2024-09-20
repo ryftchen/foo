@@ -305,7 +305,7 @@ catch (...)
 inline namespace
 {
 //! @brief The semaphore that controls the maximum access limit.
-static std::counting_semaphore<maxAccessLimit> configSem{maxAccessLimit};
+static std::counting_semaphore<maxAccessLimit> configSem(maxAccessLimit);
 } // namespace
 
 //! @brief Retrieve data.
