@@ -20,18 +20,27 @@ const char* version() noexcept
 
 void Time::setBeginTime()
 {
-    beginTime = std::chrono::steady_clock::now();
+    beginTime = std::chrono::high_resolution_clock::now();
 }
 
 void Time::setEndTime()
 {
-    endTime = std::chrono::steady_clock::now();
+    endTime = std::chrono::high_resolution_clock::now();
 }
 
 double Time::getTimeInterval() const
 {
-    const std::chrono::duration<double, std::milli> timeInterval =
-        std::chrono::duration<double, std::milli>(endTime - beginTime);
+    if ((std::chrono::high_resolution_clock::time_point{} == beginTime)
+        || (std::chrono::high_resolution_clock::time_point{} == endTime))
+    {
+        throw std::logic_error("Either the begin time or the end time is not set.");
+    }
+    if (beginTime > endTime)
+    {
+        throw std::logic_error("The end time cannot be earlier than the begin time.");
+    }
+
+    const auto timeInterval = std::chrono::duration<double, std::milli>(endTime - beginTime);
     return timeInterval.count();
 }
 

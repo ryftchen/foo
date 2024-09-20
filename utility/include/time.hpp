@@ -42,9 +42,9 @@ public:
 
 private:
     //! @brief Beginning time.
-    std::chrono::steady_clock::time_point beginTime{};
+    std::chrono::high_resolution_clock::time_point beginTime{};
     //! @brief Ending time.
-    std::chrono::steady_clock::time_point endTime{};
+    std::chrono::high_resolution_clock::time_point endTime{};
 };
 
 extern void millisecondLevelSleep(const std::uint32_t duration);

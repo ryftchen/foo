@@ -26,7 +26,7 @@ const char* version() noexcept
 inline namespace
 {
 //! @brief Current console instance.
-static Console* currentConsole = nullptr;
+static Console* currentSession = nullptr;
 } // namespace
 
 Console::Console(const std::string& greeting) : impl(std::make_unique<Impl>(greeting))
@@ -194,14 +194,14 @@ void Console::saveState()
 
 void Console::reserveConsole()
 {
-    if (this == currentConsole)
+    if (this == currentSession)
     {
         return;
     }
 
-    if (nullptr != currentConsole)
+    if (nullptr != currentSession)
     {
-        currentConsole->saveState();
+        currentSession->saveState();
     }
 
     if (nullptr == impl->history)
@@ -213,7 +213,7 @@ void Console::reserveConsole()
         ::history_set_history_state(impl->history);
     }
 
-    currentConsole = this;
+    currentSession = this;
 }
 
 char** Console::getCommandCompleter(const char* text, int start, int /*end*/)
@@ -230,12 +230,12 @@ char** Console::getCommandCompleter(const char* text, int start, int /*end*/)
 char* Console::getCommandIterator(const char* text, int state)
 {
     static Impl::RegisteredCommand::iterator iterator;
-    if (nullptr == currentConsole)
+    if (nullptr == currentSession)
     {
         return nullptr;
     }
 
-    auto& commands = currentConsole->impl->regMap;
+    auto& commands = currentSession->impl->regMap;
     if (0 == state)
     {
         iterator = std::begin(commands);
