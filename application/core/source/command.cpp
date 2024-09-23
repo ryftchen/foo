@@ -54,6 +54,33 @@ enum class ExtEvent : std::uint8_t
     reset
 };
 
+//! @brief Trigger the external helper with event.
+//! @tparam Helper - target helper
+//! @param event - target event
+template <HelperType Helper>
+void triggerHelper(const ExtEvent event)
+{
+    if (!config::detail::activateHelper())
+    {
+        return;
+    }
+
+    switch (event)
+    {
+        case ExtEvent::start:
+            Helper::getInstance().waitForStart();
+            break;
+        case ExtEvent::stop:
+            Helper::getInstance().waitForStop();
+            break;
+        case ExtEvent::reset:
+            Helper::getInstance().requestToReset();
+            break;
+        default:
+            break;
+    }
+}
+
 //! @brief Awaitable coroutine.
 class Awaitable
 {
@@ -116,37 +143,9 @@ private:
     //! @brief Coroutine handle.
     std::coroutine_handle<promise_type> handle{};
 };
-} // namespace
-
-//! @brief Trigger the external helper with event.
-//! @tparam Helper - target helper
-//! @param event - target event
-template <HelperType Helper>
-static void triggerHelper(const ExtEvent event)
-{
-    if (!config::detail::activateHelper())
-    {
-        return;
-    }
-
-    switch (event)
-    {
-        case ExtEvent::start:
-            Helper::getInstance().waitForStart();
-            break;
-        case ExtEvent::stop:
-            Helper::getInstance().waitForStop();
-            break;
-        case ExtEvent::reset:
-            Helper::getInstance().requestToReset();
-            break;
-        default:
-            break;
-    }
-}
 
 //! @brief Helper daemon function.
-static void helperDaemon()
+void helperDaemon()
 {
     using log::Log, view::View;
 
@@ -158,7 +157,7 @@ static void helperDaemon()
 
 //! @brief Coroutine for managing the lifecycle of helper components.
 //! @return object that represents the execution of the coroutine
-static Awaitable helperLifecycle()
+Awaitable helperLifecycle()
 {
     if (!config::detail::activateHelper())
     {
@@ -197,6 +196,7 @@ static Awaitable helperLifecycle()
     asyncLauncher(ExtEvent::stop);
     awaitLatch.wait();
 }
+} // namespace
 
 //! @brief Mapping table for enum and string about command categories. X macro.
 #define COMMAND_CATEGORY_TABLE \
