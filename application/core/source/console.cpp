@@ -6,11 +6,15 @@
 
 #include "console.hpp"
 
+#ifndef __PRECOMPILED_HEADER
 #include <readline/readline.h>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
 #include <iterator>
+#else
+#include "application/pch/precompiled_header.hpp"
+#endif // __PRECOMPILED_HEADER
 
 namespace application::console
 {

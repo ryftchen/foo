@@ -8,6 +8,7 @@
 #define APPLICATION_PCH_H
 
 #include <openssl/evp.h>
+#include <readline/history.h>
 #include <readline/readline.h>
 #include <sys/prctl.h>
 #include <sys/shm.h>
@@ -31,9 +32,12 @@
 #include <cstring>
 #include <filesystem>
 #include <fstream>
+#include <functional>
+#include <iomanip>
 #include <iostream>
 #include <iterator>
 #include <latch>
+#include <list>
 #include <memory>
 #include <queue>
 #include <ranges>
