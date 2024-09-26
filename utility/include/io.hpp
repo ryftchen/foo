@@ -125,7 +125,7 @@ public:
 
 private:
     //! @brief Name of the file being read.
-    const std::string name;
+    const std::string name{};
     //! @brief File descriptor associated with the file.
     int fd{-1};
     //! @brief Custom stream buffer for reading.
@@ -172,7 +172,7 @@ public:
 
 private:
     //! @brief Name of the file being written.
-    const std::string name;
+    const std::string name{};
     //! @brief File descriptor associated with the file.
     int fd{-1};
     //! @brief Custom stream buffer for writing.
