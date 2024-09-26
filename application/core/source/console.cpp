@@ -1,6 +1,6 @@
 //! @file console.cpp
 //! @author ryftchen
-//! @brief The definitions (console) in the utility module.
+//! @brief The definitions (console) in the application module.
 //! @version 0.1.0
 //! @copyright Copyright (c) 2022-2024 ryftchen. All rights reserved.
 
@@ -12,16 +12,8 @@
 #include <iostream>
 #include <iterator>
 
-namespace utility::console
+namespace application::console
 {
-//! @brief Function version number.
-//! @return version number (major.minor.patch)
-const char* version() noexcept
-{
-    static const char* const ver = "0.1.0";
-    return ver;
-}
-
 //! @brief Anonymous namespace.
 inline namespace
 {
@@ -253,4 +245,4 @@ char* Console::getCommandIterator(const char* text, int state)
 
     return nullptr;
 }
-} // namespace utility::console
+} // namespace application::console
