@@ -62,7 +62,7 @@ target_include_directories(
     PRIVATE ${CMAKE_SOURCE_DIR}/application/core/source ${CMAKE_SOURCE_DIR}/application/example/source)
 target_link_libraries(
     ${BIN_NAME}
-    PUBLIC crypto mpfr
+    PUBLIC crypto mpfr readline
     PRIVATE foo::foo_util foo::foo_algo foo::foo_dp foo::foo_ds foo::foo_num)
 
 if(PRECOMPILED_HEADER)

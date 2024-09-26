@@ -865,12 +865,12 @@ void Command::executeInConsole() const
 
     auto udpClient = std::make_shared<utility::socket::UDPSocket>();
     launchClient(udpClient);
-    const auto console = std::make_shared<utility::console::Console>(" > ");
-    registerOnConsole(*console, udpClient);
+    const auto session = std::make_shared<console::Console>(" > ");
+    registerOnConsole(*session, udpClient);
 
     for (const auto& cmd : pendingInputs)
     {
-        console->commandExecutor(cmd);
+        session->commandExecutor(cmd);
     }
 
     udpClient->toSend(utility::common::base64Encode("stop"));
@@ -930,8 +930,7 @@ try
 #ifndef NDEBUG
     LOG_DBG << "Enter console mode.";
 #endif // NDEBUG
-    using utility::console::Console;
-    using enum Console::RetCode;
+    using enum console::Console::RetCode;
 
     std::cout << utility::io::executeCommand("tput bel ; echo '" + getIconBanner() + "' ; sleep 0.1s") << std::flush;
     auto tcpClient = std::make_shared<utility::socket::TCPSocket>();
@@ -945,21 +944,21 @@ try
         hostName[HOST_NAME_MAX - 1] = '\0';
     }
     const std::string greeting = user + '@' + std::string{hostName} + " foo > ";
-    const auto console = std::make_shared<utility::console::Console>(greeting);
-    registerOnConsole(*console, tcpClient);
+    const auto session = std::make_shared<console::Console>(greeting);
+    registerOnConsole(*session, tcpClient);
 
     int retVal = success;
     do
     {
         try
         {
-            retVal = console->readCommandLine();
+            retVal = session->readCommandLine();
         }
         catch (const std::exception& err)
         {
             LOG_WRN << err.what();
         }
-        console->setGreeting(greeting);
+        session->setGreeting(greeting);
         utility::time::millisecondLevelSleep(latency);
     }
     while (quit != retVal);
@@ -977,12 +976,12 @@ catch (const std::exception& err)
 }
 
 template <typename T>
-void Command::registerOnConsole(utility::console::Console& console, std::shared_ptr<T>& client)
+void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& client)
 {
-    using utility::console::Console;
+    using console::Console;
     using enum Console::RetCode;
 
-    console.registerCommand(
+    session.registerCommand(
         "refresh",
         [](const Console::Args& /*input*/)
         {
@@ -1004,7 +1003,7 @@ void Command::registerOnConsole(utility::console::Console& console, std::shared_
         },
         "refresh the outputs");
 
-    console.registerCommand(
+    session.registerCommand(
         "reconnect",
         [&client](const Console::Args& /*input*/)
         {
@@ -1033,7 +1032,7 @@ void Command::registerOnConsole(utility::console::Console& console, std::shared_
 
     for (const auto& [optionName, optionAttr] : view::info::getOptions())
     {
-        console.registerCommand(
+        session.registerCommand(
             optionName,
             [&client](const Console::Args& input)
             {
@@ -1073,7 +1072,6 @@ void Command::validateDependenciesVersion() const
             mainCLI.version().data(),
             utility::argument::version(),
             utility::common::version(),
-            utility::console::version(),
             utility::currying::version(),
             utility::fsm::version(),
             utility::io::version(),

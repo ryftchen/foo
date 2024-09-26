@@ -1,6 +1,6 @@
 //! @file console.hpp
 //! @author ryftchen
-//! @brief The declarations (console) in the utility module.
+//! @brief The declarations (console) in the application module.
 //! @version 0.1.0
 //! @copyright Copyright (c) 2022-2024 ryftchen. All rights reserved.
 
@@ -11,14 +11,12 @@
 #include <list>
 #include <memory>
 
-//! @brief The utility module.
-namespace utility // NOLINT (modernize-concat-nested-namespaces)
+//! @brief The application module.
+namespace application // NOLINT (modernize-concat-nested-namespaces)
 {
-//! @brief Console-mode-related functions in the utility module.
+//! @brief Console-mode-related functions in the application module.
 namespace console
 {
-extern const char* version() noexcept;
-
 //! @brief Console mode.
 class Console
 {
@@ -140,4 +138,4 @@ private:
     static CommandIteratorFunctor getCommandIterator;
 };
 } // namespace console
-} // namespace utility
+} // namespace application

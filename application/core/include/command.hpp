@@ -7,10 +7,10 @@
 #pragma once
 
 #include "action.hpp"
+#include "console.hpp"
 #include "note.hpp"
 
 #include "utility/include/argument.hpp"
-#include "utility/include/console.hpp"
 
 //! @brief The application module.
 namespace application // NOLINT (modernize-concat-nested-namespaces)
@@ -320,10 +320,10 @@ private:
     static void enterConsoleMode();
     //! @brief Register the command line to console mode.
     //! @tparam T - type of client
-    //! @param console - console to be registered
+    //! @param session - console to be registered
     //! @param client - client used to send
     template <typename T>
-    static void registerOnConsole(utility::console::Console& console, std::shared_ptr<T>& client);
+    static void registerOnConsole(console::Console& session, std::shared_ptr<T>& client);
     //! @brief Launch the client for console mode.
     //! @tparam T - type of client
     //! @param client - client to be launched
