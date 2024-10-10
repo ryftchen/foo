@@ -51,7 +51,7 @@ public:
     //! @brief Tear down.
     void TearDown() override{};
 
-    //! @brief System under test.
+    //! @brief Test suite.
     const numeric::arithmetic::Arithmetic sut{};
     //! @brief Input builder.
     static std::shared_ptr<arithmetic::InputBuilder> inputs;
@@ -108,7 +108,7 @@ public:
     //! @brief Tear down.
     void TearDown() override{};
 
-    //! @brief System under test.
+    //! @brief Test suite.
     const numeric::divisor::Divisor sut{};
     //! @brief Input builder.
     static std::shared_ptr<divisor::InputBuilder> inputs;
@@ -260,7 +260,7 @@ public:
     //! @brief Tear down.
     void TearDown() override{};
 
-    //! @brief System under test.
+    //! @brief Test suite.
     const numeric::prime::Prime sut{};
     //! @brief Input builder.
     static std::shared_ptr<prime::InputBuilder> inputs;

@@ -51,7 +51,7 @@ public:
     //! @brief Tear down.
     void TearDown() override{};
 
-    //! @brief System under test.
+    //! @brief Test suite.
     const algorithm::match::Match sut{};
     //! @brief Input builder.
     static std::shared_ptr<match::InputBuilder> inputs;
@@ -144,7 +144,7 @@ public:
     //! @brief Tear down.
     void TearDown() override{};
 
-    //! @brief System under test.
+    //! @brief Test suite.
     const algorithm::notation::Notation sut{};
     //! @brief Input builder.
     static std::shared_ptr<notation::InputBuilder> inputs;
@@ -287,7 +287,7 @@ public:
     //! @brief Tear down.
     void TearDown() override{};
 
-    //! @brief System under test.
+    //! @brief Test suite.
     const algorithm::search::Search<float> sut{};
     //! @brief Input builder.
     static std::shared_ptr<search::InputBuilder<float>> inputs;
@@ -296,7 +296,7 @@ public:
     //! @brief Update expected result.
     static void updateExpColl()
     {
-        if (nullptr != inputs)
+        if (inputs)
         {
             const auto* const orderedArray = inputs->getOrderedArray().get();
             const auto length = inputs->getLength();
@@ -363,7 +363,7 @@ public:
     //! @brief Tear down.
     void TearDown() override{};
 
-    //! @brief System under test.
+    //! @brief Test suite.
     algorithm::sort::Sort<std::int32_t> sut{};
     //! @brief Input builder.
     static std::shared_ptr<sort::InputBuilder<std::int32_t>> inputs;
@@ -372,7 +372,7 @@ public:
     //! @brief Update expected result.
     static void updateExpColl()
     {
-        if (nullptr != inputs)
+        if (inputs)
         {
             expColl = std::vector<std::int32_t>(
                 inputs->getRandomArray().get(), inputs->getRandomArray().get() + inputs->getLength());
