@@ -93,15 +93,15 @@ public:
         //! @return awaitable instance
         Awaitable get_return_object() { return Awaitable{std::coroutine_handle<promise_type>::from_promise(*this)}; }
         //! @brief Initial suspend point of the coroutine.
-        //! @return suspend_never object indicating that the coroutine should not be suspended initially
-        std::suspend_never initial_suspend() noexcept { return {}; }
+        //! @return std::suspend_never object indicating that the coroutine should not be suspended initially
+        std::suspend_never initial_suspend() const noexcept { return {}; }
         //! @brief Final suspend point of the coroutine.
-        //! @return suspend_always object indicating that the coroutine should be suspended finally
-        std::suspend_always final_suspend() noexcept { return {}; }
+        //! @return std::suspend_always object indicating that the coroutine should be suspended finally
+        std::suspend_always final_suspend() const noexcept { return {}; }
         //! @brief Complete the coroutine without returning a value.
-        void return_void() noexcept {}
+        void return_void() const noexcept {}
         //! @brief Handle exceptions thrown within the coroutine.
-        void unhandled_exception() { std::rethrow_exception(std::current_exception()); }
+        void unhandled_exception() const { std::rethrow_exception(std::current_exception()); }
     };
     // NOLINTEND (readability-identifier-naming)
 
@@ -128,7 +128,7 @@ public:
     Awaitable& operator=(Awaitable&&) = delete;
 
     //! @brief Resume the execution of the coroutine if it is suspended.
-    void resume()
+    void resume() const
     {
         if (handle)
         {
