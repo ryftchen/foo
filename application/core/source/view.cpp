@@ -502,22 +502,17 @@ int View::buildTLVPacket4Depend(const std::vector<std::string>& args, char* buf)
 #else
 #error Could not find the GNU C++ Standard library version.
 #endif // defined(_GLIBCXX_RELEASE) && defined(__GLIBCXX__)
-#if defined(OPENSSL_VERSION_STR)
-    extLibraries += "OpenSSL Library " OPENSSL_VERSION_STR "\n";
-#else
-#error Could not find the OpenSSL library version.
-#endif // defined(OPENSSL_VERSION_STR)
-#if defined(MPFR_VERSION_STRING)
-    extLibraries += "GNU MPFR Library " MPFR_VERSION_STRING "\n";
-#else
-#error Could not find the GNU MPFR library version.
-#endif // defined(MPFR_VERSION_STRING)
 #if defined(__GNU_MP_VERSION) && defined(__GNU_MP_VERSION_MINOR) && defined(__GNU_MP_VERSION_PATCHLEVEL)
     extLibraries += "GNU MP Library " COMMON_TO_STRING(__GNU_MP_VERSION) "." COMMON_TO_STRING(
         __GNU_MP_VERSION_MINOR) "." COMMON_TO_STRING(__GNU_MP_VERSION_PATCHLEVEL) "\n";
 #else
 #error Could not find the GNU MP library version.
 #endif // defined(__GNU_MP_VERSION) && defined(__GNU_MP_VERSION_MINOR) && defined(__GNU_MP_VERSION_PATCHLEVEL)
+#if defined(MPFR_VERSION_STRING)
+    extLibraries += "GNU MPFR Library " MPFR_VERSION_STRING "\n";
+#else
+#error Could not find the GNU MPFR library version.
+#endif // defined(MPFR_VERSION_STRING)
 #if defined(RL_VERSION_MAJOR) && defined(RL_VERSION_MINOR)
     extLibraries +=
         "GNU Readline Library " COMMON_TO_STRING(RL_VERSION_MAJOR) "." COMMON_TO_STRING(RL_VERSION_MINOR) "\n";
@@ -525,10 +520,15 @@ int View::buildTLVPacket4Depend(const std::vector<std::string>& args, char* buf)
 #error Could not find the GNU Readline library version.
 #endif // defined(RL_VERSION_MAJOR) && defined(RL_VERSION_MINOR)
 #if defined(NCURSES_VERSION)
-    extLibraries += "Ncurses Library " NCURSES_VERSION "";
+    extLibraries += "Ncurses Library " NCURSES_VERSION "\n";
 #else
 #error Could not find the Ncurses library version.
 #endif // defined(NCURSES_VERSION)
+#if defined(OPENSSL_VERSION_STR)
+    extLibraries += "OpenSSL Library " OPENSSL_VERSION_STR "";
+#else
+#error Could not find the OpenSSL library version.
+#endif // defined(OPENSSL_VERSION_STR)
     std::strncpy(val.libInfo, extLibraries.data(), sizeof(val.libInfo) - 1);
     val.libInfo[sizeof(val.libInfo) - 1] = '\0';
     if (tlv::tlvEncoding(buf, len, val) < 0)
@@ -1179,7 +1179,8 @@ std::ostream& operator<<(std::ostream& os, const View::State state)
             os << "HOLD";
             break;
         default:
-            os << "UNKNOWN: " << static_cast<std::underlying_type_t<View::State>>(state);
+            os << "UNKNOWN (" << static_cast<std::underlying_type_t<View::State>>(state) << ')';
+            break;
     }
 
     return os;
