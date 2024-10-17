@@ -164,7 +164,8 @@ protected:
                 os << "STRUCTURAL";
                 break;
             default:
-                os << "UNKNOWN: " << static_cast<std::underlying_type_t<Category>>(cat);
+                os << "UNKNOWN (" << static_cast<std::underlying_type_t<Category>>(cat) << ')';
+                break;
         }
         return os;
     }

@@ -327,7 +327,7 @@ public:
     [[nodiscard]] std::string dumpMinified() const;
 
     //! @brief Alias for the value in the data.
-    using Value = std::variant<Null, Object, Array, String, Floating, Integral, Boolean>;
+    using Value = std::variant<std::monostate, Null, Object, Array, String, Floating, Integral, Boolean>;
     //! @brief The data that stores JSON information.
     struct Data
     {

@@ -439,7 +439,8 @@ std::ostream& operator<<(std::ostream& os, const Log::State state)
             os << "HOLD";
             break;
         default:
-            os << "UNKNOWN: " << static_cast<std::underlying_type_t<Log::State>>(state);
+            os << "UNKNOWN (" << static_cast<std::underlying_type_t<Log::State>>(state) << ')';
+            break;
     }
 
     return os;
