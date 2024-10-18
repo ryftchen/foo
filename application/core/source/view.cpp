@@ -86,7 +86,7 @@ static int deserialize(Packet& pkt, TLVValue& val, char (TLVValue::*pl)[])
 
 //! @brief Encode the TLV packet.
 //! @param buf - TLV packet buffer
-//! @param len -  buffer length
+//! @param len - buffer length
 //! @param val - value of TLV to encode
 //! @return the value is 0 if successful, otherwise -1
 static int tlvEncoding(char* buf, int& len, const TLVValue& val)
@@ -123,7 +123,7 @@ static int tlvEncoding(char* buf, int& len, const TLVValue& val)
 
 //! @brief Decode the TLV packet.
 //! @param buf - TLV packet buffer
-//! @param len -  buffer length
+//! @param len - buffer length
 //! @param val - value of TLV to decode
 //! @return the value is 0 if successful, otherwise -1
 static int tlvDecoding(char* buf, const int len, TLVValue& val)
@@ -291,7 +291,7 @@ try
         ongoing.store(true);
 
         daemonLock.unlock();
-        daemonCv.notify_one();
+        daemonCond.notify_one();
     }
 
     utility::time::blockingTimer(
@@ -316,7 +316,7 @@ try
     {
         ongoing.store(false);
         daemonLock.unlock();
-        daemonCv.notify_one();
+        daemonCond.notify_one();
     }
 
     utility::time::blockingTimer(
@@ -341,7 +341,7 @@ try
     {
         toReset.store(true);
         daemonLock.unlock();
-        daemonCv.notify_one();
+        daemonCond.notify_one();
     }
 
     if (utility::time::blockingTimer(
@@ -351,7 +351,7 @@ try
             },
             timeoutPeriod))
     {
-        throw std::runtime_error("The viewer did not reset properly in " + std::to_string(timeoutPeriod) + "ms ...");
+        throw std::runtime_error("The viewer did not reset properly in " + std::to_string(timeoutPeriod) + " ms ...");
     }
 }
 catch (const std::exception& err)
@@ -423,7 +423,7 @@ void View::awaitDueToOutput()
     if (isInUninterruptedState(State::work))
     {
         std::unique_lock<std::mutex> outputLock(outputMtx);
-        outputCv.wait(
+        outputCond.wait(
             outputLock,
             [this]()
             {
@@ -443,7 +443,7 @@ void View::awakenDueToOutput()
     std::unique_lock<std::mutex> outputLock(outputMtx);
     outputCompleted.store(true);
     outputLock.unlock();
-    outputCv.notify_one();
+    outputCond.notify_one();
 }
 
 std::vector<std::string> View::splitString(const std::string& str)
@@ -541,27 +541,27 @@ int View::buildTLVPacket4Depend(const std::vector<std::string>& args, char* buf)
 
 int View::buildTLVPacket4Execute(const std::vector<std::string>& args, char* buf)
 {
-    std::string cmds;
+    std::string entry;
     for (const auto& arg : args)
     {
-        cmds += arg + ' ';
+        entry += arg + ' ';
     }
-    if (!cmds.empty())
+    if (!entry.empty())
     {
-        cmds.pop_back();
+        entry.pop_back();
     }
-    if (cmds.empty()
-        || ((cmds.length() == 2)
+    if (entry.empty()
+        || ((entry.length() == 2)
             && (std::all_of(
-                    cmds.cbegin(),
-                    cmds.cend(),
+                    entry.cbegin(),
+                    entry.cend(),
                     [](const auto c)
                     {
                         return '\'' == c;
                     })
                 || std::all_of(
-                    cmds.cbegin(),
-                    cmds.cend(),
+                    entry.cbegin(),
+                    entry.cend(),
                     [](const auto c)
                     {
                         return '"' == c;
@@ -569,15 +569,15 @@ int View::buildTLVPacket4Execute(const std::vector<std::string>& args, char* buf
     {
         throw std::invalid_argument("Please enter the \"execute\" and append with 'CMD' (include quotes).");
     }
-    if ((cmds.length() <= 1)
-        || (((cmds.find_first_not_of('\'') == 0) || (cmds.find_last_not_of('\'') == (cmds.length() - 1)))
-            && ((cmds.find_first_not_of('"') == 0) || (cmds.find_last_not_of('"') == (cmds.length() - 1)))))
+    if ((entry.length() <= 1)
+        || (((entry.find_first_not_of('\'') == 0) || (entry.find_last_not_of('\'') == (entry.length() - 1)))
+            && ((entry.find_first_not_of('"') == 0) || (entry.find_last_not_of('"') == (entry.length() - 1)))))
     {
         throw std::invalid_argument("Missing full quotes around the pending command.");
     }
 
     int len = 0;
-    const int shmId = fillSharedMemory(utility::io::executeCommand("/bin/bash -c " + cmds, 5000));
+    const int shmId = fillSharedMemory(utility::io::executeCommand("/bin/bash -c " + entry, 5000));
     if (tlv::tlvEncoding(buf, len, tlv::TLVValue{.bashShmId = shmId}) < 0)
     {
         throw std::runtime_error("Failed to build packet for the execute option.");
@@ -1107,7 +1107,7 @@ void View::awaitNotification2Ongoing()
 {
     if (std::unique_lock<std::mutex> daemonLock(daemonMtx); true)
     {
-        daemonCv.wait(
+        daemonCond.wait(
             daemonLock,
             [this]()
             {
@@ -1121,7 +1121,7 @@ void View::awaitNotification2View()
     while (ongoing.load())
     {
         std::unique_lock<std::mutex> daemonLock(daemonMtx);
-        daemonCv.wait(
+        daemonCond.wait(
             daemonLock,
             [this]()
             {
@@ -1139,7 +1139,7 @@ bool View::awaitNotification2Retry()
 {
     if (std::unique_lock<std::mutex> daemonLock(daemonMtx); true)
     {
-        daemonCv.wait(daemonLock);
+        daemonCond.wait(daemonLock);
     }
 
     if (toReset.load())

@@ -71,8 +71,8 @@ constexpr std::string_view infoLevelPrefix = "[INF]";
 constexpr std::string_view warningLevelPrefix = "[WRN]";
 //! @brief Prefix of error level in log.
 constexpr std::string_view errorLevelPrefix = "[ERR]";
-//! @brief Prefix of unknown level in log.
-constexpr std::string_view unknownLevelPrefix = "[UNK]";
+//! @brief Prefix of trace level in log.
+constexpr std::string_view traceLevelPrefix = "[TRC]";
 //! @brief Regular expression of debug level in log.
 constexpr std::string_view debugLevelPrefixRegex = R"(^\[DBG\])";
 //! @brief Regular expression of info level in log.
@@ -81,8 +81,8 @@ constexpr std::string_view infoLevelPrefixRegex = R"(^\[INF\])";
 constexpr std::string_view warnLevelPrefixRegex = R"(^\[WRN\])";
 //! @brief Regular expression of error level in log.
 constexpr std::string_view errorLevelPrefixRegex = R"(^\[ERR\])";
-//! @brief Regular expression of unknown level in log.
-constexpr std::string_view unknownLevelPrefixRegex = R"(^\[UNK\])";
+//! @brief Regular expression of trace level in log.
+constexpr std::string_view traceLevelPrefixRegex = R"(^\[TRC\])";
 //! @brief Regular expression of date time in log.
 constexpr std::string_view dateTimeRegex = R"(\[(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})\.(\d{6}) (\w{3})\])";
 //! @brief Regular expression of code file in log.
@@ -115,12 +115,12 @@ constinit const auto errorLevelPrefixWithColor = utility::common::joinString<
     utility::common::colorForBackground,
     errorLevelPrefix,
     utility::common::colorOff>;
-//! @brief Unknown level prefix with color. Include ANSI escape codes.
-constinit const auto unknownLevelPrefixWithColor = utility::common::joinString<
+//! @brief Trace level prefix with color. Include ANSI escape codes.
+constinit const auto traceLevelPrefixWithColor = utility::common::joinString<
     utility::common::colorInverse,
     utility::common::colorBold,
     utility::common::colorForBackground,
-    unknownLevelPrefix,
+    traceLevelPrefix,
     utility::common::colorOff>;
 //! @brief Base color of the date time. Include ANSI escape codes.
 constinit const auto dateTimeBaseColor = utility::common::joinString<
@@ -280,7 +280,7 @@ private:
     //! @brief Mutex for controlling daemon.
     mutable std::mutex daemonMtx{};
     //! @brief The synchronization condition for daemon. Use with daemonMtx.
-    std::condition_variable daemonCv{};
+    std::condition_variable daemonCond{};
     //! @brief Flag to indicate whether it is logging.
     std::atomic<bool> ongoing{false};
     //! @brief Flag for rollback request.
@@ -416,7 +416,7 @@ void Log::flush(
     std::unique_lock<std::mutex> daemonLock(daemonMtx, std::defer_lock);
     try
     {
-        std::string_view prefix = unknownLevelPrefix;
+        std::string_view prefix = traceLevelPrefix;
         if (isInUninterruptedState(State::work))
         {
             daemonLock.lock();
@@ -450,7 +450,7 @@ void Log::flush(
         {
             logQueue.push(std::move(output));
             daemonLock.unlock();
-            daemonCv.notify_one();
+            daemonCond.notify_one();
         }
         else
         {

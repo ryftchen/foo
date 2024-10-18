@@ -31,8 +31,8 @@ struct HlRegex
     const std::regex warningLevel{std::string{warnLevelPrefixRegex}};
     //! @brief Error level prefix highlighting.
     const std::regex errorLevel{std::string{errorLevelPrefixRegex}};
-    //! @brief Unknown level prefix highlighting.
-    const std::regex unknownLevel{std::string{unknownLevelPrefixRegex}};
+    //! @brief Trace level prefix highlighting.
+    const std::regex traceLevel{std::string{traceLevelPrefixRegex}};
     //! @brief Date time highlighting.
     const std::regex dateTime{std::string{dateTimeRegex}};
     //! @brief Code file highlighting.
@@ -113,7 +113,7 @@ try
     {
         ongoing.store(true);
         daemonLock.unlock();
-        daemonCv.notify_one();
+        daemonCond.notify_one();
     }
 
     utility::time::blockingTimer(
@@ -138,7 +138,7 @@ try
     {
         ongoing.store(false);
         daemonLock.unlock();
-        daemonCv.notify_one();
+        daemonCond.notify_one();
     }
 
     utility::time::blockingTimer(
@@ -163,7 +163,7 @@ try
     {
         toReset.store(true);
         daemonLock.unlock();
-        daemonCv.notify_one();
+        daemonCond.notify_one();
     }
 
     if (utility::time::blockingTimer(
@@ -173,7 +173,7 @@ try
             },
             timeoutPeriod))
     {
-        throw std::runtime_error("The logger did not reset properly in " + std::to_string(timeoutPeriod) + "ms ...");
+        throw std::runtime_error("The logger did not reset properly in " + std::to_string(timeoutPeriod) + " ms ...");
     }
 }
 catch (const std::exception& err)
@@ -346,7 +346,7 @@ void Log::awaitNotification2Ongoing()
 {
     if (std::unique_lock<std::mutex> lock(daemonMtx); true)
     {
-        daemonCv.wait(
+        daemonCond.wait(
             lock,
             [this]()
             {
@@ -360,7 +360,7 @@ void Log::awaitNotification2Log()
     while (ongoing.load())
     {
         std::unique_lock<std::mutex> lock(daemonMtx);
-        daemonCv.wait(
+        daemonCond.wait(
             lock,
             [this]()
             {
@@ -399,7 +399,7 @@ bool Log::awaitNotification2Retry()
 {
     if (std::unique_lock<std::mutex> daemonLock(daemonMtx); true)
     {
-        daemonCv.wait(daemonLock);
+        daemonCond.wait(daemonLock);
     }
 
     if (toReset.load())
@@ -468,9 +468,9 @@ const std::string& changeToLogStyle(std::string& line)
     {
         line = std::regex_replace(line, style.errorLevel, std::string{errorLevelPrefixWithColor});
     }
-    else if (std::regex_search(line, style.unknownLevel))
+    else if (std::regex_search(line, style.traceLevel))
     {
-        line = std::regex_replace(line, style.unknownLevel, std::string{unknownLevelPrefixWithColor});
+        line = std::regex_replace(line, style.traceLevel, std::string{traceLevelPrefixWithColor});
     }
 
     namespace common = utility::common;

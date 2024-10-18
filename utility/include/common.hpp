@@ -218,7 +218,7 @@ private:
     //! @brief Mutex for counters.
     mutable std::mutex mtx{};
     //! @brief The synchronization condition for counters. Use with mtx.
-    std::condition_variable cv{};
+    std::condition_variable cond{};
 };
 
 //! @brief Manage the lifetime of a lock under control.

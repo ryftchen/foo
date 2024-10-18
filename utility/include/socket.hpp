@@ -63,7 +63,7 @@ private:
 protected:
     //! @brief Construct a new Socket object.
     //! @param socketType - socket type
-    //! @param socketId -  socket id
+    //! @param socketId - socket id
     explicit Socket(const Type socketType = Type::tcp, const int socketId = -1);
     //! @brief Destroy the Socket object.
     virtual ~Socket();

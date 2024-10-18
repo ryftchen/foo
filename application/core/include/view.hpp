@@ -325,7 +325,7 @@ private:
     //! @brief Mutex for controlling daemon.
     mutable std::mutex daemonMtx{};
     //! @brief The synchronization condition for daemon. Use with daemonMtx.
-    std::condition_variable daemonCv{};
+    std::condition_variable daemonCond{};
     //! @brief Flag to indicate whether it is viewing.
     std::atomic<bool> ongoing{false};
     //! @brief Flag for rollback request.
@@ -335,7 +335,7 @@ private:
     //! @brief Mutex for controlling output.
     mutable std::mutex outputMtx{};
     //! @brief The synchronization condition for output. Use with outputMtx.
-    std::condition_variable outputCv{};
+    std::condition_variable outputCond{};
     //! @brief Flag to indicate whether the output is complete.
     std::atomic<bool> outputCompleted{false};
     //! @brief Spin lock for controlling state.
