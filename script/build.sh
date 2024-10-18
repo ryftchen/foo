@@ -870,7 +870,7 @@ function perform_doxygen_option()
         if [[ -f ./${FOLDER[doc]}/artifact/${last_tar} ]]; then
             local time_interval=$(($(date +%s) - $(stat -L --format %Y "./${FOLDER[doc]}/artifact/${last_tar}")))
             if [[ ${time_interval} -lt 60 ]]; then
-                die "The latest doxygen artifact ${last_tar} has been generated since ${time_interval}s ago."
+                die "The latest doxygen artifact ${last_tar} has been generated since ${time_interval} s ago."
             fi
         fi
         package_for_doxygen "${commit_id}"
@@ -928,7 +928,7 @@ function perform_browser_option()
         if [[ -f ./${FOLDER[doc]}/artifact/${last_tar} ]]; then
             local time_interval=$(($(date +%s) - $(stat -L --format %Y "./${FOLDER[doc]}/artifact/${last_tar}")))
             if [[ ${time_interval} -lt 60 ]]; then
-                die "The latest browser artifact ${last_tar} has been generated since ${time_interval}s ago."
+                die "The latest browser artifact ${last_tar} has been generated since ${time_interval} s ago."
             fi
         fi
         package_for_browser "${commit_id}"

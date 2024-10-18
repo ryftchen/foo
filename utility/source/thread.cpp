@@ -29,7 +29,7 @@ Thread::Thread(const std::size_t size)
                     std::packaged_task<void()> thdTask;
                     if (std::unique_lock<std::mutex> lock(mtx); true)
                     {
-                        cv.wait(
+                        cond.wait(
                             lock,
                             [this]()
                             {
@@ -72,7 +72,7 @@ Thread::~Thread()
         releaseReady.store(true);
     }
 
-    cv.notify_all();
+    cond.notify_all();
     for (auto& thd : thdColl)
     {
         if (thd.joinable())

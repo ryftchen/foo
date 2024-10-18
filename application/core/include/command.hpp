@@ -75,7 +75,7 @@ private:
     //! @brief Mutex for controlling parser.
     mutable std::mutex parserMtx{};
     //! @brief The synchronization condition for foreground and background. Use with parserMtx.
-    std::condition_variable parserCv{};
+    std::condition_variable parserCond{};
     //! @brief Flag to indicate whether parsing of arguments is completed.
     std::atomic<bool> isParsed{false};
     //! @brief Parse argument helper for commander.

@@ -55,7 +55,7 @@ void ReadWriteLock::readLock()
     std::shared_lock<std::shared_mutex> rdLock(rwLock);
     if (std::unique_lock<std::mutex> lock(mtx); true)
     {
-        cv.wait(
+        cond.wait(
             lock,
             [this]()
             {
@@ -70,7 +70,7 @@ void ReadWriteLock::readUnlock()
     std::unique_lock<std::mutex> lock(mtx);
     reader.fetch_sub(1);
     lock.unlock();
-    cv.notify_all();
+    cond.notify_all();
     lock.lock();
 }
 
@@ -79,7 +79,7 @@ void ReadWriteLock::writeLock()
     std::unique_lock<std::shared_mutex> wrLock(rwLock);
     if (std::unique_lock<std::mutex> lock(mtx); true)
     {
-        cv.wait(
+        cond.wait(
             lock,
             [this]()
             {
@@ -94,7 +94,7 @@ void ReadWriteLock::writeUnlock()
     std::unique_lock<std::mutex> lock(mtx);
     writer.fetch_sub(1);
     lock.unlock();
-    cv.notify_all();
+    cond.notify_all();
     lock.lock();
 }
 

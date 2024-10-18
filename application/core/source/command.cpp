@@ -639,12 +639,12 @@ try
 
     isParsed.store(true);
     parserLock.unlock();
-    parserCv.notify_one();
+    parserCond.notify_one();
 }
 catch (const std::exception& err)
 {
     isParsed.store(true);
-    parserCv.notify_one();
+    parserCond.notify_one();
     LOG_WRN << err.what();
 }
 
@@ -653,7 +653,7 @@ try
 {
     if (std::unique_lock<std::mutex> parserLock(parserMtx); true)
     {
-        parserCv.wait(
+        parserCond.wait(
             parserLock,
             [this]()
             {
@@ -1039,17 +1039,17 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& c
                 auto retVal = success;
                 try
                 {
-                    std::string cmds;
+                    std::string entry;
                     for (const auto& arg : input)
                     {
-                        cmds += arg + ' ';
+                        entry += arg + ' ';
                     }
-                    if (!cmds.empty())
+                    if (!entry.empty())
                     {
-                        cmds.pop_back();
+                        entry.pop_back();
                     }
 
-                    client->toSend(utility::common::base64Encode(cmds));
+                    client->toSend(utility::common::base64Encode(entry));
                     view::View::getInstance().awaitDueToOutput();
                 }
                 catch (const std::exception& err)

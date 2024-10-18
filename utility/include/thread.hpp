@@ -46,7 +46,7 @@ private:
     //! @brief Mutex for controlling queue.
     mutable std::mutex mtx{};
     //! @brief The synchronization condition for queue. Use with mtx.
-    std::condition_variable cv{};
+    std::condition_variable cond{};
     //! @brief The synchronization condition for availability of resources.
     std::condition_variable producer{};
     //! @brief Flag for ready release.
@@ -68,7 +68,7 @@ decltype(auto) Thread::enqueue(const std::string_view name, Func&& func, Args&&.
         }
         taskQueue.emplace(std::make_pair(name, std::move(task)));
     }
-    cv.notify_one();
+    cond.notify_one();
     return future;
 }
 } // namespace thread
