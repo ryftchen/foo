@@ -1012,6 +1012,7 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& c
             {
                 client->toSend(utility::common::base64Encode("stop"));
                 client->waitIfAlive();
+                utility::time::millisecondLevelSleep(latency);
                 client.reset();
                 triggerHelper<view::View>(ExtEvent::reset);
                 triggerHelper<view::View>(ExtEvent::start);
