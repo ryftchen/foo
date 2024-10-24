@@ -36,7 +36,7 @@ utility::json::JSON Config::parseConfigFile(const std::string& configFile)
     }
 
     const auto& configRows = utility::io::getFileContents(configFile, true);
-    std::ostringstream os;
+    std::ostringstream os{};
     std::copy(configRows.cbegin(), configRows.cend(), std::ostream_iterator<std::string>(os, ""));
     const auto& preprocessedData = utility::json::JSON::load(os.str());
     verifyConfigData(preprocessedData);

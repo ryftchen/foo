@@ -18,7 +18,7 @@ const char* version() noexcept
 
 std::vector<std::uint32_t> Prime::eratosthenes(const std::uint32_t max)
 {
-    std::vector<std::uint32_t> container;
+    std::vector<std::uint32_t> container{};
     std::vector<bool> isPrime(max + 1, true);
 
     isPrime[0] = false;
@@ -40,7 +40,7 @@ std::vector<std::uint32_t> Prime::eratosthenes(const std::uint32_t max)
 
 std::vector<std::uint32_t> Prime::euler(const std::uint32_t max)
 {
-    std::vector<std::uint32_t> container;
+    std::vector<std::uint32_t> container{};
     std::vector<bool> isPrime(max + 1, true);
 
     isPrime[0] = false;

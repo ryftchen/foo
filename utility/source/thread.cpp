@@ -25,8 +25,8 @@ Thread::Thread(const std::size_t size)
             {
                 for (;;)
                 {
-                    std::string_view thdName;
-                    std::packaged_task<void()> thdTask;
+                    std::string_view thdName{};
+                    std::packaged_task<void()> thdTask{};
                     if (std::unique_lock<std::mutex> lock(mtx); true)
                     {
                         cond.wait(

@@ -252,9 +252,9 @@ public:
 
 private:
     //! @brief First integer for elementary arithmetic.
-    const std::int32_t integer1{};
+    const std::int32_t integer1{0};
     //! @brief Second integer for elementary arithmetic.
-    const std::int32_t integer2{};
+    const std::int32_t integer2{0};
 };
 } // namespace arithmetic
 template <>
@@ -364,9 +364,9 @@ public:
 
 private:
     //! @brief First integer.
-    const std::int32_t integer1{};
+    const std::int32_t integer1{0};
     //! @brief Second integer.
-    const std::int32_t integer2{};
+    const std::int32_t integer2{0};
 };
 } // namespace divisor
 template <>
@@ -483,12 +483,6 @@ struct ExprRange
     }
     //! @brief Construct a new ExprRange object.
     ExprRange() = delete;
-    //! @brief Lower endpoint.
-    const T1 range1{};
-    //! @brief Upper endpoint.
-    const T2 range2{};
-    //! @brief Expression description.
-    const std::string_view exprDescr{};
     //! @brief The operator (==) overloading of ExprRange struct.
     //! @param rhs - right-hand side
     //! @return be equal or not equal
@@ -496,6 +490,13 @@ struct ExprRange
     {
         return std::tie(rhs.range1, rhs.range2, rhs.exprDescr) == std::tie(range1, range2, exprDescr);
     }
+
+    //! @brief Lower endpoint.
+    const T1 range1{};
+    //! @brief Upper endpoint.
+    const T2 range2{};
+    //! @brief Expression description.
+    const std::string_view exprDescr{};
 };
 //! @brief Mapping hash value for the expression.
 struct ExprMapHash
@@ -669,7 +670,7 @@ public:
 
 private:
     //! @brief Maximum positive integer.
-    const std::uint32_t maxPositiveInteger{};
+    const std::uint32_t maxPositiveInteger{0};
 };
 } // namespace prime
 template <>

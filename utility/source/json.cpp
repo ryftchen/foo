@@ -30,7 +30,7 @@ static JSON parseNext(const std::string& fmt, std::size_t& offset);
 //! @return string after escape
 static std::string jsonEscape(const std::string& fmt)
 {
-    std::string output;
+    std::string output{};
     for (std::size_t i = 0; i < fmt.length(); ++i)
     {
         switch (fmt.at(i))
@@ -81,7 +81,6 @@ static void consumeWhitespace(const std::string& fmt, std::size_t& offset)
 static JSON parseObject(const std::string& fmt, std::size_t& offset)
 {
     JSON object = JSON::make(JSON::Type::object);
-
     ++offset;
     consumeWhitespace(fmt, offset);
     if ('}' == fmt.at(offset))
@@ -164,7 +163,7 @@ static JSON parseArray(const std::string& fmt, std::size_t& offset)
 //! @param offset - data offset
 static JSON parseString(const std::string& fmt, std::size_t& offset)
 {
-    std::string val;
+    std::string val{};
     for (char c = fmt.at(++offset); '\"' != c; c = fmt.at(++offset))
     {
         if ('\\' == c)
@@ -236,7 +235,7 @@ static JSON parseString(const std::string& fmt, std::size_t& offset)
 static std::string extractExponent(const std::string& fmt, std::size_t& offset)
 {
     char c = fmt.at(offset);
-    std::string expStr;
+    std::string expStr{};
     if ('-' == c)
     {
         ++offset;
@@ -271,8 +270,8 @@ static std::string extractExponent(const std::string& fmt, std::size_t& offset)
 //! @param offset - data offset
 static JSON parseNumber(const std::string& fmt, std::size_t& offset)
 {
-    std::string val;
-    char c;
+    std::string val{};
+    char c = '\0';
     bool isFloating = false;
     for (;;)
     {
@@ -293,7 +292,7 @@ static JSON parseNumber(const std::string& fmt, std::size_t& offset)
     }
 
     long long exp = 0;
-    std::string expStr;
+    std::string expStr{};
     if (('E' == c) || ('e' == c))
     {
         expStr = extractExponent(fmt, offset);
@@ -306,7 +305,7 @@ static JSON parseNumber(const std::string& fmt, std::size_t& offset)
     --offset;
 
     constexpr std::uint8_t base = 10;
-    JSON number;
+    JSON number{};
     if (isFloating)
     {
         number = std::stod(val) * std::pow(base, exp);
@@ -327,7 +326,7 @@ static JSON parseNumber(const std::string& fmt, std::size_t& offset)
 //! @param offset - data offset
 static JSON parseBoolean(const std::string& fmt, std::size_t& offset)
 {
-    JSON boolean;
+    JSON boolean{};
     const std::string trueStr = "true", falseStr = "false";
     if (fmt.substr(offset, trueStr.length()) == trueStr)
     {
@@ -364,7 +363,7 @@ static JSON parseNull(const std::string& fmt, std::size_t& offset)
 static JSON parseNext(const std::string& fmt, std::size_t& offset)
 {
     consumeWhitespace(fmt, offset);
-    char value = fmt.at(offset);
+    const char value = fmt.at(offset);
     switch (value)
     {
         case '{':
@@ -561,7 +560,7 @@ JSON::String JSON::toString() const
         default:
             break;
     }
-    return std::string{""};
+    return std::string{};
 }
 
 JSON::String JSON::toUnescapedString() const
@@ -585,7 +584,7 @@ JSON::String JSON::toUnescapedString() const
         default:
             break;
     }
-    return std::string{""};
+    return std::string{};
 }
 
 JSON::Floating JSON::toFloating() const
@@ -728,7 +727,7 @@ std::string JSON::dump(const std::uint32_t depth, const std::string& tab) const
             return "null";
         case Type::object:
         {
-            std::string pad;
+            std::string pad{};
             for (std::uint32_t i = 0; i < depth; ++i)
             {
                 pad += tab;

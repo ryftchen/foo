@@ -100,7 +100,7 @@ std::string Console::getGreeting() const
 
 int Console::commandExecutor(const std::string& command)
 {
-    std::vector<std::string> inputs;
+    std::vector<std::string> inputs{};
     std::istringstream is(command);
     std::copy(std::istream_iterator<std::string>(is), std::istream_iterator<std::string>(), std::back_inserter(inputs));
 
@@ -127,7 +127,7 @@ int Console::fileExecutor(const std::string& filename)
         throw std::runtime_error("Could not find the batch file to run.");
     }
 
-    std::string command;
+    std::string command{};
     std::uint32_t counter = 0;
     int result = 0;
     while (std::getline(input, command))
@@ -173,7 +173,7 @@ int Console::readCommandLine()
 
 std::vector<Console::CommandHelpPair> Console::getHelpOfRegisteredCommand() const
 {
-    std::vector<Console::CommandHelpPair> allCommandsHelp;
+    std::vector<Console::CommandHelpPair> allCommandsHelp{};
     for (const auto& command : impl->regOrder)
     {
         allCommandsHelp.emplace_back(command, impl->regMap.at(command).second);
@@ -225,7 +225,7 @@ char** Console::getCommandCompleter(const char* text, int start, int /*end*/)
 
 char* Console::getCommandIterator(const char* text, int state)
 {
-    static Impl::RegisteredCommand::iterator iterator;
+    static Impl::RegisteredCommand::iterator iterator{};
     if (nullptr == currentSession)
     {
         return nullptr;

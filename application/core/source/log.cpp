@@ -324,7 +324,7 @@ void Log::doRollback()
 
         closeLogFile();
         tryCreateLogFolder();
-        std::ofstream tempOfs;
+        std::ofstream tempOfs{};
         tempOfs.open(filePath, std::ios_base::out | std::ios_base::trunc);
         tempOfs.close();
     }
@@ -477,14 +477,14 @@ const std::string& changeToLogStyle(std::string& line)
     if (std::regex_search(line, style.dateTime))
     {
         const auto searchIter = std::sregex_iterator(line.begin(), line.end(), style.dateTime);
-        const std::string dateTimeWithColor =
+        const auto dateTimeWithColor =
             std::string{dateTimeBaseColor} + (*searchIter).str() + std::string{common::colorOff};
         line = std::regex_replace(line, style.dateTime, dateTimeWithColor);
     }
     if (std::regex_search(line, style.codeFile))
     {
         const auto searchIter = std::sregex_iterator(line.begin(), line.end(), style.codeFile);
-        const std::string codeFileWithColor =
+        const auto codeFileWithColor =
             std::string{codeFileBaseColor} + (*searchIter).str() + std::string{common::colorOff};
         line = std::regex_replace(line, style.codeFile, codeFileWithColor);
     }

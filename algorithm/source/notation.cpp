@@ -50,8 +50,8 @@ std::string Notation::postfix(const std::string& infixNotation)
 
 std::string Notation::infixToPostfix(const std::string& infix)
 {
-    std::string postfix;
-    std::stack<char> charStack;
+    std::string postfix{};
+    std::stack<char> charStack{};
 
     for (std::uint32_t i = 0; i < infix.size(); ++i)
     {

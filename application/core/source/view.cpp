@@ -178,7 +178,7 @@ static int tlvDecoding(char* buf, const int len, TLVValue& val)
 template <typename T>
 bool Packet::write(const T data)
 {
-    T temp;
+    T temp{};
     if constexpr (sizeof(T) == sizeof(int))
     {
         temp = ::htonl(data);
@@ -448,9 +448,9 @@ void View::awakenDueToOutput()
 
 std::vector<std::string> View::splitString(const std::string& str)
 {
-    std::vector<std::string> split;
+    std::vector<std::string> split{};
     std::istringstream is(str);
-    std::string token;
+    std::string token{};
     while (is >> token)
     {
         split.emplace_back(token);
@@ -490,7 +490,7 @@ int View::buildTLVPacket4Depend(const std::vector<std::string>& args, char* buf)
 
     int len = 0;
     tlv::TLVValue val{};
-    std::string extLibraries;
+    std::string extLibraries{};
 #if defined(__GLIBC__) && defined(__GLIBC_MINOR__)
     extLibraries += "GNU C Library " COMMON_TO_STRING(__GLIBC__) "." COMMON_TO_STRING(__GLIBC_MINOR__) "\n";
 #else
@@ -541,7 +541,7 @@ int View::buildTLVPacket4Depend(const std::vector<std::string>& args, char* buf)
 
 int View::buildTLVPacket4Execute(const std::vector<std::string>& args, char* buf)
 {
-    std::string entry;
+    std::string entry{};
     for (const auto& arg : args)
     {
         entry += arg + ' ';
@@ -775,7 +775,7 @@ void View::fetchSharedMemory(const int shmId, std::string& contents)
 
 void View::printSharedMemory(const int shmId, const bool withoutPaging)
 {
-    std::string output;
+    std::string output{};
     fetchSharedMemory(shmId, output);
     if (withoutPaging)
     {
@@ -798,7 +798,7 @@ void View::segmentedOutput(const std::string& buffer)
     is.seekg(std::ios::beg);
 
     bool forcedCancel = false, withoutPaging = (lineNum <= terminalRows);
-    std::string line;
+    std::string line{};
     std::uint64_t counter = 0;
     while (std::getline(is, line) && !forcedCancel)
     {
@@ -851,7 +851,7 @@ std::string View::getLogContents()
         {
             return log::changeToLogStyle(line);
         });
-    std::ostringstream os;
+    std::ostringstream os{};
     std::copy(contents.cbegin(), contents.cend(), std::ostream_iterator<std::string>(os, "\n"));
     return std::move(os).str();
 }
@@ -864,7 +864,7 @@ std::string View::getStatusReports(const std::uint16_t frame)
     std::snprintf(cmd, totalLen, "ps -T -p %d | awk 'NR>1 {split($0, a, \" \"); print a[2]}'", pid);
     const std::string queryResult = utility::io::executeCommand(cmd);
 
-    std::vector<std::string> cmdColl;
+    std::vector<std::string> cmdColl{};
     std::size_t pos = 0, prev = 0;
     const int currTid = ::gettid();
     const bool showStack = (::system("which eu-stack >/dev/null 2>&1") == EXIT_SUCCESS);
@@ -906,7 +906,7 @@ std::string View::getStatusReports(const std::uint16_t frame)
     }
     cmd[totalLen - 1] = '\0';
 
-    std::string statRep;
+    std::string statRep{};
     std::for_each(
         cmdColl.cbegin(),
         cmdColl.cend(),

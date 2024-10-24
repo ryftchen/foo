@@ -83,6 +83,7 @@ struct BinaryFuncHelper<Func, Arg1, Arg2, true, false, false, false>
 {
     //! @brief Alias for invoke result.
     using ResultType = InvokeResult<Func>;
+
     //! @brief Invoke operation.
     //! @param func - callable function
     //! @return invoke result
@@ -98,6 +99,7 @@ struct BinaryFuncHelper<Func, Arg1, Arg2, false, true, false, false>
 {
     //! @brief Alias for invoke result.
     using ResultType = InvokeResult<Func, Arg1>;
+
     //! @brief Invoke operation.
     //! @param func - callable function
     //! @param arg1 - function argument
@@ -114,6 +116,7 @@ struct BinaryFuncHelper<Func, Arg1, Arg2, false, false, true, false>
 {
     //! @brief Alias for invoke result.
     using ResultType = InvokeResult<Func, Arg2>;
+
     //! @brief Invoke operation.
     //! @param func - callable function
     //! @param arg2 - function arguments
@@ -130,6 +133,7 @@ struct BinaryFuncHelper<Func, Arg1, Arg2, false, false, false, true>
 {
     //! @brief Alias for invoke result.
     using ResultType = InvokeResult<Func, Arg1, Arg2>;
+
     //! @brief Invoke operation.
     //! @param func - callable function
     //! @param arg1 - function arguments
@@ -228,9 +232,10 @@ class FSM
 public:
     //! @brief Alias for state.
     using StateType = State;
+
     //! @brief Construct a new FSM object.
     //! @param initState - initialization value of state
-    explicit FSM(State initState = State()) : state(initState) {}
+    explicit FSM(const State initState = State()) : state(initState) {}
 
     //! @brief Process the specific event.
     //! @tparam Event - type of triggered event
@@ -506,6 +511,7 @@ template <class Event>
 void FSM<Derived, State>::processEvent(const Event& event)
 {
     using Rows = typename ByEventType<Event, typename Derived::TransitionMap>::Type;
+
     ProcessingLock procLock(*this);
     static_assert(std::is_base_of<FSM, Derived>::value);
     Derived& self = static_cast<Derived&>(*this);

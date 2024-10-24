@@ -192,7 +192,7 @@ public:
 
 private:
     //! @brief Leaf node id.
-    int id{};
+    int id{0};
 };
 
 extern std::ostringstream& output();
@@ -348,7 +348,7 @@ public:
 
 private:
     //! @brief Intrinsic state.
-    int state{};
+    int state{0};
 };
 
 //! @brief The concrete flyweight.
@@ -366,7 +366,7 @@ public:
 
 private:
     //! @brief Intrinsic state.
-    int state{};
+    int state{0};
 };
 
 //! @brief Manage flyweights and ensure that flyweights are appropriately shared.

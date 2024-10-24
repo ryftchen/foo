@@ -275,7 +275,7 @@ private:
     //! @brief Collection of items.
     std::unique_ptr<int[]> list{};
     //! @brief Size of the concrete aggregate.
-    std::uint32_t count{};
+    std::uint32_t count{0};
 };
 
 //! @brief The concrete iterator.
@@ -303,7 +303,7 @@ private:
     //! @brief Collection of items.
     std::shared_ptr<ConcreteAggregate> list{};
     //! @brief Current Index.
-    std::uint32_t index{};
+    std::uint32_t index{0};
 };
 
 extern std::ostringstream& output();
@@ -380,7 +380,7 @@ protected:
     //! @brief Mediator of the colleague.
     std::weak_ptr<Mediator> mediator{};
     //! @brief Id of the colleague.
-    std::uint32_t id{};
+    std::uint32_t id{0};
 };
 
 //! @brief The concrete colleague.
@@ -418,7 +418,7 @@ private:
     explicit Memento(const int state) : state(state) {}
 
     //! @brief State of memento.
-    int state{};
+    int state{0};
     //! @brief Set the state of memento.
     //! @param s - target state
     void setState(const int s);
@@ -447,7 +447,7 @@ public:
 
 private:
     //! @brief State of originator.
-    int state{};
+    int state{0};
 };
 
 //! @brief Safeguard memento.
@@ -541,7 +541,7 @@ public:
 
 private:
     //! @brief State of observer.
-    int observerState{};
+    int observerState{0};
 };
 
 //! @brief The concrete subject.
@@ -562,7 +562,7 @@ public:
 
 private:
     //! @brief State of subject.
-    int subjectState{};
+    int subjectState{0};
 };
 
 extern std::ostringstream& output();

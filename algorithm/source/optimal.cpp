@@ -25,13 +25,13 @@ std::optional<std::tuple<double, double>> Gradient::operator()(const double left
     std::mt19937 engine(std::random_device{}());
     double x = 0.0, y = 0.0;
     std::uniform_real_distribution<double> candidate(left, right);
-    std::set<double> climbing;
+    std::set<double> climbing{};
     while (climbing.size() < loopTime)
     {
         climbing.insert(candidate(engine));
     }
 
-    std::vector<std::pair<double, double>> container;
+    std::vector<std::pair<double, double>> container{};
     container.reserve(climbing.size());
     for (const auto climber : climbing)
     {
@@ -71,9 +71,7 @@ double Gradient::calculateFirstDerivative(const double x, const double eps) cons
 
 std::optional<std::tuple<double, double>> Annealing::operator()(const double left, const double right, const double eps)
 {
-    std::uniform_real_distribution<double> perturbation(left, right);
-    std::uniform_real_distribution<double> pr(0.0, 1.0);
-
+    std::uniform_real_distribution<double> perturbation(left, right), pr(0.0, 1.0);
     std::mt19937 engine(std::random_device{}());
     double temperature = initialT, x = perturbation(engine), y = func(x);
     while (temperature > minimalT)
@@ -129,7 +127,7 @@ std::optional<std::tuple<double, double>> Particle::operator()(const double left
     double xBest = initialBest->x, xFitnessBest = initialBest->xFitness;
 
     std::uniform_real_distribution<double> coeff(0.0, 1.0);
-    std::vector<std::pair<double, double>> container;
+    std::vector<std::pair<double, double>> container{};
     container.reserve(swarm.size());
     for (std::uint32_t i = 0; i < numOfIteration; ++i)
     {
@@ -265,7 +263,7 @@ Genetic::Population Genetic::populationInit()
 
 void Genetic::geneticCross(Chromosome& chr1, Chromosome& chr2)
 {
-    Chromosome chrTemp;
+    Chromosome chrTemp{};
     chrTemp.reserve(chr1.size());
     std::copy(chr1.cbegin(), chr1.cend(), std::back_inserter(chrTemp));
 
@@ -281,7 +279,7 @@ void Genetic::geneticCross(Chromosome& chr1, Chromosome& chr2)
 
 void Genetic::crossover(Population& pop)
 {
-    Population popCross;
+    Population popCross{};
     popCross.reserve(pop.size());
 
     std::vector<std::reference_wrapper<Chromosome>> container(pop.begin(), pop.end());
@@ -339,7 +337,7 @@ double Genetic::calculateFitness(const Chromosome& chr)
 
 std::optional<std::pair<double, double>> Genetic::fitnessLinearTransformation(const Population& pop)
 {
-    std::vector<double> reFitness;
+    std::vector<double> reFitness{};
     reFitness.reserve(pop.size());
     std::transform(
         pop.cbegin(),
@@ -381,7 +379,7 @@ auto Genetic::rouletteWheelSelection(const Population& pop, const std::vector<do
 
 void Genetic::stochasticTournamentSelection(Population& pop, const std::vector<double>& cumFitness)
 {
-    Population popNew;
+    Population popNew{};
     popNew.reserve(pop.size());
     while (popNew.size() < pop.size())
     {
@@ -402,7 +400,7 @@ void Genetic::select(Population& pop)
         alpha = std::get<0>(coefficient.value());
         beta = std::get<1>(coefficient.value());
     }
-    std::vector<double> fitnessVal;
+    std::vector<double> fitnessVal{};
     fitnessVal.reserve(pop.size());
     std::transform(
         pop.cbegin(),
@@ -415,7 +413,7 @@ void Genetic::select(Population& pop)
             return fitVal;
         });
 
-    std::vector<double> fitnessAvg;
+    std::vector<double> fitnessAvg{};
     fitnessAvg.reserve(fitnessVal.size());
     std::transform(
         fitnessVal.cbegin(),
@@ -440,7 +438,7 @@ void Genetic::select(Population& pop)
 
 Genetic::Chromosome Genetic::getBestIndividual(const Population& pop)
 {
-    std::vector<double> fitnessVal;
+    std::vector<double> fitnessVal{};
     fitnessVal.reserve(pop.size());
     std::transform(
         pop.cbegin(),

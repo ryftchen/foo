@@ -125,7 +125,7 @@ consteval std::size_t abbrVal(const T instance)
 template <class T>
 std::string getTitle(const T instance)
 {
-    std::string title = std::string{toString(instance)};
+    std::string title(toString(instance));
     title.at(0) = std::toupper(title.at(0));
     return title;
 }

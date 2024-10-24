@@ -338,7 +338,7 @@ std::string executeCommand(const std::string& command, const std::uint32_t timeo
         throw std::runtime_error("Could not open pipe when trying to execute command.");
     }
 
-    std::string output;
+    std::string output{};
     std::vector<char> buffer(4096);
     const auto startTime = std::chrono::steady_clock::now();
     for (;;)
@@ -399,9 +399,7 @@ void waitForUserInput(const std::function<bool(const std::string&)>& action, con
         throw std::runtime_error("Could not create epoll when trying to wait for user input.");
     }
 
-    struct ::epoll_event event
-    {
-    };
+    ::epoll_event event{};
     event.events = ::EPOLLIN;
     event.data.fd = STDIN_FILENO;
     if (::epoll_ctl(epollFD, EPOLL_CTL_ADD, STDIN_FILENO, &event))
@@ -420,7 +418,7 @@ void waitForUserInput(const std::function<bool(const std::string&)>& action, con
         }
         else if ((0 != status) && (event.events & ::EPOLLIN))
         {
-            std::string input;
+            std::string input{};
             std::getline(std::cin, input);
             if (action(input))
             {
@@ -452,8 +450,8 @@ std::list<std::string> getFileContents(
 
     auto& input = fileReader.stream();
     input.seekg(0, std::ios::beg);
-    std::string line;
-    std::list<std::string> contents;
+    std::string line{};
+    std::list<std::string> contents{};
     if (!toReverse)
     {
         while ((contents.size() < totalRows) && std::getline(input, line))

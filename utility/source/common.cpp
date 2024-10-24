@@ -134,9 +134,9 @@ ReadWriteGuard::~ReadWriteGuard()
 //! @return string after formatting
 std::string formatString(const std::string_view format, ...)
 {
-    std::va_list list;
+    std::va_list list{};
     ::va_start(list, format);
-    int bufferSize = std::vsnprintf(nullptr, 0, format.data(), list);
+    const int bufferSize = std::vsnprintf(nullptr, 0, format.data(), list);
     ::va_end(list);
     if (bufferSize < 0)
     {
@@ -158,7 +158,7 @@ std::string base64Encode(const std::string& data)
 {
     std::size_t counter = 0, offset = 0;
     std::uint32_t bitStream = 0;
-    std::string encoded;
+    std::string encoded{};
     constexpr std::string_view base64Chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
                                              "abcdefghijklmnopqrstuvwxyz"
                                              "0123456789+/";
@@ -214,7 +214,7 @@ std::string base64Decode(const std::string& data)
 {
     std::size_t counter = 0, offset = 0;
     std::uint32_t bitStream = 0;
-    std::string decoded;
+    std::string decoded{};
     constexpr std::string_view base64Chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
                                              "abcdefghijklmnopqrstuvwxyz"
                                              "0123456789+/";

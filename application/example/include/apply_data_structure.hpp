@@ -138,9 +138,9 @@ const char* const version = date_structure::linear::version();
 struct Meta
 {
     //! @brief Id of the metadata.
-    int id{};
+    int id{0};
     //! @brief Name of the metadata.
-    char name[4]{};
+    char name[4]{'\0'};
 };
 //! @brief Linear instances.
 class Linear
@@ -160,7 +160,7 @@ public:
             doubly_linked_list::dllInsert, doubly_linked_list::dllInsertFirst, doubly_linked_list::dllInsertLast,
             doubly_linked_list::dllIsEmpty, doubly_linked_list::dllSize;
 
-        date_structure::linear::Output output;
+        date_structure::linear::Output output{};
         output.flush() << std::boolalpha;
         Meta meta[] = {{'A', "foo"}, {'B', "bar"}, {'C', "baz"}, {'D', "qux"}};
         const std::span<Meta> nodes(meta);
@@ -209,7 +209,7 @@ public:
         using stack::createStack, stack::destroyStack, stack::Stack, stack::stackIsEmpty, stack::stackPop,
             stack::stackPush, stack::stackSize, stack::stackTop;
 
-        date_structure::linear::Output output;
+        date_structure::linear::Output output{};
         output.flush() << std::boolalpha;
         Meta meta[] = {{'A', "foo"}, {'B', "bar"}, {'C', "baz"}, {'D', "qux"}};
         const std::span<Meta> nodes(meta);
@@ -252,7 +252,7 @@ public:
         using queue::createQueue, queue::destroyQueue, queue::Queue, queue::queueFront, queue::queueIsEmpty,
             queue::queuePop, queue::queuePush, queue::queueSize;
 
-        date_structure::linear::Output output;
+        date_structure::linear::Output output{};
         output.flush() << std::boolalpha;
         Meta meta[] = {{'A', "foo"}, {'B', "bar"}, {'C', "baz"}, {'D', "qux"}};
         const std::span<Meta> nodes(meta);
@@ -328,7 +328,7 @@ public:
         namespace bs = date_structure::tree::bs;
         using bs::BSTree, bs::bsTreeDelete, bs::bsTreeInsert, bs::destroyBSTree, bs::getMaximum, bs::getMinimum;
 
-        bs::Output output;
+        bs::Output output{};
         BSTree root = nullptr;
         constexpr std::array<std::int16_t, 6> nodes = {1, 5, 4, 3, 2, 6};
 
@@ -375,7 +375,7 @@ public:
         using avl::AVLTree, avl::avlTreeDelete, avl::avlTreeInsert, avl::destroyAVLTree, avl::getHeight,
             avl::getMaximum, avl::getMinimum;
 
-        avl::Output output;
+        avl::Output output{};
         AVLTree root = nullptr;
         constexpr std::array<std::int16_t, 16> nodes = {3, 2, 1, 4, 5, 6, 7, 16, 15, 14, 13, 12, 11, 10, 8, 9};
 
@@ -425,7 +425,7 @@ public:
         using splay::destroySplayTree, splay::getMaximum, splay::getMinimum, splay::SplayTree, splay::splayTreeInsert,
             splay::splayTreeSplay;
 
-        splay::Output output;
+        splay::Output output{};
         SplayTree root = nullptr;
         constexpr std::array<std::int16_t, 6> nodes = {10, 50, 40, 30, 20, 60};
 

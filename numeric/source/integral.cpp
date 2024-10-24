@@ -111,9 +111,9 @@ double Romberg::operator()(double lower, double upper, const double eps) const
     double t0 = trapezoidFunctor(std::pow(2, k));
 
     k = 1;
-    double t1Zero = trapezoidFunctor(std::pow(2, k));
-    double t1 =
-        std::pow(4, k) / (std::pow(4, k) - 1) * trapezoidFunctor(std::pow(2, k + 1)) - 1.0 / std::pow(4, k) * t1Zero;
+    double t1Zero = trapezoidFunctor(std::pow(2, k)),
+           t1 = std::pow(4, k) / (std::pow(4, k) - 1) * trapezoidFunctor(std::pow(2, k + 1))
+        - 1.0 / std::pow(4, k) * t1Zero;
 
     while (std::fabs(t1 - t0) > eps)
     {

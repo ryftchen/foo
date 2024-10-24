@@ -219,7 +219,7 @@ public:
 
         std::shared_ptr<ConcreteCommand> commands = std::make_shared<ConcreteCommand>(std::make_shared<Receiver>());
 
-        Invoker invoker;
+        Invoker invoker{};
         invoker.set(commands);
         invoker.confirm();
 
@@ -386,8 +386,8 @@ public:
 
         std::shared_ptr<ConcreteElementA> elementA = std::make_shared<ConcreteElementA>();
         std::shared_ptr<ConcreteElementB> elementB = std::make_shared<ConcreteElementB>();
-        ConcreteVisitor1 visitor1;
-        ConcreteVisitor2 visitor2;
+        ConcreteVisitor1 visitor1{};
+        ConcreteVisitor2 visitor2{};
 
         elementA->accept(visitor1);
         elementA->accept(visitor2);
@@ -490,7 +490,7 @@ public:
         namespace builder = design_pattern::creational::builder;
         using builder::ConcreteBuilderX, builder::ConcreteBuilderY, builder::Director, builder::Product;
 
-        Director director;
+        Director director{};
         director.set(std::make_unique<ConcreteBuilderX>());
         director.construct();
         Product product1 = director.get();
@@ -641,7 +641,7 @@ public:
         using composite::Composite, composite::Leaf;
 
         constexpr std::uint32_t count = 5;
-        Composite composites;
+        Composite composites{};
 
         for (std::uint32_t i = 0; i < count; ++i)
         {
