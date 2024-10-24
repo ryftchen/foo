@@ -323,8 +323,8 @@ void Command::initializeCLI()
                 executeInConsole();
             }));
 
-    CategoryName category;
-    ChoiceContainer choices;
+    CategoryName category{};
+    ChoiceContainer choices{};
 
     auto& algoTable = regularChoices[subCLIAppAlgo.title()];
     subCLIAppAlgo.addDescription(getDescr<app_algo::ApplyAlgorithm>());
@@ -790,7 +790,7 @@ Command::ChoiceContainer Command::extractChoices()
 {
     using TypeInfo = utility::reflection::TypeInfo<T>;
 
-    ChoiceContainer choices;
+    ChoiceContainer choices{};
     choices.reserve(TypeInfo::fields.size);
     TypeInfo::fields.forEach(
         [&choices](auto field)
@@ -1040,7 +1040,7 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& c
                 auto retVal = success;
                 try
                 {
-                    std::string entry;
+                    std::string entry{};
                     for (const auto& arg : input)
                     {
                         entry += arg + ' ';
@@ -1120,7 +1120,7 @@ void Command::validateDependenciesVersion() const
 
 std::string Command::getIconBanner()
 {
-    std::string banner;
+    std::string banner{};
     banner += R"(  ______   ______     ______    \n)";
     banner += R"( /\  ___\ /\  __ \   /\  __ \   \n)";
     banner += R"( \ \  __\ \ \ \/\ \  \ \ \/\ \  \n)";

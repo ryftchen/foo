@@ -534,7 +534,7 @@ template <typename Evt>
 struct UpdateChoice
 {
     //! @brief Target choice.
-    const std::string cho;
+    const std::string cho{};
 };
 //! @brief The "Run Choices" message in the applied action.
 //! @tparam Evt - type of applied action event
@@ -542,7 +542,7 @@ template <typename Evt>
 struct RunChoices
 {
     //! @brief Collection of candidates for choice.
-    const std::vector<std::string> coll;
+    const std::vector<std::string> coll{};
 };
 //! @brief Indication type of updating in the applied action.
 //! @tparam Msg - type of message

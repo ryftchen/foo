@@ -30,14 +30,14 @@ std::vector<std::int32_t> Divisor::euclidean(std::int32_t a, std::int32_t b)
         a = b;
         b = temp;
     }
-    const std::int32_t greatestCommonDivisor = a;
+    const std::int32_t gcd = a;
 
-    return getAllDivisors(greatestCommonDivisor);
+    return getAllDivisors(gcd);
 }
 
 std::vector<std::int32_t> Divisor::stein(std::int32_t a, std::int32_t b)
 {
-    std::int32_t greatestCommonDivisor = 0, c = 0;
+    std::int32_t gcd = 0, c = 0;
     a = std::abs(a);
     b = std::abs(b);
 
@@ -50,14 +50,14 @@ std::vector<std::int32_t> Divisor::stein(std::int32_t a, std::int32_t b)
     if (0 == (a & 0x1))
     {
         a = a >> 1;
-        greatestCommonDivisor = steinRecursive(a, b) << c;
+        gcd = steinRecursive(a, b) << c;
     }
     else
     {
-        greatestCommonDivisor = steinRecursive(b, a) << c;
+        gcd = steinRecursive(b, a) << c;
     }
 
-    return getAllDivisors(greatestCommonDivisor);
+    return getAllDivisors(gcd);
 }
 
 std::int32_t Divisor::steinRecursive(std::int32_t a, std::int32_t b)
@@ -89,7 +89,7 @@ std::int32_t Divisor::steinRecursive(std::int32_t a, std::int32_t b)
 
 std::vector<std::int32_t> Divisor::getAllDivisors(const std::int32_t gcd)
 {
-    std::vector<std::int32_t> divisors;
+    std::vector<std::int32_t> divisors{};
     for (std::int32_t i = 1; i <= std::sqrt(gcd); ++i)
     {
         if (0 == (gcd % i))

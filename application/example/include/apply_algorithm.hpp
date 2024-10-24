@@ -355,11 +355,11 @@ private:
     //! @brief Matching text.
     const std::unique_ptr<unsigned char[]> marchingText{};
     //! @brief Length of the matching text.
-    const std::uint32_t textLength{};
+    const std::uint32_t textLength{0};
     //! @brief Single pattern.
     const std::unique_ptr<unsigned char[]> singlePattern{};
     //! @brief Length of the single pattern.
-    const std::uint32_t patternLength{};
+    const std::uint32_t patternLength{0};
 
     //! @brief Base number for converting the digit to precision.
     static constexpr int mpfrBase{10};
@@ -584,13 +584,6 @@ struct FuncRange
     }
     //! @brief Construct a new FuncRange object.
     FuncRange() = delete;
-    //! @brief Left endpoint.
-    const T1 range1{};
-    //! @brief Right endpoint.
-    const T2 range2{};
-    //! @brief Function description.
-    const std::string_view funcDescr{};
-
     //! @brief The operator (==) overloading of FuncRange struct.
     //! @param rhs - right-hand side
     //! @return be equal or not equal
@@ -598,6 +591,13 @@ struct FuncRange
     {
         return std::tie(rhs.range1, rhs.range2, rhs.funcDescr) == std::tie(range1, range2, funcDescr);
     }
+
+    //! @brief Left endpoint.
+    const T1 range1{};
+    //! @brief Right endpoint.
+    const T2 range2{};
+    //! @brief Function description.
+    const std::string_view funcDescr{};
 };
 //! @brief Mapping hash value for the function.
 struct FuncMapHash
@@ -833,7 +833,7 @@ private:
     //! @brief Ordered array.
     const std::unique_ptr<T[]> orderedArray{};
     //! @brief Length of the ordered array.
-    const std::uint32_t length{};
+    const std::uint32_t length{0};
 
     //! @brief Deep copy for copy constructor.
     //! @param rhs - right-hand side
@@ -1080,7 +1080,7 @@ private:
     //! @brief Random array.
     const std::unique_ptr<T[]> randomArray{};
     //! @brief Length of the random array.
-    const std::uint32_t length{};
+    const std::uint32_t length{0};
 
     //! @brief Deep copy for copy constructor.
     //! @param rhs - right-hand side

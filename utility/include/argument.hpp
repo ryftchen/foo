@@ -95,7 +95,7 @@ std::string represent(const T& val)
     }
     else if constexpr (isContainer<T>)
     {
-        std::ostringstream out;
+        std::ostringstream out{};
         out << '{';
         const auto size = val.size();
         if (size > 1)
@@ -129,7 +129,7 @@ std::string represent(const T& val)
     }
     else if constexpr (isStreamable<T>)
     {
-        std::ostringstream out;
+        std::ostringstream out{};
         out << val;
         return std::move(out).str();
     }
@@ -183,7 +183,8 @@ std::string join(StrIter first, StrIter last, const std::string& separator)
     {
         return "";
     }
-    std::ostringstream value;
+
+    std::ostringstream value{};
     value << *first;
     ++first;
     while (first != last)
@@ -508,6 +509,7 @@ auto Register::action(Func&& callable, Args&&... boundArgs)
         std::is_void_v<std::invoke_result_t<Func, Args..., const std::string&>>,
         VoidAction,
         ValuedAction>;
+
     if constexpr (!sizeof...(Args))
     {
         actions.emplace<ActionType>(std::forward<Func>(callable));
@@ -534,8 +536,7 @@ Iterator Register::consume(Iterator start, Iterator end, const std::string_view 
 
     isUsed = true;
     usedName = argName;
-    const auto numMax = argsNumRange.getMax();
-    const auto numMin = argsNumRange.getMin();
+    const auto numMax = argsNumRange.getMax(), numMin = argsNumRange.getMin();
     std::size_t dist = 0;
     if (0 == numMax)
     {
@@ -566,8 +567,11 @@ Iterator Register::consume(Iterator start, Iterator end, const std::string_view 
 
         struct ActionApply
         {
-            void operator()(ValuedAction& func) { std::transform(first, last, std::back_inserter(self.values), func); }
-            void operator()(VoidAction& func)
+            void operator()(const ValuedAction& func) const
+            {
+                std::transform(first, last, std::back_inserter(self.values), func);
+            }
+            void operator()(const VoidAction& func) const
             {
                 std::for_each(first, last, func);
                 if (!self.defaultValue.has_value())
@@ -579,8 +583,8 @@ Iterator Register::consume(Iterator start, Iterator end, const std::string_view 
                 }
             }
 
-            Iterator first;
-            Iterator last;
+            Iterator first{};
+            Iterator last{};
             Register& self;
         };
         std::visit(ActionApply{start, end, *this}, actions);
@@ -609,7 +613,8 @@ bool Register::operator==(const T& rhs) const
     else
     {
         using ValueType = typename T::value_type;
-        auto lhs = get<T>();
+
+        const auto& lhs = get<T>();
         return std::equal(
             std::begin(lhs),
             std::end(lhs),
@@ -673,7 +678,8 @@ template <typename T>
 T Register::anyCastContainer(const std::vector<std::any>& operand)
 {
     using ValueType = typename T::value_type;
-    T result;
+
+    T result{};
     std::transform(
         std::begin(operand),
         std::end(operand),

@@ -296,7 +296,7 @@ void TCPServer::toAccept(const std::shared_ptr<TCPServer> server)
 {
     ::sockaddr_in newSockAddr{};
     ::socklen_t newSockAddrLength = sizeof(newSockAddr);
-    std::vector<std::shared_ptr<TCPSocket>> activeSockets;
+    std::vector<std::shared_ptr<TCPSocket>> activeSockets{};
 
     int newSock = 0;
     for (;;)

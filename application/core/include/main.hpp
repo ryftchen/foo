@@ -35,12 +35,12 @@ static void signalHandler(int sig)
 {
     signalStatus = sig;
     constexpr std::uint16_t maxFrame = 128;
-    void* callStack[maxFrame];
+    void* callStack[maxFrame] = {nullptr};
     const int numOfFrame = ::backtrace(callStack, maxFrame);
     char** const symbols = ::backtrace_symbols(callStack, numOfFrame);
 
     char buffer[1024] = {'\0'};
-    std::ostringstream originalTrace, detailedTrace;
+    std::ostringstream originalTrace{}, detailedTrace{};
     for (int i = 1; i < numOfFrame; ++i)
     {
         originalTrace << symbols[i] << '\n';

@@ -126,7 +126,7 @@ std::string Register::getInlineUsage() const
             longestName = str;
         }
     }
-    std::ostringstream usage;
+    std::ostringstream usage{};
     if (!isRequired)
     {
         usage << '[';
@@ -178,7 +178,7 @@ std::size_t Register::getArgumentsLength() const
 
 void Register::throwArgsNumRangeValidationException() const
 {
-    std::ostringstream stream;
+    std::ostringstream stream{};
     if (!usedName.empty())
     {
         stream << usedName << ": ";
@@ -205,14 +205,14 @@ void Register::throwArgsNumRangeValidationException() const
 
 void Register::throwRequiredArgNotUsedException() const
 {
-    std::ostringstream stream;
+    std::ostringstream stream{};
     stream << names.front() << ": required.";
     throw std::runtime_error(stream.str());
 }
 
 void Register::throwRequiredArgNoValueProvidedException() const
 {
-    std::ostringstream stream;
+    std::ostringstream stream{};
     stream << usedName << ": no value provided.";
     throw std::runtime_error(stream.str());
 }
@@ -256,7 +256,7 @@ bool Register::checkIfPositional(std::string_view name, const std::string_view p
 //! @return reference of the output stream object
 std::ostream& operator<<(std::ostream& os, const Register& reg)
 {
-    std::ostringstream nameStream;
+    std::ostringstream nameStream{};
     if (reg.checkIfPositional(reg.names.front(), reg.prefixChars))
     {
         if (!reg.metavarContent.empty())
@@ -373,19 +373,19 @@ Argument& Argument::operator=(const Argument& arg)
 Argument::operator bool() const
 {
     const auto isArgUsed = std::any_of(
-        argumentMap.cbegin(),
-        argumentMap.cend(),
-        [](const auto& iterator)
-        {
-            return iterator.second->isUsed;
-        });
-    const auto isSubParserUsed = std::any_of(
-        subParserUsed.cbegin(),
-        subParserUsed.cend(),
-        [](const auto& iterator)
-        {
-            return iterator.second;
-        });
+                   argumentMap.cbegin(),
+                   argumentMap.cend(),
+                   [](const auto& iterator)
+                   {
+                       return iterator.second->isUsed;
+                   }),
+               isSubParserUsed = std::any_of(
+                   subParserUsed.cbegin(),
+                   subParserUsed.cend(),
+                   [](const auto& iterator)
+                   {
+                       return iterator.second;
+                   });
 
     return isParsed && (isArgUsed || isSubParserUsed);
 }
@@ -457,14 +457,14 @@ std::string Argument::version() const
 
 std::ostringstream Argument::help() const
 {
-    std::ostringstream out;
+    std::ostringstream out{};
     out << *this;
     return out;
 }
 
 std::string Argument::usage() const
 {
-    std::ostringstream stream;
+    std::ostringstream stream{};
     stream << "usage: " << ((parserPath.find(' ' + titleName) == std::string::npos) ? titleName : parserPath);
 
     for (const auto& argument : optionalArguments)
@@ -523,7 +523,7 @@ char Argument::getAnyValidPrefixChar() const
 
 std::vector<std::string> Argument::preprocessArguments(const std::vector<std::string>& rawArguments) const
 {
-    std::vector<std::string> arguments;
+    std::vector<std::string> arguments{};
     for (const auto& arg : rawArguments)
     {
         const auto argumentStartsWithPrefixChars = [this](const std::string& str)

@@ -80,18 +80,19 @@ public:
     };
 
 private:
+    //! @brief Alias for the history state.
+    using HistoryState = ::HISTORY_STATE;
     //! @brief Alias for the command name.
     using Command = std::string;
     //! @brief Alias for the help message.
     using Help = std::string;
     //! @brief Alias for command help pair.
     using CommandHelpPair = std::pair<Command, Help>;
-    //! @brief Get help messages for all registered commands.
-    //! @return help messages for all registered commands
-    [[nodiscard]] std::vector<CommandHelpPair> getHelpOfRegisteredCommand() const;
+    //! @brief Alias for the functor of command completer.
+    using CommandCompleterFunctor = char**(const char* text, int start, int end);
+    //! @brief Alias for the functor of command iterator.
+    using CommandIteratorFunctor = char*(const char* text, int state);
 
-    //! @brief Alias for the history state.
-    using HistoryState = ::HISTORY_STATE;
     //! @brief Saved empty history state.
     HistoryState* const emptyHistory{::history_get_history_state()};
     //! @brief Implementation of running console.
@@ -113,10 +114,11 @@ private:
         //! @return reference of the Impl object
         Impl& operator=(Impl&&) = delete;
 
-        //! @brief Greeting information.
-        std::string greeting{};
         //! @brief Alias for the map of command and function in console.
         using RegisteredCommand = std::unordered_map<Command, std::pair<CommandFunctor, Help>>;
+
+        //! @brief Greeting information.
+        std::string greeting{};
         //! @brief Mapping table of all registered commands.
         RegisteredCommand regMap{};
         //! @brief Register order.
@@ -127,15 +129,14 @@ private:
     //! @brief Implementation instance.
     std::unique_ptr<Impl> impl{};
 
+    //! @brief Get help messages for all registered commands.
+    //! @return help messages for all registered commands
+    [[nodiscard]] std::vector<CommandHelpPair> getHelpOfRegisteredCommand() const;
     //! @brief Save current state.
     void saveState();
     //! @brief Reserve usage to the calling console instance.
     void reserveConsole();
 
-    //! @brief Alias for the functor of command completer.
-    using CommandCompleterFunctor = char**(const char* text, int start, int end);
-    //! @brief Alias for the functor of command iterator.
-    using CommandIteratorFunctor = char*(const char* text, int state);
     //! @brief Get the command completer. Wrap the interface.
     static CommandCompleterFunctor getCommandCompleter;
     //! @brief Get the command iterator.

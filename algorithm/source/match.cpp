@@ -122,7 +122,7 @@ std::int64_t Match::bm(
     const std::uint32_t patternLen)
 {
     std::int64_t shift = -1;
-    std::uint32_t badCharRuleTable[maxASCII], goodSuffixIndexTable[maxASCII];
+    std::uint32_t badCharRuleTable[maxASCII] = {}, goodSuffixIndexTable[maxASCII] = {};
 
     fillBadCharRuleTable(badCharRuleTable, pattern, patternLen);
     fillGoodSuffixRuleTable(goodSuffixIndexTable, pattern, patternLen);
@@ -209,7 +209,7 @@ std::int64_t Match::horspool(
     const std::uint32_t patternLen)
 {
     std::int64_t shift = -1;
-    std::uint32_t badCharShiftTable[maxASCII];
+    std::uint32_t badCharShiftTable[maxASCII] = {};
 
     fillBadCharShiftTableForHorspool(badCharShiftTable, pattern, patternLen);
 
@@ -255,7 +255,7 @@ std::int64_t Match::sunday(
     const std::uint32_t patternLen)
 {
     std::int64_t shift = -1;
-    std::uint32_t badCharShiftTable[maxASCII];
+    std::uint32_t badCharShiftTable[maxASCII] = {};
 
     fillBadCharShiftTableForSunday(badCharShiftTable, pattern, patternLen);
 

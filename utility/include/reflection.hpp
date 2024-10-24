@@ -200,6 +200,7 @@ inline constexpr void Reflect::varInNodeV(T /*info*/, U&& obj, Func&& func)
         [&](auto&& fld)
         {
             using Fld = std::decay_t<decltype(fld)>;
+
             if constexpr (!Fld::isStatic && !Fld::isFunction)
             {
                 std::forward<Func>(func)(fld, std::forward<U>(obj).*(fld.value));
@@ -222,6 +223,7 @@ struct NamedValueBase
 {
     //! @brief Alias for the name type.
     using NameType = Name;
+
     //! @brief Value name.
     static constexpr std::string_view name{NameType::view()};
 };
@@ -588,6 +590,7 @@ struct TypeInfoBase
 {
     //! @brief Alias for the type.
     using Type = T;
+
     //! @brief Public base class list.
     static constexpr BaseList bases{Bs{}...};
 
@@ -662,7 +665,7 @@ struct TypeInfoBase
     {
         dfsAcc(
             0,
-            [&](auto, auto info, auto der)
+            [&](auto /*func*/, auto info, auto der)
             {
                 std::forward<Func>(func)(info, der);
                 return 0;
@@ -683,6 +686,7 @@ struct TypeInfoBase
                     [&](const auto& fld)
                     {
                         using Fld = std::decay_t<decltype(fld)>;
+
                         if constexpr (!Fld::isStatic && !Fld::isFunction)
                         {
                             std::forward<Func>(func)(fld, std::forward<U>(obj).*(fld.value));
