@@ -226,7 +226,7 @@ int Register::lookAhead(const std::string_view name)
     return static_cast<int>(static_cast<unsigned char>(name.front()));
 }
 
-bool Register::checkIfOptional(std::string_view name, const std::string_view prefix)
+bool Register::checkIfOptional(const std::string_view name, const std::string_view prefix)
 {
     return !checkIfPositional(name, prefix);
 }

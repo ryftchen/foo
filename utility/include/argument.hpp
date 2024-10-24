@@ -219,13 +219,13 @@ public:
     //! @param sequence - sequences related to arguments
     template <std::size_t N, std::size_t... I>
     explicit Register(
-        std::string_view prefix, std::array<std::string_view, N>&& array, std::index_sequence<I...> sequence);
+        const std::string_view prefix, std::array<std::string_view, N>&& array, std::index_sequence<I...> sequence);
     //! @brief Construct a new Register object.
     //! @tparam N - number of arguments
     //! @param prefix - prefix characters
     //! @param array - array of arguments to be registered
     template <std::size_t N>
-    explicit Register(std::string_view prefix, std::array<std::string_view, N>&& array) :
+    explicit Register(const std::string_view prefix, std::array<std::string_view, N>&& array) :
         Register(prefix, std::move(array), std::make_index_sequence<N>{})
     {
     }
@@ -444,7 +444,7 @@ private:
     //! @param name - name of argument
     //! @param prefix - prefix characters
     //! @return be optional or not optional
-    static bool checkIfOptional(std::string_view name, const std::string_view prefix);
+    static bool checkIfOptional(const std::string_view name, const std::string_view prefix);
     //! @brief Check whether the argument is positional.
     //! @param name - name of argument
     //! @param prefix - prefix characters
@@ -474,7 +474,7 @@ protected:
 
 template <std::size_t N, std::size_t... I>
 Register::Register(
-    std::string_view prefix, std::array<std::string_view, N>&& array, std::index_sequence<I...> /*sequence*/) :
+    const std::string_view prefix, std::array<std::string_view, N>&& array, std::index_sequence<I...> /*sequence*/) :
     isAcceptOptionalLikeValue(false),
     isOptional((checkIfOptional(array[I], prefix) || ...)),
     isRequired(false),

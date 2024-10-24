@@ -642,7 +642,7 @@ class Dispatcher<>
 {
 public:
     //! @brief Register the handler.
-    void registerHandler(){};
+    void registerHandler() {}
 };
 //! @brief Message receiver.
 //! @tparam Is - type of indications
@@ -680,7 +680,7 @@ class Receiver<>
 {
 public:
     //! @brief Action on message.
-    void onMessage(){};
+    void onMessage() {}
 };
 //! @brief Forwarding basis for all message types.
 struct ForwardBase : public MessageTypes::AsParameterPackFor<Dispatcher>,
