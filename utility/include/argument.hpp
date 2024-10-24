@@ -367,7 +367,7 @@ private:
         {
             if (minimum > maximum)
             {
-                throw std::invalid_argument("The range of number of arguments is invalid.");
+                throw std::runtime_error("The range of number of arguments is invalid.");
             }
         }
 
@@ -648,7 +648,7 @@ T Register::get() const
         }
     }
 
-    throw std::invalid_argument("No value specified for '" + names.back() + "'.");
+    throw std::runtime_error("No value specified for '" + names.back() + "'.");
 }
 
 template <typename T>
@@ -656,7 +656,7 @@ std::optional<T> Register::present() const
 {
     if (defaultValue.has_value())
     {
-        throw std::invalid_argument("Default value always presents.");
+        throw std::runtime_error("Default value always presents.");
     }
     if (values.empty())
     {
@@ -867,7 +867,7 @@ T& Argument::at(const std::string_view name)
         {
             return subParserIter->second->get();
         }
-        throw std::invalid_argument("No such sub-parser: " + std::string{name} + '.');
+        throw std::runtime_error("No such sub-parser: " + std::string{name} + '.');
     }
 }
 
@@ -876,7 +876,7 @@ T Argument::get(const std::string_view argName) const
 {
     if (!isParsed)
     {
-        throw std::invalid_argument("Nothing parsed, no arguments are available.");
+        throw std::runtime_error("Nothing parsed, no arguments are available.");
     }
     return (*this)[argName].get<T>();
 }

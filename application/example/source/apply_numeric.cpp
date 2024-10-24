@@ -296,7 +296,7 @@ void updateChoice<ArithmeticMethod>(const std::string& target)
             break;
         default:
             bitFlag.reset();
-            throw std::invalid_argument("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
+            throw std::logic_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
     }
 }
 
@@ -421,7 +421,7 @@ void updateChoice<DivisorMethod>(const std::string& target)
             break;
         default:
             bitFlag.reset();
-            throw std::invalid_argument("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
+            throw std::logic_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
     }
 }
 
@@ -582,7 +582,7 @@ void updateChoice<IntegralMethod>(const std::string& target)
             break;
         default:
             bitFlag.reset();
-            throw std::invalid_argument("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
+            throw std::logic_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
     }
 }
 
@@ -728,7 +728,7 @@ void updateChoice<PrimeMethod>(const std::string& target)
             break;
         default:
             bitFlag.reset();
-            throw std::invalid_argument("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
+            throw std::logic_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
     }
 }
 

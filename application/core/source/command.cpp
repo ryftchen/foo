@@ -308,7 +308,7 @@ void Command::initializeCLI()
                             return !std::isspace(c, l);
                         }))
                 {
-                    throw std::invalid_argument("Invalid console command.");
+                    throw std::runtime_error("Invalid console command.");
                 }
                 return input;
             })
@@ -914,7 +914,7 @@ void Command::checkForExcessiveArguments()
     if (anySelected())
     {
         dispatchManager.reset();
-        throw std::invalid_argument("Excessive arguments.");
+        throw std::runtime_error("Excessive arguments.");
     }
 }
 

@@ -233,7 +233,7 @@ void updateChoice<LinearInstance>(const std::string& target)
             break;
         default:
             bitFlag.reset();
-            throw std::invalid_argument("Unexpected " + std::string{toString(category)} + " instance: " + target + '.');
+            throw std::logic_error("Unexpected " + std::string{toString(category)} + " instance: " + target + '.');
     }
 }
 
@@ -355,7 +355,7 @@ void updateChoice<TreeInstance>(const std::string& target)
             break;
         default:
             bitFlag.reset();
-            throw std::invalid_argument("Unexpected " + std::string{toString(category)} + " instance: " + target + '.');
+            throw std::logic_error("Unexpected " + std::string{toString(category)} + " instance: " + target + '.');
     }
 }
 
