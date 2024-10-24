@@ -442,7 +442,7 @@ Register& Argument::operator[](const std::string_view argName) const
             return *(iterator->second);
         }
     }
-    throw std::invalid_argument("No such argument: " + std::string{argName} + '.');
+    throw std::runtime_error("No such argument: " + std::string{argName} + '.');
 }
 
 std::string Argument::title() const

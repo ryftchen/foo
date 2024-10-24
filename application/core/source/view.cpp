@@ -485,7 +485,7 @@ int View::buildTLVPacket4Depend(const std::vector<std::string>& args, char* buf)
 {
     if (!args.empty())
     {
-        throw std::invalid_argument("Excessive arguments.");
+        throw std::runtime_error("Excessive arguments.");
     }
 
     int len = 0;
@@ -567,13 +567,13 @@ int View::buildTLVPacket4Execute(const std::vector<std::string>& args, char* buf
                         return '"' == c;
                     }))))
     {
-        throw std::invalid_argument("Please enter the \"execute\" and append with 'CMD' (include quotes).");
+        throw std::runtime_error("Please enter the \"execute\" and append with 'CMD' (include quotes).");
     }
     if ((entry.length() <= 1)
         || (((entry.find_first_not_of('\'') == 0) || (entry.find_last_not_of('\'') == (entry.length() - 1)))
             && ((entry.find_first_not_of('"') == 0) || (entry.find_last_not_of('"') == (entry.length() - 1)))))
     {
-        throw std::invalid_argument("Missing full quotes around the pending command.");
+        throw std::runtime_error("Missing full quotes around the pending command.");
     }
 
     int len = 0;
@@ -590,7 +590,7 @@ int View::buildTLVPacket4Journal(const std::vector<std::string>& args, char* buf
 {
     if (!args.empty())
     {
-        throw std::invalid_argument("Excessive arguments.");
+        throw std::runtime_error("Excessive arguments.");
     }
 
     int len = 0;
@@ -607,14 +607,14 @@ int View::buildTLVPacket4Monitor(const std::vector<std::string>& args, char* buf
 {
     if (args.size() > 1)
     {
-        throw std::invalid_argument("Please enter the \"monitor\" and append with or without NUM.");
+        throw std::runtime_error("Please enter the \"monitor\" and append with or without NUM.");
     }
     else if (args.size() == 1)
     {
         const std::string input = args.front();
         if ((input.length() != 1) || !std::isdigit(input.front()))
         {
-            throw std::invalid_argument("Only decimal bases are supported for the specified number of stack frames.");
+            throw std::runtime_error("Only decimal bases are supported for the specified number of stack frames.");
         }
     }
     const std::uint16_t frameNum = !args.empty() ? std::stoul(args.front()) : 1;
@@ -633,7 +633,7 @@ int View::buildTLVPacket4Profile(const std::vector<std::string>& args, char* buf
 {
     if (!args.empty())
     {
-        throw std::invalid_argument("Excessive arguments.");
+        throw std::runtime_error("Excessive arguments.");
     }
 
     int len = 0;

@@ -385,7 +385,7 @@ void updateChoice<MatchMethod>(const std::string& target)
             break;
         default:
             bitFlag.reset();
-            throw std::invalid_argument("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
+            throw std::logic_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
     }
 }
 
@@ -511,7 +511,7 @@ void updateChoice<NotationMethod>(const std::string& target)
             break;
         default:
             bitFlag.reset();
-            throw std::invalid_argument("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
+            throw std::logic_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
     }
 }
 
@@ -670,7 +670,7 @@ void updateChoice<OptimalMethod>(const std::string& target)
             break;
         default:
             bitFlag.reset();
-            throw std::invalid_argument("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
+            throw std::logic_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
     }
 }
 
@@ -841,7 +841,7 @@ void updateChoice<SearchMethod>(const std::string& target)
             break;
         default:
             bitFlag.reset();
-            throw std::invalid_argument("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
+            throw std::logic_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
     }
 }
 
@@ -1094,7 +1094,7 @@ void updateChoice<SortMethod>(const std::string& target)
             break;
         default:
             bitFlag.reset();
-            throw std::invalid_argument("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
+            throw std::logic_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
     }
 }
 
