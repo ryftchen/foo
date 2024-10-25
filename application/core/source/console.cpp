@@ -25,7 +25,7 @@ inline namespace
 static Console* currentSession = nullptr;
 } // namespace
 
-Console::Console(const std::string& greeting) : impl(std::make_unique<Impl>(greeting))
+Console::Console(const std::string_view greeting) : impl(std::make_unique<Impl>(greeting))
 {
     ::rl_attempted_completion_function = &Console::getCommandCompleter;
 
@@ -82,13 +82,13 @@ Console::~Console()
     ::rl_restore_prompt();
 }
 
-void Console::registerCommand(const std::string& name, const CommandFunctor& func, const std::string& help)
+void Console::registerCommand(const std::string_view name, const CommandFunctor& func, const std::string_view help)
 {
-    impl->regMap[name] = std::make_pair(func, help);
+    impl->regMap[name.data()] = std::make_pair(func, help);
     impl->regOrder.emplace_back(name);
 }
 
-void Console::setGreeting(const std::string& greeting)
+void Console::setGreeting(const std::string_view greeting)
 {
     impl->greeting = greeting;
 }
@@ -98,10 +98,10 @@ std::string Console::getGreeting() const
     return impl->greeting;
 }
 
-int Console::commandExecutor(const std::string& command)
+int Console::commandExecutor(const std::string_view command)
 {
     std::vector<std::string> inputs{};
-    std::istringstream is(command);
+    std::istringstream is(command.data());
     std::copy(std::istream_iterator<std::string>(is), std::istream_iterator<std::string>(), std::back_inserter(inputs));
 
     if (inputs.empty())
@@ -119,9 +119,9 @@ int Console::commandExecutor(const std::string& command)
     return RetCode(static_cast<int>(std::get<0>(iterator->second)(inputs)));
 }
 
-int Console::fileExecutor(const std::string& filename)
+int Console::fileExecutor(const std::string_view filename)
 {
-    std::ifstream input(filename);
+    std::ifstream input(filename.data());
     if (!input)
     {
         throw std::runtime_error("Could not find the batch file to run.");

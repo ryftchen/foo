@@ -176,7 +176,7 @@ extern ApplyDesignPattern& manager();
 //! @tparam T - type of target instance
 //! @param target - target instance
 template <class T>
-void updateChoice(const std::string& target);
+void updateChoice(const std::string_view target);
 //! @brief Run choices.
 //! @tparam T - type of target instance
 //! @param candidates - container for the candidate target instances
@@ -442,7 +442,7 @@ public:
 };
 } // namespace behavioral
 template <>
-void updateChoice<BehavioralInstance>(const std::string& target);
+void updateChoice<BehavioralInstance>(const std::string_view target);
 template <>
 void runChoices<BehavioralInstance>(const std::vector<std::string>& candidates);
 
@@ -587,7 +587,7 @@ public:
 };
 } // namespace creational
 template <>
-void updateChoice<CreationalInstance>(const std::string& target);
+void updateChoice<CreationalInstance>(const std::string_view target);
 template <>
 void runChoices<CreationalInstance>(const std::vector<std::string>& candidates);
 
@@ -745,7 +745,7 @@ public:
 };
 } // namespace structural
 template <>
-void updateChoice<StructuralInstance>(const std::string& target);
+void updateChoice<StructuralInstance>(const std::string_view target);
 template <>
 void runChoices<StructuralInstance>(const std::vector<std::string>& candidates);
 } // namespace app_dp

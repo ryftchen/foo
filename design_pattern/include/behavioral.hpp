@@ -143,11 +143,11 @@ public:
     //! @brief Set the pair of the expression and the value.
     //! @param expr - expression
     //! @param val - value
-    void set(const std::string& expr, const bool val);
+    void set(const std::string_view expr, const bool val);
     //! @brief Get the value by expression.
     //! @param expr - expression
     //! @return value
-    bool get(const std::string& expr);
+    bool get(const std::string_view expr);
 
 private:
     //! @brief The variables.
@@ -173,7 +173,7 @@ class TerminalExpression : public AbstractExpression
 public:
     //! @brief Construct a new TerminalExpression object.
     //! @param value - target value
-    explicit TerminalExpression(const std::string& value) : value(value) {}
+    explicit TerminalExpression(const std::string_view value) : value(value) {}
     //! @brief Destroy the TerminalExpression object.
     ~TerminalExpression() override = default;
 
@@ -327,7 +327,7 @@ public:
     //! @brief Distribute message.
     //! @param sender - sender in colleagues
     //! @param msg - message from sender
-    virtual void distribute(const std::shared_ptr<Colleague>& sender, const std::string& msg) = 0;
+    virtual void distribute(const std::shared_ptr<Colleague>& sender, const std::string_view msg) = 0;
 
 protected:
     //! @brief Construct a new Mediator object.
@@ -347,7 +347,7 @@ public:
     //! @brief Distribute message.
     //! @param sender - sender in colleagues
     //! @param msg - message from sender
-    void distribute(const std::shared_ptr<Colleague>& sender, const std::string& msg) override;
+    void distribute(const std::shared_ptr<Colleague>& sender, const std::string_view msg) override;
 
 private:
     //! @brief Collection of colleagues.
@@ -371,10 +371,10 @@ public:
     [[nodiscard]] std::uint32_t getId() const;
     //! @brief Send message.
     //! @param msg - sending message
-    virtual void send(const std::string& msg) = 0;
+    virtual void send(const std::string_view msg) = 0;
     //! @brief Receive message.
     //! @param msg - receiving message
-    virtual void receive(const std::string& msg) = 0;
+    virtual void receive(const std::string_view msg) = 0;
 
 protected:
     //! @brief Mediator of the colleague.
@@ -396,10 +396,10 @@ public:
 
     //! @brief Send message.
     //! @param msg - sending message
-    void send(const std::string& msg) override;
+    void send(const std::string_view msg) override;
     //! @brief Receive message.
     //! @param msg - receiving message
-    void receive(const std::string& msg) override;
+    void receive(const std::string_view msg) override;
 };
 
 extern std::ostringstream& output();

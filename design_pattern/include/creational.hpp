@@ -150,13 +150,13 @@ class Product
 public:
     //! @brief Make part A.
     //! @param part - target part
-    void makeA(const std::string& part);
+    void makeA(const std::string_view part);
     //! @brief Make part B.
     //! @param part - target part
-    void makeB(const std::string& part);
+    void makeB(const std::string_view part);
     //! @brief Make part C.
     //! @param part - target part
-    void makeC(const std::string& part);
+    void makeC(const std::string_view part);
     //! @brief Get all parts.
     //! @return all parts
     std::string get();

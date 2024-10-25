@@ -181,7 +181,7 @@ extern ApplyNumeric& manager();
 //! @tparam T - type of target method
 //! @param target - target method
 template <class T>
-void updateChoice(const std::string& target);
+void updateChoice(const std::string_view target);
 //! @brief Run choices.
 //! @tparam T - type of target method
 //! @param candidates - container for the candidate target methods
@@ -258,7 +258,7 @@ private:
 };
 } // namespace arithmetic
 template <>
-void updateChoice<ArithmeticMethod>(const std::string& target);
+void updateChoice<ArithmeticMethod>(const std::string_view target);
 template <>
 void runChoices<ArithmeticMethod>(const std::vector<std::string>& candidates);
 
@@ -370,7 +370,7 @@ private:
 };
 } // namespace divisor
 template <>
-void updateChoice<DivisorMethod>(const std::string& target);
+void updateChoice<DivisorMethod>(const std::string_view target);
 template <>
 void runChoices<DivisorMethod>(const std::vector<std::string>& candidates);
 
@@ -496,7 +496,7 @@ struct ExprRange
     //! @brief Upper endpoint.
     const T2 range2{};
     //! @brief Expression description.
-    const std::string_view exprDescr{};
+    const std::string exprDescr{};
 };
 //! @brief Mapping hash value for the expression.
 struct ExprMapHash
@@ -510,7 +510,7 @@ struct ExprMapHash
     std::size_t operator()(const ExprRange<T1, T2>& range) const
     {
         const std::size_t hash1 = std::hash<T1>()(range.range1), hash2 = std::hash<T2>()(range.range2),
-                          hash3 = std::hash<std::string_view>()(range.exprDescr);
+                          hash3 = std::hash<std::string>()(range.exprDescr);
         constexpr std::size_t magicNumber = 0x9e3779b9, leftShift = 6, rightShift = 2;
         std::size_t seed = 0;
         seed ^= hash1 + magicNumber + (seed << leftShift) + (seed >> rightShift);
@@ -572,7 +572,7 @@ private:
 };
 } // namespace integral
 template <>
-void updateChoice<IntegralMethod>(const std::string& target);
+void updateChoice<IntegralMethod>(const std::string_view target);
 template <>
 void runChoices<IntegralMethod>(const std::vector<std::string>& candidates);
 
@@ -674,7 +674,7 @@ private:
 };
 } // namespace prime
 template <>
-void updateChoice<PrimeMethod>(const std::string& target);
+void updateChoice<PrimeMethod>(const std::string_view target);
 template <>
 void runChoices<PrimeMethod>(const std::vector<std::string>& candidates);
 } // namespace app_num

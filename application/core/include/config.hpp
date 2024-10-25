@@ -57,7 +57,7 @@ private:
     //! @brief Parse the configuration file.
     //! @param configFile - configuration file
     //! @return configuration data
-    static utility::json::JSON parseConfigFile(const std::string& configFile);
+    static utility::json::JSON parseConfigFile(const std::string_view configFile);
     //! @brief Verify the configuration data.
     //! @param configData - configuration data
     static void verifyConfigData(const utility::json::JSON& configData);
@@ -70,7 +70,7 @@ private:
 };
 
 extern utility::json::JSON getDefaultConfiguration();
-extern bool loadConfiguration(const std::string& filename = getFullDefaultConfigurationPath());
+extern bool loadConfiguration(const std::string_view filename = getFullDefaultConfigurationPath());
 
 const utility::json::JSON& retrieveData();
 //! @brief Configuration details.

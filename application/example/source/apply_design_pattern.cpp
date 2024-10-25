@@ -67,7 +67,7 @@ constexpr std::string_view toString(const Category cat)
         case Category::structural:
             return utility::reflection::TypeInfo<StructuralInstance>::name;
         default:
-            return "";
+            return {};
     }
 }
 
@@ -105,12 +105,12 @@ consteval std::size_t abbrVal(const T instance)
 
     std::size_t value = 0;
     TypeInfo::fields.forEach(
-        [instance, &value](auto field)
+        [instance, &value](const auto field)
         {
             if (field.name == toString(instance))
             {
                 static_assert(1 == field.attrs.size);
-                auto attr = field.attrs.find(REFLECTION_STR("choice"));
+                const auto attr = field.attrs.find(REFLECTION_STR("choice"));
                 static_assert(attr.hasValue);
                 value = utility::common::operator""_bkdrHash(attr.value, 0);
             }
@@ -209,7 +209,7 @@ namespace behavioral
 //! @brief Display the contents of the behavioral result.
 //! @param instance - the specific value of BehavioralInstance enum
 //! @param result - behavioral result
-static void displayResult(const BehavioralInstance instance, const std::string& result)
+static void displayResult(const BehavioralInstance instance, const std::string_view result)
 {
     COMMON_PRINT("\n==> %-21s Instance <==\n%s", getTitle(instance).data(), result.data());
 }
@@ -339,12 +339,12 @@ catch (const std::exception& err)
 //! @brief Update behavioral-related choice.
 //! @param target - target instance
 template <>
-void updateChoice<BehavioralInstance>(const std::string& target)
+void updateChoice<BehavioralInstance>(const std::string_view target)
 {
     constexpr auto category = Category::behavioral;
     auto& bitFlag = getCategoryOpts<category>();
 
-    switch (utility::common::bkdrHash(target.c_str()))
+    switch (utility::common::bkdrHash(target.data()))
     {
         case abbrVal(BehavioralInstance::chainOfResponsibility):
             bitFlag.set(BehavioralInstance::chainOfResponsibility);
@@ -381,7 +381,8 @@ void updateChoice<BehavioralInstance>(const std::string& target)
             break;
         default:
             bitFlag.reset();
-            throw std::logic_error("Unexpected " + std::string{toString(category)} + " instance: " + target + '.');
+            throw std::logic_error(
+                "Unexpected " + std::string{toString(category)} + " instance: " + target.data() + '.');
     }
 }
 
@@ -403,7 +404,7 @@ void runChoices<BehavioralInstance>(const std::vector<std::string>& candidates)
     auto& pooling = action::resourcePool();
     auto* const threads = pooling.newElement(std::min(
         static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<BehavioralInstance>::value)));
-    const auto behavioralFunctor = [threads](const std::string& threadName, void (*targetInstance)())
+    const auto behavioralFunctor = [threads](const std::string_view threadName, void (*targetInstance)())
     {
         threads->enqueue(threadName, targetInstance);
     };
@@ -467,7 +468,7 @@ namespace creational
 //! @brief Display the contents of the creational result.
 //! @param instance - the specific value of CreationalInstance enum
 //! @param result - creational result
-static void displayResult(const CreationalInstance instance, const std::string& result)
+static void displayResult(const CreationalInstance instance, const std::string_view result)
 {
     COMMON_PRINT("\n==> %-15s Instance <==\n%s", getTitle(instance).data(), result.data());
 }
@@ -531,12 +532,12 @@ catch (const std::exception& err)
 //! @brief Update creational-related choice.
 //! @param target - target instance
 template <>
-void updateChoice<CreationalInstance>(const std::string& target)
+void updateChoice<CreationalInstance>(const std::string_view target)
 {
     constexpr auto category = Category::creational;
     auto& bitFlag = getCategoryOpts<category>();
 
-    switch (utility::common::bkdrHash(target.c_str()))
+    switch (utility::common::bkdrHash(target.data()))
     {
         case abbrVal(CreationalInstance::abstractFactory):
             bitFlag.set(CreationalInstance::abstractFactory);
@@ -555,7 +556,8 @@ void updateChoice<CreationalInstance>(const std::string& target)
             break;
         default:
             bitFlag.reset();
-            throw std::logic_error("Unexpected " + std::string{toString(category)} + " instance: " + target + '.');
+            throw std::logic_error(
+                "Unexpected " + std::string{toString(category)} + " instance: " + target.data() + '.');
     }
 }
 
@@ -577,7 +579,7 @@ void runChoices<CreationalInstance>(const std::vector<std::string>& candidates)
     auto& pooling = action::resourcePool();
     auto* const threads = pooling.newElement(std::min(
         static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<CreationalInstance>::value)));
-    const auto creationalFunctor = [threads](const std::string& threadName, void (*targetInstance)())
+    const auto creationalFunctor = [threads](const std::string_view threadName, void (*targetInstance)())
     {
         threads->enqueue(threadName, targetInstance);
     };
@@ -623,7 +625,7 @@ namespace structural
 //! @brief Display the contents of the structural result.
 //! @param instance - the specific value of StructuralInstance enum
 //! @param result - structural result
-static void displayResult(const StructuralInstance instance, const std::string& result)
+static void displayResult(const StructuralInstance instance, const std::string_view result)
 {
     COMMON_PRINT("\n==> %-9s Instance <==\n%s", getTitle(instance).data(), result.data());
 }
@@ -709,12 +711,12 @@ catch (const std::exception& err)
 //! @brief Update structural-related choice.
 //! @param target - target instance
 template <>
-void updateChoice<StructuralInstance>(const std::string& target)
+void updateChoice<StructuralInstance>(const std::string_view target)
 {
     constexpr auto category = Category::structural;
     auto& bitFlag = getCategoryOpts<category>();
 
-    switch (utility::common::bkdrHash(target.c_str()))
+    switch (utility::common::bkdrHash(target.data()))
     {
         case abbrVal(StructuralInstance::adapter):
             bitFlag.set(StructuralInstance::adapter);
@@ -739,7 +741,8 @@ void updateChoice<StructuralInstance>(const std::string& target)
             break;
         default:
             bitFlag.reset();
-            throw std::logic_error("Unexpected " + std::string{toString(category)} + " instance: " + target + '.');
+            throw std::logic_error(
+                "Unexpected " + std::string{toString(category)} + " instance: " + target.data() + '.');
     }
 }
 
@@ -761,7 +764,7 @@ void runChoices<StructuralInstance>(const std::vector<std::string>& candidates)
     auto& pooling = action::resourcePool();
     auto* const threads = pooling.newElement(std::min(
         static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<StructuralInstance>::value)));
-    const auto structuralFunctor = [threads](const std::string& threadName, void (*targetInstance)())
+    const auto structuralFunctor = [threads](const std::string_view threadName, void (*targetInstance)())
     {
         threads->enqueue(threadName, targetInstance);
     };

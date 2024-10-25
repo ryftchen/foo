@@ -226,9 +226,9 @@ public:
     template <typename... Args>
     void flush(
         const OutputLevel level,
-        const std::string& codeFile,
+        const std::string_view codeFile,
         const std::uint32_t codeLine,
-        const std::string& format,
+        const std::string_view format,
         Args&&... args);
     //! @brief Log holder for flushing.
     //! @tparam Lv - type of output level
@@ -239,7 +239,7 @@ public:
         //! @brief Construct a new Holder object.
         //! @param codeFile - current code file
         //! @param codeLine - current code line
-        Holder(const std::string& codeFile, const std::uint32_t codeLine) : file(codeFile), line(codeLine) {}
+        Holder(const std::string_view codeFile, const std::uint32_t codeLine) : file(codeFile), line(codeLine) {}
         //! @brief Destroy the Holder object.
         virtual ~Holder() { flush(); }
 
@@ -251,9 +251,9 @@ public:
         //! @brief Output stream for flushing.
         std::ostringstream output{};
         //! @brief Code file.
-        const std::string& file{};
+        const std::string file{};
         //! @brief Code line.
-        const std::uint32_t line{};
+        const std::uint32_t line{0};
 
         //! @brief Flush the output stream.
         inline void flush() { getInstance().flush(Lv, file, line, output.str()); }
@@ -303,7 +303,7 @@ private:
     //! @brief Filter break line.
     //! @param line - target line
     //! @return single row
-    static std::string filterBreakLine(const std::string& line);
+    static std::string filterBreakLine(const std::string_view line);
     //! @brief Safely retrieve the current state.
     //! @return current state
     State safeCurrentState() const;
@@ -319,7 +319,7 @@ private:
     //! @brief Get the full path to the log file.
     //! @param filename - log file
     //! @return full path to the log file
-    static std::string getFullLogPath(const std::string& filename = "log/foo.log");
+    static std::string getFullLogPath(const std::string_view filename = "log/foo.log");
     //! @brief Try to create the log folder.
     void tryCreateLogFolder() const;
 
@@ -403,9 +403,9 @@ extern const std::string& changeToLogStyle(std::string& line);
 template <typename... Args>
 void Log::flush(
     const OutputLevel level,
-    const std::string& codeFile,
+    const std::string_view codeFile,
     const std::uint32_t codeLine,
-    const std::string& format,
+    const std::string_view format,
     Args&&... args)
 {
     if (level < minimumLevel)

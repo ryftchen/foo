@@ -220,7 +220,7 @@ public:
     //! @brief Load JSON object from string.
     //! @param fmt - formatted string to be parsed
     //! @return JSON object
-    static JSON load(const std::string& fmt);
+    static JSON load(const std::string_view fmt);
     //! @brief Append item to array. Convert to array type.
     //! @tparam T - type of arg
     //! @param arg - item
@@ -236,7 +236,7 @@ public:
     //! @brief The operator ([]) overloading of JSON class.
     //! @param key - target key
     //! @return reference of the JSON object
-    JSON& operator[](const std::string& key);
+    JSON& operator[](const std::string_view key);
     //! @brief The operator ([]) overloading of JSON class.
     //! @param index - target index
     //! @return reference of the JSON object
@@ -244,11 +244,11 @@ public:
     //! @brief Get the JSON object by key.
     //! @param key - target key
     //! @return reference of the JSON object
-    JSON& at(const std::string& key);
+    JSON& at(const std::string_view key);
     //! @brief Get the JSON object by key.
     //! @param key - target key
     //! @return const reference of the JSON object
-    [[nodiscard]] const JSON& at(const std::string& key) const;
+    [[nodiscard]] const JSON& at(const std::string_view key) const;
     //! @brief Get the JSON object by index.
     //! @param index - target index
     //! @return reference of the JSON object
@@ -266,7 +266,7 @@ public:
     //! @brief Check that the key exists.
     //! @param key - target key
     //! @return exist or not exist
-    [[nodiscard]] bool hasKey(const std::string& key) const;
+    [[nodiscard]] bool hasKey(const std::string_view key) const;
     //! @brief Get the data type.
     //! @return data type
     [[nodiscard]] Type getType() const;
@@ -322,7 +322,7 @@ public:
     //! @param depth - target depth
     //! @param tab - tab string
     //! @return formatted string
-    [[nodiscard]] std::string dump(const std::uint32_t depth = 1, const std::string& tab = "    ") const;
+    [[nodiscard]] std::string dump(const std::uint32_t depth = 1, const std::string_view tab = "    ") const;
     //! @brief Dump as minified formatted string.
     //! @return minified formatted string
     [[nodiscard]] std::string dumpMinified() const;

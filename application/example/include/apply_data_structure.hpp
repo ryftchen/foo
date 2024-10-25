@@ -122,7 +122,7 @@ extern ApplyDataStructure& manager();
 //! @tparam T - type of target instance
 //! @param target - target instance
 template <class T>
-void updateChoice(const std::string& target);
+void updateChoice(const std::string_view target);
 //! @brief Run choices.
 //! @tparam T - type of target instance
 //! @param candidates - container for the candidate target instances
@@ -305,7 +305,7 @@ public:
 };
 } // namespace linear
 template <>
-void updateChoice<LinearInstance>(const std::string& target);
+void updateChoice<LinearInstance>(const std::string_view target);
 template <>
 void runChoices<LinearInstance>(const std::vector<std::string>& candidates);
 
@@ -480,7 +480,7 @@ public:
 };
 } // namespace tree
 template <>
-void updateChoice<TreeInstance>(const std::string& target);
+void updateChoice<TreeInstance>(const std::string_view target);
 template <>
 void runChoices<TreeInstance>(const std::vector<std::string>& candidates);
 } // namespace app_ds

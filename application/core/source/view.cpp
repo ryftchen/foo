@@ -446,10 +446,10 @@ void View::awakenDueToOutput()
     outputCond.notify_one();
 }
 
-std::vector<std::string> View::splitString(const std::string& str)
+std::vector<std::string> View::splitString(const std::string_view str)
 {
     std::vector<std::string> split{};
-    std::istringstream is(str);
+    std::istringstream is(str.data());
     std::string token{};
     while (is >> token)
     {
@@ -711,7 +711,7 @@ void View::decryptMessage(char* buffer, const int length)
     ::EVP_CIPHER_CTX_free(ctx);
 }
 
-int View::fillSharedMemory(const std::string& contents)
+int View::fillSharedMemory(const std::string_view contents)
 {
     const int shmId = ::shmget(
         static_cast<::key_t>(0),
@@ -734,7 +734,7 @@ int View::fillSharedMemory(const std::string& contents)
         if (!shrMem->signal.load())
         {
             std::memset(shrMem->buffer, 0, sizeof(shrMem->buffer));
-            std::strncpy(shrMem->buffer, contents.c_str(), sizeof(shrMem->buffer) - 1);
+            std::strncpy(shrMem->buffer, contents.data(), sizeof(shrMem->buffer) - 1);
             shrMem->buffer[sizeof(shrMem->buffer) - 1] = '\0';
             encryptMessage(shrMem->buffer, sizeof(shrMem->buffer));
 
@@ -787,12 +787,12 @@ void View::printSharedMemory(const int shmId, const bool withoutPaging)
     }
 }
 
-void View::segmentedOutput(const std::string& buffer)
+void View::segmentedOutput(const std::string_view buffer)
 {
     constexpr std::uint8_t terminalRows = 24;
     constexpr std::string_view hint = "----- Type <CR> for more, c to continue without paging, q to quit -----: ",
                                clearEscape = "\x1b[1A\x1b[2K\r";
-    std::istringstream is(buffer);
+    std::istringstream is(buffer.data());
     const std::uint64_t lineNum =
         std::count(std::istreambuf_iterator<char>(is), std::istreambuf_iterator<char>(), '\n');
     is.seekg(std::ios::beg);
@@ -808,7 +808,7 @@ void View::segmentedOutput(const std::string& buffer)
         {
             std::cout << hint << "\n\x1b[1A\x1b[" << hint.length() << 'C' << std::flush;
             utility::io::waitForUserInput(
-                [&](const std::string& input)
+                [&](const std::string_view input)
                 {
                     std::cout << clearEscape << std::flush;
                     if (input.empty())
@@ -957,7 +957,7 @@ void View::createViewServer()
     tcpServer->onNewConnection = [this](const std::shared_ptr<utility::socket::TCPSocket> newSocket)
     {
         std::weak_ptr<utility::socket::TCPSocket> weakSocket = newSocket;
-        newSocket->onMessageReceived = [this, weakSocket](const std::string& message)
+        newSocket->onMessageReceived = [this, weakSocket](const std::string_view message)
         {
             auto newSocket = weakSocket.lock();
             if (!newSocket)
@@ -1001,7 +1001,8 @@ void View::createViewServer()
     };
 
     udpServer = std::make_shared<utility::socket::UDPServer>();
-    udpServer->onMessageReceived = [this](const std::string& message, const std::string& ip, const std::uint16_t port)
+    udpServer->onMessageReceived =
+        [this](const std::string_view message, const std::string_view ip, const std::uint16_t port)
     {
         if (message.empty())
         {

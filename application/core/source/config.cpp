@@ -28,11 +28,11 @@ const utility::json::JSON& Config::getData() const
     return data;
 }
 
-utility::json::JSON Config::parseConfigFile(const std::string& configFile)
+utility::json::JSON Config::parseConfigFile(const std::string_view configFile)
 {
     if (!std::filesystem::exists(configFile))
     {
-        throw std::runtime_error("Configuration file " + configFile + " is missing.");
+        throw std::runtime_error("Configuration file " + std::string{configFile} + " is missing.");
     }
 
     const auto& configRows = utility::io::getFileContents(configFile, true);
@@ -178,7 +178,7 @@ std::string getFullDefaultConfigurationPath()
     {
         throw std::runtime_error("The environment variable FOO_HOME is not set.");
     }
-    return std::string{processHome} + '/' + std::string{defaultConfigurationFile};
+    return std::string{processHome} + '/' + defaultConfigurationFile.data();
 }
 
 //! @brief Get the default configuration.
@@ -230,7 +230,7 @@ utility::json::JSON getDefaultConfiguration()
 
 //! @brief Forced configuration update by default.
 //! @param filename - config file
-static void forcedConfigurationUpdateByDefault(const std::string& filename)
+static void forcedConfigurationUpdateByDefault(const std::string_view filename)
 {
     utility::io::FileWriter fileWriter(filename);
     fileWriter.open(true);
@@ -242,7 +242,7 @@ static void forcedConfigurationUpdateByDefault(const std::string& filename)
 
 //! @brief Initialize the configuration.
 //! @param filename - config file
-static void initializeConfiguration(const std::string& filename)
+static void initializeConfiguration(const std::string_view filename)
 {
     const std::filesystem::path configFolderPath = std::filesystem::absolute(filename).parent_path();
     std::filesystem::create_directories(configFolderPath);
@@ -255,7 +255,7 @@ static void initializeConfiguration(const std::string& filename)
 //! @brief Load the configuration.
 //! @param filename - config file
 //! @return successful or failed to load
-bool loadConfiguration(const std::string& filename)
+bool loadConfiguration(const std::string_view filename)
 try
 {
     if (!std::filesystem::exists(filename))
@@ -276,7 +276,7 @@ catch (...)
     bool keepThrowing = true;
     constexpr std::uint16_t timeoutPeriod = 5000;
     utility::io::waitForUserInput(
-        [&](const std::string& input)
+        [&](const std::string_view input)
         {
             if (("y" != input) && ("n" != input))
             {

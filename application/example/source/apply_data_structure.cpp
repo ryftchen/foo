@@ -65,7 +65,7 @@ constexpr std::string_view toString(const Category cat)
         case Category::tree:
             return utility::reflection::TypeInfo<TreeInstance>::name;
         default:
-            return "";
+            return {};
     }
 }
 
@@ -103,12 +103,12 @@ consteval std::size_t abbrVal(const T instance)
 
     std::size_t value = 0;
     TypeInfo::fields.forEach(
-        [instance, &value](auto field)
+        [instance, &value](const auto field)
         {
             if (field.name == toString(instance))
             {
                 static_assert(1 == field.attrs.size);
-                auto attr = field.attrs.find(REFLECTION_STR("choice"));
+                const auto attr = field.attrs.find(REFLECTION_STR("choice"));
                 static_assert(attr.hasValue);
                 value = utility::common::operator""_bkdrHash(attr.value, 0);
             }
@@ -173,7 +173,7 @@ namespace linear
 //! @brief Display the contents of the linear result.
 //! @param instance - the specific value of LinearInstance enum
 //! @param result - linear result
-static void displayResult(const LinearInstance instance, const std::string& result)
+static void displayResult(const LinearInstance instance, const std::string_view result)
 {
     COMMON_PRINT("\n==> %-10s Instance <==\n%s", getTitle(instance).data(), result.data());
 }
@@ -215,12 +215,12 @@ catch (const std::exception& err)
 //! @brief Update linear-related choice.
 //! @param target - target instance
 template <>
-void updateChoice<LinearInstance>(const std::string& target)
+void updateChoice<LinearInstance>(const std::string_view target)
 {
     constexpr auto category = Category::linear;
     auto& bitFlag = getCategoryOpts<category>();
 
-    switch (utility::common::bkdrHash(target.c_str()))
+    switch (utility::common::bkdrHash(target.data()))
     {
         case abbrVal(LinearInstance::linkedList):
             bitFlag.set(LinearInstance::linkedList);
@@ -233,7 +233,8 @@ void updateChoice<LinearInstance>(const std::string& target)
             break;
         default:
             bitFlag.reset();
-            throw std::logic_error("Unexpected " + std::string{toString(category)} + " instance: " + target + '.');
+            throw std::logic_error(
+                "Unexpected " + std::string{toString(category)} + " instance: " + target.data() + '.');
     }
 }
 
@@ -255,7 +256,7 @@ void runChoices<LinearInstance>(const std::vector<std::string>& candidates)
     auto& pooling = action::resourcePool();
     auto* const threads = pooling.newElement(std::min(
         static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<LinearInstance>::value)));
-    const auto linearFunctor = [threads](const std::string& threadName, void (*targetInstance)())
+    const auto linearFunctor = [threads](const std::string_view threadName, void (*targetInstance)())
     {
         threads->enqueue(threadName, targetInstance);
     };
@@ -295,7 +296,7 @@ namespace tree
 //! @brief Display the contents of the tree result.
 //! @param instance - the specific value of TreeInstance enum
 //! @param result - tree result
-static void displayResult(const TreeInstance instance, const std::string& result)
+static void displayResult(const TreeInstance instance, const std::string_view result)
 {
     COMMON_PRINT("\n==> %-19s Instance <==\n%s", getTitle(instance).data(), result.data());
 }
@@ -337,12 +338,12 @@ catch (const std::exception& err)
 //! @brief Update tree-related choice.
 //! @param target - target instance
 template <>
-void updateChoice<TreeInstance>(const std::string& target)
+void updateChoice<TreeInstance>(const std::string_view target)
 {
     constexpr auto category = Category::tree;
     auto& bitFlag = getCategoryOpts<category>();
 
-    switch (utility::common::bkdrHash(target.c_str()))
+    switch (utility::common::bkdrHash(target.data()))
     {
         case abbrVal(TreeInstance::binarySearch):
             bitFlag.set(TreeInstance::binarySearch);
@@ -355,7 +356,8 @@ void updateChoice<TreeInstance>(const std::string& target)
             break;
         default:
             bitFlag.reset();
-            throw std::logic_error("Unexpected " + std::string{toString(category)} + " instance: " + target + '.');
+            throw std::logic_error(
+                "Unexpected " + std::string{toString(category)} + " instance: " + target.data() + '.');
     }
 }
 
@@ -377,7 +379,7 @@ void runChoices<TreeInstance>(const std::vector<std::string>& candidates)
     auto& pooling = action::resourcePool();
     auto* const threads = pooling.newElement(
         std::min(static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<TreeInstance>::value)));
-    const auto treeFunctor = [threads](const std::string& threadName, void (*targetInstance)())
+    const auto treeFunctor = [threads](const std::string_view threadName, void (*targetInstance)())
     {
         threads->enqueue(threadName, targetInstance);
     };

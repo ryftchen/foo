@@ -19,10 +19,9 @@ const char* version() noexcept
     return ver;
 }
 
-std::string Notation::prefix(const std::string& infixNotation)
+std::string Notation::prefix(const std::string_view infixNotation)
 {
-    std::string infix = infixNotation;
-
+    std::string infix(infixNotation);
     std::reverse(infix.begin(), infix.end());
     for (std::uint32_t i = 0; i < infix.size(); ++i)
     {
@@ -41,14 +40,14 @@ std::string Notation::prefix(const std::string& infixNotation)
     return prefixNotation;
 }
 
-std::string Notation::postfix(const std::string& infixNotation)
+std::string Notation::postfix(const std::string_view infixNotation)
 {
     std::string postfixNotation = infixToPostfix(infixNotation);
 
     return postfixNotation;
 }
 
-std::string Notation::infixToPostfix(const std::string& infix)
+std::string Notation::infixToPostfix(const std::string_view infix)
 {
     std::string postfix{};
     std::stack<char> charStack{};

@@ -95,15 +95,15 @@ public:
     //! @brief Send the message string to socket FD.
     //! @param message - message string
     //! @return sent size
-    int toSend(const std::string& message);
+    int toSend(const std::string_view message);
     //! @brief Open a connection on socket FD to peer.
     //! @param ip - peer ip address
     //! @param port - peer port number
     //! @param onConnected - handling on connected
     void toConnect(
-        const std::string& ip,
+        const std::string_view ip,
         const std::uint16_t port,
-        const std::function<void()> onConnected =
+        const std::function<void()>& onConnected =
             []()
         {
         });
@@ -133,7 +133,7 @@ public:
     //! @brief Bind to transport ip address and port number.
     //! @param ip - ip address
     //! @param port - port number
-    void toBind(const std::string& ip, const std::uint16_t port);
+    void toBind(const std::string_view ip, const std::uint16_t port);
     //! @brief Bind to transport port number with default ip address.
     //! @param port - port number
     void toBind(const std::uint16_t port);
@@ -165,13 +165,14 @@ public:
     //! @param ip - peer ip address
     //! @param port - peer port number
     //! @return sent size
-    int toSendTo(const char* const bytes, const std::size_t length, const std::string& ip, const std::uint16_t port);
+    int toSendTo(
+        const char* const bytes, const std::size_t length, const std::string_view ip, const std::uint16_t port);
     //! @brief Send the message string on socket FD to peer.
     //! @param message - message string
     //! @param ip - peer ip address
     //! @param port - peer port number
     //! @return sent size
-    int toSendTo(const std::string& message, const std::string& ip, const std::uint16_t port);
+    int toSendTo(const std::string_view message, const std::string_view ip, const std::uint16_t port);
     //! @brief Send bytes from the buffer to socket FD.
     //! @param bytes - bytes buffer
     //! @param length - length of buffer
@@ -180,11 +181,11 @@ public:
     //! @brief Send the message string to socket FD.
     //! @param message - message string
     //! @return sent size
-    int toSend(const std::string& message);
+    int toSend(const std::string_view message);
     //! @brief Open a connection on socket FD to peer.
     //! @param ip - peer ip address
     //! @param port - peer port number
-    void toConnect(const std::string& ip, const std::uint16_t port);
+    void toConnect(const std::string_view ip, const std::uint16_t port);
     //! @brief Create a thread to receive.
     //! @param toDetach - whether to detach
     void toReceive(const bool toDetach = false);
@@ -212,7 +213,7 @@ public:
     //! @brief Bind to transport ip address and port number.
     //! @param ip - ip address
     //! @param port - port number
-    void toBind(const std::string& ip, const std::uint16_t port);
+    void toBind(const std::string_view ip, const std::uint16_t port);
     //! @brief Bind to transport port number with default ip address.
     //! @param port - port number
     void toBind(const std::uint16_t port);

@@ -147,7 +147,7 @@ std::string represent(const T& val)
 //! @return wrapping of calls
 template <class Func, class Tuple, class Extra, std::size_t... I>
 constexpr decltype(auto) applyScopedOneImpl(
-    Func&& func, Tuple&& tup, Extra&& ext, std::index_sequence<I...> /*sequence*/)
+    Func&& func, Tuple&& tup, Extra&& ext, const std::index_sequence<I...>& /*sequence*/)
 {
     return std::invoke(std::forward<Func>(func), std::get<I>(std::forward<Tuple>(tup))..., std::forward<Extra>(ext));
 }
@@ -177,11 +177,11 @@ constexpr decltype(auto) applyScopedOne(Func&& func, Tuple&& tup, Extra&& ext)
 //! @param separator - separator to be used between strings
 //! @return joined string
 template <typename StrIter>
-std::string join(StrIter first, StrIter last, const std::string& separator)
+std::string join(StrIter first, StrIter last, const std::string_view separator)
 {
     if (first == last)
     {
-        return "";
+        return {};
     }
 
     std::ostringstream value{};
@@ -220,7 +220,9 @@ public:
     //! @param sequence - sequences related to arguments
     template <std::size_t N, std::size_t... I>
     explicit Register(
-        const std::string_view prefix, std::array<std::string_view, N>&& array, std::index_sequence<I...> sequence);
+        const std::string_view prefix,
+        std::array<std::string_view, N>&& array,
+        const std::index_sequence<I...>& sequence);
     //! @brief Construct a new Register object.
     //! @tparam N - number of arguments
     //! @param prefix - prefix characters
@@ -450,7 +452,7 @@ private:
     //! @param name - name of argument
     //! @param prefix - prefix characters
     //! @return be positional or not positional
-    static bool checkIfPositional(std::string_view name, const std::string_view prefix);
+    static bool checkIfPositional(const std::string_view name, const std::string_view prefix);
     //! @brief Get the member.
     //! @tparam T - type of member to be got
     //! @return member corresponding to the specific type
@@ -475,7 +477,9 @@ protected:
 
 template <std::size_t N, std::size_t... I>
 Register::Register(
-    const std::string_view prefix, std::array<std::string_view, N>&& array, std::index_sequence<I...> /*sequence*/) :
+    const std::string_view prefix,
+    std::array<std::string_view, N>&& array,
+    const std::index_sequence<I...>& /*sequence*/) :
     isAcceptOptionalLikeValue(false),
     isOptional((checkIfOptional(array[I], prefix) || ...)),
     isRequired(false),
@@ -698,7 +702,7 @@ public:
     //! @brief Construct a new Argument object.
     //! @param title - title name
     //! @param version - version number
-    explicit Argument(const std::string_view title = "", const std::string_view version = "1.0.0") :
+    explicit Argument(const std::string_view title = {}, const std::string_view version = "1.0.0") :
         titleName(title), versionNumber(version), parserPath(title)
     {
     }
@@ -720,11 +724,11 @@ public:
     explicit operator bool() const;
 
     //! @brief Add a single argument.
-    //! @tparam Args - type of argument
+    //! @tparam ArgsType - type of arguments
     //! @param fewArgs - argument name
     //! @return reference of the Register object
-    template <typename... TArgs>
-    Register& addArgument(TArgs... fewArgs);
+    template <typename... ArgsType>
+    Register& addArgument(ArgsType... fewArgs);
     //! @brief Add a descrText.
     //! @param text - descrText text
     //! @return reference of the Register object
@@ -838,16 +842,16 @@ private:
     [[nodiscard]] std::size_t getLengthOfLongestArgument() const;
     //! @brief Make index for argumentMap.
     //! @param iterator - iterator in all argument registers
-    void indexArgument(RegisterIter iterator);
+    void indexArgument(const RegisterIter& iterator);
 
 protected:
     friend std::ostream& operator<<(std::ostream& os, const Argument& arg);
 };
 
-template <typename... TArgs>
-Register& Argument::addArgument(TArgs... fewArgs)
+template <typename... ArgsType>
+Register& Argument::addArgument(ArgsType... fewArgs)
 {
-    using ArrayOfSv = std::array<std::string_view, sizeof...(TArgs)>;
+    using ArrayOfSv = std::array<std::string_view, sizeof...(ArgsType)>;
 
     const auto argument = optionalArguments.emplace(std::cend(optionalArguments), prefixChars, ArrayOfSv{fewArgs...});
     if (!argument->isOptional)

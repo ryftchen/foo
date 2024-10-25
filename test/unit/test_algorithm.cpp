@@ -38,7 +38,7 @@ public:
     static void SetUpTestCase()
     {
         TST_ALGO_PRINT_TASK_TITLE(Category::match, "BEGIN");
-        inputs = std::make_shared<match::InputBuilder>(std::string{match::input::patternString});
+        inputs = std::make_shared<match::InputBuilder>(match::input::patternString);
     }
     //! @brief Tear down the test case.
     static void TearDownTestCase()
@@ -154,13 +154,13 @@ std::shared_ptr<notation::InputBuilder> NotationTestBase::inputs = nullptr;
 //! @brief Test for the prefix method in the solution of notation.
 TEST_F(NotationTestBase, prefixMethod)
 {
-    ASSERT_EQ("+a-*b^-^cde+f*ghi", sut.prefix(std::string{inputs->getInfixNotation()}));
+    ASSERT_EQ("+a-*b^-^cde+f*ghi", sut.prefix(inputs->getInfixNotation()));
 }
 
 //! @brief Test for the postfix method in the solution of notation.
 TEST_F(NotationTestBase, postfixMethod)
 {
-    ASSERT_EQ("abcd^e-fgh*+^*+i-", sut.postfix(std::string{inputs->getInfixNotation()}));
+    ASSERT_EQ("abcd^e-fgh*+^*+i-", sut.postfix(inputs->getInfixNotation()));
 }
 
 //! @brief Test base of optimal.

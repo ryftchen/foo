@@ -42,7 +42,7 @@ public:
 
         //! @brief Construct a new StrType object.
         //! @param str - target string
-        constexpr explicit StrType(std::basic_string_view<ValueType> str)
+        constexpr explicit StrType(const std::basic_string_view<ValueType> str)
         {
             for (std::size_t i = 0; i < size; ++i)
             {
@@ -68,7 +68,7 @@ public:
         //! @tparam T - type of target string
         //! @return be custom string type or not
         template <typename T>
-        static inline constexpr bool is(T /*str*/ = {})
+        static inline constexpr bool is(const T /*str*/ = {})
         {
             return std::is_same_v<T, String>;
         }
@@ -91,7 +91,7 @@ public:
     //! @param sequence - sequences related to arguments
     //! @return value index
     template <class Lit, class Func>
-    static inline constexpr std::size_t findIf(const Lit& lit, Func&& func, std::index_sequence<> sequence);
+    static inline constexpr std::size_t findIf(const Lit lit, Func&& func, const std::index_sequence<>& sequence);
     //! @brief Finding by condition.
     //! @tparam Lit - type of string literal
     //! @tparam Func - type of callable function
@@ -102,7 +102,8 @@ public:
     //! @param sequence - sequences related to arguments
     //! @return value index
     template <class Lit, class Func, std::size_t N0, std::size_t... Ns>
-    static inline constexpr std::size_t findIf(const Lit& lit, Func&& func, std::index_sequence<N0, Ns...> sequence);
+    static inline constexpr std::size_t findIf(
+        const Lit lit, Func&& func, const std::index_sequence<N0, Ns...>& sequence);
     //! @brief Calculate accumulation.
     //! @tparam Lit - type of string literal
     //! @tparam Func - type of callable function
@@ -113,7 +114,7 @@ public:
     //! @param sequence - sequences related to arguments
     //! @return result of accumulation
     template <class Lit, class Func, class Ret>
-    static inline constexpr auto acc(const Lit& lit, Func&& func, Ret ret, std::index_sequence<> sequence);
+    static inline constexpr auto acc(const Lit lit, Func&& func, Ret ret, const std::index_sequence<>& sequence);
     //! @brief Calculate accumulation.
     //! @tparam Lit - type of string literal
     //! @tparam Func - type of callable function
@@ -126,7 +127,8 @@ public:
     //! @param sequence - sequences related to arguments
     //! @return result of accumulation
     template <class Lit, class Func, class Ret, std::size_t N0, std::size_t... Ns>
-    static inline constexpr auto acc(const Lit& lit, Func&& func, Ret ret, std::index_sequence<N0, Ns...> sequence);
+    static inline constexpr auto acc(
+        const Lit lit, Func&& func, Ret ret, const std::index_sequence<N0, Ns...>& sequence);
     //! @brief Calculate accumulation by the DFS algorithm.
     //! @tparam D - degree of depth
     //! @tparam T - type of type information
@@ -137,7 +139,7 @@ public:
     //! @param ret - return value
     //! @return result of the accumulation
     template <std::size_t D, class T, class Ret, class Func>
-    static inline constexpr auto dfsAcc(T info, Func&& func, Ret ret);
+    static inline constexpr auto dfsAcc(const T info, Func&& func, Ret ret);
     //! @brief Traverse the variable of node v in the DFS algorithm.
     //! @tparam T - type of type information
     //! @tparam U - type of object to be traversed
@@ -146,58 +148,62 @@ public:
     //! @param obj - object to be traversed
     //! @param func - callable function
     template <class T, class U, class Func>
-    static inline constexpr void varInNodeV(T info, U&& obj, Func&& func);
+    static inline constexpr void varInNodeV(const T info, U&& obj, Func&& func);
 };
 
 template <class Lit, class Func>
-inline constexpr std::size_t Reflect::findIf(const Lit& /*lit*/, Func&& /*func*/, std::index_sequence<> /*sequence*/)
+inline constexpr std::size_t Reflect::findIf(
+    const Lit /*lit*/, Func&& /*func*/, const std::index_sequence<>& /*sequence*/)
 {
     return -1;
 }
 
 template <class Lit, class Func, std::size_t N0, std::size_t... Ns>
-inline constexpr std::size_t Reflect::findIf(const Lit& lit, Func&& func, std::index_sequence<N0, Ns...> /*sequence*/)
+inline constexpr std::size_t Reflect::findIf(
+    const Lit lit, Func&& func, const std::index_sequence<N0, Ns...>& /*sequence*/)
 {
     return func(lit.template get<N0>()) ? N0 : findIf(lit, std::forward<Func>(func), std::index_sequence<Ns...>{});
 }
 
 template <class Lit, class Func, class Ret>
-inline constexpr auto Reflect::acc(const Lit& /*lit*/, Func&& /*func*/, Ret ret, std::index_sequence<> /*sequence*/)
+inline constexpr auto Reflect::acc(
+    const Lit /*lit*/, Func&& /*func*/, Ret ret, const std::index_sequence<>& /*sequence*/)
 {
     return ret;
 }
 
 template <class Lit, class Func, class Ret, std::size_t N0, std::size_t... Ns>
-inline constexpr auto Reflect::acc(const Lit& lit, Func&& func, Ret ret, std::index_sequence<N0, Ns...> /*sequence*/)
+inline constexpr auto Reflect::acc(
+    const Lit lit, Func&& func, Ret ret, const std::index_sequence<N0, Ns...>& /*sequence*/)
 {
     return acc(
         lit, std::forward<Func>(func), func(std::move(ret), lit.template get<N0>()), std::index_sequence<Ns...>{});
 }
 
 template <std::size_t D, class T, class Ret, class Func>
-inline constexpr auto Reflect::dfsAcc(T info, Func&& func, Ret ret)
+inline constexpr auto Reflect::dfsAcc(const T info, Func&& func, Ret ret)
 {
     return info.bases.accumulate(
         std::move(ret),
-        [&](auto ret, auto base)
+        [&](const auto ret, const auto base)
         {
             if constexpr (base.isVirtual)
             {
-                return dfsAcc<D + 1>(base.info, std::forward<Func>(func), std::move(ret));
+                return dfsAcc<D + 1>(base.info, std::forward<Func>(func), ret);
             }
             else
             {
                 return dfsAcc<D + 1>(
-                    base.info, std::forward<Func>(func), std::forward<Func>(func)(std::move(ret), base.info, D + 1));
+                    base.info, std::forward<Func>(func), std::forward<Func>(func)(ret, base.info, D + 1));
             }
         });
 }
 
 template <class T, class U, class Func>
-inline constexpr void Reflect::varInNodeV(T /*info*/, U&& obj, Func&& func)
+inline constexpr void Reflect::varInNodeV(const T /*info*/, U&& obj, Func&& func)
 {
     T::fields.forEach(
-        [&](auto&& fld)
+        [&](const auto fld)
         {
             using Fld = std::decay_t<decltype(fld)>;
 
@@ -207,7 +213,7 @@ inline constexpr void Reflect::varInNodeV(T /*info*/, U&& obj, Func&& func)
             }
         });
     T::bases.forEach(
-        [&](auto base)
+        [&](const auto base)
         {
             if constexpr (!base.isVirtual)
             {
@@ -236,14 +242,14 @@ struct NamedValue : NamedValueBase<Name>
 {
     //! @brief Construct a new NamedValue object.
     //! @param val - target value
-    constexpr explicit NamedValue(T val) : value(val) {}
+    constexpr explicit NamedValue(const T val) : value(val) {}
 
     //! @brief The operator (==) overloading of NamedValue struct.
     //! @tparam U - type of value
     //! @param val - named value
     //! @return be equal or not equal
     template <class U>
-    constexpr bool operator==(U val) const
+    constexpr bool operator==(const U val) const
     {
         if constexpr (std::is_same_v<T, U>)
         {
@@ -270,7 +276,7 @@ struct NamedValue<Name, void> : NamedValueBase<Name>
     //! @tparam U - type of value
     //! @return be equal or not equal
     template <class U>
-    constexpr bool operator==(U /*val*/) const
+    constexpr bool operator==(const U /*val*/) const
     {
         return false;
     }
@@ -286,7 +292,7 @@ struct ElemList
 {
     //! @brief Construct a new ElemList object.
     //! @param es - list of elements
-    constexpr explicit ElemList(Es... es) : elems(es...) {}
+    constexpr explicit ElemList(const Es... es) : elems(es...) {}
 
     //! @brief Element list.
     std::tuple<Es...> elems{};
@@ -312,7 +318,7 @@ struct ElemList
     {
         accumulate(
             0,
-            [&](auto, const auto& fld)
+            [&](const auto /*func*/, const auto fld)
             {
                 std::forward<Func>(func)(fld);
                 return 0;
@@ -322,7 +328,7 @@ struct ElemList
     //! @tparam Str - type of custom string
     //! @return contain or not contain
     template <class Str>
-    static constexpr bool contain(Str /*str*/ = {})
+    static constexpr bool contain(const Str /*str*/ = {})
     {
         return (Es::NameType::template is<Str>() || ...);
     }
@@ -339,7 +345,7 @@ struct ElemList
     //! @tparam Str - type of custom string
     //! @return value index
     template <class Str>
-    constexpr const auto& find(Str /*str*/ = {}) const
+    constexpr const auto& find(const Str /*str*/ = {}) const
     {
         constexpr std::size_t idx = []() constexpr
         {
@@ -360,10 +366,10 @@ struct ElemList
     //! @param val - target value
     //! @return value index
     template <class T>
-    constexpr std::size_t findValue(const T& val) const
+    constexpr std::size_t findValue(const T val) const
     {
         return findIf(
-            [&val](auto elem)
+            [&val](const auto elem)
             {
                 return elem == val;
             });
@@ -374,11 +380,11 @@ struct ElemList
     //! @param name - value name
     //! @return pointer of value
     template <typename T, typename Str>
-    constexpr const T* valuePtrOfName(Str name) const
+    constexpr const T* valuePtrOfName(const Str name) const
     {
         return accumulate(
             nullptr,
-            [name](auto ret, const auto& elem)
+            [&name](const auto ret, const auto elem)
             {
                 if constexpr (std::is_same_v<decltype(elem.value), T>)
                 {
@@ -396,7 +402,7 @@ struct ElemList
     //! @param name - value name
     //! @return reference of value
     template <typename T, typename Str>
-    constexpr const T& valueOfName(Str name) const
+    constexpr const T& valueOfName(const Str name) const
     {
         return *valuePtrOfName<T>(name);
     }
@@ -406,11 +412,11 @@ struct ElemList
     //! @param val - target value
     //! @return value name
     template <class T, class Char = char>
-    constexpr auto nameOfValue(const T& val) const
+    constexpr auto nameOfValue(const T val) const
     {
         return accumulate(
             std::basic_string_view<Char>{},
-            [&val](auto ret, auto&& elem)
+            [&val](const auto ret, const auto elem)
             {
                 return (elem == val) ? elem.name : ret;
             });
@@ -420,10 +426,10 @@ struct ElemList
     //! @param elem - target element
     //! @return position after pushing
     template <class Elem>
-    constexpr auto push(Elem elem) const
+    constexpr auto push(const Elem elem) const
     {
         return std::apply(
-            [elem](auto... es)
+            [&elem](const auto... es)
             {
                 return ElemList<Es..., Elem>{es..., elem};
             },
@@ -434,7 +440,7 @@ struct ElemList
     //! @param elem - target element
     //! @return position after inserting
     template <class Elem>
-    constexpr auto insert(Elem elem) const
+    constexpr auto insert(const Elem elem) const
     {
         if constexpr ((std::is_same_v<Es, Elem> || ...))
         {
@@ -463,7 +469,7 @@ struct Attr : NamedValue<Name, T>
 {
     //! @brief Construct a new Attr object.
     //! @param val - target value
-    constexpr Attr(Name /*name*/, T val) : NamedValue<Name, T>(val) {}
+    constexpr Attr(const Name /*name*/, const T val) : NamedValue<Name, T>(val) {}
 };
 
 //! @brief Attribute in class.
@@ -472,7 +478,7 @@ template <class Name>
 struct Attr<Name, void> : NamedValue<Name, void>
 {
     //! @brief Construct a new Attr object.
-    constexpr explicit Attr(Name /*name*/) {}
+    constexpr explicit Attr(const Name /*name*/) {}
 };
 
 //! @brief The list of attributes.
@@ -482,7 +488,7 @@ struct AttrList : ElemList<As...>
 {
     //! @brief Construct a new AttrList object.
     //! @param as - list of attributes
-    constexpr explicit AttrList(As... as) : ElemList<As...>(as...) {}
+    constexpr explicit AttrList(const As... as) : ElemList<As...>(as...) {}
 };
 
 //! @brief Base class of trait.
@@ -529,7 +535,7 @@ struct Field : Trait<T>, NamedValue<Name, T>
     //! @brief Construct a new Field object.
     //! @param val - target value
     //! @param as - list of attributes
-    constexpr Field(Name /*name*/, T val, Attrs as = {}) : NamedValue<Name, T>(val), attrs(as) {}
+    constexpr Field(const Name /*name*/, const T val, const Attrs as = {}) : NamedValue<Name, T>(val), attrs(as) {}
 
     //! @brief Attribute list.
     Attrs attrs{};
@@ -542,7 +548,7 @@ struct FieldList : ElemList<Fs...>
 {
     //! @brief Construct a new FieldList object.
     //! @param fs - list of fields
-    constexpr explicit FieldList(Fs... fs) : ElemList<Fs...>(fs...) {}
+    constexpr explicit FieldList(const Fs... fs) : ElemList<Fs...>(fs...) {}
 };
 
 //! @brief Type information.
@@ -569,7 +575,7 @@ struct BaseList : ElemList<Bs...>
 {
     //! @brief Construct a new BaseList object.
     //! @param bs - list of public base classes
-    constexpr explicit BaseList(Bs... bs) : ElemList<Bs...>(bs...) {}
+    constexpr explicit BaseList(const Bs... bs) : ElemList<Bs...>(bs...) {}
 };
 
 //! @brief The list of type informations.
@@ -579,7 +585,7 @@ struct TypeInfoList : ElemList<Ts...>
 {
     //! @brief Construct a new TypeInfoList object.
     //! @param ts - list of type informations
-    constexpr explicit TypeInfoList(Ts... ts) : ElemList<Ts...>(ts...) {}
+    constexpr explicit TypeInfoList(const Ts... ts) : ElemList<Ts...>(ts...) {}
 };
 
 //! @brief Base class of type information.
@@ -620,11 +626,11 @@ struct TypeInfoBase
     {
         return bases.accumulate(
             ElemList<>{},
-            [](auto acc, auto base)
+            [](const auto acc, const auto base)
             {
                 auto concat = base.info.virtualBases().accumulate(
                     acc,
-                    [](auto acc, auto base)
+                    [](const auto acc, const auto base)
                     {
                         return acc.insert(base);
                     });
@@ -652,7 +658,7 @@ struct TypeInfoBase
             std::forward<Func>(func),
             virtualBases().accumulate(
                 std::forward<Func>(func)(std::move(ret), TypeInfo<Type>{}, 0),
-                [&](auto acc, auto vb)
+                [&](const auto acc, const auto vb)
                 {
                     return std::forward<Func>(func)(std::move(acc), vb, 1);
                 }));
@@ -665,7 +671,7 @@ struct TypeInfoBase
     {
         dfsAcc(
             0,
-            [&](auto /*func*/, auto info, auto der)
+            [&](const auto /*func*/, const auto info, const auto der)
             {
                 std::forward<Func>(func)(info, der);
                 return 0;
@@ -680,10 +686,10 @@ struct TypeInfoBase
     static constexpr void forEachVarOf(U&& obj, Func&& func)
     {
         virtualBases().forEach(
-            [&](auto vb)
+            [&](const auto vb)
             {
                 vb.fields.forEach(
-                    [&](const auto& fld)
+                    [&](const auto fld)
                     {
                         using Fld = std::decay_t<decltype(fld)>;
 
