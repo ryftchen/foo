@@ -148,12 +148,8 @@ jobs:
           ./script/build.sh --initialize
           sed -i 's/FOO_BLD_COMPILER=.*/FOO_BLD_COMPILER=gcc/' ./script/.build_env
           sed -i 's/FOO_BLD_PARALLEL=.*/FOO_BLD_PARALLEL=2/' ./script/.build_env
-          sed -i 's/FOO_BLD_PCH=.*/FOO_BLD_PCH=on/' ./script/.build_env
-          sed -i 's/FOO_BLD_UNITY=.*/FOO_BLD_UNITY=on/' ./script/.build_env
           sed -i 's/FOO_BLD_CCACHE=.*/FOO_BLD_CCACHE=on/' ./script/.build_env
-          sed -i 's/FOO_BLD_DISTCC=.*/FOO_BLD_DISTCC="127.0.0.1,lzo"/' ./script/.build_env
           sed -i 's/FOO_BLD_TMPFS=.*/FOO_BLD_TMPFS=on/' ./script/.build_env
-          distccd --daemon --allow 127.0.0.1/32
           ./script/run.py --dump
           ./script/run.py --test --build dbg --repeat 1
           ./script/run.py --analyze
@@ -245,6 +241,6 @@ jobs:
       - name: Clean workflow runs
         uses: dmvict/clean-workflow-runs@v1.2.2
         with:
-          save_period: 1
+          save_period: '00:20:00'
           save_min_runs_number: 1
 ...
