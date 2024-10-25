@@ -122,14 +122,14 @@ std::ostringstream& output()
 
 namespace interpreter
 {
-void Context::set(const std::string& expr, const bool val)
+void Context::set(const std::string_view expr, const bool val)
 {
     vars.insert(std::pair<std::string, bool>(expr, val));
 }
 
-bool Context::get(const std::string& expr)
+bool Context::get(const std::string_view expr)
 {
-    return vars[expr];
+    return vars[expr.data()];
 }
 
 bool AbstractExpression::interpret(const std::shared_ptr<Context> /*context*/)
@@ -243,7 +243,7 @@ void ConcreteMediator::add(const std::shared_ptr<Colleague>& colleague)
     colleagues.emplace_back(colleague);
 }
 
-void ConcreteMediator::distribute(const std::shared_ptr<Colleague>& sender, const std::string& msg)
+void ConcreteMediator::distribute(const std::shared_ptr<Colleague>& sender, const std::string_view msg)
 {
     std::for_each(
         colleagues.cbegin(),
@@ -265,13 +265,13 @@ std::uint32_t Colleague::getId() const
     return id;
 }
 
-void ConcreteColleague::send(const std::string& msg)
+void ConcreteColleague::send(const std::string_view msg)
 {
     output() << "message \"" << msg << "\" sent by colleague " << id << '\n';
     mediator.lock()->distribute(shared_from_this(), msg);
 }
 
-void ConcreteColleague::receive(const std::string& msg)
+void ConcreteColleague::receive(const std::string_view msg)
 {
     output() << "message \"" << msg << "\" received by colleague " << id << '\n';
 }

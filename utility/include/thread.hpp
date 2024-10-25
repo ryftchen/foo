@@ -42,7 +42,7 @@ private:
     //! @brief The container of target threads to join.
     std::vector<std::thread> thdColl{};
     //! @brief The queue of tasks.
-    std::queue<std::pair<std::string_view, std::packaged_task<void()>>> taskQueue{};
+    std::queue<std::pair<std::string, std::packaged_task<void()>>> taskQueue{};
     //! @brief Mutex for controlling queue.
     mutable std::mutex mtx{};
     //! @brief The synchronization condition for queue. Use with mtx.

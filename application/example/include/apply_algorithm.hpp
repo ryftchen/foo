@@ -225,7 +225,7 @@ extern ApplyAlgorithm& manager();
 //! @tparam T - type of target method
 //! @param target - target method
 template <class T>
-void updateChoice(const std::string& target);
+void updateChoice(const std::string_view target);
 //! @brief Run choices.
 //! @tparam T - type of target method
 //! @param candidates - container for the candidate target methods
@@ -312,7 +312,7 @@ class InputBuilder
 public:
     //! @brief Construct a new InputBuilder object.
     //! @param pattern - single pattern
-    explicit InputBuilder(const std::string& pattern) :
+    explicit InputBuilder(const std::string_view pattern) :
         marchingText(std::make_unique<unsigned char[]>(maxDigit + 1)),
         textLength(maxDigit),
         singlePattern(std::make_unique<unsigned char[]>(pattern.length() + 1)),
@@ -412,7 +412,7 @@ private:
 };
 } // namespace match
 template <>
-void updateChoice<MatchMethod>(const std::string& target);
+void updateChoice<MatchMethod>(const std::string_view target);
 template <>
 void runChoices<MatchMethod>(const std::vector<std::string>& candidates);
 
@@ -437,10 +437,10 @@ public:
 
     //! @brief The prefix method.
     //! @param infixNotation - infix notation
-    static void prefixMethod(const std::string& infixNotation);
+    static void prefixMethod(const std::string_view infixNotation);
     //! @brief The postfix method.
     //! @param infixNotation - infix notation
-    static void postfixMethod(const std::string& infixNotation);
+    static void postfixMethod(const std::string_view infixNotation);
 };
 
 //! @brief Builder for the input.
@@ -460,15 +460,15 @@ public:
 
     //! @brief Get the infix notation.
     //! @return infix notation
-    [[nodiscard]] inline std::string_view getInfixNotation() const { return infixNotation; }
+    [[nodiscard]] inline std::string getInfixNotation() const { return infixNotation; }
 
 private:
     //! @brief Infix notation.
-    const std::string_view infixNotation{};
+    const std::string infixNotation{};
 };
 } // namespace notation
 template <>
-void updateChoice<NotationMethod>(const std::string& target);
+void updateChoice<NotationMethod>(const std::string_view target);
 template <>
 void runChoices<NotationMethod>(const std::vector<std::string>& candidates);
 
@@ -597,7 +597,7 @@ struct FuncRange
     //! @brief Right endpoint.
     const T2 range2{};
     //! @brief Function description.
-    const std::string_view funcDescr{};
+    const std::string funcDescr{};
 };
 //! @brief Mapping hash value for the function.
 struct FuncMapHash
@@ -611,7 +611,7 @@ struct FuncMapHash
     std::size_t operator()(const FuncRange<T1, T2>& range) const
     {
         const std::size_t hash1 = std::hash<T1>()(range.range1), hash2 = std::hash<T2>()(range.range2),
-                          hash3 = std::hash<std::string_view>()(range.funcDescr);
+                          hash3 = std::hash<std::string>()(range.funcDescr);
         constexpr std::size_t magicNumber = 0x9e3779b9, leftShift = 6, rightShift = 2;
         std::size_t seed = 0;
         seed ^= hash1 + magicNumber + (seed << leftShift) + (seed >> rightShift);
@@ -673,7 +673,7 @@ private:
 };
 } // namespace optimal
 template <>
-void updateChoice<OptimalMethod>(const std::string& target);
+void updateChoice<OptimalMethod>(const std::string_view target);
 template <>
 void runChoices<OptimalMethod>(const std::vector<std::string>& candidates);
 
@@ -898,7 +898,7 @@ private:
 };
 } // namespace search
 template <>
-void updateChoice<SearchMethod>(const std::string& target);
+void updateChoice<SearchMethod>(const std::string_view target);
 template <>
 void runChoices<SearchMethod>(const std::vector<std::string>& candidates);
 
@@ -1143,7 +1143,7 @@ private:
 };
 } // namespace sort
 template <>
-void updateChoice<SortMethod>(const std::string& target);
+void updateChoice<SortMethod>(const std::string_view target);
 template <>
 void runChoices<SortMethod>(const std::vector<std::string>& candidates);
 } // namespace app_algo

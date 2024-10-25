@@ -69,17 +69,17 @@ std::ostringstream& output()
 
 namespace builder
 {
-void Product::makeA(const std::string& part)
+void Product::makeA(const std::string_view part)
 {
     partA = part;
 }
 
-void Product::makeB(const std::string& part)
+void Product::makeB(const std::string_view part)
 {
     partB = part;
 }
 
-void Product::makeC(const std::string& part)
+void Product::makeC(const std::string_view part)
 {
     partC = part;
 }

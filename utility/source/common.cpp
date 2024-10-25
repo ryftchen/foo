@@ -154,7 +154,7 @@ std::string formatString(const std::string_view format, ...)
 //! @brief Base64 encoding.
 //! @param data - decoded data
 //! @return encoded data
-std::string base64Encode(const std::string& data)
+std::string base64Encode(const std::string_view data)
 {
     std::size_t counter = 0, offset = 0;
     std::uint32_t bitStream = 0;
@@ -210,7 +210,7 @@ std::string base64Encode(const std::string& data)
 //! @brief Base64 decoding.
 //! @param data - encoded data
 //! @return decoded data
-std::string base64Decode(const std::string& data)
+std::string base64Decode(const std::string_view data)
 {
     std::size_t counter = 0, offset = 0;
     std::uint32_t bitStream = 0;

@@ -71,7 +71,7 @@ constexpr std::string_view toString(const Category cat)
         case Category::sort:
             return utility::reflection::TypeInfo<SortMethod>::name;
         default:
-            return "";
+            return {};
     }
 }
 
@@ -109,12 +109,12 @@ consteval std::size_t abbrVal(const T method)
 
     std::size_t value = 0;
     TypeInfo::fields.forEach(
-        [method, &value](auto field)
+        [method, &value](const auto field)
         {
             if (field.name == toString(method))
             {
                 static_assert(1 == field.attrs.size);
-                auto attr = field.attrs.find(REFLECTION_STR("choice"));
+                const auto attr = field.attrs.find(REFLECTION_STR("choice"));
                 static_assert(attr.hasValue);
                 value = utility::common::operator""_bkdrHash(attr.value, 0);
             }
@@ -361,12 +361,12 @@ catch (const std::exception& err)
 //! @brief Update match-related choice.
 //! @param target - target method
 template <>
-void updateChoice<MatchMethod>(const std::string& target)
+void updateChoice<MatchMethod>(const std::string_view target)
 {
     constexpr auto category = Category::match;
     auto& bitFlag = getCategoryOpts<category>();
 
-    switch (utility::common::bkdrHash(target.c_str()))
+    switch (utility::common::bkdrHash(target.data()))
     {
         case abbrVal(MatchMethod::rabinKarp):
             bitFlag.set(MatchMethod::rabinKarp);
@@ -385,7 +385,7 @@ void updateChoice<MatchMethod>(const std::string& target)
             break;
         default:
             bitFlag.reset();
-            throw std::logic_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
+            throw std::logic_error("Unexpected " + std::string{toString(category)} + " method: " + target.data() + '.');
     }
 }
 
@@ -408,10 +408,10 @@ void runChoices<MatchMethod>(const std::vector<std::string>& candidates)
     auto& pooling = action::resourcePool();
     auto* const threads = pooling.newElement(
         std::min(static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<MatchMethod>::value)));
-    const auto inputs = std::make_shared<InputBuilder>(std::string{patternString});
+    const auto inputs = std::make_shared<InputBuilder>(patternString);
     const auto matchFunctor =
         [threads, inputs](
-            const std::string& threadName,
+            const std::string_view threadName,
             void (*targetMethod)(
                 const unsigned char* const, const unsigned char* const, const std::uint32_t, const std::uint32_t))
     {
@@ -465,12 +465,12 @@ namespace notation
 //! @param method - the specific value of NotationMethod enum
 //! @param result - notation result
 //! @param descr - notation description
-static void displayResult(const NotationMethod method, const std::string& result, const char* const descr)
+static void displayResult(const NotationMethod method, const std::string_view result, const char* const descr)
 {
     COMMON_PRINT("\n==> %-7s Method <==\n%s: %s\n", getTitle(method).data(), descr, result.data());
 }
 
-void NotationSolution::prefixMethod(const std::string& infixNotation)
+void NotationSolution::prefixMethod(const std::string_view infixNotation)
 try
 {
     const auto& expr = algorithm::notation::Notation().prefix(infixNotation);
@@ -481,7 +481,7 @@ catch (const std::exception& err)
     LOG_ERR << "Interrupt " << __func__ << ": " << err.what();
 }
 
-void NotationSolution::postfixMethod(const std::string& infixNotation)
+void NotationSolution::postfixMethod(const std::string_view infixNotation)
 try
 {
     const auto& expr = algorithm::notation::Notation().postfix(infixNotation);
@@ -496,12 +496,12 @@ catch (const std::exception& err)
 //! @brief Update notation-related choice.
 //! @param target - target method
 template <>
-void updateChoice<NotationMethod>(const std::string& target)
+void updateChoice<NotationMethod>(const std::string_view target)
 {
     constexpr auto category = Category::notation;
     auto& bitFlag = getCategoryOpts<category>();
 
-    switch (utility::common::bkdrHash(target.c_str()))
+    switch (utility::common::bkdrHash(target.data()))
     {
         case abbrVal(NotationMethod::prefix):
             bitFlag.set(NotationMethod::prefix);
@@ -511,7 +511,7 @@ void updateChoice<NotationMethod>(const std::string& target)
             break;
         default:
             bitFlag.reset();
-            throw std::logic_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
+            throw std::logic_error("Unexpected " + std::string{toString(category)} + " method: " + target.data() + '.');
     }
 }
 
@@ -535,9 +535,9 @@ void runChoices<NotationMethod>(const std::vector<std::string>& candidates)
         static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<NotationMethod>::value)));
     const auto inputs = std::make_shared<InputBuilder>(infixString);
     const auto notationFunctor =
-        [threads, inputs](const std::string& threadName, void (*targetMethod)(const std::string&))
+        [threads, inputs](const std::string_view threadName, void (*targetMethod)(const std::string_view))
     {
-        threads->enqueue(threadName, targetMethod, std::string{inputs->getInfixNotation()});
+        threads->enqueue(threadName, targetMethod, inputs->getInfixNotation());
     };
     const auto name = utility::currying::curry(getTaskNameCurried(), getCategoryAlias<category>());
 
@@ -649,12 +649,12 @@ catch (const std::exception& err)
 //! @brief Update optimal-related choice.
 //! @param target - target method
 template <>
-void updateChoice<OptimalMethod>(const std::string& target)
+void updateChoice<OptimalMethod>(const std::string_view target)
 {
     constexpr auto category = Category::optimal;
     auto& bitFlag = getCategoryOpts<category>();
 
-    switch (utility::common::bkdrHash(target.c_str()))
+    switch (utility::common::bkdrHash(target.data()))
     {
         case abbrVal(OptimalMethod::gradient):
             bitFlag.set(OptimalMethod::gradient);
@@ -670,7 +670,7 @@ void updateChoice<OptimalMethod>(const std::string& target)
             break;
         default:
             bitFlag.reset();
-            throw std::logic_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
+            throw std::logic_error("Unexpected " + std::string{toString(category)} + " method: " + target.data() + '.');
     }
 }
 
@@ -694,7 +694,7 @@ void runChoices<OptimalMethod>(const std::vector<std::string>& candidates)
         auto* const threads = pooling.newElement(std::min(
             static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<OptimalMethod>::value)));
         const auto optimalFunctor = [threads, &function, &range](
-                                        const std::string& threadName,
+                                        const std::string_view threadName,
                                         void (*targetMethod)(const optimal::Function&, const double, const double))
         {
             threads->enqueue(threadName, targetMethod, std::ref(function), range.range1, range.range2);
@@ -823,12 +823,12 @@ catch (const std::exception& err)
 //! @brief Update search-related choice.
 //! @param target - target method
 template <>
-void updateChoice<SearchMethod>(const std::string& target)
+void updateChoice<SearchMethod>(const std::string_view target)
 {
     constexpr auto category = Category::search;
     auto& bitFlag = getCategoryOpts<category>();
 
-    switch (utility::common::bkdrHash(target.c_str()))
+    switch (utility::common::bkdrHash(target.data()))
     {
         case abbrVal(SearchMethod::binary):
             bitFlag.set(SearchMethod::binary);
@@ -841,7 +841,7 @@ void updateChoice<SearchMethod>(const std::string& target)
             break;
         default:
             bitFlag.reset();
-            throw std::logic_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
+            throw std::logic_error("Unexpected " + std::string{toString(category)} + " method: " + target.data() + '.');
     }
 }
 
@@ -866,9 +866,9 @@ void runChoices<SearchMethod>(const std::vector<std::string>& candidates)
     auto* const threads = pooling.newElement(
         std::min(static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<SearchMethod>::value)));
     const auto inputs = std::make_shared<InputBuilder<float>>(arrayLength, arrayRange1, arrayRange2);
-    const auto searchFunctor =
-        [threads, inputs](
-            const std::string& threadName, void (*targetMethod)(const float* const, const std::uint32_t, const float))
+    const auto searchFunctor = [threads, inputs](
+                                   const std::string_view threadName,
+                                   void (*targetMethod)(const float* const, const std::uint32_t, const float))
     {
         threads->enqueue(
             threadName, targetMethod, inputs->getOrderedArray().get(), inputs->getLength(), inputs->getSearchKey());
@@ -1055,12 +1055,12 @@ catch (const std::exception& err)
 //! @brief Update sort-related choice.
 //! @param target - target method
 template <>
-void updateChoice<SortMethod>(const std::string& target)
+void updateChoice<SortMethod>(const std::string_view target)
 {
     constexpr auto category = Category::sort;
     auto& bitFlag = getCategoryOpts<category>();
 
-    switch (utility::common::bkdrHash(target.c_str()))
+    switch (utility::common::bkdrHash(target.data()))
     {
         case abbrVal(SortMethod::bubble):
             bitFlag.set(SortMethod::bubble);
@@ -1094,7 +1094,7 @@ void updateChoice<SortMethod>(const std::string& target)
             break;
         default:
             bitFlag.reset();
-            throw std::logic_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
+            throw std::logic_error("Unexpected " + std::string{toString(category)} + " method: " + target.data() + '.');
     }
 }
 
@@ -1120,8 +1120,8 @@ void runChoices<SortMethod>(const std::vector<std::string>& candidates)
         std::min(static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<SortMethod>::value)));
     const auto inputs = std::make_shared<InputBuilder<std::int32_t>>(arrayLength, arrayRange1, arrayRange2);
     const auto sortFunctor =
-        [threads,
-         inputs](const std::string& threadName, void (*targetMethod)(const std::int32_t* const, const std::uint32_t))
+        [threads, inputs](
+            const std::string_view threadName, void (*targetMethod)(const std::int32_t* const, const std::uint32_t))
     {
         threads->enqueue(threadName, targetMethod, inputs->getRandomArray().get(), inputs->getLength());
     };

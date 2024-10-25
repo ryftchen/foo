@@ -27,11 +27,11 @@ public:
     //! @brief Prefix.
     //! @param infixNotation - infix notation
     //! @return prefix notation
-    static std::string prefix(const std::string& infixNotation);
+    static std::string prefix(const std::string_view infixNotation);
     //! @brief Postfix.
     //! @param infixNotation - infix notation
     //! @return postfix notation
-    static std::string postfix(const std::string& infixNotation);
+    static std::string postfix(const std::string_view infixNotation);
 
 private:
     //! @brief Enumerate specific operator priorities.
@@ -50,7 +50,7 @@ private:
     //! @brief Convert infix notation to postfix notation.
     //! @param infix - infix notation
     //! @return postfix notation
-    static std::string infixToPostfix(const std::string& infix);
+    static std::string infixToPostfix(const std::string_view infix);
     //! @brief Get the operator priority.
     //! @param c - character
     //! @return operator priority

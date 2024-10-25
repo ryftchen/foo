@@ -146,12 +146,15 @@ private:
         //! @brief Attach an observer with a specific key to the notifier.
         //! @param key - unique identifier for the observer
         //! @param observer - observer to attach
-        void attach(const std::string& key, const std::shared_ptr<Observer>& observer) { observers[key] = observer; }
+        void attach(const std::string_view key, const std::shared_ptr<Observer>& observer)
+        {
+            observers[key.data()] = observer;
+        }
         //! @brief Notify the observer associated with the given key.
         //! @param key - unique identifier for the observer
-        void notify(const std::string& key) const
+        void notify(const std::string_view key) const
         {
-            const auto iter = observers.find(key);
+            const auto iter = observers.find(key.data());
             if (iter != observers.cend())
             {
                 if (const auto observer = iter->second)

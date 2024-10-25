@@ -118,7 +118,7 @@ void Register::validate() const
 
 std::string Register::getInlineUsage() const
 {
-    std::string longestName = names.front();
+    std::string longestName(names.front());
     for (const auto& str : names)
     {
         if (str.size() > longestName.size())
@@ -231,7 +231,7 @@ bool Register::checkIfOptional(const std::string_view name, const std::string_vi
     return !checkIfPositional(name, prefix);
 }
 
-bool Register::checkIfPositional(std::string_view name, const std::string_view prefix)
+bool Register::checkIfPositional(const std::string_view name, const std::string_view prefix)
 {
     const int first = lookAhead(name);
     if (eof == first)
@@ -240,8 +240,9 @@ bool Register::checkIfPositional(std::string_view name, const std::string_view p
     }
     else if (prefix.find(static_cast<char>(first)) != std::string_view::npos)
     {
-        name.remove_prefix(1);
-        if (name.empty())
+        std::string_view remain(name);
+        remain.remove_prefix(1);
+        if (remain.empty())
         {
             return true;
         }
@@ -526,7 +527,7 @@ std::vector<std::string> Argument::preprocessArguments(const std::vector<std::st
     std::vector<std::string> arguments{};
     for (const auto& arg : rawArguments)
     {
-        const auto argumentStartsWithPrefixChars = [this](const std::string& str)
+        const auto argumentStartsWithPrefixChars = [this](const std::string_view str)
         {
             if (!str.empty())
             {
@@ -651,7 +652,7 @@ std::size_t Argument::getLengthOfLongestArgument() const
     return maxSize;
 }
 
-void Argument::indexArgument(RegisterIter iterator)
+void Argument::indexArgument(const RegisterIter& iterator)
 {
     for (const auto& name : std::as_const(iterator->names))
     {

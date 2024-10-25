@@ -33,15 +33,11 @@ using TypeInfo = utility::reflection::TypeInfo<T>;
 //! @brief Constraint for external helpers.
 //! @tparam T - type of helper
 template <typename T>
-concept HelperType = std::derived_from<T, utility::fsm::FSM<T>> &&
-    requires (T /*helper*/)
-{
+concept HelperType = std::derived_from<T, utility::fsm::FSM<T>> && requires (const T /*helper*/) {
     {
         T::getInstance()
     } -> std::same_as<T&>;
-}
-&&!std::is_copy_constructible_v<T> && !std::is_copy_assignable_v<T> && !std::is_move_constructible_v<T>
-    && !std::is_move_assignable_v<T>;
+} && !std::is_copy_constructible_v<T> && !std::is_copy_assignable_v<T> && !std::is_move_constructible_v<T> && !std::is_move_assignable_v<T>;
 
 //! @brief Enumerate specific events to control external helpers.
 enum class ExtEvent : std::uint8_t
@@ -271,7 +267,7 @@ void Command::initializeCLI()
 {
     mainCLI.addArgument("-h", "--help").argsNum(0).implicitVal(true).help("show help and exit");
     defaultNotifier.attach(
-        std::string{toString(Category::help)},
+        toString(Category::help),
         std::make_shared<Notifier::Observer>(
             [this]()
             {
@@ -279,7 +275,7 @@ void Command::initializeCLI()
             }));
     mainCLI.addArgument("-v", "--version").argsNum(0).implicitVal(true).help("show version and exit");
     defaultNotifier.attach(
-        std::string{toString(Category::version)},
+        toString(Category::version),
         std::make_shared<Notifier::Observer>(
             [this]()
             {
@@ -287,7 +283,7 @@ void Command::initializeCLI()
             }));
     mainCLI.addArgument("-d", "--dump").argsNum(0).implicitVal(true).help("dump default configuration and exit");
     defaultNotifier.attach(
-        std::string{toString(Category::dump)},
+        toString(Category::dump),
         std::make_shared<Notifier::Observer>(
             []()
             {
@@ -316,7 +312,7 @@ void Command::initializeCLI()
         .help("run commands in console mode and exit\n"
               "separate with quotes");
     defaultNotifier.attach(
-        std::string{toString(Category::console)},
+        toString(Category::console),
         std::make_shared<Notifier::Observer>(
             [this]()
             {
@@ -329,7 +325,7 @@ void Command::initializeCLI()
     auto& algoTable = regularChoices[subCLIAppAlgo.title()];
     subCLIAppAlgo.addDescription(getDescr<app_algo::ApplyAlgorithm>());
     subCLIAppAlgo.addArgument("-h", "--help").argsNum(0).implicitVal(true).help("show help and exit");
-    category = std::string{TypeInfo<app_algo::MatchMethod>::name};
+    category = TypeInfo<app_algo::MatchMethod>::name;
     choices = extractChoices<app_algo::MatchMethod>();
     algoTable[category] = CategoryExtAttr{choices, app_algo::MatchMethod{}};
     subCLIAppAlgo
@@ -349,7 +345,7 @@ void Command::initializeCLI()
         {
             app_algo::runChoices<app_algo::MatchMethod>(msg.coll);
         });
-    category = std::string{TypeInfo<app_algo::NotationMethod>::name};
+    category = TypeInfo<app_algo::NotationMethod>::name;
     choices = extractChoices<app_algo::NotationMethod>();
     algoTable[category] = CategoryExtAttr{choices, app_algo::NotationMethod{}};
     subCLIAppAlgo
@@ -369,7 +365,7 @@ void Command::initializeCLI()
         {
             app_algo::runChoices<app_algo::NotationMethod>(msg.coll);
         });
-    category = std::string{TypeInfo<app_algo::OptimalMethod>::name};
+    category = TypeInfo<app_algo::OptimalMethod>::name;
     choices = extractChoices<app_algo::OptimalMethod>();
     algoTable[category] = CategoryExtAttr{choices, app_algo::OptimalMethod{}};
     subCLIAppAlgo
@@ -389,7 +385,7 @@ void Command::initializeCLI()
         {
             app_algo::runChoices<app_algo::OptimalMethod>(msg.coll);
         });
-    category = std::string{TypeInfo<app_algo::SearchMethod>::name};
+    category = TypeInfo<app_algo::SearchMethod>::name;
     choices = extractChoices<app_algo::SearchMethod>();
     algoTable[category] = CategoryExtAttr{choices, app_algo::SearchMethod{}};
     subCLIAppAlgo
@@ -409,7 +405,7 @@ void Command::initializeCLI()
         {
             app_algo::runChoices<app_algo::SearchMethod>(msg.coll);
         });
-    category = std::string{TypeInfo<app_algo::SortMethod>::name};
+    category = TypeInfo<app_algo::SortMethod>::name;
     choices = extractChoices<app_algo::SortMethod>();
     algoTable[category] = CategoryExtAttr{choices, app_algo::SortMethod{}};
     subCLIAppAlgo
@@ -434,7 +430,7 @@ void Command::initializeCLI()
     auto& dpTable = regularChoices[subCLIAppDp.title()];
     subCLIAppDp.addDescription(getDescr<app_dp::ApplyDesignPattern>());
     subCLIAppDp.addArgument("-h", "--help").argsNum(0).implicitVal(true).help("show help and exit");
-    category = std::string{TypeInfo<app_dp::BehavioralInstance>::name};
+    category = TypeInfo<app_dp::BehavioralInstance>::name;
     choices = extractChoices<app_dp::BehavioralInstance>();
     dpTable[category] = CategoryExtAttr{choices, app_dp::BehavioralInstance{}};
     subCLIAppDp
@@ -455,7 +451,7 @@ void Command::initializeCLI()
         {
             app_dp::runChoices<app_dp::BehavioralInstance>(msg.coll);
         });
-    category = std::string{TypeInfo<app_dp::CreationalInstance>::name};
+    category = TypeInfo<app_dp::CreationalInstance>::name;
     choices = extractChoices<app_dp::CreationalInstance>();
     dpTable[category] = CategoryExtAttr{choices, app_dp::CreationalInstance{}};
     subCLIAppDp
@@ -476,7 +472,7 @@ void Command::initializeCLI()
         {
             app_dp::runChoices<app_dp::CreationalInstance>(msg.coll);
         });
-    category = std::string{TypeInfo<app_dp::StructuralInstance>::name};
+    category = TypeInfo<app_dp::StructuralInstance>::name;
     choices = extractChoices<app_dp::StructuralInstance>();
     dpTable[category] = CategoryExtAttr{choices, app_dp::StructuralInstance{}};
     subCLIAppDp
@@ -502,7 +498,7 @@ void Command::initializeCLI()
     auto& dsTable = regularChoices[subCLIAppDs.title()];
     subCLIAppDs.addDescription(getDescr<app_ds::ApplyDataStructure>());
     subCLIAppDs.addArgument("-h", "--help").argsNum(0).implicitVal(true).help("show help and exit");
-    category = std::string{TypeInfo<app_ds::LinearInstance>::name};
+    category = TypeInfo<app_ds::LinearInstance>::name;
     choices = extractChoices<app_ds::LinearInstance>();
     dsTable[category] = CategoryExtAttr{choices, app_ds::LinearInstance{}};
     subCLIAppDs
@@ -522,7 +518,7 @@ void Command::initializeCLI()
         {
             app_ds::runChoices<app_ds::LinearInstance>(msg.coll);
         });
-    category = std::string{TypeInfo<app_ds::TreeInstance>::name};
+    category = TypeInfo<app_ds::TreeInstance>::name;
     choices = extractChoices<app_ds::TreeInstance>();
     dsTable[category] = CategoryExtAttr{choices, app_ds::TreeInstance{}};
     subCLIAppDs
@@ -547,7 +543,7 @@ void Command::initializeCLI()
     auto& numTable = regularChoices[subCLIAppNum.title()];
     subCLIAppNum.addDescription(getDescr<app_num::ApplyNumeric>());
     subCLIAppNum.addArgument("-h", "--help").argsNum(0).implicitVal(true).help("show help and exit");
-    category = std::string{TypeInfo<app_num::ArithmeticMethod>::name};
+    category = TypeInfo<app_num::ArithmeticMethod>::name;
     choices = extractChoices<app_num::ArithmeticMethod>();
     numTable[category] = CategoryExtAttr{choices, app_num::ArithmeticMethod{}};
     subCLIAppNum
@@ -567,7 +563,7 @@ void Command::initializeCLI()
         {
             app_num::runChoices<app_num::ArithmeticMethod>(msg.coll);
         });
-    category = std::string{TypeInfo<app_num::DivisorMethod>::name};
+    category = TypeInfo<app_num::DivisorMethod>::name;
     choices = extractChoices<app_num::DivisorMethod>();
     numTable[category] = CategoryExtAttr{choices, app_num::DivisorMethod{}};
     subCLIAppNum
@@ -587,7 +583,7 @@ void Command::initializeCLI()
         {
             app_num::runChoices<app_num::DivisorMethod>(msg.coll);
         });
-    category = std::string{TypeInfo<app_num::IntegralMethod>::name};
+    category = TypeInfo<app_num::IntegralMethod>::name;
     choices = extractChoices<app_num::IntegralMethod>();
     numTable[category] = CategoryExtAttr{choices, app_num::IntegralMethod{}};
     subCLIAppNum
@@ -607,7 +603,7 @@ void Command::initializeCLI()
         {
             app_num::runChoices<app_num::IntegralMethod>(msg.coll);
         });
-    category = std::string{TypeInfo<app_num::PrimeMethod>::name};
+    category = TypeInfo<app_num::PrimeMethod>::name;
     choices = extractChoices<app_num::PrimeMethod>();
     numTable[category] = CategoryExtAttr{choices, app_num::PrimeMethod{}};
     subCLIAppNum
@@ -747,7 +743,7 @@ void Command::dispatch()
         {
             if (dispatchManager.basicManager.categories.test(Category(i)))
             {
-                defaultNotifier.notify(std::string{toString(Category(i))});
+                defaultNotifier.notify(toString(Category(i)));
             }
         }
     }
@@ -793,7 +789,7 @@ Command::ChoiceContainer Command::extractChoices()
     ChoiceContainer choices{};
     choices.reserve(TypeInfo::fields.size);
     TypeInfo::fields.forEach(
-        [&choices](auto field)
+        [&choices](const auto field)
         {
             choices.emplace_back(field.attrs.find(REFLECTION_STR("choice")).value);
         });
@@ -830,7 +826,7 @@ template <>
 void Command::launchClient<utility::socket::UDPSocket>(std::shared_ptr<utility::socket::UDPSocket>& client)
 {
     client->onRawMessageReceived =
-        [&client](char* buffer, const int length, const std::string& /*ip*/, const std::uint16_t /*port*/)
+        [&client](char* buffer, const int length, const std::string_view /*ip*/, const std::uint16_t /*port*/)
     {
         try
         {

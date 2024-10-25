@@ -240,7 +240,7 @@ private:
 };
 
 extern std::string formatString(const std::string_view format, ...);
-extern std::string base64Encode(const std::string& data);
-extern std::string base64Decode(const std::string& data);
+extern std::string base64Encode(const std::string_view data);
+extern std::string base64Decode(const std::string_view data);
 } // namespace common
 } // namespace utility

@@ -174,7 +174,7 @@ std::vector<std::uint32_t> Search<T>::generateFibonacciNumber(const std::uint32_
 {
     if (0 == limit)
     {
-        return std::vector<std::uint32_t>{};
+        return {};
     }
 
     const double phi = (1.0 + std::sqrt(5.0)) / 2.0, // golden ratio

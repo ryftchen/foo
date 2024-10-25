@@ -69,7 +69,7 @@ constexpr std::string_view toString(const Category cat)
         case Category::prime:
             return utility::reflection::TypeInfo<PrimeMethod>::name;
         default:
-            return "";
+            return {};
     }
 }
 
@@ -107,12 +107,12 @@ consteval std::size_t abbrVal(const T method)
 
     std::size_t value = 0;
     TypeInfo::fields.forEach(
-        [method, &value](auto field)
+        [method, &value](const auto field)
         {
             if (field.name == toString(method))
             {
                 static_assert(1 == field.attrs.size);
-                auto attr = field.attrs.find(REFLECTION_STR("choice"));
+                const auto attr = field.attrs.find(REFLECTION_STR("choice"));
                 static_assert(attr.hasValue);
                 value = utility::common::operator""_bkdrHash(attr.value, 0);
             }
@@ -275,12 +275,12 @@ catch (const std::exception& err)
 //! @brief Update arithmetic-related choice.
 //! @param target - target method
 template <>
-void updateChoice<ArithmeticMethod>(const std::string& target)
+void updateChoice<ArithmeticMethod>(const std::string_view target)
 {
     constexpr auto category = Category::arithmetic;
     auto& bitFlag = getCategoryOpts<category>();
 
-    switch (utility::common::bkdrHash(target.c_str()))
+    switch (utility::common::bkdrHash(target.data()))
     {
         case abbrVal(ArithmeticMethod::addition):
             bitFlag.set(ArithmeticMethod::addition);
@@ -296,7 +296,7 @@ void updateChoice<ArithmeticMethod>(const std::string& target)
             break;
         default:
             bitFlag.reset();
-            throw std::logic_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
+            throw std::logic_error("Unexpected " + std::string{toString(category)} + " method: " + target.data() + '.');
     }
 }
 
@@ -321,7 +321,8 @@ void runChoices<ArithmeticMethod>(const std::vector<std::string>& candidates)
         static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<ArithmeticMethod>::value)));
     const auto inputs = std::make_shared<InputBuilder>(integerA, integerB);
     const auto arithmeticFunctor =
-        [threads, inputs](const std::string& threadName, void (*targetMethod)(const std::int32_t, const std::int32_t))
+        [threads,
+         inputs](const std::string_view threadName, void (*targetMethod)(const std::int32_t, const std::int32_t))
     {
         threads->enqueue(
             threadName, targetMethod, std::get<0>(inputs->getIntegers()), std::get<1>(inputs->getIntegers()));
@@ -406,12 +407,12 @@ catch (const std::exception& err)
 //! @brief Update divisor-related choice.
 //! @param target - target method
 template <>
-void updateChoice<DivisorMethod>(const std::string& target)
+void updateChoice<DivisorMethod>(const std::string_view target)
 {
     constexpr auto category = Category::divisor;
     auto& bitFlag = getCategoryOpts<category>();
 
-    switch (utility::common::bkdrHash(target.c_str()))
+    switch (utility::common::bkdrHash(target.data()))
     {
         case abbrVal(DivisorMethod::euclidean):
             bitFlag.set(DivisorMethod::euclidean);
@@ -421,7 +422,7 @@ void updateChoice<DivisorMethod>(const std::string& target)
             break;
         default:
             bitFlag.reset();
-            throw std::logic_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
+            throw std::logic_error("Unexpected " + std::string{toString(category)} + " method: " + target.data() + '.');
     }
 }
 
@@ -445,7 +446,7 @@ void runChoices<DivisorMethod>(const std::vector<std::string>& candidates)
         static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<DivisorMethod>::value)));
     const auto inputs = std::make_shared<InputBuilder>(integerA, integerB);
     const auto divisorFunctor =
-        [threads, inputs](const std::string& threadName, void (*targetMethod)(std::int32_t, std::int32_t))
+        [threads, inputs](const std::string_view threadName, void (*targetMethod)(std::int32_t, std::int32_t))
     {
         threads->enqueue(
             threadName, targetMethod, std::get<0>(inputs->getIntegers()), std::get<1>(inputs->getIntegers()));
@@ -558,12 +559,12 @@ catch (const std::exception& err)
 //! @brief Update integral-related choice.
 //! @param target - target method
 template <>
-void updateChoice<IntegralMethod>(const std::string& target)
+void updateChoice<IntegralMethod>(const std::string_view target)
 {
     constexpr auto category = Category::integral;
     auto& bitFlag = getCategoryOpts<category>();
 
-    switch (utility::common::bkdrHash(target.c_str()))
+    switch (utility::common::bkdrHash(target.data()))
     {
         case abbrVal(IntegralMethod::trapezoidal):
             bitFlag.set(IntegralMethod::trapezoidal);
@@ -582,7 +583,7 @@ void updateChoice<IntegralMethod>(const std::string& target)
             break;
         default:
             bitFlag.reset();
-            throw std::logic_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
+            throw std::logic_error("Unexpected " + std::string{toString(category)} + " method: " + target.data() + '.');
     }
 }
 
@@ -606,7 +607,7 @@ void runChoices<IntegralMethod>(const std::vector<std::string>& candidates)
         auto* const threads = pooling.newElement(std::min(
             static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<IntegralMethod>::value)));
         const auto integralFunctor = [threads, &expression, &range](
-                                         const std::string& threadName,
+                                         const std::string_view threadName,
                                          void (*targetMethod)(const integral::Expression&, const double, const double))
         {
             threads->enqueue(threadName, targetMethod, std::ref(expression), range.range1, range.range2);
@@ -713,12 +714,12 @@ catch (const std::exception& err)
 //! @brief Update prime-related choice.
 //! @param target - target method
 template <>
-void updateChoice<PrimeMethod>(const std::string& target)
+void updateChoice<PrimeMethod>(const std::string_view target)
 {
     constexpr auto category = Category::prime;
     auto& bitFlag = getCategoryOpts<category>();
 
-    switch (utility::common::bkdrHash(target.c_str()))
+    switch (utility::common::bkdrHash(target.data()))
     {
         case abbrVal(PrimeMethod::eratosthenes):
             bitFlag.set(PrimeMethod::eratosthenes);
@@ -728,7 +729,7 @@ void updateChoice<PrimeMethod>(const std::string& target)
             break;
         default:
             bitFlag.reset();
-            throw std::logic_error("Unexpected " + std::string{toString(category)} + " method: " + target + '.');
+            throw std::logic_error("Unexpected " + std::string{toString(category)} + " method: " + target.data() + '.');
     }
 }
 
@@ -752,7 +753,7 @@ void runChoices<PrimeMethod>(const std::vector<std::string>& candidates)
         std::min(static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<PrimeMethod>::value)));
     const auto inputs = std::make_shared<InputBuilder>(maxPositiveInteger);
     const auto primeFunctor =
-        [threads, inputs](const std::string& threadName, void (*targetMethod)(const std::uint32_t))
+        [threads, inputs](const std::string_view threadName, void (*targetMethod)(const std::uint32_t))
     {
         threads->enqueue(threadName, targetMethod, inputs->getMaxPositiveInteger());
     };

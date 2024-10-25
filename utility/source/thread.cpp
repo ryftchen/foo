@@ -25,7 +25,7 @@ Thread::Thread(const std::size_t size)
             {
                 for (;;)
                 {
-                    std::string_view thdName{};
+                    std::string thdName{};
                     std::packaged_task<void()> thdTask{};
                     if (std::unique_lock<std::mutex> lock(mtx); true)
                     {
@@ -51,7 +51,7 @@ Thread::Thread(const std::size_t size)
                     }
                     if (!thdName.empty())
                     {
-                        ::pthread_setname_np(::pthread_self(), thdName.data());
+                        ::pthread_setname_np(::pthread_self(), thdName.c_str());
                     }
                     thdTask();
                 }

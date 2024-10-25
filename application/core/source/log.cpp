@@ -24,19 +24,19 @@ inline namespace
 struct HlRegex
 {
     //! @brief Debug level prefix highlighting.
-    const std::regex debugLevel{std::string{debugLevelPrefixRegex}};
+    const std::regex debugLevel{debugLevelPrefixRegex.data()};
     //! @brief Info level prefix highlighting.
-    const std::regex infoLevel{std::string{infoLevelPrefixRegex}};
+    const std::regex infoLevel{infoLevelPrefixRegex.data()};
     //! @brief Warning level prefix highlighting.
-    const std::regex warningLevel{std::string{warnLevelPrefixRegex}};
+    const std::regex warningLevel{warnLevelPrefixRegex.data()};
     //! @brief Error level prefix highlighting.
-    const std::regex errorLevel{std::string{errorLevelPrefixRegex}};
+    const std::regex errorLevel{errorLevelPrefixRegex.data()};
     //! @brief Trace level prefix highlighting.
-    const std::regex traceLevel{std::string{traceLevelPrefixRegex}};
+    const std::regex traceLevel{traceLevelPrefixRegex.data()};
     //! @brief Date time highlighting.
-    const std::regex dateTime{std::string{dateTimeRegex}};
+    const std::regex dateTime{dateTimeRegex.data()};
     //! @brief Code file highlighting.
-    const std::regex codeFile{std::string{codeFileRegex}};
+    const std::regex codeFile{codeFileRegex.data()};
 };
 //! @brief Log style.
 const HlRegex& logStyle()
@@ -191,7 +191,7 @@ utility::common::ReadWriteLock& Log::getFileLock()
     return fileLock;
 }
 
-std::string Log::filterBreakLine(const std::string& line)
+std::string Log::filterBreakLine(const std::string_view line)
 {
     std::string singleRow(line);
     singleRow.erase(
@@ -235,14 +235,14 @@ bool Log::isInUninterruptedState(const State state) const
     return (safeCurrentState() == state) && !toReset.load();
 }
 
-std::string Log::getFullLogPath(const std::string& filename)
+std::string Log::getFullLogPath(const std::string_view filename)
 {
     const char* const processHome = std::getenv("FOO_HOME");
     if (nullptr == processHome)
     {
         throw std::runtime_error("The environment variable FOO_HOME is not set.");
     }
-    return std::string{processHome} + '/' + filename;
+    return std::string{processHome} + '/' + filename.data();
 }
 
 void Log::tryCreateLogFolder() const
@@ -454,38 +454,36 @@ const std::string& changeToLogStyle(std::string& line)
     const auto& style = logStyle();
     if (std::regex_search(line, style.debugLevel))
     {
-        line = std::regex_replace(line, style.debugLevel, std::string{debugLevelPrefixWithColor});
+        line = std::regex_replace(line, style.debugLevel, debugLevelPrefixWithColor.data());
     }
     else if (std::regex_search(line, style.infoLevel))
     {
-        line = std::regex_replace(line, style.infoLevel, std::string{infoLevelPrefixWithColor});
+        line = std::regex_replace(line, style.infoLevel, infoLevelPrefixWithColor.data());
     }
     else if (std::regex_search(line, style.warningLevel))
     {
-        line = std::regex_replace(line, style.warningLevel, std::string{warningLevelPrefixWithColor});
+        line = std::regex_replace(line, style.warningLevel, warningLevelPrefixWithColor.data());
     }
     else if (std::regex_search(line, style.errorLevel))
     {
-        line = std::regex_replace(line, style.errorLevel, std::string{errorLevelPrefixWithColor});
+        line = std::regex_replace(line, style.errorLevel, errorLevelPrefixWithColor.data());
     }
     else if (std::regex_search(line, style.traceLevel))
     {
-        line = std::regex_replace(line, style.traceLevel, std::string{traceLevelPrefixWithColor});
+        line = std::regex_replace(line, style.traceLevel, traceLevelPrefixWithColor.data());
     }
 
     namespace common = utility::common;
     if (std::regex_search(line, style.dateTime))
     {
         const auto searchIter = std::sregex_iterator(line.begin(), line.end(), style.dateTime);
-        const auto dateTimeWithColor =
-            std::string{dateTimeBaseColor} + (*searchIter).str() + std::string{common::colorOff};
+        const auto dateTimeWithColor = dateTimeBaseColor.data() + (*searchIter).str() + common::colorOff.data();
         line = std::regex_replace(line, style.dateTime, dateTimeWithColor);
     }
     if (std::regex_search(line, style.codeFile))
     {
         const auto searchIter = std::sregex_iterator(line.begin(), line.end(), style.codeFile);
-        const auto codeFileWithColor =
-            std::string{codeFileBaseColor} + (*searchIter).str() + std::string{common::colorOff};
+        const auto codeFileWithColor = codeFileBaseColor.data() + (*searchIter).str() + common::colorOff.data();
         line = std::regex_replace(line, style.codeFile, codeFileWithColor);
     }
 

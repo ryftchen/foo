@@ -27,7 +27,7 @@ class Console
 public:
     //! @brief Construct a new Console object.
     //! @param greeting - default greeting information
-    explicit Console(const std::string& greeting);
+    explicit Console(const std::string_view greeting);
     //! @brief Destroy the Console object.
     virtual ~Console();
     //! @brief Construct a new Console object.
@@ -49,21 +49,21 @@ public:
     //! @param name - command name
     //! @param func - callable function
     //! @param help - help message
-    void registerCommand(const std::string& name, const CommandFunctor& func, const std::string& help);
+    void registerCommand(const std::string_view name, const CommandFunctor& func, const std::string_view help);
     //! @brief Set greeting information.
     //! @param greeting - greeting information
-    void setGreeting(const std::string& greeting);
+    void setGreeting(const std::string_view greeting);
     //! @brief Get greeting information.
     //! @return greeting information
     [[nodiscard]] std::string getGreeting() const;
     //! @brief Execute the target console command.
     //! @param command - command to be executed
     //! @return value of RetCode
-    int commandExecutor(const std::string& command);
+    int commandExecutor(const std::string_view command);
     //! @brief Execute all console commands in the target file.
     //! @param filename - file to be executed
     //! @return value of RetCode
-    int fileExecutor(const std::string& filename);
+    int fileExecutor(const std::string_view filename);
     //! @brief Read console command line.
     //! @return value of RetCode
     int readCommandLine();
@@ -100,7 +100,7 @@ private:
     {
         //! @brief Construct a new Impl object.
         //! @param greeting - default greeting information
-        explicit Impl(const std::string& greeting) : greeting(greeting), regMap() {}
+        explicit Impl(const std::string_view greeting) : greeting(greeting), regMap() {}
         //! @brief Destroy the Impl object.
         ~Impl() { delete history; }
         //! @brief Construct a new Impl object.

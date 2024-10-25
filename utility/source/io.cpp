@@ -330,9 +330,9 @@ std::ostream& FileWriter::stream()
 //! @param command - target command line to be executed
 //! @param timeout - timeout period (ms)
 //! @return command line output
-std::string executeCommand(const std::string& command, const std::uint32_t timeout)
+std::string executeCommand(const std::string_view command, const std::uint32_t timeout)
 {
-    std::FILE* const pipe = ::popen(command.c_str(), "r");
+    std::FILE* const pipe = ::popen(command.data(), "r");
     if (nullptr == pipe)
     {
         throw std::runtime_error("Could not open pipe when trying to execute command.");
@@ -391,7 +391,7 @@ std::string executeCommand(const std::string& command, const std::uint32_t timeo
 //! @brief Wait for input from the user.
 //! @param action - handling for the input
 //! @param timeout - timeout period (ms)
-void waitForUserInput(const std::function<bool(const std::string&)>& action, const int timeout)
+void waitForUserInput(const std::function<bool(const std::string_view)>& action, const int timeout)
 {
     const int epollFD = ::epoll_create1(0);
     if (-1 == epollFD)
@@ -439,7 +439,7 @@ void waitForUserInput(const std::function<bool(const std::string&)>& action, con
 //! @param totalRows - number of rows
 //! @return file contents
 std::list<std::string> getFileContents(
-    const std::string& filename, const bool toLock, const bool toReverse, const std::uint64_t totalRows)
+    const std::string_view filename, const bool toLock, const bool toReverse, const std::uint64_t totalRows)
 {
     FileReader fileReader(filename);
     fileReader.open();

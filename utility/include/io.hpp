@@ -20,10 +20,10 @@ namespace io
 {
 extern const char* version() noexcept;
 
-extern std::string executeCommand(const std::string& command, const std::uint32_t timeout = 0);
-extern void waitForUserInput(const std::function<bool(const std::string&)>& action, const int timeout = -1);
+extern std::string executeCommand(const std::string_view command, const std::uint32_t timeout = 0);
+extern void waitForUserInput(const std::function<bool(const std::string_view)>& action, const int timeout = -1);
 extern std::list<std::string> getFileContents(
-    const std::string& filename,
+    const std::string_view filename,
     const bool toLock,
     const bool toReverse = false,
     const std::uint64_t totalRows = std::numeric_limits<std::uint64_t>::max());
@@ -94,7 +94,7 @@ class FileReader
 public:
     //! @brief Construct a new FileReader object.
     //! @param filename - name of the file to be read
-    explicit FileReader(const std::string& filename) : name(filename) {}
+    explicit FileReader(const std::string_view filename) : name(filename) {}
     //! @brief Destroy the FileReader object.
     ~FileReader();
     //! @brief Construct a new FileReader object.
@@ -140,7 +140,7 @@ class FileWriter
 public:
     //! @brief Construct a new FileWriter object.
     //! @param filename - name of the file to be written
-    explicit FileWriter(const std::string& filename) : name(filename) {}
+    explicit FileWriter(const std::string_view filename) : name(filename) {}
     //! @brief Destroy the FileWriter object.
     ~FileWriter();
     //! @brief Construct a new FileWriter object.

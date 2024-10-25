@@ -253,7 +253,7 @@ private:
     //! @brief Split string by space.
     //! @param str - target string
     //! @return strings after split
-    static std::vector<std::string> splitString(const std::string& str);
+    static std::vector<std::string> splitString(const std::string_view str);
     //! @brief Build the null TLV packet.
     //! @param buf - TLV packet buffer
     //! @return buffer length
@@ -298,7 +298,7 @@ private:
     //! @brief Fill the shared memory.
     //! @param contents - contents to be filled
     //! @return shm id
-    static int fillSharedMemory(const std::string& contents);
+    static int fillSharedMemory(const std::string_view contents);
     //! @brief Fetch the shared memory.
     //! @param shmId - shm id
     //! @param contents - contents to be fetched
@@ -309,7 +309,7 @@ private:
     static void printSharedMemory(const int shmId, const bool withoutPaging = true);
     //! @brief Segmented output.
     //! @param buffer - output buffer
-    static void segmentedOutput(const std::string& buffer);
+    static void segmentedOutput(const std::string_view buffer);
     //! @brief Get the log contents.
     //! @return log contents
     static std::string getLogContents();
