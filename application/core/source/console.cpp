@@ -11,7 +11,7 @@
 #include <fstream>
 #include <iomanip>
 #include <iostream>
-#include <iterator>
+#include <ranges>
 #else
 #include "application/pch/precompiled_header.hpp"
 #endif // __PRECOMPILED_HEADER
@@ -27,41 +27,43 @@ static Console* currentSession = nullptr;
 
 Console::Console(const std::string_view greeting) : impl(std::make_unique<Impl>(greeting))
 {
-    ::rl_attempted_completion_function = &Console::getCommandCompleter;
+    ::rl_attempted_completion_function = &Console::getOptionCompleter;
+    auto& regTable = impl->regTable;
+    auto& orderList = impl->orderList;
 
-    impl->regMap["usage"] = std::make_pair(
+    regTable["usage"] = std::make_pair(
         [this](const Args& /*input*/)
         {
-            const auto commandsHelp = getHelpOfRegisteredCommand();
+            const auto pairs = getOptionHelpPairs();
             std::size_t maxLength = 0;
-            for ([[maybe_unused]] const auto& [command, help] : commandsHelp)
+            for ([[maybe_unused]] const auto& [option, help] : pairs)
             {
-                maxLength = std::max(maxLength, command.length());
+                maxLength = std::max(maxLength, option.length());
             }
 
-            std::cout << "console command:\n" << std::endl;
-            for (const auto& [command, help] : commandsHelp)
+            std::cout << "console option:\n" << std::endl;
+            for (const auto& [option, help] : pairs)
             {
-                std::cout << std::setiosflags(std::ios_base::left) << std::setw(maxLength) << command << "    " << help
+                std::cout << std::setiosflags(std::ios_base::left) << std::setw(maxLength) << option << "    " << help
                           << std::resetiosflags(std::ios_base::left) << '\n';
             }
 
             std::cout << std::flush;
             return RetCode::success;
         },
-        "show how to use");
-    impl->regOrder.emplace_back("usage");
+        "how to use the console");
+    orderList.emplace_back("usage");
 
-    impl->regMap["quit"] = std::make_pair(
+    regTable["quit"] = std::make_pair(
         [](const Args& /*input*/)
         {
             std::cout << "exit" << std::endl;
             return RetCode::quit;
         },
         "exit the console");
-    impl->regOrder.emplace_back("quit");
+    orderList.emplace_back("quit");
 
-    impl->regMap["batch"] = std::make_pair(
+    regTable["batch"] = std::make_pair(
         [this](const Args& input)
         {
             if (input.size() < 2)
@@ -71,7 +73,7 @@ Console::Console(const std::string_view greeting) : impl(std::make_unique<Impl>(
             return RetCode(fileExecutor(input.at(1)));
         },
         "run lines from the file [inputs: FILE]");
-    impl->regOrder.emplace_back("batch");
+    orderList.emplace_back("batch");
 }
 
 Console::~Console()
@@ -82,10 +84,10 @@ Console::~Console()
     ::rl_restore_prompt();
 }
 
-void Console::registerCommand(const std::string_view name, const CommandFunctor& func, const std::string_view help)
+void Console::registerOption(const std::string_view name, const OptionFunctor& func, const std::string_view prompt)
 {
-    impl->regMap[name.data()] = std::make_pair(func, help);
-    impl->regOrder.emplace_back(name);
+    impl->regTable[name.data()] = std::make_pair(func, prompt);
+    impl->orderList.emplace_back(name);
 }
 
 void Console::setGreeting(const std::string_view greeting)
@@ -98,10 +100,10 @@ std::string Console::getGreeting() const
     return impl->greeting;
 }
 
-int Console::commandExecutor(const std::string_view command)
+int Console::optionExecutor(const std::string_view option)
 {
     std::vector<std::string> inputs{};
-    std::istringstream is(command.data());
+    std::istringstream is(option.data());
     std::copy(std::istream_iterator<std::string>(is), std::istream_iterator<std::string>(), std::back_inserter(inputs));
 
     if (inputs.empty())
@@ -109,11 +111,11 @@ int Console::commandExecutor(const std::string_view command)
         return RetCode::success;
     }
 
-    const auto iterator = impl->regMap.find(inputs.at(0));
-    if (std::cend(impl->regMap) == iterator)
+    const auto iterator = impl->regTable.find(inputs.at(0));
+    if (std::cend(impl->regTable) == iterator)
     {
         throw std::runtime_error(
-            "The console command \"" + inputs.at(0) + R"(" could not be found. Enter the "usage" for help.)");
+            "The console option \"" + inputs.at(0) + R"(" could not be found. Enter the "usage" for help.)");
     }
 
     return RetCode(static_cast<int>(std::get<0>(iterator->second)(inputs)));
@@ -127,18 +129,18 @@ int Console::fileExecutor(const std::string_view filename)
         throw std::runtime_error("Could not find the batch file to run.");
     }
 
-    std::string command{};
+    std::string option{};
     std::uint32_t counter = 0;
     int result = 0;
-    while (std::getline(input, command))
+    while (std::getline(input, option))
     {
-        if ('#' == command.at(0))
+        if ('#' == option.at(0))
         {
             continue;
         }
-        std::cout << '[' << counter << "] " << command << std::endl;
+        std::cout << '[' << counter << "] " << option << std::endl;
 
-        result = commandExecutor(command);
+        result = optionExecutor(option);
         if (result)
         {
             return RetCode(result);
@@ -150,7 +152,7 @@ int Console::fileExecutor(const std::string_view filename)
     return RetCode::success;
 }
 
-int Console::readCommandLine()
+int Console::readLine()
 {
     reserveConsole();
 
@@ -168,18 +170,18 @@ int Console::readCommandLine()
 
     std::string line(buffer);
     ::rl_free(buffer);
-    return RetCode(commandExecutor(line));
+    return RetCode(optionExecutor(line));
 }
 
-std::vector<Console::CommandHelpPair> Console::getHelpOfRegisteredCommand() const
+std::vector<Console::OptionHelpPair> Console::getOptionHelpPairs() const
 {
-    std::vector<Console::CommandHelpPair> allCommandsHelp{};
-    for (const auto& command : impl->regOrder)
-    {
-        allCommandsHelp.emplace_back(command, impl->regMap.at(command).second);
-    }
-
-    return allCommandsHelp;
+    const auto trans = impl->orderList
+        | std::views::transform(
+                           [&](const std::string_view option)
+                           {
+                               return std::make_pair(option, impl->regTable.at(option.data()).second);
+                           });
+    return std::vector<OptionHelpPair>{trans.begin(), trans.end()};
 }
 
 void Console::saveState()
@@ -212,38 +214,38 @@ void Console::reserveConsole()
     currentSession = this;
 }
 
-char** Console::getCommandCompleter(const char* text, int start, int /*end*/)
+char** Console::getOptionCompleter(const char* text, int start, int /*end*/)
 {
     char** completionList = nullptr;
     if (0 == start)
     {
-        completionList = ::rl_completion_matches(text, &Console::getCommandIterator);
+        completionList = ::rl_completion_matches(text, &Console::getOptionIterator);
     }
 
     return completionList;
 }
 
-char* Console::getCommandIterator(const char* text, int state)
+char* Console::getOptionIterator(const char* text, int state)
 {
-    static Impl::RegisteredCommand::iterator iterator{};
+    static Impl::RegisteredOption::iterator iterator{};
     if (nullptr == currentSession)
     {
         return nullptr;
     }
 
-    auto& commands = currentSession->impl->regMap;
+    auto& regTable = currentSession->impl->regTable;
     if (0 == state)
     {
-        iterator = std::begin(commands);
+        iterator = std::begin(regTable);
     }
 
-    while (std::end(commands) != iterator)
+    while (std::end(regTable) != iterator)
     {
-        const auto& command = iterator->first;
+        const auto& option = iterator->first;
         ++iterator;
-        if (command.find(text) != std::string::npos)
+        if (option.find(text) != std::string::npos)
         {
-            return ::strdup(command.c_str());
+            return ::strdup(option.c_str());
         }
     }
 
