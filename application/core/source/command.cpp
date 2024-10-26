@@ -309,7 +309,7 @@ void Command::initializeCLI()
                 return input;
             })
         .metavar("CMD")
-        .help("run commands in console mode and exit\n"
+        .help("run options in console mode and exit\n"
               "separate with quotes");
     defaultNotifier.attach(
         toString(Category::console),
@@ -864,9 +864,9 @@ void Command::executeInConsole() const
     const auto session = std::make_shared<console::Console>(" > ");
     registerOnConsole(*session, udpClient);
 
-    for (const auto& cmd : pendingInputs)
+    for (const auto& option : pendingInputs)
     {
-        session->commandExecutor(cmd);
+        session->optionExecutor(option);
     }
 
     udpClient->toSend(utility::common::base64Encode("stop"));
@@ -948,7 +948,7 @@ try
     {
         try
         {
-            retVal = session->readCommandLine();
+            retVal = session->readLine();
         }
         catch (const std::exception& err)
         {
@@ -977,7 +977,7 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& c
     using console::Console;
     using enum Console::RetCode;
 
-    session.registerCommand(
+    session.registerOption(
         "refresh",
         [](const Console::Args& /*input*/)
         {
@@ -999,7 +999,7 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& c
         },
         "refresh the outputs");
 
-    session.registerCommand(
+    session.registerOption(
         "reconnect",
         [&client](const Console::Args& /*input*/)
         {
@@ -1029,24 +1029,24 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& c
 
     for (const auto& [optionName, optionAttr] : view::info::getOptions())
     {
-        session.registerCommand(
+        session.registerOption(
             optionName,
             [&client](const Console::Args& input)
             {
                 auto retVal = success;
                 try
                 {
-                    std::string entry{};
-                    for (const auto& arg : input)
+                    std::string message{};
+                    for (const auto& token : input)
                     {
-                        entry += arg + ' ';
+                        message += token + ' ';
                     }
-                    if (!entry.empty())
+                    if (!message.empty())
                     {
-                        entry.pop_back();
+                        message.pop_back();
                     }
 
-                    client->toSend(utility::common::base64Encode(entry));
+                    client->toSend(utility::common::base64Encode(message));
                     view::View::getInstance().awaitDueToOutput();
                 }
                 catch (const std::exception& err)

@@ -111,7 +111,7 @@ public:
     //! @param toDetach - whether to detach
     void toReceive(const bool toDetach = false);
     //! @brief Handling on message received.
-    std::function<void(const std::string&)> onMessageReceived{};
+    std::function<void(const std::string_view)> onMessageReceived{};
     //! @brief Handling on raw message received.
     std::function<void(char*, const int)> onRawMessageReceived{};
     //! @brief Handling on socket closed.
@@ -193,9 +193,9 @@ public:
     //! @param toDetach - whether to detach
     void toReceiveFrom(const bool toDetach = false);
     //! @brief Handling on message received.
-    std::function<void(const std::string&, const std::string&, const std::uint16_t)> onMessageReceived{};
+    std::function<void(const std::string_view, const std::string_view, const std::uint16_t)> onMessageReceived{};
     //! @brief Handling on raw message received.
-    std::function<void(char*, const int, const std::string&, const std::uint16_t)> onRawMessageReceived{};
+    std::function<void(char*, const int, const std::string_view, const std::uint16_t)> onRawMessageReceived{};
 
 private:
     //! @brief Receive bytes from socket FD.

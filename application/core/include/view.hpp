@@ -233,7 +233,7 @@ private:
     {
         // - Option -+---------------------- Help ----------------------+------- Build Packet -------
         // ----------+--------------------------------------------------+----------------------------
-        { "depend"   , { "list associated libraries"                     , &buildTLVPacket4Depend  }},
+        { "depend"   , { "list all associated libraries"                 , &buildTLVPacket4Depend  }},
         { "execute"  , { "enter bash commands in quotes [inputs: 'CMD']" , &buildTLVPacket4Execute }},
         { "journal"  , { "view the log with highlights"                  , &buildTLVPacket4Journal }},
         { "monitor"  , { "query process status and stacks [inputs: NUM]" , &buildTLVPacket4Monitor }},

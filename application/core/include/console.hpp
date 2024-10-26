@@ -43,30 +43,30 @@ public:
 
     //! @brief Alias for the container of arguments.
     using Args = std::vector<std::string>;
-    //! @brief Alias for the functor of command.
-    using CommandFunctor = std::function<int(const Args&)>;
-    //! @brief Register console command.
-    //! @param name - command name
+    //! @brief Alias for the functor of option.
+    using OptionFunctor = std::function<int(const Args&)>;
+    //! @brief Register console option.
+    //! @param name - option name
     //! @param func - callable function
-    //! @param help - help message
-    void registerCommand(const std::string_view name, const CommandFunctor& func, const std::string_view help);
+    //! @param prompt - help prompt
+    void registerOption(const std::string_view name, const OptionFunctor& func, const std::string_view prompt);
     //! @brief Set greeting information.
     //! @param greeting - greeting information
     void setGreeting(const std::string_view greeting);
     //! @brief Get greeting information.
     //! @return greeting information
     [[nodiscard]] std::string getGreeting() const;
-    //! @brief Execute the target console command.
-    //! @param command - command to be executed
+    //! @brief Execute the target console option.
+    //! @param option - option to be executed
     //! @return value of RetCode
-    int commandExecutor(const std::string_view command);
-    //! @brief Execute all console commands in the target file.
+    int optionExecutor(const std::string_view option);
+    //! @brief Execute all console options in the target file.
     //! @param filename - file to be executed
     //! @return value of RetCode
     int fileExecutor(const std::string_view filename);
-    //! @brief Read console command line.
+    //! @brief Read console option line.
     //! @return value of RetCode
-    int readCommandLine();
+    int readLine();
 
     //! @brief Enumerate specific return code.
     enum RetCode : int
@@ -82,16 +82,16 @@ public:
 private:
     //! @brief Alias for the history state.
     using HistoryState = ::HISTORY_STATE;
-    //! @brief Alias for the command name.
-    using Command = std::string;
-    //! @brief Alias for the help message.
+    //! @brief Alias for the option name.
+    using Option = std::string;
+    //! @brief Alias for the help prompt.
     using Help = std::string;
-    //! @brief Alias for command help pair.
-    using CommandHelpPair = std::pair<Command, Help>;
-    //! @brief Alias for the functor of command completer.
-    using CommandCompleterFunctor = char**(const char* text, int start, int end);
-    //! @brief Alias for the functor of command iterator.
-    using CommandIteratorFunctor = char*(const char* text, int state);
+    //! @brief Alias for option help pair.
+    using OptionHelpPair = std::pair<Option, Help>;
+    //! @brief Alias for the functor of option completer.
+    using OptionCompleterFunctor = char**(const char* text, int start, int end);
+    //! @brief Alias for the functor of option iterator.
+    using OptionIteratorFunctor = char*(const char* text, int state);
 
     //! @brief Saved empty history state.
     HistoryState* const emptyHistory{::history_get_history_state()};
@@ -100,7 +100,7 @@ private:
     {
         //! @brief Construct a new Impl object.
         //! @param greeting - default greeting information
-        explicit Impl(const std::string_view greeting) : greeting(greeting), regMap() {}
+        explicit Impl(const std::string_view greeting) : greeting(greeting) {}
         //! @brief Destroy the Impl object.
         ~Impl() { delete history; }
         //! @brief Construct a new Impl object.
@@ -114,33 +114,33 @@ private:
         //! @return reference of the Impl object
         Impl& operator=(Impl&&) = delete;
 
-        //! @brief Alias for the map of command and function in console.
-        using RegisteredCommand = std::unordered_map<Command, std::pair<CommandFunctor, Help>>;
+        //! @brief Alias for the map of option and function in console.
+        using RegisteredOption = std::unordered_map<Option, std::pair<OptionFunctor, Help>>;
 
         //! @brief Greeting information.
         std::string greeting{};
-        //! @brief Mapping table of all registered commands.
-        RegisteredCommand regMap{};
+        //! @brief Mapping table of all registered options.
+        RegisteredOption regTable{};
         //! @brief Register order.
-        std::list<Command> regOrder{};
+        std::list<Option> orderList{};
         //! @brief Saved history state.
         HistoryState* history{nullptr};
     };
     //! @brief Implementation instance.
     std::unique_ptr<Impl> impl{};
 
-    //! @brief Get help messages for all registered commands.
-    //! @return help messages for all registered commands
-    [[nodiscard]] std::vector<CommandHelpPair> getHelpOfRegisteredCommand() const;
+    //! @brief Get all registered options with help prompts.
+    //! @return all registered options with help prompts
+    [[nodiscard]] std::vector<OptionHelpPair> getOptionHelpPairs() const;
     //! @brief Save current state.
     void saveState();
     //! @brief Reserve usage to the calling console instance.
     void reserveConsole();
 
-    //! @brief Get the command completer. Wrap the interface.
-    static CommandCompleterFunctor getCommandCompleter;
-    //! @brief Get the command iterator.
-    static CommandIteratorFunctor getCommandIterator;
+    //! @brief Get the option completer. Wrap the interface.
+    static OptionCompleterFunctor getOptionCompleter;
+    //! @brief Get the option iterator. Wrap the interface.
+    static OptionIteratorFunctor getOptionIterator;
 };
 } // namespace console
 } // namespace application
