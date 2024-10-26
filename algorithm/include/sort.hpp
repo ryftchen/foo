@@ -336,19 +336,19 @@ std::vector<T> Sort<T>::counting(const T* const array, const std::uint32_t lengt
         min = std::min(sorting[i], min);
     }
 
-    const T countingLen = max - min + 1;
-    std::vector<T> counting(countingLen);
+    const T countSize = max - min + 1;
+    std::vector<T> count(countSize);
     for (std::uint32_t i = 0; i < length; ++i)
     {
-        ++counting[sorting[i] - min];
+        ++count[sorting[i] - min];
     }
     std::uint32_t index = 0;
-    for (T j = 0; j < countingLen; ++j)
+    for (T j = 0; j < countSize; ++j)
     {
-        while (counting[j])
+        while (count[j])
         {
             sorting[index++] = j + min;
-            --counting[j];
+            --count[j];
         }
     }
 
@@ -369,19 +369,19 @@ std::vector<T> Sort<T>::bucket(const T* const array, const std::uint32_t length)
 
     const std::uint32_t bucketSize = length;
     const double intervalSpan = static_cast<double>(max - min) / static_cast<double>(bucketSize - 1);
-    std::vector<std::vector<T>> container(bucketSize, std::vector<T>{});
+    std::vector<std::vector<T>> bucket(bucketSize, std::vector<T>{});
     for (std::uint32_t i = 0; i < length; ++i)
     {
         const std::uint32_t bucketIdx = std::floor(static_cast<double>(sorting[i] - min) / intervalSpan + 1) - 1;
-        container[bucketIdx].emplace_back(sorting[i]);
+        bucket[bucketIdx].emplace_back(sorting[i]);
     }
 
-    for (std::uint32_t index = 0; auto& bucketUpd : container)
+    for (std::uint32_t index = 0; auto& each : bucket)
     {
-        std::sort(bucketUpd.begin(), bucketUpd.end());
-        for (const auto bucketElem : bucketUpd)
+        std::sort(each.begin(), each.end());
+        for (const auto elem : each)
         {
-            sorting[index++] = bucketElem;
+            sorting[index++] = elem;
         }
     }
 
@@ -433,48 +433,48 @@ void Sort<T>::leastSignificantDigit(
     const std::uint32_t indexOffset)
 {
     constexpr std::uint32_t base = 10;
-    std::vector<T> countingOld(bucketSize, 0), countingNew(bucketSize, 0);
-    std::vector<std::queue<T>> container(bucketSize, std::queue<T>{});
+    std::vector<T> oldCount(bucketSize, 0), newCount(bucketSize, 0);
+    std::vector<std::queue<T>> bucket(bucketSize, std::queue<T>{});
     for (std::uint32_t i = 0; i < length; ++i)
     {
         const std::int8_t sign = (sorting[i] > 0) ? 1 : -1;
         const std::uint32_t bucketIdx = std::abs(sorting[i]) / 1 % base * sign + indexOffset;
-        container[bucketIdx].push(sorting[i]);
-        ++countingNew[bucketIdx];
+        bucket[bucketIdx].push(sorting[i]);
+        ++newCount[bucketIdx];
     }
 
     constexpr std::uint32_t decimal = 10;
     for (std::uint32_t i = 1, pow = decimal; i < maxDigit; ++i, pow *= base)
     {
-        countingOld = countingNew;
-        std::fill(countingNew.begin(), countingNew.end(), 0);
-        for (auto bucketIter = container.begin(); container.end() != bucketIter; ++bucketIter)
+        oldCount = newCount;
+        std::fill(newCount.begin(), newCount.end(), 0);
+        for (auto bucketIter = bucket.begin(); bucket.end() != bucketIter; ++bucketIter)
         {
             if (bucketIter->size() == 0)
             {
                 continue;
             }
 
-            const std::uint32_t countingIdx = bucketIter - container.begin();
-            while (countingOld[countingIdx])
+            const std::uint32_t countIdx = bucketIter - bucket.begin();
+            while (oldCount[countIdx])
             {
-                const T bucketElem = bucketIter->front();
-                const std::int8_t sign = (bucketElem > 0) ? 1 : -1;
-                const std::uint32_t bucketIdx = std::abs(bucketElem) / pow % base * sign + indexOffset;
-                container[bucketIdx].push(bucketElem);
-                ++countingNew[bucketIdx];
+                const T elem = bucketIter->front();
+                const std::int8_t sign = (elem > 0) ? 1 : -1;
+                const std::uint32_t bucketIdx = std::abs(elem) / pow % base * sign + indexOffset;
+                bucket[bucketIdx].push(elem);
+                ++newCount[bucketIdx];
                 bucketIter->pop();
-                --countingOld[countingIdx];
+                --oldCount[countIdx];
             }
         }
     }
 
-    for (std::uint32_t index = 0; auto& bucketInfo : container)
+    for (std::uint32_t index = 0; auto& each : bucket)
     {
-        while (!bucketInfo.empty())
+        while (!each.empty())
         {
-            sorting[index++] = bucketInfo.front();
-            bucketInfo.pop();
+            sorting[index++] = each.front();
+            each.pop();
         }
     }
 }
