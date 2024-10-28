@@ -266,7 +266,7 @@ catch (const std::exception& err)
 void Command::initializeCLI()
 {
     mainCLI.addArgument("-h", "--help").argsNum(0).implicitVal(true).help("show help and exit");
-    defaultNotifier.attach(
+    nativeNotifier.attach(
         toString(Category::help),
         std::make_shared<Notifier::Observer>(
             [this]()
@@ -274,7 +274,7 @@ void Command::initializeCLI()
                 showHelpMessage();
             }));
     mainCLI.addArgument("-v", "--version").argsNum(0).implicitVal(true).help("show version and exit");
-    defaultNotifier.attach(
+    nativeNotifier.attach(
         toString(Category::version),
         std::make_shared<Notifier::Observer>(
             [this]()
@@ -282,7 +282,7 @@ void Command::initializeCLI()
                 showVersionIcon();
             }));
     mainCLI.addArgument("-d", "--dump").argsNum(0).implicitVal(true).help("dump default configuration and exit");
-    defaultNotifier.attach(
+    nativeNotifier.attach(
         toString(Category::dump),
         std::make_shared<Notifier::Observer>(
             []()
@@ -311,7 +311,7 @@ void Command::initializeCLI()
         .metavar("CMD")
         .help("run options in console mode and exit\n"
               "separate with quotes");
-    defaultNotifier.attach(
+    nativeNotifier.attach(
         toString(Category::console),
         std::make_shared<Notifier::Observer>(
             [this]()
@@ -743,7 +743,7 @@ void Command::dispatch()
         {
             if (dispatchManager.basicManager.categories.test(Category(i)))
             {
-                defaultNotifier.notify(toString(Category(i)));
+                nativeNotifier.notify(toString(Category(i)));
             }
         }
     }

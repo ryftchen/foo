@@ -315,7 +315,7 @@ private:
         }
     } /** @brief Dispatch all types of tasks. */ dispatchManager{};
     //! @brief Notify for basic type tasks.
-    Notifier defaultNotifier{};
+    Notifier nativeNotifier{};
     //! @brief Forward messages for regular type tasks.
     action::MessageForwarder applyingForwarder{};
 
