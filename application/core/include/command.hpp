@@ -23,7 +23,7 @@ namespace command
 template <class T>
 struct Bottom;
 
-//! @brief Enumerate specific basic categories.
+//! @brief Enumerate specific native categories.
 enum Category : std::uint8_t
 {
     //! @brief Console.
@@ -101,7 +101,7 @@ private:
     void foregroundHandler(const int argc, const char* const argv[]);
     //! @brief Background handler for performing the specific tasks.
     void backgroundHandler();
-    //! @brief Pre-check the basic type or regular type task.
+    //! @brief Pre-check the native type or extra type task.
     void validate();
     //! @brief Check whether any type tasks exist.
     //! @return any type tasks exist or do not exist
@@ -187,7 +187,7 @@ private:
     //! @brief Alias for the map of CategoryName and CategoryExtAttr.
     using CategoryExtMap = std::map<CategoryName, CategoryExtAttr>;
     //! @brief Alias for the map of SubCLIName and CategoryExtMap.
-    using RegularChoiceMap = std::map<SubCLIName, CategoryExtMap>;
+    using ExtraChoiceMap = std::map<SubCLIName, CategoryExtMap>;
     //! @brief Get the description.
     //! @tparam T - type of sub-cli or category
     //! @return description
@@ -215,27 +215,27 @@ private:
     //! @return all choices
     template <class Cat>
     static ChoiceContainer extractChoices();
-    //! @brief Mapping table of all regular choices. Fill as needed.
-    RegularChoiceMap regularChoices{};
+    //! @brief Mapping table of all extra choices. Fill as needed.
+    ExtraChoiceMap extraChoices{};
 
-    //! @brief Manage basic categories.
-    class BasicManager
+    //! @brief Manage native categories.
+    class NativeManager
     {
     public:
-        //! @brief Bit flags for managing basic categories.
+        //! @brief Bit flags for managing native categories.
         std::bitset<Bottom<Category>::value> categories{};
 
-        //! @brief Check whether any basic categories do not exist.
-        //! @return any basic categories do not exist or exist
+        //! @brief Check whether any native categories do not exist.
+        //! @return any native categories do not exist or exist
         [[nodiscard]] inline bool empty() const { return categories.none(); }
-        //! @brief Reset bit flags that manage basic categories.
+        //! @brief Reset bit flags that manage native categories.
         inline void reset() { categories.reset(); }
     };
-    //! @brief Manage regular choices of sub-cli.
-    class RegularManager
+    //! @brief Manage extra choices of sub-cli.
+    class ExtraManager
     {
     public:
-        //! @brief Enumerate specific regular choices.
+        //! @brief Enumerate specific extra choices.
         enum Order : std::uint8_t
         {
             //! @brief Algorithm.
@@ -250,14 +250,14 @@ private:
         //! @brief Flag for help only.
         bool helpOnly{false};
 
-        //! @brief Check whether any regular choices do not exist.
-        //! @return any regular choices do not exist or exist
+        //! @brief Check whether any extra choices do not exist.
+        //! @return any extra choices do not exist or exist
         [[nodiscard]] inline bool empty() const
         {
             return app_algo::manager().empty() && app_ds::manager().empty() && app_dp::manager().empty()
                 && app_num::manager().empty() && !helpOnly;
         }
-        //! @brief Reset bit flags that manage regular choices.
+        //! @brief Reset bit flags that manage extra choices.
         inline void reset()
         {
             app_algo::manager().reset();
@@ -293,30 +293,30 @@ private:
             }
 
             reset();
-            throw std::logic_error("There can only be one order for the regular choices.");
+            throw std::logic_error("There can only be one order for the extra choices.");
         }
     };
     //! @brief Manage all types of tasks.
-    struct DispatchManager
+    struct TaskDispatcher
     {
-        //! @brief Dispatch basic type tasks.
-        BasicManager basicManager{};
-        //! @brief Dispatch regular type tasks.
-        RegularManager regularManager{};
+        //! @brief Dispatch native type tasks.
+        NativeManager nativeManager{};
+        //! @brief Dispatch extra type tasks.
+        ExtraManager extraManager{};
 
         //! @brief Check whether any tasks do not exist.
         //! @return any tasks do not exist or exist
-        [[nodiscard]] inline bool empty() const { return basicManager.empty() && regularManager.empty(); }
+        [[nodiscard]] inline bool empty() const { return nativeManager.empty() && extraManager.empty(); }
         //! @brief Reset bit flags that manage all tasks.
         inline void reset()
         {
-            basicManager.reset();
-            regularManager.reset();
+            nativeManager.reset();
+            extraManager.reset();
         }
-    } /** @brief Dispatch all types of tasks. */ dispatchManager{};
-    //! @brief Notify for basic type tasks.
-    Notifier nativeNotifier{};
-    //! @brief Forward messages for regular type tasks.
+    } /** @brief Dispatch all types of tasks. */ taskDispatcher{};
+    //! @brief Notify for native type tasks.
+    Notifier defaultNotifier{};
+    //! @brief Forward messages for extra type tasks.
     action::MessageForwarder applyingForwarder{};
 
     //! @brief Enter console mode.

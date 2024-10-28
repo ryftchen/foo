@@ -33,7 +33,7 @@ class Task:
     build_script = f"{script_path}/build.sh"
     run_dict_file = f"{script_path}/.run_dict"
     console_file = f"{script_path}/.console_batch"
-    app_basic_task_dict = {
+    app_native_task_dict = {
         "--help": [],
         "--version": [],
         "--dump": [],
@@ -50,7 +50,7 @@ class Task:
             r"profile",
         ],
     }
-    app_regular_task_dict = {
+    app_extra_task_dict = {
         "app-algo": {
             "--help": [],
             "--match": ["rab", "knu", "boy", "hor", "sun"],
@@ -74,7 +74,7 @@ class Task:
             "--prime": ["era", "eul"],
         },
     }
-    tst_task_filt = ""
+    tst_task_filt = []
     stored_options = {"tst": False, "chk": {"cov": False, "mem": False}}
     analyze_only = False
     report_path = "./report"
@@ -215,7 +215,7 @@ class Task:
             self.total_steps = self.repeat_count
             command = self.tst_bin_cmd
             if len(self.tst_task_filt) != 0:
-                command = f"{self.tst_bin_cmd} {self.tst_task_filt}"
+                command = f"{self.tst_bin_cmd} {' '.join(self.tst_task_filt)}"
             while self.repeat_count:
                 self.run_single_task(command)
                 self.repeat_count -= 1
@@ -248,15 +248,15 @@ class Task:
             spec = importlib.util.spec_from_loader(loader.name, loader)
             module = importlib.util.module_from_spec(spec)
             loader.exec_module(module)
-            self.app_basic_task_dict = module.app_basic_task_dict
-            self.app_regular_task_dict = module.app_regular_task_dict
+            self.app_native_task_dict = module.app_native_task_dict
+            self.app_extra_task_dict = module.app_extra_task_dict
             self.tst_task_filt = module.tst_task_filt
 
     def dump_run_dict(self):
         orig_content = "#!/usr/bin/env python3\n\n"
-        orig_content += f"app_basic_task_dict = {ast.literal_eval(str(self.app_basic_task_dict))}\n"
-        orig_content += f"app_regular_task_dict = {ast.literal_eval(str(self.app_regular_task_dict))}\n"
-        orig_content += f"tst_task_filt = \"{self.tst_task_filt}\"\n"
+        orig_content += f"app_native_task_dict = {ast.literal_eval(str(self.app_native_task_dict))}\n"
+        orig_content += f"app_extra_task_dict = {ast.literal_eval(str(self.app_extra_task_dict))}\n"
+        orig_content += f"tst_task_filt = {ast.literal_eval(str(self.tst_task_filt))}\n"
 
         with open(self.run_dict_file, "wt", encoding="utf-8") as run_dict_content:
             fcntl.flock(run_dict_content.fileno(), fcntl.LOCK_EX)
@@ -305,12 +305,12 @@ class Task:
         sys.stdout = self.logger
 
         self.load_run_dict()
-        if "--console" in self.app_basic_task_dict:
-            self.total_steps += len(self.app_basic_task_dict["--console"])
-        self.total_steps += len(self.app_basic_task_dict.keys())
-        for task_category_list in self.app_basic_task_dict.values():
+        if "--console" in self.app_native_task_dict:
+            self.total_steps += len(self.app_native_task_dict["--console"])
+        self.total_steps += len(self.app_native_task_dict.keys())
+        for task_category_list in self.app_native_task_dict.values():
             self.total_steps += len(task_category_list)
-        for sub_cli_map in self.app_regular_task_dict.values():
+        for sub_cli_map in self.app_extra_task_dict.values():
             self.total_steps += 1 + len(sub_cli_map.keys())
             for task_category_list in sub_cli_map.values():
                 if task_category_list:
@@ -329,18 +329,18 @@ class Task:
 
     def generate_tasks(self):
         while self.repeat_count:
-            if "--console" in self.app_basic_task_dict:
-                for console_cmd in self.app_basic_task_dict["--console"]:
+            if "--console" in self.app_native_task_dict:
+                for console_cmd in self.app_native_task_dict["--console"]:
                     self.task_queue.put((self.app_bin_cmd, f"{console_cmd}\nquit"))
 
-            for category, option_list in self.app_basic_task_dict.items():
+            for category, option_list in self.app_native_task_dict.items():
                 self.task_queue.put((f"{self.app_bin_cmd} {category}", ""))
                 for option in option_list:
                     option = option.replace("\\", "\\\\\\").replace('"', '\\"', 1)
                     option = '\\"'.join(option.rsplit('"', 1))
                     self.task_queue.put((f"{self.app_bin_cmd} {category} \"{option}\"", ""))
 
-            for sub_cli, category_map in self.app_regular_task_dict.items():
+            for sub_cli, category_map in self.app_extra_task_dict.items():
                 self.task_queue.put((f"{self.app_bin_cmd} {sub_cli}", ""))
                 for category, choice_list in category_map.items():
                     self.task_queue.put((f"{self.app_bin_cmd} {sub_cli} {category}", ""))
