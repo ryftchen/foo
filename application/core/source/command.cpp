@@ -222,7 +222,7 @@ Command::Command()
 
 Command::~Command()
 {
-    dispatchManager.reset();
+    taskDispatcher.reset();
 }
 
 Command& Command::getInstance()
@@ -266,7 +266,7 @@ catch (const std::exception& err)
 void Command::initializeCLI()
 {
     mainCLI.addArgument("-h", "--help").argsNum(0).implicitVal(true).help("show help and exit");
-    nativeNotifier.attach(
+    defaultNotifier.attach(
         toString(Category::help),
         std::make_shared<Notifier::Observer>(
             [this]()
@@ -274,7 +274,7 @@ void Command::initializeCLI()
                 showHelpMessage();
             }));
     mainCLI.addArgument("-v", "--version").argsNum(0).implicitVal(true).help("show version and exit");
-    nativeNotifier.attach(
+    defaultNotifier.attach(
         toString(Category::version),
         std::make_shared<Notifier::Observer>(
             [this]()
@@ -282,7 +282,7 @@ void Command::initializeCLI()
                 showVersionIcon();
             }));
     mainCLI.addArgument("-d", "--dump").argsNum(0).implicitVal(true).help("dump default configuration and exit");
-    nativeNotifier.attach(
+    defaultNotifier.attach(
         toString(Category::dump),
         std::make_shared<Notifier::Observer>(
             []()
@@ -311,7 +311,7 @@ void Command::initializeCLI()
         .metavar("CMD")
         .help("run options in console mode and exit\n"
               "separate with quotes");
-    nativeNotifier.attach(
+    defaultNotifier.attach(
         toString(Category::console),
         std::make_shared<Notifier::Observer>(
             [this]()
@@ -322,7 +322,7 @@ void Command::initializeCLI()
     CategoryName category{};
     ChoiceContainer choices{};
 
-    auto& algoTable = regularChoices[subCLIAppAlgo.title()];
+    auto& algoTable = extraChoices[subCLIAppAlgo.title()];
     subCLIAppAlgo.addDescription(getDescr<app_algo::ApplyAlgorithm>());
     subCLIAppAlgo.addArgument("-h", "--help").argsNum(0).implicitVal(true).help("show help and exit");
     category = TypeInfo<app_algo::MatchMethod>::name;
@@ -427,7 +427,7 @@ void Command::initializeCLI()
         });
     mainCLI.addSubParser(subCLIAppAlgo);
 
-    auto& dpTable = regularChoices[subCLIAppDp.title()];
+    auto& dpTable = extraChoices[subCLIAppDp.title()];
     subCLIAppDp.addDescription(getDescr<app_dp::ApplyDesignPattern>());
     subCLIAppDp.addArgument("-h", "--help").argsNum(0).implicitVal(true).help("show help and exit");
     category = TypeInfo<app_dp::BehavioralInstance>::name;
@@ -495,7 +495,7 @@ void Command::initializeCLI()
         });
     mainCLI.addSubParser(subCLIAppDp);
 
-    auto& dsTable = regularChoices[subCLIAppDs.title()];
+    auto& dsTable = extraChoices[subCLIAppDs.title()];
     subCLIAppDs.addDescription(getDescr<app_ds::ApplyDataStructure>());
     subCLIAppDs.addArgument("-h", "--help").argsNum(0).implicitVal(true).help("show help and exit");
     category = TypeInfo<app_ds::LinearInstance>::name;
@@ -540,7 +540,7 @@ void Command::initializeCLI()
         });
     mainCLI.addSubParser(subCLIAppDs);
 
-    auto& numTable = regularChoices[subCLIAppNum.title()];
+    auto& numTable = extraChoices[subCLIAppNum.title()];
     subCLIAppNum.addDescription(getDescr<app_num::ApplyNumeric>());
     subCLIAppNum.addArgument("-h", "--help").argsNum(0).implicitVal(true).help("show help and exit");
     category = TypeInfo<app_num::ArithmeticMethod>::name;
@@ -677,7 +677,7 @@ void Command::validate()
         }
         checkForExcessiveArguments();
 
-        dispatchManager.basicManager.categories.set(Category(i));
+        taskDispatcher.nativeManager.categories.set(Category(i));
     }
 
     const auto isSubCLIUsed = [this](const auto& subCLIPair)
@@ -689,18 +689,18 @@ void Command::validate()
         }
         return false;
     };
-    for ([[maybe_unused]] const auto& [subCLIName, categoryMap] : regularChoices | std::views::filter(isSubCLIUsed))
+    for ([[maybe_unused]] const auto& [subCLIName, categoryMap] : extraChoices | std::views::filter(isSubCLIUsed))
     {
         const auto& subCLI = mainCLI.at<utility::argument::Argument>(subCLIName);
         if (!subCLI)
         {
-            dispatchManager.regularManager.helpOnly = true;
+            taskDispatcher.extraManager.helpOnly = true;
             return;
         }
 
         if (subCLI.isUsed("help"))
         {
-            dispatchManager.regularManager.helpOnly = true;
+            taskDispatcher.extraManager.helpOnly = true;
         }
         const auto isCategoryUsed = [this, subCLI](const auto& categoryPair)
         {
@@ -732,31 +732,31 @@ void Command::validate()
 
 bool Command::anySelected() const
 {
-    return !dispatchManager.empty();
+    return !taskDispatcher.empty();
 }
 
 void Command::dispatch()
 {
-    if (!dispatchManager.basicManager.empty())
+    if (!taskDispatcher.nativeManager.empty())
     {
         for (std::uint8_t i = 0; i < Bottom<Category>::value; ++i)
         {
-            if (dispatchManager.basicManager.categories.test(Category(i)))
+            if (taskDispatcher.nativeManager.categories.test(Category(i)))
             {
-                nativeNotifier.notify(toString(Category(i)));
+                defaultNotifier.notify(toString(Category(i)));
             }
         }
     }
-    else if (!dispatchManager.regularManager.empty())
+    else if (!taskDispatcher.extraManager.empty())
     {
-        if (dispatchManager.regularManager.helpOnly)
+        if (taskDispatcher.extraManager.helpOnly)
         {
             const auto isSubCLIUsed = [this](const auto& subCLIPair)
             {
                 return mainCLI.isSubCommandUsed(subCLIPair.first);
             };
 
-            for (const auto& subCLIName : std::views::keys(regularChoices | std::views::filter(isSubCLIUsed)))
+            for (const auto& subCLIName : std::views::keys(extraChoices | std::views::filter(isSubCLIUsed)))
             {
                 const auto& subCLI = mainCLI.at<utility::argument::Argument>(subCLIName);
                 std::cout << subCLI.help().str() << std::flush;
@@ -766,7 +766,7 @@ void Command::dispatch()
         }
 
         for (const auto& categoryAttr : std::views::values(
-                 std::next(regularChoices.cbegin(), dispatchManager.regularManager.getExistingOrder())->second))
+                 std::next(extraChoices.cbegin(), taskDispatcher.extraManager.getExistingOrder())->second))
         {
             const auto& candidates = categoryAttr.choices;
             std::visit(
@@ -909,7 +909,7 @@ void Command::checkForExcessiveArguments()
 {
     if (anySelected())
     {
-        dispatchManager.reset();
+        taskDispatcher.reset();
         throw std::runtime_error("Excessive arguments.");
     }
 }
