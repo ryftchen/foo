@@ -393,20 +393,15 @@ void Genetic::stochasticTournamentSelection(Population& pop, const std::vector<d
 
 void Genetic::select(Population& pop)
 {
-    double sum = 0.0, alpha = 1.0, beta = 0.0;
-    const auto coefficient = fitnessLinearTransformation(pop);
-    if (coefficient.has_value())
-    {
-        alpha = std::get<0>(coefficient.value());
-        beta = std::get<1>(coefficient.value());
-    }
+    const auto coeff = fitnessLinearTransformation(pop).value_or(std::pair<double, double>(1.0, 0.0));
+    double sum = 0.0;
     std::vector<double> fitnessVal{};
     fitnessVal.reserve(pop.size());
     std::transform(
         pop.cbegin(),
         pop.cend(),
         std::back_inserter(fitnessVal),
-        [this, alpha, beta, &sum](const auto& ind)
+        [this, alpha = std::get<0>(coeff), beta = std::get<1>(coeff), &sum](const auto& ind)
         {
             const double fitVal = alpha * calculateFitness(ind) + beta;
             sum += fitVal;
