@@ -18,7 +18,7 @@ const char* version() noexcept
 
 std::vector<std::uint32_t> Prime::eratosthenes(const std::uint32_t max)
 {
-    std::vector<std::uint32_t> container{};
+    std::vector<std::uint32_t> storage{};
     std::vector<bool> isPrime(max + 1, true);
 
     isPrime[0] = false;
@@ -31,16 +31,16 @@ std::vector<std::uint32_t> Prime::eratosthenes(const std::uint32_t max)
             {
                 isPrime[j] = false;
             }
-            container.emplace_back(i);
+            storage.emplace_back(i);
         }
     }
 
-    return container;
+    return storage;
 }
 
 std::vector<std::uint32_t> Prime::euler(const std::uint32_t max)
 {
-    std::vector<std::uint32_t> container{};
+    std::vector<std::uint32_t> storage{};
     std::vector<bool> isPrime(max + 1, true);
 
     isPrime[0] = false;
@@ -49,19 +49,19 @@ std::vector<std::uint32_t> Prime::euler(const std::uint32_t max)
     {
         if (isPrime[i])
         {
-            container.emplace_back(i);
+            storage.emplace_back(i);
         }
 
-        for (std::uint32_t j = 1; (j <= container.size()) && ((i * container[j - 1]) <= max); ++j)
+        for (std::uint32_t j = 1; (j <= storage.size()) && ((i * storage[j - 1]) <= max); ++j)
         {
-            isPrime[static_cast<std::uint32_t>(i * container[j - 1])] = false;
-            if (0 == (i % container[j - 1]))
+            isPrime[static_cast<std::uint32_t>(i * storage[j - 1])] = false;
+            if (0 == (i % storage[j - 1]))
             {
                 break;
             }
         }
     }
 
-    return container;
+    return storage;
 }
 } // namespace numeric::prime

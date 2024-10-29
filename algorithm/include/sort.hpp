@@ -433,21 +433,21 @@ void Sort<T>::leastSignificantDigit(
     const std::uint32_t indexOffset)
 {
     constexpr std::uint32_t base = 10;
-    std::vector<T> oldCount(bucketSize, 0), newCount(bucketSize, 0);
+    std::vector<T> countOld(bucketSize, 0), countNew(bucketSize, 0);
     std::vector<std::queue<T>> bucket(bucketSize, std::queue<T>{});
     for (std::uint32_t i = 0; i < length; ++i)
     {
         const std::int8_t sign = (sorting[i] > 0) ? 1 : -1;
         const std::uint32_t bucketIdx = std::abs(sorting[i]) / 1 % base * sign + indexOffset;
         bucket[bucketIdx].push(sorting[i]);
-        ++newCount[bucketIdx];
+        ++countNew[bucketIdx];
     }
 
     constexpr std::uint32_t decimal = 10;
     for (std::uint32_t i = 1, pow = decimal; i < maxDigit; ++i, pow *= base)
     {
-        oldCount = newCount;
-        std::fill(newCount.begin(), newCount.end(), 0);
+        countOld = countNew;
+        std::fill(countNew.begin(), countNew.end(), 0);
         for (auto bucketIter = bucket.begin(); bucket.end() != bucketIter; ++bucketIter)
         {
             if (bucketIter->size() == 0)
@@ -456,15 +456,15 @@ void Sort<T>::leastSignificantDigit(
             }
 
             const std::uint32_t countIdx = bucketIter - bucket.begin();
-            while (oldCount[countIdx])
+            while (countOld[countIdx])
             {
                 const T elem = bucketIter->front();
                 const std::int8_t sign = (elem > 0) ? 1 : -1;
                 const std::uint32_t bucketIdx = std::abs(elem) / pow % base * sign + indexOffset;
                 bucket[bucketIdx].push(elem);
-                ++newCount[bucketIdx];
+                ++countNew[bucketIdx];
                 bucketIter->pop();
-                --oldCount[countIdx];
+                --countOld[countIdx];
             }
         }
     }

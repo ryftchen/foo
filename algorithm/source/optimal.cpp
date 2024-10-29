@@ -31,8 +31,8 @@ std::optional<std::tuple<double, double>> Gradient::operator()(const double left
         climbing.insert(candidate(engine));
     }
 
-    std::vector<std::pair<double, double>> container{};
-    container.reserve(climbing.size());
+    std::vector<std::pair<double, double>> storage{};
+    storage.reserve(climbing.size());
     for (const auto climber : climbing)
     {
         x = climber;
@@ -47,12 +47,12 @@ std::optional<std::tuple<double, double>> Gradient::operator()(const double left
             gradient = calculateFirstDerivative(x, eps);
             dx = learningRate * gradient;
         }
-        container.emplace_back(func(x), x);
+        storage.emplace_back(func(x), x);
     }
 
     const auto best = std::min_element(
-        std::cbegin(container),
-        std::cend(container),
+        std::cbegin(storage),
+        std::cend(storage),
         [](const auto& min1, const auto& min2)
         {
             return std::get<0>(min1) < std::get<0>(min2);
@@ -127,8 +127,8 @@ std::optional<std::tuple<double, double>> Particle::operator()(const double left
     double xBest = initialBest->x, xFitnessBest = initialBest->xFitness;
 
     std::uniform_real_distribution<double> coeff(0.0, 1.0);
-    std::vector<std::pair<double, double>> container{};
-    container.reserve(swarm.size());
+    std::vector<std::pair<double, double>> storage{};
+    storage.reserve(swarm.size());
     for (std::uint32_t i = 0; i < numOfIteration; ++i)
     {
         const double w = wBegin - (wBegin - wEnd) * std::pow(static_cast<double>(i + 1) / numOfIteration, 2);
@@ -174,12 +174,12 @@ std::optional<std::tuple<double, double>> Particle::operator()(const double left
                 xFitnessBest = ind.xFitness;
             }
         }
-        container.emplace_back(xFitnessBest, xBest);
+        storage.emplace_back(xFitnessBest, xBest);
     }
 
     const auto best = std::min_element(
-        std::cbegin(container),
-        std::cend(container),
+        std::cbegin(storage),
+        std::cend(storage),
         [](const auto& min1, const auto& min2)
         {
             return std::get<0>(min1) < std::get<0>(min2);
@@ -282,9 +282,9 @@ void Genetic::crossover(Population& pop)
     Population popCross{};
     popCross.reserve(pop.size());
 
-    std::vector<std::reference_wrapper<Chromosome>> container(pop.begin(), pop.end());
-    std::shuffle(container.begin(), container.end(), engine);
-    for (auto chrIter = container.begin(); (container.end() != chrIter) && (std::next(chrIter, 1) != container.end());
+    std::vector<std::reference_wrapper<Chromosome>> candidate(pop.begin(), pop.end());
+    std::shuffle(candidate.begin(), candidate.end(), engine);
+    for (auto chrIter = candidate.begin(); (candidate.end() != chrIter) && (std::next(chrIter, 1) != candidate.end());
          std::advance(chrIter, 2))
     {
         Chromosome parent1 = chrIter->get(), parent2 = std::next(chrIter, 1)->get();
@@ -295,7 +295,7 @@ void Genetic::crossover(Population& pop)
         popCross.emplace_back(std::move(parent1));
         popCross.emplace_back(std::move(parent2));
 
-        if ((pop.size() % 2) && (std::next(chrIter, 2) == (container.end() - 1)))
+        if ((pop.size() % 2) && (std::next(chrIter, 2) == (candidate.end() - 1)))
         {
             Chromosome single = std::next(chrIter, 2)->get();
             popCross.emplace_back(std::move(single));
@@ -393,13 +393,8 @@ void Genetic::stochasticTournamentSelection(Population& pop, const std::vector<d
 
 void Genetic::select(Population& pop)
 {
-    double sum = 0.0, alpha = 1.0, beta = 0.0;
-    const auto coefficient = fitnessLinearTransformation(pop);
-    if (coefficient.has_value())
-    {
-        alpha = std::get<0>(coefficient.value());
-        beta = std::get<1>(coefficient.value());
-    }
+    const auto [alpha, beta] = fitnessLinearTransformation(pop).value_or(std::pair<double, double>(1.0, 0.0));
+    double sum = 0.0;
     std::vector<double> fitnessVal{};
     fitnessVal.reserve(pop.size());
     std::transform(
