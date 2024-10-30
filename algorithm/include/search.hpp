@@ -51,6 +51,8 @@ private:
     //! @brief Generate Fibonacci number.
     //! @param limit - the smallest integer that is not greater than the maximum value of the Fibonacci sequence
     //! @return Fibonacci sequence
+    //! @note golden ratio
+    //! @note Fn≈(ϕ^n)/(5^(1/2))
     static std::vector<std::uint32_t> generateFibonacciNumber(const std::uint32_t limit);
 };
 
@@ -177,8 +179,7 @@ std::vector<std::uint32_t> Search<T>::generateFibonacciNumber(const std::uint32_
         return {};
     }
 
-    const double phi = (1.0 + std::sqrt(5.0)) / 2.0, // golden ratio
-        estimate = std::log(limit * std::sqrt(5.0)) / std::log(phi); // Fn≈(ϕ^n)/(5^(1/2))
+    const double phi = (1.0 + std::sqrt(5.0)) / 2.0, estimate = std::log(limit * std::sqrt(5.0)) / std::log(phi);
     std::vector<std::uint32_t> fibonacci{};
     fibonacci.reserve(static_cast<std::uint32_t>(estimate) + 1);
     std::uint32_t f1 = 0, f2 = 1;
