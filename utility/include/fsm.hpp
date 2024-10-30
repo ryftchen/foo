@@ -278,7 +278,7 @@ private:
             invokeAsBinaryFunc(action, self, event);
         }
         //! @brief Process the specific event by default.
-        static constexpr void processEvent(std::nullptr_t /*null*/, Derived& /*self*/, const Event& /*event*/) {}
+        static constexpr void processEvent(const std::nullptr_t /*null*/, Derived& /*self*/, const Event& /*event*/) {}
 
         //! @brief Check guard condition.
         //! @tparam Guard - type of guard condition
@@ -293,7 +293,7 @@ private:
         }
         //! @brief Check guard condition by default.
         //! @return pass or not pass
-        static constexpr bool checkGuard(std::nullptr_t /*null*/, const Derived& /*self*/, const Event& /*event*/)
+        static constexpr bool checkGuard(const std::nullptr_t /*null*/, const Derived& /*self*/, const Event& /*event*/)
         {
             return true;
         }
@@ -346,7 +346,7 @@ private:
         //! @param event - event to be processed
         //! @param state - source state
         //! @return state after execute
-        static State execute(Derived& self, const Event& event, State state)
+        static State execute(Derived& self, const Event& event, const State state)
         {
             return ((T::sourceValue() == state) && T::checkGuard(self, event))
                 ? (T::processEvent(self, event), T::targetValue())
@@ -363,7 +363,10 @@ private:
         //! @param self - derived object
         //! @param event - event to be processed
         //! @return state after execute
-        static State execute(Derived& self, const Event& event, State /*state*/) { return self.noTransition(event); }
+        static State execute(Derived& self, const Event& event, const State /*state*/)
+        {
+            return self.noTransition(event);
+        }
     };
 
     //! @brief Lock of FSM processing.
