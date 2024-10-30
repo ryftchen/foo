@@ -972,8 +972,8 @@ void View::createViewServer()
             char buffer[maxMsgLen] = {'\0'};
             try
             {
-                const auto telling = utility::common::base64Decode(message);
-                if ("stop" == telling)
+                const auto plaintext = utility::common::base64Decode(message);
+                if ("stop" == plaintext)
                 {
                     buildTLVPacket4Stop(buffer);
                     newSocket->toSend(buffer, sizeof(buffer));
@@ -981,7 +981,7 @@ void View::createViewServer()
                     return;
                 }
 
-                auto args = splitString(telling);
+                auto args = splitString(plaintext);
                 const auto optionIter = optionDispatcher.find(args.at(0));
                 if (optionDispatcher.cend() == optionIter)
                 {
@@ -1012,15 +1012,15 @@ void View::createViewServer()
         char buffer[maxMsgLen] = {'\0'};
         try
         {
-            const auto telling = utility::common::base64Decode(message);
-            if ("stop" == telling)
+            const auto plaintext = utility::common::base64Decode(message);
+            if ("stop" == plaintext)
             {
                 buildTLVPacket4Stop(buffer);
                 udpServer->toSendTo(buffer, sizeof(buffer), ip, port);
                 return;
             }
 
-            auto args = splitString(telling);
+            auto args = splitString(plaintext);
             const auto optionIter = optionDispatcher.find(args.at(0));
             if (optionDispatcher.cend() == optionIter)
             {
