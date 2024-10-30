@@ -1042,6 +1042,10 @@ function set_compile_condition()
         if ! command -v distcc >/dev/null; then
             die "No distcc program. Please install it."
         fi
+        if [[ ${DEV_OPT[pch]} = true ]] || [[ ${DEV_OPT[unity]} = true ]]; then
+            die "Compilation relationships may have potential conflicts if the FOO_BLD_DISTCC is not localhost and the \
+FOO_BLD_PCH or FOO_BLD_UNITY is turned on."
+        fi
         if [[ -n ${FOO_BLD_COV} ]] && [[ ${FOO_BLD_COV} = "llvm-cov" ]]; then
             die "Code coverage may be affected if the FOO_BLD_DISTCC is not localhost."
         fi
