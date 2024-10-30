@@ -489,7 +489,7 @@ public:
     //! @return dependent variable
     double operator()(const double x) const override
     {
-        return x * x - 10.0 * std::cos(2.0 * std::numbers::pi * x) + 10.0; // one-dimensional Rastrigin
+        return x * x - 10.0 * std::cos(2.0 * std::numbers::pi * x) + 10.0;
     }
 
     //! @brief Left endpoint.
@@ -508,10 +508,7 @@ public:
     //! @brief The operator (()) overloading of Griewank class.
     //! @param x - independent variable
     //! @return dependent variable
-    double operator()(const double x) const override
-    {
-        return 1.0 + 1.0 / 4000.0 * x * x - std::cos(x); // one-dimensional Griewank
-    }
+    double operator()(const double x) const override { return 1.0 + 1.0 / 4000.0 * x * x - std::cos(x); }
 
     //! @brief Left endpoint.
     static constexpr double range1{-600.0};

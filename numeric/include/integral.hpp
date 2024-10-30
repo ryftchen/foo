@@ -104,6 +104,7 @@ private:
     //! @param right - right endpoint
     //! @param step - number of steps
     //! @return result of definite integral
+    //! @note I≈(b-a)/6[Y0+Y2n+4(Y1+...+Y2n-1)+6(Y2+...+Y2n-2)]
     [[nodiscard]] double compositeSimpsonOneThird(
         const double left, const double right, const std::uint32_t step) const;
     //! @brief Simpson's 1/3 formula.
@@ -146,6 +147,7 @@ public:
     //! @param upper - upper endpoint
     //! @param eps - precision of calculation
     //! @return result of integral
+    //! @note x=1/2*[(a+b)+(b-a)*t]
     [[nodiscard]] double operator()(double lower, double upper, const double eps) const override;
 
 private:
@@ -176,12 +178,15 @@ private:
     //! @param upper - upper endpoint
     //! @param eps - precision of calculation
     //! @return result of definite integral
+    //! @note I≈(b-a)/N*[F(X1)+F(X2)+...+F(Xn)]
     [[nodiscard]] double sampleFromUniformDistribution(const double lower, const double upper, const double eps) const;
     //! @brief Sample from the normal distribution.
     //! @param lower - lower endpoint
     //! @param upper - upper endpoint
     //! @param eps - precision of calculation
     //! @return result of definite integral
+    //! @note Box-Muller transform
+    //! @note I≈1/N*[F(X1)/P(X1)+...+F(Xn)/P(Xn)]
     [[nodiscard]] double sampleFromNormalDistribution(const double lower, const double upper, const double eps) const;
 };
 } // namespace integral

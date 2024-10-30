@@ -30,13 +30,14 @@ std::int8_t Integral::getSign(double& lower, double& upper)
 //! @param height - height of trapezoidal
 //! @param step - number of steps
 //! @return result of definite integral
+//! @note S=(a+b)*h/2
 double trapezoid(const Expression& expr, const double left, const double height, const std::uint32_t step)
 {
     double sum = 0.0, x = left;
     const double delta = height / step;
     for (std::uint32_t i = 0; i < step; ++i)
     {
-        const double area = (expr(x) + expr(x + delta)) * delta / 2.0; // S=(a+b)*h/2
+        const double area = (expr(x) + expr(x + delta)) * delta / 2.0;
         sum += area;
         x += delta;
     }
@@ -90,8 +91,7 @@ double Simpson::compositeSimpsonOneThird(const double left, const double right, 
     double sum = 0.0;
     for (std::uint32_t i = 0; i < step; ++i)
     {
-        sum += simpsonOneThird(
-            left + i * stepLength, left + (i + 1) * stepLength); // I≈(b-a)/6[Y0+Y2n+4(Y1+...+Y2n-1)+6(Y2+...+Y2n-2)]
+        sum += simpsonOneThird(left + i * stepLength, left + (i + 1) * stepLength);
     }
     return sum;
 }
@@ -153,9 +153,8 @@ double Gauss::operator()(double lower, double upper, const double eps) const
             const double left = lower + i * stepLength, right = left + stepLength;
             for (std::uint32_t j = 0; j < gaussNodes; ++j)
             {
-                const double x = ((right - left) * gaussLegendreTable[j][0] + (left + right))
-                    / 2.0, // x=1/2*[(a+b)+(b-a)*t]
-                    polynomial = expr(x) * gaussLegendreTable[j][1] * (right - left) / 2.0;
+                const double x = ((right - left) * gaussLegendreTable[j][0] + (left + right)) / 2.0,
+                             polynomial = expr(x) * gaussLegendreTable[j][1] * (right - left) / 2.0;
                 sum += polynomial;
             }
         }
@@ -189,7 +188,7 @@ double MonteCarlo::sampleFromUniformDistribution(const double lower, const doubl
     {
         sum += expr(dist(engine));
     }
-    sum *= (upper - lower) / n; // I≈(b-a)/N*[F(X1)+F(X2)+...+F(Xn)]
+    sum *= (upper - lower) / n;
 
     return sum;
 }
@@ -206,12 +205,12 @@ double MonteCarlo::sampleFromNormalDistribution(const double lower, const double
         do
         {
             const double u1 = dist(engine), u2 = dist(engine), mag = sigma * std::sqrt(-2.0 * std::log(u1));
-            x = mag * std::sin(2.0 * std::numbers::pi * u2) + mu; // Box-Muller transform
+            x = mag * std::sin(2.0 * std::numbers::pi * u2) + mu;
         }
         while ((x < lower) || (x > upper));
         const double probabilityDensityFunction = (1.0 / std::sqrt(2.0 * std::numbers::pi * sigma * sigma))
             * std::pow(std::numbers::e, (-(x - mu) * (x - mu)) / (2.0 * sigma * sigma));
-        sum += expr(x) / probabilityDensityFunction; // I≈1/N*[F(X1)/P(X1)+...+F(Xn)/P(Xn)]
+        sum += expr(x) / probabilityDensityFunction;
     }
     sum /= n;
 
