@@ -42,6 +42,7 @@
 #include <queue>
 #include <ranges>
 #include <regex>
+#include <source_location>
 #include <span>
 #include <string>
 #include <syncstream>
