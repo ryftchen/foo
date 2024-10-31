@@ -11,6 +11,7 @@
 #ifndef __PRECOMPILED_HEADER
 #include <iostream>
 #include <queue>
+#include <source_location>
 #else
 #include "application/pch/precompiled_header.hpp"
 #endif // __PRECOMPILED_HEADER
@@ -23,7 +24,7 @@
 //! @brief Log with debug level.
 #define LOG_DBG                                                   \
     if (application::config::detail::activateHelper()) [[likely]] \
-    application::log::Log::Holder<application::log::Log::OutputLevel::debug>(__FILE__, __LINE__).stream()
+    application::log::Log::Holder<application::log::Log::OutputLevel::debug>().stream()
 //! @brief Log with debug level (formatted).
 #define LOG_DBG_F(fmt, ...)                                       \
     if (application::config::detail::activateHelper()) [[likely]] \
@@ -32,7 +33,7 @@
 //! @brief Log with info level.
 #define LOG_INF                                                   \
     if (application::config::detail::activateHelper()) [[likely]] \
-    application::log::Log::Holder<application::log::Log::OutputLevel::info>(__FILE__, __LINE__).stream()
+    application::log::Log::Holder<application::log::Log::OutputLevel::info>().stream()
 //! @brief Log with info level (formatted).
 #define LOG_INF_F(fmt, ...)                                       \
     if (application::config::detail::activateHelper()) [[likely]] \
@@ -41,7 +42,7 @@
 //! @brief Log with warning level.
 #define LOG_WRN                                                   \
     if (application::config::detail::activateHelper()) [[likely]] \
-    application::log::Log::Holder<application::log::Log::OutputLevel::warning>(__FILE__, __LINE__).stream()
+    application::log::Log::Holder<application::log::Log::OutputLevel::warning>().stream()
 //! @brief Log with warning level (formatted).
 #define LOG_WRN_F(fmt, ...)                                       \
     if (application::config::detail::activateHelper()) [[likely]] \
@@ -50,7 +51,7 @@
 //! @brief Log with error level.
 #define LOG_ERR                                                   \
     if (application::config::detail::activateHelper()) [[likely]] \
-    application::log::Log::Holder<application::log::Log::OutputLevel::error>(__FILE__, __LINE__).stream()
+    application::log::Log::Holder<application::log::Log::OutputLevel::error>().stream()
 //! @brief Log with error level (formatted).
 #define LOG_ERR_F(fmt, ...)                                       \
     if (application::config::detail::activateHelper()) [[likely]] \
@@ -237,9 +238,8 @@ public:
     {
     public:
         //! @brief Construct a new Holder object.
-        //! @param codeFile - current code file
-        //! @param codeLine - current code line
-        Holder(const std::string_view codeFile, const std::uint32_t codeLine) : file(codeFile), line(codeLine) {}
+        //! @param srcLoc - current source location
+        explicit Holder(const std::source_location& srcLoc = std::source_location::current()) : location(srcLoc) {}
         //! @brief Destroy the Holder object.
         virtual ~Holder() { flush(); }
 
@@ -250,13 +250,11 @@ public:
     private:
         //! @brief Output stream for flushing.
         std::ostringstream output{};
-        //! @brief Code file.
-        const std::string file{};
-        //! @brief Code line.
-        const std::uint32_t line{0};
+        //! @brief Source location.
+        const std::source_location location{};
 
         //! @brief Flush the output stream.
-        inline void flush() { getInstance().flush(Lv, file, line, output.str()); }
+        inline void flush() { getInstance().flush(Lv, location.file_name(), location.line(), output.str()); }
     };
 
 private:
@@ -443,7 +441,7 @@ void Log::flush(
             "{}:[{}]:[{}#{}]: {}",
             prefix,
             utility::time::getCurrentSystemTime(),
-            codeFile.substr(codeFile.find("foo/") + 4, codeFile.length()),
+            codeFile.substr(codeFile.rfind("foo/") + 4, codeFile.length()),
             codeLine,
             utility::common::formatString(filterBreakLine(format).data(), std::forward<Args>(args)...));
         if (daemonLock.owns_lock())
