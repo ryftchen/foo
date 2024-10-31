@@ -350,7 +350,7 @@ struct ElemList
         constexpr std::size_t idx = []() constexpr
         {
             constexpr decltype(Str::view()) names[]{Es::name...};
-            for (std::size_t i = 0; i < size; i++)
+            for (std::size_t i = 0; i < size; ++i)
             {
                 if (Str::view() == names[i])
                 {

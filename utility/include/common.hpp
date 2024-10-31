@@ -125,10 +125,12 @@ inline bool allStrEqual(const char* const str1, const char* const str2, Others c
 //! @tparam EnumType - type of enumeration
 //! @tparam Values - arguments of enumeration
 template <typename EnumType, EnumType... Values>
+requires std::is_enum_v<EnumType>
 class EnumCheck;
 //! @brief Check that the target value is part of the enumeration.
 //! @tparam EnumType - type of enumeration
 template <typename EnumType>
+requires std::is_enum_v<EnumType>
 class EnumCheck<EnumType>
 {
 public:
@@ -146,6 +148,7 @@ public:
 //! @tparam Value - current value
 //! @tparam Next - next enumeration value
 template <typename EnumType, EnumType Value, EnumType... Next>
+requires std::is_enum_v<EnumType>
 class EnumCheck<EnumType, Value, Next...> : private EnumCheck<EnumType, Next...>
 {
 public:
