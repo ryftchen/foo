@@ -443,7 +443,7 @@ void Log::flush(
             utility::time::getCurrentSystemTime(),
             codeFile.substr(codeFile.rfind("foo/") + 4, codeFile.length()),
             codeLine,
-            utility::common::formatString(filterBreakLine(format).data(), std::forward<Args>(args)...));
+            utility::common::formatString(filterBreakLine(format).c_str(), std::forward<Args>(args)...));
         if (daemonLock.owns_lock())
         {
             logQueue.push(std::move(output));
