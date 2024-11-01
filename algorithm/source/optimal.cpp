@@ -50,15 +50,13 @@ std::optional<std::tuple<double, double>> Gradient::operator()(const double left
         storage.emplace_back(func(x), x);
     }
 
-    const auto best = std::min_element(
+    std::tie(y, x) = *std::min_element(
         std::cbegin(storage),
         std::cend(storage),
         [](const auto& min1, const auto& min2)
         {
             return std::get<0>(min1) < std::get<0>(min2);
         });
-    y = std::get<0>(*best);
-    x = std::get<1>(*best);
 
     return std::make_optional(std::make_tuple(y, x));
 }
@@ -177,15 +175,13 @@ std::optional<std::tuple<double, double>> Particle::operator()(const double left
         storage.emplace_back(xFitnessBest, xBest);
     }
 
-    const auto best = std::min_element(
+    std::tie(xFitnessBest, xBest) = *std::min_element(
         std::cbegin(storage),
         std::cend(storage),
         [](const auto& min1, const auto& min2)
         {
             return std::get<0>(min1) < std::get<0>(min2);
         });
-    xFitnessBest = std::get<0>(*best);
-    xBest = std::get<1>(*best);
 
     return std::make_optional(std::make_tuple(xFitnessBest, xBest));
 }
