@@ -41,8 +41,7 @@ Thread::Thread(const std::size_t size)
                             return;
                         }
 
-                        thdName = std::get<0>(taskQueue.front());
-                        thdTask = std::move(std::get<1>(taskQueue.front()));
+                        std::tie(thdName, thdTask) = std::move(taskQueue.front());
                         taskQueue.pop();
                         if (taskQueue.empty())
                         {
