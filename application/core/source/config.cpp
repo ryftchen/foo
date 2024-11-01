@@ -23,9 +23,9 @@ Config& Config::getInstance()
     return cfg;
 }
 
-const utility::json::JSON& Config::getData() const
+const utility::json::JSON& Config::getDataRepo() const
 {
-    return data;
+    return dataRepo;
 }
 
 utility::json::JSON Config::parseConfigFile(const std::string_view configFile)
@@ -59,14 +59,14 @@ void Config::verifyConfigData(const utility::json::JSON& configData)
     checkViewerConfigInHelperList(configData);
 }
 
-void Config::checkLoggerConfigInHelperList(const utility::json::JSON& configData)
+void Config::checkLoggerConfigInHelperList(const utility::json::JSON& helperList)
 {
     using utility::common::EnumCheck, utility::common::operator""_bkdrHash;
 
     bool isVerified = true;
-    const auto loggerObject = configData.at("helperList").at("logger");
+    const auto& loggerObject = helperList.at("helperList").at("logger");
     isVerified &= loggerObject.isObjectType();
-    const auto loggerProperties = loggerObject.at("properties"), loggerRequired = loggerObject.at("required");
+    const auto &loggerProperties = loggerObject.at("properties"), loggerRequired = loggerObject.at("required");
     isVerified &= loggerProperties.isObjectType();
     isVerified &= loggerRequired.isArrayType();
     isVerified &= (loggerProperties.size() == loggerRequired.length());
@@ -119,14 +119,14 @@ void Config::checkLoggerConfigInHelperList(const utility::json::JSON& configData
     }
 }
 
-void Config::checkViewerConfigInHelperList(const utility::json::JSON& configData)
+void Config::checkViewerConfigInHelperList(const utility::json::JSON& helperList)
 {
     using utility::common::operator""_bkdrHash;
 
     bool isVerified = true;
-    const auto viewerObject = configData.at("helperList").at("viewer");
+    const auto& viewerObject = helperList.at("helperList").at("viewer");
     isVerified &= viewerObject.isObjectType();
-    const auto viewerProperties = viewerObject.at("properties"), viewerRequired = viewerObject.at("required");
+    const auto &viewerProperties = viewerObject.at("properties"), viewerRequired = viewerObject.at("required");
     isVerified &= viewerProperties.isObjectType();
     isVerified &= viewerRequired.isArrayType();
     isVerified &= (viewerProperties.size() == viewerRequired.length());
@@ -308,15 +308,15 @@ inline namespace
 static std::counting_semaphore<maxAccessLimit> configSem(maxAccessLimit);
 } // namespace
 
-//! @brief Retrieve data.
-//! @return current configuration data
-const utility::json::JSON& retrieveData()
+//! @brief Retrieve data repository.
+//! @return current configuration data repository
+const utility::json::JSON& retrieveDataRepo()
 try
 {
     configSem.acquire();
-    const auto& data = Config::getInstance().getData();
+    const auto& dataRepo = Config::getInstance().getDataRepo();
     configSem.release();
-    return data;
+    return dataRepo;
 }
 catch (...)
 {

@@ -638,7 +638,7 @@ int View::buildTLVPacket4Profile(const std::vector<std::string>& args, char* buf
 
     int len = 0;
     tlv::TLVValue val{};
-    const std::string currConfig = config::retrieveData().toUnescapedString();
+    const std::string currConfig = config::retrieveDataRepo().toUnescapedString();
     std::strncpy(val.configInfo, currConfig.c_str(), sizeof(val.configInfo) - 1);
     val.configInfo[sizeof(val.configInfo) - 1] = '\0';
     if (tlv::tlvEncoding(buf, len, val) < 0)
