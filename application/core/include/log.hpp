@@ -88,6 +88,8 @@ constexpr std::string_view traceLevelPrefixRegex = R"(^\[TRC\])";
 constexpr std::string_view dateTimeRegex = R"(\[(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})\.(\d{6}) (\w{3})\])";
 //! @brief Regular expression of code file in log.
 constexpr std::string_view codeFileRegex = R"(\[[^:]+\.(c|h|cc|hh|cpp|hpp|tpp|cxx|hxx|C|H)#\d+\])";
+//! @brief Directory of the source code.
+constexpr std::string_view sourceDirectory = R"(/foo/)";
 //! @brief Debug level prefix with color. Include ANSI escape codes.
 constinit const auto debugLevelPrefixWithColor = utility::common::joinString<
     utility::common::colorBlue,
@@ -414,7 +416,7 @@ void Log::flush(
     std::unique_lock<std::mutex> daemonLock(daemonMtx, std::defer_lock);
     try
     {
-        std::string_view prefix = traceLevelPrefix;
+        std::string_view prefix(traceLevelPrefix);
         if (isInUninterruptedState(State::work))
         {
             daemonLock.lock();
@@ -441,7 +443,9 @@ void Log::flush(
             "{}:[{}]:[{}#{}]: {}",
             prefix,
             utility::time::getCurrentSystemTime(),
-            codeFile.substr(codeFile.rfind("foo/") + 4, codeFile.length()),
+            (std::string_view::npos != codeFile.rfind(sourceDirectory))
+                ? codeFile.substr(codeFile.rfind(sourceDirectory) + sourceDirectory.length(), codeFile.length())
+                : codeFile,
             codeLine,
             utility::common::formatString(filterBreakLine(format).c_str(), std::forward<Args>(args)...));
         if (daemonLock.owns_lock())
