@@ -30,7 +30,6 @@ std::int8_t Integral::getSign(double& lower, double& upper)
 //! @param height - height of trapezoidal
 //! @param step - number of steps
 //! @return result of definite integral
-//! @note S=(a+b)*h/2
 double trapezoid(const Expression& expr, const double left, const double height, const std::uint32_t step)
 {
     double sum = 0.0, x = left;
