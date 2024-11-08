@@ -389,7 +389,7 @@ std::string executeCommand(const std::string_view command, const std::uint32_t t
 };
 
 //! @brief Wait for input from the user.
-//! @param action - handling for the input
+//! @param action - handling for the input (interrupt waiting if the return value is true, otherwise continue waiting)
 //! @param timeout - timeout period (ms)
 void waitForUserInput(const std::function<bool(const std::string_view)>& action, const int timeout)
 {

@@ -229,7 +229,7 @@ utility::json::JSON getDefaultConfiguration()
 }
 
 //! @brief Forced configuration update by default.
-//! @param filename - config file
+//! @param filename - config file path
 static void forcedConfigurationUpdateByDefault(const std::string_view filename)
 {
     utility::io::FileWriter fileWriter(filename);
@@ -241,7 +241,7 @@ static void forcedConfigurationUpdateByDefault(const std::string_view filename)
 }
 
 //! @brief Initialize the configuration.
-//! @param filename - config file
+//! @param filename - config file path
 static void initializeConfiguration(const std::string_view filename)
 {
     const std::filesystem::path configFolderPath = std::filesystem::absolute(filename).parent_path();
@@ -252,8 +252,43 @@ static void initializeConfiguration(const std::string_view filename)
     forcedConfigurationUpdateByDefault(filename);
 }
 
+//! @brief Show prompt and wait for input on configuration exception.
+//! @param filename - config file path
+//! @return whether to continue throwing exception
+static bool handleConfigurationException(const std::string_view filename)
+{
+    constexpr std::string_view hint = "Type y to force an update to the default configuration, n to exit: ",
+                               clearEscape = "\x1b[1A\x1b[2K\r";
+    std::cout << hint << "\n\x1b[1A\x1b[" << hint.length() << 'C' << std::flush;
+
+    bool keepThrowing = true;
+    constexpr std::uint16_t timeoutPeriod = 5000;
+    utility::io::waitForUserInput(
+        [&](const std::string_view input)
+        {
+            using utility::common::operator""_bkdrHash;
+
+            switch (utility::common::bkdrHash(input.data()))
+            {
+                case "y"_bkdrHash:
+                    forcedConfigurationUpdateByDefault(filename);
+                    [[fallthrough]];
+                case "n"_bkdrHash:
+                    keepThrowing = false;
+                    break;
+                default:
+                    std::cout << clearEscape << hint << std::flush;
+                    return false;
+            }
+            return true;
+        },
+        timeoutPeriod);
+
+    return keepThrowing;
+}
+
 //! @brief Load the configuration.
-//! @param filename - config file
+//! @param filename - config file path
 //! @return successful or failed to load
 bool loadConfiguration(const std::string_view filename)
 try
@@ -269,34 +304,12 @@ try
 catch (...)
 {
     std::cerr << "Configuration load exception ..." << std::endl;
-    constexpr std::string_view hint = "Type y to force an update to the default configuration, n to exit: ",
-                               clearEscape = "\x1b[1A\x1b[2K\r";
-    std::cout << hint << "\n\x1b[1A\x1b[" << hint.length() << 'C' << std::flush;
-
-    bool keepThrowing = true;
-    constexpr std::uint16_t timeoutPeriod = 5000;
-    utility::io::waitForUserInput(
-        [&](const std::string_view input)
-        {
-            if (("y" != input) && ("n" != input))
-            {
-                std::cout << clearEscape << hint << std::flush;
-                return false;
-            }
-            else if ("y" == input)
-            {
-                forcedConfigurationUpdateByDefault(filename);
-            }
-            keepThrowing = false;
-            return true;
-        },
-        timeoutPeriod);
-
-    if (keepThrowing)
+    if (handleConfigurationException(filename))
     {
         std::cout << '\n' << std::endl;
         throw;
     }
+
     std::cout << std::endl;
     return false;
 }

@@ -317,7 +317,7 @@ private:
     //! @return in the uninterrupted target state or not
     bool isInUninterruptedState(const State state) const;
     //! @brief Get the full path to the log file.
-    //! @param filename - log file
+    //! @param filename - log file path
     //! @return full path to the log file
     static std::string getFullLogPath(const std::string_view filename = "log/foo.log");
     //! @brief Try to create the log folder.
