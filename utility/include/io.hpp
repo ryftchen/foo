@@ -93,7 +93,7 @@ class FileReader
 {
 public:
     //! @brief Construct a new FileReader object.
-    //! @param filename - name of the file to be read
+    //! @param filename - file path to be read
     explicit FileReader(const std::string_view filename) : name(filename) {}
     //! @brief Destroy the FileReader object.
     ~FileReader();
@@ -139,7 +139,7 @@ class FileWriter
 {
 public:
     //! @brief Construct a new FileWriter object.
-    //! @param filename - name of the file to be written
+    //! @param filename - file path to be written
     explicit FileWriter(const std::string_view filename) : name(filename) {}
     //! @brief Destroy the FileWriter object.
     ~FileWriter();

@@ -780,11 +780,9 @@ void View::printSharedMemory(const int shmId, const bool withoutPaging)
     if (withoutPaging)
     {
         std::cout << output;
+        return;
     }
-    else
-    {
-        segmentedOutput(output);
-    }
+    segmentedOutput(output);
 }
 
 void View::segmentedOutput(const std::string_view buffer)
@@ -800,6 +798,32 @@ void View::segmentedOutput(const std::string_view buffer)
     bool forcedCancel = false, withoutPaging = (lineNum <= terminalRows);
     std::string line{};
     std::uint64_t counter = 0;
+    const auto handling = [&](const std::string_view input)
+    {
+        using utility::common::operator""_bkdrHash;
+
+        std::cout << clearEscape << std::flush;
+        if (input.empty())
+        {
+            --counter;
+        }
+        else
+        {
+            switch (utility::common::bkdrHash(input.data()))
+            {
+                case "c"_bkdrHash:
+                    withoutPaging = true;
+                    break;
+                case "q"_bkdrHash:
+                    forcedCancel = true;
+                    break;
+                default:
+                    std::cout << hint << std::flush;
+                    return false;
+            }
+        }
+        return true;
+    };
     while (std::getline(is, line) && !forcedCancel)
     {
         std::cout << line << '\n';
@@ -807,30 +831,7 @@ void View::segmentedOutput(const std::string_view buffer)
         if (!withoutPaging && (0 == (counter % terminalRows)))
         {
             std::cout << hint << "\n\x1b[1A\x1b[" << hint.length() << 'C' << std::flush;
-            utility::io::waitForUserInput(
-                [&](const std::string_view input)
-                {
-                    std::cout << clearEscape << std::flush;
-                    if (input.empty())
-                    {
-                        --counter;
-                    }
-                    else if ("c" == input)
-                    {
-                        withoutPaging = true;
-                    }
-                    else if ("q" == input)
-                    {
-                        forcedCancel = true;
-                    }
-                    else
-                    {
-                        std::cout << hint << std::flush;
-                        return false;
-                    }
-                    return true;
-                },
-                -1);
+            utility::io::waitForUserInput(handling, -1);
         }
     }
 
