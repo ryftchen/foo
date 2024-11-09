@@ -69,9 +69,14 @@ static std::string jsonEscape(const std::string_view fmt)
 //! @param offset - data offset
 static void consumeWhitespace(const std::string_view fmt, std::size_t& offset)
 {
-    while (std::isspace(fmt.at(offset)))
+    while ((offset < fmt.length()) && std::isspace(fmt.at(offset)))
     {
         ++offset;
+    }
+
+    if (offset == fmt.length())
+    {
+        --offset;
     }
 }
 
@@ -95,11 +100,11 @@ static JSON parseObject(const std::string_view fmt, std::size_t& offset)
         consumeWhitespace(fmt, offset);
         if (':' != fmt.at(offset))
         {
-            throw std::runtime_error("JSON object: Expected colon, found '" + std::string{fmt.at(offset)} + "'.");
+            throw std::runtime_error("JSON object: Expected ':', found '" + std::string{fmt.at(offset)} + "'.");
         }
         consumeWhitespace(fmt, ++offset);
-        const JSON value = parseNext(fmt, offset);
-        object[key.toString()] = value;
+        const JSON val = parseNext(fmt, offset);
+        object[key.toString()] = val;
 
         consumeWhitespace(fmt, offset);
         if (',' == fmt.at(offset))
@@ -114,7 +119,7 @@ static JSON parseObject(const std::string_view fmt, std::size_t& offset)
         }
         else
         {
-            throw std::runtime_error("JSON object: Expected comma, found '" + std::string{fmt.at(offset)} + "'.");
+            throw std::runtime_error("JSON object: Expected ',' or '}', found '" + std::string{fmt.at(offset)} + "'.");
         }
     }
     return object;
@@ -223,6 +228,11 @@ static JSON parseString(const std::string_view fmt, std::size_t& offset)
         {
             val += c;
         }
+
+        if ((offset + 1) == fmt.length())
+        {
+            throw std::runtime_error("JSON syntax error, at \"" + val + "\" and after.");
+        }
     }
     ++offset;
     return val;
@@ -246,7 +256,7 @@ static std::string extractExponent(const std::string_view fmt, std::size_t& offs
         ++offset;
     }
 
-    for (;;)
+    while (offset < fmt.length())
     {
         c = fmt.at(offset++);
         if ((c >= '0') && (c <= '9'))
@@ -273,7 +283,7 @@ static JSON parseNumber(const std::string_view fmt, std::size_t& offset)
     std::string val{};
     char c = '\0';
     bool isFloating = false;
-    for (;;)
+    while (offset < fmt.length())
     {
         c = fmt.at(offset++);
         if (('-' == c) || ((c >= '0') && (c <= '9')))
@@ -327,7 +337,7 @@ static JSON parseNumber(const std::string_view fmt, std::size_t& offset)
 static JSON parseBoolean(const std::string_view fmt, std::size_t& offset)
 {
     JSON boolean{};
-    const std::string trueStr = "true", falseStr = "false";
+    constexpr std::string_view trueStr = "true", falseStr = "false";
     if (fmt.substr(offset, trueStr.length()) == trueStr)
     {
         boolean = true;
@@ -351,7 +361,7 @@ static JSON parseBoolean(const std::string_view fmt, std::size_t& offset)
 //! @param offset - data offset
 static JSON parseNull(const std::string_view fmt, std::size_t& offset)
 {
-    const std::string nullStr = "null";
+    constexpr std::string_view nullStr = "null";
     if (fmt.substr(offset, nullStr.length()) != nullStr)
     {
         throw std::runtime_error(
@@ -364,8 +374,8 @@ static JSON parseNull(const std::string_view fmt, std::size_t& offset)
 static JSON parseNext(const std::string_view fmt, std::size_t& offset)
 {
     consumeWhitespace(fmt, offset);
-    const char value = fmt.at(offset);
-    switch (value)
+    const char c = fmt.at(offset);
+    switch (c)
     {
         case '{':
             return parseObject(fmt, offset);
@@ -380,12 +390,12 @@ static JSON parseNext(const std::string_view fmt, std::size_t& offset)
         case 'n':
             return parseNull(fmt, offset);
         default:
-            if (((value >= '0') && (value <= '9')) || ('-' == value))
+            if (((c >= '0') && (c <= '9')) || ('-' == c))
             {
                 return parseNumber(fmt, offset);
             }
     }
-    throw std::runtime_error("JSON syntax error, unknown starting character '" + std::string{value} + "'.");
+    throw std::runtime_error("JSON syntax error, unknown starting character '" + std::string{c} + "'.");
 }
 
 JSON::JSON(const JSON::Type type) : JSON()
@@ -430,7 +440,12 @@ JSON JSON::make(const JSON::Type type)
 JSON JSON::load(const std::string_view fmt)
 {
     std::size_t offset = 0;
-    return parseNext(fmt, offset);
+    JSON object = parseNext(fmt, offset);
+    if ((offset + 1) <= fmt.length())
+    {
+        throw std::runtime_error("JSON syntax error, expected 'EOF' (" + std::string{fmt} + ").");
+    }
+    return object;
 }
 
 JSON& JSON::operator[](const std::string_view key)

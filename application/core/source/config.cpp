@@ -46,26 +46,41 @@ utility::json::JSON Config::parseConfigFile(const std::string_view configFile)
 
 void Config::verifyConfigData(const utility::json::JSON& configData)
 {
+    if (!configData.hasKey("activateHelper") || !configData.hasKey("helperList") || !configData.hasKey("helperTimeout"))
+    {
+        throw std::runtime_error("Incomplete configuration (" + configData.toUnescapedString() + ").");
+    }
+
     bool isVerified = configData.at("activateHelper").isBooleanType();
     isVerified &= configData.at("helperList").isObjectType();
     isVerified &=
         (configData.at("helperTimeout").isIntegralType() && (configData.at("helperTimeout").toIntegral() >= 0));
     if (!isVerified)
     {
-        throw std::runtime_error("Illegal configuration: " + configData.toUnescapedString() + '.');
+        throw std::runtime_error("Illegal configuration (" + configData.toUnescapedString() + ").");
     }
 
-    checkLoggerConfigInHelperList(configData);
-    checkViewerConfigInHelperList(configData);
+    checkLoggerConfigInHelperList(configData.at("helperList"));
+    checkViewerConfigInHelperList(configData.at("helperList"));
 }
 
 void Config::checkLoggerConfigInHelperList(const utility::json::JSON& helperList)
 {
-    using utility::common::EnumCheck, utility::common::operator""_bkdrHash;
+    if (!helperList.hasKey("logger"))
+    {
+        throw std::runtime_error(R"(Incomplete configuration, miss "logger" object in "helperList" object.)");
+    }
 
     bool isVerified = true;
-    const auto& loggerObject = helperList.at("helperList").at("logger");
+    const auto& loggerObject = helperList.at("logger");
+    if (!loggerObject.hasKey("properties") || !loggerObject.hasKey("required"))
+    {
+        throw std::runtime_error(
+            R"(Incomplete configuration, "logger" object in "helperList" object ()" + loggerObject.toUnescapedString()
+            + ").");
+    }
     isVerified &= loggerObject.isObjectType();
+
     const auto &loggerProperties = loggerObject.at("properties"), loggerRequired = loggerObject.at("required");
     isVerified &= loggerProperties.isObjectType();
     isVerified &= loggerRequired.isArrayType();
@@ -78,6 +93,8 @@ void Config::checkLoggerConfigInHelperList(const utility::json::JSON& helperList
 
     for (const auto& [key, item] : loggerProperties.objectRange())
     {
+        using utility::common::EnumCheck, utility::common::operator""_bkdrHash;
+
         switch (utility::common::bkdrHash(key.data()))
         {
             case "filePath"_bkdrHash:
@@ -114,18 +131,28 @@ void Config::checkLoggerConfigInHelperList(const utility::json::JSON& helperList
     if (!isVerified)
     {
         throw std::runtime_error(
-            R"(Illegal configuration, "logger" object in "helperList" object: )" + loggerObject.toUnescapedString()
-            + '.');
+            R"(Illegal configuration, "logger" object in "helperList" object ()" + loggerObject.toUnescapedString()
+            + ").");
     }
 }
 
 void Config::checkViewerConfigInHelperList(const utility::json::JSON& helperList)
 {
-    using utility::common::operator""_bkdrHash;
+    if (!helperList.hasKey("viewer"))
+    {
+        throw std::runtime_error(R"(Incomplete configuration, miss "viewer" object in "helperList" object.)");
+    }
 
     bool isVerified = true;
-    const auto& viewerObject = helperList.at("helperList").at("viewer");
+    const auto& viewerObject = helperList.at("viewer");
+    if (!viewerObject.hasKey("properties") || !viewerObject.hasKey("required"))
+    {
+        throw std::runtime_error(
+            R"(Incomplete configuration, "viewer" object in "helperList" object ()" + viewerObject.toUnescapedString()
+            + ").");
+    }
     isVerified &= viewerObject.isObjectType();
+
     const auto &viewerProperties = viewerObject.at("properties"), viewerRequired = viewerObject.at("required");
     isVerified &= viewerProperties.isObjectType();
     isVerified &= viewerRequired.isArrayType();
@@ -139,6 +166,8 @@ void Config::checkViewerConfigInHelperList(const utility::json::JSON& helperList
     constexpr std::uint16_t minPortNum = 0, maxPortNum = 65535;
     for (const auto& [key, item] : viewerProperties.objectRange())
     {
+        using utility::common::operator""_bkdrHash;
+
         switch (utility::common::bkdrHash(key.data()))
         {
             case "tcpHost"_bkdrHash:
@@ -164,8 +193,8 @@ void Config::checkViewerConfigInHelperList(const utility::json::JSON& helperList
     if (!isVerified)
     {
         throw std::runtime_error(
-            R"(Illegal configuration, "viewer" object in "helperList" object: )" + viewerObject.toUnescapedString()
-            + '.');
+            R"(Illegal configuration, "viewer" object in "helperList" object ()" + viewerObject.toUnescapedString()
+            + ").");
     }
 }
 
