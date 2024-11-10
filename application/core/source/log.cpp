@@ -7,6 +7,7 @@
 #include "log.hpp"
 
 #ifndef __PRECOMPILED_HEADER
+#include <algorithm>
 #include <cassert>
 #include <filesystem>
 #include <fstream>
@@ -252,10 +253,32 @@ void Log::tryCreateLogFolder() const
     std::filesystem::permissions(logFolderPath, std::filesystem::perms::owner_all, std::filesystem::perm_options::add);
 }
 
+void Log::backUpLogFileIfNeeded() const
+{
+    if (constexpr std::uint32_t maxFileSize = 512 * 1024;
+        std::filesystem::exists(filePath) && (std::filesystem::file_size(filePath) >= maxFileSize))
+    {
+        int index = 0;
+        for (const std::regex pattern(R"(foo\.log\.(\d+))");
+             const auto& entry : std::filesystem::directory_iterator(std::filesystem::absolute(filePath).parent_path()))
+        {
+            const std::string filename = entry.path().filename().string();
+            std::smatch match{};
+            if (std::regex_match(filename, match, pattern))
+            {
+                index = std::max(index, std::stoi(match[1].str()));
+            }
+        }
+
+        std::filesystem::rename(filePath, filePath + '.' + std::to_string(index + 1));
+    }
+}
+
 void Log::openLogFile()
 {
     utility::common::ReadWriteGuard guard(fileLock, LockMode::write);
     tryCreateLogFolder();
+    backUpLogFileIfNeeded();
     switch (writeType)
     {
         case OutputType::add:
@@ -274,7 +297,13 @@ void Log::closeLogFile()
     utility::common::ReadWriteGuard guard(fileLock, LockMode::write);
     logWriter.unlock();
     logWriter.close();
-    if (std::filesystem::exists(filePath) && (std::filesystem::file_size(filePath) == 0))
+    if (std::filesystem::exists(filePath) && (std::filesystem::file_size(filePath) == 0)
+        && std::ranges::all_of(
+            std::filesystem::directory_iterator(std::filesystem::absolute(filePath).parent_path()),
+            [this](const std::filesystem::directory_entry& entry)
+            {
+                return entry.path().filename() == filePath;
+            }))
     {
         std::filesystem::remove_all(std::filesystem::absolute(filePath).parent_path());
     }
@@ -324,6 +353,7 @@ void Log::doRollback()
 
         closeLogFile();
         tryCreateLogFolder();
+        backUpLogFileIfNeeded();
         std::ofstream tempOfs{};
         tempOfs.open(filePath, std::ios_base::out | std::ios_base::trunc);
         tempOfs.close();

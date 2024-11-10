@@ -777,12 +777,24 @@ void View::printSharedMemory(const int shmId, const bool withoutPaging)
 {
     std::string output{};
     fetchSharedMemory(shmId, output);
+    if ((output.length() + 1) >= maxShmSize)
+    {
+        LOG_INF << "The content will be truncated due to the maximum length.";
+        const std::size_t ending = output.rfind('\n');
+        if (std::string::npos != ending)
+        {
+            output = output.substr(0, ending);
+        }
+    }
+
     if (withoutPaging)
     {
-        std::cout << output;
-        return;
+        std::cout << output << utility::common::colorOff << std::endl;
     }
-    segmentedOutput(output);
+    else
+    {
+        segmentedOutput(output);
+    }
 }
 
 void View::segmentedOutput(const std::string_view buffer)
@@ -835,6 +847,7 @@ void View::segmentedOutput(const std::string_view buffer)
         }
     }
 
+    std::cout << utility::common::colorOff;
     if (lineNum > terminalRows)
     {
         std::cout << std::endl;
@@ -844,7 +857,8 @@ void View::segmentedOutput(const std::string_view buffer)
 std::string View::getLogContents()
 {
     utility::common::ReadWriteGuard guard(log::info::loggerFileLock(), LockMode::read);
-    auto contents = utility::io::getFileContents(log::info::loggerFilePath(), false, true);
+    constexpr std::uint64_t maxRows = 24 * 100;
+    auto contents = utility::io::getFileContents(log::info::loggerFilePath(), false, true, maxRows);
     std::for_each(
         contents.begin(),
         contents.end(),

@@ -322,6 +322,8 @@ private:
     static std::string getFullLogPath(const std::string_view filename = "log/foo.log");
     //! @brief Try to create the log folder.
     void tryCreateLogFolder() const;
+    //! @brief Back up the log file if needed.
+    void backUpLogFileIfNeeded() const;
 
     //! @brief FSM event. Open file.
     struct OpenFile
