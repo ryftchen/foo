@@ -95,9 +95,6 @@ class Task:
         sys.path.append(".")
         if not os.path.exists(self.report_path):
             os.mkdir(self.report_path)
-        proc_path = os.path.expanduser("~/.foo")
-        if os.path.exists(proc_path):
-            common.execute_command(f"rm -rf {proc_path}")
 
         self.logger = sys.stdout
         self.progress_bar = common.ProgressBar()
