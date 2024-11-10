@@ -278,7 +278,7 @@ void Log::openLogFile()
 {
     utility::common::ReadWriteGuard guard(fileLock, LockMode::write);
     tryCreateLogFolder();
-    // backUpLogFileIfNeeded();
+    backUpLogFileIfNeeded();
     switch (writeType)
     {
         case OutputType::add:
@@ -297,7 +297,13 @@ void Log::closeLogFile()
     utility::common::ReadWriteGuard guard(fileLock, LockMode::write);
     logWriter.unlock();
     logWriter.close();
-    if (std::filesystem::exists(filePath) && (std::filesystem::file_size(filePath) == 0))
+    if (std::filesystem::exists(filePath) && (std::filesystem::file_size(filePath) == 0)
+        && std::ranges::all_of(
+            std::filesystem::directory_iterator(std::filesystem::absolute(filePath).parent_path()),
+            [this](const std::filesystem::directory_entry& entry)
+            {
+                return entry.path().filename() == filePath;
+            }))
     {
         std::filesystem::remove_all(std::filesystem::absolute(filePath).parent_path());
     }
@@ -347,7 +353,7 @@ void Log::doRollback()
 
         closeLogFile();
         tryCreateLogFolder();
-        // backUpLogFileIfNeeded();
+        backUpLogFileIfNeeded();
         std::ofstream tempOfs{};
         tempOfs.open(filePath, std::ios_base::out | std::ios_base::trunc);
         tempOfs.close();
