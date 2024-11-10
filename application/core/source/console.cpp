@@ -175,13 +175,13 @@ int Console::readLine()
 
 std::vector<Console::OptionHelpPair> Console::getOptionHelpPairs() const
 {
-    const auto trans = impl->orderList
+    const auto transformed = impl->orderList
         | std::views::transform(
-                           [&](const std::string_view option)
-                           {
-                               return std::make_pair(option, impl->regTable.at(option.data()).second);
-                           });
-    return std::vector<OptionHelpPair>{trans.begin(), trans.end()};
+                                 [this](const auto& option)
+                                 {
+                                     return std::make_pair(option, impl->regTable.at(option).second);
+                                 });
+    return std::vector<OptionHelpPair>{transformed.begin(), transformed.end()};
 }
 
 void Console::saveState()
