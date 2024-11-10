@@ -11,6 +11,7 @@
 #include <cassert>
 #include <filesystem>
 #include <fstream>
+#include <ranges>
 #include <regex>
 #else
 #include "application/pch/precompiled_header.hpp"
@@ -248,9 +249,13 @@ std::string Log::getFullLogPath(const std::string_view filename)
 
 void Log::tryCreateLogFolder() const
 {
-    const std::filesystem::path logFolderPath = std::filesystem::absolute(filePath).parent_path();
-    std::filesystem::create_directories(logFolderPath);
-    std::filesystem::permissions(logFolderPath, std::filesystem::perms::owner_all, std::filesystem::perm_options::add);
+    if (const auto logFolderPath = std::filesystem::absolute(filePath).parent_path();
+        !std::filesystem::exists(logFolderPath))
+    {
+        std::filesystem::create_directories(logFolderPath);
+        std::filesystem::permissions(
+            logFolderPath, std::filesystem::perms::owner_all, std::filesystem::perm_options::add);
+    }
 }
 
 void Log::backUpLogFileIfNeeded() const
@@ -258,18 +263,23 @@ void Log::backUpLogFileIfNeeded() const
     if (constexpr std::uint32_t maxFileSize = 512 * 1024;
         std::filesystem::exists(filePath) && (std::filesystem::file_size(filePath) >= maxFileSize))
     {
-        int index = 0;
-        for (const std::regex pattern(R"(foo\.log\.(\d+))");
-             const auto& entry : std::filesystem::directory_iterator(std::filesystem::absolute(filePath).parent_path()))
-        {
-            const std::string filename = entry.path().filename().string();
-            std::smatch match{};
-            if (std::regex_match(filename, match, pattern))
+        const std::regex pattern(R"(foo\.log\.(\d+))");
+        const auto transformed =
+            std::filesystem::directory_iterator(std::filesystem::absolute(filePath).parent_path())
+            | std::views::transform(
+                [&pattern](const auto& entry)
+                {
+                    const std::string filename = entry.path().filename().string();
+                    std::smatch match{};
+                    return std::regex_match(filename, match, pattern) ? std::stoi(match[1].str()) : 0;
+                });
+        const int index = std::ranges::max(
+            transformed,
+            std::less<int>(),
+            [](const auto value)
             {
-                index = std::max(index, std::stoi(match[1].str()));
-            }
-        }
-
+                return value;
+            });
         std::filesystem::rename(filePath, filePath + '.' + std::to_string(index + 1));
     }
 }
@@ -297,16 +307,6 @@ void Log::closeLogFile()
     utility::common::ReadWriteGuard guard(fileLock, LockMode::write);
     logWriter.unlock();
     logWriter.close();
-    if (std::filesystem::exists(filePath) && (std::filesystem::file_size(filePath) == 0)
-        && std::ranges::all_of(
-            std::filesystem::directory_iterator(std::filesystem::absolute(filePath).parent_path()),
-            [this](const std::filesystem::directory_entry& entry)
-            {
-                return entry.path().filename() == filePath;
-            }))
-    {
-        std::filesystem::remove_all(std::filesystem::absolute(filePath).parent_path());
-    }
 }
 
 void Log::startLogging()
