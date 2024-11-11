@@ -206,7 +206,7 @@ public:
     struct alignas(64) SharedMemory
     {
         //! @brief Shared memory buffer.
-        char buffer[maxShmSize]{'\0'};
+        char buffer[sizeof(int) + maxShmSize]{'\0'};
         //! @brief Flag for operable.
         std::atomic<bool> signal{false};
     };
@@ -295,6 +295,12 @@ private:
     //! @param buffer - message buffer
     //! @param length - buffer length
     static void decryptMessage(char* buffer, const int length);
+    //! @brief Compress the data with LZ4.
+    //! @param cache - data cache
+    static void compressData(std::vector<char>& cache);
+    //! @brief Decompress the data with LZ4.
+    //! @param cache - data cache
+    static void decompressData(std::vector<char>& cache);
     //! @brief Fill the shared memory.
     //! @param contents - contents to be filled
     //! @return shm id
