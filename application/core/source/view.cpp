@@ -13,6 +13,7 @@
 #include <sys/shm.h>
 #include <sys/stat.h>
 #include <mpfr.h>
+#include <lz4.h>
 #if defined(__has_include) && __has_include(<ncurses.h>)
 #include <ncurses.h>
 #endif // defined(__has_include) && __has_include(<ncurses.h>)
@@ -519,6 +520,11 @@ int View::buildTLVPacket4Depend(const std::vector<std::string>& args, char* buf)
 #else
 #error Could not find the GNU Readline library version.
 #endif // defined(RL_VERSION_MAJOR) && defined(RL_VERSION_MINOR)
+#if defined(LZ4_VERSION_STRING)
+    extLibraries += "LZ4 Library " LZ4_VERSION_STRING "\n";
+#else
+#error Could not find the LZ4 library version.
+#endif // defined(LZ4_VERSION_STRING)
 #if defined(NCURSES_VERSION)
     extLibraries += "Ncurses Library " NCURSES_VERSION "\n";
 #else
@@ -711,6 +717,35 @@ void View::decryptMessage(char* buffer, const int length)
     ::EVP_CIPHER_CTX_free(ctx);
 }
 
+void View::compressData(std::vector<char>& cache)
+{
+    const int compressedCap = ::LZ4_compressBound(cache.size());
+    std::vector<char> compressed(compressedCap);
+
+    const int compressedSize = ::LZ4_compress_default(cache.data(), compressed.data(), cache.size(), compressedCap);
+    if (compressedSize < 0)
+    {
+        throw std::runtime_error("Failed to compress data.");
+    }
+    compressed.resize(compressedSize);
+    cache = std::move(compressed);
+}
+
+void View::decompressData(std::vector<char>& cache)
+{
+    constexpr int decompressedCap = 65536 * 10 * 10;
+    std::vector<char> decompressed(decompressedCap);
+
+    const int decompressedSize =
+        ::LZ4_decompress_safe(cache.data(), decompressed.data(), cache.size(), decompressedCap);
+    if (decompressedSize < 0)
+    {
+        throw std::runtime_error("Failed to decompress data.");
+    }
+    decompressed.resize(decompressedSize);
+    cache = std::move(decompressed);
+}
+
 int View::fillSharedMemory(const std::string_view contents)
 {
     const int shmId = ::shmget(
@@ -733,10 +768,12 @@ int View::fillSharedMemory(const std::string_view contents)
     {
         if (!shrMem->signal.load())
         {
-            std::memset(shrMem->buffer, 0, sizeof(shrMem->buffer));
-            std::strncpy(shrMem->buffer, contents.data(), sizeof(shrMem->buffer) - 1);
-            shrMem->buffer[sizeof(shrMem->buffer) - 1] = '\0';
-            encryptMessage(shrMem->buffer, sizeof(shrMem->buffer));
+            std::vector<char> processed(contents.data(), contents.data() + contents.size());
+            compressData(processed);
+            encryptMessage(processed.data(), processed.size());
+            *reinterpret_cast<int*>(shrMem->buffer) = processed.size();
+            std::memcpy(
+                shrMem->buffer + sizeof(int), processed.data(), std::min(maxShmSize, processed.size()) * sizeof(char));
 
             shrMem->signal.store(true);
             break;
@@ -762,8 +799,13 @@ void View::fetchSharedMemory(const int shmId, std::string& contents)
     {
         if (shrMem->signal.load())
         {
-            decryptMessage(shrMem->buffer, sizeof(shrMem->buffer));
-            contents = shrMem->buffer;
+            std::vector<char> processed(*reinterpret_cast<int*>(shrMem->buffer));
+            std::memcpy(
+                processed.data(), shrMem->buffer + sizeof(int), std::min(maxShmSize, processed.size()) * sizeof(char));
+            decryptMessage(processed.data(), processed.size());
+            decompressData(processed);
+            contents = std::string{processed.data(), processed.data() + processed.size()};
+
             shrMem->signal.store(false);
             break;
         }
@@ -777,19 +819,15 @@ void View::printSharedMemory(const int shmId, const bool withoutPaging)
 {
     std::string output{};
     fetchSharedMemory(shmId, output);
-    if ((output.length() + 1) >= maxShmSize)
-    {
-        LOG_INF << "The content will be truncated due to the maximum length.";
-        const std::size_t ending = output.rfind('\n');
-        if (std::string::npos != ending)
-        {
-            output = output.substr(0, ending);
-        }
-    }
-
     if (withoutPaging)
     {
-        std::cout << output << utility::common::colorOff << std::endl;
+        std::istringstream is(output.data());
+        std::string line{};
+        while (std::getline(is, line))
+        {
+            std::cout << line << '\n';
+        }
+        std::cout << utility::common::colorOff << std::endl;
     }
     else
     {
