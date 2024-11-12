@@ -838,14 +838,14 @@ void View::printSharedMemory(const int shmId, const bool withoutPaging)
 void View::segmentedOutput(const std::string_view buffer)
 {
     constexpr std::uint8_t terminalRows = 24;
-    constexpr std::string_view hint = "----- Type <CR> for more, c to continue without paging, q to quit -----: ",
+    constexpr std::string_view hint = "--- Type <CR> for more, c to continue, n to show next page, q to quit ---: ",
                                clearEscape = "\x1b[1A\x1b[2K\r";
     std::istringstream is(buffer.data());
     const std::uint64_t lineNum =
         std::count(std::istreambuf_iterator<char>(is), std::istreambuf_iterator<char>(), '\n');
     is.seekg(std::ios::beg);
 
-    bool forcedCancel = false, withoutPaging = (lineNum <= terminalRows);
+    bool moreRows = false, forcedCancel = false, withoutPaging = (lineNum <= terminalRows);
     std::string line{};
     std::uint64_t counter = 0;
     const auto handling = [&](const std::string_view input)
@@ -855,14 +855,19 @@ void View::segmentedOutput(const std::string_view buffer)
         std::cout << clearEscape << std::flush;
         if (input.empty())
         {
-            --counter;
+            moreRows = true;
+            counter = 0;
         }
         else
         {
+            moreRows = false;
             switch (utility::common::bkdrHash(input.data()))
             {
                 case "c"_bkdrHash:
                     withoutPaging = true;
+                    break;
+                case "n"_bkdrHash:
+                    counter = 0;
                     break;
                 case "q"_bkdrHash:
                     forcedCancel = true;
@@ -878,7 +883,7 @@ void View::segmentedOutput(const std::string_view buffer)
     {
         std::cout << line << '\n';
         ++counter;
-        if (!withoutPaging && (0 == (counter % terminalRows)))
+        if (!withoutPaging && (moreRows || (terminalRows == counter)))
         {
             std::cout << hint << "\n\x1b[1A\x1b[" << hint.length() << 'C' << std::flush;
             utility::io::waitForUserInput(handling, -1);
