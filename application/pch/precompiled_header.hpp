@@ -17,8 +17,8 @@
 #include <cxxabi.h>
 #include <dlfcn.h>
 #include <execinfo.h>
-#include <mpfr.h>
 #include <lz4.h>
+#include <mpfr.h>
 #if defined(__has_include) && __has_include(<ncurses.h>)
 #include <ncurses.h>
 #endif // defined(__has_include) && __has_include(<ncurses.h>)
