@@ -53,15 +53,15 @@ DerivePointerAlignment: false
 DisableFormat: false
 FixNamespaceComments: true
 IncludeCategories:
-  - Regex: '^<[a-zA-Z]+\/'
+  - Regex: '^<[0-9a-zA-Z]+\/'
     Priority: 1
-  - Regex: '^<[a-zA-Z]+\.'
+  - Regex: '^<[0-9a-zA-Z]+\.'
     Priority: 2
   - Regex: '^<'
     Priority: 3
   - Regex: '^"'
     Priority: 4
-  - Regex: '^"[0-9a-zA-Z_]+\/'
+  - Regex: '^"[0-9a-zA-Z]+\/'
     Priority: 5
 IndentCaseLabels: true
 IndentRequires: false
