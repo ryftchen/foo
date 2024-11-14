@@ -702,7 +702,7 @@ void Command::validate()
         for ([[maybe_unused]] const auto& [categoryName, categoryAttr] :
              categoryMap
                  | std::views::filter(
-                     [this, subCLI](const auto& categoryPair)
+                     [this, &subCLI](const auto& categoryPair)
                      {
                          return subCLI.isUsed(categoryPair.first) ? (checkForExcessiveArguments(), true) : false;
                      }))
@@ -711,7 +711,7 @@ void Command::validate()
             for (const auto& target : pendingTasks)
             {
                 std::visit(
-                    action::EvtTypeOverloaded{[this, target](auto&& event)
+                    action::EvtTypeOverloaded{[this, &target](auto&& event)
                                               {
                                                   using EventType = std::decay_t<decltype(event)>;
 
@@ -764,7 +764,7 @@ void Command::dispatch()
         {
             const auto& candidates = categoryAttr.choices;
             std::visit(
-                action::EvtTypeOverloaded{[this, candidates](auto&& event)
+                action::EvtTypeOverloaded{[this, &candidates](auto&& event)
                                           {
                                               using EventType = std::decay_t<decltype(event)>;
 

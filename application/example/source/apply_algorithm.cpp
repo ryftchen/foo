@@ -410,7 +410,7 @@ void runChoices<MatchMethod>(const std::vector<std::string>& candidates)
         std::min(static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<MatchMethod>::value)));
     const auto inputs = std::make_shared<InputBuilder>(patternString);
     const auto matchFunctor =
-        [threads, inputs](
+        [threads, &inputs](
             const std::string_view threadName,
             void (*targetMethod)(
                 const unsigned char* const, const unsigned char* const, const std::uint32_t, const std::uint32_t))
@@ -535,7 +535,7 @@ void runChoices<NotationMethod>(const std::vector<std::string>& candidates)
         static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<NotationMethod>::value)));
     const auto inputs = std::make_shared<InputBuilder>(infixString);
     const auto notationFunctor =
-        [threads, inputs](const std::string_view threadName, void (*targetMethod)(const std::string_view))
+        [threads, &inputs](const std::string_view threadName, void (*targetMethod)(const std::string_view))
     {
         threads->enqueue(threadName, targetMethod, inputs->getInfixNotation());
     };
@@ -688,7 +688,7 @@ void runChoices<OptimalMethod>(const std::vector<std::string>& candidates)
 
     using optimal::InputBuilder, optimal::input::Rastrigin;
     const auto calcFunc =
-        [&candidates, bitFlag](const optimal::Function& function, const optimal::FuncRange<double, double>& range)
+        [&candidates, &bitFlag](const optimal::Function& function, const optimal::FuncRange<double, double>& range)
     {
         auto& pooling = action::resourcePool();
         auto* const threads = pooling.newElement(std::min(
@@ -866,7 +866,7 @@ void runChoices<SearchMethod>(const std::vector<std::string>& candidates)
     auto* const threads = pooling.newElement(
         std::min(static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<SearchMethod>::value)));
     const auto inputs = std::make_shared<InputBuilder<float>>(arrayLength, arrayRange1, arrayRange2);
-    const auto searchFunctor = [threads, inputs](
+    const auto searchFunctor = [threads, &inputs](
                                    const std::string_view threadName,
                                    void (*targetMethod)(const float* const, const std::uint32_t, const float))
     {
@@ -1120,7 +1120,7 @@ void runChoices<SortMethod>(const std::vector<std::string>& candidates)
         std::min(static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<SortMethod>::value)));
     const auto inputs = std::make_shared<InputBuilder<std::int32_t>>(arrayLength, arrayRange1, arrayRange2);
     const auto sortFunctor =
-        [threads, inputs](
+        [threads, &inputs](
             const std::string_view threadName, void (*targetMethod)(const std::int32_t* const, const std::uint32_t))
     {
         threads->enqueue(threadName, targetMethod, inputs->getRandomArray().get(), inputs->getLength());
