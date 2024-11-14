@@ -322,7 +322,7 @@ void runChoices<ArithmeticMethod>(const std::vector<std::string>& candidates)
     const auto inputs = std::make_shared<InputBuilder>(integerA, integerB);
     const auto arithmeticFunctor =
         [threads,
-         inputs](const std::string_view threadName, void (*targetMethod)(const std::int32_t, const std::int32_t))
+         &inputs](const std::string_view threadName, void (*targetMethod)(const std::int32_t, const std::int32_t))
     {
         threads->enqueue(
             threadName, targetMethod, std::get<0>(inputs->getIntegers()), std::get<1>(inputs->getIntegers()));
@@ -446,7 +446,7 @@ void runChoices<DivisorMethod>(const std::vector<std::string>& candidates)
         static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<DivisorMethod>::value)));
     const auto inputs = std::make_shared<InputBuilder>(integerA, integerB);
     const auto divisorFunctor =
-        [threads, inputs](const std::string_view threadName, void (*targetMethod)(std::int32_t, std::int32_t))
+        [threads, &inputs](const std::string_view threadName, void (*targetMethod)(std::int32_t, std::int32_t))
     {
         threads->enqueue(
             threadName, targetMethod, std::get<0>(inputs->getIntegers()), std::get<1>(inputs->getIntegers()));
@@ -600,8 +600,8 @@ void runChoices<IntegralMethod>(const std::vector<std::string>& candidates)
     }
 
     using integral::InputBuilder, integral::input::Expression1;
-    const auto calcExpr =
-        [&candidates, bitFlag](const integral::Expression& expression, const integral::ExprRange<double, double>& range)
+    const auto calcExpr = [&candidates, &bitFlag](
+                              const integral::Expression& expression, const integral::ExprRange<double, double>& range)
     {
         auto& pooling = action::resourcePool();
         auto* const threads = pooling.newElement(std::min(
@@ -753,7 +753,7 @@ void runChoices<PrimeMethod>(const std::vector<std::string>& candidates)
         std::min(static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<PrimeMethod>::value)));
     const auto inputs = std::make_shared<InputBuilder>(maxPositiveInteger);
     const auto primeFunctor =
-        [threads, inputs](const std::string_view threadName, void (*targetMethod)(const std::uint32_t))
+        [threads, &inputs](const std::string_view threadName, void (*targetMethod)(const std::uint32_t))
     {
         threads->enqueue(threadName, targetMethod, inputs->getMaxPositiveInteger());
     };
