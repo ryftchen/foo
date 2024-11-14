@@ -680,16 +680,13 @@ void Command::validate()
         taskDispatcher.nativeManager.categories.set(Category(i));
     }
 
-    const auto isSubCLIUsed = [this](const auto& subCLIPair)
-    {
-        if (mainCLI.isSubCommandUsed(subCLIPair.first))
-        {
-            checkForExcessiveArguments();
-            return true;
-        }
-        return false;
-    };
-    for ([[maybe_unused]] const auto& [subCLIName, categoryMap] : extraChoices | std::views::filter(isSubCLIUsed))
+    for ([[maybe_unused]] const auto& [subCLIName, categoryMap] :
+         extraChoices
+             | std::views::filter(
+                 [this](const auto& subCLIPair)
+                 {
+                     return mainCLI.isSubCommandUsed(subCLIPair.first) ? (checkForExcessiveArguments(), true) : false;
+                 }))
     {
         const auto& subCLI = mainCLI.at<utility::argument::Argument>(subCLIName);
         if (!subCLI)
@@ -702,17 +699,13 @@ void Command::validate()
         {
             taskDispatcher.extraManager.helpOnly = true;
         }
-        const auto isCategoryUsed = [this, subCLI](const auto& categoryPair)
-        {
-            if (subCLI.isUsed(categoryPair.first))
-            {
-                checkForExcessiveArguments();
-                return true;
-            }
-            return false;
-        };
         for ([[maybe_unused]] const auto& [categoryName, categoryAttr] :
-             categoryMap | std::views::filter(isCategoryUsed))
+             categoryMap
+                 | std::views::filter(
+                     [this, subCLI](const auto& categoryPair)
+                     {
+                         return subCLI.isUsed(categoryPair.first) ? (checkForExcessiveArguments(), true) : false;
+                     }))
         {
             const auto& pendingTasks = subCLI.get<std::vector<std::string>>(categoryName);
             for (const auto& target : pendingTasks)
@@ -751,16 +744,17 @@ void Command::dispatch()
     {
         if (taskDispatcher.extraManager.helpOnly)
         {
-            const auto isSubCLIUsed = [this](const auto& subCLIPair)
-            {
-                return mainCLI.isSubCommandUsed(subCLIPair.first);
-            };
-
-            for (const auto& subCLIName : std::views::keys(extraChoices | std::views::filter(isSubCLIUsed)))
+            for (const auto& subCLIName : std::views::keys(
+                     extraChoices
+                     | std::views::filter(
+                         [this](const auto& subCLIPair)
+                         {
+                             return mainCLI.isSubCommandUsed(subCLIPair.first);
+                         })))
             {
                 const auto& subCLI = mainCLI.at<utility::argument::Argument>(subCLIName);
                 std::cout << subCLI.help().str() << std::flush;
-                return;
+                break;
             }
             return;
         }
