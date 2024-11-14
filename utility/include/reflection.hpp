@@ -347,7 +347,7 @@ struct ElemList
     template <class Str>
     constexpr const auto& find(const Str /*str*/ = {}) const
     {
-        constexpr std::size_t idx = []() constexpr
+        constexpr std::size_t index = []() constexpr
         {
             constexpr decltype(Str::view()) names[]{Es::name...};
             for (std::size_t i = 0; i < size; ++i)
@@ -359,7 +359,7 @@ struct ElemList
             }
             return static_cast<std::size_t>(-1);
         }();
-        return get<idx>();
+        return get<index>();
     }
     //! @brief Finding by value.
     //! @tparam T - type of target value
