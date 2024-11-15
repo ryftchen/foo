@@ -669,15 +669,17 @@ catch (const std::exception& err)
 
 void Command::validate()
 {
-    for (std::uint8_t i = 0; i < Bottom<Category>::value; ++i)
+    auto& bits = taskDispatcher.nativeManager.categories;
+    auto indices = std::views::iota(0U, bits.size())
+        | std::views::filter(
+                       [this](const auto i)
+                       {
+                           return mainCLI.isUsed(toString(Category(i)));
+                       });
+    for (const auto index : indices)
     {
-        if (!mainCLI.isUsed(toString(Category(i))))
-        {
-            continue;
-        }
         checkForExcessiveArguments();
-
-        taskDispatcher.nativeManager.categories.set(Category(i));
+        bits.set(Category(index));
     }
 
     for ([[maybe_unused]] const auto& [subCLIName, categoryMap] :
@@ -732,29 +734,32 @@ void Command::dispatch()
 {
     if (!taskDispatcher.nativeManager.empty())
     {
-        for (std::uint8_t i = 0; i < Bottom<Category>::value; ++i)
+        const auto& bits = taskDispatcher.nativeManager.categories;
+        auto indices = std::views::iota(0U, bits.size())
+            | std::views::filter(
+                           [&bits](const auto i)
+                           {
+                               return bits.test(i);
+                           });
+        for (const auto index : indices)
         {
-            if (taskDispatcher.nativeManager.categories.test(Category(i)))
-            {
-                defaultNotifier.notify(toString(Category(i)));
-            }
+            defaultNotifier.notify(toString(Category(index)));
         }
     }
     else if (!taskDispatcher.extraManager.empty())
     {
         if (taskDispatcher.extraManager.helpOnly)
         {
-            for (const auto& subCLIName : std::views::keys(
-                     extraChoices
-                     | std::views::filter(
-                         [this](const auto& subCLIPair)
-                         {
-                             return mainCLI.isSubCommandUsed(subCLIPair.first);
-                         })))
+            auto filtered = std::views::keys(extraChoices)
+                | std::views::filter(
+                                [this](const auto& subCLIName)
+                                {
+                                    return mainCLI.isSubCommandUsed(subCLIName);
+                                });
+            if (std::ranges::distance(filtered) != 0)
             {
-                const auto& subCLI = mainCLI.at<utility::argument::Argument>(subCLIName);
+                const auto& subCLI = mainCLI.at<utility::argument::Argument>(*std::ranges::begin(filtered));
                 std::cout << subCLI.help().str() << std::flush;
-                break;
             }
             return;
         }
