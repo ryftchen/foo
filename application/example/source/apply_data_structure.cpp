@@ -7,7 +7,9 @@
 #include "apply_data_structure.hpp"
 
 #ifndef __PRECOMPILED_HEADER
+#include <cassert>
 #include <iomanip>
+#include <ranges>
 #include <syncstream>
 #else
 #include "application/pch/precompiled_header.hpp"
@@ -218,21 +220,21 @@ template <>
 void updateChoice<LinearInstance>(const std::string_view target)
 {
     constexpr auto category = Category::linear;
-    auto& bitFlag = getCategoryOpts<category>();
+    auto& bits = getCategoryOpts<category>();
 
     switch (utility::common::bkdrHash(target.data()))
     {
         case abbrVal(LinearInstance::linkedList):
-            bitFlag.set(LinearInstance::linkedList);
+            bits.set(LinearInstance::linkedList);
             break;
         case abbrVal(LinearInstance::stack):
-            bitFlag.set(LinearInstance::stack);
+            bits.set(LinearInstance::stack);
             break;
         case abbrVal(LinearInstance::queue):
-            bitFlag.set(LinearInstance::queue);
+            bits.set(LinearInstance::queue);
             break;
         default:
-            bitFlag.reset();
+            bits.reset();
             throw std::logic_error(
                 "Unexpected " + std::string{toString(category)} + " instance: " + target.data() + '.');
     }
@@ -244,8 +246,9 @@ template <>
 void runChoices<LinearInstance>(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::linear;
-    const auto& bitFlag = getCategoryOpts<category>();
-    if (bitFlag.none())
+    const auto& bits = getCategoryOpts<category>();
+    assert(bits.size() == candidates.size());
+    if (bits.none())
     {
         return;
     }
@@ -254,33 +257,33 @@ void runChoices<LinearInstance>(const std::vector<std::string>& candidates)
     using linear::LinearStructure;
 
     auto& pooling = action::resourcePool();
-    auto* const threads = pooling.newElement(std::min(
-        static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<LinearInstance>::value)));
-    const auto linearFunctor = [threads](const std::string_view threadName, void (*targetInstance)())
+    auto* const threads = pooling.newElement(bits.count());
+    const auto functor = [threads](const std::string_view threadName, void (*targetInstance)())
     {
         threads->enqueue(threadName, targetInstance);
     };
     const auto name = utility::currying::curry(getTaskNameCurried(), getCategoryAlias<category>());
+    auto indices = std::views::iota(0U, bits.size())
+        | std::views::filter(
+                       [&bits](const auto i)
+                       {
+                           return bits.test(i);
+                       });
 
     std::cout << "\nInstances of the " << toString(category) << " structure:" << std::endl;
-    for (std::uint8_t i = 0; i < Bottom<LinearInstance>::value; ++i)
+    for (const auto index : indices)
     {
-        if (!bitFlag.test(LinearInstance(i)))
-        {
-            continue;
-        }
-
-        const std::string target = candidates.at(i);
+        const auto& target = candidates.at(index);
         switch (utility::common::bkdrHash(target.data()))
         {
             case abbrVal(LinearInstance::linkedList):
-                linearFunctor(name(target), &LinearStructure::linkedListInstance);
+                functor(name(target), &LinearStructure::linkedListInstance);
                 break;
             case abbrVal(LinearInstance::stack):
-                linearFunctor(name(target), &LinearStructure::stackInstance);
+                functor(name(target), &LinearStructure::stackInstance);
                 break;
             case abbrVal(LinearInstance::queue):
-                linearFunctor(name(target), &LinearStructure::queueInstance);
+                functor(name(target), &LinearStructure::queueInstance);
                 break;
             default:
                 throw std::logic_error("Unknown " + std::string{toString(category)} + " instance: " + target + '.');
@@ -341,21 +344,21 @@ template <>
 void updateChoice<TreeInstance>(const std::string_view target)
 {
     constexpr auto category = Category::tree;
-    auto& bitFlag = getCategoryOpts<category>();
+    auto& bits = getCategoryOpts<category>();
 
     switch (utility::common::bkdrHash(target.data()))
     {
         case abbrVal(TreeInstance::binarySearch):
-            bitFlag.set(TreeInstance::binarySearch);
+            bits.set(TreeInstance::binarySearch);
             break;
         case abbrVal(TreeInstance::adelsonVelskyLandis):
-            bitFlag.set(TreeInstance::adelsonVelskyLandis);
+            bits.set(TreeInstance::adelsonVelskyLandis);
             break;
         case abbrVal(TreeInstance::splay):
-            bitFlag.set(TreeInstance::splay);
+            bits.set(TreeInstance::splay);
             break;
         default:
-            bitFlag.reset();
+            bits.reset();
             throw std::logic_error(
                 "Unexpected " + std::string{toString(category)} + " instance: " + target.data() + '.');
     }
@@ -367,8 +370,9 @@ template <>
 void runChoices<TreeInstance>(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::tree;
-    const auto& bitFlag = getCategoryOpts<category>();
-    if (bitFlag.none())
+    const auto& bits = getCategoryOpts<category>();
+    assert(bits.size() == candidates.size());
+    if (bits.none())
     {
         return;
     }
@@ -377,33 +381,33 @@ void runChoices<TreeInstance>(const std::vector<std::string>& candidates)
     using tree::TreeStructure;
 
     auto& pooling = action::resourcePool();
-    auto* const threads = pooling.newElement(
-        std::min(static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<TreeInstance>::value)));
-    const auto treeFunctor = [threads](const std::string_view threadName, void (*targetInstance)())
+    auto* const threads = pooling.newElement(bits.count());
+    const auto functor = [threads](const std::string_view threadName, void (*targetInstance)())
     {
         threads->enqueue(threadName, targetInstance);
     };
     const auto name = utility::currying::curry(getTaskNameCurried(), getCategoryAlias<category>());
+    auto indices = std::views::iota(0U, bits.size())
+        | std::views::filter(
+                       [&bits](const auto i)
+                       {
+                           return bits.test(i);
+                       });
 
     std::cout << "\nInstances of the " << toString(category) << " structure:" << std::endl;
-    for (std::uint8_t i = 0; i < Bottom<TreeInstance>::value; ++i)
+    for (const auto index : indices)
     {
-        if (!bitFlag.test(TreeInstance(i)))
-        {
-            continue;
-        }
-
-        const std::string target = candidates.at(i);
+        const auto& target = candidates.at(index);
         switch (utility::common::bkdrHash(target.data()))
         {
             case abbrVal(TreeInstance::binarySearch):
-                treeFunctor(name(target), &TreeStructure::bsInstance);
+                functor(name(target), &TreeStructure::bsInstance);
                 break;
             case abbrVal(TreeInstance::adelsonVelskyLandis):
-                treeFunctor(name(target), &TreeStructure::avlInstance);
+                functor(name(target), &TreeStructure::avlInstance);
                 break;
             case abbrVal(TreeInstance::splay):
-                treeFunctor(name(target), &TreeStructure::splayInstance);
+                functor(name(target), &TreeStructure::splayInstance);
                 break;
             default:
                 throw std::logic_error("Unknown " + std::string{toString(category)} + " instance: " + target + '.');

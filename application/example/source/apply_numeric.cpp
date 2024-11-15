@@ -7,7 +7,9 @@
 #include "apply_numeric.hpp"
 
 #ifndef __PRECOMPILED_HEADER
+#include <cassert>
 #include <iomanip>
+#include <ranges>
 #include <syncstream>
 #else
 #include "application/pch/precompiled_header.hpp"
@@ -278,24 +280,24 @@ template <>
 void updateChoice<ArithmeticMethod>(const std::string_view target)
 {
     constexpr auto category = Category::arithmetic;
-    auto& bitFlag = getCategoryOpts<category>();
+    auto& bits = getCategoryOpts<category>();
 
     switch (utility::common::bkdrHash(target.data()))
     {
         case abbrVal(ArithmeticMethod::addition):
-            bitFlag.set(ArithmeticMethod::addition);
+            bits.set(ArithmeticMethod::addition);
             break;
         case abbrVal(ArithmeticMethod::subtraction):
-            bitFlag.set(ArithmeticMethod::subtraction);
+            bits.set(ArithmeticMethod::subtraction);
             break;
         case abbrVal(ArithmeticMethod::multiplication):
-            bitFlag.set(ArithmeticMethod::multiplication);
+            bits.set(ArithmeticMethod::multiplication);
             break;
         case abbrVal(ArithmeticMethod::division):
-            bitFlag.set(ArithmeticMethod::division);
+            bits.set(ArithmeticMethod::division);
             break;
         default:
-            bitFlag.reset();
+            bits.reset();
             throw std::logic_error("Unexpected " + std::string{toString(category)} + " method: " + target.data() + '.');
     }
 }
@@ -306,8 +308,9 @@ template <>
 void runChoices<ArithmeticMethod>(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::arithmetic;
-    const auto& bitFlag = getCategoryOpts<category>();
-    if (bitFlag.none())
+    const auto& bits = getCategoryOpts<category>();
+    assert(bits.size() == candidates.size());
+    if (bits.none())
     {
         return;
     }
@@ -317,10 +320,9 @@ void runChoices<ArithmeticMethod>(const std::vector<std::string>& candidates)
         arithmetic::input::integerB;
 
     auto& pooling = action::resourcePool();
-    auto* const threads = pooling.newElement(std::min(
-        static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<ArithmeticMethod>::value)));
+    auto* const threads = pooling.newElement(bits.count());
     const auto inputs = std::make_shared<InputBuilder>(integerA, integerB);
-    const auto arithmeticFunctor =
+    const auto functor =
         [threads,
          &inputs](const std::string_view threadName, void (*targetMethod)(const std::int32_t, const std::int32_t))
     {
@@ -328,28 +330,29 @@ void runChoices<ArithmeticMethod>(const std::vector<std::string>& candidates)
             threadName, targetMethod, std::get<0>(inputs->getIntegers()), std::get<1>(inputs->getIntegers()));
     };
     const auto name = utility::currying::curry(getTaskNameCurried(), getCategoryAlias<category>());
+    auto indices = std::views::iota(0U, bits.size())
+        | std::views::filter(
+                       [&bits](const auto i)
+                       {
+                           return bits.test(i);
+                       });
 
-    for (std::uint8_t i = 0; i < Bottom<ArithmeticMethod>::value; ++i)
+    for (const auto index : indices)
     {
-        if (!bitFlag.test(ArithmeticMethod(i)))
-        {
-            continue;
-        }
-
-        const std::string target = candidates.at(i);
+        const auto& target = candidates.at(index);
         switch (utility::common::bkdrHash(target.data()))
         {
             case abbrVal(ArithmeticMethod::addition):
-                arithmeticFunctor(name(target), &ArithmeticSolution::additionMethod);
+                functor(name(target), &ArithmeticSolution::additionMethod);
                 break;
             case abbrVal(ArithmeticMethod::subtraction):
-                arithmeticFunctor(name(target), &ArithmeticSolution::subtractionMethod);
+                functor(name(target), &ArithmeticSolution::subtractionMethod);
                 break;
             case abbrVal(ArithmeticMethod::multiplication):
-                arithmeticFunctor(name(target), &ArithmeticSolution::multiplicationMethod);
+                functor(name(target), &ArithmeticSolution::multiplicationMethod);
                 break;
             case abbrVal(ArithmeticMethod::division):
-                arithmeticFunctor(name(target), &ArithmeticSolution::divisionMethod);
+                functor(name(target), &ArithmeticSolution::divisionMethod);
                 break;
             default:
                 throw std::logic_error("Unknown " + std::string{toString(category)} + " method: " + target + '.');
@@ -410,18 +413,18 @@ template <>
 void updateChoice<DivisorMethod>(const std::string_view target)
 {
     constexpr auto category = Category::divisor;
-    auto& bitFlag = getCategoryOpts<category>();
+    auto& bits = getCategoryOpts<category>();
 
     switch (utility::common::bkdrHash(target.data()))
     {
         case abbrVal(DivisorMethod::euclidean):
-            bitFlag.set(DivisorMethod::euclidean);
+            bits.set(DivisorMethod::euclidean);
             break;
         case abbrVal(DivisorMethod::stein):
-            bitFlag.set(DivisorMethod::stein);
+            bits.set(DivisorMethod::stein);
             break;
         default:
-            bitFlag.reset();
+            bits.reset();
             throw std::logic_error("Unexpected " + std::string{toString(category)} + " method: " + target.data() + '.');
     }
 }
@@ -432,8 +435,9 @@ template <>
 void runChoices<DivisorMethod>(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::divisor;
-    const auto& bitFlag = getCategoryOpts<category>();
-    if (bitFlag.none())
+    const auto& bits = getCategoryOpts<category>();
+    assert(bits.size() == candidates.size());
+    if (bits.none())
     {
         return;
     }
@@ -442,32 +446,32 @@ void runChoices<DivisorMethod>(const std::vector<std::string>& candidates)
     using divisor::DivisorSolution, divisor::InputBuilder, divisor::input::integerA, divisor::input::integerB;
 
     auto& pooling = action::resourcePool();
-    auto* const threads = pooling.newElement(std::min(
-        static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<DivisorMethod>::value)));
+    auto* const threads = pooling.newElement(bits.count());
     const auto inputs = std::make_shared<InputBuilder>(integerA, integerB);
-    const auto divisorFunctor =
+    const auto functor =
         [threads, &inputs](const std::string_view threadName, void (*targetMethod)(std::int32_t, std::int32_t))
     {
         threads->enqueue(
             threadName, targetMethod, std::get<0>(inputs->getIntegers()), std::get<1>(inputs->getIntegers()));
     };
     const auto name = utility::currying::curry(getTaskNameCurried(), getCategoryAlias<category>());
+    auto indices = std::views::iota(0U, bits.size())
+        | std::views::filter(
+                       [&bits](const auto i)
+                       {
+                           return bits.test(i);
+                       });
 
-    for (std::uint8_t i = 0; i < Bottom<DivisorMethod>::value; ++i)
+    for (const auto index : indices)
     {
-        if (!bitFlag.test(DivisorMethod(i)))
-        {
-            continue;
-        }
-
-        const std::string target = candidates.at(i);
+        const auto& target = candidates.at(index);
         switch (utility::common::bkdrHash(target.data()))
         {
             case abbrVal(DivisorMethod::euclidean):
-                divisorFunctor(name(target), &DivisorSolution::euclideanMethod);
+                functor(name(target), &DivisorSolution::euclideanMethod);
                 break;
             case abbrVal(DivisorMethod::stein):
-                divisorFunctor(name(target), &DivisorSolution::steinMethod);
+                functor(name(target), &DivisorSolution::steinMethod);
                 break;
             default:
                 throw std::logic_error("Unknown " + std::string{toString(category)} + " method: " + target + '.');
@@ -562,27 +566,27 @@ template <>
 void updateChoice<IntegralMethod>(const std::string_view target)
 {
     constexpr auto category = Category::integral;
-    auto& bitFlag = getCategoryOpts<category>();
+    auto& bits = getCategoryOpts<category>();
 
     switch (utility::common::bkdrHash(target.data()))
     {
         case abbrVal(IntegralMethod::trapezoidal):
-            bitFlag.set(IntegralMethod::trapezoidal);
+            bits.set(IntegralMethod::trapezoidal);
             break;
         case abbrVal(IntegralMethod::simpson):
-            bitFlag.set(IntegralMethod::simpson);
+            bits.set(IntegralMethod::simpson);
             break;
         case abbrVal(IntegralMethod::romberg):
-            bitFlag.set(IntegralMethod::romberg);
+            bits.set(IntegralMethod::romberg);
             break;
         case abbrVal(IntegralMethod::gauss):
-            bitFlag.set(IntegralMethod::gauss);
+            bits.set(IntegralMethod::gauss);
             break;
         case abbrVal(IntegralMethod::monteCarlo):
-            bitFlag.set(IntegralMethod::monteCarlo);
+            bits.set(IntegralMethod::monteCarlo);
             break;
         default:
-            bitFlag.reset();
+            bits.reset();
             throw std::logic_error("Unexpected " + std::string{toString(category)} + " method: " + target.data() + '.');
     }
 }
@@ -593,52 +597,53 @@ template <>
 void runChoices<IntegralMethod>(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::integral;
-    const auto& bitFlag = getCategoryOpts<category>();
-    if (bitFlag.none())
+    const auto& bits = getCategoryOpts<category>();
+    assert(bits.size() == candidates.size());
+    if (bits.none())
     {
         return;
     }
 
     using integral::InputBuilder, integral::input::Expression1;
-    const auto calcExpr = [&candidates, &bitFlag](
-                              const integral::Expression& expression, const integral::ExprRange<double, double>& range)
+    const auto calcExpr =
+        [&candidates, &bits](const integral::Expression& expression, const integral::ExprRange<double, double>& range)
     {
         auto& pooling = action::resourcePool();
-        auto* const threads = pooling.newElement(std::min(
-            static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<IntegralMethod>::value)));
-        const auto integralFunctor = [threads, &expression, &range](
-                                         const std::string_view threadName,
-                                         void (*targetMethod)(const integral::Expression&, const double, const double))
+        auto* const threads = pooling.newElement(bits.count());
+        const auto functor = [threads, &expression, &range](
+                                 const std::string_view threadName,
+                                 void (*targetMethod)(const integral::Expression&, const double, const double))
         {
             threads->enqueue(threadName, targetMethod, std::ref(expression), range.range1, range.range2);
         };
         const auto name = utility::currying::curry(getTaskNameCurried(), getCategoryAlias<category>());
+        auto indices = std::views::iota(0U, bits.size())
+            | std::views::filter(
+                           [&bits](const auto i)
+                           {
+                               return bits.test(i);
+                           });
 
         using integral::IntegralSolution;
-        for (std::uint8_t i = 0; i < Bottom<IntegralMethod>::value; ++i)
+        for (const auto index : indices)
         {
-            if (!bitFlag.test(IntegralMethod(i)))
-            {
-                continue;
-            }
-
-            const std::string target = candidates.at(i);
+            const auto& target = candidates.at(index);
             switch (utility::common::bkdrHash(target.data()))
             {
                 case abbrVal(IntegralMethod::trapezoidal):
-                    integralFunctor(name(target), &IntegralSolution::trapezoidalMethod);
+                    functor(name(target), &IntegralSolution::trapezoidalMethod);
                     break;
                 case abbrVal(IntegralMethod::simpson):
-                    integralFunctor(name(target), &IntegralSolution::adaptiveSimpsonMethod);
+                    functor(name(target), &IntegralSolution::adaptiveSimpsonMethod);
                     break;
                 case abbrVal(IntegralMethod::romberg):
-                    integralFunctor(name(target), &IntegralSolution::rombergMethod);
+                    functor(name(target), &IntegralSolution::rombergMethod);
                     break;
                 case abbrVal(IntegralMethod::gauss):
-                    integralFunctor(name(target), &IntegralSolution::gaussLegendreMethod);
+                    functor(name(target), &IntegralSolution::gaussLegendreMethod);
                     break;
                 case abbrVal(IntegralMethod::monteCarlo):
-                    integralFunctor(name(target), &IntegralSolution::monteCarloMethod);
+                    functor(name(target), &IntegralSolution::monteCarloMethod);
                     break;
                 default:
                     throw std::logic_error("Unknown " + std::string{toString(category)} + " method: " + target + '.');
@@ -717,18 +722,18 @@ template <>
 void updateChoice<PrimeMethod>(const std::string_view target)
 {
     constexpr auto category = Category::prime;
-    auto& bitFlag = getCategoryOpts<category>();
+    auto& bits = getCategoryOpts<category>();
 
     switch (utility::common::bkdrHash(target.data()))
     {
         case abbrVal(PrimeMethod::eratosthenes):
-            bitFlag.set(PrimeMethod::eratosthenes);
+            bits.set(PrimeMethod::eratosthenes);
             break;
         case abbrVal(PrimeMethod::euler):
-            bitFlag.set(PrimeMethod::euler);
+            bits.set(PrimeMethod::euler);
             break;
         default:
-            bitFlag.reset();
+            bits.reset();
             throw std::logic_error("Unexpected " + std::string{toString(category)} + " method: " + target.data() + '.');
     }
 }
@@ -739,8 +744,9 @@ template <>
 void runChoices<PrimeMethod>(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::prime;
-    const auto& bitFlag = getCategoryOpts<category>();
-    if (bitFlag.none())
+    const auto& bits = getCategoryOpts<category>();
+    assert(bits.size() == candidates.size());
+    if (bits.none())
     {
         return;
     }
@@ -749,31 +755,31 @@ void runChoices<PrimeMethod>(const std::vector<std::string>& candidates)
     using prime::PrimeSolution, prime::InputBuilder, prime::input::maxPositiveInteger;
 
     auto& pooling = action::resourcePool();
-    auto* const threads = pooling.newElement(
-        std::min(static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<PrimeMethod>::value)));
+    auto* const threads = pooling.newElement(bits.count());
     const auto inputs = std::make_shared<InputBuilder>(maxPositiveInteger);
-    const auto primeFunctor =
+    const auto functor =
         [threads, &inputs](const std::string_view threadName, void (*targetMethod)(const std::uint32_t))
     {
         threads->enqueue(threadName, targetMethod, inputs->getMaxPositiveInteger());
     };
     const auto name = utility::currying::curry(getTaskNameCurried(), getCategoryAlias<category>());
+    auto indices = std::views::iota(0U, bits.size())
+        | std::views::filter(
+                       [&bits](const auto i)
+                       {
+                           return bits.test(i);
+                       });
 
-    for (std::uint8_t i = 0; i < Bottom<PrimeMethod>::value; ++i)
+    for (const auto index : indices)
     {
-        if (!bitFlag.test(PrimeMethod(i)))
-        {
-            continue;
-        }
-
-        const std::string target = candidates.at(i);
+        const auto& target = candidates.at(index);
         switch (utility::common::bkdrHash(target.data()))
         {
             case abbrVal(PrimeMethod::eratosthenes):
-                primeFunctor(name(target), &PrimeSolution::eratosthenesMethod);
+                functor(name(target), &PrimeSolution::eratosthenesMethod);
                 break;
             case abbrVal(PrimeMethod::euler):
-                primeFunctor(name(target), &PrimeSolution::eulerMethod);
+                functor(name(target), &PrimeSolution::eulerMethod);
                 break;
             default:
                 throw std::logic_error("Unknown " + std::string{toString(category)} + " method: " + target + '.');

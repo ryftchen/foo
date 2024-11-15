@@ -7,7 +7,9 @@
 #include "apply_algorithm.hpp"
 
 #ifndef __PRECOMPILED_HEADER
+#include <cassert>
 #include <iomanip>
+#include <ranges>
 #include <syncstream>
 #else
 #include "application/pch/precompiled_header.hpp"
@@ -364,27 +366,27 @@ template <>
 void updateChoice<MatchMethod>(const std::string_view target)
 {
     constexpr auto category = Category::match;
-    auto& bitFlag = getCategoryOpts<category>();
+    auto& bits = getCategoryOpts<category>();
 
     switch (utility::common::bkdrHash(target.data()))
     {
         case abbrVal(MatchMethod::rabinKarp):
-            bitFlag.set(MatchMethod::rabinKarp);
+            bits.set(MatchMethod::rabinKarp);
             break;
         case abbrVal(MatchMethod::knuthMorrisPratt):
-            bitFlag.set(MatchMethod::knuthMorrisPratt);
+            bits.set(MatchMethod::knuthMorrisPratt);
             break;
         case abbrVal(MatchMethod::boyerMoore):
-            bitFlag.set(MatchMethod::boyerMoore);
+            bits.set(MatchMethod::boyerMoore);
             break;
         case abbrVal(MatchMethod::horspool):
-            bitFlag.set(MatchMethod::horspool);
+            bits.set(MatchMethod::horspool);
             break;
         case abbrVal(MatchMethod::sunday):
-            bitFlag.set(MatchMethod::sunday);
+            bits.set(MatchMethod::sunday);
             break;
         default:
-            bitFlag.reset();
+            bits.reset();
             throw std::logic_error("Unexpected " + std::string{toString(category)} + " method: " + target.data() + '.');
     }
 }
@@ -395,8 +397,9 @@ template <>
 void runChoices<MatchMethod>(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::match;
-    const auto& bitFlag = getCategoryOpts<category>();
-    if (bitFlag.none())
+    const auto& bits = getCategoryOpts<category>();
+    assert(bits.size() == candidates.size());
+    if (bits.none())
     {
         return;
     }
@@ -406,10 +409,9 @@ void runChoices<MatchMethod>(const std::vector<std::string>& candidates)
     static_assert(InputBuilder::maxDigit > patternString.length());
 
     auto& pooling = action::resourcePool();
-    auto* const threads = pooling.newElement(
-        std::min(static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<MatchMethod>::value)));
+    auto* const threads = pooling.newElement(bits.count());
     const auto inputs = std::make_shared<InputBuilder>(patternString);
-    const auto matchFunctor =
+    const auto functor =
         [threads, &inputs](
             const std::string_view threadName,
             void (*targetMethod)(
@@ -424,31 +426,32 @@ void runChoices<MatchMethod>(const std::vector<std::string>& candidates)
             inputs->getPatternLength());
     };
     const auto name = utility::currying::curry(getTaskNameCurried(), getCategoryAlias<category>());
+    auto indices = std::views::iota(0U, bits.size())
+        | std::views::filter(
+                       [&bits](const auto i)
+                       {
+                           return bits.test(i);
+                       });
 
-    for (std::uint8_t i = 0; i < Bottom<MatchMethod>::value; ++i)
+    for (const auto index : indices)
     {
-        if (!bitFlag.test(MatchMethod(i)))
-        {
-            continue;
-        }
-
-        const std::string target = candidates.at(i);
+        const auto& target = candidates.at(index);
         switch (utility::common::bkdrHash(target.data()))
         {
             case abbrVal(MatchMethod::rabinKarp):
-                matchFunctor(name(target), &MatchSolution::rkMethod);
+                functor(name(target), &MatchSolution::rkMethod);
                 break;
             case abbrVal(MatchMethod::knuthMorrisPratt):
-                matchFunctor(name(target), &MatchSolution::kmpMethod);
+                functor(name(target), &MatchSolution::kmpMethod);
                 break;
             case abbrVal(MatchMethod::boyerMoore):
-                matchFunctor(name(target), &MatchSolution::bmMethod);
+                functor(name(target), &MatchSolution::bmMethod);
                 break;
             case abbrVal(MatchMethod::horspool):
-                matchFunctor(name(target), &MatchSolution::horspoolMethod);
+                functor(name(target), &MatchSolution::horspoolMethod);
                 break;
             case abbrVal(MatchMethod::sunday):
-                matchFunctor(name(target), &MatchSolution::sundayMethod);
+                functor(name(target), &MatchSolution::sundayMethod);
                 break;
             default:
                 throw std::logic_error("Unknown " + std::string{toString(category)} + " method: " + target + '.');
@@ -499,18 +502,18 @@ template <>
 void updateChoice<NotationMethod>(const std::string_view target)
 {
     constexpr auto category = Category::notation;
-    auto& bitFlag = getCategoryOpts<category>();
+    auto& bits = getCategoryOpts<category>();
 
     switch (utility::common::bkdrHash(target.data()))
     {
         case abbrVal(NotationMethod::prefix):
-            bitFlag.set(NotationMethod::prefix);
+            bits.set(NotationMethod::prefix);
             break;
         case abbrVal(NotationMethod::postfix):
-            bitFlag.set(NotationMethod::postfix);
+            bits.set(NotationMethod::postfix);
             break;
         default:
-            bitFlag.reset();
+            bits.reset();
             throw std::logic_error("Unexpected " + std::string{toString(category)} + " method: " + target.data() + '.');
     }
 }
@@ -521,8 +524,9 @@ template <>
 void runChoices<NotationMethod>(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::notation;
-    const auto& bitFlag = getCategoryOpts<category>();
-    if (bitFlag.none())
+    const auto& bits = getCategoryOpts<category>();
+    assert(bits.size() == candidates.size());
+    if (bits.none())
     {
         return;
     }
@@ -531,31 +535,31 @@ void runChoices<NotationMethod>(const std::vector<std::string>& candidates)
     using notation::NotationSolution, notation::InputBuilder, notation::input::infixString;
 
     auto& pooling = action::resourcePool();
-    auto* const threads = pooling.newElement(std::min(
-        static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<NotationMethod>::value)));
+    auto* const threads = pooling.newElement(bits.count());
     const auto inputs = std::make_shared<InputBuilder>(infixString);
-    const auto notationFunctor =
+    const auto functor =
         [threads, &inputs](const std::string_view threadName, void (*targetMethod)(const std::string_view))
     {
         threads->enqueue(threadName, targetMethod, inputs->getInfixNotation());
     };
     const auto name = utility::currying::curry(getTaskNameCurried(), getCategoryAlias<category>());
+    auto indices = std::views::iota(0U, bits.size())
+        | std::views::filter(
+                       [&bits](const auto i)
+                       {
+                           return bits.test(i);
+                       });
 
-    for (std::uint8_t i = 0; i < Bottom<NotationMethod>::value; ++i)
+    for (const auto index : indices)
     {
-        if (!bitFlag.test(NotationMethod(i)))
-        {
-            continue;
-        }
-
-        const std::string target = candidates.at(i);
+        const auto& target = candidates.at(index);
         switch (utility::common::bkdrHash(target.data()))
         {
             case abbrVal(NotationMethod::prefix):
-                notationFunctor(name(target), &NotationSolution::prefixMethod);
+                functor(name(target), &NotationSolution::prefixMethod);
                 break;
             case abbrVal(NotationMethod::postfix):
-                notationFunctor(name(target), &NotationSolution::postfixMethod);
+                functor(name(target), &NotationSolution::postfixMethod);
                 break;
             default:
                 throw std::logic_error("Unknown " + std::string{toString(category)} + " method: " + target + '.');
@@ -652,24 +656,24 @@ template <>
 void updateChoice<OptimalMethod>(const std::string_view target)
 {
     constexpr auto category = Category::optimal;
-    auto& bitFlag = getCategoryOpts<category>();
+    auto& bits = getCategoryOpts<category>();
 
     switch (utility::common::bkdrHash(target.data()))
     {
         case abbrVal(OptimalMethod::gradient):
-            bitFlag.set(OptimalMethod::gradient);
+            bits.set(OptimalMethod::gradient);
             break;
         case abbrVal(OptimalMethod::annealing):
-            bitFlag.set(OptimalMethod::annealing);
+            bits.set(OptimalMethod::annealing);
             break;
         case abbrVal(OptimalMethod::particle):
-            bitFlag.set(OptimalMethod::particle);
+            bits.set(OptimalMethod::particle);
             break;
         case abbrVal(OptimalMethod::genetic):
-            bitFlag.set(OptimalMethod::genetic);
+            bits.set(OptimalMethod::genetic);
             break;
         default:
-            bitFlag.reset();
+            bits.reset();
             throw std::logic_error("Unexpected " + std::string{toString(category)} + " method: " + target.data() + '.');
     }
 }
@@ -680,49 +684,50 @@ template <>
 void runChoices<OptimalMethod>(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::optimal;
-    const auto& bitFlag = getCategoryOpts<category>();
-    if (bitFlag.none())
+    const auto& bits = getCategoryOpts<category>();
+    assert(bits.size() == candidates.size());
+    if (bits.none())
     {
         return;
     }
 
     using optimal::InputBuilder, optimal::input::Rastrigin;
     const auto calcFunc =
-        [&candidates, &bitFlag](const optimal::Function& function, const optimal::FuncRange<double, double>& range)
+        [&candidates, &bits](const optimal::Function& function, const optimal::FuncRange<double, double>& range)
     {
         auto& pooling = action::resourcePool();
-        auto* const threads = pooling.newElement(std::min(
-            static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<OptimalMethod>::value)));
-        const auto optimalFunctor = [threads, &function, &range](
-                                        const std::string_view threadName,
-                                        void (*targetMethod)(const optimal::Function&, const double, const double))
+        auto* const threads = pooling.newElement(bits.count());
+        const auto functor = [threads, &function, &range](
+                                 const std::string_view threadName,
+                                 void (*targetMethod)(const optimal::Function&, const double, const double))
         {
             threads->enqueue(threadName, targetMethod, std::ref(function), range.range1, range.range2);
         };
         const auto name = utility::currying::curry(getTaskNameCurried(), getCategoryAlias<category>());
+        auto indices = std::views::iota(0U, bits.size())
+            | std::views::filter(
+                           [&bits](const auto i)
+                           {
+                               return bits.test(i);
+                           });
 
         using optimal::OptimalSolution;
-        for (std::uint8_t i = 0; i < Bottom<OptimalMethod>::value; ++i)
+        for (const auto index : indices)
         {
-            if (!bitFlag.test(OptimalMethod(i)))
-            {
-                continue;
-            }
-
-            const std::string target = candidates.at(i);
+            const auto& target = candidates.at(index);
             switch (utility::common::bkdrHash(target.data()))
             {
                 case abbrVal(OptimalMethod::gradient):
-                    optimalFunctor(name(target), &OptimalSolution::gradientDescentMethod);
+                    functor(name(target), &OptimalSolution::gradientDescentMethod);
                     break;
                 case abbrVal(OptimalMethod::annealing):
-                    optimalFunctor(name(target), &OptimalSolution::simulatedAnnealingMethod);
+                    functor(name(target), &OptimalSolution::simulatedAnnealingMethod);
                     break;
                 case abbrVal(OptimalMethod::particle):
-                    optimalFunctor(name(target), &OptimalSolution::particleSwarmMethod);
+                    functor(name(target), &OptimalSolution::particleSwarmMethod);
                     break;
                 case abbrVal(OptimalMethod::genetic):
-                    optimalFunctor(name(target), &OptimalSolution::geneticMethod);
+                    functor(name(target), &OptimalSolution::geneticMethod);
                     break;
                 default:
                     throw std::logic_error("Unknown " + std::string{toString(category)} + " method: " + target + '.');
@@ -826,21 +831,21 @@ template <>
 void updateChoice<SearchMethod>(const std::string_view target)
 {
     constexpr auto category = Category::search;
-    auto& bitFlag = getCategoryOpts<category>();
+    auto& bits = getCategoryOpts<category>();
 
     switch (utility::common::bkdrHash(target.data()))
     {
         case abbrVal(SearchMethod::binary):
-            bitFlag.set(SearchMethod::binary);
+            bits.set(SearchMethod::binary);
             break;
         case abbrVal(SearchMethod::interpolation):
-            bitFlag.set(SearchMethod::interpolation);
+            bits.set(SearchMethod::interpolation);
             break;
         case abbrVal(SearchMethod::fibonacci):
-            bitFlag.set(SearchMethod::fibonacci);
+            bits.set(SearchMethod::fibonacci);
             break;
         default:
-            bitFlag.reset();
+            bits.reset();
             throw std::logic_error("Unexpected " + std::string{toString(category)} + " method: " + target.data() + '.');
     }
 }
@@ -851,8 +856,9 @@ template <>
 void runChoices<SearchMethod>(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::search;
-    const auto& bitFlag = getCategoryOpts<category>();
-    if (bitFlag.none())
+    const auto& bits = getCategoryOpts<category>();
+    assert(bits.size() == candidates.size());
+    if (bits.none())
     {
         return;
     }
@@ -863,36 +869,36 @@ void runChoices<SearchMethod>(const std::vector<std::string>& candidates)
     static_assert((arrayRange1 < arrayRange2) && (arrayLength > 0));
 
     auto& pooling = action::resourcePool();
-    auto* const threads = pooling.newElement(
-        std::min(static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<SearchMethod>::value)));
+    auto* const threads = pooling.newElement(bits.count());
     const auto inputs = std::make_shared<InputBuilder<float>>(arrayLength, arrayRange1, arrayRange2);
-    const auto searchFunctor = [threads, &inputs](
-                                   const std::string_view threadName,
-                                   void (*targetMethod)(const float* const, const std::uint32_t, const float))
+    const auto functor = [threads, &inputs](
+                             const std::string_view threadName,
+                             void (*targetMethod)(const float* const, const std::uint32_t, const float))
     {
         threads->enqueue(
             threadName, targetMethod, inputs->getOrderedArray().get(), inputs->getLength(), inputs->getSearchKey());
     };
     const auto name = utility::currying::curry(getTaskNameCurried(), getCategoryAlias<category>());
+    auto indices = std::views::iota(0U, bits.size())
+        | std::views::filter(
+                       [&bits](const auto i)
+                       {
+                           return bits.test(i);
+                       });
 
-    for (std::uint8_t i = 0; i < Bottom<SearchMethod>::value; ++i)
+    for (const auto index : indices)
     {
-        if (!bitFlag.test(SearchMethod(i)))
-        {
-            continue;
-        }
-
-        const std::string target = candidates.at(i);
+        const auto& target = candidates.at(index);
         switch (utility::common::bkdrHash(target.data()))
         {
             case abbrVal(SearchMethod::binary):
-                searchFunctor(name(target), &SearchSolution::binaryMethod);
+                functor(name(target), &SearchSolution::binaryMethod);
                 break;
             case abbrVal(SearchMethod::interpolation):
-                searchFunctor(name(target), &SearchSolution::interpolationMethod);
+                functor(name(target), &SearchSolution::interpolationMethod);
                 break;
             case abbrVal(SearchMethod::fibonacci):
-                searchFunctor(name(target), &SearchSolution::fibonacciMethod);
+                functor(name(target), &SearchSolution::fibonacciMethod);
                 break;
             default:
                 throw std::logic_error("Unknown " + std::string{toString(category)} + " method: " + target + '.');
@@ -1058,42 +1064,42 @@ template <>
 void updateChoice<SortMethod>(const std::string_view target)
 {
     constexpr auto category = Category::sort;
-    auto& bitFlag = getCategoryOpts<category>();
+    auto& bits = getCategoryOpts<category>();
 
     switch (utility::common::bkdrHash(target.data()))
     {
         case abbrVal(SortMethod::bubble):
-            bitFlag.set(SortMethod::bubble);
+            bits.set(SortMethod::bubble);
             break;
         case abbrVal(SortMethod::selection):
-            bitFlag.set(SortMethod::selection);
+            bits.set(SortMethod::selection);
             break;
         case abbrVal(SortMethod::insertion):
-            bitFlag.set(SortMethod::insertion);
+            bits.set(SortMethod::insertion);
             break;
         case abbrVal(SortMethod::shell):
-            bitFlag.set(SortMethod::shell);
+            bits.set(SortMethod::shell);
             break;
         case abbrVal(SortMethod::merge):
-            bitFlag.set(SortMethod::merge);
+            bits.set(SortMethod::merge);
             break;
         case abbrVal(SortMethod::quick):
-            bitFlag.set(SortMethod::quick);
+            bits.set(SortMethod::quick);
             break;
         case abbrVal(SortMethod::heap):
-            bitFlag.set(SortMethod::heap);
+            bits.set(SortMethod::heap);
             break;
         case abbrVal(SortMethod::counting):
-            bitFlag.set(SortMethod::counting);
+            bits.set(SortMethod::counting);
             break;
         case abbrVal(SortMethod::bucket):
-            bitFlag.set(SortMethod::bucket);
+            bits.set(SortMethod::bucket);
             break;
         case abbrVal(SortMethod::radix):
-            bitFlag.set(SortMethod::radix);
+            bits.set(SortMethod::radix);
             break;
         default:
-            bitFlag.reset();
+            bits.reset();
             throw std::logic_error("Unexpected " + std::string{toString(category)} + " method: " + target.data() + '.');
     }
 }
@@ -1104,8 +1110,9 @@ template <>
 void runChoices<SortMethod>(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::sort;
-    const auto& bitFlag = getCategoryOpts<category>();
-    if (bitFlag.none())
+    const auto& bits = getCategoryOpts<category>();
+    assert(bits.size() == candidates.size());
+    if (bits.none())
     {
         return;
     }
@@ -1116,56 +1123,56 @@ void runChoices<SortMethod>(const std::vector<std::string>& candidates)
     static_assert((arrayRange1 < arrayRange2) && (arrayLength > 0));
 
     auto& pooling = action::resourcePool();
-    auto* const threads = pooling.newElement(
-        std::min(static_cast<std::uint32_t>(bitFlag.count()), static_cast<std::uint32_t>(Bottom<SortMethod>::value)));
+    auto* const threads = pooling.newElement(bits.count());
     const auto inputs = std::make_shared<InputBuilder<std::int32_t>>(arrayLength, arrayRange1, arrayRange2);
-    const auto sortFunctor =
+    const auto functor =
         [threads, &inputs](
             const std::string_view threadName, void (*targetMethod)(const std::int32_t* const, const std::uint32_t))
     {
         threads->enqueue(threadName, targetMethod, inputs->getRandomArray().get(), inputs->getLength());
     };
     const auto name = utility::currying::curry(getTaskNameCurried(), getCategoryAlias<category>());
+    auto indices = std::views::iota(0U, bits.size())
+        | std::views::filter(
+                       [&bits](const auto i)
+                       {
+                           return bits.test(i);
+                       });
 
-    for (std::uint8_t i = 0; i < Bottom<SortMethod>::value; ++i)
+    for (const auto index : indices)
     {
-        if (!bitFlag.test(SortMethod(i)))
-        {
-            continue;
-        }
-
-        const std::string target = candidates.at(i);
+        const auto& target = candidates.at(index);
         switch (utility::common::bkdrHash(target.data()))
         {
             case abbrVal(SortMethod::bubble):
-                sortFunctor(name(target), &SortSolution::bubbleMethod);
+                functor(name(target), &SortSolution::bubbleMethod);
                 break;
             case abbrVal(SortMethod::selection):
-                sortFunctor(name(target), &SortSolution::selectionMethod);
+                functor(name(target), &SortSolution::selectionMethod);
                 break;
             case abbrVal(SortMethod::insertion):
-                sortFunctor(name(target), &SortSolution::insertionMethod);
+                functor(name(target), &SortSolution::insertionMethod);
                 break;
             case abbrVal(SortMethod::shell):
-                sortFunctor(name(target), &SortSolution::shellMethod);
+                functor(name(target), &SortSolution::shellMethod);
                 break;
             case abbrVal(SortMethod::merge):
-                sortFunctor(name(target), &SortSolution::mergeMethod);
+                functor(name(target), &SortSolution::mergeMethod);
                 break;
             case abbrVal(SortMethod::quick):
-                sortFunctor(name(target), &SortSolution::quickMethod);
+                functor(name(target), &SortSolution::quickMethod);
                 break;
             case abbrVal(SortMethod::heap):
-                sortFunctor(name(target), &SortSolution::heapMethod);
+                functor(name(target), &SortSolution::heapMethod);
                 break;
             case abbrVal(SortMethod::counting):
-                sortFunctor(name(target), &SortSolution::countingMethod);
+                functor(name(target), &SortSolution::countingMethod);
                 break;
             case abbrVal(SortMethod::bucket):
-                sortFunctor(name(target), &SortSolution::bucketMethod);
+                functor(name(target), &SortSolution::bucketMethod);
                 break;
             case abbrVal(SortMethod::radix):
-                sortFunctor(name(target), &SortSolution::radixMethod);
+                functor(name(target), &SortSolution::radixMethod);
                 break;
             default:
                 throw std::logic_error("Unknown " + std::string{toString(category)} + " method: " + target + '.');
