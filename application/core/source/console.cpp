@@ -35,16 +35,16 @@ Console::Console(const std::string_view greeting) : impl(std::make_unique<Impl>(
         [this](const Args& /*input*/)
         {
             const auto pairs = getOptionHelpPairs();
-            std::size_t maxLength = 0;
+            std::size_t maxLen = 0;
             for ([[maybe_unused]] const auto& [option, help] : pairs)
             {
-                maxLength = std::max(maxLength, option.length());
+                maxLen = std::max(maxLen, option.length());
             }
 
             std::cout << "console option:\n" << std::endl;
             for (const auto& [option, help] : pairs)
             {
-                std::cout << std::setiosflags(std::ios_base::left) << std::setw(maxLength) << option << "    " << help
+                std::cout << std::setiosflags(std::ios_base::left) << std::setw(maxLen) << option << "    " << help
                           << std::resetiosflags(std::ios_base::left) << '\n';
             }
 
@@ -93,11 +93,6 @@ void Console::registerOption(const std::string_view name, const OptionFunctor& f
 void Console::setGreeting(const std::string_view greeting)
 {
     impl->greeting = greeting;
-}
-
-std::string Console::getGreeting() const
-{
-    return impl->greeting;
 }
 
 int Console::optionExecutor(const std::string_view option)
@@ -156,7 +151,7 @@ int Console::readLine()
 {
     reserveConsole();
 
-    char* const buffer = ::readline(getGreeting().c_str());
+    char* const buffer = ::readline(impl->greeting.c_str());
     if (nullptr == buffer)
     {
         std::cout << std::endl;

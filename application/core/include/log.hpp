@@ -220,18 +220,18 @@ public:
     utility::common::ReadWriteLock& getFileLock();
 
     //! @brief Flush log to queue.
-    //! @tparam Args - type of arguments of format
+    //! @tparam Args - type of arguments of log format
     //! @param level - output level
-    //! @param codeFile - current code file
-    //! @param codeLine - current code line
-    //! @param format - log format to be flushed
-    //! @param args - arguments of format
+    //! @param srcFile - current code file
+    //! @param srcLine - current code line
+    //! @param fmt - log format to be flushed
+    //! @param args - arguments of log format
     template <typename... Args>
     void flush(
         const OutputLevel level,
-        const std::string_view codeFile,
-        const std::uint32_t codeLine,
-        const std::string_view format,
+        const std::string_view srcFile,
+        const std::uint32_t srcLine,
+        const std::string_view fmt,
         Args&&... args);
     //! @brief Log holder for flushing.
     //! @tparam Lv - type of output level
@@ -405,9 +405,9 @@ extern const std::string& changeToLogStyle(std::string& line);
 template <typename... Args>
 void Log::flush(
     const OutputLevel level,
-    const std::string_view codeFile,
-    const std::uint32_t codeLine,
-    const std::string_view format,
+    const std::string_view srcFile,
+    const std::uint32_t srcLine,
+    const std::string_view fmt,
     Args&&... args)
 {
     if (level < minimumLevel)
@@ -445,11 +445,11 @@ void Log::flush(
             "{}:[{}]:[{}#{}]: {}",
             prefix,
             utility::time::getCurrentSystemTime(),
-            (std::string_view::npos != codeFile.rfind(sourceDirectory))
-                ? codeFile.substr(codeFile.rfind(sourceDirectory) + sourceDirectory.length(), codeFile.length())
-                : codeFile,
-            codeLine,
-            utility::common::formatString(filterBreakLine(format).c_str(), std::forward<Args>(args)...));
+            (std::string_view::npos != srcFile.rfind(sourceDirectory))
+                ? srcFile.substr(srcFile.rfind(sourceDirectory) + sourceDirectory.length(), srcFile.length())
+                : srcFile,
+            srcLine,
+            utility::common::formatString(filterBreakLine(fmt).c_str(), std::forward<Args>(args)...));
         if (daemonLock.owns_lock())
         {
             logQueue.push(std::move(output));

@@ -790,36 +790,36 @@ public:
             align = std::max(static_cast<std::uint32_t>(std::to_string(*(array + i)).length()), align);
         }
 
-        const char* format = nullptr;
+        const char* spliceFmt = nullptr;
         if constexpr (std::is_integral<T>::value)
         {
-            format = "%*d ";
+            spliceFmt = "%*d ";
         }
         else if constexpr (std::is_floating_point<T>::value)
         {
-            format = "%*.5f ";
+            spliceFmt = "%*.5f ";
         }
 
-        int formatSize = 0;
+        int totalLen = 0;
         std::uint32_t completeSize = 0;
         for (std::uint32_t i = 0; i < length; ++i)
         {
-            formatSize =
-                std::snprintf(buffer + completeSize, bufferSize - completeSize, format, align + 1, *(array + i));
-            if ((formatSize < 0) || (formatSize >= static_cast<int>(bufferSize - completeSize)))
+            totalLen =
+                std::snprintf(buffer + completeSize, bufferSize - completeSize, spliceFmt, align + 1, *(array + i));
+            if ((totalLen < 0) || (totalLen >= static_cast<int>(bufferSize - completeSize)))
             {
                 break;
             }
-            completeSize += formatSize;
+            completeSize += totalLen;
 
             if ((0 == ((i + 1) % maxColumnOfPrint)) && ((i + 1) != length))
             {
-                formatSize = std::snprintf(buffer + completeSize, bufferSize - completeSize, "\n");
-                if ((formatSize < 0) || (formatSize >= static_cast<int>(bufferSize - completeSize)))
+                totalLen = std::snprintf(buffer + completeSize, bufferSize - completeSize, "\n");
+                if ((totalLen < 0) || (totalLen >= static_cast<int>(bufferSize - completeSize)))
                 {
                     break;
                 }
-                completeSize += formatSize;
+                completeSize += totalLen;
             }
         }
 
@@ -1037,36 +1037,36 @@ public:
             align = std::max(static_cast<std::uint32_t>(std::to_string(*(array + i)).length()), align);
         }
 
-        const char* format = nullptr;
+        const char* spliceFmt = nullptr;
         if constexpr (std::is_integral<T>::value)
         {
-            format = "%*d ";
+            spliceFmt = "%*d ";
         }
         else if constexpr (std::is_floating_point<T>::value)
         {
-            format = "%*.5f ";
+            spliceFmt = "%*.5f ";
         }
 
-        int formatSize = 0;
+        int totalLen = 0;
         std::uint32_t completeSize = 0;
         for (std::uint32_t i = 0; i < length; ++i)
         {
-            formatSize =
-                std::snprintf(buffer + completeSize, bufferSize - completeSize, format, align + 1, *(array + i));
-            if ((formatSize < 0) || (formatSize >= static_cast<int>(bufferSize - completeSize)))
+            totalLen =
+                std::snprintf(buffer + completeSize, bufferSize - completeSize, spliceFmt, align + 1, *(array + i));
+            if ((totalLen < 0) || (totalLen >= static_cast<int>(bufferSize - completeSize)))
             {
                 break;
             }
-            completeSize += formatSize;
+            completeSize += totalLen;
 
             if ((0 == ((i + 1) % maxColumnOfPrint)) && ((i + 1) != length))
             {
-                formatSize = std::snprintf(buffer + completeSize, bufferSize - completeSize, "\n");
-                if ((formatSize < 0) || (formatSize >= static_cast<int>(bufferSize - completeSize)))
+                totalLen = std::snprintf(buffer + completeSize, bufferSize - completeSize, "\n");
+                if ((totalLen < 0) || (totalLen >= static_cast<int>(bufferSize - completeSize)))
                 {
                     break;
                 }
-                completeSize += formatSize;
+                completeSize += totalLen;
             }
         }
 

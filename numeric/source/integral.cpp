@@ -86,11 +86,11 @@ double Simpson::simpsonIntegral(const double left, const double right, const dou
 
 double Simpson::compositeSimpsonOneThird(const double left, const double right, const std::uint32_t step) const
 {
-    const double stepLength = (right - left) / step;
+    const double stepLen = (right - left) / step;
     double sum = 0.0;
     for (std::uint32_t i = 0; i < step; ++i)
     {
-        sum += simpsonOneThird(left + i * stepLength, left + (i + 1) * stepLength);
+        sum += simpsonOneThird(left + i * stepLen, left + (i + 1) * stepLen);
     }
     return sum;
 }
@@ -146,10 +146,10 @@ double Gauss::operator()(double lower, double upper, const double eps) const
     do
     {
         sum = 0.0;
-        const double stepLength = (upper - lower) / n;
+        const double stepLen = (upper - lower) / n;
         for (std::uint32_t i = 0; i < n; ++i)
         {
-            const double left = lower + i * stepLength, right = left + stepLength;
+            const double left = lower + i * stepLen, right = left + stepLen;
             for (std::uint32_t j = 0; j < gaussNodes; ++j)
             {
                 const double x = ((right - left) * gaussLegendreTable[j][0] + (left + right)) / 2.0,

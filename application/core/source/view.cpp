@@ -928,7 +928,7 @@ std::string View::getStatusReports(const std::uint16_t frame)
     const bool showStack = (::system("which eu-stack >/dev/null 2>&1") == EXIT_SUCCESS);
     while (std::string::npos != (pos = queryResult.find('\n', prev)))
     {
-        const int tid = std::stoi(queryResult.substr(prev, pos - prev));
+        const int tid = std::stoi(queryResult.substr(prev, pos - prev + 1));
         char cmd[totalLen] = {'\0'};
         const int usedLen = std::snprintf(
             cmd,
@@ -960,7 +960,7 @@ std::string View::getStatusReports(const std::uint16_t frame)
             std::strncpy(cmd + usedLen, "; fi", totalLen - usedLen);
         }
         cmdColl.emplace_back(cmd);
-        prev = pos + 1;
+        prev += pos - prev + 1;
     }
     cmd[totalLen - 1] = '\0';
 
@@ -1014,10 +1014,10 @@ void View::createViewServer()
     tcpServer = std::make_shared<utility::socket::TCPServer>();
     tcpServer->onNewConnection = [this](const std::shared_ptr<utility::socket::TCPSocket> newSocket)
     {
-        std::weak_ptr<utility::socket::TCPSocket> weakSocket = newSocket;
-        newSocket->onMessageReceived = [this, weakSocket](const std::string_view message)
+        std::weak_ptr<utility::socket::TCPSocket> weakSock = newSocket;
+        newSocket->onMessageReceived = [this, weakSock](const std::string_view message)
         {
-            auto newSocket = weakSocket.lock();
+            auto newSocket = weakSock.lock();
             if (!newSocket)
             {
                 return;
@@ -1027,7 +1027,7 @@ void View::createViewServer()
             {
                 return;
             }
-            char buffer[maxMsgLen] = {'\0'};
+            char buffer[1024] = {'\0'};
             try
             {
                 const auto plaintext = utility::common::base64Decode(message);
@@ -1067,7 +1067,7 @@ void View::createViewServer()
             return;
         }
 
-        char buffer[maxMsgLen] = {'\0'};
+        char buffer[1024] = {'\0'};
         try
         {
             const auto plaintext = utility::common::base64Decode(message);
