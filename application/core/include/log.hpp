@@ -11,6 +11,7 @@
 #ifndef __PRECOMPILED_HEADER
 #include <iostream>
 #include <queue>
+#include <ranges>
 #include <source_location>
 #else
 #include "application/pch/precompiled_header.hpp"
@@ -87,7 +88,7 @@ constexpr std::string_view traceLevelPrefixRegex = R"(^\[TRC\])";
 //! @brief Regular expression of date time in log.
 constexpr std::string_view dateTimeRegex = R"(\[(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})\.(\d{6}) (\w{3})\])";
 //! @brief Regular expression of code file in log.
-constexpr std::string_view codeFileRegex = R"(\[[^:]+\.(c|h|cc|hh|cpp|hpp|tpp|cxx|hxx|C|H)#\d+\])";
+constexpr std::string_view codeFileRegex = R"(\[[^ ]+\.(c|h|cc|hh|cpp|hpp|tpp|cxx|hxx|C|H)#\d+\])";
 //! @brief Directory of the source code.
 constexpr std::string_view sourceDirectory = R"(/foo/)";
 //! @brief Debug level prefix with color. Include ANSI escape codes.
@@ -224,14 +225,14 @@ public:
     //! @param level - output level
     //! @param srcFile - current code file
     //! @param srcLine - current code line
-    //! @param fmt - log format to be flushed
+    //! @param format - log format to be flushed
     //! @param args - arguments of log format
     template <typename... Args>
     void flush(
         const OutputLevel level,
         const std::string_view srcFile,
         const std::uint32_t srcLine,
-        const std::string_view fmt,
+        const std::string_view format,
         Args&&... args);
     //! @brief Log holder for flushing.
     //! @tparam Lv - type of output level
@@ -407,7 +408,7 @@ void Log::flush(
     const OutputLevel level,
     const std::string_view srcFile,
     const std::uint32_t srcLine,
-    const std::string_view fmt,
+    const std::string_view format,
     Args&&... args)
 {
     if (level < minimumLevel)
@@ -441,24 +442,63 @@ void Log::flush(
             }
         }
 
-        std::string output = std::format(
-            "{}:[{}]:[{}#{}]: {}",
-            prefix,
-            utility::time::getCurrentSystemTime(),
-            (std::string_view::npos != srcFile.rfind(sourceDirectory))
-                ? srcFile.substr(srcFile.rfind(sourceDirectory) + sourceDirectory.length(), srcFile.length())
-                : srcFile,
-            srcLine,
-            utility::common::formatString(filterBreakLine(fmt).c_str(), std::forward<Args>(args)...));
+        const std::string label = std::format(
+                              "{} [{}] [{}#{}]: ",
+                              prefix,
+                              utility::time::getCurrentSystemTime(),
+                              (std::string_view::npos != srcFile.rfind(sourceDirectory)) ? srcFile.substr(
+                                  srcFile.rfind(sourceDirectory) + sourceDirectory.length(), srcFile.length())
+                                                                                         : srcFile,
+                              srcLine),
+                          formatted = utility::common::formatString(format.data(), std::forward<Args>(args)...);
+        std::vector<std::string> multiRows{};
+        if (std::string::npos == formatted.find('\n'))
+        {
+            multiRows.emplace_back(formatted);
+        }
+        else
+        {
+            std::size_t pos = 0, prev = 0;
+            while (std::string::npos != (pos = formatted.find('\n', prev)))
+            {
+                multiRows.emplace_back(formatted.substr(prev, pos - prev + 1));
+                prev += pos - prev + 1;
+            }
+        }
+        auto reformat = multiRows | std::views::transform(filterBreakLine)
+            | std::views::filter(
+                            [](const auto& line)
+                            {
+                                return !line.empty();
+                            })
+            | std::views::transform(
+                            [&label](const auto& line)
+                            {
+                                return label + line;
+                            });
+        multiRows = std::vector<std::string>(std::ranges::begin(reformat), std::ranges::end(reformat));
+
         if (daemonLock.owns_lock())
         {
-            logQueue.push(std::move(output));
+            std::for_each(
+                multiRows.begin(),
+                multiRows.end(),
+                [this](auto& output)
+                {
+                    logQueue.push(std::move(output));
+                });
             daemonLock.unlock();
             daemonCond.notify_one();
         }
         else
         {
-            std::cerr << changeToLogStyle(output) << std::endl;
+            std::for_each(
+                multiRows.begin(),
+                multiRows.end(),
+                [](auto& output)
+                {
+                    std::cerr << changeToLogStyle(output) << std::endl;
+                });
         }
     }
     catch (...)
