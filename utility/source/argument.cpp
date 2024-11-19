@@ -667,7 +667,7 @@ void Argument::indexArgument(const RegisterIter& iterator)
 std::ostream& operator<<(std::ostream& os, const Argument& arg)
 {
     os.setf(std::ios_base::left);
-    const auto longestArgLength = arg.getLengthOfLongestArgument();
+    const auto longestArgLen = arg.getLengthOfLongestArgument();
 
     os << arg.usage() << "\n\n";
 
@@ -682,7 +682,7 @@ std::ostream& operator<<(std::ostream& os, const Argument& arg)
     }
     for (const auto& argument : arg.optionalArguments)
     {
-        os.width(static_cast<std::streamsize>(longestArgLength));
+        os.width(static_cast<std::streamsize>(longestArgLen));
         os << argument;
     }
 
@@ -692,7 +692,7 @@ std::ostream& operator<<(std::ostream& os, const Argument& arg)
     }
     for (const auto& argument : arg.positionalArguments)
     {
-        os.width(static_cast<std::streamsize>(longestArgLength));
+        os.width(static_cast<std::streamsize>(longestArgLen));
         os << argument;
     }
 
@@ -702,8 +702,7 @@ std::ostream& operator<<(std::ostream& os, const Argument& arg)
            << "sub-command:\n";
         for (const auto& [command, subParser] : arg.subParserMap)
         {
-            os << std::setw(static_cast<int>(longestArgLength)) << command << "    " << subParser->get().descrText
-               << '\n';
+            os << std::setw(static_cast<int>(longestArgLen)) << command << "    " << subParser->get().descrText << '\n';
         }
     }
 

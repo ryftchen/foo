@@ -53,9 +53,6 @@ public:
     //! @brief Set greeting information.
     //! @param greeting - greeting information
     void setGreeting(const std::string_view greeting);
-    //! @brief Get greeting information.
-    //! @return greeting information
-    [[nodiscard]] std::string getGreeting() const;
     //! @brief Execute the target console option.
     //! @param option - option to be executed
     //! @return value of RetCode

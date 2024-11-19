@@ -194,21 +194,21 @@ void TCPSocket::toRecv(const std::shared_ptr<TCPSocket> socket)
         if (pollFDs.at(0).revents & POLLIN)
         {
             socket->spinLock();
-            const int messageLength = ::recv(socket->sock, tempBuffer, bufferSize, 0);
+            const int msgLen = ::recv(socket->sock, tempBuffer, bufferSize, 0);
             socket->spinUnlock();
-            if (messageLength <= 0)
+            if (msgLen <= 0)
             {
                 break;
             }
 
-            tempBuffer[messageLength] = '\0';
+            tempBuffer[msgLen] = '\0';
             if (socket->onMessageReceived)
             {
-                socket->onMessageReceived(std::string(tempBuffer, messageLength));
+                socket->onMessageReceived(std::string(tempBuffer, msgLen));
             }
             if (socket->onRawMessageReceived)
             {
-                socket->onRawMessageReceived(tempBuffer, messageLength);
+                socket->onRawMessageReceived(tempBuffer, msgLen);
             }
         }
         if (socket->shouldExit())
@@ -295,13 +295,13 @@ void TCPServer::toAccept(const bool toDetach)
 void TCPServer::toAccept(const std::shared_ptr<TCPServer> server)
 {
     ::sockaddr_in newSockAddr{};
-    ::socklen_t newSockAddrLength = sizeof(newSockAddr);
+    ::socklen_t newSockAddrLen = sizeof(newSockAddr);
     std::vector<std::shared_ptr<TCPSocket>> activeSockets{};
 
     int newSock = 0;
     for (;;)
     {
-        newSock = ::accept(server->sock, reinterpret_cast<::sockaddr*>(&newSockAddr), &newSockAddrLength);
+        newSock = ::accept(server->sock, reinterpret_cast<::sockaddr*>(&newSockAddr), &newSockAddrLen);
         if (-1 == newSock)
         {
             for (const auto& socket : activeSockets)
@@ -468,23 +468,22 @@ void UDPSocket::toRecv(const std::shared_ptr<UDPSocket> socket)
         if (pollFDs.at(0).revents & POLLIN)
         {
             socket->spinLock();
-            const int messageLength = ::recv(socket->sock, tempBuffer, bufferSize, 0);
+            const int msgLen = ::recv(socket->sock, tempBuffer, bufferSize, 0);
             socket->spinUnlock();
-            if (-1 == messageLength)
+            if (-1 == msgLen)
             {
                 break;
             }
 
-            tempBuffer[messageLength] = '\0';
+            tempBuffer[msgLen] = '\0';
             if (socket->onMessageReceived)
             {
                 socket->onMessageReceived(
-                    std::string(tempBuffer, messageLength), socket->transportAddress(), socket->transportPort());
+                    std::string(tempBuffer, msgLen), socket->transportAddress(), socket->transportPort());
             }
             if (socket->onRawMessageReceived)
             {
-                socket->onRawMessageReceived(
-                    tempBuffer, messageLength, socket->transportAddress(), socket->transportPort());
+                socket->onRawMessageReceived(tempBuffer, msgLen, socket->transportAddress(), socket->transportPort());
             }
         }
         if (socket->shouldExit())
@@ -520,23 +519,22 @@ void UDPSocket::toRecvFrom(const std::shared_ptr<UDPSocket> socket)
         if (pollFDs.at(0).revents & POLLIN)
         {
             socket->spinLock();
-            const int messageLength = ::recvfrom(
+            const int msgLen = ::recvfrom(
                 socket->sock, tempBuffer, bufferSize, 0, reinterpret_cast<::sockaddr*>(&addr), &hostAddrSize);
             socket->spinUnlock();
-            if (-1 == messageLength)
+            if (-1 == msgLen)
             {
                 break;
             }
 
-            tempBuffer[messageLength] = '\0';
+            tempBuffer[msgLen] = '\0';
             if (socket->onMessageReceived)
             {
-                socket->onMessageReceived(
-                    std::string(tempBuffer, messageLength), ipString(addr), ::ntohs(addr.sin_port));
+                socket->onMessageReceived(std::string(tempBuffer, msgLen), ipString(addr), ::ntohs(addr.sin_port));
             }
             if (socket->onRawMessageReceived)
             {
-                socket->onRawMessageReceived(tempBuffer, messageLength, ipString(addr), ::ntohs(addr.sin_port));
+                socket->onRawMessageReceived(tempBuffer, msgLen, ipString(addr), ::ntohs(addr.sin_port));
             }
         }
         if (socket->shouldExit())

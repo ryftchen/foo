@@ -336,8 +336,6 @@ private:
     std::atomic<bool> ongoing{false};
     //! @brief Flag for rollback request.
     std::atomic<bool> toReset{false};
-    //! @brief Maximum length of the message.
-    static constexpr std::uint32_t maxMsgLen{1024};
     //! @brief Mutex for controlling output.
     mutable std::mutex outputMtx{};
     //! @brief The synchronization condition for output. Use with outputMtx.
