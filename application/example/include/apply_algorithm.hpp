@@ -436,11 +436,11 @@ public:
     virtual ~NotationSolution() = default;
 
     //! @brief The prefix method.
-    //! @param infixNotation - infix notation
-    static void prefixMethod(const std::string_view infixNotation);
+    //! @param infix - infix notation
+    static void prefixMethod(const std::string_view infix);
     //! @brief The postfix method.
-    //! @param infixNotation - infix notation
-    static void postfixMethod(const std::string_view infixNotation);
+    //! @param infix - infix notation
+    static void postfixMethod(const std::string_view infix);
 };
 
 //! @brief Builder for the input.

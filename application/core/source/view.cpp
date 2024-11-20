@@ -768,7 +768,7 @@ int View::fillSharedMemory(const std::string_view contents)
     {
         if (!shrMem->signal.load())
         {
-            std::vector<char> processed(contents.data(), contents.data() + contents.size());
+            std::vector<char> processed(contents.data(), contents.data() + contents.length());
             compressData(processed);
             encryptMessage(processed.data(), processed.size());
             *reinterpret_cast<int*>(shrMem->buffer) = processed.size();
