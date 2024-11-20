@@ -121,7 +121,7 @@ std::string Register::getInlineUsage() const
     std::string longestName(names.front());
     for (const auto& str : names)
     {
-        if (str.size() > longestName.size())
+        if (str.length() > longestName.length())
         {
             longestName = str;
         }
@@ -156,14 +156,14 @@ std::size_t Register::getArgumentsLength() const
         std::size_t(0),
         [](const auto& sum, const auto& str)
         {
-            return sum + str.size();
+            return sum + str.length();
         });
 
     if (checkIfPositional(names.front(), prefixChars))
     {
         if (!metavarContent.empty())
         {
-            return metavarContent.size();
+            return metavarContent.length();
         }
 
         return namesSize + (names.size() - 1);
@@ -171,7 +171,7 @@ std::size_t Register::getArgumentsLength() const
     std::size_t size = namesSize + 2 * (names.size() - 1);
     if (!metavarContent.empty() && (ArgsNumRange{1, 1} == argsNumRange))
     {
-        size += metavarContent.size() + 1;
+        size += metavarContent.length() + 1;
     }
     return size;
 }
@@ -279,7 +279,7 @@ std::ostream& operator<<(std::ostream& os, const Register& reg)
     }
 
     const auto streamWidth = os.width();
-    const auto namePadding = std::string(nameStream.str().size(), ' ');
+    const auto namePadding = std::string(nameStream.str().length(), ' ');
     os << nameStream.str();
 
     std::size_t pos = 0, prev = 0;
@@ -307,7 +307,7 @@ std::ostream& operator<<(std::ostream& os, const Register& reg)
     }
     else
     {
-        const auto remain = helpView.substr(prev, reg.helpContent.size() - prev);
+        const auto remain = helpView.substr(prev, reg.helpContent.length() - prev);
         if (!remain.empty())
         {
             os.width(streamWidth);
@@ -541,7 +541,7 @@ std::vector<std::string> Argument::preprocessArguments(const std::vector<std::st
                 {
                     return true;
                 }
-                else if (!windowsStyle && (str.size() > 1))
+                else if (!windowsStyle && (str.length() > 1))
                 {
                     return legalPrefix(str.at(0)) && legalPrefix(str.at(1));
                 }
@@ -606,11 +606,11 @@ void Argument::parseArgsInternal(const std::vector<std::string>& rawArguments)
             const auto argument = argMapIter->second;
             iterator = argument->consume(std::next(iterator), end, argMapIter->first);
         }
-        else if (const auto& compoundArg = currentArgument; (compoundArg.size() > 1)
+        else if (const auto& compoundArg = currentArgument; (compoundArg.length() > 1)
                  && isValidPrefixChar(compoundArg.at(0)) && !isValidPrefixChar(compoundArg.at(1)))
         {
             ++iterator;
-            for (std::size_t i = 1; i < compoundArg.size(); ++i)
+            for (std::size_t i = 1; i < compoundArg.length(); ++i)
             {
                 const auto hypotheticalArg = std::string{'-', compoundArg.at(i)};
                 const auto argMapIter2 = argumentMap.find(hypotheticalArg);
@@ -647,7 +647,7 @@ std::size_t Argument::getLengthOfLongestArgument() const
     }
     for (const auto& command : std::views::keys(subParserMap))
     {
-        maxSize = std::max<std::size_t>(maxSize, command.size());
+        maxSize = std::max<std::size_t>(maxSize, command.length());
     }
     return maxSize;
 }

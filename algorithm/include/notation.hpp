@@ -25,13 +25,13 @@ public:
     virtual ~Notation() = default;
 
     //! @brief Prefix.
-    //! @param infixNotation - infix notation
+    //! @param infix - infix notation
     //! @return prefix notation
-    static std::string prefix(const std::string_view infixNotation);
+    static std::string prefix(const std::string_view infix);
     //! @brief Postfix.
-    //! @param infixNotation - infix notation
+    //! @param infix - infix notation
     //! @return postfix notation
-    static std::string postfix(const std::string_view infixNotation);
+    static std::string postfix(const std::string_view infix);
 
 private:
     //! @brief Enumerate specific operator priorities.

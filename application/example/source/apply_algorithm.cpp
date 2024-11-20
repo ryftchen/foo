@@ -472,10 +472,10 @@ static void displayResult(const NotationMethod method, const std::string_view re
     COMMON_PRINT("\n==> %-7s Method <==\n%s: %s\n", getTitle(method).data(), descr, result.data());
 }
 
-void NotationSolution::prefixMethod(const std::string_view infixNotation)
+void NotationSolution::prefixMethod(const std::string_view infix)
 try
 {
-    const auto& expr = algorithm::notation::Notation().prefix(infixNotation);
+    const auto& expr = algorithm::notation::Notation().prefix(infix);
     displayResult(NotationMethod::prefix, expr, "polish notation");
 }
 catch (const std::exception& err)
@@ -483,10 +483,10 @@ catch (const std::exception& err)
     LOG_ERR << "Exception in " << __func__ << " function: " << err.what();
 }
 
-void NotationSolution::postfixMethod(const std::string_view infixNotation)
+void NotationSolution::postfixMethod(const std::string_view infix)
 try
 {
-    const auto& expr = algorithm::notation::Notation().postfix(infixNotation);
+    const auto& expr = algorithm::notation::Notation().postfix(infix);
     displayResult(NotationMethod::postfix, expr, "reverse polish notation");
 }
 catch (const std::exception& err)

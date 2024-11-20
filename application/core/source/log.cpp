@@ -199,9 +199,9 @@ std::string Log::filterBreakLine(const std::string_view line)
         std::remove_if(
             std::begin(singleRow),
             std::end(singleRow),
-            [l = std::locale{}](const auto c)
+            [](const auto c)
             {
-                return (!std::isprint(c, l)) || ('\n' == c) || ('\r' == c);
+                return ('\n' == c) || ('\r' == c);
             }),
         std::end(singleRow));
     return singleRow;

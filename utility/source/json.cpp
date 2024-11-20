@@ -758,7 +758,7 @@ std::string JSON::dump(const std::uint32_t depth, const std::string_view tab) co
                 s += (pad + '\"' + p.first + "\": " + p.second.dump(depth + 1, tab));
                 skip = false;
             }
-            s += ('\n' + pad.erase(0, tab.size()) + '}');
+            s += ('\n' + pad.erase(0, tab.length()) + '}');
             return s;
         }
         case Type::array:

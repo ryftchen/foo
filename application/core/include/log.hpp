@@ -76,15 +76,15 @@ constexpr std::string_view errorLevelPrefix = "[ERR]";
 //! @brief Prefix of trace level in log.
 constexpr std::string_view traceLevelPrefix = "[TRC]";
 //! @brief Regular expression of debug level in log.
-constexpr std::string_view debugLevelPrefixRegex = R"(^\[DBG\])";
+constexpr std::string_view debugLevelPrefixRegex = R"(\[DBG\])";
 //! @brief Regular expression of info level in log.
-constexpr std::string_view infoLevelPrefixRegex = R"(^\[INF\])";
+constexpr std::string_view infoLevelPrefixRegex = R"(\[INF\])";
 //! @brief Regular expression of warning level in log.
-constexpr std::string_view warnLevelPrefixRegex = R"(^\[WRN\])";
+constexpr std::string_view warnLevelPrefixRegex = R"(\[WRN\])";
 //! @brief Regular expression of error level in log.
-constexpr std::string_view errorLevelPrefixRegex = R"(^\[ERR\])";
+constexpr std::string_view errorLevelPrefixRegex = R"(\[ERR\])";
 //! @brief Regular expression of trace level in log.
-constexpr std::string_view traceLevelPrefixRegex = R"(^\[TRC\])";
+constexpr std::string_view traceLevelPrefixRegex = R"(\[TRC\])";
 //! @brief Regular expression of date time in log.
 constexpr std::string_view dateTimeRegex = R"(\[(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})\.(\d{6}) (\w{3})\])";
 //! @brief Regular expression of code file in log.
@@ -443,9 +443,9 @@ void Log::flush(
         }
 
         const std::string label = std::format(
-                              "{} [{}] [{}#{}]: ",
-                              prefix,
+                              "[{}] {} [{}#{}]: ",
                               utility::time::getCurrentSystemTime(),
+                              prefix,
                               (std::string_view::npos != srcFile.rfind(sourceDirectory)) ? srcFile.substr(
                                   srcFile.rfind(sourceDirectory) + sourceDirectory.length(), srcFile.length())
                                                                                          : srcFile,
@@ -463,6 +463,10 @@ void Log::flush(
             {
                 multiRows.emplace_back(formatted.substr(prev, pos - prev + 1));
                 prev += pos - prev + 1;
+            }
+            if (prev < formatted.length())
+            {
+                multiRows.emplace_back(formatted.substr(prev));
             }
         }
         auto reformat = multiRows | std::views::transform(filterBreakLine)

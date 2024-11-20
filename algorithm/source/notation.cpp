@@ -19,32 +19,32 @@ const char* version() noexcept
     return ver;
 }
 
-std::string Notation::prefix(const std::string_view infixNotation)
+std::string Notation::prefix(const std::string_view infix)
 {
-    std::string infix(infixNotation);
-    std::reverse(infix.begin(), infix.end());
-    for (std::uint32_t i = 0; i < infix.size(); ++i)
+    std::string preprocess(infix);
+    std::reverse(preprocess.begin(), preprocess.end());
+    for (std::uint32_t i = 0; i < preprocess.length(); ++i)
     {
-        if ('(' == infix[i])
+        if ('(' == preprocess[i])
         {
-            infix[i] = ')';
+            preprocess[i] = ')';
         }
-        else if (')' == infix[i])
+        else if (')' == preprocess[i])
         {
-            infix[i] = '(';
+            preprocess[i] = '(';
         }
     }
-    std::string prefixNotation = infixToPostfix(infix);
-    std::reverse(prefixNotation.begin(), prefixNotation.end());
+    std::string notation(infixToPostfix(preprocess));
+    std::reverse(notation.begin(), notation.end());
 
-    return prefixNotation;
+    return notation;
 }
 
-std::string Notation::postfix(const std::string_view infixNotation)
+std::string Notation::postfix(const std::string_view infix)
 {
-    std::string postfixNotation = infixToPostfix(infixNotation);
+    std::string notation(infixToPostfix(infix));
 
-    return postfixNotation;
+    return notation;
 }
 
 std::string Notation::infixToPostfix(const std::string_view infix)
@@ -52,7 +52,7 @@ std::string Notation::infixToPostfix(const std::string_view infix)
     std::string postfix{};
     std::stack<char> charStack{};
 
-    for (std::uint32_t i = 0; i < infix.size(); ++i)
+    for (std::uint32_t i = 0; i < infix.length(); ++i)
     {
         if (!isOperator(infix[i]))
         {
