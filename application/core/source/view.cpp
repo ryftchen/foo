@@ -945,8 +945,10 @@ std::string View::getStatusReports(const std::uint16_t frame)
                 std::snprintf(
                     cmd + usedLen,
                     totalLen - usedLen,
-                    "&& echo 'Stack:' && (timeout --preserve-status --signal=2 0.1 stdbuf -o0 eu-stack -1v -n %d -p %d "
-                    "2>&1 | grep '#' || exit 0) ; fi",
+                    "&& echo 'Stack:' "
+                    "&& (timeout --preserve-status --signal=2 0.%d stdbuf -o0 eu-stack -1v -n %d -p %d 2>&1 | grep '#' "
+                    "|| exit 0) ; fi",
+                    frame,
                     frame,
                     tid);
             }
