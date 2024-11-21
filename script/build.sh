@@ -811,7 +811,7 @@ to improve accuracy. (y or n)"
 --no-sarif-minify --ram=2048"
     if echo "${input}" | grep -iq '^y'; then
         build_script=./${FOLDER[scr]}/$(basename "$0")
-        shell_command "${build_script}${other_option} && ${build_script} --test${other_option}"
+        shell_command "${build_script}${other_option} >/dev/null && ${build_script} --test${other_option} >/dev/null"
     fi
 
     if [[ -f ${codeql_sarif} ]]; then
