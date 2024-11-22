@@ -389,9 +389,10 @@ std::string executeCommand(const std::string_view command, const std::uint32_t t
 };
 
 //! @brief Wait for input from the user.
-//! @param action - handling for the input (interrupt waiting if the return value is true, otherwise continue waiting)
+//! @param operation - handling for the input (interrupt waiting if the return value is true, otherwise continue
+//! waiting)
 //! @param timeout - timeout period (ms)
-void waitForUserInput(const std::function<bool(const std::string_view)>& action, const int timeout)
+void waitForUserInput(const std::function<bool(const std::string_view)>& operation, const int timeout)
 {
     const int epollFD = ::epoll_create1(0);
     if (-1 == epollFD)
@@ -420,7 +421,7 @@ void waitForUserInput(const std::function<bool(const std::string_view)>& action,
         {
             std::string input{};
             std::getline(std::cin, input);
-            if (action(input))
+            if (operation(input))
             {
                 break;
             }

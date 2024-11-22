@@ -131,8 +131,8 @@ private:
         {
         public:
             //! @brief Construct a new Observer object.
-            //! @param callback - function to be called when the observer is updated
-            explicit Observer(const std::function<void()>& callback) : callback(callback) {}
+            //! @param procedure - procedure to be executed when the observer is updated
+            explicit Observer(std::function<void()> procedure) : callback(std::move(procedure)) {}
             //! @brief Destroy the Observer object.
             virtual ~Observer() = default;
 

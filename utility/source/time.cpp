@@ -55,7 +55,7 @@ void millisecondLevelSleep(const std::uint32_t duration)
 //! @param termination - termination condition
 //! @param timeout - timeout period (ms)
 //! @return the value is 0 if the termination condition is met, otherwise -1 on timeout
-int blockingTimer(const std::function<bool()> termination, const std::uint32_t timeout)
+int blockingTimer(const std::function<bool()>& termination, const std::uint32_t timeout)
 {
     const auto startTime = std::chrono::steady_clock::now();
     for (;;)
@@ -102,7 +102,6 @@ std::string getCurrentSystemTime()
         tm.tm_sec,
         microseconds.count(),
         tm.tm_zone);
-
     return std::string{date};
 }
 } // namespace utility::time

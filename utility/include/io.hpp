@@ -21,7 +21,7 @@ namespace io
 extern const char* version() noexcept;
 
 extern std::string executeCommand(const std::string_view command, const std::uint32_t timeout = 0);
-extern void waitForUserInput(const std::function<bool(const std::string_view)>& action, const int timeout = -1);
+extern void waitForUserInput(const std::function<bool(const std::string_view)>& operation, const int timeout = -1);
 extern std::list<std::string> getFileContents(
     const std::string_view filename,
     const bool toLock,

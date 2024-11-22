@@ -48,7 +48,7 @@ private:
 };
 
 extern void millisecondLevelSleep(const std::uint32_t duration);
-extern int blockingTimer(const std::function<bool()> termination, const std::uint32_t timeout = 0);
+extern int blockingTimer(const std::function<bool()>& termination, const std::uint32_t timeout = 0);
 extern std::string getCurrentSystemTime();
 } // namespace time
 } // namespace utility
