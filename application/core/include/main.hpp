@@ -81,7 +81,7 @@ static void signalHandler(int sig)
 
     if (maxFrame == numOfFrame)
     {
-        detailedTrace << "\n<TRUNCATED...>\n";
+        detailedTrace << "\n<TRUNCATED>\n";
     }
     std::fprintf(
         ::stderr,
