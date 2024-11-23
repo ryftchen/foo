@@ -54,7 +54,7 @@ extern int dllDeleteFirst(DLL head);
 extern int dllDeleteLast(DLL head);
 } // namespace doubly_linked_list
 
-//! @brief The stack structure.
+//! @brief The stack structure (FILO/LIFO).
 namespace stack
 {
 //! @brief Alias for the doubly linked list. Used for the stack.
@@ -69,7 +69,7 @@ extern int stackSize(Stack head);
 extern bool stackIsEmpty(Stack head);
 } // namespace stack
 
-//! @brief The queue structure.
+//! @brief The queue structure (FIFO/LILO).
 namespace queue
 {
 //! @brief Alias for the doubly linked list. Used for the queue.

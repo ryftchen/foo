@@ -264,7 +264,7 @@ void Output::preorderBSTree(BSTree tree)
 {
     if (nullptr != tree)
     {
-        flush() << tree->key << ' ';
+        flush() << tree->key << " ... ";
         preorderBSTree(tree->left);
         preorderBSTree(tree->right);
     }
@@ -275,7 +275,7 @@ void Output::inorderBSTree(BSTree tree)
     if (nullptr != tree)
     {
         inorderBSTree(tree->left);
-        flush() << tree->key << ' ';
+        flush() << tree->key << " ... ";
         inorderBSTree(tree->right);
     }
 }
@@ -286,7 +286,7 @@ void Output::postorderBSTree(BSTree tree)
     {
         postorderBSTree(tree->left);
         postorderBSTree(tree->right);
-        flush() << tree->key << ' ';
+        flush() << tree->key << " ... ";
     }
 }
 
@@ -294,18 +294,22 @@ void Output::printBSTree(BSTree tree, const Type key, const int direction)
 {
     if (nullptr != tree)
     {
+        int currInd = indent;
         if (0 == direction)
         {
-            flush() << "| " << tree->key << " is root\n";
+            indent = 0;
+            flush() << "+ " << tree->key << " -> root\n";
         }
         else
         {
-            flush() << "| " << tree->key << " is " << key << "'s " << ((1 == direction) ? "right" : "left")
-                    << " child\n";
+            flush() << "+ " << std::string(currInd, ' ') << tree->key << " -> " << key << "'s "
+                    << ((1 == direction) ? "right" : "left") << " child\n";
         }
 
+        indent += 2;
         printBSTree(tree->left, tree->key, -1);
         printBSTree(tree->right, tree->key, 1);
+        indent = currInd;
     }
 }
 } // namespace bs
@@ -575,7 +579,7 @@ void Output::preorderAVLTree(AVLTree tree)
 {
     if (nullptr != tree)
     {
-        flush() << tree->key << ' ';
+        flush() << tree->key << " ... ";
         preorderAVLTree(tree->left);
         preorderAVLTree(tree->right);
     }
@@ -586,7 +590,7 @@ void Output::inorderAVLTree(AVLTree tree)
     if (nullptr != tree)
     {
         inorderAVLTree(tree->left);
-        flush() << tree->key << ' ';
+        flush() << tree->key << " ... ";
         inorderAVLTree(tree->right);
     }
 }
@@ -597,7 +601,7 @@ void Output::postorderAVLTree(AVLTree tree)
     {
         postorderAVLTree(tree->left);
         postorderAVLTree(tree->right);
-        flush() << tree->key << ' ';
+        flush() << tree->key << " ... ";
     }
 }
 
@@ -605,18 +609,22 @@ void Output::printAVLTree(AVLTree tree, const Type key, const int direction)
 {
     if (nullptr != tree)
     {
+        int currInd = indent;
         if (0 == direction)
         {
-            flush() << "| " << tree->key << " is root\n";
+            indent = 0;
+            flush() << "+ " << tree->key << " -> root\n";
         }
         else
         {
-            flush() << "| " << tree->key << " is " << key << "'s " << ((1 == direction) ? "right" : "left")
-                    << " child\n";
+            flush() << "+ " << std::string(currInd, ' ') << tree->key << " -> " << key << "'s "
+                    << ((1 == direction) ? "right" : "left") << " child\n";
         }
 
+        indent += 2;
         printAVLTree(tree->left, tree->key, -1);
         printAVLTree(tree->right, tree->key, 1);
+        indent = currInd;
     }
 }
 } // namespace avl
@@ -887,7 +895,7 @@ void Output::preorderSplayTree(SplayTree tree)
 {
     if (nullptr != tree)
     {
-        flush() << tree->key << ' ';
+        flush() << tree->key << " ... ";
         preorderSplayTree(tree->left);
         preorderSplayTree(tree->right);
     }
@@ -898,7 +906,7 @@ void Output::inorderSplayTree(SplayTree tree)
     if (nullptr != tree)
     {
         inorderSplayTree(tree->left);
-        flush() << tree->key << ' ';
+        flush() << tree->key << " ... ";
         inorderSplayTree(tree->right);
     }
 }
@@ -909,7 +917,7 @@ void Output::postorderSplayTree(SplayTree tree)
     {
         postorderSplayTree(tree->left);
         postorderSplayTree(tree->right);
-        flush() << tree->key << ' ';
+        flush() << tree->key << " ... ";
     }
 }
 
@@ -917,18 +925,22 @@ void Output::printSplayTree(SplayTree tree, const Type key, const int direction)
 {
     if (nullptr != tree)
     {
+        int currInd = indent;
         if (0 == direction)
         {
-            flush() << "| " << tree->key << " is root\n";
+            indent = 0;
+            flush() << "+ " << tree->key << " -> root\n";
         }
         else
         {
-            flush() << "| " << tree->key << " is " << key << "'s " << ((1 == direction) ? "right" : "left")
-                    << " child\n";
+            flush() << "+ " << std::string(currInd, ' ') << tree->key << " -> " << key << "'s "
+                    << ((1 == direction) ? "right" : "left") << " child\n";
         }
 
+        indent += 2;
         printSplayTree(tree->left, tree->key, -1);
         printSplayTree(tree->right, tree->key, 1);
+        indent = currInd;
     }
 }
 } // namespace splay

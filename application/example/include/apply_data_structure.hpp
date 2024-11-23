@@ -161,7 +161,8 @@ public:
             doubly_linked_list::dllIsEmpty, doubly_linked_list::dllSize;
 
         date_structure::linear::Output output{};
-        output.flush() << std::boolalpha;
+        auto& flush = output.flush();
+        flush << std::boolalpha;
         Meta meta[] = {{'A', "foo"}, {'B', "bar"}, {'C', "baz"}, {'D', "qux"}};
         const std::span<Meta> nodes(meta);
 
@@ -169,37 +170,39 @@ public:
         DLL dll = nullptr;
         createDll(&dll);
         dllInsert(dll, 0, &nodes[0]);
-        output.flush() << "insert (0): {" << nodes[0].id << ", " << nodes[0].name << "}\n";
+        flush << "insert (0): {" << nodes[0].id << ", " << nodes[0].name << "}\n";
         dllInsert(dll, 0, &nodes[1]);
-        output.flush() << "insert (0): {" << nodes[1].id << ", " << nodes[1].name << "}\n";
+        flush << "insert (0): {" << nodes[1].id << ", " << nodes[1].name << "}\n";
         dllInsert(dll, 1, &nodes[2]);
-        output.flush() << "insert (1): {" << nodes[2].id << ", " << nodes[2].name << "}\n";
+        flush << "insert (1): {" << nodes[2].id << ", " << nodes[2].name << "}\n";
         dllDelete(dll, 2);
-        output.flush() << "delete (2)\n";
+        flush << "delete (2)\n";
 
         dllInsertFirst(dll, &nodes.front());
-        output.flush() << "insert first: {" << nodes.front().id << ", " << nodes.front().name << "}\n";
+        flush << "insert first: {" << nodes.front().id << ", " << nodes.front().name << "}\n";
         dllInsertLast(dll, &nodes.back());
-        output.flush() << "insert last: {" << nodes.back().id << ", " << nodes.back().name << "}\n";
+        flush << "insert last: {" << nodes.back().id << ", " << nodes.back().name << "}\n";
         val = static_cast<Meta*>(dllGetFirst(dll));
-        output.flush() << "get first: {" << val->id << ", " << val->name << "}\n";
+        flush << "get first: {" << val->id << ", " << val->name << "}\n";
         val = static_cast<Meta*>(dllGetLast(dll));
-        output.flush() << "get last: {" << val->id << ", " << val->name << "}\n";
+        flush << "get last: {" << val->id << ", " << val->name << "}\n";
         dllDeleteFirst(dll);
-        output.flush() << "delete first\n";
+        flush << "delete first\n";
         dllDeleteLast(dll);
-        output.flush() << "delete last\n";
+        flush << "delete last\n";
 
-        output.flush() << "whether it is empty: " << dllIsEmpty(dll) << '\n';
-        output.flush() << "size: " << dllSize(dll) << '\n';
+        flush << "whether it is empty: " << dllIsEmpty(dll) << '\n';
+        flush << "size: " << dllSize(dll) << '\n';
+        flush << "linear details:\n+ HEAD";
         for (int i = 0; i < dllSize(dll); ++i)
         {
             val = static_cast<Meta*>(dllGet(dll, i));
-            output.flush() << "get (" << i << "): {" << val->id << ", " << val->name << "}\n";
+            flush << " <-> {" << val->id << ", " << val->name << '}';
         }
+        flush << " <-> NULL\n";
         destroyDll(&dll);
 
-        return std::ostringstream(output.flush().str());
+        return std::ostringstream(flush.str());
     }
     //! @brief Stack.
     //! @return procedure output
@@ -210,7 +213,8 @@ public:
             stack::stackPush, stack::stackSize, stack::stackTop;
 
         date_structure::linear::Output output{};
-        output.flush() << std::boolalpha;
+        auto& flush = output.flush();
+        flush << std::boolalpha;
         Meta meta[] = {{'A', "foo"}, {'B', "bar"}, {'C', "baz"}, {'D', "qux"}};
         const std::span<Meta> nodes(meta);
 
@@ -223,26 +227,29 @@ public:
             [&](auto& node)
             {
                 stackPush(stacks, &node);
-                output.flush() << "push: {" << node.id << ", " << node.name << "}\n";
+                flush << "push: {" << node.id << ", " << node.name << "}\n";
             });
 
         val = static_cast<Meta*>(stackPop(stacks));
-        output.flush() << "pop: {" << val->id << ", " << val->name << "}\n";
+        flush << "pop: {" << val->id << ", " << val->name << "}\n";
         val = static_cast<Meta*>(stackTop(stacks));
-        output.flush() << "top: {" << val->id << ", " << val->name << "}\n";
+        flush << "top: {" << val->id << ", " << val->name << "}\n";
         stackPush(stacks, &nodes.back());
-        output.flush() << "push: {" << nodes.back().id << ", " << nodes.back().name << "}\n";
+        flush << "push: {" << nodes.back().id << ", " << nodes.back().name << "}\n";
 
-        output.flush() << "whether it is empty: " << stackIsEmpty(stacks) << '\n';
-        output.flush() << "size: " << stackSize(stacks) << '\n';
+        flush << "whether it is empty: " << stackIsEmpty(stacks) << '\n';
+        flush << "size: " << stackSize(stacks) << '\n';
+        flush << "linear details:\n+ FRONT [";
         while (!stackIsEmpty(stacks))
         {
             val = static_cast<Meta*>(stackPop(stacks));
-            output.flush() << "pop: {" << val->id << ", " << val->name << "}\n";
+            flush << '{' << val->id << ", " << val->name << "}, ";
         }
+        flush.seekp(flush.str().length() - 2);
+        flush << "] REAR\n";
         destroyStack(&stacks);
 
-        return std::ostringstream(output.flush().str());
+        return std::ostringstream(flush.str());
     }
     //! @brief Queue.
     //! @return procedure output
@@ -253,7 +260,8 @@ public:
             queue::queuePop, queue::queuePush, queue::queueSize;
 
         date_structure::linear::Output output{};
-        output.flush() << std::boolalpha;
+        auto& flush = output.flush();
+        flush << std::boolalpha;
         Meta meta[] = {{'A', "foo"}, {'B', "bar"}, {'C', "baz"}, {'D', "qux"}};
         const std::span<Meta> nodes(meta);
 
@@ -266,26 +274,29 @@ public:
             [&](auto& node)
             {
                 queuePush(queues, &node);
-                output.flush() << "push: {" << node.id << ", " << node.name << "}\n";
+                flush << "push: {" << node.id << ", " << node.name << "}\n";
             });
 
         val = static_cast<Meta*>(queuePop(queues));
-        output.flush() << "pop: {" << val->id << ", " << val->name << "}\n";
+        flush << "pop: {" << val->id << ", " << val->name << "}\n";
         val = static_cast<Meta*>(queueFront(queues));
-        output.flush() << "front: {" << val->id << ", " << val->name << "}\n";
+        flush << "front: {" << val->id << ", " << val->name << "}\n";
         queuePush(queues, &nodes.front());
-        output.flush() << "push: {" << nodes.front().id << ", " << nodes.front().name << "}\n";
+        flush << "push: {" << nodes.front().id << ", " << nodes.front().name << "}\n";
 
-        output.flush() << "whether it is empty: " << queueIsEmpty(queues) << '\n';
-        output.flush() << "size: " << queueSize(queues) << '\n';
+        flush << "whether it is empty: " << queueIsEmpty(queues) << '\n';
+        flush << "size: " << queueSize(queues) << '\n';
+        flush << "linear details:\n+ TOP [";
         while (!queueIsEmpty(queues))
         {
             val = static_cast<Meta*>(queuePop(queues));
-            output.flush() << "pop: {" << val->id << ", " << val->name << "}\n";
+            flush << '{' << val->id << ", " << val->name << "}, ";
         }
+        flush.seekp(flush.str().length() - 2);
+        flush << "] BOTTOM\n";
         destroyQueue(&queues);
 
-        return std::ostringstream(output.flush().str());
+        return std::ostringstream(flush.str());
     }
 };
 
@@ -329,43 +340,45 @@ public:
         using bs::BSTree, bs::bsTreeDelete, bs::bsTreeInsert, bs::destroyBSTree, bs::getMaximum, bs::getMinimum;
 
         bs::Output output{};
+        auto& flush = output.flush();
         BSTree root = nullptr;
         constexpr std::array<std::int16_t, 6> nodes = {1, 5, 4, 3, 2, 6};
 
-        output.flush() << "insert: ";
+        flush << "insert: ";
         std::for_each(
             nodes.cbegin(),
             nodes.cend(),
             [&](const auto node)
             {
-                output.flush() << node << ' ';
+                flush << node << ", ";
                 root = bsTreeInsert(root, node);
             });
+        flush.seekp(flush.str().length() - 2);
 
-        output.flush() << "\npre-order traversal: ";
+        flush << "\npre-order traversal: ";
         output.preorderBSTree(root);
-        output.flush() << "\nin-order traversal: ";
+        flush << "\nin-order traversal: ";
         output.inorderBSTree(root);
-        output.flush() << "\npost-order traversal: ";
+        flush << "\npost-order traversal: ";
         output.postorderBSTree(root);
 
-        output.flush() << "\nminimum: " << getMinimum(root)->key;
-        output.flush() << "\nmaximum: " << getMaximum(root)->key;
-        output.flush() << "\ntree details:\n";
+        flush << "\nminimum: " << getMinimum(root)->key;
+        flush << "\nmaximum: " << getMaximum(root)->key;
+        flush << "\ntree details:\n";
         output.printBSTree(root, root->key, 0);
 
         constexpr std::int16_t deleteNode = 3;
-        output.flush() << "delete root node: " << deleteNode;
+        flush << "delete root node: " << deleteNode;
         root = bsTreeDelete(root, deleteNode);
 
-        output.flush() << "\nin-order traversal: ";
+        flush << "\nin-order traversal: ";
         output.inorderBSTree(root);
-        output.flush() << "\ntree details:\n";
+        flush << "\ntree details:\n";
         output.printBSTree(root, root->key, 0);
 
         destroyBSTree(root);
 
-        return std::ostringstream(output.flush().str());
+        return std::ostringstream(flush.str());
     }
     //! @brief Adelson-Velsky-Landis.
     //! @return procedure output
@@ -376,46 +389,48 @@ public:
             avl::getMaximum, avl::getMinimum;
 
         avl::Output output{};
+        auto& flush = output.flush();
         AVLTree root = nullptr;
         constexpr std::array<std::int16_t, 16> nodes = {3, 2, 1, 4, 5, 6, 7, 16, 15, 14, 13, 12, 11, 10, 8, 9};
 
-        output.flush() << "height: " << getHeight(root);
-        output.flush() << "\ninsert: ";
+        flush << "height: " << getHeight(root);
+        flush << "\ninsert: ";
         std::for_each(
             nodes.cbegin(),
             nodes.cend(),
             [&](const auto node)
             {
-                output.flush() << node << ' ';
+                flush << node << ", ";
                 root = avlTreeInsert(root, node);
             });
+        flush.seekp(flush.str().length() - 2);
 
-        output.flush() << "\npre-order traversal: ";
+        flush << "\npre-order traversal: ";
         output.preorderAVLTree(root);
-        output.flush() << "\nin-order traversal: ";
+        flush << "\nin-order traversal: ";
         output.inorderAVLTree(root);
-        output.flush() << "\npost-order traversal: ";
+        flush << "\npost-order traversal: ";
         output.postorderAVLTree(root);
 
-        output.flush() << "\nheight: " << getHeight(root);
-        output.flush() << "\nminimum: " << getMinimum(root)->key;
-        output.flush() << "\nmaximum: " << getMaximum(root)->key;
-        output.flush() << "\ntree details:\n";
+        flush << "\nheight: " << getHeight(root);
+        flush << "\nminimum: " << getMinimum(root)->key;
+        flush << "\nmaximum: " << getMaximum(root)->key;
+        flush << "\ntree details:\n";
         output.printAVLTree(root, root->key, 0);
 
         constexpr std::int16_t deleteNode = 8;
-        output.flush() << "delete root node: " << deleteNode;
+        flush << "delete root node: " << deleteNode;
         root = avlTreeDelete(root, deleteNode);
 
-        output.flush() << "\nheight: " << getHeight(root);
-        output.flush() << "\nin-order traversal: ";
+        flush << "\nheight: " << getHeight(root);
+        flush << "\nin-order traversal: ";
         output.inorderAVLTree(root);
-        output.flush() << "\ntree details:\n";
+        flush << "\ntree details:\n";
         output.printAVLTree(root, root->key, 0);
 
         destroyAVLTree(root);
 
-        return std::ostringstream(output.flush().str());
+        return std::ostringstream(flush.str());
     }
     //! @brief Splay.
     //! @return procedure output
@@ -426,41 +441,43 @@ public:
             splay::splayTreeSplay;
 
         splay::Output output{};
+        auto& flush = output.flush();
         SplayTree root = nullptr;
         constexpr std::array<std::int16_t, 6> nodes = {10, 50, 40, 30, 20, 60};
 
-        output.flush() << "insert: ";
+        flush << "insert: ";
         std::for_each(
             nodes.cbegin(),
             nodes.cend(),
             [&](const auto node)
             {
-                output.flush() << node << ' ';
+                flush << node << ", ";
                 root = splayTreeInsert(root, node);
             });
+        flush.seekp(flush.str().length() - 2);
 
-        output.flush() << "\npre-order traversal: ";
+        flush << "\npre-order traversal: ";
         output.preorderSplayTree(root);
-        output.flush() << "\nin-order traversal: ";
+        flush << "\nin-order traversal: ";
         output.inorderSplayTree(root);
-        output.flush() << "\npost-order traversal: ";
+        flush << "\npost-order traversal: ";
         output.postorderSplayTree(root);
 
-        output.flush() << "\nminimum: " << getMinimum(root)->key;
-        output.flush() << "\nmaximum: " << getMaximum(root)->key;
-        output.flush() << "\ntree details:\n";
+        flush << "\nminimum: " << getMinimum(root)->key;
+        flush << "\nmaximum: " << getMaximum(root)->key;
+        flush << "\ntree details:\n";
         output.printSplayTree(root, root->key, 0);
 
         constexpr std::int16_t splayNode = 30;
-        output.flush() << "splay node as root node: " << splayNode;
+        flush << "splay node as root node: " << splayNode;
         root = splayTreeSplay(root, splayNode);
 
-        output.flush() << "\ntree details:\n";
+        flush << "\ntree details:\n";
         output.printSplayTree(root, root->key, 0);
 
         destroySplayTree(root);
 
-        return std::ostringstream(output.flush().str());
+        return std::ostringstream(flush.str());
     }
 };
 
