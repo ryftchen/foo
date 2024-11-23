@@ -101,12 +101,7 @@ public:
     //! @param port - peer port number
     //! @param onConnected - handling on connected
     void toConnect(
-        const std::string_view ip,
-        const std::uint16_t port,
-        const std::function<void()>& onConnected =
-            []()
-        {
-        });
+        const std::string_view ip, const std::uint16_t port, const std::function<void()>& onConnected = []() {});
     //! @brief Create a thread to receive.
     //! @param toDetach - whether to detach
     void toReceive(const bool toDetach = false);

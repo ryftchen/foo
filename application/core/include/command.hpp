@@ -119,54 +119,54 @@ private:
     //! @brief Check for excessive arguments.
     void checkForExcessiveArguments();
 
-    //! @brief Gather and notify observers.
+    //! @brief Gather and notify handlers.
     class Notifier
     {
     public:
         //! @brief Destroy the Notifier object.
         virtual ~Notifier() = default;
 
-        //! @brief An observer that performs an action when notified.
-        class Observer
+        //! @brief A handler that performs an action when notified.
+        class Handler
         {
         public:
-            //! @brief Construct a new Observer object.
-            //! @param procedure - procedure to be executed when the observer is updated
-            explicit Observer(std::function<void()> procedure) : callback(std::move(procedure)) {}
-            //! @brief Destroy the Observer object.
-            virtual ~Observer() = default;
+            //! @brief Construct a new Handler object.
+            //! @param procedure - procedure to be executed when the handler is updated
+            explicit Handler(std::function<void()> procedure) : callback(std::move(procedure)) {}
+            //! @brief Destroy the Handler object.
+            virtual ~Handler() = default;
 
             //! @brief Call the stored callback function.
-            void update() const { callback(); }
+            void execute() const { callback(); }
 
         private:
             //! @brief Callback function to invoke.
             const std::function<void()> callback{};
         };
-        //! @brief Attach an observer with a specific key to the notifier.
-        //! @param key - unique identifier for the observer
-        //! @param observer - observer to attach
-        void attach(const std::string_view key, const std::shared_ptr<Observer>& observer)
+        //! @brief Attach a handler with a specific key to the notifier.
+        //! @param key - unique identifier for the handler
+        //! @param handler - handler to be attached
+        void attach(const std::string_view key, const std::shared_ptr<Handler>& handler)
         {
-            observers[key.data()] = observer;
+            handlers[key.data()] = handler;
         }
-        //! @brief Notify the observer associated with the given key.
-        //! @param key - unique identifier for the observer
+        //! @brief Notify the handler associated with the given key.
+        //! @param key - unique identifier for the handler
         void notify(const std::string_view key) const
         {
-            const auto iter = observers.find(key.data());
-            if (iter != observers.cend())
+            const auto iter = handlers.find(key.data());
+            if (iter != handlers.cend())
             {
-                if (const auto observer = iter->second)
+                if (const auto handler = iter->second)
                 {
-                    observer->update();
+                    handler->execute();
                 }
             }
         }
 
     private:
-        //! @brief Map of observers identified by a key.
-        std::map<std::string, std::shared_ptr<Observer>> observers{};
+        //! @brief Map of handlers identified by a key.
+        std::map<std::string, std::shared_ptr<Handler>> handlers{};
     };
     //! @brief Alias for the sub-cli name.
     using SubCLIName = std::string;
