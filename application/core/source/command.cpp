@@ -168,7 +168,7 @@ Awaitable helperLifecycle()
         });
     constexpr std::uint8_t helperNum = 2;
     std::barrier awaitBarrier(helperNum + 1);
-    const auto asyncLauncher = [&awaitBarrier](const ExtEvent event)
+    const auto publish = [&awaitBarrier](const ExtEvent event)
     {
         const std::jthread send2Logger(
             [&awaitBarrier, event]()
@@ -186,9 +186,9 @@ Awaitable helperLifecycle()
     };
 
     co_await std::suspend_always{};
-    asyncLauncher(ExtEvent::start);
+    publish(ExtEvent::start);
     co_await std::suspend_always{};
-    asyncLauncher(ExtEvent::stop);
+    publish(ExtEvent::stop);
     awaitLatch.wait();
 }
 } // namespace
@@ -267,7 +267,7 @@ void Command::initializeCLI()
     mainCLI.addArgument("-h", "--help").argsNum(0).implicitVal(true).help("show help and exit");
     defaultNotifier.attach(
         toString(Category::help),
-        std::make_shared<Notifier::Observer>(
+        std::make_shared<Notifier::Handler>(
             [this]()
             {
                 showHelpMessage();
@@ -275,7 +275,7 @@ void Command::initializeCLI()
     mainCLI.addArgument("-v", "--version").argsNum(0).implicitVal(true).help("show version and exit");
     defaultNotifier.attach(
         toString(Category::version),
-        std::make_shared<Notifier::Observer>(
+        std::make_shared<Notifier::Handler>(
             [this]()
             {
                 showVersionIcon();
@@ -283,7 +283,7 @@ void Command::initializeCLI()
     mainCLI.addArgument("-d", "--dump").argsNum(0).implicitVal(true).help("dump default configuration and exit");
     defaultNotifier.attach(
         toString(Category::dump),
-        std::make_shared<Notifier::Observer>(
+        std::make_shared<Notifier::Handler>(
             []()
             {
                 dumpConfiguration();
@@ -312,7 +312,7 @@ void Command::initializeCLI()
               "separate with quotes");
     defaultNotifier.attach(
         toString(Category::console),
-        std::make_shared<Notifier::Observer>(
+        std::make_shared<Notifier::Handler>(
             [this]()
             {
                 executeInConsole();
