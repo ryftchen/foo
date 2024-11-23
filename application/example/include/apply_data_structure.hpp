@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <bitset>
 #include <cstdint>
+#include <cstring>
 #include <span>
 #include <vector>
 #else
@@ -193,13 +194,14 @@ public:
 
         flush << "whether it is empty: " << dllIsEmpty(dll) << '\n';
         flush << "size: " << dllSize(dll) << '\n';
-        flush << "linear details:\n+ HEAD";
+        flush << "linear details: HEAD -> ";
         for (int i = 0; i < dllSize(dll); ++i)
         {
             val = static_cast<Meta*>(dllGet(dll, i));
-            flush << " <-> {" << val->id << ", " << val->name << '}';
+            flush << '{' << val->id << ", " << val->name << "} <-> ";
         }
-        flush << " <-> NULL\n";
+        flush.seekp(flush.str().length() - std::strlen(" <-> "));
+        flush << " -> NULL\n";
         destroyDll(&dll);
 
         return std::ostringstream(flush.str());
@@ -239,13 +241,13 @@ public:
 
         flush << "whether it is empty: " << stackIsEmpty(stacks) << '\n';
         flush << "size: " << stackSize(stacks) << '\n';
-        flush << "linear details:\n+ FRONT [";
+        flush << "linear details: FRONT [";
         while (!stackIsEmpty(stacks))
         {
             val = static_cast<Meta*>(stackPop(stacks));
             flush << '{' << val->id << ", " << val->name << "}, ";
         }
-        flush.seekp(flush.str().length() - 2);
+        flush.seekp(flush.str().length() - std::strlen(", "));
         flush << "] REAR\n";
         destroyStack(&stacks);
 
@@ -286,13 +288,13 @@ public:
 
         flush << "whether it is empty: " << queueIsEmpty(queues) << '\n';
         flush << "size: " << queueSize(queues) << '\n';
-        flush << "linear details:\n+ TOP [";
+        flush << "linear details: TOP [";
         while (!queueIsEmpty(queues))
         {
             val = static_cast<Meta*>(queuePop(queues));
             flush << '{' << val->id << ", " << val->name << "}, ";
         }
-        flush.seekp(flush.str().length() - 2);
+        flush.seekp(flush.str().length() - std::strlen(", "));
         flush << "] BOTTOM\n";
         destroyQueue(&queues);
 
