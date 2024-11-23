@@ -380,7 +380,10 @@ void Subject::notify()
         observers.cend(),
         [this](const auto& observer)
         {
-            observer->update(shared_from_this());
+            if (const auto obs = observer.lock())
+            {
+                obs->update(weak_from_this());
+            }
         });
 }
 
@@ -389,10 +392,13 @@ int ConcreteObserver::getState()
     return observerState;
 }
 
-void ConcreteObserver::update(const std::shared_ptr<Subject>& subject)
+void ConcreteObserver::update(const std::weak_ptr<Subject>& subject)
 {
-    observerState = subject->getState();
-    output() << "observer state updated\n";
+    if (const auto sub = subject.lock())
+    {
+        observerState = sub->getState();
+        output() << "observer state updated\n";
+    }
 }
 
 int ConcreteSubject::getState()

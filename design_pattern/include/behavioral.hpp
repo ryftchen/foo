@@ -492,7 +492,7 @@ public:
     virtual int getState() = 0;
     //! @brief Update the state of observer by subject.
     //! @param subject - target subject
-    virtual void update(const std::shared_ptr<Subject>& subject) = 0;
+    virtual void update(const std::weak_ptr<Subject>& subject) = 0;
 };
 
 //! @brief Attach, detach and notify observers.
@@ -519,7 +519,7 @@ public:
 
 private:
     //! @brief Collection of observers.
-    std::vector<std::shared_ptr<Observer>> observers{};
+    std::vector<std::weak_ptr<Observer>> observers{};
 };
 
 //! @brief The concrete observer.
@@ -537,7 +537,7 @@ public:
     int getState() override;
     //! @brief Update the state of observer by subject.
     //! @param subject - target subject
-    void update(const std::shared_ptr<Subject>& subject) override;
+    void update(const std::weak_ptr<Subject>& subject) override;
 
 private:
     //! @brief State of observer.
