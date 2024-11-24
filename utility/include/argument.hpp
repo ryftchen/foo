@@ -381,7 +381,7 @@ private:
         //! @brief Check whether the number of arguments is exact.
         //! @return be exact or not exact
         [[nodiscard]] bool isExact() const { return min == max; }
-        //! @brief Check that the range's maximum is not greater than the type's maximum.
+        //! @brief Check whether the range's maximum is not greater than the type's maximum.
         //! @return be not greater or greater
         [[nodiscard]] bool isRightBounded() const { return max < std::numeric_limits<std::size_t>::max(); }
         //! @brief Get the minimum of the range.

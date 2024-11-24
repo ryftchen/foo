@@ -130,7 +130,7 @@ public:
             handle.resume();
         }
     }
-    //! @brief Check if the coroutine has completed.
+    //! @brief Check whether the coroutine has been completed.
     //! @return be done or not
     [[nodiscard]] bool done() const { return handle ? handle.done() : true; }
 

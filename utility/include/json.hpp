@@ -263,7 +263,7 @@ public:
     //! @brief Get the size of the array or object.
     //! @return number of items stored in the array or object, -1 if type is neither array nor object
     [[nodiscard]] int size() const;
-    //! @brief Check that the key exists.
+    //! @brief Check whether the key exists.
     //! @param key - target key
     //! @return exist or not exist
     [[nodiscard]] bool hasKey(const std::string_view key) const;

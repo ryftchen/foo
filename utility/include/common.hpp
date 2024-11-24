@@ -121,13 +121,13 @@ inline bool allStrEqual(const char* const str1, const char* const str2, Others c
     return allStrEqual(str1, str2) && allStrEqual(str2, others...);
 }
 
-//! @brief Check that the target value is part of the enumeration.
+//! @brief Check whether the target value is part of the enumeration.
 //! @tparam EnumType - type of enumeration
 //! @tparam Values - arguments of enumeration
 template <typename EnumType, EnumType... Values>
 requires std::is_enum_v<EnumType>
 class EnumCheck;
-//! @brief Check that the target value is part of the enumeration.
+//! @brief Check whether the target value is part of the enumeration.
 //! @tparam EnumType - type of enumeration
 template <typename EnumType>
 requires std::is_enum_v<EnumType>
@@ -143,7 +143,7 @@ public:
         return false;
     }
 };
-//! @brief Check that the target value is part of the enumeration.
+//! @brief Check whether the target value is part of the enumeration.
 //! @tparam EnumType - type of enumeration
 //! @tparam Value - current value
 //! @tparam Next - next enumeration value
