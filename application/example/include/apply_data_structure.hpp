@@ -191,6 +191,8 @@ public:
         flush << "delete first\n";
         dllDeleteLast(dll);
         flush << "delete last\n";
+        dllInsert(dll, 1, &nodes[0]);
+        flush << "insert (1): {" << nodes[0].id << ", " << nodes[0].name << "}\n";
 
         flush << "whether it is empty: " << dllIsEmpty(dll) << '\n';
         flush << "size: " << dllSize(dll) << '\n';
