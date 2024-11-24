@@ -397,11 +397,11 @@ void runChoices<MatchMethod>(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::match;
     const auto& bits = getCategoryOpts<category>();
-    assert(bits.size() == candidates.size());
     if (bits.none())
     {
         return;
     }
+    assert(bits.size() == candidates.size());
 
     APP_ALGO_PRINT_TASK_BEGIN_TITLE(category);
     using match::MatchSolution, match::InputBuilder, match::input::patternString;
@@ -524,11 +524,11 @@ void runChoices<NotationMethod>(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::notation;
     const auto& bits = getCategoryOpts<category>();
-    assert(bits.size() == candidates.size());
     if (bits.none())
     {
         return;
     }
+    assert(bits.size() == candidates.size());
 
     APP_ALGO_PRINT_TASK_BEGIN_TITLE(category);
     using notation::NotationSolution, notation::InputBuilder, notation::input::infixString;
@@ -684,11 +684,11 @@ void runChoices<OptimalMethod>(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::optimal;
     const auto& bits = getCategoryOpts<category>();
-    assert(bits.size() == candidates.size());
     if (bits.none())
     {
         return;
     }
+    assert(bits.size() == candidates.size());
 
     using optimal::InputBuilder, optimal::input::Rastrigin;
     const auto calcFunc =
@@ -856,11 +856,11 @@ void runChoices<SearchMethod>(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::search;
     const auto& bits = getCategoryOpts<category>();
-    assert(bits.size() == candidates.size());
     if (bits.none())
     {
         return;
     }
+    assert(bits.size() == candidates.size());
 
     APP_ALGO_PRINT_TASK_BEGIN_TITLE(category);
     using search::SearchSolution, search::InputBuilder, search::input::arrayLength, search::input::arrayRange1,
@@ -1110,11 +1110,11 @@ void runChoices<SortMethod>(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::sort;
     const auto& bits = getCategoryOpts<category>();
-    assert(bits.size() == candidates.size());
     if (bits.none())
     {
         return;
     }
+    assert(bits.size() == candidates.size());
 
     APP_ALGO_PRINT_TASK_BEGIN_TITLE(category);
     using sort::SortSolution, sort::InputBuilder, sort::input::arrayLength, sort::input::arrayRange1,

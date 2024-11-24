@@ -394,11 +394,11 @@ void runChoices<BehavioralInstance>(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::behavioral;
     const auto& bits = getCategoryOpts<category>();
-    assert(bits.size() == candidates.size());
     if (bits.none())
     {
         return;
     }
+    assert(bits.size() == candidates.size());
 
     APP_DP_PRINT_TASK_BEGIN_TITLE(category);
     using behavioral::BehavioralPattern;
@@ -570,11 +570,11 @@ void runChoices<CreationalInstance>(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::creational;
     const auto& bits = getCategoryOpts<category>();
-    assert(bits.size() == candidates.size());
     if (bits.none())
     {
         return;
     }
+    assert(bits.size() == candidates.size());
 
     APP_DP_PRINT_TASK_BEGIN_TITLE(category);
     using creational::CreationalPattern;
@@ -756,11 +756,11 @@ void runChoices<StructuralInstance>(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::structural;
     const auto& bits = getCategoryOpts<category>();
-    assert(bits.size() == candidates.size());
     if (bits.none())
     {
         return;
     }
+    assert(bits.size() == candidates.size());
 
     APP_DP_PRINT_TASK_BEGIN_TITLE(category);
     using structural::StructuralPattern;

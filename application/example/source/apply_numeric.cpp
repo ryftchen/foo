@@ -308,11 +308,11 @@ void runChoices<ArithmeticMethod>(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::arithmetic;
     const auto& bits = getCategoryOpts<category>();
-    assert(bits.size() == candidates.size());
     if (bits.none())
     {
         return;
     }
+    assert(bits.size() == candidates.size());
 
     APP_NUM_PRINT_TASK_BEGIN_TITLE(category);
     using arithmetic::ArithmeticSolution, arithmetic::InputBuilder, arithmetic::input::integerA,
@@ -435,11 +435,11 @@ void runChoices<DivisorMethod>(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::divisor;
     const auto& bits = getCategoryOpts<category>();
-    assert(bits.size() == candidates.size());
     if (bits.none())
     {
         return;
     }
+    assert(bits.size() == candidates.size());
 
     APP_NUM_PRINT_TASK_BEGIN_TITLE(category);
     using divisor::DivisorSolution, divisor::InputBuilder, divisor::input::integerA, divisor::input::integerB;
@@ -597,11 +597,11 @@ void runChoices<IntegralMethod>(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::integral;
     const auto& bits = getCategoryOpts<category>();
-    assert(bits.size() == candidates.size());
     if (bits.none())
     {
         return;
     }
+    assert(bits.size() == candidates.size());
 
     using integral::InputBuilder, integral::input::Expression1;
     const auto calcExpr =
@@ -744,11 +744,11 @@ void runChoices<PrimeMethod>(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::prime;
     const auto& bits = getCategoryOpts<category>();
-    assert(bits.size() == candidates.size());
     if (bits.none())
     {
         return;
     }
+    assert(bits.size() == candidates.size());
 
     APP_NUM_PRINT_TASK_BEGIN_TITLE(category);
     using prime::PrimeSolution, prime::InputBuilder, prime::input::maxPositiveInteger;

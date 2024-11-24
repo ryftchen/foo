@@ -246,11 +246,11 @@ void runChoices<LinearInstance>(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::linear;
     const auto& bits = getCategoryOpts<category>();
-    assert(bits.size() == candidates.size());
     if (bits.none())
     {
         return;
     }
+    assert(bits.size() == candidates.size());
 
     APP_DS_PRINT_TASK_BEGIN_TITLE(category);
     using linear::LinearStructure;
@@ -370,11 +370,11 @@ void runChoices<TreeInstance>(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::tree;
     const auto& bits = getCategoryOpts<category>();
-    assert(bits.size() == candidates.size());
     if (bits.none())
     {
         return;
     }
+    assert(bits.size() == candidates.size());
 
     APP_DS_PRINT_TASK_BEGIN_TITLE(category);
     using tree::TreeStructure;
