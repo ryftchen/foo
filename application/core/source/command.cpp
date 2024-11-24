@@ -295,12 +295,12 @@ void Command::initializeCLI()
         .action(
             [](const std::string& input)
             {
-                if (std::none_of(
+                if (std::all_of(
                         input.cbegin(),
                         input.cend(),
                         [l = std::locale{}](const auto c)
                         {
-                            return !std::isspace(c, l);
+                            return std::isspace(c, l);
                         }))
                 {
                     throw std::runtime_error("Invalid console command.");
@@ -318,10 +318,23 @@ void Command::initializeCLI()
                 executeInConsole();
             }));
 
+    SubCLIName title{};
     CategoryName category{};
     ChoiceContainer choices{};
+    auto& checklist = taskDispatcher.extraManager.checklist;
+    using IntWrap = TaskDispatcher::ExtraManager::IntWrap;
 
-    auto& algoTable = extraChoices[subCLIAppAlgo.title()];
+    title = subCLIAppAlgo.title();
+    auto& algoTable = extraChoices[title];
+    checklist[title] = IntWrap{
+        []()
+        {
+            return !app_algo::manager().empty();
+        },
+        []()
+        {
+            app_algo::manager().reset();
+        }};
     subCLIAppAlgo.addDescription(getDescr<app_algo::ApplyAlgorithm>());
     subCLIAppAlgo.addArgument("-h", "--help").argsNum(0).implicitVal(true).help("show help and exit");
     category = TypeInfo<app_algo::MatchMethod>::name;
@@ -426,7 +439,17 @@ void Command::initializeCLI()
         });
     mainCLI.addSubParser(subCLIAppAlgo);
 
-    auto& dpTable = extraChoices[subCLIAppDp.title()];
+    title = subCLIAppDp.title();
+    auto& dpTable = extraChoices[title];
+    checklist[title] = IntWrap{
+        []()
+        {
+            return !app_dp::manager().empty();
+        },
+        []()
+        {
+            app_dp::manager().reset();
+        }};
     subCLIAppDp.addDescription(getDescr<app_dp::ApplyDesignPattern>());
     subCLIAppDp.addArgument("-h", "--help").argsNum(0).implicitVal(true).help("show help and exit");
     category = TypeInfo<app_dp::BehavioralInstance>::name;
@@ -494,7 +517,17 @@ void Command::initializeCLI()
         });
     mainCLI.addSubParser(subCLIAppDp);
 
-    auto& dsTable = extraChoices[subCLIAppDs.title()];
+    title = subCLIAppDs.title();
+    auto& dsTable = extraChoices[title];
+    checklist[title] = IntWrap{
+        []()
+        {
+            return !app_ds::manager().empty();
+        },
+        []()
+        {
+            app_ds::manager().reset();
+        }};
     subCLIAppDs.addDescription(getDescr<app_ds::ApplyDataStructure>());
     subCLIAppDs.addArgument("-h", "--help").argsNum(0).implicitVal(true).help("show help and exit");
     category = TypeInfo<app_ds::LinearInstance>::name;
@@ -539,7 +572,18 @@ void Command::initializeCLI()
         });
     mainCLI.addSubParser(subCLIAppDs);
 
-    auto& numTable = extraChoices[subCLIAppNum.title()];
+    title = subCLIAppNum.title();
+    auto& numTable = extraChoices[title];
+    checklist[title] = IntWrap{
+        []()
+        {
+            return !app_num::manager().empty();
+        },
+        []()
+        {
+            app_num::manager().reset();
+        }};
+    ;
     subCLIAppNum.addDescription(getDescr<app_num::ApplyNumeric>());
     subCLIAppNum.addArgument("-h", "--help").argsNum(0).implicitVal(true).help("show help and exit");
     category = TypeInfo<app_num::ArithmeticMethod>::name;
@@ -714,9 +758,8 @@ void Command::validate()
                 std::visit(
                     action::EvtTypeOverloaded{[this, &target](auto&& event)
                                               {
-                                                  using EventType = std::decay_t<decltype(event)>;
-
-                                                  applyingForwarder.onMessage(action::UpdateChoice<EventType>{target});
+                                                  applyingForwarder.onMessage(
+                                                      action::UpdateChoice<std::decay_t<decltype(event)>>{target});
                                               }},
                     categoryAttr.event);
             }
@@ -763,16 +806,21 @@ void Command::dispatch()
             return;
         }
 
-        for (const auto& categoryAttr : std::views::values(
-                 std::next(extraChoices.cbegin(), taskDispatcher.extraManager.getExistingOrder())->second))
+        for ([[maybe_unused]] const auto& [categoryName, categoryAttr] :
+             extraChoices
+                 | std::views::filter(
+                     [this](const auto& subCLIPair)
+                     {
+                         return taskDispatcher.extraManager.checklist[subCLIPair.first].present();
+                     })
+                 | std::views::values | std::views::join)
         {
             const auto& candidates = categoryAttr.choices;
             std::visit(
                 action::EvtTypeOverloaded{[this, &candidates](auto&& event)
                                           {
-                                              using EventType = std::decay_t<decltype(event)>;
-
-                                              applyingForwarder.onMessage(action::RunChoices<EventType>{candidates});
+                                              applyingForwarder.onMessage(
+                                                  action::RunChoices<std::decay_t<decltype(event)>>{candidates});
                                           }},
                 categoryAttr.event);
         }

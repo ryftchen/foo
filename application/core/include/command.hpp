@@ -119,55 +119,6 @@ private:
     //! @brief Check for excessive arguments.
     void checkForExcessiveArguments();
 
-    //! @brief Gather and notify handlers.
-    class Notifier
-    {
-    public:
-        //! @brief Destroy the Notifier object.
-        virtual ~Notifier() = default;
-
-        //! @brief A handler that performs an action when notified.
-        class Handler
-        {
-        public:
-            //! @brief Construct a new Handler object.
-            //! @param procedure - procedure to be executed when the handler is updated
-            explicit Handler(std::function<void()> procedure) : callback(std::move(procedure)) {}
-            //! @brief Destroy the Handler object.
-            virtual ~Handler() = default;
-
-            //! @brief Call the stored callback function.
-            void execute() const { callback(); }
-
-        private:
-            //! @brief Callback function to invoke.
-            const std::function<void()> callback{};
-        };
-        //! @brief Attach a handler with a specific key to the notifier.
-        //! @param key - unique identifier for the handler
-        //! @param handler - handler to be attached
-        void attach(const std::string_view key, const std::shared_ptr<Handler>& handler)
-        {
-            handlers[key.data()] = handler;
-        }
-        //! @brief Notify the handler associated with the given key.
-        //! @param key - unique identifier for the handler
-        void notify(const std::string_view key) const
-        {
-            const auto iter = handlers.find(key.data());
-            if (iter != handlers.cend())
-            {
-                if (const auto handler = iter->second)
-                {
-                    handler->execute();
-                }
-            }
-        }
-
-    private:
-        //! @brief Map of handlers identified by a key.
-        std::map<std::string, std::shared_ptr<Handler>> handlers{};
-    };
     //! @brief Alias for the sub-cli name.
     using SubCLIName = std::string;
     //! @brief Alias for the category name.
@@ -218,104 +169,139 @@ private:
     //! @brief Mapping table of all extra choices. Fill as needed.
     ExtraChoiceMap extraChoices{};
 
-    //! @brief Manage native categories.
-    class NativeManager
+    //! @brief Manage tasks.
+    class TaskManager
     {
     public:
-        //! @brief Bit flags for managing native categories.
-        std::bitset<Bottom<Category>::value> categories{};
-
-        //! @brief Check whether any native categories do not exist.
-        //! @return any native categories do not exist or exist
-        [[nodiscard]] inline bool empty() const { return categories.none(); }
-        //! @brief Reset bit flags that manage native categories.
-        inline void reset() { categories.reset(); }
-    };
-    //! @brief Manage extra choices of sub-cli.
-    class ExtraManager
-    {
-    public:
-        //! @brief Enumerate specific extra choices.
-        enum Order : std::uint8_t
-        {
-            //! @brief Algorithm.
-            algorithm,
-            //! @brief Design pattern.
-            designPattern,
-            //! @brief Data structure.
-            dataStructure,
-            //! @brief Numeric.
-            numeric
-        };
-        //! @brief Flag for help only.
-        bool helpOnly{false};
-
-        //! @brief Check whether any extra choices do not exist.
-        //! @return any extra choices do not exist or exist
-        [[nodiscard]] inline bool empty() const
-        {
-            return app_algo::manager().empty() && app_ds::manager().empty() && app_dp::manager().empty()
-                && app_num::manager().empty() && !helpOnly;
-        }
-        //! @brief Reset bit flags that manage extra choices.
-        inline void reset()
-        {
-            app_algo::manager().reset();
-            app_ds::manager().reset();
-            app_dp::manager().reset();
-            app_num::manager().reset();
-            helpOnly = false;
-        }
-        //! @brief Get the existing order.
-        //! @return existing order
-        Order getExistingOrder()
-        {
-            const std::uint8_t validation = !app_algo::manager().empty() + !app_dp::manager().empty()
-                + !app_ds::manager().empty() + !app_num::manager().empty();
-            if (1 == validation)
-            {
-                if (!app_algo::manager().empty())
-                {
-                    return Order::algorithm;
-                }
-                else if (!app_dp::manager().empty())
-                {
-                    return Order::designPattern;
-                }
-                else if (!app_ds::manager().empty())
-                {
-                    return Order::dataStructure;
-                }
-                else if (!app_num::manager().empty())
-                {
-                    return Order::numeric;
-                }
-            }
-
-            reset();
-            throw std::logic_error("There can only be one order for the extra choices.");
-        }
-    };
-    //! @brief Manage all types of tasks.
-    struct TaskDispatcher
-    {
-        //! @brief Dispatch native type tasks.
-        NativeManager nativeManager{};
-        //! @brief Dispatch extra type tasks.
-        ExtraManager extraManager{};
+        //! @brief Destroy the TaskManager object.
+        virtual ~TaskManager() = default;
 
         //! @brief Check whether any tasks do not exist.
         //! @return any tasks do not exist or exist
-        [[nodiscard]] inline bool empty() const { return nativeManager.empty() && extraManager.empty(); }
+        [[nodiscard]] virtual inline bool empty() const = 0;
         //! @brief Reset bit flags that manage all tasks.
-        inline void reset()
+        virtual inline void reset() = 0;
+    };
+    //! @brief Schedule all managed tasks.
+    struct TaskDispatcher : public TaskManager
+    {
+        //! @brief Manage native categories.
+        class NativeManager : public TaskManager
+        {
+        public:
+            //! @brief Bit flags for managing native categories.
+            std::bitset<Bottom<Category>::value> categories{};
+
+            //! @brief Check whether any native categories do not exist.
+            //! @return any native categories do not exist or exist
+            [[nodiscard]] inline bool empty() const override { return categories.none(); }
+            //! @brief Reset bit flags that manage native categories.
+            inline void reset() override { categories.reset(); }
+        } /** @brief Dispatch native type tasks. */ nativeManager{};
+        //! @brief Manage extra choices of sub-cli.
+        class ExtraManager : public TaskManager
+        {
+        public:
+            //! @brief Wrap functions to check for existing and reset extra choices.
+            struct IntWrap
+            {
+                //! @brief Check the existence status of the extra choice.
+                std::function<bool()> present{};
+                //! @brief Reset control of the extra choice.
+                std::function<void()> reset{};
+            };
+            //! @brief Flag for help only.
+            bool helpOnly{false};
+            //! @brief Existence status and reset control of the sub-cli to which the extra choices belong.
+            std::map<SubCLIName, IntWrap> checklist{};
+
+            //! @brief Check whether any extra choices do not exist.
+            //! @return any extra choices do not exist or exist
+            [[nodiscard]] inline bool empty() const override
+            {
+                return !helpOnly
+                    && std::none_of(
+                        checklist.cbegin(),
+                        checklist.cend(),
+                        [](const auto& pair)
+                        {
+                            return pair.second.present();
+                        });
+            }
+            //! @brief Reset bit flags that manage extra choices.
+            inline void reset() override
+            {
+                helpOnly = false;
+                std::for_each(
+                    checklist.cbegin(),
+                    checklist.cend(),
+                    [](const auto& pair)
+                    {
+                        pair.second.reset();
+                    });
+            }
+        } /** @brief Dispatch extra type tasks */ extraManager{};
+
+        //! @brief Check whether any tasks do not exist.
+        //! @return any tasks do not exist or exist
+        [[nodiscard]] inline bool empty() const override { return nativeManager.empty() && extraManager.empty(); }
+        //! @brief Reset bit flags that manage all tasks.
+        inline void reset() override
         {
             nativeManager.reset();
             extraManager.reset();
         }
     } /** @brief Dispatch all types of tasks. */ taskDispatcher{};
-    //! @brief Notify for native type tasks.
-    Notifier defaultNotifier{};
+
+    //! @brief Gather and notify handlers.
+    class Notifier
+    {
+    public:
+        //! @brief Destroy the Notifier object.
+        virtual ~Notifier() = default;
+
+        //! @brief A handler that performs an action when notified.
+        class Handler
+        {
+        public:
+            //! @brief Construct a new Handler object.
+            //! @param procedure - procedure to be executed when the handler is updated
+            explicit Handler(std::function<void()> procedure) : callback(std::move(procedure)) {}
+            //! @brief Destroy the Handler object.
+            virtual ~Handler() = default;
+
+            //! @brief Call the stored callback function.
+            void execute() const { callback(); }
+
+        private:
+            //! @brief Callback function to invoke.
+            const std::function<void()> callback{};
+        };
+        //! @brief Attach a handler with a specific key to the notifier.
+        //! @param key - unique identifier for the handler
+        //! @param handler - handler to be attached
+        void attach(const std::string_view key, const std::shared_ptr<Handler>& handler)
+        {
+            handlers[key.data()] = handler;
+        }
+        //! @brief Notify the handler associated with the given key.
+        //! @param key - unique identifier for the handler
+        void notify(const std::string_view key) const
+        {
+            const auto iter = handlers.find(key.data());
+            if (iter != handlers.cend())
+            {
+                if (const auto handler = iter->second)
+                {
+                    handler->execute();
+                }
+            }
+        }
+
+    private:
+        //! @brief Map of handlers identified by a key.
+        std::map<std::string, std::shared_ptr<Handler>> handlers{};
+    } /** @brief Notify for native type tasks. */ defaultNotifier{};
     //! @brief Forward messages for extra type tasks.
     action::MessageForwarder applyingForwarder{};
 
