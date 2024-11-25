@@ -368,11 +368,7 @@ struct ElemList
     template <class T>
     constexpr std::size_t findValue(const T val) const
     {
-        return findIf(
-            [&val](const auto elem)
-            {
-                return elem == val;
-            });
+        return findIf([&val](const auto elem) { return elem == val; });
     }
     //! @brief Get the pointer of value by name.
     //! @tparam T - type of value
@@ -416,10 +412,7 @@ struct ElemList
     {
         return accumulate(
             std::basic_string_view<Char>{},
-            [&val](const auto ret, const auto elem)
-            {
-                return (elem == val) ? elem.name : ret;
-            });
+            [&val](const auto ret, const auto elem) { return (elem == val) ? elem.name : ret; });
     }
     //! @brief Push operation of the element.
     //! @tparam Elem - type of target element
@@ -428,12 +421,7 @@ struct ElemList
     template <class Elem>
     constexpr auto push(const Elem elem) const
     {
-        return std::apply(
-            [&elem](const auto... es)
-            {
-                return ElemList<Es..., Elem>{es..., elem};
-            },
-            elems);
+        return std::apply([&elem](const auto... es) { return ElemList<Es..., Elem>{es..., elem}; }, elems);
     }
     //! @brief Insert operation of the element.
     //! @tparam Elem - type of target element
@@ -629,11 +617,7 @@ struct TypeInfoBase
             [](const auto acc, const auto base)
             {
                 auto concat = base.info.virtualBases().accumulate(
-                    acc,
-                    [](const auto acc, const auto base)
-                    {
-                        return acc.insert(base);
-                    });
+                    acc, [](const auto acc, const auto base) { return acc.insert(base); });
                 if constexpr (!base.isVirtual)
                 {
                     return concat;
@@ -658,10 +642,7 @@ struct TypeInfoBase
             std::forward<Func>(func),
             virtualBases().accumulate(
                 std::forward<Func>(func)(std::move(ret), TypeInfo<Type>{}, 0),
-                [&](const auto acc, const auto vb)
-                {
-                    return std::forward<Func>(func)(std::move(acc), vb, 1);
-                }));
+                [&](const auto acc, const auto vb) { return std::forward<Func>(func)(std::move(acc), vb, 1); }));
     }
     //! @brief Iteration in the DFS algorithm.
     //! @tparam Func - type of callable function

@@ -552,13 +552,9 @@ public:
         std::visit(
             ExprOverloaded{
                 [&prefix](const input::Expression1& /*expr*/)
-                {
-                    std::cout << prefix << input::Expression1::exprDescr << std::endl;
-                },
+                { std::cout << prefix << input::Expression1::exprDescr << std::endl; },
                 [&prefix](const input::Expression2& /*expr*/)
-                {
-                    std::cout << prefix << input::Expression2::exprDescr << std::endl;
-                },
+                { std::cout << prefix << input::Expression2::exprDescr << std::endl; },
                 [](const auto& expr)
                 {
                     throw std::runtime_error("Unknown expression type: " + std::string{typeid(expr).name()} + '.');

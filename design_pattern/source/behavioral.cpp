@@ -228,13 +228,7 @@ namespace mediator
 {
 ConcreteMediator::~ConcreteMediator()
 {
-    std::for_each(
-        colleagues.begin(),
-        colleagues.end(),
-        [](auto& colleague)
-        {
-            colleague.reset();
-        });
+    std::for_each(colleagues.begin(), colleagues.end(), [](auto& colleague) { colleague.reset(); });
     colleagues.clear();
 }
 
@@ -320,13 +314,7 @@ std::shared_ptr<Memento> Originator::createMemento() const
 
 CareTaker::~CareTaker()
 {
-    std::for_each(
-        history.begin(),
-        history.end(),
-        [](auto& memento)
-        {
-            memento.reset();
-        });
+    std::for_each(history.begin(), history.end(), [](auto& memento) { memento.reset(); });
     history.clear();
 }
 

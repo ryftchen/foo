@@ -29,12 +29,7 @@ Thread::Thread(const std::size_t size)
                     std::packaged_task<void()> thdTask{};
                     if (std::unique_lock<std::mutex> lock(mtx); true)
                     {
-                        cond.wait(
-                            lock,
-                            [this]()
-                            {
-                                return releaseReady.load() || !taskQueue.empty();
-                            });
+                        cond.wait(lock, [this]() { return releaseReady.load() || !taskQueue.empty(); });
 
                         if (releaseReady.load() && taskQueue.empty())
                         {
@@ -62,12 +57,7 @@ Thread::~Thread()
 {
     if (std::unique_lock<std::mutex> lock(mtx); true)
     {
-        producer.wait(
-            lock,
-            [this]()
-            {
-                return taskQueue.empty();
-            });
+        producer.wait(lock, [this]() { return taskQueue.empty(); });
         releaseReady.store(true);
     }
 

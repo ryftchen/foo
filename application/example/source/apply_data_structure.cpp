@@ -262,12 +262,8 @@ void runChoices<LinearInstance>(const std::vector<std::string>& candidates)
         threads->enqueue(threadName, targetInstance);
     };
     const auto name = utility::currying::curry(getTaskNameCurried(), getCategoryAlias<category>());
-    auto indices = std::views::iota(0U, bits.size())
-        | std::views::filter(
-                       [&bits](const auto i)
-                       {
-                           return bits.test(i);
-                       });
+    auto indices =
+        std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); });
 
     std::cout << "\nInstances of the " << toString(category) << " structure:" << std::endl;
     for (const auto index : indices)
@@ -386,12 +382,8 @@ void runChoices<TreeInstance>(const std::vector<std::string>& candidates)
         threads->enqueue(threadName, targetInstance);
     };
     const auto name = utility::currying::curry(getTaskNameCurried(), getCategoryAlias<category>());
-    auto indices = std::views::iota(0U, bits.size())
-        | std::views::filter(
-                       [&bits](const auto i)
-                       {
-                           return bits.test(i);
-                       });
+    auto indices =
+        std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); });
 
     std::cout << "\nInstances of the " << toString(category) << " structure:" << std::endl;
     for (const auto index : indices)

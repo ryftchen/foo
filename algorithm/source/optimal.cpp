@@ -53,10 +53,7 @@ std::optional<std::tuple<double, double>> Gradient::operator()(const double left
     std::tie(y, x) = *std::min_element(
         std::cbegin(storage),
         std::cend(storage),
-        [](const auto& min1, const auto& min2)
-        {
-            return std::get<0>(min1) < std::get<0>(min2);
-        });
+        [](const auto& min1, const auto& min2) { return std::get<0>(min1) < std::get<0>(min2); });
 
     return std::make_optional(std::make_tuple(y, x));
 }
@@ -118,10 +115,7 @@ std::optional<std::tuple<double, double>> Particle::operator()(const double left
     const auto initialBest = std::min_element(
         std::cbegin(swarm),
         std::cend(swarm),
-        [](const auto& min1, const auto& min2)
-        {
-            return min1.xFitness < min2.xFitness;
-        });
+        [](const auto& min1, const auto& min2) { return min1.xFitness < min2.xFitness; });
     double xBest = initialBest->x, xFitnessBest = initialBest->xFitness;
 
     std::uniform_real_distribution<double> coeff(0.0, 1.0);
@@ -178,10 +172,7 @@ std::optional<std::tuple<double, double>> Particle::operator()(const double left
     std::tie(xFitnessBest, xBest) = *std::min_element(
         std::cbegin(storage),
         std::cend(storage),
-        [](const auto& min1, const auto& min2)
-        {
-            return std::get<0>(min1) < std::get<0>(min2);
-        });
+        [](const auto& min1, const auto& min2) { return std::get<0>(min1) < std::get<0>(min2); });
 
     return std::make_optional(std::make_tuple(xFitnessBest, xBest));
 }
@@ -246,13 +237,7 @@ Genetic::Population Genetic::populationInit()
         [this](auto& chr)
         {
             std::uniform_int_distribution<std::uint8_t> bit(0, 1);
-            std::generate(
-                chr.begin(),
-                chr.end(),
-                [this, &bit]()
-                {
-                    return bit(engine);
-                });
+            std::generate(chr.begin(), chr.end(), [this, &bit]() { return bit(engine); });
         });
     return pop;
 }
@@ -339,10 +324,7 @@ std::optional<std::pair<double, double>> Genetic::fitnessLinearTransformation(co
         pop.cbegin(),
         pop.cend(),
         std::back_inserter(reFitness),
-        [this](const auto& ind)
-        {
-            return calculateFitness(ind);
-        });
+        [this](const auto& ind) { return calculateFitness(ind); });
 
     const double reFitnessMin = *(std::min_element(std::cbegin(reFitness), std::cend(reFitness))),
                  reFitnessAvg = std::accumulate(std::cbegin(reFitness), std::cend(reFitness), 0.0) / reFitness.size();
@@ -362,13 +344,8 @@ std::optional<std::pair<double, double>> Genetic::fitnessLinearTransformation(co
 auto Genetic::rouletteWheelSelection(const Population& pop, const std::vector<double>& cumFitness)
 {
     const double pr = probability();
-    const auto cumIter = std::find_if(
-        cumFitness.cbegin(),
-        cumFitness.cend(),
-        [&pr](const auto cumulation)
-        {
-            return cumulation > pr;
-        });
+    const auto cumIter =
+        std::find_if(cumFitness.cbegin(), cumFitness.cend(), [&pr](const auto cumulation) { return cumulation > pr; });
 
     return std::next(pop.cbegin(), std::distance(cumFitness.cbegin(), cumIter));
 }
@@ -410,10 +387,7 @@ void Genetic::select(Population& pop)
         fitnessVal.cbegin(),
         fitnessVal.cend(),
         std::back_inserter(fitnessAvg),
-        [&sum](const auto fitVal)
-        {
-            return fitVal / sum;
-        });
+        [&sum](const auto fitVal) { return fitVal / sum; });
 
     double previous = 0.0;
     std::for_each(
@@ -435,10 +409,7 @@ Genetic::Chromosome Genetic::getBestIndividual(const Population& pop)
         pop.cbegin(),
         pop.cend(),
         std::back_inserter(fitnessVal),
-        [this](const auto& ind)
-        {
-            return calculateFitness(ind);
-        });
+        [this](const auto& ind) { return calculateFitness(ind); });
 
     const auto fitValBestIter = std::max_element(std::cbegin(fitnessVal), std::cend(fitnessVal));
     const auto indBestIter = std::next(pop.cbegin(), std::distance(fitnessVal.cbegin(), fitValBestIter));
