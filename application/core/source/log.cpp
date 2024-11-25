@@ -167,12 +167,7 @@ try
         daemonCond.notify_one();
     }
 
-    if (utility::time::blockingTimer(
-            [this]()
-            {
-                return !toReset.load();
-            },
-            timeoutPeriod))
+    if (utility::time::blockingTimer([this]() { return !toReset.load(); }, timeoutPeriod))
     {
         throw std::runtime_error("The logger did not reset properly in " + std::to_string(timeoutPeriod) + " ms ...");
     }
@@ -197,12 +192,7 @@ std::string Log::filterBreakLine(const std::string_view line)
     std::string singleRow(line);
     singleRow.erase(
         std::remove_if(
-            std::begin(singleRow),
-            std::end(singleRow),
-            [](const auto c)
-            {
-                return ('\n' == c) || ('\r' == c);
-            }),
+            std::begin(singleRow), std::end(singleRow), [](const auto c) { return ('\n' == c) || ('\r' == c); }),
         std::end(singleRow));
     return singleRow;
 }
@@ -272,13 +262,7 @@ void Log::backUpLogFileIfNeeded() const
                     std::smatch match{};
                     return std::regex_match(filename, match, pattern) ? std::stoi(match[1].str()) : 0;
                 });
-        const int index = std::ranges::max(
-            transformed,
-            std::less<int>(),
-            [](const auto value)
-            {
-                return value;
-            });
+        const int index = std::ranges::max(transformed, std::less<int>(), [](const auto value) { return value; });
         std::filesystem::rename(filePath, filePath + '.' + std::to_string(index + 1));
     }
 }
@@ -375,12 +359,7 @@ void Log::awaitNotification2Ongoing()
 {
     if (std::unique_lock<std::mutex> lock(daemonMtx); true)
     {
-        daemonCond.wait(
-            lock,
-            [this]()
-            {
-                return ongoing.load();
-            });
+        daemonCond.wait(lock, [this]() { return ongoing.load(); });
     }
 }
 
@@ -389,12 +368,7 @@ void Log::awaitNotification2Log()
     while (ongoing.load())
     {
         std::unique_lock<std::mutex> lock(daemonMtx);
-        daemonCond.wait(
-            lock,
-            [this]()
-            {
-                return !ongoing.load() || !logQueue.empty() || toReset.load();
-            });
+        daemonCond.wait(lock, [this]() { return !ongoing.load() || !logQueue.empty() || toReset.load(); });
 
         if (toReset.load())
         {

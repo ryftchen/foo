@@ -87,13 +87,7 @@ void Component::remove(const std::uint32_t /*index*/)
 
 Composite::~Composite()
 {
-    std::for_each(
-        children.begin(),
-        children.end(),
-        [](auto& component)
-        {
-            component.reset();
-        });
+    std::for_each(children.begin(), children.end(), [](auto& component) { component.reset(); });
 }
 
 std::shared_ptr<Component> Composite::getChild(const std::uint32_t index)
@@ -115,13 +109,7 @@ void Composite::remove(const std::uint32_t index)
 
 void Composite::operation()
 {
-    std::for_each(
-        children.cbegin(),
-        children.cend(),
-        [](const auto& component)
-        {
-            component->operation();
-        });
+    std::for_each(children.cbegin(), children.cend(), [](const auto& component) { component->operation(); });
 }
 
 void Leaf::operation()
@@ -223,13 +211,7 @@ void ConcreteFlyweight::operation()
 
 FlyweightFactory::~FlyweightFactory()
 {
-    std::for_each(
-        flies.begin(),
-        flies.end(),
-        [](auto& file)
-        {
-            file.second.reset();
-        });
+    std::for_each(flies.begin(), flies.end(), [](auto& file) { file.second.reset(); });
     flies.clear();
 }
 

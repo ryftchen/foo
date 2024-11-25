@@ -107,10 +107,7 @@ std::string represent(const T& val)
                     val.begin(),
                     static_cast<typename T::iterator::difference_type>(
                         std::min<std::size_t>(size, representMaxContainerSize) - 1)),
-                [&out](const auto& v)
-                {
-                    out << ' ' << represent(v);
-                });
+                [&out](const auto& v) { out << ' ' << represent(v); });
             if (size <= representMaxContainerSize)
             {
                 out << ' ';
@@ -492,9 +489,7 @@ Register::Register(
         names.begin(),
         names.end(),
         [](const auto& lhs, const auto& rhs)
-        {
-            return (lhs.size() == rhs.size()) ? (lhs < rhs) : (lhs.size() < rhs.size());
-        });
+        { return (lhs.size() == rhs.size()) ? (lhs < rhs) : (lhs.size() < rhs.size()); });
 }
 
 template <typename T>
@@ -521,11 +516,8 @@ auto Register::action(Func&& callable, Args&&... boundArgs)
     else
     {
         actions.emplace<ActionType>(
-            [func = std::forward<Func>(callable),
-             tup = std::make_tuple(std::forward<Args>(boundArgs)...)](const std::string& opt) mutable
-            {
-                return applyScopedOne(func, tup, opt);
-            });
+            [func = std::forward<Func>(callable), tup = std::make_tuple(std::forward<Args>(boundArgs)...)](
+                const std::string& opt) mutable { return applyScopedOne(func, tup, opt); });
     }
     return *this;
 }
@@ -545,12 +537,7 @@ Iterator Register::consume(Iterator start, Iterator end, const std::string_view 
     if (0 == numMax)
     {
         values.emplace_back(implicitValue);
-        std::visit(
-            [](const auto& func)
-            {
-                func({});
-            },
-            actions);
+        std::visit([](const auto& func) { func({}); }, actions);
         return start;
     }
     if ((dist = static_cast<std::size_t>(std::distance(start, end))) >= numMin)
@@ -624,10 +611,7 @@ bool Register::operator==(const T& rhs) const
             std::end(lhs),
             std::begin(rhs),
             std::end(rhs),
-            [](const auto& lhs, const auto& rhs)
-            {
-                return rhs == std::any_cast<const ValueType&>(lhs);
-            });
+            [](const auto& lhs, const auto& rhs) { return rhs == std::any_cast<const ValueType&>(lhs); });
     }
 }
 
@@ -688,10 +672,7 @@ T Register::anyCastContainer(const std::vector<std::any>& operand)
         std::begin(operand),
         std::end(operand),
         std::back_inserter(result),
-        [](const auto& value)
-        {
-            return std::any_cast<ValueType>(value);
-        });
+        [](const auto& value) { return std::any_cast<ValueType>(value); });
     return result;
 }
 

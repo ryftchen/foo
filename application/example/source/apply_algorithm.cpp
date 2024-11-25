@@ -425,12 +425,8 @@ void runChoices<MatchMethod>(const std::vector<std::string>& candidates)
             inputs->getPatternLength());
     };
     const auto name = utility::currying::curry(getTaskNameCurried(), getCategoryAlias<category>());
-    auto indices = std::views::iota(0U, bits.size())
-        | std::views::filter(
-                       [&bits](const auto i)
-                       {
-                           return bits.test(i);
-                       });
+    auto indices =
+        std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); });
 
     for (const auto index : indices)
     {
@@ -542,12 +538,8 @@ void runChoices<NotationMethod>(const std::vector<std::string>& candidates)
         threads->enqueue(threadName, targetMethod, inputs->getInfixNotation());
     };
     const auto name = utility::currying::curry(getTaskNameCurried(), getCategoryAlias<category>());
-    auto indices = std::views::iota(0U, bits.size())
-        | std::views::filter(
-                       [&bits](const auto i)
-                       {
-                           return bits.test(i);
-                       });
+    auto indices =
+        std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); });
 
     for (const auto index : indices)
     {
@@ -703,12 +695,8 @@ void runChoices<OptimalMethod>(const std::vector<std::string>& candidates)
             threads->enqueue(threadName, targetMethod, std::ref(function), range.range1, range.range2);
         };
         const auto name = utility::currying::curry(getTaskNameCurried(), getCategoryAlias<category>());
-        auto indices = std::views::iota(0U, bits.size())
-            | std::views::filter(
-                           [&bits](const auto i)
-                           {
-                               return bits.test(i);
-                           });
+        auto indices =
+            std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); });
 
         using optimal::OptimalSolution;
         for (const auto index : indices)
@@ -878,12 +866,8 @@ void runChoices<SearchMethod>(const std::vector<std::string>& candidates)
             threadName, targetMethod, inputs->getOrderedArray().get(), inputs->getLength(), inputs->getSearchKey());
     };
     const auto name = utility::currying::curry(getTaskNameCurried(), getCategoryAlias<category>());
-    auto indices = std::views::iota(0U, bits.size())
-        | std::views::filter(
-                       [&bits](const auto i)
-                       {
-                           return bits.test(i);
-                       });
+    auto indices =
+        std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); });
 
     for (const auto index : indices)
     {
@@ -1131,12 +1115,8 @@ void runChoices<SortMethod>(const std::vector<std::string>& candidates)
         threads->enqueue(threadName, targetMethod, inputs->getRandomArray().get(), inputs->getLength());
     };
     const auto name = utility::currying::curry(getTaskNameCurried(), getCategoryAlias<category>());
-    auto indices = std::views::iota(0U, bits.size())
-        | std::views::filter(
-                       [&bits](const auto i)
-                       {
-                           return bits.test(i);
-                       });
+    auto indices =
+        std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); });
 
     for (const auto index : indices)
     {

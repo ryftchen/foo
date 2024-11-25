@@ -650,13 +650,9 @@ public:
         std::visit(
             FuncOverloaded{
                 [&prefix](const input::Rastrigin& /*func*/)
-                {
-                    std::cout << prefix << input::Rastrigin::funcDescr << std::endl;
-                },
+                { std::cout << prefix << input::Rastrigin::funcDescr << std::endl; },
                 [&prefix](const input::Griewank& /*func*/)
-                {
-                    std::cout << prefix << input::Griewank::funcDescr << std::endl;
-                },
+                { std::cout << prefix << input::Griewank::funcDescr << std::endl; },
                 [](const auto& func)
                 {
                     throw std::runtime_error("Unknown function type: " + std::string{typeid(func).name()} + '.');

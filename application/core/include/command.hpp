@@ -221,24 +221,13 @@ private:
             {
                 return !helpOnly
                     && std::none_of(
-                        checklist.cbegin(),
-                        checklist.cend(),
-                        [](const auto& pair)
-                        {
-                            return pair.second.present();
-                        });
+                        checklist.cbegin(), checklist.cend(), [](const auto& pair) { return pair.second.present(); });
             }
             //! @brief Reset bit flags that manage extra choices.
             inline void reset() override
             {
                 helpOnly = false;
-                std::for_each(
-                    checklist.cbegin(),
-                    checklist.cend(),
-                    [](const auto& pair)
-                    {
-                        pair.second.reset();
-                    });
+                std::for_each(checklist.cbegin(), checklist.cend(), [](const auto& pair) { pair.second.reset(); });
             }
         } /** @brief Dispatch extra type tasks */ extraManager{};
 

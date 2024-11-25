@@ -410,12 +410,8 @@ void runChoices<BehavioralInstance>(const std::vector<std::string>& candidates)
         threads->enqueue(threadName, targetInstance);
     };
     const auto name = utility::currying::curry(getTaskNameCurried(), getCategoryAlias<category>());
-    auto indices = std::views::iota(0U, bits.size())
-        | std::views::filter(
-                       [&bits](const auto i)
-                       {
-                           return bits.test(i);
-                       });
+    auto indices =
+        std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); });
 
     std::cout << "\nInstances of the " << toString(category) << " pattern:" << std::endl;
     for (const auto index : indices)
@@ -586,12 +582,8 @@ void runChoices<CreationalInstance>(const std::vector<std::string>& candidates)
         threads->enqueue(threadName, targetInstance);
     };
     const auto name = utility::currying::curry(getTaskNameCurried(), getCategoryAlias<category>());
-    auto indices = std::views::iota(0U, bits.size())
-        | std::views::filter(
-                       [&bits](const auto i)
-                       {
-                           return bits.test(i);
-                       });
+    auto indices =
+        std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); });
 
     std::cout << "\nInstances of the " << toString(category) << " pattern:" << std::endl;
     for (const auto index : indices)
@@ -772,12 +764,8 @@ void runChoices<StructuralInstance>(const std::vector<std::string>& candidates)
         threads->enqueue(threadName, targetInstance);
     };
     const auto name = utility::currying::curry(getTaskNameCurried(), getCategoryAlias<category>());
-    auto indices = std::views::iota(0U, bits.size())
-        | std::views::filter(
-                       [&bits](const auto i)
-                       {
-                           return bits.test(i);
-                       });
+    auto indices =
+        std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); });
 
     std::cout << "\nInstances of the " << toString(category) << " pattern:" << std::endl;
     for (const auto index : indices)

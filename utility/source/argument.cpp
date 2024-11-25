@@ -154,10 +154,7 @@ std::size_t Register::getArgumentsLength() const
         std::cbegin(names),
         std::cend(names),
         std::size_t(0),
-        [](const auto& sum, const auto& str)
-        {
-            return sum + str.length();
-        });
+        [](const auto& sum, const auto& str) { return sum + str.length(); });
 
     if (checkIfPositional(names.front(), prefixChars))
     {
@@ -376,17 +373,9 @@ Argument::operator bool() const
     const auto isArgUsed = std::any_of(
                    argumentMap.cbegin(),
                    argumentMap.cend(),
-                   [](const auto& iterator)
-                   {
-                       return iterator.second->isUsed;
-                   }),
+                   [](const auto& iterator) { return iterator.second->isUsed; }),
                isSubParserUsed = std::any_of(
-                   subParserUsed.cbegin(),
-                   subParserUsed.cend(),
-                   [](const auto& iterator)
-                   {
-                       return iterator.second;
-                   });
+                   subParserUsed.cbegin(), subParserUsed.cend(), [](const auto& iterator) { return iterator.second; });
 
     return isParsed && (isArgUsed || isSubParserUsed);
 }

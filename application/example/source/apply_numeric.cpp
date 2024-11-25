@@ -329,12 +329,8 @@ void runChoices<ArithmeticMethod>(const std::vector<std::string>& candidates)
             threadName, targetMethod, std::get<0>(inputs->getIntegers()), std::get<1>(inputs->getIntegers()));
     };
     const auto name = utility::currying::curry(getTaskNameCurried(), getCategoryAlias<category>());
-    auto indices = std::views::iota(0U, bits.size())
-        | std::views::filter(
-                       [&bits](const auto i)
-                       {
-                           return bits.test(i);
-                       });
+    auto indices =
+        std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); });
 
     for (const auto index : indices)
     {
@@ -454,12 +450,8 @@ void runChoices<DivisorMethod>(const std::vector<std::string>& candidates)
             threadName, targetMethod, std::get<0>(inputs->getIntegers()), std::get<1>(inputs->getIntegers()));
     };
     const auto name = utility::currying::curry(getTaskNameCurried(), getCategoryAlias<category>());
-    auto indices = std::views::iota(0U, bits.size())
-        | std::views::filter(
-                       [&bits](const auto i)
-                       {
-                           return bits.test(i);
-                       });
+    auto indices =
+        std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); });
 
     for (const auto index : indices)
     {
@@ -616,12 +608,8 @@ void runChoices<IntegralMethod>(const std::vector<std::string>& candidates)
             threads->enqueue(threadName, targetMethod, std::ref(expression), range.range1, range.range2);
         };
         const auto name = utility::currying::curry(getTaskNameCurried(), getCategoryAlias<category>());
-        auto indices = std::views::iota(0U, bits.size())
-            | std::views::filter(
-                           [&bits](const auto i)
-                           {
-                               return bits.test(i);
-                           });
+        auto indices =
+            std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); });
 
         using integral::IntegralSolution;
         for (const auto index : indices)
@@ -762,12 +750,8 @@ void runChoices<PrimeMethod>(const std::vector<std::string>& candidates)
         threads->enqueue(threadName, targetMethod, inputs->getMaxPositiveInteger());
     };
     const auto name = utility::currying::curry(getTaskNameCurried(), getCategoryAlias<category>());
-    auto indices = std::views::iota(0U, bits.size())
-        | std::views::filter(
-                       [&bits](const auto i)
-                       {
-                           return bits.test(i);
-                       });
+    auto indices =
+        std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); });
 
     for (const auto index : indices)
     {

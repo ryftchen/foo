@@ -470,27 +470,14 @@ void Log::flush(
             }
         }
         auto reformat = multiRows | std::views::transform(filterBreakLine)
-            | std::views::filter(
-                            [](const auto& line)
-                            {
-                                return !line.empty();
-                            })
-            | std::views::transform(
-                            [&label](const auto& line)
-                            {
-                                return label + line;
-                            });
+            | std::views::filter([](const auto& line) { return !line.empty(); })
+            | std::views::transform([&label](const auto& line) { return label + line; });
         multiRows = std::vector<std::string>(std::ranges::begin(reformat), std::ranges::end(reformat));
 
         if (daemonLock.owns_lock())
         {
             std::for_each(
-                multiRows.begin(),
-                multiRows.end(),
-                [this](auto& output)
-                {
-                    logQueue.push(std::move(output));
-                });
+                multiRows.begin(), multiRows.end(), [this](auto& output) { logQueue.push(std::move(output)); });
             daemonLock.unlock();
             daemonCond.notify_one();
         }
@@ -499,10 +486,7 @@ void Log::flush(
             std::for_each(
                 multiRows.begin(),
                 multiRows.end(),
-                [](auto& output)
-                {
-                    std::cerr << changeToLogStyle(output) << std::endl;
-                });
+                [](auto& output) { std::cerr << changeToLogStyle(output) << std::endl; });
         }
     }
     catch (...)

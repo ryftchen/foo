@@ -345,12 +345,7 @@ try
         daemonCond.notify_one();
     }
 
-    if (utility::time::blockingTimer(
-            [this]()
-            {
-                return !toReset.load();
-            },
-            timeoutPeriod))
+    if (utility::time::blockingTimer([this]() { return !toReset.load(); }, timeoutPeriod))
     {
         throw std::runtime_error("The viewer did not reset properly in " + std::to_string(timeoutPeriod) + " ms ...");
     }
@@ -424,12 +419,7 @@ void View::awaitDueToOutput()
     if (isInUninterruptedState(State::work))
     {
         std::unique_lock<std::mutex> outputLock(outputMtx);
-        outputCond.wait(
-            outputLock,
-            [this]()
-            {
-                return outputCompleted.load();
-            });
+        outputCond.wait(outputLock, [this]() { return outputCompleted.load(); });
         outputCompleted.store(false);
     }
     else
@@ -558,20 +548,8 @@ int View::buildTLVPacket4Execute(const std::vector<std::string>& args, char* buf
     }
     if (entry.empty()
         || ((entry.length() == 2)
-            && (std::all_of(
-                    entry.cbegin(),
-                    entry.cend(),
-                    [](const auto c)
-                    {
-                        return '\'' == c;
-                    })
-                || std::all_of(
-                    entry.cbegin(),
-                    entry.cend(),
-                    [](const auto c)
-                    {
-                        return '"' == c;
-                    }))))
+            && (std::all_of(entry.cbegin(), entry.cend(), [](const auto c) { return '\'' == c; })
+                || std::all_of(entry.cbegin(), entry.cend(), [](const auto c) { return '"' == c; }))))
     {
         throw std::runtime_error("Please enter the \"execute\" and append with 'CMD' (include quotes).");
     }
@@ -902,13 +880,7 @@ std::string View::getLogContents()
     utility::common::ReadWriteGuard guard(log::info::loggerFileLock(), LockMode::read);
     constexpr std::uint64_t maxRows = 24 * 100;
     auto contents = utility::io::getFileContents(log::info::loggerFilePath(), false, true, maxRows);
-    std::for_each(
-        contents.begin(),
-        contents.end(),
-        [](auto& line)
-        {
-            return log::changeToLogStyle(line);
-        });
+    std::for_each(contents.begin(), contents.end(), [](auto& line) { return log::changeToLogStyle(line); });
     std::ostringstream os{};
     std::copy(contents.cbegin(), contents.cend(), std::ostream_iterator<std::string>(os, "\n"));
     return std::move(os).str();
@@ -970,10 +942,7 @@ std::string View::getStatusReports(const std::uint16_t frame)
     std::for_each(
         cmdColl.cbegin(),
         cmdColl.cend(),
-        [&statRep](const auto& cmd)
-        {
-            statRep += utility::io::executeCommand(cmd) + '\n';
-        });
+        [&statRep](const auto& cmd) { statRep += utility::io::executeCommand(cmd) + '\n'; });
     if (!statRep.empty())
     {
         statRep.pop_back();
@@ -1168,12 +1137,7 @@ void View::awaitNotification2Ongoing()
 {
     if (std::unique_lock<std::mutex> daemonLock(daemonMtx); true)
     {
-        daemonCond.wait(
-            daemonLock,
-            [this]()
-            {
-                return ongoing.load();
-            });
+        daemonCond.wait(daemonLock, [this]() { return ongoing.load(); });
     }
 }
 
@@ -1182,12 +1146,7 @@ void View::awaitNotification2View()
     while (ongoing.load())
     {
         std::unique_lock<std::mutex> daemonLock(daemonMtx);
-        daemonCond.wait(
-            daemonLock,
-            [this]()
-            {
-                return !ongoing.load() || toReset.load();
-            });
+        daemonCond.wait(daemonLock, [this]() { return !ongoing.load() || toReset.load(); });
 
         if (toReset.load())
         {
