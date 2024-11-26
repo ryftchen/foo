@@ -100,7 +100,7 @@ void Config::checkLoggerConfigInHelperList(const utility::json::JSON& helperList
             case "filePath"_bkdrHash:
                 isVerified &= item.isStringType();
                 break;
-            case "minimumLevel"_bkdrHash:
+            case "priorityLevel"_bkdrHash:
                 using OutputLevel = log::Log::OutputLevel;
                 isVerified &= item.isIntegralType();
                 isVerified &= EnumCheck<
@@ -110,17 +110,17 @@ void Config::checkLoggerConfigInHelperList(const utility::json::JSON& helperList
                     OutputLevel::warning,
                     OutputLevel::error>::isValue(item.toIntegral());
                 break;
-            case "usedMedium"_bkdrHash:
-                using OutputMedium = log::Log::OutputMedium;
-                isVerified &= item.isIntegralType();
-                isVerified &=
-                    EnumCheck<OutputMedium, OutputMedium::file, OutputMedium::terminal, OutputMedium::both>::isValue(
-                        item.toIntegral());
-                break;
-            case "writeType"_bkdrHash:
+            case "targetType"_bkdrHash:
                 using OutputType = log::Log::OutputType;
                 isVerified &= item.isIntegralType();
-                isVerified &= EnumCheck<OutputType, OutputType::add, OutputType::over>::isValue(item.toIntegral());
+                isVerified &= EnumCheck<OutputType, OutputType::file, OutputType::terminal, OutputType::all>::isValue(
+                    item.toIntegral());
+                break;
+            case "writeMode"_bkdrHash:
+                using OutputMode = log::Log::OutputMode;
+                isVerified &= item.isIntegralType();
+                isVerified &=
+                    EnumCheck<OutputMode, OutputMode::append, OutputMode::overwrite>::isValue(item.toIntegral());
                 break;
             default:
                 isVerified &= false;
@@ -218,11 +218,11 @@ utility::json::JSON getDefaultConfiguration()
 
     auto loggerProperties = json::object();
     loggerProperties.at("filePath") = "log/foo.log";
-    loggerProperties.at("minimumLevel") = static_cast<int>(log::Log::OutputLevel::debug);
-    loggerProperties.at("usedMedium") = static_cast<int>(log::Log::OutputMedium::both);
-    loggerProperties.at("writeType") = static_cast<int>(log::Log::OutputType::add);
+    loggerProperties.at("priorityLevel") = static_cast<int>(log::Log::OutputLevel::debug);
+    loggerProperties.at("targetType") = static_cast<int>(log::Log::OutputType::all);
+    loggerProperties.at("writeMode") = static_cast<int>(log::Log::OutputMode::append);
     auto loggerRequired = json::array();
-    loggerRequired.append("filePath", "minimumLevel", "usedMedium", "writeType");
+    loggerRequired.append("filePath", "priorityLevel", "targetType", "writeMode");
     assert(loggerProperties.size() == loggerRequired.length());
 
     auto viewerProperties = json::object();

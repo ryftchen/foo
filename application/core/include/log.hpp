@@ -157,14 +157,6 @@ public:
     Log& operator=(Log&&) = delete;
 
     friend class FSM<Log>;
-    //! @brief Enumerate specific output types.
-    enum class OutputType : std::uint8_t
-    {
-        //! @brief Add.
-        add,
-        //! @brief Over.
-        over
-    };
     //! @brief Enumerate specific output levels.
     enum class OutputLevel : std::uint8_t
     {
@@ -177,15 +169,23 @@ public:
         //! @brief Error.
         error
     };
-    //! @brief Enumerate specific output medium.
-    enum class OutputMedium : std::uint8_t
+    //! @brief Enumerate specific output modes.
+    enum class OutputMode : std::uint8_t
+    {
+        //! @brief Append.
+        append,
+        //! @brief Overwrite.
+        overwrite
+    };
+    //! @brief Enumerate specific output types.
+    enum class OutputType : std::uint8_t
     {
         //! @brief File.
         file,
         //! @brief Terminal.
         terminal,
-        //! @brief Both.
-        both
+        //! @brief All.
+        all
     };
     //! @brief Enumerate specific states for FSM.
     enum State : std::uint8_t
@@ -222,14 +222,14 @@ public:
 
     //! @brief Flush log to queue.
     //! @tparam Args - type of arguments of log format
-    //! @param level - output level
+    //! @param severity - level of severity
     //! @param srcFile - current code file
     //! @param srcLine - current code line
     //! @param format - log format to be flushed
     //! @param args - arguments of log format
     template <typename... Args>
     void flush(
-        const OutputLevel level,
+        const OutputLevel severity,
         const std::string_view srcFile,
         const std::uint32_t srcLine,
         const std::string_view format,
@@ -266,9 +266,9 @@ private:
     explicit Log(const StateType initState = State::init) noexcept :
         FSM(initState),
         filePath(getFullLogPath(config::detail::filePath4Logger())),
-        writeType(OutputType(config::detail::writeType4Logger())),
-        minimumLevel(OutputLevel(config::detail::minimumLevel4Logger())),
-        usedMedium(OutputMedium(config::detail::usedMedium4Logger()))
+        priorityLevel(OutputLevel(config::detail::priorityLevel4Logger())),
+        targetType(OutputType(config::detail::targetType4Logger())),
+        writeMode(OutputMode(config::detail::writeMode4Logger()))
     {
     }
 
@@ -286,17 +286,17 @@ private:
     std::atomic<bool> ongoing{false};
     //! @brief Flag for rollback request.
     std::atomic<bool> toReset{false};
-    //! @brief Log file absolute path.
+    //! @brief Full path to the log file.
     const std::string filePath{getFullLogPath()};
-    //! @brief Write type.
-    const OutputType writeType{OutputType::add};
-    //! @brief Minimum level.
-    const OutputLevel minimumLevel{OutputLevel::debug};
-    //! @brief Used medium.
-    const OutputMedium usedMedium{OutputMedium::both};
-    //! @brief Writer for the log file.
+    //! @brief Priority level.
+    const OutputLevel priorityLevel{OutputLevel::debug};
+    //! @brief Target type.
+    const OutputType targetType{OutputType::all};
+    //! @brief Write mode.
+    const OutputMode writeMode{OutputMode::append};
+    //! @brief Writer of the log content.
     utility::io::FileWriter logWriter{filePath};
-    //! @brief Log file lock.
+    //! @brief Operation lock for the log file.
     utility::common::ReadWriteLock fileLock{};
     //! @brief Spin lock for controlling state.
     mutable utility::common::SpinLock stateLock{};
@@ -405,13 +405,13 @@ extern const std::string& changeToLogStyle(std::string& line);
 
 template <typename... Args>
 void Log::flush(
-    const OutputLevel level,
+    const OutputLevel severity,
     const std::string_view srcFile,
     const std::uint32_t srcLine,
     const std::string_view format,
     Args&&... args)
 {
-    if (level < minimumLevel)
+    if (severity < priorityLevel)
     {
         return;
     }
@@ -423,7 +423,7 @@ void Log::flush(
         if (isInUninterruptedState(State::work))
         {
             daemonLock.lock();
-            switch (level)
+            switch (severity)
             {
                 case OutputLevel::debug:
                     prefix = debugLevelPrefix;

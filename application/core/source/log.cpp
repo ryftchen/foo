@@ -275,12 +275,12 @@ void Log::openLogFile()
     utility::common::ReadWriteGuard guard(fileLock, LockMode::write);
     tryCreateLogFolder();
     backUpLogFileIfNeeded();
-    switch (writeType)
+    switch (writeMode)
     {
-        case OutputType::add:
+        case OutputMode::append:
             logWriter.open();
             break;
-        case OutputType::over:
+        case OutputMode::overwrite:
             logWriter.open(true);
             break;
         default:
@@ -381,15 +381,15 @@ void Log::awaitNotification2Log()
         utility::common::ReadWriteGuard guard(fileLock, LockMode::write);
         while (!logQueue.empty())
         {
-            switch (usedMedium)
+            switch (targetType)
             {
-                case OutputMedium::file:
+                case OutputType::file:
                     logWriter.stream() << logQueue.front() << std::endl;
                     break;
-                case OutputMedium::terminal:
+                case OutputType::terminal:
                     std::cout << changeToLogStyle(logQueue.front()) << std::endl;
                     break;
-                case OutputMedium::both:
+                case OutputType::all:
                     logWriter.stream() << logQueue.front() << std::endl;
                     std::cout << changeToLogStyle(logQueue.front()) << std::endl;
                     break;
