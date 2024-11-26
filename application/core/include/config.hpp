@@ -49,7 +49,7 @@ private:
     //! @brief Construct a new Config object.
     Config() : dataRepo(parseConfigFile(filePath)) {}
 
-    //! @brief Configuration file absolute path.
+    //! @brief Full path to the configuration file.
     const std::string filePath{getFullDefaultConfigurationPath()};
     //! @brief Configuration data repository.
     const utility::json::JSON dataRepo{};
@@ -103,23 +103,23 @@ inline std::string filePath4Logger()
 {
     return (retrieveDataRepo() / "helperList" / "logger" / "properties" / "filePath").toString();
 }
-//! @brief Query the "minimumLevel" configuration in the "logger" properties of "helpList".
-//! @return "minimumLevel" configuration in the "logger" properties of "helpList"
-inline int minimumLevel4Logger()
+//! @brief Query the "priorityLevel" configuration in the "logger" properties of "helpList".
+//! @return "priorityLevel" configuration in the "logger" properties of "helpList"
+inline int priorityLevel4Logger()
 {
-    return (retrieveDataRepo() / "helperList" / "logger" / "properties" / "minimumLevel").toIntegral();
+    return (retrieveDataRepo() / "helperList" / "logger" / "properties" / "priorityLevel").toIntegral();
 }
-//! @brief Query the "usedMedium" configuration in the "logger" properties of "helpList".
-//! @return "usedMedium" configuration in the "logger" properties of "helpList"
-inline int usedMedium4Logger()
+//! @brief Query the "targetType" configuration in the "logger" properties of "helpList".
+//! @return "targetType" configuration in the "logger" properties of "helpList"
+inline int targetType4Logger()
 {
-    return (retrieveDataRepo() / "helperList" / "logger" / "properties" / "usedMedium").toIntegral();
+    return (retrieveDataRepo() / "helperList" / "logger" / "properties" / "targetType").toIntegral();
 }
-//! @brief Query the "writeType" configuration in the "logger" properties of "helpList".
-//! @return "writeType" configuration in the "logger" properties of "helpList"
-inline int writeType4Logger()
+//! @brief Query the "writeMode" configuration in the "logger" properties of "helpList".
+//! @return "writeMode" configuration in the "logger" properties of "helpList"
+inline int writeMode4Logger()
 {
-    return (retrieveDataRepo() / "helperList" / "logger" / "properties" / "writeType").toIntegral();
+    return (retrieveDataRepo() / "helperList" / "logger" / "properties" / "writeMode").toIntegral();
 }
 //! @brief Query the "tcpHost" configuration in the "viewer" properties of "helpList".
 //! @return "tcpHost" configuration in the "viewer" properties of "helpList"
