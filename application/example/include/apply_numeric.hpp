@@ -555,9 +555,14 @@ public:
                 { std::cout << prefix << input::Expression1::exprDescr << std::endl; },
                 [&prefix](const input::Expression2& /*expr*/)
                 { std::cout << prefix << input::Expression2::exprDescr << std::endl; },
-                [](const auto& expr)
+                [](auto&& expr)
                 {
-                    throw std::runtime_error("Unknown expression type: " + std::string{typeid(expr).name()} + '.');
+                    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-const-cast)
+                    auto* exprPtr = const_cast<std::remove_const_t<std::remove_reference_t<decltype(expr)>>*>(&expr);
+                    if (nullptr != dynamic_cast<numeric::integral::Expression*>(exprPtr))
+                    {
+                        throw std::runtime_error("Unknown expression type (" + std::string{typeid(expr).name()} + ").");
+                    }
                 }},
             expression);
     };
