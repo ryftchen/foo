@@ -116,6 +116,7 @@ static int tlvEncoding(char* buf, int& len, const TLVValue& val)
     enc.write<int>(TLVType::profile);
     sum += sizeof(int) + serialize(enc, val, &TLVValue::configInfo);
 
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
     *reinterpret_cast<int*>(buf + sizeof(int)) = ::htonl(sum);
     len = sizeof(int) + sizeof(int) + sum;
 
@@ -253,7 +254,7 @@ retry:
         if (toReset.load())
         {
             safeProcessEvent(Relaunch());
-            goto retry; // NOLINT (hicpp-avoid-goto)
+            goto retry; // NOLINT(hicpp-avoid-goto)
         }
         safeProcessEvent(DestroyServer());
 
@@ -269,7 +270,7 @@ retry:
         safeProcessEvent(Standby());
         if (awaitNotification2Retry())
         {
-            goto retry; // NOLINT (hicpp-avoid-goto)
+            goto retry; // NOLINT(hicpp-avoid-goto)
         }
     }
 }
@@ -633,6 +634,7 @@ int View::buildTLVPacket4Profile(const std::vector<std::string>& args, char* buf
     return len;
 }
 
+// NOLINTBEGIN(cppcoreguidelines-pro-type-reinterpret-cast)
 void View::encryptMessage(char* buffer, const int length)
 {
     constexpr unsigned char
@@ -694,6 +696,7 @@ void View::decryptMessage(char* buffer, const int length)
     while (0);
     ::EVP_CIPHER_CTX_free(ctx);
 }
+// NOLINTEND(cppcoreguidelines-pro-type-reinterpret-cast)
 
 void View::compressData(std::vector<char>& cache)
 {
@@ -724,6 +727,7 @@ void View::decompressData(std::vector<char>& cache)
     cache = std::move(decompressed);
 }
 
+// NOLINTBEGIN(cppcoreguidelines-pro-type-reinterpret-cast)
 int View::fillSharedMemory(const std::string_view contents)
 {
     const int shmId = ::shmget(
@@ -792,6 +796,7 @@ void View::fetchSharedMemory(const int shmId, std::string& contents)
     ::shmdt(shm);
     ::shmctl(shmId, IPC_RMID, nullptr);
 }
+// NOLINTEND(cppcoreguidelines-pro-type-reinterpret-cast)
 
 void View::printSharedMemory(const int shmId, const bool withoutPaging)
 {

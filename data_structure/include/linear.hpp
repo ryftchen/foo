@@ -9,7 +9,7 @@
 #include <sstream>
 
 //! @brief The date structure module.
-namespace date_structure // NOLINT (modernize-concat-nested-namespaces)
+namespace date_structure // NOLINT(modernize-concat-nested-namespaces)
 {
 //! @brief Linear-related functions in the data structure module.
 namespace linear

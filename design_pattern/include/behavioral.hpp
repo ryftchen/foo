@@ -12,7 +12,7 @@
 #include <vector>
 
 //! @brief The design pattern module.
-namespace design_pattern // NOLINT (modernize-concat-nested-namespaces)
+namespace design_pattern // NOLINT(modernize-concat-nested-namespaces)
 {
 //! @brief Behavioral-related functions in the design pattern module.
 namespace behavioral

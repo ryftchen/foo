@@ -16,12 +16,12 @@
                                 << std::setfill(' ') << std::endl;
 
 //! @brief The test module.
-namespace test // NOLINT (modernize-concat-nested-namespaces)
+namespace test // NOLINT(modernize-concat-nested-namespaces)
 {
 //! @brief Numeric-testing-related functions in the test module.
 namespace tst_num
 {
-using namespace application::app_num; // NOLINT (google-build-using-namespace)
+using namespace application::app_num; // NOLINT(google-build-using-namespace)
 //! @brief Alias for Category.
 using Category = ApplyNumeric::Category;
 

@@ -16,7 +16,7 @@
 #endif // __PRECOMPILED_HEADER
 
 //! @brief The application module.
-namespace application // NOLINT (modernize-concat-nested-namespaces)
+namespace application // NOLINT(modernize-concat-nested-namespaces)
 {
 //! @brief Console-mode-related functions in the application module.
 namespace console

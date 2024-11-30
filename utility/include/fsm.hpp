@@ -10,7 +10,7 @@
 #include <stdexcept>
 
 //! @brief The utility module.
-namespace utility // NOLINT (modernize-concat-nested-namespaces)
+namespace utility // NOLINT(modernize-concat-nested-namespaces)
 {
 //! @brief Finite-state-machine-related functions in the utility module.
 namespace fsm

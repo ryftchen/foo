@@ -13,6 +13,7 @@
 
 namespace utility::socket
 {
+// NOLINTBEGIN(cppcoreguidelines-pro-type-reinterpret-cast)
 //! @brief Function version number.
 //! @return version number (major.minor.patch)
 const char* version() noexcept
@@ -571,4 +572,5 @@ void UDPServer::setBroadcast()
     int broadcast = 1;
     ::setsockopt(sock, SOL_SOCKET, SO_BROADCAST, &broadcast, sizeof(broadcast));
 }
+// NOLINTEND(cppcoreguidelines-pro-type-reinterpret-cast)
 } // namespace utility::socket

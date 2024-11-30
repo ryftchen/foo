@@ -13,7 +13,7 @@
 #include "utility/include/argument.hpp"
 
 //! @brief The application module.
-namespace application // NOLINT (modernize-concat-nested-namespaces)
+namespace application // NOLINT(modernize-concat-nested-namespaces)
 {
 //! @brief Command-line-related functions in the application module.
 namespace command

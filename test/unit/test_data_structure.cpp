@@ -16,12 +16,12 @@
                                 << std::resetiosflags(std::ios_base::left) << std::setfill(' ') << std::endl;
 
 //! @brief The test module.
-namespace test // NOLINT (modernize-concat-nested-namespaces)
+namespace test // NOLINT(modernize-concat-nested-namespaces)
 {
 //! @brief Data-structure-testing-related functions in the test module.
 namespace tst_ds
 {
-using namespace application::app_ds; // NOLINT (google-build-using-namespace)
+using namespace application::app_ds; // NOLINT(google-build-using-namespace)
 //! @brief Alias for Category.
 using Category = ApplyDataStructure::Category;
 
