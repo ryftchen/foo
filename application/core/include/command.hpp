@@ -205,7 +205,7 @@ private:
             //! @brief Check the existence status of the extra choice.
             std::function<bool()> present{};
             //! @brief Reset control of the extra choice.
-            std::function<void()> reset{};
+            std::function<void()> clear{};
         };
         //! @brief Flag for help only.
         bool extraHelpOnly{false};
@@ -227,7 +227,7 @@ private:
         {
             extraHelpOnly = false;
             std::for_each(
-                extraChecklist.cbegin(), extraChecklist.cend(), [](const auto& pair) { pair.second.reset(); });
+                extraChecklist.cbegin(), extraChecklist.cend(), [](const auto& pair) { pair.second.clear(); });
         }
     };
     //! @brief Schedule all managed tasks.
@@ -252,35 +252,55 @@ private:
         //! @brief Destroy the Notifier object.
         virtual ~Notifier() = default;
 
-        //! @brief A handler that performs an action when notified.
-        class Handler
+        //! @brief A base handler that performs an action when notified.
+        class HandlerBase
         {
         public:
-            //! @brief Construct a new Handler object.
-            //! @param procedure - procedure to be executed when the handler is updated
-            explicit Handler(std::function<void()> procedure) : callback(std::move(procedure)) {}
-            //! @brief Destroy the Handler object.
-            virtual ~Handler() = default;
+            //! @brief Destroy the HandlerBase object.
+            virtual ~HandlerBase() = default;
 
-            //! @brief Call the stored callback function.
-            void execute() const { callback(); }
+            //! @brief Perform the specific operation.
+            virtual void execute() const = 0;
+        };
+        //! @brief A handler that performs an action when notified.
+        //! @tparam Derived - type of derived class
+        template <class Derived>
+        class Handler : public HandlerBase
+        {
+        public:
+            //! @brief Perform the specific operation.
+            void execute() const override { static_cast<const Derived*>(this)->execute(); }
+        };
+        //! @brief A handler that performs an action when notified (CRTP).
+        //! @tparam Cat - the specific value of Category enum
+        //! @tparam T - type of involved object
+        template <Category Cat, class T = Command>
+        class ConcreteHandler : public Handler<ConcreteHandler<Cat, T>>
+        {
+        public:
+            //! @brief Construct a new ConcreteHandler object.
+            ConcreteHandler() = delete;
+            //! @brief Construct a new ConcreteHandler object.
+            //! @param obj - target involved object
+            explicit ConcreteHandler(const T& obj) : obj(obj) {}
+
+            //! @brief Perform the specific operation.
+            void execute() const override;
 
         private:
-            //! @brief Callback function to invoke.
-            const std::function<void()> callback{};
+            //! @brief The involved object.
+            const T& obj{};
         };
+
         //! @brief Attach a handler with a specific key to the notifier.
-        //! @param key - unique identifier for the handler
+        //! @param cat - the specific value of Category enum
         //! @param handler - handler to be attached
-        void attach(const std::string_view key, const std::shared_ptr<Handler>& handler)
-        {
-            handlers[key.data()] = handler;
-        }
+        void attach(const Category cat, std::shared_ptr<HandlerBase> handler) { handlers[cat] = std::move(handler); }
         //! @brief Notify the handler associated with the given key.
-        //! @param key - unique identifier for the handler
-        void notify(const std::string_view key) const
+        //! @param cat - the specific value of Category enum
+        void notify(const Category cat) const
         {
-            const auto iter = handlers.find(key.data());
+            const auto iter = handlers.find(cat);
             if (iter != handlers.cend())
             {
                 if (const auto handler = iter->second)
@@ -292,11 +312,13 @@ private:
 
     private:
         //! @brief Map of handlers identified by a key.
-        std::map<std::string, std::shared_ptr<Handler>> handlers{};
+        std::map<Category, std::shared_ptr<HandlerBase>> handlers{};
     } /** @brief Notify for native type tasks. */ defaultNotifier{};
     //! @brief Forward messages for extra type tasks.
     action::MessageForwarder applyingForwarder{};
 
+    template <Category Cat, class T>
+    friend class Notifier::ConcreteHandler;
     //! @brief Enter console mode.
     static void enterConsoleMode();
     //! @brief Register the command line to console mode.

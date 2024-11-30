@@ -265,14 +265,11 @@ catch (const std::exception& err)
 void Command::initializeCLI()
 {
     mainCLI.addArgument("-h", "--help").argsNum(0).implicitVal(true).help("show help and exit");
-    defaultNotifier.attach(
-        toString(Category::help), std::make_shared<Notifier::Handler>([this]() { showHelpMessage(); }));
+    defaultNotifier.attach(Category::help, std::make_shared<Notifier::ConcreteHandler<Category::help>>(*this));
     mainCLI.addArgument("-v", "--version").argsNum(0).implicitVal(true).help("show version and exit");
-    defaultNotifier.attach(
-        toString(Category::version), std::make_shared<Notifier::Handler>([this]() { showVersionIcon(); }));
+    defaultNotifier.attach(Category::version, std::make_shared<Notifier::ConcreteHandler<Category::version>>(*this));
     mainCLI.addArgument("-d", "--dump").argsNum(0).implicitVal(true).help("dump default configuration and exit");
-    defaultNotifier.attach(
-        toString(Category::dump), std::make_shared<Notifier::Handler>([]() { dumpConfiguration(); }));
+    defaultNotifier.attach(Category::dump, std::make_shared<Notifier::ConcreteHandler<Category::dump>>(*this));
     mainCLI.addArgument("-c", "--console")
         .argsNum(utility::argument::ArgsNumPattern::any)
         .defaultVal<std::vector<std::string>>({"usage"})
@@ -290,8 +287,7 @@ void Command::initializeCLI()
         .metavar("CMD")
         .help("run options in console mode and exit\n"
               "separate with quotes");
-    defaultNotifier.attach(
-        toString(Category::console), std::make_shared<Notifier::Handler>([this]() { executeInConsole(); }));
+    defaultNotifier.attach(Category::console, std::make_shared<Notifier::ConcreteHandler<Category::console>>(*this));
 
     SubCLIName title{};
     CategoryName category{};
@@ -642,7 +638,7 @@ void Command::dispatch()
             std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); });
         for (const auto index : indices)
         {
-            defaultNotifier.notify(toString(Category(index)));
+            defaultNotifier.notify(Category(index));
         }
     }
     else if (!taskDispatcher.ExtraManager::empty())
@@ -804,6 +800,34 @@ void Command::checkForExcessiveArguments()
         taskDispatcher.reset();
         throw std::runtime_error("Excessive arguments.");
     }
+}
+
+//! @brief Perform the specific operation for Category::console.
+template <>
+void Command::Notifier::ConcreteHandler<Category::console>::execute() const
+{
+    obj.executeInConsole();
+}
+
+//! @brief Perform the specific operation for Category::dump.
+template <>
+void Command::Notifier::ConcreteHandler<Category::dump>::execute() const
+{
+    obj.dumpConfiguration();
+}
+
+//! @brief Perform the specific operation for Category::help.
+template <>
+void Command::Notifier::ConcreteHandler<Category::help>::execute() const
+{
+    obj.showHelpMessage();
+}
+
+//! @brief Perform the specific operation for Category::version.
+template <>
+void Command::Notifier::ConcreteHandler<Category::version>::execute() const
+{
+    obj.showVersionIcon();
 }
 
 void Command::enterConsoleMode()
