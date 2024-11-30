@@ -9,7 +9,7 @@
 #include "utility/include/json.hpp"
 
 //! @brief The application module.
-namespace application // NOLINT (modernize-concat-nested-namespaces)
+namespace application // NOLINT(modernize-concat-nested-namespaces)
 {
 //! @brief Configuration-related functions in the application module.
 namespace config
@@ -22,7 +22,7 @@ constexpr std::uint8_t maxAccessLimit = 10;
 extern std::string getFullDefaultConfigurationPath();
 
 //! @brief Configuration.
-class Config
+class Config final
 {
 public:
     //! @brief Destroy the Config object.

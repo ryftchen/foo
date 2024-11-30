@@ -12,7 +12,7 @@
 #include <vector>
 
 //! @brief The algorithm module.
-namespace algorithm // NOLINT (modernize-concat-nested-namespaces)
+namespace algorithm // NOLINT(modernize-concat-nested-namespaces)
 {
 //! @brief Search-related functions in the algorithm module.
 namespace search

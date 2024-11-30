@@ -10,7 +10,7 @@
 #include <random>
 
 //! @brief The algorithm module.
-namespace algorithm // NOLINT (modernize-concat-nested-namespaces)
+namespace algorithm // NOLINT(modernize-concat-nested-namespaces)
 {
 //! @brief Optimal-related functions in the algorithm module.
 namespace optimal

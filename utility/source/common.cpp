@@ -141,6 +141,7 @@ std::string formatString(const std::string_view format, ...)
     return std::string{buffer.cbegin(), buffer.cbegin() + bufferSize};
 }
 
+// NOLINTBEGIN(readability-magic-numbers)
 //! @brief Base64 encoding.
 //! @param data - decoded data
 //! @return encoded data
@@ -152,7 +153,7 @@ std::string base64Encode(const std::string_view data)
     constexpr std::string_view base64Chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
                                              "abcdefghijklmnopqrstuvwxyz"
                                              "0123456789+/";
-    // NOLINTBEGIN (readability-magic-numbers)
+
     for (const unsigned char c : data)
     {
         const auto numVal = static_cast<unsigned int>(c);
@@ -193,7 +194,7 @@ std::string base64Encode(const std::string_view data)
         default:
             break;
     }
-    // NOLINTEND (readability-magic-numbers)
+
     return encoded;
 }
 
@@ -208,7 +209,7 @@ std::string base64Decode(const std::string_view data)
     constexpr std::string_view base64Chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
                                              "abcdefghijklmnopqrstuvwxyz"
                                              "0123456789+/";
-    // NOLINTBEGIN (readability-magic-numbers)
+
     for (const unsigned char c : data)
     {
         if (const auto numVal = base64Chars.find(c); std::string::npos != numVal)
@@ -240,7 +241,8 @@ std::string base64Decode(const std::string_view data)
         }
         ++counter;
     }
-    // NOLINTEND (readability-magic-numbers)
+
     return decoded;
 }
+// NOLINTEND(readability-magic-numbers)
 } // namespace utility::common

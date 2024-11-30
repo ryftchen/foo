@@ -25,7 +25,7 @@
 #include "algorithm/include/sort.hpp"
 
 //! @brief The application module.
-namespace application // NOLINT (modernize-concat-nested-namespaces)
+namespace application // NOLINT(modernize-concat-nested-namespaces)
 {
 //! @brief Algorithm-applying-related functions in the application module.
 namespace app_algo

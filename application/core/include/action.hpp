@@ -523,7 +523,7 @@ struct utility::reflection::TypeInfo<application::app_num::PrimeMethod>
 #undef ACTION_REFLECT_COMMAND_CATEGORY_FIELD
 
 //! @brief The application module.
-namespace application // NOLINT (modernize-concat-nested-namespaces)
+namespace application // NOLINT(modernize-concat-nested-namespaces)
 {
 //! @brief Applied-action-related functions in the application module.
 namespace action

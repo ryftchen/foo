@@ -80,7 +80,7 @@ void triggerHelper(const ExtEvent event)
 class Awaitable
 {
 public:
-    // NOLINTBEGIN (readability-identifier-naming)
+    // NOLINTBEGIN(readability-identifier-naming)
     //! @brief Promise type for use in coroutines.
     struct promise_type
     {
@@ -89,16 +89,16 @@ public:
         Awaitable get_return_object() { return Awaitable{std::coroutine_handle<promise_type>::from_promise(*this)}; }
         //! @brief Initial suspend point of the coroutine.
         //! @return std::suspend_never object indicating that the coroutine should not be suspended initially
-        std::suspend_never initial_suspend() const noexcept { return {}; }
+        static std::suspend_never initial_suspend() noexcept { return {}; }
         //! @brief Final suspend point of the coroutine.
         //! @return std::suspend_always object indicating that the coroutine should be suspended finally
-        std::suspend_always final_suspend() const noexcept { return {}; }
+        static std::suspend_always final_suspend() noexcept { return {}; }
         //! @brief Complete the coroutine without returning a value.
         void return_void() const noexcept {}
         //! @brief Handle exceptions thrown within the coroutine.
-        void unhandled_exception() const { std::rethrow_exception(std::current_exception()); }
+        static void unhandled_exception() { std::rethrow_exception(std::current_exception()); }
     };
-    // NOLINTEND (readability-identifier-naming)
+    // NOLINTEND(readability-identifier-naming)
 
     //! @brief Construct a new Awaitable object.
     //! @param handle - coroutine handle
@@ -261,7 +261,7 @@ catch (const std::exception& err)
     LOG_ERR << err.what();
 }
 
-// NOLINTNEXTLINE (readability-function-size)
+// NOLINTNEXTLINE(readability-function-size)
 void Command::initializeCLI()
 {
     mainCLI.addArgument("-h", "--help").argsNum(0).implicitVal(true).help("show help and exit");

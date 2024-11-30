@@ -10,7 +10,7 @@
 #include <future>
 
 //! @brief The utility module.
-namespace utility // NOLINT (modernize-concat-nested-namespaces)
+namespace utility // NOLINT(modernize-concat-nested-namespaces)
 {
 //! @brief Network-socket-related functions in the utility module.
 namespace socket

@@ -20,7 +20,7 @@
 namespace application
 {
 //! @brief Status of the signal.
-volatile std::sig_atomic_t signalStatus = 0; // NOLINT (misc-definitions-in-headers)
+volatile std::sig_atomic_t signalStatus = 0; // NOLINT(misc-definitions-in-headers)
 
 //! @brief Get the executable name.
 //! @return executable name
@@ -62,7 +62,7 @@ static void signalHandler(int sig)
                 callStack[i],
                 (0 == status) ? demangle : ((nullptr == info.dli_sname) ? symbols[i] : info.dli_sname),
                 static_cast<char*>(callStack[i]) - static_cast<char*>(info.dli_saddr));
-            std::free(demangle); // NOLINT (cppcoreguidelines-no-malloc)
+            std::free(demangle); // NOLINT(cppcoreguidelines-no-malloc)
         }
         else
         {
@@ -77,7 +77,7 @@ static void signalHandler(int sig)
         }
         detailedTrace << buffer;
     }
-    std::free(symbols); // NOLINT (cppcoreguidelines-no-malloc)
+    std::free(symbols); // NOLINT(cppcoreguidelines-no-malloc)
 
     if (maxFrame == numOfFrame)
     {

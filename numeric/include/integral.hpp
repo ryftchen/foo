@@ -9,7 +9,7 @@
 #include <cstdint>
 
 //! @brief The numeric module.
-namespace numeric // NOLINT (modernize-concat-nested-namespaces)
+namespace numeric // NOLINT(modernize-concat-nested-namespaces)
 {
 //! @brief Integral-related functions in the numeric module.
 namespace integral

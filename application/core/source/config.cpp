@@ -210,6 +210,7 @@ std::string getFullDefaultConfigurationPath()
     return std::string{processHome} + '/' + defaultConfigurationFile.data();
 }
 
+// NOLINTBEGIN(readability-magic-numbers)
 //! @brief Get the default configuration.
 //! @return default configuration
 utility::json::JSON getDefaultConfiguration()
@@ -227,14 +228,13 @@ utility::json::JSON getDefaultConfiguration()
 
     auto viewerProperties = json::object();
     viewerProperties.at("tcpHost") = "localhost";
-    viewerProperties.at("tcpPort") = 61501; // NOLINT (readability-magic-numbers)
+    viewerProperties.at("tcpPort") = 61501;
     viewerProperties.at("udpHost") = "localhost";
-    viewerProperties.at("udpPort") = 61502; // NOLINT (readability-magic-numbers)
+    viewerProperties.at("udpPort") = 61502;
     auto viewerRequired = json::array();
     viewerRequired.append("tcpHost", "tcpPort", "udpHost", "udpPort");
     assert(viewerProperties.size() == viewerRequired.length());
 
-    // NOLINTBEGIN (readability-magic-numbers)
     // clang-format off
     return utility::json::JSON
     (
@@ -254,8 +254,8 @@ utility::json::JSON getDefaultConfiguration()
     }
     );
     // clang-format on
-    // NOLINTEND (readability-magic-numbers)
 }
+// NOLINTEND(readability-magic-numbers)
 
 //! @brief Forced configuration update by default.
 //! @param filename - config file path

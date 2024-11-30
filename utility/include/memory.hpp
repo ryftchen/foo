@@ -10,7 +10,7 @@
 #include <utility>
 
 //! @brief The utility module.
-namespace utility // NOLINT (modernize-concat-nested-namespaces)
+namespace utility // NOLINT(modernize-concat-nested-namespaces)
 {
 //! @brief Memory-pool-related functions in the utility module.
 namespace memory
@@ -117,6 +117,7 @@ private:
     static_assert(BlockSize >= (2 * sizeof(Slot)));
 };
 
+// NOLINTBEGIN(cppcoreguidelines-pro-type-reinterpret-cast)
 template <typename T, std::size_t BlockSize>
 Memory<T, BlockSize>::~Memory() noexcept
 {
@@ -252,5 +253,6 @@ void Memory<T, BlockSize>::allocateBlock()
     currentSlot = reinterpret_cast<Slot*>(body + bodyPadding);
     lastSlot = reinterpret_cast<Slot*>(newBlock + BlockSize - sizeof(Slot) + 1);
 }
+// NOLINTEND(cppcoreguidelines-pro-type-reinterpret-cast)
 } // namespace memory
 } // namespace utility

@@ -13,7 +13,7 @@
 #include <variant>
 
 //! @brief The utility module.
-namespace utility // NOLINT (modernize-concat-nested-namespaces)
+namespace utility // NOLINT(modernize-concat-nested-namespaces)
 {
 //! @brief JSON-related functions in the utility module.
 namespace json
@@ -82,7 +82,7 @@ public:
     //! @return reference of the JSON object
     JSON& operator=(JSON&& json) noexcept;
 
-    // NOLINTBEGIN (google-explicit-constructor)
+    // NOLINTBEGIN(google-explicit-constructor)
     //! @brief Construct a new JSON object.
     JSON(std::nullptr_t /*n*/) : data(), type(Type::null) {}
     //! @brief Construct a new JSON object.
@@ -119,8 +119,8 @@ public:
         data(static_cast<Boolean>(b)), type(Type::boolean)
     {
     }
-    // NOLINTEND (google-explicit-constructor)
-    // NOLINTBEGIN (misc-unconventional-assign-operator)
+    // NOLINTEND(google-explicit-constructor)
+    // NOLINTBEGIN(misc-unconventional-assign-operator)
     //! @brief The operator (=) overloading of JSON class.
     //! @tparam T - type of string value
     //! @param s - string value
@@ -146,7 +146,7 @@ public:
     //! @return reference of the JSON object
     template <typename T>
     typename std::enable_if<std::is_same<T, bool>::value, JSON&>::type operator=(const T b);
-    // NOLINTEND (misc-unconventional-assign-operator)
+    // NOLINTEND(misc-unconventional-assign-operator)
 
     //! @brief JSON wrapper.
     //! @tparam Container - type of container
@@ -369,7 +369,7 @@ protected:
     friend std::ostream& operator<<(std::ostream& os, const JSON& json);
 };
 
-// NOLINTBEGIN (misc-unconventional-assign-operator)
+// NOLINTBEGIN(misc-unconventional-assign-operator)
 template <typename T>
 typename std::enable_if<std::is_convertible<T, std::string>::value, JSON&>::type JSON::operator=(const T s)
 {
@@ -402,7 +402,7 @@ typename std::enable_if<std::is_same<T, bool>::value, JSON&>::type JSON::operato
     data.value = static_cast<Boolean>(b);
     return *this;
 }
-// NOLINTEND (misc-unconventional-assign-operator)
+// NOLINTEND(misc-unconventional-assign-operator)
 
 template <typename T>
 void JSON::append(const T arg)

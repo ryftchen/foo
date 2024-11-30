@@ -13,7 +13,7 @@
 #include <memory>
 
 //! @brief The utility module.
-namespace utility // NOLINT (modernize-concat-nested-namespaces)
+namespace utility // NOLINT(modernize-concat-nested-namespaces)
 {
 //! @brief I/O-operation-related functions in the utility module.
 namespace io
