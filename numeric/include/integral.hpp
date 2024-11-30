@@ -47,6 +47,9 @@ public:
     virtual double operator()(double lower, double upper, const double eps) const = 0;
 
 protected:
+    //! @brief Construct a new Integral object.
+    Integral() = default;
+
     //! @brief Get the sign.
     //! @param lower - lower endpoint
     //! @param upper - upper endpoint
