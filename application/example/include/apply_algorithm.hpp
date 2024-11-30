@@ -653,9 +653,14 @@ public:
                 { std::cout << prefix << input::Rastrigin::funcDescr << std::endl; },
                 [&prefix](const input::Griewank& /*func*/)
                 { std::cout << prefix << input::Griewank::funcDescr << std::endl; },
-                [](const auto& func)
+                [](auto&& func)
                 {
-                    throw std::runtime_error("Unknown function type: " + std::string{typeid(func).name()} + '.');
+                    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-const-cast)
+                    auto* funcPtr = const_cast<std::remove_const_t<std::remove_reference_t<decltype(func)>>*>(&func);
+                    if (nullptr != dynamic_cast<algorithm::optimal::Function*>(funcPtr))
+                    {
+                        throw std::runtime_error("Unknown function type (" + std::string{typeid(func).name()} + ").");
+                    }
                 }},
             function);
     };
