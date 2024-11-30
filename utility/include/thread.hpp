@@ -58,7 +58,7 @@ decltype(auto) Thread::enqueue(const std::string_view name, Func&& func, Args&&.
 {
     std::packaged_task<std::invoke_result_t<Func, Args...>()> task(
         std::bind(std::forward<Func>(func), std::forward<Args>(args)...));
-    std::future<std::invoke_result_t<Func, Args...>> future = task.get_future();
+    auto future = task.get_future();
 
     if (std::unique_lock<std::mutex> lock(mtx); true)
     {

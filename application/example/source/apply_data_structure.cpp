@@ -182,7 +182,7 @@ static void displayResult(const LinearInstance instance, const std::string_view 
 void LinearStructure::linkedListInstance()
 try
 {
-    const auto& output = Linear().linkedList().str();
+    const auto output = Linear().linkedList().str();
     displayResult(LinearInstance::linkedList, output);
 }
 catch (const std::exception& err)
@@ -193,7 +193,7 @@ catch (const std::exception& err)
 void LinearStructure::stackInstance()
 try
 {
-    const auto& output = Linear().stack().str();
+    const auto output = Linear().stack().str();
     displayResult(LinearInstance::stack, output);
 }
 catch (const std::exception& err)
@@ -204,7 +204,7 @@ catch (const std::exception& err)
 void LinearStructure::queueInstance()
 try
 {
-    const auto& output = Linear().queue().str();
+    const auto output = Linear().queue().str();
     displayResult(LinearInstance::queue, output);
 }
 catch (const std::exception& err)
@@ -302,7 +302,7 @@ static void displayResult(const TreeInstance instance, const std::string_view re
 void TreeStructure::bsInstance()
 try
 {
-    const auto& output = Tree().bs().str();
+    const auto output = Tree().bs().str();
     displayResult(TreeInstance::binarySearch, output);
 }
 catch (const std::exception& err)
@@ -313,7 +313,7 @@ catch (const std::exception& err)
 void TreeStructure::avlInstance()
 try
 {
-    const auto& output = Tree().avl().str();
+    const auto output = Tree().avl().str();
     displayResult(TreeInstance::adelsonVelskyLandis, output);
 }
 catch (const std::exception& err)
@@ -324,7 +324,7 @@ catch (const std::exception& err)
 void TreeStructure::splayInstance()
 try
 {
-    const auto& output = Tree().splay().str();
+    const auto output = Tree().splay().str();
     displayResult(TreeInstance::splay, output);
 }
 catch (const std::exception& err)

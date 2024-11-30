@@ -8,6 +8,7 @@
 
 #include <sys/poll.h>
 #include <netdb.h>
+#include <algorithm>
 #include <cstring>
 #include <vector>
 
@@ -305,10 +306,8 @@ void TCPServer::toAccept(const std::shared_ptr<TCPServer> server)
         newSock = ::accept(server->sock, reinterpret_cast<::sockaddr*>(&newSockAddr), &newSockAddrLen);
         if (-1 == newSock)
         {
-            for (const auto& socket : activeSockets)
-            {
-                socket->asyncExit();
-            }
+            std::for_each(
+                activeSockets.cbegin(), activeSockets.cend(), [](const auto& socket) { socket->asyncExit(); });
             if ((EBADF == errno) || (EINVAL == errno))
             {
                 return;

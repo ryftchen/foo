@@ -218,7 +218,7 @@ static void displayResult(const BehavioralInstance instance, const std::string_v
 void BehavioralPattern::chainOfResponsibilityInstance()
 try
 {
-    const auto& output = Behavioral().chainOfResponsibility().str();
+    const auto output = Behavioral().chainOfResponsibility().str();
     displayResult(BehavioralInstance::chainOfResponsibility, output);
 }
 catch (const std::exception& err)
@@ -229,7 +229,7 @@ catch (const std::exception& err)
 void BehavioralPattern::commandInstance()
 try
 {
-    const auto& output = Behavioral().command().str();
+    const auto output = Behavioral().command().str();
     displayResult(BehavioralInstance::command, output);
 }
 catch (const std::exception& err)
@@ -240,7 +240,7 @@ catch (const std::exception& err)
 void BehavioralPattern::interpreterInstance()
 try
 {
-    const auto& output = Behavioral().interpreter().str();
+    const auto output = Behavioral().interpreter().str();
     displayResult(BehavioralInstance::interpreter, output);
 }
 catch (const std::exception& err)
@@ -251,7 +251,7 @@ catch (const std::exception& err)
 void BehavioralPattern::iteratorInstance()
 try
 {
-    const auto& output = Behavioral().iterator().str();
+    const auto output = Behavioral().iterator().str();
     displayResult(BehavioralInstance::iterator, output);
 }
 catch (const std::exception& err)
@@ -262,7 +262,7 @@ catch (const std::exception& err)
 void BehavioralPattern::mediatorInstance()
 try
 {
-    const auto& output = Behavioral().mediator().str();
+    const auto output = Behavioral().mediator().str();
     displayResult(BehavioralInstance::mediator, output);
 }
 catch (const std::exception& err)
@@ -273,7 +273,7 @@ catch (const std::exception& err)
 void BehavioralPattern::mementoInstance()
 try
 {
-    const auto& output = Behavioral().memento().str();
+    const auto output = Behavioral().memento().str();
     displayResult(BehavioralInstance::memento, output);
 }
 catch (const std::exception& err)
@@ -284,7 +284,7 @@ catch (const std::exception& err)
 void BehavioralPattern::observerInstance()
 try
 {
-    const auto& output = Behavioral().observer().str();
+    const auto output = Behavioral().observer().str();
     displayResult(BehavioralInstance::observer, output);
 }
 catch (const std::exception& err)
@@ -295,7 +295,7 @@ catch (const std::exception& err)
 void BehavioralPattern::stateInstance()
 try
 {
-    const auto& output = Behavioral().state().str();
+    const auto output = Behavioral().state().str();
     displayResult(BehavioralInstance::state, output);
 }
 catch (const std::exception& err)
@@ -306,7 +306,7 @@ catch (const std::exception& err)
 void BehavioralPattern::strategyInstance()
 try
 {
-    const auto& output = Behavioral().strategy().str();
+    const auto output = Behavioral().strategy().str();
     displayResult(BehavioralInstance::strategy, output);
 }
 catch (const std::exception& err)
@@ -317,7 +317,7 @@ catch (const std::exception& err)
 void BehavioralPattern::templateMethodInstance()
 try
 {
-    const auto& output = Behavioral().templateMethod().str();
+    const auto output = Behavioral().templateMethod().str();
     displayResult(BehavioralInstance::templateMethod, output);
 }
 catch (const std::exception& err)
@@ -328,7 +328,7 @@ catch (const std::exception& err)
 void BehavioralPattern::visitorInstance()
 try
 {
-    const auto& output = Behavioral().visitor().str();
+    const auto output = Behavioral().visitor().str();
     displayResult(BehavioralInstance::visitor, output);
 }
 catch (const std::exception& err)
@@ -474,7 +474,7 @@ static void displayResult(const CreationalInstance instance, const std::string_v
 void CreationalPattern::abstractFactoryInstance()
 try
 {
-    const auto& output = Creational().abstractFactory().str();
+    const auto output = Creational().abstractFactory().str();
     displayResult(CreationalInstance::abstractFactory, output);
 }
 catch (const std::exception& err)
@@ -485,7 +485,7 @@ catch (const std::exception& err)
 void CreationalPattern::builderInstance()
 try
 {
-    const auto& output = Creational().builder().str();
+    const auto output = Creational().builder().str();
     displayResult(CreationalInstance::builder, output);
 }
 catch (const std::exception& err)
@@ -496,7 +496,7 @@ catch (const std::exception& err)
 void CreationalPattern::factoryMethodInstance()
 try
 {
-    const auto& output = Creational().factoryMethod().str();
+    const auto output = Creational().factoryMethod().str();
     displayResult(CreationalInstance::factoryMethod, output);
 }
 catch (const std::exception& err)
@@ -507,7 +507,7 @@ catch (const std::exception& err)
 void CreationalPattern::prototypeInstance()
 try
 {
-    const auto& output = Creational().prototype().str();
+    const auto output = Creational().prototype().str();
     displayResult(CreationalInstance::prototype, output);
 }
 catch (const std::exception& err)
@@ -518,7 +518,7 @@ catch (const std::exception& err)
 void CreationalPattern::singletonInstance()
 try
 {
-    const auto& output = Creational().singleton().str();
+    const auto output = Creational().singleton().str();
     displayResult(CreationalInstance::singleton, output);
 }
 catch (const std::exception& err)
@@ -628,7 +628,7 @@ static void displayResult(const StructuralInstance instance, const std::string_v
 void StructuralPattern::adapterInstance()
 try
 {
-    const auto& output = Structural().adapter().str();
+    const auto output = Structural().adapter().str();
     displayResult(StructuralInstance::adapter, output);
 }
 catch (const std::exception& err)
@@ -639,7 +639,7 @@ catch (const std::exception& err)
 void StructuralPattern::bridgeInstance()
 try
 {
-    const auto& output = Structural().bridge().str();
+    const auto output = Structural().bridge().str();
     displayResult(StructuralInstance::bridge, output);
 }
 catch (const std::exception& err)
@@ -650,7 +650,7 @@ catch (const std::exception& err)
 void StructuralPattern::compositeInstance()
 try
 {
-    const auto& output = Structural().composite().str();
+    const auto output = Structural().composite().str();
     displayResult(StructuralInstance::composite, output);
 }
 catch (const std::exception& err)
@@ -661,7 +661,7 @@ catch (const std::exception& err)
 void StructuralPattern::decoratorInstance()
 try
 {
-    const auto& output = Structural().decorator().str();
+    const auto output = Structural().decorator().str();
     displayResult(StructuralInstance::decorator, output);
 }
 catch (const std::exception& err)
@@ -672,7 +672,7 @@ catch (const std::exception& err)
 void StructuralPattern::facadeInstance()
 try
 {
-    const auto& output = Structural().facade().str();
+    const auto output = Structural().facade().str();
     displayResult(StructuralInstance::facade, output);
 }
 catch (const std::exception& err)
@@ -683,7 +683,7 @@ catch (const std::exception& err)
 void StructuralPattern::flyweightInstance()
 try
 {
-    const auto& output = Structural().flyweight().str();
+    const auto output = Structural().flyweight().str();
     displayResult(StructuralInstance::flyweight, output);
 }
 catch (const std::exception& err)
@@ -694,7 +694,7 @@ catch (const std::exception& err)
 void StructuralPattern::proxyInstance()
 try
 {
-    const auto& output = Structural().proxy().str();
+    const auto output = Structural().proxy().str();
     displayResult(StructuralInstance::proxy, output);
 }
 catch (const std::exception& err)

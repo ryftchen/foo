@@ -379,7 +379,7 @@ void DivisorSolution::euclideanMethod(std::int32_t a, std::int32_t b)
 try
 {
     TIME_BEGIN(timing);
-    const auto& coll = numeric::divisor::Divisor().euclidean(a, b);
+    const auto coll = numeric::divisor::Divisor().euclidean(a, b);
     TIME_END(timing);
     displayResult(DivisorMethod::euclidean, coll, TIME_INTERVAL(timing));
 }
@@ -392,7 +392,7 @@ void DivisorSolution::steinMethod(std::int32_t a, std::int32_t b)
 try
 {
     TIME_BEGIN(timing);
-    const auto& coll = numeric::divisor::Divisor().stein(a, b);
+    const auto coll = numeric::divisor::Divisor().stein(a, b);
     TIME_END(timing);
     displayResult(DivisorMethod::stein, coll, TIME_INTERVAL(timing));
 }
@@ -680,7 +680,7 @@ void PrimeSolution::eratosthenesMethod(const std::uint32_t max)
 try
 {
     TIME_BEGIN(timing);
-    const auto& coll = numeric::prime::Prime().eratosthenes(max);
+    const auto coll = numeric::prime::Prime().eratosthenes(max);
     TIME_END(timing);
     displayResult(PrimeMethod::eratosthenes, coll, TIME_INTERVAL(timing));
 }
@@ -693,7 +693,7 @@ void PrimeSolution::eulerMethod(const std::uint32_t max)
 try
 {
     TIME_BEGIN(timing);
-    const auto& coll = numeric::prime::Prime().euler(max);
+    const auto coll = numeric::prime::Prime().euler(max);
     TIME_END(timing);
     displayResult(PrimeMethod::euler, coll, TIME_INTERVAL(timing));
 }

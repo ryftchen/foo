@@ -78,7 +78,7 @@ struct Join
     //! @return character array
     static constexpr auto impl() noexcept
     {
-        constexpr std::size_t length = (Strings.length() + ... + 0);
+        constexpr auto length = (Strings.length() + ... + 0);
         std::array<char, length + 1> array{};
         auto append = [i = 0, &array](const auto& str) mutable
         {
