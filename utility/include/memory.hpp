@@ -237,14 +237,14 @@ inline void Memory<T, BlockSize>::deleteElement(T* const obj)
 template <typename T, std::size_t BlockSize>
 inline std::size_t Memory<T, BlockSize>::padPointer(const char* const data, const std::size_t align) const noexcept
 {
-    const std::uintptr_t result = reinterpret_cast<std::uintptr_t>(data);
+    const auto result = reinterpret_cast<std::uintptr_t>(data);
     return (align - result) % align;
 }
 
 template <typename T, std::size_t BlockSize>
 void Memory<T, BlockSize>::allocateBlock()
 {
-    char* const newBlock = reinterpret_cast<char*>(operator new(BlockSize));
+    auto* const newBlock = reinterpret_cast<char*>(operator new(BlockSize));
     reinterpret_cast<Slot*>(newBlock)->next = currentBlock;
     currentBlock = reinterpret_cast<Slot*>(newBlock);
 

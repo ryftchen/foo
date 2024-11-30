@@ -154,9 +154,9 @@ std::string base64Encode(const std::string_view data)
                                              "abcdefghijklmnopqrstuvwxyz"
                                              "0123456789+/";
 
-    for (const unsigned char c : data)
+    for (const auto c : data)
     {
-        const auto numVal = static_cast<unsigned int>(c);
+        const auto numVal = static_cast<unsigned int>(static_cast<unsigned char>(c));
         offset = 16 - counter % 3 * 8;
         bitStream += numVal << offset;
         switch (offset)
@@ -210,9 +210,10 @@ std::string base64Decode(const std::string_view data)
                                              "abcdefghijklmnopqrstuvwxyz"
                                              "0123456789+/";
 
-    for (const unsigned char c : data)
+    for (const auto c : data)
     {
-        if (const auto numVal = base64Chars.find(c); std::string::npos != numVal)
+        const auto uc = static_cast<unsigned char>(c);
+        if (const auto numVal = base64Chars.find(uc); std::string::npos != numVal)
         {
             offset = 18 - counter % 4 * 6;
             bitStream += numVal << offset;
@@ -235,7 +236,7 @@ std::string base64Decode(const std::string_view data)
                     break;
             }
         }
-        else if ('=' != c)
+        else if ('=' != uc)
         {
             throw std::runtime_error("Invalid base64 encoded data.");
         }

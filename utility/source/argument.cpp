@@ -153,8 +153,8 @@ std::size_t Register::getArgumentsLength() const
     const std::size_t namesSize = std::accumulate(
         std::cbegin(names),
         std::cend(names),
-        std::size_t(0),
-        [](const auto& sum, const auto& str) { return sum + str.length(); });
+        static_cast<std::size_t>(0),
+        [](const auto sum, const auto& str) { return sum + str.length(); });
 
     if (checkIfPositional(names.front(), prefixChars))
     {
@@ -370,12 +370,10 @@ Argument& Argument::operator=(const Argument& arg)
 
 Argument::operator bool() const
 {
-    const auto isArgUsed = std::any_of(
-                   argumentMap.cbegin(),
-                   argumentMap.cend(),
-                   [](const auto& iterator) { return iterator.second->isUsed; }),
+    const bool isArgUsed = std::any_of(
+                   argumentMap.cbegin(), argumentMap.cend(), [](const auto& iter) { return iter.second->isUsed; }),
                isSubParserUsed = std::any_of(
-                   subParserUsed.cbegin(), subParserUsed.cend(), [](const auto& iterator) { return iterator.second; });
+                   subParserUsed.cbegin(), subParserUsed.cend(), [](const auto& iter) { return iter.second; });
 
     return isParsed && (isArgUsed || isSubParserUsed);
 }
@@ -415,7 +413,7 @@ Register& Argument::operator[](const std::string_view argName) const
     if (!isValidPrefixChar(argName.front()))
     {
         std::string name(argName);
-        const auto legalPrefixChar = getAnyValidPrefixChar();
+        const char legalPrefixChar = getAnyValidPrefixChar();
         const auto prefix = std::string(1, legalPrefixChar);
 
         name = prefix + name;
@@ -525,7 +523,7 @@ std::vector<std::string> Argument::preprocessArguments(const std::vector<std::st
                     return prefixChars.find(c) != std::string::npos;
                 };
 
-                const auto windowsStyle = legalPrefix('/');
+                const bool windowsStyle = legalPrefix('/');
                 if (windowsStyle && legalPrefix(str.at(0)))
                 {
                     return true;

@@ -254,7 +254,7 @@ retry:
         if (toReset.load())
         {
             safeProcessEvent(Relaunch());
-            goto retry; // NOLINT(hicpp-avoid-goto)
+            goto retry; // NOLINT(cppcoreguidelines-avoid-goto,hicpp-avoid-goto)
         }
         safeProcessEvent(DestroyServer());
 
@@ -270,7 +270,7 @@ retry:
         safeProcessEvent(Standby());
         if (awaitNotification2Retry())
         {
-            goto retry; // NOLINT(hicpp-avoid-goto)
+            goto retry; // NOLINT(cppcoreguidelines-avoid-goto,hicpp-avoid-goto)
         }
     }
 }
@@ -810,7 +810,7 @@ void View::printSharedMemory(const int shmId, const bool withoutPaging)
         {
             std::cout << line << '\n';
         }
-        std::cout << utility::common::colorOff << std::endl;
+        std::cout << utility::common::colorOff << std::flush;
     }
     else
     {
