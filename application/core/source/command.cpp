@@ -296,12 +296,11 @@ void Command::initializeCLI()
     SubCLIName title{};
     CategoryName category{};
     ChoiceContainer choices{};
-    auto& checklist = taskDispatcher.extraManager.checklist;
-    using IntWrap = TaskDispatcher::ExtraManager::IntWrap;
+    auto& checklist = taskDispatcher.extraChecklist;
 
     title = subCLIAppAlgo.title();
     auto& algoTable = extraChoices[title];
-    checklist[title] = IntWrap{
+    checklist[title] = ExtraManager::IntWrap{
         []() { return !app_algo::manager().empty(); },
         []()
         {
@@ -383,7 +382,7 @@ void Command::initializeCLI()
 
     title = subCLIAppDp.title();
     auto& dpTable = extraChoices[title];
-    checklist[title] = IntWrap{
+    checklist[title] = ExtraManager::IntWrap{
         []() { return !app_dp::manager().empty(); },
         []()
         {
@@ -440,7 +439,7 @@ void Command::initializeCLI()
 
     title = subCLIAppDs.title();
     auto& dsTable = extraChoices[title];
-    checklist[title] = IntWrap{
+    checklist[title] = ExtraManager::IntWrap{
         []() { return !app_ds::manager().empty(); },
         []()
         {
@@ -480,7 +479,7 @@ void Command::initializeCLI()
 
     title = subCLIAppNum.title();
     auto& numTable = extraChoices[title];
-    checklist[title] = IntWrap{
+    checklist[title] = ExtraManager::IntWrap{
         []() { return !app_num::manager().empty(); },
         []()
         {
@@ -586,7 +585,7 @@ catch (const std::exception& err)
 
 void Command::validate()
 {
-    auto& bits = taskDispatcher.nativeManager.categories;
+    auto& bits = taskDispatcher.nativeCategories;
     auto indices = std::views::iota(0U, bits.size())
         | std::views::filter([this](const auto i) { return mainCLI.isUsed(toString(Category(i))); });
     for (const auto index : indices)
@@ -602,16 +601,12 @@ void Command::validate()
                  { return mainCLI.isSubCommandUsed(subCLIPair.first) ? (checkForExcessiveArguments(), true) : false; }))
     {
         const auto& subCLI = mainCLI.at<utility::argument::Argument>(subCLIName);
+        taskDispatcher.extraHelpOnly = !subCLI || subCLI.isUsed("help");
         if (!subCLI)
         {
-            taskDispatcher.extraManager.helpOnly = true;
             return;
         }
 
-        if (subCLI.isUsed("help"))
-        {
-            taskDispatcher.extraManager.helpOnly = true;
-        }
         for ([[maybe_unused]] const auto& [categoryName, categoryAttr] :
              categoryMap
                  | std::views::filter(
@@ -640,9 +635,9 @@ bool Command::anySelected() const
 
 void Command::dispatch()
 {
-    if (!taskDispatcher.nativeManager.empty())
+    if (!taskDispatcher.NativeManager::empty())
     {
-        const auto& bits = taskDispatcher.nativeManager.categories;
+        const auto& bits = taskDispatcher.nativeCategories;
         auto indices =
             std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); });
         for (const auto index : indices)
@@ -650,9 +645,9 @@ void Command::dispatch()
             defaultNotifier.notify(toString(Category(index)));
         }
     }
-    else if (!taskDispatcher.extraManager.empty())
+    else if (!taskDispatcher.ExtraManager::empty())
     {
-        if (taskDispatcher.extraManager.helpOnly)
+        if (taskDispatcher.extraHelpOnly)
         {
             auto filtered = std::views::keys(extraChoices)
                 | std::views::filter([this](const auto& subCLIName) { return mainCLI.isSubCommandUsed(subCLIName); });
@@ -666,7 +661,7 @@ void Command::dispatch()
 
         for ([[maybe_unused]] const auto& [categoryName, categoryAttr] : extraChoices
                  | std::views::filter([this](const auto& subCLIPair)
-                                      { return taskDispatcher.extraManager.checklist[subCLIPair.first].present(); })
+                                      { return taskDispatcher.extraChecklist[subCLIPair.first].present(); })
                  | std::views::values | std::views::join)
         {
             const auto& candidates = categoryAttr.choices;

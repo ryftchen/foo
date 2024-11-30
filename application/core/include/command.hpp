@@ -182,63 +182,66 @@ private:
         //! @brief Reset bit flags that manage all tasks.
         virtual inline void reset() = 0;
     };
-    //! @brief Schedule all managed tasks.
-    struct TaskDispatcher : public TaskManager
+    //! @brief Manage native categories.
+    class NativeManager : virtual public TaskManager // NOLINT(fuchsia-virtual-inheritance)
     {
-        //! @brief Manage native categories.
-        class NativeManager : public TaskManager
+    public:
+        //! @brief Bit flags for managing native categories.
+        std::bitset<Bottom<Category>::value> nativeCategories{};
+
+        //! @brief Check whether any native categories do not exist.
+        //! @return any native categories do not exist or exist
+        [[nodiscard]] inline bool empty() const override { return nativeCategories.none(); }
+        //! @brief Reset bit flags that manage native categories.
+        inline void reset() override { nativeCategories.reset(); }
+    };
+    //! @brief Manage extra choices of sub-cli.
+    class ExtraManager : virtual public TaskManager // NOLINT(fuchsia-virtual-inheritance)
+    {
+    public:
+        //! @brief Wrap functions to check for existing and reset extra choices.
+        struct IntWrap
         {
-        public:
-            //! @brief Bit flags for managing native categories.
-            std::bitset<Bottom<Category>::value> categories{};
+            //! @brief Check the existence status of the extra choice.
+            std::function<bool()> present{};
+            //! @brief Reset control of the extra choice.
+            std::function<void()> reset{};
+        };
+        //! @brief Flag for help only.
+        bool extraHelpOnly{false};
+        //! @brief Existence status and reset control of the sub-cli to which the extra choices belong.
+        std::map<SubCLIName, IntWrap> extraChecklist{};
 
-            //! @brief Check whether any native categories do not exist.
-            //! @return any native categories do not exist or exist
-            [[nodiscard]] inline bool empty() const override { return categories.none(); }
-            //! @brief Reset bit flags that manage native categories.
-            inline void reset() override { categories.reset(); }
-        } /** @brief Dispatch native type tasks. */ nativeManager{};
-        //! @brief Manage extra choices of sub-cli.
-        class ExtraManager : public TaskManager
+        //! @brief Check whether any extra choices do not exist.
+        //! @return any extra choices do not exist or exist
+        [[nodiscard]] inline bool empty() const override
         {
-        public:
-            //! @brief Wrap functions to check for existing and reset extra choices.
-            struct IntWrap
-            {
-                //! @brief Check the existence status of the extra choice.
-                std::function<bool()> present{};
-                //! @brief Reset control of the extra choice.
-                std::function<void()> reset{};
-            };
-            //! @brief Flag for help only.
-            bool helpOnly{false};
-            //! @brief Existence status and reset control of the sub-cli to which the extra choices belong.
-            std::map<SubCLIName, IntWrap> checklist{};
-
-            //! @brief Check whether any extra choices do not exist.
-            //! @return any extra choices do not exist or exist
-            [[nodiscard]] inline bool empty() const override
-            {
-                return !helpOnly
-                    && std::none_of(
-                        checklist.cbegin(), checklist.cend(), [](const auto& pair) { return pair.second.present(); });
-            }
-            //! @brief Reset bit flags that manage extra choices.
-            inline void reset() override
-            {
-                helpOnly = false;
-                std::for_each(checklist.cbegin(), checklist.cend(), [](const auto& pair) { pair.second.reset(); });
-            }
-        } /** @brief Dispatch extra type tasks */ extraManager{};
-
-        //! @brief Check whether any tasks do not exist.
-        //! @return any tasks do not exist or exist
-        [[nodiscard]] inline bool empty() const override { return nativeManager.empty() && extraManager.empty(); }
-        //! @brief Reset bit flags that manage all tasks.
+            return !extraHelpOnly
+                && std::none_of(
+                    extraChecklist.cbegin(),
+                    extraChecklist.cend(),
+                    [](const auto& pair) { return pair.second.present(); });
+        }
+        //! @brief Reset bit flags that manage extra choices.
         inline void reset() override
         {
-            nativeManager.reset();
-            extraManager.reset();
+            extraHelpOnly = false;
+            std::for_each(
+                extraChecklist.cbegin(), extraChecklist.cend(), [](const auto& pair) { pair.second.reset(); });
+        }
+    };
+    //! @brief Schedule all managed tasks.
+    class TaskDispatcher : public NativeManager, public ExtraManager
+    {
+    public:
+        //! @brief Check whether any tasks do not exist.
+        //! @return any tasks do not exist or exist
+        [[nodiscard]] inline bool empty() const final { return NativeManager::empty() && ExtraManager::empty(); }
+        //! @brief Reset bit flags that manage all tasks.
+        inline void reset() final
+        {
+            NativeManager::reset();
+            ExtraManager::reset();
         }
     } /** @brief Dispatch all types of tasks. */ taskDispatcher{};
 
