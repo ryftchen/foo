@@ -118,7 +118,7 @@ void Register::validate() const
 
 std::string Register::getInlineUsage() const
 {
-    std::string longestName(names.front());
+    std::string longestName(names.at(0));
     for (const auto& str : names)
     {
         if (str.length() > longestName.length())
@@ -155,8 +155,7 @@ std::size_t Register::getArgumentsLength() const
         std::cend(names),
         static_cast<std::size_t>(0),
         [](const auto sum, const auto& str) { return sum + str.length(); });
-
-    if (checkIfPositional(names.front(), prefixChars))
+    if (checkIfPositional(names.at(0), prefixChars))
     {
         if (!metavarContent.empty())
         {
@@ -165,6 +164,7 @@ std::size_t Register::getArgumentsLength() const
 
         return namesSize + (names.size() - 1);
     }
+
     std::size_t size = namesSize + 2 * (names.size() - 1);
     if (!metavarContent.empty() && (ArgsNumRange{1, 1} == argsNumRange))
     {
@@ -182,7 +182,7 @@ void Register::throwArgsNumRangeValidationException() const
     }
     else
     {
-        stream << names.front() << ": ";
+        stream << names.at(0) << ": ";
     }
     if (argsNumRange.isExact())
     {
@@ -203,7 +203,7 @@ void Register::throwArgsNumRangeValidationException() const
 void Register::throwRequiredArgNotUsedException() const
 {
     std::ostringstream stream{};
-    stream << names.front() << ": required.";
+    stream << names.at(0) << ": required.";
     throw std::runtime_error(stream.str());
 }
 
@@ -255,7 +255,7 @@ bool Register::checkIfPositional(const std::string_view name, const std::string_
 std::ostream& operator<<(std::ostream& os, const Register& reg)
 {
     std::ostringstream nameStream{};
-    if (reg.checkIfPositional(reg.names.front(), reg.prefixChars))
+    if (reg.checkIfPositional(reg.names.at(0), reg.prefixChars))
     {
         if (!reg.metavarContent.empty())
         {
@@ -410,7 +410,7 @@ Register& Argument::operator[](const std::string_view argName) const
     {
         return *(iterator->second);
     }
-    if (!isValidPrefixChar(argName.front()))
+    if (!isValidPrefixChar(argName.at(0)))
     {
         std::string name(argName);
         const char legalPrefixChar = getAnyValidPrefixChar();
@@ -467,7 +467,7 @@ std::string Argument::usage() const
         }
         else
         {
-            stream << ' ' << argument.names.front();
+            stream << ' ' << argument.names.at(0);
         }
     }
 
@@ -506,7 +506,7 @@ bool Argument::isValidPrefixChar(const char c) const
 
 char Argument::getAnyValidPrefixChar() const
 {
-    return prefixChars.front();
+    return prefixChars.at(0);
 }
 
 std::vector<std::string> Argument::preprocessArguments(const std::vector<std::string>& rawArguments) const

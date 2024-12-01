@@ -993,16 +993,17 @@ void View::createViewServer()
         std::weak_ptr<utility::socket::TCPSocket> weakSock = newSocket;
         newSocket->onMessageReceived = [this, weakSock](const std::string_view message)
         {
+            if (message.empty())
+            {
+                return;
+            }
+
             auto newSocket = weakSock.lock();
             if (!newSocket)
             {
                 return;
             }
 
-            if (message.empty())
-            {
-                return;
-            }
             char buffer[1024] = {'\0'};
             try
             {
@@ -1016,13 +1017,13 @@ void View::createViewServer()
                 }
 
                 auto args = splitString(plaintext);
-                const auto optionIter = optionDispatcher.find(args.at(0));
-                if (optionDispatcher.cend() == optionIter)
+                const auto iter = optionDispatcher.find(args.at(0));
+                if (optionDispatcher.cend() == iter)
                 {
                     throw std::runtime_error("Unknown TCP message.");
                 }
                 args.erase(args.begin());
-                (optionIter->second.functor)(args, buffer);
+                iter->second.functor(args, buffer);
                 newSocket->toSend(buffer, sizeof(buffer));
             }
             catch (const std::exception& err)
@@ -1055,13 +1056,13 @@ void View::createViewServer()
             }
 
             auto args = splitString(plaintext);
-            const auto optionIter = optionDispatcher.find(args.at(0));
-            if (optionDispatcher.cend() == optionIter)
+            const auto iter = optionDispatcher.find(args.at(0));
+            if (optionDispatcher.cend() == iter)
             {
                 throw std::runtime_error("Unknown UDP message.");
             }
             args.erase(args.begin());
-            (optionIter->second.functor)(args, buffer);
+            iter->second.functor(args, buffer);
             udpServer->toSendTo(buffer, sizeof(buffer), ip, port);
         }
         catch (const std::exception& err)
