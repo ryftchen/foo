@@ -113,7 +113,7 @@ public:
     //! @brief Input builder.
     static std::shared_ptr<divisor::InputBuilder> inputs;
     //! @brief Expected result.
-    const std::vector<std::int32_t> expColl{1, 2, 3, 5, 6, 7, 10, 14, 15, 21, 30, 35, 42, 70, 105, 210};
+    const std::set<std::int32_t> expColl{1, 2, 3, 5, 6, 7, 10, 14, 15, 21, 30, 35, 42, 70, 105, 210};
 };
 std::shared_ptr<divisor::InputBuilder> DivisorTestBase::inputs = nullptr;
 

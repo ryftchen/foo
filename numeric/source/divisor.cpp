@@ -19,7 +19,7 @@ const char* version() noexcept
     return ver;
 }
 
-std::vector<std::int32_t> Divisor::euclidean(std::int32_t a, std::int32_t b)
+std::set<std::int32_t> Divisor::euclidean(std::int32_t a, std::int32_t b)
 {
     a = std::abs(a);
     b = std::abs(b);
@@ -35,7 +35,7 @@ std::vector<std::int32_t> Divisor::euclidean(std::int32_t a, std::int32_t b)
     return getAllDivisors(gcd);
 }
 
-std::vector<std::int32_t> Divisor::stein(std::int32_t a, std::int32_t b)
+std::set<std::int32_t> Divisor::stein(std::int32_t a, std::int32_t b)
 {
     std::int32_t gcd = 0, c = 0;
     a = std::abs(a);
@@ -87,21 +87,20 @@ std::int32_t Divisor::steinRecursive(std::int32_t a, std::int32_t b)
     }
 }
 
-std::vector<std::int32_t> Divisor::getAllDivisors(const std::int32_t gcd)
+std::set<std::int32_t> Divisor::getAllDivisors(const std::int32_t gcd)
 {
-    std::vector<std::int32_t> divisors{};
+    std::set<std::int32_t> divisors{};
     for (std::int32_t i = 1; i <= std::sqrt(gcd); ++i)
     {
         if (0 == (gcd % i))
         {
-            divisors.emplace_back(i);
+            divisors.emplace(i);
             if ((gcd / i) != i)
             {
-                divisors.emplace_back(gcd / i);
+                divisors.emplace(gcd / i);
             }
         }
     }
-    std::sort(divisors.begin(), divisors.end());
     return divisors;
 }
 } // namespace numeric::divisor

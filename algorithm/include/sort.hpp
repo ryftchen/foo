@@ -215,8 +215,8 @@ void Sort<T>::mergeSortRecursive(T* const sorting, const std::uint32_t begin, co
 
     std::uint32_t leftIdx = 0, rightIdx = 0;
     std::vector<T> leftSub(sorting + begin, sorting + mid + 1), rightSub(sorting + mid + 1, sorting + end + 1);
-    leftSub.insert(leftSub.cend(), std::numeric_limits<T>::max());
-    rightSub.insert(rightSub.cend(), std::numeric_limits<T>::max());
+    leftSub.emplace(leftSub.cend(), std::numeric_limits<T>::max());
+    rightSub.emplace(rightSub.cend(), std::numeric_limits<T>::max());
     for (std::uint32_t i = begin; i <= end; ++i)
     {
         if (leftSub[leftIdx] < rightSub[rightIdx])
