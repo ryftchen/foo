@@ -106,14 +106,14 @@ int Console::optionExecutor(const std::string_view option)
         return RetCode::success;
     }
 
-    const auto iterator = impl->regTable.find(inputs.at(0));
-    if (std::cend(impl->regTable) == iterator)
+    const auto iter = impl->regTable.find(inputs.front());
+    if (impl->regTable.cend() == iter)
     {
         throw std::runtime_error(
-            "The console option \"" + inputs.at(0) + R"(" could not be found. Enter the "usage" for help.)");
+            "The console option \"" + inputs.front() + R"(" could not be found. Enter the "usage" for help.)");
     }
 
-    return RetCode(static_cast<int>(std::get<0>(iterator->second)(inputs)));
+    return RetCode(std::get<0>(iter->second)(inputs));
 }
 
 int Console::fileExecutor(const std::string_view filename)

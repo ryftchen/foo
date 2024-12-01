@@ -300,13 +300,9 @@ private:
         //! @param cat - the specific value of Category enum
         void notify(const Category cat) const
         {
-            const auto iter = handlers.find(cat);
-            if (iter != handlers.cend())
+            if (handlers.contains(cat))
             {
-                if (const auto handler = iter->second)
-                {
-                    handler->execute();
-                }
+                handlers.at(cat)->execute();
             }
         }
 

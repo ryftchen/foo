@@ -243,14 +243,14 @@ public:
 
         flush << "whether it is empty: " << stackIsEmpty(stacks) << '\n';
         flush << "size: " << stackSize(stacks) << '\n';
-        flush << "linear details: FRONT [";
+        flush << "linear details: TOP [";
         while (!stackIsEmpty(stacks))
         {
             val = static_cast<Meta*>(stackPop(stacks));
             flush << '{' << val->id << ", " << val->name << "}, ";
         }
         flush.seekp(flush.str().length() - std::strlen(", "));
-        flush << "] REAR\n";
+        flush << "] BOTTOM\n";
         destroyStack(&stacks);
 
         return std::ostringstream(flush.str());
@@ -290,14 +290,14 @@ public:
 
         flush << "whether it is empty: " << queueIsEmpty(queues) << '\n';
         flush << "size: " << queueSize(queues) << '\n';
-        flush << "linear details: TOP [";
+        flush << "linear details: FRONT [";
         while (!queueIsEmpty(queues))
         {
             val = static_cast<Meta*>(queuePop(queues));
             flush << '{' << val->id << ", " << val->name << "}, ";
         }
         flush.seekp(flush.str().length() - std::strlen(", "));
-        flush << "] BOTTOM\n";
+        flush << "] REAR\n";
         destroyQueue(&queues);
 
         return std::ostringstream(flush.str());
