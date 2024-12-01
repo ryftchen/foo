@@ -7,6 +7,7 @@
 #pragma once
 
 #ifndef __PRECOMPILED_HEADER
+#include <algorithm>
 #include <bitset>
 #include <cmath>
 #include <iostream>
@@ -328,27 +329,28 @@ public:
     //! @return buffer after splicing
     template <typename T>
     requires std::is_integral<T>::value
-    static char* spliceAllIntegers(const std::vector<T>& container, char* const buffer, const std::uint32_t bufferSize)
+    static char* spliceAllIntegers(const std::set<T>& container, char* const buffer, const std::uint32_t bufferSize)
     {
         std::uint32_t align = 0;
-        for (std::uint32_t i = 0; i < container.size(); ++i)
-        {
-            align = std::max(static_cast<std::uint32_t>(std::to_string(container.at(i)).length()), align);
-        }
+        std::for_each(
+            container.cbegin(),
+            container.cend(),
+            [&align](const auto elem)
+            { align = std::max(static_cast<std::uint32_t>(std::to_string(elem).length()), align); });
 
         int formatSize = 0;
         std::uint32_t completeSize = 0;
-        for (std::uint32_t i = 0; i < container.size(); ++i)
+        for (auto iter = container.cbegin(); container.cend() != iter; ++iter)
         {
-            formatSize =
-                std::snprintf(buffer + completeSize, bufferSize - completeSize, "%*d ", align + 1, container.at(i));
+            formatSize = std::snprintf(buffer + completeSize, bufferSize - completeSize, "%*d ", align + 1, *iter);
             if ((formatSize < 0) || (formatSize >= static_cast<int>(bufferSize - completeSize)))
             {
                 break;
             }
             completeSize += formatSize;
 
-            if ((0 == ((i + 1) % maxColumnOfPrint)) && ((i + 1) != container.size()))
+            const std::uint32_t nextIdx = std::distance(container.cbegin(), iter) + 1;
+            if ((0 == (nextIdx % maxColumnOfPrint)) && (nextIdx != container.size()))
             {
                 formatSize = std::snprintf(buffer + completeSize, bufferSize - completeSize, "\n");
                 if ((formatSize < 0) || (formatSize >= static_cast<int>(bufferSize - completeSize)))
@@ -638,10 +640,11 @@ public:
     static char* spliceAllIntegers(const std::vector<T>& container, char* const buffer, const std::uint32_t bufferSize)
     {
         std::uint32_t align = 0;
-        for (std::uint32_t i = 0; i < container.size(); ++i)
-        {
-            align = std::max(static_cast<std::uint32_t>(std::to_string(container.at(i)).length()), align);
-        }
+        std::for_each(
+            container.cbegin(),
+            container.cend(),
+            [&align](const auto elem)
+            { align = std::max(static_cast<std::uint32_t>(std::to_string(elem).length()), align); });
 
         int formatSize = 0;
         std::uint32_t completeSize = 0;

@@ -293,20 +293,23 @@ public:
     static std::shared_ptr<search::InputBuilder<float>> inputs;
     //! @brief Expected result.
     static std::set<std::int64_t> expColl;
+
+private:
     //! @brief Update expected result.
     static void updateExpColl()
     {
-        if (inputs)
+        if (!inputs)
         {
-            const auto* const orderedArray = inputs->getOrderedArray().get();
-            const auto length = inputs->getLength();
-            const auto searchKey = inputs->getSearchKey();
-            for (std::uint32_t i = 0; i < length; ++i)
+            return;
+        }
+        const auto* const orderedArray = inputs->getOrderedArray().get();
+        const auto length = inputs->getLength();
+        const auto searchKey = inputs->getSearchKey();
+        for (std::uint32_t i = 0; i < length; ++i)
+        {
+            if (searchKey == orderedArray[i])
             {
-                if (searchKey == orderedArray[i])
-                {
-                    expColl.emplace(i);
-                }
+                expColl.emplace(i);
             }
         }
     }
@@ -369,15 +372,18 @@ public:
     static std::shared_ptr<sort::InputBuilder<std::int32_t>> inputs;
     //! @brief Expected result.
     static std::vector<std::int32_t> expColl;
+
+private:
     //! @brief Update expected result.
     static void updateExpColl()
     {
-        if (inputs)
+        if (!inputs)
         {
-            expColl = std::vector<std::int32_t>(
-                inputs->getRandomArray().get(), inputs->getRandomArray().get() + inputs->getLength());
-            std::sort(expColl.begin(), expColl.end());
+            return;
         }
+        expColl = std::vector<std::int32_t>(
+            inputs->getRandomArray().get(), inputs->getRandomArray().get() + inputs->getLength());
+        std::sort(expColl.begin(), expColl.end());
     }
 };
 std::shared_ptr<sort::InputBuilder<std::int32_t>> SortTestBase::inputs = nullptr;

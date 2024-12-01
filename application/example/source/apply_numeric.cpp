@@ -364,7 +364,7 @@ namespace divisor
 //! @param method - the specific value of DivisorMethod enum
 //! @param result - divisor result
 //! @param interval - time interval
-static void displayResult(const DivisorMethod method, const std::vector<std::int32_t>& result, const double interval)
+static void displayResult(const DivisorMethod method, const std::set<std::int32_t>& result, const double interval)
 {
     const std::uint32_t arrayBufferSize = result.size() * maxAlignOfPrint;
     std::vector<char> arrayBuffer(arrayBufferSize + 1);

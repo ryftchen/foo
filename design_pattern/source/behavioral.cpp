@@ -124,7 +124,7 @@ namespace interpreter
 {
 void Context::set(const std::string_view expr, const bool val)
 {
-    vars.insert(std::pair<std::string, bool>(expr, val));
+    vars.emplace(expr, val);
 }
 
 bool Context::get(const std::string_view expr)

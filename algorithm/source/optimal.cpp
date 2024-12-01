@@ -7,8 +7,8 @@
 #include "optimal.hpp"
 
 #include <functional>
-#include <set>
 #include <stdexcept>
+#include <unordered_set>
 
 namespace algorithm::optimal
 {
@@ -25,10 +25,10 @@ std::optional<std::tuple<double, double>> Gradient::operator()(const double left
     std::mt19937 engine(std::random_device{}());
     double x = 0.0, y = 0.0;
     std::uniform_real_distribution<double> candidate(left, right);
-    std::set<double> climbing{};
+    std::unordered_multiset<double> climbing{};
     while (climbing.size() < loopTime)
     {
-        climbing.insert(candidate(engine));
+        climbing.emplace(candidate(engine));
     }
 
     std::vector<std::pair<double, double>> storage{};

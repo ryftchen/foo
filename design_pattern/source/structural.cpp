@@ -223,7 +223,7 @@ std::unique_ptr<Flyweight>& FlyweightFactory::getFlyweight(const int key)
     }
 
     std::unique_ptr<Flyweight> fly = std::make_unique<ConcreteFlyweight>(key);
-    flies.insert(std::pair<int, std::unique_ptr<Flyweight>>(key, std::move(fly)));
+    flies.emplace(key, std::move(fly));
     return flies[key];
 }
 
