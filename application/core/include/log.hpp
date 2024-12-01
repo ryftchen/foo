@@ -9,7 +9,9 @@
 #include "config.hpp"
 
 #ifndef __PRECOMPILED_HEADER
+#include <forward_list>
 #include <iostream>
+#include <mutex>
 #include <queue>
 #include <ranges>
 #include <source_location>
@@ -300,6 +302,10 @@ private:
     utility::common::ReadWriteLock fileLock{};
     //! @brief Spin lock for controlling state.
     mutable utility::common::SpinLock stateLock{};
+    //! @brief The cache logs that could not be processed properly.
+    std::forward_list<std::string> unprocessedCache{};
+    //! @brief Mutex for controlling cache.
+    std::recursive_mutex cacheMtx{};
 
     //! @brief Filter break line.
     //! @param line - target line
@@ -483,10 +489,15 @@ void Log::flush(
         }
         else
         {
+            std::lock_guard<std::recursive_mutex> cacheLock(cacheMtx);
             std::for_each(
                 multiRows.begin(),
                 multiRows.end(),
-                [](auto& output) { std::cerr << changeToLogStyle(output) << std::endl; });
+                [this](auto& output)
+                {
+                    std::cerr << changeToLogStyle(output) << std::endl;
+                    unprocessedCache.emplace_front(output);
+                });
         }
     }
     catch (...)

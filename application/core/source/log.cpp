@@ -298,6 +298,13 @@ void Log::closeLogFile()
 void Log::startLogging()
 {
     logWriter.lock();
+
+    std::lock_guard<std::recursive_mutex> cacheLock(cacheMtx);
+    while (!unprocessedCache.empty())
+    {
+        std::cout << "*** " << unprocessedCache.front() << std::endl;
+        unprocessedCache.pop_front();
+    }
 }
 
 void Log::stopLogging()
