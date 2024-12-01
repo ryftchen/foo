@@ -32,6 +32,7 @@
 #include <cstdint>
 #include <cstring>
 #include <filesystem>
+#include <forward_list>
 #include <fstream>
 #include <functional>
 #include <iomanip>
@@ -40,6 +41,7 @@
 #include <latch>
 #include <list>
 #include <memory>
+#include <mutex>
 #include <queue>
 #include <ranges>
 #include <regex>
