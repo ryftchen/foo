@@ -33,8 +33,7 @@ try
         [=]()
         {
             ::pthread_setname_np(::pthread_self(), "commander");
-            auto& commander = command::Command::getInstance();
-            commander.execManager(argc, argv);
+            command::Command::getInstance().execManager(argc, argv);
         });
     if (running.joinable())
     {
