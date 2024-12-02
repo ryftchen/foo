@@ -37,6 +37,8 @@ inline constexpr std::string_view colorBlue = "\033[0;34;40m";
 inline constexpr std::string_view colorBold = "\033[1m";
 //! @brief ANSI escape codes for the dim font.
 inline constexpr std::string_view colorDim = "\033[2m";
+//! @brief ANSI escape codes for the italic font.
+inline constexpr std::string_view colorItalic = "\033[3m";
 //! @brief ANSI escape codes for the underline font.
 inline constexpr std::string_view colorUnderline = "\033[4m";
 //! @brief ANSI escape codes for the inverse font.

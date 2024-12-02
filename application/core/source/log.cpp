@@ -302,7 +302,8 @@ void Log::startLogging()
     std::lock_guard<std::recursive_mutex> cacheLock(cacheMtx);
     while (!unprocessedCache.empty())
     {
-        std::cout << "*** " << unprocessedCache.front() << std::endl;
+        std::cout << historyCacheBaseColor.data() + unprocessedCache.front() + utility::common::colorOff.data()
+                  << std::endl;
         unprocessedCache.pop_front();
     }
 }

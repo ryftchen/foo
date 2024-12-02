@@ -140,6 +140,9 @@ constinit const auto codeFileBaseColor = utility::common::joinString<
     utility::common::colorBold,
     utility::common::colorUnderline,
     utility::common::colorForBackground>;
+//! @brief Base color of the history cache. Include ANSI escape codes.
+constinit const auto historyCacheBaseColor = utility::common::
+    joinString<utility::common::colorInverse, utility::common::colorItalic, utility::common::colorForBackground>;
 
 //! @brief Logger.
 class Log final : public utility::fsm::FSM<Log>
@@ -449,7 +452,7 @@ void Log::flush(
         }
 
         const std::string label = std::format(
-                              "[{}] {} [{}#{}]: ",
+                              "[{}] {} [{}#{}] ",
                               utility::time::getCurrentSystemTime(),
                               prefix,
                               (std::string_view::npos != srcFile.rfind(sourceDirectory)) ? srcFile.substr(
@@ -495,8 +498,8 @@ void Log::flush(
                 multiRows.end(),
                 [this](auto& output)
                 {
-                    std::cerr << changeToLogStyle(output) << std::endl;
                     unprocessedCache.emplace_front(output);
+                    std::cerr << changeToLogStyle(output) << std::endl;
                 });
         }
     }
