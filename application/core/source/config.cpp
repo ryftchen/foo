@@ -35,10 +35,10 @@ utility::json::JSON Config::parseConfigFile(const std::string_view configFile)
         throw std::runtime_error("Configuration file " + std::string{configFile} + " is missing.");
     }
 
-    const auto& configRows = utility::io::getFileContents(configFile, true);
-    std::ostringstream os{};
-    std::copy(configRows.cbegin(), configRows.cend(), std::ostream_iterator<std::string>(os, ""));
-    const auto& preprocessedData = utility::json::JSON::load(os.str());
+    const auto configRows = utility::io::getFileContents(configFile, true);
+    std::ostringstream trans{};
+    std::copy(configRows.cbegin(), configRows.cend(), std::ostream_iterator<std::string>(trans, ""));
+    auto preprocessedData = utility::json::JSON::load(trans.str());
     verifyConfigData(preprocessedData);
 
     return preprocessedData;

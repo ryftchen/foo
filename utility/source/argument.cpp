@@ -128,27 +128,27 @@ std::string Register::getInlineUsage() const
             longestName = str;
         }
     }
-    std::ostringstream usage{};
+    std::ostringstream out{};
     if (!isRequired)
     {
-        usage << '[';
+        out << '[';
     }
-    usage << longestName;
+    out << longestName;
     const std::string metavar = !metavarContent.empty() ? metavarContent : "VAR";
     if (argsNumRange.getMax() > 0)
     {
-        usage << ' ' << metavar;
+        out << ' ' << metavar;
         if (argsNumRange.getMax() > 1)
         {
-            usage << "...";
+            out << "...";
         }
     }
     if (!isRequired)
     {
-        usage << ']';
+        out << ']';
     }
 
-    return std::move(usage).str();
+    return std::move(out).str();
 }
 
 std::size_t Register::getArgumentsLength() const
@@ -176,43 +176,43 @@ std::size_t Register::getArgumentsLength() const
 
 void Register::throwArgsNumRangeValidationException() const
 {
-    std::ostringstream stream{};
+    std::ostringstream out{};
     if (!usedName.empty())
     {
-        stream << usedName << ": ";
+        out << usedName << ": ";
     }
     else
     {
-        stream << names.at(0) << ": ";
+        out << names.at(0) << ": ";
     }
     if (argsNumRange.isExact())
     {
-        stream << argsNumRange.getMin();
+        out << argsNumRange.getMin();
     }
     else if (argsNumRange.isRightBounded())
     {
-        stream << argsNumRange.getMin() << " to " << argsNumRange.getMax();
+        out << argsNumRange.getMin() << " to " << argsNumRange.getMax();
     }
     else
     {
-        stream << argsNumRange.getMin() << " or more";
+        out << argsNumRange.getMin() << " or more";
     }
-    stream << " argument(s) expected. " << values.size() << " provided.";
-    throw std::runtime_error(stream.str());
+    out << " argument(s) expected. " << values.size() << " provided.";
+    throw std::runtime_error(out.str());
 }
 
 void Register::throwRequiredArgNotUsedException() const
 {
-    std::ostringstream stream{};
-    stream << names.at(0) << ": required.";
-    throw std::runtime_error(stream.str());
+    std::ostringstream out{};
+    out << names.at(0) << ": required.";
+    throw std::runtime_error(out.str());
 }
 
 void Register::throwRequiredArgNoValueProvidedException() const
 {
-    std::ostringstream stream{};
-    stream << usedName << ": no value provided.";
-    throw std::runtime_error(stream.str());
+    std::ostringstream out{};
+    out << usedName << ": no value provided.";
+    throw std::runtime_error(out.str());
 }
 
 int Register::lookAhead(const std::string_view name)
@@ -257,30 +257,30 @@ bool Register::checkIfPositional(const std::string_view name, const std::string_
 //! @return reference of the output stream object
 std::ostream& operator<<(std::ostream& os, const Register& reg)
 {
-    std::ostringstream nameStream{};
+    std::ostringstream out{};
     if (reg.checkIfPositional(reg.names.at(0), reg.prefixChars))
     {
         if (!reg.metavarContent.empty())
         {
-            nameStream << reg.metavarContent;
+            out << reg.metavarContent;
         }
         else
         {
-            nameStream << join(reg.names.cbegin(), reg.names.cend(), " ");
+            out << join(reg.names.cbegin(), reg.names.cend(), " ");
         }
     }
     else
     {
-        nameStream << join(reg.names.cbegin(), reg.names.cend(), ", ");
+        out << join(reg.names.cbegin(), reg.names.cend(), ", ");
         if (!reg.metavarContent.empty() && (Register::ArgsNumRange{1, 1} == reg.argsNumRange))
         {
-            nameStream << ' ' << reg.metavarContent;
+            out << ' ' << reg.metavarContent;
         }
     }
 
     const auto streamWidth = os.width();
-    const auto namePadding = std::string(nameStream.str().length(), ' ');
-    os << nameStream.str();
+    const auto namePadding = std::string(out.str().length(), ' ');
+    os << out.str();
 
     std::size_t pos = 0, prev = 0;
     bool firstLine = true;
@@ -456,44 +456,44 @@ std::ostringstream Argument::help() const
 
 std::string Argument::usage() const
 {
-    std::ostringstream stream{};
-    stream << "usage: " << ((parserPath.find(' ' + titleName) == std::string::npos) ? titleName : parserPath);
+    std::ostringstream out{};
+    out << "usage: " << ((parserPath.find(' ' + titleName) == std::string::npos) ? titleName : parserPath);
 
     for (const auto& argument : optionalArguments)
     {
-        stream << ' ' << argument.getInlineUsage();
+        out << ' ' << argument.getInlineUsage();
     }
     for (const auto& argument : positionalArguments)
     {
         if (!argument.metavarContent.empty())
         {
-            stream << ' ' << argument.metavarContent;
+            out << ' ' << argument.metavarContent;
         }
         else
         {
-            stream << ' ' << argument.names.at(0);
+            out << ' ' << argument.names.at(0);
         }
     }
 
     if (!subParserMap.empty())
     {
-        stream << " {";
+        out << " {";
         for (std::size_t i = 0; const auto& command : std::views::keys(subParserMap))
         {
             if (0 == i)
             {
-                stream << command;
+                out << command;
             }
             else
             {
-                stream << ',' << command;
+                out << ',' << command;
             }
             ++i;
         }
-        stream << '}';
+        out << '}';
     }
 
-    return std::move(stream).str();
+    return std::move(out).str();
 }
 
 void Argument::addSubParser(Argument& parser)

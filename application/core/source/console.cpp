@@ -98,8 +98,9 @@ void Console::setGreeting(const std::string_view greeting)
 int Console::optionExecutor(const std::string_view option)
 {
     std::vector<std::string> inputs{};
-    std::istringstream is(option.data());
-    std::copy(std::istream_iterator<std::string>(is), std::istream_iterator<std::string>(), std::back_inserter(inputs));
+    std::istringstream trans(option.data());
+    std::copy(
+        std::istream_iterator<std::string>(trans), std::istream_iterator<std::string>(), std::back_inserter(inputs));
 
     if (inputs.empty())
     {
