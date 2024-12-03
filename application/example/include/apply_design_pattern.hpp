@@ -202,7 +202,6 @@ public:
     {
         namespace chain_of_responsibility = design_pattern::behavioral::chain_of_responsibility;
         using chain_of_responsibility::ConcreteHandler1, chain_of_responsibility::ConcreteHandler2;
-
         std::shared_ptr<ConcreteHandler1> handler1 = std::make_shared<ConcreteHandler1>();
         std::shared_ptr<ConcreteHandler2> handler2 = std::make_shared<ConcreteHandler2>();
 
@@ -217,7 +216,6 @@ public:
     {
         namespace command = design_pattern::behavioral::command;
         using command::Command, command::ConcreteCommand, command::Invoker, command::Receiver;
-
         std::shared_ptr<ConcreteCommand> commands = std::make_shared<ConcreteCommand>(std::make_shared<Receiver>());
 
         Invoker invoker{};
@@ -233,7 +231,6 @@ public:
         namespace interpreter = design_pattern::behavioral::interpreter;
         using interpreter::AbstractExpression, interpreter::Context, interpreter::NonTerminalExpression,
             interpreter::TerminalExpression;
-
         std::shared_ptr<AbstractExpression> a = std::make_shared<TerminalExpression>("A"),
                                             b = std::make_shared<TerminalExpression>("B"),
                                             exp = std::make_shared<NonTerminalExpression>(a, b);
@@ -253,7 +250,6 @@ public:
     {
         namespace iterator = design_pattern::behavioral::iterator;
         using iterator::ConcreteAggregate, iterator::Iterator;
-
         constexpr std::uint32_t size = 5;
         std::shared_ptr<ConcreteAggregate> list = std::make_shared<ConcreteAggregate>(size);
         std::shared_ptr<Iterator> iter = list->createIterator();
@@ -271,7 +267,6 @@ public:
     {
         namespace mediator = design_pattern::behavioral::mediator;
         using mediator::Colleague, mediator::ConcreteColleague, mediator::ConcreteMediator, mediator::Mediator;
-
         constexpr std::uint32_t id1 = 1, id2 = 2, id3 = 3;
         std::shared_ptr<Mediator> mediators = std::make_shared<ConcreteMediator>();
         std::shared_ptr<Colleague> c1 = std::make_shared<ConcreteColleague>(mediators, id1),
@@ -292,7 +287,6 @@ public:
     {
         namespace memento = design_pattern::behavioral::memento;
         using memento::CareTaker, memento::Originator;
-
         constexpr int state1 = 1, state2 = 2, state3 = 3;
         std::shared_ptr<Originator> originator = std::make_shared<Originator>();
         std::shared_ptr<CareTaker> caretaker = std::make_shared<CareTaker>(originator);
@@ -314,7 +308,6 @@ public:
     {
         namespace observer = design_pattern::behavioral::observer;
         using observer::ConcreteObserver, observer::ConcreteSubject, observer::Subject;
-
         constexpr int state1 = 1, state2 = 2, state3 = 3;
         std::shared_ptr<ConcreteObserver> observer1 = std::make_shared<ConcreteObserver>(state1),
                                           observer2 = std::make_shared<ConcreteObserver>(state2);
@@ -339,7 +332,6 @@ public:
     {
         namespace state = design_pattern::behavioral::state;
         using state::ConcreteStateA, state::ConcreteStateB, state::Context;
-
         std::shared_ptr<Context> context = std::make_shared<Context>();
 
         context->setState(std::make_unique<ConcreteStateA>());
@@ -356,7 +348,6 @@ public:
     {
         namespace strategy = design_pattern::behavioral::strategy;
         using strategy::ConcreteStrategyA, strategy::ConcreteStrategyB, strategy::Context;
-
         Context contextA(std::make_unique<ConcreteStrategyA>());
         contextA.contextInterface();
 
@@ -371,8 +362,8 @@ public:
     {
         namespace template_method = design_pattern::behavioral::template_method;
         using template_method::AbstractClass, template_method::ConcreteClass;
-
         std::shared_ptr<AbstractClass> tm = std::make_shared<ConcreteClass>();
+
         tm->templateMethod();
 
         return transferOutputs(template_method::output());
@@ -384,12 +375,11 @@ public:
         namespace visitor = design_pattern::behavioral::visitor;
         using visitor::ConcreteElementA, visitor::ConcreteElementB, visitor::ConcreteVisitor1,
             visitor::ConcreteVisitor2;
-
         std::shared_ptr<ConcreteElementA> elementA = std::make_shared<ConcreteElementA>();
         std::shared_ptr<ConcreteElementB> elementB = std::make_shared<ConcreteElementB>();
+
         ConcreteVisitor1 visitor1{};
         ConcreteVisitor2 visitor2{};
-
         elementA->accept(visitor1);
         elementA->accept(visitor2);
         elementB->accept(visitor1);
@@ -467,7 +457,6 @@ public:
         namespace abstract_factory = design_pattern::creational::abstract_factory;
         using abstract_factory::ConcreteFactoryX, abstract_factory::ConcreteFactoryY, abstract_factory::ProductA,
             abstract_factory::ProductB;
-
         std::shared_ptr<ConcreteFactoryX> factoryX = std::make_shared<ConcreteFactoryX>();
         std::shared_ptr<ConcreteFactoryY> factoryY = std::make_shared<ConcreteFactoryY>();
 
@@ -491,7 +480,6 @@ public:
     {
         namespace builder = design_pattern::creational::builder;
         using builder::ConcreteBuilderX, builder::ConcreteBuilderY, builder::Director, builder::Product;
-
         Director director{};
         director.set(std::make_unique<ConcreteBuilderX>());
         director.construct();
@@ -511,7 +499,6 @@ public:
     {
         namespace factory_method = design_pattern::creational::factory_method;
         using factory_method::ConcreteCreator, factory_method::Creator, factory_method::Product;
-
         std::shared_ptr<Creator> creator = std::make_shared<ConcreteCreator>();
 
         std::unique_ptr<Product> p1 = creator->createProductA();
@@ -530,7 +517,6 @@ public:
     {
         namespace prototype = design_pattern::creational::prototype;
         using prototype::Client, prototype::Prototype;
-
         Client::init();
 
         std::unique_ptr<Prototype> prototype1 = Client::make(0);
@@ -549,8 +535,8 @@ public:
     {
         namespace singleton = design_pattern::creational::singleton;
         using singleton::Singleton;
-
         Singleton::get()->tell();
+
         Singleton::restart();
 
         return transferOutputs(singleton::output());
@@ -612,8 +598,8 @@ public:
     {
         namespace adapter = design_pattern::structural::adapter;
         using adapter::Adapter, adapter::Target;
-
         std::shared_ptr<Target> t = std::make_shared<Adapter>();
+
         t->request();
 
         return transferOutputs(adapter::output());
@@ -625,7 +611,6 @@ public:
         namespace bridge = design_pattern::structural::bridge;
         using bridge::Abstraction, bridge::ConcreteImplementorA, bridge::ConcreteImplementorB, bridge::Implementor,
             bridge::RefinedAbstraction;
-
         std::unique_ptr<Abstraction> abstract1 =
             std::make_unique<RefinedAbstraction>(std::make_unique<ConcreteImplementorA>());
         abstract1->operation();
@@ -642,7 +627,6 @@ public:
     {
         namespace composite = design_pattern::structural::composite;
         using composite::Composite, composite::Leaf;
-
         constexpr std::uint32_t count = 5;
         Composite composites{};
 
@@ -662,7 +646,6 @@ public:
         namespace decorator = design_pattern::structural::decorator;
         using decorator::Component, decorator::ConcreteComponent, decorator::ConcreteDecoratorA,
             decorator::ConcreteDecoratorB;
-
         std::shared_ptr<ConcreteComponent> cc = std::make_shared<ConcreteComponent>();
         std::shared_ptr<ConcreteDecoratorA> da = std::make_shared<ConcreteDecoratorA>(cc);
         std::shared_ptr<ConcreteDecoratorB> db = std::make_shared<ConcreteDecoratorB>(da);
@@ -678,8 +661,8 @@ public:
     {
         namespace facade = design_pattern::structural::facade;
         using facade::Facade;
-
         std::shared_ptr<Facade> facades = std::make_shared<Facade>();
+
         facades->operation1();
         facades->operation2();
 
@@ -691,8 +674,8 @@ public:
     {
         namespace flyweight = design_pattern::structural::flyweight;
         using flyweight::FlyweightFactory;
-
         std::shared_ptr<FlyweightFactory> factory = std::make_shared<FlyweightFactory>();
+
         factory->getFlyweight(1)->operation();
         factory->getFlyweight(2)->operation();
 
@@ -704,8 +687,8 @@ public:
     {
         namespace proxy = design_pattern::structural::proxy;
         using proxy::Proxy;
-
         std::shared_ptr<Proxy> proxies = std::make_shared<Proxy>();
+
         proxies->request();
 
         return transferOutputs(proxy::output());

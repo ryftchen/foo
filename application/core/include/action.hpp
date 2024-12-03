@@ -618,10 +618,9 @@ class Dispatcher<UpdatingIndication<Msg>, Is...> : public Dispatcher<Is...>
 {
 public:
     using Dispatcher<Is...>::registerHandler;
-
     //! @brief Register the handler.
-    //! @param handler - message handler
-    virtual void registerHandler(Handler<Msg> handler) = 0;
+    //! @param handling - handling for message
+    virtual void registerHandler(Handler<Msg> handling) = 0;
 };
 //! @brief Message dispatcher of the running indication.
 //! @tparam Msg - type of messages
@@ -631,10 +630,9 @@ class Dispatcher<RunningIndication<Msg>, Is...> : public Dispatcher<Is...>
 {
 public:
     using Dispatcher<Is...>::registerHandler;
-
     //! @brief Register the handler.
-    //! @param handler - message handler
-    virtual void registerHandler(Handler<Msg> handler) = 0;
+    //! @param handling - handling for message
+    virtual void registerHandler(Handler<Msg> handling) = 0;
 };
 //! @brief Default message dispatcher.
 template <>
@@ -656,7 +654,6 @@ class Receiver<UpdatingIndication<Msg>, Is...> : public Receiver<Is...>
 {
 public:
     using Receiver<Is...>::onMessage;
-
     //! @brief Action on message.
     //! @param message - message body
     virtual void onMessage(const Msg& message) = 0;
@@ -669,7 +666,6 @@ class Receiver<RunningIndication<Msg>, Is...> : public Receiver<Is...>
 {
 public:
     using Receiver<Is...>::onMessage;
-
     //! @brief Action on message.
     //! @param message - message body
     virtual void onMessage(const Msg& message) = 0;
@@ -701,10 +697,9 @@ public:
     //! @brief Alias for the base class.
     using Base = Forward<Is...>;
     using Base::registerHandler, Base::onMessage;
-
     //! @brief Register the handler.
-    //! @param handler - message handler
-    void registerHandler(Handler<Msg> handler) override { this->handler = std::move(handler); }
+    //! @param handling - handling for message
+    void registerHandler(Handler<Msg> handling) override { handler = std::move(handling); }
     //! @brief Action on message.
     //! @param message - message body
     void onMessage(const Msg& message) override
@@ -729,10 +724,9 @@ public:
     //! @brief Alias for the base class.
     using Base = Forward<Is...>;
     using Base::registerHandler, Base::onMessage;
-
     //! @brief Register the handler.
-    //! @param handler - message handler
-    void registerHandler(Handler<Msg> handler) override { this->handler = std::move(handler); }
+    //! @param handling - handling for message
+    void registerHandler(Handler<Msg> handling) override { handler = std::move(handling); }
     //! @brief Action on message.
     //! @param message - message body
     void onMessage(const Msg& message) override

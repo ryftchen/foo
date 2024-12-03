@@ -94,7 +94,6 @@ void Config::checkLoggerConfigInHelperList(const utility::json::JSON& helperList
     for (const auto& [key, item] : loggerProperties.objectRange())
     {
         using utility::common::EnumCheck, utility::common::operator""_bkdrHash;
-
         switch (utility::common::bkdrHash(key.data()))
         {
             case "filePath"_bkdrHash:
@@ -167,7 +166,6 @@ void Config::checkViewerConfigInHelperList(const utility::json::JSON& helperList
     for (const auto& [key, item] : viewerProperties.objectRange())
     {
         using utility::common::operator""_bkdrHash;
-
         switch (utility::common::bkdrHash(key.data()))
         {
             case "tcpHost"_bkdrHash:
@@ -217,7 +215,6 @@ std::string getFullDefaultConfigurationPath()
 utility::json::JSON getDefaultConfiguration()
 {
     namespace json = utility::json;
-
     auto loggerProperties = json::object();
     loggerProperties.at("filePath") = "log/foo.log";
     loggerProperties.at("priorityLevel") = static_cast<int>(log::Log::OutputLevel::debug);
@@ -297,7 +294,6 @@ static bool handleConfigurationException(const std::string_view filename)
         [&](const std::string_view input)
         {
             using utility::common::operator""_bkdrHash;
-
             switch (utility::common::bkdrHash(input.data()))
             {
                 case "y"_bkdrHash:

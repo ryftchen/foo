@@ -511,7 +511,6 @@ auto Register::action(Func&& callable, Args&&... boundArgs)
         std::is_void_v<std::invoke_result_t<Func, Args..., const std::string&>>,
         VoidAction,
         ValuedAction>;
-
     if constexpr (!sizeof...(Args))
     {
         actions.emplace<ActionType>(std::forward<Func>(callable));
