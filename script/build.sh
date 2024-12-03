@@ -62,8 +62,8 @@ function wait_until_get_input()
     local answer
     answer=$(while ! head -c 1 | grep -i '[yn]'; do true; done)
     stty "${old_stty}"
-
     echo "${answer}"
+
     return 0
 }
 
@@ -94,6 +94,7 @@ function existing_single_choice_parameters()
         fi
     done
     echo "${number}"
+
     return 0
 }
 
@@ -110,6 +111,7 @@ function existing_multiple_choice_parameters()
         fi
     done
     echo "${number}"
+
     return 0
 }
 

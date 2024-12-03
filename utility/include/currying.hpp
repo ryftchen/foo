@@ -161,7 +161,6 @@ inline auto Curried<Callable, std::tuple<CurriedArgs...>, std::tuple<UncurriedAr
         Callable,
         TupleConcatResult<std::tuple<CurriedArgs...>, std::tuple<Args...>>,
         ArgsExclType<sizeof...(Args), UncurriedArgs...>>;
-
     return OverlayCurried(callable, std::tuple_cat(curriedArgs, args));
 }
 
@@ -174,7 +173,6 @@ inline auto Curried<Callable, std::tuple<CurriedArgs...>, std::tuple<UncurriedAr
         Callable,
         TupleConcatResult<std::tuple<CurriedArgs...>, std::tuple<Args...>>,
         ArgsExclType<sizeof...(Args), UncurriedArgs...>>;
-
     return OverlayCurried(std::move(callable), std::tuple_cat(std::move(curriedArgs), args));
 }
 
@@ -204,7 +202,6 @@ struct Curry<std::tuple<CurriedArgs...>, std::tuple<UncurriedArgs...>>
     {
         using Callable = std::function<Ret(CurriedArgs..., UncurriedArgs...)>;
         using CurriedType = Curried<Callable, std::tuple<CurriedArgs...>, std::tuple<UncurriedArgs...>>;
-
         return CurriedType(call, std::tuple<CurriedArgs...>(std::forward<Args>(args)...));
     }
     //! @brief To curry for internal.
@@ -218,7 +215,6 @@ struct Curry<std::tuple<CurriedArgs...>, std::tuple<UncurriedArgs...>>
     {
         using Callable = std::function<Ret(CurriedArgs..., UncurriedArgs...)>;
         using CurriedType = Curried<Callable, std::tuple<CurriedArgs...>, std::tuple<UncurriedArgs...>>;
-
         return CurriedType(std::move(call), std::tuple<CurriedArgs...>(std::forward<Args>(args)...));
     }
 };
@@ -236,7 +232,6 @@ inline auto curry(std::function<Ret(FullArgs...)>&& call, Args&&... args)
     using CurriedArgsTuple = ArgsHeadType<sizeof...(Args), FullArgs...>;
     using UncurriedArgsTuple = ArgsExclType<sizeof...(Args), FullArgs...>;
     using CurryWrapper = Curry<CurriedArgsTuple, UncurriedArgsTuple>;
-
     return CurryWrapper::curryForInternal(std::move(call), std::forward<Args>(args)...);
 }
 
@@ -253,7 +248,6 @@ inline auto curry(const std::function<Ret(FullArgs...)>& call, Args&&... args)
     using CurriedArgsTuple = ArgsHeadType<sizeof...(Args), FullArgs...>;
     using UncurriedArgsTuple = ArgsExclType<sizeof...(Args), FullArgs...>;
     using CurryWrapper = Curry<CurriedArgsTuple, UncurriedArgsTuple>;
-
     return CurryWrapper::curryForInternal(call, std::forward<Args>(args)...);
 }
 

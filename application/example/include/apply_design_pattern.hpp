@@ -167,6 +167,7 @@ protected:
                 os << "UNKNOWN (" << static_cast<std::underlying_type_t<Category>>(cat) << ')';
                 break;
         }
+
         return os;
     }
 };
@@ -406,6 +407,7 @@ private:
         std::ostringstream os(outputs.str());
         outputs.str("");
         outputs.clear();
+
         return os;
     }
 };
@@ -563,6 +565,7 @@ private:
         std::ostringstream os(outputs.str());
         outputs.str("");
         outputs.clear();
+
         return os;
     }
 };
@@ -717,6 +720,7 @@ private:
         std::ostringstream os(outputs.str());
         outputs.str("");
         outputs.clear();
+
         return os;
     }
 };

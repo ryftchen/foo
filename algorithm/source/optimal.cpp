@@ -49,7 +49,6 @@ std::optional<std::tuple<double, double>> Gradient::operator()(const double left
         }
         storage.emplace_back(func(x), x);
     }
-
     std::tie(y, x) = *std::min_element(
         storage.cbegin(),
         storage.cend(),
@@ -166,7 +165,6 @@ std::optional<std::tuple<double, double>> Particle::operator()(const double left
         }
         storage.emplace_back(xFitnessBest, xBest);
     }
-
     std::tie(xFitnessBest, xBest) = *std::min_element(
         storage.cbegin(),
         storage.cend(),
@@ -223,6 +221,7 @@ double Genetic::geneticDecode(const Chromosome& chr) const
             convert += bit * std::pow(2, index);
             ++index;
         });
+
     return property.lower + (property.upper - property.lower) * convert / max;
 }
 
@@ -237,6 +236,7 @@ Genetic::Population Genetic::populationInit()
             std::uniform_int_distribution<std::uint8_t> bit(0, 1);
             std::generate(chr.begin(), chr.end(), [this, &bit]() { return bit(engine); });
         });
+
     return pop;
 }
 
@@ -336,6 +336,7 @@ std::optional<std::pair<double, double>> Genetic::fitnessLinearTransformation(co
     {
         return std::make_optional(std::pair<double, double>(1.0, 0.0));
     }
+
     return std::make_optional(std::pair<double, double>(alpha, beta));
 }
 

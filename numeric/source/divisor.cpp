@@ -30,9 +30,8 @@ std::set<std::int32_t> Divisor::euclidean(std::int32_t a, std::int32_t b)
         a = b;
         b = temp;
     }
-    const std::int32_t gcd = a;
 
-    return getAllDivisors(gcd);
+    return getAllDivisors(a);
 }
 
 std::set<std::int32_t> Divisor::stein(std::int32_t a, std::int32_t b)
@@ -101,6 +100,7 @@ std::set<std::int32_t> Divisor::getAllDivisors(const std::int32_t gcd)
             }
         }
     }
+
     return divisors;
 }
 } // namespace numeric::divisor

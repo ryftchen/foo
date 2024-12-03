@@ -114,6 +114,7 @@ protected:
                 os << "UNKNOWN (" << static_cast<std::underlying_type_t<Category>>(cat) << ')';
                 break;
         }
+
         return os;
     }
 };

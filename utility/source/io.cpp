@@ -83,8 +83,8 @@ int FDStreamBuffer::flush()
         }
         ptr += writtenSize;
     }
-
     setp(writeBuffer.get(), writeBuffer.get() + bufferSize);
+
     return 0;
 }
 
@@ -109,8 +109,8 @@ FDStreamBuffer::int_type FDStreamBuffer::underflow()
     {
         return traits_type::eof();
     }
-
     setg(readBuffer.get(), readBuffer.get(), readBuffer.get() + readSize);
+
     return traits_type::to_int_type(*gptr());
 }
 
@@ -188,8 +188,8 @@ std::streampos FDStreamBuffer::seekoff(std::streamoff off, std::ios_base::seekdi
     {
         return -1;
     }
-
     setg(nullptr, nullptr, nullptr);
+
     return newOffset;
 }
 
@@ -204,6 +204,7 @@ std::streamsize FDStreamBuffer::showmanyc()
     {
         return 0;
     }
+
     return egptr() - gptr();
 }
 
@@ -482,6 +483,7 @@ std::list<std::string> getFileContents(
         fileReader.unlock();
     }
     fileReader.close();
+
     return contents;
 }
 } // namespace utility::io

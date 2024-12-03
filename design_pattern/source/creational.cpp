@@ -241,6 +241,7 @@ std::unique_ptr<Prototype> Client::make(const int index)
     {
         return nullptr;
     }
+
     return types[index]->clone();
 }
 
@@ -263,6 +264,7 @@ std::shared_ptr<Singleton>& Singleton::get()
     {
         instance = std::shared_ptr<Singleton>();
     }
+
     return instance;
 }
 

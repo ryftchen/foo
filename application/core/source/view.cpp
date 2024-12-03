@@ -41,6 +41,7 @@ static int serialize(Packet& pkt, const TLVValue& val, T TLVValue::*pl)
     constexpr int length = sizeof(T);
     pkt.write<int>(length);
     pkt.write<T>(val.*pl);
+
     return sizeof(int) + length;
 }
 
@@ -54,6 +55,7 @@ static int serialize(Packet& pkt, const TLVValue& val, char (TLVValue::*pl)[])
     const int length = std::strlen(val.*pl);
     pkt.write<int>(length);
     pkt.write(val.*pl, length);
+
     return sizeof(int) + length;
 }
 
@@ -70,6 +72,7 @@ static int deserialize(Packet& pkt, TLVValue& val, T TLVValue::*pl)
     int length = 0;
     pkt.read<int>(&length);
     pkt.read<T>(&(val.*pl));
+
     return sizeof(int) + length;
 }
 
@@ -83,6 +86,7 @@ static int deserialize(Packet& pkt, TLVValue& val, char (TLVValue::*pl)[])
     int length = 0;
     pkt.read<int>(&length);
     pkt.read(&(val.*pl), length);
+
     return sizeof(int) + length;
 }
 
@@ -194,6 +198,7 @@ bool Packet::write(const T data)
     {
         temp = data;
     }
+
     return write(&temp, sizeof(T));
 }
 
@@ -201,6 +206,7 @@ bool Packet::write(const void* const dst, const int offset)
 {
     std::memcpy(writer, dst, offset);
     writer += offset;
+
     return (writer < tail) ? true : false;
 }
 
@@ -216,6 +222,7 @@ bool Packet::read(T* const data)
     {
         *data = ::ntohs(*data);
     }
+
     return isEnd;
 }
 
@@ -223,6 +230,7 @@ bool Packet::read(void* const dst, const int offset)
 {
     std::memcpy(dst, reader, offset);
     reader += offset;
+
     return (reader < tail) ? true : false;
 }
 } // namespace tlv
@@ -233,8 +241,8 @@ View& View::getInstance()
     {
         throw std::logic_error("The viewer is disabled.");
     }
-
     static View viewer{};
+
     return viewer;
 }
 
@@ -460,6 +468,7 @@ int View::buildNullTLVPacket(char* buf)
         throw std::runtime_error("Failed to build null packet.");
     }
     encryptMessage(buf, len);
+
     return len;
 }
 
@@ -471,6 +480,7 @@ int View::buildTLVPacket4Stop(char* buf)
         throw std::runtime_error("Failed to build packet to stop");
     }
     encryptMessage(buf, len);
+
     return len;
 }
 
@@ -534,6 +544,7 @@ int View::buildTLVPacket4Depend(const std::vector<std::string>& args, char* buf)
         throw std::runtime_error("Failed to build packet for the depend option.");
     }
     encryptMessage(buf, len);
+
     return len;
 }
 
@@ -565,6 +576,7 @@ int View::buildTLVPacket4Execute(const std::vector<std::string>& args, char* buf
         throw std::runtime_error("Failed to build packet for the execute option.");
     }
     encryptMessage(buf, len);
+
     return len;
 }
 
@@ -582,6 +594,7 @@ int View::buildTLVPacket4Journal(const std::vector<std::string>& args, char* buf
         throw std::runtime_error("Failed to build packet for the journal option.");
     }
     encryptMessage(buf, len);
+
     return len;
 }
 
@@ -608,6 +621,7 @@ int View::buildTLVPacket4Monitor(const std::vector<std::string>& args, char* buf
         throw std::runtime_error("Failed to build packet for the monitor option.");
     }
     encryptMessage(buf, len);
+
     return len;
 }
 
@@ -628,6 +642,7 @@ int View::buildTLVPacket4Profile(const std::vector<std::string>& args, char* buf
         throw std::runtime_error("Failed to build packet for the profile option.");
     }
     encryptMessage(buf, len);
+
     return len;
 }
 
@@ -885,6 +900,7 @@ std::string View::getLogContents()
     std::for_each(contents.begin(), contents.end(), [](auto& line) { return log::changeToLogStyle(line); });
     std::ostringstream os{};
     std::copy(contents.cbegin(), contents.cend(), std::ostream_iterator<std::string>(os, "\n"));
+
     return std::move(os).str();
 }
 
@@ -953,6 +969,7 @@ View::State View::safeCurrentState() const
     stateLock.lock();
     const auto state = State(currentState());
     stateLock.unlock();
+
     return state;
 }
 

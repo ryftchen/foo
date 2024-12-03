@@ -195,7 +195,6 @@ template <class T>
 std::vector<T> Sort<T>::merge(const T* const array, const std::uint32_t length)
 {
     std::vector<T> sorting(array, array + length);
-
     mergeSortRecursive(sorting.data(), 0, length - 1);
 
     return sorting;
@@ -236,7 +235,6 @@ template <class T>
 std::vector<T> Sort<T>::quick(const T* const array, const std::uint32_t length)
 {
     std::vector<T> sorting(array, array + length);
-
     quickSortRecursive(sorting.data(), 0, length - 1);
 
     return sorting;

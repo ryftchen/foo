@@ -150,6 +150,7 @@ Memory<T, BlockSize>& Memory<T, BlockSize>::operator=(Memory&& memory) noexcept
         lastSlot = memory.lastSlot;
         freeSlots = memory.freeSlots;
     }
+
     return *this;
 }
 
@@ -221,6 +222,7 @@ inline T* Memory<T, BlockSize>::newElement(Args&&... args)
 {
     T* const result = allocate();
     construct<T>(result, std::forward<Args>(args)...);
+
     return result;
 }
 

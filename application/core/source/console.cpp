@@ -162,9 +162,9 @@ int Console::readLine()
     {
         ::add_history(buffer);
     }
-
     std::string line(buffer);
     ::rl_free(buffer);
+
     return RetCode(optionExecutor(line));
 }
 

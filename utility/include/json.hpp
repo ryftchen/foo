@@ -375,6 +375,7 @@ typename std::enable_if<std::is_convertible<T, std::string>::value, JSON&>::type
 {
     setType(Type::string);
     data.value = String{s};
+
     return *this;
 }
 
@@ -383,6 +384,7 @@ typename std::enable_if<std::is_floating_point<T>::value, JSON&>::type JSON::ope
 {
     setType(Type::floating);
     data.value = static_cast<Floating>(f);
+
     return *this;
 }
 
@@ -392,6 +394,7 @@ typename std::enable_if<std::is_integral<T>::value && !std::is_same<T, bool>::va
 {
     setType(Type::integral);
     data.value = static_cast<Integral>(i);
+
     return *this;
 }
 
@@ -400,6 +403,7 @@ typename std::enable_if<std::is_same<T, bool>::value, JSON&>::type JSON::operato
 {
     setType(Type::boolean);
     data.value = static_cast<Boolean>(b);
+
     return *this;
 }
 // NOLINTEND(misc-unconventional-assign-operator)

@@ -108,6 +108,7 @@ class Task:
             value = int(value)
             if value <= 0:
                 raise argparse.ArgumentTypeError(f"\"{value}\" is an invalid positive int value.")
+
             return value
 
         parser = argparse.ArgumentParser(description="run script", formatter_class=argparse.RawTextHelpFormatter)
@@ -805,6 +806,7 @@ class Output:
                 rows.append(new_line)
 
             rows.append("-" * (cls.tbl_min_key_width + 2 + cls.tbl_min_value_width + 1))
+
         return "\n".join(rows)
 
 

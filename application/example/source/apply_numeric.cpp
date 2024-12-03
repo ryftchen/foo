@@ -105,7 +105,6 @@ consteval std::size_t abbrVal(const T method)
 {
     using TypeInfo = utility::reflection::TypeInfo<T>;
     static_assert(Bottom<T>::value == TypeInfo::fields.size);
-
     std::size_t value = 0;
     TypeInfo::fields.forEach(
         [method, &value](const auto field)
@@ -118,6 +117,7 @@ consteval std::size_t abbrVal(const T method)
                 value = utility::common::operator""_bkdrHash(attr.value, 0);
             }
         });
+
     return value;
 }
 
@@ -130,6 +130,7 @@ std::string getTitle(const T method)
 {
     std::string title(toString(method));
     title.at(0) = std::toupper(title.at(0));
+
     return title;
 }
 

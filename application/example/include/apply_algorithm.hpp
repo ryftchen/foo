@@ -216,6 +216,7 @@ protected:
             default:
                 os << "UNKNOWN (" << static_cast<std::underlying_type_t<Category>>(cat) << ')';
         }
+
         return os;
     }
 };
@@ -614,6 +615,7 @@ struct FuncMapHash
         seed ^= hash1 + magicNumber + (seed << leftShift) + (seed >> rightShift);
         seed ^= hash2 + magicNumber + (seed << leftShift) + (seed >> rightShift);
         seed ^= hash3 + magicNumber + (seed << leftShift) + (seed >> rightShift);
+
         return seed;
     }
 };
@@ -761,6 +763,7 @@ public:
         {
             deepCopy(rhs);
         }
+
         return *this;
     }
 
@@ -1011,6 +1014,7 @@ public:
         {
             deepCopy(rhs);
         }
+
         return *this;
     }
 

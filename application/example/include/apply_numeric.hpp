@@ -173,6 +173,7 @@ protected:
                 os << "UNKNOWN (" << static_cast<std::underlying_type_t<Category>>(cat) << ')';
                 break;
         }
+
         return os;
     }
 };
@@ -518,6 +519,7 @@ struct ExprMapHash
         seed ^= hash1 + magicNumber + (seed << leftShift) + (seed >> rightShift);
         seed ^= hash2 + magicNumber + (seed << leftShift) + (seed >> rightShift);
         seed ^= hash3 + magicNumber + (seed << leftShift) + (seed >> rightShift);
+
         return seed;
     }
 };

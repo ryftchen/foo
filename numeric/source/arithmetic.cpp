@@ -18,22 +18,17 @@ const char* version() noexcept
 
 std::int32_t Arithmetic::addition(const std::int32_t augend, const std::int32_t addend)
 {
-    const std::int32_t sum = bitAdd(augend, addend);
-
-    return sum;
+    return bitAdd(augend, addend);
 }
 
 std::int32_t Arithmetic::subtraction(const std::int32_t minuend, const std::int32_t subtrahend)
 {
-    const std::int32_t difference = bitAdd(minuend, bitAdd(~subtrahend, 1));
-
-    return difference;
+    return bitAdd(minuend, bitAdd(~subtrahend, 1));
 }
 
 std::int32_t Arithmetic::multiplication(const std::int32_t multiplier, const std::int32_t multiplicand)
 {
     std::int32_t product = 0;
-
     for (std::int32_t i = (32 - 1); i >= 0; --i)
     {
         product <<= 1;

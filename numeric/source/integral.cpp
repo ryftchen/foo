@@ -40,6 +40,7 @@ double trapezoid(const Expression& expr, const double left, const double height,
         sum += area;
         x += delta;
     }
+
     return sum;
 }
 
@@ -67,7 +68,6 @@ double Trapezoidal::operator()(double lower, double upper, const double eps) con
 double Simpson::operator()(double lower, double upper, const double eps) const
 {
     const std::int8_t sign = getSign(lower, upper);
-
     double sum = simpsonIntegral(lower, upper, eps);
     sum *= sign;
 
@@ -81,6 +81,7 @@ double Simpson::simpsonIntegral(const double left, const double right, const dou
     {
         return simpsonIntegral(left, mid, eps) + simpsonIntegral(mid, right, eps);
     }
+
     return sum;
 }
 
@@ -92,6 +93,7 @@ double Simpson::compositeSimpsonOneThird(const double left, const double right, 
     {
         sum += simpsonOneThird(left + i * stepLen, left + (i + 1) * stepLen);
     }
+
     return sum;
 }
 
@@ -170,7 +172,6 @@ double Gauss::operator()(double lower, double upper, const double eps) const
 double MonteCarlo::operator()(double lower, double upper, const double eps) const
 {
     const std::int8_t sign = getSign(lower, upper);
-
     double sum = sampleFromUniformDistribution(lower, upper, eps);
     sum *= sign;
 

@@ -42,9 +42,7 @@ std::string Notation::prefix(const std::string_view infix)
 
 std::string Notation::postfix(const std::string_view infix)
 {
-    std::string notation(infixToPostfix(infix));
-
-    return notation;
+    return infixToPostfix(infix);
 }
 
 std::string Notation::infixToPostfix(const std::string_view infix)
