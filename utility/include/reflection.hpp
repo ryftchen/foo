@@ -39,7 +39,6 @@ public:
     {
         //! @brief Alias for the value type.
         using ValueType = Char;
-
         //! @brief Construct a new StrType object.
         //! @param str - target string
         constexpr explicit StrType(const std::basic_string_view<ValueType> str)
@@ -63,7 +62,6 @@ public:
     {
         //! @brief Alias for the character.
         using Char = typename decltype(Str)::ValueType;
-
         //! @brief Check whether it is the custom string type.
         //! @tparam T - type of target string
         //! @return be custom string type or not
@@ -206,7 +204,6 @@ inline constexpr void Reflect::varInNodeV(const T /*info*/, U&& obj, Func&& func
         [&](const auto fld)
         {
             using Fld = std::decay_t<decltype(fld)>;
-
             if constexpr (!Fld::isStatic && !Fld::isFunction)
             {
                 std::forward<Func>(func)(fld, std::forward<U>(obj).*(fld.value));
@@ -229,7 +226,6 @@ struct NamedValueBase
 {
     //! @brief Alias for the name type.
     using NameType = Name;
-
     //! @brief Value name.
     static constexpr std::string_view name{NameType::view()};
 };
@@ -584,7 +580,6 @@ struct TypeInfoBase
 {
     //! @brief Alias for the type.
     using Type = T;
-
     //! @brief Public base class list.
     static constexpr BaseList bases{Bs{}...};
 
@@ -673,7 +668,6 @@ struct TypeInfoBase
                     [&](const auto fld)
                     {
                         using Fld = std::decay_t<decltype(fld)>;
-
                         if constexpr (!Fld::isStatic && !Fld::isFunction)
                         {
                             std::forward<Func>(func)(fld, std::forward<U>(obj).*(fld.value));

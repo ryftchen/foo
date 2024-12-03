@@ -89,7 +89,6 @@ private:
     using OptionCompleterFunctor = char**(const char* text, int start, int end);
     //! @brief Alias for the functor of option iterator.
     using OptionIteratorFunctor = char*(const char* text, int state);
-
     //! @brief Saved empty history state.
     HistoryState* const emptyHistory{::history_get_history_state()};
     //! @brief Implementation of running console.
@@ -113,7 +112,6 @@ private:
 
         //! @brief Alias for the map of option and function in console.
         using RegisteredOption = std::unordered_map<Option, std::pair<OptionFunctor, Help>>;
-
         //! @brief Greeting information.
         std::string greeting{};
         //! @brief Mapping table of all registered options.

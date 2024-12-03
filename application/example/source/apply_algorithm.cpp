@@ -407,7 +407,6 @@ void runChoices<MatchMethod>(const std::vector<std::string>& candidates)
     APP_ALGO_PRINT_TASK_BEGIN_TITLE(category);
     using match::MatchSolution, match::InputBuilder, match::input::patternString;
     static_assert(InputBuilder::maxDigit > patternString.length());
-
     auto& pooling = action::resourcePool();
     auto* const threads = pooling.newElement(bits.count());
     const auto inputs = std::make_shared<InputBuilder>(patternString);
@@ -529,7 +528,6 @@ void runChoices<NotationMethod>(const std::vector<std::string>& candidates)
 
     APP_ALGO_PRINT_TASK_BEGIN_TITLE(category);
     using notation::NotationSolution, notation::InputBuilder, notation::input::infixString;
-
     auto& pooling = action::resourcePool();
     auto* const threads = pooling.newElement(bits.count());
     const auto inputs = std::make_shared<InputBuilder>(infixString);

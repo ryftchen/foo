@@ -56,7 +56,6 @@ public:
     using Integral = long long;
     //! @brief Alias for the JSON boolean.
     using Boolean = bool;
-
     //! @brief Construct a new JSON object.
     JSON() : data(), type(Type::null) {}
     //! @brief Destroy the JSON object.

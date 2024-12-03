@@ -143,7 +143,6 @@ private:
 void helperDaemon()
 {
     using log::Log, view::View;
-
     constexpr std::uint8_t helperNum = 2;
     utility::thread::Thread extensionThd(helperNum);
     extensionThd.enqueue("logger", &Log::stateController, &Log::getInstance());
@@ -842,7 +841,6 @@ try
     LOG_DBG << "Enter console mode.";
 #endif // NDEBUG
     using enum console::Console::RetCode;
-
     std::cout << utility::io::executeCommand("tput bel ; echo '" + getIconBanner() + "' ; sleep 0.1s") << std::flush;
     auto tcpClient = std::make_shared<utility::socket::TCPSocket>();
     launchClient(tcpClient);
@@ -891,7 +889,6 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& c
 {
     using console::Console;
     using enum Console::RetCode;
-
     session.registerOption(
         "refresh",
         [](const Console::Args& /*input*/)
@@ -973,7 +970,6 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& c
 void Command::validateDependenciesVersion() const
 {
     using utility::common::allStrEqual;
-
     if (!allStrEqual(
             mainCLI.version().data(),
             utility::argument::version(),

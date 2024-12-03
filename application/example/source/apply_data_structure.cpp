@@ -255,7 +255,6 @@ void runChoices<LinearInstance>(const std::vector<std::string>& candidates)
 
     APP_DS_PRINT_TASK_BEGIN_TITLE(category);
     using linear::LinearStructure;
-
     auto& pooling = action::resourcePool();
     auto* const threads = pooling.newElement(bits.count());
     const auto functor = [threads](const std::string_view threadName, void (*targetInstance)())
@@ -375,7 +374,6 @@ void runChoices<TreeInstance>(const std::vector<std::string>& candidates)
 
     APP_DS_PRINT_TASK_BEGIN_TITLE(category);
     using tree::TreeStructure;
-
     auto& pooling = action::resourcePool();
     auto* const threads = pooling.newElement(bits.count());
     const auto functor = [threads](const std::string_view threadName, void (*targetInstance)())

@@ -161,7 +161,6 @@ public:
             doubly_linked_list::dllGet, doubly_linked_list::dllGetFirst, doubly_linked_list::dllGetLast,
             doubly_linked_list::dllInsert, doubly_linked_list::dllInsertFirst, doubly_linked_list::dllInsertLast,
             doubly_linked_list::dllIsEmpty, doubly_linked_list::dllSize;
-
         date_structure::linear::Output output{};
         auto& flush = output.flush();
         flush << std::boolalpha;
@@ -216,7 +215,6 @@ public:
         namespace stack = date_structure::linear::stack;
         using stack::createStack, stack::destroyStack, stack::Stack, stack::stackIsEmpty, stack::stackPop,
             stack::stackPush, stack::stackSize, stack::stackTop;
-
         date_structure::linear::Output output{};
         auto& flush = output.flush();
         flush << std::boolalpha;
@@ -263,7 +261,6 @@ public:
         namespace queue = date_structure::linear::queue;
         using queue::createQueue, queue::destroyQueue, queue::Queue, queue::queueFront, queue::queueIsEmpty,
             queue::queuePop, queue::queuePush, queue::queueSize;
-
         date_structure::linear::Output output{};
         auto& flush = output.flush();
         flush << std::boolalpha;
@@ -343,7 +340,6 @@ public:
     {
         namespace bs = date_structure::tree::bs;
         using bs::BSTree, bs::bsTreeDelete, bs::bsTreeInsert, bs::destroyBSTree, bs::getMaximum, bs::getMinimum;
-
         bs::Output output{};
         auto& flush = output.flush();
         BSTree root = nullptr;
@@ -392,7 +388,6 @@ public:
         namespace avl = date_structure::tree::avl;
         using avl::AVLTree, avl::avlTreeDelete, avl::avlTreeInsert, avl::destroyAVLTree, avl::getHeight,
             avl::getMaximum, avl::getMinimum;
-
         avl::Output output{};
         auto& flush = output.flush();
         AVLTree root = nullptr;
@@ -444,7 +439,6 @@ public:
         namespace splay = date_structure::tree::splay;
         using splay::destroySplayTree, splay::getMaximum, splay::getMinimum, splay::SplayTree, splay::splayTreeInsert,
             splay::splayTreeSplay;
-
         splay::Output output{};
         auto& flush = output.flush();
         SplayTree root = nullptr;

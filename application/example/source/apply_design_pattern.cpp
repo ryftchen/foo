@@ -403,7 +403,6 @@ void runChoices<BehavioralInstance>(const std::vector<std::string>& candidates)
 
     APP_DP_PRINT_TASK_BEGIN_TITLE(category);
     using behavioral::BehavioralPattern;
-
     auto& pooling = action::resourcePool();
     auto* const threads = pooling.newElement(bits.count());
     const auto functor = [threads](const std::string_view threadName, void (*targetInstance)())
@@ -575,7 +574,6 @@ void runChoices<CreationalInstance>(const std::vector<std::string>& candidates)
 
     APP_DP_PRINT_TASK_BEGIN_TITLE(category);
     using creational::CreationalPattern;
-
     auto& pooling = action::resourcePool();
     auto* const threads = pooling.newElement(bits.count());
     const auto functor = [threads](const std::string_view threadName, void (*targetInstance)())
@@ -757,7 +755,6 @@ void runChoices<StructuralInstance>(const std::vector<std::string>& candidates)
 
     APP_DP_PRINT_TASK_BEGIN_TITLE(category);
     using structural::StructuralPattern;
-
     auto& pooling = action::resourcePool();
     auto* const threads = pooling.newElement(bits.count());
     const auto functor = [threads](const std::string_view threadName, void (*targetInstance)())

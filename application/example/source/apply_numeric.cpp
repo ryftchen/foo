@@ -318,7 +318,6 @@ void runChoices<ArithmeticMethod>(const std::vector<std::string>& candidates)
     APP_NUM_PRINT_TASK_BEGIN_TITLE(category);
     using arithmetic::ArithmeticSolution, arithmetic::InputBuilder, arithmetic::input::integerA,
         arithmetic::input::integerB;
-
     auto& pooling = action::resourcePool();
     auto* const threads = pooling.newElement(bits.count());
     const auto inputs = std::make_shared<InputBuilder>(integerA, integerB);
@@ -440,7 +439,6 @@ void runChoices<DivisorMethod>(const std::vector<std::string>& candidates)
 
     APP_NUM_PRINT_TASK_BEGIN_TITLE(category);
     using divisor::DivisorSolution, divisor::InputBuilder, divisor::input::integerA, divisor::input::integerB;
-
     auto& pooling = action::resourcePool();
     auto* const threads = pooling.newElement(bits.count());
     const auto inputs = std::make_shared<InputBuilder>(integerA, integerB);
@@ -741,7 +739,6 @@ void runChoices<PrimeMethod>(const std::vector<std::string>& candidates)
 
     APP_NUM_PRINT_TASK_BEGIN_TITLE(category);
     using prime::PrimeSolution, prime::InputBuilder, prime::input::maxPositiveInteger;
-
     auto& pooling = action::resourcePool();
     auto* const threads = pooling.newElement(bits.count());
     const auto inputs = std::make_shared<InputBuilder>(maxPositiveInteger);

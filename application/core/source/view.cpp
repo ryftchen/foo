@@ -846,7 +846,6 @@ void View::segmentedOutput(const std::string_view buffer)
     const auto handling = [&](const std::string_view input)
     {
         using utility::common::operator""_bkdrHash;
-
         std::cout << clearEscape << std::flush;
         if (input.empty())
         {
