@@ -53,8 +53,8 @@ Log& Log::getInstance()
     {
         throw std::logic_error("The logger is disabled.");
     }
-
     static Log logger{};
+
     return logger;
 }
 
@@ -245,6 +245,7 @@ Log::State Log::safeCurrentState() const
     stateLock.lock();
     const auto state = State(currentState());
     stateLock.unlock();
+
     return state;
 }
 
@@ -276,6 +277,7 @@ std::string Log::getFullLogPath(const std::string_view filename)
     {
         throw std::runtime_error("The environment variable FOO_HOME is not set.");
     }
+
     return std::string{processHome} + '/' + filename.data();
 }
 

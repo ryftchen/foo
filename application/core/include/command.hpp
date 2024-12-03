@@ -146,7 +146,6 @@ private:
     static inline constexpr std::string_view getDescr()
     {
         using TypeInfo = utility::reflection::TypeInfo<T>;
-
         return TypeInfo::attrs.find(REFLECTION_STR("descr")).value;
     }
     //! @brief Get the alias name.
@@ -158,7 +157,6 @@ private:
     {
         using SubCLITypeInfo = utility::reflection::TypeInfo<SubCLI>;
         using CatTypeInfo = utility::reflection::TypeInfo<Cat>;
-
         return SubCLITypeInfo::fields.find(REFLECTION_STR(CatTypeInfo::name)).attrs.find(REFLECTION_STR("alias")).value;
     }
     //! @brief Extract all choices in the category.

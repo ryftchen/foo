@@ -207,6 +207,7 @@ std::string getFullDefaultConfigurationPath()
     {
         throw std::runtime_error("The environment variable FOO_HOME is not set.");
     }
+
     return std::string{processHome} + '/' + defaultConfigurationFile.data();
 }
 
@@ -338,8 +339,8 @@ catch (...)
         std::cout << '\n' << std::endl;
         throw;
     }
-
     std::cout << std::endl;
+
     return false;
 }
 
@@ -358,6 +359,7 @@ try
     configSem.acquire();
     const auto& dataRepo = Config::getInstance().getDataRepo();
     configSem.release();
+
     return dataRepo;
 }
 catch (...)

@@ -187,6 +187,7 @@ Node* deleteNode(BSTree tree, Node* const z)
         return nullptr;
     }
     delete y;
+
     return tree;
 }
 
@@ -356,6 +357,7 @@ Node* getMaximum(AVLTree tree)
     {
         tree = tree->right;
     }
+
     return tree;
 }
 
@@ -860,8 +862,8 @@ Node* splayTreeDelete(SplayTree tree, const Type key)
     {
         x = tree->right;
     }
-
     delete tree;
+
     return x;
 }
 

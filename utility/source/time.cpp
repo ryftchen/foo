@@ -39,8 +39,8 @@ double Time::getTimeInterval() const
     {
         throw std::logic_error("The end time cannot be earlier than the begin time.");
     }
-
     const auto timeInterval = std::chrono::duration<double, std::milli>(endTime - beginTime);
+
     return timeInterval.count();
 }
 
@@ -88,8 +88,8 @@ std::string getCurrentSystemTime()
     const auto microseconds = std::chrono::duration_cast<std::chrono::microseconds>(now.time_since_epoch()) % 1000000;
     const std::time_t tt = std::chrono::system_clock::to_time_t(now);
     std::tm tm{};
-    ::localtime_r(&tt, &tm);
 
+    ::localtime_r(&tt, &tm);
     std::snprintf(
         date,
         dateLen,
@@ -102,6 +102,7 @@ std::string getCurrentSystemTime()
         tm.tm_sec,
         microseconds.count(),
         tm.tm_zone);
+
     return std::string{date};
 }
 } // namespace utility::time

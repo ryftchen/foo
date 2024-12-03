@@ -29,6 +29,7 @@ std::size_t bkdrHash(const char* str)
     {
         hash = hash * bkdrHashSeed + (*str++);
     }
+
     return hash & bkdrHashSize;
 }
 

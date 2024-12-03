@@ -69,6 +69,7 @@ decltype(auto) Thread::enqueue(const std::string_view name, Func&& func, Args&&.
         taskQueue.emplace(std::make_pair(name, std::move(task)));
     }
     cond.notify_one();
+
     return future;
 }
 } // namespace thread

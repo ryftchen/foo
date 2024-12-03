@@ -212,6 +212,7 @@ int ConcreteIterator::currentItem() const
     {
         return -1;
     }
+
     return list->at(index);
 }
 

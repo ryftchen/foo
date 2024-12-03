@@ -91,6 +91,7 @@ struct Join
         };
         (append(Strings), ...);
         array.at(length) = 0;
+
         return array;
     }
     //! @brief A sequence of characters.

@@ -676,7 +676,6 @@ template <typename T>
 Command::ChoiceContainer Command::extractChoices()
 {
     using TypeInfo = utility::reflection::TypeInfo<T>;
-
     ChoiceContainer choices{};
     choices.reserve(TypeInfo::fields.size);
     TypeInfo::fields.forEach([&choices](const auto field)

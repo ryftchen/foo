@@ -42,6 +42,7 @@ Register& Register::implicitVal(std::any value)
 {
     implicitValue = std::move(value);
     argsNumRange = ArgsNumRange{0, 0};
+
     return *this;
 }
 
@@ -91,6 +92,7 @@ Register& Register::argsNum(const ArgsNumPattern pattern)
         default:
             break;
     }
+
     return *this;
 }
 
@@ -145,6 +147,7 @@ std::string Register::getInlineUsage() const
     {
         usage << ']';
     }
+
     return std::move(usage).str();
 }
 
@@ -167,6 +170,7 @@ std::size_t Register::getArgumentsLength() const
     {
         size += metavarContent.length() + 1;
     }
+
     return size;
 }
 
@@ -217,6 +221,7 @@ int Register::lookAhead(const std::string_view name)
     {
         return eof;
     }
+
     return static_cast<int>(static_cast<unsigned char>(name.front()));
 }
 
@@ -242,6 +247,7 @@ bool Register::checkIfPositional(const std::string_view name, const std::string_
         }
         return false;
     }
+
     return true;
 }
 
@@ -323,8 +329,8 @@ std::ostream& operator<<(std::ostream& os, const Register& reg)
     {
         os << "[required]";
     }
-
     os << '\n';
+
     return os;
 }
 
@@ -362,6 +368,7 @@ Argument& Argument::operator=(const Argument& arg)
         auto temp = arg;
         std::swap(*this, temp);
     }
+
     return *this;
 }
 
@@ -371,7 +378,6 @@ Argument::operator bool() const
                    argumentMap.cbegin(), argumentMap.cend(), [](const auto& iter) { return iter.second->isUsed; }),
                isSubParserUsed = std::any_of(
                    subParserUsed.cbegin(), subParserUsed.cend(), [](const auto& iter) { return iter.second; });
-
     return isParsed && (isArgUsed || isSubParserUsed);
 }
 
@@ -444,6 +450,7 @@ std::ostringstream Argument::help() const
 {
     std::ostringstream out{};
     out << *this;
+
     return out;
 }
 
@@ -485,6 +492,7 @@ std::string Argument::usage() const
         }
         stream << '}';
     }
+
     return std::move(stream).str();
 }
 
@@ -547,6 +555,7 @@ std::vector<std::string> Argument::preprocessArguments(const std::vector<std::st
         }
         arguments.emplace_back(arg);
     }
+
     return arguments;
 }
 
@@ -633,6 +642,7 @@ std::size_t Argument::getLengthOfLongestArgument() const
     {
         maxSize = std::max<std::size_t>(maxSize, command.length());
     }
+
     return maxSize;
 }
 
@@ -689,8 +699,8 @@ std::ostream& operator<<(std::ostream& os, const Argument& arg)
             os << std::setw(static_cast<int>(longestArgLen)) << command << "    " << subParser->get().descrText << '\n';
         }
     }
-
     os << std::flush;
+
     return os;
 }
 } // namespace utility::argument

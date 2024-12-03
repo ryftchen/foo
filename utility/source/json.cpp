@@ -61,6 +61,7 @@ static std::string jsonEscape(const std::string_view fmt)
                 break;
         }
     }
+
     return output;
 }
 
@@ -122,6 +123,7 @@ static JSON parseObject(const std::string_view fmt, std::size_t& offset)
             throw std::runtime_error("JSON object: Expected ',' or '}', found '" + std::string{fmt.at(offset)} + "'.");
         }
     }
+
     return object;
 }
 
@@ -160,6 +162,7 @@ static JSON parseArray(const std::string_view fmt, std::size_t& offset)
             throw std::runtime_error("JSON array: Expected ',' or ']', found '" + std::string{fmt.at(offset)} + "'.");
         }
     }
+
     return array;
 }
 
@@ -235,6 +238,7 @@ static JSON parseString(const std::string_view fmt, std::size_t& offset)
         }
     }
     ++offset;
+
     return val;
 }
 
@@ -272,6 +276,7 @@ static std::string extractExponent(const std::string_view fmt, std::size_t& offs
             break;
         }
     }
+
     return expStr;
 }
 
@@ -328,6 +333,7 @@ static JSON parseNumber(const std::string_view fmt, std::size_t& offset)
     {
         number = std::stol(val);
     }
+
     return number;
 }
 
@@ -353,6 +359,7 @@ static JSON parseBoolean(const std::string_view fmt, std::size_t& offset)
             + "\".");
     }
     offset += (boolean.toBoolean() ? trueStr.length() : falseStr.length());
+
     return boolean;
 }
 
@@ -368,6 +375,7 @@ static JSON parseNull(const std::string_view fmt, std::size_t& offset)
             R"(JSON null: Expected "null", found ")" + std::string{fmt.substr(offset, nullStr.length())} + "\".");
     }
     offset += nullStr.length();
+
     return {};
 }
 
@@ -429,6 +437,7 @@ JSON& JSON::operator=(JSON&& json) noexcept
         json.data = Data{};
         json.type = Type::null;
     }
+
     return *this;
 }
 
@@ -445,6 +454,7 @@ JSON JSON::load(const std::string_view fmt)
     {
         throw std::runtime_error("JSON syntax error, expected 'EOF' (" + std::string{fmt} + ").");
     }
+
     return object;
 }
 
@@ -461,6 +471,7 @@ JSON& JSON::operator[](std::size_t index)
     {
         std::get<Array>(data.value).resize(index + 1);
     }
+
     return std::get<Array>(data.value).operator[](index);
 }
 
@@ -490,6 +501,7 @@ int JSON::length() const
     {
         return static_cast<int>(std::get<Array>(data.value).size());
     }
+
     return -1;
 }
 
@@ -503,6 +515,7 @@ int JSON::size() const
     {
         return static_cast<int>(std::get<Array>(data.value).size());
     }
+
     return -1;
 }
 
@@ -512,6 +525,7 @@ bool JSON::hasKey(const std::string_view key) const
     {
         return std::get<Object>(data.value).cend() != std::get<Object>(data.value).find(key.data());
     }
+
     return false;
 }
 
@@ -576,6 +590,7 @@ JSON::String JSON::toString() const
         default:
             break;
     }
+
     return {};
 }
 
@@ -600,6 +615,7 @@ JSON::String JSON::toUnescapedString() const
         default:
             break;
     }
+
     return {};
 }
 
@@ -630,6 +646,7 @@ JSON::Floating JSON::toFloating() const
         default:
             throw std::logic_error("Failed to convert the value to floating in JSON.");
     }
+
     return 0.0;
 }
 
@@ -659,6 +676,7 @@ JSON::Integral JSON::toIntegral() const
         default:
             throw std::logic_error("Failed to convert the value to integral in JSON.");
     }
+
     return 0;
 }
 
@@ -696,6 +714,7 @@ JSON::Boolean JSON::toBoolean() const
         default:
             throw std::logic_error("Failed to convert the value to boolean in JSON.");
     }
+
     return false;
 }
 
@@ -705,6 +724,7 @@ JSON::JSONWrapper<JSON::Object> JSON::objectRange()
     {
         return JSONWrapper<Object>{&std::get<Object>(data.value)};
     }
+
     return JSONWrapper<Object>{nullptr};
 }
 
@@ -714,6 +734,7 @@ JSON::JSONWrapper<JSON::Array> JSON::arrayRange()
     {
         return JSONWrapper<Array>{&std::get<Array>(data.value)};
     }
+
     return JSONWrapper<Array>{nullptr};
 }
 
@@ -723,6 +744,7 @@ JSON::JSONConstWrapper<JSON::Object> JSON::objectRange() const
     {
         return JSONConstWrapper<Object>{&std::get<Object>(data.value)};
     }
+
     return JSONConstWrapper<Object>{nullptr};
 }
 
@@ -732,6 +754,7 @@ JSON::JSONConstWrapper<JSON::Array> JSON::arrayRange() const
     {
         return JSONConstWrapper<Array>{&std::get<Array>(data.value)};
     }
+
     return JSONConstWrapper<Array>{nullptr};
 }
 
@@ -787,6 +810,7 @@ std::string JSON::dump(const std::uint32_t depth, const std::string_view tab) co
         default:
             break;
     }
+
     return {};
 }
 
@@ -837,6 +861,7 @@ std::string JSON::dumpMinified() const
         default:
             break;
     }
+
     return {};
 }
 

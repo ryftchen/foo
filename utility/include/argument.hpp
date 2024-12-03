@@ -189,6 +189,7 @@ std::string join(StrIter first, StrIter last, const std::string_view separator)
         value << separator << *first;
         ++first;
     }
+
     return std::move(value).str();
 }
 
@@ -411,6 +412,7 @@ private:
                     os << "[args=" << range.min << ".." << range.max << "] ";
                 }
             }
+
             return os;
         }
         //! @brief The operator (==) overloading of Register class.
@@ -497,6 +499,7 @@ Register& Register::defaultVal(T&& value)
 {
     defaultValueRepresent = represent(value);
     defaultValue = std::forward<T>(value);
+
     return *this;
 }
 
@@ -519,6 +522,7 @@ auto Register::action(Func&& callable, Args&&... boundArgs)
             [func = std::forward<Func>(callable), tup = std::make_tuple(std::forward<Args>(boundArgs)...)](
                 const std::string& opt) mutable { return applyScopedOne(func, tup, opt); });
     }
+
     return *this;
 }
 
@@ -604,7 +608,6 @@ bool Register::operator==(const T& rhs) const
     else
     {
         using ValueType = typename T::value_type;
-
         const auto& lhs = get<T>();
         return std::equal(
             std::cbegin(lhs),
@@ -640,7 +643,6 @@ T Register::get() const
             return anyCastContainer<T>(values);
         }
     }
-
     throw std::runtime_error("No value specified for '" + names.back() + "'.");
 }
 
@@ -659,6 +661,7 @@ std::optional<T> Register::present() const
     {
         return anyCastContainer<T>(values);
     }
+
     return std::any_cast<T>(values.front());
 }
 
@@ -666,13 +669,13 @@ template <typename T>
 T Register::anyCastContainer(const std::vector<std::any>& operand)
 {
     using ValueType = typename T::value_type;
-
     T result{};
     std::transform(
         operand.cbegin(),
         operand.cend(),
         std::back_inserter(result),
         [](const auto& value) { return std::any_cast<ValueType>(value); });
+
     return result;
 }
 
@@ -833,14 +836,13 @@ template <typename... ArgsType>
 Register& Argument::addArgument(ArgsType... fewArgs)
 {
     using ArrayOfSv = std::array<std::string_view, sizeof...(ArgsType)>;
-
     const auto argument = optionalArguments.emplace(optionalArguments.cend(), prefixChars, ArrayOfSv{fewArgs...});
     if (!argument->isOptional)
     {
         positionalArguments.splice(positionalArguments.cend(), optionalArguments, argument);
     }
-
     indexArgument(argument);
+
     return *argument;
 }
 
@@ -869,6 +871,7 @@ T Argument::get(const std::string_view argName) const
     {
         throw std::runtime_error("Nothing parsed, no arguments are available.");
     }
+
     return (*this)[argName].get<T>();
 }
 
