@@ -51,8 +51,8 @@ std::optional<std::tuple<double, double>> Gradient::operator()(const double left
     }
 
     std::tie(y, x) = *std::min_element(
-        std::cbegin(storage),
-        std::cend(storage),
+        storage.cbegin(),
+        storage.cend(),
         [](const auto& min1, const auto& min2) { return std::get<0>(min1) < std::get<0>(min2); });
 
     return std::make_optional(std::make_tuple(y, x));
@@ -113,9 +113,7 @@ std::optional<std::tuple<double, double>> Particle::operator()(const double left
             return Individual{x, v(engine), x, func(x), func(x)};
         });
     const auto initialBest = std::min_element(
-        std::cbegin(swarm),
-        std::cend(swarm),
-        [](const auto& min1, const auto& min2) { return min1.xFitness < min2.xFitness; });
+        swarm.cbegin(), swarm.cend(), [](const auto& min1, const auto& min2) { return min1.xFitness < min2.xFitness; });
     double xBest = initialBest->x, xFitnessBest = initialBest->xFitness;
 
     std::uniform_real_distribution<double> coeff(0.0, 1.0);
@@ -170,8 +168,8 @@ std::optional<std::tuple<double, double>> Particle::operator()(const double left
     }
 
     std::tie(xFitnessBest, xBest) = *std::min_element(
-        std::cbegin(storage),
-        std::cend(storage),
+        storage.cbegin(),
+        storage.cend(),
         [](const auto& min1, const auto& min2) { return std::get<0>(min1) < std::get<0>(min2); });
 
     return std::make_optional(std::make_tuple(xFitnessBest, xBest));
@@ -326,8 +324,8 @@ std::optional<std::pair<double, double>> Genetic::fitnessLinearTransformation(co
         std::back_inserter(reFitness),
         [this](const auto& ind) { return calculateFitness(ind); });
 
-    const double reFitnessMin = *(std::min_element(std::cbegin(reFitness), std::cend(reFitness))),
-                 reFitnessAvg = std::reduce(std::cbegin(reFitness), std::cend(reFitness), 0.0) / reFitness.size();
+    const double reFitnessMin = *(std::min_element(reFitness.cbegin(), reFitness.cend())),
+                 reFitnessAvg = std::reduce(reFitness.cbegin(), reFitness.cend(), 0.0) / reFitness.size();
     if (std::fabs(reFitnessMin - reFitnessAvg) < property.eps)
     {
         return std::nullopt;
@@ -411,7 +409,7 @@ Genetic::Chromosome Genetic::getBestIndividual(const Population& pop)
         std::back_inserter(fitnessVal),
         [this](const auto& ind) { return calculateFitness(ind); });
 
-    const auto fitValBestIter = std::max_element(std::cbegin(fitnessVal), std::cend(fitnessVal));
+    const auto fitValBestIter = std::max_element(fitnessVal.cbegin(), fitnessVal.cend());
     const auto indBestIter = std::next(pop.cbegin(), std::distance(fitnessVal.cbegin(), fitValBestIter));
 
     return *indBestIter;

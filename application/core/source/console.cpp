@@ -106,14 +106,14 @@ int Console::optionExecutor(const std::string_view option)
         return RetCode::success;
     }
 
-    const auto iter = impl->regTable.find(inputs.front());
-    if (impl->regTable.cend() == iter)
+    const auto regIter = impl->regTable.find(inputs.front());
+    if (impl->regTable.cend() == regIter)
     {
         throw std::runtime_error(
             "The console option \"" + inputs.front() + R"(" could not be found. Enter the "usage" for help.)");
     }
 
-    return RetCode(std::get<0>(iter->second)(inputs));
+    return RetCode(std::get<0>(regIter->second)(inputs));
 }
 
 int Console::fileExecutor(const std::string_view filename)
@@ -228,10 +228,10 @@ char* Console::getOptionIterator(const char* text, int state)
     auto& regTable = currentSession->impl->regTable;
     if (0 == state)
     {
-        iterator = std::begin(regTable);
+        iterator = regTable.begin();
     }
 
-    while (std::end(regTable) != iterator)
+    while (regTable.end() != iterator)
     {
         const auto& option = iterator->first;
         ++iterator;
