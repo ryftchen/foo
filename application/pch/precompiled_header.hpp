@@ -42,6 +42,7 @@
 #include <list>
 #include <memory>
 #include <mutex>
+#include <numeric>
 #include <queue>
 #include <ranges>
 #include <regex>

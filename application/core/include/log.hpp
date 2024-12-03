@@ -310,10 +310,15 @@ private:
     //! @brief Mutex for controlling cache.
     std::recursive_mutex cacheMtx{};
 
-    //! @brief Filter break line.
-    //! @param line - target line
-    //! @return single row
-    static std::string filterBreakLine(const std::string_view line);
+    //! @brief Get the prefix corresponding to the level.
+    //! @param level - output level
+    //! @return output prefix
+    static std::string_view getPrefix(const OutputLevel level);
+    //! @brief Reformat log contents.
+    //! @param label - label information
+    //! @param formatted - formatted body information
+    //! @return log contents
+    static std::vector<std::string> reformatContents(const std::string_view label, const std::string_view formatted);
     //! @brief Safely retrieve the current state.
     //! @return current state
     State safeCurrentState() const;
@@ -428,61 +433,16 @@ void Log::flush(
     std::unique_lock<std::mutex> daemonLock(daemonMtx, std::defer_lock);
     try
     {
-        std::string_view prefix(traceLevelPrefix);
-        if (isInUninterruptedState(State::work))
-        {
-            daemonLock.lock();
-            switch (severity)
-            {
-                case OutputLevel::debug:
-                    prefix = debugLevelPrefix;
-                    break;
-                case OutputLevel::info:
-                    prefix = infoLevelPrefix;
-                    break;
-                case OutputLevel::warning:
-                    prefix = warningLevelPrefix;
-                    break;
-                case OutputLevel::error:
-                    prefix = errorLevelPrefix;
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        const std::string label = std::format(
-                              "[{}] {} [{}#{}] ",
-                              utility::time::getCurrentSystemTime(),
-                              prefix,
-                              (std::string_view::npos != srcFile.rfind(sourceDirectory)) ? srcFile.substr(
-                                  srcFile.rfind(sourceDirectory) + sourceDirectory.length(), srcFile.length())
-                                                                                         : srcFile,
-                              srcLine),
-                          formatted = utility::common::formatString(format.data(), std::forward<Args>(args)...);
-        std::vector<std::string> multiRows{};
-        if (std::string::npos == formatted.find('\n'))
-        {
-            multiRows.emplace_back(formatted);
-        }
-        else
-        {
-            std::size_t pos = 0, prev = 0;
-            while (std::string::npos != (pos = formatted.find('\n', prev)))
-            {
-                multiRows.emplace_back(formatted.substr(prev, pos - prev + 1));
-                prev += pos - prev + 1;
-            }
-            if (prev < formatted.length())
-            {
-                multiRows.emplace_back(formatted.substr(prev));
-            }
-        }
-        auto reformat = multiRows | std::views::transform(filterBreakLine)
-            | std::views::filter([](const auto& line) { return !line.empty(); })
-            | std::views::transform([&label](const auto& line) { return label + line; });
-        multiRows = std::vector<std::string>(std::ranges::begin(reformat), std::ranges::end(reformat));
-
+        auto multiRows = reformatContents(
+            std::format(
+                "[{}] {} [{}#{}] ",
+                utility::time::getCurrentSystemTime(),
+                isInUninterruptedState(State::work) ? (daemonLock.lock(), getPrefix(severity)) : traceLevelPrefix,
+                (std::string_view::npos != srcFile.rfind(sourceDirectory))
+                    ? srcFile.substr(srcFile.rfind(sourceDirectory) + sourceDirectory.length(), srcFile.length())
+                    : srcFile,
+                srcLine),
+            utility::common::formatString(format.data(), std::forward<Args>(args)...));
         if (daemonLock.owns_lock())
         {
             std::for_each(
