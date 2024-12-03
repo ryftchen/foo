@@ -192,6 +192,8 @@ private:
     const Function& func;
     //! @brief Random engine.
     std::mt19937 engine{std::random_device{}()};
+    //! @brief The probability of a possible event (from 0 to 1).
+    std::uniform_real_distribution<double> probability{0.0, 1.0};
     //! @brief The number of chromosomes.
     std::uint32_t chromosomeNum{0};
     //! @brief Crossover probability.
@@ -266,9 +268,6 @@ private:
     //! @param pop - whole population
     //! @return the best individual's chromosome
     Chromosome getBestIndividual(const Population& pop);
-    //! @brief The probability of a possible event.
-    //! @return probability from 0 to 1
-    double probability();
     //! @brief Get a random number from 0 to the limit.
     //! @param limit - maximum random number
     //! @return random number

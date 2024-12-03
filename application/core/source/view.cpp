@@ -19,6 +19,7 @@
 #endif // defined(__has_include) && __has_include(<ncurses.h>)
 #include <cassert>
 #include <iterator>
+#include <numeric>
 #else
 #include "application/pch/precompiled_header.hpp"
 #endif // __PRECOMPILED_HEADER
@@ -538,31 +539,27 @@ int View::buildTLVPacket4Depend(const std::vector<std::string>& args, char* buf)
 
 int View::buildTLVPacket4Execute(const std::vector<std::string>& args, char* buf)
 {
-    std::string entry{};
-    for (const auto& arg : args)
-    {
-        entry += arg + ' ';
-    }
-    if (!entry.empty())
-    {
-        entry.pop_back();
-    }
-    if (entry.empty()
-        || ((entry.length() == 2)
-            && (std::all_of(entry.cbegin(), entry.cend(), [](const auto c) { return '\'' == c; })
-                || std::all_of(entry.cbegin(), entry.cend(), [](const auto c) { return '"' == c; }))))
+    const auto cmd = std::accumulate(
+        args.cbegin(),
+        args.cend(),
+        std::string{},
+        [](const auto& acc, const auto& arg) { return acc.empty() ? arg : (acc + ' ' + arg); });
+    if (((cmd.length() == 2)
+         && (std::all_of(cmd.cbegin(), cmd.cend(), [](const auto c) { return '\'' == c; })
+             || std::all_of(cmd.cbegin(), cmd.cend(), [](const auto c) { return '"' == c; })))
+        || cmd.empty())
     {
         throw std::runtime_error("Please enter the \"execute\" and append with 'CMD' (include quotes).");
     }
-    if ((entry.length() <= 1)
-        || (((entry.find_first_not_of('\'') == 0) || (entry.find_last_not_of('\'') == (entry.length() - 1)))
-            && ((entry.find_first_not_of('"') == 0) || (entry.find_last_not_of('"') == (entry.length() - 1)))))
+    if ((cmd.length() <= 1)
+        || (((cmd.find_first_not_of('\'') == 0) || (cmd.find_last_not_of('\'') == (cmd.length() - 1)))
+            && ((cmd.find_first_not_of('"') == 0) || (cmd.find_last_not_of('"') == (cmd.length() - 1)))))
     {
         throw std::runtime_error("Missing full quotes around the pending command.");
     }
 
     int len = 0;
-    const int shmId = fillSharedMemory(utility::io::executeCommand("/bin/bash -c " + entry, 5000));
+    const int shmId = fillSharedMemory(utility::io::executeCommand("/bin/bash -c " + cmd, 5000));
     if (tlv::tlvEncoding(buf, len, tlv::TLVValue{.bashShmId = shmId}) < 0)
     {
         throw std::runtime_error("Failed to build packet for the execute option.");
@@ -943,17 +940,12 @@ std::string View::getStatusReports(const std::uint16_t frame)
     }
     cmd[totalLen - 1] = '\0';
 
-    std::string statRep{};
-    std::for_each(
+    return std::accumulate(
         cmdColl.cbegin(),
         cmdColl.cend(),
-        [&statRep](const auto& cmd) { statRep += utility::io::executeCommand(cmd) + '\n'; });
-    if (!statRep.empty())
-    {
-        statRep.pop_back();
-    }
-
-    return statRep;
+        std::string{},
+        [](const auto& acc, const auto& cmd)
+        { return acc.empty() ? utility::io::executeCommand(cmd) : (acc + '\n' + utility::io::executeCommand(cmd)); });
 }
 
 View::State View::safeCurrentState() const

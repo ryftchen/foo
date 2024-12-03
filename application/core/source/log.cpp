@@ -187,14 +187,57 @@ utility::common::ReadWriteLock& Log::getFileLock()
     return fileLock;
 }
 
-std::string Log::filterBreakLine(const std::string_view line)
+std::string_view Log::getPrefix(const OutputLevel level)
 {
-    std::string singleRow(line);
-    singleRow.erase(
-        std::remove_if(
-            std::begin(singleRow), std::end(singleRow), [](const auto c) { return ('\n' == c) || ('\r' == c); }),
-        std::end(singleRow));
-    return singleRow;
+    switch (level)
+    {
+        case OutputLevel::debug:
+            return debugLevelPrefix;
+        case OutputLevel::info:
+            return infoLevelPrefix;
+        case OutputLevel::warning:
+            return warningLevelPrefix;
+        case OutputLevel::error:
+            return errorLevelPrefix;
+        default:
+            return traceLevelPrefix;
+    }
+}
+
+std::vector<std::string> Log::reformatContents(const std::string_view label, const std::string_view formatted)
+{
+    std::vector<std::string> rows{};
+    if (std::string_view::npos == formatted.find('\n'))
+    {
+        rows.emplace_back(formatted);
+    }
+    else
+    {
+        std::size_t pos = 0, prev = 0;
+        while (std::string_view::npos != (pos = formatted.find('\n', prev)))
+        {
+            rows.emplace_back(formatted.substr(prev, pos - prev + 1));
+            prev += pos - prev + 1;
+        }
+        if (prev < formatted.length())
+        {
+            rows.emplace_back(formatted.substr(prev));
+        }
+    }
+    auto reformatted =
+        rows
+        | std::views::transform(
+            [](auto& line)
+            {
+                line.erase(
+                    std::remove_if(line.begin(), line.end(), [](const auto c) { return ('\n' == c) || ('\r' == c); }),
+                    line.end());
+                return line;
+            })
+        | std::views::filter([](const auto& line) { return !line.empty(); })
+        | std::views::transform([&label](const auto& line) { return label.data() + line; });
+
+    return std::vector<std::string>{std::ranges::begin(reformatted), std::ranges::end(reformatted)};
 }
 
 Log::State Log::safeCurrentState() const

@@ -269,7 +269,7 @@ void Genetic::crossover(Population& pop)
          std::advance(chrIter, 2))
     {
         Chromosome parent1 = chrIter->get(), parent2 = std::next(chrIter, 1)->get();
-        if (crossPr > probability())
+        if (crossPr > probability(engine))
         {
             geneticCross(parent1, parent2);
         }
@@ -304,7 +304,7 @@ void Genetic::mutate(Population& pop)
         pop.end(),
         [this](auto& ind)
         {
-            if (mutatePr > probability())
+            if (mutatePr > probability(engine))
             {
                 geneticMutation(ind);
             }
@@ -327,7 +327,7 @@ std::optional<std::pair<double, double>> Genetic::fitnessLinearTransformation(co
         [this](const auto& ind) { return calculateFitness(ind); });
 
     const double reFitnessMin = *(std::min_element(std::cbegin(reFitness), std::cend(reFitness))),
-                 reFitnessAvg = std::accumulate(std::cbegin(reFitness), std::cend(reFitness), 0.0) / reFitness.size();
+                 reFitnessAvg = std::reduce(std::cbegin(reFitness), std::cend(reFitness), 0.0) / reFitness.size();
     if (std::fabs(reFitnessMin - reFitnessAvg) < property.eps)
     {
         return std::nullopt;
@@ -343,7 +343,7 @@ std::optional<std::pair<double, double>> Genetic::fitnessLinearTransformation(co
 
 auto Genetic::rouletteWheelSelection(const Population& pop, const std::vector<double>& cumFitness)
 {
-    const double pr = probability();
+    const double pr = probability(engine);
     const auto cumIter =
         std::find_if(cumFitness.cbegin(), cumFitness.cend(), [&pr](const auto cumulation) { return cumulation > pr; });
 
@@ -417,15 +417,8 @@ Genetic::Chromosome Genetic::getBestIndividual(const Population& pop)
     return *indBestIter;
 }
 
-double Genetic::probability()
-{
-    std::uniform_real_distribution<double> pr(0.0, 1.0);
-    return pr(engine);
-}
-
 std::uint32_t Genetic::getRandomLessThanLimit(const std::uint32_t limit)
 {
-    std::uniform_int_distribution<std::uint32_t> num(0, limit);
-    return num(engine);
+    return std::uniform_int_distribution<std::uint32_t>{0, limit}(engine);
 }
 } // namespace algorithm::optimal

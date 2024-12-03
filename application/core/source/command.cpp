@@ -952,17 +952,11 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& c
                 auto retVal = success;
                 try
                 {
-                    std::string message{};
-                    for (const auto& token : input)
-                    {
-                        message += token + ' ';
-                    }
-                    if (!message.empty())
-                    {
-                        message.pop_back();
-                    }
-
-                    client->toSend(utility::common::base64Encode(message));
+                    client->toSend(utility::common::base64Encode(std::accumulate(
+                        input.cbegin(),
+                        input.cend(),
+                        std::string{},
+                        [](const auto& acc, const auto& token) { return acc.empty() ? token : (acc + ' ' + token); })));
                     view::View::getInstance().awaitDueToOutput();
                 }
                 catch (const std::exception& err)
