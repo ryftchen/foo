@@ -450,9 +450,9 @@ void View::awakenDueToOutput()
 std::vector<std::string> View::splitString(const std::string_view str)
 {
     std::vector<std::string> split{};
-    std::istringstream is(str.data());
+    std::istringstream trans(str.data());
     std::string token{};
-    while (is >> token)
+    while (trans >> token)
     {
         split.emplace_back(token);
     }
@@ -816,9 +816,9 @@ void View::printSharedMemory(const int shmId, const bool withoutPaging)
     fetchSharedMemory(shmId, output);
     if (withoutPaging)
     {
-        std::istringstream is(output.data());
+        std::istringstream trans(output.data());
         std::string line{};
-        while (std::getline(is, line))
+        while (std::getline(trans, line))
         {
             std::cout << line << '\n';
         }
@@ -835,10 +835,10 @@ void View::segmentedOutput(const std::string_view buffer)
     constexpr std::uint8_t terminalRows = 24;
     constexpr std::string_view hint = "--- Type <CR> for more, c to continue, n to show next page, q to quit ---: ",
                                clearEscape = "\x1b[1A\x1b[2K\r";
-    std::istringstream is(buffer.data());
+    std::istringstream trans(buffer.data());
     const std::uint64_t lineNum =
-        std::count(std::istreambuf_iterator<char>(is), std::istreambuf_iterator<char>(), '\n');
-    is.seekg(std::ios::beg);
+        std::count(std::istreambuf_iterator<char>(trans), std::istreambuf_iterator<char>(), '\n');
+    trans.seekg(std::ios::beg);
 
     bool moreRows = false, forcedCancel = false, withoutPaging = (lineNum <= terminalRows);
     std::string line{};
@@ -873,7 +873,7 @@ void View::segmentedOutput(const std::string_view buffer)
         }
         return true;
     };
-    while (std::getline(is, line) && !forcedCancel)
+    while (std::getline(trans, line) && !forcedCancel)
     {
         std::cout << line << '\n';
         ++counter;
@@ -897,10 +897,10 @@ std::string View::getLogContents()
     constexpr std::uint64_t maxRows = 24 * 100;
     auto contents = utility::io::getFileContents(log::info::loggerFilePath(), false, true, maxRows);
     std::for_each(contents.begin(), contents.end(), [](auto& line) { return log::changeToLogStyle(line); });
-    std::ostringstream os{};
-    std::copy(contents.cbegin(), contents.cend(), std::ostream_iterator<std::string>(os, "\n"));
+    std::ostringstream trans{};
+    std::copy(contents.cbegin(), contents.cend(), std::ostream_iterator<std::string>(trans, "\n"));
 
-    return std::move(os).str();
+    return std::move(trans).str();
 }
 
 std::string View::getStatusReports(const std::uint16_t frame)

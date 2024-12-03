@@ -181,16 +181,16 @@ std::string join(StrIter first, StrIter last, const std::string_view separator)
         return {};
     }
 
-    std::ostringstream value{};
-    value << *first;
+    std::ostringstream out{};
+    out << *first;
     ++first;
     while (first != last)
     {
-        value << separator << *first;
+        out << separator << *first;
         ++first;
     }
 
-    return std::move(value).str();
+    return std::move(out).str();
 }
 
 //! @brief Enumerate specific argument patterns.
