@@ -151,10 +151,7 @@ std::string Register::getInlineUsage() const
 std::size_t Register::getArgumentsLength() const
 {
     const std::size_t namesSize = std::accumulate(
-        std::cbegin(names),
-        std::cend(names),
-        static_cast<std::size_t>(0),
-        [](const auto sum, const auto& str) { return sum + str.length(); });
+        names.cbegin(), names.cend(), 0, [](const auto sum, const auto& str) { return sum + str.length(); });
     if (checkIfPositional(names.at(0), prefixChars))
     {
         if (!metavarContent.empty())
@@ -343,15 +340,15 @@ Argument::Argument(const Argument& arg) :
     parserPath(arg.parserPath),
     subParsers(arg.subParsers)
 {
-    for (auto iterator = std::begin(optionalArguments); std::end(optionalArguments) != iterator; ++iterator)
+    for (auto iterator = optionalArguments.begin(); optionalArguments.end() != iterator; ++iterator)
     {
         indexArgument(iterator);
     }
-    for (auto iterator = std::begin(positionalArguments); std::end(positionalArguments) != iterator; ++iterator)
+    for (auto iterator = positionalArguments.begin(); positionalArguments.end() != iterator; ++iterator)
     {
         indexArgument(iterator);
     }
-    for (auto iterator = std::begin(subParsers); std::end(subParsers) != iterator; ++iterator)
+    for (auto iterator = subParsers.begin(); subParsers.end() != iterator; ++iterator)
     {
         subParserMap.insert_or_assign(iterator->get().titleName, iterator);
         subParserUsed.insert_or_assign(iterator->get().titleName, false);
@@ -494,7 +491,7 @@ std::string Argument::usage() const
 void Argument::addSubParser(Argument& parser)
 {
     parser.parserPath = titleName + ' ' + parser.titleName;
-    auto iterator = subParsers.emplace(std::cend(subParsers), parser);
+    const auto iterator = subParsers.emplace(subParsers.cend(), parser);
     subParserMap.insert_or_assign(parser.titleName, iterator);
     subParserUsed.insert_or_assign(parser.titleName, false);
 }
@@ -561,14 +558,14 @@ void Argument::parseArgsInternal(const std::vector<std::string>& rawArguments)
         titleName = arguments.front();
     }
 
-    const auto end = std::cend(arguments);
-    auto positionalArgumentIter = std::begin(positionalArguments);
-    for (auto iterator = std::next(std::begin(arguments)); end != iterator;)
+    const auto end = arguments.cend();
+    auto positionalArgumentIter = positionalArguments.begin();
+    for (auto iterator = std::next(arguments.begin()); end != iterator;)
     {
         const auto& currentArgument = *iterator;
         if (Register::checkIfPositional(currentArgument, prefixChars))
         {
-            if (std::cend(positionalArguments) == positionalArgumentIter)
+            if (positionalArguments.cend() == positionalArgumentIter)
             {
                 const std::string_view maybeCommand = currentArgument;
                 const auto subParserIter = subParserMap.find(maybeCommand);

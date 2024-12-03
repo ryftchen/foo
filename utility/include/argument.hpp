@@ -100,11 +100,11 @@ std::string represent(const T& val)
         const auto size = val.size();
         if (size > 1)
         {
-            out << represent(*val.begin());
+            out << represent(*std::cbegin(val));
             std::for_each(
-                std::next(val.begin()),
+                std::next(std::cbegin(val)),
                 std::next(
-                    val.begin(),
+                    std::cbegin(val),
                     static_cast<typename T::iterator::difference_type>(
                         std::min<std::size_t>(size, representMaxContainerSize) - 1)),
                 [&out](const auto& v) { out << ' ' << represent(v); });
@@ -119,7 +119,7 @@ std::string represent(const T& val)
         }
         if (size > 0)
         {
-            out << represent(*std::prev(val.end()));
+            out << represent(*std::prev(std::cend(val)));
         }
         out << '}';
         return std::move(out).str();
@@ -607,10 +607,10 @@ bool Register::operator==(const T& rhs) const
 
         const auto& lhs = get<T>();
         return std::equal(
-            std::begin(lhs),
-            std::end(lhs),
-            std::begin(rhs),
-            std::end(rhs),
+            std::cbegin(lhs),
+            std::cend(lhs),
+            std::cbegin(rhs),
+            std::cend(rhs),
             [](const auto& lhs, const auto& rhs) { return rhs == std::any_cast<const ValueType&>(lhs); });
     }
 }
@@ -669,8 +669,8 @@ T Register::anyCastContainer(const std::vector<std::any>& operand)
 
     T result{};
     std::transform(
-        std::begin(operand),
-        std::end(operand),
+        operand.cbegin(),
+        operand.cend(),
         std::back_inserter(result),
         [](const auto& value) { return std::any_cast<ValueType>(value); });
     return result;
@@ -834,10 +834,10 @@ Register& Argument::addArgument(ArgsType... fewArgs)
 {
     using ArrayOfSv = std::array<std::string_view, sizeof...(ArgsType)>;
 
-    const auto argument = optionalArguments.emplace(std::cend(optionalArguments), prefixChars, ArrayOfSv{fewArgs...});
+    const auto argument = optionalArguments.emplace(optionalArguments.cend(), prefixChars, ArrayOfSv{fewArgs...});
     if (!argument->isOptional)
     {
-        positionalArguments.splice(std::cend(positionalArguments), optionalArguments, argument);
+        positionalArguments.splice(positionalArguments.cend(), optionalArguments, argument);
     }
 
     indexArgument(argument);

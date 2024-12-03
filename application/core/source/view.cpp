@@ -1009,13 +1009,13 @@ void View::createViewServer()
                 }
 
                 auto args = splitString(plaintext);
-                const auto iter = optionDispatcher.find(args.at(0));
-                if (optionDispatcher.cend() == iter)
+                const auto optIter = optionDispatcher.find(args.at(0));
+                if (optionDispatcher.cend() == optIter)
                 {
                     throw std::runtime_error("Unknown TCP message.");
                 }
                 args.erase(args.begin());
-                iter->second.functor(args, buffer);
+                optIter->second.functor(args, buffer);
                 newSocket->toSend(buffer, sizeof(buffer));
             }
             catch (const std::exception& err)
@@ -1048,13 +1048,13 @@ void View::createViewServer()
             }
 
             auto args = splitString(plaintext);
-            const auto iter = optionDispatcher.find(args.at(0));
-            if (optionDispatcher.cend() == iter)
+            const auto optIter = optionDispatcher.find(args.at(0));
+            if (optionDispatcher.cend() == optIter)
             {
                 throw std::runtime_error("Unknown UDP message.");
             }
             args.erase(args.begin());
-            iter->second.functor(args, buffer);
+            optIter->second.functor(args, buffer);
             udpServer->toSendTo(buffer, sizeof(buffer), ip, port);
         }
         catch (const std::exception& err)

@@ -340,16 +340,16 @@ public:
 
         int formatSize = 0;
         std::uint32_t completeSize = 0;
-        for (auto iter = container.cbegin(); container.cend() != iter; ++iter)
+        for (auto iterator = container.cbegin(); container.cend() != iterator; ++iterator)
         {
-            formatSize = std::snprintf(buffer + completeSize, bufferSize - completeSize, "%*d ", align + 1, *iter);
+            formatSize = std::snprintf(buffer + completeSize, bufferSize - completeSize, "%*d ", align + 1, *iterator);
             if ((formatSize < 0) || (formatSize >= static_cast<int>(bufferSize - completeSize)))
             {
                 break;
             }
             completeSize += formatSize;
 
-            const std::uint32_t nextIdx = std::distance(container.cbegin(), iter) + 1;
+            const std::uint32_t nextIdx = std::distance(container.cbegin(), iterator) + 1;
             if ((0 == (nextIdx % maxColumnOfPrint)) && (nextIdx != container.size()))
             {
                 formatSize = std::snprintf(buffer + completeSize, bufferSize - completeSize, "\n");
