@@ -250,37 +250,37 @@ private:
         //! @brief Destroy the Notifier object.
         virtual ~Notifier() = default;
 
-        //! @brief A base handler that performs an action when notified.
-        class HandlerBase
+        //! @brief The base action when notified.
+        class ActionBase
         {
         public:
-            //! @brief Destroy the HandlerBase object.
-            virtual ~HandlerBase() = default;
+            //! @brief Destroy the ActionBase object.
+            virtual ~ActionBase() = default;
 
             //! @brief Perform the specific operation.
             virtual void execute() const = 0;
         };
-        //! @brief A handler that performs an action when notified.
-        //! @tparam Derived - type of derived class
-        template <class Derived>
-        class Handler : public HandlerBase
+        //! @brief The action when notified.
+        //! @tparam CRTP - type of derived class for CRTP
+        template <class CRTP>
+        class Action : public ActionBase
         {
         public:
             //! @brief Perform the specific operation.
-            void execute() const override { static_cast<const Derived*>(this)->execute(); }
+            void execute() const override { static_cast<const CRTP&>(*this).execute(); }
         };
-        //! @brief A handler that performs an action when notified (CRTP).
+        //! @brief The handler that performs an action when notified.
         //! @tparam Cat - the specific value of Category enum
         //! @tparam T - type of involved object
         template <Category Cat, class T = Command>
-        class ConcreteHandler : public Handler<ConcreteHandler<Cat, T>>
+        class Handler : public Action<Handler<Cat>>
         {
         public:
-            //! @brief Construct a new ConcreteHandler object.
-            ConcreteHandler() = delete;
-            //! @brief Construct a new ConcreteHandler object.
+            //! @brief Construct a new Handler object.
             //! @param obj - target involved object
-            explicit ConcreteHandler(const T& obj) : obj(obj) {}
+            explicit Handler(const T& obj) : obj(obj) {}
+            //! @brief Construct a new Handler object.
+            Handler() = delete;
 
             //! @brief Perform the specific operation.
             void execute() const override;
@@ -293,7 +293,7 @@ private:
         //! @brief Attach a handler with a specific key to the notifier.
         //! @param cat - the specific value of Category enum
         //! @param handler - handler to be attached
-        void attach(const Category cat, std::shared_ptr<HandlerBase> handler) { handlers[cat] = std::move(handler); }
+        void attach(const Category cat, std::shared_ptr<ActionBase> handler) { handlers[cat] = std::move(handler); }
         //! @brief Notify the handler associated with the given key.
         //! @param cat - the specific value of Category enum
         void notify(const Category cat) const
@@ -306,13 +306,13 @@ private:
 
     private:
         //! @brief Map of handlers identified by a key.
-        std::map<Category, std::shared_ptr<HandlerBase>> handlers{};
+        std::map<Category, std::shared_ptr<ActionBase>> handlers{};
     } /** @brief Notify for native type tasks. */ defaultNotifier{};
     //! @brief Forward messages for extra type tasks.
     action::MessageForwarder applyingForwarder{};
 
     template <Category Cat, class T>
-    friend class Notifier::ConcreteHandler;
+    friend class Notifier::Handler;
     //! @brief Enter console mode.
     static void enterConsoleMode();
     //! @brief Register the command line to console mode.

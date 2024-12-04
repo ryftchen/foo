@@ -240,7 +240,7 @@ public:
         const std::string_view format,
         Args&&... args);
     //! @brief Log holder for flushing.
-    //! @tparam Lv - type of output level
+    //! @tparam Lv - output level
     template <OutputLevel Lv>
     class Holder
     {
