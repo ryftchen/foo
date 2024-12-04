@@ -32,11 +32,14 @@ using TypeInfo = utility::reflection::TypeInfo<T>;
 //! @brief Constraint for external helpers.
 //! @tparam T - type of helper
 template <typename T>
-concept HelperType = std::derived_from<T, utility::fsm::FSM<T>> && requires (const T /*helper*/) {
+concept HelperType = !std::is_constructible_v<T> && !std::is_copy_constructible_v<T> && !std::is_copy_assignable_v<T>
+    && !std::is_move_constructible_v<T> && !std::is_move_assignable_v<T> &&
+    requires (T /*helper*/)
+{
     {
         T::getInstance()
     } -> std::same_as<T&>;
-} && !std::is_copy_constructible_v<T> && !std::is_copy_assignable_v<T> && !std::is_move_constructible_v<T> && !std::is_move_assignable_v<T>;
+};
 
 //! @brief Enumerate specific events to control external helpers.
 enum class ExtEvent : std::uint8_t
@@ -49,10 +52,29 @@ enum class ExtEvent : std::uint8_t
     reset
 };
 
+//! @brief Get the helper name.
+//! @tparam Helper - type of helper
+//! @return helper name
+template <HelperType Helper>
+consteval std::string_view getHelperName()
+{
+    if constexpr (std::is_same_v<Helper, log::Log>)
+    {
+        return "logger";
+    }
+    else if constexpr (std::is_same_v<Helper, view::View>)
+    {
+        return "viewer";
+    }
+
+    return "helper";
+}
+
 //! @brief Trigger the external helper with event.
-//! @tparam Helper - target helper
+//! @tparam Helper - type of helper
 //! @param event - target event
 template <HelperType Helper>
+requires std::derived_from<Helper, utility::fsm::FSM<Helper>>
 void triggerHelper(const ExtEvent event)
 {
     if (!config::detail::activateHelper())
@@ -74,6 +96,16 @@ void triggerHelper(const ExtEvent event)
         default:
             break;
     }
+}
+
+//! @brief Helper daemon function.
+//! @tparam Helpers - type of arguments of helper
+template <HelperType... Helpers>
+requires (std::derived_from<Helpers, utility::fsm::FSM<Helpers>> && ...)
+void helperDaemon()
+{
+    utility::thread::Thread extensionThd(sizeof...(Helpers));
+    (extensionThd.enqueue(getHelperName<Helpers>(), &Helpers::stateController, &Helpers::getInstance()), ...);
 }
 
 //! @brief Awaitable coroutine.
@@ -139,18 +171,10 @@ private:
     std::coroutine_handle<promise_type> handle{};
 };
 
-//! @brief Helper daemon function.
-void helperDaemon()
-{
-    using log::Log, view::View;
-    constexpr std::uint8_t helperNum = 2;
-    utility::thread::Thread extensionThd(helperNum);
-    extensionThd.enqueue("logger", &Log::stateController, &Log::getInstance());
-    extensionThd.enqueue("viewer", &View::stateController, &View::getInstance());
-}
-
 //! @brief Coroutine for managing the lifecycle of helper components.
+//! @tparam Helpers - type of arguments of helper
 //! @return object that represents the execution of the coroutine
+template <HelperType... Helpers>
 Awaitable helperLifecycle()
 {
     if (!config::detail::activateHelper())
@@ -158,37 +182,31 @@ Awaitable helperLifecycle()
         co_return;
     }
 
-    std::latch awaitLatch(1);
+    std::latch awaitDaemon(1);
     const std::jthread daemon(
-        [&awaitLatch]()
+        [&awaitDaemon]()
         {
-            helperDaemon();
-            awaitLatch.count_down();
+            helperDaemon<Helpers...>();
+            awaitDaemon.count_down();
         });
-    constexpr std::uint8_t helperNum = 2;
-    std::barrier awaitBarrier(helperNum + 1);
-    const auto publish = [&awaitBarrier](const ExtEvent event)
+    std::barrier awaitPublish(sizeof...(Helpers) + 1);
+    const auto publish = [&awaitPublish](const ExtEvent event)
     {
-        const std::jthread send2Logger(
-            [&awaitBarrier, event]()
-            {
-                triggerHelper<log::Log>(event);
-                awaitBarrier.arrive_and_wait();
-            }),
-            send2Viewer(
-                [&awaitBarrier, event]()
-                {
-                    triggerHelper<view::View>(event);
-                    awaitBarrier.arrive_and_wait();
-                });
-        awaitBarrier.arrive_and_wait();
+        std::vector<std::jthread> senders(sizeof...(Helpers));
+        (senders.emplace_back(std::jthread{[&awaitPublish, event]()
+                                           {
+                                               triggerHelper<Helpers>(event);
+                                               awaitPublish.arrive_and_wait();
+                                           }}),
+         ...);
+        awaitPublish.arrive_and_wait();
     };
 
     co_await std::suspend_always{};
     publish(ExtEvent::start);
     co_await std::suspend_always{};
     publish(ExtEvent::stop);
-    awaitLatch.wait();
+    awaitDaemon.wait();
 }
 } // namespace
 
@@ -232,7 +250,7 @@ Command& Command::getInstance()
 void Command::execManager(const int argc, const char* const argv[])
 try
 {
-    auto launcher = helperLifecycle();
+    auto launcher = helperLifecycle<log::Log, view::View>();
     if (!launcher.done())
     {
         launcher.resume();
@@ -264,11 +282,11 @@ catch (const std::exception& err)
 void Command::initializeCLI()
 {
     mainCLI.addArgument("-h", "--help").argsNum(0).implicitVal(true).help("show help and exit");
-    defaultNotifier.attach(Category::help, std::make_shared<Notifier::ConcreteHandler<Category::help>>(*this));
+    defaultNotifier.attach(Category::help, std::make_shared<Notifier::Handler<Category::help>>(*this));
     mainCLI.addArgument("-v", "--version").argsNum(0).implicitVal(true).help("show version and exit");
-    defaultNotifier.attach(Category::version, std::make_shared<Notifier::ConcreteHandler<Category::version>>(*this));
+    defaultNotifier.attach(Category::version, std::make_shared<Notifier::Handler<Category::version>>(*this));
     mainCLI.addArgument("-d", "--dump").argsNum(0).implicitVal(true).help("dump default configuration and exit");
-    defaultNotifier.attach(Category::dump, std::make_shared<Notifier::ConcreteHandler<Category::dump>>(*this));
+    defaultNotifier.attach(Category::dump, std::make_shared<Notifier::Handler<Category::dump>>(*this));
     mainCLI.addArgument("-c", "--console")
         .argsNum(utility::argument::ArgsNumPattern::any)
         .defaultVal<std::vector<std::string>>({"usage"})
@@ -286,7 +304,7 @@ void Command::initializeCLI()
         .metavar("CMD")
         .help("run options in console mode and exit\n"
               "separate with quotes");
-    defaultNotifier.attach(Category::console, std::make_shared<Notifier::ConcreteHandler<Category::console>>(*this));
+    defaultNotifier.attach(Category::console, std::make_shared<Notifier::Handler<Category::console>>(*this));
 
     SubCLIName title{};
     CategoryName category{};
@@ -773,8 +791,7 @@ void Command::dumpConfiguration()
 void Command::showVersionIcon() const
 {
     validateDependenciesVersion();
-
-    const std::string fullIcon = std::format(
+    std::cout << utility::io::executeCommand(std::format(
         "tput rev ; echo '{}{}{}' ; tput sgr0 ; echo ; echo '{}' ; echo 'Built with {} for {} on {}.'",
         getIconBanner(),
 #ifndef NDEBUG
@@ -786,9 +803,8 @@ void Command::showVersionIcon() const
         note::copyright(),
         note::compiler(),
         note::processor(),
-        note::buildDate());
-
-    std::cout << utility::io::executeCommand(fullIcon) << std::flush;
+        note::buildDate()))
+              << std::flush;
 }
 
 void Command::checkForExcessiveArguments()
@@ -802,28 +818,28 @@ void Command::checkForExcessiveArguments()
 
 //! @brief Perform the specific operation for Category::console.
 template <>
-void Command::Notifier::ConcreteHandler<Category::console>::execute() const
+void Command::Notifier::Handler<Category::console>::execute() const
 {
     obj.executeInConsole();
 }
 
 //! @brief Perform the specific operation for Category::dump.
 template <>
-void Command::Notifier::ConcreteHandler<Category::dump>::execute() const
+void Command::Notifier::Handler<Category::dump>::execute() const
 {
     obj.dumpConfiguration();
 }
 
 //! @brief Perform the specific operation for Category::help.
 template <>
-void Command::Notifier::ConcreteHandler<Category::help>::execute() const
+void Command::Notifier::Handler<Category::help>::execute() const
 {
     obj.showHelpMessage();
 }
 
 //! @brief Perform the specific operation for Category::version.
 template <>
-void Command::Notifier::ConcreteHandler<Category::version>::execute() const
+void Command::Notifier::Handler<Category::version>::execute() const
 {
     obj.showVersionIcon();
 }
@@ -910,7 +926,6 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& c
             return retVal;
         },
         "refresh the outputs");
-
     session.registerOption(
         "reconnect",
         [&client](const Console::Args& /*input*/)
