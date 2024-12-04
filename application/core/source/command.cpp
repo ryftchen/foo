@@ -905,6 +905,12 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& c
 {
     using console::Console;
     using enum Console::RetCode;
+    static constinit const auto resetter = []<HelperType Helper>() constexpr
+    {
+        triggerHelper<Helper>(ExtEvent::reset);
+        triggerHelper<Helper>(ExtEvent::start);
+    };
+
     session.registerOption(
         "refresh",
         [](const Console::Args& /*input*/)
@@ -912,8 +918,7 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& c
             auto retVal = success;
             try
             {
-                triggerHelper<log::Log>(ExtEvent::reset);
-                triggerHelper<log::Log>(ExtEvent::start);
+                resetter.template operator()<log::Log>();
 
                 LOG_INF << "Refreshed the outputs.";
             }
@@ -937,8 +942,7 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& c
                 client->waitIfAlive();
                 utility::time::millisecondLevelSleep(latency);
                 client.reset();
-                triggerHelper<view::View>(ExtEvent::reset);
-                triggerHelper<view::View>(ExtEvent::start);
+                resetter.template operator()<view::View>();
 
                 client = std::make_shared<T>();
                 launchClient(client);
