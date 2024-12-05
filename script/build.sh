@@ -331,6 +331,7 @@ FOO_BLD_DISTCC=localhost # HOST
 FOO_BLD_TMPFS=off # on / off
 
 export FOO_BLD_COMPILER FOO_BLD_PARALLEL FOO_BLD_PCH FOO_BLD_UNITY FOO_BLD_CCACHE FOO_BLD_DISTCC FOO_BLD_TMPFS
+
 return 0
 EOF"
     shell_command "echo 'core.%s.%e.%p' | ${SUDO}tee /proc/sys/kernel/core_pattern"
@@ -784,6 +785,7 @@ function perform_query_option()
         shell_command "cat <<EOF >./${rebuild_script}
 #!/usr/bin/env bash
 
+set -e
 export FOO_BLD_FORCE=on
 $(realpath "$0") \"\\\$@\"
 EOF"

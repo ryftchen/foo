@@ -61,25 +61,25 @@ std::shared_ptr<arithmetic::InputBuilder> ArithmeticTestBase::inputs = nullptr;
 //! @brief Test for the addition method in the solution of arithmetic.
 TEST_F(ArithmeticTestBase, additionMethod)
 {
-    ASSERT_EQ(1073741821, sut.addition(std::get<0>(inputs->getIntegers()), std::get<1>(inputs->getIntegers())));
+    ASSERT_EQ(1073741821, sut.addition(inputs->getIntegers().first, inputs->getIntegers().second));
 }
 
 //! @brief Test for the subtraction method in the solution of arithmetic.
 TEST_F(ArithmeticTestBase, subtractionMethod)
 {
-    ASSERT_EQ(1073741825, sut.subtraction(std::get<0>(inputs->getIntegers()), std::get<1>(inputs->getIntegers())));
+    ASSERT_EQ(1073741825, sut.subtraction(inputs->getIntegers().first, inputs->getIntegers().second));
 }
 
 //! @brief Test for the multiplication method in the solution of arithmetic.
 TEST_F(ArithmeticTestBase, multiplicationMethod)
 {
-    ASSERT_EQ(-2147483646, sut.multiplication(std::get<0>(inputs->getIntegers()), std::get<1>(inputs->getIntegers())));
+    ASSERT_EQ(-2147483646, sut.multiplication(inputs->getIntegers().first, inputs->getIntegers().second));
 }
 
 //! @brief Test for the division method in the solution of arithmetic.
 TEST_F(ArithmeticTestBase, divisionMethod)
 {
-    ASSERT_EQ(-536870911, sut.division(std::get<0>(inputs->getIntegers()), std::get<1>(inputs->getIntegers())));
+    ASSERT_EQ(-536870911, sut.division(inputs->getIntegers().first, inputs->getIntegers().second));
 }
 
 //! @brief Test base of divisor.
@@ -120,13 +120,13 @@ std::shared_ptr<divisor::InputBuilder> DivisorTestBase::inputs = nullptr;
 //! @brief Test for the Euclidean method in the solution of divisor.
 TEST_F(DivisorTestBase, euclideanMethod)
 {
-    ASSERT_EQ(expColl, sut.euclidean(std::get<0>(inputs->getIntegers()), std::get<1>(inputs->getIntegers())));
+    ASSERT_EQ(expColl, sut.euclidean(inputs->getIntegers().first, inputs->getIntegers().second));
 }
 
 //! @brief Test for the Stein method in the solution of divisor.
 TEST_F(DivisorTestBase, steinMethod)
 {
-    ASSERT_EQ(expColl, sut.stein(std::get<0>(inputs->getIntegers()), std::get<1>(inputs->getIntegers())));
+    ASSERT_EQ(expColl, sut.stein(inputs->getIntegers().first, inputs->getIntegers().second));
 }
 
 //! @brief Test base of integral.

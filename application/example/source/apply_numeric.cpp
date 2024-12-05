@@ -325,8 +325,7 @@ void runChoices<ArithmeticMethod>(const std::vector<std::string>& candidates)
         [threads,
          &inputs](const std::string_view threadName, void (*targetMethod)(const std::int32_t, const std::int32_t))
     {
-        threads->enqueue(
-            threadName, targetMethod, std::get<0>(inputs->getIntegers()), std::get<1>(inputs->getIntegers()));
+        threads->enqueue(threadName, targetMethod, inputs->getIntegers().first, inputs->getIntegers().second);
     };
     const auto name = utility::currying::curry(getTaskNameCurried(), getCategoryAlias<category>());
     auto indices =
@@ -445,8 +444,7 @@ void runChoices<DivisorMethod>(const std::vector<std::string>& candidates)
     const auto functor =
         [threads, &inputs](const std::string_view threadName, void (*targetMethod)(std::int32_t, std::int32_t))
     {
-        threads->enqueue(
-            threadName, targetMethod, std::get<0>(inputs->getIntegers()), std::get<1>(inputs->getIntegers()));
+        threads->enqueue(threadName, targetMethod, inputs->getIntegers().first, inputs->getIntegers().second);
     };
     const auto name = utility::currying::curry(getTaskNameCurried(), getCategoryAlias<category>());
     auto indices =

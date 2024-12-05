@@ -203,16 +203,12 @@ void Register::throwArgsNumRangeValidationException() const
 
 void Register::throwRequiredArgNotUsedException() const
 {
-    std::ostringstream out{};
-    out << names.at(0) << ": required.";
-    throw std::runtime_error(out.str());
+    throw std::runtime_error(names.at(0) + ": required.");
 }
 
 void Register::throwRequiredArgNoValueProvidedException() const
 {
-    std::ostringstream out{};
-    out << usedName << ": no value provided.";
-    throw std::runtime_error(out.str());
+    throw std::runtime_error(std::string{usedName} + ": no value provided.");
 }
 
 int Register::lookAhead(const std::string_view name)

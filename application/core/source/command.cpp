@@ -910,10 +910,31 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& c
         triggerHelper<Helper>(ExtEvent::reset);
         triggerHelper<Helper>(ExtEvent::start);
     };
+    const auto sender = [&client](const Console::Args& inputs)
+    {
+        auto retVal = success;
+        try
+        {
+            client->toSend(utility::common::base64Encode(std::accumulate(
+                inputs.cbegin(),
+                inputs.cend(),
+                std::string{},
+                [](const auto& acc, const auto& token) { return acc.empty() ? token : (acc + ' ' + token); })));
+            view::View::getInstance().awaitDueToOutput();
+        }
+        catch (const std::exception& err)
+        {
+            retVal = error;
+            LOG_WRN << err.what();
+            utility::time::millisecondLevelSleep(latency);
+        }
+        return retVal;
+    };
 
     session.registerOption(
         "refresh",
-        [](const Console::Args& /*input*/)
+        "refresh the outputs",
+        [](const Console::Args& /*inputs*/)
         {
             auto retVal = success;
             try
@@ -929,11 +950,11 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& c
             }
             utility::time::millisecondLevelSleep(latency);
             return retVal;
-        },
-        "refresh the outputs");
+        });
     session.registerOption(
         "reconnect",
-        [&client](const Console::Args& /*input*/)
+        "reconnect to the servers",
+        [&client](const Console::Args& /*inputs*/)
         {
             auto retVal = success;
             try
@@ -955,34 +976,10 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& c
             }
             utility::time::millisecondLevelSleep(latency);
             return retVal;
-        },
-        "reconnect to the servers");
-
-    for (const auto& [optionName, optionAttr] : view::info::getOptions())
+        });
+    for (const auto& [name, attr] : view::info::getOptions())
     {
-        session.registerOption(
-            optionName,
-            [&client](const Console::Args& input)
-            {
-                auto retVal = success;
-                try
-                {
-                    client->toSend(utility::common::base64Encode(std::accumulate(
-                        input.cbegin(),
-                        input.cend(),
-                        std::string{},
-                        [](const auto& acc, const auto& token) { return acc.empty() ? token : (acc + ' ' + token); })));
-                    view::View::getInstance().awaitDueToOutput();
-                }
-                catch (const std::exception& err)
-                {
-                    retVal = error;
-                    LOG_WRN << err.what();
-                    utility::time::millisecondLevelSleep(latency);
-                }
-                return retVal;
-            },
-            optionAttr.prompt);
+        session.registerOption(name, attr.prompt, sender);
     }
 }
 

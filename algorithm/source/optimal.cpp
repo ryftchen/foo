@@ -31,7 +31,7 @@ std::optional<std::tuple<double, double>> Gradient::operator()(const double left
         climbing.emplace(candidate(engine));
     }
 
-    std::vector<std::pair<double, double>> storage{};
+    std::vector<std::tuple<double, double>> storage{};
     storage.reserve(climbing.size());
     for (const auto climber : climbing)
     {
@@ -116,7 +116,7 @@ std::optional<std::tuple<double, double>> Particle::operator()(const double left
     double xBest = initialBest->x, xFitnessBest = initialBest->xFitness;
 
     std::uniform_real_distribution<double> coeff(0.0, 1.0);
-    std::vector<std::pair<double, double>> storage{};
+    std::vector<std::tuple<double, double>> storage{};
     storage.reserve(swarm.size());
     for (std::uint32_t i = 0; i < numOfIteration; ++i)
     {
@@ -373,7 +373,7 @@ void Genetic::select(Population& pop)
         pop.cbegin(),
         pop.cend(),
         std::back_inserter(fitnessVal),
-        [this, alpha = std::get<0>(coeff), beta = std::get<1>(coeff), &sum](const auto& ind)
+        [this, alpha = coeff.first, beta = coeff.second, &sum](const auto& ind)
         {
             const double fitVal = alpha * calculateFitness(ind) + beta;
             sum += fitVal;
