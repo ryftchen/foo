@@ -302,7 +302,7 @@ class Task:
         if not os.path.exists(self.report_path):
             os.makedirs(self.report_path)
         if not os.path.isfile(self.console_file):
-            Path(self.console_file).write_text("# console option\nusage\nquit\n", encoding="utf-8")
+            Path(self.console_file).write_text("# console option\n\nusage\nquit\n", encoding="utf-8")
 
         self.logger = common.Log(self.log_file)
         self.progress_bar.setup_progress_bar()

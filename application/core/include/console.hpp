@@ -43,13 +43,13 @@ public:
 
     //! @brief Alias for the container of arguments.
     using Args = std::vector<std::string>;
-    //! @brief Alias for the functor of option.
-    using OptionFunctor = std::function<int(const Args&)>;
+    //! @brief Alias for the callback of option.
+    using Callback = std::function<int(const Args&)>;
     //! @brief Register console option.
     //! @param name - option name
-    //! @param func - callable function
     //! @param prompt - help prompt
-    void registerOption(const std::string_view name, const OptionFunctor& func, const std::string_view prompt);
+    //! @param func - callable function
+    void registerOption(const std::string_view name, const std::string_view prompt, Callback func);
     //! @brief Set greeting information.
     //! @param greeting - greeting information
     void setGreeting(const std::string_view greeting);
@@ -110,8 +110,8 @@ private:
         //! @return reference of the Impl object
         Impl& operator=(Impl&&) = delete;
 
-        //! @brief Alias for the map of option and function in console.
-        using RegisteredOption = std::unordered_map<Option, std::pair<OptionFunctor, Help>>;
+        //! @brief Alias for the map of option and callback in console.
+        using RegisteredOption = std::unordered_map<Option, std::pair<Help, Callback>>;
         //! @brief Greeting information.
         std::string greeting{};
         //! @brief Mapping table of all registered options.

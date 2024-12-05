@@ -32,47 +32,47 @@ Console::Console(const std::string_view greeting) : impl(std::make_unique<Impl>(
     auto& orderList = impl->orderList;
 
     regTable["usage"] = std::make_pair(
-        [this](const Args& /*input*/)
+        "how to use the console",
+        [this](const Args& /*inputs*/)
         {
             const auto pairs = getOptionHelpPairs();
             std::size_t maxLen = 0;
-            for ([[maybe_unused]] const auto& [option, help] : pairs)
-            {
-                maxLen = std::max(maxLen, option.length());
-            }
+            std::for_each(
+                pairs.cbegin(),
+                pairs.cend(),
+                [&maxLen](const auto& pair) { maxLen = std::max(pair.first.length(), maxLen); });
 
-            std::cout << "console option:\n" << std::endl;
+            std::ostringstream out{};
+            out << "console option:\n\n";
             for (const auto& [option, help] : pairs)
             {
-                std::cout << std::setiosflags(std::ios_base::left) << std::setw(maxLen) << option << "    " << help
-                          << std::resetiosflags(std::ios_base::left) << '\n';
+                out << std::setiosflags(std::ios_base::left) << std::setw(maxLen) << option << "    " << help
+                    << std::resetiosflags(std::ios_base::left) << '\n';
             }
-
-            std::cout << std::flush;
+            std::cout << out.str() << std::flush;
             return RetCode::success;
-        },
-        "how to use the console");
+        });
     orderList.emplace_back("usage");
 
     regTable["quit"] = std::make_pair(
-        [](const Args& /*input*/)
+        "exit the console",
+        [](const Args& /*inputs*/)
         {
             std::cout << "exit" << std::endl;
             return RetCode::quit;
-        },
-        "exit the console");
+        });
     orderList.emplace_back("quit");
 
     regTable["batch"] = std::make_pair(
-        [this](const Args& input)
+        "run lines from the file [inputs: FILE]",
+        [this](const Args& inputs)
         {
-            if (input.size() < 2)
+            if (inputs.size() < 2)
             {
-                throw std::runtime_error("Please enter the \"" + input.at(0) + "\" and append with FILE.");
+                throw std::runtime_error("Please enter the \"" + inputs.at(0) + "\" and append with FILE.");
             }
-            return RetCode(fileExecutor(input.at(1)));
-        },
-        "run lines from the file [inputs: FILE]");
+            return RetCode(fileExecutor(inputs.at(1)));
+        });
     orderList.emplace_back("batch");
 }
 
@@ -84,9 +84,9 @@ Console::~Console()
     ::rl_restore_prompt();
 }
 
-void Console::registerOption(const std::string_view name, const OptionFunctor& func, const std::string_view prompt)
+void Console::registerOption(const std::string_view name, const std::string_view prompt, Callback func)
 {
-    impl->regTable[name.data()] = std::make_pair(func, prompt);
+    impl->regTable[name.data()] = std::make_pair(prompt, std::move(func));
     impl->orderList.emplace_back(name);
 }
 
@@ -98,10 +98,9 @@ void Console::setGreeting(const std::string_view greeting)
 int Console::optionExecutor(const std::string_view option)
 {
     std::vector<std::string> inputs{};
-    std::istringstream trans(option.data());
+    std::istringstream transfer(option.data());
     std::copy(
-        std::istream_iterator<std::string>(trans), std::istream_iterator<std::string>(), std::back_inserter(inputs));
-
+        std::istream_iterator<std::string>(transfer), std::istream_iterator<std::string>(), std::back_inserter(inputs));
     if (inputs.empty())
     {
         return RetCode::success;
@@ -114,34 +113,34 @@ int Console::optionExecutor(const std::string_view option)
             "The console option \"" + inputs.front() + R"(" could not be found. Enter the "usage" for help.)");
     }
 
-    return RetCode(std::get<0>(regIter->second)(inputs));
+    return RetCode(regIter->second.second(inputs));
 }
 
 int Console::fileExecutor(const std::string_view filename)
 {
-    std::ifstream input(filename.data());
-    if (!input)
+    std::ifstream batch(filename.data());
+    if (!batch)
     {
         throw std::runtime_error("Could not find the batch file to run.");
     }
 
-    std::string option{};
+    std::string input{};
     std::uint32_t counter = 0;
-    int result = 0;
-    while (std::getline(input, option))
+    while (std::getline(batch, input))
     {
-        if ('#' == option.at(0))
+        if (input.empty() || ('#' == input.front()))
         {
             continue;
         }
-        std::cout << '[' << counter << "] " << option << std::endl;
 
-        result = optionExecutor(option);
-        if (result)
+        ++counter;
+        std::ostringstream out{};
+        out << '#' << counter << ' ' << input << '\n';
+        std::cout << out.str() << std::flush;
+        if (const int result = optionExecutor(input))
         {
             return RetCode(result);
         }
-        ++counter;
         std::cout << std::endl;
     }
 
@@ -163,17 +162,17 @@ int Console::readLine()
     {
         ::add_history(buffer);
     }
-    std::string line(buffer);
+    std::string input(buffer);
     ::rl_free(buffer);
 
-    return RetCode(optionExecutor(line));
+    return RetCode(optionExecutor(input));
 }
 
 std::vector<Console::OptionHelpPair> Console::getOptionHelpPairs() const
 {
     const auto transformed = impl->orderList
         | std::views::transform([this](const auto& option)
-                                { return std::make_pair(option, impl->regTable.at(option).second); });
+                                { return std::make_pair(option, impl->regTable.at(option).first); });
     return std::vector<OptionHelpPair>{transformed.begin(), transformed.end()};
 }
 
