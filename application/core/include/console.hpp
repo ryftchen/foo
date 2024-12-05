@@ -124,6 +124,8 @@ private:
     //! @brief Implementation instance.
     std::unique_ptr<Impl> impl{};
 
+    //! @brief Set the default options.
+    void setDefaultOptions();
     //! @brief Get all registered options with help prompts.
     //! @return all registered options with help prompts
     [[nodiscard]] std::vector<OptionHelpPair> getOptionHelpPairs() const;
