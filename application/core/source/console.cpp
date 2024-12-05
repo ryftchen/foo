@@ -28,52 +28,8 @@ static Console* currentSession = nullptr;
 Console::Console(const std::string_view greeting) : impl(std::make_unique<Impl>(greeting))
 {
     ::rl_attempted_completion_function = &Console::getOptionCompleter;
-    auto& regTable = impl->regTable;
-    auto& orderList = impl->orderList;
 
-    regTable["usage"] = std::make_pair(
-        "how to use the console",
-        [this](const Args& /*inputs*/)
-        {
-            const auto pairs = getOptionHelpPairs();
-            std::size_t maxLen = 0;
-            std::for_each(
-                pairs.cbegin(),
-                pairs.cend(),
-                [&maxLen](const auto& pair) { maxLen = std::max(pair.first.length(), maxLen); });
-
-            std::ostringstream out{};
-            out << "console option:\n\n";
-            for (const auto& [option, help] : pairs)
-            {
-                out << std::setiosflags(std::ios_base::left) << std::setw(maxLen) << option << "    " << help
-                    << std::resetiosflags(std::ios_base::left) << '\n';
-            }
-            std::cout << out.str() << std::flush;
-            return RetCode::success;
-        });
-    orderList.emplace_back("usage");
-
-    regTable["quit"] = std::make_pair(
-        "exit the console",
-        [](const Args& /*inputs*/)
-        {
-            std::cout << "exit" << std::endl;
-            return RetCode::quit;
-        });
-    orderList.emplace_back("quit");
-
-    regTable["batch"] = std::make_pair(
-        "run lines from the file [inputs: FILE]",
-        [this](const Args& inputs)
-        {
-            if (inputs.size() < 2)
-            {
-                throw std::runtime_error("Please enter the \"" + inputs.at(0) + "\" and append with FILE.");
-            }
-            return RetCode(fileExecutor(inputs.at(1)));
-        });
-    orderList.emplace_back("batch");
+    setDefaultOptions();
 }
 
 Console::~Console()
@@ -100,7 +56,7 @@ int Console::optionExecutor(const std::string_view option)
     std::vector<std::string> inputs{};
     std::istringstream transfer(option.data());
     std::copy(
-        std::istream_iterator<std::string>(transfer), std::istream_iterator<std::string>(), std::back_inserter(inputs));
+        std::istream_iterator<std::string>(transfer), std::istream_iterator<std::string>{}, std::back_inserter(inputs));
     if (inputs.empty())
     {
         return RetCode::success;
@@ -166,6 +122,56 @@ int Console::readLine()
     ::rl_free(buffer);
 
     return RetCode(optionExecutor(input));
+}
+
+void Console::setDefaultOptions()
+{
+    auto& regTable = impl->regTable;
+    auto& orderList = impl->orderList;
+
+    regTable["usage"] = std::make_pair(
+        "how to use the console",
+        [this](const Args& /*inputs*/)
+        {
+            const auto pairs = getOptionHelpPairs();
+            std::size_t maxLen = 0;
+            std::for_each(
+                pairs.cbegin(),
+                pairs.cend(),
+                [&maxLen](const auto& pair) { maxLen = std::max(pair.first.length(), maxLen); });
+
+            std::ostringstream out{};
+            out << "console option:\n\n";
+            for (const auto& [option, help] : pairs)
+            {
+                out << std::setiosflags(std::ios_base::left) << std::setw(maxLen) << option << "    " << help
+                    << std::resetiosflags(std::ios_base::left) << '\n';
+            }
+            std::cout << out.str() << std::flush;
+            return RetCode::success;
+        });
+    orderList.emplace_back("usage");
+
+    regTable["quit"] = std::make_pair(
+        "exit the console",
+        [](const Args& /*inputs*/)
+        {
+            std::cout << "exit" << std::endl;
+            return RetCode::quit;
+        });
+    orderList.emplace_back("quit");
+
+    regTable["batch"] = std::make_pair(
+        "run lines from the file [inputs: FILE]",
+        [this](const Args& inputs)
+        {
+            if (inputs.size() < 2)
+            {
+                throw std::runtime_error("Please enter the \"" + inputs.at(0) + "\" and append with FILE.");
+            }
+            return RetCode(fileExecutor(inputs.at(1)));
+        });
+    orderList.emplace_back("batch");
 }
 
 std::vector<Console::OptionHelpPair> Console::getOptionHelpPairs() const
