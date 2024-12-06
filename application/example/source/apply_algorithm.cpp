@@ -281,14 +281,15 @@ void MatchSolution::rkMethod(
     const std::uint32_t patternLen)
 try
 {
-    TIME_BEGIN(timing);
+    utility::time::Time timer{};
+    timer.setBeginTime();
     const auto shift = algorithm::match::Match().rk(text, pattern, textLen, patternLen);
-    TIME_END(timing);
-    displayResult(MatchMethod::rabinKarp, shift, pattern, TIME_INTERVAL(timing));
+    timer.setEndTime();
+    displayResult(MatchMethod::rabinKarp, shift, pattern, timer.calculateInterval());
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Exception in " << __func__ << " function: " << err.what();
+    LOG_ERR << "Exception in solution (" << __func__ << "): " << err.what();
 }
 
 void MatchSolution::kmpMethod(
@@ -298,14 +299,15 @@ void MatchSolution::kmpMethod(
     const std::uint32_t patternLen)
 try
 {
-    TIME_BEGIN(timing);
+    utility::time::Time timer{};
+    timer.setBeginTime();
     const auto shift = algorithm::match::Match().kmp(text, pattern, textLen, patternLen);
-    TIME_END(timing);
-    displayResult(MatchMethod::knuthMorrisPratt, shift, pattern, TIME_INTERVAL(timing));
+    timer.setEndTime();
+    displayResult(MatchMethod::knuthMorrisPratt, shift, pattern, timer.calculateInterval());
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Exception in " << __func__ << " function: " << err.what();
+    LOG_ERR << "Exception in solution (" << __func__ << "): " << err.what();
 }
 
 void MatchSolution::bmMethod(
@@ -315,14 +317,15 @@ void MatchSolution::bmMethod(
     const std::uint32_t patternLen)
 try
 {
-    TIME_BEGIN(timing);
+    utility::time::Time timer{};
+    timer.setBeginTime();
     const auto shift = algorithm::match::Match().bm(text, pattern, textLen, patternLen);
-    TIME_END(timing);
-    displayResult(MatchMethod::boyerMoore, shift, pattern, TIME_INTERVAL(timing));
+    timer.setEndTime();
+    displayResult(MatchMethod::boyerMoore, shift, pattern, timer.calculateInterval());
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Exception in " << __func__ << " function: " << err.what();
+    LOG_ERR << "Exception in solution (" << __func__ << "): " << err.what();
 }
 
 void MatchSolution::horspoolMethod(
@@ -332,14 +335,15 @@ void MatchSolution::horspoolMethod(
     const std::uint32_t patternLen)
 try
 {
-    TIME_BEGIN(timing);
+    utility::time::Time timer{};
+    timer.setBeginTime();
     const auto shift = algorithm::match::Match().horspool(text, pattern, textLen, patternLen);
-    TIME_END(timing);
-    displayResult(MatchMethod::horspool, shift, pattern, TIME_INTERVAL(timing));
+    timer.setEndTime();
+    displayResult(MatchMethod::horspool, shift, pattern, timer.calculateInterval());
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Exception in " << __func__ << " function: " << err.what();
+    LOG_ERR << "Exception in solution (" << __func__ << "): " << err.what();
 }
 
 void MatchSolution::sundayMethod(
@@ -349,14 +353,15 @@ void MatchSolution::sundayMethod(
     const std::uint32_t patternLen)
 try
 {
-    TIME_BEGIN(timing);
+    utility::time::Time timer{};
+    timer.setBeginTime();
     const auto shift = algorithm::match::Match().sunday(text, pattern, textLen, patternLen);
-    TIME_END(timing);
-    displayResult(MatchMethod::sunday, shift, pattern, TIME_INTERVAL(timing));
+    timer.setEndTime();
+    displayResult(MatchMethod::sunday, shift, pattern, timer.calculateInterval());
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Exception in " << __func__ << " function: " << err.what();
+    LOG_ERR << "Exception in solution (" << __func__ << "): " << err.what();
 }
 } // namespace match
 
@@ -476,7 +481,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Exception in " << __func__ << " function: " << err.what();
+    LOG_ERR << "Exception in solution (" << __func__ << "): " << err.what();
 }
 
 void NotationSolution::postfixMethod(const std::string_view infix)
@@ -487,7 +492,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Exception in " << __func__ << " function: " << err.what();
+    LOG_ERR << "Exception in solution (" << __func__ << "): " << err.what();
 }
 } // namespace notation
 
@@ -590,53 +595,57 @@ static void displayResult(
 void OptimalSolution::gradientDescentMethod(const Function& func, const double left, const double right)
 try
 {
-    TIME_BEGIN(timing);
+    utility::time::Time timer{};
+    timer.setBeginTime();
     const auto tuple = algorithm::optimal::Gradient(func)(left, right, algorithm::optimal::epsilon);
-    TIME_END(timing);
-    displayResult(OptimalMethod::gradient, tuple, TIME_INTERVAL(timing));
+    timer.setEndTime();
+    displayResult(OptimalMethod::gradient, tuple, timer.calculateInterval());
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Exception in " << __func__ << " function: " << err.what();
+    LOG_ERR << "Exception in solution (" << __func__ << "): " << err.what();
 }
 
 void OptimalSolution::simulatedAnnealingMethod(const Function& func, const double left, const double right)
 try
 {
-    TIME_BEGIN(timing);
+    utility::time::Time timer{};
+    timer.setBeginTime();
     const auto tuple = algorithm::optimal::Annealing(func)(left, right, algorithm::optimal::epsilon);
-    TIME_END(timing);
-    displayResult(OptimalMethod::annealing, tuple, TIME_INTERVAL(timing));
+    timer.setEndTime();
+    displayResult(OptimalMethod::annealing, tuple, timer.calculateInterval());
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Exception in " << __func__ << " function: " << err.what();
+    LOG_ERR << "Exception in solution (" << __func__ << "): " << err.what();
 }
 
 void OptimalSolution::particleSwarmMethod(const Function& func, const double left, const double right)
 try
 {
-    TIME_BEGIN(timing);
+    utility::time::Time timer{};
+    timer.setBeginTime();
     const auto tuple = algorithm::optimal::Particle(func)(left, right, algorithm::optimal::epsilon);
-    TIME_END(timing);
-    displayResult(OptimalMethod::particle, tuple, TIME_INTERVAL(timing));
+    timer.setEndTime();
+    displayResult(OptimalMethod::particle, tuple, timer.calculateInterval());
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Exception in " << __func__ << " function: " << err.what();
+    LOG_ERR << "Exception in solution (" << __func__ << "): " << err.what();
 }
 
 void OptimalSolution::geneticMethod(const Function& func, const double left, const double right)
 try
 {
-    TIME_BEGIN(timing);
+    utility::time::Time timer{};
+    timer.setBeginTime();
     const auto tuple = algorithm::optimal::Genetic(func)(left, right, algorithm::optimal::epsilon);
-    TIME_END(timing);
-    displayResult(OptimalMethod::genetic, tuple, TIME_INTERVAL(timing));
+    timer.setEndTime();
+    displayResult(OptimalMethod::genetic, tuple, timer.calculateInterval());
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Exception in " << __func__ << " function: " << err.what();
+    LOG_ERR << "Exception in solution (" << __func__ << "): " << err.what();
 }
 } // namespace optimal
 
@@ -774,40 +783,43 @@ static void displayResult(const SearchMethod method, const std::int64_t result, 
 void SearchSolution::binaryMethod(const float* const array, const std::uint32_t length, const float key)
 try
 {
-    TIME_BEGIN(timing);
+    utility::time::Time timer{};
+    timer.setBeginTime();
     const auto index = algorithm::search::Search<float>().binary(array, length, key);
-    TIME_END(timing);
-    displayResult(SearchMethod::binary, index, key, TIME_INTERVAL(timing));
+    timer.setEndTime();
+    displayResult(SearchMethod::binary, index, key, timer.calculateInterval());
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Exception in " << __func__ << " function: " << err.what();
+    LOG_ERR << "Exception in solution (" << __func__ << "): " << err.what();
 }
 
 void SearchSolution::interpolationMethod(const float* const array, const std::uint32_t length, const float key)
 try
 {
-    TIME_BEGIN(timing);
+    utility::time::Time timer{};
+    timer.setBeginTime();
     const auto index = algorithm::search::Search<float>().interpolation(array, length, key);
-    TIME_END(timing);
-    displayResult(SearchMethod::interpolation, index, key, TIME_INTERVAL(timing));
+    timer.setEndTime();
+    displayResult(SearchMethod::interpolation, index, key, timer.calculateInterval());
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Exception in " << __func__ << " function: " << err.what();
+    LOG_ERR << "Exception in solution (" << __func__ << "): " << err.what();
 }
 
 void SearchSolution::fibonacciMethod(const float* const array, const std::uint32_t length, const float key)
 try
 {
-    TIME_BEGIN(timing);
+    utility::time::Time timer{};
+    timer.setBeginTime();
     const auto index = algorithm::search::Search<float>().fibonacci(array, length, key);
-    TIME_END(timing);
-    displayResult(SearchMethod::fibonacci, index, key, TIME_INTERVAL(timing));
+    timer.setEndTime();
+    displayResult(SearchMethod::fibonacci, index, key, timer.calculateInterval());
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Exception in " << __func__ << " function: " << err.what();
+    LOG_ERR << "Exception in solution (" << __func__ << "): " << err.what();
 }
 } // namespace search
 
@@ -912,131 +924,141 @@ static void displayResult(const SortMethod method, const std::vector<std::int32_
 void SortSolution::bubbleMethod(const std::int32_t* const array, const std::uint32_t length)
 try
 {
-    TIME_BEGIN(timing);
+    utility::time::Time timer{};
+    timer.setBeginTime();
     const auto coll = algorithm::sort::Sort<std::int32_t>().bubble(array, length);
-    TIME_END(timing);
-    displayResult(SortMethod::bubble, coll, TIME_INTERVAL(timing));
+    timer.setEndTime();
+    displayResult(SortMethod::bubble, coll, timer.calculateInterval());
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Exception in " << __func__ << " function: " << err.what();
+    LOG_ERR << "Exception in solution (" << __func__ << "): " << err.what();
 }
 
 void SortSolution::selectionMethod(const std::int32_t* const array, const std::uint32_t length)
 try
 {
-    TIME_BEGIN(timing);
+    utility::time::Time timer{};
+    timer.setBeginTime();
     const auto coll = algorithm::sort::Sort<std::int32_t>().selection(array, length);
-    TIME_END(timing);
-    displayResult(SortMethod::selection, coll, TIME_INTERVAL(timing));
+    timer.setEndTime();
+    displayResult(SortMethod::selection, coll, timer.calculateInterval());
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Exception in " << __func__ << " function: " << err.what();
+    LOG_ERR << "Exception in solution (" << __func__ << "): " << err.what();
 }
 
 void SortSolution::insertionMethod(const std::int32_t* const array, const std::uint32_t length)
 try
 {
-    TIME_BEGIN(timing);
+    utility::time::Time timer{};
+    timer.setBeginTime();
     const auto coll = algorithm::sort::Sort<std::int32_t>().insertion(array, length);
-    TIME_END(timing);
-    displayResult(SortMethod::insertion, coll, TIME_INTERVAL(timing));
+    timer.setEndTime();
+    displayResult(SortMethod::insertion, coll, timer.calculateInterval());
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Exception in " << __func__ << " function: " << err.what();
+    LOG_ERR << "Exception in solution (" << __func__ << "): " << err.what();
 }
 
 void SortSolution::shellMethod(const std::int32_t* const array, const std::uint32_t length)
 try
 {
-    TIME_BEGIN(timing);
+    utility::time::Time timer{};
+    timer.setBeginTime();
     const auto coll = algorithm::sort::Sort<std::int32_t>().shell(array, length);
-    TIME_END(timing);
-    displayResult(SortMethod::shell, coll, TIME_INTERVAL(timing));
+    timer.setEndTime();
+    displayResult(SortMethod::shell, coll, timer.calculateInterval());
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Exception in " << __func__ << " function: " << err.what();
+    LOG_ERR << "Exception in solution (" << __func__ << "): " << err.what();
 }
 
 void SortSolution::mergeMethod(const std::int32_t* const array, const std::uint32_t length)
 try
 {
-    TIME_BEGIN(timing);
+    utility::time::Time timer{};
+    timer.setBeginTime();
     const auto coll = algorithm::sort::Sort<std::int32_t>().merge(array, length);
-    TIME_END(timing);
-    displayResult(SortMethod::merge, coll, TIME_INTERVAL(timing));
+    timer.setEndTime();
+    displayResult(SortMethod::merge, coll, timer.calculateInterval());
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Exception in " << __func__ << " function: " << err.what();
+    LOG_ERR << "Exception in solution (" << __func__ << "): " << err.what();
 }
 
 void SortSolution::quickMethod(const std::int32_t* const array, const std::uint32_t length)
 try
 {
-    TIME_BEGIN(timing);
+    utility::time::Time timer{};
+    timer.setBeginTime();
     const auto coll = algorithm::sort::Sort<std::int32_t>().quick(array, length);
-    TIME_END(timing);
-    displayResult(SortMethod::quick, coll, TIME_INTERVAL(timing));
+    timer.setEndTime();
+    displayResult(SortMethod::quick, coll, timer.calculateInterval());
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Exception in " << __func__ << " function: " << err.what();
+    LOG_ERR << "Exception in solution (" << __func__ << "): " << err.what();
 }
 
 void SortSolution::heapMethod(const std::int32_t* const array, const std::uint32_t length)
 try
 {
-    TIME_BEGIN(timing);
+    utility::time::Time timer{};
+    timer.setBeginTime();
     const auto coll = algorithm::sort::Sort<std::int32_t>().heap(array, length);
-    TIME_END(timing);
-    displayResult(SortMethod::heap, coll, TIME_INTERVAL(timing));
+    timer.setEndTime();
+    displayResult(SortMethod::heap, coll, timer.calculateInterval());
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Exception in " << __func__ << " function: " << err.what();
+    LOG_ERR << "Exception in solution (" << __func__ << "): " << err.what();
 }
 
 void SortSolution::countingMethod(const std::int32_t* const array, const std::uint32_t length)
 try
 {
-    TIME_BEGIN(timing);
+    utility::time::Time timer{};
+    timer.setBeginTime();
     const auto coll = algorithm::sort::Sort<std::int32_t>().counting(array, length);
-    TIME_END(timing);
-    displayResult(SortMethod::counting, coll, TIME_INTERVAL(timing));
+    timer.setEndTime();
+    displayResult(SortMethod::counting, coll, timer.calculateInterval());
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Exception in " << __func__ << " function: " << err.what();
+    LOG_ERR << "Exception in solution (" << __func__ << "): " << err.what();
 }
 
 void SortSolution::bucketMethod(const std::int32_t* const array, const std::uint32_t length)
 try
 {
-    TIME_BEGIN(timing);
+    utility::time::Time timer{};
+    timer.setBeginTime();
     const auto coll = algorithm::sort::Sort<std::int32_t>().bucket(array, length);
-    TIME_END(timing);
-    displayResult(SortMethod::bucket, coll, TIME_INTERVAL(timing));
+    timer.setEndTime();
+    displayResult(SortMethod::bucket, coll, timer.calculateInterval());
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Exception in " << __func__ << " function: " << err.what();
+    LOG_ERR << "Exception in solution (" << __func__ << "): " << err.what();
 }
 
 void SortSolution::radixMethod(const std::int32_t* const array, const std::uint32_t length)
 try
 {
-    TIME_BEGIN(timing);
+    utility::time::Time timer{};
+    timer.setBeginTime();
     const auto coll = algorithm::sort::Sort<std::int32_t>().radix(array, length);
-    TIME_END(timing);
-    displayResult(SortMethod::radix, coll, TIME_INTERVAL(timing));
+    timer.setEndTime();
+    displayResult(SortMethod::radix, coll, timer.calculateInterval());
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Exception in " << __func__ << " function: " << err.what();
+    LOG_ERR << "Exception in solution (" << __func__ << "): " << err.what();
 }
 } // namespace sort
 
