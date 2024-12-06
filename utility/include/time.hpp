@@ -9,15 +9,6 @@
 #include <chrono>
 #include <functional>
 
-//! @brief Store beginning time.
-#define TIME_BEGIN(timing)      \
-    utility::time::Time timing; \
-    timing.setBeginTime()
-//! @brief Store ending time.
-#define TIME_END(timing) timing.setEndTime()
-//! @brief Calculate time interval.
-#define TIME_INTERVAL(timing) timing.getTimeInterval()
-
 //! @brief The utility module.
 namespace utility // NOLINT(modernize-concat-nested-namespaces)
 {
@@ -37,8 +28,8 @@ public:
     void setBeginTime();
     //! @brief Set the ending time.
     void setEndTime();
-    //! @brief Get the time interval.
-    [[nodiscard]] double getTimeInterval() const;
+    //! @brief Calculate the time interval.
+    [[nodiscard]] double calculateInterval() const;
 
 private:
     //! @brief Beginning time.

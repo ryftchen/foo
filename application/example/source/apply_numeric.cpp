@@ -237,7 +237,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Exception in " << __func__ << " function: " << err.what();
+    LOG_ERR << "Exception in solution (" << __func__ << "): " << err.what();
 }
 
 void ArithmeticSolution::subtractionMethod(const std::int32_t minuend, const std::int32_t subtrahend)
@@ -248,7 +248,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Exception in " << __func__ << " function: " << err.what();
+    LOG_ERR << "Exception in solution (" << __func__ << "): " << err.what();
 }
 
 void ArithmeticSolution::multiplicationMethod(const std::int32_t multiplier, const std::int32_t multiplicand)
@@ -259,7 +259,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Exception in " << __func__ << " function: " << err.what();
+    LOG_ERR << "Exception in solution (" << __func__ << "): " << err.what();
 }
 
 void ArithmeticSolution::divisionMethod(const std::int32_t dividend, const std::int32_t divisor)
@@ -270,7 +270,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Exception in " << __func__ << " function: " << err.what();
+    LOG_ERR << "Exception in solution (" << __func__ << "): " << err.what();
 }
 } // namespace arithmetic
 
@@ -377,27 +377,29 @@ static void displayResult(const DivisorMethod method, const std::set<std::int32_
 void DivisorSolution::euclideanMethod(std::int32_t a, std::int32_t b)
 try
 {
-    TIME_BEGIN(timing);
+    utility::time::Time timer{};
+    timer.setBeginTime();
     const auto coll = numeric::divisor::Divisor().euclidean(a, b);
-    TIME_END(timing);
-    displayResult(DivisorMethod::euclidean, coll, TIME_INTERVAL(timing));
+    timer.setEndTime();
+    displayResult(DivisorMethod::euclidean, coll, timer.calculateInterval());
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Exception in " << __func__ << " function: " << err.what();
+    LOG_ERR << "Exception in solution (" << __func__ << "): " << err.what();
 }
 
 void DivisorSolution::steinMethod(std::int32_t a, std::int32_t b)
 try
 {
-    TIME_BEGIN(timing);
+    utility::time::Time timer{};
+    timer.setBeginTime();
     const auto coll = numeric::divisor::Divisor().stein(a, b);
-    TIME_END(timing);
-    displayResult(DivisorMethod::stein, coll, TIME_INTERVAL(timing));
+    timer.setEndTime();
+    displayResult(DivisorMethod::stein, coll, timer.calculateInterval());
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Exception in " << __func__ << " function: " << err.what();
+    LOG_ERR << "Exception in solution (" << __func__ << "): " << err.what();
 }
 } // namespace divisor
 
@@ -485,66 +487,71 @@ static void displayResult(const IntegralMethod method, const double result, cons
 void IntegralSolution::trapezoidalMethod(const Expression& expr, double lower, double upper)
 try
 {
-    TIME_BEGIN(timing);
+    utility::time::Time timer{};
+    timer.setBeginTime();
     const auto sum = numeric::integral::Trapezoidal(expr)(lower, upper, numeric::integral::epsilon);
-    TIME_END(timing);
-    displayResult(IntegralMethod::trapezoidal, sum, TIME_INTERVAL(timing));
+    timer.setEndTime();
+    displayResult(IntegralMethod::trapezoidal, sum, timer.calculateInterval());
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Exception in " << __func__ << " function: " << err.what();
+    LOG_ERR << "Exception in solution (" << __func__ << "): " << err.what();
 }
 
 void IntegralSolution::adaptiveSimpsonMethod(const Expression& expr, const double lower, const double upper)
 try
 {
-    TIME_BEGIN(timing);
+    utility::time::Time timer{};
+    timer.setBeginTime();
     const auto sum = numeric::integral::Trapezoidal(expr)(lower, upper, numeric::integral::epsilon);
-    TIME_END(timing);
-    displayResult(IntegralMethod::simpson, sum, TIME_INTERVAL(timing));
+    timer.setEndTime();
+    displayResult(IntegralMethod::simpson, sum, timer.calculateInterval());
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Exception in " << __func__ << " function: " << err.what();
+    LOG_ERR << "Exception in solution (" << __func__ << "): " << err.what();
 }
 
 void IntegralSolution::rombergMethod(const Expression& expr, const double lower, const double upper)
 try
 {
-    TIME_BEGIN(timing);
+    utility::time::Time timer{};
+    timer.setBeginTime();
     const auto sum = numeric::integral::Romberg(expr)(lower, upper, numeric::integral::epsilon);
-    TIME_END(timing);
-    displayResult(IntegralMethod::romberg, sum, TIME_INTERVAL(timing));
+    timer.setEndTime();
+    displayResult(IntegralMethod::romberg, sum, timer.calculateInterval());
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Exception in " << __func__ << " function: " << err.what();
+    LOG_ERR << "Exception in solution (" << __func__ << "): " << err.what();
 }
 
 void IntegralSolution::gaussLegendreMethod(const Expression& expr, const double lower, const double upper)
 try
 {
-    TIME_BEGIN(timing);
+    utility::time::Time timer{};
+    timer.setBeginTime();
     const auto sum = numeric::integral::Gauss(expr)(lower, upper, numeric::integral::epsilon);
-    TIME_END(timing);
-    displayResult(IntegralMethod::gauss, sum, TIME_INTERVAL(timing));
+    timer.setEndTime();
+    displayResult(IntegralMethod::gauss, sum, timer.calculateInterval());
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Exception in " << __func__ << " function: " << err.what();
+    LOG_ERR << "Exception in solution (" << __func__ << "): " << err.what();
 }
 
 void IntegralSolution::monteCarloMethod(const Expression& expr, const double lower, const double upper)
 try
 {
-    TIME_BEGIN(timing);
+    utility::time::Time timer{};
+    timer.setBeginTime();
     const auto sum = numeric::integral::MonteCarlo(expr)(lower, upper, numeric::integral::epsilon);
-    TIME_END(timing);
-    displayResult(IntegralMethod::monteCarlo, sum, TIME_INTERVAL(timing));
+    timer.setEndTime();
+    displayResult(IntegralMethod::monteCarlo, sum, timer.calculateInterval());
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Exception in " << __func__ << " function: " << err.what();
+    LOG_ERR << "Exception in solution (" << __func__ << "): " << err.what();
 }
 } // namespace integral
 
@@ -676,27 +683,29 @@ static void displayResult(const PrimeMethod method, const std::vector<std::uint3
 void PrimeSolution::eratosthenesMethod(const std::uint32_t max)
 try
 {
-    TIME_BEGIN(timing);
+    utility::time::Time timer{};
+    timer.setBeginTime();
     const auto coll = numeric::prime::Prime().eratosthenes(max);
-    TIME_END(timing);
-    displayResult(PrimeMethod::eratosthenes, coll, TIME_INTERVAL(timing));
+    timer.setEndTime();
+    displayResult(PrimeMethod::eratosthenes, coll, timer.calculateInterval());
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Exception in " << __func__ << " function: " << err.what();
+    LOG_ERR << "Exception in solution (" << __func__ << "): " << err.what();
 }
 
 void PrimeSolution::eulerMethod(const std::uint32_t max)
 try
 {
-    TIME_BEGIN(timing);
+    utility::time::Time timer{};
+    timer.setBeginTime();
     const auto coll = numeric::prime::Prime().euler(max);
-    TIME_END(timing);
-    displayResult(PrimeMethod::euler, coll, TIME_INTERVAL(timing));
+    timer.setEndTime();
+    displayResult(PrimeMethod::euler, coll, timer.calculateInterval());
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Exception in " << __func__ << " function: " << err.what();
+    LOG_ERR << "Exception in solution (" << __func__ << "): " << err.what();
 }
 } // namespace prime
 

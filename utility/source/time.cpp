@@ -28,7 +28,7 @@ void Time::setEndTime()
     endTime = std::chrono::high_resolution_clock::now();
 }
 
-double Time::getTimeInterval() const
+double Time::calculateInterval() const
 {
     if ((std::chrono::high_resolution_clock::time_point{} == beginTime)
         || (std::chrono::high_resolution_clock::time_point{} == endTime))
@@ -39,9 +39,8 @@ double Time::getTimeInterval() const
     {
         throw std::logic_error("The end time cannot be earlier than the begin time.");
     }
-    const auto timeInterval = std::chrono::duration<double, std::milli>(endTime - beginTime);
 
-    return timeInterval.count();
+    return std::chrono::duration<double, std::milli>(endTime - beginTime).count();
 }
 
 //! @brief Perform millisecond-level sleep.

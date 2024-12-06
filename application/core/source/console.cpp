@@ -22,7 +22,7 @@ namespace application::console
 inline namespace
 {
 //! @brief Current console instance.
-static Console* currentSession = nullptr;
+static thread_local Console* currentSession = nullptr;
 } // namespace
 
 Console::Console(const std::string_view greeting) : impl(std::make_unique<Impl>(greeting))
@@ -225,7 +225,7 @@ char** Console::getOptionCompleter(const char* text, int start, int /*end*/)
 
 char* Console::getOptionIterator(const char* text, int state)
 {
-    static Impl::RegisteredOption::iterator iterator{};
+    static thread_local Impl::RegisteredOption::iterator iterator{};
     if (nullptr == currentSession)
     {
         return nullptr;
