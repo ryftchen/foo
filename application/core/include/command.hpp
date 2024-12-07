@@ -326,6 +326,15 @@ private:
     //! @param client - client to be launched
     template <typename T>
     static void launchClient(std::shared_ptr<T>& client);
+    //! @brief Parse the message inside the client in console mode.
+    //! @param buffer - message buffer
+    //! @param length - message length
+    //! @return parsed results
+    static auto parseMessageInsideClient(char* buffer, const int length);
+    //! @brief Await outside the client in console mode.
+    static void awaitOutsideClient();
+    //! @brief Awaken inside the client in console mode.
+    static void awakenInsideClient();
     //! @brief Validate dependencies version.
     void validateDependenciesVersion() const;
     //! @brief Get ASCII banner text.
