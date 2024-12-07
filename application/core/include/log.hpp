@@ -9,12 +9,13 @@
 #include "config.hpp"
 
 #ifndef __PRECOMPILED_HEADER
+#include <format>
 #include <forward_list>
 #include <iostream>
 #include <mutex>
 #include <queue>
-#include <ranges>
 #include <source_location>
+#include <sstream>
 #else
 #include "application/pch/precompiled_header.hpp"
 #endif // __PRECOMPILED_HEADER
@@ -94,55 +95,55 @@ constexpr std::string_view codeFileRegex = R"(\[[^ ]+\.(c|h|cc|hh|cpp|hpp|tpp|cx
 //! @brief Directory of the source code.
 constexpr std::string_view sourceDirectory = R"(/foo/)";
 //! @brief Debug level prefix with color. Include ANSI escape codes.
-constinit const auto debugLevelPrefixWithColor = utility::common::joinString<
+constinit const auto debugLevelPrefixWithColor = utility::common::concatString<
     utility::common::colorBlue,
     utility::common::colorBold,
     utility::common::colorForBackground,
     debugLevelPrefix,
     utility::common::colorOff>;
 //! @brief Info level prefix with color. Include ANSI escape codes.
-constinit const auto infoLevelPrefixWithColor = utility::common::joinString<
+constinit const auto infoLevelPrefixWithColor = utility::common::concatString<
     utility::common::colorGreen,
     utility::common::colorBold,
     utility::common::colorForBackground,
     infoLevelPrefix,
     utility::common::colorOff>;
 //! @brief Warning level prefix with color. Include ANSI escape codes.
-constinit const auto warningLevelPrefixWithColor = utility::common::joinString<
+constinit const auto warningLevelPrefixWithColor = utility::common::concatString<
     utility::common::colorYellow,
     utility::common::colorBold,
     utility::common::colorForBackground,
     warningLevelPrefix,
     utility::common::colorOff>;
 //! @brief Error level prefix with color. Include ANSI escape codes.
-constinit const auto errorLevelPrefixWithColor = utility::common::joinString<
+constinit const auto errorLevelPrefixWithColor = utility::common::concatString<
     utility::common::colorRed,
     utility::common::colorBold,
     utility::common::colorForBackground,
     errorLevelPrefix,
     utility::common::colorOff>;
 //! @brief Trace level prefix with color. Include ANSI escape codes.
-constinit const auto traceLevelPrefixWithColor = utility::common::joinString<
+constinit const auto traceLevelPrefixWithColor = utility::common::concatString<
     utility::common::colorInverse,
     utility::common::colorBold,
     utility::common::colorForBackground,
     traceLevelPrefix,
     utility::common::colorOff>;
 //! @brief Base color of the date time. Include ANSI escape codes.
-constinit const auto dateTimeBaseColor = utility::common::joinString<
+constinit const auto dateTimeBaseColor = utility::common::concatString<
     utility::common::colorForForeground,
     utility::common::colorBold,
     utility::common::colorDim,
     utility::common::colorForBackground>;
 //! @brief Base color of the code file. Include ANSI escape codes.
-constinit const auto codeFileBaseColor = utility::common::joinString<
+constinit const auto codeFileBaseColor = utility::common::concatString<
     utility::common::colorForForeground,
     utility::common::colorBold,
     utility::common::colorUnderline,
     utility::common::colorForBackground>;
 //! @brief Base color of the history cache. Include ANSI escape codes.
 constinit const auto historyCacheBaseColor = utility::common::
-    joinString<utility::common::colorInverse, utility::common::colorItalic, utility::common::colorForBackground>;
+    concatString<utility::common::colorInverse, utility::common::colorItalic, utility::common::colorForBackground>;
 
 //! @brief Logger.
 class Log final : public utility::fsm::FSM<Log>

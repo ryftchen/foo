@@ -9,6 +9,7 @@
 #ifndef __PRECOMPILED_HEADER
 #include <cassert>
 #include <iomanip>
+#include <ranges>
 #include <syncstream>
 #else
 #include "application/pch/precompiled_header.hpp"
@@ -57,7 +58,7 @@ static const auto& getTaskNameCurried()
 //! @brief Convert category enumeration to string.
 //! @param cat - the specific value of Category enum
 //! @return category name
-constexpr std::string_view toString(const Category cat)
+consteval std::string_view toString(const Category cat)
 {
     switch (cat)
     {
@@ -86,7 +87,7 @@ constexpr auto& getCategoryOpts()
 //! @tparam Cat - the specific value of Category enum
 //! @return alias of the category name
 template <Category Cat>
-constexpr std::string_view getCategoryAlias()
+consteval std::string_view getCategoryAlias()
 {
     constexpr auto attr = utility::reflection::TypeInfo<ApplyDesignPattern>::fields.find(REFLECTION_STR(toString(Cat)))
                               .attrs.find(REFLECTION_STR("alias"));

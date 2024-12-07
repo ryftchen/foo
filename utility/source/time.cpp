@@ -6,8 +6,6 @@
 
 #include "time.hpp"
 
-#include <thread>
-
 namespace utility::time
 {
 //! @brief Function version number.
@@ -41,13 +39,6 @@ double Time::calculateInterval() const
     }
 
     return std::chrono::duration<double, std::milli>(endTime - beginTime).count();
-}
-
-//! @brief Perform millisecond-level sleep.
-//! @param duration - sleep duration
-void millisecondLevelSleep(const std::uint32_t duration)
-{
-    std::this_thread::sleep_for(std::chrono::operator""ms(duration));
 }
 
 //! @brief Create a one-shot timer with blocking.

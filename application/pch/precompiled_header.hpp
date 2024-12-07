@@ -32,6 +32,7 @@
 #include <cstdint>
 #include <cstring>
 #include <filesystem>
+#include <format>
 #include <forward_list>
 #include <fstream>
 #include <functional>
@@ -48,9 +49,9 @@
 #include <regex>
 #include <source_location>
 #include <span>
+#include <sstream>
 #include <string>
 #include <syncstream>
-#include <thread>
 #include <unordered_map>
 #include <variant>
 #include <vector>

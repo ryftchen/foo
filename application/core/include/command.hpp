@@ -143,7 +143,7 @@ private:
     //! @tparam T - type of sub-cli or category
     //! @return description
     template <class T>
-    static inline constexpr std::string_view getDescr()
+    static inline consteval std::string_view getDescr()
     {
         using TypeInfo = utility::reflection::TypeInfo<T>;
         return TypeInfo::attrs.find(REFLECTION_STR("descr")).value;
@@ -153,7 +153,7 @@ private:
     //! @tparam Cat - type of category
     //! @return alias name
     template <class SubCLI, class Cat>
-    static inline constexpr std::string_view getAlias()
+    static inline consteval std::string_view getAlias()
     {
         using SubCLITypeInfo = utility::reflection::TypeInfo<SubCLI>;
         using CatTypeInfo = utility::reflection::TypeInfo<Cat>;

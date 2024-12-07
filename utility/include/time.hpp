@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include <chrono>
 #include <functional>
+#include <thread>
 
 //! @brief The utility module.
 namespace utility // NOLINT(modernize-concat-nested-namespaces)
@@ -38,7 +38,13 @@ private:
     std::chrono::high_resolution_clock::time_point endTime{};
 };
 
-extern void millisecondLevelSleep(const std::uint32_t duration);
+//! @brief Perform millisecond-level sleep.
+//! @param duration - sleep duration
+inline void millisecondLevelSleep(const std::uint32_t duration)
+{
+    std::this_thread::sleep_for(std::chrono::operator""ms(duration));
+}
+
 extern int blockingTimer(const std::function<bool()>& termination, const std::uint32_t timeout = 0);
 extern std::string getCurrentSystemTime();
 } // namespace time

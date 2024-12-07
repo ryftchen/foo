@@ -12,7 +12,7 @@
 #include <barrier>
 #include <coroutine>
 #include <latch>
-#include <thread>
+#include <ranges>
 #else
 #include "application/pch/precompiled_header.hpp"
 #endif // __PRECOMPILED_HEADER
