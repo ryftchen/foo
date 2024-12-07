@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include <algorithm>
 #include <condition_variable>
 #include <cstring>
 #include <shared_mutex>
@@ -74,35 +75,29 @@ constexpr std::size_t operator""_bkdrHash(const char* const str, const std::size
 //! @brief Splice strings into constexpr type.
 //! @tparam Strings - target strings to be spliced
 template <const std::string_view&... Strings>
-struct Join
+struct ConcatString
 {
-    //! @brief Implementation of splicing strings.
-    //! @return character array
-    static constexpr auto impl() noexcept
-    {
-        constexpr auto length = (Strings.length() + ... + 0);
-        std::array<char, length + 1> array{};
-        auto append = [i = 0, &array](const auto& str) mutable
-        {
-            for (const auto c : str)
-            {
-                array.at(i++) = c;
-            }
-        };
-        (append(Strings), ...);
-        array.at(length) = 0;
-
-        return array;
-    }
+private:
     //! @brief A sequence of characters.
-    static constexpr auto array{impl()};
+    static constexpr std::array characters{
+        []() constexpr noexcept
+        {
+            constexpr auto length = (Strings.length() + ... + 0);
+            std::array<char, length + 1> result{};
+            char* dst = result.data();
+            ((std::copy_n(Strings.cbegin(), Strings.length(), dst), dst += Strings.length()), ...);
+            result.at(length) = '\0';
+            return result;
+        }()};
+
+public:
     //! @brief The splicing result. Converted from a sequence of characters.
-    static constexpr std::string_view value{array.data(), array.size() - 1};
+    static constexpr std::string_view value{characters.data(), characters.size() - 1};
 };
 //! @brief Get the result of splicing strings.
 //! @tparam Strings - target strings to be spliced
 template <const std::string_view&... Strings>
-static constexpr auto joinString = Join<Strings...>::value;
+static constexpr auto concatString = ConcatString<Strings...>::value;
 
 //! @brief Compare whether two strings are equal.
 //! @param str1 - string 1

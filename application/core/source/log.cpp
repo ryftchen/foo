@@ -7,10 +7,10 @@
 #include "log.hpp"
 
 #ifndef __PRECOMPILED_HEADER
-#include <algorithm>
 #include <cassert>
 #include <filesystem>
 #include <fstream>
+#include <ranges>
 #include <regex>
 #else
 #include "application/pch/precompiled_header.hpp"
