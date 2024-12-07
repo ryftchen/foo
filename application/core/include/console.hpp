@@ -91,24 +91,24 @@ private:
     using OptionIteratorFunctor = char*(const char* text, int state);
     //! @brief Saved empty history state.
     HistoryState* const emptyHistory{::history_get_history_state()};
-    //! @brief Implementation of running console.
-    struct Impl
+    //! @brief Controller for interaction.
+    struct Controller
     {
-        //! @brief Construct a new Impl object.
+        //! @brief Construct a new Controller object.
         //! @param greeting - default greeting information
-        explicit Impl(const std::string_view greeting) : greeting(greeting) {}
-        //! @brief Destroy the Impl object.
-        ~Impl() { delete history; }
-        //! @brief Construct a new Impl object.
-        Impl(const Impl&) = delete;
-        //! @brief Construct a new Impl object.
-        Impl(Impl&&) = delete;
-        //! @brief The operator (=) overloading of Impl struct.
-        //! @return reference of the Impl object
-        Impl& operator=(const Impl&) = delete;
-        //! @brief The operator (=) overloading of Impl struct.
-        //! @return reference of the Impl object
-        Impl& operator=(Impl&&) = delete;
+        explicit Controller(const std::string_view greeting) : greeting(greeting) {}
+        //! @brief Destroy the Controller object.
+        ~Controller() { delete history; }
+        //! @brief Construct a new Controller object.
+        Controller(const Controller&) = delete;
+        //! @brief Construct a new Controller object.
+        Controller(Controller&&) = delete;
+        //! @brief The operator (=) overloading of Controller struct.
+        //! @return reference of the Controller object
+        Controller& operator=(const Controller&) = delete;
+        //! @brief The operator (=) overloading of Controller struct.
+        //! @return reference of the Controller object
+        Controller& operator=(Controller&&) = delete;
 
         //! @brief Alias for the map of option and callback in console.
         using RegisteredOption = std::unordered_map<Option, std::pair<Help, Callback>>;
@@ -121,8 +121,8 @@ private:
         //! @brief Saved history state.
         HistoryState* history{nullptr};
     };
-    //! @brief Implementation instance.
-    std::unique_ptr<Impl> impl{};
+    //! @brief Internal controller.
+    std::unique_ptr<Controller> controller{};
 
     //! @brief Set the default options.
     void setDefaultOptions();
