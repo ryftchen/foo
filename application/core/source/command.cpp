@@ -701,6 +701,11 @@ Command::ChoiceContainer Command::extractChoices()
     return choices;
 }
 
+auto Command::parseMessageInsideClient(char* buffer, const int length)
+{
+    return view::View::getInstance().parseTLVPacket(buffer, length);
+}
+
 //! @brief Launch the TCP client for console mode.
 //! @param client - TCP client to be launched
 template <>
@@ -710,7 +715,7 @@ void Command::launchClient<utility::socket::TCPSocket>(std::shared_ptr<utility::
     {
         try
         {
-            if ((0 != length) && view::View::getInstance().parseTLVPacket(buffer, length).stopTag)
+            if ((0 != length) && parseMessageInsideClient(buffer, length).stopTag)
             {
                 client->asyncExit();
             }
@@ -719,7 +724,7 @@ void Command::launchClient<utility::socket::TCPSocket>(std::shared_ptr<utility::
         {
             LOG_WRN << err.what();
         }
-        view::View::getInstance().awakenDueToOutput();
+        awakenInsideClient();
     };
     client->toConnect(view::info::viewerTCPHost(), view::info::viewerTCPPort());
 }
@@ -734,7 +739,7 @@ void Command::launchClient<utility::socket::UDPSocket>(std::shared_ptr<utility::
     {
         try
         {
-            if ((0 != length) && view::View::getInstance().parseTLVPacket(buffer, length).stopTag)
+            if ((0 != length) && parseMessageInsideClient(buffer, length).stopTag)
             {
                 client->asyncExit();
             }
@@ -743,7 +748,7 @@ void Command::launchClient<utility::socket::UDPSocket>(std::shared_ptr<utility::
         {
             LOG_WRN << err.what();
         }
-        view::View::getInstance().awakenDueToOutput();
+        awakenInsideClient();
     };
     client->toReceive();
     client->toConnect(view::info::viewerUDPHost(), view::info::viewerUDPPort());
@@ -919,7 +924,7 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& c
                 inputs.cend(),
                 std::string{},
                 [](const auto& acc, const auto& token) { return acc.empty() ? token : (acc + ' ' + token); })));
-            view::View::getInstance().awaitDueToOutput();
+            awaitOutsideClient();
         }
         catch (const std::exception& err)
         {
@@ -980,6 +985,16 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& c
     {
         session.registerOption(name, attr.prompt, sender);
     }
+}
+
+void Command::awaitOutsideClient()
+{
+    view::View::getInstance().awaitDueToOutput();
+}
+
+void Command::awakenInsideClient()
+{
+    view::View::getInstance().awakenDueToOutput();
 }
 
 void Command::validateDependenciesVersion() const
