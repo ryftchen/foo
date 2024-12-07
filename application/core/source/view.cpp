@@ -365,7 +365,7 @@ catch (const std::exception& err)
     LOG_ERR << err.what();
 }
 
-const View::OptionMap& View::getOptions() const
+const View::OptionMap& View::getAllOptions() const
 {
     return optionDispatcher;
 }
