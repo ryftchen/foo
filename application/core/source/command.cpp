@@ -767,7 +767,6 @@ void Command::executeInConsole() const
     launchClient(udpClient);
     const auto session = std::make_shared<console::Console>(" > ");
     registerOnConsole(*session, udpClient);
-
     for (const auto& option : pendingInputs)
     {
         session->optionExecutor(option);
@@ -977,7 +976,7 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& c
             utility::time::millisecondLevelSleep(latency);
             return retVal;
         });
-    for (const auto& [name, attr] : view::info::getOptions())
+    for (const auto& [name, attr] : view::info::getAllOptions())
     {
         session.registerOption(name, attr.prompt, sender);
     }

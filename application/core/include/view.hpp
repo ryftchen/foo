@@ -177,7 +177,7 @@ public:
     using OptionMap = std::map<OptionName, OptionAttr>;
     //! @brief Get the viewer options.
     //! @return viewer options
-    const OptionMap& getOptions() const;
+    const OptionMap& getAllOptions() const;
     //! @brief Get the TCP server host address.
     //! @return TCP server host address
     std::string getTCPHost() const;
@@ -429,9 +429,9 @@ namespace info
 {
 //! @brief Get the current supported viewer options.
 //! @return current supported viewer options
-inline const View::OptionMap& getOptions()
+inline const View::OptionMap& getAllOptions()
 {
-    return View::getInstance().getOptions();
+    return View::getInstance().getAllOptions();
 }
 //! @brief Get the current TCP host address being used for viewing.
 //! @return current TCP host address being used for viewing
