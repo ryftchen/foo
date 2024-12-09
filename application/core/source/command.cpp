@@ -909,7 +909,7 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& c
 {
     using console::Console;
     using enum Console::RetCode;
-    static constinit const auto resetter = []<HelperType Helper>() constexpr
+    static constexpr const auto resetter = []<HelperType Helper>() constexpr
     {
         triggerHelper<Helper>(ExtEvent::reset);
         triggerHelper<Helper>(ExtEvent::start);
