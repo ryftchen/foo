@@ -11,6 +11,7 @@
 #ifndef __PRECOMPILED_HEADER
 #include <barrier>
 #include <coroutine>
+#include <format>
 #include <latch>
 #include <ranges>
 #else

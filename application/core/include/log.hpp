@@ -9,7 +9,6 @@
 #include "config.hpp"
 
 #ifndef __PRECOMPILED_HEADER
-#include <format>
 #include <forward_list>
 #include <iostream>
 #include <mutex>
@@ -435,13 +434,15 @@ void Log::flush(
     try
     {
         auto multiRows = reformatContents(
-            std::format(
-                "[{}] {} [{}#{}] ",
-                utility::time::getCurrentSystemTime(),
-                isInUninterruptedState(State::work) ? (daemonLock.lock(), getPrefix(severity)) : traceLevelPrefix,
-                (std::string_view::npos != srcFile.rfind(sourceDirectory))
-                    ? srcFile.substr(srcFile.rfind(sourceDirectory) + sourceDirectory.length(), srcFile.length())
-                    : srcFile,
+            utility::common::formatString(
+                "[%s] %s [%s#%d] ",
+                utility::time::getCurrentSystemTime().c_str(),
+                (isInUninterruptedState(State::work) ? (daemonLock.lock(), getPrefix(severity)) : traceLevelPrefix)
+                    .data(),
+                ((std::string_view::npos != srcFile.rfind(sourceDirectory))
+                     ? srcFile.substr(srcFile.rfind(sourceDirectory) + sourceDirectory.length(), srcFile.length())
+                     : srcFile)
+                    .data(),
                 srcLine),
             utility::common::formatString(format.data(), std::forward<Args>(args)...));
         if (daemonLock.owns_lock())
