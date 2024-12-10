@@ -728,7 +728,7 @@ constexpr std::uint8_t maxColumnOfPrint = 10;
 template <typename T>
 constexpr bool isRealNumber()
 {
-    return std::is_integral<T>::value || std::is_floating_point<T>::value;
+    return std::is_integral_v<T> || std::is_floating_point_v<T>;
 }
 
 //! @brief Builder for the input.
@@ -795,11 +795,11 @@ public:
         }
 
         const char* spliceFmt = nullptr;
-        if constexpr (std::is_integral<T>::value)
+        if constexpr (std::is_integral_v<T>)
         {
             spliceFmt = "%*d ";
         }
-        else if constexpr (std::is_floating_point<T>::value)
+        else if constexpr (std::is_floating_point_v<T>)
         {
             spliceFmt = "%*.5f ";
         }
@@ -852,7 +852,7 @@ private:
     //! @param left - the left boundary of the ordered array
     //! @param right - the left right of the ordered array
     template <typename N>
-    requires std::is_integral<N>::value
+    requires std::is_integral_v<N>
     static void setOrderedArray(T array[], const std::uint32_t length, const T left, const T right)
     {
         std::mt19937 engine(std::random_device{}());
@@ -877,7 +877,7 @@ private:
     //! @param left - the left boundary of the ordered array
     //! @param right - the left right of the ordered array
     template <typename N>
-    requires std::is_floating_point<N>::value
+    requires std::is_floating_point_v<N>
     static void setOrderedArray(T array[], const std::uint32_t length, const T left, const T right)
     {
         std::mt19937 engine(std::random_device{}());
@@ -979,7 +979,7 @@ constexpr std::uint8_t maxColumnOfPrint = 10;
 template <typename T>
 constexpr bool isRealNumber()
 {
-    return std::is_integral<T>::value || std::is_floating_point<T>::value;
+    return std::is_integral_v<T> || std::is_floating_point_v<T>;
 }
 
 //! @brief Builder for the input.
@@ -1043,11 +1043,11 @@ public:
         }
 
         const char* spliceFmt = nullptr;
-        if constexpr (std::is_integral<T>::value)
+        if constexpr (std::is_integral_v<T>)
         {
             spliceFmt = "%*d ";
         }
-        else if constexpr (std::is_floating_point<T>::value)
+        else if constexpr (std::is_floating_point_v<T>)
         {
             spliceFmt = "%*.5f ";
         }
@@ -1100,7 +1100,7 @@ private:
     //! @param left - the left boundary of the random array
     //! @param right - the left right of the random array
     template <typename N>
-    requires std::is_integral<N>::value
+    requires std::is_integral_v<N>
     static void setRandomArray(T array[], const std::uint32_t length, const T left, const T right)
     {
         std::mt19937 engine(std::random_device{}());
@@ -1124,7 +1124,7 @@ private:
     //! @param left - the left boundary of the random array
     //! @param right - the left right of the random array
     template <typename N>
-    requires std::is_floating_point<N>::value
+    requires std::is_floating_point_v<N>
     static void setRandomArray(T array[], const std::uint32_t length, const T left, const T right)
     {
         std::mt19937 engine(std::random_device{}());

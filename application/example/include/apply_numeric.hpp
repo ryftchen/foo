@@ -329,7 +329,7 @@ public:
     //! @param bufferSize - size of the buffer
     //! @return buffer after splicing
     template <typename T>
-    requires std::is_integral<T>::value
+    requires std::is_integral_v<T>
     static char* spliceAllIntegers(const std::set<T>& container, char* const buffer, const std::uint32_t bufferSize)
     {
         std::uint32_t align = 0;
@@ -638,7 +638,7 @@ public:
     //! @param bufferSize - size of the buffer
     //! @return buffer after splicing
     template <typename T>
-    requires std::is_integral<T>::value
+    requires std::is_integral_v<T>
     static char* spliceAllIntegers(const std::vector<T>& container, char* const buffer, const std::uint32_t bufferSize)
     {
         std::uint32_t align = 0;

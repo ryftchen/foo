@@ -35,7 +35,7 @@ namespace tlv
 //! @param pl - target payload that has been included in the value of TLV
 //! @return summary offset of length-value
 template <typename T>
-requires std::is_arithmetic<T>::value
+requires std::is_arithmetic_v<T>
 static int serialize(Packet& pkt, const TLVValue& val, T TLVValue::*pl)
 {
     constexpr int length = sizeof(T);
@@ -66,7 +66,7 @@ static int serialize(Packet& pkt, const TLVValue& val, char (TLVValue::*pl)[])
 //! @param pl - target payload that has been included in the value of TLV
 //! @return summary offset of length-value
 template <typename T>
-requires std::is_arithmetic<T>::value
+requires std::is_arithmetic_v<T>
 static int deserialize(Packet& pkt, TLVValue& val, T TLVValue::*pl)
 {
     int length = 0;
