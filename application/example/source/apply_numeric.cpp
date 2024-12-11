@@ -325,9 +325,7 @@ void runChoices<ArithmeticMethod>(const std::vector<std::string>& candidates)
     const auto functor =
         [threads,
          &inputs](const std::string_view threadName, void (*targetMethod)(const std::int32_t, const std::int32_t))
-    {
-        threads->enqueue(threadName, targetMethod, inputs->getIntegers().first, inputs->getIntegers().second);
-    };
+    { threads->enqueue(threadName, targetMethod, inputs->getIntegers().first, inputs->getIntegers().second); };
     const auto name = utility::currying::curry(getTaskNameCurried(), getCategoryAlias<category>());
     auto indices =
         std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); });
@@ -446,9 +444,7 @@ void runChoices<DivisorMethod>(const std::vector<std::string>& candidates)
     const auto inputs = std::make_shared<InputBuilder>(integerA, integerB);
     const auto functor =
         [threads, &inputs](const std::string_view threadName, void (*targetMethod)(std::int32_t, std::int32_t))
-    {
-        threads->enqueue(threadName, targetMethod, inputs->getIntegers().first, inputs->getIntegers().second);
-    };
+    { threads->enqueue(threadName, targetMethod, inputs->getIntegers().first, inputs->getIntegers().second); };
     const auto name = utility::currying::curry(getTaskNameCurried(), getCategoryAlias<category>());
     auto indices =
         std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); });
@@ -609,9 +605,7 @@ void runChoices<IntegralMethod>(const std::vector<std::string>& candidates)
         const auto functor = [threads, &expression, &range](
                                  const std::string_view threadName,
                                  void (*targetMethod)(const integral::Expression&, const double, const double))
-        {
-            threads->enqueue(threadName, targetMethod, std::ref(expression), range.range1, range.range2);
-        };
+        { threads->enqueue(threadName, targetMethod, std::ref(expression), range.range1, range.range2); };
         const auto name = utility::currying::curry(getTaskNameCurried(), getCategoryAlias<category>());
         auto indices =
             std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); });
@@ -752,9 +746,7 @@ void runChoices<PrimeMethod>(const std::vector<std::string>& candidates)
     const auto inputs = std::make_shared<InputBuilder>(maxPositiveInteger);
     const auto functor =
         [threads, &inputs](const std::string_view threadName, void (*targetMethod)(const std::uint32_t))
-    {
-        threads->enqueue(threadName, targetMethod, inputs->getMaxPositiveInteger());
-    };
+    { threads->enqueue(threadName, targetMethod, inputs->getMaxPositiveInteger()); };
     const auto name = utility::currying::curry(getTaskNameCurried(), getCategoryAlias<category>());
     auto indices =
         std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); });

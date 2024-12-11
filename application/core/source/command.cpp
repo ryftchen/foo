@@ -313,12 +313,8 @@ void Command::initializeCLI()
 
     title = subCLIAppAlgo.title();
     auto& algoTable = extraChoices[title];
-    checklist[title] = ExtraManager::IntfWrap{
-        []() { return !app_algo::manager().empty(); },
-        []()
-        {
-            app_algo::manager().reset();
-        }};
+    checklist[title] =
+        ExtraManager::IntfWrap{[]() { return !app_algo::manager().empty(); }, []() { app_algo::manager().reset(); }};
     subCLIAppAlgo.addDescription(getDescr<app_algo::ApplyAlgorithm>());
     subCLIAppAlgo.addArgument("-h", "--help").argsNum(0).implicitVal(true).help("show help and exit");
     category = TypeInfo<app_algo::MatchMethod>::name;
@@ -395,12 +391,8 @@ void Command::initializeCLI()
 
     title = subCLIAppDp.title();
     auto& dpTable = extraChoices[title];
-    checklist[title] = ExtraManager::IntfWrap{
-        []() { return !app_dp::manager().empty(); },
-        []()
-        {
-            app_dp::manager().reset();
-        }};
+    checklist[title] =
+        ExtraManager::IntfWrap{[]() { return !app_dp::manager().empty(); }, []() { app_dp::manager().reset(); }};
     subCLIAppDp.addDescription(getDescr<app_dp::ApplyDesignPattern>());
     subCLIAppDp.addArgument("-h", "--help").argsNum(0).implicitVal(true).help("show help and exit");
     category = TypeInfo<app_dp::BehavioralInstance>::name;
@@ -452,12 +444,8 @@ void Command::initializeCLI()
 
     title = subCLIAppDs.title();
     auto& dsTable = extraChoices[title];
-    checklist[title] = ExtraManager::IntfWrap{
-        []() { return !app_ds::manager().empty(); },
-        []()
-        {
-            app_ds::manager().reset();
-        }};
+    checklist[title] =
+        ExtraManager::IntfWrap{[]() { return !app_ds::manager().empty(); }, []() { app_ds::manager().reset(); }};
     subCLIAppDs.addDescription(getDescr<app_ds::ApplyDataStructure>());
     subCLIAppDs.addArgument("-h", "--help").argsNum(0).implicitVal(true).help("show help and exit");
     category = TypeInfo<app_ds::LinearInstance>::name;
@@ -492,13 +480,8 @@ void Command::initializeCLI()
 
     title = subCLIAppNum.title();
     auto& numTable = extraChoices[title];
-    checklist[title] = ExtraManager::IntfWrap{
-        []() { return !app_num::manager().empty(); },
-        []()
-        {
-            app_num::manager().reset();
-        }};
-    ;
+    checklist[title] =
+        ExtraManager::IntfWrap{[]() { return !app_num::manager().empty(); }, []() { app_num::manager().reset(); }};
     subCLIAppNum.addDescription(getDescr<app_num::ApplyNumeric>());
     subCLIAppNum.addArgument("-h", "--help").argsNum(0).implicitVal(true).help("show help and exit");
     category = TypeInfo<app_num::ArithmeticMethod>::name;
@@ -630,11 +613,9 @@ void Command::validate()
             for (const auto& target : pendingTasks)
             {
                 std::visit(
-                    action::EvtTypeOverloaded{[this, &target](auto&& event)
-                                              {
-                                                  applyingForwarder.onMessage(
-                                                      action::UpdateChoice<std::decay_t<decltype(event)>>{target});
-                                              }},
+                    action::EvtTypeOverloaded{[this, &target](auto&& event) {
+                        applyingForwarder.onMessage(action::UpdateChoice<std::decay_t<decltype(event)>>{target});
+                    }},
                     categoryAttr.event);
             }
         }
@@ -679,11 +660,9 @@ void Command::dispatch()
         {
             const auto& candidates = categoryAttr.choices;
             std::visit(
-                action::EvtTypeOverloaded{[this, &candidates](auto&& event)
-                                          {
-                                              applyingForwarder.onMessage(
-                                                  action::RunChoices<std::decay_t<decltype(event)>>{candidates});
-                                          }},
+                action::EvtTypeOverloaded{[this, &candidates](auto&& event) {
+                    applyingForwarder.onMessage(action::RunChoices<std::decay_t<decltype(event)>>{candidates});
+                }},
                 categoryAttr.event);
         }
     }

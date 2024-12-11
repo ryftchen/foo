@@ -259,9 +259,7 @@ void runChoices<LinearInstance>(const std::vector<std::string>& candidates)
     auto& pooling = action::resourcePool();
     auto* const threads = pooling.newElement(bits.count());
     const auto functor = [threads](const std::string_view threadName, void (*targetInstance)())
-    {
-        threads->enqueue(threadName, targetInstance);
-    };
+    { threads->enqueue(threadName, targetInstance); };
     const auto name = utility::currying::curry(getTaskNameCurried(), getCategoryAlias<category>());
     auto indices =
         std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); });
@@ -378,9 +376,7 @@ void runChoices<TreeInstance>(const std::vector<std::string>& candidates)
     auto& pooling = action::resourcePool();
     auto* const threads = pooling.newElement(bits.count());
     const auto functor = [threads](const std::string_view threadName, void (*targetInstance)())
-    {
-        threads->enqueue(threadName, targetInstance);
-    };
+    { threads->enqueue(threadName, targetInstance); };
     const auto name = utility::currying::curry(getTaskNameCurried(), getCategoryAlias<category>());
     auto indices =
         std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); });

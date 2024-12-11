@@ -539,9 +539,7 @@ void runChoices<NotationMethod>(const std::vector<std::string>& candidates)
     const auto inputs = std::make_shared<InputBuilder>(infixString);
     const auto functor =
         [threads, &inputs](const std::string_view threadName, void (*targetMethod)(const std::string_view))
-    {
-        threads->enqueue(threadName, targetMethod, inputs->getInfixNotation());
-    };
+    { threads->enqueue(threadName, targetMethod, inputs->getInfixNotation()); };
     const auto name = utility::currying::curry(getTaskNameCurried(), getCategoryAlias<category>());
     auto indices =
         std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); });
@@ -700,9 +698,7 @@ void runChoices<OptimalMethod>(const std::vector<std::string>& candidates)
         const auto functor = [threads, &function, &range](
                                  const std::string_view threadName,
                                  void (*targetMethod)(const optimal::Function&, const double, const double))
-        {
-            threads->enqueue(threadName, targetMethod, std::ref(function), range.range1, range.range2);
-        };
+        { threads->enqueue(threadName, targetMethod, std::ref(function), range.range1, range.range2); };
         const auto name = utility::currying::curry(getTaskNameCurried(), getCategoryAlias<category>());
         auto indices =
             std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); });
@@ -1133,9 +1129,7 @@ void runChoices<SortMethod>(const std::vector<std::string>& candidates)
     const auto functor =
         [threads, &inputs](
             const std::string_view threadName, void (*targetMethod)(const std::int32_t* const, const std::uint32_t))
-    {
-        threads->enqueue(threadName, targetMethod, inputs->getRandomArray().get(), inputs->getLength());
-    };
+    { threads->enqueue(threadName, targetMethod, inputs->getRandomArray().get(), inputs->getLength()); };
     const auto name = utility::currying::curry(getTaskNameCurried(), getCategoryAlias<category>());
     auto indices =
         std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); });
