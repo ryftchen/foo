@@ -335,11 +335,7 @@ private:
     std::any implicitValue{};
     //! @brief All actions of arguments.
     std::variant<ValuedAction, VoidAction> actions{
-        std::in_place_type<ValuedAction>,
-        [](const std::string& value)
-        {
-            return value;
-        }};
+        std::in_place_type<ValuedAction>, [](const std::string& value) { return value; }};
     //! @brief Values from all arguments.
     std::vector<std::any> values{};
     //! @brief Flag to indicate whether to accept optional like value.
