@@ -394,8 +394,8 @@ private:
     //! @brief Do rollback.
     void doRollback();
     // clang-format off
-    //! @brief Alias for the transition map of the viewer.
-    using TransitionMap = Map
+    //! @brief Alias for the transition table of the viewer.
+    using TransitionTable = Table
     <
         // --- Source ---+---- Event ----+--- Target ---+--------- Action ---------+--- Guard (Optional) ---
         // --------------+---------------+--------------+--------------------------+------------------------

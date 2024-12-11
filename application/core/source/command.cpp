@@ -105,8 +105,8 @@ template <HelperType... Helpers>
 requires (std::derived_from<Helpers, utility::fsm::FSM<Helpers>> && ...)
 void helperDaemon()
 {
-    utility::thread::Thread extensionThd(sizeof...(Helpers));
-    (extensionThd.enqueue(getHelperName<Helpers>(), &Helpers::stateController, &Helpers::getInstance()), ...);
+    utility::thread::Thread extendingThd(sizeof...(Helpers));
+    (extendingThd.enqueue(getHelperName<Helpers>(), &Helpers::stateController, &Helpers::getInstance()), ...);
 }
 
 //! @brief Awaitable coroutine.
@@ -127,7 +127,7 @@ public:
         //! @return std::suspend_always object indicating that the coroutine should be suspended finally
         static std::suspend_always final_suspend() noexcept { return {}; }
         //! @brief Complete the coroutine without returning a value.
-        void return_void() const noexcept {}
+        static void return_void() noexcept {}
         //! @brief Handle exceptions thrown within the coroutine.
         static void unhandled_exception() { std::rethrow_exception(std::current_exception()); }
     };
@@ -263,10 +263,10 @@ try
     }
     else
     {
-        constexpr std::uint8_t groundNum = 2;
-        utility::thread::Thread handleThd(groundNum);
-        handleThd.enqueue("commander@fg", &Command::foregroundHandler, this, argc, argv);
-        handleThd.enqueue("commander@bg", &Command::backgroundHandler, this);
+        constexpr std::uint8_t endNum = 2;
+        utility::thread::Thread handlingThd(endNum);
+        handlingThd.enqueue("commander@FE", &Command::frontEndHandler, this, argc, argv);
+        handlingThd.enqueue("commander@BE", &Command::backEndHandler, this);
     }
 
     if (!launcher.done())
@@ -314,7 +314,7 @@ void Command::initializeCLI()
 
     title = subCLIAppAlgo.title();
     auto& algoTable = extraChoices[title];
-    checklist[title] = ExtraManager::IntWrap{
+    checklist[title] = ExtraManager::IntfWrap{
         []() { return !app_algo::manager().empty(); },
         []()
         {
@@ -396,7 +396,7 @@ void Command::initializeCLI()
 
     title = subCLIAppDp.title();
     auto& dpTable = extraChoices[title];
-    checklist[title] = ExtraManager::IntWrap{
+    checklist[title] = ExtraManager::IntfWrap{
         []() { return !app_dp::manager().empty(); },
         []()
         {
@@ -453,7 +453,7 @@ void Command::initializeCLI()
 
     title = subCLIAppDs.title();
     auto& dsTable = extraChoices[title];
-    checklist[title] = ExtraManager::IntWrap{
+    checklist[title] = ExtraManager::IntfWrap{
         []() { return !app_ds::manager().empty(); },
         []()
         {
@@ -493,7 +493,7 @@ void Command::initializeCLI()
 
     title = subCLIAppNum.title();
     auto& numTable = extraChoices[title];
-    checklist[title] = ExtraManager::IntWrap{
+    checklist[title] = ExtraManager::IntfWrap{
         []() { return !app_num::manager().empty(); },
         []()
         {
@@ -561,7 +561,7 @@ void Command::initializeCLI()
     mainCLI.addSubParser(subCLIAppNum);
 }
 
-void Command::foregroundHandler(const int argc, const char* const argv[])
+void Command::frontEndHandler(const int argc, const char* const argv[])
 try
 {
     std::unique_lock<std::mutex> parserLock(parserMtx);
@@ -579,7 +579,7 @@ catch (const std::exception& err)
     LOG_WRN << err.what();
 }
 
-void Command::backgroundHandler()
+void Command::backEndHandler()
 try
 {
     if (std::unique_lock<std::mutex> parserLock(parserMtx); true)

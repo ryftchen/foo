@@ -95,12 +95,12 @@ private:
 
     //! @brief Initialize the parse argument helpers.
     void initializeCLI();
-    //! @brief Foreground handler for parsing command line arguments.
+    //! @brief Front-end handler for parsing command line arguments.
     //! @param argc - argument count
     //! @param argv - argument vector
-    void foregroundHandler(const int argc, const char* const argv[]);
-    //! @brief Background handler for performing the specific tasks.
-    void backgroundHandler();
+    void frontEndHandler(const int argc, const char* const argv[]);
+    //! @brief Back-end handler for performing the specific tasks.
+    void backEndHandler();
     //! @brief Pre-check the native type or extra type task.
     void validate();
     //! @brief Check whether any type tasks exist.
@@ -197,8 +197,8 @@ private:
     class ExtraManager : virtual public TaskManager // NOLINT(fuchsia-virtual-inheritance)
     {
     public:
-        //! @brief Wrap functions to check for existing and reset extra choices.
-        struct IntWrap
+        //! @brief Wrap interfaces to check for existing and reset extra choices.
+        struct IntfWrap
         {
             //! @brief Check the existence status of the extra choice.
             std::function<bool()> present{};
@@ -208,7 +208,7 @@ private:
         //! @brief Flag for help only.
         bool extraHelpOnly{false};
         //! @brief Existence status and reset control of the sub-cli to which the extra choices belong.
-        std::map<SubCLIName, IntWrap> extraChecklist{};
+        std::map<SubCLIName, IntfWrap> extraChecklist{};
 
         //! @brief Check whether any extra choices do not exist.
         //! @return any extra choices do not exist or exist
