@@ -9,6 +9,7 @@
 #include "config.hpp"
 
 #ifndef __PRECOMPILED_HEADER
+#include <format>
 #include <forward_list>
 #include <iostream>
 #include <mutex>
@@ -433,22 +434,19 @@ void Log::flush(
     std::unique_lock<std::mutex> daemonLock(daemonMtx, std::defer_lock);
     try
     {
-        auto multiRows = reformatContents(
-            utility::common::formatString(
-                "[%s] %s [%s#%d] ",
-                utility::time::getCurrentSystemTime().c_str(),
-                (isInUninterruptedState(State::work) ? (daemonLock.lock(), getPrefix(severity)) : traceLevelPrefix)
-                    .data(),
-                ((std::string_view::npos != srcFile.rfind(sourceDirectory))
-                     ? srcFile.substr(srcFile.rfind(sourceDirectory) + sourceDirectory.length(), srcFile.length())
-                     : srcFile)
-                    .data(),
+        auto rows = reformatContents(
+            std::format(
+                "[{}] {} [{}#{}] ",
+                utility::time::getCurrentSystemTime(),
+                isInUninterruptedState(State::work) ? (daemonLock.lock(), getPrefix(severity)) : traceLevelPrefix,
+                (std::string_view::npos != srcFile.rfind(sourceDirectory))
+                    ? srcFile.substr(srcFile.rfind(sourceDirectory) + sourceDirectory.length(), srcFile.length())
+                    : srcFile,
                 srcLine),
             utility::common::formatString(format.data(), std::forward<Args>(args)...));
         if (daemonLock.owns_lock())
         {
-            std::for_each(
-                multiRows.begin(), multiRows.end(), [this](auto& output) { logQueue.push(std::move(output)); });
+            std::for_each(rows.begin(), rows.end(), [this](auto& output) { logQueue.push(std::move(output)); });
             daemonLock.unlock();
             daemonCond.notify_one();
         }
@@ -456,8 +454,8 @@ void Log::flush(
         {
             std::lock_guard<std::recursive_mutex> cacheLock(cacheMtx);
             std::for_each(
-                multiRows.begin(),
-                multiRows.end(),
+                rows.begin(),
+                rows.end(),
                 [this](auto& output)
                 {
                     unprocessedCache.emplace_front(output);
