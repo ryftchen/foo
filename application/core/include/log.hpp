@@ -385,8 +385,8 @@ private:
     //! @return whether the log file is close or not
     bool isLogFileClose(const NoLogging& event) const;
     // clang-format off
-    //! @brief Alias for the transition map of the logger.
-    using TransitionMap = Map
+    //! @brief Alias for the transition table of the logger.
+    using TransitionTable = Table
     <
         // --- Source ---+-- Event --+--- Target ---+------ Action ------+--- Guard (Optional) ---
         // --------------+-----------+--------------+--------------------+------------------------

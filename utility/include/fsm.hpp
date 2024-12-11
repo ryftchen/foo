@@ -391,10 +391,10 @@ private:
     std::atomic<bool> isProcessing{false};
 
 protected:
-    //! @brief Alias for transition map.
+    //! @brief Alias for transition table.
     //! @tparam Rows - type of row-based
     template <class... Rows>
-    using Map = List<Rows...>;
+    using Table = List<Rows...>;
     //! @brief No transition can be found for the given event in its current state.
     //! @tparam Event - type of triggered event
     //! @param event - event to be processed
@@ -402,7 +402,7 @@ protected:
     template <class Event>
     inline State noTransition(const Event& event);
 
-    //! @brief The basic row of the transition map.
+    //! @brief The basic row of the transition table.
     //! @tparam Source - source state
     //! @tparam Event - type of triggered event
     //! @tparam Target - target state
@@ -437,7 +437,7 @@ protected:
         }
     };
 
-    //! @brief Member function row of the transition map.
+    //! @brief Member function row of the transition table.
     //! @tparam Source - source state
     //! @tparam Event - type of triggered event
     //! @tparam Target - target state
@@ -475,7 +475,7 @@ protected:
         }
     };
 
-    //! @brief The generic row of the transition map.
+    //! @brief The generic row of the transition table.
     //! @tparam Source - source state
     //! @tparam Event - type of triggered event
     //! @tparam Target - target state
@@ -506,7 +506,7 @@ template <class Derived, class State>
 template <class Event>
 void FSM<Derived, State>::processEvent(const Event& event)
 {
-    using Rows = typename ByEventType<Event, typename Derived::TransitionMap>::Type;
+    using Rows = typename ByEventType<Event, typename Derived::TransitionTable>::Type;
     ProcessingLock procLock(*this);
     static_assert(std::is_base_of_v<FSM, Derived>);
     Derived& self = static_cast<Derived&>(*this);
