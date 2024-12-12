@@ -264,8 +264,8 @@ try
     {
         constexpr std::uint8_t endNum = 2;
         utility::thread::Thread handlingThd(endNum);
-        handlingThd.enqueue("commander@FE", &Command::frontEndHandler, this, argc, argv);
-        handlingThd.enqueue("commander@BE", &Command::backEndHandler, this);
+        handlingThd.enqueue("commander(FE)", &Command::frontEndHandler, this, argc, argv);
+        handlingThd.enqueue("commander(BE)", &Command::backEndHandler, this);
     }
 
     if (!launcher.done())
@@ -613,7 +613,7 @@ void Command::validate()
             for (const auto& target : pendingTasks)
             {
                 std::visit(
-                    action::EvtTypeOverloaded{[this, &target](auto&& event) {
+                    action::EvtVisitor{[this, &target](auto&& event) {
                         applyingForwarder.onMessage(action::UpdateChoice<std::decay_t<decltype(event)>>{target});
                     }},
                     categoryAttr.event);
@@ -660,7 +660,7 @@ void Command::dispatch()
         {
             const auto& candidates = categoryAttr.choices;
             std::visit(
-                action::EvtTypeOverloaded{[this, &candidates](auto&& event) {
+                action::EvtVisitor{[this, &candidates](auto&& event) {
                     applyingForwarder.onMessage(action::RunChoices<std::decay_t<decltype(event)>>{candidates});
                 }},
                 categoryAttr.event);
@@ -888,7 +888,7 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& c
 {
     using console::Console;
     using enum Console::RetCode;
-    static constexpr const auto resetter = []<HelperType Helper>() constexpr
+    static constexpr auto resetter = []<HelperType Helper>() constexpr
     {
         triggerHelper<Helper>(ExtEvent::reset);
         triggerHelper<Helper>(ExtEvent::start);
