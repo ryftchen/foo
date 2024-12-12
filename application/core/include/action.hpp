@@ -756,14 +756,14 @@ class MessageForwarder : public MessageTypes::WithInterface<ForwardBase>::AsPara
 //! @brief Applying event type object's helper type for the visitor.
 //! @tparam Ts - type of visitors
 template <class... Ts>
-struct EvtTypeOverloaded : Ts...
+struct EvtVisitor : Ts...
 {
     using Ts::operator()...;
 };
-//! @brief Explicit deduction guide for EvtTypeOverloaded.
+//! @brief Explicit deduction guide for EvtVisitor.
 //! @tparam Ts - type of visitors
 template <class... Ts>
-EvtTypeOverloaded(Ts...) -> EvtTypeOverloaded<Ts...>;
+EvtVisitor(Ts...) -> EvtVisitor<Ts...>;
 //! @brief Alias for the applied action event type.
 using EventType = std::variant<
     app_algo::MatchMethod,
