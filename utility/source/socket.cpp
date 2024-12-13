@@ -168,8 +168,7 @@ void TCPSocket::toReceive(const bool toDetach)
     }
     else
     {
-        std::thread thd(toRecv, self);
-        thd.detach();
+        std::thread(toRecv, self).detach();
     }
 }
 
@@ -282,15 +281,15 @@ void TCPServer::toAccept(const bool toDetach)
     }
     else
     {
-        std::thread thd(
+        std::thread(
             [weakSelf]
             {
                 if (auto sharedSelf = weakSelf.lock())
                 {
                     sharedSelf->toAccept(sharedSelf);
                 }
-            });
-        thd.detach();
+            })
+            .detach();
     }
 }
 
@@ -426,8 +425,7 @@ void UDPSocket::toReceive(const bool toDetach)
     }
     else
     {
-        std::thread thd(toRecv, self);
-        thd.detach();
+        std::thread(toRecv, self).detach();
     }
 }
 
@@ -440,8 +438,7 @@ void UDPSocket::toReceiveFrom(const bool toDetach)
     }
     else
     {
-        std::thread thd(toRecvFrom, self);
-        thd.detach();
+        std::thread(toRecvFrom, self).detach();
     }
 }
 
