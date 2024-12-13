@@ -95,7 +95,7 @@ static int deserialize(Packet& pkt, TLVValue& val, char (TLVValue::*pl)[])
 //! @param len - buffer length
 //! @param val - value of TLV to encode
 //! @return the value is 0 if successful, otherwise -1
-static int tlvEncoding(char* buf, int& len, const TLVValue& val)
+static int encodeTLV(char* buf, int& len, const TLVValue& val)
 {
     if (nullptr == buf)
     {
@@ -133,7 +133,7 @@ static int tlvEncoding(char* buf, int& len, const TLVValue& val)
 //! @param len - buffer length
 //! @param val - value of TLV to decode
 //! @return the value is 0 if successful, otherwise -1
-static int tlvDecoding(char* buf, const int len, TLVValue& val)
+static int decodeTLV(char* buf, const int len, TLVValue& val)
 {
     if (nullptr == buf)
     {
@@ -395,7 +395,7 @@ tlv::TLVValue View::parseTLVPacket(char* buffer, const int length) const
     decryptMessage(buffer, length);
 
     tlv::TLVValue value{};
-    if (tlv::tlvDecoding(buffer, length, value) < 0)
+    if (tlv::decodeTLV(buffer, length, value) < 0)
     {
         throw std::runtime_error("Invalid message content.");
     }
@@ -463,7 +463,7 @@ std::vector<std::string> View::splitString(const std::string_view str)
 int View::buildNullTLVPacket(char* buf)
 {
     int len = 0;
-    if (tlv::tlvEncoding(buf, len, tlv::TLVValue{}) < 0)
+    if (tlv::encodeTLV(buf, len, tlv::TLVValue{}) < 0)
     {
         throw std::runtime_error("Failed to build null packet.");
     }
@@ -475,7 +475,7 @@ int View::buildNullTLVPacket(char* buf)
 int View::buildTLVPacket4Stop(char* buf)
 {
     int len = 0;
-    if (tlv::tlvEncoding(buf, len, tlv::TLVValue{.stopTag = true}) < 0)
+    if (tlv::encodeTLV(buf, len, tlv::TLVValue{.stopTag = true}) < 0)
     {
         throw std::runtime_error("Failed to build packet to stop");
     }
@@ -537,9 +537,9 @@ int View::buildTLVPacket4Depend(const std::vector<std::string>& args, char* buf)
 #else
 #error Could not find the OpenSSL library version.
 #endif // defined(OPENSSL_VERSION_STR)
-    std::strncpy(val.libInfo, extLibraries.data(), sizeof(val.libInfo) - 1);
+    std::strncpy(val.libInfo, extLibraries.c_str(), sizeof(val.libInfo) - 1);
     val.libInfo[sizeof(val.libInfo) - 1] = '\0';
-    if (tlv::tlvEncoding(buf, len, val) < 0)
+    if (tlv::encodeTLV(buf, len, val) < 0)
     {
         throw std::runtime_error("Failed to build packet for the depend option.");
     }
@@ -571,7 +571,7 @@ int View::buildTLVPacket4Execute(const std::vector<std::string>& args, char* buf
 
     int len = 0;
     const int shmId = fillSharedMemory(utility::io::executeCommand("/bin/bash -c " + cmd, 5000));
-    if (tlv::tlvEncoding(buf, len, tlv::TLVValue{.bashShmId = shmId}) < 0)
+    if (tlv::encodeTLV(buf, len, tlv::TLVValue{.bashShmId = shmId}) < 0)
     {
         throw std::runtime_error("Failed to build packet for the execute option.");
     }
@@ -589,7 +589,7 @@ int View::buildTLVPacket4Journal(const std::vector<std::string>& args, char* buf
 
     int len = 0;
     const int shmId = fillSharedMemory(getLogContents());
-    if (tlv::tlvEncoding(buf, len, tlv::TLVValue{.logShmId = shmId}) < 0)
+    if (tlv::encodeTLV(buf, len, tlv::TLVValue{.logShmId = shmId}) < 0)
     {
         throw std::runtime_error("Failed to build packet for the journal option.");
     }
@@ -606,17 +606,16 @@ int View::buildTLVPacket4Monitor(const std::vector<std::string>& args, char* buf
     }
     else if (args.size() == 1)
     {
-        const std::string input = args.front();
+        const auto& input = args.front();
         if ((input.length() != 1) || !std::isdigit(input.front()))
         {
             throw std::runtime_error("Only decimal bases are supported for the specified number of stack frames.");
         }
     }
-    const std::uint16_t frameNum = !args.empty() ? std::stoul(args.front()) : 1;
 
     int len = 0;
-    const int shmId = fillSharedMemory(getStatusReports(frameNum));
-    if (tlv::tlvEncoding(buf, len, tlv::TLVValue{.statusShmId = shmId}) < 0)
+    const int shmId = fillSharedMemory(getStatusReports(!args.empty() ? std::stoul(args.front()) : 1));
+    if (tlv::encodeTLV(buf, len, tlv::TLVValue{.statusShmId = shmId}) < 0)
     {
         throw std::runtime_error("Failed to build packet for the monitor option.");
     }
@@ -634,10 +633,9 @@ int View::buildTLVPacket4Profile(const std::vector<std::string>& args, char* buf
 
     int len = 0;
     tlv::TLVValue val{};
-    const std::string currConfig = config::retrieveDataRepo().toUnescapedString();
-    std::strncpy(val.configInfo, currConfig.c_str(), sizeof(val.configInfo) - 1);
+    std::strncpy(val.configInfo, config::retrieveDataRepo().toUnescapedString().c_str(), sizeof(val.configInfo) - 1);
     val.configInfo[sizeof(val.configInfo) - 1] = '\0';
-    if (tlv::tlvEncoding(buf, len, val) < 0)
+    if (tlv::encodeTLV(buf, len, val) < 0)
     {
         throw std::runtime_error("Failed to build packet for the profile option.");
     }
@@ -816,7 +814,7 @@ void View::printSharedMemory(const int shmId, const bool withoutPaging)
     fetchSharedMemory(shmId, output);
     if (withoutPaging)
     {
-        std::istringstream transfer(output.data());
+        std::istringstream transfer(output.c_str());
         std::string line{};
         while (std::getline(transfer, line))
         {
@@ -909,7 +907,7 @@ std::string View::getStatusReports(const std::uint16_t frame)
     constexpr std::uint16_t totalLen = 512;
     char cmd[totalLen] = {'\0'};
     std::snprintf(cmd, totalLen, "ps -T -p %d | awk 'NR>1 {split($0, a, \" \"); print a[2]}'", pid);
-    const std::string queryResult = utility::io::executeCommand(cmd);
+    const auto queryResult = utility::io::executeCommand(cmd);
 
     std::vector<std::string> cmdColl{};
     std::size_t pos = 0, prev = 0;

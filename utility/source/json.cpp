@@ -664,8 +664,8 @@ JSON::Integral JSON::toIntegral() const
         {
             long long parsed = 0;
             const std::from_chars_result result = std::from_chars(
-                std::get<String>(data.value).data(),
-                std::get<String>(data.value).data() + std::get<String>(data.value).size(),
+                std::get<String>(data.value).c_str(),
+                std::get<String>(data.value).c_str() + std::get<String>(data.value).size(),
                 parsed);
             if (!static_cast<bool>(result.ec))
             {
@@ -702,8 +702,8 @@ JSON::Boolean JSON::toBoolean() const
             }
             int parsed = 0;
             const std::from_chars_result result = std::from_chars(
-                std::get<String>(data.value).data(),
-                std::get<String>(data.value).data() + std::get<String>(data.value).size(),
+                std::get<String>(data.value).c_str(),
+                std::get<String>(data.value).c_str() + std::get<String>(data.value).size(),
                 parsed);
             if (!static_cast<bool>(result.ec))
             {

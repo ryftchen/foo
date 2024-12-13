@@ -260,7 +260,7 @@ static void displayResult(
     {
         COMMON_PRINT(
             "\n==> %-16s Method <==\npattern \"%s\" found starting (1st) at index %d, run time: %8.5f ms\n",
-            getTitle(method).data(),
+            getTitle(method).c_str(),
             pattern,
             result,
             interval);
@@ -269,7 +269,7 @@ static void displayResult(
     {
         COMMON_PRINT(
             "\n==> %-16s Method <==\npattern \"%s\" could not be found, run time: %8.5f ms\n",
-            getTitle(method).data(),
+            getTitle(method).c_str(),
             pattern,
             interval);
     }
@@ -437,7 +437,7 @@ void runChoices<MatchMethod>(const std::vector<std::string>& candidates)
     for (const auto index : indices)
     {
         const auto& target = candidates.at(index);
-        switch (utility::common::bkdrHash(target.data()))
+        switch (utility::common::bkdrHash(target.c_str()))
         {
             case abbrVal(MatchMethod::rabinKarp):
                 functor(name(target), &MatchSolution::rkMethod);
@@ -471,7 +471,7 @@ namespace notation
 //! @param descr - notation description
 static void displayResult(const NotationMethod method, const std::string_view result, const char* const descr)
 {
-    COMMON_PRINT("\n==> %-7s Method <==\n%s: %s\n", getTitle(method).data(), descr, result.data());
+    COMMON_PRINT("\n==> %-7s Method <==\n%s: %s\n", getTitle(method).c_str(), descr, result.data());
 }
 
 void NotationSolution::prefixMethod(const std::string_view infix)
@@ -547,7 +547,7 @@ void runChoices<NotationMethod>(const std::vector<std::string>& candidates)
     for (const auto index : indices)
     {
         const auto& target = candidates.at(index);
-        switch (utility::common::bkdrHash(target.data()))
+        switch (utility::common::bkdrHash(target.c_str()))
         {
             case abbrVal(NotationMethod::prefix):
                 functor(name(target), &NotationSolution::prefixMethod);
@@ -577,7 +577,7 @@ static void displayResult(
     {
         COMMON_PRINT(
             "\n==> %-9s Method <==\nF(min)=%+.5f X=%+.5f, run time: %8.5f ms\n",
-            getTitle(method).data(),
+            getTitle(method).c_str(),
             std::get<0>(result.value()),
             std::get<1>(result.value()),
             interval);
@@ -586,7 +586,7 @@ static void displayResult(
     {
         COMMON_PRINT(
             "\n==> %-9s Method <==\nF(min) could not be found, run time: %8.5f ms\n",
-            getTitle(method).data(),
+            getTitle(method).c_str(),
             interval);
     }
 }
@@ -707,7 +707,7 @@ void runChoices<OptimalMethod>(const std::vector<std::string>& candidates)
         for (const auto index : indices)
         {
             const auto& target = candidates.at(index);
-            switch (utility::common::bkdrHash(target.data()))
+            switch (utility::common::bkdrHash(target.c_str()))
             {
                 case abbrVal(OptimalMethod::gradient):
                     functor(name(target), &OptimalSolution::gradientDescentMethod);
@@ -762,7 +762,7 @@ static void displayResult(const SearchMethod method, const std::int64_t result, 
     {
         COMMON_PRINT(
             "\n==> %-13s Method <==\nfound the key \"%.5f\" that appears in the index %d, run time: %8.5f ms\n",
-            getTitle(method).data(),
+            getTitle(method).c_str(),
             key,
             result,
             interval);
@@ -771,7 +771,7 @@ static void displayResult(const SearchMethod method, const std::int64_t result, 
     {
         COMMON_PRINT(
             "\n==> %-13s Method <==\ncould not find the key \"%.5f\", run time: %8.5f ms\n",
-            getTitle(method).data(),
+            getTitle(method).c_str(),
             key,
             interval);
     }
@@ -880,7 +880,7 @@ void runChoices<SearchMethod>(const std::vector<std::string>& candidates)
     for (const auto index : indices)
     {
         const auto& target = candidates.at(index);
-        switch (utility::common::bkdrHash(target.data()))
+        switch (utility::common::bkdrHash(target.c_str()))
         {
             case abbrVal(SearchMethod::binary):
                 functor(name(target), &SearchSolution::binaryMethod);
@@ -912,7 +912,7 @@ static void displayResult(const SortMethod method, const std::vector<std::int32_
     std::vector<char> arrayBuffer(arrayBufferSize + 1);
     COMMON_PRINT(
         "\n==> %-9s Method <==\n%s\n(asc) run time: %8.5f ms\n",
-        getTitle(method).data(),
+        getTitle(method).c_str(),
         InputBuilder<std::int32_t>::template spliceAll<std::int32_t>(
             result.data(), result.size(), arrayBuffer.data(), arrayBufferSize + 1),
         interval);
@@ -1137,7 +1137,7 @@ void runChoices<SortMethod>(const std::vector<std::string>& candidates)
     for (const auto index : indices)
     {
         const auto& target = candidates.at(index);
-        switch (utility::common::bkdrHash(target.data()))
+        switch (utility::common::bkdrHash(target.c_str()))
         {
             case abbrVal(SortMethod::bubble):
                 functor(name(target), &SortSolution::bubbleMethod);

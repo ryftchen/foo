@@ -227,7 +227,7 @@ namespace arithmetic
 static void displayResult(
     const ArithmeticMethod method, const std::int32_t result, const std::int32_t a, const std::int32_t b, const char op)
 {
-    COMMON_PRINT("\n==> %-14s Method <==\n(%d) %c (%d) = %d\n", getTitle(method).data(), a, op, b, result);
+    COMMON_PRINT("\n==> %-14s Method <==\n(%d) %c (%d) = %d\n", getTitle(method).c_str(), a, op, b, result);
 }
 
 void ArithmeticSolution::additionMethod(const std::int32_t augend, const std::int32_t addend)
@@ -333,7 +333,7 @@ void runChoices<ArithmeticMethod>(const std::vector<std::string>& candidates)
     for (const auto index : indices)
     {
         const auto& target = candidates.at(index);
-        switch (utility::common::bkdrHash(target.data()))
+        switch (utility::common::bkdrHash(target.c_str()))
         {
             case abbrVal(ArithmeticMethod::addition):
                 functor(name(target), &ArithmeticSolution::additionMethod);
@@ -368,7 +368,7 @@ static void displayResult(const DivisorMethod method, const std::set<std::int32_
     std::vector<char> arrayBuffer(arrayBufferSize + 1);
     COMMON_PRINT(
         "\n==> %-9s Method <==\n%s\nrun time: %8.5f ms\n",
-        getTitle(method).data(),
+        getTitle(method).c_str(),
         InputBuilder::template spliceAllIntegers<std::int32_t>(result, arrayBuffer.data(), arrayBufferSize + 1),
         interval);
 }
@@ -452,7 +452,7 @@ void runChoices<DivisorMethod>(const std::vector<std::string>& candidates)
     for (const auto index : indices)
     {
         const auto& target = candidates.at(index);
-        switch (utility::common::bkdrHash(target.data()))
+        switch (utility::common::bkdrHash(target.c_str()))
         {
             case abbrVal(DivisorMethod::euclidean):
                 functor(name(target), &DivisorSolution::euclideanMethod);
@@ -478,7 +478,7 @@ namespace integral
 static void displayResult(const IntegralMethod method, const double result, const double interval)
 {
     COMMON_PRINT(
-        "\n==> %-11s Method <==\nI(def)=%+.5f, run time: %8.5f ms\n", getTitle(method).data(), result, interval);
+        "\n==> %-11s Method <==\nI(def)=%+.5f, run time: %8.5f ms\n", getTitle(method).c_str(), result, interval);
 }
 
 void IntegralSolution::trapezoidalMethod(const Expression& expr, double lower, double upper)
@@ -614,7 +614,7 @@ void runChoices<IntegralMethod>(const std::vector<std::string>& candidates)
         for (const auto index : indices)
         {
             const auto& target = candidates.at(index);
-            switch (utility::common::bkdrHash(target.data()))
+            switch (utility::common::bkdrHash(target.c_str()))
             {
                 case abbrVal(IntegralMethod::trapezoidal):
                     functor(name(target), &IntegralSolution::trapezoidalMethod);
@@ -670,7 +670,7 @@ static void displayResult(const PrimeMethod method, const std::vector<std::uint3
     std::vector<char> arrayBuffer(arrayBufferSize + 1);
     COMMON_PRINT(
         "\n==> %-9s Method <==\n%s\nrun time: %8.5f ms\n",
-        getTitle(method).data(),
+        getTitle(method).c_str(),
         InputBuilder::template spliceAllIntegers<std::uint32_t>(result, arrayBuffer.data(), arrayBufferSize + 1),
         interval);
 }
@@ -754,7 +754,7 @@ void runChoices<PrimeMethod>(const std::vector<std::string>& candidates)
     for (const auto index : indices)
     {
         const auto& target = candidates.at(index);
-        switch (utility::common::bkdrHash(target.data()))
+        switch (utility::common::bkdrHash(target.c_str()))
         {
             case abbrVal(PrimeMethod::eratosthenes):
                 functor(name(target), &PrimeSolution::eratosthenesMethod);

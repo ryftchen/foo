@@ -537,7 +537,7 @@ std::vector<std::string> Argument::preprocessArguments(const std::vector<std::st
         if ((argumentMap.cend() == argumentMap.find(arg)) && argumentStartsWithPrefixChars(arg)
             && (std::string::npos != assignCharPos))
         {
-            const std::string optName = arg.substr(0, assignCharPos);
+            const auto optName = arg.substr(0, assignCharPos);
             if (argumentMap.cend() != argumentMap.find(optName))
             {
                 arguments.emplace_back(optName);
