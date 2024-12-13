@@ -214,7 +214,7 @@ namespace behavioral
 //! @param result - behavioral result
 static void displayResult(const BehavioralInstance instance, const std::string_view result)
 {
-    COMMON_PRINT("\n==> %-21s Instance <==\n%s", getTitle(instance).data(), result.data());
+    COMMON_PRINT("\n==> %-21s Instance <==\n%s", getTitle(instance).c_str(), result.data());
 }
 
 void BehavioralPattern::chainOfResponsibilityInstance()
@@ -416,7 +416,7 @@ void runChoices<BehavioralInstance>(const std::vector<std::string>& candidates)
     for (const auto index : indices)
     {
         const auto& target = candidates.at(index);
-        switch (utility::common::bkdrHash(target.data()))
+        switch (utility::common::bkdrHash(target.c_str()))
         {
             case abbrVal(BehavioralInstance::chainOfResponsibility):
                 functor(name(target), &BehavioralPattern::chainOfResponsibilityInstance);
@@ -467,7 +467,7 @@ namespace creational
 //! @param result - creational result
 static void displayResult(const CreationalInstance instance, const std::string_view result)
 {
-    COMMON_PRINT("\n==> %-15s Instance <==\n%s", getTitle(instance).data(), result.data());
+    COMMON_PRINT("\n==> %-15s Instance <==\n%s", getTitle(instance).c_str(), result.data());
 }
 
 void CreationalPattern::abstractFactoryInstance()
@@ -585,7 +585,7 @@ void runChoices<CreationalInstance>(const std::vector<std::string>& candidates)
     for (const auto index : indices)
     {
         const auto& target = candidates.at(index);
-        switch (utility::common::bkdrHash(target.data()))
+        switch (utility::common::bkdrHash(target.c_str()))
         {
             case abbrVal(CreationalInstance::abstractFactory):
                 functor(name(target), &CreationalPattern::abstractFactoryInstance);
@@ -618,7 +618,7 @@ namespace structural
 //! @param result - structural result
 static void displayResult(const StructuralInstance instance, const std::string_view result)
 {
-    COMMON_PRINT("\n==> %-9s Instance <==\n%s", getTitle(instance).data(), result.data());
+    COMMON_PRINT("\n==> %-9s Instance <==\n%s", getTitle(instance).c_str(), result.data());
 }
 
 void StructuralPattern::adapterInstance()
@@ -764,7 +764,7 @@ void runChoices<StructuralInstance>(const std::vector<std::string>& candidates)
     for (const auto index : indices)
     {
         const auto& target = candidates.at(index);
-        switch (utility::common::bkdrHash(target.data()))
+        switch (utility::common::bkdrHash(target.c_str()))
         {
             case abbrVal(StructuralInstance::adapter):
                 functor(name(target), &StructuralPattern::adapterInstance);

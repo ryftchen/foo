@@ -306,7 +306,7 @@ void Log::backUpLogFileIfNeeded() const
             | std::views::transform(
                 [&pattern](const auto& entry)
                 {
-                    const std::string filename = entry.path().filename().string();
+                    const auto filename = entry.path().filename().string();
                     std::smatch match{};
                     return std::regex_match(filename, match, pattern) ? std::stoi(match[1].str()) : 0;
                 });

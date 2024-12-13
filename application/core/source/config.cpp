@@ -94,7 +94,7 @@ void Config::checkLoggerConfigInHelperList(const utility::json::JSON& helperList
     for (const auto& [key, item] : loggerProperties.objectRange())
     {
         using utility::common::EnumCheck, utility::common::operator""_bkdrHash;
-        switch (utility::common::bkdrHash(key.data()))
+        switch (utility::common::bkdrHash(key.c_str()))
         {
             case "filePath"_bkdrHash:
                 isVerified &= item.isStringType();
@@ -166,7 +166,7 @@ void Config::checkViewerConfigInHelperList(const utility::json::JSON& helperList
     for (const auto& [key, item] : viewerProperties.objectRange())
     {
         using utility::common::operator""_bkdrHash;
-        switch (utility::common::bkdrHash(key.data()))
+        switch (utility::common::bkdrHash(key.c_str()))
         {
             case "tcpHost"_bkdrHash:
                 isVerified &= item.isStringType();

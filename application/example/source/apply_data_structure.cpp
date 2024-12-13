@@ -178,7 +178,7 @@ namespace linear
 //! @param result - linear result
 static void displayResult(const LinearInstance instance, const std::string_view result)
 {
-    COMMON_PRINT("\n==> %-10s Instance <==\n%s", getTitle(instance).data(), result.data());
+    COMMON_PRINT("\n==> %-10s Instance <==\n%s", getTitle(instance).c_str(), result.data());
 }
 
 void LinearStructure::linkedListInstance()
@@ -268,7 +268,7 @@ void runChoices<LinearInstance>(const std::vector<std::string>& candidates)
     for (const auto index : indices)
     {
         const auto& target = candidates.at(index);
-        switch (utility::common::bkdrHash(target.data()))
+        switch (utility::common::bkdrHash(target.c_str()))
         {
             case abbrVal(LinearInstance::linkedList):
                 functor(name(target), &LinearStructure::linkedListInstance);
@@ -295,7 +295,7 @@ namespace tree
 //! @param result - tree result
 static void displayResult(const TreeInstance instance, const std::string_view result)
 {
-    COMMON_PRINT("\n==> %-19s Instance <==\n%s", getTitle(instance).data(), result.data());
+    COMMON_PRINT("\n==> %-19s Instance <==\n%s", getTitle(instance).c_str(), result.data());
 }
 
 void TreeStructure::bsInstance()
@@ -385,7 +385,7 @@ void runChoices<TreeInstance>(const std::vector<std::string>& candidates)
     for (const auto index : indices)
     {
         const auto& target = candidates.at(index);
-        switch (utility::common::bkdrHash(target.data()))
+        switch (utility::common::bkdrHash(target.c_str()))
         {
             case abbrVal(TreeInstance::binarySearch):
                 functor(name(target), &TreeStructure::bsInstance);
