@@ -248,7 +248,7 @@ utility::json::JSON getDefaultConfiguration()
                 "required", viewerRequired
             }
         },
-        "helperTimeout", 500
+        "helperTimeout", 1000
     }
     );
     // clang-format on
