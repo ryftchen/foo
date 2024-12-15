@@ -30,7 +30,6 @@ Thread::Thread(const std::size_t size)
                     if (std::unique_lock<std::mutex> lock(mtx); true)
                     {
                         cond.wait(lock, [this]() { return releaseReady.load() || !taskQueue.empty(); });
-
                         if (releaseReady.load() && taskQueue.empty())
                         {
                             return;

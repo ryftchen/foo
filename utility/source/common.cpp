@@ -53,7 +53,7 @@ bool SpinLock::tryLock()
 
 void ReadWriteLock::readLock()
 {
-    std::shared_lock<std::shared_mutex> rdLock(rwLock);
+    const std::shared_lock<std::shared_mutex> rLock(rwLock);
     if (std::unique_lock<std::mutex> lock(mtx); true)
     {
         cond.wait(lock, [this]() { return writer.load() == 0; });
@@ -72,7 +72,7 @@ void ReadWriteLock::readUnlock()
 
 void ReadWriteLock::writeLock()
 {
-    std::unique_lock<std::shared_mutex> wrLock(rwLock);
+    const std::unique_lock<std::shared_mutex> wLock(rwLock);
     if (std::unique_lock<std::mutex> lock(mtx); true)
     {
         cond.wait(lock, [this]() { return (reader.load() == 0) && (writer.load() == 0); });

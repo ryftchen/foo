@@ -452,7 +452,7 @@ void Log::flush(
         }
         else
         {
-            std::lock_guard<std::recursive_mutex> cacheLock(cacheMtx);
+            const std::lock_guard<std::recursive_mutex> cacheLock(cacheMtx);
             std::for_each(
                 rows.begin(),
                 rows.end(),
