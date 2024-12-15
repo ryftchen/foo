@@ -279,7 +279,12 @@ retry:
         safeProcessEvent(Standby());
         if (awaitNotification2Retry())
         {
-            goto retry; // NOLINT(cppcoreguidelines-avoid-goto,hicpp-avoid-goto)
+            safeProcessEvent(Relaunch());
+            if (safeCurrentState() == State::init)
+            {
+                goto retry; // NOLINT(cppcoreguidelines-avoid-goto,hicpp-avoid-goto)
+            }
+            LOG_ERR << "Failed to rollback viewer.";
         }
     }
 }
@@ -1171,17 +1176,7 @@ bool View::awaitNotification2Retry()
         daemonCond.wait(daemonLock);
     }
 
-    if (toReset.load())
-    {
-        safeProcessEvent(Relaunch());
-        if (safeCurrentState() == State::init)
-        {
-            return true;
-        }
-        LOG_ERR << "Failed to rollback viewer.";
-    }
-
-    return false;
+    return toReset.load();
 }
 
 //! @brief The operator (<<) overloading of the State enum.
