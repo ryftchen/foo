@@ -28,6 +28,23 @@ namespace application::view
 {
 namespace tlv
 {
+//! @brief Value in TLV.
+struct TLVValue
+{
+    //! @brief Flag for stopping the connection.
+    bool stopTag{false};
+    //! @brief Information about the runtime library.
+    char libInfo[defaultInfoSize]{'\0'};
+    //! @brief Shared memory id of the bash outputs.
+    int bashShmId{invalidShmId};
+    //! @brief Shared memory id of the log contents.
+    int logShmId{invalidShmId};
+    //! @brief Shared memory id of the status reports.
+    int statusShmId{invalidShmId};
+    //! @brief Information about the current configuration.
+    char configInfo[defaultInfoSize * 2]{'\0'};
+};
+
 //! @brief TLV value serialization.
 //! @tparam T - type of target payload
 //! @param pkt - encoding packet that was filled type
@@ -289,34 +306,34 @@ retry:
     }
 }
 
-void View::waitForStart()
+void View::Access::startup()
 try
 {
     utility::time::blockingTimer(
         [this]()
         {
-            if (isInUninterruptedState(State::hold))
+            if (inst.isInUninterruptedState(State::hold))
             {
                 throw std::runtime_error("The viewer did not initialize successfully ...");
             }
-            return isInUninterruptedState(State::idle);
+            return inst.isInUninterruptedState(State::idle);
         });
 
-    if (std::unique_lock<std::mutex> daemonLock(daemonMtx); true)
+    if (std::unique_lock<std::mutex> daemonLock(inst.daemonMtx); true)
     {
-        ongoing.store(true);
+        inst.ongoing.store(true);
         daemonLock.unlock();
-        daemonCond.notify_one();
+        inst.daemonCond.notify_one();
     }
 
     utility::time::blockingTimer(
         [this]()
         {
-            if (isInUninterruptedState(State::hold))
+            if (inst.isInUninterruptedState(State::hold))
             {
                 throw std::runtime_error("The viewer did not start successfully ...");
             }
-            return isInUninterruptedState(State::work);
+            return inst.isInUninterruptedState(State::work);
         });
 }
 catch (const std::exception& err)
@@ -324,24 +341,24 @@ catch (const std::exception& err)
     LOG_ERR << err.what();
 }
 
-void View::waitForStop()
+void View::Access::shutdown()
 try
 {
-    if (std::unique_lock<std::mutex> daemonLock(daemonMtx); true)
+    if (std::unique_lock<std::mutex> daemonLock(inst.daemonMtx); true)
     {
-        ongoing.store(false);
+        inst.ongoing.store(false);
         daemonLock.unlock();
-        daemonCond.notify_one();
+        inst.daemonCond.notify_one();
     }
 
     utility::time::blockingTimer(
         [this]()
         {
-            if (isInUninterruptedState(State::hold))
+            if (inst.isInUninterruptedState(State::hold))
             {
                 throw std::runtime_error("The viewer did not stop successfully ...");
             }
-            return isInUninterruptedState(State::done);
+            return inst.isInUninterruptedState(State::done);
         });
 }
 catch (const std::exception& err)
@@ -349,19 +366,20 @@ catch (const std::exception& err)
     LOG_ERR << err.what();
 }
 
-void View::requestToReset()
+void View::Access::reload()
 try
 {
-    if (std::unique_lock<std::mutex> daemonLock(daemonMtx); true)
+    if (std::unique_lock<std::mutex> daemonLock(inst.daemonMtx); true)
     {
-        toReset.store(true);
+        inst.toReset.store(true);
         daemonLock.unlock();
-        daemonCond.notify_one();
+        inst.daemonCond.notify_one();
     }
 
-    if (utility::time::blockingTimer([this]() { return !toReset.load(); }, timeoutPeriod))
+    if (utility::time::blockingTimer([this]() { return !inst.toReset.load(); }, inst.timeoutPeriod))
     {
-        throw std::runtime_error("The viewer did not reset properly in " + std::to_string(timeoutPeriod) + " ms ...");
+        throw std::runtime_error(
+            "The viewer did not reset properly in " + std::to_string(inst.timeoutPeriod) + " ms ...");
     }
 }
 catch (const std::exception& err)
@@ -369,32 +387,7 @@ catch (const std::exception& err)
     LOG_ERR << err.what();
 }
 
-const View::OptionMap& View::getAllOptions() const
-{
-    return optionDispatcher;
-}
-
-std::string View::getTCPHost() const
-{
-    return tcpHost;
-}
-
-std::uint16_t View::getTCPPort() const
-{
-    return tcpPort;
-}
-
-std::string View::getUDPHost() const
-{
-    return udpHost;
-}
-
-std::uint16_t View::getUDPPort() const
-{
-    return udpPort;
-}
-
-tlv::TLVValue View::parseTLVPacket(char* buffer, const int length) const
+bool View::Access::parseTLVPacket(char* buffer, const int length) const
 {
     decryptMessage(buffer, length);
 
@@ -414,7 +407,7 @@ tlv::TLVValue View::parseTLVPacket(char* buffer, const int length) const
     }
     if (invalidShmId != value.logShmId)
     {
-        printSharedMemory(value.logShmId, !isInUninterruptedState(State::work));
+        printSharedMemory(value.logShmId, !inst.isInUninterruptedState(State::work));
     }
     if (invalidShmId != value.statusShmId)
     {
@@ -425,29 +418,29 @@ tlv::TLVValue View::parseTLVPacket(char* buffer, const int length) const
         std::cout << utility::json::JSON::load(value.configInfo) << std::endl;
     }
 
-    return value;
+    return value.stopTag;
 }
 
-void View::awaitDueToOutput()
+void View::Access::awaitDueToOutput()
 {
-    if (isInUninterruptedState(State::work))
+    if (inst.isInUninterruptedState(State::work))
     {
-        std::unique_lock<std::mutex> outputLock(outputMtx);
-        outputCond.wait(outputLock, [this]() { return outputCompleted.load(); });
-        outputCompleted.store(false);
+        std::unique_lock<std::mutex> outputLock(inst.outputMtx);
+        inst.outputCond.wait(outputLock, [this]() { return inst.outputCompleted.load(); });
+        inst.outputCompleted.store(false);
     }
     else
     {
-        utility::time::millisecondLevelSleep(timeoutPeriod);
+        utility::time::millisecondLevelSleep(inst.timeoutPeriod);
     }
 }
 
-void View::awakenDueToOutput()
+void View::Access::awakenDueToOutput()
 {
-    std::unique_lock<std::mutex> outputLock(outputMtx);
-    outputCompleted.store(true);
+    std::unique_lock<std::mutex> outputLock(inst.outputMtx);
+    inst.outputCompleted.store(true);
     outputLock.unlock();
-    outputCond.notify_one();
+    inst.outputCond.notify_one();
 }
 
 std::vector<std::string> View::splitString(const std::string_view str)
@@ -1026,8 +1019,8 @@ void View::createViewServer()
                 }
 
                 auto args = splitString(plaintext);
-                const auto optIter = optionDispatcher.find(args.at(0));
-                if (optionDispatcher.cend() == optIter)
+                const auto optIter = supportedOptions.find(args.at(0));
+                if (supportedOptions.cend() == optIter)
                 {
                     throw std::runtime_error("Unknown TCP message.");
                 }
@@ -1065,8 +1058,8 @@ void View::createViewServer()
             }
 
             auto args = splitString(plaintext);
-            const auto optIter = optionDispatcher.find(args.at(0));
-            if (optionDispatcher.cend() == optIter)
+            const auto optIter = supportedOptions.find(args.at(0));
+            if (supportedOptions.cend() == optIter)
             {
                 throw std::runtime_error("Unknown UDP message.");
             }

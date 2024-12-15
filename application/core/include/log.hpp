@@ -213,18 +213,34 @@ public:
     static Log& getInstance();
     //! @brief State controller for running logger.
     void stateController();
-    //! @brief Wait for the logger to start. Interface controller for external use.
-    void waitForStart();
-    //! @brief Wait for the logger to stop. Interface controller for external use.
-    void waitForStop();
-    //! @brief Request to reset the logger. Interface controller for external use.
-    void requestToReset();
-    //! @brief Get the log file path.
-    //! @return log file path
-    std::string getFilePath() const;
-    //! @brief Get the log file lock.
-    //! @return log file lock
-    utility::common::ReadWriteLock& getFileLock();
+
+    //! @brief Access for the instance.
+    class Access
+    {
+    public:
+        //! @brief Construct a new Access object.
+        Access() : inst(getInstance()) {}
+        //! @brief Destroy the Access object.
+        virtual ~Access() = default;
+
+        //! @brief Wait for the logger to start. Interface controller for external use.
+        void startup();
+        //! @brief Wait for the logger to stop. Interface controller for external use.
+        void shutdown();
+        //! @brief Request to reset the logger. Interface controller for external use.
+        void reload();
+
+        //! @brief Get the log file path.
+        //! @return log file path
+        [[nodiscard]] inline std::string getFilePath() const { return inst.filePath; }
+        //! @brief Get the log file lock.
+        //! @return log file lock
+        [[nodiscard]] inline utility::common::ReadWriteLock& getFileLock() const { return inst.fileLock; }
+
+    private:
+        //! @brief Instance to be accessed.
+        Log& inst;
+    };
 
     //! @brief Flush log to queue.
     //! @tparam Args - type of arguments of log format
@@ -320,6 +336,8 @@ private:
     //! @param formatted - formatted body information
     //! @return log contents
     static std::vector<std::string> reformatContents(const std::string_view label, const std::string_view formatted);
+    friend class Access;
+
     //! @brief Safely retrieve the current state.
     //! @return current state
     State safeCurrentState() const;
@@ -340,7 +358,6 @@ private:
     void tryCreateLogFolder() const;
     //! @brief Back up the log file if needed.
     void backUpLogFileIfNeeded() const;
-
     //! @brief FSM event. Open file.
     struct OpenFile
     {
@@ -480,13 +497,13 @@ namespace info
 //! @return current log file path
 inline std::string loggerFilePath()
 {
-    return Log::getInstance().getFilePath();
+    return Log::Access().getFilePath();
 }
 //! @brief Get the current log file lock.
 //! @return current log file lock
 inline utility::common::ReadWriteLock& loggerFileLock()
 {
-    return Log::getInstance().getFileLock();
+    return Log::Access().getFileLock();
 }
 } // namespace info
 } // namespace log

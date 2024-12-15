@@ -44,12 +44,12 @@ concept HelperType = !std::is_constructible_v<T> && !std::is_copy_constructible_
 //! @brief Enumerate specific events to control external helpers.
 enum class ExtEvent : std::uint8_t
 {
-    //! @brief Start.
-    start,
-    //! @brief Stop.
-    stop,
-    //! @brief Reset.
-    reset
+    //! @brief Startup.
+    startup,
+    //! @brief Shutdown.
+    shutdown,
+    //! @brief Reload.
+    reload
 };
 
 //! @brief Get the helper name.
@@ -84,14 +84,14 @@ void triggerHelper(const ExtEvent event)
 
     switch (event)
     {
-        case ExtEvent::start:
-            Helper::getInstance().waitForStart();
+        case ExtEvent::startup:
+            typename Helper::Access().startup();
             break;
-        case ExtEvent::stop:
-            Helper::getInstance().waitForStop();
+        case ExtEvent::shutdown:
+            typename Helper::Access().shutdown();
             break;
-        case ExtEvent::reset:
-            Helper::getInstance().requestToReset();
+        case ExtEvent::reload:
+            typename Helper::Access().reload();
             break;
         default:
             break;
@@ -203,9 +203,9 @@ Awaitable helperLifecycle()
     };
 
     co_await std::suspend_always{};
-    publish(ExtEvent::start);
+    publish(ExtEvent::startup);
     co_await std::suspend_always{};
-    publish(ExtEvent::stop);
+    publish(ExtEvent::shutdown);
     awaitDaemon.wait();
 }
 } // namespace
@@ -680,9 +680,9 @@ Command::ChoiceContainer Command::extractChoices()
     return choices;
 }
 
-auto Command::parseMessageInsideClient(char* buffer, const int length)
+bool Command::parseMessageInsideClient(char* buffer, const int length)
 {
-    return view::View::getInstance().parseTLVPacket(buffer, length);
+    return view::View::Access().parseTLVPacket(buffer, length);
 }
 
 //! @brief Launch the TCP client for console mode.
@@ -694,7 +694,7 @@ void Command::launchClient<utility::socket::TCPSocket>(std::shared_ptr<utility::
     {
         try
         {
-            if ((0 != length) && parseMessageInsideClient(buffer, length).stopTag)
+            if ((0 != length) && parseMessageInsideClient(buffer, length))
             {
                 client->asyncExit();
             }
@@ -718,7 +718,7 @@ void Command::launchClient<utility::socket::UDPSocket>(std::shared_ptr<utility::
     {
         try
         {
-            if ((0 != length) && parseMessageInsideClient(buffer, length).stopTag)
+            if ((0 != length) && parseMessageInsideClient(buffer, length))
             {
                 client->asyncExit();
             }
@@ -890,8 +890,8 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& c
     using enum Console::RetCode;
     static constexpr auto resetter = []<HelperType Helper>() constexpr
     {
-        triggerHelper<Helper>(ExtEvent::reset);
-        triggerHelper<Helper>(ExtEvent::start);
+        triggerHelper<Helper>(ExtEvent::reload);
+        triggerHelper<Helper>(ExtEvent::startup);
     };
     const auto sender = [&client](const Console::Args& inputs)
     {
@@ -960,7 +960,7 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& c
             utility::time::millisecondLevelSleep(latency);
             return retVal;
         });
-    for (const auto& [name, attr] : view::info::getAllOptions())
+    for (const auto& [name, attr] : view::info::viewerSupportedOptions())
     {
         session.registerOption(name, attr.prompt, sender);
     }
@@ -968,12 +968,12 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& c
 
 void Command::awaitOutsideClient()
 {
-    view::View::getInstance().awaitDueToOutput();
+    view::View::Access().awaitDueToOutput();
 }
 
 void Command::awakenInsideClient()
 {
-    view::View::getInstance().awakenDueToOutput();
+    view::View::Access().awakenDueToOutput();
 }
 
 void Command::validateDependenciesVersion() const
