@@ -224,11 +224,11 @@ public:
         virtual ~Access() = default;
 
         //! @brief Wait for the logger to start. Interface controller for external use.
-        void startup();
+        void startup() const;
         //! @brief Wait for the logger to stop. Interface controller for external use.
-        void shutdown();
+        void shutdown() const;
         //! @brief Request to reset the logger. Interface controller for external use.
-        void reload();
+        void reload() const;
 
         //! @brief Get the log file path.
         //! @return log file path

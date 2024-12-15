@@ -146,11 +146,11 @@ public:
         virtual ~Access() = default;
 
         //! @brief Wait for the viewer to start. Interface controller for external use.
-        void startup();
+        void startup() const;
         //! @brief Wait for the viewer to stop. Interface controller for external use.
-        void shutdown();
+        void shutdown() const;
         //! @brief Request to reset the viewer. Interface controller for external use.
-        void reload();
+        void reload() const;
 
         //! @brief Parse the TLV packet.
         //! @param buffer - TLV packet buffer
@@ -158,9 +158,9 @@ public:
         //! @return need to stop the connection or not
         bool parseTLVPacket(char* buffer, const int length) const;
         //! @brief Await depending on the output state.
-        void awaitDueToOutput();
+        void awaitDueToOutput() const;
         //! @brief Awaken depending on the output state.
-        void awakenDueToOutput();
+        void awakenDueToOutput() const;
 
         //! @brief Get the supported options.
         //! @return supported options

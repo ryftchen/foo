@@ -306,7 +306,7 @@ retry:
     }
 }
 
-void View::Access::startup()
+void View::Access::startup() const
 try
 {
     utility::time::blockingTimer(
@@ -341,7 +341,7 @@ catch (const std::exception& err)
     LOG_ERR << err.what();
 }
 
-void View::Access::shutdown()
+void View::Access::shutdown() const
 try
 {
     if (std::unique_lock<std::mutex> daemonLock(inst.daemonMtx); true)
@@ -366,7 +366,7 @@ catch (const std::exception& err)
     LOG_ERR << err.what();
 }
 
-void View::Access::reload()
+void View::Access::reload() const
 try
 {
     if (std::unique_lock<std::mutex> daemonLock(inst.daemonMtx); true)
@@ -421,7 +421,7 @@ bool View::Access::parseTLVPacket(char* buffer, const int length) const
     return value.stopTag;
 }
 
-void View::Access::awaitDueToOutput()
+void View::Access::awaitDueToOutput() const
 {
     if (inst.isInUninterruptedState(State::work))
     {
@@ -435,7 +435,7 @@ void View::Access::awaitDueToOutput()
     }
 }
 
-void View::Access::awakenDueToOutput()
+void View::Access::awakenDueToOutput() const
 {
     std::unique_lock<std::mutex> outputLock(inst.outputMtx);
     inst.outputCompleted.store(true);
