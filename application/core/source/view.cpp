@@ -434,8 +434,7 @@ void View::awaitDueToOutput()
     }
     else
     {
-        constexpr std::uint16_t maxLatency = 500;
-        utility::time::millisecondLevelSleep(maxLatency);
+        utility::time::millisecondLevelSleep(timeoutPeriod);
     }
 }
 
