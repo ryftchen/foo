@@ -102,7 +102,7 @@ retry:
     }
 }
 
-void Log::Access::startup()
+void Log::Access::startup() const
 try
 {
     utility::time::blockingTimer(
@@ -137,7 +137,7 @@ catch (const std::exception& err)
     LOG_ERR << err.what();
 }
 
-void Log::Access::shutdown()
+void Log::Access::shutdown() const
 try
 {
     if (std::unique_lock<std::mutex> daemonLock(inst.daemonMtx); true)
@@ -162,7 +162,7 @@ catch (const std::exception& err)
     LOG_ERR << err.what();
 }
 
-void Log::Access::reload()
+void Log::Access::reload() const
 try
 {
     if (std::unique_lock<std::mutex> daemonLock(inst.daemonMtx); true)
