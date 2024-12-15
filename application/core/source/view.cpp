@@ -300,7 +300,6 @@ try
     if (std::unique_lock<std::mutex> daemonLock(daemonMtx); true)
     {
         ongoing.store(true);
-
         daemonLock.unlock();
         daemonCond.notify_one();
     }
@@ -1100,7 +1099,7 @@ void View::startViewing()
 
 void View::stopViewing()
 {
-    std::scoped_lock locks(daemonMtx, outputMtx);
+    const std::scoped_lock locks(daemonMtx, outputMtx);
     ongoing.store(false);
     toReset.store(false);
     outputCompleted.store(false);
@@ -1112,7 +1111,7 @@ void View::doToggle()
 
 void View::doRollback()
 {
-    std::scoped_lock locks(daemonMtx, outputMtx);
+    const std::scoped_lock locks(daemonMtx, outputMtx);
     ongoing.store(false);
 
     if (tcpServer)
@@ -1158,7 +1157,6 @@ void View::awaitNotification2View()
     {
         std::unique_lock<std::mutex> daemonLock(daemonMtx);
         daemonCond.wait(daemonLock, [this]() { return !ongoing.load() || toReset.load(); });
-
         if (toReset.load())
         {
             break;

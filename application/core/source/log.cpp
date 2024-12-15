@@ -344,7 +344,7 @@ void Log::startLogging()
 {
     logWriter.lock();
 
-    std::lock_guard<std::recursive_mutex> cacheLock(cacheMtx);
+    const std::lock_guard<std::recursive_mutex> cacheLock(cacheMtx);
     while (!unprocessedCache.empty())
     {
         std::cout << historyCacheBaseColor.data() + unprocessedCache.front() + utility::common::colorOff.data()
@@ -355,9 +355,10 @@ void Log::startLogging()
 
 void Log::stopLogging()
 {
-    std::lock_guard<std::mutex> daemonLock(daemonMtx);
+    const std::lock_guard<std::mutex> daemonLock(daemonMtx);
     ongoing.store(false);
     toReset.store(false);
+
     while (!logQueue.empty())
     {
         logQueue.pop();
@@ -370,14 +371,13 @@ void Log::doToggle()
 
 void Log::doRollback()
 {
-    std::lock_guard<std::mutex> daemonLock(daemonMtx);
+    const std::lock_guard<std::mutex> daemonLock(daemonMtx);
     ongoing.store(false);
 
     while (!logQueue.empty())
     {
         logQueue.pop();
     }
-
     if (logWriter.isOpen())
     {
         try
@@ -413,9 +413,9 @@ bool Log::isLogFileClose(const NoLogging& /*event*/) const
 
 void Log::awaitNotification2Ongoing()
 {
-    if (std::unique_lock<std::mutex> lock(daemonMtx); true)
+    if (std::unique_lock<std::mutex> daemonLock(daemonMtx); true)
     {
-        daemonCond.wait(lock, [this]() { return ongoing.load(); });
+        daemonCond.wait(daemonLock, [this]() { return ongoing.load(); });
     }
 }
 
@@ -423,9 +423,8 @@ void Log::awaitNotification2Log()
 {
     while (ongoing.load())
     {
-        std::unique_lock<std::mutex> lock(daemonMtx);
-        daemonCond.wait(lock, [this]() { return !ongoing.load() || !logQueue.empty() || toReset.load(); });
-
+        std::unique_lock<std::mutex> daemonLock(daemonMtx);
+        daemonCond.wait(daemonLock, [this]() { return !ongoing.load() || !logQueue.empty() || toReset.load(); });
         if (toReset.load())
         {
             break;
