@@ -102,34 +102,34 @@ retry:
     }
 }
 
-void Log::waitForStart()
+void Log::Access::startup()
 try
 {
     utility::time::blockingTimer(
         [this]()
         {
-            if (isInUninterruptedState(State::hold))
+            if (inst.isInUninterruptedState(State::hold))
             {
                 throw std::runtime_error("The logger did not initialize successfully ...");
             }
-            return isInUninterruptedState(State::idle);
+            return inst.isInUninterruptedState(State::idle);
         });
 
-    if (std::unique_lock<std::mutex> daemonLock(daemonMtx); true)
+    if (std::unique_lock<std::mutex> daemonLock(inst.daemonMtx); true)
     {
-        ongoing.store(true);
+        inst.ongoing.store(true);
         daemonLock.unlock();
-        daemonCond.notify_one();
+        inst.daemonCond.notify_one();
     }
 
     utility::time::blockingTimer(
         [this]()
         {
-            if (isInUninterruptedState(State::hold))
+            if (inst.isInUninterruptedState(State::hold))
             {
                 throw std::runtime_error("The logger did not start successfully ...");
             }
-            return isInUninterruptedState(State::work);
+            return inst.isInUninterruptedState(State::work);
         });
 }
 catch (const std::exception& err)
@@ -137,24 +137,24 @@ catch (const std::exception& err)
     LOG_ERR << err.what();
 }
 
-void Log::waitForStop()
+void Log::Access::shutdown()
 try
 {
-    if (std::unique_lock<std::mutex> daemonLock(daemonMtx); true)
+    if (std::unique_lock<std::mutex> daemonLock(inst.daemonMtx); true)
     {
-        ongoing.store(false);
+        inst.ongoing.store(false);
         daemonLock.unlock();
-        daemonCond.notify_one();
+        inst.daemonCond.notify_one();
     }
 
     utility::time::blockingTimer(
         [this]()
         {
-            if (isInUninterruptedState(State::hold))
+            if (inst.isInUninterruptedState(State::hold))
             {
                 throw std::runtime_error("The logger did not stop successfully ...");
             }
-            return isInUninterruptedState(State::done);
+            return inst.isInUninterruptedState(State::done);
         });
 }
 catch (const std::exception& err)
@@ -162,34 +162,25 @@ catch (const std::exception& err)
     LOG_ERR << err.what();
 }
 
-void Log::requestToReset()
+void Log::Access::reload()
 try
 {
-    if (std::unique_lock<std::mutex> daemonLock(daemonMtx); true)
+    if (std::unique_lock<std::mutex> daemonLock(inst.daemonMtx); true)
     {
-        toReset.store(true);
+        inst.toReset.store(true);
         daemonLock.unlock();
-        daemonCond.notify_one();
+        inst.daemonCond.notify_one();
     }
 
-    if (utility::time::blockingTimer([this]() { return !toReset.load(); }, timeoutPeriod))
+    if (utility::time::blockingTimer([this]() { return !inst.toReset.load(); }, inst.timeoutPeriod))
     {
-        throw std::runtime_error("The logger did not reset properly in " + std::to_string(timeoutPeriod) + " ms ...");
+        throw std::runtime_error(
+            "The logger did not reset properly in " + std::to_string(inst.timeoutPeriod) + " ms ...");
     }
 }
 catch (const std::exception& err)
 {
     LOG_ERR << err.what();
-}
-
-std::string Log::getFilePath() const
-{
-    return filePath;
-}
-
-utility::common::ReadWriteLock& Log::getFileLock()
-{
-    return fileLock;
 }
 
 std::string_view Log::getPrefix(const OutputLevel level)

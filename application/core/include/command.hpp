@@ -329,8 +329,8 @@ private:
     //! @brief Parse the message inside the client in console mode.
     //! @param buffer - message buffer
     //! @param length - message length
-    //! @return parsed results
-    static auto parseMessageInsideClient(char* buffer, const int length);
+    //! @return need to stop the client connection or not
+    static bool parseMessageInsideClient(char* buffer, const int length);
     //! @brief Await outside the client in console mode.
     static void awaitOutsideClient();
     //! @brief Awaken inside the client in console mode.

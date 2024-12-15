@@ -51,23 +51,6 @@ enum TLVType : int
     profile
 };
 
-//! @brief Value in TLV.
-struct TLVValue
-{
-    //! @brief Flag for stopping the connection.
-    bool stopTag{false};
-    //! @brief Information about the runtime library.
-    char libInfo[defaultInfoSize]{'\0'};
-    //! @brief Shared memory id of the bash outputs.
-    int bashShmId{invalidShmId};
-    //! @brief Shared memory id of the log contents.
-    int logShmId{invalidShmId};
-    //! @brief Shared memory id of the status reports.
-    int statusShmId{invalidShmId};
-    //! @brief Information about the current configuration.
-    char configInfo[defaultInfoSize * 2]{'\0'};
-};
-
 //! @brief TLV packet.
 class Packet
 {
@@ -152,63 +135,52 @@ public:
     static View& getInstance();
     //! @brief State controller for running viewer.
     void stateController();
-    //! @brief Wait for the viewer to start. Interface controller for external use.
-    void waitForStart();
-    //! @brief Wait for the viewer to stop. Interface controller for external use.
-    void waitForStop();
-    //! @brief Request to reset the viewer. Interface controller for external use.
-    void requestToReset();
 
-    //! @brief Alias for the option name.
-    using OptionName = std::string;
-    //! @brief Alias for the help prompt of the option.
-    using HelpPrompt = std::string;
-    //! @brief Alias for the functor to build the TLV packet.
-    typedef int (*BuildFunctor)(const std::vector<std::string>&, char*);
-    //! @brief Alias for the attribute of the target option.
-    struct OptionAttr
+    //! @brief Access for the instance.
+    class Access
     {
-        //! @brief Help prompt.
-        HelpPrompt prompt{};
-        //! @brief Build functor.
-        BuildFunctor functor{};
-    };
-    //! @brief Alias for the map of OptionName and OptionAttr.
-    using OptionMap = std::map<OptionName, OptionAttr>;
-    //! @brief Get the viewer options.
-    //! @return viewer options
-    const OptionMap& getAllOptions() const;
-    //! @brief Get the TCP server host address.
-    //! @return TCP server host address
-    std::string getTCPHost() const;
-    //! @brief Get the TCP server port number.
-    //! @return TCP server port number
-    std::uint16_t getTCPPort() const;
-    //! @brief Get the UDP server host address.
-    //! @return UDP server host address
-    std::string getUDPHost() const;
-    //! @brief Get the UDP server port number.
-    //! @return UDP server port number
-    std::uint16_t getUDPPort() const;
-    //! @brief Parse the TLV packet.
-    //! @param buffer - TLV packet buffer
-    //! @param length - buffer length
-    //! @return value of TLV after parsing
-    tlv::TLVValue parseTLVPacket(char* buffer, const int length) const;
-    //! @brief Await depending on the output state.
-    void awaitDueToOutput();
-    //! @brief Awaken depending on the output state.
-    void awakenDueToOutput();
+    public:
+        //! @brief Construct a new Access object.
+        Access() : inst(getInstance()) {}
+        //! @brief Destroy the Access object.
+        virtual ~Access() = default;
 
-    //! @brief Maximum size of the shared memory.
-    static constexpr std::uint64_t maxShmSize{65536 * 10};
-    //! @brief Memory that can be accessed by multiple programs simultaneously.
-    struct alignas(64) SharedMemory
-    {
-        //! @brief Shared memory buffer.
-        char buffer[sizeof(int) + maxShmSize]{'\0'};
-        //! @brief Flag for operable.
-        std::atomic<bool> signal{false};
+        //! @brief Wait for the viewer to start. Interface controller for external use.
+        void startup();
+        //! @brief Wait for the viewer to stop. Interface controller for external use.
+        void shutdown();
+        //! @brief Request to reset the viewer. Interface controller for external use.
+        void reload();
+
+        //! @brief Parse the TLV packet.
+        //! @param buffer - TLV packet buffer
+        //! @param length - buffer length
+        //! @return need to stop the connection or not
+        bool parseTLVPacket(char* buffer, const int length) const;
+        //! @brief Await depending on the output state.
+        void awaitDueToOutput();
+        //! @brief Awaken depending on the output state.
+        void awakenDueToOutput();
+
+        //! @brief Get the supported options.
+        //! @return supported options
+        [[nodiscard]] inline const auto& getSupportedOptions() const { return inst.supportedOptions; }
+        //! @brief Get the TCP server host address.
+        //! @return TCP server host address
+        [[nodiscard]] inline std::string getTCPHost() const { return inst.tcpHost; }
+        //! @brief Get the TCP server port number.
+        //! @return TCP server port number
+        [[nodiscard]] inline std::uint16_t getTCPPort() const { return inst.tcpPort; }
+        //! @brief Get the UDP server host address.
+        //! @return UDP server host address
+        [[nodiscard]] inline std::string getUDPHost() const { return inst.udpHost; }
+        //! @brief Get the UDP server port number.
+        //! @return UDP server port number
+        [[nodiscard]] inline std::uint16_t getUDPPort() const { return inst.udpPort; }
+
+    private:
+        //! @brief Instance to be proxied.
+        View& inst;
     };
 
 private:
@@ -227,9 +199,25 @@ private:
     using LockMode = utility::common::ReadWriteLock::LockMode;
     //! @brief Timeout period (ms) to waiting for the viewer to change to the target state.
     const std::uint32_t timeoutPeriod{static_cast<std::uint32_t>(config::detail::helperTimeout())};
+    //! @brief Alias for the option name.
+    using OptionName = std::string;
+    //! @brief Alias for the help prompt of the option.
+    using HelpPrompt = std::string;
+    //! @brief Alias for the functor to build the TLV packet.
+    typedef int (*BuildFunctor)(const std::vector<std::string>&, char*);
+    //! @brief Alias for the attribute of the target option.
+    struct OptionAttr
+    {
+        //! @brief Help prompt.
+        HelpPrompt prompt{};
+        //! @brief Build functor.
+        BuildFunctor functor{};
+    };
+    //! @brief Alias for the map of OptionName and OptionAttr.
+    using OptionMap = std::map<OptionName, OptionAttr>;
     // clang-format off
     //! @brief Mapping table of all viewer options.
-    const OptionMap optionDispatcher
+    const OptionMap supportedOptions
     {
         // - Option -+---------------------- Help ----------------------+------- Build Packet -------
         // ----------+--------------------------------------------------+----------------------------
@@ -241,6 +229,16 @@ private:
         // ----------+--------------------------------------------------+----------------------------
     };
     // clang-format on
+    //! @brief Maximum size of the shared memory.
+    static constexpr std::uint64_t maxShmSize{65536 * 10};
+    //! @brief Memory that can be accessed by multiple programs simultaneously.
+    struct alignas(64) SharedMemory
+    {
+        //! @brief Shared memory buffer.
+        char buffer[sizeof(int) + maxShmSize]{'\0'};
+        //! @brief Flag for operable.
+        std::atomic<bool> signal{false};
+    };
 
     //! @brief TCP server host address.
     const std::string tcpHost{"localhost"};
@@ -344,6 +342,7 @@ private:
     std::atomic<bool> outputCompleted{false};
     //! @brief Spin lock for controlling state.
     mutable utility::common::SpinLock stateLock{};
+    friend class Access;
 
     //! @brief Safely retrieve the current state.
     //! @return current state
@@ -429,33 +428,33 @@ namespace info
 {
 //! @brief Get the current supported viewer options.
 //! @return current supported viewer options
-inline const View::OptionMap& getAllOptions()
+inline const auto& viewerSupportedOptions()
 {
-    return View::getInstance().getAllOptions();
+    return View::Access().getSupportedOptions();
 }
 //! @brief Get the current TCP host address being used for viewing.
 //! @return current TCP host address being used for viewing
 inline std::string viewerTCPHost()
 {
-    return View::getInstance().getTCPHost();
+    return View::Access().getTCPHost();
 }
 //! @brief Get the current TCP port number being used for viewing.
 //! @return current TCP port number being used for viewing
 inline std::uint16_t viewerTCPPort()
 {
-    return View::getInstance().getTCPPort();
+    return View::Access().getTCPPort();
 }
 //! @brief Get the current UDP host address being used for viewing.
 //! @return current UDP host address being used for viewing
 inline std::string viewerUDPHost()
 {
-    return View::getInstance().getUDPHost();
+    return View::Access().getUDPHost();
 }
 //! @brief Get the current UDP port number being used for viewing.
 //! @return current UDP port number being used for viewing
 inline std::uint16_t viewerUDPPort()
 {
-    return View::getInstance().getUDPPort();
+    return View::Access().getUDPPort();
 }
 } // namespace info
 } // namespace view
