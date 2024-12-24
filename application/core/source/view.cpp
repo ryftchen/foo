@@ -387,7 +387,7 @@ catch (const std::exception& err)
     LOG_ERR << err.what();
 }
 
-bool View::Access::parseTLVPacket(char* buffer, const int length) const
+bool View::Access::parseMessage(char* buffer, const int length) const
 {
     decryptMessage(buffer, length);
 
@@ -421,7 +421,7 @@ bool View::Access::parseTLVPacket(char* buffer, const int length) const
     return value.stopTag;
 }
 
-void View::Access::awaitDueToOutput() const
+void View::Access::enableWait() const
 {
     if (inst.isInUninterruptedState(State::work))
     {
@@ -435,7 +435,7 @@ void View::Access::awaitDueToOutput() const
     }
 }
 
-void View::Access::awakenDueToOutput() const
+void View::Access::disableWait() const
 {
     std::unique_lock<std::mutex> outputLock(inst.outputMtx);
     inst.outputCompleted.store(true);
@@ -831,7 +831,7 @@ void View::segmentedOutput(const std::string_view buffer)
                                clearEscape = "\x1b[1A\x1b[2K\r";
     std::istringstream transfer(buffer.data());
     const std::uint64_t lineNum =
-        std::count(std::istreambuf_iterator<char>(transfer), std::istreambuf_iterator<char>(), '\n');
+        std::count(std::istreambuf_iterator<char>(transfer), std::istreambuf_iterator<char>{}, '\n');
     transfer.seekg(std::ios::beg);
 
     bool moreRows = false, forcedCancel = false, withoutPaging = (lineNum <= terminalRows);

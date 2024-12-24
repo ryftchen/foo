@@ -69,8 +69,10 @@ consteval std::string_view toString(const Category cat)
         case Category::structural:
             return utility::reflection::TypeInfo<StructuralInstance>::name;
         default:
-            return {};
+            break;
     }
+
+    return {};
 }
 
 //! @brief Get the bit flags of the category in design pattern choices.

@@ -424,9 +424,7 @@ private:
         std::size_t min{0};
         //! @brief Maximum of range.
         std::size_t max{0};
-    };
-    //! @brief The range for the number of arguments.
-    ArgsNumRange argsNumRange{1, 1};
+    } /** @brief The range for the number of arguments. */ argsNumRange{1, 1};
 
     //! @brief Throw an exception when ArgsNumRange is invalid.
     [[noreturn]] void throwArgsNumRangeValidationException() const;

@@ -464,7 +464,7 @@ std::list<std::string> getFileContents(
     else
     {
         const std::uint64_t numOfLines = std::count(
-                                std::istreambuf_iterator<char>(input), std::istreambuf_iterator<char>(), '\n'),
+                                std::istreambuf_iterator<char>(input), std::istreambuf_iterator<char>{}, '\n'),
                             startLine = (numOfLines > totalRows) ? (numOfLines - totalRows + 1) : 1;
         input.clear();
         input.seekg(0, std::ios::beg);

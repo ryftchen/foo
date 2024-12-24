@@ -330,11 +330,11 @@ private:
     //! @param buffer - message buffer
     //! @param length - message length
     //! @return need to stop the client connection or not
-    static bool parseMessageInsideClient(char* buffer, const int length);
+    static bool parseMessage4Client(char* buffer, const int length);
     //! @brief Await outside the client in console mode.
-    static void awaitOutsideClient();
+    static void enableWait4Client();
     //! @brief Awaken inside the client in console mode.
-    static void awakenInsideClient();
+    static void disableWait4Client();
     //! @brief Validate dependencies version.
     void validateDependenciesVersion() const;
     //! @brief Get ASCII banner text.

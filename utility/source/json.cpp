@@ -203,7 +203,6 @@ static JSON parseString(const std::string_view fmt, std::size_t& offset)
                     val += '\t';
                     break;
                 case 'u':
-                {
                     val += "\\u";
                     for (std::uint8_t i = 1; i <= 4; ++i)
                     {
@@ -220,8 +219,7 @@ static JSON parseString(const std::string_view fmt, std::size_t& offset)
                         }
                     }
                     offset += 4;
-                }
-                break;
+                    break;
                 default:
                     val += '\\';
                     break;
@@ -402,7 +400,9 @@ static JSON parseNext(const std::string_view fmt, std::size_t& offset)
             {
                 return parseNumber(fmt, offset);
             }
+            break;
     }
+
     throw std::runtime_error("JSON syntax error, unknown starting character '" + std::string{c} + "'.");
 }
 
@@ -771,7 +771,7 @@ std::string JSON::dump(const std::uint32_t depth, const std::string_view tab) co
             {
                 pad += tab;
             }
-            std::string s = "{\n";
+            std::string s("{\n");
             for (bool skip = true; const auto& p : std::get<Object>(data.value))
             {
                 if (!skip)
@@ -786,7 +786,7 @@ std::string JSON::dump(const std::uint32_t depth, const std::string_view tab) co
         }
         case Type::array:
         {
-            std::string s = "[";
+            std::string s("[");
             for (bool skip = true; const auto& p : std::get<Array>(data.value))
             {
                 if (!skip)
@@ -822,7 +822,7 @@ std::string JSON::dumpMinified() const
             return "null";
         case Type::object:
         {
-            std::string s = "{";
+            std::string s("{");
             for (bool skip = true; const auto& p : std::get<Object>(data.value))
             {
                 if (!skip)
@@ -837,7 +837,7 @@ std::string JSON::dumpMinified() const
         }
         case Type::array:
         {
-            std::string s = "[";
+            std::string s("[");
             for (bool skip = true; const auto& p : std::get<Array>(data.value))
             {
                 if (!skip)

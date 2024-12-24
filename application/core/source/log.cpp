@@ -196,8 +196,10 @@ std::string_view Log::getPrefix(const OutputLevel level)
         case OutputLevel::error:
             return errorLevelPrefix;
         default:
-            return traceLevelPrefix;
+            break;
     }
+
+    return traceLevelPrefix;
 }
 
 std::vector<std::string> Log::reformatContents(const std::string_view label, const std::string_view formatted)
@@ -306,7 +308,7 @@ void Log::backUpLogFileIfNeeded() const
                     std::smatch match{};
                     return std::regex_match(filename, match, pattern) ? std::stoi(match[1].str()) : 0;
                 });
-        const int index = std::ranges::max(transformed, std::less<int>(), [](const auto value) { return value; });
+        const int index = std::ranges::max(transformed, std::less<int>{}, [](const auto value) { return value; });
         std::filesystem::rename(filePath, filePath + '.' + std::to_string(index + 1));
     }
 }

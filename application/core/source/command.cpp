@@ -680,9 +680,9 @@ Command::ChoiceContainer Command::extractChoices()
     return choices;
 }
 
-bool Command::parseMessageInsideClient(char* buffer, const int length)
+bool Command::parseMessage4Client(char* buffer, const int length)
 {
-    return view::View::Access().parseTLVPacket(buffer, length);
+    return (0 != length) ? view::View::Access().parseMessage(buffer, length) : false;
 }
 
 //! @brief Launch the TCP client for console mode.
@@ -694,7 +694,7 @@ void Command::launchClient<utility::socket::TCPSocket>(std::shared_ptr<utility::
     {
         try
         {
-            if ((0 != length) && parseMessageInsideClient(buffer, length))
+            if (parseMessage4Client(buffer, length))
             {
                 client->asyncExit();
             }
@@ -703,7 +703,7 @@ void Command::launchClient<utility::socket::TCPSocket>(std::shared_ptr<utility::
         {
             LOG_WRN << err.what();
         }
-        awakenInsideClient();
+        disableWait4Client();
     };
     client->toConnect(view::info::viewerTCPHost(), view::info::viewerTCPPort());
 }
@@ -718,7 +718,7 @@ void Command::launchClient<utility::socket::UDPSocket>(std::shared_ptr<utility::
     {
         try
         {
-            if ((0 != length) && parseMessageInsideClient(buffer, length))
+            if (parseMessage4Client(buffer, length))
             {
                 client->asyncExit();
             }
@@ -727,7 +727,7 @@ void Command::launchClient<utility::socket::UDPSocket>(std::shared_ptr<utility::
         {
             LOG_WRN << err.what();
         }
-        awakenInsideClient();
+        disableWait4Client();
     };
     client->toReceive();
     client->toConnect(view::info::viewerUDPHost(), view::info::viewerUDPPort());
@@ -903,7 +903,7 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& c
                 inputs.cend(),
                 std::string{},
                 [](const auto& acc, const auto& token) { return acc.empty() ? token : (acc + ' ' + token); })));
-            awaitOutsideClient();
+            enableWait4Client();
         }
         catch (const std::exception& err)
         {
@@ -966,14 +966,14 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& c
     }
 }
 
-void Command::awaitOutsideClient()
+void Command::enableWait4Client()
 {
-    view::View::Access().awaitDueToOutput();
+    view::View::Access().enableWait();
 }
 
-void Command::awakenInsideClient()
+void Command::disableWait4Client()
 {
-    view::View::Access().awakenDueToOutput();
+    view::View::Access().disableWait();
 }
 
 void Command::validateDependenciesVersion() const

@@ -73,8 +73,10 @@ consteval std::string_view toString(const Category cat)
         case Category::sort:
             return utility::reflection::TypeInfo<SortMethod>::name;
         default:
-            return {};
+            break;
     }
+
+    return {};
 }
 
 //! @brief Get the bit flags of the category in algorithm choices.

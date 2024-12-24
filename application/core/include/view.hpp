@@ -156,11 +156,11 @@ public:
         //! @param buffer - TLV packet buffer
         //! @param length - buffer length
         //! @return need to stop the connection or not
-        bool parseTLVPacket(char* buffer, const int length) const;
+        bool parseMessage(char* buffer, const int length) const;
         //! @brief Await depending on the output state.
-        void awaitDueToOutput() const;
+        void enableWait() const;
         //! @brief Awaken depending on the output state.
-        void awakenDueToOutput() const;
+        void disableWait() const;
 
         //! @brief Get the supported options.
         //! @return supported options
@@ -179,7 +179,7 @@ public:
         [[nodiscard]] inline std::uint16_t getUDPPort() const { return inst.udpPort; }
 
     private:
-        //! @brief Instance to be proxied.
+        //! @brief Instance to be accessed.
         View& inst;
     };
 
