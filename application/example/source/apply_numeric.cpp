@@ -71,8 +71,10 @@ consteval std::string_view toString(const Category cat)
         case Category::prime:
             return utility::reflection::TypeInfo<PrimeMethod>::name;
         default:
-            return {};
+            break;
     }
+
+    return {};
 }
 
 //! @brief Get the bit flags of the category in numeric choices.

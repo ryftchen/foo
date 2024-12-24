@@ -114,7 +114,6 @@ template <class T>
 std::vector<T> Sort<T>::bubble(const T* const array, const std::uint32_t length)
 {
     std::vector<T> sorting(array, array + length);
-
     for (std::uint32_t i = 0; i < length - 1; ++i)
     {
         for (std::uint32_t j = 0; j < length - 1 - i; ++j)
@@ -133,7 +132,6 @@ template <class T>
 std::vector<T> Sort<T>::selection(const T* const array, const std::uint32_t length)
 {
     std::vector<T> sorting(array, array + length);
-
     for (std::uint32_t i = 0; i < length - 1; ++i)
     {
         std::uint32_t min = i;
@@ -154,7 +152,6 @@ template <class T>
 std::vector<T> Sort<T>::insertion(const T* const array, const std::uint32_t length)
 {
     std::vector<T> sorting(array, array + length);
-
     for (std::uint32_t i = 1; i < length; ++i)
     {
         std::int64_t n = i - 1;
@@ -174,7 +171,6 @@ template <class T>
 std::vector<T> Sort<T>::shell(const T* const array, const std::uint32_t length)
 {
     std::vector<T> sorting(array, array + length);
-
     std::uint32_t gap = length / 2;
     while (gap >= 1)
     {
@@ -282,7 +278,6 @@ template <class T>
 std::vector<T> Sort<T>::heap(const T* const array, const std::uint32_t length)
 {
     std::vector<T> sorting(array, array + length);
-
     for (std::int64_t i = length / 2 + 1; i >= 0; --i)
     {
         buildMaxHeap(sorting.data(), i, length - 1);
@@ -326,7 +321,6 @@ std::vector<T> Sort<T>::counting(const T* const array, const std::uint32_t lengt
     }
 
     std::vector<T> sorting(array, array + length);
-
     T max = std::numeric_limits<T>::min(), min = std::numeric_limits<T>::max();
     for (std::uint32_t i = 0; i < length; ++i)
     {
@@ -357,7 +351,6 @@ template <class T>
 std::vector<T> Sort<T>::bucket(const T* const array, const std::uint32_t length)
 {
     std::vector<T> sorting(array, array + length);
-
     T max = std::numeric_limits<T>::min(), min = std::numeric_limits<T>::max();
     for (std::uint32_t i = 0; i < length; ++i)
     {
@@ -395,7 +388,6 @@ std::vector<T> Sort<T>::radix(const T* const array, const std::uint32_t length)
     }
 
     std::vector<T> sorting(array, array + length);
-
     T max = std::numeric_limits<T>::min(), min = std::numeric_limits<T>::max();
     bool positive = false, negative = false;
     for (std::uint32_t i = 0; i < length; ++i)
@@ -461,6 +453,7 @@ void Sort<T>::leastSignificantDigit(
                 const std::uint32_t bucketIdx = std::abs(elem) / pow % base * sign + indexOffset;
                 bucket[bucketIdx].push(elem);
                 ++countNew[bucketIdx];
+
                 bucketIter->pop();
                 --countOld[countIdx];
             }

@@ -67,8 +67,10 @@ consteval std::string_view toString(const Category cat)
         case Category::tree:
             return utility::reflection::TypeInfo<TreeInstance>::name;
         default:
-            return {};
+            break;
     }
+
+    return {};
 }
 
 //! @brief Get the bit flags of the category in data structure choices.

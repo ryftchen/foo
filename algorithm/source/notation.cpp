@@ -104,8 +104,10 @@ Notation::Priority Notation::getPriority(const char c)
         case '^':
             return Priority::high;
         default:
-            return Priority::none;
+            break;
     }
+
+    return Priority::none;
 }
 
 bool Notation::isOperator(const char c)

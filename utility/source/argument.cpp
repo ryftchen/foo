@@ -515,7 +515,7 @@ std::vector<std::string> Argument::preprocessArguments(const std::vector<std::st
     std::vector<std::string> arguments{};
     for (const auto& arg : rawArguments)
     {
-        const auto argumentStartsWithPrefixChars = [this](const std::string_view str)
+        const auto startWithPrefixChars = [this](const std::string_view str)
         {
             if (!str.empty())
             {
@@ -534,7 +534,7 @@ std::vector<std::string> Argument::preprocessArguments(const std::vector<std::st
         };
 
         const auto assignCharPos = arg.find_first_of(assignChars);
-        if ((argumentMap.cend() == argumentMap.find(arg)) && argumentStartsWithPrefixChars(arg)
+        if ((argumentMap.cend() == argumentMap.find(arg)) && startWithPrefixChars(arg)
             && (std::string::npos != assignCharPos))
         {
             const auto optName = arg.substr(0, assignCharPos);
@@ -560,13 +560,13 @@ void Argument::parseArgsInternal(const std::vector<std::string>& rawArguments)
     }
 
     const auto end = arguments.cend();
-    auto positionalArgumentIter = positionalArguments.begin();
+    auto positionalArgIter = positionalArguments.begin();
     for (auto iterator = std::next(arguments.begin()); end != iterator;)
     {
         const auto& currentArgument = *iterator;
         if (Register::checkIfPositional(currentArgument, prefixChars))
         {
-            if (positionalArguments.cend() == positionalArgumentIter)
+            if (positionalArguments.cend() == positionalArgIter)
             {
                 const std::string_view maybeCommand = currentArgument;
                 const auto subParserIter = subParserMap.find(maybeCommand);
@@ -580,7 +580,7 @@ void Argument::parseArgsInternal(const std::vector<std::string>& rawArguments)
 
                 throw std::runtime_error("Maximum number of positional arguments exceeded.");
             }
-            const auto argument = positionalArgumentIter++;
+            const auto argument = positionalArgIter++;
             iterator = argument->consume(iterator, end);
             continue;
         }
