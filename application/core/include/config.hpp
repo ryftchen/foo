@@ -41,9 +41,9 @@ public:
     //! @brief Get the Config instance.
     //! @return reference of the Config object
     static Config& getInstance();
-    //! @brief Get the data repository.
+    //! @brief Interface used to retrieve.
     //! @return data repository
-    [[nodiscard]] const utility::json::JSON& getDataRepo() const;
+    [[nodiscard]] const utility::json::JSON& retrieve() const;
 
 private:
     //! @brief Construct a new Config object.

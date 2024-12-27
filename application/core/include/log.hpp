@@ -211,8 +211,8 @@ public:
     //! @brief Get the Log instance.
     //! @return reference of the Log object
     static Log& getInstance();
-    //! @brief State controller for running logger.
-    void stateController();
+    //! @brief Service for running.
+    void service();
 
     //! @brief Access for the instance.
     class Access
@@ -346,10 +346,10 @@ private:
     //! @param event - target event
     template <class T>
     void safeProcessEvent(const T& event);
-    //! @brief Check whether it is in the uninterrupted target state.
+    //! @brief Check whether it is in the uninterrupted serving state.
     //! @param state - target state
-    //! @return in the uninterrupted target state or not
-    bool isInUninterruptedState(const State state) const;
+    //! @return in the uninterrupted serving state or not
+    bool isInServingState(const State state) const;
     //! @brief Get the full path to the log file.
     //! @param filename - log file path
     //! @return full path to the log file
@@ -455,7 +455,7 @@ void Log::flush(
             std::format(
                 "[{}] {} [{}#{}] ",
                 utility::time::getCurrentSystemTime(),
-                isInUninterruptedState(State::work) ? (daemonLock.lock(), getPrefix(severity)) : traceLevelPrefix,
+                isInServingState(State::work) ? (daemonLock.lock(), getPrefix(severity)) : traceLevelPrefix,
                 (std::string_view::npos != srcFile.rfind(sourceDirectory))
                     ? srcFile.substr(srcFile.rfind(sourceDirectory) + sourceDirectory.length(), srcFile.length())
                     : srcFile,
