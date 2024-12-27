@@ -394,11 +394,11 @@ private:
     //! @return full outputs
     static std::ostringstream transferOutputs(std::ostringstream& outputs)
     {
-        std::ostringstream transfer(outputs.str());
+        std::ostringstream process(outputs.str());
         outputs.str("");
         outputs.clear();
 
-        return transfer;
+        return process;
     }
 };
 
@@ -548,11 +548,11 @@ private:
     //! @return full outputs
     static std::ostringstream transferOutputs(std::ostringstream& outputs)
     {
-        std::ostringstream transfer(outputs.str());
+        std::ostringstream process(outputs.str());
         outputs.str("");
         outputs.clear();
 
-        return transfer;
+        return process;
     }
 };
 
@@ -700,11 +700,11 @@ private:
     //! @return full outputs
     static std::ostringstream transferOutputs(std::ostringstream& outputs)
     {
-        std::ostringstream transfer(outputs.str());
+        std::ostringstream process(outputs.str());
         outputs.str("");
         outputs.clear();
 
-        return transfer;
+        return process;
     }
 };
 

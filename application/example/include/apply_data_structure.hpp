@@ -143,6 +143,16 @@ struct Meta
     int id{0};
     //! @brief Name of the metadata.
     char name[4]{'\0'};
+
+    //! @brief The operator (<<) overloading of the Meta struct.
+    //! @param os - output stream object
+    //! @param meta - the specific value of Meta enum
+    //! @return reference of the output stream object
+    friend std::ostream& operator<<(std::ostream& os, const Meta& meta)
+    {
+        os << '{' << meta.id << ", " << meta.name << '}';
+        return os;
+    }
 };
 //! @brief Linear instances.
 class Linear
@@ -161,52 +171,53 @@ public:
             doubly_linked_list::dllGet, doubly_linked_list::dllGetFirst, doubly_linked_list::dllGetLast,
             doubly_linked_list::dllInsert, doubly_linked_list::dllInsertFirst, doubly_linked_list::dllInsertLast,
             doubly_linked_list::dllIsEmpty, doubly_linked_list::dllSize;
-        date_structure::linear::Output output{};
-        auto& flush = output.flush();
-        flush << std::boolalpha;
+        date_structure::linear::Output tracker{};
+        auto& process = tracker.output();
+        process << std::boolalpha;
         Meta meta[] = {{'A', "foo"}, {'B', "bar"}, {'C', "baz"}, {'D', "qux"}};
         const std::span<Meta> nodes(meta);
+        constexpr std::string_view separator = " <-> ";
 
         const Meta* val = nullptr;
         DLL dll = nullptr;
         createDll(&dll);
         dllInsert(dll, 0, &nodes[0]);
-        flush << "insert (0): {" << nodes[0].id << ", " << nodes[0].name << "}\n";
+        process << "insert (0): " << nodes[0] << '\n';
         dllInsert(dll, 0, &nodes[1]);
-        flush << "insert (0): {" << nodes[1].id << ", " << nodes[1].name << "}\n";
+        process << "insert (0): " << nodes[1] << '\n';
         dllInsert(dll, 1, &nodes[2]);
-        flush << "insert (1): {" << nodes[2].id << ", " << nodes[2].name << "}\n";
+        process << "insert (1): " << nodes[2] << '\n';
         dllDelete(dll, 2);
-        flush << "delete (2)\n";
+        process << "delete (2)\n";
 
         dllInsertFirst(dll, &nodes.front());
-        flush << "insert first: {" << nodes.front().id << ", " << nodes.front().name << "}\n";
+        process << "insert first: " << nodes.front() << '\n';
         dllInsertLast(dll, &nodes.back());
-        flush << "insert last: {" << nodes.back().id << ", " << nodes.back().name << "}\n";
+        process << "insert last: " << nodes.back() << '\n';
         val = static_cast<Meta*>(dllGetFirst(dll));
-        flush << "get first: {" << val->id << ", " << val->name << "}\n";
+        process << "get first: " << *val << '\n';
         val = static_cast<Meta*>(dllGetLast(dll));
-        flush << "get last: {" << val->id << ", " << val->name << "}\n";
+        process << "get last: " << *val << '\n';
         dllDeleteFirst(dll);
-        flush << "delete first\n";
+        process << "delete first\n";
         dllDeleteLast(dll);
-        flush << "delete last\n";
+        process << "delete last\n";
         dllInsert(dll, 1, &nodes[0]);
-        flush << "insert (1): {" << nodes[0].id << ", " << nodes[0].name << "}\n";
+        process << "insert (1): " << nodes[0] << '\n';
 
-        flush << "whether it is empty: " << dllIsEmpty(dll) << '\n';
-        flush << "size: " << dllSize(dll) << '\n';
-        flush << "linear details: HEAD -> ";
+        process << "whether it is empty: " << dllIsEmpty(dll) << '\n';
+        process << "size: " << dllSize(dll) << '\n';
+        process << "linear details: HEAD -> ";
         for (int i = 0; i < dllSize(dll); ++i)
         {
             val = static_cast<Meta*>(dllGet(dll, i));
-            flush << '{' << val->id << ", " << val->name << "} <-> ";
+            process << *val << separator;
         }
-        flush.seekp(flush.str().length() - std::strlen(" <-> "));
-        flush << " -> NULL\n";
+        process.seekp(process.str().length() - separator.length());
+        process << " -> NULL\n";
         destroyDll(&dll);
 
-        return std::ostringstream(flush.str());
+        return std::ostringstream(process.str());
     }
     //! @brief Stack.
     //! @return procedure output
@@ -215,11 +226,12 @@ public:
         namespace stack = date_structure::linear::stack;
         using stack::createStack, stack::destroyStack, stack::Stack, stack::stackIsEmpty, stack::stackPop,
             stack::stackPush, stack::stackSize, stack::stackTop;
-        date_structure::linear::Output output{};
-        auto& flush = output.flush();
-        flush << std::boolalpha;
+        date_structure::linear::Output tracker{};
+        auto& process = tracker.output();
+        process << std::boolalpha;
         Meta meta[] = {{'A', "foo"}, {'B', "bar"}, {'C', "baz"}, {'D', "qux"}};
         const std::span<Meta> nodes(meta);
+        constexpr std::string_view separator = ", ";
 
         const Meta* val = nullptr;
         Stack stacks = nullptr;
@@ -230,29 +242,29 @@ public:
             [&](auto& node)
             {
                 stackPush(stacks, &node);
-                flush << "push: {" << node.id << ", " << node.name << "}\n";
+                process << "push: " << node << '\n';
             });
 
         val = static_cast<Meta*>(stackPop(stacks));
-        flush << "pop: {" << val->id << ", " << val->name << "}\n";
+        process << "pop: " << *val << '\n';
         val = static_cast<Meta*>(stackTop(stacks));
-        flush << "top: {" << val->id << ", " << val->name << "}\n";
+        process << "top: " << *val << '\n';
         stackPush(stacks, &nodes.back());
-        flush << "push: {" << nodes.back().id << ", " << nodes.back().name << "}\n";
+        process << "push: " << nodes.back() << '\n';
 
-        flush << "whether it is empty: " << stackIsEmpty(stacks) << '\n';
-        flush << "size: " << stackSize(stacks) << '\n';
-        flush << "linear details: TOP [";
+        process << "whether it is empty: " << stackIsEmpty(stacks) << '\n';
+        process << "size: " << stackSize(stacks) << '\n';
+        process << "linear details: TOP [";
         while (!stackIsEmpty(stacks))
         {
             val = static_cast<Meta*>(stackPop(stacks));
-            flush << '{' << val->id << ", " << val->name << "}, ";
+            process << *val << separator;
         }
-        flush.seekp(flush.str().length() - std::strlen(", "));
-        flush << "] BOTTOM\n";
+        process.seekp(process.str().length() - separator.length());
+        process << "] BOTTOM\n";
         destroyStack(&stacks);
 
-        return std::ostringstream(flush.str());
+        return std::ostringstream(process.str());
     }
     //! @brief Queue.
     //! @return procedure output
@@ -261,11 +273,12 @@ public:
         namespace queue = date_structure::linear::queue;
         using queue::createQueue, queue::destroyQueue, queue::Queue, queue::queueFront, queue::queueIsEmpty,
             queue::queuePop, queue::queuePush, queue::queueSize;
-        date_structure::linear::Output output{};
-        auto& flush = output.flush();
-        flush << std::boolalpha;
+        date_structure::linear::Output tracker{};
+        auto& process = tracker.output();
+        process << std::boolalpha;
         Meta meta[] = {{'A', "foo"}, {'B', "bar"}, {'C', "baz"}, {'D', "qux"}};
         const std::span<Meta> nodes(meta);
+        constexpr std::string_view separator = ", ";
 
         const Meta* val = nullptr;
         Queue queues = nullptr;
@@ -276,29 +289,29 @@ public:
             [&](auto& node)
             {
                 queuePush(queues, &node);
-                flush << "push: {" << node.id << ", " << node.name << "}\n";
+                process << "push: " << node << '\n';
             });
 
         val = static_cast<Meta*>(queuePop(queues));
-        flush << "pop: {" << val->id << ", " << val->name << "}\n";
+        process << "pop: " << *val << '\n';
         val = static_cast<Meta*>(queueFront(queues));
-        flush << "front: {" << val->id << ", " << val->name << "}\n";
+        process << "front: " << *val << '\n';
         queuePush(queues, &nodes.front());
-        flush << "push: {" << nodes.front().id << ", " << nodes.front().name << "}\n";
+        process << "push: " << nodes.front() << '\n';
 
-        flush << "whether it is empty: " << queueIsEmpty(queues) << '\n';
-        flush << "size: " << queueSize(queues) << '\n';
-        flush << "linear details: FRONT [";
+        process << "whether it is empty: " << queueIsEmpty(queues) << '\n';
+        process << "size: " << queueSize(queues) << '\n';
+        process << "linear details: FRONT [";
         while (!queueIsEmpty(queues))
         {
             val = static_cast<Meta*>(queuePop(queues));
-            flush << '{' << val->id << ", " << val->name << "}, ";
+            process << *val << separator;
         }
-        flush.seekp(flush.str().length() - std::strlen(", "));
-        flush << "] REAR\n";
+        process.seekp(process.str().length() - separator.length());
+        process << "] REAR\n";
         destroyQueue(&queues);
 
-        return std::ostringstream(flush.str());
+        return std::ostringstream(process.str());
     }
 };
 
@@ -340,46 +353,46 @@ public:
     {
         namespace bs = date_structure::tree::bs;
         using bs::BSTree, bs::bsTreeDelete, bs::bsTreeInsert, bs::destroyBSTree, bs::getMaximum, bs::getMinimum;
-        bs::Output output{};
-        auto& flush = output.flush();
+        bs::Output tracker{};
+        auto& process = tracker.output();
         BSTree root = nullptr;
         constexpr std::array<std::int16_t, 6> nodes = {1, 5, 4, 3, 2, 6};
 
-        flush << "insert: ";
+        process << "insert: ";
         std::for_each(
             nodes.cbegin(),
             nodes.cend(),
             [&](const auto node)
             {
-                flush << node << ", ";
+                process << node << ", ";
                 root = bsTreeInsert(root, node);
             });
-        flush.seekp(flush.str().length() - 2);
+        process.seekp(process.str().length() - 2);
 
-        flush << "\npre-order traversal: ";
-        output.preorderBSTree(root);
-        flush << "\nin-order traversal: ";
-        output.inorderBSTree(root);
-        flush << "\npost-order traversal: ";
-        output.postorderBSTree(root);
+        process << "\npre-order traversal: ";
+        tracker.preorderBSTree(root);
+        process << "\nin-order traversal: ";
+        tracker.inorderBSTree(root);
+        process << "\npost-order traversal: ";
+        tracker.postorderBSTree(root);
 
-        flush << "\nminimum: " << getMinimum(root)->key;
-        flush << "\nmaximum: " << getMaximum(root)->key;
-        flush << "\ntree details:\n";
-        output.printBSTree(root, root->key, 0);
+        process << "\nminimum: " << getMinimum(root)->key;
+        process << "\nmaximum: " << getMaximum(root)->key;
+        process << "\ntree details:\n";
+        tracker.printBSTree(root, root->key, 0);
 
         constexpr std::int16_t deleteNode = 3;
-        flush << "delete root node: " << deleteNode;
+        process << "delete root node: " << deleteNode;
         root = bsTreeDelete(root, deleteNode);
 
-        flush << "\nin-order traversal: ";
-        output.inorderBSTree(root);
-        flush << "\ntree details:\n";
-        output.printBSTree(root, root->key, 0);
+        process << "\nin-order traversal: ";
+        tracker.inorderBSTree(root);
+        process << "\ntree details:\n";
+        tracker.printBSTree(root, root->key, 0);
 
         destroyBSTree(root);
 
-        return std::ostringstream(flush.str());
+        return std::ostringstream(process.str());
     }
     //! @brief Adelson-Velsky-Landis.
     //! @return procedure output
@@ -388,49 +401,49 @@ public:
         namespace avl = date_structure::tree::avl;
         using avl::AVLTree, avl::avlTreeDelete, avl::avlTreeInsert, avl::destroyAVLTree, avl::getHeight,
             avl::getMaximum, avl::getMinimum;
-        avl::Output output{};
-        auto& flush = output.flush();
+        avl::Output tracker{};
+        auto& process = tracker.output();
         AVLTree root = nullptr;
         constexpr std::array<std::int16_t, 16> nodes = {3, 2, 1, 4, 5, 6, 7, 16, 15, 14, 13, 12, 11, 10, 8, 9};
 
-        flush << "height: " << getHeight(root);
-        flush << "\ninsert: ";
+        process << "height: " << getHeight(root);
+        process << "\ninsert: ";
         std::for_each(
             nodes.cbegin(),
             nodes.cend(),
             [&](const auto node)
             {
-                flush << node << ", ";
+                process << node << ", ";
                 root = avlTreeInsert(root, node);
             });
-        flush.seekp(flush.str().length() - 2);
+        process.seekp(process.str().length() - 2);
 
-        flush << "\npre-order traversal: ";
-        output.preorderAVLTree(root);
-        flush << "\nin-order traversal: ";
-        output.inorderAVLTree(root);
-        flush << "\npost-order traversal: ";
-        output.postorderAVLTree(root);
+        process << "\npre-order traversal: ";
+        tracker.preorderAVLTree(root);
+        process << "\nin-order traversal: ";
+        tracker.inorderAVLTree(root);
+        process << "\npost-order traversal: ";
+        tracker.postorderAVLTree(root);
 
-        flush << "\nheight: " << getHeight(root);
-        flush << "\nminimum: " << getMinimum(root)->key;
-        flush << "\nmaximum: " << getMaximum(root)->key;
-        flush << "\ntree details:\n";
-        output.printAVLTree(root, root->key, 0);
+        process << "\nheight: " << getHeight(root);
+        process << "\nminimum: " << getMinimum(root)->key;
+        process << "\nmaximum: " << getMaximum(root)->key;
+        process << "\ntree details:\n";
+        tracker.printAVLTree(root, root->key, 0);
 
         constexpr std::int16_t deleteNode = 8;
-        flush << "delete root node: " << deleteNode;
+        process << "delete root node: " << deleteNode;
         root = avlTreeDelete(root, deleteNode);
 
-        flush << "\nheight: " << getHeight(root);
-        flush << "\nin-order traversal: ";
-        output.inorderAVLTree(root);
-        flush << "\ntree details:\n";
-        output.printAVLTree(root, root->key, 0);
+        process << "\nheight: " << getHeight(root);
+        process << "\nin-order traversal: ";
+        tracker.inorderAVLTree(root);
+        process << "\ntree details:\n";
+        tracker.printAVLTree(root, root->key, 0);
 
         destroyAVLTree(root);
 
-        return std::ostringstream(flush.str());
+        return std::ostringstream(process.str());
     }
     //! @brief Splay.
     //! @return procedure output
@@ -439,44 +452,44 @@ public:
         namespace splay = date_structure::tree::splay;
         using splay::destroySplayTree, splay::getMaximum, splay::getMinimum, splay::SplayTree, splay::splayTreeInsert,
             splay::splayTreeSplay;
-        splay::Output output{};
-        auto& flush = output.flush();
+        splay::Output tracker{};
+        auto& process = tracker.output();
         SplayTree root = nullptr;
         constexpr std::array<std::int16_t, 6> nodes = {10, 50, 40, 30, 20, 60};
 
-        flush << "insert: ";
+        process << "insert: ";
         std::for_each(
             nodes.cbegin(),
             nodes.cend(),
             [&](const auto node)
             {
-                flush << node << ", ";
+                process << node << ", ";
                 root = splayTreeInsert(root, node);
             });
-        flush.seekp(flush.str().length() - 2);
+        process.seekp(process.str().length() - 2);
 
-        flush << "\npre-order traversal: ";
-        output.preorderSplayTree(root);
-        flush << "\nin-order traversal: ";
-        output.inorderSplayTree(root);
-        flush << "\npost-order traversal: ";
-        output.postorderSplayTree(root);
+        process << "\npre-order traversal: ";
+        tracker.preorderSplayTree(root);
+        process << "\nin-order traversal: ";
+        tracker.inorderSplayTree(root);
+        process << "\npost-order traversal: ";
+        tracker.postorderSplayTree(root);
 
-        flush << "\nminimum: " << getMinimum(root)->key;
-        flush << "\nmaximum: " << getMaximum(root)->key;
-        flush << "\ntree details:\n";
-        output.printSplayTree(root, root->key, 0);
+        process << "\nminimum: " << getMinimum(root)->key;
+        process << "\nmaximum: " << getMaximum(root)->key;
+        process << "\ntree details:\n";
+        tracker.printSplayTree(root, root->key, 0);
 
         constexpr std::int16_t splayNode = 30;
-        flush << "splay node as root node: " << splayNode;
+        process << "splay node as root node: " << splayNode;
         root = splayTreeSplay(root, splayNode);
 
-        flush << "\ntree details:\n";
-        output.printSplayTree(root, root->key, 0);
+        process << "\ntree details:\n";
+        tracker.printSplayTree(root, root->key, 0);
 
         destroySplayTree(root);
 
-        return std::ostringstream(flush.str());
+        return std::ostringstream(process.str());
     }
 };
 

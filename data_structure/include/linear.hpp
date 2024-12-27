@@ -93,11 +93,11 @@ public:
 
     //! @brief Flush the output stream.
     //! @return reference of the output stream object, which is on string based
-    std::ostringstream& flush();
+    std::ostringstream& output();
 
 private:
     //! @brief Output stream of the data structure.
-    std::ostringstream stream{};
+    std::ostringstream process{};
 };
 } // namespace linear
 } // namespace date_structure
