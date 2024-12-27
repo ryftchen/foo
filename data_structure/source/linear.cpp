@@ -402,8 +402,8 @@ bool queueIsEmpty(Queue head)
 }
 } // namespace queue
 
-std::ostringstream& Output::flush()
+std::ostringstream& Output::output()
 {
-    return stream;
+    return process;
 }
 } // namespace date_structure::linear

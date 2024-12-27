@@ -256,16 +256,16 @@ void destroyBSTree(BSTree tree)
     delete tree;
 }
 
-std::ostringstream& Output::flush()
+std::ostringstream& Output::output()
 {
-    return stream;
+    return process;
 }
 
 void Output::preorderBSTree(BSTree tree)
 {
     if (nullptr != tree)
     {
-        flush() << tree->key << " ... ";
+        output() << tree->key << " ... ";
         preorderBSTree(tree->left);
         preorderBSTree(tree->right);
     }
@@ -276,7 +276,7 @@ void Output::inorderBSTree(BSTree tree)
     if (nullptr != tree)
     {
         inorderBSTree(tree->left);
-        flush() << tree->key << " ... ";
+        output() << tree->key << " ... ";
         inorderBSTree(tree->right);
     }
 }
@@ -287,7 +287,7 @@ void Output::postorderBSTree(BSTree tree)
     {
         postorderBSTree(tree->left);
         postorderBSTree(tree->right);
-        flush() << tree->key << " ... ";
+        output() << tree->key << " ... ";
     }
 }
 
@@ -299,12 +299,12 @@ void Output::printBSTree(BSTree tree, const Type key, const int direction)
         if (0 == direction)
         {
             indent = 0;
-            flush() << "+ " << tree->key << " -> root\n";
+            output() << "+ " << tree->key << " -> root\n";
         }
         else
         {
-            flush() << "+ " << std::string(currInd, ' ') << tree->key << " -> " << key << "'s "
-                    << ((1 == direction) ? "right" : "left") << " child\n";
+            output() << "+ " << std::string(currInd, ' ') << tree->key << " -> " << key << "'s "
+                     << ((1 == direction) ? "right" : "left") << " child\n";
         }
 
         indent += 2;
@@ -572,16 +572,16 @@ void destroyAVLTree(AVLTree tree)
     delete tree;
 }
 
-std::ostringstream& Output::flush()
+std::ostringstream& Output::output()
 {
-    return stream;
+    return process;
 }
 
 void Output::preorderAVLTree(AVLTree tree)
 {
     if (nullptr != tree)
     {
-        flush() << tree->key << " ... ";
+        output() << tree->key << " ... ";
         preorderAVLTree(tree->left);
         preorderAVLTree(tree->right);
     }
@@ -592,7 +592,7 @@ void Output::inorderAVLTree(AVLTree tree)
     if (nullptr != tree)
     {
         inorderAVLTree(tree->left);
-        flush() << tree->key << " ... ";
+        output() << tree->key << " ... ";
         inorderAVLTree(tree->right);
     }
 }
@@ -603,7 +603,7 @@ void Output::postorderAVLTree(AVLTree tree)
     {
         postorderAVLTree(tree->left);
         postorderAVLTree(tree->right);
-        flush() << tree->key << " ... ";
+        output() << tree->key << " ... ";
     }
 }
 
@@ -615,12 +615,12 @@ void Output::printAVLTree(AVLTree tree, const Type key, const int direction)
         if (0 == direction)
         {
             indent = 0;
-            flush() << "+ " << tree->key << " -> root\n";
+            output() << "+ " << tree->key << " -> root\n";
         }
         else
         {
-            flush() << "+ " << std::string(currInd, ' ') << tree->key << " -> " << key << "'s "
-                    << ((1 == direction) ? "right" : "left") << " child\n";
+            output() << "+ " << std::string(currInd, ' ') << tree->key << " -> " << key << "'s "
+                     << ((1 == direction) ? "right" : "left") << " child\n";
         }
 
         indent += 2;
@@ -888,16 +888,16 @@ void destroySplayTree(SplayTree tree)
     delete tree;
 }
 
-std::ostringstream& Output::flush()
+std::ostringstream& Output::output()
 {
-    return stream;
+    return process;
 }
 
 void Output::preorderSplayTree(SplayTree tree)
 {
     if (nullptr != tree)
     {
-        flush() << tree->key << " ... ";
+        output() << tree->key << " ... ";
         preorderSplayTree(tree->left);
         preorderSplayTree(tree->right);
     }
@@ -908,7 +908,7 @@ void Output::inorderSplayTree(SplayTree tree)
     if (nullptr != tree)
     {
         inorderSplayTree(tree->left);
-        flush() << tree->key << " ... ";
+        output() << tree->key << " ... ";
         inorderSplayTree(tree->right);
     }
 }
@@ -919,7 +919,7 @@ void Output::postorderSplayTree(SplayTree tree)
     {
         postorderSplayTree(tree->left);
         postorderSplayTree(tree->right);
-        flush() << tree->key << " ... ";
+        output() << tree->key << " ... ";
     }
 }
 
@@ -931,12 +931,12 @@ void Output::printSplayTree(SplayTree tree, const Type key, const int direction)
         if (0 == direction)
         {
             indent = 0;
-            flush() << "+ " << tree->key << " -> root\n";
+            output() << "+ " << tree->key << " -> root\n";
         }
         else
         {
-            flush() << "+ " << std::string(currInd, ' ') << tree->key << " -> " << key << "'s "
-                    << ((1 == direction) ? "right" : "left") << " child\n";
+            output() << "+ " << std::string(currInd, ' ') << tree->key << " -> " << key << "'s "
+                     << ((1 == direction) ? "right" : "left") << " child\n";
         }
 
         indent += 2;

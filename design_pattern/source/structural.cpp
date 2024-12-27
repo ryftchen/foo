@@ -39,8 +39,8 @@ void Adapter::request()
 //! @return reference of the output stream object, which is on string based
 std::ostringstream& output()
 {
-    static std::ostringstream stream{};
-    return stream;
+    static std::ostringstream process{};
+    return process;
 }
 } // namespace adapter
 
@@ -65,8 +65,8 @@ void RefinedAbstraction::operation()
 //! @return reference of the output stream object, which is on string based
 std::ostringstream& output()
 {
-    static std::ostringstream stream{};
-    return stream;
+    static std::ostringstream process{};
+    return process;
 }
 } // namespace bridge
 
@@ -121,8 +121,8 @@ void Leaf::operation()
 //! @return reference of the output stream object, which is on string based
 std::ostringstream& output()
 {
-    static std::ostringstream stream{};
-    return stream;
+    static std::ostringstream process{};
+    return process;
 }
 } // namespace composite
 
@@ -155,8 +155,8 @@ void ConcreteDecoratorB::operation()
 //! @return reference of the output stream object, which is on string based
 std::ostringstream& output()
 {
-    static std::ostringstream stream{};
-    return stream;
+    static std::ostringstream process{};
+    return process;
 }
 } // namespace decorator
 
@@ -192,8 +192,8 @@ void Facade::operation2()
 //! @return reference of the output stream object, which is on string based
 std::ostringstream& output()
 {
-    static std::ostringstream stream{};
-    return stream;
+    static std::ostringstream process{};
+    return process;
 }
 } // namespace facade
 
@@ -232,8 +232,8 @@ std::unique_ptr<Flyweight>& FlyweightFactory::getFlyweight(const int key)
 //! @return reference of the output stream object, which is on string based
 std::ostringstream& output()
 {
-    static std::ostringstream stream{};
-    return stream;
+    static std::ostringstream process{};
+    return process;
 }
 } // namespace flyweight
 
@@ -271,8 +271,8 @@ RealSubject& Proxy::realSubject()
 //! @return reference of the output stream object, which is on string based
 std::ostringstream& output()
 {
-    static std::ostringstream stream{};
-    return stream;
+    static std::ostringstream process{};
+    return process;
 }
 } // namespace proxy
 } // namespace design_pattern::structural

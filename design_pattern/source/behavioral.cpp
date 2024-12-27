@@ -73,8 +73,8 @@ void ConcreteHandler2::handleRequest()
 //! @return reference of the output stream object, which is on string based
 std::ostringstream& output()
 {
-    static std::ostringstream stream{};
-    return stream;
+    static std::ostringstream process{};
+    return process;
 }
 } // namespace chain_of_responsibility
 
@@ -115,8 +115,8 @@ void Invoker::confirm()
 //! @return reference of the output stream object, which is on string based
 std::ostringstream& output()
 {
-    static std::ostringstream stream{};
-    return stream;
+    static std::ostringstream process{};
+    return process;
 }
 } // namespace command
 
@@ -157,8 +157,8 @@ bool NonTerminalExpression::interpret(const std::shared_ptr<Context> context)
 //! @return reference of the output stream object, which is on string based
 std::ostringstream& output()
 {
-    static std::ostringstream stream{};
-    return stream;
+    static std::ostringstream process{};
+    return process;
 }
 } // namespace interpreter
 
@@ -220,8 +220,8 @@ int ConcreteIterator::currentItem() const
 //! @return reference of the output stream object, which is on string based
 std::ostringstream& output()
 {
-    static std::ostringstream stream{};
-    return stream;
+    static std::ostringstream process{};
+    return process;
 }
 } // namespace iterator
 
@@ -275,8 +275,8 @@ void ConcreteColleague::receive(const std::string_view msg)
 //! @return reference of the output stream object, which is on string based
 std::ostringstream& output()
 {
-    static std::ostringstream stream{};
-    return stream;
+    static std::ostringstream process{};
+    return process;
 }
 } // namespace mediator
 
@@ -345,8 +345,8 @@ void CareTaker::undo()
 //! @return reference of the output stream object, which is on string based
 std::ostringstream& output()
 {
-    static std::ostringstream stream{};
-    return stream;
+    static std::ostringstream process{};
+    return process;
 }
 } // namespace memento
 
@@ -404,8 +404,8 @@ void ConcreteSubject::setState(const int s)
 //! @return reference of the output stream object, which is on string based
 std::ostringstream& output()
 {
-    static std::ostringstream stream{};
-    return stream;
+    static std::ostringstream process{};
+    return process;
 }
 } // namespace observer
 
@@ -444,8 +444,8 @@ void Context::request()
 //! @return reference of the output stream object, which is on string based
 std::ostringstream& output()
 {
-    static std::ostringstream stream{};
-    return stream;
+    static std::ostringstream process{};
+    return process;
 }
 } // namespace state
 
@@ -475,8 +475,8 @@ void Context::contextInterface()
 //! @return reference of the output stream object, which is on string based
 std::ostringstream& output()
 {
-    static std::ostringstream stream{};
-    return stream;
+    static std::ostringstream process{};
+    return process;
 }
 } // namespace strategy
 
@@ -502,8 +502,8 @@ void ConcreteClass::primitiveOperation2()
 //! @return reference of the output stream object, which is on string based
 std::ostringstream& output()
 {
-    static std::ostringstream stream{};
-    return stream;
+    static std::ostringstream process{};
+    return process;
 }
 } // namespace template_method
 
@@ -543,8 +543,8 @@ void ConcreteElementB::accept(Visitor& visitor)
 //! @return reference of the output stream object, which is on string based
 std::ostringstream& output()
 {
-    static std::ostringstream stream{};
-    return stream;
+    static std::ostringstream process{};
+    return process;
 }
 } // namespace visitor
 } // namespace design_pattern::behavioral

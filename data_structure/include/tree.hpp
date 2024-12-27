@@ -65,7 +65,7 @@ public:
 
     //! @brief Flush the output stream.
     //! @return reference of the output stream object, which is on string based
-    std::ostringstream& flush();
+    std::ostringstream& output();
     //! @brief The pre-order traversal of the binary search tree.
     //! @param tree - tree root, the target binary search tree has this node as the root node
     void preorderBSTree(BSTree tree);
@@ -83,7 +83,7 @@ public:
 
 private:
     //! @brief Output stream of the binary search tree structure.
-    std::ostringstream stream{};
+    std::ostringstream process{};
     //! @brief Indentation size.
     int indent{0};
 };
@@ -140,7 +140,7 @@ public:
 
     //! @brief Flush the output stream.
     //! @return reference of the output stream object, which is on string based
-    std::ostringstream& flush();
+    std::ostringstream& output();
     //! @brief The pre-order traversal of the AVL tree.
     //! @param tree - tree root, the target AVL tree has this node as the root node
     void preorderAVLTree(AVLTree tree);
@@ -158,7 +158,7 @@ public:
 
 private:
     //! @brief Output stream of the AVL tree structure.
-    std::ostringstream stream{};
+    std::ostringstream process{};
     //! @brief Indentation size.
     int indent{0};
 };
@@ -209,7 +209,7 @@ public:
 
     //! @brief Flush the output stream.
     //! @return reference of the output stream object, which is on string based
-    std::ostringstream& flush();
+    std::ostringstream& output();
     //! @brief The pre-order traversal of the splay tree.
     //! @param tree - tree root, the target splay tree has this node as the root node
     void preorderSplayTree(SplayTree tree);
@@ -227,7 +227,7 @@ public:
 
 private:
     //! @brief Output stream of the splay tree structure.
-    std::ostringstream stream{};
+    std::ostringstream process{};
     //! @brief Indentation size.
     int indent{0};
 };
