@@ -23,7 +23,7 @@ Config& Config::getInstance()
     return cfg;
 }
 
-const utility::json::JSON& Config::getDataRepo() const
+const utility::json::JSON& Config::retrieve() const
 {
     return dataRepo;
 }
@@ -353,7 +353,7 @@ const utility::json::JSON& retrieveDataRepo()
 try
 {
     configSem.acquire();
-    const auto& dataRepo = Config::getInstance().getDataRepo();
+    const auto& dataRepo = Config::getInstance().retrieve();
     configSem.release();
 
     return dataRepo;

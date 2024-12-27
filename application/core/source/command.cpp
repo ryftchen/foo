@@ -105,7 +105,7 @@ requires (std::derived_from<Helpers, utility::fsm::FSM<Helpers>> && ...)
 void helperDaemon()
 {
     utility::thread::Thread extendingThd(sizeof...(Helpers));
-    (extendingThd.enqueue(getHelperName<Helpers>(), &Helpers::stateController, &Helpers::getInstance()), ...);
+    (extendingThd.enqueue(getHelperName<Helpers>(), &Helpers::service, &Helpers::getInstance()), ...);
 }
 
 //! @brief Awaitable coroutine.
@@ -247,7 +247,7 @@ Command& Command::getInstance()
     return commander;
 }
 
-void Command::execManager(const int argc, const char* const argv[])
+void Command::execute(const int argc, const char* const argv[])
 try
 {
     auto launcher = helperLifecycle<log::Log, view::View>();

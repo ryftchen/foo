@@ -58,7 +58,7 @@ Log& Log::getInstance()
     return logger;
 }
 
-void Log::stateController()
+void Log::service()
 {
 retry:
     try
@@ -108,11 +108,11 @@ try
     utility::time::blockingTimer(
         [this]()
         {
-            if (inst.isInUninterruptedState(State::hold))
+            if (inst.isInServingState(State::hold))
             {
                 throw std::runtime_error("The logger did not initialize successfully ...");
             }
-            return inst.isInUninterruptedState(State::idle);
+            return inst.isInServingState(State::idle);
         });
 
     if (std::unique_lock<std::mutex> daemonLock(inst.daemonMtx); true)
@@ -125,11 +125,11 @@ try
     utility::time::blockingTimer(
         [this]()
         {
-            if (inst.isInUninterruptedState(State::hold))
+            if (inst.isInServingState(State::hold))
             {
                 throw std::runtime_error("The logger did not start successfully ...");
             }
-            return inst.isInUninterruptedState(State::work);
+            return inst.isInServingState(State::work);
         });
 }
 catch (const std::exception& err)
@@ -150,11 +150,11 @@ try
     utility::time::blockingTimer(
         [this]()
         {
-            if (inst.isInUninterruptedState(State::hold))
+            if (inst.isInServingState(State::hold))
             {
                 throw std::runtime_error("The logger did not stop successfully ...");
             }
-            return inst.isInUninterruptedState(State::done);
+            return inst.isInServingState(State::done);
         });
 }
 catch (const std::exception& err)
@@ -263,7 +263,7 @@ void Log::safeProcessEvent(const T& event)
     stateLock.unlock();
 }
 
-bool Log::isInUninterruptedState(const State state) const
+bool Log::isInServingState(const State state) const
 {
     return (safeCurrentState() == state) && !toReset.load();
 }

@@ -133,8 +133,8 @@ public:
     //! @brief Get the View instance.
     //! @return reference of the View object
     static View& getInstance();
-    //! @brief State controller for running viewer.
-    void stateController();
+    //! @brief Service for running.
+    void service();
 
     //! @brief Access for the instance.
     class Access
@@ -352,10 +352,10 @@ private:
     //! @param event - target event
     template <class T>
     void safeProcessEvent(const T& event);
-    //! @brief Check whether it is in the uninterrupted target state.
+    //! @brief Check whether it is in the uninterrupted serving state.
     //! @param state - target state
-    //! @return in the uninterrupted target state or not
-    bool isInUninterruptedState(const State state) const;
+    //! @return in the uninterrupted serving state or not
+    bool isInServingState(const State state) const;
     //! @brief FSM event. Create server.
     struct CreateServer
     {

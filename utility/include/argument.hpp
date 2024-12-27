@@ -330,7 +330,7 @@ private:
     //! @brief Default value.
     std::any defaultValue{};
     //! @brief Default value content to be represented.
-    std::string defaultValueRepresent{};
+    std::string representedDefVal{};
     //! @brief Implicit value.
     std::any implicitValue{};
     //! @brief All actions of arguments.
@@ -339,7 +339,7 @@ private:
     //! @brief Values from all arguments.
     std::vector<std::any> values{};
     //! @brief Flag to indicate whether to accept optional like value.
-    bool isAcceptOptionalLikeValue{false};
+    bool optionalAsValue{false};
     //! @brief Flag to indicate whether to be optional.
     bool isOptional{true};
     //! @brief Flag to indicate whether to be required.
@@ -473,7 +473,7 @@ Register::Register(
     const std::string_view prefix,
     std::array<std::string_view, N>&& array,
     const std::index_sequence<I...>& /*sequence*/) :
-    isAcceptOptionalLikeValue(false),
+    optionalAsValue(false),
     isOptional((checkIfOptional(array[I], prefix) || ...)),
     isRequired(false),
     isRepeatable(false),
@@ -491,7 +491,7 @@ Register::Register(
 template <typename T>
 Register& Register::defaultVal(T&& value)
 {
-    defaultValueRepresent = represent(value);
+    representedDefVal = represent(value);
     defaultValue = std::forward<T>(value);
 
     return *this;
@@ -543,7 +543,7 @@ Iterator Register::consume(Iterator start, Iterator end, const std::string_view 
         {
             end = std::next(start, static_cast<typename Iterator::difference_type>(numMax));
         }
-        if (!isAcceptOptionalLikeValue)
+        if (!optionalAsValue)
         {
             end = std::find_if(start, end, std::bind(checkIfOptional, std::placeholders::_1, prefixChars));
             dist = static_cast<std::size_t>(std::distance(start, end));
@@ -564,7 +564,7 @@ Iterator Register::consume(Iterator start, Iterator end, const std::string_view 
                 std::for_each(first, last, func);
                 if (!self.defaultValue.has_value())
                 {
-                    if (!self.isAcceptOptionalLikeValue)
+                    if (!self.optionalAsValue)
                     {
                         self.values.resize(static_cast<std::size_t>(std::distance(first, last)));
                     }
@@ -631,7 +631,7 @@ T Register::get() const
     }
     if constexpr (isContainer<T>)
     {
-        if (!isAcceptOptionalLikeValue)
+        if (!optionalAsValue)
         {
             return anyCastContainer<T>(values);
         }
@@ -786,9 +786,9 @@ private:
     //! @brief Flag to indicate whether to be parsed.
     bool isParsed{false};
     //! @brief List of optional arguments.
-    std::list<Register> optionalArguments{};
+    std::list<Register> optionalArgs{};
     //! @brief List of positional arguments.
-    std::list<Register> positionalArguments{};
+    std::list<Register> positionalArgs{};
     //! @brief Mapping table of argument.
     std::unordered_map<std::string_view, RegisterIter> argumentMap{};
     //! @brief Current parser path.
@@ -829,10 +829,10 @@ template <typename... ArgsType>
 Register& Argument::addArgument(ArgsType... fewArgs)
 {
     using ArrayOfSv = std::array<std::string_view, sizeof...(ArgsType)>;
-    const auto argument = optionalArguments.emplace(optionalArguments.cend(), prefixChars, ArrayOfSv{fewArgs...});
+    const auto argument = optionalArgs.emplace(optionalArgs.cend(), prefixChars, ArrayOfSv{fewArgs...});
     if (!argument->isOptional)
     {
-        positionalArguments.splice(positionalArguments.cend(), optionalArguments, argument);
+        positionalArgs.splice(positionalArgs.cend(), optionalArgs, argument);
     }
     indexArgument(argument);
 

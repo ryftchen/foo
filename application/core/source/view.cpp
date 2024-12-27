@@ -263,7 +263,7 @@ View& View::getInstance()
     return viewer;
 }
 
-void View::stateController()
+void View::service()
 {
 retry:
     try
@@ -312,11 +312,11 @@ try
     utility::time::blockingTimer(
         [this]()
         {
-            if (inst.isInUninterruptedState(State::hold))
+            if (inst.isInServingState(State::hold))
             {
                 throw std::runtime_error("The viewer did not initialize successfully ...");
             }
-            return inst.isInUninterruptedState(State::idle);
+            return inst.isInServingState(State::idle);
         });
 
     if (std::unique_lock<std::mutex> daemonLock(inst.daemonMtx); true)
@@ -329,11 +329,11 @@ try
     utility::time::blockingTimer(
         [this]()
         {
-            if (inst.isInUninterruptedState(State::hold))
+            if (inst.isInServingState(State::hold))
             {
                 throw std::runtime_error("The viewer did not start successfully ...");
             }
-            return inst.isInUninterruptedState(State::work);
+            return inst.isInServingState(State::work);
         });
 }
 catch (const std::exception& err)
@@ -354,11 +354,11 @@ try
     utility::time::blockingTimer(
         [this]()
         {
-            if (inst.isInUninterruptedState(State::hold))
+            if (inst.isInServingState(State::hold))
             {
                 throw std::runtime_error("The viewer did not stop successfully ...");
             }
-            return inst.isInUninterruptedState(State::done);
+            return inst.isInServingState(State::done);
         });
 }
 catch (const std::exception& err)
@@ -403,15 +403,15 @@ bool View::Access::parseMessage(char* buffer, const int length) const
     }
     if (invalidShmId != value.bashShmId)
     {
-        printSharedMemory(value.bashShmId, true);
+        printSharedMemory(value.bashShmId);
     }
     if (invalidShmId != value.logShmId)
     {
-        printSharedMemory(value.logShmId, !inst.isInUninterruptedState(State::work));
+        printSharedMemory(value.logShmId, !inst.isInServingState(State::work));
     }
     if (invalidShmId != value.statusShmId)
     {
-        printSharedMemory(value.statusShmId, true);
+        printSharedMemory(value.statusShmId);
     }
     if (std::strlen(value.configInfo) != 0)
     {
@@ -423,7 +423,7 @@ bool View::Access::parseMessage(char* buffer, const int length) const
 
 void View::Access::enableWait() const
 {
-    if (inst.isInUninterruptedState(State::work))
+    if (inst.isInServingState(State::work))
     {
         std::unique_lock<std::mutex> outputLock(inst.outputMtx);
         inst.outputCond.wait(outputLock, [this]() { return inst.outputCompleted.load(); });
@@ -982,7 +982,7 @@ void View::safeProcessEvent(const T& event)
     stateLock.unlock();
 }
 
-bool View::isInUninterruptedState(const State state) const
+bool View::isInServingState(const State state) const
 {
     return (safeCurrentState() == state) && !toReset.load();
 }

@@ -60,7 +60,7 @@ Register& Register::appending()
 
 Register& Register::remaining()
 {
-    isAcceptOptionalLikeValue = true;
+    optionalAsValue = true;
     return argsNum(ArgsNumPattern::any);
 }
 
@@ -319,7 +319,7 @@ std::ostream& operator<<(std::ostream& os, const Register& reg)
 
     if (reg.defaultValue.has_value() && (Register::ArgsNumRange{0, 0} != reg.argsNumRange))
     {
-        os << "[default: " << reg.defaultValueRepresent << ']';
+        os << "[default: " << reg.representedDefVal << ']';
     }
     else if (reg.isRequired)
     {
@@ -337,16 +337,16 @@ Argument::Argument(const Argument& arg) :
     prefixChars(arg.prefixChars),
     assignChars(arg.assignChars),
     isParsed(arg.isParsed),
-    optionalArguments(arg.optionalArguments),
-    positionalArguments(arg.positionalArguments),
+    optionalArgs(arg.optionalArgs),
+    positionalArgs(arg.positionalArgs),
     parserPath(arg.parserPath),
     subParsers(arg.subParsers)
 {
-    for (auto iterator = optionalArguments.begin(); optionalArguments.end() != iterator; ++iterator)
+    for (auto iterator = optionalArgs.begin(); optionalArgs.end() != iterator; ++iterator)
     {
         indexArgument(iterator);
     }
-    for (auto iterator = positionalArguments.begin(); positionalArguments.end() != iterator; ++iterator)
+    for (auto iterator = positionalArgs.begin(); positionalArgs.end() != iterator; ++iterator)
     {
         indexArgument(iterator);
     }
@@ -455,11 +455,11 @@ std::string Argument::usage() const
     std::ostringstream out{};
     out << "usage: " << ((parserPath.find(' ' + titleName) == std::string::npos) ? titleName : parserPath);
 
-    for (const auto& argument : optionalArguments)
+    for (const auto& argument : optionalArgs)
     {
         out << ' ' << argument.getInlineUsage();
     }
-    for (const auto& argument : positionalArguments)
+    for (const auto& argument : positionalArgs)
     {
         if (!argument.metavarContent.empty())
         {
@@ -560,13 +560,13 @@ void Argument::parseArgsInternal(const std::vector<std::string>& rawArguments)
     }
 
     const auto end = arguments.cend();
-    auto positionalArgIter = positionalArguments.begin();
+    auto positionalArgIter = positionalArgs.begin();
     for (auto iterator = std::next(arguments.begin()); end != iterator;)
     {
         const auto& currentArgument = *iterator;
         if (Register::checkIfPositional(currentArgument, prefixChars))
         {
-            if (positionalArguments.cend() == positionalArgIter)
+            if (positionalArgs.cend() == positionalArgIter)
             {
                 const std::string_view maybeCommand = currentArgument;
                 const auto subParserIter = subParserMap.find(maybeCommand);
@@ -662,21 +662,21 @@ std::ostream& operator<<(std::ostream& os, const Argument& arg)
         os << arg.descrText << "\n\n";
     }
 
-    if (!arg.optionalArguments.empty())
+    if (!arg.optionalArgs.empty())
     {
         os << "optional:\n";
     }
-    for (const auto& argument : arg.optionalArguments)
+    for (const auto& argument : arg.optionalArgs)
     {
         os.width(static_cast<std::streamsize>(longestArgLen));
         os << argument;
     }
 
-    if (!arg.positionalArguments.empty())
+    if (!arg.positionalArgs.empty())
     {
-        os << (arg.optionalArguments.empty() ? "" : "\n") << "positional:\n";
+        os << (arg.optionalArgs.empty() ? "" : "\n") << "positional:\n";
     }
-    for (const auto& argument : arg.positionalArguments)
+    for (const auto& argument : arg.positionalArgs)
     {
         os.width(static_cast<std::streamsize>(longestArgLen));
         os << argument;
@@ -684,8 +684,7 @@ std::ostream& operator<<(std::ostream& os, const Argument& arg)
 
     if (!arg.subParserMap.empty())
     {
-        os << (arg.optionalArguments.empty() ? (arg.positionalArguments.empty() ? "" : "\n") : "\n")
-           << "sub-command:\n";
+        os << (arg.optionalArgs.empty() ? (arg.positionalArgs.empty() ? "" : "\n") : "\n") << "sub-command:\n";
         for (const auto& [command, subParser] : arg.subParserMap)
         {
             os << std::setw(static_cast<int>(longestArgLen)) << command << "    " << subParser->get().descrText << '\n';
