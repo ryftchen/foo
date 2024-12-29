@@ -26,41 +26,41 @@
 #include "utility/include/time.hpp"
 
 //! @brief Log with debug level.
-#define LOG_DBG                                                   \
-    if (application::config::detail::activateHelper()) [[likely]] \
-    application::log::Log::Holder<application::log::Log::OutputLevel::debug>().stream()
+#define LOG_DBG application::log::Log::Holder<application::log::Log::OutputLevel::debug>().stream()
 //! @brief Log with debug level (formatted).
-#define LOG_DBG_F(fmt, ...)                                       \
-    if (application::config::detail::activateHelper()) [[likely]] \
-    application::log::Log::getInstance().flush(                   \
-        application::log::Log::OutputLevel::debug, __FILE__, __LINE__, fmt __VA_OPT__(, ) __VA_ARGS__)
+#define LOG_DBG_F(fmt, ...)                                                                                 \
+    if (application::config::detail::activateHelper()) [[likely]]                                           \
+        application::log::Log::getInstance().flush(                                                         \
+            application::log::Log::OutputLevel::debug, __FILE__, __LINE__, fmt __VA_OPT__(, ) __VA_ARGS__); \
+    else [[unlikely]]                                                                                       \
+        application::log::Log::nativeOutput(fmt __VA_OPT__(, ) __VA_ARGS__)
 //! @brief Log with info level.
-#define LOG_INF                                                   \
-    if (application::config::detail::activateHelper()) [[likely]] \
-    application::log::Log::Holder<application::log::Log::OutputLevel::info>().stream()
+#define LOG_INF application::log::Log::Holder<application::log::Log::OutputLevel::info>().stream()
 //! @brief Log with info level (formatted).
-#define LOG_INF_F(fmt, ...)                                       \
-    if (application::config::detail::activateHelper()) [[likely]] \
-    application::log::Log::getInstance().flush(                   \
-        application::log::Log::OutputLevel::info, __FILE__, __LINE__, fmt __VA_OPT__(, ) __VA_ARGS__)
+#define LOG_INF_F(fmt, ...)                                                                                \
+    if (application::config::detail::activateHelper()) [[likely]]                                          \
+        application::log::Log::getInstance().flush(                                                        \
+            application::log::Log::OutputLevel::info, __FILE__, __LINE__, fmt __VA_OPT__(, ) __VA_ARGS__); \
+    else [[unlikely]]                                                                                      \
+        application::log::Log::nativeOutput(fmt __VA_OPT__(, ) __VA_ARGS__)
 //! @brief Log with warning level.
-#define LOG_WRN                                                   \
-    if (application::config::detail::activateHelper()) [[likely]] \
-    application::log::Log::Holder<application::log::Log::OutputLevel::warning>().stream()
+#define LOG_WRN application::log::Log::Holder<application::log::Log::OutputLevel::warning>().stream()
 //! @brief Log with warning level (formatted).
-#define LOG_WRN_F(fmt, ...)                                       \
-    if (application::config::detail::activateHelper()) [[likely]] \
-    application::log::Log::getInstance().flush(                   \
-        application::log::Log::OutputLevel::warning, __FILE__, __LINE__, fmt __VA_OPT__(, ) __VA_ARGS__)
+#define LOG_WRN_F(fmt, ...)                                                                                   \
+    if (application::config::detail::activateHelper()) [[likely]]                                             \
+        application::log::Log::getInstance().flush(                                                           \
+            application::log::Log::OutputLevel::warning, __FILE__, __LINE__, fmt __VA_OPT__(, ) __VA_ARGS__); \
+    else [[unlikely]]                                                                                         \
+        application::log::Log::nativeOutput(fmt __VA_OPT__(, ) __VA_ARGS__)
 //! @brief Log with error level.
-#define LOG_ERR                                                   \
-    if (application::config::detail::activateHelper()) [[likely]] \
-    application::log::Log::Holder<application::log::Log::OutputLevel::error>().stream()
+#define LOG_ERR application::log::Log::Holder<application::log::Log::OutputLevel::error>().stream()
 //! @brief Log with error level (formatted).
-#define LOG_ERR_F(fmt, ...)                                       \
-    if (application::config::detail::activateHelper()) [[likely]] \
-    application::log::Log::getInstance().flush(                   \
-        application::log::Log::OutputLevel::error, __FILE__, __LINE__, fmt __VA_OPT__(, ) __VA_ARGS__)
+#define LOG_ERR_F(fmt, ...)                                                                                 \
+    if (application::config::detail::activateHelper()) [[likely]]                                           \
+        application::log::Log::getInstance().flush(                                                         \
+            application::log::Log::OutputLevel::error, __FILE__, __LINE__, fmt __VA_OPT__(, ) __VA_ARGS__); \
+    else [[unlikely]]                                                                                       \
+        application::log::Log::nativeOutput(fmt __VA_OPT__(, ) __VA_ARGS__)
 
 //! @brief The application module.
 namespace application // NOLINT(modernize-concat-nested-namespaces)
@@ -256,6 +256,12 @@ public:
         const std::uint32_t srcLine,
         const std::string_view format,
         Args&&... args);
+    //! @brief Log of native output.
+    //! @tparam Args - type of arguments of log format
+    //! @param format - log format to be flushed
+    //! @param args - arguments of log format
+    template <typename... Args>
+    static void nativeOutput(const std::string_view format, Args&&... args);
     //! @brief Log holder for flushing.
     //! @tparam Lv - output level
     template <OutputLevel Lv>
@@ -279,8 +285,20 @@ public:
         const std::source_location location{};
 
         //! @brief Flush the output stream.
-        inline void flush() { getInstance().flush(Lv, location.file_name(), location.line(), output.str()); }
+        inline void flush()
+        {
+            if (config::detail::activateHelper()) [[likely]]
+            {
+                getInstance().flush(Lv, location.file_name(), location.line(), output.str());
+            }
+            else [[unlikely]]
+            {
+                Log::nativeOutput(output.str());
+            }
+        }
     };
+
+    static_assert((sourceDirectory.front() == '/') && (sourceDirectory.back() == '/'));
 
 private:
     //! @brief Construct a new Log object.
@@ -488,6 +506,15 @@ void Log::flush(
         }
         throw;
     }
+}
+
+template <typename... Args>
+void Log::nativeOutput(const std::string_view format, Args&&... args)
+{
+    const auto rows = reformatContents(
+        std::string{sourceDirectory.substr(1, sourceDirectory.length() - 2)} + ": ",
+        utility::common::formatString(format.data(), std::forward<Args>(args)...));
+    std::for_each(rows.begin(), rows.end(), [](const auto& output) { std::clog << output << std::endl; });
 }
 
 //! @brief Instance information, if enabled.

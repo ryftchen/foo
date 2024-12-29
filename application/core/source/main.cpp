@@ -29,18 +29,15 @@ try
         return EXIT_FAILURE;
     }
 
-    std::thread running(
+    std::future<bool> running = std::async(
+        std::launch::async,
         [=]()
         {
             ::pthread_setname_np(::pthread_self(), "commander");
-            command::Command::getInstance().execute(argc, argv);
+            return command::Command::getInstance().execute(argc, argv);
         });
-    if (running.joinable())
-    {
-        running.join();
-    }
 
-    return EXIT_SUCCESS;
+    return running.get() ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 catch (const std::exception& err)
 {
