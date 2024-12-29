@@ -254,13 +254,12 @@ bool Packet::read(void* const dst, const int offset)
 
 View& View::getInstance()
 {
-    if (!config::detail::activateHelper()) [[unlikely]]
+    if (config::detail::activateHelper()) [[likely]]
     {
-        throw std::logic_error("The viewer is disabled.");
+        static View viewer{};
+        return viewer;
     }
-    static View viewer{};
-
-    return viewer;
+    throw std::logic_error("The viewer is disabled.");
 }
 
 void View::service()
