@@ -18,6 +18,7 @@ const char* version() noexcept
 
 Thread::Thread(const std::size_t size)
 {
+    thdColl.reserve(size);
     for (std::size_t i = 0; i < size; ++i)
     {
         thdColl.emplace_back(

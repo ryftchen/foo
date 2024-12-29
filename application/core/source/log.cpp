@@ -49,13 +49,12 @@ const HlRegex& logStyle()
 
 Log& Log::getInstance()
 {
-    if (!config::detail::activateHelper()) [[unlikely]]
+    if (config::detail::activateHelper()) [[likely]]
     {
-        throw std::logic_error("The logger is disabled.");
+        static Log logger{};
+        return logger;
     }
-    static Log logger{};
-
-    return logger;
+    throw std::logic_error("The logger is disabled.");
 }
 
 void Log::service()
