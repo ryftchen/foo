@@ -36,7 +36,7 @@ using IsInvocable = std::is_invocable<Func, Args...>;
 //! @param args - function arguments
 //! @return wrapping of calls
 template <class Func, class... Args>
-InvokeResult<Func, Args...> invokeResult(Func&& func, Args&&... args)
+inline InvokeResult<Func, Args...> invokeResult(Func&& func, Args&&... args)
 {
     return func(args...);
 }
@@ -51,7 +51,7 @@ InvokeResult<Func, Args...> invokeResult(Func&& func, Args&&... args)
 //! @param args - function arguments
 //! @return wrapping of calls
 template <class Ret, class T1, class T2, class... Args>
-InvokeResult<Ret T1::*, T2, Args...> invokeResult(Ret T1::*func, T2&& obj, Args&&... args)
+inline InvokeResult<Ret T1::*, T2, Args...> invokeResult(Ret T1::*func, T2&& obj, Args&&... args)
 {
     return (obj.*func)(args...);
 }
@@ -86,7 +86,7 @@ struct BinaryFuncHelper<Func, Arg1, Arg2, true, false, false, false>
     //! @brief Invoke operation.
     //! @param func - callable function
     //! @return invoke result
-    static ResultType invoke(Func&& func, Arg1&& /*arg1*/, Arg2&& /*arg2*/) { return invokeResult(func); }
+    static inline ResultType invoke(Func&& func, Arg1&& /*arg1*/, Arg2&& /*arg2*/) { return invokeResult(func); }
 };
 
 //! @brief Binary function helper. Include only Arg1.
@@ -102,7 +102,7 @@ struct BinaryFuncHelper<Func, Arg1, Arg2, false, true, false, false>
     //! @param func - callable function
     //! @param arg1 - function argument
     //! @return invoke result
-    static ResultType invoke(Func&& func, Arg1&& arg1, Arg2&& /*arg2*/) { return invokeResult(func, arg1); }
+    static inline ResultType invoke(Func&& func, Arg1&& arg1, Arg2&& /*arg2*/) { return invokeResult(func, arg1); }
 };
 
 //! @brief Binary function helper. Include only Arg2.
@@ -118,7 +118,7 @@ struct BinaryFuncHelper<Func, Arg1, Arg2, false, false, true, false>
     //! @param func - callable function
     //! @param arg2 - function arguments
     //! @return invoke result
-    static ResultType invoke(Func&& func, Arg1&& /*arg1*/, Arg2&& arg2) { return invokeResult(func, arg2); }
+    static inline ResultType invoke(Func&& func, Arg1&& /*arg1*/, Arg2&& arg2) { return invokeResult(func, arg2); }
 };
 
 //! @brief Binary function helper. Include both Arg1 and Arg2.
@@ -135,7 +135,7 @@ struct BinaryFuncHelper<Func, Arg1, Arg2, false, false, false, true>
     //! @param arg1 - function arguments
     //! @param arg2 - function arguments
     //! @return invoke result
-    static ResultType invoke(Func&& func, Arg1&& arg1, Arg2&& arg2) { return invokeResult(func, arg1, arg2); }
+    static inline ResultType invoke(Func&& func, Arg1&& arg1, Arg2&& arg2) { return invokeResult(func, arg1, arg2); }
 };
 
 //! @brief Alias for invoke result of binary function.
@@ -154,7 +154,7 @@ using InvokeAsBinaryFuncResult = typename BinaryFuncHelper<Func, Arg1, Arg2>::Re
 //! @param arg2 - function arguments
 //! @return invoke result of binary function
 template <class Func, class Arg1, class Arg2>
-InvokeAsBinaryFuncResult<Func, Arg1, Arg2> invokeAsBinaryFunc(Func&& func, Arg1&& arg1, Arg2&& arg2)
+inline InvokeAsBinaryFuncResult<Func, Arg1, Arg2> invokeAsBinaryFunc(Func&& func, Arg1&& arg1, Arg2&& arg2)
 {
     return BinaryFuncHelper<Func, Arg1, Arg2>::invoke(
         std::forward<Func>(func), std::forward<Arg1>(arg1), std::forward<Arg2>(arg2));
@@ -236,29 +236,30 @@ public:
     //! @tparam Event - type of triggered event
     //! @param event - event to be processed
     template <class Event>
-    void processEvent(const Event& event);
+    inline void processEvent(const Event& event);
     //! @brief Get current state.
     //! @return State current state
     inline State currentState() const;
 
 private:
-    //! @brief Row-based.
+    //! @brief The base row of the transition table.
     //! @tparam Source - source state
     //! @tparam Event - type of triggered event
     //! @tparam Target - target state
     template <State Source, class Event, State Target>
-    struct RowBased
+    struct RowBase
     {
+    public:
         //! @brief Alias for state.
         using StateType = State;
         //! @brief Alias for event.
         using EventType = Event;
         //! @brief Get source state.
         //! @return source state
-        static constexpr StateType sourceValue() { return Source; }
+        static inline constexpr StateType sourceValue() { return Source; }
         //! @brief Get target state.
         //! @return target state
-        static constexpr StateType targetValue() { return Target; }
+        static inline constexpr StateType targetValue() { return Target; }
 
     protected:
         //! @brief Process the specific event.
@@ -267,12 +268,15 @@ private:
         //! @param self - derived object
         //! @param event - event to be processed
         template <class Action>
-        static void processEvent(Action&& action, Derived& self, const Event& event)
+        static inline void processEvent(Action&& action, Derived& self, const Event& event)
         {
             invokeAsBinaryFunc(action, self, event);
         }
         //! @brief Process the specific event by default.
-        static constexpr void processEvent(const std::nullptr_t /*null*/, Derived& /*self*/, const Event& /*event*/) {}
+        static inline constexpr void processEvent(
+            const std::nullptr_t /*null*/, Derived& /*self*/, const Event& /*event*/)
+        {
+        }
 
         //! @brief Check guard condition.
         //! @tparam Guard - type of guard condition
@@ -281,13 +285,14 @@ private:
         //! @param event - event to be processed
         //! @return pass or not pass
         template <class Guard>
-        static bool checkGuard(Guard&& guard, const Derived& self, const Event& event)
+        static inline bool checkGuard(Guard&& guard, const Derived& self, const Event& event)
         {
             return invokeAsBinaryFunc(guard, self, event);
         }
         //! @brief Check guard condition by default.
         //! @return pass or not pass
-        static constexpr bool checkGuard(const std::nullptr_t /*null*/, const Derived& /*self*/, const Event& /*event*/)
+        static inline constexpr bool checkGuard(
+            const std::nullptr_t /*null*/, const Derived& /*self*/, const Event& /*event*/)
         {
             return true;
         }
@@ -340,7 +345,7 @@ private:
         //! @param event - event to be processed
         //! @param state - source state
         //! @return state after execute
-        static State execute(Derived& self, const Event& event, const State state)
+        static inline State execute(Derived& self, const Event& event, const State state)
         {
             return ((T::sourceValue() == state) && T::checkGuard(self, event))
                 ? (T::processEvent(self, event), T::targetValue())
@@ -357,19 +362,19 @@ private:
         //! @param self - derived object
         //! @param event - event to be processed
         //! @return state after execute
-        static State execute(Derived& self, const Event& event, const State /*state*/)
+        static inline State execute(Derived& self, const Event& event, const State /*state*/)
         {
             return self.noTransition(event);
         }
     };
 
-    //! @brief Lock of FSM processing.
-    class ProcessingLock
+    //! @brief Lock of FSM procedure.
+    class ProcedureLock
     {
     public:
-        //! @brief Construct a new ProcessingLock object.
+        //! @brief Construct a new ProcedureLock object.
         //! @param fsm - FSM object
-        explicit ProcessingLock(FSM& fsm) : isProcessing(fsm.isProcessing)
+        explicit ProcedureLock(FSM& fsm) : isProcessing(fsm.isProcessing)
         {
             if (isProcessing.load())
             {
@@ -377,8 +382,10 @@ private:
             }
             isProcessing.store(true);
         }
-        //! @brief Destroy the ProcessingLock object.
-        ~ProcessingLock() { isProcessing.store(false); }
+        //! @brief Construct a new ProcedureLock object.
+        ProcedureLock() = delete;
+        //! @brief Destroy the ProcedureLock object.
+        virtual ~ProcedureLock() { isProcessing.store(false); }
 
     private:
         //! @brief Flag to indicate whether the FSM is processing.
@@ -402,7 +409,7 @@ protected:
     template <class Event>
     inline State noTransition(const Event& event);
 
-    //! @brief The basic row of the transition table.
+    //! @brief Default row of the transition table.
     //! @tparam Source - source state
     //! @tparam Event - type of triggered event
     //! @tparam Target - target state
@@ -418,22 +425,22 @@ protected:
         Action action = nullptr,
         class Guard = std::nullptr_t,
         Guard guard = nullptr>
-    struct BasicRow : public RowBased<Source, Event, Target>
+    struct DefRow : public RowBase<Source, Event, Target>
     {
         //! @brief Process the specific event.
         //! @param self - derived object
         //! @param event - event to be processed
-        static void processEvent(Derived& self, const Event& event)
+        static inline void processEvent(Derived& self, const Event& event)
         {
-            RowBased<Source, Event, Target>::processEvent(action, self, event);
+            RowBase<Source, Event, Target>::processEvent(action, self, event);
         }
         //! @brief Check guard condition.
         //! @param self - derived object
         //! @param event - event to be processed
         //! @return pass or not pass
-        static bool checkGuard(const Derived& self, const Event& event)
+        static inline bool checkGuard(const Derived& self, const Event& event)
         {
-            return RowBased<Source, Event, Target>::checkGuard(guard, self, event);
+            return RowBase<Source, Event, Target>::checkGuard(guard, self, event);
         }
     };
 
@@ -449,29 +456,29 @@ protected:
         State Target,
         void (Derived::*action)(const Event&) = nullptr,
         bool (Derived::*guard)(const Event&) const = nullptr>
-    struct MemFuncRow : public RowBased<Source, Event, Target>
+    struct MemFuncRow : public RowBase<Source, Event, Target>
     {
         //! @brief Process the specific event.
         //! @param self - derived object
         //! @param event - event to be processed
-        static void processEvent(Derived& self, const Event& event)
+        static inline void processEvent(Derived& self, const Event& event)
         {
             if (nullptr != action)
             {
-                RowBased<Source, Event, Target>::processEvent(action, self, event);
+                RowBase<Source, Event, Target>::processEvent(action, self, event);
             }
         }
         //! @brief Check guard condition.
         //! @param self - derived object
         //! @param event - event to be processed
         //! @return pass or not pass
-        static bool checkGuard(const Derived& self, const Event& event)
+        static inline bool checkGuard(const Derived& self, const Event& event)
         {
             if (nullptr == guard)
             {
                 return true;
             }
-            RowBased<Source, Event, Target>::checkGuard(guard, self, event);
+            RowBase<Source, Event, Target>::checkGuard(guard, self, event);
         }
     };
 
@@ -482,32 +489,32 @@ protected:
     //! @tparam action - action function
     //! @tparam guard - guard condition
     template <State Source, class Event, State Target, auto action = nullptr, auto guard = nullptr>
-    struct Row : public RowBased<Source, Event, Target>
+    struct Row : public RowBase<Source, Event, Target>
     {
         //! @brief Process the specific event.
         //! @param self - derived object
         //! @param event - event to be processed
-        static void processEvent(Derived& self, const Event& event)
+        static inline void processEvent(Derived& self, const Event& event)
         {
-            RowBased<Source, Event, Target>::processEvent(action, self, event);
+            RowBase<Source, Event, Target>::processEvent(action, self, event);
         }
         //! @brief Check guard condition.
         //! @param self - derived object
         //! @param event - event to be processed
         //! @return pass or not pass
-        static bool checkGuard(const Derived& self, const Event& event)
+        static inline bool checkGuard(const Derived& self, const Event& event)
         {
-            return RowBased<Source, Event, Target>::checkGuard(guard, self, event);
+            return RowBase<Source, Event, Target>::checkGuard(guard, self, event);
         }
     };
 };
 
 template <class Derived, class State>
 template <class Event>
-void FSM<Derived, State>::processEvent(const Event& event)
+inline void FSM<Derived, State>::processEvent(const Event& event)
 {
     using Rows = typename ByEventType<Event, typename Derived::TransitionTable>::Type;
-    ProcessingLock procLock(*this);
+    ProcedureLock lock(*this);
     static_assert(std::is_base_of_v<FSM, Derived>);
     Derived& self = static_cast<Derived&>(*this);
     state = handleEvent<Event, Rows>::execute(self, event, state);

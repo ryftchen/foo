@@ -112,7 +112,7 @@ private:
     //! @return size after padding
     inline std::size_t padPointer(const char* const data, const std::size_t align) const noexcept;
     //! @brief Allocate block.
-    void allocateBlock();
+    inline void allocateBlock();
 
     static_assert(BlockSize >= (2 * sizeof(Slot)));
 };
@@ -244,7 +244,7 @@ inline std::size_t Memory<T, BlockSize>::padPointer(const char* const data, cons
 }
 
 template <typename T, std::size_t BlockSize>
-void Memory<T, BlockSize>::allocateBlock()
+inline void Memory<T, BlockSize>::allocateBlock()
 {
     auto* const newBlock = reinterpret_cast<char*>(operator new(BlockSize));
     reinterpret_cast<Slot*>(newBlock)->next = currentBlock;

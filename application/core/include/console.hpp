@@ -92,8 +92,9 @@ private:
     //! @brief Saved empty history state.
     HistoryState* const emptyHistory{::history_get_history_state()};
     //! @brief Controller for interaction.
-    struct Controller
+    class Controller
     {
+    public:
         //! @brief Construct a new Controller object.
         //! @param greeting - default greeting information
         explicit Controller(const std::string_view greeting) : greeting(greeting) {}
