@@ -66,7 +66,8 @@ public:
     //! @brief Interface used to execute.
     //! @param argc - argument count
     //! @param argv - argument vector
-    void execute(const int argc, const char* const argv[]);
+    //! @return successful or failed to execute
+    bool execute(const int argc, const char* const argv[]);
 
 private:
     //! @brief Construct a new Command object.
@@ -92,6 +93,8 @@ private:
     //! @brief Parse argument helper to apply numeric.
     utility::argument::Argument subCLIAppNum{
         utility::reflection::TypeInfo<app_num::ApplyNumeric>::name, note::version()};
+    //! @brief Flag to indicate whether the command is faulty.
+    std::atomic<bool> isFaulty{false};
 
     //! @brief Initialize the parse argument helpers.
     void initializeCLI();

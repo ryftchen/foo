@@ -247,7 +247,7 @@ Command& Command::getInstance()
     return commander;
 }
 
-void Command::execute(const int argc, const char* const argv[])
+bool Command::execute(const int argc, const char* const argv[])
 try
 {
     auto launcher = helperLifecycle<log::Log, view::View>();
@@ -272,10 +272,15 @@ try
     {
         launcher.resume();
     }
+
+    return !isFaulty.load();
 }
 catch (const std::exception& err)
 {
+    isFaulty.store(true);
     LOG_ERR << err.what();
+
+    return !isFaulty.load();
 }
 
 // NOLINTNEXTLINE(readability-function-size)
@@ -558,6 +563,7 @@ catch (const std::exception& err)
 {
     isParsed.store(true);
     parserCond.notify_one();
+    isFaulty.store(true);
     LOG_WRN << err.what();
 }
 
@@ -576,6 +582,7 @@ try
 }
 catch (const std::exception& err)
 {
+    isFaulty.store(true);
     LOG_WRN << err.what();
 }
 
@@ -851,7 +858,7 @@ try
         std::strncpy(hostName, "HOSTNAME", HOST_NAME_MAX - 1);
         hostName[HOST_NAME_MAX - 1] = '\0';
     }
-    const std::string greeting = user + '@' + std::string{hostName} + " foo > ";
+    const auto greeting = user + '@' + std::string{hostName} + " foo > ";
     const auto session = std::make_shared<console::Console>(greeting);
     registerOnConsole(*session, tcpClient);
 
