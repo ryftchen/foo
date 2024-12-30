@@ -12,7 +12,7 @@
 //! @brief Convert target string for reflection.
 #define REFLECTION_STR(str)                                                                                       \
     (                                                                                                             \
-        []                                                                                                        \
+        []() constexpr                                                                                            \
         {                                                                                                         \
             constexpr std::basic_string_view refl = str;                                                          \
             return utility::reflection::Reflect::String<                                                          \
