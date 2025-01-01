@@ -2,7 +2,7 @@
 //! @author ryftchen
 //! @brief The definitions (test_design_pattern) in the test module.
 //! @version 0.1.0
-//! @copyright Copyright (c) 2022-2024 ryftchen. All rights reserved.
+//! @copyright Copyright (c) 2022-2025 ryftchen. All rights reserved.
 
 #include <gtest/gtest.h>
 #include <syncstream>
