@@ -2,7 +2,7 @@
 //! @author ryftchen
 //! @brief The declarations (note) in the application module.
 //! @version 0.1.0
-//! @copyright Copyright (c) 2022-2024 ryftchen. All rights reserved.
+//! @copyright Copyright (c) 2022-2025 ryftchen. All rights reserved.
 
 #pragma once
 
@@ -29,7 +29,7 @@ inline constexpr std::string_view version()
 //! @return copyright
 inline constexpr std::string_view copyright()
 {
-    return "Copyright (c) 2022-2024 ryftchen. All rights reserved.";
+    return "Copyright (c) 2022-2025 ryftchen. All rights reserved.";
 }
 
 extern std::string compiler();

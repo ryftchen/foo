@@ -2,7 +2,7 @@
 //! @author ryftchen
 //! @brief The precompiled header in the application module.
 //! @version 0.1.0
-//! @copyright Copyright (c) 2022-2024 ryftchen. All rights reserved.
+//! @copyright Copyright (c) 2022-2025 ryftchen. All rights reserved.
 
 #ifndef APPLICATION_PCH_H
 #define APPLICATION_PCH_H
