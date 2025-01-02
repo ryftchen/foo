@@ -687,9 +687,9 @@ Command::ChoiceContainer Command::extractChoices()
     return choices;
 }
 
-bool Command::parseMessage4Client(char* buffer, const int length)
+bool Command::onParsing4Client(char* buffer, const int length)
 {
-    return (0 != length) ? view::View::Access().parseMessage(buffer, length) : false;
+    return (0 != length) ? view::View::Access().onParsing(buffer, length) : false;
 }
 
 //! @brief Launch the TCP client for console mode.
@@ -701,7 +701,7 @@ void Command::launchClient<utility::socket::TCPSocket>(std::shared_ptr<utility::
     {
         try
         {
-            if (parseMessage4Client(buffer, length))
+            if (onParsing4Client(buffer, length))
             {
                 client->asyncExit();
             }
@@ -725,7 +725,7 @@ void Command::launchClient<utility::socket::UDPSocket>(std::shared_ptr<utility::
     {
         try
         {
-            if (parseMessage4Client(buffer, length))
+            if (onParsing4Client(buffer, length))
             {
                 client->asyncExit();
             }
@@ -763,7 +763,7 @@ void Command::executeInConsole() const
         session->optionExecutor(option);
     }
 
-    udpClient->toSend(utility::common::base64Encode("stop"));
+    udpClient->toSend(utility::common::base64Encode(view::exitSymbol));
     udpClient->waitIfAlive();
     utility::time::millisecondLevelSleep(latency);
 }
@@ -846,7 +846,6 @@ try
 #ifndef NDEBUG
     LOG_DBG << "Enter console mode.";
 #endif // NDEBUG
-    using enum console::Console::RetCode;
     std::cout << utility::io::executeCommand("tput bel ; echo '" + getIconBanner() + "' ; sleep 0.1s") << std::flush;
     auto tcpClient = std::make_shared<utility::socket::TCPSocket>();
     launchClient(tcpClient);
@@ -862,6 +861,7 @@ try
     const auto session = std::make_shared<console::Console>(greeting);
     registerOnConsole(*session, tcpClient);
 
+    using enum console::Console::RetCode;
     int retVal = success;
     do
     {
@@ -878,7 +878,7 @@ try
     }
     while (quit != retVal);
 
-    tcpClient->toSend(utility::common::base64Encode("stop"));
+    tcpClient->toSend(utility::common::base64Encode(view::exitSymbol));
     tcpClient->waitIfAlive();
     utility::time::millisecondLevelSleep(latency);
 #ifndef NDEBUG
@@ -949,7 +949,7 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& c
             auto retVal = success;
             try
             {
-                client->toSend(utility::common::base64Encode("stop"));
+                client->toSend(utility::common::base64Encode(view::exitSymbol));
                 client->waitIfAlive();
                 utility::time::millisecondLevelSleep(latency);
                 client.reset();

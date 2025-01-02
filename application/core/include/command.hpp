@@ -333,7 +333,7 @@ private:
     //! @param buffer - message buffer
     //! @param length - message length
     //! @return need to stop the client connection or not
-    static bool parseMessage4Client(char* buffer, const int length);
+    static bool onParsing4Client(char* buffer, const int length);
     //! @brief Await outside the client in console mode.
     static void enableWait4Client();
     //! @brief Awaken inside the client in console mode.

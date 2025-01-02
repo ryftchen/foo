@@ -24,6 +24,8 @@ namespace application // NOLINT(modernize-concat-nested-namespaces)
 //! @brief View-server-related functions in the application module.
 namespace view
 {
+//! @brief The internal symbol for exiting.
+inline constexpr std::string_view exitSymbol = "stop";
 //! @brief Invalid shared memory id in TLV value.
 constexpr int invalidShmId = -1;
 //! @brief Default information size in TLV value.
@@ -156,7 +158,7 @@ public:
         //! @param buffer - TLV packet buffer
         //! @param length - buffer length
         //! @return need to stop the connection or not
-        bool parseMessage(char* buffer, const int length) const;
+        bool onParsing(char* buffer, const int length) const;
         //! @brief Await depending on the output state.
         void enableWait() const;
         //! @brief Awaken depending on the output state.

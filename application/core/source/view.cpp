@@ -386,7 +386,7 @@ catch (const std::exception& err)
     LOG_ERR << err.what();
 }
 
-bool View::Access::parseMessage(char* buffer, const int length) const
+bool View::Access::onParsing(char* buffer, const int length) const
 {
     decryptMessage(buffer, length);
 
@@ -1009,7 +1009,7 @@ void View::createViewServer()
             try
             {
                 const auto plaintext = utility::common::base64Decode(message);
-                if ("stop" == plaintext)
+                if (plaintext == exitSymbol)
                 {
                     buildTLVPacket4Stop(buffer);
                     newSocket->toSend(buffer, sizeof(buffer));
@@ -1049,7 +1049,7 @@ void View::createViewServer()
         try
         {
             const auto plaintext = utility::common::base64Decode(message);
-            if ("stop" == plaintext)
+            if (plaintext == exitSymbol)
             {
                 buildTLVPacket4Stop(buffer);
                 udpServer->toSendTo(buffer, sizeof(buffer), ip, port);
