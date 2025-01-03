@@ -687,11 +687,6 @@ Command::ChoiceContainer Command::extractChoices()
     return choices;
 }
 
-bool Command::onParsing4Client(char* buffer, const int length)
-{
-    return (0 != length) ? view::View::Access().onParsing(buffer, length) : false;
-}
-
 //! @brief Launch the TCP client for console mode.
 //! @param client - TCP client to be launched
 template <>
@@ -971,6 +966,11 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& c
     {
         session.registerOption(name, attr.prompt, sender);
     }
+}
+
+bool Command::onParsing4Client(char* buffer, const int length)
+{
+    return (0 != length) ? view::View::Access().onParsing(buffer, length) : false;
 }
 
 void Command::enableWait4Client()
