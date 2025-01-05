@@ -965,7 +965,10 @@ function set_compile_condition()
     }; then
         # shellcheck source=/dev/null
         source "./${FOLDER[scr]}/.build_env"
-        if [[ -n ${FOO_BLD_COMPILER} ]] && [[ ${FOO_BLD_COMPILER} =~ ^(clang|gcc)$ ]]; then
+        if [[ -n ${FOO_BLD_COMPILER} ]]; then
+            if [[ ! ${FOO_BLD_COMPILER} =~ ^(clang|gcc)$ ]]; then
+                die "The FOO_BLD_COMPILER must be clang or gcc."
+            fi
             if {
                 [[ -n ${FOO_BLD_COV} ]] && [[ ${FOO_BLD_COV} = "llvm-cov" ]]
             } || {
@@ -975,23 +978,41 @@ function set_compile_condition()
             fi
             DEV_OPT[compiler]=${FOO_BLD_COMPILER}
         fi
-        if [[ -n ${FOO_BLD_PARALLEL} ]] && [[ ${FOO_BLD_PARALLEL} =~ ^[0-9]+$ ]]; then
+        if [[ -n ${FOO_BLD_PARALLEL} ]]; then
+            if [[ ! ${FOO_BLD_PARALLEL} =~ ^[0-9]+$ ]]; then
+                die "The FOO_BLD_PARALLEL must be a positive integer."
+            fi
             DEV_OPT[parallel]=${FOO_BLD_PARALLEL}
         fi
-        if [[ -n ${FOO_BLD_PCH} ]] && [[ ${FOO_BLD_PCH} = "on" ]]; then
-            DEV_OPT[pch]=true
+        if [[ -n ${FOO_BLD_PCH} ]]; then
+            if [[ ! ${FOO_BLD_PCH} =~ ^(on|off)$ ]]; then
+                die "The FOO_BLD_PCH must be on or off."
+            fi
+            DEV_OPT[pch]=$([[ ${FOO_BLD_PCH} = "on" ]] && echo true || echo false)
         fi
-        if [[ -n ${FOO_BLD_UNITY} ]] && [[ ${FOO_BLD_UNITY} = "on" ]]; then
-            DEV_OPT[unity]=true
+        if [[ -n ${FOO_BLD_UNITY} ]]; then
+            if [[ ! ${FOO_BLD_UNITY} =~ ^(on|off)$ ]]; then
+                die "The FOO_BLD_UNITY must be on or off."
+            fi
+            DEV_OPT[unity]=$([[ ${FOO_BLD_UNITY} = "on" ]] && echo true || echo false)
         fi
-        if [[ -n ${FOO_BLD_CCACHE} ]] && [[ ${FOO_BLD_CCACHE} = "on" ]]; then
-            DEV_OPT[ccache]=true
+        if [[ -n ${FOO_BLD_CCACHE} ]]; then
+            if [[ ! ${FOO_BLD_CCACHE} =~ ^(on|off)$ ]]; then
+                die "The FOO_BLD_CCACHE must be on or off."
+            fi
+            DEV_OPT[ccache]=$([[ ${FOO_BLD_CCACHE} = "on" ]] && echo true || echo false)
         fi
-        if [[ -n "${FOO_BLD_DISTCC// /}" ]]; then
+        if [[ -n "${FOO_BLD_DISTCC}" ]]; then
+            if [[ -z "${FOO_BLD_DISTCC// /}" ]]; then
+                die "The FOO_BLD_DISTCC must be a non-empty string."
+            fi
             DEV_OPT[distcc]=${FOO_BLD_DISTCC}
         fi
-        if [[ -n ${FOO_BLD_TMPFS} ]] && [[ ${FOO_BLD_TMPFS} = "on" ]]; then
-            DEV_OPT[tmpfs]=true
+        if [[ -n ${FOO_BLD_TMPFS} ]]; then
+            if [[ ! ${FOO_BLD_TMPFS} =~ ^(on|off)$ ]]; then
+                die "The FOO_BLD_TMPFS must be on or off."
+            fi
+            DEV_OPT[tmpfs]=$([[ ${FOO_BLD_TMPFS} = "on" ]] && echo true || echo false)
         fi
     fi
 
