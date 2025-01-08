@@ -51,11 +51,8 @@ void Config::verifyConfigData(const utility::json::JSON& configData)
         throw std::runtime_error("Incomplete configuration (" + configData.toUnescapedString() + ").");
     }
 
-    bool isVerified = configData.at("activateHelper").isBooleanType();
-    isVerified &= configData.at("helperList").isObjectType();
-    isVerified &=
-        (configData.at("helperTimeout").isIntegralType() && (configData.at("helperTimeout").toIntegral() >= 0));
-    if (!isVerified)
+    if (!configData.at("activateHelper").isBooleanType() || !configData.at("helperList").isObjectType()
+        || !configData.at("helperTimeout").isIntegralType() || configData.at("helperTimeout").toIntegral() < 0)
     {
         throw std::runtime_error("Illegal configuration (" + configData.toUnescapedString() + ").");
     }
@@ -71,7 +68,6 @@ void Config::checkLoggerConfigInHelperList(const utility::json::JSON& helperList
         throw std::runtime_error(R"(Incomplete configuration, miss "logger" object in "helperList" object.)");
     }
 
-    bool isVerified = true;
     const auto& loggerObject = helperList.at("logger");
     if (!loggerObject.hasKey("properties") || !loggerObject.hasKey("required"))
     {
@@ -79,18 +75,16 @@ void Config::checkLoggerConfigInHelperList(const utility::json::JSON& helperList
             R"(Incomplete configuration, "logger" object in "helperList" object ()" + loggerObject.toUnescapedString()
             + ").");
     }
-    isVerified &= loggerObject.isObjectType();
 
+    bool isVerified = true;
+    isVerified &= loggerObject.isObjectType();
     const auto &loggerProperties = loggerObject.at("properties"), loggerRequired = loggerObject.at("required");
-    isVerified &= loggerProperties.isObjectType();
-    isVerified &= loggerRequired.isArrayType();
-    isVerified &= (loggerProperties.size() == loggerRequired.length());
+    isVerified &= loggerProperties.isObjectType() && loggerRequired.isArrayType()
+        && (loggerProperties.size() == loggerRequired.length());
     for (const auto& item : loggerRequired.arrayRange())
     {
-        isVerified &= item.isStringType();
-        isVerified &= loggerProperties.hasKey(item.toString());
+        isVerified &= item.isStringType() && loggerProperties.hasKey(item.toString());
     }
-
     for (const auto& [key, item] : loggerProperties.objectRange())
     {
         using utility::common::EnumCheck, utility::common::operator""_bkdrHash;
@@ -101,25 +95,23 @@ void Config::checkLoggerConfigInHelperList(const utility::json::JSON& helperList
                 break;
             case "priorityLevel"_bkdrHash:
                 using OutputLevel = log::Log::OutputLevel;
-                isVerified &= item.isIntegralType();
-                isVerified &= EnumCheck<
-                    OutputLevel,
-                    OutputLevel::debug,
-                    OutputLevel::info,
-                    OutputLevel::warning,
-                    OutputLevel::error>::isValue(item.toIntegral());
+                isVerified &= item.isIntegralType()
+                    && EnumCheck<OutputLevel,
+                                 OutputLevel::debug,
+                                 OutputLevel::info,
+                                 OutputLevel::warning,
+                                 OutputLevel::error>::isValue(item.toIntegral());
                 break;
             case "targetType"_bkdrHash:
                 using OutputType = log::Log::OutputType;
-                isVerified &= item.isIntegralType();
-                isVerified &= EnumCheck<OutputType, OutputType::file, OutputType::terminal, OutputType::all>::isValue(
-                    item.toIntegral());
+                isVerified &= item.isIntegralType()
+                    && EnumCheck<OutputType, OutputType::file, OutputType::terminal, OutputType::all>::isValue(
+                                  item.toIntegral());
                 break;
             case "writeMode"_bkdrHash:
                 using OutputMode = log::Log::OutputMode;
-                isVerified &= item.isIntegralType();
-                isVerified &=
-                    EnumCheck<OutputMode, OutputMode::append, OutputMode::overwrite>::isValue(item.toIntegral());
+                isVerified &= item.isIntegralType()
+                    && EnumCheck<OutputMode, OutputMode::append, OutputMode::overwrite>::isValue(item.toIntegral());
                 break;
             default:
                 isVerified &= false;
@@ -142,7 +134,6 @@ void Config::checkViewerConfigInHelperList(const utility::json::JSON& helperList
         throw std::runtime_error(R"(Incomplete configuration, miss "viewer" object in "helperList" object.)");
     }
 
-    bool isVerified = true;
     const auto& viewerObject = helperList.at("viewer");
     if (!viewerObject.hasKey("properties") || !viewerObject.hasKey("required"))
     {
@@ -150,18 +141,16 @@ void Config::checkViewerConfigInHelperList(const utility::json::JSON& helperList
             R"(Incomplete configuration, "viewer" object in "helperList" object ()" + viewerObject.toUnescapedString()
             + ").");
     }
-    isVerified &= viewerObject.isObjectType();
 
+    bool isVerified = true;
+    isVerified &= viewerObject.isObjectType();
     const auto &viewerProperties = viewerObject.at("properties"), viewerRequired = viewerObject.at("required");
-    isVerified &= viewerProperties.isObjectType();
-    isVerified &= viewerRequired.isArrayType();
-    isVerified &= (viewerProperties.size() == viewerRequired.length());
+    isVerified &= viewerProperties.isObjectType() && viewerRequired.isArrayType()
+        && (viewerProperties.size() == viewerRequired.length());
     for (const auto& item : viewerRequired.arrayRange())
     {
-        isVerified &= item.isStringType();
-        isVerified &= viewerProperties.hasKey(item.toString());
+        isVerified &= item.isStringType() && viewerProperties.hasKey(item.toString());
     }
-
     constexpr std::uint16_t minPortNum = 0, maxPortNum = 65535;
     for (const auto& [key, item] : viewerProperties.objectRange())
     {
@@ -172,15 +161,15 @@ void Config::checkViewerConfigInHelperList(const utility::json::JSON& helperList
                 isVerified &= item.isStringType();
                 break;
             case "tcpPort"_bkdrHash:
-                isVerified &= item.isIntegralType();
-                isVerified &= ((item.toIntegral() >= minPortNum) && (item.toIntegral() <= maxPortNum));
+                isVerified &=
+                    item.isIntegralType() && ((item.toIntegral() >= minPortNum) && (item.toIntegral() <= maxPortNum));
                 break;
             case "udpHost"_bkdrHash:
                 isVerified &= item.isStringType();
                 break;
             case "udpPort"_bkdrHash:
-                isVerified &= item.isIntegralType();
-                isVerified &= ((item.toIntegral() >= minPortNum) && (item.toIntegral() <= maxPortNum));
+                isVerified &=
+                    item.isIntegralType() && ((item.toIntegral() >= minPortNum) && (item.toIntegral() <= maxPortNum));
                 break;
             default:
                 isVerified &= false;

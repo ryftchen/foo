@@ -268,23 +268,23 @@ retry:
     try
     {
         assert(safeCurrentState() == State::init);
-        safeProcessEvent(CreateServer());
+        safeProcessEvent(CreateServer{});
 
         assert(safeCurrentState() == State::idle);
         awaitNotification2Ongoing();
-        safeProcessEvent(GoViewing());
+        safeProcessEvent(GoViewing{});
 
         assert(safeCurrentState() == State::work);
         awaitNotification2View();
         if (toReset.load())
         {
-            safeProcessEvent(Relaunch());
+            safeProcessEvent(Relaunch{});
             goto retry; // NOLINT(cppcoreguidelines-avoid-goto,hicpp-avoid-goto)
         }
-        safeProcessEvent(DestroyServer());
+        safeProcessEvent(DestroyServer{});
 
         assert(safeCurrentState() == State::idle);
-        safeProcessEvent(NoViewing());
+        safeProcessEvent(NoViewing{});
 
         assert(safeCurrentState() == State::done);
     }
@@ -292,10 +292,10 @@ retry:
     {
         LOG_ERR << "Suspend the viewer during " << safeCurrentState() << " state: " << err.what();
 
-        safeProcessEvent(Standby());
+        safeProcessEvent(Standby{});
         if (awaitNotification2Retry())
         {
-            safeProcessEvent(Relaunch());
+            safeProcessEvent(Relaunch{});
             if (safeCurrentState() == State::init)
             {
                 goto retry; // NOLINT(cppcoreguidelines-avoid-goto,hicpp-avoid-goto)

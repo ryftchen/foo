@@ -64,23 +64,23 @@ retry:
     {
         static_cast<void>(logStyle());
         assert(safeCurrentState() == State::init);
-        safeProcessEvent(OpenFile());
+        safeProcessEvent(OpenFile{});
 
         assert(safeCurrentState() == State::idle);
         awaitNotification2Ongoing();
-        safeProcessEvent(GoLogging());
+        safeProcessEvent(GoLogging{});
 
         assert(safeCurrentState() == State::work);
         awaitNotification2Log();
         if (toReset.load())
         {
-            safeProcessEvent(Relaunch());
+            safeProcessEvent(Relaunch{});
             goto retry; // NOLINT(cppcoreguidelines-avoid-goto,hicpp-avoid-goto)
         }
-        safeProcessEvent(CloseFile());
+        safeProcessEvent(CloseFile{});
 
         assert(safeCurrentState() == State::idle);
-        safeProcessEvent(NoLogging());
+        safeProcessEvent(NoLogging{});
 
         assert(safeCurrentState() == State::done);
     }
@@ -88,10 +88,10 @@ retry:
     {
         LOG_ERR << "Suspend the logger during " << safeCurrentState() << " state: " << err.what();
 
-        safeProcessEvent(Standby());
+        safeProcessEvent(Standby{});
         if (awaitNotification2Retry())
         {
-            safeProcessEvent(Relaunch());
+            safeProcessEvent(Relaunch{});
             if (safeCurrentState() == State::init)
             {
                 goto retry; // NOLINT(cppcoreguidelines-avoid-goto,hicpp-avoid-goto)
