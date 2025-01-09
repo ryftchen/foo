@@ -28,6 +28,11 @@ namespace application::view
 {
 namespace tlv
 {
+//! @brief Invalid shared memory id in TLV value.
+constexpr int invalidShmId = -1;
+//! @brief Default information size in TLV value.
+constexpr std::uint16_t defaultInfoSize = 256;
+
 //! @brief Value in TLV.
 struct TLVValue
 {
@@ -259,7 +264,7 @@ View& View::getInstance()
         static View viewer{};
         return viewer;
     }
-    throw std::logic_error("The viewer is disabled.");
+    throw std::logic_error("The " + std::string{name} + " is disabled.");
 }
 
 void View::service()
@@ -290,7 +295,7 @@ retry:
     }
     catch (const std::exception& err)
     {
-        LOG_ERR << "Suspend the viewer during " << safeCurrentState() << " state: " << err.what();
+        LOG_ERR << "Suspend the " << name << " during " << safeCurrentState() << " state: " << err.what();
 
         safeProcessEvent(Standby{});
         if (awaitNotification2Retry())
@@ -300,7 +305,7 @@ retry:
             {
                 goto retry; // NOLINT(cppcoreguidelines-avoid-goto,hicpp-avoid-goto)
             }
-            LOG_ERR << "Failed to rollback viewer.";
+            LOG_ERR << "Failed to rollback " << name << '.';
         }
     }
 }
@@ -313,7 +318,7 @@ try
         {
             if (inst.isInServingState(State::hold))
             {
-                throw std::runtime_error("The viewer did not initialize successfully ...");
+                throw std::runtime_error("The " + std::string{name} + " did not initialize successfully ...");
             }
             return inst.isInServingState(State::idle);
         });
@@ -330,7 +335,7 @@ try
         {
             if (inst.isInServingState(State::hold))
             {
-                throw std::runtime_error("The viewer did not start successfully ...");
+                throw std::runtime_error("The " + std::string{name} + " did not start successfully ...");
             }
             return inst.isInServingState(State::work);
         });
@@ -355,7 +360,7 @@ try
         {
             if (inst.isInServingState(State::hold))
             {
-                throw std::runtime_error("The viewer did not stop successfully ...");
+                throw std::runtime_error("The " + std::string{name} + " did not stop successfully ...");
             }
             return inst.isInServingState(State::done);
         });
@@ -378,7 +383,8 @@ try
     if (utility::time::blockingTimer([this]() { return !inst.toReset.load(); }, inst.timeoutPeriod))
     {
         throw std::runtime_error(
-            "The viewer did not reset properly in " + std::to_string(inst.timeoutPeriod) + " ms ...");
+            "The " + std::string{name} + " did not reset properly in " + std::to_string(inst.timeoutPeriod)
+            + " ms ...");
     }
 }
 catch (const std::exception& err)
@@ -400,15 +406,15 @@ bool View::Access::onParsing(char* buffer, const int length) const
     {
         std::cout << value.libInfo << std::endl;
     }
-    if (invalidShmId != value.bashShmId)
+    if (tlv::invalidShmId != value.bashShmId)
     {
         printSharedMemory(value.bashShmId);
     }
-    if (invalidShmId != value.logShmId)
+    if (tlv::invalidShmId != value.logShmId)
     {
         printSharedMemory(value.logShmId, !inst.isInServingState(State::work));
     }
-    if (invalidShmId != value.statusShmId)
+    if (tlv::invalidShmId != value.statusShmId)
     {
         printSharedMemory(value.statusShmId);
     }

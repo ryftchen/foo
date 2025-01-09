@@ -211,6 +211,8 @@ public:
     //! @brief Get the Log instance.
     //! @return reference of the Log object
     static Log& getInstance();
+    //! @brief Instance name.
+    static constexpr std::string_view name{config::field::logger};
     //! @brief Service for running.
     void service();
 
