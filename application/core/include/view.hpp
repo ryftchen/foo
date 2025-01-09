@@ -346,7 +346,6 @@ private:
     std::atomic<bool> outputCompleted{false};
     //! @brief Spin lock for controlling state.
     mutable utility::common::SpinLock stateLock{};
-    friend class Access;
 
     //! @brief Safely retrieve the current state.
     //! @return current state

@@ -213,9 +213,39 @@ constexpr std::string_view toString(const Category cat)
 }
 #undef COMMAND_CATEGORY_TABLE
 
+//! @brief Mapping table for enum and attribute about command categories. X macro.
+#define COMMAND_CATEGORY_TABLE_ATTR                                                  \
+    ELEM(console, "run options in console mode and exit\nseparate with quotes", "c") \
+    ELEM(dump, "dump default configuration and exit", "d")                           \
+    ELEM(help, "show help and exit", "h")                                            \
+    ELEM(version, "show version and exit", "v")
+consteval std::string_view Command::getDescr(const Category cat)
+{
+//! @cond
+#define ELEM(val, str1, str2) {str1, str2},
+    constexpr std::string_view table[][2] = {COMMAND_CATEGORY_TABLE_ATTR};
+    static_assert((sizeof(table) / sizeof(table[0])) == Bottom<Category>::value);
+    return table[cat][0];
+//! @endcond
+#undef ELEM
+}
+
+consteval std::string_view Command::getAlias(const Category cat)
+{
+//! @cond
+#define ELEM(val, str1, str2) {str1, str2},
+    constexpr std::string_view table[][2] = {COMMAND_CATEGORY_TABLE_ATTR};
+    static_assert((sizeof(table) / sizeof(table[0])) == Bottom<Category>::value);
+    return table[cat][1];
+//! @endcond
+#undef ELEM
+}
+#undef COMMAND_CATEGORY_TABLE_ATTR
+
 Command::Command()
 {
-    initializeCLI();
+    initializeNativeCLI();
+    initializeExtraCLI();
 }
 
 Command::~Command()
@@ -265,16 +295,32 @@ catch (const std::exception& err)
     return !isFaulty.load();
 }
 
-// NOLINTNEXTLINE(readability-function-size)
-void Command::initializeCLI()
+void Command::initializeNativeCLI()
 {
-    mainCLI.addArgument("-h", "--help").argsNum(0).implicitVal(true).help("show help and exit");
+    const std::string prefix1 = "-", prefix2 = "--";
+
+    mainCLI
+        .addArgument(prefix1 + std::string{getAlias(Category::help)}, prefix2 + std::string{toString(Category::help)})
+        .argsNum(0)
+        .implicitVal(true)
+        .help(getDescr(Category::help));
     defaultNotifier.attach(Category::help, std::make_shared<Notifier::Handler<Category::help>>(*this));
-    mainCLI.addArgument("-v", "--version").argsNum(0).implicitVal(true).help("show version and exit");
+    mainCLI
+        .addArgument(
+            prefix1 + std::string{getAlias(Category::version)}, prefix2 + std::string{toString(Category::version)})
+        .argsNum(0)
+        .implicitVal(true)
+        .help(getDescr(Category::version));
     defaultNotifier.attach(Category::version, std::make_shared<Notifier::Handler<Category::version>>(*this));
-    mainCLI.addArgument("-d", "--dump").argsNum(0).implicitVal(true).help("dump default configuration and exit");
+    mainCLI
+        .addArgument(prefix1 + std::string{getAlias(Category::dump)}, prefix2 + std::string{toString(Category::dump)})
+        .argsNum(0)
+        .implicitVal(true)
+        .help(getDescr(Category::dump));
     defaultNotifier.attach(Category::dump, std::make_shared<Notifier::Handler<Category::dump>>(*this));
-    mainCLI.addArgument("-c", "--console")
+    mainCLI
+        .addArgument(
+            prefix1 + std::string{getAlias(Category::console)}, prefix2 + std::string{toString(Category::console)})
         .argsNum(utility::argument::ArgsNumPattern::any)
         .defaultVal<std::vector<std::string>>({"usage"})
         .appending()
@@ -289,86 +335,94 @@ void Command::initializeCLI()
                 return input;
             })
         .metavar("CMD")
-        .help("run options in console mode and exit\n"
-              "separate with quotes");
+        .help(getDescr(Category::console));
     defaultNotifier.attach(Category::console, std::make_shared<Notifier::Handler<Category::console>>(*this));
+}
 
-    SubCLIName title{};
-    CategoryName category{};
-    ChoiceContainer choices{};
+// NOLINTNEXTLINE(readability-function-size)
+void Command::initializeExtraCLI()
+{
+    const std::string prefix1 = "-", prefix2 = "--", helpArg1 = prefix1 + std::string{getAlias(Category::help)},
+                      helpArg2 = prefix2 + std::string{toString(Category::help)};
+    constexpr std::string_view helpDescr = getDescr(Category::help), optMetavar = "OPT";
+    std::vector<std::string> choices{};
     auto& checklist = taskDispatcher.extraChecklist;
 
-    title = subCLIAppAlgo.title();
-    auto& algoTable = extraChoices[title];
-    checklist[title] =
+    auto& algoTable = extraChoices[subCLIAppAlgo.title()];
+    checklist[subCLIAppAlgo.title()] =
         ExtraManager::IntfWrap{[]() { return !app_algo::manager().empty(); }, []() { app_algo::manager().reset(); }};
     subCLIAppAlgo.addDescription(getDescr<app_algo::ApplyAlgorithm>());
-    subCLIAppAlgo.addArgument("-h", "--help").argsNum(0).implicitVal(true).help("show help and exit");
-    category = TypeInfo<app_algo::MatchMethod>::name;
+    subCLIAppAlgo.addArgument(helpArg1, helpArg2).argsNum(0).implicitVal(true).help(helpDescr);
     choices = extractChoices<app_algo::MatchMethod>();
-    algoTable[category] = CategoryExtAttr{choices, app_algo::MatchMethod{}};
+    algoTable[TypeInfo<app_algo::MatchMethod>::name.data()] = CategoryExtAttr{choices, app_algo::MatchMethod{}};
     subCLIAppAlgo
-        .addArgument("-" + std::string{getAlias<app_algo::ApplyAlgorithm, app_algo::MatchMethod>()}, "--" + category)
+        .addArgument(
+            prefix1 + std::string{getAlias<app_algo::ApplyAlgorithm, app_algo::MatchMethod>()},
+            prefix2 + std::string{TypeInfo<app_algo::MatchMethod>::name})
         .argsNum(0, choices.size())
         .defaultVal<std::vector<std::string>>(std::move(choices))
         .remaining()
-        .metavar("OPT")
+        .metavar(optMetavar)
         .help(getDescr<app_algo::MatchMethod>());
     applyingForwarder.registerHandler([](const action::UpdateChoice<app_algo::MatchMethod>& msg)
                                       { app_algo::updateChoice<app_algo::MatchMethod>(msg.cho); });
     applyingForwarder.registerHandler([](const action::RunChoices<app_algo::MatchMethod>& msg)
                                       { app_algo::runChoices<app_algo::MatchMethod>(msg.coll); });
-    category = TypeInfo<app_algo::NotationMethod>::name;
     choices = extractChoices<app_algo::NotationMethod>();
-    algoTable[category] = CategoryExtAttr{choices, app_algo::NotationMethod{}};
+    algoTable[TypeInfo<app_algo::NotationMethod>::name.data()] = CategoryExtAttr{choices, app_algo::NotationMethod{}};
     subCLIAppAlgo
-        .addArgument("-" + std::string{getAlias<app_algo::ApplyAlgorithm, app_algo::NotationMethod>()}, "--" + category)
+        .addArgument(
+            prefix1 + std::string{getAlias<app_algo::ApplyAlgorithm, app_algo::NotationMethod>()},
+            prefix2 + std::string{TypeInfo<app_algo::NotationMethod>::name})
         .argsNum(0, choices.size())
         .defaultVal<std::vector<std::string>>(std::move(choices))
         .remaining()
-        .metavar("OPT")
+        .metavar(optMetavar)
         .help(getDescr<app_algo::NotationMethod>());
     applyingForwarder.registerHandler([](const action::UpdateChoice<app_algo::NotationMethod>& msg)
                                       { app_algo::updateChoice<app_algo::NotationMethod>(msg.cho); });
     applyingForwarder.registerHandler([](const action::RunChoices<app_algo::NotationMethod>& msg)
                                       { app_algo::runChoices<app_algo::NotationMethod>(msg.coll); });
-    category = TypeInfo<app_algo::OptimalMethod>::name;
     choices = extractChoices<app_algo::OptimalMethod>();
-    algoTable[category] = CategoryExtAttr{choices, app_algo::OptimalMethod{}};
+    algoTable[TypeInfo<app_algo::OptimalMethod>::name.data()] = CategoryExtAttr{choices, app_algo::OptimalMethod{}};
     subCLIAppAlgo
-        .addArgument("-" + std::string{getAlias<app_algo::ApplyAlgorithm, app_algo::OptimalMethod>()}, "--" + category)
+        .addArgument(
+            prefix1 + std::string{getAlias<app_algo::ApplyAlgorithm, app_algo::OptimalMethod>()},
+            prefix2 + std::string{TypeInfo<app_algo::OptimalMethod>::name})
         .argsNum(0, choices.size())
         .defaultVal<std::vector<std::string>>(std::move(choices))
         .remaining()
-        .metavar("OPT")
+        .metavar(optMetavar)
         .help(getDescr<app_algo::OptimalMethod>());
     applyingForwarder.registerHandler([](const action::UpdateChoice<app_algo::OptimalMethod>& msg)
                                       { app_algo::updateChoice<app_algo::OptimalMethod>(msg.cho); });
     applyingForwarder.registerHandler([](const action::RunChoices<app_algo::OptimalMethod>& msg)
                                       { app_algo::runChoices<app_algo::OptimalMethod>(msg.coll); });
-    category = TypeInfo<app_algo::SearchMethod>::name;
     choices = extractChoices<app_algo::SearchMethod>();
-    algoTable[category] = CategoryExtAttr{choices, app_algo::SearchMethod{}};
+    algoTable[TypeInfo<app_algo::SearchMethod>::name.data()] = CategoryExtAttr{choices, app_algo::SearchMethod{}};
     subCLIAppAlgo
-        .addArgument("-" + std::string{getAlias<app_algo::ApplyAlgorithm, app_algo::SearchMethod>()}, "--" + category)
+        .addArgument(
+            prefix1 + std::string{getAlias<app_algo::ApplyAlgorithm, app_algo::SearchMethod>()},
+            prefix2 + std::string{TypeInfo<app_algo::SearchMethod>::name})
         .argsNum(0, choices.size())
         .defaultVal<std::vector<std::string>>(std::move(choices))
         .remaining()
-        .metavar("OPT")
+        .metavar(optMetavar)
         .help(getDescr<app_algo::SearchMethod>());
     applyingForwarder.registerHandler([](const action::UpdateChoice<app_algo::SearchMethod>& msg)
                                       { app_algo::updateChoice<app_algo::SearchMethod>(msg.cho); });
     applyingForwarder.registerHandler([](const action::RunChoices<app_algo::SearchMethod>& msg)
                                       { app_algo::runChoices<app_algo::SearchMethod>(msg.coll); });
-    category = TypeInfo<app_algo::SortMethod>::name;
     choices = extractChoices<app_algo::SortMethod>();
-    algoTable[category] = CategoryExtAttr{choices, app_algo::SortMethod{}};
+    algoTable[TypeInfo<app_algo::SortMethod>::name.data()] = CategoryExtAttr{choices, app_algo::SortMethod{}};
     subCLIAppAlgo
-        .addArgument("-" + std::string{getAlias<app_algo::ApplyAlgorithm, app_algo::SortMethod>()}, "--" + category)
+        .addArgument(
+            prefix1 + std::string{getAlias<app_algo::ApplyAlgorithm, app_algo::SortMethod>()},
+            prefix2 + std::string{TypeInfo<app_algo::SortMethod>::name})
         .argsNum(0, choices.size())
         .defaultVal<std::vector<std::string>>(std::move(choices))
         .remaining()
-        .metavar("OPT")
+        .metavar(optMetavar)
         .help(getDescr<app_algo::SortMethod>());
     applyingForwarder.registerHandler([](const action::UpdateChoice<app_algo::SortMethod>& msg)
                                       { app_algo::updateChoice<app_algo::SortMethod>(msg.cho); });
@@ -376,52 +430,51 @@ void Command::initializeCLI()
                                       { app_algo::runChoices<app_algo::SortMethod>(msg.coll); });
     mainCLI.addSubParser(subCLIAppAlgo);
 
-    title = subCLIAppDp.title();
-    auto& dpTable = extraChoices[title];
-    checklist[title] =
+    auto& dpTable = extraChoices[subCLIAppDp.title()];
+    checklist[subCLIAppDp.title()] =
         ExtraManager::IntfWrap{[]() { return !app_dp::manager().empty(); }, []() { app_dp::manager().reset(); }};
     subCLIAppDp.addDescription(getDescr<app_dp::ApplyDesignPattern>());
-    subCLIAppDp.addArgument("-h", "--help").argsNum(0).implicitVal(true).help("show help and exit");
-    category = TypeInfo<app_dp::BehavioralInstance>::name;
+    subCLIAppDp.addArgument(helpArg1, helpArg2).argsNum(0).implicitVal(true).help(helpDescr);
     choices = extractChoices<app_dp::BehavioralInstance>();
-    dpTable[category] = CategoryExtAttr{choices, app_dp::BehavioralInstance{}};
+    dpTable[TypeInfo<app_dp::BehavioralInstance>::name.data()] = CategoryExtAttr{choices, app_dp::BehavioralInstance{}};
     subCLIAppDp
         .addArgument(
-            "-" + std::string{getAlias<app_dp::ApplyDesignPattern, app_dp::BehavioralInstance>()}, "--" + category)
+            prefix1 + std::string{getAlias<app_dp::ApplyDesignPattern, app_dp::BehavioralInstance>()},
+            prefix2 + std::string{TypeInfo<app_dp::BehavioralInstance>::name})
         .argsNum(0, choices.size())
         .defaultVal<std::vector<std::string>>(std::move(choices))
         .remaining()
-        .metavar("OPT")
+        .metavar(optMetavar)
         .help(getDescr<app_dp::BehavioralInstance>());
     applyingForwarder.registerHandler([](const action::UpdateChoice<app_dp::BehavioralInstance>& msg)
                                       { app_dp::updateChoice<app_dp::BehavioralInstance>(msg.cho); });
     applyingForwarder.registerHandler([](const action::RunChoices<app_dp::BehavioralInstance>& msg)
                                       { app_dp::runChoices<app_dp::BehavioralInstance>(msg.coll); });
-    category = TypeInfo<app_dp::CreationalInstance>::name;
     choices = extractChoices<app_dp::CreationalInstance>();
-    dpTable[category] = CategoryExtAttr{choices, app_dp::CreationalInstance{}};
+    dpTable[TypeInfo<app_dp::CreationalInstance>::name.data()] = CategoryExtAttr{choices, app_dp::CreationalInstance{}};
     subCLIAppDp
         .addArgument(
-            "-" + std::string{getAlias<app_dp::ApplyDesignPattern, app_dp::CreationalInstance>()}, "--" + category)
+            prefix1 + std::string{getAlias<app_dp::ApplyDesignPattern, app_dp::CreationalInstance>()},
+            prefix2 + std::string{TypeInfo<app_dp::CreationalInstance>::name})
         .argsNum(0, choices.size())
         .defaultVal<std::vector<std::string>>(std::move(choices))
         .remaining()
-        .metavar("OPT")
+        .metavar(optMetavar)
         .help(getDescr<app_dp::CreationalInstance>());
     applyingForwarder.registerHandler([](const action::UpdateChoice<app_dp::CreationalInstance>& msg)
                                       { app_dp::updateChoice<app_dp::CreationalInstance>(msg.cho); });
     applyingForwarder.registerHandler([](const action::RunChoices<app_dp::CreationalInstance>& msg)
                                       { app_dp::runChoices<app_dp::CreationalInstance>(msg.coll); });
-    category = TypeInfo<app_dp::StructuralInstance>::name;
     choices = extractChoices<app_dp::StructuralInstance>();
-    dpTable[category] = CategoryExtAttr{choices, app_dp::StructuralInstance{}};
+    dpTable[TypeInfo<app_dp::StructuralInstance>::name.data()] = CategoryExtAttr{choices, app_dp::StructuralInstance{}};
     subCLIAppDp
         .addArgument(
-            "-" + std::string{getAlias<app_dp::ApplyDesignPattern, app_dp::StructuralInstance>()}, "--" + category)
+            prefix1 + std::string{getAlias<app_dp::ApplyDesignPattern, app_dp::StructuralInstance>()},
+            prefix2 + std::string{TypeInfo<app_dp::StructuralInstance>::name})
         .argsNum(0, choices.size())
         .defaultVal<std::vector<std::string>>(std::move(choices))
         .remaining()
-        .metavar("OPT")
+        .metavar(optMetavar)
         .help(getDescr<app_dp::StructuralInstance>());
     applyingForwarder.registerHandler([](const action::UpdateChoice<app_dp::StructuralInstance>& msg)
                                       { app_dp::updateChoice<app_dp::StructuralInstance>(msg.cho); });
@@ -429,35 +482,36 @@ void Command::initializeCLI()
                                       { app_dp::runChoices<app_dp::StructuralInstance>(msg.coll); });
     mainCLI.addSubParser(subCLIAppDp);
 
-    title = subCLIAppDs.title();
-    auto& dsTable = extraChoices[title];
-    checklist[title] =
+    auto& dsTable = extraChoices[subCLIAppDs.title()];
+    checklist[subCLIAppDs.title()] =
         ExtraManager::IntfWrap{[]() { return !app_ds::manager().empty(); }, []() { app_ds::manager().reset(); }};
     subCLIAppDs.addDescription(getDescr<app_ds::ApplyDataStructure>());
-    subCLIAppDs.addArgument("-h", "--help").argsNum(0).implicitVal(true).help("show help and exit");
-    category = TypeInfo<app_ds::LinearInstance>::name;
+    subCLIAppDs.addArgument(helpArg1, helpArg2).argsNum(0).implicitVal(true).help(helpDescr);
     choices = extractChoices<app_ds::LinearInstance>();
-    dsTable[category] = CategoryExtAttr{choices, app_ds::LinearInstance{}};
+    dsTable[TypeInfo<app_ds::LinearInstance>::name.data()] = CategoryExtAttr{choices, app_ds::LinearInstance{}};
     subCLIAppDs
-        .addArgument("-" + std::string{getAlias<app_ds::ApplyDataStructure, app_ds::LinearInstance>()}, "--" + category)
+        .addArgument(
+            prefix1 + std::string{getAlias<app_ds::ApplyDataStructure, app_ds::LinearInstance>()},
+            prefix2 + std::string{TypeInfo<app_ds::LinearInstance>::name})
         .argsNum(0, choices.size())
         .defaultVal<std::vector<std::string>>(std::move(choices))
         .remaining()
-        .metavar("OPT")
+        .metavar(optMetavar)
         .help(getDescr<app_ds::LinearInstance>());
     applyingForwarder.registerHandler([](const action::UpdateChoice<app_ds::LinearInstance>& msg)
                                       { app_ds::updateChoice<app_ds::LinearInstance>(msg.cho); });
     applyingForwarder.registerHandler([](const action::RunChoices<app_ds::LinearInstance>& msg)
                                       { app_ds::runChoices<app_ds::LinearInstance>(msg.coll); });
-    category = TypeInfo<app_ds::TreeInstance>::name;
     choices = extractChoices<app_ds::TreeInstance>();
-    dsTable[category] = CategoryExtAttr{choices, app_ds::TreeInstance{}};
+    dsTable[TypeInfo<app_ds::TreeInstance>::name.data()] = CategoryExtAttr{choices, app_ds::TreeInstance{}};
     subCLIAppDs
-        .addArgument("-" + std::string{getAlias<app_ds::ApplyDataStructure, app_ds::TreeInstance>()}, "--" + category)
+        .addArgument(
+            prefix1 + std::string{getAlias<app_ds::ApplyDataStructure, app_ds::TreeInstance>()},
+            prefix2 + std::string{TypeInfo<app_ds::TreeInstance>::name})
         .argsNum(0, choices.size())
         .defaultVal<std::vector<std::string>>(std::move(choices))
         .remaining()
-        .metavar("OPT")
+        .metavar(optMetavar)
         .help(getDescr<app_ds::TreeInstance>());
     applyingForwarder.registerHandler([](const action::UpdateChoice<app_ds::TreeInstance>& msg)
                                       { app_ds::updateChoice<app_ds::TreeInstance>(msg.cho); });
@@ -465,63 +519,66 @@ void Command::initializeCLI()
                                       { app_ds::runChoices<app_ds::TreeInstance>(msg.coll); });
     mainCLI.addSubParser(subCLIAppDs);
 
-    title = subCLIAppNum.title();
-    auto& numTable = extraChoices[title];
-    checklist[title] =
+    auto& numTable = extraChoices[subCLIAppNum.title()];
+    checklist[subCLIAppNum.title()] =
         ExtraManager::IntfWrap{[]() { return !app_num::manager().empty(); }, []() { app_num::manager().reset(); }};
     subCLIAppNum.addDescription(getDescr<app_num::ApplyNumeric>());
-    subCLIAppNum.addArgument("-h", "--help").argsNum(0).implicitVal(true).help("show help and exit");
-    category = TypeInfo<app_num::ArithmeticMethod>::name;
+    subCLIAppNum.addArgument(helpArg1, helpArg2).argsNum(0).implicitVal(true).help(helpDescr);
     choices = extractChoices<app_num::ArithmeticMethod>();
-    numTable[category] = CategoryExtAttr{choices, app_num::ArithmeticMethod{}};
+    numTable[TypeInfo<app_num::ArithmeticMethod>::name.data()] = CategoryExtAttr{choices, app_num::ArithmeticMethod{}};
     subCLIAppNum
-        .addArgument("-" + std::string{getAlias<app_num::ApplyNumeric, app_num::ArithmeticMethod>()}, "--" + category)
+        .addArgument(
+            prefix1 + std::string{getAlias<app_num::ApplyNumeric, app_num::ArithmeticMethod>()},
+            prefix2 + std::string{TypeInfo<app_num::ArithmeticMethod>::name})
         .argsNum(0, choices.size())
         .defaultVal<std::vector<std::string>>(std::move(choices))
         .remaining()
-        .metavar("OPT")
+        .metavar(optMetavar)
         .help(getDescr<app_num::ArithmeticMethod>());
     applyingForwarder.registerHandler([](const action::UpdateChoice<app_num::ArithmeticMethod>& msg)
                                       { app_num::updateChoice<app_num::ArithmeticMethod>(msg.cho); });
     applyingForwarder.registerHandler([](const action::RunChoices<app_num::ArithmeticMethod>& msg)
                                       { app_num::runChoices<app_num::ArithmeticMethod>(msg.coll); });
-    category = TypeInfo<app_num::DivisorMethod>::name;
     choices = extractChoices<app_num::DivisorMethod>();
-    numTable[category] = CategoryExtAttr{choices, app_num::DivisorMethod{}};
+    numTable[TypeInfo<app_num::DivisorMethod>::name.data()] = CategoryExtAttr{choices, app_num::DivisorMethod{}};
     subCLIAppNum
-        .addArgument("-" + std::string{getAlias<app_num::ApplyNumeric, app_num::DivisorMethod>()}, "--" + category)
+        .addArgument(
+            prefix1 + std::string{getAlias<app_num::ApplyNumeric, app_num::DivisorMethod>()},
+            prefix2 + std::string{TypeInfo<app_num::DivisorMethod>::name})
         .argsNum(0, choices.size())
         .defaultVal<std::vector<std::string>>(std::move(choices))
         .remaining()
-        .metavar("OPT")
+        .metavar(optMetavar)
         .help(getDescr<app_num::DivisorMethod>());
     applyingForwarder.registerHandler([](const action::UpdateChoice<app_num::DivisorMethod>& msg)
                                       { app_num::updateChoice<app_num::DivisorMethod>(msg.cho); });
     applyingForwarder.registerHandler([](const action::RunChoices<app_num::DivisorMethod>& msg)
                                       { app_num::runChoices<app_num::DivisorMethod>(msg.coll); });
-    category = TypeInfo<app_num::IntegralMethod>::name;
     choices = extractChoices<app_num::IntegralMethod>();
-    numTable[category] = CategoryExtAttr{choices, app_num::IntegralMethod{}};
+    numTable[TypeInfo<app_num::IntegralMethod>::name.data()] = CategoryExtAttr{choices, app_num::IntegralMethod{}};
     subCLIAppNum
-        .addArgument("-" + std::string{getAlias<app_num::ApplyNumeric, app_num::IntegralMethod>()}, "--" + category)
+        .addArgument(
+            prefix1 + std::string{getAlias<app_num::ApplyNumeric, app_num::IntegralMethod>()},
+            prefix2 + std::string{TypeInfo<app_num::IntegralMethod>::name})
         .argsNum(0, choices.size())
         .defaultVal<std::vector<std::string>>(std::move(choices))
         .remaining()
-        .metavar("OPT")
+        .metavar(optMetavar)
         .help(getDescr<app_num::IntegralMethod>());
     applyingForwarder.registerHandler([](const action::UpdateChoice<app_num::IntegralMethod>& msg)
                                       { app_num::updateChoice<app_num::IntegralMethod>(msg.cho); });
     applyingForwarder.registerHandler([](const action::RunChoices<app_num::IntegralMethod>& msg)
                                       { app_num::runChoices<app_num::IntegralMethod>(msg.coll); });
-    category = TypeInfo<app_num::PrimeMethod>::name;
     choices = extractChoices<app_num::PrimeMethod>();
-    numTable[category] = CategoryExtAttr{choices, app_num::PrimeMethod{}};
+    numTable[TypeInfo<app_num::PrimeMethod>::name.data()] = CategoryExtAttr{choices, app_num::PrimeMethod{}};
     subCLIAppNum
-        .addArgument("-" + std::string{getAlias<app_num::ApplyNumeric, app_num::PrimeMethod>()}, "--" + category)
+        .addArgument(
+            prefix1 + std::string{getAlias<app_num::ApplyNumeric, app_num::PrimeMethod>()},
+            prefix2 + std::string{TypeInfo<app_num::PrimeMethod>::name})
         .argsNum(0, choices.size())
         .defaultVal<std::vector<std::string>>(std::move(choices))
         .remaining()
-        .metavar("OPT")
+        .metavar(optMetavar)
         .help(getDescr<app_num::PrimeMethod>());
     applyingForwarder.registerHandler([](const action::UpdateChoice<app_num::PrimeMethod>& msg)
                                       { app_num::updateChoice<app_num::PrimeMethod>(msg.cho); });
@@ -579,14 +636,15 @@ void Command::validate()
         bits.set(Category(index));
     }
 
-    for ([[maybe_unused]] const auto& [subCLIName, categoryMap] :
+    for (constexpr std::string_view helpArgInExtra = toString(Category::help);
+         [[maybe_unused]] const auto& [subCLIName, categoryMap] :
          extraChoices
              | std::views::filter(
                  [this](const auto& subCLIPair)
                  { return mainCLI.isSubCommandUsed(subCLIPair.first) ? (checkForExcessiveArguments(), true) : false; }))
     {
         const auto& subCLI = mainCLI.at<utility::argument::Argument>(subCLIName);
-        taskDispatcher.extraHelpOnly = !subCLI || subCLI.isUsed("help");
+        taskDispatcher.extraHelpOnly = !subCLI || subCLI.isUsed(helpArgInExtra);
         if (!subCLI)
         {
             return;
@@ -628,7 +686,8 @@ void Command::dispatch()
             defaultNotifier.notify(Category(index));
         }
     }
-    else if (!taskDispatcher.ExtraManager::empty())
+
+    if (!taskDispatcher.ExtraManager::empty())
     {
         if (taskDispatcher.extraHelpOnly)
         {
@@ -658,10 +717,10 @@ void Command::dispatch()
 }
 
 template <typename T>
-Command::ChoiceContainer Command::extractChoices()
+std::vector<std::string> Command::extractChoices()
 {
     using TypeInfo = utility::reflection::TypeInfo<T>;
-    ChoiceContainer choices{};
+    std::vector<std::string> choices{};
     choices.reserve(TypeInfo::fields.size);
     TypeInfo::fields.forEach([&choices](const auto field)
                              { choices.emplace_back(field.attrs.find(REFLECTION_STR("choice")).value); });

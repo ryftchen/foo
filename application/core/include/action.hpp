@@ -14,7 +14,7 @@
 #include "utility/include/reflection.hpp"
 #include "utility/include/thread.hpp"
 
-//! @brief Reflect the sub-cli category and alias name to the field in the command line argument mapping.
+//! @brief Reflect the sub-cli category name and alias name to the field in the command line argument mapping.
 #define ACTION_REFLECT_COMMAND_SUB_CLI_FIELD(category, alias)      \
     Field                                                          \
     {                                                              \
@@ -26,17 +26,17 @@
             }                                                      \
         }                                                          \
     }
-//! @brief Reflect the category enumeration and choice name to the field in the command line argument mapping.
-#define ACTION_REFLECT_COMMAND_CATEGORY_FIELD(enumeration, choice) \
-    Field                                                          \
-    {                                                              \
-        REFLECTION_STR(#enumeration), Type::enumeration, AttrList  \
-        {                                                          \
-            Attr                                                   \
-            {                                                      \
-                REFLECTION_STR("choice"), #choice                  \
-            }                                                      \
-        }                                                          \
+//! @brief Reflect the sub-cli category entry and choice name to the field in the command line argument mapping.
+#define ACTION_REFLECT_COMMAND_SUB_CLI_CATEGORY_FIELD(entry, choice) \
+    Field                                                            \
+    {                                                                \
+        REFLECTION_STR(#entry), Type::entry, AttrList                \
+        {                                                            \
+            Attr                                                     \
+            {                                                        \
+                REFLECTION_STR("choice"), #choice                    \
+            }                                                        \
+        }                                                            \
     }
 
 //! @brief Static reflection for ApplyAlgorithm. Used to map command line arguments.
@@ -71,11 +71,11 @@ struct utility::reflection::TypeInfo<application::app_algo::MatchMethod>
     //! @brief Field list.
     static constexpr FieldList fields
     {
-        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(rabinKarp       , rab),
-        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(knuthMorrisPratt, knu),
-        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(boyerMoore      , boy),
-        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(horspool        , hor),
-        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(sunday          , sun),
+        ACTION_REFLECT_COMMAND_SUB_CLI_CATEGORY_FIELD(rabinKarp       , rab),
+        ACTION_REFLECT_COMMAND_SUB_CLI_CATEGORY_FIELD(knuthMorrisPratt, knu),
+        ACTION_REFLECT_COMMAND_SUB_CLI_CATEGORY_FIELD(boyerMoore      , boy),
+        ACTION_REFLECT_COMMAND_SUB_CLI_CATEGORY_FIELD(horspool        , hor),
+        ACTION_REFLECT_COMMAND_SUB_CLI_CATEGORY_FIELD(sunday          , sun),
     };
     // clang-format on
     //! @brief Attribute list.
@@ -100,8 +100,8 @@ struct utility::reflection::TypeInfo<application::app_algo::NotationMethod>
     //! @brief Field list.
     static constexpr FieldList fields
     {
-        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(prefix , pre),
-        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(postfix, pos),
+        ACTION_REFLECT_COMMAND_SUB_CLI_CATEGORY_FIELD(prefix , pre),
+        ACTION_REFLECT_COMMAND_SUB_CLI_CATEGORY_FIELD(postfix, pos),
     };
     // clang-format on
     //! @brief Attribute list.
@@ -123,10 +123,10 @@ struct utility::reflection::TypeInfo<application::app_algo::OptimalMethod>
     //! @brief Field list.
     static constexpr FieldList fields
     {
-        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(gradient , gra),
-        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(annealing, ann),
-        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(particle , par),
-        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(genetic  , gen),
+        ACTION_REFLECT_COMMAND_SUB_CLI_CATEGORY_FIELD(gradient , gra),
+        ACTION_REFLECT_COMMAND_SUB_CLI_CATEGORY_FIELD(annealing, ann),
+        ACTION_REFLECT_COMMAND_SUB_CLI_CATEGORY_FIELD(particle , par),
+        ACTION_REFLECT_COMMAND_SUB_CLI_CATEGORY_FIELD(genetic  , gen),
     };
     // clang-format on
     //! @brief Attribute list.
@@ -150,9 +150,9 @@ struct utility::reflection::TypeInfo<application::app_algo::SearchMethod>
     //! @brief Field list.
     static constexpr FieldList fields
     {
-        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(binary       , bin),
-        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(interpolation, int),
-        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(fibonacci    , fib),
+        ACTION_REFLECT_COMMAND_SUB_CLI_CATEGORY_FIELD(binary       , bin),
+        ACTION_REFLECT_COMMAND_SUB_CLI_CATEGORY_FIELD(interpolation, int),
+        ACTION_REFLECT_COMMAND_SUB_CLI_CATEGORY_FIELD(fibonacci    , fib),
     };
     // clang-format on
     //! @brief Attribute list.
@@ -175,16 +175,16 @@ struct utility::reflection::TypeInfo<application::app_algo::SortMethod>
     //! @brief Field list.
     static constexpr FieldList fields
     {
-        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(bubble   , bub),
-        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(selection, sel),
-        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(insertion, ins),
-        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(shell    , she),
-        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(merge    , mer),
-        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(quick    , qui),
-        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(heap     , hea),
-        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(counting , cou),
-        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(bucket   , buc),
-        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(radix    , rad),
+        ACTION_REFLECT_COMMAND_SUB_CLI_CATEGORY_FIELD(bubble   , bub),
+        ACTION_REFLECT_COMMAND_SUB_CLI_CATEGORY_FIELD(selection, sel),
+        ACTION_REFLECT_COMMAND_SUB_CLI_CATEGORY_FIELD(insertion, ins),
+        ACTION_REFLECT_COMMAND_SUB_CLI_CATEGORY_FIELD(shell    , she),
+        ACTION_REFLECT_COMMAND_SUB_CLI_CATEGORY_FIELD(merge    , mer),
+        ACTION_REFLECT_COMMAND_SUB_CLI_CATEGORY_FIELD(quick    , qui),
+        ACTION_REFLECT_COMMAND_SUB_CLI_CATEGORY_FIELD(heap     , hea),
+        ACTION_REFLECT_COMMAND_SUB_CLI_CATEGORY_FIELD(counting , cou),
+        ACTION_REFLECT_COMMAND_SUB_CLI_CATEGORY_FIELD(bucket   , buc),
+        ACTION_REFLECT_COMMAND_SUB_CLI_CATEGORY_FIELD(radix    , rad),
     };
     // clang-format on
     //! @brief Attribute list.
@@ -234,17 +234,17 @@ struct utility::reflection::TypeInfo<application::app_dp::BehavioralInstance>
     //! @brief Field list.
     static constexpr FieldList fields
     {
-        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(chainOfResponsibility, cha),
-        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(command              , com),
-        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(interpreter          , int),
-        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(iterator             , ite),
-        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(mediator             , med),
-        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(memento              , mem),
-        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(observer             , obs),
-        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(state                , sta),
-        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(strategy             , str),
-        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(templateMethod       , tem),
-        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(visitor              , vis),
+        ACTION_REFLECT_COMMAND_SUB_CLI_CATEGORY_FIELD(chainOfResponsibility, cha),
+        ACTION_REFLECT_COMMAND_SUB_CLI_CATEGORY_FIELD(command              , com),
+        ACTION_REFLECT_COMMAND_SUB_CLI_CATEGORY_FIELD(interpreter          , int),
+        ACTION_REFLECT_COMMAND_SUB_CLI_CATEGORY_FIELD(iterator             , ite),
+        ACTION_REFLECT_COMMAND_SUB_CLI_CATEGORY_FIELD(mediator             , med),
+        ACTION_REFLECT_COMMAND_SUB_CLI_CATEGORY_FIELD(memento              , mem),
+        ACTION_REFLECT_COMMAND_SUB_CLI_CATEGORY_FIELD(observer             , obs),
+        ACTION_REFLECT_COMMAND_SUB_CLI_CATEGORY_FIELD(state                , sta),
+        ACTION_REFLECT_COMMAND_SUB_CLI_CATEGORY_FIELD(strategy             , str),
+        ACTION_REFLECT_COMMAND_SUB_CLI_CATEGORY_FIELD(templateMethod       , tem),
+        ACTION_REFLECT_COMMAND_SUB_CLI_CATEGORY_FIELD(visitor              , vis),
     };
     // clang-format on
     //! @brief Attribute list.
@@ -275,11 +275,11 @@ struct utility::reflection::TypeInfo<application::app_dp::CreationalInstance>
     //! @brief Field list.
     static constexpr FieldList fields
     {
-        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(abstractFactory, abs),
-        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(builder        , bui),
-        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(factoryMethod  , fac),
-        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(prototype      , pro),
-        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(singleton      , sin),
+        ACTION_REFLECT_COMMAND_SUB_CLI_CATEGORY_FIELD(abstractFactory, abs),
+        ACTION_REFLECT_COMMAND_SUB_CLI_CATEGORY_FIELD(builder        , bui),
+        ACTION_REFLECT_COMMAND_SUB_CLI_CATEGORY_FIELD(factoryMethod  , fac),
+        ACTION_REFLECT_COMMAND_SUB_CLI_CATEGORY_FIELD(prototype      , pro),
+        ACTION_REFLECT_COMMAND_SUB_CLI_CATEGORY_FIELD(singleton      , sin),
     };
     // clang-format on
     //! @brief Attribute list.
@@ -304,13 +304,13 @@ struct utility::reflection::TypeInfo<application::app_dp::StructuralInstance>
     //! @brief Field list.
     static constexpr FieldList fields
     {
-        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(adapter  , ada),
-        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(bridge   , bri),
-        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(composite, com),
-        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(decorator, dec),
-        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(facade   , fac),
-        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(flyweight, fly),
-        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(proxy    , pro),
+        ACTION_REFLECT_COMMAND_SUB_CLI_CATEGORY_FIELD(adapter  , ada),
+        ACTION_REFLECT_COMMAND_SUB_CLI_CATEGORY_FIELD(bridge   , bri),
+        ACTION_REFLECT_COMMAND_SUB_CLI_CATEGORY_FIELD(composite, com),
+        ACTION_REFLECT_COMMAND_SUB_CLI_CATEGORY_FIELD(decorator, dec),
+        ACTION_REFLECT_COMMAND_SUB_CLI_CATEGORY_FIELD(facade   , fac),
+        ACTION_REFLECT_COMMAND_SUB_CLI_CATEGORY_FIELD(flyweight, fly),
+        ACTION_REFLECT_COMMAND_SUB_CLI_CATEGORY_FIELD(proxy    , pro),
     };
     // clang-format on
     //! @brief Attribute list.
@@ -356,9 +356,9 @@ struct utility::reflection::TypeInfo<application::app_ds::LinearInstance>
     //! @brief Field list.
     static constexpr FieldList fields
     {
-        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(linkedList, lin),
-        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(stack     , sta),
-        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(queue     , que),
+        ACTION_REFLECT_COMMAND_SUB_CLI_CATEGORY_FIELD(linkedList, lin),
+        ACTION_REFLECT_COMMAND_SUB_CLI_CATEGORY_FIELD(stack     , sta),
+        ACTION_REFLECT_COMMAND_SUB_CLI_CATEGORY_FIELD(queue     , que),
     };
     // clang-format on
     //! @brief Attribute list.
@@ -381,9 +381,9 @@ struct utility::reflection::TypeInfo<application::app_ds::TreeInstance>
     //! @brief Field list.
     static constexpr FieldList fields
     {
-        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(binarySearch       , bin),
-        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(adelsonVelskyLandis, ade),
-        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(splay              , spl),
+        ACTION_REFLECT_COMMAND_SUB_CLI_CATEGORY_FIELD(binarySearch       , bin),
+        ACTION_REFLECT_COMMAND_SUB_CLI_CATEGORY_FIELD(adelsonVelskyLandis, ade),
+        ACTION_REFLECT_COMMAND_SUB_CLI_CATEGORY_FIELD(splay              , spl),
     };
     // clang-format on
     //! @brief Attribute list.
@@ -427,10 +427,10 @@ struct utility::reflection::TypeInfo<application::app_num::ArithmeticMethod>
     //! @brief Field list.
     static constexpr FieldList fields
     {
-        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(addition      , add),
-        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(subtraction   , sub),
-        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(multiplication, mul),
-        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(division      , div),
+        ACTION_REFLECT_COMMAND_SUB_CLI_CATEGORY_FIELD(addition      , add),
+        ACTION_REFLECT_COMMAND_SUB_CLI_CATEGORY_FIELD(subtraction   , sub),
+        ACTION_REFLECT_COMMAND_SUB_CLI_CATEGORY_FIELD(multiplication, mul),
+        ACTION_REFLECT_COMMAND_SUB_CLI_CATEGORY_FIELD(division      , div),
     };
     // clang-format on
     //! @brief Attribute list.
@@ -454,8 +454,8 @@ struct utility::reflection::TypeInfo<application::app_num::DivisorMethod>
     //! @brief Field list.
     static constexpr FieldList fields
     {
-        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(euclidean, euc),
-        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(stein    , ste),
+        ACTION_REFLECT_COMMAND_SUB_CLI_CATEGORY_FIELD(euclidean, euc),
+        ACTION_REFLECT_COMMAND_SUB_CLI_CATEGORY_FIELD(stein    , ste),
     };
     // clang-format on
     //! @brief Attribute list.
@@ -477,11 +477,11 @@ struct utility::reflection::TypeInfo<application::app_num::IntegralMethod>
     //! @brief Field list.
     static constexpr FieldList fields
     {
-        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(trapezoidal, tra),
-        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(simpson    , sim),
-        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(romberg    , rom),
-        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(gauss      , gau),
-        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(monteCarlo , mon),
+        ACTION_REFLECT_COMMAND_SUB_CLI_CATEGORY_FIELD(trapezoidal, tra),
+        ACTION_REFLECT_COMMAND_SUB_CLI_CATEGORY_FIELD(simpson    , sim),
+        ACTION_REFLECT_COMMAND_SUB_CLI_CATEGORY_FIELD(romberg    , rom),
+        ACTION_REFLECT_COMMAND_SUB_CLI_CATEGORY_FIELD(gauss      , gau),
+        ACTION_REFLECT_COMMAND_SUB_CLI_CATEGORY_FIELD(monteCarlo , mon),
     };
     // clang-format on
     //! @brief Attribute list.
@@ -506,8 +506,8 @@ struct utility::reflection::TypeInfo<application::app_num::PrimeMethod>
     //! @brief Field list.
     static constexpr FieldList fields
     {
-        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(eratosthenes, era),
-        ACTION_REFLECT_COMMAND_CATEGORY_FIELD(euler       , eul),
+        ACTION_REFLECT_COMMAND_SUB_CLI_CATEGORY_FIELD(eratosthenes, era),
+        ACTION_REFLECT_COMMAND_SUB_CLI_CATEGORY_FIELD(euler       , eul),
     };
     // clang-format on
     //! @brief Attribute list.
@@ -520,7 +520,7 @@ struct utility::reflection::TypeInfo<application::app_num::PrimeMethod>
 };
 
 #undef ACTION_REFLECT_COMMAND_SUB_CLI_FIELD
-#undef ACTION_REFLECT_COMMAND_CATEGORY_FIELD
+#undef ACTION_REFLECT_COMMAND_SUB_CLI_CATEGORY_FIELD
 
 //! @brief The application module.
 namespace application // NOLINT(modernize-concat-nested-namespaces)
