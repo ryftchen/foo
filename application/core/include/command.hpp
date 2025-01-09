@@ -63,6 +63,8 @@ public:
     //! @brief Get the Command instance.
     //! @return reference of the Command object
     static Command& getInstance();
+    //! @brief Instance name.
+    static constexpr std::string_view name{"commander"};
     //! @brief Interface used to execute.
     //! @param argc - argument count
     //! @param argv - argument vector
@@ -322,12 +324,12 @@ private:
     //! @tparam T - type of client
     //! @param session - console to be registered
     //! @param client - client used to send
-    template <typename T>
+    template <class T>
     static void registerOnConsole(console::Console& session, std::shared_ptr<T>& client);
     //! @brief Launch the client for console mode.
     //! @tparam T - type of client
     //! @param client - client to be launched
-    template <typename T>
+    template <class T>
     static void launchClient(std::shared_ptr<T>& client);
     //! @brief Parse the message inside the client in console mode.
     //! @param buffer - message buffer

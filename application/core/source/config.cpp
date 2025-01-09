@@ -6,6 +6,7 @@
 
 #include "config.hpp"
 #include "log.hpp"
+#include "view.hpp"
 
 #ifndef __PRECOMPILED_HEADER
 #include <cassert>
@@ -44,41 +45,30 @@ utility::json::JSON Config::parseConfigFile(const std::string_view configFile)
     return preprocessedData;
 }
 
-void Config::verifyConfigData(const utility::json::JSON& configData)
+//! @brief Check the "logger" object in the helper list.
+//! @param helperList - object in the helper list
+template <>
+void Config::checkObjectInHelperList<log::Log>(const utility::json::JSON& helperList)
 {
-    if (!configData.hasKey("activateHelper") || !configData.hasKey("helperList") || !configData.hasKey("helperTimeout"))
-    {
-        throw std::runtime_error("Incomplete configuration (" + configData.toUnescapedString() + ").");
-    }
-
-    if (!configData.at("activateHelper").isBooleanType() || !configData.at("helperList").isObjectType()
-        || !configData.at("helperTimeout").isIntegralType() || configData.at("helperTimeout").toIntegral() < 0)
-    {
-        throw std::runtime_error("Illegal configuration (" + configData.toUnescapedString() + ").");
-    }
-
-    checkLoggerConfigInHelperList(configData.at("helperList"));
-    checkViewerConfigInHelperList(configData.at("helperList"));
-}
-
-void Config::checkLoggerConfigInHelperList(const utility::json::JSON& helperList)
-{
-    if (!helperList.hasKey("logger"))
-    {
-        throw std::runtime_error(R"(Incomplete configuration, miss "logger" object in "helperList" object.)");
-    }
-
-    const auto& loggerObject = helperList.at("logger");
-    if (!loggerObject.hasKey("properties") || !loggerObject.hasKey("required"))
+    if (!helperList.hasKey(field::logger))
     {
         throw std::runtime_error(
-            R"(Incomplete configuration, "logger" object in "helperList" object ()" + loggerObject.toUnescapedString()
-            + ").");
+            R"("Incomplete configuration, miss ")" + std::string{field::logger} + R"(" object in ")"
+            + std::string{field::helperList} + R"(" object.)");
+    }
+
+    const auto& loggerObject = helperList.at(field::logger);
+    if (!loggerObject.hasKey(field::properties) || !loggerObject.hasKey(field::required))
+    {
+        throw std::runtime_error(
+            R"(Incomplete configuration, ")" + std::string{field::logger} + R"(" object in ")"
+            + std::string{field::helperList} + R"(" object ()" + loggerObject.toUnescapedString() + ").");
     }
 
     bool isVerified = true;
     isVerified &= loggerObject.isObjectType();
-    const auto &loggerProperties = loggerObject.at("properties"), loggerRequired = loggerObject.at("required");
+    const auto &loggerProperties = loggerObject.at(field::properties),
+               loggerRequired = loggerObject.at(field::required);
     isVerified &= loggerProperties.isObjectType() && loggerRequired.isArrayType()
         && (loggerProperties.size() == loggerRequired.length());
     for (const auto& item : loggerRequired.arrayRange())
@@ -87,13 +77,13 @@ void Config::checkLoggerConfigInHelperList(const utility::json::JSON& helperList
     }
     for (const auto& [key, item] : loggerProperties.objectRange())
     {
-        using utility::common::EnumCheck, utility::common::operator""_bkdrHash;
+        using utility::common::operator""_bkdrHash, utility::common::EnumCheck;
         switch (utility::common::bkdrHash(key.c_str()))
         {
-            case "filePath"_bkdrHash:
+            case operator""_bkdrHash(field::filePath.data(), 0):
                 isVerified &= item.isStringType();
                 break;
-            case "priorityLevel"_bkdrHash:
+            case operator""_bkdrHash(field::priorityLevel.data(), 0):
                 using OutputLevel = log::Log::OutputLevel;
                 isVerified &= item.isIntegralType()
                     && EnumCheck<OutputLevel,
@@ -102,13 +92,13 @@ void Config::checkLoggerConfigInHelperList(const utility::json::JSON& helperList
                                  OutputLevel::warning,
                                  OutputLevel::error>::isValue(item.toIntegral());
                 break;
-            case "targetType"_bkdrHash:
+            case operator""_bkdrHash(field::targetType.data(), 0):
                 using OutputType = log::Log::OutputType;
                 isVerified &= item.isIntegralType()
                     && EnumCheck<OutputType, OutputType::file, OutputType::terminal, OutputType::all>::isValue(
                                   item.toIntegral());
                 break;
-            case "writeMode"_bkdrHash:
+            case operator""_bkdrHash(field::writeMode.data(), 0):
                 using OutputMode = log::Log::OutputMode;
                 isVerified &= item.isIntegralType()
                     && EnumCheck<OutputMode, OutputMode::append, OutputMode::overwrite>::isValue(item.toIntegral());
@@ -122,54 +112,59 @@ void Config::checkLoggerConfigInHelperList(const utility::json::JSON& helperList
     if (!isVerified)
     {
         throw std::runtime_error(
-            R"(Illegal configuration, "logger" object in "helperList" object ()" + loggerObject.toUnescapedString()
-            + ").");
+            R"(Illegal configuration, ")" + std::string{field::logger} + R"(" object in ")"
+            + std::string{field::helperList} + R"(" object ()" + loggerObject.toUnescapedString() + ").");
     }
 }
 
-void Config::checkViewerConfigInHelperList(const utility::json::JSON& helperList)
+//! @brief Check the "viewer" object in the helper list.
+//! @param helperList - object in the helper list
+template <>
+void Config::checkObjectInHelperList<view::View>(const utility::json::JSON& helperList)
 {
-    if (!helperList.hasKey("viewer"))
-    {
-        throw std::runtime_error(R"(Incomplete configuration, miss "viewer" object in "helperList" object.)");
-    }
-
-    const auto& viewerObject = helperList.at("viewer");
-    if (!viewerObject.hasKey("properties") || !viewerObject.hasKey("required"))
+    if (!helperList.hasKey(field::viewer))
     {
         throw std::runtime_error(
-            R"(Incomplete configuration, "viewer" object in "helperList" object ()" + viewerObject.toUnescapedString()
-            + ").");
+            R"(Incomplete configuration, miss ")" + std::string{field::viewer} + R"(" object in ")"
+            + std::string{field::helperList} + R"(" object.)");
+    }
+
+    const auto& viewerObject = helperList.at(field::viewer);
+    if (!viewerObject.hasKey(field::properties) || !viewerObject.hasKey(field::required))
+    {
+        throw std::runtime_error(
+            R"(Incomplete configuration, ")" + std::string{field::viewer} + R"(" object in ")"
+            + std::string{field::helperList} + R"(" object ()" + viewerObject.toUnescapedString() + ").");
     }
 
     bool isVerified = true;
     isVerified &= viewerObject.isObjectType();
-    const auto &viewerProperties = viewerObject.at("properties"), viewerRequired = viewerObject.at("required");
+    const auto &viewerProperties = viewerObject.at(field::properties),
+               viewerRequired = viewerObject.at(field::required);
     isVerified &= viewerProperties.isObjectType() && viewerRequired.isArrayType()
         && (viewerProperties.size() == viewerRequired.length());
     for (const auto& item : viewerRequired.arrayRange())
     {
         isVerified &= item.isStringType() && viewerProperties.hasKey(item.toString());
     }
-    constexpr std::uint16_t minPortNum = 0, maxPortNum = 65535;
     for (const auto& [key, item] : viewerProperties.objectRange())
     {
         using utility::common::operator""_bkdrHash;
         switch (utility::common::bkdrHash(key.c_str()))
         {
-            case "tcpHost"_bkdrHash:
+            case operator""_bkdrHash(field::tcpHost.data(), 0):
                 isVerified &= item.isStringType();
                 break;
-            case "tcpPort"_bkdrHash:
-                isVerified &=
-                    item.isIntegralType() && ((item.toIntegral() >= minPortNum) && (item.toIntegral() <= maxPortNum));
+            case operator""_bkdrHash(field::tcpPort.data(), 0):
+                isVerified &= item.isIntegralType()
+                    && ((item.toIntegral() >= view::minPortNumber) && (item.toIntegral() <= view::maxPortNumber));
                 break;
-            case "udpHost"_bkdrHash:
+            case operator""_bkdrHash(field::udpHost.data(), 0):
                 isVerified &= item.isStringType();
                 break;
-            case "udpPort"_bkdrHash:
-                isVerified &=
-                    item.isIntegralType() && ((item.toIntegral() >= minPortNum) && (item.toIntegral() <= maxPortNum));
+            case operator""_bkdrHash(field::udpPort.data(), 0):
+                isVerified &= item.isIntegralType()
+                    && ((item.toIntegral() >= view::minPortNumber) && (item.toIntegral() <= view::maxPortNumber));
                 break;
             default:
                 isVerified &= false;
@@ -180,9 +175,28 @@ void Config::checkViewerConfigInHelperList(const utility::json::JSON& helperList
     if (!isVerified)
     {
         throw std::runtime_error(
-            R"(Illegal configuration, "viewer" object in "helperList" object ()" + viewerObject.toUnescapedString()
-            + ").");
+            R"(Illegal configuration, ")" + std::string{field::viewer} + R"(" object in ")"
+            + std::string{field::helperList} + R"(" object ()" + viewerObject.toUnescapedString() + ").");
     }
+}
+
+void Config::verifyConfigData(const utility::json::JSON& configData)
+{
+    if (!configData.hasKey(field::activateHelper) || !configData.hasKey(field::helperList)
+        || !configData.hasKey(field::helperTimeout))
+    {
+        throw std::runtime_error("Incomplete configuration (" + configData.toUnescapedString() + ").");
+    }
+
+    if (!configData.at(field::activateHelper).isBooleanType() || !configData.at(field::helperList).isObjectType()
+        || !configData.at(field::helperTimeout).isIntegralType()
+        || configData.at(field::helperTimeout).toIntegral() < 0)
+    {
+        throw std::runtime_error("Illegal configuration (" + configData.toUnescapedString() + ").");
+    }
+
+    checkObjectInHelperList<log::Log>(configData.at(field::helperList));
+    checkObjectInHelperList<view::View>(configData.at(field::helperList));
 }
 
 //! @brief Get the full path to the default configuration file.
@@ -205,39 +219,40 @@ utility::json::JSON getDefaultConfiguration()
 {
     namespace json = utility::json;
     auto loggerProperties = json::object();
-    loggerProperties.at("filePath") = "log/foo.log";
-    loggerProperties.at("priorityLevel") = static_cast<int>(log::Log::OutputLevel::debug);
-    loggerProperties.at("targetType") = static_cast<int>(log::Log::OutputType::all);
-    loggerProperties.at("writeMode") = static_cast<int>(log::Log::OutputMode::append);
+    loggerProperties.at(field::filePath) = "log/foo.log";
+    loggerProperties.at(field::priorityLevel) = static_cast<int>(log::Log::OutputLevel::debug);
+    loggerProperties.at(field::targetType) = static_cast<int>(log::Log::OutputType::all);
+    loggerProperties.at(field::writeMode) = static_cast<int>(log::Log::OutputMode::append);
     auto loggerRequired = json::array();
-    loggerRequired.append("filePath", "priorityLevel", "targetType", "writeMode");
+    loggerRequired.append(
+        field::filePath.data(), field::priorityLevel.data(), field::targetType.data(), field::writeMode.data());
     assert(loggerProperties.size() == loggerRequired.length());
 
     auto viewerProperties = json::object();
-    viewerProperties.at("tcpHost") = "localhost";
-    viewerProperties.at("tcpPort") = 61501;
-    viewerProperties.at("udpHost") = "localhost";
-    viewerProperties.at("udpPort") = 61502;
+    viewerProperties.at(field::tcpHost) = "localhost";
+    viewerProperties.at(field::tcpPort) = 61501;
+    viewerProperties.at(field::udpHost) = "localhost";
+    viewerProperties.at(field::udpPort) = 61502;
     auto viewerRequired = json::array();
-    viewerRequired.append("tcpHost", "tcpPort", "udpHost", "udpPort");
+    viewerRequired.append(field::tcpHost.data(), field::tcpPort.data(), field::udpHost.data(), field::udpPort.data());
     assert(viewerProperties.size() == viewerRequired.length());
 
     // clang-format off
     return utility::json::JSON
     (
     {
-        "activateHelper", true,
-        "helperList", {
-            "logger", {
-                "properties", loggerProperties,
-                "required", loggerRequired
+        field::activateHelper.data(), true,
+        field::helperList.data(), {
+            field::logger.data(), {
+                field::properties.data(), loggerProperties,
+                field::required.data(), loggerRequired
             },
-            "viewer", {
-                "properties", viewerProperties,
-                "required", viewerRequired
+            field::viewer.data(), {
+                field::properties.data(), viewerProperties,
+                field::required.data(), viewerRequired
             }
         },
-        "helperTimeout", 1000
+        field::helperTimeout.data(), 1000
     }
     );
     // clang-format on

@@ -24,12 +24,12 @@ namespace application // NOLINT(modernize-concat-nested-namespaces)
 //! @brief View-server-related functions in the application module.
 namespace view
 {
+//! @brief Minimum port number.
+inline constexpr std::uint16_t minPortNumber = 1024;
+//! @brief Maximum port number.
+inline constexpr std::uint16_t maxPortNumber = 65535;
 //! @brief The internal symbol for exiting.
 inline constexpr std::string_view exitSymbol = "stop";
-//! @brief Invalid shared memory id in TLV value.
-constexpr int invalidShmId = -1;
-//! @brief Default information size in TLV value.
-constexpr std::uint16_t defaultInfoSize = 256;
 
 //! @brief Type-length-value scheme.
 namespace tlv
@@ -135,6 +135,8 @@ public:
     //! @brief Get the View instance.
     //! @return reference of the View object
     static View& getInstance();
+    //! @brief Instance name.
+    static constexpr std::string_view name{config::field::viewer};
     //! @brief Service for running.
     void service();
 

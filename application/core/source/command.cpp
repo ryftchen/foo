@@ -52,24 +52,6 @@ enum class ExtEvent : std::uint8_t
     reload
 };
 
-//! @brief Get the helper name.
-//! @tparam Helper - type of helper
-//! @return helper name
-template <HelperType Helper>
-consteval std::string_view getHelperName()
-{
-    if constexpr (std::is_same_v<Helper, log::Log>)
-    {
-        return "logger";
-    }
-    else if constexpr (std::is_same_v<Helper, view::View>)
-    {
-        return "viewer";
-    }
-
-    return "helper";
-}
-
 //! @brief Trigger the external helper with event.
 //! @tparam Helper - type of helper
 //! @param event - target event
@@ -105,7 +87,7 @@ requires (std::derived_from<Helpers, utility::fsm::FSM<Helpers>> && ...)
 void helperDaemon()
 {
     utility::thread::Thread extendingThd(sizeof...(Helpers));
-    (extendingThd.enqueue(getHelperName<Helpers>(), &Helpers::service, &Helpers::getInstance()), ...);
+    (extendingThd.enqueue(Helpers::name, &Helpers::service, &Helpers::getInstance()), ...);
 }
 
 //! @brief Awaitable coroutine.
@@ -264,8 +246,8 @@ try
     {
         constexpr std::uint8_t endNum = 2;
         utility::thread::Thread handlingThd(endNum);
-        handlingThd.enqueue("commander(FE)", &Command::frontEndHandler, this, argc, argv);
-        handlingThd.enqueue("commander(BE)", &Command::backEndHandler, this);
+        handlingThd.enqueue(std::string{name} + "(FE)", &Command::frontEndHandler, this, argc, argv);
+        handlingThd.enqueue(std::string{name} + "(BE)", &Command::backEndHandler, this);
     }
 
     if (!launcher.done())

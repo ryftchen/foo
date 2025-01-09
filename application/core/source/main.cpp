@@ -29,12 +29,13 @@ try
         return EXIT_FAILURE;
     }
 
+    using command::Command;
     std::future<bool> running = std::async(
         std::launch::async,
         [=]()
         {
-            ::pthread_setname_np(::pthread_self(), "commander");
-            return command::Command::getInstance().execute(argc, argv);
+            ::pthread_setname_np(::pthread_self(), Command::name.data());
+            return Command::getInstance().execute(argc, argv);
         });
 
     return running.get() ? EXIT_SUCCESS : EXIT_FAILURE;

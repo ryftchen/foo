@@ -54,7 +54,7 @@ Log& Log::getInstance()
         static Log logger{};
         return logger;
     }
-    throw std::logic_error("The logger is disabled.");
+    throw std::logic_error("The " + std::string{name} + " is disabled.");
 }
 
 void Log::service()
@@ -86,7 +86,7 @@ retry:
     }
     catch (const std::exception& err)
     {
-        LOG_ERR << "Suspend the logger during " << safeCurrentState() << " state: " << err.what();
+        LOG_ERR << "Suspend the " << name << " during " << safeCurrentState() << " state: " << err.what();
 
         safeProcessEvent(Standby{});
         if (awaitNotification2Retry())
@@ -96,7 +96,7 @@ retry:
             {
                 goto retry; // NOLINT(cppcoreguidelines-avoid-goto,hicpp-avoid-goto)
             }
-            LOG_ERR << "Failed to rollback logger.";
+            LOG_ERR << "Failed to rollback " << name << '.';
         }
     }
 }
@@ -109,7 +109,7 @@ try
         {
             if (inst.isInServingState(State::hold))
             {
-                throw std::runtime_error("The logger did not initialize successfully ...");
+                throw std::runtime_error("The " + std::string{name} + " did not initialize successfully ...");
             }
             return inst.isInServingState(State::idle);
         });
@@ -126,7 +126,7 @@ try
         {
             if (inst.isInServingState(State::hold))
             {
-                throw std::runtime_error("The logger did not start successfully ...");
+                throw std::runtime_error("The " + std::string{name} + " did not start successfully ...");
             }
             return inst.isInServingState(State::work);
         });
@@ -151,7 +151,7 @@ try
         {
             if (inst.isInServingState(State::hold))
             {
-                throw std::runtime_error("The logger did not stop successfully ...");
+                throw std::runtime_error("The " + std::string{name} + " did not stop successfully ...");
             }
             return inst.isInServingState(State::done);
         });
@@ -174,7 +174,8 @@ try
     if (utility::time::blockingTimer([this]() { return !inst.toReset.load(); }, inst.timeoutPeriod))
     {
         throw std::runtime_error(
-            "The logger did not reset properly in " + std::to_string(inst.timeoutPeriod) + " ms ...");
+            "The " + std::string{name} + " did not reset properly in " + std::to_string(inst.timeoutPeriod)
+            + " ms ...");
     }
 }
 catch (const std::exception& err)
