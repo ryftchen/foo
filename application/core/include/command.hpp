@@ -98,8 +98,10 @@ private:
     //! @brief Flag to indicate whether the command is faulty.
     std::atomic<bool> isFaulty{false};
 
-    //! @brief Initialize the parse argument helpers.
-    void initializeCLI();
+    //! @brief Initialize the parse argument helpers for native.
+    void initializeNativeCLI();
+    //! @brief Initialize the parse argument helpers for extra.
+    void initializeExtraCLI();
     //! @brief Front-end handler for parsing command line arguments.
     //! @param argc - argument count
     //! @param argv - argument vector
@@ -124,28 +126,28 @@ private:
     //! @brief Check for excessive arguments.
     void checkForExcessiveArguments();
 
-    //! @brief Alias for the sub-cli name.
-    using SubCLIName = std::string;
-    //! @brief Alias for the category name.
-    using CategoryName = std::string;
-    //! @brief Alias for the target choice.
-    using ChoiceName = std::string;
-    //! @brief Alias for the collection of candidates for ChoiceName.
-    using ChoiceContainer = std::vector<ChoiceName>;
-    //! @brief Alias for the extend attribute of the target category.
+    //! @brief Alias for the extend attribute of the sub-cli category.
     struct CategoryExtAttr
     {
         //! @brief The candidates for the choice.
-        ChoiceContainer choices{};
+        std::vector<std::string> choices{};
         //! @brief The internal event for applying.
         action::EventType event{};
     };
-    //! @brief Alias for the map of CategoryName and CategoryExtAttr.
-    using CategoryExtMap = std::map<CategoryName, CategoryExtAttr>;
-    //! @brief Alias for the map of SubCLIName and CategoryExtMap.
-    using ExtraChoiceMap = std::map<SubCLIName, CategoryExtMap>;
+    //! @brief Alias for the map of sub-cli category name and CategoryExtAttr.
+    using CategoryExtMap = std::map<std::string, CategoryExtAttr>;
+    //! @brief Alias for the map of sub-cli name and CategoryExtMap.
+    using ExtraChoiceMap = std::map<std::string, CategoryExtMap>;
     //! @brief Get the description.
-    //! @tparam T - type of sub-cli or category
+    //! @param cat - the specific value of Category enum
+    //! @return description
+    static consteval std::string_view getDescr(const Category cat);
+    //! @brief Get the alias name.
+    //! @param cat - the specific value of Category enum
+    //! @return alias name
+    static consteval std::string_view getAlias(const Category cat);
+    //! @brief Get the description.
+    //! @tparam T - type of sub-cli or sub-cli category
     //! @return description
     template <class T>
     static inline consteval std::string_view getDescr()
@@ -155,7 +157,7 @@ private:
     }
     //! @brief Get the alias name.
     //! @tparam SubCLI - type of sub-cli
-    //! @tparam Cat - type of category
+    //! @tparam Cat - type of sub-cli category
     //! @return alias name
     template <class SubCLI, class Cat>
     static inline consteval std::string_view getAlias()
@@ -164,11 +166,11 @@ private:
         using CatTypeInfo = utility::reflection::TypeInfo<Cat>;
         return SubCLITypeInfo::fields.find(REFLECTION_STR(CatTypeInfo::name)).attrs.find(REFLECTION_STR("alias")).value;
     }
-    //! @brief Extract all choices in the category.
-    //! @tparam Cat - type of category
+    //! @brief Extract all choices in the sub-cli category.
+    //! @tparam Cat - type of sub-cli category
     //! @return all choices
     template <class Cat>
-    static ChoiceContainer extractChoices();
+    static std::vector<std::string> extractChoices();
     //! @brief Mapping table of all extra choices. Fill as needed.
     ExtraChoiceMap extraChoices{};
 
@@ -213,7 +215,7 @@ private:
         //! @brief Flag for help only.
         bool extraHelpOnly{false};
         //! @brief Existence status and reset control of the sub-cli to which the extra choices belong.
-        std::map<SubCLIName, IntfWrap> extraChecklist{};
+        std::map<std::string, IntfWrap> extraChecklist{};
 
         //! @brief Check whether any extra choices do not exist.
         //! @return any extra choices do not exist or exist
@@ -316,8 +318,6 @@ private:
     //! @brief Forward messages for extra type tasks.
     action::MessageForwarder applyingForwarder{};
 
-    template <Category Cat, class T>
-    friend class Notifier::Handler;
     //! @brief Enter console mode.
     static void enterConsoleMode();
     //! @brief Register the command line to console mode.

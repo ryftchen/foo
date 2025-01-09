@@ -356,7 +356,6 @@ private:
     //! @param formatted - formatted body information
     //! @return log contents
     static std::vector<std::string> reformatContents(const std::string_view label, const std::string_view formatted);
-    friend class Access;
 
     //! @brief Safely retrieve the current state.
     //! @return current state
