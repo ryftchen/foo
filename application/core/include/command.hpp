@@ -130,9 +130,9 @@ private:
     struct CategoryExtAttr
     {
         //! @brief The candidates for the choice.
-        std::vector<std::string> choices{};
+        const std::vector<std::string> choices{};
         //! @brief The internal event for applying.
-        action::EventType event{};
+        const action::EventType event{};
     };
     //! @brief Alias for the map of sub-cli category name and CategoryExtAttr.
     using CategoryExtMap = std::map<std::string, CategoryExtAttr>;
@@ -208,9 +208,9 @@ private:
         struct IntfWrap
         {
             //! @brief Check the existence status of the extra choice.
-            std::function<bool()> present{};
+            const std::function<bool()> present{};
             //! @brief Reset control of the extra choice.
-            std::function<void()> clear{};
+            const std::function<void()> clear{};
         };
         //! @brief Flag for help only.
         bool extraHelpOnly{false};

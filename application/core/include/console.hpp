@@ -79,10 +79,6 @@ public:
 private:
     //! @brief Alias for the history state.
     using HistoryState = ::HISTORY_STATE;
-    //! @brief Alias for the functor of option completer.
-    using OptionCompleterFunctor = char**(const char* text, int start, int end);
-    //! @brief Alias for the functor of option iterator.
-    using OptionIteratorFunctor = char*(const char* text, int state);
     //! @brief Saved empty history state.
     HistoryState* const emptyHistory{::history_get_history_state()};
     //! @brief Terminal for interaction.
@@ -129,6 +125,10 @@ private:
     //! @brief Reserve usage to the calling console instance.
     void reserveConsole();
 
+    //! @brief Alias for the functor of option completer.
+    using OptionCompleterFunctor = char**(const char*, int, int);
+    //! @brief Alias for the functor of option iterator.
+    using OptionIteratorFunctor = char*(const char*, int);
     //! @brief Get the option completer. Wrap the interface.
     static OptionCompleterFunctor getOptionCompleter;
     //! @brief Get the option iterator. Wrap the interface.
