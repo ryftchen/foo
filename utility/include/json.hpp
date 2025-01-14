@@ -57,7 +57,7 @@ public:
     //! @brief Alias for the JSON boolean.
     using Boolean = bool;
     //! @brief Construct a new JSON object.
-    JSON() : data(), type(Type::null) {}
+    JSON() = default;
     //! @brief Destroy the JSON object.
     ~JSON() = default;
     //! @brief Construct a new JSON object.
@@ -83,13 +83,13 @@ public:
 
     // NOLINTBEGIN(google-explicit-constructor)
     //! @brief Construct a new JSON object.
-    JSON(std::nullptr_t /*n*/) : data(), type(Type::null) {}
+    JSON(std::nullptr_t /*n*/) : data{}, type{Type::null} {}
     //! @brief Construct a new JSON object.
     //! @tparam T - type of string value
     //! @param s - string value
     template <typename T>
     JSON(const T s, typename std::enable_if<std::is_convertible<T, std::string>::value>::type* /*type*/ = nullptr) :
-        data(String{s}), type(Type::string)
+        data{String{s}}, type{Type::string}
     {
     }
     //! @brief Construct a new JSON object.
@@ -97,7 +97,7 @@ public:
     //! @param f - floating value
     template <typename T>
     JSON(const T f, typename std::enable_if<std::is_floating_point<T>::value>::type* /*type*/ = 0) :
-        data(static_cast<Floating>(f)), type(Type::floating)
+        data{static_cast<Floating>(f)}, type{Type::floating}
     {
     }
     //! @brief Construct a new JSON object.
@@ -107,7 +107,7 @@ public:
     JSON(
         const T i,
         typename std::enable_if<std::is_integral<T>::value && !std::is_same<T, bool>::value>::type* /*type*/ = 0) :
-        data(static_cast<Integral>(i)), type(Type::integral)
+        data{static_cast<Integral>(i)}, type{Type::integral}
     {
     }
     //! @brief Construct a new JSON object.
@@ -115,7 +115,7 @@ public:
     //! @param b - boolean value
     template <typename T>
     JSON(const T b, typename std::enable_if<std::is_same<T, bool>::value>::type* /*type*/ = 0) :
-        data(static_cast<Boolean>(b)), type(Type::boolean)
+        data{static_cast<Boolean>(b)}, type{Type::boolean}
     {
     }
     // NOLINTEND(google-explicit-constructor)
@@ -155,9 +155,9 @@ public:
     public:
         //! @brief Construct a new JSONWrapper object.
         //! @param container - JSON object to be wrapped
-        explicit JSONWrapper(Container* container) : object(container) {}
+        explicit JSONWrapper(Container* container) : object{container} {}
         //! @brief Construct a new JSONWrapper object.
-        explicit JSONWrapper(std::nullptr_t /*n*/) : object(nullptr) {}
+        explicit JSONWrapper(std::nullptr_t /*n*/) : object{nullptr} {}
 
         //! @brief Pointer to the JSON object.
         Container* object{nullptr};
@@ -192,9 +192,9 @@ public:
     public:
         //! @brief Construct a new JSONWrapper object.
         //! @param container - JSON object to be wrapped
-        explicit JSONConstWrapper(const Container* container) : object(container) {}
+        explicit JSONConstWrapper(const Container* container) : object{container} {}
         //! @brief Construct a new JSONWrapper object.
-        explicit JSONConstWrapper(const std::nullptr_t /*n*/) : object(nullptr) {}
+        explicit JSONConstWrapper(const std::nullptr_t /*n*/) : object{nullptr} {}
 
         //! @brief Const pointer to the JSON object.
         const Container* object{nullptr};
@@ -332,25 +332,25 @@ public:
     struct Data
     {
         //! @brief Construct a new Data object.
-        Data() : value(nullptr) {}
+        Data() : value{nullptr} {}
         //! @brief Construct a new Data object.
         //! @param o - object value
-        explicit Data(const Object& o) : value(o) {}
+        explicit Data(const Object& o) : value{o} {}
         //! @brief Construct a new Data object.
         //! @param a - array value
-        explicit Data(const Array& a) : value(a) {}
+        explicit Data(const Array& a) : value{a} {}
         //! @brief Construct a new Data object.
         //! @param s - string value
-        explicit Data(const String& s) : value(s) {}
+        explicit Data(const String& s) : value{s} {}
         //! @brief Construct a new Data object.
         //! @param f - floating value
-        explicit Data(const Floating f) : value(f) {}
+        explicit Data(const Floating f) : value{f} {}
         //! @brief Construct a new Data object.
         //! @param i - integral value
-        explicit Data(const Integral i) : value(i) {}
+        explicit Data(const Integral i) : value{i} {}
         //! @brief Construct a new Data object.
         //! @param b - boolean value
-        explicit Data(const Boolean b) : value(b) {}
+        explicit Data(const Boolean b) : value{b} {}
 
         //! @brief Value of the data.
         Value value{};

@@ -331,16 +331,16 @@ std::ostream& operator<<(std::ostream& os, const Register& reg)
 }
 
 Argument::Argument(const Argument& arg) :
-    titleName(arg.titleName),
-    versionNumber(arg.versionNumber),
-    descrText(arg.descrText),
-    prefixChars(arg.prefixChars),
-    assignChars(arg.assignChars),
-    isParsed(arg.isParsed),
-    optionalArgs(arg.optionalArgs),
-    positionalArgs(arg.positionalArgs),
-    parserPath(arg.parserPath),
-    subParsers(arg.subParsers)
+    titleName{arg.titleName},
+    versionNumber{arg.versionNumber},
+    descrText{arg.descrText},
+    prefixChars{arg.prefixChars},
+    assignChars{arg.assignChars},
+    isParsed{arg.isParsed},
+    optionalArgs{arg.optionalArgs},
+    positionalArgs{arg.positionalArgs},
+    parserPath{arg.parserPath},
+    subParsers{arg.subParsers}
 {
     for (auto iterator = optionalArgs.begin(); optionalArgs.end() != iterator; ++iterator)
     {

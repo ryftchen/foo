@@ -25,7 +25,7 @@ inline namespace
 static thread_local Console* currentSession = nullptr;
 } // namespace
 
-Console::Console(const std::string_view greeting) : controller(std::make_unique<Controller>(greeting))
+Console::Console(const std::string_view greeting) : terminal{std::make_unique<Terminal>(greeting)}
 {
     ::rl_attempted_completion_function = &Console::getOptionCompleter;
 
@@ -42,13 +42,13 @@ Console::~Console()
 
 void Console::registerOption(const std::string_view name, const std::string_view prompt, Callback func)
 {
-    controller->regTable[name.data()] = std::make_pair(prompt, std::move(func));
-    controller->orderList.emplace_back(name);
+    terminal->regTable[name.data()] = std::make_pair(prompt, std::move(func));
+    terminal->orderList.emplace_back(name);
 }
 
 void Console::setGreeting(const std::string_view greeting)
 {
-    controller->greeting = greeting;
+    terminal->greeting = greeting;
 }
 
 int Console::optionExecutor(const std::string_view option)
@@ -62,8 +62,8 @@ int Console::optionExecutor(const std::string_view option)
         return RetCode::success;
     }
 
-    const auto regIter = controller->regTable.find(inputs.front());
-    if (controller->regTable.cend() == regIter)
+    const auto regIter = terminal->regTable.find(inputs.front());
+    if (terminal->regTable.cend() == regIter)
     {
         throw std::runtime_error(
             "The console option \"" + inputs.front() + R"(" could not be found. Enter the "usage" for help.)");
@@ -107,7 +107,7 @@ int Console::readLine()
 {
     reserveConsole();
 
-    char* const buffer = ::readline(controller->greeting.c_str());
+    char* const buffer = ::readline(terminal->greeting.c_str());
     if (nullptr == buffer)
     {
         std::cout << std::endl;
@@ -124,10 +124,18 @@ int Console::readLine()
     return RetCode(optionExecutor(input));
 }
 
+auto Console::getOptionHelpPairs() const
+{
+    const auto transformed = terminal->orderList
+        | std::views::transform([this](const auto& option)
+                                { return std::make_pair(option, terminal->regTable.at(option).first); });
+    return std::vector<std::ranges::range_value_t<decltype(transformed)>>{transformed.begin(), transformed.end()};
+}
+
 void Console::setDefaultOptions()
 {
-    auto& regTable = controller->regTable;
-    auto& orderList = controller->orderList;
+    auto& regTable = terminal->regTable;
+    auto& orderList = terminal->orderList;
 
     regTable["usage"] = std::make_pair(
         "how to use the console",
@@ -174,18 +182,10 @@ void Console::setDefaultOptions()
     orderList.emplace_back("batch");
 }
 
-std::vector<Console::OptionHelpPair> Console::getOptionHelpPairs() const
-{
-    const auto transformed = controller->orderList
-        | std::views::transform([this](const auto& option)
-                                { return std::make_pair(option, controller->regTable.at(option).first); });
-    return std::vector<OptionHelpPair>{transformed.begin(), transformed.end()};
-}
-
 void Console::saveState()
 {
-    ::rl_free(controller->history);
-    controller->history = ::history_get_history_state();
+    ::rl_free(terminal->history);
+    terminal->history = ::history_get_history_state();
 }
 
 void Console::reserveConsole()
@@ -200,13 +200,13 @@ void Console::reserveConsole()
         currentSession->saveState();
     }
 
-    if (nullptr == controller->history)
+    if (nullptr == terminal->history)
     {
         ::history_set_history_state(emptyHistory);
     }
     else
     {
-        ::history_set_history_state(controller->history);
+        ::history_set_history_state(terminal->history);
     }
 
     currentSession = this;
@@ -225,13 +225,13 @@ char** Console::getOptionCompleter(const char* text, int start, int /*end*/)
 
 char* Console::getOptionIterator(const char* text, int state)
 {
-    static thread_local Controller::RegisteredOption::iterator iterator{};
+    static thread_local Terminal::RegisteredOption::iterator iterator{};
     if (nullptr == currentSession)
     {
         return nullptr;
     }
 
-    auto& regTable = currentSession->controller->regTable;
+    auto& regTable = currentSession->terminal->regTable;
     if (0 == state)
     {
         iterator = regTable.begin();

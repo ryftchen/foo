@@ -60,14 +60,14 @@ extern std::size_t bkdrHash(const char* str);
 //! @param str - input data
 //! @param hash - previous hash value
 //! @return hash value
-constexpr std::size_t bkdrHashInCompiling(const char* const str, const std::size_t hash = 0) noexcept
+inline constexpr std::size_t bkdrHashInCompiling(const char* const str, const std::size_t hash = 0) noexcept
 {
     return *str ? bkdrHashInCompiling(str + 1, (hash * bkdrHashSeed + *str) & bkdrHashSize) : hash;
 }
 //! @brief The operator ("") overloading with BKDR hash function.
 //! @param str - input data
 //! @return hash value
-constexpr std::size_t operator""_bkdrHash(const char* const str, const std::size_t /*len*/) noexcept
+inline constexpr std::size_t operator""_bkdrHash(const char* const str, const std::size_t /*len*/) noexcept
 {
     return bkdrHashInCompiling(str);
 }

@@ -116,7 +116,7 @@ public:
 
     //! @brief Construct a new Awaitable object.
     //! @param handle - coroutine handle
-    explicit Awaitable(std::coroutine_handle<promise_type> handle) : handle(handle) {}
+    explicit Awaitable(std::coroutine_handle<promise_type> handle) : handle{handle} {}
     //! @brief Destroy the Awaitable object.
     ~Awaitable()
     {

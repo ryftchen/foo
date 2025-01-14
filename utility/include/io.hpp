@@ -34,7 +34,7 @@ class FDStreamBuffer : public std::streambuf
 public:
     //! @brief Construct a new FDStreamBuffer object.
     //! @param fd - file descriptor to associate with the stream buffer
-    explicit FDStreamBuffer(const int fd = -1) : fileDescriptor(fd) {}
+    explicit FDStreamBuffer(const int fd = -1) : fileDescriptor{fd} {}
     //! @brief Destroy the FDStreamBuffer object.
     ~FDStreamBuffer() override;
 
@@ -94,7 +94,7 @@ class FileReader
 public:
     //! @brief Construct a new FileReader object.
     //! @param filename - file path to be read
-    explicit FileReader(const std::string_view filename) : name(filename) {}
+    explicit FileReader(const std::string_view filename) : name{filename} {}
     //! @brief Destroy the FileReader object.
     ~FileReader();
     //! @brief Construct a new FileReader object.
@@ -140,7 +140,7 @@ class FileWriter
 public:
     //! @brief Construct a new FileWriter object.
     //! @param filename - file path to be written
-    explicit FileWriter(const std::string_view filename) : name(filename) {}
+    explicit FileWriter(const std::string_view filename) : name{filename} {}
     //! @brief Destroy the FileWriter object.
     ~FileWriter();
     //! @brief Construct a new FileWriter object.

@@ -314,10 +314,10 @@ public:
     //! @brief Construct a new InputBuilder object.
     //! @param pattern - single pattern
     explicit InputBuilder(const std::string_view pattern) :
-        marchingText(std::make_unique<unsigned char[]>(maxDigit + 1)),
-        textLength(maxDigit),
-        singlePattern(std::make_unique<unsigned char[]>(pattern.length() + 1)),
-        patternLength(pattern.length())
+        marchingText{std::make_unique<unsigned char[]>(maxDigit + 1)},
+        textLength{maxDigit},
+        singlePattern{std::make_unique<unsigned char[]>(pattern.length() + 1)},
+        patternLength{static_cast<uint32_t>(pattern.length())}
     {
         createMatchingText(marchingText.get(), maxDigit);
         std::memcpy(singlePattern.get(), pattern.data(), pattern.length() * sizeof(unsigned char));
@@ -450,7 +450,7 @@ class InputBuilder
 public:
     //! @brief Construct a new InputBuilder object.
     //! @param infixNotation - infix notation
-    explicit InputBuilder(const std::string_view infixNotation) : infixNotation(infixNotation)
+    explicit InputBuilder(const std::string_view infixNotation) : infixNotation{infixNotation}
     {
 #ifdef __RUNTIME_PRINTING
         std::cout << "\nInfix notation: " << infixNotation << std::endl;
@@ -577,7 +577,7 @@ struct FuncRange
     //! @param range2 - light endpoint
     //! @param funcDescr - function description
     FuncRange(const T1 range1, const T2 range2, const std::string_view funcDescr) :
-        range1(range1), range2(range2), funcDescr(funcDescr)
+        range1{range1}, range2{range2}, funcDescr{funcDescr}
     {
     }
     //! @brief Construct a new FuncRange object.
@@ -637,7 +637,7 @@ class InputBuilder
 public:
     //! @brief Construct a new InputBuilder object.
     //! @param functionMap - collection of optimal functions
-    explicit InputBuilder(const OptimalFuncMap<Ts...>& functionMap) : functionMap(std::move(functionMap)) {}
+    explicit InputBuilder(const OptimalFuncMap<Ts...>& functionMap) : functionMap{functionMap} {}
     //! @brief Destroy the InputBuilder object.
     virtual ~InputBuilder() = default;
 
@@ -742,7 +742,7 @@ public:
     //! @param left - the left boundary of the array
     //! @param right - the right boundary of the array
     InputBuilder(const std::uint32_t length, const T left, const T right) :
-        orderedArray(std::make_unique<T[]>(length + 1)), length(length)
+        orderedArray{std::make_unique<T[]>(length + 1)}, length{length}
     {
         setOrderedArray<T>(orderedArray.get(), length, left, right);
     }
@@ -750,7 +750,7 @@ public:
     virtual ~InputBuilder() = default;
     //! @brief Construct a new InputBuilder object.
     //! @param rhs - right-hand side
-    InputBuilder(const InputBuilder& rhs) : orderedArray(std::make_unique<T[]>(rhs.length + 1)), length(rhs.length)
+    InputBuilder(const InputBuilder& rhs) : orderedArray{std::make_unique<T[]>(rhs.length + 1)}, length{rhs.length}
     {
         deepCopy(rhs);
     }
@@ -993,7 +993,7 @@ public:
     //! @param left - the left boundary of the array
     //! @param right - the right boundary of the array
     InputBuilder(const std::uint32_t length, const T left, const T right) :
-        randomArray(std::make_unique<T[]>(length + 1)), length(length)
+        randomArray{std::make_unique<T[]>(length + 1)}, length{length}
     {
         setRandomArray<T>(randomArray.get(), length, left, right);
     }
@@ -1001,7 +1001,7 @@ public:
     virtual ~InputBuilder() = default;
     //! @brief Construct a new InputBuilder object.
     //! @param rhs - right-hand side
-    InputBuilder(const InputBuilder& rhs) : randomArray(std::make_unique<T[]>(rhs.length + 1)), length(rhs.length)
+    InputBuilder(const InputBuilder& rhs) : randomArray{std::make_unique<T[]>(rhs.length + 1)}, length{rhs.length}
     {
         deepCopy(rhs);
     }

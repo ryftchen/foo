@@ -406,12 +406,12 @@ static JSON parseNext(const std::string_view fmt, std::size_t& offset)
     throw std::runtime_error("JSON syntax error, unknown starting character '" + std::string{c} + "'.");
 }
 
-JSON::JSON(const JSON::Type type) : JSON()
+JSON::JSON(const JSON::Type type)
 {
     setType(type);
 }
 
-JSON::JSON(const std::initializer_list<JSON>& list) : JSON()
+JSON::JSON(const std::initializer_list<JSON>& list)
 {
     setType(Type::object);
     for (const auto* iterator = list.begin(); list.end() != iterator; std::advance(iterator, 2))
@@ -467,12 +467,13 @@ JSON& JSON::operator[](const std::string_view key)
 JSON& JSON::operator[](std::size_t index)
 {
     setType(Type::array);
-    if (index >= std::get<Array>(data.value).size())
+    auto& array = std::get<Array>(data.value);
+    if (index >= array.size())
     {
-        std::get<Array>(data.value).resize(index + 1);
+        array.resize(index + 1);
     }
 
-    return std::get<Array>(data.value).operator[](index);
+    return array.operator[](index);
 }
 
 JSON& JSON::at(const std::string_view key)
@@ -720,42 +721,24 @@ JSON::Boolean JSON::toBoolean() const
 
 JSON::JSONWrapper<JSON::Object> JSON::objectRange()
 {
-    if (Type::object == type)
-    {
-        return JSONWrapper<Object>{&std::get<Object>(data.value)};
-    }
-
-    return JSONWrapper<Object>{nullptr};
+    return (Type::object == type) ? JSONWrapper<Object>{&std::get<Object>(data.value)} : JSONWrapper<Object>{nullptr};
 }
 
 JSON::JSONWrapper<JSON::Array> JSON::arrayRange()
 {
-    if (Type::array == type)
-    {
-        return JSONWrapper<Array>{&std::get<Array>(data.value)};
-    }
-
-    return JSONWrapper<Array>{nullptr};
+    return (Type::array == type) ? JSONWrapper<Array>{&std::get<Array>(data.value)} : JSONWrapper<Array>{nullptr};
 }
 
 JSON::JSONConstWrapper<JSON::Object> JSON::objectRange() const
 {
-    if (Type::object == type)
-    {
-        return JSONConstWrapper<Object>{&std::get<Object>(data.value)};
-    }
-
-    return JSONConstWrapper<Object>{nullptr};
+    return (Type::object == type) ? JSONConstWrapper<Object>{&std::get<Object>(data.value)}
+                                  : JSONConstWrapper<Object>{nullptr};
 }
 
 JSON::JSONConstWrapper<JSON::Array> JSON::arrayRange() const
 {
-    if (Type::array == type)
-    {
-        return JSONConstWrapper<Array>{&std::get<Array>(data.value)};
-    }
-
-    return JSONConstWrapper<Array>{nullptr};
+    return (Type::array == type) ? JSONConstWrapper<Array>{&std::get<Array>(data.value)}
+                                 : JSONConstWrapper<Array>{nullptr};
 }
 
 std::string JSON::dump(const std::uint32_t depth, const std::string_view tab) const

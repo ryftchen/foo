@@ -221,7 +221,7 @@ class Director
 {
 public:
     //! @brief Construct a new Director object.
-    Director() : builder() {}
+    Director() = default;
     //! @brief Destroy the Director object.
     ~Director();
 

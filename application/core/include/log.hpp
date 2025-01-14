@@ -221,7 +221,7 @@ public:
     {
     public:
         //! @brief Construct a new Access object.
-        Access() : inst(getInstance()) {}
+        Access() : inst{getInstance()} {}
         //! @brief Destroy the Access object.
         virtual ~Access() = default;
 
@@ -272,7 +272,7 @@ public:
     public:
         //! @brief Construct a new Holder object.
         //! @param srcLoc - current source location
-        explicit Holder(const std::source_location& srcLoc = std::source_location::current()) : location(srcLoc) {}
+        explicit Holder(const std::source_location& srcLoc = std::source_location::current()) : location{srcLoc} {}
         //! @brief Destroy the Holder object.
         virtual ~Holder() { flush(); }
 

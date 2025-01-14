@@ -20,8 +20,8 @@ namespace application::config
 {
 Config& Config::getInstance()
 {
-    static Config cfg{};
-    return cfg;
+    static Config configurator{};
+    return configurator;
 }
 
 const utility::json::JSON& Config::retrieve() const
@@ -68,7 +68,7 @@ void Config::checkObjectInHelperList<log::Log>(const utility::json::JSON& helper
     bool isVerified = true;
     isVerified &= loggerObject.isObjectType();
     const auto &loggerProperties = loggerObject.at(field::properties),
-               loggerRequired = loggerObject.at(field::required);
+               &loggerRequired = loggerObject.at(field::required);
     isVerified &= loggerProperties.isObjectType() && loggerRequired.isArrayType()
         && (loggerProperties.size() == loggerRequired.length());
     for (const auto& item : loggerRequired.arrayRange())
@@ -140,7 +140,7 @@ void Config::checkObjectInHelperList<view::View>(const utility::json::JSON& help
     bool isVerified = true;
     isVerified &= viewerObject.isObjectType();
     const auto &viewerProperties = viewerObject.at(field::properties),
-               viewerRequired = viewerObject.at(field::required);
+               &viewerRequired = viewerObject.at(field::required);
     isVerified &= viewerProperties.isObjectType() && viewerRequired.isArrayType()
         && (viewerProperties.size() == viewerRequired.length());
     for (const auto& item : viewerRequired.arrayRange())

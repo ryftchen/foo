@@ -230,7 +230,7 @@ public:
     using StateType = State;
     //! @brief Construct a new FSM object.
     //! @param initState - initialization value of state
-    explicit FSM(const State initState = State()) : state(initState) {}
+    explicit FSM(const State initState = {}) : state{initState} {}
 
     //! @brief Process the specific event.
     //! @tparam Event - type of triggered event
@@ -374,7 +374,7 @@ private:
     public:
         //! @brief Construct a new ProcedureLock object.
         //! @param fsm - FSM object
-        explicit ProcedureLock(FSM& fsm) : isProcessing(fsm.isProcessing)
+        explicit ProcedureLock(FSM& fsm) : isProcessing{fsm.isProcessing}
         {
             if (isProcessing.load())
             {
