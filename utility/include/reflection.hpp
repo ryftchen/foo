@@ -238,7 +238,7 @@ struct NamedValue : NamedValueBase<Name>
 {
     //! @brief Construct a new NamedValue object.
     //! @param val - target value
-    constexpr explicit NamedValue(const T val) : value(val) {}
+    constexpr explicit NamedValue(const T val) : value{val} {}
 
     //! @brief The operator (==) overloading of NamedValue struct.
     //! @tparam U - type of value
@@ -288,7 +288,7 @@ struct ElemList
 {
     //! @brief Construct a new ElemList object.
     //! @param es - list of elements
-    constexpr explicit ElemList(const Es... es) : elems(es...) {}
+    constexpr explicit ElemList(const Es... es) : elems{es...} {}
 
     //! @brief Element list.
     std::tuple<Es...> elems{};
@@ -453,7 +453,7 @@ struct Attr : NamedValue<Name, T>
 {
     //! @brief Construct a new Attr object.
     //! @param val - target value
-    constexpr Attr(const Name /*name*/, const T val) : NamedValue<Name, T>(val) {}
+    constexpr Attr(const Name /*name*/, const T val) : NamedValue<Name, T>{val} {}
 };
 
 //! @brief Attribute in class.
@@ -472,7 +472,7 @@ struct AttrList : ElemList<As...>
 {
     //! @brief Construct a new AttrList object.
     //! @param as - list of attributes
-    constexpr explicit AttrList(const As... as) : ElemList<As...>(as...) {}
+    constexpr explicit AttrList(const As... as) : ElemList<As...>{as...} {}
 };
 
 //! @brief Base class of trait.
@@ -519,7 +519,7 @@ struct Field : Trait<T>, NamedValue<Name, T>
     //! @brief Construct a new Field object.
     //! @param val - target value
     //! @param as - list of attributes
-    constexpr Field(const Name /*name*/, const T val, const Attrs as = {}) : NamedValue<Name, T>(val), attrs(as) {}
+    constexpr Field(const Name /*name*/, const T val, const Attrs as = {}) : NamedValue<Name, T>{val}, attrs{as} {}
 
     //! @brief Attribute list.
     Attrs attrs{};
@@ -532,7 +532,7 @@ struct FieldList : ElemList<Fs...>
 {
     //! @brief Construct a new FieldList object.
     //! @param fs - list of fields
-    constexpr explicit FieldList(const Fs... fs) : ElemList<Fs...>(fs...) {}
+    constexpr explicit FieldList(const Fs... fs) : ElemList<Fs...>{fs...} {}
 };
 
 //! @brief Type information.
@@ -559,7 +559,7 @@ struct BaseList : ElemList<Bs...>
 {
     //! @brief Construct a new BaseList object.
     //! @param bs - list of public base classes
-    constexpr explicit BaseList(const Bs... bs) : ElemList<Bs...>(bs...) {}
+    constexpr explicit BaseList(const Bs... bs) : ElemList<Bs...>{bs...} {}
 };
 
 //! @brief The list of type informations.
@@ -569,7 +569,7 @@ struct TypeInfoList : ElemList<Ts...>
 {
     //! @brief Construct a new TypeInfoList object.
     //! @param ts - list of type informations
-    constexpr explicit TypeInfoList(const Ts... ts) : ElemList<Ts...>(ts...) {}
+    constexpr explicit TypeInfoList(const Ts... ts) : ElemList<Ts...>{ts...} {}
 };
 
 //! @brief Base class of type information.

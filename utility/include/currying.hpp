@@ -116,7 +116,7 @@ public:
     //! @param args - curried function arguments tuple
     template <typename CallableType>
     Curried(CallableType&& call, std::tuple<CurriedArgs...>&& args) :
-        callable(std::forward<CallableType>(call)), curriedArgs(std::move(args))
+        callable{std::forward<CallableType>(call)}, curriedArgs{std::move(args)}
     {
     }
 

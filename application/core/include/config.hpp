@@ -82,7 +82,7 @@ public:
 
 private:
     //! @brief Construct a new Config object.
-    Config() : dataRepo(parseConfigFile(filePath)) {}
+    Config() : dataRepo{parseConfigFile(filePath)} {}
 
     //! @brief Full path to the configuration file.
     const std::string filePath{getFullDefaultConfigurationPath()};

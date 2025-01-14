@@ -60,7 +60,7 @@ public:
     //! @brief Construct a new Packet object.
     //! @param buf - TVL packet buffer
     //! @param len - buffer length
-    Packet(char* buf, const std::uint32_t len) : buffer(buf), tail(buffer + len), writer(buffer), reader(buffer) {}
+    Packet(char* buf, const std::uint32_t len) : buffer{buf}, tail{buffer + len}, writer{buffer}, reader{buffer} {}
     //! @brief Destroy the Packet object.
     virtual ~Packet() = default;
 
@@ -145,7 +145,7 @@ public:
     {
     public:
         //! @brief Construct a new Access object.
-        Access() : inst(getInstance()) {}
+        Access() : inst{getInstance()} {}
         //! @brief Destroy the Access object.
         virtual ~Access() = default;
 

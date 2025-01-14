@@ -285,7 +285,7 @@ private:
         public:
             //! @brief Construct a new Handler object.
             //! @param obj - target involved object
-            explicit Handler(const T& obj) : obj(obj) {}
+            explicit Handler(const T& obj) : obj{obj} {}
             //! @brief Construct a new Handler object.
             Handler() = delete;
 

@@ -79,57 +79,51 @@ public:
 private:
     //! @brief Alias for the history state.
     using HistoryState = ::HISTORY_STATE;
-    //! @brief Alias for the option name.
-    using Option = std::string;
-    //! @brief Alias for the help prompt.
-    using Help = std::string;
-    //! @brief Alias for option help pair.
-    using OptionHelpPair = std::pair<Option, Help>;
     //! @brief Alias for the functor of option completer.
     using OptionCompleterFunctor = char**(const char* text, int start, int end);
     //! @brief Alias for the functor of option iterator.
     using OptionIteratorFunctor = char*(const char* text, int state);
     //! @brief Saved empty history state.
     HistoryState* const emptyHistory{::history_get_history_state()};
-    //! @brief Controller for interaction.
-    class Controller
+    //! @brief Terminal for interaction.
+    class Terminal
     {
     public:
-        //! @brief Construct a new Controller object.
+        //! @brief Construct a new Terminal object.
         //! @param greeting - default greeting information
-        explicit Controller(const std::string_view greeting) : greeting(greeting) {}
-        //! @brief Destroy the Controller object.
-        ~Controller() { delete history; }
-        //! @brief Construct a new Controller object.
-        Controller(const Controller&) = delete;
-        //! @brief Construct a new Controller object.
-        Controller(Controller&&) = delete;
-        //! @brief The operator (=) overloading of Controller struct.
-        //! @return reference of the Controller object
-        Controller& operator=(const Controller&) = delete;
-        //! @brief The operator (=) overloading of Controller struct.
-        //! @return reference of the Controller object
-        Controller& operator=(Controller&&) = delete;
+        explicit Terminal(const std::string_view greeting) : greeting{greeting} {}
+        //! @brief Destroy the Terminal object.
+        ~Terminal() { delete history; }
+        //! @brief Construct a new Terminal object.
+        Terminal(const Terminal&) = delete;
+        //! @brief Construct a new Terminal object.
+        Terminal(Terminal&&) = delete;
+        //! @brief The operator (=) overloading of Terminal struct.
+        //! @return reference of the Terminal object
+        Terminal& operator=(const Terminal&) = delete;
+        //! @brief The operator (=) overloading of Terminal struct.
+        //! @return reference of the Terminal object
+        Terminal& operator=(Terminal&&) = delete;
 
         //! @brief Alias for the map of option and callback in console.
-        using RegisteredOption = std::unordered_map<Option, std::pair<Help, Callback>>;
+        using RegisteredOption = std::unordered_map<std::string, std::pair<std::string, Callback>>;
         //! @brief Greeting information.
         std::string greeting{};
         //! @brief Mapping table of all registered options.
         RegisteredOption regTable{};
         //! @brief Register order.
-        std::list<Option> orderList{};
+        std::list<std::string> orderList{};
         //! @brief Saved history state.
         HistoryState* history{nullptr};
     };
-    //! @brief Internal controller.
-    std::unique_ptr<Controller> controller{};
+    //! @brief Internal terminal.
+    std::unique_ptr<Terminal> terminal{};
 
-    //! @brief Set the default options.
-    void setDefaultOptions();
     //! @brief Get all registered options with help prompts.
     //! @return all registered options with help prompts
-    [[nodiscard]] std::vector<OptionHelpPair> getOptionHelpPairs() const;
+    [[nodiscard]] auto getOptionHelpPairs() const;
+    //! @brief Set the default options.
+    void setDefaultOptions();
     //! @brief Save current state.
     void saveState();
     //! @brief Reserve usage to the calling console instance.

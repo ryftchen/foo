@@ -360,7 +360,7 @@ private:
         //! @brief Construct a new ArgsNumRange object.
         //! @param minimum - minimum of range
         //! @param maximum - maximum of range
-        ArgsNumRange(const std::size_t minimum, const std::size_t maximum) : min(minimum), max(maximum)
+        ArgsNumRange(const std::size_t minimum, const std::size_t maximum) : min{minimum}, max{maximum}
         {
             if (minimum > maximum)
             {
@@ -480,7 +480,7 @@ Register::Register(
     isUsed(false),
     prefixChars(prefix)
 {
-    (static_cast<void>(names.emplace_back(array[I])), ...);
+    (names.emplace_back(array[I]), ...);
     std::sort(
         names.begin(),
         names.end(),
@@ -680,7 +680,7 @@ public:
     //! @param title - title name
     //! @param version - version number
     explicit Argument(const std::string_view title = {}, const std::string_view version = "1.0.0") :
-        titleName(title), versionNumber(version), parserPath(title)
+        titleName{title}, versionNumber{version}, parserPath{title}
     {
     }
     //! @brief Destroy the Argument object.

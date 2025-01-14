@@ -236,7 +236,7 @@ public:
     //! @brief Construct a new InputBuilder object.
     //! @param integer1 - first integer for elementary arithmetic
     //! @param integer2 - second integer for elementary arithmetic
-    InputBuilder(const std::int32_t integer1, const std::int32_t integer2) : integer1(integer1), integer2(integer2)
+    InputBuilder(const std::int32_t integer1, const std::int32_t integer2) : integer1{integer1}, integer2{integer2}
     {
 #ifdef __RUNTIME_PRINTING
         std::cout << "\nElementary arithmetic of " << integer1 << " and " << integer2 << ':' << std::endl;
@@ -307,7 +307,7 @@ public:
     //! @brief Construct a new InputBuilder object.
     //! @param integer1 - first integer
     //! @param integer2 - second integer
-    InputBuilder(const std::int32_t integer1, const std::int32_t integer2) : integer1(integer1), integer2(integer2)
+    InputBuilder(const std::int32_t integer1, const std::int32_t integer2) : integer1{integer1}, integer2{integer2}
     {
 #ifdef __RUNTIME_PRINTING
         std::cout << "\nAll common divisors of " << integer1 << " and " << integer2 << ':' << std::endl;
@@ -481,7 +481,7 @@ struct ExprRange
     //! @param range2 - upper endpoint
     //! @param exprDescr - expression description
     ExprRange(const T1 range1, const T2 range2, const std::string_view exprDescr) :
-        range1(range1), range2(range2), exprDescr(exprDescr)
+        range1{range1}, range2{range2}, exprDescr{exprDescr}
     {
     }
     //! @brief Construct a new ExprRange object.
@@ -541,7 +541,7 @@ class InputBuilder
 public:
     //! @brief Construct a new InputBuilder object.
     //! @param expressionMap - collection of integral expressions
-    explicit InputBuilder(const IntegralExprMap<Ts...>& expressionMap) : expressionMap(std::move(expressionMap)) {}
+    explicit InputBuilder(const IntegralExprMap<Ts...>& expressionMap) : expressionMap{expressionMap} {}
     //! @brief Destroy the InputBuilder object.
     virtual ~InputBuilder() = default;
 
@@ -619,7 +619,7 @@ class InputBuilder
 public:
     //! @brief Construct a new InputBuilder object.
     //! @param maxPositiveInteger - maximum positive integer
-    explicit InputBuilder(const std::uint32_t maxPositiveInteger) : maxPositiveInteger(maxPositiveInteger)
+    explicit InputBuilder(const std::uint32_t maxPositiveInteger) : maxPositiveInteger{maxPositiveInteger}
     {
 #ifdef __RUNTIME_PRINTING
         std::cout << "\nAll prime numbers smaller than " << maxPositiveInteger << ':' << std::endl;
