@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "config.hpp"
+#include "configure.hpp"
 
 #ifndef __PRECOMPILED_HEADER
 #include <vector>
@@ -136,7 +136,7 @@ public:
     //! @return reference of the View object
     static View& getInstance();
     //! @brief Instance name.
-    static constexpr std::string_view name{config::field::viewer};
+    static constexpr std::string_view name{configure::field::viewer};
     //! @brief Service for running.
     void service();
 
@@ -192,23 +192,22 @@ private:
     //! @param initState - initialization value of state
     explicit View(const StateType initState = State::init) noexcept :
         FSM(initState),
-        tcpHost{config::detail::tcpHost4Viewer()},
-        tcpPort{static_cast<std::uint16_t>(config::detail::tcpPort4Viewer())},
-        udpHost{config::detail::udpHost4Viewer()},
-        udpPort{static_cast<std::uint16_t>(config::detail::udpPort4Viewer())}
+        tcpHost{configure::detail::tcpHost4Viewer()},
+        tcpPort{static_cast<std::uint16_t>(configure::detail::tcpPort4Viewer())},
+        udpHost{configure::detail::udpHost4Viewer()},
+        udpPort{static_cast<std::uint16_t>(configure::detail::udpPort4Viewer())}
     {
     }
 
     //! @brief Alias for the lock mode.
     using LockMode = utility::common::ReadWriteLock::LockMode;
     //! @brief Timeout period (ms) to waiting for the viewer to change to the target state.
-    const std::uint32_t timeoutPeriod{static_cast<std::uint32_t>(config::detail::helperTimeout())};
+    const std::uint32_t timeoutPeriod{static_cast<std::uint32_t>(configure::detail::helperTimeout())};
     //! @brief Alias for the attribute of the target option.
     struct OptionAttr
     {
         //! @brief Alias for the functor to build the TLV packet.
         using BuildFunctor = int (*)(const std::vector<std::string>&, char*);
-
         //! @brief Help prompt.
         const std::string prompt{};
         //! @brief Build functor.

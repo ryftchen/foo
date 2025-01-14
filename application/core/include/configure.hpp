@@ -1,6 +1,6 @@
-//! @file config.hpp
+//! @file configure.hpp
 //! @author ryftchen
-//! @brief The declarations (config) in the application module.
+//! @brief The declarations (configure) in the application module.
 //! @version 0.1.0
 //! @copyright Copyright (c) 2022-2025 ryftchen. All rights reserved.
 
@@ -12,10 +12,10 @@
 namespace application // NOLINT(modernize-concat-nested-namespaces)
 {
 //! @brief Configuration-related functions in the application module.
-namespace config
+namespace configure
 {
 //! @brief Default configuration filename.
-constexpr std::string_view defaultConfigurationFile = "config/foo.json";
+constexpr std::string_view defaultConfigFile = "configure/foo.json";
 //! @brief Maximum access limit.
 constexpr std::uint8_t maxAccessLimit = 10;
 
@@ -54,38 +54,38 @@ constexpr std::string_view udpPort = "udpPort";
 constexpr std::string_view helperTimeout = "helperTimeout";
 } // namespace field
 
-extern std::string getFullDefaultConfigurationPath();
+extern std::string getFullDefaultConfigPath();
 
 //! @brief Configuration.
-class Config final
+class Configure final
 {
 public:
-    //! @brief Destroy the Config object.
-    virtual ~Config() = default;
-    //! @brief Construct a new Config object.
-    Config(const Config&) = delete;
-    //! @brief Construct a new Config object.
-    Config(Config&&) = delete;
-    //! @brief The operator (=) overloading of Config class.
-    //! @return reference of the Config object
-    Config& operator=(const Config&) = delete;
-    //! @brief The operator (=) overloading of Config class.
-    //! @return reference of the Config object
-    Config& operator=(Config&&) = delete;
+    //! @brief Destroy the Configure object.
+    virtual ~Configure() = default;
+    //! @brief Construct a new Configure object.
+    Configure(const Configure&) = delete;
+    //! @brief Construct a new Configure object.
+    Configure(Configure&&) = delete;
+    //! @brief The operator (=) overloading of Configure class.
+    //! @return reference of the Configure object
+    Configure& operator=(const Configure&) = delete;
+    //! @brief The operator (=) overloading of Configure class.
+    //! @return reference of the Configure object
+    Configure& operator=(Configure&&) = delete;
 
-    //! @brief Get the Config instance.
-    //! @return reference of the Config object
-    static Config& getInstance();
+    //! @brief Get the Configure instance.
+    //! @return reference of the Configure object
+    static Configure& getInstance();
     //! @brief Interface used to retrieve.
     //! @return data repository
     [[nodiscard]] const utility::json::JSON& retrieve() const;
 
 private:
-    //! @brief Construct a new Config object.
-    Config() : dataRepo{parseConfigFile(filePath)} {}
+    //! @brief Construct a new Configure object.
+    Configure() : dataRepo{parseConfigFile(filePath)} {}
 
     //! @brief Full path to the configuration file.
-    const std::string filePath{getFullDefaultConfigurationPath()};
+    const std::string filePath{getFullDefaultConfigPath()};
     //! @brief Configuration data repository.
     const utility::json::JSON dataRepo{};
 
@@ -104,7 +104,7 @@ private:
 };
 
 extern utility::json::JSON getDefaultConfiguration();
-extern bool loadConfiguration(const std::string_view filename = getFullDefaultConfigurationPath());
+extern bool loadConfiguration(const std::string_view filename = getFullDefaultConfigPath());
 
 const utility::json::JSON& retrieveDataRepo();
 //! @brief Configuration details.
@@ -182,5 +182,5 @@ inline int helperTimeout()
     return (retrieveDataRepo() / field::helperTimeout).toIntegral();
 }
 } // namespace detail
-} // namespace config
+} // namespace configure
 } // namespace application

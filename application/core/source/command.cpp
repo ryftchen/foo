@@ -59,7 +59,7 @@ template <HelperType Helper>
 requires std::derived_from<Helper, utility::fsm::FSM<Helper>>
 void triggerHelper(const ExtEvent event)
 {
-    if (!config::detail::activateHelper())
+    if (!configure::detail::activateHelper())
     {
         return;
     }
@@ -159,7 +159,7 @@ private:
 template <HelperType... Helpers>
 Awaitable helperLifecycle()
 {
-    if (!config::detail::activateHelper())
+    if (!configure::detail::activateHelper())
     {
         co_return;
     }
@@ -782,7 +782,7 @@ void Command::launchClient<utility::socket::UDPSocket>(std::shared_ptr<utility::
 
 void Command::executeInConsole() const
 {
-    if (!config::detail::activateHelper())
+    if (!configure::detail::activateHelper())
     {
         std::cout << "exit" << std::endl;
         return;
@@ -815,7 +815,7 @@ void Command::showHelpMessage() const
 
 void Command::dumpConfiguration()
 {
-    std::cout << config::getDefaultConfiguration() << std::endl;
+    std::cout << configure::getDefaultConfiguration() << std::endl;
 }
 
 void Command::showVersionIcon() const
@@ -877,7 +877,7 @@ void Command::Notifier::Handler<Category::version>::execute() const
 void Command::enterConsoleMode()
 try
 {
-    if (!config::detail::activateHelper())
+    if (!configure::detail::activateHelper())
     {
         std::cout << "exit" << std::endl;
         return;

@@ -6,7 +6,7 @@
 
 #include "main.hpp"
 #include "command.hpp"
-#include "config.hpp"
+#include "configure.hpp"
 
 #ifndef __PRECOMPILED_HEADER
 #include <sys/prctl.h>
@@ -24,7 +24,7 @@ namespace application
 static int run(int argc, char* argv[])
 try
 {
-    if (!config::loadConfiguration())
+    if (!configure::loadConfiguration())
     {
         return EXIT_FAILURE;
     }
