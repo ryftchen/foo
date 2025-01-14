@@ -1,10 +1,10 @@
-//! @file config.cpp
+//! @file configure.cpp
 //! @author ryftchen
-//! @brief The definitions (config) in the application module.
+//! @brief The definitions (configure) in the application module.
 //! @version 0.1.0
 //! @copyright Copyright (c) 2022-2025 ryftchen. All rights reserved.
 
-#include "config.hpp"
+#include "configure.hpp"
 #include "log.hpp"
 #include "view.hpp"
 
@@ -16,20 +16,20 @@
 #include "application/pch/precompiled_header.hpp"
 #endif // __PRECOMPILED_HEADER
 
-namespace application::config
+namespace application::configure
 {
-Config& Config::getInstance()
+Configure& Configure::getInstance()
 {
-    static Config configurator{};
+    static Configure configurator{};
     return configurator;
 }
 
-const utility::json::JSON& Config::retrieve() const
+const utility::json::JSON& Configure::retrieve() const
 {
     return dataRepo;
 }
 
-utility::json::JSON Config::parseConfigFile(const std::string_view configFile)
+utility::json::JSON Configure::parseConfigFile(const std::string_view configFile)
 {
     if (!std::filesystem::exists(configFile))
     {
@@ -48,7 +48,7 @@ utility::json::JSON Config::parseConfigFile(const std::string_view configFile)
 //! @brief Check the "logger" object in the helper list.
 //! @param helperList - object in the helper list
 template <>
-void Config::checkObjectInHelperList<log::Log>(const utility::json::JSON& helperList)
+void Configure::checkObjectInHelperList<log::Log>(const utility::json::JSON& helperList)
 {
     if (!helperList.hasKey(field::logger))
     {
@@ -120,7 +120,7 @@ void Config::checkObjectInHelperList<log::Log>(const utility::json::JSON& helper
 //! @brief Check the "viewer" object in the helper list.
 //! @param helperList - object in the helper list
 template <>
-void Config::checkObjectInHelperList<view::View>(const utility::json::JSON& helperList)
+void Configure::checkObjectInHelperList<view::View>(const utility::json::JSON& helperList)
 {
     if (!helperList.hasKey(field::viewer))
     {
@@ -180,7 +180,7 @@ void Config::checkObjectInHelperList<view::View>(const utility::json::JSON& help
     }
 }
 
-void Config::verifyConfigData(const utility::json::JSON& configData)
+void Configure::verifyConfigData(const utility::json::JSON& configData)
 {
     if (!configData.hasKey(field::activateHelper) || !configData.hasKey(field::helperList)
         || !configData.hasKey(field::helperTimeout))
@@ -201,7 +201,7 @@ void Config::verifyConfigData(const utility::json::JSON& configData)
 
 //! @brief Get the full path to the default configuration file.
 //! @return full path to the default configuration file
-std::string getFullDefaultConfigurationPath()
+std::string getFullDefaultConfigPath()
 {
     const char* const processHome = std::getenv("FOO_HOME");
     if (nullptr == processHome)
@@ -209,7 +209,7 @@ std::string getFullDefaultConfigurationPath()
         throw std::runtime_error("The environment variable FOO_HOME is not set.");
     }
 
-    return std::string{processHome} + '/' + defaultConfigurationFile.data();
+    return std::string{processHome} + '/' + defaultConfigFile.data();
 }
 
 // NOLINTBEGIN(readability-magic-numbers)
@@ -260,19 +260,19 @@ utility::json::JSON getDefaultConfiguration()
 // NOLINTEND(readability-magic-numbers)
 
 //! @brief Forced configuration update by default.
-//! @param filename - config file path
+//! @param filename - configure file path
 static void forcedConfigurationUpdateByDefault(const std::string_view filename)
 {
     utility::io::FileWriter fileWriter(filename);
     fileWriter.open(true);
     fileWriter.lock();
-    fileWriter.stream() << config::getDefaultConfiguration();
+    fileWriter.stream() << configure::getDefaultConfiguration();
     fileWriter.unlock();
     fileWriter.close();
 }
 
 //! @brief Initialize the configuration.
-//! @param filename - config file path
+//! @param filename - configure file path
 static void initializeConfiguration(const std::string_view filename)
 {
     const std::filesystem::path configFolderPath = std::filesystem::absolute(filename).parent_path();
@@ -284,7 +284,7 @@ static void initializeConfiguration(const std::string_view filename)
 }
 
 //! @brief Show prompt and wait for input on configuration exception.
-//! @param filename - config file path
+//! @param filename - configure file path
 //! @return whether to continue throwing exception
 static bool handleConfigurationException(const std::string_view filename)
 {
@@ -318,7 +318,7 @@ static bool handleConfigurationException(const std::string_view filename)
 }
 
 //! @brief Load the configuration.
-//! @param filename - config file path
+//! @param filename - configure file path
 //! @return successful or failed to load
 bool loadConfiguration(const std::string_view filename)
 try
@@ -327,7 +327,7 @@ try
     {
         initializeConfiguration(filename);
     }
-    static_cast<void>(Config::getInstance());
+    static_cast<void>(Configure::getInstance());
 
     return true;
 }
@@ -357,7 +357,7 @@ const utility::json::JSON& retrieveDataRepo()
 try
 {
     configSem.acquire();
-    const auto& dataRepo = Config::getInstance().retrieve();
+    const auto& dataRepo = Configure::getInstance().retrieve();
     configSem.release();
 
     return dataRepo;
@@ -367,4 +367,4 @@ catch (...)
     configSem.release();
     throw;
 }
-} // namespace application::config
+} // namespace application::configure

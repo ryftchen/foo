@@ -259,7 +259,7 @@ bool Packet::read(void* const dst, const int offset)
 
 View& View::getInstance()
 {
-    if (config::detail::activateHelper()) [[likely]]
+    if (configure::detail::activateHelper()) [[likely]]
     {
         static View viewer{};
         return viewer;
@@ -634,7 +634,7 @@ int View::buildTLVPacket4Profile(const std::vector<std::string>& args, char* buf
 
     int len = 0;
     tlv::TLVValue val{};
-    std::strncpy(val.configInfo, config::retrieveDataRepo().toUnescapedString().c_str(), sizeof(val.configInfo) - 1);
+    std::strncpy(val.configInfo, configure::retrieveDataRepo().toUnescapedString().c_str(), sizeof(val.configInfo) - 1);
     val.configInfo[sizeof(val.configInfo) - 1] = '\0';
     if (tlv::encodeTLV(buf, len, val) < 0)
     {

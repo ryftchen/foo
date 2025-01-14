@@ -49,7 +49,7 @@ const HlRegex& logStyle()
 
 Log& Log::getInstance()
 {
-    if (config::detail::activateHelper()) [[likely]]
+    if (configure::detail::activateHelper()) [[likely]]
     {
         static Log logger{};
         return logger;
