@@ -317,7 +317,7 @@ public:
         marchingText{std::make_unique<unsigned char[]>(maxDigit + 1)},
         textLength{maxDigit},
         singlePattern{std::make_unique<unsigned char[]>(pattern.length() + 1)},
-        patternLength{static_cast<uint32_t>(pattern.length())}
+        patternLength{static_cast<std::uint32_t>(pattern.length())}
     {
         createMatchingText(marchingText.get(), maxDigit);
         std::memcpy(singlePattern.get(), pattern.data(), pattern.length() * sizeof(unsigned char));

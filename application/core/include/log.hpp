@@ -307,10 +307,10 @@ private:
     //! @param initState - initialization value of state
     explicit Log(const StateType initState = State::init) noexcept :
         FSM(initState),
-        filePath(getFullLogPath(config::detail::filePath4Logger())),
-        priorityLevel(OutputLevel(config::detail::priorityLevel4Logger())),
-        targetType(OutputType(config::detail::targetType4Logger())),
-        writeMode(OutputMode(config::detail::writeMode4Logger()))
+        filePath{getFullLogPath(config::detail::filePath4Logger())},
+        priorityLevel{OutputLevel(config::detail::priorityLevel4Logger())},
+        targetType{OutputType(config::detail::targetType4Logger())},
+        writeMode{OutputMode(config::detail::writeMode4Logger())}
     {
     }
 
