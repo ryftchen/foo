@@ -192,10 +192,10 @@ private:
     //! @param initState - initialization value of state
     explicit View(const StateType initState = State::init) noexcept :
         FSM(initState),
-        tcpHost(config::detail::tcpHost4Viewer()),
-        tcpPort(config::detail::tcpPort4Viewer()),
-        udpHost(config::detail::udpHost4Viewer()),
-        udpPort(config::detail::udpPort4Viewer())
+        tcpHost{config::detail::tcpHost4Viewer()},
+        tcpPort{static_cast<std::uint16_t>(config::detail::tcpPort4Viewer())},
+        udpHost{config::detail::udpHost4Viewer()},
+        udpPort{static_cast<std::uint16_t>(config::detail::udpPort4Viewer())}
     {
     }
 
@@ -203,22 +203,19 @@ private:
     using LockMode = utility::common::ReadWriteLock::LockMode;
     //! @brief Timeout period (ms) to waiting for the viewer to change to the target state.
     const std::uint32_t timeoutPeriod{static_cast<std::uint32_t>(config::detail::helperTimeout())};
-    //! @brief Alias for the option name.
-    using OptionName = std::string;
-    //! @brief Alias for the help prompt of the option.
-    using HelpPrompt = std::string;
-    //! @brief Alias for the functor to build the TLV packet.
-    typedef int (*BuildFunctor)(const std::vector<std::string>&, char*);
     //! @brief Alias for the attribute of the target option.
     struct OptionAttr
     {
+        //! @brief Alias for the functor to build the TLV packet.
+        using BuildFunctor = int (*)(const std::vector<std::string>&, char*);
+
         //! @brief Help prompt.
-        HelpPrompt prompt{};
+        const std::string prompt{};
         //! @brief Build functor.
-        BuildFunctor functor{};
+        const BuildFunctor functor{};
     };
-    //! @brief Alias for the map of OptionName and OptionAttr.
-    using OptionMap = std::map<OptionName, OptionAttr>;
+    //! @brief Alias for the map of option name and OptionAttr.
+    using OptionMap = std::map<std::string, OptionAttr>;
     // clang-format off
     //! @brief Mapping table of all viewer options.
     const OptionMap supportedOptions
