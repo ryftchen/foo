@@ -25,9 +25,9 @@ class Memory
 {
 public:
     //! @brief Construct a new Memory object.
-    Memory() noexcept : currentBlock(nullptr), currentSlot(nullptr), lastSlot(nullptr), freeSlots(nullptr) {}
+    Memory() : currentBlock{nullptr}, currentSlot{nullptr}, lastSlot{nullptr}, freeSlots{nullptr} {}
     //! @brief Destroy the Memory object.
-    ~Memory() noexcept;
+    ~Memory();
     //! @brief Construct a new Memory object.
     Memory(const Memory&) = delete;
     //! @brief Construct a new Memory object.
@@ -35,13 +35,13 @@ public:
     template <class U>
     Memory(const Memory<U>&) = delete;
     //! @brief Construct a new Memory object.
-    //! @param memory - the old object for move constructor
+    //! @param memory - the object for move constructor
     Memory(Memory&& memory) noexcept;
     //! @brief The operator (=) overloading of Memory class.
     //! @return reference of the Memory object
     Memory& operator=(const Memory&) = delete;
     //! @brief The operator (=) overloading of Memory class.
-    //! @param memory - the old object for move assignment operator
+    //! @param memory - the object for move assignment operator
     //! @return reference of the Memory object
     Memory& operator=(Memory&& memory) noexcept;
 
@@ -119,7 +119,7 @@ private:
 
 // NOLINTBEGIN(cppcoreguidelines-pro-type-reinterpret-cast)
 template <typename T, std::size_t BlockSize>
-Memory<T, BlockSize>::~Memory() noexcept
+Memory<T, BlockSize>::~Memory()
 {
     Slot* curr = currentBlock;
     while (nullptr != curr)
@@ -132,10 +132,10 @@ Memory<T, BlockSize>::~Memory() noexcept
 
 template <typename T, std::size_t BlockSize>
 Memory<T, BlockSize>::Memory(Memory&& memory) noexcept :
-    currentBlock(memory.currentBlock),
-    currentSlot(memory.currentSlot),
-    lastSlot(memory.lastSlot),
-    freeSlots(memory.freeSlots)
+    currentBlock{memory.currentBlock},
+    currentSlot{memory.currentSlot},
+    lastSlot{memory.lastSlot},
+    freeSlots{memory.freeSlots}
 {
     memory.currentBlock = nullptr;
 }

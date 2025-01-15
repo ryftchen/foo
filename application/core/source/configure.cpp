@@ -275,7 +275,7 @@ static void forcedConfigurationUpdateByDefault(const std::string_view filename)
 //! @param filename - configure file path
 static void initializeConfiguration(const std::string_view filename)
 {
-    const std::filesystem::path configFolderPath = std::filesystem::absolute(filename).parent_path();
+    const auto configFolderPath = std::filesystem::absolute(filename).parent_path();
     std::filesystem::create_directories(configFolderPath);
     std::filesystem::permissions(
         configFolderPath, std::filesystem::perms::owner_all, std::filesystem::perm_options::add);
