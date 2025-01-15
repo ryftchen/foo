@@ -238,8 +238,8 @@ void updateChoice<LinearInstance>(const std::string_view target)
             break;
         default:
             bits.reset();
-            throw std::logic_error(
-                "Unexpected " + std::string{toString(category)} + " instance: " + target.data() + '.');
+            throw std::logic_error{
+                "Unexpected " + std::string{toString(category)} + " instance: " + target.data() + '.'};
     }
 }
 
@@ -282,7 +282,7 @@ void runChoices<LinearInstance>(const std::vector<std::string>& candidates)
                 functor(name(target), &LinearStructure::queueInstance);
                 break;
             default:
-                throw std::logic_error("Unknown " + std::string{toString(category)} + " instance: " + target + '.');
+                throw std::logic_error{"Unknown " + std::string{toString(category)} + " instance: " + target + '.'};
         }
     }
 
@@ -355,8 +355,8 @@ void updateChoice<TreeInstance>(const std::string_view target)
             break;
         default:
             bits.reset();
-            throw std::logic_error(
-                "Unexpected " + std::string{toString(category)} + " instance: " + target.data() + '.');
+            throw std::logic_error{
+                "Unexpected " + std::string{toString(category)} + " instance: " + target.data() + '.'};
     }
 }
 
@@ -399,7 +399,7 @@ void runChoices<TreeInstance>(const std::vector<std::string>& candidates)
                 functor(name(target), &TreeStructure::splayInstance);
                 break;
             default:
-                throw std::logic_error("Unknown " + std::string{toString(category)} + " instance: " + target + '.');
+                throw std::logic_error{"Unknown " + std::string{toString(category)} + " instance: " + target + '.'};
         }
     }
 

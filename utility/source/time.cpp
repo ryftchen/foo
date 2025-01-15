@@ -31,11 +31,11 @@ double Time::calculateInterval() const
     if ((std::chrono::high_resolution_clock::time_point{} == beginTime)
         || (std::chrono::high_resolution_clock::time_point{} == endTime))
     {
-        throw std::logic_error("Either the begin time or the end time is not set.");
+        throw std::logic_error{"Either the begin time or the end time is not set."};
     }
     if (beginTime > endTime)
     {
-        throw std::logic_error("The end time cannot be earlier than the begin time.");
+        throw std::logic_error{"The end time cannot be earlier than the begin time."};
     }
 
     return std::chrono::duration<double, std::milli>(endTime - beginTime).count();

@@ -565,7 +565,7 @@ public:
                     auto* exprPtr = const_cast<std::remove_const_t<std::remove_reference_t<decltype(expr)>>*>(&expr);
                     if (nullptr != dynamic_cast<numeric::integral::Expression*>(exprPtr))
                     {
-                        throw std::runtime_error("Unknown expression type (" + std::string{typeid(expr).name()} + ").");
+                        throw std::runtime_error{"Unknown expression type (" + std::string{typeid(expr).name()} + ")."};
                     }
                 }},
             expression);

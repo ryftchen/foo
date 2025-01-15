@@ -33,7 +33,7 @@ Socket::Socket(const Type socketType, const int socketId)
         spinUnlock();
         if (-1 == sock)
         {
-            throw std::runtime_error("Socket creation error, errno: " + std::string{std::strerror(errno)} + '.');
+            throw std::runtime_error{"Socket creation error, errno: " + std::string{std::strerror(errno)} + '.'};
         }
     }
     else
@@ -82,7 +82,7 @@ void Socket::waitIfAlive()
 {
     if (!task.valid())
     {
-        throw std::logic_error("Never use asynchronous.");
+        throw std::logic_error{"Never use asynchronous."};
     }
 
     if (task.wait_until(std::chrono::system_clock::now()) != std::future_status::ready)
@@ -128,9 +128,9 @@ void TCPSocket::toConnect(const std::string_view ip, const std::uint16_t port, c
 
     if (const int status = ::getaddrinfo(ip.data(), nullptr, &hints, &res); 0 != status)
     {
-        throw std::runtime_error(
+        throw std::runtime_error{
             "Invalid address, status: " + std::string{::gai_strerror(status)}
-            + ", errno: " + std::string{std::strerror(errno)} + '.');
+            + ", errno: " + std::string{std::strerror(errno)} + '.'};
     }
 
     for (it = res; nullptr != it; it = it->ai_next)
@@ -152,7 +152,7 @@ void TCPSocket::toConnect(const std::string_view ip, const std::uint16_t port, c
     spinUnlock();
     if (-1 == status)
     {
-        throw std::runtime_error("Failed to connect to the socket, errno: " + std::string{std::strerror(errno)} + '.');
+        throw std::runtime_error{"Failed to connect to the socket, errno: " + std::string{std::strerror(errno)} + '.'};
     }
 
     onConnected();
@@ -185,7 +185,7 @@ void TCPSocket::toRecv(const std::shared_ptr<TCPSocket> socket)
         const int status = ::poll(pollFDs.data(), pollFDs.size(), timeout);
         if (status < 0)
         {
-            throw std::runtime_error("Not the expected wait result for poll.");
+            throw std::runtime_error{"Not the expected wait result for poll."};
         }
         else if (0 == status)
         {
@@ -228,16 +228,16 @@ void TCPSocket::toRecv(const std::shared_ptr<TCPSocket> socket)
 TCPServer::TCPServer() : Socket(Type::tcp)
 {
     int opt1 = 1, opt2 = 0;
-    ::setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &opt1, sizeof(int));
-    ::setsockopt(sock, SOL_SOCKET, SO_REUSEPORT, &opt2, sizeof(int));
+    ::setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &opt1, sizeof(opt1));
+    ::setsockopt(sock, SOL_SOCKET, SO_REUSEPORT, &opt2, sizeof(opt2));
 }
 
 void TCPServer::toBind(const std::string_view ip, const std::uint16_t port)
 {
     if (::inet_pton(AF_INET, ip.data(), &sockAddr.sin_addr) == -1)
     {
-        throw std::runtime_error(
-            "Invalid address, address type is not supported, errno: " + std::string{std::strerror(errno)} + '.');
+        throw std::runtime_error{
+            "Invalid address, address type is not supported, errno: " + std::string{std::strerror(errno)} + '.'};
     }
 
     sockAddr.sin_family = AF_INET;
@@ -245,7 +245,7 @@ void TCPServer::toBind(const std::string_view ip, const std::uint16_t port)
 
     if (::bind(sock, reinterpret_cast<const ::sockaddr*>(&sockAddr), sizeof(sockAddr)) == -1)
     {
-        throw std::runtime_error("Failed to bind the socket, errno: " + std::string{std::strerror(errno)} + '.');
+        throw std::runtime_error{"Failed to bind the socket, errno: " + std::string{std::strerror(errno)} + '.'};
     }
 }
 
@@ -259,8 +259,8 @@ void TCPServer::toListen()
     constexpr int retryTimes = 10;
     if (::listen(sock, retryTimes) == -1)
     {
-        throw std::runtime_error(
-            "Server could not listen on the socket, errno: " + std::string{std::strerror(errno)} + '.');
+        throw std::runtime_error{
+            "Server could not listen on the socket, errno: " + std::string{std::strerror(errno)} + '.'};
     }
 }
 
@@ -312,8 +312,8 @@ void TCPServer::toAccept(const std::shared_ptr<TCPServer> server)
                 return;
             }
 
-            throw std::runtime_error(
-                "Error while accepting a new connection, errno: " + std::string{std::strerror(errno)} + '.');
+            throw std::runtime_error{
+                "Error while accepting a new connection, errno: " + std::string{std::strerror(errno)} + '.'};
         }
 
         auto newSocket = std::make_shared<TCPSocket>(newSock);
@@ -336,9 +336,9 @@ int UDPSocket::toSendTo(
 
     if (const int status = ::getaddrinfo(ip.data(), nullptr, &hints, &res); 0 != status)
     {
-        throw std::runtime_error(
+        throw std::runtime_error{
             "Invalid address, status: " + std::string{::gai_strerror(status)}
-            + ", errno: " + std::string{std::strerror(errno)} + '.');
+            + ", errno: " + std::string{std::strerror(errno)} + '.'};
     }
 
     for (it = res; nullptr != it; it = it->ai_next)
@@ -357,8 +357,8 @@ int UDPSocket::toSendTo(
     const int sent = ::sendto(sock, bytes, length, 0, reinterpret_cast<::sockaddr*>(&addr), sizeof(addr));
     if (-1 == sent)
     {
-        throw std::runtime_error(
-            "Unable to send message to address, errno: " + std::string{std::strerror(errno)} + '.');
+        throw std::runtime_error{
+            "Unable to send message to address, errno: " + std::string{std::strerror(errno)} + '.'};
     }
 
     return sent;
@@ -388,9 +388,9 @@ void UDPSocket::toConnect(const std::string_view ip, const std::uint16_t port)
 
     if (const int status = ::getaddrinfo(ip.data(), nullptr, &hints, &res); 0 != status)
     {
-        throw std::runtime_error(
+        throw std::runtime_error{
             "Invalid address, status: " + std::string{::gai_strerror(status)}
-            + ", errno: " + std::string{std::strerror(errno)} + '.');
+            + ", errno: " + std::string{std::strerror(errno)} + '.'};
     }
 
     for (it = res; nullptr != it; it = it->ai_next)
@@ -412,7 +412,7 @@ void UDPSocket::toConnect(const std::string_view ip, const std::uint16_t port)
     spinUnlock();
     if (-1 == status)
     {
-        throw std::runtime_error("Failed to connect to the socket, errno: " + std::string{std::strerror(errno)} + '.');
+        throw std::runtime_error{"Failed to connect to the socket, errno: " + std::string{std::strerror(errno)} + '.'};
     }
 }
 
@@ -455,7 +455,7 @@ void UDPSocket::toRecv(const std::shared_ptr<UDPSocket> socket)
         const int status = ::poll(pollFDs.data(), pollFDs.size(), timeout);
         if (status < 0)
         {
-            throw std::runtime_error("Not the expected wait result for poll.");
+            throw std::runtime_error{"Not the expected wait result for poll."};
         }
         else if (0 == status)
         {
@@ -506,7 +506,7 @@ void UDPSocket::toRecvFrom(const std::shared_ptr<UDPSocket> socket)
         const int status = ::poll(pollFDs.data(), pollFDs.size(), timeout);
         if (status < 0)
         {
-            throw std::runtime_error("Not the expected wait result for poll.");
+            throw std::runtime_error{"Not the expected wait result for poll."};
         }
         else if (0 == status)
         {
@@ -545,8 +545,8 @@ void UDPServer::toBind(const std::string_view ip, const std::uint16_t port)
 {
     if (::inet_pton(AF_INET, ip.data(), &sockAddr.sin_addr) == -1)
     {
-        throw std::runtime_error(
-            "Invalid address, address type is not supported, errno: " + std::string{std::strerror(errno)} + '.');
+        throw std::runtime_error{
+            "Invalid address, address type is not supported, errno: " + std::string{std::strerror(errno)} + '.'};
     }
 
     sockAddr.sin_family = AF_INET;
@@ -554,7 +554,7 @@ void UDPServer::toBind(const std::string_view ip, const std::uint16_t port)
 
     if (::bind(sock, reinterpret_cast<const ::sockaddr*>(&sockAddr), sizeof(sockAddr)) == -1)
     {
-        throw std::runtime_error("Failed to bind the socket, errno: " + std::string{std::strerror(errno)} + '.');
+        throw std::runtime_error{"Failed to bind the socket, errno: " + std::string{std::strerror(errno)} + '.'};
     }
 }
 

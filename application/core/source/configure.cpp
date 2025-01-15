@@ -33,7 +33,7 @@ utility::json::JSON Configure::parseConfigFile(const std::string_view configFile
 {
     if (!std::filesystem::exists(configFile))
     {
-        throw std::runtime_error("Configuration file " + std::string{configFile} + " is missing.");
+        throw std::runtime_error{"Configuration file " + std::string{configFile} + " is missing."};
     }
 
     const auto configRows = utility::io::getFileContents(configFile, true);
@@ -52,17 +52,17 @@ void Configure::checkObjectInHelperList<log::Log>(const utility::json::JSON& hel
 {
     if (!helperList.hasKey(field::logger))
     {
-        throw std::runtime_error(
+        throw std::runtime_error{
             R"("Incomplete configuration, miss ")" + std::string{field::logger} + R"(" object in ")"
-            + std::string{field::helperList} + R"(" object.)");
+            + std::string{field::helperList} + R"(" object.)"};
     }
 
     const auto& loggerObject = helperList.at(field::logger);
     if (!loggerObject.hasKey(field::properties) || !loggerObject.hasKey(field::required))
     {
-        throw std::runtime_error(
+        throw std::runtime_error{
             R"(Incomplete configuration, ")" + std::string{field::logger} + R"(" object in ")"
-            + std::string{field::helperList} + R"(" object ()" + loggerObject.toUnescapedString() + ").");
+            + std::string{field::helperList} + R"(" object ()" + loggerObject.toUnescapedString() + ")."};
     }
 
     bool isVerified = true;
@@ -111,9 +111,9 @@ void Configure::checkObjectInHelperList<log::Log>(const utility::json::JSON& hel
 
     if (!isVerified)
     {
-        throw std::runtime_error(
+        throw std::runtime_error{
             R"(Illegal configuration, ")" + std::string{field::logger} + R"(" object in ")"
-            + std::string{field::helperList} + R"(" object ()" + loggerObject.toUnescapedString() + ").");
+            + std::string{field::helperList} + R"(" object ()" + loggerObject.toUnescapedString() + ")."};
     }
 }
 
@@ -124,17 +124,17 @@ void Configure::checkObjectInHelperList<view::View>(const utility::json::JSON& h
 {
     if (!helperList.hasKey(field::viewer))
     {
-        throw std::runtime_error(
+        throw std::runtime_error{
             R"(Incomplete configuration, miss ")" + std::string{field::viewer} + R"(" object in ")"
-            + std::string{field::helperList} + R"(" object.)");
+            + std::string{field::helperList} + R"(" object.)"};
     }
 
     const auto& viewerObject = helperList.at(field::viewer);
     if (!viewerObject.hasKey(field::properties) || !viewerObject.hasKey(field::required))
     {
-        throw std::runtime_error(
+        throw std::runtime_error{
             R"(Incomplete configuration, ")" + std::string{field::viewer} + R"(" object in ")"
-            + std::string{field::helperList} + R"(" object ()" + viewerObject.toUnescapedString() + ").");
+            + std::string{field::helperList} + R"(" object ()" + viewerObject.toUnescapedString() + ")."};
     }
 
     bool isVerified = true;
@@ -174,9 +174,9 @@ void Configure::checkObjectInHelperList<view::View>(const utility::json::JSON& h
 
     if (!isVerified)
     {
-        throw std::runtime_error(
+        throw std::runtime_error{
             R"(Illegal configuration, ")" + std::string{field::viewer} + R"(" object in ")"
-            + std::string{field::helperList} + R"(" object ()" + viewerObject.toUnescapedString() + ").");
+            + std::string{field::helperList} + R"(" object ()" + viewerObject.toUnescapedString() + ")."};
     }
 }
 
@@ -185,14 +185,14 @@ void Configure::verifyConfigData(const utility::json::JSON& configData)
     if (!configData.hasKey(field::activateHelper) || !configData.hasKey(field::helperList)
         || !configData.hasKey(field::helperTimeout))
     {
-        throw std::runtime_error("Incomplete configuration (" + configData.toUnescapedString() + ").");
+        throw std::runtime_error{"Incomplete configuration (" + configData.toUnescapedString() + ")."};
     }
 
     if (!configData.at(field::activateHelper).isBooleanType() || !configData.at(field::helperList).isObjectType()
         || !configData.at(field::helperTimeout).isIntegralType()
         || configData.at(field::helperTimeout).toIntegral() < 0)
     {
-        throw std::runtime_error("Illegal configuration (" + configData.toUnescapedString() + ").");
+        throw std::runtime_error{"Illegal configuration (" + configData.toUnescapedString() + ")."};
     }
 
     checkObjectInHelperList<log::Log>(configData.at(field::helperList));
@@ -206,7 +206,7 @@ std::string getFullDefaultConfigPath()
     const char* const processHome = std::getenv("FOO_HOME");
     if (nullptr == processHome)
     {
-        throw std::runtime_error("The environment variable FOO_HOME is not set.");
+        throw std::runtime_error{"The environment variable FOO_HOME is not set."};
     }
 
     return std::string{processHome} + '/' + defaultConfigFile.data();

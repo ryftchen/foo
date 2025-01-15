@@ -386,8 +386,8 @@ void updateChoice<BehavioralInstance>(const std::string_view target)
             break;
         default:
             bits.reset();
-            throw std::logic_error(
-                "Unexpected " + std::string{toString(category)} + " instance: " + target.data() + '.');
+            throw std::logic_error{
+                "Unexpected " + std::string{toString(category)} + " instance: " + target.data() + '.'};
     }
 }
 
@@ -454,7 +454,7 @@ void runChoices<BehavioralInstance>(const std::vector<std::string>& candidates)
                 functor(name(target), &BehavioralPattern::visitorInstance);
                 break;
             default:
-                throw std::logic_error("Unknown " + std::string{toString(category)} + " instance: " + target + '.');
+                throw std::logic_error{"Unknown " + std::string{toString(category)} + " instance: " + target + '.'};
         }
     }
 
@@ -555,8 +555,8 @@ void updateChoice<CreationalInstance>(const std::string_view target)
             break;
         default:
             bits.reset();
-            throw std::logic_error(
-                "Unexpected " + std::string{toString(category)} + " instance: " + target.data() + '.');
+            throw std::logic_error{
+                "Unexpected " + std::string{toString(category)} + " instance: " + target.data() + '.'};
     }
 }
 
@@ -605,7 +605,7 @@ void runChoices<CreationalInstance>(const std::vector<std::string>& candidates)
                 functor(name(target), &CreationalPattern::singletonInstance);
                 break;
             default:
-                throw std::logic_error("Unknown " + std::string{toString(category)} + " instance: " + target + '.');
+                throw std::logic_error{"Unknown " + std::string{toString(category)} + " instance: " + target + '.'};
         }
     }
 
@@ -734,8 +734,8 @@ void updateChoice<StructuralInstance>(const std::string_view target)
             break;
         default:
             bits.reset();
-            throw std::logic_error(
-                "Unexpected " + std::string{toString(category)} + " instance: " + target.data() + '.');
+            throw std::logic_error{
+                "Unexpected " + std::string{toString(category)} + " instance: " + target.data() + '.'};
     }
 }
 
@@ -790,7 +790,7 @@ void runChoices<StructuralInstance>(const std::vector<std::string>& candidates)
                 functor(name(target), &StructuralPattern::proxyInstance);
                 break;
             default:
-                throw std::logic_error("Unknown " + std::string{toString(category)} + " instance: " + target + '.');
+                throw std::logic_error{"Unknown " + std::string{toString(category)} + " instance: " + target + '.'};
         }
     }
 

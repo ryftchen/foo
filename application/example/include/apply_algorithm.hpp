@@ -661,7 +661,7 @@ public:
                     auto* funcPtr = const_cast<std::remove_const_t<std::remove_reference_t<decltype(func)>>*>(&func);
                     if (nullptr != dynamic_cast<algorithm::optimal::Function*>(funcPtr))
                     {
-                        throw std::runtime_error("Unknown function type (" + std::string{typeid(func).name()} + ").");
+                        throw std::runtime_error{"Unknown function type (" + std::string{typeid(func).name()} + ")."};
                     }
                 }},
             function);

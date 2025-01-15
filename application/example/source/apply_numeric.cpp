@@ -301,7 +301,7 @@ void updateChoice<ArithmeticMethod>(const std::string_view target)
             break;
         default:
             bits.reset();
-            throw std::logic_error("Unexpected " + std::string{toString(category)} + " method: " + target.data() + '.');
+            throw std::logic_error{"Unexpected " + std::string{toString(category)} + " method: " + target.data() + '.'};
     }
 }
 
@@ -350,7 +350,7 @@ void runChoices<ArithmeticMethod>(const std::vector<std::string>& candidates)
                 functor(name(target), &ArithmeticSolution::divisionMethod);
                 break;
             default:
-                throw std::logic_error("Unknown " + std::string{toString(category)} + " method: " + target + '.');
+                throw std::logic_error{"Unknown " + std::string{toString(category)} + " method: " + target + '.'};
         }
     }
 
@@ -422,7 +422,7 @@ void updateChoice<DivisorMethod>(const std::string_view target)
             break;
         default:
             bits.reset();
-            throw std::logic_error("Unexpected " + std::string{toString(category)} + " method: " + target.data() + '.');
+            throw std::logic_error{"Unexpected " + std::string{toString(category)} + " method: " + target.data() + '.'};
     }
 }
 
@@ -463,7 +463,7 @@ void runChoices<DivisorMethod>(const std::vector<std::string>& candidates)
                 functor(name(target), &DivisorSolution::steinMethod);
                 break;
             default:
-                throw std::logic_error("Unknown " + std::string{toString(category)} + " method: " + target + '.');
+                throw std::logic_error{"Unknown " + std::string{toString(category)} + " method: " + target + '.'};
         }
     }
 
@@ -581,7 +581,7 @@ void updateChoice<IntegralMethod>(const std::string_view target)
             break;
         default:
             bits.reset();
-            throw std::logic_error("Unexpected " + std::string{toString(category)} + " method: " + target.data() + '.');
+            throw std::logic_error{"Unexpected " + std::string{toString(category)} + " method: " + target.data() + '.'};
     }
 }
 
@@ -634,7 +634,7 @@ void runChoices<IntegralMethod>(const std::vector<std::string>& candidates)
                     functor(name(target), &IntegralSolution::monteCarloMethod);
                     break;
                 default:
-                    throw std::logic_error("Unknown " + std::string{toString(category)} + " method: " + target + '.');
+                    throw std::logic_error{"Unknown " + std::string{toString(category)} + " method: " + target + '.'};
             }
         }
         pooling.deleteElement(threads);
@@ -724,7 +724,7 @@ void updateChoice<PrimeMethod>(const std::string_view target)
             break;
         default:
             bits.reset();
-            throw std::logic_error("Unexpected " + std::string{toString(category)} + " method: " + target.data() + '.');
+            throw std::logic_error{"Unexpected " + std::string{toString(category)} + " method: " + target.data() + '.'};
     }
 }
 
@@ -765,7 +765,7 @@ void runChoices<PrimeMethod>(const std::vector<std::string>& candidates)
                 functor(name(target), &PrimeSolution::eulerMethod);
                 break;
             default:
-                throw std::logic_error("Unknown " + std::string{toString(category)} + " method: " + target + '.');
+                throw std::logic_error{"Unknown " + std::string{toString(category)} + " method: " + target + '.'};
         }
     }
 
