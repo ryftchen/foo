@@ -150,22 +150,13 @@ private:
     //! @tparam T - type of sub-cli or sub-cli category
     //! @return description
     template <class T>
-    static inline consteval std::string_view getDescr()
-    {
-        using TypeInfo = utility::reflection::TypeInfo<T>;
-        return TypeInfo::attrs.find(REFLECTION_STR("descr")).value;
-    }
+    static inline consteval std::string_view getDescr();
     //! @brief Get the alias name.
     //! @tparam SubCLI - type of sub-cli
     //! @tparam Cat - type of sub-cli category
     //! @return alias name
     template <class SubCLI, class Cat>
-    static inline consteval std::string_view getAlias()
-    {
-        using SubCLITypeInfo = utility::reflection::TypeInfo<SubCLI>;
-        using CatTypeInfo = utility::reflection::TypeInfo<Cat>;
-        return SubCLITypeInfo::fields.find(REFLECTION_STR(CatTypeInfo::name)).attrs.find(REFLECTION_STR("alias")).value;
-    }
+    static inline consteval std::string_view getAlias();
     //! @brief Extract all choices in the sub-cli category.
     //! @tparam Cat - type of sub-cli category
     //! @return all choices
@@ -349,5 +340,20 @@ private:
     //! @brief Latency (ms) for console.
     static constexpr std::uint16_t latency{10};
 };
+
+template <class T>
+inline consteval std::string_view Command::getDescr()
+{
+    using TypeInfo = utility::reflection::TypeInfo<T>;
+    return TypeInfo::attrs.find(REFLECTION_STR("descr")).value;
+}
+
+template <class SubCLI, class Cat>
+inline consteval std::string_view Command::getAlias()
+{
+    using SubCLITypeInfo = utility::reflection::TypeInfo<SubCLI>;
+    using CatTypeInfo = utility::reflection::TypeInfo<Cat>;
+    return SubCLITypeInfo::fields.find(REFLECTION_STR(CatTypeInfo::name)).attrs.find(REFLECTION_STR("alias")).value;
+}
 } // namespace command
 } // namespace application

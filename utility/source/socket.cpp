@@ -562,11 +562,5 @@ void UDPServer::toBind(const std::uint16_t port)
 {
     toBind("0.0.0.0", port);
 }
-
-void UDPServer::setBroadcast()
-{
-    int broadcast = 1;
-    ::setsockopt(sock, SOL_SOCKET, SO_BROADCAST, &broadcast, sizeof(broadcast));
-}
 // NOLINTEND(cppcoreguidelines-pro-type-reinterpret-cast)
 } // namespace utility::socket

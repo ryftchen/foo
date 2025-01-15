@@ -212,8 +212,6 @@ public:
     //! @brief Bind to transport port number with default ip address.
     //! @param port - port number
     void toBind(const std::uint16_t port);
-    //! @brief Set the broadcast mode.
-    void setBroadcast();
 };
 } // namespace socket
 } // namespace utility

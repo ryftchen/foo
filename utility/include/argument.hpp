@@ -473,12 +473,12 @@ Register::Register(
     const std::string_view prefix,
     std::array<std::string_view, N>&& array,
     const std::index_sequence<I...>& /*sequence*/) :
-    optionalAsValue(false),
-    isOptional((checkIfOptional(array[I], prefix) || ...)),
-    isRequired(false),
-    isRepeatable(false),
-    isUsed(false),
-    prefixChars(prefix)
+    optionalAsValue{false},
+    isOptional{(checkIfOptional(array[I], prefix) || ...)},
+    isRequired{false},
+    isRepeatable{false},
+    isUsed{false},
+    prefixChars{prefix}
 {
     (names.emplace_back(array[I]), ...);
     std::sort(
@@ -686,12 +686,12 @@ public:
     //! @brief Destroy the Argument object.
     ~Argument() = default;
     //! @brief Construct a new Argument object.
-    //! @param arg - the old object for copy constructor
+    //! @param arg - the object for copy constructor
     Argument(const Argument& arg);
     //! @brief Construct a new Argument object.
     Argument(Argument&&) noexcept = default;
     //! @brief The operator (=) overloading of Argument class.
-    //! @param arg - the old object for copy assignment operator
+    //! @param arg - the object for copy assignment operator
     //! @return reference of the Argument object
     Argument& operator=(const Argument& arg);
     //! @brief The operator (=) overloading of Argument class.
