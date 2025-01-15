@@ -467,13 +467,13 @@ JSON& JSON::operator[](const std::string_view key)
 JSON& JSON::operator[](std::size_t index)
 {
     setType(Type::array);
-    auto& array = std::get<Array>(data.value);
-    if (index >= array.size())
+    auto& arrayVal = std::get<Array>(data.value);
+    if (index >= arrayVal.size())
     {
-        array.resize(index + 1);
+        arrayVal.resize(index + 1);
     }
 
-    return array.operator[](index);
+    return arrayVal.operator[](index);
 }
 
 JSON& JSON::at(const std::string_view key)
@@ -693,19 +693,18 @@ JSON::Boolean JSON::toBoolean() const
             return std::get<Integral>(data.value);
         case Type::string:
         {
-            if (std::get<String>(data.value).find("true") != std::string::npos)
+            const auto& stringVal = std::get<String>(data.value);
+            if (stringVal.find("true") != std::string::npos)
             {
                 return true;
             }
-            if (std::get<String>(data.value).find("false") != std::string::npos)
+            if (stringVal.find("false") != std::string::npos)
             {
                 return false;
             }
             int parsed = 0;
-            const std::from_chars_result result = std::from_chars(
-                std::get<String>(data.value).c_str(),
-                std::get<String>(data.value).c_str() + std::get<String>(data.value).size(),
-                parsed);
+            const std::from_chars_result result =
+                std::from_chars(stringVal.c_str(), stringVal.c_str() + stringVal.size(), parsed);
             if (!static_cast<bool>(result.ec))
             {
                 return parsed;

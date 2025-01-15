@@ -56,28 +56,29 @@ public:
     using Integral = long long;
     //! @brief Alias for the JSON boolean.
     using Boolean = bool;
+
     //! @brief Construct a new JSON object.
     JSON() = default;
-    //! @brief Destroy the JSON object.
-    ~JSON() = default;
     //! @brief Construct a new JSON object.
     //! @param type - data type
     explicit JSON(const Type type);
     //! @brief Construct a new JSON object.
     //! @param list - initializer list for JSON
     JSON(const std::initializer_list<JSON>& list);
+    //! @brief Destroy the JSON object.
+    ~JSON() = default;
     //! @brief Construct a new JSON object.
-    //! @param json - the old object for copy constructor
+    //! @param json - the object for copy constructor
     JSON(const JSON& json) = default;
     //! @brief Construct a new JSON object.
-    //! @param json - the old object for move constructor
+    //! @param json - the object for move constructor
     JSON(JSON&& json) noexcept;
     //! @brief The operator (=) overloading of JSON class.
-    //! @param json - the old object for copy assignment operator
+    //! @param json - the object for copy assignment operator
     //! @return reference of the JSON object
     JSON& operator=(const JSON& json) = default;
     //! @brief The operator (=) overloading of JSON class.
-    //! @param json - the old object for move assignment operator
+    //! @param json - the object for move assignment operator
     //! @return reference of the JSON object
     JSON& operator=(JSON&& json) noexcept;
 
