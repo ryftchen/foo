@@ -364,7 +364,7 @@ private:
         {
             if (minimum > maximum)
             {
-                throw std::runtime_error("The range of number of arguments is invalid.");
+                throw std::runtime_error{"The range of number of arguments is invalid."};
             }
         }
 
@@ -524,7 +524,7 @@ Iterator Register::consume(Iterator start, Iterator end, const std::string_view 
 {
     if (!isRepeatable && isUsed)
     {
-        throw std::runtime_error("Duplicate argument.");
+        throw std::runtime_error{"Duplicate argument."};
     }
 
     isUsed = true;
@@ -549,7 +549,7 @@ Iterator Register::consume(Iterator start, Iterator end, const std::string_view 
             dist = static_cast<std::size_t>(std::distance(start, end));
             if (dist < numMin)
             {
-                throw std::runtime_error("Too few arguments.");
+                throw std::runtime_error{"Too few arguments."};
             }
         }
 
@@ -582,7 +582,7 @@ Iterator Register::consume(Iterator start, Iterator end, const std::string_view 
     {
         return start;
     }
-    throw std::runtime_error("Too few arguments for '" + std::string{usedName} + "'.");
+    throw std::runtime_error{"Too few arguments for '" + std::string{usedName} + "'."};
 }
 
 template <typename T>
@@ -636,7 +636,7 @@ T Register::get() const
             return anyCastContainer<T>(values);
         }
     }
-    throw std::runtime_error("No value specified for '" + names.back() + "'.");
+    throw std::runtime_error{"No value specified for '" + names.back() + "'."};
 }
 
 template <typename T>
@@ -644,7 +644,7 @@ std::optional<T> Register::present() const
 {
     if (defaultValue.has_value())
     {
-        throw std::runtime_error("Default value always presents.");
+        throw std::runtime_error{"Default value always presents."};
     }
     if (values.empty())
     {
@@ -853,7 +853,7 @@ T& Argument::at(const std::string_view name)
         {
             return subParserIter->second->get();
         }
-        throw std::runtime_error("No such sub-parser: " + std::string{name} + '.');
+        throw std::runtime_error{"No such sub-parser: " + std::string{name} + '.'};
     }
 }
 
@@ -862,7 +862,7 @@ T Argument::get(const std::string_view argName) const
 {
     if (!isParsed)
     {
-        throw std::runtime_error("Nothing parsed, no arguments are available.");
+        throw std::runtime_error{"Nothing parsed, no arguments are available."};
     }
 
     return (*this)[argName].get<T>();

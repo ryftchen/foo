@@ -65,8 +65,8 @@ int Console::optionExecutor(const std::string_view option)
     const auto regIter = terminal->regTable.find(inputs.front());
     if (terminal->regTable.cend() == regIter)
     {
-        throw std::runtime_error(
-            "The console option \"" + inputs.front() + R"(" could not be found. Enter the "usage" for help.)");
+        throw std::runtime_error{
+            "The console option \"" + inputs.front() + R"(" could not be found. Enter the "usage" for help.)"};
     }
 
     return RetCode(regIter->second.second(inputs));
@@ -77,7 +77,7 @@ int Console::fileExecutor(const std::string_view filename)
     std::ifstream batch(filename.data());
     if (!batch)
     {
-        throw std::runtime_error("Could not find the batch file to run.");
+        throw std::runtime_error{"Could not find the batch file to run."};
     }
 
     std::string input{};
@@ -175,7 +175,7 @@ void Console::setDefaultOptions()
         {
             if (inputs.size() < 2)
             {
-                throw std::runtime_error("Please enter the \"" + inputs.at(0) + "\" and append with FILE.");
+                throw std::runtime_error{"Please enter the \"" + inputs.at(0) + "\" and append with FILE."};
             }
             return RetCode(fileExecutor(inputs.at(1)));
         });

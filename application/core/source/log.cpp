@@ -54,7 +54,7 @@ Log& Log::getInstance()
         static Log logger{};
         return logger;
     }
-    throw std::logic_error("The " + std::string{name} + " is disabled.");
+    throw std::logic_error{"The " + std::string{name} + " is disabled."};
 }
 
 void Log::service()
@@ -109,7 +109,7 @@ try
         {
             if (inst.isInServingState(State::hold))
             {
-                throw std::runtime_error("The " + std::string{name} + " did not initialize successfully ...");
+                throw std::runtime_error{"The " + std::string{name} + " did not initialize successfully ..."};
             }
             return inst.isInServingState(State::idle);
         });
@@ -126,7 +126,7 @@ try
         {
             if (inst.isInServingState(State::hold))
             {
-                throw std::runtime_error("The " + std::string{name} + " did not start successfully ...");
+                throw std::runtime_error{"The " + std::string{name} + " did not start successfully ..."};
             }
             return inst.isInServingState(State::work);
         });
@@ -151,7 +151,7 @@ try
         {
             if (inst.isInServingState(State::hold))
             {
-                throw std::runtime_error("The " + std::string{name} + " did not stop successfully ...");
+                throw std::runtime_error{"The " + std::string{name} + " did not stop successfully ..."};
             }
             return inst.isInServingState(State::done);
         });
@@ -173,9 +173,9 @@ try
 
     if (utility::time::blockingTimer([this]() { return !inst.toReset.load(); }, inst.timeoutPeriod))
     {
-        throw std::runtime_error(
+        throw std::runtime_error{
             "The " + std::string{name} + " did not reset properly in " + std::to_string(inst.timeoutPeriod)
-            + " ms ...");
+            + " ms ..."};
     }
 }
 catch (const std::exception& err)
@@ -273,7 +273,7 @@ std::string Log::getFullLogPath(const std::string_view filename)
     const char* const processHome = std::getenv("FOO_HOME");
     if (nullptr == processHome)
     {
-        throw std::runtime_error("The environment variable FOO_HOME is not set.");
+        throw std::runtime_error{"The environment variable FOO_HOME is not set."};
     }
 
     return std::string{processHome} + '/' + filename.data();

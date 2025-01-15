@@ -395,7 +395,7 @@ void updateChoice<MatchMethod>(const std::string_view target)
             break;
         default:
             bits.reset();
-            throw std::logic_error("Unexpected " + std::string{toString(category)} + " method: " + target.data() + '.');
+            throw std::logic_error{"Unexpected " + std::string{toString(category)} + " method: " + target.data() + '.'};
     }
 }
 
@@ -457,7 +457,7 @@ void runChoices<MatchMethod>(const std::vector<std::string>& candidates)
                 functor(name(target), &MatchSolution::sundayMethod);
                 break;
             default:
-                throw std::logic_error("Unknown " + std::string{toString(category)} + " method: " + target + '.');
+                throw std::logic_error{"Unknown " + std::string{toString(category)} + " method: " + target + '.'};
         }
     }
 
@@ -517,7 +517,7 @@ void updateChoice<NotationMethod>(const std::string_view target)
             break;
         default:
             bits.reset();
-            throw std::logic_error("Unexpected " + std::string{toString(category)} + " method: " + target.data() + '.');
+            throw std::logic_error{"Unexpected " + std::string{toString(category)} + " method: " + target.data() + '.'};
     }
 }
 
@@ -558,7 +558,7 @@ void runChoices<NotationMethod>(const std::vector<std::string>& candidates)
                 functor(name(target), &NotationSolution::postfixMethod);
                 break;
             default:
-                throw std::logic_error("Unknown " + std::string{toString(category)} + " method: " + target + '.');
+                throw std::logic_error{"Unknown " + std::string{toString(category)} + " method: " + target + '.'};
         }
     }
 
@@ -674,7 +674,7 @@ void updateChoice<OptimalMethod>(const std::string_view target)
             break;
         default:
             bits.reset();
-            throw std::logic_error("Unexpected " + std::string{toString(category)} + " method: " + target.data() + '.');
+            throw std::logic_error{"Unexpected " + std::string{toString(category)} + " method: " + target.data() + '.'};
     }
 }
 
@@ -724,7 +724,7 @@ void runChoices<OptimalMethod>(const std::vector<std::string>& candidates)
                     functor(name(target), &OptimalSolution::geneticMethod);
                     break;
                 default:
-                    throw std::logic_error("Unknown " + std::string{toString(category)} + " method: " + target + '.');
+                    throw std::logic_error{"Unknown " + std::string{toString(category)} + " method: " + target + '.'};
             }
         }
         pooling.deleteElement(threads);
@@ -843,7 +843,7 @@ void updateChoice<SearchMethod>(const std::string_view target)
             break;
         default:
             bits.reset();
-            throw std::logic_error("Unexpected " + std::string{toString(category)} + " method: " + target.data() + '.');
+            throw std::logic_error{"Unexpected " + std::string{toString(category)} + " method: " + target.data() + '.'};
     }
 }
 
@@ -894,7 +894,7 @@ void runChoices<SearchMethod>(const std::vector<std::string>& candidates)
                 functor(name(target), &SearchSolution::fibonacciMethod);
                 break;
             default:
-                throw std::logic_error("Unknown " + std::string{toString(category)} + " method: " + target + '.');
+                throw std::logic_error{"Unknown " + std::string{toString(category)} + " method: " + target + '.'};
         }
     }
 
@@ -1103,7 +1103,7 @@ void updateChoice<SortMethod>(const std::string_view target)
             break;
         default:
             bits.reset();
-            throw std::logic_error("Unexpected " + std::string{toString(category)} + " method: " + target.data() + '.');
+            throw std::logic_error{"Unexpected " + std::string{toString(category)} + " method: " + target.data() + '.'};
     }
 }
 
@@ -1172,7 +1172,7 @@ void runChoices<SortMethod>(const std::vector<std::string>& candidates)
                 functor(name(target), &SortSolution::radixMethod);
                 break;
             default:
-                throw std::logic_error("Unknown " + std::string{toString(category)} + " method: " + target + '.');
+                throw std::logic_error{"Unknown " + std::string{toString(category)} + " method: " + target + '.'};
         }
     }
 

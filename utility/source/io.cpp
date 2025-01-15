@@ -92,7 +92,7 @@ FDStreamBuffer::int_type FDStreamBuffer::underflow()
 {
     if (gptr() != egptr())
     {
-        throw std::runtime_error("Read pointer has not reached the end of the buffer.");
+        throw std::runtime_error{"Read pointer has not reached the end of the buffer."};
     }
     if (fileDescriptor < 0)
     {
@@ -118,7 +118,7 @@ FDStreamBuffer::int_type FDStreamBuffer::overflow(int_type c)
 {
     if (pptr() != epptr())
     {
-        throw std::runtime_error("Write pointer has not reached the end of the buffer.");
+        throw std::runtime_error{"Write pointer has not reached the end of the buffer."};
     }
     if (fileDescriptor < 0)
     {
@@ -228,8 +228,8 @@ void FileReader::open()
     fd = ::open(name.c_str(), O_CREAT | O_RDONLY, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
     if (fd < 0)
     {
-        throw std::runtime_error(
-            "Failed to open " + std::filesystem::path(name).filename().string() + " file for reading.");
+        throw std::runtime_error{
+            "Failed to open " + std::filesystem::path(name).filename().string() + " file for reading."};
     }
     strBuf.fd(fd);
 }
@@ -250,7 +250,7 @@ void FileReader::lock() const
 {
     if (::flock(fd, LOCK_SH | LOCK_NB))
     {
-        throw std::runtime_error("Failed to lock file descriptor " + std::to_string(fd) + " for reading.");
+        throw std::runtime_error{"Failed to lock file descriptor " + std::to_string(fd) + " for reading."};
     }
 }
 
@@ -258,7 +258,7 @@ void FileReader::unlock() const
 {
     if (::flock(fd, LOCK_UN))
     {
-        throw std::runtime_error("Failed to unlock file descriptor " + std::to_string(fd) + " for reading.");
+        throw std::runtime_error{"Failed to unlock file descriptor " + std::to_string(fd) + " for reading."};
     }
 }
 
@@ -288,8 +288,8 @@ void FileWriter::open(const bool overwrite)
         name.c_str(), O_CREAT | (overwrite ? O_TRUNC : O_APPEND) | O_WRONLY, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
     if (fd < 0)
     {
-        throw std::runtime_error(
-            "Failed to open " + std::filesystem::path(name).filename().string() + " file for writing.");
+        throw std::runtime_error{
+            "Failed to open " + std::filesystem::path(name).filename().string() + " file for writing."};
     }
     strBuf.fd(fd);
 }
@@ -310,7 +310,7 @@ void FileWriter::lock() const
 {
     if (::flock(fd, LOCK_EX | LOCK_NB))
     {
-        throw std::runtime_error("Failed to lock file descriptor " + std::to_string(fd) + " for writing.");
+        throw std::runtime_error{"Failed to lock file descriptor " + std::to_string(fd) + " for writing."};
     }
 }
 
@@ -318,7 +318,7 @@ void FileWriter::unlock() const
 {
     if (::flock(fd, LOCK_UN))
     {
-        throw std::runtime_error("Failed to unlock file descriptor " + std::to_string(fd) + " for writing.");
+        throw std::runtime_error{"Failed to unlock file descriptor " + std::to_string(fd) + " for writing."};
     }
 }
 
@@ -336,7 +336,7 @@ std::string executeCommand(const std::string_view command, const std::uint32_t t
     std::FILE* const pipe = ::popen(command.data(), "r");
     if (nullptr == pipe)
     {
-        throw std::runtime_error("Could not open pipe when trying to execute command.");
+        throw std::runtime_error{"Could not open pipe when trying to execute command."};
     }
 
     std::string output{};
@@ -351,7 +351,7 @@ std::string executeCommand(const std::string_view command, const std::uint32_t t
             if (elapsedTime.count() > timeout)
             {
                 ::pclose(pipe);
-                throw std::runtime_error("Execute command timeout.");
+                throw std::runtime_error{"Execute command timeout."};
             }
         }
 
@@ -366,24 +366,24 @@ std::string executeCommand(const std::string_view command, const std::uint32_t t
     const int exitStatus = ::pclose(pipe);
     if (-1 == exitStatus)
     {
-        throw std::runtime_error("Could not close pipe when trying to execute command.");
+        throw std::runtime_error{"Could not close pipe when trying to execute command."};
     }
     if (WIFEXITED(exitStatus))
     {
         if (const int exitCode = WEXITSTATUS(exitStatus); EXIT_SUCCESS != exitCode)
         {
-            throw std::runtime_error(
-                "Returns exit code " + std::to_string(exitCode) + " when the command is executed.");
+            throw std::runtime_error{
+                "Returns exit code " + std::to_string(exitCode) + " when the command is executed."};
         }
     }
     else if (WIFSIGNALED(exitStatus))
     {
         const int signal = WTERMSIG(exitStatus);
-        throw std::runtime_error("Terminated by signal " + std::to_string(signal) + " when the command is executed.");
+        throw std::runtime_error{"Terminated by signal " + std::to_string(signal) + " when the command is executed."};
     }
     else
     {
-        throw std::runtime_error("The termination status is unknown when the command is executed.");
+        throw std::runtime_error{"The termination status is unknown when the command is executed."};
     }
 
     return output;
@@ -398,7 +398,7 @@ void waitForUserInput(const std::function<bool(const std::string_view)>& operati
     const int epollFD = ::epoll_create1(0);
     if (-1 == epollFD)
     {
-        throw std::runtime_error("Could not create epoll when trying to wait for user input.");
+        throw std::runtime_error{"Could not create epoll when trying to wait for user input."};
     }
 
     ::epoll_event event{};
@@ -407,7 +407,7 @@ void waitForUserInput(const std::function<bool(const std::string_view)>& operati
     if (::epoll_ctl(epollFD, EPOLL_CTL_ADD, STDIN_FILENO, &event))
     {
         ::close(epollFD);
-        throw std::runtime_error("Could not control epoll when trying to wait for user input.");
+        throw std::runtime_error{"Could not control epoll when trying to wait for user input."};
     }
 
     for (;;)
@@ -416,7 +416,7 @@ void waitForUserInput(const std::function<bool(const std::string_view)>& operati
         if (-1 == status)
         {
             ::close(epollFD);
-            throw std::runtime_error("Not the expected wait result for epoll.");
+            throw std::runtime_error{"Not the expected wait result for epoll."};
         }
         else if ((0 != status) && (event.events & ::EPOLLIN))
         {

@@ -330,7 +330,7 @@ void Command::initializeNativeCLI()
                 if (std::all_of(
                         input.cbegin(), input.cend(), [l = std::locale{}](const auto c) { return std::isspace(c, l); }))
                 {
-                    throw std::runtime_error("Invalid console command.");
+                    throw std::runtime_error{"Invalid console command."};
                 }
                 return input;
             })
@@ -842,7 +842,7 @@ void Command::checkForExcessiveArguments()
     if (anySelected())
     {
         taskDispatcher.reset();
-        throw std::runtime_error("Excessive arguments.");
+        throw std::runtime_error{"Excessive arguments."};
     }
 }
 
@@ -1064,7 +1064,7 @@ void Command::validateDependenciesVersion() const
             app_num::integral::version,
             app_num::prime::version))
     {
-        throw std::runtime_error(std::format(
+        throw std::runtime_error{std::format(
             "Dependencies version number mismatch. Expected main version: {} ({})"
             ", sub-version: {} ({}), {} ({}), {} ({}), {} ({}).",
             mainCLI.title(),
@@ -1076,7 +1076,7 @@ void Command::validateDependenciesVersion() const
             subCLIAppDs.title(),
             subCLIAppDs.version(),
             subCLIAppNum.title(),
-            subCLIAppNum.version()));
+            subCLIAppNum.version())};
     }
 }
 

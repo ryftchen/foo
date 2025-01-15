@@ -264,7 +264,7 @@ View& View::getInstance()
         static View viewer{};
         return viewer;
     }
-    throw std::logic_error("The " + std::string{name} + " is disabled.");
+    throw std::logic_error{"The " + std::string{name} + " is disabled."};
 }
 
 void View::service()
@@ -318,7 +318,7 @@ try
         {
             if (inst.isInServingState(State::hold))
             {
-                throw std::runtime_error("The " + std::string{name} + " did not initialize successfully ...");
+                throw std::runtime_error{"The " + std::string{name} + " did not initialize successfully ..."};
             }
             return inst.isInServingState(State::idle);
         });
@@ -335,7 +335,7 @@ try
         {
             if (inst.isInServingState(State::hold))
             {
-                throw std::runtime_error("The " + std::string{name} + " did not start successfully ...");
+                throw std::runtime_error{"The " + std::string{name} + " did not start successfully ..."};
             }
             return inst.isInServingState(State::work);
         });
@@ -360,7 +360,7 @@ try
         {
             if (inst.isInServingState(State::hold))
             {
-                throw std::runtime_error("The " + std::string{name} + " did not stop successfully ...");
+                throw std::runtime_error{"The " + std::string{name} + " did not stop successfully ..."};
             }
             return inst.isInServingState(State::done);
         });
@@ -382,9 +382,9 @@ try
 
     if (utility::time::blockingTimer([this]() { return !inst.toReset.load(); }, inst.timeoutPeriod))
     {
-        throw std::runtime_error(
+        throw std::runtime_error{
             "The " + std::string{name} + " did not reset properly in " + std::to_string(inst.timeoutPeriod)
-            + " ms ...");
+            + " ms ..."};
     }
 }
 catch (const std::exception& err)
@@ -399,7 +399,7 @@ bool View::Access::onParsing(char* buffer, const int length) const
     tlv::TLVValue value{};
     if (tlv::decodeTLV(buffer, length, value) < 0)
     {
-        throw std::runtime_error("Invalid message content.");
+        throw std::runtime_error{"Invalid message content."};
     }
 
     if (std::strlen(value.libInfo) != 0)
@@ -466,7 +466,7 @@ int View::buildNullTLVPacket(char* buf)
     int len = 0;
     if (tlv::encodeTLV(buf, len, tlv::TLVValue{}) < 0)
     {
-        throw std::runtime_error("Failed to build null packet.");
+        throw std::runtime_error{"Failed to build null packet."};
     }
     encryptMessage(buf, len);
 
@@ -478,7 +478,7 @@ int View::buildTLVPacket4Stop(char* buf)
     int len = 0;
     if (tlv::encodeTLV(buf, len, tlv::TLVValue{.stopTag = true}) < 0)
     {
-        throw std::runtime_error("Failed to build packet to stop");
+        throw std::runtime_error{"Failed to build packet to stop"};
     }
     encryptMessage(buf, len);
 
@@ -489,7 +489,7 @@ int View::buildTLVPacket4Depend(const std::vector<std::string>& args, char* buf)
 {
     if (!args.empty())
     {
-        throw std::runtime_error("Excessive arguments.");
+        throw std::runtime_error{"Excessive arguments."};
     }
 
     int len = 0;
@@ -542,7 +542,7 @@ int View::buildTLVPacket4Depend(const std::vector<std::string>& args, char* buf)
     val.libInfo[sizeof(val.libInfo) - 1] = '\0';
     if (tlv::encodeTLV(buf, len, val) < 0)
     {
-        throw std::runtime_error("Failed to build packet for the depend option.");
+        throw std::runtime_error{"Failed to build packet for the depend option."};
     }
     encryptMessage(buf, len);
 
@@ -561,20 +561,20 @@ int View::buildTLVPacket4Execute(const std::vector<std::string>& args, char* buf
              || std::all_of(cmd.cbegin(), cmd.cend(), [](const auto c) { return '"' == c; })))
         || cmd.empty())
     {
-        throw std::runtime_error("Please enter the \"execute\" and append with 'CMD' (include quotes).");
+        throw std::runtime_error{"Please enter the \"execute\" and append with 'CMD' (include quotes)."};
     }
     if ((cmd.length() <= 1)
         || (((cmd.find_first_not_of('\'') == 0) || (cmd.find_last_not_of('\'') == (cmd.length() - 1)))
             && ((cmd.find_first_not_of('"') == 0) || (cmd.find_last_not_of('"') == (cmd.length() - 1)))))
     {
-        throw std::runtime_error("Missing full quotes around the pending command.");
+        throw std::runtime_error{"Missing full quotes around the pending command."};
     }
 
     int len = 0;
     const int shmId = fillSharedMemory(utility::io::executeCommand("/bin/bash -c " + cmd, 5000));
     if (tlv::encodeTLV(buf, len, tlv::TLVValue{.bashShmId = shmId}) < 0)
     {
-        throw std::runtime_error("Failed to build packet for the execute option.");
+        throw std::runtime_error{"Failed to build packet for the execute option."};
     }
     encryptMessage(buf, len);
 
@@ -585,14 +585,14 @@ int View::buildTLVPacket4Journal(const std::vector<std::string>& args, char* buf
 {
     if (!args.empty())
     {
-        throw std::runtime_error("Excessive arguments.");
+        throw std::runtime_error{"Excessive arguments."};
     }
 
     int len = 0;
     const int shmId = fillSharedMemory(getLogContents());
     if (tlv::encodeTLV(buf, len, tlv::TLVValue{.logShmId = shmId}) < 0)
     {
-        throw std::runtime_error("Failed to build packet for the journal option.");
+        throw std::runtime_error{"Failed to build packet for the journal option."};
     }
     encryptMessage(buf, len);
 
@@ -603,14 +603,14 @@ int View::buildTLVPacket4Monitor(const std::vector<std::string>& args, char* buf
 {
     if (args.size() > 1)
     {
-        throw std::runtime_error("Please enter the \"monitor\" and append with or without NUM.");
+        throw std::runtime_error{"Please enter the \"monitor\" and append with or without NUM."};
     }
     else if (args.size() == 1)
     {
         const auto& input = args.front();
         if ((input.length() != 1) || !std::isdigit(input.front()))
         {
-            throw std::runtime_error("Only decimal bases are supported for the specified number of stack frames.");
+            throw std::runtime_error{"Only decimal bases are supported for the specified number of stack frames."};
         }
     }
 
@@ -618,7 +618,7 @@ int View::buildTLVPacket4Monitor(const std::vector<std::string>& args, char* buf
     const int shmId = fillSharedMemory(getStatusReports(!args.empty() ? std::stoul(args.front()) : 1));
     if (tlv::encodeTLV(buf, len, tlv::TLVValue{.statusShmId = shmId}) < 0)
     {
-        throw std::runtime_error("Failed to build packet for the monitor option.");
+        throw std::runtime_error{"Failed to build packet for the monitor option."};
     }
     encryptMessage(buf, len);
 
@@ -629,7 +629,7 @@ int View::buildTLVPacket4Profile(const std::vector<std::string>& args, char* buf
 {
     if (!args.empty())
     {
-        throw std::runtime_error("Excessive arguments.");
+        throw std::runtime_error{"Excessive arguments."};
     }
 
     int len = 0;
@@ -638,7 +638,7 @@ int View::buildTLVPacket4Profile(const std::vector<std::string>& args, char* buf
     val.configInfo[sizeof(val.configInfo) - 1] = '\0';
     if (tlv::encodeTLV(buf, len, val) < 0)
     {
-        throw std::runtime_error("Failed to build packet for the profile option.");
+        throw std::runtime_error{"Failed to build packet for the profile option."};
     }
     encryptMessage(buf, len);
 
@@ -717,7 +717,7 @@ void View::compressData(std::vector<char>& cache)
     const int compressedSize = ::LZ4_compress_default(cache.data(), compressed.data(), cache.size(), compressedCap);
     if (compressedSize < 0)
     {
-        throw std::runtime_error("Failed to compress data.");
+        throw std::runtime_error{"Failed to compress data."};
     }
     compressed.resize(compressedSize);
     cache = std::move(compressed);
@@ -732,7 +732,7 @@ void View::decompressData(std::vector<char>& cache)
         ::LZ4_decompress_safe(cache.data(), decompressed.data(), cache.size(), decompressedCap);
     if (decompressedSize < 0)
     {
-        throw std::runtime_error("Failed to decompress data.");
+        throw std::runtime_error{"Failed to decompress data."};
     }
     decompressed.resize(decompressedSize);
     cache = std::move(decompressed);
@@ -747,12 +747,12 @@ int View::fillSharedMemory(const std::string_view contents)
         IPC_CREAT | IPC_EXCL | S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
     if (-1 == shmId)
     {
-        throw std::runtime_error("Failed to create shared memory.");
+        throw std::runtime_error{"Failed to create shared memory."};
     }
     void* const shm = ::shmat(shmId, nullptr, 0);
     if (nullptr == shm)
     {
-        throw std::runtime_error("Failed to attach shared memory.");
+        throw std::runtime_error{"Failed to attach shared memory."};
     }
 
     auto* const shrMem = reinterpret_cast<SharedMemory*>(shm);
@@ -783,7 +783,7 @@ void View::fetchSharedMemory(const int shmId, std::string& contents)
     void* const shm = ::shmat(shmId, nullptr, 0);
     if (nullptr == shm)
     {
-        throw std::runtime_error("Failed to attach shared memory.");
+        throw std::runtime_error{"Failed to attach shared memory."};
     }
 
     auto* const shrMem = reinterpret_cast<SharedMemory*>(shm);
@@ -1027,7 +1027,7 @@ void View::createViewServer()
                 const auto optIter = supportedOptions.find(args.at(0));
                 if (supportedOptions.cend() == optIter)
                 {
-                    throw std::runtime_error("Unknown TCP message.");
+                    throw std::runtime_error{"Unknown TCP message."};
                 }
                 args.erase(args.begin());
                 optIter->second.functor(args, buffer);
@@ -1066,7 +1066,7 @@ void View::createViewServer()
             const auto optIter = supportedOptions.find(args.at(0));
             if (supportedOptions.cend() == optIter)
             {
-                throw std::runtime_error("Unknown UDP message.");
+                throw std::runtime_error{"Unknown UDP message."};
             }
             args.erase(args.begin());
             optIter->second.functor(args, buffer);

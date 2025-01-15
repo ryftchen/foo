@@ -129,7 +129,7 @@ std::int64_t Search<T>::fibonacci(const T* const array, const std::uint32_t leng
     const auto& fib = generateFibonacciNumber(length);
     if (constexpr std::uint8_t minSize = 3; minSize > static_cast<std::int32_t>(fib.size() - 1))
     {
-        throw std::logic_error("An array size of " + std::to_string(length) + " is not sufficient.");
+        throw std::logic_error{"An array size of " + std::to_string(length) + " is not sufficient."};
     }
 
     std::uint32_t n = fib.size() - 1;

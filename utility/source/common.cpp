@@ -131,7 +131,7 @@ std::string formatString(const std::string_view format, ...)
     ::va_end(list);
     if (bufferSize < 0)
     {
-        throw std::runtime_error("Unable to format string.");
+        throw std::runtime_error{"Unable to format string."};
     }
 
     ::va_start(list, format);
@@ -239,7 +239,7 @@ std::string base64Decode(const std::string_view data)
         }
         else if ('=' != uc)
         {
-            throw std::runtime_error("Invalid base64 encoded data.");
+            throw std::runtime_error{"Invalid base64 encoded data."};
         }
         ++counter;
     }

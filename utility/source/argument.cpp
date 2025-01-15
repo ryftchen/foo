@@ -198,17 +198,17 @@ void Register::throwArgsNumRangeValidationException() const
         out << argsNumRange.getMin() << " or more";
     }
     out << " argument(s) expected. " << values.size() << " provided.";
-    throw std::runtime_error(out.str());
+    throw std::runtime_error{out.str()};
 }
 
 void Register::throwRequiredArgNotUsedException() const
 {
-    throw std::runtime_error(names.at(0) + ": required.");
+    throw std::runtime_error{names.at(0) + ": required."};
 }
 
 void Register::throwRequiredArgNoValueProvidedException() const
 {
-    throw std::runtime_error(std::string{usedName} + ": no value provided.");
+    throw std::runtime_error{std::string{usedName} + ": no value provided."};
 }
 
 int Register::lookAhead(const std::string_view name)
@@ -429,7 +429,7 @@ Register& Argument::operator[](const std::string_view argName) const
             return *(iterator->second);
         }
     }
-    throw std::runtime_error("No such argument: " + std::string{argName} + '.');
+    throw std::runtime_error{"No such argument: " + std::string{argName} + '.'};
 }
 
 std::string Argument::title() const
@@ -578,7 +578,7 @@ void Argument::parseArgsInternal(const std::vector<std::string>& rawArguments)
                     return subParserIter->second->get().parseArgs(unprocessedArguments);
                 }
 
-                throw std::runtime_error("Maximum number of positional arguments exceeded.");
+                throw std::runtime_error{"Maximum number of positional arguments exceeded."};
             }
             const auto argument = positionalArgIter++;
             iterator = argument->consume(iterator, end);
@@ -606,13 +606,13 @@ void Argument::parseArgsInternal(const std::vector<std::string>& rawArguments)
                 }
                 else
                 {
-                    throw std::runtime_error("Unknown argument: " + currentArgument + '.');
+                    throw std::runtime_error{"Unknown argument: " + currentArgument + '.'};
                 }
             }
         }
         else
         {
-            throw std::runtime_error("Unknown argument: " + currentArgument + '.');
+            throw std::runtime_error{"Unknown argument: " + currentArgument + '.'};
         }
     }
     isParsed = true;
