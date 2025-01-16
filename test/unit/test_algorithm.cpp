@@ -47,9 +47,9 @@ public:
         inputs.reset();
     }
     //! @brief Set up.
-    void SetUp() override{};
+    void SetUp() override {}
     //! @brief Tear down.
-    void TearDown() override{};
+    void TearDown() override {}
 
     //! @brief Test suite.
     const algorithm::match::Match sut{};
@@ -140,9 +140,9 @@ public:
         inputs.reset();
     }
     //! @brief Set up.
-    void SetUp() override{};
+    void SetUp() override {}
     //! @brief Tear down.
-    void TearDown() override{};
+    void TearDown() override {}
 
     //! @brief Test suite.
     const algorithm::notation::Notation sut{};
@@ -188,9 +188,9 @@ public:
         inputs.reset();
     }
     //! @brief Set up.
-    void SetUp() override{};
+    void SetUp() override {}
     //! @brief Tear down.
-    void TearDown() override{};
+    void TearDown() override {}
 
     //! @brief Input builder.
     static std::shared_ptr<optimal::InputBuilder<Rastrigin>> inputs;
@@ -283,9 +283,9 @@ public:
         inputs.reset();
     }
     //! @brief Set up.
-    void SetUp() override{};
+    void SetUp() override {}
     //! @brief Tear down.
-    void TearDown() override{};
+    void TearDown() override {}
 
     //! @brief Test suite.
     const algorithm::search::Search<float> sut{};
@@ -362,9 +362,9 @@ public:
         inputs.reset();
     }
     //! @brief Set up.
-    void SetUp() override{};
+    void SetUp() override {}
     //! @brief Tear down.
-    void TearDown() override{};
+    void TearDown() override {}
 
     //! @brief Test suite.
     algorithm::sort::Sort<std::int32_t> sut{};

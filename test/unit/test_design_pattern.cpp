@@ -39,9 +39,9 @@ public:
     //! @brief Tear down the test case.
     static void TearDownTestCase() { TST_DP_PRINT_TASK_TITLE(Category::behavioral, "END"); }
     //! @brief Set up.
-    void SetUp() override{};
+    void SetUp() override {}
     //! @brief Tear down.
-    void TearDown() override{};
+    void TearDown() override {}
 };
 
 //! @brief Test for the chain of responsibility instance in the pattern of behavioral.
@@ -146,9 +146,9 @@ public:
     //! @brief Tear down the test case.
     static void TearDownTestCase() { TST_DP_PRINT_TASK_TITLE(Category::creational, "END"); }
     //! @brief Set up.
-    void SetUp() override{};
+    void SetUp() override {}
     //! @brief Tear down.
-    void TearDown() override{};
+    void TearDown() override {}
 };
 
 //! @brief Test for the abstract factory instance in the pattern of creational.
@@ -205,9 +205,9 @@ public:
     //! @brief Tear down the test case.
     static void TearDownTestCase() { TST_DP_PRINT_TASK_TITLE(Category::structural, "END"); }
     //! @brief Set up.
-    void SetUp() override{};
+    void SetUp() override {}
     //! @brief Tear down.
-    void TearDown() override{};
+    void TearDown() override {}
 };
 
 //! @brief Test for the adapter instance in the pattern of structural.

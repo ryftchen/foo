@@ -54,7 +54,7 @@ constexpr std::string_view udpPort = "udpPort";
 constexpr std::string_view helperTimeout = "helperTimeout";
 } // namespace field
 
-extern std::string getFullDefaultConfigPath();
+extern std::string getFullConfigPath(const std::string_view filename = defaultConfigFile);
 
 //! @brief Configuration.
 class Configure final
@@ -74,18 +74,23 @@ public:
     Configure& operator=(Configure&&) = delete;
 
     //! @brief Get the Configure instance.
+    //! @param filename - configure file path
     //! @return reference of the Configure object
-    static Configure& getInstance();
+    static Configure& getInstance(const std::string_view filename = defaultConfigFile);
     //! @brief Interface used to retrieve.
     //! @return data repository
     [[nodiscard]] const utility::json::JSON& retrieve() const;
 
 private:
     //! @brief Construct a new Configure object.
-    Configure() : dataRepo(parseConfigFile(filePath)) {}
+    //! @param filename - configure file path
+    explicit Configure(const std::string_view filename) :
+        filePath{getFullConfigPath(filename)}, dataRepo(parseConfigFile(filePath))
+    {
+    }
 
     //! @brief Full path to the configuration file.
-    const std::string filePath{getFullDefaultConfigPath()};
+    const std::string filePath{};
     //! @brief Configuration data repository.
     const utility::json::JSON dataRepo{};
 
@@ -104,7 +109,7 @@ private:
 };
 
 extern utility::json::JSON getDefaultConfiguration();
-extern bool loadConfiguration(const std::string_view filename = getFullDefaultConfigPath());
+extern bool loadConfiguration(const std::string_view filename = defaultConfigFile);
 
 const utility::json::JSON& retrieveDataRepo();
 //! @brief Configuration details.

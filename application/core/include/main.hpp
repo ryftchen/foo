@@ -109,14 +109,14 @@ static void signalHandler(int sig)
     const char* const homeEnv = std::getenv("HOME");
     const std::string_view defaultHome = (nullptr != homeEnv) ? homeEnv : "/root";
     const auto homePath = std::filesystem::absolute(defaultHome);
-    if (!std::filesystem::exists(homePath))
+    if (!std::filesystem::is_directory(homePath))
     {
         std::fprintf(::stdout, "%s: Could not find the home directory.\n", getExecutableName().c_str());
         std::exit(EXIT_FAILURE);
     }
 
     const auto processPath = homePath / ".foo";
-    if (!std::filesystem::exists(processPath))
+    if (!std::filesystem::is_directory(processPath))
     {
         std::filesystem::create_directory(processPath);
         std::filesystem::permissions(
