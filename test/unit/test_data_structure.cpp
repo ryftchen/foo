@@ -39,9 +39,9 @@ public:
     //! @brief Tear down the test case.
     static void TearDownTestCase() { TST_DS_PRINT_TASK_TITLE(Category::linear, "END"); }
     //! @brief Set up.
-    void SetUp() override{};
+    void SetUp() override {}
     //! @brief Tear down.
-    void TearDown() override{};
+    void TearDown() override {}
 };
 
 //! @brief Test for the linked list instance in the structure of linear.
@@ -76,9 +76,9 @@ public:
     //! @brief Tear down the test case.
     static void TearDownTestCase() { TST_DS_PRINT_TASK_TITLE(Category::tree, "END"); }
     //! @brief Set up.
-    void SetUp() override{};
+    void SetUp() override {}
     //! @brief Tear down.
-    void TearDown() override{};
+    void TearDown() override {}
 };
 
 //! @brief Test for the binary search instance in the structure of tree.

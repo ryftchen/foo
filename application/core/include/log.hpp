@@ -234,10 +234,10 @@ public:
 
         //! @brief Get the log file path.
         //! @return log file path
-        [[nodiscard]] inline std::string getFilePath() const { return inst.filePath; }
+        [[nodiscard]] inline std::string getFilePath() const noexcept { return inst.filePath; }
         //! @brief Get the log file lock.
         //! @return log file lock
-        [[nodiscard]] inline utility::common::ReadWriteLock& getFileLock() const { return inst.fileLock; }
+        [[nodiscard]] inline utility::common::ReadWriteLock& getFileLock() const noexcept { return inst.fileLock; }
 
     private:
         //! @brief Instance to be accessed.

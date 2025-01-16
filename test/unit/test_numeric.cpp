@@ -47,9 +47,9 @@ public:
         inputs.reset();
     }
     //! @brief Set up.
-    void SetUp() override{};
+    void SetUp() override {}
     //! @brief Tear down.
-    void TearDown() override{};
+    void TearDown() override {}
 
     //! @brief Test suite.
     const numeric::arithmetic::Arithmetic sut{};
@@ -104,9 +104,9 @@ public:
         inputs.reset();
     }
     //! @brief Set up.
-    void SetUp() override{};
+    void SetUp() override {}
     //! @brief Tear down.
-    void TearDown() override{};
+    void TearDown() override {}
 
     //! @brief Test suite.
     const numeric::divisor::Divisor sut{};
@@ -154,9 +154,9 @@ public:
         inputs.reset();
     }
     //! @brief Set up.
-    void SetUp() override{};
+    void SetUp() override {}
     //! @brief Tear down.
-    void TearDown() override{};
+    void TearDown() override {}
 
     //! @brief Input builder.
     static std::shared_ptr<integral::InputBuilder<Expression1>> inputs;
@@ -256,9 +256,9 @@ public:
         inputs.reset();
     }
     //! @brief Set up.
-    void SetUp() override{};
+    void SetUp() override {}
     //! @brief Tear down.
-    void TearDown() override{};
+    void TearDown() override {}
 
     //! @brief Test suite.
     const numeric::prime::Prime sut{};

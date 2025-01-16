@@ -293,7 +293,7 @@ void Log::tryCreateLogFolder() const
 void Log::backUpLogFileIfNeeded() const
 {
     if (constexpr std::uint32_t maxFileSize = 512 * 1024;
-        std::filesystem::exists(filePath) && (std::filesystem::file_size(filePath) >= maxFileSize))
+        std::filesystem::is_regular_file(filePath) && (std::filesystem::file_size(filePath) >= maxFileSize))
     {
         const std::regex pattern(
             std::regex_replace(

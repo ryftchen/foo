@@ -18,9 +18,9 @@
 
 namespace application::configure
 {
-Configure& Configure::getInstance()
+Configure& Configure::getInstance(const std::string_view filename)
 {
-    static Configure configurator{};
+    static Configure configurator{filename};
     return configurator;
 }
 
@@ -31,7 +31,7 @@ const utility::json::JSON& Configure::retrieve() const
 
 utility::json::JSON Configure::parseConfigFile(const std::string_view configFile)
 {
-    if (!std::filesystem::exists(configFile))
+    if (!std::filesystem::is_regular_file(configFile))
     {
         throw std::runtime_error{"Configuration file " + std::string{configFile} + " is missing."};
     }
@@ -199,9 +199,10 @@ void Configure::verifyConfigData(const utility::json::JSON& configData)
     checkObjectInHelperList<view::View>(configData.at(field::helperList));
 }
 
-//! @brief Get the full path to the default configuration file.
-//! @return full path to the default configuration file
-std::string getFullDefaultConfigPath()
+//! @brief Get the full path to the configuration file.
+//! @param filename - configuration file path
+//! @return full path to the configuration file
+std::string getFullConfigPath(const std::string_view filename)
 {
     const char* const processHome = std::getenv("FOO_HOME");
     if (nullptr == processHome)
@@ -209,7 +210,7 @@ std::string getFullDefaultConfigPath()
         throw std::runtime_error{"The environment variable FOO_HOME is not set."};
     }
 
-    return std::string{processHome} + '/' + defaultConfigFile.data();
+    return std::string{processHome} + '/' + filename.data();
 }
 
 // NOLINTBEGIN(readability-magic-numbers)
@@ -260,10 +261,10 @@ utility::json::JSON getDefaultConfiguration()
 // NOLINTEND(readability-magic-numbers)
 
 //! @brief Forced configuration update by default.
-//! @param filename - configure file path
-static void forcedConfigurationUpdateByDefault(const std::string_view filename)
+//! @param filePath - full path to the configuration file
+static void forcedConfigurationUpdateByDefault(const std::string_view filePath)
 {
-    utility::io::FileWriter fileWriter(filename);
+    utility::io::FileWriter fileWriter(filePath);
     fileWriter.open(true);
     fileWriter.lock();
     fileWriter.stream() << configure::getDefaultConfiguration();
@@ -272,21 +273,21 @@ static void forcedConfigurationUpdateByDefault(const std::string_view filename)
 }
 
 //! @brief Initialize the configuration.
-//! @param filename - configure file path
-static void initializeConfiguration(const std::string_view filename)
+//! @param filePath - full path to the configuration file
+static void initializeConfiguration(const std::string_view filePath)
 {
-    const auto configFolderPath = std::filesystem::absolute(filename).parent_path();
+    const auto configFolderPath = std::filesystem::absolute(filePath).parent_path();
     std::filesystem::create_directories(configFolderPath);
     std::filesystem::permissions(
         configFolderPath, std::filesystem::perms::owner_all, std::filesystem::perm_options::add);
 
-    forcedConfigurationUpdateByDefault(filename);
+    forcedConfigurationUpdateByDefault(filePath);
 }
 
 //! @brief Show prompt and wait for input on configuration exception.
-//! @param filename - configure file path
+//! @param filePath - full path to the configuration file
 //! @return whether to continue throwing exception
-static bool handleConfigurationException(const std::string_view filename)
+static bool handleConfigurationException(const std::string_view filePath)
 {
     constexpr std::string_view hint = "Type y to force an update to the default configuration, n to exit: ",
                                clearEscape = "\x1b[1A\x1b[2K\r";
@@ -301,7 +302,7 @@ static bool handleConfigurationException(const std::string_view filename)
             switch (utility::common::bkdrHash(input.data()))
             {
                 case "y"_bkdrHash:
-                    forcedConfigurationUpdateByDefault(filename);
+                    forcedConfigurationUpdateByDefault(filePath);
                     [[fallthrough]];
                 case "n"_bkdrHash:
                     keepThrowing = false;
@@ -321,25 +322,28 @@ static bool handleConfigurationException(const std::string_view filename)
 //! @param filename - configure file path
 //! @return successful or failed to load
 bool loadConfiguration(const std::string_view filename)
-try
 {
-    if (!std::filesystem::exists(filename))
+    const auto filePath = getFullConfigPath(filename);
+    try
     {
-        initializeConfiguration(filename);
-    }
-    static_cast<void>(Configure::getInstance());
+        if (!std::filesystem::is_regular_file(filePath))
+        {
+            initializeConfiguration(filePath);
+        }
+        static_cast<void>(Configure::getInstance(filename));
 
-    return true;
-}
-catch (...)
-{
-    std::cerr << "Configuration load exception ..." << std::endl;
-    if (handleConfigurationException(filename))
-    {
-        std::cout << '\n' << std::endl;
-        throw;
+        return true;
     }
-    std::cout << std::endl;
+    catch (...)
+    {
+        std::cerr << "Configuration load exception ..." << std::endl;
+        if (handleConfigurationException(filePath))
+        {
+            std::cout << '\n' << std::endl;
+            throw;
+        }
+        std::cout << std::endl;
+    }
 
     return false;
 }

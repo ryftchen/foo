@@ -696,7 +696,7 @@ public:
     Argument& operator=(const Argument& arg);
     //! @brief The operator (=) overloading of Argument class.
     //! @return reference of the Argument object
-    Argument& operator=(Argument&&) = default;
+    Argument& operator=(Argument&&) noexcept = default;
     //! @brief The operator (bool) overloading of Argument class.
     explicit operator bool() const;
 
