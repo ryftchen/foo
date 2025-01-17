@@ -139,13 +139,15 @@ std::string getTitle(const T method)
     return title;
 }
 
+// clang-format off
 //! @brief Mapping table for enum and string about match methods. X macro.
 #define APP_ALGO_MATCH_METHOD_TABLE            \
-    ELEM(rabinKarp, "rabinKarp")               \
+    ELEM(rabinKarp       , "rabinKarp"       ) \
     ELEM(knuthMorrisPratt, "knuthMorrisPratt") \
-    ELEM(boyerMoore, "boyerMoore")             \
-    ELEM(horspool, "horspool")                 \
-    ELEM(sunday, "sunday")
+    ELEM(boyerMoore      , "boyerMoore"      ) \
+    ELEM(horspool        , "horspool"        ) \
+    ELEM(sunday          , "sunday"          )
+// clang-format on
 //! @brief Convert method enumeration to string.
 //! @param method - the specific value of MatchMethod enum
 //! @return method name
@@ -161,10 +163,12 @@ constexpr std::string_view toString(const MatchMethod method)
 }
 #undef APP_ALGO_MATCH_METHOD_TABLE
 
+// clang-format off
 //! @brief Mapping table for enum and string about notation methods. X macro.
 #define APP_ALGO_NOTATION_METHOD_TABLE \
-    ELEM(prefix, "prefix")             \
+    ELEM(prefix , "prefix" )           \
     ELEM(postfix, "postfix")
+// clang-format on
 //! @brief Convert method enumeration to string.
 //! @param method - the specific value of NotationMethod enum
 //! @return method name
@@ -180,12 +184,14 @@ constexpr std::string_view toString(const NotationMethod method)
 }
 #undef APP_ALGO_NOTATION_METHOD_TABLE
 
+// clang-format off
 //! @brief Mapping table for enum and string about optimal methods. X macro.
 #define APP_ALGO_OPTIMAL_METHOD_TABLE \
-    ELEM(gradient, "gradient")        \
+    ELEM(gradient , "gradient" )      \
     ELEM(annealing, "annealing")      \
-    ELEM(particle, "particle")        \
-    ELEM(genetic, "genetic")
+    ELEM(particle , "particle" )      \
+    ELEM(genetic  , "genetic"  )
+// clang-format on
 //! @brief Convert method enumeration to string.
 //! @param method - the specific value of OptimalMethod enum
 //! @return method name
@@ -201,11 +207,13 @@ constexpr std::string_view toString(const OptimalMethod method)
 }
 #undef APP_ALGO_OPTIMAL_METHOD_TABLE
 
+// clang-format off
 //! @brief Mapping table for enum and string about search methods. X macro.
 #define APP_ALGO_SEARCH_METHOD_TABLE     \
-    ELEM(binary, "binary")               \
+    ELEM(binary       , "binary"       ) \
     ELEM(interpolation, "interpolation") \
-    ELEM(fibonacci, "fibonacci")
+    ELEM(fibonacci    , "fibonacci"    )
+// clang-format on
 //! @brief Convert method enumeration to string.
 //! @param method - the specific value of SearchMethod enum
 //! @return method name
@@ -221,18 +229,20 @@ constexpr std::string_view toString(const SearchMethod method)
 }
 #undef APP_ALGO_SEARCH_METHOD_TABLE
 
+// clang-format off
 //! @brief Mapping table for enum and string about sort methods. X macro.
 #define APP_ALGO_SORT_METHOD_TABLE \
-    ELEM(bubble, "bubble")         \
+    ELEM(bubble   , "bubble"   )   \
     ELEM(selection, "selection")   \
     ELEM(insertion, "insertion")   \
-    ELEM(shell, "shell")           \
-    ELEM(merge, "merge")           \
-    ELEM(quick, "quick")           \
-    ELEM(heap, "heap")             \
-    ELEM(counting, "counting")     \
-    ELEM(bucket, "bucket")         \
-    ELEM(radix, "radix")
+    ELEM(shell    , "shell"    )   \
+    ELEM(merge    , "merge"    )   \
+    ELEM(quick    , "quick"    )   \
+    ELEM(heap     , "heap"     )   \
+    ELEM(counting , "counting" )   \
+    ELEM(bucket   , "bucket"   )   \
+    ELEM(radix    , "radix"    )
+// clang-format on
 //! @brief Convert method enumeration to string.
 //! @param method - the specific value of SortMethod enum
 //! @return method name

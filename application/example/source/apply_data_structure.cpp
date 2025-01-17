@@ -133,11 +133,13 @@ std::string getTitle(const T instance)
     return title;
 }
 
+// clang-format off
 //! @brief Mapping table for enum and string about linear instances. X macro.
 #define APP_DS_LINEAR_INSTANCE_TABLE \
     ELEM(linkedList, "linkedList")   \
-    ELEM(stack, "stack")             \
-    ELEM(queue, "queue")
+    ELEM(stack     , "stack"     )   \
+    ELEM(queue     , "queue"     )
+// clang-format on
 //! @brief Convert instance enumeration to string.
 //! @param instance - the specific value of LinearInstance enum
 //! @return instance name
@@ -153,11 +155,13 @@ constexpr std::string_view toString(const LinearInstance instance)
 }
 #undef APP_DS_LINEAR_INSTANCE_TABLE
 
+// clang-format off
 //! @brief Mapping table for enum and string about tree instances. X macro.
 #define APP_DS_TREE_INSTANCE_TABLE                   \
-    ELEM(binarySearch, "binarySearch")               \
+    ELEM(binarySearch       , "binarySearch"       ) \
     ELEM(adelsonVelskyLandis, "adelsonVelskyLandis") \
-    ELEM(splay, "splay")
+    ELEM(splay              , "splay"              )
+// clang-format on
 //! @brief Convert instance enumeration to string.
 //! @param instance - the specific value of TreeInstance enum
 //! @return instance name
