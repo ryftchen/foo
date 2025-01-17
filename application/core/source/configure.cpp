@@ -20,7 +20,7 @@ namespace application::configure
 {
 Configure& Configure::getInstance(const std::string_view filename)
 {
-    static Configure configurator{filename};
+    static Configure configurator(filename);
     return configurator;
 }
 

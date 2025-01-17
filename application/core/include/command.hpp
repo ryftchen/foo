@@ -81,20 +81,20 @@ private:
     std::condition_variable parserCond{};
     //! @brief Flag to indicate whether parsing of arguments is completed.
     std::atomic<bool> isParsed{false};
+    //! @brief Alias for the type information.
+    //! @tparam T - type of target object
+    template <class T>
+    using TypeInfo = utility::reflection::TypeInfo<T>;
     //! @brief Parse argument helper for commander.
     utility::argument::Argument mainCLI{"foo", note::version()};
     //! @brief Parse argument helper to apply algorithm.
-    utility::argument::Argument subCLIAppAlgo{
-        utility::reflection::TypeInfo<app_algo::ApplyAlgorithm>::name, note::version()};
+    utility::argument::Argument subCLIAppAlgo{TypeInfo<app_algo::ApplyAlgorithm>::name, note::version()};
     //! @brief Parse argument helper to apply design pattern.
-    utility::argument::Argument subCLIAppDp{
-        utility::reflection::TypeInfo<app_dp::ApplyDesignPattern>::name, note::version()};
+    utility::argument::Argument subCLIAppDp{TypeInfo<app_dp::ApplyDesignPattern>::name, note::version()};
     //! @brief Parse argument helper to apply data structure.
-    utility::argument::Argument subCLIAppDs{
-        utility::reflection::TypeInfo<app_ds::ApplyDataStructure>::name, note::version()};
+    utility::argument::Argument subCLIAppDs{TypeInfo<app_ds::ApplyDataStructure>::name, note::version()};
     //! @brief Parse argument helper to apply numeric.
-    utility::argument::Argument subCLIAppNum{
-        utility::reflection::TypeInfo<app_num::ApplyNumeric>::name, note::version()};
+    utility::argument::Argument subCLIAppNum{TypeInfo<app_num::ApplyNumeric>::name, note::version()};
     //! @brief Flag to indicate whether the command is faulty.
     std::atomic<bool> isFaulty{false};
 
@@ -344,16 +344,13 @@ private:
 template <class T>
 inline consteval std::string_view Command::getDescr()
 {
-    using TypeInfo = utility::reflection::TypeInfo<T>;
-    return TypeInfo::attrs.find(REFLECTION_STR("descr")).value;
+    return TypeInfo<T>::attrs.find(REFLECTION_STR("descr")).value;
 }
 
 template <class SubCLI, class Cat>
 inline consteval std::string_view Command::getAlias()
 {
-    using SubCLITypeInfo = utility::reflection::TypeInfo<SubCLI>;
-    using CatTypeInfo = utility::reflection::TypeInfo<Cat>;
-    return SubCLITypeInfo::fields.find(REFLECTION_STR(CatTypeInfo::name)).attrs.find(REFLECTION_STR("alias")).value;
+    return TypeInfo<SubCLI>::fields.find(REFLECTION_STR(TypeInfo<Cat>::name)).attrs.find(REFLECTION_STR("alias")).value;
 }
 } // namespace command
 } // namespace application

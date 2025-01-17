@@ -135,19 +135,21 @@ std::string getTitle(const T instance)
     return title;
 }
 
+// clang-format off
 //! @brief Mapping table for enum and string about behavioral instances. X macro.
 #define APP_DP_BEHAVIORAL_INSTANCE_TABLE                 \
     ELEM(chainOfResponsibility, "chainOfResponsibility") \
-    ELEM(command, "command")                             \
-    ELEM(interpreter, "interpreter")                     \
-    ELEM(iterator, "iterator")                           \
-    ELEM(mediator, "mediator")                           \
-    ELEM(memento, "memento")                             \
-    ELEM(observer, "observer")                           \
-    ELEM(state, "state")                                 \
-    ELEM(strategy, "strategy")                           \
-    ELEM(templateMethod, "templateMethod")               \
-    ELEM(visitor, "visitor")
+    ELEM(command              , "command"              ) \
+    ELEM(interpreter          , "interpreter"          ) \
+    ELEM(iterator             , "iterator"             ) \
+    ELEM(mediator             , "mediator"             ) \
+    ELEM(memento              , "memento"              ) \
+    ELEM(observer             , "observer"             ) \
+    ELEM(state                , "state"                ) \
+    ELEM(strategy             , "strategy"             ) \
+    ELEM(templateMethod       , "templateMethod"       ) \
+    ELEM(visitor              , "visitor"              )
+// clang-format on
 //! @brief Convert instance enumeration to string.
 //! @param instance - the specific value of BehavioralInstance enum
 //! @return instance name
@@ -163,13 +165,15 @@ constexpr std::string_view toString(const BehavioralInstance instance)
 }
 #undef APP_DP_BEHAVIORAL_INSTANCE_TABLE
 
+// clang-format off
 //! @brief Mapping table for enum and string about creational instances. X macro.
 #define APP_DP_CREATIONAL_INSTANCE_TABLE     \
     ELEM(abstractFactory, "abstractFactory") \
-    ELEM(builder, "builder")                 \
-    ELEM(factoryMethod, "factoryMethod")     \
-    ELEM(prototype, "prototype")             \
-    ELEM(singleton, "singleton")
+    ELEM(builder        , "builder"        ) \
+    ELEM(factoryMethod  , "factoryMethod"  ) \
+    ELEM(prototype      , "prototype"      ) \
+    ELEM(singleton      , "singleton"      )
+// clang-format on
 //! @brief Convert instance enumeration to string.
 //! @param instance - the specific value of CreationalInstance enum
 //! @return instance name
@@ -185,15 +189,17 @@ constexpr std::string_view toString(const CreationalInstance instance)
 }
 #undef APP_DP_CREATIONAL_INSTANCE_TABLE
 
+// clang-format off
 //! @brief Mapping table for enum and string about structural instances. X macro.
 #define APP_DP_STRUCTURAL_INSTANCE_TABLE \
-    ELEM(adapter, "adapter")             \
-    ELEM(bridge, "bridge")               \
+    ELEM(adapter  , "adapter"  )         \
+    ELEM(bridge   , "bridge"   )         \
     ELEM(composite, "composite")         \
     ELEM(decorator, "decorator")         \
-    ELEM(facade, "facade")               \
+    ELEM(facade   , "facade"   )         \
     ELEM(flyweight, "flyweight")         \
-    ELEM(proxy, "proxy")
+    ELEM(proxy    , "proxy"    )
+// clang-format on
 //! @brief Convert instance enumeration to string.
 //! @param instance - the specific value of StructuralInstance enum
 //! @return instance name

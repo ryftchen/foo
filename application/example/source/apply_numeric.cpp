@@ -137,12 +137,14 @@ std::string getTitle(const T method)
     return title;
 }
 
+// clang-format off
 //! @brief Mapping table for enum and string about arithmetic methods. X macro.
 #define APP_NUM_ARITHMETIC_METHOD_TABLE    \
-    ELEM(addition, "addition")             \
-    ELEM(subtraction, "subtraction")       \
+    ELEM(addition      , "addition"      ) \
+    ELEM(subtraction   , "subtraction"   ) \
     ELEM(multiplication, "multiplication") \
-    ELEM(division, "division")
+    ELEM(division      , "division"      )
+// clang-format on
 //! @brief Convert method enumeration to string.
 //! @param method - the specific value of ArithmeticMethod enum
 //! @return method name
@@ -158,10 +160,12 @@ constexpr std::string_view toString(const ArithmeticMethod method)
 }
 #undef APP_NUM_ARITHMETIC_METHOD_TABLE
 
+// clang-format off
 //! @brief Mapping table for enum and string about divisor methods. X macro.
 #define APP_NUM_DIVISOR_METHOD_TABLE \
     ELEM(euclidean, "euclidean")     \
-    ELEM(stein, "stein")
+    ELEM(stein    , "stein"    )
+// clang-format on
 //! @brief Convert method enumeration to string.
 //! @param method - the specific value of DivisorMethod enum
 //! @return method name
@@ -177,13 +181,15 @@ constexpr std::string_view toString(const DivisorMethod method)
 }
 #undef APP_NUM_DIVISOR_METHOD_TABLE
 
+// clang-format off
 //! @brief Mapping table for enum and string about integral methods. X macro.
 #define APP_NUM_INTEGRAL_METHOD_TABLE \
     ELEM(trapezoidal, "trapezoidal")  \
-    ELEM(simpson, "simpson")          \
-    ELEM(romberg, "romberg")          \
-    ELEM(gauss, "gauss")              \
-    ELEM(monteCarlo, "monteCarlo")
+    ELEM(simpson    , "simpson"    )  \
+    ELEM(romberg    , "romberg"    )  \
+    ELEM(gauss      , "gauss"      )  \
+    ELEM(monteCarlo , "monteCarlo" )
+// clang-format on
 //! @brief Convert method enumeration to string.
 //! @param method - the specific value of IntegralMethod enum
 //! @return method name
@@ -199,10 +205,12 @@ constexpr std::string_view toString(const IntegralMethod method)
 }
 #undef APP_NUM_INTEGRAL_METHOD_TABLE
 
+// clang-format off
 //! @brief Mapping table for enum and string about prime methods. X macro.
 #define APP_NUM_PRIME_METHOD_TABLE     \
     ELEM(eratosthenes, "eratosthenes") \
-    ELEM(euler, "euler")
+    ELEM(euler       , "euler"       )
+// clang-format on
 //! @brief Convert method enumeration to string.
 //! @param method - the specific value of PrimeMethod enum
 //! @return method name

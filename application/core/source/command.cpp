@@ -24,11 +24,6 @@ namespace application::command
 //! @brief Anonymous namespace.
 inline namespace
 {
-//! @brief Alias for the type information.
-//! @tparam T - type of target object
-template <class T>
-using TypeInfo = utility::reflection::TypeInfo<T>;
-
 //! @brief Constraint for external helpers.
 //! @tparam T - type of helper
 template <typename T>
@@ -188,16 +183,19 @@ Awaitable helperLifecycle()
     publish(ExtEvent::startup);
     co_await std::suspend_always{};
     publish(ExtEvent::shutdown);
+
     awaitDaemon.wait();
 }
 } // namespace
 
+// clang-format off
 //! @brief Mapping table for enum and string about command categories. X macro.
 #define COMMAND_CATEGORY_TABLE \
     ELEM(console, "console")   \
-    ELEM(dump, "dump")         \
-    ELEM(help, "help")         \
+    ELEM(dump   , "dump"   )   \
+    ELEM(help   , "help"   )   \
     ELEM(version, "version")
+// clang-format on
 //! @brief Convert category enumeration to string.
 //! @param cat - the specific value of Category enum
 //! @return category name
@@ -213,12 +211,14 @@ constexpr std::string_view toString(const Category cat)
 }
 #undef COMMAND_CATEGORY_TABLE
 
+// clang-format off
 //! @brief Mapping table for enum and attribute about command categories. X macro.
 #define COMMAND_CATEGORY_TABLE_ATTR                                                  \
     ELEM(console, "run options in console mode and exit\nseparate with quotes", "c") \
-    ELEM(dump, "dump default configuration and exit", "d")                           \
-    ELEM(help, "show help and exit", "h")                                            \
-    ELEM(version, "show version and exit", "v")
+    ELEM(dump   , "dump default configuration and exit"                       , "d") \
+    ELEM(help   , "show help and exit"                                        , "h") \
+    ELEM(version, "show version and exit"                                     , "v")
+// clang-format on
 consteval std::string_view Command::getDescr(const Category cat)
 {
 //! @cond
@@ -345,8 +345,23 @@ void Command::initializeExtraCLI()
     const std::string prefix1 = "-", prefix2 = "--", helpArg1 = prefix1 + std::string{getAlias(Category::help)},
                       helpArg2 = prefix2 + std::string{toString(Category::help)};
     constexpr std::string_view helpDescr = getDescr(Category::help), optMetavar = "OPT";
-    std::vector<std::string> choices{};
     auto& checklist = taskDispatcher.extraChecklist;
+    std::vector<std::string> choices{};
+    choices.reserve(std::max(
+        {TypeInfo<app_algo::MatchMethod>::fields.size,
+         TypeInfo<app_algo::NotationMethod>::fields.size,
+         TypeInfo<app_algo::OptimalMethod>::fields.size,
+         TypeInfo<app_algo::SearchMethod>::fields.size,
+         TypeInfo<app_algo::SortMethod>::fields.size,
+         TypeInfo<app_dp::BehavioralInstance>::fields.size,
+         TypeInfo<app_dp::CreationalInstance>::fields.size,
+         TypeInfo<app_dp::StructuralInstance>::fields.size,
+         TypeInfo<app_ds::LinearInstance>::fields.size,
+         TypeInfo<app_ds::TreeInstance>::fields.size,
+         TypeInfo<app_num::ArithmeticMethod>::fields.size,
+         TypeInfo<app_num::DivisorMethod>::fields.size,
+         TypeInfo<app_num::IntegralMethod>::fields.size,
+         TypeInfo<app_num::PrimeMethod>::fields.size}));
 
     auto& algoTable = extraChoices[subCLIAppAlgo.title()];
     checklist.emplace(
@@ -723,11 +738,10 @@ void Command::dispatch()
 template <typename T>
 std::vector<std::string> Command::extractChoices()
 {
-    using TypeInfo = utility::reflection::TypeInfo<T>;
     std::vector<std::string> choices{};
-    choices.reserve(TypeInfo::fields.size);
-    TypeInfo::fields.forEach([&choices](const auto field)
-                             { choices.emplace_back(field.attrs.find(REFLECTION_STR("choice")).value); });
+    choices.reserve(TypeInfo<T>::fields.size);
+    TypeInfo<T>::fields.forEach([&choices](const auto field)
+                                { choices.emplace_back(field.attrs.find(REFLECTION_STR("choice")).value); });
 
     return choices;
 }

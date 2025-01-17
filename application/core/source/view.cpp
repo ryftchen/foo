@@ -742,9 +742,7 @@ void View::decompressData(std::vector<char>& cache)
 int View::fillSharedMemory(const std::string_view contents)
 {
     const int shmId = ::shmget(
-        static_cast<::key_t>(0),
-        sizeof(SharedMemory),
-        IPC_CREAT | IPC_EXCL | S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
+        0, sizeof(SharedMemory), IPC_CREAT | IPC_EXCL | S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
     if (-1 == shmId)
     {
         throw std::runtime_error{"Failed to create shared memory."};
