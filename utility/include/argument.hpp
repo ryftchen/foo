@@ -231,6 +231,19 @@ public:
     {
     }
 
+    //! @brief The operator (==) overloading of Register class.
+    //! @tparam T - type of right-hand side
+    //! @param rhs - right-hand side
+    //! @return be equal or not equal
+    template <typename T>
+    bool operator==(const T& rhs) const;
+    //! @brief The operator (!=) overloading of Register class.
+    //! @tparam T - type of right-hand side
+    //! @param rhs - right-hand side
+    //! @return be not equal or equal
+    template <typename T>
+    bool operator!=(const T& rhs) const;
+
     //! @brief Set help message.
     //! @param content - help message content
     //! @return reference of the Register object
@@ -300,18 +313,6 @@ public:
     //! @brief Get the length of all arguments.
     //! @return length of all arguments
     [[nodiscard]] std::size_t getArgumentsLength() const;
-    //! @brief The operator (!=) overloading of Register class.
-    //! @tparam T - type of right-hand side
-    //! @param rhs - right-hand side
-    //! @return be not equal or equal
-    template <typename T>
-    bool operator!=(const T& rhs) const;
-    //! @brief The operator (==) overloading of Register class.
-    //! @tparam T - type of right-hand side
-    //! @param rhs - right-hand side
-    //! @return be equal or not equal
-    template <typename T>
-    bool operator==(const T& rhs) const;
     friend class Argument;
 
 private:
@@ -368,6 +369,20 @@ private:
             }
         }
 
+        //! @brief The operator (==) overloading of Register class.
+        //! @param rhs - right-hand side
+        //! @return be equal or not equal
+        bool operator==(const ArgsNumRange& rhs) const { return (rhs.min == min) && (rhs.max == max); }
+        //! @brief The operator (!=) overloading of Register class.
+        //! @param rhs - right-hand side
+        //! @return be not equal or equal
+        bool operator!=(const ArgsNumRange& rhs) const { return !(*this == rhs); }
+
+        //! @brief Minimum of range.
+        std::size_t min{0};
+        //! @brief Maximum of range.
+        std::size_t max{0};
+
         //! @brief Check whether the number of arguments is within the range.
         //! @param value - number of arguments
         //! @return be contain or not contain
@@ -411,19 +426,6 @@ private:
 
             return os;
         }
-        //! @brief The operator (==) overloading of Register class.
-        //! @param rhs - right-hand side
-        //! @return be equal or not equal
-        bool operator==(const ArgsNumRange& rhs) const { return (rhs.min == min) && (rhs.max == max); }
-        //! @brief The operator (!=) overloading of Register class.
-        //! @param rhs - right-hand side
-        //! @return be not equal or equal
-        bool operator!=(const ArgsNumRange& rhs) const { return !(*this == rhs); }
-
-        //! @brief Minimum of range.
-        std::size_t min{0};
-        //! @brief Maximum of range.
-        std::size_t max{0};
     } /** @brief The range for the number of arguments. */ argsNumRange{1, 1};
 
     //! @brief Throw an exception when ArgsNumRange is invalid.
@@ -486,6 +488,32 @@ Register::Register(
         names.end(),
         [](const auto& lhs, const auto& rhs)
         { return (lhs.size() == rhs.size()) ? (lhs < rhs) : (lhs.size() < rhs.size()); });
+}
+
+template <typename T>
+bool Register::operator==(const T& rhs) const
+{
+    if constexpr (!isContainer<T>)
+    {
+        return rhs == get<T>();
+    }
+    else
+    {
+        using ValueType = typename T::value_type;
+        const auto& lhs = get<T>();
+        return std::equal(
+            std::cbegin(lhs),
+            std::cend(lhs),
+            std::cbegin(rhs),
+            std::cend(rhs),
+            [](const auto& lhs, const auto& rhs) { return rhs == std::any_cast<const ValueType&>(lhs); });
+    }
+}
+
+template <typename T>
+bool Register::operator!=(const T& rhs) const
+{
+    return !(*this == rhs);
 }
 
 template <typename T>
@@ -576,6 +604,7 @@ Iterator Register::consume(Iterator start, Iterator end, const std::string_view 
             Register& self;
         };
         std::visit(ActionApply{start, end, *this}, actions);
+
         return end;
     }
     if (defaultValue.has_value())
@@ -583,32 +612,6 @@ Iterator Register::consume(Iterator start, Iterator end, const std::string_view 
         return start;
     }
     throw std::runtime_error{"Too few arguments for '" + std::string{usedName} + "'."};
-}
-
-template <typename T>
-bool Register::operator!=(const T& rhs) const
-{
-    return !(*this == rhs);
-}
-
-template <typename T>
-bool Register::operator==(const T& rhs) const
-{
-    if constexpr (!isContainer<T>)
-    {
-        return rhs == get<T>();
-    }
-    else
-    {
-        using ValueType = typename T::value_type;
-        const auto& lhs = get<T>();
-        return std::equal(
-            std::cbegin(lhs),
-            std::cend(lhs),
-            std::cbegin(rhs),
-            std::cend(rhs),
-            [](const auto& lhs, const auto& rhs) { return rhs == std::any_cast<const ValueType&>(lhs); });
-    }
 }
 
 template <typename T>
@@ -697,6 +700,7 @@ public:
     //! @brief The operator (=) overloading of Argument class.
     //! @return reference of the Argument object
     Argument& operator=(Argument&&) noexcept = default;
+
     //! @brief The operator (bool) overloading of Argument class.
     explicit operator bool() const;
 

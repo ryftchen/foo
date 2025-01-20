@@ -582,6 +582,7 @@ struct FuncRange
     }
     //! @brief Construct a new FuncRange object.
     FuncRange() = delete;
+
     //! @brief The operator (==) overloading of FuncRange struct.
     //! @param rhs - right-hand side
     //! @return be equal or not equal
@@ -726,7 +727,7 @@ constexpr std::uint8_t maxColumnOfPrint = 10;
 //! @tparam T - type of inspection to be performed
 //! @return be number or not
 template <typename T>
-constexpr bool isRealNumber()
+consteval bool isRealNumber()
 {
     return std::is_integral_v<T> || std::is_floating_point_v<T>;
 }
@@ -774,7 +775,7 @@ public:
     //! @return length
     [[nodiscard]] inline std::uint32_t getLength() const { return length; }
     //! @brief Get the search key.
-    //! @return T search key
+    //! @return search key
     inline T getSearchKey() const { return orderedArray[length / 2]; }
     //! @brief Splice from array for printing.
     //! @tparam N - type of array
@@ -977,7 +978,7 @@ constexpr std::uint8_t maxColumnOfPrint = 10;
 //! @tparam T - type of inspection to be performed
 //! @return be number or not
 template <typename T>
-constexpr bool isRealNumber()
+consteval bool isRealNumber()
 {
     return std::is_integral_v<T> || std::is_floating_point_v<T>;
 }

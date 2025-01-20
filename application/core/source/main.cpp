@@ -34,7 +34,7 @@ try
         std::launch::async,
         [=]()
         {
-            ::pthread_setname_np(::pthread_self(), Command::name.data());
+            ::pthread_setname_np(::pthread_self(), Command::name.c_str());
             return Command::getInstance().execute(argc, argv);
         });
 

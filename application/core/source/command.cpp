@@ -276,8 +276,8 @@ try
     {
         constexpr std::uint8_t endNum = 2;
         utility::thread::Thread handlingThd(endNum);
-        handlingThd.enqueue(std::string{name} + "(FE)", &Command::frontEndHandler, this, argc, argv);
-        handlingThd.enqueue(std::string{name} + "(BE)", &Command::backEndHandler, this);
+        handlingThd.enqueue(name + "(FE)", &Command::frontEndHandler, this, argc, argv);
+        handlingThd.enqueue(name + "(BE)", &Command::backEndHandler, this);
     }
 
     if (!launcher.done())
