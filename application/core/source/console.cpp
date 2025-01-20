@@ -16,6 +16,8 @@
 #include "application/pch/precompiled_header.hpp"
 #endif // __PRECOMPILED_HEADER
 
+#include "utility/include/common.hpp"
+
 namespace application::console
 {
 //! @brief Anonymous namespace.
@@ -69,7 +71,13 @@ int Console::optionExecutor(const std::string_view option)
             "The console option \"" + inputs.front() + R"(" could not be found. Enter the "usage" for help.)"};
     }
 
-    return RetCode(regIter->second.second(inputs));
+    const int result = regIter->second.second(inputs);
+    if (!utility::common::EnumCheck<RetCode, RetCode::quit, RetCode::success, RetCode::error>::isValue(result))
+    {
+        return RetCode::error;
+    }
+
+    return RetCode(result);
 }
 
 int Console::fileExecutor(const std::string_view filename)

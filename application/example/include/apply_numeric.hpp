@@ -486,6 +486,7 @@ struct ExprRange
     }
     //! @brief Construct a new ExprRange object.
     ExprRange() = delete;
+
     //! @brief The operator (==) overloading of ExprRange struct.
     //! @param rhs - right-hand side
     //! @return be equal or not equal

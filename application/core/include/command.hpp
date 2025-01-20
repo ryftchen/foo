@@ -64,7 +64,7 @@ public:
     //! @return reference of the Command object
     static Command& getInstance();
     //! @brief Instance name.
-    static constexpr std::string_view name{"commander"};
+    static constexpr std::string name{"commander"};
     //! @brief Interface used to execute.
     //! @param argc - argument count
     //! @param argv - argument vector
