@@ -374,7 +374,7 @@ class FlyweightFactory
 {
 public:
     //! @brief Destroy the FlyweightFactory object.
-    ~FlyweightFactory();
+    virtual ~FlyweightFactory();
 
     //! @brief Get the flyweight by key.
     //! @param key - key of the flyweight

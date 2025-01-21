@@ -27,7 +27,7 @@ public:
     //! @brief Construct a new Memory object.
     Memory() : currentBlock{nullptr}, currentSlot{nullptr}, lastSlot{nullptr}, freeSlots{nullptr} {}
     //! @brief Destroy the Memory object.
-    ~Memory();
+    virtual ~Memory();
     //! @brief Construct a new Memory object.
     Memory(const Memory&) = delete;
     //! @brief Construct a new Memory object.

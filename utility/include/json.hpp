@@ -25,7 +25,7 @@ class JSON
 {
 public:
     //! @brief Enumerate specific data types.
-    enum class Type
+    enum class Type : std::uint8_t
     {
         //! @brief Null.
         null,
@@ -66,7 +66,7 @@ public:
     //! @param list - initializer list for JSON
     JSON(const std::initializer_list<JSON>& list);
     //! @brief Destroy the JSON object.
-    ~JSON() = default;
+    virtual ~JSON() = default;
     //! @brief Construct a new JSON object.
     //! @param json - the object for copy constructor
     JSON(const JSON& json) = default;

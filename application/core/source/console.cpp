@@ -16,8 +16,6 @@
 #include "application/pch/precompiled_header.hpp"
 #endif // __PRECOMPILED_HEADER
 
-#include "utility/include/common.hpp"
-
 namespace application::console
 {
 //! @brief Anonymous namespace.
@@ -37,7 +35,6 @@ Console::Console(const std::string_view greeting) : terminal{std::make_unique<Te
 Console::~Console()
 {
     ::rl_free(emptyHistory);
-
     ::rl_clear_history();
     ::rl_restore_prompt();
 }
@@ -53,7 +50,7 @@ void Console::setGreeting(const std::string_view greeting)
     terminal->greeting = greeting;
 }
 
-int Console::optionExecutor(const std::string_view option)
+Console::RetCode Console::optionExecutor(const std::string_view option)
 {
     std::vector<std::string> inputs{};
     std::istringstream transfer(option.data());
@@ -71,16 +68,10 @@ int Console::optionExecutor(const std::string_view option)
             "The console option \"" + inputs.front() + R"(" could not be found. Enter the "usage" for help.)"};
     }
 
-    const int result = regIter->second.second(inputs);
-    if (!utility::common::EnumCheck<RetCode, RetCode::quit, RetCode::success, RetCode::error>::isValue(result))
-    {
-        return RetCode::error;
-    }
-
-    return RetCode(result);
+    return regIter->second.second(inputs);
 }
 
-int Console::fileExecutor(const std::string_view filename)
+Console::RetCode Console::fileExecutor(const std::string_view filename)
 {
     std::ifstream batch(filename.data());
     if (!batch)
@@ -101,9 +92,9 @@ int Console::fileExecutor(const std::string_view filename)
         std::ostringstream out{};
         out << '#' << counter << ' ' << input << '\n';
         std::cout << out.str() << std::flush;
-        if (const int result = optionExecutor(input))
+        if (const auto result = optionExecutor(input); RetCode::success != result)
         {
-            return RetCode(result);
+            return result;
         }
         std::cout << std::endl;
     }
@@ -111,7 +102,7 @@ int Console::fileExecutor(const std::string_view filename)
     return RetCode::success;
 }
 
-int Console::readLine()
+Console::RetCode Console::readLine()
 {
     reserveConsole();
 
@@ -129,7 +120,7 @@ int Console::readLine()
     std::string input(buffer);
     ::rl_free(buffer);
 
-    return RetCode(optionExecutor(input));
+    return optionExecutor(input);
 }
 
 auto Console::getOptionHelpPairs() const
@@ -207,15 +198,7 @@ void Console::reserveConsole()
     {
         currentSession->saveState();
     }
-
-    if (nullptr == terminal->history)
-    {
-        ::history_set_history_state(emptyHistory);
-    }
-    else
-    {
-        ::history_set_history_state(terminal->history);
-    }
+    ::history_set_history_state((nullptr != terminal->history) ? terminal->history : emptyHistory);
 
     currentSession = this;
 }

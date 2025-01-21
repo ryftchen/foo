@@ -41,10 +41,20 @@ public:
     //! @return reference of the Console object
     Console& operator=(Console&&) = delete;
 
+    //! @brief Enumerate specific return code.
+    enum class RetCode : int
+    {
+        //! @brief Quit.
+        quit = -1,
+        //! @brief Success.
+        success = 0,
+        //! @brief Error.
+        error = 1
+    };
     //! @brief Alias for the container of arguments.
     using Args = std::vector<std::string>;
     //! @brief Alias for the callback of option.
-    using Callback = std::function<int(const Args&)>;
+    using Callback = std::function<RetCode(const Args&)>;
     //! @brief Register console option.
     //! @param name - option name
     //! @param prompt - help prompt
@@ -56,25 +66,14 @@ public:
     //! @brief Execute the target console option.
     //! @param option - option to be executed
     //! @return value of RetCode
-    int optionExecutor(const std::string_view option);
+    RetCode optionExecutor(const std::string_view option);
     //! @brief Execute all console options in the target file.
     //! @param filename - file path to be executed
     //! @return value of RetCode
-    int fileExecutor(const std::string_view filename);
+    RetCode fileExecutor(const std::string_view filename);
     //! @brief Read console option line.
     //! @return value of RetCode
-    int readLine();
-
-    //! @brief Enumerate specific return code.
-    enum RetCode : int
-    {
-        //! @brief Quit.
-        quit = -1,
-        //! @brief Success.
-        success = 0,
-        //! @brief Error.
-        error = 1
-    };
+    RetCode readLine();
 
 private:
     //! @brief Alias for the history state.
@@ -89,7 +88,7 @@ private:
         //! @param greeting - default greeting information
         explicit Terminal(const std::string_view greeting) : greeting{greeting} {}
         //! @brief Destroy the Terminal object.
-        ~Terminal() { delete history; }
+        virtual ~Terminal() { delete history; }
         //! @brief Construct a new Terminal object.
         Terminal(const Terminal&) = delete;
         //! @brief Construct a new Terminal object.

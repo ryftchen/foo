@@ -220,10 +220,8 @@ public:
 class Director
 {
 public:
-    //! @brief Construct a new Director object.
-    Director() = default;
     //! @brief Destroy the Director object.
-    ~Director();
+    virtual ~Director();
 
     //! @brief Set the builder.
     //! @param b - target builder
