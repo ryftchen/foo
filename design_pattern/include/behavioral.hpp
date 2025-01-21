@@ -458,7 +458,7 @@ public:
     //! @param originator - target originator
     explicit CareTaker(const std::shared_ptr<Originator> originator) : originator{originator} {}
     //! @brief Destroy the CareTaker object.
-    ~CareTaker();
+    virtual ~CareTaker();
 
     //! @brief Save the current state to history.
     void save();
@@ -608,10 +608,8 @@ public:
 class Context
 {
 public:
-    //! @brief Construct a new Context object.
-    Context() = default;
     //! @brief Destroy the Context object.
-    ~Context();
+    virtual ~Context();
 
     //! @brief Set the state of context.
     //! @param s - target state
@@ -671,7 +669,7 @@ public:
     //! @param strategy - target strategy
     explicit Context(std::unique_ptr<Strategy> strategy) : strategy{std::move(strategy)} {}
     //! @brief Destroy the Context object.
-    ~Context();
+    virtual ~Context();
 
     //! @brief The interface of the context.
     void contextInterface();

@@ -476,7 +476,7 @@ void UDPSocket::toRecv(const std::shared_ptr<UDPSocket> socket)
             if (socket->onMessageReceived)
             {
                 socket->onMessageReceived(
-                    std::string(tempBuffer, msgLen), socket->transportAddress(), socket->transportPort());
+                    std::string_view(tempBuffer, msgLen), socket->transportAddress(), socket->transportPort());
             }
             if (socket->onRawMessageReceived)
             {
@@ -527,7 +527,7 @@ void UDPSocket::toRecvFrom(const std::shared_ptr<UDPSocket> socket)
             tempBuffer[msgLen] = '\0';
             if (socket->onMessageReceived)
             {
-                socket->onMessageReceived(std::string(tempBuffer, msgLen), ipString(addr), ::ntohs(addr.sin_port));
+                socket->onMessageReceived(std::string_view(tempBuffer, msgLen), ipString(addr), ::ntohs(addr.sin_port));
             }
             if (socket->onRawMessageReceived)
             {

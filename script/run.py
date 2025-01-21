@@ -309,8 +309,9 @@ class Task:
         sys.stdout = self.logger
 
         self.load_run_dict()
-        if "--console" in self.app_native_task_dict:
-            self.total_steps += len(self.app_native_task_dict["--console"])
+        console_mode_arg = "--console"
+        if console_mode_arg in self.app_native_task_dict:
+            self.total_steps += len(self.app_native_task_dict[console_mode_arg])
         self.total_steps += len(self.app_native_task_dict.keys())
         for task_category_list in self.app_native_task_dict.values():
             self.total_steps += len(task_category_list)
@@ -332,9 +333,10 @@ class Task:
         del self.logger
 
     def generate_tasks(self):
+        console_mode_arg = "--console"
         while self.repeat_count:
-            if "--console" in self.app_native_task_dict:
-                for console_cmd in self.app_native_task_dict["--console"]:
+            if console_mode_arg in self.app_native_task_dict:
+                for console_cmd in self.app_native_task_dict[console_mode_arg]:
                     self.task_queue.put((self.app_bin_cmd, f"{console_cmd}\nquit"))
 
             for category, option_list in self.app_native_task_dict.items():

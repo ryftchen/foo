@@ -257,15 +257,15 @@ public:
     //! @param value - default value
     //! @return reference of the Register object
     template <typename T>
-    Register& defaultVal(T&& value);
+    Register& defaultValue(T&& value);
     //! @brief Set default value.
     //! @param value - default value
     //! @return reference of the Register object
-    Register& defaultVal(const char* value);
+    Register& defaultValue(const std::string_view value);
     //! @brief Set implicit value.
     //! @param value - implicit value
     //! @return reference of the Register object
-    Register& implicitVal(std::any value);
+    Register& implicitValue(std::any value);
     //! @brief Set the argument property to be required.
     //! @return reference of the Register object
     Register& required();
@@ -329,11 +329,11 @@ private:
     //! @brief Metavar message content.
     std::string metavarContent{};
     //! @brief Default value.
-    std::any defaultValue{};
+    std::any defaultVal{};
     //! @brief Default value content to be represented.
     std::string representedDefVal{};
     //! @brief Implicit value.
-    std::any implicitValue{};
+    std::any implicitVal{};
     //! @brief All actions of arguments.
     std::variant<ValuedAction, VoidAction> actions{
         std::in_place_type<ValuedAction>, [](const std::string& value) { return value; }};
@@ -517,10 +517,10 @@ bool Register::operator!=(const T& rhs) const
 }
 
 template <typename T>
-Register& Register::defaultVal(T&& value)
+Register& Register::defaultValue(T&& value)
 {
     representedDefVal = represent(value);
-    defaultValue = std::forward<T>(value);
+    defaultVal = std::forward<T>(value);
 
     return *this;
 }
@@ -561,7 +561,7 @@ Iterator Register::consume(Iterator start, Iterator end, const std::string_view 
     std::size_t dist = 0;
     if (0 == numMax)
     {
-        values.emplace_back(implicitValue);
+        values.emplace_back(implicitVal);
         std::visit([](const auto& func) { func({}); }, actions);
         return start;
     }
@@ -590,7 +590,7 @@ Iterator Register::consume(Iterator start, Iterator end, const std::string_view 
             void operator()(const VoidAction& func) const
             {
                 std::for_each(first, last, func);
-                if (!self.defaultValue.has_value())
+                if (!self.defaultVal.has_value())
                 {
                     if (!self.optionalAsValue)
                     {
@@ -607,7 +607,7 @@ Iterator Register::consume(Iterator start, Iterator end, const std::string_view 
 
         return end;
     }
-    if (defaultValue.has_value())
+    if (defaultVal.has_value())
     {
         return start;
     }
@@ -628,9 +628,9 @@ T Register::get() const
             return std::any_cast<T>(values.front());
         }
     }
-    if (defaultValue.has_value())
+    if (defaultVal.has_value())
     {
-        return std::any_cast<T>(defaultValue);
+        return std::any_cast<T>(defaultVal);
     }
     if constexpr (isContainer<T>)
     {
@@ -645,7 +645,7 @@ T Register::get() const
 template <typename T>
 std::optional<T> Register::present() const
 {
-    if (defaultValue.has_value())
+    if (defaultVal.has_value())
     {
         throw std::runtime_error{"Default value always presents."};
     }
@@ -687,7 +687,7 @@ public:
     {
     }
     //! @brief Destroy the Argument object.
-    ~Argument() = default;
+    virtual ~Argument() = default;
     //! @brief Construct a new Argument object.
     //! @param arg - the object for copy constructor
     Argument(const Argument& arg);

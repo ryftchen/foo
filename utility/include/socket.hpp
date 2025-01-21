@@ -46,7 +46,7 @@ public:
     //! @brief Bytes buffer size.
     static constexpr std::uint16_t bufferSize{0xFFFFU};
     //! @brief Enumerate specific socket types.
-    enum Type
+    enum Type : int
     {
         //! @brief TCP.
         tcp = ::SOCK_STREAM,

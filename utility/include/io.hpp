@@ -96,7 +96,7 @@ public:
     //! @param filename - file path to be read
     explicit FileReader(const std::string_view filename) : name{filename} {}
     //! @brief Destroy the FileReader object.
-    ~FileReader();
+    virtual ~FileReader();
     //! @brief Construct a new FileReader object.
     FileReader(const FileReader&) = delete;
     //! @brief Construct a new FileReader object.
@@ -142,7 +142,7 @@ public:
     //! @param filename - file path to be written
     explicit FileWriter(const std::string_view filename) : name{filename} {}
     //! @brief Destroy the FileWriter object.
-    ~FileWriter();
+    virtual ~FileWriter();
     //! @brief Construct a new FileWriter object.
     FileWriter(const FileWriter&) = delete;
     //! @brief Construct a new FileWriter object.

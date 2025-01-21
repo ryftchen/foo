@@ -33,14 +33,14 @@ Register& Register::metavar(const std::string_view content)
     return *this;
 }
 
-Register& Register::defaultVal(const char* value)
+Register& Register::defaultValue(const std::string_view value)
 {
-    return defaultVal(std::string{value});
+    return defaultValue(std::string{value});
 }
 
-Register& Register::implicitVal(std::any value)
+Register& Register::implicitValue(std::any value)
 {
-    implicitValue = std::move(value);
+    implicitVal = std::move(value);
     argsNumRange = ArgsNumRange{0, 0};
 
     return *this;
@@ -100,7 +100,7 @@ void Register::validate() const
 {
     if (isOptional)
     {
-        if (!isUsed && !defaultValue.has_value() && isRequired)
+        if (!isUsed && !defaultVal.has_value() && isRequired)
         {
             throwRequiredArgNotUsedException();
         }
@@ -111,7 +111,7 @@ void Register::validate() const
     }
     else
     {
-        if (!argsNumRange.isContain(values.size()) && !defaultValue.has_value())
+        if (!argsNumRange.isContain(values.size()) && !defaultVal.has_value())
         {
             throwArgsNumRangeValidationException();
         }
@@ -317,7 +317,7 @@ std::ostream& operator<<(std::ostream& os, const Register& reg)
     }
     os << reg.argsNumRange;
 
-    if (reg.defaultValue.has_value() && (Register::ArgsNumRange{0, 0} != reg.argsNumRange))
+    if (reg.defaultVal.has_value() && (Register::ArgsNumRange{0, 0} != reg.argsNumRange))
     {
         os << "[default: " << reg.representedDefVal << ']';
     }

@@ -111,9 +111,9 @@ public:
 
     //! @brief Construct a new Awaitable object.
     //! @param handle - coroutine handle
-    explicit Awaitable(std::coroutine_handle<promise_type> handle) : handle{handle} {}
+    explicit Awaitable(const std::coroutine_handle<promise_type>& handle) : handle{handle} {}
     //! @brief Destroy the Awaitable object.
-    ~Awaitable()
+    virtual ~Awaitable()
     {
         if (handle)
         {
@@ -297,32 +297,33 @@ catch (const std::exception& err)
 
 void Command::initializeNativeCLI()
 {
+    using ArgsNumPattern = utility::argument::ArgsNumPattern;
     const std::string prefix1 = "-", prefix2 = "--";
 
     mainCLI
         .addArgument(prefix1 + std::string{getAlias(Category::help)}, prefix2 + std::string{toString(Category::help)})
         .argsNum(0)
-        .implicitVal(true)
+        .implicitValue(true)
         .help(getDescr(Category::help));
     defaultNotifier.attach(Category::help, std::make_shared<Notifier::Handler<Category::help>>(*this));
     mainCLI
         .addArgument(
             prefix1 + std::string{getAlias(Category::version)}, prefix2 + std::string{toString(Category::version)})
         .argsNum(0)
-        .implicitVal(true)
+        .implicitValue(true)
         .help(getDescr(Category::version));
     defaultNotifier.attach(Category::version, std::make_shared<Notifier::Handler<Category::version>>(*this));
     mainCLI
         .addArgument(prefix1 + std::string{getAlias(Category::dump)}, prefix2 + std::string{toString(Category::dump)})
         .argsNum(0)
-        .implicitVal(true)
+        .implicitValue(true)
         .help(getDescr(Category::dump));
     defaultNotifier.attach(Category::dump, std::make_shared<Notifier::Handler<Category::dump>>(*this));
     mainCLI
         .addArgument(
             prefix1 + std::string{getAlias(Category::console)}, prefix2 + std::string{toString(Category::console)})
-        .argsNum(utility::argument::ArgsNumPattern::any)
-        .defaultVal<std::vector<std::string>>({"usage"})
+        .argsNum(ArgsNumPattern::any)
+        .defaultValue<std::vector<std::string>>({"usage"})
         .appending()
         .action(
             [](const std::string& input)
@@ -368,7 +369,7 @@ void Command::initializeExtraCLI()
         subCLIAppAlgo.title(),
         ExtraManager::IntfWrap{[]() { return !app_algo::manager().empty(); }, []() { app_algo::manager().reset(); }});
     subCLIAppAlgo.addDescription(getDescr<app_algo::ApplyAlgorithm>());
-    subCLIAppAlgo.addArgument(helpArg1, helpArg2).argsNum(0).implicitVal(true).help(helpDescr);
+    subCLIAppAlgo.addArgument(helpArg1, helpArg2).argsNum(0).implicitValue(true).help(helpDescr);
     choices = extractChoices<app_algo::MatchMethod>();
     algoTable.emplace(TypeInfo<app_algo::MatchMethod>::name, CategoryExtAttr{choices, app_algo::MatchMethod{}});
     subCLIAppAlgo
@@ -376,7 +377,7 @@ void Command::initializeExtraCLI()
             prefix1 + std::string{getAlias<app_algo::ApplyAlgorithm, app_algo::MatchMethod>()},
             prefix2 + std::string{TypeInfo<app_algo::MatchMethod>::name})
         .argsNum(0, choices.size())
-        .defaultVal<std::vector<std::string>>(std::move(choices))
+        .defaultValue<std::vector<std::string>>(std::move(choices))
         .remaining()
         .metavar(optMetavar)
         .help(getDescr<app_algo::MatchMethod>());
@@ -391,7 +392,7 @@ void Command::initializeExtraCLI()
             prefix1 + std::string{getAlias<app_algo::ApplyAlgorithm, app_algo::NotationMethod>()},
             prefix2 + std::string{TypeInfo<app_algo::NotationMethod>::name})
         .argsNum(0, choices.size())
-        .defaultVal<std::vector<std::string>>(std::move(choices))
+        .defaultValue<std::vector<std::string>>(std::move(choices))
         .remaining()
         .metavar(optMetavar)
         .help(getDescr<app_algo::NotationMethod>());
@@ -406,7 +407,7 @@ void Command::initializeExtraCLI()
             prefix1 + std::string{getAlias<app_algo::ApplyAlgorithm, app_algo::OptimalMethod>()},
             prefix2 + std::string{TypeInfo<app_algo::OptimalMethod>::name})
         .argsNum(0, choices.size())
-        .defaultVal<std::vector<std::string>>(std::move(choices))
+        .defaultValue<std::vector<std::string>>(std::move(choices))
         .remaining()
         .metavar(optMetavar)
         .help(getDescr<app_algo::OptimalMethod>());
@@ -421,7 +422,7 @@ void Command::initializeExtraCLI()
             prefix1 + std::string{getAlias<app_algo::ApplyAlgorithm, app_algo::SearchMethod>()},
             prefix2 + std::string{TypeInfo<app_algo::SearchMethod>::name})
         .argsNum(0, choices.size())
-        .defaultVal<std::vector<std::string>>(std::move(choices))
+        .defaultValue<std::vector<std::string>>(std::move(choices))
         .remaining()
         .metavar(optMetavar)
         .help(getDescr<app_algo::SearchMethod>());
@@ -436,7 +437,7 @@ void Command::initializeExtraCLI()
             prefix1 + std::string{getAlias<app_algo::ApplyAlgorithm, app_algo::SortMethod>()},
             prefix2 + std::string{TypeInfo<app_algo::SortMethod>::name})
         .argsNum(0, choices.size())
-        .defaultVal<std::vector<std::string>>(std::move(choices))
+        .defaultValue<std::vector<std::string>>(std::move(choices))
         .remaining()
         .metavar(optMetavar)
         .help(getDescr<app_algo::SortMethod>());
@@ -451,7 +452,7 @@ void Command::initializeExtraCLI()
         subCLIAppDp.title(),
         ExtraManager::IntfWrap{[]() { return !app_dp::manager().empty(); }, []() { app_dp::manager().reset(); }});
     subCLIAppDp.addDescription(getDescr<app_dp::ApplyDesignPattern>());
-    subCLIAppDp.addArgument(helpArg1, helpArg2).argsNum(0).implicitVal(true).help(helpDescr);
+    subCLIAppDp.addArgument(helpArg1, helpArg2).argsNum(0).implicitValue(true).help(helpDescr);
     choices = extractChoices<app_dp::BehavioralInstance>();
     dpTable.emplace(TypeInfo<app_dp::BehavioralInstance>::name, CategoryExtAttr{choices, app_dp::BehavioralInstance{}});
     subCLIAppDp
@@ -459,7 +460,7 @@ void Command::initializeExtraCLI()
             prefix1 + std::string{getAlias<app_dp::ApplyDesignPattern, app_dp::BehavioralInstance>()},
             prefix2 + std::string{TypeInfo<app_dp::BehavioralInstance>::name})
         .argsNum(0, choices.size())
-        .defaultVal<std::vector<std::string>>(std::move(choices))
+        .defaultValue<std::vector<std::string>>(std::move(choices))
         .remaining()
         .metavar(optMetavar)
         .help(getDescr<app_dp::BehavioralInstance>());
@@ -474,7 +475,7 @@ void Command::initializeExtraCLI()
             prefix1 + std::string{getAlias<app_dp::ApplyDesignPattern, app_dp::CreationalInstance>()},
             prefix2 + std::string{TypeInfo<app_dp::CreationalInstance>::name})
         .argsNum(0, choices.size())
-        .defaultVal<std::vector<std::string>>(std::move(choices))
+        .defaultValue<std::vector<std::string>>(std::move(choices))
         .remaining()
         .metavar(optMetavar)
         .help(getDescr<app_dp::CreationalInstance>());
@@ -489,7 +490,7 @@ void Command::initializeExtraCLI()
             prefix1 + std::string{getAlias<app_dp::ApplyDesignPattern, app_dp::StructuralInstance>()},
             prefix2 + std::string{TypeInfo<app_dp::StructuralInstance>::name})
         .argsNum(0, choices.size())
-        .defaultVal<std::vector<std::string>>(std::move(choices))
+        .defaultValue<std::vector<std::string>>(std::move(choices))
         .remaining()
         .metavar(optMetavar)
         .help(getDescr<app_dp::StructuralInstance>());
@@ -504,7 +505,7 @@ void Command::initializeExtraCLI()
         subCLIAppDs.title(),
         ExtraManager::IntfWrap{[]() { return !app_ds::manager().empty(); }, []() { app_ds::manager().reset(); }});
     subCLIAppDs.addDescription(getDescr<app_ds::ApplyDataStructure>());
-    subCLIAppDs.addArgument(helpArg1, helpArg2).argsNum(0).implicitVal(true).help(helpDescr);
+    subCLIAppDs.addArgument(helpArg1, helpArg2).argsNum(0).implicitValue(true).help(helpDescr);
     choices = extractChoices<app_ds::LinearInstance>();
     dsTable.emplace(TypeInfo<app_ds::LinearInstance>::name, CategoryExtAttr{choices, app_ds::LinearInstance{}});
     subCLIAppDs
@@ -512,7 +513,7 @@ void Command::initializeExtraCLI()
             prefix1 + std::string{getAlias<app_ds::ApplyDataStructure, app_ds::LinearInstance>()},
             prefix2 + std::string{TypeInfo<app_ds::LinearInstance>::name})
         .argsNum(0, choices.size())
-        .defaultVal<std::vector<std::string>>(std::move(choices))
+        .defaultValue<std::vector<std::string>>(std::move(choices))
         .remaining()
         .metavar(optMetavar)
         .help(getDescr<app_ds::LinearInstance>());
@@ -527,7 +528,7 @@ void Command::initializeExtraCLI()
             prefix1 + std::string{getAlias<app_ds::ApplyDataStructure, app_ds::TreeInstance>()},
             prefix2 + std::string{TypeInfo<app_ds::TreeInstance>::name})
         .argsNum(0, choices.size())
-        .defaultVal<std::vector<std::string>>(std::move(choices))
+        .defaultValue<std::vector<std::string>>(std::move(choices))
         .remaining()
         .metavar(optMetavar)
         .help(getDescr<app_ds::TreeInstance>());
@@ -542,7 +543,7 @@ void Command::initializeExtraCLI()
         subCLIAppNum.title(),
         ExtraManager::IntfWrap{[]() { return !app_num::manager().empty(); }, []() { app_num::manager().reset(); }});
     subCLIAppNum.addDescription(getDescr<app_num::ApplyNumeric>());
-    subCLIAppNum.addArgument(helpArg1, helpArg2).argsNum(0).implicitVal(true).help(helpDescr);
+    subCLIAppNum.addArgument(helpArg1, helpArg2).argsNum(0).implicitValue(true).help(helpDescr);
     choices = extractChoices<app_num::ArithmeticMethod>();
     numTable.emplace(TypeInfo<app_num::ArithmeticMethod>::name, CategoryExtAttr{choices, app_num::ArithmeticMethod{}});
     subCLIAppNum
@@ -550,7 +551,7 @@ void Command::initializeExtraCLI()
             prefix1 + std::string{getAlias<app_num::ApplyNumeric, app_num::ArithmeticMethod>()},
             prefix2 + std::string{TypeInfo<app_num::ArithmeticMethod>::name})
         .argsNum(0, choices.size())
-        .defaultVal<std::vector<std::string>>(std::move(choices))
+        .defaultValue<std::vector<std::string>>(std::move(choices))
         .remaining()
         .metavar(optMetavar)
         .help(getDescr<app_num::ArithmeticMethod>());
@@ -565,7 +566,7 @@ void Command::initializeExtraCLI()
             prefix1 + std::string{getAlias<app_num::ApplyNumeric, app_num::DivisorMethod>()},
             prefix2 + std::string{TypeInfo<app_num::DivisorMethod>::name})
         .argsNum(0, choices.size())
-        .defaultVal<std::vector<std::string>>(std::move(choices))
+        .defaultValue<std::vector<std::string>>(std::move(choices))
         .remaining()
         .metavar(optMetavar)
         .help(getDescr<app_num::DivisorMethod>());
@@ -580,7 +581,7 @@ void Command::initializeExtraCLI()
             prefix1 + std::string{getAlias<app_num::ApplyNumeric, app_num::IntegralMethod>()},
             prefix2 + std::string{TypeInfo<app_num::IntegralMethod>::name})
         .argsNum(0, choices.size())
-        .defaultVal<std::vector<std::string>>(std::move(choices))
+        .defaultValue<std::vector<std::string>>(std::move(choices))
         .remaining()
         .metavar(optMetavar)
         .help(getDescr<app_num::IntegralMethod>());
@@ -595,7 +596,7 @@ void Command::initializeExtraCLI()
             prefix1 + std::string{getAlias<app_num::ApplyNumeric, app_num::PrimeMethod>()},
             prefix2 + std::string{TypeInfo<app_num::PrimeMethod>::name})
         .argsNum(0, choices.size())
-        .defaultVal<std::vector<std::string>>(std::move(choices))
+        .defaultValue<std::vector<std::string>>(std::move(choices))
         .remaining()
         .metavar(optMetavar)
         .help(getDescr<app_num::PrimeMethod>());
@@ -663,8 +664,9 @@ void Command::validate()
                  { return mainCLI.isSubCommandUsed(subCLIPair.first) ? (checkForExcessiveArguments(), true) : false; }))
     {
         const auto& subCLI = mainCLI.at<utility::argument::Argument>(subCLIName);
-        taskDispatcher.extraHelpOnly = !subCLI || subCLI.isUsed(helpArgInExtra);
-        if (!subCLI)
+        const bool notAssigned = !subCLI;
+        taskDispatcher.extraHelpOnly = notAssigned || subCLI.isUsed(helpArgInExtra);
+        if (notAssigned)
         {
             return;
         }
@@ -915,13 +917,13 @@ try
     const auto session = std::make_shared<console::Console>(greeting);
     registerOnConsole(*session, tcpClient);
 
-    using enum console::Console::RetCode;
-    int retVal = success;
+    using RetCode = console::Console::RetCode;
+    auto retCode = RetCode::success;
     do
     {
         try
         {
-            retVal = session->readLine();
+            retCode = session->readLine();
         }
         catch (const std::exception& err)
         {
@@ -930,7 +932,7 @@ try
         session->setGreeting(greeting);
         utility::time::millisecondLevelSleep(latency);
     }
-    while (quit != retVal);
+    while (RetCode::quit != retCode);
 
     tcpClient->toSend(utility::common::base64Encode(view::exitSymbol));
     tcpClient->waitIfAlive();
@@ -948,7 +950,6 @@ template <typename T>
 void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& client)
 {
     using console::Console;
-    using enum Console::RetCode;
     static constexpr auto resetter = []<HelperType Helper>() constexpr
     {
         triggerHelper<Helper>(ExtEvent::reload);
@@ -956,7 +957,8 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& c
     };
     const auto sender = [&client](const Console::Args& inputs)
     {
-        auto retVal = success;
+        using enum Console::RetCode;
+        auto retCode = success;
         try
         {
             client->toSend(utility::common::base64Encode(std::accumulate(
@@ -968,11 +970,11 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& c
         }
         catch (const std::exception& err)
         {
-            retVal = error;
+            retCode = error;
             LOG_WRN << err.what();
             utility::time::millisecondLevelSleep(latency);
         }
-        return retVal;
+        return retCode;
     };
 
     session.registerOption(
@@ -980,7 +982,8 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& c
         "refresh the outputs",
         [](const Console::Args& /*inputs*/)
         {
-            auto retVal = success;
+            using enum Console::RetCode;
+            auto retCode = success;
             try
             {
                 resetter.template operator()<log::Log>();
@@ -989,18 +992,19 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& c
             }
             catch (const std::exception& err)
             {
-                retVal = error;
+                retCode = error;
                 LOG_WRN << err.what();
             }
             utility::time::millisecondLevelSleep(latency);
-            return retVal;
+            return retCode;
         });
     session.registerOption(
         "reconnect",
         "reconnect to the servers",
         [&client](const Console::Args& /*inputs*/)
         {
-            auto retVal = success;
+            using enum Console::RetCode;
+            auto retCode = success;
             try
             {
                 client->toSend(utility::common::base64Encode(view::exitSymbol));
@@ -1015,11 +1019,11 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& c
             }
             catch (const std::exception& err)
             {
-                retVal = error;
+                retCode = error;
                 LOG_WRN << err.what();
             }
             utility::time::millisecondLevelSleep(latency);
-            return retVal;
+            return retCode;
         });
     for (const auto& [name, attr] : view::info::viewerSupportedOptions())
     {
