@@ -28,7 +28,7 @@ namespace app_ds
 {
 //! @brief Represent the maximum value of an enum.
 //! @tparam T - type of specific enum
-template <class T>
+template <typename T>
 struct Bottom;
 
 //! @brief Enumerate specific linear instances.
@@ -123,12 +123,12 @@ extern ApplyDataStructure& manager();
 //! @brief Update choice.
 //! @tparam T - type of target instance
 //! @param target - target instance
-template <class T>
+template <typename T>
 void updateChoice(const std::string_view target);
 //! @brief Run choices.
 //! @tparam T - type of target instance
 //! @param candidates - container for the candidate target instances
-template <class T>
+template <typename T>
 void runChoices(const std::vector<std::string>& candidates);
 
 //! @brief Apply linear.

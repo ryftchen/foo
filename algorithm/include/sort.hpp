@@ -22,7 +22,7 @@ extern const char* version() noexcept;
 
 //! @brief Sort methods.
 //! @tparam T - type of sort methods
-template <class T>
+template <typename T>
 class Sort
 {
 public:
@@ -110,7 +110,7 @@ private:
         const std::uint32_t indexOffset);
 };
 
-template <class T>
+template <typename T>
 std::vector<T> Sort<T>::bubble(const T* const array, const std::uint32_t length)
 {
     std::vector<T> sorting(array, array + length);
@@ -128,7 +128,7 @@ std::vector<T> Sort<T>::bubble(const T* const array, const std::uint32_t length)
     return sorting;
 }
 
-template <class T>
+template <typename T>
 std::vector<T> Sort<T>::selection(const T* const array, const std::uint32_t length)
 {
     std::vector<T> sorting(array, array + length);
@@ -148,7 +148,7 @@ std::vector<T> Sort<T>::selection(const T* const array, const std::uint32_t leng
     return sorting;
 }
 
-template <class T>
+template <typename T>
 std::vector<T> Sort<T>::insertion(const T* const array, const std::uint32_t length)
 {
     std::vector<T> sorting(array, array + length);
@@ -167,7 +167,7 @@ std::vector<T> Sort<T>::insertion(const T* const array, const std::uint32_t leng
     return sorting;
 }
 
-template <class T>
+template <typename T>
 std::vector<T> Sort<T>::shell(const T* const array, const std::uint32_t length)
 {
     std::vector<T> sorting(array, array + length);
@@ -187,7 +187,7 @@ std::vector<T> Sort<T>::shell(const T* const array, const std::uint32_t length)
     return sorting;
 }
 
-template <class T>
+template <typename T>
 std::vector<T> Sort<T>::merge(const T* const array, const std::uint32_t length)
 {
     std::vector<T> sorting(array, array + length);
@@ -196,7 +196,7 @@ std::vector<T> Sort<T>::merge(const T* const array, const std::uint32_t length)
     return sorting;
 }
 
-template <class T>
+template <typename T>
 void Sort<T>::mergeSortRecursive(T* const sorting, const std::uint32_t begin, const std::uint32_t end)
 {
     if (begin >= end)
@@ -227,7 +227,7 @@ void Sort<T>::mergeSortRecursive(T* const sorting, const std::uint32_t begin, co
     }
 }
 
-template <class T>
+template <typename T>
 std::vector<T> Sort<T>::quick(const T* const array, const std::uint32_t length)
 {
     std::vector<T> sorting(array, array + length);
@@ -236,7 +236,7 @@ std::vector<T> Sort<T>::quick(const T* const array, const std::uint32_t length)
     return sorting;
 }
 
-template <class T>
+template <typename T>
 void Sort<T>::quickSortRecursive(T* const sorting, const std::uint32_t begin, const std::uint32_t end)
 {
     if (begin >= end)
@@ -274,7 +274,7 @@ void Sort<T>::quickSortRecursive(T* const sorting, const std::uint32_t begin, co
     quickSortRecursive(sorting, leftIdx + 1, end);
 }
 
-template <class T>
+template <typename T>
 std::vector<T> Sort<T>::heap(const T* const array, const std::uint32_t length)
 {
     std::vector<T> sorting(array, array + length);
@@ -291,7 +291,7 @@ std::vector<T> Sort<T>::heap(const T* const array, const std::uint32_t length)
     return sorting;
 }
 
-template <class T>
+template <typename T>
 void Sort<T>::buildMaxHeap(T* const sorting, const std::uint32_t begin, const std::uint32_t end)
 {
     std::uint32_t parent = begin, child = parent * 2 + 1;
@@ -312,7 +312,7 @@ void Sort<T>::buildMaxHeap(T* const sorting, const std::uint32_t begin, const st
     }
 }
 
-template <class T>
+template <typename T>
 std::vector<T> Sort<T>::counting(const T* const array, const std::uint32_t length)
 {
     if (!std::is_integral_v<T>)
@@ -347,7 +347,7 @@ std::vector<T> Sort<T>::counting(const T* const array, const std::uint32_t lengt
     return sorting;
 }
 
-template <class T>
+template <typename T>
 std::vector<T> Sort<T>::bucket(const T* const array, const std::uint32_t length)
 {
     std::vector<T> sorting(array, array + length);
@@ -379,7 +379,7 @@ std::vector<T> Sort<T>::bucket(const T* const array, const std::uint32_t length)
     return sorting;
 }
 
-template <class T>
+template <typename T>
 std::vector<T> Sort<T>::radix(const T* const array, const std::uint32_t length)
 {
     if (!std::is_integral_v<T>)
@@ -414,7 +414,7 @@ std::vector<T> Sort<T>::radix(const T* const array, const std::uint32_t length)
     return sorting;
 }
 
-template <class T>
+template <typename T>
 void Sort<T>::leastSignificantDigit(
     T* const sorting,
     const std::uint32_t length,

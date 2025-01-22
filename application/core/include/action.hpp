@@ -564,7 +564,7 @@ struct MessageTypeList
     //! @brief Alias for the parameter pack.
     //! @tparam InnerTypes - type of inner types
     //! @tparam TemplatedType - type of templated type
-    template <template <typename... InnerTypes> typename TemplatedType>
+    template <template <typename... InnerTypes> class TemplatedType>
     using AsParameterPackFor = TemplatedType<Types...>;
     //! @brief Alias for the providing interface.
     //! @tparam Intf - type of interface
@@ -755,14 +755,14 @@ class MessageForwarder : public MessageTypes::WithInterface<ForwardBase>::AsPara
 
 //! @brief Applying event type object's helper type for the visitor.
 //! @tparam Ts - type of visitors
-template <class... Ts>
+template <typename... Ts>
 struct EvtVisitor : Ts...
 {
     using Ts::operator()...;
 };
 //! @brief Explicit deduction guide for EvtVisitor.
 //! @tparam Ts - type of visitors
-template <class... Ts>
+template <typename... Ts>
 EvtVisitor(Ts...) -> EvtVisitor<Ts...>;
 //! @brief Alias for the applied action event type.
 using EventType = std::variant<

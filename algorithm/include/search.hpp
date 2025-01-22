@@ -21,7 +21,7 @@ extern const char* version() noexcept;
 
 //! @brief Search methods.
 //! @tparam T - type of search methods
-template <class T>
+template <typename T>
 class Search
 {
 public:
@@ -55,7 +55,7 @@ private:
     static std::vector<std::uint32_t> generateFibonacciNumber(const std::uint32_t limit);
 };
 
-template <class T>
+template <typename T>
 std::int64_t Search<T>::binary(const T* const array, const std::uint32_t length, const T key)
 {
     std::int64_t index = -1;
@@ -86,7 +86,7 @@ std::int64_t Search<T>::binary(const T* const array, const std::uint32_t length,
     return index;
 }
 
-template <class T>
+template <typename T>
 std::int64_t Search<T>::interpolation(const T* const array, const std::uint32_t length, const T key)
 {
     std::int64_t index = -1;
@@ -117,7 +117,7 @@ std::int64_t Search<T>::interpolation(const T* const array, const std::uint32_t 
     return index;
 }
 
-template <class T>
+template <typename T>
 std::int64_t Search<T>::fibonacci(const T* const array, const std::uint32_t length, const T key)
 {
     std::int64_t index = -1;
@@ -170,7 +170,7 @@ std::int64_t Search<T>::fibonacci(const T* const array, const std::uint32_t leng
     return index;
 }
 
-template <class T>
+template <typename T>
 std::vector<std::uint32_t> Search<T>::generateFibonacciNumber(const std::uint32_t limit)
 {
     if (0 == limit)

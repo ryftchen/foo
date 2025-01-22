@@ -104,7 +104,7 @@ Node* getSuccessor(const Node* x)
 //! @return new node after creating
 Node* createNode(const Type key, Node* const parent, Node* const left, Node* const right)
 {
-    Node* const node = new (std::nothrow) Node;
+    Node* const node = ::new (std::nothrow) Node;
     if (nullptr == node)
     {
         return nullptr;
@@ -183,10 +183,10 @@ Node* deleteNode(BSTree tree, Node* const z)
 
     if (tree == y)
     {
-        delete y;
+        ::delete y;
         return nullptr;
     }
-    delete y;
+    ::delete y;
 
     return tree;
 }
@@ -253,7 +253,7 @@ void destroyBSTree(BSTree tree)
         destroyBSTree(tree->right);
     }
 
-    delete tree;
+    ::delete tree;
 }
 
 std::ostringstream& Output::output()
@@ -418,7 +418,7 @@ Node* rightLeftRotation(AVLTree k1)
 //! @return new node after creating
 Node* createNode(const Type key, Node* const left, Node* const right)
 {
-    Node* const node = new (std::nothrow) Node;
+    Node* const node = ::new (std::nothrow) Node;
     if (nullptr == node)
     {
         return nullptr;
@@ -480,7 +480,7 @@ Node* deleteNode(AVLTree tree, const Node* const z)
     {
         const Node* const temp = tree;
         tree = tree->left ? tree->left : tree->right;
-        delete temp;
+        ::delete temp;
     }
 
     return tree;
@@ -569,7 +569,7 @@ void destroyAVLTree(AVLTree tree)
         destroyAVLTree(tree->right);
     }
 
-    delete tree;
+    ::delete tree;
 }
 
 std::ostringstream& Output::output()
@@ -676,7 +676,7 @@ Node* getMaximum(SplayTree tree)
 //! @return new node after creating
 Node* createNode(const Type key, Node* const left, Node* const right)
 {
-    Node* const node = new (std::nothrow) Node;
+    Node* const node = ::new (std::nothrow) Node;
     if (nullptr == node)
     {
         return nullptr;
@@ -710,7 +710,7 @@ Node* insertNode(SplayTree tree, Node* const z)
         }
         else
         {
-            delete z;
+            ::delete z;
             return tree;
         }
     }
@@ -862,7 +862,7 @@ Node* splayTreeDelete(SplayTree tree, const Type key)
     {
         x = tree->right;
     }
-    delete tree;
+    ::delete tree;
 
     return x;
 }
@@ -885,7 +885,7 @@ void destroySplayTree(SplayTree tree)
         destroySplayTree(tree->right);
     }
 
-    delete tree;
+    ::delete tree;
 }
 
 std::ostringstream& Output::output()

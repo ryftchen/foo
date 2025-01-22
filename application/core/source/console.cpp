@@ -176,7 +176,7 @@ void Console::setDefaultOptions()
             {
                 throw std::runtime_error{"Please enter the \"" + inputs.at(0) + "\" and append with FILE."};
             }
-            return RetCode(fileExecutor(inputs.at(1)));
+            return fileExecutor(inputs.at(1));
         });
     orderList.emplace_back("batch");
 }
