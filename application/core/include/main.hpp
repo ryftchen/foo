@@ -26,7 +26,7 @@ volatile std::sig_atomic_t signalStatus = 0; // NOLINT(misc-definitions-in-heade
 //! @return executable name
 static inline std::string getExecutableName()
 {
-    return std::filesystem::canonical(std::filesystem::path{"/proc/self/exe"}).filename();
+    return std::filesystem::canonical(std::filesystem::path{"/proc/self/exe"}).filename().string();
 }
 
 //! @brief Signal handler for SIGSEGV signal, etc.
@@ -85,7 +85,7 @@ static void signalHandler(int sig)
     }
     std::fprintf(
         ::stderr,
-        "\n%s:\n<SIGNAL>\n%d\n\n<BACKTRACE>\n%s\n<VERBOSE>\n%s\n",
+        "%s: Crash occurred.\n\n<SIGNAL>\n%d\n\n<BACKTRACE>\n%s\n<VERBOSE>\n%s\n",
         getExecutableName().c_str(),
         sig,
         originalTrace.str().c_str(),
