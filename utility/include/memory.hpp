@@ -32,7 +32,7 @@ public:
     Memory(const Memory&) = delete;
     //! @brief Construct a new Memory object.
     //! @tparam U - type of object to allocate
-    template <class U>
+    template <typename U>
     Memory(const Memory<U>&) = delete;
     //! @brief Construct a new Memory object.
     //! @param memory - the object for move constructor
@@ -69,19 +69,19 @@ public:
     //! @tparam Args - type of arguments for constructing the object
     //! @param obj - pointer of the allocated object
     //! @param args - arguments for constructing the object
-    template <class U, class... Args>
+    template <typename U, typename... Args>
     inline void construct(U* const obj, Args&&... args);
     //! @brief Destroy object.
     //! @tparam U - type of allocated object
     //! @param obj - pointer of the allocated object
-    template <class U>
+    template <typename U>
     inline void destroy(const U* const obj);
 
     //! @brief New an element.
     //! @tparam Args - type of arguments for constructing the object
     //! @param args - arguments for constructing the object
     //! @return pointer of the allocated object
-    template <class... Args>
+    template <typename... Args>
     inline T* newElement(Args&&... args);
     //! @brief Delete an element.
     //! @param obj - pointer of the allocated object
@@ -203,21 +203,21 @@ inline std::size_t Memory<T, BlockSize>::maxSize() const noexcept
 }
 
 template <typename T, std::size_t BlockSize>
-template <class U, class... Args>
+template <typename U, typename... Args>
 inline void Memory<T, BlockSize>::construct(U* const obj, Args&&... args)
 {
     new (obj) U(std::forward<Args>(args)...);
 }
 
 template <typename T, std::size_t BlockSize>
-template <class U>
+template <typename U>
 inline void Memory<T, BlockSize>::destroy(const U* const obj)
 {
     obj->~U();
 }
 
 template <typename T, std::size_t BlockSize>
-template <class... Args>
+template <typename... Args>
 inline T* Memory<T, BlockSize>::newElement(Args&&... args)
 {
     T* const result = allocate();

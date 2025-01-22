@@ -969,7 +969,7 @@ View::State View::safeCurrentState() const
     return state;
 }
 
-template <class T>
+template <typename T>
 void View::safeProcessEvent(const T& event)
 {
     stateLock.lock();

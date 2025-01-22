@@ -349,7 +349,7 @@ private:
     //! @brief Safely process an event.
     //! @tparam T - type of target event
     //! @param event - target event
-    template <class T>
+    template <typename T>
     void safeProcessEvent(const T& event);
     //! @brief Check whether it is in the uninterrupted serving state.
     //! @param state - target state

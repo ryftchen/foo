@@ -23,7 +23,7 @@ namespace doubly_linked_list
 //! @return node
 static Node* createNode(void* const val)
 {
-    Node* const node = new (std::nothrow) Node;
+    Node* const node = ::new (std::nothrow) Node;
     if (nullptr == node)
     {
         return nullptr;
@@ -106,10 +106,10 @@ int destroyDll(DLL* const dll)
     {
         temp = node;
         node = node->next;
-        delete temp;
+        ::delete temp;
     }
 
-    delete *dll;
+    ::delete *dll;
     *dll = nullptr;
 
     return 0;
@@ -256,7 +256,7 @@ int dllDelete(DLL head, const int index)
 
     node->next->prev = node->prev;
     node->prev->next = node->next;
-    delete node;
+    ::delete node;
 
     return 0;
 }

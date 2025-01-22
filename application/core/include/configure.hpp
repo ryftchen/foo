@@ -104,7 +104,7 @@ private:
     //! @brief Check the object in the helper list.
     //! @tparam T - type of helper
     //! @param helperList - object in the helper list
-    template <class T>
+    template <typename T>
     static void checkObjectInHelperList(const utility::json::JSON& helperList);
 };
 

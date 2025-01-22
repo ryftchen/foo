@@ -30,7 +30,7 @@ namespace app_num
 {
 //! @brief Represent the maximum value of an enum.
 //! @tparam T - type of specific enum
-template <class T>
+template <typename T>
 struct Bottom;
 
 //! @brief Enumerate specific arithmetic methods.
@@ -182,12 +182,12 @@ extern ApplyNumeric& manager();
 //! @brief Update choice.
 //! @tparam T - type of target method
 //! @param target - target method
-template <class T>
+template <typename T>
 void updateChoice(const std::string_view target);
 //! @brief Run choices.
 //! @tparam T - type of target method
 //! @param candidates - container for the candidate target methods
-template <class T>
+template <typename T>
 void runChoices(const std::vector<std::string>& candidates);
 
 //! @brief Apply arithmetic.
@@ -459,7 +459,7 @@ public:
 
 //! @brief Expression object's helper type for the visitor.
 //! @tparam Ts - type of visitors
-template <class... Ts>
+template <typename... Ts>
 struct ExprOverloaded : Ts...
 {
     using Ts::operator()...;
@@ -467,7 +467,7 @@ struct ExprOverloaded : Ts...
 
 //! @brief Explicit deduction guide for ExprOverloaded.
 //! @tparam Ts - type of visitors
-template <class... Ts>
+template <typename... Ts>
 ExprOverloaded(Ts...) -> ExprOverloaded<Ts...>;
 
 //! @brief Range properties of the expression.
@@ -527,16 +527,16 @@ struct ExprMapHash
 
 //! @brief Alias for the integral expression.
 //! @tparam Ts - type of expressions
-template <class... Ts>
+template <typename... Ts>
 using IntegralExpr = std::variant<Ts...>;
 //! @brief Alias for the integral expression map.
 //! @tparam Ts - type of expressions
-template <class... Ts>
+template <typename... Ts>
 using IntegralExprMap = std::unordered_multimap<ExprRange<double, double>, IntegralExpr<Ts...>, ExprMapHash>;
 
 //! @brief Builder for the input.
 //! @tparam Ts - type of expressions
-template <class... Ts>
+template <typename... Ts>
 class InputBuilder
 {
 public:

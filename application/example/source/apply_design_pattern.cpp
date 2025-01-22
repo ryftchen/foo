@@ -101,7 +101,7 @@ consteval std::string_view getCategoryAlias()
 //! @tparam T - type of target instance
 //! @param instance - target instance
 //! @return abbreviation value
-template <class T>
+template <typename T>
 consteval std::size_t abbrVal(const T instance)
 {
     using TypeInfo = utility::reflection::TypeInfo<T>;
@@ -126,7 +126,7 @@ consteval std::size_t abbrVal(const T instance)
 //! @tparam T - type of target instance
 //! @param instance - target instance
 //! @return initial capitalized title
-template <class T>
+template <typename T>
 std::string getTitle(const T instance)
 {
     std::string title(toString(instance));

@@ -247,7 +247,7 @@ Log::State Log::safeCurrentState() const
     return state;
 }
 
-template <class T>
+template <typename T>
 void Log::safeProcessEvent(const T& event)
 {
     stateLock.lock();

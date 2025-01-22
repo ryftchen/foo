@@ -20,13 +20,13 @@ extern const char* version() noexcept;
 //! @brief Alias for invoke result.
 //! @tparam Func - type of callable function
 //! @tparam Args - type of function arguments
-template <class Func, class... Args>
+template <typename Func, typename... Args>
 using InvokeResult = std::invoke_result_t<Func, Args...>;
 
 //! @brief Alias for checking whether to be invocable.
 //! @tparam Func - type of callable function
 //! @tparam Args - type of function arguments
-template <class Func, class... Args>
+template <typename Func, typename... Args>
 using IsInvocable = std::is_invocable<Func, Args...>;
 
 //! @brief Invoke result.
@@ -35,7 +35,7 @@ using IsInvocable = std::is_invocable<Func, Args...>;
 //! @param func - callable function
 //! @param args - function arguments
 //! @return wrapping of calls
-template <class Func, class... Args>
+template <typename Func, typename... Args>
 inline InvokeResult<Func, Args...> invokeResult(Func&& func, Args&&... args)
 {
     return func(args...);
@@ -50,7 +50,7 @@ inline InvokeResult<Func, Args...> invokeResult(Func&& func, Args&&... args)
 //! @param obj - object to which the function belongs
 //! @param args - function arguments
 //! @return wrapping of calls
-template <class Ret, class T1, class T2, class... Args>
+template <typename Ret, typename T1, typename T2, typename... Args>
 inline InvokeResult<Ret T1::*, T2, Args...> invokeResult(Ret T1::*func, T2&& obj, Args&&... args)
 {
     return (obj.*func)(args...);
@@ -65,9 +65,9 @@ inline InvokeResult<Ret T1::*, T2, Args...> invokeResult(Ret T1::*func, T2&& obj
 //! @tparam val3 - flag to indicate the value when include only Arg2
 //! @tparam val4 - flag to indicate the value when include both Arg1 and Arg2
 template <
-    class Func,
-    class Arg1,
-    class Arg2,
+    typename Func,
+    typename Arg1,
+    typename Arg2,
     bool val1 = IsInvocable<Func>::value,
     bool val2 = IsInvocable<Func, Arg1>::value,
     bool val3 = IsInvocable<Func, Arg2>::value,
@@ -78,7 +78,7 @@ struct BinaryFuncHelper;
 //! @tparam Func - type of callable function
 //! @tparam Arg1 - type of function arguments
 //! @tparam Arg2 - type of function arguments
-template <class Func, class Arg1, class Arg2>
+template <typename Func, typename Arg1, typename Arg2>
 struct BinaryFuncHelper<Func, Arg1, Arg2, true, false, false, false>
 {
     //! @brief Alias for invoke result.
@@ -93,7 +93,7 @@ struct BinaryFuncHelper<Func, Arg1, Arg2, true, false, false, false>
 //! @tparam Func - type of callable function
 //! @tparam Arg1 - type of function arguments
 //! @tparam Arg2 - type of function arguments
-template <class Func, class Arg1, class Arg2>
+template <typename Func, typename Arg1, typename Arg2>
 struct BinaryFuncHelper<Func, Arg1, Arg2, false, true, false, false>
 {
     //! @brief Alias for invoke result.
@@ -109,7 +109,7 @@ struct BinaryFuncHelper<Func, Arg1, Arg2, false, true, false, false>
 //! @tparam Func - type of callable function
 //! @tparam Arg1 - type of function arguments
 //! @tparam Arg2 - type of function arguments
-template <class Func, class Arg1, class Arg2>
+template <typename Func, typename Arg1, typename Arg2>
 struct BinaryFuncHelper<Func, Arg1, Arg2, false, false, true, false>
 {
     //! @brief Alias for invoke result.
@@ -125,7 +125,7 @@ struct BinaryFuncHelper<Func, Arg1, Arg2, false, false, true, false>
 //! @tparam Func - type of callable function
 //! @tparam Arg1 - type of function arguments
 //! @tparam Arg2 - type of function arguments
-template <class Func, class Arg1, class Arg2>
+template <typename Func, typename Arg1, typename Arg2>
 struct BinaryFuncHelper<Func, Arg1, Arg2, false, false, false, true>
 {
     //! @brief Alias for invoke result.
@@ -142,7 +142,7 @@ struct BinaryFuncHelper<Func, Arg1, Arg2, false, false, false, true>
 //! @tparam Func - type of callable function
 //! @tparam Arg1 - type of function arguments
 //! @tparam Arg2 - type of function arguments
-template <class Func, class Arg1, class Arg2>
+template <typename Func, typename Arg1, typename Arg2>
 using InvokeAsBinaryFuncResult = typename BinaryFuncHelper<Func, Arg1, Arg2>::ResultType;
 
 //! @brief Invoke as binary function.
@@ -153,7 +153,7 @@ using InvokeAsBinaryFuncResult = typename BinaryFuncHelper<Func, Arg1, Arg2>::Re
 //! @param arg1 - function arguments
 //! @param arg2 - function arguments
 //! @return invoke result of binary function
-template <class Func, class Arg1, class Arg2>
+template <typename Func, typename Arg1, typename Arg2>
 inline InvokeAsBinaryFuncResult<Func, Arg1, Arg2> invokeAsBinaryFunc(Func&& func, Arg1&& arg1, Arg2&& arg2)
 {
     return BinaryFuncHelper<Func, Arg1, Arg2>::invoke(
@@ -162,20 +162,20 @@ inline InvokeAsBinaryFuncResult<Func, Arg1, Arg2> invokeAsBinaryFunc(Func&& func
 
 //! @brief The list of behaviors.
 //! @tparam Types - type of behaviors
-template <class... Types>
+template <typename... Types>
 struct List
 {
 };
 
 //! @brief Associate behaviors.
 //! @tparam Types - type of behaviors
-template <class... Types>
+template <typename... Types>
 struct Concat;
 
 //! @brief Associate events with behaviors.
 //! @tparam T - type of triggered event
 //! @tparam Types - type of behaviors
-template <class T, class... Types>
+template <typename T, typename... Types>
 struct Concat<T, List<Types...>>
 {
     //! @brief Alias for list.
@@ -193,14 +193,14 @@ struct Concat<>
 //! @brief The filter of events and behaviors.
 //! @tparam Predicate - type of predicate
 //! @tparam Types - type of behaviors
-template <template <typename> class Predicate, class... Types>
+template <template <typename> class Predicate, typename... Types>
 struct Filter;
 
 //! @brief The filter of events and behaviors. Based on conditions.
 //! @tparam Predicate - type of predicate
 //! @tparam T - specific type for predicate
 //! @tparam Types - type of behaviors
-template <template <typename> class Predicate, class T, class... Types>
+template <template <typename> class Predicate, typename T, typename... Types>
 struct Filter<Predicate, T, Types...>
 {
     //! @brief Alias for concat or filter.
@@ -222,7 +222,7 @@ struct Filter<Predicate>
 //! @brief Finite state machine.
 //! @tparam Derived - type of derived class
 //! @tparam State - type of state
-template <class Derived, class State = int>
+template <typename Derived, typename State = int>
 class FSM
 {
 public:
@@ -235,7 +235,7 @@ public:
     //! @brief Process the specific event.
     //! @tparam Event - type of triggered event
     //! @param event - event to be processed
-    template <class Event>
+    template <typename Event>
     inline void processEvent(const Event& event);
     //! @brief Get current state.
     //! @return State current state
@@ -246,7 +246,7 @@ private:
     //! @tparam Source - source state
     //! @tparam Event - type of triggered event
     //! @tparam Target - target state
-    template <State Source, class Event, State Target>
+    template <State Source, typename Event, State Target>
     struct RowBase
     {
     public:
@@ -267,7 +267,7 @@ private:
         //! @param action - action function
         //! @param self - derived object
         //! @param event - event to be processed
-        template <class Action>
+        template <typename Action>
         static inline void processEvent(Action&& action, Derived& self, const Event& event)
         {
             invokeAsBinaryFunc(action, self, event);
@@ -284,7 +284,7 @@ private:
         //! @param self - derived object
         //! @param event - event to be processed
         //! @return pass or not pass
-        template <class Guard>
+        template <typename Guard>
         static inline bool checkGuard(Guard&& guard, const Derived& self, const Event& event)
         {
             return invokeAsBinaryFunc(guard, self, event);
@@ -301,18 +301,18 @@ private:
     //! @brief Classification by event type.
     //! @tparam Event - type of triggered event
     //! @tparam Types - type of behaviors
-    template <class Event, class... Types>
+    template <typename Event, typename... Types>
     struct ByEventType;
 
     //! @brief Classification by event type. Include both event and behaviors.
     //! @tparam Event - type of triggered event
     //! @tparam Types - type of behaviors
-    template <class Event, class... Types>
+    template <typename Event, typename... Types>
     struct ByEventType<Event, List<Types...>>
     {
         //! @brief Alias for predicate.
         //! @tparam T - type of class to which the struct belongs
-        template <class T>
+        template <typename T>
         using Predicate = std::is_same<typename T::EventType, Event>;
         //! @brief Alias for filter type.
         using Type = typename Filter<Predicate, Types...>::Type;
@@ -320,7 +320,7 @@ private:
 
     //! @brief Classification by event type. Include only event.
     //! @tparam Event - type of triggered event
-    template <class Event>
+    template <typename Event>
     struct ByEventType<Event, List<>>
     {
         //! @brief Alias for list.
@@ -330,14 +330,14 @@ private:
     //! @brief Handle the specific event.
     //! @tparam Event - type of triggered event
     //! @tparam Types - type of behaviors
-    template <class Event, class... Types>
+    template <typename Event, typename... Types>
     struct handleEvent;
 
     //! @brief Handle the specific event. Include both event and behaviors.
     //! @tparam Event - type of triggered event
     //! @tparam T - type of derived class
     //! @tparam Types - type of behaviors
-    template <class Event, class T, class... Types>
+    template <typename Event, typename T, typename... Types>
     struct handleEvent<Event, List<T, Types...>>
     {
         //! @brief Execute handling.
@@ -355,7 +355,7 @@ private:
 
     //! @brief Handle the specific event. Include only event.
     //! @tparam Event - type of triggered event
-    template <class Event>
+    template <typename Event>
     struct handleEvent<Event, List<>>
     {
         //! @brief Execute handling. No transition.
@@ -400,13 +400,13 @@ private:
 protected:
     //! @brief Alias for transition table.
     //! @tparam Rows - type of row-based
-    template <class... Rows>
+    template <typename... Rows>
     using Table = List<Rows...>;
     //! @brief No transition can be found for the given event in its current state.
     //! @tparam Event - type of triggered event
     //! @param event - event to be processed
     //! @return current state
-    template <class Event>
+    template <typename Event>
     inline State noTransition(const Event& event);
 
     //! @brief Default row of the transition table.
@@ -419,11 +419,11 @@ protected:
     //! @tparam guard - guard condition
     template <
         State Source,
-        class Event,
+        typename Event,
         State Target,
-        class Action = std::nullptr_t,
+        typename Action = std::nullptr_t,
         Action action = nullptr,
-        class Guard = std::nullptr_t,
+        typename Guard = std::nullptr_t,
         Guard guard = nullptr>
     struct DefRow : public RowBase<Source, Event, Target>
     {
@@ -452,7 +452,7 @@ protected:
     //! @tparam guard - guard condition
     template <
         State Source,
-        class Event,
+        typename Event,
         State Target,
         void (Derived::*action)(const Event&) = nullptr,
         bool (Derived::*guard)(const Event&) const = nullptr>
@@ -488,7 +488,7 @@ protected:
     //! @tparam Target - target state
     //! @tparam action - action function
     //! @tparam guard - guard condition
-    template <State Source, class Event, State Target, auto action = nullptr, auto guard = nullptr>
+    template <State Source, typename Event, State Target, auto action = nullptr, auto guard = nullptr>
     struct Row : public RowBase<Source, Event, Target>
     {
         //! @brief Process the specific event.
@@ -509,8 +509,8 @@ protected:
     };
 };
 
-template <class Derived, class State>
-template <class Event>
+template <typename Derived, typename State>
+template <typename Event>
 inline void FSM<Derived, State>::processEvent(const Event& event)
 {
     using Rows = typename ByEventType<Event, typename Derived::TransitionTable>::Type;
@@ -520,14 +520,14 @@ inline void FSM<Derived, State>::processEvent(const Event& event)
     state = handleEvent<Event, Rows>::execute(self, event, state);
 }
 
-template <class Derived, class State>
+template <typename Derived, typename State>
 inline State FSM<Derived, State>::currentState() const
 {
     return state;
 }
 
-template <class Derived, class State>
-template <class Event>
+template <typename Derived, typename State>
+template <typename Event>
 inline State FSM<Derived, State>::noTransition(const Event& /*event*/)
 {
     return state;

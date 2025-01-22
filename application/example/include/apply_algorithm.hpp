@@ -32,7 +32,7 @@ namespace app_algo
 {
 //! @brief Represent the maximum value of an enum.
 //! @tparam T - type of specific enum
-template <class T>
+template <typename T>
 struct Bottom;
 
 //! @brief Enumerate specific match methods.
@@ -225,12 +225,12 @@ extern ApplyAlgorithm& manager();
 //! @brief Update choice.
 //! @tparam T - type of target method
 //! @param target - target method
-template <class T>
+template <typename T>
 void updateChoice(const std::string_view target);
 //! @brief Run choices.
 //! @tparam T - type of target method
 //! @param candidates - container for the candidate target methods
-template <class T>
+template <typename T>
 void runChoices(const std::vector<std::string>& candidates);
 
 //! @brief Apply match.
@@ -555,7 +555,7 @@ public:
 
 //! @brief Function object's helper type for the visitor.
 //! @tparam Ts - type of visitors
-template <class... Ts>
+template <typename... Ts>
 struct FuncOverloaded : Ts...
 {
     using Ts::operator()...;
@@ -563,7 +563,7 @@ struct FuncOverloaded : Ts...
 
 //! @brief Explicit deduction guide for FuncOverloaded.
 //! @tparam Ts - type of visitors
-template <class... Ts>
+template <typename... Ts>
 FuncOverloaded(Ts...) -> FuncOverloaded<Ts...>;
 
 //! @brief Range properties of the function.
@@ -623,16 +623,16 @@ struct FuncMapHash
 
 //! @brief Alias for the optimal function.
 //! @tparam Ts - type of functions
-template <class... Ts>
+template <typename... Ts>
 using OptimalFunc = std::variant<Ts...>;
 //! @brief Alias for the optimal function map.
 //! @tparam Ts - type of functions
-template <class... Ts>
+template <typename... Ts>
 using OptimalFuncMap = std::unordered_multimap<FuncRange<double, double>, OptimalFunc<Ts...>, FuncMapHash>;
 
 //! @brief Builder for the input.
 //! @tparam Ts - type of functions
-template <class... Ts>
+template <typename... Ts>
 class InputBuilder
 {
 public:
@@ -734,7 +734,7 @@ consteval bool isRealNumber()
 
 //! @brief Builder for the input.
 //! @tparam T - type of builder for the target
-template <class T>
+template <typename T>
 class InputBuilder
 {
 public:
@@ -985,7 +985,7 @@ consteval bool isRealNumber()
 
 //! @brief Builder for the input.
 //! @tparam T - type of builder for the target
-template <class T>
+template <typename T>
 class InputBuilder
 {
 public:

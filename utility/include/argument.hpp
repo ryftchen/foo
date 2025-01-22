@@ -91,7 +91,7 @@ std::string represent(const T& val)
     }
     else if constexpr (std::is_convertible_v<T, std::string_view>)
     {
-        return '"' + std::string{std::string_view{val}} + '"';
+        return '"' + val + '"';
     }
     else if constexpr (isContainer<T>)
     {
@@ -142,7 +142,7 @@ std::string represent(const T& val)
 //! @tparam Extra - type of extra option
 //! @tparam I - number of sequence which converted from bound arguments tuple
 //! @return wrapping of calls
-template <class Func, class Tuple, class Extra, std::size_t... I>
+template <typename Func, typename Tuple, typename Extra, std::size_t... I>
 constexpr decltype(auto) applyScopedOneImpl(
     Func&& func, Tuple&& tup, Extra&& ext, const std::index_sequence<I...>& /*sequence*/)
 {
@@ -157,7 +157,7 @@ constexpr decltype(auto) applyScopedOneImpl(
 //! @param tup - bound arguments tuple
 //! @param ext - extra option
 //! @return wrapping of calls
-template <class Func, class Tuple, class Extra>
+template <typename Func, typename Tuple, typename Extra>
 constexpr decltype(auto) applyScopedOne(Func&& func, Tuple&& tup, Extra&& ext)
 {
     return applyScopedOneImpl(
@@ -281,7 +281,7 @@ public:
     //! @param callable - callable function
     //! @param boundArgs - bound arguments
     //! @return reference of the Register object
-    template <class Func, class... Args>
+    template <typename Func, typename... Args>
     auto action(Func&& callable, Args&&... boundArgs)
         -> std::enable_if_t<std::is_invocable_v<Func, Args..., const std::string&>, Register&>;
     //! @brief Set number of arguments.
@@ -372,7 +372,7 @@ private:
         //! @brief The operator (==) overloading of Register class.
         //! @param rhs - right-hand side
         //! @return be equal or not equal
-        bool operator==(const ArgsNumRange& rhs) const { return (rhs.min == min) && (rhs.max == max); }
+        bool operator==(const ArgsNumRange& rhs) const { return std::tie(rhs.min, rhs.max) == std::tie(min, max); }
         //! @brief The operator (!=) overloading of Register class.
         //! @param rhs - right-hand side
         //! @return be not equal or equal
@@ -525,7 +525,7 @@ Register& Register::defaultValue(T&& value)
     return *this;
 }
 
-template <class Func, class... Args>
+template <typename Func, typename... Args>
 auto Register::action(Func&& callable, Args&&... boundArgs)
     -> std::enable_if_t<std::is_invocable_v<Func, Args..., const std::string&>, Register&>
 {

@@ -103,7 +103,7 @@ consteval std::string_view getCategoryAlias()
 //! @tparam T - type of target method
 //! @param method - target method
 //! @return abbreviation value
-template <class T>
+template <typename T>
 consteval std::size_t abbrVal(const T method)
 {
     using TypeInfo = utility::reflection::TypeInfo<T>;
@@ -128,7 +128,7 @@ consteval std::size_t abbrVal(const T method)
 //! @tparam T - type of target method
 //! @param method - target method
 //! @return initial capitalized title
-template <class T>
+template <typename T>
 std::string getTitle(const T method)
 {
     std::string title(toString(method));

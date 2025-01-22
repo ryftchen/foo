@@ -20,7 +20,7 @@ namespace command
 {
 //! @brief Represent the maximum value of an enum.
 //! @tparam T - type of specific enum
-template <class T>
+template <typename T>
 struct Bottom;
 
 //! @brief Enumerate specific native categories.
@@ -83,7 +83,7 @@ private:
     std::atomic<bool> isParsed{false};
     //! @brief Alias for the type information.
     //! @tparam T - type of target object
-    template <class T>
+    template <typename T>
     using TypeInfo = utility::reflection::TypeInfo<T>;
     //! @brief Parse argument helper for commander.
     utility::argument::Argument mainCLI{"foo", note::version()};
@@ -149,18 +149,18 @@ private:
     //! @brief Get the description.
     //! @tparam T - type of sub-cli or sub-cli category
     //! @return description
-    template <class T>
+    template <typename T>
     static inline consteval std::string_view getDescr();
     //! @brief Get the alias name.
     //! @tparam SubCLI - type of sub-cli
     //! @tparam Cat - type of sub-cli category
     //! @return alias name
-    template <class SubCLI, class Cat>
+    template <typename SubCLI, typename Cat>
     static inline consteval std::string_view getAlias();
     //! @brief Extract all choices in the sub-cli category.
     //! @tparam Cat - type of sub-cli category
     //! @return all choices
-    template <class Cat>
+    template <typename Cat>
     static std::vector<std::string> extractChoices();
     //! @brief Mapping table of all extra choices. Fill as needed.
     ExtraChoiceMap extraChoices{};
@@ -260,7 +260,7 @@ private:
         };
         //! @brief The action when notified.
         //! @tparam CRTP - type of derived class for CRTP
-        template <class CRTP>
+        template <typename CRTP>
         class Action : public ActionBase
         {
         public:
@@ -270,7 +270,7 @@ private:
         //! @brief The handler that performs an action when notified.
         //! @tparam Cat - the specific value of Category enum
         //! @tparam T - type of involved object
-        template <Category Cat, class T = Command>
+        template <Category Cat, typename T = Command>
         class Handler : public Action<Handler<Cat>>
         {
         public:
@@ -315,12 +315,12 @@ private:
     //! @tparam T - type of client
     //! @param session - console to be registered
     //! @param client - client used to send
-    template <class T>
+    template <typename T>
     static void registerOnConsole(console::Console& session, std::shared_ptr<T>& client);
     //! @brief Launch the client for console mode.
     //! @tparam T - type of client
     //! @param client - client to be launched
-    template <class T>
+    template <typename T>
     static void launchClient(std::shared_ptr<T>& client);
     //! @brief Parse the message inside the client in console mode.
     //! @param buffer - message buffer
@@ -341,13 +341,13 @@ private:
     static constexpr std::uint16_t latency{10};
 };
 
-template <class T>
+template <typename T>
 inline consteval std::string_view Command::getDescr()
 {
     return TypeInfo<T>::attrs.find(REFLECTION_STR("descr")).value;
 }
 
-template <class SubCLI, class Cat>
+template <typename SubCLI, typename Cat>
 inline consteval std::string_view Command::getAlias()
 {
     return TypeInfo<SubCLI>::fields.find(REFLECTION_STR(TypeInfo<Cat>::name)).attrs.find(REFLECTION_STR("alias")).value;
