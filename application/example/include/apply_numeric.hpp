@@ -240,7 +240,7 @@ public:
     {
 #ifdef __RUNTIME_PRINTING
         std::cout << "\nElementary arithmetic of " << integer1 << " and " << integer2 << ':' << std::endl;
-#endif
+#endif // __RUNTIME_PRINTING
     }
     //! @brief Destroy the InputBuilder object.
     virtual ~InputBuilder() = default;
@@ -311,7 +311,7 @@ public:
     {
 #ifdef __RUNTIME_PRINTING
         std::cout << "\nAll common divisors of " << integer1 << " and " << integer2 << ':' << std::endl;
-#endif
+#endif // __RUNTIME_PRINTING
     }
     //! @brief Destroy the InputBuilder object.
     virtual ~InputBuilder() = default;
@@ -624,7 +624,7 @@ public:
     {
 #ifdef __RUNTIME_PRINTING
         std::cout << "\nAll prime numbers smaller than " << maxPositiveInteger << ':' << std::endl;
-#endif
+#endif // __RUNTIME_PRINTING
     }
     //! @brief Destroy the InputBuilder object.
     virtual ~InputBuilder() = default;

@@ -273,7 +273,7 @@ public:
     {
         TST_ALGO_PRINT_TASK_TITLE(Category::search, "BEGIN");
         inputs = std::make_shared<search::InputBuilder<float>>(
-            search::input::arrayLength, search::input::arrayRange1, search::input::arrayRange2);
+            search::input::arrayLength, search::input::arrayRangeMin, search::input::arrayRangeMax);
         updateExpColl();
     }
     //! @brief Tear down the test case.
@@ -352,7 +352,7 @@ public:
     {
         TST_ALGO_PRINT_TASK_TITLE(Category::sort, "BEGIN");
         inputs = std::make_shared<sort::InputBuilder<std::int32_t>>(
-            sort::input::arrayLength, sort::input::arrayRange1, sort::input::arrayRange2);
+            sort::input::arrayLength, sort::input::arrayRangeMin, sort::input::arrayRangeMax);
         updateExpColl();
     }
     //! @brief Tear down the test case.
