@@ -872,13 +872,13 @@ void runChoices<SearchMethod>(const std::vector<std::string>& candidates)
     assert(bits.size() == candidates.size());
 
     APP_ALGO_PRINT_TASK_BEGIN_TITLE(category);
-    using search::SearchSolution, search::InputBuilder, search::input::arrayLength, search::input::arrayRange1,
-        search::input::arrayRange2;
-    static_assert((arrayRange1 < arrayRange2) && (arrayLength > 0));
+    using search::SearchSolution, search::InputBuilder, search::input::arrayLength, search::input::arrayRangeMin,
+        search::input::arrayRangeMax;
+    static_assert((arrayRangeMin < arrayRangeMax) && (arrayLength > 0));
 
     auto& pooling = action::resourcePool();
     auto* const threads = pooling.newElement(bits.count());
-    const auto inputs = std::make_shared<InputBuilder<float>>(arrayLength, arrayRange1, arrayRange2);
+    const auto inputs = std::make_shared<InputBuilder<float>>(arrayLength, arrayRangeMin, arrayRangeMax);
     const auto functor = [threads, &inputs](
                              const std::string_view threadName,
                              void (*targetMethod)(const float* const, const std::uint32_t, const float))
@@ -1132,13 +1132,13 @@ void runChoices<SortMethod>(const std::vector<std::string>& candidates)
     assert(bits.size() == candidates.size());
 
     APP_ALGO_PRINT_TASK_BEGIN_TITLE(category);
-    using sort::SortSolution, sort::InputBuilder, sort::input::arrayLength, sort::input::arrayRange1,
-        sort::input::arrayRange2;
-    static_assert((arrayRange1 < arrayRange2) && (arrayLength > 0));
+    using sort::SortSolution, sort::InputBuilder, sort::input::arrayLength, sort::input::arrayRangeMin,
+        sort::input::arrayRangeMax;
+    static_assert((arrayRangeMin < arrayRangeMax) && (arrayLength > 0));
 
     auto& pooling = action::resourcePool();
     auto* const threads = pooling.newElement(bits.count());
-    const auto inputs = std::make_shared<InputBuilder<std::int32_t>>(arrayLength, arrayRange1, arrayRange2);
+    const auto inputs = std::make_shared<InputBuilder<std::int32_t>>(arrayLength, arrayRangeMin, arrayRangeMax);
     const auto functor =
         [threads, &inputs](
             const std::string_view threadName, void (*targetMethod)(const std::int32_t* const, const std::uint32_t))

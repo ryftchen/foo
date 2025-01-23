@@ -380,7 +380,6 @@ private:
         {
             piText[textLen] = '\0';
             std::memcpy(text, piText, textLen * sizeof(unsigned char));
-
 #ifdef __RUNTIME_PRINTING
             std::string out(text, text + textLen);
             if (textLen > 1)
@@ -399,7 +398,6 @@ private:
             }
 #endif // __RUNTIME_PRINTING
         }
-
         ::mpfr_clear(operand);
         ::mpfr_free_str(piText);
     }
@@ -687,9 +685,9 @@ const char* const version = algorithm::search::version();
 namespace input
 {
 //! @brief Minimum of the array for search methods.
-constexpr float arrayRange1 = -50.0;
+constexpr float arrayRangeMin = -50.0;
 //! @brief Maximum of the array for search methods.
-constexpr float arrayRange2 = 150.0;
+constexpr float arrayRangeMax = 150.0;
 //! @brief Length of the array for search methods.
 constexpr std::uint32_t arrayLength = 53;
 } // namespace input
@@ -863,7 +861,6 @@ private:
             array[i] = dist(engine);
         }
         std::sort(array, array + length);
-
 #ifdef __RUNTIME_PRINTING
         const std::uint32_t arrayBufferSize = length * maxAlignOfPrint;
         std::vector<char> arrayBuffer(arrayBufferSize + 1);
@@ -888,7 +885,6 @@ private:
             array[i] = dist(engine);
         }
         std::sort(array, array + length);
-
 #ifdef __RUNTIME_PRINTING
         const std::uint32_t arrayBufferSize = length * maxAlignOfPrint;
         std::vector<char> arrayBuffer(arrayBufferSize + 1);
@@ -913,9 +909,9 @@ const char* const version = algorithm::sort::version();
 namespace input
 {
 //! @brief Minimum of the array for sort methods.
-constexpr std::int32_t arrayRange1 = -50;
+constexpr std::int32_t arrayRangeMin = -50;
 //! @brief Maximum of the array for sort methods.
-constexpr std::int32_t arrayRange2 = 150;
+constexpr std::int32_t arrayRangeMax = 150;
 //! @brief Length of the array for sort methods.
 constexpr std::uint32_t arrayLength = 53;
 } // namespace input
@@ -1110,7 +1106,6 @@ private:
         {
             array[i] = dist(engine);
         }
-
 #ifdef __RUNTIME_PRINTING
         const std::uint32_t arrayBufferSize = length * maxAlignOfPrint;
         std::vector<char> arrayBuffer(arrayBufferSize + 1);
@@ -1134,7 +1129,6 @@ private:
         {
             array[i] = dist(engine);
         }
-
 #ifdef __RUNTIME_PRINTING
         const std::uint32_t arrayBufferSize = length * maxAlignOfPrint;
         std::vector<char> arrayBuffer(arrayBufferSize + 1);
